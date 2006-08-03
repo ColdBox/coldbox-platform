@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<Config>
+    <Settings>
+        <Setting name="Codename" 		       value="ColdBox"/>
+        <Setting name="Author" 		           value="Luis Majano"/>
+        <Setting name="AuthorEmail" 	       value="cfcoldbox@gmail.com"/>
+        <Setting name="AuthorWebsite"          value="http://www.luismajano.com/projects/coldbox" />
+        <Setting name="Suffix" 		           value=""/>
+        <Setting name="Version" 		       value="1.1.0"/>
+        <Setting name="Description"	           value="This is the ColdBox ColdFusion Framework for web applications." />
+        <Setting name="ModifyLogLocation"      value="readme.txt" />
+        <Setting name="FrameworkBlog"          value="http://www.luismajano.com/blog" />
+        <Setting name="FrameworkForums"        value="http://www.luismajano.com/forums" />
+        <Setting name="FrameworkAPI"           value="http://www.luismajano.com/projects/coldbox/cfdocs" />
+        <Setting name="FrameworkTrac"          value="http://trac.luismajano.com/coldbox" />
+        <Setting name="DashboardName"          value="ColdboxDashboard" />
+        <!--Available:US-ASCII, ISO-8859-1, UTF-8, UTF-16BE, UTF-16LE,  UTF-16.-->
+        <Setting name="LogFileEncoding"        value="UTF-8" />
+        <Setting name="LogFileBufferSize"      value="32768" />
+    </Settings>
+    
+    <!-- Config XML File Declarations -->
+    <ConfigXMLFile>
+        <FilePath>config{sep}config.xml.cfm</FilePath>
+    </ConfigXMLFile>
+    
+</Config>

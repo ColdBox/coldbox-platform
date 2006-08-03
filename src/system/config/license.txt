@@ -1,0 +1,27 @@
+ColdBox
+A ColdFusion Framework.
+by Luis Majano
+lmajano@gmail.com
+www.luismajano.com
+
+ColdBox is open source. However, if you use this product please know that it is bound to the following Creative Commons Licence. 
+If you use ColdBox, please make mention of it in your software or web site or add a the Powered By Coldbox icon.
+
+Attribution-ShareAlike 2.5
+
+You are free:
+
+To copy, distribute, display, and perform the work
+To make derivative works
+To make commercial use of the work
+Under the following conditions:
+	
+Attribution. You must attribute the work in the manner specified by the author or licensor.
+	
+Share Alike. If you alter, transform, or build upon this work, you may distribute the resulting work only under a license identical to this one.
+For any reuse or distribution, you must make clear to others the license terms of this work.
+Any of these conditions can be waived if you get permission from the copyright holder.
+Your fair use and other rights are in no way affected by the above.
+
+This is a human-readable summary of the Legal Code (the full license) that can be found at
+http://creativecommons.org/licenses/by-sa/2.5/legalcode

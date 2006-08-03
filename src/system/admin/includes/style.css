@@ -1,0 +1,101 @@
+/* CSS Document */.hidelayer{    display: none;}
+.showlayer{
+    display: block;
+}
+.fw_redText{    font-family: Arial, Helvetica, sans-serif;
+    font-weight:bold;
+    color:#CC0000;
+    background-color: inherit;
+    font-size: 11px;}
+.fw_greenText{    font-family: Arial, Helvetica, sans-serif;
+    color: #336600;
+    background-color: inherit;
+    font-weight:bold;
+    font-size: 11px;}
+.fw_blueText{    font-family: Arial, Helvetica, sans-serif;
+    font-size: 11px;
+    font-weight:bold;
+    color: #0022AA;
+    background-color: inherit;}
+.fw_errorText{    font-family: Arial, Helvetica, sans-serif;
+    font-size: 11px;
+    color: #666666;
+    background-color: inherit;
+    font-weight:bold;}.fw_debugTablesTitlesDocs{    font-size:14px;
+    background-color: #CCCCFF;
+    color: inherit;
+    font-weight: bold;
+    padding: 5px 5px 5px 5px;}.fw_errorTables{    font-family: Arial, Helvetica, sans-serif;
+    font-size: 11px;
+    border:1px solid #CC0000;
+    background-color: #FFFFFF;
+    color: inherit;
+    width: 95%;}.fw_errorTitles{    background-color: #cc0000;
+    color:#FFFFFF;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size:11px;
+    font-weight: bold;
+    padding:5px 5px 5px 5px;}.TablesTitles{    font-family: Arial, Helvetica, sans-serif;
+    font-size: 11px;
+    font-weight: bold;
+    background-color: #eeeeee;
+    color: inherit;
+    border:1px dotted #999999;
+    padding: 5px 5px 5px 5px;}.TablesCells{    font-family: Arial, Helvetica, sans-serif;
+    font-size: 11px;
+    background-color: #ffffff;
+    color: inherit;
+    border:1px dotted #999999;
+    padding: 5px 5px 5px 5px;}/*Admin Dashboard*/.page{    width: 790px;
+    display:block;
+    margin-left:auto;
+    margin-right:auto;}.header{    background:url(../images/header.jpg);
+    background-repeat:no-repeat;
+    height: 119px;}.headerBar{    background:url(../images/login_header_bar.png);
+    background-repeat:no-repeat;
+    height:26px;
+    border-left: 1px solid #AFB1AB;
+    border-top: 1px solid #AFB1AB;
+    border-bottom: 1px solid #696B65;
+    border-right: 1px solid #696B65;}.adminBody{    padding: 5px 5px 5px 5px;
+    background-color:#313131;
+    color: inherit;}.titlesDarkBg{    padding: 5px 5px 5px 5px;
+    background-color:#313131;    color: #FFFFFF;}.adminSmall{    font-size: 10px;
+    color:#FFFFFF;
+    background-color: inherit;
+    padding: 5px 5px 5px 5px;}.loginForm{    background-color:#E2E4D9;
+    color: inherit;
+    height:240px;
+    border-left: 1px solid #AFB1AB;
+    border-bottom: 1px solid #696B65;
+    border-right: 1px solid #696B65;}.loginTable{    border:1px dotted #ABADA4;
+    background-color: #f5f5f5;
+    color: inherit;
+    height: 125px;
+    vertical-align:middle;
+    padding: 5px 5px 5px 5px;}.contentTable{    border-left: 1px solid #AFB1AB;
+    border-bottom: 1px solid #696B65;
+    border-right: 1px solid #696B65;
+    border-top: 1px solid #AFB1AB;
+    height:400px;
+    width:790px;}.menuColumn{    width: 185px;
+    border-right: 1px solid #ABADA4;
+    vertical-align:top;
+    background: url(../images/light_horizontal_bar.png);
+    background-position:bottom;
+    background-repeat:repeat-x;
+    background-color:#FFFFFF;
+    color: inherit;
+    font-weight: bold;
+    display:table-cell;}.collapser{	background-color: #999999;
+	color: inherit;	width:5px;}.menuItem a:link, .menuItem a:visited {	border: 1px solid #E2E4D9;	background:#EFF3E6;	font-size: 11px;	color: #8E9089;	height: 20px;	vertical-align:middle;	padding-top: 5px;	display:block;	text-decoration:none;	text-indent: 25px;	background-image:url(../images/three_dots.gif);	background-repeat:no-repeat;	background-position: 15px;	margin-bottom:2px;}.menuItem a:hover {	color: #ffffff;	background:#C5D2A4;	background-image:url(../images/three_dots_white.gif);	background-repeat:no-repeat;	background-position: 15px;}.menuItemOn a:link, .menuItemOn a:visited {	border: 1px solid #E2E4D9;	color: #FFFFFF;	height: 20px;	vertical-align:middle;	padding-top: 5px;	display:block;	text-decoration:none;	text-indent: 25px;	background:#C5D2A4;	background-image:url(../images/three_dots_white.gif);	background-repeat:no-repeat;	background-position: 15px;	margin-bottom:2px;}.menuItemOn a:hover {	background-image:url(../images/three_dots.gif);	background-repeat:no-repeat;	background-position: 15px;}.menuheader{	padding-top:3px; 	padding-bottom: 8px;	background-image:url(../images/menubar_header.png);	background-repeat:no-repeat;	background-position: center;	height: 15px;}.dashboardColumn{	background-color: #E2E4D9;
+	color: inherit;}.dashboardContent {	padding: 10px 10px 10px 10px;}.dashboardTitles {	font-size:14px;	font-weight: bold;}.textboxes{	font-family:Arial, Helvetica, sans-serif;	font-size:11px;	color:#666666;
+	background-color: inherit;}.codes{	font-family: Arial, Helvetica, sans-serif;	font-size:11px;	padding:5px 5px 5px 5px;	border: 1px dotted #999999;	background-color:#FFFFFF;	color: #000099;	width: 98%;	height: 450px;	overflow:scroll;}.filecontents{	font-family: Arial, Helvetica, sans-serif;	font-size:11px;	color: #000099;	background: #DDDDDD;	border: 1px dotted #999999;	width: 98%;	height: 450px;	padding: 3px 3px 3px 3px;}.buttons{	font-size:11px;}/************************************************************* Links*************************************************************/a:link, a:visited {	font-family: 			Geneva, Arial, Helvetica, sans-serif;	font-weight:			800;	color: 					#000000;
+	background-color:       inherit;	text-decoration: 		underline;}a:hover {	color: #336666;	background: #FFFFCC;	text-decoration: 		underline;}pre{	font-family: 			'Courier New', Courier, mono;	font-size:	  			11px;	border: 				1px dashed #CF6600;	background-color: 		#ffffcc;	width:					465px;	padding: 	            5px;	margin: 			    auto;	margin-bottom:		    5px;	margin-top:			    5px;	color:					#0033CC;}
+p, body{
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 11px;
+}h2{    color: #000000;
+    background-color: inherit;
+    font-size:14px;
+    font-weight:bold;}li{    font-family: 			Geneva, Arial, Helvetica, sans-serif;    font-size:              10px;}
