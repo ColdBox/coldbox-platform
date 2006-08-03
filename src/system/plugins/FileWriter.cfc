@@ -63,15 +63,53 @@ Modification History:
 			arguments.bufferSize = bufferSizeLimit(arguments.bufferSize);
 			//prepare Streams.
 			variables.joFileOutputStream = CreateObject('java','java.io.FileOutputStream').init(javaCast('string', arguments.fileName));
+			//Verify Encoding
 			getFileEncoding(arguments.fileEncoding);
+			//Prepare OUtput stream Writer
 			variables.joOutputStreamWriter = CreateObject('java','java.io.OutputStreamWriter').init(variables.joFileOutputStream, javaCast('string', arguments.fileEncoding));
+			//Create BufferedWriter
 			variables.joBufferedWriter = CreateObject('java','java.io.BufferedWriter').init(variables.joOutputStreamWriter, javaCast('int', arguments.bufferSize));
 		</cfscript>
+	</cffunction>
+	<!--- ************************************************************* --->
 
-		<cfreturn this />
+	<!--- ************************************************************* --->
+	<cffunction name="write" access="public" returntype="void" output="No" hint="writes a string to a file">
+		<!--- ************************************************************* --->
+		<cfargument name="strIn" type="string" required="No" default="" hint="a string to write to the file" />
+		<!--- ************************************************************* --->
+		<cfset variables.joBufferedWriter.write(javaCast("string", arguments.strIn)) />
+	</cffunction>
+	<!--- ************************************************************* --->
+
+	<!--- ************************************************************* --->
+	<cffunction name="writeLine" access="public" returntype="void" output="No" hint="writes a string to a file, and places and EOL character at the end">
+		<!--- ************************************************************* --->
+		<cfargument name="strIn" type="string" required="No" default="" hint="a string to write to the file" />
+		<!--- ************************************************************* --->
+		<cfset variables.joBufferedWriter.write(javaCast("string", arguments.strIn)) />
+		<cfset variables.joBufferedWriter.newLine() />
 	</cffunction>
 	<!--- ************************************************************* --->
 	
+	<!--- ************************************************************* --->
+	<cffunction name="newLine" access="public" returntype="void" output="No" hint="Uses the platform's own notion of line separator. Not all platforms use the newline character ('\n') to terminate lines.">
+		<cfset variables.joBufferedWriter.newLine() />
+	</cffunction>
+	<!--- ************************************************************* --->
+	
+	<!--- ************************************************************* --->
+	<cffunction name="close" access="public" returntype="void" output="No" hint="flushes and closes stream, buffer, and file">
+		<cfscript>
+			variables.joBufferedWriter.flush();
+			variables.joOutputStreamWriter.flush();
+			variables.joBufferedWriter.close();
+			variables.joOutputStreamWriter.close();
+			variables.joFileOutputStream.close();
+		</cfscript>
+	</cffunction>
+	<!--- ************************************************************* --->
+		
 <!------------------------------------------- PRIVATE ------------------------------------------->
 
 	<!--- ************************************************************* --->
@@ -93,10 +131,10 @@ Modification History:
 
 	<!--- ************************************************************* --->
 	<cffunction name="getFileEncoding" access="private" returntype="void" output="No" hint="checks for a valid file encoding">
+		<!--- ************************************************************* --->
 		<cfargument name="fileEncoding" type="string" required="yes" hint="the file encoding" />
-
+		<!--- ************************************************************* --->
 		<cfset var joCharSet = CreateObject("java","java.nio.charset.Charset") />
-
 		<cfif (joCharSet.isSupported(javaCast("string", arguments.fileEncoding)))>
 			<cfscript>
 				/*
@@ -131,43 +169,8 @@ Modification History:
 			</cfscript>
 		<cfelse>
 			<cfset variables.joFileOutputStream.close() />
-			<cfabort showerror="Invalid file encoding" />
+			<cfthrow type="Framework.FileWriter.InvalidEncodingException" message="The encoding: #arguments.fileEncoding# is not a valid encoding.">
 		</cfif>
-	</cffunction>
-	<!--- ************************************************************* --->
-	
-	<!--- ************************************************************* --->
-	<cffunction name="write" access="public" returntype="void" output="No" hint="writes a string to a file">
-		<cfargument name="strIn" type="string" required="No" default="" hint="a string to write to the file" />
-
-		<cfset variables.joBufferedWriter.write(javaCast("string", arguments.strIn)) />
-	</cffunction>
-	<!--- ************************************************************* --->
-
-	<!--- ************************************************************* --->
-	<cffunction name="writeLine" access="public" returntype="void" output="No" hint="writes a string to a file, and places and EOL character at the end">
-		<cfargument name="strIn" type="string" required="No" default="" hint="a string to write to the file" />
-
-		<cfset variables.joBufferedWriter.write(javaCast("string", arguments.strIn)) />
-		<cfset variables.joBufferedWriter.newLine() />
-	</cffunction>
-	<!--- ************************************************************* --->
-	
-	<!--- ************************************************************* --->
-	<cffunction name="newLine" access="public" returntype="void" output="No" hint="Uses the platform's own notion of line separator. Not all platforms use the newline character ('\n') to terminate lines.">
-		<cfset variables.joBufferedWriter.newLine() />
-	</cffunction>
-	<!--- ************************************************************* --->
-	
-	<!--- ************************************************************* --->
-	<cffunction name="close" access="public" returntype="void" output="No" hint="flushes and closes stream, buffer, and file">
-		<cfscript>
-			variables.joBufferedWriter.flush();
-			variables.joOutputStreamWriter.flush();
-			variables.joBufferedWriter.close();
-			variables.joOutputStreamWriter.close();
-			variables.joFileOutputStream.close();
-		</cfscript>
 	</cffunction>
 	<!--- ************************************************************* --->
 	
