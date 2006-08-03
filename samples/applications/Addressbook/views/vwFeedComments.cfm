@@ -1,0 +1,2 @@
+<cfset qryData = getValue("qryData")>
+

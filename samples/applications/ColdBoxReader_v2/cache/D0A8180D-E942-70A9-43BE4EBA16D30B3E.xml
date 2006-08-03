@@ -1,0 +1,310 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+			<channel>
+			<title>Luis Majano's Java, Coldfusion &amp; More Blog</title>
+			<link>http://www.luismajano.com/blog/index.cfm</link>
+			<description>A blog about coldfusion, java, linux, technology, etc.</description>
+			<language>en-us</language>
+			<pubDate>Mon, 19 Jun 2006 23:01:20 -0400</pubDate>
+			<lastBuildDate>Sun, 18 Jun 2006 10:45:00 -0400</lastBuildDate>
+			<generator>BlogCFC</generator>
+			<docs>http://blogs.law.harvard.edu/tech/rss</docs>
+			<managingEditor>lmajano@gmail.com</managingEditor>
+			<webMaster>lmajano@gmail.com</webMaster>
+			
+			
+			
+			
+			
+			<item>
+				<title>I got Advanced Certification!! Hooray!!</title>
+				<link>http://www.luismajano.com/blog/index.cfm?mode=entry&amp;entry=E79E679C-0F71-1B27-5104157B2879755E</link>
+				<description>
+				
+				&lt;p&gt;Just a note that i took my ColdFusion 7 Certification friday at 4:00 PM.&amp;nbsp; Well, got an 88%!!&amp;nbsp; The studying payed off. My only material for studying was &lt;a href="http://www.forta.com" target="_blank"&gt;Ben Forta&amp;#39;s&lt;/a&gt;  &lt;a href="http://forta.com/books/0321330110" class="LeftNavLinks"&gt;Macromedia ColdFusion MX7 Certified Developer Study Guide&lt;/a&gt; which is a great study aid.&amp;nbsp; However, the best tool is actually using ColdFusion in you daily work.&lt;/p&gt;&lt;p&gt;&amp;nbsp;I can now upgrade my certification, Hooray!! &lt;br /&gt;&lt;/p&gt;
+				
+				</description>
+				
+				<category>Coldfusion</category>
+				
+				<pubDate>Sun, 18 Jun 2006 10:45:00 -0400</pubDate>
+				<guid>http://www.luismajano.com/blog/index.cfm?mode=entry&amp;entry=E79E679C-0F71-1B27-5104157B2879755E</guid>
+				
+			</item>
+			
+		 	
+			
+			
+			<item>
+				<title>Introducing ColdBox. An open source Coldfusion Framework</title>
+				<link>http://www.luismajano.com/blog/index.cfm?mode=entry&amp;entry=DD87CC75-9A49-D4AD-012B809D61796A69</link>
+				<description>
+				
+				&lt;p&gt;Well, I am finally opening the lid on a project I have been developing since August of last year: &lt;strong&gt;ColdBox a ColdFusion Framework.&lt;/strong&gt; I am just releasing the specs for this framework for now as I complete all the documentation and sample applications. If you want to see how it works, well you are already using it. This site, its blog (&lt;a href="http://ray.camdenfamily.com/" target="_blank"&gt;Raymond Camden&amp;#39;s&lt;/a&gt;  BlogCFC by the way), and its forums (&lt;a href="http://ray.camdenfamily.com/" target="_blank"&gt;Raymond Camden&amp;#39;s&lt;/a&gt;  Galleon Forums) are all running via ColdBox.&amp;nbsp; A subset of ColdBox is powering the &lt;a href="http://obe.sandals.com" target="_blank"&gt;Sandals Online Booking Engine&lt;/a&gt;  and &lt;a href="http://oee.sandals.com" target="_blank"&gt;Online Event Engine&lt;/a&gt; , which handle more than 500,000 requests per day per server.&amp;nbsp; So tune in for the next few weeks as I release more information. &lt;/p&gt;&lt;p&gt;ColdBox is a proven event-driven CFC based ColdFusion Framework, specifically designed for high availability web applications. The purpose behind ColdBox was to create a fast &amp;amp; stable development methodology that could be shared among several developers. It makes use of an MVC (Model View Controller) design pattern implemented via CFC&amp;#39;s. I introduce the concept of event handler CFC&amp;#39;s that hold all the code necessary to prepare views, call model CFC&amp;#39;s, use ColdBox plugins, and redirect requests through the ColdBox Controller.&amp;nbsp;&amp;nbsp; You can consider the event handlers to be all that code that you had on top of your templates, but now moved to an Object Oriented pattern.&amp;nbsp; You can look at the MVC Design Pattern diagram below:&lt;/p&gt;&lt;p&gt;&lt;a href="../fileshare/blog/ColdboxMVCDesignPattern.jpg" target="_blank"&gt;&lt;img src="../fileshare/blog/ColdboxMVCDesignPattern_tmb.jpg" alt=" " title="ColdBox MVC Design Pattern" width="450" height="323" /&gt;&lt;/a&gt;&lt;/p&gt;&lt;p&gt;ColdBox uses both implicit and explicit invocation methods.&amp;nbsp; You have one single xml file: config.xml, from where you can configure your entire application and plugins.&amp;nbsp; You can use ColdSpring, Reactor, Remoting, CRUD, Bean/DAO Factories or any other technology and/or pattern that you can think off with ColdBox. However, ColdBox does make you adhere to an application directory structure and some naming conventions.&amp;nbsp; This is done with the purpose of creating a standard for all developers in the same team to share and for ColdBox to find what it needs. You are only limited by your ingenuity.ColdBox also uses a request collection where all variables can be shared among an execution request. The Request Collection is a central repository of information that is refreshed on every user request.&amp;nbsp; This is how data gets moved around from event handlers to views and layouts.Another important feature is the use of a plugin library of CFC&amp;#39;s that extend the normal usage of ColdBox to application specific tasks but without hindering system performance.&amp;nbsp; These plugins are reusable components that your applications can use for application-specific tasks and can be loaded on demand via a Plugin Factory. Thus, your plugins are not utilized or loaded into a scope, they are just invoked. Some samples are: i18n, resource bundles, refresh a webservice stub, Bug Reports, java file utilities, etc.&amp;nbsp; This is a major difference between ColdBox and any other framework, in that it gives you a set of reusable on-demand components for tedious or repeatable application-specific tasks.Below you can see an overview diagram of how ColdBox works, you do not need to install special software on your web server or radically modify your coldfusion installation. You can explore this site to find more information about ColdBox. If you need to contact me please use the Contact button in the navigation bar.&lt;/p&gt;&lt;p&gt;ColdBox Overview:&lt;/p&gt;&lt;p&gt;&lt;a href="../fileshare/blog/ColdboxOverview.jpg" target="_blank"&gt;&lt;img src="../fileshare/blog/ColdboxOverview_tmb.jpg" alt=" " title="Coldbox Overview" width="450" height="331" /&gt;&lt;/a&gt;&lt;/p&gt;&lt;p&gt;&amp;nbsp;&lt;/p&gt;&lt;p&gt;&lt;strong&gt;ColdBox Capabilities &amp;amp; Features&lt;/strong&gt;&lt;/p&gt;&lt;ul&gt;&lt;li&gt;MVC Design pattern&lt;/li&gt;&lt;li&gt;PROVEN &amp;amp; TESTED for high availabilty and mission critical applications&lt;/li&gt;&lt;li&gt;Multi-Layout &amp;amp; View concept (Can be programmed at runtime if needed)&lt;/li&gt;&lt;li&gt;One Centralized Variable Collection for data&lt;/li&gt;&lt;li&gt;One config.xml for implicit invocation and setup&lt;/li&gt;&lt;li&gt;Event Handler CFC&amp;#39;s&lt;/li&gt;&lt;li&gt;Event Chaining&lt;/li&gt;&lt;li&gt;Support for Child Applications&lt;/li&gt;&lt;ul&gt;&lt;li&gt;Supports as many as you want child applications&lt;/li&gt;&lt;li&gt;No extra configurations, just point to the parent&amp;#39;s system folder&lt;/li&gt;&lt;li&gt;ColdBox auto-senses if it is in a Parent or Child Application&lt;/li&gt;&lt;li&gt;ColdBox auto calculates the distance to its parent if parent code is neededBug Reports&lt;/li&gt;&lt;/ul&gt;&lt;li&gt;Event Handler Execution Profiling&lt;/li&gt;&lt;li&gt;UDF Library usage (Optional, for legacy)&lt;/li&gt;&lt;li&gt;Small footprint controller&lt;/li&gt;&lt;li&gt;Optimized for high traffic sites&lt;/li&gt;&lt;li&gt;Incorporated ColdBox Dashboard (Optional) &lt;/li&gt;&lt;ul&gt;&lt;li&gt;Online System Update&lt;/li&gt;&lt;li&gt;Online API&lt;/li&gt;&lt;/ul&gt;&lt;ul&gt;&lt;li&gt;Main Application Config.xml Editor&lt;/li&gt;&lt;/ul&gt;&lt;ul&gt;&lt;li&gt;Online Backups&lt;/li&gt;&lt;/ul&gt;&lt;li&gt;Framework extensions through Plugins&lt;/li&gt;&lt;ul&gt;&lt;li&gt;Logger (Bug Tracking, Tracers)&lt;/li&gt;&lt;li&gt;Renderer (Render Logs, Views, Layouts,etc)&lt;/li&gt;&lt;li&gt;FileUtilities (Java Utilities, File Utilities)Webservices (instantiation, refresh, etc)&lt;/li&gt;&lt;li&gt;ClientStorage (Permanent variable storage for clustered environment uses WDDX)Messagebox (Universal Error/Warning/Information messagebox)&lt;/li&gt;&lt;li&gt;Settings (ColdBox metadata and dashboard utility)Zip (A great zip utility plugin by Arthur Kordowski)&lt;/li&gt;&lt;li&gt;cfcViewer (A cfc metadata retriever by &lt;a href="http://www.cfempire.com/home/" target="_blank"&gt;Oscar Arevalo&lt;/a&gt; ) &lt;/li&gt;&lt;/ul&gt;&lt;/ul&gt;&lt;p&gt;&amp;nbsp;&lt;/p&gt;&lt;p&gt;Hope this can give you a better insight into what ColdBox is and what it can do.&amp;nbsp; I will start posting more information as I progress.&amp;nbsp;&lt;/p&gt;&lt;p&gt;&amp;nbsp;&lt;/p&gt;&lt;p&gt;&amp;nbsp;&lt;/p&gt;
+				
+				</description>
+				
+				<category>ColdBox</category>
+				
+				<pubDate>Fri, 16 Jun 2006 11:21:00 -0400</pubDate>
+				<guid>http://www.luismajano.com/blog/index.cfm?mode=entry&amp;entry=DD87CC75-9A49-D4AD-012B809D61796A69</guid>
+				
+			</item>
+			
+		 	
+			
+			
+			<item>
+				<title>'Mind over matter' no longer science fiction</title>
+				<link>http://www.luismajano.com/blog/index.cfm?mode=entry&amp;entry=BA2FDD32-B84A-1B49-9D8B64E92CDDE436</link>
+				<description>
+				
+				&lt;p&gt;I just read this incredible article on digg. please check it out. It will blow your mind!!&lt;/p&gt;&lt;p&gt;Controlling your source code with your mind. hmmm that might be possible in the near future.&lt;/p&gt;&lt;p&gt;&lt;a href="http://www.physorg.com/news69039322.html" target="_blank"&gt;Mind Freak&amp;nbsp;&lt;/a&gt; &lt;/p&gt;
+				
+				</description>
+				
+				<category>Geek World</category>
+				
+				<category>News</category>
+				
+				<pubDate>Fri, 09 Jun 2006 15:04:00 -0400</pubDate>
+				<guid>http://www.luismajano.com/blog/index.cfm?mode=entry&amp;entry=BA2FDD32-B84A-1B49-9D8B64E92CDDE436</guid>
+				
+			</item>
+			
+		 	
+			
+			
+			<item>
+				<title>Germany 4 : Costa Rica 2</title>
+				<link>http://www.luismajano.com/blog/index.cfm?mode=entry&amp;entry=BA2E0B22-E4E2-45FE-18B9AEF35152614A</link>
+				<description>
+				
+				What an exciting first world cup game.&amp;nbsp; The tension was high and the game was amazing. Germany played incredibly!! I am afraid of them now!! Costa Rica played awesome too, but their defense was shabby.&amp;nbsp; What an exciting world cup, I hope all the games are this intense. Gotta go, game 2 is on now.
+				
+				</description>
+				
+				<category>News</category>
+				
+				<pubDate>Fri, 09 Jun 2006 15:02:00 -0400</pubDate>
+				<guid>http://www.luismajano.com/blog/index.cfm?mode=entry&amp;entry=BA2E0B22-E4E2-45FE-18B9AEF35152614A</guid>
+				
+			</item>
+			
+		 	
+			
+			
+			<item>
+				<title>World Cup 2006!!</title>
+				<link>http://www.luismajano.com/blog/index.cfm?mode=entry&amp;entry=B92EFEDF-A565-B301-6EED6ECC1209DA0C</link>
+				<description>
+				
+				&lt;p&gt;Finally, after four years of waiting we get the World Cup.&amp;nbsp; I am excited just like a little kid. I bought my stickers album like I have since Spain 1982 and have it almost filled out.&amp;nbsp; I am wearing my Argentina Jersey today in preparation for tomorrows game against Ivory Coast.&amp;nbsp; For all you &amp;quot;Futbol&amp;quot; fans, hope you are ready for an exciting month!!&lt;/p&gt;&lt;p&gt;&amp;nbsp;&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Viva Argentina Boludo!!&amp;nbsp;&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;&amp;nbsp;&lt;/p&gt;
+				
+				</description>
+				
+				<category>News</category>
+				
+				<category>Personal</category>
+				
+				<pubDate>Fri, 09 Jun 2006 10:21:00 -0400</pubDate>
+				<guid>http://www.luismajano.com/blog/index.cfm?mode=entry&amp;entry=B92EFEDF-A565-B301-6EED6ECC1209DA0C</guid>
+				
+			</item>
+			
+		 	
+			
+			
+			<item>
+				<title>I upgraded to Ubuntu Dapper 6.06</title>
+				<link>http://www.luismajano.com/blog/index.cfm?mode=entry&amp;entry=B92AA31B-904D-6E4C-720052871D557D80</link>
+				<description>
+				
+				&lt;p&gt;I finally got some time to upgrade my ubuntu 5.10 installation to the latest release, &lt;a href="www.ubuntu.com" target="_blank"&gt;Dapper 6.06.&lt;/a&gt; &amp;nbsp; It was as some as a baby&amp;#39;s buttocks!! Just updated my sources in /etc/apt/source.list to point to dapper, run my synaptic manager to mark my upgrades, apply and that is it.&amp;nbsp; Wow!! What a great way to upgrade an entire operating system.&amp;nbsp; The system now boots up much more faster than it did, the screens look sharper, and overall the system responds more snappier. I still have to check that everything is running as it should, but from what I can see it was a seemless upgarde.&lt;br /&gt;&lt;br /&gt;If some of you have still not messed around with this Linux Distro, you have to check it out. In my opinion, it is one of the best I have used in over 10 years.&amp;nbsp; Easy to install, maintain, operate. And now the released the server version which includes a pre-configured LAMP (Linux, Apache, MySQL, PHP) Server.&lt;/p&gt; &lt;blockquote&gt; In about 15 minutes, the time it takes to install Ubuntu Server Edition, you can have a LAMP server up and ready to go. This feature, exclusive to Ubuntu Server Edition, is available at the time of installation.  The LAMP option saves the trouble of installing and integrating each of the four separate LAMP components, a process which can take hours and requires someone who is skilled in the installation and configuration of the individual applications. You get increased security, reduced time to install, and reduced risk of misconfiguration, all of which results in a lower cost of ownership. &lt;/blockquote&gt; &lt;p&gt;&amp;nbsp;&lt;/p&gt;&lt;p&gt;They also offer a Live CD option, where if you just want to test it out you can.&amp;nbsp; I highly recommend this distro and you can download the binaries from here:&lt;/p&gt;&lt;ul&gt;&lt;li&gt;&lt;a href="http://www.ubuntu.com/desktop" target="_blank"&gt;Workstation&lt;/a&gt; &lt;br /&gt;&lt;br /&gt;&lt;/li&gt;&lt;li&gt;&lt;a href="http://www.ubuntu.com/server" target="_blank"&gt;Server Edition&amp;nbsp;&lt;/a&gt; &lt;/li&gt;&lt;/ul&gt;
+				
+				</description>
+				
+				<category>Ubuntu</category>
+				
+				<pubDate>Fri, 09 Jun 2006 10:17:00 -0400</pubDate>
+				<guid>http://www.luismajano.com/blog/index.cfm?mode=entry&amp;entry=B92AA31B-904D-6E4C-720052871D557D80</guid>
+				
+			</item>
+			
+		 	
+			
+			
+			<item>
+				<title>Do you use CVS or Subversion?What do you Think?</title>
+				<link>http://www.luismajano.com/blog/index.cfm?mode=entry&amp;entry=B36C7654-9460-5DEF-97E1F87D90A212AB</link>
+				<description>
+				
+				&lt;span style="font-family: Arial; font-size: 11px; line-height: 15px" class="Apple-style-span"&gt;I have only been exposed to using CVS for version control and find it pretty straightforward and useful. The server was easy to setup on Linux and the maintenance of it has been pretty good.&amp;nbsp; However, I have been told and reading that Subversion is CVS on steroids and just wanted to get a public opinion before I start messing around with it.&amp;nbsp; Has anyone used both and can comment on the pros and cons of each?&lt;/span&gt;&lt;div&gt;&lt;span style="font-family: Arial; font-size: 11px; line-height: 15px" class="Apple-style-span"&gt;&lt;br /&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style="font-family: Arial; font-size: 11px; line-height: 15px" class="Apple-style-span"&gt;Is it easy to setup on Linux? Does it mesh well with Eclipse, any Mac GUI?&amp;nbsp;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style="font-family: Arial; font-size: 11px; line-height: 15px" class="Apple-style-span"&gt;&lt;br /&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style="font-family: Arial; font-size: 11px; line-height: 15px" class="Apple-style-span"&gt;The usual questions!! Thanks and have a great day today.&lt;/span&gt;&lt;/div&gt;
+				
+				</description>
+				
+				<category>Tools</category>
+				
+				<pubDate>Thu, 08 Jun 2006 07:33:00 -0400</pubDate>
+				<guid>http://www.luismajano.com/blog/index.cfm?mode=entry&amp;entry=B36C7654-9460-5DEF-97E1F87D90A212AB</guid>
+				
+			</item>
+			
+		 	
+			
+			
+			<item>
+				<title>RDS Eclipse Plugin Errors When opening files??</title>
+				<link>http://www.luismajano.com/blog/index.cfm?mode=entry&amp;entry=AECFAD4B-AD31-8105-4F1B66C2C91650A0</link>
+				<description>
+				
+				&lt;p&gt;Has anybody experienced errors when trying to open a file through the RDS plugin?? I have, and don&amp;#39;t know why. Here is a screenshot of the error with the Error Log open so you can see the errors. Please let me know if this is my error or a bug.&lt;/p&gt;&lt;p&gt;&lt;a href="../fileshare/blog/rds_error.png"&gt;&lt;img src="../fileshare/blog/rds_error_tmb.png" alt=" " title="Error" width="450" height="360" /&gt;&lt;/a&gt;  &lt;br /&gt;&lt;/p&gt;
+				
+				</description>
+				
+				<category>Eclipse</category>
+				
+				<pubDate>Wed, 07 Jun 2006 09:55:00 -0400</pubDate>
+				<guid>http://www.luismajano.com/blog/index.cfm?mode=entry&amp;entry=AECFAD4B-AD31-8105-4F1B66C2C91650A0</guid>
+				
+			</item>
+			
+		 	
+			
+			
+			<item>
+				<title>Viewing the Error Log in Eclipse</title>
+				<link>http://www.luismajano.com/blog/index.cfm?mode=entry&amp;entry=AEC6B376-A657-6925-3A0EF664AE55D4CB</link>
+				<description>
+				
+				&lt;p&gt;This is a simple entry, mainly directed so I never forget, but it might be useful to eclipse newbies. If you need to see the eclipse IDE error log all you need to do is the following:&lt;/p&gt;&lt;p&gt;1) Click on the Plugin-in Development Perspective&lt;/p&gt;&lt;p&gt;2) Click on the Error Window tab&lt;/p&gt;&lt;p&gt;WALLA!!!&lt;/p&gt;&lt;p&gt;&amp;nbsp;You can also reach it by going to &lt;strong&gt;Window &amp;gt;&amp;gt; Show View &amp;gt;&amp;gt; PDE Runtime &amp;gt;&amp;gt; Error Log&lt;/strong&gt; &lt;/p&gt;&lt;p&gt;Hope this helps&amp;nbsp;&lt;/p&gt;
+				
+				</description>
+				
+				<category>Eclipse</category>
+				
+				<pubDate>Wed, 07 Jun 2006 09:53:00 -0400</pubDate>
+				<guid>http://www.luismajano.com/blog/index.cfm?mode=entry&amp;entry=AEC6B376-A657-6925-3A0EF664AE55D4CB</guid>
+				
+			</item>
+			
+		 	
+			
+			
+			<item>
+				<title>I am back from vacation!! Thailand &amp; Hong Kong</title>
+				<link>http://www.luismajano.com/blog/index.cfm?mode=entry&amp;entry=ABBDC191-A607-79F0-1611B282087495CB</link>
+				<description>
+				
+				&lt;p&gt;Well, I am back from my vacation to Amazing Thailand!! Wow what a wonderful country, we spent about 12 days in Asia with my wife. You can look at the amazing pictures here:&lt;/p&gt;&lt;p&gt;&lt;a href="http://web.mac.com/lmajano/iWeb/Majano%27s%20ASIA%20Vacation/Welcome.html" target="_blank"&gt;Photo Gallery&lt;/a&gt;&lt;/p&gt;&lt;p&gt;The trip was amazing, we started in Hong Kong for two days then to hectic Bangkok. What a busy city, reminds me of mexico city.&amp;nbsp; We then headed to Krabi in the south of thailand to a beautiful resort called Tubkaak. What a resort!! In the middle of the jungle with a beach. The pictures tell the story.&amp;nbsp; We then headed to Koh Phi Phi island, where they filmed the Beach. Amazing beaches!!We did not have the greatest weather there, almost threw up on the boats, but overall a great experience.&lt;/p&gt;&lt;p&gt;We then headed to Koh Samui another island chain. WOW!! This island has it all. You can go elephant riding, snorkeling, jungle exploration, etc.&amp;nbsp; And the restaurants are amazing.&amp;nbsp; We then concluded our trip in Bangkok for 5 more days.&amp;nbsp; Thailand is indeed a beautiful country, the people are extremely nice and best of all it is really cheap!! Really really cheap.&lt;/p&gt;&lt;p&gt;&amp;nbsp;Well enjoy the pictures.&lt;br /&gt;&lt;/p&gt;
+				
+				</description>
+				
+				<category>Personal</category>
+				
+				<category>Vacation</category>
+				
+				<pubDate>Tue, 06 Jun 2006 19:39:00 -0400</pubDate>
+				<guid>http://www.luismajano.com/blog/index.cfm?mode=entry&amp;entry=ABBDC191-A607-79F0-1611B282087495CB</guid>
+				
+			</item>
+			
+		 	
+			
+			
+			<item>
+				<title>How to create an Eclipse Plugin Extension Location</title>
+				<link>http://www.luismajano.com/blog/index.cfm?mode=entry&amp;entry=1EAF4F95-C76F-E908-B323E2E99C457D44</link>
+				<description>
+				
+				&lt;p&gt;For any eclipse newbie, you will find out that all the plugins you download or update will be placed by you or the update manager in the eclipse install folder under the plugins directory. However, when updating comes around or removing or any kind of update, it is a hassle to manage it.&amp;nbsp; That is why you can create multiple plugin extension directories in order to facillitate plugin management.&amp;nbsp; I have attached a simple zip file with the correct format of an extension directory.&lt;/p&gt;&lt;p&gt;It basically contains the following structure:&lt;/p&gt;&lt;p&gt;&lt;strong&gt;+MyPlugins (Dir)&lt;br /&gt;|--+eclipse (Dir)&lt;br /&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp; |--features (Dir)&lt;br /&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp; |--plugins (Dir)&lt;br /&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp; |--.eclipseextension&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;The .eclipseextension is a text file that contains the following:&lt;/p&gt;&lt;p&gt;&lt;strong&gt;&amp;nbsp;id=org.eclipse.platform&lt;br /&gt;name=Eclipse Platform&lt;br /&gt;version=3.1.0&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;You now have a succesfull extension directory.&amp;nbsp; You now can go to eclipse to add it.&lt;/p&gt;&lt;p&gt;1) Open Eclipse&lt;/p&gt;&lt;p&gt;2) Click on Help ==&amp;gt; Manage Configuration&lt;/p&gt;&lt;p&gt;&lt;img src="../fileshare/blog/eclipse_plugins_extensions1.png" alt=" " title="Step 1" width="419" height="289" /&gt; &lt;br /&gt;&lt;/p&gt;&lt;p&gt;3) Click on Add An Extension Location:&lt;/p&gt;&lt;p&gt;&lt;img src="../fileshare/blog/eclipse_plugins_extensions2.png" alt=" " /&gt; &lt;/p&gt;&lt;p&gt;4)&amp;nbsp; Choose your directory&lt;/p&gt;&lt;p&gt;&amp;nbsp;&lt;img src="../fileshare/blog/eclipse_plugins_extensions3.png" alt=" " /&gt;&lt;/p&gt;&lt;p&gt;5) Restart your workbench&lt;/p&gt;&lt;p&gt;6) You are set and dandy!! Ready to roll!!&lt;/p&gt;&lt;p&gt;&amp;nbsp;&lt;/p&gt;&lt;p&gt;Hope this works for you. I have also a testing eclipse extension folder, so I can drop and test new plugins without affecting my workbench. &lt;/p&gt;
+				
+				</description>
+				
+				<category>Eclipse</category>
+				
+				<category>Coldfusion</category>
+				
+				<pubDate>Wed, 10 May 2006 09:54:00 -0400</pubDate>
+				<guid>http://www.luismajano.com/blog/index.cfm?mode=entry&amp;entry=1EAF4F95-C76F-E908-B323E2E99C457D44</guid>
+				
+				<enclosure length="1462" type="application/zip" url="http://www.luismajano.com/blog/enclosures/MyPlugins.zip"/>
+				
+			</item>
+			
+		 	
+			
+			
+			<item>
+				<title>Wokly Work Ethic: Me wrong.... NEVER!!!</title>
+				<link>http://www.luismajano.com/blog/index.cfm?mode=entry&amp;entry=D66EEBA9-D32A-655E-4952AFB216594FCA</link>
+				<description>
+				
+				&lt;p&gt;As always, here is the weekly work ethic, brought to you by G TUcker!!&lt;/p&gt;&lt;p&gt;&amp;nbsp;&lt;/p&gt; &lt;blockquote&gt; Like most men, I have at times had trouble admitting when I have done something wrong. However, I have learned ( I am still learning actually) that It&amp;#39;s a wise person who can take criticism and learn from one&amp;#39;s mistakes without getting upset or angry when someone points out their errors. Think about the following: What makes you successful -- Good decisions. How do you make good decisions -- Experience. How do you get experience -- Bad decisions. Of course, there are always consequences for bad decisions, but you will come out on top if you learn from them. So I encourage you. Go ahead and make those bad decisions. Just remember there are consequences and be prepared to take responsibility for your actions. &lt;/blockquote&gt;  Admitting your own mistakes is hard, but too much obstinance and pride will corrupt your humility.
+				
+				</description>
+				
+				<category>Work Ethic</category>
+				
+				<pubDate>Wed, 26 Apr 2006 09:35:00 -0400</pubDate>
+				<guid>http://www.luismajano.com/blog/index.cfm?mode=entry&amp;entry=D66EEBA9-D32A-655E-4952AFB216594FCA</guid>
+				
+			</item>
+			
+		 	
+			
+			
+			<item>
+				<title>Are Form variables more secure?</title>
+				<link>http://www.luismajano.com/blog/index.cfm?mode=entry&amp;entry=D6686D3F-98F3-C84D-60FA955050784CF9</link>
+				<description>
+				
+				I had recently asked Mr Raymond Camden for his opinion on wether form variables would be more secure than URL due to a request at work.&amp;nbsp; I have attached a word doc detailing this issue and ways to solve it.&amp;nbsp; I have asked around and used several quotes and opinions.&amp;nbsp; Overall, here is a summary:&lt;br /&gt;&lt;br /&gt;&lt;br /&gt; &lt;blockquote&gt; The cost of changing all interaction to form submittals is not monumental, but it will be consuming.  All developers will need to change their URL links to JavaScript in order to submit requests.  Although it is not a monumental task, IT WILL produce more work without actually getting the real security benefit.  Form variables will not protect the application or discourage anybody to mess with the application.  The real security implementations need to be performed in server-side validation and used in conjunction with tools provided by ColdFusion and the Database.  A first rule of validation should be not to trust either FORM or URL variables; they should always be validated. It is the role of the developer to protect the database and its contents, no matter if you are using a POST or a GET. &lt;/blockquote&gt;
+				
+				</description>
+				
+				<pubDate>Wed, 26 Apr 2006 09:26:00 -0400</pubDate>
+				<guid>http://www.luismajano.com/blog/index.cfm?mode=entry&amp;entry=D6686D3F-98F3-C84D-60FA955050784CF9</guid>
+				
+				<enclosure length="38912" type="application/msword" url="http://www.luismajano.com/blog/enclosures/Form More secure than url.doc"/>
+				
+			</item>
+			
+		 	
+			
+			
+			<item>
+				<title>Weekly Work Ethic: Fear vs Love. Which is the greater motivator?</title>
+				<link>http://www.luismajano.com/blog/index.cfm?mode=entry&amp;entry=AD615231-0FCC-83D3-97B71811B346FDE8</link>
+				<description>
+				
+				&lt;p&gt;You can see the previous work ethic subjects by &lt;a href="index.cfm?mode=cat&amp;amp;catid=61096F39-08BE-302F-8DF36D5657CE76F4"&gt;clicking here.&lt;/a&gt; &lt;/p&gt;&lt;p&gt;&amp;nbsp;This was a very controversial issue in our office and it definetely created some nice comments, and some weird ones.&lt;/p&gt;&lt;p&gt;&amp;nbsp;Here was mine:&lt;/p&gt;&lt;p&gt;&lt;strong&gt;The greatest motivator should be love. Fear might work in the small spectrum, but this will not grant respect or leadership. Love &amp;amp; Patience should be your greatest asset in any situation. &lt;/strong&gt;&lt;br /&gt;&lt;/p&gt;&lt;p&gt;&amp;nbsp;&lt;/p&gt; &lt;blockquote&gt; Again, this is something I&amp;#39;ve learned from my kids. I&amp;#39;ve sometimes threatened my kids or tried to scare them into doing something (I call this Fear). They may do it, but usually they don&amp;#39;t want anything to do with me after - I&amp;#39;ve alienated them. And I know that if I continue treating them that way as they grow, they will reach a point where all they want to do is to move out of the house and go live on their own. But if I sit with them and explain to them how important they are to the family and let them know that I need their help to make the family better, ie I let them know their value to me (I call this Love) - Wow, things get done and everyone is at peace. Fear is easy to do - that&amp;#39;s why we do it so often. Love is hard, it requires a lot of patience and self control. So what does this have to do with us here at work? Well, how do you try to motivate someone to do something - through Fear or Love. With fear a person will only do so much. With love they will do so much more. With fear, a person will follow you so far until they say &amp;quot;Ya, No Mas&amp;quot;. But with love they will follow you to the end... &lt;/blockquote&gt; &lt;p&gt;Here are some interesting comments:&lt;/p&gt;&lt;p&gt;&lt;strong&gt;&lt;em&gt;&amp;nbsp;Definitely Love. With fear of course you can make things happen only for short time. There is a limit for how much one can tolerate. And once it reached, then no fear will work. There will be a revolution. History has proven. Adolph hitler, Idi Amin, Suddam hussain and many big dictators regime vanished.&lt;/em&gt;&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;&lt;em&gt;&lt;strong&gt;But at the end in a work environment the ultimate motivator will always be fear... fear of loosing your job and not being able to support your family. Of course, Assuming that you are not the owner of the company, in which case what drives you is something completely different. For Love to be the motivator at work you need to feel yourself deeply identified with the company, feel that its success is also your success (and not the rich owner&amp;#39;s success). How do you do that? I have no clue. &lt;/strong&gt;&lt;/em&gt;&lt;/p&gt;&lt;p&gt;&lt;em&gt;&lt;strong&gt;&amp;nbsp;it all comes back to respect for each other and employees. And more importantly, showing appreciation for a job well done... just to hear commendation makes a huge difference in motivation and employee attitude.&lt;/strong&gt;&lt;/em&gt;&lt;/p&gt;&lt;p&gt;&lt;em&gt;&lt;strong&gt;I think love is the driving force behind motivation. Not love of a FAM trip or love of another person, it has to do with your love of the job. You have to love what you do. If you love it, you take pride in your work. You take care to do a good job. You work harder to make deadlines. The clock should not be a deciding factor on when you leave, the task at hand should be. &lt;/strong&gt;&lt;/em&gt;&lt;/p&gt;&lt;p&gt;&lt;em&gt;&lt;strong&gt;Fear is the worst motivator out there. People, we are quite possibly the best darn team in the building.The quickest way to lose such a fantastic crew of workers is to employ fear as a motivator. This is because strategies that implement fear not only cause performance levels to go down, but it eliminates the desire to compete. While fear forces compliance, it almost never results in superior performance. We must also realize that fear is not conducive to creating respect. Management 101. &lt;/strong&gt;&lt;/em&gt;&lt;/p&gt;&lt;p&gt;&lt;em&gt;&lt;strong&gt;&amp;nbsp;Lesson of the day... fear can easily burn out the best of us. The envelope can be pushed only so far before it is realized that there are more important things to do in this short life rather than let fear control us. &amp;quot;Scratch my back a little nuh.&amp;quot; Even out some of the work load. Love is the key, respect is the most wonderful thing that can be shown to an employee. Lets break down the Burlin wall! I have a dream! &amp;quot;Come here nuh!&amp;quot;&lt;/strong&gt;&lt;/em&gt;&lt;/p&gt;&lt;p&gt;&amp;nbsp;&lt;/p&gt;
+				
+				</description>
+				
+				<category>Work Ethic</category>
+				
+				<pubDate>Tue, 18 Apr 2006 10:13:00 -0400</pubDate>
+				<guid>http://www.luismajano.com/blog/index.cfm?mode=entry&amp;entry=AD615231-0FCC-83D3-97B71811B346FDE8</guid>
+				
+			</item>
+			
+		 	
+			
+			
+			<item>
+				<title>Happy Friday, Nerd Alert!!</title>
+				<link>http://www.luismajano.com/blog/index.cfm?mode=entry&amp;entry=98E08CE7-DFF8-380E-9488C82745A0004A</link>
+				<description>
+				
+				&lt;p&gt;First of all Happy Good Friday to all!!&amp;nbsp; May God bless your lives.&lt;/p&gt;&lt;p&gt;&amp;nbsp;Now to the nerd&amp;nbsp; stuff.&amp;nbsp; I just found this &lt;a href="http://corfield.org/"&gt;post&lt;/a&gt; , kinda old, but still informative and humurous. It is a nerd test, you find out, how nerdy you are so you can embarras yourselves by doing a post like this one, and announcing your nerdiness.&amp;nbsp; The test is quite humurous and informative.&amp;nbsp; Here is my score:&lt;/p&gt;&lt;p&gt;&amp;nbsp;&lt;/p&gt;&lt;p&gt;  &lt;a href="http://www.nerdtests.com/ft_nq.php?im"&gt;&lt;img src="http://www.nerdtests.com/images/ft/nq.php?val=8792" alt="I am nerdier than 97% of all people. Are you nerdier? Click here to find out!" /&gt;&lt;/a&gt;&lt;/p&gt;&lt;p&gt;Well, I think I am a NERD GOD!!!&amp;nbsp; Happy nerding!!!&amp;nbsp;&lt;/p&gt;
+				
+				</description>
+				
+				<pubDate>Fri, 14 Apr 2006 10:45:00 -0400</pubDate>
+				<guid>http://www.luismajano.com/blog/index.cfm?mode=entry&amp;entry=98E08CE7-DFF8-380E-9488C82745A0004A</guid>
+				
+			</item>
+			
+		 	
+			</channel></rss>

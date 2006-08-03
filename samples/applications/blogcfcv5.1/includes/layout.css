@@ -1,0 +1,27 @@
+/*Layout*/
+#page{
+	width:800px;
+	margin: 0 auto 0 auto;
+	padding: 0 0 10px 0;
+}
+
+#content {
+	margin: 15px 0 0 0 ;
+	width:600px;
+	float:left;
+	/*Uncomment the line below for content on right*/
+	/*float:right;*/
+}
+
+#menu {
+	width:196px;
+	border-left: 1px dotted #999;
+	margin:0 0 0 600px;
+	/*Uncomment the line below for menu on left*/
+	/*margin:0 600px 0 0;*/
+}
+
+.footerHeader {
+	margin:3px 8px 0 8px;
+	clear:both;
+}

@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+				<channel>
+				<title>HomePortal's Blog</title>
+				<link>http://www.homeportals.net/home/home.cfm?currentHome=/Accounts/HomePortals/layouts/blog.xml</link>
+				<description>Keep track of the progress and latest updates on HomePortals</description>
+				<language>English (US)</language>
+				<pubDate>Fri, 24 Feb 2006 00:52:06 -0500</pubDate>
+				<lastBuildDate>Tue, 03 May 2005 15:58:17 -0500</lastBuildDate>
+				<generator>HomePortalBlog</generator>
+				<docs>http://blogs.law.harvard.edu/tech/rss</docs>
+				<managingEditor>info@cfempire.com</managingEditor>
+				<webMaster>info@cfempire.com</webMaster>
+				
+				
+				
+				
+				
+				
+				<item>
+					<title>Bookmarks2 Module Updated</title>
+					<link>http://www.cfempire.com/home/modules/blog/blog.cfc?method=getPost&amp;URL=/accounts/wencho/blog.xml&amp;timestamp=2006-02-22T11:57:16</link>
+					<description>
+					
+					Sorry that it has been a while since I posted any updates in this blog, but I have been busy mostly at work (sad to me to say that HomePortals is not my full-time job), and also with a bit of HomePortals stuff.
+
+&lt;p&gt;However, today I managed to upload an update to the Bookmarks2 module; I have updated the user interface to make it a bit more polished and nice for editing. Here is a screenshot of the new look:&lt;/p&gt;
+&lt;img src="http://wencho.homeportals.net/Accounts/wencho/Images/bookmarks2_module.gif" /&gt;
+
+
+&lt;p&gt;Basically I got rid of the ugly "Click Here For Edit" link on top, and replaced it with two icons for editing and deleting entries; these icons are only visible when you are logged in as the page owner. There were a couple of other fixes, but they were mostly internal stuff. If anybody has a problem, please don't hesitate to send me an email using the control panel or the forums.&lt;/p&gt;
+
+&lt;p&gt;That's it for now, keep playing and I hope to have more announcements shortly...&lt;/p&gt;
+
+					</description>
+					<pubDate>Wed, 22 Feb 2006 11:57:16 -0500</pubDate>
+					<guid>http://www.cfempire.com/home/modules/blog/blog.cfc?method=getPost&amp;URL=/accounts/wencho/blog.xml&amp;timestamp=2006-02-22T11:57:16</guid>
+				</item>
+				
+				
+				
+				
+				
+				<item>
+					<title>Master of your domain!</title>
+					<link>http://www.cfempire.com/home/modules/blog/blog.cfc?method=getPost&amp;URL=/accounts/wencho/blog.xml&amp;timestamp=2006-02-07T22:32:54</link>
+					<description>
+					
+					Yes, now each HomePortals account have its own subdomain; to access your HomePortals pages (or someone else's pages) you only need to go to &lt;b&gt;&lt;em&gt;username&lt;/em&gt;.homeportals.net&lt;/b&gt;, as in &lt;a href="http://demos.homeportals.net"&gt;http://demos.homeportals.net&lt;/a&gt;. By the way, you can also get to HomePortals by going to &lt;a href="http://www.homeportals.net"&gt;http://www.homeportals.net&lt;/a&gt;.
+					</description>
+					<pubDate>Tue, 07 Feb 2006 22:32:54 -0500</pubDate>
+					<guid>http://www.cfempire.com/home/modules/blog/blog.cfc?method=getPost&amp;URL=/accounts/wencho/blog.xml&amp;timestamp=2006-02-07T22:32:54</guid>
+				</item>
+				
+				
+				
+				
+				
+				<item>
+					<title>New Default Page</title>
+					<link>http://www.cfempire.com/home/modules/blog/blog.cfc?method=getPost&amp;URL=/accounts/wencho/blog.xml&amp;timestamp=2006-01-30T21:08:43</link>
+					<description>
+					
+					&lt;p&gt;The default page for new accounts has been changed, we are now using a different layout and skin; the idea is to give new users a better idea of what kind of pages they can create with their HomePortals accounts. The new default page lends itself better to be used as a start page in your browser.&lt;/p&gt;
+&lt;p&gt;For existing users, you can add the new default page to your account by selecting it from the list of published pages. To add a published page to your account, go to your Control Panel and select &lt;b&gt;New&lt;/b&gt;, and then select "&lt;b&gt;Default&lt;/b&gt; by wencho".&lt;/p&gt;
+&lt;p&gt;You are welcome to send your comments and suggestions; also if you have a page that would like for us to consider as using as the default page for new users, please let us know via the forums.&lt;/p&gt;
+					</description>
+					<pubDate>Mon, 30 Jan 2006 21:08:43 -0500</pubDate>
+					<guid>http://www.cfempire.com/home/modules/blog/blog.cfc?method=getPost&amp;URL=/accounts/wencho/blog.xml&amp;timestamp=2006-01-30T21:08:43</guid>
+				</item>
+				
+				
+				
+				
+				
+				<item>
+					<title>More Module Updates</title>
+					<link>http://www.cfempire.com/home/modules/blog/blog.cfc?method=getPost&amp;URL=/accounts/wencho/blog.xml&amp;timestamp=2006-01-27T12:04:21</link>
+					<description>
+					
+					&lt;p&gt;I want to announce a couple of new module updates. The first is a new Appointments module upgrade. Now you can view your appointments by day, week or month. Just select from the button bar on top of the module to change views. Here is a screen shot of how it looks now:&lt;/p&gt;
+&lt;img src="http://wencho.homeportals.net/Accounts/wencho/images/appointments_module.jpg"&gt;
+&lt;p&gt;The second update is for the EditBox module, this has been up for already a couple of days but I didn't have time to mention it here. The EditBox module allows you to create several free text entries, you can enter anything you want there, even HTML code. There are a few neat things you can do with this module. To give you an idea of what you can do take a look at the HomePortals homepage, it is made using mostly editBox modules.&lt;/p&gt;
+&lt;p&gt;As I mentioned before, the EditBox allows you to enter several "content" entries. At the top of the module by default you will see a dropdown box with all entries where you can select which entry to see. The title of the selected entry will appear to the right. If you are signed-in as the page owner you will also have the options to create, edit, and delete entries.&lt;/p&gt;
+&lt;p&gt;Now, I mentioned that the HomePortals page was made using only EditBoxes, but when you look at it you don't see any drop-down controls, right? That is because you can tell the module to not display the controls to your visitors and load a particular content entry. To do this, go to the control panel, and in the "staticContent" attribute put "true", and in "ContentID" put the title of the content entry you want to display by default.&lt;/p&gt;
+&lt;p&gt;That's it for now, stay around for more changes and updates, and don't forget to visit the forums to enter your comments and suggestions.&lt;/p&gt;
+					</description>
+					<pubDate>Fri, 27 Jan 2006 12:04:21 -0500</pubDate>
+					<guid>http://www.cfempire.com/home/modules/blog/blog.cfc?method=getPost&amp;URL=/accounts/wencho/blog.xml&amp;timestamp=2006-01-27T12:04:21</guid>
+				</item>
+				
+				
+				
+				
+				
+				<item>
+					<title>Appointments module update and New Skin</title>
+					<link>http://www.cfempire.com/home/modules/blog/blog.cfc?method=getPost&amp;URL=/accounts/wencho/blog.xml&amp;timestamp=2006-01-24T23:13:04</link>
+					<description>
+					
+					&lt;p&gt;The Appointments module has been updated and fixed, now it behaves like the To-Do and blog modules in the sense that they can only be updated and modified by the owner. Additionally, there were some cosmetic changes on the interface.&lt;/p&gt;
+&lt;p&gt;A second announcement is the availability of a new skin called "Sandbox"&lt;/p&gt;
+					</description>
+					<pubDate>Tue, 24 Jan 2006 23:13:04 -0500</pubDate>
+					<guid>http://www.cfempire.com/home/modules/blog/blog.cfc?method=getPost&amp;URL=/accounts/wencho/blog.xml&amp;timestamp=2006-01-24T23:13:04</guid>
+				</item>
+				
+				
+				
+				
+				
+				<item>
+					<title>Control Panel Updated</title>
+					<link>http://www.cfempire.com/home/modules/blog/blog.cfc?method=getPost&amp;URL=/accounts/wencho/blog.xml&amp;timestamp=2006-01-21T23:02:58</link>
+					<description>
+					
+					&lt;p&gt;I just finished uploading the new version of the HomePortals Server. The most noticeable change is on the Control Panel, it has been redesigned to have a more professional look and to be somewhat easier to use (yes, yes, I know, it still needs an extra level of geekyness to really understand everything in there, but we are working on it :) )&lt;/p&gt;
+&lt;p&gt;A cool new feature in the Control Panel is the "Skins" section. Now you can change the visual appearance of the entire page just by selecting from one of the available skins. The current selection is somewhat limited but we plan to add more better looking skins in the future; and if you know your way around CSS and stylesheets we invite you to send us your skins so we can add them to  the skins library (with the proper credit of course!)&lt;/p&gt;
+&lt;p&gt;Also, we added another feature that has been requested several times. Now you can easily move modules up and down on the same column, just click on the module settings icon and click on the &lt;b&gt;Move Up&lt;/b&gt; or the &lt;b&gt;Move Down&lt;/b&gt; buttons.&lt;/p&gt;
+&lt;p&gt;If you experience any problems in your pages, or see anything that its not longer working as it was, please use the Forums or the Send Feedback options to let us know; and as always, all suggestions are welcome. Have fun!&lt;/p&gt;
+					</description>
+					<pubDate>Sat, 21 Jan 2006 23:02:58 -0500</pubDate>
+					<guid>http://www.cfempire.com/home/modules/blog/blog.cfc?method=getPost&amp;URL=/accounts/wencho/blog.xml&amp;timestamp=2006-01-21T23:02:58</guid>
+				</item>
+				
+				
+				
+				
+				
+				<item>
+					<title>HomePortals Forums</title>
+					<link>http://www.cfempire.com/home/modules/blog/blog.cfc?method=getPost&amp;URL=/accounts/wencho/blog.xml&amp;timestamp=2006-01-13T08:25:19</link>
+					<description>
+					
+					&lt;p&gt;We want to invite everyone to visit the new &lt;a href="http://www.cfempire.com/home/home.cfm?currentHome=/Accounts/homeportals/layouts/Forum.xml"&gt;HomePortals Forum&lt;/a&gt; section of our site. Here you may ask questions about HomePortals, bugs, requests for new modules, oppinions, or anything else you have in mind. The forum section is pretty much so right now there is not much going on, but please don't be shy and be the first one to break the ice!&lt;/p&gt;
+
+					</description>
+					<pubDate>Fri, 13 Jan 2006 08:25:19 -0500</pubDate>
+					<guid>http://www.cfempire.com/home/modules/blog/blog.cfc?method=getPost&amp;URL=/accounts/wencho/blog.xml&amp;timestamp=2006-01-13T08:25:19</guid>
+				</item>
+				
+				
+				
+				
+				
+				<item>
+					<title>New Homepage, Sharing, and Feedback</title>
+					<link>http://www.cfempire.com/home/modules/blog/blog.cfc?method=getPost&amp;URL=/accounts/wencho/blog.xml&amp;timestamp=2006-01-09T21:04:05</link>
+					<description>
+					
+					&lt;p&gt;Today we are rolling out a couple of changes:&lt;/p&gt;
+
+&lt;p&gt;We have changed a little bit our homepage to show more prominently the HomePortals blog, so it will be easier for all of you to see any new features and changes, and to participate via comments. Also, we are now showing a list with all published pages right on the homepage, with the option to add a copy of the page to your own site with a single click. So far, there are not many published pages, but we imagine this list will grow. We are working on a way to search and rank published pages, we would like very much to hear your comments on that.&lt;/p&gt;
+
+&lt;p&gt;Another new addition is the long awaited &lt;a href="http://www.cfempire.com/home/home.cfm?currentHome=/Accounts/homeportals/layouts/Documentation.xml"&gt;Documentation &lt;/a&gt; page. This page provides help and information on how to use all features in your HomePortals account. Leave a comment here if there is any section or topic you wish for us to expand more.&lt;/p&gt;
+
+&lt;p&gt;Finally the last addition is an option on the Control Panel to send us your comments and feedback. You can use this space to ask questions or request for modules, we promise to read every submission!&lt;/p&gt;
+
+					</description>
+					<pubDate>Mon, 09 Jan 2006 21:04:05 -0500</pubDate>
+					<guid>http://www.cfempire.com/home/modules/blog/blog.cfc?method=getPost&amp;URL=/accounts/wencho/blog.xml&amp;timestamp=2006-01-09T21:04:05</guid>
+				</item>
+				
+				
+				
+				
+				
+				<item>
+					<title>Module Updates</title>
+					<link>http://www.cfempire.com/home/modules/blog/blog.cfc?method=getPost&amp;URL=/accounts/wencho/blog.xml&amp;timestamp=2006-01-09T00:11:09</link>
+					<description>
+					
+					&lt;p&gt;The last few days we have been a bit busy working on the commercial version of the HomePortals server, so there was little update on the public site. However we have a couple of announcements regarding modules.&lt;/p&gt;
+
+&lt;p&gt;The first is that we added a new module called "WeatherChannel", this module displays weather information provided by the Weather Channel. Just configure the module with the Zip Code you want the weather information for. I know it works for US Zipcodes, you'll have to play with it for other countries.&lt;/p&gt;
+
+&lt;p&gt;The other update is concerning the Blog module. If you have been playing with it you may have noticed how easy is to overwrite someone else's stuff (this blog has been overwritten a few times!). To prevent that we are now keeping track of who creates the blog, this is called the blog owner. Only the blog owner can add or edit posts, and change blog details. Other users can add blogs created by others to their sites, however they will not be allowed to make changes to them. This change applies to new blogs only. And yes, the HomePortals blog is now protected.&lt;/p&gt;
+
+&lt;p&gt;Keep playing with HomePortals and send us your comments and questions to &lt;a href="mailto:support@cfempire.com"&gt;support@cfempire.com&lt;/a&gt;&lt;/p&gt;
+					</description>
+					<pubDate>Mon, 09 Jan 2006 00:11:09 -0500</pubDate>
+					<guid>http://www.cfempire.com/home/modules/blog/blog.cfc?method=getPost&amp;URL=/accounts/wencho/blog.xml&amp;timestamp=2006-01-09T00:11:09</guid>
+				</item>
+				
+				
+				
+				
+				
+				<item>
+					<title>Changes to data stores</title>
+					<link>http://www.cfempire.com/home/modules/blog/blog.cfc?method=getPost&amp;URL=/accounts/wencho/blog.xml&amp;timestamp=2006-01-04T00:07:53</link>
+					<description>
+					
+					&lt;p&gt;We have made a small but significant change to how some modules store their data. This change affects the Blog, Bookmarks2, Appointments and ToDo modules.&lt;/p&gt;
+
+&lt;p&gt;Before, whenever you added any of these modules to your page, you were prompted to enter the name of a file to store your data. Now, when adding the module, it will automatically use a default file to store your data, so you can start using the modules inmediately without further configuration.&lt;/p&gt;
+
+&lt;p&gt;These default files are unique to your account, this means that for example any time you add a ToDo module to any page within your account (and do not explicitly provide a filename) all those modules will be sharing the same data.&lt;/p&gt;
+
+&lt;p&gt;The files created by each module are:&lt;br&gt;
+Appointments: /accounts/&lt;em&gt;account_name&lt;/em&gt;/myAppointments.xml&lt;br&gt;
+ToDo:
+/accounts/&lt;em&gt;account_name&lt;/em&gt;/myToDo.xml&lt;br&gt;
+Blog:
+/accounts/&lt;em&gt;account_name&lt;/em&gt;/myBlog.xml&lt;br&gt;
+Bookmarks2:
+/accounts/&lt;em&gt;account_name&lt;/em&gt;/myBookmarks.xml&lt;br&gt;
+&lt;/p&gt;
+
+&lt;p&gt;You may override this behavior at any time by providing a filename in the module settings page. The reason we still allow this is that one of the uses we think HomePortals may have, is for a group of people to share and work with common data.&lt;/p&gt;
+
+
+
+					</description>
+					<pubDate>Wed, 04 Jan 2006 00:07:53 -0500</pubDate>
+					<guid>http://www.cfempire.com/home/modules/blog/blog.cfc?method=getPost&amp;URL=/accounts/wencho/blog.xml&amp;timestamp=2006-01-04T00:07:53</guid>
+				</item>
+				
+				</channel></rss>
