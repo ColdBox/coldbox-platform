@@ -1,0 +1,1 @@
+<cfoutput>#getValue("welcomeMessage")#</cfoutput>
