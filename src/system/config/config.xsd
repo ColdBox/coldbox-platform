@@ -51,6 +51,7 @@
 									<xs:enumeration value="ConfigAutoReload" />
 									<xs:enumeration value="ExceptionHandler" />
 									<xs:enumeration value="CustomErrorTemplate" />
+									<xs:enumeration value="MyPluginsLocation" />
 								</xs:restriction>
 							</xs:simpleType>
 						</xs:attribute>

@@ -10,7 +10,7 @@
 		<Setting name="DumpVarActive" 				value="true"/>
 		<Setting name="ColdfusionLogging" 			value="true"/>
 		<!--Absolute path to where you want your log files to be stored-->
-		<Setting name="ColdboxLogsLocation"			value="/data/domains/applications/coldbox/testing" />
+		<Setting name="ColdboxLogsLocation"			value="testing" />
 		<Setting name="DefaultEvent" 				value="ehGeneral.dspHello"/>
 		<Setting name="RequestStartHandler" 		value=""/>
 		<Setting name="RequestEndHandler" 			value=""/>
@@ -21,8 +21,9 @@
 		<Setting name="CustomErrorTemplate"			value="" />
 		<Setting name="MessageboxStyleClass"		value="mymessagebox" />
 		<Setting name="HandlersIndexAutoReload"   	value="false" />
-		<Setting name="ConfigAutoReload"			value="false" />
+		<Setting name="ConfigAutoReload"			value="true" />
 		<Setting name="ExceptionHandler"     		value="" />
+		<Setting name="MyPluginsLocation" 			value="myplugins"/>
 	</Settings>
 	
 	<YourSettings />
