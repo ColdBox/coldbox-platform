@@ -32,17 +32,18 @@ Modification History:
 				<cfset session.fwController.getPlugin("settings").registerHandlers()>
 			</cfif>
 		</cflock>
-	</cfif>
-	<!--- AutoReload Tests --->
-	<cfif session.fwController.getSetting("ConfigAutoReload")>
-		<cflock type="exclusive" name="Coldbox_configloader" timeout="120">
-			<cfset session.fwController.getPlugin("settings").configLoader()>
-		</cflock>
-	</cfif>
-	<cfif session.fwController.getSetting("HandlersIndexAutoReload")>
-		<cflock type="exclusive" name="Coldbox_configloader" timeout="120">
-			<cfset session.fwController.getPlugin("settings").registerHandlers()>
-		</cflock>
+	<cfelse>
+		<!--- AutoReload Tests --->
+		<cfif session.fwController.getSetting("ConfigAutoReload")>
+			<cflock type="exclusive" name="Coldbox_configloader" timeout="120">
+				<cfset session.fwController.getPlugin("settings").configLoader()>
+			</cflock>
+		</cfif>
+		<cfif session.fwController.getSetting("HandlersIndexAutoReload")>
+			<cflock type="exclusive" name="Coldbox_configloader" timeout="120">
+				<cfset session.fwController.getPlugin("settings").registerHandlers()>
+			</cflock>
+		</cfif>
 	</cfif>
 	<!--- Trap Framework Errors --->
 	<cfcatch type="any">
