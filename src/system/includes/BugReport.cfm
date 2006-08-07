@@ -25,7 +25,7 @@ Modification History:
   <tr>
     <td colspan="2" class="fw_errorTablesCells">#Exception.getExtramessage()#</td>
     </tr>
-<cfif Exception.getErrorType eq "Application">
+<cfif Exception.getErrorType() eq "Application">
   <cfif valueExists("event")>
   <tr>
     <td width="122" align="right" class="fw_errorTablesTitles">Current Event: </td>
@@ -89,7 +89,7 @@ Modification History:
   <tr>
     <td colspan="2" class="fw_errorTitles">Exception Structure </td>
   </tr>
-  	  <cfif Exception.getType neq "">
+  	  <cfif Exception.getType() neq "">
 	  <tr >
 		<td colspan="2" class="fw_errorTablesTitles">Error Type & Code:</td>
 	  </tr>
