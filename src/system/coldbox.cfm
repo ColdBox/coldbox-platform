@@ -14,6 +14,7 @@ Description :
 
 Modification History:
 06/07/2006 - Updated to coldbox.
+08/07/2006 - Ticket #45 fix, autoreloadflag cleaned handlers.
 ---------------------------------------------------------------------->
 <cfparam type="boolean" name="url.fwreinit" default="false">
 <!--- Initialize timing variable --->
@@ -26,6 +27,7 @@ Modification History:
 				<cfset session.fwController = CreateObject("component","controller").init()>
 			</cfif>
 		</cflock>
+		<!--- Initialize the Structures --->
 		<cflock type="exclusive" name="Coldbox_configloader" timeout="120">
 			<cfif not structKeyExists(application, "ColdBox_fwInitiated") or url.fwreinit>
 				<cfset session.fwController.getPlugin("settings").configLoader()>
@@ -37,9 +39,9 @@ Modification History:
 		<cfif session.fwController.getSetting("ConfigAutoReload")>
 			<cflock type="exclusive" name="Coldbox_configloader" timeout="120">
 				<cfset session.fwController.getPlugin("settings").configLoader()>
+				<cfset session.fwController.getPlugin("settings").registerHandlers()>
 			</cflock>
-		</cfif>
-		<cfif session.fwController.getSetting("HandlersIndexAutoReload")>
+		<cfelseif session.fwController.getSetting("HandlersIndexAutoReload")>
 			<cflock type="exclusive" name="Coldbox_configloader" timeout="120">
 				<cfset session.fwController.getPlugin("settings").registerHandlers()>
 			</cflock>
