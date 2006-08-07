@@ -17,7 +17,6 @@ Modification History:
 ----------------------------------------------------------------------->
 <!--- ************************************************************* --->
 <cfset debugStartTime = GetTickCount()>
-<cfset distanceString = getSetting("DistanceString",1)>
 <cfoutput>
 <!--- Style --->
 <style>
@@ -28,11 +27,11 @@ Modification History:
 function toggle(divid){
 	if ( document.getElementById(divid).className == "fw_debugContent"){
 		document.getElementById(divid).className = "fw_debugContentView";
-		document.getElementById(divid + "_img").src = "#distanceString#system/includes/images/arrow_down.gif";
+		document.getElementById(divid + "_img").src = "/coldbox/system/includes/images/arrow_down.gif";
 	}
 	else{
 		document.getElementById(divid).className = "fw_debugContent";
-		document.getElementById(divid + "_img").src = "#distanceString#system/includes/images/arrow_right.gif";
+		document.getElementById(divid + "_img").src = "/coldbox/system/includes/images/arrow_right.gif";
 	}
 }
 </cfoutput>
@@ -43,7 +42,7 @@ function toggle(divid){
 	<cfif structkeyExists(getCollection(), "tracerStack")>
 	<cfoutput>
 		<!--- <cfinclude template="style.cfm"> --->
-		<div class="fw_titles" onClick="toggle('fw_tracer')"><img src="#distanceString#system/includes/images/arrow_down.gif" id="fw_tracer_img"/>&nbsp;Tracer Messages </div>
+		<div class="fw_titles" onClick="toggle('fw_tracer')"><img src="/coldbox/system/includes/images/arrow_down.gif" id="fw_tracer_img"/>&nbsp;Tracer Messages </div>
 		<div id="fw_tracer" class="fw_info">
 		<cfloop from="1" to="#arrayLen(getCollection().tracerStack)#" index="i">
 		<div class="fw_tracerMessage">
@@ -64,7 +63,7 @@ function toggle(divid){
 	</cfif>
 
 	<div class="fw_titles" onClick="toggle('fw_info')" >
-		 <img src="#distanceString#system/includes/images/arrow_down.gif" id="fw_info_img"/>&nbsp;Debugging Information
+		 <img src="/coldbox/system/includes/images/arrow_down.gif" id="fw_info_img"/>&nbsp;Debugging Information
 	</div>
 
 	<div class="fw_debugContentView" id="fw_info">
@@ -197,7 +196,7 @@ function toggle(divid){
 	<cfset dumpList = getValue("dumpvar",0)>
 	<cfif dumplist neq 0>
 	<!--- Dump Var --->
-	<div class="fw_titles" onClick="toggle('fw_dumpvar')"><img src="#distanceString#system/includes/images/arrow_right.gif" id="fw_dumpvar_img" />&nbsp;Dumpvar </div>
+	<div class="fw_titles" onClick="toggle('fw_dumpvar')"><img src="/coldbox/system/includes/images/arrow_right.gif" id="fw_dumpvar_img" />&nbsp;Dumpvar </div>
 	<div class="fw_debugContent" id="fw_dumpvar">
 		<cfloop list="#dumplist#" index="i">
 			<cfif isDefined("#i#")>
@@ -212,7 +211,7 @@ function toggle(divid){
 
 	<!--- Request Collection Debug --->
 	<div class="fw_titles"  onClick="toggle('fw_reqCollection')" >
-	<img src="#distanceString#system/includes/images/arrow_right.gif"  id="fw_reqCollection_img" />&nbsp;Request Collection Structure
+	<img src="/coldbox/system/includes/images/arrow_right.gif"  id="fw_reqCollection_img" />&nbsp;Request Collection Structure
 	</div>
 	<div class="fw_debugContent" id="fw_reqCollection">
 		<table border="0" cellpadding="0" cellspacing="1" class="fw_debugTables" width="100%">
