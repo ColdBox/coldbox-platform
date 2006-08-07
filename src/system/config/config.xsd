@@ -32,25 +32,26 @@
 							</xs:annotation>
 							<xs:simpleType>
 								<xs:restriction base="xs:string">
-									<xs:enumeration value="EnableBugReports"/>
 									<xs:enumeration value="OwnerEmail"/>
 									<xs:enumeration value="RequestEndHandler"/>
 									<xs:enumeration value="RequestStartHandler"/>
 									<xs:enumeration value="ApplicationStartHandler" />
-									<xs:enumeration value="DefaultEvent"/>
-									<xs:enumeration value="ColdfusionLogging"/>
-									<xs:enumeration value="ColdboxLogsLocation" />
-									<xs:enumeration value="DumpVarActive"/>									
+									<xs:enumeration value="DefaultEvent"/>									
+									<xs:enumeration value="ExceptionHandler" />
+									<xs:enumeration value="CustomErrorTemplate" />
+									<xs:enumeration value="EnableBugReports"/>
+									<xs:enumeration value="EnableColdfusionLogging"/>
+									<xs:enumeration value="EnableDumpVar"/>	
+									<xs:enumeration value="EnableColdboxLogging"/>
+									<xs:enumeration value="ColdboxLogsLocation" />								
 									<xs:enumeration value="DebugMode"/>		
 									<xs:enumeration value="DebugPassword"/>							
-									<xs:enumeration value="AppCFMXMapping"/>
+									<xs:enumeration value="AppMapping"/>
 									<xs:enumeration value="AppName"/>				
 									<xs:enumeration value="UDFLibraryFile"/>	
 									<xs:enumeration value="MessageboxStyleClass" />
 									<xs:enumeration value="HandlersIndexAutoReload" />
 									<xs:enumeration value="ConfigAutoReload" />
-									<xs:enumeration value="ExceptionHandler" />
-									<xs:enumeration value="CustomErrorTemplate" />
 									<xs:enumeration value="MyPluginsLocation" />
 								</xs:restriction>
 							</xs:simpleType>

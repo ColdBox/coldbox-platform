@@ -3,12 +3,13 @@
  xsi:noNamespaceSchemaLocation="../system/config/config.xsd">
 	<Settings>
 		<Setting name="AppName" 					value="coldbox"/>
-		<Setting name="AppCFMXMapping" 				value="fwcoldbox"/>
+		<Setting name="AppMapping" 					value="fwcoldbox"/>
 		<Setting name="DebugMode" 					value="true"/>
 		<Setting name="DebugPassword" 				value="coldbox"/>
 		<!--This feature is enabled, by default-->
-		<Setting name="DumpVarActive" 				value="true"/>
-		<Setting name="ColdfusionLogging" 			value="true"/>
+		<Setting name="EnableDumpVar" 				value="true"/>
+		<Setting name="EnableColdfusionLogging" 	value="true"/>
+		<Setting name="EnableColdboxLogging" 		value="true"/>
 		<!--Absolute path to where you want your log files to be stored-->
 		<Setting name="ColdboxLogsLocation"			value="../testing" />
 		<Setting name="DefaultEvent" 				value="ehGeneral.dspHello"/>

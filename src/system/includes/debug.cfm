@@ -192,21 +192,21 @@ function toggle(divid){
 
 	</div>
 
-	<cfif getSetting("DumpVarActive")>
-	<cfset dumpList = getValue("dumpvar",0)>
-	<cfif dumplist neq 0>
-	<!--- Dump Var --->
-	<div class="fw_titles" onClick="toggle('fw_dumpvar')"><img src="/coldbox/system/includes/images/arrow_right.gif" id="fw_dumpvar_img" />&nbsp;Dumpvar </div>
-	<div class="fw_debugContent" id="fw_dumpvar">
-		<cfloop list="#dumplist#" index="i">
-			<cfif isDefined("#i#")>
-				<cfdump var="#evaluate(i)#" label="#i#">
-			<cfelseif StructKeyExists( request.reqCollection, "#i#")>
-				<cfdump var="#request.reqCollection[i]#">
-			</cfif>
-		</cfloop>
-	</div>
-	</cfif>
+	<cfif getSetting("EnableDumpVar")>
+		<cfset dumpList = getValue("dumpvar",0)>
+		<cfif dumplist neq 0>
+		<!--- Dump Var --->
+		<div class="fw_titles" onClick="toggle('fw_dumpvar')"><img src="/coldbox/system/includes/images/arrow_right.gif" id="fw_dumpvar_img" />&nbsp;Dumpvar </div>
+		<div class="fw_debugContent" id="fw_dumpvar">
+			<cfloop list="#dumplist#" index="i">
+				<cfif isDefined("#i#")>
+					<cfdump var="#evaluate(i)#" label="#i#">
+				<cfelseif StructKeyExists( request.reqCollection, "#i#")>
+					<cfdump var="#request.reqCollection[i]#">
+				</cfif>
+			</cfloop>
+		</div>
+		</cfif>
 	</cfif>
 
 	<!--- Request Collection Debug --->

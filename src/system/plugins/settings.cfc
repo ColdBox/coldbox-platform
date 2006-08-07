@@ -41,7 +41,7 @@ Modification History:
 		<!--- Set Config DebugMode --->
 		<cfset setDebugMode(getSetting("DebugMode"))>
 		<!--- Test for Coldbox logging, if set init the log location --->
-		<cfif getSetting("ColdboxLogsLocation") neq "">
+		<cfif getSetting("EnableColdboxLogging")>
 			<cfset getPlugin("logger").initLogLocation()>
 		</cfif>
 		<!--- Test for myplugins location and init if necessary --->
@@ -112,7 +112,7 @@ Modification History:
 		<cfif handlerIndex>
 			<cfreturn getPlugin("beanFactory").create("coldbox.system.beans.eventhandler").init(listgetAt(handlersList,handlerIndex))>
 		<cfelse>
-			<cfthrow type="Framework.plugins.settings.EventHandlerNotRegisteredException" message="The event handler: '#getSetting('AppCFMXMapping')#/#arguments.event#' is not valid registered event. Please <a href= 'index.cfm?fwreinit=1'>click here to try again.</a>">
+			<cfthrow type="Framework.plugins.settings.EventHandlerNotRegisteredException" message="The event handler: '#getSetting('AppMapping')#/#arguments.event#' is not valid registered event. Please <a href= 'index.cfm?fwreinit=1'>click here to try again.</a>">
 		</cfif>
 	</cffunction>
 	<!--- ************************************************************* --->
@@ -179,7 +179,7 @@ Modification History:
 	<!--- ************************************************************* --->
 	<cffunction name="getHandlersMetaData" access="private" hint="Get the handler(s) meta data for registration." returntype="any">
 		<cfset var oCFCViewer = getPlugin("cfcViewer")>
-		<cfset var HandlersPath = getSetting("AppCFMXMapping")>
+		<cfset var HandlersPath = getSetting("AppMapping")>
 		<cfset var CFCPath = HandlersPath>
 		<cfset var HandlersArray = ArrayNew(1)>
 		<cfset var metaData = "">
@@ -188,7 +188,7 @@ Modification History:
 		<cfset var x = 0>
 
 		<!--- setup Default location --->
-		<cfif getSetting("AppCFMXMapping") neq "">
+		<cfif getSetting("AppMapping") neq "">
 			<!--- Test for CFMX 6.X --->
 			<cfif listfirst(server.coldfusion.productversion) lt 7>
 				<cfset HandlersPath = replacenocase(cgi.SCRIPT_NAME, listlast(cgi.SCRIPT_NAME,"/"),"") & "handlers">

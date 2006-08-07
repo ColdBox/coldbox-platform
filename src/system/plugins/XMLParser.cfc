@@ -188,10 +188,10 @@ Modification History:
 			if ( not StructKeyExists(ConfigStruct, "AppName") )
 				throw("There was no 'AppName' setting defined. This is required by the framework.","","Framework.plugins.XMLParser.ConfigXMLParsingException");
 			//Check For CFMapping or Throw
-			if ( not StructKeyExists(ConfigStruct, "AppCFMXMapping") )
-				throw("There was no 'AppCFMXMapping' setting defined. This is required by the framework.","","Framework.plugins.XMLParser.ConfigXMLParsingException");
-			//Conver . to / in the CFMX Mapping
-			ConfigStruct["AppCFMXMapping"] = replace(ConfigStruct["AppCFMXMapping"],".","/","all");
+			if ( not StructKeyExists(ConfigStruct, "AppMapping") )
+				throw("There was no 'AppMapping' setting defined. This is required by the framework.","","Framework.plugins.XMLParser.ConfigXMLParsingException");
+			//Convert . to / in the CFMX Mapping
+			ConfigStruct["AppMapping"] = replace(ConfigStruct["AppMapping"],".","/","all");
 			//Check for Default Event
 			if ( not StructKeyExists(ConfigStruct, "DefaultEvent") )
 				throw("There was no 'DefaultEvent' setting defined. This is required by the framework.","","Framework.plugins.XMLParser.ConfigXMLParsingException");
@@ -211,17 +211,21 @@ Modification History:
 			if ( not structKeyExists(ConfigStruct, "DebugPassword"))
 				ConfigStruct["DebugPassword"] = "";
 			//Check For Coldfusion Logging
-			if ( not structKeyExists(ConfigStruct, "ColdfusionLogging") or not isBoolean(ConfigStruct.ColdfusionLogging) )
-				ConfigStruct["ColdfusionLogging"] = "true";
+			if ( not structKeyExists(ConfigStruct, "EnableColdfusionLogging") or not isBoolean(ConfigStruct.EnableColdfusionLogging) )
+				ConfigStruct["EnableColdfusionLogging"] = "false";
+			//Check For Coldbox Logging
+			if ( not structKeyExists(ConfigStruct, "EnableColdboxLogging") or not isBoolean(ConfigStruct.EnableColdboxLogging) )
+				ConfigStruct["EnableColdboxLogging"] = "false";
 			//Check For Coldbox Log Location
 			if ( not structKeyExists(ConfigStruct, "ColdboxLogsLocation"))
-				ConfigStruct["ColdboxLogsLocation"] = "";				
+				ConfigStruct["ColdboxLogsLocation"] = "";		
+						
 			//Check For Owner Email or Throw
 			if ( not StructKeyExists(ConfigStruct, "OwnerEmail") )
 				throw("There was no 'OwnerEmail' setting defined. This is required by the framework.","","Framework.plugins.XMLParser.ConfigXMLParsingException");
-			//Check For Dumpvar Active or set to true
-			if ( not StructKeyExists(ConfigStruct, "DumpVarActive") or not isBoolean(ConfigStruct.DumpVarActive))
-				ConfigStruct["DumpVarActive"] = "true";
+			//Check For EnableDumpvar or set to true
+			if ( not StructKeyExists(ConfigStruct, "EnableDumpVar") or not isBoolean(ConfigStruct.EnableDumpVar))
+				ConfigStruct["EnableDumpVar"] = "true";
 			//Check For EnableBugReports Active or set to true
 			if ( not StructKeyExists(ConfigStruct, "EnableBugReports") or not isBoolean(ConfigStruct.EnableBugReports))
 				ConfigStruct["EnableBugReports"] = "true";

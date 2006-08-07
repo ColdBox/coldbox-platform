@@ -5,12 +5,15 @@ Last Update 	: July 28, 2006
 ----------------------------------------------------------------------->
 <cfcomponent name="controller" hint="This is the ColdBox Controller. I practically do everything">
 
+<!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 	<cfset variables.currentPath = getCurrentTemplatePath()>
 	<cfset variables.DebugMode = false>
 
 	<cffunction name="init" returntype="any" access="Public" hint="I am the constructor" output="false">
 		<cfreturn this>
 	</cffunction>
+
+<!------------------------------------------- PUBLIC ------------------------------------------->
 
 	<cffunction name="getSetting" hint="I get a setting from the FW Config structures. Use the FWSetting boolean argument to retrieve from the fwSettingsStruct." access="public" returntype="any" output="false">
 		<cfargument name="name" 	    type="string"   	 hint="Name of the setting key to retrieve"  >
@@ -38,7 +41,7 @@ Last Update 	: July 28, 2006
 		<cftry>
 			<cfreturn CreateObject("component", "plugins.#trim(arguments.plugin)#").init(this)>
 			<cfcatch type="any">
-				<cfthrow type="Framework.InvalidPluginInstantiationException"	 message="Framework.getPlugin: Error Instantiating Plugin Object (#trim(arguments.plugin)#)<br><br>Diagnostics: #cfcatch.Message#<br>#cfcatch.detail#">
+				<cfthrow type="Framework.InvalidPluginInstantiationException"	 message="Framework.getPlugin: Error Instantiating Plugin Object (#trim(arguments.plugin)#)" detail="#cfcatch.Message# #cfcatch.detail#">
 			</cfcatch>
 		</cftry>
 	</cffunction>
@@ -191,8 +194,8 @@ Last Update 	: July 28, 2006
 			<!--- Dashboard Determinations --->
 			<cfif CompareNocase(getSetting("AppName"),getSetting("DashboardName",1)) eq 0>
 				<cfset handlerDir = "admin.handlers">
-			<cfelseif getSetting("AppCFMXMapping") neq "">
-				<cfset handlerDir = "#replace(getSetting("AppCFMXMapping"),"/",".","all")#.handlers">
+			<cfelseif getSetting("AppMapping") neq "">
+				<cfset handlerDir = "#replace(getSetting("AppMapping"),"/",".","all")#.handlers">
 			</cfif>
 			<!--- Get RegisteredHandler --->
 			<cfset EventBean =  getPlugin("settings").getRegisteredHandler(arguments.event)>

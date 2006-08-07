@@ -38,7 +38,7 @@ Modification History:
 			<cfif CompareNocase(getSetting("AppName"),getSetting("DashboardName",1)) eq 0>
 				<cfset AppDir = "../admin">
 			<cfelse>
-				<cfset AppDir = "/#getSetting("AppCFMXMapping")#">
+				<cfset AppDir = "/#getSetting("AppMapping")#">
 			</cfif>
 			<!--- Test if we have a view to render --->
 			<cfif len(trim(arguments.view)) eq 0>
@@ -64,7 +64,7 @@ Modification History:
 			<cfif CompareNocase(getSetting("AppName"),getSetting("DashboardName",1)) eq 0>
 				<cfset AppDir = "../admin">
 			<cfelse>
-				<cfset AppDir = "/#getSetting("AppCFMXMapping")#">
+				<cfset AppDir = "/#getSetting("AppMapping")#">
 			</cfif>
 			<!--- Render With No Layout --->
 			<cfif not valueExists("currentLayout")>
@@ -98,7 +98,7 @@ Modification History:
 				<!--- Place exception in the requset Collection --->
 				<Cfset setvalue("ExceptionBean",Exception)>
 				<!--- Save the Custom Report --->
-				<cfsavecontent variable="BugReport"><cfinclude template="/#getSetting("AppCFMXMapping")#/#getSetting("CustomErrorTemplate")#"></cfsavecontent>
+				<cfsavecontent variable="BugReport"><cfinclude template="/#getSetting("AppMapping")#/#getSetting("CustomErrorTemplate")#"></cfsavecontent>
 				<cfcatch type="any">
 					<cfset Exception = getPlugin("settings").ExceptionHandler(cfcatch,"Application","Error creating custom error template.")>
 					<!--- Save the Bug Report --->
@@ -119,7 +119,7 @@ Modification History:
 		<cfif getSetting("UDFLibraryFile") neq "">
 			<!--- Check if file exists on app's includes --->
 			<cfif fileExists("#getSetting("ApplicationPath",1)#/#getSetting("UDFLibraryFile")#")>
-				<cfinclude template="/#getSetting("AppCFMXMapping")#/#getSetting("UDFLibraryFile")#">
+				<cfinclude template="/#getSetting("AppMapping")#/#getSetting("UDFLibraryFile")#">
 			<cfelseif fileExists(ExpandPath("#getSetting("UDFLibraryFile")#"))>
 				<cfinclude template="#getSetting("UDFLibraryFile")#">
 			<cfelse>
