@@ -15,7 +15,9 @@
         <Setting name="FrameworkTrac"          value="http://trac.luismajano.com/coldbox" />
         <Setting name="DashboardName"          value="ColdboxDashboard" />
         <!--Available:US-ASCII, ISO-8859-1, UTF-8, UTF-16BE, UTF-16LE,  UTF-16.-->
+        <Setting name="AvailableEncodings"     value="US-ASCII,ISO-8859-1,UTF-8,UTF-16BE,UTF-16LE,UTF-16" />
         <Setting name="LogFileEncoding"        value="UTF-8" />
+        <!--In bytes-->
         <Setting name="LogFileBufferSize"      value="32768" />
     </Settings>
     

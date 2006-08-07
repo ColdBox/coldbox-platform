@@ -23,7 +23,7 @@ Modification History:
 	<!--- ************************************************************* --->
 
 	<!--- ************************************************************* --->
-	<cffunction name="configLoader" returntype="void" access="Public" hint="I Load the configurations and init the framework variables" output="false">
+	<cffunction name="configLoader" returntype="void" access="Public" hint="I Load the configurations and init the framework variables. I have a facade to the application scope." output="false">
 		<cfset var XMLParser = getPlugin("XMLParser")>
 		<cfset var ConfigFileLocation = "">
 		<cfset var ConfigTimeStamp = "">
@@ -38,9 +38,14 @@ Modification History:
 		</cfif>
 		<!--- Set Config DebugMode --->
 		<cfset setDebugMode(getSetting("DebugMode"))>
-		<!--- Test for Coldbox logging --->
+		<!--- Test for Coldbox logging, if set init the log location --->
 		<cfif getSetting("ColdboxLogsLocation") neq "">
 			<cfset getPlugin("logger").initLogLocation()>
+		</cfif>
+		<!--- Test for myplugins location and init if necessary --->
+		<cfif getSetting("MyPluginsLocation") neq "" and not directoryExists(expandPath(getSetting("MyPluginsLocation"))) >
+			<!--- Directory not verified, throw error --->
+			<cfthrow type="Framework.settings.MyPluginsLocationNotFound" message="The custom plugins location: #getSetting("MyPluginsLocation")# cannot be located or does not exist. Please verify your entry in your config.xml.cfm">
 		</cfif>
 		<!--- Flag the initiation --->
 		<cfset application.ColdBox_fwInitiated = true>
@@ -105,7 +110,7 @@ Modification History:
 		<cfif handlerIndex>
 			<cfreturn getPlugin("beanFactory").create("beans.eventhandler").init(listgetAt(handlersList,handlerIndex))>
 		<cfelse>
-			<cfthrow type="Framework.EventHandlerNotRegisteredException" message="The event handler: '#getSetting('AppCFMXMapping')#/#arguments.event#' is not valid registered event. Please <a href= 'index.cfm?fwreinit=1'>click here to try again.</a>">
+			<cfthrow type="Framework.settings.EventHandlerNotRegisteredException" message="The event handler: '#getSetting('AppCFMXMapping')#/#arguments.event#' is not valid registered event. Please <a href= 'index.cfm?fwreinit=1'>click here to try again.</a>">
 		</cfif>
 	</cffunction>
 	<!--- ************************************************************* --->
@@ -202,7 +207,7 @@ Modification History:
 		
 		<!--- Check for Handlers Location --->
 		<cfif not directoryExists(ExpandPath(HandlersPath))>
-			<cfthrow type="Framework.HandlersDirectoryNotFoundException" message="The handlers directory does not exist please check your application structure.">
+			<cfthrow type="Framework.settings.HandlersDirectoryNotFoundException" message="The handlers directory does not exist please check your application structure.">
 		</cfif>
 		
 		<!--- Get Handlers --->
@@ -211,7 +216,7 @@ Modification History:
 		<cfset HandlersArray = oCFCViewer.getCFCs()>
 		<!--- Verify at least one handler --->
 		<cfif not ArrayLen(HandlersArray)>
-			<cfthrow type="Framework.NoHandlersFoundException" message="There were no event handler cfc's found in your handlers directory. You need at least one for the application to work.">
+			<cfthrow type="Framework.settings.NoHandlersFoundException" message="There were no event handler cfc's found in your handlers directory. You need at least one for the application to work.">
 		</cfif>
 		<cfloop from="1" to="#ArrayLen(HandlersArray)#" index="i">
 			<cfset metaData = oCFCViewer.getCFCMetaData(HandlersArray[i])>
@@ -233,7 +238,7 @@ Modification History:
 		<cfif refindnocase("^eh[a-zA-Z]+\.(dsp|do|on)[a-zA-Z]+", arguments.event)>
 			<cfreturn true>
 		<cfelse>
-			<cfthrow type="Framework.EventSyntaxInvalidException" message="The event syntax: #request.reqCollection.event# is invalid. Please check the documentation for valid syntax.">
+			<cfthrow type="Framework.settings.EventSyntaxInvalidException" message="The event syntax: #request.reqCollection.event# is invalid. Please check the documentation for valid syntax.">
 		</cfif>
 	</cffunction>
 	<!--- ************************************************************* --->

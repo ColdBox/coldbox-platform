@@ -31,7 +31,7 @@ Description :
 Modification History:
 08/01/2006 - Updated the cfc to work for ColdBox.
 --->
-<cfcomponent name="FileWriter" hint="Uses the Java FileOutputStream, OutputStreamWriter, and BufferedWriter to provide a way to GREATLY increase performance of file output.">
+<cfcomponent name="FileWriter" hint="Uses the Java FileOutputStream, OutputStreamWriter, and BufferedWriter to provide a way to GREATLY increase performance of file output." extends="plugin">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 	<cfscript>
@@ -50,7 +50,7 @@ Modification History:
 	<!--- ************************************************************* --->
 	
 	<!--- ************************************************************* --->
-	<cffunction name="setup" access="public" returntype="void" output="false" hint="initializes the FileWriter CF/java object">
+	<cffunction name="setup" access="public" returntype="any" output="false" hint="initializes the FileWriter CF/java object">
 		<!--- ************************************************************* --->
 		<cfargument name="fileName" 	type="string" 	required="Yes" 	hint="the path and name of the file to write" />
 		<cfargument name="fileEncoding" type="string" 	required="yes" 	hint="the file encoding: US-ASCII, ISO-8859-1, UTF-8, UTF-16BE, UTF-16LE,  UTF-16." />
@@ -69,6 +69,8 @@ Modification History:
 			variables.joOutputStreamWriter = CreateObject('java','java.io.OutputStreamWriter').init(variables.joFileOutputStream, javaCast('string', arguments.fileEncoding));
 			//Create BufferedWriter
 			variables.joBufferedWriter = CreateObject('java','java.io.BufferedWriter').init(variables.joOutputStreamWriter, javaCast('int', arguments.bufferSize));
+			//Return reference
+			return this;
 		</cfscript>
 	</cffunction>
 	<!--- ************************************************************* --->

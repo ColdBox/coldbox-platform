@@ -10,7 +10,7 @@
 		<Setting name="DumpVarActive" 				value="true"/>
 		<Setting name="ColdfusionLogging" 			value="true"/>
 		<!--Absolute path to where you want your log files to be stored-->
-		<Setting name="ColdboxLogsLocation"			value="testing" />
+		<Setting name="ColdboxLogsLocation"			value="../testing" />
 		<Setting name="DefaultEvent" 				value="ehGeneral.dspHello"/>
 		<Setting name="RequestStartHandler" 		value=""/>
 		<Setting name="RequestEndHandler" 			value=""/>
@@ -23,6 +23,7 @@
 		<Setting name="HandlersIndexAutoReload"   	value="false" />
 		<Setting name="ConfigAutoReload"			value="true" />
 		<Setting name="ExceptionHandler"     		value="" />
+		<!--Path to plugins, as if to instantiate -->
 		<Setting name="MyPluginsLocation" 			value="myplugins"/>
 	</Settings>
 	
