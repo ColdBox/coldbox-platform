@@ -1,1 +1,98 @@
-<style type="text/css">a:link, a:visited{	color: #0033CC;	font-weight:bold;	text-decoration:none;}a:hover{	text-decoration: underline;}body{	margin: 0px;	font-family:Verdana, Arial, Helvetica, sans-serif;	font-size:11px;	}iframe{	height: 100%;}.showlayer{	display: block;}.hidelayer{	display: none;}/* SHELL DECLARATIONS */.container{	width:100%;	height:100%;	background-color: #f5f5f5;}.header{	height: 92px;}.headerbar {	background:url(images/header_bg.png) repeat;	height: 70px;}.statusbar{	background:url(images/statusbar_bg.png) repeat;	height: 22px;	border-top:1px solid #AAAAAA;	border-bottom:1px solid #dddddd;	font-size:9px;}/*GUI Declarations */.myloader{	float:right;	width: 275px;	text-align:right;	font-size:9px;	vertical-align:middle;	margin-top:2px;}.contentpanel{	vertical-align: top;}.menupanel{	background-color: #FFFFFF;	width: 220px;	border-left:1px solid #dddddd;	vertical-align: top;	height: 100%;}.cleardiv{	clear: both;}.paddingDiv{ 	margin: 15px;}/* FORM ELEMENTS */input[type=button], input[type=submit], input[type=reset] { background: #eee; color: #222; border: 1px outset #ccc; padding: .1em .5em; font-size: 11px;}input[type=button]:hover, input[type=submit]:hover, input[type=reset]:hover { background: #FFFFF0; border: 1px inset #ccc; cursor: hand;}input[type=button][disabled], input[type=submit][disabled],input[type=reset][disabled] { background: #f6f6f6; border-style: solid; color: #999;}input[type=text], input[type=checkbox], textarea { border: 1px solid #d7d7d7 }input[type=text], input[type=checkbox] { padding: .20em .3em }input[type=text]:focus, textarea:focus, input[type=checkbox]:focus { border: 1px solid #886;}</style>
+<style type="text/css">
+a:link, a:visited{
+	color: #0033CC;
+	font-weight:bold;
+	text-decoration:none;
+}
+a:hover{
+	text-decoration: underline;
+	background-color: #FFFFF0;
+}
+body{
+	margin: 0px;
+	font-family:Verdana, Arial, Helvetica, sans-serif;
+	font-size:11px;	
+}
+iframe{
+	height: 100%;
+}
+.showlayer{
+	display: block;
+}
+.hidelayer{
+	display: none;
+}
+/* SHELL DECLARATIONS */
+.container{
+	width:100%;
+	height:100%;
+	background-color: #f5f5f5;
+}
+.header{
+	height: 92px;
+}
+.headerbar {
+	background:url(images/header_bg.png) repeat;
+	height: 70px;
+}
+.statusbar{
+	background:url(images/statusbar_bg.png) repeat;
+	height: 22px;
+	border-top:1px solid #AAAAAA;
+	border-bottom:1px solid #dddddd;
+	font-size:9px;
+}
+
+/*GUI Declarations */
+.myloader{
+	float:right;
+	width: 275px;
+	text-align:right;
+	font-size:9px;
+	vertical-align:middle;
+	margin-top:2px;
+}
+.contentpanel{
+	vertical-align: top;
+	float:left;
+}
+.menupanel{
+	background-color: #FFFFFF;
+	width: 220px;
+	border-left:1px solid #dddddd;
+	vertical-align: top;
+	height: 100%;
+	float:right;
+}
+.cleardiv{
+	clear: both;
+}
+.paddingDiv{
+ 	margin: 15px;
+}
+
+/* FORM ELEMENTS */
+input[type=button], input[type=submit], input[type=reset] {
+ background: #eee;
+ color: #222;
+ border: 1px outset #ccc;
+ padding: .1em .5em;
+ font-size: 11px;
+}
+input[type=button]:hover, input[type=submit]:hover, input[type=reset]:hover {
+ background: #FFFFF0;
+ border: 1px inset #ccc;
+ cursor: hand;
+}
+input[type=button][disabled], input[type=submit][disabled],
+input[type=reset][disabled] {
+ background: #f6f6f6;
+ border-style: solid;
+ color: #999;
+}
+input[type=text], input[type=checkbox], textarea { border: 1px solid #d7d7d7 }
+input[type=text], input[type=checkbox] { padding: .20em .3em }
+input[type=text]:focus, textarea:focus, input[type=checkbox]:focus {
+ border: 1px solid #886;
+}
+</style>
