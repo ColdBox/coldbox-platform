@@ -10,9 +10,9 @@ Modification History:
 			 from the request collection.
 08/01/2006 - Coldbox Logs support.
 ----------------------------------------------------------------------->
-<cfcomponent name="settings" hint="Coldbox settings object." extends="plugin">
+<cfcomponent name="settings" hint="Coldbox settings object." extends="coldbox.system.plugin">
 
-<!------------------------------------------- PUBLIC ------------------------------------------->
+<!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
 	<!--- ************************************************************* --->
 	<cffunction name="init" access="public" returntype="any" output="false">
@@ -21,6 +21,8 @@ Modification History:
 			<cfreturn this>
 	</cffunction>
 	<!--- ************************************************************* --->
+
+<!------------------------------------------- PUBLIC ------------------------------------------->
 
 	<!--- ************************************************************* --->
 	<cffunction name="configLoader" returntype="void" access="Public" hint="I Load the configurations and init the framework variables. I have a facade to the application scope." output="false">
@@ -45,7 +47,7 @@ Modification History:
 		<!--- Test for myplugins location and init if necessary --->
 		<cfif getSetting("MyPluginsLocation") neq "" and not directoryExists(expandPath(getSetting("MyPluginsLocation"))) >
 			<!--- Directory not verified, throw error --->
-			<cfthrow type="Framework.settings.MyPluginsLocationNotFound" message="The custom plugins location: #getSetting("MyPluginsLocation")# cannot be located or does not exist. Please verify your entry in your config.xml.cfm">
+			<cfthrow type="Framework.plugins.settings.MyPluginsLocationNotFound" message="The custom plugins location: #getSetting("MyPluginsLocation")# cannot be located or does not exist. Please verify your entry in your config.xml.cfm">
 		</cfif>
 		<!--- Flag the initiation --->
 		<cfset application.ColdBox_fwInitiated = true>
@@ -108,9 +110,9 @@ Modification History:
 		<!--- Check registration --->
 		<cfset handlerIndex = listFindNoCase(handlersList, arguments.event) >
 		<cfif handlerIndex>
-			<cfreturn getPlugin("beanFactory").create("beans.eventhandler").init(listgetAt(handlersList,handlerIndex))>
+			<cfreturn getPlugin("beanFactory").create("coldbox.system.beans.eventhandler").init(listgetAt(handlersList,handlerIndex))>
 		<cfelse>
-			<cfthrow type="Framework.settings.EventHandlerNotRegisteredException" message="The event handler: '#getSetting('AppCFMXMapping')#/#arguments.event#' is not valid registered event. Please <a href= 'index.cfm?fwreinit=1'>click here to try again.</a>">
+			<cfthrow type="Framework.plugins.settings.EventHandlerNotRegisteredException" message="The event handler: '#getSetting('AppCFMXMapping')#/#arguments.event#' is not valid registered event. Please <a href= 'index.cfm?fwreinit=1'>click here to try again.</a>">
 		</cfif>
 	</cffunction>
 	<!--- ************************************************************* --->
@@ -123,7 +125,7 @@ Modification History:
 		<cfargument name="ExtraMessage"  type="string"  required="false" default="">
 		<!--- ************************************************************* --->
 		<cfset var BugReport = "">
-		<cfset var ExceptionBean = getPlugin("beanFactory").create("beans.exception").init(errorStruct=arguments.Exception,extramessage=arguments.extraMessage,errorType=arguments.ErrorType)>
+		<cfset var ExceptionBean = getPlugin("beanFactory").create("coldbox.system.beans.exception").init(errorStruct=arguments.Exception,extramessage=arguments.extraMessage,errorType=arguments.ErrorType)>
 		<!--- Test ErrorType --->
 		<cfif not reFindnocase("(application|framework)",arguments.errorType)>
 			<cfset arguments.errorType = "application">
@@ -135,7 +137,7 @@ Modification History:
 					<cfset setValue("ExceptionBean",ExceptionBean)>
 					<cfset runEvent(getSetting("Exceptionhandler"))>
 					<cfcatch type="any">
-						<cfset ExceptionBean = getPlugin("beanFactory").create("beans.exception").init(errorStruct=cfcatch,extramessage="Error Running Custom Exception handler",errorType="application")>
+						<cfset ExceptionBean = getPlugin("beanFactory").create("coldbox.system.beans.exception").init(errorStruct=cfcatch,extramessage="Error Running Custom Exception handler",errorType="application")>
 						<cfset getPlugin("logger").logErrorWithBean(ExceptionBean)>
 					</cfcatch>
 				</cftry>
@@ -207,7 +209,7 @@ Modification History:
 		
 		<!--- Check for Handlers Location --->
 		<cfif not directoryExists(ExpandPath(HandlersPath))>
-			<cfthrow type="Framework.settings.HandlersDirectoryNotFoundException" message="The handlers directory does not exist please check your application structure.">
+			<cfthrow type="Framework.plugins.settings.HandlersDirectoryNotFoundException" message="The handlers directory does not exist please check your application structure.">
 		</cfif>
 		
 		<!--- Get Handlers --->
@@ -216,7 +218,7 @@ Modification History:
 		<cfset HandlersArray = oCFCViewer.getCFCs()>
 		<!--- Verify at least one handler --->
 		<cfif not ArrayLen(HandlersArray)>
-			<cfthrow type="Framework.settings.NoHandlersFoundException" message="There were no event handler cfc's found in your handlers directory. You need at least one for the application to work.">
+			<cfthrow type="Framework.plugins.settings.NoHandlersFoundException" message="There were no event handler cfc's found in your handlers directory. You need at least one for the application to work.">
 		</cfif>
 		<cfloop from="1" to="#ArrayLen(HandlersArray)#" index="i">
 			<cfset metaData = oCFCViewer.getCFCMetaData(HandlersArray[i])>
@@ -238,7 +240,7 @@ Modification History:
 		<cfif refindnocase("^eh[a-zA-Z]+\.(dsp|do|on)[a-zA-Z]+", arguments.event)>
 			<cfreturn true>
 		<cfelse>
-			<cfthrow type="Framework.settings.EventSyntaxInvalidException" message="The event syntax: #request.reqCollection.event# is invalid. Please check the documentation for valid syntax.">
+			<cfthrow type="Framework.plugins.settings.EventSyntaxInvalidException" message="The event syntax: #request.reqCollection.event# is invalid. Please check the documentation for valid syntax.">
 		</cfif>
 	</cffunction>
 	<!--- ************************************************************* --->

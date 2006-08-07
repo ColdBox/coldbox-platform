@@ -11,7 +11,7 @@ Modification History:
 06/09/2006 - Updated for coldbox.
 07/29/2006 - Flag to leave contents in the messagebox or delete them once rendered.
 ----------------------------------------------------------------------->
-<cfcomponent name="messagebox" hint="This is the messagebox plugin." extends="plugin">
+<cfcomponent name="messagebox" hint="This is the messagebox plugin." extends="coldbox.system.plugin">
 
 	<!--- ************************************************************* --->
 	<cffunction name="init" access="public" returntype="any" output="false">
@@ -33,7 +33,7 @@ Modification History:
 			<cfset msgStruct.message = arguments.message>
 			<cfwddx action="cfml2wddx" input="#msgStruct#" output="client.fw_messagebox">
 		<cfelse>
-			<cfthrow type="Framework.messagebox.InvalidMessageTypeException" message="The message type sent in: #arguments.type# is invalid. Available types: error,warning,info">
+			<cfthrow type="Framework.plugins.messagebox.InvalidMessageTypeException" message="The message type sent in: #arguments.type# is invalid. Available types: error,warning,info">
 		</cfif>
 	</cffunction>
 	<!--- ************************************************************* --->

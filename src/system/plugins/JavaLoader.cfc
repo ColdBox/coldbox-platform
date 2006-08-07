@@ -13,7 +13,7 @@ Mark Mandel		08/05/2006		Created
 Mark Mandel		22/06/2006		Added verification that the path exists
 Luis Majano		07/11/2006		Updated it to work with ColdBox. look at license in the install folder.
 ------------------------------------------------------------------------------->
-<cfcomponent name="JavaLoader" hint="Loads External Java Classes, while providing access to ColdFusion classes" extends="plugin">
+<cfcomponent name="JavaLoader" hint="Loads External Java Classes, while providing access to ColdFusion classes" extends="coldbox.system.plugin">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 	<cfset instance = StructNew()>
@@ -55,7 +55,7 @@ Luis Majano		07/11/2006		Updated it to work with ColdBox. look at license in the
 			while(iterator.hasNext()){
 				file = createObject("java", "java.io.File").init(iterator.next());
 				if(NOT file.exists()){
-					throw("The path you have specified could not be found", file.getAbsolutePath() & " does not exist", "PathNotFoundException");
+					throw("The path you have specified could not be found", file.getAbsolutePath() & " does not exist", "Framework.plugins.JavaLoader.PathNotFoundException");
 				}
 				Array.set(URLs, JavaCast("int", counter), file.toURL());
 				counter = counter + 1;

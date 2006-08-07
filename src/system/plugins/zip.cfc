@@ -42,7 +42,7 @@
 <cfcomponent name="zip"
 	 	     displayname = "Zip Component"
              hint        = "A collections of functions that supports the Zip and GZip functionality by using the Java Zip file API."
-             extends="plugin">
+             extends="coldbox.system.plugin">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 	<cfscript>

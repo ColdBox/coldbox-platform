@@ -31,7 +31,7 @@ Description :
 Modification History:
 08/01/2006 - Updated the cfc to work for ColdBox.
 --->
-<cfcomponent name="FileWriter" hint="Uses the Java FileOutputStream, OutputStreamWriter, and BufferedWriter to provide a way to GREATLY increase performance of file output." extends="plugin">
+<cfcomponent name="FileWriter" hint="Uses the Java FileOutputStream, OutputStreamWriter, and BufferedWriter to provide a way to GREATLY increase performance of file output." extends="coldbox.system.plugin">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 	<cfscript>
@@ -171,7 +171,7 @@ Modification History:
 			</cfscript>
 		<cfelse>
 			<cfset variables.joFileOutputStream.close() />
-			<cfthrow type="Framework.FileWriter.InvalidEncodingException" message="The encoding: #arguments.fileEncoding# is not a valid encoding.">
+			<cfthrow type="Framework.plugins.FileWriter.InvalidEncodingException" message="The encoding: #arguments.fileEncoding# is not a valid encoding.">
 		</cfif>
 	</cffunction>
 	<!--- ************************************************************* --->

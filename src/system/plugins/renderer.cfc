@@ -16,7 +16,7 @@ Modification History:
 06/28/2006 - Updated for Coldbox.
 07/27/2006 - renderview with view argument, added cfoutput support.
 ----------------------------------------------------------------------->
-<cfcomponent name="renderer" hint="This plugin renders layouts, views, framework includes, etc." extends="plugin">
+<cfcomponent name="renderer" hint="This plugin renders layouts, views, framework includes, etc." extends="coldbox.system.plugin">
 
 	<!--- ************************************************************* --->
 	<cffunction name="init" access="public" returntype="any" output="false">
@@ -42,7 +42,7 @@ Modification History:
 			</cfif>
 			<!--- Test if we have a view to render --->
 			<cfif len(trim(arguments.view)) eq 0>
-				<cfthrow type="Framework.ViewNotSetException" message="Framework.renderView: The currentview variable has not been set, therefore there is no view to render.">
+				<cfthrow type="Framework.plugins.renderer.ViewNotSetException" message="Framework.renderView: The currentview variable has not been set, therefore there is no view to render.">
 			</cfif>
 			<!--- Render UDf if no layout is used or if the arguments.view exits--->
 			<cfif not valueExists("currentLayout") and arguments.view neq "">
@@ -123,7 +123,7 @@ Modification History:
 			<cfelseif fileExists(ExpandPath("#getSetting("UDFLibraryFile")#"))>
 				<cfinclude template="#getSetting("UDFLibraryFile")#">
 			<cfelse>
-				<cfthrow type="Framework.UDFLibraryNotFoundException" message="Error loading UDFLibraryFile.  The file declared in the config.xml: #getSetting("UDFLibraryFile")# was not found in your application's include directory or in the following location: #ExpandPath(getSetting("UDFLibraryFile"))#. Please make sure you verify the file's location.">
+				<cfthrow type="Framework.plugins.renderer.UDFLibraryNotFoundException" message="Error loading UDFLibraryFile.  The file declared in the config.xml: #getSetting("UDFLibraryFile")# was not found in your application's include directory or in the following location: #ExpandPath(getSetting("UDFLibraryFile"))#. Please make sure you verify the file's location.">
 			</cfif>
 		</cfif>
 	</cffunction>

@@ -21,7 +21,7 @@ Modification History:
 ----------------------------------------------------------------------->
 <cfcomponent name="XMLParser"
 			 hint="This is the XML Parser plugin for the framework. It takes care of any XML parsing for the framework's usage."
-			 extends="plugin">
+			 extends="coldbox.system.plugin">
 
 	<!--- ************************************************************* --->
 	<cffunction name="init" access="public" returntype="any" output="false">
@@ -67,7 +67,7 @@ Modification History:
 		try{
 			//verify File
 			if ( not fileExists(variables.FrameworkConfigFile) ){
-				throw("Error finding settings.xml configuration file. The file #variables.FrameworkConfigFile# cannot be found.","","Framework.ColdBoxSettingsNotFoundException");
+				throw("Error finding settings.xml configuration file. The file #variables.FrameworkConfigFile# cannot be found.","","Framework.plugins.XMLParser.ColdBoxSettingsNotFoundException");
 			}
 			//Determine which CF version for XML Parsing method
 			if (listfirst(server.coldfusion.productversion) lt 7){
@@ -119,7 +119,7 @@ Modification History:
 			return settingsStruct;
 		}//end of try
 		catch( Any Exception ){
-			throw("Error Loading Framework Configuration.<br>#Exception.Message# & #Exception.Detail#","","Framework.ColdboxSettingsParsingException");
+			throw("Error Loading Framework Configuration.<br>#Exception.Message# & #Exception.Detail#","","Framework.plugins.XMLParser.ColdboxSettingsParsingException");
 		}
 		</cfscript>
 	</cffunction>
@@ -164,7 +164,7 @@ Modification History:
 		try{
 			//Validate File
 			if ( not fileExists(ConfigFileLocation) ){
-				throw("The Config File: #ConfigFileLocation# can't be found.","","Framework.ConfigXMLFileNotFoundException");
+				throw("The Config File: #ConfigFileLocation# can't be found.","","Framework.plugins.XMLParser.ConfigXMLFileNotFoundException");
 			}
 			//Determine which CF version for XML Parsing method
 			if (listfirst(server.coldfusion.productversion) lt 7){
@@ -176,25 +176,25 @@ Modification History:
 			}
 			//validate
 			if ( not structKeyExists(configXML, "config")  )
-				throw("No Config element found in the configuration file","","Framework.ConfigXMLParsingException");
+				throw("No Config element found in the configuration file","","Framework.plugins.XMLParser.ConfigXMLParsingException");
 			//Get SettingNodes
 			SettingNodes = XMLSearch(configXML, variables.searchSettings);
 			if ( ArrayLen(SettingNodes) eq 0 )
-				throw("No Setting elements could be found in the configuration file.","","Framework.ConfigXMLParsingException");
+				throw("No Setting elements could be found in the configuration file.","","Framework.plugins.XMLParser.ConfigXMLParsingException");
 			//Insert Settings to Config Struct
 			for (i=1; i lte ArrayLen(SettingNodes); i=i+1)
 				StructInsert( ConfigStruct, SettingNodes[i].XMLAttributes["name"], trim(SettingNodes[i].XMLAttributes["value"]));
 			//Check for AppName or throw
 			if ( not StructKeyExists(ConfigStruct, "AppName") )
-				throw("There was no 'AppName' setting defined. This is required by the framework.","","Framework.ConfigXMLParsingException");
+				throw("There was no 'AppName' setting defined. This is required by the framework.","","Framework.plugins.XMLParser.ConfigXMLParsingException");
 			//Check For CFMapping or Throw
 			if ( not StructKeyExists(ConfigStruct, "AppCFMXMapping") )
-				throw("There was no 'AppCFMXMapping' setting defined. This is required by the framework.","","Framework.ConfigXMLParsingException");
+				throw("There was no 'AppCFMXMapping' setting defined. This is required by the framework.","","Framework.plugins.XMLParser.ConfigXMLParsingException");
 			//Conver . to / in the CFMX Mapping
 			ConfigStruct["AppCFMXMapping"] = replace(ConfigStruct["AppCFMXMapping"],".","/","all");
 			//Check for Default Event
 			if ( not StructKeyExists(ConfigStruct, "DefaultEvent") )
-				throw("There was no 'DefaultEvent' setting defined. This is required by the framework.","","Framework.ConfigXMLParsingException");
+				throw("There was no 'DefaultEvent' setting defined. This is required by the framework.","","Framework.plugins.XMLParser.ConfigXMLParsingException");
 			//Check for Request Start Handler
 			if ( not StructKeyExists(ConfigStruct, "ApplicationStartHandler") )
 				ConfigStruct["ApplicationStartHandler"] = "";
@@ -218,7 +218,7 @@ Modification History:
 				ConfigStruct["ColdboxLogsLocation"] = "";				
 			//Check For Owner Email or Throw
 			if ( not StructKeyExists(ConfigStruct, "OwnerEmail") )
-				throw("There was no 'OwnerEmail' setting defined. This is required by the framework.","","Framework.ConfigXMLParsingException");
+				throw("There was no 'OwnerEmail' setting defined. This is required by the framework.","","Framework.plugins.XMLParser.ConfigXMLParsingException");
 			//Check For Dumpvar Active or set to true
 			if ( not StructKeyExists(ConfigStruct, "DumpVarActive") or not isBoolean(ConfigStruct.DumpVarActive))
 				ConfigStruct["DumpVarActive"] = "true";
@@ -274,7 +274,7 @@ Modification History:
 				//Parse i18N Settings
 				for (i=1; i lte ArrayLen(i18NSettingNodes[1].XMLChildren); i=i+1){
 					if ( len(trim(i18NSettingNodes[1].XMLChildren[i].XMLText)) eq 0 ){
-						throw("The i18N setting: #i18NSettingNodes[1].XMLChildren[i].XMLName# cannot be left blank.","","Framework.ConfigXMLParsingException");
+						throw("The i18N setting: #i18NSettingNodes[1].XMLChildren[i].XMLName# cannot be left blank.","","Framework.plugins.XMLParser.ConfigXMLParsingException");
 					}
 					if ( i18NSettingNodes[1].XMLChildren[i].XMLName eq "DefaultResourceBundle" ){
 						i18NSettingNodes[1].XMLChildren[i].XMLText = expandPath(trim(i18NSettingNodes[1].XMLChildren[i].XMLText));
@@ -285,7 +285,7 @@ Modification History:
 						if ( not listlen( DefaultLocale, "_") is 2 or
 							 not len(listFirst(DefaultLocale,"_")) is 2 or
 				 			 not len(listLast(DefaultLocale,"_")) is 2 ){
-				 			 throw("Invalid Locale Syntax found. Please re-check your config.xml DefaultLocale i18N Setting: #defaultLocale# is an invalid locale syntax. ex: en_US","","Framework.ConfigXMLParsingException");
+				 			 throw("Invalid Locale Syntax found. Please re-check your config.xml DefaultLocale i18N Setting: #defaultLocale# is an invalid locale syntax. ex: en_US","","Framework.plugins.XMLParser.ConfigXMLParsingException");
 				 		}
 				 		//set the right syntax just in case.
 				 		i18NSettingNodes[1].XMLChildren[i].XMLText = lcase(listFirst(DefaultLocale,"_")) & "_" & ucase(listLast(DefaultLocale,"_"));
@@ -369,7 +369,7 @@ Modification History:
 					if ( not structKeyExists(DatasourcesStruct,DSNStruct.name) )
 						StructInsert(DatasourcesStruct, DSNStruct.name , DSNStruct);
 					else
-						throw("The datasource name: #dsnStruct.name# has already been declared.","","Framework.ConfigXMLParsingException");
+						throw("The datasource name: #dsnStruct.name# has already been declared.","","Framework.plugins.XMLParser.ConfigXMLParsingException");
 				}
 			}
 			StructInsert(ConfigStruct, "Datasources", DatasourcesStruct);
@@ -378,9 +378,9 @@ Modification History:
 			DefaultLayout = XMLSearch(configXML,variables.searchDefaultLayout);
 			//validate Default Layout.
 			if ( ArrayLen(DefaultLayout) eq 0 )
-				throw("There was no default layout element found.","","Framework.ConfigXMLParsingException");
+				throw("There was no default layout element found.","","Framework.plugins.XMLParser.ConfigXMLParsingException");
 			if ( ArrayLen(DefaultLayout) gt 1 )
-				throw("There were more than 1 DefaultLayout elements found. There can only be one.","","Framework.ConfigXMLParsingException");
+				throw("There were more than 1 DefaultLayout elements found. There can only be one.","","Framework.plugins.XMLParser.ConfigXMLParsingException");
 			StructInsert(ConfigStruct,"DefaultLayout",Trim(DefaultLayout[1].XMLText));
 			//Get View Layouts
 			LayoutNodes = XMLSearch(configXML, variables.searchLayouts);
@@ -400,11 +400,11 @@ Modification History:
 			if (listfirst(server.coldfusion.productversion) gte 7){
 				//Finally Validate With XSD
 				if ( not XMLValidate(configXML, getSetting("ConfigFileSchemaLocation", true)).status )
-					throw("<br>The config.xml file does not validate with the framework's schema.<br>You can find the config schema <a href='#getSetting("DistanceString",1)#system/config/#GetFileFromPath(getSetting("ConfigFileSchemaLocation", true))#'>here</a>","","Framework.ConfigXMLParsingException");
+					throw("<br>The config.xml file does not validate with the framework's schema.<br>You can find the config schema <a href='/coldbox/system/config/#GetFileFromPath(getSetting("ConfigFileSchemaLocation", 1))#'>here</a>","","Framework.plugins.XMLParser.ConfigXMLParsingException");
 			}
 		}//end of try
 		catch( Any Exception ){
-			throw("#Exception.Message# & #Exception.Detail#","","Framework.ConfigXMLParsingException");
+			throw("#Exception.Message# & #Exception.Detail#","","Framework.plugins.XMLParser.ConfigXMLParsingException");
 		}
 		//finish
 		return ConfigStruct;
