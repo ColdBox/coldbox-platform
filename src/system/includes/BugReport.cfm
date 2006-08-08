@@ -26,24 +26,19 @@ Modification History:
     <td colspan="2" class="fw_errorTablesCells">#Exception.getExtramessage()#</td>
     </tr>
 <cfif Exception.getErrorType() eq "Application">
-  <cfif valueExists("event")>
+  
   <tr>
     <td width="122" align="right" class="fw_errorTablesTitles">Current Event: </td>
-    <td width="463" class="fw_errorTablesCells">#getValue("event")#</td>
+    <td width="463" class="fw_errorTablesCells"><cfif valueExists("event")>#getValue("event")#<cfelse>N/A</cfif></td>
   </tr>
-  </cfif>
-  <cfif valueExists("currentLayout")>
   <tr>
     <td align="right" class="fw_errorTablesTitles">Current Layout: </td>
-    <td class="fw_errorTablesCells">#getValue("currentLayout")#</td>
+    <td class="fw_errorTablesCells"><cfif valueExists("currentLayout")>#getValue("currentLayout")#<cfelse>N/A</cfif></td>
   </tr>
-  </cfif>
-  <cfif valueExists("currentView")>
   <tr>
     <td align="right" class="fw_errorTablesTitles">Current View: </td>
-    <td class="fw_errorTablesCells">#getvalue("currentView")#</td>
+    <td class="fw_errorTablesCells"><cfif valueExists("currentView")>#getvalue("currentView")#<cfelse>N/A</cfif></td>
   </tr>
-  </cfif>
 </cfif>
   <tr>
     <td align="right" class="fw_errorTablesTitles">Bug Date:</td>
