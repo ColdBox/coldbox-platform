@@ -1,24 +1,29 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <Config>
     <Settings>
-        <Setting name="Codename" 		       value="ColdBox"/>
-        <Setting name="Author" 		           value="Luis Majano"/>
-        <Setting name="AuthorEmail" 	       value="cfcoldbox@gmail.com"/>
-        <Setting name="AuthorWebsite"          value="http://www.luismajano.com/projects/coldbox" />
-        <Setting name="Suffix" 		           value=""/>
-        <Setting name="Version" 		       value="1.1.0"/>
-        <Setting name="Description"	           value="This is the ColdBox ColdFusion Framework for web applications." />
-        <Setting name="ModifyLogLocation"      value="readme.txt" />
-        <Setting name="FrameworkBlog"          value="http://www.luismajano.com/blog" />
-        <Setting name="FrameworkForums"        value="http://www.luismajano.com/forums" />
-        <Setting name="FrameworkAPI"           value="http://www.luismajano.com/projects/coldbox/cfdocs" />
-        <Setting name="FrameworkTrac"          value="http://trac.luismajano.com/coldbox" />
-        <Setting name="DashboardName"          value="ColdboxDashboard" />
-        <!--Available:US-ASCII, ISO-8859-1, UTF-8, UTF-16BE, UTF-16LE,  UTF-16.-->
-        <Setting name="AvailableEncodings"     value="US-ASCII,ISO-8859-1,UTF-8,UTF-16BE,UTF-16LE,UTF-16" />
-        <Setting name="LogFileEncoding"        value="UTF-8" />
-        <!--In bytes-->
-        <Setting name="LogFileBufferSize"      value="32768" />
+        <Setting name="Codename" 		               value="ColdBox"/>
+        <Setting name="Author" 		                   value="Luis Majano"/>
+        <Setting name="AuthorEmail" 	               value="cfcoldbox@gmail.com"/>
+        <Setting name="AuthorWebsite"                  value="http://www.luismajano.com/projects/coldbox" />
+        <Setting name="Suffix" 		                   value="John:3:16"/>
+        <Setting name="Version" 		               value="1.1.0"/>
+        <Setting name="Description"	                   value="This is the ColdBox MVC ColdFusion Framework for web applications." />
+        <Setting name="ModifyLogLocation"              value="readme.txt" />
+        <Setting name="FrameworkBlog"                  value="http://www.luismajano.com/blog" />
+        <Setting name="FrameworkForums"                value="http://www.luismajano.com/forums" />
+        <Setting name="FrameworkAPI"                   value="http://www.luismajano.com/projects/coldbox/cfdocs" />
+        <Setting name="FrameworkTrac"                  value="http://trac.luismajano.com/coldbox" />
+        <Setting name="DashboardName"                  value="ColdboxDashboard" />
+        <!--AvailableLogFileEncodings:US-ASCII, ISO-8859-1, UTF-8, UTF-16BE, UTF-16LE,  UTF-16.-->
+        <Setting name="AvailableLogFileEncodings"      value="US-ASCII,ISO-8859-1,UTF-8,UTF-16BE,UTF-16LE,UTF-16" />
+        <Setting name="LogFileEncoding"                value="UTF-8" />
+        <!--LogFileWrite Buffer Size In bytes-->
+        <Setting name="LogFileBufferSize"              value="32768" />
+        <!--LogFile's Max Size in KBytes -->
+        <Setting name="LogFileMaxSize"                 value="16" />
+        <!--Available CF Character Sets -->
+        <Setting name="AvailableCFCharacterSets"       value="utf-8,iso-8859-1,windows-1252,us-ascii,shift_jis,iso-2022-jp,euc-jp,euc-kr,big5,euc-cn,utf-16" />
+        <Setting name="DefaultFileCharacterSet"        value="utf-8" />
     </Settings>
     
     <!-- Config XML File Declarations -->
