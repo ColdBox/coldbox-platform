@@ -13,7 +13,7 @@
 *                      27.06.2005     1.0         A. Kordowski    Component complete.
 *                      07.08.2005     1.1         A. Kordowski    Fixed some bugs. Add GZip functionality. New functions
 *                                                                 gzipAddFile() and gzipExtract().
-*					   09.21.2005     1.2         L. Majano       Added it to coldbox as a plugin
+*					   02.10.2005     1.2         A.Kordowski     Fixed bug for ColdFusion MX 6.
 *
 *           Comments: [dd.mm.yyyy]   [Version]   [Author]        [Comments]
 *                      27.06.2005     0.1 Beta    A. Kordowski    Thanks a lot to Warren Sung for testing the Component with
@@ -37,7 +37,15 @@
 *                     THIS COMPONENT IS LICENSED UNDER THE CREATIVE COMMONS ATTRIBUTION-SHAREALIKE LICENSE.
 *                     FOR THE FULL LICENSE TEXT PLEASE VISIT: http://creativecommons.org/licenses/by-sa/2.5/
 *
-* 
+************************************************************************************************
+
+Author 	 :	Luis Majano
+Date     :	September 23, 2005
+Description : 			
+	Converted this cfc into a ColdBox plugin.
+				
+Modification History:
+08/01/2006 - Updated the cfc to work for ColdBox.
 --->
 <cfcomponent name="zip"
 	 	     displayname = "Zip Component"
@@ -46,32 +54,30 @@
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 	<cfscript>
-
 		/* Create Objects */
-		ioFile      = CreateObject("java","java.io.File");
-		ioInput     = CreateObject("java","java.io.FileInputStream");
-		ioOutput    = CreateObject("java","java.io.FileOutputStream");
-		ioBufOutput = CreateObject("java","java.io.BufferedOutputStream");
-		zipFile     = CreateObject("java","java.util.zip.ZipFile");
-		zipEntry    = CreateObject("java","java.util.zip.ZipEntry");
-		zipInput    = CreateObject("java","java.util.zip.ZipInputStream");
-		zipOutput   = CreateObject("java","java.util.zip.ZipOutputStream");
-		gzInput     = CreateObject("java","java.util.zip.GZIPInputStream");
-		gzOutput    = CreateObject("java","java.util.zip.GZIPOutputStream");
-		objDate     = CreateObject("java","java.util.Date");
+		variables.ioFile      = CreateObject("java","java.io.File");
+		variables.ioInput     = CreateObject("java","java.io.FileInputStream");
+		variables.ioOutput    = CreateObject("java","java.io.FileOutputStream");
+		variables.ioBufOutput = CreateObject("java","java.io.BufferedOutputStream");
+		variables.zipFile     = CreateObject("java","java.util.zip.ZipFile");
+		variables.zipEntry    = CreateObject("java","java.util.zip.ZipEntry");
+		variables.zipInput    = CreateObject("java","java.util.zip.ZipInputStream");
+		variables.zipOutput   = CreateObject("java","java.util.zip.ZipOutputStream");
+		variables.gzInput     = CreateObject("java","java.util.zip.GZIPInputStream");
+		variables.gzOutput    = CreateObject("java","java.util.zip.GZIPOutputStream");
+		variables.objDate     = CreateObject("java","java.util.Date");
 
-		/* Set Variables */
-		this.os = Server.OS.Name;
-
-		if(FindNoCase("Windows", this.os)) this.slash = "\";
-		else                               this.slash = "/";
-
+		/* Set Localized Variables */
+		variables.os = Server.OS.Name;
+		if(FindNoCase("Windows", variables.os)) 
+			variables.slash = "\";
+		else
+		    variables.slash = "/";
+		//LM. To fix Overflow.
+		variables.filename = "";
 	</cfscript>
 
-<!------------------------------------------- PUBLIC ------------------------------------------->
-
 	<!--- ************************************************************* --->
-	<!--- by Luis Majano --->
 	<cffunction name="init" access="public" returntype="any" output="false">
 		<cfargument name="controller" required="yes" hint="The reference to the framework controller">
 		<cfset super.Init(arguments.controller) />
@@ -79,90 +85,86 @@
 	</cffunction>
 	<!--- ************************************************************* --->
 
-	<!--- -------------------------------------------------- --->
-	<!--- AddFiles --->
-	<cffunction name="AddFiles" access="public" output="no" returntype="boolean" hint="Add files to a new or an existing Zip file archive.">
+<!------------------------------------------- PUBLIC ------------------------------------------->
 
-		<!--- Function Arguments --->
+	<!--- ************************************************************* --->
+	<cffunction name="AddFiles" access="public" output="no" returntype="boolean" hint="Add files to a new or an existing Zip file archive.">
+		<!--- ************************************************************* --->
 		<cfargument name="zipFilePath" required="yes" type="string"                hint="Pathname of the Zip file to add files.">
-		<cfargument name="files"       required="no"  type="string"                hint="| (Chr(124)) delimited list of files to add to the Zip file. Required if argument 'directory' is not set.">
-		<cfargument name="directory"   required="no"  type="string"                hint="Absolute pathname of directory to add to the Zip file. Required if argument 'files' is not set.">
+		<cfargument name="files"       required="no"  type="string"  default=""    hint="| (Chr(124)) delimited list of files to add to the Zip file. Required if argument 'directory' is not set.">
+		<cfargument name="directory"   required="no"  type="string"  default=""    hint="Absolute pathname of directory to add to the Zip file. Required if argument 'files' is not set.">
 		<cfargument name="filter"      required="no"  type="string"  default=""    hint="File extension filter. One filter can be applied. Only if argument 'directory' is set.">
 		<cfargument name="recurse"     required="no"  type="boolean" default="no"  hint="Get recursive files of subdirectories. Only if argument 'directory' is set.">
 		<cfargument name="compression" required="no"  type="numeric" default="9"   hint="Compression level (0 through 9, 0=minimum, 9=maximum).">
 		<cfargument name="savePaths"   required="no"  type="boolean" default="no"  hint="Save full path info.">
-
+		<!--- ************************************************************* --->
 		<cfscript>
-
 			/* Default variables */
 			var i = 0;
 			var l = 0;
 			var buffer    = RepeatString(" ",1024).getBytes();
 			var entryPath = "";
 			var entryFile = "";
+			var localfiles = "";
+			var path = "";
+			var skip = "";
 
-			try
-			{
+			try{
 				/* Initialize Zip file */
-				ioOutput.init(PathFormat(arguments.zipFilePath));
-				zipOutput.init(ioOutput);
-				zipOutput.setLevel(arguments.compression);
+				variables.ioOutput.init(PathFormat(arguments.zipFilePath));
+				variables.filename = getFileFromPath(arguments.zipFilePath);
+				variables.zipOutput.init(variables.ioOutput);
+				variables.zipOutput.setLevel(arguments.compression);
 
 				/* Get files list array */
-				if( structKeyExists(arguments, "files") )
-					files = ListToArray(PathFormat(arguments.files), "|");
-
-				else if( structKeyExists(arguments,"directory") )
-				{
-					files = FilesList(arguments.directory, arguments.filter, arguments.recurse);
+				if( structKeyExists(arguments, "files") and arguments.files neq "")
+					localfiles = ListToArray(PathFormat(arguments.files), "|");
+				else if( structKeyExists(arguments,"directory") and arguments.directory neq ""){
+					localfiles = FilesList(arguments.directory, arguments.filter, arguments.recurse);
 					arguments.directory = PathFormat(arguments.directory);
 				}
 
 				/* Loop over files array */
-				for(i=1; i LTE ArrayLen(files); i=i+1)
-				{
-					if(FileExists(files[i]))
-					{
-						path = files[i];
+				for(i=1; i LTE ArrayLen(localfiles); i=i+1){
+					if(FileExists(localfiles[i])){
+						path = localfiles[i];
 
 						// Get entry path and file
 						entryPath = GetDirectoryFromPath(path);
 						entryFile = GetFileFromPath(path);
 
 						// Remove drive letter from path
-						if(arguments.savePaths EQ "yes" AND Right(ListFirst(entryPath, this.slash), 1) EQ ":")
-							entryPath = ListDeleteAt(entryPath, 1, this.slash);
-
+						if(arguments.savePaths EQ "yes" AND Right(ListFirst(entryPath, variables.slash), 1) EQ ":")
+							entryPath = ListDeleteAt(entryPath, 1, variables.slash);
 						// Remove directory from path
-						else if(arguments.savePaths EQ "no")
-						{
-							if( structKeyExists(arguments, "directory") )  entryPath = ReplaceNoCase(entryPath, arguments.directory, "", "ALL");
-							else if(structKeyExists(arguments, "files")) entryPath = "";
+						else if(arguments.savePaths EQ "no"){
+							if( structKeyExists(arguments, "directory") and arguments.directory neq "" )  
+								entryPath = ReplaceNoCase(entryPath, arguments.directory, "", "ALL");
+							else if(structKeyExists(arguments, "files") and arguments.files neq "") 
+								entryPath = "";
 						}
 
 						// Remove slash at first
-						if(Len(entryPath) GT 1 AND Left(entryPath, 1) EQ this.slash)      entryPath = Right(entryPath, Len(entryPath)-1);
-						else if(Len(entryPath) EQ 1 AND Left(entryPath, 1) EQ this.slash) entryPath = "" ;
+						if(Len(entryPath) GT 1 AND Left(entryPath, 1) EQ variables.slash)      entryPath = Right(entryPath, Len(entryPath)-1);
+						else if(Len(entryPath) EQ 1 AND Left(entryPath, 1) EQ variables.slash) entryPath = "" ;
 
 						//  Skip if entry with the same name already exsits
-						try
-						{
-							ioFile.init(path);
-							ioInput.init(ioFile.getPath());
+						try	{
+							variables.ioFile.init(path);
+							variables.ioInput.init(variables.ioFile.getPath());
 
-							zipEntry.init(entryPath & entryFile);
-							zipOutput.putNextEntry(zipEntry);
+							variables.zipEntry.init(entryPath & entryFile);
+							variables.zipOutput.putNextEntry(variables.zipEntry);
 
-							l = ioInput.read(buffer);
+							l = variables.ioInput.read(buffer);
 
-							while(l GT 0)
-							{
-								zipOutput.write(buffer, 0, l);
-								l = ioInput.read(buffer);
+							while(l GT 0){
+								variables.zipOutput.write(buffer, 0, l);
+								l = variables.ioInput.read(buffer);
 							}
 
-							zipOutput.closeEntry();
-							ioInput.close();
+							variables.zipOutput.closeEntry();
+							variables.ioInput.close();
 						}
 
 						catch(java.util.zip.ZipException ex)
@@ -171,7 +173,7 @@
 				}
 
 				/* Close Zip file */
-				zipOutput.close();
+				variables.zipOutput.close();
 
 				/* Return true */
 				return true;
@@ -180,7 +182,7 @@
 			catch(Any expr)
 			{
 				/* Close Zip file */
-				zipOutput.close();
+				variables.zipOutput.close();
 
 				/* Return false */
 				return false;
@@ -189,15 +191,14 @@
 		</cfscript>
 
 	</cffunction>
-
-	<!--- -------------------------------------------------- --->
-	<!--- DeleteFiles --->
+	<!--- ************************************************************* --->
+	
+	<!--- ************************************************************* --->
 	<cffunction name="DeleteFiles" access="public" output="no" returntype="boolean" hint="Delete files from an existing Zip file archive.">
-
-		<!--- Function Arguments --->
+		<!--- ************************************************************* --->
 		<cfargument name="zipFilePath" required="yes" type="string" hint="Pathname of the Zip file to delete files from.">
 		<cfargument name="files"       required="yes" type="string" hint="| (Chr(124)) delimited list of files to delete from Zip file.">
-
+		<!--- ************************************************************* --->
 		<cfscript>
 
 			/* NOTICE: There is no function in the Java API to delete entrys from a Zip file.
@@ -209,62 +210,61 @@
 			/* Default variables */
 			var l = 0;
 			var buffer = RepeatString(" ",1024).getBytes();
-
+			var entries = "";
+			var entry = "";
+			var inStream = "";
+			var zipTemp = "";
+			var zipRename = "";
 			/* Convert to the right path format */
 			arguments.zipFilePath = PathFormat(arguments.zipFilePath);
 
-			try
-			{
+			try{
 				/* Open Zip file and get Zip file entries */
-				zipFile.init(arguments.zipFilePath);
-				entries = zipFile.entries();
+				variables.zipFile.init(arguments.zipFilePath);
+				entries = variables.zipFile.entries();
 
 				/* Create a new temporary Zip file */
-				ioOutput.init(PathFormat(arguments.zipFilePath & ".temp"));
-				zipOutput.init(ioOutput);
+				variables.ioOutput.init(PathFormat(arguments.zipFilePath & ".temp"));
+				variables.zipOutput.init(variables.ioOutput);
 
 				/* Loop over Zip file entries */
-				while(entries.hasMoreElements())
-				{
+				while(entries.hasMoreElements()){
 					entry = entries.nextElement();
 
-					if(NOT entry.isDirectory())
-					{
+					if(NOT entry.isDirectory()){
 						/* Create a new entry in the temporary Zip file */
-						if(NOT ListFindNoCase(arguments.files, entry.getName(), "|"))
-						{
+						if(NOT ListFindNoCase(arguments.files, entry.getName(), "|")){
 							// Set entry compression
-							zipOutput.setLevel(entry.getMethod());
+							variables.zipOutput.setLevel(entry.getMethod());
 
 							// Create new entry in the temporary Zip file
-							zipEntry.init(entry.getName());
-							zipOutput.putNextEntry(zipEntry);
+							variables.zipEntry.init(entry.getName());
+							variables.zipOutput.putNextEntry(variables.zipEntry);
 
-							inStream = zipFile.getInputStream(entry);
+							inStream = variables.zipFile.getInputStream(entry);
 							l        = inStream.read(buffer);
 
-							while(l GT 0)
-							{
-								zipOutput.write(buffer, 0, l);
+							while(l GT 0){
+								variables.zipOutput.write(buffer, 0, l);
 								l = inStream.read(buffer);
 							}
 
 							// Close entry
-							zipOutput.closeEntry();
+							variables.zipOutput.closeEntry();
 						}
 					}
 				}
 
 				/* Close the orginal Zip and the temporary Zip file */
-				zipFile.close();
-				zipOutput.close();
+				variables.zipFile.close();
+				variables.zipOutput.close();
 
 				/* Delete the orginal Zip file */
-				ioFile.init(arguments.zipFilePath).delete();
+				variables.ioFile.init(arguments.zipFilePath).delete();
 
 				/* Rename the temporary Zip file */
-				zipTemp   = ioFile.init(arguments.zipFilePath & ".temp");
-				zipRename = ioFile.init(arguments.zipFilePath);
+				zipTemp   = variables.ioFile.init(arguments.zipFilePath & ".temp");
+				zipRename = variables.ioFile.init(arguments.zipFilePath);
 				zipTemp.renameTo(zipRename);
 
 				/* Return true */
@@ -274,32 +274,30 @@
 			catch(Any expr)
 			{
 				/* Close the orginal Zip and the temporary Zip file */
-				zipOutput.close();
-				zipFile.close();
+				variables.zipOutput.close();
+				variables.zipFile.close();
 
 				/* Delete the temporary Zip file, if exists */
 				if(FileExists(arguments.zipFilePath & ".temp"))
-					ioFile.init(arguments.zipFilePath & ".temp").delete();
+					variables.ioFile.init(arguments.zipFilePath & ".temp").delete();
 
 				/* Return false */
 				return false;
 			}
 
 		</cfscript>
-
 	</cffunction>
-
-	<!--- -------------------------------------------------- --->
-	<!--- Extract --->
+	<!--- ************************************************************* --->
+	
+	<!--- ************************************************************* --->
 	<cffunction name="Extract" access="public" output="no" returntype="boolean" hint="Extracts a specified Zip file into a specified directory.">
-
-		<!--- Function Arguments --->
+		<!--- ************************************************************* --->
 		<cfargument name="zipFilePath"    required="yes" type="string"                              hint="Pathname of the Zip file to extract.">
 		<cfargument name="extractPath"    required="no"  type="string"  default="#ExpandPath(".")#" hint="Pathname to extract the Zip file to.">
 		<cfargument name="extractFiles"   required="no"  type="string"                              hint="| (Chr(124)) delimited list of files to extract.">
 		<cfargument name="useFolderNames" required="no"  type="boolean" default="yes"               hint="Create folders using the pathinfo stored in the Zip file.">
 		<cfargument name="overwriteFiles" required="no"  type="boolean" default="no"                hint="Overwrite existing files.">
-
+		<!--- ************************************************************* --->	
 		<cfscript>
 
 			/* Default variables */
@@ -310,7 +308,11 @@
 			var path     = "";
 			var filePath = "";
 			var buffer   = RepeatString(" ",1024).getBytes();
-
+			var lastChr = "";
+			var lenPath = "";
+			var inStream = "";
+			var skip = "";
+			
 			/* Convert to the right path format */
 			arguments.zipFilePath = PathFormat(arguments.zipFilePath);
 			arguments.extractPath = PathFormat(arguments.extractPath);
@@ -319,38 +321,33 @@
 			lastChr = Right(arguments.extractPath, 1);
 
 			/* Set an slash at the end of string */
-			if(lastChr NEQ this.slash)
-				arguments.extractPath = arguments.extractPath & this.slash;
+			if(lastChr NEQ variables.slash)
+				arguments.extractPath = arguments.extractPath & variables.slash;
 
-			try
-			{
+			try{
 				/* Open Zip file */
-				zipFile.init(arguments.zipFilePath);
+				variables.zipFile.init(arguments.zipFilePath);
 
 				/* Zip file entries */
-				entries = zipFile.entries();
+				entries = variables.zipFile.entries();
 
 				/* Loop over Zip file entries */
-				while(entries.hasMoreElements())
-				{
+				while(entries.hasMoreElements()){
 					entry = entries.nextElement();
 
-					if(NOT entry.isDirectory())
-					{
+					if(NOT entry.isDirectory()){
 						name = entry.getName();
 
 						/* Create directory only if 'useFolderNames' is 'yes' */
-						if(arguments.useFolderNames EQ "yes")
-						{
+						if(arguments.useFolderNames EQ "yes"){
 							lenPath = Len(name) - Len(GetFileFromPath(name));
 
 							if(lenPath) path = extractPath & Left(name, lenPath);
 							else        path = extractPath;
 
-							if(NOT DirectoryExists(path))
-							{
-								ioFile.init(path);
-								ioFile.mkdirs();
+							if(NOT DirectoryExists(path)){
+								variables.ioFile.init(path);
+								variables.ioFile.mkdirs();
 							}
 						}
 
@@ -367,23 +364,21 @@
 						   AND (NOT FileExists(filePath) OR (FileExists(filePath) AND arguments.overwriteFiles EQ "yes")))
 						{
 							// Skip if entry contains special characters
-							try
-							{
-								ioOutput.init(filePath);
-								ioBufOutput.init(ioOutput);
+							try{
+								variables.ioOutput.init(filePath);
+								variables.ioBufOutput.init(variables.ioOutput);
 
-								inStream = zipFile.getInputStream(entry);
+								inStream = variables.zipFile.getInputStream(entry);
 								l        = inStream.read(buffer);
 
-								while(l GTE 0)
-								{
-									ioBufOutput.write(buffer, 0, l);
+								while(l GTE 0){
+									variables.ioBufOutput.write(buffer, 0, l);
 									l = inStream.read(buffer);
 								}
 
 								inStream.close();
-								ioBufOutput.close();
-								ioOutput.close();
+								variables.ioBufOutput.close();
+								variables.ioOutput.close();
 							}
 
 							catch(Any Expr)
@@ -393,60 +388,60 @@
 				}
 
 				/* Close the Zip file */
-				zipFile.close();
+				variables.zipFile.close();
 
 				/* Return true */
 				return true;
 			}
 
-			catch(Any expr)
-			{
+			catch(Any expr){
 				/* Close the Zip file */
-				zipFile.close();
+				variables.zipFile.close();
 
 				/* Return false */
 				return false;
 			}
 
 		</cfscript>
-
 	</cffunction>
-
-	<!--- -------------------------------------------------- --->
-	<!--- List --->
+	<!--- ************************************************************* --->	
+		
+	<!--- ************************************************************* --->	
 	<cffunction name="List" access="public" output="no" returntype="query" hint="List the content of a specified Zip file.">
-
-		<!--- Function Arguments --->
+		<!--- ************************************************************* --->	
 		<cfargument name="zipFilePath" required="yes" type="string" hint="Pathname of the Zip file to list the content.">
-
+		<!--- ************************************************************* --->	
 		<cfscript>
-
 			/* Default variables */
 			var i = 0;
 			var entries = "";
 			var entry   = "";
 			var cols    = "entry,date,size,packed,ratio,crc";
 			var query   = QueryNew(cols);
+			var qEntry = "";
+			var qDate = "";
+			var qSize = "";
+			var qPacked = "";
+			var qCrc = "";
+			var qRatio = "";
 
 			cols = ListToArray(cols);
 
 			/* Open Zip file */
-			zipFile.init(arguments.zipFilePath);
+			variables.zipFile.init(arguments.zipFilePath);
 
 			/* Zip file entries */
-			entries = zipFile.entries();
+			entries = variables.zipFile.entries();
 
 			/* Fill query with data */
-			while(entries.hasMoreElements())
-			{
+			while(entries.hasMoreElements()){
 				entry = entries.nextElement();
 
-				if(NOT entry.isDirectory())
-				{
+				if(NOT entry.isDirectory()){
 					QueryAddRow(query, 1);
 
 					qEntry     = PathFormat(entry.getName());
-					qDate      = objDate.init(entry.getTime());
+					qDate      = variables.objDate.init(entry.getTime());
 					qSize      = entry.getSize();
 					qPacked    = entry.getCompressedSize();
 					qCrc       = entry.getCrc();
@@ -460,31 +455,30 @@
 			}
 
 			/* Close the Zip File */
-			zipFile.close();
+			variables.zipFile.close();
 
 			/* Return query */
 			return query;
-
 		</cfscript>
-
 	</cffunction>
-
-	<!--- -------------------------------------------------- --->
-	<!--- gzipAddFile --->
+	<!--- ************************************************************* --->	
+		
+	<!--- ************************************************************* --->	
 	<cffunction name="gzipAddFile" access="public" output="no" returntype="boolean" hint="Create a new GZip file archive.">
-
-		<!--- Function Arguments --->
+		<!--- ************************************************************* --->	
 		<cfargument name="gzipFilePath" required="yes" type="string" hint="Pathname of the GZip file to create.">
 		<cfargument name="filePath"     required="yes" type="string" hint="Pathname of a file to add to the GZip file archive.">
-
+		<!--- ************************************************************* --->	
 		<cfscript>
-
 			/* Default variables */
 			var l = 0;
 			var buffer     = RepeatString(" ",1024).getBytes();
 			var gzFileName = "";
 			var outputFile = "";
-
+			var lastChr = "";
+			
+			
+			
 			/* Convert to the right path format */
 			arguments.gzipFilePath = PathFormat(arguments.gzipFilePath);
 			arguments.filePath     = PathFormat(arguments.filePath);
@@ -493,32 +487,29 @@
 			lastChr = Right(arguments.gzipFilePath, 1);
 
 			/* Set an slash at the end of string */
-			if(lastChr NEQ this.slash)
-				arguments.gzipFilePath = arguments.gzipFilePath & this.slash;
+			if(lastChr NEQ variables.slash)
+				arguments.gzipFilePath = arguments.gzipFilePath & variables.slash;
 
-			try
-			{
-
+			try{
 				/* Set output gzip file name */
 				gzFileName = getFileFromPath(arguments.filePath) & ".gz";
 				outputFile = arguments.gzipFilePath & gzFileName;
 
-				ioInput.init(arguments.filePath);
-				ioOutput.init(outputFile);
-				gzOutput.init(ioOutput);
+				variables.ioInput.init(arguments.filePath);
+				variables.ioOutput.init(outputFile);
+				variables.gzOutput.init(variables.ioOutput);
 
-				l = ioInput.read(buffer);
+				l = variables.ioInput.read(buffer);
 
-				while(l GT 0)
-				{
-					gzOutput.write(buffer, 0, l);
-					l = ioInput.read(buffer);
+				while(l GT 0){
+					variables.gzOutput.write(buffer, 0, l);
+					l = variables.ioInput.read(buffer);
 				}
 
 				/* Close the GZip file */
-				gzOutput.close();
-				ioOutput.close();
-				ioInput.close();
+				variables.gzOutput.close();
+				variables.ioOutput.close();
+				variables.ioInput.close();
 
 				/* Return true */
 				return true;
@@ -530,22 +521,21 @@
 		</cfscript>
 
 	</cffunction>
-
-	<!--- -------------------------------------------------- --->
-	<!--- gzipExtract --->
+	<!--- ************************************************************* --->	
+		
+	<!--- ************************************************************* --->	
 	<cffunction name="gzipExtract" access="public" output="no" returntype="boolean" hint="Extracts a specified GZip file into a specified directory.">
-
-		<!--- Function Arguments --->
+		<!--- ************************************************************* --->	
 		<cfargument name="gzipFilePath" required="yes" type="string"                             hint="Pathname of the GZip file to extract.">
 		<cfargument name="extractPath"  required="no"  type="string" default="#ExpandPath(".")#" hint="Pathname to extract the GZip file to.">
-
+		<!--- ************************************************************* --->	
 		<cfscript>
-
 			/* Default variables */
 			var l = 0;
 			var buffer     = RepeatString(" ",1024).getBytes();
 			var gzFileName = "";
 			var outputFile = "";
+			var lastChr = "";
 
 			/* Convert to the right path format */
 			arguments.gzipFilePath = PathFormat(arguments.gzipFilePath);
@@ -555,56 +545,54 @@
 			lastChr = Right(arguments.extractPath, 1);
 
 			/* Set an slash at the end of string */
-			if(lastChr NEQ this.slash)
-				arguments.extractPath = arguments.extractPath & this.slash;
+			if(lastChr NEQ variables.slash)
+				arguments.extractPath = arguments.extractPath & variables.slash;
 
-			try
-			{
+			try{
 				/* Set output file name */
 				gzFileName = getFileFromPath(arguments.gzipFilePath);
 				outputFile = arguments.extractPath & Left(gzFileName, Len(gzFileName)-3);
 
 				/* Initialize gzip file */
-				ioOutput.init(outputFile);
-				ioInput.init(arguments.gzipFilePath);
-				gzInput.init(ioInput);
+				variables.ioOutput.init(outputFile);
+				variables.ioInput.init(arguments.gzipFilePath);
+				variables.gzInput.init(variables.ioInput);
 
-				while(l GTE 0)
-				{
-					ioOutput.write(buffer, 0, l);
-					l = gzInput.read(buffer);
+				while(l GTE 0){
+					variables.ioOutput.write(buffer, 0, l);
+					l = variables.gzInput.read(buffer);
 				}
 
 				/* Close the GZip file */
-				gzInput.close();
-				ioInput.close();
-				ioOutput.close();
+				variables.gzInput.close();
+				variables.ioInput.close();
+				variables.ioOutput.close();
 
 				/* Return true */
 				return true;
 			}
-
 			catch(Any expr)
 			{ return false; }
 
 		</cfscript>
-
 	</cffunction>
-
+	<!--- ************************************************************* --->	
+		
 <!------------------------------------------- PRIVATE ------------------------------------------->
 
-	<!--- FilesList --->
+	<!--- ************************************************************* --->	
 	<cffunction name="FilesList" access="private" output="no" returntype="array" hint="Create an array with the file names of specified directory.">
-
-		<!--- Function Arguments --->
+		<!--- ************************************************************* --->	
 		<cfargument name="directory" required="yes" type="string"               hint="Absolute pathname of directory to get files list.">
 		<cfargument name="filter"    required="no"  type="string"  default=""   hint="File extension filter. One filter can be applied.">
 		<cfargument name="recurse"   required="no"  type="boolean" default="no" hint="Get recursive files of subdirectories.">
-
+		<!--- ************************************************************* --->	
 		<cfset var i = 0>
 		<cfset var n = 0>
 		<cfset var dir   = "">
 		<cfset var array = ArrayNew(1)>
+		<cfset var path = "">
+		<cfset var subdir = "">
 
 		<cfdirectory action    = "list"
 					 name      = "dir"
@@ -612,19 +600,16 @@
 					 filter    = "#arguments.filter#">
 
 		<cfscript>
-
 			/* Loop over directory query */
-			for(i=1; i LTE dir.recordcount; i=i+1)
-			{
-				path = PathFormat(dir.directory[i] & this.slash & dir.name[i]);
+			for(i=1; i LTE dir.recordcount; i=i+1){
+				path = PathFormat(arguments.directory & variables.slash & dir.name[i]);
 
 				/* Add file to array */
-				if(dir.type[i] eq "file")
+				if(dir.type[i] eq "file" and dir.name[i] neq variables.filename)
 					ArrayAppend(array, path);
 
 				/* Get files from sub directorys and add them to the array */
-				else if(dir.type[i] EQ "dir" AND arguments.recurse EQ "yes")
-				{
+				else if(dir.type[i] EQ "dir" AND arguments.recurse EQ "yes"){
 					subdir = FilesList(path, arguments.filter, arguments.recurse);
 
 					for(n=1; n LTE ArrayLen(subdir); n=n+1)
@@ -636,24 +621,21 @@
 			return array;
 
 		</cfscript>
-
 	</cffunction>
-
-	<!--- -------------------------------------------------- --->
-	<!--- PathFormat --->
+	<!--- ************************************************************* --->	
+		
+	<!--- ************************************************************* --->	
 	<cffunction name="PathFormat" access="private" output="no" returntype="string" hint="Convert path into Windows or Unix format.">
-
-		<!--- Function Arguments --->
+		<!--- ************************************************************* --->	
 		<cfargument name="path" required="yes" type="string" hint="The path to convert.">
-
-		<cfif FindNoCase("Windows", this.os)>
+		<!--- ************************************************************* --->	
+		<cfif FindNoCase("Windows", variables.os)>
 			<cfset arguments.path = Replace(arguments.path, "/", "\", "ALL")>
 		<cfelse>
 			<cfset arguments.path = Replace(arguments.path, "\", "/", "ALL")>
 		</cfif>
-
 		<cfreturn arguments.path>
-
 	</cffunction>
-
+	<!--- ************************************************************* --->	
+		
 </cfcomponent>
