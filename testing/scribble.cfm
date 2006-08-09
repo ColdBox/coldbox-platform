@@ -1,5 +1,5 @@
 <cftimer type="inline">
-<cffile action="read" file="#expandPath("../src/handlers/ehGeneral.cfc")#" variable="content">
+<cffile action="read" file="#expandPath("../src/handlers/ehobe.cfc")#" variable="content">
 <cfscript>
 joStringBuffer = createObject("java","java.lang.StringBuffer").init();
 str = reFindnocase("<cffunction[^>/]*>",content,1,true);
