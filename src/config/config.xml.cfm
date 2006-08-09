@@ -22,7 +22,7 @@
 		<Setting name="CustomErrorTemplate"			value="" />
 		<Setting name="MessageboxStyleClass"		value="mymessagebox" />
 		<Setting name="HandlersIndexAutoReload"   	value="false" />
-		<Setting name="ConfigAutoReload"			value="true" />
+		<Setting name="ConfigAutoReload"			value="false" />
 		<Setting name="ExceptionHandler"     		value="" />
 		<!--Path to plugins, as if to instantiate -->
 		<Setting name="MyPluginsLocation" 			value="myplugins"/>
