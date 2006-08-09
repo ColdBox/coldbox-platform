@@ -12,7 +12,6 @@ Modification History:
 ----------------------------------------------------------------------->
 <!--- ************************************************************* --->
 <cfparam name="attributes.timertag" default="NO_TIMER_TAG">
-<cfparam name="caller.extraInfo"    default="">
 <cfif not structkeyExists(session,"fwController") and not session.fwController.getDebugMode()>
 	<cfexit method="exittag">
 </cfif>
@@ -28,7 +27,7 @@ else{
 	//In case timer is executed before the debug Mode has been set
 	if ( structKeyExists(variables, "stime") )	{
 		QueryAddRow(request.DebugTimers,1);
-		QuerySetCell(request.DebugTimers, "Method", attributes.timertag & caller.extraInfo);
+		QuerySetCell(request.DebugTimers, "Method", attributes.timertag);
 		QuerySetCell(request.DebugTimers, "Time", getTickCount() - stime);
 		QuerySetCell(request.DebugTimers, "Timestamp", now());
 	}
