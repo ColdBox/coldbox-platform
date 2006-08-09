@@ -26,7 +26,7 @@ Use this program however you want.
 Author 	 :	Luis Majano
 Date     :	September 23, 2005
 Description : 			
-	Converted this cfc into a ColdBox plugin.
+	Converted this cfc into a ColdBox plugin. You can now also, append to a file, if needed.
 				
 Modification History:
 08/01/2006 - Updated the cfc to work for ColdBox.
@@ -55,19 +55,21 @@ Modification History:
 		<cfargument name="fileName" 	type="string" 	required="Yes" 	hint="the path and name of the file to write" />
 		<cfargument name="fileEncoding" type="string" 	required="yes" 	hint="the file encoding: US-ASCII, ISO-8859-1, UTF-8, UTF-16BE, UTF-16LE,  UTF-16." />
 		<cfargument name="bufferSize" 	type="numeric" 	required="no" 	default="8192" hint="the buffer size for the bufferedWriter" />
+		<cfargument name="appendFlag"   type="boolean"  required="no"   default="false" hint="This flag determines whether you are creating a file to write to or to append to. The default is FALSE.">
 		<!--- ************************************************************* --->
 		<cfscript>
 			//Clean the arguments.
 			arguments.fileName = trim(arguments.fileName);
 			arguments.fileEncoding = uCase(trim(arguments.fileEncoding));
+			//Test bufferSize Limits.
 			arguments.bufferSize = bufferSizeLimit(arguments.bufferSize);
 			//prepare Streams.
-			variables.joFileOutputStream = CreateObject('java','java.io.FileOutputStream').init(javaCast('string', arguments.fileName));
+			variables.joFileOutputStream = CreateObject('java','java.io.FileOutputStream').init(javaCast('string', arguments.fileName),javaCast("boolean",arguments.appendFlag));
 			//Verify Encoding
 			getFileEncoding(arguments.fileEncoding);
-			//Prepare OUtput stream Writer
+			//Prepare OUtput stream Writer with Encoding
 			variables.joOutputStreamWriter = CreateObject('java','java.io.OutputStreamWriter').init(variables.joFileOutputStream, javaCast('string', arguments.fileEncoding));
-			//Create BufferedWriter
+			//Create BufferedWriter with Buffer Size
 			variables.joBufferedWriter = CreateObject('java','java.io.BufferedWriter').init(variables.joOutputStreamWriter, javaCast('int', arguments.bufferSize));
 			//Return reference
 			return this;
@@ -116,8 +118,9 @@ Modification History:
 
 	<!--- ************************************************************* --->
 	<cffunction name="bufferSizeLimit" access="private" returntype="numeric" output="No" hint="limit the buffer between 8k and 128k. Come on, let's be reasonable.">
+		<!--- ************************************************************* --->
 		<cfargument name="bufferSize" type="numeric" required="no" default="8192" hint="the buffer size for the bufferedWriter" />
-
+		<!--- ************************************************************* --->
 		<cfscript>
 			/* limit the buffer between 8k and 128k. Come on, let's be reasonable. */
 			if (arguments.bufferSize LT 8192) {
@@ -126,7 +129,6 @@ Modification History:
 				arguments.bufferSize = 131072;
 			}
 		</cfscript>
-
 		<cfreturn arguments.bufferSize />
 	</cffunction>
 	<!--- ************************************************************* --->
