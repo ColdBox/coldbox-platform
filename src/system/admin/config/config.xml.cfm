@@ -2,20 +2,20 @@
 <Config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
  xsi:noNamespaceSchemaLocation="http://www.luismajano.com/projects/coldbox/schema/config.xsd">
 	<Settings>
-		<Setting name="AppName" 				value="ColdboxDashboard"/>
-		<Setting name="AppCFMXMapping" 			value=""/>
-		<Setting name="DebugMode"				value="false"/>
-		<Setting name="DumpVarActive" 			value="true"/>
-		<Setting name="ColdfusionLogging" 		value="true"/>
-		<Setting name="DefaultEvent" 			value="ehColdbox.dspLogin"/>
-		<Setting name="RequestStartHandler" 	value="ehColdbox.onRequestStart"/>
-		<Setting name="RequestEndHandler" 		value=""/>
-		<Setting name="OwnerEmail" 				value="lmajano@gmail.com"/>
-		<Setting name="EnableBugReports" 		value="true"/>
-		<Setting name="UDFLibraryFile" 			value="" />		
-		<Setting name="CustomErrorTemplate"		value="" />
-		<Setting name="MessageboxStyleClass"	   value="" />
-		<Setting name="HandlersIndexAutoReload"   value="false" />
+		<Setting name="AppName" 					value="ColdboxDashboard"/>
+		<Setting name="AppMapping" 					value=""/>
+		<Setting name="DebugMode"					value="false"/>
+		<Setting name="EnableDumpVar" 				value="true"/>
+		<Setting name="EnableColdfusionLogging" 	value="true"/>
+		<Setting name="DefaultEvent" 				value="ehColdbox.dspLogin"/>
+		<Setting name="RequestStartHandler" 		value="ehColdbox.onRequestStart"/>
+		<Setting name="RequestEndHandler" 			value=""/>
+		<Setting name="OwnerEmail" 					value="lmajano@gmail.com"/>
+		<Setting name="EnableBugReports" 			value="true"/>
+		<Setting name="UDFLibraryFile" 				value="" />		
+		<Setting name="CustomErrorTemplate"			value="" />
+		<Setting name="MessageboxStyleClass"	    value="" />
+		<Setting name="HandlersIndexAutoReload"   	value="false" />
 		<Setting name="ConfigAutoReload"			value="false" />
 		<Setting name="ExceptionHandler"     		value="" />
 	</Settings>
