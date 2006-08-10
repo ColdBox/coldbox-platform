@@ -18,6 +18,7 @@ Modification History:
 06/08/2006 - Updated for Coldbox - Added support for writing the CFMX mapping with . or with /, MessageboxStyleClass
 06/21/2006 - Finished i18N support, file based.
 07/28/2006 - Datasources support, var scope additions.
+08/10/2006 - Child References Eliminated. No longer in use.
 ----------------------------------------------------------------------->
 <cfcomponent name="XMLParser"
 			 hint="This is the XML Parser plugin for the framework. It takes care of any XML parsing for the framework's usage."
@@ -35,15 +36,15 @@ Modification History:
 		variables.searchBugTracer = "//BugTracerReports/BugEmail";
 		variables.searchDevURLS = "//DevEnvironments/url";
 		variables.searchWS = "//WebServices/WebService";
-		variables.searchDatasources = "//Datasources/Datasource";
 		variables.searchLayouts = "//Layouts/Layout";
 		variables.searchDefaultLayout = "//Layouts/DefaultLayout";
 		variables.searchMailSettings = "//MailServerSettings";
 		variables.searchi18NSettings = "//i18N";
+		variables.searchDatasources = "//Datasources/Datasource";
 		//Search patterns for fw xml
 		variables.searchConfigXML_Path = "//ConfigXMLFile/FilePath";
 		//Properties
-		variables.FileSeparator = CreateObject("component","fileUtilities").getOSFileSeparator();
+		variables.FileSeparator = createObject("java","java.lang.System").getProperty("file.separator");
 		variables.FrameworkConfigFile = "#getDirectoryFromPath(controller.getCurrentPath())#config#variables.FileSeparator#settings.xml";
 		variables.FrameworkConfigXSDFile = "#getDirectoryFromPath(controller.getCurrentPath())#config#variables.FileSeparator#config.xsd";
 		//Return
@@ -57,7 +58,6 @@ Modification History:
 		<cfscript>
 		var settingsStruct = StructNew();
 		var FrameworkParent = "";
-		var childApp = false;
 		var distanceToParent = 0;
 		var distanceString = "";
 		var fwXML = "";
@@ -65,16 +65,16 @@ Modification History:
 		var ConfigXMLFilePath = "";
 		var ParentAppPath = "";
 		try{
-			//verify File
+			//verify Framework settings File
 			if ( not fileExists(variables.FrameworkConfigFile) ){
 				throw("Error finding settings.xml configuration file. The file #variables.FrameworkConfigFile# cannot be found.","","Framework.plugins.XMLParser.ColdBoxSettingsNotFoundException");
 			}
 			//Determine which CF version for XML Parsing method
 			if (listfirst(server.coldfusion.productversion) lt 7){
-				fwXML = xmlParse(getPlugin("fileutilities").readFile(variables.FrameworkCOnfigFile));
+				fwXML = xmlParse(getPlugin("fileutilities").readFile(variables.FrameworkConfigFile));
 			}
 			else{
-				//get XML
+				//get XML for CFMX version 7 and above.
 				fwXML = xmlParse(variables.FrameworkConfigFile);
 			}
 			//Get SettingNodes
@@ -95,31 +95,13 @@ Modification History:
 			//Load Framework Path too
 			StructInsert(settingsStruct, "FrameworkPath", getDirectoryFromPath(controller.getCurrentPath()) );
 			//Load Plugins Path
-			StructInsert(settingsStruct, "FrameworkPluginsPath", settingsStruct.FrameworkPath & variables.FileSeparator & "plugins");
-			//Verify if Child app or not
-			FrameworkParent = getDirectoryFromPath(controller.getCurrentPath());
-			FrameworkParent = ListDeleteAt(FrameworkParent, ListLen(FrameworkParent,variables.FileSeparator), variables.FileSeparator);
-			if ( FrameworkParent neq settingsStruct.ApplicationPath)
-				childApp = true;
-			//Insert into Structure.
-			StructInsert(settingsStruct, "ChildApp", childApp);
-			//Calculate the distance to the parent
-			distanceToParent = listlen(replacenocase(settingsStruct.ApplicationPath, FrameworkParent,""), variables.FileSeparator);
-			//Get Distance String
-			for (i = 1; i lte distanceToParent; i=i+1)
-				distanceString = distanceString & "../";
-			//Insert into Structure.
-			StructInsert(settingsStruct, "DistanceToParent", distanceToParent);
-			StructInsert(settingsStruct, "DistanceString", distanceString);
-			//Get Directory of Parent Application
-			ParentAppPath = ExpandPath(distanceString);
-			StructInsert(settingsStruct, "ParentAppPath", ParentAppPath);
+			StructInsert(settingsStruct, "FrameworkPluginsPath", settingsStruct.FrameworkPath & "plugins");
 			//Set the complete modifylog path
-			settingsStruct.ModifyLogLocation = "#getDirectoryFromPath(controller.getCurrentPath())#config#variables.FileSeparator#readme.txt";
+			settingsStruct.ModifyLogLocation = "#settingsStruct.FrameworkPath#config#variables.FileSeparator#readme.txt";
 			return settingsStruct;
 		}//end of try
 		catch( Any Exception ){
-			throw("Error Loading Framework Configuration.<br>#Exception.Message# & #Exception.Detail#","","Framework.plugins.XMLParser.ColdboxSettingsParsingException");
+			throw("Error Loading Framework Configuration.","#Exception.Message# #Exception.Detail#","Framework.plugins.XMLParser.ColdboxSettingsParsingException");
 		}
 		</cfscript>
 	</cffunction>
@@ -219,7 +201,6 @@ Modification History:
 			//Check For Coldbox Log Location
 			if ( not structKeyExists(ConfigStruct, "ColdboxLogsLocation"))
 				ConfigStruct["ColdboxLogsLocation"] = "";		
-						
 			//Check For Owner Email or Throw
 			if ( not StructKeyExists(ConfigStruct, "OwnerEmail") )
 				throw("There was no 'OwnerEmail' setting defined. This is required by the framework.","","Framework.plugins.XMLParser.ConfigXMLParsingException");
@@ -247,7 +228,10 @@ Modification History:
 			//Check for MessageboxStyleClass if found
 			if ( not structkeyExists(ConfigStruct, "ExceptionHandler") )
 				ConfigStruct["ExceptionHandler"] = "";
-
+			//Check for MyPluginsLocation if found
+			if ( not structkeyExists(ConfigStruct, "MyPluginsLocation") )
+				ConfigStruct["MyPluginsLocation"] = "";
+						
 			//Your Settings To Load
 			YourSettingNodes = XMLSearch(configXML, variables.searchYourSettings);
 			if ( ArrayLen(YourSettingNodes) gt 0 ){

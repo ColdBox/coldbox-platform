@@ -82,13 +82,6 @@ function toggle(divid){
 		</div>
 
 		<div class="fw_debugTitleCell">
-		  Child Application:
-		</div>
-		<div class="fw_debugContentCell">
-		#getSetting("ChildApp",1)#
-		</div>
-
-		<div class="fw_debugTitleCell">
 		  Coldfusion ID's:
 		</div>
 		<div class="fw_debugContentCell">
