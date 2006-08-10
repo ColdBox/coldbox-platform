@@ -20,8 +20,8 @@
         <!--LogFileWrite Buffer Size In bytes-->
         <Setting name="LogFileBufferSize"              value="32768" />
         <!--LogFile's Max Size in KBytes -->
-        <Setting name="LogFileMaxSize"                 value="16" />
-        <!--Available CF Character Sets -->
+        <Setting name="LogFileMaxSize"                 value="5000" />
+        <!--Available CF Character Sets For File Operations -->
         <Setting name="AvailableCFCharacterSets"       value="utf-8,iso-8859-1,windows-1252,us-ascii,shift_jis,iso-2022-jp,euc-jp,euc-kr,big5,euc-cn,utf-16" />
         <Setting name="DefaultFileCharacterSet"        value="utf-8" />
     </Settings>
