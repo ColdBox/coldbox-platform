@@ -209,17 +209,13 @@ Modification History:
 		
 		<!--- Check for Handlers Location --->
 		<cfif not directoryExists(ExpandPath(HandlersPath))>
-			<cfthrow type="Framework.plugins.settings.HandlersDirectoryNotFoundException" message="The handlers directory does not exist please check your application structure.">
+			<cfthrow type="Framework.plugins.settings.HandlersDirectoryNotFoundException" message="The handlers directory: #expandPath(handlerspath)# does not exist please check your application structure or your Application Mapping.">
 		</cfif>
 		
 		<!--- Get Handlers --->
 		<cfset oCFCViewer.setup(HandlersPath,CFCPath)>
 		<!--- Get Array of Cfc's --->
 		<cfset HandlersArray = oCFCViewer.getCFCs()>
-		<!--- Verify at least one handler --->
-		<cfif not ArrayLen(HandlersArray)>
-			<cfthrow type="Framework.plugins.settings.NoHandlersFoundException" message="There were no event handler cfc's found in your handlers directory. You need at least one for the application to work.">
-		</cfif>
 		<cfloop from="1" to="#ArrayLen(HandlersArray)#" index="i">
 			<cfset metaData = oCFCViewer.getCFCMetaData(HandlersArray[i])>
 			<cfloop from="1" to="#ArrayLen(metaData.Functions)#" index="x">
