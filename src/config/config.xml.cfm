@@ -24,8 +24,8 @@
 		<Setting name="HandlersIndexAutoReload"   	value="false" />
 		<Setting name="ConfigAutoReload"			value="false" />
 		<Setting name="ExceptionHandler"     		value="" />
-		<!--Path to plugins, as if to instantiate -->
-		<Setting name="MyPluginsLocation" 			value="myplugins"/>
+		<!--Base Path to plugins, as if to instantiate them. -->
+		<Setting name="MyPluginsLocation" 			value="myplugins.testing"/>
 	</Settings>
 	
 	<YourSettings />
