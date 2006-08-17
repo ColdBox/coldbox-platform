@@ -498,5 +498,65 @@ because the dashboard lives inside of ColdBox.
 		</cfif>
 	</cffunction>
 	<!--- ************************************************************* --->
+	
+	<!--- ************************************************************* --->
+	<cffunction name="getPassword" access="private" hint="Gets the current dashboard password or creates one if necessary." returntype="any" output="false">
+		<cfset var pass = "coldbox=9702D637FA3229EAFFC5A58FF7E06B6C">
+		<cfset var passContent = "">
+		<cfset var passfile = "#getSetting("FrameworkPath",1)##getSetting("OSFileSeparator",1)#admin#getSetting("OSFileSeparator",1)#config#getSetting("OSFileSeparator",1)#.coldbox">
 
+		<!--- Check if file .coldbox exists --->
+		<cfif fileExists( passfile )>
+			<cffile action="read" file="#passfile#" variable="passContent">
+			<!--- Veriy pass on File is Correct. --->
+			<cfif not refindNocase("^coldbox=.*", passContent)>
+				<cffile action="write" file="#passFile#" output="#pass#">
+				<cfset passContent = pass>
+			</cfif>
+			<cfreturn getToken(passContent, 2,"=")>
+		<cfelse>
+			<!--- Create New File with Password --->
+			<cffile action="write" file="#passfile#" output="#pass#">
+			<cfset passContent = pass>
+			<!--- Return password hash--->
+			<cfreturn getToken(passContent, 2,"=")>
+		</cfif>
+	</cffunction>
+	<!--- ************************************************************* --->
+	
+	<!--- ************************************************************* --->
+	<cffunction name="passwordCheck" access="public" hint="Checks wether the passed password is correct or not." returntype="boolean" output="false">
+		<!--- ************************************************************* --->
+		<cfargument name="passToCheck" required="yes" type="string" hint="The password to verify. Hashed already please.">
+		<!--- ************************************************************* --->
+		<cfif Compare(trim("#getPassword()#"),trim(arguments.passToCheck)) eq 0>
+			<cfreturn true>
+		<cfelse>
+			<cfreturn false>
+		</cfif>
+	</cffunction>
+	<!--- ************************************************************* --->
+
+	<!--- ************************************************************* --->
+	<cffunction name="changePassword" access="public" hint="Changes the dashboard password." returntype="boolean" output="false">
+		<!--- ************************************************************* --->
+		<cfargument name="currentPassword" 	required="yes" type="string">
+		<cfargument name="newPassword" 		required="yes" type="string">
+		<!--- ************************************************************* --->
+		<cfset var newPass = "">
+		<cfset var passfile = "#getSetting("FrameworkPath",1)##getSetting("OSFileSeparator",1)#admin#getSetting("OSFileSeparator",1)#config#getSetting("OSFileSeparator",1)#.coldbox">
+		<cfif CompareNocase(getSetting("AppName"),getSetting("DashboardName",1)) eq 0>
+			<cfif passwordCheck(hash(arguments.currentPassword))>
+				<!--- Create New File with Password --->
+				<cfset newPass = "coldbox=#hash(arguments.newPassword)#">
+				<cffile action="write" file="#passFile#" output="#newPass#">
+				<cfreturn true>
+			<cfelse>
+				<cfreturn false>
+			</cfif>
+		<cfelse>
+			<cfreturn false>
+		</cfif>
+	</cffunction>
+	<!--- ************************************************************* --->
 </cfcomponent>

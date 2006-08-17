@@ -57,43 +57,7 @@ Modification History:
 	<!--- ************************************************************* --->
 
 	<!--- ************************************************************* --->
-	<cffunction name="passwordCheck" access="public" hint="Checks wether the passed password is correct or not." returntype="boolean" output="false">
-		<!--- ************************************************************* --->
-		<cfargument name="passToCheck" required="yes" type="string" hint="The password to verify. Hashed already please.">
-		<!--- ************************************************************* --->
-		<cfif Compare(trim("#getPassword()#"),trim(arguments.passToCheck)) eq 0>
-			<cfreturn true>
-		<cfelse>
-			<cfreturn false>
-		</cfif>
-	</cffunction>
-	<!--- ************************************************************* --->
-
-	<!--- ************************************************************* --->
-	<cffunction name="changePassword" access="public" hint="Changes the dashboard password." returntype="boolean" output="false">
-		<!--- ************************************************************* --->
-		<cfargument name="currentPassword" 	required="yes" type="string">
-		<cfargument name="newPassword" 		required="yes" type="string">
-		<!--- ************************************************************* --->
-		<cfset var newPass = "">
-		<cfset var passfile = "#getSetting("FrameworkPath",1)##getSetting("OSFileSeparator",1)#admin#getSetting("OSFileSeparator",1)#config#getSetting("OSFileSeparator",1)#.coldbox">
-		<cfif CompareNocase(getSetting("AppName"),getSetting("DashboardName",1)) eq 0>
-			<cfif passwordCheck(hash(arguments.currentPassword))>
-				<!--- Create New File with Password --->
-				<cfset newPass = "coldbox=#hash(arguments.newPassword)#">
-				<cffile action="write" file="#passFile#" output="#newPass#">
-				<cfreturn true>
-			<cfelse>
-				<cfreturn false>
-			</cfif>
-		<cfelse>
-			<cfreturn false>
-		</cfif>
-	</cffunction>
-	<!--- ************************************************************* --->
-
-	<!--- ************************************************************* --->
-	<cffunction name="getRegisteredHandler" access="public" hint="I get a registered handler and method according to passed event." returntype="any"  output="false">
+	<cffunction name="getRegisteredHandler" access="public" hint="I get a registered handler and method according to passed event from the registeredHandlers setting." returntype="any"  output="false">
 		<!--- ************************************************************* --->
 		<cfargument name="event" hint="The event to check and get." type="string" required="true">
 		<!--- ************************************************************* --->
@@ -107,7 +71,7 @@ Modification History:
 		<cfif handlerIndex>
 			<cfreturn getPlugin("beanFactory").create("coldbox.system.beans.eventhandler").init(listgetAt(handlersList,handlerIndex))>
 		<cfelse>
-			<cfthrow type="Framework.plugins.settings.EventHandlerNotRegisteredException" message="The event handler: '#getSetting('AppMapping')#/#arguments.event#' is not valid registered event. Please <a href= 'index.cfm?fwreinit=1'>click here to try again.</a>">
+			<cfthrow type="Framework.plugins.settings.EventHandlerNotRegisteredException" message="The event handler: '#getSetting('AppMapping')#/#arguments.event#' is not valid registered event.</a>">
 		</cfif>
 	</cffunction>
 	<!--- ************************************************************* --->
@@ -147,77 +111,66 @@ Modification History:
 <!------------------------------------------- PRIVATE ------------------------------------------->
 
 	<!--- ************************************************************* --->
-	<cffunction name="getPassword" access="private" hint="Gets the current dashboard password or creates one if necessary." returntype="any" output="false">
-		<cfset var pass = "coldbox=9702D637FA3229EAFFC5A58FF7E06B6C">
-		<cfset var passContent = "">
-		<cfset var passfile = "#getSetting("FrameworkPath",1)##getSetting("OSFileSeparator",1)#admin#getSetting("OSFileSeparator",1)#config#getSetting("OSFileSeparator",1)#.coldbox">
-
-		<!--- Check if file .coldbox exists --->
-		<cfif fileExists( passfile )>
-			<cffile action="read" file="#passfile#" variable="passContent">
-			<!--- Veriy pass on File is Correct. --->
-			<cfif not refindNocase("^coldbox=.*", passContent)>
-				<cffile action="write" file="#passFile#" output="#pass#">
-				<cfset passContent = pass>
-			</cfif>
-			<cfreturn getToken(passContent, 2,"=")>
-		<cfelse>
-			<!--- Create New File with Password --->
-			<cffile action="write" file="#passfile#" output="#pass#">
-			<cfset passContent = pass>
-			<!--- Return password hash--->
-			<cfreturn getToken(passContent, 2,"=")>
-		</cfif>
-	</cffunction>
-	<!--- ************************************************************* --->
-
-	<!--- ************************************************************* --->
 	<cffunction name="getHandlersMetaData" access="private" hint="Get the handler(s) meta data for registration." returntype="any">
-		<cfset var oCFCViewer = getPlugin("cfcViewer")>
 		<cfset var HandlersPath = getSetting("AppMapping")>
-		<cfset var CFCPath = HandlersPath>
 		<cfset var HandlersArray = ArrayNew(1)>
 		<cfset var metaData = "">
 		<cfset var registeredHandlers = ArrayNew(1)>
-		<cfset var i = 0>
 		<cfset var x = 0>
-
-		<!--- setup Default location --->
+		<cfset var qryCFC = "">
+		<cfset var StringBuffer = "<cfc>">
+		<cfset var parseString = "">
+		<cfset var fileContent = "">
+		<cfset var functions = "">
+		
+		<!--- setup handler's location, I use / because I use relative paths --->
 		<cfif getSetting("AppMapping") neq "">
-			<!--- Test for CFMX 6.X --->
+			<!--- Test for CF 6.X --->
 			<cfif listfirst(server.coldfusion.productversion) lt 7>
-				<cfset HandlersPath = replacenocase(cgi.SCRIPT_NAME, listlast(cgi.SCRIPT_NAME,"/"),"") & "handlers">
+				<cfset HandlersPath = replacenocase(cgi.SCRIPT_NAME, listlast(cgi.SCRIPT_NAME,"/"),"") & "handlers/">
 			<cfelse>
-				<cfset HandlersPath = "/" & HandlersPath & "/handlers">
+				<cfset HandlersPath = "/" & HandlersPath & "/handlers/">
 			</cfif>
-			<cfset CFCPath = "/" & CFCPath & "/handlers">
 		<cfelse>
-			<cfset HandlersPath = "/handlers">
-			<cfset CFCPath = HandlersPath>
+			<cfset HandlersPath = "/handlers/">
 		</cfif>
-		
-		<!--- Dashboard Exceptions --->
-		<cfif CompareNocase(getSetting("AppName"),getSetting("DashboardName",1)) eq 0>
-			<cfset HandlersPath = "." & "/handlers">
-			<cfset CFCPath = getDirectoryFromPath(cgi.SCRIPT_NAME) & "handlers">
+		<!--- Expand Path --->
+		<cfset HandlersPath = Expandpath(HandlersPath)>
+		<!--- Check for Handlers Directory Location --->
+		<cfif not directoryExists(HandlersPath)>
+			<cfthrow type="Framework.plugins.settings.HandlersDirectoryNotFoundException" message="The handlers directory: #handlerspath# does not exist please check your application structure or your Application Mapping.">
 		</cfif>
-		
-		<!--- Check for Handlers Location --->
-		<cfif not directoryExists(ExpandPath(HandlersPath))>
-			<cfthrow type="Framework.plugins.settings.HandlersDirectoryNotFoundException" message="The handlers directory: #expandPath(handlerspath)# does not exist please check your application structure or your Application Mapping.">
+		<!--- Get CFC's to parse --->
+		<cfdirectory action="list" directory="#HandlersPath#" name="qryCFC" sort="name" filter="*.cfc">
+		<!--- Verify handler's found, else, why continue --->
+		<cfif not qryCFC.recordcount>
+			<cfthrow type="Framework.plugins.settings.NoHandlersFoundException" message="No handlers were found in: #handlerspath#. So I have no clue how you are going to run this application.">
 		</cfif>
-		
-		<!--- Get Handlers --->
-		<cfset oCFCViewer.setup(HandlersPath,CFCPath)>
-		<!--- Get Array of Cfc's --->
-		<cfset HandlersArray = oCFCViewer.getCFCs()>
-		<cfloop from="1" to="#ArrayLen(HandlersArray)#" index="i">
-			<cfset metaData = oCFCViewer.getCFCMetaData(HandlersArray[i])>
-			<cfloop from="1" to="#ArrayLen(metaData.Functions)#" index="x">
-				<cfif not structkeyExists(metadata.Functions[x],"access") or (metadata.Functions[x].access eq "PUBLIC" and metadata.Functions[x].name neq "init")>
-					<cfset ArrayAppend(registeredHandlers,"#HandlersArray[i]#." & metaData.Functions[x].name)>
-				</cfif>
-			</cfloop>
+		<!--- Loop and parse --->
+		<cfloop query="qryCFC">
+			<cffile action="read" file="#HandlersPath##name#" variable="fileContent">
+			<cfscript>
+		 	parseString = reFindnocase("<cffunction[^>/]*>",fileContent,1,true);
+			while ( parseString.len[1] neq 0 ) {
+				StringBuffer = StringBuffer &  Mid(fileContent,parseString.pos[1],parseString.len[1]) & "</cffunction>";
+				fileContent = removeChars(fileContent,1,parseString.pos[1]+parseString.len[1]);
+				parseString = reFindnocase("<cffunction[^>/]*>",fileContent,1,true);
+			}
+			StringBuffer = StringBuffer & "</cfc>";
+			functions = xmlsearch(xmlparse(StringBuffer),"//cfc/cffunction");
+			if ( arrayLen(functions) eq 0 )
+				getPlugin("logger").logEntry("warning","Handler cfc: #name# does not have any methods defined.");
+			else{
+				for (x=1; x lt arrayLen(functions) ; x=x+1){
+					if ( not StructKeyExists(functions[x].XMLAttributes,"access") ) 
+						functions[x].XMLAttributes["access"] = "public";
+					if ( functions[x].XMLAttributes["name"] neq "init" and functions[x].XMLAttributes["access"] eq "public" ){
+						arrayAppend(registeredHandlers, ripExtension(name) & "." & trim(functions[x].XMLAttributes["name"]));
+					}
+				}
+			}
+			StringBuffer = "<cfc>";
+			</cfscript>
 		</cfloop>
 		<cfreturn registeredHandlers>
 	</cffunction>
@@ -235,5 +188,12 @@ Modification History:
 		</cfif>
 	</cffunction>
 	<!--- ************************************************************* --->
-
+	
+	<!--- ************************************************************* --->
+	<cffunction name="ripExtension" access="private" returntype="string" output="false">
+		<cfargument name="filename" type="string" required="true">
+		<cfreturn reReplace(arguments.filename,"\.[^.]*$","")>
+	</cffunction>
+	<!--- ************************************************************* --->
+	
 </cfcomponent>

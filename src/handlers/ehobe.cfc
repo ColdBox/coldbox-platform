@@ -12,7 +12,7 @@
 <!--------------------------------------------- PUBLIC --------------------------------------------->
 	
 	<!--- ************************************************************* --->
-	<cffunction name="onAppStart" access="public" returntype="void" output="false">
+	< cffunction name="onAppStart" access="public" returntype="void" output="false" >
 		<cfset var appreinit = false>
 		<cfset var objDriver = "">
 		<!--- Init the OBE if needed --->
