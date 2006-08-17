@@ -21,11 +21,11 @@
 		<Setting name="UDFLibraryFile" 				value="includes/udf.cfm" />
 		<Setting name="CustomErrorTemplate"			value="" />
 		<Setting name="MessageboxStyleClass"		value="mymessagebox" />
-		<Setting name="HandlersIndexAutoReload"   	value="false" />
+		<Setting name="HandlersIndexAutoReload"   	value="true" />
 		<Setting name="ConfigAutoReload"			value="false" />
 		<Setting name="ExceptionHandler"     		value="" />
 		<!--Base Path to plugins, as if to instantiate them. -->
-		<Setting name="MyPluginsLocation" 			value="myplugins.testing"/>
+		<Setting name="MyPluginsLocation" 			value="fwcoldbox.myplugins"/>
 	</Settings>
 	
 	<YourSettings />

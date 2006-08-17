@@ -45,7 +45,19 @@ Last Update 	: July 28, 2006
 			</cfcatch>
 		</cftry>
 	</cffunction>
-
+	
+	<cffunction name="getMyPlugin" access="public" hint="Get a custom plugin using the MyPluginsLocation as the base of instantiation" returntype="any" output="false">
+		<!--- ************************************************************* --->
+		<cfargument name="plugin" type="string" hint="The custom Plugin object's name to instantiate." >
+		<!--- ************************************************************* --->
+		<cftry>
+			<cfreturn CreateObject("component", "#getSetting("MyPluginsLocation")#.#trim(arguments.plugin)#").init(this)>
+			<cfcatch type="any">
+				<cfthrow type="Framework.InvalidPluginInstantiationException"	 message="Error Instantiating Custom Plugin Object (#trim(arguments.plugin)#). Please verify that the plugin exists. MyPluginsLocation: #getSetting("MyPluginsLocation")#" detail="#cfcatch.Message# #cfcatch.detail#">
+			</cfcatch>
+		</cftry>
+	</cffunction>
+	
 	<cffunction name="getCurrentPath" access="public" hint="I Get the currentPath of the controller" returntype="string"  output="false">
 		<cfreturn variables.currentPath>
 	</cffunction>
@@ -174,7 +186,8 @@ Last Update 	: July 28, 2006
 		<cfargument name="event"  			hint="The name of the event to run." 			type="string" default="#getSetting("DefaultEvent")#" >
 		<cfargument name="queryString"  	hint="The query string to append, if needed."   type="any" required="No" default="" >
 		<!--- ************************************************************* --->
-			<cflocation url="#cgi.SCRIPT_NAME#?event=#trim(arguments.event)#&#trim(arguments.queryString)#" addtoken="no">
+			<cfif len(trim(arguments.event)) eq 0><cfset arguments.event = getSetting("DefaultEvent")></cfif>
+			<cflocation url="#cgi.SCRIPT_NAME#?event=#arguments.event#&#arguments.queryString#" addtoken="no">
 	</cffunction>
 
 	<cffunction name="overrideEvent" access="Public" hint="I Override the current event in the request collection. This method does not execute the event, it just replaces the event to be executed by the framework's RunEvent() method. This method is usually called from an onRequestStart or onApplicationStart method."  output="false" returntype="void">

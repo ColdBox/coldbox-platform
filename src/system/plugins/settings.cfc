@@ -44,11 +44,6 @@ Modification History:
 		<cfif getSetting("EnableColdboxLogging")>
 			<cfset getPlugin("logger").initLogLocation()>
 		</cfif>
-		<!--- Test for myplugins location and init if necessary --->
-		<cfif getSetting("MyPluginsLocation") neq "" and not directoryExists(expandPath(replace(getSetting("MyPluginsLocation"),".","/","all"))) >
-			<!--- Directory not verified, throw error --->
-			<cfthrow type="Framework.plugins.settings.MyPluginsLocationNotFound" message="The custom plugins location: #getSetting("MyPluginsLocation")# (Expanded:#expandPath(replace(getSetting("MyPluginsLocation"),".","/","all"))#) cannot be located or does not exist. Please verify your entry in your config.xml.cfm">
-		</cfif>
 		<!--- Flag the initiation --->
 		<cfset application.ColdBox_fwInitiated = true>
 		<cfset application.ColdBox_fwAppStartHandlerFired = false>
