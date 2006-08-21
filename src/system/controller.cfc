@@ -6,10 +6,10 @@ Last Update 	: July 28, 2006
 <cfcomponent name="controller" hint="This is the ColdBox Controller. I practically do everything">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
-	<cfset variables.currentPath = getCurrentTemplatePath()>
-	<cfset variables.DebugMode = false>
-
 	<cffunction name="init" returntype="any" access="Public" hint="I am the constructor" output="false">
+		<cfset variables.instance = structnew()>
+		<cfset variables.instance.currentPath = getCurrentTemplatePath()>
+		<cfset variables.instance.DebugMode = false>
 		<cfreturn this>
 	</cffunction>
 
@@ -46,29 +46,17 @@ Last Update 	: July 28, 2006
 		</cftry>
 	</cffunction>
 	
-	<cffunction name="getMyPlugin" access="public" hint="Get a custom plugin using the MyPluginsLocation as the base of instantiation" returntype="any" output="false">
-		<!--- ************************************************************* --->
-		<cfargument name="plugin" type="string" hint="The custom Plugin object's name to instantiate." >
-		<!--- ************************************************************* --->
-		<cftry>
-			<cfreturn CreateObject("component", "#getSetting("MyPluginsLocation")#.#trim(arguments.plugin)#").init(this)>
-			<cfcatch type="any">
-				<cfthrow type="Framework.InvalidPluginInstantiationException"	 message="Error Instantiating Custom Plugin Object (#trim(arguments.plugin)#). Please verify that the plugin exists. MyPluginsLocation: #getSetting("MyPluginsLocation")#" detail="#cfcatch.Message# #cfcatch.detail#">
-			</cfcatch>
-		</cftry>
-	</cffunction>
-	
 	<cffunction name="getCurrentPath" access="public" hint="I Get the currentPath of the controller" returntype="string"  output="false">
-		<cfreturn variables.currentPath>
+		<cfreturn variables.instance.currentPath>
 	</cffunction>
 
 	<cffunction name="getDebugMode" access="public" hint="I Get the current controller debugmode" returntype="boolean"  output="false">
-		<cfreturn variables.DebugMode>
+		<cfreturn variables.instance.DebugMode>
 	</cffunction>
 
 	<cffunction name="setDebugMode" access="public" hint="I set the current controller debugmode" returntype="void"  output="false">
 		<cfargument name="mode" type="boolean" >
-		<cfset variables.DebugMode = arguments.mode>
+		<cfset variables.instance.DebugMode = arguments.mode>
 	</cffunction>
 
 	<cffunction name="reqCapture" access="Public" returntype="void" hint="I capture a framework event request." output="false">
