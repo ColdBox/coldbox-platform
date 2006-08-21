@@ -77,7 +77,7 @@ Modification History:
 		<cfset session.fwController.runEvent(session.fwController.getSetting("RequestEndHandler"))>
 	</cfif>
 	<cfcatch type="any">
-		<cfset ExceptionBean = session.fwController.getPlugin("settings").ExceptionHandler(cfcatch,"Application","Application Execution Exception")>
+		<cfset ExceptionBean = session.fwController.getPlugin("settings").ExceptionHandler(cfcatch,"application","Application Execution Exception")>
 		<cfoutput>#session.fwController.getPlugin("renderer").renderBugReport(ExceptionBean)#</cfoutput>
 	</cfcatch>
 </cftry>
