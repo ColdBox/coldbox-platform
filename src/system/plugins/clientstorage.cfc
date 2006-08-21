@@ -12,8 +12,10 @@ Modification History:
 
 	<!--- ************************************************************* --->
 	<cffunction name="init" access="public" returntype="any" output="false">
-		<cfargument name="controller" required="yes" hint="The reference to the framework controller">
-		<cfset super.Init(arguments.controller) />
+		<cfset super.Init() />
+		<cfset variables.instance.pluginName = "Client Storage">
+		<cfset variables.instance.pluginVersion = "1.0">
+		<cfset variables.instance.pluginDescription = "A permanent data storage plugin.">
 		<cfreturn this>
 	</cffunction>
 	<!--- ************************************************************* --->

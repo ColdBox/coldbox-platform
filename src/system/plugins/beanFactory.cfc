@@ -10,8 +10,10 @@ Modifications:
 
 	<!--- ************************************************************* --->
 	<cffunction name="init" access="public" returntype="any" output="false">
-		<cfargument name="controller" required="yes" hint="The reference to the framework controller">
-		<cfset super.Init(arguments.controller) />
+		<cfset super.Init() />
+		<cfset variables.instance.pluginName = "Bean Factory">
+		<cfset variables.instance.pluginVersion = "1.0">
+		<cfset variables.instance.pluginDescription = "I am a simple bean factory">
 		<cfreturn this>
 	</cffunction>
 	<!--- ************************************************************* --->

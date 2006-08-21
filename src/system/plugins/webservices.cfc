@@ -16,14 +16,16 @@ Modification History:
 
 	<!--- ************************************************************* --->
 	<cffunction name="init" access="public" returntype="any" output="false">
-		<cfargument name="controller" required="yes" hint="The reference to the framework controller">
-		<cfset super.Init(arguments.controller) />
+		<cfset super.Init() />
+		<cfset variables.instance.pluginName = "Web Services">
+		<cfset variables.instance.pluginVersion = "1.0">
+		<cfset variables.instance.pluginDescription = "This is a very useful web services utility plugin.">
 		<cfreturn this>
 	</cffunction>
 	<!--- ************************************************************* --->
 
 	<!--- ************************************************************* --->
-	<cffunction name="getWS" returntype="any" access="Public" hint="Get a web service's wsdl url from the configStruct." output="false">
+	<cffunction name="getWS" returntype="any" access="Public" hint="Get a web service's wsdl url from the configStruct according to which environment you are on." output="false">
 	<!--- ************************************************************* --->
 		<cfargument name="name" hint="The name of the web service. If the web service is not found an exception is thrown." type="string" required="Yes">
 	<!--- ************************************************************* --->
@@ -41,7 +43,7 @@ Modification History:
 	<!--- ************************************************************* --->
 
 	<!--- ************************************************************* --->
-	<cffunction name="getWSobj" access="Public"	hint="Get a reference to a webservice obj." output="false" returntype="any">
+	<cffunction name="getWSobj" access="Public"	hint="Get a reference to a webservice obj according to which environment you are on." output="false" returntype="any">
 	<!--- ************************************************************* --->
 		<cfargument name="name" hint="The name of the web service. If the web service is not found an exception is thrown" type="string" required="Yes">
 	<!--- ************************************************************* --->

@@ -26,27 +26,30 @@ Modification History:
 
 	<!--- ************************************************************* --->
 	<cffunction name="init" access="public" returntype="any" output="false">
-		<cfargument name="controller" required="yes" hint="The reference to the framework controller">
 		<!---- Constructor --->
 		<cfscript>
-		super.init(arguments.controller);
+		super.init();
+		//Local Plugin Definition
+		variables.instance.pluginName = "XMLParser";
+		variables.instance.pluginVersion = "1.0";
+		variables.instance.pluginDescription = "I am the framework's XML parser";
 		//Search Patterns for Config.xml
-		variables.searchSettings = "//Settings/Setting";
-		variables.searchYourSettings = "//YourSettings/Setting";
-		variables.searchBugTracer = "//BugTracerReports/BugEmail";
-		variables.searchDevURLS = "//DevEnvironments/url";
-		variables.searchWS = "//WebServices/WebService";
-		variables.searchLayouts = "//Layouts/Layout";
-		variables.searchDefaultLayout = "//Layouts/DefaultLayout";
-		variables.searchMailSettings = "//MailServerSettings";
-		variables.searchi18NSettings = "//i18N";
-		variables.searchDatasources = "//Datasources/Datasource";
+		variables.instance.searchSettings = "//Settings/Setting";
+		variables.instance.searchYourSettings = "//YourSettings/Setting";
+		variables.instance.searchBugTracer = "//BugTracerReports/BugEmail";
+		variables.instance.searchDevURLS = "//DevEnvironments/url";
+		variables.instance.searchWS = "//WebServices/WebService";
+		variables.instance.searchLayouts = "//Layouts/Layout";
+		variables.instance.searchDefaultLayout = "//Layouts/DefaultLayout";
+		variables.instance.searchMailSettings = "//MailServerSettings";
+		variables.instance.searchi18NSettings = "//i18N";
+		variables.instance.searchDatasources = "//Datasources/Datasource";
 		//Search patterns for fw xml
-		variables.searchConfigXML_Path = "//ConfigXMLFile/FilePath";
+		variables.instance.searchConfigXML_Path = "//ConfigXMLFile/FilePath";
 		//Properties
-		variables.FileSeparator = createObject("java","java.lang.System").getProperty("file.separator");
-		variables.FrameworkConfigFile = "#getDirectoryFromPath(controller.getCurrentPath())#config#variables.FileSeparator#settings.xml";
-		variables.FrameworkConfigXSDFile = "#getDirectoryFromPath(controller.getCurrentPath())#config#variables.FileSeparator#config.xsd";
+		variables.instance.FileSeparator = createObject("java","java.lang.System").getProperty("file.separator");
+		variables.instance.FrameworkConfigFile = "#getDirectoryFromPath(getCurrentPath())#config#instance.FileSeparator#settings.xml";
+		variables.instance.FrameworkConfigXSDFile = "#getDirectoryFromPath(getCurrentPath())#config#instance.FileSeparator#config.xsd";
 		//Return
 		return this;
 		</cfscript>
@@ -66,38 +69,38 @@ Modification History:
 		var ParentAppPath = "";
 		try{
 			//verify Framework settings File
-			if ( not fileExists(variables.FrameworkConfigFile) ){
-				throw("Error finding settings.xml configuration file. The file #variables.FrameworkConfigFile# cannot be found.","","Framework.plugins.XMLParser.ColdBoxSettingsNotFoundException");
+			if ( not fileExists(instance.FrameworkConfigFile) ){
+				throw("Error finding settings.xml configuration file. The file #instance.FrameworkConfigFile# cannot be found.","","Framework.plugins.XMLParser.ColdBoxSettingsNotFoundException");
 			}
 			//Determine which CF version for XML Parsing method
 			if (listfirst(server.coldfusion.productversion) lt 7){
-				fwXML = xmlParse(getPlugin("fileutilities").readFile(variables.FrameworkConfigFile));
+				fwXML = xmlParse(getPlugin("fileutilities").readFile(instance.FrameworkConfigFile));
 			}
 			else{
 				//get XML for CFMX version 7 and above.
-				fwXML = xmlParse(variables.FrameworkConfigFile);
+				fwXML = xmlParse(instance.FrameworkConfigFile);
 			}
 			//Get SettingNodes
-			SettingNodes = XMLSearch(fwXML, variables.searchSettings);
+			SettingNodes = XMLSearch(fwXML, instance.searchSettings);
 			//Insert Settings to Config Struct
 			for (i=1; i lte ArrayLen(SettingNodes); i=i+1)
 				StructInsert( settingsStruct, SettingNodes[i].XMLAttributes["name"], trim(SettingNodes[i].XMLAttributes["value"]));
 			//OS File Separator
-			StructInsert(settingsStruct, "OSFileSeparator", variables.FileSeparator );
+			StructInsert(settingsStruct, "OSFileSeparator", instance.FileSeparator );
 			//Get Config XML File Settings
-			ConfigXMLFilePath = XMLSearch(fwXML, variables.searchConfigXML_Path);
-			ConfigXMLFilePath = ExpandPath(replace(ConfigXMLFilePath[1].XMLText, "{sep}", variables.FileSeparator,"all"));
+			ConfigXMLFilePath = XMLSearch(fwXML, instance.searchConfigXML_Path);
+			ConfigXMLFilePath = ExpandPath(replace(ConfigXMLFilePath[1].XMLText, "{sep}", instance.FileSeparator,"all"));
 			StructInsert(settingsStruct, "ConfigFileLocation", ConfigXMLFilePath);
 			//Schema Path
-			StructInsert(settingsStruct, "ConfigFileSchemaLocation", variables.FrameworkConfigXSDFile);
+			StructInsert(settingsStruct, "ConfigFileSchemaLocation", instance.FrameworkConfigXSDFile);
 			//Parent Application Path
 			StructInsert(settingsStruct, "ApplicationPath", ExpandPath("."));
 			//Load Framework Path too
-			StructInsert(settingsStruct, "FrameworkPath", getDirectoryFromPath(controller.getCurrentPath()) );
+			StructInsert(settingsStruct, "FrameworkPath", getDirectoryFromPath(getCurrentPath()) );
 			//Load Plugins Path
 			StructInsert(settingsStruct, "FrameworkPluginsPath", settingsStruct.FrameworkPath & "plugins");
 			//Set the complete modifylog path
-			settingsStruct.ModifyLogLocation = "#settingsStruct.FrameworkPath#config#variables.FileSeparator#readme.txt";
+			settingsStruct.ModifyLogLocation = "#settingsStruct.FrameworkPath#config#instance.FileSeparator#readme.txt";
 			return settingsStruct;
 		}//end of try
 		catch( Any Exception ){
@@ -160,7 +163,7 @@ Modification History:
 			if ( not structKeyExists(configXML, "config")  )
 				throw("No Config element found in the configuration file","","Framework.plugins.XMLParser.ConfigXMLParsingException");
 			//Get SettingNodes
-			SettingNodes = XMLSearch(configXML, variables.searchSettings);
+			SettingNodes = XMLSearch(configXML, instance.searchSettings);
 			if ( ArrayLen(SettingNodes) eq 0 )
 				throw("No Setting elements could be found in the configuration file.","","Framework.plugins.XMLParser.ConfigXMLParsingException");
 			//Insert Settings to Config Struct
@@ -233,7 +236,7 @@ Modification History:
 				ConfigStruct["MyPluginsLocation"] = "";
 						
 			//Your Settings To Load
-			YourSettingNodes = XMLSearch(configXML, variables.searchYourSettings);
+			YourSettingNodes = XMLSearch(configXML, instance.searchYourSettings);
 			if ( ArrayLen(YourSettingNodes) gt 0 ){
 				//Insert Your Settings to Config Struct
 				for (i=1; i lte ArrayLen(YourSettingNodes); i=i+1)
@@ -241,7 +244,7 @@ Modification History:
 			}
 
 			//Mail Settings
-			MailSettingsNodes = XMLSearch(configXML, variables.searchMailSettings);
+			MailSettingsNodes = XMLSearch(configXML, instance.searchMailSettings);
 			//Check if empty
 			if ( ArrayLen(MailSettingsNodes) gt 0 and ArrayLen(MailSettingsNodes[1].XMLChildren) gt 0){
 				//Parse Mail Settings
@@ -256,7 +259,7 @@ Modification History:
 			}
 
 			//i18N Settings
-			i18NSettingNodes = XMLSearch(configXML, variables.searchi18NSettings);
+			i18NSettingNodes = XMLSearch(configXML, instance.searchi18NSettings);
 			//Check if empty
 			if ( ArrayLen(i18NSettingNodes) gt 0 and ArrayLen(i18NSettingNodes[1].XMLChildren) gt 0){
 				//Parse i18N Settings
@@ -292,7 +295,7 @@ Modification History:
 			}
 
 			//Bug Tracer Reports
-			BugEmailNodes = XMLSearch(configXML, variables.searchBugTracer);
+			BugEmailNodes = XMLSearch(configXML, instance.searchBugTracer);
 			for (i=1; i lte ArrayLen(BugEmailNodes); i=i+1){
 				BugEmails = BugEmails & trim(BugEmailNodes[i].XMLText);
 				if ( i neq ArrayLen(BugEmailNodes) )
@@ -302,7 +305,7 @@ Modification History:
 			StructInsert(ConfigStruct, "BugEmails", BugEmails);
 
 			//Get Dev Environments
-			DevEnvironmentNodes = XMLSearch(configXML, variables.searchDevURLS);
+			DevEnvironmentNodes = XMLSearch(configXML, instance.searchDevURLS);
 			//Insert DevEnvironments
 			for (i=1; i lte ArrayLen(DevEnvironmentNodes); i=i+1){
 				DevEnvironmentArray[i] = Trim(DevEnvironmentNodes[i].XMLText);
@@ -322,7 +325,7 @@ Modification History:
 				StructInsert(ConfigStruct,"Environment","PRODUCTION");
 
 			//Get Web Services From Config.
-			WebServiceNodes = XMLSearch(configXML, variables.searchWS);
+			WebServiceNodes = XMLSearch(configXML, instance.searchWS);
 			if ( ArrayLen(WebServiceNodes) ){
 				//New Web Service Array
 				for (i=1; i lte ArrayLen(WebServiceNodes); i=i+1){
@@ -344,7 +347,7 @@ Modification History:
 			StructInsert(ConfigStruct,"WebServices",WebServicesStruct);
 			
 			//Datasources Support
-			DatasourcesNodes = XMLSearch(configXML, variables.searchDatasources);
+			DatasourcesNodes = XMLSearch(configXML, instance.searchDatasources);
 			if ( ArrayLen(DatasourcesNodes) ){
 				//Create Structures
 				for(i=1;i lte ArrayLen(DatasourcesNodes); i=i+1){
@@ -363,7 +366,7 @@ Modification History:
 			StructInsert(ConfigStruct, "Datasources", DatasourcesStruct);
 			
 			//Layout into Config
-			DefaultLayout = XMLSearch(configXML,variables.searchDefaultLayout);
+			DefaultLayout = XMLSearch(configXML,instance.searchDefaultLayout);
 			//validate Default Layout.
 			if ( ArrayLen(DefaultLayout) eq 0 )
 				throw("There was no default layout element found.","","Framework.plugins.XMLParser.ConfigXMLParsingException");
@@ -371,7 +374,7 @@ Modification History:
 				throw("There were more than 1 DefaultLayout elements found. There can only be one.","","Framework.plugins.XMLParser.ConfigXMLParsingException");
 			StructInsert(ConfigStruct,"DefaultLayout",Trim(DefaultLayout[1].XMLText));
 			//Get View Layouts
-			LayoutNodes = XMLSearch(configXML, variables.searchLayouts);
+			LayoutNodes = XMLSearch(configXML, instance.searchLayouts);
 			for (i=1; i lte ArrayLen(LayoutNodes); i=i+1){
 				//Get Layout for the views
 				Layout = Trim(LayoutNodes[i].XMLAttributes["file"]);

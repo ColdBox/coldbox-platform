@@ -8,16 +8,6 @@ performing a listToArray() call.
 Supports writting files in US-ASCII, ISO-8859-1, UTF-8, UTF-16BE, UTF-16LE,  UTF-16.
 UTF-8 and UTF-16 unicode files will automatically have a byte order mark (BOM) written to them.
 
-To use:
-<cfscript>
-	variables.joFileWriter = createObject('component', 'FileWriter').init(variables.fileName, variables.encoding, 32768);
-
-	variables.joFileWriter.writeLine(variables.someDataVar);
-
-	variables.joFileWriter.close();
-</cfscript>
-
-
 greg.lively@gmail.com
 Use this program however you want.
 
@@ -34,20 +24,22 @@ Modification History:
 <cfcomponent name="FileWriter" hint="Uses the Java FileOutputStream, OutputStreamWriter, and BufferedWriter to provide a way to GREATLY increase performance of file output." extends="coldbox.system.plugin">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
-	<cfscript>
-		variables.joFileOutputStream = '';
-		variables.joOutputStreamWriter = '';
-		variables.joBufferedWriter = '';
-	</cfscript>
-<!------------------------------------------- PUBLIC ------------------------------------------->
 
 	<!--- ************************************************************* --->
 	<cffunction name="init" access="public" returntype="any" output="false">
-		<cfargument name="controller" required="yes" hint="The reference to the framework controller">
-			<cfset super.Init(arguments.controller) />
+		<cfset super.Init() />
+		<cfset variables.instance.pluginName = "File Writer">
+		<cfset variables.instance.pluginVersion = "1.0">
+		<cfset variables.instance.pluginDescription = "Uses the java native classes to perform buffered file writing.">
+		<!--- This instance constructor --->
+		<cfset variables.instance.joFileOutputStream = ''>
+		<cfset variables.instance.joOutputStreamWriter = ''>
+		<cfset variables.instance.joBufferedWriter = ''>
 		<cfreturn this>
 	</cffunction>
 	<!--- ************************************************************* --->
+
+<!------------------------------------------- PUBLIC ------------------------------------------->
 	
 	<!--- ************************************************************* --->
 	<cffunction name="setup" access="public" returntype="any" output="false" hint="initializes the FileWriter CF/java object">
@@ -64,13 +56,13 @@ Modification History:
 			//Test bufferSize Limits.
 			arguments.bufferSize = bufferSizeLimit(arguments.bufferSize);
 			//prepare Streams.
-			variables.joFileOutputStream = CreateObject('java','java.io.FileOutputStream').init(javaCast('string', arguments.fileName),javaCast("boolean",arguments.appendFlag));
+			instance.joFileOutputStream = CreateObject('java','java.io.FileOutputStream').init(javaCast('string', arguments.fileName),javaCast("boolean",arguments.appendFlag));
 			//Verify Encoding
 			getFileEncoding(arguments.fileEncoding);
 			//Prepare OUtput stream Writer with Encoding
-			variables.joOutputStreamWriter = CreateObject('java','java.io.OutputStreamWriter').init(variables.joFileOutputStream, javaCast('string', arguments.fileEncoding));
+			instance.joOutputStreamWriter = CreateObject('java','java.io.OutputStreamWriter').init(instance.joFileOutputStream, javaCast('string', arguments.fileEncoding));
 			//Create BufferedWriter with Buffer Size
-			variables.joBufferedWriter = CreateObject('java','java.io.BufferedWriter').init(variables.joOutputStreamWriter, javaCast('int', arguments.bufferSize));
+			instance.joBufferedWriter = CreateObject('java','java.io.BufferedWriter').init(instance.joOutputStreamWriter, javaCast('int', arguments.bufferSize));
 			//Return reference
 			return this;
 		</cfscript>
@@ -82,7 +74,7 @@ Modification History:
 		<!--- ************************************************************* --->
 		<cfargument name="strIn" type="string" required="No" default="" hint="a string to write to the file" />
 		<!--- ************************************************************* --->
-		<cfset variables.joBufferedWriter.write(javaCast("string", arguments.strIn)) />
+		<cfset instance.joBufferedWriter.write(javaCast("string", arguments.strIn)) />
 	</cffunction>
 	<!--- ************************************************************* --->
 
@@ -91,25 +83,25 @@ Modification History:
 		<!--- ************************************************************* --->
 		<cfargument name="strIn" type="string" required="No" default="" hint="a string to write to the file" />
 		<!--- ************************************************************* --->
-		<cfset variables.joBufferedWriter.write(javaCast("string", arguments.strIn)) />
-		<cfset variables.joBufferedWriter.newLine() />
+		<cfset instance.joBufferedWriter.write(javaCast("string", arguments.strIn)) />
+		<cfset instance.joBufferedWriter.newLine() />
 	</cffunction>
 	<!--- ************************************************************* --->
 	
 	<!--- ************************************************************* --->
 	<cffunction name="newLine" access="public" returntype="void" output="No" hint="Uses the platform's own notion of line separator. Not all platforms use the newline character ('\n') to terminate lines.">
-		<cfset variables.joBufferedWriter.newLine() />
+		<cfset instance.joBufferedWriter.newLine() />
 	</cffunction>
 	<!--- ************************************************************* --->
 	
 	<!--- ************************************************************* --->
 	<cffunction name="close" access="public" returntype="void" output="No" hint="flushes and closes stream, buffer, and file">
 		<cfscript>
-			variables.joBufferedWriter.flush();
-			variables.joOutputStreamWriter.flush();
-			variables.joBufferedWriter.close();
-			variables.joOutputStreamWriter.close();
-			variables.joFileOutputStream.close();
+			instance.joBufferedWriter.flush();
+			instance.joOutputStreamWriter.flush();
+			instance.joBufferedWriter.close();
+			instance.joOutputStreamWriter.close();
+			instance.joFileOutputStream.close();
 		</cfscript>
 	</cffunction>
 	<!--- ************************************************************* --->
@@ -155,24 +147,24 @@ Modification History:
 				/* write out file BOM, only if unicode format */
 				switch (arguments.fileEncoding) {
 					case 'UTF-8' : /* EF BB BF */
-						variables.joFileOutputStream.write(239); // 0xEF
-						variables.joFileOutputStream.write(187); // 0xBB
-						variables.joFileOutputStream.write(191); // 0xBF
+						instance.joFileOutputStream.write(239); // 0xEF
+						instance.joFileOutputStream.write(187); // 0xBB
+						instance.joFileOutputStream.write(191); // 0xBF
 						break;
 					case 'UTF-16LE' : /* FF FE */
-						variables.joFileOutputStream.write(255); // 0xFF
-						variables.joFileOutputStream.write(254); // 0xFE
+						instance.joFileOutputStream.write(255); // 0xFF
+						instance.joFileOutputStream.write(254); // 0xFE
 						break;
 					case 'UTF-16BE' : /* FE FF */
-						variables.joFileOutputStream.write(254); // 0xFE
-						variables.joFileOutputStream.write(255); // 0xFF
+						instance.joFileOutputStream.write(254); // 0xFE
+						instance.joFileOutputStream.write(255); // 0xFF
 						break;
 					default :
 						/* no BOM */			
 				}
 			</cfscript>
 		<cfelse>
-			<cfset variables.joFileOutputStream.close() />
+			<cfset instance.joFileOutputStream.close() />
 			<cfthrow type="Framework.plugins.FileWriter.InvalidEncodingException" message="The encoding: #arguments.fileEncoding# is not a valid encoding.">
 		</cfif>
 	</cffunction>

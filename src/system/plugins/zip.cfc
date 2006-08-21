@@ -53,35 +53,38 @@ Modification History:
              extends="coldbox.system.plugin">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
-	<cfscript>
-		/* Create Objects */
-		variables.ioFile      = CreateObject("java","java.io.File");
-		variables.ioInput     = CreateObject("java","java.io.FileInputStream");
-		variables.ioOutput    = CreateObject("java","java.io.FileOutputStream");
-		variables.ioBufOutput = CreateObject("java","java.io.BufferedOutputStream");
-		variables.zipFile     = CreateObject("java","java.util.zip.ZipFile");
-		variables.zipEntry    = CreateObject("java","java.util.zip.ZipEntry");
-		variables.zipInput    = CreateObject("java","java.util.zip.ZipInputStream");
-		variables.zipOutput   = CreateObject("java","java.util.zip.ZipOutputStream");
-		variables.gzInput     = CreateObject("java","java.util.zip.GZIPInputStream");
-		variables.gzOutput    = CreateObject("java","java.util.zip.GZIPOutputStream");
-		variables.objDate     = CreateObject("java","java.util.Date");
-
-		/* Set Localized Variables */
-		variables.os = Server.OS.Name;
-		if(FindNoCase("Windows", variables.os)) 
-			variables.slash = "\";
-		else
-		    variables.slash = "/";
-		//LM. To fix Overflow.
-		variables.filename = "";
-	</cfscript>
-
+	
 	<!--- ************************************************************* --->
 	<cffunction name="init" access="public" returntype="any" output="false">
-		<cfargument name="controller" required="yes" hint="The reference to the framework controller">
-		<cfset super.Init(arguments.controller) />
-		<cfreturn this>
+		<cfscript>
+		super.Init();
+		//Local Plugin Definition
+		variables.instance.pluginName = "Zip Plugin";
+		variables.instance.pluginVersion = "1.0";
+		variables.instance.pluginDescription = "This is a zip utility for the framework."
+		//This plugin's properties
+		variables.instance.ioFile      = CreateObject("java","java.io.File");
+		variables.instance.ioInput     = CreateObject("java","java.io.FileInputStream");
+		variables.instance.ioOutput    = CreateObject("java","java.io.FileOutputStream");
+		variables.instance.ioBufOutput = CreateObject("java","java.io.BufferedOutputStream");
+		variables.instance.zipFile     = CreateObject("java","java.util.zip.ZipFile");
+		variables.instance.zipEntry    = CreateObject("java","java.util.zip.ZipEntry");
+		variables.instance.zipInput    = CreateObject("java","java.util.zip.ZipInputStream");
+		variables.instance.zipOutput   = CreateObject("java","java.util.zip.ZipOutputStream");
+		variables.instance.gzInput     = CreateObject("java","java.util.zip.GZIPInputStream");
+		variables.instance.gzOutput    = CreateObject("java","java.util.zip.GZIPOutputStream");
+		variables.instance.objDate     = CreateObject("java","java.util.Date");
+
+		/* Set Localized Variables */
+		variables.instance.os = Server.OS.Name;
+		variables.instance.slash = createObject("java","java.lang.System").getProperty("file.separator");
+		
+		//LM. To fix Overflow.
+		variables.instance.filename = "";
+	
+		//Return instance
+		return this;
+		</cfscript>
 	</cffunction>
 	<!--- ************************************************************* --->
 
@@ -111,10 +114,10 @@ Modification History:
 
 			try{
 				/* Initialize Zip file */
-				variables.ioOutput.init(PathFormat(arguments.zipFilePath));
-				variables.filename = getFileFromPath(arguments.zipFilePath);
-				variables.zipOutput.init(variables.ioOutput);
-				variables.zipOutput.setLevel(arguments.compression);
+				instance.ioOutput.init(PathFormat(arguments.zipFilePath));
+				instance.filename = getFileFromPath(arguments.zipFilePath);
+				instance.zipOutput.init(instance.ioOutput);
+				instance.zipOutput.setLevel(arguments.compression);
 
 				/* Get files list array */
 				if( structKeyExists(arguments, "files") and arguments.files neq "")
@@ -134,8 +137,8 @@ Modification History:
 						entryFile = GetFileFromPath(path);
 
 						// Remove drive letter from path
-						if(arguments.savePaths EQ "yes" AND Right(ListFirst(entryPath, variables.slash), 1) EQ ":")
-							entryPath = ListDeleteAt(entryPath, 1, variables.slash);
+						if(arguments.savePaths EQ "yes" AND Right(ListFirst(entryPath, instance.slash), 1) EQ ":")
+							entryPath = ListDeleteAt(entryPath, 1, instance.slash);
 						// Remove directory from path
 						else if(arguments.savePaths EQ "no"){
 							if( structKeyExists(arguments, "directory") and arguments.directory neq "" )  
@@ -145,26 +148,26 @@ Modification History:
 						}
 
 						// Remove slash at first
-						if(Len(entryPath) GT 1 AND Left(entryPath, 1) EQ variables.slash)      entryPath = Right(entryPath, Len(entryPath)-1);
-						else if(Len(entryPath) EQ 1 AND Left(entryPath, 1) EQ variables.slash) entryPath = "" ;
+						if(Len(entryPath) GT 1 AND Left(entryPath, 1) EQ instance.slash)      entryPath = Right(entryPath, Len(entryPath)-1);
+						else if(Len(entryPath) EQ 1 AND Left(entryPath, 1) EQ instance.slash) entryPath = "" ;
 
 						//  Skip if entry with the same name already exsits
 						try	{
-							variables.ioFile.init(path);
-							variables.ioInput.init(variables.ioFile.getPath());
+							instance.ioFile.init(path);
+							instance.ioInput.init(instance.ioFile.getPath());
 
-							variables.zipEntry.init(entryPath & entryFile);
-							variables.zipOutput.putNextEntry(variables.zipEntry);
+							instance.zipEntry.init(entryPath & entryFile);
+							instance.zipOutput.putNextEntry(instance.zipEntry);
 
-							l = variables.ioInput.read(buffer);
+							l = instance.ioInput.read(buffer);
 
 							while(l GT 0){
-								variables.zipOutput.write(buffer, 0, l);
-								l = variables.ioInput.read(buffer);
+								instance.zipOutput.write(buffer, 0, l);
+								l = instance.ioInput.read(buffer);
 							}
 
-							variables.zipOutput.closeEntry();
-							variables.ioInput.close();
+							instance.zipOutput.closeEntry();
+							instance.ioInput.close();
 						}
 
 						catch(java.util.zip.ZipException ex)
@@ -173,7 +176,7 @@ Modification History:
 				}
 
 				/* Close Zip file */
-				variables.zipOutput.close();
+				instance.zipOutput.close();
 
 				/* Return true */
 				return true;
@@ -182,7 +185,7 @@ Modification History:
 			catch(Any expr)
 			{
 				/* Close Zip file */
-				variables.zipOutput.close();
+				instance.zipOutput.close();
 
 				/* Return false */
 				return false;
@@ -220,12 +223,12 @@ Modification History:
 
 			try{
 				/* Open Zip file and get Zip file entries */
-				variables.zipFile.init(arguments.zipFilePath);
-				entries = variables.zipFile.entries();
+				instance.zipFile.init(arguments.zipFilePath);
+				entries = instance.zipFile.entries();
 
 				/* Create a new temporary Zip file */
-				variables.ioOutput.init(PathFormat(arguments.zipFilePath & ".temp"));
-				variables.zipOutput.init(variables.ioOutput);
+				instance.ioOutput.init(PathFormat(arguments.zipFilePath & ".temp"));
+				instance.zipOutput.init(instance.ioOutput);
 
 				/* Loop over Zip file entries */
 				while(entries.hasMoreElements()){
@@ -235,36 +238,36 @@ Modification History:
 						/* Create a new entry in the temporary Zip file */
 						if(NOT ListFindNoCase(arguments.files, entry.getName(), "|")){
 							// Set entry compression
-							variables.zipOutput.setLevel(entry.getMethod());
+							instance.zipOutput.setLevel(entry.getMethod());
 
 							// Create new entry in the temporary Zip file
-							variables.zipEntry.init(entry.getName());
-							variables.zipOutput.putNextEntry(variables.zipEntry);
+							instance.zipEntry.init(entry.getName());
+							instance.zipOutput.putNextEntry(instance.zipEntry);
 
-							inStream = variables.zipFile.getInputStream(entry);
+							inStream = instance.zipFile.getInputStream(entry);
 							l        = inStream.read(buffer);
 
 							while(l GT 0){
-								variables.zipOutput.write(buffer, 0, l);
+								instance.zipOutput.write(buffer, 0, l);
 								l = inStream.read(buffer);
 							}
 
 							// Close entry
-							variables.zipOutput.closeEntry();
+							instance.zipOutput.closeEntry();
 						}
 					}
 				}
 
 				/* Close the orginal Zip and the temporary Zip file */
-				variables.zipFile.close();
-				variables.zipOutput.close();
+				instance.zipFile.close();
+				instance.zipOutput.close();
 
 				/* Delete the orginal Zip file */
-				variables.ioFile.init(arguments.zipFilePath).delete();
+				instance.ioFile.init(arguments.zipFilePath).delete();
 
 				/* Rename the temporary Zip file */
-				zipTemp   = variables.ioFile.init(arguments.zipFilePath & ".temp");
-				zipRename = variables.ioFile.init(arguments.zipFilePath);
+				zipTemp   = instance.ioFile.init(arguments.zipFilePath & ".temp");
+				zipRename = instance.ioFile.init(arguments.zipFilePath);
 				zipTemp.renameTo(zipRename);
 
 				/* Return true */
@@ -274,12 +277,12 @@ Modification History:
 			catch(Any expr)
 			{
 				/* Close the orginal Zip and the temporary Zip file */
-				variables.zipOutput.close();
-				variables.zipFile.close();
+				instance.zipOutput.close();
+				instance.zipFile.close();
 
 				/* Delete the temporary Zip file, if exists */
 				if(FileExists(arguments.zipFilePath & ".temp"))
-					variables.ioFile.init(arguments.zipFilePath & ".temp").delete();
+					instance.ioFile.init(arguments.zipFilePath & ".temp").delete();
 
 				/* Return false */
 				return false;
@@ -321,15 +324,15 @@ Modification History:
 			lastChr = Right(arguments.extractPath, 1);
 
 			/* Set an slash at the end of string */
-			if(lastChr NEQ variables.slash)
-				arguments.extractPath = arguments.extractPath & variables.slash;
+			if(lastChr NEQ instance.slash)
+				arguments.extractPath = arguments.extractPath & instance.slash;
 
 			try{
 				/* Open Zip file */
-				variables.zipFile.init(arguments.zipFilePath);
+				instance.zipFile.init(arguments.zipFilePath);
 
 				/* Zip file entries */
-				entries = variables.zipFile.entries();
+				entries = instance.zipFile.entries();
 
 				/* Loop over Zip file entries */
 				while(entries.hasMoreElements()){
@@ -346,8 +349,8 @@ Modification History:
 							else        path = extractPath;
 
 							if(NOT DirectoryExists(path)){
-								variables.ioFile.init(path);
-								variables.ioFile.mkdirs();
+								instance.ioFile.init(path);
+								instance.ioFile.mkdirs();
 							}
 						}
 
@@ -365,20 +368,20 @@ Modification History:
 						{
 							// Skip if entry contains special characters
 							try{
-								variables.ioOutput.init(filePath);
-								variables.ioBufOutput.init(variables.ioOutput);
+								instance.ioOutput.init(filePath);
+								instance.ioBufOutput.init(instance.ioOutput);
 
-								inStream = variables.zipFile.getInputStream(entry);
+								inStream = instance.zipFile.getInputStream(entry);
 								l        = inStream.read(buffer);
 
 								while(l GTE 0){
-									variables.ioBufOutput.write(buffer, 0, l);
+									instance.ioBufOutput.write(buffer, 0, l);
 									l = inStream.read(buffer);
 								}
 
 								inStream.close();
-								variables.ioBufOutput.close();
-								variables.ioOutput.close();
+								instance.ioBufOutput.close();
+								instance.ioOutput.close();
 							}
 
 							catch(Any Expr)
@@ -388,7 +391,7 @@ Modification History:
 				}
 
 				/* Close the Zip file */
-				variables.zipFile.close();
+				instance.zipFile.close();
 
 				/* Return true */
 				return true;
@@ -396,7 +399,7 @@ Modification History:
 
 			catch(Any expr){
 				/* Close the Zip file */
-				variables.zipFile.close();
+				instance.zipFile.close();
 
 				/* Return false */
 				return false;
@@ -428,10 +431,10 @@ Modification History:
 			cols = ListToArray(cols);
 
 			/* Open Zip file */
-			variables.zipFile.init(arguments.zipFilePath);
+			instance.zipFile.init(arguments.zipFilePath);
 
 			/* Zip file entries */
-			entries = variables.zipFile.entries();
+			entries = instance.zipFile.entries();
 
 			/* Fill query with data */
 			while(entries.hasMoreElements()){
@@ -441,7 +444,7 @@ Modification History:
 					QueryAddRow(query, 1);
 
 					qEntry     = PathFormat(entry.getName());
-					qDate      = variables.objDate.init(entry.getTime());
+					qDate      = instance.objDate.init(entry.getTime());
 					qSize      = entry.getSize();
 					qPacked    = entry.getCompressedSize();
 					qCrc       = entry.getCrc();
@@ -455,7 +458,7 @@ Modification History:
 			}
 
 			/* Close the Zip File */
-			variables.zipFile.close();
+			instance.zipFile.close();
 
 			/* Return query */
 			return query;
@@ -487,29 +490,29 @@ Modification History:
 			lastChr = Right(arguments.gzipFilePath, 1);
 
 			/* Set an slash at the end of string */
-			if(lastChr NEQ variables.slash)
-				arguments.gzipFilePath = arguments.gzipFilePath & variables.slash;
+			if(lastChr NEQ instance.slash)
+				arguments.gzipFilePath = arguments.gzipFilePath & instance.slash;
 
 			try{
 				/* Set output gzip file name */
 				gzFileName = getFileFromPath(arguments.filePath) & ".gz";
 				outputFile = arguments.gzipFilePath & gzFileName;
 
-				variables.ioInput.init(arguments.filePath);
-				variables.ioOutput.init(outputFile);
-				variables.gzOutput.init(variables.ioOutput);
+				instance.ioInput.init(arguments.filePath);
+				instance.ioOutput.init(outputFile);
+				instance.gzOutput.init(instance.ioOutput);
 
-				l = variables.ioInput.read(buffer);
+				l = instance.ioInput.read(buffer);
 
 				while(l GT 0){
-					variables.gzOutput.write(buffer, 0, l);
-					l = variables.ioInput.read(buffer);
+					instance.gzOutput.write(buffer, 0, l);
+					l = instance.ioInput.read(buffer);
 				}
 
 				/* Close the GZip file */
-				variables.gzOutput.close();
-				variables.ioOutput.close();
-				variables.ioInput.close();
+				instance.gzOutput.close();
+				instance.ioOutput.close();
+				instance.ioInput.close();
 
 				/* Return true */
 				return true;
@@ -545,8 +548,8 @@ Modification History:
 			lastChr = Right(arguments.extractPath, 1);
 
 			/* Set an slash at the end of string */
-			if(lastChr NEQ variables.slash)
-				arguments.extractPath = arguments.extractPath & variables.slash;
+			if(lastChr NEQ instance.slash)
+				arguments.extractPath = arguments.extractPath & instance.slash;
 
 			try{
 				/* Set output file name */
@@ -554,19 +557,19 @@ Modification History:
 				outputFile = arguments.extractPath & Left(gzFileName, Len(gzFileName)-3);
 
 				/* Initialize gzip file */
-				variables.ioOutput.init(outputFile);
-				variables.ioInput.init(arguments.gzipFilePath);
-				variables.gzInput.init(variables.ioInput);
+				instance.ioOutput.init(outputFile);
+				instance.ioInput.init(arguments.gzipFilePath);
+				instance.gzInput.init(instance.ioInput);
 
 				while(l GTE 0){
-					variables.ioOutput.write(buffer, 0, l);
-					l = variables.gzInput.read(buffer);
+					instance.ioOutput.write(buffer, 0, l);
+					l = instance.gzInput.read(buffer);
 				}
 
 				/* Close the GZip file */
-				variables.gzInput.close();
-				variables.ioInput.close();
-				variables.ioOutput.close();
+				instance.gzInput.close();
+				instance.ioInput.close();
+				instance.ioOutput.close();
 
 				/* Return true */
 				return true;
@@ -602,10 +605,10 @@ Modification History:
 		<cfscript>
 			/* Loop over directory query */
 			for(i=1; i LTE dir.recordcount; i=i+1){
-				path = PathFormat(arguments.directory & variables.slash & dir.name[i]);
+				path = PathFormat(arguments.directory & instance.slash & dir.name[i]);
 
 				/* Add file to array */
-				if(dir.type[i] eq "file" and dir.name[i] neq variables.filename)
+				if(dir.type[i] eq "file" and dir.name[i] neq instance.filename)
 					ArrayAppend(array, path);
 
 				/* Get files from sub directorys and add them to the array */
@@ -629,7 +632,7 @@ Modification History:
 		<!--- ************************************************************* --->	
 		<cfargument name="path" required="yes" type="string" hint="The path to convert.">
 		<!--- ************************************************************* --->	
-		<cfif FindNoCase("Windows", variables.os)>
+		<cfif FindNoCase("Windows", instance.os)>
 			<cfset arguments.path = Replace(arguments.path, "/", "\", "ALL")>
 		<cfelse>
 			<cfset arguments.path = Replace(arguments.path, "\", "/", "ALL")>

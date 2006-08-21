@@ -11,12 +11,14 @@ Modification History:
 06/09/2006 - Updated for coldbox.
 07/29/2006 - Flag to leave contents in the messagebox or delete them once rendered.
 ----------------------------------------------------------------------->
-<cfcomponent name="messagebox" hint="This is the messagebox plugin." extends="coldbox.system.plugin">
+<cfcomponent name="messagebox" hint="This is the messagebox plugin. It uses the client scope to save messages. You will need the client scope to be available." extends="coldbox.system.plugin">
 
 	<!--- ************************************************************* --->
 	<cffunction name="init" access="public" returntype="any" output="false">
-		<cfargument name="controller" required="yes" hint="The reference to the framework controller">
-		<cfset super.Init(arguments.controller) />
+		<cfset super.Init() />
+		<cfset variables.instance.pluginName = "Messagebox">
+		<cfset variables.instance.pluginVersion = "1.0">
+		<cfset variables.instance.pluginDescription = "This is a visual plugin that creates message boxes.">
 		<cfreturn this>
 	</cffunction>
 	<!--- ************************************************************* --->

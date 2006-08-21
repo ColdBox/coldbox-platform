@@ -16,16 +16,20 @@ Luis Majano		07/11/2006		Updated it to work with ColdBox. look at license in the
 <cfcomponent name="JavaLoader" hint="Loads External Java Classes, while providing access to ColdFusion classes" extends="coldbox.system.plugin">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
-	<cfset instance = StructNew()>
-<!------------------------------------------- PUBLIC ------------------------------------------->
-
+	
 	<!--- ************************************************************* --->
 	<cffunction name="init" access="public" returntype="any" output="false">
-		<cfargument name="controller" required="yes" hint="The reference to the framework controller">
-			<cfset super.Init(arguments.controller) />
+		<cfset super.Init() />
+		<cfset variables.instance.pluginName = "Java Loader">
+		<cfset variables.instance.pluginVersion = "1.0">
+		<cfset variables.instance.pluginDescription = "Java Loader plugin, based on Mark Mandel's brain.">
+		<!--- This plugins' properties --->
+		<cfset variables.instance.classLoader = "">
 		<cfreturn this>
 	</cffunction>
 	<!--- ************************************************************* --->
+
+<!------------------------------------------- PUBLIC ------------------------------------------->
 
 	<!--- ************************************************************* --->
 	<cffunction name="setup" hint="setup the loader" access="public" returntype="any" output="false">

@@ -47,12 +47,13 @@ Modification History:
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 	
-	<cfset variables.joStringBuffer = createObject("java","java.lang.StringBuffer") />
-
 	<!--- ************************************************************* --->
 	<cffunction name="init" access="public" returntype="any" output="false">
-		<cfargument name="controller" required="yes" hint="The reference to the framework controller">
-			<cfset super.Init(arguments.controller) />
+		<cfset super.Init() />
+		<cfset variables.instance.pluginName = "StringBuffer">
+		<cfset variables.instance.pluginVersion = "1.0">
+		<cfset variables.instance.pluginDescription = "This is a facade to the java StringBuffer class.">
+		<cfset variables.instance.joStringBuffer = createObject("java","java.lang.StringBuffer") />
 		<cfreturn this>
 	</cffunction>
 	<!--- ************************************************************* --->
@@ -64,9 +65,9 @@ Modification History:
 		<cfargument name="BufferLength" 	type="numeric" 	required="no" default="16" hint="The length to start the buffer at. The default is 16 characters. This argument is mutually exclusive to strIn ">
 		<!--- ************************************************************* --->
 		<cfif arguments.strIn neq "">
-			<cfset variables.joStringBuffer.init(javaCast("string", arguments.strIn)) />
+			<cfset instance.joStringBuffer.init(javaCast("string", arguments.strIn)) />
 		<cfelse>
-			<cfset variables.joStringBuffer.init(javaCast("int", arguments.BufferLength)) />
+			<cfset instance.joStringBuffer.init(javaCast("int", arguments.BufferLength)) />
 		</cfif>		
 		<cfreturn this />	
 	</cffunction>
@@ -79,7 +80,7 @@ Modification History:
 		<!--- ************************************************************* --->
 		<cfargument name="strIn" type="string" required="No" default="" hint="a string to append to the buffer" />
 		<!--- ************************************************************* --->
-		<cfset variables.joStringBuffer.append(javaCast("string", arguments.strIn)) />
+		<cfset instance.joStringBuffer.append(javaCast("string", arguments.strIn)) />
 	</cffunction>
 	<!--- ************************************************************* --->
 	
@@ -89,7 +90,7 @@ Modification History:
 		<cfargument name="startPos" type="numeric" required="Yes" hint="The beginning index, inclusive." />
 		<cfargument name="endPos" 	type="numeric" required="Yes" hint="The ending index, exclusive." />
 		<!--- ************************************************************* --->
-		<cfset variables.joStringBuffer.delete(javaCast("int", arguments.startPos),javaCast("int", arguments.endPos)) />
+		<cfset instance.joStringBuffer.delete(javaCast("int", arguments.startPos),javaCast("int", arguments.endPos)) />
 	</cffunction>
 	<!--- ************************************************************* --->
 	
@@ -99,7 +100,7 @@ Modification History:
 		<cfargument name="offSet" 	type="numeric" required="No" default="0" hint="the offset" />
 		<cfargument name="inStr" 	type="string" required="Yes" hint="a string" />
 		<!--- ************************************************************* --->
-		<cfset variables.joStringBuffer.insert(javaCast("int", arguments.offSet), javaCast("string", arguments.inStr)) />
+		<cfset instance.joStringBuffer.insert(javaCast("int", arguments.offSet), javaCast("string", arguments.inStr)) />
 	</cffunction>
 	<!--- ************************************************************* --->
 	
@@ -110,7 +111,7 @@ Modification History:
 		<cfargument name="endPos" 	type="numeric" 	required="Yes" hint="The ending index, exclusive." />
 		<cfargument name="inStr" 	type="string" 	required="Yes" hint="a string" />
 		<!--- ************************************************************* --->
-		<cfset variables.joStringBuffer.replace(javaCast("int", arguments.startPos), javaCast("int", arguments.endPos), javaCast("string", arguments.inStr)) />
+		<cfset instance.joStringBuffer.replace(javaCast("int", arguments.startPos), javaCast("int", arguments.endPos), javaCast("string", arguments.inStr)) />
 	</cffunction>
 	<!--- ************************************************************* --->
 	
@@ -120,7 +121,7 @@ Modification History:
 		<cfargument name="inStr" 	type="string" required="Yes" hint="the substring for which to search" />
 		<cfargument name="fromPos" 	type="numeric" required="No" default="0" hint="the index from which to start the search" />
 		<!--- ************************************************************* --->
-		<cfreturn variables.joStringBuffer.indexOf(javaCast("string", arguments.inStr),javaCast("int", arguments.fromPos)) />
+		<cfreturn instance.joStringBuffer.indexOf(javaCast("string", arguments.inStr),javaCast("int", arguments.fromPos)) />
 	</cffunction>
 	<!--- ************************************************************* --->
 	
@@ -130,7 +131,7 @@ Modification History:
 		<cfargument name="inStr" 	type="string" required="Yes" hint="the substring for which to search" />
 		<cfargument name="fromPos" 	type="numeric" required="No" default="0" hint="the index from which to start the search" />
 		<!--- ************************************************************* --->
-		<cfreturn variables.joStringBuffer.lastIndexOf(javaCast("string", arguments.inStr),javaCast("int", arguments.fromPos)) />
+		<cfreturn instance.joStringBuffer.lastIndexOf(javaCast("string", arguments.inStr),javaCast("int", arguments.fromPos)) />
 	</cffunction>
 	<!--- ************************************************************* --->
 	
@@ -138,15 +139,15 @@ Modification History:
 	<cffunction name="substring" returntype="string" access="public" output="No" hint="Returns a new String that contains a subsequence of characters currently contained in this StringBuffer.The substring begins at the specified index and extends to the end of the StringBuffer.">
 		<!--- ************************************************************* --->
 		<cfargument name="startPos" type="numeric" required="Yes" hint="The beginning index, inclusive." />
-		<cfargument name="endPos" 	type="numeric" required="No" default="#(variables.joStringBuffer.length() - 1)#" hint="The ending index, exclusive." />
+		<cfargument name="endPos" 	type="numeric" required="No" default="#(instance.joStringBuffer.length() - 1)#" hint="The ending index, exclusive." />
 		<!--- ************************************************************* --->
-		<cfreturn variables.joStringBuffer.substring(javaCast("int", arguments.startPos),javaCast("int", arguments.endPos)) />
+		<cfreturn instance.joStringBuffer.substring(javaCast("int", arguments.startPos),javaCast("int", arguments.endPos)) />
 	</cffunction>
 	<!--- ************************************************************* --->
 	
 	<!--- ************************************************************* --->
 	<cffunction name="reverseStr" returntype="void" access="public" output="No" hint="The character sequence contained in this string buffer is replaced by the reverse of the sequence.">
-		<cfset variables.joStringBuffer.reverse() />
+		<cfset instance.joStringBuffer.reverse() />
 	</cffunction>
 	<!--- ************************************************************* --->
 	
@@ -155,31 +156,31 @@ Modification History:
 		<!--- ************************************************************* --->
 		<cfargument name="newLength" type="numeric" required="true" hint="Length in characters to set.">
 		<!--- ************************************************************* --->
-		<cfset variables.joStringBuffer.setLength(JavaCast("int", arguments.newLength)) />
+		<cfset instance.joStringBuffer.setLength(JavaCast("int", arguments.newLength)) />
 	</cffunction>
 	<!--- ************************************************************* --->
 	
 	<!--- ************************************************************* --->
 	<cffunction name="length" returntype="numeric" access="public" output="No" hint="Returns the length (character count) of this string buffer.">
-		<cfreturn variables.joStringBuffer.length() />
+		<cfreturn instance.joStringBuffer.length() />
 	</cffunction>
 	<!--- ************************************************************* --->
 	
 	<!--- ************************************************************* --->
 	<cffunction name="capacity" returntype="numeric" access="public" output="No" hint="Returns the current capacity of the String buffer.">
-		<cfreturn variables.joStringBuffer.capacity() />
+		<cfreturn instance.joStringBuffer.capacity() />
 	</cffunction>
 	<!--- ************************************************************* --->
 	
 	<!--- ************************************************************* --->
 	<cffunction name="getString" returntype="string" access="public" output="No" hint="Converts to a string representing the data in this string buffer.">
-		<cfreturn variables.joStringBuffer.toString() />
+		<cfreturn instance.joStringBuffer.toString() />
 	</cffunction>
 	<!--- ************************************************************* --->
 	
 	<!--- ************************************************************* --->
 	<cffunction name="getStringBuffer" returntype="any" access="public" output="No" hint="Return the StringBuffer Java Object">
-		<cfreturn variables.joStringBuffer />
+		<cfreturn instance.joStringBuffer />
 	</cffunction>
 	<!--- ************************************************************* --->
 	
