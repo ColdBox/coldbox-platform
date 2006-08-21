@@ -181,10 +181,10 @@ Modification History:
 			
 			//Set the Handler Invocation Path for this Application
 			if( ConfigStruct["AppMapping"] neq ""){
-				ConfigStruct["HandlerInvocationPath"] = replace(ConfigStruct["AppMapping"],"/",".","all") & ".handlers";
+				ConfigStruct["HandlersInvocationPath"] = replace(ConfigStruct["AppMapping"],"/",".","all") & ".handlers";
 			}
 			else{
-				ConfigStruct["HandlerInvocationPath"] = "handlers";
+				ConfigStruct["HandlersInvocationPath"] = "handlers";
 			}
 			
 			//Check for Default Event

@@ -188,9 +188,9 @@ Last Update 	: July 28, 2006
 			<!--- Get RegisteredHandler --->
 			<cfset EventBean =  getPlugin("settings").getRegisteredHandler(arguments.event)>
 			<cftry>
-				<cfset objEventHandler = CreateObject("component","#getSetting("HandlerInvocationPath")#.#EventBean.getHandler()#").init()>
+				<cfset objEventHandler = CreateObject("component","#getSetting("HandlersInvocationPath")#.#EventBean.getHandler()#").init()>
 				<cfcatch type="any">
-					<cfthrow type="Framework.EventHandlerInstantiationException" message="Error Instantiating Event Handler: (#EventBean.getName()#)" detail="CFCPath: #getSetting("HandlerInvocationPath")# ; #cfcatch.Detail# #cfcatch.Message#">
+					<cfthrow type="Framework.EventHandlerInstantiationException" message="Error Instantiating Event Handler: (#EventBean.getName()#)" detail="CFCPath: #getSetting("HandlersInvocationPath")# ; #cfcatch.Detail# #cfcatch.Message#">
 				</cfcatch>
 			</cftry>
 			<!---  Run The handler's Method --->
