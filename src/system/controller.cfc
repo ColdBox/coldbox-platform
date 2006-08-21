@@ -182,22 +182,15 @@ Last Update 	: July 28, 2006
 		<cfargument name="event" hint="The event to run. If no current event is set, use the default event from the config.xml" type="string" required="no" default="#getValue("event")#">
 		<!--- ************************************************************* --->
 		<cfset var objEventHandler = "">
-		<cfset var handlerDir = "handlers">
 		<cfset var EventBean = "">
 		<!--- Start Timer --->
 		<cfmodule template="includes/timer.cfm" timertag="invoking runEvent [#arguments.event#]">
-			<!--- Dashboard Determinations --->
-			<cfif CompareNocase(getSetting("AppName"),getSetting("DashboardName",1)) eq 0>
-				<cfset handlerDir = "admin.handlers">
-			<cfelseif getSetting("AppMapping") neq "">
-				<cfset handlerDir = "#replace(getSetting("AppMapping"),"/",".","all")#.handlers">
-			</cfif>
 			<!--- Get RegisteredHandler --->
 			<cfset EventBean =  getPlugin("settings").getRegisteredHandler(arguments.event)>
 			<cftry>
-				<cfset objEventHandler = CreateObject("component","#handlerDir#.#EventBean.getHandler()#").init(this)>
+				<cfset objEventHandler = CreateObject("component","#getSetting("HandlerInvocationPath")#.#EventBean.getHandler()#").init()>
 				<cfcatch type="any">
-					<cfthrow type="Framework.EventHandlerInstantiationException" message="Error Instantiating Event Handler: (#EventBean.getName()#)" detail="#cfcatch.Detail# #cfcatch.Message#">
+					<cfthrow type="Framework.EventHandlerInstantiationException" message="Error Instantiating Event Handler: (#EventBean.getName()#)" detail="CFCPath: #getSetting("HandlerInvocationPath")# ; #cfcatch.Detail# #cfcatch.Message#">
 				</cfcatch>
 			</cftry>
 			<!---  Run The handler's Method --->

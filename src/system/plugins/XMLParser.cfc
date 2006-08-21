@@ -175,8 +175,18 @@ Modification History:
 			//Check For CFMapping or Throw
 			if ( not StructKeyExists(ConfigStruct, "AppMapping") )
 				throw("There was no 'AppMapping' setting defined. This is required by the framework.","","Framework.plugins.XMLParser.ConfigXMLParsingException");
-			//Convert . to / in the CFMX Mapping
+			
+			//Convert . to / in the App Mapping
 			ConfigStruct["AppMapping"] = replace(ConfigStruct["AppMapping"],".","/","all");
+			
+			//Set the Handler Invocation Path for this Application
+			if( ConfigStruct["AppMapping"] neq ""){
+				ConfigStruct["HandlerInvocationPath"] = replace(ConfigStruct["AppMapping"],"/",".","all") & ".handlers";
+			}
+			else{
+				ConfigStruct["HandlerInvocationPath"] = "handlers";
+			}
+			
 			//Check for Default Event
 			if ( not StructKeyExists(ConfigStruct, "DefaultEvent") )
 				throw("There was no 'DefaultEvent' setting defined. This is required by the framework.","","Framework.plugins.XMLParser.ConfigXMLParsingException");
