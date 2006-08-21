@@ -8,11 +8,9 @@ Last Update 	: July 28, 2006
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 	<cffunction name="init" returntype="any" access="Public" hint="I am the constructor" output="false">
 		<cfset variables.instance = structnew()>
-		<cfset variables.instance.currentPath = getCurrentTemplatePath()>
 		<cfset variables.instance.DebugMode = false>
 		<cfreturn this>
 	</cffunction>
-
 <!------------------------------------------- PUBLIC ------------------------------------------->
 
 	<cffunction name="getSetting" hint="I get a setting from the FW Config structures. Use the FWSetting boolean argument to retrieve from the fwSettingsStruct." access="public" returntype="any" output="false">
@@ -39,17 +37,13 @@ Last Update 	: July 28, 2006
 		<cfargument name="plugin" type="string" hint="The Plugin object's name to instantiate" >
 		<!--- ************************************************************* --->
 		<cftry>
-			<cfreturn CreateObject("component", "plugins.#trim(arguments.plugin)#").init(this)>
+			<cfreturn CreateObject("component", "plugins.#trim(arguments.plugin)#").init()>
 			<cfcatch type="any">
 				<cfthrow type="Framework.InvalidPluginInstantiationException"	 message="Framework.getPlugin: Error Instantiating Plugin Object (#trim(arguments.plugin)#)" detail="#cfcatch.Message# #cfcatch.detail#">
 			</cfcatch>
 		</cftry>
 	</cffunction>
 	
-	<cffunction name="getCurrentPath" access="public" hint="I Get the currentPath of the controller" returntype="string"  output="false">
-		<cfreturn variables.instance.currentPath>
-	</cffunction>
-
 	<cffunction name="getDebugMode" access="public" hint="I Get the current controller debugmode" returntype="boolean"  output="false">
 		<cfreturn variables.instance.DebugMode>
 	</cffunction>

@@ -48,8 +48,8 @@ Modification History:
 		variables.instance.searchConfigXML_Path = "//ConfigXMLFile/FilePath";
 		//Properties
 		variables.instance.FileSeparator = createObject("java","java.lang.System").getProperty("file.separator");
-		variables.instance.FrameworkConfigFile = "#getDirectoryFromPath(getCurrentPath())#config#instance.FileSeparator#settings.xml";
-		variables.instance.FrameworkConfigXSDFile = "#getDirectoryFromPath(getCurrentPath())#config#instance.FileSeparator#config.xsd";
+		variables.instance.FrameworkConfigFile = ExpandPath("/coldbox/system/config/settings.xml");
+		variables.instance.FrameworkConfigXSDFile = ExpandPath("/coldbox/system/config/config.xsd");
 		//Return
 		return this;
 		</cfscript>
@@ -96,7 +96,7 @@ Modification History:
 			//Parent Application Path
 			StructInsert(settingsStruct, "ApplicationPath", ExpandPath("."));
 			//Load Framework Path too
-			StructInsert(settingsStruct, "FrameworkPath", getDirectoryFromPath(getCurrentPath()) );
+			StructInsert(settingsStruct, "FrameworkPath", ExpandPath("/coldbox/system") & instance.FileSeparator );
 			//Load Plugins Path
 			StructInsert(settingsStruct, "FrameworkPluginsPath", settingsStruct.FrameworkPath & "plugins");
 			//Set the complete modifylog path
