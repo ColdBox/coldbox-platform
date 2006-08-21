@@ -163,10 +163,10 @@ Modification History:
 			if ( arrayLen(functions) eq 0 )
 				getPlugin("logger").logEntry("warning","Handler cfc: #name# does not have any methods defined.");
 			else{
-				for (x=1; x lt arrayLen(functions) ; x=x+1){
+				for (x=1; x lte arrayLen(functions) ; x=x+1){
 					if ( not StructKeyExists(functions[x].XMLAttributes,"access") ) 
 						functions[x].XMLAttributes["access"] = "public";
-					if ( functions[x].XMLAttributes["name"] neq "init" and functions[x].XMLAttributes["access"] eq "public" ){
+					if ( trim(functions[x].XMLAttributes["name"]) neq "init" and trim(functions[x].XMLAttributes["access"]) eq "public" ){
 						arrayAppend(registeredHandlers, ripExtension(name) & "." & trim(functions[x].XMLAttributes["name"]));
 					}
 				}
