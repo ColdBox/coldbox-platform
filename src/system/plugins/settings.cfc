@@ -16,9 +16,11 @@ Modification History:
 
 	<!--- ************************************************************* --->
 	<cffunction name="init" access="public" returntype="any" output="false">
-		<cfargument name="controller" required="yes" hint="The reference to the framework controller">
-			<cfset super.Init(arguments.controller) />
-			<cfreturn this>
+		<cfset super.Init() />
+		<cfset variables.instance.pluginName = "Settings">
+		<cfset variables.instance.pluginVersion = "1.0">
+		<cfset variables.instance.pluginDescription = "This plugin is used to control several of the framework settings and aspects.">
+		<cfreturn this>
 	</cffunction>
 	<!--- ************************************************************* --->
 
