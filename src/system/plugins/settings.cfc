@@ -43,7 +43,7 @@ Modification History:
 		<!--- Set Config DebugMode --->
 		<cfset setDebugMode(getSetting("DebugMode"))>
 		<!--- Test for Coldbox logging, if set init the log location --->
-		<cfif getSetting("EnableColdboxLogging")>
+		<cfif getSetting("EnableColdboxLogging") and getSetting("ColdboxLogsLocation") neq "">
 			<cfset getPlugin("logger").initLogLocation()>
 		</cfif>
 		<!--- Flag the initiation --->
