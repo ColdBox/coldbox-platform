@@ -97,6 +97,15 @@ Last Update 	: July 28, 2006
 		<!--- ************************************************************* --->
 		<cfreturn isDefined("request.reqCollection.#arguments.name#") >
 	</cffunction>
+	
+	<cffunction name="paramValue" returntype="void" access="Public"	hint="Just like cfparam, but for the request collection" output="false">
+		<cfargument name="name" 	hint="Name of the variable to param in the request collection" 	type="string">
+		<cfargument name="value" 	hint="The value of the variable to set if not found." 			type="Any" >
+		<!--- ************************************************************* --->
+		<cfif not valueExists(arguments.name)>
+			<cfset setValue(arguments.name, arguments.value)>
+		</cfif>
+	</cffunction>
 
 	<cffunction name="getValue" returntype="Any" access="Public" hint="I Get a value from the request collection." output="false">
 		<cfargument name="name" hint="Name of the variable to get from the request collection" type="string">
