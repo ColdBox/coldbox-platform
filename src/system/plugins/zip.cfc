@@ -48,8 +48,7 @@ Modification History:
 08/01/2006 - Updated the cfc to work for ColdBox.
 --->
 <cfcomponent name="zip"
-	 	     displayname = "Zip Component"
-             hint        = "A collections of functions that supports the Zip and GZip functionality by using the Java Zip file API."
+             hint = "A collections of functions that supports the Zip and GZip functionality by using the Java Zip file API."
              extends="coldbox.system.plugin">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
