@@ -9,7 +9,13 @@
 }
 .cfc_content a:hover{
 	color: black;
-	font-size: 10px;
+	font-weight: bold;
+}
+.cfc_content ul{
+	color: #330066;
+}
+.cfc_content li{
+	margin: 5px;
 }
 .cfc_h1{
 	font-size: 14px;
@@ -75,5 +81,5 @@
 	background-color: #FFFFFF;
 }
 .cfc_methodrowsOn{
-	background-color: #99E4FF;
+	background-color: #E8F2FE;
 }
