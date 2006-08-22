@@ -31,6 +31,7 @@ Modification History:
 		<cflock type="exclusive" name="Coldbox_configloader" timeout="120">
 			<cfif not structKeyExists(application, "ColdBox_fwInitiated") or url.fwreinit>
 				<cfset session.fwController.getPlugin("settings").configLoader()>
+				<cfset session.fwController.setDebugMode(session.fwController.getSetting("DebugMode"))>
 				<cfset session.fwController.getPlugin("settings").registerHandlers()>
 			</cfif>
 		</cflock>
@@ -39,6 +40,7 @@ Modification History:
 		<cfif session.fwController.getSetting("ConfigAutoReload")>
 			<cflock type="exclusive" name="Coldbox_configloader" timeout="120">
 				<cfset session.fwController.getPlugin("settings").configLoader()>
+				<cfset session.fwController.setDebugMode(session.fwController.getSetting("DebugMode"))>
 				<cfset session.fwController.getPlugin("settings").registerHandlers()>
 			</cflock>
 		<cfelseif session.fwController.getSetting("HandlersIndexAutoReload")>
