@@ -10,12 +10,11 @@ On the other hand, it just uses the controller methods directly.  This is done
 because the dashboard lives inside of ColdBox.
 
 --->
-<cfcomponent name="ehColdBox">
+<cfcomponent name="ehColdBox" extends="coldbox.system.eventhandler">
 
 	<!--- ************************************************************* --->
 	<cffunction name="init" access="public" returntype="any">
-		<cfargument name="controller" required="yes" hint="The reference to the framework controller">
-		<cfset variables.controller = arguments.controller>
+		<cfset super.Init()>
 		<cfreturn this>
 	</cffunction>
 	<!--- ************************************************************* --->
@@ -25,16 +24,16 @@ because the dashboard lives inside of ColdBox.
 		<!--- Authorization --->
 		<cfif (not isDefined("session.authorized") or
 			  session.authorized eq false) and
-			  controller.getValue("password","not found") eq "not found">
-			<cfset controller.setValue("event", "ehColdbox.dspLogin")>
+			  getValue("password","not found") eq "not found">
+			<cfset setValue("event", "ehColdbox.dspLogin")>
 		</cfif>
 		<!--- Logout --->
-		<cfif controller.getValue("logout",0) neq 0>
-			<cfset controller.setNextEvent("ehColdbox.doLogout")>
+		<cfif getValue("logout",0) neq 0>
+			<cfset setNextEvent("ehColdbox.doLogout")>
 		</cfif>
 		<!--- Web Service Refresh, if needed. --->
-		<cfif controller.getValue("refreshWS","") neq "">
-			<cfset controller.getPlugin("webservices").refreshWS("DistributionWS")>
+		<cfif getValue("refreshWS","") neq "">
+			<cfset getPlugin("webservices").refreshWS("DistributionWS")>
 		</cfif>
 	</cffunction>
 	<!--- ************************************************************* --->
@@ -42,38 +41,38 @@ because the dashboard lives inside of ColdBox.
 	<!--- ************************************************************* --->
 	<cffunction name="dspLogin" access="public" returntype="void">
 		<!--- Set the View --->
-		<cfset controller.setView("vwLogin")>
+		<cfset setView("vwLogin")>
 	</cffunction>
 	<!--- ************************************************************* --->
 
 	<!--- ************************************************************* --->
 	<cffunction name="dspHome" access="public" returntype="void">
 		<!--- Set the View --->
-		<cfset controller.setView("vwHome")>
+		<cfset setView("vwHome")>
 	</cffunction>
 	<!--- ************************************************************* --->
 
 	<!--- ************************************************************* --->
 	<cffunction name="dspPassword" access="public" returntype="void">
 		<!--- Set the View --->
-		<cfset controller.setView("vwPassword")>
+		<cfset setView("vwPassword")>
 	</cffunction>
 	<!--- ************************************************************* --->
 
 	<!--- ************************************************************* --->
 	<cffunction name="dspConfigEditor" access="public" returntype="void">
-		<cfset var fs = controller.getSetting("OSFileSeparator",1)>
-		<cfset var configFile = controller.getSetting("ParentAppPath",true) & fs & "config" & fs & "config.xml.cfm">
+		<cfset var fs = getSetting("OSFileSeparator",1)>
+		<cfset var configFile = getSetting("ParentAppPath",true) & fs & "config" & fs & "config.xml.cfm">
 		<!--- Read Config XML using plugin, this is mostly for cfscript --->
-		<cfset var configXML = controller.getPlugin("fileUtilities").readFile("#configFile#")>
-		<cfset controller.setValue("configXML", configXML)>
+		<cfset var configXML = getPlugin("fileUtilities").readFile("#configFile#")>
+		<cfset setValue("configXML", configXML)>
 		<!--- Test for CFDOC --->
-		<cfif controller.getValue("cfdoc", false) eq false >
-			<cfset controller.setView("vwConfigEditor")>
+		<cfif getValue("cfdoc", false) eq false >
+			<cfset setView("vwConfigEditor")>
 		<cfelse>
-			<cfset controller.setValue("fpcontent", XMLFormat(configXML))>
-			<cfset controller.setValue("usePreTag", true)>
-			<cfset controller.setView("vwFPViewer")>
+			<cfset setValue("fpcontent", XMLFormat(configXML))>
+			<cfset setValue("usePreTag", true)>
+			<cfset setView("vwFPViewer")>
 		</cfif>
 	</cffunction>
 	<!--- ************************************************************* --->
@@ -84,17 +83,17 @@ because the dashboard lives inside of ColdBox.
 		<cfset checkBackupDir()>
 		<!--- Read Directory --->
 		<cfdirectory action="list"
-					 directory="#expandPath(controller.getSetting("BackupsPath"))#"
+					 directory="#expandPath(getSetting("BackupsPath"))#"
 					 name="dirListing"
 					 recurse="yes"
 					 sort="asc"  >
 
-		<cfset controller.setValue("dirListing",dirListing)>
+		<cfset setValue("dirListing",dirListing)>
 		<!--- grab if backup --->
-		<cfif controller.getValue("finished","") eq "ok">
-			<cfset controller.getPlugin("messagebox").setMessage("info","Your data has been backed up successfully. Please look below in your backups directory for the zip file.")>
+		<cfif getValue("finished","") eq "ok">
+			<cfset getPlugin("messagebox").setMessage("info","Your data has been backed up successfully. Please look below in your backups directory for the zip file.")>
 		</cfif>
-		<cfset controller.setView("vwBackups")>
+		<cfset setView("vwBackups")>
 	</cffunction>
 	<!--- ************************************************************* --->
 
@@ -102,24 +101,24 @@ because the dashboard lives inside of ColdBox.
 	<cffunction name="dspModifyLog" access="public" returntype="void">
 		<cfset var logText = "">
 		<!--- Read Modify Log --->
-		<cffile action="read" file="#controller.getSetting("ModifyLogLocation",true)#" variable="logtext">
+		<cffile action="read" file="#getSetting("ModifyLogLocation",true)#" variable="logtext">
 		<cfset logText = replace(logtext, chr(13), "<br>", "all")>
 		<cfset logText = replace(logtext, chr(9), "&nbsp;&nbsp;&nbsp;&nbsp;", "all")>
-		<cfset controller.setValue("logtext", logtext)>
+		<cfset setValue("logtext", logtext)>
 		<!--- Test for CFDOC --->
-		<cfif controller.getValue("cfdoc", false) eq false >
-			<cfset controller.setView("vwModifyLog")>
+		<cfif getValue("cfdoc", false) eq false >
+			<cfset setView("vwModifyLog")>
 		<cfelse>
-			<cfset controller.setValue("fpcontent", logtext)>
-			<cfset controller.setValue("usePreTag", false)>
-			<cfset controller.setView("vwFPViewer")>
+			<cfset setValue("fpcontent", logtext)>
+			<cfset setValue("usePreTag", false)>
+			<cfset setView("vwFPViewer")>
 		</cfif>
 	</cffunction>
 	<!--- ************************************************************* --->
 
 	<!--- ************************************************************* --->
 	<cffunction name="dspConfigHelp" access="public" returntype="void">
-		<cfset controller.setView("vwConfigHelp")>
+		<cfset setView("vwConfigHelp")>
 		<!--- CFDoc Check --->
 		<cfset cfdoc()>
 	</cffunction>
@@ -127,7 +126,7 @@ because the dashboard lives inside of ColdBox.
 
 	<!--- ************************************************************* --->
 	<cffunction name="dspHandlersHelp" access="public" returntype="void">
-		<cfset controller.setView("vwHandlersHelp")>
+		<cfset setView("vwHandlersHelp")>
 		<!--- CFDoc Check --->
 		<cfset cfdoc()>
 	</cffunction>
@@ -135,7 +134,7 @@ because the dashboard lives inside of ColdBox.
 
 	<!--- ************************************************************* --->
 	<cffunction name="dspSettings" access="public" returntype="void">
-		<cfset controller.setView("vwSettings")>
+		<cfset setView("vwSettings")>
 		<!--- CFDoc Check --->
 		<cfset cfdoc()>
 	</cffunction>
@@ -153,27 +152,27 @@ because the dashboard lives inside of ColdBox.
 		<cfset var oCFCViewer = "">
 
 		<!--- Determine type of cfc's to show --->
-		<cfif controller.getValue("type","") eq "plugins">
+		<cfif getValue("type","") eq "plugins">
 			<cfset cfcPath = PluginPath>
 			<cfset dirPath = "../plugins/">
-		<cfelseif controller.getValue("type","") eq "system">
+		<cfelseif getValue("type","") eq "system">
 			<cfset cfcPath = SystemPath>
 			<cfset dirPath = "../">
 		</cfif>
 		<!---Set paths --->
-		<cfset controller.setValue("cfcPath", cfcPath)>
-		<cfset controller.setValue("dirPath", dirPath)>
+		<cfset setValue("cfcPath", cfcPath)>
+		<cfset setValue("dirPath", dirPath)>
 
 		<!--- Get cfcviewer Plugin --->
-		<cfset oCFCViewer = controller.getPlugin("cfcViewer")>
+		<cfset oCFCViewer = getPlugin("cfcViewer")>
 		<cfset oCFCViewer.setup(dirPath, cfcPath)>
 
 		<!--- Place in req Collection --->
-		<cfset controller.setValue("oCFCViewer",oCFCViewer)>
-		<cfset controller.setValue("aCFC",oCFCViewer.getCFCs())>
+		<cfset setValue("oCFCViewer",oCFCViewer)>
+		<cfset setValue("aCFC",oCFCViewer.getCFCs())>
 
 		<!--- set the view --->
-		<cfset controller.setView("vwAPI")>
+		<cfset setView("vwAPI")>
 		<!--- CFDoc Check --->
 		<cfset cfdoc()>
 	</cffunction>
@@ -181,15 +180,15 @@ because the dashboard lives inside of ColdBox.
 
 	<!--- ************************************************************* --->
 	<cffunction name="doLogin" access="public" returntype="void">
-		<cfset var passHash = hash(controller.getValue("password") )>
+		<cfset var passHash = hash(getValue("password") )>
 		<!--- Check for password --->
-		<cfif controller.getPlugin("settings").passwordCheck(passHash)>
+		<cfif passwordCheck(passHash)>
 			<cfset session.authorized = true>
-			<cfset controller.setNextEvent("ehColdbox.dspHome")>
+			<cfset setNextEvent("ehColdbox.dspHome")>
 		<cfelse>
 			<!--- Invalid --->
-			<cfset controller.getPlugin("messagebox").setMessage("warning","The password you entered is incorrect")>
-			<cfset controller.setNextEvent("ehColdbox.dspLogin")>
+			<cfset getPlugin("messagebox").setMessage("warning","The password you entered is incorrect")>
+			<cfset setNextEvent("ehColdbox.dspLogin")>
 		</cfif>
 	</cffunction>
 	<!--- ************************************************************* --->
@@ -201,39 +200,39 @@ because the dashboard lives inside of ColdBox.
 		<cfset var updateResults = "">
 		<cftry>
 			<!--- Get a WS Object --->
-			<cfset updateWS = controller.getPlugin("webservices").getWSObj("DistributionWS")>
+			<cfset updateWS = getPlugin("webservices").getWSObj("DistributionWS")>
 			<!--- Check for Updates --->
-			<cfset updateResults = updateWS.getUpdateInfo('#controller.getSetting("Version",1)#')>
+			<cfset updateResults = updateWS.getUpdateInfo('#getSetting("Version",1)#')>
 			<!--- CHeck for WS Errors --->
 			<cfif updateResults.error>
-				<cfset controller.getPlugin("messagebox").setMessage("error", "#errorString##updateResults.errorMessage#")>
+				<cfset getPlugin("messagebox").setMessage("error", "#errorString##updateResults.errorMessage#")>
 			<cfelse>
 				<!--- Test versions --->
 				<cfif updateResults.AvailableUpdate>
-					<cfset controller.getPlugin("messagebox").setMessage("warning","There is a new version of ColdBox available.")>
+					<cfset getPlugin("messagebox").setMessage("warning","There is a new version of ColdBox available.")>
 				<cfelse>
-					<cfset controller.getPlugin("messagebox").setMessage("warning","You have the latest version of ColdBox installed.")>
+					<cfset getPlugin("messagebox").setMessage("warning","You have the latest version of ColdBox installed.")>
 				</cfif>
 				<!--- Format Readme for display --->
 				<cfset updateResults.updateStruct.ReadmeFile = replace(updateResults.updateStruct.ReadmeFile, chr(13), "<br>", "all")>
 				<cfset updateResults.updateStruct.ReadmeFile = replace(updateResults.updateStruct.ReadmeFile, chr(9), "&nbsp;&nbsp;&nbsp;&nbsp;", "all")>
 				<!--- Save Update Results --->
-				<cfset controller.getPlugin("clientstorage").setVar("updateResults", updateResults)>
+				<cfset getPlugin("clientstorage").setVar("updateResults", updateResults)>
 			</cfif>
 			<!--- Catch --->
 			<cfcatch type="any">
-				<cfset controller.getPlugin("messagebox").setMessage("warning","#errorString##cfcatch.Detail#<br><br>#cfcatch.Message#")>
+				<cfset getPlugin("messagebox").setMessage("warning","#errorString##cfcatch.Detail#<br><br>#cfcatch.Message#")>
 			</cfcatch>
 		</cftry>
 		<!--- set next event --->
-		<cfset controller.setNextEvent("ehColdbox.dspHome")>
+		<cfset setNextEvent("ehColdbox.dspHome")>
 	</cffunction>
 	<!--- ************************************************************* --->
 
 	<!--- ************************************************************* --->
 	<cffunction name="doLogout" access="public" returntype="void">
 		<cfset session.authorized = false>
-		<cfset controller.SetNextEvent("ehColdbox.dspLogin")>
+		<cfset SetNextEvent("ehColdbox.dspLogin")>
 	</cffunction>
 	<!--- ************************************************************* --->
 
@@ -241,26 +240,26 @@ because the dashboard lives inside of ColdBox.
 	<cffunction name="doChangePassword" access="public" returntype="void">
 		<cfset var errors = "">
 		<!--- Validations --->
-		<cfif trim(controller.getValue("new_password")) eq "" or trim(controller.getValue("current_password")) eq "" or trim(controller.getValue("new_password2")) eq "">
+		<cfif trim(getValue("new_password")) eq "" or trim(getValue("current_password")) eq "" or trim(getValue("new_password2")) eq "">
 			<cfset errors = "- Please enter all the fields.<br>">
 		</cfif>
 		<!--- pass matches --->
-		<cfif compare(trim(controller.getValue("new_password")), trim(controller.getValue("new_password2"))) neq 0>
+		<cfif compare(trim(getValue("new_password")), trim(getValue("new_password2"))) neq 0>
 			<cfset errors = errors & "- The new password does not match the confirmation password. Try again.<br>">
 		</cfif>
 		<!--- Test for old Password --->
-		<cfif not controller.getPlugin("settings").passwordCheck(trim(hash(controller.getValue("current_password"))))>
+		<cfif not getPlugin("settings").passwordCheck(trim(hash(getValue("current_password"))))>
 			<cfset errors = errors & "- The current password you entered is incorrect.<br>">
 		</cfif>
 		<cfif len(errors) neq 0>
-			<cfset controller.getPlugin("messagebox").setMessage("warning",errors)>
-			<cfset controller.setNextEvent("ehColdbox.dspPassword")>
+			<cfset getPlugin("messagebox").setMessage("warning",errors)>
+			<cfset setNextEvent("ehColdbox.dspPassword")>
 		</cfif>
 
 		<!--- Change Password --->
-		<cfset controller.getPlugin("settings").changePassword(trim(controller.getValue("current_password")),trim(controller.getValue("new_password")))>
-		<cfset controller.getPlugin("messagebox").setMessage("info","Your Dashboard password has been changed.")>
-		<cfset controller.setNextEvent("ehColdbox.dspPassword")>
+		<cfset getPlugin("settings").changePassword(trim(getValue("current_password")),trim(getValue("new_password")))>
+		<cfset getPlugin("messagebox").setMessage("info","Your Dashboard password has been changed.")>
+		<cfset setNextEvent("ehColdbox.dspPassword")>
 
 	</cffunction>
 	<!--- ************************************************************* --->
@@ -268,25 +267,25 @@ because the dashboard lives inside of ColdBox.
 	<!--- ************************************************************* --->
 	<cffunction name="doSaveConfig" access="public" returntype="void">
 		<!--- Save Config XML --->
-		<cfset var fileContents = toString(trim(controller.getValue("xmlcontent")))>
-		<cfset var fs = controller.getSetting("OSFileSeparator",1)>
-		<cfset var filename = "#getFileFromPath(controller.getSetting("ConfigFileLocation",true))#">
-		<cfset var source = controller.getSetting("ParentAppPath",true) & fs & "config" & fs & "config.xml.cfm" >
-		<cfset var destination = ExpandPath("#controller.getSetting("BackupsPath")##fs#config_files#fs##dateformat(now(),"MMM.DD.YY")#-#timeformat(now(),"HH.MM")#_#filename#")>
+		<cfset var fileContents = toString(trim(getValue("xmlcontent")))>
+		<cfset var fs = getSetting("OSFileSeparator",1)>
+		<cfset var filename = "#getFileFromPath(getSetting("ConfigFileLocation",true))#">
+		<cfset var source = getSetting("ParentAppPath",true) & fs & "config" & fs & "config.xml.cfm" >
+		<cfset var destination = ExpandPath("#getSetting("BackupsPath")##fs#config_files#fs##dateformat(now(),"MMM.DD.YY")#-#timeformat(now(),"HH.MM")#_#filename#")>
 		<cfset var validationResults = "">
 		
 		<!--- XML Verification --->
 		<cfif not isXML(fileContents)>
-			<cfset controller.getPlugin("messagebox").setMessage("error", "The contents of the xml file are invalid. This is not a valid XML file. Please check your syntax. The file has been reverted to the original config.xml")>
-			<cfset controller.setNextEvent("ehColdbox.dspConfigEditor")>
+			<cfset getPlugin("messagebox").setMessage("error", "The contents of the xml file are invalid. This is not a valid XML file. Please check your syntax. The file has been reverted to the original config.xml")>
+			<cfset setNextEvent("ehColdbox.dspConfigEditor")>
 		</cfif>
 
 		<!--- Validation --->
-		<cfset validationResults = XMLValidate(fileContents,controller.getSetting("ConfigFileSchemaLocation",1))>
+		<cfset validationResults = XMLValidate(fileContents,getSetting("ConfigFileSchemaLocation",1))>
 
 		<cfif not validationResults.status>
-			<cfset controller.getPlugin("messagebox").setMessage("error", "The contents of the xml file does not validate with the config schema file.  The file has been reverted to the original config.xml.")>
-			<cfset controller.setNextEvent("ehColdbox.dspConfigEditor")>
+			<cfset getPlugin("messagebox").setMessage("error", "The contents of the xml file does not validate with the config schema file.  The file has been reverted to the original config.xml.")>
+			<cfset setNextEvent("ehColdbox.dspConfigEditor")>
 		</cfif>
 
 		<!--- Check backups dir --->
@@ -307,11 +306,11 @@ because the dashboard lives inside of ColdBox.
 					mode="777">
 
 			<!--- Message --->
-			<cfset controller.getPlugin("messagebox").setMessage("info","The Config.xml file was saved successfully. A backup copy has been placed in the backups directory of the dashboard.")>
-			<cfset controller.setNextEvent("ehColdbox.dspConfigEditor")>
+			<cfset getPlugin("messagebox").setMessage("info","The Config.xml file was saved successfully. A backup copy has been placed in the backups directory of the dashboard.")>
+			<cfset setNextEvent("ehColdbox.dspConfigEditor")>
 			<cfcatch type="any">
-				<cfset controller.getPlugin("messagebox").setMessage("error", "Error Saving File: #cfcatch.detail# #cfcatch.message#")>
-				<cfset controller.setNextEvent("ehColdbox.dspConfigEditor")>
+				<cfset getPlugin("messagebox").setMessage("error", "Error Saving File: #cfcatch.detail# #cfcatch.message#")>
+				<cfset setNextEvent("ehColdbox.dspConfigEditor")>
 			</cfcatch>
 		</cftry>
 	</cffunction>
@@ -320,18 +319,18 @@ because the dashboard lives inside of ColdBox.
 	<!--- ************************************************************* --->
 	<cffunction name="doRemoveFile" access="public" returntype="void">
 		<!--- Get File info to remove --->
-		<cfset var Filename = controller.getValue("filename")>
-		<cfset var FilePath = controller.getValue("filepath")>
+		<cfset var Filename = getValue("filename")>
+		<cfset var FilePath = getValue("filepath")>
 		<cftry>
 			<!--- Remove File --->
 			<cffile action="delete"
-					file="#filepath##controller.getSetting('OSFileSeparator',1)##filename#">
+					file="#filepath##getSetting('OSFileSeparator',1)##filename#">
 			<!--- Set Message --->
-			<cfset controller.getPlugin("messagebox").setMessage("info", "The file: <strong>#filename#</strong> was deleted successfully")>
-			<cfset controller.setNextEvent("ehColdbox.dspBackups")>
+			<cfset getPlugin("messagebox").setMessage("info", "The file: <strong>#filename#</strong> was deleted successfully")>
+			<cfset setNextEvent("ehColdbox.dspBackups")>
 			<cfcatch type="any">
-				<cfset controller.getPlugin("messagebox").setMessage("error", "Error removing file: #cfcatch.detail# #cfcatch.message#")>
-				<cfset controller.setNextEvent("ehColdbox.dspBackups")>
+				<cfset getPlugin("messagebox").setMessage("error", "Error removing file: #cfcatch.detail# #cfcatch.message#")>
+				<cfset setNextEvent("ehColdbox.dspBackups")>
 			</cfcatch>
 		</cftry>
 	</cffunction>
@@ -339,7 +338,7 @@ because the dashboard lives inside of ColdBox.
 
 	<!--- ************************************************************* --->
 	<cffunction name="doDeliverFile" access="public" returntype="void">
-		<cfset var DeliverFile = replace(urlDecode(controller.getValue("backupfile")),"{sep}",controller.getSetting("OSFileSeparator",1))>
+		<cfset var DeliverFile = replace(urlDecode(getValue("backupfile")),"{sep}",getSetting("OSFileSeparator",1))>
 		<cfset var Filename = GetFileFromPath(DeliverFile)>
 		<cfset var mime = "">
 		<!--- Determine type --->
@@ -361,11 +360,11 @@ because the dashboard lives inside of ColdBox.
 		<cfset var SetupSettings = Structnew()>
 		<cfset var wddxpacket = "">
 		<cfset SetupSettings.InstallationType = "backup">
-		<cfset SetupSettings.BackupsPath= expandPath(controller.getSetting("BackupsPath"))>
-		<cfset SetupSettings.BackupDirectoryPath = controller.getSetting("FrameworkPath",1)>
-		<cfset SetupSettings.FrameworkPath = controller.getSetting("FrameworkPath",1)>
-		<cfset SetupSettings.FrameworkVersion = controller.getSetting("Version",1)>
-		<cfset SetupSettings.FrameworkBackupName = dateformat(now(),"Mmm.dd.yy") & "-" & timeFormat(now(),"HHmm") & "_system_" & controller.getSetting("Version",1) & "_backup.zip">
+		<cfset SetupSettings.BackupsPath= expandPath(getSetting("BackupsPath"))>
+		<cfset SetupSettings.BackupDirectoryPath = getSetting("FrameworkPath",1)>
+		<cfset SetupSettings.FrameworkPath = getSetting("FrameworkPath",1)>
+		<cfset SetupSettings.FrameworkVersion = getSetting("Version",1)>
+		<cfset SetupSettings.FrameworkBackupName = dateformat(now(),"Mmm.dd.yy") & "-" & timeFormat(now(),"HHmm") & "_system_" & getSetting("Version",1) & "_backup.zip">
 		<cfwddx action="cfml2wddx" input="#SetupSettings#" output="wddxpacket">
 		<!--- RElocate to installer --->
 		<cflocation url="installer/installer.cfm?setuppacket=#wddxpacket#" addtoken="no">
@@ -378,10 +377,10 @@ because the dashboard lives inside of ColdBox.
 		<cfset var SetupSettings = Structnew()>
 		<cfset var wddxpacket = "">
 		<cfset SetupSettings.InstallationType = "backup">
-		<cfset SetupSettings.BackupsPath= expandPath(controller.getSetting("BackupsPath"))>
-		<cfset SetupSettings.BackupDirectoryPath = controller.getSetting("ParentAppPath",1)>
-		<cfset SetupSettings.FrameworkPath = controller.getSetting("FrameworkPath",1)>
-		<cfset SetupSettings.FrameworkVersion = controller.getSetting("Version",1)>
+		<cfset SetupSettings.BackupsPath= expandPath(getSetting("BackupsPath"))>
+		<cfset SetupSettings.BackupDirectoryPath = getSetting("ParentAppPath",1)>
+		<cfset SetupSettings.FrameworkPath = getSetting("FrameworkPath",1)>
+		<cfset SetupSettings.FrameworkVersion = getSetting("Version",1)>
 		<cfset SetupSettings.FrameworkBackupName = dateformat(now(),"Mmm.dd.yy") & "-" & timeFormat(now(),"HHmm") & "_app_backup.zip">
 		<cfwddx action="cfml2wddx" input="#SetupSettings#" output="wddxpacket">
 		<!--- RElocate to installer --->
@@ -394,23 +393,23 @@ because the dashboard lives inside of ColdBox.
 		<!--- Set Setup Variables Structure For Installer. --->
 		<cfset var SetupSettings = Structnew()>
 		<cfset var wddxpacket = "">
-		<cfset var fs = controller.getSetting("OSFileSeparator",1)>
+		<cfset var fs = getSetting("OSFileSeparator",1)>
 		<cfset var installfiles = "">
 		<cfset SetupSettings.InstallationType = "update">
-		<cfset SetupSettings.FrameworkUpdateFileURL = controller.getValue("updateFile")>
-		<cfset SetupSettings.FrameworkUpdateFileSize = controller.getValue("FileSize")>
-		<cfset SetupSettings.FrameworkNewVersion = controller.getValue("version")>
-		<cfset SetupSettings.FrameworkVersion = controller.getSetting("Version",1)>
+		<cfset SetupSettings.FrameworkUpdateFileURL = getValue("updateFile")>
+		<cfset SetupSettings.FrameworkUpdateFileSize = getValue("FileSize")>
+		<cfset SetupSettings.FrameworkNewVersion = getValue("version")>
+		<cfset SetupSettings.FrameworkVersion = getSetting("Version",1)>
 		<cfset SetupSettings.FrameworkUpdateFileName = "coldbox_#SetupSettings.FrameworkNewVersion#.zip">
 		<cfset SetupSettings.FrameworkBackupName = dateformat(now(),"Mmm.dd.yy") & "-" & timeFormat(now(),"HHmm") & "_system_" & SetupSettings.FrameworkVersion & "_backup.zip">
-		<cfset SetupSettings.FrameworkPath = controller.getSetting("FrameworkPath",1)>
-		<cfset SetupSettings.UpdateTempDir = expandPath(controller.getSetting("UpdateTempDir") )>
+		<cfset SetupSettings.FrameworkPath = getSetting("FrameworkPath",1)>
+		<cfset SetupSettings.UpdateTempDir = expandPath(getSetting("UpdateTempDir") )>
 		<cfset SetupSettings.BackupsPath = SetupSettings.UpdateTempDir & fs & "system" & fs & "admin" & fs & "backups">
-		<cfset SetupSettings.BackupDirectoryPath = controller.getSetting("FrameworkPath",1)>
+		<cfset SetupSettings.BackupDirectoryPath = getSetting("FrameworkPath",1)>
 		<cfset SetupSettings.installerDir = expandPath("installer")>
 		<cfset SetupSettings.PasswordFilePath = expandPath("config/.coldbox")>
 		<cfset SetupSettings.PasswordFileDestination = SetupSettings.updateTempDir & fs & "system" & fs & "admin" & fs & "config">
-		<cfset SetupSettings.ParentPath = controller.getSetting("ParentAppPath",1)>
+		<cfset SetupSettings.ParentPath = getSetting("ParentAppPath",1)>
 		<cfwddx action="cfml2wddx" input="#SetupSettings#" output="wddxpacket">
 		<!--- Move Installer and run --->
 		<cftry>
@@ -428,7 +427,7 @@ because the dashboard lives inside of ColdBox.
 			</cfloop>
 
 			<!--- Start Installler --->
-			<cflocation url="#controller.getSetting("UpdateTempDir")#/installer.cfm?setuppacket=#wddxpacket#" addtoken="no">
+			<cflocation url="#getSetting("UpdateTempDir")#/installer.cfm?setuppacket=#wddxpacket#" addtoken="no">
 
 			<cfcatch type="any">
 				<!--- Check for Dir --->
@@ -436,8 +435,8 @@ because the dashboard lives inside of ColdBox.
 					<cfdirectory action="delete" recurse="true" directory="#setupSettings.updateTempDir#">
 				</cfif>
 				<!--- Message --->
-				<cfset controller.getPlugin("messagebox").setMessage("error","Error initiating installer. Please see the diagnostics message below:<br><br>#cfcatch.Detail#<br>#cfcatch.Message#")>
-				<cfset controller.setNextEvent("ehColdbox.dspHome")>
+				<cfset getPlugin("messagebox").setMessage("error","Error initiating installer. Please see the diagnostics message below:<br><br>#cfcatch.Detail#<br>#cfcatch.Message#")>
+				<cfset setNextEvent("ehColdbox.dspHome")>
 			</cfcatch>
 		</cftry>
 	</cffunction>
@@ -445,32 +444,32 @@ because the dashboard lives inside of ColdBox.
 
 	<!--- ************************************************************* --->
 	<cffunction name="doInstall" access="public" returntype="void">
-		<cfset var UpdateTempDir = expandPath(controller.getSetting("UpdateTempDir") )>
+		<cfset var UpdateTempDir = expandPath(getSetting("UpdateTempDir") )>
 		<cfif directoryExists(UpdateTempDir)>
 			<!--- Remove Temp Install Dir --->
 			<cfdirectory action="delete" directory="#UpdateTempDir#" recurse="yes">
 		</cfif>
-		<cfset controller.getPlugin("messagebox").setMessage("info","Your ColdBox installation has been updated successfully!")>
-		<cfset controller.setNextEvent("ehColdbox.dspLogin")>
+		<cfset getPlugin("messagebox").setMessage("info","Your ColdBox installation has been updated successfully!")>
+		<cfset setNextEvent("ehColdbox.dspLogin")>
 	</cffunction>
 	<!--- ************************************************************* --->
 
 	<!--- ************************************************************* --->
 	<cffunction name="doRollback" access="public" returntype="void">
-		<cfset var UpdateTempDir = expandPath(controller.getSetting("UpdateTempDir") )>
+		<cfset var UpdateTempDir = expandPath(getSetting("UpdateTempDir") )>
 		<cfif directoryExists(UpdateTempDir)>
 			<!--- Remove Temp Install Dir --->
 			<cfdirectory action="delete" directory="#UpdateTempDir#" recurse="yes">
 		</cfif>
-		<cfset controller.getPlugin("messagebox").setMessage("error","There was an error while updating your system. Please look at the error below:<br><br>#URLDecode(controller.getValue("installerror"))#")>
-		<cfset controller.setNextEvent("ehColdbox.dspHome")>
+		<cfset getPlugin("messagebox").setMessage("error","There was an error while updating your system. Please look at the error below:<br><br>#URLDecode(getValue("installerror"))#")>
+		<cfset setNextEvent("ehColdbox.dspHome")>
 	</cffunction>
 	<!--- ************************************************************* --->
 
 	<!--- ************************************************************* --->
 	<cffunction name="doChangeLocale" access="public" returntype="void">
 		<!--- Change Locale --->
-		<cfset controller.getPlugin("i18n").setfwLocale(controller.getValue("locale"))>
+		<cfset getPlugin("i18n").setfwLocale(getValue("locale"))>
 		<cfset dspHome()>
 	</cffunction>
 	<!--- ************************************************************* --->
@@ -479,22 +478,22 @@ because the dashboard lives inside of ColdBox.
 	<!--- UTILITY METHODS												   --->
 	<!--- ************************************************************* --->
 	<cffunction  name="checkBackupDir" access="private" returntype="void" hint="Check the backups dir">
-		<cfset var fs = controller.getSetting("OSFileSeparator",1)>
+		<cfset var fs = getSetting("OSFileSeparator",1)>
 		<!--- Directory Check --->
-		<cfif not directoryExists( expandPath(controller.getSetting("backupsPath")) )>
-			<cfdirectory action="create" directory="#expandPath(controller.getSetting("BackupsPath"))#" mode="777">
+		<cfif not directoryExists( expandPath(getSetting("backupsPath")) )>
+			<cfdirectory action="create" directory="#expandPath(getSetting("BackupsPath"))#" mode="777">
 		</cfif>
 		<!--- Config Directories Check --->
-		<cfif not directoryExists( expandPath(controller.getSetting("backupsPath") & "#fs#config_files") )>
-			<cfdirectory action="create" directory="#expandPath(controller.getSetting("BackupsPath") & "#fs#config_files")#" mode="777">
+		<cfif not directoryExists( expandPath(getSetting("backupsPath") & "#fs#config_files") )>
+			<cfdirectory action="create" directory="#expandPath(getSetting("BackupsPath") & "#fs#config_files")#" mode="777">
 		</cfif>
 	</cffunction>
 	<!--- ************************************************************* --->
 
 	<!--- ************************************************************* --->
 	<cffunction  name="cfdoc" access="private" returntype="void" hint="Change the layout to cfdoc">
-		<cfif controller.getValue("cfdoctype","") neq "">
-			<cfset controller.setLayout("Layout.cfdoc")>
+		<cfif getValue("cfdoctype","") neq "">
+			<cfset setLayout("Layout.cfdoc")>
 		</cfif>
 	</cffunction>
 	<!--- ************************************************************* --->

@@ -3,7 +3,7 @@
  xsi:noNamespaceSchemaLocation="http://www.luismajano.com/projects/coldbox/schema/config.xsd">
 	<Settings>
 		<Setting name="AppName" 					value="ColdboxDashboard"/>
-		<Setting name="AppMapping" 					value=""/>
+		<Setting name="AppMapping" 					value="coldbox/system/admin"/>
 		<Setting name="DebugMode"					value="false"/>
 		<Setting name="EnableDumpVar" 				value="true"/>
 		<Setting name="EnableColdfusionLogging" 	value="true"/>
@@ -15,7 +15,7 @@
 		<Setting name="UDFLibraryFile" 				value="" />		
 		<Setting name="CustomErrorTemplate"			value="" />
 		<Setting name="MessageboxStyleClass"	    value="" />
-		<Setting name="HandlersIndexAutoReload"   	value="false" />
+		<Setting name="HandlersIndexAutoReload"   	value="true" />
 		<Setting name="ConfigAutoReload"			value="false" />
 		<Setting name="ExceptionHandler"     		value="" />
 	</Settings>
