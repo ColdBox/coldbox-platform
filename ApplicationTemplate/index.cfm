@@ -8,5 +8,5 @@ Description :
 	a cfinclude to the frameworks coldbox file. You do not need to modify
 	this file.
 ----------------------------------------------------------------------->
-<cfinclude template="system/coldbox.cfm">
+<cfinclude template="/coldbox/system/coldbox.cfm">
 <cfsetting enablecfoutputonly="no">

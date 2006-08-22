@@ -1,67 +1,80 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<Config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<Config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
 	xsi:noNamespaceSchemaLocation="http://www.luismajano.com/projects/coldbox/schema/config.xsd">
 	<Settings>
 		<!--The name of your application.-->
-		<Setting name="AppName"					value="Your App Name here"/>
-		<!--The application's coldfusion mapping if it exists, else leave blank.-->
-		<Setting name="AppCFMXMapping" 			value="Your CFMX Mapping Here" />
-		<!--Default Debugmode boolean flag (Set to true in production)-->
-		<Setting name="DebugMode" 				value="true" />
-		<!--The Debug Password to use in order to activate/deactivate debugmode -->
-		<Setting name="DebugPassword" 			value="Coldbox"/>
-		<!--This feature is enabled, by default to permit the url dumpvar parameter (Look at help for more info)-->
-		<Setting name="DumpVarActive"			value="true" />
-		<!--Log Errors on the coldfusion server logs-->
-		<Setting name="ColdfusionLogging" 		value="true" />
+		<Setting name="AppName"						value="Your App Name here"/>
+		<!--The application's mapping either relative to the web root or using a CFMX mapping.-->
+		<Setting name="AppMapping" 					value="Your Application Mapping Here" />
+		<!--Default Debugmode boolean flag (Set to false in production environments)-->
+		<Setting name="DebugMode" 					value="true" />
+		<!--The Debug Password to use in order to activate/deactivate debugmode,activated by url actions -->
+		<Setting name="DebugPassword" 				value="Coldbox"/>
+		<!--This feature is enabled by default to permit the url dumpvar parameter-->
+		<Setting name="EnableDumpVar"				value="true" />
+		<!--Log Errors and entries on the coldfusion server logs, disabled by default if not used-->
+		<Setting name="EnableColdfusionLogging" 	value="true" />
+		<!--Log Errors and entries in ColdBox's own logging facilities. You choose the location, finally per application logging.-->
+		<Setting name="EnableColdboxLogging"		value="true" />
+		<!--The absolute or relative path to where you want to store your log files for this application-->
+		<Setting name="ColdboxLogsLocation"			value="" />
 		<!--Default Event to run if no event is set or passed. Usually the event to be fired first (NOTE: use event handler syntax)-->
-		<Setting name="DefaultEvent" 			value="ehGeneral.dspHello"/>
+		<Setting name="DefaultEvent" 				value="ehGeneral.dspHello"/>
 		<!--Event Handler to run on the start of a request, leave blank if not used. Emulates the Application.cfc onRequestStart method
 			<Setting name="RequestStartHandler" 	value="ehGeneral.onRequestStart"/>
 		-->
-		<Setting name="RequestStartHandler" 	value=""/>
+		<Setting name="RequestStartHandler" 		value=""/>
 		<!--Event Handler to run at end of all requests, leave blank if not used. Emulates the Application.cfc onRequestEnd method
 			<Setting name="RequestEndHandler" 		value="ehGeneral.onRequestEnd"/>
 		-->
-		<Setting name="RequestEndHandler" 		value=""/>
+		<Setting name="RequestEndHandler" 			value=""/>
 		<!--Event Handler to run at the start of an application, leave blank if not used. Emulates the Application.cfc onApplicationStart method
+		    It will fire again on expiration of the application variable or when you reinit the framework using fwreinit=1
 			<Setting name="ApplicationStartHandler" 		value="ehGeneral.onAppinit"/>
 		-->
-		<Setting name="ApplicationStartHandler" 		value=""/>
-		<!--The Email address from which all framework emails will be sent. -->
-		<Setting name="OwnerEmail" 				value="myemail@gmail.com" />
-		<!-- Enable Bug Reports to be emailed, set to true by default -->
-		<Setting name="EnableBugReports" 		value="true"/>
+		<Setting name="ApplicationStartHandler" 	value=""/>
+		<!--The Email address from which all outgoing framework emails will be sent. -->
+		<Setting name="OwnerEmail" 					value="myemail@gmail.com" />
+		<!-- Enable Bug Reports to be emailed out, set to true by default if left blank -->
+		<Setting name="EnableBugReports" 			value="true"/>
 		<!--UDF Library To Load on every request for your views and handlers. ex: includes/udf.cfm
 		   or You can use a CFMX absolute mapping path, ex: /coldboxCFMXMapping/includes/udf.cfm
 		   If not used, leave it blank.
 			<Setting name="UDFLibraryFile" 			value="udf.cfm" />
 		   -->
-		<Setting name="UDFLibraryFile" 			value="" />
-		<!--The handler to execute on all framework exceptions.-->
-		<Setting name="ExceptionHandler"		value="" />
+		<Setting name="UDFLibraryFile" 				value="" />
+		<!--The event handler to execute on all framework exceptions. Event Handler syntax required.-->
+		<Setting name="ExceptionHandler"			value="" />
 		<!--Full path from the application's root to your custom error page, else leave blank. ColdBox provides you with a custom
 		    error template by default.If you use this then you need to display the errors using an
-		    exception bean in the request collection getvalue('ExceptionBean')
+		    exception bean that will be in the request collection getvalue('ExceptionBean')
 			<Setting name="CustomErrorTemplate"			value="includes/myerror.cfm" />
 		 -->
 		<Setting name="CustomErrorTemplate"			value="" />
-		<!--Messagebox Style (css) class name. This needs to be in your current displayed layout or view
+		<!--Messagebox Style (css) class name to use. Look at the messagebox.cfm in the includes directory to see how to override the
+		    style.
 			<Setting name="MessageboxStyleClass"		value="mymessagebox" />
 		-->
 		<Setting name="MessageboxStyleClass"		value="" />
 		<!--Flag to Auto reload the internal handlers directory listing. False for production. If not used
 			then the handlers will not be found. You will need to reload the framework via fwreinit=1 in the URL -->
-		<Setting name="HandlersIndexAutoReload"   value="true" />
+		<Setting name="HandlersIndexAutoReload"   	value="true" />
 		<!--Flag to auto reload the config.xml settings. False for production. If not used
 		    then use the fwreinit=1 to reload the framework -->
-		<Setting name="ConfigAutoReload"          value="true" />
+		<Setting name="ConfigAutoReload"          	value="true" />
+		<!-- Declare the custom plugins base invocation path, if used. You have to use dot notation.
+		Example: mymapping.myplugins, myapplication.customplugins
+		When plugins are called, this invocation location will be pre-pended.
+			<Setting name="MyPluginsLocation"   		value="myapplication.customplugins" />
+		-->
+		<Setting name="MyPluginsLocation"   		value="" />
 	</Settings>
 
 	<!--Your Settings can go here, if not needed, use <YourSettings />. You can use these for anything you like.
 		<Setting name="MySetting"  				value="WOW" />
 	 -->
 	<YourSettings>
+		<Setting name="MySetting" value="My Value"/>
 	</YourSettings>
 
 	<!--Optional,if blank it will use the CFMX administrator settings.-->
@@ -94,10 +107,12 @@
 	<Layouts>
 		<!--Declare the default layout, MANDATORY-->
 		<DefaultLayout>Layout.Main.cfm</DefaultLayout>
+		
 		<!--Declare other layouts, with view assignments if needed, else do not write them-->
 		<Layout file="Layout.Popup.cfm" name="popup">
 			<!--You can declare all the views that you want to appear with the above layout-->
 			<View>vwTest</View>
+			<View>vwMyView</View>
 		</Layout>
 	</Layouts>
 
@@ -110,5 +125,11 @@
 	</i18N>
 	-->
 	<i18N />
+	
+	<!--Datasource Setup, you can then retreive a datasourceBean via the getDatasource("name") method: -->
+	<Datasources>
+		<Datasource name="MyDSN"   dbtype="mysql"  username="" password="" />
+		<Datasource name="MyBlog"  dbtype="oracle" username="" password="" />
+	</Datasources>
 
 </Config>
