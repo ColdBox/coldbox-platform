@@ -1,6 +1,13 @@
 <cfoutput>
-<h1>CFC Viewer - #instance.cfcPath#</h1>
-<h3>Components</h3>
+<!--- Style Sheet --->
+<link rel="stylesheet" href="#instance.styleSheet#" type="text/css" />	
+
+<div class="cfc_content">
+
+<div class="cfc_h1">CFC Viewer - #instance.cfcPath#</div>
+
+<div class="cfc_componentlisting">
+<div class="cfc_h3">Components</div>
 
 <ul>
 	<cfloop from="1" to="#ArrayLen(instance.aCFC)#" index="i">
@@ -12,7 +19,8 @@
 	</cfif>
 </ul>
 
-<h3>Packages / Directories</h3>
+
+<div class="cfc_h3">Packages / Directories</div>
 
 <ul>
 	<cfloop from="1" to="#ArrayLen(instance.aPacks)#" index="i">
@@ -22,9 +30,11 @@
 		<li><em>None</em></li>
 	</cfif>
 </ul>
-
+</div>
 </cfoutput>
-	
+
+<p>&nbsp;</p>
+
 <cfloop from="1" to="#ArrayLen(instance.aCFC)#" index="j">
 	<cftry>
 		<cfset mdpath = instance.cfcPath & "/" & instance.aCFC[j] & ".cfc">
@@ -34,22 +44,29 @@
 		<cfparam name="md.Extends" 	default="#StructNew()#">
 		<cfset aMethods = md.Functions>
 		<cfoutput>
-			<a name="#md.Name#"></a>
-			<table class="tblComponent">
-				<tr valign="top">
-					<th width="10">#md.Name#</th>
-					<td>#md.Hint#</td>
+			<a name="#instance.aCFC[j]#"></a>
+			<div class="cfc_h1">#md.name#</div>
+			<table class="cfc_component">
+			
+				
+				
+				<tr>
+					<td class="cfc_hint">#md.Hint#</td>
 				</tr>
 				
 				<tr valign="top">
-					<td colspan="2">
-						<h3>Methods:</h3>
-						<table class="tblMethods">
-							<tr valign="top">
-								<th style="width:20px;">Access</th>
-								<th>Name</th>
-								<th>Description</th>
+					<td >
+						<div class="cfc_h2">Methods:</div>
+						<br />
+						
+						<table cellspacing="0" width="100%">
+							
+							<tr valign="top" >
+								<td class="cfc_methodstitle" width="40" align="right">Access</td>
+								<td class="cfc_methodstitle" width="40" align="right" >Returns</td>
+								<td class="cfc_methodstitle" >Name</td>
 							</tr>
+							
 							<cfloop from="1" to="#ArrayLen(aMethods)#" index="i">
 								<cfset thisMethod = aMethods[i]>
 								<cfparam name="thisMethod.Name" default="">
@@ -74,31 +91,38 @@
 									
 									<cfset tmpParam = "#thisParam.Type# <b>#thisParam.Name#</b>">
 									<cfif Not thisParam.Required>
-										<cfset tmpParam = "[#tmpParam# = '#thisParam.Default#']">
+										<cfset tmpParam = "<i>[#tmpParam# = '#thisParam.Default#']</i>">
 									</cfif>
-									<cfset tmpParam = "<br>&nbsp;&nbsp;&nbsp;&nbsp;#tmpParam#">
+									<cfset tmpParam = "&nbsp;#tmpParam#">
 									
 									<cfset lstParams = ListAppend(lstParams, tmpParam)>						
 								</cfloop>
 		
-								<tr valign="top">
-									<td>#thisMethod.Access#</td>
-									<td nowrap="nowrap">
-										<cfif thisMethod.ReturnType neq "">
-											#thisMethod.ReturnType#&nbsp;&nbsp;
-										</cfif>
+								<tr valign="top" onmouseover="this.className='cfc_methodrowsOn'" onmouseout="this.className='cfc_methodrows'" class="cfc_methodrows">
+									<td align="right" class="cfc_methodcells">#lcase(thisMethod.Access)#</td>
+									<td class="cfc_methodcells" align="right">
+									<cfif thisMethod.ReturnType neq "">
+									#lcase(thisMethod.ReturnType)#
+									<cfelse>
+									any
+									</cfif>
+									</td>
+									<td class="cfc_methodcells">
 										<b>#thisMethod.Name#</b> 
 										<cfif lstParams neq "">
-											(#lstParams#<br />)
+											(#lstParams#)
 										<cfelse>
 											()
 										</cfif>
+										<br><br />
+										#thisMethod.Hint#
 									</td>
-									<td>#thisMethod.Hint#</td>
 								</tr>
 							</cfloop>
-						</table>
-						<h3>Extends:</h3>
+					  </table>
+					
+					   <br />
+						<div class="cfc_h2">Extends:</div>
 						<cfif IsSimpleValue(md.Extends)>
 							<ul><li>#md.Extends#</li></ul>
 						<cfelseif IsDefined("md.Extends.Name") and md.Extends.Name neq "WEB-INF.cftags.component">
@@ -109,9 +133,11 @@
 					</td>
 				</tr>
 			</table>
+			<br>
 		</cfoutput>
 		<cfcatch>
 			<cfdump var="#cfcatch#">
 		</cfcatch>
 	</cftry>
 </cfloop>
+</div>
