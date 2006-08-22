@@ -23,7 +23,7 @@ Modification History:
 		<cfset super.Init() />
 		<cfset variables.instance.pluginName = "Renderer">
 		<cfset variables.instance.pluginVersion = "1.0">
-		<cfset variables.instance.pluginDescription = "This plugin is renders layouts, views, debug logs, and more.">
+		<cfset variables.instance.pluginDescription = "This plugin renders layouts, views, debug logs, and more.">
 		<cfreturn this>
 	</cffunction>
 	<!--- ************************************************************* --->
@@ -34,17 +34,10 @@ Modification History:
 		<cfargument name="view" required="false" default="#getvalue('currentView','')#" type="string" hint="If not passed in, the value in the currentView will be used. If passed in, try to render the view and return the contents.">	
 		<!--- ************************************************************* --->
 		<cfset var RenderedView = "">
-		<cfset var AppDir = "">
 		<cfmodule template="../includes/timer.cfm" timertag="Rendering View [#arguments.view#.cfm]">
-			<!--- Dashboard exceptions --->
-			<cfif CompareNocase(getSetting("AppName"),getSetting("DashboardName",1)) eq 0>
-				<cfset AppDir = "../admin">
-			<cfelse>
-				<cfset AppDir = "/#getSetting("AppMapping")#">
-			</cfif>
 			<!--- Test if we have a view to render --->
 			<cfif len(trim(arguments.view)) eq 0>
-				<cfthrow type="Framework.plugins.renderer.ViewNotSetException" message="Framework.renderView: The currentview variable has not been set, therefore there is no view to render.">
+				<cfthrow type="Framework.plugins.renderer.ViewNotSetException" message="The ""currentview"" variable has not been set, therefore there is no view to render.">
 			</cfif>
 			<!--- Render UDf if no layout is used or if the arguments.view exits--->
 			<cfif not valueExists("currentLayout") and arguments.view neq "">
@@ -52,7 +45,7 @@ Modification History:
 				<cfset includeUDF()>
 			</cfif>
 			<!--- Render the View --->
-			<cfsavecontent variable="RenderedView"><cfoutput><cfinclude template="#AppDir#/views/#arguments.view#.cfm"></cfoutput></cfsavecontent>
+			<cfsavecontent variable="RenderedView"><cfoutput><cfinclude template="/#getSetting("AppMapping")#/views/#arguments.view#.cfm"></cfoutput></cfsavecontent>
 		</cfmodule>
 		<cfreturn RenderedView>
 	</cffunction>
@@ -61,20 +54,14 @@ Modification History:
 	<!--- ************************************************************* --->
 	<cffunction name="renderLayout" access="Public" hint="Renders the current layout." output="false" returntype="Any">
 		<cfset var RederedLayout = "">
-		<cfset var AppDir = "">
 		<cfmodule template="../includes/timer.cfm" timertag="Rendering Layout [#getvalue('currentLayout','')#]">
-			<cfif CompareNocase(getSetting("AppName"),getSetting("DashboardName",1)) eq 0>
-				<cfset AppDir = "../admin">
-			<cfelse>
-				<cfset AppDir = "/#getSetting("AppMapping")#">
-			</cfif>
 			<!--- Render With No Layout --->
 			<cfif not valueExists("currentLayout")>
 				<cfset RederedLayout = renderView()>
 			<cfelse>
 				<!--- UDF Library Call --->
 				<cfset includeUDF()>
-				<cfsavecontent variable="RederedLayout"><cfinclude template="#AppDir#/layouts/#getValue("currentLayout")#"></cfsavecontent>
+				<cfsavecontent variable="RederedLayout"><cfinclude template="/#getSetting("AppMapping")#/layouts/#getValue("currentLayout")#"></cfsavecontent>
 			</cfif>
 		</cfmodule>
 		<cfreturn RederedLayout>
