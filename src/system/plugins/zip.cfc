@@ -61,7 +61,7 @@ Modification History:
 		//Local Plugin Definition
 		variables.instance.pluginName = "Zip Plugin";
 		variables.instance.pluginVersion = "1.0";
-		variables.instance.pluginDescription = "This is a zip utility for the framework."
+		variables.instance.pluginDescription = "This is a zip utility for the framework.";
 		//This plugin's properties
 		variables.instance.ioFile      = CreateObject("java","java.io.File");
 		variables.instance.ioInput     = CreateObject("java","java.io.FileInputStream");
