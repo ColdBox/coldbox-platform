@@ -44,8 +44,6 @@
 				<a name="#instance.aCFC[j]#"></a>
 				<div class="cfc_h1">#md.name#</div>
 				<table class="cfc_component">
-				
-					
 					
 					<tr>
 						<td class="cfc_hint">#md.Hint#</td>
