@@ -12,37 +12,41 @@ Modification History:
 Sep/25/2005 - Luis Majano
 	-Created the template.
 ----------------------------------------------------------------------->
-<cfcomponent name="ehSamples" extends="system.eventhandler">
+<cfcomponent name="ehSamples" extends="coldbox.system.eventhandler">
 
 	<!--- ************************************************************* --->
-	<cffunction name="init" access="public" returntype="Any">
-		<cfargument name="controller" required="yes" hint="The reference to the framework controller">
-		<cfset super.init(arguments.controller)>
+	<cffunction name="init" access="public" returntype="Any" output="false">
+		<cfset super.init()>
 		<cfreturn this>
 	</cffunction>
 	<!--- ************************************************************* --->
-
+	
 	<!--- ************************************************************* --->
-	<cffunction name="onRequestStart" access="public">
+	<cffunction name="onAppInit" access="public" returntype="void" output="false">
+		<cfset application.localeUtils = getPlugin("i18n").setfwLocale(getSetting("DefaultLocale"))>
+	</cffunction>
+	<!--- ************************************************************* --->
+	
+	<!--- ************************************************************* --->
+	<cffunction name="onRequestStart" access="public" returntype="void" output="false">
 	</cffunction>
 	<!--- ************************************************************* --->
 
 	<!--- ************************************************************* --->
-	<cffunction name="onRequestEnd" access="public">
+	<cffunction name="onRequestEnd" access="public" returntype="void" output="false">
 	</cffunction>
 	<!--- ************************************************************* --->
 
 	<!--- ************************************************************* --->
-	<cffunction name="dspHome" access="public" returntype="string">
-		<!--- Set View --->
+	<cffunction name="dspHome" access="public" returntype="void" output="false">
 		<cfset setView("home")>
 	</cffunction>
 	<!--- ************************************************************* --->
 
 	<!--- ************************************************************* --->
-	<cffunction name="doChangeLocale" access="public" returntype="void">
+	<cffunction name="doChangeLocale" access="public" returntype="void" output="false">
 		<!--- Change Locale --->
-		<cfset getPlugin("i18n").setfwLocale(getValue("locale"))>
+		<cfset application.localeUtils.setfwLocale(getValue("locale"))>
 		<cfset dspHome()>
 	</cffunction>
 	<!--- ************************************************************* --->

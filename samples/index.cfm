@@ -12,5 +12,5 @@ Sep/15/2005 - Luis Majano
 	-Created the template.
 		
 ----------------------------------------------------------------------->
-<cfinclude template="/system/coldbox.cfm">
+<cfinclude template="/coldbox/system/coldbox.cfm">
 <cfsetting enablecfoutputonly="no">

@@ -5,16 +5,26 @@ applications I have created and some of them are re-writes of FAMOUS open source
 that I credit below.  
 
 If you have ported an app to ColdBox or have an application you would like to share 
-with the ColdBox community.  Please email me at lmajano@gmail.com with your application
+with the ColdBox community.  Please email me at cfcoldbox@gmail.com with your application
 so I can include it in the downloads section and the main release.
 *******************************************************
 Installation
 *******************************************************
 In order to make the samples gallery functional you will need to do the following:
 
-1) Copy the samples folder to your CFMX server.
-2) Create a CFMX mapping to the samples folder path you just copied to the CFMX server called "coldboxSamples".
+1) Copy the coldbox extracted archive to your web root
+You should have the following directory structure in the web root:
+
++ {Web_Root}
+|---+ coldbox
+    |---+ ApplicationTemplate
+    |---+ install
+    |---+ samples
+    |---+ system
+
 3) Browse to the samples directory on your browser and that is it.
+http://{your web address}/coldbox/samples
+
 *******************************************************
 Credits
 *******************************************************
