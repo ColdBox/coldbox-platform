@@ -38,7 +38,7 @@ Modification History:
 		<cfset application.ColdBox_configStruct = XMLParser.parseConfig()>
 		<!---Load i18N if needed --->
 		<cfif getSetting("using_i18N")>
-			<cfset getPlugin("i18n").initBundle(getSetting("DefaultResourceBundle"),getSetting("DefaultLocale"))>
+			<cfset getPlugin("i18n").init_i18N(getSetting("DefaultResourceBundle"),getSetting("DefaultLocale"))>
 		</cfif>
 		<!--- Set Config DebugMode --->
 		<cfset setDebugMode(getSetting("DebugMode"))>
