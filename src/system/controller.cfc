@@ -25,7 +25,18 @@ Last Update 	: July 28, 2006
 			<cfthrow type="Framework.SettingNotFoundException" message="The setting #arguments.name# does not exist." detail="FWSetting flag is #arguments.FWSetting#">
 		</cfif>
 	</cffunction>
-
+	
+	<cffunction name="settingExists" returntype="boolean" access="Public"	hint="I Check if a value exists in the configstruct or the fwsettingsStruct." output="false">
+		<cfargument name="name" hint="Name of the setting to find." type="string">
+		<cfargument name="FWSetting"  	type="boolean" 	 required="false"  hint="Boolean Flag. If true, it will retrieve from the fwSettingsStruct else from the configStruct. Default is false." default="false">
+		<!--- ************************************************************* --->
+		<cfif arguments.FWSetting>
+			<cfreturn isDefined("application.ColdBox_FWSettingsStruct.#arguments.name#") >
+		<cfelse>
+			<cfreturn isDefined("application.ColdBox_configstruct.#arguments.name#") >
+		</cfif>
+	</cffunction>
+		
 	<cffunction name="setSetting" access="Public" returntype="any" hint="I set a Global Coldbox setting variable in the configstruct, if it exists it will be overrided. This only sets in the ConfigStruct" output="false">
 		<cfargument name="name"  type="string"   hint="The name of the setting" >
 		<cfargument name="value" type="any"      hint="The value of the setting (Can be simple or complex)">
