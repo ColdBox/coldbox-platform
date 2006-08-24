@@ -33,6 +33,10 @@
 		<select name="locale" onChange="window.location='index.cfm?event=ehSamples.doChangeLocale&locale=' + this.value">
 		   	<option value="en_US" <cfif application.localeUtils.getfwLocale() eq "en_US">selected</cfif>>English</option>
 		   	<option value="es_SV" <cfif application.localeUtils.getfwLocale() eq "es_SV">selected</cfif>>Spanish</option>
+		   <cfset locales = getPlugin("i18n").getLocales()>
+		   	<cfloop from="1" to="#arrayLen(locales)#" index="i">
+		   		<option value="#locales[i]#">#locales[i]#</option>
+		   	</cfloop>
 		</select>
 		</div>
 	</div>
@@ -43,18 +47,9 @@
 	<!--- ********************************* --->
 	
 	<div id="subcontent">
-		<div class="small box">
-		<strong>Locale:</strong> <br />#application.localeUtils.getfwLocale()#<br />
-		<strong>Language:</strong> <br />#application.localeUtils.showLanguage()#<br />
-		<strong>Country:</strong> <br />#application.localeUtils.showCountry()#<br />
-		<strong>TimeZone:</strong> <br />#application.localeUtils.getServerTZ()#<br />
-		<strong>i18nDateFormat:</strong> <br />#application.localeUtils.i18nDateFormat(application.localeUtils.toEpoch(now()),1)#<br />
-		<strong>i18nTimeFormat:</strong> <br />#application.localeUtils.i18nTimeFormat(application.localeUtils.toEpoch(now()),2)#<br />
-		<hr>
-		<strong>I18NUtilVersion:</strong> <br />#application.localeUtils.getVersion().I18NUtilVersion#<br>
-		<strong>I18NUtilDate:</strong> <br />#application.localeUtils.getVersion().I18NUtilDate#<br>
-		<strong>Java version:</strong> <br />#application.localeUtils.getVersion().javaVersion#<br>
-		</div>
+		<!--- CCV via render view() --->
+		<div class="small box">#renderView("tags/i18n")#</div>
+		
 		<div class="small box"><strong>#getResource("note")#:</strong>#getResource("notemessage")#</div>
 		<br>
 		<h2>Favorite Links</h2>
