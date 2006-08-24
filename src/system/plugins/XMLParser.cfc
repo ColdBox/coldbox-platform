@@ -19,6 +19,7 @@ Modification History:
 06/21/2006 - Finished i18N support, file based.
 07/28/2006 - Datasources support, var scope additions.
 08/10/2006 - Child References Eliminated. No longer in use.
+08/20/2006 - i18n Support completed for new plugins.
 ----------------------------------------------------------------------->
 <cfcomponent name="XMLParser"
 			 hint="This is the XML Parser plugin for the framework. It takes care of any XML parsing for the framework's usage."
@@ -74,7 +75,7 @@ Modification History:
 			}
 			//Determine which CF version for XML Parsing method
 			if (listfirst(server.coldfusion.productversion) lt 7){
-				fwXML = xmlParse(getPlugin("fileutilities").readFile(instance.FrameworkConfigFile));
+				fwXML = xmlParse(getPlugin("fileutilities").readFile(instance.FrameworkConfigFile,false,"utf-8"));
 			}
 			else{
 				//get XML for CFMX version 7 and above.
@@ -153,7 +154,7 @@ Modification History:
 			}
 			//Determine which CF version for XML Parsing method
 			if (listfirst(server.coldfusion.productversion) lt 7){
-				configXML = xmlParse(getPlugin("fileutilities").readFile(ConfigFileLocation));
+				configXML = xmlParse(getPlugin("fileutilities").readFile(ConfigFileLocation,false,"utf-8"));
 			}
 			else{
 				//Parse XML and validate with XSD
@@ -274,20 +275,14 @@ Modification History:
 			if ( ArrayLen(i18NSettingNodes) gt 0 and ArrayLen(i18NSettingNodes[1].XMLChildren) gt 0){
 				//Parse i18N Settings
 				for (i=1; i lte ArrayLen(i18NSettingNodes[1].XMLChildren); i=i+1){
-					if ( len(trim(i18NSettingNodes[1].XMLChildren[i].XMLText)) eq 0 ){
-						throw("The i18N setting: #i18NSettingNodes[1].XMLChildren[i].XMLName# cannot be left blank.","","Framework.plugins.XMLParser.ConfigXMLParsingException");
-					}
-					if ( i18NSettingNodes[1].XMLChildren[i].XMLName eq "DefaultResourceBundle" ){
+
+					//Set the Resource Bundle if Using it.
+					if ( i18NSettingNodes[1].XMLChildren[i].XMLName eq "DefaultResourceBundle" and len(trim(i18NSettingNodes[1].XMLChildren[i].XMLText)) neq 0 ){
 						i18NSettingNodes[1].XMLChildren[i].XMLText = expandPath(trim(i18NSettingNodes[1].XMLChildren[i].XMLText));
 					}
-					//Check Local Syntax.
+					//Check if locale is valid.
 					if ( i18NSettingNodes[1].XMLChildren[i].XMLName eq "DefaultLocale" ){
 						DefaultLocale = trim(i18NSettingNodes[1].XMLChildren[i].XMLText);
-						if ( not listlen( DefaultLocale, "_") is 2 or
-							 not len(listFirst(DefaultLocale,"_")) is 2 or
-				 			 not len(listLast(DefaultLocale,"_")) is 2 ){
-				 			 throw("Invalid Locale Syntax found. Please re-check your config.xml DefaultLocale i18N Setting: #defaultLocale# is an invalid locale syntax. ex: en_US","","Framework.plugins.XMLParser.ConfigXMLParsingException");
-				 		}
 				 		//set the right syntax just in case.
 				 		i18NSettingNodes[1].XMLChildren[i].XMLText = lcase(listFirst(DefaultLocale,"_")) & "_" & ucase(listLast(DefaultLocale,"_"));
 					}
@@ -296,6 +291,10 @@ Modification History:
 				}
 				//set i18n
 				StructInsert(ConfigStruct,"using_i18N",true);
+				//Check if resource bundle was used.
+				if ( not structKeyExists(ConfigStruct, "DefaultResourceBundle") ){
+					StructInsert(ConfigStruct,"DefaultResourceBundle","");				
+				}
 			}
 			else{
 				StructInsert(ConfigStruct,"DefaultResourceBundle","");
