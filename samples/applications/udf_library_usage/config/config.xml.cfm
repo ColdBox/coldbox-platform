@@ -13,7 +13,7 @@
 		<Setting name="RequestStartHandler" 		value=""/>
 		<Setting name="RequestEndHandler" 			value=""/>
 		<Setting name="ApplicationStartHandler"   	value="" />
-		<Setting name="OwnerEmail" 					value="cfcoldbox@gmail.com"/>
+		<Setting name="OwnerEmail" 					value="myemail@email.com"/>
 		<Setting name="EnableBugReports" 			value="true"/>
 		<Setting name="UDFLibraryFile" 				value="includes/udf.cfm" />
 		<Setting name="CustomErrorTemplate" 		value=""/>
