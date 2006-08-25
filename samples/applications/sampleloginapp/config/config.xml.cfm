@@ -4,10 +4,11 @@
 	<Settings>
 		<!--The name of your app-->
 		<Setting name="AppName" 				value="Sample Login Application"/>
-		<Setting name="AppCFMXMapping" 			value="coldboxSamples/applications/sampleloginapp" />
+		<Setting name="AppMapping" 				value="coldbox/samples/applications/sampleloginapp" />
 		<Setting name="DebugMode" 				value="true" />
 		<Setting name="DebugPassword" 			value="coldbox"/>
-		<Setting name="ColdfusionLogging" 		value="true" />
+		<Setting name="EnableColdfusionLogging" value="true" />
+		<Setting name="EnableColdboxLogging" 	value="false" />
 		<Setting name="DefaultEvent" 			value="ehGeneral.dspLogin"/>
 		<Setting name="RequestStartHandler" 	value="ehGeneral.onRequestStart"/>
 		<Setting name="RequestEndHandler" 		value=""/>
@@ -15,11 +16,11 @@
 		<Setting name="OwnerEmail" 				value="cfcoldbox@gmail.com" />
 		<Setting name="EnableBugReports" 		value="true"/>
 		<Setting name="UDFLibraryFile" 			value="" />
-		<Setting name="CustomErrorTemplate" value=""/>
-		<Setting name="ExceptionHandler" value=""/>
-		<Setting name="MessageboxStyleClass" value=""/>
+		<Setting name="CustomErrorTemplate" 	value=""/>
+		<Setting name="ExceptionHandler" 		value=""/>
+		<Setting name="MessageboxStyleClass" 	value=""/>
 		<Setting name="HandlersIndexAutoReload" value="false"/>
-		<Setting name="ConfigAutoReload" value="false"/>
+		<Setting name="ConfigAutoReload" 		value="false"/>
 	</Settings>
 
 	<YourSettings />
@@ -61,4 +62,7 @@
 	</Layouts>
 
 	<i18N />
+	
+	<Datasources />
+	
 </Config>

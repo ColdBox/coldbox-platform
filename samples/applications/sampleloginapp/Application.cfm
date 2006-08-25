@@ -1,4 +1,4 @@
-<cfapplication name="UDF Library Usage"
+<cfapplication name="Sample Login App"
 			   clientmanagement="yes"
 			   sessionmanagement="yes"
 			   setclientcookies="true">
