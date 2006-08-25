@@ -13,7 +13,7 @@
 		<Setting name="RequestStartHandler" 	value="ehGeneral.onRequestStart"/>
 		<Setting name="RequestEndHandler" 		value=""/>
 		<Setting name="ApplicationStartHandler" value="" />
-		<Setting name="OwnerEmail" 				value="cfcoldbox@gmail.com" />
+		<Setting name="OwnerEmail" 				value="myemail@email.com" />
 		<Setting name="EnableBugReports" 		value="true"/>
 		<Setting name="UDFLibraryFile" 			value="" />
 		<Setting name="CustomErrorTemplate" 	value=""/>
