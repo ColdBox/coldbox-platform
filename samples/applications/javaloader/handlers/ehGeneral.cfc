@@ -2,23 +2,16 @@
 Author 	 :	Luis Majano
 Date     :	September 25, 2005
 Description : 			
-	General handler for my hello application. Please remember to extend 
-	your event handler to the system eventhanlder using your colfusion
-	mapping.
-
-	example:
-		Mapping: coldboxSamples
 		
 Modification History:
 Sep/25/2005 - Luis Majano
 	-Created the template.
 ----------------------------------------------------------------------->
-<cfcomponent name="ehGeneral" extends="coldboxSamples.system.eventhandler">
+<cfcomponent name="ehGeneral" extends="coldbox.system.eventhandler">
 
 	<!--- ************************************************************* --->
 	<cffunction name="init" access="public" returntype="Any">
-		<cfargument name="controller" required="yes" hint="The reference to the framework controller">	
-		<cfset super.init(arguments.controller)>
+		<cfset super.init()>
 		<cfreturn this>
 	</cffunction>
 	<!--- ************************************************************* --->
