@@ -33,10 +33,6 @@
 		<select name="locale" onChange="window.location='index.cfm?event=ehSamples.doChangeLocale&locale=' + this.value">
 		   	<option value="en_US" <cfif application.localeUtils.getfwLocale() eq "en_US">selected</cfif>>English</option>
 		   	<option value="es_SV" <cfif application.localeUtils.getfwLocale() eq "es_SV">selected</cfif>>Spanish</option>
-		   <cfset locales = getPlugin("i18n").getLocales()>
-		   	<cfloop from="1" to="#arrayLen(locales)#" index="i">
-		   		<option value="#locales[i]#">#locales[i]#</option>
-		   	</cfloop>
 		</select>
 		</div>
 	</div>

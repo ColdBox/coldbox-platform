@@ -3,7 +3,7 @@
 	xsi:noNamespaceSchemaLocation="http://www.luismajano.com/projects/coldbox/schema/config.xsd">
 	<Settings>
 		<Setting name="AppName" value="Coldbox Samples Browser"/>
-		<Setting name="AppMapping" value="applications/coldbox/samples"/>
+		<Setting name="AppMapping" value="coldbox/samples"/>
 		<Setting name="DebugMode" value="true"/>
 		<Setting name="DebugPassword" value="coldbox"/>
 		<Setting name="EnableDumpVar" value="true"/>
