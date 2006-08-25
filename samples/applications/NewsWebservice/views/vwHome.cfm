@@ -33,15 +33,17 @@ padding: 5px;
 </tr>
 <tr>
 <td>
-<form id="form1" name="form1" method="post" action="" onSubmit="disableButtons()">
-  <input type="button" name="homebutton" value="Home" onClick="disableButtons();window.location='index.cfm'" />&nbsp;
-  <input type="submit" name="getbutton" value="Get News Feed" />&nbsp;
-  <input type="submit" name="getclientbutton" value="Get News Feed (Using ClientStorage Plugin)" onclick="changeEvent('ehGeneral.doGetNewsClientVersion')" />
-  <input name="event" type="hidden" id="event" value="ehGeneral.doGetNews" />
-</form>
-<p >&nbsp;</p>
-<!--- Render a messagebox if set --->
-<cfoutput>#getPlugin("messagebox").render()#<br></cfoutput>
+	<cfoutput>
+	<form id="form1" name="form1" method="post" action="" onSubmit="disableButtons()">
+	  <input type="button" name="homebutton" value="Home" onClick="disableButtons();window.location='index.cfm'" />&nbsp;
+	  <input type="submit" name="getbutton" value="Get News Feed" />&nbsp;
+	  <input type="submit" name="getclientbutton" value="Get News Feed (Using ClientStorage Plugin)" onclick="changeEvent('#getValue("xehGetNewsClient")#')" />
+	  <input name="event" type="hidden" id="event" value="#getValue("xehGetNews")#" />
+	</form>
+	<p >&nbsp;</p>
+	<!--- Render a messagebox if set --->
+	#getPlugin("messagebox").render()#<br>
+	</cfoutput>
 </td>
 </tr>
 </table>
@@ -56,7 +58,7 @@ padding: 5px;
 <!--- Display the news if found in the client storage plugin --->
 <cfif getPlugin("clientstorage").exists("newsfeed")>
 	<div class="newsbox">
-	<h4>Client Storage News: <input type="button" name="clientclearbutton" id="clientclearbutton" value="Clear Client Storage News" onClick="disableButtons(true);window.location='index.cfm?event=ehGeneral.doClearClientStorageNews'" />&nbsp;</h4>
+	<h4>Client Storage News: <input type="button" name="clientclearbutton" id="clientclearbutton" value="Clear Client Storage News" onClick="disableButtons(true);window.location='index.cfm?event=#getValue("xehDeleteNews")#'" />&nbsp;</h4>
 	<cfoutput>#replace(getPlugin("clientstorage").getvar("newsfeed"),"*****","<br><Br>","all")#</cfoutput>
 	</div>
 </cfif>

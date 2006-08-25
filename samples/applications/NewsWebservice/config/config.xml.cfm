@@ -1,25 +1,28 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <Config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
- xsi:noNamespaceSchemaLocation="http://www.luismajano.com/projects/coldbox/schema/config.xsd">
+	xsi:noNamespaceSchemaLocation="http://www.luismajano.com/projects/coldbox/schema/config_1.1.0.xsd">
 	<Settings>
 		<!--The name of your app-->
-		<Setting name="AppName" 			value="News Webservices Feed"/>
-		<Setting name="AppCFMXMapping" 		value="coldboxSamples/applications/NewsWebservice" />
-		<Setting name="DebugMode" 			value="true" />
-		<Setting name="DebugPassword" 		value="coldbox"/>
-		<Setting name="ColdfusionLogging"	value="true" />
-		<Setting name="DefaultEvent" 		value="ehGeneral.dspHome"/>
-		<Setting name="RequestStartHandler" value=""/>
-		<Setting name="RequestEndHandler" 	value=""/>
-		<Setting name="ApplicationStartHandler" value="" />
-		<Setting name="OwnerEmail" 			value="cfcoldbox@gmail.com" />
-		<Setting name="EnableBugReports" 	value="true"/>
-		<Setting name="UDFLibraryFile" 		value="" />
-		<Setting name="CustomErrorTemplate" value=""/>
-		<Setting name="ExceptionHandler" value=""/>
-		<Setting name="MessageboxStyleClass" value=""/>
-		<Setting name="HandlersIndexAutoReload" value="false"/>
-		<Setting name="ConfigAutoReload" value="false"/>
+		<Setting name="AppName" 					value="News Webservices Feed"/>
+		<Setting name="AppMapping" 					value="coldbox/samples/applications/NewsWebservice" />
+		<Setting name="DebugMode" 					value="true" />
+		<Setting name="DebugPassword" 				value="coldbox"/>
+		<Setting name="EnableColdfusionLogging"		value="false" />
+		<Setting name="EnableColdboxLogging"		value="true" />
+		<Setting name="ColdboxLogsLocation" 		value="logs"/>
+		<Setting name="DefaultEvent" 				value="ehGeneral.dspHome"/>
+		<Setting name="RequestStartHandler" 		value=""/>
+		<Setting name="RequestEndHandler" 			value=""/>
+		<Setting name="ApplicationStartHandler" 	value="" />
+		<Setting name="OwnerEmail" 					value="myemail@email.com" />
+		<Setting name="EnableBugReports" 			value="true"/>
+		<Setting name="UDFLibraryFile" 				value="" />
+		<Setting name="CustomErrorTemplate" 		value=""/>
+		<Setting name="ExceptionHandler" 			value=""/>
+		<Setting name="MessageboxStyleClass" 		value=""/>
+		<Setting name="HandlersIndexAutoReload" 	value="false"/>
+		<Setting name="ConfigAutoReload"			value="false"/>
+		<Setting name="MyPluginsLocation"			value="" />
 	</Settings>
 
 	<YourSettings />
@@ -55,4 +58,7 @@
 	</Layouts>
 
 	<i18N />
+	
+	<Datasources />
+	
 </Config>

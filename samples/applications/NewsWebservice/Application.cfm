@@ -1,4 +1,4 @@
-<cfapplication name="UDF Library Usage"
+<cfapplication name="ColdBox News WebService"
 			   clientmanagement="yes"
 			   sessionmanagement="yes"
 			   setclientcookies="true">
