@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <Config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
- xsi:noNamespaceSchemaLocation="http://www.luismajano.com/projects/coldbox/schema/config.xsd">
+	xsi:noNamespaceSchemaLocation="http://www.luismajano.com/projects/coldbox/schema/config_1.1.0.xsd">
 	<Settings>
 		<!--The name of your app-->
 		<Setting name="AppName" 				value="Sample Login Application"/>
 		<Setting name="AppMapping" 				value="coldbox/samples/applications/sampleloginapp" />
 		<Setting name="DebugMode" 				value="true" />
 		<Setting name="DebugPassword" 			value="coldbox"/>
-		<Setting name="EnableColdfusionLogging" value="true" />
-		<Setting name="EnableColdboxLogging" 	value="false" />
+		<Setting name="EnableColdfusionLogging" value="false" />
+		<Setting name="EnableColdboxLogging" 	value="true" />
+		<Setting name="ColdboxLogsLocation" 	value="logs"/>
 		<Setting name="DefaultEvent" 			value="ehGeneral.dspLogin"/>
 		<Setting name="RequestStartHandler" 	value="ehGeneral.onRequestStart"/>
 		<Setting name="RequestEndHandler" 		value=""/>
