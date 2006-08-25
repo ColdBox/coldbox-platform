@@ -3,23 +3,25 @@
  xsi:noNamespaceSchemaLocation="http://www.luismajano.com/projects/coldbox/schema/config.xsd">
 	<Settings>
 		<Setting name="AppName" 					value="Sample UDF Library Usage"/>
-		<Setting name="AppCFMXMapping" 				value="coldboxSamples/applications/udf_library_usage"/>
+		<Setting name="AppMapping" 					value="coldbox/samples/applications/udf_library_usage"/>
 		<Setting name="DebugMode" 					value="true"/>
 		<Setting name="DebugPassword" 				value="coldbox"/>
-		<Setting name="DumpVarActive" 				value="true"/>
-		<Setting name="ColdfusionLogging" 			value="true"/>
+		<Setting name="EnableDumpVar" 				value="true"/>
+		<Setting name="EnableColdfusionLogging" 	value="true"/>
+		<Setting name="EnableColdboxLogging"		value="false" />
 		<Setting name="DefaultEvent" 				value="ehGeneral.dspHome"/>
 		<Setting name="RequestStartHandler" 		value=""/>
 		<Setting name="RequestEndHandler" 			value=""/>
-		<Setting name="ApplicationStartHandler"   value="" />
-		<Setting name="OwnerEmail" 				value="cfcoldbox@gmail.com"/>
+		<Setting name="ApplicationStartHandler"   	value="" />
+		<Setting name="OwnerEmail" 					value="cfcoldbox@gmail.com"/>
 		<Setting name="EnableBugReports" 			value="true"/>
 		<Setting name="UDFLibraryFile" 				value="includes/udf.cfm" />
-		<Setting name="CustomErrorTemplate" value=""/>
-		<Setting name="ExceptionHandler" value=""/>
-		<Setting name="MessageboxStyleClass" value=""/>
-		<Setting name="HandlersIndexAutoReload" value="false"/>
-		<Setting name="ConfigAutoReload" value="false"/>
+		<Setting name="CustomErrorTemplate" 		value=""/>
+		<Setting name="ExceptionHandler" 			value=""/>
+		<Setting name="MessageboxStyleClass" 		value=""/>
+		<Setting name="HandlersIndexAutoReload" 	value="false"/>
+		<Setting name="ConfigAutoReload" 			value="false"/>
+		<Setting name="MyPluginsLocation" 			value=""/>
 	</Settings>
 
 	<YourSettings />
@@ -47,5 +49,7 @@
 	</Layouts>
 
 	<i18N />
+	
+	<Datasources />
 
 </Config>
