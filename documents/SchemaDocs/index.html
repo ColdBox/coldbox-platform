@@ -3,7 +3,7 @@
   PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
    <head>
-      <title>Documentation for ColdBox's 1.1.0 Config.xml - config.xsd</title>
+      <title>Documentation for ColdBox 1.1.0's Config.xml - config.xsd</title>
       <meta http-equiv="Content-Type" content="text/xml; charset=UTF-8"/>
       <style type="text/css">
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
@@ -725,7 +725,7 @@ function viewDocumentation(compDesc, compName, docTextArray) {
    </head>
    <body>
       <h1>
-         <a name="top">Documentation for ColdBox's 1.1.0 Config.xml</a>
+         <a name="top">Documentation for ColdBox 1.1.0's Config.xml</a>
       </h1>
       <div style="float: right;">
          <div id="printerControls" style="display:none;">
@@ -1071,7 +1071,7 @@ if (gc != null) {
          </tr>
          <tr>
             <th>
-               <a title="Look up 'Abstract' in glossary" href="index.<em>html</em>#term_Abstract">Abstract</a>
+               <a title="Look up 'Abstract' in glossary" href="index.html#term_Abstract">Abstract</a>
             </th>
             <td>no</td>
          </tr>
@@ -1926,7 +1926,7 @@ if (gc != null) {
                <area shape="rect" alt="h-785168978" coords="168,0,354,49"
                      href="index.html#h-785168978"/>
 
-               <area shape="rect" alt="h751539160" coords="168,59,300,95"
+               <area shape="rect" alt="h751539160" coords="168,59,300,108"
                      href="index.html#h751539160"/>
 
             </map>
@@ -1949,12 +1949,12 @@ if (gc != null) {
                <div style="margin-left: 1.5em">&lt;DefaultResourceBundle&gt; ... &lt;/DefaultResourceBundle&gt; <span class="occurs">[0..1]</span> 
                   <p class="documentation">'The path to the resource bundle to load.'</p>
                </div>
-               <div style="margin-left: 1.5em">&lt;DefaultLocale&gt; ... &lt;/DefaultLocale&gt; <span class="occurs">[1]</span> 
+               <div style="margin-left: 1.5em">&lt;DefaultLocale&gt; ... &lt;/DefaultLocale&gt; <span class="occurs">[0..1]</span> 
                   <p class="documentation">'The default locale in the standard Java locale names'</p>
                </div>
                <div style="margin-left: 1.5em">&lt;LocaleStorage&gt; <span class="constraint">
                      <span class="type">
-                        <a href="#ns_xs" title="Find out namespace of 'xs' prefix">xs</a>:string</span> (<em>value</em> comes from list: {'client'|'session'})</span> &lt;/LocaleStorage&gt; <span class="occurs">[1]</span> 
+                        <a href="#ns_xs" title="Find out namespace of 'xs' prefix">xs</a>:string</span> (<em>value</em> comes from list: {'client'|'session'})</span> &lt;/LocaleStorage&gt; <span class="occurs">[0..1]</span> 
                   <p class="documentation">'The storage scope of the locale setting. Preferred is session.'</p>
                </div>&lt;/i18N&gt;</div>
          </div>
@@ -1995,9 +1995,9 @@ if (gc != null) {
                <span class="scTag">name</span>="<span class="scContent">i18N</span>"&gt;<div style="margin-left: 1.5em">&lt;<span class="scTag">xs:complexType</span>&gt;<div style="margin-left: 1.5em">&lt;<span class="scTag">xs:sequence</span>&gt;<div style="margin-left: 1.5em">&lt;<span class="scTag">xs:element</span> 
                         <span class="scTag">name</span>="<span class="scContent">DefaultResourceBundle</span>" <span class="scTag">maxOccurs</span>="<span class="scContent">1</span>" <span class="scTag">minOccurs</span>="<span class="scContent">0</span>"/&gt;</div>
                      <div style="margin-left: 1.5em">&lt;<span class="scTag">xs:element</span> 
-                        <span class="scTag">name</span>="<span class="scContent">DefaultLocale</span>" <span class="scTag">maxOccurs</span>="<span class="scContent">1</span>" <span class="scTag">minOccurs</span>="<span class="scContent">1</span>"/&gt;</div>
+                        <span class="scTag">name</span>="<span class="scContent">DefaultLocale</span>" <span class="scTag">maxOccurs</span>="<span class="scContent">1</span>" <span class="scTag">minOccurs</span>="<span class="scContent">0</span>"/&gt;</div>
                      <div style="margin-left: 1.5em">&lt;<span class="scTag">xs:element</span> 
-                        <span class="scTag">name</span>="<span class="scContent">LocaleStorage</span>" <span class="scTag">maxOccurs</span>="<span class="scContent">1</span>" <span class="scTag">minOccurs</span>="<span class="scContent">1</span>"&gt;<div style="margin-left: 1.5em">&lt;<span class="scTag">xs:simpleType</span>&gt;<div style="margin-left: 1.5em">&lt;<span class="scTag">xs:restriction</span> 
+                        <span class="scTag">name</span>="<span class="scContent">LocaleStorage</span>" <span class="scTag">maxOccurs</span>="<span class="scContent">1</span>" <span class="scTag">minOccurs</span>="<span class="scContent">0</span>"&gt;<div style="margin-left: 1.5em">&lt;<span class="scTag">xs:simpleType</span>&gt;<div style="margin-left: 1.5em">&lt;<span class="scTag">xs:restriction</span> 
                               <span class="scTag">base</span>="<span class="scContent">
                                  <span class="type">
                                     <a href="#ns_xs" title="Find out namespace of 'xs' prefix">xs</a>:string</span>
