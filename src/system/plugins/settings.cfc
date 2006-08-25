@@ -159,7 +159,15 @@ Modification History:
 				parseString = reFindnocase("<cffunction[^>/]*>",fileContent,1,true);
 			}
 			StringBuffer = StringBuffer & "</cfc>";
-			functions = xmlsearch(xmlparse(StringBuffer),"//cfc/cffunction");
+			//Try to parse
+			try{
+				functions = xmlsearch(xmlparse(StringBuffer),"//cfc/cffunction");
+			}
+			catch(any e){
+				throw("Error registering and parsing your event handlers. There are syntax errors in your event handlers. please verify them.","#e.message# #e.detail#","Framework.plugins.settings.InvalidEventHandlersException");
+			}
+			
+			//Parse the methods.
 			if ( arrayLen(functions) eq 0 )
 				getPlugin("logger").logEntry("warning","Handler cfc: #name# does not have any methods defined.");
 			else{
