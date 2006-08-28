@@ -7,28 +7,28 @@ Modification History:
 Sep/25/2005 - Luis Majano
 	-Created the template.
 ----------------------------------------------------------------------->
-<cfcomponent name="ehGeneral" extends="coldbox.system.eventhandler">
+<cfcomponent name="ehGeneral" extends="coldbox.system.eventhandler" output="false">
 
 	<!--- ************************************************************* --->
-	<cffunction name="init" access="public" returntype="Any">
+	<cffunction name="init" access="public" returntype="Any" output="false">
 		<cfset super.init()>
 		<cfreturn this>
 	</cffunction>
 	<!--- ************************************************************* --->
 
 	<!--- ************************************************************* --->
-	<cffunction name="onAppStart" access="public">
+	<cffunction name="onAppStart" access="public" returntype="void" output="false">
 		<cfscript>
 		//Create the JavaLoader with the helloworld.jar file. You can send one path or a comma delimited list.
 		var stime = getTickcount();
 		application.myLoader = getPlugin("JavaLoader").setup("includes/helloworld.jar");
-		getPlugin("logger").tracer("My Loader has been Loaded into the application scope. It took #stime-gettickcount()# ms");
+		getPlugin("logger").tracer("My Java Loader has been Loaded into the application scope. It took #stime-gettickcount()# ms");
 		</cfscript>
 	</cffunction>
 	<!--- ************************************************************* --->
 
 	<!--- ************************************************************* --->
-	<cffunction name="dspHello" access="public" returntype="string">
+	<cffunction name="dspHello" access="public" returntype="void" output="false">
 		<cfscript>
 		//Load the hello world class
 		setvalue("HelloWorldObj", application.myLoader.create("HelloWorld").init());
