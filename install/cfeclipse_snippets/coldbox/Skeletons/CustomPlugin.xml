@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<snippet filetemplate="true" extension="cfc">
+<name>CustomPlugin</name>
+<help>Skeleton for a new custom plugin</help>
+<starttext><![CDATA[<!-----------------------------------------------------------------------
+Author: $${USERNAME}
+Date:   $${DATE}
+Description: 
+	$${Template Description:}	
+
+Modifications:
+$${DATE} - Created template
+
+-----------------------------------------------------------------------
+INHERITED PROPERTIES:
+-----------------------------------------------------------------------
+instance.pluginName 		- Name of the plugin
+instance.pluginVersion 		- Version of the plugin
+instance.description 		- Small description of what the plugin does.
+instance.pluginPath 		- OS Path to plugin.
+variables.sharedLibrary 	- SharedLibrary cfc instance.
+-----------------------------------------------------------------------
+INHERITED METHODS:
+-----------------------------------------------------------------------
+	MUTATOR/ACCESSOR
+-----------------------------------------------------------------------
+string			- getPluginName			Get the plugin Name
+void			- setPluginName			Set the plugin name
+string			- getPluginVersion		Get the plugin Version
+void			- setPluginVersion		Set the plugin Version
+string			- getPluginDescription	Get the plugin Description
+void			- setPluginDescription	Set the plugin Description
+-----------------------------------------------------------------------
+	FW SPECIFIC
+-----------------------------------------------------------------------
+string  		- getCurrentLayout() 	Get the current set Layout.
+string  		- getCurrentEvent() 	Get the current set event
+string  		- getCurrentView() 		Get the current set view
+string  		- getResource() 		Get a resource from the set locale
+string  		- getfwLocale() 		Get the locale of the framework app.
+datasourceBean 	- getDatasource()   	Get a datasource bean
+Plugin			- getMyPlugin()			Get a custom plugin.
+-----------------------------------------------------------------------
+	FACADES
+-----------------------------------------------------------------------
+void			- throw()				CFTHROW
+void			- dump()				CFDUMP
+void			- abort()				CFABORT
+void			- relocate()			CFLOCATION
+void			- include()				CFINCLUDE
+----------------------------------------------------------------------->
+<cfcomponent name="$${cfc Name:}" hint="$${Hint}" extends="coldbox.system.plugin" output="false">
+
+<!------------------------------------------- CONSTRUCTOR ------------------------------------------->
+
+	<cffunction name="init" access="public" returntype="any" output="false">
+		<cfset super.Init() />
+		<cfset variables.instance.pluginName = "$${Instance Name:}">
+		<cfset variables.instance.pluginVersion = "$${Instance Version:}">
+		<cfset variables.instance.pluginDescription = "$${Instance Description:}">
+		<cfreturn this>
+	</cffunction>
+	
+<!------------------------------------------- PUBLIC ------------------------------------------->
+
+	
+<!------------------------------------------- PRIVATE ------------------------------------------->
+
+
+</cfcomponent>
+]]></starttext>
+<endtext><![CDATA[]]></endtext>
+</snippet>
