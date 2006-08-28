@@ -1,20 +1,22 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <Config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
- xsi:noNamespaceSchemaLocation="http://www.luismajano.com/projects/coldbox/schema/config.xsd">
+	xsi:noNamespaceSchemaLocation="http://www.luismajano.com/projects/coldbox/schema/config_1.1.0.xsd">
 	<Settings>
 		<!--The name of your app-->
 		<Setting name="AppName" 			value="Galleon"/>
-		<Setting name="AppCFMXMapping" 		value="coldboxSamples/applications/forumsv1.6" />
+		<Setting name="AppMapping" 			value="coldbox/samples/applications/forumsv1.6" />
 		<Setting name="DebugMode" 			value="false" />
 		<Setting name="DebugPassword" 		value="coldbox"/>
-		<Setting name="DumpVarActive"		value="true" />
-		<Setting name="ColdfusionLogging" 	value="true" />
+		<Setting name="EnableDumpVar"		value="true" />
+		<Setting name="EnableColdfusionLogging" 	value="false" />
+		<Setting name="EnableColdboxLogging" value="true" />
+		<Setting name="ColdboxLogsLocation"  value="logs" />
 		<Setting name="DefaultEvent" 		value="ehForums.dspHome"/>
 		<Setting name="RequestStartHandler" value="ehForums.onRequestStart"/>
 		<Setting name="RequestEndHandler" 	value=""/>
 		<Setting name="ApplicationStartHandler" value="ehForums.onAppStart" />
 		<Setting name="EnableBugReports" 	value="true"/>
-		<Setting name="OwnerEmail" 			value="cfcoldbox@gmail.com" />
+		<Setting name="OwnerEmail" 			value="myemail@email.com" />
 		<Setting name="UDFLibraryFile" 		value="includes/udf.cfm" />
 		<Setting name="CustomErrorTemplate" value=""/>
 		<Setting name="ExceptionHandler" value=""/>
@@ -61,4 +63,9 @@
 	</Layouts>
 
 	<i18N />
+	
+	<Datasources>
+		
+	</Datasources>
+	
 </Config>

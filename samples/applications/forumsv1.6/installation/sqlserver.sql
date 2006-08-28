@@ -40,7 +40,7 @@ GO
 
 CREATE TABLE [dbo].[galleon_conferences] (
 	[id] [nvarchar] (35) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
-	[name] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
+	[name] [nvarchar] (255) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
 	[description] [nvarchar] (255) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
 	[active] [bit] NOT NULL 
 ) ON [PRIMARY]
@@ -48,7 +48,7 @@ GO
 
 CREATE TABLE [dbo].[galleon_forums] (
 	[id] [nvarchar] (35) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
-	[name] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
+	[name] [nvarchar] (255) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
 	[description] [nvarchar] (255) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
 	[readonly] [bit] NOT NULL ,
 	[active] [bit] NOT NULL ,
@@ -96,7 +96,7 @@ GO
 
 CREATE TABLE [dbo].[galleon_threads] (
 	[id] [nvarchar] (35) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
-	[name] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
+	[name] [nvarchar] (255) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
 	[readonly] [bit] NOT NULL ,
 	[useridfk] [nvarchar] (35) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
 	[forumidfk] [nvarchar] (35) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
@@ -111,7 +111,8 @@ CREATE TABLE [dbo].[galleon_users] (
 	[username] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
 	[password] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
 	[emailaddress] [nvarchar] (255) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
-	[datecreated] [datetime] NOT NULL 
+	[datecreated] [datetime] NOT NULL ,
+	[confirmed] [bit] NOT NULL 
 ) ON [PRIMARY]
 GO
 
@@ -178,8 +179,8 @@ ALTER TABLE [dbo].[galleon_users] WITH NOCHECK ADD
 GO
 
 
-insert into [dbo].[galleon_users](id,username,password,emailaddress,datecreated)
-values('AD0CD90E-07C8-CFFE-F80C5EB6688AF47A','admin','admin','admin@127.0.0.1',getDate())
+insert into [dbo].[galleon_users](id,username,password,emailaddress,datecreated,confirmed)
+values('AD0CD90E-07C8-CFFE-F80C5EB6688AF47A','admin','admin','admin@127.0.0.1',getDate(),1)
 GO
 
 insert into [dbo].[galleon_groups](id,[group])

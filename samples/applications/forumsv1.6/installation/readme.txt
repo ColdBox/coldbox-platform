@@ -1,8 +1,24 @@
+LICENSE 
+Copyright 2006 Raymond Camden
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+
+
 Welcome to Galleon. This is an open-source forums application for ColdFusion. For installation instructions, please
-read the word documentat, Galleon Documenation. For folks who are upgrading, BE SURE to read the notes below. It details
+read the word documentation. For folks who are upgrading, BE SURE to read the notes below. It details
 what changes in each release.
 
-This application was created by Raymond Camden (ray@camdenfamily.com) of Mindseye (www.mindseye.com). 
+This application was created by Raymond Camden (ray@camdenfamily.com). 
 You may use this application as you will. I ask that you link back to my blog (http://ray.camdenfamily.com).
 
 If you find this app worthy, I have a Amazon wish list set up (www.amazon.com/o/registry/2TCL1D08EZEYE ). 
@@ -10,6 +26,66 @@ Gifts are always welcome. ;)
 
 
 ---- LATEST VERSION ----
+1.6.1 (August 3, 2006)
+Typo in SQLServer install script. Thanks Josh Rogers. No version change.
+
+1.6.1 (July 27, 2006)
+/install/ - All DB scripts updated. The size of the name fields for 
+conferences, forums, threads, and messages are now all set to a max
+of 255. There was also a bug in the mysql script that limited the size
+on one field to a low number.
+
+/admin/conferences_edit, forums_edit, threads_edit, messages_edit - 
+all had the sizes removed from name fields.
+
+/cfcs/conferences+messages+forums+threads.cfc - support for new size
+and new email of full messages. Also added wrap to emails.
+
+/cfcs/settings.ini.cfm - added fullemails key
+
+/messages.cfm + /newposts.cfm - updated with new sizes
+---- ARCHIVED UPDATES ----
+1.6.002 (July 21, 2006)
+DB install scripts had a bug.
+/cfcs/settings.ini.cfm - just a version change
+
+1.6.001 (July 17, 2006)
+/admin/user_edit.cfm - Bug when requireconfirmation was false
+/admin/Application.cfm, /Application.cfm - better "is admin file" checking. 
+/cfcs/settings.ini.cfm - Just a version change
+
+1.6 (final release July 12, 2006)
+
+DB CHANGES: Add confirmed as a bit property to the users table. If you wish to use confirmations,
+you must write a sql query to update all old users and mark them confirmed.
+
+FILE CHANGES: Note the updated files below. Most importantly, you need to rename settings.ini to 
+settings.ini.cfm and add requireconfirmation, title fields.
+
+/admin/users.cfm - show confirmation
+/admin/users_edit.cfm - show confirmation, require one group
+/cfc/conference.cfc, forum.cfc, thread.cfc - show last user
+/cfc/message.cfc - fix saving for moderators, make title dynamic
+/cfc/user.cfc - confirmation support and dynamic title
+/cfc/galleon.cfc - use a cfm file
+/includes/udf.cfm - various
+/pagetemplates/main_* - Support dynamic title, show version
+/stylesheets/style.css - minor change to footer
+/tags/datatabase.cfm - confirmation support
+/tags/breadcrumbs.cfm - minor layout mod
+/Application.cfm - Better admin check, logout fix
+/confirm.cfm - new file
+/threads.cfm - show last user
+/search.cfm - auto focus on search box
+/login.cfm - require confirmation changes
+/index.cfm, /forums.cfm - show last user
+/installation - Word doc updated, PDF version added, and SQL install files updated
+
+1.6 (beta released July 6, 2006)
+These notes are NOT complete. Install instructions NOT updated. File headers NOT updated.
+Please add "confirmed" as a bit property to the users table. Better release notes to ship in the 
+final 1.6 version.
+
 1.5 (no new version number) (released 11/22/05)
 /cfcs/conference.cfc - restrict length of search term and delete subscription clean ip
 /cfcs/forum.cfc - ditto
@@ -22,7 +98,6 @@ Gifts are always welcome. ;)
 /messages.cfm - allow bigger titles 
 /install/ SQL scripts updated to reflect bigger message title.
 
----- ARCHIVED UPDATES ----
 1.5 (no new version number) (released 10/10/05)
 /pagetemplates/main_header.cfm - quick mod to login link on top
 /members.cfm - fixes for IE bug, and prevent message add if not logged in

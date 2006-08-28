@@ -58,18 +58,18 @@
 		  <a href="applications/ColdBoxReader/index.cfm" target="_blank">#getresource("opensample")#</a><br />
 		</p>
 		
-		<h3>JavaLoader</h3>
-		<p> #getresource("by")# Luis Majano
-		  <br />#getresource("javaloadermessage")#<br>
-		  #getresource("nosetup")# <br />
-		  <a href="applications/javaloader/index.cfm" target="_blank">#getresource("opensample")#</a><br />
-		</p>
-		
 		<h3>Hello World</h3>
 		<p> #getresource("by")# Luis Majano
 		  <br />
 		  #getresource("nosetup")# <br />
 		  <a href="applications/helloworld/index.cfm" target="_blank">#getresource("opensample")#</a><br />
+		</p>
+		
+		<h3>JavaLoader</h3>
+		<p> #getresource("by")# Luis Majano
+		  <br />#getresource("javaloadermessage")#<br>
+		  #getresource("nosetup")# <br />
+		  <a href="applications/javaloader/index.cfm" target="_blank">#getresource("opensample")#</a><br />
 		</p>
 		
 		<h3>News Web Service</h3>

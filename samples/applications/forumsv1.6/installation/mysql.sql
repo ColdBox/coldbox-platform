@@ -12,7 +12,7 @@
 DROP TABLE IF EXISTS `galleon_conferences`;
 CREATE TABLE `galleon_conferences` (
   `Id` varchar(35) NOT NULL default '',
-  `name` varchar(50) NOT NULL default '',
+  `name` varchar(255) NOT NULL default '',
   `description` varchar(255) NOT NULL default '',
   `active` tinyint(1) default NULL,
   PRIMARY KEY  (`Id`)
@@ -30,7 +30,7 @@ CREATE TABLE `galleon_conferences` (
 DROP TABLE IF EXISTS `galleon_forums`;
 CREATE TABLE `galleon_forums` (
   `id` varchar(35) NOT NULL default '',
-  `name` varchar(50) NOT NULL default '',
+  `name` varchar(255) NOT NULL default '',
   `description` varchar(255) NOT NULL default '',
   `readonly` tinyint(1) NOT NULL default '0',
   `active` tinyint(1) NOT NULL default '0',
@@ -69,7 +69,7 @@ INSERT INTO `galleon_groups` VALUES ('C18B1118-7E9B-AEC8-14E8DB3C21EFCA1D','foru
 DROP TABLE IF EXISTS `galleon_messages`;
 CREATE TABLE `galleon_messages` (
   `Id` varchar(35) NOT NULL default '',
-  `title` varchar(100) NOT NULL default '',
+  `title` varchar(255) NOT NULL default '',
   `body` text NOT NULL,
   `posted` datetime NOT NULL default '0000-00-00 00:00:00',
   `useridfk` varchar(35) NOT NULL default '',
@@ -140,7 +140,7 @@ CREATE TABLE `galleon_subscriptions` (
 DROP TABLE IF EXISTS `galleon_threads`;
 CREATE TABLE `galleon_threads` (
   `Id` varchar(35) NOT NULL default '',
-  `name` varchar(35) NOT NULL default '',
+  `name` varchar(255) NOT NULL default '',
   `active` tinyint(1) NOT NULL default '0',
   `readonly` tinyint(1) NOT NULL default '0',
   `useridfk` varchar(35) NOT NULL default '',
@@ -166,6 +166,7 @@ CREATE TABLE `galleon_users` (
   `password` varchar(50) NOT NULL default '',
   `emailaddress` varchar(255) NOT NULL default '',
   `datecreated` datetime NOT NULL default '0000-00-00 00:00:00',
+  `confirmed` tinyint(1) NOT NULL default '0',
   PRIMARY KEY  (`Id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -173,7 +174,7 @@ CREATE TABLE `galleon_users` (
 # Dumping data for table galleon_users
 #
 
-INSERT INTO `galleon_users` VALUES ('C189C5AC-7E9B-AEC8-1DAEEEA03A562CF0','admin','admin','admin@localhost.com','2005-01-29 12:00:00');
+INSERT INTO `galleon_users` VALUES ('C189C5AC-7E9B-AEC8-1DAEEEA03A562CF0','admin','admin','admin@localhost.com','2005-01-29 12:00:00',1);
 
 #
 # Table structure for table galleon_users_groups
