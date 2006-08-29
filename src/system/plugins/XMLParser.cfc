@@ -176,10 +176,7 @@ Modification History:
 			//Check For CFMapping or Throw
 			if ( not StructKeyExists(ConfigStruct, "AppMapping") )
 				throw("There was no 'AppMapping' setting defined. This is required by the framework.","","Framework.plugins.XMLParser.ConfigXMLParsingException");
-			
-			//Convert . to / in the App Mapping
-			ConfigStruct["AppMapping"] = replace(ConfigStruct["AppMapping"],".","/","all");
-			
+						
 			//Set the Handler Invocation Path for this Application
 			if( ConfigStruct["AppMapping"] neq ""){
 				ConfigStruct["HandlersInvocationPath"] = replace(ConfigStruct["AppMapping"],"/",".","all") & ".handlers";
