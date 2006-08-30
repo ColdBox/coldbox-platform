@@ -19,7 +19,7 @@
 	<tr class="tableRowMain">
 		<td>
 		<form action="#cgi.script_name#?" method="post">
-		<input type="hidden" name="event" value="ehForums.doSearch">
+		<input type="hidden" name="event" value="#getValue("xehDoSearch")#">
 			
 		<table>
 			<tr>
@@ -57,7 +57,7 @@
 				<b>Results in Conferences:</b><br>
 				<cfif conferences.recordCount>
 					<cfloop query="conferences">
-					<a href="index.cfm?event=ehForums.dspForums&conferenceid=#id#">#name#</a><br>
+					<a href="index.cfm?event=#getValue("xehForums")#&conferenceid=#id#">#name#</a><br>
 					</cfloop>
 				<cfelse>
 				No matches.
@@ -67,7 +67,7 @@
 				<b>Results in Forums:</b><br>
 				<cfif forums.recordCount>
 					<cfloop query="forums">
-					<a href="index.cfm?event=ehForums.dspThreads&forumid=#id#">#name#</a><br>
+					<a href="index.cfm?event=#getValue("xehThreads")#&forumid=#id#">#name#</a><br>
 					</cfloop>
 				<cfelse>
 				No matches.
@@ -77,7 +77,7 @@
 				<b>Results in Threads:</b><br>
 				<cfif threads.recordCount>
 					<cfloop query="threads">
-					<a href="index.cfm?event=ehForums.dspMessages&threadid=#id#">#name#</a><br>
+					<a href="index.cfm?event=#getValue("xehMessages")#&threadid=#id#">#name#</a><br>
 					</cfloop>
 				<cfelse>
 				No matches.
@@ -87,7 +87,7 @@
 				<b>Results in Messages:</b><br>
 				<cfif messages.recordCount>
 					<cfloop query="messages">
-					<a href="index.cfm?event=ehForums.dspMessages&threadid=#threadidfk#">#title#</a><br>
+					<a href="index.cfm?event=#getValue("xehMessages")#&threadid=#threadidfk#">#title#</a><br>
 					</cfloop>
 				<cfelse>
 				No matches.

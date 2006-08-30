@@ -8,11 +8,10 @@
 				   Moved out charts for BD (rkc 8/30/05)
 	Purpose		 : 
 --->
-
-<cfinclude template="../includes/gen_stats.cfm">
+<cfoutput>#renderView("includes/gen_stats")#</cfoutput>
 <cfoutput>#getPlugin("messagebox").render()#</cfoutput>
 <cfif getValue("charts")>
-	<cfinclude template="../includes/stats_charts.cfm">
+	<cfoutput>#renderView("includes/stats_charts")#</cfoutput>
 </cfif>
 
 

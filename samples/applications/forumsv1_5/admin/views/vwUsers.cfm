@@ -14,7 +14,7 @@
 </cfoutput>
 <cfmodule template="../../tags/datatable.cfm" 
 		  data="#getValue("users")#" list="username,emailaddress,postcount,datecreated" 
-		  editlink="?event=ehForums.dspUsersEdit" linkcol="username" linkval="username" label="User" />
+		  editlink="?event=#getValue("xehUsersEdit")#" linkcol="username" linkval="username" label="User" />
 
 
 

@@ -11,7 +11,7 @@
 <p>
 #getPlugin("messagebox").render()#
 <form action="#cgi.script_name#?" method="post">
-<input type="hidden" name="event" value="ehForums.doSaveConference">
+<input type="hidden" name="event" value="#getValue("xehSaveConference")#">
 <input type="hidden" name="id" value="#getValue("id")#">
 <table width="100%" cellspacing=0 cellpadding=5 class="adminEditTable">
 	<tr valign="top">

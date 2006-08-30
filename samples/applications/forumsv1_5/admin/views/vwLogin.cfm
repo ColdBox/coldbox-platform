@@ -20,7 +20,7 @@
 
 <form action="#cgi.script_name#" method="post" name="login">
 #getPlugin("messagebox").render()#
-<input type="hidden" name="event" value="ehForums.doLogin">
+<input type="hidden" name="event" value="#getValue("xehLogin")#">
 <table height="400" width="100%" >
 	<tr align="center" valign="middle"><td>
 	

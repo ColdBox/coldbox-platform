@@ -8,7 +8,7 @@
 	Purpose		 : general stats used both on home page and stats
 --->
 
-<!--- coldbox has the ability to call and run an event handler from a tag --->
+<!--- Run event for get stats --->
 <cfset runEvent("ehForums.doGetStats")>
 <!--- Set References --->
 <cfset conferences = getValue("conferences")>

@@ -24,7 +24,7 @@
 	<tr class="tableRowMain">
 		<td>
 		<form action="#cgi.script_name#" method="post">
-		<input type="hidden" name="event" value="ehForums.doEditPost">
+		<input type="hidden" name="event" value="#getValue("xehMessagePost")#">
 		<input type="hidden" name="id" value="#getvalue("id")#">
 		<table>
 			<tr>

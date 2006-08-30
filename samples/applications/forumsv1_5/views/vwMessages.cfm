@@ -41,6 +41,7 @@
 			</table>
 		</td>
 	</tr>
+	
 	<cfif data.recordCount>
 		<cfloop query="data" startrow="#(getValue("page")-1)*application.settings.perpage+1#" endrow="#(getValue("page")-1)*application.settings.perpage+application.settings.perpage#">
 			<cfset uinfo = request.udf.cachedUserInfo(username)>
@@ -56,7 +57,7 @@
 					#dateFormat(posted,"mm/dd/yy")# #timeFormat(posted,"h:mm tt")#<br><br>
 					#request.udf.paragraphFormat2(request.udf.activateURL(body))#
 					<cfif request.udf.isLoggedOn() and application.utils.isUserInAnyRole("forumsadmin,forumsmoderator")>
-					<p align="right"><a href="index.cfm?event=ehForums.dspMessageEdit&id=#id#">[Edit Post]</a></p>
+						<p align="right"><a href="index.cfm?event=#getValue("xehMessageEdit")#&id=#id#">[Edit Post]</a></p>
 					</cfif>
 				</td>
 			</tr>
@@ -99,12 +100,12 @@
 	<tr class="tableRowMain">
 		<td>
 		<form action="#cgi.script_name#?##newpost" method="post">
-		<input type="hidden" name="event" value="ehForums.doMessagePost">
+		<input type="hidden" name="event" value="#getValue("xehMessagePost")#">
 		<input type="hidden" name="threadid" value="#getValue("threadid")#">
 		<table>
 			<cfif not request.udf.isLoggedOn()>
 				<cfset thisPage = cgi.script_name & "?" & cgi.query_string & "&##newpost">
-				<cfset link = "index.cfm?event=ehForums.dspLogin&ref=#urlEncodedFormat(thisPage)#">
+				<cfset link = "index.cfm?event=#getValue("xehLogin")#&ref=#urlEncodedFormat(thisPage)#">
 
 				<tr>
 					<td>Please <a href="#link#">login</a> to post a response.</td>

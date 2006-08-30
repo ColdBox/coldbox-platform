@@ -14,7 +14,7 @@
 </cfoutput>
 <cfmodule template="../../tags/datatable.cfm" 
 		  data="#getValue("messages")#" list="title,posted,threadname,forumname,conferencename,username" 
-		  editlink="?event=ehForums.dspMessagesEdit" linkcol="title" label="Message" />
+		  editlink="?event=#getValue("xehMessagesEdit")#" linkcol="title" label="Message" />
 
 
 <cfsetting enablecfoutputonly=false>

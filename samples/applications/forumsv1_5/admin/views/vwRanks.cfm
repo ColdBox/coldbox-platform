@@ -14,7 +14,7 @@
 </cfoutput>
 <cfmodule template="../../tags/datatable.cfm" 
 		  data="#getValue("ranks")#" list="name,minposts" 
-		  editlink="?event=ehForums.dspRanksEdit" linkcol="name" label="Rank" />
+		  editlink="?event=#getValue("xehRanksEdits")#" linkcol="name" label="Rank" />
 
 
 <cfsetting enablecfoutputonly=false>

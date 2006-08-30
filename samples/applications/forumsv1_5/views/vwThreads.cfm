@@ -37,10 +37,10 @@
 			--->
 			<cfset mcount = max(0, messagecount-1)>
 			<tr class="tableRow#currentRow mod 2#">
-				<td><cfif isBoolean(sticky) and sticky><b>[Sticky]</b></cfif> <a href="index.cfm?event=ehForums.dspMessages&threadid=#id#">#name#</a></td>
+				<td><cfif isBoolean(sticky) and sticky><b>[Sticky]</b></cfif> <a href="index.cfm?event=#getValue("xehMessages")#&threadid=#id#">#name#</a></td>
 				<td>#username#</td>
 				<td>#mcount#</td>
-				<td><a href="index.cfm?event=ehForums.dspMessages&threadid=#id###last">#dateFormat(lastpost,"m/d/yy")# #timeFormat(lastpost,"h:mm tt")#</a></td>
+				<td><a href="index.cfm?event=#getValue("xehMessages")#&threadid=#id###last">#dateFormat(lastpost,"m/d/yy")# #timeFormat(lastpost,"h:mm tt")#</a></td>
 				<td>#yesNoFormat(readonly)#</td>
 			</tr>
 		</cfloop>

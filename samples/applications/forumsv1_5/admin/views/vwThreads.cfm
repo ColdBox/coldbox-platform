@@ -15,7 +15,7 @@
 </cfoutput>
 <cfmodule template="../../tags/datatable.cfm" 
 		  data="#getValue("threads")#" list="name,lastpost,forum,conference,messagecount,sticky,active" 
-		  editlink="?event=ehForums.dspThreadsEdit" linkcol="name" label="Thread" />
+		  editlink="?event=#getValue("xehThreadsEdit")#" linkcol="name" label="Thread" />
 
 
 <cfsetting enablecfoutputonly=false>

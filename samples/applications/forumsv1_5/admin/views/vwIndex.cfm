@@ -19,8 +19,8 @@ to <a href="mailto:ray@camdenfamily.com">Raymond Camden</a>.
 <h2>Version</h2>
 You are currently running version #application.settings.version#.
 </p>
-</cfoutput>
 
-<cfinclude template="../includes/gen_stats.cfm">
+#renderView("includes/gen_stats")#
+</cfoutput>
 
 <cfsetting enablecfoutputonly=false>

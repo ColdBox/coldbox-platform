@@ -29,7 +29,7 @@
 	<tr class="tableRowMain">
 		<td>
 		<form action="#cgi.script_name#" method="post">
-		<input type="hidden" name="event" value="ehForums.doPost">
+		<input type="hidden" name="event" value="#getValue("xehNewTopic")#">
 		<input type="hidden" name="forumid" value="#getvalue("forumid")#">
 		<table>
 			<cfif not getValue("blockedAttempt")>

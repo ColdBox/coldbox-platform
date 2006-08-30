@@ -16,7 +16,7 @@
 
 <cfmodule template="../../tags/datatable.cfm" 
 		  data="#getValue("conferences")#" list="name,description,lastpost,messagecount,active" 
-		  editlink="?event=ehForums.dspConferencesEdit" linkcol="name" label="Conference" />
+		  editlink="?event=#getValue("xehConferencesEdit")#" linkcol="name" label="Conference" />
 
 
 <cfsetting enablecfoutputonly=false>
