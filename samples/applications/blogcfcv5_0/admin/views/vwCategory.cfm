@@ -29,7 +29,7 @@
 	in the alias. Spaces should be replaced with dashes.
 	</p>
 
-	<form action="?event=ehAdmin.doAddCategory&id=#url.id#" method="post">
+	<form action="?event=#getValue("xehSaveCategory")#&id=#url.id#" method="post">
 	<table>
 		<tr>
 			<td align="right">name:</td>

@@ -1,6 +1,7 @@
-<cfset relatedCats			= application.blog.getRelatedEntriesSelects() />
-<cfif URL.id IS NOT "0">
-	<cfset getRelatedEntries	= application.blog.getRelatedBlogEntries(URL.id) />
+<cfsetting showdebugoutput="false">
+<cfset relatedCats	= application.blog.getRelatedEntriesSelects() />
+<cfif url.id IS NOT "0">
+	<cfset getRelatedEntries	= application.blog.getRelatedBlogEntries(url.id) />
 </cfif>
 <cfset catList = "" />
 <cfoutput query="relatedCats" group="categoryName">
@@ -12,12 +13,11 @@ var rememberCats	= new Array();	// global array to hold selected options for rel
 var rememberEntries = new Array();	// global array to hold selected options for related entries (entries)
 var originalEntries = new Array();  // global array to hold the -original- selected options for related entries (entries)
 
-<cfif URL.id IS NOT "0">
+<cfif url.id IS NOT "0">
 	<cfoutput>
 		<cfloop query="getRelatedEntries">
 			rememberCats[rememberCats.length] = "#categoryName#";
 			rememberEntries[rememberEntries.length] = "#ID#";
-
 			originalEntries[originalEntries.length] = "#ID#";
 		</cfloop>
 	</cfoutput>
@@ -29,7 +29,7 @@ var originalEntries = new Array();  // global array to hold the -original- selec
 	<cfset arrayCounter = 0 />
 	<cfoutput>
 		<!--- added conditional to prevent current entry from displaying in entries list : 12 january 2005 : cjg --->
-		<cfif relatedCats.ID IS NOT URL.ID>
+		<cfif relatedCats.ID IS NOT url.id>
 			categoryArray["#categoryName#"][#arrayCounter#] 		= new Array();
 			categoryArray["#categoryName#"][#arrayCounter#].ID		= "#ID#";
 			categoryArray["#categoryName#"][#arrayCounter#].posted	= "#dateFormat(posted, 'mm/dd/yyyy')#";

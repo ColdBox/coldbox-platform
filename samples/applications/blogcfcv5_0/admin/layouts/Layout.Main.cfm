@@ -24,30 +24,29 @@
 <div id="menu">
 <ul>
 <li><a href="index.cfm">Home</a></li>
-<li><a href="?event=ehAdmin.dspEntries">Entries</a></li>
-<li><a href="?event=ehAdmin.dspCategories">Categories</a></li>
-<li><a href="?event=ehAdmin.dspComments">Comments</a></li>
+<li><a href="?event=#getValue("xehEntries")#">Entries</a></li>
+<li><a href="?event=#getValue("xehCategories")#">Categories</a></li>
+<li><a href="?event=#getValue("xehComments")#">Comments</a></li>
 <li><a href="?reinit=1">Refresh Blog Cache</a></li>
-<li><a href="?event=ehAdmin.dspSettings">Settings</a></li>
-<li><a href="?event=ehAdmin.dspSubscribers">Subscribers</a></li>
-<li><a href="?event=ehAdmin.dspTrackbacks">Trackbacks</a></li>
+<li><a href="?event=#getValue("xehSettings")#">Settings</a></li>
+<li><a href="?event=#getValue("xehSubscribers")#">Subscribers</a></li>
+<li><a href="?event=#getValue("xehTrackbacks")#">Trackbacks</a></li>
 </ul>
 <hr>
 <ul>
 <li><a href="../">Your Blog</a></li>
 <li><a href="../" target="_new">Your Blog (New Window)</a></li>
-<li><a href="?event=ehAdmin.dspStats">Your Blog Stats</a></li>
+<li><a href="?event=#getValue("xehStats")#">Your Blog Stats</a></li>
 </ul>
 <hr>
 <ul>
-<li><a href="?event=ehAdmin.doLogout">Logout</a></li>
+<li><a href="?event=#getValue("xehLogout")#">Logout</a></li>
 </ul>
 </div>
 </cfif>
 
 <div id="content">
 	<div id="header">BlogCFC Administrator: #getValue("title")#</div>
-
 	<!--- Content Goes Here --->
 	#renderView()#
 </div>

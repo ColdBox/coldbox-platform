@@ -22,8 +22,8 @@
 	</p>
 	</cfoutput>
 
-	<cfmodule template="../tags/datatable.cfm" data="#categories#" editlink="?event=ehAdmin.dspCategory" label="Categories"
-			  linkcol="categoryname" linkval="categoryid" deleteEvent="ehAdmin.doDeleteCategories">
+	<cfmodule template="../tags/datatable.cfm" data="#categories#" editlink="?event=#getValue("xehCategory")#" label="Categories"
+			  linkcol="categoryname" linkval="categoryid" deleteEvent="#getValue("xehDeleteCategory")#">
 		<cfmodule template="../tags/datacol.cfm" colname="categoryname" label="Category" />
 		<cfmodule template="../tags/datacol.cfm" colname="entrycount" label="Entries" />
 	</cfmodule>

@@ -208,7 +208,10 @@ function checksubmit() {
 
 <p align="right">
 <cfif attributes.showAdd>[<a href="#attributes.editlink#&id=0&#attributes.querystring#">Add #attributes.label#</a>]</cfif>
+
+<cfif attributes.data.recordCount>
 [<a href="javascript:checksubmit()">Delete Selected</a>]
+</cfif>
 </p>
 </cfoutput>
 

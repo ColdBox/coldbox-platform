@@ -25,7 +25,7 @@
 	</cfif>
 
 	<cfoutput>
-	<form action="?event=ehAdmin.doAddComment&id=#comment.id#" method="post">
+	<form action="?event=#getValue("xehAddComment")#&id=#comment.id#" method="post">
 	<table>
 		<tr>
 			<td align="right">posted:</td>

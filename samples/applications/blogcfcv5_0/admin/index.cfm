@@ -11,5 +11,5 @@ Modification History:
 		
 		
 ----------------------------------------------------------------------->
-<cfinclude template="/coldboxSamples/system/coldbox.cfm">
+<cfinclude template="/coldbox/system/coldbox.cfm">
 <cfsetting enablecfoutputonly="no">

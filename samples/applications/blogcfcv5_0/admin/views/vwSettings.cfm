@@ -39,68 +39,68 @@ function toLines(str) { return replace(str, ",", chr(10), "all"); }
 	</cfif>
 
 	<cfoutput>
-	<form action="index.cfm?event=ehAdmin.doSaveSettings" method="post">
+	<form action="index.cfm?event=#getValue("xehSaveSettings")#" method="post">
 	<table>
 		<tr>
 			<td align="right">blog title:</td>
-			<td><input type="text" name="blogtitle" value="#form.blogtitle#" class="txtField" maxlength="255"></td>
+			<td><input type="text" name="blogtitle" value="#rc.blogtitle#" class="txtField" maxlength="255"></td>
 		</tr>
 		<tr valign="top">
 			<td align="right">blog description:</td>
-			<td><textarea name="blogdescription" class="txtAreaShort">#form.blogdescription#</textarea></td>
+			<td><textarea name="blogdescription" class="txtAreaShort">#rc.blogdescription#</textarea></td>
 		</tr>
 		<tr valign="top">
 			<td align="right">blog keywords:</td>
-			<td><input type="text" name="blogkeywords" value="#form.blogkeywords#" class="txtField" maxlength="255"></td>
+			<td><input type="text" name="blogkeywords" value="#rc.blogkeywords#" class="txtField" maxlength="255"></td>
 		</tr>
 		<tr>
 			<td align="right">blog url:</td>
-			<td><input type="text" name="blogurl" value="#form.blogurl#" class="txtField" maxlength="255"></td>
+			<td><input type="text" name="blogurl" value="#rc.blogurl#" class="txtField" maxlength="255"></td>
 		</tr>
 		<tr>
 			<td align="right">comments sent from:</td>
-			<td><input type="text" name="commentsfrom" value="#form.commentsfrom#" class="txtField" maxlength="255"></td>
+			<td><input type="text" name="commentsfrom" value="#rc.commentsfrom#" class="txtField" maxlength="255"></td>
 		</tr>
 		<tr>
 			<td align="right">max entries:</td>
-			<td><input type="text" name="maxentries" value="#form.maxentries#" class="txtField" maxlength="255"></td>
+			<td><input type="text" name="maxentries" value="#rc.maxentries#" class="txtField" maxlength="255"></td>
 		</tr>
 		<tr>
 			<td align="right">offset:</td>
-			<td><input type="text" name="offset" value="#form.offset#" class="txtField" maxlength="255"></td>
+			<td><input type="text" name="offset" value="#rc.offset#" class="txtField" maxlength="255"></td>
 		</tr>
 		<tr valign="top">
 			<td align="right">ping urls:</td>
-			<td><textarea name="pingurls" class="txtAreaShort">#toLines(form.pingurls)#</textarea></td>
+			<td><textarea name="pingurls" class="txtAreaShort">#toLines(rc.pingurls)#</textarea></td>
 		</tr>
 		<tr>
 			<td align="right">dsn:</td>
-			<td><input type="text" name="dsn" value="#form.dsn#" class="txtField" maxlength="50"></td>
+			<td><input type="text" name="dsn" value="#rc.dsn#" class="txtField" maxlength="50"></td>
 		</tr>
 		<tr>
 			<td align="right">blog database type:</td>
 			<td>
 			<select name="blogdbtype">
 			<cfloop index="dbtype" list="#validDBTypes#">
-			<option value="#dbtype#" <cfif form.blogdbtype is dbtype>selected</cfif>>#dbtype#</option>
+			<option value="#dbtype#" <cfif rc.blogdbtype is dbtype>selected</cfif>>#dbtype#</option>
 			</cfloop>
 			</select>
 			</td>
 		</tr>
 		<tr>
 			<td align="right">locale:</td>
-			<td><input type="text" name="locale" value="#form.locale#" class="txtField" maxlength="50"></td>
+			<td><input type="text" name="locale" value="#rc.locale#" class="txtField" maxlength="50"></td>
 		</tr>
 		<tr valign="top">
 			<td align="right">ip block list:</td>
-			<td><textarea name="ipblocklist" class="txtAreaShort">#toLines(form.ipblocklist)#</textarea></td>
+			<td><textarea name="ipblocklist" class="txtAreaShort">#toLines(rc.ipblocklist)#</textarea></td>
 		</tr>
 		<tr>
 			<td align="right">use captcha:</td>
 			<td>
 			<select name="usecaptcha">
-			<option value="yes" <cfif form.usecaptcha>selected</cfif>>Yes</option>
-			<option value="no" <cfif not form.usecaptcha>selected</cfif>>No</option>
+			<option value="yes" <cfif rc.usecaptcha>selected</cfif>>Yes</option>
+			<option value="no" <cfif not rc.usecaptcha>selected</cfif>>No</option>
 			</select>
 			</td>
 		</tr>
@@ -108,30 +108,30 @@ function toLines(str) { return replace(str, ",", chr(10), "all"); }
 			<td align="right">allow trackbacks:</td>
 			<td>
 			<select name="allowtrackbacks">
-			<option value="yes" <cfif form.allowtrackbacks>selected</cfif>>Yes</option>
-			<option value="no" <cfif not form.allowtrackbacks>selected</cfif>>No</option>
+			<option value="yes" <cfif rc.allowtrackbacks>selected</cfif>>Yes</option>
+			<option value="no" <cfif not rc.allowtrackbacks>selected</cfif>>No</option>
 			</select>
 			</td>
 		</tr>
 		<tr valign="top">
 			<td align="right">trackback spamlist:</td>
-			<td><textarea name="trackbackspamlist" class="txtAreaShort">#toLines(form.trackbackspamlist)#</textarea></td>
+			<td><textarea name="trackbackspamlist" class="txtAreaShort">#toLines(rc.trackbackspamlist)#</textarea></td>
 		</tr>
 		<tr>
 			<td align="right">mail server:</td>
-			<td><input type="text" name="mailserver" value="#form.mailserver#" class="txtField" maxlength="50"></td>
+			<td><input type="text" name="mailserver" value="#rc.mailserver#" class="txtField" maxlength="50"></td>
 		</tr>
 		<tr>
 			<td align="right">mail username:</td>
-			<td><input type="text" name="mailusername" value="#form.mailusername#" class="txtField" maxlength="50"></td>
+			<td><input type="text" name="mailusername" value="#rc.mailusername#" class="txtField" maxlength="50"></td>
 		</tr>
 		<tr>
 			<td align="right">mail password:</td>
-			<td><input type="text" name="mailpassword" value="#form.mailpassword#" class="txtField" maxlength="50"></td>
+			<td><input type="text" name="mailpassword" value="#rc.mailpassword#" class="txtField" maxlength="50"></td>
 		</tr>
 		<tr>
 			<td align="right">users:</td>
-			<td><input type="text" name="users" value="#form.users#" class="txtField" maxlength="50"></td>
+			<td><input type="text" name="users" value="#rc.users#" class="txtField" maxlength="50"></td>
 		</tr>
 		<tr>
 			<td>&nbsp;</td>

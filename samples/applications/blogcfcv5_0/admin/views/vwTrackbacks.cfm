@@ -23,9 +23,9 @@
 	</p>
 	</cfoutput>
 
-	<cfmodule template="../tags/datatable.cfm" data="#tbs#" editlink="?event=ehAdmin.dspTrackback" label="Trackbacks"
+	<cfmodule template="../tags/datatable.cfm" data="#tbs#" editlink="?event=#getValue("xehTrackback")#" label="Trackbacks"
 			  linkcol="" defaultsort="created" defaultdir="desc" showAdd="false"
-			  deleteEvent="ehAdmin.doDeleteTrackbacks">
+			  deleteEvent="#getValue("xehDeleteTrackbacks")#">
 		<cfmodule template="../tags/datacol.cfm" colname="title" label="Title" width="300" />
 		<cfmodule template="../tags/datacol.cfm" colname="blogname" label="Blog Name" width="250" />
 		<cfmodule template="../tags/datacol.cfm" colname="created" label="Posted" format="datetime" width="150" />

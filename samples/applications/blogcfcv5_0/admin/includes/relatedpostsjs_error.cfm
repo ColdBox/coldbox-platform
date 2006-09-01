@@ -1,3 +1,4 @@
+<cfsetting showdebugoutput="false">
 var catsErrorArray = new Array(<cfoutput>#listQualify(URL.c, "'")#</cfoutput>);
 var postErrorArray = new Array(<cfoutput>#listQualify(URL.p, "'")#</cfoutput>);
 

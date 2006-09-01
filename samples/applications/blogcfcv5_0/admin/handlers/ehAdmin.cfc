@@ -1,15 +1,14 @@
-<cfcomponent name="ehBlog" extends="coldboxSamples.system.eventhandler">
+<cfcomponent name="ehBlog" extends="coldbox.system.eventhandler">
 
 	<!--- ************************************************************* --->
-	<cffunction name="init" access="public" returntype="Any">
-		<cfargument name="controller" required="yes" hint="The reference to the framework controller">
-		<cfset super.init(arguments.controller)>
+	<cffunction name="init" access="public" returntype="Any" output="false">
+		<cfset super.init()>
 		<cfreturn this>
 	</cffunction>
 	<!--- ************************************************************* --->
 
 	<!--- ************************************************************* --->
-	<cffunction name="onAppStart" access="public">
+	<cffunction name="onAppStart" access="public" returntype="void" output="false">
 		<cfset var blogname = getToken(application.applicationName,3,"_")>
 		<cfset var lylaFile = "">
 		<cfset var majorVersion = "">
@@ -26,8 +25,7 @@
 			<cfset theFile = expandPath("./includes/main")>
 			<cfset lylaFile = "./includes/captcha.xml">
 		</cfif>
-		<cfset application.localeutils = getPlugin("i18n")>
-		<cfset application.localeutils.setfwLocale(getSetting("DefaultLocale"))>
+		<cfset application.localeutils = getPlugin("i18n").setfwLocale(getSetting("DefaultLocale"))>
 
 		<!--- Use Captcha? --->
 		<cfset application.usecaptcha = application.blog.getProperty("usecaptcha")>
@@ -67,7 +65,7 @@
 	<!--- ************************************************************* --->
 	
 	<!--- ************************************************************* --->
-	<cffunction name="onRequestStart" access="public">
+	<cffunction name="onRequestStart" access="public" returntype="void" output="false">
 		<!--- Encoding --->
 		<cfset setEncoding("form","utf-8")>
 		<cfset setEncoding("url","utf-8")>
@@ -89,13 +87,22 @@
 
 		<cfif findNoCase("/admin", cgi.script_name) and not isLoggedIn() and not findNoCase("/admin/index.cfm?event=ehAdmin.dspNotify", cgi.script_name)>
 			<cfset overrideEvent("ehAdmin.dspLogin")>
-			<cfreturn>
 		</cfif>
+		
+		<!--- EXIT HANDLERS: --->
+		<cfset rc.xehEntries = "ehAdmin.dspEntries">
+		<cfset rc.xehCategories = "ehAdmin.dspCategories">
+		<cfset rc.xehComments = "ehAdmin.dspComments">
+		<cfset rc.xehSettings = "ehAdmin.dspSettings">
+		<cfset rc.xehSubscribers = "ehAdmin.dspSubscribers">
+		<cfset rc.xehTrackbacks = "ehAdmin.dspTrackbacks">
+		<cfset rc.xehStats = "ehAdmin.dspStats">
+		<cfset rc.xehLogout = "ehAdmin.doLogout">		
 	</cffunction>
 	<!--- ************************************************************* --->
 
 	<!--- ************************************************************* --->
-	<cffunction name="doLogout" access="public" returntype="void">
+	<cffunction name="doLogout" access="public" returntype="void" output="false">
 		<cfif isLoggedIn()>
 			<cfset structDelete(session,"loggedin")>
 			<cflogout>
@@ -106,7 +113,7 @@
 	<!--- ************************************************************* --->
 
 	<!--- ************************************************************* --->
-	<cffunction name="dspLogin" access="public" returntype="void">
+	<cffunction name="dspLogin" access="public" returntype="void" output="false">
 		<cfset var qs = cgi.query_string>
 		<cfset setvalue("qs",reReplace(qs, "logout=[^&]+", ""))>
 		<cfset setValue("title","Logon")>
@@ -115,189 +122,177 @@
 	<!--- ************************************************************* --->
 
 	<!--- ************************************************************* --->
-	<cffunction name="dspHome" access="public" returntype="void">
+	<cffunction name="dspHome" access="public" returntype="void" output="false">
 		<cfset setValue("title","Home")>
 		<cfset setView("vwIndex")>
 	</cffunction>
 	<!--- ************************************************************* --->
 
 	<!--- ************************************************************* --->
-	<cffunction name="dspStats" access="public" returntype="void">
-		<cfset dsn = application.blog.getProperty("dsn")>
-		<cfset dbtype = application.blog.getProperty("blogdbtype")>
-		<cfset blog = application.blog.getProperty("name")>
+	<cffunction name="dspStats" access="public" returntype="void" output="false">
+		<cfset var dsn = application.blog.getProperty("dsn")>
+		<cfset var dbtype = application.blog.getProperty("blogdbtype")>
+		<cfset var blog = application.blog.getProperty("name")>
+		<cfset var thirtyDaysAgo = "">
 
+		<!--- LM: All this should be in a Model call --->
+		
 		<!--- get a bunch of crap --->
-		<cfquery name="getTotalEntries" datasource="#dsn#">
+		<cfquery name="rc.getTotalEntries" datasource="#dsn#">
 				select	count(id) as totalentries,
 						min(posted) as firstentry,
 						max(posted) as lastentry
 				from	tblblogentries
 				where 	tblblogentries.blog = <cfqueryparam cfsqltype="cf_sql_varchar" value="#blog#">
-			</cfquery>
-			<!--- Place in request collection --->
-			<cfset setValue("getTotalEntries",getTotalEntries)>
+		</cfquery>
 
-			<cfquery name="getTotalSubscribers" datasource="#dsn#">
-				select	count(email) as totalsubscribers
-				from	tblblogsubscribers
-				where 	tblblogsubscribers.blog = <cfqueryparam cfsqltype="cf_sql_varchar" value="#blog#">
-			</cfquery>
-			<cfset setvalue("getTotalSubscribers",getTotalSubscribers)>
+		<cfquery name="rc.getTotalSubscribers" datasource="#dsn#">
+			select	count(email) as totalsubscribers
+			from	tblblogsubscribers
+			where 	tblblogsubscribers.blog = <cfqueryparam cfsqltype="cf_sql_varchar" value="#blog#">
+		</cfquery>
+		
+		<cfquery name="rc.getTotalViews" datasource="#dsn#">
+			select		sum(views) as total
+			from		tblblogentries
+			where 	tblblogentries.blog = <cfqueryparam cfsqltype="cf_sql_varchar" value="#blog#">
+		</cfquery>
+		
+		<cfquery name="rc.getTopViews" datasource="#dsn#">
+			select		<cfif dbtype is not "mysql">top 10</cfif> id, title, views
+			from		tblblogentries
+			where 	tblblogentries.blog = <cfqueryparam cfsqltype="cf_sql_varchar" value="#blog#">
+			order by	views desc
+			<cfif dbtype is "mysql">limit 10</cfif>
+		</cfquery>
 
-			<cfquery name="getTotalViews" datasource="#dsn#">
-				select		sum(views) as total
-				from		tblblogentries
-				where 	tblblogentries.blog = <cfqueryparam cfsqltype="cf_sql_varchar" value="#blog#">
-			</cfquery>
-			<cfset setvalue("getTotalViews",getTotalViews)>
+		<!--- get last 30 --->
+		<cfset thirtyDaysAgo = dateAdd("d", -30, now())>
+		<cfquery name="rc.last30" datasource="#dsn#">
+			select	count(id) as totalentries
+			from	tblblogentries
+			where 	tblblogentries.blog = <cfqueryparam cfsqltype="cf_sql_varchar" value="#blog#">
+			and		posted >= <cfqueryparam cfsqltype="cf_sql_date" value="#thirtyDaysAgo#">
+		</cfquery>
+		
+		<cfquery name="rc.getTotalComments" datasource="#dsn#">
+			select	count(tblblogcomments.id) as totalcomments
+			from	tblblogcomments, tblblogentries
+			where	tblblogcomments.entryidfk = tblblogentries.id
+			and		tblblogentries.blog = <cfqueryparam cfsqltype="cf_sql_varchar" value="#blog#">
+		</cfquery>
 
-			<cfquery name="getTopViews" datasource="#dsn#">
-				select		<cfif dbtype is not "mysql">top 10</cfif> id, title, views
-				from		tblblogentries
-				where 	tblblogentries.blog = <cfqueryparam cfsqltype="cf_sql_varchar" value="#blog#">
-				order by	views desc
-				<cfif dbtype is "mysql">limit 10</cfif>
-			</cfquery>
-			<cfset setvalue("getTopViews",getTopViews)>
-
-			<!--- get last 30 --->
-			<cfset thirtyDaysAgo = dateAdd("d", -30, now())>
-			<cfquery name="last30" datasource="#dsn#">
-				select	count(id) as totalentries
-				from	tblblogentries
-				where 	tblblogentries.blog = <cfqueryparam cfsqltype="cf_sql_varchar" value="#blog#">
-				and		posted >= <cfqueryparam cfsqltype="cf_sql_date" value="#thirtyDaysAgo#">
-			</cfquery>
-			<!--- Place in request collection --->
-			<cfset setValue("last30",last30)>
-
-			<cfquery name="getTotalComments" datasource="#dsn#">
-				select	count(tblblogcomments.id) as totalcomments
-				from	tblblogcomments, tblblogentries
-				where	tblblogcomments.entryidfk = tblblogentries.id
-				and		tblblogentries.blog = <cfqueryparam cfsqltype="cf_sql_varchar" value="#blog#">
-			</cfquery>
-			<!--- Place in request collection --->
-			<cfset setValue("getTotalComments",getTotalComments)>
-
-			<!--- RBB: 1/20/2006: get trackbacks --->
-			<cfquery name="getTotalTrackbacks" datasource="#dsn#">
-				select count(tblblogtrackbacks.id) as totaltrackbacks
-				from	tblblogtrackbacks, tblblogentries
-				where	tblblogtrackbacks.entryid = tblblogentries.id
-				and		tblblogentries.blog = <cfqueryparam cfsqltype="cf_sql_varchar" value="#blog#">
-			</cfquery>
-			<cfset setValue("getTotalTrackbacks",getTotalTrackbacks)>
-
-			<!--- gets num of entries per category --->
-			<cfquery name="getCategoryCount" datasource="#dsn#">
-				select	categoryid, categoryname, count(categoryidfk) as total
-				from	tblblogcategories, tblblogentriescategories
-				where	tblblogentriescategories.categoryidfk = tblblogcategories.categoryid
-				and		tblblogcategories.blog = <cfqueryparam cfsqltype="cf_sql_varchar" value="#blog#">
-				group by tblblogcategories.categoryid, tblblogcategories.categoryname
-				<cfif dbtype is not "msaccess">
-					order by total desc
-				<cfelse>
-					order by count(categoryidfk) desc
-				</cfif>
-			</cfquery>
-			<!--- Place in request collection --->
-			<cfset setValue("getCategoryCount",getCategoryCount)>
-
-			<!--- gets num of comments per entry, top 10 --->
-			<cfquery name="topCommentedEntries" datasource="#dsn#">
-				select
-				<cfif dbtype is not "mysql">top 10</cfif>
-				tblblogentries.id, tblblogentries.title, count(tblblogcomments.id) as commentcount
-				from			tblblogentries, tblblogcomments
-				where			tblblogcomments.entryidfk = tblblogentries.id
-				and				tblblogentries.blog = <cfqueryparam cfsqltype="cf_sql_varchar" value="#blog#">
-
-				group by		tblblogentries.id, tblblogentries.title
-				<cfif dbtype is not "msaccess">
-					order by	commentcount desc
-				<cfelse>
-					order by 	count(tblblogcomments.id) desc
-				</cfif>
-				<cfif dbtype is "mysql">limit 10</cfif>
-			</cfquery>
-			<!--- Place in request collection --->
-			<cfset setValue("topCommentedEntries",topCommentedEntries)>
-
-			<!--- gets num of comments per category, top 10 --->
-			<cfquery name="topCommentedCategories" datasource="#dsn#">
-				select
-				<cfif dbtype is not "mysql">top 10</cfif>
-								tblblogcategories.categoryid,
-								tblblogcategories.categoryname,
-								count(tblblogcomments.id) as commentcount
-				from			tblblogcategories, tblblogcomments, tblblogentriescategories
-				where			tblblogcomments.entryidfk = tblblogentriescategories.entryidfk
-				and				tblblogentriescategories.categoryidfk = tblblogcategories.categoryid
-				and				tblblogcategories.blog = <cfqueryparam cfsqltype="cf_sql_varchar" value="#blog#">
-				group by		tblblogcategories.categoryid, tblblogcategories.categoryname
-				<cfif dbtype is not "msaccess">
-					order by	commentcount desc
-				<cfelse>
-					order by	count(tblblogcomments.id) desc
-				</cfif>
-				<cfif dbtype is "mysql">limit 10</cfif>
-			</cfquery>
-			<!--- Place in request collection --->
-			<cfset setValue("topCommentedCategories",topCommentedCategories)>
-
-			<!--- RBB 1/20/2006: gets num of trackbacks per entry, top 10 --->
-			<cfquery name="topTrackbackedEntries" datasource="#dsn#">
-				select
-				<cfif dbtype is not "mysql">top 10</cfif>
-				tblblogentries.id, tblblogentries.title, count(tblblogtrackbacks.id) as trackbackcount
-				from			tblblogentries, tblblogtrackbacks
-				where			tblblogtrackbacks.entryid = tblblogentries.id
-				and				tblblogentries.blog = <cfqueryparam cfsqltype="cf_sql_varchar" value="#blog#">
-
-				group by		tblblogentries.id, tblblogentries.title
-				<cfif dbtype is not "msaccess">
-					order by	trackbackcount desc
-				<cfelse>
-					order by 	count(tblblogtrackbacks.id) desc
-				</cfif>
-				<cfif dbtype is "mysql">limit 10</cfif>
-			</cfquery>
-			<cfset setValue("topTrackbackedEntries",topTrackbackedEntries)>
-
-			<cfquery name="topSearchTerms" datasource="#dsn#">
-				select
-				<cfif dbtype is not "mysql">top 10</cfif>
-							searchterm, count(searchterm) as total
-				from		tblblogsearchstats
-				where		blog = <cfqueryparam cfsqltype="cf_sql_varchar" value="#blog#">
-				group by	searchterm
-				<cfif dbtype is not "msaccess">
-					order by	total desc
-				<cfelse>
-					order by	count(searchterm) desc
-				</cfif>
-				<cfif dbtype is "mysql">limit 10</cfif>
-			</cfquery>
-			<!--- Place in request collection --->
-			<cfset setValue("topSearchTerms",topSearchTerms)>
-
-
-			<cfif getTotalEntries.totalEntries>
-				<cfset setValue("dur",dateDiff("d",getTotalEntries.firstEntry, now()))>
+		<!--- RBB: 1/20/2006: get trackbacks --->
+		<cfquery name="rc.getTotalTrackbacks" datasource="#dsn#">
+			select count(tblblogtrackbacks.id) as totaltrackbacks
+			from	tblblogtrackbacks, tblblogentries
+			where	tblblogtrackbacks.entryid = tblblogentries.id
+			and		tblblogentries.blog = <cfqueryparam cfsqltype="cf_sql_varchar" value="#blog#">
+		</cfquery>
+		
+		<!--- gets num of entries per category --->
+		<cfquery name="rc.getCategoryCount" datasource="#dsn#">
+			select	categoryid, categoryname, count(categoryidfk) as total
+			from	tblblogcategories, tblblogentriescategories
+			where	tblblogentriescategories.categoryidfk = tblblogcategories.categoryid
+			and		tblblogcategories.blog = <cfqueryparam cfsqltype="cf_sql_varchar" value="#blog#">
+			group by tblblogcategories.categoryid, tblblogcategories.categoryname
+			<cfif dbtype is not "msaccess">
+				order by total desc
+			<cfelse>
+				order by count(categoryidfk) desc
 			</cfif>
+		</cfquery>
+		
+		<!--- gets num of comments per entry, top 10 --->
+		<cfquery name="rc.topCommentedEntries" datasource="#dsn#">
+			select
+			<cfif dbtype is not "mysql">top 10</cfif>
+			tblblogentries.id, tblblogentries.title, count(tblblogcomments.id) as commentcount
+			from			tblblogentries, tblblogcomments
+			where			tblblogcomments.entryidfk = tblblogentries.id
+			and				tblblogentries.blog = <cfqueryparam cfsqltype="cf_sql_varchar" value="#blog#">
 
-			<cfset setvalue("title",getresource("stats"))>
-			<!--- Set View --->
-			<cfset setView("vwStats")>
-		</cffunction>
-		<!--- ************************************************************* --->
+			group by		tblblogentries.id, tblblogentries.title
+			<cfif dbtype is not "msaccess">
+				order by	commentcount desc
+			<cfelse>
+				order by 	count(tblblogcomments.id) desc
+			</cfif>
+			<cfif dbtype is "mysql">limit 10</cfif>
+		</cfquery>
+		
+		<!--- gets num of comments per category, top 10 --->
+		<cfquery name="rc.topCommentedCategories" datasource="#dsn#">
+			select
+			<cfif dbtype is not "mysql">top 10</cfif>
+							tblblogcategories.categoryid,
+							tblblogcategories.categoryname,
+							count(tblblogcomments.id) as commentcount
+			from			tblblogcategories, tblblogcomments, tblblogentriescategories
+			where			tblblogcomments.entryidfk = tblblogentriescategories.entryidfk
+			and				tblblogentriescategories.categoryidfk = tblblogcategories.categoryid
+			and				tblblogcategories.blog = <cfqueryparam cfsqltype="cf_sql_varchar" value="#blog#">
+			group by		tblblogcategories.categoryid, tblblogcategories.categoryname
+			<cfif dbtype is not "msaccess">
+				order by	commentcount desc
+			<cfelse>
+				order by	count(tblblogcomments.id) desc
+			</cfif>
+			<cfif dbtype is "mysql">limit 10</cfif>
+		</cfquery>
+		
+		<!--- RBB 1/20/2006: gets num of trackbacks per entry, top 10 --->
+		<cfquery name="rc.topTrackbackedEntries" datasource="#dsn#">
+			select
+			<cfif dbtype is not "mysql">top 10</cfif>
+			tblblogentries.id, tblblogentries.title, count(tblblogtrackbacks.id) as trackbackcount
+			from			tblblogentries, tblblogtrackbacks
+			where			tblblogtrackbacks.entryid = tblblogentries.id
+			and				tblblogentries.blog = <cfqueryparam cfsqltype="cf_sql_varchar" value="#blog#">
+
+			group by		tblblogentries.id, tblblogentries.title
+			<cfif dbtype is not "msaccess">
+				order by	trackbackcount desc
+			<cfelse>
+				order by 	count(tblblogtrackbacks.id) desc
+			</cfif>
+			<cfif dbtype is "mysql">limit 10</cfif>
+		</cfquery>
+		
+		<cfquery name="rc.topSearchTerms" datasource="#dsn#">
+			select
+			<cfif dbtype is not "mysql">top 10</cfif>
+						searchterm, count(searchterm) as total
+			from		tblblogsearchstats
+			where		blog = <cfqueryparam cfsqltype="cf_sql_varchar" value="#blog#">
+			group by	searchterm
+			<cfif dbtype is not "msaccess">
+				order by	total desc
+			<cfelse>
+				order by	count(searchterm) desc
+			</cfif>
+			<cfif dbtype is "mysql">limit 10</cfif>
+		</cfquery>
+		
+		<cfif rc.getTotalEntries.totalEntries>
+			<cfset setValue("dur",dateDiff("d",rc.getTotalEntries.firstEntry, now()))>
+		</cfif>
+
+		<cfset setvalue("title",getresource("stats"))>
+		<!--- Set View --->
+		<cfset setView("vwStats")>
+	</cffunction>
+	<!--- ************************************************************* --->
 
 	<!--- ************************************************************* --->
-	<cffunction name="dspEntries" access="public" returntype="void">
+	<cffunction name="dspEntries" access="public" returntype="void" output="false">
 		<cfset var params = structNew()>
+		<!--- EXIT HANDLERS: --->
+		<cfset rc.xehEntry = "ehAdmin.dspEntry">
+		<cfset rc.xehDeleteEntries = "ehAdmin.doDeleteEntries">
+		
+		<!--- Set params --->
 		<cfset params.mode = "short">
 		<cfif len(trim(getvalue("keywords","")))>
 			<cfset params.searchTerms = getValue("keywords")>
@@ -310,62 +305,73 @@
 	<!--- ************************************************************* --->
 
 	<!--- ************************************************************* --->
-	<cffunction name="dspEntry" access="public" returntype="void">
+	<cffunction name="dspEntry" access="public" returntype="void" output="false">
 		<!--- In coldbox you can use the form, url scopes too. You are open
 		to use whatever you want. However, the request collection provides
 		a one central repository, that any template, module, include can
 		get --->
 		<Cfset var entry = "">
 		<cfset var message = "">
+		
+		<!--- EXIT HANDLERS: --->
+		<cfset rc.xehSave = "ehAdmin.doSaveEntry">
+		
 		<cftry>
 			<cfif getvalue("id") neq 0>
 				<cfset entry = application.blog.getEntry(getvalue("id"))>
 				<cfif len(entry.morebody)>
 					<cfset entry.body = entry.body & "<more/>" & entry.morebody>
-				</cfif>
-				<cfparam name="form.title" default="#entry.title#">
-				<cfparam name="form.body" default="#entry.body#">
-				<cfparam name="form.posted" default="#entry.posted#">
-				<cfparam name="form.alias" default="#entry.alias#">
-				<cfparam name="form.allowcomments" default="#entry.allowcomments#">
-				<cfparam name="form.oldenclosure" default="#entry.enclosure#">
-				<cfparam name="form.oldfilesize" default="#entry.filesize#">
-				<cfparam name="form.oldmimetype" default="#entry.mimetype#">
-				<cfparam name="form.released" default="#entry.released#">
+				</cfif>			
+				<!--- Param Values --->
+				<cfset paramValue("title",entry.title)>
+				<cfset paramValue("body",entry.body)>
+				<cfset paramValue("alias",entry.alias)>	
+				<cfset paramValue("posted",entry.posted)>
+				<cfset paramValue("allowcomments",entry.allowcomments)>
+				<cfset paramValue("oldenclosure",entry.enclosure)>
+				<cfset paramValue("oldfilesize", entry.filesize)>
+				<cfset paramValue("oldmimetype", entry.mimetype)>
+				<cfset paramValue("released", entry.released)>
+				
 				<!--- handle case where form submitted, cant use cfparam --->
-				<cfif not isDefined("form.save")>
-					<cfset form.categories = structKeyList(entry.categories)>
+				<cfif not valueExists("save")>
+					<cfset rc.categories = structKeyList(entry.categories)>
 				</cfif>
 
 			<cfelse>
-				<cfif not isDefined("form.save") and not isDefined("form.return") and not isDefined("form.preview")>
-					<cfset form.categories = "">
+				<!--- New Entry --->
+				<cfif not valueExists("save") and not valueExists("return") and not valueExists("preview")>
+					<cfset rc.categories = "">
 				</cfif>
-				<cfparam name="form.title" default="">
-				<cfparam name="form.body" default="">
-				<cfparam name="form.alias" default="">
-				<cfparam name="form.posted" default="#dateAdd("h", application.blog.getProperty("offset"), now())#">
-				<cfparam name="form.allowcomments" default="">
-				<cfparam name="form.oldenclosure" default="">
-				<cfparam name="form.oldfilesize" default="0">
-				<cfparam name="form.oldmimetype" default="">
-				<cfparam name="form.released" default="true">
+				<!--- Param Values --->
+				<cfset paramValue("body", "")>
+				<cfset paramValue("alias", "")>	
+				<cfset paramValue("posted", "#dateAdd("h", application.blog.getProperty("offset"), now())#")>
+				<cfset paramValue("allowcomments", "")>
+				<cfset paramValue("oldenclosure", "")>
+				<cfset paramValue("oldfilesize", "0")>
+				<cfset paramValue("oldmimetype", "")>
+				<cfset paramValue("released", "true")>
 			</cfif>
 			<cfcatch>
+				<cfset getPlugin("logger").logError("Error in entries", cfcatch)>
 				<cfset setNextEvent("ehAdmin.dspEntries")>
 			</cfcatch>
 		</cftry>
-		<cfparam name="form.cboRelatedEntries" default="" />
-		<cfparam name="form.cboRelatedEntriesCats" default="" />
-		<cfparam name="form.newcategory" default="">
-
-		<cfif not isNumeric(form.oldfilesize)>
-			<cfset form.oldfilesize = 0>
+		
+		<!---param Values --->
+		<cfset paramValue("cboRelatedEntries", "")>
+		<cfset paramValue("cboRelatedEntriesCats", "")>
+		<cfset paramValue("newcategory", "")>
+		
+		<!--- Check oldfilesize --->
+		<cfif not isNumeric(rc.oldfilesize)>
+			<cfset rc.oldfilesize = 0>
 		</cfif>
-
-		<cfif lsIsDate(form.posted)>
-			<cfset form.posted = createODBCDateTime(form.posted)>
-			<cfset form.posted = application.localeUtils.dateLocaleFormat(form.posted,"short") & " " & application.localeUtils.timeLocaleFormat(form.posted)>
+		<!--- check date --->
+		<cfif lsIsDate(rc.posted)>
+			<cfset rc.posted = createODBCDateTime(rc.posted)>
+			<cfset rc.posted = application.localeUtils.dateLocaleFormat(rc.posted,"short") & " " & application.localeUtils.timeLocaleFormat(rc.posted)>
 		</cfif>
 		<cfset setValue("allCats",application.blog.getCategories())>
 		<cfset setValue("message",message)>
@@ -376,26 +382,35 @@
 	<!--- ************************************************************* --->
 
 	<!--- ************************************************************* --->
-	<cffunction name="doSaveEntry" access="public" returntype="void">
+	<cffunction name="doSaveEntry" access="public" returntype="void" output="false">
 		<cfset var errors = arrayNew(1)>
 		<cfset var entry = "">
-		<cfparam name="form.cboRelatedEntries" default="" />
-		<cfparam name="form.cboRelatedEntriesCats" default="" />
-		<cfparam name="form.newcategory" default="">
+		<cfset var destination = "">
+		<cfset var origbody = "">
+		<cfset var strMoreTag = "">
+		<cfset var moreStart = "">
+		<cfset var moreText = "">
+	
+		<!--- Param Values --->
+		<cfset paramValue("cboRelatedEntries", "")>
+		<cfset paramValue("cboRelatedEntriesCats", "")>
+		<cfset paramValue("newcategory", "")>
 
+		<!--- Check for cancel --->
 		<cfif valueExists("cancel")>
 			<cfset setNextEvent("ehAdmin.dspEntries")>
 		</cfif>
-
-		<cfif isDefined("form.delete_enclosure")>
-			<cfif len(form.oldenclosure) and fileExists(form.oldenclosure)>
-				<cffile action="delete" file="#form.oldenclosure#">
+	
+		<!--- check for delete enclosure --->
+		<cfif valueExists("delete_enclosure")>
+			<cfif len(rc.oldenclosure) and fileExists(rc.oldenclosure)>
+				<cffile action="delete" file="#rc.oldenclosure#">
 			</cfif>
-			<cfset form.oldenclosure = "">
-			<cfset form.oldfilesize = "0">
-			<cfset form.oldmimetype = "">
+			<cfset rc.oldenclosure = "">
+			<cfset rc.oldfilesize = "0">
+			<cfset rc.oldmimetype = "">
 			<!--- We need to set a msg to warn folks that they need to save the entry --->
-			<cfif url.id is not "new">
+			<cfif rc.id is not "new">
 				<cfset message = getResource("enclosureentrywarning")>
 			</cfif>
 		</cfif>
@@ -403,7 +418,7 @@
 		<!---
 		Enclosure logic move out to always run. Thinking is that it needs to run on preview.
 		--->
-		<cfif isDefined("form.enclosure") and len(trim(form.enclosure))>
+		<cfif valueExists("enclosure") and len(trim(rc.enclosure))>
 			<cfset destination = expandPath("../enclosures")>
 			<!--- first off, potentially make the folder --->
 			<cfif not directoryExists(destination)>
@@ -412,87 +427,89 @@
 
 			<cffile action="upload" filefield="enclosure" destination="#destination#" nameconflict="makeunique">
 			<cfif cffile.filewassaved>
-				<cfset form.oldenclosure = cffile.serverDirectory & "/" & cffile.serverFile>
-				<cfset form.oldfilesize = cffile.filesize>
-				<cfset form.oldmimetype = cffile.contenttype & "/" & cffile.contentsubtype>
+				<cfset rc.oldenclosure = cffile.serverDirectory & "/" & cffile.serverFile>
+				<cfset rc.oldfilesize = cffile.filesize>
+				<cfset rc.oldmimetype = cffile.contenttype & "/" & cffile.contentsubtype>
 			</cfif>
 		</cfif>
 
-		<cfif isDefined("form.save")>
-			<cfif not len(trim(form.title))>
+		<!--- Save Entry --->
+		<cfif valueExists("save")>
+			<cfif not len(trim(rc.title))>
 				<cfset arrayAppend(errors, getResource("mustincludetitle"))>
 			<cfelse>
-				<cfset form.title = trim(form.title)>
+				<cfset rc.title = trim(rc.title)>
 			</cfif>
-			<cfif not isDate(form.posted)>
+			<cfif not isDate(rc.posted)>
 				<cfset arrayAppend(errors, getResource("invaliddate"))>
 			</cfif>
-			<cfif not len(trim(form.body))>
+			<cfif not len(trim(rc.body))>
 				<cfset arrayAppend(errors, getResource("mustincludebody"))>
 				<cfset origbody = "">
 			<cfelse>
-				<cfset form.body = trim(form.body)>
-				<cfset origbody = form.body>
+				<cfset rc.body = trim(rc.body)>
+				<cfset origbody = rc.body>
 
 				<!--- Handle potential <more/> --->
 				<!--- fix by Andrew --->
 				<cfset strMoreTag = "<more/>">
-				<cfset moreStart = findNoCase(strMoreTag,form.body)>
+				<cfset moreStart = findNoCase(strMoreTag,rc.body)>
 				<cfif moreStart gt 1>
-					<cfset moreText = trim(mid(form.body,(moreStart+len(strMoreTag)),len(form.body)))>
-					<cfset form.body = trim(left(form.body,moreStart-1))>
+					<cfset moreText = trim(mid(rc.body,(moreStart+len(strMoreTag)),len(rc.body)))>
+					<cfset rc.body = trim(left(rc.body,moreStart-1))>
 				<cfelseif moreStart is 1>
 					<cfset arrayAppend(errors, getResource("mustincludebody"))>
 				<cfelse>
 					<cfset moreText = "">
 				</cfif>
 			</cfif>
-
-			<cfif (not isDefined("form.categories") or form.categories is 0) and not len(trim(form.newCategory))>
+			<!--- Categories --->
+			<cfif (not valueExists("categories") or rc.categories is 0) and not len(trim(rc.newCategory))>
 				<cfset arrayAppend(errors, getResource("mustincludecategory"))>
 			<cfelse>
-				<cfset form.newCategory = trim(htmlEditFormat(form.newCategory))>
+				<cfset rc.newCategory = trim(htmlEditFormat(rc.newCategory))>
 			</cfif>
 
-			<cfif len(form.alias)>
-				<cfset form.alias = trim(htmlEditFormat(form.alias))>
+			<cfif len(rc.alias)>
+				<cfset rc.alias = trim(htmlEditFormat(rc.alias))>
 			<cfelse>
 				<!--- Auto create the alias --->
-				<cfset form.alias = application.blog.makeTitle(form.title)>
+				<cfset rc.alias = application.blog.makeTitle(rc.title)>
 			</cfif>
 
 			<cfif not arrayLen(errors)>
 				<!--- Before we save, modify the posted time by -1 * posted --->
-				<cfset form.posted = dateAdd("h", -1 * application.blog.getProperty("offset"), form.posted)>
+				<cfset rc.posted = dateAdd("h", -1 * application.blog.getProperty("offset"), rc.posted)>
 				<cfif getvalue("id") neq 0>
-					<cfset application.blog.saveEntry(url.id,form.title,form.body,moreText,form.alias,form.posted,form.allowcomments, form.oldenclosure, form.oldfilesize, form.oldmimetype,form.released,form.cboRelatedEntries)>
+					<cfset application.blog.saveEntry(rc.id,rc.title,rc.body,moreText,rc.alias,rc.posted,rc.allowcomments, rc.oldenclosure, rc.oldfilesize, rc.oldmimetype,rc.released,rc.cboRelatedEntries)>
 				<cfelse>
-					<cfset url.id = application.blog.addEntry(form.title,form.body,moreText,form.alias,form.posted,form.allowcomments, form.oldenclosure, form.oldfilesize, form.oldmimetype,form.released,form.cboRelatedEntries)>
+					<cfset rc.id = application.blog.addEntry(rc.title,rc.body,moreText,rc.alias,rc.posted,rc.allowcomments, rc.oldenclosure, rc.oldfilesize, rc.oldmimetype,rc.released,rc.cboRelatedEntries)>
 				</cfif>
 				<!--- remove all old cats that arent passed in --->
-				<cfif url.id is not "new">
-					<cfset application.blog.removeCategories(url.id)>
+				<cfif rc.id is not "new">
+					<cfset application.blog.removeCategories(rc.id)>
 				</cfif>
 				<!--- potentially add new cat --->
-				<cfif len(trim(form.newCategory))>
-					<cfparam name="form.categories" default="">
-					<cfset form.categories = listAppend(form.categories,application.blog.addCategory(form.newCategory, application.blog.makeTitle(newCategory)))>
+				<cfif len(trim(rc.newCategory))>
+					<cfset paramValue("categories", "")>
+					<cfset rc.categories = listAppend(rc.categories,application.blog.addCategory(rc.newCategory, application.blog.makeTitle(rc.newCategory)))>
 				</cfif>
-				<cfset application.blog.assignCategories(url.id,form.categories)>
+				<cfset application.blog.assignCategories(rc.id,rc.categories)>
 				<cfmodule template="../../tags/scopecache.cfm" scope="application" clearall="true">
 				<cfset setNextEvent("ehAdmin.dspEntries")>
 			<cfelse>
 				<!--- restore body, since it loses more body --->
-				<cfset form.body = origbody>
+				<cfset rc.body = origbody>
 			</cfif>
 		</cfif>
+		
 		<!--- Run internal event to display entry --->
 		<cfset dspEntry()>
 	</cffunction>
 	<!--- ************************************************************* --->
 
 	<!--- ************************************************************* --->
-	<cffunction name="doDeleteEntries" access="public" returntype="void">
+	<cffunction name="doDeleteEntries" access="public" returntype="void" output="false">
 		<cfset var u = "">
 		<cfloop index="u" list="#getValue("mark","")#">
 			<cfset application.blog.deleteEntry(u)>
@@ -502,7 +519,7 @@
 	<!--- ************************************************************* --->
 
 	<!--- ************************************************************* --->
-	<cffunction name="doDeleteTrackbacks" access="public" returntype="void">
+	<cffunction name="doDeleteTrackbacks" access="public" returntype="void" output="false">
 		<cfset var u = "">
 		<cfloop index="u" list="#getValue("mark","")#">
 			<cfset application.blog.deleteTrackback(u)>
@@ -512,7 +529,11 @@
 	<!--- ************************************************************* --->
 
 	<!--- ************************************************************* --->
-	<cffunction name="dspTrackbacks" access="public" returntype="void">
+	<cffunction name="dspTrackbacks" access="public" returntype="void" output="false">
+		<!--- EXIT HANDLERS: --->
+		<cfset rc.xehTrackback = "ehAdmin.dspTrackback">
+		<cfset rc.xehDeleteTrackbacks = "ehAdmin.doDeleteTrackbacks">
+		
 		<cfset setvalue("tbs", application.blog.getTrackbacks(sortdir="desc"))>
 		<cfset setValue("title","Trackbacks")>
 		<cfset setView("vwTrackbacks")>
@@ -520,7 +541,7 @@
 	<!--- ************************************************************* --->
 
 	<!--- ************************************************************* --->
-	<cffunction name="doDeleteCategories" access="public" returntype="void">
+	<cffunction name="doDeleteCategories" access="public" returntype="void" output="false">
 		<cfset var u = "">
 		<cfloop index="u" list="#getValue("mark","")#">
 			<cfset application.blog.deleteCategory(u)>
@@ -530,7 +551,11 @@
 	<!--- ************************************************************* --->
 
 	<!--- ************************************************************* --->
-	<cffunction name="dspCategories" access="public" returntype="void">
+	<cffunction name="dspCategories" access="public" returntype="void" output="false">
+		<!--- EXIT HANDLERS: --->
+		<cfset rc.xehCategory = "ehAdmin.dspCategory">
+		<cfset rc.xehDeleteCategory = "ehAdmin.doDeleteCategories">
+		
 		<cfset setvalue("categories", application.blog.getCategories())>
 		<cfset setValue("title","Trackbacks")>
 		<cfset setView("vwCategories")>
@@ -538,7 +563,9 @@
 	<!--- ************************************************************* --->
 
 	<!--- ************************************************************* --->
-	<cffunction name="dspCategory" access="public" returntype="void">
+	<cffunction name="dspCategory" access="public" returntype="void" output="false">
+		<!--- EXIT HANDLERS: --->
+		<cfset rc.xehSaveCategory = "ehAdmin.doAddCategory">
 		<cftry>
 			<cfif getvalue("id",0) neq 0>
 				<cfset setvalue("cat",application.blog.getCategory(getvalue("id")))>
@@ -556,7 +583,7 @@
 	<!--- ************************************************************* --->
 
 	<!--- ************************************************************* --->
-	<cffunction name="doAddCategory" access="public" returntype="void">
+	<cffunction name="doAddCategory" access="public" returntype="void" output="false">
 		<cfset var errors = arrayNew(1)>
 
 		<cfif valueExists("cancel")>
@@ -599,7 +626,11 @@
 	<!--- ************************************************************* --->
 
 	<!--- ************************************************************* --->
-	<cffunction name="dspComments" access="public" returntype="void">
+	<cffunction name="dspComments" access="public" returntype="void" output="false">
+		<!--- EXIT HANDLERS: --->
+		<cfset rc.xehComment = "ehAdmin.dspComment">
+		<cfset rc.xehDeleteComment = "ehAdmin.doDeleteComments">
+		
 		<cfset setvalue("comments", application.blog.getComments(sortdir="desc"))>
 		<cfset setValue("title","Comments")>
 		<cfset setView("vwComments")>
@@ -607,7 +638,7 @@
 	<!--- ************************************************************* --->
 
 	<!--- ************************************************************* --->
-	<cffunction name="doDeleteComments" access="public" returntype="void">
+	<cffunction name="doDeleteComments" access="public" returntype="void" output="false">
 		<cfset var u = "">
 		<cfloop index="u" list="#getValue("mark","")#">
 			<cfset application.blog.deleteComment(u)>
@@ -617,7 +648,10 @@
 	<!--- ************************************************************* --->
 
 	<!--- ************************************************************* --->
-	<cffunction name="dspComment" access="public" returntype="void">
+	<cffunction name="dspComment" access="public" returntype="void" output="false">
+		<!--- EXIT HANDLERS: --->
+		<cfset rc.xehAddComment = "ehAdmin.doAddComment">
+		
 		<cftry>
 			<cfset setvalue("comment", application.blog.getComment(getvalue("id")))>
 			<cfif getvalue("comment.recordCount") is 0>
@@ -633,7 +667,7 @@
 	<!--- ************************************************************* --->
 
 	<!--- ************************************************************* --->
-	<cffunction name="doAddComment" access="public" returntype="void">
+	<cffunction name="doAddComment" access="public" returntype="void" output="false">
 		<cfset var errors = arrayNew(1)>
 
 		<cfif valueExists("cancel")>
@@ -662,7 +696,9 @@
 	<!--- ************************************************************* --->
 
 	<!--- ************************************************************* --->
-	<cffunction name="dspSubscribers" access="public" returntype="void">
+	<cffunction name="dspSubscribers" access="public" returntype="void" output="false">
+		<!--- EXIT HANDLERS: --->
+		<cfset rc.xehDeleteSub = "ehAdmin.doDeleteSubscribers">
 		<cfset setvalue("subscribers", application.blog.getSubscribers())>
 		<cfset setValue("title","Subscribers")>
 		<cfset setView("vwSubscribers")>
@@ -670,7 +706,7 @@
 	<!--- ************************************************************* --->
 
 	<!--- ************************************************************* --->
-	<cffunction name="doDeleteSubscribers" access="public" returntype="void">
+	<cffunction name="doDeleteSubscribers" access="public" returntype="void" output="false">
 		<cfset var u = "">
 		<cfloop index="u" list="#getValue("MARK","")#">
 			<cfset application.blog.removeSubscriber(u)>
@@ -680,11 +716,13 @@
 	<!--- ************************************************************* --->
 
 	<!--- ************************************************************* --->
-	<cffunction name="dspSettings" access="public" returntype="void">
+	<cffunction name="dspSettings" access="public" returntype="void" output="false">
 		<cfset var settings = application.blog.getProperties()>
 		<cfset var validDBTypes = application.blog.getValidDBTypes()>
+		<!--- EXIT HANDLERS: --->
+		<cfset rc.xehSaveSettings = "ehAdmin.doSaveSettings">
 		<cfloop item="setting" collection="#settings#">
-			<cfparam name="form.#setting#" default="#settings[setting]#">
+			<cfset paramValue("#setting#", settings[setting])>			
 		</cfloop>
 		<cfset setvalue("settings",settings)>
 		<Cfset setvalue("validDBTypes",validDBTypes)>
@@ -694,8 +732,10 @@
 	<!--- ************************************************************* --->
 
 	<!--- ************************************************************* --->
-	<cffunction name="doSaveSettings" access="public" returntype="void">
+	<cffunction name="doSaveSettings" access="public" returntype="void" output="false">
 		<cfset var errors = arrayNew(1)>
+		<cfset var keylist = "">
+		
 		<cfif valueExists("cancel")>
 			<cfset setNextEvent("ehAdmin.dspHome")>
 		</cfif>
@@ -739,7 +779,7 @@
 			<!--- make a list of the keys we will send. --->
 			<cfset keylist = "blogtitle,blogdescription,blogkeywords,blogurl,commentsfrom,maxentries,offset,pingurls,dsn,blogdbtype,locale,ipblocklist,allowtrackbacks,trackbackspamlist,mailserver,mailusername,mailpassword,users,usecaptcha">
 			<cfloop index="key" list="#keylist#">
-				<cfset application.blog.setProperty(key, trim(request.reqCollection[key]))>
+				<cfset application.blog.setProperty(key, trim(rc[key]))>
 			</cfloop>
 			<cfset getPlugin("messagebox").setMessage("info","Settings have been updated successfully.")>
 			<cfset setNextEvent("ehAdmin.dspHome","reinit=1")>

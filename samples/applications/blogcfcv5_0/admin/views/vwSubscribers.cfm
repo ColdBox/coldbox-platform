@@ -24,7 +24,7 @@
 	</cfoutput>
 
 	<cfmodule template="../tags/datatable.cfm" data="#subscribers#" editlink="" label="Subscribers"
-			  linkcol="" linkval="email" showAdd="false" defaultsort="email" deleteEvent="ehAdmin.doDeleteSubscribers">
+			  linkcol="" linkval="email" showAdd="false" defaultsort="email" deleteEvent="#getValue("xehDeleteSub")#">
 		<cfmodule template="../tags/datacol.cfm" colname="email" label="Email" />
 	</cfmodule>
 
