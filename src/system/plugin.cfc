@@ -13,6 +13,9 @@ Modification History:
 	<!--- ************************************************************* --->
 	<cffunction name="init" access="public" returntype="any" output="false">
 		<cfargument name="controllerInstance" type="struct">
+		<!--- memory reference for the request collection --->
+		<cfset variables.rc = getCollection()>
+		<!--- instance names --->
 		<cfset variables.instance.pluginName = "">
 		<cfset variables.instance.pluginVersion = "">
 		<cfset variables.instance.pluginDescription = "">
