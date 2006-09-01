@@ -34,6 +34,10 @@
 		<Setting name="BlogURL" value="http://www.luismajano.com/blog/index.cfm?mode=cat&amp;catid=C048ADD3-0C45-9C3D-A8F228EFB8C128DA"/>
 		<Setting name="ColdboxAPIURL" value="http://www.luismajano.com/projects/coldbox/cfdocs/index.cfm"/>
 		<Setting name="TracURL" value="http://trac.luismajano.com/coldbox"/>
+		<!---App Versionsettings -->
+		<Setting name="BlogcfcApp" value="applications/blogcfcv5_0" />
+		<Setting name="ForumsApp" value="applications/forumsv1_5" />
+		<Setting name="ColdboxReaderApp" value="applications/ColdBoxReader" />
 	</YourSettings>
 
 	<!--Optional,if blank it will use the CFMX administrator settings.-->

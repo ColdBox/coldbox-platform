@@ -13,6 +13,13 @@
 	<p>&nbsp;</p>
 		<h2>#getresource("about")# ColdBox </h2>
 		<p>#getResource("aboutcoldbox")# </p>
+		
+		<div class="box">
+			<strong>#getResource("Tip")#</strong>: #getResource("TipMessage")# :<br>
+			<div align="center">
+				<input type="button" name="reinitbutton" value="#getResource("ReinitButton")#" onClick="window.location='index.cfm?fwreinit=true'">
+			</div>
+		</div>
 	</div>
 		
 	<div class="splitcontentright">
@@ -38,24 +45,28 @@
 		<h3>BlogCFC</h3>
 		<p> #getresource("by")# Raymond Camden<br />#getresource("needssetup")#
 		<br />
-		  <a href="applications/blogcfcv5.1/install" target="_blank">#getresource("openinstall")#</a><br />
-		  <a href="applications/blogcfcv5.1/index.cfm" target="_blank">#getresource("open")# BlogCFC</a><br />
+		<font color="##53231d">#getResource("portMessage")#</font>
+		<br />
+		  <a href="#getSetting("blogcfcApp")#/install" target="_blank">#getresource("openinstall")#</a><br />
+		  <a href="#getSetting("blogcfcApp")#/index.cfm" target="_blank">#getresource("open")# BlogCFC</a><br />
 		</p>
 		
 		<h3>Galleon Forums</h3>
 		<p> #getresource("by")# Raymond Camden<br />#getresource("needssetup")#
 		<br />
-		  <a href="applications/forumsv1.6/installation/" target="_blank">#getresource("openinstall")#</a><br />
-		  <a href="applications/forumsv1.6/index.cfm" target="_blank">#getresource("open")# Galleon #getresource("forums")#</a><br />
-		  <a href="applications/forumsv1.6/admin/index.cfm" target="_blank">#getresource("open")# #getresource("administrator")#</a><br />
+		<font color="##53231d">#getResource("portMessage")#</font>
+		<br />
+		  <a href="#getSetting("forumsApp")#/installation/" target="_blank">#getresource("openinstall")#</a><br />
+		  <a href="#getSetting("forumsApp")#/index.cfm" target="_blank">#getresource("open")# Galleon #getresource("forums")#</a><br />
+		  <a href="#getSetting("forumsApp")#/admin/index.cfm" target="_blank">#getresource("open")# #getresource("administrator")#</a><br />
 		</p>
 		
 		<h3>Ajax RSS Reader</h3>
 		<p> #getresource("by")# Oscar Arevalo<br />#getresource("coldboxreadermessage")#<bR>
 		#getresource("needssetup")#
 		<br />
-		  <a href="applications/ColdBoxReader/install" target="_blank">#getresource("openinstall")#</a><br />
-		  <a href="applications/ColdBoxReader/index.cfm" target="_blank">#getresource("opensample")#</a><br />
+		  <a href="#getSetting("ColdboxReaderApp")#/install" target="_blank">#getresource("openinstall")#</a><br />
+		  <a href="#getSetting("ColdboxReaderApp")#/index.cfm" target="_blank">#getresource("opensample")#</a><br />
 		</p>
 		
 		<h3>Hello World</h3>
@@ -93,6 +104,13 @@
 		</p>
 		
 		</div>
+		
+		<h2>ColdBox #getResource("LogFile")#:</h2>
+		
+		<div class="boxscrolling">
+		#htmlCodeFormat(getValue("LogFileContents"))#
+		</div>
+		
 	</div>
 	
 </div>

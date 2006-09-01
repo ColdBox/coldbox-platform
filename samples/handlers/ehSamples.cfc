@@ -39,6 +39,14 @@ Sep/25/2005 - Luis Majano
 
 	<!--- ************************************************************* --->
 	<cffunction name="dspHome" access="public" returntype="void" output="false">
+		<!--- Get Log File contents --->
+		<cftry>
+			<cfset rc.LogFileContents = getPlugin("fileUtilities").readFile(getPlugin("logger").getlogFullPath())>
+			<cfcatch type="any">
+				<cfset rc.LogFileContents = cfcatch.Detail & cfcatch.message>
+			</cfcatch>
+		</cftry>
+		
 		<cfset setView("home")>
 	</cffunction>
 	<!--- ************************************************************* --->

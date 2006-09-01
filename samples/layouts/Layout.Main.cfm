@@ -46,9 +46,11 @@
 		<!--- CCV via render view() --->
 		<div class="small box">#renderView("tags/i18n")#</div>
 		
-		<div class="small box"><strong>#getResource("note")#:</strong>#getResource("notemessage")#</div>
+		<div class="small box"><strong>#getResource("note")#:
+		<font color="##53231d">#getResource("notemessage")#</font></strong>
+		</div>
 		<br>
-		<h2>Favorite Links</h2>
+		<h2>#getResource("FavoriteLinks")#</h2>
 		<ul class="menublock">
 		  <li><a href="http://www.luismajano.com">#getresource("mysite")#</a></li>
 		   <li><a href="#getSetting("AmazonURL")#">#getresource("myamazonwishlist")#</a></li>
