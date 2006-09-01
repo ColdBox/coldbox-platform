@@ -9,7 +9,7 @@
 	
 	<cfloop query="qryFeeds">
 		<div style="line-height:20px;">
-			<a href="javascript:doEvent('ehFeed.dspViewFeed','centercontent',{feedID:'#qryFeeds.feedID#'});"><strong>#qryFeeds.feedname#</strong></a>
+			<a href="javascript:doEvent('#getValue("xehFeed")#','centercontent',{feedID:'#qryFeeds.feedID#'});"><strong>#qryFeeds.feedname#</strong></a>
 			<span style="font-size:0.8em;">
 				 by #qryFeeds.username# on #dateformat(qryFeeds.createdon,"mmm dd")# #lstimeFormat(qryFeeds.createdOn)#
 			</span>
@@ -20,6 +20,6 @@
 	</cfif>
 	
 	<script>
-		doEvent("ehFeed.dspAllTags", "rightcontent1", {});
+		doEvent("#getValue("xehTags")#", "rightcontent1", {});
 	</script>
 </cfoutput>

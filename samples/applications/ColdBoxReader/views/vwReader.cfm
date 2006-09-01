@@ -1,11 +1,5 @@
 <cfset qryFeeds = getValue("qryFeeds")>
-
-<cfquery name="qryTopFeeds" dbtype="query" maxrows="5">
-	SELECT *
-		FROM qryFeeds
-		ORDER BY Views DESC
-</cfquery>
-
+<cfset qryTopFeeds = getValue("qryTopFeeds")>
 
 <h1>About ColdBoxReader</h1>
 <p>
@@ -21,12 +15,12 @@
 	
 <p><b>Recently Added:</b>
 <cfoutput query="qryFeeds" maxrows="5">
-	<div style="line-height:20px;">
-		<a href="javascript:doEvent('ehFeed.dspViewFeed','centercontent',{feedID:'#qryFeeds.feedID#'});"><strong>#qryFeeds.feedname#</strong></a>
-		<span style="font-size:0.8em;">
-			 by #qryFeeds.username# on #dateformat(qryFeeds.createdon,"mmm dd")# #lstimeFormat(qryFeeds.createdOn)#
-		</span>
-	</div>	
+<div style="line-height:20px;">
+	<a href="javascript:doEvent('#getValue("xehViewFeed")#','centercontent',{feedID:'#qryFeeds.feedID#'});"><strong>#qryFeeds.feedname#</strong></a>
+	<span style="font-size:0.8em;">
+		 by #qryFeeds.username# on #dateformat(qryFeeds.createdon,"mmm dd")# #lstimeFormat(qryFeeds.createdOn)#
+	</span>
+</div>	
 </cfoutput>
 </p>
 
@@ -36,7 +30,7 @@
 <cfoutput query="qryTopFeeds" maxrows="5">
 	<div style="line-height:20px;">
 		[#qryTopFeeds.views#]&nbsp;
-		<a href="javascript:doEvent('ehFeed.dspViewFeed','centercontent',{feedID:'#qryTopFeeds.feedID#'});"><strong>#qryTopFeeds.feedname#</strong></a>
+		<a href="javascript:doEvent('#getValue("xehViewFeed")#','centercontent',{feedID:'#qryTopFeeds.feedID#'});"><strong>#qryTopFeeds.feedname#</strong></a>
 		<span style="font-size:0.8em;">
 			 by #qryTopFeeds.username# on #dateformat(qryTopFeeds.createdon,"mmm dd")# #lstimeFormat(qryFeeds.createdOn)#
 		</span>
@@ -46,17 +40,20 @@
 
 <p><br /><br />
 <cfif Not StructKeyExists(Session, "userID") or Session.userID eq "">
-	To Add a Feed, your must first <a href="javascript:doEvent('ehUser.dspLogin','centercontent',{})"><strong>Sign-in</strong></a> to your account
-	or <a href="javascript:doEvent('ehUser.dspSignUp','centercontent',{})"><strong>Create an Account</strong></a>.
+	To Add a Feed, your must first <a href="javascript:doEvent('#getValue("xehLogin")#','centercontent',{})"><strong>Sign-in</strong></a> to your account
+	or <a href="javascript:doEvent('#getValue("xehSignup")#','centercontent',{})"><strong>Create an Account</strong></a>.
 	<div id="divLogin"></div>
 <cfelse>
-	<input type="button" name="btnAdd" value="Add Feed" onclick="doEvent('ehFeed.dspAddFeed','centercontent',{});" />
+	<input type="button" name="btnAdd" value="Add Feed" onclick="doEvent('#getValue("xehAddFeed")#','centercontent',{});" />
 </cfif>
 </p>
 
+<!--- Setup the Page --->
+<cfoutput>
 <script>
 	clearDiv("leftcontent1");
 	clearDiv("rightcontent2");
-	doEvent("ehFeed.dspAllTags", "rightcontent1", {});
-	doEvent("ehUser.dspAccountActions", "divAccountActions", {});
+	doEvent("#getValue("xehShowTags")#", "rightcontent1", {});
+	doEvent("#getValue("xehAccountActions")#", "divAccountActions", {});
 </script>
+</cfoutput>

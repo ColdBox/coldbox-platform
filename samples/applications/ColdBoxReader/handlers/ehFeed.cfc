@@ -1,61 +1,65 @@
-<cfcomponent name="ehUser" extends="coldboxSamples.system.eventhandler">
-	<cffunction name="init" access="public" returntype="ehFeed">
-		<cfargument name="controller" required="yes" hint="The reference to the framework controller">	
-		<cfset super.init(arguments.controller)>
+<cfcomponent name="ehUser" extends="coldbox.system.eventhandler">
+	
+	<cffunction name="init" access="public" returntype="ehFeed" output="false">
+		<cfset super.init()>
 		<cfreturn this>
 	</cffunction>
 	
-	<cffunction name="dspAddFeed" access="public">
+	<cffunction name="dspAddFeed" access="public" returntype="void" output="false">
 		<cfset setView("vwAddFeed")>
 	</cffunction>
 	
-	<cffunction name="dspViewFeed" access="public">
+	<cffunction name="dspViewFeed" access="public" returntype="void" output="false">
 		<cfset feedID = getValue("feedID")>
-		<cfset obj = createObject("component","#getSetting("AppCFMXMapping")#.components.feed")>
+		<cfset obj = createObject("component","#getSetting("AppMapping")#.components.feed")>
 		<cfset myFeed = obj.readFeed(feedID,"#GetSetting("ApplicationPath",1)#")>
 		<cfset setValue("feed",myFeed)>
 		<cfset setValue("feedID",feedID)>
 		<cfset setView("vwViewFeed")>
 	</cffunction>	
 
-	<cffunction name="dspFeedInfo" access="public">
+	<cffunction name="dspFeedInfo" access="public" returntype="void" output="false">
 		<cfset feedID = getValue("feedID")>
-		<cfset obj = createObject("component","#getSetting("AppCFMXMapping")#.components.feed")>
+		<cfset obj = createObject("component","#getSetting("AppMapping")#.components.feed")>
 		<cfset qryData = obj.getFeedInfo(feedID)>
 		<cfset setValue("qryData",qryData)>
 		<cfset setValue("feedID",feedID)>
 		<cfset setView("vwFeedInfo")>
 	</cffunction>	
 
-	<cffunction name="dspFeedTags" access="public">
+	<cffunction name="dspFeedTags" access="public" returntype="void" output="false">
 		<cfset feedID = getValue("feedID")>
-		<cfset obj = createObject("component","#getSetting("AppCFMXMapping")#.components.tags")>
+		<cfset obj = createObject("component","#getSetting("AppMapping")#.components.tags")>
 		<cfset qryData = obj.getFeedTags(feedID)>
 		<cfset setValue("qryData",qryData)>
 		<cfset setValue("feedID",feedID)>
 		<cfset setView("vwFeedTags")>
 	</cffunction>
 
-	<cffunction name="dspFeedComments" access="public">
+	<cffunction name="dspFeedComments" access="public" returntype="void" output="false">
 		<cfset feedID = getValue("feedID")>
-		<cfset obj = createObject("component","#getSetting("AppCFMXMapping")#.components.comments")>
+		<cfset obj = createObject("component","#getSetting("AppMapping")#.components.comments")>
 		<cfset qryData = obj.getFeedComments(feedID)>
 		<cfset setValue("qryData",qryData)>
 		<cfset setValue("feedID",feedID)>
 		<cfset setView("vwFeedComments")>
 	</cffunction>
 	
-	<cffunction name="dspAllTags" access="public">
-		<cfset obj = createObject("component","#getSetting("AppCFMXMapping")#.components.tags")>
-		<cfset qryData = obj.getAllTags()>
-		<cfset setValue("qryData",qryData)>
+	<cffunction name="dspAllTags" access="public" returntype="void" output="false">
+		<cfset var obj = createObject("component","#getSetting("AppMapping")#.components.tags")>
+		<!--- EXIT HANDLERS: --->
+		<cfset rc.xehSearchTag = "ehFeed.doSearchByTag">
+		<cfset rc.qryData = obj.getAllTags()>
 		<cfset setView("vwAllTags")>
 	</cffunction>
 
-	<cffunction name="dspSearchResults" access="public">
+	<cffunction name="dspSearchResults" access="public" returntype="void" output="false">
+		<cfset var plClient = getPlugin("clientStorage")>
+		<!--- EXIT HANDLERS: --->
+		<cfset rc.xehFeed = "ehFeed.dspViewFeed">
+		<cfset rc.xehTags = "ehFeed.dspAllTags">
+		
 		<cftry>
-			<cfset plClient = getPlugin("clientStorage")>
-			
 			<cfif Not plClient.exists("search_results")>
 				<cfthrow message="The search results are not in the client scope.">
 			<cfelse>
@@ -74,10 +78,10 @@
 		<cfset setView("vwSearchResults")>
 	</cffunction>
 				
-	<cffunction name="doParseFeed" access="public">
+	<cffunction name="doParseFeed" access="public" returntype="void" output="false">
 		<cftry>
 			<cfset feedURL = getValue("feedURL","")>
-			<cfset obj = createObject("component","#getSetting("AppCFMXMapping")#.components.feed")>
+			<cfset obj = createObject("component","#getSetting("AppMapping")#.components.feed")>
 			<cfset myFeed = obj.retrieveFeed(feedURL)>
 			
 			<cfset setValue("feedName", myFeed.title)>
@@ -95,7 +99,7 @@
 		<cfset setView("vwAddFeed")>
 	</cffunction>	
 
-	<cffunction name="doAddFeed" access="public">
+	<cffunction name="doAddFeed" access="public" returntype="void" output="false">
 		<cftry>
 			<cfset feedID = getValue("feedID")>
 			<cfset feedName = getValue("feedName")>
@@ -105,7 +109,7 @@
 			<cfset imgURL = getValue("imgURL")>
 			<cfset siteURL = getValue("siteURL")>		
 
-			<cfset obj = createObject("component","#getSetting("AppCFMXMapping")#.components.feed")>
+			<cfset obj = createObject("component","#getSetting("AppMapping")#.components.feed")>
 			<cfset obj.saveFeed(feedID, feedName, feedURL, feedAuthor, description, imgURL, siteURL, session.userID)>
 
 			<cfcatch type="any">
@@ -116,13 +120,13 @@
 		<cfset setNextEvent("ehGeneral.dspReader")>
 	</cffunction>	
 
-	<cffunction name="doAddTags" access="public">
+	<cffunction name="doAddTags" access="public" returntype="void" output="false">
 		<cftry>
 			<cfset feedID = getValue("feedID")>
 			<cfset tags = getValue("tags")>
 
 			<cfif tags neq "">
-				<cfset obj = createObject("component","#getSetting("AppCFMXMapping")#.components.tags")>
+				<cfset obj = createObject("component","#getSetting("AppMapping")#.components.tags")>
 				<cfset obj.addFeedTags(feedID, tags, session.userID)>
 			</cfif>
 
@@ -133,27 +137,28 @@
 		<cfset setNextEvent("ehFeed.dspFeedTags","feedID=#feedID#")>
 	</cffunction>	
 
-	<cffunction name="doSearchByTag" access="public">
+	<cffunction name="doSearchByTag" access="public" returntype="void" output="false">
+		<cfset var obj = "">
+		<cfset var qryData = "">
 		<cftry>
-			<cfset tag = getValue("tag")>
-			<cfset obj = createObject("component","#getSetting("AppCFMXMapping")#.components.feed")>
-			<cfset qryData = obj.searchByTag(tag)>
+			<cfset obj = createObject("component","#getSetting("AppMapping")#.components.feed")>
+			<cfset qryData = obj.searchByTag(rc.tag)>
 			<cfset getPlugin("clientStorage").setVar("search_results", qryData)>
-			<cfset getPlugin("clientStorage").setVar("search_tag", tag)>
+			<cfset getPlugin("clientStorage").setVar("search_tag", rc.tag)>
 			<cfset getPlugin("clientStorage").setVar("search_term", "")>
 			
 			<cfcatch type="any">
 				<cfset getPlugin("messagebox").setMessage("error", cfcatch.message & "<br>" & cfcatch.detail)>
-				<cfset setView("vwMain")>
+				<cfset setNextEvent()>
 			</cfcatch>
 		</cftry>
 		<cfset setNextEvent("ehFeed.dspSearchResults")>
 	</cffunction>		
 	
-	<cffunction name="doSearchByTerm" access="public">
+	<cffunction name="doSearchByTerm" access="public" returntype="void" output="false">
 		<cftry>
 			<cfset term = getValue("searchTerm")>
-			<cfset obj = createObject("component","#getSetting("AppCFMXMapping")#.components.feed")>
+			<cfset obj = createObject("component","#getSetting("AppMapping")#.components.feed")>
 			<cfset qryData = obj.searchByTerm(term)>
 			<cfset plClient = getPlugin("clientStorage")>
 			<cfset plClient.setVar("search_results", duplicate(qryData))>

@@ -4,48 +4,63 @@ Date     :	February 13, 2006
 Description :
 	General handler for my ColdboxReader application.
 
-	example:
-		Mapping: fwsample
-		Argument Type: fwsample.system.eventhandler
 Modification History:
 feb/13/2006 - Oscar Arevalo
 	-Created the template.
+aug/20/2006 - Luis Majano
+	- Modified for 1.1.0
 ----------------------------------------------------------------------->
-<cfcomponent name="ehGeneral" extends="coldboxSamples.system.eventhandler">
+<cfcomponent name="ehGeneral" extends="coldbox.system.eventhandler">
 
-	<!--- ************************************************************* --->
-	<cffunction name="init" access="public" returntype="ehGeneral">
-		<cfargument name="controller" required="yes" hint="The reference to the framework controller">
-		<cfset super.init(arguments.controller)>
+	<cffunction name="init" access="public" returntype="ehGeneral" output="false">
+		<cfset super.init()>
 		<cfreturn this>
 	</cffunction>
-	<!--- ************************************************************* --->
 
-	<!--- ************************************************************* --->
-	<cffunction name="onRequestStart" access="public">
-		<cfparam name="session.userid" default="">
-		<cfif session.userid eq "">
-			<cfset setNextEvent = "ehGeneral.dspStart">
-		</cfif>
+	<cffunction name="onRequestStart" access="public" returntype="void" output="false">
+		<!--- EXIT HANDLERS: --->
+		<cfset rc.xehSearch = "ehFeed.doSearchByTerm">
+		
 	</cffunction>
-	<!--- ************************************************************* --->
-
-	<!--- ************************************************************* --->
-	<cffunction name="onRequestEnd" access="public">
+	
+	<cffunction name="onException" access="public" returntype="void" output="false">
+		<!--- My own Exception Handler --->
+		<!--- Log error --->
+		<cfset var exceptionBean = getValue("ExceptionBean")>		
+		<!--- Do per Type Validations, example here --->
+		<cfif exceptionBean.getType eq "Framework.plugins.settings.EventSyntaxInvalidException">
+			<cfset getPlugin("messagebox").setMessage("warning", "No page found with that syntax.")>
+			<!--- Relocate to default event --->
+			<cfset setNextEvent()>
+		<cfelse>
+			<cfset getPlugin("logger").logErrorWithBean(exceptionBean)>
+		</cfif>		
 	</cffunction>
-	<!--- ************************************************************* --->
-
-	<!--- ************************************************************* --->
-	<cffunction name="dspStart" access="public">
+	
+	<cffunction name="dspStart" access="public" returntype="void" output="false">
 		<cfparam name="session.userid" default="">
+		<!--- EXIT HANDLERS: --->
+		<cfset rc.xehReader = "ehGeneral.dspReader">
 		<cfset setView("vwMain")>
 	</cffunction>
-	<!--- ************************************************************* --->
 
-
-	<cffunction name="dspReader" access="public">
-		<cfset obj = createObject("component","#getSetting("AppCFMXMapping")#.components.feed")>
-		<cfset setValue("qryFeeds",obj.getAllFeeds())>
+	<cffunction name="dspReader" access="public" returntype="void" output="false">
+		<cfset var obj = createObject("component","#getSetting("AppMapping")#.components.feed")>
+		<!--- EXIT HANDLERS: --->
+		<cfset rc.xehViewFeed = "ehFeed.dspViewFeed">
+		<cfset rc.xehLogin = "ehUser.dspLogin">
+		<cfset rc.xehSignup = "ehUser.dspSignUp">
+		<cfset rc.xehAddFeed = "ehFeed.dspAddFeed">
+		<cfset rc.xehShowTags = "ehFeed.dspAllTags">
+		<cfset rc.xehAccountActions = "ehUser.dspAccountActions">
+		<!--- Get Feeds --->
+		<cfset rc.qryFeeds = obj.getAllFeeds()>
+		<cfquery name="rc.qryTopFeeds" dbtype="query" maxrows="5">
+			SELECT *
+				FROM rc.qryFeeds
+				ORDER BY Views DESC
+		</cfquery>		
 		<cfset setView("vwReader")>
 	</cffunction>
+	
 </cfcomponent>

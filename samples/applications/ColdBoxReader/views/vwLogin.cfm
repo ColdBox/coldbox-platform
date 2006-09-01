@@ -2,7 +2,7 @@
 <cfparam name="password" default="">
 
 <cfoutput>
-<form name="frm" method="post" action="javascript:doFormEvent('ehUser.doLogin','centercontent',document.frm)">
+<form name="frm" method="post" action="javascript:doFormEvent('#getValue("xehLogin")#','centercontent',document.frm)">
 	<p>
 		Sign in to your account to add new feeds and tag existing feeds.
 	</p>

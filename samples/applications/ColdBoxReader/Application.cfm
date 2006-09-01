@@ -1,4 +1,4 @@
-<cfapplication name="UDF Library Usage"
+<cfapplication name="ColdBoxReader"
 			   clientmanagement="yes"
 			   sessionmanagement="yes"
 			   setclientcookies="true">

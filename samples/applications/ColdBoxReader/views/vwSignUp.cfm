@@ -4,7 +4,7 @@
 <cfparam name="email" default="">
 
 <cfoutput>
-<form name="frm" method="post" action="javascript:doFormEvent('ehUser.doCreateAccount','centercontent',document.frm)">
+<form name="frm" method="post" action="javascript:doFormEvent('#getValue("xehCreate")#','centercontent',document.frm)">
 	<p>
 		Creating an account allows you to add new feeds and tag existing feeds.
 	</p>

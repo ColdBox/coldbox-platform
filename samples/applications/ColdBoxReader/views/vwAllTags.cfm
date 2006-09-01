@@ -19,7 +19,7 @@
 		<cfelse>
 			<cfset class="smallTag">
 		</cfif>
-		<a href="javascript:doEvent('ehFeed.doSearchByTag','centercontent',{tag:'#tag#'});" class="#class#">#qryData.tag#</a>&nbsp;
+		<a href="javascript:doEvent('#getValue("xehSearchTag")#','centercontent',{tag:'#tag#'});" class="#class#">#qryData.tag#</a>&nbsp;
 	</cfoutput>
 	<cfif qryData.recordCount eq 0>
 		<em>No Tags</em>

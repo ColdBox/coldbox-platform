@@ -1,3 +1,5 @@
+<cfoutput>
 <script>
-	doEvent("ehGeneral.dspReader", "centercontent", {});
+	doEvent("#getValue("xehReader")#", "centercontent", {});
 </script>
+</cfoutput>
