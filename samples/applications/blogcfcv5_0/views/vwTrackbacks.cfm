@@ -42,27 +42,27 @@
 
 </form> --->
 <form action="#cgi.script_name#?id=#getValue("id")#" method="post" enctype="application/x-www-form-urlencoded" id="tbForm">
-<input type="hidden" name="event" value="ehBlog.doAddTrackback">
-<fieldset class="sideBySide">
-<label for="blogName">Your Blog Name:</label>
-<input type="text" id="blogName" name="blog_name" value="#getvalue("blog_name","")#" maxlength="255" />
-</fieldset>
-<fieldset class="sideBySide">
-<label for="title">Your Blog Entry Title:</label>
-<input type="text" id="title" name="title" value="#getvalue("title","")#" maxlength="255" />
-</fieldset>
-<fieldset>
-<label for="excerpt">Excerpt from your Blog:</label><br/>
-<textarea id="excerpt" name="excerpt" cols=50 rows=10>#getvalue("excerpt","")#</textarea>
-</fieldset>
-<fieldset class="sideBySide">
-<label for="url">Your Blog Entry URL:</label>
-<input type="text" id="url" name="url" value="#getvalue("url","")#" maxlength="255" />
-</fieldset>
-<fieldset style="text-align:center">
-<input id="submit" type="button" name="cancelbutton" value="Cancel" onClick="window.close()">
-<input id="submit" type="submit" name="addtrackback" value="#getResource("post","")#" />
-</fieldset>
+	<input type="hidden" name="event" value="#getValue("xehAddTrackback")#">
+	<fieldset class="sideBySide">
+	<label for="blogName">Your Blog Name:</label>
+	<input type="text" id="blogName" name="blog_name" value="#getvalue("blog_name","")#" maxlength="255" />
+	</fieldset>
+	<fieldset class="sideBySide">
+	<label for="title">Your Blog Entry Title:</label>
+	<input type="text" id="title" name="title" value="#getvalue("title","")#" maxlength="255" />
+	</fieldset>
+	<fieldset>
+	<label for="excerpt">Excerpt from your Blog:</label><br/>
+	<textarea id="excerpt" name="excerpt" cols=50 rows=10>#getvalue("excerpt","")#</textarea>
+	</fieldset>
+	<fieldset class="sideBySide">
+	<label for="url">Your Blog Entry URL:</label>
+	<input type="text" id="url" name="url" value="#getvalue("url","")#" maxlength="255" />
+	</fieldset>
+	<fieldset style="text-align:center">
+	<input id="submit" type="button" name="cancelbutton" value="Cancel" onClick="window.close()">
+	<input id="submit" type="submit" name="addtrackback" value="#getResource("post","")#" />
+	</fieldset>
 </form> 
 </div>
 

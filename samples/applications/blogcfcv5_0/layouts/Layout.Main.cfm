@@ -26,13 +26,13 @@
 		//Modified by LM to open in center
 		var winl = (screen.width - 400) / 2;
 		var wint = (screen.height - 350) / 2
-		cWin = window.open("#application.rooturl#/?event=ehBlog.dspComments&id="+id,"cWin","width=545,height=500,menubar=yes,personalbar=no,dependent=true,directories=no,status=yes,toolbar=no,scrollbars=yes,resizable=yes,left=" + winl + ",top=" + wint);
+		cWin = window.open("#application.rooturl#/?event=#getValue("xehComments")#&id="+id,"cWin","width=545,height=500,menubar=yes,personalbar=no,dependent=true,directories=no,status=yes,toolbar=no,scrollbars=yes,resizable=yes,left=" + winl + ",top=" + wint);
 	}
 	function launchTrackback(id) {
 		//Modified by LM to open in center
 		var winl = (screen.width - 400) / 2;
 		var wint = (screen.height - 350) / 2
-		cWin = window.open("#application.rooturl#/?event=ehBlog.dspTrackbacks&id="+id,"cWin","width=545,height=500,menubar=yes,personalbar=no,dependent=true,directories=no,status=yes,toolbar=no,scrollbars=yes,resizable=yes,left=" + winl + ",top=" + wint);
+		cWin = window.open("#application.rooturl#/?event=#getValue("xehTrackbacks")#&id="+id,"cWin","width=545,height=500,menubar=yes,personalbar=no,dependent=true,directories=no,status=yes,toolbar=no,scrollbars=yes,resizable=yes,left=" + winl + ",top=" + wint);
 	}
 </script>
 		
@@ -49,13 +49,13 @@
 			</div>
 		</div>
 	<div id="menu">
-		<cfinclude template="../includes/pods/search.cfm">		
-		<cfinclude template="../includes/pods/calendar.cfm">
-		<cfinclude template="../includes/pods/subscribe.cfm">		
-		<cfinclude template="../includes/pods/archives.cfm">
-		<cfinclude template="../includes/pods/recent.cfm"> 
-		<cfinclude template="../includes/pods/recentcomments.cfm"> 
-		<cfinclude template="../includes/pods/rss.cfm">
+		#renderView("pods/search")#		
+		#renderView("pods/calendar")#
+		#renderView("pods/subscribe")#
+		#renderView("pods/archives")#
+		#renderView("pods/recent")#
+		#renderView("pods/recentcomments")#
+		#renderView("pods/rss")#
 	</div>
 	
 	<div class="footerHeader"><a href="http://ray.camdenfamily.com/projects/blogcfc">BlogCFC</a> was created by <a href="http://ray.camdenfamily.com/">Raymond Camden</a>. This blog is running version #application.blog.getVersion()#. 

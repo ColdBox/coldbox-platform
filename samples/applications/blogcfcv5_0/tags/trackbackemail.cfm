@@ -30,18 +30,18 @@
 <!--- make TB killer link --->
 <cfset tbKiller = application.rootURL & "/index.cfm?event=ehBlog.dspTrackback&kill=#attributes.trackback#">
 
-<cfset subject = caller.getResource("trackbackaddedtoentry") & ": " & application.blog.getProperty("blogTitle") & " / " & caller.getResource("entry") & ": " & blogEntry.title>
+<cfset subject = caller.getPlugin("resourceBundle").getResource("trackbackaddedtoentry") & ": " & application.blog.getProperty("blogTitle") & " / " & caller.getPlugin("resourceBundle").getResource("entry") & ": " & blogEntry.title>
 <cfsavecontent variable="email">
 <cfoutput>
-#caller.getResource("trackbackaddedtoblogentry")#:	#blogEntry.title#
-#caller.getResource("trackbackadded")#: 		#application.localeUtils.dateLocaleFormat(now())# / #application.localeUtils.timeLocaleFormat(now())#
-#caller.getResource("blogname")#:	 		#tb.blogname#
-#caller.getResource("title")#:	 			#tb.title#
+#caller.getPlugin("resourceBundle").getResource("trackbackaddedtoblogentry")#:	#blogEntry.title#
+#caller.getPlugin("resourceBundle").getResource("trackbackadded")#: 		#application.localeUtils.dateLocaleFormat(now())# / #application.localeUtils.timeLocaleFormat(now())#
+#caller.getPlugin("resourceBundle").getResource("blogname")#:	 		#tb.blogname#
+#caller.getPlugin("resourceBundle").getResource("title")#:	 			#tb.title#
 URL:				#tb.posturl#
-#caller.getResource("excerpt")#:
+#caller.getPlugin("resourceBundle").getResource("excerpt")#:
 #tb.excerpt#
 
-#caller.getResource("deletetrackbacklink")#:
+#caller.getPlugin("resourceBundle").getResource("deletetrackbacklink")#:
 #tbKiller#
 
 ------------------------------------------------------------

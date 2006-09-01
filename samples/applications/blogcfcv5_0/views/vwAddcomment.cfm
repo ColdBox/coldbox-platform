@@ -27,7 +27,7 @@
 	<cfoutput><div class="date">#getResource("postyourcomments")#</div>
 	#getPlugin("messagebox").render()#
 	<form action="#application.rootURL#/index.cfm" method="post">
-	<input type="hidden" value="ehBlog.doAddComment" name="event">
+	<input type="hidden" value="#getValue("xehAddComment")#" name="event">
 	<input type="hidden" value="#getvalue("id")#" name="id">
 	<fieldset class="sideBySide">
 		<label for="name">#getResource("name")#:</label>

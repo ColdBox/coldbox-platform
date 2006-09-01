@@ -9,7 +9,7 @@
 	Purpose		 : Display rss box
 --->
 
-<cfset rssURL = application.rootURL & "/index.cfm?event=ehBlog.dspRss">
+<cfset rssURL = application.rootURL & "/index.cfm?event=#getValue("xehRSS")#">
 
 <cfmodule template="../../tags/podlayout.cfm" title="RSS">
 

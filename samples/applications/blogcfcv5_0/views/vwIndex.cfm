@@ -2,10 +2,10 @@
 
 <!--- Reference to Articles --->
 <cfset articles = getValue("articles")>
-
 <cfset lastDate = "">
 <cfset allowTB = application.blog.getProperty("allowtrackbacks")>
 <cfset maxEntries = application.blog.getProperty("maxEntries") />
+
 <cfoutput query="articles" startrow="#getValue("startrow")#" maxrows="#maxEntries#">
 	<div class="entry<cfif articles.currentRow EQ articles.recordCount>Last</cfif>">
 	<cfif allowTB>
@@ -18,7 +18,7 @@
 	        rdf:about="#application.blog.makeLink(id)#"
 	        dc:identifier="#application.blog.makeLink(id)#"
 	        dc:title="#title#"
-	        trackback:ping="#application.rooturl#/?event=ehBlog.dspTrackback&id=#id#" />
+	        trackback:ping="#application.rooturl#/?event=#getValue("xehTrackback")#&id=#id#" />
 	    </rdf:RDF>
 		-->
 	</cfif>
@@ -49,8 +49,8 @@
 	<div class="byline">
 	<cfif allowcomments or commentCount neq ""><a href="#application.blog.makeLink(id)###comments">#getResource("comments")# (<cfif commentCount is "">0<cfelse>#commentCount#</cfif>)</a> | </cfif>
 	<cfif allowTB><a href="#application.blog.makeLink(id)###trackbacks">Trackbacks (<cfif trackbackCount is "">0<cfelse>#trackbackCount#</cfif>)</a> | </cfif>
-	<cfif application.isColdFusionMX7><a href="#application.rooturl#/?event=ehBlog.dspPrint&id=#id#" rel="nofollow">#getResource("print")#</a> | </cfif>
-	<a href="#application.rooturl#/?event=ehBlog.dspSend&id=#id#" rel="nofollow">#getResource("send")#</a> |
+	<cfif application.isColdFusionMX7><a href="#application.rooturl#/?event=#getValue("xehPrint")#&id=#id#" rel="nofollow">#getResource("print")#</a> | </cfif>
+	<a href="#application.rooturl#/?event=#getValue("xehSend")#&id=#id#" rel="nofollow">#getResource("send")#</a> |
 	<cfif len(enclosure)><a href="#application.rooturl#/enclosures/#urlEncodedFormat(getFileFromPath(enclosure))#">#getResource("download")#</a> | </cfif>
     <!--- RBB 11/02/2005: Added del.icio.us and Technorati links --->
    	<a href="http://del.icio.us/post?url=#application.blog.makeLink(id)#&title=#URLEncodedFormat("#application.blog.getProperty('blogTitle')#:#title#")#">del.icio.us</a>
@@ -103,7 +103,7 @@
 			<p>
 			<div class="body">
 			#getResource("trackbackurl")#<br>
-			#application.rooturl#/?event=ehBlog.dspTrackback&#id#
+			<textarea name="tr" rows="2" cols="85" onFocus="this.select()">#application.rooturl#/?event=#getValue("xehTrackback")#&#id#</textarea>
 			</div>
 			</p>
 			<div class="trackbackBody addTrackbackLink">

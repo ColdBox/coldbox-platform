@@ -1,9 +1,8 @@
-<cfcomponent name="ehBlog" extends="coldboxSamples.system.eventhandler">
+<cfcomponent name="ehBlog" extends="coldbox.system.eventhandler">
 
 	<!--- ************************************************************* --->
-	<cffunction name="init" access="public" returntype="Any">
-		<cfargument name="controller" required="yes" hint="The reference to the framework controller">
-		<cfset super.init(arguments.controller)>
+	<cffunction name="init" access="public" returntype="Any" output="false">
+		<cfset super.init()>
 		<cfreturn this>
 	</cffunction>
 	<!--- ************************************************************* --->
@@ -28,8 +27,7 @@
 			<cfset lylaFile = "./includes/captcha.xml">
 		</cfif>
 		<!--- MODIFIED TO USE COLDBOX I18N --->
-		<cfset application.localeutils = getPlugin("i18n")>
-		<cfset application.localeutils.setfwLocale(getSetting("DefaultLocale"))>
+		<cfset application.localeutils = getPlugin("i18n").setfwLocale(getSetting("DefaultLocale"))>
 
 		<!--- Use Captcha? --->
 		<cfset application.usecaptcha = application.blog.getProperty("usecaptcha")>
@@ -76,6 +74,7 @@
 		<!--- Moved here from layout --->
 		<!--- Get Additional Title's To Display --->
 		<cfset setValue("additionalTitle","")>
+		
 		<cfif getValue("mode","") is "cat">
 			<cftry>
 				<cfset cat = application.blog.getCategory(getValue("catid"))>
@@ -89,13 +88,23 @@
 				<cfcatch></cfcatch>
 			</cftry>
 		</cfif>
+		
+		<!--- EXIT HANDLERS: --->
+		<cfset rc.xehComments = "ehBlog.dspComments">
+		<cfset rc.xehTrackbacks = "ehBlog.dspTrackbacks">
 
 	</cffunction>
 	<!--- ************************************************************* --->
 
 	<!--- ************************************************************* --->
-	<cffunction name="dspBlog" access="public" returntype="void">
-
+	<cffunction name="dspBlog" access="public" returntype="void" output="false">
+		<!--- EXIT HANDLERS: --->
+		<cfset rc.xehTrackback = "ehBlog.dspTrackback">
+		<cfset rc.xehPrint = "ehBlog.dspPrint">
+		<cfset rc.xehSend = "ehBlog.dspSend">
+		<cfset rc.xehRSS = "ehBlog.dspRss">
+		<cfset rc.xehSubscribe = "ehBlog.doSubscribe">
+		
 		<!--- Handle URL variables to figure out how we will get betting stuff. --->
 		<cfmodule template="../tags/getmode.cfm" r_params="params"/>
 
@@ -125,7 +134,7 @@
 	<!--- ************************************************************* --->
 
 	<!--- ************************************************************* --->
-	<cffunction name="dspRss" access="public" returntype="void">
+	<cffunction name="dspRss" access="public" returntype="void" output="false">
 		<cfset var params = structNew()>
 		<cfset var additionalTitle = "">
 
@@ -166,11 +175,14 @@
 	<!--- ************************************************************* --->
 
 	<!--- ************************************************************* --->
-	<cffunction name="dspTrackback" access="public" returntype="void">
+	<cffunction name="dspTrackback" access="public" returntype="void" output="false">
 		<cfset var response = '<?xml version="1.0" encoding="utf-8"?><response><error>{code}</error>{message}</response>'>
 		<cfset var message = '<message>{error}</message>'>
 		<cfset var error = "">
 		<cfset var id = "">
+		<cfset var entry = "">
+		<cfset var blogEntry = "">
+		
 		<!--- TBs allowed? --->
 		<cfif not application.blog.getProperty("allowtrackbacks")><cfabort></cfif>
 
@@ -232,7 +244,7 @@
 	<!--- ************************************************************* --->
 
 	<!--- ************************************************************* --->
-	<cffunction name="doSubscribe" access="public" returntype="void">
+	<cffunction name="doSubscribe" access="public" returntype="void" output="false">
 		<cfif valueExists("subscriber_email") and len(trim(getValue("subscriber_email"))) and isEmail(trim(getValue("subscriber_email")))>
 			<cfset application.blog.addSubscriber(trim(getValue("subscriber_email")))>
 			<!--- set Messagebox --->
@@ -246,7 +258,7 @@
 	<!--- ************************************************************* --->
 
 	<!--- ************************************************************* --->
-	<cffunction name="doUnsubscribe" access="public" returntype="void">
+	<cffunction name="doUnsubscribe" access="public" returntype="void" output="false">
 		<cfif not valueExists("email")>
 			<cfset setNextEvent("ehBlog.dspBlog")>
 		</cfif>
@@ -275,8 +287,11 @@
 	<!--- ************************************************************* --->
 
 	<!--- ************************************************************* --->
-	<cffunction name="dspComments" access="public" returntype="void">
+	<cffunction name="dspComments" access="public" returntype="void" output="false">
 		<cfset var closeme = false>
+		<!--- EXIT HANDLERS: --->
+		<cfset rc.xehAddComment = "ehBlog.doAddComment">
+		
 		<!--- Get Cookie Values --->
 		<cfif not valueExists("addcomment")>
 			<cfif isDefined("cookie.blog_name")>
@@ -323,17 +338,19 @@
 	<!--- ************************************************************* --->
 
 	<!--- ************************************************************* --->
-	<cffunction name="doAddComment" access="public" returntype="void">
+	<cffunction name="doAddComment" access="public" returntype="void" output="false">
 		<cfset var errorStr = "">
 		<cfset var entry = "">
 		<cfset var email = "">
 		<cfset var subject = "">
 		<cfset var commentID = 0>
+		
 		<cfset setvalue("name",trim(getValue("name")))>
 		<cfset setvalue("email", trim(getValue("email")))>
 		<!--- RBB 11/02/2005: Added new website option --->
 		<cfset setvalue("website",trim(getValue("website")))>
 		<cfset setvalue("newcomments", trim(getValue("newcomments")))>
+		
 		<!--- error checks --->
 		<cfif not len(getValue("name"))>
 			<cfset errorStr = errorStr & getResource("mustincludename") & "<br>">
@@ -347,6 +364,7 @@
 		<cfif not len(getValue("newcomments"))>
 			<cfset errorStr = errorStr & getResource("mustincludecomments") & "<br>">
 		</cfif>
+		
 		<!--- captcha validation --->
 		<cfif application.useCaptcha>
 			<cfif not len(getvalue("captchaText"))>
@@ -413,21 +431,22 @@
 		<!--- Set the error message --->
 		<cfset getPlugin("messagebox").setMessage("error",errorStr)>
 		<!--- Go to display --->
-		<cfset setNextEvent("ehBlog.dspComments","id=#getvalue("id")#")>
+		<cfset dspComments()>
 	</cffunction>
 	<!--- ************************************************************* --->
 
 	<!--- ************************************************************* --->
-	<cffunction name="doDeleteComment" access="public" returntype="void">
+	<cffunction name="doDeleteComment" access="public" returntype="void" output="false">
 		<cfset application.blog.deleteComment(getValue("delete"))>
-		<cfset comments = application.blog.getComments(getValue("id"))>
 		<cfset setNextEvent("ehBlog.dspComments")>
 	</cffunction>
 	<!--- ************************************************************* --->
 
 	<!--- ************************************************************* --->
-	<cffunction name="dspTrackbacks" access="public" returntype="void">
+	<cffunction name="dspTrackbacks" access="public" returntype="void" output="false">
 		<cfset var params = Structnew()>
+		<!--- EXIT HANDLERS: --->
+		<cfset rc.xehAddTrackback ="ehBlog.doAddTrackback">
 		<cfif not valueExists("id") or not application.blog.getProperty("allowtrackbacks")>
 			<cfabort>
 		</cfif>
@@ -444,9 +463,10 @@
 	<!--- ************************************************************* --->
 
 	<!--- ************************************************************* --->
-	<cffunction name="doAddTrackback" access="public" returntype="void">
+	<cffunction name="doAddTrackback" access="public" returntype="void" output="false">
 		<cfset var errorStr = "">
 		<cfset var id = "">
+		
 		<cfif not len(trim(getValue("blog_name")))>
 			<cfset errorStr = errorStr & getResource("mustincludeblogname") & "<br>">
 		</cfif>
@@ -487,7 +507,7 @@
 	<!--- ************************************************************* --->
 
 	<!--- ************************************************************* --->
-	<cffunction name="doDeleteTrackback" access="public" returntype="void">
+	<cffunction name="doDeleteTrackback" access="public" returntype="void" output="false">
 		<cfif valueExists("delete") and UserInRole("admin")>
 			<cfset application.blog.deleteTrackback(getValue("delete"))>
 		</cfif>
@@ -497,7 +517,7 @@
 	<!--- ************************************************************* --->
 
 	<!--- ************************************************************* --->
-	<cffunction name="dspPrint" access="public" returntype="void">
+	<cffunction name="dspPrint" access="public" returntype="void" output="false">
 		<cfif not valueExists("id")>
 			<cfset setNextEvent("ehBlog.dspBlog")>
 		</cfif>
@@ -514,7 +534,15 @@
 	<!--- ************************************************************* --->
 
 	<!--- ************************************************************* --->
-	<cffunction name="dspSend" access="public" returntype="void">
+	<cffunction name="dspSend" access="public" returntype="void" output="false">
+		<!--- EXIT HANDLERS: --->
+		<cfset rc.xehTrackback = "ehBlog.dspTrackback">
+		<cfset rc.xehPrint = "ehBlog.dspPrint">
+		<cfset rc.xehSend = "ehBlog.dspSend">
+		<cfset rc.xehRSS = "ehBlog.dspRss">
+		<cfset rc.xehSubscribe = "ehBlog.doSubscribe">
+		<cfset rc.xehSendEntry = "ehBlog.doSend">
+
 		<cfif not valueExists("id")>
 			<cfset setNextEvent("ehBlog.dspHome")>
 		<cfelse>
@@ -526,9 +554,6 @@
 			</cftry>
 		</cfif>
 		<cfset setValue("showForm", true)>
-		<cfif valueExists("send")>
-			<cfset doSend()>
-		</cfif>
 		<cfset setValue("additionalTitle",getResource("send"))>
 		<!--- Set View --->
 		<cfset setView("vwSend")>
@@ -536,9 +561,9 @@
 	<!--- ************************************************************* --->
 
 	<!--- ************************************************************* --->
-	<cffunction name="doSend" access="public">
+	<cffunction name="doSend" access="public" returntype="void" output="false">
 		<cfset var errorStr = "">
-		<cfset var entry = getValue("entry")>
+		<cfset var entry = application.blog.getEntry(getvalue("id"))>
 
 		<cfif not len(trim(getvalue("email",""))) or not isEmail(getvalue("email",""))>
 			<cfset errorStr = errorStr & getResource("mustincludeemail") & "<br />">
@@ -575,6 +600,8 @@
 		<cfelse>
 			<cfset getPlugin("messagebox").setMessage("error",errorStr)>
 		</cfif>
+		<!--- Display Send --->
+		<cfset setNextEvent("ehBlog.dspSend","id=#rc.id#")>
 	</cffunction>
 	<!--- ************************************************************* --->
 

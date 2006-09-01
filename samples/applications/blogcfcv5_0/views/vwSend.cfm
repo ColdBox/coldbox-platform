@@ -21,9 +21,9 @@
 #getResource("sendform")#
 </p>
 
-	<form action="#cgi.script_name#?#cgi.query_string#" method="post">
+	<form action="#cgi.script_name#?id=#getvalue("id")#" method="post">
    <div id="sendForm">
-	<input type="hidden" name="event" value="ehBlog.doSend">
+	<input type="hidden" name="event" value="#getValue("xehSendEntry")#">
     <fieldset class="sideBySide">
       <label for="email" style="width:150px;">#getResource("youremailaddress")#:</label>
       <input type="text" id="email" name="email" value="#getvalue("email","")#" style="width:300px;">
@@ -37,7 +37,7 @@
       <textarea name="notes" style="width:300px;" rows="5">#getvalue("notes","")#</textarea>
     </fieldset>
     <fieldset class="formButtons">
-      <input type="submit" id="submit" name="send" value="#getResource("sendentry")#">
+	  <input type="submit" id="submit" name="send" value="#getResource("sendentry")#">
     </fieldset>
    </div>
 	</form>
