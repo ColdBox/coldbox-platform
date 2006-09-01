@@ -96,7 +96,9 @@ Last Update 	: July 28, 2006
 	<cffunction name="getCollection" returntype="any" access="Public" hint="I Get a reference or deep copy of the request Collection" output="false">
 		<cfargument name="DeepCopyFlag" hint="Default is false, gives a reference to the collection. True, creates a deep copy of the collection." type="boolean" required="no" default="false">
 		<!--- ************************************************************* --->
-		<cfif arguments.DeepCopyFlag>
+		<cfif not structKeyExists(request, "reqCollection")>
+			<cfreturn structnew()>
+		<cfelseif arguments.DeepCopyFlag>
 			<cfreturn duplicate(request.reqCollection)>
 		<cfelse>
 			<cfreturn request.reqCollection>

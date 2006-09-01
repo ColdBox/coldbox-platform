@@ -15,8 +15,17 @@ Description :
 Modification History:
 06/07/2006 - Updated to coldbox.
 08/07/2006 - Ticket #45 fix, autoreloadflag cleaned handlers.
+08/20/2006 - Reusabel setupCalls()
 ---------------------------------------------------------------------->
 <cfparam type="boolean" name="url.fwreinit" default="false">
+
+<!--- Reusable Setup Calls --->
+<cffunction name="setupCalls" returntype="void">
+	<cfset session.fwController.getPlugin("settings").configLoader()>
+	<cfset session.fwController.setDebugMode(session.fwController.getSetting("DebugMode"))>
+	<cfset session.fwController.getPlugin("settings").registerHandlers()>
+</cffunction>
+
 <!--- Initialize timing variable --->
 <cfset request.fwExecTime = GetTickCount()>
 <cftry>
@@ -30,18 +39,14 @@ Modification History:
 		<!--- Initialize the Structures --->
 		<cflock type="exclusive" name="Coldbox_configloader" timeout="120">
 			<cfif not structKeyExists(application, "ColdBox_fwInitiated") or url.fwreinit>
-				<cfset session.fwController.getPlugin("settings").configLoader()>
-				<cfset session.fwController.setDebugMode(session.fwController.getSetting("DebugMode"))>
-				<cfset session.fwController.getPlugin("settings").registerHandlers()>
+				<cfset setupCalls()>
 			</cfif>
 		</cflock>
 	<cfelse>
 		<!--- AutoReload Tests --->
 		<cfif session.fwController.getSetting("ConfigAutoReload")>
 			<cflock type="exclusive" name="Coldbox_configloader" timeout="120">
-				<cfset session.fwController.getPlugin("settings").configLoader()>
-				<cfset session.fwController.setDebugMode(session.fwController.getSetting("DebugMode"))>
-				<cfset session.fwController.getPlugin("settings").registerHandlers()>
+				<cfset setupCalls()>
 			</cflock>
 		<cfelseif session.fwController.getSetting("HandlersIndexAutoReload")>
 			<cflock type="exclusive" name="Coldbox_configloader" timeout="120">
