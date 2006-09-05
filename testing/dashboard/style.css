@@ -1,5 +1,5 @@
 <style type="text/css">
-a:link, a:visited{
+a:link, a:visited, a:history{
 	color: #0033CC;
 	font-weight:bold;
 	text-decoration:none;
@@ -7,6 +7,7 @@ a:link, a:visited{
 a:hover{
 	text-decoration: underline;
 	background-color: #FFFFF0;
+	color: #000000;
 }
 body{
 	margin: 0px;
@@ -36,8 +37,8 @@ iframe{
 	height: 70px;
 }
 .statusbar{
-	background:url(images/statusbar_bg.png) repeat;
-	height: 22px;
+	background:url(images/statusbar_bg.png) repeat-x;
+	height: 25px;
 	border-top:1px solid #AAAAAA;
 	border-bottom:1px solid #dddddd;
 	font-size:9px;

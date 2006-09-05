@@ -80,10 +80,9 @@ function showAdvancedBar(){
 <a href="javascript:loading(1)">Turn On</a>   <a href="javascript:loading(0)">Turn Off</a>
 <a href="index.htm" target="_parent">Home</a>
 </div>	
-<form id="searchdocs" action="http://trac.luismajano.com/coldbox/search" method="get" target="mainframe">
 
 <div class="statusbar">
-	
+	<form id="searchdocs" action="http://trac.luismajano.com/coldbox/search" method="get" target="mainframe">
 	<div style="float:left; margin-left:10px;margin-top: 3px">
 	<a href="javascript:parent.mainframe.history.back()">Back</a>
 	<a href="javascript:parent.mainframe.history.forward()">Forward</a>
@@ -93,11 +92,12 @@ function showAdvancedBar(){
 	</div>
 	
 	<div style="float:left;margin-left:10px;margin-top: 5px">
-		<div id="advancedSearchBarTriggerOpen" class="showlayer"><a href="javascript:showAdvancedBar()" title="Show Advanced Search Bar">Advanced</a></div>
+		<div id="advancedSearchBarTriggerOpen" class="showlayer"><a href="javascript:showAdvancedBar()" title="Show Advanced Search Bar">Options</a></div>
 		<div id="advancedSearchBarTriggerClose" class="hidelayer"><a href="javascript:showAdvancedBar()" title="Close Advanced Search Bar">Close</a></div>
 	</div>
 	
-	<div style="float:left;margin-left: 10px;padding-left: 10px;padding-right:10px; height:inherit; border-left:1px solid #cccccc;border-right:1px solid #cccccc" id="advancedSearchBar" class="hidelayer">
+	<div style="height: 25px;float:left;margin-left: 10px;padding-left: 10px;padding-right:10px; height:inherit; border-left:1px solid #cccccc;border-right:1px solid #cccccc" id="advancedSearchBar" class="hidelayer">
+	   <strong>Search:</strong>
 	   <input type="checkbox" id="ticket" 
 			  name="ticket" checked="checked" />
 	   <label for="ticket" style="margin-">Tickets</label>
@@ -111,8 +111,7 @@ function showAdvancedBar(){
 	
 	<div class="hidelayer" id="myloader"><div class="myloader"><img src="images/ajax-loader.gif" width="220" height="19" align="absmiddle" title="Loading..." /></div>
 	</div>
-	
+	</form>
 </div>
-</form>
 </body>
 </html>
