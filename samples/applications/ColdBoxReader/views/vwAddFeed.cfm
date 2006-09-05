@@ -24,24 +24,28 @@
 			<tr>
 				<td><b>URL:</b></td>
 				<td>
-					<input type="text" name="feedURL" value="#myFeed.feedURL#" size="50" readonly="true" />
+					<input type="text" name="feedURL" value="#rc.feedURL#" size="50" readonly="true" />
 				</td>
 			</tr>
 			<tr>
 				<td><b>Name:</b></td>
-				<td><input type="text" name="feedName" value="#myFeed.feedName#" /></td>
+				<td><input type="text" name="feedName" value="#myFeed.title#" /></td>
 			</tr>
 			<tr>
 				<td><b>Author:</b></td>
-				<td><input type="text" name="feedAuthor" value="#myFeed.feedAuthor#" /></td>
+				<td><input type="text" name="feedAuthor" value="" /></td>
+			</tr>
+			<tr>
+				<td><b>Last Updated:</b></td>
+				<td><input type="text" name="feedAuthor" value="#myFeed.date#" /></td>
 			</tr>
 			<tr>
 				<td><b>Image:</b></td>
-				<td><input type="text" name="imgURL" value="#myFeed.imgURL#" /></td>
+				<td><input type="text" name="imgURL" value="#myFeed.image.url#" /></td>
 			</tr>		
 			<tr>
 				<td><b>Website:</b></td>
-				<td><input type="text" name="siteURL" value="#myFeed.siteURL#" /></td>
+				<td><input type="text" name="siteURL" value="#myFeed.link#" /></td>
 			</tr>			
 			<tr>
 				<td valign="top"><b>description:</b></td>
