@@ -1,97 +1,72 @@
 	body {
-		margin:10px 10px 0px 10px;
+		margin:0;
 		padding:0px;
 		font-family:Arial, Helvetica, sans-serif;
-		font-size:12px;
+		font-size:11px;
 		}
 	
 	#leftcontent {
 		position: absolute;
-		left:10px;
-		top:70px;
-		width:200px;
+		left:5px;
+		top:105px;
+		width:190px;
 		background:#fff;
-		/*border:1px solid #000;*/
 		}
 
 	#centercontent {
-		background:#fff;
+		background:#f3f3f3;
    		margin-left: 199px;
    		margin-right:199px;
-		border:1px solid #000;
+		border:2px outset #dddddd;
 		padding:10px;
-		/*
-		IE5x PC mis-implements the box model. Because of that we sometimes have
-		to perform a little CSS trickery to get pixel-perfect display across browsers.
-		The following bit of code was proposed by Tantek Celik, and it preys upon a CSS
-		parsing bug in IE5x PC that will prematurly close a style rule when it runs
-		into the string "\"}\"". After that string appears in a rule, then, we can override
-		previously set attribute values and only browsers without the parse bug will
-		recognize the new values. So any of the name-value pairs above this comment
-		that we need to override for browsers with correct box-model implementations
-		will be listed below.
-		
-		We use the voice-family property because it is likely to be used very infrequently,
-		and where it is used it will be set on the body tag. So the second voice-family value 
-		of "inherit" will override our bogus "\"}\"" value and allow the proper value to
-		cascade down from the body tag.
-
-		The style rule immediately following this rule offers another chance for CSS2
-		aware browsers to pick up the values meant for correct box-model implementations.
-		It uses a CSS2 selector that will be ignored by IE5x PC.
-		
-		Read more at http://www.glish.com/css/hacks.asp
-		*/
-		
-		voice-family: "\"}\"";
-		voice-family: inherit;
-   		margin-left: 201px;
-   		margin-right:201px;
 		}
-	html>body #centercontent {
-   		margin-left: 201px;
-   		margin-right:201px;
-		}
-
+		
 	#rightcontent {
 		position: absolute;
-		right:10px;
-		top:70px;
-		width:200px;
+		right:5px;
+		top:105px;
+		width:190px;
 		background:#fff;
-		/*border:1px solid #000;*/
 		}
 	
 	#banner {
-		background:#fff;
-		height:40px;
-		border-bottom:1px solid #000;
-		/*border-top:1px solid #000;
-		border-right:1px solid #000;
-		border-left:1px solid #000;*/
-		voice-family: "\"}\"";
-		voice-family: inherit;
-		height:49px;
+		background:#F5F5F5;
+		height:85px;
+		border-bottom:1px solid #dddddd;
 		margin-bottom:20px;
-		}
-	html>body #banner {
-		height:49px;
-		}
-		
-	p,h1,pre {
-		margin:0px 10px 10px 10px;
-		}
-		
-	h1 {
-		font-size:14px;
-		padding-top:10px;
-		}
-		
+	}
+	
 	#banner h1 {
-		font-size:14px;
+		font-size:16px;
 		padding:10px 10px 0px 10px;
 		margin:0px;
-		}
+	}
+	
+	#bottombanner {
+		background:#F5F5F5;
+		height:85px;
+		border-top:1px solid #dddddd;
+		margin-top:20px;
+	}
+	
+	#statusbar{
+		background:url(../images/statusbar_bg.png) repeat-x;
+		height: 25px;
+		border-top:1px solid #AAAAAA;
+		border-bottom:1px solid #dddddd;
+		margin-top: 5px;
+		font-size:9px;
+	}
+
+			
+	p,h1,pre {
+		margin:0px 10px 10px 10px;
+	}
+		
+	h1 {
+		font-size:16px;
+		padding-top:10px;
+	}
 	
 	#rightcontent1, #rightcontent2,
 	#leftcontent1 {
@@ -102,12 +77,13 @@
 		margin:20px;
 	}	
 	
-	a {
+	a:link,a:visited {
 		color:#003399;
 		text-decoration:none;
 	}
 	a:hover {
-		color:#666666;
+		color:#000000;
+		background-color: #fffff0;
 		text-decoration:underline;
 	}
 
@@ -119,12 +95,40 @@
 	.largeTag { font-size: large; }
 	.largestTag { font-size: x-large; }
 
-    .myMessagebox{
-	border:1px outset ##999999;
-	background: #FFFFE0;
-	width: 100%;
-	padding: 3px 3px 3px 3px;
-	font-family: Arial, Helvetica, sans-serif;
-	font-size: 12px;
-	font-weight: bold;
-    }
+	/* FORM ELEMENTS */
+	input[type=button], input[type=submit], input[type=reset] {
+	 background: #eee;
+	 color: #222;
+	 border: 1px outset #ccc;
+	 padding: .1em .5em;
+	 font-size: 11px;
+	}
+	input[type=button]:hover, input[type=submit]:hover, input[type=reset]:hover {
+	 background: #FFFFF0;
+	 border: 1px inset #ccc;
+	 cursor: hand;
+	}
+	input[type=button][disabled], input[type=submit][disabled],
+	input[type=reset][disabled] {
+	 background: #f6f6f6;
+	 border-style: solid;
+	 color: #999;
+	}
+	
+	input[type=text], input[type=password], input[type=checkbox], textarea { border: 1px solid #d7d7d7; font-size:11px }
+	input[type=text], input[type=password], input[type=checkbox] { padding: .20em .3em }
+	input[type=text]:focus, textarea:focus, input[type=checkbox]:focus, input[type=password]:focus {
+	 border: 1px solid #886;
+	}
+	
+	/* TOP BUTTONS */
+	#topbuttons{
+		float:left;
+		margin-right:30px;
+		margin-top:5px
+	}
+	#topbuttons a:hover {
+		color: #000000;
+		background-color: #f5f5f5;
+	}
+

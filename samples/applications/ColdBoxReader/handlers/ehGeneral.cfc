@@ -18,9 +18,11 @@ aug/20/2006 - Luis Majano
 	</cffunction>
 
 	<cffunction name="onRequestStart" access="public" returntype="void" output="false">
+		<!--- Session param --->
+		<cfparam name="session.userID" 		default="">
+		<cfparam name="session.username" 	default="">
 		<!--- EXIT HANDLERS: --->
-		<cfset rc.xehSearch = "ehFeed.doSearchByTerm">
-		
+		<cfset rc.xehSearch = "ehFeed.doSearchByTerm">		
 	</cffunction>
 	
 	<cffunction name="onException" access="public" returntype="void" output="false">
@@ -38,7 +40,6 @@ aug/20/2006 - Luis Majano
 	</cffunction>
 	
 	<cffunction name="dspStart" access="public" returntype="void" output="false">
-		<cfparam name="session.userid" default="">
 		<!--- EXIT HANDLERS: --->
 		<cfset rc.xehReader = "ehGeneral.dspReader">
 		<cfset setView("vwMain")>
@@ -50,7 +51,6 @@ aug/20/2006 - Luis Majano
 		<cfset rc.xehViewFeed = "ehFeed.dspViewFeed">
 		<cfset rc.xehLogin = "ehUser.dspLogin">
 		<cfset rc.xehSignup = "ehUser.dspSignUp">
-		<cfset rc.xehAddFeed = "ehFeed.dspAddFeed">
 		<cfset rc.xehShowTags = "ehFeed.dspAllTags">
 		<cfset rc.xehAccountActions = "ehUser.dspAccountActions">
 		<!--- Get Feeds --->

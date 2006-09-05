@@ -12,14 +12,9 @@
 		<cfset rc.xehLogout = "ehUser.doLogout">
 		<cfset rc.xehLogin = "ehUser.dspLogin">
 		<cfset rc.xehSignup = "ehUser.dspSignUp">
-		<!--- Logged In --->
-		<cfset setValue("isLoggedIn", session.userID neq "")>
-		
-		<cfif session.userID neq "">
-			<cfset obj = CreateObject("component","#getSetting("AppMapping")#.components.users")>
-			<cfset qry = obj.getUser(session.userID)>
-			<cfset setValue("username", qry.username)>
-		</cfif>		
+		<cfset rc.xehHome = "ehGeneral.dspReader">		
+		<cfset rc.xehAddFeed = "ehFeed.dspAddFeed">
+		<!--- Set View --->	
 		<cfset setView("vwAccountActions")>
 	</cffunction>
 
@@ -73,11 +68,14 @@
 			var password = getValue("password","");
 			var obj = "";
 			var userID = "";
+			var qry = "";
 			try {
 				obj = CreateObject("component","#getSetting("AppMapping")#.components.users");
 				userID = obj.checkLogin(username, password);
 				if(userID eq "") throw("Username/Password not recognized.");
 				session.userID = userID;
+				qry = obj.getUser(session.userID);
+				session.username = qry.username;
 				getPlugin("messagebox").setMessage("info","Welcome back to the ColdBox Reader #username#!");
 				setNextEvent("ehGeneral.dspReader");
 				
@@ -90,6 +88,7 @@
 
 	<cffunction name="doLogout" access="public" returntype="void" output="false">
 		<cfset session.userID = "">
+		<cfset session.username = "">
 		<cfset setNextEvent("ehGeneral.dspReader")>
 	</cffunction>
 

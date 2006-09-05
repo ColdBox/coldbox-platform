@@ -6,6 +6,32 @@
 	</cffunction>
 	
 	<cffunction name="dspAddFeed" access="public" returntype="void" output="false">
+		<cfset var csPlugin = getPlugin("clientstorage")>
+		<cfset var obj = "">
+		<!--- EXIT HANDLERS: --->
+		<cfset rc.xehAddFeed = "ehFeed.doAddFeed">
+		<cfset rc.xehParseFeed = "ehFeed.dspAddFeed">
+		
+		<!--- Feed Validated? --->
+		<cfset rc.feedValidated = false>
+
+		<!--- Try to parse feed --->
+		<cfif getValue("continue_button","") neq "">
+			<!--- Validate Feed --->
+			<cfif trim(len(rc.FeedURL)) eq 0 or not getPlugin("fileUtilities").isURL("#rc.FeedURL#")>
+				<cfset getPlugin("messagebox").setMessage("error","Please enter a valid Feed URL")>			
+			<cfelse>
+				<cftry>
+					<cfset obj = createObject("component","#getSetting("AppMapping")#.components.feed")>
+					<cfset rc.myFeed = obj.retrieveFeed(rc.feedURL)>
+					<cfset rc.feedValidated = true>
+					<cfcatch type="any">
+						<cfset getPlugin("messagebox").setMessage("error", cfcatch.message & "<br>" & cfcatch.detail)>
+					</cfcatch>
+				</cftry>			
+			</cfif>
+		</cfif>			
+		<!--- Set view --->
 		<cfset setView("vwAddFeed")>
 	</cffunction>
 	
@@ -78,27 +104,6 @@
 		<cfset setView("vwSearchResults")>
 	</cffunction>
 				
-	<cffunction name="doParseFeed" access="public" returntype="void" output="false">
-		<cftry>
-			<cfset feedURL = getValue("feedURL","")>
-			<cfset obj = createObject("component","#getSetting("AppMapping")#.components.feed")>
-			<cfset myFeed = obj.retrieveFeed(feedURL)>
-			
-			<cfset setValue("feedName", myFeed.title)>
-			<cfset setValue("feedURL", feedURL)>
-			<cfset setValue("feedAuthor", "")>
-			<cfset setValue("description", myFeed.description)>
-			<cfset setValue("imgURL", myFeed.image.url)>
-			<cfset setValue("siteURL", myFeed.link)>
-
-			<cfcatch type="any">
-				<cfset getPlugin("messagebox").setMessage("error", cfcatch.message & "<br>" & cfcatch.detail)>
-				<cfset setView("vwAddFeed")>
-			</cfcatch>
-		</cftry>
-		<cfset setView("vwAddFeed")>
-	</cffunction>	
-
 	<cffunction name="doAddFeed" access="public" returntype="void" output="false">
 		<cftry>
 			<cfset feedID = getValue("feedID")>

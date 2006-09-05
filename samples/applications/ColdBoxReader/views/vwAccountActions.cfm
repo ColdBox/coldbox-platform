@@ -1,13 +1,1 @@
-<!--- Account Actions view --->
-<cfset isLoggedIn = getValue("isLoggedIn",false)>
-<cfset username = getValue("username","")>
-
-<cfoutput>	
-<cfif IsLoggedIn>
-	 Logged in as <strong>#username#</strong>&nbsp;
-	 (<a href="javascript:doEvent('#getValue("xehLogout")#','centercontent',{})"><strong>Sign out</strong></a>)
-<cfelse>
-	<a href="javascript:doEvent('#getValue("xehLogin")#','centercontent',{})"><strong>Sign-in</strong></a>&nbsp;&nbsp;&nbsp;
-	<a href="javascript:doEvent('#getValue("xehSignup")#','centercontent',{})"><strong>Create an Account</strong></a>
-</cfif>
-</cfoutput>
+<cfoutput>	<cfif session.userID neq "">	<div id="topbuttons">	<a href="javascript:doEvent('#getValue("xehHome")#','centercontent',{})"  onmouseover="MM_swapImage('login_image','','images/login_on.png',1)" onmouseout="MM_swapImgRestore()"><img src="images/login.png" border="0" id="login_image"><br>	<strong>Home</strong></a>	</div>		<div id="topbuttons">	<a href="javascript:doEvent('#getValue("xehAddFeed")#','centercontent',{})"  onmouseover="MM_swapImage('addfeed_image','','images/addfeed_on.png',1)" onmouseout="MM_swapImgRestore()"><img src="images/addfeed.png" border="0" id="addfeed_image"><br>	<strong>Add Feed</strong></a>	</div>		<div id="topbuttons">	 <a href="##" onClick="logout() ? doEvent('#getValue("xehLogout")#','centercontent',{}) : null" onmouseover="MM_swapImage('logout_image','','images/logout_on.png',1)" onmouseout="MM_swapImgRestore()"><img src="images/logout.png" border="0" id="logout_image"><br><strong>Sign out</strong></a>	 </div><cfelse>		<div id="topbuttons">	<a href="javascript:doEvent('#getValue("xehLogin")#','centercontent',{})"  onmouseover="MM_swapImage('login_image','','images/login_on.png',1)" onmouseout="MM_swapImgRestore()"><img src="images/login.png" border="0" id="login_image"><br>	<strong>Log-in</strong></a>	</div>		<div id="topbuttons">	<a href="javascript:doEvent('#getValue("xehSignup")#','centercontent',{})"  onmouseover="MM_swapImage('account_image','','images/createaccount_on.png',1)" onmouseout="MM_swapImgRestore()"><img src="images/createaccount.png" border="0" id="account_image"><Br>	<strong>Sign-Up</strong></a>	</div>	</cfif></cfoutput>

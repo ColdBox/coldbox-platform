@@ -1,6 +1,11 @@
 <cfset qryFeeds = getValue("qryFeeds")>
 <cfset qryTopFeeds = getValue("qryTopFeeds")>
 
+<cfoutput>
+<!--- Reload Icon --->
+#renderView("tags/reload")#
+</cfoutput>
+
 <h1>About ColdBoxReader</h1>
 <p>
 	ColdBoxReader is an application for shared reading of RSS/Atom feeds. Users submit RSS/Atom feeds 
@@ -38,14 +43,15 @@
 </cfoutput>
 </p>
 
-<p><br /><br />
+<p><br />
+<cfoutput>
 <cfif Not StructKeyExists(Session, "userID") or Session.userID eq "">
+	<hr>
 	To Add a Feed, your must first <a href="javascript:doEvent('#getValue("xehLogin")#','centercontent',{})"><strong>Sign-in</strong></a> to your account
 	or <a href="javascript:doEvent('#getValue("xehSignup")#','centercontent',{})"><strong>Create an Account</strong></a>.
 	<div id="divLogin"></div>
-<cfelse>
-	<input type="button" name="btnAdd" value="Add Feed" onclick="doEvent('#getValue("xehAddFeed")#','centercontent',{});" />
 </cfif>
+</cfoutput>
 </p>
 
 <!--- Setup the Page --->

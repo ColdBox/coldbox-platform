@@ -25,6 +25,7 @@
 	</Settings>
 
 	<YourSettings>
+			<Setting name="Version" value="1.1.0" />
 	</YourSettings>
 
 	<!--Optional,if blank it will use the CFMX administrator settings.-->

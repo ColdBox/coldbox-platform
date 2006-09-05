@@ -1,59 +1,58 @@
-<cfset feedID = getValue("feedID","")>
-<cfset feedName = getValue("feedName","")>
-<cfset feedURL = getValue("feedURL","")>
-<cfset feedAuthor = getValue("feedAuthor","")>
-<cfset description = getValue("description","")>
-<cfset imgURL = getValue("imgURL","")>
-<cfset siteURL = getValue("siteURL","")>
-
+<cfset myFeed = getValue("myFeed","")>
 <cfoutput>
-<cfif feedID eq "" and feedURL eq "">
-	<form name="frm" method="post" action="javascript:doFormEvent('ehFeed.doParseFeed','centercontent',document.frm)">
+<!--- Reload Icon --->
+#renderView("tags/reload")#
+
+<h1>Add New Feed</h1>
+
+<cfif not getValue("FeedValidated")>
+	<form name="frm" method="post" action="javascript:doFormEvent('#getValue("xehParseFeed")#','centercontent',document.frm)">
+		<p>Please use the form below to add a new feed URL that you would like to add to your ColdBox Reader. The reader will try to validate this URL.</p>
 		<b>Feed URL:</b>
-		<input type="text" name="feedURL" value="#feedURL#" size="40" style="padding:3px;font-size:12px;font-family:Verdana, Arial, Helvetica, sans-serif;" />
-
-		
-		<input type="submit" value="Continue >>" />
+		<input type="text" name="feedURL" value="#getValue("feedURL","")#" size="50" style="padding:3px;font-size:12px;font-family:Verdana, Arial, Helvetica, sans-serif;" />
+		<br><br>
+		<div align="center">
 		<input type="button" value="Go Back" onClick="doEvent('ehGeneral.dspReader','centercontent',{})" />
-
+		<input type="submit" value="Continue >>" name="continue_button" id="continue_button" />	
+		</div>
 	</form>	
 <cfelse>
 	<form name="frm" method="post" action="javascript:doFormEvent('ehFeed.doAddFeed','centercontent',document.frm)">
-		<input type="hidden" name="feedID" value="#feedID#">
+		<p>The feed you entered has been validated successfully. You can see the feed's details below.</p>
+		<input type="hidden" name="feedID" value="#getValue("feedID","")#">
 		<table>
 			<tr>
 				<td><b>URL:</b></td>
 				<td>
-					#feedURL#
-					<input type="hidden" name="feedURL" value="#feedURL#" />
+					<input type="text" name="feedURL" value="#myFeed.feedURL#" size="50" readonly="true" />
 				</td>
 			</tr>
 			<tr>
 				<td><b>Name:</b></td>
-				<td><input type="text" name="feedName" value="#feedName#" /></td>
+				<td><input type="text" name="feedName" value="#myFeed.feedName#" /></td>
 			</tr>
 			<tr>
 				<td><b>Author:</b></td>
-				<td><input type="text" name="feedAuthor" value="#feedAuthor#" /></td>
+				<td><input type="text" name="feedAuthor" value="#myFeed.feedAuthor#" /></td>
 			</tr>
 			<tr>
 				<td><b>Image:</b></td>
-				<td><input type="text" name="imgURL" value="#imgURL#" /></td>
+				<td><input type="text" name="imgURL" value="#myFeed.imgURL#" /></td>
 			</tr>		
 			<tr>
 				<td><b>Website:</b></td>
-				<td><input type="text" name="siteURL" value="#siteURL#" /></td>
+				<td><input type="text" name="siteURL" value="#myFeed.siteURL#" /></td>
 			</tr>			
 			<tr>
 				<td valign="top"><b>description:</b></td>
-				<td><textarea name="description" cols="30" rows="5">#description#</textarea></td>
+				<td><textarea name="description" cols="30" rows="5">#myFeed.description#</textarea></td>
 			</tr>
 			<tr><td colspan="2">&nbsp;</td></tr>
 			<tr>
 				<td>&nbsp;</td>
 				<td>
-					<input type="submit" value="Add Feed" />
-					<input type="button" value="Go Back" onClick="doEvent('ehFeed.dspAddFeed','centercontent',{})" />
+					<input type="submit" value="Add Feed"  />
+					<input type="button" value="Go Back" onClick="doEvent('#getValue("xehAddFeed")#','centercontent',{})" />
 				</td>
 			</tr>
 		</table>

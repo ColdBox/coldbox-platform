@@ -19,8 +19,8 @@
 		<tr>
 			<td>&nbsp;</td>
 			<td>
-				<input type="submit" value="Log In" />
 				<input type="button" value="Go Back" onClick="document.location='index.cfm'" />
+				<input type="submit" value="Log In" />
 			</td>
 		</tr>
 	</table>
