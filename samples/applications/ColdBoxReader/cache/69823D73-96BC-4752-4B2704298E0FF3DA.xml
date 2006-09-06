@@ -1,82 +1,104 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- generator="wordpress/2.0" --><rss version="0.92">
+<!-- generator="wordpress/2.0.2" --><rss version="0.92">
 <channel>
-	<title>TechCrunch</title>
+	<title>Techcrunch</title>
 	<link>http://www.techcrunch.com</link>
 	<description>TechCrunch is a weblog dedicated to obsessively profiling and reviewing every newly launched web 2.0 business, product and service. We are part of the  Archimedes Ventures  Network of Companies.</description>
-	<lastBuildDate>Fri, 17 Feb 2006 19:45:15 +0000</lastBuildDate>
+	<lastBuildDate>Tue, 05 Sep 2006 23:37:08 +0000</lastBuildDate>
 	<docs>http://backend.userland.com/rss092</docs>
 	<language>en</language>
 	
 	<item>
-		<title>Naked Conversations TechCrunch Party Tomorrow</title>
-		<description> I'm pretty excited about the Naked Conversations TechCrunch Party tomorrow night starting at 7 pm. 
-
-We've been working hard for weeks to get the event together and, thanks to our sponsors,  this should be the best one so far. A huge tent is up in the back yard, ...</description>
-		<link>http://www.techcrunch.com/2006/02/16/naked-conversations-techcrunch-party-tomorrow/</link>
+		<title>MingleNow to make top users VIPs in real life</title>
+		<description>MingleNow is a place-centered social networking site that will offer real world incentives for online activity.  Incubated by advertising company BlueLithium, MingleNow will launch a limited beta early next week and open to the public at the end of this month.  I've been waiting for this to come ...</description>
+		<link>http://www.techcrunch.com/2006/09/05/minglenow-to-make-top-users-vips-in-real-life/</link>
 			</item>
 	<item>
-		<title>37 Signals Launches Campfire</title>
-		<description>Campfire, the new 37 Signals product, launched yesterday. It is a dead simple way to create a robust, permanent (with URL) group chat.
-
-Key features include embedded images, permanent URL for chat, no client to download (chat is in the web page), and easy file sharing. I'm basically thinking of it ...</description>
-		<link>http://www.techcrunch.com/2006/02/16/37-signals-launches-campfire/</link>
+		<title>New Facebook Redesign More Than Aesthetic</title>
+		<description>Facebook launched two new features and a major design change tonight that affects all of their 9.5 million users. The new products, called News Feed and Mini Feed, are designed to change what Founder and CEO Mark Zuckerberg calls Facebook's old "Encyclopedic interface," where pages mostly just list off information ...</description>
+		<link>http://www.techcrunch.com/2006/09/05/new-facebook-redesign-more-than-just-aesthetics/</link>
 			</item>
 	<item>
-		<title>AllPeers is Coming; Exclusive Screenshots</title>
-		<description>Prague based Allpeers cofounder Matthew Gertner came by my house today to install the product and let me try it out.
+		<title>Very Early Look at Synthasite’s Ajax Website Builder</title>
+		<description>South Africa based incuBeta will soon launch a website builder called Synthasite to help people build webpages entirely online. It will include a lot of the functionality of desktop applications like Frontpage and Dreamweaver (think Writely or Zoho Writer v. Word).
 
-Allpeers is a Firefox extension that creates a simple, persistent buddy list in the browser. Initially, interaction with those buddies will be limited to discovering and sharing files - If ...</description>
-		<link>http://www.techcrunch.com/2006/02/16/allpeers-is-coming-exclusive-screenshots/</link>
+Like Sitekreator and Google Page Creator, Synthasite will be an ...</description>
+		<link>http://www.techcrunch.com/2006/09/04/very-early-look-at-synthasites-ajax-website-builder/</link>
 			</item>
 	<item>
-		<title>New: Blog Ad Exchange at Rojo</title>
-		<description>On Friday Rojo will be officially releasing Feedshare, a new way for blogs to promote themselves on other blogs. The service is available now to test.
+		<title>A Moment to Say Thanks to our Sponsors</title>
+		<description>Just a quick note to say Thank You to our six TechCrunch sponsors, as well as the companies that have listed job openings at the CrunchBoard job board. If you are interested in sponsoring the TechCrunch site, information is here. Our six sponsors are:
 
-The idea is that a blog include a Google Adsense-type ad unit on the site (I've included this in the bottom left sidebar of TechCrunch). ...</description>
-		<link>http://www.techcrunch.com/2006/02/16/new-blog-ad-exchange-at-rojo/</link>
+
+	Faces.com: Faces.com is a social network with ...</description>
+		<link>http://www.techcrunch.com/2006/09/04/a-moment-to-say-thanks-to-our-sponsors/</link>
 			</item>
 	<item>
-		<title>Get Concert Info + Music at Podbop</title>
-		<description>Podbop launched today, and for music lovers it may be the most interesting mashup we've seen yet. They've combined concert events from eventful and mashed the data up with band sites that include downloadable music.
-
-The result? search for any city in the U.S. (hopefully this will soon expand to become ...</description>
-		<link>http://www.techcrunch.com/2006/02/16/814/</link>
+		<title>ComBOTS is easy VOIP and file transfer for your avatars</title>
+		<description>ComBOTS is a German company that has just taken its product to beta and appears aimed to carve a chunk out of Skype's potential customer base.  You'll have to get in line for an account right now but it's worth an early look at the site.  ComBOTS is ...</description>
+		<link>http://www.techcrunch.com/2006/09/04/combots-aims-for-simplicity-in-voip-and-filesharing/</link>
 			</item>
 	<item>
-		<title>Microsoft Office Live goes into Beta</title>
-		<description>Microsoft Office Live went into beta today. The service was first revealed at a Microsoft event last fall - you can see my post about it here.
-
-This is not an online version of Microsoft Office. It is a set of online tools for businesses to help them have a web ...</description>
-		<link>http://www.techcrunch.com/2006/02/15/microsoft-office-live-goes-into-beta/</link>
+		<title>WebWorkerDaily, for the Web 2.0 Worker</title>
+		<description>Om Malik's blog network is starting to take shape as he launches WebWorkerDaily this afternoon. The new site is a blog for the distributed worker, where the office is wherever their laptop happens to be. Cell phones, Skype, laptops and other tools have made it possible for an entire generation ...</description>
+		<link>http://www.techcrunch.com/2006/09/04/webworkerdaily-for-the-web-20-worker/</link>
 			</item>
 	<item>
-		<title>Everyone Send Me $5</title>
-		<description>TextPayMe is coming out of beta on a SMS payment service (U.S. only) that allows anyone to send money to anyone else via cell phone. You simply sms the payment to another phone number. 
+		<title>Geesee to offer cross-site chat by tag</title>
+		<description>Geesee is an early stage startup from Slovakia that will combine topical web chat, tag search and widgets.  If you've seen MeeboMe, imagine instead a widget that connects a network of web chat rooms organized by tags with access points across many blogs and web pages.
 
-For example, to send $15.27 to a friend with mobile number (206) 555-1234, you would text ...</description>
-		<link>http://www.techcrunch.com/2006/02/15/everyone-send-me-5/</link>
+Publishers who put a ...</description>
+		<link>http://www.techcrunch.com/2006/09/04/geesee-to-offer-cross-site-chat-by-tag/</link>
 			</item>
 	<item>
-		<title>Pimp Your Blog</title>
-		<description>Stickam will launch tomorrow, February 15. The service allows users to easily create video and audio files, and additional tools to easily post these files to a website with a code snippet. 
+		<title>OpenBC Design Challenge - €10,000 Prize</title>
+		<description>OpenBC is a Hamburg, Germany based professional social networking site that is often compared to LinkedIN. They were founded in late 2003, are profitable, and boast nearly 2 million members and 275 million page views per month.
 
-The media files are played on the destination website in Flash. Bunchball has similar technology for integration of ...</description>
-		<link>http://www.techcrunch.com/2006/02/14/pimp-my-blog/</link>
+Six weeks ago they launched an open design challenge for the new personal profile ...</description>
+		<link>http://www.techcrunch.com/2006/09/04/openbc-design-challenge-e10000-prize/</link>
 			</item>
 	<item>
-		<title>Google Buys MeasureMap</title>
-		<description>Google just announced that they have acquired Adaptive Path's Measure Map (one of my most loved companies, more posts on them here).
-
-No word on price...my wild ass speculation is $5 - $10m. Measure Map has not raised outside capital, and seems to be more of a drain on Adaptive Path ...</description>
-		<link>http://www.techcrunch.com/2006/02/14/google-buys-measuremap/</link>
+		<title>An interview with investor Paul Graham of Y Combinator</title>
+		<description>Paul Graham believes we're not in a bubble, that startups shouldn't worry about their business models and the best companies are the ones with potential to kill old monopolies.   Graham is a partner at Y Combinator, a Mountain View firm that invests in very early tech startups.  ...</description>
+		<link>http://www.techcrunch.com/2006/09/02/an-interview-with-vc-paul-graham-of-ycombinator/</link>
 			</item>
 	<item>
-		<title>Blogs Need Email</title>
-		<description>I agree with Fred Wilson - email can be an important way to syndicate blog content. Fred has about 1 email subscriber for every 5 RSS subscribers. 
+		<title>MySpace To Sell Music Through Snocap</title>
+		<description>MySpace is getting into the music business. They announced today that they will allow nearly 3 million unsigned bands to sell their music directly to Myspace users. Snocap will provide the back end technology for the service. The agreement also includes performance-based warrants to purchase stock in SnoCap(Fox recently took ...</description>
+		<link>http://www.techcrunch.com/2006/09/02/myspace-gets-into-music-biz/</link>
+			</item>
+	<item>
+		<title>Is Browzar Just An Adware Machine?</title>
+		<description>Earlier this week the big story was the launch of a new "safe" browser called Browzar, which InfoWorld called "the latest entrant to the crowded Internet browser market". 
 
-Until now Feedblitz was the only real choice to bloggers. I've chosen not to use it because of the heavy orange feedblitz branding ...</description>
-		<link>http://www.techcrunch.com/2006/02/13/blogs-need-an-email-solution/</link>
+Browzar promises to make web surfing more anonymous by disabling cookies, history, auto-complete, etc. The story was widely circulated, including writeups on ...</description>
+		<link>http://www.techcrunch.com/2006/09/01/is-browzar-just-an-adware-machine/</link>
+			</item>
+	<item>
+		<title>Partystrands aims to be Last.fm + Digg for the jukebox</title>
+		<description>Partystrands is a music  service launching next month that will bring together aggregated recommendations, voting and photos synchronized on location by mobile phone.  Created by the Corvallis, Oregon and Barcelona, Spain based company MyStrands, PartyStrands is targeting bars and clubs.   The site will go live on ...</description>
+		<link>http://www.techcrunch.com/2006/09/01/partystrands-aims-to-be-lastfm-digg-for-the-jukebox/</link>
+			</item>
+	<item>
+		<title>Google Image Labeler Uses Human Labor</title>
+		<description>Google Image Labeler launched today. It's a game, based on Luis von Ahn's ESP Game, that puts two random users together and asks them to label/tag an image. The idea is that if two people come up with the same label, it is probably a good one and will make ...</description>
+		<link>http://www.techcrunch.com/2006/09/01/google-image-labeler/</link>
+			</item>
+	<item>
+		<title>iTunes To Have Movie Downloads This Month</title>
+		<description>Rumors have been swirling for weeks (see here and here) that Apple will soon be selling full length movie downloads on the iTunes service. This morning, Business Week is stating, based on unnamed sources, that the service will launch by mid-September.
+
+And adding color to the story: WalMart is pissed off.
+
+Apple ...</description>
+		<link>http://www.techcrunch.com/2006/09/01/itunes-to-have-movie-downloads-this-month/</link>
+			</item>
+	<item>
+		<title>Microsoft Cries Foul At Stolen Interface</title>
+		<description>Microsoft Expo's project leader, Garry Wiseman, wrote a blog post earlier today criticizing Sina, one of China's largest search engines, saying "Sina.com steals our design and graphics".
+
+The post highlights the similar look and feel of Sina's new classifieds site to a previous release of Expo, including the identical color scheme ...</description>
+		<link>http://www.techcrunch.com/2006/09/01/microsoft-cries-foul-at-stolen-interface/</link>
 			</item>
 </channel>
-</rss>
+</rss><!-- Dynamic Page Served (once) in 0.595 seconds -->
