@@ -1,14 +1,14 @@
 <cfset feed = getValue("feed","")>
 <cfset feedID = getValue("feedID",0)>
 
-
 <cfoutput>
-<p><a href="javascript:doEvent('ehGeneral.dspReader','centercontent',{})">Return To Feeds</a></p>
+
+<p><img src="images/return.gif"><a href="javascript:doEvent('#getValue("xehFeeds")#','centercontent',{})">Return To Feeds</a></p>
 
 <cfif feed.Image.URL neq "">
 	<a href="#feed.Image.Link#">
 		<img src="#feed.Image.URL#" border="0" id="RSS_Image"
-				title="#feed.Image.Title#" 
+				title="#feed.Image.Title#"
 				alt="#feed.Image.Title#" /></a>
 </cfif>
 
@@ -35,8 +35,8 @@
 		<cfset tmpID = "feed#i#">
 		<li>
 			<cfif thisContent neq "">
-				<cfset tmpLinkRead = "javascript:viewContent('#tmpID#','#JSStringFormat(thisTitle)#')"> 
-				<a href="#tmpLinkRead#"><b>#thisTitle#</b></a> 
+				<cfset tmpLinkRead = "javascript:viewContent('#tmpID#','#JSStringFormat(thisTitle)#')">
+				<a href="#tmpLinkRead#"><b>#thisTitle#</b></a>
 				<cfif thisLink neq "">(<a href="#thisLink#" target="_blank">Link</a>)</cfif>
 				<div id="#tmpID#" style="display:none;border:1px solid ##cccccc;background-color:##EAEEED;padding:4px;margin-top:5px;">
 					#thisContent#
@@ -53,8 +53,8 @@
 </ul>
 
 <script>
-	doEvent("ehFeed.dspFeedInfo", "leftcontent1", {feedID:'#feedID#'});
-	doEvent("ehFeed.dspFeedTags", "rightcontent1", {feedID:'#feedID#'});
-	doEvent("ehFeed.dspFeedComments", "rightcontent2", {feedID:'#feedID#'});
+	doEvent("#getValue("xehFeedInfo")#", "leftcontent1", {feedID:'#feedID#'});
+	doEvent("#getValue("xehFeedTags")#", "rightcontent1", {feedID:'#feedID#'});
+	doEvent("#getValue("xehFeedComments")#", "rightcontent2", {feedID:'#feedID#'});
 </script>
 </cfoutput>

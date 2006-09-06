@@ -8,7 +8,7 @@
 	#leftcontent {
 		position: absolute;
 		left:5px;
-		top:105px;
+		top:100px;
 		width:190px;
 		background:#fff;
 		}
@@ -24,7 +24,7 @@
 	#rightcontent {
 		position: absolute;
 		right:5px;
-		top:105px;
+		top:100px;
 		width:190px;
 		background:#fff;
 		}
@@ -42,13 +42,6 @@
 		margin:0px;
 	}
 	
-	#bottombanner {
-		background:#F5F5F5;
-		height:85px;
-		border-top:1px solid #dddddd;
-		margin-top:20px;
-	}
-	
 	#statusbar{
 		background:url(../images/statusbar_bg.png) repeat-x;
 		height: 25px;
@@ -56,6 +49,12 @@
 		border-bottom:1px solid #dddddd;
 		margin-top: 5px;
 		font-size:9px;
+	}
+	
+	.nicebox{
+		border: 1px dashed #eeeeee; 
+		background-color: #FFFFF0; 
+		padding:10px
 	}
 
 			
@@ -131,4 +130,11 @@
 		color: #000000;
 		background-color: #f5f5f5;
 	}
-
+	
+	/* Hide */
+	.hidelayer{
+		display: none;
+	}
+	.showlayer{
+		display: block;
+	}

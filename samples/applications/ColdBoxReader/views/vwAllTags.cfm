@@ -6,7 +6,8 @@
 <cfset distribution = diff / 3>
 
 <p style="line-height:20px;">
-	<div style="font-weight:bold;margin-bottom:10px;margin-top:20px;">All Tags:</div>
+	<div class="nicebox">
+	<div style="font-weight:bold;margin-bottom:10px;">All Tags:</div>
 	<cfoutput query="qryData">
 		<cfif qryData.tagCount EQ min>
 			<cfset class="smallestTag">
@@ -24,4 +25,5 @@
 	<cfif qryData.recordCount eq 0>
 		<em>No Tags</em>
 	</cfif>
+	</div>
 </p>

@@ -41,7 +41,7 @@ function doEvent (e, targetID, params) {
 	var myAjax = new Ajax.Updater(targetID,
 									"index.cfm",
 									{method:'get', parameters:pars, evalScripts:true, onFailure:h_callError, onComplete:doEventComplete});
-	$("loadingImage").style.display = 'block';
+	$("loadingImage").className = "showlayer";
 }
 
 function h_callError(request) {
@@ -49,7 +49,7 @@ function h_callError(request) {
 }
 
 function doEventComplete (obj) {
-	$("loadingImage").style.display = 'none';
+	$("loadingImage").className = "hidelayer";
 }
 
 function viewContent(id) {

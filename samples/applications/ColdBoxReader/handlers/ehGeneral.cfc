@@ -22,13 +22,13 @@ aug/20/2006 - Luis Majano
 		<cfparam name="session.userID" 		default="">
 		<cfparam name="session.username" 	default="">
 		<!--- EXIT HANDLERS: --->
-		<cfset rc.xehSearch = "ehFeed.doSearchByTerm">		
+		<cfset rc.xehSearch = "ehFeed.doSearchByTerm">
 	</cffunction>
-	
+
 	<cffunction name="onException" access="public" returntype="void" output="false">
 		<!--- My own Exception Handler --->
 		<!--- Log error --->
-		<cfset var exceptionBean = getValue("ExceptionBean")>		
+		<cfset var exceptionBean = getValue("ExceptionBean")>
 		<!--- Do per Type Validations, example here --->
 		<cfif exceptionBean.getType eq "Framework.plugins.settings.EventSyntaxInvalidException">
 			<cfset getPlugin("messagebox").setMessage("warning", "No page found with that syntax.")>
@@ -36,9 +36,9 @@ aug/20/2006 - Luis Majano
 			<cfset setNextEvent()>
 		<cfelse>
 			<cfset getPlugin("logger").logErrorWithBean(exceptionBean)>
-		</cfif>		
+		</cfif>
 	</cffunction>
-	
+
 	<cffunction name="dspStart" access="public" returntype="void" output="false">
 		<!--- EXIT HANDLERS: --->
 		<cfset rc.xehReader = "ehGeneral.dspReader">
@@ -49,9 +49,8 @@ aug/20/2006 - Luis Majano
 		<cfset var obj = createObject("component","#getSetting("AppMapping")#.components.feed")>
 		<!--- EXIT HANDLERS: --->
 		<cfset rc.xehViewFeed = "ehFeed.dspViewFeed">
-		<cfset rc.xehLogin = "ehUser.dspLogin">
-		<cfset rc.xehSignup = "ehUser.dspSignUp">
 		<cfset rc.xehShowTags = "ehFeed.dspAllTags">
+		<cfset rc.xehShowInfo = "ehGeneral.dspInfo">
 		<cfset rc.xehAccountActions = "ehUser.dspAccountActions">
 		<!--- Get Feeds --->
 		<cfset rc.qryFeeds = obj.getAllFeeds()>
@@ -59,8 +58,16 @@ aug/20/2006 - Luis Majano
 			SELECT *
 				FROM rc.qryFeeds
 				ORDER BY Views DESC
-		</cfquery>		
+		</cfquery>
 		<cfset setView("vwReader")>
 	</cffunction>
-	
+
+	<cffunction name="dspInfo" access="public" returntype="void" output="false">
+		<!--- EXIT HANDLERS: --->
+		<cfset rc.xehLogin = "ehUser.dspLogin">
+		<cfset rc.xehSignup = "ehUser.dspSignUp">
+		<cfset setView("vwInfo")>
+	</cffunction>
+
+
 </cfcomponent>

@@ -11,53 +11,54 @@
 
 <body>
 	<div id="banner">
-	
+
 		<div style="float:right">
-		    <div id="divAccountActions" align="center"></div>			
+		    <div id="divAccountActions" align="center"></div>
 		</div>
-		
+
 		<h1><img src="images/logo.png" align="absmiddle" border="0" width="57" height="57">&nbsp;<a href="index.cfm">ColdBoxReader</a>: Shared Feed Reading</h1>
-	
+
 		<div id="statusbar">
 			<cfoutput>
 			<div style="float:left;margin-left:10px">
 			<form name="frmSearch" style="padding:0px;margin:5px;" method="post" action="javascript:doFormEvent('#getValue("xehSearch")#','centercontent',document.frmSearch);">
-				
+
 				<input type="text" name="searchTerm" value="Search Keywords" onclick="this.value='';" style="font-size:9px" onBlur="this.value ==  '' ? this.value='Search Keywords' : this.value"/>
 				<input type="submit" value="Search" style="font-size:9px" />
 				<strong>ColdBox Reader Version: #getSetting("version")#</strong>
 			</form>
 			</div>
-			
-			<div style="float:right">
-				<img src="images/ajax-loader.gif" style="margin-top:5px;display:none" id="loadingImage">
+
+			<div style="float:right" id="loadingImage" class="hidelayer">
+				<img src="images/ajax-loader.gif" style="margin-top:5px;">
 			</div>
 			</cfoutput>
 		</div>
-	
+
 	</div>
-		
+
 	<div id="leftcontent">
 		<div id="leftcontent1"></div>
 		<div id="leftcontent2"></div>
 	</div>
-	
+
 	<div id="centercontent">
 		<div style="margin-bottom: 3px;">
 		<cfset writeOutput(getPlugin("messageBox").render())>
 		</div>
 		<cfset writeOutput(renderView())>
 	</div>
-	
+
 	<div id="rightcontent">
 		<div id="rightcontent1"></div>
 		<div id="rightcontent2"></div>
 	</div>
-	
-	<div id="bottombanner">
-	<br />
-	<p align="center"><a href="http://www.luismajano.com/projects/coldbox" target="_blank"><img src="../../images/poweredby.png" border="0"></a></p>
-	<p align="center">ColdBoxReader is developed by <a href="http://www.wencho.net" target="_blank">Oscar Arevalo</a> & Luis Majano to showcase AJAX-style interaction using the ColdBox Framework
-	</div>
+
+
+		<br />
+		<p align="center"><a href="http://www.luismajano.com/projects/coldbox" target="_blank"><img src="../../images/poweredby.png" border="0"></a></p>
+		<p align="center">ColdBoxReader is developed by <a href="http://www.wencho.net" target="_blank">Oscar Arevalo</a> & Luis Majano to showcase AJAX-style interaction using the ColdBox Framework
+
+
 </body>
 </html>
