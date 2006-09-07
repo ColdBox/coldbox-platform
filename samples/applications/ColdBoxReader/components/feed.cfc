@@ -1,8 +1,9 @@
-<cfcomponent extends="dataStore">
+<cfcomponent name="feed" extends="dataStore" output="false">
 
 	<cffunction name="parseFeed" access="public" returntype="struct">
+		<!--- ******************************************************************************** --->
 		<cfargument name="xmlDoc" type="xml" required="yes">
-
+		<!--- ******************************************************************************** --->
 		<cfset var feed = StructNew()>
 		<cfset var isRSS1 = false>
 		<cfset var isRSS2 = false>
@@ -51,9 +52,12 @@
 		<cfreturn feed>
 	</cffunction>
 	
+	<!--- ******************************************************************************** --->
+	
 	<cffunction name="retrieveFeed" access="public" returntype="struct">
+		<!--- ******************************************************************************** --->
 		<cfargument name="url" type="string" required="yes">
-
+		<!--- ******************************************************************************** --->
 		<cfset var xmlDoc = 0>
 		<cfset arguments.url = ReplaceNoCase(arguments.url,"feed://","http://")> 
 		
@@ -69,8 +73,10 @@
 		<cfreturn feed>
 	</cffunction>
 	
-
+	<!--- ******************************************************************************** --->
+	
 	<cffunction name="saveFeed" access="public" returntype="string">
+		<!--- ******************************************************************************** --->
 		<cfargument name="feedID" type="string" required="yes">
 		<cfargument name="feedName" type="string" required="yes">
 		<cfargument name="feedURL" type="string" required="yes">
@@ -79,7 +85,7 @@
 		<cfargument name="imgURL" type="string" required="yes">
 		<cfargument name="siteURL" type="string" required="yes">
 		<cfargument name="userID" type="string" required="yes">
-
+		<!--- ******************************************************************************** --->
 		<cfif arguments.feedID eq "">
 			<cfset newID = CreateUUID()>
 			<cfquery name="qry" datasource="#this.datasource#" username="#this.username#" password="#this.password#">
@@ -113,20 +119,46 @@
 		<cfreturn newID>
 	</cffunction>	
 	
+	<!--- ******************************************************************************** --->
+	
 	<cffunction name="getAllFeeds" access="public" returntype="query">
 		<cfquery name="qry" datasource="#this.datasource#" username="#this.username#" password="#this.password#">
 			SELECT FeedID, FeedName, FeedURL, FeedAuthor, Description, ImgURL, SiteURL, f.CreatedOn, f.CreatedBy, u.UserName,Views
 				FROM feed f
 					INNER JOIN users u ON f.CreatedBy = u.UserID
 				ORDER BY f.CreatedOn DESC
-		</cfquery>
-		
+		</cfquery>		
 		<cfreturn qry>
 	</cffunction>
 	
+	<!--- ******************************************************************************** --->
+	
+	<cffunction name="verifyFeed" access="public" returntype="boolean" hint="Verifies a feed by the user.">
+		<!--- ******************************************************************************** --->
+		<cfargument name="feedURL" 	type="string" required="yes">
+		<cfargument name="authorID" type="string" required="yes">
+		<!--- ******************************************************************************** --->
+		<cfset var qry = "">
+		<cfquery name="qry" datasource="#this.datasource#" username="#this.username#" password="#this.password#">
+			SELECT FeedID
+				FROM feed
+			   WHERE FeedURL = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.feedURL#"> AND
+			   		 CreatedBy = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.authorID#">
+		</cfquery>
+		<cfif qry.recordcount>
+			<cfreturn true>
+		<cfelse>
+			<cfreturn false>
+		</cfif>
+	</cffunction>
+	
+	<!--- ******************************************************************************** --->
+	
 	<cffunction name="readFeed" access="public" returntype="struct">
+		<!--- ******************************************************************************** --->
 		<cfargument name="feedID" type="string" required="yes">
 		<cfargument name="dirURL" type="string" required="yes">
+		<!--- ******************************************************************************** --->
 		<!--- get details on requested feed --->
 		<cfquery name="qry" datasource="#this.datasource#" username="#this.username#" password="#this.password#">
 			SELECT FeedURL
@@ -170,9 +202,12 @@
 		<cfreturn stFeed>
 	</cffunction>	
 	
+	<!--- ******************************************************************************** --->
 	
 	<cffunction name="getFeedInfo" access="public" returntype="query">
+		<!--- ******************************************************************************** --->
 		<cfargument name="feedID" type="string" required="yes">
+		<!--- ******************************************************************************** --->
 		<cfquery name="qry" datasource="#this.datasource#" username="#this.username#" password="#this.password#">
 			SELECT f.*, u.UserName
 				FROM feed f, users u
@@ -182,9 +217,12 @@
 		<cfreturn qry>
 	</cffunction>	
 	
+	<!--- ******************************************************************************** --->
 	
 	<cffunction name="searchByTag" access="public" returntype="query">
+		<!--- ******************************************************************************** --->
 		<cfargument name="tag" type="string" required="yes">
+		<!--- ******************************************************************************** --->
 		<cfquery name="qry" datasource="#this.datasource#" username="#this.username#" password="#this.password#">
 			SELECT f.FeedID, FeedName, FeedURL, FeedAuthor, Description, ImgURL, SiteURL, f.CreatedOn, f.CreatedBy, u.UserName, Views
 				FROM feed f
@@ -196,8 +234,12 @@
 		<cfreturn qry>
 	</cffunction>		
 	
+	<!--- ******************************************************************************** --->
+	
 	<cffunction name="searchByTerm" access="public" returntype="query">
+		<!--- ******************************************************************************** --->
 		<cfargument name="term" type="string" required="yes">
+		<!--- ******************************************************************************** --->
 		<cfquery name="qry" datasource="#this.datasource#" UserName="#this.UserName#" password="#this.password#">
 			SELECT f.FeedID, FeedName, FeedURL, FeedAuthor, Description, ImgURL, SiteURL, f.CreatedOn, f.CreatedBy, u.UserName, Views
 				FROM feed f

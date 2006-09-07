@@ -1,7 +1,5 @@
 <cfset myFeed = getValue("myFeed","")>
 <cfoutput>
-<!--- Reload Icon --->
-#renderView("tags/reload")#
 
 <h1>Add New Feed</h1>
 

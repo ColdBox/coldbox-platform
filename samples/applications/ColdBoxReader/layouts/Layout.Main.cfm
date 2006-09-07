@@ -55,10 +55,10 @@
 	</div>
 
 
-		<br />
-		<p align="center"><a href="http://www.luismajano.com/projects/coldbox" target="_blank"><img src="../../images/poweredby.png" border="0"></a></p>
-		<p align="center">ColdBoxReader is developed by <a href="http://www.wencho.net" target="_blank">Oscar Arevalo</a> & Luis Majano to showcase AJAX-style interaction using the ColdBox Framework
-
-
+	<div id="footer">
+	<br />
+	<p align="center"><a href="http://www.luismajano.com/projects/coldbox" target="_blank"><img src="../../images/poweredby.png" border="0"></a></p>
+	<p align="center">ColdBoxReader is developed by <a href="http://www.wencho.net" target="_blank">Oscar Arevalo</a> & Luis Majano to showcase AJAX-style interaction using the ColdBox Framework
+	</div>
 </body>
 </html>

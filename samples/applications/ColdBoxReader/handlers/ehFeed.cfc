@@ -23,8 +23,13 @@
 			<cfelse>
 				<cftry>
 					<cfset obj = createObject("component","#getSetting("AppMapping")#.components.feed")>
-					<cfset rc.myFeed = obj.retrieveFeed(rc.feedURL)>
-					<cfset rc.feedValidated = true>
+					<!--- Verify Feed in user's feeds --->
+					<cfif obj.verifyFeed(rc.feedURL, session.userID)>
+						<cfset getPlugin("messagebox").setMessage("warning","The feed you are trying to add is already in your feeds collection. You cannot add it twice.")>
+					<cfelse>
+						<cfset rc.myFeed = obj.retrieveFeed(rc.feedURL)>
+						<cfset rc.feedValidated = true>
+					</cfif>
 					<cfcatch type="any">
 						<cfset getPlugin("logger").logError("Error Parsing Feed", e)>
 						<cfset getPlugin("messagebox").setMessage("error", cfcatch.message & "<br>" & cfcatch.detail)>

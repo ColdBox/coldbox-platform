@@ -1,11 +1,6 @@
 <cfset qryFeeds = getValue("qryFeeds")>
 <cfset qryTopFeeds = getValue("qryTopFeeds")>
 
-<cfoutput>
-<!--- Reload Icon --->
-#renderView("tags/reload")#
-</cfoutput>
-
 <h1>About ColdBoxReader</h1>
 <p>
 	ColdBoxReader is an application for shared reading of RSS/Atom feeds. Users submit RSS/Atom feeds
@@ -21,8 +16,8 @@
 <p><b>Recently Added:</b>
 <cfoutput query="qryFeeds" maxrows="5">
 <div style="line-height:20px;">
-	<a href="javascript:doEvent('#getValue("xehViewFeed")#','centercontent',{feedID:'#qryFeeds.feedID#'});"><strong>#qryFeeds.feedname#</strong></a>
-	<span style="font-size:0.8em;">
+	<img src="images/dot_orange.gif">&nbsp;<a href="javascript:doEvent('#getValue("xehViewFeed")#','centercontent',{feedID:'#qryFeeds.feedID#'});"><strong>#qryFeeds.feedname#</strong></a>
+	<span style="font-size:0.9em;">
 		 by #qryFeeds.username# on #dateformat(qryFeeds.createdon,"mmm dd")# #lstimeFormat(qryFeeds.createdOn)#
 	</span>
 </div>
@@ -35,8 +30,8 @@
 <cfoutput query="qryTopFeeds" maxrows="5">
 	<div style="line-height:20px;">
 		[#qryTopFeeds.views#]&nbsp;
-		<a href="javascript:doEvent('#getValue("xehViewFeed")#','centercontent',{feedID:'#qryTopFeeds.feedID#'});"><strong>#qryTopFeeds.feedname#</strong></a>
-		<span style="font-size:0.8em;">
+		<img src="images/dot_orange.gif">&nbsp;<a href="javascript:doEvent('#getValue("xehViewFeed")#','centercontent',{feedID:'#qryTopFeeds.feedID#'});"><strong>#qryTopFeeds.feedname#</strong></a>
+		<span style="font-size:0.9em;">
 			 by #qryTopFeeds.username# on #dateformat(qryTopFeeds.createdon,"mmm dd")# #lstimeFormat(qryFeeds.createdOn)#
 		</span>
 	</div>
