@@ -1,5 +1,9 @@
 <cfcomponent extends="dataStore">
+	
+	<!--- ******************************************************************************** --->
+	
 	<cffunction name="getAllTags" access="public" returntype="query">
+		<cfset var qry = "">
 		<cfquery name="qry" datasource="#this.datasource#" username="#this.username#" password="#this.password#">
 			SELECT Tag, COUNT(*) AS TagCount
 				FROM feed_tags
@@ -9,9 +13,13 @@
 		<cfreturn qry>
 	</cffunction>
 
+	<!--- ******************************************************************************** --->
 
 	<cffunction name="getFeedTags" access="public" returntype="query">
+		<!--- ******************************************************************************** --->
 		<cfargument name="feedID" type="string" required="yes">
+		<!--- ******************************************************************************** --->
+		<cfset var qry = "">
 		<cfquery name="qry" datasource="#this.datasource#" username="#this.username#" password="#this.password#">
 			SELECT *
 				FROM feed_tags
@@ -21,12 +29,17 @@
 		<cfreturn qry>
 	</cffunction>
 	
+	<!--- ******************************************************************************** --->
 	
-	<cffunction name="addFeedTags" access="public">
+	<cffunction name="addFeedTags" access="public" returntype="void">
+		<!--- ******************************************************************************** --->
 		<cfargument name="feedID" type="string" required="yes">
 		<cfargument name="tags" type="string" required="yes">
 		<cfargument name="userID" type="string" required="yes">
-
+		<!--- ******************************************************************************** --->
+		<cfset var qry = "">
+		<cfset var aTags = "">
+		<cfset var newID = "">
 		<cfset arguments.tags = Replace(arguments.tags," ",",","ALL")>
 		<cfset aTags = ListToArray(arguments.tags)>
 		
@@ -45,4 +58,6 @@
 		</cfloop>
 	</cffunction>
 	
+	<!--- ******************************************************************************** --->
+
 </cfcomponent>

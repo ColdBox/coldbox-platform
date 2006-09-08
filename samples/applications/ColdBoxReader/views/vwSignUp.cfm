@@ -4,9 +4,11 @@
 <cfparam name="email" default="">
 
 <cfoutput>
+<h1>Create your very own ColdBox Reader Account</h1>
+
 <form name="frm" method="post" action="javascript:doFormEvent('#getValue("xehCreate")#','centercontent',document.frm)">
 	<p>
-		Creating an account allows you to add new feeds and tag existing feeds.
+		Creating an account allows you to add new feeds and tag existing feeds. All passwords are encrypted.
 	</p>
 	<table>
 		<tr>
@@ -29,8 +31,8 @@
 		<tr>
 			<td>&nbsp;</td>
 			<td>
-				<input type="submit" value="Create Account" />
 				<input type="button" value="Go Back" onClick="document.location='index.cfm'" />
+				<input type="submit" value="Create Account" />
 			</td>
 		</tr>
 	</table>

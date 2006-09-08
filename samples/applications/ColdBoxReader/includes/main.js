@@ -72,3 +72,21 @@ function clearDiv(id) {
 function logout(){
 	return confirm("Do you wish to logout of your ColdBox reader session?")
 }
+
+function toggleFooter(){
+	if ( FOOTER_DRAWER ){
+		$("footer").className = "hidelayer";
+		$("footer_small").className = "footer_small";
+		FOOTER_DRAWER = false;
+	}	
+	else{
+		$("footer").className = "footer";
+		$("footer_small").className = "hidelayer";
+		FOOTER_DRAWER = true;
+	}
+}
+
+
+
+//GLOVAL VARIABLES
+var FOOTER_DRAWER = true;

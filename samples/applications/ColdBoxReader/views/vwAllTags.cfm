@@ -3,7 +3,7 @@
 <cfset max = ArrayMax(tagValueArray)>
 <cfset min = ArrayMin(tagValueArray)>
 <cfset diff = max - min>
-<cfset distribution = diff / 3>
+<cfset distribution = diff / 20>
 
 <p style="line-height:20px;">
 	<div class="nicebox">

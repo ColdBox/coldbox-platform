@@ -30,8 +30,12 @@
 				<td><input type="text" name="feedName" value="#myFeed.title#" size="50" /></td>
 			</tr>
 			<tr>
+				<td><b>Author:</b></td>
+				<td><input type="text" name="feedAuthor" value="" size="50" /></td>
+			</tr>
+			<tr>
 				<td><b>Last Updated:</b></td>
-				<td><input type="text" name="feedAuthor" value="#myFeed.date#" size="50" /></td>
+				<td><input type="text" name="feedDate" value="#myFeed.date#" size="50" /></td>
 			</tr>
 			<tr>
 				<td><b>Image:</b></td>

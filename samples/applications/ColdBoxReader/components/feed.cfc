@@ -1,5 +1,5 @@
 <cfcomponent name="feed" extends="dataStore" output="false">
-
+	
 	<cffunction name="parseFeed" access="public" returntype="struct">
 		<!--- ******************************************************************************** --->
 		<cfargument name="xmlDoc" type="xml" required="yes">
@@ -59,6 +59,7 @@
 		<cfargument name="url" type="string" required="yes">
 		<!--- ******************************************************************************** --->
 		<cfset var xmlDoc = 0>
+		<cfset var feed = "">
 		<cfset arguments.url = ReplaceNoCase(arguments.url,"feed://","http://")> 
 		
 		<cfhttp method="get" url="#arguments.url#" resolveurl="yes" redirect="yes"></cfhttp>
@@ -86,6 +87,9 @@
 		<cfargument name="siteURL" type="string" required="yes">
 		<cfargument name="userID" type="string" required="yes">
 		<!--- ******************************************************************************** --->
+		<cfset var newID = "">
+		<cfset var qry = "">
+		
 		<cfif arguments.feedID eq "">
 			<cfset newID = CreateUUID()>
 			<cfquery name="qry" datasource="#this.datasource#" username="#this.username#" password="#this.password#">
@@ -122,11 +126,29 @@
 	<!--- ******************************************************************************** --->
 	
 	<cffunction name="getAllFeeds" access="public" returntype="query">
+		<cfset var qry = "">
 		<cfquery name="qry" datasource="#this.datasource#" username="#this.username#" password="#this.password#">
 			SELECT FeedID, FeedName, FeedURL, FeedAuthor, Description, ImgURL, SiteURL, f.CreatedOn, f.CreatedBy, u.UserName,Views
 				FROM feed f
 					INNER JOIN users u ON f.CreatedBy = u.UserID
 				ORDER BY f.CreatedOn DESC
+		</cfquery>		
+		<cfreturn qry>
+	</cffunction>
+	
+	<!--- ******************************************************************************** --->
+	
+	<cffunction name="getAllMyFeeds" access="public" returntype="query">
+		<!--- ******************************************************************************** --->
+		<cfargument name="userID" 	type="string" required="yes">
+		<!--- ******************************************************************************** --->
+		<cfset var qry = "">
+		<cfquery name="qry" datasource="#this.datasource#" username="#this.username#" password="#this.password#">
+			SELECT FeedID, FeedName, FeedURL, FeedAuthor, Description, ImgURL, SiteURL, f.CreatedOn, f.CreatedBy, u.UserName,Views
+				FROM feed f
+					INNER JOIN users u ON f.CreatedBy = u.UserID
+			   WHERE u.UserID = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.userID#">
+			   ORDER BY f.CreatedOn DESC
 		</cfquery>		
 		<cfreturn qry>
 	</cffunction>
@@ -159,6 +181,15 @@
 		<cfargument name="feedID" type="string" required="yes">
 		<cfargument name="dirURL" type="string" required="yes">
 		<!--- ******************************************************************************** --->
+		<cfset var qry = "">
+		<cfset var qryDir = "">
+		<cfset var txtDoc = "">
+		<cfset var cacheValid = "">
+		<cfset var cacheDir = "">
+		<cfset var cacheFile = "">
+		<cfset var stFeed = "">
+		<cfset var slash = CreateObject("java","java.lang.System").getProperty("file.separator")>
+		
 		<!--- get details on requested feed --->
 		<cfquery name="qry" datasource="#this.datasource#" username="#this.username#" password="#this.password#">
 			SELECT FeedURL
@@ -168,8 +199,8 @@
 		
 		<!--- Check if feed is on cache --->
 		<cfset cacheValid = false>
-		<cfset cacheDir = "#arguments.dirURL#/cache">
-		<cfset cacheFile = cacheDir & "/" & arguments.feedID & ".xml">
+		<cfset cacheDir = "#arguments.dirURL##slash#cache">
+		<cfset cacheFile = cacheDir & slash  & arguments.feedID & ".xml">
 		
 		<!--- if there is a cache then check if it is less than 30 minutes old --->
 		<cfif fileExists(cacheFile)>
@@ -187,6 +218,7 @@
 			<cfquery name="qry" datasource="#this.datasource#" username="#this.username#" password="#this.password#">
 				UPDATE feed
 					SET Views = Views + 1
+				  WHERE FeedID = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.feedID#">
 			</cfquery>
 		<cfelse>
 			<cfset stFeed = retrieveFeed(qry.feedURL)>
@@ -195,10 +227,10 @@
 				UPDATE feed
 					SET LastRefreshedOn = <cfqueryparam cfsqltype="cf_sql_timestamp" value="#now()#">,
 						Views = Views + 1
+				  WHERE FeedID = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.feedID#">
 			</cfquery>
 			<cffile action="write" file="#cacheFile#" output="#toString(stFeed.xmlDocString)#">	
-		</cfif>
-			
+		</cfif>		
 		<cfreturn stFeed>
 	</cffunction>	
 	
@@ -208,8 +240,9 @@
 		<!--- ******************************************************************************** --->
 		<cfargument name="feedID" type="string" required="yes">
 		<!--- ******************************************************************************** --->
+		<cfset var qry = "">
 		<cfquery name="qry" datasource="#this.datasource#" username="#this.username#" password="#this.password#">
-			SELECT f.*, u.UserName
+			SELECT f.*, u.UserName, u.Email
 				FROM feed f, users u
 				WHERE f.FeedID = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.feedID#"> and
 				      f.CreatedBy = u.UserID
@@ -223,6 +256,7 @@
 		<!--- ******************************************************************************** --->
 		<cfargument name="tag" type="string" required="yes">
 		<!--- ******************************************************************************** --->
+		<cfset var qry = "">
 		<cfquery name="qry" datasource="#this.datasource#" username="#this.username#" password="#this.password#">
 			SELECT f.FeedID, FeedName, FeedURL, FeedAuthor, Description, ImgURL, SiteURL, f.CreatedOn, f.CreatedBy, u.UserName, Views
 				FROM feed f
@@ -240,6 +274,7 @@
 		<!--- ******************************************************************************** --->
 		<cfargument name="term" type="string" required="yes">
 		<!--- ******************************************************************************** --->
+		<cfset var qry = "">
 		<cfquery name="qry" datasource="#this.datasource#" UserName="#this.UserName#" password="#this.password#">
 			SELECT f.FeedID, FeedName, FeedURL, FeedAuthor, Description, ImgURL, SiteURL, f.CreatedOn, f.CreatedBy, u.UserName, Views
 				FROM feed f
@@ -255,5 +290,7 @@
 		</cfquery>
 		<cfreturn qry>
 	</cffunction>		
+	
+	<!--- ******************************************************************************** --->
 	
 </cfcomponent>

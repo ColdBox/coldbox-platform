@@ -16,7 +16,7 @@
 <p><b>Recently Added:</b>
 <cfoutput query="qryFeeds" maxrows="5">
 <div style="line-height:20px;">
-	<img src="images/dot_orange.gif">&nbsp;<a href="javascript:doEvent('#getValue("xehViewFeed")#','centercontent',{feedID:'#qryFeeds.feedID#'});"><strong>#qryFeeds.feedname#</strong></a>
+	<img src="images/archives.gif">&nbsp;<a href="javascript:doEvent('#getValue("xehViewFeed")#','centercontent',{feedID:'#qryFeeds.feedID#'});"><strong>#qryFeeds.feedname#</strong></a>
 	<span style="font-size:0.9em;">
 		 by #qryFeeds.username# on #dateformat(qryFeeds.createdon,"mmm dd")# #lstimeFormat(qryFeeds.createdOn)#
 	</span>
@@ -27,10 +27,10 @@
 
 <br /><br />
 <p><b>Most Visited:</b>
-<cfoutput query="qryTopFeeds" maxrows="5">
+<cfoutput query="qryTopFeeds">
 	<div style="line-height:20px;">
 		[#qryTopFeeds.views#]&nbsp;
-		<img src="images/dot_orange.gif">&nbsp;<a href="javascript:doEvent('#getValue("xehViewFeed")#','centercontent',{feedID:'#qryTopFeeds.feedID#'});"><strong>#qryTopFeeds.feedname#</strong></a>
+		<img src="images/archives.gif">&nbsp;<a href="javascript:doEvent('#getValue("xehViewFeed")#','centercontent',{feedID:'#qryTopFeeds.feedID#'});"><strong>#qryTopFeeds.feedname#</strong></a>
 		<span style="font-size:0.9em;">
 			 by #qryTopFeeds.username# on #dateformat(qryTopFeeds.createdon,"mmm dd")# #lstimeFormat(qryFeeds.createdOn)#
 		</span>

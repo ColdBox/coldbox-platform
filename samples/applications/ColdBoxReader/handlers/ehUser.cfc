@@ -14,6 +14,8 @@
 		<cfset rc.xehSignup = "ehUser.dspSignUp">
 		<cfset rc.xehHome = "ehGeneral.dspReader">
 		<cfset rc.xehAddFeed = "ehFeed.dspAddFeed">
+		<cfset rc.xehMyFeeds = "ehFeed.dspMyFeeds">
+		
 		<!--- Set View --->
 		<cfset setView("vwAccountActions")>
 	</cffunction>
@@ -38,13 +40,14 @@
 			var email = getValue("email","");
 			var obj = "";
 			var newUserID = "";
+			var userQry = "";
 
 			if ( username eq "" or password eq "" or email eq ""){
-				getPlugin("messagebox").setMessage("error", "Please enter all the account information.");
-				setNextEvent("ehUser.dspSignup");
+				getPlugin("messagebox").setMessage("warning", "Please enter all the account information in order to create an account.");
+				setNextEvent("ehUser.dspSignUp");
 			}
 			if ( compare(password,password2) neq 0 ){
-				getPlugin("messagebox").setMessage("error", "The passwords do not match.");
+				getPlugin("messagebox").setMessage("warning", "The passwords do not match.");
 				setNextEvent("ehUser.dspSignup");
 			}
 			try {
@@ -52,11 +55,11 @@
 				newUserID = obj.createUser(username, password, email);
 				if(newUserID eq "") throw("An unexpected error ocurred while creating the account.");
 				session.userID = newUserID;
-				qry = obj.getUser(session.userID);
-				session.username = qry.username;
-				session.email = qry.email;
-				session.lastLogin = qry.LastLogin;
-				session.createdOn = qry.CreatedOn;
+				userQry = obj.getUser(session.userID);
+				session.username = userQry.username;
+				session.email = userQry.email;
+				session.lastLogin = userQry.LastLogin;
+				session.createdOn = userQry.CreatedOn;
 				setNextEvent("ehGeneral.dspReader");
 
 			} catch (any e) {
@@ -73,17 +76,17 @@
 			var password = getValue("password","");
 			var obj = "";
 			var userID = "";
-			var qry = "";
+			var userQry = "";
 			try {
 				obj = CreateObject("component","#getSetting("AppMapping")#.components.users");
 				userID = obj.checkLogin(username, password);
 				if(userID eq "") throw("Username/Password not recognized.");
 				session.userID = userID;
-				qry = obj.getUser(session.userID);
-				session.username = qry.username;
-				session.email = qry.email;
-				session.lastLogin = qry.LastLogin;
-				session.createdOn = qry.CreatedOn;
+				userQry = obj.getUser(session.userID);
+				session.username = userQry.username;
+				session.email = userQry.email;
+				session.lastLogin = userQry.LastLogin;
+				session.createdOn = userQry.CreatedOn;
 				getPlugin("messagebox").setMessage("info","Welcome back to the ColdBox Reader #username#!");
 				setNextEvent("ehGeneral.dspReader");
 

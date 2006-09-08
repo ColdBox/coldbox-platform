@@ -54,7 +54,7 @@ aug/20/2006 - Luis Majano
 		<cfset rc.xehAccountActions = "ehUser.dspAccountActions">
 		<!--- Get Feeds --->
 		<cfset rc.qryFeeds = obj.getAllFeeds()>
-		<cfquery name="rc.qryTopFeeds" dbtype="query" maxrows="5">
+		<cfquery name="rc.qryTopFeeds" dbtype="query" maxrows="8">
 			SELECT *
 				FROM rc.qryFeeds
 				ORDER BY Views DESC

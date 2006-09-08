@@ -10,7 +10,7 @@
 		or <a href="javascript:doEvent('#getValue("xehSignup")#','centercontent',{})"><strong>Create an Account</strong></a>.
 	<cfelse>
 		<div style="margin-bottom:10px;">
-			<strong>Welcome back to your ColdBox Reader.</strong>
+			<strong>Welcome to your ColdBox Reader.</strong>
 		</div>
 		<strong>Your Email:</strong><br>
 		#session.email#<Br><br />
