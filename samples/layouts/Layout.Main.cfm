@@ -23,9 +23,8 @@
 	<div id="navigation">
 		<ul>
 		<li class="selected"><a href="#cgi.SCRIPT_NAME#">#getResource("sampleshome")#</a></li>
-		<li><a href="http://www.robgonda.com"  target="_blank">Rob Gonda's Blog</a></li>
 		<li><a href="http://www.camdenfamily.com/morpheus/blog/"  target="_blank">Ray Camden's Blog</a></li>
-		<li><a href="http://www.remotesynthesis.com/blog/" target="_blank">Remote Synthesis</a></li>
+		<li><a href="http://www.remotesynthesis.com/blog/" target="_blank">Open Source</a></li>
 		</ul>
 		
 		<div align="right">
