@@ -1,24 +1,22 @@
-This is Oscar Arevalo's ColdBox RSS Reader.
+This is Oscar Arevalo's & Luis Majano's ColdBox RSS Reader.
 
-This sample works only for MySQL right now. I will port this to other major
-databases in the future.
+This sample should work with most databases, it has been tested under MySQL 5.X
 
-Installation Procedures for using the app under the Samples Gallery.
-1) Open the coldboxreader.sql file
-2) Connect to your MySQL instance and create a new schema called: coldboxreader
-3) Run the sql script for this schema.
-4) Create the datasource in your coldfusion administrator as coldboxreader, with your login and password.
-You can rename the datasource to whatever you want as long as you change it in the following component:
-components/dataStore.cfc 
+Installation Procedures.
+1) Open the coldboxreader.sql file and import it in to your MySQL instance.
+2) Create the datasource in your coldfusion administrator as coldboxreader, with your login and password.
+You can rename the datasource to whatever you want as long as you change it in the config.xml.cfm
 You can also put your login and password there.
-5) Open the application and enjoy.
+3) Open the application and enjoy.
 
-If you wish to test this application by itself. You will need to copy the ColdBox system folder to the 
-root of the application and treat it as a normal ColdBox app. Please follow the guidelines as per the
-Quick Start Guide.  Here are the quick steps.
+Please visit Oscar's Home Portals Project and support it:
+http://www.homeportals.net
 
-1) Copy the ColdBox system folder to the root of the ColdBox Reader App.
-2) Create the CFMX Mapping of your choice for this app and place the name in the
-config.xml.cfm file.
-3) change the Extends on the three event handlers to point to this new System location.
-4) Open the application.
+Or my Wishlist at:
+http://www.amazon.com/o/registry/7DPYG3RZG3AF
+
+Version 1.1.0 (sep-10-2006)
+- Updated all the files
+- New coldboxService cfc as a daoFactory
+- New icons and new look
+- Bug Fixes and additions.
