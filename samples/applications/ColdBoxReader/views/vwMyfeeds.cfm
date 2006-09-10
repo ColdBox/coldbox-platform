@@ -8,7 +8,7 @@
 <hr /><br />
 
 <p><b>My Feeds:</b>
-<cfoutput query="qryFeeds" maxrows="5">
+<cfoutput query="qryFeeds">
 <div style="line-height:20px;">
 	<img src="images/archives.gif">&nbsp;<a href="javascript:doEvent('#getValue("xehViewFeed")#','centercontent',{feedID:'#qryFeeds.feedID#',myfeeds:'true'});"><strong>#qryFeeds.feedname#</strong></a>
 	<span style="font-size:0.9em;">

@@ -17,6 +17,11 @@ aug/20/2006 - Luis Majano
 		<cfreturn this>
 	</cffunction>
 
+	<cffunction name="onAppStart" access="public" returntype="void" output="false">
+		<!--- Instantiate ColdBox Service --->
+		<cfset application.cbService = CreateObject("component","#getSetting("AppMapping")#.components.coldboxService").init(getDatasource("coldboxreader"))>
+	</cffunction>
+	
 	<cffunction name="onRequestStart" access="public" returntype="void" output="false">
 		<!--- Session param --->
 		<cfparam name="session.userID" 		default="">
@@ -46,7 +51,7 @@ aug/20/2006 - Luis Majano
 	</cffunction>
 
 	<cffunction name="dspReader" access="public" returntype="void" output="false">
-		<cfset var obj = createObject("component","#getSetting("AppMapping")#.components.feed")>
+		<cfset var obj = application.cbService.getdao("feed")>
 		<!--- EXIT HANDLERS: --->
 		<cfset rc.xehViewFeed = "ehFeed.dspViewFeed">
 		<cfset rc.xehShowTags = "ehFeed.dspAllTags">

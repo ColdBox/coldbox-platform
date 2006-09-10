@@ -1,4 +1,19 @@
-<cfcomponent name="feed" extends="dataStore" output="false">
+<cfcomponent name="feed">
+	
+	<!--- ******************************************************************************** --->
+	
+	<cffunction name="init" access="public" returntype="any" output="false">
+		<!--- ******************************************************************************** --->
+		<cfargument name="dsnBean" required="true" type="any">
+		<!--- ******************************************************************************** --->
+		<cfset instance = structnew()>
+		<cfset instance.dsn = arguments.dsnBean.getName()>
+		<cfset instance.username = arguments.dsnBean.getUsername()>
+		<cfset instance.password = arguments.dsnBean.getPassword()>
+		<cfreturn this />
+	</cffunction>
+	
+	<!--- ******************************************************************************** --->
 	
 	<cffunction name="parseFeed" access="public" returntype="struct">
 		<!--- ******************************************************************************** --->
@@ -92,7 +107,7 @@
 		
 		<cfif arguments.feedID eq "">
 			<cfset newID = CreateUUID()>
-			<cfquery name="qry" datasource="#this.datasource#" username="#this.username#" password="#this.password#">
+			<cfquery name="qry" datasource="#instance.dsn#" username="#instance.username#" password="#instance.password#">
 				INSERT INTO feed (FeedID, FeedName, FeedURL, FeedAuthor, Description, ImgURL, SiteURL, CreatedOn, CreatedBy) 
 					VALUES (
 							<cfqueryparam cfsqltype="cf_sql_varchar" value="#newID#">,
@@ -108,7 +123,7 @@
 			</cfquery>
 		<cfelse>
 			<cfset newID = arguments.feedID>
-			<cfquery name="qry" datasource="#this.datasource#" username="#this.username#" password="#this.password#">
+			<cfquery name="qry" datasource="#instance.dsn#" username="#instance.username#" password="#instance.password#">
 				UPDATE feed SET
 					FeedID = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.feedID#">,
 					FeedName = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.feedName#">,
@@ -127,7 +142,7 @@
 	
 	<cffunction name="getAllFeeds" access="public" returntype="query">
 		<cfset var qry = "">
-		<cfquery name="qry" datasource="#this.datasource#" username="#this.username#" password="#this.password#">
+		<cfquery name="qry" datasource="#instance.dsn#" username="#instance.username#" password="#instance.password#">
 			SELECT FeedID, FeedName, FeedURL, FeedAuthor, Description, ImgURL, SiteURL, f.CreatedOn, f.CreatedBy, u.UserName,Views
 				FROM feed f
 					INNER JOIN users u ON f.CreatedBy = u.UserID
@@ -143,7 +158,7 @@
 		<cfargument name="userID" 	type="string" required="yes">
 		<!--- ******************************************************************************** --->
 		<cfset var qry = "">
-		<cfquery name="qry" datasource="#this.datasource#" username="#this.username#" password="#this.password#">
+		<cfquery name="qry" datasource="#instance.dsn#" username="#instance.username#" password="#instance.password#">
 			SELECT FeedID, FeedName, FeedURL, FeedAuthor, Description, ImgURL, SiteURL, f.CreatedOn, f.CreatedBy, u.UserName,Views
 				FROM feed f
 					INNER JOIN users u ON f.CreatedBy = u.UserID
@@ -161,7 +176,7 @@
 		<cfargument name="authorID" type="string" required="yes">
 		<!--- ******************************************************************************** --->
 		<cfset var qry = "">
-		<cfquery name="qry" datasource="#this.datasource#" username="#this.username#" password="#this.password#">
+		<cfquery name="qry" datasource="#instance.dsn#" username="#instance.username#" password="#instance.password#">
 			SELECT FeedID
 				FROM feed
 			   WHERE FeedURL = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.feedURL#"> AND
@@ -191,7 +206,7 @@
 		<cfset var slash = CreateObject("java","java.lang.System").getProperty("file.separator")>
 		
 		<!--- get details on requested feed --->
-		<cfquery name="qry" datasource="#this.datasource#" username="#this.username#" password="#this.password#">
+		<cfquery name="qry" datasource="#instance.dsn#" username="#instance.username#" password="#instance.password#">
 			SELECT FeedURL
 				FROM feed
 				WHERE FeedID = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.feedID#">
@@ -215,7 +230,7 @@
 			<cffile action="read" file="#cacheFile#" variable="txtDoc">
 			<cfset stFeed = parseFeed(XMLParse(txtDoc))>
 			<!--- update stats --->
-			<cfquery name="qry" datasource="#this.datasource#" username="#this.username#" password="#this.password#">
+			<cfquery name="qry" datasource="#instance.dsn#" username="#instance.username#" password="#instance.password#">
 				UPDATE feed
 					SET Views = Views + 1
 				  WHERE FeedID = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.feedID#">
@@ -223,7 +238,7 @@
 		<cfelse>
 			<cfset stFeed = retrieveFeed(qry.feedURL)>
 			<!--- update stats --->
-			<cfquery name="qry" datasource="#this.datasource#" username="#this.username#" password="#this.password#">
+			<cfquery name="qry" datasource="#instance.dsn#" username="#instance.username#" password="#instance.password#">
 				UPDATE feed
 					SET LastRefreshedOn = <cfqueryparam cfsqltype="cf_sql_timestamp" value="#now()#">,
 						Views = Views + 1
@@ -241,7 +256,7 @@
 		<cfargument name="feedID" type="string" required="yes">
 		<!--- ******************************************************************************** --->
 		<cfset var qry = "">
-		<cfquery name="qry" datasource="#this.datasource#" username="#this.username#" password="#this.password#">
+		<cfquery name="qry" datasource="#instance.dsn#" username="#instance.username#" password="#instance.password#">
 			SELECT f.*, u.UserName, u.Email
 				FROM feed f, users u
 				WHERE f.FeedID = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.feedID#"> and
@@ -257,7 +272,7 @@
 		<cfargument name="tag" type="string" required="yes">
 		<!--- ******************************************************************************** --->
 		<cfset var qry = "">
-		<cfquery name="qry" datasource="#this.datasource#" username="#this.username#" password="#this.password#">
+		<cfquery name="qry" datasource="#instance.dsn#" username="#instance.username#" password="#instance.password#">
 			SELECT f.FeedID, FeedName, FeedURL, FeedAuthor, Description, ImgURL, SiteURL, f.CreatedOn, f.CreatedBy, u.UserName, Views
 				FROM feed f
 					INNER JOIN feed_tags t ON f.FeedID=t.FeedID
@@ -275,7 +290,7 @@
 		<cfargument name="term" type="string" required="yes">
 		<!--- ******************************************************************************** --->
 		<cfset var qry = "">
-		<cfquery name="qry" datasource="#this.datasource#" UserName="#this.UserName#" password="#this.password#">
+		<cfquery name="qry" datasource="#instance.dsn#" UserName="#instance.username#" password="#instance.password#">
 			SELECT f.FeedID, FeedName, FeedURL, FeedAuthor, Description, ImgURL, SiteURL, f.CreatedOn, f.CreatedBy, u.UserName, Views
 				FROM feed f
 					INNER JOIN feed_tags t ON f.FeedID=t.FeedID

@@ -51,7 +51,7 @@
 				setNextEvent("ehUser.dspSignup");
 			}
 			try {
-				obj = CreateObject("component","#getSetting("AppMapping")#.components.users");
+				obj = application.cbService.getdao("users");
 				newUserID = obj.createUser(username, password, email);
 				if(newUserID eq "") throw("An unexpected error ocurred while creating the account.");
 				session.userID = newUserID;
@@ -69,7 +69,6 @@
 		</cfscript>
 	</cffunction>
 
-
 	<cffunction name="doLogin" access="public" returntype="void" output="false">
 		<cfscript>
 			var username = getValue("username","");
@@ -78,7 +77,7 @@
 			var userID = "";
 			var userQry = "";
 			try {
-				obj = CreateObject("component","#getSetting("AppMapping")#.components.users");
+				obj = application.cbService.getdao("users");
 				userID = obj.checkLogin(username, password);
 				if(userID eq "") throw("Username/Password not recognized.");
 				session.userID = userID;

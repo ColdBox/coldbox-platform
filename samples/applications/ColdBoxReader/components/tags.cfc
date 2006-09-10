@@ -1,10 +1,23 @@
-<cfcomponent extends="dataStore">
+<cfcomponent name="tags">
+	
+	<!--- ******************************************************************************** --->
+	
+	<cffunction name="init" access="public" returntype="any" output="false">
+		<!--- ******************************************************************************** --->
+		<cfargument name="dsnBean" required="true" type="any">
+		<!--- ******************************************************************************** --->
+		<cfset instance = structnew()>
+		<cfset instance.dsn = arguments.dsnBean.getName()>
+		<cfset instance.username = arguments.dsnBean.getUsername()>
+		<cfset instance.password = arguments.dsnBean.getPassword()>
+		<cfreturn this />
+	</cffunction>
 	
 	<!--- ******************************************************************************** --->
 	
 	<cffunction name="getAllTags" access="public" returntype="query">
 		<cfset var qry = "">
-		<cfquery name="qry" datasource="#this.datasource#" username="#this.username#" password="#this.password#">
+		<cfquery name="qry" datasource="#instance.dsn#" username="#instance.username#" password="#instance.password#">
 			SELECT Tag, COUNT(*) AS TagCount
 				FROM feed_tags
 				GROUP BY Tag
@@ -20,7 +33,7 @@
 		<cfargument name="feedID" type="string" required="yes">
 		<!--- ******************************************************************************** --->
 		<cfset var qry = "">
-		<cfquery name="qry" datasource="#this.datasource#" username="#this.username#" password="#this.password#">
+		<cfquery name="qry" datasource="#instance.dsn#" username="#instance.username#" password="#instance.password#">
 			SELECT *
 				FROM feed_tags
 				WHERE feedID = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.feedID#">
@@ -45,7 +58,7 @@
 		
 		<cfloop from="1" to="#ArrayLen(aTags)#" index="i">
 			<cfset newID = CreateUUID()>
-			<cfquery name="qry" datasource="#this.datasource#" username="#this.username#" password="#this.password#">
+			<cfquery name="qry" datasource="#instance.dsn#" username="#instance.username#" password="#instance.password#">
 				INSERT INTO feed_tags (feed_tagID, feedID, tag, CreatedBy, CreatedOn)
 					VALUES (
 						<cfqueryparam cfsqltype="cf_sql_varchar" value="#newID#">,

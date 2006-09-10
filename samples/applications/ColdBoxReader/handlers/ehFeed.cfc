@@ -22,7 +22,7 @@
 				<cfset getPlugin("messagebox").setMessage("error","Please enter a valid Feed URL")>
 			<cfelse>
 				<cftry>
-					<cfset obj = createObject("component","#getSetting("AppMapping")#.components.feed")>
+					<cfset obj = application.cbService.getdao("feed")>
 					<!--- Verify Feed in user's feeds --->
 					<cfif obj.verifyFeed(rc.feedURL, session.userID)>
 						<cfset getPlugin("messagebox").setMessage("warning","The feed you are trying to add is already in your feeds collection. You cannot add it twice.")>
@@ -42,7 +42,7 @@
 	</cffunction>
 
 	<cffunction name="dspViewFeed" access="public" returntype="void" output="false">
-		<cfset var obj = createObject("component","#getSetting("AppMapping")#.components.feed")>
+		<cfset var obj = application.cbService.getdao("feed")>
 		<!--- EXIT HANDLERS: --->
 		<cfset rc.xehFeeds = "ehGeneral.dspReader">
 		<cfset rc.xehMyFeeds = "ehFeed.dspMyFeeds">
@@ -57,13 +57,13 @@
 	</cffunction>
 
 	<cffunction name="dspFeedInfo" access="public" returntype="void" output="false">
-		<cfset var obj = createObject("component","#getSetting("AppMapping")#.components.feed")>
+		<cfset var obj = application.cbService.getdao("feed")>
 		<cfset rc.qryData = obj.getFeedInfo(rc.feedID)>
 		<cfset setView("vwFeedInfo")>
 	</cffunction>
 
 	<cffunction name="dspFeedTags" access="public" returntype="void" output="false">
-		<cfset var obj = createObject("component","#getSetting("AppMapping")#.components.tags")>
+		<cfset var obj = application.cbService.getdao("tags")>
 		<!--- EXIT HANDLERS: --->
 		<cfset rc.xehSearchByTag = "ehFeed.doSearchByTag">
 		<cfset rc.xehAddTag = "ehFeed.doAddTags">
@@ -83,13 +83,13 @@
 	</cffunction>
 
 	<cffunction name="dspFeedComments" access="public" returntype="void" output="false">
-		<cfset var obj = createObject("component","#getSetting("AppMapping")#.components.comments")>
+		<cfset var obj = application.cbService.getdao("comments")>
 		<cfset rc.qryData = obj.getFeedComments(rc.feedID)>
 		<cfset setView("vwFeedComments")>
 	</cffunction>
 
 	<cffunction name="dspAllTags" access="public" returntype="void" output="false">
-		<cfset var obj = createObject("component","#getSetting("AppMapping")#.components.tags")>
+		<cfset var obj = application.cbService.getdao("tags")>
 		<!--- EXIT HANDLERS: --->
 		<cfset rc.xehSearchTag = "ehFeed.doSearchByTag">
 		<cfset rc.qryData = obj.getAllTags()>
@@ -99,7 +99,7 @@
 	<cffunction name="doAddFeed" access="public" returntype="void" output="false">
 		<cfset var obj = "">
 		<cftry>
-			<cfset obj = createObject("component","#getSetting("AppMapping")#.components.feed")>
+			<cfset obj = application.cbService.getdao("feed")>
 			<cfset obj.saveFeed(rc.feedID, rc.feedName, rc.feedURL, rc.FeedAuthor, rc.description, rc.imgURL, rc.siteURL, session.userID)>
 			<cfset getPlugin("messagebox").setMessage("info", "The feed: #rc.feedName# has been added successfully")>
 			<cfcatch type="any">
@@ -116,7 +116,7 @@
 		<cftry>
 
 			<cfif rc.tags neq "">
-				<cfset obj = createObject("component","#getSetting("AppMapping")#.components.tags")>
+				<cfset obj = application.cbService.getdao("tags")>
 				<cfset obj.addFeedTags(rc.feedID, rc.tags, session.userID)>
 			</cfif>
 
@@ -132,7 +132,7 @@
 		<cfset var obj = "">
 		<cfset var qryData = "">
 		<cftry>
-			<cfset obj = createObject("component","#getSetting("AppMapping")#.components.feed")>
+			<cfset obj = application.cbService.getdao("feed")>
 			<cfset qryData = obj.searchByTag(rc.tag)>
 			<cfset getPlugin("clientStorage").setVar("search_results", qryData)>
 			<cfset getPlugin("clientStorage").setVar("search_tag", rc.tag)>
@@ -152,7 +152,7 @@
 		<cfset var plClient = getPlugin("clientStorage")>
 		<cftry>
 			<cfset term = getValue("searchTerm")>
-			<cfset obj = createObject("component","#getSetting("AppMapping")#.components.feed")>
+			<cfset obj = application.cbService.getdao("feed")>
 			<cfset plClient.setVar("search_results", duplicate(obj.searchByTerm(rc.searchTerm)))>
 			<cfset plClient.setVar("search_tag", "")>
 			<cfset plClient.setVar("search_term", rc.searchTerm)>
@@ -192,7 +192,7 @@
 	</cffunction>
 	
 	<cffunction name="dspMyFeeds" access="public" returntype="void" output="false">
-		<cfset var obj = createObject("component","#getSetting("AppMapping")#.components.feed")>
+		<cfset var obj = application.cbService.getdao("feed")>
 		<!--- EXIT HANDLERS: --->
 		<cfset rc.xehViewFeed = "ehFeed.dspViewFeed">
 		<cfset rc.xehShowTags = "ehFeed.dspAllTags">

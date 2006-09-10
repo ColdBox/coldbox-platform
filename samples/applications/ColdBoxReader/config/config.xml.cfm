@@ -11,7 +11,7 @@
 		<Setting name="EnableColdboxLogging" 		value="true"/>
 		<Setting name="ColdboxLogsLocation" 		value="logs"/>
 		<Setting name="DefaultEvent" 				value="ehGeneral.dspStart"/>
-		<Setting name="ApplicationStartHandler"		value=""/>
+		<Setting name="ApplicationStartHandler"		value="ehGeneral.onAppStart"/>
 		<Setting name="RequestStartHandler" 		value="ehGeneral.onRequestStart"/>
 		<Setting name="RequestEndHandler" 			value=""/>
 		<Setting name="OwnerEmail" 					value="myemail@email.com"/>
