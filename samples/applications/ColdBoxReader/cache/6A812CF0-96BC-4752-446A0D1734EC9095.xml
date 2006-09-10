@@ -5,8 +5,8 @@
 			<link>http://ray.camdenfamily.com/index.cfm</link>
 			<description>A blog for ColdFusion, Java, and other topics.</description>
 			<language>en-us</language>
-			<pubDate>Mon, 19 Jun 2006 22:10:16 -0400</pubDate>
-			<lastBuildDate>Mon, 19 Jun 2006 21:18:00 -0400</lastBuildDate>
+			<pubDate>Sun, 10 Sep 2006 16:51:36 -0400</pubDate>
+			<lastBuildDate>Sat, 09 Sep 2006 11:28:00 -0400</lastBuildDate>
 			<generator>BlogCFC</generator>
 			<docs>http://blogs.law.harvard.edu/tech/rss</docs>
 			<managingEditor>ray@camdenfamily.com</managingEditor>
@@ -17,24 +17,83 @@
 			
 			
 			<item>
-				<title>Ask a Jedi: Bilingual Sites</title>
-				<link>http://ray.camdenfamily.com/index.cfm/2006/6/19/Ask-a-Jedi-Bilingual-Sites</link>
+				<title>Community track at MAX - MAXUP</title>
+				<link>http://ray.camdenfamily.com/index.cfm/2006/9/9/Community-track-at-MAX--MAXUP</link>
 				<description>
 				
-				A reader had a short and sweet question for me:
+				Ted Patrick as announced &lt;a href="http://www.onflex.org/ted/2006/09/maxup-community-track-at-max-2006.php"&gt;MAXUP&lt;/a&gt;, a community-driven track that will take place at MAX. This will take place over the entire conference and will be easy to get to at the community lounge, so please come check it out! (Schedule to come soon.)
+				
+				</description>
+				
+				<category>MAX</category>
+				
+				<pubDate>Sat, 09 Sep 2006 11:28:00 -0400</pubDate>
+				<guid>http://ray.camdenfamily.com/index.cfm/2006/9/9/Community-track-at-MAX--MAXUP</guid>
+				
+			</item>
+			
+		 	
+			
+			
+			<item>
+				<title>Dharma Revealed?</title>
+				<link>http://ray.camdenfamily.com/index.cfm/2006/9/8/Dharma-Revealed</link>
+				<description>
+				
+				YouTube has a video which reveals the secrets behind &lt;a href="http://www.youtube.com/watch?v=_PPCCcXarkc"&gt;Dharma&lt;/a&gt;. This can be considered a big spoiler, although to be honest, it doesn't actually answer &lt;i&gt;everything&lt;/i&gt;. Personally, I'm pretty psyched about what this video reveals, but I've been a Lost addict since day one anyway. I'm definitely not surprised by the revelation that Dharma had good intentions, especially after the "We're the good guys" comment at the end of season two.
+				
+				</description>
+				
+				<category>Lost</category>
+				
+				<pubDate>Fri, 08 Sep 2006 20:21:00 -0400</pubDate>
+				<guid>http://ray.camdenfamily.com/index.cfm/2006/9/8/Dharma-Revealed</guid>
+				
+			</item>
+			
+		 	
+			
+			
+			<item>
+				<title>Nimer's Log Viewer</title>
+				<link>http://ray.camdenfamily.com/index.cfm/2006/9/8/Nimers-Log-Viewer</link>
+				<description>
+				
+				This is old news but as I used it recently I wanted to remind folks. Mike Nimer has created a cool Eclipse plugin called the &lt;a href="http://www.mikenimer.com/eclipse/logviewer/index.cfm"&gt;CF Log Viewer&lt;/a&gt;. It lets you display a ColdFusion log directly in Eclipse. It isn't a straight text dump but a nicely formatted display.
 
-&lt;blockquote&gt;
-What is the best way to create a bilingual site...english and spanish?
-&lt;/blockquote&gt;
+What is &lt;i&gt;really&lt;/i&gt; nice about it is that it constantly monitors the file. This means you can use cflog commands and watch them show up in Eclipse as you hit your site. I used it to help me debug issues with XML-RPC support for &lt;a href="http://www.blogcfc.com"&gt;BlogCFC&lt;/a&gt;. 
 
-Like many short questions - this one is actually a quite huge topic. I'm going to answer it, but folks should be aware that I'm just scratching the surface of a more in-depth answer.
+I'd like to see him allow for removing columns so that you could focus in on the text and not the other messages. (But to be fair - Nimer provides the source so I could do it myself. In my spare time. Um, right. :)
+
+As a side note - you should read Charlie Arehart's new series on &lt;a href="http://carehart.org/blog/client/index.cfm/2006/9/6/fusiondebug_part1"&gt;FusionDebug&lt;/a&gt; as it can provide an even nicer way to debug.
+				
+				</description>
+				
+				<category>CFEclipse</category>
+				
+				<category>Development</category>
+				
+				<pubDate>Fri, 08 Sep 2006 09:48:00 -0400</pubDate>
+				<guid>http://ray.camdenfamily.com/index.cfm/2006/9/8/Nimers-Log-Viewer</guid>
+				
+			</item>
+			
+		 	
+			
+			
+			<item>
+				<title>Using ColdFusion's Asynchronous Gateway - 2</title>
+				<link>http://ray.camdenfamily.com/index.cfm/2006/9/7/Using-ColdFusions-Asynchronous-Gateway--2</link>
+				<description>
+				
+				Earlier today I &lt;a href="http://ray.camdenfamily.com/index.cfm/2006/9/7/Using-ColdFusions-Asynchronous-Gateway"&gt;blogged&lt;/a&gt; about ColdFusion's Asynchronous Gateway. I promised a more appropriate example to demonstrate the power of the gateway, and instead of watching the Steelers lose, I figured I'd write code instead.
 				 [More]
 				</description>
 				
 				<category>ColdFusion</category>
 				
-				<pubDate>Mon, 19 Jun 2006 21:18:00 -0400</pubDate>
-				<guid>http://ray.camdenfamily.com/index.cfm/2006/6/19/Ask-a-Jedi-Bilingual-Sites</guid>
+				<pubDate>Thu, 07 Sep 2006 22:07:00 -0400</pubDate>
+				<guid>http://ray.camdenfamily.com/index.cfm/2006/9/7/Using-ColdFusions-Asynchronous-Gateway--2</guid>
 				
 			</item>
 			
@@ -42,18 +101,46 @@ Like many short questions - this one is actually a quite huge topic. I'm going t
 			
 			
 			<item>
-				<title>Moving from SQL Server to MySQL</title>
-				<link>http://ray.camdenfamily.com/index.cfm/2006/6/17/Moving-from-SQL-Server-to-MySQL</link>
+				<title>Spry Error Callback Example</title>
+				<link>http://ray.camdenfamily.com/index.cfm/2006/9/7/Spry-Error-Callback-Example</link>
 				<description>
 				
-				This blog post is mostly for me so I don't forget, but here is an excellent tool for migrating from SQL Server to MySQL: &lt;a href="http://www.kofler.cc/mysql/mssql2mysql.html"&gt;MSSQL2MySQL&lt;/a&gt;.  The only drawback is that you need MS Office or VB installed to run the script. I still have MS Office on my desktop, but I don't use it anymore. I'm completely on OpenOffice now. (Except on the Mac - I'm still using Office there till OpenOffice for the Mac gets improved.)
+				Today's entry is from a guest blogger. Now before folks get all excited, I don't have a "real" concept of guest blogging here. Rather - he had a good problem with Spry and he shared his solution with me. He doesn't have a blog yet (hmm, someone should consider making a service so it is easy for folks to use BlogCFC w/o needing a real host, hmmm indeed) so I said I'd blog it for him. 
+
+Daniel Budde II (wraith) had this to share about error handling in Spry. I &lt;a href="http://ray.camdenfamily.com/index.cfm/2006/7/14/New-features-in-Spry"&gt;blogged&lt;/a&gt; about states in Spry before - and there is a simple way to create an error state for Spry, but what if you want a more controlled result for Spry?
+
+From Daniel:&lt;br/&gt;
+
+I made a post about it on the Adobe Spry forum.  It's not the clearest post, but I just thought I would give it to you to look at if you want.  I'm interested in the responses people will give.
+
+http://www.adobe.com/cfusion/webforums/forum/messageview.cfm?forumid=72&amp;catid=602&amp;threadid=1190912&amp;enterthread=y
+
+Ok, I had a problem with it in IE because IE's XMLHttpRequest object has a send() method that will throw an error if the status code from the web server is not "200".  When it throws the error it prevents the "synchronous" execution of the Spry.Utils.loadURL.callback method.  So, to get around this you need to use "asynchronous" mode which will rely on the "onreadystatechange" method and will then call the callback method which will in turn call a custom error handler if you have one set.
+
+Here is my example:
+
+&lt;code&gt;
+var optionsObj = new Object();
+
+optionsObj.errorCallback = ShowError;
+
+Spry.Utils.loadURL("GET", url, true, ValidateForm, optionsObj);
+&lt;/code&gt;
+ 
+There is a list of available options that you can set in the SpryData.js file and here those are:
+
+[ "method", "url", "async", "username", "password", "postData", "successCallback", "errorCallback", "headers", "userData", "xhRequest" ]
+
+Obviously some of those are used and setup no matter what (method, url, async). 
+
+Ray again: Just in case it wasn't clear, the ShowError variable is a function that is a called when the error occurs.
 				
 				</description>
 				
-				<category>Development</category>
+				<category>AJAX</category>
 				
-				<pubDate>Sat, 17 Jun 2006 09:36:00 -0400</pubDate>
-				<guid>http://ray.camdenfamily.com/index.cfm/2006/6/17/Moving-from-SQL-Server-to-MySQL</guid>
+				<pubDate>Thu, 07 Sep 2006 13:57:00 -0400</pubDate>
+				<guid>http://ray.camdenfamily.com/index.cfm/2006/9/7/Spry-Error-Callback-Example</guid>
 				
 			</item>
 			
@@ -61,30 +148,37 @@ Like many short questions - this one is actually a quite huge topic. I'm going t
 			
 			
 			<item>
-				<title>Mac and Mini Update</title>
-				<link>http://ray.camdenfamily.com/index.cfm/2006/6/16/Mac-and-Mini-Update</link>
+				<title>Using ColdFusion's Asynchronous Gateway</title>
+				<link>http://ray.camdenfamily.com/index.cfm/2006/9/7/Using-ColdFusions-Asynchronous-Gateway</link>
 				<description>
 				
-				I know - it sounds like some Disney show. Let me start with the icky stuff first so I can at least end on a happy note. If you remember, I've been fighting Mini Corp to try to get a refund on what I consider to be a lemon. While I was in Detroit I got a call back from Mini Corp. (In my last entry I believe I mentioned that they called me and were "investigating". My contact at Mini, who was very polite, said that they would absolutely not consider giving me a refund. In their mind, the repairs had been made and that was that.
-
-So - while I was in Detroit, my wife contacted a lawyer. They had some issues getting mail out, but supposedly I will be getting a packet of forms to fill out.
-
-On Monday, Brian Harris, the shop in Baton Rouge where I got the Mini, called to say the car was done. What is interesting is that earlier in the day, I got a form letter from Mini talking about how my car had a bad battery. The kind of form letter you normally get in recall type situations. So it &lt;i&gt;wasn't&lt;/i&gt; that I wasn't driving the car enough or "bad gas". The only problem is - they had already replaced the battery. That was done on the 3rd service trip. The trip where the car returned and worked for 24 hours before breaking down again.
-
-So now I'm just sick about it. I look at the car and my stomach just twists. If I could just sell it, I'd at least get some money back and get it out of my life, but I'm not sure how I feel selling it. On one hand, Mini says the car is fine. On the other hand, I feel like the car is cursed. 
-
-So - to kind of wrap this up on a good note. I convinced my wife to go Mac. I ordered her a Macbook today. I got the very low end white one since all she does is use Firefox and Thunderbird. I really feel sorry for her. Her old laptop was so bad that the battery wouldn't work, and she has to hold the plugin for the AC power to even flow into the machine. Oh - and she is missing a few keys as well. 
-
-I also ordered another gig of RAM. I absolutely love how well Parallels work, but it's a dog to start up, and I'm definitely using the Mac enough where 2 gigs makes sense. 
-
-Today was a bit intense for me blog wise. I don't think I've written this many posts in one day ever, but hey, I figure I'm a bit too quiet in real life, so I can be verbose here.
+				I got an email a while back from a user who was having issues with ColdFusion's Asynchronous Gateway code. It had been a while since I used it so I thought it might be nice to refresh my own memory, and provide a simple guide for users on how to work with it. I ran into a few issues that I bet have tricked up my own readers. (Hopefully we will see Damon Cooper's &lt;a href="http://www.dcooper.org/blog/client/index.cfm?mode=entry&amp;entry=916FEFD9-4E22-1671-57A23859C50FFF47"&gt;cfthread&lt;/a&gt; get rolled into the core product to make this a lot easier.) This guide will not cover everything you can do with the Asynch gateway, but it should be enough to get you going.
+				 [More]
+				</description>
+				
+				<category>ColdFusion</category>
+				
+				<pubDate>Thu, 07 Sep 2006 08:09:00 -0400</pubDate>
+				<guid>http://ray.camdenfamily.com/index.cfm/2006/9/7/Using-ColdFusions-Asynchronous-Gateway</guid>
+				
+			</item>
+			
+		 	
+			
+			
+			<item>
+				<title>Thanks for "Ship of Gold"</title>
+				<link>http://ray.camdenfamily.com/index.cfm/2006/9/7/Thanks-for-Ship-of-Gold</link>
+				<description>
+				
+				I got "Ship of Gold" from my wishlist last night, but with no indication of who got it - so thank you! I apologize for the lack of blogging here lately (or to be clear, ColdFusion blogging). Things have been more than a little bit hectic and my brain is having a hard time keeping up.
 				
 				</description>
 				
 				<category>Misc</category>
 				
-				<pubDate>Fri, 16 Jun 2006 23:51:00 -0400</pubDate>
-				<guid>http://ray.camdenfamily.com/index.cfm/2006/6/16/Mac-and-Mini-Update</guid>
+				<pubDate>Thu, 07 Sep 2006 06:00:00 -0400</pubDate>
+				<guid>http://ray.camdenfamily.com/index.cfm/2006/9/7/Thanks-for-Ship-of-Gold</guid>
 				
 			</item>
 			
@@ -92,98 +186,24 @@ Today was a bit intense for me blog wise. I don't think I've written this many p
 			
 			
 			<item>
-				<title>Yes, you can cock fight, but you can't play GTA</title>
-				<link>http://ray.camdenfamily.com/index.cfm/2006/6/16/Yes-you-can-cock-fight-but-you-cant-play-GTA</link>
+				<title>Where do I report a bug with an Adobe product?</title>
+				<link>http://ray.camdenfamily.com/index.cfm/2006/9/6/Where-do-I-report-a-bug-with-an-Adobe-product</link>
 				<description>
 				
-				I'm stunned. You can't ban cock fighting, but you can &lt;a href="http://www.gamasutra.com/php-bin/news_index.php?story=9745"&gt;block violent video games&lt;/a&gt;?
+				I talked about this a few months ago, but it came up again today in conversation so I thought I'd remind folks. As we all know, ColdFusion is perfect and has no bugs and is the best programming language on the planet. If, however, you do not agree with that and think you have a bug (inconceivable!), you can report a bug here:
 
-These guys should be ashamed.
-				
-				</description>
-				
-				<category>Politics</category>
-				
-				<pubDate>Fri, 16 Jun 2006 16:35:00 -0400</pubDate>
-				<guid>http://ray.camdenfamily.com/index.cfm/2006/6/16/Yes-you-can-cock-fight-but-you-cant-play-GTA</guid>
-				
-			</item>
-			
-		 	
-			
-			
-			<item>
-				<title>Lighthouse Pro 2.0.3</title>
-				<link>http://ray.camdenfamily.com/index.cfm/2006/6/16/Lighthouse-Pro-203</link>
-				<description>
-				
-				I've released an update to &lt;a href="http://ray.camdenfamily.com/projects/lhp"&gt;Lighthouse Pro&lt;/a&gt; today. There are two main changes in this application, both of which were suggested from Dan Sorensen.
+&lt;a href="http://www.adobe.com/go/wish"&gt;http://www.adobe.com/go/wish&lt;/a&gt;
 
-The first is the addition of announcements. Announcements are a simple way to tie things to a project like, due dates, or meeting reminders. So for example, you could add an announcement to a project reminding folks that the launch day is Saturday and the bugs need to be fixed. Thanks Dan for the idea!
-
-The second idea was a design change to the LHP home page. When you logon, you will see a little box that shows your current open bugs. This is a handy little report and makes the home page a lot more interesting now. This was all Dan's code, so thanks go to him.
-
-There are also a few other small fixes.
-
-I know that updates to my projects have slowed down a bit. That is because I am working on a new project that will take a few months to complete. I'm going to try to get small updates like this out every week though so my applications don't get too stale. As always, I'll remind folks of my &lt;a href="http://www.amazon.com/o/registry/2TCL1D08EZEYE"&gt;wish list&lt;/a&gt; (hey, the purchased items list is blank now! ;) since, well, I like to do that. 
-
-Enjoy!
+You can also use this link for other Adobe products, but it seems as if they only list the old Macromedia products. I didn't see Photoshop listed for example. You can also use this page to make requests as well. (ColdFusion needs more cow bell!)
 				
 				</description>
 				
 				<category>ColdFusion</category>
 				
-				<category>Lighthouse Pro CF Bugtracker</category>
+				<category>Adobe</category>
 				
-				<pubDate>Fri, 16 Jun 2006 13:55:00 -0400</pubDate>
-				<guid>http://ray.camdenfamily.com/index.cfm/2006/6/16/Lighthouse-Pro-203</guid>
-				
-			</item>
-			
-		 	
-			
-			
-			<item>
-				<title>Good article on computer languages and being practical</title>
-				<link>http://ray.camdenfamily.com/index.cfm/2006/6/16/Good-article-on-computer-languages-and-being-practical</link>
-				<description>
-				
-				I've never visited Nutrun before, but I absolutely loved this article: 
-
-&lt;blockquote&gt;
-&lt;a href="http://nutrun.com/weblog/three-lines-of-code/"&gt;Three lines of code&lt;/a&gt;
-&lt;/blockquote&gt;
-
-The article begins with a simple question and answer: How do you read a file in Java? Answer? Simple - just write a utility class!
-
-But the author then asks - why is something so simple and basic not a part of the language? From the article:
-
-&lt;blockquote&gt;
-So how much DRY was applied to a language that requires you to wrap its File I/O routines in a utility class after all these years?
-&lt;/blockquote&gt;
-
-and later...
-
-&lt;blockquote&gt;
-Or maybe someone out there was disappointed when Collections were introduced in Java? Who needs them, when you can implement LinkedList yourself?
-&lt;/blockquote&gt;
-
-Now I'm not reading this as a negative review of Java per se, but a point to the &lt;i&gt;practicality&lt;/i&gt; of language design. (Not that I pretend to be an expert!) At the 10 year anniversary party for ColdFusion, one of the creators said his intent was not to make a beautiful language, but a practical one, and I think that speaks volumes about what makes ColdFusion such a strong web development language. You can't use CF to go to the moon - or run a nuclear reactor. And that's fine. CF is absolutely wonderful and great for making web sites. Folks need to remember that when they get "attacked" by the .Net or Java folks arguing how much better their language is then ours. It's all about using what is best for the task at hand - and I have yet to see a language better for making dynamic web sites. 
-
-The absolute best line from this article:
-
-&lt;blockquote&gt;
-Trying to pinpoint what makes a language better than another is too abstract a subject for anyone to come up with any concrete suggestions anyway. However, the choice is highly dependent on the problem we?re trying to solve, and for a significant number of problems out there at the moment, there are better tools for the job than Java. And I do believe what makes a good mechanic is his judgement in terms of the choice of tools.
-&lt;/blockquote&gt;
-
-Amen. You can replace Java with any language, including ColdFusion. I'm sure most of my readers know this already, but I just wanted to share. Oh, and I had no idea what DRY was. Here is an article that talks a bit about it: &lt;a href="http://www.artima.com/intv/dry.html"&gt;http://www.artima.com/intv/dry.html&lt;/a&gt;.
-				
-				</description>
-				
-				<category>Development</category>
-				
-				<pubDate>Fri, 16 Jun 2006 10:40:00 -0400</pubDate>
-				<guid>http://ray.camdenfamily.com/index.cfm/2006/6/16/Good-article-on-computer-languages-and-being-practical</guid>
+				<pubDate>Wed, 06 Sep 2006 09:53:00 -0400</pubDate>
+				<guid>http://ray.camdenfamily.com/index.cfm/2006/9/6/Where-do-I-report-a-bug-with-an-Adobe-product</guid>
 				
 			</item>
 			
@@ -191,39 +211,28 @@ Amen. You can replace Java with any language, including ColdFusion. I'm sure mos
 			
 			
 			<item>
-				<title>Friday Puzzler: Finding a meeting time</title>
-				<link>http://ray.camdenfamily.com/index.cfm/2006/6/16/Friday-Puzzler-Finding-a-meeting-time</link>
+				<title>Next "virtual" user group meeting scheduled - Building a Security System</title>
+				<link>http://ray.camdenfamily.com/index.cfm/2006/9/5/Next-virtual-user-group-meeting-scheduled--Building-a-Security-System</link>
 				<description>
 				
-				Here is an interesting problem, and one I admit I'm not sure what the best answer is. You have two people who want to meet. However, both are quite busy and have a day full of meetings. Can you use ColdFusion to find a time where both are available? I've created a simple data set that contains a query of 4 rows. Person ID is the FK of the user. Name is the name. Start and End are the times of a meeting. Each row then is one meeting, or a busy time. Your solution needs to find a time where users 1 and 2 can meet up (on 6/16 obviously). Your solution should only search from 8AM to 6PM, and, potentially, handle a case where a meeting is impossible. 
+				My next presentation in what I am (tentatively) calling the ColdFusion Jedi User Group will be on September 27 at 6 PM Central. This is a class for beginners who know the basics of CFML, and are now looking to add basic security to your applications. So for example - you have a form to add, edit, and delete press releases for your site, but want the form to require an administrator username and password. I'll walk you through the basics of this starting from having nothing to having a simple logon system. 
 
+I'll then touch a bit on roles. By that I mean - what if you want some users to be able to add content, but not edit or delete? Or perhaps you don't want all your content writers publishing content. I'll show how you can create a basic authorization system such that only certain users have the ability to publish content.
 
-Here is some code that will generate the data for you. By the way - notice how I commit one of the cardinal sins of UDFs - accessing outside data from a UDF. Also notice how I don't care - it was a handy way to manipulate the core query quickly and easily. Anyway, here is the code:
+Anyway, this is the plan. Comments and suggestions are welcome. For the fun of it, I created this seal online a few days ago. Don't consider it anything "official" - it is just for fun.
 
-&lt;code&gt;
-&lt;cfscript&gt;
-function addEvent(personid, name, start, end) {
-	queryAddRow(data);
-	querySetCell(data, "personid", arguments.personid);
-	querySetCell(data, "name", arguments.name);
-	querySetCell(data, "start", arguments.start);
-	querySetCell(data, "end", arguments.end);
-}
-&lt;/cfscript&gt;
+&lt;p align="center"&gt;
+&lt;img src="http://ray.camdenfamily.com/images/seal.gif"&gt;
+&lt;/p&gt;
 
-&lt;cfset data = queryNew("personid,name,start,end")&gt;
-&lt;cfset addEvent(1, "Ray", "6/16/06 8:00 AM", "6/16/06 10:00 AM")&gt;
-&lt;cfset addEvent(1, "Ray", "6/16/06 2:00 PM", "6/16/06 4:00 PM")&gt;
-&lt;cfset addEvent(2, "Lynn", "6/16/06 8:00 AM", "6/16/06 9:00 AM")&gt;
-&lt;cfset addEvent(2, "Lynn", "6/16/06 10:00 AM", "6/16/06 12:00 PM")&gt;
-&lt;/code&gt;
+As always, you can find information about this meeting and all my other upcoming presentations on my &lt;a href="http://ray.camdenfamily.com/speakingengagements.cfm"&gt;Speaking Engagements&lt;/a&gt; page.
 				
 				</description>
 				
 				<category>ColdFusion</category>
 				
-				<pubDate>Fri, 16 Jun 2006 06:43:00 -0400</pubDate>
-				<guid>http://ray.camdenfamily.com/index.cfm/2006/6/16/Friday-Puzzler-Finding-a-meeting-time</guid>
+				<pubDate>Tue, 05 Sep 2006 10:42:00 -0400</pubDate>
+				<guid>http://ray.camdenfamily.com/index.cfm/2006/9/5/Next-virtual-user-group-meeting-scheduled--Building-a-Security-System</guid>
 				
 			</item>
 			
@@ -231,34 +240,31 @@ function addEvent(personid, name, start, end) {
 			
 			
 			<item>
-				<title>ColdFusion Security Checklist</title>
-				<link>http://ray.camdenfamily.com/index.cfm/2006/6/16/ColdFusion-Security-Checklist</link>
+				<title>Return Types in Application.cfc</title>
+				<link>http://ray.camdenfamily.com/index.cfm/2006/9/5/Return-Types-in-Applicationcfc</link>
 				<description>
 				
-				A few days ago I &lt;a href="http://ray.camdenfamily.com/index.cfm/2006/6/14/Top-10-PHP-Vulnerbalities"&gt;blogged&lt;/a&gt; about a list of PHP vulnerabilities and how they applied to ColdFusion users as well. With that in mind I've created a one page resource for ColdFusion users:
+				Peter sent in an interesting question this morning, especially as it relates to my &lt;a href="http://ray.camdenfamily.com/index.cfm/2006/9/1/Applicationcfc-Presentation-Files--Recording-URL--Next-Meeting"&gt;last presentation&lt;/a&gt;:
 
 &lt;blockquote&gt;
-&lt;a href="http://ray.camdenfamily.com/coldfusionsecuritychecklist.cfm"&gt;ColdFusion Security Checklist&lt;/a&gt;
+Just wanted to quickly check something about your &lt;a href="http://ray.camdenfamily.com/downloads/app.pdf"&gt;App.cfc reference&lt;/a&gt;:
+
+The onApplicationStart and onRequestStart functions have a returntype of Boolean, whilst the rest are all Void.
+
+Is there a reason for these two being different
+than the others, particularly the onSessionStart function? 
 &lt;/blockquote&gt;
 
-If you ever forget the URL, just check the Guides pod to the right. Let me be absolutely clear on this:
+The fact that you can return true or false in onApplicationStart and onRequestStart simply are ways to let you abort the application start up, or request, based on some condition. The example I believe I gave in my &lt;a href="http://ray.camdenfamily.com/index.cfm/2006/9/1/Applicationcfc-Presentation-Files--Recording-URL--Next-Meeting"&gt;presentation&lt;/a&gt; was doing a quick database check. If the check fails, then send some kind of message to the admin and prevent the application from starting up. You could do the same in onRequestStart, although it is probably overkill to check every request. What you could do instead is log the last time you checked (in the application scope for example), and check only if sixty minutes have passed. 
 
-Security is &lt;b&gt;not&lt;/b&gt; a task item.&lt;br&gt;
-Security is &lt;b&gt;not&lt;/b&gt; something you can tack on at the end.&lt;br&gt;
-Security is a way of life, a religion. You need to keep it in your head from the very first day a project starts until the end of the world.
-
-So please keep the above points in mind. I made this checklist as a simple high level reminder of things to keep in mind. I can imagine a manager sharing it with his or her employees. It is not meant to be a book. 
-
-The unfortunate thing is that even this simple list is ignored by far too many people. 
-
-I know that some people will disagree with some of the items on the list. I've already taken some feedback from folks, but it will never make everyone happy. At the end of the day, I hope the list provides some guideposts to at least a) steer you in the right direction and more importantly b) keep security in mind as you develop.
+Anyone out there using something like this in their Application.cfc files?
 				
 				</description>
 				
 				<category>ColdFusion</category>
 				
-				<pubDate>Fri, 16 Jun 2006 06:24:00 -0400</pubDate>
-				<guid>http://ray.camdenfamily.com/index.cfm/2006/6/16/ColdFusion-Security-Checklist</guid>
+				<pubDate>Tue, 05 Sep 2006 08:16:00 -0400</pubDate>
+				<guid>http://ray.camdenfamily.com/index.cfm/2006/9/5/Return-Types-in-Applicationcfc</guid>
 				
 			</item>
 			
@@ -266,167 +272,26 @@ I know that some people will disagree with some of the items on the list. I've a
 			
 			
 			<item>
-				<title>Ask a Jedi: Coding for Review</title>
-				<link>http://ray.camdenfamily.com/index.cfm/2006/6/15/Ask-a-Jedi-Coding-for-Review</link>
+				<title>Job titles and salary are a security issue?</title>
+				<link>http://ray.camdenfamily.com/index.cfm/2006/9/3/Job-titles-and-salary-are-a-security-issue</link>
 				<description>
 				
-				John asks:
+				My local paper ran a story today entitled, &lt;a href="http://www.acadiananow.com/apps/pbcs.dll/article?AID=/20060903/NEWS01/609030333/1002"&gt;They make what?&lt;/a&gt;. It covered what our public officials are getting paid. (Although to be fair, it should cover all the benefits they get.) Unfortunately, the most interesting article doesn't exist on the web site. Apparently the one local government agency that wouldn't respond to the FOI request was our airport.
 
-&lt;blockquote&gt;
-I am coding ColdFusion now for over 6 years within different teams. During that time I have found it quite difficult to find the right style of coding to make it easy to review.
+Get this.
 
-Is there general guideline?
+Apparently the job titles and salaries of the airport officials is a matter of national security. The paper was sent a list of names and job titles, but they were not connected. Salaries were not sent. The airport is checking with Homeland Security even though the law clearly states that they should have responded to the paper properly.
 
-Like calling a query qryQueryName or qry_QueryName or qry_queryName or queryName.
+What is sad is that the job title information is readily available on the &lt;a href="http://www.lftairport.com/"&gt;web site&lt;/a&gt;. 
 
-It is not about finding the perfect one, but a thought-out one I can relate to the team and this way make debugging easier.
-&lt;/blockquote&gt;
-
-This is one of those questions that illicit a great deal of responses, so be prepared to get a wealth of opinions. Let me describe my coding style in general.
-
-1) I use tabs instead of spaces. I hate spaces for tabs. Don't know why. I think because I use the keyboard a lot and clicking the right arrow on a tab will move faster than having to go over a set of spaces.
-
-2) I indent all code in conditionals, wrapped tags, etc. I have a few exceptions. I don't always indent the functions of a component. I feel like I should since cffunction is a child of cfcomponent, but at the same time, it seems silly to indent them when the cfcomponent tags make up 1% of the file usually. The main reason for indentation, in my opinion, is to help remember what code belongs to blocks of conditions, loops, etc. 
-
-3) I lower/camel case my code. So I'll do:
-
-&lt;code&gt;
-&lt;cfset x = htmlEditFormt(form.fooBar)&gt;
-&lt;/code&gt;
-
-In the old days I used to capitalize all of my code. I was stupid. I admit it.
-
-4) Variable Names: This was the main focus of your question. In the past I've done the format where the variable types are included in the name. This is called &lt;a href="http://en.wikipedia.org/wiki/Hungarian_notation"&gt;Hungarian notation&lt;/a&gt;. I don't typically do it. Every now and then I'll slip and name a query something like qPeople, but in general, I don't use it. At first it seems kind of cool, but I guess I always figured if I didn't know what the variable was doing, then maybe something was wrong with my development. If you follow the link above, you will see more criticisms of the notation and I tend to agree with them.
-
-I do believe in good variable names. So peopleList is better than pl. In fact, I'd probably say you should only use one character variables for iterators. (Again though, I've been known to cheat on this rule as well.)
-
-At the end of the day - nothing beats documentation. I've never regretted over-documenting. On the other side, I have regretted not writing enough documentation.
-				
-				</description>
-				
-				<category>ColdFusion</category>
-				
-				<pubDate>Thu, 15 Jun 2006 15:13:00 -0400</pubDate>
-				<guid>http://ray.camdenfamily.com/index.cfm/2006/6/15/Ask-a-Jedi-Coding-for-Review</guid>
-				
-			</item>
-			
-		 	
-			
-			
-			<item>
-				<title>Tip: Remove some, but not all, HTML</title>
-				<link>http://ray.camdenfamily.com/index.cfm/2006/6/15/Tip-Remove-some-but-not-all-HTML</link>
-				<description>
-				
-				A friend pinged me yesterday with a problem. His site allowed folks to post content with HTML, and while in general this worked fine, some users were posting content with Flash. He wanted to prevent this from being added to the content.
-
-Now - the brute force fix is to simply htmlEditFormat() the code, but that would remove all HTML, not just the unwanted tags.
-				 [More]
-				</description>
-				
-				<category>ColdFusion</category>
-				
-				<pubDate>Thu, 15 Jun 2006 09:06:00 -0400</pubDate>
-				<guid>http://ray.camdenfamily.com/index.cfm/2006/6/15/Tip-Remove-some-but-not-all-HTML</guid>
-				
-			</item>
-			
-		 	
-			
-			
-			<item>
-				<title>CanvasWiki Updated</title>
-				<link>http://ray.camdenfamily.com/index.cfm/2006/6/15/CanvasWiki-Updated</link>
-				<description>
-				
-				&lt;a href="http://www.thebitbucket.net/weblog/"&gt;Lucas Sherwood&lt;/a&gt; sent in a nice little modification for CanvasWiki, Google Sitemap support. I've added this and updated the build. You can download Canvas from the &lt;a href="http://ray.camdenfamily.com/projects/canvas"&gt;project page&lt;/a&gt;. 
-
-Also - over the last few days I've had a few people talk to me about Canvas. I believe I told all of them that the main feature I wanted to add was a simple notification system when someone adds/edits a page. Silly me - I forgot I had added that already. 
-
-And lastly, on a completely unrelated note - I had gone to download Picasa today for my Mac and was sad to see it wasn't supported on the Mac yet. I had forgotten that the Mac ships with iPhoto. What a nice little application. I love the fact that you can export a slide show to Quicktime or DVD. That's pretty darn handy. I was going to complain that it's too bad that the web option is only for iLife, but I double checked and saw an export to Web Page option. Every day I love this little laptop more and more. (Now if I could just get CFE's RDS or FTP editing working...)
-				
-				</description>
-				
-				<category>ColdFusion</category>
-				
-				<category>Canvas Wiki</category>
-				
-				<pubDate>Thu, 15 Jun 2006 06:58:00 -0400</pubDate>
-				<guid>http://ray.camdenfamily.com/index.cfm/2006/6/15/CanvasWiki-Updated</guid>
-				
-			</item>
-			
-		 	
-			
-			
-			<item>
-				<title>Model-Glue 2 Beta 1 Available</title>
-				<link>http://ray.camdenfamily.com/index.cfm/2006/6/14/ModelGlue-2-Beta-1-Available</link>
-				<description>
-				
-				The title says it all. You can now get the &lt;a href="http://www.model-glue.com/index.cfm?mode=entry&amp;entry=D5815F2A-3048-55C9-432B8F55F7D81A87"&gt;beta 1&lt;/a&gt; version of Model-Glue 2. I've been playing with it already and I'm very happy with that I see so far. I'm working on a very large project in my free time (did you notice the lack of updates to my released projects) and it is using Model-Glue 2. Along with new features, Joe finally wrote some good documentation. (I think he got tired of me complaining!)
-				
-				</description>
-				
-				<category>Model-Glue</category>
-				
-				<category>ColdFusion</category>
-				
-				<pubDate>Wed, 14 Jun 2006 21:48:00 -0400</pubDate>
-				<guid>http://ray.camdenfamily.com/index.cfm/2006/6/14/ModelGlue-2-Beta-1-Available</guid>
-				
-			</item>
-			
-		 	
-			
-			
-			<item>
-				<title>Top 10 PHP Vulnerbalities (and why ColdFusion developers need to care)</title>
-				<link>http://ray.camdenfamily.com/index.cfm/2006/6/14/Top-10-PHP-Vulnerbalities</link>
-				<description>
-				
-				I found an interesting article today via Digg:
-
-&lt;blockquote&gt;
-&lt;a href="http://www.sklar.com/page/article/owasp-top-ten"&gt;PHP and the OWASP Top Ten Security Vulnerabilities&lt;/a&gt;
-&lt;/blockquote&gt;
-
-So why am I writing about PHP on a ColdFusion blog? Check the link out. It is amazing how similar the issues are to things that I, and others, have tried to teach ColdFusion developers as well. I especially like their top tip, which has been my primary recommendation for years - Unvalidated Parameters. I know I've said this before, but validating input parameters is something that is a) easy and b) done far too less. Go to a few random web sites with parameters in the URL, change them, and see how quickly the site throws an error.
-				 [More]
-				</description>
-				
-				<category>ColdFusion</category>
-				
-				<pubDate>Wed, 14 Jun 2006 07:00:00 -0400</pubDate>
-				<guid>http://ray.camdenfamily.com/index.cfm/2006/6/14/Top-10-PHP-Vulnerbalities</guid>
-				
-			</item>
-			
-		 	
-			
-			
-			<item>
-				<title>Macbook Pro and Firefox tip</title>
-				<link>http://ray.camdenfamily.com/index.cfm/2006/6/13/Macbook-Pro-and-Firefox-tip</link>
-				<description>
-				
-				One thing that has been driving me crazy about this Mac (besides RDS not working) is the silly behavior of tabs in Firefox. Imagine a logon form. You click on the username field and enter your name. You hit tab and then enter the password. You hit tab again and... eh? Where did my cursor go? To the address bar. 
-
-I don't know &lt;i&gt;why&lt;/i&gt; Firefox does this, but I found a site with the answer:
-
-&lt;blockquote&gt;
-&lt;a href="http://sidesh0w.com/weblog/2004/09/01/tabindex_osx_firefox/"&gt;Proper tabindex in OSX Firefox&lt;/a&gt;
-&lt;/blockquote&gt;
-
-And if you are like me, you may not know where your Firefox preferences are stored. You can find it under the Library/Application Support/Firefox/profiles folder. Not the Library folder at /, but the Library folder under your own account.
+So - nothing too exciting here I guess. Just one more sign of the new world we live in.
 				
 				</description>
 				
 				<category>Misc</category>
 				
-				<pubDate>Tue, 13 Jun 2006 20:23:00 -0400</pubDate>
-				<guid>http://ray.camdenfamily.com/index.cfm/2006/6/13/Macbook-Pro-and-Firefox-tip</guid>
+				<pubDate>Sun, 03 Sep 2006 18:16:00 -0400</pubDate>
+				<guid>http://ray.camdenfamily.com/index.cfm/2006/9/3/Job-titles-and-salary-are-a-security-issue</guid>
 				
 			</item>
 			
@@ -434,18 +299,128 @@ And if you are like me, you may not know where your Firefox preferences are stor
 			
 			
 			<item>
-				<title>ColdFusion Cookbook hits 100!</title>
-				<link>http://ray.camdenfamily.com/index.cfm/2006/6/13/ColdFusion-Cookbook-hits-100</link>
+				<title>Mini Cooper is the only car not covered by lemon law (and other fun facts)</title>
+				<link>http://ray.camdenfamily.com/index.cfm/2006/9/2/Mini-Cooper-is-the-only-car-not-covered-by-lemon-law-and-other-fun-facts</link>
 				<description>
 				
-				I am &lt;b&gt;very&lt;/b&gt; happy to announce that the &lt;a href="http://www.coldfusioncookbook.com"&gt;ColdFusion Cookbook&lt;/a&gt; has hit 100 entries! While I built the site, about 90 of those 100 entries were published by &lt;a href="http://www.petersenfam.com/jeremy/"&gt;Jeremy Petersen&lt;/a&gt;. The PDF is now almost the size of a "real" book, and I think that is something to be proud of.
+				Ok, I swear I'm not going to turn this into a Mini Cooper rant blog, but I had some interesting discoveries on Friday I wanted to share. First off: My wife and I had decided we weren't really interested in going to court. It seemed like a lot of trouble. But the lawyer called us on Friday and really wants to work with us.
+
+Then my wife did a bit of research. Now - it is not surprising that she found folks complaining about Mini Cooper. You can find people complaining about &lt;i&gt;anything&lt;/i&gt; on the Internet. However, some of what she found was pretty interesting. Consider...
+
+&lt;a href="http://www.chenelle.com/2005/03/18/mini-trouble/"&gt;http://www.chenelle.com/2005/03/18/mini-trouble/&lt;/a&gt;
+
+From this entry: "Performance issues - idling too low, jerking motion when shifting gears automatic mode, loss of power and then jumping forward from a stopped position to go"
+
+This is exactly something my Mini did. She also mentions indicator lights - we had that issue with our trunk. (Which by the way Brian Harris said was our fault for slamming the trunk.) 
+
+&lt;a href="http://www.consumeraffairs.com/automotive/mini.html"&gt;http://www.consumeraffairs.com/automotive/mini.html&lt;/a&gt;
+
+From this entry - note how they accused one person of driving into a swamp (in NYC). My favorite quote from here though: "The Operations Manager first stated BMWs weren't subject to lemon laws!" Another quote:
+
+&lt;blockquote&gt;
+I only slightly under 30,000 miles on my 2003 Mini-Cooper and was told I had to pay for a battery replacement because I had not driven the car enough. Even though I drive my car daily to work - I have to pay over $200 for a new battery because I did not use the car enough - this is so ridiculous. Talked to several Mini representative and all say the same - Mini Policy and yet it is not in the Policy Book provided upon purchase.
+&lt;/blockquote&gt;
+
+This is also what Brian Harris told us multiple times - that we didn't drive the car enough. Gee - what is it? Not driving the car enough or driving into swamps?
+
+My wife had Brian Harris send over our service history via fax, and it is amazing how much of the history is a list of things &lt;b&gt;we&lt;/b&gt; did wrong. Not driving it enough. Slamming the trunk. Using "bad gas".
+
+You know what - screw this. We will fight.
+				
+				</description>
+				
+				<category>Misc</category>
+				
+				<pubDate>Sat, 02 Sep 2006 09:34:00 -0400</pubDate>
+				<guid>http://ray.camdenfamily.com/index.cfm/2006/9/2/Mini-Cooper-is-the-only-car-not-covered-by-lemon-law-and-other-fun-facts</guid>
+				
+			</item>
+			
+		 	
+			
+			
+			<item>
+				<title>ColdFusion Quick Reference Sheet</title>
+				<link>http://ray.camdenfamily.com/index.cfm/2006/9/1/ColdFusion-Quick-Reference-Sheet</link>
+				<description>
+				
+				The guys over at &lt;a href="http://www.dreamincode.net/"&gt;Dream.In.Code&lt;/a&gt; have created a nice &lt;a href="http://forums.dreamincode.net/showtopic18275.htm"&gt;ColdFusion  Quick Reference Sheet&lt;/a&gt;. Check it out!
 				
 				</description>
 				
 				<category>ColdFusion</category>
 				
-				<pubDate>Tue, 13 Jun 2006 12:43:00 -0400</pubDate>
-				<guid>http://ray.camdenfamily.com/index.cfm/2006/6/13/ColdFusion-Cookbook-hits-100</guid>
+				<pubDate>Fri, 01 Sep 2006 15:49:00 -0400</pubDate>
+				<guid>http://ray.camdenfamily.com/index.cfm/2006/9/1/ColdFusion-Quick-Reference-Sheet</guid>
+				
+			</item>
+			
+		 	
+			
+			
+			<item>
+				<title>Application.cfc Presentation Files + Recording URL + Next Meeting</title>
+				<link>http://ray.camdenfamily.com/index.cfm/2006/9/1/Applicationcfc-Presentation-Files--Recording-URL--Next-Meeting</link>
+				<description>
+				
+				Sorry for the delay on this folks, but here is the URL for my Application.cfc presentation. I was delayed as I was waiting to see if this was the &lt;b&gt;official&lt;/b&gt; URL. There is a chance this URL may change though. 
+
+&lt;a href="http://adobechats.adobe.breezecentral.com/p73045503/"&gt;http://adobechats.adobe.breezecentral.com/p73045503/&lt;/a&gt;
+
+For the files, please use the download link below.
+
+I am tentatively scheduling a meeting for the end of this month, the last Wednesday. I can cover one of two topics. Please let me know what you think - and whatever I don't cover in September will be covered later.
+
+1) How to add security to a web site. This is a class for beginners and covers the basic, "How in the heck do I start" type situation. It will cover creating a username/password table and how to add a simple logon form. I will talk about basic authentication and if we have time, authorization for more advanced security needs.
+
+2) Custom Tags: What are they, and are they planning to attack! You get the idea.
+
+Lastly - someone give me a good name for this group.
+				
+				</description>
+				
+				<category>ColdFusion</category>
+				
+				<pubDate>Fri, 01 Sep 2006 10:45:00 -0400</pubDate>
+				<guid>http://ray.camdenfamily.com/index.cfm/2006/9/1/Applicationcfc-Presentation-Files--Recording-URL--Next-Meeting</guid>
+				
+				<enclosure length="553603" type="application/x-zip-compressed" url="http://ray.camdenfamily.com/enclosures/appcfc.zip"/>
+				
+			</item>
+			
+		 	
+			
+			
+			<item>
+				<title>Ask a Jedi: Getting a job and code samples</title>
+				<link>http://ray.camdenfamily.com/index.cfm/2006/9/1/Ask-a-Jedi-Getting-a-job-and-code-samples</link>
+				<description>
+				
+				George sent me this a few weeks ago:
+
+&lt;blockquote&gt;
+I'm currently looking for a new ColdFusion job in London and a lot of the companies I apply to ask for some form of example code I've written. The only CF apps I've worked on are behind firewalls on internal networks run by companys
+using apps I've worked on, so I'm looking to get something together that I can just throw at a company (or deply on a website and give them the URL) whenever I'm asked for it.
+
+One thing I've supplied to a couple of companies is something I knocked up a while ago while I was experimenting with a couple of techniques. It's a SAX XML parser for CF and uses a lot of cool stuff - calling Java from
+CF, calling methods in a CFC from Java, duck-typing, mixins, adding variables to CFCs at runtime, yadda yadda. However, there's very little front-end required for a SAX parser so I can't show much HTML/CSS/JS.
+
+If you have a few minutes, I'd be interested to know what sort of things you'd like to see in code provided
+by a candidate for a ColdFusion job you're hiring for.
+&lt;/blockquote&gt;
+
+It is interesting because what you provided is exactly what I'd look for. You seem to be very passionate about your project, and you pointed out what is interesting about it. That is, in my mind, exactly what I'd want in a code sample. It also relates to the types of questions I like to ask candidates: What was the coolest piece of code you have written? What was the most difficult piece of code you have written? 
+
+How you answer this can tell me how much passion you have for your code and also talk about how you solve problems. That is typically what interests me the most. I don't expect a coder to have memorized every function (go ahead, quiz me, I can't seme to ever remember what comes first in the find function). I do expect a coder to know how to look in the docs and where to go to for help. I also want to know how you debug and test your code as well.
+
+Being able to talk about your code is a must since, unlike those fancy Flash developers, your end results will never be as sexy as an animation. Unfortunately - you will have to actually show something to people, so I think it is a good idea what you are doing (building the example site).
+				
+				</description>
+				
+				<category>ColdFusion</category>
+				
+				<pubDate>Fri, 01 Sep 2006 10:23:00 -0400</pubDate>
+				<guid>http://ray.camdenfamily.com/index.cfm/2006/9/1/Ask-a-Jedi-Getting-a-job-and-code-samples</guid>
 				
 			</item>
 			
