@@ -103,6 +103,14 @@
 		  <a href="applications/udf_library_usage/index.cfm" target="_blank">#getresource("opensample")#</a><br />
 		</p>
 		
+		<h3>i18N Sample Gallery</h3>
+		<p> #getresource("by")# Paul Hastings & Luis Majano
+		  <br />
+		  #getresource("nosetup")# <br />
+		  <a href="applications/i18NSample/index.cfm" target="_blank">#getresource("opensample")#</a><br />
+		</p>
+		
+		
 		</div>
 		
 		<h2>ColdBox #getResource("LogFile")#:</h2>
