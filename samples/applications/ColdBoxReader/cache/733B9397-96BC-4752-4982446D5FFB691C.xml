@@ -5,8 +5,8 @@
 			<link>http://www.remotesynthesis.com/blog/index.cfm</link>
 			<description>Development using ColdFusion, Flash, SQL and more</description>
 			<language>en-us</language>
-			<pubDate>Fri, 01 Sep 2006 17:08:36 -0400</pubDate>
-			<lastBuildDate>Wed, 30 Aug 2006 20:41:00 -0400</lastBuildDate>
+			<pubDate>Mon, 11 Sep 2006 08:53:12 -0400</pubDate>
+			<lastBuildDate>Sun, 10 Sep 2006 10:39:00 -0400</lastBuildDate>
 			<generator>BlogCFC</generator>
 			<docs>http://blogs.law.harvard.edu/tech/rss</docs>
 			<managingEditor>brinaldi@remotesynthesis.com</managingEditor>
@@ -14,6 +14,79 @@
 			
 			
 			
+			
+			
+			<item>
+				<title>More Code Generator Updates - Oracle Support</title>
+				<link>http://www.remotesynthesis.com/blog/index.cfm/2006/9/10/Code-Generator-Updates--Oracle-Support</link>
+				<description>
+				
+				I have just committed new changes to the Illudium PU-36 Code Generator that add Oracle support. As I know nothing about Oracle, this code was generously donated by Beth Bowden, so I want to send her a special thank you.
+
+She also made some suggestions for the generated code, one of which I have already implemented as it will improve Oracle and MySQL support. I do need people who are interested in utlizing the Oracle support to let me know the outcome of their testing.
+
+Lastly, if you are using the code generator and have made your own custom methods or modified the prebuilt generated code, feel free to contribute those for possible inclusion in future updates. I would love to see the project contain alternate component code for users to choose as the point of this was in large part to make it extremely easy to customize.
+
+The project can be found (and downloaded via Subversion) at http://code.google.com/p/cfcgenerator/.
+				
+				</description>
+				
+				<category>Open-Source CF</category>
+				
+				<category>ColdFusion</category>
+				
+				<category>Code Generator</category>
+				
+				<pubDate>Sun, 10 Sep 2006 10:39:00 -0400</pubDate>
+				<guid>http://www.remotesynthesis.com/blog/index.cfm/2006/9/10/Code-Generator-Updates--Oracle-Support</guid>
+				
+			</item>
+			
+		 	
+			
+			
+			<item>
+				<title>Code Generator Updates</title>
+				<link>http://www.remotesynthesis.com/blog/index.cfm/2006/9/8/Code-Generator-Updates</link>
+				<description>
+				
+				I have updated the Illudium PU-36 Code Generator ("Where's the Kaboom? There should have been an earth shattering kaboom."). There are a number of bug fixes that have been added in the since I launched it. The major change in the recent update is that the mssql queries have been totally rewritten to *hopefully* fix incompatibility issues with changes in MS SQL Server 2005. I do not actually have 2005, so I am hoping for testers in the community to assist. You can download the latest version via Subversion by browsing the product page at http://code.google.com/p/cfcgenerator/. If everything is ok, maybe we can call this version 0.5. I am hoping to overhaul the UI as a next step. Also, if anyone would like to add database support outside of the included MySQL and MS SQL, please contact me. It really isn't very difficult, but I don't have experience outside of the included dbs.
+				
+				</description>
+				
+				<category>ColdFusion</category>
+				
+				<category>Open-Source CF</category>
+				
+				<category>Code Generator</category>
+				
+				<pubDate>Fri, 08 Sep 2006 14:38:00 -0400</pubDate>
+				<guid>http://www.remotesynthesis.com/blog/index.cfm/2006/9/8/Code-Generator-Updates</guid>
+				
+			</item>
+			
+		 	
+			
+			
+			<item>
+				<title>ColdFusion Open-Source Update - September 4</title>
+				<link>http://www.remotesynthesis.com/blog/index.cfm/2006/9/4/ColdFusion-OpenSource-Update--September-4</link>
+				<description>
+				
+				Quite a bit of discussion this week regarding projects like Transfer and Mach ii, however not a lot of updates this week (and no new projects...for the first time in a while I think).
+				 [More]
+				</description>
+				
+				<category>ColdFusion</category>
+				
+				<category>Open-Source CF</category>
+				
+				<pubDate>Mon, 04 Sep 2006 20:45:00 -0400</pubDate>
+				<guid>http://www.remotesynthesis.com/blog/index.cfm/2006/9/4/ColdFusion-OpenSource-Update--September-4</guid>
+				
+			</item>
+			
+		 	
 			
 			
 			<item>
@@ -302,73 +375,6 @@ I would say that I have no idea if there are any negative performance consequenc
 				
 				<pubDate>Wed, 02 Aug 2006 12:27:00 -0400</pubDate>
 				<guid>http://www.remotesynthesis.com/blog/index.cfm/2006/8/2/Avoiding-eval-and-iif</guid>
-				
-			</item>
-			
-		 	
-			
-			
-			<item>
-				<title>ColdFusion Open-Source Update - July 31</title>
-				<link>http://www.remotesynthesis.com/blog/index.cfm/2006/7/31/ColdFusion-OpenSource-Update--July-31</link>
-				<description>
-				
-				A lot of framework activity this week, including the release of Fusebox 5. Mach-II, Model-Glue and ColdBox each offer us some updated information on their upcoming releases. Also, Andrea Veggiani released a new beta of AVBlog that includes a number of interesting new features that are worth checking out.
-				 [More]
-				</description>
-				
-				<category>Open-Source CF</category>
-				
-				<category>ColdFusion</category>
-				
-				<pubDate>Mon, 31 Jul 2006 14:43:00 -0400</pubDate>
-				<guid>http://www.remotesynthesis.com/blog/index.cfm/2006/7/31/ColdFusion-OpenSource-Update--July-31</guid>
-				
-			</item>
-			
-		 	
-			
-			
-			<item>
-				<title>Aptana Eclipse-Based Web IDE</title>
-				<link>http://www.remotesynthesis.com/blog/index.cfm/2006/7/31/Aptana-EclipseBased-Web-IDE</link>
-				<description>
-				
-				You may have heard about this on the latest ColdFusion Weekly Podcast (I actually found this on dzone), but Aptana is a new IDE based on Eclipse that offers code assist on JavaScript, HTML, and CSS. The CSS code assist alone is huge to me since I have not found a decent CSS editor for Eclipse up to now. The code assist will even let you know the compatibility (Firefox/IE) of the attribute. I am just beginning to test this out, but for the moment it seems like an excellent compliment to CFEclipse.
-				
-				</description>
-				
-				<category>CFEclipse</category>
-				
-				<category>CSS</category>
-				
-				<category>General</category>
-				
-				<category>JavaScript</category>
-				
-				<pubDate>Mon, 31 Jul 2006 12:24:00 -0400</pubDate>
-				<guid>http://www.remotesynthesis.com/blog/index.cfm/2006/7/31/Aptana-EclipseBased-Web-IDE</guid>
-				
-			</item>
-			
-		 	
-			
-			
-			<item>
-				<title>New Google Code Hosting</title>
-				<link>http://www.remotesynthesis.com/blog/index.cfm/2006/7/27/New-Google-Code-Hosting</link>
-				<description>
-				
-				Caught this on Digg, but Google has launched a code hosting project. It includes a project workspace, version cotrol via Subversion, issue tracking and mailing lists. It is also open to any open-source project. Currently there are only two ColdFusion projects listed there - CFWheels and GoogleCheckoutCFC - but worth keeping tabs on.
-				
-				</description>
-				
-				<category>ColdFusion</category>
-				
-				<category>Open-Source CF</category>
-				
-				<pubDate>Thu, 27 Jul 2006 20:20:00 -0400</pubDate>
-				<guid>http://www.remotesynthesis.com/blog/index.cfm/2006/7/27/New-Google-Code-Hosting</guid>
 				
 			</item>
 			
