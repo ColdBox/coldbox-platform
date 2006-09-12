@@ -23,6 +23,7 @@
 	<div id="navigation">
 		<ul>
 		<li class="selected"><a href="#cgi.SCRIPT_NAME#">#getResource("sampleshome")#</a></li>
+		<li><a href="http://www.homeportals.net"  target="_blank">Home Portals (Oscar Arevalo)</a></li>
 		<li><a href="http://www.camdenfamily.com/morpheus/blog/"  target="_blank">Ray Camden's Blog</a></li>
 		<li><a href="http://www.remotesynthesis.com/blog/" target="_blank">Open Source</a></li>
 		</ul>
