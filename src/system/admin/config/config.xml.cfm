@@ -1,17 +1,20 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <Config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
- xsi:noNamespaceSchemaLocation="http://www.luismajano.com/projects/coldbox/schema/config.xsd">
+ xsi:noNamespaceSchemaLocation="http://www.luismajano.com/projects/coldbox/schema/config_1.1.0.xsd">
 	<Settings>
 		<Setting name="AppName" 					value="ColdboxDashboard"/>
 		<Setting name="AppMapping" 					value="coldbox/system/admin"/>
 		<Setting name="DebugMode"					value="false"/>
 		<Setting name="EnableDumpVar" 				value="true"/>
-		<Setting name="EnableColdfusionLogging" 	value="true"/>
+		<Setting name="EnableColdfusionLogging" 	value="false"/>
+		<Setting name="EnableColdboxLogging" 		value="true"/>
+		<Setting name="ColdboxLogsLocation" 		value="logs"/>
 		<Setting name="DefaultEvent" 				value="ehColdbox.dspLogin"/>
 		<Setting name="RequestStartHandler" 		value="ehColdbox.onRequestStart"/>
 		<Setting name="RequestEndHandler" 			value=""/>
-		<Setting name="OwnerEmail" 					value="lmajano@gmail.com"/>
-		<Setting name="EnableBugReports" 			value="true"/>
+		<Setting name="ApplicationStartHandler" 	value="ehColdbox.onAppStart"/>
+		<Setting name="OwnerEmail" 					value="myemail@email.com"/>
+		<Setting name="EnableBugReports" 			value="false"/>
 		<Setting name="UDFLibraryFile" 				value="" />		
 		<Setting name="CustomErrorTemplate"			value="" />
 		<Setting name="MessageboxStyleClass"	    value="" />
@@ -21,7 +24,7 @@
 	</Settings>
 	
 	<YourSettings>
-		<Setting name="BackupsPath"			value="backups" />
+		<Setting name="BackupsPath"				value="backups" />
 		<Setting name="UpdateTempDir"			value="../../_tempinstall" />
 		<Setting name="InstallerDir"			value="installer" />
 	</YourSettings>

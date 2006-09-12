@@ -5,20 +5,23 @@ Update Date		:	June 19, 2006
 Description		:
 
 This is the main event handler for the ColdBox dashboard.
-This is not a typical event handler since it does not extend the eventhandler.cfc
-On the other hand, it just uses the controller methods directly.  This is done
-because the dashboard lives inside of ColdBox.
 
 --->
 <cfcomponent name="ehColdBox" extends="coldbox.system.eventhandler">
 
 	<!--- ************************************************************* --->
-	<cffunction name="init" access="public" returntype="any">
+	<cffunction name="init" access="public" returntype="any" output="false">
 		<cfset super.Init()>
 		<cfreturn this>
 	</cffunction>
 	<!--- ************************************************************* --->
 
+	<!--- ************************************************************* --->
+	<cffunction name="onAppStart" access="public" returntype="void">
+
+	</cffunction>
+	<!--- ************************************************************* --->
+	
 	<!--- ************************************************************* --->
 	<cffunction name="onRequestStart" access="public" returntype="void">
 		<!--- Authorization --->
