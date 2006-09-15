@@ -9,7 +9,7 @@
 	
 	
 	<cfif ImgURL neq "">
-	<div style="margin-bottom: 10px"><img src="#ImgURL#"></div>
+	<div style="margin-bottom: 10px"><img src="#ImgURL#" width="150"></div>
 	</cfif>
 	
 	<b>Added On:</b><br />
