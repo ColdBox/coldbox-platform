@@ -5,8 +5,8 @@
 			<link>http://www.remotesynthesis.com/blog/index.cfm</link>
 			<description>Development using ColdFusion, Flash, SQL and more</description>
 			<language>en-us</language>
-			<pubDate>Mon, 11 Sep 2006 08:53:12 -0400</pubDate>
-			<lastBuildDate>Sun, 10 Sep 2006 10:39:00 -0400</lastBuildDate>
+			<pubDate>Fri, 15 Sep 2006 12:57:54 -0400</pubDate>
+			<lastBuildDate>Wed, 13 Sep 2006 15:24:00 -0400</lastBuildDate>
 			<generator>BlogCFC</generator>
 			<docs>http://blogs.law.harvard.edu/tech/rss</docs>
 			<managingEditor>brinaldi@remotesynthesis.com</managingEditor>
@@ -14,6 +14,104 @@
 			
 			
 			
+			
+			
+			<item>
+				<title>Music for Your Work Week - Kish Mauve</title>
+				<link>http://www.remotesynthesis.com/blog/index.cfm/2006/9/13/Music-for-Your-Work-Week--Kish-Mauve</link>
+				<description>
+				
+				In a comment to my last post, Matt Williams asked what happened to the "Music for Your Work Week" series of posts. Well, the answer is that I had been planning on it for a long time and it isn't for lack of good music. In fact, I am now a member of emusic and have been downloading stuff like crazy. Anyway, at first the break had to do with a lack of other technical posts and suddenly my blog was looking like a music blog...nonetheless, I am hereby bringing it back from extended hiatus and promise to post on a semi-weekly basis :)
+
+Moving on, my pick for this week is a band called Kish Mauve. Their Kish Mauve and Modern Love EPs are available on both iTunes and emusic. They continue my fascination with retro-sounding electronica ("Retro-Electro-Rocktronica" was what I previosuly deemed it). I am particularly fond of "Come On" off of the Kish Mauve EP and "I'm in Love with a German Film Star" from Modern Love, but seeing as both EPs combine to a total of 5 songs, its worth the investment to get them all. Here's hoping a full-length album is on the way. And thanks Matt for kicking me in the butt and getting these posts started again.
+				
+				</description>
+				
+				<category>Music</category>
+				
+				<pubDate>Wed, 13 Sep 2006 15:24:00 -0400</pubDate>
+				<guid>http://www.remotesynthesis.com/blog/index.cfm/2006/9/13/Music-for-Your-Work-Week--Kish-Mauve</guid>
+				
+			</item>
+			
+		 	
+			
+			
+			<item>
+				<title>Subversion 1.4 Released</title>
+				<link>http://www.remotesynthesis.com/blog/index.cfm/2006/9/12/Subversion-14-Released</link>
+				<description>
+				
+				Caught this on Digg. Subversion version 1.4 was released some time yesterday. The changes listed in the release notes are:
+
+
+*  svnsync, a new repository mirroring tool
+* Huge working-copy performance improvements
+* Support for BerkeleyDB 4.4 and its "auto recovery" feature
+* Size improvements to the binary delta algorithm
+* A handful of new command switches
+* Many improved APIs
+* More than 40 new bugfixes
+
+
+I was going to upgrade my installation at work, but I am running on running svn on Windows and didn't see a 1.4 installer for Windows yet (Windows versions can be found here). They do have a binaries zip, but I need to "-setup" installer for idiots :)
+				
+				</description>
+				
+				<category>Subversion</category>
+				
+				<category>General</category>
+				
+				<pubDate>Tue, 12 Sep 2006 08:13:00 -0400</pubDate>
+				<guid>http://www.remotesynthesis.com/blog/index.cfm/2006/9/12/Subversion-14-Released</guid>
+				
+			</item>
+			
+		 	
+			
+			
+			<item>
+				<title>ColdFusion Open-Source Update - September 11</title>
+				<link>http://www.remotesynthesis.com/blog/index.cfm/2006/9/11/ColdFusion-OpenSource-Update--September-11</link>
+				<description>
+				
+				The past week was a busy one in ColdFusion open-source. Three new projects were released, including two from Joe Danziger and one from Jeff Houser, as well as a number of important updates to exisitng projects and presentations.
+				 [More]
+				</description>
+				
+				<category>Open-Source CF</category>
+				
+				<category>ColdFusion</category>
+				
+				<pubDate>Mon, 11 Sep 2006 16:05:00 -0400</pubDate>
+				<guid>http://www.remotesynthesis.com/blog/index.cfm/2006/9/11/ColdFusion-OpenSource-Update--September-11</guid>
+				
+			</item>
+			
+		 	
+			
+			
+			<item>
+				<title>Using Lyla CAPTCHA Without CFContent</title>
+				<link>http://www.remotesynthesis.com/blog/index.cfm/2006/9/11/Using-Lyla-CAPTCHA-Without-CFContent</link>
+				<description>
+				
+				Robert Froehling wrote to Peter Farrell and me the other day offering a solution he had developed to incorporating Peter's open-source Lyla CAPTCHA on a host that prevents the use of cfcontent. Robert was using my original post about incorporating Lyla into BlogCFC. However, I have updated the more general example that I used for my CFDJ article using the code he provided and attached it to this post (it should be noted that he credits posts from Christian Cantrell and Mark Kruger for helping him solve this problem).
+				 [More]
+				</description>
+				
+				<category>Open-Source CF</category>
+				
+				<category>ColdFusion</category>
+				
+				<pubDate>Mon, 11 Sep 2006 11:35:00 -0400</pubDate>
+				<guid>http://www.remotesynthesis.com/blog/index.cfm/2006/9/11/Using-Lyla-CAPTCHA-Without-CFContent</guid>
+				
+				<enclosure length="54026" type="application/x-zip-compressed" url="http://www.remotesynthesis.com/blog/enclosures/captcha1.zip"/>
+				
+			</item>
+			
+		 	
 			
 			
 			<item>
@@ -265,116 +363,6 @@ Subclipse is a plugin for the Eclipse IDE that allows you to interact with your 
 				
 				<pubDate>Thu, 10 Aug 2006 10:28:00 -0400</pubDate>
 				<guid>http://www.remotesynthesis.com/blog/index.cfm/2006/8/10/Getting-Started-with-Subclipse</guid>
-				
-			</item>
-			
-		 	
-			
-			
-			<item>
-				<title>Objects and Frameworks - The Right Framework</title>
-				<link>http://www.remotesynthesis.com/blog/index.cfm/2006/8/9/Objects-and-Frameworks--The-Right-Framework</link>
-				<description>
-				
-				Inevitably when discussing getting started with frameworks, the question comes up, "Which framework should I choose?" Well, let's answer that.
-
-You see, many years ago 4 frameworks were created and given to the gurus of ColdFusion OO. Then forged in the depths of Mordor was created the one framework to rule them all; one framework that could unleash the full power of ColdFusion. That framework was called...
-				 [More]
-				</description>
-				
-				<category>Open-Source CF</category>
-				
-				<category>ColdFusion</category>
-				
-				<pubDate>Wed, 09 Aug 2006 21:24:00 -0400</pubDate>
-				<guid>http://www.remotesynthesis.com/blog/index.cfm/2006/8/9/Objects-and-Frameworks--The-Right-Framework</guid>
-				
-			</item>
-			
-		 	
-			
-			
-			<item>
-				<title>ColdFusion Open-Source Update - August 7</title>
-				<link>http://www.remotesynthesis.com/blog/index.cfm/2006/8/7/ColdFusion-OpenSource-Update--August-7</link>
-				<description>
-				
-				Definitely not the usual suspects this week. We actually have a handful of new projects to discuss (including my own) and some general updates. Honestly, with all the releases happening lately, I am strongly in need of revamping the list - with 118 projects now and counting, it is getting a bit unwieldy as a just a huge list (granted you can filter, but by default you view all). However, this is a great problem to have; it seems like there is certainly no shortage of ColdFusion developers willing to share with the community.
-				 [More]
-				</description>
-				
-				<category>Open-Source CF</category>
-				
-				<category>ColdFusion</category>
-				
-				<pubDate>Mon, 07 Aug 2006 13:56:00 -0400</pubDate>
-				<guid>http://www.remotesynthesis.com/blog/index.cfm/2006/8/7/ColdFusion-OpenSource-Update--August-7</guid>
-				
-			</item>
-			
-		 	
-			
-			
-			<item>
-				<title>New Open-Source Component Generator</title>
-				<link>http://www.remotesynthesis.com/blog/index.cfm/2006/8/3/New-OpenSource-Component-Generator</link>
-				<description>
-				
-				Many months back, I wrote a post showing you how to create your own code generator using XSL stylesheets and the admin API for database introspection. There were a couple of issues with it: 1) the generated code sucked (hey, I was very new to the OO stuff) 2) it wasn't very extensible as everything was handled through a single template. Since then, I have had the opportunity to update the generator and am finally releasing it as the Illudium PU-36 Code Generator (any Looney Tunes fans out there?) as a new open-source project under an Apache 2.0 license. You can download the code via the Subversion repository by going here (note: I plan to have a project page on this site soon). Keep in mind, this is alpha software, so there are likely bugs in there.
-				 [More]
-				</description>
-				
-				<category>Programming</category>
-				
-				<category>Open-Source CF</category>
-				
-				<category>ColdFusion</category>
-				
-				<pubDate>Thu, 03 Aug 2006 15:27:00 -0400</pubDate>
-				<guid>http://www.remotesynthesis.com/blog/index.cfm/2006/8/3/New-OpenSource-Component-Generator</guid>
-				
-			</item>
-			
-		 	
-			
-			
-			<item>
-				<title>Avoiding eval() and iif()</title>
-				<link>http://www.remotesynthesis.com/blog/index.cfm/2006/8/2/Avoiding-eval-and-iif</link>
-				<description>
-				
-				I am not sure if I have posted this before (I am sure others have), but I thought I might mention a simple tip that doesn't seem obvious at all. Basically, you can put simple statements between pound signs and they will get evaluated. For instance, I used to do something like this in my queryparam's:
-
-
-
-
-
-However, I have changed - and simplified - that to:
-
-
-
-
-
-The "not len()" gets evaluated to true if the item has a length of 0 or false if it has any value other than empty string without the need for the iif statement or even an eval statement.
-
-This is the most useful (to me) aspect of this "shortcut," but you can also do things like this:
-
-
-
-
-
-Notice that the content of the file attribute does the string concatenation within a single set of pound signs. Yes, this only saves a few keystrokes, but I also find it easier to read (I've always found that the pound signs can clutter a page personally).
-
-I would say that I have no idea if there are any negative performance consequences involved here (either positive or negative) since I haven't tested for that (in the places I have used this, if there were I didn't notice them)...plus if I got into that, Peter Bell might get on me about the dangers of "premature optimization." ;)
-				
-				</description>
-				
-				<category>Programming</category>
-				
-				<category>ColdFusion</category>
-				
-				<pubDate>Wed, 02 Aug 2006 12:27:00 -0400</pubDate>
-				<guid>http://www.remotesynthesis.com/blog/index.cfm/2006/8/2/Avoiding-eval-and-iif</guid>
 				
 			</item>
 			

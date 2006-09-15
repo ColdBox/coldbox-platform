@@ -2,7 +2,7 @@
 <cfset feedID = getValue("feedID")>
 <cfoutput query="qryData">
 	<div class="nicebox">
-		<h2 style="margin-bottom:2px;"><a href="#siteURL#" target="_blank">#FeedName#</a></h2>
+		<h5 style="margin-bottom:2px;"><a href="#siteURL#" target="_blank">#FeedName#</a></h5>
 		<div style="font-size:0.9em;margin-bottom:8px;">
 		<img src="images/orange_arrows.gif" align="absmiddle">Added by <a href="mailto:#email#" title="#email#">#username#</a>
 		</div>

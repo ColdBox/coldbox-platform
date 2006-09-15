@@ -5,8 +5,8 @@
 			<link>http://www.luismajano.com/blog/index.cfm</link>
 			<description>A blog about coldfusion, java, linux, technology, etc.</description>
 			<language>en-us</language>
-			<pubDate>Thu, 07 Sep 2006 14:59:25 -0400</pubDate>
-			<lastBuildDate>Mon, 07 Aug 2006 13:27:00 -0400</lastBuildDate>
+			<pubDate>Fri, 15 Sep 2006 14:05:26 -0400</pubDate>
+			<lastBuildDate>Tue, 12 Sep 2006 11:47:00 -0400</lastBuildDate>
 			<generator>BlogCFC</generator>
 			<docs>http://blogs.law.harvard.edu/tech/rss</docs>
 			<managingEditor>lmajano@gmail.com</managingEditor>
@@ -14,6 +14,118 @@
 			
 			
 			
+			
+			
+			<item>
+				<title>Eclipse + SVN Users: SubEclipse or Subversive?</title>
+				<link>http://www.luismajano.com/blog/index.cfm/2006/9/12/Eclipse--SVN-Users-SubEclipse-or-Subversive</link>
+				<description>
+				
+				This is just a call for comments to see which eclipse SVN plugin people are using and why?
+
+I personally use Subversive because it was the first choice that I found and it has worked great. I am running 1.1.0.M3
+It is easy to integrate to repositories, browse, check out, etc.
+
+&lt;ul&gt;
+&lt;li&gt;What do you like of Subeclipse?&lt;/li&gt;
+&lt;li&gt;How would they contrast each other?&lt;/li&gt;
+&lt;li&gt;Which one do you prefer?&lt;/li&gt;
+&lt;li&gt;What are the advantages?&lt;/li&gt;
+&lt;/ul&gt;
+
+If you have any comments, please post them.
+				
+				</description>
+				
+				<category>Eclipse</category>
+				
+				<category>SVN</category>
+				
+				<pubDate>Tue, 12 Sep 2006 11:47:00 -0400</pubDate>
+				<guid>http://www.luismajano.com/blog/index.cfm/2006/9/12/Eclipse--SVN-Users-SubEclipse-or-Subversive</guid>
+				
+			</item>
+			
+		 	
+			
+			
+			<item>
+				<title>More Tools: Antelope an ANT Gui</title>
+				<link>http://www.luismajano.com/blog/index.cfm/2006/9/12/More-Tools-Antelope-an-ANT-Gui</link>
+				<description>
+				
+				I am just creating these entries for all people to share and I don't forget about these great tools.  I had never checked out the tigris site so much like today.
+
+These tools are amazing!!
+
+This is an ANT interface called Antelope.
+
+&lt;a href="http://antelope.tigris.org/"&gt;http://antelope.tigris.org/&lt;/a&gt;
+
+So check it out.
+				
+				</description>
+				
+				<category>Tools</category>
+				
+				<pubDate>Tue, 12 Sep 2006 11:41:00 -0400</pubDate>
+				<guid>http://www.luismajano.com/blog/index.cfm/2006/9/12/More-Tools-Antelope-an-ANT-Gui</guid>
+				
+			</item>
+			
+		 	
+			
+			
+			<item>
+				<title>Argo UML a great UML documentation Tool</title>
+				<link>http://www.luismajano.com/blog/index.cfm/2006/9/12/Argo-UML-a-great-UML-documentation-Tool</link>
+				<description>
+				
+				If you like documentation like me!! Well, I guess I am kinda in the dark here since not many people like documentation.  This is the tool for you. I am now using it more and more.  It is called ArgoUML and you can find it here:
+
+&lt;a href="http://argouml.tigris.org/"&gt;http://argouml.tigris.org/&lt;/a&gt;
+
+It can be used either through Java Web Start or a full package download.  Give it a try and please DOCUMENT!!!
+
+If you want people to use your software to build software, then document. Make it easy!!
+				
+				</description>
+				
+				<category>Java</category>
+				
+				<category>SVN</category>
+				
+				<pubDate>Tue, 12 Sep 2006 10:47:00 -0400</pubDate>
+				<guid>http://www.luismajano.com/blog/index.cfm/2006/9/12/Argo-UML-a-great-UML-documentation-Tool</guid>
+				
+			</item>
+			
+		 	
+			
+			
+			<item>
+				<title>RapidSVN: Gui for SVN repo</title>
+				<link>http://www.luismajano.com/blog/index.cfm/2006/9/12/RapidSVN-Gui-for-SVN-repo</link>
+				<description>
+				
+				I was browsing the tigris.org site and came upon this tool: RapidSVN
+
+&lt;a href="http://rapidsvn.tigris.org/"&gt;http://rapidsvn.tigris.org/&lt;/a&gt;
+
+and it caught my eye because it has a Mac OS version.  I just downloaded it and started playing with it.  It is basic, but it gets the job done. Please check it out.
+				
+				</description>
+				
+				<category>Tools</category>
+				
+				<category>SVN</category>
+				
+				<pubDate>Tue, 12 Sep 2006 10:33:00 -0400</pubDate>
+				<guid>http://www.luismajano.com/blog/index.cfm/2006/9/12/RapidSVN-Gui-for-SVN-repo</guid>
+				
+			</item>
+			
+		 	
 			
 			
 			<item>
@@ -406,111 +518,6 @@ Enjoy
 				
 				<pubDate>Wed, 12 Jul 2006 10:35:00 -0400</pubDate>
 				<guid>http://www.luismajano.com/blog/index.cfm/2006/7/12/ColdBox-102-for-Friday</guid>
-				
-			</item>
-			
-		 	
-			
-			
-			<item>
-				<title>ColdBox: 1.0.1 revision is now available.</title>
-				<link>http://www.luismajano.com/blog/index.cfm/2006/7/10/ColdBox-101-revision-is-now-available</link>
-				<description>
-				
-				I just finished uploading some initial observations of the beta. Specifically one with the &lt;b&gt;ApplicationStartHandler&lt;/b&gt;, where it was not firing automatically, just manually through the fwreinit action.
-
-You can download the update, or you can use the auto-update feature of the dashboard.
-
-So give that auto-update feature a spin and let me know if it blows up.
-
-&lt;a href="http://www.luismajano.com/projects/coldbox"&gt;http://www.luismajano.com/projects/coldbox&lt;/a&gt;
-
-Enjoy.
-				
-				</description>
-				
-				<category>ColdBox</category>
-				
-				<pubDate>Mon, 10 Jul 2006 16:16:00 -0400</pubDate>
-				<guid>http://www.luismajano.com/blog/index.cfm/2006/7/10/ColdBox-101-revision-is-now-available</guid>
-				
-			</item>
-			
-		 	
-			
-			
-			<item>
-				<title>ColdBox:A ColdFusion Framework: Dashboard now in Spanish.</title>
-				<link>http://www.luismajano.com/blog/index.cfm/2006/7/10/ColdBoxA-ColdFusion-Framework-Dashboard-now-in-Spanish</link>
-				<description>
-				
-				Thanks to ColdBox's easy i18n and resource bundle support (Paul Hastings and Ray Camden) the dashboard application is now in Spanish for all of the Latinos in the CF community.
-
-Also, the samples gallery application is in Spanish.  
-
-I will be updating all the documentation to Spanish too, but it will take me some time. I really would appreciate your feedback on typos or sentences that really do not make any sense or if you want to help me translate, well,you are more than welcome.
-
-You can download the ColdBox public beta 1.0.0 from here:
-
-&lt;a href="http://www.luismajano.com/projects/coldbox"&gt;http://www.luismajano.com/projects/coldbox&lt;/a&gt;
-
-Enjoy.
-				
-				</description>
-				
-				<category>ColdBox</category>
-				
-				<pubDate>Mon, 10 Jul 2006 14:42:00 -0400</pubDate>
-				<guid>http://www.luismajano.com/blog/index.cfm/2006/7/10/ColdBoxA-ColdFusion-Framework-Dashboard-now-in-Spanish</guid>
-				
-			</item>
-			
-		 	
-			
-			
-			<item>
-				<title>ColdBox: A ColdFusion Framework, Public Beta Opened!</title>
-				<link>http://www.luismajano.com/blog/index.cfm/2006/7/7/ColdBox-A-ColdFusion-Framework-Public-Beta-Opened</link>
-				<description>
-				
-				Well, I have been finally going at it more than usual to get this public beta out. You can find it now under my projects section by using the link below 
-&lt;a href="http://www.luismajano.com/index.cfm?event=ehProjects.dspColdbox"&gt;http://www.luismajano.com/index.cfm?event=ehProjects.dspColdbox &lt;/a&gt;
-
-So welcome to ColdBox.
-
-Please use the trac site for issues and the wiki, which I have been putting a lot of content.
-
-Use the forums for any discussions, and if you need to contact me use the contact button in the nav bar or email me at cfcoldbox@gmail.com
-
-The disto includes several sample applications, some of which were not created by me. So please respect the authors licenses and rights. 
-
-Thanks and hope you enjoy.
-				
-				</description>
-				
-				<category>ColdBox</category>
-				
-				<pubDate>Fri, 07 Jul 2006 16:15:00 -0400</pubDate>
-				<guid>http://www.luismajano.com/blog/index.cfm/2006/7/7/ColdBox-A-ColdFusion-Framework-Public-Beta-Opened</guid>
-				
-			</item>
-			
-		 	
-			
-			
-			<item>
-				<title>ColdBox Update: Dashboard Preview and more.</title>
-				<link>http://www.luismajano.com/blog/index.cfm/2006/6/22/ColdBox-Update-Dashboard-Preview-and-more</link>
-				<description>
-				
-				&lt;p&gt;Well, it is almost a week since my announcement of ColdBox and here are the updates on my progress.&lt;/p&gt;&lt;ul&gt;&lt;li&gt;The dashboard is complete with the framework auto-update feature included&lt;/li&gt;&lt;li&gt;i18N support via resource bundles is complete, you can now internationalize your applications via the config.xml and one simple getresource method. It takes more time to create the resource bundles than to actually enable multi-language support.&lt;/li&gt;&lt;li&gt;Samples gallery application finished in both English and Spanish&lt;/li&gt;&lt;li&gt;Quick Start Guide almost finished.&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;What is keeping me back from opening the source is the Quick Start Guide. I want to be able to provide some decent and abundant documentation, so from now on, that is the only task I am doing.  This guide will give you  an overview of the framework, how to use it, why use it, why not to use it, and more.&lt;/p&gt;&lt;p&gt;Now to the Dashboard preview.  Below you can see some thumbnails of the sections of the Dashboard and brief descriptions:&lt;br /&gt;&lt;/p&gt;
-				 [More]
-				</description>
-				
-				<category>ColdBox</category>
-				
-				<pubDate>Thu, 22 Jun 2006 09:09:00 -0400</pubDate>
-				<guid>http://www.luismajano.com/blog/index.cfm/2006/6/22/ColdBox-Update-Dashboard-Preview-and-more</guid>
 				
 			</item>
 			

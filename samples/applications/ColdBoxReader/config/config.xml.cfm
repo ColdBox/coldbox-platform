@@ -19,7 +19,7 @@
 		<Setting name="UDFLibraryFile" 				value="" />	
 		<Setting name="CustomErrorTemplate" 		value=""/>
 		<Setting name="ExceptionHandler" 			value="ehGeneral.onException"/>
-		<Setting name="MessageboxStyleClass" 		value=""/>
+		<Setting name="MessageboxStyleClass" 		value="myOwnMessagebox"/>
 		<Setting name="HandlersIndexAutoReload" 	value="false"/>
 		<Setting name="ConfigAutoReload" 			value="false"/>		
 	</Settings>

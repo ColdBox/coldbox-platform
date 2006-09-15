@@ -5,8 +5,8 @@
 			<link>http://www.robgonda.com/blog/index.cfm</link>
 			<description>Rob Gonda's opinions</description>
 			<language>en-us</language>
-			<pubDate>Tue, 05 Sep 2006 16:57:55 -0400</pubDate>
-			<lastBuildDate>Wed, 30 Aug 2006 21:26:00 -0400</lastBuildDate>
+			<pubDate>Fri, 15 Sep 2006 13:00:33 -0400</pubDate>
+			<lastBuildDate>Wed, 13 Sep 2006 17:06:00 -0400</lastBuildDate>
 			<generator>BlogCFC</generator>
 			<docs>http://blogs.law.harvard.edu/tech/rss</docs>
 			<managingEditor>rob@robgonda.com</managingEditor>
@@ -14,6 +14,252 @@
 			
 			
 			
+			
+			
+			<item>
+				<title>subversion 1.4 is out</title>
+				<link>http://www.robgonda.com/blog/index.cfm/2006/9/13/subversion-14-is-out</link>
+				<description>
+				
+				&lt;a href="http://subversion.tigris.org/" target="_blank"&gt;Subversion 1.4&lt;/a&gt; was released a few days ago... I haven't upgraded my servers yet, but I will post comments as soon as I do. Why should you upgrade?&lt;br /&gt;
+&lt;ul&gt;
+    &lt;li&gt;&lt;tt&gt;svnsync&lt;/tt&gt;, a new repository mirroring tool&lt;/li&gt;
+    &lt;li&gt;Huge working-copy performance improvements&lt;/li&gt;
+    &lt;li&gt;Support for BerkeleyDB 4.4 and its &amp;quot;auto recovery&amp;quot; feature&lt;/li&gt;
+    &lt;li&gt;Size improvements to the binary delta algorithm&lt;/li&gt;
+    &lt;li&gt;A handful of new command switches&lt;/li&gt;
+    &lt;li&gt;Many improved APIs&lt;/li&gt;
+    &lt;li&gt;More than 40 new bugfixes&lt;/li&gt;
+&lt;/ul&gt;
+&lt;a href="http://tortoisesvn.tigris.org/" target="_blank"&gt;Tortoise SVN&lt;/a&gt; is still on 1.4 RC1, so we should be seeing the final release soon. &lt;a href="http://subclipse.tigris.org/" target="_blank"&gt;Subeclipse&lt;/a&gt; shows no signs of adding the new commands to the client.
+				
+				</description>
+				
+				<category>Subversion</category>
+				
+				<pubDate>Wed, 13 Sep 2006 17:06:00 -0400</pubDate>
+				<guid>http://www.robgonda.com/blog/index.cfm/2006/9/13/subversion-14-is-out</guid>
+				
+			</item>
+			
+		 	
+			
+			
+			<item>
+				<title>Atlas renamed and works with ColdFusion</title>
+				<link>http://www.robgonda.com/blog/index.cfm/2006/9/11/Atlas-renamed-and-works-with-ColdFusion</link>
+				<description>
+				
+				&lt;p&gt;Scott Guthrie has announced the &lt;a href="http://weblogs.asp.net/scottgu/archive/2006/09/11/_2200_Atlas_2200_-1.0-Naming-and-Roadmap.aspx" target="_blank"&gt;&amp;ldquo;Atlas&amp;rdquo; 1.0 Naming and Roadmap&lt;/a&gt; that as part of releasing &amp;ldquo;Atlas&amp;rdquo;, they have also finally locked on an official set of product names that they will begin using moving forward. What was formerly called &amp;ldquo;Atlas&amp;rdquo; will now have a few names:&lt;/p&gt;
+&lt;ol&gt;
+    &lt;li&gt;The client-side &amp;ldquo;Atlas&amp;rdquo; javascript library is going to be called the Microsoft AJAX Library. This will work with any browser, and also support any backend web server (read these blog posts to see how to run it on &lt;a href="http://www.shankun.com/Atlas_Php_2.aspx" target="_blank"&gt;PHP&lt;/a&gt; and &lt;a href="http://blogs.msdn.com/brada/archive/2006/06/29/649944.aspx" target="_blank"&gt;ColdFusion&lt;/a&gt;).&lt;br /&gt;&lt;/li&gt;
+    &lt;li&gt;The server-side &amp;ldquo;Atlas&amp;rdquo; functionality that nicely integrates with ASP.NET will be called the ASP.NET 2.0 AJAX Extensions. As part of this change the tag prefix for the &amp;ldquo;Atlas&amp;rdquo; controls will change from &lt;atlas&gt;to &lt;asp&gt;. These controls will also be built-in to ASP.NET vNext.&lt;br /&gt;&lt;/asp&gt;&lt;/atlas&gt;&lt;/li&gt;
+    &lt;li&gt;The &amp;ldquo;Atlas&amp;rdquo; Control Toolkit today is a set of free, shared source controls and components that help you get the most value from the ASP.NET AJAX Extensions. Going forward, the name of the project will change to be the ASP.NET AJAX Control Toolkit.&lt;/li&gt;
+&lt;/ol&gt;
+Microsoft demonstrated Atlas at CFUnited, and ... well, it wasn't pretty ... Anyways, you can't judge a technology by a bad presentation... I've seen it before, and Atlas is pretty powerful... it's a very well structured library and will probably get a large chunk of marketshare.... It's broken down into two pieces: server side and client side. The combination it's nice, but they're trying to push their JavaScript library and show how it can be used with any server side language... of course it can, so does Rico, Prototype, Dojo, DWR, and a few hundreds... If you wish to give it a try, Microsoft shared the code they used at CFUnited with ColdFusion...
+				
+				</description>
+				
+				<category>ajax</category>
+				
+				<pubDate>Mon, 11 Sep 2006 21:44:00 -0400</pubDate>
+				<guid>http://www.robgonda.com/blog/index.cfm/2006/9/11/Atlas-renamed-and-works-with-ColdFusion</guid>
+				
+			</item>
+			
+		 	
+			
+			
+			<item>
+				<title>cfQuickDocs has its own domain now</title>
+				<link>http://www.robgonda.com/blog/index.cfm/2006/9/11/cfQuickDocs-has-its-own-domain-now</link>
+				<description>
+				
+				&lt;a href="http://www.techfeed.net/cfQuickDocs/" target="_blank"&gt;http://www.techfeed.net/cfQuickDocs/&lt;/a&gt; is now &lt;a href="http://www.cfquickdocs.com/" target="_blank"&gt;http://www.cfquickdocs.com/&lt;/a&gt;. It definitely deserved its own domain. I've got this page aliased a CF in Firefox and use it, almost every day.... especially cuz Eclipse does not have this documentation built in like old homesite used to, so I recur to this site all the time. It's faster that the MM/Adobe docs by the factor of at least 10x or 20x.... bookmark it CF community, it's worth it.&lt;br /&gt;&lt;br /&gt;How about a plugin for eclipse now Yacob?
+				
+				</description>
+				
+				<category>Coldfusion</category>
+				
+				<pubDate>Mon, 11 Sep 2006 21:23:00 -0400</pubDate>
+				<guid>http://www.robgonda.com/blog/index.cfm/2006/9/11/cfQuickDocs-has-its-own-domain-now</guid>
+				
+			</item>
+			
+		 	
+			
+			
+			<item>
+				<title>ajaxCFC in Ajax Books</title>
+				<link>http://www.robgonda.com/blog/index.cfm/2006/9/10/ajaxCFC-in-Ajax-Books</link>
+				<description>
+				
+				&lt;a target="_blank" href="http://www.oreilly.com/catalog/ajaxdp/"&gt;Oreilly's Ajax Design Patterns&lt;/a&gt; has a list of Ajax/ColdFusion frameworks on page 585 and it lists ajaxCFC. It says &lt;span style="font-style: italic;"&gt;Restricted open source license (free to use in any context but not redistributable) by Rob Gonda.&lt;/span&gt; which used to be the case, but the &lt;a href="http://www.robgonda.com/blog/index.cfm/2006/2/21/ajaxCFC-License-change"&gt;license changed&lt;/a&gt; in February 2006. The book came out in June, so it is understandable that the information was a little outdated... this is what happens with every book on cutting-edge technology .. but the time it's published, some/most/any of the covered topics could have changed, or the is a new, better, or improved way of doing things.&lt;br /&gt;&lt;br /&gt;Talking about books, my &lt;a target="_blank" href="http://www.realworldajaxbook.com/"&gt;Real-World Ajax book&lt;/a&gt; should had come out a few months ago, but due to delays in x,y,z it will come out next month, during the AjaxWorld Conference. It's a nice book, but I wish it had come out a while back as planned... just like I said, it may be missing some of the new tendencies that came out in the last 6 months; nevertheless, it covers all the basics, intermediate, and many advanced topics, and includes many examples in many different languages...
+				
+				</description>
+				
+				<category>ajax</category>
+				
+				<category>ajaxCFC</category>
+				
+				<pubDate>Sun, 10 Sep 2006 23:02:00 -0400</pubDate>
+				<guid>http://www.robgonda.com/blog/index.cfm/2006/9/10/ajaxCFC-in-Ajax-Books</guid>
+				
+			</item>
+			
+		 	
+			
+			
+			<item>
+				<title>Annoying invalidtag appearing from nowhere</title>
+				<link>http://www.robgonda.com/blog/index.cfm/2006/9/10/Annoying-invalidtag-appearing-from-nowhere</link>
+				<description>
+				
+				So lately I ran into this problem where my CMS was converting Flash embed tags into invalidtags and it drove me crazy ... I initially blamed the fckeditor, but when I tried to update my DB with a plain textarea and it did the same I realized the problem must be either in the DB or in my drivers... For those of you who haven't experienced this yet, every time you submit text content to be saved in the db, and 'script', 'embed', and probably many other tags will be automatically replaced by 'invalidtag' tags.... so my clients were uploading swfs, and it kept breaking. &lt;br /&gt;&lt;br /&gt;I finally found the problem... ColdFusion has an option in the admin:&amp;nbsp; Enable Global Script Protection, which I guess after the 7.0.2 update started blocking embed tags coming from form posts. I'm not sure how much protection it provides me since I'm usually pretty good validating all my data, but this fact alone made me turn it off in every development and production server.&lt;br /&gt;&lt;br /&gt;Now you know, if you start seeing invalidtag's appearing randomly, just disable the global script protection ...
+				
+				</description>
+				
+				<category>Coldfusion</category>
+				
+				<pubDate>Sun, 10 Sep 2006 19:47:00 -0400</pubDate>
+				<guid>http://www.robgonda.com/blog/index.cfm/2006/9/10/Annoying-invalidtag-appearing-from-nowhere</guid>
+				
+			</item>
+			
+		 	
+			
+			
+			<item>
+				<title>blogcfc and isapi rewrite</title>
+				<link>http://www.robgonda.com/blog/index.cfm/2006/9/10/blogcfc-and-isapi-rewrite</link>
+				<description>
+				
+				I've been thinking about doing this for the longest time, but I finally got around to add some non-blog content to my site... I added a basic bio (copy/paste from linked-in), my agenda with this year's presentations (will add links and downloads soon), and a flex app with community jobs. &lt;br /&gt;&lt;br /&gt;I like the idea of managing my content from the back-end, so I'm using the page editor from blogCFC, slightly modified to use the fckeditor instead of a plain textarea. &lt;br /&gt;&lt;br /&gt;I also didn't like the page.cfm SES ... while it's better than straight up dynamic urls, I'd like them to be cleaner, so I'm using isapi rewrite. I would love to use it for all my links, but after a year of blogging over 500 pages indexed at google I'm not sure it's a good idea... thoughts? should I rewrite my urls and leave both working for a while? this will affect the age of my content ... any expert out there?&lt;br /&gt;&lt;br /&gt;
+				
+				</description>
+				
+				<category>Generic</category>
+				
+				<pubDate>Sun, 10 Sep 2006 19:16:00 -0400</pubDate>
+				<guid>http://www.robgonda.com/blog/index.cfm/2006/9/10/blogcfc-and-isapi-rewrite</guid>
+				
+			</item>
+			
+		 	
+			
+			
+			<item>
+				<title>ajaxCFC utils update</title>
+				<link>http://www.robgonda.com/blog/index.cfm/2006/9/10/ajaxCFC-utils-update</link>
+				<description>
+				
+				I just updated ajaxCFC with a massively refactored utils class, including highlight handler, improved form serialization, debugging, and the ability to use image loading indicators (brought to you by &lt;a target="_blank" href="http://www.reybango.com/index.cfm/2006/8/16/Adding-an-Ajax-Indicator-Image-in-AjaxCFC"&gt;Rey Bango&lt;/a&gt;).&lt;br /&gt;&lt;br /&gt;to use the image loading indicator use:&lt;br /&gt;&lt;br /&gt;
+&lt;div class="code"&gt;DWRUtil.useLoadingImage(&amp;quot;/images/ajax-loader.gif&amp;quot;); &lt;br /&gt; &lt;/div&gt;
+&lt;br /&gt;You may find a bunch of indicators at &lt;a href="http://www.ajaxload.info/" target="_blank"&gt;http://www.ajaxload.info/&lt;/a&gt;
+				
+				</description>
+				
+				<category>ajax</category>
+				
+				<category>ajaxCFC</category>
+				
+				<pubDate>Sun, 10 Sep 2006 00:48:00 -0400</pubDate>
+				<guid>http://www.robgonda.com/blog/index.cfm/2006/9/10/ajaxCFC-utils-update</guid>
+				
+			</item>
+			
+		 	
+			
+			
+			<item>
+				<title>ColdFusion Open Source Chat Application</title>
+				<link>http://www.robgonda.com/blog/index.cfm/2006/9/9/ColdFusion-Open-Source-Chat-Application</link>
+				<description>
+				
+				if you're looking for a simple chat application for your web site check out &lt;a href="http://www.opensourcecf.com/cfopenchat/" target="_blank"&gt;CFOpenChat&lt;/a&gt;. It's a simple customizable chat for ColdFusion using &lt;a href="http://www.robgonda.com/blog/projects/ajaxcfc/"&gt;ajaxCFC&lt;/a&gt;, works with mssql, mysql, and it's free and open source.
+				
+				</description>
+				
+				<category>ajaxCFC</category>
+				
+				<category>Coldfusion</category>
+				
+				<pubDate>Sat, 09 Sep 2006 23:50:00 -0400</pubDate>
+				<guid>http://www.robgonda.com/blog/index.cfm/2006/9/9/ColdFusion-Open-Source-Chat-Application</guid>
+				
+			</item>
+			
+		 	
+			
+			
+			<item>
+				<title>ColdFusion and Flex: Do you need Flex Data Services?</title>
+				<link>http://www.robgonda.com/blog/index.cfm/2006/9/9/ColdFusion-and-Flex-Do-you-need-Flex-Data-Services</link>
+				<description>
+				
+				Adobe Flex 2 has been out for a couple of months now, and lots of ColdFusion customers are discovering that the combination of ColdFusion and Flex allows them to deliver powerful and engaging applications easier than ever before.
+&lt;p&gt; One area of confusion appears to be the Adobe Flex server: Adobe Flex Data Services. What is Adobe Flex Data Services? What exactly does Flex Data Services allow you to do that you wouldn't be able to do without it? What does this mean specifically to us ColdFusion developers? &lt;/p&gt;
+&lt;p&gt; Ben Forta's new article Adobe Developer Center article entitled &lt;a target="_blank" href="http://www.adobe.com/devnet/coldfusion/articles/fr_fds.html"&gt;ColdFusion and Flex: Do you need Flex Data Services?&lt;/a&gt; explains. &lt;/p&gt;
+				
+				</description>
+				
+				<category>Coldfusion</category>
+				
+				<category>Flex</category>
+				
+				<pubDate>Sat, 09 Sep 2006 23:42:00 -0400</pubDate>
+				<guid>http://www.robgonda.com/blog/index.cfm/2006/9/9/ColdFusion-and-Flex-Do-you-need-Flex-Data-Services</guid>
+				
+			</item>
+			
+		 	
+			
+			
+			<item>
+				<title>Ajax for ColdFusion Developers Breeze Presso next week</title>
+				<link>http://www.robgonda.com/blog/index.cfm/2006/9/6/Ajax-for-ColdFusion-Developers-Breeze-Presso-next-week</link>
+				<description>
+				
+				I'll be presenting Ajax for ColdFusion Developers to both the &lt;a href="http://www.bostoncfug.org/" target="_blank"&gt;local Boston CFUG&lt;/a&gt; and also the &lt;a href="http://coldfusion.meetup.com/" target="_blank"&gt;Online ColdFusion Meetup Group&lt;/a&gt;.&amp;nbsp; The event detail for the OCFMG is:&lt;br /&gt;&lt;br /&gt;&lt;a href="http://coldfusion.meetup.com/17/events/5113555/" target="_blank"&gt;http://coldfusion.meetup.com/17/events/5113555/&lt;/a&gt;&lt;br /&gt;&lt;br /&gt;I was tempted to use the same pressos I have at the Ajax World Conference, but I think I may change it up a bit and add some opinions about Spry, Ajax Vs. Flex, ColdFusion Frameworks, and then some... I want this not to be another Ajax presentation, but something that clears up doubts in the community ... if you have any specific topics you want me to cover, there is still time...&lt;br /&gt;&lt;br /&gt;See you all there.
+				
+				</description>
+				
+				<category>ajax</category>
+				
+				<category>Coldfusion</category>
+				
+				<pubDate>Wed, 06 Sep 2006 23:06:00 -0400</pubDate>
+				<guid>http://www.robgonda.com/blog/index.cfm/2006/9/6/Ajax-for-ColdFusion-Developers-Breeze-Presso-next-week</guid>
+				
+			</item>
+			
+		 	
+			
+			
+			<item>
+				<title>ajaxCFC: more small fixes</title>
+				<link>http://www.robgonda.com/blog/index.cfm/2006/9/6/ajaxCFC-more-small-fixes</link>
+				<description>
+				
+				just uploaded a new release of AjaxCFC with a couple of fixes:&lt;br /&gt;
+&lt;ul&gt;
+    &lt;li&gt;backwards compatibility for single arguments with an object, provided by nathanael waite. You may add the setComplexInputStruct(boolean) to the top of your function to enable or disable allowing argumentCollections to be passed to ajaxCFC. If enabled and a single object is passed as an arguments, it will be threaded as a collection. This is enabled by default.&lt;/li&gt;
+    &lt;li&gt;fix in the argumentCollection option mentioned above to allow passing a single array argument. &lt;/li&gt;
+&lt;/ul&gt;
+More to come soon.
+				
+				</description>
+				
+				<category>ajax</category>
+				
+				<category>ajaxCFC</category>
+				
+				<pubDate>Wed, 06 Sep 2006 22:55:00 -0400</pubDate>
+				<guid>http://www.robgonda.com/blog/index.cfm/2006/9/6/ajaxCFC-more-small-fixes</guid>
+				
+			</item>
+			
+		 	
 			
 			
 			<item>
@@ -92,257 +338,6 @@
 				
 				<pubDate>Thu, 24 Aug 2006 12:05:00 -0400</pubDate>
 				<guid>http://www.robgonda.com/blog/index.cfm/2006/8/24/Ajax-Debugging-Tip</guid>
-				
-			</item>
-			
-		 	
-			
-			
-			<item>
-				<title>little tip for model-glue: unity</title>
-				<link>http://www.robgonda.com/blog/index.cfm/2006/8/23/little-tip-for-modelglue-unity</link>
-				<description>
-				
-				If you're developing in Model-Glue:Unity, you may already know that you are working with ColdSpring and Reactor. ColdSpring may seem obvious because you set up all Model-Glue's properties with ColdSpring; as the matter of fact, Model-Glue is a ColdSpring application. &lt;br /&gt;However, Model-Glue also ties to Reactor, which you may decide to use or not. A little performance tip is to set Reactor to production mode if you're not using it, because whether you use it or not, it will take up resources. &lt;br /&gt;To chance it to production mode open ColdSpring.xml, find the reactorConfiguration bean, and modify the mode to &lt;span style="font-style: italic;"&gt;&amp;lt;property name=&amp;quot;mode&amp;quot;&amp;gt;&amp;lt;value&amp;gt;production&amp;lt;/value&amp;gt;&amp;lt;/property&amp;gt;&lt;/span&gt;&lt;br /&gt;&lt;br /&gt;I am still not sure exactly why it would make such a difference, but in the project I'm currently working, which does not use Reactor at all, it improved the load time from 700ms to 100ms, having Model-Glue set to always reload.
-				
-				</description>
-				
-				<category>Coldfusion</category>
-				
-				<pubDate>Wed, 23 Aug 2006 09:51:00 -0400</pubDate>
-				<guid>http://www.robgonda.com/blog/index.cfm/2006/8/23/little-tip-for-modelglue-unity</guid>
-				
-			</item>
-			
-		 	
-			
-			
-			<item>
-				<title>Google Analytics Open to Everyone</title>
-				<link>http://www.robgonda.com/blog/index.cfm/2006/8/17/Google-Analytics-Open-to-Everyone</link>
-				<description>
-				
-				Google just removed the wait to receive a Google Analytics account. Now anyone with a website can instantly create one for free by simply by visiting &lt;a href="http://www.google.com/analytics" target="_blank"&gt;google.com/analytics&lt;/a&gt; or by clicking on the &amp;quot;Analytics&amp;quot; tab within AdWords.  After you create an account, they suggest reading the &lt;a href="http://www.google.com/support/analytics/bin/answer.py?answer=40932" target="_blank"&gt;Installation Guide&lt;/a&gt; to get it set up quickly and correctly.&lt;br /&gt;&lt;br /&gt;I've been using Google Analytics for a while and I like it a lot; the best part: it's free!
-				
-				</description>
-				
-				<category>Generic</category>
-				
-				<pubDate>Thu, 17 Aug 2006 09:09:00 -0400</pubDate>
-				<guid>http://www.robgonda.com/blog/index.cfm/2006/8/17/Google-Analytics-Open-to-Everyone</guid>
-				
-			</item>
-			
-		 	
-			
-			
-			<item>
-				<title>Script.aculo.us 1.6.2 Released</title>
-				<link>http://www.robgonda.com/blog/index.cfm/2006/8/16/Scriptaculous-162-Released</link>
-				<description>
-				
-				&lt;p&gt;&lt;a href="http://script.aculo.us/downloads" target="_blank"&gt;Script.aculo.us&lt;/a&gt; &lt;strong&gt;               V1.6.2 (2006-08-15): Bug fix galore! &lt;/strong&gt;was released yesterday.&amp;nbsp; &lt;/p&gt;
-&lt;ul&gt;
-    &lt;li&gt;Fix a problem in the drag and drop logic if an reverting/drag ending draggable was initialized for a new drag (for example by clicking repeatedly) for all cases where the default start/revert/end-effects are used, fixes #4706 [thx tecM0]&lt;/li&gt;
-    &lt;li&gt;Fix possible memory leaks with Draggables, fixes #3436 [thx aal]&lt;/li&gt;
-    &lt;li&gt;Throw nicer errors when requires script.aculo.us libraries are not loaded, fixes #5339&lt;/li&gt;
-    &lt;li&gt;Make slider handles work when not displayed initially by using &lt;span class="caps"&gt;CSS&lt;/span&gt; width/height, fixes #4011 [thx foysavas]&lt;/li&gt;
-    &lt;li&gt;Update sortable functional test with onUpdate counter&lt;/li&gt;
-    &lt;li&gt;Make more Element extensions unit tests work on Safari&lt;/li&gt;
-    &lt;li&gt;Add the assertMatch unit test assertion for asserts with RegExps [thx Ian Tyndall]&lt;/li&gt;
-    &lt;li&gt;Fix a problem with Effect.Move causing &amp;ldquo;jumping&amp;rdquo; elements because of very low float numbers in some situations&lt;/li&gt;
-    &lt;li&gt;Fix a missing semicolon in dragdrop.js, fixes #5569 [thx mackalicious]&lt;/li&gt;
-    &lt;li&gt;Fix a slight inaccuracy with Effect.Scale that could lead the scaling to be one pixel off&lt;/li&gt;
-    &lt;li&gt;Be more prototypish with Effect.Transitions.linear&lt;/li&gt;
-    &lt;li&gt;Make Effect.Scale recognize font sizes that use the pt unit, fixes #4136 [thx aljoscha]&lt;/li&gt;
-    &lt;li&gt;Fix IE hack in Effect.Opacity, fixes #5444 [thx nicholas]&lt;/li&gt;
-    &lt;li&gt;Fix &lt;span class="caps"&gt;IFRAME&lt;/span&gt; layout fix for IE and Autocompleter, fixes #5192 [thx tommy skaue]&lt;/li&gt;
-    &lt;li&gt;Fix only option in onEmptyHover, fiex #5348 [thx glenn nilsson]&lt;/li&gt;
-    &lt;li&gt;Fix Effect.BlindDown and SwitchOff handling of supplied callbacks, fixes #5089 [thx martinstrom]&lt;/li&gt;
-    &lt;li&gt;Fix a problem with field focus on Ajax.InPlaceEditor and loading external text, fixes #4988, #5244 [thx rob]&lt;/li&gt;
-    &lt;li&gt;Do not attempt to scroll if scrollspeed is 0/0, fixes #5035 [thx tomg]&lt;/li&gt;
-    &lt;li&gt;Fix a problem with Sortable Tree serialization, fixes #4939, #4688, #4767  [thx Sammi Williams]&lt;/li&gt;
-    &lt;li&gt;Fix an endless loop with sliders, fixes #3226, #4051, #4765 [thx jeff]&lt;/li&gt;
-    &lt;li&gt;Make autocompleter work with update DIVs that have scrollbars, fixes #4782 [thx Tommy Skaue]&lt;/li&gt;
-    &lt;li&gt;Corrected options parsing on switchoff effect, fixes #4710 [thx haldini]&lt;/li&gt;
-&lt;/ul&gt;
-				
-				</description>
-				
-				<category>ajax</category>
-				
-				<category>JS/DHTML</category>
-				
-				<pubDate>Wed, 16 Aug 2006 20:07:00 -0400</pubDate>
-				<guid>http://www.robgonda.com/blog/index.cfm/2006/8/16/Scriptaculous-162-Released</guid>
-				
-			</item>
-			
-		 	
-			
-			
-			<item>
-				<title>JavaScript Model-View-Controller with Dojo toolkit</title>
-				<link>http://www.robgonda.com/blog/index.cfm/2006/8/8/JavaScript-ModelViewController-with-Dojo-toolkit</link>
-				<description>
-				
-				You probably know how I love design patterns and apply them all over CF ... You also know I love Dojo :) ... I just found &lt;a href="http://www.alexatnet.com/Blog/Index/2006-08-04/javascript-model-view-controller-with-dojo-toolkit" target="_blank"&gt;this nice article&lt;/a&gt; showing how to apply MVC in JavaScript with Dojo. I don't extensively use JavaScript, but it's a nice implementation.
-				
-				</description>
-				
-				<category>JS/DHTML</category>
-				
-				<pubDate>Tue, 08 Aug 2006 08:56:00 -0400</pubDate>
-				<guid>http://www.robgonda.com/blog/index.cfm/2006/8/8/JavaScript-ModelViewController-with-Dojo-toolkit</guid>
-				
-			</item>
-			
-		 	
-			
-			
-			<item>
-				<title>updated to blogcfc 5.1.004</title>
-				<link>http://www.robgonda.com/blog/index.cfm/2006/8/8/updated-to-blogcfc-51004</link>
-				<description>
-				
-				I just updated my blog from v5.004 to 5.1.004. I was reading in the blogsphere that this update was a bit of a hassle, or did not go smoothly for some people. In my case, so far so good (knock on wood). I just upgraded 5 mins ago and thus far nothing's broken. I backed up my entire 5.004 folder and overwrote everything with the new version; then I modified some custom files I have, such as application, layout, admin entry pages (fckeditor), ping rpc .. that's it ... &lt;br /&gt;&lt;br /&gt;If someone notice something broken please let me know.&lt;br /&gt;&lt;br /&gt;Thanks again Ray, you rock!&lt;br /&gt;
-				
-				</description>
-				
-				<category>Generic</category>
-				
-				<pubDate>Tue, 08 Aug 2006 00:36:00 -0400</pubDate>
-				<guid>http://www.robgonda.com/blog/index.cfm/2006/8/8/updated-to-blogcfc-51004</guid>
-				
-			</item>
-			
-		 	
-			
-			
-			<item>
-				<title>CFMX7 + W2k3sp1 = Access is denied</title>
-				<link>http://www.robgonda.com/blog/index.cfm/2006/8/7/CFMX7--W2k3sp1--Access-is-denied</link>
-				<description>
-				
-				I just can't believe there is no official documentation on this issue. If you ever tried to install ColdFusion MX7 on a Windows 2003 Server with sp1 pre installed, your ColdFusion will not install properly. &lt;br /&gt;&lt;br /&gt;I just tried to install it over 20-30 times, changing settings, nt security, firewall, web server, jrun, man .. everything! I tried to install it on an AMD 64 bit CPU running Windows 2003 Server. The 64 bit threw me off, and I almost returned it and ordered a new system... the strange fact is that I have other AMD 64bits running ... &lt;br /&gt;&lt;br /&gt;Regardless of the installation type, standalone, multiserver, using the built-in web server, iis, or apache, it will always finish the install with errors. If you look at the logs you will see 2 or 3 non-fatal errors:&lt;br /&gt;&lt;br /&gt;ERROR - jrun.xmljava.io.FileNotFoundException: C:\JRun4\tmpmove.bat (Access is denied)&lt;br /&gt;&lt;br /&gt;or&lt;br /&gt;&lt;br /&gt;ERROR - jrun.xmljava.io.FileNotFoundException: C:\CFusionMX7\tmpmove.bat (Access is denied)&lt;br /&gt;&lt;br /&gt;Web Server Connector Configuration Error&lt;br /&gt;Status: ERROR&lt;br /&gt;Additional Notes: ERROR - JNDI port 2902 for server cfusion is not active&lt;br /&gt;&lt;br /&gt;The last one I don't have the exact error, but it was something along the line of cannot find C:\CFUsionMX7\lib&lt;br /&gt;&lt;br /&gt;Missing the entire /lib folder does not look so 'non-fatal' to me. Anyways, ColdFusion would not start. After trying everything known to man, I even tried to copy the /lib folder from another server.... nada, nothing.&lt;br /&gt;&lt;br /&gt;I found two solutions to this problem:&lt;br /&gt;1) Reinstall sp1 on top of the pre-installed sp1.&lt;br /&gt;2) A little easier, and I still don't know why this works, install CF with the silent mode. Run the CF install file from a command line (DOS box) with &amp;quot;-f silent.properties&amp;quot; and it will take 2 mins to install. Silent.properties is a file that you must create using a text editor. See &lt;a href="http://www.macromedia.com/go/87bd20f4" target="_blank"&gt;this technote&lt;/a&gt; for details.&lt;br /&gt;&lt;br /&gt;I installed it silently with the built-in server, and then manually attached the IIS connectors. It also installed the Report Builder, I guess it's part of the silent install... so I removed it after it was done. I kept a copy of the silent.properties if anyone needs it, but it's close to the template provided in the technote.&lt;br /&gt;&lt;br /&gt;Adobe should document this issue! Next time you're installing CFMX7 on a W2k3 box, remember this post, it may save you days.&lt;br /&gt;&lt;br /&gt;&lt;br /&gt;
-				
-				</description>
-				
-				<category>Adobe</category>
-				
-				<category>Coldfusion</category>
-				
-				<category>Software</category>
-				
-				<pubDate>Mon, 07 Aug 2006 23:26:00 -0400</pubDate>
-				<guid>http://www.robgonda.com/blog/index.cfm/2006/8/7/CFMX7--W2k3sp1--Access-is-denied</guid>
-				
-			</item>
-			
-		 	
-			
-			
-			<item>
-				<title>flash player 9</title>
-				<link>http://www.robgonda.com/blog/index.cfm/2006/8/2/flash-player-9</link>
-				<description>
-				
-				Can anyone tell me how &lt;a href="http://search.yahoo.com/search?p=%22flash+player+9%22&amp;amp;fr=FP-tab-web-t500&amp;amp;toggle=1&amp;amp;cop=&amp;amp;ei=UTF-8" target="_blank"&gt;this&lt;/a&gt; happened? I was looking through my stats today and I realized that the top keyword for my blog is 'flash player 9', and it so happens that if you search that in Yahoo, my Blog is #4. Go figure... &lt;br /&gt;
-				
-				</description>
-				
-				<category>Generic</category>
-				
-				<pubDate>Wed, 02 Aug 2006 23:07:00 -0400</pubDate>
-				<guid>http://www.robgonda.com/blog/index.cfm/2006/8/2/flash-player-9</guid>
-				
-			</item>
-			
-		 	
-			
-			
-			<item>
-				<title>SVNServe Vs Apache</title>
-				<link>http://www.robgonda.com/blog/index.cfm/2006/8/2/SVNServe-Vs-Apache</link>
-				<description>
-				
-				SVN, short for &lt;a href="http://subversion.tigris.org/" target="_blank"&gt;Subversion&lt;/a&gt;, is a source control system similar to CSV, but IMHO better. Anyways, it is extremely simple to install the server, for Windows or Linux servers. SVN will take care of versioning, but if you need to serve it over IP you must use an additional tool, SVNServe and Apache being the two main (only?) choices.&lt;br /&gt;&lt;br /&gt;If you have to choose one, here are a few points to take into consideration.&lt;br /&gt;&lt;br /&gt;
-&lt;ul&gt;
-    &lt;li&gt;Both work with Windows and Linux&lt;/li&gt;
-    &lt;li&gt;SVNServe for Windows allows to serve a single repository; SVNServe for Linux allows unlimited&lt;/li&gt;
-    &lt;li&gt;Apache allows to serve unlimited repositories in both OS.&lt;/li&gt;
-    &lt;li&gt;&lt;a href="http://svn1clicksetup.tigris.org/" target="_blank"&gt;svn1clicks&lt;/a&gt; allows to fully install SVN + SVNServe in Windows&lt;/li&gt;
-    &lt;li&gt;SVNServe runs on port 3690, Apache runs on port 80&lt;/li&gt;
-    &lt;li&gt;Apache allows to run encrypted SVN over HTTPS -- port 443&lt;/li&gt;
-    &lt;li&gt;Apache allows to authenticate against an htpassword file, ldap, or other methods. SVNServe uses a clear text passwd file.&lt;/li&gt;
-    &lt;li&gt;SVNServe and Apache allow per repository authentication, including None, R, or RW. Apache allows per folder access restrictions too.&lt;/li&gt;
-    &lt;li&gt;Apache requires to restart/reload configuration everytime a change is made. SVNServe picks it up automatically.&lt;/li&gt;
-&lt;/ul&gt;
-Those are the main points I can think of right now, there may be more, so please share your personal experience.&lt;br /&gt;&lt;br /&gt;I have two setups at the moment, one running SVN+SVNServe for Linux, and the other is SVN+Apache in a Windows box. In fact, this box is running IIS6 and Apache with no conflicts, which you can accomplish by either having multiple IPs, or assigning a special port for Apache. &lt;br /&gt;&lt;br /&gt;My client tools are &lt;a href="http://tortoisesvn.tigris.org/" target="_blank"&gt;TortoiseSVN&lt;/a&gt; and &lt;a href="http://subclipse.tigris.org/" target="_blank"&gt;SubEclipse&lt;/a&gt;. I tried SVN Ant a couple of times, but I gave up... running SVN in the command line with Ant.
-				
-				</description>
-				
-				<category>Subversion</category>
-				
-				<pubDate>Wed, 02 Aug 2006 21:36:00 -0400</pubDate>
-				<guid>http://www.robgonda.com/blog/index.cfm/2006/8/2/SVNServe-Vs-Apache</guid>
-				
-			</item>
-			
-		 	
-			
-			
-			<item>
-				<title>Yet Another ColdFusion Ajax Library</title>
-				<link>http://www.robgonda.com/blog/index.cfm/2006/8/2/Yet-Another-ColdFusion-Ajax-Library</link>
-				<description>
-				
-				Brian pointed me today to &lt;a href="http://www.indiankey.com/mxajax/index.cfm" target="_blank"&gt;mxAjax&lt;/a&gt;, yet another ColdFusion Ajax Library. After over a year of hiding in the dark, Arjun, the creator of CFAjax decided to discontinue that framework and start&amp;nbsp; a new project. &lt;span style="font-style: italic;"&gt;&amp;quot;It is inspired from CFAjax but is build from grounds up&amp;quot;&lt;/span&gt;, which actually means that there is a ColdFusion back end for prototype, scriptaculous, and rico front end. It must says, it's nicer than CFAjax, especially because of the similarity to AjaxCFC :) ... it posts to a CFC, that extends a base components that handles some core functionality like complex object translation. It uses the exact same code I do to get metadata from functions and invoke them using argument collection and named arguments.... Well, I chose to license it under Apache 2.0, so what the hell, hehe.&lt;br /&gt;&lt;br /&gt;mxAjax uses JSON as the standard complex object notation, and the cfjson udfs to serialize/deserialize. It's only version 1, and I would suggest a couple of improvements like ALWAYS VAR SCOPE, and don't throw unnecessary debugging information in the screen to later reset the content... it's a misuse of resources... in addition, it's forcing to abort the request after the JS is displayed, but what if I had additional cleanups and logging?&lt;br /&gt;&lt;br /&gt;anyways, Arjun, great improvement from CFAjax... nicely done ... btw, if you're reading this, please tell us why you chose prototype... I hope it wasn't bcuz of RoR :)&lt;br /&gt;&lt;br /&gt;
-				
-				</description>
-				
-				<category>ajax</category>
-				
-				<pubDate>Wed, 02 Aug 2006 21:21:00 -0400</pubDate>
-				<guid>http://www.robgonda.com/blog/index.cfm/2006/8/2/Yet-Another-ColdFusion-Ajax-Library</guid>
-				
-			</item>
-			
-		 	
-			
-			
-			<item>
-				<title>uploading a file via Ajax</title>
-				<link>http://www.robgonda.com/blog/index.cfm/2006/8/1/uploading-a-file-via-Ajax</link>
-				<description>
-				
-				It is not possible. &lt;br /&gt;&lt;br /&gt;Lol, well, ok.... the XMLHttpRequest cannot send multipart/form-data, therefore, cannot upload files. There are two ways around this:&lt;br /&gt;1) use an iframe. This can be transparent, e.g. using the dojo.io.bind &lt;a href="http://ajaxian.com/archives/ajax-file-uploads-to-amazon-s3" target="_blank"&gt;will do it automatically&lt;/a&gt;.&lt;br /&gt;2) use a pixel Flash movie. You can create a 1 pixel flash movie, interface with it using the external interface (Flash 8 required), and use the Flash buffer classes (Flash 9 required) to upload the file. The nice thing about this is that you get the total bytes transferred count, thus you can display an accurate progress bar. &lt;br /&gt;&lt;br /&gt;I'll try to post an example of both options soon.
-				
-				</description>
-				
-				<category>ajax</category>
-				
-				<pubDate>Tue, 01 Aug 2006 23:13:00 -0400</pubDate>
-				<guid>http://www.robgonda.com/blog/index.cfm/2006/8/1/uploading-a-file-via-Ajax</guid>
-				
-			</item>
-			
-		 	
-			
-			
-			<item>
-				<title>Clearing template cache automatically</title>
-				<link>http://www.robgonda.com/blog/index.cfm/2006/8/1/Clearing-template-cache-automatically</link>
-				<description>
-				
-				Brian Szoszorek &lt;a href="http://www.adobe.com/devnet/coldfusion/articles/cacheclear.html" target="_blank"&gt;wrote an excellent article&lt;/a&gt; on clearing trusted cache automatically with even gateways -- directory watcher. &lt;br /&gt;Trusted cache should be enabled in every ColdFusion production server, as it prevents cfm,cfc files from being compiled into Java classes every time. ColdFusion will not check for file system updates, so you would have to clear cache every time you make a change. Brian proposed a solution to automate it via event gateways -- which only work for enterprise installs of course. Really nice I must say.
-				
-				</description>
-				
-				<category>Coldfusion</category>
-				
-				<pubDate>Tue, 01 Aug 2006 23:06:00 -0400</pubDate>
-				<guid>http://www.robgonda.com/blog/index.cfm/2006/8/1/Clearing-template-cache-automatically</guid>
 				
 			</item>
 			

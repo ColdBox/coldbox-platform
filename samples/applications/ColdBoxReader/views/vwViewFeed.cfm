@@ -43,7 +43,8 @@
 					<!--- Close Item --->
 					<div class="reader_floater">
 					<cfif thisLink neq "">
-					<img src="images/web_icon.gif" align="absmiddle" border="0">&nbsp;<a href="#thisLink#" target="_blank">Open Article</a>&nbsp;</cfif>
+					<img src="images/web_icon.gif" align="absmiddle" border="0">&nbsp;<a href="#thisLink#" target="_blank">Open Article</a>&nbsp;
+					</cfif>
 					<img src="images/orange_arrows_up.gif" align="absmiddle" border="0"><a href="##" onClick="javascript:viewContent('#tmpID#','#JSStringFormat(thisTitle)#')">Close Article</a>
 					</div>
 					<!--- Publish Date --->

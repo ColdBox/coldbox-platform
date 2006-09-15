@@ -10,11 +10,11 @@
 	<table>
 		<tr>
 			<td><b>Username:</b></td>
-			<td><input type="text" name="username" value="#username#" /></td>
+			<td><input type="text" name="username" value="#username#" size="20" /></td>
 		</tr>
 		<tr>
 			<td><b>Password:</b></td>
-			<td><input type="password" name="password" value="#password#" /></td>
+			<td><input type="password" name="password" value="#password#" size="20" /></td>
 		</tr>
 		<tr><td colspan="2">&nbsp;</td></tr>
 		<tr>

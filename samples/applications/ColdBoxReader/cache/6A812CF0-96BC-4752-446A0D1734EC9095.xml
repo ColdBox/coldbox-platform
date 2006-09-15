@@ -5,8 +5,8 @@
 			<link>http://ray.camdenfamily.com/index.cfm</link>
 			<description>A blog for ColdFusion, Java, and other topics.</description>
 			<language>en-us</language>
-			<pubDate>Sun, 10 Sep 2006 16:51:36 -0400</pubDate>
-			<lastBuildDate>Sat, 09 Sep 2006 11:28:00 -0400</lastBuildDate>
+			<pubDate>Fri, 15 Sep 2006 13:08:23 -0400</pubDate>
+			<lastBuildDate>Fri, 15 Sep 2006 08:46:00 -0400</lastBuildDate>
 			<generator>BlogCFC</generator>
 			<docs>http://blogs.law.harvard.edu/tech/rss</docs>
 			<managingEditor>ray@camdenfamily.com</managingEditor>
@@ -14,6 +14,198 @@
 			
 			
 			
+			
+			
+			<item>
+				<title>Friday Puzzler: Automatic CFC Method Tester</title>
+				<link>http://ray.camdenfamily.com/index.cfm/2006/9/15/Friday-Puzzler-Automatic-CFC-Method-Tester</link>
+				<description>
+				
+				One of the cooler features of ColdFusion components is their metadata. This lets you dig into the CFC via CFML and can enable some pretty powerful features. (See &lt;a href="http://ray.camdenfamily.com/projects/canvas"&gt;Canvas&lt;/a&gt; or the new rendering engine in &lt;a href="http://www.blogcfc.com"&gt;BlogCFC 5.5&lt;/a&gt; for examples.) Building on the fact that CF lets you grab this metadata easily, let me see how you build the following:
+
+Write code that accepts as input both a CFC (dotted notation path) and a method (yes, you could grab this via metadata, but I'm trying to keep the contest short). Your code will then generate a form with inputs for all method arguments. 
+
+The code can assume nicely documented CFCs. (Ie, the method arguments all have type attributes.)
+
+If you are really eager, don't prompt for the method, but just the CFC and follow it up with a prompt for the method where you provide the methods for the user.
+
+The code should be a self posting form and should invoke the data sent by the user using cfinvoke. This will let you build the tester for methods that are not remote.
+
+Anyone game for this?
+				
+				</description>
+				
+				<category>ColdFusion</category>
+				
+				<pubDate>Fri, 15 Sep 2006 08:46:00 -0400</pubDate>
+				<guid>http://ray.camdenfamily.com/index.cfm/2006/9/15/Friday-Puzzler-Automatic-CFC-Method-Tester</guid>
+				
+			</item>
+			
+		 	
+			
+			
+			<item>
+				<title>Using ColdFusion's Asynchronous Gateway - 3</title>
+				<link>http://ray.camdenfamily.com/index.cfm/2006/9/14/Using-ColdFusions-Asynchronous-Gateway--3</link>
+				<description>
+				
+				I had promised a summary page a while ago concerning my two articles on ColdFusion's Asynch Gateways. In case you missed it, here are the older articles:
+
+&lt;a href="http://ray.camdenfamily.com/index.cfm/2006/9/7/Using-ColdFusions-Asynchronous-Gateway"&gt;Using ColdFusion's Asynchronous Gateway&lt;/a&gt;&lt;br&gt;
+&lt;a href="http://ray.camdenfamily.com/index.cfm/2006/9/7/Using-ColdFusions-Asynchronous-Gateway--2"&gt;Using ColdFusion's Asynchronous Gateway - 2&lt;/a&gt;&lt;br&gt;
+				 [More]
+				</description>
+				
+				<category>ColdFusion</category>
+				
+				<pubDate>Thu, 14 Sep 2006 08:47:00 -0400</pubDate>
+				<guid>http://ray.camdenfamily.com/index.cfm/2006/9/14/Using-ColdFusions-Asynchronous-Gateway--3</guid>
+				
+			</item>
+			
+		 	
+			
+			
+			<item>
+				<title>Interesting use of onRequestEnd</title>
+				<link>http://ray.camdenfamily.com/index.cfm/2006/9/14/Interesting-use-of-onRequestEnd</link>
+				<description>
+				
+				Andrew pointed me to an &lt;a href="http://www.andyscott.id.au/index.cfm/2006/9/12/Proof-of-Concept"&gt;article&lt;/a&gt; on his blog where he discusses an interesting use of the onRequestEnd method of the Application.cfc file. He is very clear in pointing out that it is just a proof of concept, but it is still definitely worth a read.
+				
+				</description>
+				
+				<category>ColdFusion</category>
+				
+				<pubDate>Thu, 14 Sep 2006 08:24:00 -0400</pubDate>
+				<guid>http://ray.camdenfamily.com/index.cfm/2006/9/14/Interesting-use-of-onRequestEnd</guid>
+				
+			</item>
+			
+		 	
+			
+			
+			<item>
+				<title>Presentation Tonight</title>
+				<link>http://ray.camdenfamily.com/index.cfm/2006/9/14/Presentation-Tonight</link>
+				<description>
+				
+				Tonight I'm presenting to the &lt;a href="http://www.statelinemmug.com/"&gt;Stateline Adobe User Group&lt;/a&gt;. Since this presentation is just a simple introduction to ColdFusion, I'm not sharing the breeze URL. Of course, I don't have breeze URL, but I figured this presentation wouldn't interest anyone here. I'm bringing it up in case there are other user groups out there that would want a presentation like this.
+				
+				</description>
+				
+				<category>ColdFusion</category>
+				
+				<pubDate>Thu, 14 Sep 2006 06:20:00 -0400</pubDate>
+				<guid>http://ray.camdenfamily.com/index.cfm/2006/9/14/Presentation-Tonight</guid>
+				
+			</item>
+			
+		 	
+			
+			
+			<item>
+				<title>Updated CFTHREAD/CFJOIN POC from Adobe</title>
+				<link>http://ray.camdenfamily.com/index.cfm/2006/9/13/Updated-CFTHREADCFJOIN-POC-from-Adobe</link>
+				<description>
+				
+				Damon has updated the &lt;a href="http://www.dcooper.org/blog/client/index.cfm?mode=entry&amp;entry=A71F310C-4E22-1671-5E287AE8918A048B"&gt;cfthread/cfjoin proof of concept&lt;/a&gt; code and I'm very happy with the changes. Threads have their own scope now and can even have their own attributes. There are many other changes as well. &lt;b&gt;Definitely&lt;/b&gt; check it out. When I return from the deep hole I'm in I'll post an updated demo.
+				
+				</description>
+				
+				<category>ColdFusion</category>
+				
+				<pubDate>Wed, 13 Sep 2006 09:21:00 -0400</pubDate>
+				<guid>http://ray.camdenfamily.com/index.cfm/2006/9/13/Updated-CFTHREADCFJOIN-POC-from-Adobe</guid>
+				
+			</item>
+			
+		 	
+			
+			
+			<item>
+				<title>Apple enters movie business (yawn)</title>
+				<link>http://ray.camdenfamily.com/index.cfm/2006/9/12/Apple-enters-movie-business-yawn</link>
+				<description>
+				
+				Anyone else just not terribly excited about iTunes selling movies? Without getting into a huge DRM discussion, I can say I'm very happy with the prices for songs, and the TV show prices seemed fair as well. But 9.99 for an old DVD that I can get at Walmart (for probably cheaper), and 14.99 for a new movie? Wow. I'm just really surprised.
+				
+				</description>
+				
+				<category>Misc</category>
+				
+				<pubDate>Tue, 12 Sep 2006 14:15:00 -0400</pubDate>
+				<guid>http://ray.camdenfamily.com/index.cfm/2006/9/12/Apple-enters-movie-business-yawn</guid>
+				
+			</item>
+			
+		 	
+			
+			
+			<item>
+				<title>Question on Instant Messenger Gateway</title>
+				<link>http://ray.camdenfamily.com/index.cfm/2006/9/12/Question-on-Instant-Messenger-Gateway</link>
+				<description>
+				
+				Kevin asks, 
+
+&lt;blockquote&gt;
+I read Forta's blog post from about 1 year ago where he dealt with GTalk and your own post to rewrite Eliza to work with GTalk.  I tried both systems and liked them, but neither of you Jedi's went the step further to take the functionality a little more...
+
+So here as one of your fans I am sending in my own ask a jedi question.  Would it be possible to ask the XMMP event gateway and cfc to check a users online status and keep a database updated with the changes... 
+
+I am thinking an Online/Offline image system using GTalk / Jabber as the protocol? In my specific case, we have a new board for our church... If you could see a users status and interact with them if they were online.. that would be a great function to add to the page...
+&lt;/blockquote&gt;
+				 [More]
+				</description>
+				
+				<category>ColdFusion</category>
+				
+				<pubDate>Tue, 12 Sep 2006 06:07:00 -0400</pubDate>
+				<guid>http://ray.camdenfamily.com/index.cfm/2006/9/12/Question-on-Instant-Messenger-Gateway</guid>
+				
+			</item>
+			
+		 	
+			
+			
+			<item>
+				<title>This Week</title>
+				<link>http://ray.camdenfamily.com/index.cfm/2006/9/11/This-Week</link>
+				<description>
+				
+				This is mainly for those who use my products. I want everyone to know that this week is very, very bad for me. In general, if you have a support question, and you &lt;b&gt;can&lt;/b&gt; wait, I ask that you do so, until the beginning of next week. I apologize, but I'm busy night and day now to fix an issue so I will not be able to help. Obviously my blogging volume is going to be much lower than normal. I am still giving my presentation this week (two actually, but one is for my local user group), but the presentation I'm giving later in the week is an intro to CF thing that will not really be of interest to most folks.
+				
+				</description>
+				
+				<category>Misc</category>
+				
+				<pubDate>Mon, 11 Sep 2006 15:43:00 -0400</pubDate>
+				<guid>http://ray.camdenfamily.com/index.cfm/2006/9/11/This-Week</guid>
+				
+			</item>
+			
+		 	
+			
+			
+			<item>
+				<title>A few random 9/11 Thoughts</title>
+				<link>http://ray.camdenfamily.com/index.cfm/2006/9/11/A-few-random-911-Thoughts</link>
+				<description>
+				
+				I just wanted to share a few things that are in my mind today. Nothing deep or meaningful - just - well - stuff. I remember everything about 9/11, and it often occurred to me since then if this is just like my parent's generation and Kennedy. They always said they remembered what they were doing when he was shot.
+				 [More]
+				</description>
+				
+				<category>Misc</category>
+				
+				<pubDate>Mon, 11 Sep 2006 06:11:00 -0400</pubDate>
+				<guid>http://ray.camdenfamily.com/index.cfm/2006/9/11/A-few-random-911-Thoughts</guid>
+				
+			</item>
+			
+		 	
 			
 			
 			<item>
@@ -160,267 +352,6 @@ Ray again: Just in case it wasn't clear, the ShowError variable is a function th
 				
 				<pubDate>Thu, 07 Sep 2006 08:09:00 -0400</pubDate>
 				<guid>http://ray.camdenfamily.com/index.cfm/2006/9/7/Using-ColdFusions-Asynchronous-Gateway</guid>
-				
-			</item>
-			
-		 	
-			
-			
-			<item>
-				<title>Thanks for "Ship of Gold"</title>
-				<link>http://ray.camdenfamily.com/index.cfm/2006/9/7/Thanks-for-Ship-of-Gold</link>
-				<description>
-				
-				I got "Ship of Gold" from my wishlist last night, but with no indication of who got it - so thank you! I apologize for the lack of blogging here lately (or to be clear, ColdFusion blogging). Things have been more than a little bit hectic and my brain is having a hard time keeping up.
-				
-				</description>
-				
-				<category>Misc</category>
-				
-				<pubDate>Thu, 07 Sep 2006 06:00:00 -0400</pubDate>
-				<guid>http://ray.camdenfamily.com/index.cfm/2006/9/7/Thanks-for-Ship-of-Gold</guid>
-				
-			</item>
-			
-		 	
-			
-			
-			<item>
-				<title>Where do I report a bug with an Adobe product?</title>
-				<link>http://ray.camdenfamily.com/index.cfm/2006/9/6/Where-do-I-report-a-bug-with-an-Adobe-product</link>
-				<description>
-				
-				I talked about this a few months ago, but it came up again today in conversation so I thought I'd remind folks. As we all know, ColdFusion is perfect and has no bugs and is the best programming language on the planet. If, however, you do not agree with that and think you have a bug (inconceivable!), you can report a bug here:
-
-&lt;a href="http://www.adobe.com/go/wish"&gt;http://www.adobe.com/go/wish&lt;/a&gt;
-
-You can also use this link for other Adobe products, but it seems as if they only list the old Macromedia products. I didn't see Photoshop listed for example. You can also use this page to make requests as well. (ColdFusion needs more cow bell!)
-				
-				</description>
-				
-				<category>ColdFusion</category>
-				
-				<category>Adobe</category>
-				
-				<pubDate>Wed, 06 Sep 2006 09:53:00 -0400</pubDate>
-				<guid>http://ray.camdenfamily.com/index.cfm/2006/9/6/Where-do-I-report-a-bug-with-an-Adobe-product</guid>
-				
-			</item>
-			
-		 	
-			
-			
-			<item>
-				<title>Next "virtual" user group meeting scheduled - Building a Security System</title>
-				<link>http://ray.camdenfamily.com/index.cfm/2006/9/5/Next-virtual-user-group-meeting-scheduled--Building-a-Security-System</link>
-				<description>
-				
-				My next presentation in what I am (tentatively) calling the ColdFusion Jedi User Group will be on September 27 at 6 PM Central. This is a class for beginners who know the basics of CFML, and are now looking to add basic security to your applications. So for example - you have a form to add, edit, and delete press releases for your site, but want the form to require an administrator username and password. I'll walk you through the basics of this starting from having nothing to having a simple logon system. 
-
-I'll then touch a bit on roles. By that I mean - what if you want some users to be able to add content, but not edit or delete? Or perhaps you don't want all your content writers publishing content. I'll show how you can create a basic authorization system such that only certain users have the ability to publish content.
-
-Anyway, this is the plan. Comments and suggestions are welcome. For the fun of it, I created this seal online a few days ago. Don't consider it anything "official" - it is just for fun.
-
-&lt;p align="center"&gt;
-&lt;img src="http://ray.camdenfamily.com/images/seal.gif"&gt;
-&lt;/p&gt;
-
-As always, you can find information about this meeting and all my other upcoming presentations on my &lt;a href="http://ray.camdenfamily.com/speakingengagements.cfm"&gt;Speaking Engagements&lt;/a&gt; page.
-				
-				</description>
-				
-				<category>ColdFusion</category>
-				
-				<pubDate>Tue, 05 Sep 2006 10:42:00 -0400</pubDate>
-				<guid>http://ray.camdenfamily.com/index.cfm/2006/9/5/Next-virtual-user-group-meeting-scheduled--Building-a-Security-System</guid>
-				
-			</item>
-			
-		 	
-			
-			
-			<item>
-				<title>Return Types in Application.cfc</title>
-				<link>http://ray.camdenfamily.com/index.cfm/2006/9/5/Return-Types-in-Applicationcfc</link>
-				<description>
-				
-				Peter sent in an interesting question this morning, especially as it relates to my &lt;a href="http://ray.camdenfamily.com/index.cfm/2006/9/1/Applicationcfc-Presentation-Files--Recording-URL--Next-Meeting"&gt;last presentation&lt;/a&gt;:
-
-&lt;blockquote&gt;
-Just wanted to quickly check something about your &lt;a href="http://ray.camdenfamily.com/downloads/app.pdf"&gt;App.cfc reference&lt;/a&gt;:
-
-The onApplicationStart and onRequestStart functions have a returntype of Boolean, whilst the rest are all Void.
-
-Is there a reason for these two being different
-than the others, particularly the onSessionStart function? 
-&lt;/blockquote&gt;
-
-The fact that you can return true or false in onApplicationStart and onRequestStart simply are ways to let you abort the application start up, or request, based on some condition. The example I believe I gave in my &lt;a href="http://ray.camdenfamily.com/index.cfm/2006/9/1/Applicationcfc-Presentation-Files--Recording-URL--Next-Meeting"&gt;presentation&lt;/a&gt; was doing a quick database check. If the check fails, then send some kind of message to the admin and prevent the application from starting up. You could do the same in onRequestStart, although it is probably overkill to check every request. What you could do instead is log the last time you checked (in the application scope for example), and check only if sixty minutes have passed. 
-
-Anyone out there using something like this in their Application.cfc files?
-				
-				</description>
-				
-				<category>ColdFusion</category>
-				
-				<pubDate>Tue, 05 Sep 2006 08:16:00 -0400</pubDate>
-				<guid>http://ray.camdenfamily.com/index.cfm/2006/9/5/Return-Types-in-Applicationcfc</guid>
-				
-			</item>
-			
-		 	
-			
-			
-			<item>
-				<title>Job titles and salary are a security issue?</title>
-				<link>http://ray.camdenfamily.com/index.cfm/2006/9/3/Job-titles-and-salary-are-a-security-issue</link>
-				<description>
-				
-				My local paper ran a story today entitled, &lt;a href="http://www.acadiananow.com/apps/pbcs.dll/article?AID=/20060903/NEWS01/609030333/1002"&gt;They make what?&lt;/a&gt;. It covered what our public officials are getting paid. (Although to be fair, it should cover all the benefits they get.) Unfortunately, the most interesting article doesn't exist on the web site. Apparently the one local government agency that wouldn't respond to the FOI request was our airport.
-
-Get this.
-
-Apparently the job titles and salaries of the airport officials is a matter of national security. The paper was sent a list of names and job titles, but they were not connected. Salaries were not sent. The airport is checking with Homeland Security even though the law clearly states that they should have responded to the paper properly.
-
-What is sad is that the job title information is readily available on the &lt;a href="http://www.lftairport.com/"&gt;web site&lt;/a&gt;. 
-
-So - nothing too exciting here I guess. Just one more sign of the new world we live in.
-				
-				</description>
-				
-				<category>Misc</category>
-				
-				<pubDate>Sun, 03 Sep 2006 18:16:00 -0400</pubDate>
-				<guid>http://ray.camdenfamily.com/index.cfm/2006/9/3/Job-titles-and-salary-are-a-security-issue</guid>
-				
-			</item>
-			
-		 	
-			
-			
-			<item>
-				<title>Mini Cooper is the only car not covered by lemon law (and other fun facts)</title>
-				<link>http://ray.camdenfamily.com/index.cfm/2006/9/2/Mini-Cooper-is-the-only-car-not-covered-by-lemon-law-and-other-fun-facts</link>
-				<description>
-				
-				Ok, I swear I'm not going to turn this into a Mini Cooper rant blog, but I had some interesting discoveries on Friday I wanted to share. First off: My wife and I had decided we weren't really interested in going to court. It seemed like a lot of trouble. But the lawyer called us on Friday and really wants to work with us.
-
-Then my wife did a bit of research. Now - it is not surprising that she found folks complaining about Mini Cooper. You can find people complaining about &lt;i&gt;anything&lt;/i&gt; on the Internet. However, some of what she found was pretty interesting. Consider...
-
-&lt;a href="http://www.chenelle.com/2005/03/18/mini-trouble/"&gt;http://www.chenelle.com/2005/03/18/mini-trouble/&lt;/a&gt;
-
-From this entry: "Performance issues - idling too low, jerking motion when shifting gears automatic mode, loss of power and then jumping forward from a stopped position to go"
-
-This is exactly something my Mini did. She also mentions indicator lights - we had that issue with our trunk. (Which by the way Brian Harris said was our fault for slamming the trunk.) 
-
-&lt;a href="http://www.consumeraffairs.com/automotive/mini.html"&gt;http://www.consumeraffairs.com/automotive/mini.html&lt;/a&gt;
-
-From this entry - note how they accused one person of driving into a swamp (in NYC). My favorite quote from here though: "The Operations Manager first stated BMWs weren't subject to lemon laws!" Another quote:
-
-&lt;blockquote&gt;
-I only slightly under 30,000 miles on my 2003 Mini-Cooper and was told I had to pay for a battery replacement because I had not driven the car enough. Even though I drive my car daily to work - I have to pay over $200 for a new battery because I did not use the car enough - this is so ridiculous. Talked to several Mini representative and all say the same - Mini Policy and yet it is not in the Policy Book provided upon purchase.
-&lt;/blockquote&gt;
-
-This is also what Brian Harris told us multiple times - that we didn't drive the car enough. Gee - what is it? Not driving the car enough or driving into swamps?
-
-My wife had Brian Harris send over our service history via fax, and it is amazing how much of the history is a list of things &lt;b&gt;we&lt;/b&gt; did wrong. Not driving it enough. Slamming the trunk. Using "bad gas".
-
-You know what - screw this. We will fight.
-				
-				</description>
-				
-				<category>Misc</category>
-				
-				<pubDate>Sat, 02 Sep 2006 09:34:00 -0400</pubDate>
-				<guid>http://ray.camdenfamily.com/index.cfm/2006/9/2/Mini-Cooper-is-the-only-car-not-covered-by-lemon-law-and-other-fun-facts</guid>
-				
-			</item>
-			
-		 	
-			
-			
-			<item>
-				<title>ColdFusion Quick Reference Sheet</title>
-				<link>http://ray.camdenfamily.com/index.cfm/2006/9/1/ColdFusion-Quick-Reference-Sheet</link>
-				<description>
-				
-				The guys over at &lt;a href="http://www.dreamincode.net/"&gt;Dream.In.Code&lt;/a&gt; have created a nice &lt;a href="http://forums.dreamincode.net/showtopic18275.htm"&gt;ColdFusion  Quick Reference Sheet&lt;/a&gt;. Check it out!
-				
-				</description>
-				
-				<category>ColdFusion</category>
-				
-				<pubDate>Fri, 01 Sep 2006 15:49:00 -0400</pubDate>
-				<guid>http://ray.camdenfamily.com/index.cfm/2006/9/1/ColdFusion-Quick-Reference-Sheet</guid>
-				
-			</item>
-			
-		 	
-			
-			
-			<item>
-				<title>Application.cfc Presentation Files + Recording URL + Next Meeting</title>
-				<link>http://ray.camdenfamily.com/index.cfm/2006/9/1/Applicationcfc-Presentation-Files--Recording-URL--Next-Meeting</link>
-				<description>
-				
-				Sorry for the delay on this folks, but here is the URL for my Application.cfc presentation. I was delayed as I was waiting to see if this was the &lt;b&gt;official&lt;/b&gt; URL. There is a chance this URL may change though. 
-
-&lt;a href="http://adobechats.adobe.breezecentral.com/p73045503/"&gt;http://adobechats.adobe.breezecentral.com/p73045503/&lt;/a&gt;
-
-For the files, please use the download link below.
-
-I am tentatively scheduling a meeting for the end of this month, the last Wednesday. I can cover one of two topics. Please let me know what you think - and whatever I don't cover in September will be covered later.
-
-1) How to add security to a web site. This is a class for beginners and covers the basic, "How in the heck do I start" type situation. It will cover creating a username/password table and how to add a simple logon form. I will talk about basic authentication and if we have time, authorization for more advanced security needs.
-
-2) Custom Tags: What are they, and are they planning to attack! You get the idea.
-
-Lastly - someone give me a good name for this group.
-				
-				</description>
-				
-				<category>ColdFusion</category>
-				
-				<pubDate>Fri, 01 Sep 2006 10:45:00 -0400</pubDate>
-				<guid>http://ray.camdenfamily.com/index.cfm/2006/9/1/Applicationcfc-Presentation-Files--Recording-URL--Next-Meeting</guid>
-				
-				<enclosure length="553603" type="application/x-zip-compressed" url="http://ray.camdenfamily.com/enclosures/appcfc.zip"/>
-				
-			</item>
-			
-		 	
-			
-			
-			<item>
-				<title>Ask a Jedi: Getting a job and code samples</title>
-				<link>http://ray.camdenfamily.com/index.cfm/2006/9/1/Ask-a-Jedi-Getting-a-job-and-code-samples</link>
-				<description>
-				
-				George sent me this a few weeks ago:
-
-&lt;blockquote&gt;
-I'm currently looking for a new ColdFusion job in London and a lot of the companies I apply to ask for some form of example code I've written. The only CF apps I've worked on are behind firewalls on internal networks run by companys
-using apps I've worked on, so I'm looking to get something together that I can just throw at a company (or deply on a website and give them the URL) whenever I'm asked for it.
-
-One thing I've supplied to a couple of companies is something I knocked up a while ago while I was experimenting with a couple of techniques. It's a SAX XML parser for CF and uses a lot of cool stuff - calling Java from
-CF, calling methods in a CFC from Java, duck-typing, mixins, adding variables to CFCs at runtime, yadda yadda. However, there's very little front-end required for a SAX parser so I can't show much HTML/CSS/JS.
-
-If you have a few minutes, I'd be interested to know what sort of things you'd like to see in code provided
-by a candidate for a ColdFusion job you're hiring for.
-&lt;/blockquote&gt;
-
-It is interesting because what you provided is exactly what I'd look for. You seem to be very passionate about your project, and you pointed out what is interesting about it. That is, in my mind, exactly what I'd want in a code sample. It also relates to the types of questions I like to ask candidates: What was the coolest piece of code you have written? What was the most difficult piece of code you have written? 
-
-How you answer this can tell me how much passion you have for your code and also talk about how you solve problems. That is typically what interests me the most. I don't expect a coder to have memorized every function (go ahead, quiz me, I can't seme to ever remember what comes first in the find function). I do expect a coder to know how to look in the docs and where to go to for help. I also want to know how you debug and test your code as well.
-
-Being able to talk about your code is a must since, unlike those fancy Flash developers, your end results will never be as sexy as an animation. Unfortunately - you will have to actually show something to people, so I think it is a good idea what you are doing (building the example site).
-				
-				</description>
-				
-				<category>ColdFusion</category>
-				
-				<pubDate>Fri, 01 Sep 2006 10:23:00 -0400</pubDate>
-				<guid>http://ray.camdenfamily.com/index.cfm/2006/9/1/Ask-a-Jedi-Getting-a-job-and-code-samples</guid>
 				
 			</item>
 			
