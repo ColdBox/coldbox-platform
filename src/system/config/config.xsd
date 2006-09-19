@@ -47,6 +47,7 @@
 									<xs:enumeration value="DebugMode"/>		
 									<xs:enumeration value="DebugPassword"/>							
 									<xs:enumeration value="AppMapping"/>
+									<xs:enumeration value="AppDevMapping"/>
 									<xs:enumeration value="AppName"/>				
 									<xs:enumeration value="UDFLibraryFile"/>	
 									<xs:enumeration value="MessageboxStyleClass" />

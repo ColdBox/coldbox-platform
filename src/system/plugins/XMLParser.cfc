@@ -176,15 +176,10 @@ Modification History:
 			//Check For CFMapping or Throw
 			if ( not StructKeyExists(ConfigStruct, "AppMapping") )
 				throw("There was no 'AppMapping' setting defined. This is required by the framework.","","Framework.plugins.XMLParser.ConfigXMLParsingException");
-						
-			//Set the Handler Invocation Path for this Application
-			if( ConfigStruct["AppMapping"] neq ""){
-				ConfigStruct["HandlersInvocationPath"] = replace(ConfigStruct["AppMapping"],"/",".","all") & ".handlers";
-			}
-			else{
-				ConfigStruct["HandlersInvocationPath"] = "handlers";
-			}
-			
+			//Check for Dev Mapping
+			if ( not StructKeyExists(ConfigStruct, "AppDevMapping") )
+				ConfigStruct["AppDevMapping"] = "";
+				
 			//Check for Default Event
 			if ( not StructKeyExists(ConfigStruct, "DefaultEvent") )
 				throw("There was no 'DefaultEvent' setting defined. This is required by the framework.","","Framework.plugins.XMLParser.ConfigXMLParsingException");
@@ -329,7 +324,20 @@ Modification History:
 			}
 			else
 				StructInsert(ConfigStruct,"Environment","PRODUCTION");
-
+			
+			//Environment Set, now test if AppDevMapping is defined and set it to be the AppMapping.
+			if( ConfigStruct.Environment eq "DEVELOPMENT" and ConfigStruct.AppDevMapping neq "" ){
+				ConfigStruct.AppMapping = ConfigStruct.AppDevMapping;
+			}
+			
+			//Set the Handler Invocation Path for this Application
+			if( ConfigStruct["AppMapping"] neq ""){
+				ConfigStruct["HandlersInvocationPath"] = replace(ConfigStruct["AppMapping"],"/",".","all") & ".handlers";
+			}
+			else{
+				ConfigStruct["HandlersInvocationPath"] = "handlers";
+			}
+			
 			//Get Web Services From Config.
 			WebServiceNodes = XMLSearch(configXML, instance.searchWS);
 			if ( ArrayLen(WebServiceNodes) ){
