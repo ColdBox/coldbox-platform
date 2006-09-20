@@ -69,6 +69,15 @@
 		  <a href="#getSetting("ColdboxReaderApp")#/index.cfm" target="_blank">#getresource("opensample")#</a><br />
 		</p>
 		
+		<h3>Illidium cfc Code Generator</h3>
+		<p> #getresource("by")# Brian Rinaldi<br />#getresource("needssetup")#
+		<br />
+		<font color="##53231d">#getResource("portMessage")#</font>
+		<br />
+		  <a href="#getSetting("cfcGeneratorApp")#/install" target="_blank">#getresource("openinstall")#</a><br />
+		  <a href="#getSetting("cfcGeneratorApp")#/index.cfm" target="_blank">#getresource("open")# cfcGenerator</a><br />
+		</p>
+		
 		<h3>Hello World</h3>
 		<p> #getresource("by")# Luis Majano
 		  <br />

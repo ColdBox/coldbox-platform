@@ -38,6 +38,7 @@
 		<Setting name="BlogcfcApp" value="applications/blogcfcv5_0" />
 		<Setting name="ForumsApp" value="applications/forumsv1_5" />
 		<Setting name="ColdboxReaderApp" value="applications/ColdBoxReader" />
+		<Setting name="cfcGeneratorApp" value="applications/cfcGenerator" />
 	</YourSettings>
 
 	<!--Optional,if blank it will use the CFMX administrator settings.-->
