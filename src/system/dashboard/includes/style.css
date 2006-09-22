@@ -1,0 +1,40 @@
+/* OVERALL APPLICATION LINKS */a:link, a:visited, a:history{	color: #0033CC;	font-weight:bold;	text-decoration:none;}a:hover{	text-decoration: underline;	background-color: #FFFFF0;	color: #E58108;}body{	margin: 0px;	font-family:Verdana, Arial, Helvetica, sans-serif;	font-size:11px;	}hr{
+	color: #232332;
+}
+.copyright{
+	font-size: 9px;
+	font-style: italic;	
+}
+/* GUI BARS */.statusbar{	background: url(../images/statusbar_bg.png) repeat-x;	height: 25px;	border-top: 1px solid #AAAAAA;	border-bottom: 1px solid #dddddd;	font-size:9px;}.headerbar{	background: url(../images/header_bg.png) repeat;	height: 70px;}/* DHTML BASED */.showlayer{	display: block;}.hidelayer{	display: none;}/* SHELL DECLARATIONS */.container{	width:100%;	height:100%;	background-color: #f5f5f5;}.header{	height: 92px;}/*GUI Declarations */
+.loginbox{
+	width: 600px;
+	height: 300px;
+	border: 1px outset #cccccc;
+	margin: auto;
+	margin-top:60px;
+	background: url(../images/contentboxes_footer.png) repeat-x bottom;
+}
+.contentboxes_footer{
+	position: rel;
+	width: 100%;
+	left: 0px;
+	text-align: right;
+	float: right;
+	bottom: 0px;
+}
+.contentboxes_header{
+	background: url(../images/contentboxes_header.png) repeat-x;
+	height: 50px;
+}
+.contentboxes{
+	margin: 20px;
+}
+.contentboxes_title{
+	margin-left: 20px;
+	padding-top: 5px;
+	font-size: 14px;
+	font-family: Arial, Helvetica, sans-serif;
+	font-weight: bold;
+}.myloader{	float:right;	width: 275px;	text-align:right;	font-size:9px;	vertical-align:middle;	margin-top:2px;}
+.contentpanel{	vertical-align: top;	float:left;}.menupanel{	background-color: #FFFFFF;	width: 220px;	border-left:1px solid #dddddd;	vertical-align: top;	height: 100%;	float:right;}.cleardiv{	clear: both;}.paddingDiv{ 	margin: 15px;}/* FORM ELEMENTS */input[type=button], input[type=submit], input[type=reset] { background: #eee; color: #222; border: 1px outset #ccc; padding: .1em .5em; font-size: 11px;
+ font-weight: bold;}input[type=button]:hover, input[type=submit]:hover, input[type=reset]:hover { background: #FFFFF0; border: 1px inset #ccc; cursor: hand;}input[type=button][disabled], input[type=submit][disabled],input[type=reset][disabled] { background: #f6f6f6; border-style: solid; color: #999;}input[type=text], input[type=password], input[type=checkbox], textarea { border: 1px solid #d7d7d7 }input[type=text], input[type=password], input[type=checkbox] { padding: .20em .3em }input[type=text]:focus, input[type=password]:focus, textarea:focus, input[type=checkbox]:focus { border: 1px solid #886;}
