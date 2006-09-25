@@ -20,7 +20,7 @@ This is the main event handler for the ColdBox dashboard.
 
 	<cffunction name="onAppStart" access="public" returntype="void">
 		<cfset var MyService = getSetting("AppMapping") & ".model.dbservice">
-		<cfset session.dbservice = CreateObject("component",MyService).init()>
+		<cfset application.dbservice = CreateObject("component",MyService).init()>
 	</cffunction>
 	
 	<!--- ************************************************************* --->
@@ -50,7 +50,7 @@ This is the main event handler for the ColdBox dashboard.
 			<cfset getPlugin("messagebox").setMessage("error", "Please fill out the password field.")>
 			<cfset setNextEvent()>
 		</cfif>
-		<cfif session.dbservice.get("settings").validatePassword(getvalue("password"))>
+		<cfif application.dbservice.get("settings").validatePassword(getvalue("password"))>
 			<!--- Validate user --->
 			<cfset session.authorized = true>
 			<cfset setNextEvent()>
@@ -60,13 +60,19 @@ This is the main event handler for the ColdBox dashboard.
 		</cfif>
 	</cffunction>
 	
+	<cffunction name="doLogout" access="public" returntype="void">
+		<cfset session.authorized = false>
+		<cfset SetNextEvent("ehColdbox.dspLogin")>
+	</cffunction>
+	
 	<!--- ************************************************************* --->
 	
 	<cffunction name="dspFrameset" access="public" returntype="void">
+		<!--- EXIT HANDLERS: --->
 		<cfset rc.xehHome = "ehColdbox.dspHome">
 		<cfset rc.xehHeader = "ehColdbox.dspHeader">
 		<!--- Set the View --->
-		<cfset setView("vwFrameset")>
+		<cfset setView("vwFrameset",true)>
 	</cffunction>
 	
 	<!--- ************************************************************* --->
@@ -77,6 +83,13 @@ This is the main event handler for the ColdBox dashboard.
 	</cffunction>
 	
 	<cffunction name="dspHeader" access="public" returntype="void">
+		<!--- EXIT HANDLERS: --->
+		<cfset rc.xehLogout = "ehColdbox.doLogout">
+		<cfset rc.xehHome = "ehColdbox.dspHome">
+		<cfset rc.xehSettings = "ehColdbox.dspSettings">
+		<cfset rc.xehTools = "ehColdbox.dspTools">
+		<cfset rc.xehUpdate = "ehColdbox.dspUpdate">
+		<cfset rc.xehBugs = "ehColdbox.dspBugs">
 		<!--- Set the View --->
 		<cfset setView("tags/header")>
 	</cffunction>
@@ -244,12 +257,7 @@ This is the main event handler for the ColdBox dashboard.
 	</cffunction>
 	<!--- ************************************************************* --->
 
-	<!--- ************************************************************* --->
-	<cffunction name="doLogout" access="public" returntype="void">
-		<cfset session.authorized = false>
-		<cfset SetNextEvent("ehColdbox.dspLogin")>
-	</cffunction>
-	<!--- ************************************************************* --->
+	
 
 	<!--- ************************************************************* --->
 	<cffunction name="doChangePassword" access="public" returntype="void">

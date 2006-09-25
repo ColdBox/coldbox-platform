@@ -53,7 +53,7 @@
 	</WebServices>
 	
 	<Layouts>
-		<DefaultLayout>Layout.None.cfm</DefaultLayout>
+		<DefaultLayout>Layout.Main.cfm</DefaultLayout>
 		<Layout file="Layout.Login.cfm" name="login">
 			<View>vwLogin</View>
 		</Layout>

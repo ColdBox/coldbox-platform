@@ -1,101 +1,69 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
-<title>ColdBox Dashboard Header</title>
-<link href="includes/style.css" rel="stylesheet" type="text/css" />
-<script language="javascript" src="includes/lib/prototype.js"></script>
-<script language="javascript" src="includes/dashboard.js"></script>
-<script language="javascript" src="includes/toolkit/scriptaculous.js?load=effects"></script>
-<script>
-	
-<!--- DHTML Methods --->
-function doFormEvent (e, targetID, frm, callback, methodType) {
-	if ( methodType == null || methodType == undefined )
-		methodType = "get";
-	var params = {};
-	var frm = $(frm);
-	for(i=0;i<frm.length;i++) {
-		if(!(frm[i].type=="radio" && !frm[i].checked) && frm[i].value != undefined)  {
-			params[frm[i].name] = frm[i].value;
-		}
-	}
-	doEvent(e, targetID, params, callback, methodType);
-}
-
-function doEvent (e, targetID, params, callback, methodType ) {
-	if ( methodType == null || methodType == undefined )
-		methodType = "get";
-	var pars = "";
-	for(p in params) pars = pars + p + "=" + escape(params[p]) + "&";
-	pars = pars + "event=" + e;
-	var myAjax = new Ajax.Updater(targetID,
-									"index.cfm",
-									{method:methodType, parameters:pars, evalScripts:true, onFailure:h_callError, onComplete:callback});
-}
-
-function doCall(targetID, targetURL, params, callback, methodType ){
-	if ( methodType == null || methodType == undefined )
-		methodType = "get";
-	var pars = "";
-	for(p in params) pars = pars + p + "=" + escape(params[p]) + "&";
-	var myAjax = new Ajax.Updater(targetID,
-								   targetURL,
-								   {method:methodType, parameters:pars, evalScripts:true, onFailure:h_callError, onComplete:callback});
-}
-
-function h_callError(request) {
-	alert('Sorry. An error ocurred while calling a server side component. Please try again.');
-}
-
-function clearDiv(id) {
-	$(id).innerHTML = "";
-}
-
-function loading(toggle){
-	if ( toggle )
-		$("myloader").className = "showlayer";
-	else
-		$("myloader").className = "hidelayer";
-}
-function loadit(){
-	parent.mainframe.location.href="http://trac.luismajano.com/coldbox";
-}
-
-function showAdvancedBar(){
-	if ( $("advancedSearchBar").className == "hidelayer" ){
-		$("advancedSearchBar").className = "showlayer";
-		$("advancedSearchBarTriggerOpen").className = "hidelayer";
-		$("advancedSearchBarTriggerClose").className = "showlayer";
-	}
-	else{
-		$("advancedSearchBar").className = "hidelayer";
-		$("advancedSearchBarTriggerClose").className = "hidelayer";
-		$("advancedSearchBarTriggerOpen").className = "showlayer";
-	}
-}
-</script>
-</head>
-<body>
 <cfoutput>
-<div class="headerbar"></div>	
+<div class="headerbar">
+
+	<div style="float:right">
+		<!--- HOME --->
+		<div id="topbuttons">
+			<a href="?event=#getValue("xehHome")#" target="mainframe" onmouseover="rollover('btn_home')" onmouseout="rollout('btn_home')"><img  src="images/icons/home.gif" border="0" id="btn_home" srcoff="images/icons/home.gif" srcon="images/icons/home_on.gif"><br>
+			Home</a>
+		</div>
+		<!--- SETTINGS --->
+		<div id="topbuttons">
+			<a href="?event=#getValue("xehSettings")#" target="mainframe" onmouseover="rollover('btn_settings')" onmouseout="rollout('btn_settings')"><img  src="images/icons/settings.gif" border="0" id="btn_settings" srcoff="images/icons/settings.gif" srcon="images/icons/settings_on.gif"><br>
+			Settings</a>
+		</div>
+		<!--- TOOLS --->
+		<div id="topbuttons">
+			<a href="?event=#getValue("xehTools")#" target="mainframe" onmouseover="rollover('btn_tools')" onmouseout="rollout('btn_tools')"><img  src="images/icons/tools.gif" border="0" id="btn_tools" srcoff="images/icons/tools.gif" srcon="images/icons/tools_on.gif"><br>
+			Tools</a>
+		</div>
+		<!--- BD/CFADMIN --->
+		<cfif server.ColdFusion.ProductName eq "Coldfusion Server">
+		<div id="topbuttons">
+			<a href="/CFIDE/administrator/login.cfm" target="_blank" onmouseover="rollover('btn_cfadmin')" onmouseout="rollout('btn_cfadmin')"><img  src="images/icons/cfadmin.gif" border="0" id="btn_cfadmin" srcoff="images/icons/cfadmin.gif" srcon="images/icons/cfadmin_on.gif"><br>
+			CF Admin</a>
+		</div>
+		<cfelse>
+		<div id="topbuttons">
+			<a href="http://localhost:8080/bluedragon" target="mainframe" onmouseover="rollover('btn_bd')" onmouseout="rollout('btn_bd')"><img  src="images/icons/bluedragon.gif" border="0" id="btn_bd" srcoff="images/icons/bluedragon.gif" srcon="images/icons/bluedragon_on.gif"><br>
+			BlueDragon</a>
+		</div>
+		</cfif>
+		<!--- UPDATE --->
+		<div id="topbuttons">
+			<a href="#getValue("xehUpdate")#" target="mainframe" onmouseover="rollover('btn_update')" onmouseout="rollout('btn_update')"><img  src="images/icons/update.gif" border="0" id="btn_update" srcoff="images/icons/update.gif" srcon="images/icons/update_on.gif"><br>
+			Update</a>
+		</div>
+		<!--- BUG REPORTS --->
+		<div id="topbuttons">
+			<a href="#getValue("xehBugs")#" target="mainframe" onmouseover="rollover('btn_bugs')" onmouseout="rollout('btn_bugs')"><img  src="images/icons/bugreports.gif" border="0" id="btn_bugs" srcoff="images/icons/bugreports.gif" srcon="images/icons/bugreports_on.gif"><br>
+			Report Bug</a>
+		</div>
+	</div>
+	
+</div>	
 
 <div class="statusbar">
 	<form id="searchdocs" action="#getSetting("tracsite")#/search" method="get" target="mainframe">
 	
-	<div style="float:left; margin-left:10px;margin-top: 3px">
-		<a href="javascript:parent.mainframe.history.back()"><img ></a>
-		<a href="javascript:parent.mainframe.history.forward()">Forward</a>
-		<input type="text" name="q" size="20" accesskey="f" value="Search Documentation" style="font-size:9px" onclick="this.value='';" />
+	<div class="browserbuttonsbar">
+		<cfif not findnocase("MSIE",cgi.HTTP_USER_AGENT)>
+		<a href="javascript:parent.mainframe.history.back()" title="Go Back!" ><img src="images/icons/back_browser.gif" border="0" align="absmiddle" id="btn_browserback" srcoff="images/icons/back_browser.gif" srcon="images/icons/back_browser_on.gif" onMouseOver="rollover(this)" onMouseOut="rollout(this)"></a>
+		<a href="javascript:parent.mainframe.history.forward()" title="Go Forward!"><img src="images/icons/forward_browser.gif" border="0" align="absmiddle" id="btn_browserforward" srcoff="images/icons/forward_browser.gif" srcon="images/icons/forward_browser_on.gif" onMouseOver="rollover(this)" onMouseOut="rollout(this)"></a>
+		&nbsp;		
+		</cfif>
+		<img src="images/icons/search_icon.gif" align="absmiddle">
+		<input type="text" name="q" size="20" accesskey="s" value="Search Documentation" style="font-size:9px" onclick="this.value='';" title="Search the documentation, tickets and changeset" />
 		<input type="Submit" name="Search" value="Search" style="font-size:9px" />
+		<input type="button" name="Search" value="Reload" style="font-size:9px" onClick="location.reload()" />
 	</div>
 	
-	<div style="float:left;margin-left:10px;margin-top: 5px">
-		<div id="advancedSearchBarTriggerOpen" class="showlayer"><a href="javascript:showAdvancedBar()" title="Show Advanced Search Bar">Options</a></div>
-		<div id="advancedSearchBarTriggerClose" class="hidelayer"><a href="javascript:showAdvancedBar()" title="Close Advanced Search Bar">Close</a></div>
+	<div class="searchOptionsBar">
+		<div id="advancedSearchBarTriggerOpen" class="showlayer"><a href="javascript:showAdvancedSearchBar(true)" title="Show Advanced Search Bar">Options</a></div>
+		<div id="advancedSearchBarTriggerClose" class="hidelayer"><a href="javascript:showAdvancedSearchBar(false)" title="Close Advanced Search Bar">Close</a>&nbsp;&nbsp;&nbsp;&nbsp;</div>
 	</div>
 	
-	<div style="height: 25px;float:left;margin-left: 10px;padding-left: 10px;padding-right:10px; height:inherit; border-left:1px solid #cccccc;border-right:1px solid #cccccc" id="advancedSearchBar" class="hidelayer">
+	<div class="advancedSearchBar" id="advancedSearchBar" style="display: none ">
 	   <strong>Search:</strong>
 	   <input type="checkbox" id="ticket" 
 			  name="ticket" checked="checked" />
@@ -108,10 +76,16 @@ function showAdvancedBar(){
 	   <label for="wiki">Wiki</label>
 	</div>
 	
-	<div class="hidelayer" id="myloader"><div class="myloader"><img src="images/ajax-loader.gif" width="220" height="19" align="absmiddle" title="Loading..." /></div>
+	<div style="float:right; margin-top:2px;font-weight:bold;margin-right:10px;">
+	 <a href="##" onClick="validateLogout() ? parent.window.location='index.cfm?event=#getValue("xehLogout")#' : null" title="Logout of the Dashboard">
+	 <img src="images/icons/logout.gif" id="btn_logout" srcoff="images/icons/logout.gif" 
+	 	  srcon="images/icons/logout_on.gif" align="absmiddle" border="0"
+	 	  onMouseOver="rollover(this)" onMouseOut="rollout(this)" alt="Logout of the Dashboard"></a>&nbsp;Logout
+	</div>
+	
+	<div id="myloader" style="display: none">
+		<div class="myloader"><img src="images/ajax-loader.gif" width="220" height="19" align="absmiddle" title="Loading..." /></div>
 	</div>
 	</form>
 </div>
-</cfoutput>	
-</body>
-</html>
+</cfoutput>
