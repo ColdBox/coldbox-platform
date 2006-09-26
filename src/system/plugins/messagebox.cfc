@@ -10,6 +10,7 @@ Description :
 Modification History:
 06/09/2006 - Updated for coldbox.
 07/29/2006 - Flag to leave contents in the messagebox or delete them once rendered.
+09/10/2006 - Addedthe renderit method for usage under Blue Dragon.
 ----------------------------------------------------------------------->
 <cfcomponent name="messagebox" hint="This is the messagebox plugin. It uses the client scope to save messages. You will need the client scope to be available." extends="coldbox.system.plugin">
 
@@ -77,6 +78,25 @@ Modification History:
 
 	<!--- ************************************************************* --->
 	<cffunction name="render" access="public" hint="Renders the message box and clears the message structure by default." output="false" returntype="any">
+		<!--- ************************************************************* --->
+		<cfargument name="clearFlag" type="boolean" required="false" default="true" hint="Flag to clear the message structure or not after rendering. Default is true.">
+		<cfset var msgStruct = getMessage()>
+		<cfset var results = "">
+		<cfif msgStruct.type neq "">
+			<cfsavecontent variable="results"><cfinclude template="../includes/messagebox.cfm"></cfsavecontent>
+		<cfelse>
+			<cfset results = "">
+		</cfif>
+		<!--- Test to clear message structure --->
+		<cfif arguments.clearFlag>
+			<cfset clearMessage()>
+		</cfif>
+		<cfreturn results>
+	</cffunction>
+	<!--- ************************************************************* --->
+	
+	<!--- ************************************************************* --->
+	<cffunction name="renderit" access="public" hint="Renders the message box and clears the message structure by default." output="false" returntype="any">
 		<!--- ************************************************************* --->
 		<cfargument name="clearFlag" type="boolean" required="false" default="true" hint="Flag to clear the message structure or not after rendering. Default is true.">
 		<cfset var msgStruct = getMessage()>
