@@ -21,6 +21,7 @@ This is the main event handler for the ColdBox dashboard.
 	<cffunction name="onAppStart" access="public" returntype="void">
 		<cfset var MyService = getSetting("AppMapping") & ".model.dbservice">
 		<cfset application.dbservice = CreateObject("component",MyService).init()>
+		<cfset application.isBD = server.ColdFusion.ProductName neq "Coldfusion Server">
 	</cffunction>
 	
 	<!--- ************************************************************* --->
@@ -32,7 +33,7 @@ This is the main event handler for the ColdBox dashboard.
 			<cfset overrideEvent("ehColdbox.dspLogin")>
 		</cfif>
 	</cffunction>
-	
+
 	<!--- ************************************************************* --->
 	
 	<cffunction name="dspLogin" access="public" returntype="void">
@@ -41,8 +42,6 @@ This is the main event handler for the ColdBox dashboard.
 		<!--- Set the View --->
 		<cfset setView("vwLogin")>
 	</cffunction>
-	
-	<!--- ************************************************************* --->
 	
 	<cffunction name="doLogin" access="public" returntype="void">
 		<!--- Do Login --->

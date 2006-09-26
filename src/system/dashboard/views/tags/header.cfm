@@ -18,7 +18,7 @@
 			Tools</a>
 		</div>
 		<!--- BD/CFADMIN --->
-		<cfif server.ColdFusion.ProductName eq "Coldfusion Server">
+		<cfif not application.isBD>
 		<div id="topbuttons">
 			<a href="/CFIDE/administrator/login.cfm" target="_blank" onmouseover="rollover('btn_cfadmin')" onmouseout="rollout('btn_cfadmin')"><img  src="images/icons/cfadmin.gif" border="0" id="btn_cfadmin" srcoff="images/icons/cfadmin.gif" srcon="images/icons/cfadmin_on.gif"><br>
 			CF Admin</a>
