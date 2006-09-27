@@ -29,7 +29,7 @@
 		<Setting name="UpdateTempDir"			value="../../_tempinstall" />
 		<Setting name="InstallerDir"			value="installer" />
 		<Setting name="Version" 				value="1.1.0"/>
-		<Setting name="TracSite"				value="http://trac.luismajano.com/coldbox" />
+		<Setting name="TracSite"				value="http://ortus.svnrepository.com/coldbox/" />
 	</YourSettings>
 	
 	<!--Optional,if blank it will use the CFMX administrator settings.-->

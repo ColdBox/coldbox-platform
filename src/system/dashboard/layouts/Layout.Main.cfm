@@ -9,7 +9,6 @@
 <script language="javascript" src="includes/dashboard.js"></script>
 <script language="javascript" src="includes/toolkit/scriptaculous.js?load=effects"></script>
 </head>
-
 <body>
 <cfset WriteOutput(renderView())>
 </body>

@@ -1,31 +1,31 @@
 <cfoutput>
 <div class="headerbar">
 
-	<div style="float:right">
+	<div style="float:right;clear:both;margin-right:10px">
 		<!--- HOME --->
-		<div id="topbuttons">
+		<div id="topbuttons" >
 			<a href="?event=#getValue("xehHome")#" target="mainframe" onmouseover="rollover('btn_home')" onmouseout="rollout('btn_home')"><img  src="images/icons/home.gif" border="0" id="btn_home" srcoff="images/icons/home.gif" srcon="images/icons/home_on.gif"><br>
 			Home</a>
 		</div>
 		<!--- SETTINGS --->
-		<div id="topbuttons">
+		<div id="topbuttons" >
 			<a href="?event=#getValue("xehSettings")#" target="mainframe" onmouseover="rollover('btn_settings')" onmouseout="rollout('btn_settings')"><img  src="images/icons/settings.gif" border="0" id="btn_settings" srcoff="images/icons/settings.gif" srcon="images/icons/settings_on.gif"><br>
 			Settings</a>
 		</div>
 		<!--- TOOLS --->
-		<div id="topbuttons">
+		<div id="topbuttons" >
 			<a href="?event=#getValue("xehTools")#" target="mainframe" onmouseover="rollover('btn_tools')" onmouseout="rollout('btn_tools')"><img  src="images/icons/tools.gif" border="0" id="btn_tools" srcoff="images/icons/tools.gif" srcon="images/icons/tools_on.gif"><br>
 			Tools</a>
 		</div>
 		<!--- BD/CFADMIN --->
 		<cfif not application.isBD>
-		<div id="topbuttons">
+		<div id="topbuttons" >
 			<a href="/CFIDE/administrator/login.cfm" target="_blank" onmouseover="rollover('btn_cfadmin')" onmouseout="rollout('btn_cfadmin')"><img  src="images/icons/cfadmin.gif" border="0" id="btn_cfadmin" srcoff="images/icons/cfadmin.gif" srcon="images/icons/cfadmin_on.gif"><br>
 			CF Admin</a>
 		</div>
 		<cfelse>
-		<div id="topbuttons">
-			<a href="http://localhost:8080/bluedragon" target="mainframe" onmouseover="rollover('btn_bd')" onmouseout="rollout('btn_bd')"><img  src="images/icons/bluedragon.gif" border="0" id="btn_bd" srcoff="images/icons/bluedragon.gif" srcon="images/icons/bluedragon_on.gif"><br>
+		<div id="topbuttons" >
+			<a href="/bluedragon" target="mainframe" onmouseover="rollover('btn_bd')" onmouseout="rollout('btn_bd')"><img  src="images/icons/bluedragon.gif" border="0" id="btn_bd" srcoff="images/icons/bluedragon.gif" srcon="images/icons/bluedragon_on.gif"><br>
 			BlueDragon</a>
 		</div>
 		</cfif>
@@ -37,7 +37,7 @@
 		<!--- BUG REPORTS --->
 		<div id="topbuttons">
 			<a href="#getValue("xehBugs")#" target="mainframe" onmouseover="rollover('btn_bugs')" onmouseout="rollout('btn_bugs')"><img  src="images/icons/bugreports.gif" border="0" id="btn_bugs" srcoff="images/icons/bugreports.gif" srcon="images/icons/bugreports_on.gif"><br>
-			Report Bug</a>
+			Submit Bug</a>
 		</div>
 	</div>
 	
@@ -75,14 +75,7 @@
 			  name="wiki" checked="checked" />
 	   <label for="wiki">Wiki</label>
 	</div>
-	
-	<div style="float:right; margin-top:2px;font-weight:bold;margin-right:10px;">
-	 <a href="##" onClick="validateLogout() ? parent.window.location='index.cfm?event=#getValue("xehLogout")#' : null" title="Logout of the Dashboard">
-	 <img src="images/icons/logout.gif" id="btn_logout" srcoff="images/icons/logout.gif" 
-	 	  srcon="images/icons/logout_on.gif" align="absmiddle" border="0"
-	 	  onMouseOver="rollover(this)" onMouseOut="rollout(this)" alt="Logout of the Dashboard"></a>&nbsp;Logout
-	</div>
-	
+		
 	<div id="myloader" style="display: none">
 		<div class="myloader"><img src="images/ajax-loader.gif" width="220" height="19" align="absmiddle" title="Loading..." /></div>
 	</div>

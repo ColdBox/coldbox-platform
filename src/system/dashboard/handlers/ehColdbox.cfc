@@ -32,6 +32,8 @@ This is the main event handler for the ColdBox dashboard.
 			  getValue("event") neq "ehColdbox.doLogin">
 			<cfset overrideEvent("ehColdbox.dspLogin")>
 		</cfif>
+		<!--- EXIT HANDLERS: --->
+		<cfset rc.xehLogout = "ehColdbox.doLogout">
 	</cffunction>
 
 	<!--- ************************************************************* --->
@@ -83,7 +85,6 @@ This is the main event handler for the ColdBox dashboard.
 	
 	<cffunction name="dspHeader" access="public" returntype="void">
 		<!--- EXIT HANDLERS: --->
-		<cfset rc.xehLogout = "ehColdbox.doLogout">
 		<cfset rc.xehHome = "ehColdbox.dspHome">
 		<cfset rc.xehSettings = "ehColdbox.dspSettings">
 		<cfset rc.xehTools = "ehColdbox.dspTools">

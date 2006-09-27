@@ -81,7 +81,7 @@ function h_callError(request) {
 //********************************************************************************
 function validateLogout(){
 	if ( confirm("Do your really want to exit the ColdBox Dashboard?") ){
-		lon();
+		parent.topframe.lon();
 		return true;
 	}
 	return false;
