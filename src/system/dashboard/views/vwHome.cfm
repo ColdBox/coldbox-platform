@@ -8,7 +8,7 @@
 	
 	<!--- Sub Menu Links --->
 	<ul>
-		<li><a href="##">System Information</a></li>
+		<li><a href="?event=#getValue("xehHome")#">System Information</a></li>
 		
 		<li><a href="##">Online Resources</a></li>
 		
@@ -16,7 +16,7 @@
 		<li><a href="##">CFC Documentation</a></li>
 		</cfif>
 		
-		<li><a href="##">Config Schema Docs</a></li>
+		<li><a href="javascript:doEvent('#getValue("xehSchemaDocs")#', 'content', {})">Config Schema Docs</a></li>
 	</ul>
 	
 	<br>
@@ -48,7 +48,6 @@
 </div>
 
 <div class="content">
-
 	
 </div>
 </cfoutput>

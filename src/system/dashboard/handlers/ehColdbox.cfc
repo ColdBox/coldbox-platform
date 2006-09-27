@@ -79,6 +79,12 @@ This is the main event handler for the ColdBox dashboard.
 	<!--- ************************************************************* --->
 	
 	<cffunction name="dspHome" access="public" returntype="void">
+		<!--- EXIT HANDLERS: --->
+		<cfset rc.xehHome = "ehColdbox.dspHome">
+		<cfset rc.xehResources = "ehColdbox.dspOnlineResources">
+		<cfset rc.xehCFCDocs = "ehColdbox.dspCFCDocs">
+		<cfset rc.xehSchemaDocs = "ehColdbox.dspSchemaDocs">		
+		
 		<!--- Set the View --->
 		<cfset setView("vwHome")>
 	</cffunction>
@@ -92,6 +98,13 @@ This is the main event handler for the ColdBox dashboard.
 		<cfset rc.xehBugs = "ehColdbox.dspBugs">
 		<!--- Set the View --->
 		<cfset setView("tags/header")>
+	</cffunction>
+	
+	<!--- ************************************************************* --->
+	
+	<cffunction name="dspSchemaDocs" access="public" returntype="void">
+		<!--- Set the View --->
+		<cfset setView("vwSchemaDocs")>
 	</cffunction>
 	
 	<!--- ************************************************************* --->

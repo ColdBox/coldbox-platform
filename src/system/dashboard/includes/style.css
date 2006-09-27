@@ -93,7 +93,7 @@ a:hover{
 	font-family: Arial, Helvetica, sans-serif;
 	font-weight: bold;
 }.myloader{	float:right;	width: 275px;	text-align:right;	font-size:9px;	vertical-align:middle;	margin-top:2px;}
-.contentpanel{	vertical-align: top;	float:left;}.menupanel{	background-color: #FFFFFF;	width: 220px;	border-left:1px solid #dddddd;	vertical-align: top;	height: 100%;	float:right;}
+
 /* SIDE MENU */
 .sidemenu{
 	position: absolute;
@@ -143,5 +143,9 @@ li{
 	float:left;
 	margin-top: 15px;
 	margin-left: 3px;
+}
+/* CONTENT  */
+.content{
+	margin: 20px;
 }/* FORM ELEMENTS */input[type=button], input[type=submit], input[type=reset] { background: #eee; color: #222; border: 1px outset #ccc; padding: .1em .5em; font-size: 12px;}
 input[type=button]:hover, input[type=submit]:hover, input[type=reset]:hover { background: #FFFFF0; border: 1px inset #ccc; cursor: hand;}input[type=button][disabled], input[type=submit][disabled],input[type=reset][disabled] { background: #f6f6f6; border-style: solid; color: #999;}input[type=text], input[type=password], input[type=checkbox], textarea { border: 1px solid #d7d7d7 }input[type=text], input[type=password], input[type=checkbox] { padding: .20em .3em }input[type=text]:focus, input[type=password]:focus, textarea:focus, input[type=checkbox]:focus { border: 1px solid #886;}
