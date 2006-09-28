@@ -7,6 +7,7 @@
 	<div class="cfc_h1">CFC Viewer - #instance.cfcPath#</div>
 	
 	<div class="cfc_componentlisting">
+	
 		<div class="cfc_h3">Packages / Directories</div>
 		<ul>
 			<cfloop from="1" to="#ArrayLen(instance.aPacks)#" index="i">
@@ -43,7 +44,7 @@
 			<cfoutput>
 				<a name="#instance.aCFC[j]#"></a>
 				<div class="cfc_h1">#md.name#</div>
-				<table class="cfc_component">
+				<table class="cfc_component" width="100%">
 					
 					<tr>
 						<td class="cfc_hint">#md.Hint#</td>
