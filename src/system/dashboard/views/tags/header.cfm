@@ -55,7 +55,6 @@
 		<img src="images/icons/search_icon.gif" align="absmiddle">
 		<input type="text" name="q" size="20" accesskey="s" value="Search Documentation" style="font-size:9px" onclick="this.value='';" title="Search the documentation, tickets and changeset" />
 		<input type="Submit" name="Search" value="Search" style="font-size:9px" />
-		<input type="button" name="Search" value="Reload" style="font-size:9px" onClick="location.reload()" />
 	</div>
 	
 	<div class="searchOptionsBar">

@@ -1,1 +1,0 @@
-<cfinclude template="SchemaDocs/index.html">

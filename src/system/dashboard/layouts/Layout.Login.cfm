@@ -9,7 +9,7 @@
 <script language="javascript" src="includes/toolkit/scriptaculous.js?load=effects"></script>
 </head>
 
-<body>
+<body onload="framebuster()">
 
 <div class="headerbar"></div>	
 

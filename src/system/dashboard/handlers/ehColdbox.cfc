@@ -37,6 +37,8 @@ This is the main event handler for the ColdBox dashboard.
 	</cffunction>
 
 	<!--- ************************************************************* --->
+	<!--- LOGIN SECTION													--->
+	<!--- ************************************************************* --->
 	
 	<cffunction name="dspLogin" access="public" returntype="void">
 		<!--- EVENT HANDLERS: --->
@@ -67,6 +69,8 @@ This is the main event handler for the ColdBox dashboard.
 	</cffunction>
 	
 	<!--- ************************************************************* --->
+	<!--- FRAMESET SECTION												--->
+	<!--- ************************************************************* --->
 	
 	<cffunction name="dspFrameset" access="public" returntype="void">
 		<!--- EXIT HANDLERS: --->
@@ -76,15 +80,13 @@ This is the main event handler for the ColdBox dashboard.
 		<cfset setView("vwFrameset",true)>
 	</cffunction>
 	
-	<!--- ************************************************************* --->
-	
 	<cffunction name="dspHome" access="public" returntype="void">
 		<!--- EXIT HANDLERS: --->
-		<cfset rc.xehHome = "ehColdbox.dspHome">
+		<cfset rc.xehSystemInfo = "ehColdbox.dspSystemInfo">
 		<cfset rc.xehResources = "ehColdbox.dspOnlineResources">
 		<cfset rc.xehCFCDocs = "ehColdbox.dspCFCDocs">
-		<cfset rc.xehSchemaDocs = "ehColdbox.dspSchemaDocs">		
-		
+		<!--- Set the Rollovers --->
+		<cfset rc.qRollovers = filterQuery(application.dbservice.get("settings").getRollovers(),"pagesection","home")>
 		<!--- Set the View --->
 		<cfset setView("vwHome")>
 	</cffunction>
@@ -101,18 +103,192 @@ This is the main event handler for the ColdBox dashboard.
 	</cffunction>
 	
 	<!--- ************************************************************* --->
+	<!--- HOME SECTION 													--->
+	<!--- ************************************************************* --->
 	
-	<cffunction name="dspSchemaDocs" access="public" returntype="void">
+	<cffunction name="dspSystemInfo" access="public" returntype="void">
+		<!--- Check if install folder exists --->
+		<cfset rc.InstallFolderExits = directoryExists(ExpandPath("/coldbox/install"))>
+		<!--- Check if the samples folder exists --->
+		<cfset rc.SampleFolderExists = directoryExists(ExpandPath("/coldbox/samples"))>
 		<!--- Set the View --->
-		<cfset setView("vwSchemaDocs")>
+		<cfset setView("home/vwSystemInfo")>
+	</cffunction>
+	
+	<cffunction name="dspOnlineResources" access="public" returntype="void">
+		<!--- Set the View --->
+		<cfset setView("home/vwOnlineResources")>
+	</cffunction>
+	
+	<cffunction name="dspCFCDocs" access="public" returntype="void">
+		<!--- EXIT HANDLERS: --->
+		<cfset rc.xehCFCDocs = "ehColdbox.dspCFCDocs">
+		<cfset rc.cfcViewer = getPlugin("cfcViewer")>
+		<cfset paramValue("show", "")>
+		<cfif rc.show eq "plugins">
+			<cfset rc.cfcViewer.setup("/coldbox/system/plugins","coldbox/system/plugins")>
+		<cfelseif rc.show eq "beans">
+			<cfset rc.cfcViewer.setup("/coldbox/system/beans","coldbox/system/beans")>
+		<cfelseif rc.show eq "util">
+			<cfset rc.cfcViewer.setup("/coldbox/system/util","coldbox/system/util")>
+		<cfelse>
+			<cfset rc.cfcViewer.setup("/coldbox/system/","coldbox/system/")>
+		</cfif>		
+		<!--- Set the View --->
+		<cfset setView("home/vwCFCDocs")>
+	</cffunction>
+
+	<!--- ************************************************************* --->
+	<!--- SETTINGS SECTION 												--->
+	<!--- ************************************************************* --->
+	
+	<cffunction name="dspSettings" access="public" returntype="void">
+		<!--- EXIT HANDLERS: --->
+		<cfset rc.xehSettings = "ehColdbox.dspGeneralSettings">
+		<cfset rc.xehLogSettings = "ehColdbox.dspLogSettings">
+		<cfset rc.xehEncodingSettings = "ehColdbox.dspEncodingSettings">
+		<cfset rc.xehPassword = "ehColdbox.dspChangePassword">
+		<cfset rc.xehProxy = "ehColdbox.dspProxySettings">
+		<!--- Set the Rollovers For This Section --->
+		<cfset rc.qRollovers = filterQuery(application.dbservice.get("settings").getRollovers(),"pagesection","settings")>
+		<!--- Set the View --->
+		<cfset setView("vwSettings")>
+	</cffunction>
+	
+	<cffunction name="dspGeneralSettings" access="public" returntype="void">
+		<cfset rc.fwSettings = application.dbservice.get("fwsettings").getSettings()>
+		<!--- Set the View --->
+		<cfset setView("settings/vwSettings")>
+	</cffunction>
+	
+	<cffunction name="dspLogSettings" access="public" returntype="void">
+		<cfset var fwSettings = application.dbservice.get("fwsettings").getSettings()>
+		<cfset rc.LogFileEncoding = fwSettings["LogFileEncoding"]>
+		<cfset rc.AvailableLogFileEncodings = fwSettings["AvailableLogFileEncodings"]>
+		<cfset rc.LogFileBufferSize = fwSettings["LogFileBufferSize"]>
+		<cfset rc.LogFileMaxSize = fwSettings["LogFileMaxSize"]>
+		<!--- EXIT HANDLERS: --->
+		<cfset rc.xehDoSave = "ehColdbox.doSaveLogFileSettings">
+		<!--- Set the View --->
+		<cfset setView("settings/vwLogFileSettings")>
+	</cffunction>
+	
+	<cffunction name="doSaveLogFileSettings" access="public" returntype="void">
+		<cfset var fwSettings = application.dbservice.get("fwsettings").getSettings()>
+		<cfset var errors = false>
+		<!--- Validate blanks --->
+		<cfif len(trim(rc.LogFileEncoding)) eq 0 or len(trim(rc.LogFileBufferSize)) eq 0 or len(trim(rc.LogFileMaxSize)) eq 0>
+			<cfset getPlugin("messagebox").setMessage("error","Please make sure you fill out all the values.")>
+			<cfset errors = true>
+		</cfif>
+		<!--- Validate Buffer --->
+		<cfif not isNumeric(rc.LogFileBufferSize) or rc.LogFileBufferSize gt 64000 or rc.LogFileBufferSize lt 8000>
+			<cfset getPlugin("messagebox").setMessage("error","The Log File Buffer Size you sent in is not numeric or you choose a number not betwee 8000-64000 bytes. Please try again")>
+			<cfset errors = true>
+		</cfif>
+		<!--- ValidateMax Size ---->
+		<cfif not isNumeric(rc.LogFileMaxSize)>
+			<cfset getPlugin("messagebox").setMessage("error","The Log File Max Size you sent in is not numeric. Please try again")>
+			<cfset errors = true>
+		</cfif>
+		<!--- Check for Errors --->
+		<cfif not errors>
+			<!--- Update the settings --->
+			<cfset application.dbservice.get("fwsettings").saveLogFileSettings(rc.LogFileEncoding,rc.LogFileBufferSize,rc.LogFileMaxSize)>
+			<cfset getPlugin("messagebox").setMessage("info","Settings have been updated successfully. Please remember to reinitialize the framework on your applications for the changes to take effect.")>
+			<!--- Relocate --->
+			<cfset setNextEvent("ehColdbox.dspLogSettings","fwreinit=1")>
+		<cfelse>
+			<!--- Relocate --->
+			<cfset setNextEvent("ehColdbox.dspLogSettings")>
+		</cfif>
+	</cffunction>
+	
+	<cffunction name="dspEncodingSettings" access="public" returntype="void">
+		<cfset var fwSettings = application.dbservice.get("fwsettings").getSettings()>
+		<cfset rc.AvailableCFCharacterSets = fwSettings["AvailableCFCharacterSets"]>
+		<cfset rc.DefaultFileCharacterSet = fwSettings["DefaultFileCharacterSet"]>
+		<!--- EXIT HANDLERS: --->
+		<cfset rc.xehDoSave = "ehColdbox.doSaveEncodingSettings">
+		<!--- Set the View --->
+		<cfset setView("settings/vwFileEncodingSettings")>
+	</cffunction>
+	
+	<cffunction name="doSaveEncodingSettings" access="public" returntype="void">
+		<cfset var fwSettings = application.dbservice.get("fwsettings").getSettings()>
+		<cfset var setCharacterSet = fwSettings["DefaultFileCharacterSet"]>
+		<!--- Check for changes --->
+		<cfif comparenocase(setCharacterSet, rc.DefaultFileCharacterSet ) neq 0>
+			<!--- Update the settings --->
+			<cfset application.dbservice.get("fwsettings").saveEncodingSettings(rc.DefaultFileCharacterSet)>
+			<cfset getPlugin("messagebox").setMessage("info","Settings have been updated successfully. Please remember to reinitialize the framework on your applications for the changes to take effect.")>
+			<!--- Relocate --->
+			<cfset setNextEvent("ehColdbox.dspEncodingSettings","fwreinit=1")>
+		<cfelse>
+			<cfset getPlugin("messagebox").setMessage("warning","You did not select a new character set. No settings were saved.")>
+			<!--- Relocate --->
+			<cfset setNextEvent("ehColdbox.dspEncodingSettings")>
+		</cfif>
+	</cffunction>
+	
+	<cffunction name="dspChangePassword" access="public" returntype="void">
+		<!--- EXIT HANDLERS: --->
+		<cfset rc.xehDoSave = "ehColdbox.doChangePassword">
+		<!--- Set the View --->
+		<cfset setView("settings/vwPassword")>
+	</cffunction>
+	
+	<cffunction name="doChangePassword" access="public" returntype="void">
+		<cfset var errors = false>
+		<cfset var rtnStruct = "">
+		<!--- Validate Passwords --->
+		<cfif len(trim(rc.oldpassword)) eq 0 or len(trim(rc.newpassword)) eq 0 or len(trim(rc.newpassword2)) eq 0>
+			<cfset getPlugin("messagebox").setMessage("error", "Please fill out all the necessary fields.")>
+		<cfelse>
+			<!--- Save the new password --->
+			<cfset rtnStruct = application.dbservice.get("settings").changePassword(rc.oldpassword,rc.newpassword,rc.newpassword2)>
+			<!--- Validate --->
+			<cfif not rtnStruct.results>
+				<cfset getPlugin("messagebox").setMessage("error", "#rtnStruct.message#")>
+			<cfelse>
+				<cfset getPlugin("messagebox").setMessage("info", "Your new password has been updated successfully.")>
+			</cfif>
+		</cfif>		
+		<!--- Move to new event --->
+		<cfset setnextEvent("ehColdbox.dspChangePassword")>
+	</cffunction>
+	
+	<cffunction name="dspProxySettings" access="public" returntype="void">
+		<cfset var settings = application.dbservice.get("settings").getSettings()>
+		<cfset rc.proxyflag = settings["proxyflag"]>
+		<cfset rc.proxyserver = settings["proxyserver"]>
+		<cfset rc.proxyuser = settings["proxyuser"]>
+		<cfset rc.proxypassword = settings["proxypassword"]>
+		<cfset rc.proxyport = settings["proxyport"]>
+		<!--- EXIT HANDLERS: --->
+		<cfset rc.xehDoSave = "ehColdbox.doChangeProxySettings">
+		<!--- Set the View --->
+		<cfset setView("settings/vwProxySettings")>
+	</cffunction>
+	
+	<cffunction name="doChangeProxySettings" access="public" returntype="void">
+		<cfset var errors = false>
+		<cfset var rtnStruct = "">
+		<!--- Validate Passwords --->
+		<cfif len(trim(rc.proxyport)) neq 0 and not isnumeric(rc.proxyport)>
+			<cfset getPlugin("messagebox").setMessage("error", "The proxy port you filled out was not numeric. Please try again.")>
+		<cfelse>
+			<!--- Save the proxy settings --->
+			<cfset application.dbservice.get("settings").changeProxySettings(rc.proxyflag,rc.proxyserver,rc.proxyuser, rc.proxypassword, rc.proxyport)>
+			<cfset getPlugin("messagebox").setMessage("info", "Your proxy settings have been saved successfully.")>
+		</cfif>		
+		<!--- Move to new event --->
+		<cfset setnextEvent("ehColdbox.dspProxySettings")>
 	</cffunction>
 	
 	<!--- ************************************************************* --->
 	
-	<cffunction name="dspPassword" access="public" returntype="void">
-		<!--- Set the View --->
-		<cfset setView("vwPassword")>
-	</cffunction>
+	
 	
 	<!--- ************************************************************* --->
 	
@@ -154,87 +330,6 @@ This is the main event handler for the ColdBox dashboard.
 	<!--- ************************************************************* --->
 
 	<!--- ************************************************************* --->
-	<cffunction name="dspModifyLog" access="public" returntype="void">
-		<cfset var logText = "">
-		<!--- Read Modify Log --->
-		<cffile action="read" file="#getSetting("ModifyLogLocation",true)#" variable="logtext">
-		<cfset logText = replace(logtext, chr(13), "<br>", "all")>
-		<cfset logText = replace(logtext, chr(9), "&nbsp;&nbsp;&nbsp;&nbsp;", "all")>
-		<cfset setValue("logtext", logtext)>
-		<!--- Test for CFDOC --->
-		<cfif getValue("cfdoc", false) eq false >
-			<cfset setView("vwModifyLog")>
-		<cfelse>
-			<cfset setValue("fpcontent", logtext)>
-			<cfset setValue("usePreTag", false)>
-			<cfset setView("vwFPViewer")>
-		</cfif>
-	</cffunction>
-	<!--- ************************************************************* --->
-
-	<!--- ************************************************************* --->
-	<cffunction name="dspConfigHelp" access="public" returntype="void">
-		<cfset setView("vwConfigHelp")>
-		<!--- CFDoc Check --->
-		<cfset cfdoc()>
-	</cffunction>
-	<!--- ************************************************************* --->
-
-	<!--- ************************************************************* --->
-	<cffunction name="dspHandlersHelp" access="public" returntype="void">
-		<cfset setView("vwHandlersHelp")>
-		<!--- CFDoc Check --->
-		<cfset cfdoc()>
-	</cffunction>
-	<!--- ************************************************************* --->
-
-	<!--- ************************************************************* --->
-	<cffunction name="dspSettings" access="public" returntype="void">
-		<cfset setView("vwSettings")>
-		<!--- CFDoc Check --->
-		<cfset cfdoc()>
-	</cffunction>
-	<!--- ************************************************************* --->
-
-	<!--- ************************************************************* --->
-	<cffunction name="dspAPI" access="public" returntype="void">
-		<!--- Code to Parse to System Directory --->
-		<cfset var script = getDirectoryFromPath(cgi.SCRIPT_NAME)>
-		<cfset var itemcount = listlen(script,"/")>
-		<cfset var SystemPath = replace( listDeleteAt(script,itemcount,"/") & "/","/","","one")>
-		<cfset var PluginPath = SystemPath & "plugins/">
-		<cfset var cfcPath = "">
-		<cfset var dirPath = "">
-		<cfset var oCFCViewer = "">
-
-		<!--- Determine type of cfc's to show --->
-		<cfif getValue("type","") eq "plugins">
-			<cfset cfcPath = PluginPath>
-			<cfset dirPath = "../plugins/">
-		<cfelseif getValue("type","") eq "system">
-			<cfset cfcPath = SystemPath>
-			<cfset dirPath = "../">
-		</cfif>
-		<!---Set paths --->
-		<cfset setValue("cfcPath", cfcPath)>
-		<cfset setValue("dirPath", dirPath)>
-
-		<!--- Get cfcviewer Plugin --->
-		<cfset oCFCViewer = getPlugin("cfcViewer")>
-		<cfset oCFCViewer.setup(dirPath, cfcPath)>
-
-		<!--- Place in req Collection --->
-		<cfset setValue("oCFCViewer",oCFCViewer)>
-		<cfset setValue("aCFC",oCFCViewer.getCFCs())>
-
-		<!--- set the view --->
-		<cfset setView("vwAPI")>
-		<!--- CFDoc Check --->
-		<cfset cfdoc()>
-	</cffunction>
-	<!--- ************************************************************* --->
-
-	<!--- ************************************************************* --->
 	<cffunction name="doCheckUpdates" access="public" returntype="void">
 		<cfset var errorString = "Error retrieving update information from the ColdBox distribution site. Below you can see some diagnostic information.<br><br>">
 		<cfset var updateWS = "">
@@ -270,37 +365,7 @@ This is the main event handler for the ColdBox dashboard.
 	</cffunction>
 	<!--- ************************************************************* --->
 
-	
-
-	<!--- ************************************************************* --->
-	<cffunction name="doChangePassword" access="public" returntype="void">
-		<cfset var errors = "">
-		<!--- Validations --->
-		<cfif trim(getValue("new_password")) eq "" or trim(getValue("current_password")) eq "" or trim(getValue("new_password2")) eq "">
-			<cfset errors = "- Please enter all the fields.<br>">
-		</cfif>
-		<!--- pass matches --->
-		<cfif compare(trim(getValue("new_password")), trim(getValue("new_password2"))) neq 0>
-			<cfset errors = errors & "- The new password does not match the confirmation password. Try again.<br>">
-		</cfif>
-		<!--- Test for old Password --->
-		<cfif not getPlugin("settings").passwordCheck(trim(hash(getValue("current_password"))))>
-			<cfset errors = errors & "- The current password you entered is incorrect.<br>">
-		</cfif>
-		<cfif len(errors) neq 0>
-			<cfset getPlugin("messagebox").setMessage("warning",errors)>
-			<cfset setNextEvent("ehColdbox.dspPassword")>
-		</cfif>
-
-		<!--- Change Password --->
-		<cfset getPlugin("settings").changePassword(trim(getValue("current_password")),trim(getValue("new_password")))>
-		<cfset getPlugin("messagebox").setMessage("info","Your Dashboard password has been changed.")>
-		<cfset setNextEvent("ehColdbox.dspPassword")>
-
-	</cffunction>
-	<!--- ************************************************************* --->
-
-	<!--- ************************************************************* --->
+		<!--- ************************************************************* --->
 	<cffunction name="doSaveConfig" access="public" returntype="void">
 		<!--- Save Config XML --->
 		<cfset var fileContents = toString(trim(getValue("xmlcontent")))>
@@ -502,14 +567,7 @@ This is the main event handler for the ColdBox dashboard.
 	</cffunction>
 	<!--- ************************************************************* --->
 
-	<!--- ************************************************************* --->
-	<cffunction name="doChangeLocale" access="public" returntype="void">
-		<!--- Change Locale --->
-		<cfset getPlugin("i18n").setfwLocale(getValue("locale"))>
-		<cfset dspHome()>
-	</cffunction>
-	<!--- ************************************************************* --->
-
+	
 	<!--- ************************************************************* --->
 	<!--- UTILITY METHODS												   --->
 	<!--- ************************************************************* --->
@@ -526,72 +584,5 @@ This is the main event handler for the ColdBox dashboard.
 	</cffunction>
 	<!--- ************************************************************* --->
 
-	<!--- ************************************************************* --->
-	<cffunction  name="cfdoc" access="private" returntype="void" hint="Change the layout to cfdoc">
-		<cfif getValue("cfdoctype","") neq "">
-			<cfset setLayout("Layout.cfdoc")>
-		</cfif>
-	</cffunction>
-	<!--- ************************************************************* --->
 	
-	<!--- ************************************************************* --->
-	<cffunction name="getPassword" access="private" hint="Gets the current dashboard password or creates one if necessary." returntype="any" output="false">
-		<cfset var pass = "coldbox=9702D637FA3229EAFFC5A58FF7E06B6C">
-		<cfset var passContent = "">
-		<cfset var passfile = "#getSetting("FrameworkPath",1)##getSetting("OSFileSeparator",1)#admin#getSetting("OSFileSeparator",1)#config#getSetting("OSFileSeparator",1)#.coldbox">
-
-		<!--- Check if file .coldbox exists --->
-		<cfif fileExists( passfile )>
-			<cffile action="read" file="#passfile#" variable="passContent">
-			<!--- Veriy pass on File is Correct. --->
-			<cfif not refindNocase("^coldbox=.*", passContent)>
-				<cffile action="write" file="#passFile#" output="#pass#">
-				<cfset passContent = pass>
-			</cfif>
-			<cfreturn getToken(passContent, 2,"=")>
-		<cfelse>
-			<!--- Create New File with Password --->
-			<cffile action="write" file="#passfile#" output="#pass#">
-			<cfset passContent = pass>
-			<!--- Return password hash--->
-			<cfreturn getToken(passContent, 2,"=")>
-		</cfif>
-	</cffunction>
-	<!--- ************************************************************* --->
-	
-	<!--- ************************************************************* --->
-	<cffunction name="passwordCheck" access="public" hint="Checks wether the passed password is correct or not." returntype="boolean" output="false">
-		<!--- ************************************************************* --->
-		<cfargument name="passToCheck" required="yes" type="string" hint="The password to verify. Hashed already please.">
-		<!--- ************************************************************* --->
-		<cfif Compare(trim("#getPassword()#"),trim(arguments.passToCheck)) eq 0>
-			<cfreturn true>
-		<cfelse>
-			<cfreturn false>
-		</cfif>
-	</cffunction>
-	<!--- ************************************************************* --->
-
-	<!--- ************************************************************* --->
-	<cffunction name="changePassword" access="public" hint="Changes the dashboard password." returntype="boolean" output="false">
-		<!--- ************************************************************* --->
-		<cfargument name="currentPassword" 	required="yes" type="string">
-		<cfargument name="newPassword" 		required="yes" type="string">
-		<!--- ************************************************************* --->
-		<cfset var newPass = "">
-		<cfset var passfile = "#getSetting("FrameworkPath",1)##getSetting("OSFileSeparator",1)#admin#getSetting("OSFileSeparator",1)#config#getSetting("OSFileSeparator",1)#.coldbox">
-		<cfif CompareNocase(getSetting("AppName"),getSetting("DashboardName",1)) eq 0>
-			<cfif passwordCheck(hash(arguments.currentPassword))>
-				<!--- Create New File with Password --->
-				<cfset newPass = "coldbox=#hash(arguments.newPassword)#">
-				<cffile action="write" file="#passFile#" output="#newPass#">
-				<cfreturn true>
-			<cfelse>
-				<cfreturn false>
-			</cfif>
-		<cfelse>
-			<cfreturn false>
-		</cfif>
-	</cffunction>
-	<!--- ************************************************************* --->
 </cfcomponent>

@@ -1,0 +1,17 @@
+<rollovers>
+   
+    <section id="home">
+        <rollover id="sysinfo">Displays the framework's and system's information</rollover>
+        <rollover id="onlineresources">An extensive online resource list where you can find more useful information about ColdBox</rollover>
+        <rollover id="cfcdocs">Creates the on the fly documentation for the framework's cfc's</rollover>
+    </section>
+    
+    <section id="settings">
+        <rollover id="frameworksettings">Displays the framework's read only settings</rollover>
+        <rollover id="logfilesettings">From here you can change the coldbox logging facility's parameters</rollover>
+        <rollover id="encodingsettings">From here you can change the file encoding to use when using the fileutilities plugin.</rollover>
+        <rollover id="passwordsettings">Change your dashboard password, securely!!</rollover>
+        <rollover id="proxysettings">Change your proxy settings, if needed.</rollover>
+    </section>
+        
+</rollovers>

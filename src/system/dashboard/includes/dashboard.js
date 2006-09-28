@@ -6,10 +6,16 @@
 //AJAX LOADER JS
 //********************************************************************************
 function lon(){
-	Effect.Appear('myloader',{duration: .2});
+	try{
+		Effect.Appear('myloader',{duration: .2});
+	}
+	catch(err){null;}
 }
 function loff(){
-	Effect.Fade('myloader',{duration: .2});	
+	try{
+		Effect.Fade('myloader',{duration: .2});	
+	}
+	catch(err){null;}
 }
 
 //********************************************************************************
@@ -43,6 +49,12 @@ function showAdvancedSearchBar( openit ){
 		divoff('advancedSearchBar');
 	}
 }
+function helpon(){
+	Effect.BlindDown('helpbox');
+}
+function helpoff(){
+	Effect.BlindUp('helpbox');
+}
 //********************************************************************************
 //AJAX INTERACTION
 //********************************************************************************
@@ -58,7 +70,7 @@ function doFormEvent (e, targetID, frm) {
 }
 
 function doEvent (e, targetID, params, methodType ) {
-	parent.topframe.lon();
+	parent.topframe.lon(); 
 	var pars = "event=" + e + "&";
 	//Check for Method.
 	if ( methodType == null )
@@ -86,8 +98,19 @@ function validateLogout(){
 	}
 	return false;
 }
-
-
+function framebuster(){
+	if ( top != self )
+		top.location=self.location;	
+}
+function resetHint(){
+	$("sidemenu_help").innerHTML = "Help tips will be shown here. Just rollover the links above and you will get help.";
+}
+function confirmit(){
+	if ( confirm ("Do you want to commit these changes to the framework.") )
+		return true;
+	else
+		return false;
+}
 
 //********************************************************************************
 //TEST METHODS

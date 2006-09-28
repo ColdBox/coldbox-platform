@@ -1,5 +1,5 @@
 /* OVERALL APPLICATION LINKS */body{	margin: 0px;
-	padding: 0px;	font-family:Verdana, Arial, Helvetica, sans-serif;	font-size:11px;	
+	padding: 0px;	font-family:Verdana, Arial, Helvetica, sans-serif;	font-size:10px;	
 	height: 100%;}hr{
 	color: #232332;
 }
@@ -11,6 +11,8 @@ a:link, a:visited{
 	color: #000000;
 	font-weight:bold;
 	text-decoration:none;
+	font-style: italic;
+	font-size: 10px;
 }
 a:hover{
 	text-decoration: underline;
@@ -21,7 +23,7 @@ a:hover{
 .headerbar{
 	background: url(../images/header_bg.png) repeat;
 	height: 70px;
-}.statusbar{	background: url(../images/statusbar_bg.png) repeat-x;	height: 25px;	border-top: 1px solid #AAAAAA;	border-bottom: 1px solid #dddddd;	font-size:9px;}
+}.statusbar{	background: url(../images/statusbar_bg.png) repeat-x;	height: 25px;	border-top: 1px solid #AAAAAA;	border-bottom: 1px solid #dddddd;	font-size:10px;}
 .browserbuttonsbar{
 	float:left; 
 	margin-left:10px;
@@ -77,15 +79,6 @@ a:hover{
 	float: right;
 	bottom: 0px;
 }
-.contentboxes_header{
-	background: url(../images/contentboxes_header.png) repeat-x;
-	height: 50px;
-	clear: both;
-}
-.contentboxes{
-	margin: 20px;
-	clear: both;
-}
 .contentboxes_title{
 	margin-left: 20px;
 	padding-top: 5px;
@@ -96,9 +89,9 @@ a:hover{
 
 /* SIDE MENU */
 .sidemenu{
-	position: absolute;
+	/* position: absolute; 
 	right: 0px;
-	top: 0px;
+	top: 0px;*/
 	background: url(../images/sidemenu_bg.png) repeat;
 	height: 100%;
 	width: 221px;
@@ -110,7 +103,8 @@ a:hover{
 }
 .sidemenu_help{
 	font-size: 9px;
-	margin: 8px;
+	margin: 10px;
+	height: 30px;
 }
 .sidemenu_toolbar{
 	margin-top: 40px;
@@ -145,7 +139,90 @@ li{
 	margin-left: 3px;
 }
 /* CONTENT  */
-.content{
-	margin: 20px;
-}/* FORM ELEMENTS */input[type=button], input[type=submit], input[type=reset] { background: #eee; color: #222; border: 1px outset #ccc; padding: .1em .5em; font-size: 12px;}
-input[type=button]:hover, input[type=submit]:hover, input[type=reset]:hover { background: #FFFFF0; border: 1px inset #ccc; cursor: hand;}input[type=button][disabled], input[type=submit][disabled],input[type=reset][disabled] { background: #f6f6f6; border-style: solid; color: #999;}input[type=text], input[type=password], input[type=checkbox], textarea { border: 1px solid #d7d7d7 }input[type=text], input[type=password], input[type=checkbox] { padding: .20em .3em }input[type=text]:focus, input[type=password]:focus, textarea:focus, input[type=checkbox]:focus { border: 1px solid #886;}
+#content{
+	width: 600px;
+	height: 100%;
+	text-align:left;
+}
+.maincontentbox{
+	width: 600px;
+	border: 1px outset #cccccc;
+	background: url(../images/contentboxes_footer.png) repeat-x bottom;
+	margin: 15px;
+}
+.contentboxes_header{
+	background: url(../images/contentboxes_header.png) repeat-x;
+	height: 50px;
+}
+.contentboxes{
+	margin: 10px;
+	margin-bottom: 50px;
+}
+/* HELP DIVS */
+.helpbox{
+	width: 350px;
+	height: 260px;
+	border: 1px solid #ddd;
+	background: url(../images/help_footer_bg.gif) #FBFFCD repeat-x bottom;
+	margin: 15px;
+	position: relative; 
+	margin: auto; 
+}
+.helpbox_header{
+	width: 100%;
+	background: url(../images/help_titlebar_bg.gif) repeat-x;
+	height: 30px;
+	font-weight: bold;
+}
+.helpbox_header_title{
+	padding-top:3px;
+	padding-left: 10px;
+}
+.helpbox_message{
+	width: 330px;
+	height: 200px;
+	overflow: auto;
+	overflow-x: hidden;
+	margin-left: 10px;
+	margin-right: 10px;
+	margin-bottom: 10px;
+}
+.helpbox_message ul{
+	list-style-image: url(../images/icons/icon_guide_tips.gif);
+}
+.helpbox_message li{
+	margin-left: -15px;
+	margin-bottom: 10px;
+	vertical-align: text-top;
+}/* FORM ELEMENTS */
+.redtext{
+	color: red;
+}.tablelisting{
+	font-size: 9px;
+	border-bottom: 1px solid #cccccc;
+}
+.tablelisting tr:hover { background: #E8F2FE }
+.tablelisting th {
+  text-align: left;
+  background-color: #F6F6F6;
+  background-image: url(../images/th_bg.gif);
+  background-repeat: repeat-x;
+  color: #000000;
+  border: 1px solid #7D7D7D;
+}
+.sort {
+  background-color: #5DE3FF;
+  background-image: url(../images/th_sorted_bg.gif);
+  background-repeat: repeat-x;
+  border-top: 1px solid #002F93;
+  border-bottom: 1px solid #0090FF;
+  color: #000000;
+  text-align: left;
+  font-weight: bold;
+}
+fieldset{
+	background-color: #f5f5f5;
+	border: 1px solid #ddd;
+}
+input[type=button], input[type=submit], input[type=reset] { background: #eee; color: #222; border: 1px outset #ccc; padding: .1em .5em; font-size: 12px;}
+input[type=button]:hover, input[type=submit]:hover, input[type=reset]:hover { background: #FFFFF0; border: 1px inset #ccc; cursor: hand;}input[type=button][disabled], input[type=submit][disabled],input[type=reset][disabled] { background: #f6f6f6; border-style: solid; color: #999;}input[type=text], input[type=password], input[type=checkbox], textarea, select { font-size:10px; border: 1px solid #d7d7d7 }input[type=text], input[type=password], input[type=checkbox], select { padding: .20em .3em }input[type=text]:focus, input[type=password]:focus, textarea:focus, input[type=checkbox]:focus, select:focus { border: 1px solid #886;}

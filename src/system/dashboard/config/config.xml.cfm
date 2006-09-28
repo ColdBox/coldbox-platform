@@ -30,6 +30,8 @@
 		<Setting name="InstallerDir"			value="installer" />
 		<Setting name="Version" 				value="1.1.0"/>
 		<Setting name="TracSite"				value="http://ortus.svnrepository.com/coldbox/" />
+		<Setting name="OfficialSite"			value="http://www.coldboxframework.com" />
+		<Setting name="SchemaDocs" 				value="http://www.luismajano.com/projects/coldbox/documents/SchemaDocs/"/>
 	</YourSettings>
 	
 	<!--Optional,if blank it will use the CFMX administrator settings.-->

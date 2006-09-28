@@ -9,7 +9,7 @@
 <script language="javascript" src="includes/dashboard.js"></script>
 <script language="javascript" src="includes/toolkit/scriptaculous.js?load=effects"></script>
 </head>
-<body onunload="parent.topframe.lon()" onLoad="parent.topframe.loff()">
+<body>
 <cfset WriteOutput(renderView())>
 </body>
 </html>
