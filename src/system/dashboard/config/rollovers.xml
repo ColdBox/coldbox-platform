@@ -13,5 +13,25 @@
         <rollover id="passwordsettings">Change your dashboard password, securely!!</rollover>
         <rollover id="proxysettings">Change your proxy settings, if needed.</rollover>
     </section>
-        
+     
+    <section id="tools">
+        <rollover id="appbuilder">Launches the ColdBox application builder wizard.</rollover>
+        <rollover id="cfcgenerator">Your very own cfc generator based on Brian Rinaldi's Illidium Generator</rollover>
+        <rollover id="logviewer">Lanuches ColdBox very own log viewer application.</rollover>
+    </section>  
+    
+    <section id="appbuilder">
+        <rollover id="appname">Launches the ColdBox application builder wizard.</rollover>
+    </section>  
+    
+    <section id="update">
+        <rollover id="appbuilder">Launches the ColdBox application builder wizard.</rollover>
+    </section>  
+    
+    <section id="bugs">
+        <rollover id="submitbug">Submit a new bug to the offical bug email address.</rollover>
+        <rollover id="tracdatabase">Visit the official Trac bug database and run ticket reports, view progress, etc.</rollover>
+    </section>   
+    
+     
 </rollovers>

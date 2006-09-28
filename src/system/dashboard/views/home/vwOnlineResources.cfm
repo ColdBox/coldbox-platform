@@ -24,7 +24,7 @@
 <div class="maincontentbox">
 	
 	<div class="contentboxes_header">
-		<div class="contentboxes_title"><img src="images/icons/developerresources_icon.gif" align="absbottom" />&nbsp; Online Resources</div>
+		<div class="contentboxes_title"><img src="images/icons/online_resources.gif" align="absbottom" />&nbsp; Online Resources</div>
 	</div>
 	
 	<div class="contentboxes">
@@ -34,7 +34,12 @@
 	
 		<div style="margin: 5px">
 	    <table width="100%" border="0" cellspacing="0" cellpadding="5" class="tablelisting">
-          <tr>
+		  <tr>
+				<th>Resource</th>
+				<th>Open</th>
+		  </tr>
+          
+		  <tr>
             <td width="40%" align="right" valign="top"><strong>Official Wiki, Guides, etc:</strong></td>
             <td valign="top" style="border-left:1px solid ##ddd"><a href="#getSetting("TracSite")#">Click Here To Open</a></td>
           </tr>

@@ -22,10 +22,10 @@ function loff(){
 //DIV EFFECTS
 //********************************************************************************
 function divon(divid){
-	Effect.Appear(divid,{duration: .1});
+	Effect.Appear(divid,{duration: .2});
 }
 function divoff(divid){
-	Effect.Fade(divid,{duration: .1});
+	Effect.Fade(divid,{duration: .2});
 }
 function cleariv(id) {
 	$(id).innerHTML = "";
@@ -103,7 +103,7 @@ function framebuster(){
 		top.location=self.location;	
 }
 function resetHint(){
-	$("sidemenu_help").innerHTML = "Help tips will be shown here. Just rollover the links above and you will get help.";
+	$("sidemenu_help").innerHTML = "Help tips will be shown here. Just rollover certain areas or links and you will get some quick tips.";
 }
 function confirmit(){
 	if ( confirm ("Do you want to commit these changes to the framework.") )
@@ -111,7 +111,15 @@ function confirmit(){
 	else
 		return false;
 }
-
+function validateappbuilder(){
+	
+}
+function toggleLogsLocation(){
+	if ( $("coldboxlogging").value == 'true' )
+		$('tr_coldboxlogslocation').style.display = 'table-row';
+	else
+		$('tr_coldboxlogslocation').style.display = 'none';
+}
 //********************************************************************************
 //TEST METHODS
 //********************************************************************************

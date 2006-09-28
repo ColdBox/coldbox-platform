@@ -31,12 +31,12 @@
 		</cfif>
 		<!--- UPDATE --->
 		<div id="topbuttons">
-			<a href="#getValue("xehUpdate")#" target="mainframe" onmouseover="rollover('btn_update')" onmouseout="rollout('btn_update')"><img  src="images/icons/update.gif" border="0" id="btn_update" srcoff="images/icons/update.gif" srcon="images/icons/update_on.gif"><br>
+			<a href="?event=#getValue("xehUpdate")#" target="mainframe" onmouseover="rollover('btn_update')" onmouseout="rollout('btn_update')"><img  src="images/icons/update.gif" border="0" id="btn_update" srcoff="images/icons/update.gif" srcon="images/icons/update_on.gif"><br>
 			Update</a>
 		</div>
 		<!--- BUG REPORTS --->
 		<div id="topbuttons">
-			<a href="#getValue("xehBugs")#" target="mainframe" onmouseover="rollover('btn_bugs')" onmouseout="rollout('btn_bugs')"><img  src="images/icons/bugreports.gif" border="0" id="btn_bugs" srcoff="images/icons/bugreports.gif" srcon="images/icons/bugreports_on.gif"><br>
+			<a href="?event=#getValue("xehBugs")#" target="mainframe" onmouseover="rollover('btn_bugs')" onmouseout="rollout('btn_bugs')"><img  src="images/icons/bugreports.gif" border="0" id="btn_bugs" srcoff="images/icons/bugreports.gif" srcon="images/icons/bugreports_on.gif"><br>
 			Submit Bug</a>
 		</div>
 	</div>
@@ -44,7 +44,7 @@
 </div>	
 
 <div class="statusbar">
-	<form id="searchdocs" action="#getSetting("tracsite")#/search" method="get" target="mainframe">
+	<form id="searchdocs" action="#getSetting("tracsite")#/trac.cgi/search" method="get" target="mainframe">
 	
 	<div class="browserbuttonsbar">
 		<cfif not findnocase("MSIE",cgi.HTTP_USER_AGENT)>

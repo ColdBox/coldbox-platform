@@ -287,28 +287,99 @@ This is the main event handler for the ColdBox dashboard.
 	</cffunction>
 	
 	<!--- ************************************************************* --->
-	
-	
-	
+	<!--- TOOLS SECTION 												--->
 	<!--- ************************************************************* --->
 	
-	<cffunction name="dspConfigEditor" access="public" returntype="void">
-		<cfset var fs = getSetting("OSFileSeparator",1)>
-		<cfset var configFile = getSetting("ParentAppPath",true) & fs & "config" & fs & "config.xml.cfm">
-		<!--- Read Config XML using plugin, this is mostly for cfscript --->
-		<cfset var configXML = getPlugin("fileUtilities").readFile("#configFile#")>
-		<cfset setValue("configXML", configXML)>
-		<!--- Test for CFDOC --->
-		<cfif getValue("cfdoc", false) eq false >
-			<cfset setView("vwConfigEditor")>
-		<cfelse>
-			<cfset setValue("fpcontent", XMLFormat(configXML))>
-			<cfset setValue("usePreTag", true)>
-			<cfset setView("vwFPViewer")>
-		</cfif>
+	<cffunction name="dspTools" access="public" returntype="void">
+		<!--- EXIT HANDLERS: --->
+		<cfset rc.xehAppBuilder = "ehColdbox.dspAppBuilder">
+		<cfset rc.xehLogViewer = "ehColdbox.dspLogViewer">
+		<cfset rc.xehCFCGenerator = "ehColdbox.dspcfcGenerator">
+		<!--- Set the Rollovers For This Section --->
+		<cfset rc.qRollovers = filterQuery(application.dbservice.get("settings").getRollovers(),"pagesection","tools")>
+		<!--- Set the View --->
+		<cfset setView("vwTools")>
 	</cffunction>
+	
+	<cffunction name="dspAppBuilder" access="public" returntype="void">
+		<!--- Set the Rollovers For This Section --->
+		<cfset rc.qRollovers = filterQuery(application.dbservice.get("settings").getRollovers(),"pagesection","appbuilder")>
+		<!--- Set the View --->
+		<cfset setView("tools/vwAppBuilder")>
+	</cffunction>
+	
 	<!--- ************************************************************* --->
-
+	<!--- UPDATE SECTION 												--->
+	<!--- ************************************************************* --->
+	
+	
+	<!--- ************************************************************* --->
+	<!--- SUBMIT BUG	 												--->
+	<!--- ************************************************************* --->
+	<cffunction name="dspBugs" access="public" returntype="void">
+		<!--- EXIT HANDLERS: --->
+		<cfset rc.xehSubmitBug = "ehColdbox.dspSubmitBug">
+		<!--- Set the Rollovers For This Section --->
+		<cfset rc.qRollovers = filterQuery(application.dbservice.get("settings").getRollovers(),"pagesection","bugs")>
+		<!--- Set the View --->
+		<cfset setView("vwBugs")>
+	</cffunction>
+	
+	<cffunction name="dspSubmitBug" access="public" returntype="void">
+		<!--- EXIT HANDLERS: --->
+		<cfset rc.xehDoSave = "ehColdbox.doSubmitBug">
+		<!--- Set the View --->
+		<cfset setView("bugs/vwSubmitBugs")>
+	</cffunction>
+	
+	<cffunction name="doSubmitBug" access="public" returntype="void">
+		<cfset var mybugreport = "">
+		<!--- Validate --->
+		<cfif len(trim(rc.email)) eq 0 or len(trim(rc.bugreport)) eq 0 or len(trim(rc.name)) eq 0>
+			<cfset getPlugin("messagebox").setMessage("warning", "Please fill out all the mandatory fields.")>
+		<cfelse>
+			<!--- Save the Report --->
+			<cfsavecontent variable="mybugreport">
+			<cfoutput>
+			=========================================================
+			_Bug Details_
+			=========================================================
+			Date: #dateFormat(now(),"mmmm dd, YYYY")#
+			Time: #TimeFormat(now(), "long")#
+			From: #rc.name#
+			Bug Report:
+			#rc.bugreport#
+			=========================================================
+			_ColdBox Details_
+			=========================================================
+			Version:    #getSetting("version", 1)#
+			Codename:   #getSetting("codename",1)#
+			Suffix:     #getSetting("suffix",1)#
+			O.S:        #getPlugin("fileutilities").getOSName()#
+			CF Engine:  #server.ColdFusion.ProductName#
+			CF Version: #server.ColdFusion.ProductVersion#
+			=========================================================
+			</cfoutput>
+			</cfsavecontent>
+			<!--- Send the bug report --->
+			<cfif len(trim(rc.mailserver)) eq 0>
+				<cfmail to="bugs@coldboxframework.com" from="#rc.email#" subject="Bug Report" username="#rc.mailusername#" password="#mailpassword#">
+				#mybugreport#
+				</cfmail>
+			<cfelse>
+				<cfmail to="bugs@coldboxframework.com" from="#rc.email#" subject="Bug Report" server="#rc.mailserver#" username="#rc.mailusername#" password="#rc.mailpassword#">
+				#mybugreport#
+				</cfmail>
+			</cfif>
+			<cfset getPlugin("messagebox").setMessage("info", "You have successfully sent your bug report to the ColdBox bug email address.")>
+			<!--- Save copy to show --->
+			<cfset getPlugin("clientstorage").setvar("sentbugreport",mybugreport)>
+		</cfif>
+		<cfset setNextEvent("ehColdbox.dspSubmitBug")>		
+	</cffunction>
+	
+	
+	
 	<!--- ************************************************************* --->
 	<cffunction name="dspBackups" access="public" returntype="void">
 		<cfset var dirListing = "">
@@ -362,58 +433,6 @@ This is the main event handler for the ColdBox dashboard.
 		</cftry>
 		<!--- set next event --->
 		<cfset setNextEvent("ehColdbox.dspHome")>
-	</cffunction>
-	<!--- ************************************************************* --->
-
-		<!--- ************************************************************* --->
-	<cffunction name="doSaveConfig" access="public" returntype="void">
-		<!--- Save Config XML --->
-		<cfset var fileContents = toString(trim(getValue("xmlcontent")))>
-		<cfset var fs = getSetting("OSFileSeparator",1)>
-		<cfset var filename = "#getFileFromPath(getSetting("ConfigFileLocation",true))#">
-		<cfset var source = getSetting("ParentAppPath",true) & fs & "config" & fs & "config.xml.cfm" >
-		<cfset var destination = ExpandPath("#getSetting("BackupsPath")##fs#config_files#fs##dateformat(now(),"MMM.DD.YY")#-#timeformat(now(),"HH.MM")#_#filename#")>
-		<cfset var validationResults = "">
-		
-		<!--- XML Verification --->
-		<cfif not isXML(fileContents)>
-			<cfset getPlugin("messagebox").setMessage("error", "The contents of the xml file are invalid. This is not a valid XML file. Please check your syntax. The file has been reverted to the original config.xml")>
-			<cfset setNextEvent("ehColdbox.dspConfigEditor")>
-		</cfif>
-
-		<!--- Validation --->
-		<cfset validationResults = XMLValidate(fileContents,getSetting("ConfigFileSchemaLocation",1))>
-
-		<cfif not validationResults.status>
-			<cfset getPlugin("messagebox").setMessage("error", "The contents of the xml file does not validate with the config schema file.  The file has been reverted to the original config.xml.")>
-			<cfset setNextEvent("ehColdbox.dspConfigEditor")>
-		</cfif>
-
-		<!--- Check backups dir --->
-		<cfset checkBackupDir()>
-		<cftry>
-			<!--- Save backup --->
-			<cffile action="copy"
-				    source="#source#"
-					destination="#destination#"
-					nameconflict="overwrite"
-					mode="777">
-
-			<!--- Save --->
-			<cffile action="write"
-					file="#source#"
-					output="#fileContents#"
-					nameconflict="overwrite"
-					mode="777">
-
-			<!--- Message --->
-			<cfset getPlugin("messagebox").setMessage("info","The Config.xml file was saved successfully. A backup copy has been placed in the backups directory of the dashboard.")>
-			<cfset setNextEvent("ehColdbox.dspConfigEditor")>
-			<cfcatch type="any">
-				<cfset getPlugin("messagebox").setMessage("error", "Error Saving File: #cfcatch.detail# #cfcatch.message#")>
-				<cfset setNextEvent("ehColdbox.dspConfigEditor")>
-			</cfcatch>
-		</cftry>
 	</cffunction>
 	<!--- ************************************************************* --->
 
