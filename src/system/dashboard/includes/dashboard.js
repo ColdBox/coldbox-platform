@@ -2,18 +2,19 @@
 //DESCRIPTION: 	MAIN JS FILE FOR THE DASHBOARD.
 //
 
+
 //********************************************************************************
 //AJAX LOADER JS
 //********************************************************************************
 function lon(){
 	try{
-		Effect.Appear('myloader',{duration: .2});
+		new Effect.Appear('myloader',{duration: .2});
 	}
 	catch(err){null;}
 }
 function loff(){
 	try{
-		Effect.Fade('myloader',{duration: .2});	
+		new Effect.Fade('myloader',{duration: .2});	
 	}
 	catch(err){null;}
 }
@@ -22,10 +23,10 @@ function loff(){
 //DIV EFFECTS
 //********************************************************************************
 function divon(divid){
-	Effect.Appear(divid,{duration: .2});
+	new Effect.Appear(divid,{duration: .2});
 }
 function divoff(divid){
-	Effect.Fade(divid,{duration: .2});
+	new Effect.Fade(divid,{duration: .2});
 }
 function cleariv(id) {
 	$(id).innerHTML = "";
@@ -53,7 +54,7 @@ function helpon(){
 	Effect.BlindDown('helpbox');
 }
 function helpoff(){
-	Effect.BlindUp('helpbox');
+	new Effect.BlindUp('helpbox');
 }
 //********************************************************************************
 //AJAX INTERACTION
@@ -119,6 +120,30 @@ function toggleLogsLocation(){
 		$('tr_coldboxlogslocation').style.display = 'table-row';
 	else
 		$('tr_coldboxlogslocation').style.display = 'none';
+}
+
+function addemail(){
+	var vemail = $("bugemailadd").value;
+	var oldLength = $("bugemails").options.length;
+	
+	if ( vemail == "") alert("Please enter a valid email");
+	else{
+		if ( oldLength == 0 )
+			newLength = 0;
+		$("bugemails").options.length = oldLength + 1;
+		$("bugemails").options[oldLength] = new Option(vemail,vemail);
+		$("bugemailadd").value = '';
+	}
+}
+
+function removeemail(){
+ var lgth = $("bugemails").options.length - 1;
+ var sel = $("bugemails").selectedIndex;
+ 
+ if ( sel < 0 )
+ 	alert ("Please select a valid email to remove");
+ else
+ 	$("bugemails").options[sel] = null;
 }
 //********************************************************************************
 //TEST METHODS

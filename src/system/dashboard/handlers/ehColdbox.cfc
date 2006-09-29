@@ -292,20 +292,13 @@ This is the main event handler for the ColdBox dashboard.
 	
 	<cffunction name="dspTools" access="public" returntype="void">
 		<!--- EXIT HANDLERS: --->
-		<cfset rc.xehAppBuilder = "ehColdbox.dspAppBuilder">
-		<cfset rc.xehLogViewer = "ehColdbox.dspLogViewer">
-		<cfset rc.xehCFCGenerator = "ehColdbox.dspcfcGenerator">
+		<cfset rc.xehAppBuilder = "ehAppBuilder.dspAppBuilder">
+		<cfset rc.xehLogViewer = "ehLogViewer.dspLogViewer">
+		<cfset rc.xehCFCGenerator = "ehGenerator.dspcfcGenerator">
 		<!--- Set the Rollovers For This Section --->
 		<cfset rc.qRollovers = filterQuery(application.dbservice.get("settings").getRollovers(),"pagesection","tools")>
 		<!--- Set the View --->
 		<cfset setView("vwTools")>
-	</cffunction>
-	
-	<cffunction name="dspAppBuilder" access="public" returntype="void">
-		<!--- Set the Rollovers For This Section --->
-		<cfset rc.qRollovers = filterQuery(application.dbservice.get("settings").getRollovers(),"pagesection","appbuilder")>
-		<!--- Set the View --->
-		<cfset setView("tools/vwAppBuilder")>
 	</cffunction>
 	
 	<!--- ************************************************************* --->

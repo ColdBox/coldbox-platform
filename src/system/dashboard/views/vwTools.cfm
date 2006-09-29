@@ -21,7 +21,7 @@
 			
 			<li><a href="javascript:doEvent('#getValue("xehLogViewer")#', 'content', {})" onMouseOver="getHint('logviewer')" onMouseOut="resetHint()">ColdBox Log Viewer</a></li>
 			
-			<li><a href="javascript:doEvent('#getValue("xehCFCGenerator")#', 'content', {})" onMouseOver="getHint('cfcgenerator')" onMouseOut="resetHint()">Illidium CFC Generator</a></li>
+			<li><a href="javascript:doEvent('#getValue("xehCFCGenerator")#', 'content', {})" onMouseOver="getHint('cfcgenerator')" onMouseOut="resetHint()">Illidium PU-36 CFC Generator</a></li>
 			
 		</ul>
 		

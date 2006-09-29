@@ -4,7 +4,7 @@
 
 <!--- Help Div --->
 <div class="sidemenu_help" id="sidemenu_help">
-Help tips will be shown here. Just rollover the links above and you will get help.
+Help tips will be shown here. Just rollover certain areas or links and you will get some quick tips.
 </div>
 
 <!--- Toolbar --->
