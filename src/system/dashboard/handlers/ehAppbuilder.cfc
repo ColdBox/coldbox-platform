@@ -19,6 +19,8 @@ This is the app Builder handler.
 	<!--- ************************************************************* --->
 
 	<cffunction name="dspAppBuilder" access="public" returntype="void">
+		<!--- Get Locales --->
+		<cfset rc.Locales = getPlugin("i18n").getLocales()>
 		<!--- Set the View --->
 		<cfset setView("tools/vwAppBuilder")>
 	</cffunction>

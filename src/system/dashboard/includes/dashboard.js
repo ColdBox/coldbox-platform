@@ -71,7 +71,7 @@ function doFormEvent (e, targetID, frm) {
 }
 
 function doEvent (e, targetID, params, methodType ) {
-	parent.topframe.lon(); 
+	try{parent.topframe.lon();} catch(err){null;}
 	var pars = "event=" + e + "&";
 	//Check for Method.
 	if ( methodType == null )
@@ -144,6 +144,76 @@ function removeemail(){
  	alert ("Please select a valid email to remove");
  else
  	$("bugemails").options[sel] = null;
+}
+
+function addDevURL(){
+	var vurl = $("devurladd").value;
+	var oldLength = $("devurls").options.length;
+	
+	if ( vurl == "") alert("Please enter a valid dev url snippet");
+	else{
+		if ( oldLength == 0 )
+			newLength = 0;
+		$("devurls").options.length = oldLength + 1;
+		$("devurls").options[oldLength] = new Option(vurl,vurl);
+		$("devurladd").value = '';
+	}
+}
+
+function removeDevURL(){
+ var lgth = $("devurls").options.length - 1;
+ var sel = $("devurls").selectedIndex;
+ 
+ if ( sel < 0 )
+ 	alert ("Please select a valid dev url to remove");
+ else
+ 	$("devurls").options[sel] = null;
+}
+
+function toggleHandlers( vchecked, vtextboxID, vmethod ){
+	if ( vchecked ){
+		$(vtextboxID).value = $("maineventhandler").value + "." + vmethod;
+	}
+	else{
+		$(vtextboxID).value = '';
+	}
+}
+function changeallHandlers(){
+	if ( $('onapplicationstart_cb').checked ){
+		$("onapplicationstart").value = $("maineventhandler").value + ".onApplicationStart";
+	}
+	if ( $('onrequeststart_cb').checked ){
+		$("onrequeststart").value = $("maineventhandler").value + ".onRequestStart";
+	}
+	if ( $('onrequestend_cb').checked ){
+		$("onrequestend").value = $("maineventhandler").value + ".onRequestEnd";
+	}
+	if ( $('onexception_cb').checked ){
+		$("onexception").value = $("maineventhandler").value + ".onException";
+	}
+	$("defaultevent_handler").innerHTML = $("maineventhandler").value + ".";
+}
+function toggleBugReportEmails(){
+	if ( $("enablebugreports").value == 'true' )
+		$('tr_bugreportEmails').style.display = 'table-row';
+	else
+		$('tr_bugreportEmails').style.display = 'none';
+}
+function toggleResourceBundle(){
+	var locale = $("defaultlocale").options[$("defaultlocale").selectedIndex].value;
+	$("defaultresourcebundle_locale").innerHTML = "_" + locale + ".properties";
+}
+function togglei18n(){
+	if ( $("i18nFlag").value == 'true' ){
+		$('tr_locale').style.display = 'table-row';
+		$('tr_localestorage').style.display = 'table-row';
+		$('tr_resourcebundle').style.display = 'table-row';
+	}
+	else{
+		$('tr_locale').style.display = 'none';
+		$('tr_localestorage').style.display = 'none';
+		$('tr_resourcebundle').style.display = 'none';
+	}
 }
 //********************************************************************************
 //TEST METHODS
