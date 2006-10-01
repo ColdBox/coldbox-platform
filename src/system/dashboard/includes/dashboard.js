@@ -28,7 +28,7 @@ function divon(divid){
 function divoff(divid){
 	new Effect.Fade(divid,{duration: .2});
 }
-function cleariv(id) {
+function cleardiv(id) {
 	$(id).innerHTML = "";
 }
 function rollover(img){
@@ -81,9 +81,13 @@ function doEvent (e, targetID, params, methodType ) {
 	//do Ajax Updater
 	var myAjax = new Ajax.Updater(targetID,
 								  "index.cfm",
-								  {method:methodType, parameters:pars, evalScripts:true, onFailure:h_callError, onComplete:parent.topframe.loff});
+								  {method:methodType, parameters:pars, evalScripts:true, onFailure:h_callError, onComplete:h_onComplete});
 }
 
+function h_onComplete(){
+	try{ parent.topframe.loff();}
+	catch(err){null;}
+}
 function h_callError(request) {
 	alert('Sorry. An error ocurred while calling a server side component. Please try again.');
 }
@@ -215,6 +219,29 @@ function togglei18n(){
 		$('tr_resourcebundle').style.display = 'none';
 	}
 }
+
+//FILE BROWSER JS
+function selectdirectory( vdir ){
+	var selectedDir = vdir;
+	$("selecteddir").value = selectedDir;
+	$("span_selectedfolder").innerHTML = selectedDir;
+	$("selectdir_btn").disabled = false;
+}
+
+function newFolder( vcurrentRoot ){
+	var vNewFolder = prompt("Please enter the name of the folder to create:");
+	if (vNewFolder == ""){ 
+		alert("Please enter a valid name");
+	}
+	else{
+		doEvent("#getValue('xehNewFolder')#",'FileBrowser',{dir:vcurrentRoot,newfolder:vNewFolder});
+	}
+}
+function chooseFolder( vcallbackItem ){
+	$(vcallbackItem).value = $("selecteddir").value;
+	cleardiv("FileBrowser");
+}
+
 //********************************************************************************
 //TEST METHODS
 //********************************************************************************

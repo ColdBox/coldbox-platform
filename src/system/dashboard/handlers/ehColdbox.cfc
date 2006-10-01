@@ -371,8 +371,6 @@ This is the main event handler for the ColdBox dashboard.
 		<cfset setNextEvent("ehColdbox.dspSubmitBug")>		
 	</cffunction>
 	
-	
-	
 	<!--- ************************************************************* --->
 	<cffunction name="dspBackups" access="public" returntype="void">
 		<cfset var dirListing = "">

@@ -26,7 +26,6 @@ This is the app Builder handler.
 	</cffunction>
 	
 	<!--- ************************************************************* --->
-	
-	
+
 	
 </cfcomponent>
