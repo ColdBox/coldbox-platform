@@ -72,4 +72,5 @@ This is the File Browser Handler
 		<cfset setNextEvent("ehFileBrowser.dspBrowser","dir=#getvalue("dir")#")>
 	</cffunction>
 	
+	<!--- ************************************************************* --->
 </cfcomponent>
