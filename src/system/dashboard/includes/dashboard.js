@@ -313,13 +313,15 @@ function chooseFolder( vcallbackItem ){
 //Navigation of app Builder 
 function stepper( vsource, vtarget ){
 	$(vsource).style.display = "none";
-	Effect.BlindDown(vtarget);
+	Effect.BlindDown(vtarget, {duration:.3});
 }
+//Validation for app Builder
 function validate_basic(vRelocate){
 	var errors = "";
 	if ( vRelocate == null ){
 		vRelocate = true;
 	}
+	
 	if ( $("appname").value == ""){
 		errors += "- Please enter an application name\n";
 	}
@@ -342,7 +344,11 @@ function validate_basic(vRelocate){
 		return true;
 	}
 }
-function validate_applicationlogging(){
+function validate_applicationlogging(vRelocate){
+	if( vRelocate == null ){
+		vRelocate = true;
+	}
+	
 	if ($("coldboxlogging").value == "true" && $("coldboxlogslocation").value == ""){
 		alert("Please enter the logs location");
 		return false;
