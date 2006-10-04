@@ -226,3 +226,41 @@ fieldset{
 }
 input[type=button], input[type=submit], input[type=reset] { background: #eee; color: #222; border: 1px outset #ccc; padding: .1em .5em; font-size: 12px;}
 input[type=button]:hover, input[type=submit]:hover, input[type=reset]:hover { background: #FFFFF0; border: 1px inset #ccc; cursor: hand;}input[type=button][disabled], input[type=submit][disabled],input[type=reset][disabled] { background: #f6f6f6; border-style: solid; color: #999;}input[type=text], input[type=password], input[type=checkbox], textarea, select { font-size:10px; border: 1px solid #d7d7d7 }input[type=text], input[type=password], input[type=checkbox], select { padding: .20em .3em }input[type=text]:focus, input[type=password]:focus, textarea:focus, input[type=checkbox]:focus, select:focus { border: 1px solid #886;}
+
+/* Generator */
+.menu_appgenerator{
+	margin-left:auto;
+	margin-right: auto;
+	width: 400px;
+	font-size: 9px;
+}
+.menu_appgenerator ul{
+	list-style: none;
+}
+.menu_appgenerator li{
+	float: left;
+	height: 25px;
+	width:  60px;
+	text-align: center;
+	vertical-align: middle;
+	background-color: #F6F6F6;
+  	background-image: url(../images/th_bg.gif);
+  	background-repeat: repeat-x;
+	cursor: pointer;
+	border-top: 1px solid #002F93; 
+	border-bottom: 1px solid #0090FF;
+	border-left: 1px solid #ffffff;
+  	color: #000000;
+	padding-top: 10px;
+}
+.appgenerator_li_on{
+	background-color: #5DE3FF;
+  	background-image: url(../images/th_sorted_bg.gif);
+  	background-repeat: repeat-x;
+  	font-weight: bold;
+}
+
+
+
+
+

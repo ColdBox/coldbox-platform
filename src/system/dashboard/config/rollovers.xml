@@ -46,6 +46,10 @@
         <rollover id="defaultlocale">Choose the default locale for your application. This is a list of valid locales for ColdFusion and ColdBox</rollover>
         <rollover id="localestorage">Choose the storage scope for the default locale. This is used internally by ColdBox.</rollover>
         <rollover id="resourcebundle">Enter the name of your main resource bundle if you are using one. Do not enter the locale or .properties extension. These are added by ColdBox.</rollover>
+        <rollover id="wsdlpro">The alias name of a webservice wsdl URL</rollover>
+        <rollover id="wsdldev">The development URL of the web service wsdl. Leave blank if it is the same as the production URL</rollover>
+        <rollover id="skeleton_name">The name of the skeleton to save on disk for future generation.</rollover>
+        <rollover id="generation_target">The location on the web server of where to generate and deploy the application.</rollover>
     </section>  
     
     <section id="update">
