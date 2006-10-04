@@ -19,6 +19,9 @@ This is the app Builder handler.
 	<!--- ************************************************************* --->
 
 	<cffunction name="dspAppBuilder" access="public" returntype="void">
+		<!--- EXIT HANDLERS --->
+		<cfset rc.xehFileBrowser = "ehFileBrowser.dspBrowser">
+		<cfset rc.xehGenerate = "ehAppbuilder.generateApplication">
 		<!--- Get Locales --->
 		<cfset rc.Locales = getPlugin("i18n").getLocales()>
 		<!--- Set the View --->
@@ -26,6 +29,14 @@ This is the app Builder handler.
 	</cffunction>
 	
 	<!--- ************************************************************* --->
-
+	
+	<cffunction name="generateApplication" access="public" returntype="void">
+		<!--- Start application Generation --->
+		
+		<!--- Set the View --->
+		<cfset setView("tools/vwAppBuilder")>
+	</cffunction>
+	
+	<!--- ************************************************************* --->
 	
 </cfcomponent>

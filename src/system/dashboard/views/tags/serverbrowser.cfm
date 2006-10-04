@@ -1,11 +1,9 @@
 <cfoutput>
 <cfset qryDir = getValue("qryDir")>
 <cfset currentRoot = getValue("currentRoot")>
-
-<input type="text" name="applicationmapping" id="applicationmapping" value="" size="50">
 <div id="FileBrowser">
 <form name="fileviewer" id="fileviewer" method="post" action="index.cfm">
-<div style="width: 550px;margin: 10px; border:1px outset ##ddd;margin-left:auto;margin-right:auto">
+<div style="width: 550px;margin: 10px; border:1px outset ##ddd;margin-left:auto;margin-right:auto;background-color: ##FFFFFF">
 	
 	<div style="border-bottom:1px solid ##ddd; background-color: ##f5f5f5;padding: 5px;font-weight:bold;">
 	   <a href="javascript:doEvent('#getValue("xehBrowser")#', 'FileBrowser',{dir:'#jsstringFormat(currentroot)#'})" title="Refresh Listing"><img src="images/icons/arrow_refresh.png" align="absmiddle" border="0" title="Refresh Listing."></a>
@@ -22,7 +20,7 @@
 			<cfif qryDir.type eq "Dir">
 				<cfset vURL = "#currentRoot##iif(currentroot eq "/","''","'/'")##urlEncodedFormat(qryDir.name)#">
 				<cfset tmpHREF = "javascript:doEvent('#getValue("xehBrowser")#','FileBrowser',{dir:'#JSStringFormat(vURL)#'})">
-				<div onMouseOver="this.style.backgroundColor='##b3cbff'" onMouseOut="this.style.backgroundColor='##ffffff'" onClick="selectdirectory('#jsstringFormat(qrydir.name)#')">
+				<div id="#JSStringFormat(qryDir.name)#" onClick="selectdirectory('#jsstringFormat(qrydir.name)#','#JSStringFormat(vURL)#')" style="cursor: pointer;" onDblclick="#tmpHREF#">
 				<a href="#tmpHREF#"><img src="images/icons/folder.png" border="0" align="absmiddle" alt="Folder"></a>
 				<!---<a href="#tmpHREF#">#qryDir.name#</a> --->
 				#qryDir.name#
@@ -36,14 +34,12 @@
 	<div style="border-top:1px solid ##ddd; background-color: ##f5f5f5;padding: 5px;font-weight:bold; text-align:right">
 	<input type="hidden" name="selecteddir" id="selecteddir" value="">
 	<input type="hidden" name="currentroot" id="currentroot" value="#currentRoot#">
-	<input type="button" id="createdir_btn" value="New Folder" style="font-size: 9xp" onClick="newFolder('#JSStringFormat(currentRoot)#')"> &nbsp;
+	<input type="button" id="cancel_btn" value="Cancel" style="font-size: 9xp" onClick="closeBrowser()"> &nbsp;
+	<input type="button" id="createdir_btn" value="New Folder" style="font-size: 9xp" onClick="newFolder('#getValue('xehNewFolder')#','#JSStringFormat(currentRoot)#')"> &nbsp;
 	<input type="button" id="selectdir_btn" value="Choose Folder" disabled="true" style="font-size: 9xp" onClick="chooseFolder('#session.callbackItem#')">
 	</div>
 	
 </div>
 </form>
-<div align="center">
-Click on a folder to browse into it. Click on the directory's name to select it.
-</div>
 </div>
 </cfoutput>

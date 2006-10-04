@@ -174,6 +174,38 @@ function removeDevURL(){
  	$("devurls").options[sel] = null;
 }
 
+function addWebservice(){
+	var vname = $("wsname").value;
+	var vprourl = $("wsdlpro").value;
+	var vdevurl = $("wsdldev").value;
+	var valueString = vname + "," + vprourl + "," + vdevurl;
+	
+	if ( vname == "" || vprourl == ""){
+		alert("Please fill out the web service information");
+		return;
+	}
+	
+	var oldLength = $("webservices").options.length;
+	if ( oldLength == 0 )
+		newLength = 0;
+	$("webservices").options.length = oldLength + 1;
+	$("webservices").options[oldLength] = new Option(vname,valueString);
+	//Clean
+	$("wsname").value = "";
+	$("wsdlpro").value = "";
+	$("wsdldev").value = "";
+}
+
+function removeWebservice(){
+ var lgth = $("webservices").options.length - 1;
+ var sel = $("webservices").selectedIndex;
+ 
+ if ( sel < 0 )
+ 	alert ("Please select a valid Web Service to remove");
+ else
+ 	$("webservices").options[sel] = null;
+}
+
 function toggleHandlers( vchecked, vtextboxID, vmethod ){
 	if ( vchecked ){
 		$(vtextboxID).value = $("maineventhandler").value + "." + vmethod;
@@ -221,28 +253,129 @@ function togglei18n(){
 }
 
 //FILE BROWSER JS
-function selectdirectory( vdir ){
-	var selectedDir = vdir;
-	$("selecteddir").value = selectedDir;
-	$("span_selectedfolder").innerHTML = selectedDir;
-	$("selectdir_btn").disabled = false;
+function openBrowser( vEvent, vCallbackInput ){
+	//Open And Place container
+	if(window.innerWidth)  clientWidth = window.innerWidth;
+	else if (document.body) clientWidth = document.body.clientWidth;
+
+	if(window.innerHeight)  clientHeight = window.innerHeight;
+	else if (document.body) clientHeight = document.body.clientHeight;
+	
+	var Container = $("FileBrowserContainer");
+	Container.style.left = ((clientWidth/2)-200) + "px";
+	Container.style.top = ((clientHeight/2)-200) + "px";
+	
+	//Render It
+	doEvent(vEvent,'FileBrowserContainer',{callBackItem:vCallbackInput});
+	//Show it.
+	new Effect.Grow("FileBrowserContainer",{duration: .2});
+	
+	
+}
+function closeBrowser( ){
+	cleardiv("FileBrowserContainer");
+	divoff("FileBrowserContainer");
 }
 
-function newFolder( vcurrentRoot ){
+function selectdirectory( vdir , vFullUrl){
+	var selectedDir = vdir;
+	$("selecteddir").value = vFullUrl;
+	$("span_selectedfolder").innerHTML = selectedDir;
+	$("selectdir_btn").disabled = false;
+	//Color Pattern
+	if ( selectDirectoryHistoryID != ""){
+		try{$(selectDirectoryHistoryID).style.backgroundColor = '#ffffff';}
+		catch(err){null;}
+		$(vdir).style.backgroundColor = '#b3cbff';
+		selectDirectoryHistoryID = vdir;
+	}
+	else{
+		$(vdir).style.backgroundColor = '#b3cbff';
+		selectDirectoryHistoryID = vdir;
+	}
+}
+var selectDirectoryHistoryID = "";
+
+function newFolder( vEvent, vcurrentRoot ){
 	var vNewFolder = prompt("Please enter the name of the folder to create:");
 	if (vNewFolder == ""){ 
 		alert("Please enter a valid name");
 	}
 	else{
-		doEvent("#getValue('xehNewFolder')#",'FileBrowser',{dir:vcurrentRoot,newfolder:vNewFolder});
+		doEvent(vEvent,'FileBrowser',{dir:vcurrentRoot,newfolder:vNewFolder});
 	}
 }
 function chooseFolder( vcallbackItem ){
 	$(vcallbackItem).value = $("selecteddir").value;
-	cleardiv("FileBrowser");
+	closeBrowser();
 }
 
-//********************************************************************************
+//Navigation of app Builder 
+function stepper( vsource, vtarget ){
+	$(vsource).style.display = "none";
+	Effect.BlindDown(vtarget);
+}
+function validate_basic(vRelocate){
+	var errors = "";
+	if ( vRelocate == null ){
+		vRelocate = true;
+	}
+	if ( $("appname").value == ""){
+		errors += "- Please enter an application name\n";
+	}
+	if( $("appmapping").value == ""){
+		errors += "- Please enter an application mapping\n";
+	}
+	if( $("debugpassword").value == ""){
+		errors += "- Please enter an debug password\n";
+	}
+	if( $("defaultlayout").value == ""){
+		errors += "- Please enter a default layout.\n";
+	}
+	if ( errors != ""){
+		alert(errors);
+		return false;
+	}
+	else{
+		if (vRelocate) 
+			stepper('basic_set','applicationloggin_set');
+		return true;
+	}
+}
+function validate_applicationlogging(){
+	if ($("coldboxlogging").value == "true" && $("coldboxlogslocation").value == ""){
+		alert("Please enter the logs location");
+		return false;
+	}
+	else{
+		if (vRelocate) 
+			stepper('applicationloggin_set','development_set');
+		return true;
+	}
+}
+function validate_eventhandlers(){
+	var errors = "";
+	if ( $("maineventhandler").value == ""){
+		errors += "- Please enter the main event handler's name.\n";
+	}
+	if( $("defaultevent").value == ""){
+		errors += "- Please enter the default event.\n";
+	}
+	
+	if ( errors != ""){
+		alert(errors);
+		return false;
+	}
+	else{
+		if ( validate_basic(false) && validate_applicationlogging(false)){
+			divon("pleasewait_div");
+			return true;
+		}
+		else
+			return false;
+	}
+}
+//******************************************************************************
 //TEST METHODS
 //********************************************************************************
 
