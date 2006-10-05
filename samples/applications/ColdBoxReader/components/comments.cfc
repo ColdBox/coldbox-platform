@@ -22,7 +22,7 @@
 		<cfset var qry = "">
 		<cfquery name="qry" datasource="#instance.dsn#" username="#instance.username#" password="#instance.password#">
 			SELECT *
-				FROM feed_comments
+				FROM coldboxreader_feed_comments
 				WHERE FeedID = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.feedID#">
 				ORDER BY CreatedOn DESC
 		</cfquery>

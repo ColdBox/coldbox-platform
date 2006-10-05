@@ -3,11 +3,19 @@ This is Oscar Arevalo's & Luis Majano's ColdBox RSS Reader.
 This sample should work with most databases, it has been tested under MySQL 5.X
 
 Installation Procedures.
-1) Open the coldboxreader.sql file and import it in to your MySQL instance.
+1) Open the coldboxreader.sql file and import it in to your MySQL schema. You can use the default
+   schema, coldboxreader, or you can import it to wherever you want. Just make sure your datasource
+   points to the correct schema.
 2) Create the datasource in your coldfusion administrator as coldboxreader, with your login and password.
-You can rename the datasource to whatever you want as long as you change it in the config.xml.cfm
-You can also put your login and password there.
-3) Open the application and enjoy.
+   You can rename the datasource to whatever you want as long as you change it in the config.xml.cfm
+   You can also put your login and password there.
+3) Open the application and enjoy. The default user created for you has the following login information:
+
+User: admin
+Password: coldbox
+
+You cannot change your passwords yet, so if you don't want that user, then delete him and create yours.
+All passwords are saved as hash strings using default coldfusion hash().
 
 Please visit Oscar's Home Portals Project and support it:
 http://www.homeportals.net

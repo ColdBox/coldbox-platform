@@ -19,7 +19,7 @@
 		<cfset var qry = "">
 		<cfquery name="qry" datasource="#instance.dsn#" username="#instance.username#" password="#instance.password#">
 			SELECT Tag, COUNT(*) AS TagCount
-				FROM feed_tags
+				FROM coldboxreader_feed_tags
 				GROUP BY Tag
 				ORDER BY tag
 		</cfquery>
@@ -35,7 +35,7 @@
 		<cfset var qry = "">
 		<cfquery name="qry" datasource="#instance.dsn#" username="#instance.username#" password="#instance.password#">
 			SELECT *
-				FROM feed_tags
+				FROM coldboxreader_feed_tags
 				WHERE feedID = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.feedID#">
 				ORDER BY tag
 		</cfquery>
@@ -59,7 +59,7 @@
 		<cfloop from="1" to="#ArrayLen(aTags)#" index="i">
 			<cfset newID = CreateUUID()>
 			<cfquery name="qry" datasource="#instance.dsn#" username="#instance.username#" password="#instance.password#">
-				INSERT INTO feed_tags (feed_tagID, feedID, tag, CreatedBy, CreatedOn)
+				INSERT INTO coldboxreader_feed_tags (feed_tagID, feedID, tag, CreatedBy, CreatedOn)
 					VALUES (
 						<cfqueryparam cfsqltype="cf_sql_varchar" value="#newID#">,
 						<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.feedID#">,

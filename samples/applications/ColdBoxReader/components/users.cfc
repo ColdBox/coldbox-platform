@@ -25,7 +25,7 @@
 
 		<cfquery name="qry" datasource="#instance.dsn#" username="#instance.username#" password="#instance.password#">
 			SELECT *
-				FROM users
+				FROM coldboxreader_users
 				WHERE UserName = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.username#">
 					AND Password = <cfqueryparam cfsqltype="cf_sql_varchar" value="#hash(arguments.password)#">
 		</cfquery>
@@ -33,7 +33,7 @@
 		<cfif qry.recordCount gt 0>
 			<cfset rtnVal = qry.UserID>
 			<cfquery name="update" datasource="#instance.dsn#" username="#instance.username#" password="#instance.password#">
-					UPDATE users
+					UPDATE coldboxreader_users
 					SET LastLogin = <cfqueryparam cfsqltype="cf_sql_timestamp" value="#now()#">
 					WHERE UserID =  <cfqueryparam cfsqltype="cf_sql_varchar" value="#qry.userID#">
 			</cfquery>
@@ -53,7 +53,7 @@
 		<cfset var newUserID = CreateUUID()>
 		<cfset var qry = "">
 		<cfquery name="qry" datasource="#instance.dsn#" username="#instance.username#" password="#instance.password#">
-			INSERT INTO users (UserID, UserName, Password, Email, CreatedOn, LastLogin)
+			INSERT INTO coldboxreader_users (UserID, UserName, Password, Email, CreatedOn, LastLogin)
 				VALUES (
 						<cfqueryparam cfsqltype="cf_sql_varchar" value="#newUserID#">,
 						<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.UserName#">,
@@ -76,7 +76,7 @@
 		<cfset var qry = "">
 		<cfquery name="qry" datasource="#instance.dsn#" username="#instance.username#" password="#instance.password#">
 			SELECT UserID, UserName, Email, LastLogin, CreatedOn
-				FROM users
+				FROM coldboxreader_users
 				WHERE UserID = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.userID#">
 		</cfquery>
 

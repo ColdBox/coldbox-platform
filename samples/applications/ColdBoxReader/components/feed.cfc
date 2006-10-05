@@ -108,7 +108,7 @@
 		<cfif arguments.feedID eq "">
 			<cfset newID = CreateUUID()>
 			<cfquery name="qry" datasource="#instance.dsn#" username="#instance.username#" password="#instance.password#">
-				INSERT INTO feed (FeedID, FeedName, FeedURL, FeedAuthor, Description, ImgURL, SiteURL, CreatedOn, CreatedBy) 
+				INSERT INTO coldboxreader_feed (FeedID, FeedName, FeedURL, FeedAuthor, Description, ImgURL, SiteURL, CreatedOn, CreatedBy) 
 					VALUES (
 							<cfqueryparam cfsqltype="cf_sql_varchar" value="#newID#">,
 							<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.feedName#">,
@@ -124,7 +124,7 @@
 		<cfelse>
 			<cfset newID = arguments.feedID>
 			<cfquery name="qry" datasource="#instance.dsn#" username="#instance.username#" password="#instance.password#">
-				UPDATE feed SET
+				UPDATE coldboxreader_feed SET
 					FeedID = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.feedID#">,
 					FeedName = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.feedName#">,
 					FeedURL = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.feedURL#">,
@@ -144,8 +144,8 @@
 		<cfset var qry = "">
 		<cfquery name="qry" datasource="#instance.dsn#" username="#instance.username#" password="#instance.password#">
 			SELECT FeedID, FeedName, FeedURL, FeedAuthor, Description, ImgURL, SiteURL, f.CreatedOn, f.CreatedBy, u.UserName,Views
-				FROM feed f
-					INNER JOIN users u ON f.CreatedBy = u.UserID
+				FROM coldboxreader_feed f
+					INNER JOIN coldboxreader_users u ON f.CreatedBy = u.UserID
 				ORDER BY f.CreatedOn DESC
 		</cfquery>		
 		<cfreturn qry>
@@ -160,8 +160,8 @@
 		<cfset var qry = "">
 		<cfquery name="qry" datasource="#instance.dsn#" username="#instance.username#" password="#instance.password#">
 			SELECT FeedID, FeedName, FeedURL, FeedAuthor, Description, ImgURL, SiteURL, f.CreatedOn, f.CreatedBy, u.UserName,Views
-				FROM feed f
-					INNER JOIN users u ON f.CreatedBy = u.UserID
+				FROM coldboxreader_feed f
+					INNER JOIN coldboxreader_users u ON f.CreatedBy = u.UserID
 			   WHERE u.UserID = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.userID#">
 			   ORDER BY f.CreatedOn DESC
 		</cfquery>		
@@ -178,7 +178,7 @@
 		<cfset var qry = "">
 		<cfquery name="qry" datasource="#instance.dsn#" username="#instance.username#" password="#instance.password#">
 			SELECT FeedID
-				FROM feed
+				FROM coldboxreader_feed
 			   WHERE FeedURL = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.feedURL#"> AND
 			   		 CreatedBy = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.authorID#">
 		</cfquery>
@@ -208,7 +208,7 @@
 		<!--- get details on requested feed --->
 		<cfquery name="qry" datasource="#instance.dsn#" username="#instance.username#" password="#instance.password#">
 			SELECT FeedURL
-				FROM feed
+				FROM coldboxreader_feed
 				WHERE FeedID = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.feedID#">
 		</cfquery>
 		
@@ -231,7 +231,7 @@
 			<cfset stFeed = parseFeed(XMLParse(txtDoc))>
 			<!--- update stats --->
 			<cfquery name="qry" datasource="#instance.dsn#" username="#instance.username#" password="#instance.password#">
-				UPDATE feed
+				UPDATE coldboxreader_feed
 					SET Views = Views + 1
 				  WHERE FeedID = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.feedID#">
 			</cfquery>
@@ -239,7 +239,7 @@
 			<cfset stFeed = retrieveFeed(qry.feedURL)>
 			<!--- update stats --->
 			<cfquery name="qry" datasource="#instance.dsn#" username="#instance.username#" password="#instance.password#">
-				UPDATE feed
+				UPDATE coldboxreader_feed
 					SET LastRefreshedOn = <cfqueryparam cfsqltype="cf_sql_timestamp" value="#now()#">,
 						Views = Views + 1
 				  WHERE FeedID = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.feedID#">
@@ -258,7 +258,7 @@
 		<cfset var qry = "">
 		<cfquery name="qry" datasource="#instance.dsn#" username="#instance.username#" password="#instance.password#">
 			SELECT f.*, u.UserName, u.Email
-				FROM feed f, users u
+				FROM coldboxreader_feed f, coldboxreader_users u
 				WHERE f.FeedID = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.feedID#"> and
 				      f.CreatedBy = u.UserID
 		</cfquery>
@@ -274,9 +274,9 @@
 		<cfset var qry = "">
 		<cfquery name="qry" datasource="#instance.dsn#" username="#instance.username#" password="#instance.password#">
 			SELECT f.FeedID, FeedName, FeedURL, FeedAuthor, Description, ImgURL, SiteURL, f.CreatedOn, f.CreatedBy, u.UserName, Views
-				FROM feed f
-					INNER JOIN feed_tags t ON f.FeedID=t.FeedID
-					INNER JOIN users u ON f.CreatedBy = u.UserID
+				FROM coldboxreader_feed f
+					INNER JOIN coldboxreader_feed_tags t ON f.FeedID=t.FeedID
+					INNER JOIN coldboxreader_users u ON f.CreatedBy = u.UserID
 				WHERE tag = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.tag#">
 				ORDER BY f.FeedName DESC
 		</cfquery>
@@ -292,9 +292,9 @@
 		<cfset var qry = "">
 		<cfquery name="qry" datasource="#instance.dsn#" UserName="#instance.username#" password="#instance.password#">
 			SELECT f.FeedID, FeedName, FeedURL, FeedAuthor, Description, ImgURL, SiteURL, f.CreatedOn, f.CreatedBy, u.UserName, Views
-				FROM feed f
-					INNER JOIN feed_tags t ON f.FeedID=t.FeedID
-					INNER JOIN users u ON f.CreatedBy = u.UserID
+				FROM coldboxreader_feed f
+					INNER JOIN coldboxreader_feed_tags t ON f.FeedID=t.FeedID
+					INNER JOIN coldboxreader_users u ON f.CreatedBy = u.UserID
 				WHERE tag LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.term#%">
 					OR FeedName LIKE  <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.term#%">
 					OR Description LIKE  <cfqueryparam cfsqltype="cf_sql_varchar" value="%#arguments.term#%">
