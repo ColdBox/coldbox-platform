@@ -27,7 +27,7 @@
 	</Settings>
 
 	<YourSettings>
-		<Setting name="adminPass" value="jfk69blonde"/>
+		<Setting name="adminPass" value=""/>
 	</YourSettings>
 
 	<!--Optional,if blank it will use the CFMX administrator settings.-->
