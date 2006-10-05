@@ -31,7 +31,21 @@ This is the app Builder handler.
 	<!--- ************************************************************* --->
 	
 	<cffunction name="generateApplication" access="public" returntype="void">
+		<cfset var generatorResults = "">
+		<!--- param the necessary values --->
+		<cfset paramValue("onapplicationstart_cb", "false")>
+		<cfset paramValue("onrequeststart_cb", "false")>
+		<cfset paramValue("onrequestend_cb", "false")>
+		<cfset paramValue("onexception_cb", "false")>
+		
 		<!--- Start application Generation --->
+		<cfset generatorResults = application.dbservice.get("appGeneratorService").generate(getCollection())>
+		<!--- Check for Errors --->
+		<cfif generatorResults.error >
+			<cfset getPlugin("messagebox").setMessage("error", "An error ocurred during generation")>
+		<cfelse>
+			<cfset getPlugin("messagebox").setMessage("info", "Your application has been successfully generated.")>
+		</cfif>
 		
 		<!--- Set the View --->
 		<cfset setView("tools/vwAppBuilder")>

@@ -4,7 +4,7 @@
 
 	<!--- Constructor --->
 	<cfset variables.instance = structnew()>
-	<cfset variables.instance.settingsFilePath = ExpandPath("/coldbox/system/config/settings.xml")>
+	<cfset variables.instance.settingsFilePath = ExpandPath("../config/settings.xml")>
 	<cfset variables.instance.qSettings = queryNew("")>
 	<cfset variables.instance.xmlObj = "">
 	
@@ -42,6 +42,8 @@
 		saveSettings();
 		</cfscript>	
 	</cffunction>
+	
+	<!--- ************************************************************* --->
 	
 	<cffunction name="saveEncodingSettings" access="public" returntype="void" output="false">
 		<!--- ************************************************************* --->

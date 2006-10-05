@@ -237,27 +237,36 @@ input[type=button]:hover, input[type=submit]:hover, input[type=reset]:hover { b
 .menu_appgenerator ul{
 	list-style: none;
 }
-.menu_appgenerator li{
+.menu_appgenerator_step{
 	float: left;
-	height: 25px;
+	height: 15px;
 	width:  60px;
 	text-align: center;
 	vertical-align: middle;
 	background-color: #F6F6F6;
   	background-image: url(../images/th_bg.gif);
   	background-repeat: repeat-x;
-	cursor: pointer;
 	border-top: 1px solid #002F93; 
 	border-bottom: 1px solid #0090FF;
 	border-left: 1px solid #ffffff;
   	color: #000000;
-	padding-top: 10px;
+	padding-top: 5px;
 }
-.appgenerator_li_on{
+.menu_appgenerator_step_on{
+	float: left;
+	height: 15px;
+	width:  60px;
+	text-align: center;
+	vertical-align: middle;
 	background-color: #5DE3FF;
   	background-image: url(../images/th_sorted_bg.gif);
   	background-repeat: repeat-x;
   	font-weight: bold;
+	border-top: 1px solid #002F93; 
+	border-bottom: 1px solid #0090FF;
+	border-left: 1px solid #ffffff;
+	color: #000000;
+	padding-top: 5px;
 }
 
 

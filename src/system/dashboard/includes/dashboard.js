@@ -51,10 +51,10 @@ function showAdvancedSearchBar( openit ){
 	}
 }
 function helpon(){
-	Effect.BlindDown('helpbox');
+	Effect.BlindDown('helpbox',{duration:.5});
 }
 function helpoff(){
-	new Effect.BlindUp('helpbox');
+	new Effect.BlindUp('helpbox',{duration:.5});
 }
 //********************************************************************************
 //AJAX INTERACTION
@@ -311,10 +311,24 @@ function chooseFolder( vcallbackItem ){
 }
 
 //Navigation of app Builder 
-function stepper( vsource, vtarget ){
+function stepper( vsource, vtarget, direction ){
 	$(vsource).style.display = "none";
-	Effect.BlindDown(vtarget, {duration:.3});
+	Effect.SlideDown(vtarget, {duration:.5});
+	//Change step Color
+	$("step_" + vtarget).className = 'menu_appgenerator_step_on';
+	//Change Indicator
+	if ( direction == "forward" ){
+		currentGeneratorStep =  $("step_" + vtarget).innerHTML;
+		$("step_" + vtarget).innerHTML = "^" + currentGeneratorStep;
+		$("step_" + vsource).innerHTML = "Done";
+	}
+	else{
+		$("step_" + vsource).innerHTML = currentGeneratorStep;
+		currentGeneratorStep = $("step_" + vtarget).innerHTML;
+		$("step_" + vtarget).innerHTML = "^Done";
+	}
 }
+var currentGeneratorStep = "^Step 1";
 //Validation for app Builder
 function validate_basic(vRelocate){
 	var errors = "";
@@ -340,7 +354,7 @@ function validate_basic(vRelocate){
 	}
 	else{
 		if (vRelocate) 
-			stepper('basic_set','applicationloggin_set');
+			stepper('basic_set','applicationloggin_set','forward');
 		return true;
 	}
 }
@@ -355,12 +369,15 @@ function validate_applicationlogging(vRelocate){
 	}
 	else{
 		if (vRelocate) 
-			stepper('applicationloggin_set','development_set');
+			stepper('applicationloggin_set','development_set','forward');
 		return true;
 	}
 }
-function validate_eventhandlers(){
+function validate_eventhandlers(vRelocate){
 	var errors = "";
+	if( vRelocate == null ){
+		vRelocate = true;
+	}
 	if ( $("maineventhandler").value == ""){
 		errors += "- Please enter the main event handler's name.\n";
 	}
@@ -373,10 +390,30 @@ function validate_eventhandlers(){
 		return false;
 	}
 	else{
-		if ( validate_basic(false) && validate_applicationlogging(false)){
-			divon("pleasewait_div");
+		if (vRelocate)
+			stepper('eventhandler_set','generation_set','forward');
+		return true;
+	}
+}
+function validateGeneration(){
+	//Check inputs
+	var errors = "";
+	if ( $("authorname").value == ""){
+		errors += "- Please enter your name.\n";
+	}
+	if ( $("skeleton_name").value == ""){
+		errors += "- Please enter the name of this skeleton that will be generated.\n";
+	}
+	if ( $("generation_target").value == ""){
+		errors += "- Please enter the target directory in the web server where your application will be generated.\n";
+	}
+	if ( errors != ""){
+		alert(errors);
+		return false;
+	}
+	else{
+		if ( validate_basic(false) && validate_applicationlogging(false) && validate_eventhandlers(false) )
 			return true;
-		}
 		else
 			return false;
 	}

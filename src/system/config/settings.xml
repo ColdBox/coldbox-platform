@@ -11,7 +11,7 @@
         <Setting name="ModifyLogLocation" value="readme.txt"/>
         <Setting name="FrameworkBlog" value="http://www.luismajano.com/blog"/>
         <Setting name="FrameworkForums" value="http://www.luismajano.com/forums"/>
-        <Setting name="FrameworkAPI" value="http://www.luismajano.com/projects/coldbox/cfdocs"/>
+        <Setting name="FrameworkAPI" value="http://www.coldboxframework.com/documents/cfdocs"/>
         <Setting name="FrameworkTrac" value="http://ortus.svnrepository.com/coldbox/"/>
         <Setting name="DashboardName" value="ColdboxDashboard"/>
         <!--AvailableLogFileEncodings:US-ASCII, ISO-8859-1, UTF-8, UTF-16BE, UTF-16LE,  UTF-16.-->

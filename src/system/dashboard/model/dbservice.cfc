@@ -6,6 +6,7 @@
 	<cffunction name="init" access="public" returntype="dbservice" output="false">
 		<cfset instance.settings = CreateObject("component","settings").init()>
 		<cfset instance.fwsettings = CreateObject("component","fwsettings").init()>
+		<cfset instance.appGeneratorService = CreateObject("component","appGeneratorService").init()>
 		<cfreturn this>
 	</cffunction>
 	

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<Config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
- xsi:noNamespaceSchemaLocation="http://www.luismajano.com/projects/coldbox/schema/config_1.1.0.xsd">
+<Config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:noNamespaceSchemaLocation="http://www.coldboxframework.com/schema/config_1.1.0.xsd">
 	<Settings>
 		<Setting name="AppName" 					value="ColdboxDashboard"/>
 		<Setting name="AppMapping" 					value="coldbox/system/dashboard"/>
@@ -31,7 +31,7 @@
 		<Setting name="Version" 				value="1.1.0"/>
 		<Setting name="TracSite"				value="http://ortus.svnrepository.com/coldbox/" />
 		<Setting name="OfficialSite"			value="http://www.coldboxframework.com" />
-		<Setting name="SchemaDocs" 				value="http://www.luismajano.com/projects/coldbox/documents/SchemaDocs/"/>
+		<Setting name="SchemaDocs" 				value="http://www.coldboxframework.com/documents/SchemaDocs/"/>
 	</YourSettings>
 	
 	<!--Optional,if blank it will use the CFMX administrator settings.-->
@@ -51,7 +51,7 @@
 	</DevEnvironments>
 	
 	<WebServices>
-		<WebService name="DistributionWS" URL="http://www.luismajano.com/projects/coldbox/distribution/coldbox.cfc?wsdl" />
+		<WebService name="DistributionWS" URL="http://www.coldboxframework.com/distribution/coldbox.cfc?wsdl" />
 	</WebServices>
 	
 	<Layouts>
