@@ -44,7 +44,7 @@
 </div>	
 
 <div class="statusbar">
-	<form id="searchdocs" action="#getSetting("tracsite")#/trac.cgi/search" method="get" target="mainframe">
+	<form id="searchdocs" action="#getSetting("tracsite")#trac.cgi/search" method="get" target="mainframe">
 	
 	<div class="browserbuttonsbar">
 		<cfif not findnocase("MSIE",cgi.HTTP_USER_AGENT)>

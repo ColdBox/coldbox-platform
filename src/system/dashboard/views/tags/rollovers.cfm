@@ -1,5 +1,6 @@
 <cfoutput>
 <cfset qRollovers = getValue("qRollovers")>
+<cfsavecontent variable="rollovers">
 <script language="javascript">
 function getHint( vid ){
 	<cfloop query="qRollovers">
@@ -9,4 +10,6 @@ function getHint( vid ){
 	</cfloop>
 }	
 </script>
+</cfsavecontent>
+<cfhtmlhead text="#rollovers#">
 </cfoutput>

@@ -10,6 +10,22 @@
 <script language="javascript" src="includes/toolkit/scriptaculous.js?load=effects"></script>
 </head>
 <body>
-<cfset WriteOutput(renderView())>
+	<cfoutput>
+	<table width="100%" height="100%" cellpadding="0" cellspacing="0" border="0">	
+		<tr>
+			<td valign="top" height="700" align="center">
+			<!--- Content --->
+			<div id="content"></div>
+			</td>
+			
+			<td class="sidemenu" valign="top">
+			
+			#renderView()#
+			<!--- Render sidemenu tools --->
+			#renderview("tags/sidemenu_tools")#
+			</td>
+		</tr>
+	</table>
+	</cfoutput>
 </body>
 </html>

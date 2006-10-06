@@ -1,4 +1,5 @@
 <cfoutput>
+
 <!--- HELPBOX --->
 <div id="helpbox" class="helpbox" style="display: none">
 

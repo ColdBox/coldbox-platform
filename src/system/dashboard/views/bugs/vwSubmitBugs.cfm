@@ -20,27 +20,28 @@
 </div>
 
 <form name="updateform" id="udpateform" action="javascript:doFormEvent('#getValue("xehDoSave")#','content',document.updateform)" method="post">
-<div class="maincontentbox">
+	<div class="maincontentbox">
+		<div class="contentboxes_header">
+		<div class="contentboxes_title"><img src="images/icons/bugreports_27.gif" align="absmiddle" />&nbsp; Submit A Bug</div>
+	</div>
+	
 	<!--- Messagebox --->
 	<cfif application.isBD>
 		#getPlugin("messagebox").renderit()#
 	<cfelse>
 		#getPlugin("messagebox").render()#
 	</cfif>
-
-	<div class="contentboxes_header">
-		<div class="contentboxes_title"><img src="images/icons/bugreports_27.gif" align="absmiddle" />&nbsp; Submit A Bug</div>
-	</div>
 	
 	<div class="contentboxes">
 	
 	<cfif getPlugin("clientstorage").exists("sentbugreport")>
-		This is a copy of the bug report you sent:<br />
-		<div style="border:1px solid ##ddd; background-color: ##fffff0;padding:10px">
+		This is a copy of the bug report you sent to bugs@coldboxframework.com:<br /><br>
+		<div style="border:1px solid ##ddd; background-color: ##fffff0;padding:10px; overflow: auto; width: 550px; height:400px;">
 		#htmlCodeFormat(getPlugin("clientstorage").getVar("sentbugreport"))#
 		</div>
 		<cfset getPlugin("clientstorage").deleteVar("sentbugreport")>
-	</cfif>
+	
+	<cfelse>
 	
 	<p>Submit a new bug to the official bug reports email address. You can use this form or just send an email to: <a href="mailto:bugs@coldboxframework.com">bugs@coldboxframework.com</a></p>
 	<br>
@@ -109,6 +110,10 @@
 	<div align="right" style="margin-right:5px;margin-bottom: 10px">
 		<input type="submit" value="Send Bug Report" >
 	</div>
+	
+	</cfif>
+	
+	
 </div>
 </form>
 </cfoutput>

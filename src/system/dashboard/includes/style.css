@@ -96,6 +96,7 @@ a:hover{
 	height: 100%;
 	width: 221px;
 	border-left: 1px solid #999999;
+	border-bottom: 1px solid #999999;
 }
 .sidemenu a:link, .sidemenu a:visited{
 	font-weight:normal;

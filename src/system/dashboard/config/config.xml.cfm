@@ -55,9 +55,16 @@
 	</WebServices>
 	
 	<Layouts>
-		<DefaultLayout>Layout.Main.cfm</DefaultLayout>
+		<DefaultLayout>Layout.simple.cfm</DefaultLayout>
 		<Layout file="Layout.Login.cfm" name="login">
 			<View>vwLogin</View>
+		</Layout>
+		<Layout file="Layout.Main.cfm" name="simple">
+			<View>vwHome</View>
+			<View>vwSettings</View>
+			<View>vwBugs</View>
+			<View>vwTools</View>
+			<View>vwUpdate</View>
 		</Layout>
 	</Layouts>
 	

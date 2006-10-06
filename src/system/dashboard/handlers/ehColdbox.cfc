@@ -87,6 +87,7 @@ This is the main event handler for the ColdBox dashboard.
 		<cfset rc.xehCFCDocs = "ehColdbox.dspCFCDocs">
 		<!--- Set the Rollovers --->
 		<cfset rc.qRollovers = filterQuery(application.dbservice.get("settings").getRollovers(),"pagesection","home")>
+		
 		<!--- Set the View --->
 		<cfset setView("vwHome")>
 	</cffunction>
@@ -96,7 +97,7 @@ This is the main event handler for the ColdBox dashboard.
 		<cfset rc.xehHome = "ehColdbox.dspHome">
 		<cfset rc.xehSettings = "ehColdbox.dspSettings">
 		<cfset rc.xehTools = "ehColdbox.dspTools">
-		<cfset rc.xehUpdate = "ehColdbox.dspUpdate">
+		<cfset rc.xehUpdate = "ehColdbox.dspUpdateSection">
 		<cfset rc.xehBugs = "ehColdbox.dspBugs">
 		<!--- Set the View --->
 		<cfset setView("tags/header")>
@@ -304,7 +305,57 @@ This is the main event handler for the ColdBox dashboard.
 	<!--- ************************************************************* --->
 	<!--- UPDATE SECTION 												--->
 	<!--- ************************************************************* --->
+	<cffunction name="dspUpdateSection" access="public" returntype="void">
+		<!--- EXIT HANDLERS: --->
+		<cfset rc.xehUpdater = "ehColdbox.dspUpdater">
+		<!--- Set the Rollovers For This Section --->
+		<cfset rc.qRollovers = filterQuery(application.dbservice.get("settings").getRollovers(),"pagesection","update")>
+		<!--- Set the View --->
+		<cfset setView("vwUpdate")>
+	</cffunction>
 	
+	<cffunction name="dspUpdater" access="public" returntype="void">
+		<!--- EXIT HANDLERS: --->
+		<cfset rc.xehCheck = "ehColdbox.docheckForUpdates">
+		<!--- Set the View --->
+		<cfset setView("update/vwUpdater")>
+	</cffunction>
+	
+	<cffunction name="docheckForUpdates" access="public" returntype="void">
+		<cfset var errorString = "Error retrieving update information from the ColdBox distribution site. Below you can see some diagnostic information.<br><br>">
+		<cfset var updateWS = "">
+		<cfset var updateResults = "">
+		<cftry>
+			<!--- Get a WS Object --->
+			<cfset updateWS = getPlugin("webservices").getWSObj("DistributionWS")>
+			<!--- Check for Updates --->
+			<cfset updateResults = updateWS.getUpdateInfo('#getSetting("Version",1)#')>
+			<!--- CHeck for WS Errors --->
+			<cfif updateResults.error>
+				<cfset getPlugin("logger").logError("#errorString#",structnew(), updateResults.errorMessage)>
+				<cfset getPlugin("messagebox").setMessage("error", errorString & updateResults.errorMessage)>
+			<cfelse>
+				<!--- Test versions --->
+				<cfif updateResults.AvailableUpdate>
+					<cfset getPlugin("messagebox").setMessage("warning","There is a new version of ColdBox available.")>
+				<cfelse>
+					<cfset getPlugin("messagebox").setMessage("warning","You have the latest version of ColdBox installed.")>
+				</cfif>
+				<!--- Format Readme for display --->
+				<cfset updateResults.updateStruct.ReadmeFile = replace(updateResults.updateStruct.ReadmeFile, chr(13), "<br>", "all")>
+				<cfset updateResults.updateStruct.ReadmeFile = replace(updateResults.updateStruct.ReadmeFile, chr(9), "&nbsp;&nbsp;&nbsp;&nbsp;", "all")>
+				<!--- Save Update Results --->
+				<cfset getPlugin("clientstorage").setVar("updateResults", updateResults)>
+			</cfif>
+			<!--- Catch --->
+			<cfcatch type="any">
+				<cfset getPlugin("logger").logError("#errorString#", cfcatch)>
+				<cfset getPlugin("messagebox").setMessage("error","#errorString##cfcatch.Detail#<br><br>#cfcatch.Message#")>
+			</cfcatch>
+		</cftry>
+		<!--- set next event --->
+		<cfset setNextEvent("ehColdbox.dspHome")>
+	</cffunction>
 	
 	<!--- ************************************************************* --->
 	<!--- SUBMIT BUG	 												--->
@@ -388,42 +439,6 @@ This is the main event handler for the ColdBox dashboard.
 			<cfset getPlugin("messagebox").setMessage("info","Your data has been backed up successfully. Please look below in your backups directory for the zip file.")>
 		</cfif>
 		<cfset setView("vwBackups")>
-	</cffunction>
-	<!--- ************************************************************* --->
-
-	<!--- ************************************************************* --->
-	<cffunction name="doCheckUpdates" access="public" returntype="void">
-		<cfset var errorString = "Error retrieving update information from the ColdBox distribution site. Below you can see some diagnostic information.<br><br>">
-		<cfset var updateWS = "">
-		<cfset var updateResults = "">
-		<cftry>
-			<!--- Get a WS Object --->
-			<cfset updateWS = getPlugin("webservices").getWSObj("DistributionWS")>
-			<!--- Check for Updates --->
-			<cfset updateResults = updateWS.getUpdateInfo('#getSetting("Version",1)#')>
-			<!--- CHeck for WS Errors --->
-			<cfif updateResults.error>
-				<cfset getPlugin("messagebox").setMessage("error", "#errorString##updateResults.errorMessage#")>
-			<cfelse>
-				<!--- Test versions --->
-				<cfif updateResults.AvailableUpdate>
-					<cfset getPlugin("messagebox").setMessage("warning","There is a new version of ColdBox available.")>
-				<cfelse>
-					<cfset getPlugin("messagebox").setMessage("warning","You have the latest version of ColdBox installed.")>
-				</cfif>
-				<!--- Format Readme for display --->
-				<cfset updateResults.updateStruct.ReadmeFile = replace(updateResults.updateStruct.ReadmeFile, chr(13), "<br>", "all")>
-				<cfset updateResults.updateStruct.ReadmeFile = replace(updateResults.updateStruct.ReadmeFile, chr(9), "&nbsp;&nbsp;&nbsp;&nbsp;", "all")>
-				<!--- Save Update Results --->
-				<cfset getPlugin("clientstorage").setVar("updateResults", updateResults)>
-			</cfif>
-			<!--- Catch --->
-			<cfcatch type="any">
-				<cfset getPlugin("messagebox").setMessage("warning","#errorString##cfcatch.Detail#<br><br>#cfcatch.Message#")>
-			</cfcatch>
-		</cftry>
-		<!--- set next event --->
-		<cfset setNextEvent("ehColdbox.dspHome")>
 	</cffunction>
 	<!--- ************************************************************* --->
 

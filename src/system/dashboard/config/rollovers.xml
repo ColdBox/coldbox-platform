@@ -53,7 +53,7 @@
     </section>  
     
     <section id="update">
-        <rollover id="appbuilder">Launches the ColdBox application builder wizard.</rollover>
+        <rollover id="updater">Check for any ColdBox updates via the online utility.</rollover>
     </section>  
     
     <section id="bugs">
