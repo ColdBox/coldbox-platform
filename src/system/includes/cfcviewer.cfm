@@ -1,6 +1,9 @@
 <cfoutput>
 <!--- Style Sheet --->
 <link rel="stylesheet" href="#instance.styleSheet#" type="text/css" />	
+
+<a name="cfcdocstop"></a>
+
 <!--- Start Content --->
 <div class="cfc_content">
 
@@ -135,5 +138,8 @@
 				<cfdump var="#cfcatch#">
 			</cfcatch>
 		</cftry>
+		
+		<div align="right"><a href="#cfcdocstop">^Top</a></div>
+		<hr size="1"><br />
 	</cfloop>
 </div>
