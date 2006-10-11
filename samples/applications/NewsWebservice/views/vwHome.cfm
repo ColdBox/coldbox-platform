@@ -42,7 +42,7 @@ padding: 5px;
 	</form>
 	<p >&nbsp;</p>
 	<!--- Render a messagebox if set --->
-	#getPlugin("messagebox").render()#<br>
+	#getPlugin("messagebox").renderit()#<br>
 	</cfoutput>
 </td>
 </tr>

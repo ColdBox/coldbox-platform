@@ -10,7 +10,7 @@
 
 <cfoutput>
 <!--- Messagebox --->
-#getPlugin("messagebox").render()#
+#getPlugin("messagebox").renderit()#
 </cfoutput>
 <cfmodule template="../../tags/datatable.cfm" 
 		  data="#getValue("ranks")#" list="name,minposts" 

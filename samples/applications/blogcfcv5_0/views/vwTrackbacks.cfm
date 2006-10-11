@@ -13,7 +13,7 @@
 <cfoutput>
 <div class="date">Add TrackBack</div>
 <div class="body">
-#getPlugin("messagebox").render()#
+#getPlugin("messagebox").renderit()#
 <!---<form action="#cgi.script_name#?id=#url.id#" method="post" enctype="application/x-www-form-urlencoded">
 <table width="100%">
 <tr>

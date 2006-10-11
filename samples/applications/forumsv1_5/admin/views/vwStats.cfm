@@ -9,7 +9,7 @@
 	Purpose		 : 
 --->
 <cfoutput>#renderView("includes/gen_stats")#</cfoutput>
-<cfoutput>#getPlugin("messagebox").render()#</cfoutput>
+<cfoutput>#getPlugin("messagebox").renderit()#</cfoutput>
 <cfif getValue("charts")>
 	<cfoutput>#renderView("includes/stats_charts")#</cfoutput>
 </cfif>

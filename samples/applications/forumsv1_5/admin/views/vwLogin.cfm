@@ -19,7 +19,7 @@
 <body bgcolor="##CCCCCC" onload="document.login.username.focus()">
 
 <form action="#cgi.script_name#" method="post" name="login">
-#getPlugin("messagebox").render()#
+#getPlugin("messagebox").renderit()#
 <input type="hidden" name="event" value="#getValue("xehLogin")#">
 <table height="400" width="100%" >
 	<tr align="center" valign="middle"><td>

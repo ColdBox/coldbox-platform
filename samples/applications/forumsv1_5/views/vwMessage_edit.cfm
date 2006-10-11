@@ -17,7 +17,7 @@
 	<cfif valueExists("posterrors")>
 	<tr class="tableRowMain">
 		<td>
-		#getPlugin("messagebox").render()#
+		#getPlugin("messagebox").renderit()#
 		</td>
 	</tr>
 	</cfif>

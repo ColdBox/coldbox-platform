@@ -25,7 +25,7 @@
 
 <cfif entry.allowcomments>
 	<cfoutput><div class="date">#getResource("postyourcomments")#</div>
-	#getPlugin("messagebox").render()#
+	#getPlugin("messagebox").renderit()#
 	<form action="#application.rootURL#/index.cfm" method="post">
 	<input type="hidden" value="#getValue("xehAddComment")#" name="event">
 	<input type="hidden" value="#getvalue("id")#" name="id">

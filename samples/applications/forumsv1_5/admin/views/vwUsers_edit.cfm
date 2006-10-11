@@ -14,7 +14,7 @@
 
 <cfoutput>
 <p>
-#getPlugin("messagebox").render()#
+#getPlugin("messagebox").renderit()#
 <form action="#cgi.script_name#?" method="post">
 <input type="hidden" name="event" value="#getValue("xehUsersSave")#">
 <input type="hidden" name="id" value="#getValue("id")#">

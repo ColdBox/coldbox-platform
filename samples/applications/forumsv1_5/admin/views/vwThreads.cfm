@@ -11,7 +11,7 @@
 
 <cfoutput>
 <!--- Messagebox --->
-#getPlugin("messagebox").render()#
+#getPlugin("messagebox").renderit()#
 </cfoutput>
 <cfmodule template="../../tags/datatable.cfm" 
 		  data="#getValue("threads")#" list="name,lastpost,forum,conference,messagecount,sticky,active" 

@@ -23,7 +23,7 @@
 		<td>
 		Please use the form below to edit your profile.
 		<cfif getValue("confirm","") eq "profile">
-			#getPlugin("messagebox").render()#
+			#getPlugin("messagebox").renderit()#
 		</cfif>
 		</td>
 	</tr>
@@ -68,7 +68,7 @@
 	<cfif getValue("confirm","") eq "subscribe">
 	<tr class="tableRowMain">
 		<td>
-		#getPlugin("messagebox").render()#
+		#getPlugin("messagebox").renderit()#
 		</td>
 	</tr>
 	</cfif>

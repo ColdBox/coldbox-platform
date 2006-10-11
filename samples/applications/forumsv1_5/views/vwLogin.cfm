@@ -19,7 +19,7 @@
 		<td>
 		Please use the form below to login.
 		<cfif getValue("failedLogon",false)>
-		#getPlugin("messageBox").render()#
+		#getPlugin("messageBox").renderit()#
 		</cfif>
 		</td>
 	</tr>
@@ -54,7 +54,7 @@
 		fields below are required.
 		<cfif getValue("failedRegistration",false)>
 			<p>
-			#getPlugin("messageBox").render()#
+			#getPlugin("messageBox").renderit()#
 			</p>
 		</cfif>
 		</td>
@@ -96,7 +96,7 @@
 		<td>
 		If you cannot remember your password, enter your username in the form below and your login information will be sent to you.
 			<cfif getValue("passreminder",false) eq true>
-			#getPlugin("messagebox").render()#
+			#getPlugin("messagebox").renderit()#
 			</cfif>
 		</td>
 	</tr>

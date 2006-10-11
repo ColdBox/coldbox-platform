@@ -43,7 +43,7 @@
 	<div id="banner"><a href="#application.rootURL#">#application.blog.getProperty("blogTitle")#</a></div>
 		<div id="content">	
 			<div id="blogText">
-			#getPlugin("messagebox").render()#
+			#getPlugin("messagebox").renderit()#
 			<!--- Views Get Rendered HERE --->
 			#renderView()#
 			</div>

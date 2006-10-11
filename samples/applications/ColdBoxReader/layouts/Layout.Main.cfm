@@ -47,7 +47,7 @@
 
 	<div id="centercontent">
 		<div style="margin-bottom: 3px;">
-		<cfset writeOutput(getPlugin("messageBox").render())>
+		<cfset writeOutput(getPlugin("messageBox").renderit())>
 		</div>
 		<cfset writeOutput(renderView())>
 	</div>

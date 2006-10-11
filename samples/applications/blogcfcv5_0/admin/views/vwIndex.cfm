@@ -13,7 +13,7 @@
 	Welcome to BlogCFC Administrator. You are running BlogCFC version #application.blog.getVersion()#. This blog is named
 	#application.blog.getProperty("blogtitle")#.
 	</p>
-	#getPlugin("messagebox").render()#
+	#getPlugin("messagebox").renderit()#
 	</cfoutput>
 
 
