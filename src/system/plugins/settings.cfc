@@ -40,8 +40,6 @@ Modification History:
 		<cfif getSetting("using_i18N")>
 			<cfset getPlugin("i18n").init_i18N(getSetting("DefaultResourceBundle"),getSetting("DefaultLocale"))>
 		</cfif>
-		<!--- Set Config DebugMode --->
-		<cfset setDebugMode(getSetting("DebugMode"))>
 		<!--- Test for Coldbox logging, if set init the log location --->
 		<cfif getSetting("EnableColdboxLogging") and getSetting("ColdboxLogsLocation") neq "">
 			<cfset getPlugin("logger").initLogLocation()>
