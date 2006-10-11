@@ -49,7 +49,13 @@
 					</div>
 					<!--- Publish Date --->
 					<div class="reader_toolbar">
-						<div style="padding-top:10px;margin-left:5px"><b>Published On:</b> #dateFormat(thisPubDate,"MMM DD, YYYY")# at #TimeFormat(thisPubDate,"hh:mm:ss tt")#<br /><br />
+						<div style="padding-top:10px;margin-left:5px"><b>Published On:</b> 
+						<cfif isDate(thisPubDate)>
+						#dateFormat(thisPubDate,"MMM DD, YYYY")# at #TimeFormat(thisPubDate,"hh:mm:ss tt")#
+						<cfelse>
+						#thisPubDate#
+						</cfif>
+						<br /><br />
 					</div>	
 					</div>
 					
