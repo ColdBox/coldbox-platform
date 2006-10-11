@@ -10,7 +10,7 @@
 		You are Here: #currentRoot#</div>
 	
 	<div style="line-height:20px;padding:3px;overflow:auto;height: 250px;font-weight:bold">
-	    #getPlugin("messagebox").render()#
+	    #getPlugin("messagebox").renderit()#
 		<cfif listlen(currentroot,"/") gte 1>
 			<cfset tmpHREF = "javascript:doEvent('#getValue("xehBrowser")#','FileBrowser',{dir:'#JSStringFormat(session.oldRoot)#'})">
 			<a href="#tmpHREF#"><img src="images/icons/folder.png" border="0" align="absmiddle" alt="Folder"></a>

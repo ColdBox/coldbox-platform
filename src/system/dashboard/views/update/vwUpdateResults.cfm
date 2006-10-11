@@ -1,5 +1,4 @@
 <cfoutput>
-<cfset qURLS = getValue("qURLS")>
 <!--- HELPBOX --->
 <div id="helpbox" class="helpbox" style="display: none">
 
@@ -9,10 +8,11 @@
 	
 	<div class="helpbox_message" >
 	  <ul>
-	  	<li>From this screen you can connect to the official ColdBox distribution site and check if there
-		  	is an update to the framework.</li>
-		<li>You have the option to download the update or actually do a live update of your system.</li>
-		<li>If you are doing a live update of the system, make sure that your applications are offline.</li>
+	  	<li>You can see from ths screen wether an update is available or not. You can then choose to download
+			the update or use the Dashboard's auto-update feature to install it.</li>
+		<li>When you perform an auto-update for the framework, the updater will have to delete all the old
+		files and make backups. If you have running applications, the installation might be corrupted or
+		not possible. So please make sure all your applications are offline.</li>
 	  </ul>
 	</div>
 	<div align="right" style="margin-right:5px;">
@@ -28,8 +28,7 @@
 	</div>
 	
 	<div class="contentboxes">
-	<p>Welcome to the online update section of the ColdBox Framework. You can connect to the distribution site and verify that you are
-	running the latest version of the framework and dashboard.  You can then decide to download the update or auto-update it.
+	<p>Below you can see the results of the distribution checks.
 	</p>
 	<br>
 	<p align="center" class="redtext">When you do an auto-update, make sure there are no running applications.</p>
@@ -43,7 +42,7 @@
           
 		  <cfloop query="qURLS">
             <tr <cfif currentrow mod 2 eq 0>bgcolor="##f5f5f5"</cfif>>
-              <td valign="top"><input name="distribution_site" type="radio" value="#url#" <cfif currentrow eq 1>checked="true"</cfif> />
+              <td valign="top"><input name="distribution_sites" type="radio" value="#url#" <cfif currentrow eq 1>checked="true"</cfif> />
 	    #url#</label></td>
             </tr>
 		   </cfloop>

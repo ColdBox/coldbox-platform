@@ -8,6 +8,7 @@
 	<cfset variables.instance.settingsFilePath = ExpandPath("config/settings.xml.cfm")>
 	<cfset variables.instance.rolloversFilePath = ExpandPath("config/rollovers.xml")>
 	<cfset variables.instance.qSettings = queryNew("")>
+	<cfset variables.instance.qDistributionURLS = queryNew("url", "varchar")>
 	<cfset variables.instance.qRollovers = queryNew("pagesection,rolloverid, text","varchar,varchar,varchar")>
 	<cfset variables.instance.xmlObj = "">
 	
@@ -32,11 +33,11 @@
 		<cfargument name="proxypassword" 	required="false" type="string" default="">
 		<cfargument name="proxyport" 		required="false" type="string" default="">		
 		<!--- Save Proxy Settings --->	
-		<cfset instance.xmlObj.xmlRoot.proxyflag.xmlText = arguments.proxyflag>
-		<cfset instance.xmlObj.xmlRoot.proxyserver.xmlText = arguments.proxyserver>
-		<cfset instance.xmlObj.xmlRoot.proxyuser.xmlText = arguments.proxyuser>
-		<cfset instance.xmlObj.xmlRoot.proxypassword.xmlText = arguments.proxypassword>
-		<cfset instance.xmlObj.xmlRoot.proxyport.xmlText = arguments.proxyport>
+		<cfset instance.xmlObj.xmlRoot.settings.proxyflag.xmlText = arguments.proxyflag>
+		<cfset instance.xmlObj.xmlRoot.settings.proxyserver.xmlText = arguments.proxyserver>
+		<cfset instance.xmlObj.xmlRoot.settings.proxyuser.xmlText = arguments.proxyuser>
+		<cfset instance.xmlObj.xmlRoot.settings.proxypassword.xmlText = arguments.proxypassword>
+		<cfset instance.xmlObj.xmlRoot.settings.proxyport.xmlText = arguments.proxyport>
 		<!--- Savce XML --->
 		<cfset saveSettings()>
 		<!--- Parse Settings Again --->
@@ -64,7 +65,7 @@
 			<cfset rtnStruct.message = "New password and confirmation password are not the same.">
 		<cfelse>
 			<!--- Save Password --->	
-			<cfset instance.xmlObj.xmlRoot.password.xmlText = hash(arguments.newpassword, instance.hashAlg)>
+			<cfset instance.xmlObj.xmlRoot.settings.password.xmlText = hash(arguments.newpassword, instance.hashAlg)>
 			<!--- Savce XML --->
 			<cfset saveSettings()>
 			<!--- Parse Settings Again --->
@@ -109,25 +110,39 @@
 		<cfreturn instance.qSettings>
 	</cffunction>
 	
+	<!--- ************************************************************* --->
+	
+	<cffunction name="getDistributionUrls" access="public" returntype="query" output="false">
+		<cfreturn instance.qDistributionURLS>
+	</cffunction>
+	
 <!------------------------------------------- PRIVATE ------------------------------------------->
 	
 	<!--- ************************************************************* --->
 		
 	<cffunction name="parseSettings" access="private" returntype="void" output="false">
 		<cfset var xmlString = "">
-		<cfset var xmlChildren = ArrayNew(1)>
+		<cfset var settingsArray = ArrayNew(1)>
+		<cfset var urlArray = ArrayNew(1)>
 		<cfset var x = 1>
 		<!--- Read File --->
 		<cffile action="read" file="#instance.settingsFilePath#" variable="xmlString">
-		<!--- Parse File --->
-		<cfset instance.xmlObj = XMLParse(trim(xmlString))>
-		<cfset xmlChildren = instance.xmlObj.xmlRoot.XMLChildren>
-		<!--- Create Query --->
 		<cfscript>
+			//Parse File
+			instance.xmlObj = XMLParse(trim(xmlString));
+			//Create Query of Settings
+			settingsArray = instance.xmlObj.xmlRoot.settings.XMLChildren;
 			QueryAddRow(instance.qSettings,1);
-			for (x=1; x lte ArrayLen(xmlChildren); x=x+1){
-				QueryAddColumn(instance.qSettings, trim(xmlChildren[x].xmlName), trim(xmlChildren[x].xmlAttributes["type"]) , ArrayNew(1));				
-				QuerySetCell(instance.qSettings, trim(xmlChildren[x].xmlName), trim(xmlChildren[x].xmlText),1);
+			for (x=1; x lte ArrayLen(settingsArray); x=x+1){
+				QueryAddColumn(instance.qSettings, trim(settingsArray[x].xmlName), trim(settingsArray[x].xmlAttributes["type"]) , ArrayNew(1));				
+				QuerySetCell(instance.qSettings, trim(settingsArray[x].xmlName), trim(settingsArray[x].xmlText),1);
+			}
+			//Root of DisURL's
+			urlArray = instance.xmlObj.xmlRoot.distribution_urls.XMLChildren;
+			for (x=1; x lte ArrayLen(urlArray);x=x+1){
+				//Create Query of Distribution URL's
+				QueryAddRow(instance.qDistributionURLS, 1);
+				QuerySetCell(instance.qDistributionURLS,"url", trim(urlArray[x].xmlText), x);
 			}
 		</cfscript>
 	</cffunction>

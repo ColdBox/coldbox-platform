@@ -50,9 +50,7 @@
 		<url>lmajano</url>
 	</DevEnvironments>
 	
-	<WebServices>
-		<WebService name="DistributionWS" URL="http://www.coldboxframework.com/distribution/coldbox.cfc?wsdl" />
-	</WebServices>
+	<WebServices />
 	
 	<Layouts>
 		<DefaultLayout>Layout.simple.cfm</DefaultLayout>

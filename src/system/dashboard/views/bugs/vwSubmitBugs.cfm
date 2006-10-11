@@ -26,11 +26,7 @@
 	</div>
 	
 	<!--- Messagebox --->
-	<cfif application.isBD>
-		#getPlugin("messagebox").renderit()#
-	<cfelse>
-		#getPlugin("messagebox").render()#
-	</cfif>
+	#getPlugin("messagebox").renderit()#
 	
 	<div class="contentboxes">
 	

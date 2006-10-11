@@ -317,6 +317,8 @@ This is the main event handler for the ColdBox dashboard.
 	<cffunction name="dspUpdater" access="public" returntype="void">
 		<!--- EXIT HANDLERS: --->
 		<cfset rc.xehCheck = "ehColdbox.docheckForUpdates">
+		<!--- Get distribution URL's --->
+		<cfset rc.qURLS = application.dbservice.get("settings").getDistributionUrls()>
 		<!--- Set the View --->
 		<cfset setView("update/vwUpdater")>
 	</cffunction>
@@ -325,7 +327,14 @@ This is the main event handler for the ColdBox dashboard.
 		<cfset var errorString = "Error retrieving update information from the ColdBox distribution site. Below you can see some diagnostic information.<br><br>">
 		<cfset var updateWS = "">
 		<cfset var updateResults = "">
+		<!--- Param Site--->
+		<cfset paramValue("distribution_sites", "")>
 		<cftry>
+			<!--- Check for URL --->
+			<cfif getValue("distribution_sites") eq "">
+				<cfset getPlugin("messagebox").setMessage("warning", "The distribution site to query seems to be invalid. Please check again")>
+				<cfset setnextEvent("ehColdbox.dspUpdater")>
+			</cfif>
 			<!--- Get a WS Object --->
 			<cfset updateWS = getPlugin("webservices").getWSObj("DistributionWS")>
 			<!--- Check for Updates --->
@@ -421,6 +430,9 @@ This is the main event handler for the ColdBox dashboard.
 		</cfif>
 		<cfset setNextEvent("ehColdbox.dspSubmitBug")>		
 	</cffunction>
+	
+	
+	
 	
 	<!--- ************************************************************* --->
 	<cffunction name="dspBackups" access="public" returntype="void">
@@ -591,23 +603,5 @@ This is the main event handler for the ColdBox dashboard.
 		<cfset setNextEvent("ehColdbox.dspHome")>
 	</cffunction>
 	<!--- ************************************************************* --->
-
-	
-	<!--- ************************************************************* --->
-	<!--- UTILITY METHODS												   --->
-	<!--- ************************************************************* --->
-	<cffunction  name="checkBackupDir" access="private" returntype="void" hint="Check the backups dir">
-		<cfset var fs = getSetting("OSFileSeparator",1)>
-		<!--- Directory Check --->
-		<cfif not directoryExists( expandPath(getSetting("backupsPath")) )>
-			<cfdirectory action="create" directory="#expandPath(getSetting("BackupsPath"))#" mode="777">
-		</cfif>
-		<!--- Config Directories Check --->
-		<cfif not directoryExists( expandPath(getSetting("backupsPath") & "#fs#config_files") )>
-			<cfdirectory action="create" directory="#expandPath(getSetting("BackupsPath") & "#fs#config_files")#" mode="777">
-		</cfif>
-	</cffunction>
-	<!--- ************************************************************* --->
-
 	
 </cfcomponent>
