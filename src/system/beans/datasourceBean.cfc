@@ -1,4 +1,7 @@
 <!-----------------------------------------------------------------------
+Copyright 2005 - 2006 ColdBox Framework by Luis Majano
+www.coldboxframework.com | www.coldboxframework.org
+-------------------------------------------------------------------------
 Author 	 :	Luis Majano
 Date     :	June 30, 2006
 Description :
