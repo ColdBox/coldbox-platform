@@ -1,3 +1,17 @@
+<!-----------------------------------------------------------------------
+Copyright 2005 - 2006 ColdBox Framework by Luis Majano
+www.coldboxframework.com | www.coldboxframework.org
+-------------------------------------------------------------------------
+
+Author 	 :	Luis Majano
+Date     :	September 25, 2005
+Description :
+	cfc Viewer rendering helper
+
+Modification History:
+10/13/2006 - Updated Oscar's code to filter access types
+----------------------------------------------------------------------->
+<!--- ************************************************************* --->
 <cfoutput>
 <!--- Style Sheet --->
 <link rel="stylesheet" href="#instance.styleSheet#" type="text/css" />	

@@ -1,5 +1,9 @@
 <cfsetting enablecfoutputonly=true>
 <!-----------------------------------------------------------------------
+Copyright 2005 - 2006 ColdBox Framework by Luis Majano
+www.coldboxframework.com | www.coldboxframework.org
+-------------------------------------------------------------------------
+
 Template :  debug.cfm
 Author 	 :	Luis Majano
 Date     :	September 25, 2005
