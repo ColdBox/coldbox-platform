@@ -77,46 +77,48 @@
 									<cfif thisMethod.Access eq "">
 										<cfset thisMethod.Access = "public">
 									</cfif>
-			
-									<cfset aParams = thisMethod.Parameters>
-									<cfset lstParams = "">
-									<cfloop from="1" to="#ArrayLen(aParams)#" index="j">
-										<cfset thisParam = aParams[j]>
-										<cfparam name="thisParam.Name" default="">
-										<cfparam name="thisParam.Required" default="true" type="boolean">
-										<cfparam name="thisParam.Type" default="">
-										<cfparam name="thisParam.Default" default="">
-										
-										
-										<cfset tmpParam = "#thisParam.Type# <b>#thisParam.Name#</b>">
-										<cfif Not thisParam.Required>
-											<cfset tmpParam = "<i>[#tmpParam# = '#thisParam.Default#']</i>">
-										</cfif>
-										<cfset tmpParam = "&nbsp;#tmpParam#">
-										
-										<cfset lstParams = ListAppend(lstParams, tmpParam)>						
-									</cfloop>
-			
-									<tr valign="top" onmouseover="this.className='cfc_methodrowsOn'" onmouseout="this.className='cfc_methodrows'" class="cfc_methodrows">
-										<td align="right" class="cfc_methodcells">#lcase(thisMethod.Access)#</td>
-										<td class="cfc_methodcells" align="right">
-										<cfif thisMethod.ReturnType neq "">
-										#lcase(thisMethod.ReturnType)#
-										<cfelse>
-										any
-										</cfif>
-										</td>
-										<td class="cfc_methodcells">
-											<b>#thisMethod.Name#</b> 
-											<cfif lstParams neq "">
-												(#lstParams#)
-											<cfelse>
-												()
+									
+									<cfif listFindNoCase(instance.lstAccessTypes, thisMethod.Access)>
+										<cfset aParams = thisMethod.Parameters>
+										<cfset lstParams = "">
+										<cfloop from="1" to="#ArrayLen(aParams)#" index="j">
+											<cfset thisParam = aParams[j]>
+											<cfparam name="thisParam.Name" default="">
+											<cfparam name="thisParam.Required" default="true" type="boolean">
+											<cfparam name="thisParam.Type" default="">
+											<cfparam name="thisParam.Default" default="">
+											
+											
+											<cfset tmpParam = "#thisParam.Type# <b>#thisParam.Name#</b>">
+											<cfif Not thisParam.Required>
+												<cfset tmpParam = "<i>[#tmpParam# = '#thisParam.Default#']</i>">
 											</cfif>
-											<br><br />
-											#thisMethod.Hint#
-										</td>
-									</tr>
+											<cfset tmpParam = "&nbsp;#tmpParam#">
+											
+											<cfset lstParams = ListAppend(lstParams, tmpParam)>						
+										</cfloop>
+				
+										<tr valign="top" onmouseover="this.className='cfc_methodrowsOn'" onmouseout="this.className='cfc_methodrows'" class="cfc_methodrows">
+											<td align="right" class="cfc_methodcells">#lcase(thisMethod.Access)#</td>
+											<td class="cfc_methodcells" align="right">
+											<cfif thisMethod.ReturnType neq "">
+											#lcase(thisMethod.ReturnType)#
+											<cfelse>
+											any
+											</cfif>
+											</td>
+											<td class="cfc_methodcells">
+												<b>#thisMethod.Name#</b> 
+												<cfif lstParams neq "">
+													(#lstParams#)
+												<cfelse>
+													()
+												</cfif>
+												<br><br />
+												#thisMethod.Hint#
+											</td>
+										</tr>
+									</cfif>
 								</cfloop>
 						  </table>
 						
