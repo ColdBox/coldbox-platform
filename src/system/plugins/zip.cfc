@@ -1,4 +1,8 @@
 <!---
+Copyright 2005 - 2006 ColdBox Framework by Luis Majano
+www.coldboxframework.com | www.coldboxframework.org
+-------------------------------------------------------------------------
+
 *        Application: newsight Zip Component
 *          File Name: Zip.cfc
 * CFC Component Name: Zip

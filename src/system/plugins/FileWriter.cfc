@@ -1,4 +1,8 @@
 <!---
+Copyright 2005 - 2006 ColdBox Framework by Luis Majano
+www.coldboxframework.com | www.coldboxframework.org
+-------------------------------------------------------------------------
+
 FileReader.cfc
 Uses the Java FileOutputStream, OutputStreamWriter, and BufferedWriter to provide a way to GREATLY increase
 performance of file output. Must faster and less resource intensive than trying to build large strings and

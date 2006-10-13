@@ -1,4 +1,8 @@
 <!---
+Copyright 2005 - 2006 ColdBox Framework by Luis Majano
+www.coldboxframework.com | www.coldboxframework.org
+-------------------------------------------------------------------------
+
 StringBuffer.cfc
 This CFC greatly increases the speed of string concatenation. CF strings are immutable. When you append a string
 to another string, a whole new string is created. This is fine for a small number of iterations but painfully

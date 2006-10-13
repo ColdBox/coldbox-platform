@@ -1,4 +1,8 @@
 <!--- Document Information -----------------------------------------------------
+Copyright 2005 - 2006 ColdBox Framework by Luis Majano
+www.coldboxframework.com | www.coldboxframework.org
+-------------------------------------------------------------------------
+
 Title:      JavaLoader.cfc
 
 Author:     Mark Mandel & Luis Majano

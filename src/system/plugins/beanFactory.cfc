@@ -1,4 +1,8 @@
 <!-----------------------------------------------------------------------
+Copyright 2005 - 2006 ColdBox Framework by Luis Majano
+www.coldboxframework.com | www.coldboxframework.org
+-------------------------------------------------------------------------
+
 Author: Luis Majano
 Date:   July 28, 2006
 Description: This is the framework's simple bean factory.
