@@ -10,7 +10,7 @@ Description :
 
 Modification History:
 ----------------------------------------------------------------------->
-<cfcomponent name="plugin" hint="This is the plugin base cfc." extends="controller">
+<cfcomponent name="plugin" hint="This is the plugin base cfc." extends="coldbox.system.util.sharedlibrary">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 	
@@ -24,8 +24,6 @@ Modification History:
 		<cfset variables.instance.pluginVersion = "">
 		<cfset variables.instance.pluginDescription = "">
 		<cfset variables.instance.pluginPath = getCurrentTemplatePath()>
-		<!--- Shared implementations library --->
-		<cfset variables.sharedLibrary = CreateObject("component","util.sharedlibrary")>
 		<cfreturn this>
 	</cffunction>
 	<!--- ************************************************************* --->
@@ -58,30 +56,7 @@ Modification History:
 		<cfreturn getPlugin("resourceBundle").getResource("#arguments.resource#")>
 	</cffunction>
 	<!--- ************************************************************* --->
-	
-	<!--- ************************************************************* --->
-	<cffunction name="getfwLocale" access="public" output="false" returnType="string" hint="Get the default locale string used in the framework as a facade. This improves by 100% calling the i18n Plugin.">
-		<cfreturn variables.sharedLibrary.getfwLocale()>
-	</cffunction>
-	<!--- ************************************************************* --->
-	
-	<!--- ************************************************************* --->
-	<cffunction name="getDatasource" access="public" output="false" returnType="any" hint="I will return to you a datasourceBean according to the name of the datasource you wish to get from the configstruct (config.xml)">
-		<!--- ************************************************************* --->
-		<cfargument name="name" type="string" hint="The name of the datasource to get from the configstruct (name property in the config.xml)">
-		<!--- ************************************************************* --->
-		<cfreturn variables.sharedLibrary.getDatasource(arguments.name)>
-	</cffunction>
-	<!--- ************************************************************* --->
 
-	<!--- ************************************************************* --->
-	<cffunction name="getMyPlugin" access="public" hint="Get a custom plugin" returntype="any" output="false">
-		<!--- ************************************************************* --->
-		<cfargument name="plugin" type="string" hint="The Plugin object's name to instantiate" required="true" >
-		<!--- ************************************************************* --->
-		<cfreturn variables.sharedLibrary.getMyPlugin(arguments.plugin)>
-	</cffunction>
-	<!--- ************************************************************* --->
 	
 <!------------------------------------------- INSTANCE MUTATORS AND ACCESSORS ------------------------------------------->
 
@@ -126,46 +101,5 @@ Modification History:
 	
 	
 <!------------------------------------------- PRIVATE ------------------------------------------->
-
-	<!--- ************************************************************* --->
-	<cffunction name="throw" access="private" hint="Facade for cfthrow" output="false">
-		<!--- ************************************************************* --->
-		<cfargument name="message" 	type="string" 	required="yes">
-		<cfargument name="detail" 	type="string" 	required="no" default="">
-		<cfargument name="type"  	type="string" 	required="no" default="Framework">
-		<!--- ************************************************************* --->
-		<cfthrow type="#arguments.type#" message="#arguments.message#"  detail="#arguments.detail#">
-	</cffunction>
-	<!--- ************************************************************* --->
-
-	<!--- ************************************************************* --->
-	<cffunction name="dump" access="private" hint="Facade for cfmx dump">
-		<cfargument name="var" required="yes" type="any">
-		<cfdump var="#var#">
-	</cffunction>
-	<!--- ************************************************************* --->
-	
-	<!--- ************************************************************* --->
-	<cffunction name="abort" access="private" hint="Facade for cfabort" output="false">
-		<cfabort>
-	</cffunction>
-	<!--- ************************************************************* --->
-	
-	<!--- ************************************************************* --->
-	<cffunction name="relocate" access="private" hint="Facade for cflocation" returntype="void" output="false">
-		<!--- ************************************************************* --->
-		<cfargument name="url" 		type="string" 	required="true">
-		<cfargument name="addtoken" type="boolean" 	required="false" default="false">
-		<!--- ************************************************************* --->
-		<cflocation urL="#arguments.url#" addtoken="#arguments.addtoken#">
-	</cffunction>
-	<!--- ************************************************************* --->
-	
-	<!--- ************************************************************* --->
-	<cffunction name="include" access="private" hint="Facade for cfinclude" output="false">
-		<cfargument name="template" type="string">
-		<cfinclude template="#template#">
-	</cffunction>
-	<!--- ************************************************************* --->
 
 </cfcomponent>
