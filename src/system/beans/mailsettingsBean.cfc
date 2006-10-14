@@ -35,6 +35,7 @@ Modification History:
 		instance.username = arguments.username;
 		instance.password = arguments.password;
 		instance.port = arguments.port;
+		return this;
 		</cfscript>
 	</cffunction>
 	<!--- ************************************************************* --->
