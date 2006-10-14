@@ -24,6 +24,7 @@ Modification History:
 07/28/2006 - Datasources support, var scope additions.
 08/10/2006 - Child References Eliminated. No longer in use.
 08/20/2006 - i18n Support completed for new plugins.
+10/10/2006 - Mail server settings setup.
 ----------------------------------------------------------------------->
 <cfcomponent name="XMLParser"
 			 hint="This is the XML Parser plugin for the framework. It takes care of any XML parsing for the framework's usage."
@@ -254,17 +255,41 @@ Modification History:
 			MailSettingsNodes = XMLSearch(configXML, instance.searchMailSettings);
 			//Check if empty
 			if ( ArrayLen(MailSettingsNodes) gt 0 and ArrayLen(MailSettingsNodes[1].XMLChildren) gt 0){
-				//Parse Mail Settings
-				for (i=1; i lte ArrayLen(MailSettingsNodes[1].XMLChildren); i=i+1){
-					StructInsert(ConfigStruct, trim(MailSettingsNodes[1].XMLChildren[i].XMLName),trim(MailSettingsNodes[1].XMLChildren[i].XMLText));
+				
+				//Checks
+				if ( structKeyExists(MailSettingsNodes[1], "MailServer") )
+					StructInsert(ConfigStruct, "MailServer", trim(MailSettingsNodes[1].MailServer.xmlText) );
+				else
+					StructInsert(ConfigStruct,"MailServer","");
+					
+				//Mail username
+				if ( structKeyExists(MailSettingsNodes[1], "MailUsername") )
+					StructInsert(ConfigStruct, "MailUsername", trim(MailSettingsNodes[1].MailUsername.xmlText) );
+				else
+					StructInsert(ConfigStruct,"MailUsername","");
+					
+				//Mail password
+				if ( structKeyExists(MailSettingsNodes[1], "MailPassword") )
+					StructInsert(ConfigStruct, "MailPassword", trim(MailSettingsNodes[1].MailPassword.xmlText) );
+				else
+					StructInsert(ConfigStruct,"MailPassword","");
+					
+				//Mail Port
+				if ( structKeyExists(MailSettingsNodes[1], "MailPort") ){
+					if (trim(MailSettingsNodes[1].MailPort.xmlText) neq "")
+						StructInsert(ConfigStruct, "MailPort", trim(MailSettingsNodes[1].MailPort.xmlText) );
+					else
+						StructInsert(ConfigStruct, "MailPort", 25 );
 				}
+				else
+					StructInsert(ConfigStruct, "MailPort", 25 );
 			}
 			else{
 				StructInsert(ConfigStruct,"MailServer","");
 				StructInsert(ConfigStruct,"MailUsername","");
 				StructInsert(ConfigStruct,"MailPassword","");
+				StructInsert(ConfigStruct,"MailPort",25);
 			}
-
 			//i18N Settings
 			i18NSettingNodes = XMLSearch(configXML, instance.searchi18NSettings);
 			//Check if empty
