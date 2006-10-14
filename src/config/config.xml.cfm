@@ -31,7 +31,11 @@
 	<YourSettings />
 
 	<!--Optional,if blank it will use the CFMX administrator settings.-->
-	<MailServerSettings />
+	<MailServerSettings>
+		<MailServer>testmailserver.com</MailServer>
+		<MailUsername>myemail@info.com</MailUsername>
+		<MailPassword>password</MailPassword>
+	</MailServerSettings>
 
 	<BugTracerReports>
 	</BugTracerReports>
