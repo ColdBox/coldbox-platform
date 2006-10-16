@@ -12,11 +12,6 @@ aug/20/2006 - Luis Majano
 ----------------------------------------------------------------------->
 <cfcomponent name="ehGeneral" extends="coldbox.system.eventhandler">
 
-	<cffunction name="init" access="public" returntype="ehGeneral" output="false">
-		<cfset super.init()>
-		<cfreturn this>
-	</cffunction>
-
 	<cffunction name="onAppStart" access="public" returntype="void" output="false">
 		<!--- Instantiate ColdBox Service --->
 		<cfset application.cbService = CreateObject("component","#getSetting("AppMapping")#.components.coldboxService").init(getDatasource("coldboxreader"))>

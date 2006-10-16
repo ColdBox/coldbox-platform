@@ -1,13 +1,6 @@
 <cfcomponent name="ehBlog" extends="coldbox.system.eventhandler">
 
 	<!--- ************************************************************* --->
-	<cffunction name="init" access="public" returntype="Any" output="false">
-		<cfset super.init()>
-		<cfreturn this>
-	</cffunction>
-	<!--- ************************************************************* --->
-
-	<!--- ************************************************************* --->
 	<cffunction name="onAppStart" access="public" returntype="void" output="false">
 		<!--- *Edit this line if you are not using a default blog --->
 		<cfset var blogname = getToken(application.applicationName,3,"_")>

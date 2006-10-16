@@ -10,13 +10,6 @@ Sep/25/2005 - Luis Majano
 <cfcomponent name="ehGeneral" extends="coldbox.system.eventhandler" output="false">
 
 	<!--- ************************************************************* --->
-	<cffunction name="init" access="public" returntype="Any" output="false">
-		<cfset super.init()>
-		<cfreturn this>
-	</cffunction>
-	<!--- ************************************************************* --->
-
-	<!--- ************************************************************* --->
 	<cffunction name="onAppStart" access="public" returntype="void" output="false">
 		<cfscript>
 		//Create the JavaLoader with the helloworld.jar file. You can send one path or a comma delimited list.

@@ -1,10 +1,5 @@
 <cfcomponent name="ehUser" extends="coldbox.system.eventhandler">
 
-	<cffunction name="init" access="public" returntype="ehUser">
-		<cfset super.init()>
-		<cfreturn this>
-	</cffunction>
-
 	<cffunction name="dspAccountActions" access="public" returntype="void" output="false">
 		<cfset var obj = "">
 		<cfset var qry = "">

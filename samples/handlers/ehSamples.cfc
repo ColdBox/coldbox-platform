@@ -13,13 +13,6 @@ Sep/25/2005 - Luis Majano
 	-Created the template.
 ----------------------------------------------------------------------->
 <cfcomponent name="ehSamples" extends="coldbox.system.eventhandler">
-
-	<!--- ************************************************************* --->
-	<cffunction name="init" access="public" returntype="Any" output="false">
-		<cfset super.init()>
-		<cfreturn this>
-	</cffunction>
-	<!--- ************************************************************* --->
 	
 	<!--- ************************************************************* --->
 	<cffunction name="onAppInit" access="public" returntype="void" output="false">

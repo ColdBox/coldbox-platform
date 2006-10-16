@@ -1,10 +1,5 @@
 <cfcomponent name="ehUser" extends="coldbox.system.eventhandler">
 
-	<cffunction name="init" access="public" returntype="ehFeed" output="false">
-		<cfset super.init()>
-		<cfreturn this>
-	</cffunction>
-
 	<cffunction name="dspAddFeed" access="public" returntype="void" output="false">
 		<cfset var csPlugin = getPlugin("clientstorage")>
 		<cfset var obj = "">
