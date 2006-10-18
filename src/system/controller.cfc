@@ -46,7 +46,25 @@ Last Update 	: July 28, 2006
 		<!--- ************************************************************* --->
 		<cfset "application.Coldbox_configstruct.#arguments.name#" = arguments.value>
 	</cffunction>
-
+	
+	<cffunction name="getSettingStructure" hint="I get the entire setting structure. By default I retrieve the configStruct. You can change this by using the fwsetting flag." access="public" returntype="struct" output="false">
+		<cfargument name="FWSetting"  	type="boolean" 	 required="false"  hint="Boolean Flag. If true, it will retrieve from the fwSettingsStruct else the configStruct. Default is false." default="false">
+		<cfargument name="DeepCopyFlag" hint="Default is false. True, creates a deep copy of the structure." type="boolean" required="no" default="false">
+		<cfif arguments.FWSetting>
+			<cfif arguments.DeepCopyFlag>
+				<cfreturn duplicate(application.ColdBox_FWSettingsStruct)>
+			<cfelse>
+				<cfreturn application.ColdBox_FWSettingsStruct>
+			</cfif>
+		<cfelse>
+			<cfif arguments.DeepCopyFlag>
+				<cfreturn duplicate(application.ColdBox_configstruct)>
+			<cfelse>
+				<cfreturn application.ColdBox_configstruct>
+			</cfif>
+		</cfif>
+	</cffunction>
+	
 	<cffunction name="getPlugin" access="Public" returntype="any" hint="I am the Plugin cfc object factory." output="false">
 		<cfargument name="plugin" type="string" hint="The Plugin object's name to instantiate" >
 		<!--- ************************************************************* --->
@@ -94,18 +112,6 @@ Last Update 	: July 28, 2006
 				<cfset request.reqCollection.event = getToken(event,1,",")>
 			</cfif>
 		</cfmodule>
-	</cffunction>
-
-	<cffunction name="getCollection" returntype="any" access="Public" hint="I Get a reference or deep copy of the request Collection" output="false">
-		<cfargument name="DeepCopyFlag" hint="Default is false, gives a reference to the collection. True, creates a deep copy of the collection." type="boolean" required="no" default="false">
-		<!--- ************************************************************* --->
-		<cfif not structKeyExists(request, "reqCollection")>
-			<cfreturn structnew()>
-		<cfelseif arguments.DeepCopyFlag>
-			<cfreturn duplicate(request.reqCollection)>
-		<cfelse>
-			<cfreturn request.reqCollection>
-		</cfif>
 	</cffunction>
 
 	<cffunction name="valueExists" returntype="boolean" access="Public"	hint="I Check if a value exists in the request collection." output="false">
@@ -165,6 +171,17 @@ Last Update 	: July 28, 2006
 		<cfset structDelete(request.reqCollection,"#arguments.name#")>
 	</cffunction>
 
+	<cffunction name="getCollection" returntype="any" access="Public" hint="I Get a reference or deep copy of the request Collection" output="false">
+		<cfargument name="DeepCopyFlag" hint="Default is false, gives a reference to the collection. True, creates a deep copy of the collection." type="boolean" required="no" default="false">
+		<cfif not structKeyExists(request, "reqCollection")>
+			<cfreturn structnew()>
+		<cfelseif arguments.DeepCopyFlag>
+			<cfreturn duplicate(request.reqCollection)>
+		<cfelse>
+			<cfreturn request.reqCollection>
+		</cfif>
+	</cffunction>
+	
 	<cffunction name="setView" access="Public" returntype="void" hint="I Set the view to render in this request.I am called from event handlers. Request Collection Name: currentView, currentLayout"  output="false">
 		<cfargument name="name"  hint="The name of the view to set. If a layout has been defined it will assign it, else if will assign the default layout." type="string">
 		<cfargument name="nolayout" type="boolean" required="false" default="false" hint="Boolean flag, wether the view sent in will be using a layout or not. Default is false. Uses a pre set layout or the default layout.">
