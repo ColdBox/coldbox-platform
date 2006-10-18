@@ -1,6 +1,8 @@
 <cfoutput>
+<div class="logo"></div>
+	
 <div class="headerbar">
-
+	
 	<div style="float:right;clear:both;margin-right:10px">
 		<!--- HOME --->
 		<div id="topbuttons" >
