@@ -68,8 +68,6 @@ Modification History:
 		<cfset var handlerIndex = 0>
 		<cfset var rtnStruct = "">
 		<cfset var handlersList = arrayToList(getSetting("RegisteredHandlers"))>
-		<!--- Syntax Check --->
-		<cfset EventSyntaxCheck(arguments.event)>
 		<!--- Check registration --->
 		<cfset handlerIndex = listFindNoCase(handlersList, arguments.event) >
 		<cfif handlerIndex>
