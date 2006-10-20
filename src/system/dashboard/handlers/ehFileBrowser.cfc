@@ -11,13 +11,6 @@ This is the File Browser Handler
 
 	<!--- ************************************************************* --->
 
-	<cffunction name="init" access="public" returntype="any" output="false">
-		<cfset super.Init()>
-		<cfreturn this>
-	</cffunction>
-
-	<!--- ************************************************************* --->
-
 	<cffunction name="dspBrowser" access="public" returntype="void">
 		<!--- EXIT HANDLERS: --->
 		<cfset rc.xehBrowser = "ehFileBrowser.dspBrowser">

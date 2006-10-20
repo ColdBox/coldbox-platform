@@ -11,13 +11,6 @@ This is the app Builder handler.
 
 	<!--- ************************************************************* --->
 
-	<cffunction name="init" access="public" returntype="any" output="false">
-		<cfset super.Init()>
-		<cfreturn this>
-	</cffunction>
-
-	<!--- ************************************************************* --->
-
 	<cffunction name="dspAppBuilder" access="public" returntype="void">
 		<!--- EXIT HANDLERS --->
 		<cfset rc.xehFileBrowser = "ehFileBrowser.dspBrowser">

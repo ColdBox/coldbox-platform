@@ -418,6 +418,25 @@ function validateGeneration(){
 			return false;
 	}
 }
+
+
+//Auto Update Methods
+function confirmUpdate( vupdateType ){
+	$("updatetype").value = vupdateType;
+	if ( vupdateType == "dashboard" ){
+		if ( confirm ("Do you wish to auto update the Dashboard application?") )
+			return true;
+		else
+			return false;
+	}
+	else if ( vupdateType == "framework" ){
+		if ( confirm ("Do you wish to auto update the ColdBox framework?") )
+			return true;
+		else
+			return false;
+	}
+	
+}
 //******************************************************************************
 //TEST METHODS
 //********************************************************************************

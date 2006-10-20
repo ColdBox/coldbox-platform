@@ -25,10 +25,10 @@
 	</Settings>
 	
 	<YourSettings>
-		<Setting name="BackupsPath"				value="backups" />
-		<Setting name="UpdateTempDir"			value="../../_tempinstall" />
-		<Setting name="InstallerDir"			value="installer" />
 		<Setting name="Version" 				value="1.1.0"/>
+		<Setting name="BackupsPath"				value="backups" />
+		<Setting name="UpdateTempDir"			value="/coldbox/_tempinstall" />
+		<Setting name="InstallerDir"			value="model/installer" />
 		<Setting name="TracSite"				value="http://ortus.svnrepository.com/coldbox/" />
 		<Setting name="OfficialSite"			value="http://www.coldboxframework.com" />
 		<Setting name="SchemaDocs" 				value="http://www.coldboxframework.com/documents/SchemaDocs/"/>
@@ -50,7 +50,7 @@
 		<url>lmajano</url>
 	</DevEnvironments>
 	
-	<WebServices />
+	<WebServices/>
 	
 	<Layouts>
 		<DefaultLayout>Layout.simple.cfm</DefaultLayout>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<config>
+    <!--In Seconds-->
+    <download_timeout>10</download_timeout>
+    <installer_title>Updating the ColdBox Dashboard. Installer by ColdBox</installer_title>
+    <installer_message>Installing your new version of the ColdBox Dashboard. Please wait...</installer_message>
+    <implementation_cfc>dashboard</implementation_cfc>
+    <success_url><![CDATA[../system/dashboard/index.cfm?event=ehUpdate.doInstallSuccess&fwreinit=1]]></success_url>
+    <failure_url><![CDATA[../system/dashboard/index.cfm?event=ehUpdate.doRollback]]></failure_url>  
+</config>

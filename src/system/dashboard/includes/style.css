@@ -20,6 +20,16 @@ a:hover{
 	color: #E58108;
 }
 /* GUI BARS */
+.logo{
+	background: url(../images/dashboard_logo.gif) no-repeat;
+	width: 170px;
+	height: 60px;
+	background-color: "transparent";
+	margin-left: 10px;
+	margin-top: 5px;
+	float: left;
+	position: absolute;
+}
 .headerbar{
 	background: url(../images/header_bg.png) repeat;
 	height: 70px;
@@ -158,6 +168,12 @@ li{
 .contentboxes{
 	margin: 10px;
 	margin-bottom: 50px;
+}
+.updatertext{
+	height:150px;
+	width:570px;
+	overflow:auto;
+	font-size:10px
 }
 /* HELP DIVS */
 .helpbox{

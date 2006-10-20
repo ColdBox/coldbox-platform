@@ -12,6 +12,7 @@
 			screen will be tightly integrated with the bug database.</li>
 		<li>You must enter a mail server, username and password in order to send this bug report. If they are not filled out,
 		then the settings in the CFMX/BlueDragon Administrator will be used.</li>
+		<li>Please not that the From Email Address field, will be used as the FROM in the cfmail tag.</li>
 	  </ul>
 	</div>
 	<div align="right" style="margin-right:5px;">
@@ -73,7 +74,8 @@
 	     
 	     <tr bgcolor="##f5f5f5">
 	     	<td align="right"  style="border-right:1px solid ##ddd">
-	     	<strong>From Email Address: <span class="redtext">*</span></strong>
+	     	<strong>From Email Address: <span class="redtext">*</span></strong><br />
+	     	(Used in the FROM for cfmail)
 	     	</td>
 	     	<td>
 	     	<input type="text" name="email" value="" size="30" >

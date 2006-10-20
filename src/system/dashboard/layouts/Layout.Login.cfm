@@ -11,7 +11,9 @@
 
 <body onload="framebuster()">
 
-<div class="headerbar"></div>	
+<div class="headerbar">
+  <div class="logo"></div>
+</div>	
 
 <div class="statusbar">
 	

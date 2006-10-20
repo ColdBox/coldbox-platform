@@ -25,7 +25,7 @@
         <rollover id="debugpassword">The password you will use to go into debug mode or out if activating from the url action.</rollover>  
         <rollover id="enabledumpvar">Flag that determines if you can use the 'dumpvar' url action to dump variables in debug mode.</rollover>
         <rollover id="udflibraryfile">The location relative from the application root or using cfmx mappings of a udf template to load on all views, layouts and event handlers.</rollover>
-        <rollover id="messageboxstyleclass">The css class name to use when rendering the messagebox. This class has to be loaded on your stylesheet. Look at the /coldbox/system/includes/messagebox.cfm for a template css.</rollover>
+        <rollover id="messageboxstyleclass">The css class name to use when rendering the messagebox. This class has to be loaded on your stylesheet. Look at the messagebox.cfm for a template css.</rollover>
         <rollover id="defaultlayout">The default layout template to use for your application. This will be generated since you are starting a new project. The name choosen is just a best practice.</rollover>
         <rollover id="coldboxlogging">Flag that determines if the application will use the embedded ColdBox logging facility. If you select ENABLED make sure you fill out the location.</rollover>
         <rollover id="coldboxlogslocations">The location of where ColdBox will store your log file. This is either relative from your application root or an absolute path.</rollover>
