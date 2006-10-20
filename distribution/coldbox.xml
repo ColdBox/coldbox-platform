@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Config>
     <Application>ColdBox Framework</Application>
-    <Version>1.1.0</Version>
+    <Version>1.1.1</Version>
     <Filename>../builds/coldbox_1.1.0.zip</Filename>
     <UpdateDate>oct-25-2006</UpdateDate>
     <Author>Luis Majano</Author>
