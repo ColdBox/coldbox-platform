@@ -1,5 +1,7 @@
-ColdBox
-A ColdFusion Framework.
+ColdBox: A ColdFusion Framework.
+info@coldboxframework.com
+www.coldboxframework.com|org
+
 by Luis Majano
 lmajano@gmail.com
 www.luismajano.com
@@ -25,3 +27,7 @@ Your fair use and other rights are in no way affected by the above.
 
 This is a human-readable summary of the Legal Code (the full license) that can be found at
 http://creativecommons.org/licenses/by-sa/2.5/legalcode
+
+
+Copyright 2005 - 2006 ColdBox Framework by Luis Majano
+www.coldboxframework.com | www.coldboxframework.org
