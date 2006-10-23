@@ -11,10 +11,11 @@ Sample Directory Structure For Your Application
 	-config (Your config folder, where your config.xml.cfm resides) REQUIRED
 	-handlers (Your ColdBox event handlers) REQUIRED
 	-layouts  (Your layouts) REQUIRED
-	-views (Your views, can include folders) REQUIRED
+	-views (Your views, can be orgainzed in folders) REQUIRED
 	-includes (Your include files if used.) OPTIONAL
 	-tags (Your cf tags if used) OPTIONAL
-	-images (Your images) OPTIONAL	
+	-images (Your images) OPTIONAL
+	-logs (For ColdBox Logging) OPTIONAL
 	-{Any other folder(s) you want} OPTIONAL
 	
 ******************************************************************************
@@ -26,12 +27,14 @@ Views (Optional): All my views start with 'vw'
 Layouts (Optional): All my layouts start with 'Layout.'
 	ex: Layout.Main.cfm, Layout.Open.cfm, Layout.Popup.cfm
 
-Event Handlers (Required): 
+Event Handlers (REQUIRED): 
 
 All event handlers method calls follow this regular expression:
 "^eh[a-zA-Z]+\.(dsp|do|on)[a-zA-Z]+"
+and they need to have an access of public
 
 ex: ehGeneral.doLogin, ehTools.doParse, ehGeneral.dspHome, ehGeneral.dspContactInfo
+
 All event handlers start with 'eh' + the name.
 ex: ehGeneral.cfc, ehLuis.cfc, ehTools.cfc, ehBase.cfc
 
@@ -49,19 +52,18 @@ to understand all the variables in this file.
 Then you need to change the name property of your Application.cfc or
 Application.cfm template. So open the file Application.cfc and change the name
 property to whatever you want it to be. Remember that every application will need
-its own name property. Also,please note that ColdBox uses the session 
+its own name property. Also,please note that ColdBox uses the session and application
 scope as a requirement. The client scope needs to be enabled if using the 
 messagebox or clientstorage plugin.
 
 Once you have completed editing the config.xml file make sure that you now go to 
-your CFMX administrator and create the CFMX mapping if needed. If your application
-lies on the root of your server, then you do not need a coldfusion mapping but a relative
-mapping from your web server root.
-Example: {root}/myapplication
+your CFMX administrator and create the CFMX mapping if you are using one. 
+
+Example: {web_root}/myapplication
 
 Then your AppMapping setting will be: myapplication
 
-Now that you have completed editing your config, Application.cfc, you are ready to see 
+Now that you have completed editing your config and Application.cfc, you are ready to see 
 results. Point your browser to your application folder and you will see a message display:
 
 Welcome to Coldbox!!
