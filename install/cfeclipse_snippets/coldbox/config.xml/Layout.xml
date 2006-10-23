@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<snippet filetemplate="false" extension="cfm">
+<name>Layout</name>
+<help>A new Layout Element</help>
+<starttext><![CDATA[<Layout file="$${Layout File Name (Must be in layouts folder)}" name="$${Name}" >
+
+</Layout>
+]]></starttext>
+<endtext><![CDATA[]]></endtext>
+</snippet>

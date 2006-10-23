@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<snippet filetemplate="true" extension="cfc">
+<name>EventHandler</name>
+<help>A new Event Handler</help>
+<starttext><![CDATA[<!-----------------------------------------------------------------------
+Author 	 :	$${USERNAME}
+Date     :	$${DATE}
+Description : 			
+ $${Description}
+		
+Modification History:
+
+----------------------------------------------------------------------->
+<cfcomponent name="$${Event Handler Name:}" hint="$${Hint}" extends="coldbox.system.eventhandler" output="false">
+
+<!------------------------------------------- CONSTRUCTOR ------------------------------------------->
+
+	<!--- ************************************************************* --->
+	<cffunction name="init" access="public" returntype="Any" output="false" hint="Constructor">
+		<!--- Call Parent init --->
+		<cfset super.init()>
+		<!--- Any init code here --->
+		<cfreturn this>
+	</cffunction>
+	<!--- ************************************************************* --->
+
+<!------------------------------------------- PUBLIC EVENT HANDLERS ------------------------------------------->
+
+	<cffunction name="doSomething" access="public" returntype="Void" output="false" hint="doSomething">
+	
+	</cffunction>
+	
+	<cffunction name="dspSomething" access="public" returntype="Void" output="false" hint="dspSomething">
+	
+	</cffunction>
+	
+	
+<!------------------------------------------- PRIVATE ------------------------------------------->
+
+</cfcomponent>]]></starttext>
+<endtext><![CDATA[]]></endtext>
+</snippet>
