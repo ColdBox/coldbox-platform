@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<snippet filetemplate="false" extension="cfm">
+<name>getValueSurround</name>
+<help>Get Value surrounding var</help>
+<starttext><![CDATA[getValue("]]></starttext>
+<endtext><![CDATA[")]]></endtext>
+</snippet>
