@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<snippet filetemplate="false" extension="cfm">
+<name>getMailSettings</name>
+<help>get mail settings bean</help>
+<starttext><![CDATA[getMailSettings()]]></starttext>
+<endtext><![CDATA[]]></endtext>
+</snippet>
