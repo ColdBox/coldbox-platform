@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<snippet filetemplate="false" extension="cfm">
-<name>getPlugin</name>
-<help>get a plugin</help>
-<starttext><![CDATA[getPlugin("$${Plugin Name:beanFactory|cfcViewer|clientstorage|fileUtilities|FileWriter|i18n|JavaLoader|logger|messagebox|renderer|resourceBundle|settings|StringBuffer|webservices|XMLParser|zip}")]]></starttext>
-<endtext><![CDATA[]]></endtext>
-</snippet>

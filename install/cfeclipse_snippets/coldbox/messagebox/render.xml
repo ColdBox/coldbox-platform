@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<snippet filetemplate="false" extension="cfm">
-<name>render</name>
-<help>Render the messagebox</help>
-<starttext><![CDATA[getPlugin("messagebox").render($${Clear Message After Render:true|false})]]></starttext>
-<endtext><![CDATA[]]></endtext>
-</snippet>
