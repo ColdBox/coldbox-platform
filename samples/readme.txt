@@ -5,7 +5,7 @@ applications I have created and some of them are re-writes of FAMOUS open source
 that I credit below.  
 
 If you have ported an app to ColdBox or have an application you would like to share 
-with the ColdBox community.  Please email me at cfcoldbox@gmail.com with your application
+with the ColdBox community.  Please email me at info@coldboxframework.com with your application
 so I can include it in the downloads section and the main release.
 *******************************************************
 Installation
@@ -30,11 +30,11 @@ Credits
 *******************************************************
 1. BlogCFC by Raymond Camden (www.camdenfamily.com/morpheus/blog)
 	A full featured blog application
-	Ray's Version: 4.0.3.101
+	Ray's Version: 5.0.290
 	
 2. Galleon Forums by Raymond Camden (www.camdenfamily.com/morpheus/blog)
 	An incredible user-friendly forums application.
-	Ray's Version: 1.5
+	Ray's Version: 1.5.290
 	
 3. Hello World by Luis Majano
 	A simple introduction to ColdBox
@@ -48,5 +48,11 @@ Credits
 6. Sample UDF Library Usage by Luis Majano
 	A simple application to show you how to use a UDF library if needed.
 	
-7. ColdBoxReader by Oscar Arevalo
-	A simple RSS reader with AJAX interaction.
+7. ColdBoxReader by Oscar Arevalo/Luis Majano
+	An RSS reader with AJAX interaction.
+8. i18N Sample by Paul Hastings/Luis Majano
+	A showcase gallery of i18N interactions
+9. JavaLoader by Luis Majano
+	Interaction for using Mark Mandel's Java Loader
+10. Illidium PU-36 CFC Generator by Brian Rinaldi/Luis Majano
+	Brian Rinaldi's cfc generator ported to ColdBox
