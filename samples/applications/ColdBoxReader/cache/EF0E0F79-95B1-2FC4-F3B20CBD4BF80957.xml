@@ -1,0 +1,580 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+			<channel>
+			<title>Blog of Fusion</title>
+			<link>http://www.blogoffusion.com/index.cfm</link>
+			<description>ColdFusion Blogs</description>
+			<language>en-us</language>
+			<pubDate>Sun, 10 Sep 2006 17:23:24 -0400</pubDate>
+			<lastBuildDate>Fri, 08 Sep 2006 18:33:00 -0400</lastBuildDate>
+			<generator>BlogCFC</generator>
+			<docs>http://blogs.law.harvard.edu/tech/rss</docs>
+			<managingEditor>mdinowit@houseoffusion.com</managingEditor>
+			<webMaster>mdinowit@houseoffusion.com</webMaster>
+			
+			
+			
+			
+			
+			<item>
+				<title>It's the little things that get you</title>
+				<link>http://www.blogoffusion.com/index.cfm/2006/9/8/Its-the-little-things-that-get-you</link>
+				<description>
+				
+				I'd like to say I made a great discovery here, but instead I'll say that I made the same mistake everyone else has and will. I thought my code was perfect, but there was a tiny flaw that grew. Let me tell you what it was and how a single loop could cause so much havoc.
+
+&lt;h2&gt;Desire for change&lt;/h2&gt;
+It all started off with a desire to make the &lt;A HREF="http://www.houseoffusion.com/groups" title="ColdFusion Mailing Lists" target="_blank"&gt;mailing list&lt;/A&gt; digests on &lt;A HREF="http://www.houseoffusion.com" target="_blank"&gt;House of Fusion&lt;/A&gt; better. This code has not been enhanced in a while and while it was solid code, I felt I could do better. 
+
+So how does one make code better? Step one is to literally write down a description of what the code in question is supposed to do. The second is to write some pseudo code to translate the written ideas into a framework to work with (no, not that framework). Once the pseudo code is done and looks like the written description, it can be turned into real code and tested step by step. The end result should be exactly what was written down. 
+
+My idea was to take the 50+ mailing lists on the site and the 8 different digest options that have to be checked every hour and combine them with a cached CFC that will be called multiple times using a scheduled Asynchronous Gateway. Every hour the scheduled event will call a template. This template will generate the 400+ requests and send them to the Asynchronous Gateway. The gateway will actually only be a 'stub' that will send the request to the cached CFC that does the work. 
+
+&lt;h2&gt;Potential problem and solution&lt;/h2&gt;
+Now before I go on you should already see where a problem can come up. Whenever you have a cached CFC, the chances are high that a variable set to the &lt;em&gt;Variables&lt;/em&gt; scope of the CFC will cause a problem. I knew this and tried to make sure that every variable I created was created inside a local structure that was &lt;em&gt;var&lt;/em&gt;ed to begin with. For example
+
+&lt;code&gt;
+&lt;CFSET var local=StructNew()&gt;
+&lt;CFQUERY name="local.users"  datasource="#Variables.DSN#"&gt;
+&lt;/code&gt;
+
+This technique allowed me to be very clear about what was a local variable and what was a global one. There was no chance of data being saved to the global &lt;em&gt;Variables&lt;/em&gt; scope without me knowing about it. At least that was what I thought.
+
+&lt;h2&gt;Part of the real problem&lt;/h2&gt;
+Somehow I overlooked something that most of you will overlook: the index variable of a loop. How many of us use &lt;em&gt;i&lt;/em&gt; as a loop index? (I really have no clue but if the answer was over 90% I would not be surprised). Without having &lt;em&gt;var&lt;/em&gt;ed the index at the beginning of the function or setting it to the local structure, it would automatically be set to the &lt;em&gt;Variables&lt;/em&gt; scope. This means that each loop will set its index to a cached global scope shared between 400+ other calls to the same cached CFC.
+
+&lt;h2&gt;The secret of CFLOOP&lt;/h2&gt;
+Now this really would not be a problem if you're using CFLOOP, as the tag cheats. 
+
+Think about how a &lt;em&gt;For&lt;/em&gt; loop is supposed to work. You start with a number (your &lt;em&gt;From&lt;/em&gt; attribute). You run the loop once. When the loop is done, you increment the number and then check if the new number is higher than the ending condition (your &lt;em&gt;To&lt;/em&gt; attribute). If it's not higher, then the loop is run again, otherwise, the loop is stopped. 
+
+CFLOOP doesn't work that way. It does not do a check at each loop iteration but instead it creates each iteration first and then runs through them one at a time. Changing the index in the middle of an iteration and expecting it to have any effect is basically a pipe dream. Don't trust me? Try it yourself:
+
+&lt;code&gt;
+&lt;CFLOOP from="1" to="100" index="i"&gt;
+	&lt;CFOUTPUT&gt;#i#&lt;/CFOUTPUT&gt;
+	&lt;CFSET i=200&gt;
+&lt;/CFLOOP&gt;
+&lt;/code&gt;
+
+No matter how you alter the index variable, it has no effect on the loop operation. So this means that if the index variable was set to the global &lt;em&gt;Variables&lt;/em&gt; scope, it would have no effect on the loop itself. On the other hand, if the global index variable was changed between the time that it was set by the loop and the time it was used in the CFLOOP body, it could have an effect. The chances of this happening is exceptionally slim and can almost be discounted as the problem....almost.
+
+&lt;h2&gt;Loops the way you expect them&lt;/h2&gt;
+While CFLOOP may cheat, the loops used within a CFSCRIPT block do not. A &lt;em&gt;For&lt;/em&gt; loop in CFSCRIPT checks each loop iteration to see if it should continue or not. Try it yourself
+
+&lt;code&gt;
+&lt;CFSCRIPT&gt;
+for(i=1;i LTE 100; i=i+1)
+{
+	Writeoutput(i);
+	i=200;
+}
+&lt;/CFSCRIPT&gt;
+&lt;/code&gt;
+
+Now what will happen if the index is changed while it's being used? Chaos. You're expecting a loop to go from 1 to 2 to 3 but because the index is a global variable, it can be set to some other value in a different call to the cached CFC and the index value can go from 1 to 2 to 500, which is far from what is expected. This is what happened to me. Great new code with an overlooked loop variable causing chaos.
+
+&lt;h2&gt;Summary&lt;/h2&gt;
+A few things you can take away from this:&lt;BR&gt;
+1. &lt;em&gt;Var&lt;/em&gt; all of your local variables or better yet, assign local variables to a &lt;em&gt;Var&lt;/em&gt;ed local structure. (I always use the &lt;em&gt;Variables&lt;/em&gt; prefix for global variables as well).&lt;BR&gt;
+2. Always be super careful when dealing with cached objects. Triple check your code and then have two other people check it again.&lt;BR&gt;
+3. Keep an eye our for tags that create their own variables. &lt;BR&gt;
+4. CFLOOP does not operate the way you think a loop should - CFSCRIPT loops do.
+				
+				</description>
+				
+				<pubDate>Fri, 08 Sep 2006 18:33:00 -0400</pubDate>
+				<guid>http://www.blogoffusion.com/index.cfm/2006/9/8/Its-the-little-things-that-get-you</guid>
+				
+			</item>
+			
+		 	
+			
+			
+			<item>
+				<title>A win for the community</title>
+				<link>http://www.blogoffusion.com/index.cfm/2006/8/28/A-win-for-the-community</link>
+				<description>
+				
+				I've been doing advertising with Google AdWords for a bit now and the results have been rather good. One way to keep your results good is to keep an eye on the sites running your ads and block the sites you don't like. This works great and keeps your ads on target...Until your ads are shown on a scam site.
+
+I found such a site showing my ads. www.coldfusionjobs.com might have been legit in the past, but it's now nothing more than a site to display Google ads in different categories. So why is a site showing off Google ads a scam site? Well, I'll tell you.
+
+&lt;h2&gt;How Google Ads Work&lt;/h2&gt;
+Using AdWords, there are two different ways of displaying ads: Contextual or Targeted.
+
+Contextual means that you set up your ad with specific keywords that you want your ad associated with and whenever someone does a search on those keywords, they may get your ad. In addition, if someone is running Google AdSense on their site, your ads may show up based on the context of the page. 
+
+As an advertiser, you have the option as to how much to pay per click on a search versus an AdWords display. In most cases, you'll have a higher amount on a search result than on an AdWord result. In addition, you're actually charged based on the position of the ad when clicked. If it's in the first position, you get charged more than if it's in the last. 
+&lt;div align="center"&gt;
+&lt;script type="text/javascript"&gt;google_ad_client = "pub-9987223904467795";google_ad_width = 468;google_ad_height = 60;google_ad_format = "468x60_as_rimg";google_cpa_choice = "CAAQlJX88AEaCGh7os8b7tBYKKSxynM";google_ad_channel = "4035243080";&lt;/script&gt;
+&lt;script type="text/javascript" src="http://pagead2.googlesyndication.com/pagead/show_ads.js"&gt;&lt;/script&gt;
+&lt;/div&gt; 
+But there's more to the story. There is a special type of AdWords where you can put a search box on your site and any search sent through this form is actually going back to Google. While this is part of the AdWords program, it's actually paying out as a search click rather than an AdWords contextual click. 
+
+So now that you have a good idea as to how AdWords and AdSense works, let me explain the scam. When an ad through AdWords is placed on your site, it's placed through Javascript. On the other hand, when you do an AdWords search, the ads shown have a direct link to Google. It is possible to do a number of searches under different search terms and collect the links from all the top ads that show. Then you can create a site using SEO practices with each search term as its own page. The only thing on the page will be the ads that were found to be associated with that search term. And the links from these ads? They are simply the collected search links masked. 
+
+Someone comes to the page, sees nothing but the content on the page and clicks on a link. Yes, they're all ads but they are not in a standard Google ad format nor do they announce themselves as ads. 
+
+And the click? Well, because it's a search click and the top search click no matter what, it gets the site owner a nice profit. All through a scam that most would never detect unless they are really looking at where their ads are and where the clicks are coming from.
+
+Now why is all this a win for the community? Because I emailed the host of coldfusionjobs.com and asked for my ads to be removed. After four requests and a mention about how I'd let everyone know what was being done, they were finally taken down. How so? The entire site was moved totally from ColdFusion Programming-centric ads to ColdFusion Physics-centric ads. 
+
+Yep, no ColdFusion company or person will have their ads shown on at least one scam site. And all it cost me was some time, frustration and a few dollars. Well worth it for the good of the community.
+&lt;div align="center"&gt;
+&lt;script type="text/javascript"&gt;google_ad_client = "pub-9987223904467795";google_ad_width = 468;google_ad_height = 60;google_ad_format = "468x60_as_rimg";google_cpa_choice = "CAAQq8WdzgEaCCQIMpsWzihvKNvD93M";google_ad_channel = "4035243080";&lt;/script&gt;
+&lt;script type="text/javascript" src="http://pagead2.googlesyndication.com/pagead/show_ads.js"&gt;&lt;/script&gt;
+&lt;/div&gt;
+				
+				</description>
+				
+				<pubDate>Mon, 28 Aug 2006 16:30:00 -0400</pubDate>
+				<guid>http://www.blogoffusion.com/index.cfm/2006/8/28/A-win-for-the-community</guid>
+				
+			</item>
+			
+		 	
+			
+			
+			<item>
+				<title>IE 7 - Don't like it</title>
+				<link>http://www.blogoffusion.com/index.cfm/2006/8/25/IE-7--Dont-like-it</link>
+				<description>
+				
+				I just installed IE 7 on my home server and tried it out. Let me say bluntly that I hate it. The UI is very different and I don't seem to have any option to move bars around. No, I don't mean the 'extra' bars like the Google toolbar or links. I'm talking about the standard toolbars that every browser has and needs. The file/edit/view options are not on top where they are in just about every Microsoft product. The home/page and other buttons are thrown all the way down and to the right of the new tab bar and the url entry form is right on top. This configuration sucks. 
+
+Maybe I'm totally wrong. Maybe Microsoft spent a billion dollars to poll average, non-programming people and found out that this is the layout they want. Maybe this is better for productivity in a business environment. Maybe I'm just in User Interface shock because of the radical change. 
+
+Bottom line is that I'm really not impressed and I doubt that the people who visit my site will be either. I've seen a very stead shrinking of the IE marketshare and this new version of IE feels very much too little, too late.
+				
+				</description>
+				
+				<category>IE</category>
+				
+				<category>User Interface</category>
+				
+				<category>Browsers</category>
+				
+				<category>Rant</category>
+				
+				<category>Opinion</category>
+				
+				<pubDate>Fri, 25 Aug 2006 17:00:00 -0400</pubDate>
+				<guid>http://www.blogoffusion.com/index.cfm/2006/8/25/IE-7--Dont-like-it</guid>
+				
+			</item>
+			
+		 	
+			
+			
+			<item>
+				<title>Fast Stats</title>
+				<link>http://www.blogoffusion.com/index.cfm/2006/8/24/Fast-Stats</link>
+				<description>
+				
+				I have a very controversial article that I originally wrote for Blog of Fusion. I may still post it here, but it looks like it'll be a Fusion Authority article instead. In its place I'd posting up some stats for House of Fusion as seen through Google Analytics. As a note, I'm using round numbers here. Usually rounded down.  
+
+The first and most important statistic to me is the people. Using strict Google numbers, House of Fusion has had over 825,000 Absolute Unique Visitors since the beginning of the year. These visitors are broken down into 1,075,000 visits and 1,775,000 page views. This in turn breaks down into 815,000 visitors who came once and did not return and 250,000 visitors who did. As House of Fusion excels in its mailing lists, it is expected that people don't come to the site very often as they get it all in their email.
+
+While the site visitor information is nice to look at, it really doesn't help you that much. Lets look at some numbers for the last week that will be of use. 
+
+Of all the visitors, only 2.9% did not have Flash installed. 84% had Flash 8 or higher and 28% had Flash 9. Because I use a 95% threshold to determine if a stat covers just about everyone, I have to assume that If/When I add Flash content to the site, it should be targeted to Flash 7 or make it easy to upgrade to the latest version. 
+
+On the browser side, 61% of the visitors were using IE with over 99% of them on IE 6 or above and 33.5% used Firefox. Again, this tells me that I can code the site using as close to modern standards as I'd like. No worries about older versions of IE or Netscape. They're just not statistically significant as a sample. 
+
+Now here's the statistic that is really important to me. Only 3% of the site users are on an 800x600 resolution. In contrast, over 95% are on a 1024x768. This means I can code the UI of the site to this larger size. But wait, it gets better. A little over 43% of my visitors are using a 1024 or wider resolution. This means I have 'extra' space for content that will be seen by almost half of my visitors. Not a place to put important things like site nav, but things like latest blog posts, list threads and the like will fit here perfectly. And because it's on the page, Google will see it and it'll help raise the profile of the page.
+
+The last statistic shows why I focus so much on Google for Search Engine Optimization and the like. Of all visits to the site, 85% are coming from a Google link. Only 5% are coming from a Yahoo link and another 5% are coming direct. This means that whatever I can do to make Google 'like' my site better, the more traffic I can expect.
+
+I'm going to try and keep a running log of the House of Fusion stats on the &lt;A HREF="http://www.houseoffusion.com/statistics/" target="_blank"&gt;House of Fusion Statistics&lt;/A&gt; page. This will go far in showing that House of Fusion is growing and this implies that ColdFusion is growing as well. It will also allow you to see the changes in data over time. Watching the resolution numbers shift more and more to larger screens lets you be ready when you hit your threshold and you have to do a site redesign to make use of the extra room. 
+
+For those who want to get their own numbers, just sign up for a &lt;A HREF="http://www.google.com/analytics/" target="_blank"&gt;Google Analytics&lt;/A&gt; account. If you can't get in due to Google being overwhelmed by responses, you can 'cheat' by setting yourself up with a Google AdWords account, which gives direct access to Analytics as part of the setup. Need to set up an AdWords account? Click on the button below:
+
+&lt;div align="center"&gt;
+&lt;script type="text/javascript"&gt;google_ad_client = "pub-9987223904467795"; google_ad_width = 468; google_ad_height = 60; google_ad_format = "468x60_as_rimg"; google_cpa_choice = "CAAQlJX88AEaCGh7os8b7tBYKKSxynM"; google_ad_channel = "4035243080";&lt;/script&gt;
+&lt;script type="text/javascript" src="http://pagead2.googlesyndication.com/pagead/show_ads.js"&gt;&lt;/script&gt;
+&lt;/div&gt;
+				
+				</description>
+				
+				<category>Adwords</category>
+				
+				<category>Advertising</category>
+				
+				<category>Google</category>
+				
+				<category>Statistics</category>
+				
+				<pubDate>Thu, 24 Aug 2006 04:44:00 -0400</pubDate>
+				<guid>http://www.blogoffusion.com/index.cfm/2006/8/24/Fast-Stats</guid>
+				
+			</item>
+			
+		 	
+			
+			
+			<item>
+				<title>Really stopping blog spam - part 1</title>
+				<link>http://www.blogoffusion.com/index.cfm/2006/8/4/Really-stopping-blog-spam--part-1</link>
+				<description>
+				
+				There's not a day that goes by without me receiving an email from a blog I posted to a few months back. Do these emails have any use? Are they full of new information? No. They are simply blog spam posts being sent to me. 
+
+Welcome to the latest front in the war on innocent people by spammers. Actually, this welcome is quite late in coming as the war has been on for a while now. It's just gotten worse as the blog spammers have gotten better with their technology. 
+
+There is not a single public form on the internet today that has not been scanned by a bot from a spammer. Their database of form fields and types is immense and their bots have gotten rather sophisticated. They can tell what's a name, what's an email address and what's a password in most cases despite being named different things. They can then use this information to post directly to the action page of the form with anything they want.
+
+So now that i've sung their praise for technical ability, lets talk about how to stop them. I've come up with a few ways to do this and for the most part each works well...to a point.
+
+The first way I'll talk about is one totally ignored by the ColdFusion community at large but is rather obvious once you think about it. Lets walk through the thoughts. A form spammer has to see a form to know what to post and where. If there's no form, there's no spam. Simple, right? But how can we have a form without a form? Maybe.....Flash?
+
+Yes, ColdFusion has a great advantage over other languages in the fight against spam as we can create forms on the fly in flash. Forms that are in effect a flash movie and can not be seen as a form. No form, no spam. 
+
+An example of this can be found by clicking on any trackback url on Blog of Fusion. The form looks exactly like the one Raymond wrote (in XForms, actually) but has been changed into a Flash Form. Oh, I also changed the form field names because most form spammers only look at the form once but after that post directly to the action url. Changing the form fields prevents that. But as I stated, only to a point. What happens when I give the template out to everyone? All a form spammer has to do is look at the source code to see where to post to. Don't think they'll look at the source by eye rather than by bot? You don't know these people or the popularity of Raymond's blog package.
+
+But I've got a solution for that as well which I'll talk about next.
+
+For those who want to listen to this post, I've included an MP3 of it here:
+&lt;A HREF="http://blogoffusion.com/enclosures/formspam1.mp3" target="_blank"&gt;http://blogoffusion.com/enclosures/formspam1.mp3&lt;/A&gt;
+				
+				</description>
+				
+				<category>Blog</category>
+				
+				<category>Spam</category>
+				
+				<pubDate>Fri, 04 Aug 2006 14:01:00 -0400</pubDate>
+				<guid>http://www.blogoffusion.com/index.cfm/2006/8/4/Really-stopping-blog-spam--part-1</guid>
+				
+				<enclosure length="3435334" type="audio/mpeg" url="http://www.blogoffusion.com/enclosures/formspam1.mp3"/>
+				
+			</item>
+			
+		 	
+			
+			
+			<item>
+				<title>What I want in CF 8 - part 1</title>
+				<link>http://www.blogoffusion.com/index.cfm/2006/7/26/What-I-want-in-CF-8--part-1</link>
+				<description>
+				
+				There are TONS of great things inside Java that I'd love to see exposed and wrapped up nicely in ColdFusion. The RegEx functions are nice, but I want ALL of the RegEx options from Java. I can use Alagad to work with images, but a real CFIMAGE tag would be great(sorry Doug). A wait() function in place of using a CreateObject to call a java command (http://www.cflib.org/codeView.cfm?ID=959). All these things and more exist in Java, are used by ColdFusion programmers and should be exposed for all in the next release. 
+
+Actually, having the ability to create a function library that is part of ColdFusion directly rather than something that has to be either 'on page' or included might be nice. A CustomFunction directory like the CustomTag one.
+				
+				</description>
+				
+				<category>Coding</category>
+				
+				<category>Scorpio (ColdFusion 8)</category>
+				
+				<pubDate>Wed, 26 Jul 2006 07:04:00 -0400</pubDate>
+				<guid>http://www.blogoffusion.com/index.cfm/2006/7/26/What-I-want-in-CF-8--part-1</guid>
+				
+			</item>
+			
+		 	
+			
+			
+			<item>
+				<title>The secret history of ColdFusion MX</title>
+				<link>http://www.blogoffusion.com/index.cfm/2006/7/26/The-secret-history-of-ColdFusion-MX</link>
+				<description>
+				
+				It was the year 2001. Macromedia had only recently-acquired Allaire and were moving forward with their MX project when I got a call. It was ***** from Macromedia asking if I'd like to come up and be part of an experts panel talking about the next release from a community standpoint. What else could I do but say yes?
+
+We talked about a number of things that were happening in the community at the time and what Macromedia planned for the future. We all had something to say and some tweak to give to the language that was coming. ***** went into great detail on what he wanted for the creation of PDFs.
+
+When it came to their proposal for CFCs, I actually took offense. This was not ColdFusion. This was Java encroaching on ColdFusion. At the time, CFMX was in alpha and CFCs looked like Java tag libraries - ugly as sin and something that would not make the average ColdFusion programmer happy. As they detailed each part, I was very vehement about what was right and wrong about it. "Was this the right way of doing it in ColdFusion? Is there something that can be leveraged to do it instead?" My opinion was that CFCs as they stood would be harder and scarier than they needed to be and added new tags where they were not needed. Need to validate variables? What about CFPARAM? Can we use the same approach there? The same thing was said for just about every part of the CFC spec and just about everyone had the same opinion. It went on and on but the bottom line was that Macromedia listened to us all and made what looked to me like major changes in the new feature spec before the next beta. 
+
+What is the point of all this? The point is a solid question to all those who are pushing for Java language constructs in ColdFusion: Why? Will Interfaces really help anyone or will it be only used by a top tier and make CFCs just that much scarier to people new to ColdFusion? Will it be something that slows down code execution just to 'look like other OOP languages'? Is there a point?
+
+The same question is asked about new feature requests. Are they useful and can they be made to fit into the spirit of ColdFusion. When **** wanted an entire 'outside' language for PDF creation, it 'felt' wrong because it meant another language would be needed to make the tag work. This isn't in the spirit of ColdFusion. ColdFusion is about smooth, easy-to-use and human-readable tags that are used to do the work that would normally need much longer chunks of code. 
+
+Don't get me wrong; I'm all for advanced features. I just want people to stop and think about whether the features are actually needed or are just being thrown in because OOP, Java, Ruby or some other language/concept has it.
+				
+				</description>
+				
+				<pubDate>Wed, 26 Jul 2006 01:32:00 -0400</pubDate>
+				<guid>http://www.blogoffusion.com/index.cfm/2006/7/26/The-secret-history-of-ColdFusion-MX</guid>
+				
+			</item>
+			
+		 	
+			
+			
+			<item>
+				<title>How I log - part 1</title>
+				<link>http://www.blogoffusion.com/index.cfm/2006/7/25/How-I-log--part-1</link>
+				<description>
+				
+				Now that I've lamented the amount of data I have, I might as well mention how I record it all. I'll start with an overview of logging and then go deeper.
+
+There are basically 3 types of site logging. The first is webserver logging, the second is remote logging and the third is programmatic logging. 
+
+Webserver is the easiest of the logging to use but in my opinion the least useful. Basically, every request to the webserver is taken and written to a log. Maybe you have control over what is written, maybe not but the bottom line is a 'glob' of data. The main problem is that you have no control over the data. If you have 1,000,000 hits from Google, you'll have 1,000,000 entries of the Google user agent. This can lead to huge reams of data that can't be used unless it's run through some log reader like webtrends. Personally, I NEVER log through the webserver. 
+
+Remote logging was once viewed with suspicion as you're giving your visitor statistics to some third party and not always gaining anything from it other than a hit count or the like. For this reason I avoided remote logging until Google Analytics came along. If you've ever used Google Analytics, I can tell you that your data is used to great effect through that service. You get so much data you can devote your entire day to reviewing it and seeing how it can be used. Statistics, charts and more are nicely laid out. I'll have to blog about that sometime in the future. 
+
+As a side note on Google Analytics data, I was looking over the screen resolution of the visitors to House of Fusion and over 39% of the people have a resolution of 1024 wide or more. This tells me that I can add an extra column of useful data (latest CF-Talk, CF-Jobs, Fusion Authority, important blog posts, etc.) to the site and it'll be used by people.  But this is all something for a future post. :)
+
+The third type of logging is what I actually do. This involves some sort of web based programming language. You might know of one of them. Something called Cold Fusion or ColdFusion or something like that. Basically, the language has access to all of the CGI information about the visitor. This means you can store it all in a nice clean DataBase. But wait, there's more. Because you have control over the whole thing, you can do data manipulation. Lets say you have 1,000,000 Google hits today. Rather than recording Google's User Agent 1,000,000 times, all you have to do is have an Agent lookup table and record the User Agent once. Then the log only needs the ID of the google agent. A single number takes far less Database space than a text value of up to 100 characters.
+
+The same can be done with other pieces of data which means you have a final DataBase that's made up of 1-3 text fields with the rest being numbers. This is perfect for those who like tight DataBase structures or have limited space. But beware of success as a good site can still get gigs of data even with a tight DataBase structure. 
+
+So now that we've decided on the way we're going to log, we need the how. I'll discuss that a little later after I deal with all the flack from dissing webserver logging. :)
+				
+				</description>
+				
+				<category>Google</category>
+				
+				<category>Database</category>
+				
+				<pubDate>Tue, 25 Jul 2006 15:45:00 -0400</pubDate>
+				<guid>http://www.blogoffusion.com/index.cfm/2006/7/25/How-I-log--part-1</guid>
+				
+			</item>
+			
+		 	
+			
+			
+			<item>
+				<title>Too much data</title>
+				<link>http://www.blogoffusion.com/index.cfm/2006/7/25/Too-much-data</link>
+				<description>
+				
+				I've been looking over my database machine and I notice that I have a problem. Despite having a super tight data structure (really super tight), my logging DataBase is over 12.5 gig, and that's just since January.
+
+Just by looking at the June stats at the &lt;A HREF="http://www.houseoffusion.com/statistics" target="_blank"&gt;House of Fusion statistics&lt;/A&gt; page, you can see the problem. I'm being hammered to death and I'm recording every blow. :)
+
+I'm going to try and get some aggregate data from the DataBase and start dumping data month to month. Either that or get another drive just for that DataBase alone.
+				
+				</description>
+				
+				<category>Server</category>
+				
+				<pubDate>Tue, 25 Jul 2006 15:24:00 -0400</pubDate>
+				<guid>http://www.blogoffusion.com/index.cfm/2006/7/25/Too-much-data</guid>
+				
+			</item>
+			
+		 	
+			
+			
+			<item>
+				<title>Regular Expressions Gotcha</title>
+				<link>http://www.blogoffusion.com/index.cfm/2006/7/18/Regular-Expressions-Gotcha</link>
+				<description>
+				
+				I was playing with some code the other day and ran into a 'gotcha' that I should have seen. I knew it in a different situation and just didn't apply it to what I was doing at the time. 
+
+Basically, ColdFusion can store a Regular Expression in a variable and then use that variable within a REFind/REReplace function as if the expression was written there. In other words, ColdFusion evaluates the variable, sees that it is in the Regular Expression position of the function and uses it as the expression to parse. 
+
+If this is so well known, then what was the problem? I was doing a search for a piece of text and then use a REReplace function to replace the text I found with a different piece of text. Straightforward and all but the text that I found had a parenthesis in it (an open and a close to be exact). This means that it was a valid Regular Expression and was to be parsed. All I wanted to do was use it as the replace text, but ColdFusion wanted to do something else with it. 
+
+Bottom line is that after beating my head against the wall looking at the data I ran a few tests and then a few more and saw the issue. Makes me feel really foolish when I can't apply a known gotcha to an unknown problem. :(
+
+Here's the code to showcase the issue:
+&lt;code&gt;
+&lt;cfset String="this is trim(name) which is a variable inside a function"&gt;
+&lt;cfset Searchtext="trim(name)"&gt;
+&lt;cfset Position=REFind(Searchtext, String)&gt;
+&lt;cfset String=REReplace(String, Searchtext, '&lt;b&gt;\1&lt;/b&gt;')&gt;
+&lt;cfoutput&gt;#Position#-#String#&lt;/cfoutput&gt;
+&lt;/code&gt;
+The position returned will be 0 and there will be no replace as the text that is looked for is not &lt;em&gt;trim(name)&lt;/em&gt; but &lt;em&gt;trimname&lt;/em&gt;. The parenthesis in Regular Expressions are special characters to allow grouping.
+
+Because this was a REReplace and the text was coming from a search, I didn't see the text, didn't realize that it was a valid Regular Expression and didn't realize that it would fail (Variable stored Regular Expressions are almost always used in REFind examples). It's times like this that I could use a really good debugger to see what's happening in each variable as it changes. Luckily, that debugger should be out in a few weeks. 
+
+&lt;A HREF="
+http://www.fusion-reactor.com/fusiondebug" target="_blank"&gt;FusionDebug&lt;/A&gt;
+				
+				</description>
+				
+				<category>Coding</category>
+				
+				<category>Gotcha</category>
+				
+				<category>Regular Expressions</category>
+				
+				<pubDate>Tue, 18 Jul 2006 20:02:00 -0400</pubDate>
+				<guid>http://www.blogoffusion.com/index.cfm/2006/7/18/Regular-Expressions-Gotcha</guid>
+				
+			</item>
+			
+		 	
+			
+			
+			<item>
+				<title>Blogging to be a Guru</title>
+				<link>http://www.blogoffusion.com/index.cfm/2006/7/18/Blogging-to-be-a-Guru</link>
+				<description>
+				
+				There was a post on another blog saying that my blog was very quiet for someone with guru status. This is quite true and the problem is that I've been 'trained' by my wife/editor to have my work reviewed before I post it. This definitely gets in the way of real blogging which is rather fast and off the cuff. I'll try to get more of my materials out without being held for editorial. 
+
+I've got a number of posts on SEO, Google Adsense/Adwords/Analytics/Checkout, ColdFusion gotcha's and optimization tips that I've picked up in my work. I'll do my best to get them out on a regular basis for your reading enjoyment.
+				
+				</description>
+				
+				<category>Opinion</category>
+				
+				<pubDate>Tue, 18 Jul 2006 19:48:00 -0400</pubDate>
+				<guid>http://www.blogoffusion.com/index.cfm/2006/7/18/Blogging-to-be-a-Guru</guid>
+				
+			</item>
+			
+		 	
+			
+			
+			<item>
+				<title>Google AdWord's biggest problem</title>
+				<link>http://www.blogoffusion.com/index.cfm/2006/6/25/Google-AdWords-biggest-problem</link>
+				<description>
+				
+				I'm going through my referer logs to see why my adword costs are so high and the answer is clear as day; spam sites. 
+
+Basically, someone sets up a site with some targetted key words and then puts it out to get people to come in and when they don't see any content, they click on an ad. Either that or they have someone click on the ad for them.
+
+Either way, it's a waste of money. The problem? Unless you look at your referer logs, you have NO CLUE AT ALL where an ad click comes from. This is my biggest problem with adwords. Because Google will not give me the info, I have to try and get it myself. 
+
+To make it worse, Google seems to only give you like 10% of the referers. The excuse is that not all browsers give referer information. BS! If I'm displaying 100 ads a day, I expect at least 80% of the people to have a browser and system that will give me the referer. I expect to see where an ad is shown and be able to block it if it is not a place I want my ad shown.
+
+And this is only if I expect to get the information through the referer. Google has a VERY GOOD idea as to where the ad was shown, who clicked it, and even what they were wearing at the time. Why can't I have that information? (except for the person's dressing habits)
+
+And it gets even worse than that. When I asked Google to block my ads from oingo.com (which is now owned by Google), they went ahead and listed the domain in my block list but still show my ads on it. What site on it? A parked (i.e. spam) site.
+
+In Google's defense, when I complained about something like this in the past they gave me a refund of a certain amount of money so at least they recognise the problem and want to be 'nice'. Personally, I'd rather have a Google based list of every site that shows my ads and/or every site that generated a click. If I'm spending a few hundred dollars a month on advertising, I'd like to be sure my money is being well spent.
+
+And how in the world did one of my ColdFusion ads get on the site of Red Hot Chili Peppers guitarist John Frusciante? I guess he just loves ColdFusion at heart. :)
+
+&lt;div align="center"&gt;
+&lt;script type="text/javascript"&gt;google_ad_client = "pub-9987223904467795"; google_ad_width = 468; google_ad_height = 60; google_ad_format = "468x60_as_rimg"; google_cpa_choice = "CAAQlJX88AEaCGh7os8b7tBYKKSxynM"; google_ad_channel = "4035243080";&lt;/script&gt;
+&lt;script type="text/javascript" src="http://pagead2.googlesyndication.com/pagead/show_ads.js"&gt;&lt;/script&gt;
+&lt;/div&gt;
+				
+				</description>
+				
+				<category>Adwords</category>
+				
+				<category>Advertising</category>
+				
+				<category>Google</category>
+				
+				<pubDate>Sun, 25 Jun 2006 06:44:00 -0400</pubDate>
+				<guid>http://www.blogoffusion.com/index.cfm/2006/6/25/Google-AdWords-biggest-problem</guid>
+				
+			</item>
+			
+		 	
+			
+			
+			<item>
+				<title>The Secret of Search Engine Optimization (SEO)</title>
+				<link>http://www.blogoffusion.com/index.cfm/2006/6/23/The-Secret-of-Search-Engine-Optimization-SEO</link>
+				<description>
+				
+				I just did an interview for a magazine on the topic of SEO and afterwards I came up with a single sentence that summed it all up.
+
+"While people optimize sites for search engines, search engines are trying to look at sites like people"
+				
+				</description>
+				
+				<category>SEO</category>
+				
+				<pubDate>Fri, 23 Jun 2006 18:25:00 -0400</pubDate>
+				<guid>http://www.blogoffusion.com/index.cfm/2006/6/23/The-Secret-of-Search-Engine-Optimization-SEO</guid>
+				
+			</item>
+			
+		 	
+			
+			
+			<item>
+				<title>IsValid and RegEx Issues</title>
+				<link>http://www.blogoffusion.com/index.cfm/2006/6/16/IsValid-and-RegEx-Issues</link>
+				<description>
+				
+				While writing some new documentation on ColdFusion MX 7 features you may have missed (for the soon to be released Fusion Authority Quarterly Update), I came across an interesting issue with the IsValid function. 
+
+This function is used to test if a ColdFusion variable is of a particular data type or if it is a particular value (email address, credit card, etc). In many ways this is a single function that can stand in for most of the standard "IS" functions (IsStruct, IsQuery, etc.) One noted exception is that the function has no existance checking (IsDefined). 
+
+One feature of the function is the ability to use a regular expression as a validator. This makes the IsValid tag a perfect replacement for using REFind to do regular expression pattern validation. That is, with a single exception. REFind is case sensitive and has a NoCase version to deal with non-case sensitive matches. IsValid is only case sensitive. 
+
+For many, this may mean that using IsValid in place of REFind for regular expression pattern validation is not an option. To those I say, there is a simple solution. 
+
+ColdFusion MX 7 has some advanced options for regular expressions which include a simple prefix for any expression to make it case insensitive. To make IsValid in regular expression mode case insensitive, just do the following:
+&lt;code&gt;
+IsValid('regex', variable, '(?i)pattern')
+&lt;/code&gt;
+
+The (?i) syntax at the start of a regular expression pattern makes the entire match case insensitive. Other advanced regular expression prefixes can be used with the function as well, which can greatly expand its capabilities. 
+
+Note that we are talking about the ColdFusion-style regular expressions here. The documentation for the IsValid function incorrectly states that it uses Javascript-style regular expression syntax. This is not the case.
+
+There are a few other quirks with the function that you're almost never going to run into and I suggest you keep an eye on the &lt;A HREF="http://livedocs.macromedia.com/coldfusion/7/htmldocs/00000534.htm" target="_blank"&gt;IsValid LiveDocs entry&lt;/A&gt; for any changes and clarifications.
+				
+				</description>
+				
+				<category>Coding</category>
+				
+				<category>Errors</category>
+				
+				<category>Regular Expressions</category>
+				
+				<pubDate>Fri, 16 Jun 2006 18:24:00 -0400</pubDate>
+				<guid>http://www.blogoffusion.com/index.cfm/2006/6/16/IsValid-and-RegEx-Issues</guid>
+				
+			</item>
+			
+		 	
+			
+			
+			<item>
+				<title>When to Use the Variables scope.</title>
+				<link>http://www.blogoffusion.com/index.cfm/2006/6/6/When-to-Use-the-Variables-scope</link>
+				<description>
+				
+				&lt;P&gt;While formatting code for the upcoming Fusion Authority Quarterly Update, I had to actually write down all the rules I personally use for code formatting. Some of them are common sense, some  seem kind of strange until you think of them, and some go against the current 'best practices'. 
+&lt;/P&gt;
+&lt;P&gt;
+Let's start off with the use of the Variables scope. By default, any standard variable set in ColdFusion is set to the Variables scope. This means that other than a single exception, there is never a reason to declare the Variables scope when setting a variable
+
+&lt;code&gt;
+&lt;CFSET Variables.Name="michael"&gt;
+&lt;/code&gt; 
+
+All this does is make your code longer. No speed increase, no performance boost and almost no value in documentation. 
+&lt;/P&gt;
+&lt;P&gt;
+The only exception I make to this rule is when setting 'Global' CFC variables. &lt;BR&gt;
+Normally, any variable set within a CFC is set to the 'global' Variables scope (the Variables scope for the entire CFC). If the variable name has been VAR-ed in a function, then it's set to the local Variables scope of that function and disappears when the function is finished running. You MUST ALWAYS VAR local variables. Must, must, must. (If you do not then you get into issues of writing inadvertant global variables and possibly making your CFC use lots of extra memory.) 
+&lt;BR&gt;
+If the variable being set has not been VAR-ed, then it is set to the 'global' Variables scope of the CFC itself. This means it exists as long as the CFC does. When I'm setting a variable to the global Variables scope, I always prefix it with "Variables." to make it clear that it's  global within the CFC and not local to the function. 
+&lt;BR&gt;
+The only effect this has is to give a visual cue in your code to tell you where the data is being set. This use of the Variables prefix for documentation is different than the use of it outside a CFC. In a normal template, there is only a single Variables scope. Inside a CFC, there are two so making a differentiation is important. 
+&lt;/P&gt;
+&lt;P&gt; 
+There are two reasons to use the Variables prefix when outputting data. The first is when you're in a CFOUTPUT or CFLOOP dealing with a query, and the query has a variable of the same name as one in the Variables scope. In such a case, the query variable has precedence and you need to use the Variables prefix to gain access to the other one. 
+The second reason to use the Variables prefix is when you want to check if a variable exists in the Variables scope only. In such a case, you want to be specific to prevent ColdFusion from looking in a half dozen other scopes before saying that the variable does not exist (a waste of processing). 
+&lt;/P&gt; 
+&lt;P&gt;
+So the bottom line is: Use &lt;B&gt;Variables.Variablename&lt;/B&gt;: 
+&lt;UL&gt;
+&lt;LI&gt;when setting a global variable within a CFC
+&lt;LI&gt;within a query loop where a Query scope variable has the same name as a Variables scope variable.
+&lt;LI&gt;when doing any sort of validation where you want to be specific about what variable you're validating
+&lt;/UL&gt;
+&lt;/P&gt;
+Anything else is just longer code.
+				
+				</description>
+				
+				<category>Coding</category>
+				
+				<pubDate>Tue, 06 Jun 2006 18:27:00 -0400</pubDate>
+				<guid>http://www.blogoffusion.com/index.cfm/2006/6/6/When-to-Use-the-Variables-scope</guid>
+				
+			</item>
+			
+		 	
+			</channel></rss>

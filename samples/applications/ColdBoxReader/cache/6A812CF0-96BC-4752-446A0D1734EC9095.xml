@@ -1,0 +1,359 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+			<channel>
+			<title>Raymond Camden's ColdFusion Blog</title>
+			<link>http://ray.camdenfamily.com/index.cfm</link>
+			<description>A blog for ColdFusion, Java, and other topics.</description>
+			<language>en-us</language>
+			<pubDate>Fri, 15 Sep 2006 13:08:23 -0400</pubDate>
+			<lastBuildDate>Fri, 15 Sep 2006 08:46:00 -0400</lastBuildDate>
+			<generator>BlogCFC</generator>
+			<docs>http://blogs.law.harvard.edu/tech/rss</docs>
+			<managingEditor>ray@camdenfamily.com</managingEditor>
+			<webMaster>ray@camdenfamily.com</webMaster>
+			
+			
+			
+			
+			
+			<item>
+				<title>Friday Puzzler: Automatic CFC Method Tester</title>
+				<link>http://ray.camdenfamily.com/index.cfm/2006/9/15/Friday-Puzzler-Automatic-CFC-Method-Tester</link>
+				<description>
+				
+				One of the cooler features of ColdFusion components is their metadata. This lets you dig into the CFC via CFML and can enable some pretty powerful features. (See &lt;a href="http://ray.camdenfamily.com/projects/canvas"&gt;Canvas&lt;/a&gt; or the new rendering engine in &lt;a href="http://www.blogcfc.com"&gt;BlogCFC 5.5&lt;/a&gt; for examples.) Building on the fact that CF lets you grab this metadata easily, let me see how you build the following:
+
+Write code that accepts as input both a CFC (dotted notation path) and a method (yes, you could grab this via metadata, but I'm trying to keep the contest short). Your code will then generate a form with inputs for all method arguments. 
+
+The code can assume nicely documented CFCs. (Ie, the method arguments all have type attributes.)
+
+If you are really eager, don't prompt for the method, but just the CFC and follow it up with a prompt for the method where you provide the methods for the user.
+
+The code should be a self posting form and should invoke the data sent by the user using cfinvoke. This will let you build the tester for methods that are not remote.
+
+Anyone game for this?
+				
+				</description>
+				
+				<category>ColdFusion</category>
+				
+				<pubDate>Fri, 15 Sep 2006 08:46:00 -0400</pubDate>
+				<guid>http://ray.camdenfamily.com/index.cfm/2006/9/15/Friday-Puzzler-Automatic-CFC-Method-Tester</guid>
+				
+			</item>
+			
+		 	
+			
+			
+			<item>
+				<title>Using ColdFusion's Asynchronous Gateway - 3</title>
+				<link>http://ray.camdenfamily.com/index.cfm/2006/9/14/Using-ColdFusions-Asynchronous-Gateway--3</link>
+				<description>
+				
+				I had promised a summary page a while ago concerning my two articles on ColdFusion's Asynch Gateways. In case you missed it, here are the older articles:
+
+&lt;a href="http://ray.camdenfamily.com/index.cfm/2006/9/7/Using-ColdFusions-Asynchronous-Gateway"&gt;Using ColdFusion's Asynchronous Gateway&lt;/a&gt;&lt;br&gt;
+&lt;a href="http://ray.camdenfamily.com/index.cfm/2006/9/7/Using-ColdFusions-Asynchronous-Gateway--2"&gt;Using ColdFusion's Asynchronous Gateway - 2&lt;/a&gt;&lt;br&gt;
+				 [More]
+				</description>
+				
+				<category>ColdFusion</category>
+				
+				<pubDate>Thu, 14 Sep 2006 08:47:00 -0400</pubDate>
+				<guid>http://ray.camdenfamily.com/index.cfm/2006/9/14/Using-ColdFusions-Asynchronous-Gateway--3</guid>
+				
+			</item>
+			
+		 	
+			
+			
+			<item>
+				<title>Interesting use of onRequestEnd</title>
+				<link>http://ray.camdenfamily.com/index.cfm/2006/9/14/Interesting-use-of-onRequestEnd</link>
+				<description>
+				
+				Andrew pointed me to an &lt;a href="http://www.andyscott.id.au/index.cfm/2006/9/12/Proof-of-Concept"&gt;article&lt;/a&gt; on his blog where he discusses an interesting use of the onRequestEnd method of the Application.cfc file. He is very clear in pointing out that it is just a proof of concept, but it is still definitely worth a read.
+				
+				</description>
+				
+				<category>ColdFusion</category>
+				
+				<pubDate>Thu, 14 Sep 2006 08:24:00 -0400</pubDate>
+				<guid>http://ray.camdenfamily.com/index.cfm/2006/9/14/Interesting-use-of-onRequestEnd</guid>
+				
+			</item>
+			
+		 	
+			
+			
+			<item>
+				<title>Presentation Tonight</title>
+				<link>http://ray.camdenfamily.com/index.cfm/2006/9/14/Presentation-Tonight</link>
+				<description>
+				
+				Tonight I'm presenting to the &lt;a href="http://www.statelinemmug.com/"&gt;Stateline Adobe User Group&lt;/a&gt;. Since this presentation is just a simple introduction to ColdFusion, I'm not sharing the breeze URL. Of course, I don't have breeze URL, but I figured this presentation wouldn't interest anyone here. I'm bringing it up in case there are other user groups out there that would want a presentation like this.
+				
+				</description>
+				
+				<category>ColdFusion</category>
+				
+				<pubDate>Thu, 14 Sep 2006 06:20:00 -0400</pubDate>
+				<guid>http://ray.camdenfamily.com/index.cfm/2006/9/14/Presentation-Tonight</guid>
+				
+			</item>
+			
+		 	
+			
+			
+			<item>
+				<title>Updated CFTHREAD/CFJOIN POC from Adobe</title>
+				<link>http://ray.camdenfamily.com/index.cfm/2006/9/13/Updated-CFTHREADCFJOIN-POC-from-Adobe</link>
+				<description>
+				
+				Damon has updated the &lt;a href="http://www.dcooper.org/blog/client/index.cfm?mode=entry&amp;entry=A71F310C-4E22-1671-5E287AE8918A048B"&gt;cfthread/cfjoin proof of concept&lt;/a&gt; code and I'm very happy with the changes. Threads have their own scope now and can even have their own attributes. There are many other changes as well. &lt;b&gt;Definitely&lt;/b&gt; check it out. When I return from the deep hole I'm in I'll post an updated demo.
+				
+				</description>
+				
+				<category>ColdFusion</category>
+				
+				<pubDate>Wed, 13 Sep 2006 09:21:00 -0400</pubDate>
+				<guid>http://ray.camdenfamily.com/index.cfm/2006/9/13/Updated-CFTHREADCFJOIN-POC-from-Adobe</guid>
+				
+			</item>
+			
+		 	
+			
+			
+			<item>
+				<title>Apple enters movie business (yawn)</title>
+				<link>http://ray.camdenfamily.com/index.cfm/2006/9/12/Apple-enters-movie-business-yawn</link>
+				<description>
+				
+				Anyone else just not terribly excited about iTunes selling movies? Without getting into a huge DRM discussion, I can say I'm very happy with the prices for songs, and the TV show prices seemed fair as well. But 9.99 for an old DVD that I can get at Walmart (for probably cheaper), and 14.99 for a new movie? Wow. I'm just really surprised.
+				
+				</description>
+				
+				<category>Misc</category>
+				
+				<pubDate>Tue, 12 Sep 2006 14:15:00 -0400</pubDate>
+				<guid>http://ray.camdenfamily.com/index.cfm/2006/9/12/Apple-enters-movie-business-yawn</guid>
+				
+			</item>
+			
+		 	
+			
+			
+			<item>
+				<title>Question on Instant Messenger Gateway</title>
+				<link>http://ray.camdenfamily.com/index.cfm/2006/9/12/Question-on-Instant-Messenger-Gateway</link>
+				<description>
+				
+				Kevin asks, 
+
+&lt;blockquote&gt;
+I read Forta's blog post from about 1 year ago where he dealt with GTalk and your own post to rewrite Eliza to work with GTalk.  I tried both systems and liked them, but neither of you Jedi's went the step further to take the functionality a little more...
+
+So here as one of your fans I am sending in my own ask a jedi question.  Would it be possible to ask the XMMP event gateway and cfc to check a users online status and keep a database updated with the changes... 
+
+I am thinking an Online/Offline image system using GTalk / Jabber as the protocol? In my specific case, we have a new board for our church... If you could see a users status and interact with them if they were online.. that would be a great function to add to the page...
+&lt;/blockquote&gt;
+				 [More]
+				</description>
+				
+				<category>ColdFusion</category>
+				
+				<pubDate>Tue, 12 Sep 2006 06:07:00 -0400</pubDate>
+				<guid>http://ray.camdenfamily.com/index.cfm/2006/9/12/Question-on-Instant-Messenger-Gateway</guid>
+				
+			</item>
+			
+		 	
+			
+			
+			<item>
+				<title>This Week</title>
+				<link>http://ray.camdenfamily.com/index.cfm/2006/9/11/This-Week</link>
+				<description>
+				
+				This is mainly for those who use my products. I want everyone to know that this week is very, very bad for me. In general, if you have a support question, and you &lt;b&gt;can&lt;/b&gt; wait, I ask that you do so, until the beginning of next week. I apologize, but I'm busy night and day now to fix an issue so I will not be able to help. Obviously my blogging volume is going to be much lower than normal. I am still giving my presentation this week (two actually, but one is for my local user group), but the presentation I'm giving later in the week is an intro to CF thing that will not really be of interest to most folks.
+				
+				</description>
+				
+				<category>Misc</category>
+				
+				<pubDate>Mon, 11 Sep 2006 15:43:00 -0400</pubDate>
+				<guid>http://ray.camdenfamily.com/index.cfm/2006/9/11/This-Week</guid>
+				
+			</item>
+			
+		 	
+			
+			
+			<item>
+				<title>A few random 9/11 Thoughts</title>
+				<link>http://ray.camdenfamily.com/index.cfm/2006/9/11/A-few-random-911-Thoughts</link>
+				<description>
+				
+				I just wanted to share a few things that are in my mind today. Nothing deep or meaningful - just - well - stuff. I remember everything about 9/11, and it often occurred to me since then if this is just like my parent's generation and Kennedy. They always said they remembered what they were doing when he was shot.
+				 [More]
+				</description>
+				
+				<category>Misc</category>
+				
+				<pubDate>Mon, 11 Sep 2006 06:11:00 -0400</pubDate>
+				<guid>http://ray.camdenfamily.com/index.cfm/2006/9/11/A-few-random-911-Thoughts</guid>
+				
+			</item>
+			
+		 	
+			
+			
+			<item>
+				<title>Community track at MAX - MAXUP</title>
+				<link>http://ray.camdenfamily.com/index.cfm/2006/9/9/Community-track-at-MAX--MAXUP</link>
+				<description>
+				
+				Ted Patrick as announced &lt;a href="http://www.onflex.org/ted/2006/09/maxup-community-track-at-max-2006.php"&gt;MAXUP&lt;/a&gt;, a community-driven track that will take place at MAX. This will take place over the entire conference and will be easy to get to at the community lounge, so please come check it out! (Schedule to come soon.)
+				
+				</description>
+				
+				<category>MAX</category>
+				
+				<pubDate>Sat, 09 Sep 2006 11:28:00 -0400</pubDate>
+				<guid>http://ray.camdenfamily.com/index.cfm/2006/9/9/Community-track-at-MAX--MAXUP</guid>
+				
+			</item>
+			
+		 	
+			
+			
+			<item>
+				<title>Dharma Revealed?</title>
+				<link>http://ray.camdenfamily.com/index.cfm/2006/9/8/Dharma-Revealed</link>
+				<description>
+				
+				YouTube has a video which reveals the secrets behind &lt;a href="http://www.youtube.com/watch?v=_PPCCcXarkc"&gt;Dharma&lt;/a&gt;. This can be considered a big spoiler, although to be honest, it doesn't actually answer &lt;i&gt;everything&lt;/i&gt;. Personally, I'm pretty psyched about what this video reveals, but I've been a Lost addict since day one anyway. I'm definitely not surprised by the revelation that Dharma had good intentions, especially after the "We're the good guys" comment at the end of season two.
+				
+				</description>
+				
+				<category>Lost</category>
+				
+				<pubDate>Fri, 08 Sep 2006 20:21:00 -0400</pubDate>
+				<guid>http://ray.camdenfamily.com/index.cfm/2006/9/8/Dharma-Revealed</guid>
+				
+			</item>
+			
+		 	
+			
+			
+			<item>
+				<title>Nimer's Log Viewer</title>
+				<link>http://ray.camdenfamily.com/index.cfm/2006/9/8/Nimers-Log-Viewer</link>
+				<description>
+				
+				This is old news but as I used it recently I wanted to remind folks. Mike Nimer has created a cool Eclipse plugin called the &lt;a href="http://www.mikenimer.com/eclipse/logviewer/index.cfm"&gt;CF Log Viewer&lt;/a&gt;. It lets you display a ColdFusion log directly in Eclipse. It isn't a straight text dump but a nicely formatted display.
+
+What is &lt;i&gt;really&lt;/i&gt; nice about it is that it constantly monitors the file. This means you can use cflog commands and watch them show up in Eclipse as you hit your site. I used it to help me debug issues with XML-RPC support for &lt;a href="http://www.blogcfc.com"&gt;BlogCFC&lt;/a&gt;. 
+
+I'd like to see him allow for removing columns so that you could focus in on the text and not the other messages. (But to be fair - Nimer provides the source so I could do it myself. In my spare time. Um, right. :)
+
+As a side note - you should read Charlie Arehart's new series on &lt;a href="http://carehart.org/blog/client/index.cfm/2006/9/6/fusiondebug_part1"&gt;FusionDebug&lt;/a&gt; as it can provide an even nicer way to debug.
+				
+				</description>
+				
+				<category>CFEclipse</category>
+				
+				<category>Development</category>
+				
+				<pubDate>Fri, 08 Sep 2006 09:48:00 -0400</pubDate>
+				<guid>http://ray.camdenfamily.com/index.cfm/2006/9/8/Nimers-Log-Viewer</guid>
+				
+			</item>
+			
+		 	
+			
+			
+			<item>
+				<title>Using ColdFusion's Asynchronous Gateway - 2</title>
+				<link>http://ray.camdenfamily.com/index.cfm/2006/9/7/Using-ColdFusions-Asynchronous-Gateway--2</link>
+				<description>
+				
+				Earlier today I &lt;a href="http://ray.camdenfamily.com/index.cfm/2006/9/7/Using-ColdFusions-Asynchronous-Gateway"&gt;blogged&lt;/a&gt; about ColdFusion's Asynchronous Gateway. I promised a more appropriate example to demonstrate the power of the gateway, and instead of watching the Steelers lose, I figured I'd write code instead.
+				 [More]
+				</description>
+				
+				<category>ColdFusion</category>
+				
+				<pubDate>Thu, 07 Sep 2006 22:07:00 -0400</pubDate>
+				<guid>http://ray.camdenfamily.com/index.cfm/2006/9/7/Using-ColdFusions-Asynchronous-Gateway--2</guid>
+				
+			</item>
+			
+		 	
+			
+			
+			<item>
+				<title>Spry Error Callback Example</title>
+				<link>http://ray.camdenfamily.com/index.cfm/2006/9/7/Spry-Error-Callback-Example</link>
+				<description>
+				
+				Today's entry is from a guest blogger. Now before folks get all excited, I don't have a "real" concept of guest blogging here. Rather - he had a good problem with Spry and he shared his solution with me. He doesn't have a blog yet (hmm, someone should consider making a service so it is easy for folks to use BlogCFC w/o needing a real host, hmmm indeed) so I said I'd blog it for him. 
+
+Daniel Budde II (wraith) had this to share about error handling in Spry. I &lt;a href="http://ray.camdenfamily.com/index.cfm/2006/7/14/New-features-in-Spry"&gt;blogged&lt;/a&gt; about states in Spry before - and there is a simple way to create an error state for Spry, but what if you want a more controlled result for Spry?
+
+From Daniel:&lt;br/&gt;
+
+I made a post about it on the Adobe Spry forum.  It's not the clearest post, but I just thought I would give it to you to look at if you want.  I'm interested in the responses people will give.
+
+http://www.adobe.com/cfusion/webforums/forum/messageview.cfm?forumid=72&amp;catid=602&amp;threadid=1190912&amp;enterthread=y
+
+Ok, I had a problem with it in IE because IE's XMLHttpRequest object has a send() method that will throw an error if the status code from the web server is not "200".  When it throws the error it prevents the "synchronous" execution of the Spry.Utils.loadURL.callback method.  So, to get around this you need to use "asynchronous" mode which will rely on the "onreadystatechange" method and will then call the callback method which will in turn call a custom error handler if you have one set.
+
+Here is my example:
+
+&lt;code&gt;
+var optionsObj = new Object();
+
+optionsObj.errorCallback = ShowError;
+
+Spry.Utils.loadURL("GET", url, true, ValidateForm, optionsObj);
+&lt;/code&gt;
+ 
+There is a list of available options that you can set in the SpryData.js file and here those are:
+
+[ "method", "url", "async", "username", "password", "postData", "successCallback", "errorCallback", "headers", "userData", "xhRequest" ]
+
+Obviously some of those are used and setup no matter what (method, url, async). 
+
+Ray again: Just in case it wasn't clear, the ShowError variable is a function that is a called when the error occurs.
+				
+				</description>
+				
+				<category>AJAX</category>
+				
+				<pubDate>Thu, 07 Sep 2006 13:57:00 -0400</pubDate>
+				<guid>http://ray.camdenfamily.com/index.cfm/2006/9/7/Spry-Error-Callback-Example</guid>
+				
+			</item>
+			
+		 	
+			
+			
+			<item>
+				<title>Using ColdFusion's Asynchronous Gateway</title>
+				<link>http://ray.camdenfamily.com/index.cfm/2006/9/7/Using-ColdFusions-Asynchronous-Gateway</link>
+				<description>
+				
+				I got an email a while back from a user who was having issues with ColdFusion's Asynchronous Gateway code. It had been a while since I used it so I thought it might be nice to refresh my own memory, and provide a simple guide for users on how to work with it. I ran into a few issues that I bet have tricked up my own readers. (Hopefully we will see Damon Cooper's &lt;a href="http://www.dcooper.org/blog/client/index.cfm?mode=entry&amp;entry=916FEFD9-4E22-1671-57A23859C50FFF47"&gt;cfthread&lt;/a&gt; get rolled into the core product to make this a lot easier.) This guide will not cover everything you can do with the Asynch gateway, but it should be enough to get you going.
+				 [More]
+				</description>
+				
+				<category>ColdFusion</category>
+				
+				<pubDate>Thu, 07 Sep 2006 08:09:00 -0400</pubDate>
+				<guid>http://ray.camdenfamily.com/index.cfm/2006/9/7/Using-ColdFusions-Asynchronous-Gateway</guid>
+				
+			</item>
+			
+		 	
+			</channel></rss>

@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+<channel>
+<title>Adobe Labs</title>
+<link>http://weblogs.macromedia.com/labs/</link>
+<description>News and information on Adobe Labs.</description>
+<language>en</language>
+<copyright>Copyright 2006</copyright>
+<lastBuildDate>Mon, 28 Aug 2006 13:25:50 -0800</lastBuildDate>
+<generator>http://www.movabletype.org/?v=3.16</generator>
+<docs>http://blogs.law.harvard.edu/tech/rss</docs> 
+
+<item>
+<title>Lightroom Slideshow Gallery Updates</title>
+<description>Earlier today we pushed about a dozen new Slideshow Gallery entries that were contributed by the Lightroom user community. There are some beautiful pictures here and I hope that you agree. If you have a few minutes to spare, take...</description>
+<link>http://weblogs.macromedia.com/labs/archives/2006/08/lightroom_slide.cfm</link>
+<guid>http://weblogs.macromedia.com/labs/archives/2006/08/lightroom_slide.cfm</guid>
+<category>Updates</category>
+<pubDate>Mon, 28 Aug 2006 13:25:50 -0800</pubDate>
+</item>
+<item>
+<title>ASDoc Available on Labs</title>
+<description>We have recently released the ASDoc technology on Adobe Labs. ASDoc is a command-line tool that is used to create HTML documentation from AS and MXML files. The HTML output looks similar to the Flex 2 Language Reference. If you...</description>
+<link>http://weblogs.macromedia.com/labs/archives/2006/08/asdoc_available.cfm</link>
+<guid>http://weblogs.macromedia.com/labs/archives/2006/08/asdoc_available.cfm</guid>
+<category>Updates</category>
+<pubDate>Mon, 21 Aug 2006 15:12:52 -0800</pubDate>
+</item>
+<item>
+<title>Spry Prerelease 1.3 Released on Labs</title>
+<description>This evening on Adobe Labs we released an update to the Spry framework for Ajax that responds to several issues and feature requests reported by users since the initial release of the technology. A detailed change log is available for...</description>
+<link>http://weblogs.macromedia.com/labs/archives/2006/08/spry_prerelease.cfm</link>
+<guid>http://weblogs.macromedia.com/labs/archives/2006/08/spry_prerelease.cfm</guid>
+<category>Updates</category>
+<pubDate>Thu, 10 Aug 2006 18:01:48 -0800</pubDate>
+</item>
+<item>
+<title>Lightroom Beta 3 for Windows Released on Labs</title>
+<description>Lightroom beta 3 is now available for the Windows platform on Adobe Labs. The efficient new way for professional photographers to import, manage, and showcase large volumes of digital images now supports Mac and Windows systems. Learn more &amp;#8250; Download...</description>
+<link>http://weblogs.macromedia.com/labs/archives/2006/07/lightroom_beta_1.cfm</link>
+<guid>http://weblogs.macromedia.com/labs/archives/2006/07/lightroom_beta_1.cfm</guid>
+<category>Updates</category>
+<pubDate>Tue, 18 Jul 2006 21:01:00 -0800</pubDate>
+</item>
+<item>
+<title>Spry Framework for Ajax Prerelease 1.2 Released on Labs</title>
+<description>This morning on Adobe Labs we released an update to the Spry framework for Ajax that responds to several issues reported by users since the initial relase of the technology. A detailed change log is available for prerelease 1.2. Learn...</description>
+<link>http://weblogs.macromedia.com/labs/archives/2006/07/spry_framework_2.cfm</link>
+<guid>http://weblogs.macromedia.com/labs/archives/2006/07/spry_framework_2.cfm</guid>
+<category>Updates</category>
+<pubDate>Fri, 14 Jul 2006 07:43:10 -0800</pubDate>
+</item>
+<item>
+<title>JamJar Released on Labs</title>
+<description>Tonight we released JamJar on Adobe Labs. JamJar is a demonstration application built with Flex 2 that provides a private and persistent canvas for small groups to easily exchange digital content in order to: * Plan events * Exchange ideas...</description>
+<link>http://weblogs.macromedia.com/labs/archives/2006/07/jamjar_released.cfm</link>
+<guid>http://weblogs.macromedia.com/labs/archives/2006/07/jamjar_released.cfm</guid>
+<category>Updates</category>
+<pubDate>Thu, 13 Jul 2006 23:37:42 -0800</pubDate>
+</item>
+<item>
+<title>Flash Lite 2.1 for BREW Released on Labs</title>
+<description>Earlier today we released Flash Lite 2.1 for BREW on Adobe Labs. The public beta includes a plug-in for Flash Professional 8 that lets you publish Flash content to the native BREW application format, the Flash Lite extension for testing...</description>
+<link>http://weblogs.macromedia.com/labs/archives/2006/07/flash_lite_21_f.cfm</link>
+<guid>http://weblogs.macromedia.com/labs/archives/2006/07/flash_lite_21_f.cfm</guid>
+<category>Updates</category>
+<pubDate>Mon, 03 Jul 2006 15:00:00 -0800</pubDate>
+</item>
+<item>
+<title>Cairngorm Released on Labs</title>
+<description><![CDATA[Today on Adobe Labs we released Cairngorm, an open-source microarchitecture (collection of design patterns) for Flex developers that aids in consistently solving recurring design challenges. Learn more in the Labs wiki &gt;...]]></description>
+<link>http://weblogs.macromedia.com/labs/archives/2006/06/cairngorm_relea.cfm</link>
+<guid>http://weblogs.macromedia.com/labs/archives/2006/06/cairngorm_relea.cfm</guid>
+<category>Updates</category>
+<pubDate>Wed, 28 Jun 2006 02:01:00 -0800</pubDate>
+</item>
+<item>
+<title>Flash Professional 9 ActionScript 3.0 Preview Released on Labs</title>
+<description>To coincide with the release of Flash Player 9 and the underlying ActionScript 3.0 language, we are releasing a preview of the next version of the Flash authoring tool, scheduled for release in 2007. This preview extends the capabilities of...</description>
+<link>http://weblogs.macromedia.com/labs/archives/2006/06/flash_professio.cfm</link>
+<guid>http://weblogs.macromedia.com/labs/archives/2006/06/flash_professio.cfm</guid>
+<category>Updates</category>
+<pubDate>Wed, 28 Jun 2006 01:01:00 -0800</pubDate>
+</item>
+<item>
+<title>Flex 2 Is Now Shipping</title>
+<description>Flex 2 is now available for immediate purchase from Adobe.com. With the new shipping status of Flex 2, the Flex product line (including Flash Player 9 and ColdFusion/Flex Connectivity) has been retired from Adobe Labs. You can download the final,...</description>
+<link>http://weblogs.macromedia.com/labs/archives/2006/06/flex_2_is_now_s.cfm</link>
+<guid>http://weblogs.macromedia.com/labs/archives/2006/06/flex_2_is_now_s.cfm</guid>
+<category>News</category>
+<pubDate>Wed, 28 Jun 2006 00:01:00 -0800</pubDate>
+</item>
+<item>
+<title>Lightroom Beta 3 Released on Labs</title>
+<description>Tonight on Adobe Labs we released the next version of Lightroom for the Mac. The beta 3 release includes support for several new raw camera foramts, and many new features and enhancements. Review the Release Notes for a complete list...</description>
+<link>http://weblogs.macromedia.com/labs/archives/2006/06/lightroom_beta.cfm</link>
+<guid>http://weblogs.macromedia.com/labs/archives/2006/06/lightroom_beta.cfm</guid>
+<category>Updates</category>
+<pubDate>Mon, 12 Jun 2006 21:01:00 -0800</pubDate>
+</item>
+<item>
+<title>Spry Framework for Ajax Prerelease 1.1 Released on Labs</title>
+<description>Earlier today we released an update to the Spry framework for Ajax that responds to several issues reported by users since the initial relase of the technology. A detailed change log is available for prerelease 1.1. Spry Overview Spry Download...</description>
+<link>http://weblogs.macromedia.com/labs/archives/2006/06/spry_framework_1.cfm</link>
+<guid>http://weblogs.macromedia.com/labs/archives/2006/06/spry_framework_1.cfm</guid>
+<category>Updates</category>
+<pubDate>Thu, 08 Jun 2006 23:50:51 -0800</pubDate>
+</item>
+<item>
+<title>NoteTag Technology Released on Labs</title>
+<description>Earlier today we released NoteTag on Adobe Labs. This technology is a proof-of-concept for a new project at Adobe currently code-named Kiwi. The Kiwi Project is an exploration of Read/Write RSS and Web 2.0 components for Adobe Flex and the...</description>
+<link>http://weblogs.macromedia.com/labs/archives/2006/05/notetag_technol.cfm</link>
+<guid>http://weblogs.macromedia.com/labs/archives/2006/05/notetag_technol.cfm</guid>
+<category>Updates</category>
+<pubDate>Fri, 26 May 2006 01:14:18 -0800</pubDate>
+</item>
+<item>
+<title>Spry Framework for Ajax Released on Labs</title>
+<description>The Spry framework for Ajax released on Adobe Labs today. The framework is a JavaScript library for web designers that provides functionality that allows designers to build pages that provide a richer experience for their users. It is designed to...</description>
+<link>http://weblogs.macromedia.com/labs/archives/2006/05/spry_framework.cfm</link>
+<guid>http://weblogs.macromedia.com/labs/archives/2006/05/spry_framework.cfm</guid>
+<category>Updates</category>
+<pubDate>Wed, 10 May 2006 19:39:43 -0800</pubDate>
+</item>
+<item>
+<title>Flex 2 Beta 3 Released on Labs</title>
+<description>Earlier today Flex 2 beta 3 was released on Labs. Beta 3 includes new versions of Flex Builder 2, Flex Data Services 2, Flex Charting 2, ActionScript 3.0, Flash Player 9 (formerly Flash Player 8.5) and the free Flex SDK....</description>
+<link>http://weblogs.macromedia.com/labs/archives/2006/05/flex_2_beta_3_r.cfm</link>
+<guid>http://weblogs.macromedia.com/labs/archives/2006/05/flex_2_beta_3_r.cfm</guid>
+<category>Updates</category>
+<pubDate>Mon, 08 May 2006 23:12:12 -0800</pubDate>
+</item>
+
+
+</channel>
+</rss>

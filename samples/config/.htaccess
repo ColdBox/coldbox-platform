@@ -1,0 +1,3 @@
+authtype Basic
+deny from all
+Options -Indexes
