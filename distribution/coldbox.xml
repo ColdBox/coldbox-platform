@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Config>
+    <Application>ColdBox Framework</Application>
+    <Version>1.1.1</Version>
+    <Filename>../builds/coldbox_1.1.0.zip</Filename>
+    <UpdateDate>oct-25-2006</UpdateDate>
+    <Author>Luis Majano</Author>
+    <Description><![CDATA[
+       Version 1.1.0 (August 2006) CODENAME: JOHN 3:16
+        - Varscoper Checks,Code Optimization and cleanup.
+        - Bug Fixes from 1.0.2
+        - Global Server Installation Method.
+        - CFMX 6.X & BlueDragon are now Supported.
+        - Datasources support via config.xml. You can now use the getDatasource("name") in the
+        event handlers to retrieve a datsource bean.
+        - Messagebox.render(clearFlag) now has a clearFlag in order to clear or not, the message 
+        structure after rendering.
+        - Eventhandler.cfc code optimization, no longer use of the controller argument and the 
+        call to the super.init with the controller. PLEASE REMOVE THEM, it will speed up your
+        code and eliminate unecessary references. 
+        All event handlers must change their init method to:
+        <cffunction name="init" access="public" returntype="any">
+            <cfset super.init()>
+                <cfreturn this>
+        </cffunction> 
+        - Renderview can now accept a view name as a parameter. You can then render a view 
+        anywhere you want, layouts, within views, event handlers, etc, and as content variables.
+        - New Plugins: FileWriter & StringBuffer & FileWriter & resourceBundle
+        - Framework/Application extensions via custom plugins.
+        - Coldbox Logging Facilities: ColdBox now provides you with a per application 
+        logging facility for errors and custom (error|fatal|information|warning) entries by 
+        simplify filling out two settings in your config.xml
+        - Event Handlers now have a "rc" scope available, that is a direct line to the request collection.
+        - New Method: paramValue("var name","default") same as cfparam but for the request collection.
+        - cfcViewer plugin was revised. You can now use it to render documentation with any
+        stylesheet.
+        - New i18n and Resource Bundles Plugins based on Paul Hastings work.
+        - ATTESORO JAVA RESOURCE BUNDLES UTILITY IS INCLUDED.]]></Description>
+</Config>
