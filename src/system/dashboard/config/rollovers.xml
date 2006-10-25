@@ -1,0 +1,65 @@
+<rollovers>
+   
+    <section id="home">
+        <rollover id="sysinfo">Displays the framework's and system's information</rollover>
+        <rollover id="onlineresources">An extensive online resource list where you can find more useful information about ColdBox</rollover>
+        <rollover id="cfcdocs">Creates the on the fly documentation for the framework's cfc's</rollover>
+    </section>
+    
+    <section id="settings">
+        <rollover id="frameworksettings">Displays the framework's read only settings</rollover>
+        <rollover id="logfilesettings">From here you can change the coldbox logging facility's parameters</rollover>
+        <rollover id="encodingsettings">From here you can change the file encoding to use when using the fileutilities plugin.</rollover>
+        <rollover id="passwordsettings">Change your dashboard password, securely!!</rollover>
+        <rollover id="proxysettings">Change your proxy settings, if needed.</rollover>
+    </section>
+     
+    <section id="tools">
+        <rollover id="appbuilder">Launches the ColdBox application builder wizard.</rollover>
+        <rollover id="cfcgenerator">Your very own cfc generator based on Brian Rinaldi's Illidium Generator</rollover>
+        <rollover id="logviewer">Lanuches ColdBox very own log viewer application.</rollover>
+        <!--AppBuilder-->
+        <rollover id="appname">Launches the ColdBox application builder wizard.</rollover>
+        <rollover id="appmapping">The application mapping. This can be either relative to the web root or using a coldfusion mapping. You can also browse for it by clicking on the folder icon.</rollover>
+        <rollover id="debugmode">Flag that determines if the ColdBox debugging will be carried out. This can slow down your application due to the timers and the rendering of the debugging screen. Use only for development.</rollover>
+        <rollover id="debugpassword">The password you will use to go into debug mode or out if activating from the url action.</rollover>  
+        <rollover id="enabledumpvar">Flag that determines if you can use the 'dumpvar' url action to dump variables in debug mode.</rollover>
+        <rollover id="udflibraryfile">The location relative from the application root or using cfmx mappings of a udf template to load on all views, layouts and event handlers.</rollover>
+        <rollover id="messageboxstyleclass">The css class name to use when rendering the messagebox. This class has to be loaded on your stylesheet. Look at the messagebox.cfm for a template css.</rollover>
+        <rollover id="defaultlayout">The default layout template to use for your application. This will be generated since you are starting a new project. The name choosen is just a best practice.</rollover>
+        <rollover id="coldboxlogging">Flag that determines if the application will use the embedded ColdBox logging facility. If you select ENABLED make sure you fill out the location.</rollover>
+        <rollover id="coldboxlogslocations">The location of where ColdBox will store your log file. This is either relative from your application root or an absolute path.</rollover>
+        <rollover id="coldfusionlogging">Flag that determines wether to use the coldfusion logging facilities or not.</rollover>
+        <rollover id="maineventhandler">The generator will create one event handler for you with your default event and any of the other events you select.</rollover>   
+        <rollover id="defaultevent">This is the default event to fire when you start your application or when no event can be found. This method will be generated for you</rollover>
+        <rollover id="onapplicationstart">Check on this item and the generator will create the onApplicationStart method for you on the main event handler.</rollover>
+        <rollover id="onrequestend">Check on this item and the generator will create the onRequestEnd method for you on the main event handler.</rollover>
+        <rollover id="onrequeststart">Check on this item and the generator will create the onRequestStart method for you on the main event handler.</rollover>
+        <rollover id="onexception">Check on this item and the generator will create the onException method for you on the main event handler.</rollover>
+        <rollover id="appdevmapping">If you have a development mapping different than your production mapping, then please fill this entry out.</rollover>
+        <rollover id="configautoreload">This flag tells the framework to reload all the configuration file and framework structures on every request. ONLY FOR DEVELOPMENT</rollover>
+        <rollover id="handlersindexautoreload">This flag tells the framework to reload the event handler's method's index on every request. ONLY FOR DEVELOPMENT</rollover>
+        <rollover id="enablebugreports">This flag enables the emailing of bug reports whenever errors are detected on the application.</rollover>
+        <rollover id="bugreports">Enter all the email addresses that will receive bug reports for this application.</rollover>
+        <rollover id="devenvironments">ColdBox can detect your running environment by entering URL snippets for the development environments.</rollover>
+        <rollover id="enablelocalization">Enable or disable Localization and i18N capabilities for your application.</rollover>
+        <rollover id="defaultlocale">Choose the default locale for your application. This is a list of valid locales for ColdFusion and ColdBox</rollover>
+        <rollover id="localestorage">Choose the storage scope for the default locale. This is used internally by ColdBox.</rollover>
+        <rollover id="resourcebundle">Enter the name of your main resource bundle if you are using one. Do not enter the locale or .properties extension. These are added by ColdBox.</rollover>
+        <rollover id="wsdlpro">The alias name of a webservice wsdl URL</rollover>
+        <rollover id="wsdldev">The development URL of the web service wsdl. Leave blank if it is the same as the production URL</rollover>
+        <rollover id="skeleton_name">The name of the skeleton to save on disk for future generation.</rollover>
+        <rollover id="generation_target">The location on the web server of where to generate and deploy the application.</rollover>
+    </section>  
+    
+    <section id="update">
+        <rollover id="updater">Check for any ColdBox updates via the online utility.</rollover>
+    </section>  
+    
+    <section id="bugs">
+        <rollover id="submitbug">Submit a new bug to the offical bug email address.</rollover>
+        <rollover id="tracdatabase">Visit the official Trac bug database and run ticket reports, view progress, etc.</rollover>
+    </section>   
+    
+     
+</rollovers>
