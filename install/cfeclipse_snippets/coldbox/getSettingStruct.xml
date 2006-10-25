@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<snippet filetemplate="false" extension="cfm">
+<name>getSettingStruct</name>
+<help>Get a setting structure (ConfigStruct or FWSettingsStruct)</help>
+<starttext><![CDATA[getSettingStruct($${Framework Structure:false|true},$${Deep Copy:false|true})]]></starttext>
+<endtext><![CDATA[]]></endtext>
+</snippet>
