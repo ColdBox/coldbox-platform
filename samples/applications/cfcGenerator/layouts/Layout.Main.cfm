@@ -17,7 +17,7 @@
 }
 body{
 	font:Arial, Helvetica, sans-serif;
-	font-size: 12px;
+	font-size: 10px;
 	margin-left: 0px;
 	margin-top: 0px;
 	margin-right: 0px;
@@ -25,7 +25,6 @@ body{
 }
 a {
 	font:Arial, Helvetica, sans-serif;
-	font-size: 12px;
 	color: #0066CC;
 }
 a:hover {
@@ -37,6 +36,42 @@ a:hover {
 	font-family: Geneva, Arial, Helvetica, sans-serif;
 }
 
+.navbar{
+	 margin-top: 4px;
+	 font-size: 10px;
+}
+.navelement a:link, .navelement a:visited{
+	background-color: #7D5938;
+	display:block;
+	width:95px;
+	margin-right:1px;
+	padding:5px;
+	color: #ffffff;
+	float: left;
+	text-align:center;
+	font-weight: bold;
+	text-decoration:none;
+}
+.navelement a:hover{
+	background-color: #EEEFC3;
+	color: black;
+}
+.navelementON a:link, .navelement a:visited{
+	background-color: #EEEFC3;
+	display:block;
+	width:75px;
+	margin-right:1px;
+	padding:5px;
+	color: black;
+	float: left;
+	text-align:center;
+	font-weight: bold;
+	text-decoration: none;
+}
+.generatedtab textarea{
+	font-size: 11px;
+	font-family: "Courier New", Courier, monospace;
+}
 -->
 </style>
 </head>
@@ -54,7 +89,6 @@ a:hover {
     <td align="center"><a href="##top"></a></td>
   </tr>
 </table>
-<p>&nbsp;</p>
 	<p align="center"><a href="http://www.luismajano.com/projects/coldbox"><img src="../../images/poweredby.png" border="0"></a></p>
 </body>
 </html>

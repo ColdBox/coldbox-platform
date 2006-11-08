@@ -19,7 +19,7 @@
 		<Setting name="EnableBugReports" 			value="false"/>
 		<Setting name="UDFLibraryFile" 				value="" />
 		<Setting name="ExceptionHandler"			value="" />
-		<Setting name="CustomErrorTemplate"			value="views/vwException" />
+		<Setting name="CustomErrorTemplate"			value="views/vwException.cfm" />
 		<Setting name="MessageboxStyleClass"		value="" />
 		<Setting name="HandlersIndexAutoReload"   	value="false" />
 		<Setting name="ConfigAutoReload"          	value="false" />
@@ -27,7 +27,8 @@
 	</Settings>
 
 	<YourSettings>
-		<Setting name="adminPass" value=""/>
+		<Setting name="adminPass" 	value="ortusintrojesus"/>
+		<Setting name="xslBasePath" value="./xsl/" />
 	</YourSettings>
 
 	<!--Optional,if blank it will use the CFMX administrator settings.-->
