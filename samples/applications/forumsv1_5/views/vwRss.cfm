@@ -26,7 +26,7 @@
 	<items>
 		<rdf:Seq>
 			<cfloop query="data">
-			<rdf:li rdf:resource="#application.settings.rootURL#messages.cfm?#xmlFormat("threadid=#threadid#")##xmlFormat("&r=#currentRow#")#" />
+			<rdf:li rdf:resource="#application.settings.rootURL#index.cfm?event=ehForums.dspMessages&#xmlFormat("threadid=#threadid#")##xmlFormat("&r=#currentRow#")#" />
 			</cfloop>
 		</rdf:Seq>
 	</items>
@@ -38,10 +38,10 @@
 		<cfset z = getTimeZoneInfo()>
 		<cfset dateStr = dateStr & "T" & timeFormat(posted,"HH:mm:ss") & "-" & numberFormat(z.utcHourOffset,"00") & ":00">
 	
-		<item rdf:about="#application.settings.rootURL#messages.cfm?#xmlFormat("threadid=#threadid#")##xmlFormat("&r=#currentRow#")#">
+		<item rdf:about="#application.settings.rootURL#index.cfm?event=ehForums.dspMessages&#xmlFormat("threadid=#threadid#")##xmlFormat("&r=#currentRow#")#">
 		<title>#xmlFormat(title)#</title>
 		<description>#xmlFormat(body)#</description>
-		<link>#application.settings.rootURL#messages.cfm?#xmlFormat("threadid=#threadid#")##xmlFormat("&r=#currentRow#")#</link>
+		<link>#application.settings.rootURL#index.cfm?event=ehForums.dspMessages&#xmlFormat("threadid=#threadid#")##xmlFormat("&r=#currentRow#")#</link>
 		<dc:date>#dateStr#</dc:date>
 		<dc:subject>#thread#</dc:subject>
 		</item>
