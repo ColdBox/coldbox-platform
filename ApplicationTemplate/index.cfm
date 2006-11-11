@@ -9,4 +9,5 @@ Description :
 	this file.
 ----------------------------------------------------------------------->
 <cfinclude template="/coldbox/system/coldbox.cfm">
+This is a test
 <cfsetting enablecfoutputonly="no">
