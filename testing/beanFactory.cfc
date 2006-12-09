@@ -37,35 +37,36 @@ Modifications:
 	<!--- ************************************************************* --->
 	
 	<!--- ************************************************************* --->
-	<cffunction name="MakeBean" hint="Populate bean. " access="public" output="false" returntype="Any">
+	<cffunction name="MakeBean" access="public" output="false" returntype="Any" hint="Populate a named or instantiated bean (java/cfc)">
 		<!--- ************************************************************* --->
-		<cfargument name="Type" required="true" type="string" hint="The type of bean to populate">
+		<cfargument name="FormBean" required="true" type="any" hint="The type of bean to populate. Full instantiation path as string. Or an already instantiated bean. If you pass an instantiation path and the bean has an 'init' method. It will be executed. This method follows the bean contract (set{property_name}). Example: setUsername(), setfname()">
 		<cfset var instance = "" />
 		<cfset var i = "" />
 		<cfset var fields = rc />
 		
 		<cftry>
-			<cfif isSimpleValue(arguments.type)>
-				<cfset instance = createObject("component", "#getSetting('AppMapping')#.model.#arguments.type#") />
+			<!--- Check for a path or an actual bean --->
+			<cfif isSimpleValue(arguments.FormBean)>
+				<cfset instance = createObject("component",arguments.FormBean) />
 				<cfif structKeyExists(instance, "init")>
 					<cfset instance.init() />
 				</cfif>
 			<cfelse>
-				<cfset instance = arguments.type />
+				<cfset instance = arguments.FormBean />
 			</cfif>
-	
-			<cfloop list="#structKeyList(fields)#" index="i">
-				<cfif structKeyExists(instance, "Set" & i)>
-					<cfinvoke component="#instance#" method="Set#i#">
-						<cfinvokeargument name="#i#" value="#getValue(i,'')#" />
+			
+			<cfloop collection="#fields#" item="FieldKey">
+				<cfif structKeyExists(instance, "set" & FieldKey)>
+					<cfinvoke component="#instance#" method="set#FieldKey#">
+						<cfinvokeargument name="#FieldKey#" value="#getValue(FieldKey,'')#" />
 					</cfinvoke>
 				</cfif>
 			</cfloop>
-	
+			
 			<cfreturn instance />
 			
 			<cfcatch type="any">
-				<cfthrow type="Framework.plugins.beanFactory.BeanCreationException" message="Error creating bean: #arguments.bean#Bean" detail="#cfcatch.Detail#<br>#cfcatch.message#">
+				<cfthrow type="Framework.plugins.beanFactory.BeanCreationException" message="Error creating bean: #arguments.type#" detail="#cfcatch.Detail#<br>#cfcatch.message#">
 			</cfcatch>
 		</cftry>
 	</cffunction>
