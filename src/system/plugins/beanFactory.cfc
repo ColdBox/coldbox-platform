@@ -15,25 +15,29 @@ Modifications:
 
 	<!--- ************************************************************* --->
 	<cffunction name="init" access="public" returntype="any" output="false">
-		<cfset super.Init() />
-		<cfset variables.instance.pluginName = "Bean Factory">
-		<cfset variables.instance.pluginVersion = "1.0">
-		<cfset variables.instance.pluginDescription = "I am a simple bean factory">
-		<cfreturn this>
+		<cfscript>
+		super.Init();
+		variables.instance.pluginName = "Bean Factory";
+		variables.instance.pluginVersion = "1.0";
+		variables.instance.pluginDescription = "I am a simple bean factory";
+		return this;
+		</cfscript>
 	</cffunction>
 	<!--- ************************************************************* --->
 
 	<!--- ************************************************************* --->
 	<cffunction name="create" hint="Create a named bean, simple as that. This method will append {Bean} to the path+name passed in." access="public" output="false" returntype="Any">
 		<!--- ************************************************************* --->
-		<cfargument name="bean" required="true" type="string" hint="The type of bean to create and return. Uses full cfc path mapping.Ex: coldbox.beans.exception">
+		<cfargument name="bean" required="true" type="string" hint="The type of bean to create and return. Uses full cfc path mapping.Ex: coldbox.beans.exception (This method appends 'Bean' at the end)">
 		<!--- ************************************************************* --->
-		<cftry>
-			<cfreturn createObject("component","#arguments.bean#Bean")>
-			<cfcatch type="any">
-				<cfthrow type="Framework.plugins.beanFactory.BeanCreationException" message="Error creating bean: #arguments.bean#Bean" detail="#cfcatch.Detail#<br>#cfcatch.message#">
-			</cfcatch>
-		</cftry>
+		<cfscript>
+		try{
+			return createObject("component","#arguments.bean#Bean");
+		}
+		Catch(Any e){
+			throw("Error creating bean: #arguments.bean#Bean","#e.Detail#<br>#e.message#","Framework.plugins.beanFactory.BeanCreationException");
+		}
+		</cfscript>
 	</cffunction>
 	<!--- ************************************************************* --->
 	
@@ -41,25 +45,25 @@ Modifications:
 	<cffunction name="populateBean" access="public" output="false" returntype="Any" hint="Populate a named or instantiated bean (java/cfc)">
 		<!--- ************************************************************* --->
 		<cfargument name="FormBean" required="true" type="any" hint="The type of bean to populate. Full instantiation path as string. Or an already instantiated bean. If you pass an instantiation path and the bean has an 'init' method. It will be executed. This method follows the bean contract (set{property_name}). Example: setUsername(), setfname()">
+		<!--- ************************************************************* --->
 		<cfset var instance = "" />
-		<cfset var i = "" />
+		<cfset var FieldKey = "" />
 		<cfset var fields = rc />
 		
 		<cftry>
-			<!--- Check for a path or an actual bean --->
 			<cfif isSimpleValue(arguments.FormBean)>
-				<cfset instance = createObject("component",arguments.FormBean) />
-				<cfif structKeyExists(instance, "init")>
-					<cfset instance.init() />
+				<cfset instance = CreateObject("component",arguments.FormBean)>
+				<cfif structKeyExists(instance,"init")>
+					<cfset instance.init()>
 				</cfif>
 			<cfelse>
-				<cfset instance = arguments.FormBean />
+				<cfset instance = arguments.FormBean>
 			</cfif>
 			
 			<cfloop collection="#fields#" item="FieldKey">
 				<cfif structKeyExists(instance, "set" & FieldKey)>
 					<cfinvoke component="#instance#" method="set#FieldKey#">
-						<cfinvokeargument name="#FieldKey#" value="#getValue(FieldKey,'')#" />
+						<cfinvokeargument name="#FieldKey#" value="#fields[FieldKey]#">
 					</cfinvoke>
 				</cfif>
 			</cfloop>
@@ -67,7 +71,7 @@ Modifications:
 			<cfreturn instance />
 			
 			<cfcatch type="any">
-				<cfthrow type="Framework.plugins.beanFactory.BeanCreationException" message="Error creating bean: #arguments.type#" detail="#cfcatch.Detail#<br>#cfcatch.message#">
+				<cfthrow type="Framework.plugins.beanFactory.PopulateBeanException" message="Error creating bean: #arguments.FormBean#" detail="#cfcatch.Detail#<br>#cfcatch.message#">
 			</cfcatch>
 		</cftry>
 	</cffunction>
