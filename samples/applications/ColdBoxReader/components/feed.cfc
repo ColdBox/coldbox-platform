@@ -82,10 +82,6 @@
 			<cfhttpparam type="Header" name="TE" value="deflate;q=0">
 		</cfhttp>
 
-		<cfif Not IsXML(cfhttp.FileContent)>
-			<cfthrow message="A problem ocurred while processing the requested link [#arguments.url#]. Check that it is a valid RSS or Atom feed.">
-		</cfif>
-
 		<cfset xmlDoc = XMLParse(cfhttp.FileContent)>
 		<cfset feed = parseFeed(xmlDoc)>
 
