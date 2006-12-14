@@ -21,14 +21,16 @@ Modification History:
 08/07/2006 - Ticket #45 fix, autoreloadflag cleaned handlers.
 08/20/2006 - Reusabel setupCalls()
 ---------------------------------------------------------------------->
-<cfparam type="boolean" name="url.fwreinit" default="false">
+<cfparam name="url.fwreinit" default="false">
 
-<!--- Reusable Setup Calls --->
+<!---------------------------------------------------------------------->
 <cffunction name="setupCalls" returntype="void">
 	<cfset session.fwController.getPlugin("settings").configLoader()>
 	<cfset session.fwController.setDebugMode(session.fwController.getSetting("DebugMode"))>
 	<cfset session.fwController.getPlugin("settings").registerHandlers()>
 </cffunction>
+<!---------------------------------------------------------------------->
+
 
 <!--- Initialize timing variable --->
 <cfset request.fwExecTime = GetTickCount()>

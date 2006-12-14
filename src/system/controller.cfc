@@ -4,129 +4,115 @@ www.coldboxframework.com | www.coldboxframework.org
 -------------------------------------------------------------------------
 Author 	 		: Luis Majano
 Date     		: September 23, 2005 
-Last Update 	: July 28, 2006
+Last Update 	: December 9, 2006
 ----------------------------------------------------------------------->
-<cfcomponent name="controller" hint="This is the ColdBox Controller. I practically do everything">
-
+<cfcomponent name="controller" hint="This is the ColdBox Controller. I practically do everything" output="false">
+		
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 	<cffunction name="init" returntype="any" access="Public" hint="I am the constructor" output="false">
-		<cfset variables.instance = structnew()>
-		<cfset variables.instance.DebugMode = false>
-		<cfreturn this>
+		<cfscript>
+		variables.instance = structnew();
+		variables.instance.DebugMode = false;
+		return this;
+		</cfscript>
 	</cffunction>
 <!------------------------------------------- PUBLIC ------------------------------------------->
 
+	<cffunction name="getDebugMode" access="public" hint="I Get the current controller debugmode" returntype="boolean"  output="false">
+		<cfscript>
+			return variables.instance.DebugMode;
+		</cfscript>
+	</cffunction>
+
+	<cffunction name="setDebugMode" access="public" hint="I set the current controller debugmode" returntype="void"  output="false">
+		<cfargument name="mode" type="boolean" >
+		<cfscript>
+			variables.instance.DebugMode = arguments.mode;
+		</cfscript>
+	</cffunction>
+	
 	<cffunction name="getSetting" hint="I get a setting from the FW Config structures. Use the FWSetting boolean argument to retrieve from the fwSettingsStruct." access="public" returntype="any" output="false">
-		<cfargument name="name" 	    type="string"   	 hint="Name of the setting key to retrieve"  >
-		<cfargument name="FWSetting"  	type="boolean" 	 required="false"  hint="Boolean Flag. If true, it will retrieve from the fwSettingsStruct else from the configStruct. Default is false." default="false">
+		<cfargument name="name" 	    type="string"   	hint="Name of the setting key to retrieve"  >
+		<cfargument name="FWSetting"  	type="boolean" 	 	required="false"  hint="Boolean Flag. If true, it will retrieve from the fwSettingsStruct else from the configStruct. Default is false." default="false">
 		<!--- ************************************************************* --->
-		<cfif arguments.FWSetting and isDefined("application.ColdBox_FWSettingsStruct.#arguments.name#")>
-			<cfreturn Evaluate("application.ColdBox_FWSettingsStruct.#arguments.name#")>
-		<cfelseif isDefined("application.ColdBox_configstruct.#arguments.name#")>
-			 <cfreturn Evaluate("application.ColdBox_configstruct.#arguments.name#")>
-		<cfelse>
-			<cfthrow type="Framework.SettingNotFoundException" message="The setting #arguments.name# does not exist." detail="FWSetting flag is #arguments.FWSetting#">
-		</cfif>
+		<cfscript>
+		if ( arguments.FWSetting and isDefined("application.ColdBox_FWSettingsStruct.#arguments.name#") )
+			return Evaluate("application.ColdBox_FWSettingsStruct.#arguments.name#");
+		else if ( isDefined("application.ColdBox_configstruct.#arguments.name#") )
+			 return Evaluate("application.ColdBox_configstruct.#arguments.name#");
+		else
+			throw("The setting #arguments.name# does not exist.","FWSetting flag is #arguments.FWSetting#","Framework.SettingNotFoundException");
+		</cfscript>
 	</cffunction>
 	
 	<cffunction name="settingExists" returntype="boolean" access="Public"	hint="I Check if a value exists in the configstruct or the fwsettingsStruct." output="false">
 		<cfargument name="name" hint="Name of the setting to find." type="string">
 		<cfargument name="FWSetting"  	type="boolean" 	 required="false"  hint="Boolean Flag. If true, it will retrieve from the fwSettingsStruct else from the configStruct. Default is false." default="false">
 		<!--- ************************************************************* --->
-		<cfif arguments.FWSetting>
-			<cfreturn isDefined("application.ColdBox_FWSettingsStruct.#arguments.name#") >
-		<cfelse>
-			<cfreturn isDefined("application.ColdBox_configstruct.#arguments.name#") >
-		</cfif>
+		<cfscript>
+		if (arguments.FWSetting){
+			return isDefined("application.ColdBox_FWSettingsStruct.#arguments.name#");
+		}
+		else{
+			return isDefined("application.ColdBox_configstruct.#arguments.name#");
+		}
+		</cfscript>
 	</cffunction>
 		
 	<cffunction name="setSetting" access="Public" returntype="any" hint="I set a Global Coldbox setting variable in the configstruct, if it exists it will be overrided. This only sets in the ConfigStruct" output="false">
 		<cfargument name="name"  type="string"   hint="The name of the setting" >
 		<cfargument name="value" type="any"      hint="The value of the setting (Can be simple or complex)">
 		<!--- ************************************************************* --->
-		<cfset "application.Coldbox_configstruct.#arguments.name#" = arguments.value>
-	</cffunction>
-	
-	<cffunction name="getSettingStructure" hint="I get the entire setting structure. By default I retrieve the configStruct. You can change this by using the fwsetting flag." access="public" returntype="struct" output="false">
-		<cfargument name="FWSetting"  	type="boolean" 	 required="false"  hint="Boolean Flag. If true, it will retrieve from the fwSettingsStruct else the configStruct. Default is false." default="false">
-		<cfargument name="DeepCopyFlag" hint="Default is false. True, creates a deep copy of the structure." type="boolean" required="no" default="false">
-		<cfif arguments.FWSetting>
-			<cfif arguments.DeepCopyFlag>
-				<cfreturn duplicate(application.ColdBox_FWSettingsStruct)>
-			<cfelse>
-				<cfreturn application.ColdBox_FWSettingsStruct>
-			</cfif>
-		<cfelse>
-			<cfif arguments.DeepCopyFlag>
-				<cfreturn duplicate(application.ColdBox_configstruct)>
-			<cfelse>
-				<cfreturn application.ColdBox_configstruct>
-			</cfif>
-		</cfif>
+		<cfscript>
+		"application.Coldbox_configstruct.#arguments.name#" = arguments.value;
+		</cfscript>
 	</cffunction>
 	
 	<cffunction name="getPlugin" access="Public" returntype="any" hint="I am the Plugin cfc object factory." output="false">
 		<cfargument name="plugin" type="string" hint="The Plugin object's name to instantiate" >
 		<!--- ************************************************************* --->
-		<cftry>
-			<cfreturn CreateObject("component", "plugins.#trim(arguments.plugin)#").init()>
-			<cfcatch type="any">
-				<cfthrow type="Framework.InvalidPluginInstantiationException"	 message="Framework.getPlugin: Error Instantiating Plugin Object (#trim(arguments.plugin)#)" detail="#cfcatch.Message# #cfcatch.detail#">
-			</cfcatch>
-		</cftry>
+		<cfscript>
+		try{
+			return CreateObject("component", "plugins.#trim(arguments.plugin)#").init();
+		}
+		catch(Any e){
+			throw("Framework.getPlugin: Error Instantiating Plugin Object (#trim(arguments.plugin)#)","#e.Message# #e.detail#","Framework.InvalidPluginInstantiationException");
+		}
+		</cfscript>
 	</cffunction>
 	
-	<cffunction name="getDebugMode" access="public" hint="I Get the current controller debugmode" returntype="boolean"  output="false">
-		<cfreturn variables.instance.DebugMode>
-	</cffunction>
-
-	<cffunction name="setDebugMode" access="public" hint="I set the current controller debugmode" returntype="void"  output="false">
-		<cfargument name="mode" type="boolean" >
-		<cfset variables.instance.DebugMode = arguments.mode>
-	</cffunction>
-
 	<cffunction name="reqCapture" access="Public" returntype="void" hint="I capture a framework event request." output="false">
 		<cfargument name="FORM" hint="The form scope" type="any">
 		<cfargument name="URL"  hint="The url scope"  type="any">
 		<!--- ************************************************************* --->
-		<cfmodule template="includes/timer.cfm" timertag="Request Capture" >
-			<cfset request.reqCollection = structNew()>
-			<cfset StructAppend(request.reqCollection, arguments.FORM)>
-			<cfset StructAppend(request.reqCollection, arguments.URL)>
-			<!--- Debug Mode Checks --->
-			<cfif structKeyExists(request.reqCollection,"debugMode") and isBoolean(request.reqCollection.debugmode)>
-				<cfif getSetting("debugPassword") eq "">
-					<cfset setDebugMode(request.reqCollection.debugmode)>
-				<cfelseif structKeyExists(request.reqCollection,"debugpass") and compareNoCase(getSetting("debugPassword"),request.reqCollection.debugpass) eq 0>
-					<cfset setDebugMode(request.reqCollection.debugmode)>
-				</cfif>
-			</cfif>
+		<cfscript>
+		request.reqCollection = structNew();
+		StructAppend(request.reqCollection, arguments.FORM);
+		StructAppend(request.reqCollection, arguments.URL);
+		//<!--- Debug Mode Checks --->
+		if ( structKeyExists(request.reqCollection,"debugMode") and isBoolean(request.reqCollection.debugmode) ){
+			if ( getSetting("debugPassword") eq "")
+				setDebugMode(request.reqCollection.debugmode);
+			else if ( structKeyExists(request.reqCollection,"debugpass") and compareNoCase(getSetting("debugPassword"),request.reqCollection.debugpass) eq 0 )
+				setDebugMode(request.reqCollection.debugmode);
+		}
 
-			<!---Default Event Definition --->
-			<cfif not structkeyExists(request.reqCollection,"event") >
-				<cfset request.reqCollection.event = getSetting("DefaultEvent")>
-			</cfif>
+		//<!---Default Event Definition --->
+		if ( not structkeyExists(request.reqCollection,"event") )
+			request.reqCollection.event = getSetting("DefaultEvent");
 
-			<!---Event More Than 1 Check, grab the first event instance, other's are discarded --->
-			<cfif listLen(request.reqCollection.event) gte 2>
-				<cfset request.reqCollection.event = getToken(event,1,",")>
-			</cfif>
-		</cfmodule>
+		//<!---Event More Than 1 Check, grab the first event instance, other's are discarded --->
+		if ( listLen(request.reqCollection.event) gte 2 )
+			request.reqCollection.event = getToken(event,1,",");
+		</cfscript>
 	</cffunction>
 
 	<cffunction name="valueExists" returntype="boolean" access="Public"	hint="I Check if a value exists in the request collection." output="false">
 		<cfargument name="name" hint="Name of the variable to find in the request collection" type="string">
 		<!--- ************************************************************* --->
-		<cfreturn isDefined("request.reqCollection.#arguments.name#") >
-	</cffunction>
-	
-	<cffunction name="paramValue" returntype="void" access="Public"	hint="Just like cfparam, but for the request collection" output="false">
-		<cfargument name="name" 	hint="Name of the variable to param in the request collection" 	type="string">
-		<cfargument name="value" 	hint="The value of the variable to set if not found." 			type="Any" >
-		<!--- ************************************************************* --->
-		<cfif not valueExists(arguments.name)>
-			<cfset setValue(arguments.name, arguments.value)>
-		</cfif>
+		<cfscript>
+			return isDefined("request.reqCollection.#arguments.name#");
+		</cfscript>
 	</cffunction>
 
 	<cffunction name="getValue" returntype="Any" access="Public" hint="I Get a value from the request collection." output="false">
@@ -137,87 +123,44 @@ Last Update 	: July 28, 2006
 						  as the defaultValue argument."
 					type="any" required="No" default="NONE">
 		<!--- ************************************************************* --->
-		<cfif isDefined("request.reqCollection.#arguments.name#") >
-			<cfreturn Evaluate("request.reqCollection.#arguments.name#")>
-		<cfelseif isSimpleValue(arguments.defaultValue) and arguments.defaultValue eq "NONE">
-			<cfthrow type="Framework.ValueNotInRequestCollectionException" message="The variable: #arguments.name# is undefined in the request collection.">
-		<cfelseif isSimpleValue(arguments.defaultValue) >
-			<cfif refind("\[[A-Za-z]*\]", arguments.defaultValue) >
-				<cfif findnocase("array", arguments.defaultvalue)>
-					<cfreturn ArrayNew(1)>
-				<cfelseif findnocase("struct", arguments.defaultvalue)>
-					<cfreturn StructNew()>
-				<cfelseif findnocase("query", arguments.defaultvalue)>
-					<cfreturn QueryNew("")>
-				</cfif>
-			<cfelse>
-				<cfreturn arguments.defaultValue>
-			</cfif>
-		<cfelse>
-			<cfreturn arguments.defaultValue>
-		</cfif>
+		<cfscript>
+			if ( isDefined("request.reqCollection.#arguments.name#") ){
+				return Evaluate("request.reqCollection.#arguments.name#");
+			}
+			else if ( isSimpleValue(arguments.defaultValue) and arguments.defaultValue eq "NONE" )
+				throw("The variable: #arguments.name# is undefined in the request collection.","","Framework.ValueNotInRequestCollectionException");
+			else if ( isSimpleValue(arguments.defaultValue) ){
+				if ( refind("\[[A-Za-z]*\]", arguments.defaultValue) ){
+					if ( findnocase("array", arguments.defaultvalue) )
+						return ArrayNew(1);
+					else if ( findnocase("struct", arguments.defaultvalue) )
+						return StructNew();
+					else if ( findnocase("query", arguments.defaultvalue) )
+						return QueryNew("");
+				}
+				else
+					return arguments.defaultValue;
+			}
+			else
+				return arguments.defaultValue;
+		</cfscript>
 	</cffunction>
 
 	<cffunction name="setValue" access="Public" hint="I Set a value in the request collection" output="false" returntype="void">
 		<cfargument name="name"  hint="The name of the variable to set." type="string" >
 		<cfargument name="value" hint="The value of the variable to set" type="Any" >
 		<!--- ************************************************************* --->
-		<cfset "request.reqCollection.#arguments.name#" = arguments.value>
+		<cfscript>
+			"request.reqCollection.#arguments.name#" = arguments.value;
+		</cfscript>
 	</cffunction>
 
 	<cffunction name="removeValue" access="Public" hint="I remove a value in the request collection" output="false" returntype="void">
 		<cfargument name="name"  hint="The name of the variable to remove." type="string" >
 		<!--- ************************************************************* --->
-		<cfset structDelete(request.reqCollection,"#arguments.name#")>
-	</cffunction>
-
-	<cffunction name="getCollection" returntype="any" access="Public" hint="I Get a reference or deep copy of the request Collection" output="false">
-		<cfargument name="DeepCopyFlag" hint="Default is false, gives a reference to the collection. True, creates a deep copy of the collection." type="boolean" required="no" default="false">
-		<cfif not structKeyExists(request, "reqCollection")>
-			<cfreturn structnew()>
-		<cfelseif arguments.DeepCopyFlag>
-			<cfreturn duplicate(request.reqCollection)>
-		<cfelse>
-			<cfreturn request.reqCollection>
-		</cfif>
-	</cffunction>
-	
-	<cffunction name="setView" access="Public" returntype="void" hint="I Set the view to render in this request.I am called from event handlers. Request Collection Name: currentView, currentLayout"  output="false">
-		<cfargument name="name"  hint="The name of the view to set. If a layout has been defined it will assign it, else if will assign the default layout." type="string">
-		<cfargument name="nolayout" type="boolean" required="false" default="false" hint="Boolean flag, wether the view sent in will be using a layout or not. Default is false. Uses a pre set layout or the default layout.">
-		<!--- ************************************************************* --->
-	    <cfset var viewLayouts = getSetting("ViewLayouts")>
-	    <cfif not arguments.nolayout>
-		    <cfif not getValue("layoutoverride",false)>
-			    <cfif StructKeyExists(viewLayouts, arguments.name) >
-					<cfset setValue("currentLayout",viewLayouts[arguments.name])>
-				<cfelse>
-					<cfset setValue("currentLayout", getSetting("DefaultLayout"))>
-				</cfif>
-			</cfif>
-		</cfif>
-		<cfset setValue("currentView",arguments.name)>
-	</cffunction>
-
-	<cffunction name="setLayout" access="Public" returntype="void" hint="I Set the layout to override and render. Layouts are pre-defined in the config.xml file. However I can override these settings if needed. Do not append a the cfm extension. Request Collection name: currentLayout"  output="false">
-		<cfargument name="name"  hint="The name of the layout file to set." type="string" >
-		<!--- ************************************************************* --->
-	  	<cfset setValue("currentLayout",trim(arguments.name) & ".cfm" )>
-	  	<cfset setValue("layoutoverride",true)>
-	</cffunction>
-
-	<cffunction name="setNextEvent" access="Public" returntype="void" hint="I Set the next event to run and relocate the browser to that event."  output="false">
-		<cfargument name="event"  			hint="The name of the event to run." 			type="string" default="#getSetting("DefaultEvent")#" >
-		<cfargument name="queryString"  	hint="The query string to append, if needed."   type="any" required="No" default="" >
-		<!--- ************************************************************* --->
-			<cfif len(trim(arguments.event)) eq 0><cfset arguments.event = getSetting("DefaultEvent")></cfif>
-			<cflocation url="#cgi.SCRIPT_NAME#?event=#arguments.event#&#arguments.queryString#" addtoken="no">
-	</cffunction>
-
-	<cffunction name="overrideEvent" access="Public" hint="I Override the current event in the request collection. This method does not execute the event, it just replaces the event to be executed by the framework's RunEvent() method. This method is usually called from an onRequestStart or onApplicationStart method."  output="false" returntype="void">
-		<cfargument name="event" hint="The name of the event to override." type="string">
-		<!--- ************************************************************* --->
-	    <cfset setValue("event",arguments.event)>
+		<cfscript>
+			structDelete(request.reqCollection,"#arguments.name#");
+		</cfscript>
 	</cffunction>
 
 	<cffunction name="runEvent" returntype="void" access="Public" hint="I am an event handler runnable factory. If no event is passed in then it will run the default event from the config.xml.">
@@ -227,17 +170,30 @@ Last Update 	: July 28, 2006
 		<cfset var EventBean = "">
 		<!--- Start Timer --->
 		<cfmodule template="includes/timer.cfm" timertag="invoking runEvent [#arguments.event#]">
-			<!--- Get RegisteredHandler --->
-			<cfset EventBean =  getPlugin("settings").getRegisteredHandler(arguments.event)>
-			<cftry>
-				<cfset objEventHandler = CreateObject("component","#getSetting("HandlersInvocationPath")#.#EventBean.getHandler()#").init()>
-				<cfcatch type="any">
-					<cfthrow type="Framework.EventHandlerInstantiationException" message="Error Instantiating Event Handler: (#EventBean.getName()#)" detail="CFCPath: #getSetting("HandlersInvocationPath")# ; #cfcatch.Detail# #cfcatch.Message#">
-				</cfcatch>
-			</cftry>
-			<!---  Run The handler's Method --->
-			<cfset evaluate("objEventHandler.#EventBean.getMethod()#()")>
+			<cfscript>
+			//Get registered handler
+			EventBean = getPlugin("settings").getRegisteredHandler(arguments.event);
+			try{
+				objEventHandler = CreateObject("component","#getSetting("HandlersInvocationPath")#.#EventBean.getHandler()#").init();
+			}
+			catch(Any e){
+				throw("Error Instantiating Event Handler: (#EventBean.getName()#)","CFCPath: #getSetting("HandlersInvocationPath")# ; #e.Detail# #e.Message#","Framework.EventHandlerInstantiationException");
+			}
+			//Run the event handler method.
+			evaluate("objEventHandler.#EventBean.getMethod()#()");
+			</cfscript>
 		</cfmodule>
 	</cffunction>
 
+<!------------------------------------------- PRIVATE ------------------------------------------->
+
+	<cffunction name="throw" access="private" hint="Facade for cfthrow" output="false">
+		<!--- ************************************************************* --->
+		<cfargument name="message" 	type="string" 	required="yes">
+		<cfargument name="detail" 	type="string" 	required="no" default="">
+		<cfargument name="type"  	type="string" 	required="no" default="Framework">
+		<!--- ************************************************************* --->
+		<cfthrow type="#arguments.type#" message="#arguments.message#"  detail="#arguments.detail#">
+	</cffunction>
+	
 </cfcomponent>
