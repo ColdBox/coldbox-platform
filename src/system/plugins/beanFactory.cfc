@@ -28,11 +28,15 @@ Modifications:
 	<!--- ************************************************************* --->
 	<cffunction name="create" hint="Create a named bean, simple as that. This method will append {Bean} to the path+name passed in." access="public" output="false" returntype="Any">
 		<!--- ************************************************************* --->
-		<cfargument name="bean" required="true" type="string" hint="The type of bean to create and return. Uses full cfc path mapping.Ex: coldbox.beans.exception (This method appends 'Bean' at the end)">
+		<cfargument name="bean" 		required="true"  type="string" hint="The type of bean to create and return. Uses full cfc path mapping.Ex: coldbox.beans.exceptionBean">
+		<cfargument name="callInitFlag"	required="false" type="boolean" default="false" hint="Flag to call an init method on the bean.">
 		<!--- ************************************************************* --->
 		<cfscript>
 		try{
-			return createObject("component","#arguments.bean#Bean");
+			if ( arguments.callInit )
+				return createObject("component","#arguments.bean#").init();
+			else
+				return createObject("component","#arguments.bean#");
 		}
 		Catch(Any e){
 			throw("Error creating bean: #arguments.bean#Bean","#e.Detail#<br>#e.message#","Framework.plugins.beanFactory.BeanCreationException");
