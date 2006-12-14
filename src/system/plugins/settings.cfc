@@ -71,7 +71,7 @@ Modification History:
 		<!--- Check registration --->
 		<cfset handlerIndex = listFindNoCase(handlersList, arguments.event) >
 		<cfif handlerIndex>
-			<cfreturn getPlugin("beanFactory").create("coldbox.system.beans.eventhandler").init(listgetAt(handlersList,handlerIndex))>
+			<cfreturn getPlugin("beanFactory").create("coldbox.system.beans.eventhandlerBean").init(listgetAt(handlersList,handlerIndex))>
 		<cfelse>
 			<cfthrow type="Framework.plugins.settings.EventHandlerNotRegisteredException" message="The event handler: '#getSetting('AppMapping')#/#arguments.event#' is not valid registered event.</a>">
 		</cfif>
@@ -86,7 +86,7 @@ Modification History:
 		<cfargument name="ExtraMessage"  type="string"  required="false" default="">
 		<!--- ************************************************************* --->
 		<cfset var BugReport = "">
-		<cfset var ExceptionBean = getPlugin("beanFactory").create("coldbox.system.beans.exception").init(errorStruct=arguments.Exception,extramessage=arguments.extraMessage,errorType=arguments.ErrorType)>
+		<cfset var ExceptionBean = getPlugin("beanFactory").create("coldbox.system.beans.exceptionBean").init(errorStruct=arguments.Exception,extramessage=arguments.extraMessage,errorType=arguments.ErrorType)>
 		<!--- Test ErrorType --->
 		<cfif not reFindnocase("(application|framework)",arguments.errorType)>
 			<cfset arguments.errorType = "application">
@@ -98,7 +98,7 @@ Modification History:
 					<cfset setValue("ExceptionBean",ExceptionBean)>
 					<cfset runEvent(getSetting("Exceptionhandler"))>
 					<cfcatch type="any">
-						<cfset ExceptionBean = getPlugin("beanFactory").create("coldbox.system.beans.exception").init(errorStruct=cfcatch,extramessage="Error Running Custom Exception handler",errorType="application")>
+						<cfset ExceptionBean = getPlugin("beanFactory").create("coldbox.system.beans.exceptionBean").init(errorStruct=cfcatch,extramessage="Error Running Custom Exception handler",errorType="application")>
 						<cfset getPlugin("logger").logErrorWithBean(ExceptionBean)>
 					</cfcatch>
 				</cftry>
