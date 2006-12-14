@@ -33,13 +33,13 @@ Modifications:
 		<!--- ************************************************************* --->
 		<cfscript>
 		try{
-			if ( arguments.callInit )
+			if ( arguments.callInitFlag )
 				return createObject("component","#arguments.bean#").init();
 			else
 				return createObject("component","#arguments.bean#");
 		}
 		Catch(Any e){
-			throw("Error creating bean: #arguments.bean#Bean","#e.Detail#<br>#e.message#","Framework.plugins.beanFactory.BeanCreationException");
+			throw("Error creating bean: #arguments.bean#","#e.Detail#<br>#e.message#","Framework.plugins.beanFactory.BeanCreationException");
 		}
 		</cfscript>
 	</cffunction>
