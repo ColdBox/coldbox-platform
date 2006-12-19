@@ -472,4 +472,18 @@ To complete your registration at #variables.title#, please click on the link bel
 				
 	</cffunction>		
 
+	<!--- Added by LM --->
+	<cffunction name="generateNewPass" access="public" returnType="string" output="false"
+				hint="Generates a new password for a new password.">
+		<cfargument name="id" type="string" required="true">
+		<cfset var passCFC = CreateObject("component","password")>
+		<cfset var newPass =  passCFC.get_password(14)>
+								
+		<cfquery datasource="#variables.dsn#">
+			update	#variables.tableprefix#users
+			set		password =<cfqueryparam value="#HASH(newPass)#" cfsqltype="CF_SQL_VARCHAR" maxlength="100">
+			where	id = <cfqueryparam value="#arguments.id#" cfsqltype="CF_SQL_VARCHAR" maxlength="35">
+		</cfquery>
+		<cfreturn newPass>
+	</cffunction>
 </cfcomponent>
