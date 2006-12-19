@@ -5,13 +5,9 @@
 # ------------------------------------------------------
 # Server version 4.1.11-nt
 
--- Database: `galleon`
-USE galleon;
-
 #
 # Table structure for table galleon_conferences
 #
-
 
 DROP TABLE IF EXISTS `galleon_conferences`;
 CREATE TABLE `galleon_conferences` (

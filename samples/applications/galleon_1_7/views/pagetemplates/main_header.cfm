@@ -61,6 +61,9 @@
 		</td>
 	</tr>
 	<tr>
+		<td colspan="2"><img src="images/shim.gif" height="20" width="1"></td>
+	</tr>
+	<tr>
 		<td colspan=2>
 </cfoutput>
 

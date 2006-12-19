@@ -2,7 +2,7 @@
 	Name         : message.cfc
 	Author       : Raymond Camden 
 	Created      : October 21, 2004
-	Last Updated : November 3, 2006
+	Last Updated : December 8, 2006
 	History      : We now check sendonpost to see if we notify admin on posts (rkc 10/21/04)
 				   The email sent to admins now cotain forum/conference name. (rkc 2/11/05)
 				   Was calling util.throw, not utils (rkc 3/31/05)
@@ -15,6 +15,10 @@
 				   Simple size change + new email support (rkc 7/27/06)
 				   Render moved in here - attachment support (rkc 11/3/06)
 				   Swaped render around (rkc 11/6/06)
+				   Don't send email twice to admin, slight email tweaks (rkc 11/9/06)
+				   Fix up the deletion of attachments (rkc 11/16/06)
+				   Slight change to emails sent out - send the username as well (rkc 12/5/6)
+				   Support for [img] (rkc 12/8/06)
 	Purpose		 : 
 --->
 <cfcomponent displayName="Message" hint="Handles Messages.">
@@ -62,6 +66,7 @@
 		<cfset var getInterestedFolks = "">
 		<cfset var thread = "">
 		<cfset var newid = createUUID()>
+		<cfset var notifiedList = "">
 		
 		<!--- First see if we can add a message. Because roles= doesn't allow for OR, we use a UDF --->
 		<cfif not variables.utils.isUserInAnyRole("forumsadmin,forumsmoderator,forumsmember")>
@@ -138,20 +143,20 @@
 		</cfquery>
 
 		<!--- get everyone in the thread who wants posts --->
-		<cfset notifySubscribers(arguments.threadid, tmpThread.name, arguments.forumid, variables.user.getUserID(arguments.username),arguments.message.body)>
+		<cfset notifiedList = notifySubscribers(arguments.threadid, tmpThread.name, arguments.forumid, variables.user.getUserID(arguments.username),arguments.message.body)>
 		
-		<cfif structKeyExists(variables.settings,"sendonpost") and len(variables.settings.sendonpost)>
+		<cfif structKeyExists(variables.settings,"sendonpost") and len(variables.settings.sendonpost) and not listFindNoCase(notifiedList, variables.settings.sendOnPost)>
 			<cfmail to="#variables.settings.sendonpost#" from="#variables.settings.fromAddress#" 
 					subject="#variables.settings.title# Notification: Post to #tmpThread.name#">
 Title:		#arguments.message.title#
-Thread: 		#tmpThread.name#
+Thread: 	#tmpThread.name#
 Forum:		#forum.name#
 Conference:	#tmpConference.name#
 User:		#arguments.username#
 
 #wrap(arguments.message.body,80)#
 			
-#variables.settings.rootURL#messages.cfm?threadid=#arguments.threadid#
+#variables.settings.rootURL#index.cfm?event=ehMessages.dspMessages&threadid=#arguments.threadid#
 			</cfmail>
 
 		</cfif>
@@ -182,7 +187,7 @@ User:		#arguments.username#
 			where	id = <cfqueryparam value="#arguments.id#" cfsqltype="CF_SQL_VARCHAR" maxlength="35">
 		</cfquery>
 		
-		<cfif q.filename>
+		<cfif len(q.filename) and fileExists("#variables.attachmentdir#/#q.filename#")>
 			<cffile action="delete" file="#variables.attachmentdir#/#q.filename#">
 		</cfif>
 		
@@ -237,7 +242,7 @@ User:		#arguments.username#
 			
 	</cffunction>
 	
-	<cffunction name="notifySubscribers" access="private" returnType="void" output="false"
+	<cffunction name="notifySubscribers" access="private" returnType="string" output="false"
 				hint="Emails subscribers about a new post.">
 		<cfargument name="threadid" type="uuid" required="true">
 		<cfargument name="threadname" type="string" required="true">
@@ -247,6 +252,8 @@ User:		#arguments.username#
 		<cfset var forum = variables.forum.getForum(arguments.forumid)>
 		<cfset var conference = variables.conference.getConference(forum.conferenceidfk)>
 		<cfset var subscribers = "">
+		
+		<cfset var username = variables.user.getUser(variables.user.getUsernameFromId(arguments.userid)).username>
 		
 		<!--- 
 			  In order to get our subscribers, we need to get the forum and conference for the thread.
@@ -266,12 +273,17 @@ User:		#arguments.username#
 		<cfif subscribers.recordCount>
 			<cfmail query="subscribers" subject="#variables.settings.title# Notification: Post to #arguments.threadname#" from="#variables.settings.fromAddress#" to="#emailaddress#">
 A post has been made to a thread, forum, or conference that you are subscribed to.
-You may change your subscription preferences by updating your profile.
-You can visit this thread here:
+You can change your subscription preferences by updating your profile.
+You can visit the thread here:
 
-#variables.settings.rootURL#messages.cfm?threadid=#arguments.threadid#
+#variables.settings.rootURL#index.cfm?event=ehMessages.dspMessages&threadid=#arguments.threadid#
 
+Conference: #conference.name#
+Forum:      #forum.name#
+Thread:     #arguments.threadname#
+User:       #username#
 <cfif variables.settings.fullemails>
+Message:
 #wrap(arguments.body,80)#
 </cfif>
 
@@ -280,6 +292,7 @@ You can visit this thread here:
 
 		</cfif>
 		
+		<cfreturn valueList(subscribers.emailaddress)>
 	</cffunction>
 	
 	<cffunction name="render" access="public" returnType="string" roles="" output="false"
@@ -292,6 +305,9 @@ You can visit this thread here:
 		<cfset var result = "">
 		<cfset var newbody = "">
 		<cfset var codeBlocks = arrayNew(1)>
+		<cfset var imgBlocks = arrayNew(1)>
+		<cfset var imgblock = "">
+		<cfset var imgportion = "">
 		
 		<!--- Add Code Support --->
 		<cfif findNoCase("[code]",arguments.message) and findNoCase("[/code]",arguments.message)>
@@ -306,13 +322,33 @@ You can visit this thread here:
 						<cfset result = "">
 					</cfif>
 					
-					<!---
-					<cfset newbody = mid(arguments.message, 1, codeblock.len[2]) & result & mid(arguments.message,codeblock.pos[6],codeblock.len[6])>
-					--->
 					<cfset arrayAppend(codeBlocks,result)>
 					<cfset newbody = mid(arguments.message, 1, codeblock.len[2]) & "****CODEBLOCK:#arrayLen(codeBlocks)#:KCOLBEDOC****" & mid(arguments.message,codeblock.pos[6],codeblock.len[6])>
                     <cfset arguments.message = newbody>
 					<cfset counter = findNoCase("[code]",arguments.message,counter)>
+				<cfelse>
+					<!--- bad crap, maybe <code> and no ender, or maybe </code><code> --->
+					<cfset counter = 0>
+				</cfif>
+			</cfloop>
+		</cfif>
+
+		<cfif findNoCase("[img]",arguments.message) and findNoCase("[/img]",arguments.message)>
+			<cfset counter = findNoCase("[img]",arguments.message)>
+			<cfloop condition="counter gte 1">
+                <cfset imgblock = reFindNoCase("(?s)(.*)(\[img\])(.*)(\[/img\])(.*)",arguments.message,1,1)> 
+				<cfif arrayLen(imgblock.len) gte 6>
+                    <cfset imgportion = mid(arguments.message, imgblock.pos[4], imgblock.len[4])>
+                    <cfif len(trim(imgportion))>
+						<cfset result = "<img src=""#imgportion#"">">
+					<cfelse>
+						<cfset result = "">
+					</cfif>
+					
+					<cfset arrayAppend(imgBlocks,result)>
+					<cfset newbody = mid(arguments.message, 1, imgblock.len[2]) & "****IMGBLOCK:#arrayLen(imgBlocks)#:KCOLBGMI****" & mid(arguments.message,imgblock.pos[6],imgblock.len[6])>
+                    <cfset arguments.message = newbody>
+					<cfset counter = findNoCase("[img]",arguments.message,counter)>
 				<cfelse>
 					<!--- bad crap, maybe <code> and no ender, or maybe </code><code> --->
 					<cfset counter = 0>
@@ -330,6 +366,9 @@ You can visit this thread here:
 		<cfloop index="counter" from="1" to="#arrayLen(codeBlocks)#">
 			<cfset arguments.message = replace(arguments.message,"****CODEBLOCK:#counter#:KCOLBEDOC****", codeBlocks[counter])>
 		</cfloop>
+		<cfloop index="counter" from="1" to="#arrayLen(imgBlocks)#">
+			<cfset arguments.message = replace(arguments.message,"****IMGBLOCK:#counter#:KCOLBGMI****", imgBlocks[counter])>
+		</cfloop>
 		
 		<!--- add Ps --->
 		<cfset arguments.message = variables.utils.paragraphFormat2(arguments.message)>
@@ -342,8 +381,9 @@ You can visit this thread here:
 		<cfset var msg = "">
 		
 		<cfsavecontent variable="msg">
-No HTML is allowed in your message. 
-You may include code in your message by surrounding with these tags: [code] [/code].
+All URLs will be automatically linked. No HTML is allowed in your message.<br />
+You may include code in your message like so: [code]...[/code].<br />
+You may include an image in your message like so: [img]url[/img].<br />
 		</cfsavecontent>
 		
 		<cfreturn msg>	

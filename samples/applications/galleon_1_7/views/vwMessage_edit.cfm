@@ -3,10 +3,11 @@
 	Name         : message_edit.cfm
 	Author       : Raymond Camden 
 	Created      : July 6, 2004
-	Last Updated : August 29, 2005
+	Last Updated : November 14, 2006
 	History      : Removed mappings (rkc 8/29/05)
 				 : title+cfcatch change (rkc 8/4/06)
 				 : attachment support (rkc 11/3/06)
+				 : fix bug if attachments turned off (rkc 11/14/06)
 	Purpose		 : Allows moderators/admins to edit post.
 --->
 

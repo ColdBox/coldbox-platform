@@ -26,12 +26,37 @@ Gifts are always welcome. ;)
 
 
 ---- LATEST VERSION ----
+1.7.008 (December 8, 2006)
+/admin/gen_stats.cfm - I changed how I got stats. It breaks encapsulation, but it is 10 times faster.
+/admin/stats_charts.cfm - ditto above
+/cfcs/message.cfc - Support for [img]. Idea taken from Rick Root's CFMBB
+/cfcs/settings.ini.cfm - Version only.
+
+---- ARCHIVED UPDATES ----
+1.7.007 (December 5, 2006)
+/cfcs/message.cfc - Slight change to emails sent out - it now includes the username
+/cfcs/settings.ini.cfm - Version only.
+
+1.7.006 (November 16, 2006)
+/cfcs/message.cfc - fix two bugs related to deleting of messages
+/cfcs/settings.ini.cfm - Version only.
+/Attachment.cfm - fix code that figures out attachment folder 
+
+1.7.005 (November 14, 2006)
+/cfcs/settings.ini.cfm - Version only.
+/message_edit.cfm - error when attachments weren't enabled
+
+1.7.004 (November 9, 2006)
+/cfcs/settings.ini.cfm - Version only.
+/message.cfc - In the past, if the sendOnPost person was subscribed to a thread, s/he would get 2 emails per post. Now you only get one.
+I also tweaked the message sent to subscribers a bit. I added the Conference/Forum/Thread Name to the body.
+/pagetemplates/main_footer.cfm - Changed footer link to riaforge.
+
 1.7.003 (November 6, 2006)
 /cfcs/settings.ini.cfm - Version only.
 /user.cfc - if no confirmation required, set confirmation to 1
 /message.cfc - I broke activateURL support, fixed now 
 
----- ARCHIVED UPDATES ----
 1.7.002 (November 6, 2006)
 /admin/gen_stats.cfm - added &nbsp;s to a few rows so they show nicer in Firefox when the cells are empty.
 /cfcs/settings.ini.cfm - Default to NOT encrypt passwords so default DB scripts work.
