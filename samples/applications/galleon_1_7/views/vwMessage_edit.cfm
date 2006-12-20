@@ -1,7 +1,7 @@
 <cfsetting enablecfoutputonly=true>
 <!---
 	Name         : message_edit.cfm
-	Author       : Raymond Camden 
+	Author       : Raymond Camden
 	Created      : July 6, 2004
 	Last Updated : November 14, 2006
 	History      : Removed mappings (rkc 8/29/05)
@@ -36,6 +36,9 @@
 			</tr>
 			<tr>
 				<td colspan="2"><b>Body: </b><br>
+				<p>
+				#application.message.renderHelp()#
+				</p>
 				<textarea name="body" cols="50" rows="20">#getValue("body")#</textarea></td>
 			</tr>
 			<cfif isBoolean(request.forum.attachments) and request.forum.attachments>
@@ -52,7 +55,7 @@
 					</cfif>
 					</td>
 				</tr>
-			</cfif>		
+			</cfif>
 			<tr>
 				<td>&nbsp;</td>
 				<td align="right"><input type="image" src="images/btn_update.gif" alt="Update" title="Update" width="59" height="19" name="post"></td>
