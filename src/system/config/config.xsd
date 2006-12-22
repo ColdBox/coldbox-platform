@@ -45,7 +45,8 @@
 									<xs:enumeration value="EnableColdboxLogging"/>
 									<xs:enumeration value="ColdboxLogsLocation" />								
 									<xs:enumeration value="DebugMode"/>		
-									<xs:enumeration value="DebugPassword"/>							
+									<xs:enumeration value="DebugPassword"/>
+									<xs:enumeration value="ReinitPassword"/>								
 									<xs:enumeration value="AppMapping"/>
 									<xs:enumeration value="AppDevMapping"/>
 									<xs:enumeration value="AppName"/>				
@@ -54,6 +55,7 @@
 									<xs:enumeration value="HandlersIndexAutoReload" />
 									<xs:enumeration value="ConfigAutoReload" />
 									<xs:enumeration value="MyPluginsLocation" />
+									<xs:enumeration value="onInvalidEvent"/>	
 								</xs:restriction>
 							</xs:simpleType>
 						</xs:attribute>

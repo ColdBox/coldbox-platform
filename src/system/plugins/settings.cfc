@@ -32,25 +32,28 @@ Modification History:
 
 	<!--- ************************************************************* --->
 	<cffunction name="configLoader" returntype="void" access="Public" hint="I Load the configurations and init the framework variables. I have a facade to the application scope." output="false">
-		<cfset var XMLParser = getPlugin("XMLParser")>
-		<cfset var ConfigFileLocation = "">
-		<cfset var ConfigTimeStamp = "">
-		<cfset var HandlersDirectory = "">
-		<!--- Load Coldbox Config Structure --->
-		<cfset application.ColdBox_FWSettingsStruct = XMLParser.loadFramework()>
-		<!--- Load Config from XML --->
-		<cfset application.ColdBox_configStruct = XMLParser.parseConfig()>
-		<!---Load i18N if needed --->
-		<cfif getSetting("using_i18N")>
-			<cfset getPlugin("i18n").init_i18N(getSetting("DefaultResourceBundle"),getSetting("DefaultLocale"))>
-		</cfif>
-		<!--- Test for Coldbox logging, if set init the log location --->
-		<cfif getSetting("EnableColdboxLogging") and getSetting("ColdboxLogsLocation") neq "">
-			<cfset getPlugin("logger").initLogLocation()>
-		</cfif>
-		<!--- Flag the initiation --->
-		<cfset application.ColdBox_fwInitiated = true>
-		<cfset application.ColdBox_fwAppStartHandlerFired = false>
+		<cfscript>
+		var XMLParser = getPlugin("XMLParser");
+		var ConfigFileLocation = "";
+		var ConfigTimeStamp = "";
+		var HandlersDirectory = "";
+		
+		//<!--- Load Coldbox Config Structure --->
+		application.ColdBox_FWSettingsStruct = XMLParser.loadFramework();
+		//<!--- Load Config from XML --->
+		application.ColdBox_configStruct = XMLParser.parseConfig();
+		//<!---Load i18N if needed --->
+		if ( getSetting("using_i18N") )
+			getPlugin("i18n").init_i18N(getSetting("DefaultResourceBundle"),getSetting("DefaultLocale"));
+		
+		//<!--- Test for Coldbox logging, if set init the log location --->
+		if ( getSetting("EnableColdboxLogging") and getSetting("ColdboxLogsLocation") neq "" )
+			getPlugin("logger").initLogLocation();
+		
+		//<!--- Flag the initiation --->
+		application.ColdBox_fwInitiated = true;
+		application.ColdBox_fwAppStartHandlerFired = false;
+		</cfscript>
 	</cffunction>
 	<!--- ************************************************************* --->
 
@@ -65,16 +68,24 @@ Modification History:
 		<!--- ************************************************************* --->
 		<cfargument name="event" hint="The event to check and get." type="string" required="true">
 		<!--- ************************************************************* --->
-		<cfset var handlerIndex = 0>
-		<cfset var rtnStruct = "">
-		<cfset var handlersList = arrayToList(getSetting("RegisteredHandlers"))>
-		<!--- Check registration --->
-		<cfset handlerIndex = listFindNoCase(handlersList, arguments.event) >
-		<cfif handlerIndex>
-			<cfreturn getPlugin("beanFactory").create("coldbox.system.beans.eventhandlerBean").init(listgetAt(handlersList,handlerIndex))>
-		<cfelse>
-			<cfthrow type="Framework.plugins.settings.EventHandlerNotRegisteredException" message="The event handler: '#getSetting('AppMapping')#/#arguments.event#' is not valid registered event.</a>">
-		</cfif>
+		<cfscript>
+		var handlerIndex = 0;
+		var rtnStruct = "";
+		var handlersList = arrayToList(getSetting("RegisteredHandlers"));
+		var onInvalidEvent = getSetting("onInvalidEvent");
+		
+		//Check Registration
+		handlerIndex = listFindNoCase(handlersList, arguments.event);
+		if ( handlerIndex ){
+			return getPlugin("beanFactory").create("coldbox.system.beans.eventhandlerBean").init(listgetAt(handlersList,handlerIndex));
+		}
+		else if ( onInvalidEvent neq "" and EventSyntaxCheck(onInvalidEvent) ){
+			return getPlugin("beanFactory").create("coldbox.system.beans.eventhandlerBean").init(onInvalidEvent);
+			}
+		else{
+			throw("The event handler: '#getSetting('AppMapping')#/#arguments.event#' is not valid registered event.</a>","","Framework.plugins.settings.EventHandlerNotRegisteredException");
+		}
+		</cfscript>
 	</cffunction>
 	<!--- ************************************************************* --->
 
@@ -85,28 +96,33 @@ Modification History:
 		<cfargument name="ErrorType" 	 type="any" 	required="false" default="application">
 		<cfargument name="ExtraMessage"  type="string"  required="false" default="">
 		<!--- ************************************************************* --->
-		<cfset var BugReport = "">
-		<cfset var ExceptionBean = getPlugin("beanFactory").create("coldbox.system.beans.exceptionBean").init(errorStruct=arguments.Exception,extramessage=arguments.extraMessage,errorType=arguments.ErrorType)>
-		<!--- Test ErrorType --->
-		<cfif not reFindnocase("(application|framework)",arguments.errorType)>
-			<cfset arguments.errorType = "application">
-		</cfif>
-		<cfif arguments.ErrorType eq "application">
-			<!--- Run custom Exception handler if Found, else run default --->
-			<cfif getSetting("ExceptionHandler") neq "">
-				<cftry>
-					<cfset setValue("ExceptionBean",ExceptionBean)>
-					<cfset runEvent(getSetting("Exceptionhandler"))>
-					<cfcatch type="any">
-						<cfset ExceptionBean = getPlugin("beanFactory").create("coldbox.system.beans.exceptionBean").init(errorStruct=cfcatch,extramessage="Error Running Custom Exception handler",errorType="application")>
-						<cfset getPlugin("logger").logErrorWithBean(ExceptionBean)>
-					</cfcatch>
-				</cftry>
-			<cfelse>
-				<cfset getPlugin("logger").logErrorWithBean(ExceptionBean)>
-			</cfif>
-		</cfif>
-		<cfreturn ExceptionBean>
+		<cfscript>
+		var BugReport = "";
+		var ExceptionBean = getPlugin("beanFactory").create("coldbox.system.beans.exceptionBean").init(errorStruct=arguments.Exception,extramessage=arguments.extraMessage,errorType=arguments.ErrorType);
+		
+		// Test Error Type
+		if ( not reFindnocase("(application|framework)",arguments.errorType) )
+			arguments.errorType = "application";
+			
+		if ( arguments.ErrorType eq "application" ){
+			//Run custom Exception handler if Found, else run default
+			if ( getSetting("ExceptionHandler") neq "" ){
+				try{
+					setValue("ExceptionBean",ExceptionBean);
+					runEvent(getSetting("Exceptionhandler"));
+				}
+				catch(Any e){
+					ExceptionBean = getPlugin("beanFactory").create("coldbox.system.beans.exceptionBean").init(errorStruct=e,extramessage="Error Running Custom Exception handler",errorType="application");
+					getPlugin("logger").logErrorWithBean(ExceptionBean);
+				}
+			}
+			else{
+				getPlugin("logger").logErrorWithBean(ExceptionBean);
+			}
+		}
+		//return
+		return ExceptionBean;	
+		</cfscript>
 	</cffunction>
 	<!--- ************************************************************* --->
 

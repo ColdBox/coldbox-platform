@@ -25,6 +25,7 @@ Modification History:
 08/10/2006 - Child References Eliminated. No longer in use.
 08/20/2006 - i18n Support completed for new plugins.
 10/10/2006 - Mail server settings setup.
+12/20/2006 - new settings: ReinitPassword, InvalidEventHandler
 ----------------------------------------------------------------------->
 <cfcomponent name="XMLParser"
 			 hint="This is the XML Parser plugin for the framework. It takes care of any XML parsing for the framework's usage."
@@ -165,9 +166,11 @@ Modification History:
 				//Parse XML and validate with XSD
 				configXML = xmlParse(ConfigFileLocation);
 			}
+			
 			//validate
 			if ( not structKeyExists(configXML, "config")  )
 				throw("No Config element found in the configuration file","","Framework.plugins.XMLParser.ConfigXMLParsingException");
+			
 			//Get SettingNodes
 			SettingNodes = XMLSearch(configXML, instance.searchSettings);
 			if ( ArrayLen(SettingNodes) eq 0 )
@@ -197,12 +200,20 @@ Modification History:
 			//Check for Application Start Handler
 			if ( not StructKeyExists(ConfigStruct, "RequestEndHandler") )
 				ConfigStruct["RequestEndHandler"] = "";
+			//Check for InvalidEventHandler
+			if ( not StructKeyExists(ConfigStruct, "onInvalidEvent") )
+				ConfigStruct["onInvalidEvent"] = "";
+			
 			//Check For DebugMode in settings
 			if ( not structKeyExists(ConfigStruct, "DebugMode") or not isBoolean(ConfigStruct.DebugMode) )
 				ConfigStruct["DebugMode"] = "false";
 			//Check for DebugPassword in settings, else leave blank.
-			if ( not structKeyExists(ConfigStruct, "DebugPassword"))
+			if ( not structKeyExists(ConfigStruct, "DebugPassword") )
 				ConfigStruct["DebugPassword"] = "";
+			//Check for ReinitPassword
+			if ( not structKeyExists(ConfigStruct, "ReinitPassword") )	
+				ConfigStruct["ReinitPassword"] = "";
+							
 			//Check For Coldfusion Logging
 			if ( not structKeyExists(ConfigStruct, "EnableColdfusionLogging") or not isBoolean(ConfigStruct.EnableColdfusionLogging) )
 				ConfigStruct["EnableColdfusionLogging"] = "false";
@@ -212,6 +223,7 @@ Modification History:
 			//Check For Coldbox Log Location
 			if ( not structKeyExists(ConfigStruct, "ColdboxLogsLocation"))
 				ConfigStruct["ColdboxLogsLocation"] = "";		
+			
 			//Check For Owner Email or Throw
 			if ( not StructKeyExists(ConfigStruct, "OwnerEmail") )
 				throw("There was no 'OwnerEmail' setting defined. This is required by the framework.","","Framework.plugins.XMLParser.ConfigXMLParsingException");
@@ -230,12 +242,14 @@ Modification History:
 			//Check for MessageboxStyleClass if found
 			if ( not structkeyExists(ConfigStruct, "MessageboxStyleClass") )
 				ConfigStruct["MessageboxStyleClass"] = "";
+			
 			//Check for HandlersIndexAutoReload, default = false
 			if ( not structkeyExists(ConfigStruct, "HandlersIndexAutoReload") or not isBoolean(ConfigStruct.HandlersIndexAutoReload) )
 				ConfigStruct["HandlersIndexAutoReload"] = false;
 			//Check for ConfigAutoReload
 			if ( not structKeyExists(ConfigStruct, "ConfigAutoReload") or not isBoolean(ConfigStruct.ConfigAutoReload) )
 				ConfigStruct["ConfigAutoReload"] = false;
+			
 			//Check for MessageboxStyleClass if found
 			if ( not structkeyExists(ConfigStruct, "ExceptionHandler") )
 				ConfigStruct["ExceptionHandler"] = "";
