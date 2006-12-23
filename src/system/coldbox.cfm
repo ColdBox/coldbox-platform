@@ -20,31 +20,51 @@ Modification History:
 06/07/2006 - Updated to coldbox.
 08/07/2006 - Ticket #45 fix, autoreloadflag cleaned handlers.
 08/20/2006 - Reusabel setupCalls()
+12/20/2006 - fwreinit password enabled.
 ---------------------------------------------------------------------->
-<cfparam name="url.fwreinit" default="false">
 
 <!---------------------------------------------------------------------->
 <cffunction name="setupCalls" returntype="void">
-	<cfset session.fwController.getPlugin("settings").configLoader()>
-	<cfset session.fwController.setDebugMode(session.fwController.getSetting("DebugMode"))>
-	<cfset session.fwController.getPlugin("settings").registerHandlers()>
+	<cfscript>
+	session.fwController.getPlugin("settings").configLoader();
+	session.fwController.setDebugMode(session.fwController.getSetting("DebugMode"));
+	session.fwController.getPlugin("settings").registerHandlers();
+	</cfscript>
+</cffunction>
+
+<cffunction name="isfwReinit" returntype="boolean">
+ 	<cfscript>
+	var reinitPass = session.fwController.getSetting("ReinitPassword");
+	if ( structKeyExists(url,"fwreinit") ){
+		if ( reinitPass eq "" ){
+			return true;
+		}
+		else if ( Compare(reinitPass, url.fwreinit) eq 0){
+			return true;
+		}	
+		else{
+			return false;
+		}
+	}
+	else
+		return false;
+	</cfscript>
 </cffunction>
 <!---------------------------------------------------------------------->
-
 
 <!--- Initialize timing variable --->
 <cfset request.fwExecTime = GetTickCount()>
 <cftry>
 	<!--- Initialize the Controller --->
-	<cfif not structkeyExists(session,"fwController") or not structKeyExists(application, "ColdBox_fwInitiated") or url.fwreinit>
+	<cfif not structkeyExists(session,"fwController") or not structKeyExists(application, "ColdBox_fwInitiated") or isfwReinit()>
 		<cflock type="exclusive" scope="session" timeout="120">
-			<cfif not structkeyExists(session,"fwController") or url.fwreinit>
+			<cfif not structkeyExists(session,"fwController") or isfwReinit()>
 				<cfset session.fwController = CreateObject("component","controller").init()>
 			</cfif>
 		</cflock>
 		<!--- Initialize the Structures --->
 		<cflock type="exclusive" name="Coldbox_configloader" timeout="120">
-			<cfif not structKeyExists(application, "ColdBox_fwInitiated") or url.fwreinit>
+			<cfif not structKeyExists(application, "ColdBox_fwInitiated") or isfwReinit()>
 				<cfset setupCalls()>
 			</cfif>
 		</cflock>
@@ -60,6 +80,7 @@ Modification History:
 			</cflock>
 		</cfif>
 	</cfif>
+	
 	<!--- Trap Framework Errors --->
 	<cfcatch type="any">
 		<cfset ExceptionBean = session.fwController.getPlugin("settings").ExceptionHandler(cfcatch,"framework","Framework Initialization/Configuration Exception")>
@@ -67,33 +88,42 @@ Modification History:
 		<cfabort>
 	</cfcatch>
 </cftry>
+
 <!--- Start Application Requests --->
 <cftry>
 	<!--- Request Capture --->
 	<cfset session.fwController.reqCapture(FORM, URL)>
+	
 	<!--- Application Start Handler --->	
-	<cfif session.fwController.getSetting("ApplicationStartHandler") neq "" and (not Application.ColdBox_fwAppStartHandlerFired or url.fwreinit)>
+	<cfif session.fwController.getSetting("ApplicationStartHandler") neq "" and (not Application.ColdBox_fwAppStartHandlerFired)>
 		<!--- Test for ApplicationStartHandler --->
 		<cfset session.fwController.runEvent(session.fwController.getSetting("ApplicationStartHandler"))>
 		<cfset application.ColdBox_fwAppStartHandlerFired = true>
 	</cfif>
+	
 	<!--- IF Found in config, run onRequestStart Handler --->
 	<cfif session.fwController.getSetting("RequestStartHandler") neq "">
 		<cfset session.fwController.runEvent(session.fwController.getSetting("RequestStartHandler"))>
 	</cfif>
+	
 	<!--- Run Default/Set Event --->
 	<cfset session.fwController.runEvent()>
+	
 	<!--- Render Layout/View pair using plugin factory --->
 	<cfoutput>#session.fwController.getPlugin("renderer").renderLayout()#</cfoutput>
+	
 	<!--- If Found in config, run onRequestEnd Handler --->
 	<cfif session.fwController.getSetting("RequestEndHandler") neq "">
 		<cfset session.fwController.runEvent(session.fwController.getSetting("RequestEndHandler"))>
 	</cfif>
+	
+	<!--- Trap Application Errors --->
 	<cfcatch type="any">
 		<cfset ExceptionBean = session.fwController.getPlugin("settings").ExceptionHandler(cfcatch,"application","Application Execution Exception")>
 		<cfoutput>#session.fwController.getPlugin("renderer").renderBugReport(ExceptionBean)#</cfoutput>
 	</cfcatch>
 </cftry>
+
 <!--- Time the request --->
 <cfset request.fwExecTime = GetTickCount() - request.fwExecTime>
 <!--- DebugMode Renders --->

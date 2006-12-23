@@ -6,6 +6,7 @@
 		<Setting name="AppMapping" 					value="coldbox"/>
 		<Setting name="DebugMode" 					value="true"/>
 		<Setting name="DebugPassword" 				value="coldbox"/>
+		<Setting name="ReinitPassword" 				value="pio"/>
 		<!--This feature is enabled, by default-->
 		<Setting name="EnableDumpVar" 				value="true"/>
 		<Setting name="EnableColdfusionLogging" 	value="true"/>
@@ -24,8 +25,9 @@
 		<Setting name="HandlersIndexAutoReload"   	value="true" />
 		<Setting name="ConfigAutoReload"			value="false" />
 		<Setting name="ExceptionHandler"     		value="" />
+		<Setting name="onInvalidEvent" 				value="ehGeneral.dspHello" />
 		<!--Base Path to plugins, as if to instantiate them. -->
-		<Setting name="MyPluginsLocation" 			value="fwcoldbox.myplugins"/>
+		<Setting name="MyPluginsLocation" 			value="coldbox.myplugins"/>
 	</Settings>
 
 	<YourSettings />
