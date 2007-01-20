@@ -18,7 +18,6 @@ Modification History:
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
-	<!--- ************************************************************* --->
 	<cffunction name="init" access="public" returntype="any" output="false">
 		<cfset super.Init() />
 		<cfset variables.instance.pluginName = "Settings">
@@ -26,11 +25,11 @@ Modification History:
 		<cfset variables.instance.pluginDescription = "This plugin is used to control several of the framework settings and aspects.">
 		<cfreturn this>
 	</cffunction>
-	<!--- ************************************************************* --->
 
 <!------------------------------------------- PUBLIC ------------------------------------------->
 
 	<!--- ************************************************************* --->
+	
 	<cffunction name="configLoader" returntype="void" access="Public" hint="I Load the configurations and init the framework variables. I have a facade to the application scope." output="false">
 		<cfscript>
 		var XMLParser = getPlugin("XMLParser");
@@ -47,7 +46,7 @@ Modification History:
 			getPlugin("i18n").init_i18N(getSetting("DefaultResourceBundle"),getSetting("DefaultLocale"));
 		
 		//<!--- Test for Coldbox logging, if set init the log location --->
-		if ( getSetting("EnableColdboxLogging") and getSetting("ColdboxLogsLocation") neq "" )
+		if ( getSetting("EnableColdboxLogging") )
 			getPlugin("logger").initLogLocation();
 		
 		//<!--- Flag the initiation --->
@@ -55,15 +54,15 @@ Modification History:
 		application.ColdBox_fwAppStartHandlerFired = false;
 		</cfscript>
 	</cffunction>
+	
 	<!--- ************************************************************* --->
-
-	<!--- ************************************************************* --->
+	
 	<cffunction name="registerHandlers" access="public" returntype="void" hint="I register your application's event handlers" output="false">
 		<cfset setSetting("RegisteredHandlers",getHandlersMetaData())>
 	</cffunction>
+	
 	<!--- ************************************************************* --->
-
-	<!--- ************************************************************* --->
+	
 	<cffunction name="getRegisteredHandler" access="public" hint="I get a registered handler and method according to passed event from the registeredHandlers setting." returntype="any"  output="false">
 		<!--- ************************************************************* --->
 		<cfargument name="event" hint="The event to check and get." type="string" required="true">
@@ -73,23 +72,24 @@ Modification History:
 		var rtnStruct = "";
 		var handlersList = arrayToList(getSetting("RegisteredHandlers"));
 		var onInvalidEvent = getSetting("onInvalidEvent");
+		var oBeanFactory = getPlugin("beanFactory");
 		
 		//Check Registration
 		handlerIndex = listFindNoCase(handlersList, arguments.event);
 		if ( handlerIndex ){
-			return getPlugin("beanFactory").create("coldbox.system.beans.eventhandlerBean").init(listgetAt(handlersList,handlerIndex));
+			return oBeanFactory.create("coldbox.system.beans.eventhandlerBean").init(listgetAt(handlersList,handlerIndex));
 		}
 		else if ( onInvalidEvent neq "" and EventSyntaxCheck(onInvalidEvent) ){
-			return getPlugin("beanFactory").create("coldbox.system.beans.eventhandlerBean").init(onInvalidEvent);
+			return oBeanFactory.create("coldbox.system.beans.eventhandlerBean").init(onInvalidEvent);
 			}
 		else{
 			throw("The event handler: '#getSetting('AppMapping')#/#arguments.event#' is not valid registered event.</a>","","Framework.plugins.settings.EventHandlerNotRegisteredException");
 		}
 		</cfscript>
 	</cffunction>
+	
 	<!--- ************************************************************* --->
-
-	<!--- ************************************************************* --->
+	
 	<cffunction name="ExceptionHandler" access="public" hint="I handle a framework/application exception. I return a framework exception bean" returntype="any" output="false">
 		<!--- ************************************************************* --->
 		<cfargument name="Exception" 	 type="any"     required="true"  hint="The exception structure">
@@ -124,11 +124,13 @@ Modification History:
 		return ExceptionBean;	
 		</cfscript>
 	</cffunction>
+
 	<!--- ************************************************************* --->
 
 <!------------------------------------------- PRIVATE ------------------------------------------->
 
 	<!--- ************************************************************* --->
+
 	<cffunction name="getHandlersMetaData" access="private" hint="Get the handler(s) meta data for registration." returntype="any">
 		<cfset var HandlersPath = getSetting("AppMapping")>
 		<cfset var HandlersArray = ArrayNew(1)>
@@ -200,9 +202,9 @@ Modification History:
 		</cfloop>
 		<cfreturn registeredHandlers>
 	</cffunction>
-	<!--- ************************************************************* --->
 
 	<!--- ************************************************************* --->
+
 	<cffunction name="EventSyntaxCheck" access="private" hint="I test the event syntax and throw errors." returntype="boolean"  output="false">
 		<!--- ************************************************************* --->
 		<cfargument name="event" hint="The event to check" type="string" required="true">
@@ -213,13 +215,14 @@ Modification History:
 			<cfthrow type="Framework.plugins.settings.EventSyntaxInvalidException" message="The event syntax: #request.reqCollection.event# is invalid. Please check the documentation for valid syntax.">
 		</cfif>
 	</cffunction>
-	<!--- ************************************************************* --->
 	
 	<!--- ************************************************************* --->
+
 	<cffunction name="ripExtension" access="private" returntype="string" output="false">
 		<cfargument name="filename" type="string" required="true">
 		<cfreturn reReplace(arguments.filename,"\.[^.]*$","")>
 	</cffunction>
+
 	<!--- ************************************************************* --->
 	
 </cfcomponent>

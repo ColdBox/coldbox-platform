@@ -225,8 +225,8 @@ Modification History:
 			//Check For Coldbox Logging
 			if ( not structKeyExists(ConfigStruct, "EnableColdboxLogging") or not isBoolean(ConfigStruct.EnableColdboxLogging) )
 				ConfigStruct["EnableColdboxLogging"] = "false";
-			//Check For Coldbox Log Location
-			if ( not structKeyExists(ConfigStruct, "ColdboxLogsLocation"))
+			//Check For Coldbox Log Location if it is defined.
+			if ( not structKeyExists(ConfigStruct, "ColdboxLogsLocation") or trim(ConfigStruct["ColdboxLogsLocation"]) eq "")
 				ConfigStruct["ColdboxLogsLocation"] = "";		
 			
 			//Check For Owner Email or Throw
