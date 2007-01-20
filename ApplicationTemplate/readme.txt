@@ -30,8 +30,7 @@ Layouts (Optional): All my layouts start with 'Layout.'
 Event Handlers (REQUIRED): 
 
 All event handlers method calls follow this regular expression:
-"^eh[a-zA-Z]+\.(dsp|do|on)[a-zA-Z]+"
-and they need to have an access of public
+(dsp|do|on)[a-zA-Z]+ and they need to have an access of public
 
 ex: ehGeneral.doLogin, ehTools.doParse, ehGeneral.dspHome, ehGeneral.dspContactInfo
 
