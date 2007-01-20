@@ -14,6 +14,7 @@ Modifications:
 <cfcomponent name="beanFactory" hint="I am a simple bean factory and you can use me if you want." extends="coldbox.system.plugin">
 
 	<!--- ************************************************************* --->
+	
 	<cffunction name="init" access="public" returntype="any" output="false">
 		<cfscript>
 		super.Init();
@@ -23,9 +24,9 @@ Modifications:
 		return this;
 		</cfscript>
 	</cffunction>
+	
 	<!--- ************************************************************* --->
-
-	<!--- ************************************************************* --->
+	
 	<cffunction name="create" hint="Create a named bean, simple as that. This method will append {Bean} to the path+name passed in." access="public" output="false" returntype="Any">
 		<!--- ************************************************************* --->
 		<cfargument name="bean" 		required="true"  type="string" hint="The type of bean to create and return. Uses full cfc path mapping.Ex: coldbox.beans.exceptionBean">
@@ -43,42 +44,43 @@ Modifications:
 		}
 		</cfscript>
 	</cffunction>
-	<!--- ************************************************************* --->
 	
 	<!--- ************************************************************* --->
-	<cffunction name="populateBean" access="public" output="false" returntype="Any" hint="Populate a named or instantiated bean (java/cfc)">
+	
+	<cffunction name="populateBean" access="public" output="false" returntype="Any" hint="Populate a named or instantiated bean (java/cfc) from the request collection items">
 		<!--- ************************************************************* --->
-		<cfargument name="FormBean" required="true" type="any" hint="The type of bean to populate. Full instantiation path as string. Or an already instantiated bean. If you pass an instantiation path and the bean has an 'init' method. It will be executed. This method follows the bean contract (set{property_name}). Example: setUsername(), setfname()">
+		<cfargument name="FormBean" required="true" type="any" hint="This can be an instantiated bean object or a bean instantitation path as a string. If you pass an instantiation path and the bean has an 'init' method. It will be executed. This method follows the bean contract (set{property_name}). Example: setUsername(), setfname()">
 		<!--- ************************************************************* --->
-		<cfset var instance = "" />
+		<cfset var beanInstance = "" />
 		<cfset var FieldKey = "" />
 		<cfset var fields = rc />
 		
 		<cftry>
 			<cfif isSimpleValue(arguments.FormBean)>
-				<cfset instance = CreateObject("component",arguments.FormBean)>
-				<cfif structKeyExists(instance,"init")>
-					<cfset instance.init()>
+				<cfset beanInstance = CreateObject("component",arguments.FormBean)>
+				<cfif structKeyExists(beanInstance,"init")>
+					<cfset beanInstance.init()>
 				</cfif>
 			<cfelse>
-				<cfset instance = arguments.FormBean>
+				<cfset beanInstance = arguments.FormBean>
 			</cfif>
-			
+			<!--- Populate Bean --->
 			<cfloop collection="#fields#" item="FieldKey">
-				<cfif structKeyExists(instance, "set" & FieldKey)>
-					<cfinvoke component="#instance#" method="set#FieldKey#">
+				<cfif structKeyExists(beanInstance, "set" & FieldKey)>
+					<cfinvoke component="#beanInstance#" method="set#FieldKey#">
 						<cfinvokeargument name="#FieldKey#" value="#fields[FieldKey]#">
 					</cfinvoke>
 				</cfif>
 			</cfloop>
 			
-			<cfreturn instance />
-			
 			<cfcatch type="any">
-				<cfthrow type="Framework.plugins.beanFactory.PopulateBeanException" message="Error creating bean: #arguments.FormBean#" detail="#cfcatch.Detail#<br>#cfcatch.message#">
+				<cfthrow type="Framework.plugins.beanFactory.PopulateBeanException" message="Error populating bean." detail="#cfcatch.Detail#<br>#cfcatch.message#">
 			</cfcatch>
 		</cftry>
+		
+		<cfreturn beanInstance />
 	</cffunction>
+
 	<!--- ************************************************************* --->
 
 </cfcomponent>
