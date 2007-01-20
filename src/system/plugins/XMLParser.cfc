@@ -26,12 +26,14 @@ Modification History:
 08/20/2006 - i18n Support completed for new plugins.
 10/10/2006 - Mail server settings setup.
 12/20/2006 - new settings: ReinitPassword, InvalidEventHandler
+01/17/2007 - fixed Bug #83, failure to set handler invocation path if / as first char
 ----------------------------------------------------------------------->
 <cfcomponent name="XMLParser"
 			 hint="This is the XML Parser plugin for the framework. It takes care of any XML parsing for the framework's usage."
 			 extends="coldbox.system.plugin">
 
 	<!--- ************************************************************* --->
+	
 	<cffunction name="init" access="public" returntype="any" output="false">
 		<!---- Constructor --->
 		<cfscript>
@@ -40,6 +42,7 @@ Modification History:
 		variables.instance.pluginName = "XMLParser";
 		variables.instance.pluginVersion = "1.0";
 		variables.instance.pluginDescription = "I am the framework's XML parser";
+		
 		//Search Patterns for Config.xml
 		variables.instance.searchSettings = "//Settings/Setting";
 		variables.instance.searchYourSettings = "//YourSettings/Setting";
@@ -51,8 +54,10 @@ Modification History:
 		variables.instance.searchMailSettings = "//MailServerSettings";
 		variables.instance.searchi18NSettings = "//i18N";
 		variables.instance.searchDatasources = "//Datasources/Datasource";
+		
 		//Search patterns for fw xml
 		variables.instance.searchConfigXML_Path = "//ConfigXMLFile/FilePath";
+		
 		//Properties
 		variables.instance.FileSeparator = createObject("java","java.lang.System").getProperty("file.separator");
 		variables.instance.FrameworkConfigFile = ExpandPath("/coldbox/system/config/settings.xml");
@@ -61,9 +66,9 @@ Modification History:
 		return this;
 		</cfscript>
 	</cffunction>
+	
 	<!--- ************************************************************* --->
-
-	<!--- ************************************************************* --->
+	
 	<cffunction name="loadFramework" access="public" hint="Load the framework's configuration xml." output="false" returntype="any">
 		<cfscript>
 		var settingsStruct = StructNew();
@@ -115,9 +120,9 @@ Modification History:
 		}
 		</cfscript>
 	</cffunction>
+	
 	<!--- ************************************************************* --->
-
-	<!--- ************************************************************* --->
+	
 	<cffunction name="parseConfig" access="public" returntype="struct" output="false">
 		<cfscript>
 		//Create Config Structure
@@ -375,6 +380,11 @@ Modification History:
 			
 			//Set the Handler Invocation Path for this Application
 			if( ConfigStruct["AppMapping"] neq ""){
+				//Parse out the first / to create handler invocation Path
+				if ( left(ConfigStruct["AppMapping"],1) eq "/" ){
+					ConfigStruct["AppMapping"] = removeChars(ConfigStruct["AppMapping"],1,1);
+				}
+				//Set the handler Invocation Path
 				ConfigStruct["HandlersInvocationPath"] = replace(ConfigStruct["AppMapping"],"/",".","all") & ".handlers";
 			}
 			else{
@@ -458,6 +468,7 @@ Modification History:
 		return ConfigStruct;
 		</cfscript>
 	</cffunction>
+	
 	<!--- ************************************************************* --->
 
 </cfcomponent>
