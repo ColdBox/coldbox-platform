@@ -27,6 +27,7 @@ Modification History:
 10/10/2006 - Mail server settings setup.
 12/20/2006 - new settings: ReinitPassword, InvalidEventHandler
 01/17/2007 - fixed Bug #83, failure to set handler invocation path if / as first char
+01/18/2007 - Preparing for new event registration system.
 ----------------------------------------------------------------------->
 <cfcomponent name="XMLParser"
 			 hint="This is the XML Parser plugin for the framework. It takes care of any XML parsing for the framework's usage."
@@ -378,7 +379,7 @@ Modification History:
 				ConfigStruct.AppMapping = ConfigStruct.AppDevMapping;
 			}
 			
-			//Set the Handler Invocation Path for this Application
+			//Set the Handler Invocation & Physical Path for this Application
 			if( ConfigStruct["AppMapping"] neq ""){
 				//Parse out the first / to create handler invocation Path
 				if ( left(ConfigStruct["AppMapping"],1) eq "/" ){
@@ -386,9 +387,23 @@ Modification History:
 				}
 				//Set the handler Invocation Path
 				ConfigStruct["HandlersInvocationPath"] = replace(ConfigStruct["AppMapping"],"/",".","all") & ".handlers";
+				
+				//Set the Default Handler Path
+				ConfigStruct["HandlersPath"] = ConfigStruct["AppMapping"];	
+				
+				//Set the physical path according to system.
+				//Test for CF 6.X
+				if ( listfirst(server.coldfusion.productversion) lt 7 ){
+					ConfigStruct["HandlersPath"] = replacenocase(cgi.SCRIPT_NAME, listlast(cgi.SCRIPT_NAME,"/"),"") & "handlers/";
+				}	
+				else{
+					ConfigStruct["HandlersPath"] = "/" & ConfigStruct["HandlersPath"] & "/handlers/";
+				}
+				ConfigStruct["HandlersPath"] = ExpandPath(ConfigStruct["HandlersPath"]);
 			}
 			else{
 				ConfigStruct["HandlersInvocationPath"] = "handlers";
+				ConfigStruct["HandlersPath"] = expandPath("handlers");
 			}
 			
 			//Get Web Services From Config.
