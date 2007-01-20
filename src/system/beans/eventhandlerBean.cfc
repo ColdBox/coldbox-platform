@@ -16,6 +16,7 @@ Modification History:
 	
 	<cfscript>
 	variables.instance = structnew();
+	variables.instance.invocationPath = "";
 	variables.instance.handler = "";
 	variables.instance.method = "";
 	</cfscript>
@@ -24,9 +25,8 @@ Modification History:
 	<!--- ************************************************************* --->
 	
 	<cffunction name="init" access="public" returntype="any" output="false">
-		<cfargument name="eventhandler" type="any" required="true" hint="Eventh handler syntax string." />
-		<cfset variables.instance.handler = getToken(arguments.eventhandler,1,".")>
-		<cfset variables.instance.method = getToken(arguments.eventhandler,2,".")>
+		<cfargument name="invocationPath" type="string" required="true" />
+		<cfset setInvocationPath(arguments.invocationPath)>
 		<cfreturn this >
 	</cffunction>
 
@@ -47,16 +47,17 @@ Modification History:
 	
 	<!--- ************************************************************* --->
 	
-	<cffunction name="getName" access="public" returntype="any" output="false">
-		<cfreturn variables.instance.handler & "." & variables.instance.method>
+	<cffunction name="getRunnable" access="public" returntype="any" output="false">
+		<cfreturn getInvocationPath() & "." & getHandler()>
 	</cffunction>
 	
 	<!--- ************************************************************* --->
 	
-	<cffunction name="getHandler" access="public" returntype="any" output="false">
-		<cfreturn variables.instance.handler >
+	<cffunction name="setMethod" access="public" returntype="void" output="false">
+		<cfargument name="method" type="any" required="true" />
+		<cfset variables.instance.method = arguments.method>
 	</cffunction>
-	
+
 	<!--- ************************************************************* --->
 	
 	<cffunction name="getMethod" access="public" returntype="any" output="false">
@@ -72,11 +73,22 @@ Modification History:
 	
 	<!--- ************************************************************* --->
 	
-	<cffunction name="setMethod" access="public" returntype="void" output="false">
-		<cfargument name="method" type="any" required="true" />
-		<cfset variables.instance.method = arguments.method>
+	<cffunction name="getHandler" access="public" returntype="any" output="false">
+		<cfreturn variables.instance.handler >
 	</cffunction>
 	
 	<!--- ************************************************************* --->
-
+	
+	<cffunction name="setInvocationPath" access="public" returntype="void" output="false">
+		<cfargument name="InvocationPath" type="any" required="true" />
+		<cfset variables.instance.InvocationPath = arguments.InvocationPath >
+	</cffunction>
+	
+	<!--- ************************************************************* --->
+	
+	<cffunction name="getInvocationPath" access="public" returntype="any" output="false">
+		<cfreturn variables.instance.InvocationPath >
+	</cffunction>
+	
+	<!--- ************************************************************* --->
 </cfcomponent>

@@ -394,11 +394,12 @@ Modification History:
 				//Set the physical path according to system.
 				//Test for CF 6.X
 				if ( listfirst(server.coldfusion.productversion) lt 7 ){
-					ConfigStruct["HandlersPath"] = replacenocase(cgi.SCRIPT_NAME, listlast(cgi.SCRIPT_NAME,"/"),"") & "handlers/";
+					ConfigStruct["HandlersPath"] = replacenocase(cgi.SCRIPT_NAME, listlast(cgi.SCRIPT_NAME,"/"),"") & "handlers";
 				}	
 				else{
-					ConfigStruct["HandlersPath"] = "/" & ConfigStruct["HandlersPath"] & "/handlers/";
+					ConfigStruct["HandlersPath"] = "/" & ConfigStruct["HandlersPath"] & "/handlers";
 				}
+				//Set the Handlerspath expanded.
 				ConfigStruct["HandlersPath"] = ExpandPath(ConfigStruct["HandlersPath"]);
 			}
 			else{

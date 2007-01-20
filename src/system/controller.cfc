@@ -6,10 +6,10 @@ Author 	 		: Luis Majano
 Date     		: September 23, 2005 
 Last Update 	: December 9, 2006
 ----------------------------------------------------------------------->
-<cfcomponent name="controller" hint="This is the ColdBox Controller. I practically do everything" output="false">
-		
+<cfcomponent name="controller" hint="This is the ColdBox Front Controller." output="false">
+	
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
-	<cffunction name="init" returntype="any" access="Public" hint="I am the constructor" output="false">
+	<cffunction name="init" returntype="controller" access="Public" hint="I am the constructor" output="false">
 		<cfscript>
 		variables.instance = structnew();
 		variables.instance.DebugMode = false;
@@ -59,7 +59,7 @@ Last Update 	: December 9, 2006
 		</cfscript>
 	</cffunction>
 		
-	<cffunction name="setSetting" access="Public" returntype="any" hint="I set a Global Coldbox setting variable in the configstruct, if it exists it will be overrided. This only sets in the ConfigStruct" output="false">
+	<cffunction name="setSetting" access="Public" returntype="void" hint="I set a Global Coldbox setting variable in the configstruct, if it exists it will be overrided. This only sets in the ConfigStruct" output="false">
 		<cfargument name="name"  type="string"   hint="The name of the setting" >
 		<cfargument name="value" type="any"      hint="The value of the setting (Can be simple or complex)">
 		<!--- ************************************************************* --->
@@ -82,13 +82,13 @@ Last Update 	: December 9, 2006
 	</cffunction>
 	
 	<cffunction name="reqCapture" access="Public" returntype="void" hint="I capture a framework event request." output="false">
-		<cfargument name="FORM" hint="The form scope" type="any">
-		<cfargument name="URL"  hint="The url scope"  type="any">
+		<cfargument name="FormScope" hint="The form scope" type="any">
+		<cfargument name="URLScope"  hint="The url scope"  type="any">
 		<!--- ************************************************************* --->
 		<cfscript>
 		request.reqCollection = structNew();
-		StructAppend(request.reqCollection, arguments.FORM);
-		StructAppend(request.reqCollection, arguments.URL);
+		StructAppend(request.reqCollection, arguments.FormScope);
+		StructAppend(request.reqCollection, arguments.URLScope);
 		//<!--- Debug Mode Checks --->
 		if ( structKeyExists(request.reqCollection,"debugMode") and isBoolean(request.reqCollection.debugmode) ){
 			if ( getSetting("debugPassword") eq "")
@@ -163,25 +163,48 @@ Last Update 	: December 9, 2006
 		</cfscript>
 	</cffunction>
 
+	<cffunction name="setNextEvent" access="Public" returntype="void" hint="I Set the next event to run and relocate the browser to that event."  output="false">
+		<cfargument name="event"  			hint="The name of the event to run." 			type="string" default="#getSetting("DefaultEvent")#" >
+		<cfargument name="queryString"  	hint="The query string to append, if needed."   type="any" required="No" default="" >
+		<cfargument name="addToken"			hint="Wether to add the tokens or not. Default is false" type="boolean" required="false" default="false"	>
+		<!--- ************************************************************* --->
+			<cfif len(trim(arguments.event)) eq 0><cfset arguments.event = getSetting("DefaultEvent")></cfif>
+			<cflocation url="#cgi.SCRIPT_NAME#?event=#arguments.event#&#arguments.queryString#" addtoken="#arguments.addToken#">
+	</cffunction>
+	
 	<cffunction name="runEvent" returntype="void" access="Public" hint="I am an event handler runnable factory. If no event is passed in then it will run the default event from the config.xml.">
 		<cfargument name="event" hint="The event to run. If no current event is set, use the default event from the config.xml" type="string" required="no" default="#getValue("event")#">
 		<!--- ************************************************************* --->
 		<cfset var objEventHandler = "">
 		<cfset var EventBean = "">
+		<cfset var oSettings = getPlugin("settings")>
 		<!--- Start Timer --->
 		<cfmodule template="includes/timer.cfm" timertag="invoking runEvent [#arguments.event#]">
-			<cfscript>
-			//Get registered handler
-			EventBean = getPlugin("settings").getRegisteredHandler(arguments.event);
-			try{
-				objEventHandler = CreateObject("component","#getSetting("HandlersInvocationPath")#.#EventBean.getHandler()#").init();
-			}
-			catch(Any e){
-				throw("Error Instantiating Event Handler: (#EventBean.getName()#)","CFCPath: #getSetting("HandlersInvocationPath")# ; #e.Detail# #e.Message#","Framework.EventHandlerInstantiationException");
-			}
-			//Run the event handler method.
-			evaluate("objEventHandler.#EventBean.getMethod()#()");
-			</cfscript>
+			
+			<!--- Get registered handler --->
+			<cfset EventBean = oSettings.getRegisteredHandler(arguments.event)>
+			
+			<cftry>
+				<!--- Try to Create Runnable Object --->
+				<cfset objEventHandler = CreateObject("component",EventBean.getRunnable()).init()>
+				
+				<cfcatch type="any">
+					<cfthrow type="Framework.EventHandlerInstantiationException" message="Error Instantiating Event Handler: (#EventBean.getRunnable()#)" detail="CFCPath: #getSetting("HandlersInvocationPath")# ; #cfcatch.Detail# #cfcatch.Message#">
+				</cfcatch>
+			</cftry>
+			<cftry>
+				<!--- Verify Method Exists --->
+				<cfif not structKeyExists(objEventHandler,EventBean.getMethod())>
+					<cfset setNextEvent(getSetting("onInvalidEvent"))>
+				</cfif>
+				
+				<!--- Execute Method --->
+				<cfinvoke component="#objEventHandler#" method="#EventBean.getMethod()#">
+				
+				<cfcatch type="any">
+					<cfthrow type="Framework.EventHandlerMethodExecutionException" message="Error Running Event Method: (#EventBean.getRunnable()#.#eventBean.getMethod()#)" detail="#cfcatch.Detail# #cfcatch.Message#">
+				</cfcatch>
+			</cftry>
 		</cfmodule>
 	</cffunction>
 

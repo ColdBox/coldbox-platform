@@ -6,7 +6,7 @@
 		<Setting name="AppMapping" 					value="coldbox"/>
 		<Setting name="DebugMode" 					value="true"/>
 		<Setting name="DebugPassword" 				value="coldbox"/>
-		<Setting name="ReinitPassword" 				value="pio"/>
+		<Setting name="ReinitPassword" 				value=""/>
 		<!--This feature is enabled, by default-->
 		<Setting name="EnableDumpVar" 				value="true"/>
 		<Setting name="EnableColdfusionLogging" 	value="true"/>

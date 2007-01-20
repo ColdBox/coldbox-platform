@@ -15,18 +15,19 @@ Modification History:
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 	
 	<!--- ************************************************************* --->
+	
 	<cffunction name="init" access="public" returntype="any" output="false" hint="The plugin constructor.">
 		<cfscript>
-		//<!--- memory reference for the request collection --->
-		variables.rc = getCollection();
-		//<!--- instance names --->
-		variables.instance.pluginName = "";
-		variables.instance.pluginVersion = "";
-		variables.instance.pluginDescription = "";
-		variables.instance.pluginPath = getCurrentTemplatePath();
-		return this;
+			super.init();
+			//instance names
+			variables.instance.pluginName = "";
+			variables.instance.pluginVersion = "";
+			variables.instance.pluginDescription = "";
+			variables.instance.pluginPath = getCurrentTemplatePath();
+			return this;
 		</cfscript>
 	</cffunction>
+	
 	<!--- ************************************************************* --->
 
 <!------------------------------------------- PUBLIC ------------------------------------------->
@@ -35,6 +36,7 @@ Modification History:
 <!------------------------------------------- INSTANCE MUTATORS AND ACCESSORS ------------------------------------------->
 
 	<!--- ************************************************************* --->
+	
 	<cffunction name="getPluginName" access="public" hint="Get the instance's pluginName" returntype="string" output="false">
 		<cfreturn variables.instance.pluginName>
 	</cffunction>
@@ -73,6 +75,13 @@ Modification History:
 	</cffunction>
 	
 	<!--- ************************************************************* --->
+	
+	<cffunction name="getpluginPath" access="public" hint="Get the instance's pluginPath" returntype="string" output="false">
+		<cfreturn variables.instance.pluginPath>
+	</cffunction>
+	
+	<!--- ************************************************************* --->
+	
 	
 <!------------------------------------------- PRIVATE ------------------------------------------->
 

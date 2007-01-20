@@ -26,9 +26,13 @@ Modification History:
 <!---------------------------------------------------------------------->
 <cffunction name="setupCalls" returntype="void">
 	<cfscript>
-	session.fwController.getPlugin("settings").configLoader();
+	var oSettings = session.fwController.getPlugin("settings");
+	//Load Configuration
+	oSettings.configLoader();
+	//Set the controller's debugMode
 	session.fwController.setDebugMode(session.fwController.getSetting("DebugMode"));
-	session.fwController.getPlugin("settings").registerHandlers();
+	//Register the Handlers.
+	oSettings.registerHandlers();
 	</cfscript>
 </cffunction>
 
@@ -54,16 +58,19 @@ Modification History:
 
 <!--- Initialize timing variable --->
 <cfset request.fwExecTime = GetTickCount()>
+<cfset lockTimeout = 120>
+
+<!--- Start Framework Request --->
 <cftry>
 	<!--- Initialize the Controller --->
 	<cfif not structkeyExists(session,"fwController") or not structKeyExists(application, "ColdBox_fwInitiated") or isfwReinit()>
-		<cflock type="exclusive" scope="session" timeout="120">
+		<cflock type="exclusive" scope="session" timeout="#lockTimeout#">
 			<cfif not structkeyExists(session,"fwController") or isfwReinit()>
 				<cfset session.fwController = CreateObject("component","controller").init()>
 			</cfif>
 		</cflock>
 		<!--- Initialize the Structures --->
-		<cflock type="exclusive" name="Coldbox_configloader" timeout="120">
+		<cflock type="exclusive" name="Coldbox_configloader" timeout="#lockTimeout#">
 			<cfif not structKeyExists(application, "ColdBox_fwInitiated") or isfwReinit()>
 				<cfset setupCalls()>
 			</cfif>
@@ -71,11 +78,11 @@ Modification History:
 	<cfelse>
 		<!--- AutoReload Tests --->
 		<cfif session.fwController.getSetting("ConfigAutoReload")>
-			<cflock type="exclusive" name="Coldbox_configloader" timeout="120">
+			<cflock type="exclusive" name="Coldbox_configloader" timeout="#lockTimeout#">
 				<cfset setupCalls()>
 			</cflock>
 		<cfelseif session.fwController.getSetting("HandlersIndexAutoReload")>
-			<cflock type="exclusive" name="Coldbox_configloader" timeout="120">
+			<cflock type="exclusive" name="Coldbox_configloader" timeout="#lockTimeout#">
 				<cfset session.fwController.getPlugin("settings").registerHandlers()>
 			</cflock>
 		</cfif>

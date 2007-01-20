@@ -13,6 +13,7 @@ Modification History:
 07/10/2006 - Updated the custom exception handler to retrieve an exception bean
 			 from the request collection.
 08/01/2006 - Coldbox Logs support.
+01/18/2007 - New registration methods. Getting ready for the event chaining.
 ----------------------------------------------------------------------->
 <cfcomponent name="settings" hint="Coldbox settings object." extends="coldbox.system.plugin">
 
@@ -58,7 +59,36 @@ Modification History:
 	<!--- ************************************************************* --->
 	
 	<cffunction name="registerHandlers" access="public" returntype="void" hint="I register your application's event handlers" output="false">
-		<cfset setSetting("RegisteredHandlers",getHandlersMetaData())>
+		<cfset var HandlersPath = getSetting("HandlersPath")>
+		<cfset var Handlers = ArrayNew(1)>
+		<cfset var HandlerListing = "">
+		
+		<!--- Check for Handlers Directory Location --->
+		<cfif not directoryExists(HandlersPath)>
+			<cfthrow type="Framework.plugins.settings.HandlersDirectoryNotFoundException" message="The handlers directory: #handlerspath# does not exist please check your application structure or your Application Mapping.">
+		</cfif>
+		
+		<!--- Get Handlers to register --->
+		<cfdirectory action="list" recurse="true" directory="#HandlersPath#" name="HandlerListing" filter="*.cfc">
+		
+		<!--- Verify handler's found, else, why continue --->
+		<cfif not HandlerListing.recordcount>
+			<cfthrow type="Framework.plugins.settings.NoHandlersFoundException" message="No handlers were found in: #HandlerPath#. So I have no clue how you are going to run this application.">
+		</cfif>
+		
+		<!--- Register Handlers --->
+		<cfloop query="HandlerListing">
+			<cfset HandlerListing.directory = replacenocase(HandlerListing.directory,HandlersPath,"","all")>
+			<cfset HandlerListing.directory = removeChars(replacenocase(HandlerListing.directory,"/",".","all") & ".",1,1)>
+			<cfset HandlerListing.name = ripExtension(HandlerListing.name)>
+			<cfset arrayappend(Handlers, HandlerListing.directory & HandlerListing.name)>
+		</cfloop>
+
+		<!--- Sort The Array --->
+		<cfset ArraySort(Handlers,"text")>
+		
+		<!--- Set registered Handlers --->
+		<cfset setSetting("RegisteredHandlers",arrayToList(Handlers))>
 	</cffunction>
 	
 	<!--- ************************************************************* --->
@@ -69,22 +99,38 @@ Modification History:
 		<!--- ************************************************************* --->
 		<cfscript>
 		var handlerIndex = 0;
-		var rtnStruct = "";
-		var handlersList = arrayToList(getSetting("RegisteredHandlers"));
+		var HandlerReceived = "";
+		var MethodReceived = "";
+		var handlersList = getSetting("RegisteredHandlers");
 		var onInvalidEvent = getSetting("onInvalidEvent");
-		var oBeanFactory = getPlugin("beanFactory");
+		var HandlerBean = getPlugin("beanFactory").create("coldbox.system.beans.eventhandlerBean").init(getSetting("HandlersInvocationPath"));
+		
+		//Rip the method
+		HandlerReceived = ripExtension(arguments.event);
+		MethodReceived = listLast(arguments.event,".");
 		
 		//Check Registration
-		handlerIndex = listFindNoCase(handlersList, arguments.event);
+		handlerIndex = listFindNoCase(handlersList, HandlerReceived);
+		
+		//Check for registration results
 		if ( handlerIndex ){
-			return oBeanFactory.create("coldbox.system.beans.eventhandlerBean").init(listgetAt(handlersList,handlerIndex));
+			HandlerBean.setHandler(listgetAt(handlersList,handlerIndex));
+			HandlerBean.setMethod(MethodReceived);
 		}
-		else if ( onInvalidEvent neq "" and EventSyntaxCheck(onInvalidEvent) ){
-			return oBeanFactory.create("coldbox.system.beans.eventhandlerBean").init(onInvalidEvent);
+		else if ( onInvalidEvent neq "" ){
+				//Check if the invalid event is the same as the current event
+				if ( CompareNoCase(onInvalidEvent,arguments.event) eq 0){
+					throw("The invalid event handler: #onInvalidEvent# is also invalid. Please check your settings","","Framework.plugins.settings.InvalidEventHandlerException");
+				}
+				else{
+					HandlerBean.setHandler(ripExtension(onInvalidEvent));
+					HandlerBean.setMethod(listLast(onInvalidEvent,"."));
+				}
 			}
 		else{
-			throw("The event handler: '#getSetting('AppMapping')#/#arguments.event#' is not valid registered event.</a>","","Framework.plugins.settings.EventHandlerNotRegisteredException");
+			throw("The event handler: #arguments.event# is not valid registered event.","","Framework.plugins.settings.EventHandlerNotRegisteredException");
 		}
+		return HandlerBean;
 		</cfscript>
 	</cffunction>
 	
@@ -128,93 +174,6 @@ Modification History:
 	<!--- ************************************************************* --->
 
 <!------------------------------------------- PRIVATE ------------------------------------------->
-
-	<!--- ************************************************************* --->
-
-	<cffunction name="getHandlersMetaData" access="private" hint="Get the handler(s) meta data for registration." returntype="any">
-		<cfset var HandlersPath = getSetting("AppMapping")>
-		<cfset var HandlersArray = ArrayNew(1)>
-		<cfset var metaData = "">
-		<cfset var registeredHandlers = ArrayNew(1)>
-		<cfset var x = 0>
-		<cfset var qryCFC = "">
-		<cfset var StringBuffer = "<cfc>">
-		<cfset var parseString = "">
-		<cfset var fileContent = "">
-		<cfset var functions = "">
-		
-		<!--- setup handler's location, I use / because I use relative paths --->
-		<cfif getSetting("AppMapping") neq "">
-			<!--- Test for CF 6.X --->
-			<cfif listfirst(server.coldfusion.productversion) lt 7>
-				<cfset HandlersPath = replacenocase(cgi.SCRIPT_NAME, listlast(cgi.SCRIPT_NAME,"/"),"") & "handlers/">
-			<cfelse>
-				<cfset HandlersPath = "/" & HandlersPath & "/handlers/">
-			</cfif>
-		<cfelse>
-			<cfset HandlersPath = "/handlers/">
-		</cfif>
-		<!--- Expand Path --->
-		<cfset HandlersPath = Expandpath(HandlersPath)>
-		<!--- Check for Handlers Directory Location --->
-		<cfif not directoryExists(HandlersPath)>
-			<cfthrow type="Framework.plugins.settings.HandlersDirectoryNotFoundException" message="The handlers directory: #handlerspath# does not exist please check your application structure or your Application Mapping.">
-		</cfif>
-		<!--- Get CFC's to parse --->
-		<cfdirectory action="list" directory="#HandlersPath#" name="qryCFC" sort="name" filter="*.cfc">
-		<!--- Verify handler's found, else, why continue --->
-		<cfif not qryCFC.recordcount>
-			<cfthrow type="Framework.plugins.settings.NoHandlersFoundException" message="No handlers were found in: #handlerspath#. So I have no clue how you are going to run this application.">
-		</cfif>
-		<!--- Loop and parse --->
-		<cfloop query="qryCFC">
-			<cffile action="read" file="#HandlersPath##name#" variable="fileContent">
-			<cfscript>
-		 	parseString = reFindnocase("<cffunction[^>/]*>",fileContent,1,true);
-			while ( parseString.len[1] neq 0 ) {
-				StringBuffer = StringBuffer &  Mid(fileContent,parseString.pos[1],parseString.len[1]) & "</cffunction>";
-				fileContent = removeChars(fileContent,1,parseString.pos[1]+parseString.len[1]);
-				parseString = reFindnocase("<cffunction[^>/]*>",fileContent,1,true);
-			}
-			StringBuffer = StringBuffer & "</cfc>";
-			//Try to parse
-			try{
-				functions = xmlsearch(xmlparse(StringBuffer),"//cfc/cffunction");
-			}
-			catch(any e){
-				throw("Error registering and parsing your event handlers. There are syntax errors in your event handlers. please verify them.","#e.message# #e.detail#","Framework.plugins.settings.InvalidEventHandlersException");
-			}
-			
-			//Parse the methods.
-			if ( arrayLen(functions) eq 0 )
-				getPlugin("logger").logEntry("warning","Handler cfc: #name# does not have any methods defined.");
-			else{
-				for (x=1; x lte arrayLen(functions) ; x=x+1){
-					if ( not StructKeyExists(functions[x].XMLAttributes,"access") ) 
-						functions[x].XMLAttributes["access"] = "public";
-					if ( trim(functions[x].XMLAttributes["name"]) neq "init" and trim(functions[x].XMLAttributes["access"]) eq "public" ){
-						arrayAppend(registeredHandlers, ripExtension(name) & "." & trim(functions[x].XMLAttributes["name"]));
-					}
-				}
-			}
-			StringBuffer = "<cfc>";
-			</cfscript>
-		</cfloop>
-		<cfreturn registeredHandlers>
-	</cffunction>
-
-	<!--- ************************************************************* --->
-
-	<cffunction name="EventSyntaxCheck" access="private" hint="I test the event syntax and throw errors." returntype="boolean"  output="false">
-		<!--- ************************************************************* --->
-		<cfargument name="event" hint="The event to check" type="string" required="true">
-		<!--- ************************************************************* --->
-		<cfif refindnocase("^eh[a-zA-Z]+\.(dsp|do|on)[a-zA-Z]+", arguments.event)>
-			<cfreturn true>
-		<cfelse>
-			<cfthrow type="Framework.plugins.settings.EventSyntaxInvalidException" message="The event syntax: #request.reqCollection.event# is invalid. Please check the documentation for valid syntax.">
-		</cfif>
-	</cffunction>
 	
 	<!--- ************************************************************* --->
 
