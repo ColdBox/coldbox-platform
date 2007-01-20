@@ -4,8 +4,8 @@
         <Setting name="Codename" value="ColdBox"/>
         <Setting name="Author" value="Luis Majano"/>
         <Setting name="AuthorEmail" value="info@coldboxframework.com"/>
-        <Setting name="AuthorWebsite" value="http://www.luismajano.com/projects/coldbox"/>
-        <Setting name="Suffix" value="John 3:16"/>
+        <Setting name="AuthorWebsite" value="http://www.coldboxframework.com"/>
+        <Setting name="Suffix" value="John 4:14"/>
         <Setting name="Version" value="1.1.0"/>
         <Setting name="Description" value="This is the ColdBox MVC ColdFusion Framework for web applications."/>
         <Setting name="ModifyLogLocation" value="readme.txt"/>
@@ -24,6 +24,8 @@
         <!--Available CF Character Sets For File Operations -->
         <Setting name="AvailableCFCharacterSets" value="utf-8,iso-8859-1,windows-1252,us-ascii,shift_jis,iso-2022-jp,euc-jp,euc-kr,big5,euc-cn,utf-16"/>
         <Setting name="DefaultFileCharacterSet" value="utf-8"/>
+        <!--Log Default Directory Name-->
+        <Setting name="DefaultLogDirectory" value="logs" />
     </Settings>
     
     <!-- Config XML File Declarations -->
