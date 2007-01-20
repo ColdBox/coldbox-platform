@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <Config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-	xsi:noNamespaceSchemaLocation="http://www.coldboxframework.com/schema/config_1.1.0.xsd">
+	xsi:noNamespaceSchemaLocation="http://www.coldboxframework.com/schema/config_1.2.0.xsd">
 	<Settings>
 		<!--The name of your application.-->
 		<Setting name="AppName"						value="Your App Name here"/>
 		<!--The application's mapping either relative to the web root or using a CFMX mapping.-->
 		<Setting name="AppMapping" 					value="Your Application Mapping Here" />
-		<!--Optional Setting: AppDevMapping, your mapping same as above but for a Development Environment
-		    If the framework detects you are in a Development Environment it will replace
-		    the AppMapping value with this one -->
+		<!--Optional: AppDevMapping, your mapping same as above but for a Development Environment -->
 		<Setting name="AppDevMapping" 				value=""/>
 		<!--Default Debugmode boolean flag (Set to false in production environments)-->
 		<Setting name="DebugMode" 					value="true" />
 		<!--The Debug Password to use in order to activate/deactivate debugmode,activated by url actions -->
 		<Setting name="DebugPassword" 				value="Coldbox"/>
+		<!--The fwreinit password to use in order to reinitialize the framework and application.Optional, else leave blank -->
+		<Setting name="ReinitPassword" 				value=""/>
 		<!--This feature is enabled by default to permit the url dumpvar parameter-->
 		<Setting name="EnableDumpVar"				value="true" />
 		<!--Log Errors and entries on the coldfusion server logs, disabled by default if not used-->
@@ -24,53 +24,31 @@
 		<Setting name="ColdboxLogsLocation"			value="logs" />
 		<!--Default Event to run if no event is set or passed. Usually the event to be fired first (NOTE: use event handler syntax)-->
 		<Setting name="DefaultEvent" 				value="ehGeneral.dspHello"/>
-		<!--Event Handler to run on the start of a request, leave blank if not used. Emulates the Application.cfc onRequestStart method
-			<Setting name="RequestStartHandler" 	value="ehGeneral.onRequestStart"/>
-		-->
+		<!--Event Handler to run on the start of a request, leave blank if not used. Emulates the Application.cfc onRequestStart method	-->
 		<Setting name="RequestStartHandler" 		value=""/>
-		<!--Event Handler to run at end of all requests, leave blank if not used. Emulates the Application.cfc onRequestEnd method
-			<Setting name="RequestEndHandler" 		value="ehGeneral.onRequestEnd"/>
-		-->
+		<!--Event Handler to run at end of all requests, leave blank if not used. Emulates the Application.cfc onRequestEnd method-->
 		<Setting name="RequestEndHandler" 			value=""/>
-		<!--Event Handler to run at the start of an application, leave blank if not used. Emulates the Application.cfc onApplicationStart method
-		    It will fire again on expiration of the application variable or when you reinit the framework using fwreinit=1
-			<Setting name="ApplicationStartHandler" 		value="ehGeneral.onAppinit"/>
-		-->
+		<!--Event Handler to run at the start of an application, leave blank if not used. Emulates the Application.cfc onApplicationStart method	-->
 		<Setting name="ApplicationStartHandler" 	value=""/>
 		<!--The Email address from which all outgoing framework emails will be sent. -->
 		<Setting name="OwnerEmail" 					value="myemail@gmail.com" />
 		<!-- Enable Bug Reports to be emailed out, set to true by default if left blank -->
 		<Setting name="EnableBugReports" 			value="true"/>
-		<!--UDF Library To Load on every request for your views and handlers. ex: includes/udf.cfm
-		   or You can use a CFMX absolute mapping path, ex: /coldboxCFMXMapping/includes/udf.cfm
-		   If not used, leave it blank.
-			<Setting name="UDFLibraryFile" 			value="udf.cfm" />
-		   -->
+		<!--UDF Library To Load on every request for your views and handlers -->
 		<Setting name="UDFLibraryFile" 				value="" />
 		<!--The event handler to execute on all framework exceptions. Event Handler syntax required.-->
 		<Setting name="ExceptionHandler"			value="" />
-		<!--Full path from the application's root to your custom error page, else leave blank. ColdBox provides you with a custom
-		    error template by default.If you use this then you need to display the errors using an
-		    exception bean that will be in the request collection getvalue('ExceptionBean')
-			<Setting name="CustomErrorTemplate"			value="includes/myerror.cfm" />
-		 -->
+		<!--What event to fire when an invalid event is detected-->
+		<Setting name="onInvalidEvent" 				value="ehGeneral.dspHello" />
+		<!--Full path from the application's root to your custom error page, else leave blank. -->
 		<Setting name="CustomErrorTemplate"			value="" />
-		<!--Messagebox Style (css) class name to use. Look at the messagebox.cfm in the includes directory to see how to override the
-		    style.
-			<Setting name="MessageboxStyleClass"		value="mymessagebox" />
-		-->
+		<!--Messagebox Style (css) class name to use. Look at the messagebox.cfm in the includes directory-->
 		<Setting name="MessageboxStyleClass"		value="" />
-		<!--Flag to Auto reload the internal handlers directory listing. False for production. If not used
-			then the handlers will not be found. You will need to reload the framework via fwreinit=1 in the URL -->
+		<!--Flag to Auto reload the internal handlers directory listing. False for production. -->
 		<Setting name="HandlersIndexAutoReload"   	value="true" />
-		<!--Flag to auto reload the config.xml settings. False for production. If not used
-		    then use the fwreinit=1 to reload the framework -->
+		<!--Flag to auto reload the config.xml settings. False for production. -->
 		<Setting name="ConfigAutoReload"          	value="true" />
-		<!-- Declare the custom plugins base invocation path, if used. You have to use dot notation.
-		Example: mymapping.myplugins, myapplication.customplugins
-		When plugins are called, this invocation location will be pre-pended.
-			<Setting name="MyPluginsLocation"   		value="myapplication.customplugins" />
-		-->
+		<!-- Declare the custom plugins base invocation path, if used. You have to use dot notation.Example: mymapping.myplugins	-->
 		<Setting name="MyPluginsLocation"   		value="" />
 	</Settings>
 
