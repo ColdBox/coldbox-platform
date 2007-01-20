@@ -50,9 +50,12 @@ Credits
 	
 7. ColdBoxReader by Oscar Arevalo/Luis Majano
 	An RSS reader with AJAX interaction.
+	
 8. i18N Sample by Paul Hastings/Luis Majano
 	A showcase gallery of i18N interactions
+	
 9. JavaLoader by Luis Majano
 	Interaction for using Mark Mandel's Java Loader
+	
 10. Illidium PU-36 CFC Generator by Brian Rinaldi/Luis Majano
 	Brian Rinaldi's cfc generator ported to ColdBox
