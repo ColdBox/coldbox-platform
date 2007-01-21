@@ -184,23 +184,22 @@ Last Update 	: December 9, 2006
 		<!--- Start Timer --->
 		<cfmodule template="includes/timer.cfm" timertag="invoking runEvent [#arguments.event#]">
 			
-			<!--- Get registered handler --->
+			<!--- Validate and Get registered handler --->
 			<cfset oEventBean = oSettings.getRegisteredHandler(arguments.event)>
 			<cfset ExecutingHandler = oEventBean.getRunnable()>
 			<cfset ExecutingMethod = oEventBean.getMethod()>
 			<cftry>
 				
-				<!--- Check if using handler cache --->
+				<!--- Check if using handler cache, get handler from cache --->
 				<cfif getSetting("HandlerCaching") >
 					<cfif oHandlerCacheManager.lookup(ExecutingHandler) >
 						<cfset oEventHandler = oHandlerCacheManager.get(ExecutingHandler)>
-						<cfset oEventHandler.setRC(request.reqCollection)>
 					<cfelse>
 						<cfset oEventHandler = CreateObject("component",ExecutingHandler).init()>
 						<cfset oHandlerCacheManager.set(ExecutingHandler,oEventHandler)>
 					</cfif>
 				<cfelse>
-					<!--- Try to Create Runnable Object --->
+					<!--- Create Runnable Object --->
 					<cfset oEventHandler = CreateObject("component",ExecutingHandler).init()>
 				</cfif>
 				
@@ -214,9 +213,18 @@ Last Update 	: December 9, 2006
 				<cfif not structKeyExists(oEventHandler,ExecutingMethod)>
 					<cfset setNextEvent(getSetting("onInvalidEvent"))>
 				</cfif>
-				
-				<!--- Execute Method --->
-				<cfinvoke component="#oEventHandler#" method="#ExecutingMethod#">
+				<!--- Different Execution for Cached Handler --->
+				<cfif getSetting("HandlerCaching")>
+					<cflock type="exclusive" name="HandlerCacheExecution" timeout="120">
+						<!--- Inject RC --->	
+						<cfset oEventHandler.setRC(request.reqCollection)>
+						<!--- Execute Method --->
+						<cfinvoke component="#oEventHandler#" method="#ExecutingMethod#">
+					</cflock>
+				<cfelse>
+					<!--- Execute Method --->
+					<cfinvoke component="#oEventHandler#" method="#ExecutingMethod#">
+				</cfif>
 				
 				<cfcatch type="any">
 					<cfthrow type="Framework.EventHandlerMethodExecutionException" message="Error Running Event Method: (#ExecutingHandler#.#ExecutingMethod#)" detail="#cfcatch.Detail# #cfcatch.Message#">

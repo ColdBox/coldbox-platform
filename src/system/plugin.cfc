@@ -14,8 +14,6 @@ Modification History:
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 	
-	<!--- ************************************************************* --->
-	
 	<cffunction name="init" access="public" returntype="any" output="false" hint="The plugin constructor.">
 		<cfscript>
 			super.init();
@@ -27,8 +25,6 @@ Modification History:
 			return this;
 		</cfscript>
 	</cffunction>
-	
-	<!--- ************************************************************* --->
 
 <!------------------------------------------- PUBLIC ------------------------------------------->
 	

@@ -16,7 +16,9 @@ Modification History:
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
 	<cffunction name="init" access="public" output="false" returntype="handlerCacheManager">
-		<cfset application.coldbox_handlers = structnew()>
+		<cflock type="exclusive" scope="application" timeout="120">
+			<cfset application.coldbox_handlers = structnew()>
+		</cflock>
 		<cfreturn this>
 	</cffunction>
 
@@ -29,9 +31,11 @@ Modification History:
 		<cfargument name="handlerKey" type="string" required="true">
 		<!--- ************************************************************* --->
 		<cfset var HandlerFound = false>
-		<cfif structKeyExists(application.coldbox_handlers, arguments.handlerKey ) >
-			<cfset HandlerFound = true>
-		</cfif>
+		<cflock type="readonly" scope="application" timeout="120">
+			<cfif structKeyExists(application.coldbox_handlers, arguments.handlerKey ) >
+				<cfset HandlerFound = true>
+			</cfif>
+		</cflock>
 		<cfreturn HandlerFound>
 	</cffunction>
 	
@@ -41,7 +45,11 @@ Modification History:
 		<!--- ************************************************************* --->
 		<cfargument name="handlerKey" type="string" required="true">
 		<!--- ************************************************************* --->
-		<cfreturn application.coldbox_handlers[arguments.handlerKey]>
+		<cfset var oHandler = "">
+		<cflock type="readonly" scope="application" timeout="120">
+			<cfset oHandler = application.coldbox_handlers[arguments.handlerKey]>
+		</cflock>
+		<cfreturn oHandler>
 	</cffunction>
 	
 	<!--- ************************************************************* --->
