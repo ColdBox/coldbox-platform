@@ -262,7 +262,11 @@ Modification History:
 			//Check for MyPluginsLocation if found
 			if ( not structkeyExists(ConfigStruct, "MyPluginsLocation") )
 				ConfigStruct["MyPluginsLocation"] = "";
-						
+			
+			//Check for Handler Caching
+			if ( not structKeyExists(ConfigStruct, "HandlerCaching") or not isBoolean(ConfigStruct.HandlerCaching) )
+				ConfigStruct["HandlerCaching"] = true;
+			
 			//Your Settings To Load
 			YourSettingNodes = XMLSearch(configXML, instance.searchYourSettings);
 			if ( ArrayLen(YourSettingNodes) gt 0 ){

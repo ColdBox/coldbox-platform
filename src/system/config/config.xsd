@@ -56,6 +56,7 @@
 									<xs:enumeration value="ConfigAutoReload" />
 									<xs:enumeration value="MyPluginsLocation" />
 									<xs:enumeration value="onInvalidEvent"/>	
+									<xs:enumeration value="HandlerCaching" />
 								</xs:restriction>
 							</xs:simpleType>
 						</xs:attribute>

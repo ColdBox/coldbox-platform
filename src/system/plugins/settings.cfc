@@ -50,7 +50,12 @@ Modification History:
 		if ( getSetting("EnableColdboxLogging") )
 			getPlugin("logger").initLogLocation();
 		
-		//<!--- Flag the initiation --->
+		//Cache Manager
+		if ( getSetting("HandlerCaching") ){
+			application.ColdBox_HandlerCacheManager = CreateObject("component","coldbox.system.util.handlerCacheManager").init();
+			application.ColdBox_HandlerCacheManager.clear();
+		}
+		// Flag the initiation
 		application.ColdBox_fwInitiated = true;
 		application.ColdBox_fwAppStartHandlerFired = false;
 		</cfscript>

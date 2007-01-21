@@ -175,36 +175,54 @@ Last Update 	: December 9, 2006
 	<cffunction name="runEvent" returntype="void" access="Public" hint="I am an event handler runnable factory. If no event is passed in then it will run the default event from the config.xml.">
 		<cfargument name="event" hint="The event to run. If no current event is set, use the default event from the config.xml" type="string" required="no" default="#getValue("event")#">
 		<!--- ************************************************************* --->
-		<cfset var objEventHandler = "">
-		<cfset var EventBean = "">
+		<cfset var oEventHandler = "">
+		<cfset var oEventBean = "">
 		<cfset var oSettings = getPlugin("settings")>
+		<cfset var oHandlerCacheManager = application.ColdBox_HandlerCacheManager>
+		<cfset var ExecutingHandler = "">
+		<cfset var ExecutingMethod = "">
 		<!--- Start Timer --->
 		<cfmodule template="includes/timer.cfm" timertag="invoking runEvent [#arguments.event#]">
 			
 			<!--- Get registered handler --->
-			<cfset EventBean = oSettings.getRegisteredHandler(arguments.event)>
-			
+			<cfset oEventBean = oSettings.getRegisteredHandler(arguments.event)>
+			<cfset ExecutingHandler = oEventBean.getRunnable()>
+			<cfset ExecutingMethod = oEventBean.getMethod()>
 			<cftry>
-				<!--- Try to Create Runnable Object --->
-				<cfset objEventHandler = CreateObject("component",EventBean.getRunnable()).init()>
+				
+				<!--- Check if using handler cache --->
+				<cfif getSetting("HandlerCaching") >
+					<cfif oHandlerCacheManager.lookup(ExecutingHandler) >
+						<cfset oEventHandler = oHandlerCacheManager.get(ExecutingHandler)>
+						<cfset oEventHandler.setRC(request.reqCollection)>
+					<cfelse>
+						<cfset oEventHandler = CreateObject("component",ExecutingHandler).init()>
+						<cfset oHandlerCacheManager.set(ExecutingHandler,oEventHandler)>
+					</cfif>
+				<cfelse>
+					<!--- Try to Create Runnable Object --->
+					<cfset oEventHandler = CreateObject("component",ExecutingHandler).init()>
+				</cfif>
 				
 				<cfcatch type="any">
-					<cfthrow type="Framework.EventHandlerInstantiationException" message="Error Instantiating Event Handler: (#EventBean.getRunnable()#)" detail="CFCPath: #getSetting("HandlersInvocationPath")# ; #cfcatch.Detail# #cfcatch.Message#">
+					<cfthrow type="Framework.EventHandlerInstantiationException" message="Error Instantiating Event Handler: (#ExecutingHandler#)" detail="CFCPath: #getSetting("HandlersInvocationPath")# ; #cfcatch.Detail# #cfcatch.Message#">
 				</cfcatch>
 			</cftry>
+			
 			<cftry>
 				<!--- Verify Method Exists --->
-				<cfif not structKeyExists(objEventHandler,EventBean.getMethod())>
+				<cfif not structKeyExists(oEventHandler,ExecutingMethod)>
 					<cfset setNextEvent(getSetting("onInvalidEvent"))>
 				</cfif>
 				
 				<!--- Execute Method --->
-				<cfinvoke component="#objEventHandler#" method="#EventBean.getMethod()#">
+				<cfinvoke component="#oEventHandler#" method="#ExecutingMethod#">
 				
 				<cfcatch type="any">
-					<cfthrow type="Framework.EventHandlerMethodExecutionException" message="Error Running Event Method: (#EventBean.getRunnable()#.#eventBean.getMethod()#)" detail="#cfcatch.Detail# #cfcatch.Message#">
+					<cfthrow type="Framework.EventHandlerMethodExecutionException" message="Error Running Event Method: (#ExecutingHandler#.#ExecutingMethod#)" detail="#cfcatch.Detail# #cfcatch.Message#">
 				</cfcatch>
 			</cftry>
+			
 		</cfmodule>
 	</cffunction>
 
