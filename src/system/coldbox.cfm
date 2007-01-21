@@ -38,7 +38,12 @@ Modification History:
 
 <cffunction name="isfwReinit" returntype="boolean">
  	<cfscript>
-	var reinitPass = session.fwController.getSetting("ReinitPassword");
+	var reinitPass = "";
+	if ( not session.fwController.settingExists("ReinitPassword") )
+		return true;
+	else
+		reinitPass = session.fwController.getSetting("ReinitPassword");
+		
 	if ( structKeyExists(url,"fwreinit") ){
 		if ( reinitPass eq "" ){
 			return true;
