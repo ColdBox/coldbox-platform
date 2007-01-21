@@ -50,6 +50,8 @@
 		<Setting name="ConfigAutoReload"          	value="true" />
 		<!-- Declare the custom plugins base invocation path, if used. You have to use dot notation.Example: mymapping.myplugins	-->
 		<Setting name="MyPluginsLocation"   		value="" />
+		<!--Flag to cache handlers. Default if left blank is true. -->
+		<Setting name="HandlerCaching" 				value="true"/>
 	</Settings>
 
 	<!--Your Settings can go here, if not needed, use <YourSettings />. You can use these for anything you like.
