@@ -57,6 +57,8 @@
 									<xs:enumeration value="MyPluginsLocation" />
 									<xs:enumeration value="onInvalidEvent"/>	
 									<xs:enumeration value="HandlerCaching" />
+									<xs:enumeration value="IOCFramework" />
+									<xs:enumeration value="IOCDefinitionFile" />
 								</xs:restriction>
 							</xs:simpleType>
 						</xs:attribute>
@@ -293,6 +295,11 @@
 			<xs:documentation>A datasource declaration.</xs:documentation>
 		</xs:annotation>
 		<xs:complexType>
+			<xs:attribute name="alias" type="xs:string" use="required">
+				<xs:annotation>
+					<xs:documentation>The alias of the registered datasource, for use in your application.</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
 			<xs:attribute name="name" type="xs:string" use="required">
 				<xs:annotation>
 					<xs:documentation>The name of the registered datasource.</xs:documentation>

@@ -8,7 +8,7 @@ Description :
 	I model a coldfusion datasource connection setting.
 
 Modification History:
-
+01/28/2007 - Added the alias property and solved the java contract with correct arg.
 ----------------------------------------------------------------------->
 <cfcomponent name="datasourceBean" hint="I model a datasource connection setting." output="false">
 
@@ -16,6 +16,7 @@ Modification History:
 	<cfscript>
 		variables.instance = structnew();
 		variables.instance.name = "";
+		variables.instance.alias = "";
 		variables.instance.dbtype = "";
 		variables.instance.username = "";
 	    variables.instance.password = "" ;
@@ -51,8 +52,8 @@ Modification History:
 	<!--- ************************************************************* --->
 	
 	<cffunction name="setname" access="public" return="void" output="false" hint="Set name of the datasource, this maps to the Coldfusion datasource name">
-	  <cfargument name="value" type="string" >
-	  <cfset variables.instance.name=arguments.value >
+	  <cfargument name="name" type="string" required="true">
+	  <cfset variables.instance.name=arguments.name >
 	</cffunction>
 	
 	<!--- ************************************************************* --->
@@ -63,9 +64,22 @@ Modification History:
 	
 	<!--- ************************************************************* --->
 	
+	<cffunction name="setalias" access="public" return="void" output="false" hint="Set alias of the datasource, this is used for reference to the structure.">
+	  <cfargument name="alias" type="string" required="true">
+	  <cfset variables.instance.alias=arguments.alias >
+	</cffunction>
+	
+	<!--- ************************************************************* --->
+	
+	<cffunction name="getalias" access="public" return="string" output="false" hint="Get the alias">
+	  <cfreturn variables.instance.name >
+	</cffunction>
+	
+	<!--- ************************************************************* --->
+	
 	<cffunction name="setDBType" access="public" return="void" output="false" hint="Set DBType">
-	  <cfargument name="value" type="string" >
-	  <cfset variables.instance.dbtype=arguments.value >
+	  <cfargument name="dbtype" type="string" required="true">
+	  <cfset variables.instance.dbtype=arguments.dbtype >
 	</cffunction>
 	
 	<!--- ************************************************************* --->
@@ -77,8 +91,8 @@ Modification History:
 	<!--- ************************************************************* --->
 	
 	<cffunction name="setUsername" access="public" return="void" output="false" hint="Set Username">
-	  <cfargument name="value" type="string" >
-	  <cfset variables.instance.Username=arguments.value >
+	  <cfargument name="Username" type="string" required="true">
+	  <cfset variables.instance.Username=arguments.Username >
 	</cffunction>
 	
 	<!--- ************************************************************* --->
@@ -90,8 +104,8 @@ Modification History:
 	<!--- ************************************************************* --->
 	
 	<cffunction name="setPassword" access="public" return="void" output="false" hint="Set Password">
-	  <cfargument name="value" type="string" >
-	  <cfset variables.instance.Password=arguments.value >
+	  <cfargument name="Password" type="string" required="true" >
+	  <cfset variables.instance.Password=arguments.Password >
 	</cffunction>
 	
 	<!--- ************************************************************* --->

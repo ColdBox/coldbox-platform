@@ -28,6 +28,7 @@ Modification History:
 12/20/2006 - new settings: ReinitPassword, InvalidEventHandler
 01/17/2007 - fixed Bug #83, failure to set handler invocation path if / as first char
 01/18/2007 - Preparing for new event registration system.
+01/26/2007 - Datasource Alias and error checking Ticket #88, #89
 ----------------------------------------------------------------------->
 <cfcomponent name="XMLParser"
 			 hint="This is the XML Parser plugin for the framework. It takes care of any XML parsing for the framework's usage."
@@ -439,15 +440,36 @@ Modification History:
 				//Create Structures
 				for(i=1;i lte ArrayLen(DatasourcesNodes); i=i+1){
 					DSNStruct = structNew();
-					StructInsert(DSNStruct,"Name", Trim(DatasourcesNodes[i].XMLAttributes["name"]));
-					StructInsert(DSNStruct,"DBType", Trim(DatasourcesNodes[i].XMLAttributes["dbtype"]));
-					StructInsert(DSNStruct,"Username", Trim(DatasourcesNodes[i].XMLAttributes["username"]));
-					StructInsert(DSNStruct,"Password", Trim(DatasourcesNodes[i].XMLAttributes["password"]));
-					//Insert to structure
-					if ( not structKeyExists(DatasourcesStruct,DSNStruct.name) )
-						StructInsert(DatasourcesStruct, DSNStruct.name , DSNStruct);
+					
+					//Required Entries
+					if ( not structKeyExists(DatasourcesNodes[i].XMLAttributes, "Alias") or len(Trim(DatasourcesNodes[i].XMLAttributes["Alias"])) eq 0 )
+						throw("This datasource entry's alias cannot be blank","","Framework.plugins.XMLParser.ConfigXMLParsingException");
 					else
-						throw("The datasource name: #dsnStruct.name# has already been declared.","","Framework.plugins.XMLParser.ConfigXMLParsingException");
+						StructInsert(DSNStruct,"Alias", Trim(DatasourcesNodes[i].XMLAttributes["Alias"]));
+					if ( not structKeyExists(DatasourcesNodes[i].XMLAttributes, "Name") or len(Trim(DatasourcesNodes[i].XMLAttributes["Name"])) eq 0 )
+						throw("This datasource entry's name cannot be blank","","Framework.plugins.XMLParser.ConfigXMLParsingException");
+					else
+						StructInsert(DSNStruct,"Name", Trim(DatasourcesNodes[i].XMLAttributes["Name"]));
+					
+					//Optional Entries.
+					if ( structKeyExists(DatasourcesNodes[i].XMLAttributes, "dbtype") )
+						StructInsert(DSNStruct,"DBType", Trim(DatasourcesNodes[i].XMLAttributes["dbtype"]));
+					else
+						StructInsert(DSNStruct,"DBType","");
+					if ( structKeyExists(DatasourcesNodes[i].XMLAttributes, "Username") )
+						StructInsert(DSNStruct,"Username", Trim(DatasourcesNodes[i].XMLAttributes["username"]));
+					else
+						StructInsert(DSNStruct,"Username","");
+					if ( structKeyExists(DatasourcesNodes[i].XMLAttributes, "password") )
+						StructInsert(DSNStruct,"Password", Trim(DatasourcesNodes[i].XMLAttributes["password"]));
+					else
+						StructInsert(DSNStruct,"Password","");
+					
+					//Insert to structure
+					if ( not structKeyExists(DatasourcesStruct,DSNStruct.Alias) )
+						StructInsert(DatasourcesStruct, DSNStruct.Alias , DSNStruct);
+					else
+						throw("The datasource alias: #dsnStruct.Alias# has already been declared.","","Framework.plugins.XMLParser.ConfigXMLParsingException");
 				}
 			}
 			StructInsert(ConfigStruct, "Datasources", DatasourcesStruct);
