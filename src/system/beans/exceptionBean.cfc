@@ -31,10 +31,10 @@ Modification History:
 	<!--- ************************************************************* --->
 	<cffunction name="init" access="public" returntype="any" output="false">
 		<!--- ************************************************************* --->
-		<cfargument name="errorStruct" 		type="any" required="false" hint="The CF error Structure" 		default="#structnew()#" />
-		<cfargument name="extramessage" 	type="any" required="false" hint="The custom error message" 	default="" />
-		<cfargument name="extraInfo" 		type="any" required="false" hint="Extra information" 			default="" />
-		<cfargument name="errorType" 		type="any" required="false" default="application" 				hint="application/framework">
+		<cfargument name="errorStruct" 		type="struct" 	required="false" hint="The CF error Structure" 		default="#structnew()#" />
+		<cfargument name="extramessage" 	type="string" 	required="false" hint="The custom error message" 	default="" />
+		<cfargument name="extraInfo" 		type="any" 		required="false" hint="Extra information" 			default="" />
+		<cfargument name="errorType" 		type="string" 	required="false" default="application" 				hint="application/framework">
 		<!--- ************************************************************* --->
 		<!--- Set instance for exception structure --->
 		<cfset variables.instance.exceptionStruct = duplicate(arguments.errorStruct) />
