@@ -15,7 +15,7 @@ Modification History:
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
-	<cffunction name="init" access="public" output="false" returntype="handlerCacheManager" hint="Constructor">
+	<cffunction name="init" access="public" output="false" returntype="coldbox.system.util.handlerCacheManager" hint="Constructor">
 		<cfscript>
 		variables.cb_handlers = structnew();
 		return this;

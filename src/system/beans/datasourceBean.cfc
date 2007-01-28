@@ -26,7 +26,7 @@ Modification History:
 
 	<!--- ************************************************************* --->
 	
-	<cffunction name="init" access="public" output="false" hint="I build a new datasource bean." returntype="any">
+	<cffunction name="init" access="public" output="false" hint="I build a new datasource bean." returntype="coldbox.system.beans.datasourceBean">
 	    <!--- ************************************************************* --->
 	    <cfargument name="datasourceStruct" 	type="struct" required="false" default="#structnew()#" hint="The structure holding the name,dbtype,username,and password variables." >
 	    <!--- ************************************************************* --->

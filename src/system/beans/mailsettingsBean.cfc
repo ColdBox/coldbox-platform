@@ -25,7 +25,7 @@ Modification History:
 
 	<!--- ************************************************************* --->
 	
-	<cffunction name="init" access="public" output="false" hint="I return a mail setting bean." returntype="any">
+	<cffunction name="init" access="public" output="false" hint="I return a mail setting bean." returntype="coldbox.system.beans.mailsettingsBean">
 		<!--- ************************************************************* --->
 		<cfargument name="server"	required="false" type="string" default="">
 		<cfargument name="username"	required="false" type="string" default="">

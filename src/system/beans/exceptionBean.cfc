@@ -29,7 +29,7 @@ Modification History:
 	</cfscript>
 
 	<!--- ************************************************************* --->
-	<cffunction name="init" access="public" returntype="any" output="false">
+	<cffunction name="init" access="public" returntype="coldbox.system.beans.exceptionBean" output="false">
 		<!--- ************************************************************* --->
 		<cfargument name="errorStruct" 		type="struct" 	required="false" hint="The CF error Structure" 		default="#structnew()#" />
 		<cfargument name="extramessage" 	type="string" 	required="false" hint="The custom error message" 	default="" />

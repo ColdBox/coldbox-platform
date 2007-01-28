@@ -9,7 +9,7 @@ Last Update 	: December 9, 2006
 <cfcomponent name="controller" hint="This is the ColdBox Front Controller." output="false">
 	
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
-	<cffunction name="init" returntype="controller" access="Public" hint="I am the constructor" output="false">
+	<cffunction name="init" returntype="coldbox.system.controller" access="Public" hint="I am the constructor" output="false">
 		<cfscript>
 		variables.instance = structnew();
 		variables.instance.DebugMode = false;
