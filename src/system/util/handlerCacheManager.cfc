@@ -15,11 +15,11 @@ Modification History:
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
-	<cffunction name="init" access="public" output="false" returntype="handlerCacheManager">
-		<cflock type="exclusive" scope="application" timeout="120">
-			<cfset application.coldbox_handlers = structnew()>
-		</cflock>
-		<cfreturn this>
+	<cffunction name="init" access="public" output="false" returntype="handlerCacheManager" hint="Constructor">
+		<cfscript>
+		variables.cb_handlers = structnew();
+		return this;
+		</cfscript>
 	</cffunction>
 
 <!------------------------------------------- PUBLIC ------------------------------------------->
@@ -31,25 +31,23 @@ Modification History:
 		<cfargument name="handlerKey" type="string" required="true">
 		<!--- ************************************************************* --->
 		<cfset var HandlerFound = false>
-		<cflock type="readonly" scope="application" timeout="120">
-			<cfif structKeyExists(application.coldbox_handlers, arguments.handlerKey ) >
-				<cfset HandlerFound = true>
-			</cfif>
-		</cflock>
+		<cfif structKeyExists(variables.cb_handlers, arguments.handlerKey ) >
+			<cfset HandlerFound = true>
+		</cfif>
 		<cfreturn HandlerFound>
 	</cffunction>
 	
 	<!--- ************************************************************* --->
 	
-	<cffunction name="get" access="public" output="false" returntype="any" hint="Get a handler from cache.">
+	<cffunction name="get" access="public" output="false" returntype="any" hint="Get a handler from cache. If it doesn't exist it return a blank structure.">
 		<!--- ************************************************************* --->
 		<cfargument name="handlerKey" type="string" required="true">
 		<!--- ************************************************************* --->
-		<cfset var oHandler = "">
-		<cflock type="readonly" scope="application" timeout="120">
-			<cfset oHandler = application.coldbox_handlers[arguments.handlerKey]>
-		</cflock>
-		<cfreturn oHandler>
+		<cfif lookup(arguments.handlerKey)>
+			<cfreturn variables.cb_handlers[arguments.handlerKey]>
+		<cfelse>
+			<cfreturn structNew()>
+		</cfif>
 	</cffunction>
 	
 	<!--- ************************************************************* --->
@@ -59,17 +57,13 @@ Modification History:
 		<cfargument name="handlerKey" 		type="string" required="true">
 		<cfargument name="HandlerObject"	type="any" 	  required="true">
 		<!--- ************************************************************* --->
-		<cflock type="exclusive" scope="application" timeout="120">
-			<cfset application.coldbox_handlers[arguments.handlerKey] = arguments.HandlerObject>
-		</cflock>
+		<cfset variables.cb_handlers[arguments.handlerKey] = arguments.HandlerObject>
 	</cffunction>
 	
 	<!--- ************************************************************* --->
 	
 	<cffunction name="clear" access="public" output="false" returntype="void" hint="Clears the handler cache.">
-		<cflock type="exclusive" scope="application" timeout="120">
-			<cfset structClear(application.coldbox_handlers)>
-		</cflock>
+		<cfset structClear(variables.cb_handlers)>
 	</cffunction>
 
 	<!--- ************************************************************* --->

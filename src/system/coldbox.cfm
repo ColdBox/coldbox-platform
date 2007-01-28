@@ -29,10 +29,10 @@ Modification History:
 	var oSettings = session.fwController.getPlugin("settings");
 	//Load Configuration
 	oSettings.configLoader();
-	//Set the controller's debugMode
-	session.fwController.setDebugMode(session.fwController.getSetting("DebugMode"));
 	//Register the Handlers.
 	oSettings.registerHandlers();
+	//Set the controller's debugMode
+	session.fwController.setDebugMode(session.fwController.getSetting("DebugMode"));
 	</cfscript>
 </cffunction>
 

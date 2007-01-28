@@ -178,7 +178,7 @@ Last Update 	: December 9, 2006
 		<cfset var oEventHandler = "">
 		<cfset var oEventBean = "">
 		<cfset var oSettings = getPlugin("settings")>
-		<cfset var oHandlerCacheManager = application.ColdBox_HandlerCacheManager>
+		<cfset var HandlerInCache = false>
 		<cfset var ExecutingHandler = "">
 		<cfset var ExecutingMethod = "">
 		<!--- Start Timer --->
@@ -191,12 +191,18 @@ Last Update 	: December 9, 2006
 			<cftry>
 				
 				<!--- Check if using handler cache, get handler from cache --->
-				<cfif getSetting("HandlerCaching") >
-					<cfif oHandlerCacheManager.lookup(ExecutingHandler) >
-						<cfset oEventHandler = oHandlerCacheManager.get(ExecutingHandler)>
-					<cfelse>
-						<cfset oEventHandler = CreateObject("component",ExecutingHandler).init()>
-						<cfset oHandlerCacheManager.set(ExecutingHandler,oEventHandler)>
+				<cfif getSetting("HandlerCaching")>
+					<cflock type="readonly" name="HandlerCacheOperation" timeout="120">
+						<cfset HandlerInCache = application.coldbox_HCM.lookup(ExecutingHandler)>
+						<cfif HandlerInCache>
+							<cfset oEventHandler = application.coldbox_HCM.get(ExecutingHandler)>
+						</cfif>
+					</cflock>
+					<cfif not HandlerInCache>
+						<cflock type="exclusive" name="HandlerCacheOperation" timeout="120">
+							<cfset oEventHandler = CreateObject("component",ExecutingHandler).init()>
+							<cfset application.coldbox_HCM.set(ExecutingHandler,oEventHandler)>
+						</cflock>
 					</cfif>
 				<cfelse>
 					<!--- Create Runnable Object --->

@@ -52,8 +52,7 @@ Modification History:
 		
 		//Cache Manager
 		if ( getSetting("HandlerCaching") ){
-			application.ColdBox_HandlerCacheManager = CreateObject("component","coldbox.system.util.handlerCacheManager").init();
-			application.ColdBox_HandlerCacheManager.clear();
+			application.ColdBox_HCM = CreateObject("component","coldbox.system.util.handlerCacheManager").init();
 		}
 		// Flag the initiation
 		application.ColdBox_fwInitiated = true;
