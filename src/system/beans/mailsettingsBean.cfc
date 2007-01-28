@@ -59,8 +59,8 @@ Modification History:
 	<!--- ************************************************************* --->
 	
 	<cffunction name="setserver" access="public" return="void" output="false" hint="Set server">
-	  <cfargument name="value" type="string" >
-	  <cfset variables.instance.server=arguments.value >
+	  <cfargument name="server" type="string" >
+	  <cfset variables.instance.server=arguments.server >
 	</cffunction>
 	
 	<!--- ************************************************************* --->
@@ -72,8 +72,8 @@ Modification History:
 	<!--- ************************************************************* --->
 	
 	<cffunction name="setport" access="public" return="void" output="false" hint="Set port">
-	  <cfargument name="value" type="string" >
-	  <cfset variables.instance.port=arguments.value >
+	  <cfargument name="port" type="string" >
+	  <cfset variables.instance.port=arguments.port >
 	</cffunction>
 	
 	<!--- ************************************************************* --->
@@ -85,8 +85,8 @@ Modification History:
 	<!--- ************************************************************* --->
 	
 	<cffunction name="setUsername" access="public" return="void" output="false" hint="Set Username">
-	  <cfargument name="value" type="string" >
-	  <cfset variables.instance.Username=arguments.value >
+	  <cfargument name="Username" type="string" >
+	  <cfset variables.instance.Username=arguments.Username >
 	</cffunction>
 	
 	<!--- ************************************************************* --->
@@ -98,8 +98,8 @@ Modification History:
 	<!--- ************************************************************* --->
 	
 	<cffunction name="setPassword" access="public" return="void" output="false" hint="Set Password">
-	  <cfargument name="value" type="string" >
-	  <cfset variables.instance.Password=arguments.value >
+	  <cfargument name="Password" type="string" >
+	  <cfset variables.instance.Password=arguments.Password >
 	</cffunction>
 	
 	<!--- ************************************************************* --->
