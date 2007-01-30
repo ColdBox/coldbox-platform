@@ -142,8 +142,8 @@ Modification History:
 	
 	<cffunction name="ExceptionHandler" access="public" hint="I handle a framework/application exception. I return a framework exception bean" returntype="any" output="false">
 		<!--- ************************************************************* --->
-		<cfargument name="Exception" 	 type="any"     required="true"  hint="The exception structure">
-		<cfargument name="ErrorType" 	 type="any" 	required="false" default="application">
+		<cfargument name="Exception" 	 type="any"  	required="true"  hint="The exception structure. Passed as any due to CF glitch">
+		<cfargument name="ErrorType" 	 type="string" 	required="false" default="application">
 		<cfargument name="ExtraMessage"  type="string"  required="false" default="">
 		<!--- ************************************************************* --->
 		<cfscript>
