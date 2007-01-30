@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<snippet filetemplate="false" extension="cfm">
+<name>deleteVar</name>
+<help>Delete variable</help>
+<starttext><![CDATA[getPlugin("clientstorage").deleteVar("$${Variable Name}")]]></starttext>
+<endtext><![CDATA[]]></endtext>
+</snippet>
