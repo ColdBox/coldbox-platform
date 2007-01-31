@@ -39,7 +39,7 @@ Modification History:
 		<cfif refindnocase("(error|warning|info)", trim(arguments.type))>
 			<cfset msgStruct.type = arguments.type>
 			<cfset msgStruct.message = arguments.message>
-			<cfwddx action="cfml2wddx" input="#msgStruct#" output="session.fw_messagebox">
+			<cfwddx action="cfml2wddx" input="#msgStruct#" output="session.ColdBox_fw_messagebox">
 		<cfelse>
 			<cfthrow type="Framework.plugins.messagebox.InvalidMessageTypeException" message="The message type sent in: #arguments.type# is invalid. Available types: error,warning,info">
 		</cfif>
@@ -49,8 +49,8 @@ Modification History:
 	
 	<cffunction name="getMessage" access="public" hint="Returns a structure of the message if it exists, else a blank structure." returntype="any" output="false">
 		<cfset var rtnStruct = structnew()>
-		<cfif structKeyExists(client,"fw_messagebox")>
-			<cfwddx action="wddx2cfml" input="#session.fw_messagebox#" output="rtnStruct">
+		<cfif structKeyExists(session,"ColdBox_fw_messagebox")>
+			<cfwddx action="wddx2cfml" input="#session.ColdBox_fw_messagebox#" output="rtnStruct">
 		<cfelse>
 			<cfset rtnStruct.type = "">
 			<cfset rtnStruct.message = "">
@@ -61,15 +61,15 @@ Modification History:
 	<!--- ************************************************************* --->
 	
 	<cffunction name="clearMessage" access="public" hint="Clears the message structure by deleting it from the session scope." output="false" returntype="void">
-		<cfif structKeyExists(session,"fw_messagebox")>
-			<cfset structdelete( session, "fw_messagebox")>
+		<cfif structKeyExists(session,"ColdBox_fw_messagebox")>
+			<cfset structdelete( session, "ColdBox_fw_messagebox")>
 		</cfif>
 	</cffunction>
 	
 	<!--- ************************************************************* --->
 	
 	<cffunction name="isEmpty" access="public" hint="Checks wether the messagebox is empty or not." returntype="boolean" output="false">
-		<cfif structKeyExists(session,"fw_messagebox")>
+		<cfif structKeyExists(session,"ColdBox_fw_messagebox")>
 			<cfif structisEmpty(getMessage())>
 				<cfreturn true>
 			<cfelse>
