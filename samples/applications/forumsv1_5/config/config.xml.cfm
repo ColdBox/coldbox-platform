@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <Config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-	xsi:noNamespaceSchemaLocation="http://www.coldboxframework.com/schema/config_1.1.0.xsd">
+	xsi:noNamespaceSchemaLocation="http://www.coldboxframework.com/schema/config_1.2.0.xsd">
 	<Settings>
 		<!--The name of your app-->
 		<Setting name="AppName" 			value="Galleon"/>
@@ -23,6 +23,7 @@
 		<Setting name="MessageboxStyleClass" value=""/>
 		<Setting name="HandlersIndexAutoReload" value="false"/>
 		<Setting name="ConfigAutoReload" value="false"/>
+		<Setting name="HandlerCaching" 	value="false"/>
 	</Settings>
 
 	<!--Your Settings can go here, if not needed, use <YourSettings />. You can use these for anything you like. -->
