@@ -163,6 +163,18 @@ Last Update 	: December 9, 2006
 		</cfscript>
 	</cffunction>
 
+	<cffunction name="getCollection" returntype="any" access="Public" hint="I Get a reference or deep copy of the request Collection" output="false">
+		<cfargument name="DeepCopyFlag" hint="Default is false, gives a reference to the collection. True, creates a deep copy of the collection." type="boolean" required="no" default="false">
+		<cfscript>
+			if ( not structKeyExists(request,"reqCollection") )
+				return structnew();
+			else if ( arguments.DeepCopyFlag )
+				return duplicate(request.reqCollection);
+			else
+				return request.reqCollection; 
+		</cfscript>
+	</cffunction>
+	
 	<cffunction name="setNextEvent" access="Public" returntype="void" hint="I Set the next event to run and relocate the browser to that event."  output="false">
 		<cfargument name="event"  			hint="The name of the event to run." 			type="string" default="#getSetting("DefaultEvent")#" >
 		<cfargument name="queryString"  	hint="The query string to append, if needed."   type="any" required="No" default="" >
@@ -223,7 +235,7 @@ Last Update 	: December 9, 2006
 				<cfif getSetting("HandlerCaching")>
 					<cflock type="exclusive" name="HandlerCacheExecution" timeout="120">
 						<!--- Inject RC --->	
-						<cfset oEventHandler.setRC(request.reqCollection)>
+						<cfset oEventHandler.setRC(getCollection())>
 						<!--- Execute Method --->
 						<cfinvoke component="#oEventHandler#" method="#ExecutingMethod#">
 					</cflock>
