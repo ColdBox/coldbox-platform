@@ -17,7 +17,7 @@
 				<cfset getPlugin("messagebox").setMessage("error","Please enter a valid Feed URL")>
 			<cfelse>
 				<cftry>
-					<cfset obj = application.cbService.getdao("feed")>
+					<cfset obj = application.IOCEngine.getBean("feedService")>
 					<!--- Verify Feed in user's feeds --->
 					<cfif obj.verifyFeed(rc.feedURL, session.userID)>
 						<cfset getPlugin("messagebox").setMessage("warning","The feed you are trying to add is already in your feeds collection. You cannot add it twice.")>
@@ -37,7 +37,7 @@
 	</cffunction>
 
 	<cffunction name="dspViewFeed" access="public" returntype="void" output="false">
-		<cfset var obj = application.cbService.getdao("feed")>
+		<cfset var obj = application.IOCEngine.getBean("feedService")>
 		<!--- EXIT HANDLERS: --->
 		<cfset rc.xehFeeds = "ehGeneral.dspReader">
 		<cfset rc.xehMyFeeds = "ehFeed.dspMyFeeds">
@@ -52,24 +52,20 @@
 	</cffunction>
 
 	<cffunction name="dspFeedInfo" access="public" returntype="void" output="false">
-		<cfset var obj = application.cbService.getdao("feed")>
+		<cfset var obj = application.IOCEngine.getBean("feedService")>
 		<cfset rc.qryData = obj.getFeedInfo(rc.feedID)>
 		<cfset setView("vwFeedInfo")>
 	</cffunction>
 
 	<cffunction name="dspFeedTags" access="public" returntype="void" output="false">
-		<cfset var obj = application.cbService.getdao("tags")>
+		<cfset var obj = application.IOCEngine.getbean("tagService")>
 		<!--- EXIT HANDLERS: --->
 		<cfset rc.xehSearchByTag = "ehFeed.doSearchByTag">
 		<cfset rc.xehAddTag = "ehFeed.doAddTags">
-		<cfset rc.qryData = obj.getFeedTags(rc.feedID)>
+		<cfset rc.qryData = obj.getTags(rc.feedID)>
 		<cfif session.userID neq "">
 			<cfif rc.qryData.recordCount gt 0>
-				<cfquery name="rc.qryMyTags" dbtype="query">
-					SELECT *
-						FROM rc.qryData
-						WHERE CreatedBy = <cfqueryparam cfsqltype="cf_sql_varchar" value="#session.userid#">
-				</cfquery>
+				<cfset rc.qryMyTags = filterQuery(rc.qryData,"CreatedBy",session.userid,"cf_sql_varchar")>
 			<cfelse>
 				<cfset rc.qryMyTags = QueryNew("")>
 			</cfif>
@@ -77,24 +73,18 @@
 		<cfset setView("vwFeedTags")>
 	</cffunction>
 
-	<cffunction name="dspFeedComments" access="public" returntype="void" output="false">
-		<cfset var obj = application.cbService.getdao("comments")>
-		<cfset rc.qryData = obj.getFeedComments(rc.feedID)>
-		<cfset setView("vwFeedComments")>
-	</cffunction>
-
 	<cffunction name="dspAllTags" access="public" returntype="void" output="false">
-		<cfset var obj = application.cbService.getdao("tags")>
+		<cfset var obj = application.IOCEngine.getbean("tagService")>
 		<!--- EXIT HANDLERS: --->
 		<cfset rc.xehSearchTag = "ehFeed.doSearchByTag">
-		<cfset rc.qryData = obj.getAllTags()>
+		<cfset rc.qryData = obj.getTags()>
 		<cfset setView("vwAllTags")>
 	</cffunction>
 
 	<cffunction name="doAddFeed" access="public" returntype="void" output="false">
 		<cfset var obj = "">
 		<cftry>
-			<cfset obj = application.cbService.getdao("feed")>
+			<cfset obj = application.IOCEngine.getBean("feedService")>
 			<cfset obj.saveFeed(rc.feedID, rc.feedName, rc.feedURL, rc.FeedAuthor, rc.description, rc.imgURL, rc.siteURL, session.userID)>
 			<cfset getPlugin("messagebox").setMessage("info", "The feed: #rc.feedName# has been added successfully")>
 			<cfcatch type="any">
@@ -111,12 +101,12 @@
 		<cftry>
 
 			<cfif rc.tags neq "">
-				<cfset obj = application.cbService.getdao("tags")>
+				<cfset obj = application.IOCEngine.getBean("tagService")>
 				<cfset obj.addFeedTags(rc.feedID, rc.tags, session.userID)>
 			</cfif>
 
 			<cfcatch type="any">
-				<cfset getPlugin("logger").logError("Error Adding Tag", e)>
+				<cfset getPlugin("logger").logError("Error Adding Tag", cfcatch)>
 				<cfset getPlugin("messagebox").setMessage("error", cfcatch.message & "<br>" & cfcatch.detail)>
 			</cfcatch>
 		</cftry>
@@ -127,14 +117,14 @@
 		<cfset var obj = "">
 		<cfset var qryData = "">
 		<cftry>
-			<cfset obj = application.cbService.getdao("feed")>
+			<cfset obj = application.IOCEngine.getBean("feedService")>
 			<cfset qryData = obj.searchByTag(rc.tag)>
 			<cfset getPlugin("clientStorage").setVar("search_results", qryData)>
 			<cfset getPlugin("clientStorage").setVar("search_tag", rc.tag)>
 			<cfset getPlugin("clientStorage").setVar("search_term", "")>
 
 			<cfcatch type="any">
-				<cfset getPlugin("logger").logError("Error Searching by Tags", e)>
+				<cfset getPlugin("logger").logError("Error Searching by Tags", cfcatch)>
 				<cfset getPlugin("messagebox").setMessage("error", cfcatch.message & "<br>" & cfcatch.detail)>
 				<cfset setNextEvent()>
 			</cfcatch>
@@ -147,14 +137,14 @@
 		<cfset var plClient = getPlugin("clientStorage")>
 		<cftry>
 			<cfset term = getValue("searchTerm")>
-			<cfset obj = application.cbService.getdao("feed")>
+			<cfset obj = application.IOCEngine.getBean("feedService")>
 			<cfset plClient.setVar("search_results", duplicate(obj.searchByTerm(rc.searchTerm)))>
 			<cfset plClient.setVar("search_tag", "")>
 			<cfset plClient.setVar("search_term", rc.searchTerm)>
 
 			<cfcatch type="any">
 				<cfset getPlugin("messagebox").setMessage("error", cfcatch.message & "<br>" & cfcatch.detail)>
-				<cfset getPlugin("logger").logError("Search by Term", e)>
+				<cfset getPlugin("logger").logError("Search by Term", cfcatch)>
 				<cfset setView("vwMain")>
 			</cfcatch>
 		</cftry>
@@ -187,7 +177,7 @@
 	</cffunction>
 	
 	<cffunction name="dspMyFeeds" access="public" returntype="void" output="false">
-		<cfset var obj = application.cbService.getdao("feed")>
+		<cfset var obj = application.IOCEngine.getBean("feedService")>
 		<!--- EXIT HANDLERS: --->
 		<cfset rc.xehViewFeed = "ehFeed.dspViewFeed">
 		<cfset rc.xehShowTags = "ehFeed.dspAllTags">

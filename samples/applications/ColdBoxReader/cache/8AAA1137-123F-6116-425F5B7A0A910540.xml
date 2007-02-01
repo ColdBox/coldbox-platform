@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+  <channel>
+    <title>Eclipse Corner Articles: Most Recent Articles</title>
+    <link>http://www.eclipse.org/articles/index.php?filter=recent</link>
+    <description>
+			These articles were submitted (or updated) 
+			in the last year.</description>
+    <image>
+      <url>http://www.eclipse.org/articles/images/eclipse.png</url>
+      <title>eclipse.org</title>
+      <link>http://www.eclipse.org/articles</link>
+    </image>
+	<item>
+		<title><![CDATA[Abstract Syntax Tree]]></title>
+		<link>http://www.eclipse.org/articles/Article-JavaCodeManipulation_AST/index.html</link>
+		<description><![CDATA[
+		The Abstract Syntax Tree is the base framework for many powerful
+		tools of the Eclipse IDE, including refactoring, Quick Fix and
+		Quick Assist. The Abstract Syntax Tree maps plain Java source
+		code in a tree form. This tree is more convenient and reliable
+		to analyse and modify programmatically than text-based source.
+		This article shows how you can use the Abstract Syntax Tree for
+		your own applications.
+	]]></description>
+		<pubDate>Mon, 20 Nov 2006  12:00:00 GMT</pubDate>
+	</item>
+	<item>
+		<title><![CDATA[Extending WTP Using Project Facets]]></title>
+		<link>http://www.eclipse.org/articles/Article-BuildingProjectFacets/tutorial.html</link>
+		<description><![CDATA[
+		The Faceted Project Framework allows the plug-in developer to
+		think of Web Tools Platform (WTP) projects as composed of units
+		of functionality, otherwise known as facets, that can be added
+		and removed by the user. This tutorial walks you through an
+		example of creating a couple of basic facets and in the process
+		covers the majority of the framework's extension points. This
+		tutorial has been written for version 1.5 of the Web Tools
+		Platform.
+	]]></description>
+		<pubDate>Mon, 6 Nov 2006  12:00:00 GMT</pubDate>
+	</item>
+	<item>
+		<title><![CDATA[Introducing AJDT: The AspectJ Development Tools]]></title>
+		<link>http://www.eclipse.org/articles/Article-Introducing-AJDT/article.html</link>
+		<description><![CDATA[
+		The AspectJ Development Tools (AJDT) project is an Eclipse Tools
+		project which enables the development of AspectJ applications in
+		Eclipse. This article gives an overview of the capabilities of
+		AJDT 1.4 for Eclipse 3.2 by describing several scenarios,
+		including adding aspects to existing Java&trade; projects,
+		working with aspects across multiple projects, and using the
+		load-time weaving capabilities of AspectJ 5.
+	]]></description>
+		<pubDate>Mon, 16 Oct 2006  12:00:00 GMT</pubDate>
+	</item>
+	<item>
+		<title><![CDATA[Custom Drawing Table and Tree Items]]></title>
+		<link>http://www.eclipse.org/articles/Article-CustomDrawingTableAndTreeItems/customDraw.htm</link>
+		<description><![CDATA[
+		Populating a table or tree widget involves creating items and
+		setting their attributes (eg.- texts, images, etc.), after which
+		the table or tree takes responsibility for displaying the items.
+		This approach makes item creation straightforward and visually
+		consistent. As of Eclipse 3.2, clients of Table and Tree can now
+		custom draw their items, enabling a wide range of potential
+		visual appearances. This article explores the custom draw
+		mechanism for Table and Tree.
+	]]></description>
+		<pubDate>Fri, 15 Sep 2006  12:00:00 GMT</pubDate>
+	</item>
+	<item>
+		<title><![CDATA[Implementing Model Integrity in EMF with EMFT OCL]]></title>
+		<link>http://www.eclipse.org/articles/Article-EMF-Codegen-with-OCL/article.html</link>
+		<description><![CDATA[
+		This article illustrates how the EMFT OCL parser/interpreter
+		technology adds to the value of EMF/JET code generation as a
+		foundation for model-driven development (MDD). We will see, with
+		fully functional examples, how a metamodel can be generated from
+		an Ecore model without requiring any post-generation custom
+		code, including complete implementations of invariant
+		constraints, derived attributes and references, and operations
+	]]></description>
+		<pubDate>Tue, 1 Aug 2006  12:00:00 GMT</pubDate>
+	</item>
+	<item>
+		<title><![CDATA[Designing Accessible Plug-ins in Eclipse]]></title>
+		<link>http://www.eclipse.org/articles/Article-Accessibility/index.html</link>
+		<description><![CDATA[
+		Accessibility for disabled users is now a priority in
+		application development as advances in techniques and support
+		within operating systems have now made this possible. This
+		article covers the Eclipse accessibility support, general tips
+		for creating accessible plug-ins, and the types of disabilities
+		that the Eclipse accessibility support assists. This is all
+		illustrated using an example of making a view accessible.
+	]]></description>
+		<pubDate>Tue, 25 Jul 2006  12:00:00 GMT</pubDate>
+	</item>
+	<item>
+		<title><![CDATA[Java Application Profiling using TPTP]]></title>
+		<link>http://www.eclipse.org/articles/Article-TPTP-Profiling-Tool/tptpProfilingArticle.html</link>
+		<description><![CDATA[
+		This article demonstrates how to use the TPTP Profiling tool to
+		profile a Java application for identifying execution related hot
+		spots. It shows how to start the profiling session, use the
+		various TPTP views to analyze the data, identify methods with
+		high execution time then jump to the source code to fix the
+		performance problem.
+	]]></description>
+		<pubDate>Tue, 11 Jul 2006  12:00:00 GMT</pubDate>
+	</item>
+	<item>
+		<title><![CDATA[From Front End To Code - MDSD in Practice]]></title>
+		<link>http://www.eclipse.org/articles/Article-FromFrontendToCode-MDSDInPractice/article.html</link>
+		<description><![CDATA[
+		Model-driven software development (MDSD) is not just about generating code. Several
+		additional challenges have to be mastered. These include: how to get usable graphical and
+		textual editors for your domain specific language (DSL), how to validate your models against
+		your metamodels, how to define model modifications and transformations and finally, how to
+		write scalable, maintainable and extensible code generators. In this article we show how to
+		tackle all these challenges, based on a collection of open source tools: Eclipse, Eclipse
+		Modeling Framework (EMF), Graphical Modeling Framework (GMF) as well as
+		openArchitectureWare. We believe that this tool chain provides a proven and stable stack for
+		making MDSD a practical reality.
+	]]></description>
+		<pubDate>Thu, 15 Jun 2006  12:00:00 GMT</pubDate>
+	</item>
+	<item>
+		<title><![CDATA[Virtual Tables and Trees]]></title>
+		<link>http://www.eclipse.org/articles/Article-SWT-Virtual/Virtual-in-SWT.html</link>
+		<description><![CDATA[
+		Virtual Tables and Trees allow developers to quickly create Tables and Trees with large
+		amounts of data and populate them efficiently. This article is an overview of how to use
+		virtual Tables and Trees within SWT applications.
+	]]></description>
+		<pubDate>Mon, 5 Jun 2006  12:00:00 GMT</pubDate>
+	</item>
+	<item>
+		<title><![CDATA[Eclipse Platform Technical Overview]]></title>
+		<link>http://www.eclipse.org/articles/Whitepaper-Platform-3.1/eclipse-platform-whitepaper.html</link>
+		<description><![CDATA[
+		The Eclipse Platform is designed for building applications,
+		integrated development environments (IDEs)and arbitrary tools.
+		This paper is a general technical introduction to the Eclipse
+		Platform. Part I presents a technical overview of its
+		architecture. Part II is a case study of how the Eclipse
+		Platform was used to build a full-featured Java development
+		environment.
+	]]></description>
+		<pubDate>Wed, 19 Apr 2006  12:00:00 GMT</pubDate>
+	</item>
+	<item>
+		<title><![CDATA[Eclipse Workbench: Using the Selection Service]]></title>
+		<link>http://www.eclipse.org/articles/Article-WorkbenchSelections/article.html</link>
+		<description><![CDATA[
+		The selection service provided by the Eclipse workbench allows
+		efficient linking of different parts within the workbench
+		window. Knowing and using the existing selection mechanisms
+		gives your plug-ins a clean design, smoothly integrates them
+		into the workbench and opens them for future extensions.
+	]]></description>
+		<pubDate>Fri, 14 Apr 2006  12:00:00 GMT</pubDate>
+	</item>
+	<item>
+		<title><![CDATA[
+		The Language Toolkit: An API for Automated Refactorings in
+		Eclipse-based IDEs
+	]]></title>
+		<link>http://www.eclipse.org/articles/Article-LTK/ltk.html</link>
+		<description><![CDATA[
+		Anyone who supports a programming language in an Eclipse-based
+		IDE will be asked sooner or later to offer automated
+		refactorings - similar to what is provided by the Java
+		Development Tools (JDT). Since the release of Eclipse 3.1, at
+		least part of this task--which is by no means simple--is supported
+		by a language neutral API: the Language Toolkit (LTK). But how
+		is this API used?
+	]]></description>
+		<pubDate>Wed, 12 Apr 2006  12:00:00 GMT</pubDate>
+	</item>
+	<item>
+		<title><![CDATA[Creating Database Web Applications with Eclipse]]></title>
+		<link>http://www.eclipse.org/articles/Article-EclipseDbWebapps/article.html</link>
+		<description><![CDATA[
+		The Eclipse Web Tools Project delivers a feature-rich
+		environment for developing J2EE database-driven web
+		applications. This tutorial walks you through the process of
+		creating a simple database web application using Eclipse WTP,
+		Tomcat, and the Derby database engine.
+	]]></description>
+		<pubDate>Mon, 10 Apr 2006  12:00:00 GMT</pubDate>
+	</item>
+	<item>
+		<title><![CDATA[Teach Your Eclipse to Speak the Local Lingo]]></title>
+		<link>http://www.eclipse.org/articles/Article-Speak-The-Local-Language/article.html</link>
+		<description><![CDATA[
+		Translations for the Eclipse Project and several top-level
+		projects are contributed to the Eclipse Foundation in every
+		major release of Eclipse. This article provides step-by-step
+		instructions describing what is available, where to download
+		them, how to install them, and how to launch Eclipse in
+		different languages.
+	]]></description>
+		<pubDate>Thu, 9 Mar 2006  12:00:00 GMT</pubDate>
+	</item>
+	<item>
+		<title><![CDATA[The Eclipse Tabbed Properties View]]></title>
+		<link>http://www.eclipse.org/articles/Article-Tabbed-Properties/tabbed_properties_view.html</link>
+		<description><![CDATA[
+		The Eclipse workbench provides a properties view which is used
+		to view (and/or edit) properties of a selected item. In this
+		article, you will learn how to use the tabbed properties view to
+		create an enhanced user interface for the properties view.
+	]]></description>
+		<pubDate>Sun, 19 Feb 2006  12:00:00 GMT</pubDate>
+	</item>
+	<item>
+		<title><![CDATA[Rich Client Tutorial Part 2]]></title>
+		<link>http://www.eclipse.org/articles/Article-RCP-2/tutorial2.html</link>
+		<description><![CDATA[
+		The Rich Client Platform (RCP) allows you to build Java
+		applications that can compete with native applications on any
+		platform. Part 1 of the tutorial introduced you to the platform
+		and the steps used to build the smallest possible RCP program.
+		In part 2 we'll look at what we did in more detail and introduce
+		some of the configuration classes that let you take control of
+		much of the layout and functionality of an RCP application. This
+		part has been updated for Eclipse 3.1.2.
+	]]></description>
+		<pubDate>Mon, 6 Feb 2006  12:00:00 GMT</pubDate>
+	</item>
+	<item>
+		<title><![CDATA[Rich Client Tutorial Part 3]]></title>
+		<link>http://www.eclipse.org/articles/Article-RCP-3/tutorial3.html</link>
+		<description><![CDATA[
+		The Rich Client Platform (RCP) lets you reuse common
+		functionality from the Eclipse IDE for use in your own
+		applications. Parts 1 and 2 of this tutorial introduced you to
+		the platform with a very simple example that did nothing but
+		open a blank window. Part 3 discusses a more complicated example
+		with menus, views, and other features. This part has been
+		updated for Eclipse 3.1.2.
+	]]></description>
+		<pubDate>Mon, 6 Feb 2006  12:00:00 GMT</pubDate>
+	</item>
+	<item>
+		<title><![CDATA[Rich Client Tutorial Part 1]]></title>
+		<link>http://www.eclipse.org/articles/Article-RCP-1/tutorial1.html</link>
+		<description><![CDATA[
+		The Rich Client Platform (RCP) is an exciting new way to build
+		Java applications that can compete with native applications on
+		any platform. This tutorial is designed to get you started
+		building RCP applications quickly. It has been updated for
+		Eclipse 3.1.2.
+	]]></description>
+		<pubDate>Mon, 6 Feb 2006  12:00:00 GMT</pubDate>
+	</item>	</channel>
+</rss>

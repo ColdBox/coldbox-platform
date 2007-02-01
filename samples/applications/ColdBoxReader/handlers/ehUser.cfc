@@ -29,32 +29,27 @@
 
 	<cffunction name="doCreateAccount" access="public" returntype="void" output="false">
 		<cfscript>
-			var username = getValue("username","");
-			var password = getValue("password","");
 			var password2 = getValue("password2","");
-			var email = getValue("email","");
-			var obj = "";
-			var newUserID = "";
-			var userQry = "";
-
-			if ( username eq "" or password eq "" or email eq ""){
+			var userService = application.IOCEngine.getBean("userService");
+			var userBean = userService.createUserBean();
+			
+			//Populate Bean From Request Collection.
+			getPlugin("beanFactory").populateBean(userBean);
+			
+			if ( userBean.getUserName() eq "" or userBean.getPassword() eq "" or userBean.getemail() eq ""){
 				getPlugin("messagebox").setMessage("warning", "Please enter all the account information in order to create an account.");
 				setNextEvent("ehUser.dspSignUp");
 			}
-			if ( compare(password,password2) neq 0 ){
+			if ( compare(UserBean.getpassword(),password2) neq 0 ){
 				getPlugin("messagebox").setMessage("warning", "The passwords do not match.");
 				setNextEvent("ehUser.dspSignup");
 			}
 			try {
-				obj = application.cbService.getdao("users");
-				newUserID = obj.createUser(username, password, email);
-				if(newUserID eq "") throw("An unexpected error ocurred while creating the account.");
-				session.userID = newUserID;
-				userQry = obj.getUser(session.userID);
-				session.username = userQry.username;
-				session.email = userQry.email;
-				session.lastLogin = userQry.LastLogin;
-				session.createdOn = userQry.CreatedOn;
+				userService.createUser(userBean);
+				userBean.setVerified(true);
+				//set session object
+				session.oUserBean = userBean;
+				//relocate
 				setNextEvent("ehGeneral.dspReader");
 
 			} catch (any e) {
@@ -66,23 +61,21 @@
 
 	<cffunction name="doLogin" access="public" returntype="void" output="false">
 		<cfscript>
-			var username = getValue("username","");
-			var password = getValue("password","");
-			var obj = "";
-			var userID = "";
-			var userQry = "";
+			var userService = application.IOCEngine.getBean("userService");
+			var userBean = userService.createUserBean();
 			try {
-				obj = application.cbService.getdao("users");
-				userID = obj.checkLogin(username, password);
-				if(userID eq "") throw("Username/Password not recognized.");
-				session.userID = userID;
-				userQry = obj.getUser(session.userID);
-				session.username = userQry.username;
-				session.email = userQry.email;
-				session.lastLogin = userQry.LastLogin;
-				session.createdOn = userQry.CreatedOn;
-				getPlugin("messagebox").setMessage("info","Welcome back to the ColdBox Reader #username#!");
-				setNextEvent("ehGeneral.dspReader");
+				
+				getPlugin("beanFactory").populateBean(userBean);
+				userService.checkLogin(userBean);
+				if (userBean.getVerified()){
+					structDelete(session,"oUserBean");
+					session.oUserBean = userBean;
+					getPlugin("messagebox").setMessage("info","Welcome back to the ColdBox Reader #userBean.getusername()#!");
+					setNextEvent("ehGeneral.dspReader");
+				}
+				else{
+					throw("Username/Password not recognized.");
+				}
 
 			} catch (any e) {
 				getPlugin("logger").logError("Error logging in user", e);
@@ -93,11 +86,7 @@
 	</cffunction>
 
 	<cffunction name="doLogout" access="public" returntype="void" output="false">
-		<cfset session.userID = "">
-		<cfset session.username = "">
-		<cfset session.email = "">
-		<cfset session.LastLogin = "">
-		<cfset session.createdOn = "">
+		<cfset StructDelete(session,"oUserBean")>
 		<cfset setNextEvent("ehGeneral.dspReader")>
 	</cffunction>
 

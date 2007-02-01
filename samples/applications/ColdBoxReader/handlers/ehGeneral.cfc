@@ -14,7 +14,8 @@ aug/20/2006 - Luis Majano
 
 	<cffunction name="onAppStart" access="public" returntype="void" output="false">
 		<!--- Instantiate ColdBox Service --->
-		<cfset application.cbService = CreateObject("component","#getSetting("AppMapping")#.components.coldboxService").init(getDatasource("coldboxreader"))>
+		<cfset application.IOCEngine = createObject("component","coldspring.beans.DefaultXmlBeanFactory").init(structnew(),getSettingStructure())/>
+		<cfset application.IOCEngine.loadBeansFromXmlFile(expandPath(getSetting("IOCDefinitionFile")))/>
 	</cffunction>
 	
 	<cffunction name="onRequestStart" access="public" returntype="void" output="false">
@@ -23,6 +24,9 @@ aug/20/2006 - Luis Majano
 		<cfparam name="session.username" 	default="">
 		<!--- EXIT HANDLERS: --->
 		<cfset rc.xehSearch = "ehFeed.doSearchByTerm">
+		<cfif not structKeyExists(session, "oUserBean")>
+			<cfset session.oUserBean = application.IOCEngine.getBean("UserService").createUserBean()>
+		</cfif>
 	</cffunction>
 
 	<cffunction name="onException" access="public" returntype="void" output="false">
@@ -46,19 +50,17 @@ aug/20/2006 - Luis Majano
 	</cffunction>
 
 	<cffunction name="dspReader" access="public" returntype="void" output="false">
-		<cfset var obj = application.cbService.getdao("feed")>
+		<cfset var obj = application.IOCEngine.getBean("feedService")>
+		<cfset var FeedStruct = structnew()>
 		<!--- EXIT HANDLERS: --->
 		<cfset rc.xehViewFeed = "ehFeed.dspViewFeed">
 		<cfset rc.xehShowTags = "ehFeed.dspAllTags">
 		<cfset rc.xehShowInfo = "ehGeneral.dspInfo">
 		<cfset rc.xehAccountActions = "ehUser.dspAccountActions">
 		<!--- Get Feeds --->
-		<cfset rc.qryFeeds = obj.getAllFeeds()>
-		<cfquery name="rc.qryTopFeeds" dbtype="query" maxrows="8">
-			SELECT *
-				FROM rc.qryFeeds
-				ORDER BY Views DESC
-		</cfquery>
+		<cfset FeedStruct = obj.getAllFeeds()>
+		<cfset rc.qryFeeds = FeedStruct.qAllFeeds>
+		<cfset rc.qryTopFeeds = FeedStruct.qTopFeeds>
 		<cfset setView("vwReader")>
 	</cffunction>
 

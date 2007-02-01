@@ -88,6 +88,6 @@
 <script>
 	doEvent("#getValue("xehFeedInfo")#", "leftcontent1", {feedID:'#feedID#'});
 	doEvent("#getValue("xehFeedTags")#", "rightcontent1", {feedID:'#feedID#'});
-	doEvent("#getValue("xehFeedComments")#", "rightcontent2", {feedID:'#feedID#'});
+	//doEvent("#getValue("xehFeedComments")#", "rightcontent2", {feedID:'#feedID#'});
 </script>
 </cfoutput>

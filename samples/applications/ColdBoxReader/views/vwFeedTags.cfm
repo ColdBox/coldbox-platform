@@ -13,7 +13,7 @@
 		</cfif>
 	</div>
 	
-	<cfif session.userID neq "">
+	<cfif session.oUserBean.getVerified()>
 		<br>
 		<div style="line-height:20px;">
 			<b>My Tags:</b><br />

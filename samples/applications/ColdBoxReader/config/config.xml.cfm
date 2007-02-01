@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <Config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-	xsi:noNamespaceSchemaLocation="http://www.coldboxframework.com/schema/config_1.1.0.xsd">
+	xsi:noNamespaceSchemaLocation="http://www.coldboxframework.com/schema/config_1.2.0.xsd">
 	<Settings>
 		<Setting name="AppName" 					value="ColdBoxReader"/>
 		<Setting name="AppMapping" 					value="coldbox/samples/applications/ColdBoxReader"/>
@@ -22,10 +22,13 @@
 		<Setting name="MessageboxStyleClass" 		value="myOwnMessagebox"/>
 		<Setting name="HandlersIndexAutoReload" 	value="false"/>
 		<Setting name="ConfigAutoReload" 			value="false"/>		
+		<Setting name="IOCFramework" 				value="coldspring"/>
+		<Setting name="IOCDefinitionFile" 			value="config/services.xml.cfm"/>
 	</Settings>
 
 	<YourSettings>
 			<Setting name="Version" value="1.1.0" />
+			<Setting name="ModelBasePath" value="coldbox.samples.applications.ColdBoxReader.components" />
 	</YourSettings>
 
 	<!--Optional,if blank it will use the CFMX administrator settings.-->
@@ -56,7 +59,7 @@
 	<i18N />
 
 	<Datasources>
-		<Datasource name="coldboxreader" dbtype="mysql" username="" password="" />	
+		<Datasource alias="coldboxreader" name="luismajano_com" dbtype="mysql" username="" password="" />	
 	</Datasources>
 	
 </Config>

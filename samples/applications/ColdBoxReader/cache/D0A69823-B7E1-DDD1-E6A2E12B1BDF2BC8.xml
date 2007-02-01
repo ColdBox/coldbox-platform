@@ -5,8 +5,8 @@
 			<link>http://www.robgonda.com/blog/index.cfm</link>
 			<description>Rob Gonda's opinions</description>
 			<language>en-us</language>
-			<pubDate>Sun, 10 Sep 2006 17:48:08 -0400</pubDate>
-			<lastBuildDate>Sun, 10 Sep 2006 00:48:00 -0400</lastBuildDate>
+			<pubDate>Wed, 31 Jan 2007 09:01:08 -0500</pubDate>
+			<lastBuildDate>Sat, 27 Jan 2007 14:08:00 -0500</lastBuildDate>
 			<generator>BlogCFC</generator>
 			<docs>http://blogs.law.harvard.edu/tech/rss</docs>
 			<managingEditor>rob@robgonda.com</managingEditor>
@@ -17,13 +17,77 @@
 			
 			
 			<item>
-				<title>ajaxCFC utils update</title>
-				<link>http://www.robgonda.com/blog/index.cfm/2006/9/10/ajaxCFC-utils-update</link>
+				<title>Database Data Integrity: The Basics</title>
+				<link>http://www.robgonda.com/blog/index.cfm/2007/1/27/Database-Data-Integrity-The-Basics</link>
 				<description>
 				
-				I just updated ajaxCFC with a massively refactored utils class, including highlight handler, improved form serialization, debugging, and the ability to use image loading indicators (brought to you by &lt;a target="_blank" href="http://www.reybango.com/index.cfm/2006/8/16/Adding-an-Ajax-Indicator-Image-in-AjaxCFC"&gt;Rey Bango&lt;/a&gt;).&lt;br /&gt;&lt;br /&gt;to use the image loading indicator use:&lt;br /&gt;&lt;br /&gt;
-&lt;div class="code"&gt;DWRUtil.useLoadingImage(&amp;quot;/images/ajax-loader.gif&amp;quot;); &lt;br /&gt; &lt;/div&gt;
-&lt;br /&gt;You may find a bunch of indicators at &lt;a href="http://www.ajaxload.info/" target="_blank"&gt;http://www.ajaxload.info/&lt;/a&gt;
+				Applications have usually multiple tiers, such as user interface, business model, and data. It is not an uncommon practice to rely on the application level for data validation, since in most cases, it is a single application that interacts with one particular database. However, what would happen if one field got 'corrupt', because of a bug in the application? What would happen if multiple applications accessed the same data, and but one was missing a particular validation rule? &lt;br /&gt;&lt;br /&gt;The data is held in a database, and it should be the database that maintained and verified integrity. You must be thinks, of course, you define datatypes and&amp;nbsp; table relations, but that's not enough. How many times have you -- or your dba -- defined a gender field as a char(1), or a uuid primary key as a char(35)? What makes you think that somehow, let's call it glitch, the gender field couldn't end up with a 'x' value, when you're only accepting 'm' or 'f'? or the id key could end up with '400', when taking only uuids. Chances are in fact, that your application in fact may be validating a uuid datatype, since it's native to ColdFusion, and anything other than a uuid key will break your application. &lt;br /&gt;&lt;br /&gt;In fact, and without pointing at anyone, I've downloaded and played with dozens of open-source applications that use a uuid as a primary key, providing a sql schema script that does not validate that a proper uuid is being placed.&lt;br /&gt;&lt;br /&gt;What is the solution? Constraints; and they should always be used. A constraint is nothing but a rule that all data have to comply, enforced at the database level. The most common constraints is the foreign key, where the database automatically enforce one column value (fk) to match any column value of a different table (pk), which are automatically created when you declare foreign keys&lt;br /&gt;&lt;br /&gt;However, you can also create your own constraints, for example, gender have to be 'm', or 'f'; a credit card expiration have to be between 2005 and 2020, number of children have to be between 0 and 20, and so on. Your datatype can only restrict so much, but you can add additional validation to ensure that if falls into your business logic.&lt;br /&gt;&lt;br /&gt;You can add constrains using sql scripts, or using sql GUI.&lt;br /&gt;&lt;br /&gt;The following examples are for Microsoft SQL, but should be able to adapt them to any database that supports constraints.&lt;br /&gt;&lt;br /&gt;To add a constraint to a gender field with datatype char(1), simple open the table in design mode, click the constraint icon (top toolbar, right icon, shape of a grid) and click the new button. The constraint expression must return a boolean; type ([gender] = 'f' or [gender] = 'm'). Following, you may assign any name to this constraint, commonly prefixed by CK_ for check. (&lt;a href="/blog/files/robGonda/UserFiles/Image/mssql constraints1.jpg" target="_blank"&gt;see screen shot&lt;/a&gt;)&lt;br /&gt;&lt;br /&gt;To add the same constraints by scripting, you may open a script window or the query analyzer and type the following&lt;br /&gt;&lt;br /&gt;
+&lt;div class="code"&gt;ALTER TABLE [dbo].[users] ADD &lt;br /&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp; CONSTRAINT [CK_users_gender] CHECK ([gender] = 'f' or [gender] = 'm')&lt;br /&gt;GO&lt;/div&gt;
+&lt;br /&gt;&lt;br /&gt;After this is in place, anytime you try to insert or alter the gender field with any character other than 'f' or 'm', the database will throw an error, which you can catch with the constraint name.&lt;br /&gt;&lt;br /&gt;Tomorrow I will post how to validate regular expressions, including UUID datatypes.
+				
+				</description>
+				
+				<category>SQL</category>
+				
+				<pubDate>Sat, 27 Jan 2007 14:08:00 -0500</pubDate>
+				<guid>http://www.robgonda.com/blog/index.cfm/2007/1/27/Database-Data-Integrity-The-Basics</guid>
+				
+			</item>
+			
+		 	
+			
+			
+			<item>
+				<title>CFEclipse 1.3 Released</title>
+				<link>http://www.robgonda.com/blog/index.cfm/2007/1/27/CFEclipse-13-Released</link>
+				<description>
+				
+				Good news: &lt;a href="http://www.cfeclipse.org/" target="_blank"&gt;CFEclipse 1.3&lt;/a&gt; is out; thanks Mark! It is one of the many Eclipse plugins I use daily, and by far the best tool to write ColdFusion code.&amp;nbsp;
+				
+				</description>
+				
+				<category>Coldfusion</category>
+				
+				<category>Cfeclipse</category>
+				
+				<pubDate>Sat, 27 Jan 2007 13:48:00 -0500</pubDate>
+				<guid>http://www.robgonda.com/blog/index.cfm/2007/1/27/CFEclipse-13-Released</guid>
+				
+			</item>
+			
+		 	
+			
+			
+			<item>
+				<title>jQuery 1.1.1 update</title>
+				<link>http://www.robgonda.com/blog/index.cfm/2007/1/25/jQuery-111-update</link>
+				<description>
+				
+				If you're using &lt;a target="_blank" href="http://jquery.com/"&gt;jQuery&lt;/a&gt; 1.1, download immediately the 1.1.1 update. There are a few minor bugs that were fixed, but one was major for me. (see the full list &lt;a target="_blank" href="http://jquery.com/blog/2007/01/22/jquery-111/"&gt;here&lt;/a&gt;).&lt;br /&gt;The first item: Setting the numerical value of a css property failed, for example: .css(&amp;rdquo;opacity&amp;rdquo;,0.5) (also occurred with zIndex, fontWeight), which by the way only affected IE, was causing my &lt;a target="_blank" href="http://interface.eyecon.ro"&gt;interface&lt;/a&gt; drag and drop not to work. For those of you not familiar with interface, it's a collection of components made in form of plugins that facilitate the development of Rich User Interfaces.&lt;br /&gt;The particular problem I ran into was defining draggables. The code looks as follows: &lt;br /&gt;&lt;br /&gt;
+&lt;div class="code"&gt;$('#drag2').Draggable(&lt;br /&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp; {&lt;br /&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp; &amp;nbsp;&amp;nbsp;&amp;nbsp; zIndex: &amp;nbsp;&amp;nbsp;&amp;nbsp; 1000,&lt;br /&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp; &amp;nbsp;&amp;nbsp;&amp;nbsp; ghosting:&amp;nbsp;&amp;nbsp;&amp;nbsp; true,&lt;br /&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp; &amp;nbsp;&amp;nbsp;&amp;nbsp; opacity: &amp;nbsp;&amp;nbsp;&amp;nbsp; 0.7&lt;br /&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp; }&lt;br /&gt;);&lt;/div&gt;
+&lt;br /&gt;&lt;br /&gt;Behind the scenes, this invokes the $().css('zIndex', 1000) function, which for some bizarre reason was translated into setting zIndex to 1000px; go figure. What amazes me with that Firefox, the all standard based web browser, actually ran this code, and IE, the all forgiving-stimulating-bad-code-practice was the one that broke.&lt;br /&gt;&lt;br /&gt;Anyways, the jQuery team quickly released an update and I have not experienced any bugs since. Keep it up.&lt;br /&gt;&lt;br /&gt;&lt;br /&gt;
+&lt;pre&gt;&lt;br /&gt;&lt;/pre&gt;
+				
+				</description>
+				
+				<category>ajax</category>
+				
+				<category>JS/DHTML</category>
+				
+				<pubDate>Thu, 25 Jan 2007 00:03:00 -0500</pubDate>
+				<guid>http://www.robgonda.com/blog/index.cfm/2007/1/25/jQuery-111-update</guid>
+				
+			</item>
+			
+		 	
+			
+			
+			<item>
+				<title>AjaxCFC for jQuery Alpha2 Release</title>
+				<link>http://www.robgonda.com/blog/index.cfm/2007/1/15/AjaxCFC-for-jQuery-Alpha2-Release</link>
+				<description>
+				
+				AjaxCFC for jQuery is almost ready and I just uploaded to &lt;a href="http://ajaxcfc.riaforge.org/" target="_blank"&gt;RIAForge&lt;/a&gt; the new Alpha 2 release. You may sync up your SVN repository or if you don't use source control, use RIAForge's zip download utility to fetch the latest version. Once you download the zip file, the jQuery related code is located in the branches/jquery folder.&lt;br /&gt;&lt;br /&gt;I am using the just released jQuery 1.1, so if you drop this code on an old site using jQuery, you probably want to download the back-compatibility plugin.&lt;br /&gt;&lt;br /&gt;Like I mentioned in my alpha 1 post, I included a plugin to maintain DWR syntax compatibility, and to illustrate it, I updated a few examples to use this code instead of DWR. Thus far, the only significant different I found is when returning a query using JSON serialization method (default on this release). The syntax to access the query columns is a little different, as you will see in the examples and soon-to-come documentation. &lt;br /&gt;&lt;br /&gt;Among some other changes, I updated logging, error trapping, security checks, constructor methods, serialization capabilities, and more.&lt;br /&gt;&lt;br /&gt;Most of these changes affect the DWR and jQuery version since the Ajax.cfc core file is shared between them.&lt;br /&gt;&lt;br /&gt;&lt;span style="font-style: italic;"&gt;Constructor method&lt;/span&gt;: many of you tried to extend your existing domain model objects and provide remote methods inside them. Although I don't particularly agree with this practice, I don't want to restrict it. AjaxCFC used to rely on it's built-in init method constructor, which interfered with you own component once extended, so I renamed the AjaxCFC to allow your objects to contain an init() method.&lt;br /&gt;&lt;br /&gt;&lt;span style="font-style: italic;"&gt;Error trapping&lt;/span&gt;: AjaxCFC catches most errors in your components and by default, alert you with the error message. I added the file and line number since sometimes the message was not enough. I also added a method to optionally popup a window showing the error dump, which is extremely useful because you can see the full trace... to enable this just invoke the setPopupErrorDump(true) method inside your CFC.&lt;br /&gt;&lt;br /&gt;&lt;span style="font-style: italic;"&gt;Security Check (for jQuery version only)&lt;/span&gt;: jQuery sends additional x-header data in the http request, so I added an option to check for it, to prevent access to the CFC if it's accessed by any method other than an XmlHttpRequest. To enable it just invoke the setCheckHttpRequestData(true) method inside your CFC. In fact, by default AjaxCFC ships with all the security methods turned off, for easier debugging. It is advisable to turn them on by calling: setAllowedVerbs('post'); setCheckHTTPReferer(true); setPopupErrorDump(false); setCheckHttpRequestData(true);&lt;br /&gt;&lt;br /&gt;&lt;span style="font-style: italic;"&gt;Serialization (for jQuery only)&lt;/span&gt;: The new AjaxCFC is able to serialize using pure JS, JSON, or WDDX. I haven't fully benchmarked the performance differences, so for now just use the one you like the most.&lt;br /&gt;&lt;br /&gt;&lt;span style="font-style: italic;"&gt;Logging&lt;/span&gt;: I updated the log4javascript version, plus I added a little more information in the request logs.&lt;br /&gt;&lt;br /&gt;Documentation will be included with the beta release.&lt;br /&gt;&lt;br /&gt;Please note that despite some comments out there, this release does not mean that AjaxCFC switched to jQuery. This release is a branch using a different Ajax engine, and both versions will continue to be updated and supported. &lt;br /&gt;&lt;br /&gt;That's it for now, please report any issues using &lt;a href="http://ajaxcfc.riaforge.org/index.cfm?event=page.issues" target="_blank"&gt;RIAForge's bug tracker&lt;/a&gt;.&lt;br /&gt;&lt;br /&gt;Enjoy.
 				
 				</description>
 				
@@ -31,29 +95,12 @@
 				
 				<category>ajaxCFC</category>
 				
-				<pubDate>Sun, 10 Sep 2006 00:48:00 -0400</pubDate>
-				<guid>http://www.robgonda.com/blog/index.cfm/2006/9/10/ajaxCFC-utils-update</guid>
-				
-			</item>
-			
-		 	
-			
-			
-			<item>
-				<title>ColdFusion Open Source Chat Application</title>
-				<link>http://www.robgonda.com/blog/index.cfm/2006/9/9/ColdFusion-Open-Source-Chat-Application</link>
-				<description>
-				
-				if you're looking for a simple chat application for your web site check out &lt;a href="http://www.opensourcecf.com/cfopenchat/" target="_blank"&gt;CFOpenChat&lt;/a&gt;. It's a simple customizable chat for ColdFusion using &lt;a href="http://www.robgonda.com/blog/projects/ajaxcfc/"&gt;ajaxCFC&lt;/a&gt;, works with mssql, mysql, and it's free and open source.
-				
-				</description>
-				
-				<category>ajaxCFC</category>
-				
 				<category>Coldfusion</category>
 				
-				<pubDate>Sat, 09 Sep 2006 23:50:00 -0400</pubDate>
-				<guid>http://www.robgonda.com/blog/index.cfm/2006/9/9/ColdFusion-Open-Source-Chat-Application</guid>
+				<category>JS/DHTML</category>
+				
+				<pubDate>Mon, 15 Jan 2007 00:48:00 -0500</pubDate>
+				<guid>http://www.robgonda.com/blog/index.cfm/2007/1/15/AjaxCFC-for-jQuery-Alpha2-Release</guid>
 				
 			</item>
 			
@@ -61,224 +108,16 @@
 			
 			
 			<item>
-				<title>ColdFusion and Flex: Do you need Flex Data Services?</title>
-				<link>http://www.robgonda.com/blog/index.cfm/2006/9/9/ColdFusion-and-Flex-Do-you-need-Flex-Data-Services</link>
+				<title>jQuery 1.1 final released today</title>
+				<link>http://www.robgonda.com/blog/index.cfm/2007/1/14/jQuery-11-final-released-today</link>
 				<description>
 				
-				Adobe Flex 2 has been out for a couple of months now, and lots of ColdFusion customers are discovering that the combination of ColdFusion and Flex allows them to deliver powerful and engaging applications easier than ever before.
-&lt;p&gt; One area of confusion appears to be the Adobe Flex server: Adobe Flex Data Services. What is Adobe Flex Data Services? What exactly does Flex Data Services allow you to do that you wouldn't be able to do without it? What does this mean specifically to us ColdFusion developers? &lt;/p&gt;
-&lt;p&gt; Ben Forta's new article Adobe Developer Center article entitled &lt;a target="_blank" href="http://www.adobe.com/devnet/coldfusion/articles/fr_fds.html"&gt;ColdFusion and Flex: Do you need Flex Data Services?&lt;/a&gt; explains. &lt;/p&gt;
-				
-				</description>
-				
-				<category>Coldfusion</category>
-				
-				<category>Flex</category>
-				
-				<pubDate>Sat, 09 Sep 2006 23:42:00 -0400</pubDate>
-				<guid>http://www.robgonda.com/blog/index.cfm/2006/9/9/ColdFusion-and-Flex-Do-you-need-Flex-Data-Services</guid>
-				
-			</item>
-			
-		 	
-			
-			
-			<item>
-				<title>Ajax for ColdFusion Developers Breeze Presso next week</title>
-				<link>http://www.robgonda.com/blog/index.cfm/2006/9/6/Ajax-for-ColdFusion-Developers-Breeze-Presso-next-week</link>
-				<description>
-				
-				I'll be presenting Ajax for ColdFusion Developers to both the &lt;a href="http://www.bostoncfug.org/" target="_blank"&gt;local Boston CFUG&lt;/a&gt; and also the &lt;a href="http://coldfusion.meetup.com/" target="_blank"&gt;Online ColdFusion Meetup Group&lt;/a&gt;.&amp;nbsp; The event detail for the OCFMG is:&lt;br /&gt;&lt;br /&gt;&lt;a href="http://coldfusion.meetup.com/17/events/5113555/" target="_blank"&gt;http://coldfusion.meetup.com/17/events/5113555/&lt;/a&gt;&lt;br /&gt;&lt;br /&gt;I was tempted to use the same pressos I have at the Ajax World Conference, but I think I may change it up a bit and add some opinions about Spry, Ajax Vs. Flex, ColdFusion Frameworks, and then some... I want this not to be another Ajax presentation, but something that clears up doubts in the community ... if you have any specific topics you want me to cover, there is still time...&lt;br /&gt;&lt;br /&gt;See you all there.
-				
-				</description>
-				
-				<category>ajax</category>
-				
-				<category>Coldfusion</category>
-				
-				<pubDate>Wed, 06 Sep 2006 23:06:00 -0400</pubDate>
-				<guid>http://www.robgonda.com/blog/index.cfm/2006/9/6/Ajax-for-ColdFusion-Developers-Breeze-Presso-next-week</guid>
-				
-			</item>
-			
-		 	
-			
-			
-			<item>
-				<title>ajaxCFC: more small fixes</title>
-				<link>http://www.robgonda.com/blog/index.cfm/2006/9/6/ajaxCFC-more-small-fixes</link>
-				<description>
-				
-				just uploaded a new release of AjaxCFC with a couple of fixes:&lt;br /&gt;
+				Ladies and gents, &lt;a href="http://jquery.com" target="_blank"&gt;jQuery 1.1&lt;/a&gt; is out. It's 10-20x faster than 1.0.x due to significant API refactoring, which means that all your 1.0.x may not work; for this, you may use the &lt;a target="_blank" href="http://jquery.com/dev/svn/trunk/plugins/compat-1.0/jquery.compat-1.0.js?format=txt"&gt;jQuery 1.0 Compatibility Plugin&lt;/a&gt; to keep 1.0-style functionality in 1.1... check it out
 &lt;ul&gt;
-    &lt;li&gt;backwards compatibility for single arguments with an object, provided by nathanael waite. You may add the setComplexInputStruct(boolean) to the top of your function to enable or disable allowing argumentCollections to be passed to ajaxCFC. If enabled and a single object is passed as an arguments, it will be threaded as a collection. This is enabled by default.&lt;/li&gt;
-    &lt;li&gt;fix in the argumentCollection option mentioned above to allow passing a single array argument. &lt;/li&gt;
-&lt;/ul&gt;
-More to come soon.
-				
-				</description>
-				
-				<category>ajax</category>
-				
-				<category>ajaxCFC</category>
-				
-				<pubDate>Wed, 06 Sep 2006 22:55:00 -0400</pubDate>
-				<guid>http://www.robgonda.com/blog/index.cfm/2006/9/6/ajaxCFC-more-small-fixes</guid>
-				
-			</item>
-			
-		 	
-			
-			
-			<item>
-				<title>ajaxCFC quick patch</title>
-				<link>http://www.robgonda.com/blog/index.cfm/2006/8/30/ajaxCFC-quick-patch</link>
-				<description>
-				
-				I just uploaded a small patch into &lt;a href="http://www.robgonda.com/blog/projects/ajaxcfc" target="_blank"&gt;ajaxCFC&lt;/a&gt; for the Model-Glue examples to work on the CFMX DevNet Edition. I had the core examples already patched, but I found that the MG were not.&lt;br /&gt;&lt;br /&gt;I will release a major engine update within the next few days.
-				
-				</description>
-				
-				<category>ajax</category>
-				
-				<category>ajaxCFC</category>
-				
-				<category>Coldfusion</category>
-				
-				<pubDate>Wed, 30 Aug 2006 21:26:00 -0400</pubDate>
-				<guid>http://www.robgonda.com/blog/index.cfm/2006/8/30/ajaxCFC-quick-patch</guid>
-				
-			</item>
-			
-		 	
-			
-			
-			<item>
-				<title>South Florida CFUG Reminder</title>
-				<link>http://www.robgonda.com/blog/index.cfm/2006/8/30/South-Florida-CFUG-Reminder</link>
-				<description>
-				
-				Quick reminder: I'll be speaking tomorrow at the &lt;a href="http://www.cfug-sfl.org/" target="_blank"&gt;South Florida CFUG&lt;/a&gt;. The session is on &lt;a href="http://www.model-glue.com/" target="_blank"&gt;Model-Glue&lt;/a&gt; and Unity. I will start with defining design patterns, implicit invocation, MVC, and then go into detail about the MG implementation: data flow, event handlers, listeners, models, views, ... To cover Unity I would probably need several hours, so I don't think I will get into scaffolding, and ColdSpring in details (autowiring, proxies, aop) ... &lt;br /&gt;&lt;br /&gt;I'll post my slides tomorrow.
-				
-				</description>
-				
-				<category>Coldfusion</category>
-				
-				<pubDate>Wed, 30 Aug 2006 21:19:00 -0400</pubDate>
-				<guid>http://www.robgonda.com/blog/index.cfm/2006/8/30/South-Florida-CFUG-Reminder</guid>
-				
-			</item>
-			
-		 	
-			
-			
-			<item>
-				<title>weird pages linking back</title>
-				<link>http://www.robgonda.com/blog/index.cfm/2006/8/25/weird-pages-linking-back</link>
-				<description>
-				
-				Has anyone seen this type of crap before? Every single day I find new sites with dummy content mentioning my name/blog linking back ... What could be the reason for this? Traffic, clickthroughs, ad-sense? Does anyone else have this problem?&lt;br /&gt;&lt;br /&gt;e.g. these just came up last night&lt;br /&gt;&lt;br /&gt;http://rajax.rafflesiapages.com/?p=36&lt;br /&gt;http://encleangreaseoffpansthe.blogspot.com/2006/08/clean-grease-off-pans_17.html&lt;br /&gt;http://howcleangreaseoffpanswith.blogspot.com/2006/08/clean-grease-off-pans_24.html&lt;br /&gt;http://whenasseenontvdoggierampto.blogspot.com/2006/08/as-seen-on-tv-doggie-ramp_24.html&lt;br /&gt;http://thecleangreaseor.blogspot.com/2006/08/clean-grease_25.html&lt;br /&gt;http://thisasseenontvdoggierampwhat.blogspot.com/2006/08/as-seen-on-tv-doggie-ramp_25.html
-				
-				</description>
-				
-				<category>Generic</category>
-				
-				<pubDate>Fri, 25 Aug 2006 09:06:00 -0400</pubDate>
-				<guid>http://www.robgonda.com/blog/index.cfm/2006/8/25/weird-pages-linking-back</guid>
-				
-			</item>
-			
-		 	
-			
-			
-			<item>
-				<title>Ajax Debugging Tip</title>
-				<link>http://www.robgonda.com/blog/index.cfm/2006/8/24/Ajax-Debugging-Tip</link>
-				<description>
-				
-				Rey Bango posted a &lt;a href="http://www.reybango.com/index.cfm/2006/8/24/AjaxCFC-Debugging-Tip" target="_blank"&gt;nice entry&lt;/a&gt; to help debug Ajax calls. The problem people usually run into is that Ajax triggers a remote call in the background and they have no idea to see why it failed. ajaxCFC will show you the ColdFusion error, if any, but if the problem breaks to communication for some reason it will just say invalid reply from the server... but why?! I always tell people to install a nice http sniffer, and Rey confirms it.&lt;br /&gt;The moral of the story is: use &lt;a href="http://www.mozilla.com" target="_blank"&gt;Firefox&lt;/a&gt;, use &lt;a href="https://addons.mozilla.org/firefox/1843/" target="_blank"&gt;FireBug&lt;/a&gt;.
-				
-				</description>
-				
-				<category>ajax</category>
-				
-				<category>ajaxCFC</category>
-				
-				<pubDate>Thu, 24 Aug 2006 12:05:00 -0400</pubDate>
-				<guid>http://www.robgonda.com/blog/index.cfm/2006/8/24/Ajax-Debugging-Tip</guid>
-				
-			</item>
-			
-		 	
-			
-			
-			<item>
-				<title>little tip for model-glue: unity</title>
-				<link>http://www.robgonda.com/blog/index.cfm/2006/8/23/little-tip-for-modelglue-unity</link>
-				<description>
-				
-				If you're developing in Model-Glue:Unity, you may already know that you are working with ColdSpring and Reactor. ColdSpring may seem obvious because you set up all Model-Glue's properties with ColdSpring; as the matter of fact, Model-Glue is a ColdSpring application. &lt;br /&gt;However, Model-Glue also ties to Reactor, which you may decide to use or not. A little performance tip is to set Reactor to production mode if you're not using it, because whether you use it or not, it will take up resources. &lt;br /&gt;To chance it to production mode open ColdSpring.xml, find the reactorConfiguration bean, and modify the mode to &lt;span style="font-style: italic;"&gt;&amp;lt;property name=&amp;quot;mode&amp;quot;&amp;gt;&amp;lt;value&amp;gt;production&amp;lt;/value&amp;gt;&amp;lt;/property&amp;gt;&lt;/span&gt;&lt;br /&gt;&lt;br /&gt;I am still not sure exactly why it would make such a difference, but in the project I'm currently working, which does not use Reactor at all, it improved the load time from 700ms to 100ms, having Model-Glue set to always reload.
-				
-				</description>
-				
-				<category>Coldfusion</category>
-				
-				<pubDate>Wed, 23 Aug 2006 09:51:00 -0400</pubDate>
-				<guid>http://www.robgonda.com/blog/index.cfm/2006/8/23/little-tip-for-modelglue-unity</guid>
-				
-			</item>
-			
-		 	
-			
-			
-			<item>
-				<title>Google Analytics Open to Everyone</title>
-				<link>http://www.robgonda.com/blog/index.cfm/2006/8/17/Google-Analytics-Open-to-Everyone</link>
-				<description>
-				
-				Google just removed the wait to receive a Google Analytics account. Now anyone with a website can instantly create one for free by simply by visiting &lt;a href="http://www.google.com/analytics" target="_blank"&gt;google.com/analytics&lt;/a&gt; or by clicking on the &amp;quot;Analytics&amp;quot; tab within AdWords.  After you create an account, they suggest reading the &lt;a href="http://www.google.com/support/analytics/bin/answer.py?answer=40932" target="_blank"&gt;Installation Guide&lt;/a&gt; to get it set up quickly and correctly.&lt;br /&gt;&lt;br /&gt;I've been using Google Analytics for a while and I like it a lot; the best part: it's free!
-				
-				</description>
-				
-				<category>Generic</category>
-				
-				<pubDate>Thu, 17 Aug 2006 09:09:00 -0400</pubDate>
-				<guid>http://www.robgonda.com/blog/index.cfm/2006/8/17/Google-Analytics-Open-to-Everyone</guid>
-				
-			</item>
-			
-		 	
-			
-			
-			<item>
-				<title>Script.aculo.us 1.6.2 Released</title>
-				<link>http://www.robgonda.com/blog/index.cfm/2006/8/16/Scriptaculous-162-Released</link>
-				<description>
-				
-				&lt;p&gt;&lt;a href="http://script.aculo.us/downloads" target="_blank"&gt;Script.aculo.us&lt;/a&gt; &lt;strong&gt;               V1.6.2 (2006-08-15): Bug fix galore! &lt;/strong&gt;was released yesterday.&amp;nbsp; &lt;/p&gt;
-&lt;ul&gt;
-    &lt;li&gt;Fix a problem in the drag and drop logic if an reverting/drag ending draggable was initialized for a new drag (for example by clicking repeatedly) for all cases where the default start/revert/end-effects are used, fixes #4706 [thx tecM0]&lt;/li&gt;
-    &lt;li&gt;Fix possible memory leaks with Draggables, fixes #3436 [thx aal]&lt;/li&gt;
-    &lt;li&gt;Throw nicer errors when requires script.aculo.us libraries are not loaded, fixes #5339&lt;/li&gt;
-    &lt;li&gt;Make slider handles work when not displayed initially by using &lt;span class="caps"&gt;CSS&lt;/span&gt; width/height, fixes #4011 [thx foysavas]&lt;/li&gt;
-    &lt;li&gt;Update sortable functional test with onUpdate counter&lt;/li&gt;
-    &lt;li&gt;Make more Element extensions unit tests work on Safari&lt;/li&gt;
-    &lt;li&gt;Add the assertMatch unit test assertion for asserts with RegExps [thx Ian Tyndall]&lt;/li&gt;
-    &lt;li&gt;Fix a problem with Effect.Move causing &amp;ldquo;jumping&amp;rdquo; elements because of very low float numbers in some situations&lt;/li&gt;
-    &lt;li&gt;Fix a missing semicolon in dragdrop.js, fixes #5569 [thx mackalicious]&lt;/li&gt;
-    &lt;li&gt;Fix a slight inaccuracy with Effect.Scale that could lead the scaling to be one pixel off&lt;/li&gt;
-    &lt;li&gt;Be more prototypish with Effect.Transitions.linear&lt;/li&gt;
-    &lt;li&gt;Make Effect.Scale recognize font sizes that use the pt unit, fixes #4136 [thx aljoscha]&lt;/li&gt;
-    &lt;li&gt;Fix IE hack in Effect.Opacity, fixes #5444 [thx nicholas]&lt;/li&gt;
-    &lt;li&gt;Fix &lt;span class="caps"&gt;IFRAME&lt;/span&gt; layout fix for IE and Autocompleter, fixes #5192 [thx tommy skaue]&lt;/li&gt;
-    &lt;li&gt;Fix only option in onEmptyHover, fiex #5348 [thx glenn nilsson]&lt;/li&gt;
-    &lt;li&gt;Fix Effect.BlindDown and SwitchOff handling of supplied callbacks, fixes #5089 [thx martinstrom]&lt;/li&gt;
-    &lt;li&gt;Fix a problem with field focus on Ajax.InPlaceEditor and loading external text, fixes #4988, #5244 [thx rob]&lt;/li&gt;
-    &lt;li&gt;Do not attempt to scroll if scrollspeed is 0/0, fixes #5035 [thx tomg]&lt;/li&gt;
-    &lt;li&gt;Fix a problem with Sortable Tree serialization, fixes #4939, #4688, #4767  [thx Sammi Williams]&lt;/li&gt;
-    &lt;li&gt;Fix an endless loop with sliders, fixes #3226, #4051, #4765 [thx jeff]&lt;/li&gt;
-    &lt;li&gt;Make autocompleter work with update DIVs that have scrollbars, fixes #4782 [thx Tommy Skaue]&lt;/li&gt;
-    &lt;li&gt;Corrected options parsing on switchoff effect, fixes #4710 [thx haldini]&lt;/li&gt;
+    &lt;li&gt;&lt;a target="_blank" href="http://jquery.com/src/jquery-1.1.js"&gt;jQuery 1.1&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a target="_blank" href="http://jquery.com/src/jquery-1.1.pack.js"&gt;jQuery 1.1 Compressed&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href="http://jquery.com/src/jquery-1.1.release.zip"&gt;jQuery 1.1 - All Code, Docs, and Tests&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href="http://jquery.com/src/jquery-1.1.build.zip"&gt;jQuery 1.1 - Build Your Own Copy of jQuery&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 				
 				</description>
@@ -287,8 +126,8 @@ More to come soon.
 				
 				<category>JS/DHTML</category>
 				
-				<pubDate>Wed, 16 Aug 2006 20:07:00 -0400</pubDate>
-				<guid>http://www.robgonda.com/blog/index.cfm/2006/8/16/Scriptaculous-162-Released</guid>
+				<pubDate>Sun, 14 Jan 2007 23:02:00 -0500</pubDate>
+				<guid>http://www.robgonda.com/blog/index.cfm/2007/1/14/jQuery-11-final-released-today</guid>
 				
 			</item>
 			
@@ -296,18 +135,20 @@ More to come soon.
 			
 			
 			<item>
-				<title>JavaScript Model-View-Controller with Dojo toolkit</title>
-				<link>http://www.robgonda.com/blog/index.cfm/2006/8/8/JavaScript-ModelViewController-with-Dojo-toolkit</link>
+				<title>Ajax, JavaScript, CSS, DOM: Get Firebug 1.0b8</title>
+				<link>http://www.robgonda.com/blog/index.cfm/2007/1/13/Ajax-JavaScript-CSS-DOM-Get-Firebug-10b8</link>
 				<description>
 				
-				You probably know how I love design patterns and apply them all over CF ... You also know I love Dojo :) ... I just found &lt;a href="http://www.alexatnet.com/Blog/Index/2006-08-04/javascript-model-view-controller-with-dojo-toolkit" target="_blank"&gt;this nice article&lt;/a&gt; showing how to apply MVC in JavaScript with Dojo. I don't extensively use JavaScript, but it's a nice implementation.
+				Quick note for those who jumped ahead and downloaded &lt;a href="http://getfirebug.org/" target="_blank"&gt;Firebug 1.0 beta&lt;/a&gt;: updates will not show up automatically. For instance, I first downloaded 1.0b1 and it's already up to 1.0b8, with &lt;a href="http://getfirebug.org/downloads.html" target="_blank"&gt;many, yes, many bug fixes&lt;/a&gt;.&lt;br /&gt;&lt;br /&gt;For those of you new to Firebug, it you do any type of web development, you need this extension. &lt;a href="http://www.jackslocum.com/blog/2007/01/11/domquery-css-selector-basic-xpath-implementation-with-benchmarks/" target="_blank"&gt;Jack Slocum&lt;/a&gt; (mastermind behind YUI-EXT) quote: &amp;quot;Thanks to the FireBug Profiler, I was able to trace the bottlenecks and test different execution plans to see what was the fastest.&amp;quot; when he was writing the all new &lt;a href="http://www.jackslocum.com/blog/2007/01/11/domquery-css-selector-basic-xpath-implementation-with-benchmarks/" target="_blank"&gt;DomQuery&lt;/a&gt;.
 				
 				</description>
 				
+				<category>ajax</category>
+				
 				<category>JS/DHTML</category>
 				
-				<pubDate>Tue, 08 Aug 2006 08:56:00 -0400</pubDate>
-				<guid>http://www.robgonda.com/blog/index.cfm/2006/8/8/JavaScript-ModelViewController-with-Dojo-toolkit</guid>
+				<pubDate>Sat, 13 Jan 2007 14:32:00 -0500</pubDate>
+				<guid>http://www.robgonda.com/blog/index.cfm/2007/1/13/Ajax-JavaScript-CSS-DOM-Get-Firebug-10b8</guid>
 				
 			</item>
 			
@@ -315,18 +156,70 @@ More to come soon.
 			
 			
 			<item>
-				<title>updated to blogcfc 5.1.004</title>
-				<link>http://www.robgonda.com/blog/index.cfm/2006/8/8/updated-to-blogcfc-51004</link>
+				<title>Web Developer 1.1 for Firefox</title>
+				<link>http://www.robgonda.com/blog/index.cfm/2007/1/11/Web-Developer-11-for-Firefox</link>
 				<description>
 				
-				I just updated my blog from v5.004 to 5.1.004. I was reading in the blogsphere that this update was a bit of a hassle, or did not go smoothly for some people. In my case, so far so good (knock on wood). I just upgraded 5 mins ago and thus far nothing's broken. I backed up my entire 5.004 folder and overwrote everything with the new version; then I modified some custom files I have, such as application, layout, admin entry pages (fckeditor), ping rpc .. that's it ... &lt;br /&gt;&lt;br /&gt;If someone notice something broken please let me know.&lt;br /&gt;&lt;br /&gt;Thanks again Ray, you rock!&lt;br /&gt;
+				&lt;a href="http://chrispederick.com/work/webdeveloper/documentation/" target="_blank"&gt;Web Developer&lt;/a&gt;, ironically, it's probably one my favorite Firefox extensions... it's up there right next to Firebug. They released a new version (1.1), which contains tons of nice features... one that I've been wanting for a while is collapsable JavaScript files view. Here's a list of the new features with this release.&lt;br /&gt;&lt;br /&gt;
+&lt;ul&gt;
+    &lt;li&gt;             Add a status icon that indicates whether there are             &lt;acronym title="cascading style sheet"&gt;CSS&lt;/acronym&gt;             errors on the page         &lt;/li&gt;
+    &lt;li&gt;Add close buttons to all the extension toolbars&lt;/li&gt;
+    &lt;li&gt;Add support for displaying the compressed and uncompressed file sizes in 'View Document Size'&lt;/li&gt;
+    &lt;li&gt;Add support for entering the ruler dimensions for the 'Display Ruler' feature&lt;/li&gt;
+    &lt;li&gt;Add support for explaining why certain features are unavailable&lt;/li&gt;
+    &lt;li&gt;Add support for saving the viewport resizing option&lt;/li&gt;
+    &lt;li&gt;Add support for the 'ping' attribute to 'Display Link Details'&lt;/li&gt;
+    &lt;li&gt;Add support for using multiple Web Developer sidebars at the same time&lt;/li&gt;
+    &lt;li&gt;             Add the features
+    &lt;ul&gt;
+        &lt;li&gt;Disable Proxy&lt;/li&gt;
+        &lt;li&gt;Disable Strict JavaScript Warnings&lt;/li&gt;
+        &lt;li&gt;Display Abbreviations&lt;/li&gt;
+        &lt;li&gt;Display Page Magnifier&lt;/li&gt;
+        &lt;li&gt;Display Page Validation&lt;/li&gt;
+        &lt;li&gt;Outline Images With Oversized Dimensions&lt;/li&gt;
+        &lt;li&gt;Outline Links With Ping Attributes&lt;/li&gt;
+        &lt;li&gt;Outline Table Captions&lt;/li&gt;
+        &lt;li&gt;Validate Local Accessibility&lt;/li&gt;
+    &lt;/ul&gt;
+    &lt;/li&gt;
+    &lt;li&gt;Change the JavaScript status icon when JavaScript is disabled&lt;/li&gt;
+    &lt;li&gt;             Improve the 'Edit             &lt;acronym title="cascading style sheet"&gt;CSS&lt;/acronym&gt;'             feature
+    &lt;ul&gt;
+        &lt;li&gt;Add Mozilla/Seamonkey support&lt;/li&gt;
+        &lt;li&gt;Add search functionality&lt;/li&gt;
+    &lt;/ul&gt;
+    &lt;/li&gt;
+    &lt;li&gt;             Improve the 'Edit             &lt;acronym title="hypertext markup language"&gt;HTML&lt;/acronym&gt;'             feature
+    &lt;ul&gt;
+        &lt;li&gt;Add Mozilla/Seamonkey support&lt;/li&gt;
+        &lt;li&gt;Add search functionality&lt;/li&gt;
+    &lt;/ul&gt;
+    &lt;/li&gt;
+    &lt;li&gt;             Improve the 'View Cookie Information' feature
+    &lt;ul&gt;
+        &lt;li&gt;Add support for deleting cookies&lt;/li&gt;
+        &lt;li&gt;Add support for editing cookies&lt;/li&gt;
+    &lt;/ul&gt;
+    &lt;/li&gt;
+    &lt;li&gt;             Improve the 'View Style Information' feature
+    &lt;ul&gt;
+        &lt;li&gt;Add support for syntax highlighting&lt;/li&gt;
+        &lt;li&gt;Allow the path to the highlighted element to be copied&lt;/li&gt;
+    &lt;/ul&gt;
+    &lt;/li&gt;
+    &lt;li&gt;Improve the design of the output of the features&lt;/li&gt;
+    &lt;li&gt;Tons of Bug Fixes.&lt;/li&gt;
+&lt;/ul&gt;
 				
 				</description>
 				
 				<category>Generic</category>
 				
-				<pubDate>Tue, 08 Aug 2006 00:36:00 -0400</pubDate>
-				<guid>http://www.robgonda.com/blog/index.cfm/2006/8/8/updated-to-blogcfc-51004</guid>
+				<category>Browsers</category>
+				
+				<pubDate>Thu, 11 Jan 2007 23:23:00 -0500</pubDate>
+				<guid>http://www.robgonda.com/blog/index.cfm/2007/1/11/Web-Developer-11-for-Firefox</guid>
 				
 			</item>
 			
@@ -334,22 +227,432 @@ More to come soon.
 			
 			
 			<item>
-				<title>CFMX7 + W2k3sp1 = Access is denied</title>
-				<link>http://www.robgonda.com/blog/index.cfm/2006/8/7/CFMX7--W2k3sp1--Access-is-denied</link>
+				<title>jQuery v1.1 beta released today</title>
+				<link>http://www.robgonda.com/blog/index.cfm/2007/1/11/jQuery-v11-beta-released-today</link>
 				<description>
 				
-				I just can't believe there is no official documentation on this issue. If you ever tried to install ColdFusion MX7 on a Windows 2003 Server with sp1 pre installed, your ColdFusion will not install properly. &lt;br /&gt;&lt;br /&gt;I just tried to install it over 20-30 times, changing settings, nt security, firewall, web server, jrun, man .. everything! I tried to install it on an AMD 64 bit CPU running Windows 2003 Server. The 64 bit threw me off, and I almost returned it and ordered a new system... the strange fact is that I have other AMD 64bits running ... &lt;br /&gt;&lt;br /&gt;Regardless of the installation type, standalone, multiserver, using the built-in web server, iis, or apache, it will always finish the install with errors. If you look at the logs you will see 2 or 3 non-fatal errors:&lt;br /&gt;&lt;br /&gt;ERROR - jrun.xmljava.io.FileNotFoundException: C:\JRun4\tmpmove.bat (Access is denied)&lt;br /&gt;&lt;br /&gt;or&lt;br /&gt;&lt;br /&gt;ERROR - jrun.xmljava.io.FileNotFoundException: C:\CFusionMX7\tmpmove.bat (Access is denied)&lt;br /&gt;&lt;br /&gt;Web Server Connector Configuration Error&lt;br /&gt;Status: ERROR&lt;br /&gt;Additional Notes: ERROR - JNDI port 2902 for server cfusion is not active&lt;br /&gt;&lt;br /&gt;The last one I don't have the exact error, but it was something along the line of cannot find C:\CFUsionMX7\lib&lt;br /&gt;&lt;br /&gt;Missing the entire /lib folder does not look so 'non-fatal' to me. Anyways, ColdFusion would not start. After trying everything known to man, I even tried to copy the /lib folder from another server.... nada, nothing.&lt;br /&gt;&lt;br /&gt;I found two solutions to this problem:&lt;br /&gt;1) Reinstall sp1 on top of the pre-installed sp1.&lt;br /&gt;2) A little easier, and I still don't know why this works, install CF with the silent mode. Run the CF install file from a command line (DOS box) with &amp;quot;-f silent.properties&amp;quot; and it will take 2 mins to install. Silent.properties is a file that you must create using a text editor. See &lt;a href="http://www.macromedia.com/go/87bd20f4" target="_blank"&gt;this technote&lt;/a&gt; for details.&lt;br /&gt;&lt;br /&gt;I installed it silently with the built-in server, and then manually attached the IIS connectors. It also installed the Report Builder, I guess it's part of the silent install... so I removed it after it was done. I kept a copy of the silent.properties if anyone needs it, but it's close to the template provided in the technote.&lt;br /&gt;&lt;br /&gt;Adobe should document this issue! Next time you're installing CFMX7 on a W2k3 box, remember this post, it may save you days.&lt;br /&gt;&lt;br /&gt;&lt;br /&gt;
+				&lt;a href="http://jquery.com/blog/2007/01/11/jquery-11b/" target="_blank"&gt;jQuery v1.1 beta was released today&lt;/a&gt; and final release is scheduled for this w/e -- how exciting! Since they streamlined the API to massively improve speed, they also released a back-compatibility plugin so you can easily just drop this new API to upgrade.&lt;br /&gt;&lt;br /&gt;John Resig also &lt;a href="http://jquery.com/blog/2007/01/11/selector-speeds/" target="_blank"&gt;blogged&lt;/a&gt; about the new selector speed and compared it to Jack Slocum's new &lt;a href="http://www.jackslocum.com/blog/2007/01/11/domquery-css-selector-basic-xpath-implementation-with-benchmarks/" target="_blank"&gt;DOMQuery&lt;/a&gt;.
+				
+				</description>
+				
+				<category>ajax</category>
+				
+				<category>JS/DHTML</category>
+				
+				<pubDate>Thu, 11 Jan 2007 23:06:00 -0500</pubDate>
+				<guid>http://www.robgonda.com/blog/index.cfm/2007/1/11/jQuery-v11-beta-released-today</guid>
+				
+			</item>
+			
+		 	
+			
+			
+			<item>
+				<title>Adobe Flex 2.0.1</title>
+				<link>http://www.robgonda.com/blog/index.cfm/2007/1/8/Adobe-Flex-201</link>
+				<description>
+				
+				Adobe released an update for Flex: 2.0.1. I just wrote (and lost) a review of the new changes, and it's passed 2am, so I'm not writing it again ... In summary, it now has official support for Macs, it has new JIT support for adding/removing modules in runtime, it's moving towards Apollo integration. You can see the &lt;a href="http://www.adobe.com/support/documentation/en/flex/2/releasenotes_flex201_sdk.html" target="_blank"&gt;official release notes&lt;/a&gt; and also check out &lt;a href="http://www.onflex.org/ted/2007/01/1-one-solid-flex-release-201.php" target="_blank"&gt;Ted's detailed review&lt;/a&gt;.
 				
 				</description>
 				
 				<category>Adobe</category>
 				
+				<category>Flex</category>
+				
+				<pubDate>Mon, 08 Jan 2007 02:05:00 -0500</pubDate>
+				<guid>http://www.robgonda.com/blog/index.cfm/2007/1/8/Adobe-Flex-201</guid>
+				
+			</item>
+			
+		 	
+			
+			
+			<item>
+				<title>jQuery 1.1 alpha released today</title>
+				<link>http://www.robgonda.com/blog/index.cfm/2007/1/8/jQuery-11-alpha-released-today</link>
+				<description>
+				
+				&lt;a href="http://jquery.com/blog/2007/01/08/jquery-11a/" target="_blank"&gt;jQuery v1.1 alpha was just released&lt;/a&gt;. Among the major changes, you would find that&lt;br /&gt;
+&lt;ul&gt;
+    &lt;li&gt;Its selectors are 10-20x faster than those in jQuery 1.0.4.&lt;/li&gt;
+    &lt;li&gt;The &lt;a href="http://docs.jquery.com/" target="_blank"&gt;documentation&lt;/a&gt; has been completely revamped.&lt;/li&gt;
+    &lt;li&gt;The complexity of the API has dropped by &lt;strong&gt;47%&lt;/strong&gt;.&lt;/li&gt;
+    &lt;li&gt;It has a ton of bug fixes.&lt;/li&gt;
+    &lt;li&gt;It has a bunch of great new features.&lt;/li&gt;
+&lt;/ul&gt;
+Download
+&lt;ul&gt;
+    &lt;li&gt;&lt;a href="http://jquery.com/src/jquery-1.1a.js" target="_blank"&gt;Download Uncompressed&lt;/a&gt; (&lt;strong&gt;Testing Only!&lt;/strong&gt;)&lt;/li&gt;
+    &lt;li&gt;Please submit new bug reports here: &lt;a href="http://jquery.com/dev/bugs/new/" target="_blank"&gt;New Bug Report&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;The following &lt;strong&gt;methods have been renamed/reorganized&lt;/strong&gt; in this version, here is how you can continue to use them, as you would expect:&lt;/p&gt;
+&lt;table style="width: 100%;"&gt;
+    &lt;tbody&gt;
+        &lt;tr&gt;
+            &lt;th&gt;Old Way (1.0.x)&lt;/th&gt;
+            &lt;th&gt;New Way (1.1)&lt;/th&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td&gt;.ancestors()&lt;/td&gt;
+            &lt;td&gt;.parents()&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td&gt;.width()&lt;/td&gt;
+            &lt;td&gt;.css(&amp;rdquo;width&amp;rdquo;)&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td&gt;.height()&lt;/td&gt;
+            &lt;td&gt;.css(&amp;rdquo;height&amp;rdquo;)&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td&gt;.top()&lt;/td&gt;
+            &lt;td&gt;.css(&amp;rdquo;top&amp;rdquo;)&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td&gt;.left()&lt;/td&gt;
+            &lt;td&gt;.css(&amp;rdquo;left&amp;rdquo;)&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td&gt;.position()&lt;/td&gt;
+            &lt;td&gt;.css(&amp;rdquo;position&amp;rdquo;)&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td&gt;.float()&lt;/td&gt;
+            &lt;td&gt;.css(&amp;rdquo;float&amp;rdquo;)&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td&gt;.overflow()&lt;/td&gt;
+            &lt;td&gt;.css(&amp;rdquo;overflow&amp;rdquo;)&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td&gt;.color()&lt;/td&gt;
+            &lt;td&gt;.css(&amp;rdquo;color&amp;rdquo;)&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td&gt;.background()&lt;/td&gt;
+            &lt;td&gt;.css(&amp;rdquo;background&amp;rdquo;)&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td&gt;.id()&lt;/td&gt;
+            &lt;td&gt;.attr(&amp;rdquo;id&amp;rdquo;)&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td&gt;.title()&lt;/td&gt;
+            &lt;td&gt;.attr(&amp;rdquo;title&amp;rdquo;)&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td&gt;.name()&lt;/td&gt;
+            &lt;td&gt;.attr(&amp;rdquo;name&amp;rdquo;)&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td&gt;.href()&lt;/td&gt;
+            &lt;td&gt;.attr(&amp;rdquo;href&amp;rdquo;)&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td&gt;.src()&lt;/td&gt;
+            &lt;td&gt;.attr(&amp;rdquo;src&amp;rdquo;)&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td&gt;.rel()&lt;/td&gt;
+            &lt;td&gt;.attr(&amp;rdquo;rel&amp;rdquo;)&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td&gt;.oneblur(fn)&lt;/td&gt;
+            &lt;td&gt;.one(&amp;rdquo;blur&amp;rdquo;,fn)&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td&gt;.onefocus(fn)&lt;/td&gt;
+            &lt;td&gt;.one(&amp;rdquo;focus&amp;rdquo;,fn)&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td&gt;.oneload(fn)&lt;/td&gt;
+            &lt;td&gt;.one(&amp;rdquo;load&amp;rdquo;,fn)&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td&gt;.oneresize(fn)&lt;/td&gt;
+            &lt;td&gt;.one(&amp;rdquo;resize&amp;rdquo;,fn)&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td&gt;.onescroll(fn)&lt;/td&gt;
+            &lt;td&gt;.one(&amp;rdquo;scroll&amp;rdquo;,fn)&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td&gt;.oneunload(fn)&lt;/td&gt;
+            &lt;td&gt;.one(&amp;rdquo;unload&amp;rdquo;,fn)&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td&gt;.oneclick(fn)&lt;/td&gt;
+            &lt;td&gt;.one(&amp;rdquo;click&amp;rdquo;,fn)&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td&gt;.onedblclick(fn)&lt;/td&gt;
+            &lt;td&gt;.one(&amp;rdquo;dblclick&amp;rdquo;,fn)&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td&gt;.onemousedown(fn)&lt;/td&gt;
+            &lt;td&gt;.one(&amp;rdquo;mousedown&amp;rdquo;,fn)&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td&gt;.onemouseup(fn)&lt;/td&gt;
+            &lt;td&gt;.one(&amp;rdquo;mouseup&amp;rdquo;,fn)&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td&gt;.onemousemove(fn)&lt;/td&gt;
+            &lt;td&gt;.one(&amp;rdquo;mousemove&amp;rdquo;,fn)&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td&gt;.onemouseover(fn)&lt;/td&gt;
+            &lt;td&gt;.one(&amp;rdquo;mouseover&amp;rdquo;,fn)&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td&gt;.onemouseout(fn)&lt;/td&gt;
+            &lt;td&gt;.one(&amp;rdquo;mouseout&amp;rdquo;,fn)&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td&gt;.onechange(fn)&lt;/td&gt;
+            &lt;td&gt;.one(&amp;rdquo;change&amp;rdquo;,fn)&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td&gt;.onereset(fn)&lt;/td&gt;
+            &lt;td&gt;.one(&amp;rdquo;reset&amp;rdquo;,fn)&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td&gt;.oneselect(fn)&lt;/td&gt;
+            &lt;td&gt;.one(&amp;rdquo;select&amp;rdquo;,fn)&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td&gt;.onesubmit(fn)&lt;/td&gt;
+            &lt;td&gt;.one(&amp;rdquo;submit&amp;rdquo;,fn)&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td&gt;.onekeydown(fn)&lt;/td&gt;
+            &lt;td&gt;.one(&amp;rdquo;keydown&amp;rdquo;,fn)&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td&gt;.onekeypress(fn)&lt;/td&gt;
+            &lt;td&gt;.one(&amp;rdquo;keypress&amp;rdquo;,fn)&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td&gt;.onekeyup(fn)&lt;/td&gt;
+            &lt;td&gt;.one(&amp;rdquo;keyup&amp;rdquo;,fn)&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td&gt;.oneerror(fn)&lt;/td&gt;
+            &lt;td&gt;.one(&amp;rdquo;error&amp;rdquo;,fn)&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td&gt;.unblur(fn)&lt;/td&gt;
+            &lt;td&gt;.unbind(&amp;rdquo;blur&amp;rdquo;,fn)&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td&gt;.unfocus(fn)&lt;/td&gt;
+            &lt;td&gt;.unbind(&amp;rdquo;focus&amp;rdquo;,fn)&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td&gt;.unload(fn)&lt;/td&gt;
+            &lt;td&gt;.unbind(&amp;rdquo;load&amp;rdquo;,fn)&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td&gt;.unresize(fn)&lt;/td&gt;
+            &lt;td&gt;.unbind(&amp;rdquo;resize&amp;rdquo;,fn)&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td&gt;.unscroll(fn)&lt;/td&gt;
+            &lt;td&gt;.unbind(&amp;rdquo;scroll&amp;rdquo;,fn)&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td&gt;.ununload(fn)&lt;/td&gt;
+            &lt;td&gt;.unbind(&amp;rdquo;unload&amp;rdquo;,fn)&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td&gt;.unclick(fn)&lt;/td&gt;
+            &lt;td&gt;.unbind(&amp;rdquo;click&amp;rdquo;,fn)&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td&gt;.undblclick(fn)&lt;/td&gt;
+            &lt;td&gt;.unbind(&amp;rdquo;dblclick&amp;rdquo;,fn)&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td&gt;.unmousedown(fn)&lt;/td&gt;
+            &lt;td&gt;.unbind(&amp;rdquo;mousedown&amp;rdquo;,fn)&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td&gt;.unmouseup(fn)&lt;/td&gt;
+            &lt;td&gt;.unbind(&amp;rdquo;mouseup&amp;rdquo;,fn)&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td&gt;.unmousemove(fn)&lt;/td&gt;
+            &lt;td&gt;.unbind(&amp;rdquo;mousemove&amp;rdquo;,fn)&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td&gt;.unmouseover(fn)&lt;/td&gt;
+            &lt;td&gt;.unbind(&amp;rdquo;mouseover&amp;rdquo;,fn)&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td&gt;.unmouseout(fn)&lt;/td&gt;
+            &lt;td&gt;.unbind(&amp;rdquo;mouseout&amp;rdquo;,fn)&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td&gt;.unchange(fn)&lt;/td&gt;
+            &lt;td&gt;.unbind(&amp;rdquo;change&amp;rdquo;,fn)&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td&gt;.unreset(fn)&lt;/td&gt;
+            &lt;td&gt;.unbind(&amp;rdquo;reset&amp;rdquo;,fn)&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td&gt;.unselect(fn)&lt;/td&gt;
+            &lt;td&gt;.unbind(&amp;rdquo;select&amp;rdquo;,fn)&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td&gt;.unsubmit(fn)&lt;/td&gt;
+            &lt;td&gt;.unbind(&amp;rdquo;submit&amp;rdquo;,fn)&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td&gt;.unkeydown(fn)&lt;/td&gt;
+            &lt;td&gt;.unbind(&amp;rdquo;keydown&amp;rdquo;,fn)&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td&gt;.unkeypress(fn)&lt;/td&gt;
+            &lt;td&gt;.unbind(&amp;rdquo;keypress&amp;rdquo;,fn)&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td&gt;.unkeyup(fn)&lt;/td&gt;
+            &lt;td&gt;.unbind(&amp;rdquo;keyup&amp;rdquo;,fn)&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td&gt;.unerror(fn)&lt;/td&gt;
+            &lt;td&gt;.unbind(&amp;rdquo;error&amp;rdquo;,fn)&lt;/td&gt;
+        &lt;/tr&gt;
+    &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;br /&gt;However, before you get too alarmed, I know they will release a 'back-compatibility' plugin, which would help you transition from 1.0.x to 1.1.&lt;br /&gt;&lt;br /&gt;I am really excited, benchmarks will come soon, but this release is way faster and supperior, so go ahead, spread the word. I will probably release the beta version of AjaxCFC for jQuery with the official 1.1 release.&lt;br /&gt;&lt;br /&gt;
+				
+				</description>
+				
+				<category>ajax</category>
+				
+				<category>JS/DHTML</category>
+				
+				<pubDate>Mon, 08 Jan 2007 01:55:00 -0500</pubDate>
+				<guid>http://www.robgonda.com/blog/index.cfm/2007/1/8/jQuery-11-alpha-released-today</guid>
+				
+			</item>
+			
+		 	
+			
+			
+			<item>
+				<title>CFMX7 + W2k3 r2 = Access is denied</title>
+				<link>http://www.robgonda.com/blog/index.cfm/2006/12/28/CFMX7--W2k3-r2--Access-is-denied</link>
+				<description>
+				
+				Back in August I blogged about &lt;a href="/blog/index.cfm/2006/8/7/CFMX7--W2k3sp1--Access-is-denied"&gt;problems installing ColdFusion in a Windows 2003 box with sp1 pre-installed&lt;/a&gt;... the same applies for R2 version. My solution last time was to run the silent install, but there is a much easier one: turn off DEP (Data Execution Prevention), which should work for sp1 and r2.&lt;br /&gt;&lt;br /&gt;To do this, right click my computer, goto properties, advanced, top tab: Data Execution Prevention, and switch to the first radio: for essential services only. After that, just reboot and install. It should work flawlessly.
+				
+				</description>
+				
 				<category>Coldfusion</category>
 				
-				<category>Software</category>
+				<pubDate>Thu, 28 Dec 2006 13:52:00 -0500</pubDate>
+				<guid>http://www.robgonda.com/blog/index.cfm/2006/12/28/CFMX7--W2k3-r2--Access-is-denied</guid>
 				
-				<pubDate>Mon, 07 Aug 2006 23:26:00 -0400</pubDate>
-				<guid>http://www.robgonda.com/blog/index.cfm/2006/8/7/CFMX7--W2k3sp1--Access-is-denied</guid>
+			</item>
+			
+		 	
+			
+			
+			<item>
+				<title>Watch out for memory leaks!</title>
+				<link>http://www.robgonda.com/blog/index.cfm/2006/12/28/Watch-out-for-memory-leaks</link>
+				<description>
+				
+				I had a server constantly running out of memory and I just couldn't figure out what was wrong. The first thing I did, thanks to Steven Erat, was enable the jrun metrics to monitor threads, sessions, and jvm memory. You do this by editing the \runtime\servers\coldfusion\SERVER-INF\jrun.xml and set &amp;lt;attribute name=&amp;quot;metricsEnabled&amp;quot;&amp;gt;true&amp;lt;/attribute&amp;gt;. I debugged my caching system, fixed some garbage collection issues, but it still did not completely fixed my problem. &lt;br /&gt;A few days later, I got an insight: the onSessionStart and onSessionEnd functions. &lt;br /&gt;&lt;br /&gt;I had the following functions defined:&lt;br /&gt;&lt;br /&gt;
+&lt;div class="code"&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp; &amp;lt;!--- on Session Start ---&amp;gt;&lt;br /&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp; &amp;lt;cffunction name=&amp;quot;onSessionStart&amp;quot;&amp;gt;&lt;br /&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp; &amp;nbsp;&amp;nbsp;&amp;nbsp; &amp;lt;cfscript&amp;gt;&lt;br /&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp; &amp;nbsp;&amp;nbsp;&amp;nbsp; &amp;nbsp;&amp;nbsp;&amp;nbsp; application.com.objectFactory.getInstance('session').addSession(session);&lt;br /&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp; &amp;nbsp;&amp;nbsp;&amp;nbsp; &amp;lt;/cfscript&amp;gt;&lt;br /&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp; &amp;lt;/cffunction&amp;gt;&lt;br /&gt;&lt;br /&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp; &lt;br /&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp; &amp;lt;!--- on Session End ---&amp;gt;&lt;br /&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp; &amp;lt;cffunction name=&amp;quot;onSessionEnd&amp;quot;&amp;gt;&lt;br /&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp; &amp;nbsp;&amp;nbsp;&amp;nbsp; &amp;lt;cfargument name=&amp;quot;SessionScope&amp;quot; required=&amp;quot;Yes&amp;quot; /&amp;gt;&lt;br /&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp; &amp;nbsp;&amp;nbsp;&amp;nbsp; &amp;lt;cfargument name=&amp;quot;ApplicationScope&amp;quot; required=&amp;quot;No&amp;quot; /&amp;gt;&lt;br /&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp; &amp;nbsp;&amp;nbsp;&amp;nbsp; &amp;lt;cfscript&amp;gt;&lt;br /&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp; &amp;nbsp;&amp;nbsp;&amp;nbsp; &amp;nbsp;&amp;nbsp;&amp;nbsp; ApplicationScope.com.objectFactory.getInstance('session').delSession(arguments.SessionScope.sessionId);&lt;br /&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp; &amp;nbsp;&amp;nbsp;&amp;nbsp; &amp;lt;/cfscript&amp;gt;&lt;br /&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp; &amp;lt;/cffunction&amp;gt;&lt;/div&gt;
+&lt;br /&gt;&lt;br /&gt;Well, guess what, it seems like even after removing the reference to the specific session, ColdFusion failed to destroy it. I would have assumed that ColdFusion would just destroy the session, and if I happen to still be pointing to it I would get the famous null pointer exception, but no, ColdFusion kept a copy of some sort draining all my memory. As soon as I removed the reference to the session, the jrun garbage collection did its job and memory because stable again.&lt;br /&gt;&lt;br /&gt;I will try to look further into this behavior using the Scorpio Server Monitoring, which includes really nice tools to analyze what's using your precious RAM.
+				
+				</description>
+				
+				<category>Coldfusion</category>
+				
+				<pubDate>Thu, 28 Dec 2006 01:39:00 -0500</pubDate>
+				<guid>http://www.robgonda.com/blog/index.cfm/2006/12/28/Watch-out-for-memory-leaks</guid>
+				
+			</item>
+			
+		 	
+			
+			
+			<item>
+				<title>CFUnited 2007 Topics Online</title>
+				<link>http://www.robgonda.com/blog/index.cfm/2006/12/27/CFUnited-2007-Topics-Online</link>
+				<description>
+				
+				CFUnited has posted &lt;a href="http://cfunited.com/2007/pages/topics.cfm" target="_blank"&gt;topics for 2007&lt;/a&gt; and the list looks even better than last year. They'll post about 20 more in the next couple of months, including new topics for Flex and Scorpio.&lt;br /&gt;&lt;br /&gt;As a reminder, the 'very early registration' ends January 5th, so if you know for sure you are going, register early and save.&lt;br /&gt;&lt;br /&gt;I'm giving a session called Embrace Factories:&lt;br /&gt;Object Oriented Programming is still fairly new for ColdFusion developers. The community is learning the advantages of using objects, but once programs scale, they get out of control. Learn the best practices to organize and wire your objects together using proven design patterns such as object factories, service locators, and inversion of control. Attendees will see the evolution starting from a 20-lines simple factory, moving towards light-wire, and ending with ColdSpring.&lt;br /&gt;&lt;br /&gt;I may also do a pre-confernce class like last year, not yet confirmed... I could do another Ajax Intensive, this time leveraging jQuery, YUI, and the new Scorpio Ajax built-in integration... I could also do one on Apollo ... which one would you rather take?
+				
+				</description>
+				
+				<category>Coldfusion</category>
+				
+				<pubDate>Wed, 27 Dec 2006 18:45:00 -0500</pubDate>
+				<guid>http://www.robgonda.com/blog/index.cfm/2006/12/27/CFUnited-2007-Topics-Online</guid>
+				
+			</item>
+			
+		 	
+			
+			
+			<item>
+				<title>Better image manipulation quality with ASPJpeg</title>
+				<link>http://www.robgonda.com/blog/index.cfm/2006/12/27/Better-image-manipulation-quality-with-ASPJpeg</link>
+				<description>
+				
+				ColdFusion runs on top of Java and therefore can leverage of native Java classes such as BufferedImage and ImageIO. There are a few wrapper libraries that allow you to interact with them. The core relies on CreateObject(&amp;quot;java&amp;quot;, &amp;quot;java.awt.image.BufferedImage&amp;quot;) and CreateObject(&amp;quot;Java&amp;quot;, &amp;quot;javax.imageio.ImageIO&amp;quot;), for the text manipulation you can use CreateObject(&amp;quot;Java&amp;quot;, &amp;quot;java.awt.Font&amp;quot;), and for reading and writing files you can use CreateObject(&amp;quot;Java&amp;quot;, &amp;quot;java.io.FileInputStream&amp;quot;). All this will be replaced with native image manipulation with the release of Scorpio (CFMX8).&lt;br /&gt;&lt;br /&gt;However, I ran into image quality problems when resizing large images to smaller thumbnails... the resizing algorithm used by these native Java technologies is not optimal, therefore it really doesn't matter which wrapper you use, you will ultimately run into the same issues.&lt;br /&gt;&lt;br /&gt;After much research, I chose to install a COM object used by ASP called &lt;a target="_blank" href="http://www.aspjpeg.com/"&gt;ASPJpeg&lt;/a&gt;. As you probably know, ColdFusion can also leverage COM objects, and let me tell you, the quality of ASPJpeg is superb. &lt;br /&gt;&lt;br /&gt;It really couldn't be any simpler. First initialize the COM Object:&lt;br /&gt;
+&lt;div class="code"&gt;&amp;lt;cfset myImage = createObject(&amp;quot;COM&amp;quot;,&amp;quot;Persits.Jpeg&amp;quot;) /&amp;gt;&lt;/div&gt;
+&lt;br /&gt;&lt;br /&gt;Then you may open an existing image:&lt;br /&gt;
+&lt;div class="code"&gt;&amp;lt;cfset myImage.Open(&amp;quot;/path/to/original/file.ext&amp;quot;) /&amp;gt;&lt;/div&gt;
+&lt;br /&gt;&lt;br /&gt;You may get the original width and height&lt;br /&gt;
+&lt;div class="code"&gt;&amp;lt;cfset orig_size_w = myImage.OriginalWidth() /&amp;gt;&lt;br /&gt;&amp;lt;cfset orig_size_h = myImage.OriginalHeight() /&amp;gt;&lt;/div&gt;
+&lt;br /&gt;&lt;br /&gt;Set new quality and resolution&lt;br /&gt;
+&lt;div class="code"&gt;&amp;lt;cfset myImage.ResolutionX(72) /&amp;gt;&lt;br /&gt;&amp;lt;cfset myImage.ResolutionY(72) /&amp;gt;&lt;br /&gt;&amp;lt;cfset myImage.Quality(80) /&amp;gt;&lt;/div&gt;
+&lt;br /&gt;&lt;br /&gt;Set a new width and height&lt;br /&gt;
+&lt;div class="code"&gt;&amp;lt;cfset myImage.Width(new_large_w) /&amp;gt;&lt;br /&gt;&amp;lt;cfset myImage.Height(new_large_h) /&amp;gt;&lt;/div&gt;
+&lt;br /&gt;&lt;br /&gt;Crop the image&lt;br /&gt;
+&lt;div class="code"&gt;&amp;lt;cfset myImage.Crop(crop_w, crop_h, starting_w, starting_y) /&amp;gt;&lt;/div&gt;
+&lt;br /&gt;&lt;br /&gt;and finally save the image to disk&lt;br /&gt;
+&lt;div class="code"&gt;&amp;lt;cfset myImage.Save(&amp;quot;/path/to/original/file.ext&amp;quot;) /&amp;gt;&lt;/div&gt;
+&lt;br /&gt;&lt;br /&gt;As you can see, it's extremely easy to leverage COM objects to read, resize, crop, modify quality ... ASPJpeg is capable of many other functions, but these should get you started.&lt;br /&gt;&lt;br /&gt;Enjoy good quality!
+				
+				</description>
+				
+				<category>Coldfusion</category>
+				
+				<pubDate>Wed, 27 Dec 2006 18:08:00 -0500</pubDate>
+				<guid>http://www.robgonda.com/blog/index.cfm/2006/12/27/Better-image-manipulation-quality-with-ASPJpeg</guid>
+				
+			</item>
+			
+		 	
+			
+			
+			<item>
+				<title>SQL: A Case For CROSS JOIN</title>
+				<link>http://www.robgonda.com/blog/index.cfm/2006/12/27/SQL-A-Case-For-CROSS-JOIN</link>
+				<description>
+				
+				Sometimes we have to select data from two or more tables to make our result complete. We have to perform a join. It is usually an INNER JOIN or [LEFT | RIGHT | FULL] OUTER JOIN, but SQL also provides a CROSS JOIN ... The CROSS JOIN takes all entries of one table and combine them with all entries of a second table; because of this, it does not allow for an ON clause. There are rare occasions when you would use it, so I decided to illustrate one.&lt;br /&gt;&lt;br /&gt;Imagine a schema where you have the following tables: contentKeys, languages, and content. This db allows you to store content in various languages. contentKeys will store the unique keys for content pieces, which after combined with languages, will return a unique piece of content in a particular language. The schema looks as follows:&lt;br /&gt;&lt;img src="/blog/files/robGonda/UserFiles/Image/cross-join-db-schema.jpg" alt="" /&gt;&lt;br /&gt;The content table has a unique contraint for FK_key and FK_language (FK denotes it's a forgeign key).&lt;br /&gt;&lt;br /&gt;Now, what if you need to know which keys exist for one language and not for others, or even which keys exist and contain content in no languages at all? We'll build a query to show this information.&lt;br /&gt;&lt;br /&gt;The first step is to find all combinations of keys and languages. To do this we need to combine all entries in they contentKeys table with all entries in the languages table.&lt;br /&gt;&lt;br /&gt;
+&lt;div class="code"&gt;SELECT * FROM contentKeys CROSS JOIN languages&lt;/div&gt;
+&lt;br /&gt;&lt;br /&gt;The next step is understanding OUTER JOINs. An outer join selects all of the records from one database table and only those records in the second table that have matching values in the joined field. In a left outer join, the selected records will include all of the records in the first database table. In a right outer join, the selected records will include all records of the second database table.&lt;br /&gt;&lt;br /&gt;That said, if you OUTER JOIN the combination of all possible keys in all possible languages with your content table, the resulting query will let you know which keys have been translated, and which ones have not.&lt;br /&gt;&lt;br /&gt;
+&lt;div class="code"&gt;SELECT * from [CROSS-JOINED-QUERY] helper LEFT OUTER JOIN dbo.content &lt;br /&gt;ON helper.pk_language = dbo.content.fk_language AND helper.pk_key = dbo.content.fk_key&lt;/div&gt;
+&lt;br /&gt;&lt;br /&gt;We called the cross-joined table 'helper', and this query will return all rows there, matching them to the content table. All the exiting content/language combinations will have data in the content table, and those what do not exist will have null values. You may enter an additional where clause to filter only null values, which will indicate exactly which content keys / language combination are missing.&lt;br /&gt;&lt;br /&gt;So for the full query, we'll take advantage of the dynamic table aliasing capabilities of sql and it looks like this:&lt;br /&gt;&lt;br /&gt;
+&lt;div class="code"&gt;SELECT helper.content_key, helper.code, helper.[language],&lt;br /&gt;content.pk_content, helper.pk_key, helper.pk_language, &lt;br /&gt;content.content&lt;br /&gt;FROM (SELECT * FROM contentKeys CROSS JOIN languages) helper &lt;br /&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp; LEFT OUTER JOIN dbo.content &lt;br /&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp; ON helper.pk_language = dbo.content.fk_language AND helper.pk_key = dbo.content.fk_key&lt;br /&gt;ORDER BY helper.content_key, helper.[language]&lt;/div&gt;
+				
+				</description>
+				
+				<category>SQL</category>
+				
+				<pubDate>Wed, 27 Dec 2006 13:17:00 -0500</pubDate>
+				<guid>http://www.robgonda.com/blog/index.cfm/2006/12/27/SQL-A-Case-For-CROSS-JOIN</guid>
 				
 			</item>
 			
