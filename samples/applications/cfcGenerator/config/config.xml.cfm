@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <Config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-	xsi:noNamespaceSchemaLocation="http://www.coldboxframework.com/schema/config_1.1.0.xsd">
+	xsi:noNamespaceSchemaLocation="http://www.coldboxframework.com/schema/config_1.2.0.xsd">
 	<Settings>
 		<Setting name="AppName"						value="Illudium PU-36 Code Generator"/>
 		<Setting name="AppMapping" 					value="coldbox/samples/applications/cfcGenerator" />
@@ -24,10 +24,11 @@
 		<Setting name="HandlersIndexAutoReload"   	value="false" />
 		<Setting name="ConfigAutoReload"          	value="false" />
 		<Setting name="MyPluginsLocation"   		value="" />
+		<Setting name="HandlerCaching" 				value="true"/>
 	</Settings>
 
 	<YourSettings>
-		<Setting name="adminPass" 	value=""/>
+		<Setting name="adminPass" 	value="ortusintrojesus"/>
 		<Setting name="xslBasePath" value="./xsl/" />
 	</YourSettings>
 

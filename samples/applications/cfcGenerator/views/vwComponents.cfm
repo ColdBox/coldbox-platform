@@ -1,18 +1,18 @@
-<cfset dbType = getValue("dbType") />
-<cfset tables = getValue("tables") />
-<cfset dsn = getValue("dsn")>
+<cfset dbType = requestContext.getValue("dbType") />
+<cfset tables = requestContext.getValue("tables") />
+<cfset dsn = requestContext.getValue("dsn")>
 
 <cfoutput>
-<cfform action="index.cfm?event=#getValue("xehGenerate")#" method="post" format="xml" skin="lightgray">
+<cfform action="index.cfm?event=#requestContext.getValue("xehGenerate")#" method="post" format="xml" skin="lightgray">
 	
 	<cfinput type="hidden" name="dbtype" value="#dbtype#" />
 	<cfinput type="hidden" name="dsn" value="#dsn#" />
 	
 	<cfformitem type="html">DSN: #dsn# (<a href="index.cfm">click to change</a>)</cfformitem>
 	
-	<cfinput type="text" name="componentPath" label="Component Path:" size="50" required="true" value="#getValue("componentPath")#" />
+	<cfinput type="text" name="componentPath" label="Component Path:" size="50" required="true" value="#requestContext.getValue("componentPath")#" />
 	
-	<cfselect name="table" label="Choose a table" selected="#getValue("table")#">
+	<cfselect name="table" label="Choose a table" selected="#requestContext.getValue("table")#">
 		<cfloop query="tables">
 			<option value="#tables.table_name#">#tables.table_name#</option>
 		</cfloop>

@@ -1,3 +1,4 @@
+<cfset rc = requestContext.getCollection()>
 <cfoutput>
 <script language="JavaScript">
 function showit( vdiv ){
