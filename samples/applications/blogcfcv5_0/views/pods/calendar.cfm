@@ -14,16 +14,17 @@
 
 <!---<cfparam name="month" default="#month(now)#">
 <cfparam name="year" default="#year(now)#"> --->
-<cfset month = getValue("month", month(now))>
-<cfset year = getValue("year", year(now))>
+<cfset month = requestContext.getValue("month", month(now))>
+<cfset year = requestContext.getValue("year", year(now))>
 
 <cfmodule template="../../tags/podlayout.cfm" title="#getResource("calendar")#">
 
 <cfscript>
-	// no idea why this was so hard to conceive
+	/* no idea why this was so hard to conceive
+	Moved to UDF
 	function getFirstWeekPAD(firstDOW) {
 		var firstWeekPad=0;
-		var weekStartsOn=application.localeutils.weekStarts();
+		var weekStartsOn=getPlugin("i18n").weekStarts();
 		switch (weekStartsON) {
 			case 1:
 				firstWeekPAD=firstDOW-1;
@@ -39,10 +40,11 @@
 		}
 		return firstWeekPAD;
 	}
+	*/
 
-	localizedDays=application.localeutils.getLocalizedDays();
-	localizedMonth=application.localeutils.getLocalizedMonth(month);
-	localizedYear=application.localeutils.getLocalizedYear(year);
+	localizedDays=getPlugin("i18n").getLocalizedDays();
+	localizedMonth=getPlugin("i18n").getLocalizedMonth(month);
+	localizedYear=getPlugin("i18n").getLocalizedYear(year);
 	firstDay=createDate(year,month,1);
 	firstDOW=dayOfWeek(firstDay);
 	dim=daysInMonth(firstDay);
@@ -58,7 +60,7 @@
 <!--- swap navigation buttons if BIDI is true --->
 <cfoutput>
 	<div class="header">
-	<cfif application.localeutils.isBIDI()>
+	<cfif getPlugin("i18n").isBIDI()>
 		<a href="#application.blog.getProperty("blogurl")#/#year(nextmonth)#/#month(nextmonth)#" rel="nofollow">&lt;&lt;</a>
 		<a href="#application.blog.getProperty("blogurl")#/#year#/#month#" rel="nofollow">#localizedMonth# #localizedYear#</a>
 		<a href="#application.blog.getProperty("blogurl")#/#year(lastmonth)#/#month(lastmonth)#" rel="nofollow">&gt;&gt;</a>

@@ -1,4 +1,23 @@
 <cfscript>
+function getFirstWeekPAD(firstDOW) {
+	var firstWeekPad=0;
+	var weekStartsOn=getPlugin("i18n").weekStarts();
+	switch (weekStartsON) {
+		case 1:
+			firstWeekPAD=firstDOW-1;
+		break;
+		case 2:
+			firstWeekPAD=firstDOW-2;
+			if (firstWeekPAD LT 0) firstWeekPAD=firstWeekPAD+7; // handle leap years
+		break;
+		case 7:
+			firstWeekPAD=7-abs(firstDOW-7);
+			if (firstWeekPAD EQ 7) firstWeekPAD=0;
+		break;
+	}
+	return firstWeekPAD;
+}
+	
 function toList(str) {
 	str = replace(str, chr(10), "", "all");
 	str = replace(str, chr(13), ",", "all");

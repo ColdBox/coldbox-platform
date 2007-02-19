@@ -17,7 +17,7 @@
 </cfif>
 --->
 
-<cfset entry = getvalue("entry")>
+<cfset entry = requestContext.getValue("entry")>
 <cfoutput>
 <div class="date">#getResource("comments")#: #entry.title#</div>
 <div class="body">
@@ -27,23 +27,23 @@
 	<cfoutput><div class="date">#getResource("postyourcomments")#</div>
 	#getPlugin("messagebox").renderit()#
 	<form action="#application.rootURL#/index.cfm" method="post">
-	<input type="hidden" value="#getValue("xehAddComment")#" name="event">
-	<input type="hidden" value="#getvalue("id")#" name="id">
+	<input type="hidden" value="#requestContext.getValue("xehAddComment")#" name="event">
+	<input type="hidden" value="#requestContext.getValue("id")#" name="id">
 	<fieldset class="sideBySide">
 		<label for="name">#getResource("name")#:</label>
-		<input type="text" id="name" name="name" value="#getvalue("name","")#">
+		<input type="text" id="name" name="name" value="#requestContext.getValue("name","")#">
 	</fieldset>
 	<fieldset class="sideBySide">
 		<label for="email">#getResource("emailaddress")#:</label>
-		<input type="text" id="email" name="email" value="#getvalue("email","")#">
+		<input type="text" id="email" name="email" value="#requestContext.getValue("email","")#">
 	</fieldset>
 	<fieldset class="sideBySide">
 		<label for="website">#getResource("website")#:</label>
-		<input type="text" id="website" name="website" value="#getvalue("website","")#">
+		<input type="text" id="website" name="website" value="#requestContext.getValue("website","")#">
 	</fieldset>
 	<fieldset>
 		<label for="comments">#getResource("comments")#:</label>
-		<textarea name="newcomments" id="newcomments" cols=50 rows=10>#getvalue("newcomments","")#</textarea>
+		<textarea name="newcomments" id="newcomments" cols=50 rows=10>#requestContext.getValue("newcomments","")#</textarea>
 	</fieldset>
 	<cfif application.useCaptcha>
 		<cfset variables.captcha = application.captcha.createHashReference() />
@@ -57,11 +57,11 @@
 	<div style="CLEAR:BOTH"></div>
 	<fieldset class="sideBySide">
 		<label for="rememberMe">#getResource("remembermyinfo")#:</label>
-		<input type="checkbox" class="checkBox" id="rememberMe" name="rememberMe" value="1" <cfif getvalue("rememberMe",false)>checked</cfif>>
+		<input type="checkbox" class="checkBox" id="rememberMe" name="rememberMe" value="1" <cfif requestContext.getValue("rememberMe",false)>checked</cfif>>
 	</fieldset>
 	<fieldset class="sideBySide">
 		<label for="subscribe">#getResource("subscribe")#:</label>
-		<input type="checkbox" class="checkBox" id="subscribe" name="subscribe" value="1" <cfif getvalue("subscribe",false)>checked</cfif>>
+		<input type="checkbox" class="checkBox" id="subscribe" name="subscribe" value="1" <cfif requestContext.getValue("subscribe",false)>checked</cfif>>
 	</fieldset>
 	<p style="clear:both">#getResource("subscribetext")#</p>
 	<fieldset class="formButtons">

@@ -5,7 +5,7 @@
 	Last Updated : 11/11/05
 	History      : Changed request.rooturl to app.rooturl (rkc 11/11/05)
 --->
-<cfset entry = getValue("entry")>
+<cfset entry = requestContext.getValue("entry")>
 
 <cfheader name="Content-Disposition" value="inline; filename=print.pdf">
 <cfdocument format="pdf">
@@ -35,7 +35,7 @@
 	<cfoutput>
 	<h1>#entry.title#</h1>
 
-	<div class="byline">#getResource("postedat")# : #application.localeUtils.dateLocaleFormat(entry.posted)# #application.localeUtils.timeLocaleFormat(entry.posted)# 
+	<div class="byline">#getResource("postedat")# : #getPlugin("i18n").dateLocaleFormat(entry.posted)# #getPlugin("i18n").timeLocaleFormat(entry.posted)# 
 		<cfif len(entry.name)>| #getResource("postedby")# : #entry.name#</cfif><br />
 		#getResource("relatedcategories")#:
 		<cfloop item="cat" collection="#entry.categories#">

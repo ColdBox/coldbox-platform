@@ -34,7 +34,7 @@
 <cfsavecontent variable="email">
 <cfoutput>
 #caller.getPlugin("resourceBundle").getResource("trackbackaddedtoblogentry")#:	#blogEntry.title#
-#caller.getPlugin("resourceBundle").getResource("trackbackadded")#: 		#application.localeUtils.dateLocaleFormat(now())# / #application.localeUtils.timeLocaleFormat(now())#
+#caller.getPlugin("resourceBundle").getResource("trackbackadded")#: 		#getPlugin("i18n").dateLocaleFormat(now())# / #getPlugin("i18n").timeLocaleFormat(now())#
 #caller.getPlugin("resourceBundle").getResource("blogname")#:	 		#tb.blogname#
 #caller.getPlugin("resourceBundle").getResource("title")#:	 			#tb.title#
 URL:				#tb.posturl#

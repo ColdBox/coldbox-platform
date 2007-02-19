@@ -1,7 +1,7 @@
 [default]
 dsn=myblog
-owneremail=cfcoldbox@gmail.com
-blogURL=http://lmajano.sandals.com/coldbox/samples/applications/blogcfcv5_0/index.cfm
+owneremail=info@coldboxframework.com
+blogURL=http://jfetmac/applications/coldbox/samples/applications/blogcfcv5_0/index.cfm
 blogTitle=ColdboxBlog
 blogDescription=The ColdBox blogCFC
 blogDBType=MYSQL

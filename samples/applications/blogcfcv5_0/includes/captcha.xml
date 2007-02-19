@@ -135,5 +135,12 @@ Shameless Begging:
 		<font use="true" name="Verdana Cursiva"/>
 		<font use="true" name="Verdana Negreta"/>
 		<font use="true" name="Verdana Negreta cursiva"/>
+		<!--MacFonts-->
+		<font use="true" name="Courier"/>
+		<font use="true" name="Geneva"/>
+		<font use="true" name="Helvetica"/>
+		<font use="true" name="LucidaSans"/>
+		<font use="true" name="Monaco"/>
+		<font use="true" name="Times-Roman"/>
 	</fonts>
 </captcha>

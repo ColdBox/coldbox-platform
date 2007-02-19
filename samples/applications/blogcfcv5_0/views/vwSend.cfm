@@ -9,32 +9,32 @@
 	Purpose		 : Sends a blog entry
 --->
 
-<cfset entry = getValue("entry")>
+<cfset entry = requestContext.getValue("entry")>
 
 <cfoutput>
 <div class="date"><b>#getResource("sendentry")#: #entry.title#</b></div>
 
 <div class="body">
 
-<cfif getvalue("showForm")>
+<cfif requestContext.getValue("showForm")>
 <p>
 #getResource("sendform")#
 </p>
 
-	<form action="#cgi.script_name#?id=#getvalue("id")#" method="post">
+	<form action="#cgi.script_name#?id=#requestContext.getValue("id")#" method="post">
    <div id="sendForm">
-	<input type="hidden" name="event" value="#getValue("xehSendEntry")#">
+	<input type="hidden" name="event" value="#requestContext.getValue("xehSendEntry")#">
     <fieldset class="sideBySide">
       <label for="email" style="width:150px;">#getResource("youremailaddress")#:</label>
-      <input type="text" id="email" name="email" value="#getvalue("email","")#" style="width:300px;">
+      <input type="text" id="email" name="email" value="#requestContext.getValue("email","")#" style="width:300px;">
     </fieldset>
     <fieldset class="sideBySide">
       <label for="remail" style="width:150px;">#getResource("receiveremailaddress")#:</label>
-      <input type="text" id="remail" name="remail" value="#getvalue("remail","")#" style="width:300px;">
+      <input type="text" id="remail" name="remail" value="#requestContext.getValue("remail","")#" style="width:300px;">
     </fieldset>
     <fieldset class="sideBySide">
       <label for="remail" style="width:150px;">#getResource("optionalnotes")#:</label>
-      <textarea name="notes" style="width:300px;" rows="5">#getvalue("notes","")#</textarea>
+      <textarea name="notes" style="width:300px;" rows="5">#requestContext.getValue("notes","")#</textarea>
     </fieldset>
     <fieldset class="formButtons">
 	  <input type="submit" id="submit" name="send" value="#getResource("sendentry")#">

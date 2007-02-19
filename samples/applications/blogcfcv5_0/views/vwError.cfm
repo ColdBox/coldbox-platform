@@ -39,23 +39,23 @@ Send the error report --->
 	</tr>
 	<tr>
 		<td>#getResource("message")#:</td>
-		<td>#getValue("ExceptionBean").getMessage()#</td>
+		<td>#requestContext.getValue("ExceptionBean").getMessage()#</td>
 	</tr>
 	<tr>
 		<td>Details:</td>
-		<td>#getValue("ExceptionBean").getDetail()#</td>
+		<td>#requestContext.getValue("ExceptionBean").getDetail()#</td>
 	</tr>
 	<tr>
 		<td>#getResource("type")#:</td>
-		<td>#getValue("ExceptionBean").getType()#</td>
+		<td>#requestContext.getValue("ExceptionBean").getType()#</td>
 	</tr>
 	<tr>
 		<td>Stack Trace:</td>
-		<td>#getValue("ExceptionBean").getStackTrace()#</td>
+		<td>#requestContext.getValue("ExceptionBean").getStackTrace()#</td>
 	</tr>
 	<tr>
 		<td>#getResource("tagContext")#:</td>
-		<td><cfdump var="#getValue("ExceptionBean").getTagcontext()#"></td>
+		<td><cfdump var="#requestContext.getValue("ExceptionBean").getTagcontext()#"></td>
 	</tr>
 </table>
 </cfoutput>

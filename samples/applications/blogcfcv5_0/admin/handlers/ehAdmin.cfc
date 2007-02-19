@@ -2,6 +2,7 @@
 
 	<!--- ************************************************************* --->
 	<cffunction name="onAppStart" access="public" returntype="void" output="false">
+		<cfargument name="requestContext" type="coldbox.system.beans.requestContext">
 		<cfset var blogname = getToken(application.applicationName,3,"_")>
 		<cfset var lylaFile = "">
 		<cfset var majorVersion = "">
@@ -9,7 +10,7 @@
 		<cfset var cfversion = "">
 
 		<!--- load an init blog --->
-		<cfset application.blog = createObject("component","org.camden.blog.blog").init(blogname)>
+		<cfset application.blog = createObject("component","#getSetting("ParentMapping")#.org.camden.blog.blog").init(blogname)>
 		<!--- Path may be different if admin. --->
 		<cfif findNoCase("admin/", cgi.script_name)>
 			<cfset theFile = expandPath("../includes/main")>
@@ -18,18 +19,18 @@
 			<cfset theFile = expandPath("./includes/main")>
 			<cfset lylaFile = "./includes/captcha.xml">
 		</cfif>
-		<cfset application.localeutils = getPlugin("i18n").setfwLocale(getSetting("DefaultLocale"))>
+		<cfset getPlugin("i18n").setfwLocale(getSetting("DefaultLocale"))>
 
 		<!--- Use Captcha? --->
 		<cfset application.usecaptcha = application.blog.getProperty("usecaptcha")>
 
 		<cfif application.usecaptcha>
-			<cfset application.captcha = CreateObject("component","org.captcha.captchaService").init(configFile="#lylaFile#") />
+			<cfset application.captcha = CreateObject("component","#getSetting("ParentMapping")#.org.captcha.captchaService").init(configFile="#lylaFile#") />
 			<cfset application.captcha.setup() />
 		</cfif>
 
-		<!--- clear cache
-		<cfmodule template="../tags/scopecache.cfm" scope="application" clearall="true">--->
+		<!--- clear cache --->
+		<cfmodule template="../../tags/scopecache.cfm" scope="application" clearall="true">
 
 		<cfset majorVersion = listFirst(server.coldfusion.productversion)>
 		<cfset minorVersion = listGetAt(server.coldfusion.productversion,2)>
@@ -59,14 +60,16 @@
 	
 	<!--- ************************************************************* --->
 	<cffunction name="onRequestStart" access="public" returntype="void" output="false">
+		<cfargument name="requestContext" type="coldbox.system.beans.requestContext">
+		<cfset var rc = requestContext.getCollection()>
 		<!--- Encoding --->
 		<cfset setEncoding("form","utf-8")>
 		<cfset setEncoding("url","utf-8")>
 
 		<cflogin>
-			<cfif valueExists("username") and valueExists("password") and len(trim(getValue("username"))) and len(trim(getValue("password")))>
-				<cfif application.blog.authenticate(left(trim(getValue("username")),50),left(trim(getValue("password")),50))>
-					<cfloginuser name="#trim(getValue("username"))#" password="#trim(getValue("password"))#" roles="admin">
+			<cfif requestContext.valueExists("username") and requestContext.valueExists("password") and len(trim(requestContext.getValue("username"))) and len(trim(requestContext.getValue("password")))>
+				<cfif application.blog.authenticate(left(trim(requestContext.getValue("username")),50),left(trim(requestContext.getValue("password")),50))>
+					<cfloginuser name="#trim(requestContext.getValue("username"))#" password="#trim(requestContext.getValue("password"))#" roles="admin">
 					<!---
 						  This was added because CF's built in security system has no way to determine if a user is logged on.
 						  In the past, I used getAuthUser(), it would return the username if you were logged in, but
@@ -79,7 +82,7 @@
 		</cflogin>
 
 		<cfif findNoCase("/admin", cgi.script_name) and not isLoggedIn() and not findNoCase("/admin/index.cfm?event=ehAdmin.dspNotify", cgi.script_name)>
-			<cfset overrideEvent("ehAdmin.dspLogin")>
+			<cfset requestContext.overrideEvent("ehAdmin.dspLogin")>
 		</cfif>
 		
 		<!--- EXIT HANDLERS: --->
@@ -96,6 +99,7 @@
 
 	<!--- ************************************************************* --->
 	<cffunction name="doLogout" access="public" returntype="void" output="false">
+		<cfargument name="requestContext" type="coldbox.system.beans.requestContext">
 		<cfif isLoggedIn()>
 			<cfset structDelete(session,"loggedin")>
 			<cflogout>
@@ -107,22 +111,26 @@
 
 	<!--- ************************************************************* --->
 	<cffunction name="dspLogin" access="public" returntype="void" output="false">
+		<cfargument name="requestContext" type="coldbox.system.beans.requestContext">
 		<cfset var qs = cgi.query_string>
-		<cfset setvalue("qs",reReplace(qs, "logout=[^&]+", ""))>
-		<cfset setValue("title","Logon")>
-		<cfset setView("vwLogin")>
+		<cfset requestContext.setValue("qs",reReplace(qs, "logout=[^&]+", ""))>
+		<cfset requestContext.setValue("title","Logon")>
+		<cfset requestContext.setView("vwLogin")>
 	</cffunction>
 	<!--- ************************************************************* --->
 
 	<!--- ************************************************************* --->
 	<cffunction name="dspHome" access="public" returntype="void" output="false">
-		<cfset setValue("title","Home")>
-		<cfset setView("vwIndex")>
+		<cfargument name="requestContext" type="coldbox.system.beans.requestContext">
+		<cfset requestContext.setValue("title","Home")>
+		<cfset requestContext.setView("vwIndex")>
 	</cffunction>
 	<!--- ************************************************************* --->
 
 	<!--- ************************************************************* --->
 	<cffunction name="dspStats" access="public" returntype="void" output="false">
+		<cfargument name="requestContext" type="coldbox.system.beans.requestContext">
+		<cfset var rc = requestContext.getCollection()>
 		<cfset var dsn = application.blog.getProperty("dsn")>
 		<cfset var dbtype = application.blog.getProperty("blogdbtype")>
 		<cfset var blog = application.blog.getProperty("name")>
@@ -269,40 +277,44 @@
 		</cfquery>
 		
 		<cfif rc.getTotalEntries.totalEntries>
-			<cfset setValue("dur",dateDiff("d",rc.getTotalEntries.firstEntry, now()))>
+			<cfset requestContext.setValue("dur",dateDiff("d",rc.getTotalEntries.firstEntry, now()))>
 		</cfif>
 
-		<cfset setvalue("title",getresource("stats"))>
+		<cfset requestContext.setValue("title",getresource("stats"))>
 		<!--- Set View --->
-		<cfset setView("vwStats")>
+		<cfset requestContext.setView("vwStats")>
 	</cffunction>
 	<!--- ************************************************************* --->
 
 	<!--- ************************************************************* --->
 	<cffunction name="dspEntries" access="public" returntype="void" output="false">
+		<cfargument name="requestContext" type="coldbox.system.beans.requestContext">
 		<cfset var params = structNew()>
+		<cfset var rc = requestContext.getCollection()>
 		<!--- EXIT HANDLERS: --->
 		<cfset rc.xehEntry = "ehAdmin.dspEntry">
 		<cfset rc.xehDeleteEntries = "ehAdmin.doDeleteEntries">
 		
 		<!--- Set params --->
 		<cfset params.mode = "short">
-		<cfif len(trim(getvalue("keywords","")))>
-			<cfset params.searchTerms = getValue("keywords")>
+		<cfif len(trim(requestContext.getValue("keywords","")))>
+			<cfset params.searchTerms = requestContext.getValue("keywords")>
 			<cfset params.dontlogsearch = true>
 		</cfif>
-		<cfset setvalue("entries",application.blog.getEntries(params))>
-		<cfset setValue("title","Entries")>
-		<cfset setView("vwEntries")>
+		<cfset requestContext.setValue("entries",application.blog.getEntries(params))>
+		<cfset requestContext.setValue("title","Entries")>
+		<cfset requestContext.setView("vwEntries")>
 	</cffunction>
 	<!--- ************************************************************* --->
 
 	<!--- ************************************************************* --->
 	<cffunction name="dspEntry" access="public" returntype="void" output="false">
+		<cfargument name="requestContext" type="coldbox.system.beans.requestContext">
 		<!--- In coldbox you can use the form, url scopes too. You are open
 		to use whatever you want. However, the request collection provides
 		a one central repository, that any template, module, include can
 		get --->
+		<cfset var rc = requestContext.getCollection()>
 		<Cfset var entry = "">
 		<cfset var message = "">
 		
@@ -310,41 +322,42 @@
 		<cfset rc.xehSave = "ehAdmin.doSaveEntry">
 		
 		<cftry>
-			<cfif getvalue("id") neq 0>
-				<cfset entry = application.blog.getEntry(getvalue("id"))>
+			<cfif requestContext.getValue("id") neq 0>
+				<cfset entry = application.blog.getEntry(requestContext.getValue("id"))>
 				<cfif len(entry.morebody)>
 					<cfset entry.body = entry.body & "<more/>" & entry.morebody>
 				</cfif>			
 				<!--- Param Values --->
-				<cfset paramValue("title",entry.title)>
-				<cfset paramValue("body",entry.body)>
-				<cfset paramValue("alias",entry.alias)>	
-				<cfset paramValue("posted",entry.posted)>
-				<cfset paramValue("allowcomments",entry.allowcomments)>
-				<cfset paramValue("oldenclosure",entry.enclosure)>
-				<cfset paramValue("oldfilesize", entry.filesize)>
-				<cfset paramValue("oldmimetype", entry.mimetype)>
-				<cfset paramValue("released", entry.released)>
+				<cfset requestContext.paramValue("title",entry.title)>
+				<cfset requestContext.paramValue("body",entry.body)>
+				<cfset requestContext.paramValue("alias",entry.alias)>	
+				<cfset requestContext.paramValue("posted",entry.posted)>
+				<cfset requestContext.paramValue("allowcomments",entry.allowcomments)>
+				<cfset requestContext.paramValue("oldenclosure",entry.enclosure)>
+				<cfset requestContext.paramValue("oldfilesize", entry.filesize)>
+				<cfset requestContext.paramValue("oldmimetype", entry.mimetype)>
+				<cfset requestContext.paramValue("released", entry.released)>
 				
 				<!--- handle case where form submitted, cant use cfparam --->
-				<cfif not valueExists("save")>
+				<cfif not requestContext.valueExists("save")>
 					<cfset rc.categories = structKeyList(entry.categories)>
 				</cfif>
 
 			<cfelse>
 				<!--- New Entry --->
-				<cfif not valueExists("save") and not valueExists("return") and not valueExists("preview")>
+				<cfif not requestContext.valueExists("save") and not requestContext.valueExists("return") and not requestContext.valueExists("preview")>
 					<cfset rc.categories = "">
 				</cfif>
 				<!--- Param Values --->
-				<cfset paramValue("body", "")>
-				<cfset paramValue("alias", "")>	
-				<cfset paramValue("posted", "#dateAdd("h", application.blog.getProperty("offset"), now())#")>
-				<cfset paramValue("allowcomments", "")>
-				<cfset paramValue("oldenclosure", "")>
-				<cfset paramValue("oldfilesize", "0")>
-				<cfset paramValue("oldmimetype", "")>
-				<cfset paramValue("released", "true")>
+				<cfset requestContext.paramValue("body", "")>
+				<cfset requestContext.paramValue("alias", "")>	
+				<cfset requestContext.paramValue("posted", "#dateAdd("h", application.blog.getProperty("offset"), now())#")>
+				<cfset requestContext.paramValue("allowcomments", "")>
+				<cfset requestContext.paramValue("oldenclosure", "")>
+				<cfset requestContext.paramValue("oldfilesize", "0")>
+				<cfset requestContext.paramValue("oldmimetype", "")>
+				<cfset requestContext.paramValue("released", "true")>
+				<cfset paramValue("title","")>
 			</cfif>
 			<cfcatch>
 				<cfset getPlugin("logger").logError("Error in entries", cfcatch)>
@@ -353,9 +366,9 @@
 		</cftry>
 		
 		<!---param Values --->
-		<cfset paramValue("cboRelatedEntries", "")>
-		<cfset paramValue("cboRelatedEntriesCats", "")>
-		<cfset paramValue("newcategory", "")>
+		<cfset requestContext.paramValue("cboRelatedEntries", "")>
+		<cfset requestContext.paramValue("cboRelatedEntriesCats", "")>
+		<cfset requestContext.paramValue("newcategory", "")>
 		
 		<!--- Check oldfilesize --->
 		<cfif not isNumeric(rc.oldfilesize)>
@@ -364,18 +377,18 @@
 		<!--- check date --->
 		<cfif lsIsDate(rc.posted)>
 			<cfset rc.posted = createODBCDateTime(rc.posted)>
-			<cfset rc.posted = application.localeUtils.dateLocaleFormat(rc.posted,"short") & " " & application.localeUtils.timeLocaleFormat(rc.posted)>
+			<cfset rc.posted = getPlugin("i18n").dateLocaleFormat(rc.posted,"short") & " " & getPlugin("i18n").timeLocaleFormat(rc.posted)>
 		</cfif>
-		<cfset setValue("allCats",application.blog.getCategories())>
-		<cfset setValue("message",message)>
-		<cfset setValue("entry",entry)>
-		<cfset setValue("title","Entry Editor")>
-		<cfset setView("vwEntry")>
+		<cfset requestContext.setValue("allCats",application.blog.getCategories())>
+		<cfset requestContext.setValue("message",message)>
+		<cfset requestContext.setValue("entry",entry)>
+		<cfset requestContext.setView("vwEntry")>
 	</cffunction>
 	<!--- ************************************************************* --->
 
 	<!--- ************************************************************* --->
 	<cffunction name="doSaveEntry" access="public" returntype="void" output="false">
+		<cfargument name="requestContext" type="coldbox.system.beans.requestContext">
 		<cfset var errors = arrayNew(1)>
 		<cfset var entry = "">
 		<cfset var destination = "">
@@ -383,19 +396,20 @@
 		<cfset var strMoreTag = "">
 		<cfset var moreStart = "">
 		<cfset var moreText = "">
+		<cfset var rc = requestContext.getCollection()>
 	
 		<!--- Param Values --->
-		<cfset paramValue("cboRelatedEntries", "")>
-		<cfset paramValue("cboRelatedEntriesCats", "")>
-		<cfset paramValue("newcategory", "")>
+		<cfset requestContext.paramValue("cboRelatedEntries", "")>
+		<cfset requestContext.paramValue("cboRelatedEntriesCats", "")>
+		<cfset requestContext.paramValue("newcategory", "")>
 
 		<!--- Check for cancel --->
-		<cfif valueExists("cancel")>
+		<cfif requestContext.valueExists("cancel")>
 			<cfset setNextEvent("ehAdmin.dspEntries")>
 		</cfif>
 	
 		<!--- check for delete enclosure --->
-		<cfif valueExists("delete_enclosure")>
+		<cfif requestContext.valueExists("delete_enclosure")>
 			<cfif len(rc.oldenclosure) and fileExists(rc.oldenclosure)>
 				<cffile action="delete" file="#rc.oldenclosure#">
 			</cfif>
@@ -411,7 +425,7 @@
 		<!---
 		Enclosure logic move out to always run. Thinking is that it needs to run on preview.
 		--->
-		<cfif valueExists("enclosure") and len(trim(rc.enclosure))>
+		<cfif requestContext.valueExists("enclosure") and len(trim(rc.enclosure))>
 			<cfset destination = expandPath("../enclosures")>
 			<!--- first off, potentially make the folder --->
 			<cfif not directoryExists(destination)>
@@ -427,7 +441,7 @@
 		</cfif>
 
 		<!--- Save Entry --->
-		<cfif valueExists("save")>
+		<cfif requestContext.valueExists("save")>
 			<cfif not len(trim(rc.title))>
 				<cfset arrayAppend(errors, getResource("mustincludetitle"))>
 			<cfelse>
@@ -457,7 +471,7 @@
 				</cfif>
 			</cfif>
 			<!--- Categories --->
-			<cfif (not valueExists("categories") or rc.categories is 0) and not len(trim(rc.newCategory))>
+			<cfif (not requestContext.valueExists("categories") or rc.categories is 0) and not len(trim(rc.newCategory))>
 				<cfset arrayAppend(errors, getResource("mustincludecategory"))>
 			<cfelse>
 				<cfset rc.newCategory = trim(htmlEditFormat(rc.newCategory))>
@@ -473,7 +487,7 @@
 			<cfif not arrayLen(errors)>
 				<!--- Before we save, modify the posted time by -1 * posted --->
 				<cfset rc.posted = dateAdd("h", -1 * application.blog.getProperty("offset"), rc.posted)>
-				<cfif getvalue("id") neq 0>
+				<cfif requestContext.getValue("id") neq 0>
 					<cfset application.blog.saveEntry(rc.id,rc.title,rc.body,moreText,rc.alias,rc.posted,rc.allowcomments, rc.oldenclosure, rc.oldfilesize, rc.oldmimetype,rc.released,rc.cboRelatedEntries)>
 				<cfelse>
 					<cfset rc.id = application.blog.addEntry(rc.title,rc.body,moreText,rc.alias,rc.posted,rc.allowcomments, rc.oldenclosure, rc.oldfilesize, rc.oldmimetype,rc.released,rc.cboRelatedEntries)>
@@ -484,7 +498,7 @@
 				</cfif>
 				<!--- potentially add new cat --->
 				<cfif len(trim(rc.newCategory))>
-					<cfset paramValue("categories", "")>
+					<cfset requestContext.paramValue("categories", "")>
 					<cfset rc.categories = listAppend(rc.categories,application.blog.addCategory(rc.newCategory, application.blog.makeTitle(rc.newCategory)))>
 				</cfif>
 				<cfset application.blog.assignCategories(rc.id,rc.categories)>
@@ -497,14 +511,15 @@
 		</cfif>
 		
 		<!--- Run internal event to display entry --->
-		<cfset dspEntry()>
+		<cfset dspEntry(requestContext)>
 	</cffunction>
 	<!--- ************************************************************* --->
 
 	<!--- ************************************************************* --->
 	<cffunction name="doDeleteEntries" access="public" returntype="void" output="false">
+		<cfargument name="requestContext" type="coldbox.system.beans.requestContext">
 		<cfset var u = "">
-		<cfloop index="u" list="#getValue("mark","")#">
+		<cfloop index="u" list="#requestContext.getValue("mark","")#">
 			<cfset application.blog.deleteEntry(u)>
 		</cfloop>
 		<cfset setNextEvent("ehAdmin.dspEntries")>
@@ -513,8 +528,9 @@
 
 	<!--- ************************************************************* --->
 	<cffunction name="doDeleteTrackbacks" access="public" returntype="void" output="false">
+		<cfargument name="requestContext" type="coldbox.system.beans.requestContext">
 		<cfset var u = "">
-		<cfloop index="u" list="#getValue("mark","")#">
+		<cfloop index="u" list="#requestContext.getValue("mark","")#">
 			<cfset application.blog.deleteTrackback(u)>
 		</cfloop>
 		<cfset setNextEvent("ehAdmin.dspTrackbacks")>
@@ -523,20 +539,23 @@
 
 	<!--- ************************************************************* --->
 	<cffunction name="dspTrackbacks" access="public" returntype="void" output="false">
+		<cfargument name="requestContext" type="coldbox.system.beans.requestContext">
+		<cfset var rc = requestContext.getCollection()>
 		<!--- EXIT HANDLERS: --->
 		<cfset rc.xehTrackback = "ehAdmin.dspTrackback">
 		<cfset rc.xehDeleteTrackbacks = "ehAdmin.doDeleteTrackbacks">
 		
-		<cfset setvalue("tbs", application.blog.getTrackbacks(sortdir="desc"))>
-		<cfset setValue("title","Trackbacks")>
-		<cfset setView("vwTrackbacks")>
+		<cfset requestContext.setValue("tbs", application.blog.getTrackbacks(sortdir="desc"))>
+		<cfset requestContext.setValue("title","Trackbacks")>
+		<cfset requestContext.setView("vwTrackbacks")>
 	</cffunction>
 	<!--- ************************************************************* --->
 
 	<!--- ************************************************************* --->
 	<cffunction name="doDeleteCategories" access="public" returntype="void" output="false">
+		<cfargument name="requestContext" type="coldbox.system.beans.requestContext">
 		<cfset var u = "">
-		<cfloop index="u" list="#getValue("mark","")#">
+		<cfloop index="u" list="#requestContext.getValue("mark","")#">
 			<cfset application.blog.deleteCategory(u)>
 		</cfloop>
 		<cfset setNextEvent("ehAdmin.dspCategories")>
@@ -545,58 +564,63 @@
 
 	<!--- ************************************************************* --->
 	<cffunction name="dspCategories" access="public" returntype="void" output="false">
+		<cfargument name="requestContext" type="coldbox.system.beans.requestContext">
+		<cfset var rc = requestContext.getCollection()>
 		<!--- EXIT HANDLERS: --->
 		<cfset rc.xehCategory = "ehAdmin.dspCategory">
 		<cfset rc.xehDeleteCategory = "ehAdmin.doDeleteCategories">
 		
-		<cfset setvalue("categories", application.blog.getCategories())>
-		<cfset setValue("title","Trackbacks")>
-		<cfset setView("vwCategories")>
+		<cfset requestContext.setValue("categories", application.blog.getCategories())>
+		<cfset requestContext.setValue("title","Trackbacks")>
+		<cfset requestContext.setView("vwCategories")>
 	</cffunction>
 	<!--- ************************************************************* --->
 
 	<!--- ************************************************************* --->
 	<cffunction name="dspCategory" access="public" returntype="void" output="false">
+		<cfargument name="requestContext" type="coldbox.system.beans.requestContext">
+		<cfset var rc = requestContext.getCollection()>
 		<!--- EXIT HANDLERS: --->
 		<cfset rc.xehSaveCategory = "ehAdmin.doAddCategory">
 		<cftry>
-			<cfif getvalue("id",0) neq 0>
-				<cfset setvalue("cat",application.blog.getCategory(getvalue("id")))>
-				<cfset setvalue("name",getvalue("cat.categoryname"))>
-				<cfset setvalue("alias",getvalue("cat.categoryalias"))>
+			<cfif requestContext.getValue("id",0) neq 0>
+				<cfset requestContext.setValue("cat",application.blog.getCategory(requestContext.getValue("id")))>
+				<cfset requestContext.setValue("name",requestContext.getValue("cat.categoryname"))>
+				<cfset requestContext.setValue("alias",requestContext.getValue("cat.categoryalias"))>
 			</cfif>
 			<cfcatch>
 				<cfset setNextEvent("ehAdmin.dspCategories")>
 			</cfcatch>
 		</cftry>
 
-		<cfset setValue("title","Category Editor")>
-		<cfset setView("vwCategory")>
+		<cfset requestContext.setValue("title","Category Editor")>
+		<cfset requestContext.setView("vwCategory")>
 	</cffunction>
 	<!--- ************************************************************* --->
 
 	<!--- ************************************************************* --->
 	<cffunction name="doAddCategory" access="public" returntype="void" output="false">
+		<cfargument name="requestContext" type="coldbox.system.beans.requestContext">
 		<cfset var errors = arrayNew(1)>
 
-		<cfif valueExists("cancel")>
+		<cfif requestContext.valueExists("cancel")>
 			<cfset setNextEvent("ehAdmin.dspCategories")>
 		</cfif>
 
-		<cfif not len(trim(getValue("name")))>
+		<cfif not len(trim(requestContext.getValue("name")))>
 			<cfset arrayAppend(errors, "The name cannot be blank.")>
 		</cfif>
-		<cfif not len(trim(getValue("alias")))>
-			<cfset setvalue("alias",application.blog.makeTitle(getValue("name")))>
-		<cfelseif reFind("[^[:alnum:] -]", getvalue("alias"))>
+		<cfif not len(trim(requestContext.getValue("alias")))>
+			<cfset requestContext.setValue("alias",application.blog.makeTitle(requestContext.getValue("name")))>
+		<cfelseif reFind("[^[:alnum:] -]", requestContext.getValue("alias"))>
 			<cfset arrayAppend(errors, "Your alias may only contain letters, numbers, spaces, or hyphens.")>
 		</cfif>
 		<cfif not arrayLen(errors)>
 			<cftry>
-			<cfif getvalue("id") neq 0>
-				<cfset application.blog.saveCategory(getvalue("id"), left(getValue("name"),50), left(getvalue("alias"), 50))>
+			<cfif requestContext.getValue("id") neq 0>
+				<cfset application.blog.saveCategory(requestContext.getValue("id"), left(requestContext.getValue("name"),50), left(requestContext.getValue("alias"), 50))>
 			<cfelse>
-				<cfset application.blog.addCategory(left(getValue("name"),50), left(getvalue("alias"),50))>
+				<cfset application.blog.addCategory(left(requestContext.getValue("name"),50), left(requestContext.getValue("alias"),50))>
 			</cfif>
 			<cfcatch>
 				<cfif findNoCase("already exists as a category", cfcatch.message)>
@@ -613,27 +637,30 @@
 				<cfset setNextEvent("ehAdmin.dspCategories")>
 			</cfif>
 		</cfif>
-		<cfset setvalue("errors",errors)>
-		<cfset setNextEvent("ehAdmin.dspCategory","id=#getvalue("id")#")>
+		<cfset requestContext.setValue("errors",errors)>
+		<cfset setNextEvent("ehAdmin.dspCategory","id=#requestContext.getValue("id")#")>
 	</cffunction>
 	<!--- ************************************************************* --->
 
 	<!--- ************************************************************* --->
 	<cffunction name="dspComments" access="public" returntype="void" output="false">
+		<cfargument name="requestContext" type="coldbox.system.beans.requestContext">
+		<cfset var rc = requestContext.getCollection()>
 		<!--- EXIT HANDLERS: --->
 		<cfset rc.xehComment = "ehAdmin.dspComment">
 		<cfset rc.xehDeleteComment = "ehAdmin.doDeleteComments">
 		
-		<cfset setvalue("comments", application.blog.getComments(sortdir="desc"))>
-		<cfset setValue("title","Comments")>
-		<cfset setView("vwComments")>
+		<cfset requestContext.setValue("comments", application.blog.getComments(sortdir="desc"))>
+		<cfset requestContext.setValue("title","Comments")>
+		<cfset requestContext.setView("vwComments")>
 	</cffunction>
 	<!--- ************************************************************* --->
 
 	<!--- ************************************************************* --->
 	<cffunction name="doDeleteComments" access="public" returntype="void" output="false">
+		<cfargument name="requestContext" type="coldbox.system.beans.requestContext">
 		<cfset var u = "">
-		<cfloop index="u" list="#getValue("mark","")#">
+		<cfloop index="u" list="#requestContext.getValue("mark","")#">
 			<cfset application.blog.deleteComment(u)>
 		</cfloop>
 		<cfset setNextEvent("ehAdmin.dspComments")>
@@ -642,66 +669,72 @@
 
 	<!--- ************************************************************* --->
 	<cffunction name="dspComment" access="public" returntype="void" output="false">
+		<cfargument name="requestContext" type="coldbox.system.beans.requestContext">
+		<cfset var rc = requestContext.getCollection()>
 		<!--- EXIT HANDLERS: --->
 		<cfset rc.xehAddComment = "ehAdmin.doAddComment">
 		
 		<cftry>
-			<cfset setvalue("comment", application.blog.getComment(getvalue("id")))>
-			<cfif getvalue("comment.recordCount") is 0>
+			<cfset requestContext.setValue("comment", application.blog.getComment(requestContext.getValue("id")))>
+			<cfif requestContext.getValue("comment.recordCount") is 0>
 				<cfset setNextEvent("ehAdmin.dspComments")>
 			</cfif>
 			<cfcatch>
 				<cfset setNextEvent("ehAdmin.dspComments")>
 			</cfcatch>
 		</cftry>
-		<cfset setValue("title","Comment Editor")>
-		<cfset setView("vwComment")>
+		<cfset requestContext.setValue("title","Comment Editor")>
+		<cfset requestContext.setView("vwComment")>
 	</cffunction>
 	<!--- ************************************************************* --->
 
 	<!--- ************************************************************* --->
 	<cffunction name="doAddComment" access="public" returntype="void" output="false">
+		<cfargument name="requestContext" type="coldbox.system.beans.requestContext">
 		<cfset var errors = arrayNew(1)>
 
-		<cfif valueExists("cancel")>
+		<cfif requestContext.valueExists("cancel")>
 			<cfset setNextEvent("ehAdmin.dspComments")>
 		</cfif>
 
-		<cfif not len(trim(getvalue("name")))>
+		<cfif not len(trim(requestContext.getValue("name")))>
 			<cfset arrayAppend(errors, "The name cannot be blank.")>
 		</cfif>
-		<cfif not len(trim(getvalue("email"))) or not isEmail(getvalue("email"))>
+		<cfif not len(trim(requestContext.getValue("email"))) or not isEmail(requestContext.getValue("email"))>
 			<cfset arrayAppend(errors, "The email cannot be blank and must be a valid email address.")>
 		</cfif>
-		<cfif len(getvalue("website")) and not isURL(getvalue("website"))>
+		<cfif len(requestContext.getValue("website")) and not isURL(requestContext.getValue("website"))>
 			<cfset arrayAppend(errors, "Website must be a valid URL.")>
 		</cfif>
-		<cfif not len(trim(getvalue("newcomment")))>
+		<cfif not len(trim(requestContext.getValue("newcomment")))>
 			<cfset arrayAppend(errors, "The comment cannot be blank.")>
 		</cfif>
 		<cfif not arrayLen(errors)>
-			<cfset application.blog.saveComment(getvalue("id"), left(getvalue("name"),50), left(getvalue("email"),50), left(getvalue("website"),255), getvalue("newcomment"), getvalue("subscribe",false))>
+			<cfset application.blog.saveComment(requestContext.getValue("id"), left(requestContext.getValue("name"),50), left(requestContext.getValue("email"),50), left(requestContext.getValue("website"),255), requestContext.getValue("newcomment"), requestContext.getValue("subscribe",false))>
 			<cfset setNextEvent("ehAdmin.dspComments")>
 		</cfif>
-		<cfset setvalue("errors",errors)>
-		<cfset setNextEvent("ehAdmin.dspComment","id=#getvalue("id")#")>
+		<cfset requestContext.setValue("errors",errors)>
+		<cfset setNextEvent("ehAdmin.dspComment","id=#requestContext.getValue("id")#")>
 	</cffunction>
 	<!--- ************************************************************* --->
 
 	<!--- ************************************************************* --->
 	<cffunction name="dspSubscribers" access="public" returntype="void" output="false">
+		<cfargument name="requestContext" type="coldbox.system.beans.requestContext">
+		<cfset var rc = requestContext.getCollection()>
 		<!--- EXIT HANDLERS: --->
 		<cfset rc.xehDeleteSub = "ehAdmin.doDeleteSubscribers">
-		<cfset setvalue("subscribers", application.blog.getSubscribers())>
-		<cfset setValue("title","Subscribers")>
-		<cfset setView("vwSubscribers")>
+		<cfset requestContext.setValue("subscribers", application.blog.getSubscribers())>
+		<cfset requestContext.setValue("title","Subscribers")>
+		<cfset requestContext.setView("vwSubscribers")>
 	</cffunction>
 	<!--- ************************************************************* --->
 
 	<!--- ************************************************************* --->
 	<cffunction name="doDeleteSubscribers" access="public" returntype="void" output="false">
+		<cfargument name="requestContext" type="coldbox.system.beans.requestContext">
 		<cfset var u = "">
-		<cfloop index="u" list="#getValue("MARK","")#">
+		<cfloop index="u" list="#requestContext.getValue("MARK","")#">
 			<cfset application.blog.removeSubscriber(u)>
 		</cfloop>
 		<cfset setNextEvent("ehAdmin.dspSubscribers")>
@@ -710,63 +743,67 @@
 
 	<!--- ************************************************************* --->
 	<cffunction name="dspSettings" access="public" returntype="void" output="false">
+		<cfargument name="requestContext" type="coldbox.system.beans.requestContext">
 		<cfset var settings = application.blog.getProperties()>
 		<cfset var validDBTypes = application.blog.getValidDBTypes()>
+		<cfset var rc = requestContext.getCollection()>
 		<!--- EXIT HANDLERS: --->
 		<cfset rc.xehSaveSettings = "ehAdmin.doSaveSettings">
 		<cfloop item="setting" collection="#settings#">
-			<cfset paramValue("#setting#", settings[setting])>			
+			<cfset requestContext.paramValue("#setting#", settings[setting])>			
 		</cfloop>
-		<cfset setvalue("settings",settings)>
-		<Cfset setvalue("validDBTypes",validDBTypes)>
-		<cfset setValue("title","Settings")>
-		<cfset setView("vwSettings")>
+		<cfset requestContext.setValue("settings",settings)>
+		<Cfset requestContext.setValue("validDBTypes",validDBTypes)>
+		<cfset requestContext.setValue("title","Settings")>
+		<cfset requestContext.setView("vwSettings")>
 	</cffunction>
 	<!--- ************************************************************* --->
 
 	<!--- ************************************************************* --->
 	<cffunction name="doSaveSettings" access="public" returntype="void" output="false">
+		<cfargument name="requestContext" type="coldbox.system.beans.requestContext">
+		<cfset var rc = requestContext.getCollection()>
 		<cfset var errors = arrayNew(1)>
 		<cfset var keylist = "">
 		
-		<cfif valueExists("cancel")>
+		<cfif requestContext.valueExists("cancel")>
 			<cfset setNextEvent("ehAdmin.dspHome")>
 		</cfif>
 
-		<cfif not len(trim(getvalue("blogtitle")))>
+		<cfif not len(trim(requestContext.getValue("blogtitle")))>
 			<cfset arrayAppend(errors, "Your blog must have a title.")>
 		</cfif>
 
-		<cfif not len(trim(getvalue("blogurl")))>
+		<cfif not len(trim(requestContext.getValue("blogurl")))>
 			<cfset arrayAppend(errors, "Your blog url cannot be blank.")>
-		<cfelseif right(getvalue("blogurl"), 9) is not "index.cfm">
+		<cfelseif right(requestContext.getValue("blogurl"), 9) is not "index.cfm">
 			<cfset arrayAppend(errors, "The blogurl setting must end with index.cfm.")>
 		</cfif>
 
-		<cfif len(trim(getvalue("commentsfrom"))) and not isEmail(getvalue("commentsfrom"))>
+		<cfif len(trim(requestContext.getValue("commentsfrom"))) and not isEmail(requestContext.getValue("commentsfrom"))>
 			<cfset arrayAppend(errors, "The commentsfrom setting must be a valid email address.")>
 		</cfif>
 
-		<cfif len(trim(getvalue("maxentries"))) and not isNumeric(getvalue("maxentries"))>
+		<cfif len(trim(requestContext.getValue("maxentries"))) and not isNumeric(requestContext.getValue("maxentries"))>
 			<cfset arrayAppend(errors, "Max entries must be numeric.")>
 		</cfif>
 
-		<cfif len(trim(getvalue("offset"))) and not isNumeric(getvalue("offset"))>
+		<cfif len(trim(requestContext.getValue("offset"))) and not isNumeric(requestContext.getValue("offset"))>
 			<cfset arrayAppend(errors, "Offset must be numeric.")>
 		</cfif>
 
-		<cfset setvalue("pingurls",toList(getvalue("pingurls")))>
+		<cfset requestContext.setValue("pingurls",toList(requestContext.getValue("pingurls")))>
 
-		<cfif not len(trim(getvalue("dsn")))>
+		<cfif not len(trim(requestContext.getValue("dsn")))>
 			<cfset arrayAppend(errors, "Your blog must have a dsn.")>
 		</cfif>
 
-		<cfif not len(trim(getvalue("locale")))>
+		<cfif not len(trim(requestContext.getValue("locale")))>
 			<cfset arrayAppend(errors, "Your blog must have a locale.")>
 		</cfif>
 
-		<cfset setvalue("ipblocklist", toList(getvalue("ipblocklist")))>
-		<cfset setvalue("trackbackspamlist", toList(getvalue("trackbackspamlist")))>
+		<cfset requestContext.setValue("ipblocklist", toList(requestContext.getValue("ipblocklist")))>
+		<cfset requestContext.setValue("trackbackspamlist", toList(requestContext.getValue("trackbackspamlist")))>
 
 		<cfif not arrayLen(errors)>
 			<!--- make a list of the keys we will send. --->
@@ -777,7 +814,7 @@
 			<cfset getPlugin("messagebox").setMessage("info","Settings have been updated successfully.")>
 			<cfset setNextEvent("ehAdmin.dspHome","reinit=1")>
 		</cfif>
-		<cfset setView("vwSettings")>
+		<cfset requestContext.setView("vwSettings")>
 	</cffunction>
 	<!--- ************************************************************* --->
 

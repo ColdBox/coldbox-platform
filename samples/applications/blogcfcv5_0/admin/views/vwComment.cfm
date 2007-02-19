@@ -8,10 +8,10 @@
 	History      :
 --->
 
-<cfset comment = getValue("comment")>
+<cfset comment = requestContext.getValue("comment")>
 
-	<cfif valueExists("errors") and arrayLen(getvalue("errors"))>
-		<cfset errors = getvalue("errors")>
+	<cfif requestContext.valueExists("errors") and arrayLen(requestContext.getValue("errors"))>
+		<cfset errors = requestContext.getValue("errors")>
 		<cfoutput>
 		<div class="errors">
 		Please correct the following error(s):
@@ -25,34 +25,34 @@
 	</cfif>
 
 	<cfoutput>
-	<form action="?event=#getValue("xehAddComment")#&id=#comment.id#" method="post">
+	<form action="?event=#requestContext.getValue("xehAddComment")#&id=#comment.id#" method="post">
 	<table>
 		<tr>
 			<td align="right">posted:</td>
-			<td>#application.localeUtils.dateLocaleFormat(comment.posted)# #application.localeUtils.timeLocaleFormat(comment.posted)#</td>
+			<td>#getPlugin("i18n").dateLocaleFormat(comment.posted)# #getPlugin("i18n").timeLocaleFormat(comment.posted)#</td>
 		</tr>
 		<tr>
 			<td align="right">name:</td>
-			<td><input type="text" name="name" value="#getvalue("name",comment.name)#" class="txtField" maxlength="50"></td>
+			<td><input type="text" name="name" value="#requestContext.getValue("name",comment.name)#" class="txtField" maxlength="50"></td>
 		</tr>
 		<tr>
 			<td align="right">email:</td>
-			<td><input type="text" name="email" value="#getvalue("email",comment.email)#" class="txtField" maxlength="50"></td>
+			<td><input type="text" name="email" value="#requestContext.getValue("email",comment.email)#" class="txtField" maxlength="50"></td>
 		</tr>
 		<tr>
 			<td align="right">website:</td>
-			<td><input type="text" name="website" value="#getvalue("website",comment.website)#" class="txtField"></td>
+			<td><input type="text" name="website" value="#requestContext.getValue("website",comment.website)#" class="txtField"></td>
 		</tr>
 		<tr valign="top">
 			<td align="right">comment:</td>
-			<td><textarea name="newcomment" class="txtArea">#getvalue("newcomment",comment.comment)#</textarea></td>
+			<td><textarea name="newcomment" class="txtArea">#requestContext.getValue("newcomment",comment.comment)#</textarea></td>
 		</tr>
 		<tr>
 			<td align="right">subscribed:</td>
 			<td>
 			<select name="subscribe">
-			<option value="yes" <cfif getvalue("subscribe",comment.subscribe)>selected</cfif>>Yes</option>
-			<option value="no" <cfif not getvalue("subscribe",comment.subscribe)>selected</cfif>>No</option>
+			<option value="yes" <cfif requestContext.getValue("subscribe",comment.subscribe)>selected</cfif>>Yes</option>
+			<option value="no" <cfif not requestContext.getValue("subscribe",comment.subscribe)>selected</cfif>>No</option>
 			</select>
 			</td>
 		</tr>

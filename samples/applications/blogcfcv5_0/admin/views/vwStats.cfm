@@ -10,18 +10,18 @@
 	Purpose		 : Stats
 --->
 	<!--- References --->
-	<cfset getTotalEntries = GetValue("getTotalEntries")>
-	<cfset getTotalSubscribers = getValue("getTotalSubscribers")>
-	<cfset getTotalViews = getValue("getTotalViews")>
-	<cfset getTopViews = getValue("getTopViews")>
-	<cfset last30 = getValue("last30")>
-	<cfset getTotalComments = getValue("getTotalComments")>
-	<cfset getTotalTrackbacks = getValue("getTotalTrackbacks")>
-	<cfset getCategoryCount = getValue("getCategoryCount")>
-	<cfset topCommentedEntries = getValue("topCommentedEntries")>
-	<cfset topCommentedCategories = getValue("topCommentedCategories")>
-	<cfset topTrackbackedEntries = getValue("topTrackbackedEntries")>
-	<cfset topSearchTerms = getValue("topSearchTerms")>
+	<cfset getTotalEntries = requestContext.getValue("getTotalEntries")>
+	<cfset getTotalSubscribers = requestContext.getValue("getTotalSubscribers")>
+	<cfset getTotalViews = requestContext.getValue("getTotalViews")>
+	<cfset getTopViews = requestContext.getValue("getTopViews")>
+	<cfset last30 = requestContext.getValue("last30")>
+	<cfset getTotalComments = requestContext.getValue("getTotalComments")>
+	<cfset getTotalTrackbacks = requestContext.getValue("getTotalTrackbacks")>
+	<cfset getCategoryCount = requestContext.getValue("getCategoryCount")>
+	<cfset topCommentedEntries = requestContext.getValue("topCommentedEntries")>
+	<cfset topCommentedCategories = requestContext.getValue("topCommentedCategories")>
+	<cfset topTrackbackedEntries = requestContext.getValue("topTrackbackedEntries")>
+	<cfset topSearchTerms = requestContext.getValue("topSearchTerms")>
 	
 	<cfset averageCommentsPerEntry = 0>	
 	<cfif getTotalEntries.totalEntries>

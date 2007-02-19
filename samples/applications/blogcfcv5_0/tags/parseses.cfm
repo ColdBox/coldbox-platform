@@ -60,22 +60,22 @@ included not cfmodule
 		<!--- translate back --->
 		<cfset categoryID = application.blog.getCategoryByAlias(sesInfo.categoryName)>
 		<cfif len(categoryID)>
-			<cfset caller.setValue("mode","cat")>
-			<cfset caller.setValue("catid","categoryID")>
+			<cfset caller.requestContext.setValue("mode","cat")>
+			<cfset caller.requestContext.setValue("catid","categoryID")>
 		</cfif>
 	</cfif>
 
 <!--- By month --->
 <cfelseif not structKeyExists(sesInfo, "title")>
 
-	<cfset caller.setValue("month",sesInfo.month)>
-	<cfset caller.setValue("year",sesInfo.year)>
+	<cfset caller.requestContext.setValue("month",sesInfo.month)>
+	<cfset caller.requestContext.setValue("year",sesInfo.year)>
 	
 	<cfif structKeyExists(sesInfo, "day")>
-		<cfset caller.setValue("day",sesInfo.day)>
-		<cfset caller.setValue("mode","day")>
+		<cfset caller.requestContext.setValue("day",sesInfo.day)>
+		<cfset caller.requestContext.setValue("mode","day")>
 	<cfelse>
-		<cfset caller.setValue("mode","month")>
+		<cfset caller.requestContext.setValue("mode","month")>
 	</cfif>
 	
 <!--- This is a full entry --->
@@ -94,8 +94,8 @@ included not cfmodule
 	</cfif>
 	
 	<cfset params.byAlias = sesInfo.title>
-	<cfset caller.setValue("mode","alias")>
-	<cfset caller.setValue("alias",params.byAlias)>
+	<cfset caller.requestContext.setValue("mode","alias")>
+	<cfset caller.requestContext.setValue("alias",params.byAlias)>
 
 </cfif>
 
