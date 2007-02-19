@@ -52,6 +52,10 @@
 		<Setting name="MyPluginsLocation"   		value="" />
 		<!--Flag to cache handlers. Default if left blank is true. -->
 		<Setting name="HandlerCaching" 				value="true"/>
+		<!--IOC Framework if Used, else leave blank-->
+		<Setting name="IOCFramework"				value="" />
+		<!--IOC Definition File Path, relative or absolute -->
+		<Setting name="IOCDefinitionFile"			value="" />
 	</Settings>
 
 	<!--Your Settings can go here, if not needed, use <YourSettings />. You can use these for anything you like.
@@ -113,8 +117,7 @@
 	
 	<!--Datasource Setup, you can then retreive a datasourceBean via the getDatasource("name") method: -->
 	<Datasources>
-		<Datasource name="MyDSN"   dbtype="mysql"  username="" password="" />
-		<Datasource name="MyBlog"  dbtype="oracle" username="" password="" />
+		<Datasource alias="MyDSNAlias" name="real_dsn_name"   dbtype="mysql"  username="" password="" />
 	</Datasources>
 
 </Config>
