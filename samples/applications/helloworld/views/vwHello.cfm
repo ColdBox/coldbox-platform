@@ -3,6 +3,6 @@
 	You can also do this by using the logger plugin.
 </p>
 
-<p><strong>Hello:</strong>  <cfoutput>#getValue("firstname","No name Found")#</cfoutput> 
+<p><strong>Hello:</strong>  <cfoutput>#requestContext.getValue("firstname","No name Found")#</cfoutput> 
 </p>
 <p>&nbsp;</p>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <Config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-	xsi:noNamespaceSchemaLocation="http://www.coldboxframework.com/schema/config_1.1.0.xsd">
+	xsi:noNamespaceSchemaLocation="http://www.coldboxframework.com/schema/config_1.2.0.xsd">
 	<Settings>
 		<!--The name of your app-->
 		<Setting name="AppName" 					value="News Webservices Feed"/>
@@ -48,7 +48,7 @@
 	<WebServices></WebServices>
 	-->
 	<WebServices>
-		<WebService name="newsfeed" URL="http://services.javaportal.it/kservices/JIPNews.jws?wsdl" />
+		<WebService name="newsfeed" URL="http://www.coldboxframework.com/distribution/updatews.cfc?wsdl" />
 	</WebServices>
 
 	<!--Declare Layouts for your app here-->

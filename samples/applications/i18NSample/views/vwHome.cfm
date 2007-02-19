@@ -1,3 +1,4 @@
+<cfset rc = requestContext.getCollection()>
 <cfoutput>
 <form action="index.cfm" method="post">
 <table border="1" cellspacing="0" cellpadding="1" bgcolor="##eaeaea" align="center" style="border-bottom:2px solid ##ddd;border-right:2px solid ##ddd; border-left:1px solid ##eaeaea; border-top: 1px solid ##eaeaea;background: ##f5f5f5">
@@ -8,7 +9,7 @@
 		<td>
 		<select name="thisLocale" size="1">
 		<cfloop index="i" from="1" to="#arrayLen(rc.locales)#">
-			<option value="#rc.locales[i].toString()#" <cfif application.i18nUtils.getfwLocale() eq rc.locales[i].toString()>selected</cfif>>#rc.locales[i].toString()#</option>
+			<option value="#rc.locales[i].toString()#" <cfif getPlugin("i18n").getfwLocale() eq rc.locales[i].toString()>selected</cfif>>#rc.locales[i].toString()#</option>
 		</cfloop>
 		</select>
 		</td>
@@ -48,7 +49,7 @@
 	</tr>
 	<tr valign="top">
 	<td align="right" valign="top"><b>isBidi:</b></td>
-	<td colspan="10" bgcolor="##b6e7ff">#application.i18nUtils.isBIDI()#</td>
+	<td colspan="10" bgcolor="##b6e7ff">#getPlugin("i18n").isBIDI()#</td>
 	</tr>
 	<tr valign="top">
 	<td align="right" valign="top"><b>showLanguage:</b></td>
@@ -92,35 +93,35 @@
 	</cfif>
 	<tr valign="top">
 	<td align="right" valign="top"><b>i18nDateTimeFormat:</b></td>
-	<td colspan="10" bgcolor="##b6e7ff">#application.i18nUtils.i18nDateTimeFormat(rc.now,rc.dateF,rc.timeF,rc.thisTZ)#</td>
+	<td colspan="10" bgcolor="##b6e7ff">#getPlugin("i18n").i18nDateTimeFormat(rc.now,rc.dateF,rc.timeF,rc.thisTZ)#</td>
 	</tr>
 	<tr valign="top">
 	<td align="right" valign="top"><b>i18nDateFormat:</b></td>
-	<td colspan="10" bgcolor="##b6e7ff">#application.i18nUtils.i18nDateFormat(rc.now,rc..dateF,rc.thisTZ)#</td>
+	<td colspan="10" bgcolor="##b6e7ff">#getPlugin("i18n").i18nDateFormat(rc.now,rc..dateF,rc.thisTZ)#</td>
 	</tr>
 	<tr valign="top">
 	<td align="right" valign="top"><b>i18nTimeFormat:</b></td>
-	<td colspan="10" bgcolor="##b6e7ff">#application.i18nUtils.i18nTimeFormat(rc.now,rc..timeF,rc.thisTZ)#</td>
+	<td colspan="10" bgcolor="##b6e7ff">#getPlugin("i18n").i18nTimeFormat(rc.now,rc..timeF,rc.thisTZ)#</td>
 	</tr>
 	<tr valign="top">
 	<td align="right" valign="top"><b>i18nDateParse:</b></td>
-	<td colspan="10" bgcolor="##b6e7ff">#application.i18nUtils.i18nDateParse(rc.tDate)# (original date: #rc.tDate#)</td>
+	<td colspan="10" bgcolor="##b6e7ff">#getPlugin("i18n").i18nDateParse(rc.tDate)# (original date: #rc.tDate#)</td>
 	</tr>
 	<tr valign="top">
 	<td align="right" valign="top"><b>i18nDateTimeParse:</b></td>
-	<td colspan="10" bgcolor="##b6e7ff">#application.i18nUtils.i18nDateTimeParse(rc.tDateTime)# (original datetime: #rc.tDateTime#)</td>
+	<td colspan="10" bgcolor="##b6e7ff">#getPlugin("i18n").i18nDateTimeParse(rc.tDateTime)# (original datetime: #rc.tDateTime#)</td>
 	</tr>
 	<tr valign="top">
 	<td align="right" valign="top"><b>getDateTimePattern:</b></td>
-	<td colspan="10" bgcolor="##b6e7ff">#application.i18nUtils.getDateTimePattern()#</td>
+	<td colspan="10" bgcolor="##b6e7ff">#getPlugin("i18n").getDateTimePattern()#</td>
 	</tr>
 	<tr valign="top">
 	<td align="right" valign="top"><b>formatDateTime:</b></td>
-	<td colspan="10" bgcolor="##b6e7ff">#application.i18nUtils.formatDateTime(rc.now,"d MMMM yyyy")# (using "d MMMM yyyy")</td>
+	<td colspan="10" bgcolor="##b6e7ff">#getPlugin("i18n").formatDateTime(rc.now,"d MMMM yyyy")# (using "d MMMM yyyy")</td>
 	</tr>
 	<tr valign="top">
 	<td align="right" valign="top"><b>i18nDateDiff:</b></td>
-	<td colspan="10" bgcolor="##b6e7ff">#application.i18nUtils.i18nDateDiff(rc.now,rc.laterOn,"day",rc.thisTZ)# day(s) (#rc.laterOn# #rc.now#, randomly generated end date)</td>
+	<td colspan="10" bgcolor="##b6e7ff">#getPlugin("i18n").i18nDateDiff(rc.now,rc.laterOn,"day",rc.thisTZ)# day(s) (#rc.laterOn# #rc.now#, randomly generated end date)</td>
 	</tr>
 	<tr valign="top">
 	<td align="right" valign="top"><b>version:</b></td>

@@ -15,7 +15,7 @@ function disableButtons( clientbutton ){
 <style>
 .newsbox{
 height: 400px;
-width:  500px;
+width:  650px;
 overflow: scroll;
 background: #f5f5f5;
 border: 1px dashed #ddd;
@@ -25,10 +25,10 @@ padding: 5px;
 
 <table width="500">
 <tr>
-	<td><strong><p>Welcome to the ColdBox Webservices NewsLinx.&nbsp; Please click on the button below to retrieve all the news via webservices and present them below.</p>
+	<td><strong><p>Welcome to the ColdBox Webservices NewsLinx.&nbsp; Please click on the button below to retrieve all the coldbox update news via webservices and present them below.</p>
 </strong>
-<p>When you click on "Get News Feed" you will invoke the news webservices, retrieve the news and place into the request collection.  This is temporary, if you click on "Home" and go back, the news are gone.</p>
-<p>When you click on "Get News Feed (Using Clientstorage Plugin)" the news will be saved using the client storage plugin.  You will need to have a clientstorage setup already in order to use this.  The news now become permanent until you clean them.</p>
+<p>When you click on "Get Feed" you will invoke the news webservices, retrieve the news and place into the request collection.  This is temporary, if you click on "Home" and go back, the news are gone.</p>
+<p>When you click on "Get Feed (Using Clientstorage Plugin)" the news will be saved using the client storage plugin.  You will need to have a clientstorage setup already in order to use this.  The news now become permanent until you clean them.</p>
 </td>
 </tr>
 <tr>
@@ -37,8 +37,8 @@ padding: 5px;
 	<form id="form1" name="form1" method="post" action="" onSubmit="disableButtons()">
 	  <input type="button" name="homebutton" value="Home" onClick="disableButtons();window.location='index.cfm'" />&nbsp;
 	  <input type="submit" name="getbutton" value="Get News Feed" />&nbsp;
-	  <input type="submit" name="getclientbutton" value="Get News Feed (Using ClientStorage Plugin)" onclick="changeEvent('#getValue("xehGetNewsClient")#')" />
-	  <input name="event" type="hidden" id="event" value="#getValue("xehGetNews")#" />
+	  <input type="submit" name="getclientbutton" value="Get News Feed (Using ClientStorage Plugin)" onclick="changeEvent('#requestContext.getValue("xehGetNewsClient")#')" />
+	  <input name="event" type="hidden" id="event" value="#requestContext.getValue("xehGetNews")#" />
 	</form>
 	<p >&nbsp;</p>
 	<!--- Render a messagebox if set --->
@@ -49,16 +49,16 @@ padding: 5px;
 </table>
 
 <!--- Display the news if found in the request collection --->
-<cfif valueExists("newsfeed")>
+<cfif requestContext.valueExists("newsfeed")>
 	<div class="newsbox">
-	<cfoutput>#replace(getValue("newsfeed"),"*****","<br><Br>","all")#</cfoutput>
+	<cfdump var="#requestContext.getValue("newsfeed")#">
 	</div>
 </cfif>
 
 <!--- Display the news if found in the client storage plugin --->
 <cfif getPlugin("clientstorage").exists("newsfeed")>
 	<div class="newsbox">
-	<h4>Client Storage News: <input type="button" name="clientclearbutton" id="clientclearbutton" value="Clear Client Storage News" onClick="disableButtons(true);window.location='index.cfm?event=#getValue("xehDeleteNews")#'" />&nbsp;</h4>
-	<cfoutput>#replace(getPlugin("clientstorage").getvar("newsfeed"),"*****","<br><Br>","all")#</cfoutput>
+	<h4>Client Storage News: <input type="button" name="clientclearbutton" id="clientclearbutton" value="Clear Client Storage News" onClick="disableButtons(true);window.location='index.cfm?event=#requestContext.getValue("xehDeleteNews")#'" />&nbsp;</h4>
+	<cfdump var="#getPlugin("clientstorage").getvar("newsfeed")#">
 	</div>
 </cfif>
