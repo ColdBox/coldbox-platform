@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Config>
     <Application>Samples Gallery</Application>
-    <Version>1.1.0</Version>
-    <UpdateDate>sep-05-2006</UpdateDate>
+    <Version>1.2.0</Version>
+    <UpdateDate>feb-15-2007</UpdateDate>
     <Author>Luis Majano</Author>
 </Config>

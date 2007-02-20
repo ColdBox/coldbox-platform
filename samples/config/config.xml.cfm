@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <Config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-	xsi:noNamespaceSchemaLocation="http://www.coldboxframework.com/schema/config_1.1.0.xsd">
+	xsi:noNamespaceSchemaLocation="http://www.coldboxframework.com/schema/config_1.2.0.xsd">
 	<Settings>
 		<Setting name="AppName" value="Coldbox Samples Browser"/>
 		<Setting name="AppMapping" value="coldbox/samples"/>
@@ -23,6 +23,7 @@
 		<Setting name="HandlersIndexAutoReload" value="false"/>
 		<Setting name="ConfigAutoReload" value="false"/>
 		<Setting name="MyPluginsLocation" value="" />
+		<Setting name="HandlerCaching" value="true" />
 	</Settings>
 
 	<!-- Your own custom settings -->
@@ -36,7 +37,7 @@
 		<Setting name="TracURL" value="http://trac.luismajano.com/coldbox"/>
 		<!---App Versionsettings -->
 		<Setting name="BlogcfcApp" value="applications/blogcfcv5_0" />
-		<Setting name="ForumsApp" value="applications/forumsv1_5" />
+		<Setting name="ForumsApp" value="applications/galleon_1_7" />
 		<Setting name="ColdboxReaderApp" value="applications/ColdBoxReader" />
 		<Setting name="cfcGeneratorApp" value="applications/cfcGenerator" />
 	</YourSettings>

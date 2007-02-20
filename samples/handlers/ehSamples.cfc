@@ -16,22 +16,21 @@ Sep/25/2005 - Luis Majano
 	
 	<!--- ************************************************************* --->
 	<cffunction name="onAppInit" access="public" returntype="void" output="false">
-		<cfset application.localeUtils = getPlugin("i18n").setfwLocale(getSetting("DefaultLocale"))>
+		<cfargument name="requestContext" type="coldbox.system.beans.requestContext">
+		<cfset getPlugin("i18n").setfwLocale(getSetting("DefaultLocale"))>
 	</cffunction>
-	<!--- ************************************************************* --->
 	
 	<!--- ************************************************************* --->
+	
 	<cffunction name="onRequestStart" access="public" returntype="void" output="false">
+		<cfargument name="requestContext" type="coldbox.system.beans.requestContext">
 	</cffunction>
-	<!--- ************************************************************* --->
 
 	<!--- ************************************************************* --->
-	<cffunction name="onRequestEnd" access="public" returntype="void" output="false">
-	</cffunction>
-	<!--- ************************************************************* --->
 
-	<!--- ************************************************************* --->
 	<cffunction name="dspHome" access="public" returntype="void" output="false">
+		<cfargument name="requestContext" type="coldbox.system.beans.requestContext">
+		<cfset var rc = requestContext.getCollection()>
 		<!--- Get Log File contents --->
 		<cftry>
 			<cfset rc.LogFileContents = getPlugin("fileUtilities").readFile(getPlugin("logger").getlogFullPath())>
@@ -40,16 +39,20 @@ Sep/25/2005 - Luis Majano
 			</cfcatch>
 		</cftry>
 		
-		<cfset setView("home")>
+		<cfset requestContext.setView("home")>
 	</cffunction>
-	<!--- ************************************************************* --->
 
 	<!--- ************************************************************* --->
+
 	<cffunction name="doChangeLocale" access="public" returntype="void" output="false">
+		<cfargument name="requestContext" type="coldbox.system.beans.requestContext">
 		<!--- Change Locale --->
-		<cfset application.localeUtils.setfwLocale(getValue("locale"))>
-		<cfset dspHome()>
+		<cfset getPlugin("i18n").setfwLocale(requestContext.getValue("locale"))>
+		<cfset dspHome(requestContext)>
+		<!--- or you can also use, runEvent("ehSamples.dspHome")  
+		--->
 	</cffunction>
+
 	<!--- ************************************************************* --->
 
 </cfcomponent>

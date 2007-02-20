@@ -10,7 +10,19 @@
 <link rel="stylesheet" href="../includes/andreas08.css" type="text/css" media="screen,projection" />
 <cfelse>
 <link rel="stylesheet" href="includes/andreas08.css" type="text/css" media="screen,projection" />
+<link rel="stylesheet" href="includes/Thickbox/ThickBox.css" type="text/css" media="screen,projection" />
+<link rel="stylesheet" href="includes/tabs/tabs.css" type="text/css" media="screen,projection" />
 </cfif>
+<!--- JQUERY CODE --->
+<script language="javascript" src="includes/jquery-latest.pack.js"></script>
+<script language="javascript" src="includes/Thickbox/thickbox.js"></script>
+<script language="javascript" src="includes/tabs/jquery.tabs.pack.js"></script>
+
+<script language="javascript">
+$(document).ready(function() {
+      $('##mytabs').tabs({fxFade: true, fxSpeed: 'fast'});
+  });
+</script>
 </head>
 
 <body>
@@ -31,8 +43,8 @@
 		<div align="right">
 		#getResource("changelanguage")#
 		<select name="locale" onChange="window.location='index.cfm?event=ehSamples.doChangeLocale&locale=' + this.value">
-		   	<option value="en_US" <cfif application.localeUtils.getfwLocale() eq "en_US">selected</cfif>>English</option>
-		   	<option value="es_SV" <cfif application.localeUtils.getfwLocale() eq "es_SV">selected</cfif>>Spanish</option>
+		   	<option value="en_US" <cfif getPlugin("i18n").getfwLocale() eq "en_US">selected</cfif>>English</option>
+		   	<option value="es_SV" <cfif getPlugin("i18n").getfwLocale() eq "es_SV">selected</cfif>>Spanish</option>
 		</select>
 		</div>
 	</div>
