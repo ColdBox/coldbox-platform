@@ -125,7 +125,7 @@ function checksubmit() {
 			<td width="20"><input type="checkbox" name="mark" value="#attributes.data[attributes.linkval][currentRow]#"></td>
 			<cfloop index="c" list="#attributes.list#">
 				<cfset value = attributes.data[c][currentRow]>
-				<cfif c is "readonly" or c is "active" or c is "sendnotifications" or c is "sticky">
+				<cfif c is "readonly" or c is "active" or c is "sendnotifications" or c is "sticky" or c is "attachments">
 					<cfset value = yesNoFormat(value)>
 				<cfelseif c is "datecreated" or c is "posted" or c is "lastpost">
 					<cfset value = dateFormat(value,"mm/dd/yy") & " " & timeFormat(value,"h:mm tt")>
