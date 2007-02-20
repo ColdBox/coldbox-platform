@@ -437,7 +437,7 @@
 		<!--- Set the error message --->
 		<cfset getPlugin("messagebox").setMessage("error",errorStr)>
 		<!--- Go to display --->
-		<cfset dspComments()>
+		<cfset dspComments(requestContext)>
 	</cffunction>
 	<!--- ************************************************************* --->
 
