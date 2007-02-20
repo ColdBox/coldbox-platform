@@ -18,9 +18,9 @@
 
 <body bgcolor="##CCCCCC" onload="document.login.username.focus()">
 
-<form action="#cgi.script_name#" method="post" name="login">
+<form action="#cgi.script_name#" method="post" name="login" id="login">
 #getPlugin("messagebox").renderit()#
-<input type="hidden" name="event" value="#getValue("xehLogin")#">
+<input type="hidden" name="event" value="#requestContext.getValue("xehLogin")#">
 <table height="400" width="100%" >
 	<tr align="center" valign="middle"><td>
 	

@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <Config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-	xsi:noNamespaceSchemaLocation="http://www.coldboxframework.com/schema/config_1.1.0.xsd">
+	xsi:noNamespaceSchemaLocation="http://www.coldboxframework.com/schema/config_1.2.0.xsd">
 	<Settings>
 		<!--The name of your app-->
 		<Setting name="AppName" 					value="Galleonadmin"/>
-		<Setting name="AppMapping" 					value="coldbox/samples/applications/forumsv1_5/admin" />
+		<Setting name="AppMapping" 					value="coldbox/samples/applications/galleon_1_7/admin" />
 		<Setting name="DebugMode" 					value="true" />
 		<Setting name="DebugPassword" 				value="coldbox"/>
 		<Setting name="EnableDumpVar"				value="true" />
 		<Setting name="EnableColdfusionLogging" 	value="false" />
-		<Setting name="EnableColdboxLogging" 		value="false" />
+		<Setting name="EnableColdboxLogging" 		value="true" />
+		<Setting name="ColdboxLogsLocation" 		value="logs"/>
 		<Setting name="DefaultEvent" 				value="ehForums.dspLogin"/>
 		<Setting name="RequestStartHandler" 		value="ehForums.onRequestStart"/>
 		<Setting name="RequestEndHandler" 			value=""/>
@@ -29,7 +30,7 @@
 	<!--Your Settings can go here, if not needed, use <YourSettings />. You can use these for anything you like. -->
 	<YourSettings>
 		<!--Custom Settings-->
-		<Setting name="ParentMapping" value="coldbox/samples/applications/forumsv1_5/" />
+		<Setting name="ParentMapping" value="coldbox/samples/applications/galleon_1_7" />
 	</YourSettings>
 
 	<!--Optional,if blank it will use the CFMX administrator settings.-->

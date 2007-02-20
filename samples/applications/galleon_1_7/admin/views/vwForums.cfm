@@ -14,7 +14,7 @@
 #getPlugin("messagebox").renderit()#
 </cfoutput>
 <cfmodule template="../../tags/datatable.cfm" 
-		  data="#getValue("forums")#" list="name,description,conference,messagecount,readonly,active" 
-		  editlink="?event=#getValue("xehForumsEdit")#" linkcol="name" label="Forum" />
+		  data="#requestContext.getValue("forums")#" list="name,description,conference,messagecount,readonly,attachments,active" 
+		  editlink="?event=#requestContext.getValue("xehForumsEdit")#" linkcol="name" label="Forum" />
 
 <cfsetting enablecfoutputonly=false>

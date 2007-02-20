@@ -12,16 +12,16 @@
 <p>
 #getPlugin("messagebox").renderit()#
 <form action="#cgi.script_name#?" method="post">
-<input type="hidden" name="event" value="#getValue("xehRanksSave")#">
-<input type="hidden" name="id" value="#getValue("id")#">
+<input type="hidden" name="event" value="#requestContext.getValue("xehRanksSave")#">
+<input type="hidden" name="id" value="#requestContext.getValue("id")#">
 <table width="100%" cellspacing=0 cellpadding=5 class="adminEditTable">
 	<tr valign="top">
 		<td align="right"><b>Name:</b></td>
-		<td><input type="text" name="name" value="#getValue("name","")#" size="50"></td>
+		<td><input type="text" name="name" value="#requestContext.getValue("name","")#" size="50"></td>
 	</tr>
 	<tr valign="top">
 		<td align="right"><b>Minimum Number of Posts:</b></td>
-		<td><input type="text" name="minposts" value="#getValue("minposts","")#" size="50"></td>
+		<td><input type="text" name="minposts" value="#requestContext.getValue("minposts","")#" size="50"></td>
 	</tr>
 	<tr>
 		<td>&nbsp;</td>
