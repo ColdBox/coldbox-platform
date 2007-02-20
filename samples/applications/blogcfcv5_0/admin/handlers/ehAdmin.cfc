@@ -357,7 +357,7 @@
 				<cfset requestContext.paramValue("oldfilesize", "0")>
 				<cfset requestContext.paramValue("oldmimetype", "")>
 				<cfset requestContext.paramValue("released", "true")>
-				<cfset paramValue("title","")>
+				<cfset requestContext.paramValue("title","")>
 			</cfif>
 			<cfcatch>
 				<cfset getPlugin("logger").logError("Error in entries", cfcatch)>
