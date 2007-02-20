@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<snippet filetemplate="true" extension="cfc">
+<name>EventHandler</name>
+<help>A new Event Handler</help>
+<starttext><![CDATA[<!-----------------------------------------------------------------------
+Author 	 :	$${Author}
+Date     :	$${DATE}
+Description : 			
+ $${Description}
+		
+Modification History:
+
+----------------------------------------------------------------------->
+<cfcomponent name="$${Handler Name}" hint="$${Hint}" extends="coldbox.system.eventhandler" output="false">
+
+	<!--- ************************************************************* --->
+
+	<cffunction name="doSomething" access="public" returntype="Void" output="false">
+		<cfargument name="requestContext" type="coldbox.system.beans.requestContext">
+	</cffunction>
+	
+	<!--- ************************************************************* --->
+
+	<cffunction name="dspSomething" access="public" returntype="Void" output="false">
+		<cfargument name="requestContext" type="coldbox.system.beans.requestContext">
+	</cffunction>
+	
+	<!--- ************************************************************* --->
+	
+	<cffunction name="myPrivateFunction" access="private" returntype="Void" output="false">
+		<cfargument name="requestContext" type="coldbox.system.beans.requestContext">
+	</cffunction>
+	
+</cfcomponent>]]></starttext>
+<endtext><![CDATA[]]></endtext>
+</snippet>

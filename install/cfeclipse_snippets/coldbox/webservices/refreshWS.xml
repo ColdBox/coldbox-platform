@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<snippet filetemplate="false" extension="cfm">
+<name>refreshWS</name>
+<help>Refresh the webservice's stub</help>
+<starttext><![CDATA[getPlugin("webservices").refreshWS("$${Web Service Name}")]]></starttext>
+<endtext><![CDATA[]]></endtext>
+</snippet>

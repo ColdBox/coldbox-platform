@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<snippet filetemplate="false" extension="cfm">
+<name>getMessage</name>
+<help>Get a message</help>
+<starttext><![CDATA[getPlugin("messagebox").getMessage()]]></starttext>
+<endtext><![CDATA[]]></endtext>
+</snippet>
