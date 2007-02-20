@@ -33,15 +33,15 @@ Modification History:
   
   <tr>
     <td width="122" align="right" class="fw_errorTablesTitles">Current Event: </td>
-    <td width="463" class="fw_errorTablesCells"><cfif valueExists("event")>#getValue("event")#<cfelse>N/A</cfif></td>
+    <td width="463" class="fw_errorTablesCells"><cfif RequestContext.valueExists("event")>#RequestContext.getValue("event")#<cfelse>N/A</cfif></td>
   </tr>
   <tr>
     <td align="right" class="fw_errorTablesTitles">Current Layout: </td>
-    <td class="fw_errorTablesCells"><cfif valueExists("currentLayout")>#getValue("currentLayout")#<cfelse>N/A</cfif></td>
+    <td class="fw_errorTablesCells"><cfif RequestContext.valueExists("currentLayout")>#RequestContext.getValue("currentLayout")#<cfelse>N/A</cfif></td>
   </tr>
   <tr>
     <td align="right" class="fw_errorTablesTitles">Current View: </td>
-    <td class="fw_errorTablesCells"><cfif valueExists("currentView")>#getvalue("currentView")#<cfelse>N/A</cfif></td>
+    <td class="fw_errorTablesCells"><cfif RequestContext.valueExists("currentView")>#RequestContext.getValue("currentView")#<cfelse>N/A</cfif></td>
   </tr>
 </cfif>
   <tr>
@@ -70,7 +70,7 @@ Modification History:
   </tr>
   <tr>
     <td align="right" class="fw_errorTablesTitles"> Host &amp; Server: </td>
-    <td class="fw_errorTablesCells">#cgi.http_host# #getPlugin("fileUtilities").getInetHost()#</td>
+    <td class="fw_errorTablesCells">#cgi.http_host# #controller.getPlugin("fileUtilities").getInetHost()#</td>
   </tr>
   <tr>
     <td align="right" class="fw_errorTablesTitles">Query String: </td>

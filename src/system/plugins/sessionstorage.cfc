@@ -4,24 +4,24 @@ www.coldboxframework.com | www.coldboxframework.org
 -------------------------------------------------------------------------
 
 Author 	 :	Luis Majano
-Date     :	September 23, 2005
+Date     :	February 16,2007
 Description : 			
 	This is a plugin that enables the setting/getting of permanent variables in
-	the client scope using the wddx features if needed.
+	the session scope.
 				
 Modification History:
 	
 ----------------------------------------------------------------------->
-<cfcomponent name="clientstorage" hint="Client Storage plugin. It provides the user with a mechanism for permanent data storage using the client scope and WDDX." extends="coldbox.system.plugin" cache="true">
+<cfcomponent name="sessionstorage" hint="Session Storage plugin. It provides the user with a mechanism for permanent data storage using the session scope." extends="coldbox.system.plugin" cache="true">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
 	<cffunction name="init" access="public" returntype="coldbox.system.plugin" output="false">
 		<cfargument name="controller" type="any" required="true">
 		<cfset super.Init(arguments.controller) />
-		<cfset setpluginName("Client Storage")>
+		<cfset setpluginName("Session Storage")>
 		<cfset setpluginVersion("1.0")>
-		<cfset setpluginDescription("A permanent data storage plugin.")>
+		<cfset setpluginDescription("A permanent data storage plugin using the session scope.")>
 		<cfreturn this>
 	</cffunction>
 
@@ -35,15 +35,7 @@ Modification History:
 		<cfargument name="value" type="any"    required="true" hint="The value to set in the variable.">
 		<!--- ************************************************************* --->
 		<cfset var tmpVar = "">
-		<!--- Test for simple mode --->
-		<cfif isSimpleValue(arguments.value)>
-			<cfset client["#arguments.name#"] = #arguments.value#>
-		<cfelse>
-			<!--- Wddx variable --->
-			<cfwddx action="cfml2wddx" input="#arguments.value#" output="tmpVar">
-			<!--- Set Variable --->
-			<cfset client["#arguments.name#"] = tmpVar>
-		</cfif>
+		<cfset session["#arguments.name#"] = #arguments.value#>
 	</cffunction>
 	
 	<!--- ************************************************************* --->
@@ -53,16 +45,9 @@ Modification History:
 		<cfargument  name="name" 		type="string"  required="true" 		hint="The variable name to retrieve.">
 		<cfargument  name="default"  	type="any"     required="false"  	hint="The default value to set. If not used, a blank is returned." default="">
 		<!--- ************************************************************* --->
-		<cfset var wddxVar = "">
 		<cfset var rtnVar = "">
 		<cfif exists("#arguments.name#")>
-			<!--- Get Value --->
-			<cfset rtnVar = client["#arguments.name#"]>
-			<cfif isWDDX(rtnVar)>
-				<!--- Unwddx packet --->
-				<cfwddx action="wddx2cfml" input="#rtnVar#" output="wddxVar">
-				<cfset rtnVar = wddxVar>
-			</cfif>
+			<cfset rtnVar = session["#arguments.name#"]>
 		<cfelse>
 			<cfset rtnVar = arguments.default>
 		</cfif>
@@ -76,7 +61,7 @@ Modification History:
 		<!--- ************************************************************* --->
 		<cfargument  name="name" type="string" required="true" 	hint="The variable name to retrieve.">
 		<!--- ************************************************************* --->
-		<cfif structKeyExists(client, "#arguments.name#")>
+		<cfif structKeyExists(session, "#arguments.name#")>
 			<cfreturn true>
 		<cfelse>
 			<cfreturn false>
@@ -90,7 +75,7 @@ Modification History:
 		<cfargument  name="name" type="string" required="true" 	hint="The variable name to retrieve.">
 		<!--- ************************************************************* --->
 		<cfif exists(arguments.name)>
-			<cfset structdelete(client, "#arguments.name#")>
+			<cfset structdelete(session, "#arguments.name#")>
 			<cfreturn true>
 		<cfelse>
 			<cfreturn false>

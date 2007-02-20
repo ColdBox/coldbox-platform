@@ -14,9 +14,10 @@ Modification History:
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 	
-	<cffunction name="init" access="public" returntype="coldbox.system.plugin" output="false" hint="The plugin constructor.">
+	<cffunction name="init" access="public" returntype="any" output="false" hint="The plugin constructor.">
+		<cfargument name="controller" type="any" required="true">
 		<cfscript>
-			super.init();
+			setController(arguments.controller);
 			//instance names
 			variables.instance.pluginName = "";
 			variables.instance.pluginVersion = "";

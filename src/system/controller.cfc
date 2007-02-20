@@ -9,175 +9,245 @@ Last Update 	: December 9, 2006
 <cfcomponent name="controller" hint="This is the ColdBox Front Controller." output="false">
 	
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
-	<cffunction name="init" returntype="coldbox.system.controller" access="Public" hint="I am the constructor" output="false">
-		<cfscript>
+	
+	<cfscript>
 		variables.instance = structnew();
-		variables.instance.DebugMode = false;
-		return this;
+		variables.instance.ColdboxInitiated = false;
+		variables.instance.ConfigSettings = structnew();
+		variables.instance.ColdboxSettings = structnew();
+		variables.instance.AppStartHandlerFired = false;
+		//Services & Managers
+		variables.instance.ColdboxOCM = "";
+		variables.instance.RequestService = "";		
+	</cfscript>
+	
+	<cffunction name="init" returntype="any" access="Public" hint="I am the constructor" output="false">
+		<cfscript>
+			//Create Managers & Services
+			instance.ColdboxOCM = CreateObject("component","coldbox.system.util.objectCacheManager").init(this);
+			instance.RequestService = CreateObject("component","coldbox.system.util.requestService").init(this);
+			//Return instance
+			return this;
 		</cfscript>
 	</cffunction>
+
 <!------------------------------------------- PUBLIC ------------------------------------------->
-
-	<cffunction name="getDebugMode" access="public" hint="I Get the current controller debugmode" returntype="boolean"  output="false">
-		<cfscript>
-			return variables.instance.DebugMode;
-		</cfscript>
+	
+	<!--- Getters / Setters Services & Managers --->
+	<cffunction name="getRequestService" access="public" output="false" returntype="coldbox.system.util.requestService" hint="Get RequestService">
+		<cfreturn instance.RequestService/>
 	</cffunction>
-
-	<cffunction name="setDebugMode" access="public" hint="I set the current controller debugmode" returntype="void"  output="false">
-		<cfargument name="mode" type="boolean" >
-		<cfscript>
-			variables.instance.DebugMode = arguments.mode;
-		</cfscript>
+	<cffunction name="getColdboxOCM" access="public" output="false" returntype="coldbox.system.util.objectCacheManager" hint="Get ColdboxOCM">
+		<cfreturn instance.ColdboxOCM/>
 	</cffunction>
 	
+	<!--- Accessor ColdBox Initiation Flag --->
+	<cffunction name="getColdboxInitiated" access="public" output="false" returntype="boolean" hint="Get ColdboxInitiated">
+		<cfreturn instance.ColdboxInitiated/>
+	</cffunction>
+	<!--- Accessor/Mutator App Start Handler Fired --->
+	<cffunction name="setAppStartHandlerFired" access="public" output="false" returntype="void" hint="Set AppStartHandlerFired">
+		<cfargument name="AppStartHandlerFired" type="boolean" required="true"/>
+		<cfset instance.AppStartHandlerFired = arguments.AppStartHandlerFired/>
+	</cffunction>	
+	<cffunction name="getAppStartHandlerFired" access="public" output="false" returntype="boolean" hint="Get AppStartHandlerFired">
+		<cfreturn instance.AppStartHandlerFired/>
+	</cffunction>
+	
+	<!--- Debugging Accessor/Mutators --->
+	<cffunction name="getDebugMode" access="public" hint="I Get the current user's debugmode" returntype="boolean"  output="false">
+		<cfset var appName = URLEncodedFormat(replace(replace(getSetting("AppName")," ","","all"),".","_","all"))>
+		<cfif structKeyExists(cookie,"ColdBox_debugMode_#appName#")>
+			<cfreturn cookie["ColdBox_debugMode_#appName#"]>
+		<cfelse>
+			<cfreturn false>
+		</cfif>
+	</cffunction>
+	<cffunction name="setDebugMode" access="public" hint="I set the current user's debugmode" returntype="void"  output="false">
+		<cfargument name="mode" type="boolean" required="true" >
+		<cfset var appName = URLEncodedFormat(replace(replace(getSetting("AppName")," ","","all"),".","_","all"))>
+		<cfif arguments.mode>
+			<cfcookie name="ColdBox_debugMode_#appName#" value="true">
+		<cfelseif structKeyExists(cookie,"ColdBox_debugMode_#appName#")>
+			<cfcookie name="ColdBox_debugMode_#appName#" value="false" expires="#now()#">
+		</cfif>
+	</cffunction>
+		
+	<!--- Config Loader Method --->
+	<cffunction name="configLoader" returntype="void" access="Public" hint="I Load the configurations and init the framework variables." output="false">
+		<cfscript>
+		var XMLParser = getPlugin("XMLParser");
+		//Load Coldbox Config Settings Structure 
+		instance.ColdboxSettings = XMLParser.loadFramework();
+		//Load Application Config Settings
+		instance.ConfigSettings = XMLParser.parseConfig();
+		//Configure Caching Manager
+		instance.ColdboxOCM.configure();
+		
+		//IoC Plugin Manager
+		if ( getSetting("IOCFramework") neq "" ){
+			getPlugin("ioc").configure();
+		}
+		//Load i18N if application is using it.
+		if ( getSetting("using_i18N") )
+			getPlugin("i18n").init_i18N(getSetting("DefaultResourceBundle"),getSetting("DefaultLocale"));
+		
+		//Initialize AOP Logging if requested.
+		if ( getSetting("EnableColdboxLogging") )
+			getPlugin("logger").initLogLocation();
+			
+		//Set Debugging Mode according to configuration
+		setDebugMode(getSetting("DebugMode"));
+		
+		// Flag the initiation, Framework is ready to serve requests. Praise be to GOD.
+		instance.ColdboxInitiated = true;
+		</cfscript>
+	</cffunction>
+	<!--- Framework Register Handlers --->
+	<cffunction name="registerHandlers" access="public" returntype="void" hint="I register your application's event handlers" output="false">
+		<cfset var HandlersPath = getSetting("HandlersPath")>
+		<cfset var Handlers = ArrayNew(1)>
+		<cfset var HandlerListing = "">
+		
+		<!--- Check for Handlers Directory Location --->
+		<cfif not directoryExists(HandlersPath)>
+			<cfthrow type="Framework.plugins.settings.HandlersDirectoryNotFoundException" message="The handlers directory: #handlerspath# does not exist please check your application structure or your Application Mapping.">
+		</cfif>
+		
+		<!--- Get Handlers to register --->
+		<cfdirectory action="list" recurse="true" directory="#HandlersPath#" name="HandlerListing" filter="*.cfc">
+		
+		<!--- Verify handler's found, else, why continue --->
+		<cfif not HandlerListing.recordcount>
+			<cfthrow type="Framework.plugins.settings.NoHandlersFoundException" message="No handlers were found in: #HandlerPath#. So I have no clue how you are going to run this application.">
+		</cfif>
+		
+		<!--- Register Handlers --->
+		<cfloop query="HandlerListing">
+			<cfset HandlerListing.directory = replacenocase(HandlerListing.directory,HandlersPath,"","all")>
+			<cfset HandlerListing.directory = removeChars(replacenocase(HandlerListing.directory,"/",".","all") & ".",1,1)>
+			<cfset HandlerListing.name = getPlugin("fileUtilities").ripExtension(HandlerListing.name)>
+			<cfset arrayappend(Handlers, HandlerListing.directory & HandlerListing.name)>
+		</cfloop>
+
+		<!--- Sort The Array --->
+		<cfset ArraySort(Handlers,"text")>
+		
+		<!--- Set registered Handlers --->
+		<cfset setSetting("RegisteredHandlers",arrayToList(Handlers))>
+	</cffunction>
+
+	
+	<!--- Config Structure Accessors/Mutators --->
+	<cffunction name="getSettingStructure" hint="I get the entire setting structure. By default I retrieve the configStruct. You can change this by using the fwsetting flag." access="public" returntype="struct" output="false">
+		<!--- ************************************************************* --->
+		<cfargument name="FWSetting"  	type="boolean" 	 required="false"  hint="Boolean Flag. If true, it will retrieve from the fwSettingsStruct else the configStruct. Default is false." default="false">
+		<cfargument name="DeepCopyFlag" hint="Default is false. True, creates a deep copy of the structure." type="boolean" required="no" default="false">
+		<!--- ************************************************************* --->
+		<cfscript>
+		if (arguments.FWSetting){
+			if (arguments.DeepCopyFlag)
+				return duplicate(instance.ColdboxSettings);
+			else
+				return instance.ColdboxSettings;
+		}
+		else{
+			if (arguments.DeepCopyFlag)
+				return duplicate(instance.ConfigSettings);
+			else
+				return instance.ConfigSettings;
+		}
+		</cfscript>
+	</cffunction>
 	<cffunction name="getSetting" hint="I get a setting from the FW Config structures. Use the FWSetting boolean argument to retrieve from the fwSettingsStruct." access="public" returntype="any" output="false">
 		<cfargument name="name" 	    type="string"   	hint="Name of the setting key to retrieve"  >
 		<cfargument name="FWSetting"  	type="boolean" 	 	required="false"  hint="Boolean Flag. If true, it will retrieve from the fwSettingsStruct else from the configStruct. Default is false." default="false">
 		<!--- ************************************************************* --->
 		<cfscript>
-		if ( arguments.FWSetting and isDefined("application.ColdBox_FWSettingsStruct.#arguments.name#") )
-			return Evaluate("application.ColdBox_FWSettingsStruct.#arguments.name#");
-		else if ( isDefined("application.ColdBox_configstruct.#arguments.name#") )
-			 return Evaluate("application.ColdBox_configstruct.#arguments.name#");
+		if ( arguments.FWSetting and settingExists(arguments.name,true) )
+			return Evaluate("instance.ColdboxSettings.#arguments.name#");
+		else if ( settingExists(arguments.name) )
+			 return Evaluate("instance.ConfigSettings.#arguments.name#");
 		else
 			throw("The setting #arguments.name# does not exist.","FWSetting flag is #arguments.FWSetting#","Framework.SettingNotFoundException");
 		</cfscript>
-	</cffunction>
-	
+	</cffunction>	
 	<cffunction name="settingExists" returntype="boolean" access="Public"	hint="I Check if a value exists in the configstruct or the fwsettingsStruct." output="false">
 		<cfargument name="name" hint="Name of the setting to find." type="string">
 		<cfargument name="FWSetting"  	type="boolean" 	 required="false"  hint="Boolean Flag. If true, it will retrieve from the fwSettingsStruct else from the configStruct. Default is false." default="false">
 		<!--- ************************************************************* --->
 		<cfscript>
 		if (arguments.FWSetting){
-			return isDefined("application.ColdBox_FWSettingsStruct.#arguments.name#");
+			return isDefined("instance.ColdboxSettings.#arguments.name#");
 		}
 		else{
-			return isDefined("application.ColdBox_configstruct.#arguments.name#");
+			return isDefined("instance.ConfigSettings.#arguments.name#");
 		}
 		</cfscript>
-	</cffunction>
-		
+	</cffunction>		
 	<cffunction name="setSetting" access="Public" returntype="void" hint="I set a Global Coldbox setting variable in the configstruct, if it exists it will be overrided. This only sets in the ConfigStruct" output="false">
 		<cfargument name="name"  type="string"   hint="The name of the setting" >
 		<cfargument name="value" type="any"      hint="The value of the setting (Can be simple or complex)">
 		<!--- ************************************************************* --->
 		<cfscript>
-		"application.Coldbox_configstruct.#arguments.name#" = arguments.value;
+		"instance.ConfigSettings.#arguments.name#" = arguments.value;
 		</cfscript>
 	</cffunction>
 	
+	<!--- Plugin Factories --->	
 	<cffunction name="getPlugin" access="Public" returntype="any" hint="I am the Plugin cfc object factory." output="false">
-		<cfargument name="plugin" type="string" hint="The Plugin object's name to instantiate" >
+		<cfargument name="plugin" 		type="string" hint="The Plugin object's name to instantiate" >
+		<cfargument name="customPlugin" type="boolean" required="false" default="false" hint="Used internally to create custom plugins.">
 		<!--- ************************************************************* --->
-		<cfscript>
-		try{
-			return CreateObject("component", "plugins.#trim(arguments.plugin)#").init();
-		}
-		catch(Any e){
-			throw("Framework.getPlugin: Error Instantiating Plugin Object (#trim(arguments.plugin)#)","#e.Message# #e.detail#","Framework.InvalidPluginInstantiationException");
-		}
-		</cfscript>
+		<cfset var oPlugin = "">
+		<cfset var HandlerInCache = "">
+		<cfset var MetaData = structNew()>
+		<cfset var objTimeout = 0>
+		<cfset var pluginKey = "plugin_" & arguments.plugin>
+		<cfset var pluginPath = "coldbox.system.plugins.#trim(arguments.plugin)#">
+		
+		<!--- Custom Plugin Test --->
+		<cfif arguments.customPlugin>
+			<cfset pluginKey = "custom_plugin_" & arguments.plugin>
+			<cfset pluginPath = "#getSetting("MyPluginsLocation")#.#trim(arguments.plugin)#">
+		</cfif>
+		
+		<!--- Lookup in Cache --->
+		<cflock type="readonly" name="OCM_Operation" timeout="20">
+			<cfset HandlerInCache = instance.ColdboxOCM.lookup(pluginKey)>
+		</cflock>
+		<cfif HandlerInCache>
+			<cflock type="exclusive" name="OCM_Operation" timeout="20">
+				<cfset oPlugin = instance.ColdboxOCM.get(pluginKey)>
+			</cflock>
+		</cfif>
+		
+		<!--- Object not found, proceed to create and verify --->
+		<cfif not HandlerInCache>
+			<cfset oPlugin = CreateObject("component", pluginPath).init(this)>
+			<cfset MetaData = getMetaData(oPlugin)>
+			<cfif structKeyExists(MetaData, "cache") and isBoolean(MetaData["cache"]) and MetaData["cache"]>
+				<cfif structKeyExists(MetaData,"cachetimeout") and isNumeric(MetaData["cachetimeout"])>
+					<cfset objTimeout = MetaData["cachetimeout"]>
+				</cfif>
+				<cflock type="exclusive" name="OCM_Operation" timeout="20">
+					<cfset instance.ColdboxOCM.set(pluginKey,oPlugin,objTimeout)>
+				</cflock>
+			</cfif>
+		</cfif>
+		<cfreturn oPlugin>
+	</cffunction>
+	<cffunction name="getMyPlugin" access="public" hint="Get a custom plugin" returntype="any" output="false">
+		<!--- ************************************************************* --->
+		<cfargument name="plugin" type="string" hint="The Plugin object's name to instantiate" required="true" >
+		<!--- ************************************************************* --->
+		<cfreturn getPlugin(arguments.plugin, true)>
 	</cffunction>
 	
-	<cffunction name="reqCapture" access="Public" returntype="void" hint="I capture a framework event request." output="false">
-		<cfargument name="FormScope" hint="The form scope" type="any">
-		<cfargument name="URLScope"  hint="The url scope"  type="any">
-		<!--- ************************************************************* --->
-		<cfscript>
-		request.reqCollection = structNew();
-		StructAppend(request.reqCollection, arguments.FormScope);
-		StructAppend(request.reqCollection, arguments.URLScope);
-		//<!--- Debug Mode Checks --->
-		if ( structKeyExists(request.reqCollection,"debugMode") and isBoolean(request.reqCollection.debugmode) ){
-			if ( getSetting("debugPassword") eq "")
-				setDebugMode(request.reqCollection.debugmode);
-			else if ( structKeyExists(request.reqCollection,"debugpass") and compareNoCase(getSetting("debugPassword"),request.reqCollection.debugpass) eq 0 )
-				setDebugMode(request.reqCollection.debugmode);
-		}
-
-		//<!---Default Event Definition --->
-		if ( not structkeyExists(request.reqCollection,"event") )
-			request.reqCollection.event = getSetting("DefaultEvent");
-
-		//<!---Event More Than 1 Check, grab the first event instance, other's are discarded --->
-		if ( listLen(request.reqCollection.event) gte 2 )
-			request.reqCollection.event = getToken(event,1,",");
-		</cfscript>
-	</cffunction>
-
-	<cffunction name="valueExists" returntype="boolean" access="Public"	hint="I Check if a value exists in the request collection." output="false">
-		<cfargument name="name" hint="Name of the variable to find in the request collection" type="string">
-		<!--- ************************************************************* --->
-		<cfscript>
-			return isDefined("request.reqCollection.#arguments.name#");
-		</cfscript>
-	</cffunction>
-
-	<cffunction name="getValue" returntype="Any" access="Public" hint="I Get a value from the request collection." output="false">
-		<cfargument name="name" hint="Name of the variable to get from the request collection" type="string">
-		<cfargument name="defaultValue"
-					hint="Default value to return if not found.There are no default values for complex structures. You can send [array][struct][query] and the
-						  method will return the empty complex variable.Please remember to include the brackets, syntax sensitive.You can also send complex variables
-						  as the defaultValue argument."
-					type="any" required="No" default="NONE">
-		<!--- ************************************************************* --->
-		<cfscript>
-			if ( isDefined("request.reqCollection.#arguments.name#") ){
-				return Evaluate("request.reqCollection.#arguments.name#");
-			}
-			else if ( isSimpleValue(arguments.defaultValue) and arguments.defaultValue eq "NONE" )
-				throw("The variable: #arguments.name# is undefined in the request collection.","","Framework.ValueNotInRequestCollectionException");
-			else if ( isSimpleValue(arguments.defaultValue) ){
-				if ( refind("\[[A-Za-z]*\]", arguments.defaultValue) ){
-					if ( findnocase("array", arguments.defaultvalue) )
-						return ArrayNew(1);
-					else if ( findnocase("struct", arguments.defaultvalue) )
-						return StructNew();
-					else if ( findnocase("query", arguments.defaultvalue) )
-						return QueryNew("");
-				}
-				else
-					return arguments.defaultValue;
-			}
-			else
-				return arguments.defaultValue;
-		</cfscript>
-	</cffunction>
-
-	<cffunction name="setValue" access="Public" hint="I Set a value in the request collection" output="false" returntype="void">
-		<cfargument name="name"  hint="The name of the variable to set." type="string" >
-		<cfargument name="value" hint="The value of the variable to set" type="Any" >
-		<!--- ************************************************************* --->
-		<cfscript>
-			"request.reqCollection.#arguments.name#" = arguments.value;
-		</cfscript>
-	</cffunction>
-
-	<cffunction name="removeValue" access="Public" hint="I remove a value in the request collection" output="false" returntype="void">
-		<cfargument name="name"  hint="The name of the variable to remove." type="string" >
-		<!--- ************************************************************* --->
-		<cfscript>
-			structDelete(request.reqCollection,"#arguments.name#");
-		</cfscript>
-	</cffunction>
-
-	<cffunction name="getCollection" returntype="any" access="Public" hint="I Get a reference or deep copy of the request Collection" output="false">
-		<cfargument name="DeepCopyFlag" hint="Default is false, gives a reference to the collection. True, creates a deep copy of the collection." type="boolean" required="no" default="false">
-		<cfscript>
-			if ( not structKeyExists(request,"reqCollection") )
-				return structnew();
-			else if ( arguments.DeepCopyFlag )
-				return duplicate(request.reqCollection);
-			else
-				return request.reqCollection; 
-		</cfscript>
-	</cffunction>
-	
+	<!--- Event Context Methods --->
 	<cffunction name="setNextEvent" access="Public" returntype="void" hint="I Set the next event to run and relocate the browser to that event."  output="false">
-		<cfargument name="event"  			hint="The name of the event to run." 			type="string" default="#getSetting("DefaultEvent")#" >
-		<cfargument name="queryString"  	hint="The query string to append, if needed."   type="any" required="No" default="" >
+		<cfargument name="event"  			hint="The name of the event to run." 			type="string" required="No" default="#getSetting("DefaultEvent")#" >
+		<cfargument name="queryString"  	hint="The query string to append, if needed."   type="string" required="No" default="" >
 		<cfargument name="addToken"			hint="Wether to add the tokens or not. Default is false" type="boolean" required="false" default="false"	>
 		<!--- ************************************************************* --->
 			<cfif len(trim(arguments.event)) eq 0><cfset arguments.event = getSetting("DefaultEvent")></cfif>
@@ -185,71 +255,114 @@ Last Update 	: December 9, 2006
 	</cffunction>
 	
 	<cffunction name="runEvent" returntype="void" access="Public" hint="I am an event handler runnable factory. If no event is passed in then it will run the default event from the config.xml.">
-		<cfargument name="event" hint="The event to run. If no current event is set, use the default event from the config.xml" type="string" required="no" default="#getValue("event")#">
+		<cfargument name="event" hint="The event to run. If no current event is set, use the default event from the config.xml" type="string" required="no" default="">
 		<!--- ************************************************************* --->
 		<cfset var oEventHandler = "">
 		<cfset var oEventBean = "">
-		<cfset var oSettings = getPlugin("settings")>
+		<cfset var objTimeout = 0>
+		<cfset var MetaData = "">
 		<cfset var HandlerInCache = false>
 		<cfset var ExecutingHandler = "">
 		<cfset var ExecutingMethod = "">
+		<cfset var RequestContext = instance.RequestService.getContext()>
+		
+		<!--- Default Event Set --->
+		<cfif arguments.event eq "">
+			<cfset arguments.event = RequestContext.getValue("event")>
+		</cfif>
+		
 		<!--- Start Timer --->
 		<cfmodule template="includes/timer.cfm" timertag="invoking runEvent [#arguments.event#]">
-			
 			<!--- Validate and Get registered handler --->
-			<cfset oEventBean = oSettings.getRegisteredHandler(arguments.event)>
+			<cfset oEventBean = getRegisteredHandler(arguments.event)>
+			<!--- Set Executing Parameters --->
 			<cfset ExecutingHandler = oEventBean.getRunnable()>
 			<cfset ExecutingMethod = oEventBean.getMethod()>
-			<cftry>
+			
+			<!--- Check if using handler cache, get handler from cache --->
+			<cfif getSetting("HandlerCaching")>
+			
+				<!--- Lookup in Cache --->
+				<cflock type="readonly" name="OCM_Operation" timeout="20">
+					<cfset HandlerInCache = instance.ColdboxOCM.lookup("handler_" & ExecutingHandler)>
+				</cflock>
 				
-				<!--- Check if using handler cache, get handler from cache --->
-				<cfif getSetting("HandlerCaching")>
-					<cflock type="readonly" name="HandlerCacheOperation" timeout="120">
-						<cfset HandlerInCache = application.coldbox_HCM.lookup(ExecutingHandler)>
-						<cfif HandlerInCache>
-							<cfset oEventHandler = application.coldbox_HCM.get(ExecutingHandler)>
-						</cfif>
+				<!--- Test if found --->
+				<cfif HandlerInCache>
+					<cflock type="exclusive" name="OCM_Operation" timeout="20">
+						<cfset oEventHandler = instance.ColdboxOCM.get("handler_" & ExecutingHandler)>
 					</cflock>
-					<cfif not HandlerInCache>
-						<cflock type="exclusive" name="HandlerCacheOperation" timeout="120">
-							<cfset oEventHandler = CreateObject("component",ExecutingHandler).init()>
-							<cfset application.coldbox_HCM.set(ExecutingHandler,oEventHandler)>
+				</cfif>
+				
+				<!--- Object not found, set in cache--->
+				<cfif not HandlerInCache>
+					<cfset oEventHandler = CreateObject("component",ExecutingHandler).init(this)>
+					<cfset MetaData = getMetaData(oEventHandler)>
+					<cfif not structKeyExists(MetaData,"cache")>
+						<cfset MetaData.cache = true>
+					</cfif>
+					<cfif isBoolean(MetaData["cache"]) and MetaData["cache"]>
+						<cfif structKeyExists(MetaData,"cachetimeout") and isNumeric(MetaData["cachetimeout"])>
+							<cfset objTimeout = MetaData["cachetimeout"]>
+						</cfif>
+						<cflock type="exclusive" name="OCM_Operation" timeout="20">
+							<cfset instance.ColdboxOCM.set("handler_" & ExecutingHandler,oEventHandler,objTimeout)>
 						</cflock>
 					</cfif>
-				<cfelse>
-					<!--- Create Runnable Object --->
-					<cfset oEventHandler = CreateObject("component",ExecutingHandler).init()>
 				</cfif>
 				
-				<cfcatch type="any">
-					<cfthrow type="Framework.EventHandlerInstantiationException" message="Error Instantiating Event Handler: (#ExecutingHandler#)" detail="CFCPath: #getSetting("HandlersInvocationPath")# ; #cfcatch.Detail# #cfcatch.Message#">
-				</cfcatch>
-			</cftry>
+			<cfelse>
+				<!--- Create Runnable Object --->
+				<cfset oEventHandler = CreateObject("component",ExecutingHandler).init(this)>
+			</cfif>
+
+			<!--- Verify Method Exists --->
+			<cfif not structKeyExists(oEventHandler,ExecutingMethod)>
+				<!--- Invalid Event Detected --->
+				<cfset getPlugin("logger").logEntry("error","Invalid Event detected: #ExecutingHandler#.#ExecutingMethod#")>
+				<!--- Relocate to Invalid Event --->
+				<cfset setNextEvent(getSetting("onInvalidEvent"))>
+			</cfif>
 			
-			<cftry>
-				<!--- Verify Method Exists --->
-				<cfif not structKeyExists(oEventHandler,ExecutingMethod)>
-					<cfset setNextEvent(getSetting("onInvalidEvent"))>
-				</cfif>
-				<!--- Different Execution for Cached Handler --->
-				<cfif getSetting("HandlerCaching")>
-					<cflock type="exclusive" name="HandlerCacheExecution" timeout="120">
-						<!--- Inject RC --->	
-						<cfset oEventHandler.setRC(getCollection())>
-						<!--- Execute Method --->
-						<cfinvoke component="#oEventHandler#" method="#ExecutingMethod#">
-					</cflock>
-				<cfelse>
-					<!--- Execute Method --->
-					<cfinvoke component="#oEventHandler#" method="#ExecutingMethod#">
-				</cfif>
+			<!--- Execute Method --->
+			<cfinvoke component="#oEventHandler#" method="#ExecutingMethod#" RequestContext="#RequestContext#">
 				
-				<cfcatch type="any">
-					<cfthrow type="Framework.EventHandlerMethodExecutionException" message="Error Running Event Method: (#ExecutingHandler#.#ExecutingMethod#)" detail="#cfcatch.Detail# #cfcatch.Message#">
-				</cfcatch>
-			</cftry>
-			
 		</cfmodule>
+	</cffunction>
+	
+	<cffunction name="ExceptionHandler" access="public" hint="I handle a framework/application exception. I return a framework exception bean" returntype="any" output="false">
+		<!--- ************************************************************* --->
+		<cfargument name="Exception" 	 type="any"  	required="true"  hint="The exception structure. Passed as any due to CF glitch">
+		<cfargument name="ErrorType" 	 type="string" 	required="false" default="application">
+		<cfargument name="ExtraMessage"  type="string"  required="false" default="">
+		<!--- ************************************************************* --->
+		<cfscript>
+		var BugReport = "";
+		var ExceptionBean = getPlugin("beanFactory").create("coldbox.system.beans.exceptionBean").init(errorStruct=arguments.Exception,extramessage=arguments.extraMessage,errorType=arguments.ErrorType);
+		var requestContext = getRequestService().getContext();
+		// Test Error Type
+		if ( not reFindnocase("(application|framework)",arguments.errorType) )
+			arguments.errorType = "application";
+			
+		if ( arguments.ErrorType eq "application" ){
+			//Run custom Exception handler if Found, else run default
+			if ( getSetting("ExceptionHandler") neq "" ){
+				try{
+					requestContext.setValue("ExceptionBean",ExceptionBean);
+					runEvent(getSetting("Exceptionhandler"));
+				}
+				catch(Any e){
+					ExceptionBean = getPlugin("beanFactory").create("coldbox.system.beans.exceptionBean").init(errorStruct=e,extramessage="Error Running Custom Exception handler",errorType="application");
+					getPlugin("logger").logErrorWithBean(ExceptionBean);
+				}
+			}
+			else{
+				getPlugin("logger").logErrorWithBean(ExceptionBean);
+			}
+		}
+		//return
+		return ExceptionBean;	
+		</cfscript>
 	</cffunction>
 
 <!------------------------------------------- PRIVATE ------------------------------------------->
@@ -263,4 +376,46 @@ Last Update 	: December 9, 2006
 		<cfthrow type="#arguments.type#" message="#arguments.message#"  detail="#arguments.detail#">
 	</cffunction>
 	
+	<cffunction name="getRegisteredHandler" access="private" hint="I get a registered handler and method according to passed event from the registeredHandlers setting." returntype="coldbox.system.beans.eventhandlerBean"  output="false">
+		<!--- ************************************************************* --->
+		<cfargument name="event" hint="The event to check and get." type="string" required="true">
+		<!--- ************************************************************* --->
+		<cfscript>
+		var handlerIndex = 0;
+		var HandlerReceived = "";
+		var MethodReceived = "";
+		var handlersList = getSetting("RegisteredHandlers");
+		var onInvalidEvent = getSetting("onInvalidEvent");
+		var HandlerBean = CreateObject("component","coldbox.system.beans.eventhandlerBean").init(getSetting("HandlersInvocationPath"));
+		//Rip the method
+		HandlerReceived = getPlugin("fileUtilities").ripExtension(arguments.event);
+		MethodReceived = listLast(arguments.event,".");
+		
+		//Check Registration
+		handlerIndex = listFindNoCase(handlersList, HandlerReceived);
+		
+		//Check for registration results
+		if ( handlerIndex ){
+			HandlerBean.setHandler(listgetAt(handlersList,handlerIndex));
+			HandlerBean.setMethod(MethodReceived);
+		}
+		else if ( onInvalidEvent neq "" ){
+				//Check if the invalid event is the same as the current event
+				if ( CompareNoCase(onInvalidEvent,arguments.event) eq 0){
+					throw("The invalid event handler: #onInvalidEvent# is also invalid. Please check your settings","","Framework.InvalidEventHandlerException");
+				}
+				else{
+					//Log Invalid Event
+					getPlugin("logger").logEntry("error","Invalid Event detected: #HandlerReceived#.#MethodReceived#");
+					//Override Event
+					HandlerBean.setHandler(getPlugin("fileUtilities").ripExtension(onInvalidEvent));
+					HandlerBean.setMethod(listLast(onInvalidEvent,"."));
+				}
+			}
+		else{
+			throw("The event handler: #arguments.event# is not valid registered event.","","Framework.EventHandlerNotRegisteredException");
+		}
+		return HandlerBean;
+		</cfscript>
+	</cffunction>
 </cfcomponent>

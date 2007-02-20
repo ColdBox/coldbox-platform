@@ -54,7 +54,7 @@ Modification History:
 	<!--- ************************************************************* --->
 	
 	<cffunction name="setMethod" access="public" returntype="void" output="false">
-		<cfargument name="method" type="any" required="true" />
+		<cfargument name="method" type="string" required="true" />
 		<cfset variables.instance.method = arguments.method>
 	</cffunction>
 
@@ -67,7 +67,7 @@ Modification History:
 	<!--- ************************************************************* --->
 	
 	<cffunction name="setHandler" access="public" returntype="void" output="false">
-		<cfargument name="handler" type="any" required="true" />
+		<cfargument name="handler" type="string" required="true" />
 		<cfset variables.instance.handler = arguments.handler >
 	</cffunction>
 	
@@ -80,7 +80,7 @@ Modification History:
 	<!--- ************************************************************* --->
 	
 	<cffunction name="setInvocationPath" access="public" returntype="void" output="false">
-		<cfargument name="InvocationPath" type="any" required="true" />
+		<cfargument name="InvocationPath" type="string" required="true" />
 		<cfset variables.instance.InvocationPath = arguments.InvocationPath >
 	</cffunction>
 	

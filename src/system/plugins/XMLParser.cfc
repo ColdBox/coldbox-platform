@@ -32,18 +32,19 @@ Modification History:
 ----------------------------------------------------------------------->
 <cfcomponent name="XMLParser"
 			 hint="This is the XML Parser plugin for the framework. It takes care of any XML parsing for the framework's usage."
-			 extends="coldbox.system.plugin">
+			 extends="coldbox.system.plugin" 
+			 cache="false">
 
-	<!--- ************************************************************* --->
+<!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 	
-	<cffunction name="init" access="public" returntype="any" output="false">
-		<!---- Constructor --->
+	<cffunction name="init" access="public" returntype="coldbox.system.plugin" output="false">
+		<cfargument name="controller" type="any" required="true">
+		<cfset super.Init(arguments.controller) />
 		<cfscript>
-		super.init();
 		//Local Plugin Definition
-		variables.instance.pluginName = "XMLParser";
-		variables.instance.pluginVersion = "1.0";
-		variables.instance.pluginDescription = "I am the framework's XML parser";
+		setpluginName("XMLParser");
+		setpluginVersion("2.0");
+		setpluginDescription("I am the framework's XML parser");
 		
 		//Search Patterns for Config.xml
 		variables.instance.searchSettings = "//Settings/Setting";
@@ -69,7 +70,7 @@ Modification History:
 		</cfscript>
 	</cffunction>
 	
-	<!--- ************************************************************* --->
+<!------------------------------------------- PUBLIC ------------------------------------------->
 	
 	<cffunction name="loadFramework" access="public" hint="Load the framework's configuration xml." output="false" returntype="any">
 		<cfscript>
@@ -129,7 +130,7 @@ Modification History:
 		<cfscript>
 		//Create Config Structure
 		var ConfigStruct = StructNew();
-		var ConfigFileLocation = getSetting("ConfigFileLocation", true);
+		var ConfigFileLocation = getController().getSetting("ConfigFileLocation", true);
 		var configXML = "";
 		//Nodes
 		var SettingNodes = "";
@@ -178,6 +179,9 @@ Modification History:
 			if ( not structKeyExists(configXML, "config")  )
 				throw("No Config element found in the configuration file","","Framework.plugins.XMLParser.ConfigXMLParsingException");
 			
+			//Application Path
+			StructInsert(ConfigStruct, "ApplicationPath", ExpandPath("."));
+			
 			//Get SettingNodes
 			SettingNodes = XMLSearch(configXML, instance.searchSettings);
 			if ( ArrayLen(SettingNodes) eq 0 )
@@ -188,7 +192,7 @@ Modification History:
 			//Check for AppName or throw
 			if ( not StructKeyExists(ConfigStruct, "AppName") )
 				throw("There was no 'AppName' setting defined. This is required by the framework.","","Framework.plugins.XMLParser.ConfigXMLParsingException");
-			//Check For CFMapping or Throw
+			//Check For AppMapping or Throw
 			if ( not StructKeyExists(ConfigStruct, "AppMapping") )
 				throw("There was no 'AppMapping' setting defined. This is required by the framework.","","Framework.plugins.XMLParser.ConfigXMLParsingException");
 			//Check for Dev Mapping
@@ -198,6 +202,7 @@ Modification History:
 			//Check for Default Event
 			if ( not StructKeyExists(ConfigStruct, "DefaultEvent") )
 				throw("There was no 'DefaultEvent' setting defined. This is required by the framework.","","Framework.plugins.XMLParser.ConfigXMLParsingException");
+			
 			//Check for Request Start Handler
 			if ( not StructKeyExists(ConfigStruct, "ApplicationStartHandler") )
 				ConfigStruct["ApplicationStartHandler"] = "";
@@ -240,6 +245,7 @@ Modification History:
 			//Check For EnableBugReports Active or set to true
 			if ( not StructKeyExists(ConfigStruct, "EnableBugReports") or not isBoolean(ConfigStruct.EnableBugReports))
 				ConfigStruct["EnableBugReports"] = "true";
+			
 			//Check For UDFLibraryFile
 			if ( not StructKeyExists(ConfigStruct, "UDFLibraryFile") )
 				ConfigStruct["UDFLibraryFile"] = "";
@@ -260,6 +266,7 @@ Modification History:
 			//Check for MessageboxStyleClass if found
 			if ( not structkeyExists(ConfigStruct, "ExceptionHandler") )
 				ConfigStruct["ExceptionHandler"] = "";
+		
 			//Check for MyPluginsLocation if found
 			if ( not structkeyExists(ConfigStruct, "MyPluginsLocation") )
 				ConfigStruct["MyPluginsLocation"] = "";
@@ -267,6 +274,12 @@ Modification History:
 			//Check for Handler Caching
 			if ( not structKeyExists(ConfigStruct, "HandlerCaching") or not isBoolean(ConfigStruct.HandlerCaching) )
 				ConfigStruct["HandlerCaching"] = true;
+				
+			//Check for IOC Framework
+			if ( not structKeyExists(ConfigStruct, "IOCFramework") )
+				ConfigStruct["IOCFramework"] = "";
+			if ( not structKeyExists(ConfigStruct, "IOCDefinitionFile") )
+				ConfigStruct["IOCDefinitionFile"] = "";
 			
 			//Your Settings To Load
 			YourSettingNodes = XMLSearch(configXML, instance.searchYourSettings);
@@ -499,8 +512,8 @@ Modification History:
 			//Determine which CF version for XML Parsing method
 			if (listfirst(server.coldfusion.productversion) gte 7){
 				//Finally Validate With XSD
-				if ( not XMLValidate(configXML, getSetting("ConfigFileSchemaLocation", true)).status )
-					throw("<br>The config.xml file does not validate with the framework's schema.<br>You can find the config schema <a href='/coldbox/system/config/#GetFileFromPath(getSetting("ConfigFileSchemaLocation", 1))#'>here</a>","","Framework.plugins.XMLParser.ConfigXMLParsingException");
+				if ( not XMLValidate(configXML, getController().getSetting("ConfigFileSchemaLocation", true)).status )
+					throw("<br>The config.xml file does not validate with the framework's schema.<br>You can find the config schema <a href='/coldbox/system/config/#GetFileFromPath(getController().getSetting("ConfigFileSchemaLocation", 1))#'>here</a>","","Framework.plugins.XMLParser.ConfigXMLParsingException");
 			}
 		}//end of try
 		catch( Any Exception ){

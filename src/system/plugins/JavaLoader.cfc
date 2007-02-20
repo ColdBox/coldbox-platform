@@ -17,25 +17,26 @@ Mark Mandel		08/05/2006		Created
 Mark Mandel		22/06/2006		Added verification that the path exists
 Luis Majano		07/11/2006		Updated it to work with ColdBox. look at license in the install folder.
 ------------------------------------------------------------------------------->
-<cfcomponent name="JavaLoader" hint="Loads External Java Classes, while providing access to ColdFusion classes" extends="coldbox.system.plugin">
+<cfcomponent name="JavaLoader" hint="Loads External Java Classes, while providing access to ColdFusion classes" extends="coldbox.system.plugin" cache="true">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 	
-	<!--- ************************************************************* --->
-	<cffunction name="init" access="public" returntype="any" output="false">
-		<cfset super.Init() />
-		<cfset variables.instance.pluginName = "Java Loader">
-		<cfset variables.instance.pluginVersion = "1.0">
-		<cfset variables.instance.pluginDescription = "Java Loader plugin, based on Mark Mandel's brain.">
+	<cffunction name="init" access="public" returntype="coldbox.system.plugin" output="false">
+		<cfargument name="controller" type="any" required="true">
+		<cfset super.Init(arguments.controller) />
+		<cfset setpluginName("Java Loader")>
+		<cfset setpluginVersion("1.0")>
+		<cfset setpluginDescription("Java Loader plugin, based on Mark Mandel's brain.")>
 		<!--- This plugins' properties --->
 		<cfset variables.instance.classLoader = "">
 		<cfreturn this>
 	</cffunction>
-	<!--- ************************************************************* --->
+	
 
 <!------------------------------------------- PUBLIC ------------------------------------------->
 
 	<!--- ************************************************************* --->
+	
 	<cffunction name="setup" hint="setup the loader" access="public" returntype="any" output="false">
 		<!--- ************************************************************* --->
 		<cfargument name="loadPaths" hint="A comma delimited list of paths to load into the loader, these path(s) will be expanded here. This will be converted into an array" 		type="any" default="" required="no">
@@ -79,9 +80,9 @@ Luis Majano		07/11/2006		Updated it to work with ColdBox. look at license in the
 			return this;
 		</cfscript>
 	</cffunction>
+	
 	<!--- ************************************************************* --->
-
-	<!--- ************************************************************* --->
+	
 	<cffunction name="create" hint="Retrieves a reference to the java class. To create a instance, you must run init() on this object" access="public" returntype="any" output="false">
 		<!--- ************************************************************* --->
 		<cfargument name="className" hint="The name of the class to create" type="string" required="Yes">
@@ -91,29 +92,32 @@ Luis Majano		07/11/2006		Updated it to work with ColdBox. look at license in the
 			return createObject("java", "coldfusion.runtime.java.JavaProxy").init(class);
 		</cfscript>
 	</cffunction>
-	<!--- ************************************************************* --->
 
 	<!--- ************************************************************* --->
+	
 	<cffunction name="getURLClassLoader" hint="Returns the java.net.URLClassLoader in case you need access to it" access="public" returntype="any" output="false">
 		<cfreturn instance.ClassLoader />
 	</cffunction>
+	
 	<!--- ************************************************************* --->
-
-	<!--- ************************************************************* --->
+	
 	<cffunction name="getVersion" hint="Retrieves the version of the loader you are using" access="public" returntype="string" output="false">
 		<cfreturn "0.2">
 	</cffunction>
+	
 	<!--- ************************************************************* --->
 
 <!------------------------------------------- PRIVATE ------------------------------------------->
 
 	<!--- ************************************************************* --->
+	
 	<cffunction name="setURLClassLoader" access="private" returntype="void" output="false">
 		<!--- ************************************************************* --->
 		<cfargument name="ClassLoader" type="any" required="true">
 		<!--- ************************************************************* --->
 		<cfset instance.ClassLoader = arguments.ClassLoader />
 	</cffunction>
+	
 	<!--- ************************************************************* --->
 
 </cfcomponent>

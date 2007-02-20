@@ -11,16 +11,17 @@ Modifications:
 07/29/2006 - Added more hints.
 12/08/2006 - Added makeBean method thanks to Sana Ullah. It will create and or populate a bean with the same request collection field names.
 ----------------------------------------------------------------------->
-<cfcomponent name="beanFactory" hint="I am a simple bean factory and you can use me if you want." extends="coldbox.system.plugin">
+<cfcomponent name="beanFactory" hint="I am a simple bean factory and you can use me if you want." extends="coldbox.system.plugin" cache="true">
 
 	<!--- ************************************************************* --->
 	
-	<cffunction name="init" access="public" returntype="any" output="false">
+	<cffunction name="init" access="public" returntype="coldbox.system.plugin" output="false">
+		<cfargument name="controller" type="any" required="true">
 		<cfscript>
-		super.Init();
-		variables.instance.pluginName = "Bean Factory";
-		variables.instance.pluginVersion = "1.0";
-		variables.instance.pluginDescription = "I am a simple bean factory";
+		super.Init(arguments.controller);
+		setpluginName("Bean Factory");
+		setpluginVersion("1.0");
+		setpluginDescription("I am a simple bean factory");
 		return this;
 		</cfscript>
 	</cffunction>
@@ -53,7 +54,7 @@ Modifications:
 		<!--- ************************************************************* --->
 		<cfset var beanInstance = "" />
 		<cfset var FieldKey = "" />
-		<cfset var fields = rc />
+		<cfset var fields = controller.getRequestService().getContext().getCollection() />
 		
 		<cftry>
 			<cfif isSimpleValue(arguments.FormBean)>

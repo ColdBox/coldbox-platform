@@ -13,5 +13,5 @@ Sep/15/2005 - Luis Majano
 		
 		
 ----------------------------------------------------------------------->
-<cfinclude template="../system/coldbox.cfm">
+<cfinclude template="/coldbox/system/coldbox.cfm">
 <cfsetting enablecfoutputonly="no">

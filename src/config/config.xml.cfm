@@ -70,8 +70,8 @@
 	</i18N>
 
 	<Datasources>
-		<Datasource name="mysite" dbtype="mysql"  username="root" password="pass" />
-		<Datasource name="myblog" dbtype="oracle" username="root" password="pass" />
+		<Datasource alias="mysite" name="mysite" dbtype="mysql"  username="root" password="pass" />
+		<Datasource alias="blog_dsn" name="myblog" dbtype="oracle" username="root" password="pass" />
 	</Datasources>
 
 </Config>

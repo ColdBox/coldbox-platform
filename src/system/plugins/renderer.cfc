@@ -19,81 +19,115 @@ Modification History:
 01/20/2006 - Removed Dumpvar, to debug template.
 06/28/2006 - Updated for Coldbox.
 07/27/2006 - renderview with view argument, added cfoutput support.
+02/12/2007 - Migrated to 1.2.0 format
 ----------------------------------------------------------------------->
-<cfcomponent name="renderer" hint="This plugin renders layouts, views, framework includes, etc." extends="coldbox.system.plugin">
+<cfcomponent name="renderer" hint="This service renders layouts, views, framework includes, etc." extends="coldbox.system.plugin" cache="true">
 
-	<!--- ************************************************************* --->
-	<cffunction name="init" access="public" returntype="any" output="false">
-		<cfset super.Init() />
-		<cfset variables.instance.pluginName = "Renderer">
-		<cfset variables.instance.pluginVersion = "1.0">
-		<cfset variables.instance.pluginDescription = "This plugin renders layouts, views, debug logs, and more.">
+<!------------------------------------------- CONSTRUCTOR ------------------------------------------->
+	
+	<cffunction name="init" access="public" returntype="coldbox.system.plugin" output="false">
+		<cfargument name="controller" type="any" required="true">
+		<cfset super.Init(arguments.controller) />
+		<cfset setpluginName("Renderer")>
+		<cfset setpluginVersion("1.1")>
+		<cfset setpluginDescription("This is the rendering service for ColdBox.")>
+		<cfset includeUDF()>
 		<cfreturn this>
 	</cffunction>
-	<!--- ************************************************************* --->
+	
+<!------------------------------------------- PUBLIC ------------------------------------------->
 
-	<!--- ************************************************************* --->
 	<cffunction name="renderView"	access="Public" hint="Renders the current view." output="false" returntype="Any">
 		<!--- ************************************************************* --->
-		<cfargument name="view" required="false" default="#getvalue('currentView','')#" type="string" hint="If not passed in, the value in the currentView will be used. If passed in, try to render the view and return the contents.">	
+		<cfargument name="view" required="false" default="" type="string" hint="If not passed in, the value in the currentView in the current RequestContext will be used.">	
 		<!--- ************************************************************* --->
 		<cfset var RenderedView = "">
+		<cfset var RequestContext = controller.getRequestService().getContext()>
+		
+		<!--- Test Default View --->
+		<cfif arguments.view eq "">
+			<cfset arguments.view = RequestContext.getValue("currentView","")>
+		</cfif>
+			
 		<cfmodule template="../includes/timer.cfm" timertag="Rendering View [#arguments.view#.cfm]">
 			<!--- Test if we have a view to render --->
-			<cfif len(trim(arguments.view)) eq 0>
-				<cfthrow type="Framework.plugins.renderer.ViewNotSetException" message="The ""currentview"" variable has not been set, therefore there is no view to render.">
-			</cfif>
-			<!--- Render UDf if no layout is used or if the arguments.view exits--->
-			<cfif not valueExists("currentLayout") and arguments.view neq "">
-				<!--- UDF Include Library Call --->
-				<cfset includeUDF()>
+			<cfif arguments.view eq "">
+				<cfthrow type="Framework.plugins.renderer.ViewNotSetException" message="The ""currentview"" variable has not been set, therefore there is no view to render." detail="Please remember to use the 'setView()' method in your handler.">
 			</cfif>
 			<!--- Render the View --->
-			<cfsavecontent variable="RenderedView"><cfoutput><cfinclude template="/#getSetting("AppMapping")#/views/#arguments.view#.cfm"></cfoutput></cfsavecontent>
+			<cfsavecontent variable="RenderedView"><cfoutput><cfinclude template="/#controller.getSetting("AppMapping")#/views/#arguments.view#.cfm"></cfoutput></cfsavecontent>
 		</cfmodule>
 		<cfreturn RenderedView>
 	</cffunction>
+	
 	<!--- ************************************************************* --->
-
+	
+	<cffunction name="renderExternalView"	access="Public" hint="Renders an external view." output="false" returntype="Any">
+		<!--- ************************************************************* --->
+		<cfargument name="view" required="true" type="string" hint="The full path to the view. This can be an expanded path or relative. Include extension.">	
+		<!--- ************************************************************* --->
+		<cfset var RenderedView = "">
+		<cfset var RequestContext = controller.getRequestService().getContext()>
+		
+		<cfmodule template="../includes/timer.cfm" timertag="Rendering View [#arguments.view#]">
+			
+			<cftry>
+				<!--- Render the View --->
+				<cfsavecontent variable="RenderedView"><cfoutput><cfinclude template="#arguments.view#"></cfoutput></cfsavecontent>
+				<!--- Catches --->
+				<cfcatch type="missinginclude">
+					<cfthrow type="Framework.plugin.renderer.RenderExternalViewNotFoundException" message="The external view: #arguments.view# cannot be found. Please check your paths." >
+				</cfcatch>
+				<cfcatch type="any">
+					<cfthrow type="Framework.plugin.renderer.RenderExternalViewInvalidException" message="The external view: #arguments.view# threw an invalid exception when redering." >
+				</cfcatch>
+			</cftry>
+			
+		</cfmodule>
+		<cfreturn RenderedView>
+	</cffunction>
+	
 	<!--- ************************************************************* --->
+	
 	<cffunction name="renderLayout" access="Public" hint="Renders the current layout." output="false" returntype="Any">
 		<cfset var RederedLayout = "">
-		<cfmodule template="../includes/timer.cfm" timertag="Rendering Layout [#getvalue('currentLayout','')#]">
+		<cfset var RequestContext = controller.getRequestService().getContext()>
+		<cfmodule template="../includes/timer.cfm" timertag="Rendering Layout [#RequestContext.getvalue('currentLayout','')#]">
 			<!--- Render With No Layout --->
-			<cfif not valueExists("currentLayout")>
+			<cfif not RequestContext.valueExists("currentLayout")>
 				<cfset RederedLayout = renderView()>
 			<cfelse>
-				<!--- UDF Library Call --->
-				<cfset includeUDF()>
-				<cfsavecontent variable="RederedLayout"><cfinclude template="/#getSetting("AppMapping")#/layouts/#getValue("currentLayout")#"></cfsavecontent>
+				<cfsavecontent variable="RederedLayout"><cfinclude template="/#controller.getSetting("AppMapping")#/layouts/#RequestContext.getValue("currentLayout")#"></cfsavecontent>
 			</cfif>
 		</cfmodule>
 		<cfreturn RederedLayout>
 	</cffunction>
+	
 	<!--- ************************************************************* --->
-
-	<!--- ************************************************************* --->
+	
 	<cffunction name="renderDebugLog" access="public" hint="Return the debug log." output="false" returntype="Any">
 		<cfset var RenderedDebugging = "">
+		<cfset var RequestContext = controller.getRequestService().getContext()>
 		<cfsavecontent variable="RederedDebugging"><cfinclude template="../includes/debug.cfm"></cfsavecontent>
 		<cfreturn RederedDebugging>
 	</cffunction>
+	
 	<!--- ************************************************************* --->
-
-	<!--- ************************************************************* --->
+	
 	<cffunction name="renderBugReport" access="public" hint="Render a Bug Report." output="false" returntype="Any">
 		<cfargument name="ExceptionBean" type="any" required="true">
 		<cfset var BugReport = "">
 		<cfset var Exception = arguments.ExceptionBean>
+		<cfset var RequestContext = controller.getRequestService().getContext()>
 		<!--- test for custom bug report --->
-		<cfif Exception.getErrortype() eq "application" and getSetting("CustomErrorTemplate") neq "">
+		<cfif Exception.getErrortype() eq "application" and controller.getSetting("CustomErrorTemplate") neq "">
 			<cftry>
 				<!--- Place exception in the requset Collection --->
-				<Cfset setvalue("ExceptionBean",Exception)>
+				<Cfset RequestContext.setvalue("ExceptionBean",Exception)>
 				<!--- Save the Custom Report --->
-				<cfsavecontent variable="BugReport"><cfinclude template="/#getSetting("AppMapping")#/#getSetting("CustomErrorTemplate")#"></cfsavecontent>
+				<cfsavecontent variable="BugReport"><cfinclude template="/#controller.getSetting("AppMapping")#/#controller.getSetting("CustomErrorTemplate")#"></cfsavecontent>
 				<cfcatch type="any">
-					<cfset Exception = getPlugin("settings").ExceptionHandler(cfcatch,"Application","Error creating custom error template.")>
+					<cfset Exception = controller.ExceptionHandler(cfcatch,"Application","Error creating custom error template.")>
 					<!--- Save the Bug Report --->
 					<cfsavecontent variable="BugReport"><cfinclude template="../includes/BugReport.cfm"></cfsavecontent>
 				</cfcatch>
@@ -104,19 +138,21 @@ Modification History:
 		</cfif>
 		<cfreturn BugReport>
 	</cffunction>
+	
 	<!--- ************************************************************* --->
-
-	<!--- ************************************************************* --->
+	
+<!------------------------------------------- PRIVATE ------------------------------------------->
+	
 	<cffunction name="includeUDF" access="private" hint="Includes the UDF Library if found and exists. Called only by the framework." output="false" returntype="void">
 		<!--- check if UDFLibraryFile is defined  --->
-		<cfif getSetting("UDFLibraryFile") neq "">
+		<cfif controller.getSetting("UDFLibraryFile") neq "">
 			<!--- Check if file exists on app's includes --->
-			<cfif fileExists("#getSetting("ApplicationPath",1)#/#getSetting("UDFLibraryFile")#")>
-				<cfinclude template="/#getSetting("AppMapping")#/#getSetting("UDFLibraryFile")#">
-			<cfelseif fileExists(ExpandPath("#getSetting("UDFLibraryFile")#"))>
-				<cfinclude template="#getSetting("UDFLibraryFile")#">
+			<cfif fileExists("#controller.getSetting("ApplicationPath",1)#/#controller.getSetting("UDFLibraryFile")#")>
+				<cfinclude template="/#controller.getSetting("AppMapping")#/#controller.getSetting("UDFLibraryFile")#">
+			<cfelseif fileExists(ExpandPath("#controller.getSetting("UDFLibraryFile")#"))>
+				<cfinclude template="#controller.getSetting("UDFLibraryFile")#">
 			<cfelse>
-				<cfthrow type="Framework.plugins.renderer.UDFLibraryNotFoundException" message="Error loading UDFLibraryFile.  The file declared in the config.xml: #getSetting("UDFLibraryFile")# was not found in your application's include directory or in the following location: #ExpandPath(getSetting("UDFLibraryFile"))#. Please make sure you verify the file's location.">
+				<cfthrow type="Framework.plugins.renderer.UDFLibraryNotFoundException" message="Error loading UDFLibraryFile.  The file declared in the config.xml: #controller.getSetting("UDFLibraryFile")# was not found in your application's include directory or in the following location: #ExpandPath(controller.getSetting("UDFLibraryFile"))#. Please make sure you verify the file's location.">
 			</cfif>
 		</cfif>
 	</cffunction>

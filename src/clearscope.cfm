@@ -19,3 +19,5 @@
 </cfswitch>
 
 <cfoutput>Structures Cleared...</cfoutput>
+
+<a href="index.cfm?fwreinit=1">Index.cfm?fwreinit=1</a>

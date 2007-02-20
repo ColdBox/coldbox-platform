@@ -10,38 +10,64 @@ Description :
 Modification History:
 
 ----------------------------------------------------------------------->
-<cfcomponent name="configBean" hint="I model an application's configuration." output="false">
+<cfcomponent name="configBean" hint="I hole a coldbox configuration file data." output="false">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 	<cfscript>
-		variables.instance = structnew();
+		variables.configStruct = structnew();
 	</cfscript>
 	
 <!------------------------------------------- PUBLIC ------------------------------------------->
 
 	<!--- ************************************************************* --->
 	
-	<cffunction name="init" access="public" output="false" hint="I build a new datasource bean." returntype="any">
+	<cffunction name="init" access="public" output="false" hint="constructor" returntype="coldbox.system.beans.configBean">
 	    <!--- ************************************************************* --->
-	    <cfargument name="datasourceStruct" 	type="struct" required="false" default="#structnew()#" hint="The structure holding the name,dbtype,username,and password variables." >
+	    <cfargument name="configStruct" type="struct" required="false" default="#structnew()#" >
 	    <!--- ************************************************************* --->
-	    <cfif not structisEmpty(arguments.datasourceStruct)>
-		    <cfset setInstance(arguments.datasourceStruct)>
-	    </cfif>
+		<cfset setconfigStruct(arguments.configStruct)>
 	    <cfreturn this >
 	</cffunction>
 	
 	<!--- ************************************************************* --->
 	
-	<cffunction name="getInstance" access="public" returntype="any" output="false">
-		<cfreturn variables.instance >
+	<cffunction name="getConfigStruct" access="public" returntype="any" output="false">
+		<cfreturn variables.configStruct >
 	</cffunction>
 	
 	<!--- ************************************************************* --->
 	
-	<cffunction name="setInstance" access="public" returntype="void" output="false">
-		<cfargument name="instance" type="struct" required="true">
-		<cfset variables.instance = arguments.instance>
+	<cffunction name="setconfigStruct" access="public" returntype="void" output="false">
+		<cfargument name="configStruct" type="struct" required="true">
+		<cfset variables.configStruct = arguments.configStruct>
+	</cffunction>
+	
+	<!--- ************************************************************* --->
+	
+	<cffunction name="getKey" access="public" returntype="any" output="false">
+		<cfargument name="key" type="string" required="true">
+		<cfif keyExists(arguments.key)>
+			<cfreturn Evaluate("variables.configStruct.#arguments.key#")>
+		<cfelse>
+			<cfthrow message="Key not found in configStruct">
+		</cfif>
+	</cffunction>
+	
+	<!--- ************************************************************* --->
+	
+	<cffunction name="setKey" access="public" returntype="void" output="false">
+		<cfargument name="key"   type="string" required="true">
+		<cfargument name="value" type="any" required="true">
+		<cfscript>
+		"variables.configStruct.#arguments.key#" = arguments.value;
+		</cfscript>
+	</cffunction>
+	
+	<!--- ************************************************************* --->
+	
+	<cffunction name="keyExists" access="public" returntype="any" output="false">
+		<cfargument name="key" type="string" required="true">
+		<cfreturn isDefined("variables.configStruct.#arguments.key#")>
 	</cffunction>
 	
 	<!--- ************************************************************* --->

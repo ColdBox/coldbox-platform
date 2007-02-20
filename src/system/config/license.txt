@@ -2,12 +2,12 @@ ColdBox: A ColdFusion Framework.
 info@coldboxframework.com
 www.coldboxframework.com|org
 
-by Luis Majano
+by Luis Majano (Ortus Solutions, Corp)
 lmajano@gmail.com
 www.luismajano.com
 
 ColdBox is open source. However, if you use this product please know that it is bound to the following Creative Commons Licence. 
-If you use ColdBox, please make mention of it in your software or web site or add a the Powered By Coldbox icon.
+If you use ColdBox, please make mention of it in your software or web site or add a Powered By Coldbox icon.
 
 Attribution-ShareAlike 2.5
 
@@ -16,6 +16,7 @@ You are free:
 To copy, distribute, display, and perform the work
 To make derivative works
 To make commercial use of the work
+
 Under the following conditions:
 	
 Attribution. You must attribute the work in the manner specified by the author or licensor.
@@ -29,5 +30,5 @@ This is a human-readable summary of the Legal Code (the full license) that can b
 http://creativecommons.org/licenses/by-sa/2.5/legalcode
 
 
-Copyright 2005 - 2006 ColdBox Framework by Luis Majano
+Copyright 2005 - 2006 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 www.coldboxframework.com | www.coldboxframework.org

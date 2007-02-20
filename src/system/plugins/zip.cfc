@@ -53,18 +53,19 @@ Modification History:
 --->
 <cfcomponent name="zip"
              hint = "A collections of functions that supports the Zip and GZip functionality by using the Java Zip file API."
-             extends="coldbox.system.plugin">
+             extends="coldbox.system.plugin" 
+			 cache="false">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 	
-	<!--- ************************************************************* --->
-	<cffunction name="init" access="public" returntype="any" output="false">
+	<cffunction name="init" access="public" returntype="coldbox.system.plugin" output="false">
+		<cfargument name="controller" type="any" required="true">
+		<cfset super.Init(arguments.controller) />
 		<cfscript>
-		super.Init();
 		//Local Plugin Definition
-		variables.instance.pluginName = "Zip Plugin";
-		variables.instance.pluginVersion = "1.0";
-		variables.instance.pluginDescription = "This is a zip utility for the framework.";
+		setpluginName("Zip Plugin");
+		setpluginVersion("1.0");
+		setpluginDescription("This is a zip utility for the framework.");
 		//This plugin's properties
 		variables.instance.ioFile      = CreateObject("java","java.io.File");
 		variables.instance.ioInput     = CreateObject("java","java.io.FileInputStream");
@@ -89,8 +90,7 @@ Modification History:
 		return this;
 		</cfscript>
 	</cffunction>
-	<!--- ************************************************************* --->
-
+	
 <!------------------------------------------- PUBLIC ------------------------------------------->
 
 	<!--- ************************************************************* --->
