@@ -17,7 +17,7 @@
 function isLoggedOn() {
 	return structKeyExists(session, "user");
 }
-request.udf.isLoggedOn = isLoggedOn;
+isLoggedOn = isLoggedOn;
 
 /**
  * Tests passed value to see if it is a valid e-mail address (supports subdomain nesting and new top-level domains).
@@ -34,13 +34,13 @@ function IsEmail(str) {
 if (REFindNoCase("^['_a-z0-9-]+(\.['_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*\.(([a-z]{2,3})|(aero|coop|info|museum|name))$",str)) return TRUE;
 	else return FALSE;
 }
-request.udf.isEmail = isEmail;
+isEmail = isEmail;
 
 function isValidUsername(str) {
 	if(reFindNoCase("[^a-z0-9]",str)) return false;
 	return true;
 }
-request.udf.isValidUsername = isValidUsername;
+isValidUsername = isValidUsername;
 
 /**
  * Returns a XHTML compliant string wrapped with properly formatted paragraph tags.
@@ -64,7 +64,7 @@ function XHTMLParagraphFormat(string) {
   return returnValue;
 }
 
-request.udf.XHTMLParagraphFormat = XHTMLParagraphFormat;
+XHTMLParagraphFormat = XHTMLParagraphFormat;
 
 
 /*
@@ -74,7 +74,7 @@ function dir(col) {
 	if(isDefined("url.sort") and url.sort is col and isDefined("url.sortdir") and url.sortdir is "asc") return "desc";
 	return "asc";
 }
-request.udf.dir = dir;
+dir = dir;
 
 function headerLink(col) {
 	var str = "";
@@ -100,7 +100,7 @@ function headerLink(col) {
 	if(url.sort is colname) str = str & "]";
 	return str;
 }
-request.udf.headerLink = headerLink;
+headerLink = headerLink;
 </cfscript>
 
 <!--- provides a cached way to get user info --->
@@ -137,7 +137,7 @@ request.udf.headerLink = headerLink;
 	<cfreturn userInfo>
 	
 </cffunction>
-<cfset request.udf.cachedUserInfo = cachedUserInfo>
+<cfset cachedUserInfo = cachedUserInfo>
 
 <cffunction name="querySort" returnType="query" output="false">
 	<cfargument name="query" type="query" required="true">
@@ -164,6 +164,6 @@ request.udf.headerLink = headerLink;
 	
 	<cfreturn result>
 </cffunction>
-<cfset request.udf.querySort = querySort>
+<cfset querySort = querySort>
 	
 <cfsetting enablecfoutputonly=false>

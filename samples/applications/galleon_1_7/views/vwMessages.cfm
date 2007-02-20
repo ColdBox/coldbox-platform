@@ -22,9 +22,10 @@
 --->
 
 <!--- Get References --->
-<cfset data = getValue("data")>
+<cfset rc = requestContext.getCollection()>
+<cfset data = requestContext.getValue("data")>
 <!--- Displays pagination on right side, plus left side buttons for threads --->
-<cfmodule template="../tags/pagination.cfm" pages="#Getvalue("pages")#" mode="messages" />
+<cfmodule template="../tags/pagination.cfm" pages="#requestContext.getValue("pages")#" mode="messages" />
 
 <!--- Now display the table. This changes based on what our data is. --->
 <cfoutput>
@@ -53,7 +54,7 @@
 	
 	<cfif data.recordCount>
 		<cfloop query="data" startrow="#(rc.page-1)*application.settings.perpage+1#" endrow="#(rc.page-1)*application.settings.perpage+application.settings.perpage#">
-			<cfset uinfo = request.udf.cachedUserInfo(username)>
+			<cfset uinfo = cachedUserInfo(username)>
 			<tr class="tableRow#currentRow mod 2#" valign="top">
 				<td width="170" class="tableMessageCell" rowspan="2"><b>#username#</b><br>
 				#uInfo.rank#<br>
@@ -68,17 +69,17 @@
 					<cfif currentRow is recordCount><a name="last"></a></cfif>
 					<b>#title#</b><br>
 					#dateFormat(posted,"mm/dd/yy")# #timeFormat(posted,"h:mm tt")#<br>
-					<cfif len(attachment)>Attachment: <a href="index.cfm?event=#getValue("xehAttachment")#&id=#id#">#attachment#</a><br></cfif>
+					<cfif len(attachment)>Attachment: <a href="index.cfm?event=#requestContext.getValue("xehAttachment")#&id=#id#">#attachment#</a><br></cfif>
 					<br>
 					<!---
-					#request.udf.paragraphFormat2(request.udf.activateURL(body))#
+					#paragraphFormat2(activateURL(body))#
 					--->
 					#application.message.render(body)#
 					
 					<cfif len(uinfo.signature)><div class="signature">#uinfo.signature#</div></cfif>
 					
-					<cfif request.udf.isLoggedOn() and application.utils.isUserInAnyRole("forumsadmin,forumsmoderator")>
-						<p align="right"><a href="index.cfm?event=#getValue("xehMessageEdit")#&id=#id#">[Edit Post]</a></p>
+					<cfif isLoggedOn() and application.utils.isUserInAnyRole("forumsadmin,forumsmoderator")>
+						<p align="right"><a href="index.cfm?event=#requestContext.getValue("xehMessageEdit")#&id=#id#">[Edit Post]</a></p>
 					</cfif>
 				</td>
 			</tr>
@@ -111,7 +112,7 @@
 	<tr class="tableHeader">
 		<td class="tableHeader">New Post</td>
 	</tr>
-	<cfif valueExists("posterrors") or not getPlugin("messagebox").isEmpty()>
+	<cfif requestContext.valueExists("posterrors") or not getPlugin("messagebox").isEmpty()>
 	<tr class="tableRowMain">
 		<td>
 		#getPlugin("messagebox").renderit()#
@@ -121,33 +122,33 @@
 	<tr class="tableRowMain">
 		<td>
 		<form action="#cgi.script_name#?##newpost" method="post" enctype="multipart/form-data">
-		<input type="hidden" name="event" value="#getValue("xehMessagePost")#">
-		<input type="hidden" name="threadid" value="#getValue("threadid")#">
+		<input type="hidden" name="event" value="#requestContext.getValue("xehMessagePost")#">
+		<input type="hidden" name="threadid" value="#requestContext.getValue("threadid")#">
 		<table>
-			<cfif not request.udf.isLoggedOn()>
+			<cfif not isLoggedOn()>
 				<cfset thisPage = cgi.script_name & "?" & cgi.query_string & "&##newpost">
-				<cfset link = "index.cfm?event=#getValue("xehLogin")#&ref=#urlEncodedFormat(thisPage)#">
+				<cfset link = "index.cfm?event=#requestContext.getValue("xehLogin")#&ref=#urlEncodedFormat(thisPage)#">
 
 				<tr>
 					<td>Please <a href="#link#">login</a> to post a response.</td>
 				</tr>
-			<cfelseif application.utils.isUserInAnyRole("forumsadmin,forumsmoderator") or not getValue("readonly")>
+			<cfelseif application.utils.isUserInAnyRole("forumsadmin,forumsmoderator") or not requestContext.getValue("readonly")>
 				<tr>
 					<td><b>Title: </b></td>
-					<td><input type="text" name="post_title" value="#getValue("post_title")#" class="formBox"></td>
+					<td><input type="text" name="post_title" value="#requestContext.getValue("post_title")#" class="formBox"></td>
 				</tr>
 				<tr>
 					<td colspan="2"><b>Body: </b><br>
 					<p>
 					#application.message.renderHelp()#
 					</p>
-					<textarea name="body" cols="50" rows="20">#getValue("body")#</textarea></td>
+					<textarea name="body" cols="50" rows="20">#requestContext.getValue("body")#</textarea></td>
 				</tr>
 				<tr>
 					<td><b>Subscribe to Thread: </b></td>
 					<td><select name="subscribe">
-					<option value="true" <cfif getValue("subscribe")>selected</cfif>>Yes</option>
-					<option value="false" <cfif not getValue("subscribe")>selected</cfif>>No</option>
+					<option value="true" <cfif requestContext.getValue("subscribe")>selected</cfif>>Yes</option>
+					<option value="false" <cfif not requestContext.getValue("subscribe")>selected</cfif>>No</option>
 					</select></td>
 				</tr>
 				<cfif isBoolean(request.forum.attachments) and request.forum.attachments>

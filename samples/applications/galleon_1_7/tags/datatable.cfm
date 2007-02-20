@@ -14,34 +14,34 @@
 <cfparam name="attributes.linkcol" default="#listFirst(attributes.data.columnList)#">
 <cfparam name="attributes.linkval" default="id">
 <cfparam name="attributes.list" default="#attributes.data.columnList#">
-<cfif not caller.valueExists("dir")>
-	<cfset caller.setValue("dir","asc")>
+<cfif not caller.requestContext.valueExists("dir")>
+	<cfset caller.requestContext.setValue("dir","asc")>
 </cfif>
 
-<cfif not caller.valueExists("page")>
-	<cfset caller.setValue("page",1)>
+<cfif not caller.requestContext.valueExists("page")>
+	<cfset caller.requestContext.setValue("page",1)>
 </cfif>
 
-<cfif caller.getValue("dir") is not "asc" and caller.getValue("dir") is not "desc">
-	<cfset caller.setValue("dir", "asc")>
+<cfif caller.requestContext.getValue("dir") is not "asc" and caller.requestContext.getValue("dir") is not "desc">
+	<cfset caller.requestContext.setValue("dir", "asc")>
 </cfif>
 
-<cfif len(trim(caller.getValue("sort"))) and len(trim(caller.getValue("dir")))>
+<cfif len(trim(caller.requestContext.getValue("sort"))) and len(trim(caller.requestContext.getValue("dir")))>
 	<cfquery name="attributes.data" dbtype="query">
 	select 	*
 	from	attributes.data
-	order by 	#caller.getValue("sort")# #caller.getValue("dir")#
+	order by 	#caller.requestContext.getValue("sort")# #caller.requestContext.getValue("dir")#
 	</cfquery>
 </cfif>
 
-<cfif not isNumeric(caller.getValue("page",1)) or caller.getValue("page",1) lte 0>
-	<cfset caller.setValue("page", 1)>
+<cfif not isNumeric(caller.requestContext.getValue("page",1)) or caller.requestContext.getValue("page",1) lte 0>
+	<cfset caller.requestContext.setValue("page", 1)>
 </cfif>
 
-<cfif caller.valueExists("msg")>
+<cfif caller.requestContext.valueExists("msg")>
 	<cfoutput>
 	<p>
-	<b>#caller.getValue("msg")#</b>
+	<b>#caller.requestContext.getValue("msg")#</b>
 	</p>
 	</cfoutput>
 </cfif>
@@ -83,14 +83,14 @@ function checksubmit() {
 <cfif attributes.data.recordCount gt application.settings.perpage>
 	<p align="right">
 	[[
-	<cfif caller.getValue("page",1) gt 1>
-		<a href="#cgi.script_name#?page=#caller.getValue("page",1)-1#&sort=#urlEncodedFormat(caller.getValue("sort"))#&dir=#caller.getValue("dir")#">Previous</a>
+	<cfif caller.requestContext.getValue("page",1) gt 1>
+		<a href="#cgi.script_name#?page=#caller.requestContext.getValue("page",1)-1#&sort=#urlEncodedFormat(caller.requestContext.getValue("sort"))#&dir=#caller.requestContext.getValue("dir")#">Previous</a>
 	<cfelse>
 		Previous
 	</cfif>
 	--
-	<cfif caller.getValue("page",1) * application.settings.perpage lt attributes.data.recordCount>
-		<a href="#cgi.script_name#?page=#caller.getValue("page")+1#&sort=#urlEncodedFormat(caller.getValue("sort"))#&dir=#caller.getValue("dir")#">Next</a>
+	<cfif caller.requestContext.getValue("page",1) * application.settings.perpage lt attributes.data.recordCount>
+		<a href="#cgi.script_name#?page=#caller.requestContext.getValue("page")+1#&sort=#urlEncodedFormat(caller.requestContext.getValue("sort"))#&dir=#caller.requestContext.getValue("dir")#">Next</a>
 	<cfelse>
 		Next
 	</cfif>
@@ -100,26 +100,26 @@ function checksubmit() {
 
 <p>
 <form name="listing" action="#cgi.script_name#" method="post">
-<input type="hidden" name="event" value="#caller.getValue("event")#">
+<input type="hidden" name="event" value="#caller.requestContext.getValue("event")#">
 <table width="100%" cellspacing=0 cellpadding=5 class="adminListTable">
 	<tr class="adminListHeader">
 		<td>&nbsp;</td>
 		<cfloop index="c" list="#attributes.list#">
-			<cfif caller.getValue("sort") is c and caller.getValue("dir") is "asc">
+			<cfif caller.requestContext.getValue("sort") is c and caller.requestContext.getValue("dir") is "asc">
 				<cfset dir = "desc">
 			<cfelse>
 				<cfset dir = "asc">
 			</cfif>
 			<td class="adminListHeaderText">
 			<!--- static rewrites of a few of the columns --->
-			<a href="#cgi.script_name#?event=#caller.getValue("event")#&page=#caller.getValue("page")#&sort=#urlEncodedFormat(c)#&dir=#dir#">#displayHeader(c)#</a>
+			<a href="#cgi.script_name#?event=#caller.requestContext.getValue("event")#&page=#caller.requestContext.getValue("page")#&sort=#urlEncodedFormat(c)#&dir=#dir#">#displayHeader(c)#</a>
 			</td>
 		</cfloop>
 	</tr>
 </cfoutput>
 
 <cfif attributes.data.recordCount>
-	<cfoutput query="attributes.data" startrow="#(caller.getValue("page")-1)*application.settings.perpage + 1#" maxrows="#application.settings.perpage#">
+	<cfoutput query="attributes.data" startrow="#(caller.requestContext.getValue("page")-1)*application.settings.perpage + 1#" maxrows="#application.settings.perpage#">
 		<cfset theLink = attributes.editlink & "?id=#id#">
 		<tr class="adminList#currentRow mod 2#">
 			<td width="20"><input type="checkbox" name="mark" value="#attributes.data[attributes.linkval][currentRow]#"></td>

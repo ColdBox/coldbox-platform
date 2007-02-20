@@ -16,10 +16,10 @@
 	Purpose		 : Displays forums for conference
 --->
 <!--- Get Reference --->
-<cfset data = getValue("data")>
+<cfset data = requestContext.getValue("data")>
 
 <!--- Displays pagination on right side, plus left side buttons for threads --->
-<cfmodule template="../tags/pagination.cfm" pages="#getValue("pages")#" mode="conference" />
+<cfmodule template="../tags/pagination.cfm" pages="#requestContext.getValue("pages")#" mode="conference" />
 
 <!--- Now display the table. This changes based on what our data is. --->
 <cfoutput>
@@ -29,23 +29,23 @@
 		<td colspan="5" class="tableHeader">Conference: #request.conference.name#</td>
 	</tr>
 	<tr class="tableSubHeader">
-		<td class="tableSubHeader">#request.udf.headerLink("Forum","name")#</td>
-		<td class="tableSubHeader">#request.udf.headerLink("Description")#</td>
-		<td class="tableSubHeader">#request.udf.headerLink("Messages","messagecount")#</td>
-		<td class="tableSubHeader">#request.udf.headerLink("Last Post","lastpost")#</td>
-		<td class="tableSubHeader">#request.udf.headerLink("Read Only","readonly")#</td>
+		<td class="tableSubHeader">#headerLink("Forum","name")#</td>
+		<td class="tableSubHeader">#headerLink("Description")#</td>
+		<td class="tableSubHeader">#headerLink("Messages","messagecount")#</td>
+		<td class="tableSubHeader">#headerLink("Last Post","lastpost")#</td>
+		<td class="tableSubHeader">#headerLink("Read Only","readonly")#</td>
 	</tr>
 	<cfif data.recordCount>
-		<cfset cachedUserInfo = request.udf.cachedUserInfo>
-		<cfloop query="data" startrow="#(getValue("page")-1)*application.settings.perpage+1#" endrow="#(getValue("page")-1)*application.settings.perpage+application.settings.perpage#">
+		<cfset cachedUserInfo = cachedUserInfo>
+		<cfloop query="data" startrow="#(requestContext.getValue("page")-1)*application.settings.perpage+1#" endrow="#(requestContext.getValue("page")-1)*application.settings.perpage+application.settings.perpage#">
 			<tr class="tableRow#currentRow mod 2#">
-				<td><a href="index.cfm?event=#getValue("xehThreads")#&forumid=#id#">#name#</a></td>
+				<td><a href="index.cfm?event=#requestContext.getValue("xehThreads")#&forumid=#id#">#name#</a></td>
 				<td>#description#</td>
 				<td>#messagecount#</td>
 				<td>
 				<cfif len(useridfk)>
 				<cfset uinfo = cachedUserInfo(username=useridfk,userid=true)>
-					<a href="index.cfm?event=#getValue("xehMessages")#&threadid=#threadidfk###last">#dateFormat(lastpost,"m/d/yy")# #timeFormat(lastpost,"h:mm tt")#</a> by #uinfo.username#
+					<a href="index.cfm?event=#requestContext.getValue("xehMessages")#&threadid=#threadidfk###last">#dateFormat(lastpost,"m/d/yy")# #timeFormat(lastpost,"h:mm tt")#</a> by #uinfo.username#
 				<cfelse>&nbsp;</cfif>
 				</td>
 				<td>#yesNoFormat(readonly)#</td>

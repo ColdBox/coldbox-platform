@@ -15,8 +15,8 @@
 	Purpose		 : Displays conferences
 --->
 <!--- References --->
-<cfset data = getValue("data")>
-<cfset pages = getValue("pages")>
+<cfset data = requestContext.getValue("data")>
+<cfset pages = requestContext.getValue("pages")>
 
 <!--- Displays pagination on right side, plus left side buttons for threads --->
 <cfmodule template="../tags/pagination.cfm" pages="#pages#" />
@@ -29,22 +29,22 @@
 		<td colspan="4" class="tableHeader">Conferences</td>
 	</tr>
 	<tr class="tableSubHeader">
-		<td class="tableSubHeader">#request.udf.headerLink("Name")#</td>
-		<td class="tableSubHeader">#request.udf.headerLink("Description")#</td>
-		<td class="tableSubHeader">#request.udf.headerLink("Messages","messagecount")#</td>
-		<td class="tableSubHeader">#request.udf.headerLink("Last Post","lastpost")#</td>
+		<td class="tableSubHeader">#headerLink("Name")#</td>
+		<td class="tableSubHeader">#headerLink("Description")#</td>
+		<td class="tableSubHeader">#headerLink("Messages","messagecount")#</td>
+		<td class="tableSubHeader">#headerLink("Last Post","lastpost")#</td>
 	</tr>
 	<cfif data.recordCount>
 		<!--- Have to 'fake out' CF since it doesn't like named params with udfs in a struct --->
-		<cfset cachedUserInfo = request.udf.cachedUserInfo>
-		<cfloop query="data" startrow="#(getValue("page")-1)*application.settings.perpage+1#" endrow="#(getValue("page")-1)*application.settings.perpage+application.settings.perpage#">
+		<cfset cachedUserInfo = cachedUserInfo>
+		<cfloop query="data" startrow="#(requestContext.getValue("page")-1)*application.settings.perpage+1#" endrow="#(requestContext.getValue("page")-1)*application.settings.perpage+application.settings.perpage#">
 			<tr class="tableRow#currentRow mod 2#">
-				<td><a href="index.cfm?event=#getValue("xehForums")#&conferenceid=#id#">#name#</a></td>
+				<td><a href="index.cfm?event=#requestContext.getValue("xehForums")#&conferenceid=#id#">#name#</a></td>
 				<td>#description#</td>
 				<td>#messagecount#</td>
 				<td><cfif len(useridfk)>
 				<cfset uinfo = cachedUserInfo(username=useridfk,userid=true)>
-					<a href="index.cfm?event=#getValue("xehMessages")#&threadid=#threadidfk###last">#dateFormat(lastpost,"m/d/yy")# #timeFormat(lastpost,"h:mm tt")#</a> by #uinfo.username#
+					<a href="index.cfm?event=#requestContext.getValue("xehMessages")#&threadid=#threadidfk###last">#dateFormat(lastpost,"m/d/yy")# #timeFormat(lastpost,"h:mm tt")#</a> by #uinfo.username#
 				<cfelse>&nbsp;</cfif></td>
 			</tr>
 		</cfloop>

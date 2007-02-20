@@ -23,8 +23,8 @@ coldbox provides default values on getValue
 <cfparam name="url.page" default=1>
 --->
 
-<cfif not caller.valueExists("page") or not isNumeric(caller.getValue("page")) or caller.getValue("page") lte 0>
-	<cfset caller.setValue("page",1)>
+<cfif not caller.requestContext.valueExists("page") or not isNumeric(caller.requestContext.getValue("page")) or caller.requestContext.getValue("page") lte 0>
+	<cfset caller.requestContext.setValue("page",1)>
 </cfif>
 
 <!--- how many pages do I have? --->
@@ -41,11 +41,11 @@ coldbox provides default values on getValue
 				<td>
 				
 				<cfif attributes.mode is "threads" or attributes.mode is "messages">
-					<a href="index.cfm?event=#caller.getValue("xehNewPost")#&forumid=#request.forum.id#"><img src="images/btn_new_topic.gif" width="71" height="19" alt="New Topic" title="New Topic" border="0"></a>
+					<a href="index.cfm?event=#caller.requestContext.getValue("xehNewPost")#&forumid=#request.forum.id#"><img src="images/btn_new_topic.gif" width="71" height="19" alt="New Topic" title="New Topic" border="0"></a>
 					<cfif attributes.mode is "messages">
-						<cfif not request.udf.isLoggedOn()>
+						<cfif not caller.isLoggedOn()>
 							<cfset thisPage = cgi.script_name & "?" & cgi.query_string & "&##newpost">
-							<cfset link = "index.cfm?event=#caller.getValue("xehLogin")#&ref=#urlEncodedFormat(thisPage)#">
+							<cfset link = "index.cfm?event=#caller.requestContext.getValue("xehLogin")#&ref=#urlEncodedFormat(thisPage)#">
 							<a href="#link#"><img src="images/btn_reply.gif" width="52" height="19" alt="Reply" title="Reply" border="0"></a>
 						<cfelse>
 							<a href="##newpost"><img src="images/btn_reply.gif" width="52" height="19" alt="Reply" title="Reply" border="0"></a>
@@ -53,28 +53,29 @@ coldbox provides default values on getValue
 					</cfif>
 				</cfif>
 				
-				<cfif request.udf.isLoggedOn() and attributes.mode is not "na">
-					<a href="index.cfm?event=#caller.getValue("xehProfile")#&#cgi.query_string#&s=1"><img src="images/btn_subscribe.gif" width="73" height="19" alt="Subscribe" title="Subscribe" border="0"></a>
+				<cfif caller.isLoggedOn() and attributes.mode is not "na">
+					<cfset qs = reReplacenocase(cgi.QUERY_STRING,"(event=(.)[^&]*)","","all")>
+					<a href="index.cfm?event=#caller.requestContext.getValue("xehProfile")#&#qs#&s=1"><img src="images/btn_subscribe.gif" width="73" height="19" alt="Subscribe" title="Subscribe" border="0"></a>
 				</cfif>
 				
 				&nbsp;
 				</td>
 				<td align="right">
 				<cfset qs = reReplaceNoCase(cgi.query_string,"\&*page=[^&]*","")>
-				<cfif caller.getValue("page") is 1>
+				<cfif caller.requestContext.getValue("page") is 1>
 					<img src="images/arrow_left_grey.gif" alt="Previous Page" width="17" height="17" align="absmiddle">
 				<cfelse>
-					<a href="#cgi.script_name#?#qs#&page=#caller.getValue("page")-1#"><img src="images/arrow_left_active.gif" alt="Previous Page" width="17" height="17" border="0" align="absmiddle"></a>
+					<a href="#cgi.script_name#?#qs#&page=#caller.requestContext.getValue("page")-1#"><img src="images/arrow_left_active.gif" alt="Previous Page" width="17" height="17" border="0" align="absmiddle"></a>
 				</cfif>
 				<span class="pageText">&nbsp;Page:
 				<cfloop index="x" from=1 to="#attributes.pages#">
-					<cfif caller.getValue("page") is not x><a href="#cgi.script_name#?#qs#&page=#x#">#x#</a><cfelse>#x#</cfif>
+					<cfif caller.requestContext.getValue("page") is not x><a href="#cgi.script_name#?#qs#&page=#x#">#x#</a><cfelse>#x#</cfif>
 				</cfloop>
 				&nbsp;</span>
-				<cfif caller.getValue("page") is attributes.pages>
+				<cfif caller.requestContext.getValue("page") is attributes.pages>
 					<img src="images/arrow_right_grey.gif" alt="Next Page" width="17" height="17" align="absmiddle">
 				<cfelse>
-					<a href="#cgi.script_name#?#qs#&page=#caller.getValue("page") + 1#"><img src="images/arrow_right_active.gif" alt="Next Page" width="17" height="17" border="0" align="absmiddle"></a>
+					<a href="#cgi.script_name#?#qs#&page=#caller.requestContext.getValue("page") + 1#"><img src="images/arrow_right_active.gif" alt="Next Page" width="17" height="17" border="0" align="absmiddle"></a>
 				</cfif>
 				</td>
 			</tr>

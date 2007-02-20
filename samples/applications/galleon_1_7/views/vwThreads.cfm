@@ -13,10 +13,11 @@
 				   fix title (rkc 8/4/06)
 	Purpose		 : Displays threads for a forum
 --->
+<cfset rc = requestContext.getCollection()>
 <!--- Get References --->
-<cfset data = getValue("data")>
+<cfset data = requestContext.getValue("data")>
 <!--- Displays pagination on right side, plus left side buttons for threads --->
-<cfmodule template="../tags/pagination.cfm" pages="#getValue("pages")#" mode="threads" />
+<cfmodule template="../tags/pagination.cfm" pages="#requestContext.getValue("pages")#" mode="threads" />
 
 <!--- Now display the table. This changes based on what our data is. --->
 <cfoutput>
@@ -26,11 +27,11 @@
 		<td colspan="5" class="tableHeader">Forum: #request.forum.name#</td>
 	</tr>
 	<tr class="tableSubHeader">
-		<td class="tableSubHeader">#request.udf.headerLink("Thread","name")#</td>
-		<td class="tableSubHeader">#request.udf.headerLink("Originator","username")#</td>
-		<td class="tableSubHeader">#request.udf.headerLink("Replies","messagecount")#</td>
-		<td class="tableSubHeader">#request.udf.headerLink("Last Post","lastpost")#</td>
-		<td class="tableSubHeader">#request.udf.headerLink("Read Only","readonly")#</td>
+		<td class="tableSubHeader">#headerLink("Thread","name")#</td>
+		<td class="tableSubHeader">#headerLink("Originator","username")#</td>
+		<td class="tableSubHeader">#headerLink("Replies","messagecount")#</td>
+		<td class="tableSubHeader">#headerLink("Last Post","lastpost")#</td>
+		<td class="tableSubHeader">#headerLink("Read Only","readonly")#</td>
 	</tr>
 	<cfif data.recordCount>
 		<cfloop query="data" startrow="#(rc.page-1)*application.settings.perpage+1#" endrow="#(rc.page-1)*application.settings.perpage+application.settings.perpage#">
@@ -39,13 +40,13 @@
 			--->
 			<cfset mcount = max(0, messagecount-1)>
 			<tr class="tableRow#currentRow mod 2#">
-				<td><cfif isBoolean(sticky) and sticky><b>[Sticky]</b></cfif> <a href="index.cfm?event=#getValue("xehMessages")#&threadid=#id#">#name#</a></td>
+				<td><cfif isBoolean(sticky) and sticky><b>[Sticky]</b></cfif> <a href="index.cfm?event=#requestContext.getValue("xehMessages")#&threadid=#id#">#name#</a></td>
 				<td>#username#</td>
 				<td>#mcount#</td>
 				<td>
 				<cfif len(lastuseridfk)>
 				<cfset uinfo = cachedUserInfo(username=lastuseridfk,userid=true)>
-				<a href="index.cfm?event=#getValue("xehMessages")#&threadid=#id###last">#dateFormat(lastpost,"m/d/yy")# #timeFormat(lastpost,"h:mm tt")# by #uinfo.username#</a>
+				<a href="index.cfm?event=#requestContext.getValue("xehMessages")#&threadid=#id###last">#dateFormat(lastpost,"m/d/yy")# #timeFormat(lastpost,"h:mm tt")# by #uinfo.username#</a>
 				<cfelse>&nbsp;</cfif>			
 				</td>
 				<td>#yesNoFormat(readonly)#</td>

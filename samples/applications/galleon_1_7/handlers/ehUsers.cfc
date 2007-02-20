@@ -11,41 +11,44 @@ Description :
 	<!--- ************************************************************* --->
 	
 	<cffunction name="dspLogin" access="public" returntype="void" output="false">
+		<cfargument name="requestContext" type="coldbox.system.beans.requestContext">
+		<cfset var rc = requestContext.getCollection()>
 		<!--- EXIT HANDLERS: --->
 		<cfset rc.xehDoLogin = "ehUsers.doLogin">
 		<cfset rc.xehRegister = "ehUsers.doRegister">
 		<cfset rc.xehPasswordReminder = "ehUsers.doPasswordReminder">
 		<!--- Set Title and Templatename --->
-		<cfset setValue("title","#application.settings.title#")>
-		<cfset setValue("templatename","main")>
+		<cfset requestContext.setValue("title","#application.settings.title#")>
+		<cfset requestContext.setValue("templatename","main")>
 		<!--- Set the View To Display, after Logic --->
-		<cfset setView("vwLogin")>
+		<cfset requestContext.setView("vwLogin")>
 	</cffunction>
 	
 	<!--- ************************************************************* --->
 	
 	<cffunction name="doLogin" access="public" returntype="void" output="false">
+		<cfargument name="requestContext" type="coldbox.system.beans.requestContext">
 		<cfset var mygroups = "">
 		<!--- handle security --->
 		<cflogin>
-			<cfif application.user.authenticate(trim(getValue("username")), trim(getValue("password")))>
+			<cfif application.user.authenticate(trim(requestContext.getValue("username")), trim(requestContext.getValue("password")))>
 				<!--- good logon, grab their groups --->
-				<cfset mygroups = application.user.getGroupsForUser(trim(getValue("username")))>
-				<cfset session.user = application.user.getUser(trim(getValue("username")))>
-				<cfloginuser name="#trim(getValue("username"))#" password="#trim(getValue("password"))#" roles="#mygroups#">
+				<cfset mygroups = application.user.getGroupsForUser(trim(requestContext.getValue("username")))>
+				<cfset session.user = application.user.getUser(trim(requestContext.getValue("username")))>
+				<cfloginuser name="#trim(requestContext.getValue("username"))#" password="#trim(requestContext.getValue("password"))#" roles="#mygroups#">
 			<cfelse>
 				<cfif application.settings.requireconfirmation>
 					<cfset getPlugin("messagebox").setMessage("error","Either your username and password did not match or you have not completed your email confirmation.")>
 				<cfelse>
 					<cfset getPlugin("messagebox").setMessage("error","Your username and password did not work.")>
 				</cfif>
-				<cfset setNextEvent("ehUsers.dspLogin","failedLogon=true&ref=#getValue("ref")#")>
+				<cfset setNextEvent("ehUsers.dspLogin","failedLogon=true&ref=#requestContext.getValue("ref")#")>
 			</cfif>
 		</cflogin>
 		<!--- SuccessFull Login --->
-		<cfif request.udf.isLoggedOn()>
-			<cfif getvalue("ref") neq "">
-				<cflocation url="#getValue("ref")#" addToken="false">
+		<cfif isLoggedOn()>
+			<cfif requestContext.getValue("ref") neq "">
+				<cflocation url="#requestContext.getValue("ref")#" addToken="false">
 			<cfelse>
 				<cfset setNextEvent("ehForums.dspHome")>
 			</cfif>
@@ -55,6 +58,7 @@ Description :
 	<!--- ************************************************************* --->
 	
 	<cffunction name="doLogout" access="public" returntype="void" output="false">
+		<cfargument name="requestContext" type="coldbox.system.beans.requestContext">
 		<!--- handle security --->
 		<cflogout>
 		<cfset structDelete(session, "user")>
@@ -64,36 +68,37 @@ Description :
 	<!--- ************************************************************* --->
 	
 	<cffunction name="doRegister" access="public" returntype="void" output="false">
+		<cfargument name="requestContext" type="coldbox.system.beans.requestContext">
 		<cfset var errors = "">
 		<cfset var mygroups = "">
 		
 		<!--- Check for Validation --->
-		<cfif not len(trim(getValue("username_new"))) or not request.udf.isValidUsername(getValue("username_new"))>
+		<cfif not len(trim(requestContext.getValue("username_new"))) or not isValidUsername(requestContext.getValue("username_new"))>
 			<cfset errors = errors & "You must enter a username. Only letters and numbers are allowed.<br>">
 		</cfif>
 
-		<cfif not len(trim(getValue("emailaddress"))) or not request.udf.isEmail(getValue("emailaddress"))>
+		<cfif not len(trim(requestContext.getValue("emailaddress"))) or not isEmail(requestContext.getValue("emailaddress"))>
 			<cfset errors = errors & "You must enter a valid email address.<br>">
 		</cfif>
 
-		<cfif not valueExists("password_new") or not len(trim(getValue("password_new"))) or getValue("password_new") neq getValue("password_new2")>
+		<cfif not requestContext.valueExists("password_new") or not len(trim(requestContext.getValue("password_new"))) or requestContext.getValue("password_new") neq requestContext.getValue("password_new2")>
 			<cfset errors = errors & "You must enter a valid password that matches the confirmation.<br>">
 		</cfif>
 
 		<cfif not len(errors)>
 			<cftry>
-				<cfset application.user.addUser(trim(getValue("username_new")),trim(getValue("password_new")),trim(getValue("emailaddress")),"forumsmember")>
-				<cfset mygroups = application.user.getGroupsForUser(trim(getValue("username_new")))>
+				<cfset application.user.addUser(trim(requestContext.getValue("username_new")),trim(requestContext.getValue("password_new")),trim(requestContext.getValue("emailaddress")),"forumsmember")>
+				<cfset mygroups = application.user.getGroupsForUser(trim(requestContext.getValue("username_new")))>
 				
 				<!--- Only login if no confirmation needed --->
 				<cfif not application.settings.requireconfirmation>
 					<cflogin>
-						<cfset session.user = application.user.getUser(trim(getValue("username_new")))>
-						<cfloginuser name="#trim(getValue("username_new"))#" password="#trim(form.password_new)#" roles="#mygroups#">
+						<cfset session.user = application.user.getUser(trim(requestContext.getValue("username_new")))>
+						<cfloginuser name="#trim(requestContext.getValue("username_new"))#" password="#trim(form.password_new)#" roles="#mygroups#">
 					</cflogin>
 
-					<cfif getValue("ref") neq "">
-						<cflocation url="#getValue("ref")#" addToken="false">
+					<cfif requestContext.getValue("ref") neq "">
+						<cflocation url="#requestContext.getValue("ref")#" addToken="false">
 					<cfelse>
 						<cfset setNextEvent("ehForums.dspHome")>
 					</cfif>
@@ -122,8 +127,9 @@ Description :
 	<!--- ************************************************************* --->
 	
 	<cffunction name="doPasswordReminder" access="public" returntype="void" output="false">
+		<cfargument name="requestContext" type="coldbox.system.beans.requestContext">
 		<!--- Do Your Logic Here to prepare a view --->
-		<cfset var data = application.user.getUser(trim(getValue("username_lookup")))>
+		<cfset var data = application.user.getUser(trim(requestContext.getValue("username_lookup")))>
 		<cfif data.emailaddress is not "">
 			<cfmail to="#data.emailaddress#" from="#application.settings.fromAddress#" subject="Galleon Password Reminder">
 			This is a password reminder from the Galleon Forums at #application.settings.rooturl#.
@@ -141,19 +147,22 @@ Description :
 	<!--- ************************************************************* --->
 	
 	<cffunction name="doConfirmUser" access="public" returntype="void" output="false">
+		<cfargument name="requestContext" type="coldbox.system.beans.requestContext">
+		<cfset var rc = requestContext.getCollection()>
 		<!--- Exit Handlers --->
 		<cfset rc.xehLogin = "ehUsers.dspLogin">
 		<!--- run confirmation --->
-		<cfset rc.result = application.user.confirm(getvalue("u",""))>
+		<cfset rc.result = application.user.confirm(requestContext.getValue("u",""))>
 		<!--- Set Title and Templatename --->
-		<cfset setValue("title","#application.settings.title# Registration Confirmation")>
-		<cfset setValue("templatename","main")>
-		<cfset setView("vwConfirm")>
+		<cfset requestContext.setValue("title","#application.settings.title# Registration Confirmation")>
+		<cfset requestContext.setValue("templatename","main")>
+		<cfset requestContext.setView("vwConfirm")>
 	</cffunction>
 	
 	<!--- ************************************************************* --->
 	
 	<cffunction name="dspProfile" access="public" returntype="void" output="false">
+		<cfargument name="requestContext" type="coldbox.system.beans.requestContext">
 		<cfset var thisPage = cgi.script_name & "?" & cgi.query_string>
 		<cfset var subMode = "">
 		<cfset var subID = "">
@@ -161,7 +170,7 @@ Description :
 		<cfset var name = "">
 		<cfset var forum = "">
 		<cfset var conference = "">
-		
+		<cfset var rc = requestContext.getCollection()>
 		<!--- EXIT HANDLERS: --->
 		<cfset rc.xehSaveProfile = "ehUsers.doSaveProfile">
 		<cfset rc.xehRemoveSub = "ehUsers.doRemoveSub">
@@ -170,26 +179,26 @@ Description :
 		<cfset rc.xehMessages = "ehForums.dspMessages">
 		
 		<!--- Check if Logged On --->
-		<cfif not request.udf.isLoggedOn()>
+		<cfif not isLoggedOn()>
 			<cfset setNextEvent("ehUsers.dspLogin","ref=#urlEncodedFormat(thisPage)#")>
 		</cfif>
 
 		<!--- attempt to subscribe --->
-		<cfif valueExists("s")>
+		<cfif requestContext.valueExists("s")>
 			<cftry>
-				<cfif valueExists("threadid")>
+				<cfif requestContext.valueExists("threadid")>
 					<cfset subMode = "thread">
-					<cfset subID = getValue("threadID")>
+					<cfset subID = requestContext.getValue("threadID")>
 					<cfset thread = application.thread.getThread(subID)>
 					<cfset name = thread.name>
-				<cfelseif valueExists("forumid")>
+				<cfelseif requestContext.valueExists("forumid")>
 					<cfset subMode = "forum">
-					<cfset subID = getValue("forumid")>
+					<cfset subID = requestContext.getValue("forumid")>
 					<cfset forum = application.forum.getForum(subID)>
 					<cfset name = forum.name>
-				<cfelseif valueExists("conferenceid")>
+				<cfelseif requestContext.valueExists("conferenceid")>
 					<cfset subMode = "conference">
-					<cfset subID = getValue("conferenceid")>
+					<cfset subID = requestContext.getValue("conferenceid")>
 					<cfset conference = application.conference.getConference(subid)>
 					<cfset name = conference.name>
 				</cfif>
@@ -199,41 +208,43 @@ Description :
 			</cftry>
 			<cfif subMode neq "">
 				<cfset application.user.subscribe(getAuthUser(), subMode, subID)>
-				<cfset setValue("confirm","subscribe") >
+				<cfset requestContext.setValue("confirm","subscribe") >
 				<cfset getPlugin("messagebox").setMessage("info","You have been subscribed to the #submode#: <b>#name#</b>")>
 			</cfif>
 		</cfif>
 
-		<cfset setValue("user", application.user.getUser(getAuthUser()) )>
-		<cfset setValue("subs", application.user.getSubscriptions(getAuthUser()) )>
+		<cfset requestContext.setValue("user", application.user.getUser(getAuthUser()) )>
+		<cfset requestContext.setValue("subs", application.user.getSubscriptions(getAuthUser()) )>
 
 		<!--- Set Title and Templatename --->
-		<cfset setValue("title","#application.settings.title# : Profile")>
-		<cfset setValue("templatename","main")>
+		<cfset requestContext.setValue("title","#application.settings.title# : Profile")>
+		<cfset requestContext.setValue("templatename","main")>
 		<!--- Set the View To Display, after Logic --->
-		<cfset setView("vwProfile")>
+		<cfset requestContext.setView("vwProfile")>
 	</cffunction>
 	
 	<!--- ************************************************************* --->
 	
 	<cffunction name="doSaveProfile" access="public" returntype="void" output="false">
+		<cfargument name="requestContext" type="coldbox.system.beans.requestContext">
 		<!--- Get User Info --->
 		<cfset var user = application.user.getUser(getAuthUser())>
+		<cfset var rc = requestContext.getCollection()>
 		<cfset var errors = "">
 		<!--- Validate --->
-		<cfif not len(trim(getValue("emailaddress"))) or not request.udf.isEmail(getValue("emailaddress"))>
+		<cfif not len(trim(requestContext.getValue("emailaddress"))) or not isEmail(requestContext.getValue("emailaddress"))>
 			<cfset errors = errors & "You must enter a valid email address.<br>">
 		<cfelse>
-			<cfset user.emailaddress = trim(htmlEditFormat(getValue("emailaddress")))>
+			<cfset user.emailaddress = trim(htmlEditFormat(requestContext.getValue("emailaddress")))>
 		</cfif>
 
-		<cfif len(trim(getValue("password_new"))) and getValue("password_new") neq getValue("password_confirm")>
+		<cfif len(trim(requestContext.getValue("password_new"))) and requestContext.getValue("password_new") neq requestContext.getValue("password_confirm")>
 			<cfset errors = errors & "To change your password, your confirmation password must match.<br>">
 		</cfif>
 		<!--- Save if no Errors --->
 		<cfif not len(errors)>
-			<cfif len(trim(getValue("password_new")))>
-				<cfset user.password = getValue("password_new")>
+			<cfif len(trim(requestContext.getValue("password_new")))>
+				<cfset user.password = requestContext.getValue("password_new")>
 			</cfif>
 			<cfset application.user.saveUser(username=getAuthUser(),password=user.password,emailaddress=user.emailaddress,datecreated=user.datecreated,groups=application.user.getGroupsForUser(getAuthUser()),signature=rc.signature,confirmed=true)>
 			<cfset getPlugin("messagebox").setMessage("info","Your profile has been updated.")>
@@ -247,8 +258,9 @@ Description :
 	<!--- ************************************************************* --->
 	
 	<cffunction name="doRemoveSub" access="public" returntype="void" output="false">
+		<cfargument name="requestContext" type="coldbox.system.beans.requestContext">
 		<cftry>
-			<cfset application.user.unsubscribe(getAuthUser(), getValue("removeSub"))>
+			<cfset application.user.unsubscribe(getAuthUser(), requestContext.getValue("removeSub"))>
 			<cfset getPlugin("messagebox").setMessage("info","You have been Unsubscribed successfully.")>
 			<cfcatch>
 				<!--- silently fail --->

@@ -12,8 +12,8 @@
 --->
 
 <!--- Get collection references --->
-<cfset user = getValue("user")>
-<cfset subs = getValue("subs")>
+<cfset user = requestContext.getValue("user")>
+<cfset subs = requestContext.getValue("subs")>
 
 <cfoutput>
 <p>
@@ -24,7 +24,7 @@
 	<tr class="tableRowMain">
 		<td>
 		Please use the form below to edit your profile.
-		<cfif getValue("confirm","") eq "profile">
+		<cfif requestContext.getValue("confirm","") eq "profile">
 			#getPlugin("messagebox").renderit()#
 		</cfif>
 		</td>
@@ -32,7 +32,7 @@
 	<tr class="tableRowMain">
 		<td>
 		<form action="#cgi.script_name#" method="post">
-		<input type="hidden" name="event" value="#getValue("xehSaveProfile")#">
+		<input type="hidden" name="event" value="#requestContext.getValue("xehSaveProfile")#">
 		<table>
 			<tr>
 				<td><b>Username:</b></td>
@@ -71,7 +71,7 @@
 	<tr class="tableHeader">
 		<td class="tableHeader">Subscriptions</td>
 	</tr>
-	<cfif getValue("confirm","") eq "subscribe">
+	<cfif requestContext.getValue("confirm","") eq "subscribe">
 	<tr class="tableRowMain">
 		<td>
 		#getPlugin("messagebox").renderit()#
@@ -92,20 +92,20 @@
 					<cfif len(conferenceidfk)>
 						<cfset data = application.conference.getConference(conferenceidfk)>
 						<cfset label = "Conference">
-						<cfset link = "index.cfm?event=#getValue("xehForums")#&conferenceid=#conferenceidfk#">
+						<cfset link = "index.cfm?event=#requestContext.getValue("xehForums")#&conferenceid=#conferenceidfk#">
 					<cfelseif len(forumidfk)>
 						<cfset data = application.forum.getForum(forumidfk)>
 						<cfset label = "Forum">
-						<cfset link = "index.cfm?event=#getValue("xehThreads")#&forumid=#threadidfk#">
+						<cfset link = "index.cfm?event=#requestContext.getValue("xehThreads")#&forumid=#threadidfk#">
 					<cfelse>
 						<cfset data = application.thread.getThread(threadidfk)>
 						<cfset label = "Thread">
-						<cfset link = "index.cfm?event=#getValue("xehMessages")#&threadid=#threadidfk#">
+						<cfset link = "index.cfm?event=#requestContext.getValue("xehMessages")#&threadid=#threadidfk#">
 					</cfif>
 					#label#:
 					</td>
 					<td><a href="#link#">#data.name#</a></td> 
-					<td>[<a href="index.cfm?event=#getValue("xehRemoveSub")#&removeSub=#id#">Unsubscribe</a>]</td>
+					<td>[<a href="index.cfm?event=#requestContext.getValue("xehRemoveSub")#&removeSub=#id#">Unsubscribe</a>]</td>
 			</cfloop>
 			</table>
 			</p>
