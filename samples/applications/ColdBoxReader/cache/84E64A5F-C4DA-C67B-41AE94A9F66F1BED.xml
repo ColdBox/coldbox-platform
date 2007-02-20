@@ -1,0 +1,358 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+			<channel>
+			<title>Raymond Camden's ColdFusion Blog</title>
+			<link>http://ray.camdenfamily.com/index.cfm</link>
+			<description>A blog for ColdFusion, Java, and other topics.</description>
+			<language>en-us</language>
+			<pubDate>Thu, 15 Feb 2007 20:31:35 -0500</pubDate>
+			<lastBuildDate>Thu, 15 Feb 2007 13:30:00 -0500</lastBuildDate>
+			<generator>BlogCFC</generator>
+			<docs>http://blogs.law.harvard.edu/tech/rss</docs>
+			<managingEditor>ray@camdenfamily.com</managingEditor>
+			<webMaster>ray@camdenfamily.com</webMaster>
+			
+			
+			
+			
+			
+			<item>
+				<title>FusionDebug 2 Released</title>
+				<link>http://ray.camdenfamily.com/index.cfm/2007/2/15/FusionDebug-2-Released</link>
+				<description>
+				
+				The title says it all. Version 2 of &lt;a href="http://www.fusion-reactor.com/fusiondebug/"&gt;FusionDebug&lt;/a&gt; has been released. New features include source code lookups, a custom perspective, and a "complete package" install if you want to make it even simpler. (This complete package includes CFE as well!) For more on what's new in 2.0, see &lt;a href="http://www.fusion-reactor.com/fusiondebug/featureFocus-2.0.html"&gt;this page&lt;/a&gt;.
+				
+				</description>
+				
+				<category>ColdFusion</category>
+				
+				<category>Development</category>
+				
+				<pubDate>Thu, 15 Feb 2007 13:30:00 -0500</pubDate>
+				<guid>http://ray.camdenfamily.com/index.cfm/2007/2/15/FusionDebug-2-Released</guid>
+				
+			</item>
+			
+		 	
+			
+			
+			<item>
+				<title>Generating URL Thumbnails with ColdFusion and Girafa</title>
+				<link>http://ray.camdenfamily.com/index.cfm/2007/2/15/Generating-URL-Thumbnails-with-ColdFusion-and-Girafa</link>
+				<description>
+				
+				So this is yet another blog entry related to something I saw on &lt;a href="http://www.dzone.com"&gt;Dzone&lt;/a&gt;. Olaf, a developer from the Netherlands, created a simple &lt;a href="http://www.web-development-blog.com/archives/dynamic-thumbnails-from-websites/"&gt;PHP script&lt;/a&gt; that would integrate with &lt;a href="http://www.girafa.com"&gt;Girafa.com&lt;/a&gt; to create URL thumbnails. Girafa has a free account for people who will generate less than 2000 thumbnails per day.
+				 [More]
+				</description>
+				
+				<category>ColdFusion</category>
+				
+				<pubDate>Thu, 15 Feb 2007 09:58:00 -0500</pubDate>
+				<guid>http://ray.camdenfamily.com/index.cfm/2007/2/15/Generating-URL-Thumbnails-with-ColdFusion-and-Girafa</guid>
+				
+			</item>
+			
+		 	
+			
+			
+			<item>
+				<title>Cool DZone Script - Send JavaScript errors via CFMail</title>
+				<link>http://ray.camdenfamily.com/index.cfm/2007/2/15/Cool-DZone-Script--Send-JavaScript-errors-via-CFMail</link>
+				<description>
+				
+				My friend James pointed me to a cool snippet on &lt;a href="http://www.dzone.com"&gt;DZone&lt;/a&gt;:
+
+&lt;a href="http://snippets.dzone.com/posts/show/3156"&gt;Email a JavaScript Error using ColdFusion&lt;/a&gt;
+
+This snippet uses an AJAX request along with a server side script to email an admin the contents of any JavaScript error.
+				
+				</description>
+				
+				<category>ColdFusion</category>
+				
+				<category>AJAX</category>
+				
+				<pubDate>Thu, 15 Feb 2007 09:19:00 -0500</pubDate>
+				<guid>http://ray.camdenfamily.com/index.cfm/2007/2/15/Cool-DZone-Script--Send-JavaScript-errors-via-CFMail</guid>
+				
+			</item>
+			
+		 	
+			
+			
+			<item>
+				<title>Matt Woodward's Mac Guide</title>
+				<link>http://ray.camdenfamily.com/index.cfm/2007/2/15/Matt-Woodwards-Mac-Guide</link>
+				<description>
+				
+				Matt Woodward recently released a nice guide for those of us who have left the "joy" of Windows and moved over to the Mac:
+
+&lt;a href="http://mattwoodward.com/articles/setup_mac_dev_environment.pdf"&gt;Setting Up a New OS X Development Environment for ColdFusion&lt;/a&gt;
+
+This is a nice little PDF with a great overview of the tools that folks moving to the Mac will need for development.
+				
+				</description>
+				
+				<category>Development</category>
+				
+				<pubDate>Thu, 15 Feb 2007 08:26:00 -0500</pubDate>
+				<guid>http://ray.camdenfamily.com/index.cfm/2007/2/15/Matt-Woodwards-Mac-Guide</guid>
+				
+			</item>
+			
+		 	
+			
+			
+			<item>
+				<title>Presention to Auckland CF</title>
+				<link>http://ray.camdenfamily.com/index.cfm/2007/2/14/Presention-to-Auckland-CF</link>
+				<description>
+				
+				I'll be presenting to the Auckland ColdFusion User Group on March 1st at - yes - 11PM CST. I'll be presenting on ColdFusion and Spry. More information (and a &lt;strike&gt;Breeze&lt;/strike&gt;Connect URL soon) here: &lt;a href="http://www.cfug.co.nz/"&gt;http://www.cfug.co.nz/&lt;/a&gt;.
+				
+				</description>
+				
+				<category>ColdFusion</category>
+				
+				<category>AJAX</category>
+				
+				<pubDate>Wed, 14 Feb 2007 16:36:00 -0500</pubDate>
+				<guid>http://ray.camdenfamily.com/index.cfm/2007/2/14/Presention-to-Auckland-CF</guid>
+				
+			</item>
+			
+		 	
+			
+			
+			<item>
+				<title>RIAForge back up...</title>
+				<link>http://ray.camdenfamily.com/index.cfm/2007/2/14/RIAForge-back-up</link>
+				<description>
+				
+				I had to update the &lt;a href="http://www.riaforge.org"&gt;RIAForge&lt;/a&gt; server so it was down for a while. All should be ok now. If you didn't realize it was down, then please ignore this blog entry. (By the way, &lt;a href="http://www.talkingtree.com/blog/"&gt;Steven Erat&lt;/a&gt; kicks major you know what for saving my you know what during the update.)
+				
+				</description>
+				
+				<category>ColdFusion</category>
+				
+				<pubDate>Wed, 14 Feb 2007 14:02:00 -0500</pubDate>
+				<guid>http://ray.camdenfamily.com/index.cfm/2007/2/14/RIAForge-back-up</guid>
+				
+			</item>
+			
+		 	
+			
+			
+			<item>
+				<title>Frameworks Conference Speaker Feedback</title>
+				<link>http://ray.camdenfamily.com/index.cfm/2007/2/14/Frameworks-Conference-Speaker-Feedback</link>
+				<description>
+				
+				I want to send a big thank you to everyone who filled out the forms for my presentation at the Frameworks Conference (and for those not attending - thanks for your comments on the blog). 
+
+Yesterday the folks at &lt;a href="http://www.teratech.com/"&gt;Teratech&lt;/a&gt; sent out the speaker scores and the rankings. I have to admit I always get a little nervous when I look at these things. My ego is about as fragile as Windows 95. I was a bit surprised to find I came out in 8th place.
+
+Then I took a second look. The top 9 speakers at the conference all had scores of 19.00 or higher. Thats on a 1 to 20 scale. If that doesn't speak to the quality of the presenters I don't know what does. I'm &lt;i&gt;more&lt;/i&gt; than proud to be in the top ten of that group! (Of course, now that I've gotten Highlander on DVD, I may have to hunt down the guys above me!)
+				
+				</description>
+				
+				<category>Misc</category>
+				
+				<pubDate>Wed, 14 Feb 2007 09:29:00 -0500</pubDate>
+				<guid>http://ray.camdenfamily.com/index.cfm/2007/2/14/Frameworks-Conference-Speaker-Feedback</guid>
+				
+			</item>
+			
+		 	
+			
+			
+			<item>
+				<title>Taking another step forward with Fusebox - Configuration</title>
+				<link>http://ray.camdenfamily.com/index.cfm/2007/2/13/Taking-another-step-forward-with-Fusebox--Configuration</link>
+				<description>
+				
+				Well it is taking me a bit longer than I would like, but I am  getting more excited about Fusebox and don't want to lose too much steam in my learning of the framework. In my &lt;a href="http://ray.camdenfamily.com/index.cfm/2007/2/5/Installing-Fusebox"&gt;first entry&lt;/a&gt; I talked about installing Fusebox (summary: easy as pie). In the &lt;a href="http://ray.camdenfamily.com/index.cfm/2007/2/7/Continuing-my-Fusebox-study"&gt;second entry&lt;/a&gt; I talked about what happens during the Fusebox request cycle. (In other words, what happens when you load the application.) That entry focused mainly on the application life cycle.
+				 [More]
+				</description>
+				
+				<category>Fusebox</category>
+				
+				<pubDate>Tue, 13 Feb 2007 20:36:00 -0500</pubDate>
+				<guid>http://ray.camdenfamily.com/index.cfm/2007/2/13/Taking-another-step-forward-with-Fusebox--Configuration</guid>
+				
+			</item>
+			
+		 	
+			
+			
+			<item>
+				<title>Another CF Search Engine</title>
+				<link>http://ray.camdenfamily.com/index.cfm/2007/2/13/Another-CF-Search-Engine</link>
+				<description>
+				
+				I blogged about the cool new toy Google released (&lt;a href="http://ray.camdenfamily.com/index.cfm/2006/10/24/Custom-Google-Search-Engines"&gt;Custom Google Search Enginees&lt;/a&gt;) a few months back. At that time, &lt;a href="http://www.cfhunt.com"&gt;CF Hunt&lt;/a&gt; was released using  this engine. Now there is another one, &lt;a href="http://www.cfsearchengine.com/"&gt;CFSearchEngine.com&lt;/a&gt;.
+
+Sorry for the slow blogging so far this week. I spent the day yesterday in Las Vegas meeting with a client so I'm a bit behind on the "paying" work. (For some reason no one hasn't offered me a job to just write open source applications and blog all day. ;) In case folks are curious - I had 4 flights. All were on time. No luggage was brought since I wasn't spending the night. But just to make things fun I got to fly home through a severe thunderstorm.
+				
+				</description>
+				
+				<category>ColdFusion</category>
+				
+				<pubDate>Tue, 13 Feb 2007 14:49:00 -0500</pubDate>
+				<guid>http://ray.camdenfamily.com/index.cfm/2007/2/13/Another-CF-Search-Engine</guid>
+				
+			</item>
+			
+		 	
+			
+			
+			<item>
+				<title>Baby steps in factory land</title>
+				<link>http://ray.camdenfamily.com/index.cfm/2007/2/11/Baby-steps-in-factory-land</link>
+				<description>
+				
+				About a week or so ago I attend a &lt;a href="http://ray.camdenfamily.com/index.cfm/2007/2/2/Frameworks-Conference-Intro-to-Object-Factories--Rob-Gonda"&gt;presentation&lt;/a&gt; on object factories by Rob Gonda. Object factories were something I had heard about and read about, but didn't quite get. The presentation really helped a lot, and I thought I'd share my thoughts on how I understand this concept, and then quickly show a practical example of how I applied this to the new beta of &lt;a href="http://canvas.riaforge.org"&gt;Canvas&lt;/a&gt;.
+				 [More]
+				</description>
+				
+				<category>ColdFusion</category>
+				
+				<pubDate>Sun, 11 Feb 2007 04:55:00 -0500</pubDate>
+				<guid>http://ray.camdenfamily.com/index.cfm/2007/2/11/Baby-steps-in-factory-land</guid>
+				
+			</item>
+			
+		 	
+			
+			
+			<item>
+				<title>Code to Avoid: cfoutput over a query with one row</title>
+				<link>http://ray.camdenfamily.com/index.cfm/2007/2/9/Code-to-Avoid-cfoutput-over-a-query-with-one-row</link>
+				<description>
+				
+				I've seen this a few times in the past, but I just ran into it so I thought I'd share my feelings on it. 
+
+If you have a query that contains one row that you are using for an edit form, you should not do:
+
+&lt;code&gt;
+&lt;cfoutput query="getDetail"&gt;
+&lt;/code&gt;
+
+While your page will work just fine, it simply isn't the proper user of the tag. (And before I go on - I'll note that this is my opinion only.) When you tie a query to a cfoutput tag, you are telling ColdFusion to iterate over each item of the query. 
+
+If your intent is to work a single database record (again, think of an edit form), then don't use what is - essentially - a looping construct. 
+
+As it stands, for a developer just entering the project (like me!), you can cause confusion over what the template is actually meant to do.
+				
+				</description>
+				
+				<category>ColdFusion</category>
+				
+				<pubDate>Fri, 09 Feb 2007 14:49:00 -0500</pubDate>
+				<guid>http://ray.camdenfamily.com/index.cfm/2007/2/9/Code-to-Avoid-cfoutput-over-a-query-with-one-row</guid>
+				
+			</item>
+			
+		 	
+			
+			
+			<item>
+				<title>Returning XML in ColdFusion for AJAX</title>
+				<link>http://ray.camdenfamily.com/index.cfm/2007/2/8/Returning-XML-in-ColdFusion-for-AJAX</link>
+				<description>
+				
+				I've blogged this before, but only as a side point. Since the question came in to me this morning I thought I'd mention it again in a new post. The question is simple - how do you return XML data in ColdFusion to be consumed by AJAX? (Or really any source.)
+				 [More]
+				</description>
+				
+				<category>ColdFusion</category>
+				
+				<category>AJAX</category>
+				
+				<pubDate>Thu, 08 Feb 2007 16:47:00 -0500</pubDate>
+				<guid>http://ray.camdenfamily.com/index.cfm/2007/2/8/Returning-XML-in-ColdFusion-for-AJAX</guid>
+				
+			</item>
+			
+		 	
+			
+			
+			<item>
+				<title>Ask a Jedi: Is it worthwhile to learn everything about ColdFusion immediately?</title>
+				<link>http://ray.camdenfamily.com/index.cfm/2007/2/8/Ask-a-Jedi-Is-it-worthwhile-to-learn-everything-about-ColdFusion-immediately</link>
+				<description>
+				
+				A few days ago an interesting &lt;a href="http://ray.camdenfamily.com/forums/messages.cfm?threadid=7C79D8D0-F53C-E7BB-AF97A5AF4B929F86"&gt;post&lt;/a&gt; was made to my forums. I asked the author if he minded me moving the conversation over here and he was cool with it. While his question involves ColdFusion, I really do think it could apply to any other language. First let's start with his question:
+
+&lt;blockquote&gt;
+I was wondering if there are distinct advantages for using advanced coldfusion as opposed to the more basic stuff. For example, the stuff one can learn in the first 2/3rds of Ben Forte's book "Coldfusion Construction Kit" is adequate for getting a database-driven site up and running, etc...but are there serious short-comings, or safety issues, or performance issues encountered if one doesn't use the advanced coding techniques found in later chapters and in the 'advanced cf' book? I'm wondering because I don't see a use in spending more time learning the more complex advanced (like frameworks, for ex) unless I can see clear-cut reasons why its better, safer, faster, etc.
+&lt;/blockquote&gt;
+				 [More]
+				</description>
+				
+				<category>ColdFusion</category>
+				
+				<category>Development</category>
+				
+				<pubDate>Thu, 08 Feb 2007 08:19:00 -0500</pubDate>
+				<guid>http://ray.camdenfamily.com/index.cfm/2007/2/8/Ask-a-Jedi-Is-it-worthwhile-to-learn-everything-about-ColdFusion-immediately</guid>
+				
+			</item>
+			
+		 	
+			
+			
+			<item>
+				<title>Newest member of the family</title>
+				<link>http://ray.camdenfamily.com/index.cfm/2007/2/7/Newest-member-of-the-family</link>
+				<description>
+				
+				Today my wife surprised me with an early birthday present - a new dog. Phyllis (yes, thats her name), is a Golden Retriever puppy that is 9 weeks old. I'm a sucker for dogs and now we have 2 (along with 5 cats that live outside). 
+
+For fun - I'll send a ColdFusion coffee mug from &lt;a href="http://coldfusiongear.com/cfgear/index.cfm"&gt;ColdFusionGear&lt;/a&gt; to the first person who can tell me where I got the name Phyllis from.
+
+&lt;br clear="left" /&gt;
+				
+				</description>
+				
+				<category>Misc</category>
+				
+				<pubDate>Wed, 07 Feb 2007 20:40:00 -0500</pubDate>
+				<guid>http://ray.camdenfamily.com/index.cfm/2007/2/7/Newest-member-of-the-family</guid>
+				
+				<enclosure length="32512" type="image/jpeg" url="http://ray.camdenfamily.com/enclosures/phyllis.jpg"/>
+				
+			</item>
+			
+		 	
+			
+			
+			<item>
+				<title>How do you report bugs in Fusebox (and Model-Glue)?</title>
+				<link>http://ray.camdenfamily.com/index.cfm/2007/2/7/How-do-you-report-bugs-in-Fusebox-and-ModelGlue</link>
+				<description>
+				
+				So one of the first things I asked Sean about was how to report bugs in Fusebox. Turns out there is a public bug tracker so you can not only report bugs but check for existing bugs as well. You may find the Fusebox bug tracker here:
+
+&lt;a href="http://trac.fuseboxframework.org/fusebox/report"&gt;http://trac.fuseboxframework.org/fusebox/report&lt;/a&gt;
+
+Model-Glue uses the same system (Trac) and it's bug tracker may be found here:
+
+&lt;a href="http://trac.model-glue.com/model-glue/report"&gt;http://trac.model-glue.com/model-glue/report&lt;/a&gt;
+				
+				</description>
+				
+				<category>Model-Glue</category>
+				
+				<category>ColdFusion</category>
+				
+				<category>Fusebox</category>
+				
+				<pubDate>Wed, 07 Feb 2007 15:25:00 -0500</pubDate>
+				<guid>http://ray.camdenfamily.com/index.cfm/2007/2/7/How-do-you-report-bugs-in-Fusebox-and-ModelGlue</guid>
+				
+			</item>
+			
+		 	
+			</channel></rss>

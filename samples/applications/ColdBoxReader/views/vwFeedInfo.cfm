@@ -1,5 +1,5 @@
-<cfset qryData = getValue("qryData")>
-<cfset feedID = getValue("feedID")>
+<cfset qryData = requestContext.getValue("qryData")>
+<cfset feedID = requestContext.getValue("feedID")>
 <cfoutput query="qryData">
 	<div class="nicebox">
 		<h5 style="margin-bottom:2px;"><a href="#siteURL#" target="_blank">#FeedName#</a></h5>

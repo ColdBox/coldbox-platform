@@ -11,7 +11,7 @@
 		<Setting name="EnableColdboxLogging" 		value="true"/>
 		<Setting name="ColdboxLogsLocation" 		value="logs"/>
 		<Setting name="DefaultEvent" 				value="ehGeneral.dspStart"/>
-		<Setting name="ApplicationStartHandler"		value="ehGeneral.onAppStart"/>
+		<Setting name="ApplicationStartHandler"		value=""/>
 		<Setting name="RequestStartHandler" 		value="ehGeneral.onRequestStart"/>
 		<Setting name="RequestEndHandler" 			value=""/>
 		<Setting name="OwnerEmail" 					value="myemail@email.com"/>
@@ -21,13 +21,14 @@
 		<Setting name="ExceptionHandler" 			value="ehGeneral.onException"/>
 		<Setting name="MessageboxStyleClass" 		value="myOwnMessagebox"/>
 		<Setting name="HandlersIndexAutoReload" 	value="false"/>
-		<Setting name="ConfigAutoReload" 			value="false"/>		
+		<Setting name="ConfigAutoReload" 			value="false"/>	
+		<Setting name="HandlerCaching"				value="true" />	
 		<Setting name="IOCFramework" 				value="coldspring"/>
 		<Setting name="IOCDefinitionFile" 			value="config/services.xml.cfm"/>
 	</Settings>
 
 	<YourSettings>
-			<Setting name="Version" value="1.1.0" />
+			<Setting name="Version" value="1.2.0" />
 			<Setting name="ModelBasePath" value="coldbox.samples.applications.ColdBoxReader.components" />
 	</YourSettings>
 

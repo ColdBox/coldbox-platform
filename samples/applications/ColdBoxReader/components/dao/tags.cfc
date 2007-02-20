@@ -20,7 +20,7 @@
 	
 	<cffunction name="create" access="public" returntype="void">
 		<!--- ******************************************************************************** --->
-		<cfargument name="argc" type="string" required="yes">
+		<cfargument name="argc" type="struct" required="yes">
 		<!--- ******************************************************************************** --->
 		<cfset var qry = "">
 

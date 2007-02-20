@@ -1,4 +1,4 @@
-<cfset qryFeeds = getValue("qryFeeds")>
+<cfset qryFeeds = requestContext.getValue("qryFeeds")>
 
 <h1>My ColdBox Reader Feeds:</h1>
 <p>
@@ -10,7 +10,7 @@
 <p><b>My Feeds:</b>
 <cfoutput query="qryFeeds">
 <div style="line-height:20px;">
-	<img src="images/archives.gif">&nbsp;<a href="javascript:doEvent('#getValue("xehViewFeed")#','centercontent',{feedID:'#qryFeeds.feedID#',myfeeds:'true'});"><strong>#qryFeeds.feedname#</strong></a>
+	<img src="images/archives.gif">&nbsp;<a href="javascript:doEvent('#requestContext.getValue("xehViewFeed")#','centercontent',{feedID:'#qryFeeds.feedID#',myfeeds:'true'});"><strong>#qryFeeds.feedname#</strong></a>
 	<span style="font-size:0.9em;">
 		 by #qryFeeds.username# on #dateformat(qryFeeds.createdon,"mmm dd")# #lstimeFormat(qryFeeds.createdOn)#
 	</span>
@@ -24,8 +24,8 @@
 <script>
 	clearDiv("leftcontent1");
 	clearDiv("rightcontent2");
-	doEvent("#getValue("xehShowTags")#", "rightcontent1", {});
-	doEvent("#getValue("xehShowInfo")#", "leftcontent1", {});
-	doEvent("#getValue("xehAccountActions")#", "divAccountActions", {});
+	doEvent("#requestContext.getValue("xehShowTags")#", "rightcontent1", {});
+	doEvent("#requestContext.getValue("xehShowInfo")#", "leftcontent1", {});
+	doEvent("#requestContext.getValue("xehAccountActions")#", "divAccountActions", {});
 </script>
 </cfoutput>

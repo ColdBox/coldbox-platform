@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+			<channel>
+			<title>Aaron Conran's Blog</title>
+			<link>http://www.divergingpath.com/index.cfm</link>
+			<description>Aaron Conran's Blog</description>
+			<language>en-us</language>
+			<pubDate>Mon, 19 Feb 2007 18:52:19 -0600</pubDate>
+			<lastBuildDate>Mon, 19 Feb 2007 01:06:00 -0600</lastBuildDate>
+			<generator>BlogCFC</generator>
+			<docs>http://blogs.law.harvard.edu/tech/rss</docs>
+			<managingEditor>Aaron.Conran@gmail.com</managingEditor>
+			<webMaster>Aaron.Conran@gmail.com</webMaster>
+			
+			
+			
+			
+			
+			<item>
+				<title>Yui-Ext: Beginning Using Templates</title>
+				<link>http://www.divergingpath.com/index.cfm/2007/2/19/Templates-Beginning-Using-Templates</link>
+				<description>
+				
+				This tutorial assumes that you have just completed the tutorial BorderLayout: Loading External Content into a ContentPanel found &lt;a href="http://www.divergingpath.com/index.cfm/2007/2/18/YUIExt-Loading-External-Content-into-a-ContentPanel"&gt;here&lt;/a&gt;. &lt;br/&gt;&lt;br/&gt;
+
+Assume you needed to load your bookmarks on the west navigation at runtime instead of building them into your existing markup. Doing this is simple. We add an id of 'bookmarkList' to the existing unordered list that contains the bookmarks and remove the actual list items of the list.&lt;br/&gt;&lt;br/&gt;
+				 [More]
+				</description>
+				
+				<category>YUI-Ext</category>
+				
+				<pubDate>Mon, 19 Feb 2007 01:06:00 -0600</pubDate>
+				<guid>http://www.divergingpath.com/index.cfm/2007/2/19/Templates-Beginning-Using-Templates</guid>
+				
+			</item>
+			
+		 	
+			
+			
+			<item>
+				<title>YUIExt: Loading External Content into a ContentPanel</title>
+				<link>http://www.divergingpath.com/index.cfm/2007/2/18/YUIExt-Loading-External-Content-into-a-ContentPanel</link>
+				<description>
+				
+				This tutorial will walk you through creating a simple BorderLayout which loads external content such as Yahoo! or Google into your page. 
+
+First we create a BorderLayout with 2 ContentPanels, west and center. The west ContentPanel will contain 'bookmarks' which are simply links and will be predefined in the markup. The center ContentPanel will contain an iframe which we will load the external content into.
+				 [More]
+				</description>
+				
+				<category>YUI-Ext</category>
+				
+				<pubDate>Sun, 18 Feb 2007 13:06:00 -0600</pubDate>
+				<guid>http://www.divergingpath.com/index.cfm/2007/2/18/YUIExt-Loading-External-Content-into-a-ContentPanel</guid>
+				
+			</item>
+			
+		 	
+			
+			
+			<item>
+				<title>YUI-Ext: Beginning Using UpdateManager</title>
+				<link>http://www.divergingpath.com/index.cfm/2007/2/17/YUIExt-Beginning-Using-UpdateManager</link>
+				<description>
+				
+				This simple tutorial will walk you through using the UpdateManager class of &lt;a href="http://www.yui-ext.com" target="_blank"&gt;yui-ext&lt;/a&gt; to update your pages content without suffering a page refresh. The Ext.UpdateManager class provides a simple way to update an HTMLElement using the underlying yui Connect library. 
+
+In order to use the UpdateManager, we must first get a reference to an UpdateManager which points to the HTMLElement we want to update. The following code will obtain a reference to an UpdateManager which will update the element with an id of "updateMe".
+				 [More]
+				</description>
+				
+				<category>YUI-Ext</category>
+				
+				<pubDate>Sat, 17 Feb 2007 13:26:00 -0600</pubDate>
+				<guid>http://www.divergingpath.com/index.cfm/2007/2/17/YUIExt-Beginning-Using-UpdateManager</guid>
+				
+			</item>
+			
+		 	
+			
+			
+			<item>
+				<title>CFSnippet: GetDirectoryStruct</title>
+				<link>http://www.divergingpath.com/index.cfm/2007/2/15/CFSnippet-GetDirectoryStruct</link>
+				<description>
+				
+				&lt;p&gt;
+Here is a simple UDF to retrieve a nested directory structure. It was written to retrieve all CFCs located within a certain directory. The catch was that I did not want any directories which did not contain CFCs (or did not have subdirectories which have CFCS) to be included. Therefore if we had:&lt;br/&gt;
+Dir A&lt;br/&gt;
+- Dir B&lt;br/&gt;
+- - Dir C&lt;br/&gt;
+&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+If none of the 3 directories contained a CFC then they would not be included. 
+&lt;/li&gt;
+&lt;li&gt;
+If directory A contained a CFC but neither directory B or C did, only directory A would be included.
+&lt;/li&gt;
+&lt;li&gt;
+If directory B contained a CFC but directory C did not, only directory A and B would be included.
+&lt;/li&gt;
+&lt;li&gt;
+If directory C contained a CFC all 3 directories would be included.
+&lt;/li&gt;
+&lt;/ul&gt;
+Sample Output::&lt;br/&gt;
+&lt;img src="/uploads/GetDirectoryStruct.jpg" border="0" /&gt;
+				 [More]
+				</description>
+				
+				<category>CFSnippet</category>
+				
+				<pubDate>Thu, 15 Feb 2007 22:55:00 -0600</pubDate>
+				<guid>http://www.divergingpath.com/index.cfm/2007/2/15/CFSnippet-GetDirectoryStruct</guid>
+				
+			</item>
+			
+		 	
+			
+			
+			<item>
+				<title>Transitioning from Fusebox 4 to Coldbox</title>
+				<link>http://www.divergingpath.com/index.cfm/2007/2/13/Transitioning-from-Fusebox-4-to-Coldbox</link>
+				<description>
+				
+				Building an application in Coldbox will be a very natural transition, if you are already comfortable with the Fusebox 4+ environment.  One thing I really like about Coldbox is that it takes away some of the redundant tasks which always had to be done in Fusebox. Coldbox was built on a Model-View-Controller, or M-V-C controller pattern.
+&lt;i&gt;This article was originally written in August, but has been re-posted since I've chosen to start blogging. Note that this blog is running on BlogCFC ported by Luis Majano to the Coldbox framework.&lt;/i&gt;
+				 [More]
+				</description>
+				
+				<category>Coldbox</category>
+				
+				<pubDate>Tue, 13 Feb 2007 22:51:00 -0600</pubDate>
+				<guid>http://www.divergingpath.com/index.cfm/2007/2/13/Transitioning-from-Fusebox-4-to-Coldbox</guid>
+				
+			</item>
+			
+		 	
+			
+			
+			<item>
+				<title>CFSnippet: Create DateTime UDF</title>
+				<link>http://www.divergingpath.com/index.cfm/2007/2/12/CFSnippet-Create-DateTime-UDF</link>
+				<description>
+				
+				From time to time I find myself needing to create a DateTime Object from a date and a time. Here is a simple UDF which does that.
+
+&lt;code&gt;
+&lt;cffunction name="CreateDT" access="private" hint="Creates a DateTime object from a formatted Date and Time String" returntype="any"&gt;
+	&lt;cfargument name="DateString" required="Yes"&gt;
+	&lt;cfargument name="TimeString" required="Yes"&gt;
+	
+	&lt;cfreturn createdatetime(datepart('yyyy', datestring), datepart('m', datestring), datepart('d', datestring), datepart('h', timestring), datepart('n', timestring), datepart('s', timestring))&gt;		
+&lt;/cffunction&gt;
+&lt;/code&gt;
+				
+				</description>
+				
+				<category>CFSnippet</category>
+				
+				<pubDate>Mon, 12 Feb 2007 22:42:00 -0600</pubDate>
+				<guid>http://www.divergingpath.com/index.cfm/2007/2/12/CFSnippet-Create-DateTime-UDF</guid>
+				
+			</item>
+			
+		 	
+			
+			
+			<item>
+				<title>Starting Blogging</title>
+				<link>http://www.divergingpath.com/index.cfm/2007/2/11/Starting-Blogging</link>
+				<description>
+				
+				I have now been doing web development for over 3.5 years. It is frequent that I provide explanations or simple technical writeups internally to the development team I work with. Why not post this information for the entire community to benefit from? I've had this domain for nearly 3 years now and unfortunately I have not done much with it. 
+
+Topics I plan on blogging about are:
+&lt;ul&gt;
+&lt;li&gt;ColdFusion&lt;/li&gt;
+&lt;li&gt;Coldbox&lt;/li&gt;
+&lt;li&gt;Fusebox&lt;/li&gt;
+&lt;li&gt;AJAX&lt;/li&gt;
+&lt;li&gt;Javascript&lt;/li&gt;
+&lt;li&gt;YUI-Ext&lt;/li&gt;
+&lt;/ul&gt;
+
+If you know me personally and see that I start to slack off on this blog, &lt;strong&gt;PLEASE&lt;/strong&gt; mention it to me.
+				
+				</description>
+				
+				<category>General</category>
+				
+				<pubDate>Sun, 11 Feb 2007 23:52:00 -0600</pubDate>
+				<guid>http://www.divergingpath.com/index.cfm/2007/2/11/Starting-Blogging</guid>
+				
+			</item>
+			
+		 	
+			</channel></rss>

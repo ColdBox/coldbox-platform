@@ -68,7 +68,6 @@
 			<cfif DateDiff("n", qryDir.dateLastModified, now()) lt 30>
 				<cfset cacheValid = true>
 			</cfif>
-			<cfset cacheValid = true>
 		</cfif>
 		<!--- if cached data is valid, get it from there, otherwise, get from web --->
 		<cfif cacheValid>

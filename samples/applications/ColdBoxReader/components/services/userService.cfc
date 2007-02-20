@@ -34,18 +34,53 @@
 
 	<!--- ******************************************************************************** --->
 
-	<cffunction name="createUser" access="public" returntype="void">
+	<cffunction name="saveUser" access="public" returntype="void">
 		<!--- ******************************************************************************** --->
 		<cfargument name="userBean" type="any" required="yes">
 		<!--- ******************************************************************************** --->
 		<cfset var newUserID = CreateUUID()>
 		<cfset var qry = "">
 		
-		<cfset arguments.userBean.setUserID(newUserID)>
-		<cfset instance.userDAO.create(arguments.userBean)>
-		
+		<cfif arguments.userBean.getUserID() eq "">
+			<cfset arguments.userBean.setUserID(newUserID)>
+			<cfset instance.userDAO.create(arguments.userBean)>
+		<cfelse>
+			<cfset instance.userDAO.update(arguments.userBean)>
+		</cfif>
 	</cffunction>
 
+	<!--- ******************************************************************************** --->
+	
+	<cffunction name="getUserByUsername" access="public" returntype="void">
+		<!--- ******************************************************************************** --->
+		<cfargument name="userBean" type="any" required="yes">
+		<!--- ******************************************************************************** --->
+		<cfset instance.userDAO.getUserByUsername(arguments.userBean)>
+	</cffunction>
+
+	<!--- ******************************************************************************** --->
+	
+	<cffunction name="generateNewPassword" access="public" returntype="void">
+		<!--- ******************************************************************************** --->
+		<cfargument name="userBean"     type="any"    required="yes">
+		<cfargument name="MailUsername" type="string" required="yes">
+		<cfargument name="mailSettingsBean" type="coldbox.system.beans.mailsettingsBean" required="yes">
+		<!--- ******************************************************************************** --->
+		<cfset var newPassword = instance.userDAO.generateNewPass(arguments.userBean.getuserID())>
+		
+		<cfmail to="#arguments.userBean.getEmail()#" 
+				from="#MailUsername#"
+			    subject="ColdBox Reader: Password Generator Reminder"
+				server="#mailSettingsBean.getServer()#" 
+				password="#mailSettingsBean.getPassword()#" 
+				username="#mailSettingsBean.getUsername()#" >
+		This is a password reminder from the ColdBox Reader
+		
+		Your new password is: #newPassword#
+		
+		Please change this password as soon as you log in.
+		</cfmail>
+	</cffunction>
 
 	<!--- ******************************************************************************** --->
 	

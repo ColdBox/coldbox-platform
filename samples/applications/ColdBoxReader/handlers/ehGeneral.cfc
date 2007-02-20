@@ -12,27 +12,21 @@ aug/20/2006 - Luis Majano
 ----------------------------------------------------------------------->
 <cfcomponent name="ehGeneral" extends="coldbox.system.eventhandler">
 
-	<cffunction name="onAppStart" access="public" returntype="void" output="false">
-		<!--- Instantiate ColdBox Service --->
-		<cfset application.IOCEngine = createObject("component","coldspring.beans.DefaultXmlBeanFactory").init(structnew(),getSettingStructure())/>
-		<cfset application.IOCEngine.loadBeansFromXmlFile(expandPath(getSetting("IOCDefinitionFile")))/>
-	</cffunction>
-	
 	<cffunction name="onRequestStart" access="public" returntype="void" output="false">
-		<!--- Session param --->
-		<cfparam name="session.userID" 		default="">
-		<cfparam name="session.username" 	default="">
+		<cfargument name="requestContext" type="coldbox.system.beans.requestContext">
+		<cfset var rc = requestContext.getCollection()>
 		<!--- EXIT HANDLERS: --->
 		<cfset rc.xehSearch = "ehFeed.doSearchByTerm">
 		<cfif not structKeyExists(session, "oUserBean")>
-			<cfset session.oUserBean = application.IOCEngine.getBean("UserService").createUserBean()>
+			<cfset session.oUserBean = getPlugin("ioc").getBean("UserService").createUserBean()>
 		</cfif>
 	</cffunction>
 
 	<cffunction name="onException" access="public" returntype="void" output="false">
+		<cfargument name="requestContext" type="coldbox.system.beans.requestContext">
 		<!--- My own Exception Handler --->
 		<!--- Log error --->
-		<cfset var exceptionBean = getValue("ExceptionBean")>
+		<cfset var exceptionBean = requestContext.getValue("ExceptionBean")>
 		<!--- Do per Type Validations, example here --->
 		<cfif exceptionBean.getType eq "Framework.plugins.settings.EventSyntaxInvalidException">
 			<cfset getPlugin("messagebox").setMessage("warning", "No page found with that syntax.")>
@@ -44,14 +38,18 @@ aug/20/2006 - Luis Majano
 	</cffunction>
 
 	<cffunction name="dspStart" access="public" returntype="void" output="false">
+		<cfargument name="requestContext" type="coldbox.system.beans.requestContext">
+		<cfset var rc = requestContext.getCollection()>
 		<!--- EXIT HANDLERS: --->
 		<cfset rc.xehReader = "ehGeneral.dspReader">
-		<cfset setView("vwMain")>
+		<cfset requestContext.setView("vwMain")>
 	</cffunction>
 
 	<cffunction name="dspReader" access="public" returntype="void" output="false">
-		<cfset var obj = application.IOCEngine.getBean("feedService")>
+		<cfargument name="requestContext" type="coldbox.system.beans.requestContext">
+		<cfset var obj = getPlugin("ioc").getBean("feedService")>
 		<cfset var FeedStruct = structnew()>
+		<cfset var rc = requestContext.getCollection()>
 		<!--- EXIT HANDLERS: --->
 		<cfset rc.xehViewFeed = "ehFeed.dspViewFeed">
 		<cfset rc.xehShowTags = "ehFeed.dspAllTags">
@@ -61,14 +59,17 @@ aug/20/2006 - Luis Majano
 		<cfset FeedStruct = obj.getAllFeeds()>
 		<cfset rc.qryFeeds = FeedStruct.qAllFeeds>
 		<cfset rc.qryTopFeeds = FeedStruct.qTopFeeds>
-		<cfset setView("vwReader")>
+		<cfset requestContext.setView("vwReader")>
 	</cffunction>
 
 	<cffunction name="dspInfo" access="public" returntype="void" output="false">
+		<cfargument name="requestContext" type="coldbox.system.beans.requestContext">
+		<cfset var rc = requestContext.getCollection()>
 		<!--- EXIT HANDLERS: --->
 		<cfset rc.xehLogin = "ehUser.dspLogin">
 		<cfset rc.xehSignup = "ehUser.dspSignUp">
-		<cfset setView("vwInfo")>
+		<cfset rc.xehUpdateProfile = "ehUser.doUpdateProfile">
+		<cfset requestContext.setView("vwInfo")>
 	</cffunction>
 
 

@@ -1,2 +1,2 @@
-<cfset qryData = getValue("qryData")>
+<cfset qryData = requestContext.getValue("qryData")>
 
