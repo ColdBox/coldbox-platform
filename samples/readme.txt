@@ -49,7 +49,7 @@ Credits
 	A simple application to show you how to use a UDF library if needed.
 	
 7. ColdBoxReader by Oscar Arevalo/Luis Majano
-	An RSS reader with AJAX interaction.
+	An RSS reader with AJAX interaction, coldspring and a service architecture.
 	
 8. i18N Sample by Paul Hastings/Luis Majano
 	A showcase gallery of i18N interactions
