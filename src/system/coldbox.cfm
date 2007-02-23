@@ -67,15 +67,7 @@ Modification History:
 	<cflock type="exclusive" scope="application" timeout="#lockTimeout#">
 		<cfif not structkeyExists(application,"cbController") or not application.cbController.getColdboxInitiated() or isfwReinit()>
 			<cfset application.cbController = CreateObject("component","coldbox.system.controller").init()>
-			<cftry>
-				<cfset setupCalls()>
-				<!--- Trap Framework Errors --->
-				<cfcatch type="any">
-					<cfset ExceptionBean = application.cbController.ExceptionHandler(cfcatch,"framework","Framework Initialization/Configuration Exception")>
-					<cfoutput>#application.cbController.getPlugin("renderer").renderBugReport(ExceptionBean)#</cfoutput>
-					<cfabort>
-				</cfcatch>
-			</cftry>
+			<cfset setupCalls()>
 		</cfif>
 	</cflock>
 <cfelse>
