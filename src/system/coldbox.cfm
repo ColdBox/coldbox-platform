@@ -40,14 +40,14 @@ Modification History:
 		return true;
 	else
 		reinitPass = application.cbController.getSetting("ReinitPassword");
-	
+
 	if ( structKeyExists(url,"fwreinit") ){
 		if ( reinitPass eq "" ){
 			return true;
 		}
 		else if ( Compare(reinitPass, url.fwreinit) eq 0){
 			return true;
-		}	
+		}
 		else{
 			return false;
 		}
@@ -62,17 +62,24 @@ Modification History:
 <cfset request.fwExecTime = GetTickCount()>
 <cfset lockTimeout = 60>
 
-<!--- Start Framework Request --->
-<cftry>
-	<!--- Initialize the Controller --->
-	<cfif not structkeyExists(application,"cbController") or not application.cbController.getColdboxInitiated() or isfwReinit()>
-		<cflock type="exclusive" scope="application" timeout="#lockTimeout#">
-			<cfif not structkeyExists(application,"cbController") or not application.cbController.getColdboxInitiated() or isfwReinit()>
-				<cfset application.cbController = CreateObject("component","coldbox.system.controller").init()>
+<!--- Initialize the Controller --->
+<cfif not structkeyExists(application,"cbController") or not application.cbController.getColdboxInitiated() or isfwReinit()>
+	<cflock type="exclusive" scope="application" timeout="#lockTimeout#">
+		<cfif not structkeyExists(application,"cbController") or not application.cbController.getColdboxInitiated() or isfwReinit()>
+			<cfset application.cbController = CreateObject("component","coldbox.system.controller").init()>
+			<cftry>
 				<cfset setupCalls()>
-			</cfif>
-		</cflock>
-	<cfelse>
+				<!--- Trap Framework Errors --->
+				<cfcatch type="any">
+					<cfset ExceptionBean = application.cbController.ExceptionHandler(cfcatch,"framework","Framework Initialization/Configuration Exception")>
+					<cfoutput>#application.cbController.getPlugin("renderer").renderBugReport(ExceptionBean)#</cfoutput>
+					<cfabort>
+				</cfcatch>
+			</cftry>
+		</cfif>
+	</cflock>
+<cfelse>
+	<cftry>
 		<!--- AutoReload Tests --->
 		<cfif application.cbController.getSetting("ConfigAutoReload")>
 			<cflock type="exclusive" name="Coldbox_configloader" timeout="#lockTimeout#">
@@ -83,43 +90,43 @@ Modification History:
 				<cfset application.cbController.registerHandlers()>
 			</cflock>
 		</cfif>
-	</cfif>
-	
-	<!--- Trap Framework Errors --->
-	<cfcatch type="any">
-		<cfset ExceptionBean = application.cbController.ExceptionHandler(cfcatch,"framework","Framework Initialization/Configuration Exception")>
-		<cfoutput>#application.cbController.getPlugin("renderer").renderBugReport(ExceptionBean)#</cfoutput>
-		<cfabort>
-	</cfcatch>
-</cftry>
+
+		<!--- Trap Framework Errors --->
+		<cfcatch type="any">
+			<cfset ExceptionBean = application.cbController.ExceptionHandler(cfcatch,"framework","Framework Initialization/Configuration Exception")>
+			<cfoutput>#application.cbController.getPlugin("renderer").renderBugReport(ExceptionBean)#</cfoutput>
+			<cfabort>
+		</cfcatch>
+	</cftry>
+</cfif>
 
 <!--- Start Application Requests --->
 <cftry>
 	<!--- Request Capture --->
 	<cfset application.cbController.getRequestService().requestCapture()>
-	
-	<!--- Application Start Handler --->	
+
+	<!--- Application Start Handler --->
 	<cfif application.cbController.getSetting("ApplicationStartHandler") neq "" and (not application.cbController.getAppStartHandlerFired())>
 		<cfset application.cbController.runEvent(application.cbController.getSetting("ApplicationStartHandler"))>
 		<cfset application.cbController.setAppStartHandlerFired(true)>
 	</cfif>
-	
+
 	<!--- IF Found in config, run onRequestStart Handler --->
 	<cfif application.cbController.getSetting("RequestStartHandler") neq "">
 		<cfset application.cbController.runEvent(application.cbController.getSetting("RequestStartHandler"))>
 	</cfif>
-	
+
 	<!--- Run Default/Set Event --->
 	<cfset application.cbController.runEvent()>
-	
+
 	<!--- Render Layout/View pair using plugin factory --->
 	<cfoutput>#application.cbController.getPlugin("renderer").renderLayout()#</cfoutput>
-	
+
 	<!--- If Found in config, run onRequestEnd Handler --->
 	<cfif application.cbController.getSetting("RequestEndHandler") neq "">
 		<cfset application.cbController.runEvent(application.cbController.getSetting("RequestEndHandler"))>
 	</cfif>
-	
+
 	<!--- Trap Application Errors --->
 	<cfcatch type="any">
 		<cfset ExceptionBean = application.cbController.ExceptionHandler(cfcatch,"application","Application Execution Exception")>
