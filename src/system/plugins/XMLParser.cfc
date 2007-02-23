@@ -32,11 +32,11 @@ Modification History:
 ----------------------------------------------------------------------->
 <cfcomponent name="XMLParser"
 			 hint="This is the XML Parser plugin for the framework. It takes care of any XML parsing for the framework's usage."
-			 extends="coldbox.system.plugin" 
+			 extends="coldbox.system.plugin"
 			 cache="false">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
-	
+
 	<cffunction name="init" access="public" returntype="coldbox.system.plugin" output="false">
 		<cfargument name="controller" type="any" required="true">
 		<cfset super.Init(arguments.controller) />
@@ -45,7 +45,7 @@ Modification History:
 		setpluginName("XMLParser");
 		setpluginVersion("2.0");
 		setpluginDescription("I am the framework's XML parser");
-		
+
 		//Search Patterns for Config.xml
 		variables.instance.searchSettings = "//Settings/Setting";
 		variables.instance.searchYourSettings = "//YourSettings/Setting";
@@ -57,10 +57,10 @@ Modification History:
 		variables.instance.searchMailSettings = "//MailServerSettings";
 		variables.instance.searchi18NSettings = "//i18N";
 		variables.instance.searchDatasources = "//Datasources/Datasource";
-		
+
 		//Search patterns for fw xml
 		variables.instance.searchConfigXML_Path = "//ConfigXMLFile/FilePath";
-		
+
 		//Properties
 		variables.instance.FileSeparator = createObject("java","java.lang.System").getProperty("file.separator");
 		variables.instance.FrameworkConfigFile = ExpandPath("/coldbox/system/config/settings.xml");
@@ -69,9 +69,9 @@ Modification History:
 		return this;
 		</cfscript>
 	</cffunction>
-	
+
 <!------------------------------------------- PUBLIC ------------------------------------------->
-	
+
 	<cffunction name="loadFramework" access="public" hint="Load the framework's configuration xml." output="false" returntype="any">
 		<cfscript>
 		var settingsStruct = StructNew();
@@ -123,9 +123,9 @@ Modification History:
 		}
 		</cfscript>
 	</cffunction>
-	
+
 	<!--- ************************************************************* --->
-	
+
 	<cffunction name="parseConfig" access="public" returntype="struct" output="false">
 		<cfscript>
 		//Create Config Structure
@@ -161,6 +161,9 @@ Modification History:
 		//loopers
 		var i = 0;
 		var j = 0;
+		//Appmapping Variables
+		var webPath = "";
+		var localPath = "";
 		try{
 			//Validate File
 			if ( not fileExists(ConfigFileLocation) ){
@@ -174,14 +177,14 @@ Modification History:
 				//Parse XML and validate with XSD
 				configXML = xmlParse(ConfigFileLocation);
 			}
-			
+
 			//validate
 			if ( not structKeyExists(configXML, "config")  )
 				throw("No Config element found in the configuration file","","Framework.plugins.XMLParser.ConfigXMLParsingException");
-			
+
 			//Application Path
 			StructInsert(ConfigStruct, "ApplicationPath", ExpandPath("."));
-			
+
 			//Get SettingNodes
 			SettingNodes = XMLSearch(configXML, instance.searchSettings);
 			if ( ArrayLen(SettingNodes) eq 0 )
@@ -192,17 +195,24 @@ Modification History:
 			//Check for AppName or throw
 			if ( not StructKeyExists(ConfigStruct, "AppName") )
 				throw("There was no 'AppName' setting defined. This is required by the framework.","","Framework.plugins.XMLParser.ConfigXMLParsingException");
-			//Check For AppMapping or Throw
-			if ( not StructKeyExists(ConfigStruct, "AppMapping") )
-				throw("There was no 'AppMapping' setting defined. This is required by the framework.","","Framework.plugins.XMLParser.ConfigXMLParsingException");
-			//Check for Dev Mapping
-			if ( not StructKeyExists(ConfigStruct, "AppDevMapping") )
-				ConfigStruct["AppDevMapping"] = "";
-				
+
+			//Calculate AppMapping
+			webPath = replacenocase(cgi.script_name,getFIleFromPath(cgi.script_name),"");
+			localPath = getDirectoryFromPath(replacenocase(getTemplatePath(),"\","/","all"));
+			ConfigStruct.AppMapping = mid(localPath,findnocase(webPath, localPath),len(webPath));
+
+			//Clean last /
+			if ( right(ConfigStruct.AppMapping,1) eq "/" ){
+				if ( len(ConfigStruct.AppMapping) -1 gt 0)
+					ConfigStruct.AppMapping = left(ConfigStruct.AppMapping,len(ConfigStruct.AppMapping)-1);
+				else
+					ConfigStruct.AppMapping = "";
+			}
+
 			//Check for Default Event
 			if ( not StructKeyExists(ConfigStruct, "DefaultEvent") )
 				throw("There was no 'DefaultEvent' setting defined. This is required by the framework.","","Framework.plugins.XMLParser.ConfigXMLParsingException");
-			
+
 			//Check for Request Start Handler
 			if ( not StructKeyExists(ConfigStruct, "ApplicationStartHandler") )
 				ConfigStruct["ApplicationStartHandler"] = "";
@@ -215,7 +225,7 @@ Modification History:
 			//Check for InvalidEventHandler
 			if ( not StructKeyExists(ConfigStruct, "onInvalidEvent") )
 				ConfigStruct["onInvalidEvent"] = "";
-			
+
 			//Check For DebugMode in settings
 			if ( not structKeyExists(ConfigStruct, "DebugMode") or not isBoolean(ConfigStruct.DebugMode) )
 				ConfigStruct["DebugMode"] = "false";
@@ -223,9 +233,9 @@ Modification History:
 			if ( not structKeyExists(ConfigStruct, "DebugPassword") )
 				ConfigStruct["DebugPassword"] = "";
 			//Check for ReinitPassword
-			if ( not structKeyExists(ConfigStruct, "ReinitPassword") )	
+			if ( not structKeyExists(ConfigStruct, "ReinitPassword") )
 				ConfigStruct["ReinitPassword"] = "";
-							
+
 			//Check For Coldfusion Logging
 			if ( not structKeyExists(ConfigStruct, "EnableColdfusionLogging") or not isBoolean(ConfigStruct.EnableColdfusionLogging) )
 				ConfigStruct["EnableColdfusionLogging"] = "false";
@@ -234,8 +244,8 @@ Modification History:
 				ConfigStruct["EnableColdboxLogging"] = "false";
 			//Check For Coldbox Log Location if it is defined.
 			if ( not structKeyExists(ConfigStruct, "ColdboxLogsLocation") or trim(ConfigStruct["ColdboxLogsLocation"]) eq "")
-				ConfigStruct["ColdboxLogsLocation"] = "";		
-			
+				ConfigStruct["ColdboxLogsLocation"] = "";
+
 			//Check For Owner Email or Throw
 			if ( not StructKeyExists(ConfigStruct, "OwnerEmail") )
 				throw("There was no 'OwnerEmail' setting defined. This is required by the framework.","","Framework.plugins.XMLParser.ConfigXMLParsingException");
@@ -245,7 +255,7 @@ Modification History:
 			//Check For EnableBugReports Active or set to true
 			if ( not StructKeyExists(ConfigStruct, "EnableBugReports") or not isBoolean(ConfigStruct.EnableBugReports))
 				ConfigStruct["EnableBugReports"] = "true";
-			
+
 			//Check For UDFLibraryFile
 			if ( not StructKeyExists(ConfigStruct, "UDFLibraryFile") )
 				ConfigStruct["UDFLibraryFile"] = "";
@@ -255,32 +265,32 @@ Modification History:
 			//Check for MessageboxStyleClass if found
 			if ( not structkeyExists(ConfigStruct, "MessageboxStyleClass") )
 				ConfigStruct["MessageboxStyleClass"] = "";
-			
+
 			//Check for HandlersIndexAutoReload, default = false
 			if ( not structkeyExists(ConfigStruct, "HandlersIndexAutoReload") or not isBoolean(ConfigStruct.HandlersIndexAutoReload) )
 				ConfigStruct["HandlersIndexAutoReload"] = false;
 			//Check for ConfigAutoReload
 			if ( not structKeyExists(ConfigStruct, "ConfigAutoReload") or not isBoolean(ConfigStruct.ConfigAutoReload) )
 				ConfigStruct["ConfigAutoReload"] = false;
-			
+
 			//Check for MessageboxStyleClass if found
 			if ( not structkeyExists(ConfigStruct, "ExceptionHandler") )
 				ConfigStruct["ExceptionHandler"] = "";
-		
+
 			//Check for MyPluginsLocation if found
 			if ( not structkeyExists(ConfigStruct, "MyPluginsLocation") )
 				ConfigStruct["MyPluginsLocation"] = "";
-			
+
 			//Check for Handler Caching
 			if ( not structKeyExists(ConfigStruct, "HandlerCaching") or not isBoolean(ConfigStruct.HandlerCaching) )
 				ConfigStruct["HandlerCaching"] = true;
-				
+
 			//Check for IOC Framework
 			if ( not structKeyExists(ConfigStruct, "IOCFramework") )
 				ConfigStruct["IOCFramework"] = "";
 			if ( not structKeyExists(ConfigStruct, "IOCDefinitionFile") )
 				ConfigStruct["IOCDefinitionFile"] = "";
-			
+
 			//Your Settings To Load
 			YourSettingNodes = XMLSearch(configXML, instance.searchYourSettings);
 			if ( ArrayLen(YourSettingNodes) gt 0 ){
@@ -293,25 +303,25 @@ Modification History:
 			MailSettingsNodes = XMLSearch(configXML, instance.searchMailSettings);
 			//Check if empty
 			if ( ArrayLen(MailSettingsNodes) gt 0 and ArrayLen(MailSettingsNodes[1].XMLChildren) gt 0){
-				
+
 				//Checks
 				if ( structKeyExists(MailSettingsNodes[1], "MailServer") )
 					StructInsert(ConfigStruct, "MailServer", trim(MailSettingsNodes[1].MailServer.xmlText) );
 				else
 					StructInsert(ConfigStruct,"MailServer","");
-					
+
 				//Mail username
 				if ( structKeyExists(MailSettingsNodes[1], "MailUsername") )
 					StructInsert(ConfigStruct, "MailUsername", trim(MailSettingsNodes[1].MailUsername.xmlText) );
 				else
 					StructInsert(ConfigStruct,"MailUsername","");
-					
+
 				//Mail password
 				if ( structKeyExists(MailSettingsNodes[1], "MailPassword") )
 					StructInsert(ConfigStruct, "MailPassword", trim(MailSettingsNodes[1].MailPassword.xmlText) );
 				else
 					StructInsert(ConfigStruct,"MailPassword","");
-					
+
 				//Mail Port
 				if ( structKeyExists(MailSettingsNodes[1], "MailPort") ){
 					if (trim(MailSettingsNodes[1].MailPort.xmlText) neq "")
@@ -352,7 +362,7 @@ Modification History:
 				StructInsert(ConfigStruct,"using_i18N",true);
 				//Check if resource bundle was used.
 				if ( not structKeyExists(ConfigStruct, "DefaultResourceBundle") ){
-					StructInsert(ConfigStruct,"DefaultResourceBundle","");				
+					StructInsert(ConfigStruct,"DefaultResourceBundle","");
 				}
 			}
 			else{
@@ -391,12 +401,7 @@ Modification History:
 			}
 			else
 				StructInsert(ConfigStruct,"Environment","PRODUCTION");
-			
-			//Environment Set, now test if AppDevMapping is defined and set it to be the AppMapping.
-			if( ConfigStruct.Environment eq "DEVELOPMENT" and ConfigStruct.AppDevMapping neq "" ){
-				ConfigStruct.AppMapping = ConfigStruct.AppDevMapping;
-			}
-			
+
 			//Set the Handler Invocation & Physical Path for this Application
 			if( ConfigStruct["AppMapping"] neq ""){
 				//Parse out the first / to create handler invocation Path
@@ -405,15 +410,15 @@ Modification History:
 				}
 				//Set the handler Invocation Path
 				ConfigStruct["HandlersInvocationPath"] = replace(ConfigStruct["AppMapping"],"/",".","all") & ".handlers";
-				
+
 				//Set the Default Handler Path
-				ConfigStruct["HandlersPath"] = ConfigStruct["AppMapping"];	
-				
+				ConfigStruct["HandlersPath"] = ConfigStruct["AppMapping"];
+
 				//Set the physical path according to system.
 				//Test for CF 6.X
 				if ( listfirst(server.coldfusion.productversion) lt 7 ){
 					ConfigStruct["HandlersPath"] = replacenocase(cgi.SCRIPT_NAME, listlast(cgi.SCRIPT_NAME,"/"),"") & "handlers";
-				}	
+				}
 				else{
 					ConfigStruct["HandlersPath"] = "/" & ConfigStruct["HandlersPath"] & "/handlers";
 				}
@@ -424,7 +429,7 @@ Modification History:
 				ConfigStruct["HandlersInvocationPath"] = "handlers";
 				ConfigStruct["HandlersPath"] = expandPath("handlers");
 			}
-			
+
 			//Get Web Services From Config.
 			WebServiceNodes = XMLSearch(configXML, instance.searchWS);
 			if ( ArrayLen(WebServiceNodes) ){
@@ -446,14 +451,14 @@ Modification History:
 				StructInsert(WebServicesStruct,"PRO",ProWS);
 			}// end ArrayLen( WebServiceNodes)
 			StructInsert(ConfigStruct,"WebServices",WebServicesStruct);
-			
+
 			//Datasources Support
 			DatasourcesNodes = XMLSearch(configXML, instance.searchDatasources);
 			if ( ArrayLen(DatasourcesNodes) ){
 				//Create Structures
 				for(i=1;i lte ArrayLen(DatasourcesNodes); i=i+1){
 					DSNStruct = structNew();
-					
+
 					//Required Entries
 					if ( not structKeyExists(DatasourcesNodes[i].XMLAttributes, "Alias") or len(Trim(DatasourcesNodes[i].XMLAttributes["Alias"])) eq 0 )
 						throw("This datasource entry's alias cannot be blank","","Framework.plugins.XMLParser.ConfigXMLParsingException");
@@ -463,7 +468,7 @@ Modification History:
 						throw("This datasource entry's name cannot be blank","","Framework.plugins.XMLParser.ConfigXMLParsingException");
 					else
 						StructInsert(DSNStruct,"Name", Trim(DatasourcesNodes[i].XMLAttributes["Name"]));
-					
+
 					//Optional Entries.
 					if ( structKeyExists(DatasourcesNodes[i].XMLAttributes, "dbtype") )
 						StructInsert(DSNStruct,"DBType", Trim(DatasourcesNodes[i].XMLAttributes["dbtype"]));
@@ -477,7 +482,7 @@ Modification History:
 						StructInsert(DSNStruct,"Password", Trim(DatasourcesNodes[i].XMLAttributes["password"]));
 					else
 						StructInsert(DSNStruct,"Password","");
-					
+
 					//Insert to structure
 					if ( not structKeyExists(DatasourcesStruct,DSNStruct.Alias) )
 						StructInsert(DatasourcesStruct, DSNStruct.Alias , DSNStruct);
@@ -486,7 +491,7 @@ Modification History:
 				}
 			}
 			StructInsert(ConfigStruct, "Datasources", DatasourcesStruct);
-			
+
 			//Layout into Config
 			DefaultLayout = XMLSearch(configXML,instance.searchDefaultLayout);
 			//validate Default Layout.
@@ -523,7 +528,7 @@ Modification History:
 		return ConfigStruct;
 		</cfscript>
 	</cffunction>
-	
+
 	<!--- ************************************************************* --->
 
 </cfcomponent>
