@@ -84,7 +84,7 @@ Modification History:
 	<cffunction name="createContext" access="private" output="false" returntype="any" hint="Creates a new request context object">
 		<cfscript>
 		var DefaultLayout = "";
-		var ViewLayouts = "";
+		var ViewLayouts = structNew();
 
 		if ( controller.settingExists("DefaultLayout") ){
 			DefaultLayout = controller.getSetting("DefaultLayout");
