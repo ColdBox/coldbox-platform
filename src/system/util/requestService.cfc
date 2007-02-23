@@ -83,15 +83,16 @@ Modification History:
 
 	<cffunction name="createContext" access="private" output="false" returntype="any" hint="Creates a new request context object">
 		<cfscript>
-			var DefaultLayout = "";
-			var ViewLayouts = "";
-			if ( controller.settingExists("DefaultLayout") ){
-				DefaultLayout = controller.getSetting("DefaultLayout");
-			}
-			if ( controller.settingExists("ViewLayouts") ){
-				DefaultLayout = controller.getSetting("ViewLayouts");
-			}
-			return CreateObject("component","coldbox.system.beans.RequestContext").init(FORM, URL, DefaultLayout , ViewLayouts));
+		var DefaultLayout = "";
+		var ViewLayouts = "";
+
+		if ( controller.settingExists("DefaultLayout") ){
+			DefaultLayout = controller.getSetting("DefaultLayout");
+		}
+		if ( controller.settingExists("ViewLayouts") ){
+			DefaultLayout = controller.getSetting("ViewLayouts");
+		}
+		return CreateObject("component","coldbox.system.beans.RequestContext").init(FORM, URL, DefaultLayout , ViewLayouts);
 		</cfscript>
 	</cffunction>
 
