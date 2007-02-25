@@ -60,9 +60,9 @@ Modification History:
 	
 	<!--- ************************************************************* --->
 	
-	<cffunction name="collectionAppend" access="public" returntype="void" output="false" hint="Append a structure to the collection, with overwrite or not. Overwrite = true by default">
+	<cffunction name="collectionAppend" access="public" returntype="void" output="false" hint="Append a structure to the collection, with overwrite or not. Overwrite = false by default">
 		<cfargument name="collection" type="struct"  required="true">
-		<cfargument name="overwrite"  type="boolean" required="false" default="true">
+		<cfargument name="overwrite"  type="boolean" required="false" default="false" hint="If you need to override data in the collection, set this to true.">
 		<cfset structAppend(variables.context,arguments.collection, arguments.overwrite)>
 	</cffunction>
 	
