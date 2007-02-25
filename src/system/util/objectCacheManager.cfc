@@ -11,7 +11,7 @@ Description :
 Modification History:
 01/18/2007 - Created
 ----------------------------------------------------------------------->
-<cfcomponent name="objectCacheManager" hint="Manages handler caching." output="false">
+<cfcomponent name="objectCacheManager" hint="Manages handler,plugin,custom plugin and object caching. It is thread safe and implements locking for you." output="false">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 	
@@ -48,74 +48,75 @@ Modification History:
 		<!--- ************************************************************* --->
 		<cfargument name="objectKey" type="string" required="true">
 		<!--- ************************************************************* --->
-		<cfscript>
-		var ObjectFound = false;
-		//Check for empty cache.
-		if ( structisEmpty(variables.cb_objects) ){
-			return false;
-		}
-		//Check if we need to do a reap First.
-		needToReap();
-		//Check for Object in Cache.
-		if ( structKeyExists(variables.cb_objects, arguments.objectKey) ){
-			ObjectFound = true;
-		}
-		else{
-			//Log miss because,user might not call get.
-			miss();
-		}
-		//return result	
-		return ObjectFound;
-		</cfscript>
+		<cfset var ObjectFound = false>
+		
+		<!--- Reap the cache First, if in frequency --->
+		<cfset reap()>
+		
+		<cflock type="readonly" name="OCM_Operation" timeout="5">
+			<!--- Check for Object in Cache. --->
+			<cfif structKeyExists(variables.cb_objects, arguments.objectKey) >
+				<cfset ObjectFound = true>
+			<cfelse>
+				<!--- Log miss --->
+				<cfset miss()>
+			</cfif>
+		</cflock>
+		<cfreturn ObjectFound>
 	</cffunction>
 	
 	<!--- ************************************************************* --->
 	
-	<cffunction name="get" access="public" output="false" returntype="any" hint="Get an object from cache. If it doesn't exist it return a blank structure.">
+	<cffunction name="get" access="public" output="false" returntype="any" hint="Get an object from cache. If it doesn't exist it returns a blank structure.">
 		<!--- ************************************************************* --->
 		<cfargument name="objectKey" type="string" required="true">
 		<!--- ************************************************************* --->
-		<cfscript>
-		//Check if we need to do a reap First.
-		needToReap();
-		//Normal Lookup
-		if ( lookup(arguments.objectKey) ){
-			hit();
-			variables.cb_objects_metadata[arguments.objectKey].hits = variables.cb_objects_metadata[arguments.objectKey].hits + 1;
-			variables.cb_objects_metadata[arguments.objectKey].lastAccesed = now();
-			return variables.cb_objects[arguments.objectKey];
-		}
-		else{
-			return structNew();
-		}
-		</cfscript>
+		<cfset var ObjectFound = StructNew()>
+		<!--- Lookup First --->
+		<cfif lookup(arguments.objectKey)>
+			<!--- Record a Hit --->
+			<cfset hit()>
+			<cflock type="exclusive" name="OCM_Operation" timeout="5">
+				<cfset variables.cb_objects_metadata[arguments.objectKey].hits = variables.cb_objects_metadata[arguments.objectKey].hits + 1>
+				<cfset variables.cb_objects_metadata[arguments.objectKey].lastAccesed = now()>
+				<cfset ObjectFound = variables.cb_objects[arguments.objectKey]>
+			</cflock>
+		</cfif>
+		<cfreturn ObjectFound>
 	</cffunction>
 	
 	<!--- ************************************************************* --->
 	
-	<cffunction name="set" access="public" output="false" returntype="void" hint="set a handler in cache.">
+	<cffunction name="set" access="public" output="false" returntype="void" hint="sets an object in cache.">
 		<!--- ************************************************************* --->
 		<cfargument name="objectKey" 		type="string"  required="true">
 		<cfargument name="MyObject"			type="any" 	   required="true">
-		<cfargument name="Timeout"			type="numeric" required="false" default="0" hint="Timeout in minutes, else inherits from framework.">
+		<cfargument name="Timeout"			type="string"  required="false" default="" hint="Timeout in minutes. If timeout = 0 then object never times out. If timeout is blank, then timeout will be inherited from framework.">
 		<!--- ************************************************************* --->
-		<cfscript>
-		//Check if we need to do a reap First.
-		needToReap();
-		//Set new Object
-		variables.cb_objects[arguments.objectKey] = arguments.MyObject;
-		//Compute Object Timeout
-		if ( arguments.Timeout eq 0 ){
-			arguments.Timeout = variables.CacheObjectDefaultTimeout;
-		}
-		//Set object's metdata
-		variables.cb_objects_metadata[arguments.objectKey] = structNew();
-		variables.cb_objects_metadata[arguments.objectKey].hits = 1;
-		variables.cb_objects_metadata[arguments.objectKey].Timeout = arguments.timeout;
-		variables.cb_objects_metadata[arguments.objectKey].Created = now();
-		variables.cb_objects_metadata[arguments.objectKey].lastAccesed = now();
-		</cfscript>
+		<!--- Clean Args --->
+		<cfset arguments.objectKey = trim(arguments.objectKey)>
+		<cfset arguments.Timeout = trim(arguments.Timeout)>
 		
+		<!--- Test Timeout Argument, if false, then inherit framework's timeout --->
+		<cfif arguments.Timeout eq "" or not isNumeric(arguments.Timeout) or arguments.Timeout lt 0>
+			<cfset arguments.Timeout = variables.CacheObjectDefaultTimeout>
+		</cfif>
+		
+		<!--- Check if we need to do a reap First. --->
+		<cfset reap()>
+		
+		<cflock type="exclusive" name="OCM_Operation" timeout="5">
+			<cfscript>
+			//Set new Object into cache.
+			variables.cb_objects[arguments.objectKey] = arguments.MyObject;
+			//Set object's metdata
+			variables.cb_objects_metadata[arguments.objectKey] = structNew();
+			variables.cb_objects_metadata[arguments.objectKey].hits = 1;
+			variables.cb_objects_metadata[arguments.objectKey].Timeout = arguments.timeout;
+			variables.cb_objects_metadata[arguments.objectKey].Created = now();
+			variables.cb_objects_metadata[arguments.objectKey].lastAccesed = now();
+			</cfscript>
+		</cflock>		
 	</cffunction>
 	
 	<!--- ************************************************************* --->
@@ -124,25 +125,25 @@ Modification History:
 		<!--- ************************************************************* --->
 		<cfargument name="objectKey" type="string" required="true">
 		<!--- ************************************************************* --->
-		<cfscript>
-		if ( lookup(arguments.objectKey) ){
-			structDelete(variables.cb_objects,arguments.objectKey);
-			structDelete(variables.cb_objects_metadata,arguments.objectKey);
-			return true;
-		}
-		else
-			return false;
-		</cfscript>
+		<cfset var Results = false>
+		<cfif lookup(arguments.objectKey) >
+			<cflock type="exclusive" name="OCM_Operation" timeout="5">
+				<cfset structDelete(variables.cb_objects,arguments.objectKey)>
+				<cfset structDelete(variables.cb_objects_metadata,arguments.objectKey)>
+			</cflock>
+			<cfset Results = true>
+		</cfif>
+		<cfreturn Results>
 	</cffunction>
 	
 	<!--- ************************************************************* --->
 	
 	<cffunction name="clear" access="public" output="false" returntype="void" hint="Clears the entire object cache.">
-		<cfscript>
-		structClear(variables.cb_objects);
-		structClear(variables.cb_objects_metadata);
-		resetStatistics();
-		</cfscript>
+		<cflock type="exclusive" name="OCM_Operation" timeout="5">
+			<cfset structClear(variables.cb_objects)>
+			<cfset structClear(variables.cb_objects_metadata)>
+			<cfset resetStatistics()>
+		</cflock>
 	</cffunction>
 	
 	<!--- ************************************************************* --->
@@ -192,7 +193,6 @@ Modification History:
 	
 	<cffunction name="getSize" access="public" output="false" returntype="numeric" hint="Get the cache's size in items">
 		<cfscript>
-		reap();
 		return StructCount(variables.cb_objects);
 		</cfscript>
 	</cffunction>
@@ -207,7 +207,7 @@ Modification History:
 	
 	<!--- ************************************************************* --->
 	
-	<cffunction name="getItemTypes" access="public" output="false" returntype="any" hint="">
+	<cffunction name="getItemTypes" access="public" output="false" returntype="any" hint="Get the item types of the cache.">
 		<cfscript>
 		var x = 1;
 		var itemList = structKeyList(variables.cb_objects);
@@ -231,52 +231,38 @@ Modification History:
 	
 	<!--- ************************************************************* --->
 	
-	<cffunction name="reap" access="public" output="false" returntype="void" hint="Reap the cache. Must be run from an exclusive lock">
+	<cffunction name="reap" access="public" output="false" returntype="void" hint="Reap the cache.">
 		<cfscript>
-		var key = "";
-		var objStruct = variables.cb_objects_metadata;
-		dump(objStruct);
-		//Loop Through Metadata
-		for (key in objStruct){
-			//Check for creation timeouts and clear
-			if ( dateDiff("n", objStruct[key].created, now() ) gt  objStruct[key].Timeout){
-				clearKey(key);
-				continue;
+			var key = "";
+			var objStruct = variables.cb_objects_metadata;
+			//Check reaping frequency
+			if ( dateDiff("n", variables.lastReapDatetime, now()) gt variables.reapFrequency){
+				//Reaping about to start, set new reaping date.
+				variables.lastReapDatetime = now();
+			
+				//Loop Through Metadata
+				for (key in objStruct){
+					//Override Timeout Check
+					if ( objStruct[key].Timeout gt 0 ){
+						//Check for creation timeouts and clear
+						if ( dateDiff("n", objStruct[key].created, now() ) gt  objStruct[key].Timeout){
+							clearKey(key);
+							continue;
+						}
+						//Check for last accessed timeout. If object has not been accessed in the default span
+						if ( dateDiff("n", objStruct[key].lastAccesed, now() ) gt  variables.CacheObjectDefaultLastAccessTimeout ){
+							clearKey(key);
+							continue;
+						}
+					}
+				}
 			}
-			//Check for last accessed timeout. If object has not been accessed in the default span
-			if ( dateDiff("n", objStruct[key].lastAccesed, now() ) gt  variables.CacheObjectDefaultLastAccessTimeout ){
-				clearKey(key);
-				continue;
-			}
-		}
-		dump(objStruct);
 		</cfscript>
 	</cffunction>
 	
 	<!--- ************************************************************* --->
 	
 <!------------------------------------------- PRIVATE ------------------------------------------->
-	<cffunction name="dump" access="private" hint="Facade for cfmx dump" returntype="void">
-		<!--- ************************************************************* --->
-		<cfargument name="var" required="yes" type="any">
-		<!--- ************************************************************* --->
-		<cfdump var="#var#">
-	</cffunction>
-	
-	<cffunction name="abort" access="private" hint="Facade for cfabort" returntype="void" output="false">
-		<cfabort>
-	</cffunction>
-	<!--- ************************************************************* --->
-	
-	<cffunction name="needToReap" access="private" output="false" returntype="void" hint="Checks wether we need to reap or not according to reaping frequency. If yes, then it reaps">
-		<cfscript>
-		//Check reaping frequency
-		if ( dateDiff("n", variables.lastReapDatetime, now()) gt variables.reapFrequency){
-			variables.lastReapDatetime = now();
-			reap();
-		}
-		</cfscript>
-	</cffunction>
 	
 	<!--- ************************************************************* --->
 	
@@ -291,4 +277,7 @@ Modification History:
 		<cfargument name="controller" type="any" required="true"/>
 		<cfset variables.controller = arguments.controller/>
 	</cffunction>
+	
+	<!--- ************************************************************* --->
+	
 </cfcomponent>

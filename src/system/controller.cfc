@@ -200,9 +200,8 @@ Last Update 	: December 9, 2006
 		<cfargument name="customPlugin" type="boolean" required="false" default="false" hint="Used internally to create custom plugins.">
 		<!--- ************************************************************* --->
 		<cfset var oPlugin = "">
-		<cfset var HandlerInCache = "">
 		<cfset var MetaData = structNew()>
-		<cfset var objTimeout = 0>
+		<cfset var objTimeout = "">
 		<cfset var pluginKey = "plugin_" & arguments.plugin>
 		<cfset var pluginPath = "coldbox.system.plugins.#trim(arguments.plugin)#">
 		
@@ -213,28 +212,22 @@ Last Update 	: December 9, 2006
 		</cfif>
 		
 		<!--- Lookup in Cache --->
-		<cflock type="readonly" name="OCM_Operation" timeout="20">
-			<cfset HandlerInCache = instance.ColdboxOCM.lookup(pluginKey)>
-		</cflock>
-		<cfif HandlerInCache>
-			<cflock type="exclusive" name="OCM_Operation" timeout="20">
-				<cfset oPlugin = instance.ColdboxOCM.get(pluginKey)>
-			</cflock>
-		</cfif>
-		
-		<!--- Object not found, proceed to create and verify --->
-		<cfif not HandlerInCache>
+		<cfif instance.ColdboxOCM.lookup(pluginKey)>
+			<cfset oPlugin = instance.ColdboxOCM.get(pluginKey)>
+		<cfelse>
+			<!--- Object not found, proceed to create and verify --->
 			<cfset oPlugin = CreateObject("component", pluginPath).init(this)>
+			<!--- Get Object's MetaData --->
 			<cfset MetaData = getMetaData(oPlugin)>
+			<!--- Test for caching parameters --->
 			<cfif structKeyExists(MetaData, "cache") and isBoolean(MetaData["cache"]) and MetaData["cache"]>
-				<cfif structKeyExists(MetaData,"cachetimeout") and isNumeric(MetaData["cachetimeout"])>
+				<cfif structKeyExists(MetaData,"cachetimeout") >
 					<cfset objTimeout = MetaData["cachetimeout"]>
 				</cfif>
-				<cflock type="exclusive" name="OCM_Operation" timeout="20">
-					<cfset instance.ColdboxOCM.set(pluginKey,oPlugin,objTimeout)>
-				</cflock>
+				<cfset instance.ColdboxOCM.set(pluginKey,oPlugin,objTimeout)>
 			</cfif>
 		</cfif>
+		<!--- Return Plugin --->
 		<cfreturn oPlugin>
 	</cffunction>
 	<cffunction name="getMyPlugin" access="public" hint="Get a custom plugin" returntype="any" output="false">
@@ -259,9 +252,8 @@ Last Update 	: December 9, 2006
 		<!--- ************************************************************* --->
 		<cfset var oEventHandler = "">
 		<cfset var oEventBean = "">
-		<cfset var objTimeout = 0>
+		<cfset var objTimeout = "">
 		<cfset var MetaData = "">
-		<cfset var HandlerInCache = false>
 		<cfset var ExecutingHandler = "">
 		<cfset var ExecutingMethod = "">
 		<cfset var RequestContext = instance.RequestService.getContext()>
@@ -279,49 +271,43 @@ Last Update 	: December 9, 2006
 			<cfset ExecutingHandler = oEventBean.getRunnable()>
 			<cfset ExecutingMethod = oEventBean.getMethod()>
 			
-			<!--- Check if using handler cache, get handler from cache --->
+			<!--- Check if using handler caching --->
 			<cfif getSetting("HandlerCaching")>
 			
 				<!--- Lookup in Cache --->
-				<cflock type="readonly" name="OCM_Operation" timeout="20">
-					<cfset HandlerInCache = instance.ColdboxOCM.lookup("handler_" & ExecutingHandler)>
-				</cflock>
-				
-				<!--- Test if found --->
-				<cfif HandlerInCache>
-					<cflock type="exclusive" name="OCM_Operation" timeout="20">
-						<cfset oEventHandler = instance.ColdboxOCM.get("handler_" & ExecutingHandler)>
-					</cflock>
-				</cfif>
-				
-				<!--- Object not found, set in cache--->
-				<cfif not HandlerInCache>
+				<cfif instance.ColdboxOCM.lookup("handler_" & ExecutingHandler)>
+					<cfset oEventHandler = instance.ColdboxOCM.get("handler_" & ExecutingHandler)>
+				<cfelse>
 					<cfset oEventHandler = CreateObject("component",ExecutingHandler).init(this)>
+					<!--- Get Object MetaData --->
 					<cfset MetaData = getMetaData(oEventHandler)>
+					<!--- By Default, handlers with no cache flag are set to true --->
 					<cfif not structKeyExists(MetaData,"cache")>
 						<cfset MetaData.cache = true>
 					</cfif>
 					<cfif isBoolean(MetaData["cache"]) and MetaData["cache"]>
-						<cfif structKeyExists(MetaData,"cachetimeout") and isNumeric(MetaData["cachetimeout"])>
+						<cfif structKeyExists(MetaData,"cachetimeout") >
 							<cfset objTimeout = MetaData["cachetimeout"]>
 						</cfif>
-						<cflock type="exclusive" name="OCM_Operation" timeout="20">
-							<cfset instance.ColdboxOCM.set("handler_" & ExecutingHandler,oEventHandler,objTimeout)>
-						</cflock>
-					</cfif>
-				</cfif>
-				
+						<!--- Set the Runnable Object --->
+						<cfset instance.ColdboxOCM.set("handler_" & ExecutingHandler,oEventHandler,objTimeout)>
+					</cfif>				
+				</cfif>			
 			<cfelse>
 				<!--- Create Runnable Object --->
 				<cfset oEventHandler = CreateObject("component",ExecutingHandler).init(this)>
 			</cfif>
 
-			<!--- Verify Method Exists --->
+			<!--- Verify Event Method Exists --->
 			<cfif not structKeyExists(oEventHandler,ExecutingMethod)>
-				<!--- Invalid Event Detected --->
+				<!--- Invalid Event Detected, log it --->
 				<cfset getPlugin("logger").logEntry("error","Invalid Event detected: #ExecutingHandler#.#ExecutingMethod#")>
-				<!--- Relocate to Invalid Event --->
-				<cfset setNextEvent(getSetting("onInvalidEvent"))>
+				<cfif getSetting("onInvalidEvent") neq "">
+					<!--- Relocate to Invalid Event --->
+					<cfset setNextEvent(getSetting("onInvalidEvent"))>
+				<cfelse>
+					<cfthrow type="Framework.InvalidEventException" message="An invalid event has been detected: #ExecutingMethod#">
+				</cfif>
 			</cfif>
 			
 			<!--- Execute Method --->

@@ -11,7 +11,7 @@ Description :
 Modification History:
 02/15/2007 - Created 
 ----------------------------------------------------------------------->
-<cfcomponent name="ioc" hint="An Inversion Of Control plugin." extends="coldbox.system.plugin" cache="true"> 
+<cfcomponent name="ioc" hint="An Inversion Of Control plugin." extends="coldbox.system.plugin" cache="true" cachetimeout="0"> 
 	
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
@@ -25,7 +25,7 @@ Modification History:
 		<cfset instance.IOCFramework = getSetting("IOCFramework")>
 		<cfset instance.IOCDefinitionFile = getSetting("IOCDefinitionFile")>
 		<cfset instance.ExpandedIOCDefinitionFile = "">
-		<cfset instance.IoCFactory = "">
+		<cfset instance.IoCFactory = structNew()>
 		<!--- Constants --->
 		<cfset instance.COLDSPRING_FACTORY = getSetting("ColdspringBeanFactory",true)>
 		<cfreturn this>

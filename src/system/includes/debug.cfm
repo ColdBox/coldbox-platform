@@ -26,6 +26,9 @@ Modification History:
 <cfset debugStartTime = GetTickCount()>
 <cfset RequestCollection = RequestContext.getCollection()>
 
+<cfset JVMFreeMemory = getPlugin("fileUtilities").getJVMfreeMemory()/1024>
+<cfset JVMTotalMemory = getPlugin("fileUtilities").getJVMTotalMemory()/1024>
+
 <cfoutput>
 <!--- Style --->
 <style>
@@ -93,7 +96,7 @@ function toggle(divid){
 		  JVM Memory
 		</div>
 		<div class="fw_debugContentCell">
-		#NumberFormat(getPlugin("fileUtilities").getJVMfreeMemory()/1024)# KB / #NumberFormat(getPlugin("fileUtilities").getJVMTotalMemory()/1024)#	KB (Free/Total)	
+		#NumberFormat(JVMFreeMemory)# KB / #NumberFormat(JVMTotalMemory)#	KB (Free/Total)	
 		</div>
 
 		<div class="fw_debugTitleCell">
@@ -224,6 +227,14 @@ function toggle(divid){
 		<div>
 		<table align="center" >
 			<tr>
+				<td>
+				<cfchart format="png" show3d="true" backgroundcolor="##eeeeee" gridlines="true">
+					<cfchartseries type="pie" colorlist="85ca0a,1e3aca" >
+						<cfchartdata item="Free Memory (KB)"  value="#JVMFreeMemory#">
+						<cfchartdata item="Total Memory (KB)" value="#JVMTotalMemory#">
+					</cfchartseries>
+				</cfchart>
+				</td>
 				<td>
 				<cfchart format="png" show3d="true" backgroundcolor="##eeeeee">
 					<cfchartseries type="bar" colorlist="93C2FF,ED2939" >
