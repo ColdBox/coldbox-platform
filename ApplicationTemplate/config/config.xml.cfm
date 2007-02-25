@@ -4,10 +4,6 @@
 	<Settings>
 		<!--The name of your application.-->
 		<Setting name="AppName"						value="Your App Name here"/>
-		<!--The application's mapping either relative to the web root or using a CFMX mapping.-->
-		<Setting name="AppMapping" 					value="Your Application Mapping Here" />
-		<!--Optional: AppDevMapping, your mapping same as above but for a Development Environment -->
-		<Setting name="AppDevMapping" 				value=""/>
 		<!--Default Debugmode boolean flag (Set to false in production environments)-->
 		<Setting name="DebugMode" 					value="true" />
 		<!--The Debug Password to use in order to activate/deactivate debugmode,activated by url actions -->

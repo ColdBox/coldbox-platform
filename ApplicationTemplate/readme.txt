@@ -56,15 +56,7 @@ How to start?
    web root. /WEBROOT/coldbox
 
 2) Open the config/config.xml.cfm file and change the AppName setting to whatever you want.
-   Change the AppMapping setting to the full path from the webroot to the application or
-   if you want to use a coldfusion mapping, then you can use one, but make sure you 
-   create it first in the coldfusion administrator. I usuallly use the full
-   path from the web root.
-  
-   Example: In step 1 you named the folder "ColdboxApp" then the AppMapping setting
-   will be <Setting name="AppMapping" value="/ColdboxApp" /> since it starts in the
-   root. The '/' is optional.
-  
+    
    You can read the config.xml guide in order to understand all the variables in this file
    and adjust if needed.  
 
