@@ -28,7 +28,7 @@
 						<cfset rc.feedValidated = true>
 					</cfif>
 					<cfcatch type="any">
-						<cfset getPlugin("logger").logError("Error Parsing Feed", e)>
+						<cfset getPlugin("logger").logError("Error Parsing Feed", cfcatch)>
 						<cfset getPlugin("messagebox").setMessage("error", cfcatch.message & "<br>" & cfcatch.detail)>
 					</cfcatch>
 				</cftry>
