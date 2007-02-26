@@ -4,7 +4,6 @@
 	<Settings>
 		<!--The name of your app-->
 		<Setting name="AppName" 					value="News Webservices Feed"/>
-		<Setting name="AppMapping" 					value="coldbox/samples/applications/NewsWebservice" />
 		<Setting name="DebugMode" 					value="true" />
 		<Setting name="DebugPassword" 				value="coldbox"/>
 		<Setting name="EnableColdfusionLogging"		value="false" />

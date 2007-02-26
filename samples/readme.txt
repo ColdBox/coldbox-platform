@@ -25,6 +25,11 @@ You should have the following directory structure in the web root:
 3) Browse to the samples directory on your browser and that is it.
 http://{your web address}/coldbox/samples
 
+**IMPORTANT: Some sample applications need installation of server side components or
+             databases. Please look at each of the installation instructions on each
+             application.
+
+
 *******************************************************
 Credits
 *******************************************************

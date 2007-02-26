@@ -4,7 +4,6 @@
 	<Settings>
 		<!--The name of your app-->
 		<Setting name="AppName" 					value="Galleon"/>
-		<Setting name="AppMapping" 					value="coldbox/samples/applications/galleon_1_7" />
 		<Setting name="DebugMode" 					value="true" />
 		<Setting name="DebugPassword" 				value="coldbox"/>
 		<Setting name="EnableDumpVar"				value="true" />

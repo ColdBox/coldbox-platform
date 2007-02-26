@@ -3,7 +3,6 @@
 	xsi:noNamespaceSchemaLocation="http://www.coldboxframework.com/schema/config_1.2.0.xsd">
 	<Settings>
 		<Setting name="AppName" 					value="Sample UDF Library Usage"/>
-		<Setting name="AppMapping" 					value="coldbox/samples/applications/udf_library_usage"/>
 		<Setting name="DebugMode" 					value="true"/>
 		<Setting name="DebugPassword" 				value="coldbox"/>
 		<Setting name="EnableDumpVar" 				value="true"/>

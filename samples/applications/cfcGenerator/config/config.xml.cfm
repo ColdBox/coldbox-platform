@@ -3,8 +3,6 @@
 	xsi:noNamespaceSchemaLocation="http://www.coldboxframework.com/schema/config_1.2.0.xsd">
 	<Settings>
 		<Setting name="AppName"						value="Illudium PU-36 Code Generator"/>
-		<Setting name="AppMapping" 					value="coldbox/samples/applications/cfcGenerator" />
-		<Setting name="AppDevMapping" 				value=""/>
 		<Setting name="DebugMode" 					value="false" />
 		<Setting name="DebugPassword" 				value="Coldbox"/>
 		<Setting name="EnableDumpVar"				value="true" />

@@ -80,7 +80,7 @@
 				<p> #getresource("by")# Paul Hastings & Luis Majano
 				  <br />
 				  #getresource("nosetup")# <br />
-				  <a href="applications/i18NSample/index.cfm">#getresource("opensample")#</a><br />
+				  <a href="applications/i18NSample/index.cfm" target="_blank">#getresource("opensample")#</a><br />
 				</p>
 				</div>
 			</div>
@@ -91,7 +91,8 @@
 				<p> #getresource("by")# Oscar Arevalo<br />#getresource("coldboxreadermessage")#<bR>
 				#getresource("needssetup")#
 				<br />
-				  <a href="#getSetting("ColdboxReaderApp")#/install?TB_iframe=true&height=600&width=800" class="thickbox">#getresource("openinstall")#</a><br />
+				  <a href="#getSetting("ColdboxReaderApp")#/install/install.txt?TB_iframe=true&height=550&width=800" class="thickbox" title="Install.txt">Install.txt</a><br />
+				  <a href="#getSetting("ColdboxReaderApp")#/install?TB_iframe=true&height=550&width=800" class="thickbox" title="Install Folder">#getresource("openinstall")#</a><br />
 				  <a href="#getSetting("ColdboxReaderApp")#/index.cfm" target="_blank">#getresource("opensample")#</a><br />
 				</p>
 				
@@ -100,7 +101,7 @@
 				<br />
 				<font color="##53231d">#getResource("portMessage")#</font>
 				<br />
-				  <a href="#getSetting("cfcGeneratorApp")#/install?TB_iframe=true&height=600&width=800" class="thickbox">#getresource("openinstall")#</a><br />
+				  <a href="#getSetting("cfcGeneratorApp")#/install/readme.txt?TB_iframe=true&height=550&width=800" class="thickbox" title="Readme.txt">Readme.txt</a><br />
 				  <a href="#getSetting("cfcGeneratorApp")#/index.cfm" target="_blank">#getresource("open")# cfcGenerator</a><br />
 				</p>
 				
@@ -109,7 +110,8 @@
 				<br />
 				<font color="##53231d">#getResource("portMessage")#</font>
 				<br />
-				  <a href="#getSetting("blogcfcApp")#/install?TB_iframe=true&height=600&width=800" class="thickbox">#getresource("openinstall")#</a><br />
+				  <a href="#getSetting("blogcfcApp")#/install/readme.txt?TB_iframe=true&height=550&width=800" class="thickbox" title="Readme.txt">Readme.txt</a><br />
+				  <a href="#getSetting("blogcfcApp")#/install?TB_iframe=true&height=550&width=800" class="thickbox" title="Install Folder">#getresource("openinstall")#</a><br />
 				  <a href="#getSetting("blogcfcApp")#/index.cfm" target="_blank">#getresource("open")# BlogCFC</a><br />
 				</p>
 				
@@ -118,7 +120,8 @@
 				<br />
 				<font color="##53231d">#getResource("portMessage")#</font>
 				<br />
-				  <a href="#getSetting("forumsApp")#/installation/?TB_iframe=true&height=600&width=800" class="thickbox">#getresource("openinstall")#</a><br />
+				  <a href="#getSetting("forumsApp")#/installation/readme.txt?TB_iframe=true&height=550&width=800" class="thickbox" title="Readme.txt">Readme.txt</a><br />
+				  <a href="#getSetting("forumsApp")#/installation/?TB_iframe=true&height=550&width=800" class="thickbox" title="Install Folder">#getresource("openinstall")#</a><br />
 				  <a href="#getSetting("forumsApp")#/index.cfm" target="_blank">#getresource("open")# Galleon #getresource("forums")#</a><br />
 				  <a href="#getSetting("forumsApp")#/admin/index.cfm" target="_blank">#getresource("open")# #getresource("administrator")#</a><br />
 				</p>
@@ -127,7 +130,7 @@
 		</div>
 		
 		<h2>ColdBox #getResource("LogFile")#: 
-			<a href="##TB_inline?height=600&width=800&inlineId=logFileContents" class="thickbox" title="Log File"><input type="button" value="#getResource("open")# Log" id="logbutton" name="logbutton" /></a>
+			<a href="##?TB_inline&height=550&width=800&inlineId=logFileContents" class="thickbox" title="#getResource("LogFile")#"><input type="button" value="#getResource("open")# Log" id="logbutton" name="logbutton" /></a>
 		</h2>
 		
 		<div class="boxscrolling" id="logFileContents">

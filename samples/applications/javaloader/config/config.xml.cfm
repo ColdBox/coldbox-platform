@@ -3,7 +3,6 @@
 	xsi:noNamespaceSchemaLocation="http://www.coldboxframework.com/schema/config_1.2.0.xsd">
 	<Settings>
 		<Setting name="AppName" 					value="Java Loader Example"/>
-		<Setting name="AppMapping" 					value="coldbox/samples/applications/javaloader" />
 		<Setting name="DebugMode" 					value="true" />
 		<Setting name="DebugPassword" 				value="Coldbox"/>
 		<Setting name="EnableDumpVar"				value="true" />

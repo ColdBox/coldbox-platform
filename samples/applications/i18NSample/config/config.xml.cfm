@@ -4,7 +4,6 @@
 	<Settings>
 		<!--The name of your app-->
 		<Setting name="AppName" 					value="i18N Sample"/>
-		<Setting name="AppMapping" 					value="coldbox/samples/applications/i18NSample" />
 		<Setting name="DebugMode" 					value="true" />
 		<Setting name="DebugPassword" 				value="coldbox"/>
 		<Setting name="EnableColdfusionLogging"		value="false" />
