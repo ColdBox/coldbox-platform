@@ -67,16 +67,21 @@ function displayHeader(col) {
 <cfoutput>
 <script>
 function checksubmit() {
-	if(document.listing.mark.length == null) {
-		if(document.listing.mark.checked) {
-			document.listing.submit();
-			return;
+	var listingForm = document.getElementById("listing");
+	
+	if ( confirm("Do you wish to delete the selected items?") ){
+		if(listingForm.mark.length == null) {
+			if(listingForm.mark.checked) {
+				listingForm.submit();
+				return;
+			}
 		}
-	}
-
-	for(i=0; i < document.listing.mark.length; i++) {
-		if(document.listing.mark[i].checked) document.listing.submit();
-	}
+	
+		for(i=0; i < listingForm.mark.length; i++) {
+			if(listingForm.mark[i].checked) 
+				listingForm.submit();
+		}
+	}	
 }
 </script>
 
@@ -99,7 +104,7 @@ function checksubmit() {
 </cfif>
 
 <p>
-<form name="listing" action="#cgi.script_name#" method="post">
+<form name="listing" id="listing" action="#cgi.script_name#" method="post">
 <input type="hidden" name="event" value="#caller.requestContext.getValue("event")#">
 <table width="100%" cellspacing=0 cellpadding=5 class="adminListTable">
 	<tr class="adminListHeader">
@@ -122,10 +127,10 @@ function checksubmit() {
 	<cfoutput query="attributes.data" startrow="#(caller.requestContext.getValue("page")-1)*application.settings.perpage + 1#" maxrows="#application.settings.perpage#">
 		<cfset theLink = attributes.editlink & "?id=#id#">
 		<tr class="adminList#currentRow mod 2#">
-			<td width="20"><input type="checkbox" name="mark" value="#attributes.data[attributes.linkval][currentRow]#"></td>
+			<td width="20"><input type="checkbox" name="mark" id="mark" value="#attributes.data[attributes.linkval][currentRow]#"></td>
 			<cfloop index="c" list="#attributes.list#">
 				<cfset value = attributes.data[c][currentRow]>
-				<cfif c is "readonly" or c is "active" or c is "sendnotifications" or c is "sticky" or c is "attachments">
+				<cfif c is "readonly" or c is "active" or c is "sendnotifications" or c is "sticky">
 					<cfset value = yesNoFormat(value)>
 				<cfelseif c is "datecreated" or c is "posted" or c is "lastpost">
 					<cfset value = dateFormat(value,"mm/dd/yy") & " " & timeFormat(value,"h:mm tt")>
