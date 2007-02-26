@@ -164,6 +164,7 @@ Modification History:
 		//Appmapping Variables
 		var webPath = "";
 		var localPath = "";
+		var PathLocation = "";
 		try{
 			//Validate File
 			if ( not fileExists(ConfigFileLocation) ){
@@ -199,7 +200,11 @@ Modification History:
 			//Calculate AppMapping
 			webPath = replacenocase(cgi.script_name,getFIleFromPath(cgi.script_name),"");
 			localPath = getDirectoryFromPath(replacenocase(getTemplatePath(),"\","/","all"));
-			ConfigStruct.AppMapping = mid(localPath,findnocase(webPath, localPath),len(webPath));
+			PathLocation = findnocase(webPath, localPath);
+			if ( PathLocation neq 0)
+				ConfigStruct.AppMapping = mid(localPath,PathLocation,len(webPath));
+			else
+				ConfigStruct.AppMapping = webPath;
 
 			//Clean last /
 			if ( right(ConfigStruct.AppMapping,1) eq "/" ){
