@@ -7,8 +7,6 @@
  xsi:noNamespaceSchemaLocation="http://www.coldboxframework.com/schema/config_1.2.0.xsd">
 	<Settings>
 		<Setting name="AppName" 					value="$${Application name}"/>
-		<Setting name="AppMapping" 					value="$${Application Mapping (From web root or CFMX Mapping)}" />
-		<Setting name="AppDevMapping" 				value="Blank if not used" />
 		<Setting name="DebugMode" 					value="$${Debug Mode:true|false}" />
 		<Setting name="DebugPassword" 				value="$${Debug Password}"/>
 		<Setting name="ReinitPassword" 				value="$${Framework Reinit Password (Blank if not used)}"/>
