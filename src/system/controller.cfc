@@ -3,13 +3,13 @@ Copyright 2005 - 2006 ColdBox Framework by Luis Majano
 www.coldboxframework.com | www.coldboxframework.org
 -------------------------------------------------------------------------
 Author 	 		: Luis Majano
-Date     		: September 23, 2005 
+Date     		: September 23, 2005
 Last Update 	: December 9, 2006
 ----------------------------------------------------------------------->
 <cfcomponent name="controller" hint="This is the ColdBox Front Controller." output="false">
-	
+
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
-	
+
 	<cfscript>
 		variables.instance = structnew();
 		variables.instance.ColdboxInitiated = false;
@@ -18,9 +18,9 @@ Last Update 	: December 9, 2006
 		variables.instance.AppStartHandlerFired = false;
 		//Services & Managers
 		variables.instance.ColdboxOCM = "";
-		variables.instance.RequestService = "";		
+		variables.instance.RequestService = "";
 	</cfscript>
-	
+
 	<cffunction name="init" returntype="any" access="Public" hint="I am the constructor" output="false">
 		<cfscript>
 			//Create Managers & Services
@@ -32,7 +32,7 @@ Last Update 	: December 9, 2006
 	</cffunction>
 
 <!------------------------------------------- PUBLIC ------------------------------------------->
-	
+
 	<!--- Getters / Setters Services & Managers --->
 	<cffunction name="getRequestService" access="public" output="false" returntype="coldbox.system.util.requestService" hint="Get RequestService">
 		<cfreturn instance.RequestService/>
@@ -40,7 +40,7 @@ Last Update 	: December 9, 2006
 	<cffunction name="getColdboxOCM" access="public" output="false" returntype="coldbox.system.util.objectCacheManager" hint="Get ColdboxOCM">
 		<cfreturn instance.ColdboxOCM/>
 	</cffunction>
-	
+
 	<!--- Accessor ColdBox Initiation Flag --->
 	<cffunction name="getColdboxInitiated" access="public" output="false" returntype="boolean" hint="Get ColdboxInitiated">
 		<cfreturn instance.ColdboxInitiated/>
@@ -49,11 +49,11 @@ Last Update 	: December 9, 2006
 	<cffunction name="setAppStartHandlerFired" access="public" output="false" returntype="void" hint="Set AppStartHandlerFired">
 		<cfargument name="AppStartHandlerFired" type="boolean" required="true"/>
 		<cfset instance.AppStartHandlerFired = arguments.AppStartHandlerFired/>
-	</cffunction>	
+	</cffunction>
 	<cffunction name="getAppStartHandlerFired" access="public" output="false" returntype="boolean" hint="Get AppStartHandlerFired">
 		<cfreturn instance.AppStartHandlerFired/>
 	</cffunction>
-	
+
 	<!--- Debugging Accessor/Mutators --->
 	<cffunction name="getDebugMode" access="public" hint="I Get the current user's debugmode" returntype="boolean"  output="false">
 		<cfset var appName = URLEncodedFormat(replace(replace(getSetting("AppName")," ","","all"),".","_","all"))>
@@ -72,33 +72,33 @@ Last Update 	: December 9, 2006
 			<cfcookie name="ColdBox_debugMode_#appName#" value="false" expires="#now()#">
 		</cfif>
 	</cffunction>
-		
+
 	<!--- Config Loader Method --->
 	<cffunction name="configLoader" returntype="void" access="Public" hint="I Load the configurations and init the framework variables." output="false">
 		<cfscript>
 		var XMLParser = getPlugin("XMLParser");
-		//Load Coldbox Config Settings Structure 
+		//Load Coldbox Config Settings Structure
 		instance.ColdboxSettings = XMLParser.loadFramework();
 		//Load Application Config Settings
 		instance.ConfigSettings = XMLParser.parseConfig();
 		//Configure Caching Manager
 		instance.ColdboxOCM.configure();
-		
+
 		//IoC Plugin Manager
 		if ( getSetting("IOCFramework") neq "" ){
-			getPlugin("ioc").configure();
+			getPlugin("ioc");
 		}
 		//Load i18N if application is using it.
 		if ( getSetting("using_i18N") )
 			getPlugin("i18n").init_i18N(getSetting("DefaultResourceBundle"),getSetting("DefaultLocale"));
-		
+
 		//Initialize AOP Logging if requested.
 		if ( getSetting("EnableColdboxLogging") )
 			getPlugin("logger").initLogLocation();
-			
+
 		//Set Debugging Mode according to configuration
 		setDebugMode(getSetting("DebugMode"));
-		
+
 		// Flag the initiation, Framework is ready to serve requests. Praise be to GOD.
 		instance.ColdboxInitiated = true;
 		</cfscript>
@@ -108,20 +108,20 @@ Last Update 	: December 9, 2006
 		<cfset var HandlersPath = getSetting("HandlersPath")>
 		<cfset var Handlers = ArrayNew(1)>
 		<cfset var HandlerListing = "">
-		
+
 		<!--- Check for Handlers Directory Location --->
 		<cfif not directoryExists(HandlersPath)>
 			<cfthrow type="Framework.plugins.settings.HandlersDirectoryNotFoundException" message="The handlers directory: #handlerspath# does not exist please check your application structure or your Application Mapping.">
 		</cfif>
-		
+
 		<!--- Get Handlers to register --->
 		<cfdirectory action="list" recurse="true" directory="#HandlersPath#" name="HandlerListing" filter="*.cfc">
-		
+
 		<!--- Verify handler's found, else, why continue --->
 		<cfif not HandlerListing.recordcount>
 			<cfthrow type="Framework.plugins.settings.NoHandlersFoundException" message="No handlers were found in: #HandlerPath#. So I have no clue how you are going to run this application.">
 		</cfif>
-		
+
 		<!--- Register Handlers --->
 		<cfloop query="HandlerListing">
 			<cfset HandlerListing.directory = replacenocase(HandlerListing.directory,HandlersPath,"","all")>
@@ -132,12 +132,12 @@ Last Update 	: December 9, 2006
 
 		<!--- Sort The Array --->
 		<cfset ArraySort(Handlers,"text")>
-		
+
 		<!--- Set registered Handlers --->
 		<cfset setSetting("RegisteredHandlers",arrayToList(Handlers))>
 	</cffunction>
 
-	
+
 	<!--- Config Structure Accessors/Mutators --->
 	<cffunction name="getSettingStructure" hint="I get the entire setting structure. By default I retrieve the configStruct. You can change this by using the fwsetting flag." access="public" returntype="struct" output="false">
 		<!--- ************************************************************* --->
@@ -171,7 +171,7 @@ Last Update 	: December 9, 2006
 		else
 			throw("The setting #arguments.name# does not exist.","FWSetting flag is #arguments.FWSetting#","Framework.SettingNotFoundException");
 		</cfscript>
-	</cffunction>	
+	</cffunction>
 	<cffunction name="settingExists" returntype="boolean" access="Public"	hint="I Check if a value exists in the configstruct or the fwsettingsStruct." output="false">
 		<cfargument name="name" hint="Name of the setting to find." type="string">
 		<cfargument name="FWSetting"  	type="boolean" 	 required="false"  hint="Boolean Flag. If true, it will retrieve from the fwSettingsStruct else from the configStruct. Default is false." default="false">
@@ -184,7 +184,7 @@ Last Update 	: December 9, 2006
 			return isDefined("instance.ConfigSettings.#arguments.name#");
 		}
 		</cfscript>
-	</cffunction>		
+	</cffunction>
 	<cffunction name="setSetting" access="Public" returntype="void" hint="I set a Global Coldbox setting variable in the configstruct, if it exists it will be overrided. This only sets in the ConfigStruct" output="false">
 		<cfargument name="name"  type="string"   hint="The name of the setting" >
 		<cfargument name="value" type="any"      hint="The value of the setting (Can be simple or complex)">
@@ -193,8 +193,8 @@ Last Update 	: December 9, 2006
 		"instance.ConfigSettings.#arguments.name#" = arguments.value;
 		</cfscript>
 	</cffunction>
-	
-	<!--- Plugin Factories --->	
+
+	<!--- Plugin Factories --->
 	<cffunction name="getPlugin" access="Public" returntype="any" hint="I am the Plugin cfc object factory." output="false">
 		<cfargument name="plugin" 		type="string" hint="The Plugin object's name to instantiate" >
 		<cfargument name="customPlugin" type="boolean" required="false" default="false" hint="Used internally to create custom plugins.">
@@ -204,13 +204,13 @@ Last Update 	: December 9, 2006
 		<cfset var objTimeout = "">
 		<cfset var pluginKey = "plugin_" & arguments.plugin>
 		<cfset var pluginPath = "coldbox.system.plugins.#trim(arguments.plugin)#">
-		
+
 		<!--- Custom Plugin Test --->
 		<cfif arguments.customPlugin>
 			<cfset pluginKey = "custom_plugin_" & arguments.plugin>
 			<cfset pluginPath = "#getSetting("MyPluginsLocation")#.#trim(arguments.plugin)#">
 		</cfif>
-		
+
 		<!--- Lookup in Cache --->
 		<cfif instance.ColdboxOCM.lookup(pluginKey)>
 			<cfset oPlugin = instance.ColdboxOCM.get(pluginKey)>
@@ -236,7 +236,7 @@ Last Update 	: December 9, 2006
 		<!--- ************************************************************* --->
 		<cfreturn getPlugin(arguments.plugin, true)>
 	</cffunction>
-	
+
 	<!--- Event Context Methods --->
 	<cffunction name="setNextEvent" access="Public" returntype="void" hint="I Set the next event to run and relocate the browser to that event."  output="false">
 		<cfargument name="event"  			hint="The name of the event to run." 			type="string" required="No" default="#getSetting("DefaultEvent")#" >
@@ -246,7 +246,7 @@ Last Update 	: December 9, 2006
 			<cfif len(trim(arguments.event)) eq 0><cfset arguments.event = getSetting("DefaultEvent")></cfif>
 			<cflocation url="#cgi.SCRIPT_NAME#?event=#arguments.event#&#arguments.queryString#" addtoken="#arguments.addToken#">
 	</cffunction>
-	
+
 	<cffunction name="runEvent" returntype="void" access="Public" hint="I am an event handler runnable factory. If no event is passed in then it will run the default event from the config.xml.">
 		<cfargument name="event" hint="The event to run. If no current event is set, use the default event from the config.xml" type="string" required="no" default="">
 		<!--- ************************************************************* --->
@@ -257,12 +257,12 @@ Last Update 	: December 9, 2006
 		<cfset var ExecutingHandler = "">
 		<cfset var ExecutingMethod = "">
 		<cfset var RequestContext = instance.RequestService.getContext()>
-		
+
 		<!--- Default Event Set --->
 		<cfif arguments.event eq "">
 			<cfset arguments.event = RequestContext.getValue("event")>
 		</cfif>
-		
+
 		<!--- Start Timer --->
 		<cfmodule template="includes/timer.cfm" timertag="invoking runEvent [#arguments.event#]">
 			<!--- Validate and Get registered handler --->
@@ -270,10 +270,10 @@ Last Update 	: December 9, 2006
 			<!--- Set Executing Parameters --->
 			<cfset ExecutingHandler = oEventBean.getRunnable()>
 			<cfset ExecutingMethod = oEventBean.getMethod()>
-			
+
 			<!--- Check if using handler caching --->
 			<cfif getSetting("HandlerCaching")>
-			
+
 				<!--- Lookup in Cache --->
 				<cfif instance.ColdboxOCM.lookup("handler_" & ExecutingHandler)>
 					<cfset oEventHandler = instance.ColdboxOCM.get("handler_" & ExecutingHandler)>
@@ -291,8 +291,8 @@ Last Update 	: December 9, 2006
 						</cfif>
 						<!--- Set the Runnable Object --->
 						<cfset instance.ColdboxOCM.set("handler_" & ExecutingHandler,oEventHandler,objTimeout)>
-					</cfif>				
-				</cfif>			
+					</cfif>
+				</cfif>
 			<cfelse>
 				<!--- Create Runnable Object --->
 				<cfset oEventHandler = CreateObject("component",ExecutingHandler).init(this)>
@@ -309,13 +309,13 @@ Last Update 	: December 9, 2006
 					<cfthrow type="Framework.InvalidEventException" message="An invalid event has been detected: #ExecutingMethod#">
 				</cfif>
 			</cfif>
-			
+
 			<!--- Execute Method --->
 			<cfinvoke component="#oEventHandler#" method="#ExecutingMethod#" RequestContext="#RequestContext#">
-				
+
 		</cfmodule>
 	</cffunction>
-	
+
 	<cffunction name="ExceptionHandler" access="public" hint="I handle a framework/application exception. I return a framework exception bean" returntype="any" output="false">
 		<!--- ************************************************************* --->
 		<cfargument name="Exception" 	 type="any"  	required="true"  hint="The exception structure. Passed as any due to CF glitch">
@@ -329,7 +329,7 @@ Last Update 	: December 9, 2006
 		// Test Error Type
 		if ( not reFindnocase("(application|framework)",arguments.errorType) )
 			arguments.errorType = "application";
-			
+
 		if ( arguments.ErrorType eq "application" ){
 			//Run custom Exception handler if Found, else run default
 			if ( getSetting("ExceptionHandler") neq "" ){
@@ -347,7 +347,7 @@ Last Update 	: December 9, 2006
 			}
 		}
 		//return
-		return ExceptionBean;	
+		return ExceptionBean;
 		</cfscript>
 	</cffunction>
 
@@ -361,7 +361,7 @@ Last Update 	: December 9, 2006
 		<!--- ************************************************************* --->
 		<cfthrow type="#arguments.type#" message="#arguments.message#"  detail="#arguments.detail#">
 	</cffunction>
-	
+
 	<cffunction name="getRegisteredHandler" access="private" hint="I get a registered handler and method according to passed event from the registeredHandlers setting." returntype="coldbox.system.beans.eventhandlerBean"  output="false">
 		<!--- ************************************************************* --->
 		<cfargument name="event" hint="The event to check and get." type="string" required="true">
@@ -376,10 +376,10 @@ Last Update 	: December 9, 2006
 		//Rip the method
 		HandlerReceived = getPlugin("fileUtilities").ripExtension(arguments.event);
 		MethodReceived = listLast(arguments.event,".");
-		
+
 		//Check Registration
 		handlerIndex = listFindNoCase(handlersList, HandlerReceived);
-		
+
 		//Check for registration results
 		if ( handlerIndex ){
 			HandlerBean.setHandler(listgetAt(handlersList,handlerIndex));
