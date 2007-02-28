@@ -1,16 +1,16 @@
-<cfset feed = requestContext.getValue("feed","")>
-<cfset feedID = requestContext.getValue("feedID",0)>
+<cfset feed = Context.getValue("feed","")>
+<cfset feedID = Context.getValue("feedID",0)>
 
 <cfoutput>
 <a name="TOP"/>	
 	
 <!--- Reload Icon --->
-<div style="float:right;margin-right:5px"><a href="##" onClick="doEvent('#requestContext.getValue("xehReload")#','centercontent',{feedID:'#feedID#'})" title="Refresh Panels"><img src="images/reload_icon.png" border="0" title="Refresh Panels"><a/></div>
+<div style="float:right;margin-right:5px"><a href="##" onClick="doEvent('#Context.getValue("xehReload")#','centercontent',{feedID:'#feedID#'})" title="Refresh Panels"><img src="images/reload_icon.png" border="0" title="Refresh Panels"><a/></div>
 
-<cfif not requestContext.getValue("myfeeds",false)>
-<div><img src="images/orange_arrows_backwards.gif" align="absmiddle"><a href="javascript:doEvent('#requestContext.getValue("xehFeeds")#','centercontent',{})">Return To Feeds</a></div>
+<cfif not Context.getValue("myfeeds",false)>
+<div><img src="images/orange_arrows_backwards.gif" align="absmiddle"><a href="javascript:doEvent('#Context.getValue("xehFeeds")#','centercontent',{})">Return To Feeds</a></div>
 <cfelse>
-<div><img src="images/orange_arrows_backwards.gif" align="absmiddle"><a href="javascript:doEvent('#requestContext.getValue("xehMyFeeds")#','centercontent',{})">Return To My Feeds</a></div>
+<div><img src="images/orange_arrows_backwards.gif" align="absmiddle"><a href="javascript:doEvent('#Context.getValue("xehMyFeeds")#','centercontent',{})">Return To My Feeds</a></div>
 </cfif>
 
 <h1 style="margin-bottom:4px;border-bottom:1px solid black;padding-bottom:3px;">
@@ -76,18 +76,18 @@
 
 <hr>
 
-<cfif not requestContext.getValue("myfeeds",false)>
+<cfif not Context.getValue("myfeeds",false)>
 <!--- Return to feeds --->
-<div><img src="images/orange_arrows_backwards.gif" align="absmiddle"><a href="javascript:doEvent('#requestContext.getValue("xehFeeds")#','centercontent',{})">Return To Feeds</a>
+<div><img src="images/orange_arrows_backwards.gif" align="absmiddle"><a href="javascript:doEvent('#Context.getValue("xehFeeds")#','centercontent',{})">Return To Feeds</a>
 <cfelse>
-<div><img src="images/orange_arrows_backwards.gif" align="absmiddle"><a href="javascript:doEvent('#requestContext.getValue("xehMyFeeds")#','centercontent',{})">Return To My Feeds</a></div>
+<div><img src="images/orange_arrows_backwards.gif" align="absmiddle"><a href="javascript:doEvent('#Context.getValue("xehMyFeeds")#','centercontent',{})">Return To My Feeds</a></div>
 </cfif>
 </div>
 
 
 <script>
-	doEvent("#requestContext.getValue("xehFeedInfo")#", "leftcontent1", {feedID:'#feedID#'});
-	doEvent("#requestContext.getValue("xehFeedTags")#", "rightcontent1", {feedID:'#feedID#'});
-	//doEvent("#requestContext.getValue("xehFeedComments")#", "rightcontent2", {feedID:'#feedID#'});
+	doEvent("#Context.getValue("xehFeedInfo")#", "leftcontent1", {feedID:'#feedID#'});
+	doEvent("#Context.getValue("xehFeedTags")#", "rightcontent1", {feedID:'#feedID#'});
+	//doEvent("#Context.getValue("xehFeedComments")#", "rightcontent2", {feedID:'#feedID#'});
 </script>
 </cfoutput>

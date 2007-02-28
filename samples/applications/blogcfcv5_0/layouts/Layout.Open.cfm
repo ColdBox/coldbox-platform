@@ -4,7 +4,7 @@
 
 <html>
 <head>
-	<title>#application.blog.getProperty("blogTitle")# : #requestContext.getValue("additionalTitle")#</title>
+	<title>#application.blog.getProperty("blogTitle")# : #Context.getValue("additionalTitle")#</title>
 	<link rel="stylesheet" href="#application.rootURL#/includes/style.css" type="text/css"/>
 </head>
 

@@ -1,5 +1,5 @@
 <cfoutput>
 <script>
-	doEvent("#requestContext.getValue("xehReader")#", "centercontent", {});
+	doEvent("#Context.getValue("xehReader")#", "centercontent", {});
 </script>
 </cfoutput>

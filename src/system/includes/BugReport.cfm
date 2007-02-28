@@ -30,18 +30,18 @@ Modification History:
     <td colspan="2" class="fw_errorTablesCells">#Exception.getExtramessage()#</td>
     </tr>
 <cfif Exception.getErrorType() eq "Application">
-  
+
   <tr>
     <td width="122" align="right" class="fw_errorTablesTitles">Current Event: </td>
-    <td width="463" class="fw_errorTablesCells"><cfif RequestContext.valueExists("event")>#RequestContext.getValue("event")#<cfelse>N/A</cfif></td>
+    <td width="463" class="fw_errorTablesCells"><cfif Context.valueExists("event")>#Context.getValue("event")#<cfelse>N/A</cfif></td>
   </tr>
   <tr>
     <td align="right" class="fw_errorTablesTitles">Current Layout: </td>
-    <td class="fw_errorTablesCells"><cfif RequestContext.valueExists("currentLayout")>#RequestContext.getValue("currentLayout")#<cfelse>N/A</cfif></td>
+    <td class="fw_errorTablesCells"><cfif Context.valueExists("currentLayout")>#Context.getValue("currentLayout")#<cfelse>N/A</cfif></td>
   </tr>
   <tr>
     <td align="right" class="fw_errorTablesTitles">Current View: </td>
-    <td class="fw_errorTablesCells"><cfif RequestContext.valueExists("currentView")>#RequestContext.getValue("currentView")#<cfelse>N/A</cfif></td>
+    <td class="fw_errorTablesCells"><cfif Context.valueExists("currentView")>#Context.getValue("currentView")#<cfelse>N/A</cfif></td>
   </tr>
 </cfif>
   <tr>

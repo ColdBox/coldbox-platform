@@ -2,6 +2,6 @@
 <snippet filetemplate="false" extension="cfm">
 <name>setView</name>
 <help>Set a view</help>
-<starttext><![CDATA[requestContext.setView("$${View name (No extension)}")]]></starttext>
+<starttext><![CDATA[Context.setView("$${View name (No extension)}")]]></starttext>
 <endtext><![CDATA[]]></endtext>
 </snippet>

@@ -8,7 +8,7 @@
 	History      :
 --->
 
-<cfset tbs = requestContext.getValue("tbs")>
+<cfset tbs = Context.getValue("tbs")>
 
 	<cfoutput>
 	<p>
@@ -23,9 +23,9 @@
 	</p>
 	</cfoutput>
 
-	<cfmodule template="../tags/datatable.cfm" data="#tbs#" editlink="?event=#requestContext.getValue("xehTrackback")#" label="Trackbacks"
+	<cfmodule template="../tags/datatable.cfm" data="#tbs#" editlink="?event=#Context.getValue("xehTrackback")#" label="Trackbacks"
 			  linkcol="" defaultsort="created" defaultdir="desc" showAdd="false"
-			  deleteEvent="#requestContext.getValue("xehDeleteTrackbacks")#">
+			  deleteEvent="#Context.getValue("xehDeleteTrackbacks")#">
 		<cfmodule template="../tags/datacol.cfm" colname="title" label="Title" width="300" />
 		<cfmodule template="../tags/datacol.cfm" colname="blogname" label="Blog Name" width="250" />
 		<cfmodule template="../tags/datacol.cfm" colname="created" label="Posted" format="datetime" width="150" />

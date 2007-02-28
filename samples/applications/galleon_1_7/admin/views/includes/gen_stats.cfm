@@ -11,11 +11,11 @@
 <!--- Run event for get stats --->
 <cfset runEvent("ehForums.doGetStats")>
 <!--- Set References --->
-<cfset conferences = requestContext.getValue("conferences")>
-<cfset forums = requestContext.getValue("forums")>
-<cfset threads = requestContext.getValue("threads")>
-<cfset users = requestContext.getValue("users")>
-<cfset messages = requestContext.getValue("messages")>
+<cfset conferences = Context.getValue("conferences")>
+<cfset forums = Context.getValue("forums")>
+<cfset threads = Context.getValue("threads")>
+<cfset users = Context.getValue("users")>
+<cfset messages = Context.getValue("messages")>
 
 <cfoutput>
 <p>
@@ -41,11 +41,11 @@
 </tr>
 <tr>
 	<td><b>First Post:</b></td>
-	<td>#dateFormat(requestContext.getValue("getMinPost").earliestPost, "m/d/yy")# #timeFormat(requestContext.getValue("getMinPost").earliestPost, "h:mm tt")#&nbsp;</td>
+	<td>#dateFormat(Context.getValue("getMinPost").earliestPost, "m/d/yy")# #timeFormat(Context.getValue("getMinPost").earliestPost, "h:mm tt")#&nbsp;</td>
 </tr>
 <tr>
 	<td><b>Last Post:</b></td>
-	<td>#dateFormat(requestContext.getValue("getMaxPost").lastPost, "m/d/yy")# #timeFormat(requestContext.getValue("getMaxPost").lastPost, "h:mm tt")#&nbsp;</td>
+	<td>#dateFormat(Context.getValue("getMaxPost").lastPost, "m/d/yy")# #timeFormat(Context.getValue("getMaxPost").lastPost, "h:mm tt")#&nbsp;</td>
 </tr>
 <tr>
 	<td><b>Number of Users:</b></td>

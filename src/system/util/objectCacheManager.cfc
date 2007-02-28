@@ -14,7 +14,7 @@ Modification History:
 <cfcomponent name="objectCacheManager" hint="Manages handler,plugin,custom plugin and object caching. It is thread safe and implements locking for you." output="false">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
-	
+
 	<cffunction name="init" access="public" output="false" returntype="coldbox.system.util.objectCacheManager" hint="Constructor">
 		<cfargument name="controller" type="any" required="true">
 		<cfscript>
@@ -31,7 +31,7 @@ Modification History:
 		return this;
 		</cfscript>
 	</cffunction>
-	
+
 	<cffunction name="configure" access="public" output="false" returntype="void" hint="Configure the cache.">
 		<cfscript>
 		variables.reapFrequency = variables.controller.getSetting("CacheReapFrequency",true);
@@ -43,16 +43,16 @@ Modification History:
 	</cffunction>
 
 <!------------------------------------------- PUBLIC ------------------------------------------->
-	
+
 	<cffunction name="lookup" access="public" output="false" returntype="boolean" hint="Check if an object is in cache.">
 		<!--- ************************************************************* --->
 		<cfargument name="objectKey" type="string" required="true">
 		<!--- ************************************************************* --->
 		<cfset var ObjectFound = false>
-		
+
 		<!--- Reap the cache First, if in frequency --->
 		<cfset reap()>
-		
+
 		<cflock type="readonly" name="OCM_Operation" timeout="5">
 			<!--- Check for Object in Cache. --->
 			<cfif structKeyExists(variables.cb_objects, arguments.objectKey) >
@@ -64,9 +64,9 @@ Modification History:
 		</cflock>
 		<cfreturn ObjectFound>
 	</cffunction>
-	
+
 	<!--- ************************************************************* --->
-	
+
 	<cffunction name="get" access="public" output="false" returntype="any" hint="Get an object from cache. If it doesn't exist it returns a blank structure.">
 		<!--- ************************************************************* --->
 		<cfargument name="objectKey" type="string" required="true">
@@ -84,9 +84,9 @@ Modification History:
 		</cfif>
 		<cfreturn ObjectFound>
 	</cffunction>
-	
+
 	<!--- ************************************************************* --->
-	
+
 	<cffunction name="set" access="public" output="false" returntype="void" hint="sets an object in cache.">
 		<!--- ************************************************************* --->
 		<cfargument name="objectKey" 		type="string"  required="true">
@@ -96,15 +96,15 @@ Modification History:
 		<!--- Clean Args --->
 		<cfset arguments.objectKey = trim(arguments.objectKey)>
 		<cfset arguments.Timeout = trim(arguments.Timeout)>
-		
+
 		<!--- Test Timeout Argument, if false, then inherit framework's timeout --->
 		<cfif arguments.Timeout eq "" or not isNumeric(arguments.Timeout) or arguments.Timeout lt 0>
 			<cfset arguments.Timeout = variables.CacheObjectDefaultTimeout>
 		</cfif>
-		
+
 		<!--- Check if we need to do a reap First. --->
 		<cfset reap()>
-		
+
 		<cflock type="exclusive" name="OCM_Operation" timeout="5">
 			<cfscript>
 			//Set new Object into cache.
@@ -116,11 +116,11 @@ Modification History:
 			variables.cb_objects_metadata[arguments.objectKey].Created = now();
 			variables.cb_objects_metadata[arguments.objectKey].lastAccesed = now();
 			</cfscript>
-		</cflock>		
+		</cflock>
 	</cffunction>
-	
+
 	<!--- ************************************************************* --->
-	
+
 	<cffunction name="clearKey" access="public" output="false" returntype="boolean" hint="Clears a key from the cache.">
 		<!--- ************************************************************* --->
 		<cfargument name="objectKey" type="string" required="true">
@@ -135,9 +135,9 @@ Modification History:
 		</cfif>
 		<cfreturn Results>
 	</cffunction>
-	
+
 	<!--- ************************************************************* --->
-	
+
 	<cffunction name="clear" access="public" output="false" returntype="void" hint="Clears the entire object cache.">
 		<cflock type="exclusive" name="OCM_Operation" timeout="5">
 			<cfset structClear(variables.cb_objects)>
@@ -145,9 +145,9 @@ Modification History:
 			<cfset resetStatistics()>
 		</cflock>
 	</cffunction>
-	
+
 	<!--- ************************************************************* --->
-	
+
 	<cffunction name="resetStatistics" access="public" output="false" returntype="void" hint="Resets the cache statistics.">
 		<cfscript>
 		variables.cachePerformance.Hits = 0;
@@ -156,21 +156,21 @@ Modification History:
 	</cffunction>
 
 	<!--- ************************************************************* --->
-	
+
 	<cffunction name="hit" access="public" output="false" returntype="void" hint="Record a hit">
 		<cfscript>
 		variables.cachePerformance.Hits = variables.cachePerformance.Hits + 1;
 		</cfscript>
 	</cffunction>
-	
+
 	<cffunction name="miss" access="public" output="false" returntype="void" hint="Record a miss">
 		<cfscript>
 		variables.cachePerformance.misses = variables.cachePerformance.misses + 1;
 		</cfscript>
 	</cffunction>
-	
+
 	<!--- ************************************************************* --->
-	
+
 	<cffunction name="getCachePerformanceRatio" access="public" output="false" returntype="numeric" hint="Get the cache's performance ratio">
 		<cfscript>
 	 	var requests = variables.cachePerformance.hits + variables.cachePerformance.misses;
@@ -180,33 +180,33 @@ Modification History:
 			return (variables.cachePerformance.Hits/requests) * 100;
 		</cfscript>
 	</cffunction>
-	
+
 	<!--- ************************************************************* --->
-	
+
 	<cffunction name="getlastReapDatetime" access="public" output="false" returntype="string" hint="Get the lastReapDatetime">
 		<cfscript>
 		return variables.lastReapDatetime;
 		</cfscript>
 	</cffunction>
-	
+
 	<!--- ************************************************************* --->
-	
+
 	<cffunction name="getSize" access="public" output="false" returntype="numeric" hint="Get the cache's size in items">
 		<cfscript>
 		return StructCount(variables.cb_objects);
 		</cfscript>
 	</cffunction>
-	
+
 	<!--- ************************************************************* --->
-	
+
 	<cffunction name="getcachePerformance" access="public" output="false" returntype="any" hint="Get the cachePerformance structure">
 		<cfscript>
 		return variables.cachePerformance;
 		</cfscript>
 	</cffunction>
-	
+
 	<!--- ************************************************************* --->
-	
+
 	<cffunction name="getItemTypes" access="public" output="false" returntype="any" hint="Get the item types of the cache.">
 		<cfscript>
 		var x = 1;
@@ -215,7 +215,7 @@ Modification History:
 		itemTypes.plugins = 0;
 		itemTypes.handlers = 0;
 		itemTypes.other = 0;
-		
+
 		itemList = listSort(itemList, "textnocase");
 		for (x=1; x lte listlen(itemList) ; x = x+1){
 			if ( findnocase("plugin", listGetAt(itemList,x)) )
@@ -228,9 +228,9 @@ Modification History:
 		return itemTypes;
 		</cfscript>
 	</cffunction>
-	
+
 	<!--- ************************************************************* --->
-	
+
 	<cffunction name="reap" access="public" output="false" returntype="void" hint="Reap the cache.">
 		<cfscript>
 			var key = "";
@@ -239,7 +239,7 @@ Modification History:
 			if ( dateDiff("n", variables.lastReapDatetime, now()) gt variables.reapFrequency){
 				//Reaping about to start, set new reaping date.
 				variables.lastReapDatetime = now();
-			
+
 				//Loop Through Metadata
 				for (key in objStruct){
 					//Override Timeout Check
@@ -259,25 +259,25 @@ Modification History:
 			}
 		</cfscript>
 	</cffunction>
-	
+
 	<!--- ************************************************************* --->
-	
+
 <!------------------------------------------- PRIVATE ------------------------------------------->
-	
+
 	<!--- ************************************************************* --->
-	
+
 	<!--- Controller Accessor/Mutators --->
 	<cffunction name="getcontroller" access="private" output="false" returntype="any" hint="Get controller">
 		<cfreturn variables.controller/>
-	</cffunction>	
-	
+	</cffunction>
+
 	<!--- ************************************************************* --->
-	
+
 	<cffunction name="setcontroller" access="private" output="false" returntype="void" hint="Set controller">
 		<cfargument name="controller" type="any" required="true"/>
 		<cfset variables.controller = arguments.controller/>
 	</cffunction>
-	
+
 	<!--- ************************************************************* --->
-	
+
 </cfcomponent>

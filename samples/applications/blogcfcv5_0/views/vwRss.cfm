@@ -12,7 +12,7 @@
 --->
 
 <cftry>
-	<cfcontent type="text/xml"><cfoutput>#application.blog.generateRSS(mode=requestContext.getValue("mode"),params=requestContext.getValue("params"),version=requestContext.getValue("version"),additionalTitle=requestContext.getValue("additionalTitle"))#</cfoutput>
+	<cfcontent type="text/xml"><cfoutput>#application.blog.generateRSS(mode=Context.getValue("mode"),params=Context.getValue("params"),version=Context.getValue("version"),additionalTitle=Context.getValue("additionalTitle"))#</cfoutput>
 	<cfcatch>
 		<cfset getPlugin("logger").logError("Rss Feed",cfcatch)>
 		<!--- Logic is - if they filtered incorrectly, revert to default, if not, abort --->

@@ -15,7 +15,7 @@
 <cfoutput>
 <p>
 <table width="500" cellpadding="6" class="tableDisplay" cellspacing="1" border="0">
-	<cfif requestContext.valueExists("showRequireConfirmation")>
+	<cfif Context.valueExists("showRequireConfirmation")>
 		<tr class="tableHeader">
 			<td class="tableHeader">Confirmation Required</td>
 		</tr>
@@ -34,7 +34,7 @@
 	<tr class="tableRowMain">
 		<td>
 		Please use the form below to login.
-		<cfif requestContext.getValue("failedLogon",false)>
+		<cfif Context.getValue("failedLogon",false)>
 			<p>
 			#getPlugin("messageBox").renderit()#
 			</p>
@@ -44,8 +44,8 @@
 	<tr class="tableRowMain">
 		<td>
 		<form action="#cgi.script_name#" method="post">
-		<input type="hidden" name="event" value="#requestContext.getValue("xehDoLogin")#">
-		<input type="hidden" name="ref" value="#requestContext.getValue("ref","")#">
+		<input type="hidden" name="event" value="#Context.getValue("xehDoLogin")#">
+		<input type="hidden" name="ref" value="#Context.getValue("ref","")#">
 		<table>
 			<tr>
 				<td><b>Username:</b></td>
@@ -70,7 +70,7 @@
 		<td>
 		In order to create threads or reply to threads, you must register. All of the
 		fields below are required.
-		<cfif requestContext.getValue("failedRegistration",false)>
+		<cfif Context.getValue("failedRegistration",false)>
 			<p>
 			#getPlugin("messageBox").renderit()#
 			</p>
@@ -80,15 +80,15 @@
 	<tr class="tableRowMain">
 		<td>
 		<form action="#cgi.script_name#?" method="post">
-		<input type="hidden" name="event" value="#requestContext.getValue("xehRegister")#">
+		<input type="hidden" name="event" value="#Context.getValue("xehRegister")#">
 		<table>
 			<tr>
 				<td><b>Username: </b></td>
-				<td><input type="text" name="username_new" value="#requestContext.getValue("username_new","")#" class="formBox"></td>
+				<td><input type="text" name="username_new" value="#Context.getValue("username_new","")#" class="formBox"></td>
 			</tr>
 			<tr>
 				<td><b>Email Address: </b></td>
-				<td><input type="text" name="emailaddress" value="#requestContext.getValue("emailaddress","")#" class="formBox"></td>
+				<td><input type="text" name="emailaddress" value="#Context.getValue("emailaddress","")#" class="formBox"></td>
 			</tr>
 			<tr>
 				<td><b>Password: </b></td>
@@ -114,7 +114,7 @@
 	<tr class="tableRowMain">
 		<td>
 		If you cannot remember your password, enter your username in the form below and your login information will be sent to you.
-			<cfif requestContext.getValue("passreminder",false) eq true>
+			<cfif Context.getValue("passreminder",false) eq true>
 			#getPlugin("messagebox").renderit()#
 			</cfif>
 		</td>
@@ -122,7 +122,7 @@
 	<tr class="tableRowMain">
 		<td>
 		<form action="#cgi.script_name#" method="post">
-		<input type="hidden" name="event" value="#requestContext.getValue("xehPasswordReminder")#">
+		<input type="hidden" name="event" value="#Context.getValue("xehPasswordReminder")#">
 		<table>
 			<tr>
 				<td><b>Username:</b></td>

@@ -37,8 +37,8 @@ padding: 5px;
 	<form id="form1" name="form1" method="post" action="" onSubmit="disableButtons()">
 	  <input type="button" name="homebutton" value="Home" onClick="disableButtons();window.location='index.cfm'" />&nbsp;
 	  <input type="submit" name="getbutton" value="Get News Feed" />&nbsp;
-	  <input type="submit" name="getclientbutton" value="Get News Feed (Using ClientStorage Plugin)" onclick="changeEvent('#requestContext.getValue("xehGetNewsClient")#')" />
-	  <input name="event" type="hidden" id="event" value="#requestContext.getValue("xehGetNews")#" />
+	  <input type="submit" name="getclientbutton" value="Get News Feed (Using ClientStorage Plugin)" onclick="changeEvent('#Context.getValue("xehGetNewsClient")#')" />
+	  <input name="event" type="hidden" id="event" value="#Context.getValue("xehGetNews")#" />
 	</form>
 	<p >&nbsp;</p>
 	<!--- Render a messagebox if set --->
@@ -49,16 +49,16 @@ padding: 5px;
 </table>
 
 <!--- Display the news if found in the request collection --->
-<cfif requestContext.valueExists("newsfeed")>
+<cfif Context.valueExists("newsfeed")>
 	<div class="newsbox">
-	<cfdump var="#requestContext.getValue("newsfeed")#">
+	<cfdump var="#Context.getValue("newsfeed")#">
 	</div>
 </cfif>
 
 <!--- Display the news if found in the client storage plugin --->
 <cfif getPlugin("clientstorage").exists("newsfeed")>
 	<div class="newsbox">
-	<h4>Client Storage News: <input type="button" name="clientclearbutton" id="clientclearbutton" value="Clear Client Storage News" onClick="disableButtons(true);window.location='index.cfm?event=#requestContext.getValue("xehDeleteNews")#'" />&nbsp;</h4>
+	<h4>Client Storage News: <input type="button" name="clientclearbutton" id="clientclearbutton" value="Clear Client Storage News" onClick="disableButtons(true);window.location='index.cfm?event=#Context.getValue("xehDeleteNews")#'" />&nbsp;</h4>
 	<cfdump var="#getPlugin("clientstorage").getvar("newsfeed")#">
 	</div>
 </cfif>

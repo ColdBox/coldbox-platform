@@ -2,6 +2,6 @@
 <snippet filetemplate="false" extension="cfm">
 <name>setLayout</name>
 <help>Set a layout</help>
-<starttext><![CDATA[requestContext.setLayout("$${Layout name (No extension)}")]]></starttext>
+<starttext><![CDATA[Context.setLayout("$${Layout name (No extension)}")]]></starttext>
 <endtext><![CDATA[]]></endtext>
 </snippet>

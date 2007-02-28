@@ -3,7 +3,7 @@
 <name>Event Handler Method</name>
 <help></help>
 <starttext><![CDATA[<cffunction name="$${Event Name}" access="public" returntype="void" output="false">
-	<cfargument name="requestContext" type="coldbox.system.beans.requestContext">
+	<cfargument name="Context" type="coldbox.system.beans.requestContext">
 
 </cffunction>]]></starttext>
 <endtext><![CDATA[]]></endtext>

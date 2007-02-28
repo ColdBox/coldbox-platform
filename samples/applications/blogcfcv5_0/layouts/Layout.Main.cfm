@@ -3,18 +3,18 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<title>#application.blog.getProperty("blogTitle")##requestContext.getValue("additionalTitle")#</title>
+<title>#application.blog.getProperty("blogTitle")##Context.getValue("additionalTitle")#</title>
 <!--- RBB 6/23/05: Push crawlers to follow links, but only index content on individual entry pages --->
-<cfif requestContext.valueExists("mode") and requestContext.getValue("mode") is "entry">
+<cfif Context.valueExists("mode") and Context.getValue("mode") is "entry">
 <!--- index entry page --->
 <meta name="robots" content="index,follow" />
 <cfelse>
 <!--- don't index other pages --->
 <meta name="robots" content="noindex,follow" />	  
 </cfif>
-<meta name="title" content="#application.blog.getProperty("blogTitle")##requestContext.getValue("additionalTitle")#" />
+<meta name="title" content="#application.blog.getProperty("blogTitle")##Context.getValue("additionalTitle")#" />
 <meta content="text/html; charset=UTF-8" http-equiv="content-type">
-<meta name="description" content="#application.blog.getProperty("blogDescription")##requestContext.getValue("additionalTitle")#" />
+<meta name="description" content="#application.blog.getProperty("blogDescription")##Context.getValue("additionalTitle")#" />
 <meta name="keywords" content="#application.blog.getProperty("blogKeywords")#">
 <link rel="stylesheet" href="#application.rootURL#/includes/style.css" type="text/css" />
 <link rel="stylesheet" href="#application.rooturl#/includes/layout.css" type="text/css" />
@@ -26,13 +26,13 @@
 		//Modified by LM to open in center
 		var winl = (screen.width - 400) / 2;
 		var wint = (screen.height - 350) / 2
-		cWin = window.open("#application.rooturl#/?event=#requestContext.getValue("xehComments")#&id="+id,"cWin","width=545,height=500,menubar=yes,personalbar=no,dependent=true,directories=no,status=yes,toolbar=no,scrollbars=yes,resizable=yes,left=" + winl + ",top=" + wint);
+		cWin = window.open("#application.rooturl#/?event=#Context.getValue("xehComments")#&id="+id,"cWin","width=545,height=500,menubar=yes,personalbar=no,dependent=true,directories=no,status=yes,toolbar=no,scrollbars=yes,resizable=yes,left=" + winl + ",top=" + wint);
 	}
 	function launchTrackback(id) {
 		//Modified by LM to open in center
 		var winl = (screen.width - 400) / 2;
 		var wint = (screen.height - 350) / 2
-		cWin = window.open("#application.rooturl#/?event=#requestContext.getValue("xehTrackbacks")#&id="+id,"cWin","width=545,height=500,menubar=yes,personalbar=no,dependent=true,directories=no,status=yes,toolbar=no,scrollbars=yes,resizable=yes,left=" + winl + ",top=" + wint);
+		cWin = window.open("#application.rooturl#/?event=#Context.getValue("xehTrackbacks")#&id="+id,"cWin","width=545,height=500,menubar=yes,personalbar=no,dependent=true,directories=no,status=yes,toolbar=no,scrollbars=yes,resizable=yes,left=" + winl + ",top=" + wint);
 	}
 </script>
 		

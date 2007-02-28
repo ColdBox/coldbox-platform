@@ -2,6 +2,6 @@
 <snippet filetemplate="false" extension="cfm">
 <name>Event Handler Request Context Argument</name>
 <help></help>
-<starttext><![CDATA[<cfargument name="requestContext" type="coldbox.system.beans.requestContext">]]></starttext>
+<starttext><![CDATA[<cfargument name="Context" type="coldbox.system.beans.requestContext">]]></starttext>
 <endtext><![CDATA[]]></endtext>
 </snippet>

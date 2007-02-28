@@ -1,6 +1,6 @@
-<cfset qryFeeds = requestContext.getValue("qryData")>
-<cfset tag = requestContext.getValue("tag")>
-<cfset term = requestContext.getValue("term")>
+<cfset qryFeeds = Context.getValue("qryData")>
+<cfset tag = Context.getValue("tag")>
+<cfset term = Context.getValue("term")>
 
 <cfoutput>
 <h1>Keyword Search Results:</h1>	
@@ -14,7 +14,7 @@
 	<ul>
 	<cfloop query="qryFeeds">
 		<li><div style="line-height:20px;">
-			<a href="javascript:doEvent('#requestContext.getValue("xehFeed")#','centercontent',{feedID:'#qryFeeds.feedID#'});"><strong>#qryFeeds.feedname#</strong></a>
+			<a href="javascript:doEvent('#Context.getValue("xehFeed")#','centercontent',{feedID:'#qryFeeds.feedID#'});"><strong>#qryFeeds.feedname#</strong></a>
 			<span style="font-size:0.9em;">
 				 by #qryFeeds.username# on #dateformat(qryFeeds.createdon,"mmm dd")# at #lstimeFormat(qryFeeds.createdOn)#
 			</span>
@@ -32,6 +32,6 @@
 	<img src="images/orange_arrows.gif" align="absmiddle">Showing #qryFeeds.RecordCount# results.
 	<br>
 	<script>
-		doEvent("#requestContext.getValue("xehTags")#", "rightcontent1", {});
+		doEvent("#Context.getValue("xehTags")#", "rightcontent1", {});
 	</script>
 </cfoutput>

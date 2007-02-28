@@ -7,15 +7,15 @@
 	Last Updated :
 	History      :
 --->
-<cfset rc = requestContext.getCollection()>
+<cfset rc = Context.getCollection()>
 <!--- quick utility func to change foo,moo to foo<newline>moo and reverse --->
 <cfscript>
 function toLines(str) { return replace(str, ",", chr(10), "all"); }
 </cfscript>
 
 
-<cfset settings = requestContext.getValue("settings")>
-<cfset validDBTypes = requestContext.getValue("ValidDBTypes")>
+<cfset settings = Context.getValue("settings")>
+<cfset validDBTypes = Context.getValue("ValidDBTypes")>
 
 	<cfoutput>
 	<p>
@@ -24,8 +24,8 @@ function toLines(str) { return replace(str, ",", chr(10), "all"); }
 	</p>
 	</cfoutput>
 
-	<cfif requestContext.valueExists("errors") and arrayLen(requestContext.getValue("errors"))>
-		<cfset errors = requestContext.getValue("errors")>
+	<cfif Context.valueExists("errors") and arrayLen(Context.getValue("errors"))>
+		<cfset errors = Context.getValue("errors")>
 		<cfoutput>
 		<div class="errors">
 		Please correct the following error(s):
@@ -39,7 +39,7 @@ function toLines(str) { return replace(str, ",", chr(10), "all"); }
 	</cfif>
 
 	<cfoutput>
-	<form action="index.cfm?event=#requestContext.getValue("xehSaveSettings")#" method="post">
+	<form action="index.cfm?event=#Context.getValue("xehSaveSettings")#" method="post">
 	<table>
 		<tr>
 			<td align="right">blog title:</td>

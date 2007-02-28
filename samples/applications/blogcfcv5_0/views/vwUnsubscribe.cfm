@@ -15,8 +15,8 @@
 <div class="date">#getResource("unsubscribe")#</div>
 </cfoutput>
 
-<cfif requestContext.valueExists("commentID")>
-	<cfif requestContext.getValue("result")>
+<cfif Context.valueExists("commentID")>
+	<cfif Context.getValue("result")>
 		<cfoutput>
 		<p>#getResource("unsubscribesuccess")#</p>
 		</cfoutput>
@@ -26,9 +26,9 @@
 		</cfoutput>
 	</cfif>
 
-<cfelseif requestContext.valueExists("token")>
+<cfelseif Context.valueExists("token")>
 	
-	<cfif requestContext.getValue("result")>
+	<cfif Context.getValue("result")>
 		<cfoutput>
 		<p>#getResource("unsubscribeblogsuccess")#</p>
 		</cfoutput>

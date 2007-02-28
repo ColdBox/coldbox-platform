@@ -33,27 +33,27 @@ Modification History:
 
 	<cffunction name="requestCapture" access="public" returntype="void" output="false" hint="I capture a request.">
 		<cfscript>
-			var RequestContext = createContext();
+			var Context = createContext();
 			var DebugPassword = controller.getSetting("debugPassword");
 
 			//Debug Mode Checks
-			if ( RequestContext.valueExists("debugMode") and isBoolean(RequestContext.getValue("debugMode")) ){
+			if ( Context.valueExists("debugMode") and isBoolean(Context.getValue("debugMode")) ){
 				if ( DebugPassword eq "")
-					controller.setDebugMode(REquestContext.getValue("debugMode"));
-				else if ( requestContext.valueExists("debugpass") and CompareNoCase(DebugPassword,requestContext.getValue("debugpass")) eq 0 )
-					controller.setDebugMode(REquestContext.getValue("debugMode"));
+					controller.setDebugMode(Context.getValue("debugMode"));
+				else if ( Context.valueExists("debugpass") and CompareNoCase(DebugPassword,Context.getValue("debugpass")) eq 0 )
+					controller.setDebugMode(Context.getValue("debugMode"));
 			}
 
 			//Event Checks
 			//Default Event Definition
-			if ( not requestContext.valueExists("event"))
-				requestContext.setValue("event", controller.getSetting("DefaultEvent"));
+			if ( not Context.valueExists("event"))
+				Context.setValue("event", controller.getSetting("DefaultEvent"));
 			//Event More Than 1 Check, grab the first event instance, other's are discarded
-			if ( listLen(requestContext.getValue("event")) gte 2 )
-				requestContext.setValue("event", getToken(requestContext.getValue("event"),2,","));
+			if ( listLen(Context.getValue("event")) gte 2 )
+				Context.setValue("event", getToken(Context.getValue("event"),2,","));
 
 			//Set Request Context in storage
-			setContext(requestContext);
+			setContext(Context);
 		</cfscript>
 	</cffunction>
 
@@ -67,9 +67,9 @@ Modification History:
 	</cffunction>
 
 	<cffunction name="setContext" access="public" output="false" returntype="void" hint="Set the Request Context">
-		<cfargument name="RequestContext" type="coldbox.system.beans.RequestContext" required="true">
+		<cfargument name="Context" type="coldbox.system.beans.RequestContext" required="true">
 		<cfscript>
-			request.cb_requestContext = arguments.RequestContext;
+			request.cb_requestContext = arguments.Context;
 		</cfscript>
 	</cffunction>
 
@@ -96,14 +96,4 @@ Modification History:
 		</cfscript>
 	</cffunction>
 
-<cffunction name="dump" access="private" hint="Facade for cfmx dump" returntype="void">
-		<!--- ************************************************************* --->
-		<cfargument name="var" required="yes" type="any">
-		<!--- ************************************************************* --->
-		<cfdump var="#var#">
-	</cffunction>
-
-	<cffunction name="abort" access="private" hint="Facade for cfabort" returntype="void" output="false">
-		<cfabort>
-	</cffunction>
 </cfcomponent>

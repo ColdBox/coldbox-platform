@@ -11,7 +11,7 @@ Sep/25/2005 - Luis Majano
 
 	<!--- ************************************************************* --->
 	<cffunction name="onAppStart" access="public" returntype="void" output="false">
-		<cfargument name="requestContext" type="coldbox.system.beans.requestContext">
+		<cfargument name="Context" type="coldbox.system.beans.requestContext">
 		<cfscript>
 		//Create the JavaLoader with the helloworld.jar file. You can send one path or a comma delimited list.
 		var stime = getTickcount();
@@ -24,12 +24,12 @@ Sep/25/2005 - Luis Majano
 
 	<!--- ************************************************************* --->
 	<cffunction name="dspHello" access="public" returntype="void" output="false">
-		<cfargument name="requestContext" type="coldbox.system.beans.requestContext">
+		<cfargument name="Context" type="coldbox.system.beans.requestContext">
 		<cfscript>
 		//Load the hello world class
-		requestContext.setvalue("HelloWorldObj", getPlugin("javaLoader").create("HelloWorld").init());
+		Context.setvalue("HelloWorldObj", getPlugin("javaLoader").create("HelloWorld").init());
 		getPlugin("logger").tracer("MyLoader just finished loading the HelloWorld Class object.");
-		requestContext.setView("vwHello");
+		Context.setView("vwHello");
 	</cfscript>
 	</cffunction>
 	<!--- ************************************************************* --->

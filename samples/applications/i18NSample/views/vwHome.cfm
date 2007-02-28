@@ -1,4 +1,4 @@
-<cfset rc = requestContext.getCollection()>
+<cfset rc = Context.getCollection()>
 <cfoutput>
 <form action="index.cfm" method="post">
 <table border="1" cellspacing="0" cellpadding="1" bgcolor="##eaeaea" align="center" style="border-bottom:2px solid ##ddd;border-right:2px solid ##ddd; border-left:1px solid ##eaeaea; border-top: 1px solid ##eaeaea;background: ##f5f5f5">

@@ -8,18 +8,18 @@
 	History      : Remove an extra line (5/17/06)
 --->
 
-<cfset message = requestContext.getValue("message")>
-<cfset entry = requestContext.getValue("entry")>
-<cfset allCats = requestContext.getValue("allCats")>
+<cfset message = Context.getValue("message")>
+<cfset entry = Context.getValue("entry")>
+<cfset allCats = Context.getValue("allCats")>
 
 <cfif not structKeyExists(form, "preview")>
 
 	<cfoutput>
-	<script type="text/javascript" src="includes/relatedpostsjs.cfm?id=#requestContext.getValue("ID")#"></script>
+	<script type="text/javascript" src="includes/relatedpostsjs.cfm?id=#Context.getValue("ID")#"></script>
 	</cfoutput>
 
-	<cfif requestContext.valueExists("errors") and arrayLen(requestContext.getValue("errors"))>
-		<cfset errors = requestContext.getValue("errors")>
+	<cfif Context.valueExists("errors") and arrayLen(Context.getValue("errors"))>
+		<cfset errors = Context.getValue("errors")>
 		<cfoutput>
 			<div class="errors">
 			Please correct the following error(s):
@@ -30,7 +30,7 @@
 			</ul>
 			</div>
 		</cfoutput>
-	<cfelseif requestContext.getValue("message","") neq "">
+	<cfelseif Context.getValue("message","") neq "">
 		<cfoutput>
 		<div class="message">
 		#message#
@@ -39,19 +39,19 @@
 	</cfif>
 
 	<cfoutput>
-	<form action="?event=#requestContext.getValue("xehSave")#&id=#requestContext.getValue("id")#" method="post" enctype="multipart/form-data" name="editForm">
+	<form action="?event=#Context.getValue("xehSave")#&id=#Context.getValue("id")#" method="post" enctype="multipart/form-data" name="editForm">
 	<table>
 		<tr>
 			<td align="right">title:</td>
-			<td><input type="text" name="title" value="#htmlEditFormat(requestContext.getValue("title"))#" class="txtField" maxlength="100"></td>
+			<td><input type="text" name="title" value="#htmlEditFormat(Context.getValue("title"))#" class="txtField" maxlength="100"></td>
 		</tr>
 		<tr valign="top">
 			<td align="right">body:</td>
-			<td><textarea name="body" class="txtArea">#requestContext.getValue("body")#</textarea></td>
+			<td><textarea name="body" class="txtArea">#Context.getValue("body")#</textarea></td>
 		</tr>
 		<tr>
 			<td align="right">posted:</td>
-			<td><input type="text" name="posted" value="#requestContext.getValue("posted")#" class="txtField" maxlength="100"></td>
+			<td><input type="text" name="posted" value="#Context.getValue("posted")#" class="txtField" maxlength="100"></td>
 		</tr>
 		<tr valign="top">
 			<td align="right">categories:</td>
@@ -59,11 +59,11 @@
 			<cfif allCats.recordCount>
 			<select name="categories" multiple size=4 class="txtDropdown">
 				<cfloop query="allCats">
-				<option value="#categoryID#" <cfif requestContext.valueExists("categories") and listFind(requestContext.getValue("categories"),categoryID)>selected</cfif>>#categoryName#</option>
+				<option value="#categoryID#" <cfif Context.valueExists("categories") and listFind(Context.getValue("categories"),categoryID)>selected</cfif>>#categoryName#</option>
 				</cfloop>
 			</select><br>
 			</cfif>
-			<input type="text" name="newcategory" value="#htmlEditFormat(requestContext.getValue("newcategory"))#" class="txtField" maxlength="50"> New Category</td>
+			<input type="text" name="newcategory" value="#htmlEditFormat(Context.getValue("newcategory"))#" class="txtField" maxlength="50"> New Category</td>
 		</tr>
 
 		<tr valign="top">
@@ -94,8 +94,8 @@
 
 				<script type="text/javascript" src="includes/relatedposts.js"></script>
 				<!--- BEGIN : if there was an error, repopulate the related entries categories/entries fields : cjg : 31 december 2005 --->
-				<cfif len(trim(requestContext.getValue("cboRelatedEntries"))) GT 0>
-					<script type="text/javascript" src="includes/relatedpostsjs_error.cfm?c=#URLEncodedFormat(requestContext.getValue("cboRelatedEntriesCats"))#&p=#URLEncodedFormat(requestContext.getValue("cboRelatedEntries"))#"></script>
+				<cfif len(trim(Context.getValue("cboRelatedEntries"))) GT 0>
+					<script type="text/javascript" src="includes/relatedpostsjs_error.cfm?c=#URLEncodedFormat(Context.getValue("cboRelatedEntriesCats"))#&p=#URLEncodedFormat(Context.getValue("cboRelatedEntries"))#"></script>
 				</cfif>
 				<!--- END : if there was an error, repopulate the related entries categories/entries fields : cjg : 31 december 2005 --->
 			</td>
@@ -103,24 +103,24 @@
 
 		<tr>
 			<td align="right">alias:</td>
-			<td><input type="text" name="alias" value="#requestContext.getValue("alias")#" class="txtField" maxlength="100"></td>
+			<td><input type="text" name="alias" value="#Context.getValue("alias")#" class="txtField" maxlength="100"></td>
 		</tr>
 		<tr>
 			<td align="right">allow comments:</td>
 			<td>
 			<select name="allowcomments">
-				<option value="true" <cfif requestContext.getValue("allowcomments") is "true">selected</cfif>>Yes</option>
-				<option value="false" <cfif requestContext.getValue("allowcomments") is "false">selected</cfif>>No</option>
+				<option value="true" <cfif Context.getValue("allowcomments") is "true">selected</cfif>>Yes</option>
+				<option value="false" <cfif Context.getValue("allowcomments") is "false">selected</cfif>>No</option>
 			</select>
 			</td>
 		</tr>
 		<tr>
 			<td align="right">enclosure:</td>
 			<td>
-			<input type="hidden" name="oldenclosure" value="#requestContext.getValue("oldenclosure")#">
-			<input type="hidden" name="oldfilesize" value="#requestContext.getValue("oldfilesize")#">
-			<input type="hidden" name="oldmimetype" value="#requestContext.getValue("oldmimetype")#">
-			<cfif len(requestContext.getValue("oldenclosure"))>#listLast(requestContext.getValue("oldenclosure"),"/\")# <input type="submit" name="delete_enclosure" value="#getResource("deleteenclosure")#"></cfif>
+			<input type="hidden" name="oldenclosure" value="#Context.getValue("oldenclosure")#">
+			<input type="hidden" name="oldfilesize" value="#Context.getValue("oldfilesize")#">
+			<input type="hidden" name="oldmimetype" value="#Context.getValue("oldmimetype")#">
+			<cfif len(Context.getValue("oldenclosure"))>#listLast(Context.getValue("oldenclosure"),"/\")# <input type="submit" name="delete_enclosure" value="#getResource("deleteenclosure")#"></cfif>
 			<input type="file" name="enclosure" style="width:100%">
 			</td>
 		</tr>
@@ -128,8 +128,8 @@
 			<td align="right">released:</td>
 			<td>
 			<select name="released">
-			<option value="true" <cfif requestContext.getValue("released") is "true">selected</cfif>>Yes</option>
-			<option value="false" <cfif requestContext.getValue("released") is "false">selected</cfif>>No</option>
+			<option value="true" <cfif Context.getValue("released") is "true">selected</cfif>>Yes</option>
+			<option value="false" <cfif Context.getValue("released") is "false">selected</cfif>>No</option>
 			</select>
 			</td>
 		</tr>
@@ -148,13 +148,13 @@
 	<!--- Handles previews. --->
 	<cfoutput>
 	<div class="previewEntry">
-	#application.blog.renderEntry(requestContext.getValue("body"),false,requestContext.getValue("oldenclosure"))#
+	#application.blog.renderEntry(Context.getValue("body"),false,Context.getValue("oldenclosure"))#
 	</div>
 	</cfoutput>
 
 	<cfoutput>
 	<form action="index.cfm?#cgi.query_string#" method="post">
-	<cfset rc = requestContext.getCollection()>
+	<cfset rc = Context.getCollection()>
 	<cfloop item="key" collection="#rc#">
 		<cfif not listFindNoCase("preview,fieldnames,enclosure,event,fwreinit,allCats", key)>
 			<input type="hidden" name="#key#" value="#htmlEditFormat(rc[key])#">

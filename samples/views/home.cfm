@@ -134,7 +134,7 @@
 		</h2>
 		
 		<div class="boxscrolling" id="logFileContents">
-		#htmlCodeFormat(requestContext.getValue("LogFileContents"))#
+		#htmlCodeFormat(Context.getValue("LogFileContents"))#
 		</div>
 		
 	</div>

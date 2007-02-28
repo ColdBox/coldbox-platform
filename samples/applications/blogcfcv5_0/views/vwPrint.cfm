@@ -5,7 +5,7 @@
 	Last Updated : 11/11/05
 	History      : Changed request.rooturl to app.rooturl (rkc 11/11/05)
 --->
-<cfset entry = requestContext.getValue("entry")>
+<cfset entry = Context.getValue("entry")>
 
 <cfheader name="Content-Disposition" value="inline; filename=print.pdf">
 <cfdocument format="pdf">

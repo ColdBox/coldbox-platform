@@ -11,22 +11,22 @@
 <p>
 #getPlugin("messagebox").renderit()#
 <form action="#cgi.script_name#?" method="post">
-<input type="hidden" name="event" value="#requestContext.getValue("xehSaveConference")#">
-<input type="hidden" name="id" value="#requestContext.getValue("id")#">
+<input type="hidden" name="event" value="#Context.getValue("xehSaveConference")#">
+<input type="hidden" name="id" value="#Context.getValue("id")#">
 <table width="100%" cellspacing=0 cellpadding=5 class="adminEditTable">
 	<tr valign="top">
 		<td align="right"><b>Name:</b></td>
-		<td><input type="text" name="name" value="#requestContext.getValue("name","")#" size="100"></td>
+		<td><input type="text" name="name" value="#Context.getValue("name","")#" size="100"></td>
 	</tr>
 	<tr valign="top">
 		<td align="right"><b>Description:</b></td>
-		<td><textarea name="description" rows=6 cols=35 wrap="soft">#requestContext.getValue("description","")#</textarea></td>
+		<td><textarea name="description" rows=6 cols=35 wrap="soft">#Context.getValue("description","")#</textarea></td>
 	</tr>
 	<tr valign="top">
 		<td align="right"><b>Active:</b></td>
 		<td><select name="active">
-		<option value="1" <cfif requestContext.getValue("active","No")>selected</cfif>>Yes</option>
-		<option value="0" <cfif not requestContext.getValue("active","No")>selected</cfif>>No</option>
+		<option value="1" <cfif Context.getValue("active","No")>selected</cfif>>Yes</option>
+		<option value="0" <cfif not Context.getValue("active","No")>selected</cfif>>No</option>
 		</select></td>
 	</tr>
 	<tr>

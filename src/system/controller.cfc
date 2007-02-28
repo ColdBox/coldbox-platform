@@ -310,8 +310,10 @@ Last Update 	: December 9, 2006
 				</cfif>
 			</cfif>
 
-			<!--- Execute Method --->
-			<cfset Evaluate("oEventHandler.#ExecutingMethod#(requestContext)")>
+			<!--- Execute the handler method --->
+			<cfinvoke component="#oEventHandler#" method="#ExecutingMethod#">
+				<cfinvokeargument name="context" value="#RequestContext#">
+			</cfinvoke>
 
 		</cfmodule>
 	</cffunction>

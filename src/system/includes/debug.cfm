@@ -24,7 +24,7 @@ Modification History:
 
 <!--- Setup Local Variables --->
 <cfset debugStartTime = GetTickCount()>
-<cfset RequestCollection = RequestContext.getCollection()>
+<cfset RequestCollection = Context.getCollection()>
 
 <cfset JVMFreeMemory = getPlugin("fileUtilities").getJVMfreeMemory()/1024>
 <cfset JVMTotalMemory = getPlugin("fileUtilities").getJVMTotalMemory()/1024>
@@ -39,22 +39,20 @@ Modification History:
 function toggle(divid){
 	if ( document.getElementById(divid).className == "fw_debugContent"){
 		document.getElementById(divid).className = "fw_debugContentView";
-		document.getElementById(divid + "_img").src = "/coldbox/system/includes/images/arrow_down.gif";
 	}
 	else{
 		document.getElementById(divid).className = "fw_debugContent";
-		document.getElementById(divid + "_img").src = "/coldbox/system/includes/images/arrow_right.gif";
 	}
 }
 </cfoutput>
 </script>
 <br><br><br>
 <div class="fw_debugPanel">
-	
+
 	<cfif structkeyExists(RequestCollection, "tracerStack")>
 	<cfoutput>
 		<!--- <cfinclude template="style.cfm"> --->
-		<div class="fw_titles" onClick="toggle('fw_tracer')"><img src="/coldbox/system/includes/images/arrow_down.gif" id="fw_tracer_img"/>&nbsp;Tracer Messages </div>
+		<div class="fw_titles" onClick="toggle('fw_tracer')">&nbsp;Tracer Messages </div>
 		<div id="fw_tracer" class="fw_info">
 		<cfloop from="1" to="#arrayLen(RequestCollection.tracerStack)#" index="i">
 		<div class="fw_tracerMessage">
@@ -75,7 +73,7 @@ function toggle(divid){
 	</cfif>
 
 	<div class="fw_titles" onClick="toggle('fw_info')" >
-		 <img src="/coldbox/system/includes/images/arrow_down.gif" id="fw_info_img"/>&nbsp;Debugging Information
+		 &nbsp;Debugging Information
 	</div>
 
 	<div class="fw_debugContentView" id="fw_info">
@@ -91,12 +89,12 @@ function toggle(divid){
 		<div class="fw_debugContentCell">
 		#getController().getSetting("AppName")#
 		</div>
-		
+
 		<div class="fw_debugTitleCell">
 		  JVM Memory
 		</div>
 		<div class="fw_debugContentCell">
-		#NumberFormat(JVMFreeMemory)# KB / #NumberFormat(JVMTotalMemory)#	KB (Free/Total)	
+		#NumberFormat(JVMFreeMemory)# KB / #NumberFormat(JVMTotalMemory)#	KB (Free/Total)
 		</div>
 
 		<div class="fw_debugTitleCell">
@@ -138,21 +136,21 @@ function toggle(divid){
 		  Current Event:
 		</div>
 		<div class="fw_debugContentCell">
-		<cfif requestContext.getValue("event","") eq ""><span class="fw_redText">N/A</span><cfelse>#requestContext.getValue("event")#</cfif>
+		<cfif Context.getValue("event","") eq ""><span class="fw_redText">N/A</span><cfelse>#Context.getValue("event")#</cfif>
 		</div>
 
 		<div class="fw_debugTitleCell">
 		  Current Layout:
 		</div>
 		<div class="fw_debugContentCell">
-		<cfif requestContext.getValue("currentlayout","") eq ""><span class="fw_redText">N/A</span><cfelse>#requestContext.getValue("currentlayout")#</cfif>
+		<cfif Context.getValue("currentlayout","") eq ""><span class="fw_redText">N/A</span><cfelse>#Context.getValue("currentlayout")#</cfif>
 		</div>
 
 		<div class="fw_debugTitleCell">
 		  Current View:
 		</div>
 		<div class="fw_debugContentCell">
-		<cfif requestContext.getValue("currentview","") eq ""><span class="fw_redText">N/A</span><cfelse>#requestContext.getValue("currentview")#</cfif>
+		<cfif Context.getValue("currentview","") eq ""><span class="fw_redText">N/A</span><cfelse>#Context.getValue("currentview")#</cfif>
 		</div>
 
 		<em><p>Method execution times in execution order.</p></em>
@@ -181,9 +179,9 @@ function toggle(divid){
 			<td colspan="3" class="fw_debugTablesTitles">Total Framework Request Execution Time: #request.fwExecTime# ms</td>
 		  </tr>
 		</table><br>
-		
+
 		<hr>
-		
+
 		<!--- Cache Performance --->
 		<div class="fw_debugTitleCell">
 		  Cache Performance
@@ -193,36 +191,36 @@ function toggle(divid){
 		 <em>Hits:</em> #getColdboxOCM().getCachePerformance().hits# |
 		 <em>Misses:</em> #getColdboxOCM().getCachePerformance().misses#
 		</div>
-		
+
 		<div class="fw_debugTitleCell">
 		  Last Reap
 		</div>
 		<div class="fw_debugContentCell">
-		 #DateFormat(getColdboxOCM().getlastReapDatetime(),"MMM-DD-YYYY")# 
+		 #DateFormat(getColdboxOCM().getlastReapDatetime(),"MMM-DD-YYYY")#
 		 #TimeFormat(getColdboxOCM().getlastReapDatetime(),"hh:mm:ss tt")#
 		</div>
-		
+
 		<div class="fw_debugTitleCell">
 		  Reap Frequency
 		</div>
 		<div class="fw_debugContentCell">
 		 Every #controller.getSetting("CacheReapFrequency",1)# Minutes
 		</div>
-		
+
 		<div class="fw_debugTitleCell">
 		  Default Timeout
 		</div>
 		<div class="fw_debugContentCell">
 		 #controller.getSetting("CacheObjectDefaultTimeout",1)# Minutes
 		</div>
-		
+
 		<div class="fw_debugTitleCell">
 		  Last Access Timeout
 		</div>
 		<div class="fw_debugContentCell">
 		 #controller.getSetting("CacheObjectDefaultLastAccessTimeout",1)# Minutes
 		</div>
-		
+
 		<cfif server.ColdFusion.ProductName eq "Coldfusion Server">
 		<div>
 		<table align="center" >
@@ -260,10 +258,10 @@ function toggle(divid){
 	</div>
 
 	<cfif getController().getSetting("EnableDumpVar")>
-		<cfset dumpList = RequestContext.getValue("dumpvar",0)>
+		<cfset dumpList = Context.getValue("dumpvar",0)>
 		<cfif dumplist neq 0>
 		<!--- Dump Var --->
-		<div class="fw_titles" onClick="toggle('fw_dumpvar')"><img src="/coldbox/system/includes/images/arrow_right.gif" id="fw_dumpvar_img" />&nbsp;Dumpvar </div>
+		<div class="fw_titles" onClick="toggle('fw_dumpvar')">&nbsp;Dumpvar </div>
 		<div class="fw_debugContent" id="fw_dumpvar">
 			<cfloop list="#dumplist#" index="i">
 				<cfif isDefined("#i#")>
@@ -276,7 +274,7 @@ function toggle(divid){
 
 	<!--- Request Collection Debug --->
 	<div class="fw_titles"  onClick="toggle('fw_reqCollection')" >
-	<img src="/coldbox/system/includes/images/arrow_right.gif"  id="fw_reqCollection_img" />&nbsp;Request Collection Structure
+	&nbsp;Request Collection Structure
 	</div>
 	<div class="fw_debugContent" id="fw_reqCollection">
 		<table border="0" cellpadding="0" cellspacing="1" class="fw_debugTables" width="100%">
@@ -284,10 +282,10 @@ function toggle(divid){
 		  <tr>
 			<td align="right" width="15%" class="fw_debugTablesTitles">#lcase(vars)#:</td>
 			<td  class="fw_debugTablesCells">
-			<cfif isSimpleValue(RequestContext.getValue(vars)) >
-				<cfif RequestContext.getValue(vars) eq ""><span class="fw_redText">N/A</span></cfif> #RequestContext.getValue(vars)#
+			<cfif isSimpleValue(Context.getValue(vars)) >
+				<cfif Context.getValue(vars) eq ""><span class="fw_redText">N/A</span></cfif> #Context.getValue(vars)#
 			<cfelse>
-				<cfdump var="#RequestContext.getValue(vars)#">
+				<cfdump var="#Context.getValue(vars)#">
 			</cfif>
 			</td>
 		  </tr>
@@ -299,7 +297,7 @@ function toggle(divid){
 	<em><strong>Approximate Debug Rendering Time: #GetTickCount()-DebugStartTime# ms</strong></em>
 	<br /><br />
 
-	
+
 </div>
 	</cfoutput>
 <cfsetting enablecfoutputonly=false>

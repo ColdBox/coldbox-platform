@@ -2,6 +2,6 @@
 <snippet filetemplate="false" extension="cfm">
 <name>OverrideEvent</name>
 <help>Override Event method</help>
-<starttext><![CDATA[requestContext.overrideEvent("$${Event}")]]></starttext>
+<starttext><![CDATA[Context.overrideEvent("$${Event}")]]></starttext>
 <endtext><![CDATA[]]></endtext>
 </snippet>

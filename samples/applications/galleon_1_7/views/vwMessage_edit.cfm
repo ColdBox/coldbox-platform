@@ -10,14 +10,14 @@
 				 : fix bug if attachments turned off (rkc 11/14/06)
 	Purpose		 : Allows moderators/admins to edit post.
 --->
-<cfset rc = requestContext.getCollection()>
+<cfset rc = Context.getCollection()>
 <cfoutput>
 <p>
 <table width="500" cellpadding="6" class="tableDisplay" cellspacing="1" border="0">
 	<tr class="tableHeader">
 		<td class="tableHeader">Edit Post</td>
 	</tr>
-	<cfif requestContext.valueExists("posterrors")>
+	<cfif Context.valueExists("posterrors")>
 	<tr class="tableRowMain">
 		<td>
 		#getPlugin("messagebox").renderit()#
@@ -27,19 +27,19 @@
 	<tr class="tableRowMain">
 		<td>
 		<form action="#cgi.script_name#" method="post" enctype="multipart/form-data">
-		<input type="hidden" name="event" value="#requestContext.getValue("xehMessagePost")#">
-		<input type="hidden" name="id" value="#requestContext.getValue("id")#">
+		<input type="hidden" name="event" value="#Context.getValue("xehMessagePost")#">
+		<input type="hidden" name="id" value="#Context.getValue("id")#">
 		<table>
 			<tr>
 				<td><b>Title: </b></td>
-				<td><input type="text" name="post_title" value="#requestContext.getValue("post_title")#" class="formBox"></td>
+				<td><input type="text" name="post_title" value="#Context.getValue("post_title")#" class="formBox"></td>
 			</tr>
 			<tr>
 				<td colspan="2"><b>Body: </b><br>
 				<p>
 				#application.message.renderHelp()#
 				</p>
-				<textarea name="body" cols="50" rows="20">#requestContext.getValue("body")#</textarea></td>
+				<textarea name="body" cols="50" rows="20">#Context.getValue("body")#</textarea></td>
 			</tr>
 			<cfif isBoolean(request.forum.attachments) and request.forum.attachments>
 				<tr valign="top">

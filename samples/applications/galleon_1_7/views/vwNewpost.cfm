@@ -16,14 +16,14 @@
 				   error if attachments disabled (rkc 11/6/06)
 	Purpose		 : Displays form to add a thread.
 --->
-<cfset rc = requestContext.getCollection()>
+<cfset rc = Context.getCollection()>
 <cfoutput>
 <p>
 <table width="500" cellpadding="6" class="tableDisplay" cellspacing="1" border="0">
 	<tr class="tableHeader">
 		<td class="tableHeader">New Post</td>
 	</tr>
-	<cfif requestContext.valueExists("posterrors") or not getPlugin("messagebox").isEmpty()>
+	<cfif Context.valueExists("posterrors") or not getPlugin("messagebox").isEmpty()>
 	<tr class="tableRowMain">
 		<td>
 		#getPlugin("messagebox").renderit()#
@@ -33,26 +33,26 @@
 	<tr class="tableRowMain">
 		<td>
 		<form action="#cgi.script_name#" method="post" enctype="multipart/form-data">
-		<input type="hidden" name="event" value="#requestContext.getValue("xehNewTopic")#">
-		<input type="hidden" name="forumid" value="#requestContext.getValue("forumid")#">
+		<input type="hidden" name="event" value="#Context.getValue("xehNewTopic")#">
+		<input type="hidden" name="forumid" value="#Context.getValue("forumid")#">
 		<table>
-			<cfif not requestContext.getValue("blockedAttempt")>
+			<cfif not Context.getValue("blockedAttempt")>
 				<tr>
 					<td><b>Title: </b></td>
-					<td><input type="text" name="post_title" value="#requestContext.getValue("post_title")#" class="formBox"></td>
+					<td><input type="text" name="post_title" value="#Context.getValue("post_title")#" class="formBox"></td>
 				</tr>
 				<tr>
 					<td colspan="2"><b>Body: </b><br>
 					<p>
 					#application.message.renderHelp()#
 					</p>
-					<textarea name="body" cols="50" rows="20">#requestContext.getValue("body")#</textarea></td>
+					<textarea name="body" cols="50" rows="20">#Context.getValue("body")#</textarea></td>
 				</tr>
 				<tr>
 					<td><b>Subscribe to Thread: </b></td>
 					<td><select name="subscribe">
-					<option value="true" <cfif requestContext.getValue("subscribe")>selected</cfif>>Yes</option>
-					<option value="false" <cfif not requestContext.getValue("subscribe")>selected</cfif>>No</option>
+					<option value="true" <cfif Context.getValue("subscribe")>selected</cfif>>Yes</option>
+					<option value="false" <cfif not Context.getValue("subscribe")>selected</cfif>>No</option>
 					</select></td>
 				</tr>	
 				<cfif isBoolean(request.forum.attachments) and request.forum.attachments>

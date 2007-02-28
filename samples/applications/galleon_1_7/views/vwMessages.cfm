@@ -22,10 +22,10 @@
 --->
 
 <!--- Get References --->
-<cfset rc = requestContext.getCollection()>
-<cfset data = requestContext.getValue("data")>
+<cfset rc = Context.getCollection()>
+<cfset data = Context.getValue("data")>
 <!--- Displays pagination on right side, plus left side buttons for threads --->
-<cfmodule template="../tags/pagination.cfm" pages="#requestContext.getValue("pages")#" mode="messages" />
+<cfmodule template="../tags/pagination.cfm" pages="#Context.getValue("pages")#" mode="messages" />
 
 <!--- Now display the table. This changes based on what our data is. --->
 <cfoutput>
@@ -69,7 +69,7 @@
 					<cfif currentRow is recordCount><a name="last"></a></cfif>
 					<b>#title#</b><br>
 					#dateFormat(posted,"mm/dd/yy")# #timeFormat(posted,"h:mm tt")#<br>
-					<cfif len(attachment)>Attachment: <a href="index.cfm?event=#requestContext.getValue("xehAttachment")#&id=#id#">#attachment#</a><br></cfif>
+					<cfif len(attachment)>Attachment: <a href="index.cfm?event=#Context.getValue("xehAttachment")#&id=#id#">#attachment#</a><br></cfif>
 					<br>
 					<!---
 					#paragraphFormat2(activateURL(body))#
@@ -79,7 +79,7 @@
 					<cfif len(uinfo.signature)><div class="signature">#uinfo.signature#</div></cfif>
 					
 					<cfif isLoggedOn() and application.utils.isUserInAnyRole("forumsadmin,forumsmoderator")>
-						<p align="right"><a href="index.cfm?event=#requestContext.getValue("xehMessageEdit")#&id=#id#">[Edit Post]</a></p>
+						<p align="right"><a href="index.cfm?event=#Context.getValue("xehMessageEdit")#&id=#id#">[Edit Post]</a></p>
 					</cfif>
 				</td>
 			</tr>
@@ -112,7 +112,7 @@
 	<tr class="tableHeader">
 		<td class="tableHeader">New Post</td>
 	</tr>
-	<cfif requestContext.valueExists("posterrors") or not getPlugin("messagebox").isEmpty()>
+	<cfif Context.valueExists("posterrors") or not getPlugin("messagebox").isEmpty()>
 	<tr class="tableRowMain">
 		<td>
 		#getPlugin("messagebox").renderit()#
@@ -122,33 +122,33 @@
 	<tr class="tableRowMain">
 		<td>
 		<form action="#cgi.script_name#?##newpost" method="post" enctype="multipart/form-data">
-		<input type="hidden" name="event" value="#requestContext.getValue("xehMessagePost")#">
-		<input type="hidden" name="threadid" value="#requestContext.getValue("threadid")#">
+		<input type="hidden" name="event" value="#Context.getValue("xehMessagePost")#">
+		<input type="hidden" name="threadid" value="#Context.getValue("threadid")#">
 		<table>
 			<cfif not isLoggedOn()>
 				<cfset thisPage = cgi.script_name & "?" & cgi.query_string & "&##newpost">
-				<cfset link = "index.cfm?event=#requestContext.getValue("xehLogin")#&ref=#urlEncodedFormat(thisPage)#">
+				<cfset link = "index.cfm?event=#Context.getValue("xehLogin")#&ref=#urlEncodedFormat(thisPage)#">
 
 				<tr>
 					<td>Please <a href="#link#">login</a> to post a response.</td>
 				</tr>
-			<cfelseif application.utils.isUserInAnyRole("forumsadmin,forumsmoderator") or not requestContext.getValue("readonly")>
+			<cfelseif application.utils.isUserInAnyRole("forumsadmin,forumsmoderator") or not Context.getValue("readonly")>
 				<tr>
 					<td><b>Title: </b></td>
-					<td><input type="text" name="post_title" value="#requestContext.getValue("post_title")#" class="formBox"></td>
+					<td><input type="text" name="post_title" value="#Context.getValue("post_title")#" class="formBox"></td>
 				</tr>
 				<tr>
 					<td colspan="2"><b>Body: </b><br>
 					<p>
 					#application.message.renderHelp()#
 					</p>
-					<textarea name="body" cols="50" rows="20">#requestContext.getValue("body")#</textarea></td>
+					<textarea name="body" cols="50" rows="20">#Context.getValue("body")#</textarea></td>
 				</tr>
 				<tr>
 					<td><b>Subscribe to Thread: </b></td>
 					<td><select name="subscribe">
-					<option value="true" <cfif requestContext.getValue("subscribe")>selected</cfif>>Yes</option>
-					<option value="false" <cfif not requestContext.getValue("subscribe")>selected</cfif>>No</option>
+					<option value="true" <cfif Context.getValue("subscribe")>selected</cfif>>Yes</option>
+					<option value="false" <cfif not Context.getValue("subscribe")>selected</cfif>>No</option>
 					</select></td>
 				</tr>
 				<cfif isBoolean(request.forum.attachments) and request.forum.attachments>

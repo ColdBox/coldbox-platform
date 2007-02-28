@@ -1,12 +1,12 @@
-<cfmodule template="../tags/scopecache.cfm" cachename="#application.applicationname#" scope="application" disabled="#requestContext.getValue("disabled")#" timeout="#application.timeout#">
+<cfmodule template="../tags/scopecache.cfm" cachename="#application.applicationname#" scope="application" disabled="#Context.getValue("disabled")#" timeout="#application.timeout#">
 
 <!--- Reference to Articles --->
-<cfset articles = requestContext.getValue("articles")>
+<cfset articles = Context.getValue("articles")>
 <cfset lastDate = "">
 <cfset allowTB = application.blog.getProperty("allowtrackbacks")>
 <cfset maxEntries = application.blog.getProperty("maxEntries") />
 
-<cfoutput query="articles" startrow="#requestContext.getValue("startrow")#" maxrows="#maxEntries#">
+<cfoutput query="articles" startrow="#Context.getValue("startrow")#" maxrows="#maxEntries#">
 	<div class="entry<cfif articles.currentRow EQ articles.recordCount>Last</cfif>">
 	<cfif allowTB>
 		<!--- output this rdf for auto discovery of trackback links --->
@@ -18,7 +18,7 @@
 	        rdf:about="#application.blog.makeLink(id)#"
 	        dc:identifier="#application.blog.makeLink(id)#"
 	        dc:title="#title#"
-	        trackback:ping="#application.rooturl#/?event=#requestContext.getValue("xehTrackback")#&id=#id#" />
+	        trackback:ping="#application.rooturl#/?event=#Context.getValue("xehTrackback")#&id=#id#" />
 	    </rdf:RDF>
 		-->
 	</cfif>
@@ -35,7 +35,7 @@
 
 	<div class="body">
 	#application.blog.renderEntry(body,false,enclosure)#
-	<cfif len(morebody) and requestContext.getValue("mode") is not "entry">
+	<cfif len(morebody) and Context.getValue("mode") is not "entry">
 	<p align="right">
 	<a href="#application.blog.makeLink(id)###more">[#getResource("more")#]</a>
 	</p>
@@ -49,8 +49,8 @@
 	<div class="byline">
 	<cfif allowcomments or commentCount neq ""><a href="#application.blog.makeLink(id)###comments">#getResource("comments")# (<cfif commentCount is "">0<cfelse>#commentCount#</cfif>)</a> | </cfif>
 	<cfif allowTB><a href="#application.blog.makeLink(id)###trackbacks">Trackbacks (<cfif trackbackCount is "">0<cfelse>#trackbackCount#</cfif>)</a> | </cfif>
-	<cfif application.isColdFusionMX7><a href="#application.rooturl#/?event=#requestContext.getValue("xehPrint")#&id=#id#" rel="nofollow">#getResource("print")#</a> | </cfif>
-	<a href="#application.rooturl#/?event=#requestContext.getValue("xehSend")#&id=#id#" rel="nofollow">#getResource("send")#</a> |
+	<cfif application.isColdFusionMX7><a href="#application.rooturl#/?event=#Context.getValue("xehPrint")#&id=#id#" rel="nofollow">#getResource("print")#</a> | </cfif>
+	<a href="#application.rooturl#/?event=#Context.getValue("xehSend")#&id=#id#" rel="nofollow">#getResource("send")#</a> |
 	<cfif len(enclosure)><a href="#application.rooturl#/enclosures/#urlEncodedFormat(getFileFromPath(enclosure))#">#getResource("download")#</a> | </cfif>
     <!--- RBB 11/02/2005: Added del.icio.us and Technorati links --->
    	<a href="http://del.icio.us/post?url=#application.blog.makeLink(id)#&title=#URLEncodedFormat("#application.blog.getProperty('blogTitle')#:#title#")#">del.icio.us</a>
@@ -103,7 +103,7 @@
 			<p>
 			<div class="body">
 			#getResource("trackbackurl")#<br>
-			<textarea name="tr" rows="2" cols="85" onFocus="this.select()">#application.rooturl#/?event=#requestContext.getValue("xehTrackback")#&#id#</textarea>
+			<textarea name="tr" rows="2" cols="85" onFocus="this.select()">#application.rooturl#/?event=#Context.getValue("xehTrackback")#&#id#</textarea>
 			</div>
 			</p>
 			<div class="trackbackBody addTrackbackLink">
@@ -160,14 +160,14 @@
 
 	<cfoutput><div class="body">#getResource("sorry")#</div></cfoutput>
 	<div class="body">
-	<cfif requestContext.getValue("mode") is "">
+	<cfif Context.getValue("mode") is "">
 		<cfoutput>#getResource("noentries")#</cfoutput>
 	<cfelse>
 		<cfoutput>#getResource("noentriesforcriteria")#</cfoutput>
 	</cfif>
 	</div>
 
-<cfelseif articles.recordCount gt requestContext.getValue("startRow") + application.maxEntries>
+<cfelseif articles.recordCount gt Context.getValue("startRow") + application.maxEntries>
 
 	<!--- get path if not /index.cfm --->
 	<cfset path = replace(cgi.path_info, "/index.cfm", "")>
@@ -175,10 +175,10 @@
 	<!--- clean out startrow from query string --->
 	<cfset qs = cgi.query_string>
 	<cfset qs = reReplaceNoCase(qs, "&*startrow=[0-9]+", "")>
-	<cfset qs = qs & "&startRow=" & ( requestContext.getValue("startRow") + application.maxEntries)>
+	<cfset qs = qs & "&startRow=" & ( Context.getValue("startRow") + application.maxEntries)>
 
-	<cfif requestContext.valueExists("search") and len(trim(requestContext.getValue("search")))>
-		<cfset qs = qs & "&search=#htmlEditFormat(requestContext.getValue("search"))#">
+	<cfif Context.valueExists("search") and len(trim(Context.getValue("search")))>
+		<cfset qs = qs & "&search=#htmlEditFormat(Context.getValue("search"))#">
 	</cfif>
 
 	<cfoutput>

@@ -2,6 +2,6 @@
 <snippet filetemplate="false" extension="cfm">
 <name>setValue</name>
 <help>setValue Method</help>
-<starttext><![CDATA[requestContext.setValue("$${variable name}", $${value})]]></starttext>
+<starttext><![CDATA[Context.setValue("$${variable name}", $${value})]]></starttext>
 <endtext><![CDATA[]]></endtext>
 </snippet>

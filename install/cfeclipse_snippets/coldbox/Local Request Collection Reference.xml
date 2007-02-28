@@ -2,6 +2,6 @@
 <snippet filetemplate="false" extension="cfm">
 <name>Local Request Collection Reference</name>
 <help></help>
-<starttext><![CDATA[<cfset var rc = requestContext.getCollection()>]]></starttext>
+<starttext><![CDATA[<cfset var rc = Context.getCollection()>]]></starttext>
 <endtext><![CDATA[]]></endtext>
 </snippet>

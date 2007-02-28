@@ -1,4 +1,4 @@
-<cfset qryData = requestContext.getValue("qryData")>
+<cfset qryData = Context.getValue("qryData")>
 <cfset tagValueArray = ListToArray(ValueList(qryData.tagCount))>
 <cfset max = ArrayMax(tagValueArray)>
 <cfset min = ArrayMin(tagValueArray)>
@@ -20,7 +20,7 @@
 		<cfelse>
 			<cfset class="smallTag">
 		</cfif>
-		<a href="javascript:doEvent('#requestContext.getValue("xehSearchTag")#','centercontent',{tag:'#tag#'});" class="#class#">#qryData.tag#</a>&nbsp;
+		<a href="javascript:doEvent('#Context.getValue("xehSearchTag")#','centercontent',{tag:'#tag#'});" class="#class#">#qryData.tag#</a>&nbsp;
 	</cfoutput>
 	<cfif qryData.recordCount eq 0>
 		<em>No Tags</em>

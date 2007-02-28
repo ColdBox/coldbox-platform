@@ -6,7 +6,7 @@
 <cfoutput>
 <h1>Create your very own ColdBox Reader Account</h1>
 
-<form name="frm" method="post" action="javascript:doFormEvent('#requestContext.getValue("xehCreate")#','centercontent',document.frm)">
+<form name="frm" method="post" action="javascript:doFormEvent('#Context.getValue("xehCreate")#','centercontent',document.frm)">
 	<p>
 		Creating an account allows you to add new feeds and tag existing feeds. All passwords are encrypted.
 	</p>

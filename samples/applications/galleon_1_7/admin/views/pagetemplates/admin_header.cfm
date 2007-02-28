@@ -16,7 +16,7 @@
 
 <html>
 <head>
-	<title>#requestContext.getValue("title")#</title>
+	<title>#Context.getValue("title")#</title>
 	<link rel="stylesheet" type="text/css" href="../stylesheets/style.css">
 </head>
 
@@ -28,24 +28,24 @@
 		<td class="adminLeftMenu" width="150">
 		<img src="/images/shim.gif" width="150" height="1">
 		<b>Conference Options</b><br>
-		<a href="?event=#requestContext.getValue("xehConferences")#">Conferences</a><br>
-		<a href="?event=#requestContext.getValue("xehForums")#">Forums</a><br>
-		<a href="?event=#requestContext.getValue("xehThreads")#">Threads</a><br>
-		<a href="?event=#requestContext.getValue("xehMessages")#">Messages</a><br>
-		<a href="?event=#requestContext.getValue("xehRanks")#">Ranks</a><br>
+		<a href="?event=#Context.getValue("xehConferences")#">Conferences</a><br>
+		<a href="?event=#Context.getValue("xehForums")#">Forums</a><br>
+		<a href="?event=#Context.getValue("xehThreads")#">Threads</a><br>
+		<a href="?event=#Context.getValue("xehMessages")#">Messages</a><br>
+		<a href="?event=#Context.getValue("xehRanks")#">Ranks</a><br>
 		<br>
 		<b>Security Options</b><br>
-		<a href="?event=#requestContext.getValue("xehUsers")#">User Editor</a><br>
+		<a href="?event=#Context.getValue("xehUsers")#">User Editor</a><br>
 		<br>
 		<b>Stats</b><br>
-		<a href="?event=#requestContext.getValue("xehStats")#">General Reporting</a><br>
-		<a href="?event=#requestContext.getValue("xehSearchStats")#">Search Reporting</a><br>
+		<a href="?event=#Context.getValue("xehStats")#">General Reporting</a><br>
+		<a href="?event=#Context.getValue("xehSearchStats")#">Search Reporting</a><br>
 		<br>
 		<a href="index.cfm">Admin Home</a><br>
 		<a href="../">Galleon Home</a><br>
 		</td>
 		<td width="100%">
-		<h2>#requestContext.getValue("title")#</h2>
+		<h2>#Context.getValue("title")#</h2>
 </cfoutput>
 
 <cfsetting enablecfoutputonly=false>
