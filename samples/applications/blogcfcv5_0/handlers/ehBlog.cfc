@@ -9,7 +9,7 @@
 		<cfset var majorVersion = "">
 		<cfset var minorVersion = "">
 		<cfset var cfversion = "">
-		
+
 		<!--- load an init blog --->
 		<cfset application.blog = createObject("component","#getSetting("AppMapping")#.org.camden.blog.blog").init(blogname)>
 		<!--- Path may be different if admin. --->
@@ -58,7 +58,7 @@
 
 	</cffunction>
 	<!--- ************************************************************* --->
-	
+
 	<!--- ************************************************************* --->
 	<cffunction name="onRequestStart" access="public" returntype="void" output="false">
 		<cfargument name="requestContext" type="coldbox.system.beans.requestContext">
@@ -70,7 +70,7 @@
 		<!--- Moved here from layout --->
 		<!--- Get Additional Title's To Display --->
 		<cfset requestContext.setValue("additionalTitle","")>
-		
+
 		<cfif requestContext.getValue("mode","") is "cat">
 			<cftry>
 				<cfset cat = application.blog.getCategory(requestContext.getValue("catid"))>
@@ -84,7 +84,7 @@
 				<cfcatch></cfcatch>
 			</cftry>
 		</cfif>
-		
+
 		<!--- EXIT HANDLERS: --->
 		<cfset rc.xehComments = "ehBlog.dspComments">
 		<cfset rc.xehTrackbacks = "ehBlog.dspTrackbacks">
@@ -102,7 +102,7 @@
 		<cfset rc.xehSend = "ehBlog.dspSend">
 		<cfset rc.xehRSS = "ehBlog.dspRss">
 		<cfset rc.xehSubscribe = "ehBlog.doSubscribe">
-		
+
 		<!--- Handle URL variables to figure out how we will get betting stuff. --->
 		<cfmodule template="../tags/getmode.cfm" r_params="params"/>
 
@@ -183,7 +183,7 @@
 		<cfset var id = "">
 		<cfset var entry = "">
 		<cfset var blogEntry = "">
-		
+
 		<!--- TBs allowed? --->
 		<cfif not application.blog.getProperty("allowtrackbacks")><cfabort></cfif>
 
@@ -296,7 +296,7 @@
 		<cfset var rc = requestContext.getCollection()>
 		<!--- EXIT HANDLERS: --->
 		<cfset rc.xehAddComment = "ehBlog.doAddComment">
-		
+
 		<!--- Get Cookie Values --->
 		<cfif not requestContext.valueExists("addcomment")>
 			<cfif isDefined("cookie.blog_name")>
@@ -350,13 +350,13 @@
 		<cfset var email = "">
 		<cfset var subject = "">
 		<cfset var commentID = 0>
-		
+
 		<cfset requestContext.setValue("name",trim(requestContext.getValue("name")))>
 		<cfset requestContext.setValue("email", trim(requestContext.getValue("email")))>
 		<!--- RBB 11/02/2005: Added new website option --->
 		<cfset requestContext.setValue("website",trim(requestContext.getValue("website")))>
 		<cfset requestContext.setValue("newcomments", trim(requestContext.getValue("newcomments")))>
-		
+
 		<!--- error checks --->
 		<cfif not len(requestContext.getValue("name"))>
 			<cfset errorStr = errorStr & getResource("mustincludename") & "<br>">
@@ -370,7 +370,7 @@
 		<cfif not len(requestContext.getValue("newcomments"))>
 			<cfset errorStr = errorStr & getResource("mustincludecomments") & "<br>">
 		</cfif>
-		
+
 		<!--- captcha validation --->
 		<cfif application.useCaptcha>
 			<cfif not len(requestContext.getValue("captchaText"))>
@@ -451,6 +451,7 @@
 
 	<!--- ************************************************************* --->
 	<cffunction name="dspTrackbacks" access="public" returntype="void" output="false">
+		<cfargument name="requestContext" type="coldbox.system.beans.requestContext">
 		<cfset var params = Structnew()>
 		<cfset var rc = requestContext.getCollection()>
 		<!--- EXIT HANDLERS: --->
@@ -475,7 +476,7 @@
 		<cfargument name="requestContext" type="coldbox.system.beans.requestContext">
 		<cfset var errorStr = "">
 		<cfset var id = "">
-		
+
 		<cfif not len(trim(requestContext.getValue("blog_name")))>
 			<cfset errorStr = errorStr & getResource("mustincludeblogname") & "<br>">
 		</cfif>
