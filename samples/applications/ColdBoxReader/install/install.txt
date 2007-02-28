@@ -40,9 +40,9 @@ Version 1.1.0 (sep-10-2006)
 - New icons and new look
 - Bug Fixes and additions.
 
-Version 1.2.0 (feb-20-2007)
+Version 2.0.0 (feb-20-2007)
 - Moved to service objects architecture.
 - Usage of ColdSpring
-- Move of ColdBox 1.2.0
+- Move of ColdBox 2.0.0
 - Added Update Profile
 - Added the My Feeds button.

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <Config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:noNamespaceSchemaLocation="http://www.coldboxframework.com/schema/config_1.2.0.xsd">
+	xsi:noNamespaceSchemaLocation="http://www.coldboxframework.com/schema/config_2.0.0.xsd">
 	<Settings>
 		<Setting name="AppName" 					value="ColdBoxReader"/>
 		<Setting name="DebugMode" 					value="false"/>
@@ -27,7 +27,7 @@
 	</Settings>
 
 	<YourSettings>
-			<Setting name="Version" value="1.2.0" />
+			<Setting name="Version" value="2.0.0" />
 			<Setting name="ModelBasePath" value="coldbox.samples.applications.ColdBoxReader.components" />
 	</YourSettings>
 
