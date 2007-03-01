@@ -437,7 +437,7 @@
 		<!--- Set the error message --->
 		<cfset getPlugin("messagebox").setMessage("error",errorStr)>
 		<!--- Go to display --->
-		<cfset dspComments(requestContext)>
+		<cfset dspComments(Context)>
 	</cffunction>
 	<!--- ************************************************************* --->
 
@@ -629,7 +629,7 @@
 	<!--- ************************************************************* --->
 	<cffunction name="fnccfdocument" access="private" returntype="void" hint="Check for cfdoctype and change layout">
 		<cfscript>
-		var requestContext = controller.getRequestService().getContext();
+		var Context = controller.getRequestService().getContext();
 		if ( Context.getValue("cfdoctype",0) neq 0 )
 			Context.setLayout("Layout.Cfdoc");
 		</cfscript>
