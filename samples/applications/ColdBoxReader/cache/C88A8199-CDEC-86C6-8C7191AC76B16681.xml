@@ -5,8 +5,8 @@
 			<link>http://www.divergingpath.com/index.cfm</link>
 			<description>Aaron Conran's Blog</description>
 			<language>en-us</language>
-			<pubDate>Mon, 19 Feb 2007 18:52:19 -0600</pubDate>
-			<lastBuildDate>Mon, 19 Feb 2007 01:06:00 -0600</lastBuildDate>
+			<pubDate>Wed, 28 Feb 2007 20:52:56 -0600</pubDate>
+			<lastBuildDate>Tue, 27 Feb 2007 23:45:00 -0600</lastBuildDate>
 			<generator>BlogCFC</generator>
 			<docs>http://blogs.law.harvard.edu/tech/rss</docs>
 			<managingEditor>Aaron.Conran@gmail.com</managingEditor>
@@ -14,6 +14,78 @@
 			
 			
 			
+			
+			
+			<item>
+				<title>Ext: Transform Links into DHTML Popups using Ext.BasicDialog</title>
+				<link>http://www.divergingpath.com/index.cfm/2007/2/27/Ext-Transform-Links-into-DHTML-Popups-using-ExtBasicDialog</link>
+				<description>
+				
+				I've created a simple JavaScript class to transform regular links to DHTML popups using the Ext.BasicDialog class. This works great because it degrades gracefully and it's very simple to implement. Want to let users stay at your site but show a small piece of content from another? Perhaps a map or something of that sort? This is just what you need.&lt;br/&gt;
+				 [More]
+				</description>
+						
+				
+				<category>Ext</category>				
+				
+				<category>YUI-Ext</category>				
+				
+				<pubDate>Tue, 27 Feb 2007 23:45:00 -0600</pubDate>
+				<guid>http://www.divergingpath.com/index.cfm/2007/2/27/Ext-Transform-Links-into-DHTML-Popups-using-ExtBasicDialog</guid>
+				
+			</item>
+			
+		 	
+			
+			
+			<item>
+				<title>Ext: [BookMgr] Extending functionality with Ext.extend</title>
+				<link>http://www.divergingpath.com/index.cfm/2007/2/25/Ext-BookMgr-Extending-functionality-with-Extextend</link>
+				<description>
+				
+				This is part 1 of a multi-part tutorial to build a small application to manage books. The tutorial can be extended to managing any entity with common CRUD Operations. CRUD? What's CRUD? &lt;strong&gt;C&lt;/strong&gt;reate &lt;strong&gt;R&lt;strong&gt;ead &lt;strong&gt;U&lt;/strong&gt;pdate &lt;strong&gt;D&lt;/strong&gt;elete. This is a common function built into small "manager" applications, such as the hypothetical examples of a User Manager or a Product Manager. I chose books because I would like to eventually integrate some book reviews into my personal site. (I read a &lt;strong&gt;lot&lt;/strong&gt;). &lt;br/&gt;&lt;br/&gt;
+
+&lt;a href="http://dev.divergingpath.com/playpen/book-alpha.cfm" target=_blank"&gt;Here&lt;/a&gt; is a preview of the unfinished app. The buttons on the left-hand navigation side were created using a new class which &lt;i&gt;extends&lt;/i&gt; from Ext's Button class. Notice how active buttons have a colored state and a hand cursor indicating that they are indeed Buttons. Inactive buttons have desaturated images and have a regular cursor which indicates to the user that they cannot currently use the Button. Click Add to see the Edit and Delete Buttons to go to the Inactive state.&lt;br/&gt;
+				 [More]
+				</description>
+						
+				
+				<category>BookMgr</category>				
+				
+				<category>Ext</category>				
+				
+				<category>YUI-Ext</category>				
+				
+				<pubDate>Sun, 25 Feb 2007 22:50:00 -0600</pubDate>
+				<guid>http://www.divergingpath.com/index.cfm/2007/2/25/Ext-BookMgr-Extending-functionality-with-Extextend</guid>
+				
+			</item>
+			
+		 	
+			
+			
+			<item>
+				<title>YUI-Ext &amp; BlogCFC: Implementing stylish comments</title>
+				<link>http://www.divergingpath.com/index.cfm/2007/2/20/YUIExt-and-BlogCFC-Implementing-stylish-comments</link>
+				<description>
+				
+				In this tutorial I will describe the technique that I used to create the Dialog that will pop up when you click "Add Comment". Go ahead and try it at the bottom of the page. These are Yui-Ext BasicDialogs which contain an iframe pointing to the existing addcomment.cfm file. Cool eh? Much better than an actual popup window which may be blocked by the browser and not as cool. We are going to try to be as unobtrusive as possible in BlogCFC 5.5.1 and therefore are only going to modify 2 files. Okay, let's get started once you download the necessary files: &lt;a href="http://yui-ext.com/deploy/ext-1.0-alpha1.zip"&gt;Ext 1.0 Alpha&lt;/a&gt; and &lt;a href="http://www.divergingpath.com/uploads/BlogLayout.js"&gt;BlogLayout.js&lt;/a&gt;
+				 [More]
+				</description>
+						
+				
+				<category>BlogCFC</category>				
+				
+				<category>Ext</category>				
+				
+				<category>YUI-Ext</category>				
+				
+				<pubDate>Tue, 20 Feb 2007 23:57:00 -0600</pubDate>
+				<guid>http://www.divergingpath.com/index.cfm/2007/2/20/YUIExt-and-BlogCFC-Implementing-stylish-comments</guid>
+				
+			</item>
+			
+		 	
 			
 			
 			<item>
@@ -26,8 +98,11 @@
 Assume you needed to load your bookmarks on the west navigation at runtime instead of building them into your existing markup. Doing this is simple. We add an id of 'bookmarkList' to the existing unordered list that contains the bookmarks and remove the actual list items of the list.&lt;br/&gt;&lt;br/&gt;
 				 [More]
 				</description>
+						
 				
-				<category>YUI-Ext</category>
+				<category>Ext</category>				
+				
+				<category>YUI-Ext</category>				
 				
 				<pubDate>Mon, 19 Feb 2007 01:06:00 -0600</pubDate>
 				<guid>http://www.divergingpath.com/index.cfm/2007/2/19/Templates-Beginning-Using-Templates</guid>
@@ -47,8 +122,11 @@ Assume you needed to load your bookmarks on the west navigation at runtime inste
 First we create a BorderLayout with 2 ContentPanels, west and center. The west ContentPanel will contain 'bookmarks' which are simply links and will be predefined in the markup. The center ContentPanel will contain an iframe which we will load the external content into.
 				 [More]
 				</description>
+						
 				
-				<category>YUI-Ext</category>
+				<category>Ext</category>				
+				
+				<category>YUI-Ext</category>				
 				
 				<pubDate>Sun, 18 Feb 2007 13:06:00 -0600</pubDate>
 				<guid>http://www.divergingpath.com/index.cfm/2007/2/18/YUIExt-Loading-External-Content-into-a-ContentPanel</guid>
@@ -68,8 +146,11 @@ First we create a BorderLayout with 2 ContentPanels, west and center. The west C
 In order to use the UpdateManager, we must first get a reference to an UpdateManager which points to the HTMLElement we want to update. The following code will obtain a reference to an UpdateManager which will update the element with an id of "updateMe".
 				 [More]
 				</description>
+						
 				
-				<category>YUI-Ext</category>
+				<category>Ext</category>				
+				
+				<category>YUI-Ext</category>				
 				
 				<pubDate>Sat, 17 Feb 2007 13:26:00 -0600</pubDate>
 				<guid>http://www.divergingpath.com/index.cfm/2007/2/17/YUIExt-Beginning-Using-UpdateManager</guid>
@@ -108,8 +189,9 @@ Sample Output::&lt;br/&gt;
 &lt;img src="/uploads/GetDirectoryStruct.jpg" border="0" /&gt;
 				 [More]
 				</description>
+						
 				
-				<category>CFSnippet</category>
+				<category>CFSnippet</category>				
 				
 				<pubDate>Thu, 15 Feb 2007 22:55:00 -0600</pubDate>
 				<guid>http://www.divergingpath.com/index.cfm/2007/2/15/CFSnippet-GetDirectoryStruct</guid>
@@ -128,8 +210,9 @@ Sample Output::&lt;br/&gt;
 &lt;i&gt;This article was originally written in August, but has been re-posted since I've chosen to start blogging. Note that this blog is running on BlogCFC ported by Luis Majano to the Coldbox framework.&lt;/i&gt;
 				 [More]
 				</description>
+						
 				
-				<category>Coldbox</category>
+				<category>Coldbox</category>				
 				
 				<pubDate>Tue, 13 Feb 2007 22:51:00 -0600</pubDate>
 				<guid>http://www.divergingpath.com/index.cfm/2007/2/13/Transitioning-from-Fusebox-4-to-Coldbox</guid>
@@ -156,8 +239,9 @@ Sample Output::&lt;br/&gt;
 &lt;/code&gt;
 				
 				</description>
+						
 				
-				<category>CFSnippet</category>
+				<category>CFSnippet</category>				
 				
 				<pubDate>Mon, 12 Feb 2007 22:42:00 -0600</pubDate>
 				<guid>http://www.divergingpath.com/index.cfm/2007/2/12/CFSnippet-Create-DateTime-UDF</guid>
@@ -187,8 +271,9 @@ Topics I plan on blogging about are:
 If you know me personally and see that I start to slack off on this blog, &lt;strong&gt;PLEASE&lt;/strong&gt; mention it to me.
 				
 				</description>
+						
 				
-				<category>General</category>
+				<category>General</category>				
 				
 				<pubDate>Sun, 11 Feb 2007 23:52:00 -0600</pubDate>
 				<guid>http://www.divergingpath.com/index.cfm/2007/2/11/Starting-Blogging</guid>
