@@ -3,14 +3,14 @@
 	xsi:noNamespaceSchemaLocation="http://www.coldboxframework.com/schema/config_2.0.0.xsd">
 	<Settings>
 		<Setting name="AppName"						value="Illudium PU-36 Code Generator"/>
-		<Setting name="DebugMode" 					value="false" />
+		<Setting name="DebugMode" 					value="true" />
 		<Setting name="DebugPassword" 				value="Coldbox"/>
 		<Setting name="EnableDumpVar"				value="true" />
 		<Setting name="EnableColdfusionLogging" 	value="false" />
 		<Setting name="EnableColdboxLogging"		value="true" />
 		<Setting name="ColdboxLogsLocation"			value="logs" />
 		<Setting name="DefaultEvent" 				value="ehGeneral.dspHome"/>
-		<Setting name="RequestStartHandler" 		value=""/>
+		<Setting name="RequestStartHandler" 		value="ehGeneral.onRequestStart"/>
 		<Setting name="RequestEndHandler" 			value=""/>
 		<Setting name="ApplicationStartHandler" 	value="ehGeneral.onAppInit"/>
 		<Setting name="OwnerEmail" 					value="myemail@gmail.com" />
@@ -26,7 +26,7 @@
 	</Settings>
 
 	<YourSettings>
-		<Setting name="adminPass" 	value=""/>
+		<Setting name="adminPass" 	value="ortusintrojesus"/>
 		<Setting name="xslBasePath" value="./xsl/" />
 	</YourSettings>
 
