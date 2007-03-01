@@ -61,7 +61,7 @@
 
 			} catch (any e) {
 				getPlugin("messagebox").setMessage("error", e.message & "<br>" & e.detail);
-				dspSignUp(requestContext);
+				dspSignUp(Context);
 			}
 		</cfscript>
 	</cffunction>
@@ -90,7 +90,7 @@
 			} catch (any e) {
 				getPlugin("logger").logError("Error logging in user", e);
 				getPlugin("messagebox").setMessage("error", e.message);
-				dspLogin(requestContext);
+				dspLogin(Context);
 			}
 		</cfscript>
 	</cffunction>
