@@ -1,24 +1,25 @@
 <cfsetting enablecfoutputonly=true>
 <!-----------------------------------------------------------------------
-Copyright 2005 - 2006 ColdBox Framework by Luis Majano
-www.coldboxframework.com | www.coldboxframework.org
--------------------------------------------------------------------------
-Template :  timer.cfm 
+********************************************************************************
+Copyright 2005-2007 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+www.coldboxframework.com | www.luismajano.com | www.ortussolutions.com
+********************************************************************************
+Template :  timer.cfm
 Author 	 :	Luis Majano
 Date     :	September 25, 2005
-Description : 			
+Description :
 	This is the framework's timer module. You just need to wrap any piece
 	of code with a cfmodule call to this template and it will be timed.
-				
-Modification History:	
+
+Modification History:
 06/08/2006 - Updated for coldbox.
 ----------------------------------------------------------------------->
-<!--- ************************************************************* --->
+
 <cfparam name="attributes.timertag" default="NO_TIMER_TAG">
 <cfif not structkeyExists(application,"cbController") and not application.cbController.getDebugMode()>
 	<cfexit method="exittag">
 </cfif>
-<cfscript>	
+<cfscript>
 //Check if DebugTimers is set
 if ( not structKeyExists(request,"DebugTimers") ){
 	request.DebugTimers = QueryNew("Method,Time,Timestamp");

@@ -1,7 +1,8 @@
 <!---
-Copyright 2005 - 2006 ColdBox Framework by Luis Majano
-www.coldboxframework.com | www.coldboxframework.org
--------------------------------------------------------------------------
+********************************************************************************
+Copyright 2005-2007 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+www.coldboxframework.com | www.luismajano.com | www.ortussolutions.com
+********************************************************************************
 
 StringBuffer.cfc
 This CFC greatly increases the speed of string concatenation. CF strings are immutable. When you append a string
@@ -38,20 +39,20 @@ StringBuffer = strbuf3 new StringBuffer ("Java"); // capacity = 4 + 16 = 20
 
 Author 	 :	Luis Majano
 Date     :	September 23, 2005
-Description : 			
+Description :
 	Converted this cfc into a ColdBox plugin. You can now also, append to a file, if needed.
-				
+
 Modification History:
 08/01/2006 - Updated the cfc to work for ColdBox.
 
 --->
-<cfcomponent name="StringBuffer" 
-			 hint="This CFC greatly increases the speed of string concatenation. CF strings are immutable. When you append a string to another string, a whole new string is created. This is fine for a small number of iterations but painfully slow and memory intensive for a large number of concatenation operations." 
-			 extends="coldbox.system.plugin" 
+<cfcomponent name="StringBuffer"
+			 hint="This CFC greatly increases the speed of string concatenation. CF strings are immutable. When you append a string to another string, a whole new string is created. This is fine for a small number of iterations but painfully slow and memory intensive for a large number of concatenation operations."
+			 extends="coldbox.system.plugin"
 			 cache="false">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
-	
+
 	<cffunction name="init" access="public" returntype="coldbox.system.plugin" output="false">
 		<cfargument name="controller" type="any" required="true">
 		<cfset super.Init(arguments.controller) />
@@ -61,9 +62,9 @@ Modification History:
 		<cfset variables.instance.joStringBuffer = createObject("java","java.lang.StringBuffer") />
 		<cfreturn this>
 	</cffunction>
-	
+
 	<!--- ************************************************************* --->
-	
+
 	<cffunction name="setup" access="public" returntype="coldbox.system.plugin" output="false" hint="initializes the StringBuffer CF/java object">
 		<!--- ************************************************************* --->
 		<cfargument name="strIn" 			type="string" 	required="No" default=""   hint="A string to initialize the buffer with. The bufferLength will be the number of characters + 16. This argument is mutually exclusive to BufferLength" />
@@ -73,12 +74,12 @@ Modification History:
 			<cfset instance.joStringBuffer.init(javaCast("string", arguments.strIn)) />
 		<cfelse>
 			<cfset instance.joStringBuffer.init(javaCast("int", arguments.BufferLength)) />
-		</cfif>		
-		<cfreturn this />	
+		</cfif>
+		<cfreturn this />
 	</cffunction>
-	
+
 <!------------------------------------------- PUBLIC ------------------------------------------->
-	
+
 	<!--- ************************************************************* --->
 	<cffunction name="append" returntype="void" access="public" output="No" hint="Append a string to the buffer.">
 		<!--- ************************************************************* --->
@@ -87,7 +88,7 @@ Modification History:
 		<cfset instance.joStringBuffer.append(javaCast("string", arguments.strIn)) />
 	</cffunction>
 	<!--- ************************************************************* --->
-	
+
 	<!--- ************************************************************* --->
 	<cffunction name="delete" returntype="void" access="public" output="No" hint="Removes the characters in a substring of this StringBuffer.">
 		<!--- ************************************************************* --->
@@ -97,7 +98,7 @@ Modification History:
 		<cfset instance.joStringBuffer.delete(javaCast("int", arguments.startPos),javaCast("int", arguments.endPos)) />
 	</cffunction>
 	<!--- ************************************************************* --->
-	
+
 	<!--- ************************************************************* --->
 	<cffunction name="insertStr" returntype="void" access="public" output="No" hint="Inserts the string into this string buffer at an offset.">
 		<!--- ************************************************************* --->
@@ -107,7 +108,7 @@ Modification History:
 		<cfset instance.joStringBuffer.insert(javaCast("int", arguments.offSet), javaCast("string", arguments.inStr)) />
 	</cffunction>
 	<!--- ************************************************************* --->
-	
+
 	<!--- ************************************************************* --->
 	<cffunction name="replaceStr" returntype="void" access="public" output="No" hint="Replaces the chracters in a substring of this StringBuffer with characters in the specified inStr">
 		<!--- ************************************************************* --->
@@ -118,7 +119,7 @@ Modification History:
 		<cfset instance.joStringBuffer.replace(javaCast("int", arguments.startPos), javaCast("int", arguments.endPos), javaCast("string", arguments.inStr)) />
 	</cffunction>
 	<!--- ************************************************************* --->
-	
+
 	<!--- ************************************************************* --->
 	<cffunction name="indexOf" returntype="numeric" access="public" output="No" hint="Returns the index within this string of the first occurrence of the specified substring.">
 		<!--- ************************************************************* --->
@@ -128,7 +129,7 @@ Modification History:
 		<cfreturn instance.joStringBuffer.indexOf(javaCast("string", arguments.inStr),javaCast("int", arguments.fromPos)) />
 	</cffunction>
 	<!--- ************************************************************* --->
-	
+
 	<!--- ************************************************************* --->
 	<cffunction name="lastIndexOf" returntype="numeric" access="public" output="No" hint="Returns the index within this string of the last occurrence of the specified substring.">
 		<!--- ************************************************************* --->
@@ -138,7 +139,7 @@ Modification History:
 		<cfreturn instance.joStringBuffer.lastIndexOf(javaCast("string", arguments.inStr),javaCast("int", arguments.fromPos)) />
 	</cffunction>
 	<!--- ************************************************************* --->
-	
+
 	<!--- ************************************************************* --->
 	<cffunction name="substring" returntype="string" access="public" output="No" hint="Returns a new String that contains a subsequence of characters currently contained in this StringBuffer.The substring begins at the specified index and extends to the end of the StringBuffer.">
 		<!--- ************************************************************* --->
@@ -148,13 +149,13 @@ Modification History:
 		<cfreturn instance.joStringBuffer.substring(javaCast("int", arguments.startPos),javaCast("int", arguments.endPos)) />
 	</cffunction>
 	<!--- ************************************************************* --->
-	
+
 	<!--- ************************************************************* --->
 	<cffunction name="reverseStr" returntype="void" access="public" output="No" hint="The character sequence contained in this string buffer is replaced by the reverse of the sequence.">
 		<cfset instance.joStringBuffer.reverse() />
 	</cffunction>
 	<!--- ************************************************************* --->
-	
+
 	<!--- ************************************************************* --->
 	<cffunction name="setLength" returntype="void" access="public" output="No" hint="Sets the length of this String buffer.">
 		<!--- ************************************************************* --->
@@ -163,29 +164,29 @@ Modification History:
 		<cfset instance.joStringBuffer.setLength(JavaCast("int", arguments.newLength)) />
 	</cffunction>
 	<!--- ************************************************************* --->
-	
+
 	<!--- ************************************************************* --->
 	<cffunction name="length" returntype="numeric" access="public" output="No" hint="Returns the length (character count) of this string buffer.">
 		<cfreturn instance.joStringBuffer.length() />
 	</cffunction>
 	<!--- ************************************************************* --->
-	
+
 	<!--- ************************************************************* --->
 	<cffunction name="capacity" returntype="numeric" access="public" output="No" hint="Returns the current capacity of the String buffer.">
 		<cfreturn instance.joStringBuffer.capacity() />
 	</cffunction>
 	<!--- ************************************************************* --->
-	
+
 	<!--- ************************************************************* --->
 	<cffunction name="getString" returntype="string" access="public" output="No" hint="Converts to a string representing the data in this string buffer.">
 		<cfreturn instance.joStringBuffer.toString() />
 	</cffunction>
 	<!--- ************************************************************* --->
-	
+
 	<!--- ************************************************************* --->
 	<cffunction name="getStringBuffer" returntype="any" access="public" output="No" hint="Return the StringBuffer Java Object">
 		<cfreturn instance.joStringBuffer />
 	</cffunction>
 	<!--- ************************************************************* --->
-	
+
 </cfcomponent>

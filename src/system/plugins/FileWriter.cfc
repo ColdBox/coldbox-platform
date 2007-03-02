@@ -1,7 +1,8 @@
 <!---
-Copyright 2005 - 2006 ColdBox Framework by Luis Majano
-www.coldboxframework.com | www.coldboxframework.org
--------------------------------------------------------------------------
+********************************************************************************
+Copyright 2005-2007 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+www.coldboxframework.com | www.luismajano.com | www.ortussolutions.com
+********************************************************************************
 
 FileReader.cfc
 Uses the Java FileOutputStream, OutputStreamWriter, and BufferedWriter to provide a way to GREATLY increase
@@ -19,9 +20,9 @@ Use this program however you want.
 
 Author 	 :	Luis Majano
 Date     :	September 23, 2005
-Description : 			
+Description :
 	Converted this cfc into a ColdBox plugin. You can now also, append to a file, if needed.
-				
+
 Modification History:
 08/01/2006 - Updated the cfc to work for ColdBox.
 --->
@@ -43,9 +44,9 @@ Modification History:
 	</cffunction>
 
 <!------------------------------------------- PUBLIC ------------------------------------------->
-	
+
 	<!--- ************************************************************* --->
-	
+
 	<cffunction name="setup" access="public" returntype="any" output="false" hint="initializes the FileWriter CF/java object">
 		<!--- ************************************************************* --->
 		<cfargument name="fileName" 	type="string" 	required="Yes" 	hint="the path and name of the file to write" />
@@ -71,7 +72,7 @@ Modification History:
 			return this;
 		</cfscript>
 	</cffunction>
-	
+
 	<!--- ************************************************************* --->
 
 	<cffunction name="write" access="public" returntype="void" output="No" hint="writes a string to a file">
@@ -80,9 +81,9 @@ Modification History:
 		<!--- ************************************************************* --->
 		<cfset instance.joBufferedWriter.write(javaCast("string", arguments.strIn)) />
 	</cffunction>
-	
+
 	<!--- ************************************************************* --->
-	
+
 	<cffunction name="writeLine" access="public" returntype="void" output="No" hint="writes a string to a file, and places and EOL character at the end">
 		<!--- ************************************************************* --->
 		<cfargument name="strIn" type="string" required="No" default="" hint="a string to write to the file" />
@@ -90,15 +91,15 @@ Modification History:
 		<cfset instance.joBufferedWriter.write(javaCast("string", arguments.strIn)) />
 		<cfset instance.joBufferedWriter.newLine() />
 	</cffunction>
-	
+
 	<!--- ************************************************************* --->
-	
+
 	<cffunction name="newLine" access="public" returntype="void" output="No" hint="Uses the platform's own notion of line separator. Not all platforms use the newline character ('\n') to terminate lines.">
 		<cfset instance.joBufferedWriter.newLine() />
 	</cffunction>
-	
+
 	<!--- ************************************************************* --->
-	
+
 	<cffunction name="close" access="public" returntype="void" output="No" hint="flushes and closes stream, buffer, and file">
 		<cfscript>
 			instance.joBufferedWriter.flush();
@@ -108,13 +109,13 @@ Modification History:
 			instance.joFileOutputStream.close();
 		</cfscript>
 	</cffunction>
-	
+
 	<!--- ************************************************************* --->
-		
+
 <!------------------------------------------- PRIVATE ------------------------------------------->
 
 	<!--- ************************************************************* --->
-	
+
 	<cffunction name="bufferSizeLimit" access="private" returntype="numeric" output="No" hint="limit the buffer between 8k and 128k. Come on, let's be reasonable.">
 		<!--- ************************************************************* --->
 		<cfargument name="bufferSize" type="numeric" required="no" default="8192" hint="the buffer size for the bufferedWriter" />
@@ -129,9 +130,9 @@ Modification History:
 		</cfscript>
 		<cfreturn arguments.bufferSize />
 	</cffunction>
-	
+
 	<!--- ************************************************************* --->
-	
+
 	<cffunction name="getFileEncoding" access="private" returntype="void" output="No" hint="checks for a valid file encoding">
 		<!--- ************************************************************* --->
 		<cfargument name="fileEncoding" type="string" required="yes" hint="the file encoding" />
@@ -141,7 +142,7 @@ Modification History:
 			<cfscript>
 				/*
 				Every implementation of the Java platform is required to support the following standard charsets.
-		
+
 				US-ASCII 		Seven-bit ASCII, a.k.a. ISO646-US, a.k.a. the Basic Latin block of the Unicode character set
 				ISO-8859-1 		ISO Latin Alphabet No. 1, a.k.a. ISO-LATIN-1
 				UTF-8 			Eight-bit UCS Transformation Format
@@ -166,7 +167,7 @@ Modification History:
 						instance.joFileOutputStream.write(255); // 0xFF
 						break;
 					default :
-						/* no BOM */			
+						/* no BOM */
 				}
 			</cfscript>
 		<cfelse>
@@ -174,7 +175,7 @@ Modification History:
 			<cfthrow type="Framework.plugins.FileWriter.InvalidEncodingException" message="The encoding: #arguments.fileEncoding# is not a valid encoding.">
 		</cfif>
 	</cffunction>
-	
+
 	<!--- ************************************************************* --->
-	
+
 </cfcomponent>

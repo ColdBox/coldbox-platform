@@ -1,7 +1,8 @@
 <!-----------------------------------------------------------------------
-Copyright 2005 - 2006 ColdBox Framework by Luis Majano
-www.coldboxframework.com | www.coldboxframework.org
--------------------------------------------------------------------------
+********************************************************************************
+Copyright 2005-2007 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+www.coldboxframework.com | www.luismajano.com | www.ortussolutions.com
+********************************************************************************
 
 Author 	    :	Luis Majano
 Date        :	August 21, 2006
@@ -11,8 +12,8 @@ Description :
 Modification History:
 01/30/2007 - Created
 ----------------------------------------------------------------------->
-<cfcomponent name="queryHelper" hint="A query helper plugin." extends="coldbox.system.plugin" cache="true"> 
-	
+<cfcomponent name="queryHelper" hint="A query helper plugin." extends="coldbox.system.plugin" cache="true">
+
 	<cffunction name="init" access="public" returntype="coldbox.system.plugin" output="false">
 		<cfargument name="controller" type="any" required="true">
 		<cfset super.Init(arguments.controller) />
@@ -21,9 +22,9 @@ Modification History:
 		<cfset setpluginDescription("This is a query helper plugin.")>
 		<cfreturn this>
 	</cffunction>
-	
+
 	<!--- ************************************************************* --->
-	
+
 	<cffunction name="filterQuery" access="public" returntype="query" hint="Filters a query by the given value" output="false">
 		<!--- ************************************************************* --->
 		<cfargument name="qry" 			type="query" 	required="yes" hint="Query to filter">
@@ -39,9 +40,9 @@ Modification History:
 		</cfquery>
 		<cfreturn qryNew>
 	</cffunction>
-	
+
 	<!--- ************************************************************* --->
-	
+
 	<cffunction name="sortQuery" access="public" returntype="query" hint="Sorts a query by the given field" output="false">
 		<!--- ************************************************************* --->
 		<cfargument name="qry" 			type="query" 	required="yes" hint="Query to sort">
@@ -60,7 +61,7 @@ Modification History:
 		</cfquery>
 		<cfreturn qryNew>
 	</cffunction>
-	
+
 	<!--- ************************************************************* --->
 
 </cfcomponent>

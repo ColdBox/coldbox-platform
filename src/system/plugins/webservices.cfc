@@ -1,7 +1,8 @@
 <!-----------------------------------------------------------------------
-Copyright 2005 - 2006 ColdBox Framework by Luis Majano
-www.coldboxframework.com | www.coldboxframework.org
--------------------------------------------------------------------------
+********************************************************************************
+Copyright 2005-2007 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+www.coldboxframework.com | www.luismajano.com | www.ortussolutions.com
+********************************************************************************
 
 Author 	 :	Luis Majano
 Date     :	September 23, 2005
@@ -28,9 +29,9 @@ Modification History:
 		<cfset setpluginDescription("This is a very useful web services utility plugin.")>
 		<cfreturn this>
 	</cffunction>
-	
+
 <!------------------------------------------- PUBLIC ------------------------------------------->
-	
+
 	<cffunction name="getWS" returntype="any" access="Public" hint="Get a web service's wsdl url from the configStruct according to which environment you are on." output="false">
 	<!--- ************************************************************* --->
 		<cfargument name="name" hint="The name of the web service. If the web service is not found an exception is thrown." type="string" required="Yes">
@@ -46,9 +47,9 @@ Modification History:
 		</cfif>
 		<cfthrow type="Framework.plugins.webservices.WebServiceNotFoundException" message="The webservice #arguments.name# was not found in the configuration structure.">
 	</cffunction>
-	
+
 	<!--- ************************************************************* --->
-	
+
 	<cffunction name="getWSobj" access="Public"	hint="Get a reference to a webservice obj according to which environment you are on." output="false" returntype="any">
 	<!--- ************************************************************* --->
 		<cfargument name="name" hint="The name of the web service. If the web service is not found an exception is thrown" type="string" required="Yes">
@@ -64,9 +65,9 @@ Modification History:
 		</cfif>
 		<cfthrow type="Framework.plugins.webservices.WebServiceNotFoundException" message="The webservice #arguments.name# was not found in the configuration structure.">
 	</cffunction>
-	
+
 	<!--- ************************************************************* --->
-	
+
 	<cffunction name="refreshWS" access="Public" hint="Refresh a web service stub object" output="false" returntype="void">
 	<!--- ************************************************************* --->
 		<cfargument name="webservice" hint="The name or wsdl URL of the web service to refresh" type="string" required="Yes">
@@ -84,7 +85,7 @@ Modification History:
 			<cfset rpcService.refreshWebService(arguments.webservice)>
 		</cfif>
 	</cffunction>
-	
+
 	<!--- ************************************************************* --->
 
 </cfcomponent>

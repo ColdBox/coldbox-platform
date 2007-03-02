@@ -1,16 +1,17 @@
 <!-----------------------------------------------------------------------
-Copyright 2005 - 2006 ColdBox Framework by Luis Majano
-www.coldboxframework.com | www.coldboxframework.org
--------------------------------------------------------------------------
+********************************************************************************
+Copyright 2005-2007 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+www.coldboxframework.com | www.luismajano.com | www.ortussolutions.com
+********************************************************************************
 
 Author 	 :	Luis Majano
 Date     :	September 23, 2005
-Description : 			
+Description :
 	This is a plugin that enables the setting/getting of permanent variables in
 	the client scope using the wddx features if needed.
-				
+
 Modification History:
-	
+
 ----------------------------------------------------------------------->
 <cfcomponent name="clientstorage" hint="Client Storage plugin. It provides the user with a mechanism for permanent data storage using the client scope and WDDX." extends="coldbox.system.plugin" cache="true">
 
@@ -26,9 +27,9 @@ Modification History:
 	</cffunction>
 
 <!------------------------------------------- PUBLIC ------------------------------------------->
-	
+
 	<!--- ************************************************************* --->
-	
+
 	<cffunction name="setVar" access="public" returntype="void" hint="Set a new permanent variable." output="false">
 		<!--- ************************************************************* --->
 		<cfargument name="name"  type="string" required="true" hint="The name of the variable.">
@@ -45,9 +46,9 @@ Modification History:
 			<cfset client["#arguments.name#"] = tmpVar>
 		</cfif>
 	</cffunction>
-	
+
 	<!--- ************************************************************* --->
-	
+
 	<cffunction name="getVar" access="public" returntype="any" hint="Get a new permanent variable. If the variable does not exist. The method returns blank." output="false">
 		<!--- ************************************************************* --->
 		<cfargument  name="name" 		type="string"  required="true" 		hint="The variable name to retrieve.">
@@ -69,9 +70,9 @@ Modification History:
 		<!--- Return Var --->
 		<cfreturn rtnVar>
 	</cffunction>
-	
+
 	<!--- ************************************************************* --->
-	
+
 	<cffunction name="exists" access="public" returntype="boolean" hint="Checks wether the permanent variable exists." output="false">
 		<!--- ************************************************************* --->
 		<cfargument  name="name" type="string" required="true" 	hint="The variable name to retrieve.">
@@ -82,9 +83,9 @@ Modification History:
 			<cfreturn false>
 		</cfif>
 	</cffunction>
-	
+
 	<!--- ************************************************************* --->
-	
+
 	<cffunction name="deleteVar" access="public" returntype="boolean" hint="Tries to delete a permanent client var." output="false">
 		<!--- ************************************************************* --->
 		<cfargument  name="name" type="string" required="true" 	hint="The variable name to retrieve.">
@@ -96,7 +97,7 @@ Modification History:
 			<cfreturn false>
 		</cfif>
 	</cffunction>
-	
+
 	<!--- ************************************************************* --->
 
 </cfcomponent>

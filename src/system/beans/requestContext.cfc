@@ -1,7 +1,9 @@
 <!-----------------------------------------------------------------------
-Copyright 2005 - 2006 ColdBox Framework by Luis Majano
-www.coldboxframework.com | www.coldboxframework.org
--------------------------------------------------------------------------
+********************************************************************************
+Copyright 2005-2007 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+www.coldboxframework.com | www.luismajano.com | www.ortussolutions.com
+********************************************************************************
+
 Author 	 :	Luis Majano
 Date     :	June 30, 2006
 Description :
@@ -18,7 +20,7 @@ Modification History:
 		variables.defaultLayout = "";
 		variables.ViewLayouts = "";
 	</cfscript>
-	
+
 	<cffunction name="init" access="public" output="false" hint="constructor" returntype="coldbox.system.beans.requestContext">
 		<!--- ************************************************************* --->
 		<cfargument name="struct1" 		 type="any" 	required="true">
@@ -32,7 +34,7 @@ Modification History:
 		<cfset variables.ViewLayouts = arguments.ViewLayouts>
 		<cfreturn this >
 	</cffunction>
-	
+
 <!------------------------------------------- PUBLIC ------------------------------------------->
 
 	<cffunction name="getCollection" returntype="struct" access="Public" hint="I Get a reference or deep copy of the request Collection" output="false">
@@ -41,39 +43,39 @@ Modification History:
 			if ( arguments.DeepCopyFlag )
 				return duplicate(variables.context);
 			else
-				return variables.context; 
+				return variables.context;
 		</cfscript>
 	</cffunction>
-	
+
 	<!--- ************************************************************* --->
-	
+
 	<cffunction name="setCollection" access="public" returntype="void" output="false" hint="Overwrite the collection with another collection">
 		<cfargument name="collection" type="struct" required="true">
 		<cfset variables.context = arguments.collection>
 	</cffunction>
-	
+
 	<!--- ************************************************************* --->
-	
+
 	<cffunction name="clearCollection" access="public" returntype="void" output="false" hint="Clear the entire collection">
 		<cfset structClear(variables.context)>
 	</cffunction>
-	
+
 	<!--- ************************************************************* --->
-	
+
 	<cffunction name="collectionAppend" access="public" returntype="void" output="false" hint="Append a structure to the collection, with overwrite or not. Overwrite = false by default">
 		<cfargument name="collection" type="struct"  required="true">
 		<cfargument name="overwrite"  type="boolean" required="false" default="false" hint="If you need to override data in the collection, set this to true.">
 		<cfset structAppend(variables.context,arguments.collection, arguments.overwrite)>
 	</cffunction>
-	
+
 	<!--- ************************************************************* --->
-	
+
 	<cffunction name="getSize" access="public" returntype="numeric" output="false" hint="The number of elements in the collection">
 		<cfreturn structCount(variables.context)>
 	</cffunction>
-	
+
 	<!--- ************************************************************* --->
-	
+
 	<cffunction name="getValue" returntype="Any" access="Public" hint="I Get a value from the request collection." output="false">
 		<cfargument name="name" hint="Name of the variable to get from the request collection" type="string">
 		<cfargument name="defaultValue"
@@ -104,9 +106,9 @@ Modification History:
 				return arguments.defaultValue;
 		</cfscript>
 	</cffunction>
-	
+
 	<!--- ************************************************************* --->
-	
+
 	<cffunction name="setValue" access="Public" hint="I Set a value in the request collection" output="false" returntype="void">
 		<cfargument name="name"  hint="The name of the variable to set." type="string" >
 		<cfargument name="value" hint="The value of the variable to set" type="Any" >
@@ -115,9 +117,9 @@ Modification History:
 			"variables.context.#arguments.name#" = arguments.value;
 		</cfscript>
 	</cffunction>
-	
+
 	<!--- ************************************************************* --->
-	
+
 	<cffunction name="removeValue" access="Public" hint="I remove a value in the request collection" output="false" returntype="void">
 		<cfargument name="name"  hint="The name of the variable to remove." type="string" >
 		<!--- ************************************************************* --->
@@ -125,9 +127,9 @@ Modification History:
 			structDelete(variables.context,"#arguments.name#");
 		</cfscript>
 	</cffunction>
-	
+
 	<!--- ************************************************************* --->
-	
+
 	<cffunction name="valueExists" returntype="boolean" access="Public"	hint="I Check if a value exists in the request collection." output="false">
 		<cfargument name="name" hint="Name of the variable to find in the request collection" type="string">
 		<!--- ************************************************************* --->
@@ -135,9 +137,9 @@ Modification History:
 			return isDefined("variables.context.#arguments.name#");
 		</cfscript>
 	</cffunction>
-	
+
 	<!--- ************************************************************* --->
-	
+
 	<cffunction name="paramValue" returntype="void" access="Public"	hint="Just like cfparam, but for the request collection" output="false">
 		<cfargument name="name" 	hint="Name of the variable to param in the request collection" 	type="string">
 		<cfargument name="value" 	hint="The value of the variable to set if not found." 			type="Any" >
@@ -149,15 +151,15 @@ Modification History:
 	</cffunction>
 
 	<!--- ************************************************************* --->
-	
+
 <!------------------------------------------- GET/SET CURRENT REQUEST VARIABLES ------------------------------------------->
-	
+
 	<!--- ************************************************************* --->
-	
+
 	<cffunction name="getCurrentView" access="public" hint="Gets the current set view" returntype="string" output="false">
 		<cfreturn getValue("currentView","")>
 	</cffunction>
-	
+
 	<cffunction name="setView" access="public" returntype="void" hint="I Set the view to render in this request.I am called from event handlers. Request Collection Name: currentView, currentLayout"  output="false">
 		<cfargument name="name"     hint="The name of the view to set. If a layout has been defined it will assign it, else if will assign the default layout." type="string">
 		<cfargument name="nolayout" type="boolean" required="false" default="false" hint="Boolean flag, wether the view sent in will be using a layout or not. Default is false. Uses a pre set layout or the default layout.">
@@ -174,13 +176,13 @@ Modification History:
 		setValue("currentView",arguments.name);
 		</cfscript>
 	</cffunction>
-	
+
 	<!--- ************************************************************* --->
-	
+
 	<cffunction name="getCurrentLayout" access="public" hint="Gets the current set layout" returntype="string" output="false">
 		<cfreturn getValue("currentLayout","")>
 	</cffunction>
-	
+
 	<cffunction name="setLayout" access="public" returntype="void" hint="I Set the layout to override and render. Layouts are pre-defined in the config.xml file. However I can override these settings if needed. Do not append a the cfm extension. Request Collection name: currentLayout"  output="false">
 		<cfargument name="name"  hint="The name of the layout file to set." type="string" >
 		<!--- ************************************************************* --->
@@ -189,9 +191,9 @@ Modification History:
 	  		setValue("layoutoverride",true);
 		</cfscript>
 	</cffunction>
-	
+
 	<!--- ************************************************************* --->
-	
+
 	<cffunction name="getCurrentEvent" access="public" hint="Gets the current set event" returntype="string" output="false">
 		<cfreturn getValue("event","")>
 	</cffunction>
@@ -203,7 +205,7 @@ Modification History:
 	    setValue("event",arguments.event);
 	    </cfscript>
 	</cffunction>
-	
+
 <!------------------------------------------- PRIVATE ------------------------------------------->
 
 	<cffunction name="throw" access="private" hint="Facade for cfthrow" output="false">
@@ -214,6 +216,6 @@ Modification History:
 		<!--- ************************************************************* --->
 		<cfthrow type="#arguments.type#" message="#arguments.message#"  detail="#arguments.detail#">
 	</cffunction>
-	
-	
+
+
 </cfcomponent>

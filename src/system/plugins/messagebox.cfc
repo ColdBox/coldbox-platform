@@ -1,7 +1,8 @@
 <!-----------------------------------------------------------------------
-Copyright 2005 - 2006 ColdBox Framework by Luis Majano
-www.coldboxframework.com | www.coldboxframework.org
--------------------------------------------------------------------------
+********************************************************************************
+Copyright 2005-2007 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+www.coldboxframework.com | www.luismajano.com | www.ortussolutions.com
+********************************************************************************
 
 Author 	 :	Luis Majano
 Date     :	September 23, 2005
@@ -15,13 +16,13 @@ Description :
 Modification History:
 06/09/2006 - Updated for coldbox.
 07/29/2006 - Flag to leave contents in the messagebox or delete them once rendered.
-10/10/2006 - Added the renderit method for usage under Blue Dragon, removed the render. 
+10/10/2006 - Added the renderit method for usage under Blue Dragon, removed the render.
 01/28/2007 - Prepared for 1.2.0, using new storage centers.
 ----------------------------------------------------------------------->
 <cfcomponent name="messagebox" hint="This is the messagebox plugin. It uses the session/client scope to save messages." extends="coldbox.system.plugin" cache="true">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
-	
+
 	<cffunction name="init" access="public" returntype="coldbox.system.plugin" output="false">
 		<cfargument name="controller" type="any" required="true">
 		<cfset super.Init(arguments.controller) />
@@ -31,9 +32,9 @@ Modification History:
 		<cfset instance.storageScope = getController().getSetting("MessageBoxStorage",true)>
 		<cfreturn this>
 	</cffunction>
-	
+
 <!------------------------------------------- PUBLIC ------------------------------------------->
-	
+
 	<!--- Storage Scope --->
 	<cffunction name="getstorageScope" access="public" output="false" returntype="string" hint="Get storageScope">
 		<cfreturn instance.storageScope/>
@@ -47,9 +48,9 @@ Modification History:
 			<cfset instance.storageScope = getController().getSetting("MessageBoxStorage",true)>
 		</cfif>
 	</cffunction>
-	
+
 	<!--- ************************************************************* --->
-	
+
 	<cffunction name="setMessage" access="public" hint="Create a new messagebox. Look at types." output="false" returntype="void">
 		<!--- ************************************************************* --->
 		<cfargument name="type"     required="true" type="string" hint="The message type.Available types [error][warning][info]">
@@ -64,9 +65,9 @@ Modification History:
 			<cfthrow type="Framework.plugins.messagebox.InvalidMessageTypeException" message="The message type sent in: #arguments.type# is invalid. Available types: error,warning,info">
 		</cfif>
 	</cffunction>
-	
+
 	<!--- ************************************************************* --->
-	
+
 	<cffunction name="getMessage" access="public" hint="Returns a structure of the message if it exists, else a blank structure." returntype="any" output="false">
 		<cfset var rtnStruct = structnew()>
 		<cfset var Storage = getstorageScope() & ".ColdBox_fw_messagebox">
@@ -78,18 +79,18 @@ Modification History:
 		</cfif>
 		<cfreturn rtnStruct>
 	</cffunction>
-	
+
 	<!--- ************************************************************* --->
-	
+
 	<cffunction name="clearMessage" access="public" hint="Clears the message structure by deleting it from the session scope." output="false" returntype="void">
 		<cfset var Storage = evaluate(getstorageScope())>
 		<cfif structKeyExists(Storage,"ColdBox_fw_messagebox")>
 			<cfset structdelete(Storage, "ColdBox_fw_messagebox")>
 		</cfif>
 	</cffunction>
-	
+
 	<!--- ************************************************************* --->
-	
+
 	<cffunction name="isEmpty" access="public" hint="Checks wether the messagebox is empty or not." returntype="boolean" output="false">
 		<cfset var Storage = evaluate(getstorageScope())>
 		<cfif structKeyExists(Storage,"ColdBox_fw_messagebox")>
@@ -102,9 +103,9 @@ Modification History:
 			<cfreturn true>
 		</cfif>
 	</cffunction>
-	
+
 	<!--- ************************************************************* --->
-	
+
 	<cffunction name="renderit" access="public" hint="Renders the message box and clears the message structure by default." output="false" returntype="any">
 		<!--- ************************************************************* --->
 		<cfargument name="clearFlag" type="boolean" required="false" default="true" hint="Flag to clear the message structure or not after rendering. Default is true.">
@@ -121,7 +122,7 @@ Modification History:
 		</cfif>
 		<cfreturn results>
 	</cffunction>
-	
+
 	<!--- ************************************************************* --->
 
 </cfcomponent>

@@ -1,7 +1,8 @@
 <!---
-Copyright 2005 - 2006 ColdBox Framework by Luis Majano
-www.coldboxframework.com | www.coldboxframework.org
--------------------------------------------------------------------------
+********************************************************************************
+Copyright 2005-2007 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+www.coldboxframework.com | www.luismajano.com | www.ortussolutions.com
+********************************************************************************
 
 *        Application: newsight Zip Component
 *          File Name: Zip.cfc
@@ -45,19 +46,19 @@ www.coldboxframework.com | www.coldboxframework.org
 
 Author 	 :	Luis Majano
 Date     :	September 23, 2005
-Description : 			
+Description :
 	Converted this cfc into a ColdBox plugin.
-				
+
 Modification History:
 08/01/2006 - Updated the cfc to work for ColdBox.
 --->
 <cfcomponent name="zip"
              hint = "A collections of functions that supports the Zip and GZip functionality by using the Java Zip file API."
-             extends="coldbox.system.plugin" 
+             extends="coldbox.system.plugin"
 			 cache="false">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
-	
+
 	<cffunction name="init" access="public" returntype="coldbox.system.plugin" output="false">
 		<cfargument name="controller" type="any" required="true">
 		<cfset super.Init(arguments.controller) />
@@ -82,15 +83,15 @@ Modification History:
 		/* Set Localized Variables */
 		variables.instance.os = Server.OS.Name;
 		variables.instance.slash = createObject("java","java.lang.System").getProperty("file.separator");
-		
+
 		//LM. To fix Overflow.
 		variables.instance.filename = "";
-	
+
 		//Return instance
 		return this;
 		</cfscript>
 	</cffunction>
-	
+
 <!------------------------------------------- PUBLIC ------------------------------------------->
 
 	<!--- ************************************************************* --->
@@ -144,9 +145,9 @@ Modification History:
 							entryPath = ListDeleteAt(entryPath, 1, instance.slash);
 						// Remove directory from path
 						else if(arguments.savePaths EQ "no"){
-							if( structKeyExists(arguments, "directory") and arguments.directory neq "" )  
+							if( structKeyExists(arguments, "directory") and arguments.directory neq "" )
 								entryPath = ReplaceNoCase(entryPath, arguments.directory, "", "ALL");
-							else if(structKeyExists(arguments, "files") and arguments.files neq "") 
+							else if(structKeyExists(arguments, "files") and arguments.files neq "")
 								entryPath = "";
 						}
 
@@ -198,7 +199,7 @@ Modification History:
 
 	</cffunction>
 	<!--- ************************************************************* --->
-	
+
 	<!--- ************************************************************* --->
 	<cffunction name="DeleteFiles" access="public" output="no" returntype="boolean" hint="Delete files from an existing Zip file archive.">
 		<!--- ************************************************************* --->
@@ -294,7 +295,7 @@ Modification History:
 		</cfscript>
 	</cffunction>
 	<!--- ************************************************************* --->
-	
+
 	<!--- ************************************************************* --->
 	<cffunction name="Extract" access="public" output="no" returntype="boolean" hint="Extracts a specified Zip file into a specified directory.">
 		<!--- ************************************************************* --->
@@ -303,7 +304,7 @@ Modification History:
 		<cfargument name="extractFiles"   required="no"  type="string"                              hint="| (Chr(124)) delimited list of files to extract.">
 		<cfargument name="useFolderNames" required="no"  type="boolean" default="yes"               hint="Create folders using the pathinfo stored in the Zip file.">
 		<cfargument name="overwriteFiles" required="no"  type="boolean" default="no"                hint="Overwrite existing files.">
-		<!--- ************************************************************* --->	
+		<!--- ************************************************************* --->
 		<cfscript>
 
 			/* Default variables */
@@ -318,7 +319,7 @@ Modification History:
 			var lenPath = "";
 			var inStream = "";
 			var skip = "";
-			
+
 			/* Convert to the right path format */
 			arguments.zipFilePath = PathFormat(arguments.zipFilePath);
 			arguments.extractPath = PathFormat(arguments.extractPath);
@@ -410,13 +411,13 @@ Modification History:
 
 		</cfscript>
 	</cffunction>
-	<!--- ************************************************************* --->	
-		
-	<!--- ************************************************************* --->	
+	<!--- ************************************************************* --->
+
+	<!--- ************************************************************* --->
 	<cffunction name="List" access="public" output="no" returntype="query" hint="List the content of a specified Zip file.">
-		<!--- ************************************************************* --->	
+		<!--- ************************************************************* --->
 		<cfargument name="zipFilePath" required="yes" type="string" hint="Pathname of the Zip file to list the content.">
-		<!--- ************************************************************* --->	
+		<!--- ************************************************************* --->
 		<cfscript>
 			/* Default variables */
 			var i = 0;
@@ -467,14 +468,14 @@ Modification History:
 			return query;
 		</cfscript>
 	</cffunction>
-	<!--- ************************************************************* --->	
-		
-	<!--- ************************************************************* --->	
+	<!--- ************************************************************* --->
+
+	<!--- ************************************************************* --->
 	<cffunction name="gzipAddFile" access="public" output="no" returntype="boolean" hint="Create a new GZip file archive.">
-		<!--- ************************************************************* --->	
+		<!--- ************************************************************* --->
 		<cfargument name="gzipFilePath" required="yes" type="string" hint="Pathname of the GZip file to create.">
 		<cfargument name="filePath"     required="yes" type="string" hint="Pathname of a file to add to the GZip file archive.">
-		<!--- ************************************************************* --->	
+		<!--- ************************************************************* --->
 		<cfscript>
 			/* Default variables */
 			var l = 0;
@@ -482,9 +483,9 @@ Modification History:
 			var gzFileName = "";
 			var outputFile = "";
 			var lastChr = "";
-			
-			
-			
+
+
+
 			/* Convert to the right path format */
 			arguments.gzipFilePath = PathFormat(arguments.gzipFilePath);
 			arguments.filePath     = PathFormat(arguments.filePath);
@@ -527,14 +528,14 @@ Modification History:
 		</cfscript>
 
 	</cffunction>
-	<!--- ************************************************************* --->	
-		
-	<!--- ************************************************************* --->	
+	<!--- ************************************************************* --->
+
+	<!--- ************************************************************* --->
 	<cffunction name="gzipExtract" access="public" output="no" returntype="boolean" hint="Extracts a specified GZip file into a specified directory.">
-		<!--- ************************************************************* --->	
+		<!--- ************************************************************* --->
 		<cfargument name="gzipFilePath" required="yes" type="string"                             hint="Pathname of the GZip file to extract.">
 		<cfargument name="extractPath"  required="no"  type="string" default="#ExpandPath(".")#" hint="Pathname to extract the GZip file to.">
-		<!--- ************************************************************* --->	
+		<!--- ************************************************************* --->
 		<cfscript>
 			/* Default variables */
 			var l = 0;
@@ -582,17 +583,17 @@ Modification History:
 
 		</cfscript>
 	</cffunction>
-	<!--- ************************************************************* --->	
-		
+	<!--- ************************************************************* --->
+
 <!------------------------------------------- PRIVATE ------------------------------------------->
 
-	<!--- ************************************************************* --->	
+	<!--- ************************************************************* --->
 	<cffunction name="FilesList" access="private" output="no" returntype="array" hint="Create an array with the file names of specified directory.">
-		<!--- ************************************************************* --->	
+		<!--- ************************************************************* --->
 		<cfargument name="directory" required="yes" type="string"               hint="Absolute pathname of directory to get files list.">
 		<cfargument name="filter"    required="no"  type="string"  default=""   hint="File extension filter. One filter can be applied.">
 		<cfargument name="recurse"   required="no"  type="boolean" default="no" hint="Get recursive files of subdirectories.">
-		<!--- ************************************************************* --->	
+		<!--- ************************************************************* --->
 		<cfset var i = 0>
 		<cfset var n = 0>
 		<cfset var dir   = "">
@@ -628,13 +629,13 @@ Modification History:
 
 		</cfscript>
 	</cffunction>
-	<!--- ************************************************************* --->	
-		
-	<!--- ************************************************************* --->	
+	<!--- ************************************************************* --->
+
+	<!--- ************************************************************* --->
 	<cffunction name="PathFormat" access="private" output="no" returntype="string" hint="Convert path into Windows or Unix format.">
-		<!--- ************************************************************* --->	
+		<!--- ************************************************************* --->
 		<cfargument name="path" required="yes" type="string" hint="The path to convert.">
-		<!--- ************************************************************* --->	
+		<!--- ************************************************************* --->
 		<cfif FindNoCase("Windows", instance.os)>
 			<cfset arguments.path = Replace(arguments.path, "/", "\", "ALL")>
 		<cfelse>
@@ -642,6 +643,6 @@ Modification History:
 		</cfif>
 		<cfreturn arguments.path>
 	</cffunction>
-	<!--- ************************************************************* --->	
-		
+	<!--- ************************************************************* --->
+
 </cfcomponent>

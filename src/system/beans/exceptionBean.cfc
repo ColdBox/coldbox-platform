@@ -1,7 +1,8 @@
 <!-----------------------------------------------------------------------
-Copyright 2005 - 2006 ColdBox Framework by Luis Majano
-www.coldboxframework.com | www.coldboxframework.org
--------------------------------------------------------------------------
+********************************************************************************
+Copyright 2005-2007 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+www.coldboxframework.com | www.luismajano.com | www.ortussolutions.com
+********************************************************************************
 Author 	 :	Luis Majano
 Date     :	June 30, 2006
 Description :
@@ -60,7 +61,7 @@ Modification History:
 	<cffunction name="getInstance" access="public" returntype="any" output="false">
 		<cfreturn variables.instance >
 	</cffunction>
-	
+
 	<!--- ************************************************************* --->
 
 	<cffunction name="setInstance" access="public" returntype="void" output="false">
@@ -73,27 +74,27 @@ Modification History:
 	<cffunction name="getErrorType" access="public" returntype="string" output="false">
 		<cfreturn variables.instance.errorType >
 	</cffunction>
-	
+
 	<!--- ************************************************************* --->
-	
+
 	<cffunction name="getExceptionStruct" access="public" returntype="struct" output="false">
 		<cfreturn variables.instance.exceptionStruct >
 	</cffunction>
-	
+
 	<!--- ************************************************************* --->
 
 	<cffunction name="getExtraMessage" access="public" returntype="string" output="false">
 		<cfreturn variables.instance.extramessage >
 	</cffunction>
-	
+
 	<!--- ************************************************************* --->
-	
+
 	<cffunction name="getExtraInfo" access="public" returntype="any" output="false">
 		<cfreturn variables.instance.extraInfo >
 	</cffunction>
-	
+
 	<!--- ************************************************************* --->
-	
+
 	<cffunction name="getType" access="public" returntype="string" output="false">
 		<cfif structKeyExists(variables.instance.exceptionStruct, "Type")>
 			<cfreturn variables.instance.exceptionStruct.type >
@@ -101,9 +102,9 @@ Modification History:
 			<cfreturn variables.STRINGNULL>
 		</cfif>
 	</cffunction>
-	
+
 	<!--- ************************************************************* --->
-	
+
 	<cffunction name="getMessage" access="public" returntype="string" output="false">
 		<cfif structkeyExists(variables.instance.exceptionStruct,"message")>
 			<cfreturn variables.instance.exceptionStruct.message >
@@ -111,9 +112,9 @@ Modification History:
 			<cfreturn variables.STRINGNULL>
 		</cfif>
 	</cffunction>
-	
+
 	<!--- ************************************************************* --->
-	
+
 	<cffunction name="getDetail" access="public" returntype="string" output="false">
 		<cfif structkeyExists(variables.instance.exceptionStruct,"detail")>
 			<cfreturn variables.instance.exceptionStruct.detail >
@@ -121,9 +122,9 @@ Modification History:
 			<cfreturn variables.STRINGNULL>
 		</cfif>
 	</cffunction>
-	
+
 	<!--- ************************************************************* --->
-	
+
 	<cffunction name="getStackTrace" access="public" returntype="string" output="false">
 		<cfif structKeyExists(variables.instance.exceptionStruct, 'StackTrace')>
 			<cfreturn variables.instance.exceptionStruct.StackTrace >
@@ -131,9 +132,9 @@ Modification History:
 			<cfreturn variables.STRINGNULL>
 		</cfif>
 	</cffunction>
-	
+
 	<!--- ************************************************************* --->
-	
+
 	<cffunction name="getTagContext" access="public" returntype="array" output="false">
 		<cfif structkeyExists(variables.instance.exceptionStruct, "TagContext")>
 			<cfreturn variables.instance.exceptionStruct.tagContext >
@@ -141,9 +142,9 @@ Modification History:
 			<cfreturn variables.ARRAYNULL>
 		</cfif>
 	</cffunction>
-	
+
 	<!--- ************************************************************* --->
-	
+
 	<cffunction name="getTagContextAsString" access="public" returntype="string" output="false" hint="I return the tagcontext in string format.">
 		<cfset var arrayTagContext = getTagContext()>
 		<cfset var rtnString = "">
@@ -157,9 +158,9 @@ Modification History:
 			<cfreturn variables.STRINGNULL>
 		</cfif>
 	</cffunction>
-	
+
 	<!--- ************************************************************* --->
-	
+
 	<cffunction name="getNativeErrorCode" access="public" returntype="string" output="false">
 		<cfif StructKeyExists(variables.instance.exceptionStruct,'nativeErrorCode')>
 			<cfreturn variables.instance.exceptionStruct.nativeErrorCode >
@@ -167,8 +168,8 @@ Modification History:
 			<cfreturn variables.STRINGNULL>
 		</cfif>
 	</cffunction>
-	
-	
+
+
 	<!--- SQL Types --->
 	<!--- ************************************************************* --->
 	<cffunction name="getSqlState" access="public" returntype="string" output="false">
@@ -178,9 +179,9 @@ Modification History:
 			<cfreturn variables.STRINGNULL>
 		</cfif>
 	</cffunction>
-	
+
 	<!--- ************************************************************* --->
-	
+
 	<cffunction name="getSql" access="public" returntype="string" output="false">
 		<cfif StructKeyExists(variables.instance.exceptionStruct,'sql')>
 			<cfreturn variables.instance.exceptionStruct.sql >
@@ -188,9 +189,9 @@ Modification History:
 			<cfreturn variables.STRINGNULL>
 		</cfif>
 	</cffunction>
-	
+
 	<!--- ************************************************************* --->
-	
+
 	<cffunction name="getQueryError" access="public" returntype="string" output="false">
 		<cfif StructKeyExists(variables.instance.exceptionStruct,'queryError')>
 			<cfreturn variables.instance.exceptionStruct.queryError >
@@ -198,9 +199,9 @@ Modification History:
 			<cfreturn variables.STRINGNULL>
 		</cfif>
 	</cffunction>
-	
+
 	<!--- ************************************************************* --->
-	
+
 	<cffunction name="getWhere" access="public" returntype="string" output="false">
 		<cfif StructKeyExists(variables.instance.exceptionStruct,'where')>
 			<cfreturn variables.instance.exceptionStruct.where >
@@ -210,7 +211,7 @@ Modification History:
 	</cffunction>
 
 	<!--- ************************************************************* --->
-	
+
 	<cffunction name="getErrNumber" access="public" returntype="string" output="false">
 		<cfif StructKeyExists(variables.instance.exceptionStruct,'errNumber')>
 			<cfreturn variables.instance.exceptionStruct.errNumber >
@@ -218,9 +219,9 @@ Modification History:
 			<cfreturn variables.STRINGNULL>
 		</cfif>
 	</cffunction>
-	
+
 	<!--- ************************************************************* --->
-	
+
 	<cffunction name="getMissingFileName" access="public" returntype="string" output="false">
 		<cfif StructKeyExists(variables.instance.exceptionStruct,'missingFileName')>
 			<cfreturn variables.instance.exceptionStruct.missingFileName >
@@ -228,7 +229,7 @@ Modification History:
 			<cfreturn variables.STRINGNULL>
 		</cfif>
 	</cffunction>
-	
+
 	<!--- ************************************************************* --->
 
 	<cffunction name="getLockName" access="public" returntype="string" output="false">
@@ -240,7 +241,7 @@ Modification History:
 	</cffunction>
 
 	<!--- ************************************************************* --->
-	
+
 	<cffunction name="getLockOperation" access="public" returntype="string" output="false">
 		<cfif StructKeyExists(variables.instance.exceptionStruct,'lockOperation')>
 			<cfreturn variables.instance.exceptionStruct.lockOperation >
@@ -248,9 +249,9 @@ Modification History:
 			<cfreturn variables.STRINGNULL>
 		</cfif>
 	</cffunction>
-	
+
 	<!--- ************************************************************* --->
-	
+
 	<cffunction name="getErrorCode" access="public" returntype="string" output="false">
 		<cfif StructKeyExists(variables.instance.exceptionStruct,'errorCode')>
 			<cfreturn variables.instance.exceptionStruct.errorCode >
@@ -258,9 +259,9 @@ Modification History:
 			<cfreturn variables.STRINGNULL>
 		</cfif>
 	</cffunction>
-	
+
 	<!--- ************************************************************* --->
-	
+
 	<cffunction name="getExtendedInfo" access="public" returntype="string" output="false">
 		<cfif StructKeyExists(variables.instance.exceptionStruct,'extendedInfo')>
 			<cfreturn variables.instance.exceptionStruct.extendedInfo >
@@ -268,7 +269,7 @@ Modification History:
 			<cfreturn variables.STRINGNULL>
 		</cfif>
 	</cffunction>
-	
+
 	<!--- ************************************************************* --->
 
 </cfcomponent>

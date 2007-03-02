@@ -1,7 +1,8 @@
 <!-----------------------------------------------------------------------
-Copyright 2005 - 2006 ColdBox Framework by Luis Majano
-www.coldboxframework.com | www.coldboxframework.org
--------------------------------------------------------------------------
+********************************************************************************
+Copyright 2005-2007 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+www.coldboxframework.com | www.luismajano.com | www.ortussolutions.com
+********************************************************************************
 
 Author: Luis Majano
 Date:   July 28, 2006
@@ -14,7 +15,7 @@ Modifications:
 <cfcomponent name="beanFactory" hint="I am a simple bean factory and you can use me if you want." extends="coldbox.system.plugin" cache="true">
 
 	<!--- ************************************************************* --->
-	
+
 	<cffunction name="init" access="public" returntype="coldbox.system.plugin" output="false">
 		<cfargument name="controller" type="any" required="true">
 		<cfscript>
@@ -25,9 +26,9 @@ Modifications:
 		return this;
 		</cfscript>
 	</cffunction>
-	
+
 	<!--- ************************************************************* --->
-	
+
 	<cffunction name="create" hint="Create a named bean, simple as that. This method will append {Bean} to the path+name passed in." access="public" output="false" returntype="Any">
 		<!--- ************************************************************* --->
 		<cfargument name="bean" 		required="true"  type="string" hint="The type of bean to create and return. Uses full cfc path mapping.Ex: coldbox.beans.exceptionBean">
@@ -45,9 +46,9 @@ Modifications:
 		}
 		</cfscript>
 	</cffunction>
-	
+
 	<!--- ************************************************************* --->
-	
+
 	<cffunction name="populateBean" access="public" output="false" returntype="Any" hint="Populate a named or instantiated bean (java/cfc) from the request collection items">
 		<!--- ************************************************************* --->
 		<cfargument name="FormBean" required="true" type="any" hint="This can be an instantiated bean object or a bean instantitation path as a string. If you pass an instantiation path and the bean has an 'init' method. It will be executed. This method follows the bean contract (set{property_name}). Example: setUsername(), setfname()">
@@ -55,7 +56,7 @@ Modifications:
 		<cfset var beanInstance = "" />
 		<cfset var FieldKey = "" />
 		<cfset var fields = controller.getRequestService().getContext().getCollection() />
-		
+
 		<cftry>
 			<cfif isSimpleValue(arguments.FormBean)>
 				<cfset beanInstance = CreateObject("component",arguments.FormBean)>
@@ -73,12 +74,12 @@ Modifications:
 					</cfinvoke>
 				</cfif>
 			</cfloop>
-			
+
 			<cfcatch type="any">
 				<cfthrow type="Framework.plugins.beanFactory.PopulateBeanException" message="Error populating bean." detail="#cfcatch.Detail#<br>#cfcatch.message#">
 			</cfcatch>
 		</cftry>
-		
+
 		<cfreturn beanInstance />
 	</cffunction>
 

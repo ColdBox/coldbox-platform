@@ -1,7 +1,8 @@
 <!--- Document Information -----------------------------------------------------
-Copyright 2005 - 2006 ColdBox Framework by Luis Majano
-www.coldboxframework.com | www.coldboxframework.org
--------------------------------------------------------------------------
+********************************************************************************
+Copyright 2005-2007 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+www.coldboxframework.com | www.luismajano.com | www.ortussolutions.com
+********************************************************************************
 
 Title:      JavaLoader.cfc
 
@@ -20,7 +21,7 @@ Luis Majano		07/11/2006		Updated it to work with ColdBox. look at license in the
 <cfcomponent name="JavaLoader" hint="Loads External Java Classes, while providing access to ColdFusion classes" extends="coldbox.system.plugin" cache="true">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
-	
+
 	<cffunction name="init" access="public" returntype="coldbox.system.plugin" output="false">
 		<cfargument name="controller" type="any" required="true">
 		<cfset super.Init(arguments.controller) />
@@ -31,12 +32,12 @@ Luis Majano		07/11/2006		Updated it to work with ColdBox. look at license in the
 		<cfset variables.instance.classLoader = "">
 		<cfreturn this>
 	</cffunction>
-	
+
 
 <!------------------------------------------- PUBLIC ------------------------------------------->
 
 	<!--- ************************************************************* --->
-	
+
 	<cffunction name="setup" hint="setup the loader" access="public" returntype="any" output="false">
 		<!--- ************************************************************* --->
 		<cfargument name="loadPaths" hint="A comma delimited list of paths to load into the loader, these path(s) will be expanded here. This will be converted into an array" 		type="any" default="" required="no">
@@ -80,9 +81,9 @@ Luis Majano		07/11/2006		Updated it to work with ColdBox. look at license in the
 			return this;
 		</cfscript>
 	</cffunction>
-	
+
 	<!--- ************************************************************* --->
-	
+
 	<cffunction name="create" hint="Retrieves a reference to the java class. To create a instance, you must run init() on this object" access="public" returntype="any" output="false">
 		<!--- ************************************************************* --->
 		<cfargument name="className" hint="The name of the class to create" type="string" required="Yes">
@@ -94,30 +95,30 @@ Luis Majano		07/11/2006		Updated it to work with ColdBox. look at license in the
 	</cffunction>
 
 	<!--- ************************************************************* --->
-	
+
 	<cffunction name="getURLClassLoader" hint="Returns the java.net.URLClassLoader in case you need access to it" access="public" returntype="any" output="false">
 		<cfreturn instance.ClassLoader />
 	</cffunction>
-	
+
 	<!--- ************************************************************* --->
-	
+
 	<cffunction name="getVersion" hint="Retrieves the version of the loader you are using" access="public" returntype="string" output="false">
 		<cfreturn "0.2">
 	</cffunction>
-	
+
 	<!--- ************************************************************* --->
 
 <!------------------------------------------- PRIVATE ------------------------------------------->
 
 	<!--- ************************************************************* --->
-	
+
 	<cffunction name="setURLClassLoader" access="private" returntype="void" output="false">
 		<!--- ************************************************************* --->
 		<cfargument name="ClassLoader" type="any" required="true">
 		<!--- ************************************************************* --->
 		<cfset instance.ClassLoader = arguments.ClassLoader />
 	</cffunction>
-	
+
 	<!--- ************************************************************* --->
 
 </cfcomponent>

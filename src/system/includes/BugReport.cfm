@@ -1,8 +1,9 @@
 <cfsilent>
 <!-----------------------------------------------------------------------
-Copyright 2005 - 2006 ColdBox Framework by Luis Majano
-www.coldboxframework.com | www.coldboxframework.org
--------------------------------------------------------------------------
+********************************************************************************
+Copyright 2005-2007 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+www.coldboxframework.com | www.luismajano.com | www.ortussolutions.com
+********************************************************************************
 
 Template :  BugReport.cfm
 Author 	 :	Luis Majano
@@ -15,7 +16,6 @@ Modification History:
 12/26/2005 - Exception Struct empty check.
 06/09/2006 - Updated to coldbox. Changed all isDefined to structKeyExists
 ----------------------------------------------------------------------->
-<!--- ************************************************************* --->
 </cfsilent>
 <cfoutput>
 <style>

@@ -1,8 +1,9 @@
 <cfsetting enablecfoutputonly=true>
 <!-----------------------------------------------------------------------
-Copyright 2005 - 2006 ColdBox Framework by Luis Majano
-www.coldboxframework.com | www.coldboxframework.org
--------------------------------------------------------------------------
+********************************************************************************
+Copyright 2005-2007 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+www.coldboxframework.com | www.luismajano.com | www.ortussolutions.com
+********************************************************************************
 
 Template :  debug.cfm
 Author 	 :	Luis Majano
@@ -20,7 +21,7 @@ Modification History:
 07/12/2006 - Tracer now shows first expanded.
 02/01/2007 - Updated context references
 ----------------------------------------------------------------------->
-<!--- ************************************************************* --->
+
 
 <!--- Setup Local Variables --->
 <cfset debugStartTime = GetTickCount()>
