@@ -11,7 +11,10 @@ Description :
 
 Modification History:
 ----------------------------------------------------------------------->
-<cfcomponent name="plugin" hint="This is the plugin base cfc." extends="coldbox.system.util.actioncontroller" output="false">
+<cfcomponent name="plugin"
+			 hint="This is the plugin base cfc."
+			 extends="coldbox.system.util.actioncontroller"
+			 output="false">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
@@ -27,9 +30,6 @@ Modification History:
 			return this;
 		</cfscript>
 	</cffunction>
-
-<!------------------------------------------- PUBLIC ------------------------------------------->
-
 
 <!------------------------------------------- INSTANCE MUTATORS AND ACCESSORS ------------------------------------------->
 
@@ -79,8 +79,5 @@ Modification History:
 	</cffunction>
 
 	<!--- ************************************************************* --->
-
-
-<!------------------------------------------- PRIVATE ------------------------------------------->
 
 </cfcomponent>
