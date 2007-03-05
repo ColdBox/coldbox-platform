@@ -13,7 +13,11 @@ Description :
 Modification History:
 
 ----------------------------------------------------------------------->
-<cfcomponent name="sessionstorage" hint="Session Storage plugin. It provides the user with a mechanism for permanent data storage using the session scope." extends="coldbox.system.plugin" cache="true">
+<cfcomponent name="sessionstorage"
+			 hint="Session Storage plugin. It provides the user with a mechanism for permanent data storage using the session scope."
+			 extends="coldbox.system.plugin"
+			 output="false"
+			 cache="true">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 

@@ -13,7 +13,9 @@ Description :
 Modification History:
 
 ----------------------------------------------------------------------->
-<cfcomponent name="mailsettingsBean" hint="I model mail server settings" output="false">
+<cfcomponent name="mailsettingsBean"
+			 hint="I model mail server settings"
+			 output="false">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 

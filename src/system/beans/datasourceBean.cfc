@@ -11,7 +11,9 @@ Description :
 Modification History:
 01/28/2007 - Added the alias property and solved the java contract with correct arg.
 ----------------------------------------------------------------------->
-<cfcomponent name="datasourceBean" hint="I model a datasource connection setting." output="false">
+<cfcomponent name="datasourceBean"
+			 hint="I model a datasource connection setting."
+			 output="false">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 	<cfscript>

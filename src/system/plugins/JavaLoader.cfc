@@ -18,7 +18,11 @@ Mark Mandel		08/05/2006		Created
 Mark Mandel		22/06/2006		Added verification that the path exists
 Luis Majano		07/11/2006		Updated it to work with ColdBox. look at license in the install folder.
 ------------------------------------------------------------------------------->
-<cfcomponent name="JavaLoader" hint="Loads External Java Classes, while providing access to ColdFusion classes" extends="coldbox.system.plugin" cache="true">
+<cfcomponent name="JavaLoader"
+			 hint="Loads External Java Classes, while providing access to ColdFusion classes"
+			 extends="coldbox.system.plugin"
+			 output="false"
+			 cache="true">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 

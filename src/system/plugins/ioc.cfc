@@ -12,7 +12,12 @@ Description :
 Modification History:
 02/15/2007 - Created
 ----------------------------------------------------------------------->
-<cfcomponent name="ioc" hint="An Inversion Of Control plugin." extends="coldbox.system.plugin" cache="true" cachetimeout="0">
+<cfcomponent name="ioc"
+			 hint="An Inversion Of Control plugin."
+			 extends="coldbox.system.plugin"
+			 output="false"
+			 cache="true"
+			 cachetimeout="0">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 

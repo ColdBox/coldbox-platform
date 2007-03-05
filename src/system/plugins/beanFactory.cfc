@@ -12,7 +12,11 @@ Modifications:
 07/29/2006 - Added more hints.
 12/08/2006 - Added makeBean method thanks to Sana Ullah. It will create and or populate a bean with the same request collection field names.
 ----------------------------------------------------------------------->
-<cfcomponent name="beanFactory" hint="I am a simple bean factory and you can use me if you want." extends="coldbox.system.plugin" cache="true">
+<cfcomponent name="beanFactory"
+			 hint="I am a simple bean factory and you can use me if you want."
+			 extends="coldbox.system.plugin"
+			 output="false"
+			 cache="true">
 
 	<!--- ************************************************************* --->
 

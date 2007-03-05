@@ -34,6 +34,7 @@ Modification History:
 <cfcomponent name="XMLParser"
 			 hint="This is the XML Parser plugin for the framework. It takes care of any XML parsing for the framework's usage."
 			 extends="coldbox.system.plugin"
+			 output="false"
 			 cache="false">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->

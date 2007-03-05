@@ -12,7 +12,9 @@ Description :
 Modification History:
 
 ----------------------------------------------------------------------->
-<cfcomponent name="requestContext" hint="I am a coldbox request" output="false">
+<cfcomponent name="requestContext"
+			 hint="I am a coldbox request"
+			 output="false">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 	<cfscript>

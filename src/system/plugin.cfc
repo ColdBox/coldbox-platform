@@ -11,7 +11,7 @@ Description :
 
 Modification History:
 ----------------------------------------------------------------------->
-<cfcomponent name="plugin" hint="This is the plugin base cfc." extends="coldbox.system.util.actioncontroller">
+<cfcomponent name="plugin" hint="This is the plugin base cfc." extends="coldbox.system.util.actioncontroller" output="false">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 

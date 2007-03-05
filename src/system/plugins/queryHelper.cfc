@@ -12,7 +12,11 @@ Description :
 Modification History:
 01/30/2007 - Created
 ----------------------------------------------------------------------->
-<cfcomponent name="queryHelper" hint="A query helper plugin." extends="coldbox.system.plugin" cache="true">
+<cfcomponent name="queryHelper"
+			 hint="A query helper plugin."
+			 extends="coldbox.system.plugin"
+			 output="false"
+			 cache="true">
 
 	<cffunction name="init" access="public" returntype="coldbox.system.plugin" output="false">
 		<cfargument name="controller" type="any" required="true">

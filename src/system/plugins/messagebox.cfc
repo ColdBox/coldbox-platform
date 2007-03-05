@@ -19,7 +19,11 @@ Modification History:
 10/10/2006 - Added the renderit method for usage under Blue Dragon, removed the render.
 01/28/2007 - Prepared for 1.2.0, using new storage centers.
 ----------------------------------------------------------------------->
-<cfcomponent name="messagebox" hint="This is the messagebox plugin. It uses the session/client scope to save messages." extends="coldbox.system.plugin" cache="true">
+<cfcomponent name="messagebox"
+			 hint="This is the messagebox plugin. It uses the session/client scope to save messages."
+			 extends="coldbox.system.plugin"
+			 output="false"
+			 cache="true">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 

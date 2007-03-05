@@ -22,7 +22,12 @@ Modification History:
 07/27/2006 - renderview with view argument, added cfoutput support.
 02/12/2007 - Migrated to 1.2.0 format
 ----------------------------------------------------------------------->
-<cfcomponent name="renderer" hint="This service renders layouts, views, framework includes, etc." extends="coldbox.system.plugin" cache="true" cachetimeout="0">
+<cfcomponent name="renderer"
+			 hint="This service renders layouts, views, framework includes, etc."
+			 extends="coldbox.system.plugin"
+			 output="false"
+			 cache="true"
+			 cachetimeout="0">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 

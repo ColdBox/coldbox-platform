@@ -55,6 +55,7 @@ Modification History:
 <cfcomponent name="zip"
              hint = "A collections of functions that supports the Zip and GZip functionality by using the Java Zip file API."
              extends="coldbox.system.plugin"
+			 output="false"
 			 cache="false">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
@@ -94,7 +95,6 @@ Modification History:
 
 <!------------------------------------------- PUBLIC ------------------------------------------->
 
-	<!--- ************************************************************* --->
 	<cffunction name="AddFiles" access="public" output="no" returntype="boolean" hint="Add files to a new or an existing Zip file archive.">
 		<!--- ************************************************************* --->
 		<cfargument name="zipFilePath" required="yes" type="string"                hint="Pathname of the Zip file to add files.">
@@ -198,9 +198,9 @@ Modification History:
 		</cfscript>
 
 	</cffunction>
-	<!--- ************************************************************* --->
 
 	<!--- ************************************************************* --->
+
 	<cffunction name="DeleteFiles" access="public" output="no" returntype="boolean" hint="Delete files from an existing Zip file archive.">
 		<!--- ************************************************************* --->
 		<cfargument name="zipFilePath" required="yes" type="string" hint="Pathname of the Zip file to delete files from.">
@@ -294,9 +294,9 @@ Modification History:
 
 		</cfscript>
 	</cffunction>
-	<!--- ************************************************************* --->
 
 	<!--- ************************************************************* --->
+
 	<cffunction name="Extract" access="public" output="no" returntype="boolean" hint="Extracts a specified Zip file into a specified directory.">
 		<!--- ************************************************************* --->
 		<cfargument name="zipFilePath"    required="yes" type="string"                              hint="Pathname of the Zip file to extract.">
@@ -411,9 +411,9 @@ Modification History:
 
 		</cfscript>
 	</cffunction>
-	<!--- ************************************************************* --->
 
 	<!--- ************************************************************* --->
+
 	<cffunction name="List" access="public" output="no" returntype="query" hint="List the content of a specified Zip file.">
 		<!--- ************************************************************* --->
 		<cfargument name="zipFilePath" required="yes" type="string" hint="Pathname of the Zip file to list the content.">
@@ -468,9 +468,9 @@ Modification History:
 			return query;
 		</cfscript>
 	</cffunction>
-	<!--- ************************************************************* --->
 
 	<!--- ************************************************************* --->
+
 	<cffunction name="gzipAddFile" access="public" output="no" returntype="boolean" hint="Create a new GZip file archive.">
 		<!--- ************************************************************* --->
 		<cfargument name="gzipFilePath" required="yes" type="string" hint="Pathname of the GZip file to create.">
@@ -528,9 +528,9 @@ Modification History:
 		</cfscript>
 
 	</cffunction>
-	<!--- ************************************************************* --->
 
 	<!--- ************************************************************* --->
+
 	<cffunction name="gzipExtract" access="public" output="no" returntype="boolean" hint="Extracts a specified GZip file into a specified directory.">
 		<!--- ************************************************************* --->
 		<cfargument name="gzipFilePath" required="yes" type="string"                             hint="Pathname of the GZip file to extract.">
@@ -583,11 +583,13 @@ Modification History:
 
 		</cfscript>
 	</cffunction>
+
 	<!--- ************************************************************* --->
 
 <!------------------------------------------- PRIVATE ------------------------------------------->
 
 	<!--- ************************************************************* --->
+
 	<cffunction name="FilesList" access="private" output="no" returntype="array" hint="Create an array with the file names of specified directory.">
 		<!--- ************************************************************* --->
 		<cfargument name="directory" required="yes" type="string"               hint="Absolute pathname of directory to get files list.">
@@ -629,9 +631,9 @@ Modification History:
 
 		</cfscript>
 	</cffunction>
-	<!--- ************************************************************* --->
 
 	<!--- ************************************************************* --->
+
 	<cffunction name="PathFormat" access="private" output="no" returntype="string" hint="Convert path into Windows or Unix format.">
 		<!--- ************************************************************* --->
 		<cfargument name="path" required="yes" type="string" hint="The path to convert.">

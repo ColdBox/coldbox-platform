@@ -11,7 +11,9 @@ Description :
 Modification History:
 
 ----------------------------------------------------------------------->
-<cfcomponent name="eventhandlerBean" hint="I model a ColdBox event handler" output="false">
+<cfcomponent name="eventhandlerBean"
+			 hint="I model a ColdBox event handler"
+			 output="false">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 

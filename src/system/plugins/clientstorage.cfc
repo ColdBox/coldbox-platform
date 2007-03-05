@@ -13,7 +13,11 @@ Description :
 Modification History:
 
 ----------------------------------------------------------------------->
-<cfcomponent name="clientstorage" hint="Client Storage plugin. It provides the user with a mechanism for permanent data storage using the client scope and WDDX." extends="coldbox.system.plugin" cache="true">
+<cfcomponent name="clientstorage"
+			 hint="Client Storage plugin. It provides the user with a mechanism for permanent data storage using the client scope and WDDX."
+			 extends="coldbox.system.plugin"
+			 output="false"
+			 cache="true">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 

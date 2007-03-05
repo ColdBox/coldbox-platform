@@ -17,7 +17,11 @@ Modification History:
 06/08/2006 - Updated for coldbox
 07/29/2006 - Exception is thrown if web service is not found in the configuration structure.
 ----------------------------------------------------------------------->
-<cfcomponent name="webservices" hint="The webservices framework plugin." extends="coldbox.system.plugin" cache="true">
+<cfcomponent name="webservices"
+			 hint="The webservices framework plugin."
+			 extends="coldbox.system.plugin"
+			 output="false"
+			 cache="true">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 

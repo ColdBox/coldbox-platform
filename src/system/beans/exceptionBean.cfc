@@ -11,7 +11,9 @@ Description :
 Modification History:
 08/07/2006 - new method, getTagContextAsString(). Updated the return types.
 ----------------------------------------------------------------------->
-<cfcomponent name="exceptionBean" hint="I model a Coldfusion/Coldbox Exception" output="false">
+<cfcomponent name="exceptionBean"
+			 hint="I model a Coldfusion/Coldbox Exception"
+			 output="false">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 	<cfscript>

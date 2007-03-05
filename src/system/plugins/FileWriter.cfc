@@ -26,7 +26,11 @@ Description :
 Modification History:
 08/01/2006 - Updated the cfc to work for ColdBox.
 --->
-<cfcomponent name="FileWriter" hint="Uses the Java FileOutputStream, OutputStreamWriter, and BufferedWriter to provide a way to GREATLY increase performance of file output." extends="coldbox.system.plugin" cache="false">
+<cfcomponent name="FileWriter"
+			 hint="Uses the Java FileOutputStream, OutputStreamWriter, and BufferedWriter to provide a way to GREATLY increase performance of file output."
+			 extends="coldbox.system.plugin"
+			 output="false"
+			 cache="false">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
