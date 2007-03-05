@@ -312,10 +312,11 @@ Description		: This is the main ColdBox front Controller.
 				</cfif>
 			</cfif>
 
-			<!--- Execute the handler method --->
-			<cfinvoke component="#oEventHandler#" method="#ExecutingMethod#">
-				<cfinvokeargument name="context" value="#RequestContext#">
-			</cfinvoke>
+			<!---
+			Execute the handler method. Why use Evaluate? Well, it performs just as fast as the invocation
+			syntax, but this gives me more flexibility as the name of the argument inside the handler.
+			--->
+			<cfset Evaluate("oEventHandler.#ExecutingMethod#(RequestContext)")>
 
 		</cfmodule>
 	</cffunction>
