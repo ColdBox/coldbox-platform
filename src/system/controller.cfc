@@ -312,11 +312,21 @@ Description		: This is the main ColdBox front Controller.
 				</cfif>
 			</cfif>
 
+			<!--- PreHandler Execution --->
+			<cfif structKeyExists(oEventHandler,"preHandler")>
+				<cfset oEventHandler.preHandler(requestContext)>
+			</cfif>
+
 			<!---
 			Execute the handler method. Why use Evaluate? Well, it performs just as fast as the invocation
 			syntax, but this gives me more flexibility as the name of the argument inside the handler.
 			--->
 			<cfset Evaluate("oEventHandler.#ExecutingMethod#(RequestContext)")>
+
+			<!--- PostHandler Execution --->
+			<cfif structKeyExists(oEventHandler,"postHandler")>
+				<cfset oEventHandler.postHandler(requestContext)>
+			</cfif>
 
 		</cfmodule>
 	</cffunction>
