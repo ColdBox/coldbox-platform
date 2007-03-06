@@ -165,6 +165,8 @@ function toggle(divid){
 		  <cfloop query="request.DebugTimers">
 		  <cfif findnocase("render", method)>
 		  	<cfset color = "fw_redText">
+		  <cfelseif findnocase("pre",method) or findnocase("post",method)>
+		  	<cfset color = "fw_purpleText">
 		  <cfelseif findnocase("runEvent", method)>
 		  	<cfset color = "fw_blueText">
 		  <cfelse>

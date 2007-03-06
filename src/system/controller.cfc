@@ -314,7 +314,9 @@ Description		: This is the main ColdBox front Controller.
 
 			<!--- PreHandler Execution --->
 			<cfif structKeyExists(oEventHandler,"preHandler")>
+				<cfmodule template="includes/timer.cfm" timertag="invoking runEvent [preHandler] for #arguments.event#">
 				<cfset oEventHandler.preHandler(requestContext)>
+				</cfmodule>
 			</cfif>
 
 			<!---
@@ -325,7 +327,9 @@ Description		: This is the main ColdBox front Controller.
 
 			<!--- PostHandler Execution --->
 			<cfif structKeyExists(oEventHandler,"postHandler")>
+				<cfmodule template="includes/timer.cfm" timertag="invoking runEvent [postHandler] for #arguments.event#">
 				<cfset oEventHandler.postHandler(requestContext)>
+				</cfmodule>
 			</cfif>
 
 		</cfmodule>
