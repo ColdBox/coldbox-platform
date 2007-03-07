@@ -100,13 +100,13 @@ Modification History:
 
 	<!--- Application Start Handler --->
 	<cfif application.cbController.getSetting("ApplicationStartHandler") neq "" and (not application.cbController.getAppStartHandlerFired())>
-		<cfset application.cbController.runEvent(application.cbController.getSetting("ApplicationStartHandler"))>
+		<cfset application.cbController.runEvent(application.cbController.getSetting("ApplicationStartHandler"),true)>
 		<cfset application.cbController.setAppStartHandlerFired(true)>
 	</cfif>
 
 	<!--- IF Found in config, run onRequestStart Handler --->
 	<cfif application.cbController.getSetting("RequestStartHandler") neq "">
-		<cfset application.cbController.runEvent(application.cbController.getSetting("RequestStartHandler"))>
+		<cfset application.cbController.runEvent(application.cbController.getSetting("RequestStartHandler"),true)>
 	</cfif>
 
 	<!--- Run Default/Set Event --->
@@ -117,7 +117,7 @@ Modification History:
 
 	<!--- If Found in config, run onRequestEnd Handler --->
 	<cfif application.cbController.getSetting("RequestEndHandler") neq "">
-		<cfset application.cbController.runEvent(application.cbController.getSetting("RequestEndHandler"))>
+		<cfset application.cbController.runEvent(application.cbController.getSetting("RequestEndHandler"),true)>
 	</cfif>
 
 	<!--- Trap Application Errors --->

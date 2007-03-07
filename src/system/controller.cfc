@@ -250,7 +250,8 @@ Description		: This is the main ColdBox front Controller.
 	</cffunction>
 
 	<cffunction name="runEvent" returntype="void" access="Public" hint="I am an event handler runnable factory. If no event is passed in then it will run the default event from the config.xml.">
-		<cfargument name="event" hint="The event to run. If no current event is set, use the default event from the config.xml" type="string" required="no" default="">
+		<cfargument name="event"         hint="The event to run. If no current event is set, use the default event from the config.xml" type="string" required="false" default="">
+		<cfargument name="prepostExempt" hint="If true, pre/post handlers will not be fired." type="boolean" required="false" default="false">
 		<!--- ************************************************************* --->
 		<cfset var oEventHandler = "">
 		<cfset var oEventBean = "">
@@ -313,7 +314,7 @@ Description		: This is the main ColdBox front Controller.
 			</cfif>
 
 			<!--- PreHandler Execution --->
-			<cfif structKeyExists(oEventHandler,"preHandler")>
+			<cfif not arguments.prepostExempt and structKeyExists(oEventHandler,"preHandler")>
 				<cfmodule template="includes/timer.cfm" timertag="invoking runEvent [preHandler] for #arguments.event#">
 				<cfset oEventHandler.preHandler(requestContext)>
 				</cfmodule>
@@ -326,7 +327,7 @@ Description		: This is the main ColdBox front Controller.
 			<cfset Evaluate("oEventHandler.#ExecutingMethod#(RequestContext)")>
 
 			<!--- PostHandler Execution --->
-			<cfif structKeyExists(oEventHandler,"postHandler")>
+			<cfif not arguments.prepostExempt and structKeyExists(oEventHandler,"postHandler")>
 				<cfmodule template="includes/timer.cfm" timertag="invoking runEvent [postHandler] for #arguments.event#">
 				<cfset oEventHandler.postHandler(requestContext)>
 				</cfmodule>
