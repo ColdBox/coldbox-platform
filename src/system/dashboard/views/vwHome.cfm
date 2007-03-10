@@ -1,4 +1,11 @@
 <cfoutput>
+<script language="javascript">
+$(document).ready(function() {
+ 	//Populate system info
+	doEvent('#Context.getValue("xehSystemInfo")#', 'content', {});
+});
+</script>
+
 <link rel="stylesheet" href="/coldbox/system/includes/cfcviewer.css" type="text/css" />
 #renderView("tags/rollovers")#
 
@@ -14,14 +21,8 @@
 	
 	<li><a href="javascript:doEvent('#Context.getValue("xehResources")#', 'content', {})" onMouseOver="getHint('onlineresources')" onMouseOut="resetHint()">Online Resources</a></li>
 	
-	<cfif not application.isBD>
+	<cfif not getColdBoxOCM().get("isBD")>
 		<li><a href="javascript:doEvent('#Context.getValue("xehCFCDocs")#', 'content', {})" onMouseOver="getHint('cfcdocs')" onMouseOut="resetHint()">CFC Documentation</a></li>
 	</cfif>
 </ul>
-	
-
-<script language="javascript">
-//Populate system info
-doEvent('#Context.getValue("xehSystemInfo")#', 'content', {});
-</script>
 </cfoutput>

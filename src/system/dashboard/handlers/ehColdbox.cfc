@@ -29,12 +29,14 @@ This is the main event handler for the ColdBox dashboard.
 		<cfset var storage = getPlugin("sessionstorage")>
 		<!--- Check if the dbservice is set, else set it in cache --->
 		<cfif not getColdboxOCM().lookup("dbservice")>
-			<cfset onAppStart(Context)>
+			<cfset onAppStart()>
 		</cfif>
-		<!--- EXIT HANDLERS: --->
+		<!--- GLOBAL EXIT HANDLERS: --->
 		<cfset Context.setValue("xehLogout","ehColdbox.doLogout")>
+		<!--- Inject dbservice to Context on every request for usage --->
+		<cfset Context.setValue("dbService",getColdBoxOCM().get("dbservice"))>
 		<!--- Authorization --->
-		<cfif not storage.exists("authorized") or storage.get("authorized") eq false and Context.getValue("event") neq "ehColdbox.doLogin">
+		<cfif (not storage.exists("authorized") or storage.getvar("authorized") eq false) and Context.getValue("event") neq "ehColdbox.doLogin">
 			<cfset Context.overrideEvent("ehColdbox.dspLogin")>
 		</cfif>
 	</cffunction>
@@ -58,9 +60,9 @@ This is the main event handler for the ColdBox dashboard.
 			<cfset getPlugin("messagebox").setMessage("error", "Please fill out the password field.")>
 			<cfset setNextEvent()>
 		</cfif>
-		<cfif application.dbservice.get("settings").validatePassword(Context.getValue("password"))>
+		<cfif getColdboxOCM().get("dbservice").get("settings").validatePassword(Context.getValue("password"))>
 			<!--- Validate user --->
-			<cfset session.authorized = true>
+			<cfset getPlugin("sessionstorage").setVar("authorized",true)>
 			<cfset setNextEvent()>
 		<cfelse>
 			<cfset getPlugin("messagebox").setMessage("error", "The password you entered is not correct. Please try again.")>
@@ -80,6 +82,7 @@ This is the main event handler for the ColdBox dashboard.
 	
 	<cffunction name="dspFrameset" access="public" returntype="void" output="false">
 		<cfargument name="Context" type="coldbox.system.beans.requestContext">
+		<cfset var rc = Context.getCollection()>
 		<!--- EXIT HANDLERS: --->
 		<cfset rc.xehHome = "ehColdbox.dspHome">
 		<cfset rc.xehHeader = "ehColdbox.dspHeader">
@@ -89,19 +92,20 @@ This is the main event handler for the ColdBox dashboard.
 	
 	<cffunction name="dspHome" access="public" returntype="void" output="false">
 		<cfargument name="Context" type="coldbox.system.beans.requestContext">
+		<cfset var rc = Context.getCollection()>
 		<!--- EXIT HANDLERS: --->
 		<cfset rc.xehSystemInfo = "ehInfo.dspSystemInfo">
 		<cfset rc.xehResources = "ehInfo.dspOnlineResources">
 		<cfset rc.xehCFCDocs = "ehInfo.dspCFCDocs">
 		<!--- Set the Rollovers --->
-		<cfset rc.qRollovers = filterQuery(application.dbservice.get("settings").getRollovers(),"pagesection","home")>
-		
+		<cfset rc.qRollovers = getPlugin("queryHelper").filterQuery(rc.dbService.get("settings").getRollovers(),"pagesection","home")>
 		<!--- Set the View --->
 		<cfset Context.setView("vwHome")>
 	</cffunction>
 	
 	<cffunction name="dspHeader" access="public" returntype="void" output="false">
 		<cfargument name="Context" type="coldbox.system.beans.requestContext">
+		<cfset var rc = Context.getCollection()>
 		<!--- EXIT HANDLERS: --->
 		<cfset rc.xehHome = "ehColdbox.dspHome">
 		<cfset rc.xehSettings = "ehSettings.dspSettings">

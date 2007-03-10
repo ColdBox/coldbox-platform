@@ -5,9 +5,8 @@
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
 <title>ColdBox Dashboard</title>
 <link href="includes/style.css" rel="stylesheet" type="text/css" />
-<script language="javascript" src="includes/lib/prototype.js"></script>
 <script language="javascript" src="includes/dashboard.js"></script>
-<script language="javascript" src="includes/toolkit/scriptaculous.js?load=effects"></script>
+<script language="javascript" src="includes/jquery-latest.pack.js"></script>
 </head>
 <body>
 	<cfoutput>

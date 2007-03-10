@@ -4759,3 +4759,216 @@ Table named qryDir was not found in Memory. It is misspelled, or the table is no
 	at jrunx.scheduler.ThreadPool$ThreadThrottle.invokeRunnable(ThreadPool.java:426)
 	at jrunx.scheduler.WorkerThread.run(WorkerThread.java:66)
 CFTagContext=ID: N/A; LINE: 73; TEMPLATE: /Users/lmajano/Documents/MyDevelopment/applications/coldbox/src/system/dashboard/handlers/ehColdbox.cfc ID: CF_CFPAGE; LINE: 301; TEMPLATE: /Users/lmajano/Documents/MyDevelopment/applications/coldbox/src/system/controller.cfc ID: CF_TEMPLATEPROXY; LINE: 103; TEMPLATE: /Users/lmajano/Documents/MyDevelopment/applications/coldbox/src/system/coldbox.cfm ID: CFINCLUDE; LINE: 13; TEMPLATE: /Users/lmajano/Documents/MyDevelopment/applications/coldbox/src/system/dashboard/index.cfm "
+﻿"error","03/10/2007","15:31:35","Custom Error Message: Application Execution Exception","CFErrorType=ApplicationCFDetails=Check to ensure that the method is defined, and that it is spelled correctly.CFMessage=The method 'get' could not be found in component /Users/lmajano/Documents/MyDevelopment/applications/coldbox/src/system/plugins/sessionstorage.cfc.CFStackTrace=coldfusion.runtime.TemplateProxy$InvalidMethodNameException: The method 'get' could not be found in component /Users/lmajano/Documents/MyDevelopment/applications/coldbox/src/system/plugins/sessionstorage.cfc.
+	at coldfusion.runtime.TemplateProxy.resolveMethod(TemplateProxy.java:405)
+	at coldfusion.runtime.TemplateProxy.invoke(TemplateProxy.java:188)
+	at coldfusion.runtime.TemplateProxy.invoke(TemplateProxy.java:146)
+	at coldfusion.runtime.CfJspPage._invoke(CfJspPage.java:1634)
+	at cfehColdbox2ecfc1349769409$funcONREQUESTSTART.runFunction(/Users/lmajano/Documents/MyDevelopment/applications/coldbox/src/system/dashboard/handlers/ehColdbox.cfc:37)
+	at coldfusion.runtime.UDFMethod.invoke(UDFMethod.java:344)
+	at coldfusion.filter.SilentFilter.invoke(SilentFilter.java:47)
+	at coldfusion.runtime.UDFMethod$ReturnTypeFilter.invoke(UDFMethod.java:290)
+	at coldfusion.runtime.UDFMethod$ArgumentCollectionFilter.invoke(UDFMethod.java:254)
+	at coldfusion.filter.FunctionAccessFilter.invoke(FunctionAccessFilter.java:56)
+	at coldfusion.runtime.UDFMethod.runFilterChain(UDFMethod.java:207)
+	at coldfusion.runtime.UDFMethod.invoke(UDFMethod.java:169)
+	at coldfusion.runtime.TemplateProxy.invoke(TemplateProxy.java:194)
+	at coldfusion.runtime.TemplateProxy.invoke(TemplateProxy.java:146)
+	at coldfusion.runtime.CfJspPage._invoke(CfJspPage.java:1634)
+	at Statement1.evaluate(<generated>:1)
+	at coldfusion.compiler.ExprClassLoader.evaluate(ExprClassLoader.java:134)
+	at coldfusion.runtime.CFPage.Evaluate(CFPage.java:2548)
+	at cfcontroller2ecfc533790882$funcRUNEVENT.runFunction(/Users/lmajano/Documents/MyDevelopment/applications/coldbox/src/system/controller.cfc:327)
+	at coldfusion.runtime.UDFMethod.invoke(UDFMethod.java:344)
+	at coldfusion.runtime.UDFMethod$ReturnTypeFilter.invoke(UDFMethod.java:290)
+	at coldfusion.runtime.UDFMethod$ArgumentCollectionFilter.invoke(UDFMethod.java:254)
+	at coldfusion.filter.FunctionAccessFilter.invoke(FunctionAccessFilter.java:56)
+	at coldfusion.runtime.UDFMethod.runFilterChain(UDFMethod.java:207)
+	at coldfusion.runtime.UDFMethod.invoke(UDFMethod.java:169)
+	at coldfusion.runtime.TemplateProxy.invoke(TemplateProxy.java:194)
+	at coldfusion.runtime.TemplateProxy.invoke(TemplateProxy.java:146)
+	at coldfusion.runtime.CfJspPage._invoke(CfJspPage.java:1634)
+	at cfcoldbox2ecfm15055920.runPage(/Users/lmajano/Documents/MyDevelopment/applications/coldbox/src/system/coldbox.cfm:109)
+	at coldfusion.runtime.CfJspPage.invoke(CfJspPage.java:152)
+	at coldfusion.tagext.lang.IncludeTag.doStartTag(IncludeTag.java:349)
+	at coldfusion.runtime.CfJspPage._emptyTag(CfJspPage.java:1915)
+	at cfindex2ecfm789835039.runPage(/Users/lmajano/Documents/MyDevelopment/applications/coldbox/src/system/dashboard/index.cfm:13)
+	at coldfusion.runtime.CfJspPage.invoke(CfJspPage.java:152)
+	at coldfusion.tagext.lang.IncludeTag.doStartTag(IncludeTag.java:349)
+	at coldfusion.filter.CfincludeFilter.invoke(CfincludeFilter.java:65)
+	at coldfusion.filter.ApplicationFilter.invoke(ApplicationFilter.java:219)
+	at coldfusion.filter.PathFilter.invoke(PathFilter.java:86)
+	at coldfusion.filter.ExceptionFilter.invoke(ExceptionFilter.java:69)
+	at coldfusion.filter.BrowserDebugFilter.invoke(BrowserDebugFilter.java:52)
+	at coldfusion.filter.ClientScopePersistenceFilter.invoke(ClientScopePersistenceFilter.java:28)
+	at coldfusion.filter.BrowserFilter.invoke(BrowserFilter.java:38)
+	at coldfusion.filter.GlobalsFilter.invoke(GlobalsFilter.java:38)
+	at coldfusion.filter.DatasourceFilter.invoke(DatasourceFilter.java:22)
+	at coldfusion.filter.RequestThrottleFilter.invoke(RequestThrottleFilter.java:115)
+	at coldfusion.CfmServlet.service(CfmServlet.java:107)
+	at coldfusion.bootstrap.BootstrapServlet.service(BootstrapServlet.java:78)
+	at jrun.servlet.ServletInvoker.invoke(ServletInvoker.java:91)
+	at jrun.servlet.JRunInvokerChain.invokeNext(JRunInvokerChain.java:42)
+	at jrun.servlet.JRunRequestDispatcher.invoke(JRunRequestDispatcher.java:257)
+	at jrun.servlet.ServletEngineService.dispatch(ServletEngineService.java:541)
+	at jrun.servlet.jrpp.JRunProxyService.invokeRunnable(JRunProxyService.java:204)
+	at jrunx.scheduler.ThreadPool$ThreadThrottle.invokeRunnable(ThreadPool.java:426)
+	at jrunx.scheduler.WorkerThread.run(WorkerThread.java:66)
+CFTagContext=ID: CF_TEMPLATEPROXY; LINE: 37; TEMPLATE: /Users/lmajano/Documents/MyDevelopment/applications/coldbox/src/system/dashboard/handlers/ehColdbox.cfc ID: CF_TEMPLATEPROXY; LINE: 1; TEMPLATE: <generated> ID: CF_CFPAGE; LINE: 327; TEMPLATE: /Users/lmajano/Documents/MyDevelopment/applications/coldbox/src/system/controller.cfc ID: CF_TEMPLATEPROXY; LINE: 109; TEMPLATE: /Users/lmajano/Documents/MyDevelopment/applications/coldbox/src/system/coldbox.cfm ID: CFINCLUDE; LINE: 13; TEMPLATE: /Users/lmajano/Documents/MyDevelopment/applications/coldbox/src/system/dashboard/index.cfm "
+﻿"error","03/10/2007","15:31:49","Custom Error Message: Application Execution Exception","CFErrorType=ExpressionCFMessage=Variable filterQuery is undefined.CFStackTrace=coldfusion.runtime.UndefinedVariableException: Variable filterQuery is undefined.
+	at coldfusion.runtime.CfJspPage._get(CfJspPage.java:182)
+	at cfehColdbox2ecfc1349769409$funcDSPHOME.runFunction(/Users/lmajano/Documents/MyDevelopment/applications/coldbox/src/system/dashboard/handlers/ehColdbox.cfc:99)
+	at coldfusion.runtime.UDFMethod.invoke(UDFMethod.java:344)
+	at coldfusion.filter.SilentFilter.invoke(SilentFilter.java:47)
+	at coldfusion.runtime.UDFMethod$ReturnTypeFilter.invoke(UDFMethod.java:290)
+	at coldfusion.runtime.UDFMethod$ArgumentCollectionFilter.invoke(UDFMethod.java:254)
+	at coldfusion.filter.FunctionAccessFilter.invoke(FunctionAccessFilter.java:56)
+	at coldfusion.runtime.UDFMethod.runFilterChain(UDFMethod.java:207)
+	at coldfusion.runtime.UDFMethod.invoke(UDFMethod.java:169)
+	at coldfusion.runtime.TemplateProxy.invoke(TemplateProxy.java:194)
+	at coldfusion.runtime.TemplateProxy.invoke(TemplateProxy.java:146)
+	at coldfusion.runtime.CfJspPage._invoke(CfJspPage.java:1634)
+	at Statement3.evaluate(<generated>:1)
+	at coldfusion.compiler.ExprClassLoader.evaluate(ExprClassLoader.java:134)
+	at coldfusion.runtime.CFPage.Evaluate(CFPage.java:2548)
+	at cfcontroller2ecfc533790882$funcRUNEVENT.runFunction(/Users/lmajano/Documents/MyDevelopment/applications/coldbox/src/system/controller.cfc:327)
+	at coldfusion.runtime.UDFMethod.invoke(UDFMethod.java:344)
+	at coldfusion.runtime.UDFMethod$ReturnTypeFilter.invoke(UDFMethod.java:290)
+	at coldfusion.runtime.UDFMethod$ArgumentCollectionFilter.invoke(UDFMethod.java:254)
+	at coldfusion.filter.FunctionAccessFilter.invoke(FunctionAccessFilter.java:56)
+	at coldfusion.runtime.UDFMethod.runFilterChain(UDFMethod.java:207)
+	at coldfusion.runtime.UDFMethod.invoke(UDFMethod.java:169)
+	at coldfusion.runtime.TemplateProxy.invoke(TemplateProxy.java:194)
+	at coldfusion.runtime.TemplateProxy.invoke(TemplateProxy.java:146)
+	at coldfusion.runtime.CfJspPage._invoke(CfJspPage.java:1634)
+	at cfcoldbox2ecfm15055920.runPage(/Users/lmajano/Documents/MyDevelopment/applications/coldbox/src/system/coldbox.cfm:113)
+	at coldfusion.runtime.CfJspPage.invoke(CfJspPage.java:152)
+	at coldfusion.tagext.lang.IncludeTag.doStartTag(IncludeTag.java:349)
+	at coldfusion.runtime.CfJspPage._emptyTag(CfJspPage.java:1915)
+	at cfindex2ecfm789835039.runPage(/Users/lmajano/Documents/MyDevelopment/applications/coldbox/src/system/dashboard/index.cfm:13)
+	at coldfusion.runtime.CfJspPage.invoke(CfJspPage.java:152)
+	at coldfusion.tagext.lang.IncludeTag.doStartTag(IncludeTag.java:349)
+	at coldfusion.filter.CfincludeFilter.invoke(CfincludeFilter.java:65)
+	at coldfusion.filter.ApplicationFilter.invoke(ApplicationFilter.java:219)
+	at coldfusion.filter.PathFilter.invoke(PathFilter.java:86)
+	at coldfusion.filter.ExceptionFilter.invoke(ExceptionFilter.java:69)
+	at coldfusion.filter.BrowserDebugFilter.invoke(BrowserDebugFilter.java:52)
+	at coldfusion.filter.ClientScopePersistenceFilter.invoke(ClientScopePersistenceFilter.java:28)
+	at coldfusion.filter.BrowserFilter.invoke(BrowserFilter.java:38)
+	at coldfusion.filter.GlobalsFilter.invoke(GlobalsFilter.java:38)
+	at coldfusion.filter.DatasourceFilter.invoke(DatasourceFilter.java:22)
+	at coldfusion.filter.RequestThrottleFilter.invoke(RequestThrottleFilter.java:115)
+	at coldfusion.CfmServlet.service(CfmServlet.java:107)
+	at coldfusion.bootstrap.BootstrapServlet.service(BootstrapServlet.java:78)
+	at jrun.servlet.ServletInvoker.invoke(ServletInvoker.java:91)
+	at jrun.servlet.JRunInvokerChain.invokeNext(JRunInvokerChain.java:42)
+	at jrun.servlet.JRunRequestDispatcher.invoke(JRunRequestDispatcher.java:257)
+	at jrun.servlet.ServletEngineService.dispatch(ServletEngineService.java:541)
+	at jrun.servlet.jrpp.JRunProxyService.invokeRunnable(JRunProxyService.java:204)
+	at jrunx.scheduler.ThreadPool$ThreadThrottle.invokeRunnable(ThreadPool.java:426)
+	at jrunx.scheduler.WorkerThread.run(WorkerThread.java:66)
+CFTagContext=ID: ??; LINE: 99; TEMPLATE: /Users/lmajano/Documents/MyDevelopment/applications/coldbox/src/system/dashboard/handlers/ehColdbox.cfc ID: CF_TEMPLATEPROXY; LINE: 1; TEMPLATE: <generated> ID: CF_CFPAGE; LINE: 327; TEMPLATE: /Users/lmajano/Documents/MyDevelopment/applications/coldbox/src/system/controller.cfc ID: CF_TEMPLATEPROXY; LINE: 113; TEMPLATE: /Users/lmajano/Documents/MyDevelopment/applications/coldbox/src/system/coldbox.cfm ID: CFINCLUDE; LINE: 13; TEMPLATE: /Users/lmajano/Documents/MyDevelopment/applications/coldbox/src/system/dashboard/index.cfm "
+﻿"error","03/10/2007","15:34:47","Custom Error Message: Application Execution Exception","CFErrorType=ExpressionCFMessage=Variable Context is undefined.CFStackTrace=coldfusion.runtime.UndefinedVariableException: Variable Context is undefined.
+	at coldfusion.runtime.CfJspPage._get(CfJspPage.java:182)
+	at cfehInfo2ecfc2053189095$funcDSPSYSTEMINFO.runFunction(/Users/lmajano/Documents/MyDevelopment/applications/coldbox/src/system/dashboard/handlers/ehInfo.cfc:22)
+	at coldfusion.runtime.UDFMethod.invoke(UDFMethod.java:344)
+	at coldfusion.runtime.UDFMethod$ReturnTypeFilter.invoke(UDFMethod.java:290)
+	at coldfusion.runtime.UDFMethod$ArgumentCollectionFilter.invoke(UDFMethod.java:254)
+	at coldfusion.filter.FunctionAccessFilter.invoke(FunctionAccessFilter.java:56)
+	at coldfusion.runtime.UDFMethod.runFilterChain(UDFMethod.java:207)
+	at coldfusion.runtime.UDFMethod.invoke(UDFMethod.java:169)
+	at coldfusion.runtime.TemplateProxy.invoke(TemplateProxy.java:194)
+	at coldfusion.runtime.TemplateProxy.invoke(TemplateProxy.java:146)
+	at coldfusion.runtime.CfJspPage._invoke(CfJspPage.java:1634)
+	at Statement14.evaluate(<generated>:1)
+	at coldfusion.compiler.ExprClassLoader.evaluate(ExprClassLoader.java:134)
+	at coldfusion.runtime.CFPage.Evaluate(CFPage.java:2548)
+	at cfcontroller2ecfc533790882$funcRUNEVENT.runFunction(/Users/lmajano/Documents/MyDevelopment/applications/coldbox/src/system/controller.cfc:327)
+	at coldfusion.runtime.UDFMethod.invoke(UDFMethod.java:344)
+	at coldfusion.runtime.UDFMethod$ReturnTypeFilter.invoke(UDFMethod.java:290)
+	at coldfusion.runtime.UDFMethod$ArgumentCollectionFilter.invoke(UDFMethod.java:254)
+	at coldfusion.filter.FunctionAccessFilter.invoke(FunctionAccessFilter.java:56)
+	at coldfusion.runtime.UDFMethod.runFilterChain(UDFMethod.java:207)
+	at coldfusion.runtime.UDFMethod.invoke(UDFMethod.java:169)
+	at coldfusion.runtime.TemplateProxy.invoke(TemplateProxy.java:194)
+	at coldfusion.runtime.TemplateProxy.invoke(TemplateProxy.java:146)
+	at coldfusion.runtime.CfJspPage._invoke(CfJspPage.java:1634)
+	at cfcoldbox2ecfm15055920.runPage(/Users/lmajano/Documents/MyDevelopment/applications/coldbox/src/system/coldbox.cfm:113)
+	at coldfusion.runtime.CfJspPage.invoke(CfJspPage.java:152)
+	at coldfusion.tagext.lang.IncludeTag.doStartTag(IncludeTag.java:349)
+	at coldfusion.runtime.CfJspPage._emptyTag(CfJspPage.java:1915)
+	at cfindex2ecfm789835039.runPage(/Users/lmajano/Documents/MyDevelopment/applications/coldbox/src/system/dashboard/index.cfm:13)
+	at coldfusion.runtime.CfJspPage.invoke(CfJspPage.java:152)
+	at coldfusion.tagext.lang.IncludeTag.doStartTag(IncludeTag.java:349)
+	at coldfusion.filter.CfincludeFilter.invoke(CfincludeFilter.java:65)
+	at coldfusion.filter.ApplicationFilter.invoke(ApplicationFilter.java:219)
+	at coldfusion.filter.PathFilter.invoke(PathFilter.java:86)
+	at coldfusion.filter.ExceptionFilter.invoke(ExceptionFilter.java:69)
+	at coldfusion.filter.BrowserDebugFilter.invoke(BrowserDebugFilter.java:52)
+	at coldfusion.filter.ClientScopePersistenceFilter.invoke(ClientScopePersistenceFilter.java:28)
+	at coldfusion.filter.BrowserFilter.invoke(BrowserFilter.java:38)
+	at coldfusion.filter.GlobalsFilter.invoke(GlobalsFilter.java:38)
+	at coldfusion.filter.DatasourceFilter.invoke(DatasourceFilter.java:22)
+	at coldfusion.filter.RequestThrottleFilter.invoke(RequestThrottleFilter.java:115)
+	at coldfusion.CfmServlet.service(CfmServlet.java:107)
+	at coldfusion.bootstrap.BootstrapServlet.service(BootstrapServlet.java:78)
+	at jrun.servlet.ServletInvoker.invoke(ServletInvoker.java:91)
+	at jrun.servlet.JRunInvokerChain.invokeNext(JRunInvokerChain.java:42)
+	at jrun.servlet.JRunRequestDispatcher.invoke(JRunRequestDispatcher.java:257)
+	at jrun.servlet.ServletEngineService.dispatch(ServletEngineService.java:541)
+	at jrun.servlet.jrpp.JRunProxyService.invokeRunnable(JRunProxyService.java:204)
+	at jrunx.scheduler.ThreadPool$ThreadThrottle.invokeRunnable(ThreadPool.java:426)
+	at jrunx.scheduler.WorkerThread.run(WorkerThread.java:66)
+CFTagContext=ID: ??; LINE: 22; TEMPLATE: /Users/lmajano/Documents/MyDevelopment/applications/coldbox/src/system/dashboard/handlers/ehInfo.cfc ID: CF_TEMPLATEPROXY; LINE: 1; TEMPLATE: <generated> ID: CF_CFPAGE; LINE: 327; TEMPLATE: /Users/lmajano/Documents/MyDevelopment/applications/coldbox/src/system/controller.cfc ID: CF_TEMPLATEPROXY; LINE: 113; TEMPLATE: /Users/lmajano/Documents/MyDevelopment/applications/coldbox/src/system/coldbox.cfm ID: CFINCLUDE; LINE: 13; TEMPLATE: /Users/lmajano/Documents/MyDevelopment/applications/coldbox/src/system/dashboard/index.cfm "
+﻿"error","03/10/2007","15:37:08","Custom Error Message: Application Execution Exception","CFErrorType=ExpressionCFMessage=Variable Context is undefined.CFStackTrace=coldfusion.runtime.UndefinedVariableException: Variable Context is undefined.
+	at coldfusion.runtime.CfJspPage._get(CfJspPage.java:182)
+	at cfehInfo2ecfc2053189095$funcDSPSYSTEMINFO.runFunction(/Users/lmajano/Documents/MyDevelopment/applications/coldbox/src/system/dashboard/handlers/ehInfo.cfc:22)
+	at coldfusion.runtime.UDFMethod.invoke(UDFMethod.java:344)
+	at coldfusion.runtime.UDFMethod$ReturnTypeFilter.invoke(UDFMethod.java:290)
+	at coldfusion.runtime.UDFMethod$ArgumentCollectionFilter.invoke(UDFMethod.java:254)
+	at coldfusion.filter.FunctionAccessFilter.invoke(FunctionAccessFilter.java:56)
+	at coldfusion.runtime.UDFMethod.runFilterChain(UDFMethod.java:207)
+	at coldfusion.runtime.UDFMethod.invoke(UDFMethod.java:169)
+	at coldfusion.runtime.TemplateProxy.invoke(TemplateProxy.java:194)
+	at coldfusion.runtime.TemplateProxy.invoke(TemplateProxy.java:146)
+	at coldfusion.runtime.CfJspPage._invoke(CfJspPage.java:1634)
+	at Statement14.evaluate(<generated>:1)
+	at coldfusion.compiler.ExprClassLoader.evaluate(ExprClassLoader.java:134)
+	at coldfusion.runtime.CFPage.Evaluate(CFPage.java:2548)
+	at cfcontroller2ecfc533790882$funcRUNEVENT.runFunction(/Users/lmajano/Documents/MyDevelopment/applications/coldbox/src/system/controller.cfc:327)
+	at coldfusion.runtime.UDFMethod.invoke(UDFMethod.java:344)
+	at coldfusion.runtime.UDFMethod$ReturnTypeFilter.invoke(UDFMethod.java:290)
+	at coldfusion.runtime.UDFMethod$ArgumentCollectionFilter.invoke(UDFMethod.java:254)
+	at coldfusion.filter.FunctionAccessFilter.invoke(FunctionAccessFilter.java:56)
+	at coldfusion.runtime.UDFMethod.runFilterChain(UDFMethod.java:207)
+	at coldfusion.runtime.UDFMethod.invoke(UDFMethod.java:169)
+	at coldfusion.runtime.TemplateProxy.invoke(TemplateProxy.java:194)
+	at coldfusion.runtime.TemplateProxy.invoke(TemplateProxy.java:146)
+	at coldfusion.runtime.CfJspPage._invoke(CfJspPage.java:1634)
+	at cfcoldbox2ecfm15055920.runPage(/Users/lmajano/Documents/MyDevelopment/applications/coldbox/src/system/coldbox.cfm:113)
+	at coldfusion.runtime.CfJspPage.invoke(CfJspPage.java:152)
+	at coldfusion.tagext.lang.IncludeTag.doStartTag(IncludeTag.java:349)
+	at coldfusion.runtime.CfJspPage._emptyTag(CfJspPage.java:1915)
+	at cfindex2ecfm789835039.runPage(/Users/lmajano/Documents/MyDevelopment/applications/coldbox/src/system/dashboard/index.cfm:13)
+	at coldfusion.runtime.CfJspPage.invoke(CfJspPage.java:152)
+	at coldfusion.tagext.lang.IncludeTag.doStartTag(IncludeTag.java:349)
+	at coldfusion.filter.CfincludeFilter.invoke(CfincludeFilter.java:65)
+	at coldfusion.filter.ApplicationFilter.invoke(ApplicationFilter.java:219)
+	at coldfusion.filter.PathFilter.invoke(PathFilter.java:86)
+	at coldfusion.filter.ExceptionFilter.invoke(ExceptionFilter.java:69)
+	at coldfusion.filter.BrowserDebugFilter.invoke(BrowserDebugFilter.java:52)
+	at coldfusion.filter.ClientScopePersistenceFilter.invoke(ClientScopePersistenceFilter.java:28)
+	at coldfusion.filter.BrowserFilter.invoke(BrowserFilter.java:38)
+	at coldfusion.filter.GlobalsFilter.invoke(GlobalsFilter.java:38)
+	at coldfusion.filter.DatasourceFilter.invoke(DatasourceFilter.java:22)
+	at coldfusion.filter.RequestThrottleFilter.invoke(RequestThrottleFilter.java:115)
+	at coldfusion.CfmServlet.service(CfmServlet.java:107)
+	at coldfusion.bootstrap.BootstrapServlet.service(BootstrapServlet.java:78)
+	at jrun.servlet.ServletInvoker.invoke(ServletInvoker.java:91)
+	at jrun.servlet.JRunInvokerChain.invokeNext(JRunInvokerChain.java:42)
+	at jrun.servlet.JRunRequestDispatcher.invoke(JRunRequestDispatcher.java:257)
+	at jrun.servlet.ServletEngineService.dispatch(ServletEngineService.java:541)
+	at jrun.servlet.jrpp.JRunProxyService.invokeRunnable(JRunProxyService.java:204)
+	at jrunx.scheduler.ThreadPool$ThreadThrottle.invokeRunnable(ThreadPool.java:426)
+	at jrunx.scheduler.WorkerThread.run(WorkerThread.java:66)
+CFTagContext=ID: ??; LINE: 22; TEMPLATE: /Users/lmajano/Documents/MyDevelopment/applications/coldbox/src/system/dashboard/handlers/ehInfo.cfc ID: CF_TEMPLATEPROXY; LINE: 1; TEMPLATE: <generated> ID: CF_CFPAGE; LINE: 327; TEMPLATE: /Users/lmajano/Documents/MyDevelopment/applications/coldbox/src/system/controller.cfc ID: CF_TEMPLATEPROXY; LINE: 113; TEMPLATE: /Users/lmajano/Documents/MyDevelopment/applications/coldbox/src/system/coldbox.cfm ID: CFINCLUDE; LINE: 13; TEMPLATE: /Users/lmajano/Documents/MyDevelopment/applications/coldbox/src/system/dashboard/index.cfm "
