@@ -108,35 +108,25 @@ Description		: This is the main ColdBox front Controller.
 	<!--- Framework Register Handlers --->
 	<cffunction name="registerHandlers" access="public" returntype="void" hint="I register your application's event handlers" output="false">
 		<cfset var HandlersPath = getSetting("HandlersPath")>
-		<cfset var Handlers = ArrayNew(1)>
-		<cfset var HandlerListing = "">
+		<cfset var HandlerArray = Arraynew(1)>
 
 		<!--- Check for Handlers Directory Location --->
 		<cfif not directoryExists(HandlersPath)>
 			<cfthrow type="Framework.plugins.settings.HandlersDirectoryNotFoundException" message="The handlers directory: #handlerspath# does not exist please check your application structure or your Application Mapping.">
 		</cfif>
 
-		<!--- Get Handlers to register --->
-		<cfdirectory action="list" recurse="true" directory="#HandlersPath#" name="HandlerListing" filter="*.cfc">
-
-		<!--- Verify handler's found, else, why continue --->
-		<cfif not HandlerListing.recordcount>
+		<!--- Get recursive Array listing --->
+		<cfset HandlerArray = recurseListing(HandlerArray, HandlersPath, HandlersPath)>
+		<!--- Verify it --->
+		<cfif ArrayLen(HandlerArray) eq 0>
 			<cfthrow type="Framework.plugins.settings.NoHandlersFoundException" message="No handlers were found in: #HandlerPath#. So I have no clue how you are going to run this application.">
 		</cfif>
 
-		<!--- Register Handlers --->
-		<cfloop query="HandlerListing">
-			<cfset HandlerListing.directory = replacenocase(HandlerListing.directory,HandlersPath,"","all")>
-			<cfset HandlerListing.directory = removeChars(replacenocase(HandlerListing.directory,"/",".","all") & ".",1,1)>
-			<cfset HandlerListing.name = getPlugin("fileUtilities").ripExtension(HandlerListing.name)>
-			<cfset arrayappend(Handlers, HandlerListing.directory & HandlerListing.name)>
-		</cfloop>
-
 		<!--- Sort The Array --->
-		<cfset ArraySort(Handlers,"text")>
+		<cfset ArraySort(HandlerArray,"text")>
 
 		<!--- Set registered Handlers --->
-		<cfset setSetting("RegisteredHandlers",arrayToList(Handlers))>
+		<cfset setSetting("RegisteredHandlers",arrayToList(HandlerArray))>
 	</cffunction>
 
 
@@ -372,6 +362,47 @@ Description		: This is the main ColdBox front Controller.
 	</cffunction>
 
 <!------------------------------------------- PRIVATE ------------------------------------------->
+
+	<cffunction name="recurseListing" access="private" output="false" returntype="array">
+		<cfargument name="fileArray" type="array"  required="true">
+		<cfargument name="Directory" type="string" required="true">
+		<cfargument name="HandlersPath" type="string" required="true">
+		<cfscript>
+		var oDirectory = CreateObject("java","java.io.File").init(arguments.Directory);
+		var Files = oDirectory.list();
+		var i = 1;
+		var tempfile = "";
+		var cleanHandler = "";
+
+		//Loop Through listing if any files found.
+		for ( i=1; i lte arrayLen(Files); i=i+1 ){
+			//get first reference as File Object
+			tempFile = CreateObject("java","java.io.File").init(oDirectory,Files[i]);
+			//Directory Check for recursion
+			if ( tempFile.isDirectory() ){
+				//recurse, directory found.
+				arguments.fileArray = recurseListing(arguments.fileArray,tempFile.getPath(), arguments.HandlersPath);
+			}
+			else{
+				//Filter only cfc's
+				if ( listlast(tempFile.getName(),".") neq "cfc" )
+					continue;
+				//Clean entry by using Handler Path
+				cleanHandler = replacenocase(tempFile.getAbsolutePath(),arguments.handlersPath,"","all");
+				//Clean OS separators
+				if ( getSetting("OSFileSeparator",1) eq "/")
+					cleanHandler = removeChars(replacenocase(cleanHandler,"/",".","all"),1,1);
+				else
+					cleanHandler = removeChars(replacenocase(cleanHandler,"\",".","all"),1,1);
+				//Clean Extension
+				cleanHandler = getPlugin("fileUtilities").ripExtension(cleanhandler);
+				//Add data to array
+				ArrayAppend(arguments.fileArray,cleanHandler);
+			}
+		}
+		return arguments.fileArray;
+		</cfscript>
+	</cffunction>
 
 	<cffunction name="throw" access="private" hint="Facade for cfthrow" output="false">
 		<!--- ************************************************************* --->
