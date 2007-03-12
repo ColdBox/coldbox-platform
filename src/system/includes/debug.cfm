@@ -228,7 +228,17 @@ function toggle(divid){
 			<!--- Why use a cfinclude? well, bluedragon would not compile this without it --->
 			<cfinclude template="cache_charting.cfm">
 		<cfelse>
-		<em>Charting is not supported in your coldfusion engine. Cache Charts skipped.</em>
+			<cfset itemTypes = getColdboxOCM().getItemTypes()>
+			<div class="fw_debugTitleCell">
+			  Objects In Cache:
+			</div>
+			<div class="fw_debugContentCell">
+			 <b>Plugins: </b> #itemTypes.plugins# &nbsp;
+			 <b>Handlers: </b> #itemTypes.handlers# &nbsp;
+			 <b>Other: </b> #itemTypes.other#
+			</div>
+			<em>Charting is not supported in your coldfusion engine. Cache Charts skipped.</em>
+			<br>
 		</cfif>
 
 	<cfif getController().getSetting("EnableDumpVar")>
