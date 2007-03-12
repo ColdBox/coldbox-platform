@@ -53,7 +53,7 @@ function toggle(divid){
 	<cfif structkeyExists(RequestCollection, "tracerStack")>
 	<cfoutput>
 		<!--- <cfinclude template="style.cfm"> --->
-		<div class="fw_titles" onClick="toggle('fw_tracer')">&nbsp;Tracer Messages </div>
+		<div class="fw_titles" onClick="toggle('fw_tracer')">&gt;&nbsp;Tracer Messages </div>
 		<div id="fw_tracer" class="fw_info">
 		<cfloop from="1" to="#arrayLen(RequestCollection.tracerStack)#" index="i">
 		<div class="fw_tracerMessage">
@@ -74,7 +74,7 @@ function toggle(divid){
 	</cfif>
 
 	<div class="fw_titles" onClick="toggle('fw_info')" >
-		 &nbsp;Debugging Information
+		&gt; &nbsp;Debugging Information
 	</div>
 
 	<div class="fw_debugContentView" id="fw_info">
@@ -225,46 +225,17 @@ function toggle(divid){
 		</div>
 
 		<cfif server.ColdFusion.ProductName eq "Coldfusion Server">
-		<div>
-		<table align="center" >
-			<tr>
-				<td>
-				<cfchart format="png" show3d="true" backgroundcolor="##eeeeee" gridlines="true">
-					<cfchartseries type="pie" colorlist="85ca0a,1e3aca" >
-						<cfchartdata item="Free Memory (KB)"  value="#JVMFreeMemory#">
-						<cfchartdata item="Total Memory (KB)" value="#JVMTotalMemory#">
-					</cfchartseries>
-				</cfchart>
-				</td>
-				<td>
-				<cfchart format="png" show3d="true" backgroundcolor="##eeeeee">
-					<cfchartseries type="bar" colorlist="93C2FF,ED2939" >
-						<cfchartdata item="Hits" value="#getColdboxOCM().getCachePerformance().hits#">
-						<cfchartdata item="Misses" value="#getColdboxOCM().getCachePerformance().misses#">
-					</cfchartseries>
-				</cfchart>
-				</td>
-				<td>
-				<cfset itemTypes = getColdboxOCM().getItemTypes()>
-				<cfchart format="png" show3d="true" backgroundcolor="##eeeeee" gridlines="true">
-					<cfchartseries type="pie" colorlist="93C2FF" >
-						<cfchartdata item="Plugins" value="#itemTypes.plugins#">
-						<cfchartdata item="Handlers" value="#itemTypes.handlers#">
-						<cfchartdata item="Other Objects" value="#itemTypes.other#">
-					</cfchartseries>
-				</cfchart>
-				</td>
-			</tr>
-		</table>
-		</div>
+			<!--- Why use a cfinclude? well, bluedragon would not compile this without it --->
+			<cfinclude template="cache_charting.cfm">
+		<cfelse>
+		<em>Charting is not supported in your coldfusion engine. Cache Charts skipped.</em>
 		</cfif>
-	</div>
 
 	<cfif getController().getSetting("EnableDumpVar")>
 		<cfset dumpList = Context.getValue("dumpvar",0)>
 		<cfif dumplist neq 0>
 		<!--- Dump Var --->
-		<div class="fw_titles" onClick="toggle('fw_dumpvar')">&nbsp;Dumpvar </div>
+		<div class="fw_titles" onClick="toggle('fw_dumpvar')">&gt;&nbsp;Dumpvar </div>
 		<div class="fw_debugContent" id="fw_dumpvar">
 			<cfloop list="#dumplist#" index="i">
 				<cfif isDefined("#i#")>
@@ -277,7 +248,7 @@ function toggle(divid){
 
 	<!--- Request Collection Debug --->
 	<div class="fw_titles"  onClick="toggle('fw_reqCollection')" >
-	&nbsp;Request Collection Structure
+	&gt; &nbsp;Request Collection Structure
 	</div>
 	<div class="fw_debugContent" id="fw_reqCollection">
 		<table border="0" cellpadding="0" cellspacing="1" class="fw_debugTables" width="100%">
