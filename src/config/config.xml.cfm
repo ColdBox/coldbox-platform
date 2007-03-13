@@ -3,6 +3,7 @@
  xsi:noNamespaceSchemaLocation="../system/config/config.xsd">
 	<Settings>
 		<Setting name="AppName" 					value="coldbox"/>
+		<Setting name="AppMapping"					value="/coldbox" />
 		<Setting name="DebugMode" 					value="true"/>
 		<Setting name="DebugPassword" 				value="coldbox"/>
 		<Setting name="ReinitPassword" 				value=""/>
