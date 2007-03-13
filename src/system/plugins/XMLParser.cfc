@@ -199,23 +199,25 @@ Modification History:
 			if ( not StructKeyExists(ConfigStruct, "AppName") )
 				throw("There was no 'AppName' setting defined. This is required by the framework.","","Framework.plugins.XMLParser.ConfigXMLParsingException");
 
-			//Calculate AppMapping
-			webPath = replacenocase(cgi.script_name,getFIleFromPath(cgi.script_name),"");
-			localPath = getDirectoryFromPath(replacenocase(getTemplatePath(),"\","/","all"));
-			PathLocation = findnocase(webPath, localPath);
-			if ( PathLocation neq 0)
-				ConfigStruct.AppMapping = mid(localPath,PathLocation,len(webPath));
-			else
-				ConfigStruct.AppMapping = webPath;
-
-			//Clean last /
-			if ( right(ConfigStruct.AppMapping,1) eq "/" ){
-				if ( len(ConfigStruct.AppMapping) -1 gt 0)
-					ConfigStruct.AppMapping = left(ConfigStruct.AppMapping,len(ConfigStruct.AppMapping)-1);
+			//Calculate AppMapping if not set in the config, else auto-calculate
+			if ( not structKeyExists(ConfigStruct, "AppMapping") ){
+				webPath = replacenocase(cgi.script_name,getFIleFromPath(cgi.script_name),"");
+				localPath = getDirectoryFromPath(replacenocase(getTemplatePath(),"\","/","all"));
+				PathLocation = findnocase(webPath, localPath);
+				if ( PathLocation neq 0)
+					ConfigStruct.AppMapping = mid(localPath,PathLocation,len(webPath));
 				else
-					ConfigStruct.AppMapping = "";
+					ConfigStruct.AppMapping = webPath;
+	
+				//Clean last /
+				if ( right(ConfigStruct.AppMapping,1) eq "/" ){
+					if ( len(ConfigStruct.AppMapping) -1 gt 0)
+						ConfigStruct.AppMapping = left(ConfigStruct.AppMapping,len(ConfigStruct.AppMapping)-1);
+					else
+						ConfigStruct.AppMapping = "";
+				}
 			}
-
+			
 			//Check for Default Event
 			if ( not StructKeyExists(ConfigStruct, "DefaultEvent") )
 				throw("There was no 'DefaultEvent' setting defined. This is required by the framework.","","Framework.plugins.XMLParser.ConfigXMLParsingException");
