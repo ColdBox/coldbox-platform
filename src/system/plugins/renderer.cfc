@@ -48,11 +48,11 @@ Modification History:
 		<cfargument name="view" required="false" default="" type="string" hint="If not passed in, the value in the currentView in the current RequestContext will be used.">
 		<!--- ************************************************************* --->
 		<cfset var RenderedView = "">
-		<cfset var Context = controller.getRequestService().getContext()>
+		<cfset var Event = controller.getRequestService().getContext()>
 
 		<!--- Test Default View --->
 		<cfif arguments.view eq "">
-			<cfset arguments.view = Context.getValue("currentView","")>
+			<cfset arguments.view = Event.getValue("currentView","")>
 		</cfif>
 
 		<cfmodule template="../includes/timer.cfm" timertag="Rendering View [#arguments.view#.cfm]">
@@ -73,7 +73,7 @@ Modification History:
 		<cfargument name="view" required="true" type="string" hint="The full path to the view. This can be an expanded path or relative. Include extension.">
 		<!--- ************************************************************* --->
 		<cfset var RenderedView = "">
-		<cfset var Context = controller.getRequestService().getContext()>
+		<cfset var Event = controller.getRequestService().getContext()>
 
 		<cfmodule template="../includes/timer.cfm" timertag="Rendering View [#arguments.view#]">
 
@@ -97,14 +97,14 @@ Modification History:
 
 	<cffunction name="renderLayout" access="Public" hint="Renders the current layout." output="false" returntype="Any">
 		<cfset var RederedLayout = "">
-		<cfset var Context = controller.getRequestService().getContext()>
+		<cfset var Event = controller.getRequestService().getContext()>
 
-		<cfmodule template="../includes/timer.cfm" timertag="Rendering Layout [#Context.getvalue('currentLayout','')#]">
+		<cfmodule template="../includes/timer.cfm" timertag="Rendering Layout [#Event.getvalue('currentLayout','')#]">
 			<!--- Render With No Layout --->
-			<cfif not Context.valueExists("currentLayout")>
+			<cfif not Event.valueExists("currentLayout")>
 				<cfset RederedLayout = renderView()>
 			<cfelse>
-				<cfsavecontent variable="RederedLayout"><cfinclude template="/#controller.getSetting("AppMapping")#/layouts/#Context.getValue("currentLayout")#"></cfsavecontent>
+				<cfsavecontent variable="RederedLayout"><cfinclude template="/#controller.getSetting("AppMapping")#/layouts/#Event.getValue("currentLayout")#"></cfsavecontent>
 			</cfif>
 		</cfmodule>
 		<cfreturn RederedLayout>
@@ -114,7 +114,7 @@ Modification History:
 
 	<cffunction name="renderDebugLog" access="public" hint="Return the debug log." output="false" returntype="Any">
 		<cfset var RenderedDebugging = "">
-		<cfset var Context = controller.getRequestService().getContext()>
+		<cfset var Event = controller.getRequestService().getContext()>
 		<cfsavecontent variable="RederedDebugging"><cfinclude template="../includes/debug.cfm"></cfsavecontent>
 		<cfreturn RederedDebugging>
 	</cffunction>
@@ -125,12 +125,12 @@ Modification History:
 		<cfargument name="ExceptionBean" type="any" required="true">
 		<cfset var BugReport = "">
 		<cfset var Exception = arguments.ExceptionBean>
-		<cfset var Context = controller.getRequestService().getContext()>
+		<cfset var Event = controller.getRequestService().getContext()>
 		<!--- test for custom bug report --->
 		<cfif Exception.getErrortype() eq "application" and controller.getSetting("CustomErrorTemplate") neq "">
 			<cftry>
 				<!--- Place exception in the requset Collection --->
-				<Cfset Context.setvalue("ExceptionBean",Exception)>
+				<Cfset Event.setvalue("ExceptionBean",Exception)>
 				<!--- Save the Custom Report --->
 				<cfsavecontent variable="BugReport"><cfinclude template="/#controller.getSetting("AppMapping")#/#controller.getSetting("CustomErrorTemplate")#"></cfsavecontent>
 				<cfcatch type="any">
