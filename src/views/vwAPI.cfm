@@ -1,2 +1,2 @@
 API
-<cfoutput>#Context.getValue("cfcViewer").render()#</cfoutput>
+<cfoutput>#Event.getValue("cfcViewer").render()#</cfoutput>
