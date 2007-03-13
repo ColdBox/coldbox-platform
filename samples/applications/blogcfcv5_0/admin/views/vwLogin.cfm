@@ -8,7 +8,7 @@
 	History      : 
 --->
 <cfoutput>
-<form action="#cgi.script_name#?#Context.getValue("qs")#" method="post">
+<form action="#cgi.script_name#?#Event.getValue("qs")#" method="post">
 <!--- copy additional fields --->
 <cfloop item="field" collection="#form#">
 	<!--- the isSimpleValue is probably a bit much.... --->

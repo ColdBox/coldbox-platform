@@ -13,8 +13,8 @@
 #getPlugin("messagebox").renderit()#
 </cfoutput>
 <cfmodule template="../../tags/datatable.cfm" 
-		  data="#Context.getValue("ranks")#" list="name,minposts" 
-		  editlink="?event=#Context.getValue("xehRanksEdits")#" linkcol="name" label="Rank" />
+		  data="#Event.getValue("ranks")#" list="name,minposts" 
+		  editlink="?event=#Event.getValue("xehRanksEdits")#" linkcol="name" label="Rank" />
 
 
 <cfsetting enablecfoutputonly=false>

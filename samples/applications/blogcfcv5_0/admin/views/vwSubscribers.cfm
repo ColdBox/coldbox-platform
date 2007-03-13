@@ -8,7 +8,7 @@
 	History      :
 --->
 
-<cfset subscribers = Context.getValue("subscribers")>
+<cfset subscribers = Event.getValue("subscribers")>
 
 	<cfoutput>
 	<p>
@@ -24,7 +24,7 @@
 	</cfoutput>
 
 	<cfmodule template="../tags/datatable.cfm" data="#subscribers#" editlink="" label="Subscribers"
-			  linkcol="" linkval="email" showAdd="false" defaultsort="email" deleteEvent="#Context.getValue("xehDeleteSub")#">
+			  linkcol="" linkval="email" showAdd="false" defaultsort="email" deleteEvent="#Event.getValue("xehDeleteSub")#">
 		<cfmodule template="../tags/datacol.cfm" colname="email" label="Email" />
 	</cfmodule>
 

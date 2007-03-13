@@ -9,7 +9,7 @@
 	Purpose		 : Displays RSS for a Conference
 --->
 <!--- Set References --->
-<cfset data = Context.getValue("rssdata")>
+<cfset data = Event.getValue("rssdata")>
 
 <cfcontent type="text/xml"><cfoutput><?xml version="1.0" encoding="iso-8859-1"?>
 

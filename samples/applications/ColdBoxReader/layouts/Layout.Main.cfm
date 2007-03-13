@@ -21,7 +21,7 @@
 		<div id="statusbar">
 			<cfoutput>
 			<div style="float:left;margin-left:10px">
-			<form name="frmSearch" style="padding:0px;margin:5px;" method="post" action="javascript:doFormEvent('#Context.getValue("xehSearch")#','centercontent',document.frmSearch);">
+			<form name="frmSearch" style="padding:0px;margin:5px;" method="post" action="javascript:doFormEvent('#Event.getValue("xehSearch")#','centercontent',document.frmSearch);">
 				<img src="images/search.gif" align="absbottom">
 				<input type="text" name="searchTerm" value="Search Keywords" onclick="this.value='';" style="font-size:9px" onBlur="this.value ==  '' ? this.value='Search Keywords' : this.value"/>
 				<input type="submit" value="Search" style="font-size:9px" />

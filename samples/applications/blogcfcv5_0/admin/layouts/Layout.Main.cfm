@@ -14,7 +14,7 @@
 <head>
 <meta http-equiv="content-type" content="text/html; charset=utf-8" />
 <link rel="stylesheet" type="text/css" href="#application.rooturl#/includes/admin.css" media="screen" />
-<title>BlogCFC Administrator: #Context.getValue("title")#</title>
+<title>BlogCFC Administrator: #Event.getValue("title")#</title>
 </head>
 
 <body>
@@ -24,29 +24,29 @@
 <div id="menu">
 <ul>
 <li><a href="index.cfm">Home</a></li>
-<li><a href="?event=#Context.getValue("xehEntries")#">Entries</a></li>
-<li><a href="?event=#Context.getValue("xehCategories")#">Categories</a></li>
-<li><a href="?event=#Context.getValue("xehComments")#">Comments</a></li>
+<li><a href="?event=#Event.getValue("xehEntries")#">Entries</a></li>
+<li><a href="?event=#Event.getValue("xehCategories")#">Categories</a></li>
+<li><a href="?event=#Event.getValue("xehComments")#">Comments</a></li>
 <li><a href="?reinit=1">Refresh Blog Cache</a></li>
-<li><a href="?event=#Context.getValue("xehSettings")#">Settings</a></li>
-<li><a href="?event=#Context.getValue("xehSubscribers")#">Subscribers</a></li>
-<li><a href="?event=#Context.getValue("xehTrackbacks")#">Trackbacks</a></li>
+<li><a href="?event=#Event.getValue("xehSettings")#">Settings</a></li>
+<li><a href="?event=#Event.getValue("xehSubscribers")#">Subscribers</a></li>
+<li><a href="?event=#Event.getValue("xehTrackbacks")#">Trackbacks</a></li>
 </ul>
 <hr>
 <ul>
 <li><a href="../">Your Blog</a></li>
 <li><a href="../" target="_new">Your Blog (New Window)</a></li>
-<li><a href="?event=#Context.getValue("xehStats")#">Your Blog Stats</a></li>
+<li><a href="?event=#Event.getValue("xehStats")#">Your Blog Stats</a></li>
 </ul>
 <hr>
 <ul>
-<li><a href="?event=#Context.getValue("xehLogout")#">Logout</a></li>
+<li><a href="?event=#Event.getValue("xehLogout")#">Logout</a></li>
 </ul>
 </div>
 </cfif>
 
 <div id="content">
-	<div id="header">BlogCFC Administrator: #Context.getValue("title")#</div>
+	<div id="header">BlogCFC Administrator: #Event.getValue("title")#</div>
 	<!--- Content Goes Here --->
 	#renderView()#
 </div>

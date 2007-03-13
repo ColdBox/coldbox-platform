@@ -14,8 +14,8 @@
 #getPlugin("messagebox").renderit()#
 </cfoutput>
 <cfmodule template="../../tags/datatable.cfm" 
-		  data="#Context.getValue("threads")#" list="name,lastpost,forum,conference,messagecount,sticky,active" 
-		  editlink="?event=#Context.getValue("xehThreadsEdit")#" linkcol="name" label="Thread" />
+		  data="#Event.getValue("threads")#" list="name,lastpost,forum,conference,messagecount,sticky,active" 
+		  editlink="?event=#Event.getValue("xehThreadsEdit")#" linkcol="name" label="Thread" />
 
 
 <cfsetting enablecfoutputonly=false>

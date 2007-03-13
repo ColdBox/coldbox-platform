@@ -16,10 +16,10 @@
 	Purpose		 : Displays forums for conference
 --->
 <!--- Get Reference --->
-<cfset data = Context.getValue("data")>
+<cfset data = Event.getValue("data")>
 
 <!--- Displays pagination on right side, plus left side buttons for threads --->
-<cfmodule template="../tags/pagination.cfm" pages="#Context.getValue("pages")#" mode="conference" />
+<cfmodule template="../tags/pagination.cfm" pages="#Event.getValue("pages")#" mode="conference" />
 
 <!--- Now display the table. This changes based on what our data is. --->
 <cfoutput>
@@ -37,15 +37,15 @@
 	</tr>
 	<cfif data.recordCount>
 		<cfset cachedUserInfo = cachedUserInfo>
-		<cfloop query="data" startrow="#(Context.getValue("page")-1)*application.settings.perpage+1#" endrow="#(Context.getValue("page")-1)*application.settings.perpage+application.settings.perpage#">
+		<cfloop query="data" startrow="#(Event.getValue("page")-1)*application.settings.perpage+1#" endrow="#(Event.getValue("page")-1)*application.settings.perpage+application.settings.perpage#">
 			<tr class="tableRow#currentRow mod 2#">
-				<td><a href="index.cfm?event=#Context.getValue("xehThreads")#&forumid=#id#">#name#</a></td>
+				<td><a href="index.cfm?event=#Event.getValue("xehThreads")#&forumid=#id#">#name#</a></td>
 				<td>#description#</td>
 				<td>#messagecount#</td>
 				<td>
 				<cfif len(useridfk)>
 				<cfset uinfo = cachedUserInfo(username=useridfk,userid=true)>
-					<a href="index.cfm?event=#Context.getValue("xehMessages")#&threadid=#threadidfk###last">#dateFormat(lastpost,"m/d/yy")# #timeFormat(lastpost,"h:mm tt")#</a> by #uinfo.username#
+					<a href="index.cfm?event=#Event.getValue("xehMessages")#&threadid=#threadidfk###last">#dateFormat(lastpost,"m/d/yy")# #timeFormat(lastpost,"h:mm tt")#</a> by #uinfo.username#
 				<cfelse>&nbsp;</cfif>
 				</td>
 				<td>#yesNoFormat(readonly)#</td>

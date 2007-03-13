@@ -8,7 +8,7 @@
 	History      :
 --->
 
-<cfset comments = Context.getValue("comments")>
+<cfset comments = Event.getValue("comments")>
 
 	<cfoutput>
 	<p>
@@ -23,9 +23,9 @@
 	</p>
 	</cfoutput>
 
-	<cfmodule template="../tags/datatable.cfm" data="#comments#" editlink="?event=#Context.getValue("xehComment")#" label="Comments"
+	<cfmodule template="../tags/datatable.cfm" data="#comments#" editlink="?event=#Event.getValue("xehComment")#" label="Comments"
 			  linkcol="comment" defaultsort="posted" defaultdir="desc" showAdd="false"
-			  deleteEvent="#Context.getValue("xehDeleteComment")#">
+			  deleteEvent="#Event.getValue("xehDeleteComment")#">
 		<cfmodule template="../tags/datacol.cfm" colname="name" label="Name" width="150" />
 		<cfmodule template="../tags/datacol.cfm" colname="email" label="Email" width="300" />
 		<cfmodule template="../tags/datacol.cfm" colname="posted" label="Posted" format="datetime" width="150" />

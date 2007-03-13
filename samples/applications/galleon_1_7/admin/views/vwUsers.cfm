@@ -13,8 +13,8 @@
 #getPlugin("messagebox").renderit()#
 </cfoutput>
 <cfmodule template="../../tags/datatable.cfm" 
-		  data="#Context.getValue("users")#" list="#Context.getValue("list")#" 
-		  editlink="?event=#Context.getValue("xehUsersEdit")#" linkcol="username" linkval="username" label="User" />
+		  data="#Event.getValue("users")#" list="#Event.getValue("list")#" 
+		  editlink="?event=#Event.getValue("xehUsersEdit")#" linkcol="username" linkval="username" label="User" />
 
 
 

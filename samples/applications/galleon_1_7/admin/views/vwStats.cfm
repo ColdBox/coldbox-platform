@@ -10,7 +10,7 @@
 --->
 <cfoutput>#renderView("includes/gen_stats")#</cfoutput>
 <cfoutput>#getPlugin("messagebox").renderit()#</cfoutput>
-<cfif Context.getValue("charts")>
+<cfif Event.getValue("charts")>
 	<cfoutput>#renderView("includes/stats_charts")#</cfoutput>
 </cfif>
 

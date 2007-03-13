@@ -1,8 +1,8 @@
 <cfcomponent name="ehUser" extends="coldbox.system.eventhandler">
 
 	<cffunction name="dspAccountActions" access="public" returntype="void" output="false">
-		<cfargument name="Context" type="coldbox.system.beans.requestContext">
-		<cfset var rc = Context.getCollection()>
+		<cfargument name="Event" type="coldbox.system.beans.requestContext">
+		<cfset var rc = Event.getCollection()>
 		<cfset var obj = "">
 		<cfset var qry = "">
 		<!--- EXIT HANDLERS: --->
@@ -14,32 +14,32 @@
 		<cfset rc.xehMyFeeds = "ehFeed.dspMyFeeds">
 		
 		<!--- Set View --->
-		<cfset Context.setView("vwAccountActions")>
+		<cfset Event.setView("vwAccountActions")>
 	</cffunction>
 
 	<cffunction name="dspLogin" access="public" returntype="void" output="false">
-		<cfargument name="Context" type="coldbox.system.beans.requestContext">
-		<cfset var rc = Context.getCollection()>
+		<cfargument name="Event" type="coldbox.system.beans.requestContext">
+		<cfset var rc = Event.getCollection()>
 		<!--- EXIT HANDLERS: ---->
 		<cfset rc.xehLogin = "ehUser.doLogin">
-		<cfset Context.setView("vwLogin")>
+		<cfset Event.setView("vwLogin")>
 	</cffunction>
 
 	<cffunction name="dspSignUp" access="public" returntype="void" output="false">
-		<cfargument name="Context" type="coldbox.system.beans.requestContext">
-		<cfset var rc = Context.getCollection()>
+		<cfargument name="Event" type="coldbox.system.beans.requestContext">
+		<cfset var rc = Event.getCollection()>
 		<!--- EXIT HANDLERS: --->
 		<cfset rc.xehCreate = "ehUser.doCreateAccount">
-		<cfset Context.setView("vwSignUp")>
+		<cfset Event.setView("vwSignUp")>
 	</cffunction>
 
 	<cffunction name="doCreateAccount" access="public" returntype="void" output="false">
-		<cfargument name="Context" type="coldbox.system.beans.requestContext">
+		<cfargument name="Event" type="coldbox.system.beans.requestContext">
 		<cfscript>
-			var password2 = Context.getValue("password2","");
+			var password2 = Event.getValue("password2","");
 			var userService = getPlugin("ioc").getBean("userService");
 			var userBean = userService.createUserBean();
-			var rc = Context.getCollection();
+			var rc = Event.getCollection();
 			//Populate Bean From Request Collection.
 			getPlugin("beanFactory").populateBean(userBean);
 			
@@ -67,11 +67,11 @@
 	</cffunction>
 
 	<cffunction name="doLogin" access="public" returntype="void" output="false">
-		<cfargument name="Context" type="coldbox.system.beans.requestContext">
+		<cfargument name="Event" type="coldbox.system.beans.requestContext">
 		<cfscript>
 			var userService = getPlugin("ioc").getBean("userService");
 			var userBean = userService.createUserBean();
-			var rc = Context.getCollection();
+			var rc = Event.getCollection();
 			
 			try {
 				
@@ -96,16 +96,16 @@
 	</cffunction>
 
 	<cffunction name="doLogout" access="public" returntype="void" output="false">
-		<cfargument name="Context" type="coldbox.system.beans.requestContext">
+		<cfargument name="Event" type="coldbox.system.beans.requestContext">
 		<cfset StructDelete(session,"oUserBean")>
 		<cfset setNextEvent("ehGeneral.dspReader")>
 	</cffunction>
 
 
 	<cffunction name="doNewPassword" access="public" returntype="void" output="false">
-		<cfargument name="Context" type="coldbox.system.beans.requestContext">
+		<cfargument name="Event" type="coldbox.system.beans.requestContext">
 		<cfscript>
-			var username = Context.getValue("username","");
+			var username = Event.getValue("username","");
 			var newPassword = "";
 			var userService = getPlugin("ioc").getBean("userService");
 			var userBean = userService.createUserBean();
@@ -137,11 +137,11 @@
 	</cffunction>
 	
 	<cffunction name="doUpdateProfile" access="public" returntype="void" output="false">
-		<cfargument name="Context" type="coldbox.system.beans.requestContext">
+		<cfargument name="Event" type="coldbox.system.beans.requestContext">
 		<cfscript>
-			var password = Context.getValue("password","");
-			var confirmpassword = Context.getValue("confirmpassword","");
-			var email = Context.getValue("email","");
+			var password = Event.getValue("password","");
+			var confirmpassword = Event.getValue("confirmpassword","");
+			var email = Event.getValue("email","");
 			var userService = getPlugin("ioc").getBean("userService");
 			var userBean = userService.createUserBean();
 			

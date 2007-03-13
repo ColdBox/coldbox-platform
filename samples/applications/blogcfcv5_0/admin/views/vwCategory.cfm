@@ -8,8 +8,8 @@
 	History      :
 --->
 
-	<cfif Context.valueExists("errors") and arrayLen(Context.getValue("errors"))>
-		<cfset errors = Context.getValue("errors")>
+	<cfif Event.valueExists("errors") and arrayLen(Event.getValue("errors"))>
+		<cfset errors = Event.getValue("errors")>
 		<cfoutput>
 		<div class="errors">
 		Please correct the following error(s):
@@ -29,15 +29,15 @@
 	in the alias. Spaces should be replaced with dashes.
 	</p>
 
-	<form action="?event=#Context.getValue("xehSaveCategory")#&id=#url.id#" method="post">
+	<form action="?event=#Event.getValue("xehSaveCategory")#&id=#url.id#" method="post">
 	<table>
 		<tr>
 			<td align="right">name:</td>
-			<td><input type="text" name="name" value="#Context.getValue("name","")#" class="txtField" maxlength="50"></td>
+			<td><input type="text" name="name" value="#Event.getValue("name","")#" class="txtField" maxlength="50"></td>
 		</tr>
 		<tr>
 			<td align="right">alias:</td>
-			<td><input type="text" name="alias" value="#Context.getValue("alias","")#" class="txtField" maxlength="50"></td>
+			<td><input type="text" name="alias" value="#Event.getValue("alias","")#" class="txtField" maxlength="50"></td>
 		</tr>
 		<tr>
 			<td>&nbsp;</td>

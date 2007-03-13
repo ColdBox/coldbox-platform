@@ -7,7 +7,7 @@
 	History      : 
 	Purpose		 : Confirms a user.
 --->
-<cfset rc = Context.getCollection()>
+<cfset rc = Event.getCollection()>
 <cfoutput>
 <p>
 <table width="500" cellpadding="6" class="tableDisplay" cellspacing="1" border="0">
@@ -18,7 +18,7 @@
 		<td>
 		<cfif rc.result>
 			<p>
-			Thank you for confirming your registration. You will now have to <a href="index.cfm?event=#Context.getValue("xehLogin")#">login</a>
+			Thank you for confirming your registration. You will now have to <a href="index.cfm?event=#Event.getValue("xehLogin")#">login</a>
 			to finalize the process.
 			</p>
 		<cfelse>

@@ -1,2 +1,2 @@
-<cfset qryData = Context.getValue("qryData")>
+<cfset qryData = Event.getValue("qryData")>
 

@@ -1,14 +1,14 @@
-<cfset myFeed = Context.getValue("myFeed","")>
-<cfset rc = Context.getCollection()>
+<cfset myFeed = Event.getValue("myFeed","")>
+<cfset rc = Event.getCollection()>
 <cfoutput>
 
 <h1>Add New Feed</h1>
 
-<cfif not Context.getValue("FeedValidated")>
-	<form name="addform" id="addform" method="post" action="javascript:doFormEvent('#Context.getValue("xehNewFeed")#','centercontent',document.addform)">
+<cfif not Event.getValue("FeedValidated")>
+	<form name="addform" id="addform" method="post" action="javascript:doFormEvent('#Event.getValue("xehNewFeed")#','centercontent',document.addform)">
 		<p>Please use the form below to add a new feed URL that you would like to add to your ColdBox Reader. The reader will try to validate this URL.</p>
 		<b>Feed URL:</b>
-		<input type="text" name="feedURL" value="#Context.getValue("feedURL","")#" size="50" style="padding:3px;font-size:12px;font-family:Verdana, Arial, Helvetica, sans-serif;" />
+		<input type="text" name="feedURL" value="#Event.getValue("feedURL","")#" size="50" style="padding:3px;font-size:12px;font-family:Verdana, Arial, Helvetica, sans-serif;" />
 		<br><br>
 		<div align="center">
 		<input type="button" value="Go Back" onClick="doEvent('ehGeneral.dspReader','centercontent',{})" />
@@ -16,9 +16,9 @@
 		</div>
 	</form>
 <cfelse>
-	<form name="addform" id="addform" method="post" action="javascript:doFormEvent('#Context.getValue("xehAddFeed")#','centercontent',document.addform)">
+	<form name="addform" id="addform" method="post" action="javascript:doFormEvent('#Event.getValue("xehAddFeed")#','centercontent',document.addform)">
 		<p>The feed you entered has been validated successfully. You can see the feed's details below.</p>
-		<input type="hidden" name="feedID" value="#Context.getValue("feedID","")#">
+		<input type="hidden" name="feedID" value="#Event.getValue("feedID","")#">
 		<table>
 			<tr>
 				<td><b>URL:</b></td>
@@ -55,7 +55,7 @@
 				<td>&nbsp;</td>
 				<td>
 					<div align="center">
-					<input type="button" value="Go Back" onClick="doEvent('#Context.getValue("xehNewFeed")#','centercontent',{})" />
+					<input type="button" value="Go Back" onClick="doEvent('#Event.getValue("xehNewFeed")#','centercontent',{})" />
 					<input type="submit" value="Add Feed"  />
 					</div>
 				</td>

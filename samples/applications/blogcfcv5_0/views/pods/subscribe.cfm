@@ -23,7 +23,7 @@
 				 required="yes"
 			     class="textboxes" value="E-Mail Address" onclick="this.value=''">
 		<cfinput type="submit" name="Submit" value="Join" class="buttons">
-		<input type="hidden" value="#Context.getValue("xehSubscribe")#" name="event" id="event" />
+		<input type="hidden" value="#Event.getValue("xehSubscribe")#" name="event" id="event" />
 		<input type="hidden" value="#cgi.query_string#" name="query_string" id="query_string"  />
 	</p>
 	</cfform>

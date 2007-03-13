@@ -14,8 +14,8 @@
 
 <!---<cfparam name="month" default="#month(now)#">
 <cfparam name="year" default="#year(now)#"> --->
-<cfset month = Context.getValue("month", month(now))>
-<cfset year = Context.getValue("year", year(now))>
+<cfset month = Event.getValue("month", month(now))>
+<cfset year = Event.getValue("year", year(now))>
 
 <cfmodule template="../../tags/podlayout.cfm" title="#getResource("calendar")#">
 

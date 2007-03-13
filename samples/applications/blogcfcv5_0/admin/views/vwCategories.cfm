@@ -7,7 +7,7 @@
 	Last Updated :
 	History      :
 --->
-<cfset categories = Context.getValue("categories")>
+<cfset categories = Event.getValue("categories")>
 
 	<cfoutput>
 	<p>
@@ -22,8 +22,8 @@
 	</p>
 	</cfoutput>
 
-	<cfmodule template="../tags/datatable.cfm" data="#categories#" editlink="?event=#Context.getValue("xehCategory")#" label="Categories"
-			  linkcol="categoryname" linkval="categoryid" deleteEvent="#Context.getValue("xehDeleteCategory")#">
+	<cfmodule template="../tags/datatable.cfm" data="#categories#" editlink="?event=#Event.getValue("xehCategory")#" label="Categories"
+			  linkcol="categoryname" linkval="categoryid" deleteEvent="#Event.getValue("xehDeleteCategory")#">
 		<cfmodule template="../tags/datacol.cfm" colname="categoryname" label="Category" />
 		<cfmodule template="../tags/datacol.cfm" colname="entrycount" label="Entries" />
 	</cfmodule>

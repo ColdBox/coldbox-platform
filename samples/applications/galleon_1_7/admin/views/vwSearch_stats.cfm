@@ -8,11 +8,11 @@
 	Purpose		 : 
 --->
 <!--- references to req collection --->
-<cfset latest = Context.getValue("latest")>
-<cfset todaysbest = Context.getValue("todaysbest")>
-<cfset thismonth = Context.getValue("thismonth")>
-<cfset thisyear = Context.getValue("thisyear")>
-<cfset top30 = Context.getValue("top30")>
+<cfset latest = Event.getValue("latest")>
+<cfset todaysbest = Event.getValue("todaysbest")>
+<cfset thismonth = Event.getValue("thismonth")>
+<cfset thisyear = Event.getValue("thisyear")>
+<cfset top30 = Event.getValue("top30")>
 
 <cfoutput>
 <p>

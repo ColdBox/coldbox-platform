@@ -1,8 +1,8 @@
-<cfset DSNs = Context.getValue("DSNs","")>
+<cfset DSNs = Event.getValue("DSNs","")>
 
 <cfif isStruct(DSNs)>
 	<cfoutput>
-	<cfform action="index.cfm?event=#Context.getValue("xehProcessDSN")#" method="post" format="xml" skin="lightgray">
+	<cfform action="index.cfm?event=#Event.getValue("xehProcessDSN")#" method="post" format="xml" skin="lightgray">
 		<cfselect name="dsn" label="Choose a datasource">
 			<cfloop collection="#DSNs#" item="ds">
 			<!--- only oracle, mssql or mysql for now --->

@@ -8,10 +8,10 @@
 	History      :
 --->
 
-<cfset comment = Context.getValue("comment")>
+<cfset comment = Event.getValue("comment")>
 
-	<cfif Context.valueExists("errors") and arrayLen(Context.getValue("errors"))>
-		<cfset errors = Context.getValue("errors")>
+	<cfif Event.valueExists("errors") and arrayLen(Event.getValue("errors"))>
+		<cfset errors = Event.getValue("errors")>
 		<cfoutput>
 		<div class="errors">
 		Please correct the following error(s):
@@ -25,7 +25,7 @@
 	</cfif>
 
 	<cfoutput>
-	<form action="?event=#Context.getValue("xehAddComment")#&id=#comment.id#" method="post">
+	<form action="?event=#Event.getValue("xehAddComment")#&id=#comment.id#" method="post">
 	<table>
 		<tr>
 			<td align="right">posted:</td>
@@ -33,26 +33,26 @@
 		</tr>
 		<tr>
 			<td align="right">name:</td>
-			<td><input type="text" name="name" value="#Context.getValue("name",comment.name)#" class="txtField" maxlength="50"></td>
+			<td><input type="text" name="name" value="#Event.getValue("name",comment.name)#" class="txtField" maxlength="50"></td>
 		</tr>
 		<tr>
 			<td align="right">email:</td>
-			<td><input type="text" name="email" value="#Context.getValue("email",comment.email)#" class="txtField" maxlength="50"></td>
+			<td><input type="text" name="email" value="#Event.getValue("email",comment.email)#" class="txtField" maxlength="50"></td>
 		</tr>
 		<tr>
 			<td align="right">website:</td>
-			<td><input type="text" name="website" value="#Context.getValue("website",comment.website)#" class="txtField"></td>
+			<td><input type="text" name="website" value="#Event.getValue("website",comment.website)#" class="txtField"></td>
 		</tr>
 		<tr valign="top">
 			<td align="right">comment:</td>
-			<td><textarea name="newcomment" class="txtArea">#Context.getValue("newcomment",comment.comment)#</textarea></td>
+			<td><textarea name="newcomment" class="txtArea">#Event.getValue("newcomment",comment.comment)#</textarea></td>
 		</tr>
 		<tr>
 			<td align="right">subscribed:</td>
 			<td>
 			<select name="subscribe">
-			<option value="yes" <cfif Context.getValue("subscribe",comment.subscribe)>selected</cfif>>Yes</option>
-			<option value="no" <cfif not Context.getValue("subscribe",comment.subscribe)>selected</cfif>>No</option>
+			<option value="yes" <cfif Event.getValue("subscribe",comment.subscribe)>selected</cfif>>Yes</option>
+			<option value="no" <cfif not Event.getValue("subscribe",comment.subscribe)>selected</cfif>>No</option>
 			</select>
 			</td>
 		</tr>

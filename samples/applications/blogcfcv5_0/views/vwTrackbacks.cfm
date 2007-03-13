@@ -8,7 +8,7 @@
 	History      : Ray modified it for 4.0
 --->
 
-<cfset article = Context.getValue("article")>
+<cfset article = Event.getValue("article")>
 
 <cfoutput>
 <div class="date">Add TrackBack</div>
@@ -41,23 +41,23 @@
 </table>
 
 </form> --->
-<form action="#cgi.script_name#?id=#Context.getValue("id")#" method="post" enctype="application/x-www-form-urlencoded" id="tbForm">
-	<input type="hidden" name="event" value="#Context.getValue("xehAddTrackback")#">
+<form action="#cgi.script_name#?id=#Event.getValue("id")#" method="post" enctype="application/x-www-form-urlencoded" id="tbForm">
+	<input type="hidden" name="event" value="#Event.getValue("xehAddTrackback")#">
 	<fieldset class="sideBySide">
 	<label for="blogName">Your Blog Name:</label>
-	<input type="text" id="blogName" name="blog_name" value="#Context.getValue("blog_name","")#" maxlength="255" />
+	<input type="text" id="blogName" name="blog_name" value="#Event.getValue("blog_name","")#" maxlength="255" />
 	</fieldset>
 	<fieldset class="sideBySide">
 	<label for="title">Your Blog Entry Title:</label>
-	<input type="text" id="title" name="title" value="#Context.getValue("title","")#" maxlength="255" />
+	<input type="text" id="title" name="title" value="#Event.getValue("title","")#" maxlength="255" />
 	</fieldset>
 	<fieldset>
 	<label for="excerpt">Excerpt from your Blog:</label><br/>
-	<textarea id="excerpt" name="excerpt" cols=50 rows=10>#Context.getValue("excerpt","")#</textarea>
+	<textarea id="excerpt" name="excerpt" cols=50 rows=10>#Event.getValue("excerpt","")#</textarea>
 	</fieldset>
 	<fieldset class="sideBySide">
 	<label for="url">Your Blog Entry URL:</label>
-	<input type="text" id="url" name="url" value="#Context.getValue("url","")#" maxlength="255" />
+	<input type="text" id="url" name="url" value="#Event.getValue("url","")#" maxlength="255" />
 	</fieldset>
 	<fieldset style="text-align:center">
 	<input id="submit" type="button" name="cancelbutton" value="Cancel" onClick="window.close()">

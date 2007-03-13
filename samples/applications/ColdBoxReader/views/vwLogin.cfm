@@ -3,7 +3,7 @@
 
 <cfoutput>
 	<h1>Login To Your ColdBox Reader Account</h1>
-<form name="frm" method="post" action="javascript:doFormEvent('#Context.getValue("xehLogin")#','centercontent',document.frm)">
+<form name="frm" method="post" action="javascript:doFormEvent('#Event.getValue("xehLogin")#','centercontent',document.frm)">
 	<p>
 		Sign in to your account to add new feeds and tag existing feeds.
 	</p>

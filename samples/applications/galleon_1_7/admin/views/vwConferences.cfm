@@ -15,8 +15,8 @@
 </cfoutput>
 
 <cfmodule template="../../tags/datatable.cfm" 
-		  data="#Context.getValue("conferences")#" list="name,description,lastpost,messagecount,active" 
-		  editlink="?event=#Context.getValue("xehConferencesEdit")#" linkcol="name" label="Conference" />
+		  data="#Event.getValue("conferences")#" list="name,description,lastpost,messagecount,active" 
+		  editlink="?event=#Event.getValue("xehConferencesEdit")#" linkcol="name" label="Conference" />
 
 
 <cfsetting enablecfoutputonly=false>

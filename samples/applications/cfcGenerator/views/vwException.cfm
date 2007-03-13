@@ -1,4 +1,4 @@
-<cfset variables.exception = Context.getValue("ExceptionBean") />
+<cfset variables.exception = Event.getValue("ExceptionBean") />
 
 <h3>ColdBox Exception</h3>
 

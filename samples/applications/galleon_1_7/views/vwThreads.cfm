@@ -13,11 +13,11 @@
 				   fix title (rkc 8/4/06)
 	Purpose		 : Displays threads for a forum
 --->
-<cfset rc = Context.getCollection()>
+<cfset rc = Event.getCollection()>
 <!--- Get References --->
-<cfset data = Context.getValue("data")>
+<cfset data = Event.getValue("data")>
 <!--- Displays pagination on right side, plus left side buttons for threads --->
-<cfmodule template="../tags/pagination.cfm" pages="#Context.getValue("pages")#" mode="threads" />
+<cfmodule template="../tags/pagination.cfm" pages="#Event.getValue("pages")#" mode="threads" />
 
 <!--- Now display the table. This changes based on what our data is. --->
 <cfoutput>
@@ -40,13 +40,13 @@
 			--->
 			<cfset mcount = max(0, messagecount-1)>
 			<tr class="tableRow#currentRow mod 2#">
-				<td><cfif isBoolean(sticky) and sticky><b>[Sticky]</b></cfif> <a href="index.cfm?event=#Context.getValue("xehMessages")#&threadid=#id#">#name#</a></td>
+				<td><cfif isBoolean(sticky) and sticky><b>[Sticky]</b></cfif> <a href="index.cfm?event=#Event.getValue("xehMessages")#&threadid=#id#">#name#</a></td>
 				<td>#username#</td>
 				<td>#mcount#</td>
 				<td>
 				<cfif len(lastuseridfk)>
 				<cfset uinfo = cachedUserInfo(username=lastuseridfk,userid=true)>
-				<a href="index.cfm?event=#Context.getValue("xehMessages")#&threadid=#id###last">#dateFormat(lastpost,"m/d/yy")# #timeFormat(lastpost,"h:mm tt")# by #uinfo.username#</a>
+				<a href="index.cfm?event=#Event.getValue("xehMessages")#&threadid=#id###last">#dateFormat(lastpost,"m/d/yy")# #timeFormat(lastpost,"h:mm tt")# by #uinfo.username#</a>
 				<cfelse>&nbsp;</cfif>			
 				</td>
 				<td>#yesNoFormat(readonly)#</td>

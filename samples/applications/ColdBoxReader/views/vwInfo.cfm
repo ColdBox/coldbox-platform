@@ -7,8 +7,8 @@
 			<strong>Welcome To ColdBox Reader</strong>
 		</div>
 
-		To Add a Feed, your must first <a href="javascript:doEvent('#Context.getValue("xehLogin")#','centercontent',{})"><strong>Sign-in</strong></a> to your account
-		or <a href="javascript:doEvent('#Context.getValue("xehSignup")#','centercontent',{})"><strong>Create an Account</strong></a>.
+		To Add a Feed, your must first <a href="javascript:doEvent('#Event.getValue("xehLogin")#','centercontent',{})"><strong>Sign-in</strong></a> to your account
+		or <a href="javascript:doEvent('#Event.getValue("xehSignup")#','centercontent',{})"><strong>Create an Account</strong></a>.
 	<cfelse>
 		<div style="margin-bottom:10px;">
 			<strong>Welcome to your ColdBox Reader.</strong>
@@ -35,7 +35,7 @@
 		<div class="nicebox" id="infoupdatebox" style="display:none;">
 		<cfoutput>
 		
-			<form name="frm" method="post" action="javascript:doFormEvent('#Context.getValue("xehUpdateProfile")#','leftcontent1',document.frm)">
+			<form name="frm" method="post" action="javascript:doFormEvent('#Event.getValue("xehUpdateProfile")#','leftcontent1',document.frm)">
 			<p>
 				Update your ColdBox Reader profile below.
 			</p>

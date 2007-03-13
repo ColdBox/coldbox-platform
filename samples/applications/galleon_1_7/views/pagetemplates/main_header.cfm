@@ -19,10 +19,10 @@
 
 <html>
 <head>
-	<title>#Context.getValue("title")#</title>
+	<title>#Event.getValue("title")#</title>
 	<link rel="stylesheet" type="text/css" href="stylesheets/style.css">
-	<meta name="description" content="#Context.getValue("title")#">
-	<meta name="keywords" content="#replace(Context.getValue("title")," : ", ",","all")#"> 
+	<meta name="description" content="#Event.getValue("title")#">
+	<meta name="keywords" content="#replace(Event.getValue("title")," : ", ",","all")#"> 
    	<cfif isDefined("request.conference")>
     <link rel="alternate" type="application/rss+xml" title="#request.conference.name# RSS" href="#application.settings.rooturl#rss.cfm?conferenceid=#request.conference.id#">
     </cfif>
@@ -36,17 +36,17 @@
 		<td align="right">
 		<span class="topMenu">
 		<a href="index.cfm">Home</a> | 
-		<a href="index.cfm?event=#Context.getValue("xehProfile")#">Profile</a> | 
-		<a href="index.cfm?event=#Context.getValue("xehSearch")#">Search</a> | 
+		<a href="index.cfm?event=#Event.getValue("xehProfile")#">Profile</a> | 
+		<a href="index.cfm?event=#Event.getValue("xehSearch")#">Search</a> | 
 		<cfset thisPage = cgi.script_name & "?" & reReplace(cgi.query_string,"logout=1","")>
 		
-		<cfif not Context.valueExists("ref")>
-			<cfset link = "?event=#Context.getValue("xehLogin")#&ref=#urlEncodedFormat(thisPage)#">
+		<cfif not Event.valueExists("ref")>
+			<cfset link = "?event=#Event.getValue("xehLogin")#&ref=#urlEncodedFormat(thisPage)#">
 		<cfelse>
-			<cfset link = "?event=#Context.getValue("xehLogin")#&ref=#urlEncodedFormat(ref)#">
+			<cfset link = "?event=#Event.getValue("xehLogin")#&ref=#urlEncodedFormat(ref)#">
 		</cfif>	
 		<cfif isLoggedOn()><a href="index.cfm?logout=1">Logout</a><cfelse><a href="#link#">Login</a></cfif>
-		<cfif isDefined("request.conference")> | <a href="index.cfm?event=#Context.getValue("xehRSS")#&conferenceid=#request.conference.id#">RSS</a></cfif>
+		<cfif isDefined("request.conference")> | <a href="index.cfm?event=#Event.getValue("xehRSS")#&conferenceid=#request.conference.id#">RSS</a></cfif>
 		</span>
 		</td>
 	</tr>

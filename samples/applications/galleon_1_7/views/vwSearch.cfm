@@ -22,20 +22,20 @@
 	<tr class="tableRowMain">
 		<td>
 		<form action="#cgi.script_name#?" method="post" id="searchForm">
-		<input type="hidden" name="event" value="#Context.getValue("xehDoSearch")#">
+		<input type="hidden" name="event" value="#Event.getValue("xehDoSearch")#">
 			
 		<table>
 			<tr>
 				<td><b>Search Terms:</b></td>
-				<td><input type="text" name="searchterms" value="#Context.getValue("searchterms")#" class="formBox" maxlength="100"></td>
+				<td><input type="text" name="searchterms" value="#Event.getValue("searchterms")#" class="formBox" maxlength="100"></td>
 			</tr>
 			<tr>
 				<td><b>Match:</b></td>
 				<td>
 				<select name="searchtype" class="formDropDown">
-					<option value="phrase" <cfif Context.getValue("searchtype") is "phrase">selected</cfif>>Phrase</option>
-					<option value="any" <cfif Context.getValue("searchtype") is "any">selected</cfif>>Any Word</option>
-					<option value="all" <cfif Context.getValue("searchtype") is "all">selected</cfif>>All Words</option>
+					<option value="phrase" <cfif Event.getValue("searchtype") is "phrase">selected</cfif>>Phrase</option>
+					<option value="any" <cfif Event.getValue("searchtype") is "any">selected</cfif>>Any Word</option>
+					<option value="all" <cfif Event.getValue("searchtype") is "all">selected</cfif>>All Words</option>
 				</select>	
 				</td>
 			</tr>
@@ -47,12 +47,12 @@
 		</form>
 		</td>
 	</tr>
-	<cfif Context.valueExists("totalResults")>
+	<cfif Event.valueExists("totalResults")>
 	<!--- Get References --->
-	<cfset conferences = Context.getValue("conferences")>
-	<cfset forums = Context.getValue("forums")>
-	<cfset threads = Context.getValue("threads")>
-	<cfset messages = Context.getValue("messages")>
+	<cfset conferences = Event.getValue("conferences")>
+	<cfset forums = Event.getValue("forums")>
+	<cfset threads = Event.getValue("threads")>
+	<cfset messages = Event.getValue("messages")>
 	
 		<tr class="tableRowMain">
 			<td>
@@ -60,7 +60,7 @@
 				<b>Results in Conferences:</b><br>
 				<cfif conferences.recordCount>
 					<cfloop query="conferences">
-					<a href="index.cfm?event=#Context.getValue("xehForums")#&conferenceid=#id#">#name#</a><br>
+					<a href="index.cfm?event=#Event.getValue("xehForums")#&conferenceid=#id#">#name#</a><br>
 					</cfloop>
 				<cfelse>
 				No matches.
@@ -70,7 +70,7 @@
 				<b>Results in Forums:</b><br>
 				<cfif forums.recordCount>
 					<cfloop query="forums">
-					<a href="index.cfm?event=#Context.getValue("xehThreads")#&forumid=#id#">#name#</a><br>
+					<a href="index.cfm?event=#Event.getValue("xehThreads")#&forumid=#id#">#name#</a><br>
 					</cfloop>
 				<cfelse>
 				No matches.
@@ -80,7 +80,7 @@
 				<b>Results in Threads:</b><br>
 				<cfif threads.recordCount>
 					<cfloop query="threads">
-					<a href="index.cfm?event=#Context.getValue("xehMessages")#&threadid=#id#">#name#</a><br>
+					<a href="index.cfm?event=#Event.getValue("xehMessages")#&threadid=#id#">#name#</a><br>
 					</cfloop>
 				<cfelse>
 				No matches.
@@ -90,7 +90,7 @@
 				<b>Results in Messages:</b><br>
 				<cfif messages.recordCount>
 					<cfloop query="messages">
-					<a href="index.cfm?event=#Context.getValue("xehMessages")#&threadid=#threadidfk#">#title#</a><br>
+					<a href="index.cfm?event=#Event.getValue("xehMessages")#&threadid=#threadidfk#">#title#</a><br>
 					</cfloop>
 				<cfelse>
 				No matches.
