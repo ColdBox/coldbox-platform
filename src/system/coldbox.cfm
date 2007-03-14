@@ -131,8 +131,10 @@ Modification History:
 
 <!--- Time the request --->
 <cfset request.fwExecTime = GetTickCount() - request.fwExecTime>
+<!--- Get the debugpanel flag --->
+<cfset event = application.cbController.getRequestService().getContext()>
 <!--- DebugMode Renders --->
-<cfif application.cbController.getDebugMode()>
+<cfif application.cbController.getDebugMode() and event.getValue("coldbox.debugpanel",false)>
 	<cfoutput>#application.cbController.getPlugin("renderer").renderDebugLog()#</cfoutput>
 </cfif>
 <cfsetting enablecfoutputonly="no">

@@ -10,7 +10,7 @@
 		</cfchart>
 		</td>
 		<td>
-		<cfchart format="png" show3d="true" backgroundcolor="##eeeeee">
+		<cfchart format="png" show3d="true" backgroundcolor="##eeeeee" chartwidth="150">
 			<cfchartseries type="bar" colorlist="93C2FF,ED2939" >
 				<cfchartdata item="Hits" value="#getColdboxOCM().getCachePerformance().hits#">
 				<cfchartdata item="Misses" value="#getColdboxOCM().getCachePerformance().misses#">
@@ -23,6 +23,7 @@
 			<cfchartseries type="pie" colorlist="93C2FF" >
 				<cfchartdata item="Plugins" value="#itemTypes.plugins#">
 				<cfchartdata item="Handlers" value="#itemTypes.handlers#">
+				<cfchartdata item="IoC Objects" value="#itemTypes.ioc_beans#">
 				<cfchartdata item="Other Objects" value="#itemTypes.other#">
 			</cfchartseries>
 		</cfchart>

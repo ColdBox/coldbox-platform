@@ -208,7 +208,7 @@ Modification History:
 					ConfigStruct.AppMapping = mid(localPath,PathLocation,len(webPath));
 				else
 					ConfigStruct.AppMapping = webPath;
-	
+
 				//Clean last /
 				if ( right(ConfigStruct.AppMapping,1) eq "/" ){
 					if ( len(ConfigStruct.AppMapping) -1 gt 0)
@@ -217,7 +217,7 @@ Modification History:
 						ConfigStruct.AppMapping = "";
 				}
 			}
-			
+
 			//Check for Default Event
 			if ( not StructKeyExists(ConfigStruct, "DefaultEvent") )
 				throw("There was no 'DefaultEvent' setting defined. This is required by the framework.","","Framework.plugins.XMLParser.ConfigXMLParsingException");
@@ -299,6 +299,8 @@ Modification History:
 				ConfigStruct["IOCFramework"] = "";
 			if ( not structKeyExists(ConfigStruct, "IOCDefinitionFile") )
 				ConfigStruct["IOCDefinitionFile"] = "";
+			if ( not structKeyExists(ConfigStruct, "IOCObjectCaching") )
+				ConfigStruct["IOCObjectCaching"] = false;
 
 			//Your Settings To Load
 			YourSettingNodes = XMLSearch(configXML, instance.searchYourSettings);

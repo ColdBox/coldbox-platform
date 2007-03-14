@@ -216,6 +216,7 @@ Modification History:
 		itemTypes.plugins = 0;
 		itemTypes.handlers = 0;
 		itemTypes.other = 0;
+		itemTypes.ioc_beans = 0;
 
 		itemList = listSort(itemList, "textnocase");
 		for (x=1; x lte listlen(itemList) ; x = x+1){
@@ -223,8 +224,10 @@ Modification History:
 				itemTypes.plugins = itemTypes.plugins + 1;
 			else if ( findnocase("handler", listGetAt(itemList,x)) )
 				itemTypes.handlers = itemTypes.handlers + 1;
-				else
-					itemTypes.other = itemTypes.other + 1;
+			else if ( findnocase("ioc", listGetAt(itemList,x)) )
+				itemTypes.ioc_beans = itemTypes.ioc_beans + 1;
+			else
+				itemTypes.other = itemTypes.other + 1;
 		}
 		return itemTypes;
 		</cfscript>

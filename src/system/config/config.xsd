@@ -59,6 +59,7 @@
 									<xs:enumeration value="HandlerCaching" />
 									<xs:enumeration value="IOCFramework" />
 									<xs:enumeration value="IOCDefinitionFile" />
+									<xs:enumeration value="IOCObjectCaching" />
 								</xs:restriction>
 							</xs:simpleType>
 						</xs:attribute>

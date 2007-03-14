@@ -311,8 +311,8 @@ Description		: This is the main ColdBox front Controller.
 			</cfif>
 
 			<!--- Execute the Event --->
-			<cfinvoke component="oEventHandler" method="#ExecutingMethod#">
-				<cfinvokeargument name="event" value="RequestContext">
+			<cfinvoke component="#oEventHandler#" method="#ExecutingMethod#">
+				<cfinvokeargument name="event" value="#RequestContext#">
 			</cfinvoke>
 
 			<!--- PostHandler Execution --->

@@ -208,6 +208,10 @@ Modification History:
 	    </cfscript>
 	</cffunction>
 
+	<cffunction name="showdebugpanel" access="public" returntype="void" hint="I can override to show or not the debug panel. Very useful in AJAX debugging">
+		<cfargument name="show" type="boolean" required="true">
+		<cfset setValue("coldbox.debugpanel",arguments.show)>
+	</cffunction>
 <!------------------------------------------- PRIVATE ------------------------------------------->
 
 	<cffunction name="throw" access="private" hint="Facade for cfthrow" output="false">

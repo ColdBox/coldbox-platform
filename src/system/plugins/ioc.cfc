@@ -85,17 +85,45 @@ Modification History:
 
 	<cffunction name="getBean" access="public" output="false" returntype="any" hint="Facade to get Bean">
 		<cfargument name="beanName" type="string" required="true">
-		<cfswitch expression="#lcase(instance.IOCFramework)#">
+		<cfset var oBean = "">
+		<cfset var beanKey = "ioc_" & arguments.beanName>
+		<cfset var MetaData = structNew()>
+		<cfset var objTimeout = "">
+		<cfset var objCaching = getSetting("IOCObjectCaching")>
 
-			<cfcase value="coldspring">
-				<cfreturn instance.IoCFactory.getBean(arguments.beanName)>
-			</cfcase>
+		<!--- Check if IOC Caching is set --->
+		<cfif objCaching and getColdBoxOCM().lookup(beanKey)>
+			<cfset oBean = getColdBoxOCM().get(beanKey)>
+		<cfelse>
+			<!--- Get Bean from IOC Framework --->
+			<cfswitch expression="#lcase(instance.IOCFramework)#">
+				<cfcase value="coldspring">
+					<cfset oBean = instance.IoCFactory.getBean(arguments.beanName)>
+				</cfcase>
 
-			<cfcase value="lightwire">
-				<cfthrow message="Lightwire is not supported as of yet. Still in beta.">
-			</cfcase>
-
-		</cfswitch>
+				<cfcase value="lightwire">
+					<cfthrow message="Lightwire is not supported as of yet. Still in beta.">
+				</cfcase>
+			</cfswitch>
+			<!--- If Caching on, then set object in cache --->
+			<cfif objCaching>
+				<!--- Get Object's MetaData, For Caching --->
+				<cfset MetaData = getMetaData(oBean)>
+				<!--- By Default, services with no cache flag are set to true --->
+				<cfif not structKeyExists(MetaData,"cache") or not isBoolean(MetaData.cache)>
+					<cfset MetaData.cache = true>
+				</cfif>
+				<!--- Test for caching parameters --->
+				<cfif MetaData["cache"]>
+					<cfif structKeyExists(MetaData,"cachetimeout") >
+						<cfset objTimeout = MetaData["cachetimeout"]>
+					</cfif>
+					<cfset getColdboxOCM().set(beanKey,oBean,objTimeout)>
+				</cfif>
+			</cfif>
+		</cfif>
+		<!--- Return Bean --->
+		<cfreturn oBean>
 	</cffunction>
 
 	<!--- ************************************************************* --->

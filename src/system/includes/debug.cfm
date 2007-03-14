@@ -21,12 +21,10 @@ Modification History:
 07/12/2006 - Tracer now shows first expanded.
 02/01/2007 - Updated context references
 ----------------------------------------------------------------------->
-
-
 <!--- Setup Local Variables --->
 <cfset debugStartTime = GetTickCount()>
-<cfset RequestCollection = Context.getCollection()>
-
+<cfset RequestCollection = Event.getCollection()>
+<!--- JVM Data --->
 <cfset JVMFreeMemory = getPlugin("fileUtilities").getJVMfreeMemory()/1024>
 <cfset JVMTotalMemory = getPlugin("fileUtilities").getJVMTotalMemory()/1024>
 
@@ -50,6 +48,9 @@ function toggle(divid){
 <br><br><br>
 <div class="fw_debugPanel">
 
+<!--- **************************************************************--->
+<!--- TRACER STACK--->
+<!--- **************************************************************--->
 	<cfif structkeyExists(RequestCollection, "tracerStack")>
 	<cfoutput>
 		<!--- <cfinclude template="style.cfm"> --->
@@ -72,7 +73,12 @@ function toggle(divid){
 		</div>
 	</cfoutput>
 	</cfif>
+<!--- **************************************************************--->
 
+
+<!--- **************************************************************--->
+<!--- DEBUGGING PANEL --->
+<!--- **************************************************************--->
 	<div class="fw_titles" onClick="toggle('fw_info')" >
 		&gt; &nbsp;Debugging Information
 	</div>
@@ -82,13 +88,13 @@ function toggle(divid){
 		  Framework Info:
 		</div>
 		<div class="fw_debugContentCell">
-		#getController().getSetting("Codename",true)# #getController().getSetting("Version",true)# #getController().getSetting("Suffix",true)#
+		#controller.getSetting("Codename",true)# #controller.getSetting("Version",true)# #controller.getSetting("Suffix",true)#
 		</div>
 		<div class="fw_debugTitleCell">
 		  Application Name:
 		</div>
 		<div class="fw_debugContentCell">
-		#getController().getSetting("AppName")#
+		#controller.getSetting("AppName")#
 		</div>
 
 		<div class="fw_debugTitleCell">
@@ -137,25 +143,27 @@ function toggle(divid){
 		  Current Event:
 		</div>
 		<div class="fw_debugContentCell">
-		<cfif Context.getValue("event","") eq ""><span class="fw_redText">N/A</span><cfelse>#Context.getValue("event")#</cfif>
+		<cfif Event.getValue("event","") eq ""><span class="fw_redText">N/A</span><cfelse>#Event.getValue("event")#</cfif>
 		</div>
 
 		<div class="fw_debugTitleCell">
 		  Current Layout:
 		</div>
 		<div class="fw_debugContentCell">
-		<cfif Context.getValue("currentlayout","") eq ""><span class="fw_redText">N/A</span><cfelse>#Context.getValue("currentlayout")#</cfif>
+		<cfif Event.getValue("currentlayout","") eq ""><span class="fw_redText">N/A</span><cfelse>#Event.getValue("currentlayout")#</cfif>
 		</div>
 
 		<div class="fw_debugTitleCell">
 		  Current View:
 		</div>
 		<div class="fw_debugContentCell">
-		<cfif Context.getValue("currentview","") eq ""><span class="fw_redText">N/A</span><cfelse>#Context.getValue("currentview")#</cfif>
+		<cfif Event.getValue("currentview","") eq ""><span class="fw_redText">N/A</span><cfelse>#Event.getValue("currentview")#</cfif>
 		</div>
 
+		<!--- **************************************************************--->
+		<!--- Method Executions --->
+		<!--- **************************************************************--->
 		<em><p>Method execution times in execution order.</p></em>
-
 		<table border="0" align="center" cellpadding="0" cellspacing="1" class="fw_debugTables">
 		  <tr >
 		  	<td width="13%" align="center" class="fw_debugTablesTitles">Timestamp</td>
@@ -182,10 +190,12 @@ function toggle(divid){
 			<td colspan="3" class="fw_debugTablesTitles">Total Framework Request Execution Time: #request.fwExecTime# ms</td>
 		  </tr>
 		</table><br>
-
+		<!--- **************************************************************--->
 		<hr>
 
+		<!--- **************************************************************--->
 		<!--- Cache Performance --->
+		<!--- **************************************************************--->
 		<div class="fw_debugTitleCell">
 		  Cache Performance
 		</div>
@@ -223,7 +233,7 @@ function toggle(divid){
 		<div class="fw_debugContentCell">
 		 #controller.getSetting("CacheObjectDefaultLastAccessTimeout",1)# Minutes
 		</div>
-
+		<!--- **************************************************************--->
 		<cfif server.ColdFusion.ProductName eq "Coldfusion Server">
 			<!--- Why use a cfinclude? well, bluedragon would not compile this without it --->
 			<cfinclude template="cache_charting.cfm">
@@ -235,14 +245,20 @@ function toggle(divid){
 			<div class="fw_debugContentCell">
 			 <b>Plugins: </b> #itemTypes.plugins# &nbsp;
 			 <b>Handlers: </b> #itemTypes.handlers# &nbsp;
+			 <b>IoC Beans: </b> #itemTypes.ioc_beans# &nbsp;
 			 <b>Other: </b> #itemTypes.other#
 			</div>
 			<em>Charting is not supported in your coldfusion engine. Cache Charts skipped.</em>
 			<br>
 		</cfif>
+		<!--- **************************************************************--->
+	</div>
 
+<!--- **************************************************************--->
+<!--- DUMP VAR --->
+<!--- **************************************************************--->
 	<cfif getController().getSetting("EnableDumpVar")>
-		<cfset dumpList = Context.getValue("dumpvar",0)>
+		<cfset dumpList = Event.getValue("dumpvar",0)>
 		<cfif dumplist neq 0>
 		<!--- Dump Var --->
 		<div class="fw_titles" onClick="toggle('fw_dumpvar')">&gt;&nbsp;Dumpvar </div>
@@ -255,8 +271,12 @@ function toggle(divid){
 		</div>
 		</cfif>
 	</cfif>
+<!--- **************************************************************--->
 
-	<!--- Request Collection Debug --->
+
+<!--- **************************************************************--->
+<!--- Request Collection Debug --->
+<!--- **************************************************************--->
 	<div class="fw_titles"  onClick="toggle('fw_reqCollection')" >
 	&gt; &nbsp;Request Collection Structure
 	</div>
@@ -266,22 +286,22 @@ function toggle(divid){
 		  <tr>
 			<td align="right" width="15%" class="fw_debugTablesTitles">#lcase(vars)#:</td>
 			<td  class="fw_debugTablesCells">
-			<cfif isSimpleValue(Context.getValue(vars)) >
-				<cfif Context.getValue(vars) eq ""><span class="fw_redText">N/A</span></cfif> #Context.getValue(vars)#
+			<cfif isSimpleValue(Event.getValue(vars)) >
+				<cfif Event.getValue(vars) eq ""><span class="fw_redText">N/A</span></cfif> #Event.getValue(vars)#
 			<cfelse>
-				<cfdump var="#Context.getValue(vars)#">
+				<cfdump var="#Event.getValue(vars)#">
 			</cfif>
 			</td>
 		  </tr>
 		  </cfloop>
 		</table>
 	</div>
+<!--- **************************************************************--->
 
 	<br />
 	<em><strong>Approximate Debug Rendering Time: #GetTickCount()-DebugStartTime# ms</strong></em>
 	<br /><br />
 
-
 </div>
-	</cfoutput>
+</cfoutput>
 <cfsetting enablecfoutputonly=false>

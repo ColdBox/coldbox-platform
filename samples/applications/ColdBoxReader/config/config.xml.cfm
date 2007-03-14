@@ -3,7 +3,7 @@
 	xsi:noNamespaceSchemaLocation="http://www.coldboxframework.com/schema/config_2.0.0.xsd">
 	<Settings>
 		<Setting name="AppName" 					value="ColdBoxReader"/>
-		<Setting name="DebugMode" 					value="false"/>
+		<Setting name="DebugMode" 					value="true"/>
 		<Setting name="DebugPassword" 				value="Coldbox"/>
 		<Setting name="EnableDumpVar" 				value="true"/>
 		<Setting name="EnableColdfusionLogging"		value="false" />
@@ -24,6 +24,7 @@
 		<Setting name="HandlerCaching"				value="true" />
 		<Setting name="IOCFramework" 				value="coldspring"/>
 		<Setting name="IOCDefinitionFile" 			value="config/services.xml.cfm"/>
+		<Setting name="IOCObjectCaching"			value="true" />
 	</Settings>
 
 	<YourSettings>
