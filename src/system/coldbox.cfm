@@ -81,6 +81,8 @@ Modification History:
 		<cfelseif application.cbController.getSetting("HandlersIndexAutoReload")>
 			<cflock type="exclusive" name="Coldbox_configloader" timeout="#lockTimeout#">
 				<cfset application.cbController.registerHandlers()>
+				<!--- Clear Cache --->
+				<cfset application.cbController.getColdboxOCM().clear()>
 			</cflock>
 		</cfif>
 
