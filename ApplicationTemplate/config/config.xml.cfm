@@ -52,6 +52,8 @@
 		<Setting name="IOCFramework"				value="" />
 		<!--IOC Definition File Path, relative or absolute -->
 		<Setting name="IOCDefinitionFile"			value="" />
+		<!--IOC Object Caching, true/false. For ColdBox to cache your IoC beans-->
+		<Setting name="IOCObjectCaching"			value="true" />
 	</Settings>
 
 	<!--Your Settings can go here, if not needed, use <YourSettings />. You can use these for anything you like.
