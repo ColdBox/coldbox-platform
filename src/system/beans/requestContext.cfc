@@ -212,6 +212,11 @@ Modification History:
 		<cfargument name="show" type="boolean" required="true">
 		<cfset setValue("coldbox.debugpanel",arguments.show)>
 	</cffunction>
+
+	<cffunction name="getdebugpanelFlag" access="public" returntype="boolean" hint="I return the debugpanel flag for this request.">
+		<cfreturn getValue("coldbox.debugpanel",true)>
+	</cffunction>
+
 <!------------------------------------------- PRIVATE ------------------------------------------->
 
 	<cffunction name="throw" access="private" hint="Facade for cfthrow" output="false">
