@@ -7,13 +7,15 @@ Description		:
 This is the settings handler
 
 --->
-<cfcomponent name="ehSettings" extends="coldbox.system.eventhandler">
+<cfcomponent name="ehSettings" extends="coldbox.system.eventhandler" output="false">
 
 <!--- ************************************************************* --->
 	<!--- SETTINGS SECTION 												--->
 	<!--- ************************************************************* --->
 	
-	<cffunction name="dspSettings" access="public" returntype="void">
+	<cffunction name="dspSettings" access="public" returntype="void" output="false">
+		<cfargument name="event" type="any" required="true">
+		<cfset var rc = event.getCollection()>
 		<!--- EXIT HANDLERS: --->
 		<cfset rc.xehSettings = "ehSettings.dspGeneralSettings">
 		<cfset rc.xehLogSettings = "ehSettings.dspLogSettings">
@@ -21,34 +23,41 @@ This is the settings handler
 		<cfset rc.xehPassword = "ehSettings.dspChangePassword">
 		<cfset rc.xehProxy = "ehSettings.dspProxySettings">
 		<!--- Set the Rollovers For This Section --->
-		<cfset rc.qRollovers = filterQuery(application.dbservice.get("settings").getRollovers(),"pagesection","settings")>
+		<cfset rc.qRollovers = getPlugin("queryHelper").filterQuery(rc.dbService.get("settings").getRollovers(),"pagesection","settings")>
 		<!--- Set the View --->
-		<cfset Event.setView("vwSettings")>
+		<cfset Event.setView("settings/vwFrameworkSettings")>
 	</cffunction>
 	
-	<cffunction name="dspGeneralSettings" access="public" returntype="void">
-		<cfset rc.fwSettings = application.dbservice.get("fwsettings").getSettings()>
+	<cffunction name="dspGeneralSettings" access="public" returntype="void" output="false">
+		<cfargument name="event" type="any" required="true">
+		<cfset var rc = event.getCollection()>
+		<cfset rc.fwSettings = rc.dbService.get("fwsettings").getSettings()>
 		<!--- Set the View --->
 		<cfset Event.setView("settings/vwSettings")>
 	</cffunction>
 	
-	<cffunction name="dspLogSettings" access="public" returntype="void">
-		<cfset var fwSettings = application.dbservice.get("fwsettings").getSettings()>
+	<cffunction name="dspLogSettings" access="public" returntype="void" output="false">
+		<cfargument name="event" type="any" required="true">
+		<cfset var rc = event.getCollection()>
+		<cfset var fwSettings = rc.dbservice.get("fwsettings").getSettings()>
 		<cfset rc.LogFileEncoding = fwSettings["LogFileEncoding"]>
 		<cfset rc.AvailableLogFileEncodings = fwSettings["AvailableLogFileEncodings"]>
 		<cfset rc.LogFileBufferSize = fwSettings["LogFileBufferSize"]>
 		<cfset rc.LogFileMaxSize = fwSettings["LogFileMaxSize"]>
+		<cfset rc.DefaultLogDirectory = fwSettings["DefaultLogDirectory"]>
 		<!--- EXIT HANDLERS: --->
 		<cfset rc.xehDoSave = "ehSettings.doSaveLogFileSettings">
 		<!--- Set the View --->
 		<cfset Event.setView("settings/vwLogFileSettings")>
 	</cffunction>
 	
-	<cffunction name="doSaveLogFileSettings" access="public" returntype="void">
-		<cfset var fwSettings = application.dbservice.get("fwsettings").getSettings()>
+	<cffunction name="doSaveLogFileSettings" access="public" returntype="void" output="false">
+		<cfargument name="event" type="any" required="true">
+		<cfset var rc = event.getCollection()>
+		<cfset var fwSettings = rc.dbservice.get("fwsettings").getSettings()>
 		<cfset var errors = false>
 		<!--- Validate blanks --->
-		<cfif len(trim(rc.LogFileEncoding)) eq 0 or len(trim(rc.LogFileBufferSize)) eq 0 or len(trim(rc.LogFileMaxSize)) eq 0>
+		<cfif len(trim(rc.DefaultLogDirectory)) eq 0 or len(trim(rc.LogFileEncoding)) eq 0 or len(trim(rc.LogFileBufferSize)) eq 0 or len(trim(rc.LogFileMaxSize)) eq 0>
 			<cfset getPlugin("messagebox").setMessage("error","Please make sure you fill out all the values.")>
 			<cfset errors = true>
 		</cfif>
@@ -65,7 +74,7 @@ This is the settings handler
 		<!--- Check for Errors --->
 		<cfif not errors>
 			<!--- Update the settings --->
-			<cfset application.dbservice.get("fwsettings").saveLogFileSettings(rc.LogFileEncoding,rc.LogFileBufferSize,rc.LogFileMaxSize)>
+			<cfset rc.dbservice.get("fwsettings").saveLogFileSettings(rc.LogFileEncoding,rc.LogFileBufferSize,rc.LogFileMaxSize, rc.DefaultLogDirectory)>
 			<cfset getPlugin("messagebox").setMessage("info","Settings have been updated successfully. Please remember to reinitialize the framework on your applications for the changes to take effect.")>
 			<!--- Relocate --->
 			<cfset setNextEvent("ehSettings.dspLogSettings","fwreinit=1")>
@@ -75,8 +84,10 @@ This is the settings handler
 		</cfif>
 	</cffunction>
 	
-	<cffunction name="dspEncodingSettings" access="public" returntype="void">
-		<cfset var fwSettings = application.dbservice.get("fwsettings").getSettings()>
+	<cffunction name="dspEncodingSettings" access="public" returntype="void" output="false">
+		<cfargument name="event" type="any" required="true">
+		<cfset var rc = event.getCollection()>
+		<cfset var fwSettings = rc.dbservice.get("fwsettings").getSettings()>
 		<cfset rc.AvailableCFCharacterSets = fwSettings["AvailableCFCharacterSets"]>
 		<cfset rc.DefaultFileCharacterSet = fwSettings["DefaultFileCharacterSet"]>
 		<!--- EXIT HANDLERS: --->
@@ -85,13 +96,15 @@ This is the settings handler
 		<cfset Event.setView("settings/vwFileEncodingSettings")>
 	</cffunction>
 	
-	<cffunction name="doSaveEncodingSettings" access="public" returntype="void">
-		<cfset var fwSettings = application.dbservice.get("fwsettings").getSettings()>
+	<cffunction name="doSaveEncodingSettings" access="public" returntype="void" output="false">
+		<cfargument name="event" type="any" required="true">
+		<cfset var rc = event.getCollection()>
+		<cfset var fwSettings = rc.dbservice.get("fwsettings").getSettings()>
 		<cfset var setCharacterSet = fwSettings["DefaultFileCharacterSet"]>
 		<!--- Check for changes --->
 		<cfif comparenocase(setCharacterSet, rc.DefaultFileCharacterSet ) neq 0>
 			<!--- Update the settings --->
-			<cfset application.dbservice.get("fwsettings").saveEncodingSettings(rc.DefaultFileCharacterSet)>
+			<cfset rc.dbservice.get("fwsettings").saveEncodingSettings(rc.DefaultFileCharacterSet)>
 			<cfset getPlugin("messagebox").setMessage("info","Settings have been updated successfully. Please remember to reinitialize the framework on your applications for the changes to take effect.")>
 			<!--- Relocate --->
 			<cfset setNextEvent("ehSettings.dspEncodingSettings","fwreinit=1")>
@@ -102,14 +115,18 @@ This is the settings handler
 		</cfif>
 	</cffunction>
 	
-	<cffunction name="dspChangePassword" access="public" returntype="void">
+	<cffunction name="dspChangePassword" access="public" returntype="void" output="false">
+		<cfargument name="event" type="any" required="true">
+		<cfset var rc = event.getCollection()>
 		<!--- EXIT HANDLERS: --->
 		<cfset rc.xehDoSave = "ehSettings.doChangePassword">
 		<!--- Set the View --->
 		<cfset Event.setView("settings/vwPassword")>
 	</cffunction>
 	
-	<cffunction name="doChangePassword" access="public" returntype="void">
+	<cffunction name="doChangePassword" access="public" returntype="void" output="false">
+		<cfargument name="event" type="any" required="true">
+		<cfset var rc = event.getCollection()>
 		<cfset var errors = false>
 		<cfset var rtnStruct = "">
 		<!--- Validate Passwords --->
@@ -117,7 +134,7 @@ This is the settings handler
 			<cfset getPlugin("messagebox").setMessage("error", "Please fill out all the necessary fields.")>
 		<cfelse>
 			<!--- Save the new password --->
-			<cfset rtnStruct = application.dbservice.get("settings").changePassword(rc.oldpassword,rc.newpassword,rc.newpassword2)>
+			<cfset rtnStruct = rc.dbservice.get("settings").changePassword(rc.oldpassword,rc.newpassword,rc.newpassword2)>
 			<!--- Validate --->
 			<cfif not rtnStruct.results>
 				<cfset getPlugin("messagebox").setMessage("error", "#rtnStruct.message#")>
@@ -129,8 +146,10 @@ This is the settings handler
 		<cfset setnextEvent("ehSettings.dspChangePassword")>
 	</cffunction>
 	
-	<cffunction name="dspProxySettings" access="public" returntype="void">
-		<cfset var settings = application.dbservice.get("settings").getSettings()>
+	<cffunction name="dspProxySettings" access="public" returntype="void" output="false">
+		<cfargument name="event" type="any" required="true">
+		<cfset var rc = event.getCollection()>
+		<cfset var settings = rc.dbservice.get("settings").getSettings()>
 		<cfset rc.proxyflag = settings["proxyflag"]>
 		<cfset rc.proxyserver = settings["proxyserver"]>
 		<cfset rc.proxyuser = settings["proxyuser"]>
@@ -142,7 +161,9 @@ This is the settings handler
 		<cfset Event.setView("settings/vwProxySettings")>
 	</cffunction>
 	
-	<cffunction name="doChangeProxySettings" access="public" returntype="void">
+	<cffunction name="doChangeProxySettings" access="public" returntype="void" output="false">
+		<cfargument name="event" type="any" required="true">
+		<cfset var rc = event.getCollection()>
 		<cfset var errors = false>
 		<cfset var rtnStruct = "">
 		<!--- Validate Passwords --->
@@ -150,12 +171,22 @@ This is the settings handler
 			<cfset getPlugin("messagebox").setMessage("error", "The proxy port you filled out was not numeric. Please try again.")>
 		<cfelse>
 			<!--- Save the proxy settings --->
-			<cfset application.dbservice.get("settings").changeProxySettings(rc.proxyflag,rc.proxyserver,rc.proxyuser, rc.proxypassword, rc.proxyport)>
+			<cfset rc.dbservice.get("settings").changeProxySettings(rc.proxyflag,rc.proxyserver,rc.proxyuser, rc.proxypassword, rc.proxyport)>
 			<cfset getPlugin("messagebox").setMessage("info", "Your proxy settings have been saved successfully.")>
 		</cfif>		
 		<!--- Move to new event --->
 		<cfset setnextEvent("ehSettings.dspProxySettings")>
 	</cffunction>
 	
-
+	<cffunction name="dspCacheSettings" access="public" returntype="void" output="false">
+		<cfargument name="event" type="any" required="true">
+		<cfset var rc = event.getCollection()>
+	</cffunction>
+	
+	<cffunction name="doSaveCacheSettings" access="public" returntype="void" output="false">
+		<cfargument name="event" type="any" required="true">
+		<cfset var rc = event.getCollection()>
+		
+	</cffunction>
+	
 </cfcomponent>

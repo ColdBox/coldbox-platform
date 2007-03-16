@@ -16,7 +16,7 @@
 	  </ul>
 	</div>
 	<div align="right" style="margin-right:5px;">
-	<input type="button" value="Close" onClick="helpoff()" style="font-size:9px">
+	<input type="button" value="Close" onClick="helpToggle()" style="font-size:9px">
 	</div>
 </div>
 	

@@ -1,4 +1,11 @@
 <cfoutput>
+<script language="javascript">
+$(document).ready(function() {
+ 	//Populate system info
+	doEvent('#Event.getValue("xehSettings")#', 'content', {});
+});
+</script>
+<!--- Rollovers --->
 #renderView("tags/rollovers")#
 
 <!--- Title Bar --->
@@ -20,8 +27,4 @@
 	<li><a href="javascript:doEvent('#Event.getValue("xehProxy")#', 'content', {})" onMouseOver="getHint('proxysettings')" onMouseOut="resetHint()">Proxy Settings</a></li>
 </ul>
 
-<script language="javascript">
-//Populate system info
-doEvent('#Event.getValue("xehSettings")#', 'content', {});
-</script>
 </cfoutput>

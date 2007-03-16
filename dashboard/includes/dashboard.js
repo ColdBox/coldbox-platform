@@ -23,45 +23,28 @@ function loff(){
 //DIV EFFECTS
 //********************************************************************************
 function divon(divid){
-	new Effect.Appear(divid,{duration: .2});
+	$("#"+divid).fadeIn("slow");
 }
 function divoff(divid){
-	new Effect.Fade(divid,{duration: .2});
+	$("#"+divid).fadeOut("slow");
 }
 function cleardiv(id) {
-	$(id).innerHTML = "";
+	$("#"+id).empty();
 }
 function rollover(img){
-	$(img).src = $(img).getAttribute('srcon');
+	$("#"+img).attr("src", $("#"+img).attr('srcon') );
 }
 function rollout(img){
-	$(img).src = $(img).getAttribute('srcoff');
+	$("#"+img).attr("src", $("#"+img).attr('srcoff') );
 }
-function showAdvancedSearchBar( openit ){
-	if ( openit ){
-		$("advancedSearchBarTriggerOpen").className = "hidelayer";
-		$("advancedSearchBarTriggerClose").className = "showlayer";
-		divon('advancedSearchBar');
-		
-	}
-	else{
-		$("advancedSearchBarTriggerClose").className = "hidelayer";
-		$("advancedSearchBarTriggerOpen").className = "showlayer";
-		divoff('advancedSearchBar');
-	}
-}
-function helpon(){
-	Effect.BlindDown('helpbox',{duration:.5});
-}
-function helpoff(){
-	new Effect.BlindUp('helpbox',{duration:.5});
+function helpToggle(){
+	$("#helpbox").slideToggle("slow");
 }
 //********************************************************************************
 //AJAX INTERACTION
 //********************************************************************************
 function doFormEvent (e, targetID, frm) {
 	var params = {};
-	var frm = $(frm);
 	for(i=0;i<frm.length;i++) {
 		if(!(frm[i].type=="radio" && !frm[i].checked) && frm[i].value != undefined)  {
 			params[frm[i].name] = frm[i].value;
@@ -115,16 +98,13 @@ function framebuster(){
 		top.location=self.location;	
 }
 function resetHint(){
-	$("sidemenu_help").innerHTML = "Help tips will be shown here. Just rollover certain areas or links and you will get some quick tips.";
+	$("#sidemenu_help").html("Help tips will be shown here. Just rollover certain areas or links and you will get some quick tips.");
 }
 function confirmit(){
 	if ( confirm ("Do you want to commit these changes to the framework.") )
 		return true;
 	else
 		return false;
-}
-function validateappbuilder(){
-	
 }
 function toggleLogsLocation(){
 	if ( $("coldboxlogging").value == 'true' )

@@ -55,28 +55,10 @@
 		&nbsp;		
 		</cfif>
 		<img src="images/icons/search_icon.gif" align="absmiddle">
-		<input type="text" name="q" size="20" accesskey="s" value="Search Documentation" style="font-size:9px" onclick="this.value='';" title="Search the documentation, tickets and changeset" />
+		<input type="text" name="q" size="20" accesskey="s" value="Search Docs" style="font-size:9px" onclick="(this.value=='Search Docs')?this.value='':null" title="Search the documentation, tickets and changeset" onBlur="(this.value=='')?this.value='Search Docs':null" />
 		<input type="Submit" name="Search" value="Search" style="font-size:9px" />
 	</div>
 	
-	<div class="searchOptionsBar">
-		<div id="advancedSearchBarTriggerOpen" class="showlayer"><a href="javascript:showAdvancedSearchBar(true)" title="Show Advanced Search Bar">Options</a></div>
-		<div id="advancedSearchBarTriggerClose" class="hidelayer"><a href="javascript:showAdvancedSearchBar(false)" title="Close Advanced Search Bar">Close</a>&nbsp;&nbsp;&nbsp;&nbsp;</div>
-	</div>
-	
-	<div class="advancedSearchBar" id="advancedSearchBar" style="display: none ">
-	   <strong>Search:</strong>
-	   <input type="checkbox" id="ticket" 
-			  name="ticket" checked="checked" />
-	   <label for="ticket" style="margin-">Tickets</label>
-	   <input type="checkbox" id="changeset" 
-			  name="changeset" checked="checked" />
-	   <label for="changeset">Changesets</label>
-	   <input type="checkbox" id="wiki" 
-			  name="wiki" checked="checked" />
-	   <label for="wiki">Wiki</label>
-	</div>
-		
 	<div id="myloader" style="display: none">
 		<div class="myloader"><img src="images/ajax-loader.gif" width="220" height="19" align="absmiddle" title="Loading..." /></div>
 	</div>

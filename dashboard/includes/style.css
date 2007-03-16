@@ -151,12 +151,12 @@ li{
 }
 /* CONTENT  */
 #content{
-	width: 600px;
+	width: 700px;
 	height: 100%;
 	text-align:left;
 }
 .maincontentbox{
-	width: 600px;
+	width: 700px;
 	border: 1px outset #cccccc;
 	background: url(../images/contentboxes_footer.png) repeat-x bottom;
 	margin: 15px;

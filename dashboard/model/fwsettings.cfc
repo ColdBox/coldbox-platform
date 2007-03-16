@@ -24,11 +24,15 @@
 		<cfargument name="LogFileEncoding" 		required="true" type="string">
 		<cfargument name="LogFileBufferSize" 	required="true" type="string">
 		<cfargument name="LogFileMaxSize" 		required="true" type="string">
+		<cfargument name="DefaultLogDirectory"  required="true" type="string">
 		<!--- ************************************************************* --->
 		<cfscript>
 		var x = 1;
 		var settingArray = instance.xmlObj.xmlRoot.settings.xmlChildren;
 		for (x=1; x lte ArrayLen(settingArray); x=x+1){
+			if ( Comparenocase(settingArray[x].xmlAttributes.name,"DefaultLogDirectory") eq 0){
+				settingArray[x].xmlAttributes.value = trim(arguments.DefaultLogDirectory);
+			}
 			if ( Comparenocase(settingArray[x].xmlAttributes.name,"LogFileEncoding") eq 0){
 				settingArray[x].xmlAttributes.value = trim(arguments.logFileEncoding);
 			}

@@ -5,6 +5,7 @@
 <title>ColdBox Dashboard Login</title>
 <link href="includes/style.css" rel="stylesheet" type="text/css" />
 <script language="javascript" src="includes/dashboard.js"></script>
+<script language="javascript" src="includes/plugins/interface.js"></script>
 <script language="javascript" src="includes/jquery-latest.pack.js"></script>
 </head>
 

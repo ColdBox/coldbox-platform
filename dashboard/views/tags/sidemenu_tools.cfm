@@ -17,7 +17,7 @@ Help tips will be shown here. Just rollover certain areas or links and you will 
 	
 	<div class="sidemenu_toolbar_option">
 	<img src="images/icons/help_icon.gif" align="absmiddle" id="btn_help" srcoff="images/icons/help_icon.gif"
-		 srcon="images/icons/help_icon_on.gif" border="0" alt="Help Tips!">&nbsp;<a href="javascript:helpon()" onMouseOver="rollover(btn_help)" onMouseOut="rollout(btn_help)">Help</a> <br>
+		 srcon="images/icons/help_icon_on.gif" border="0" alt="Help Tips!">&nbsp;<a href="javascript:helpToggle()" onMouseOver="rollover(btn_help)" onMouseOut="rollout(btn_help)">Help</a> <br>
 	</div>
 	
 	<div class="sidemenu_toolbar_option">

@@ -32,50 +32,15 @@ This is the main event handler for the ColdBox dashboard.
 			<cfset onAppStart()>
 		</cfif>
 		<!--- GLOBAL EXIT HANDLERS: --->
-		<cfset Event.setValue("xehLogout","ehColdbox.doLogout")>
+		<cfset Event.setValue("xehLogout","ehSecurity.doLogout")>
 		<!--- Inject dbservice to Eventon every request for usage --->
 		<cfset Event.setValue("dbService",getColdBoxOCM().get("dbservice"))>
 		<!--- Authorization --->
-		<cfif (not storage.exists("authorized") or storage.getvar("authorized") eq false) and Event.getValue("event") neq "ehColdbox.doLogin">
-			<cfset Event.overrideEvent("ehColdbox.dspLogin")>
+		<cfif (not storage.exists("authorized") or storage.getvar("authorized") eq false) and Event.getValue("event") neq "ehSecurity.doLogin">
+			<cfset Event.overrideEvent("ehSecurity.dspLogin")>
 		</cfif>
 	</cffunction>
 
-	<!--- ************************************************************* --->
-	<!--- LOGIN SECTION													--->
-	<!--- ************************************************************* --->
-	
-	<cffunction name="dspLogin" access="public" returntype="void" output="false">
-		<cfargument name="Event" type="coldbox.system.beans.requestContext">
-		<!--- EVENT HANDLERS: --->
-		<cfset Event.getCollection().xehLogin = "ehColdbox.doLogin">
-		<!--- Set the View --->
-		<cfset Event.setView("vwLogin")>
-	</cffunction>
-	
-	<cffunction name="doLogin" access="public" returntype="void" output="false">
-		<cfargument name="Event" type="coldbox.system.beans.requestContext">
-		<!--- Do Login --->
-		<cfif len(trim(Event.getValue("password",""))) eq 0>
-			<cfset getPlugin("messagebox").setMessage("error", "Please fill out the password field.")>
-			<cfset setNextEvent()>
-		</cfif>
-		<cfif getColdboxOCM().get("dbservice").get("settings").validatePassword(Event.getValue("password"))>
-			<!--- Validate user --->
-			<cfset getPlugin("sessionstorage").setVar("authorized",true)>
-			<cfset setNextEvent()>
-		<cfelse>
-			<cfset getPlugin("messagebox").setMessage("error", "The password you entered is not correct. Please try again.")>
-			<cfset setNextEvent()>
-		</cfif>
-	</cffunction>
-	
-	<cffunction name="doLogout" access="public" returntype="void" output="false">
-		<cfargument name="Event" type="coldbox.system.beans.requestContext">
-		<cfset getPlugin("sessionstorage").deleteVar("authorized")>
-		<cfset SetNextEvent("ehColdbox.dspLogin")>
-	</cffunction>
-	
 	<!--- ************************************************************* --->
 	<!--- FRAMESET SECTION												--->
 	<!--- ************************************************************* --->
@@ -100,7 +65,7 @@ This is the main event handler for the ColdBox dashboard.
 		<!--- Set the Rollovers --->
 		<cfset rc.qRollovers = getPlugin("queryHelper").filterQuery(rc.dbService.get("settings").getRollovers(),"pagesection","home")>
 		<!--- Set the View --->
-		<cfset Event.setView("vwHome")>
+		<cfset Event.setView("home/vwHome")>
 	</cffunction>
 	
 	<cffunction name="dspHeader" access="public" returntype="void" output="false">

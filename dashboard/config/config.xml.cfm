@@ -57,11 +57,11 @@
 			<View>vwLogin</View>
 		</Layout>
 		<Layout file="Layout.Main.cfm" name="simple">
-			<View>vwHome</View>
-			<View>vwSettings</View>
-			<View>vwBugs</View>
-			<View>vwTools</View>
-			<View>vwUpdate</View>
+			<View>home/vwHome</View>
+			<View>settings/vwFrameworkSettings</View>
+			<View>bugs/vwBugs</View>
+			<View>tools/vwTools</View>
+			<View>update/vwUpdate</View>
 		</Layout>
 	</Layouts>
 	
