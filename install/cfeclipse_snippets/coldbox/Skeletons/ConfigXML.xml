@@ -30,7 +30,8 @@
 		<Setting name="HandlerCaching" 				value="$${Handler Caching:true|false}"/>
 		<Setting name="MyPluginsLocation"			value="$${Custom Plugins Invocation Path}" />
 		<Setting name="IOCFramework"				value="$${IOC Framework (Blank If not Used):|coldspring|lightwire}" />
-		<Setting name="IOCDefinitionFile"			value="$${IOC Service Definition File (Relative or Absolute if used)}" />	
+		<Setting name="IOCDefinitionFile"			value="$${IOC Service Definition File (Relative or Absolute if used)}" />
+		<Setting name="IOCObjectCaching"			value="$${IOC Object Caching:true|false}"/>
 	</Settings>
 
 	<YourSettings>
@@ -55,7 +56,7 @@
 	</WebServices>
 
 	<Layouts>
-		<DefaultLayout>$${Default Layout File:Layout.Main.cfm}</DefaultLayout>
+		<DefaultLayout>Layout.Main.cfm</DefaultLayout>
 	</Layouts>
 
 	<i18N>

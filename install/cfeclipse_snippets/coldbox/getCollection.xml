@@ -2,6 +2,6 @@
 <snippet filetemplate="false" extension="cfm">
 <name>getCollection</name>
 <help>Get the request collection</help>
-<starttext><![CDATA[Context.getCollection($${DeepCopy:false|true})]]></starttext>
+<starttext><![CDATA[event.getCollection($${DeepCopy:false|true})]]></starttext>
 <endtext><![CDATA[]]></endtext>
 </snippet>

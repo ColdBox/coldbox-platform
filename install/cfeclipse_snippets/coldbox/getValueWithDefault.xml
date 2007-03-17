@@ -2,6 +2,6 @@
 <snippet filetemplate="false" extension="cfm">
 <name>getValueWithDefault</name>
 <help>getValue with a default</help>
-<starttext><![CDATA[Context.getValue("$${variable name}", $${default})]]></starttext>
+<starttext><![CDATA[event.getValue("$${variable name}", $${default})]]></starttext>
 <endtext><![CDATA[]]></endtext>
 </snippet>

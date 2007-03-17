@@ -2,6 +2,6 @@
 <snippet filetemplate="false" extension="cfm">
 <name>valueExists</name>
 <help>valueExists method</help>
-<starttext><![CDATA[Context.valueExists("$${variable name}")]]></starttext>
+<starttext><![CDATA[event.valueExists("$${variable name}")]]></starttext>
 <endtext><![CDATA[]]></endtext>
 </snippet>

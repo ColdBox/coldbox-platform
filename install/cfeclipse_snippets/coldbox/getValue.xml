@@ -2,6 +2,6 @@
 <snippet filetemplate="false" extension="cfm">
 <name>getValue</name>
 <help>GetValue method</help>
-<starttext><![CDATA[Context.getValue("$${variable name}")]]></starttext>
+<starttext><![CDATA[event.getValue("$${variable name}")]]></starttext>
 <endtext><![CDATA[]]></endtext>
 </snippet>

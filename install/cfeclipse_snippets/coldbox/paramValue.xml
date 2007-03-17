@@ -2,6 +2,6 @@
 <snippet filetemplate="false" extension="cfm">
 <name>paramValue</name>
 <help>ColdBox's cfparam for request collection</help>
-<starttext><![CDATA[Context.paramValue("$${variable name}", "$${value}")]]></starttext>
+<starttext><![CDATA[event.paramValue("$${variable name}", "$${value}")]]></starttext>
 <endtext><![CDATA[]]></endtext>
 </snippet>
