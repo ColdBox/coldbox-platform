@@ -191,7 +191,15 @@ Modification History:
 	<cffunction name="createColdspring" access="private" output="false" returntype="any" hint="Creates the coldspring factory and configures it">
 		<cfscript>
 		var coldpsring = "";
-		coldpsring = createObject("component",instance.COLDSPRING_FACTORY).init(structnew(),getSettingStructure());
+		//Get properties structure and add an element called coldbox_controller as a reference to the controller
+		var settingsStruct = StructNew();
+		//insert coldbox_controller
+		structInsert(settingsStruct,"coldbox_controller",controller);
+		//Copy the settings Structure
+		structAppend(settingsStruct, getSettingStructure());
+		//Create the Coldspring Factory
+		coldpsring = createObject("component",instance.COLDSPRING_FACTORY).init(structnew(),settingsStruct);
+		//Load Definition File
 		coldpsring.loadBeansFromXmlFile( instance.ExpandedIOCDefinitionFile );
 		return coldpsring;
 		</cfscript>
