@@ -210,11 +210,11 @@ Modification History:
 
 	<cffunction name="showdebugpanel" access="public" returntype="void" hint="I can override to show or not the debug panel. Very useful in AJAX debugging">
 		<cfargument name="show" type="boolean" required="true">
-		<cfset setValue("coldbox.debugpanel",arguments.show)>
+		<cfset setValue("coldbox_debugpanel",arguments.show)>
 	</cffunction>
 
 	<cffunction name="getdebugpanelFlag" access="public" returntype="boolean" hint="I return the debugpanel flag for this request.">
-		<cfreturn getValue("coldbox.debugpanel",true)>
+		<cfreturn getValue("coldbox_debugpanel",true)>
 	</cffunction>
 
 <!------------------------------------------- PRIVATE ------------------------------------------->
