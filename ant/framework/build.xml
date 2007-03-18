@@ -1,0 +1,117 @@
+<?xml version="1.0"?>
+<!-- ====================================================================== 
+     Mar 18, 2007 1:30:20 AM                                                        
+
+     coldbox.deploy    
+     ColdBox Deployment
+                   
+     lmajano                                                                
+     ====================================================================== -->
+<project name="coldbox.deploy" default="build" basedir="../../">
+
+	<property name="dir.build" value="ant/framework/build/coldbox" />
+	<property name="header.template" value="ant/framework/header.txt" />
+	<property name="header.generated" value="ant/framework/build/header_generated.txt" />
+	
+	<target name="cleanup">
+		<delete dir="${dir.build}" />
+		<delete file="${header.generated}" />
+	</target>	
+		
+	<target name="init" description="Initialize the task">
+		<!--Init TimeStamp-->
+		<tstamp />
+		
+		<!--Ask for user input to create application-->
+		<input message="SVN Build Number?" addproperty="svn.build"/>
+		<input message="Framework Version?" addproperty="framework.version"/>
+		
+		<!--Create Header-->
+		<copy file="${header.template}" tofile="${header.generated}" />
+		<replace file="${header.generated}" summary="yes">
+			<replacefilter 
+			    token="@VERSION@" 
+			    value="${framework.version}"/>
+		<replacefilter 
+			    token="@DATE@" 
+			    value="${TODAY}"/>
+		<replacefilter 
+			    token="@BUILDNUMBER@" 
+			    value="${svn.build}"/>			
+		</replace> 
+		<loadfile property="file.header" srcFile="${header.generated}"/>
+		<echo>${file.header}</echo>
+	</target>
+		
+	<target name="build" description="Copy Directories" depends="init">
+        <!--Copy Files-->
+		<copy todir="${dir.build}/system">
+        	<fileset dir="src/system" />
+			<exclude name="**/*.xml.cfm" />
+			<exclude name="**/*.xml" />
+			<exclude name="**/*.xsd" />
+			<exclude name="**/*.css" />
+			<exclude name="**/*.txt" />
+			<filterchain>
+				<concatfilter prepend="${file.header}"/>
+			</filterchain>
+        </copy>
+		<copy todir="${dir.build}/system">
+        	<fileset dir="src/system" />
+			<include name="**/*.xml.cfm" />
+			<include name="**/*.xml" />
+			<include name="**/*.xsd" />
+			<include name="**/*.css" />
+			<include name="**/*.txt" />
+        </copy>
+		
+		<copy todir="${dir.build}/samples">
+        	<fileset dir="samples" />
+			<exclude name="**/*.xml.cfm" />
+			<exclude name="**/*.xml" />
+			<exclude name="**/*.xsd" />
+			<exclude name="**/*.css" />
+			<exclude name="**/*.txt" />
+			<filterchain>
+				<concatfilter prepend="${file.header}"/>
+			</filterchain>
+        </copy>
+		
+		<copy todir="${dir.build}/samples">
+        	<fileset dir="samples" />
+			<include name="**/*.xml.cfm" />
+			<include name="**/*.xml" />
+			<include name="**/*.xsd" />
+			<include name="**/*.css" />
+			<include name="**/*.txt" />
+        </copy>
+		
+		<copy todir="${dir.build}/install">
+        	<fileset dir="install" />
+        </copy>
+		
+		<copy todir="${dir.build}/dashboard">
+        	<fileset dir="dashboard" />
+        </copy>
+		
+		<copy todir="${dir.build}/ApplicationTemplate">
+        	<fileset dir="ApplicationTemplate" />
+        </copy>
+		
+		<!--Copy text files-->
+		<copy todir="${dir.build}/install">
+			<fileset file="src/system/config/license.txt" />
+			<fileset file="src/system/config/readme.txt" />						
+		</copy>
+		
+		<!--Copy Documents-->
+		<copy todir="${dir.build}/install/SchemaDocs">
+			<fileset dir="documents/SchemaDocs"/>
+		</copy>
+		<!--Copy Wallpapers-->
+		<copy todir="${dir.build}/install/wallpapers">
+			<fileset dir="documents/workbench/wallpapers"/>
+		</copy>
+    </target>
+
+</project>
