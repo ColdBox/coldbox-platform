@@ -46,44 +46,13 @@
 	<target name="build" description="Copy Directories" depends="init">
         <!--Copy Files-->
 		<copy todir="${dir.build}/system">
-        	<fileset dir="src/system" />
-			<exclude name="**/*.xml.cfm" />
-			<exclude name="**/*.xml" />
-			<exclude name="**/*.xsd" />
-			<exclude name="**/*.css" />
-			<exclude name="**/*.txt" />
-			<filterchain>
-				<concatfilter prepend="${file.header}"/>
-			</filterchain>
-        </copy>
-		<copy todir="${dir.build}/system">
-        	<fileset dir="src/system" />
-			<include name="**/*.xml.cfm" />
-			<include name="**/*.xml" />
-			<include name="**/*.xsd" />
-			<include name="**/*.css" />
-			<include name="**/*.txt" />
+        	<fileset dir="src/system">
+        	</fileset>
         </copy>
 		
 		<copy todir="${dir.build}/samples">
-        	<fileset dir="samples" />
-			<exclude name="**/*.xml.cfm" />
-			<exclude name="**/*.xml" />
-			<exclude name="**/*.xsd" />
-			<exclude name="**/*.css" />
-			<exclude name="**/*.txt" />
-			<filterchain>
-				<concatfilter prepend="${file.header}"/>
-			</filterchain>
-        </copy>
-		
-		<copy todir="${dir.build}/samples">
-        	<fileset dir="samples" />
-			<include name="**/*.xml.cfm" />
-			<include name="**/*.xml" />
-			<include name="**/*.xsd" />
-			<include name="**/*.css" />
-			<include name="**/*.txt" />
+        	<fileset dir="samples">
+        	</fileset>
         </copy>
 		
 		<copy todir="${dir.build}/install">
