@@ -7,19 +7,22 @@
                    
      lmajano                                                                
      ====================================================================== -->
-<project name="coldbox.distribution" default="update" basedir="../">
+<project name="coldbox.distribution" default="ftp.deploy" basedir="../">
     <description>
             Prepare a new distribution
     </description>
-
+	
+	<!--Properties-->
+	<property name="ftp.server" value="ftp.coldboxframework.com" />
+	<property name="ftp.remotedir" value="/httpdocs/distribution" />
+	
 	<property name="coldbox_template" value="distribution/templates/coldbox.xml" />
 	<property name="coldbox_destination" value="distribution/coldbox.xml" />
 	<property name="coldbox_readme"   value="src/system/config/readme.txt" />
-		
+	<!--Dashboard Properties-->
 	<property name="dashboard_template" value="distribution/templates/dashboard.xml" />
 	<property name="dashboard_destination" value="distribution/dashboard.xml" />
 	<property name="dashboard_readme"  value="dashboard/readme.txt" />
-		
 	
     <target name="init">
         <tstamp />
@@ -58,5 +61,15 @@
 			    value="${file.dashboard_readme}"/>			
 		</replace>    	
 	</target>
+	
+	<target name="ftp.deploy" depends="update">
+       	<input message="Please enter ftp server username:" addproperty="ftp.username" />
+       	<input message="Please enter fpt server password:" addproperty="ftp.password" />
+      	<ftp action="send" server="${ftp.server}" userid="${ftp.username}" password="${ftp.password}" 
+       		remotedir="${ftp.remotedir}" passive="yes" verbose="yes">
+        	<fileset file="${coldbox_destination}" />
+      		<fileset file="${dashboard_destination}" />      		
+       	</ftp>
+    </target>
 
 </project>
