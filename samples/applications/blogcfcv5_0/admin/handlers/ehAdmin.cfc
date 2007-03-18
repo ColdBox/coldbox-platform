@@ -511,7 +511,7 @@
 		</cfif>
 		
 		<!--- Run internal event to display entry --->
-		<cfset dspEntry(Context)>
+		<cfset dspEntry(Event)>
 	</cffunction>
 	<!--- ************************************************************* --->
 
