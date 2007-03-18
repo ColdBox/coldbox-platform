@@ -1,7 +1,7 @@
 <cfoutput>
 <script language="javascript">
 $(document).ready(function() {
- 	//Populate system info
+ 	//Load System Info
 	doEvent('#Event.getValue("xehSystemInfo")#', 'content', {});
 });
 </script>

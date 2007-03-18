@@ -1,0 +1,62 @@
+<?xml version="1.0"?>
+<!-- ====================================================================== 
+     Mar 17, 2007 3:49:48 PM                                                        
+
+     coldbox.distribution    
+     Prepare a new distribution
+                   
+     lmajano                                                                
+     ====================================================================== -->
+<project name="coldbox.distribution" default="update" basedir="../">
+    <description>
+            Prepare a new distribution
+    </description>
+
+	<property name="coldbox_template" value="distribution/templates/coldbox.xml" />
+	<property name="coldbox_destination" value="distribution/coldbox.xml" />
+	<property name="coldbox_readme"   value="src/system/config/readme.txt" />
+		
+	<property name="dashboard_template" value="distribution/templates/dashboard.xml" />
+	<property name="dashboard_destination" value="distribution/dashboard.xml" />
+	<property name="dashboard_readme"  value="dashboard/readme.txt" />
+		
+	
+    <target name="init">
+        <tstamp />
+    	<input message="Enter the coldbox version:"  addproperty="coldbox.version" />
+    	<input message="Enter the dashboard version"  addproperty="dashboard.version" />
+    	<delete file="${coldbox_destination}" />
+    	<delete file="${dashboard_destination}" />
+   	</target>
+	
+    <target name="update" depends="init">
+    	<loadfile property="file.coldbox_readme" srcFile="${coldbox_readme}"/>
+    	<copy file="${coldbox_template}" tofile="${coldbox_destination}" />
+		<replace file="${coldbox_destination}" summary="yes">
+			<replacefilter 
+			    token="@@VERSION@@" 
+			    value="${coldbox.version}"/>
+		<replacefilter 
+			    token="@@DATE@@" 
+			    value="${TODAY}"/>
+		<replacefilter 
+			    token="@@README@@" 
+			    value="${file.coldbox_readme}"/>			
+		</replace>    	
+    	
+    	<loadfile property="file.dashboard_readme" srcFile="${dashboard_readme}"/>
+    	<copy file="${dashboard_template}" tofile="${dashboard_destination}" />
+		<replace file="${dashboard_destination}" summary="yes">
+			<replacefilter 
+			    token="@@VERSION@@" 
+			    value="${dashboard.version}"/>
+		<replacefilter 
+			    token="@@DATE@@" 
+			    value="${TODAY}"/>
+		<replacefilter 
+			    token="@@README@@" 
+			    value="${file.dashboard_readme}"/>			
+		</replace>    	
+	</target>
+
+</project>

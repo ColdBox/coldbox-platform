@@ -13,6 +13,19 @@ Informative handler.
 	<!--- HOME SECTION 													--->
 	<!--- ************************************************************* --->
 	
+	<cffunction name="dspGateway" access="public" returntype="void" output="false">
+		<cfargument name="Event" type="coldbox.system.beans.requestContext">
+		<cfset var rc = Event.getCollection()>
+		<!--- EXIT HANDLERS: --->
+		<cfset rc.xehSystemInfo = "ehInfo.dspSystemInfo">
+		<cfset rc.xehResources = "ehInfo.dspOnlineResources">
+		<cfset rc.xehCFCDocs = "ehInfo.dspCFCDocs">
+		<!--- Set the Rollovers --->
+		<cfset rc.qRollovers = getPlugin("queryHelper").filterQuery(rc.dbService.get("settings").getRollovers(),"pagesection","home")>
+		<!--- Set the View --->
+		<cfset Event.setView("home/gateway")>
+	</cffunction>
+	
 	<cffunction name="dspSystemInfo" access="public" returntype="void" output="false">   
 		<cfargument name="Event" type="coldbox.system.beans.requestContext">
 		<cfset var rc = Event.getCollection()>

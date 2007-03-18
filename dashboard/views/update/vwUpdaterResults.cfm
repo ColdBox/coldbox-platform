@@ -1,4 +1,5 @@
 <cfoutput>
+<cfset rc = event.getCollection()>
 <!--- HELPBOX --->
 <div id="helpbox" class="helpbox" style="display: none">
 
@@ -65,8 +66,10 @@
 		</td>
 		<td style="border-left:1px solid ##ddd" align="center">
 		<cfif rc.updateResults.coldboxavailableupdate>
-		<input type="submit" name="btn_update" value="Auto-Update" style="font-size:9px" onclick="return confirmUpdate('framework')" />
-		<input type="button" name="btn_update" value="Download" style="font-size:9px" onclick="window.open('#rc.updateResults.coldboxDistro.updateurl#')"/>
+		
+		<input type="image" src="images/edit.gif" value="Readme" title="View Readme" />&nbsp;&nbsp;
+				  
+		<input type="image" src="images/download_icon.gif" value="Download" title="Download Update" onClick="window.open('#rc.updateResults.coldboxDistro.updateurl#')" />
 		<cfelse>
 		<span class="redtext">Latest Installed</span>
 		</cfif>
@@ -74,11 +77,7 @@
 	  </tr>
 	  
 	  <cfif rc.updateResults.coldboxavailableupdate>
-	  <tr bgcolor="##FFFFF0"> 
-	    <td colspan="5" style="border:1px solid ##999999;">
-		<div class="updatertext">#HTMLCODEFORMAT(rc.updateResults.ColdboxDistro.Description)#</div>
-		</td>
-	  </tr>
+		<div id="cbReadme" class="updatertext">#HTMLCODEFORMAT(rc.updateResults.ColdboxDistro.Description)#</div>
 	  </cfif>
 	  
 	  <tr bgcolor="f5f5f5">
@@ -116,4 +115,10 @@
 	</div>
 	
 </div>
+<script language="javascript">
+$("##cbReadme").jqm({
+		modal:false,
+		onShow: function(h) {h.w.fadeIn();},
+        onHide: function(h) {h.w.fadeOut();h.o.remove();} });
+</script>
 </cfoutput>

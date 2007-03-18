@@ -21,7 +21,7 @@ a:hover{
 }
 /* GUI BARS */
 .logo{
-	background: url(../images/dashboard_logo.gif) no-repeat;
+	background: url(images/dashboard_logo.gif) no-repeat;
 	width: 170px;
 	height: 60px;
 	background-color: "transparent";
@@ -31,9 +31,9 @@ a:hover{
 	position: absolute;
 }
 .headerbar{
-	background: url(../images/header_bg.png) repeat;
+	background: url(images/header_bg.png) repeat;
 	height: 70px;
-}.statusbar{	background: url(../images/statusbar_bg.png) repeat-x;	height: 25px;	border-top: 1px solid #AAAAAA;	border-bottom: 1px solid #dddddd;	font-size:10px;}
+}.statusbar{	background: url(images/statusbar_bg.png) repeat-x;	height: 25px;	border-top: 1px solid #AAAAAA;	border-bottom: 1px solid #dddddd;	font-size:10px;}
 .browserbuttonsbar{
 	float:left; 
 	margin-left:10px;
@@ -79,7 +79,7 @@ a:hover{
 	border: 1px outset #cccccc;
 	margin: auto;
 	margin-top:60px;
-	background: url(../images/contentboxes_footer.png) repeat-x bottom;
+	background: url(images/contentboxes_footer.png) repeat-x bottom;
 }
 .contentboxes_footer{
 	position: rel;
@@ -102,7 +102,7 @@ a:hover{
 	/* position: absolute; 
 	right: 0px;
 	top: 0px;*/
-	background: url(../images/sidemenu_bg.png) repeat;
+	background: url(images/sidemenu_bg.png) repeat;
 	height: 100%;
 	width: 221px;
 	border-left: 1px solid #999999;
@@ -125,7 +125,7 @@ a:hover{
 	margin-bottom: 5px;
 }
 ul{
-	list-style-image: url(../images/orange_arrows.gif);
+	list-style-image: url(images/orange_arrows.gif);
 }
 li{
 	margin-left: -5px;
@@ -133,7 +133,7 @@ li{
 	margin-bottom: 8px;
 }.sidemenu_title{
 	margin-top: 10px;
-	background: url(../images/sidemenu_title_bg.png) no-repeat;
+	background: url(images/sidemenu_title_bg.png) no-repeat;
 	width:220px;
 	height: 42px;
 	font-weight: bold;
@@ -158,11 +158,11 @@ li{
 .maincontentbox{
 	width: 700px;
 	border: 1px outset #cccccc;
-	background: url(../images/contentboxes_footer.png) repeat-x bottom;
+	background: url(images/contentboxes_footer.png) repeat-x bottom;
 	margin: 15px;
 }
 .contentboxes_header{
-	background: url(../images/contentboxes_header.png) repeat-x;
+	background: url(images/contentboxes_header.png) repeat-x;
 	height: 50px;
 }
 .contentboxes{
@@ -177,27 +177,35 @@ li{
 }
 /* HELP DIVS */
 .helpbox{
-	width: 350px;
-	height: 260px;
-	border: 1px solid #ddd;
-	background: url(../images/help_footer_bg.gif) #FBFFCD repeat-x bottom;
+	width: 400px;
+	height: 300px;
+	border: 1px outset #ddd;
+	background: url(images/help_footer_bg.gif) #FBFFCD repeat-x bottom;
 	margin: 15px;
-	position: relative; 
-	margin: auto; 
+	position: fixed;
+    top: 15%;
+    left: 30%;
 }
 .helpbox_header{
 	width: 100%;
-	background: url(../images/help_titlebar_bg.gif) repeat-x;
+	background: url(images/help_titlebar_bg.gif) repeat-x;
 	height: 30px;
 	font-weight: bold;
+	cursor: move;
 }
 .helpbox_header_title{
-	padding-top:3px;
-	padding-left: 10px;
+	margin-top:3px;
+	margin-left: 10px;
+	float:left;
+}
+.helpbox_header_close{
+	float:right;
+	margin-top:3px;
+	margin-right:5px;
 }
 .helpbox_message{
-	width: 330px;
-	height: 200px;
+	width: 95%;
+	height: 240px;
 	overflow: auto;
 	overflow-x: hidden;
 	margin-left: 10px;
@@ -205,7 +213,7 @@ li{
 	margin-bottom: 10px;
 }
 .helpbox_message ul{
-	list-style-image: url(../images/icons/icon_guide_tips.gif);
+	list-style-image: url(images/icons/icon_guide_tips.gif);
 }
 .helpbox_message li{
 	margin-left: -15px;
@@ -222,14 +230,14 @@ li{
 .tablelisting th {
   text-align: left;
   background-color: #F6F6F6;
-  background-image: url(../images/th_bg.gif);
+  background-image: url(images/th_bg.gif);
   background-repeat: repeat-x;
   color: #000000;
   border: 1px solid #7D7D7D;
 }
 .sort {
   background-color: #5DE3FF;
-  background-image: url(../images/th_sorted_bg.gif);
+  background-image: url(images/th_sorted_bg.gif);
   background-repeat: repeat-x;
   border-top: 1px solid #002F93;
   border-bottom: 1px solid #0090FF;
@@ -261,7 +269,7 @@ input[type=button]:hover, input[type=submit]:hover, input[type=reset]:hover { b
 	text-align: center;
 	vertical-align: middle;
 	background-color: #F6F6F6;
-  	background-image: url(../images/th_bg.gif);
+  	background-image: url(images/th_bg.gif);
   	background-repeat: repeat-x;
 	border-top: 1px solid #002F93; 
 	border-bottom: 1px solid #0090FF;
@@ -276,7 +284,7 @@ input[type=button]:hover, input[type=submit]:hover, input[type=reset]:hover { b
 	text-align: center;
 	vertical-align: middle;
 	background-color: #5DE3FF;
-  	background-image: url(../images/th_sorted_bg.gif);
+  	background-image: url(images/th_sorted_bg.gif);
   	background-repeat: repeat-x;
   	font-weight: bold;
 	border-top: 1px solid #002F93; 
@@ -286,10 +294,7 @@ input[type=button]:hover, input[type=submit]:hover, input[type=reset]:hover { b
 	padding-top: 5px;
 }
 
-.jqmOverlay{ 
-	background-color: black;
-	opacity: 0.75;
-}
+
 
 
 

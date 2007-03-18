@@ -11,8 +11,6 @@
 	  <ul>
 	  	<li>From this screen you can connect to the official ColdBox distribution site and check if there
 		  	is an update to the framework.</li>
-		<li>You have the option to download the update or actually do a live update of your system.</li>
-		<li>If you are doing a live update of the system, make sure that your applications are offline.</li>
 	  </ul>
 	</div>
 	<div align="right" style="margin-right:5px;">
@@ -29,13 +27,11 @@
 	
 	<div class="contentboxes">
 	<p>Welcome to the online update section of the ColdBox Framework. You can connect to the distribution site and verify that you are
-	running the latest version of the framework and dashboard.  You can then decide to download the update or auto-update it.
+	running the latest version of the framework and dashboard.  You can then decide to download the update.
 	</p>
-	<br>
-	<p align="center" class="redtext">When you do an auto-update, make sure there are no running applications.</p>
 	<br /><br />
 	#getPlugin("messagebox").renderit()#
-	<form id="updateform" name="updateform" method="post" action="javascript:doFormEvent('#Event.getValue("xehCheck")#','content',document.updateform)" onSubmit="document.updateform.button_check.disabled=true">
+	<form id="updateform" name="updateform" method="post" action="javascript:doFormEvent('#Event.getValue("xehCheck")#','content',document.updateform)" onSubmit="doUpdater()">
 	  <div align="center">
 		<table width="100%" border="0" cellspacing="0" cellpadding="5" class="tablelisting">
           <tr>
@@ -44,13 +40,14 @@
           
 		  <cfloop query="qURLS">
             <tr <cfif currentrow mod 2 eq 0>bgcolor="##f5f5f5"</cfif>>
-              <td valign="top"><input name="distribution_site" type="radio" value="#url#" <cfif currentrow eq 1>checked="true"</cfif> />
+              <td valign="top">
+				<label><input name="distribution_site" type="radio" value="#url#" <cfif currentrow eq 1>checked="true"</cfif> />
 	    #url#</label></td>
             </tr>
 		   </cfloop>
         </table>
 		<br /><br />
-		<input type="submit" name="button_check" id="button_check" value="Check For Updates" class="buttons" onClick="$('checkloader').style.display='block'" />
+		<input type="submit" name="button_check" id="button_check" value="Check For Updates" class="buttons"/>
 		<div id="checkloader" style="display:none;"><img src="images/ajax-loader.gif" width="220" height="19" align="absmiddle" title="Loading..." /></div>
 	  </div>
 	</form>

@@ -49,39 +49,25 @@ This is the main event handler for the ColdBox dashboard.
 		<cfargument name="Event" type="coldbox.system.beans.requestContext">
 		<cfset var rc = Event.getCollection()>
 		<!--- EXIT HANDLERS: --->
-		<cfset rc.xehHome = "ehColdbox.dspHome">
+		<cfset rc.xehHome = "ehInfo.dspGateway">
 		<cfset rc.xehHeader = "ehColdbox.dspHeader">
 		<!--- Set the View --->
 		<cfset Event.setView("vwFrameset",true)>
-	</cffunction>
-	
-	<cffunction name="dspHome" access="public" returntype="void" output="false">
-		<cfargument name="Event" type="coldbox.system.beans.requestContext">
-		<cfset var rc = Event.getCollection()>
-		<!--- EXIT HANDLERS: --->
-		<cfset rc.xehSystemInfo = "ehInfo.dspSystemInfo">
-		<cfset rc.xehResources = "ehInfo.dspOnlineResources">
-		<cfset rc.xehCFCDocs = "ehInfo.dspCFCDocs">
-		<!--- Set the Rollovers --->
-		<cfset rc.qRollovers = getPlugin("queryHelper").filterQuery(rc.dbService.get("settings").getRollovers(),"pagesection","home")>
-		<!--- Set the View --->
-		<cfset Event.setView("home/vwHome")>
 	</cffunction>
 	
 	<cffunction name="dspHeader" access="public" returntype="void" output="false">
 		<cfargument name="Event" type="coldbox.system.beans.requestContext">
 		<cfset var rc = Event.getCollection()>
 		<!--- EXIT HANDLERS: --->
-		<cfset rc.xehHome = "ehColdbox.dspHome">
-		<cfset rc.xehSettings = "ehSettings.dspSettings">
-		<cfset rc.xehTools = "ehColdbox.dspTools">
-		<cfset rc.xehUpdate = "ehUpdater.dspUpdateSection">
-		<cfset rc.xehBugs = "ehBugs.dspBugs">
+		<cfset rc.xehHome = "ehInfo.dspGateway">
+		<cfset rc.xehSettings = "ehSettings.dspGateway">
+		<cfset rc.xehTools = "ehColdbox.dspGateway">
+		<cfset rc.xehUpdate = "ehUpdater.dspGateway">
+		<cfset rc.xehBugs = "ehBugs.dspGateway">
 		<!--- Set the View --->
 		<cfset Event.setView("tags/header")>
 	</cffunction>
 	
-		
 	<!--- ************************************************************* --->
 	<!--- TOOLS SECTION 												--->
 	<!--- ************************************************************* --->

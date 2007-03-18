@@ -106,6 +106,14 @@ function confirmit(){
 	else
 		return false;
 }
+function doUpdater(){
+	$("#button_check").attr("disabled",true);
+	$('#checkloader').fadeIn();
+}
+
+
+
+
 function toggleLogsLocation(){
 	if ( $("coldboxlogging").value == 'true' )
 		$('tr_coldboxlogslocation').style.display = 'table-row';

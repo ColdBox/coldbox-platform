@@ -1,4 +1,5 @@
 <cfsetting showdebugoutput="false">
+<cfset event.showdebugpanel(false)>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -7,7 +8,7 @@
 <link href="includes/style.css" rel="stylesheet" type="text/css" />
 <script language="javascript" src="includes/dashboard.js"></script>
 <script language="javascript" src="includes/jquery-latest.pack.js"></script>
-<script language="javascript" src="includes/plugins/jqModal.js"></script>
+<script language="javascript" src="jqModal.js"></script>
 </head>
 <body>
 <cfoutput>

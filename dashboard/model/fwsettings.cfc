@@ -47,11 +47,11 @@
 		</cfscript>	
 	</cffunction>
 	
-	<!--- ************************************************************* --->
-	
-	<cffunction name="saveEncodingSettings" access="public" returntype="void" output="false">
+	<cffunction name="saveGeneralSettings" access="public" returntype="void" output="false">
 		<!--- ************************************************************* --->
 		<cfargument name="DefaultFileCharacterSet"		required="true" type="string">
+		<cfargument name="MessageBoxStorage" 	        required="true" type="string">
+		<cfargument name="ColdspringBeanFactory" 	    required="true" type="string">		
 		<!--- ************************************************************* --->
 		<cfscript>
 		var x = 1;
@@ -59,6 +59,36 @@
 		for (x=1; x lte ArrayLen(settingArray); x=x+1){
 			if ( Comparenocase(settingArray[x].xmlAttributes.name,"DefaultFileCharacterSet") eq 0){
 				settingArray[x].xmlAttributes.value = trim(arguments.DefaultFileCharacterSet);
+			}
+			if ( Comparenocase(settingArray[x].xmlAttributes.name,"MessageBoxStorage") eq 0){
+				settingArray[x].xmlAttributes.value = trim(arguments.MessageBoxStorage);
+			}
+			if ( Comparenocase(settingArray[x].xmlAttributes.name,"ColdspringBeanFactory") eq 0){
+				settingArray[x].xmlAttributes.value = trim(arguments.ColdspringBeanFactory);
+			}
+		}
+		saveSettings();
+		</cfscript>	
+	</cffunction>
+	
+	<cffunction name="saveCacheSettings" access="public" returntype="void" output="false">
+		<!--- ************************************************************* --->
+		<cfargument name="CacheObjectDefaultTimeout"			required="true" type="string">
+		<cfargument name="CacheObjectDefaultLastAccessTimeout" 	required="true" type="string">
+		<cfargument name="CacheReapFrequency" 	    			required="true" type="string">		
+		<!--- ************************************************************* --->
+		<cfscript>
+		var x = 1;
+		var settingArray = instance.xmlObj.xmlRoot.settings.xmlChildren;
+		for (x=1; x lte ArrayLen(settingArray); x=x+1){
+			if ( Comparenocase(settingArray[x].xmlAttributes.name,"CacheObjectDefaultTimeout") eq 0){
+				settingArray[x].xmlAttributes.value = trim(arguments.CacheObjectDefaultTimeout);
+			}
+			if ( Comparenocase(settingArray[x].xmlAttributes.name,"CacheObjectDefaultLastAccessTimeout") eq 0){
+				settingArray[x].xmlAttributes.value = trim(arguments.CacheObjectDefaultLastAccessTimeout);
+			}
+			if ( Comparenocase(settingArray[x].xmlAttributes.name,"CacheReapFrequency") eq 0){
+				settingArray[x].xmlAttributes.value = trim(arguments.CacheReapFrequency);
 			}
 		}
 		saveSettings();

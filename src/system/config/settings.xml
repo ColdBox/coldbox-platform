@@ -35,7 +35,7 @@
         <!--ColdBox Cache Parameter: Default Object Last Accessed Timeout in Minutes -->
         <Setting name="CacheObjectDefaultLastAccessTimeout" value="20"/>
         <!--ColdBox Cache Parameter: Cache Reap Frequency in Minutes -->
-        <Setting name="CacheReapFrequency" value="5"/>
+        <Setting name="CacheReapFrequency" value="3"/>
     </Settings>
     
     <!-- Config XML File Declarations -->
