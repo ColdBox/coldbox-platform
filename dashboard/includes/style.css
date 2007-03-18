@@ -7,19 +7,40 @@
 	font-size: 9px;
 	font-style: italic;	
 }
+/* Visual Button Links */
+a.action {
+	font-size:11px;
+	font-weight: bold;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	background:#FFCC00 url(../images/bg_actions.gif) no-repeat scroll;
+	color:#000000;
+	cursor:pointer;
+	display:block;
+	margin:0pt 10px 0pt 0pt;
+	text-align:center;
+	text-decoration:none;
+	height: 23px;
+	width: 130px;
+}
+a.silver {
+	background:#FFCC00 url(../images/bg_actions_silver.gif) no-repeat scroll;
+}
+a.action span {
+	display: block;
+	padding: 5px;
+	font-weight:bold;
+}
+a.action:hover {
+	background:#C8E7FA url(../images/bg_actions_hover.gif) no-repeat 100%;
+}
 a:link, a:visited{
-	color: #000000;
 	font-weight:bold;
 	text-decoration:none;
-	font-style: italic;
-	font-size: 10px;
+	color: #000000;
 }
 a:hover{
-	text-decoration: underline;
-	background-color: #FFFFF0;
 	color: #E58108;
-}
-/* GUI BARS */
+}/* GUI BARS */
 .logo{
 	background: url(../images/dashboard_logo.gif) no-repeat;
 	width: 170px;
@@ -109,8 +130,8 @@ a:hover{
 	border-bottom: 1px solid #999999;
 }
 .sidemenu a:link, .sidemenu a:visited{
-	font-weight:normal;
-	text-decoration: underline;
+	font-weight: bold;
+	text-decoration: none;
 }
 .sidemenu_help{
 	font-size: 9px;
@@ -159,7 +180,7 @@ li{
 	width: 700px;
 	border: 1px outset #cccccc;
 	background: url(../images/contentboxes_footer.png) repeat-x bottom;
-	margin: 15px;
+	margin-top:10px;
 }
 .contentboxes_header{
 	background: url(../images/contentboxes_header.png) repeat-x;
@@ -170,15 +191,49 @@ li{
 	margin-bottom: 50px;
 }
 .updatertext{
-	height:150px;
-	width:570px;
+	height:90%;
+	width:700px;
+	font-size:11px;
+	position: fixed;
+    top: 3%;
+    left: 10%;
+	background-color: #FFFFFF;
+	border:2px outset #cccccc;
+}
+.updatertext_header{
+  width: 100%;
+  height:23px;
+  background-color: #5DE3FF;
+  background-image: url(../images/th_sorted_bg.gif);
+  background-repeat: repeat-x;
+  font-weight: bold;
+  cursor: move;
+  display: block;
+}
+.updatertext_header_text{
+	padding:5px;
+	float: left;
+}
+.updatertext_header_close{
+	float:right;
+	padding:5px;
+}
+.updatertext_content{
+	width:98%;
+	margin:10px;
 	overflow:auto;
-	font-size:10px
+	height: 90%;
+}
+.legend{
+	margin-top:50px;
+	background:#fffff0;
+	border:1px dotted #eaeaea;
+	padding:5px;		
 }
 /* HELP DIVS */
 .helpbox{
-	width: 350px;
-	height: 260px;
+	width: 450px;
+	height: 265px;
 	border: 1px solid #ddd;
 	background: url(../images/help_footer_bg.gif) #FBFFCD repeat-x bottom;
 	margin: 15px;
@@ -196,7 +251,7 @@ li{
 	padding-left: 10px;
 }
 .helpbox_message{
-	width: 330px;
+	width: 97%;
 	height: 200px;
 	overflow: auto;
 	overflow-x: hidden;
@@ -242,7 +297,7 @@ fieldset{
 	border: 1px solid #ddd;
 }
 input[type=button], input[type=submit], input[type=reset] { background: #eee; color: #222; border: 1px outset #ccc; padding: .1em .5em; font-size: 12px;}
-input[type=button]:hover, input[type=submit]:hover, input[type=reset]:hover { background: #FFFFF0; border: 1px inset #ccc; cursor: hand;}input[type=button][disabled], input[type=submit][disabled],input[type=reset][disabled] { background: #f6f6f6; border-style: solid; color: #999;}input[type=text], input[type=password], input[type=checkbox], textarea, select { font-size:10px; border: 1px solid #d7d7d7 }input[type=text], input[type=password], input[type=checkbox], select { padding: .20em .3em }input[type=text]:focus, input[type=password]:focus, textarea:focus, input[type=checkbox]:focus, select:focus { border: 1px solid #886;}
+input[type=button]:hover, input[type=submit]:hover, input[type=reset]:hover { background: #FFFFF0; border: 1px inset #ccc; cursor: hand;}input[type=button][disabled], input[type=submit][disabled],input[type=reset][disabled] { background: #f6f6f6; border-style: solid; color: #999;}input[type=text], input[type=password], input[type=checkbox], textarea, select { font-size:11px; border: 1px solid #d7d7d7 }input[type=text], input[type=password], input[type=checkbox], select { padding: .20em .3em }input[type=text]:focus, input[type=password]:focus, textarea:focus, input[type=checkbox]:focus, select:focus { border: 1px solid #886;}
 
 /* Generator */
 .menu_appgenerator{

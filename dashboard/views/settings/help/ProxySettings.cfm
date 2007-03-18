@@ -1,0 +1,1 @@
+<h3>Proxy Settings</h3><p>Here is where you set your proxy configuration settings. These settings are only used by the auto-updatefeature of the Dashboard. If you are behind a proxy and want to use the auto-update feature, you will needto set these configuration setttings.</p>

@@ -1,0 +1,1 @@
+<h3>ColdBox Dashboard Password</h3><p>In this screen you can change your current dashboard's' password. Please note thatall passwords are encrypted.</p>

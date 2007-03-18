@@ -7,29 +7,36 @@ Description		:
 Bug handler
 
 --->
-<cfcomponent name="ehBugs" extends="coldbox.system.eventhandler">
-	
+<cfcomponent name="ehBugs" extends="coldbox.system.eventhandler" output="false">
+
 	<!--- ************************************************************* --->
 	<!--- SUBMIT BUG	 												--->
 	<!--- ************************************************************* --->
-	<cffunction name="dspBugs" access="public" returntype="void">
+	<cffunction name="dspGateway" access="public" returntype="void" output="false">
+		<cfargument name="Event" type="coldbox.system.beans.requestContext">
+		<cfset var rc = Event.getCollection()>
 		<!--- EXIT HANDLERS: --->
 		<cfset rc.xehSubmitBug = "ehBugs.dspSubmitBug">
 		<!--- Set the Rollovers For This Section --->
-		<cfset rc.qRollovers = filterQuery(application.dbservice.get("settings").getRollovers(),"pagesection","bugs")>
+		<cfset rc.qRollovers = getPlugin("queryHelper").filterQuery(rc.dbservice.get("settings").getRollovers(),"pagesection","bugs")>
 		<!--- Set the View --->
-		<cfset Event.setView("vwBugs")>
+		<cfset Event.setView("bugs/gateway")>
 	</cffunction>
-	
-	<cffunction name="dspSubmitBug" access="public" returntype="void">
+
+	<cffunction name="dspSubmitBug" access="public" returntype="void" output="false">
+		<cfargument name="Event" type="coldbox.system.beans.requestContext">
+		<cfset var rc = Event.getCollection()>
 		<!--- EXIT HANDLERS: --->
 		<cfset rc.xehDoSave = "ehBugs.doSubmitBug">
+		<!--- Help --->
+		<cfset rc.help = renderView("bugs/help/SubmitBugs")>
 		<!--- Set the View --->
 		<cfset Event.setView("bugs/vwSubmitBugs")>
 	</cffunction>
-	
-	<cffunction name="doSubmitBug" access="public" returntype="void">
-		<cfset var mybugreport = "">
+
+	<cffunction name="doSubmitBug" access="public" returntype="void" output="false">
+		<cfargument name="Event" type="coldbox.system.beans.requestContext">
+		<cfset var rc = Event.getCollection()>
 		<!--- Validate --->
 		<cfif len(trim(rc.email)) eq 0 or len(trim(rc.bugreport)) eq 0 or len(trim(rc.name)) eq 0>
 			<cfset getPlugin("messagebox").setMessage("warning", "Please fill out all the mandatory fields.")>
@@ -38,18 +45,15 @@ Bug handler
 		<cfelse>
 			<cftry>
 				<!--- Send report --->
-				<cfset mybugreport = application.dbservice.sendBugReport(getCollection(),getSettingStructure(true),getPlugin("fileutilities").getOSName())>
+				<cfset rc.dbservice.sendBugReport(rc,getSettingStructure(true),getPlugin("fileutilities").getOSName())>
 				<cfset getPlugin("messagebox").setMessage("info", "You have successfully sent your bug report to the ColdBox bug email address.")>
-				<!--- Save copy to show --->
-				<cfset getPlugin("clientstorage").setvar("sentbugreport",mybugreport)>
-			
 				<cfcatch type="any">
 					<cfset getPlugin("logger").logError("Error sending bug report.", cfcatch)>
 					<cfset getPlugin("messagebox").setMessage("error","An error ocurred while sending the bug report: #cfcatch.Detail# #cfcatch.message#")>
 				</cfcatch>
 			</cftry>
 		</cfif>
-		<cfset setNextEvent("ehBugs.dspSubmitBug")>		
+		<cfset setNextEvent("ehBugs.dspSubmitBug")>
 	</cffunction>
 
 

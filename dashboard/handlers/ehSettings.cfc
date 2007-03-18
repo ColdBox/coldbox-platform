@@ -12,7 +12,7 @@ This is the settings handler
 <!--- ************************************************************* --->
 	<!--- SETTINGS SECTION 												--->
 	<!--- ************************************************************* --->
-	
+
 	<cffunction name="dspGateway" access="public" returntype="void" output="false">
 		<cfargument name="event" type="any" required="true">
 		<cfset var rc = event.getCollection()>
@@ -28,15 +28,17 @@ This is the settings handler
 		<!--- Set the View --->
 		<cfset Event.setView("settings/gateway")>
 	</cffunction>
-	
+
 	<cffunction name="dspOverview" access="public" returntype="void" output="false">
 		<cfargument name="event" type="any" required="true">
 		<cfset var rc = event.getCollection()>
 		<cfset rc.fwSettings = rc.dbService.get("fwsettings").getSettings()>
+		<!--- Help --->
+		<cfset rc.help = renderView("settings/help/Overview")>
 		<!--- Set the View --->
 		<cfset Event.setView("settings/vwOverview")>
 	</cffunction>
-	
+
 	<cffunction name="dspGeneralSettings" access="public" returntype="void" output="false">
 		<cfargument name="event" type="any" required="true">
 		<cfset var rc = event.getCollection()>
@@ -48,16 +50,18 @@ This is the settings handler
 		<cfset rc.MessageBoxStorage = fwSettings["MessageBoxStorage"]>
 		<!--- EXIT HANDLERS: --->
 		<cfset rc.xehDoSave = "ehSettings.doSaveGeneralSettings">
+		<!--- Help --->
+		<cfset rc.help = renderView("settings/help/GeneralSettings")>
 		<!--- Set the View --->
 		<cfset Event.setView("settings/vwGeneralSettings")>
 	</cffunction>
-	
+
 	<cffunction name="doSaveGeneralSettings" access="public" returntype="void" output="false">
 		<cfargument name="event" type="any" required="true">
 		<cfset var rc = event.getCollection()>
 		<cfset var fwSettings = rc.dbservice.get("fwsettings").getSettings()>
 		<cfset var setCharacterSet = fwSettings["DefaultFileCharacterSet"]>
-		
+
 		<!--- Validate Coldspring --->
 		<cfif len(trim(ColdspringBeanFactory)) eq 0>
 			<cfset getPlugin("messagebox").setMessage("error","Please enter the coldspring bean factory path.")>
@@ -70,7 +74,7 @@ This is the settings handler
 			<cfset setNextEvent("ehSettings.dspGeneralSettings","fwreinit=1")>
 		</cfif>
 	</cffunction>
-	
+
 	<cffunction name="dspLogSettings" access="public" returntype="void" output="false">
 		<cfargument name="event" type="any" required="true">
 		<cfset var rc = event.getCollection()>
@@ -82,10 +86,12 @@ This is the settings handler
 		<cfset rc.DefaultLogDirectory = fwSettings["DefaultLogDirectory"]>
 		<!--- EXIT HANDLERS: --->
 		<cfset rc.xehDoSave = "ehSettings.doSaveLogFileSettings">
+		<!--- Help --->
+		<cfset rc.help = renderView("settings/help/LogFileSettings")>
 		<!--- Set the View --->
 		<cfset Event.setView("settings/vwLogFileSettings")>
 	</cffunction>
-	
+
 	<cffunction name="doSaveLogFileSettings" access="public" returntype="void" output="false">
 		<cfargument name="event" type="any" required="true">
 		<cfset var rc = event.getCollection()>
@@ -118,16 +124,18 @@ This is the settings handler
 			<cfset setNextEvent("ehSettings.dspLogSettings")>
 		</cfif>
 	</cffunction>
-	
+
 	<cffunction name="dspChangePassword" access="public" returntype="void" output="false">
 		<cfargument name="event" type="any" required="true">
 		<cfset var rc = event.getCollection()>
 		<!--- EXIT HANDLERS: --->
 		<cfset rc.xehDoSave = "ehSettings.doChangePassword">
+		<!--- Help --->
+		<cfset rc.help = renderView("settings/help/Password")>
 		<!--- Set the View --->
 		<cfset Event.setView("settings/vwPassword")>
 	</cffunction>
-	
+
 	<cffunction name="doChangePassword" access="public" returntype="void" output="false">
 		<cfargument name="event" type="any" required="true">
 		<cfset var rc = event.getCollection()>
@@ -145,11 +153,11 @@ This is the settings handler
 			<cfelse>
 				<cfset getPlugin("messagebox").setMessage("info", "Your new password has been updated successfully.")>
 			</cfif>
-		</cfif>		
+		</cfif>
 		<!--- Move to new event --->
 		<cfset setnextEvent("ehSettings.dspChangePassword")>
 	</cffunction>
-	
+
 	<cffunction name="dspProxySettings" access="public" returntype="void" output="false">
 		<cfargument name="event" type="any" required="true">
 		<cfset var rc = event.getCollection()>
@@ -161,10 +169,12 @@ This is the settings handler
 		<cfset rc.proxyport = settings["proxyport"]>
 		<!--- EXIT HANDLERS: --->
 		<cfset rc.xehDoSave = "ehSettings.doChangeProxySettings">
+		<!--- Help --->
+		<cfset rc.help = renderView("settings/help/ProxySettings")>
 		<!--- Set the View --->
 		<cfset Event.setView("settings/vwProxySettings")>
 	</cffunction>
-	
+
 	<cffunction name="doChangeProxySettings" access="public" returntype="void" output="false">
 		<cfargument name="event" type="any" required="true">
 		<cfset var rc = event.getCollection()>
@@ -177,11 +187,11 @@ This is the settings handler
 			<!--- Save the proxy settings --->
 			<cfset rc.dbservice.get("settings").changeProxySettings(rc.proxyflag,rc.proxyserver,rc.proxyuser, rc.proxypassword, rc.proxyport)>
 			<cfset getPlugin("messagebox").setMessage("info", "Your proxy settings have been saved successfully.")>
-		</cfif>		
+		</cfif>
 		<!--- Move to new event --->
 		<cfset setnextEvent("ehSettings.dspProxySettings")>
 	</cffunction>
-	
+
 	<cffunction name="dspCacheSettings" access="public" returntype="void" output="false">
 		<cfargument name="event" type="any" required="true">
 		<cfset var rc = event.getCollection()>
@@ -191,11 +201,13 @@ This is the settings handler
 		<cfset rc.CacheReapFrequency = settings["CacheReapFrequency"]>
 		<!--- EXIT HANDLERS: --->
 		<cfset rc.xehDoSave = "ehSettings.doSaveCacheSettings">
+		<!--- Help --->
+		<cfset rc.help = renderView("settings/help/CachingSettings")>
 		<!--- Set the View --->
 		<cfset Event.setView("settings/vwCachingSettings")>
-		
+
 	</cffunction>
-	
+
 	<cffunction name="doSaveCacheSettings" access="public" returntype="void" output="false">
 		<cfargument name="event" type="any" required="true">
 		<cfset var rc = event.getCollection()>
@@ -217,7 +229,7 @@ This is the settings handler
 			<cfset getPlugin("messagebox").setMessage("info","Settings have been updated successfully. Please remember to reinitialize the framework on your applications for the changes to take effect.")>
 			<!--- Relocate --->
 			<cfset setNextEvent("ehSettings.dspCacheSettings","fwreinit=1")>
-		</cfif>		
+		</cfif>
 	</cffunction>
-	
+
 </cfcomponent>

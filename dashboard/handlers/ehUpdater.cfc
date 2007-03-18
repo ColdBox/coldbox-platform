@@ -22,9 +22,9 @@ This is the updater handler
 		<!--- Set the View --->
 		<cfset Event.setView("update/gateway")>
 	</cffunction>
-	
+
 	<!--- ************************************************************* --->
-	
+
 	<cffunction name="dspUpdater" access="public" returntype="void">
 		<cfargument name="event" type="any" required="true">
 		<cfset var rc = event.getCollection()>
@@ -32,12 +32,14 @@ This is the updater handler
 		<cfset rc.xehCheck = "ehUpdater.docheckForUpdates">
 		<!--- Get distribution URL's --->
 		<cfset rc.qURLS = rc.dbservice.get("settings").getDistributionUrls()>
+		<!--- Help --->
+		<cfset rc.help = renderView("update/help/Updater")>
 		<!--- Set the View --->
 		<cfset Event.setView("update/vwUpdater")>
 	</cffunction>
-	
+
 	<!--- ************************************************************* --->
-	
+
 	<cffunction name="docheckForUpdates" access="public" returntype="void">
 		<cfargument name="event" type="any" required="true">
 		<cfset var errorString = "Error retrieving update information from the ColdBox distribution site. Below you can see some diagnostic information.<br><br>">
@@ -75,17 +77,19 @@ This is the updater handler
 	</cffunction>
 
 	<!--- ************************************************************* --->
-		
+
 	<cffunction name="dspUpdaterResults" access="public" returntype="void">
 		<cfargument name="event" type="any" required="true">
 		<cfset var rc = event.getCollection()>
 		<!--- EXIT HANDLERS: --->
 		<cfset rc.xehdoUpdate = "ehUpdater.doGetUpdate">
 		<cfset rc.UpdateResults = getPlugin("sessionstorage").getVar("updateResults")>
+		<!--- Help --->
+		<cfset rc.help = renderView("update/help/UpdaterResults")>
 		<!--- Set the View --->
 		<cfset Event.setView("update/vwUpdaterResults")>
 	</cffunction>
-	
+
 	<!--- ************************************************************* --->
-	
+
 </cfcomponent>

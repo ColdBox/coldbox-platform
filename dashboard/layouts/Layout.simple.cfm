@@ -8,7 +8,9 @@
 <link href="includes/style.css" rel="stylesheet" type="text/css" />
 <script language="javascript" src="includes/dashboard.js"></script>
 <script language="javascript" src="includes/jquery-latest.pack.js"></script>
-<script language="javascript" src="jqModal.js"></script>
+<script language="javascript" src="includes/plugins/jqModal.js"></script>
+<script language="javascript" src="includes/plugins/jqDnR.js"></script>
+<script language="javascript" src="includes/plugins/jquery.block.js"></script>
 </head>
 <body>
 <cfoutput>

@@ -53,15 +53,19 @@ function doFormEvent (e, targetID, frm) {
 	doEvent(e, targetID, params, "POST");
 }
 
-function doEvent (e, targetID, params, methodType ) {
+function doEvent (e, targetID, params, methodType, onComplete ) {
 	//set event
 	var pars = "event=" + e + "&";
 	//Try to turn top frame.
 	try{parent.topframe.lon();} catch(err){null;}
 	//Check for Method.
 	var methodType = (methodType == null) ? "GET" : methodType;
+	//onComplete
+	var onComplete = (onComplete == null) ? h_onComplete : onComplete;
 	//parse params
 	for(p in params) pars = pars + p + "=" + escape(params[p]) + "&";
+	//BlockUI
+	blockui();
 	//do Ajax Updater
 	$.ajax( {type: methodType, 
 		     url:"index.cfm",
@@ -74,9 +78,17 @@ function doEvent (e, targetID, params, methodType ) {
 	});
 }
 
+function blockui(){
+	//BlockUI
+	$.extend($.blockUI.defaults.overlayCSS, { backgroundColor: '#000000'});
+	$.blockUI.defaults.pageMessage = "<h3>Please wait...</h3>";
+	$.blockUI( { backgroundColor: '#000000', color: '#fff', border:'1px outset #eaeaea'} );
+}
 function h_onComplete(){
 	try{ parent.topframe.loff();}
 	catch(err){null;}
+	//unblockUI
+	$.unblockUI();
 }
 function h_callError(request) {
 	alert('Sorry. An error ocurred while calling a server side component. Please try again.');
@@ -89,6 +101,7 @@ function h_callError(request) {
 function validateLogout(){
 	if ( confirm("Do your really want to exit the ColdBox Dashboard?") ){
 		parent.topframe.lon();
+		blockui();
 		return true;
 	}
 	return false;
@@ -110,8 +123,21 @@ function doUpdater(){
 	$("#button_check").attr("disabled",true);
 	$('#checkloader').fadeIn();
 }
+function showReadme(divid){
+	//cbReadme
+	$("#"+divid).jqm({
+		modal:false,
+		onShow: function(h) {h.w.fadeIn("fast");},
+        onHide: function(h) {h.w.fadeOut("fast");h.o.remove();}
+        }).jqDrag('.updatertext_header');
+    $('#'+divid).jqm().jqmShow();
+}
+function closeReadme(divid){
+	$("#"+divid).jqm().jqmHide()
+}
 
 
+//********************************************************************************
 
 
 function toggleLogsLocation(){

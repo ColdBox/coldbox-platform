@@ -1,4 +1,12 @@
 <cfoutput>
+<script language="javascript">
+$(document).ready(function() {
+	//Populate system info
+	doEvent('#Event.getValue("xehUpdater")#', 'content', {});
+});
+</script>
+
+<!--- Help Rollovers --->
 #renderView("tags/rollovers")#
 
 <!--- Title Bar --->
@@ -11,9 +19,4 @@
 <ul>
 	<li><a href="javascript:doEvent('#Event.getValue("xehUpdater")#', 'content', {})" onMouseOver="getHint('updater')" onMouseOut="resetHint()">Update Checker</a></li>
 </ul>
-
-<script language="javascript">
-//Populate system info
-doEvent('#Event.getValue("xehUpdater")#', 'content', {});
-</script>
 </cfoutput>
