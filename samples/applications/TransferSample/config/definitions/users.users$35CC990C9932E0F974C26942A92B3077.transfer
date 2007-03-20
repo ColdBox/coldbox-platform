@@ -1,0 +1,243 @@
+<cffunction name="init" access="public" returntype="transfer.com.TransferObject" default="transfer.com.TransferObject" hint="" output="false">
+<cfargument name="transfer" type="transfer.com.Transfer" required="true">
+<cfargument name="utility" type="transfer.com.util.Utility" required="true">
+<cfargument name="nullable" type="transfer.com.sql.Nullable" required="true">
+<cfargument name="thisObject" type="transfer.com.TransferObject" required="true">
+<cfscript>
+instance = StructNew();
+setThisObject(arguments.thisObject);
+setTransfer(arguments.transfer);
+setUtility(arguments.utility);
+setNullable(arguments.nullable);
+setClassName("users.users");
+setIsDirty(true);
+setIsPersisted(false);
+setIsClone(false);
+setid(getNullable().getNullUUID(getClassName(), "id"));
+setfname("");
+setlname("");
+setemail("");
+setcreate_date(Now());
+setLoaded(StructNew());
+if(StructKeyExists(this, "configure") OR StructKeyExists(variables, "configure"))
+{
+configure();
+}
+return this;
+</cfscript>
+</cffunction>
+
+<cffunction name="equalsTransfer" access="public" returntype="boolean" default="boolean" hint="If an object is persisted, returns true if they are of the same class and same id. If not, returns true if they are the same object." output="false">
+<cfargument name="transfer" type="transfer.com.TransferObject" required="true">
+<cfscript>
+if(getIsPersisted())
+{
+if(getClassName() neq arguments.transfer.getClassName())
+{
+return false;
+}
+return (getid() eq arguments.transfer.getid());
+}
+else
+{
+return sameTransfer(arguments.transfer);
+}
+</cfscript>
+</cffunction>
+
+<cffunction name="initEventObservers" access="package" returntype="void" default="void" hint="initialises the Observers on this object" output="false">
+<cfscript>
+</cfscript>
+</cffunction>
+
+<cffunction name="getid" access="public" returntype="uuid" default="uuid" hint="" output="false">
+<cfscript>
+return instance.id;
+</cfscript>
+</cffunction>
+
+<cffunction name="setid" access="public" returntype="void" default="void" hint="" output="false">
+<cfargument name="id" type="uuid" required="true">
+<cfscript>
+if(NOT StructKeyExists(instance, "id") OR getid() neq arguments.id)
+{
+instance.id = arguments.id;
+setIsDirty(true);
+}
+</cfscript>
+</cffunction>
+
+<cffunction name="getfname" access="public" returntype="string" default="string" hint="" output="false">
+<cfscript>
+return instance.fname;
+</cfscript>
+</cffunction>
+
+<cffunction name="setfname" access="public" returntype="void" default="void" hint="" output="false">
+<cfargument name="fname" type="string" required="true">
+<cfscript>
+if(NOT StructKeyExists(instance, "fname") OR Compare(getfname(), arguments.fname) neq 0)
+{
+instance.fname = arguments.fname;
+setIsDirty(true);
+}
+</cfscript>
+</cffunction>
+
+<cffunction name="getlname" access="public" returntype="string" default="string" hint="" output="false">
+<cfscript>
+return instance.lname;
+</cfscript>
+</cffunction>
+
+<cffunction name="setlname" access="public" returntype="void" default="void" hint="" output="false">
+<cfargument name="lname" type="string" required="true">
+<cfscript>
+if(NOT StructKeyExists(instance, "lname") OR Compare(getlname(), arguments.lname) neq 0)
+{
+instance.lname = arguments.lname;
+setIsDirty(true);
+}
+</cfscript>
+</cffunction>
+
+<cffunction name="getemail" access="public" returntype="string" default="string" hint="" output="false">
+<cfscript>
+return instance.email;
+</cfscript>
+</cffunction>
+
+<cffunction name="setemail" access="public" returntype="void" default="void" hint="" output="false">
+<cfargument name="email" type="string" required="true">
+<cfscript>
+if(NOT StructKeyExists(instance, "email") OR Compare(getemail(), arguments.email) neq 0)
+{
+instance.email = arguments.email;
+setIsDirty(true);
+}
+</cfscript>
+</cffunction>
+
+<cffunction name="getcreate_date" access="public" returntype="date" default="date" hint="" output="false">
+<cfscript>
+return instance.create_date;
+</cfscript>
+</cffunction>
+
+<cffunction name="setcreate_date" access="public" returntype="void" default="void" hint="" output="false">
+<cfargument name="create_date" type="date" required="true">
+<cfscript>
+if(NOT StructKeyExists(instance, "create_date") OR getcreate_date() neq arguments.create_date)
+{
+instance.create_date = arguments.create_date;
+setIsDirty(true);
+}
+</cfscript>
+</cffunction>
+
+<cffunction name="setMemento" access="public" returntype="void" default="void" hint="" output="false">
+<cfargument name="memento" type="struct" required="true">
+<cfscript>
+var composite = 0;
+if(NOT getIsPersisted())
+{
+setid(arguments.memento.id);
+}
+setPropertyMemento(arguments.memento);
+</cfscript>
+</cffunction>
+
+<cffunction name="setPropertyMemento" access="public" returntype="void" default="void" hint="" output="false">
+<cfargument name="memento" type="struct" required="true">
+<cfscript>
+setfname(arguments.memento.fname);
+setlname(arguments.memento.lname);
+setemail(arguments.memento.email);
+setcreate_date(arguments.memento.create_date);
+</cfscript>
+</cffunction>
+
+<cffunction name="getMemento" access="public" returntype="struct" default="struct" hint="Returns the memento for all non-lazy members of this object" output="false">
+<cfscript>
+var memento = StructNew();
+memento.id = getid();
+memento.transfer_isDirty = getIsDirty();
+memento.transfer_isPersisted = getIsPersisted();
+StructAppend(memento, getPropertyMemento());
+return memento;
+</cfscript>
+</cffunction>
+
+<cffunction name="getPropertyMemento" access="public" returntype="struct" default="struct" hint="returns the memento for properties" output="false">
+<cfscript>
+var memento = StructNew();
+memento.fname = getfname();
+memento.lname = getlname();
+memento.email = getemail();
+memento.create_date = getcreate_date();
+return memento;
+</cfscript>
+</cffunction>
+
+<cffunction name="copyValuesTo" access="public" returntype="void" default="void" hint="Copies the values of this object to one of the same class" output="false">
+<cfargument name="transfer" type="transfer.com.TransferObject" required="true">
+<cfscript>
+if(arguments.transfer.getClassName() neq "users.users")
+{
+throw("InvalidTransferClassException","The supplied Transfer class was not the one specified in the configuration file ","The Transfer class of '#arguments.transfer.getClassName()#' does not match the expected class of 'users.users'");
+}
+arguments.transfer.setMemento(getMemento());
+</cfscript>
+</cffunction>
+
+<cffunction name="actionAfterDeleteTransferEvent" access="public" returntype="void" default="void" hint="" output="false">
+<cfargument name="event" type="transfer.com.events.TransferEvent" required="true">
+<cfscript>
+switch(arguments.event.getTransferObject().getClassName())
+{
+}
+switch(arguments.event.getTransferObject().getClassName())
+{
+}
+switch(arguments.event.getTransferObject().getClassName())
+{
+}
+switch(arguments.event.getTransferObject().getClassName())
+{
+}
+</cfscript>
+</cffunction>
+
+<cffunction name="actionAfterUpdateTransferEvent" access="public" returntype="void" default="void" hint="" output="false">
+<cfargument name="event" type="transfer.com.events.TransferEvent" required="true">
+<cfscript>
+switch(arguments.event.getTransferObject().getClassName())
+{
+}
+</cfscript>
+</cffunction>
+
+<cffunction name="actionBeforeDiscardTransferEvent" access="public" returntype="void" default="void" hint="" output="false">
+<cfargument name="event" type="transfer.com.events.TransferEvent" required="true">
+<cfscript>
+var discard = false;
+switch(arguments.event.getTransferObject().getClassName())
+{
+}
+switch(arguments.event.getTransferObject().getClassName())
+{
+}
+switch(arguments.event.getTransferObject().getClassName())
+{
+}
+switch(arguments.event.getTransferObject().getClassName())
+{
+}
+if(discard)
+{
+getTransfer().discard(getThisObject());
+}
+</cfscript>
+</cffunction>
+
+
