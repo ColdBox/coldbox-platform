@@ -77,6 +77,7 @@
 		<cfargument name="CacheObjectDefaultLastAccessTimeout" 	required="true" type="string">
 		<cfargument name="CacheReapFrequency" 	    			required="true" type="string">
 		<cfargument name="CacheMaxObjects" 	    				required="true" type="string">		
+		<cfargument name="CacheFreeMemoryPercentageThreshold"	required="true" type="string">
 		<!--- ************************************************************* --->
 		<cfscript>
 		var x = 1;
@@ -93,6 +94,9 @@
 			}
 			if ( Comparenocase(settingArray[x].xmlAttributes.name,"CacheMaxObjects") eq 0){
 				settingArray[x].xmlAttributes.value = trim(arguments.CacheMaxObjects);
+			}
+			if ( Comparenocase(settingArray[x].xmlAttributes.name,"CacheFreeMemoryPercentageThreshold") eq 0){
+				settingArray[x].xmlAttributes.value = trim(arguments.CacheFreeMemoryPercentageThreshold);
 			}
 		}
 		saveSettings();

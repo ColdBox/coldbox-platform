@@ -30,6 +30,7 @@ Modification History:
 		variables.CacheObjectDefaultTimeout = "";
 		variables.CacheObjectDefaultLastAccessTimeout = "";
 		variables.CacheMaxObjects = 0;
+		variables.CacheFreeMemoryPercentageThreshold = 0;
 		return this;
 		</cfscript>
 	</cffunction>
@@ -40,6 +41,7 @@ Modification History:
 		variables.CacheObjectDefaultTimeout = variables.controller.getSetting("CacheObjectDefaultTimeout",true);
 		variables.CacheObjectDefaultLastAccessTimeout = variables.controller.getSetting("CacheObjectDefaultLastAccessTimeout",true);
 		variables.CacheMaxObjects = variables.controller.getSetting("CacheMaxObjects",true);
+		variables.CacheFreeMemoryPercentageThreshold = variables.controller.getSetting("CacheFreeMemoryPercentageThreshold",true);
 		variables.cachePerformance.Hits = 0;
 		variables.cachePerformance.Misses = 0;
 		</cfscript>
@@ -52,7 +54,7 @@ Modification History:
 		<cfargument name="objectKey" type="string" required="true">
 		<!--- ************************************************************* --->
 		<cfset var ObjectFound = false>
-
+		
 		<!--- Reap the cache First, if in frequency --->
 		<cfset reap()>
 
@@ -75,6 +77,7 @@ Modification History:
 		<cfargument name="objectKey" type="string" required="true">
 		<!--- ************************************************************* --->
 		<cfset var ObjectFound = StructNew()>
+		
 		<!--- Lookup First --->
 		<cfif lookup(arguments.objectKey)>
 			<!--- Record a Hit --->
@@ -96,6 +99,9 @@ Modification History:
 		<cfargument name="MyObject"			type="any" 	   required="true">
 		<cfargument name="Timeout"			type="string"  required="false" default="" hint="Timeout in minutes. If timeout = 0 then object never times out. If timeout is blank, then timeout will be inherited from framework.">
 		<!--- ************************************************************* --->
+		<!---JVM Threshold Checks --->
+		<cfset var isBelowThreshold = ThresholdChecks()>
+			
 		<!--- Clean Args --->
 		<cfset arguments.objectKey = trim(arguments.objectKey)>
 		<cfset arguments.Timeout = trim(arguments.Timeout)>
@@ -104,7 +110,9 @@ Modification History:
 		<cfset reap()>
 		
 		<!--- Max Objects in Cache Check --->
-		<cfif getSize() lt variables.CacheMaxObjects or variables.CacheMaxObjects eq 0>
+		<cfif (variables.CacheMaxObjects eq 0 or getSize() lt variables.CacheMaxObjects) and
+			  (variables.CacheFreeMemoryPercentageThreshold eq 0 or isBelowThreshold)>
+			
 			<!--- Test Timeout Argument, if false, then inherit framework's timeout --->
 			<cfif arguments.Timeout eq "" or not isNumeric(arguments.Timeout) or arguments.Timeout lt 0>
 				<cfset arguments.Timeout = variables.CacheObjectDefaultTimeout>
@@ -272,4 +280,17 @@ Modification History:
 		</cfscript>
 	</cffunction>
 
+	<cffunction name="ThresholdChecks" access="private" output="false" returntype="boolean" hint="JVM Threshold checks">
+		<cfset var fileUtilities = "">
+		<cfset var check = true>
+		<cfset var jvmThreshold = 0>
+		<!--- Checks --->
+		<cfif variables.CacheFreeMemoryPercentageThreshold neq 0>
+			<cfset fileUtilities = variables.controller.getPlugin("fileUtilities")>
+			<cfset jvmThreshold = ((fileUtilities.getJVMFreeMemory()/fileUtilities.getJVMTotalMemory())*100)>
+			<cfset check = variables.CacheFreeMemoryPercentageThreshold lt jvmThreshold>
+		</cfif>
+		<cfreturn check>
+	</cffunction>
+	
 </cfcomponent>

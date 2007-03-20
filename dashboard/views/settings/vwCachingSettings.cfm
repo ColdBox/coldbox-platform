@@ -58,11 +58,21 @@
 	     	<strong>Maximum Objects In Cache</strong>
 	     	</td>
 	     	<td>
-	     	<input type="text" name="CacheMaxObjects" value="#Event.getValue("CacheMaxObjects")#" size="6" maxlength="3">
+	     	<input type="text" name="CacheMaxObjects" value="#Event.getValue("CacheMaxObjects")#" size="6" maxlength="4">
 	     	(0 = Unlimited)
 			</td>
 	     </tr>
-
+	     
+	     <tr>
+	     	<td align="right" width="40%" style="border-right:1px solid ##ddd">
+	     	<strong>JVM Free Memory Percentage Threshold</strong>
+	     	</td>
+	     	<td>
+	     	<input type="text" name="CacheFreeMemoryPercentageThreshold" value="#Event.getValue("CacheFreeMemoryPercentageThreshold")#" size="6" maxlength="2">
+	     	(0 = Unlimited)
+			</td>
+	     </tr>
+	     
         </table>
 		</div>
 

@@ -204,6 +204,13 @@ function toggle(divid){
 		 <em>Hits:</em> #getColdboxOCM().getCachePerformance().hits# |
 		 <em>Misses:</em> #getColdboxOCM().getCachePerformance().misses#
 		</div>
+		
+		<div class="fw_debugTitleCell">
+		  Free Memory
+		</div>
+		<div class="fw_debugContentCell">
+		 <em>#NumberFormat((JVMFreeMemory/JVMTotalMemory)*100,"99.99")# % Free</em>
+		</div>
 
 		<div class="fw_debugTitleCell">
 		  Last Reap
