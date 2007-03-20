@@ -104,7 +104,7 @@ Modification History:
 		<cfset reap()>
 		
 		<!--- Max Objects in Cache Check --->
-		<cfif getSize() lte variables.CacheMaxObjects or variables.CacheMaxObjects eq 0>
+		<cfif getSize() lt variables.CacheMaxObjects or variables.CacheMaxObjects eq 0>
 			<!--- Test Timeout Argument, if false, then inherit framework's timeout --->
 			<cfif arguments.Timeout eq "" or not isNumeric(arguments.Timeout) or arguments.Timeout lt 0>
 				<cfset arguments.Timeout = variables.CacheObjectDefaultTimeout>
