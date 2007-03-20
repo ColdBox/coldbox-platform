@@ -36,6 +36,8 @@
         <Setting name="CacheObjectDefaultLastAccessTimeout" value="20"/>
         <!--ColdBox Cache Parameter: Cache Reap Frequency in Minutes -->
         <Setting name="CacheReapFrequency" value="3"/>
+        <!--ColdBox Cache Parameter: Maximum number of Objects in cache (0=Unlimited)-->
+        <Setting name="CacheMaxObjects" value="0"/>
     </Settings>
     
     <!-- Config XML File Declarations -->

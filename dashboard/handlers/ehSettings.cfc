@@ -199,6 +199,7 @@ This is the settings handler
 		<cfset rc.CacheObjectDefaultTimeout = settings["CacheObjectDefaultTimeout"]>
 		<cfset rc.CacheObjectDefaultLastAccessTimeout = settings["CacheObjectDefaultLastAccessTimeout"]>
 		<cfset rc.CacheReapFrequency = settings["CacheReapFrequency"]>
+		<cfset rc.CacheMaxObjects = settings["CacheMaxObjects"]>
 		<!--- EXIT HANDLERS: --->
 		<cfset rc.xehDoSave = "ehSettings.doSaveCacheSettings">
 		<!--- Help --->
@@ -216,16 +217,18 @@ This is the settings handler
 		<!--- Validate blanks --->
 		<cfif len(trim(rc.CacheObjectDefaultTimeout)) eq 0 or
 		      len(trim(rc.CacheObjectDefaultLastAccessTimeout)) eq 0 or
-		      len(Trim(rc.CacheReapFrequency)) eq 0>
+		      len(Trim(rc.CacheReapFrequency)) eq 0 or
+		      len(trim(rc.CacheMaxObjects)) eq 0>
 			<cfset getPlugin("messagebox").setMessage("error","You cannot leave any empty configurations.")>
 			<cfset setNextEvent("ehSettings.dspCacheSettings")>
 		<cfelseif not isNumeric(rc.CacheObjectDefaultTimeout) or
 				  not isNumeric(rc.CacheObjectDefaultLastAccessTimeout) or
-				  not isNumeric(rc.CacheReapFrequency)>
+				  not isNumeric(rc.CacheReapFrequency) or
+				  not isNumeric(rc.CacheMaxObjects)>
 			<cfset getPlugin("messagebox").setMessage("error","Only numerical values are allowed.")>
 			<cfset setNextEvent("ehSettings.dspCacheSettings")>
 		<cfelse>
-			<cfset rc.dbservice.get("fwsettings").saveCacheSettings(rc.CacheObjectDefaultTimeout,rc.CacheObjectDefaultLastAccessTimeout,rc.CacheReapFrequency)>
+			<cfset rc.dbservice.get("fwsettings").saveCacheSettings(rc.CacheObjectDefaultTimeout,rc.CacheObjectDefaultLastAccessTimeout,rc.CacheReapFrequency,rc.CacheMaxObjects)>
 			<cfset getPlugin("messagebox").setMessage("info","Settings have been updated successfully. Please remember to reinitialize the framework on your applications for the changes to take effect.")>
 			<!--- Relocate --->
 			<cfset setNextEvent("ehSettings.dspCacheSettings","fwreinit=1")>

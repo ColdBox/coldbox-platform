@@ -29,6 +29,7 @@ Modification History:
 		variables.lastReapDatetime = now();
 		variables.CacheObjectDefaultTimeout = "";
 		variables.CacheObjectDefaultLastAccessTimeout = "";
+		variables.CacheMaxObjects = 0;
 		return this;
 		</cfscript>
 	</cffunction>
@@ -38,6 +39,7 @@ Modification History:
 		variables.reapFrequency = variables.controller.getSetting("CacheReapFrequency",true);
 		variables.CacheObjectDefaultTimeout = variables.controller.getSetting("CacheObjectDefaultTimeout",true);
 		variables.CacheObjectDefaultLastAccessTimeout = variables.controller.getSetting("CacheObjectDefaultLastAccessTimeout",true);
+		variables.CacheMaxObjects = variables.controller.getSetting("CacheMaxObjects",true);
 		variables.cachePerformance.Hits = 0;
 		variables.cachePerformance.Misses = 0;
 		</cfscript>
@@ -98,26 +100,30 @@ Modification History:
 		<cfset arguments.objectKey = trim(arguments.objectKey)>
 		<cfset arguments.Timeout = trim(arguments.Timeout)>
 
-		<!--- Test Timeout Argument, if false, then inherit framework's timeout --->
-		<cfif arguments.Timeout eq "" or not isNumeric(arguments.Timeout) or arguments.Timeout lt 0>
-			<cfset arguments.Timeout = variables.CacheObjectDefaultTimeout>
-		</cfif>
-
 		<!--- Check if we need to do a reap First. --->
 		<cfset reap()>
-
-		<cflock type="exclusive" name="OCM_Operation" timeout="5">
-			<cfscript>
-			//Set new Object into cache.
-			variables.cb_objects[arguments.objectKey] = arguments.MyObject;
-			//Set object's metdata
-			variables.cb_objects_metadata[arguments.objectKey] = structNew();
-			variables.cb_objects_metadata[arguments.objectKey].hits = 1;
-			variables.cb_objects_metadata[arguments.objectKey].Timeout = arguments.timeout;
-			variables.cb_objects_metadata[arguments.objectKey].Created = now();
-			variables.cb_objects_metadata[arguments.objectKey].lastAccesed = now();
-			</cfscript>
-		</cflock>
+		
+		<!--- Max Objects in Cache Check --->
+		<cfif getSize() lte variables.CacheMaxObjects or variables.CacheMaxObjects eq 0>
+			<!--- Test Timeout Argument, if false, then inherit framework's timeout --->
+			<cfif arguments.Timeout eq "" or not isNumeric(arguments.Timeout) or arguments.Timeout lt 0>
+				<cfset arguments.Timeout = variables.CacheObjectDefaultTimeout>
+			</cfif>
+		
+			<!--- Set object in Cache --->
+			<cflock type="exclusive" name="OCM_Operation" timeout="5">
+				<cfscript>
+				//Set new Object into cache.
+				variables.cb_objects[arguments.objectKey] = arguments.MyObject;
+				//Set object's metdata
+				variables.cb_objects_metadata[arguments.objectKey] = structNew();
+				variables.cb_objects_metadata[arguments.objectKey].hits = 1;
+				variables.cb_objects_metadata[arguments.objectKey].Timeout = arguments.timeout;
+				variables.cb_objects_metadata[arguments.objectKey].Created = now();
+				variables.cb_objects_metadata[arguments.objectKey].lastAccesed = now();
+				</cfscript>
+			</cflock>
+		</cfif>
 	</cffunction>
 
 	<!--- ************************************************************* --->
@@ -153,20 +159,6 @@ Modification History:
 		<cfscript>
 		variables.cachePerformance.Hits = 0;
 		variables.cachePerformance.Misses = 0;
-		</cfscript>
-	</cffunction>
-
-	<!--- ************************************************************* --->
-
-	<cffunction name="hit" access="public" output="false" returntype="void" hint="Record a hit">
-		<cfscript>
-		variables.cachePerformance.Hits = variables.cachePerformance.Hits + 1;
-		</cfscript>
-	</cffunction>
-
-	<cffunction name="miss" access="public" output="false" returntype="void" hint="Record a miss">
-		<cfscript>
-		variables.cachePerformance.misses = variables.cachePerformance.misses + 1;
 		</cfscript>
 	</cffunction>
 
@@ -268,20 +260,16 @@ Modification History:
 
 <!------------------------------------------- PRIVATE ------------------------------------------->
 
-	<!--- ************************************************************* --->
-
-	<!--- Controller Accessor/Mutators --->
-	<cffunction name="getcontroller" access="private" output="false" returntype="any" hint="Get controller">
-		<cfreturn variables.controller/>
+	<cffunction name="hit" access="private" output="false" returntype="void" hint="Record a hit">
+		<cfscript>
+		variables.cachePerformance.Hits = variables.cachePerformance.Hits + 1;
+		</cfscript>
 	</cffunction>
 
-	<!--- ************************************************************* --->
-
-	<cffunction name="setcontroller" access="private" output="false" returntype="void" hint="Set controller">
-		<cfargument name="controller" type="any" required="true"/>
-		<cfset variables.controller = arguments.controller/>
+	<cffunction name="miss" access="private" output="false" returntype="void" hint="Record a miss">
+		<cfscript>
+		variables.cachePerformance.misses = variables.cachePerformance.misses + 1;
+		</cfscript>
 	</cffunction>
-
-	<!--- ************************************************************* --->
 
 </cfcomponent>

@@ -52,6 +52,16 @@
 	     	(In Minutes)
 			</td>
 	     </tr>
+	     
+	     <tr bgcolor="##f5f5f5">
+	     	<td align="right" width="40%" style="border-right:1px solid ##ddd">
+	     	<strong>Maximum Objects In Cache</strong>
+	     	</td>
+	     	<td>
+	     	<input type="text" name="CacheMaxObjects" value="#Event.getValue("CacheMaxObjects")#" size="6" maxlength="3">
+	     	(0 = Unlimited)
+			</td>
+	     </tr>
 
         </table>
 		</div>
