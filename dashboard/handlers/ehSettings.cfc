@@ -201,7 +201,6 @@ This is the settings handler
 		<cfset rc.CacheReapFrequency = settings["CacheReapFrequency"]>
 		<cfset rc.CacheMaxObjects = settings["CacheMaxObjects"]>
 		<cfset rc.CacheFreeMemoryPercentageThreshold = settings["CacheFreeMemoryPercentageThreshold"]>
-		<cfset rc.CacheFreeMemoryPercentagePanicMode = settings["CacheFreeMemoryPercentagePanicMode"]>
 		<!--- EXIT HANDLERS: --->
 		<cfset rc.xehDoSave = "ehSettings.doSaveCacheSettings">
 		<!--- Help --->
@@ -236,8 +235,7 @@ This is the settings handler
 																	rc.CacheObjectDefaultLastAccessTimeout,
 																	rc.CacheReapFrequency,
 																	rc.CacheMaxObjects,
-																	rc.CacheFreeMemoryPercentageThreshold,
-																	rc.CacheFreeMemoryPercentagePanicMode)>
+																	rc.CacheFreeMemoryPercentageThreshold)>
 			<cfset getPlugin("messagebox").setMessage("info","Settings have been updated successfully. Please remember to reinitialize the framework on your applications for the changes to take effect.")>
 			<!--- Relocate --->
 			<cfset setNextEvent("ehSettings.dspCacheSettings","fwreinit=1")>

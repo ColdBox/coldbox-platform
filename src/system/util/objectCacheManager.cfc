@@ -284,10 +284,14 @@ Modification History:
 		<cfset var fileUtilities = "">
 		<cfset var check = true>
 		<cfset var jvmThreshold = 0>
+		<cfset var jvmFreeMemory = "">
+		<cfset var jvmTotalMemory = "">
 		<!--- Checks --->
 		<cfif variables.CacheFreeMemoryPercentageThreshold neq 0>
 			<cfset fileUtilities = variables.controller.getPlugin("fileUtilities")>
-			<cfset jvmThreshold = ((fileUtilities.getJVMFreeMemory()/fileUtilities.getJVMTotalMemory())*100)>
+			<cfset jvmFreeMemory = fileUtilities.getJVMFreeMemory()>
+			<cfset jvmTotalMemory = fileUtilities.getJVMTotalMemory()>
+			<cfset jvmThreshold = ((jvmFreeMemory/jvmTotalMemory)*100)>
 			<cfset check = variables.CacheFreeMemoryPercentageThreshold lt jvmThreshold>
 		</cfif>
 		<cfreturn check>
