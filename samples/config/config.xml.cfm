@@ -39,6 +39,7 @@
 		<Setting name="ForumsApp" value="applications/galleon_1_7" />
 		<Setting name="ColdboxReaderApp" value="applications/ColdBoxReader" />
 		<Setting name="cfcGeneratorApp" value="applications/cfcGenerator" />
+		<Setting name="TransferApp" value="applications/TransferSample" />
 	</YourSettings>
 
 	<!--Optional,if blank it will use the CFMX administrator settings.-->

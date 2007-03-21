@@ -31,7 +31,7 @@ $(document).ready(function() {
 	<div id="header">
 		<h1><img src="images/header.png" /></h1>
 	</div>
-	
+
 	<div id="navigation">
 		<ul>
 		<li class="selected"><a href="#cgi.SCRIPT_NAME#">#getResource("sampleshome")#</a></li>
@@ -39,7 +39,7 @@ $(document).ready(function() {
 		<li><a href="http://www.camdenfamily.com/morpheus/blog/"  target="_blank">Ray Camden's Blog</a></li>
 		<li><a href="http://www.remotesynthesis.com/blog/" target="_blank">Open Source</a></li>
 		</ul>
-		
+
 		<div align="right">
 		#getResource("changelanguage")#
 		<select name="locale" onChange="window.location='index.cfm?event=ehSamples.doChangeLocale&locale=' + this.value">
@@ -48,22 +48,23 @@ $(document).ready(function() {
 		</select>
 		</div>
 	</div>
-	
+
 	<!--- ********************************* --->
 	<!--- Render View Here --->
 	#renderView()#
 	<!--- ********************************* --->
-	
+
 	<div id="subcontent">
 		<!--- CCV via render view() --->
 		<div class="small box">#renderView("tags/i18n")#</div>
-		
+
 		<div class="small box"><strong>#getResource("note")#:
 		<font color="##53231d">#getResource("notemessage")#</font></strong>
 		</div>
 		<br>
 		<h2>#getResource("FavoriteLinks")#</h2>
 		<ul class="menublock">
+		  <li><a href="https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=lmajano%40ortussolutions%2ecom&item_name=ColdBox%20Framework%20Donation&no_shipping=1&no_note=1&cn=Your%20Comments&tax=0&currency_code=USD&lc=US&bn=PP%2dDonationsBF&charset=UTF%2d8">Donate Now!</a></li>
 		  <li><a href="http://www.luismajano.com">#getresource("mysite")#</a></li>
 		   <li><a href="#getSetting("AmazonURL")#">#getresource("myamazonwishlist")#</a></li>
 		  <li><a href="#getSetting("ColdboxURL")#" target="_blank">ColdBox #getresource("home")#</a></li>
@@ -73,7 +74,7 @@ $(document).ready(function() {
 		  <li><a href="#getSetting("TracURL")#" target="_blank">ColdBox Trac Site</a></li>
 		</ul>
 		<br>
-	
+
 		<div id="searchbar">
 		<h2>#getResource("searchblog")# </h2>
 		<form action="#getSetting("SearchURL")#" method="post" name="search">
@@ -84,11 +85,11 @@ $(document).ready(function() {
 		</fieldset>
 		</form>
 		</div>
-		
+
 		<p align="center"><a href="#getSetting("ColdboxURL")#"><img src="images/poweredby.png" border=0></a></p>
-		
+
 	</div>
-	
+
 	<div id="footer">
 	<p>&copy; 2005-2006 <a href="http://www.luismajano.com">ColdBox by Luis Majano </a> | Design by <a href="http://andreasviklund.com">Andreas Viklund</a></p>
 	</div>
