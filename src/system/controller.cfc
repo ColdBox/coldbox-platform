@@ -229,8 +229,12 @@ Description		: This is the main ColdBox front Controller.
 		<cfargument name="queryString"  	hint="The query string to append, if needed."   type="string" required="No" default="" >
 		<cfargument name="addToken"			hint="Wether to add the tokens or not. Default is false" type="boolean" required="false" default="false"	>
 		<!--- ************************************************************* --->
-			<cfif len(trim(arguments.event)) eq 0><cfset arguments.event = getSetting("DefaultEvent")></cfif>
+		<cfif len(trim(arguments.event)) eq 0><cfset arguments.event = getSetting("DefaultEvent")></cfif>
+		<cfif len(trim(arguments.queryString)) eq 0>
+			<cflocation url="#cgi.SCRIPT_NAME#?event=#arguments.event#" addtoken="#arguments.addToken#">
+		<cfelse>
 			<cflocation url="#cgi.SCRIPT_NAME#?event=#arguments.event#&#arguments.queryString#" addtoken="#arguments.addToken#">
+		</cfif>
 	</cffunction>
 
 	<cffunction name="runEvent" returntype="void" access="Public" hint="I am an event handler runnable factory. If no event is passed in then it will run the default event from the config.xml.">
