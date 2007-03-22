@@ -58,7 +58,7 @@
 
 	<!--Your Settings can go here, if not needed, use <YourSettings />. You can use these for anything you like.-->
 	<YourSettings>
-		<Setting name="TransferSettings" value="[datasourceFile:config/datasource.xml.cfm, transferFile:config/transfer.xml.cfm, definitions:config/definitions]"/>
+		<Setting name="TransferSettings" value="{datasourceFile:config/datasource.xml.cfm, transferFile:config/transfer.xml.cfm, definitions:config/definitions}"/>
 	</YourSettings>
 
 	<!--Optional,if blank it will use the CFMX administrator settings.-->
