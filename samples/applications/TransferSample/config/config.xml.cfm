@@ -41,26 +41,24 @@
 		<!--Messagebox Style (css) class name to use. Look at the messagebox.cfm in the includes directory-->
 		<Setting name="MessageboxStyleClass"		value="" />
 		<!--Flag to Auto reload the internal handlers directory listing. False for production. -->
-		<Setting name="HandlersIndexAutoReload"   	value="true" />
+		<Setting name="HandlersIndexAutoReload"   	value="false" />
 		<!--Flag to auto reload the config.xml settings. False for production. -->
-		<Setting name="ConfigAutoReload"          	value="true" />
+		<Setting name="ConfigAutoReload"          	value="false" />
 		<!-- Declare the custom plugins base invocation path, if used. You have to use dot notation.Example: mymapping.myplugins	-->
 		<Setting name="MyPluginsLocation"   		value="" />
 		<!--Flag to cache handlers. Default if left blank is true. -->
-		<Setting name="HandlerCaching" 				value="false"/>
+		<Setting name="HandlerCaching" 				value="true"/>
 		<!--IOC Framework if Used, else leave blank-->
 		<Setting name="IOCFramework"				value="" />
 		<!--IOC Definition File Path, relative or absolute -->
 		<Setting name="IOCDefinitionFile"			value="" />
 		<!--IOC Object Caching, true/false. For ColdBox to cache your IoC beans-->
-		<Setting name="IOCObjectCaching"			value="true" />
+		<Setting name="IOCObjectCaching"			value="" />
 	</Settings>
 
-	<!--Your Settings can go here, if not needed, use <YourSettings />. You can use these for anything you like.
-		<Setting name="MySetting"  				value="WOW" />
-	 -->
+	<!--Your Settings can go here, if not needed, use <YourSettings />. You can use these for anything you like.-->
 	<YourSettings>
-		<Setting name="MySetting" value="My Value"/>
+		<Setting name="TransferSettings" value="[datasourceFile:config/datasource.xml.cfm, transferFile:config/transfer.xml.cfm, definitions:config/definitions]"/>
 	</YourSettings>
 
 	<!--Optional,if blank it will use the CFMX administrator settings.-->
@@ -79,16 +77,11 @@
 	<!--List url dev environments, this determines your dev/pro environment for the framework-->
 	<DevEnvironments>
 		<url>dev</url>
-		<url>dev1</url>
+		<url>jfetmac</url>
+		<url>localhost</url>
 	</DevEnvironments>
 
-	<!--Webservice declarations your use in your application, if not use, leave blank
-	Note that for the same webservice name you can have a development url and a production url.
 	<WebServices />
-	-->
-	<WebServices>
-		<!--<WebService name="TESTWS" URL="http://www.test.com/test.cfc?wsdl" DevURL="http://dev.test.com/test.cfc?wsdl" />-->
-	</WebServices>
 
 	<!--Declare Layouts for your application here-->
 	<Layouts>
@@ -96,14 +89,7 @@
 		<DefaultLayout>Layout.Main.cfm</DefaultLayout>
 	</Layouts>
 
-	<!--Internationalization and resource Bundle setup:
-
-	<i18N>
-		<DefaultResourceBundle>includes/main</DefaultResourceBundle>
-		<DefaultLocale>en_US</DefaultLocale>
-		<LocaleStorage>session</LocaleStorage>
-	</i18N>
-	-->
+	<!--Internationalization and resource Bundle setup:-->
 	<i18N />
 	
 	<!--Datasource Setup, you can then retreive a datasourceBean via the getDatasource("name") method: -->

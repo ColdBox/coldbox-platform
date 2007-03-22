@@ -15,7 +15,7 @@ Installation Procedures.
          coldfusion administrator. MySQL does not support functions as default values, so to modify it
          to work with MySQL do the following:
          A) Open the config/transfer.xml.cfm and change the ID line to
-          <id name="id" type="UUID" generate="true"/>
+          <id name="id" type="GUID" generate="true"/>
 
 1 MSSQL) open the mssql.sql and import it into the database. Create the transfersample datasource in your
          coldfusion administrator.

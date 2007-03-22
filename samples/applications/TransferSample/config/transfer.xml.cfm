@@ -11,7 +11,7 @@
   	
 	  <package name="users">
           <object name="users" table="users" >
-              <id name="id" type="string" generate="false"/>
+              <id name="id" type="GUID" generate="true"/>
 			  <property name="fname" type="string" nullable="false" />
 			  <property name="lname" type="string" nullable="false" />
 			  <property name="email" type="string" nullable="false" />

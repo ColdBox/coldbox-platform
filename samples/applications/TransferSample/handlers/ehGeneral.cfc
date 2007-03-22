@@ -14,9 +14,9 @@ Modification History:
 3/19/2007 - Created Template
 ----------------------------------------------------------------------><cfcomponent name="ehGeneral" extends="coldbox.system.eventhandler">	<cffunction name="onAppInit" access="public" returntype="void" output="false">		<cfargument name="Event" type="coldbox.system.beans.requestContext">		<!--- ON Application Start Here --->
 		<!--- Create our Transfer Factory --->
-		<cfset var DSFile = "config/datasource.xml.cfm">
-		<cfset var TFile = "config/transfer.xml.cfm">
-		<cfset var Definitions = "/" & getSetting("AppMapping") & "/config/definitions">
+		<cfset var DSFile = getSetting("TransferSettings.datasourceFile")>
+		<cfset var TFile = getSetting("TransferSettings.transferFile")>
+		<cfset var Definitions = "/" & getSetting("AppMapping") & "/" & getSetting("TransferSettings.Definitions")>
 		<cfset var TransferFactory = CreateObject("component","transfer.TransferFactory").init(DSFile,TFile,Definitions)>		<!--- Place in Cache Indefinetely --->
 		<cfset getColdBoxOCM().set("TransferFactory",TransferFactory, 0)>
 	</cffunction>	<cffunction name="onRequestStart" access="public" returntype="void" output="false">		<cfargument name="Event" type="coldbox.system.beans.requestContext">		<!--- On Request Start Code Here --->
@@ -59,11 +59,10 @@ Modification History:
 		<cfargument name="Event" type="coldbox.system.beans.requestContext">
 		<cfset var rc = event.getCollection()>
 		<cfset var oUser = "">
-		<cfset var errors = "">
 		<!--- Get Transfer Object --->
 		<cfset oUser = rc.Transfer.new("users.users")>
 		<!--- Populate it with RC data --->
-		<cfset errors = getPlugin("beanFactory").populateBean(oUser)>
+		<cfset getPlugin("beanFactory").populateBean(oUser)>
 		<!--- Add new User --->
 		<cfset rc.Transfer.save(oUser)>
 		<cfset getPlugin("messagebox").setMessage("info", "User inserted")>
@@ -80,9 +79,18 @@ Modification History:
 		<cfset Event.setView("vwEdit")>
 	</cffunction>
 
-	<cffunction name="doUpate" access="public" returntype="void" output="false">
+	<cffunction name="doUpdate" access="public" returntype="void" output="false">
 		<cfargument name="Event" type="coldbox.system.beans.requestContext">
-		<!--- Set the View To Display, after Logic --->
-		<cfset Event.setView("vwHome")>
+		<cfset var rc = event.getCollection()>
+		<cfset var oUser = "">
+		<!--- Get Transfer Object --->
+		<cfset oUser = rc.Transfer.get("users.users",rc.id)>
+		<!--- Populate it with RC data --->
+		<cfset getPlugin("beanFactory").populateBean(oUser)>
+		<!--- Update User --->
+		<cfset rc.Transfer.save(oUser)>
+		<cfset getPlugin("messagebox").setMessage("info", "User Updated")>
+		<!--- RElocate to listing --->
+		<cfset setNextEvent("ehGeneral.dspUsers")>
 	</cffunction>
 </cfcomponent>

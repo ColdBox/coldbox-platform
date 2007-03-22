@@ -31,7 +31,8 @@
 
 	<div style="margin-top:50px;clear:both" align="left">
 		<form name="addform" id="addform" action="index.cfm" method="post">
-		<input type="hidden" name="event" value="ehGeneral.doAdd">
+		<input type="hidden" name="event" value="ehGeneral.doUpdate">
+		<input type="hidden" name="id" value="#rc.oUser.getID()#">
 		<table width="100%" cellpadding="5" cellspacing="1" style="border:1px solid ##cccccc;">
 
 			<tr>
