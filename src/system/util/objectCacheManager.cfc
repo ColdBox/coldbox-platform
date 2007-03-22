@@ -25,7 +25,7 @@ Modification History:
 		variables.cachePerformance = structNew();
 		variables.cachePerformance.Hits = 0;
 		variables.cachePerformance.Misses = 0;
-		variables.reapFrequency = "";
+		variables.CacheReapFrequency = "";
 		variables.lastReapDatetime = now();
 		variables.CacheObjectDefaultTimeout = "";
 		variables.CacheObjectDefaultLastAccessTimeout = "";
@@ -37,7 +37,7 @@ Modification History:
 
 	<cffunction name="configure" access="public" output="false" returntype="void" hint="Configure the cache.">
 		<cfscript>
-		variables.reapFrequency = variables.controller.getSetting("CacheReapFrequency",true);
+		variables.CacheReapFrequency = variables.controller.getSetting("CacheReapFrequency",true);
 		variables.CacheObjectDefaultTimeout = variables.controller.getSetting("CacheObjectDefaultTimeout",true);
 		variables.CacheObjectDefaultLastAccessTimeout = variables.controller.getSetting("CacheObjectDefaultLastAccessTimeout",true);
 		variables.CacheMaxObjects = variables.controller.getSetting("CacheMaxObjects",true);
@@ -240,7 +240,7 @@ Modification History:
 			var key = "";
 			var objStruct = variables.cb_objects_metadata;
 			//Check reaping frequency
-			if ( dateDiff("n", variables.lastReapDatetime, now()) gt variables.reapFrequency){
+			if ( dateDiff("n", variables.lastReapDatetime, now()) gt variables.CacheReapFrequency){
 				//Reaping about to start, set new reaping date.
 				variables.lastReapDatetime = now();
 
@@ -286,14 +286,19 @@ Modification History:
 		<cfset var jvmThreshold = 0>
 		<cfset var jvmFreeMemory = "">
 		<cfset var jvmTotalMemory = "">
-		<!--- Checks --->
-		<cfif variables.CacheFreeMemoryPercentageThreshold neq 0>
-			<cfset fileUtilities = variables.controller.getPlugin("fileUtilities")>
-			<cfset jvmFreeMemory = fileUtilities.getJVMFreeMemory()>
-			<cfset jvmTotalMemory = fileUtilities.getJVMTotalMemory()>
-			<cfset jvmThreshold = ((jvmFreeMemory/jvmTotalMemory)*100)>
-			<cfset check = variables.CacheFreeMemoryPercentageThreshold lt jvmThreshold>
-		</cfif>
+		<cftry>
+			<!--- Checks --->
+			<cfif variables.CacheFreeMemoryPercentageThreshold neq 0>
+				<cfset fileUtilities = variables.controller.getPlugin("fileUtilities")>
+				<cfset jvmFreeMemory = fileUtilities.getJVMFreeMemory()>
+				<cfset jvmTotalMemory = fileUtilities.getJVMTotalMemory()>
+				<cfset jvmThreshold = ((jvmFreeMemory/jvmTotalMemory)*100)>
+				<cfset check = variables.CacheFreeMemoryPercentageThreshold lt jvmThreshold>
+			</cfif>
+			<cfcatch type="any">
+				<cfset check = true>
+			</cfcatch>
+		</cftry>
 		<cfreturn check>
 	</cffunction>
 	

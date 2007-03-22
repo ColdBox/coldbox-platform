@@ -31,7 +31,10 @@
 		<Setting name="HandlerCaching" 				value="true"/>
 	</Settings>
 
-	<YourSettings />
+	<YourSettings>
+		<Setting name="MyArray"  value="{1,2,3,4,5,6}"/>
+		<Setting name="MyStruct" value="[name:luis majano, email: info@coldboxframework.com, active: true]"/>
+	</YourSettings>
 
 	<!--Optional,if blank it will use the CFMX administrator settings.-->
 	<MailServerSettings>

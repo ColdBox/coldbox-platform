@@ -167,6 +167,8 @@ Modification History:
 		var webPath = "";
 		var localPath = "";
 		var PathLocation = "";
+		//Testers
+		var tester = "";
 		try{
 			//Validate File
 			if ( not fileExists(ConfigFileLocation) ){
@@ -301,15 +303,25 @@ Modification History:
 				ConfigStruct["IOCDefinitionFile"] = "";
 			if ( not structKeyExists(ConfigStruct, "IOCObjectCaching") )
 				ConfigStruct["IOCObjectCaching"] = false;
-
+			
 			//Your Settings To Load
 			YourSettingNodes = XMLSearch(configXML, instance.searchYourSettings);
 			if ( ArrayLen(YourSettingNodes) gt 0 ){
 				//Insert Your Settings to Config Struct
-				for (i=1; i lte ArrayLen(YourSettingNodes); i=i+1)
-				StructInsert( ConfigStruct, YourSettingNodes[i].XMLAttributes["name"], trim(YourSettingNodes[i].XMLAttributes["value"]));
+				for (i=1; i lte ArrayLen(YourSettingNodes); i=i+1){
+					tester = trim(YourSettingNodes[i].XMLAttributes["value"]);
+					//Test for Array
+					if ( left(tester,1) eq "{" and right(tester,1) eq "}"){
+						StructInsert(ConfigStruct, YourSettingNodes[i].XMLAttributes["name"], createArray(tester) );
+					}
+					else if ( left(tester,1) eq "[" and right(tester,1) eq "]"){
+						StructInsert(ConfigStruct, YourSettingNodes[i].XMLAttributes["name"], createStruct(tester) );
+					}
+					else
+						StructInsert( ConfigStruct, YourSettingNodes[i].XMLAttributes["name"], tester);
+				}
 			}
-
+			
 			//Mail Settings
 			MailSettingsNodes = XMLSearch(configXML, instance.searchMailSettings);
 			//Check if empty
@@ -540,6 +552,37 @@ Modification History:
 		</cfscript>
 	</cffunction>
 
+<!------------------------------------------- PRIVATE ------------------------------------------->
+	
+	<cffunction name="createArray" access="private" returntype="array" hint="Create a setting Array">
+		<cfargument name="setting" type="string" required="true" hint="The setting to create an array from">
+		<!--- ************************************************************* --->
+		<!--- Clean {} --->
+		<cfset var cleanList = "">
+		<cfset cleanList = replace(replace(arguments.setting,"{","","all"),"}","","all")>
+		<!--- Create Array --->
+		<cfreturn listToArray(cleanList)>		
+	</cffunction>
+	
 	<!--- ************************************************************* --->
-
+	
+	<cffunction name="createStruct" access="private" returntype="struct" hint="Create a setting Structure">
+		<cfargument name="setting" type="string" required="true" hint="The setting to create a struct from">
+		<!--- ************************************************************* --->
+		<!--- Clean [] --->
+		<cfset var cleanList = "">
+		<cfset var i = 1>
+		<cfset var newStructure = structnew()>
+		<cfset var structList = "">
+		<cfset cleanList = replace(replace(arguments.setting,"[","","all"),"]","","all")>
+		<!--- Loop Through list --->
+		<cfloop from="1" to="#listlen(cleanList)#" index="i">
+			<cfset structList = listgetAt(cleanList,i)>
+			<cfset structInsert(newStructure, trim(getToken(structList,1,":")), trim(getToken(structList,2,":")) )>
+		</cfloop>
+		<!--- Create Array --->
+		<cfreturn newStructure>
+	</cffunction>
+	
+	
 </cfcomponent>
