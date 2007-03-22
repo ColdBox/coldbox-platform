@@ -22,6 +22,8 @@ Modification History:
 		<cfargument name="controller" type="any" required="true">
 		<cfscript>
 			setController(arguments.controller);
+			//Init instance
+			variables.instance = structnew();
 			//instance names
 			variables.instance.pluginName = "";
 			variables.instance.pluginVersion = "";
