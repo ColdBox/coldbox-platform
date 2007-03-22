@@ -7,7 +7,7 @@ www.coldboxframework.com | www.luismajano.com | www.ortussolutions.com
 Author 	    :	Luis Majano
 Date        :	August 21, 2006
 Description :
-	IoC Plugin.
+	IoC Plugin, acts as a IoC Factory Decorator and Facade.
 
 Modification History:
 02/15/2007 - Created
