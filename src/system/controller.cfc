@@ -222,12 +222,6 @@ Description		: This is the main ColdBox front Controller.
 		<!--- Return Plugin --->
 		<cfreturn oPlugin>
 	</cffunction>
-	<cffunction name="getMyPlugin" access="public" hint="Get a custom plugin" returntype="any" output="false">
-		<!--- ************************************************************* --->
-		<cfargument name="plugin" type="string" hint="The Plugin object's name to instantiate" required="true" >
-		<!--- ************************************************************* --->
-		<cfreturn getPlugin(arguments.plugin, true)>
-	</cffunction>
 
 	<!--- Event Context Methods --->
 	<cffunction name="setNextEvent" access="Public" returntype="void" hint="I Set the next event to run and relocate the browser to that event."  output="false">
