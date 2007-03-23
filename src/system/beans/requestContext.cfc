@@ -23,7 +23,7 @@ Modification History:
 		variables.ViewLayouts = "";
 	</cfscript>
 
-	<cffunction name="init" access="public" output="false" hint="constructor" returntype="coldbox.system.beans.requestContext">
+	<cffunction name="init" access="public" output="false" hint="constructor" returntype="any">
 		<!--- ************************************************************* --->
 		<cfargument name="struct1" 		 type="any" 	required="true">
 		<cfargument name="struct2" 		 type="any" 	required="true">

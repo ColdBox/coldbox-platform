@@ -16,7 +16,7 @@ Modification History:
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
-	<cffunction name="init" access="public" output="false" returntype="coldbox.system.util.objectCacheManager" hint="Constructor">
+	<cffunction name="init" access="public" output="false" returntype="any" hint="Constructor">
 		<cfargument name="controller" type="any" required="true">
 		<cfscript>
 		variables.controller = arguments.controller;
@@ -54,7 +54,7 @@ Modification History:
 		<cfargument name="objectKey" type="string" required="true">
 		<!--- ************************************************************* --->
 		<cfset var ObjectFound = false>
-		
+
 		<!--- Reap the cache First, if in frequency --->
 		<cfset reap()>
 
@@ -77,7 +77,7 @@ Modification History:
 		<cfargument name="objectKey" type="string" required="true">
 		<!--- ************************************************************* --->
 		<cfset var ObjectFound = StructNew()>
-		
+
 		<!--- Lookup First --->
 		<cfif lookup(arguments.objectKey)>
 			<!--- Record a Hit --->
@@ -101,23 +101,23 @@ Modification History:
 		<!--- ************************************************************* --->
 		<!---JVM Threshold Checks --->
 		<cfset var isBelowThreshold = ThresholdChecks()>
-			
+
 		<!--- Clean Args --->
 		<cfset arguments.objectKey = trim(arguments.objectKey)>
 		<cfset arguments.Timeout = trim(arguments.Timeout)>
 
 		<!--- Check if we need to do a reap First. --->
 		<cfset reap()>
-		
+
 		<!--- Max Objects in Cache Check --->
 		<cfif (variables.CacheMaxObjects eq 0 or getSize() lt variables.CacheMaxObjects) and
 			  (variables.CacheFreeMemoryPercentageThreshold eq 0 or isBelowThreshold)>
-			
+
 			<!--- Test Timeout Argument, if false, then inherit framework's timeout --->
 			<cfif arguments.Timeout eq "" or not isNumeric(arguments.Timeout) or arguments.Timeout lt 0>
 				<cfset arguments.Timeout = variables.CacheObjectDefaultTimeout>
 			</cfif>
-		
+
 			<!--- Set object in Cache --->
 			<cflock type="exclusive" name="OCM_Operation" timeout="5">
 				<cfscript>
@@ -301,5 +301,5 @@ Modification History:
 		</cftry>
 		<cfreturn check>
 	</cffunction>
-	
+
 </cfcomponent>

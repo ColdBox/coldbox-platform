@@ -16,7 +16,7 @@ Modification History:
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
-	<cffunction name="init" access="public" output="false" returntype="coldbox.system.util.debuggerService" hint="Constructor">
+	<cffunction name="init" access="public" output="false" returntype="any" hint="Constructor">
 		<cfargument name="controller" type="any" required="true">
 		<cfscript>
 			variables.controller = arguments.controller;
@@ -25,7 +25,7 @@ Modification History:
 	</cffunction>
 
 <!------------------------------------------- PUBLIC ------------------------------------------->
-	
+
 	<cffunction name="getDebugMode" access="public" hint="I Get the current user's debugmode" returntype="boolean"  output="false">
 		<cfset var appName = getNamedHash()>
 		<cfif structKeyExists(cookie,"ColdBox_debugMode_#appName#")>
@@ -34,7 +34,7 @@ Modification History:
 			<cfreturn false>
 		</cfif>
 	</cffunction>
-	
+
 	<cffunction name="setDebugMode" access="public" hint="I set the current user's debugmode" returntype="void"  output="false">
 		<cfargument name="mode" type="boolean" required="true" >
 		<cfset var appName = getNamedHash()>
@@ -44,7 +44,7 @@ Modification History:
 			<cfcookie name="ColdBox_debugMode_#appName#" value="false" expires="#now()#">
 		</cfif>
 	</cffunction>
-	
+
 	<cffunction name="renderDebugLog" access="public" hint="Return the debug log." output="false" returntype="Any">
 		<cfset var RenderedDebugging = "">
 		<cfset var Event = controller.getRequestService().getContext()>
@@ -61,11 +61,11 @@ Modification History:
 	</cffunction>
 
 <!------------------------------------------- PRIVATE ------------------------------------------->
-	
+
 	<cffunction name="getNamedHash" returntype="string" access="private" output="false" hint="Provide a hash name for the cookie.">
 	<cfscript>
 		return hash(controller.getSetting("AppName"));
-	</cfscript>	
+	</cfscript>
 	</cffunction>
 
 </cfcomponent>

@@ -38,13 +38,15 @@ Description		: This is the main ColdBox front Controller.
 <!------------------------------------------- PUBLIC ------------------------------------------->
 
 	<!--- Getters / Setters Services & Managers --->
-	<cffunction name="getRequestService" access="public" output="false" returntype="coldbox.system.util.requestService" hint="Get RequestService">
+	<cffunction name="getRequestService" access="public" output="false" returntype="any" hint="Get RequestService">
 		<cfreturn instance.RequestService/>
 	</cffunction>
-	<cffunction name="getColdboxOCM" access="public" output="false" returntype="coldbox.system.util.objectCacheManager" hint="Get ColdboxOCM">
+
+	<cffunction name="getColdboxOCM" access="public" output="false" returntype="any" hint="Get ColdboxOCM">
 		<cfreturn instance.ColdboxOCM/>
 	</cffunction>
-	<cffunction name="getDebuggerService" access="public" output="false" returntype="coldbox.system.util.debuggerService" hint="Get DebuggerService">
+
+	<cffunction name="getDebuggerService" access="public" output="false" returntype="any" hint="Get DebuggerService">
 		<!--- Debugger is Lazy Loaded. --->
 		<cfif structisEmpty(instance.debuggerService)>
 			<cfset instance.debuggerService = CreateObject("component","coldbox.system.util.debuggerService").init(this)>
@@ -56,11 +58,13 @@ Description		: This is the main ColdBox front Controller.
 	<cffunction name="getColdboxInitiated" access="public" output="false" returntype="boolean" hint="Get ColdboxInitiated">
 		<cfreturn instance.ColdboxInitiated/>
 	</cffunction>
+
 	<!--- Accessor/Mutator App Start Handler Fired --->
 	<cffunction name="setAppStartHandlerFired" access="public" output="false" returntype="void" hint="Set AppStartHandlerFired">
 		<cfargument name="AppStartHandlerFired" type="boolean" required="true"/>
 		<cfset instance.AppStartHandlerFired = arguments.AppStartHandlerFired/>
 	</cffunction>
+
 	<cffunction name="getAppStartHandlerFired" access="public" output="false" returntype="boolean" hint="Get AppStartHandlerFired">
 		<cfreturn instance.AppStartHandlerFired/>
 	</cffunction>
@@ -120,13 +124,15 @@ Description		: This is the main ColdBox front Controller.
 	</cffunction>
 
 
-	<!--- Config Structure Accessors/Mutators --->
+	<!--- Config Structures Accessors/Mutators --->
 	<cffunction name="getConfigSettings" access="public" returntype="struct" output="false" hint="I retrieve the Config Settings Structure by Reference">
 		<cfreturn instance.ConfigSettings>
 	</cffunction>
+
 	<cffunction name="getColdboxSettings" access="public" returntype="struct" output="false" hint="I retrieve the ColdBox Settings Structure by Reference">
 		<cfreturn instance.ColdboxSettings>
 	</cffunction>
+
 	<cffunction name="getSettingStructure" hint="Compatability & Utility Method. By default I retrieve the Config Settings. You can change this by using the FWSetting flag." access="public" returntype="struct" output="false">
 		<!--- ************************************************************* --->
 		<cfargument name="FWSetting"  	type="boolean" 	 required="false"  hint="Boolean Flag. If true, it will retrieve from the fwSettingsStruct else the configStruct. Default is false." default="false">

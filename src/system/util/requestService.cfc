@@ -22,7 +22,7 @@ Modification History:
 		variables.controller = "";
 	</cfscript>
 
-	<cffunction name="init" access="public" output="false" returntype="coldbox.system.util.requestService" hint="Constructor">
+	<cffunction name="init" access="public" output="false" returntype="any" hint="Constructor">
 		<cfargument name="controller" type="any" required="true">
 		<cfscript>
 			variables.controller = arguments.controller;
