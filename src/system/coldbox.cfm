@@ -97,44 +97,50 @@ Modification History:
 
 <!--- Start Application Requests --->
 <cftry>
+	<!--- Local Reference --->
+	<cfset cbController = application.cbController>
+	
+	<!--- Try to garbage collect cache, if in frequency --->
+	<cfset cbController.getColdboxOCM().reap()>
+	
 	<!--- Request Capture --->
-	<cfset application.cbController.getRequestService().requestCapture()>
+	<cfset cbController.getRequestService().requestCapture()>
 
 	<!--- Application Start Handler --->
-	<cfif application.cbController.getSetting("ApplicationStartHandler") neq "" and (not application.cbController.getAppStartHandlerFired())>
-		<cfset application.cbController.runEvent(application.cbController.getSetting("ApplicationStartHandler"),true)>
-		<cfset application.cbController.setAppStartHandlerFired(true)>
+	<cfif cbController.getSetting("ApplicationStartHandler") neq "" and (not cbController.getAppStartHandlerFired())>
+		<cfset cbController.runEvent(cbController.getSetting("ApplicationStartHandler"),true)>
+		<cfset cbController.setAppStartHandlerFired(true)>
 	</cfif>
 
 	<!--- IF Found in config, run onRequestStart Handler --->
-	<cfif application.cbController.getSetting("RequestStartHandler") neq "">
-		<cfset application.cbController.runEvent(application.cbController.getSetting("RequestStartHandler"),true)>
+	<cfif cbController.getSetting("RequestStartHandler") neq "">
+		<cfset cbController.runEvent(cbController.getSetting("RequestStartHandler"),true)>
 	</cfif>
 
 	<!--- Run Default/Set Event --->
-	<cfset application.cbController.runEvent()>
+	<cfset cbController.runEvent()>
 
 	<!--- Render Layout/View pair using plugin factory --->
-	<cfoutput>#application.cbController.getPlugin("renderer").renderLayout()#</cfoutput>
+	<cfoutput>#cbController.getPlugin("renderer").renderLayout()#</cfoutput>
 
 	<!--- If Found in config, run onRequestEnd Handler --->
-	<cfif application.cbController.getSetting("RequestEndHandler") neq "">
-		<cfset application.cbController.runEvent(application.cbController.getSetting("RequestEndHandler"),true)>
+	<cfif cbController.getSetting("RequestEndHandler") neq "">
+		<cfset cbController.runEvent(cbController.getSetting("RequestEndHandler"),true)>
 	</cfif>
 
 	<!--- Trap Application Errors --->
 	<cfcatch type="any">
-		<cfset ExceptionBean = application.cbController.ExceptionHandler(cfcatch,"application","Application Execution Exception")>
-		<cfoutput>#application.cbController.getPlugin("renderer").renderBugReport(ExceptionBean)#</cfoutput>
+		<cfset ExceptionBean = cbController.ExceptionHandler(cfcatch,"application","Application Execution Exception")>
+		<cfoutput>#cbController.getPlugin("renderer").renderBugReport(ExceptionBean)#</cfoutput>
 	</cfcatch>
 </cftry>
 
 <!--- Time the request --->
 <cfset request.fwExecTime = GetTickCount() - request.fwExecTime>
 <!--- Get the debugpanel flag --->
-<cfset event = application.cbController.getRequestService().getContext()>
+<cfset event = cbController.getRequestService().getContext()>
 <!--- DebugMode Renders --->
-<cfif application.cbController.getDebugMode() and event.getdebugpanelFlag()>
-	<cfoutput>#application.cbController.getPlugin("renderer").renderDebugLog()#</cfoutput>
+<cfif cbController.getDebugMode() and event.getdebugpanelFlag()>
+	<cfoutput>#cbController.getPlugin("renderer").renderDebugLog()#</cfoutput>
 </cfif>
 <cfsetting enablecfoutputonly="no">
