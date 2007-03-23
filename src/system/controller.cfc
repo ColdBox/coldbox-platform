@@ -20,6 +20,7 @@ Description		: This is the main ColdBox front Controller.
 		variables.instance.AppStartHandlerFired = false;
 		//Services & Managers
 		variables.instance.ColdboxOCM = "";
+		variables.instance.debuggerService = "";
 		variables.instance.RequestService = "";
 	</cfscript>
 
@@ -28,6 +29,7 @@ Description		: This is the main ColdBox front Controller.
 			//Create Managers & Services
 			instance.ColdboxOCM = CreateObject("component","coldbox.system.util.objectCacheManager").init(this);
 			instance.RequestService = CreateObject("component","coldbox.system.util.requestService").init(this);
+			instance.debuggerService = CreateObject("component","coldbox.system.util.debuggerService").init(this);
 			//Return instance
 			return this;
 		</cfscript>
@@ -42,6 +44,9 @@ Description		: This is the main ColdBox front Controller.
 	<cffunction name="getColdboxOCM" access="public" output="false" returntype="coldbox.system.util.objectCacheManager" hint="Get ColdboxOCM">
 		<cfreturn instance.ColdboxOCM/>
 	</cffunction>
+	<cffunction name="getDebuggerService" access="public" output="false" returntype="coldbox.system.util.debuggerService" hint="Get DebuggerService">
+		<cfreturn instance.debuggerService/>
+	</cffunction>
 
 	<!--- Accessor ColdBox Initiation Flag --->
 	<cffunction name="getColdboxInitiated" access="public" output="false" returntype="boolean" hint="Get ColdboxInitiated">
@@ -54,25 +59,6 @@ Description		: This is the main ColdBox front Controller.
 	</cffunction>
 	<cffunction name="getAppStartHandlerFired" access="public" output="false" returntype="boolean" hint="Get AppStartHandlerFired">
 		<cfreturn instance.AppStartHandlerFired/>
-	</cffunction>
-
-	<!--- Debugging Accessor/Mutators --->
-	<cffunction name="getDebugMode" access="public" hint="I Get the current user's debugmode" returntype="boolean"  output="false">
-		<cfset var appName = URLEncodedFormat(replace(replace(getSetting("AppName")," ","","all"),".","_","all"))>
-		<cfif structKeyExists(cookie,"ColdBox_debugMode_#appName#")>
-			<cfreturn cookie["ColdBox_debugMode_#appName#"]>
-		<cfelse>
-			<cfreturn false>
-		</cfif>
-	</cffunction>
-	<cffunction name="setDebugMode" access="public" hint="I set the current user's debugmode" returntype="void"  output="false">
-		<cfargument name="mode" type="boolean" required="true" >
-		<cfset var appName = URLEncodedFormat(replace(replace(getSetting("AppName")," ","","all"),".","_","all"))>
-		<cfif arguments.mode>
-			<cfcookie name="ColdBox_debugMode_#appName#" value="true">
-		<cfelseif structKeyExists(cookie,"ColdBox_debugMode_#appName#")>
-			<cfcookie name="ColdBox_debugMode_#appName#" value="false" expires="#now()#">
-		</cfif>
 	</cffunction>
 
 	<!--- Config Loader Method --->
@@ -99,7 +85,7 @@ Description		: This is the main ColdBox front Controller.
 			getPlugin("logger").initLogLocation();
 
 		//Set Debugging Mode according to configuration
-		setDebugMode(getSetting("DebugMode"));
+		getDebuggerService().setDebugMode(getSetting("DebugMode"));
 
 		// Flag the initiation, Framework is ready to serve requests. Praise be to GOD.
 		instance.ColdboxInitiated = true;

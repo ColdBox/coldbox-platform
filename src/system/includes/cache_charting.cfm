@@ -12,13 +12,12 @@
 		<td>
 		<cfchart format="png" show3d="true" backgroundcolor="##eeeeee" chartwidth="150">
 			<cfchartseries type="bar" colorlist="93C2FF,ED2939" >
-				<cfchartdata item="Hits" value="#getColdboxOCM().getCachePerformance().hits#">
-				<cfchartdata item="Misses" value="#getColdboxOCM().getCachePerformance().misses#">
+				<cfchartdata item="Hits" value="#controller.getColdboxOCM().getCachePerformance().hits#">
+				<cfchartdata item="Misses" value="#controller.getColdboxOCM().getCachePerformance().misses#">
 			</cfchartseries>
 		</cfchart>
 		</td>
 		<td>
-		<cfset itemTypes = getColdboxOCM().getItemTypes()>
 		<cfchart format="png" show3d="true" backgroundcolor="##eeeeee" gridlines="true">
 			<cfchartseries type="pie" colorlist="93C2FF" >
 				<cfchartdata item="Plugins" value="#itemTypes.plugins#">

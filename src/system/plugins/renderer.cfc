@@ -112,15 +112,6 @@ Modification History:
 
 	<!--- ************************************************************* --->
 
-	<cffunction name="renderDebugLog" access="public" hint="Return the debug log." output="false" returntype="Any">
-		<cfset var RenderedDebugging = "">
-		<cfset var Event = controller.getRequestService().getContext()>
-		<cfsavecontent variable="RederedDebugging"><cfinclude template="../includes/debug.cfm"></cfsavecontent>
-		<cfreturn RederedDebugging>
-	</cffunction>
-
-	<!--- ************************************************************* --->
-
 	<cffunction name="renderBugReport" access="public" hint="Render a Bug Report." output="false" returntype="Any">
 		<cfargument name="ExceptionBean" type="any" required="true">
 		<cfset var BugReport = "">

@@ -140,7 +140,7 @@ Modification History:
 <!--- Get the debugpanel flag --->
 <cfset event = cbController.getRequestService().getContext()>
 <!--- DebugMode Renders --->
-<cfif cbController.getDebugMode() and event.getdebugpanelFlag()>
-	<cfoutput>#cbController.getPlugin("renderer").renderDebugLog()#</cfoutput>
+<cfif cbController.getDebuggerService().getDebugMode() and event.getdebugpanelFlag()>
+	<cfoutput>#cbController.getDebuggerService().renderDebugLog()#</cfoutput>
 </cfif>
 <cfsetting enablecfoutputonly="no">

@@ -21,13 +21,6 @@ Modification History:
 07/12/2006 - Tracer now shows first expanded.
 02/01/2007 - Updated context references
 ----------------------------------------------------------------------->
-<!--- Setup Local Variables --->
-<cfset debugStartTime = GetTickCount()>
-<cfset RequestCollection = Event.getCollection()>
-<!--- JVM Data --->
-<cfset JVMFreeMemory = getPlugin("fileUtilities").getJVMfreeMemory()/1024>
-<cfset JVMTotalMemory = getPlugin("fileUtilities").getJVMTotalMemory()/1024>
-
 <cfoutput>
 <!--- Style --->
 <style>
@@ -136,7 +129,7 @@ function toggle(divid){
 		  Server Instance:
 		</div>
 		<div class="fw_debugContentCell">
-	    #getPlugin("fileUtilities").getInetHost()#
+	    #controller.getPlugin("fileUtilities").getInetHost()#
 		</div>
 
 		<div class="fw_debugTitleCell">
@@ -200,9 +193,9 @@ function toggle(divid){
 		  Cache Performance
 		</div>
 		<div class="fw_debugContentCell">
-		 <em>Ratio:</em> #NumberFormat(getColdboxOCM().getCachePerformanceRatio(),"999.99")#%  ==>
-		 <em>Hits:</em> #getColdboxOCM().getCachePerformance().hits# |
-		 <em>Misses:</em> #getColdboxOCM().getCachePerformance().misses#
+		 <em>Ratio:</em> #NumberFormat(controller.getColdboxOCM().getCachePerformanceRatio(),"999.99")#%  ==>
+		 <em>Hits:</em> #controller.getColdboxOCM().getCachePerformance().hits# |
+		 <em>Misses:</em> #controller.getColdboxOCM().getCachePerformance().misses#
 		</div>
 		
 		<div class="fw_debugTitleCell">
@@ -216,8 +209,8 @@ function toggle(divid){
 		  Last Reap
 		</div>
 		<div class="fw_debugContentCell">
-		 #DateFormat(getColdboxOCM().getlastReapDatetime(),"MMM-DD-YYYY")#
-		 #TimeFormat(getColdboxOCM().getlastReapDatetime(),"hh:mm:ss tt")#
+		 #DateFormat(controller.getColdboxOCM().getlastReapDatetime(),"MMM-DD-YYYY")#
+		 #TimeFormat(controller.getColdboxOCM().getlastReapDatetime(),"hh:mm:ss tt")#
 		</div>
 
 		<div class="fw_debugTitleCell">
@@ -245,7 +238,7 @@ function toggle(divid){
 			<!--- Why use a cfinclude? well, bluedragon would not compile this without it --->
 			<cfinclude template="cache_charting.cfm">
 		<cfelse>
-			<cfset itemTypes = getColdboxOCM().getItemTypes()>
+			<cfset itemTypes = controller.getColdboxOCM().getItemTypes()>
 			<div class="fw_debugTitleCell">
 			  Objects In Cache:
 			</div>
@@ -264,7 +257,7 @@ function toggle(divid){
 <!--- **************************************************************--->
 <!--- DUMP VAR --->
 <!--- **************************************************************--->
-	<cfif getController().getSetting("EnableDumpVar")>
+	<cfif controller.getSetting("EnableDumpVar")>
 		<cfset dumpList = Event.getValue("dumpvar",0)>
 		<cfif dumplist neq 0>
 		<!--- Dump Var --->

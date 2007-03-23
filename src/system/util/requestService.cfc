@@ -40,9 +40,9 @@ Modification History:
 			//Debug Mode Checks
 			if ( Context.valueExists("debugMode") and isBoolean(Context.getValue("debugMode")) ){
 				if ( DebugPassword eq "")
-					controller.setDebugMode(Context.getValue("debugMode"));
+					controller.getDebuggerService().setDebugMode(Context.getValue("debugMode"));
 				else if ( Context.valueExists("debugpass") and CompareNoCase(DebugPassword,Context.getValue("debugpass")) eq 0 )
-					controller.setDebugMode(Context.getValue("debugMode"));
+					controller.getDebuggerService().setDebugMode(Context.getValue("debugMode"));
 			}
 
 			//Event Checks
