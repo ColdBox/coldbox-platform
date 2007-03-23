@@ -11,6 +11,7 @@ Description: This is the framework's simple bean factory.
 Modifications:
 07/29/2006 - Added more hints.
 12/08/2006 - Added makeBean method thanks to Sana Ullah. It will create and or populate a bean with the same request collection field names.
+03/22/2007 - Modified Sana's code to only make one call to the trim() method
 ----------------------------------------------------------------------->
 <cfcomponent name="beanFactory"
 			 hint="I am a simple bean factory and you can use me if you want."
@@ -72,9 +73,10 @@ Modifications:
 			</cfif>
 			<!--- Populate Bean --->
 			<cfloop collection="#fields#" item="FieldKey">
-				<cfif structKeyExists(beanInstance, "set" & trim(FieldKey))>
-					<cfinvoke component="#beanInstance#" method="set#trim(FieldKey)#">
-						<cfinvokeargument name="#trim(FieldKey)#" value="#fields[FieldKey]#">
+				<cfset FieldKey = Trim(FieldKey)>
+				<cfif structKeyExists(beanInstance, "set" & FieldKey)>
+					<cfinvoke component="#beanInstance#" method="set#FieldKey#">
+						<cfinvokeargument name="#FieldKey#" value="#fields[FieldKey]#">
 					</cfinvoke>
 				</cfif>
 			</cfloop>
