@@ -67,7 +67,7 @@ Modification History:
 
 	<!--- ************************************************************* --->
 
-	<cffunction name="reloadDefinitionFile" access="public" output="false" returntype="string" hint="Reloads the IoC factory with the Definition File">
+	<cffunction name="reloadDefinitionFile" access="public" output="false" returntype="void" hint="Reloads the IoC factory with the Definition File">
 		<cfswitch expression="#lcase(instance.IOCFramework)#">
 
 			<cfcase value="coldspring">

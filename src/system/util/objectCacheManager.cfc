@@ -200,7 +200,7 @@ Modification History:
 
 	<!--- ************************************************************* --->
 
-	<cffunction name="getcachePerformance" access="public" output="false" returntype="any" hint="Get the cachePerformance structure">
+	<cffunction name="getcachePerformance" access="public" output="false" returntype="struct" hint="Get the cachePerformance structure">
 		<cfscript>
 		return variables.cachePerformance;
 		</cfscript>
@@ -208,7 +208,7 @@ Modification History:
 
 	<!--- ************************************************************* --->
 
-	<cffunction name="getItemTypes" access="public" output="false" returntype="any" hint="Get the item types of the cache.">
+	<cffunction name="getItemTypes" access="public" output="false" returntype="struct" hint="Get the item types of the cache.">
 		<cfscript>
 		var x = 1;
 		var itemList = structKeyList(variables.cb_objects);
