@@ -20,7 +20,7 @@ Description		: This is the main ColdBox front Controller.
 		variables.instance.AppStartHandlerFired = false;
 		//Services & Managers
 		variables.instance.ColdboxOCM = "";
-		variables.instance.debuggerService = "";
+		variables.instance.debuggerService = structNew();
 		variables.instance.RequestService = "";
 	</cfscript>
 
@@ -29,7 +29,7 @@ Description		: This is the main ColdBox front Controller.
 			//Create Managers & Services
 			instance.ColdboxOCM = CreateObject("component","coldbox.system.util.objectCacheManager").init(this);
 			instance.RequestService = CreateObject("component","coldbox.system.util.requestService").init(this);
-			instance.debuggerService = CreateObject("component","coldbox.system.util.debuggerService").init(this);
+			//Debugger Service is Lazy Loaded, if needed.
 			//Return instance
 			return this;
 		</cfscript>
@@ -45,6 +45,10 @@ Description		: This is the main ColdBox front Controller.
 		<cfreturn instance.ColdboxOCM/>
 	</cffunction>
 	<cffunction name="getDebuggerService" access="public" output="false" returntype="coldbox.system.util.debuggerService" hint="Get DebuggerService">
+		<!--- Debugger is Lazy Loaded. --->
+		<cfif structisEmpty(instance.debuggerService)>
+			<cfset instance.debuggerService = CreateObject("component","coldbox.system.util.debuggerService").init(this)>
+		</cfif>
 		<cfreturn instance.debuggerService/>
 	</cffunction>
 
