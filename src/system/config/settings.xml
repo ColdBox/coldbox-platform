@@ -31,11 +31,11 @@
         <!--MessageBox Plugin Storage Scope (session|client)-->
         <Setting name="MessageBoxStorage" value="session"/>
         <!--ColdBox Cache Parameter: Default Object Timeout in Minutes -->
-        <Setting name="CacheObjectDefaultTimeout" value="180"/>
+        <Setting name="CacheObjectDefaultTimeout" value="20"/>
         <!--ColdBox Cache Parameter: Default Object Last Accessed Timeout in Minutes -->
-        <Setting name="CacheObjectDefaultLastAccessTimeout" value="10"/>
+        <Setting name="CacheObjectDefaultLastAccessTimeout" value="5"/>
         <!--ColdBox Cache Parameter: Cache Reap Frequency in Minutes -->
-        <Setting name="CacheReapFrequency" value="5"/>
+        <Setting name="CacheReapFrequency" value="1"/>
         <!--ColdBox Cache Parameter: Maximum number of Objects in cache (0=Unlimited)-->
         <Setting name="CacheMaxObjects" value="0"/>
         <!--ColdBox Cache Parameter: Free JVM Memory % Threshold (0=not used)-->
