@@ -14,6 +14,7 @@ color:#FFFFFF;
 border:1px dotted #eaeaea;
 background-color: #3366CC;
 padding:5px 5px 5px 5px;
+cursor: pointer;cursor:hand;
 }
 .fw_titles:hover{
    background-color: #fcb554;

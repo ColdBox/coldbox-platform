@@ -22,22 +22,7 @@ Modification History:
 02/01/2007 - Updated context references
 ----------------------------------------------------------------------->
 <cfoutput>
-<!--- Style --->
-<style>
-<cfinclude template="style.css">
-</style>
-<script  language="javascript" type="text/javascript">
-<cfoutput>
-function toggle(divid){
-	if ( document.getElementById(divid).className == "fw_debugContent"){
-		document.getElementById(divid).className = "fw_debugContentView";
-	}
-	else{
-		document.getElementById(divid).className = "fw_debugContent";
-	}
-}
-</cfoutput>
-</script>
+<cfinclude template="debugHeader.cfm">
 <br><br><br>
 <div class="fw_debugPanel">
 
@@ -190,97 +175,8 @@ function toggle(divid){
 <!--- **************************************************************--->
 <!--- Cache Performance --->
 <!--- **************************************************************--->
-	<div class="fw_titles" onClick="toggle('fw_cache')">&gt;&nbsp; ColdBox Cache </div>
-	<div class="fw_debugContentView" id="fw_cache">
-		<div class="fw_debugTitleCell">
-		  Cache Performance
-		</div>
-		<div class="fw_debugContentCell">
-		 <em>Ratio:</em> #NumberFormat(controller.getColdboxOCM().getCachePerformanceRatio(),"999.99")#%  ==>
-		 <em>Hits:</em> #controller.getColdboxOCM().getCachePerformance().hits# |
-		 <em>Misses:</em> #controller.getColdboxOCM().getCachePerformance().misses#
-		</div>
 
-		<div class="fw_debugTitleCell">
-		  Free Memory
-		</div>
-		<div class="fw_debugContentCell">
-		 <em>#NumberFormat((JVMFreeMemory/JVMTotalMemory)*100,"99.99")# % Free</em>
-		</div>
-
-		<div class="fw_debugTitleCell">
-		  Last Reap
-		</div>
-		<div class="fw_debugContentCell">
-		 #DateFormat(controller.getColdboxOCM().getlastReapDatetime(),"MMM-DD-YYYY")#
-		 #TimeFormat(controller.getColdboxOCM().getlastReapDatetime(),"hh:mm:ss tt")#
-		</div>
-
-		<div class="fw_debugTitleCell">
-		  Reap Frequency
-		</div>
-		<div class="fw_debugContentCell">
-		 Every #controller.getSetting("CacheReapFrequency",1)# Minutes
-		</div>
-
-		<div class="fw_debugTitleCell">
-		  Default Timeout
-		</div>
-		<div class="fw_debugContentCell">
-		 #controller.getSetting("CacheObjectDefaultTimeout",1)# Minutes
-		</div>
-
-		<div class="fw_debugTitleCell">
-		  Last Access Timeout
-		</div>
-		<div class="fw_debugContentCell">
-		 #controller.getSetting("CacheObjectDefaultLastAccessTimeout",1)# Minutes
-		</div>
-
-		<div class="fw_debugTitleCell">
-		  Total Objects in Cache
-		</div>
-		<div class="fw_debugContentCell">
-		 #controller.getColdBoxOCM().getSize()# Objects
-		</div>
-		<!--- **************************************************************--->
-		<cfif server.ColdFusion.ProductName eq "Coldfusion Server">
-			<!--- Why use a cfinclude? well, bluedragon would not compile this without it --->
-			<cfinclude template="cache_charting.cfm">
-		<cfelse>
-			<div class="fw_debugTitleCell">
-			  Objects In Cache:
-			</div>
-			<div class="fw_debugContentCell">
-			 <b>Plugins: </b> #itemTypes.plugins# &nbsp;
-			 <b>Handlers: </b> #itemTypes.handlers# &nbsp;
-			 <b>IoC Beans: </b> #itemTypes.ioc_beans# &nbsp;
-			 <b>Other: </b> #itemTypes.other#
-			</div>
-			<em>Charting is not supported in your coldfusion engine. Cache Charts skipped.</em>
-			<br>
-		</cfif>
-
-		<table border="0" align="center" cellpadding="0" cellspacing="1" class="fw_debugTables">
-		  <tr >
-		  	<td class="fw_debugTablesTitles">Object</td>
-			<td align="center" width="10%" align="center" class="fw_debugTablesTitles">Hits</td>
-			<td align="center" width="10%" align="center" class="fw_debugTablesTitles">Timeout (Min)</td>
-			<td align="center" width="15%" class="fw_debugTablesTitles">Created</td>
-			<td align="center" width="15%" class="fw_debugTablesTitles">Last Accessed</td>
-		  </tr>
-		  <cfloop collection="#cacheMetadata#" item="key">
-		  <tr >
-		  	<td class="fw_debugTablesCells">#key#</td>
-			<td align="center" class="fw_debugTablesCells">#cacheMetadata[key].hits#</td>
-			<td align="center" class="fw_debugTablesCells">#cacheMetadata[key].Timeout#</td>
-			<td align="center" class="fw_debugTablesCells">#cacheMetadata[key].Created#</td>
-			<td align="center" class="fw_debugTablesCells">#cacheMetadata[key].lastaccesed#</td>
-		  </tr>
-		  </cfloop>
-		</table>
-	<!--- **************************************************************--->
-	</div>
+	<cfinclude template="cachepanel.cfm">
 
 <!--- **************************************************************--->
 <!--- DUMP VAR --->

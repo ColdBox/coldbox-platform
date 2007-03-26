@@ -54,6 +54,8 @@ Modification History:
 		<!--- Setup Local Variables --->
 		<cfset var debugStartTime = GetTickCount()>
 		<cfset var RequestCollection = Event.getCollection()>
+		<!--- Debug Rendering Type --->
+		<cfset var renderType = "main">
 		<!--- JVM Data --->
 		<cfset var JVMFreeMemory = controller.getPlugin("fileUtilities").getJVMfreeMemory()/1024>
 		<cfset var JVMTotalMemory = controller.getPlugin("fileUtilities").getJVMTotalMemory()/1024>
@@ -61,6 +63,23 @@ Modification History:
 		<cfreturn RederedDebugging>
 	</cffunction>
 
+	<cffunction name="renderCachePanel" access="public" hint="Renders the caching panel." output="false" returntype="Any">
+		<cfset var event = controller.getRequestService().getContext()>
+		<cfset var RenderedDebugging = "">
+		<!--- Set local Variables --->
+		<cfset var itemTypes = controller.getOCM().getItemTypes()>
+		<cfset var cacheMetadata = controller.getOCM().getpool_metadata()>
+		<!--- Setup Local Variables --->
+		<cfset var RequestCollection = Event.getCollection()>
+		<!--- JVM Data --->
+		<cfset var JVMFreeMemory = controller.getPlugin("fileUtilities").getJVMfreeMemory()/1024>
+		<cfset var JVMTotalMemory = controller.getPlugin("fileUtilities").getJVMTotalMemory()/1024>
+		<!--- Debug Rendering Type --->
+		<cfset var renderType = "cachepanel">
+		<!--- Generate Debugging --->
+		<cfsavecontent variable="RederedDebugging"><cfinclude template="../includes/cachepanel.cfm"></cfsavecontent>
+		<cfreturn RederedDebugging>
+	</cffunction>
 <!------------------------------------------- PRIVATE ------------------------------------------->
 
 	<cffunction name="getNamedHash" returntype="string" access="private" output="false" hint="Provide a hash name for the cookie.">
