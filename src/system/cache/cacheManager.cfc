@@ -11,6 +11,7 @@ Description :
 
 Modification History:
 01/18/2007 - Created
+
 ----------------------------------------------------------------------->
 <cfcomponent name="cacheManager" hint="Manages handler,plugin,custom plugin and object caching. It is thread safe and implements locking for you." output="false">
 
