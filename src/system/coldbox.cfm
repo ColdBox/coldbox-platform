@@ -22,18 +22,10 @@ Modification History:
 08/07/2006 - Ticket #45 fix, autoreloadflag cleaned handlers.
 08/20/2006 - Reusabel setupCalls()
 12/20/2006 - fwreinit password enabled.
+03/24/2007 - move to 2.0 Using Loader Service
 ---------------------------------------------------------------------->
 
 <!---------------------------------------------------------------------->
-<cffunction name="setupCalls" returntype="void">
-	<cfscript>
-	//Load Configuration
-	application.cbController.configLoader();
-	//Register the Handlers.
-	application.cbController.registerHandlers();
-	</cfscript>
-</cffunction>
-
 <cffunction name="isfwReinit" returntype="boolean">
  	<cfscript>
 	var reinitPass = "";
@@ -68,7 +60,7 @@ Modification History:
 	<cflock type="exclusive" scope="application" timeout="#lockTimeout#">
 		<cfif not structkeyExists(application,"cbController") or not application.cbController.getColdboxInitiated() or isfwReinit()>
 			<cfset application.cbController = CreateObject("component","coldbox.system.controller").init()>
-			<cfset setupCalls()>
+			<cfset application.cbController.getService("loader").setupCalls()>
 		</cfif>
 	</cflock>
 <cfelse>
@@ -76,11 +68,11 @@ Modification History:
 		<!--- AutoReload Tests --->
 		<cfif application.cbController.getSetting("ConfigAutoReload")>
 			<cflock type="exclusive" name="Coldbox_configloader" timeout="#lockTimeout#">
-				<cfset setupCalls()>
+				<cfset application.cbController.getService("loader").setupCalls()>
 			</cflock>
 		<cfelseif application.cbController.getSetting("HandlersIndexAutoReload")>
 			<cflock type="exclusive" name="Coldbox_configloader" timeout="#lockTimeout#">
-				<cfset application.cbController.registerHandlers()>
+				<cfset application.cbController.getService("loader").registerHandlers()>
 				<!--- Clear Cache --->
 				<cfset application.cbController.getColdboxOCM().clear()>
 			</cflock>
@@ -88,8 +80,9 @@ Modification History:
 
 		<!--- Trap Framework Errors --->
 		<cfcatch type="any">
-			<cfset ExceptionBean = application.cbController.ExceptionHandler(cfcatch,"framework","Framework Initialization/Configuration Exception")>
-			<cfoutput>#application.cbController.getPlugin("renderer").renderBugReport(ExceptionBean)#</cfoutput>
+			<cfset ExceptionService = application.cbController.getService("exception")>
+			<cfset ExceptionBean = ExceptionService.ExceptionHandler(cfcatch,"framework","Framework Initialization/Configuration Exception")>
+			<cfoutput>#ExceptionService.renderBugReport(ExceptionBean)#</cfoutput>
 			<cfabort>
 		</cfcatch>
 	</cftry>
@@ -99,12 +92,9 @@ Modification History:
 <cftry>
 	<!--- Local Reference --->
 	<cfset cbController = application.cbController>
-	
-	<!--- Try to garbage collect cache, if in frequency --->
-	<cfset cbController.getColdboxOCM().reap()>
-	
-	<!--- Request Capture --->
-	<cfset cbController.getRequestService().requestCapture()>
+
+	<!--- Create Request Context & Capture Request --->
+	<cfset Event = cbController.getRequestService().requestCapture()>
 
 	<!--- Application Start Handler --->
 	<cfif cbController.getSetting("ApplicationStartHandler") neq "" and (not cbController.getAppStartHandlerFired())>
@@ -130,17 +120,17 @@ Modification History:
 
 	<!--- Trap Application Errors --->
 	<cfcatch type="any">
-		<cfset ExceptionBean = cbController.ExceptionHandler(cfcatch,"application","Application Execution Exception")>
-		<cfoutput>#cbController.getPlugin("renderer").renderBugReport(ExceptionBean)#</cfoutput>
+		<cfset ExceptionService = application.cbController.getService("exception")>
+		<cfset ExceptionBean = ExceptionService.ExceptionHandler(cfcatch,"application","Application Execution Exception")>
+		<cfoutput>#ExceptionService.renderBugReport(ExceptionBean)#</cfoutput>
 	</cfcatch>
 </cftry>
 
-<!--- Time the request --->
-<cfset request.fwExecTime = GetTickCount() - request.fwExecTime>
-<!--- Get the debugpanel flag --->
-<cfset event = cbController.getRequestService().getContext()>
 <!--- DebugMode Renders --->
-<cfif cbController.getDebuggerService().getDebugMode() and event.getdebugpanelFlag()>
+<cfif cbController.getDebuggerService().getDebugMode() and Event.getdebugpanelFlag()>
+	<!--- Time the request --->
+	<cfset request.fwExecTime = GetTickCount() - request.fwExecTime>
+	<!--- Render Debug Log --->
 	<cfoutput>#cbController.getDebuggerService().renderDebugLog()#</cfoutput>
 </cfif>
 <cfsetting enablecfoutputonly="no">

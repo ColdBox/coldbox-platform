@@ -19,17 +19,17 @@ Description		: This is the main ColdBox front Controller.
 		variables.instance.ColdboxSettings = structnew();
 		variables.instance.AppStartHandlerFired = false;
 		//Services & Managers
-		variables.instance.ColdboxOCM = "";
-		variables.instance.debuggerService = structNew();
-		variables.instance.RequestService = "";
+		variables.instance.ColdboxOCM = structNew();
+		variables.instance.DebuggerService = structNew();
+		variables.instance.RequestService = structNew();
 	</cfscript>
 
 	<cffunction name="init" returntype="any" access="Public" hint="I am the constructor" output="false">
 		<cfscript>
 			//Create Managers & Services
-			instance.ColdboxOCM = CreateObject("component","coldbox.system.util.objectCacheManager").init(this);
-			instance.RequestService = CreateObject("component","coldbox.system.util.requestService").init(this);
-			//Debugger Service is Lazy Loaded, if needed.
+			instance.ColdboxOCM = getService("cache");
+			instance.RequestService = getService("request");
+			instance.DebuggerService = getService("debugger");
 			//Return instance
 			return this;
 		</cfscript>
@@ -38,25 +38,39 @@ Description		: This is the main ColdBox front Controller.
 <!------------------------------------------- PUBLIC ------------------------------------------->
 
 	<!--- Getters / Setters Services & Managers --->
-	<cffunction name="getRequestService" access="public" output="false" returntype="any" hint="Get RequestService">
-		<cfreturn instance.RequestService/>
-	</cffunction>
-
 	<cffunction name="getColdboxOCM" access="public" output="false" returntype="any" hint="Get ColdboxOCM">
 		<cfreturn instance.ColdboxOCM/>
 	</cffunction>
-
+	<cffunction name="getRequestService" access="public" output="false" returntype="any" hint="Get RequestService">
+		<cfreturn instance.RequestService/>
+	</cffunction>
 	<cffunction name="getDebuggerService" access="public" output="false" returntype="any" hint="Get DebuggerService">
-		<!--- Debugger is Lazy Loaded. --->
-		<cfif structisEmpty(instance.debuggerService)>
-			<cfset instance.debuggerService = CreateObject("component","coldbox.system.util.debuggerService").init(this)>
-		</cfif>
-		<cfreturn instance.debuggerService/>
+		<cfreturn instance.DebuggerService/>
+	</cffunction>
+
+	<!--- Getter & Setter Internal Structures --->
+	<cffunction name="getConfigSettings" access="public" returntype="struct" output="false" hint="I retrieve the Config Settings Structure by Reference">
+		<cfreturn instance.ConfigSettings>
+	</cffunction>
+	<cffunction name="setConfigSettings" access="public" output="false" returntype="void" hint="Set ConfigSettings">
+		<cfargument name="ConfigSettings" type="struct" required="true"/>
+		<cfset instance.ConfigSettings = arguments.ConfigSettings/>
+	</cffunction>
+	<cffunction name="getColdboxSettings" access="public" returntype="struct" output="false" hint="I retrieve the ColdBox Settings Structure by Reference">
+		<cfreturn instance.ColdboxSettings>
+	</cffunction>
+	<cffunction name="setColdboxSettings" access="public" output="false" returntype="void" hint="Set ColdboxSettings">
+		<cfargument name="ColdboxSettings" type="struct" required="true"/>
+		<cfset instance.ColdboxSettings = arguments.ColdboxSettings/>
 	</cffunction>
 
 	<!--- Accessor ColdBox Initiation Flag --->
 	<cffunction name="getColdboxInitiated" access="public" output="false" returntype="boolean" hint="Get ColdboxInitiated">
 		<cfreturn instance.ColdboxInitiated/>
+	</cffunction>
+	<cffunction name="setColdboxInitiated" access="public" output="false" returntype="void" hint="Set ColdboxInitiated">
+		<cfargument name="ColdboxInitiated" type="boolean" required="true"/>
+		<cfset instance.ColdboxInitiated = arguments.ColdboxInitiated/>
 	</cffunction>
 
 	<!--- Accessor/Mutator App Start Handler Fired --->
@@ -64,75 +78,11 @@ Description		: This is the main ColdBox front Controller.
 		<cfargument name="AppStartHandlerFired" type="boolean" required="true"/>
 		<cfset instance.AppStartHandlerFired = arguments.AppStartHandlerFired/>
 	</cffunction>
-
 	<cffunction name="getAppStartHandlerFired" access="public" output="false" returntype="boolean" hint="Get AppStartHandlerFired">
 		<cfreturn instance.AppStartHandlerFired/>
 	</cffunction>
 
-	<!--- Config Loader Method --->
-	<cffunction name="configLoader" returntype="void" access="Public" hint="I Load the configurations and init the framework variables." output="false">
-		<cfscript>
-		var XMLParser = getPlugin("XMLParser");
-		//Load Coldbox Config Settings Structure
-		instance.ColdboxSettings = XMLParser.loadFramework();
-		//Load Application Config Settings
-		instance.ConfigSettings = XMLParser.parseConfig();
-		//Configure Caching Manager
-		instance.ColdboxOCM.configure();
-
-		//IoC Plugin Manager
-		if ( getSetting("IOCFramework") neq "" ){
-			getPlugin("ioc");
-		}
-		//Load i18N if application is using it.
-		if ( getSetting("using_i18N") )
-			getPlugin("i18n").init_i18N(getSetting("DefaultResourceBundle"),getSetting("DefaultLocale"));
-
-		//Initialize AOP Logging if requested.
-		if ( getSetting("EnableColdboxLogging") )
-			getPlugin("logger").initLogLocation();
-
-		//Set Debugging Mode according to configuration
-		getDebuggerService().setDebugMode(getSetting("DebugMode"));
-
-		// Flag the initiation, Framework is ready to serve requests. Praise be to GOD.
-		instance.ColdboxInitiated = true;
-		</cfscript>
-	</cffunction>
-	<!--- Framework Register Handlers --->
-	<cffunction name="registerHandlers" access="public" returntype="void" hint="I register your application's event handlers" output="false">
-		<cfset var HandlersPath = getSetting("HandlersPath")>
-		<cfset var HandlerArray = Arraynew(1)>
-
-		<!--- Check for Handlers Directory Location --->
-		<cfif not directoryExists(HandlersPath)>
-			<cfthrow type="Framework.plugins.settings.HandlersDirectoryNotFoundException" message="The handlers directory: #handlerspath# does not exist please check your application structure or your Application Mapping.">
-		</cfif>
-
-		<!--- Get recursive Array listing --->
-		<cfset HandlerArray = recurseListing(HandlerArray, HandlersPath, HandlersPath)>
-		<!--- Verify it --->
-		<cfif ArrayLen(HandlerArray) eq 0>
-			<cfthrow type="Framework.plugins.settings.NoHandlersFoundException" message="No handlers were found in: #HandlerPath#. So I have no clue how you are going to run this application.">
-		</cfif>
-
-		<!--- Sort The Array --->
-		<cfset ArraySort(HandlerArray,"text")>
-
-		<!--- Set registered Handlers --->
-		<cfset setSetting("RegisteredHandlers",arrayToList(HandlerArray))>
-	</cffunction>
-
-
 	<!--- Config Structures Accessors/Mutators --->
-	<cffunction name="getConfigSettings" access="public" returntype="struct" output="false" hint="I retrieve the Config Settings Structure by Reference">
-		<cfreturn instance.ConfigSettings>
-	</cffunction>
-
-	<cffunction name="getColdboxSettings" access="public" returntype="struct" output="false" hint="I retrieve the ColdBox Settings Structure by Reference">
-		<cfreturn instance.ColdboxSettings>
-	</cffunction>
-
 	<cffunction name="getSettingStructure" hint="Compatability & Utility Method. By default I retrieve the Config Settings. You can change this by using the FWSetting flag." access="public" returntype="struct" output="false">
 		<!--- ************************************************************* --->
 		<cfargument name="FWSetting"  	type="boolean" 	 required="false"  hint="Boolean Flag. If true, it will retrieve from the fwSettingsStruct else the configStruct. Default is false." default="false">
@@ -188,6 +138,37 @@ Description		: This is the main ColdBox front Controller.
 		</cfscript>
 	</cffunction>
 
+	<!--- Service Locator --->
+	<cffunction name="getService" access="public" output="false" returntype="any" hint="Internal ColdBox Service Locator.">
+		<cfargument name="service" type="string" required="true" hint="The service/manager to create.">
+		<cfscript>
+		//Some services get loaded as singleton's, other are just created as needed
+		var servicePath = "";
+		switch(arguments.service){
+			//Loader
+			case "loader":
+				servicePath = "services.loaderService";
+				break;
+			case "exception":
+				servicePath = "services.exceptionService";
+				break;
+			case "debugger":
+				servicePath = "services.debuggerService";
+				break;
+			case "request":
+				servicePath = "services.requestService";
+				break;
+			case "cache":
+				servicePath = "cache.cacheManager";
+				break;
+			//Default Case
+			default:
+				throw("Invalid Service detected","service:#arguments.service#","Framework.ServiceNotDefinedException");
+		}
+		return CreateObject("component",servicePath).init(this);
+		</cfscript>
+	</cffunction>
+
 	<!--- Plugin Factories --->
 	<cffunction name="getPlugin" access="Public" returntype="any" hint="I am the Plugin cfc object factory." output="false">
 		<cfargument name="plugin" 		type="string" hint="The Plugin object's name to instantiate" >
@@ -213,6 +194,7 @@ Description		: This is the main ColdBox front Controller.
 			<cfset oPlugin = CreateObject("component", pluginPath).init(this)>
 			<!--- Get Object's MetaData --->
 			<cfset MetaData = getMetaData(oPlugin)>
+
 			<!--- Test for caching parameters --->
 			<cfif structKeyExists(MetaData, "cache") and isBoolean(MetaData["cache"]) and MetaData["cache"]>
 				<cfif structKeyExists(MetaData,"cachetimeout") >
@@ -239,6 +221,7 @@ Description		: This is the main ColdBox front Controller.
 		</cfif>
 	</cffunction>
 
+	<!--- Event Service Locator Factory --->
 	<cffunction name="runEvent" returntype="void" access="Public" hint="I am an event handler runnable factory. If no event is passed in then it will run the default event from the config.xml.">
 		<cfargument name="event"         hint="The event to run. If no current event is set, use the default event from the config.xml" type="string" required="false" default="">
 		<cfargument name="prepostExempt" hint="If true, pre/post handlers will not be fired." type="boolean" required="false" default="false">
@@ -306,7 +289,7 @@ Description		: This is the main ColdBox front Controller.
 			<!--- PreHandler Execution --->
 			<cfif not arguments.prepostExempt and structKeyExists(oEventHandler,"preHandler")>
 				<cfmodule template="includes/timer.cfm" timertag="invoking runEvent [preHandler] for #arguments.event#">
-				<cfset oEventHandler.preHandler(requestContext)>
+				<cfset oEventHandler.preHandler(RequestContext)>
 				</cfmodule>
 			</cfif>
 
@@ -318,98 +301,28 @@ Description		: This is the main ColdBox front Controller.
 			<!--- PostHandler Execution --->
 			<cfif not arguments.prepostExempt and structKeyExists(oEventHandler,"postHandler")>
 				<cfmodule template="includes/timer.cfm" timertag="invoking runEvent [postHandler] for #arguments.event#">
-				<cfset oEventHandler.postHandler(requestContext)>
+				<cfset oEventHandler.postHandler(RequestContext)>
 				</cfmodule>
 			</cfif>
 
 		</cfmodule>
 	</cffunction>
 
-	<cffunction name="ExceptionHandler" access="public" hint="I handle a framework/application exception. I return a framework exception bean" returntype="any" output="false">
-		<!--- ************************************************************* --->
-		<cfargument name="Exception" 	 type="any"  	required="true"  hint="The exception structure. Passed as any due to CF glitch">
-		<cfargument name="ErrorType" 	 type="string" 	required="false" default="application">
-		<cfargument name="ExtraMessage"  type="string"  required="false" default="">
-		<!--- ************************************************************* --->
-		<cfscript>
-		var BugReport = "";
-		var ExceptionBean = getPlugin("beanFactory").create("coldbox.system.beans.exceptionBean").init(errorStruct=arguments.Exception,extramessage=arguments.extraMessage,errorType=arguments.ErrorType);
-		var requestContext = getRequestService().getContext();
-		// Test Error Type
-		if ( not reFindnocase("(application|framework)",arguments.errorType) )
-			arguments.errorType = "application";
-
-		if ( arguments.ErrorType eq "application" ){
-			//Run custom Exception handler if Found, else run default
-			if ( getSetting("ExceptionHandler") neq "" ){
-				try{
-					requestContext.setValue("ExceptionBean",ExceptionBean);
-					runEvent(getSetting("Exceptionhandler"));
-				}
-				catch(Any e){
-					ExceptionBean = getPlugin("beanFactory").create("coldbox.system.beans.exceptionBean").init(errorStruct=e,extramessage="Error Running Custom Exception handler",errorType="application");
-					getPlugin("logger").logErrorWithBean(ExceptionBean);
-				}
-			}
-			else{
-				getPlugin("logger").logErrorWithBean(ExceptionBean);
-			}
-		}
-		//return
-		return ExceptionBean;
-		</cfscript>
-	</cffunction>
-
-<!------------------------------------------- PRIVATE ------------------------------------------->
-
-	<cffunction name="recurseListing" access="private" output="false" returntype="array">
-		<cfargument name="fileArray" type="array"  required="true">
-		<cfargument name="Directory" type="string" required="true">
-		<cfargument name="HandlersPath" type="string" required="true">
-		<cfscript>
-		var oDirectory = CreateObject("java","java.io.File").init(arguments.Directory);
-		var Files = oDirectory.list();
-		var i = 1;
-		var tempfile = "";
-		var cleanHandler = "";
-
-		//Loop Through listing if any files found.
-		for ( i=1; i lte arrayLen(Files); i=i+1 ){
-			//get first reference as File Object
-			tempFile = CreateObject("java","java.io.File").init(oDirectory,Files[i]);
-			//Directory Check for recursion
-			if ( tempFile.isDirectory() ){
-				//recurse, directory found.
-				arguments.fileArray = recurseListing(arguments.fileArray,tempFile.getPath(), arguments.HandlersPath);
-			}
-			else{
-				//Filter only cfc's
-				if ( listlast(tempFile.getName(),".") neq "cfc" )
-					continue;
-				//Clean entry by using Handler Path
-				cleanHandler = replacenocase(tempFile.getAbsolutePath(),arguments.handlersPath,"","all");
-				//Clean OS separators
-				if ( getSetting("OSFileSeparator",1) eq "/")
-					cleanHandler = removeChars(replacenocase(cleanHandler,"/",".","all"),1,1);
-				else
-					cleanHandler = removeChars(replacenocase(cleanHandler,"\",".","all"),1,1);
-				//Clean Extension
-				cleanHandler = getPlugin("fileUtilities").ripExtension(cleanhandler);
-				//Add data to array
-				ArrayAppend(arguments.fileArray,cleanHandler);
-			}
-		}
-		return arguments.fileArray;
-		</cfscript>
-	</cffunction>
-
-	<cffunction name="throw" access="private" hint="Facade for cfthrow" output="false">
+	<cffunction name="throw" access="public" hint="Facade for cfthrow" output="false">
 		<!--- ************************************************************* --->
 		<cfargument name="message" 	type="string" 	required="yes">
 		<cfargument name="detail" 	type="string" 	required="no" default="">
 		<cfargument name="type"  	type="string" 	required="no" default="Framework">
 		<!--- ************************************************************* --->
 		<cfthrow type="#arguments.type#" message="#arguments.message#"  detail="#arguments.detail#">
+	</cffunction>
+<!------------------------------------------- PRIVATE ------------------------------------------->
+	<cffunction name="dump" access="private" hint="Facade for cfmx dump" returntype="void">
+		<cfargument name="var" required="yes" type="any">
+		<cfdump var="#var#">
+	</cffunction>
+	<cffunction name="abort" access="private" hint="Facade for cfabort" returntype="void" output="false">
+		<cfabort>
 	</cffunction>
 
 	<cffunction name="getRegisteredHandler" access="private" hint="I get a registered handler and method according to passed event from the registeredHandlers setting." returntype="coldbox.system.beans.eventhandlerBean"  output="false">
@@ -454,4 +367,5 @@ Description		: This is the main ColdBox front Controller.
 		return HandlerBean;
 		</cfscript>
 	</cffunction>
+
 </cfcomponent>

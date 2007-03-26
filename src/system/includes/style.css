@@ -15,6 +15,16 @@ border:1px dotted #eaeaea;
 background-color: #3366CC;
 padding:5px 5px 5px 5px;
 }
+.fw_titles:hover{
+   background-color: #fcb554;
+   border:1px dotted black; 
+   color: black;
+   cursor: pointer;cursor:hand;
+}
+
+.fw_stacktrace{
+font-size: 11px;
+}
 .fw_tracerMessage{
 padding:5px 5px 5px 5px;
 border:1px solid #3366CC;
@@ -85,13 +95,14 @@ padding: 2px 2px 2px 2px;
 
 .fw_errorTables{
 font-size: 12px;
-border:1px solid #CC0000;
+font-family: verdana;
+border:1px outset #000000;
 background-color: #FFFFFF;
-width: 95%;
+width: 98%;
 }
 .fw_errorTitles{
-background-color: #cc0000;
-color:#FFFFFF;
+background-color: #fcb554;
+color:#000000;
 font-size:12px;
 font-weight: bold;
 padding:5px 5px 5px 5px;

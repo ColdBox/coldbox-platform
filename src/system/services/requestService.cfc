@@ -17,12 +17,7 @@ Modification History:
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
-	<cfscript>
-		//Controller Reference
-		variables.controller = "";
-	</cfscript>
-
-	<cffunction name="init" access="public" output="false" returntype="any" hint="Constructor">
+	<cffunction name="init" access="public" output="false" returntype="requestService" hint="Constructor">
 		<cfargument name="controller" type="any" required="true">
 		<cfscript>
 			variables.controller = arguments.controller;
@@ -32,10 +27,13 @@ Modification History:
 
 <!------------------------------------------- PUBLIC ------------------------------------------->
 
-	<cffunction name="requestCapture" access="public" returntype="void" output="false" hint="I capture a request.">
+	<cffunction name="requestCapture" access="public" returntype="any" output="false" hint="I capture a request.">
 		<cfscript>
 			var Context = createContext();
 			var DebugPassword = controller.getSetting("debugPassword");
+
+			//Object Caching Garbage Collector
+			controller.getColdboxOCM().reap();
 
 			//Debug Mode Checks
 			if ( Context.valueExists("debugMode") and isBoolean(Context.getValue("debugMode")) ){
@@ -55,6 +53,8 @@ Modification History:
 
 			//Set Request Context in storage
 			setContext(Context);
+			//Return Context
+			return getContext();
 		</cfscript>
 	</cffunction>
 

@@ -21,18 +21,18 @@ Modification History:
 <style>
 <cfinclude template="style.css">
 </style>
-<table width="600" border="1" cellpadding="0" cellspacing="5" class="fw_errorTables">
+<table border="1" cellpadding="0" cellspacing="3" class="fw_errorTables" align="center">
 
   <tr>
-    <td colspan="2" class="fw_errorTitles">Bug Report Details </td>
+    <td colspan="2" class="fw_errorTitles">ColdBox Bug Report Details </td>
   </tr>
   <tr>
-    <td colspan="2" class="fw_errorTablesCells">#Exception.getExtramessage()#</td>
+    <td colspan="2" class="fw_errorTablesCells"><h2>#Exception.getExtramessage()#</h2></td>
     </tr>
 <cfif Exception.getErrorType() eq "Application">
 
   <tr>
-    <td width="122" align="right" class="fw_errorTablesTitles">Current Event: </td>
+    <td width="75" align="right" class="fw_errorTablesTitles">Current Event: </td>
     <td width="463" class="fw_errorTablesCells"><cfif Event.valueExists("event")>#Event.getValue("event")#<cfelse>N/A</cfif></td>
   </tr>
   <tr>
@@ -76,14 +76,17 @@ Modification History:
     <td align="right" class="fw_errorTablesTitles">Query String: </td>
     <td class="fw_errorTablesCells">#cgi.QUERY_STRING#</td>
   </tr>
+  <cfif len(cgi.HTTP_REFERER) neq 0>
   <tr>
     <td align="right" class="fw_errorTablesTitles">Referrer:</td>
     <td class="fw_errorTablesCells">#cgi.HTTP_REFERER#</td>
   </tr>
+ </cfif>
   <tr>
     <td align="right" class="fw_errorTablesTitles">Browser:</td>
     <td class="fw_errorTablesCells">#cgi.HTTP_USER_AGENT#</td>
   </tr>
+
   <cfif isStruct(Exception.getExceptionStruct()) >
   <tr>
     <td colspan="2" class="fw_errorTitles">Exception Structure </td>
@@ -110,12 +113,15 @@ Modification History:
 	  <tr>
 		<td colspan="2" class="fw_errorTablesCells">#Exception.getmessage()#</td>
 	  </tr>
+
+	  <cfif len(exception.getDetail()) neq 0>
 	  <tr >
 		<td colspan="2" class="fw_errorTablesTitles">Detail:</td>
 	  </tr>
 	  <tr>
 		<td colspan="2" class="fw_errorTablesCells">#Exception.getDetail()#</td>
 	  </tr>
+	  </cfif>
 
 	  <cfif Exception.getmissingFileName() neq  "">
 	  <tr >
@@ -160,7 +166,9 @@ Modification History:
 		<td colspan="2" class="fw_errorTitles">Stack Trace:</td>
 	  </tr>
 	  <tr>
-		<td colspan="2" class="fw_errorTablesCells">#Exception.getstackTrace()#</td>
+		<td colspan="2" class="fw_errorTablesCells">
+			<div class="fw_stacktrace"><pre>#Exception.getstackTrace()#</pre></div>
+		</td>
 	  </tr>
 
 	  <cfif ArrayLen(Exception.getTagContext()) >

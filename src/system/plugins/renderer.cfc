@@ -112,33 +112,6 @@ Modification History:
 
 	<!--- ************************************************************* --->
 
-	<cffunction name="renderBugReport" access="public" hint="Render a Bug Report." output="false" returntype="Any">
-		<cfargument name="ExceptionBean" type="any" required="true">
-		<cfset var BugReport = "">
-		<cfset var Exception = arguments.ExceptionBean>
-		<cfset var Event = controller.getRequestService().getContext()>
-		<!--- test for custom bug report --->
-		<cfif Exception.getErrortype() eq "application" and controller.getSetting("CustomErrorTemplate") neq "">
-			<cftry>
-				<!--- Place exception in the requset Collection --->
-				<Cfset Event.setvalue("ExceptionBean",Exception)>
-				<!--- Save the Custom Report --->
-				<cfsavecontent variable="BugReport"><cfinclude template="/#controller.getSetting("AppMapping")#/#controller.getSetting("CustomErrorTemplate")#"></cfsavecontent>
-				<cfcatch type="any">
-					<cfset Exception = controller.ExceptionHandler(cfcatch,"Application","Error creating custom error template.")>
-					<!--- Save the Bug Report --->
-					<cfsavecontent variable="BugReport"><cfinclude template="../includes/BugReport.cfm"></cfsavecontent>
-				</cfcatch>
-			</cftry>
-		<cfelse>
-			<!--- Save the Bug Report --->
-			<cfsavecontent variable="BugReport"><cfinclude template="../includes/BugReport.cfm"></cfsavecontent>
-		</cfif>
-		<cfreturn BugReport>
-	</cffunction>
-
-	<!--- ************************************************************* --->
-
 <!------------------------------------------- PRIVATE ------------------------------------------->
 
 	<cffunction name="includeUDF" access="private" hint="Includes the UDF Library if found and exists. Called only by the framework." output="false" returntype="void">

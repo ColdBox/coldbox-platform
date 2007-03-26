@@ -73,7 +73,7 @@ function toggle(divid){
 <!--- DEBUGGING PANEL --->
 <!--- **************************************************************--->
 	<div class="fw_titles" onClick="toggle('fw_info')" >
-		&gt; &nbsp;Debugging Information
+		&gt; &nbsp;ColdBox Debugging Information
 	</div>
 
 	<div class="fw_debugContentView" id="fw_info">
@@ -182,13 +182,16 @@ function toggle(divid){
 		  <tr>
 			<td colspan="3" class="fw_debugTablesTitles">Total Framework Request Execution Time: #request.fwExecTime# ms</td>
 		  </tr>
-		</table><br>
+		</table>
 		<!--- **************************************************************--->
-		<hr>
+	</div>
 
-		<!--- **************************************************************--->
-		<!--- Cache Performance --->
-		<!--- **************************************************************--->
+
+<!--- **************************************************************--->
+<!--- Cache Performance --->
+<!--- **************************************************************--->
+	<div class="fw_titles" onClick="toggle('fw_cache')">&gt;&nbsp; ColdBox Cache </div>
+	<div class="fw_debugContentView" id="fw_cache">
 		<div class="fw_debugTitleCell">
 		  Cache Performance
 		</div>
@@ -197,7 +200,7 @@ function toggle(divid){
 		 <em>Hits:</em> #controller.getColdboxOCM().getCachePerformance().hits# |
 		 <em>Misses:</em> #controller.getColdboxOCM().getCachePerformance().misses#
 		</div>
-		
+
 		<div class="fw_debugTitleCell">
 		  Free Memory
 		</div>
@@ -233,12 +236,18 @@ function toggle(divid){
 		<div class="fw_debugContentCell">
 		 #controller.getSetting("CacheObjectDefaultLastAccessTimeout",1)# Minutes
 		</div>
+
+		<div class="fw_debugTitleCell">
+		  Total Objects in Cache
+		</div>
+		<div class="fw_debugContentCell">
+		 #controller.getColdBoxOCM().getSize()# Objects
+		</div>
 		<!--- **************************************************************--->
 		<cfif server.ColdFusion.ProductName eq "Coldfusion Server">
 			<!--- Why use a cfinclude? well, bluedragon would not compile this without it --->
 			<cfinclude template="cache_charting.cfm">
 		<cfelse>
-			<cfset itemTypes = controller.getColdboxOCM().getItemTypes()>
 			<div class="fw_debugTitleCell">
 			  Objects In Cache:
 			</div>
@@ -251,7 +260,26 @@ function toggle(divid){
 			<em>Charting is not supported in your coldfusion engine. Cache Charts skipped.</em>
 			<br>
 		</cfif>
-		<!--- **************************************************************--->
+
+		<table border="0" align="center" cellpadding="0" cellspacing="1" class="fw_debugTables">
+		  <tr >
+		  	<td class="fw_debugTablesTitles">Object</td>
+			<td align="center" width="10%" align="center" class="fw_debugTablesTitles">Hits</td>
+			<td align="center" width="10%" align="center" class="fw_debugTablesTitles">Timeout (Min)</td>
+			<td align="center" width="15%" class="fw_debugTablesTitles">Created</td>
+			<td align="center" width="15%" class="fw_debugTablesTitles">Last Accessed</td>
+		  </tr>
+		  <cfloop collection="#cacheMetadata#" item="key">
+		  <tr >
+		  	<td class="fw_debugTablesCells">#key#</td>
+			<td align="center" class="fw_debugTablesCells">#cacheMetadata[key].hits#</td>
+			<td align="center" class="fw_debugTablesCells">#cacheMetadata[key].Timeout#</td>
+			<td align="center" class="fw_debugTablesCells">#cacheMetadata[key].Created#</td>
+			<td align="center" class="fw_debugTablesCells">#cacheMetadata[key].lastaccesed#</td>
+		  </tr>
+		  </cfloop>
+		</table>
+	<!--- **************************************************************--->
 	</div>
 
 <!--- **************************************************************--->

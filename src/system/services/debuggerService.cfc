@@ -16,7 +16,7 @@ Modification History:
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
-	<cffunction name="init" access="public" output="false" returntype="any" hint="Constructor">
+	<cffunction name="init" access="public" output="false" returntype="debuggerService" hint="Constructor">
 		<cfargument name="controller" type="any" required="true">
 		<cfscript>
 			variables.controller = arguments.controller;
@@ -50,6 +50,7 @@ Modification History:
 		<cfset var Event = controller.getRequestService().getContext()>
 		<!--- Set local Variables --->
 		<cfset var itemTypes = controller.getColdboxOCM().getItemTypes()>
+		<cfset var cacheMetadata = controller.getColdboxOCM().getpool_metadata()>
 		<!--- Setup Local Variables --->
 		<cfset var debugStartTime = GetTickCount()>
 		<cfset var RequestCollection = Event.getCollection()>

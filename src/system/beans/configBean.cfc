@@ -16,21 +16,19 @@ Modification History:
 			 output="false">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
-	<cfscript>
-		variables.configStruct = structnew();
-	</cfscript>
-
-<!------------------------------------------- PUBLIC ------------------------------------------->
-
-	<!--- ************************************************************* --->
 
 	<cffunction name="init" access="public" output="false" hint="constructor" returntype="coldbox.system.beans.configBean">
 	    <!--- ************************************************************* --->
 	    <cfargument name="configStruct" type="struct" required="false" default="#structnew()#" >
 	    <!--- ************************************************************* --->
-		<cfset setconfigStruct(arguments.configStruct)>
-	    <cfreturn this >
+		<cfscript>
+		variables.configStruct = structnew();
+		setconfigStruct(arguments.configStruct);
+		return this;
+		</cfscript>
 	</cffunction>
+
+<!------------------------------------------- PUBLIC ------------------------------------------->
 
 	<!--- ************************************************************* --->
 

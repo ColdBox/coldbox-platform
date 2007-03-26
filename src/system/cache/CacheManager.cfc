@@ -12,42 +12,53 @@ Description :
 Modification History:
 01/18/2007 - Created
 ----------------------------------------------------------------------->
-<cfcomponent name="objectCacheManager" hint="Manages handler,plugin,custom plugin and object caching. It is thread safe and implements locking for you." output="false">
+<cfcomponent name="cacheManager" hint="Manages handler,plugin,custom plugin and object caching. It is thread safe and implements locking for you." output="false">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
-	<cffunction name="init" access="public" output="false" returntype="any" hint="Constructor">
+	<cffunction name="init" access="public" output="false" returntype="cacheManager" hint="Constructor">
 		<cfargument name="controller" type="any" required="true">
 		<cfscript>
 		variables.controller = arguments.controller;
-		variables.cb_objects = structnew();
-		variables.cb_objects_metadata = structnew();
+		//Cache Configuration
+		variables.CacheConfigBean = structnew();
+		//Object Pool
+		variables.objectPool = structnew();
+		//Cache Performance
 		variables.cachePerformance = structNew();
 		variables.cachePerformance.Hits = 0;
 		variables.cachePerformance.Misses = 0;
-		variables.CacheReapFrequency = "";
+		//Reaping Controll
 		variables.lastReapDatetime = now();
-		variables.CacheObjectDefaultTimeout = "";
-		variables.CacheObjectDefaultLastAccessTimeout = "";
-		variables.CacheMaxObjects = 0;
-		variables.CacheFreeMemoryPercentageThreshold = 0;
+		//Init Pool
+		initPool();
+		//return Cache Manager;
 		return this;
 		</cfscript>
 	</cffunction>
 
 	<cffunction name="configure" access="public" output="false" returntype="void" hint="Configure the cache.">
+		<cfargument name="cacheConfigBean" type="coldbox.system.beans.cacheConfigBean" required="true">
 		<cfscript>
-		variables.CacheReapFrequency = variables.controller.getSetting("CacheReapFrequency",true);
-		variables.CacheObjectDefaultTimeout = variables.controller.getSetting("CacheObjectDefaultTimeout",true);
-		variables.CacheObjectDefaultLastAccessTimeout = variables.controller.getSetting("CacheObjectDefaultLastAccessTimeout",true);
-		variables.CacheMaxObjects = variables.controller.getSetting("CacheMaxObjects",true);
-		variables.CacheFreeMemoryPercentageThreshold = variables.controller.getSetting("CacheFreeMemoryPercentageThreshold",true);
-		variables.cachePerformance.Hits = 0;
-		variables.cachePerformance.Misses = 0;
+		//set the config bean
+		variables.CacheConfigBean = arguments.cacheConfigBean;
+		//Init the performance
+		resetStatistics();
 		</cfscript>
 	</cffunction>
 
 <!------------------------------------------- PUBLIC ------------------------------------------->
+
+	<!--- Config Bean Setter/Getter --->
+	<cffunction name="setCacheConfigBean" access="public" returntype="void" output="false">
+		<cfargument name="CacheConfigBean" type="coldbox.system.beans.cacheConfigBean" required="true">
+		<cfset variables.CacheConfigBean = arguments.CacheConfigBean>
+	</cffunction>
+	<cffunction name="getCacheConfigBean" access="public" returntype="coldbox.system.beans.cacheConfigBean" output="false">
+		<cfreturn variables.CacheConfigBean >
+	</cffunction>
+
+	<!--- ************************************************************* --->
 
 	<cffunction name="lookup" access="public" output="false" returntype="boolean" hint="Check if an object is in cache.">
 		<!--- ************************************************************* --->
@@ -59,8 +70,7 @@ Modification History:
 		<cfset reap()>
 
 		<cflock type="readonly" name="OCM_Operation" timeout="5">
-			<!--- Check for Object in Cache. --->
-			<cfif structKeyExists(variables.cb_objects, arguments.objectKey) >
+			<cfif getobjectPool().lookup(arguments.objectKey)>
 				<cfset ObjectFound = true>
 			<cfelse>
 				<!--- Log miss --->
@@ -83,9 +93,7 @@ Modification History:
 			<!--- Record a Hit --->
 			<cfset hit()>
 			<cflock type="exclusive" name="OCM_Operation" timeout="5">
-				<cfset variables.cb_objects_metadata[arguments.objectKey].hits = variables.cb_objects_metadata[arguments.objectKey].hits + 1>
-				<cfset variables.cb_objects_metadata[arguments.objectKey].lastAccesed = now()>
-				<cfset ObjectFound = variables.cb_objects[arguments.objectKey]>
+				<cfset ObjectFound = getobjectPool().get(arguments.objectKey)>
 			</cflock>
 		</cfif>
 		<cfreturn ObjectFound>
@@ -110,26 +118,17 @@ Modification History:
 		<cfset reap()>
 
 		<!--- Max Objects in Cache Check --->
-		<cfif (variables.CacheMaxObjects eq 0 or getSize() lt variables.CacheMaxObjects) and
-			  (variables.CacheFreeMemoryPercentageThreshold eq 0 or isBelowThreshold)>
+		<cfif (CacheConfigBean.getCacheMaxObjects() eq 0 or getSize() lt CacheConfigBean.getCacheMaxObjects()) and
+			  (CacheConfigBean.getCacheFreeMemoryPercentageThreshold() eq 0 or isBelowThreshold)>
 
 			<!--- Test Timeout Argument, if false, then inherit framework's timeout --->
 			<cfif arguments.Timeout eq "" or not isNumeric(arguments.Timeout) or arguments.Timeout lt 0>
-				<cfset arguments.Timeout = variables.CacheObjectDefaultTimeout>
+				<cfset arguments.Timeout = CacheConfigBean.getCacheObjectDefaultTimeout()>
 			</cfif>
 
 			<!--- Set object in Cache --->
 			<cflock type="exclusive" name="OCM_Operation" timeout="5">
-				<cfscript>
-				//Set new Object into cache.
-				variables.cb_objects[arguments.objectKey] = arguments.MyObject;
-				//Set object's metdata
-				variables.cb_objects_metadata[arguments.objectKey] = structNew();
-				variables.cb_objects_metadata[arguments.objectKey].hits = 1;
-				variables.cb_objects_metadata[arguments.objectKey].Timeout = arguments.timeout;
-				variables.cb_objects_metadata[arguments.objectKey].Created = now();
-				variables.cb_objects_metadata[arguments.objectKey].lastAccesed = now();
-				</cfscript>
+				<cfset getobjectPool().set(arguments.objectKey,arguments.MyObject,arguments.Timeout)>
 			</cflock>
 		</cfif>
 	</cffunction>
@@ -143,10 +142,8 @@ Modification History:
 		<cfset var Results = false>
 		<cfif lookup(arguments.objectKey) >
 			<cflock type="exclusive" name="OCM_Operation" timeout="5">
-				<cfset structDelete(variables.cb_objects,arguments.objectKey)>
-				<cfset structDelete(variables.cb_objects_metadata,arguments.objectKey)>
+				<cfset Results = getobjectPool().clearKey(arguments.objectKey)>
 			</cflock>
-			<cfset Results = true>
 		</cfif>
 		<cfreturn Results>
 	</cffunction>
@@ -155,8 +152,8 @@ Modification History:
 
 	<cffunction name="clear" access="public" output="false" returntype="void" hint="Clears the entire object cache.">
 		<cflock type="exclusive" name="OCM_Operation" timeout="5">
-			<cfset structClear(variables.cb_objects)>
-			<cfset structClear(variables.cb_objects_metadata)>
+			<cfset structDelete(variables,"objectPool")>
+			<cfset initPool()>
 			<cfset resetStatistics()>
 		</cflock>
 	</cffunction>
@@ -194,7 +191,7 @@ Modification History:
 
 	<cffunction name="getSize" access="public" output="false" returntype="numeric" hint="Get the cache's size in items">
 		<cfscript>
-		return StructCount(variables.cb_objects);
+		return getObjectPool().getSize();
 		</cfscript>
 	</cffunction>
 
@@ -208,17 +205,24 @@ Modification History:
 
 	<!--- ************************************************************* --->
 
+	<cffunction name="getpool_metadata" access="public" returntype="struct" output="false">
+		<cfreturn getObjectPool().getpool_metadata()>
+	</cffunction>
+
 	<cffunction name="getItemTypes" access="public" output="false" returntype="struct" hint="Get the item types of the cache.">
 		<cfscript>
 		var x = 1;
-		var itemList = structKeyList(variables.cb_objects);
+		var itemList = getObjectPool().getObjectsKeyList();
 		var itemTypes = Structnew();
+
+		//Init types
 		itemTypes.plugins = 0;
 		itemTypes.handlers = 0;
 		itemTypes.other = 0;
 		itemTypes.ioc_beans = 0;
-
+		//Sort the listing.
 		itemList = listSort(itemList, "textnocase");
+		//Count objects
 		for (x=1; x lte listlen(itemList) ; x = x+1){
 			if ( findnocase("plugin", listGetAt(itemList,x)) )
 				itemTypes.plugins = itemTypes.plugins + 1;
@@ -238,28 +242,33 @@ Modification History:
 	<cffunction name="reap" access="public" output="false" returntype="void" hint="Reap the cache.">
 		<cfscript>
 			var key = "";
-			var objStruct = variables.cb_objects_metadata;
-			//Check reaping frequency
-			if ( dateDiff("n", variables.lastReapDatetime, now()) gt variables.CacheReapFrequency){
-				//Reaping about to start, set new reaping date.
-				variables.lastReapDatetime = now();
+			var objStruct = getObjectPool().getpool_metadata();
+			//Check if no data in pool
+			if (not structisEmpty(objStruct)){
 
-				//Loop Through Metadata
-				for (key in objStruct){
-					//Override Timeout Check
-					if ( objStruct[key].Timeout gt 0 ){
-						//Check for creation timeouts and clear
-						if ( dateDiff("n", objStruct[key].created, now() ) gt  objStruct[key].Timeout){
-							clearKey(key);
-							continue;
-						}
-						//Check for last accessed timeout. If object has not been accessed in the default span
-						if ( dateDiff("n", objStruct[key].lastAccesed, now() ) gt  variables.CacheObjectDefaultLastAccessTimeout ){
-							clearKey(key);
-							continue;
+				//Check reaping frequency
+				if ( dateDiff("n", variables.lastReapDatetime, now()) gt CacheConfigBean.getCacheReapFrequency()){
+					//Reaping about to start, set new reaping date.
+					variables.lastReapDatetime = now();
+
+					//Loop Through Metadata
+					for (key in objStruct){
+						//Override Timeout Check
+						if ( objStruct[key].Timeout gt 0 ){
+							//Check for creation timeouts and clear
+							if ( dateDiff("n", objStruct[key].created, now() ) gt  objStruct[key].Timeout){
+								clearKey(key);
+								continue;
+							}
+							//Check for last accessed timeout. If object has not been accessed in the default span
+							if ( dateDiff("n", objStruct[key].lastAccesed, now() ) gt  CacheConfigBean.getCacheObjectDefaultLastAccessTimeout() ){
+								clearKey(key);
+								continue;
+							}
 						}
 					}
 				}
+
 			}
 		</cfscript>
 	</cffunction>
@@ -274,11 +283,29 @@ Modification History:
 		</cfscript>
 	</cffunction>
 
+	<!--- ************************************************************* --->
+
 	<cffunction name="miss" access="private" output="false" returntype="void" hint="Record a miss">
 		<cfscript>
 		variables.cachePerformance.misses = variables.cachePerformance.misses + 1;
 		</cfscript>
 	</cffunction>
+
+	<!--- ************************************************************* --->
+
+	<cffunction name="getObjectPool" access="private" returntype="any" output="false">
+		<cfreturn variables.objectPool >
+	</cffunction>
+
+	<!--- ************************************************************* --->
+
+	<cffunction name="initPool" access="private" output="false" returntype="void" hint="Initialize the Pool">
+		<cfscript>
+		variables.objectPool = CreateObject("component","objectPool").init();
+		</cfscript>
+	</cffunction>
+
+	<!--- ************************************************************* --->
 
 	<cffunction name="ThresholdChecks" access="private" output="false" returntype="boolean" hint="JVM Threshold checks">
 		<cfset var fileUtilities = "">
@@ -288,12 +315,12 @@ Modification History:
 		<cfset var jvmTotalMemory = "">
 		<cftry>
 			<!--- Checks --->
-			<cfif variables.CacheFreeMemoryPercentageThreshold neq 0>
+			<cfif CacheConfigBean.getCacheFreeMemoryPercentageThreshold() neq 0>
 				<cfset fileUtilities = variables.controller.getPlugin("fileUtilities")>
 				<cfset jvmFreeMemory = fileUtilities.getJVMFreeMemory()>
 				<cfset jvmTotalMemory = fileUtilities.getJVMTotalMemory()>
 				<cfset jvmThreshold = ((jvmFreeMemory/jvmTotalMemory)*100)>
-				<cfset check = variables.CacheFreeMemoryPercentageThreshold lt jvmThreshold>
+				<cfset check = CacheConfigBean.getCacheFreeMemoryPercentageThreshold() lt jvmThreshold>
 			</cfif>
 			<cfcatch type="any">
 				<cfset check = true>

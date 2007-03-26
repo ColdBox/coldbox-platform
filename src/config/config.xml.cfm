@@ -25,7 +25,7 @@
 		<Setting name="HandlersIndexAutoReload"   	value="false" />
 		<Setting name="ConfigAutoReload"			value="false" />
 		<Setting name="ExceptionHandler"     		value="" />
-		<Setting name="onInvalidEvent" 				value="ehGeneral.dspHello" />
+		<Setting name="onInvalidEvent" 				value="" />
 		<!--Base Path to plugins, as if to instantiate them. -->
 		<Setting name="MyPluginsLocation" 			value="coldbox.myplugins"/>
 		<Setting name="HandlerCaching" 				value="true"/>
@@ -38,12 +38,13 @@
 
 	<!--Optional,if blank it will use the CFMX administrator settings.-->
 	<MailServerSettings>
-		<MailServer>testmailserver.com</MailServer>
-		<MailUsername>myemail@info.com</MailUsername>
-		<MailPassword>password</MailPassword>
+		<MailServer></MailServer>
+		<MailUsername></MailUsername>
+		<MailPassword></MailPassword>
 	</MailServerSettings>
 
 	<BugTracerReports>
+		<BugEmail>lmajano@gmail.com</BugEmail>
 	</BugTracerReports>
 
 	<DevEnvironments>

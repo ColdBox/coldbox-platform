@@ -16,7 +16,7 @@ Modification History:
 ----------------------------------------------------------------------->
 
 <cfparam name="attributes.timertag" default="NO_TIMER_TAG">
-<cfif not structkeyExists(application,"cbController") and not application.cbController.getDebugMode()>
+<cfif not structkeyExists(application,"cbController") and not application.cbController.getDebuggerService().getDebugMode()>
 	<cfexit method="exittag">
 </cfif>
 <cfscript>
