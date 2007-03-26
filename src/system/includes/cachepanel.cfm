@@ -3,7 +3,10 @@
 		<!--- Setup the panel --->
 		<cfsetting showdebugoutput="false">
 		<cfparam name="url.frequency" default="5">
-
+		<!--- Verify Frequency --->
+		<cfif not isNumeric(url.Frequency)>
+			<cfset url.frequency = 5>
+		</cfif>
 		<!--- Meta Tag Refresh --->
 		<meta http-equiv="refresh" content="#url.frequency#">
 		<!--- Include Header --->
@@ -16,7 +19,7 @@
 
 		<cfif renderType eq "main">
 		<div>
-		  <input type="button" value="Open Cache Monitor" name="cachemonitor" style="font-size:10px" title="Open the cache monitor in a new window." onClick="window.open('index.cfm?debugpanel=cache','cachemonitor','status=1,toolbar=0,location=0,height=700')">
+		  <input type="button" value="Open Cache Monitor" name="cachemonitor" style="font-size:10px" title="Open the cache monitor in a new window." onClick="window.open('index.cfm?debugpanel=cache','cachemonitor','status=1,toolbar=0,location=0,resizable=1,height=700,width=700')">
 		  <br><br>
 		</div>
 		<cfelse>
