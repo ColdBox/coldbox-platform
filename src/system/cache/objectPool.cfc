@@ -137,7 +137,7 @@ Modification History:
 	</cffunction>
 
 	<!--- Get the itemList --->
-	<cffunction name="getObjectsKeyList" access="public" output="false" returntype="any" hint="Get the cache's object entries listing.">
+	<cffunction name="getObjectsKeyList" access="public" output="false" returntype="string" hint="Get the cache's object entries listing.">
 		<cfscript>
 		return structKeyList(variables.pool);
 		</cfscript>
