@@ -103,6 +103,8 @@
 			<br>
 		</cfif>
 
+		<h3>Cache Content Report (Time: #timeformat(now(),"HH:mm:ss")#)</h3>
+		<!--- Object Charts --->
 		<table border="0" align="center" cellpadding="0" cellspacing="1" class="fw_debugTables">
 		  <tr >
 		  	<td class="fw_debugTablesTitles">Object</td>
