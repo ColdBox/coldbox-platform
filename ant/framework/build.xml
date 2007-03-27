@@ -7,7 +7,7 @@
                    
      lmajano                                                                
      ====================================================================== -->
-<project name="coldbox.deploy" default="build" basedir="../../">
+<project name="coldbox.newbuild" default="build" basedir="../../">
 
 	<property name="dir.build" value="ant/framework/build/coldbox" />
 	<property name="header.template" value="ant/framework/header.txt" />
@@ -26,24 +26,9 @@
 		<input message="SVN Build Number?" addproperty="svn.build"/>
 		<input message="Framework Version?" addproperty="framework.version"/>
 		
-		<!--Create Header-->
-		<copy file="${header.template}" tofile="${header.generated}" />
-		<replace file="${header.generated}" summary="yes">
-			<replacefilter 
-			    token="@VERSION@" 
-			    value="${framework.version}"/>
-		<replacefilter 
-			    token="@DATE@" 
-			    value="${TODAY}"/>
-		<replacefilter 
-			    token="@BUILDNUMBER@" 
-			    value="${svn.build}"/>			
-		</replace> 
-		<loadfile property="file.header" srcFile="${header.generated}"/>
-		<echo>${file.header}</echo>
 	</target>
 		
-	<target name="build" description="Copy Directories" depends="init">
+	<target name="build" description="Copy Directories">
         <!--Copy Files-->
 		<copy todir="${dir.build}/system">
         	<fileset dir="src/system">
