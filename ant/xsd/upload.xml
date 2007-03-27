@@ -8,7 +8,7 @@
                    
      lmajano                                                                
      ====================================================================== -->
-<project name="XSD_Upload" default="ftp.deploy" basedir="../../">
+<project name="coldbox.xsd_upload" default="ftp.deploy" basedir="../../">
     <description>
             This task will export the config.xsd and upload it to the coldboxframework site
     </description>
