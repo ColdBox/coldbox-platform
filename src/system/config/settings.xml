@@ -5,7 +5,7 @@
         <Setting name="Author" value="Luis Majano"/>
         <Setting name="AuthorEmail" value="info@coldboxframework.com"/>
         <Setting name="AuthorWebsite" value="http://www.coldboxframework.com"/>
-        <Setting name="Suffix" value="Beta John 4:14"/>
+        <Setting name="Suffix" value="RC1 John 4:14"/>
         <Setting name="Version" value="2.0.0"/>
         <Setting name="Description" value="This is the ColdBox MVC ColdFusion Framework for web applications."/>
         <Setting name="ModifyLogLocation" value="readme.txt"/>
