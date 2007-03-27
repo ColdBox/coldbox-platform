@@ -3,7 +3,7 @@
 	xsi:noNamespaceSchemaLocation="http://www.coldboxframework.com/schema/config_1.2.0.xsd">
 	<Settings>
 		<Setting name="AppName" 					value="ColdboxDashboard"/>
-		<Setting name="DebugMode"					value="true"/>
+		<Setting name="DebugMode"					value="false"/>
 		<Setting name="DebugPassword"				value="coldbox"/>
 		<Setting name="EnableDumpVar" 				value="false"/>
 		<Setting name="EnableColdfusionLogging" 	value="false"/>

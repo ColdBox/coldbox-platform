@@ -2,7 +2,6 @@
 <cfset rc = event.getCollection()>
 <!--- HELPBOX --->
 #renderView("tags/help")#
-
 <!--- Framework Readme --->
 <cfif rc.updateResults.coldboxavailableupdate>
 <div id="cbReadme" class="updatertext" style="display:none">
