@@ -95,7 +95,16 @@ Modification History:
 
 	<!--- Create Request Context & Capture Request --->
 	<cfset Event = cbController.getRequestService().requestCapture()>
-
+	
+	<!--- Debugging Monitors Check --->
+	<cfif cbController.getDebuggerService().getDebugMode() and event.getValue("debugPanel","") neq "">
+		<!--- Which panel to render --->
+		<cfif event.getValue("debugPanel") eq "cache">
+			<cfoutput>#cbController.getDebuggerService().renderCachePanel()#</cfoutput>
+			<cfabort>
+		</cfif>
+	</cfif>
+	
 	<!--- Application Start Handler --->
 	<cfif cbController.getSetting("ApplicationStartHandler") neq "" and (not cbController.getAppStartHandlerFired())>
 		<cfset cbController.runEvent(cbController.getSetting("ApplicationStartHandler"),true)>

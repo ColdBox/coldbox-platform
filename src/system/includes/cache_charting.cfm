@@ -1,7 +1,7 @@
 <div>
 <table align="center" width="100%" border="1" cellpadding="0" cellspacing="0" style="background:white">
 	<tr>
-		<td>
+		<td align="center">
 		<cfchart format="png" show3d="true" backgroundcolor="##ffffff" gridlines="true" chartwidth="275">
 			<cfchartseries type="pie" colorlist="85ca0a,1e3aca" >
 				<cfchartdata item="Free Memory (KB)"  value="#JVMFreeMemory#">
@@ -9,7 +9,7 @@
 			</cfchartseries>
 		</cfchart>
 		</td>
-		<td>
+		<td align="center">
 		<cfchart format="png" show3d="true" backgroundcolor="##ffffff" chartwidth="100">
 			<cfchartseries type="bar" colorlist="93C2FF,ED2939" >
 				<cfchartdata item="Hits" value="#controller.getColdboxOCM().getCachePerformance().hits#">
@@ -17,7 +17,7 @@
 			</cfchartseries>
 		</cfchart>
 		</td>
-		<td>
+		<td align="center">
 		<cfchart format="png" show3d="true" backgroundcolor="##ffffff" gridlines="true" chartwidth="275">
 			<cfchartseries type="pie" colorlist="93C2FF" >
 				<cfchartdata item="Plugins" value="#itemTypes.plugins#">

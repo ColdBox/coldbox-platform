@@ -67,8 +67,8 @@ Modification History:
 		<cfset var event = controller.getRequestService().getContext()>
 		<cfset var RenderedDebugging = "">
 		<!--- Set local Variables --->
-		<cfset var itemTypes = controller.getOCM().getItemTypes()>
-		<cfset var cacheMetadata = controller.getOCM().getpool_metadata()>
+		<cfset var itemTypes = controller.getColdboxOCM().getItemTypes()>
+		<cfset var cacheMetadata = controller.getColdboxOCM().getpool_metadata()>
 		<!--- Setup Local Variables --->
 		<cfset var RequestCollection = Event.getCollection()>
 		<!--- JVM Data --->

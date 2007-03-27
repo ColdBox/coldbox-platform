@@ -59,6 +59,7 @@ Modification History:
 		variables.instance.searchMailSettings = "//MailServerSettings";
 		variables.instance.searchi18NSettings = "//i18N";
 		variables.instance.searchDatasources = "//Datasources/Datasource";
+		variables.instance.searchCache = "//Cache";
 
 		//Search patterns for fw xml
 		variables.instance.searchConfigXML_Path = "//ConfigXMLFile/FilePath";
@@ -160,6 +161,8 @@ Modification History:
 		var DatasourcesNodes = "";
 		var DSNStruct = StructNew();
 		var DatasourcesStruct = Structnew();
+		//Cache
+		var CacheSettingNodes = "";
 		//loopers
 		var i = 0;
 		var j = 0;
@@ -361,6 +364,7 @@ Modification History:
 				StructInsert(ConfigStruct,"MailPassword","");
 				StructInsert(ConfigStruct,"MailPort",25);
 			}
+			
 			//i18N Settings
 			i18NSettingNodes = XMLSearch(configXML, instance.searchi18NSettings);
 			//Check if empty
@@ -536,7 +540,56 @@ Modification History:
 			}
 			StructInsert(ConfigStruct,"ViewLayouts",LayoutViewStruct);
 			StructInsert(ConfigStruct, "ConfigTimeStamp", getPlugin("fileUtilities").FileLastModified(ConfigFileLocation));
+			
+			
+			//Cache Override Settings
+			CacheSettingNodes = XMLSearch(configXML, instance.searchCache);
+			//Create CacheSettings Structure
+			structInsert(ConfigStruct,"CacheSettings",structNew());
+			//Check if empty
+			if ( ArrayLen(CacheSettingNodes) gt 0 and ArrayLen(CacheSettingNodes[1].XMLChildren) gt 0){
+				
+				//Checks For Default Timeout
+				if ( structKeyExists(CacheSettingNodes[1], "ObjectDefaultTimeout") and isNumeric(CacheSettingNodes[1].ObjectDefaultTimeout.xmlText) )
+					StructInsert(ConfigStruct.CacheSettings, "ObjectDefaultTimeout", trim(CacheSettingNodes[1].ObjectDefaultTimeout.xmlText) );
+				else
+					throw("Invalid object timeout. Please see schema.","Value=#CacheSettingNodes[1].ObjectDefaultTimeout.xmlText#","Framework.plugins.InvalidCacheObjectDefaultTimeout");
 
+				//Check ObjectDefaultLastAccessTimeout
+				if ( structKeyExists(CacheSettingNodes[1], "ObjectDefaultLastAccessTimeout") and isNumeric(CacheSettingNodes[1].ObjectDefaultLastAccessTimeout.xmlText))
+					StructInsert(ConfigStruct.CacheSettings, "ObjectDefaultLastAccessTimeout", trim(CacheSettingNodes[1].ObjectDefaultLastAccessTimeout.xmlText) );
+				else
+					throw("Invalid object last access timeout. Please see schema.","Value=#CacheSettingNodes[1].ObjectDefaultLastAccessTimeout.xmlText#","Framework.plugins.InvalidObjectDefaultLastAccessTimeout");
+
+				//Check ReapFrequency
+				if ( structKeyExists(CacheSettingNodes[1], "ReapFrequency") and isNumeric(CacheSettingNodes[1].ReapFrequency.xmlText))
+					StructInsert(ConfigStruct.CacheSettings, "ReapFrequency", trim(CacheSettingNodes[1].ReapFrequency.xmlText) );
+				else
+					throw("Invalid reaping frequency. Please see schema.","Value=#CacheSettingNodes[1].ReapFrequency.xmlText#","Framework.plugins.InvalidReapFrequency");
+
+				//Check MaxObjects
+				if ( structKeyExists(CacheSettingNodes[1], "MaxObjects") and isNumeric(CacheSettingNodes[1].MaxObjects.xmlText)){
+					StructInsert(ConfigStruct.CacheSettings, "MaxObjects", trim(CacheSettingNodes[1].MaxObjects.xmlText) );						
+				}
+				else
+					throw("Invalid Max Objects. Please see schema.","Value=#CacheSettingNodes[1].MaxObjects.xmlText#","Framework.plugins.InvalidMaxObjects");
+				
+				//Check FreeMemoryPercentageThreshold
+				if ( structKeyExists(CacheSettingNodes[1], "FreeMemoryPercentageThreshold") and isNumeric(CacheSettingNodes[1].FreeMemoryPercentageThreshold.xmlText)){
+					StructInsert(ConfigStruct.CacheSettings, "FreeMemoryPercentageThreshold", trim(CacheSettingNodes[1].FreeMemoryPercentageThreshold.xmlText) );						
+				}
+				else
+					throw("Invalid Free Memory Percentage Threshold. Please see schema.","Value=#CacheSettingNodes[1].FreeMemoryPercentageThreshold.xmlText#","Framework.plugins.InvalidFreeMemoryPercentageThreshold");
+					
+					
+				//Set Override to true.
+				ConfigStruct.CacheSettings.Override = true;
+			}
+			else{
+				ConfigStruct.CacheSettings.Override = false;			
+			}
+			
+			
 			//Determine which CF version for XML Parsing method
 			if (listfirst(server.coldfusion.productversion) gte 7){
 				//Finally Validate With XSD

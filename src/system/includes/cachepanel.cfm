@@ -47,7 +47,7 @@
 		  Free Memory
 		</div>
 		<div class="fw_debugContentCell">
-		 <em>#NumberFormat((JVMFreeMemory/JVMTotalMemory)*100,"99.99")# % Free</em>
+		 <em>#NumberFormat((JVMFreeMemory/JVMTotalMemory)*100,"99.99")# % Free  : Threshold=#controller.getColdboxOCM().getCacheConfigBean().getCacheFreeMemoryPercentageThreshold()#% (0=Unlimited)</em>
 		</div>
 
 		<div class="fw_debugTitleCell">
@@ -62,28 +62,28 @@
 		  Reap Frequency
 		</div>
 		<div class="fw_debugContentCell">
-		 Every #controller.getSetting("CacheReapFrequency",1)# Minutes
+		 Every #controller.getColdboxOCM().getCacheConfigBean().getCacheReapFrequency()# Minutes
 		</div>
 
 		<div class="fw_debugTitleCell">
 		  Default Timeout
 		</div>
 		<div class="fw_debugContentCell">
-		 #controller.getSetting("CacheObjectDefaultTimeout",1)# Minutes
+		 #controller.getColdboxOCM().getCacheConfigBean().getCacheObjectDefaultTimeout()# Minutes
 		</div>
 
 		<div class="fw_debugTitleCell">
 		  Last Access Timeout
 		</div>
 		<div class="fw_debugContentCell">
-		 #controller.getSetting("CacheObjectDefaultLastAccessTimeout",1)# Minutes
+		 #controller.getColdboxOCM().getCacheConfigBean().getCacheObjectDefaultLastAccessTimeout()# Minutes
 		</div>
 
 		<div class="fw_debugTitleCell">
 		  Total Objects in Cache
 		</div>
 		<div class="fw_debugContentCell">
-		 #controller.getColdBoxOCM().getSize()# Objects
+		 #controller.getColdBoxOCM().getSize()# / #controller.getColdboxOCM().getCacheConfigBean().getCacheMaxObjects()# (0=Unlimited)
 		</div>
 		<!--- **************************************************************--->
 		<cfif server.ColdFusion.ProductName eq "Coldfusion Server">

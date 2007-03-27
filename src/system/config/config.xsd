@@ -15,6 +15,7 @@
 				<xs:element maxOccurs="1" minOccurs="1" ref="Layouts"/>
 				<xs:element maxOccurs="1" minOccurs="0" ref="i18N" />
 				<xs:element maxOccurs="1" minOccurs="0" ref="Datasources"/>
+				<xs:element maxOccurs="1" minOccurs="0" ref="Cache"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
@@ -321,6 +322,41 @@
 					<xs:documentation>The type of database this datasource connects to.</xs:documentation>
 				</xs:annotation>
 			</xs:attribute>
+		</xs:complexType>
+	</xs:element>
+	
+	<xs:element name="Cache">
+		<xs:annotation>
+			<xs:documentation>These are the application caching settings. It overrides the framework-wide settings.</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element maxOccurs="1" minOccurs="1" name="ObjectDefaultTimeout" type="xs:integer">
+					<xs:annotation>
+						<xs:documentation>The default object timeout in minutes</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element maxOccurs="1" minOccurs="1" name="ObjectDefaultLastAccessTimeout" type="xs:integer">
+					<xs:annotation>
+						<xs:documentation>The default object last access timeout in minutes</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element maxOccurs="1" minOccurs="1" name="ReapFrequency" type="xs:integer">
+					<xs:annotation>
+						<xs:documentation>The frequency in which the cache is reaped.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element maxOccurs="1" minOccurs="1" name="MaxObjects" type="xs:integer" default="0">
+					<xs:annotation>
+						<xs:documentation>The maximum number of objects to cache.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element maxOccurs="1" minOccurs="1" name="FreeMemoryPercentageThreshold" type="xs:integer" default="0">
+					<xs:annotation>
+						<xs:documentation>The amount of free memory threshold needed to cache. If memory goes below this threshold, objects will no longer be cached.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
 </xs:schema>

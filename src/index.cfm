@@ -11,6 +11,5 @@ Modification History:
 
 ----------------------------------------------------------------------->
 <cfinclude template="system/coldbox.cfm">
-<cfdump var="#session#" label="Session Scope">
-<cfdump var="#application#"  label="Application Scope">
+<cfdump var="#application.cbcontroller.getConfigSettings()#" label="App Config Settings">
 <cfsetting enablecfoutputonly="false">

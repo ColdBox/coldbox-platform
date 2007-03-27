@@ -60,7 +60,17 @@ Modification History:
 		//Load Application Config Settings
 		ConfigSettings =XMLParser.parseConfig();
 		controller.setConfigSettings(ConfigSettings);
-
+		//Check for Cache OVerride Settings
+		if ( ConfigSettings.CacheSettings.OVERRIDE ){
+			//Recreate the Config Bean
+			CacheConfigBean = CacheConfigBean.init(ConfigSettings.CacheSettings.ObjectDefaultTimeout,
+											   ConfigSettings.CacheSettings.ObjectDefaultLastAccessTimeout,
+											   ConfigSettings.CacheSettings.ReapFrequency,
+											   ConfigSettings.CacheSettings.MaxObjects,
+											   ConfigSettings.CacheSettings.FreeMemoryPercentageThreshold);
+			//Re-Configure the Object Cache.
+			controller.getColdboxOCM().configure(CacheConfigBean);
+		}
 		//IoC Plugin Manager
 		if ( ConfigSettings.IOCFramework neq "" ){
 			//Create IoC Factory and configure it.

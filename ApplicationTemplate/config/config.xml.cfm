@@ -117,5 +117,15 @@
 	<Datasources>
 		<Datasource alias="MyDSNAlias" name="real_dsn_name"   dbtype="mysql"  username="" password="" />
 	</Datasources>
-
+	
+	<!--ColdBox Object Caching Settings Overrides the Framework-wide settings 
+	<Cache>
+		<ObjectDefaultTimeout>20</ObjectDefaultTimeout>
+		<ObjectDefaultLastAccessTimeout>5</ObjectDefaultLastAccessTimeout>
+		<ReapFrequency>1</ReapFrequency>
+		<MaxObjects></MaxObjects>
+		<FreeMemoryPercentageThreshold></FreeMemoryPercentageThreshold>
+	</Cache>
+	-->
+	
 </Config>

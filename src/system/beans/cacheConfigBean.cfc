@@ -82,7 +82,16 @@ Modification History:
 		<cfargument name="CacheFreeMemoryPercentageThreshold" type="numeric" required="true">
 		<cfset instance.CacheFreeMemoryPercentageThreshold = arguments.CacheFreeMemoryPercentageThreshold>
 	</cffunction>
-
+	
+	<!--- Getter/Setter memento --->
+	<cffunction  name="getmemento" access="public" returntype="struct" output="false" hint="Get the instance">
+		<cfreturn variables.instance>
+	</cffunction>
+	<cffunction  name="setmemento" access="public" returntype="void" output="false" hint="Set the instance">
+		<cfargument name="instance" type="struct" required="true">
+		<cfset variables.instance = arguments.instance>
+	</cffunction>
+	
 <!------------------------------------------- PRIVATE ------------------------------------------->
 
 

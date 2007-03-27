@@ -77,5 +77,13 @@
 		<Datasource alias="mysite" name="mysite" dbtype="mysql"  username="root" password="pass" />
 		<Datasource alias="blog_dsn" name="myblog" dbtype="oracle" username="root" password="pass" />
 	</Datasources>
+	
+	<Cache>
+		<ObjectDefaultTimeout>15</ObjectDefaultTimeout>
+		<ObjectDefaultLastAccessTimeout>5</ObjectDefaultLastAccessTimeout>
+		<ReapFrequency>1</ReapFrequency>
+		<MaxObjects>15</MaxObjects>
+		<FreeMemoryPercentageThreshold>0</FreeMemoryPercentageThreshold>
+	</Cache>
 
 </Config>
