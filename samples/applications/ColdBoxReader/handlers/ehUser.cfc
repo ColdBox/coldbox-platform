@@ -61,7 +61,7 @@
 
 			} catch (any e) {
 				getPlugin("messagebox").setMessage("error", e.message & "<br>" & e.detail);
-				dspSignUp(Context);
+				dspSignUp(Event);
 			}
 		</cfscript>
 	</cffunction>
