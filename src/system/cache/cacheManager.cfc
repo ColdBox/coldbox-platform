@@ -67,9 +67,6 @@ Modification History:
 		<!--- ************************************************************* --->
 		<cfset var ObjectFound = false>
 
-		<!--- Reap the cache First, if in frequency --->
-		<cfset reap()>
-
 		<cflock type="readonly" name="OCM_Operation" timeout="5">
 			<cfif getobjectPool().lookup(arguments.objectKey)>
 				<cfset ObjectFound = true>
