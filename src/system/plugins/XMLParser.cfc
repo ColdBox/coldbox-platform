@@ -553,33 +553,33 @@ Modification History:
 				if ( structKeyExists(CacheSettingNodes[1], "ObjectDefaultTimeout") and isNumeric(CacheSettingNodes[1].ObjectDefaultTimeout.xmlText) )
 					StructInsert(ConfigStruct.CacheSettings, "ObjectDefaultTimeout", trim(CacheSettingNodes[1].ObjectDefaultTimeout.xmlText) );
 				else
-					throw("Invalid object timeout. Please see schema.","Value=#CacheSettingNodes[1].ObjectDefaultTimeout.xmlText#","Framework.plugins.InvalidCacheObjectDefaultTimeout");
+					throw("Invalid object timeout. Please see schema.","Value=#CacheSettingNodes[1].ObjectDefaultTimeout.xmlText#","Framework.plugins.XMLParser.InvalidCacheObjectDefaultTimeout");
 
 				//Check ObjectDefaultLastAccessTimeout
 				if ( structKeyExists(CacheSettingNodes[1], "ObjectDefaultLastAccessTimeout") and isNumeric(CacheSettingNodes[1].ObjectDefaultLastAccessTimeout.xmlText))
 					StructInsert(ConfigStruct.CacheSettings, "ObjectDefaultLastAccessTimeout", trim(CacheSettingNodes[1].ObjectDefaultLastAccessTimeout.xmlText) );
 				else
-					throw("Invalid object last access timeout. Please see schema.","Value=#CacheSettingNodes[1].ObjectDefaultLastAccessTimeout.xmlText#","Framework.plugins.InvalidObjectDefaultLastAccessTimeout");
+					throw("Invalid object last access timeout. Please see schema.","Value=#CacheSettingNodes[1].ObjectDefaultLastAccessTimeout.xmlText#","Framework.plugins.XMLParser.InvalidObjectDefaultLastAccessTimeout");
 
 				//Check ReapFrequency
 				if ( structKeyExists(CacheSettingNodes[1], "ReapFrequency") and isNumeric(CacheSettingNodes[1].ReapFrequency.xmlText))
 					StructInsert(ConfigStruct.CacheSettings, "ReapFrequency", trim(CacheSettingNodes[1].ReapFrequency.xmlText) );
 				else
-					throw("Invalid reaping frequency. Please see schema.","Value=#CacheSettingNodes[1].ReapFrequency.xmlText#","Framework.plugins.InvalidReapFrequency");
+					throw("Invalid reaping frequency. Please see schema.","Value=#CacheSettingNodes[1].ReapFrequency.xmlText#","Framework.plugins.XMLParser.InvalidReapFrequency");
 
 				//Check MaxObjects
 				if ( structKeyExists(CacheSettingNodes[1], "MaxObjects") and isNumeric(CacheSettingNodes[1].MaxObjects.xmlText)){
 					StructInsert(ConfigStruct.CacheSettings, "MaxObjects", trim(CacheSettingNodes[1].MaxObjects.xmlText) );						
 				}
 				else
-					throw("Invalid Max Objects. Please see schema.","Value=#CacheSettingNodes[1].MaxObjects.xmlText#","Framework.plugins.InvalidMaxObjects");
+					throw("Invalid Max Objects. Please see schema.","Value=#CacheSettingNodes[1].MaxObjects.xmlText#","Framework.plugins.XMLParser.InvalidMaxObjects");
 				
 				//Check FreeMemoryPercentageThreshold
 				if ( structKeyExists(CacheSettingNodes[1], "FreeMemoryPercentageThreshold") and isNumeric(CacheSettingNodes[1].FreeMemoryPercentageThreshold.xmlText)){
 					StructInsert(ConfigStruct.CacheSettings, "FreeMemoryPercentageThreshold", trim(CacheSettingNodes[1].FreeMemoryPercentageThreshold.xmlText) );						
 				}
 				else
-					throw("Invalid Free Memory Percentage Threshold. Please see schema.","Value=#CacheSettingNodes[1].FreeMemoryPercentageThreshold.xmlText#","Framework.plugins.InvalidFreeMemoryPercentageThreshold");
+					throw("Invalid Free Memory Percentage Threshold. Please see schema.","Value=#CacheSettingNodes[1].FreeMemoryPercentageThreshold.xmlText#","Framework.plugins.XMLParser.InvalidFreeMemoryPercentageThreshold");
 					
 					
 				//Set Override to true.
