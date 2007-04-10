@@ -321,14 +321,7 @@ Description		: This is the main ColdBox front Controller.
 		<cfthrow type="#arguments.type#" message="#arguments.message#"  detail="#arguments.detail#">
 	</cffunction>
 <!------------------------------------------- PRIVATE ------------------------------------------->
-	<cffunction name="dump" access="private" hint="Facade for cfmx dump" returntype="void">
-		<cfargument name="var" required="yes" type="any">
-		<cfdump var="#var#">
-	</cffunction>
-	<cffunction name="abort" access="private" hint="Facade for cfabort" returntype="void" output="false">
-		<cfabort>
-	</cffunction>
-
+	
 	<cffunction name="getRegisteredHandler" access="private" hint="I get a registered handler and method according to passed event from the registeredHandlers setting." returntype="coldbox.system.beans.eventhandlerBean"  output="false">
 		<!--- ************************************************************* --->
 		<cfargument name="event" hint="The event to check and get." type="string" required="true">
