@@ -56,7 +56,7 @@ Modification History:
 		<cfset var qryNew = QueryNew("")>
 		<!--- Validate sortOrder --->
 		<cfif not reFindnocase("(asc|desc)", arguments.sortOrder)>
-			<cfthrow type="Framework.sharedLibrary.InvalidSortOrderException" message="The sortOrder you sent in: #arguments.sortOrder# is not valid. Valid sort orders are ASC|DESC">
+			<cfthrow type="Framework.plugin.queryHelper.InvalidSortOrderException" message="The sortOrder you sent in: #arguments.sortOrder# is not valid. Valid sort orders are ASC|DESC">
 		</cfif>
 		<cfquery name="qryNew" dbtype="query">
 			SELECT *
