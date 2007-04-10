@@ -170,6 +170,10 @@ Description		: This is the main ColdBox front Controller.
 	</cffunction>
 
 	<!--- Plugin Factories --->
+	<cffunction name="getMyPlugin" access="Public" returntype="any" hint="I am the Custom Plugin cfc object factory." output="false">
+		<cfargument name="plugin" 		type="string" hint="The Custom Plugin object's name to instantiate" >
+		<cfreturn getPlugin(arguments.plugin,true)>
+	</cffunction>
 	<cffunction name="getPlugin" access="Public" returntype="any" hint="I am the Plugin cfc object factory." output="false">
 		<cfargument name="plugin" 		type="string" hint="The Plugin object's name to instantiate" >
 		<cfargument name="customPlugin" type="boolean" required="false" default="false" hint="Used internally to create custom plugins.">
