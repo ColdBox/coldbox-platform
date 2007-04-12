@@ -286,7 +286,7 @@ Description		: This is the main ColdBox front Controller.
 					<!--- Relocate to Invalid Event --->
 					<cfset setNextEvent(getSetting("onInvalidEvent"))>
 				<cfelse>
-					<cfthrow type="Framework.InvalidEventException" message="An invalid event has been detected: #ExecutingMethod#">
+					<cfthrow type="Framework.InvalidEventException" message="An invalid event has been detected: #ExecutingMethod#. This event does not exist in the specified handler controller.">
 				</cfif>
 			</cfif>
 
@@ -321,7 +321,7 @@ Description		: This is the main ColdBox front Controller.
 		<cfthrow type="#arguments.type#" message="#arguments.message#"  detail="#arguments.detail#">
 	</cffunction>
 <!------------------------------------------- PRIVATE ------------------------------------------->
-	
+
 	<cffunction name="getRegisteredHandler" access="private" hint="I get a registered handler and method according to passed event from the registeredHandlers setting." returntype="coldbox.system.beans.eventhandlerBean"  output="false">
 		<!--- ************************************************************* --->
 		<cfargument name="event" hint="The event to check and get." type="string" required="true">
