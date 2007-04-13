@@ -25,7 +25,7 @@
 		<Setting name="HandlersIndexAutoReload"   	value="false" />
 		<Setting name="ConfigAutoReload"			value="false" />
 		<Setting name="ExceptionHandler"     		value="" />
-		<Setting name="onInvalidEvent" 				value="" />
+		<Setting name="onInvalidEvent" 				value="ehGeneral.doinvalid" />
 		<!--Base Path to plugins, as if to instantiate them. -->
 		<Setting name="MyPluginsLocation" 			value="coldbox.myplugins"/>
 		<Setting name="HandlerCaching" 				value="true"/>

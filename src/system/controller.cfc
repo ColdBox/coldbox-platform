@@ -283,10 +283,14 @@ Description		: This is the main ColdBox front Controller.
 				<!--- Invalid Event Detected, log it --->
 				<cfset getPlugin("logger").logEntry("error","Invalid Event detected: #ExecutingHandler#.#ExecutingMethod#")>
 				<cfif getSetting("onInvalidEvent") neq "">
+					<!--- Test for invalid Event Error --->
+					<cfif compareNoCase(getSetting("onInvalidEvent"),arguments.event) eq 0>
+						<cfthrow type="Framework.onInValidEventSettingException" message="An invalid event has been detected: #RequestContext.getValue("invalidevent","")# and the onInvalidEvent setting is also invalid: #getSetting("onInvalidEvent")#. Please check your settings.">
+					</cfif>
 					<!--- Relocate to Invalid Event --->
-					<cfset setNextEvent(getSetting("onInvalidEvent"))>
+					<cfset setNextEvent(getSetting("onInvalidEvent"),"invalidevent=#ExecutingHandler#.#ExecutingMethod#")>
 				<cfelse>
-					<cfthrow type="Framework.InvalidEventException" message="An invalid event has been detected: #ExecutingMethod#. This event does not exist in the specified handler controller.">
+					<cfthrow type="Framework.InvalidEventException" message="An invalid event has been detected: #ExecutingHandler#.#ExecutingMethod#. This event does not exist in the specified handler controller.">
 				</cfif>
 			</cfif>
 
