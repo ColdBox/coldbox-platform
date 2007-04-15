@@ -8,19 +8,13 @@
 	History      : Remove an extra line (5/17/06)
 --->
 
+<!--- HTML Inserter --->
+<script type="text/javascript" src="includes/editor.js"></script>
+
+
 <cfset message = Event.getValue("message")>
 <cfset entry = Event.getValue("entry")>
 <cfset allCats = Event.getValue("allCats")>
-
-<!--- GoogieSpell --->
-<script type="text/javascript" src="../../includes/googiespell/AmiJS.js"></script>
-<script type="text/javascript" src="../../includes/googiespell/googiespell.js"></script>
-<script type="text/javascript" src="../../includes/googiespell/cookiesupport.js"></script>
-<link href="../../includes/googiespell/googiespell.css" rel="stylesheet" type="text/css" />
-<!--- GoogieSpell --->
-
-<!--- HTML Inserter --->
-<script type="text/javascript" src="includes/editor.js"></script>
 
 <cfif not structKeyExists(form, "preview")>
 
@@ -49,7 +43,7 @@
 	</cfif>
 
 	<cfoutput>
-	<form action="index.cfm?event=#Event.getValue("xehSave")#&id=#Event.getValue("id")#" method="POST" enctype="multipart/form-data" name="editForm" id="editForm">
+	<form action="?event=#Event.getValue("xehSave")#&id=#Event.getValue("id")#" method="post" enctype="multipart/form-data" name="editForm">
 	<table>
 		<tr>
 			<td align="right">title:</td>
@@ -57,7 +51,7 @@
 		</tr>
 		<tr valign="top">
 			<td align="right">body:</td>
-			<td >
+			<td>
 				<textarea name="body" class="txtArea" id="body">#Event.getValue("body")#</textarea>
 				<div align="center" class="inserter_buttons">
 				<input type="button" name="strong" 	class="button" onclick="tag('strong')" 	value="B" />
@@ -190,19 +184,5 @@
 	</cfoutput>
 
 </cfif>
-
-<cfoutput>
-<cfif getSetting("ENVIRONMENT") eq "DEVELOPMENT">
-	<script>
-	var googie1 = new GoogieSpell("../../includes/googiespell/", "http://jfetmac/applications/luismajano_com/includes/googiespell/googleapi.cfm?");
-	googie1.decorateTextarea("body");
-	</script>
-<cfelse>
-	<script>
-	var googie1 = new GoogieSpell("../../includes/googiespell/", "/includes/googiespell/googleapi.cfm?");
-	googie1.decorateTextarea("body");
-	</script>
-</cfif>
-</cfoutput>
 
 <cfsetting enablecfoutputonly=false>
