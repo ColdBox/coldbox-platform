@@ -12,6 +12,16 @@
 <cfset entry = Event.getValue("entry")>
 <cfset allCats = Event.getValue("allCats")>
 
+<!--- GoogieSpell --->
+<script type="text/javascript" src="../../includes/googiespell/AmiJS.js"></script>
+<script type="text/javascript" src="../../includes/googiespell/googiespell.js"></script>
+<script type="text/javascript" src="../../includes/googiespell/cookiesupport.js"></script>
+<link href="../../includes/googiespell/googiespell.css" rel="stylesheet" type="text/css" />
+<!--- GoogieSpell --->
+
+<!--- HTML Inserter --->
+<script type="text/javascript" src="includes/editor.js"></script>
+
 <cfif not structKeyExists(form, "preview")>
 
 	<cfoutput>
@@ -39,7 +49,7 @@
 	</cfif>
 
 	<cfoutput>
-	<form action="?event=#Event.getValue("xehSave")#&id=#Event.getValue("id")#" method="post" enctype="multipart/form-data" name="editForm">
+	<form action="index.cfm?event=#Event.getValue("xehSave")#&id=#Event.getValue("id")#" method="POST" enctype="multipart/form-data" name="editForm" id="editForm">
 	<table>
 		<tr>
 			<td align="right">title:</td>
@@ -47,7 +57,21 @@
 		</tr>
 		<tr valign="top">
 			<td align="right">body:</td>
-			<td><textarea name="body" class="txtArea">#Event.getValue("body")#</textarea></td>
+			<td >
+				<textarea name="body" class="txtArea" id="body">#Event.getValue("body")#</textarea>
+				<div align="center" class="inserter_buttons">
+				<input type="button" name="strong" 	class="button" onclick="tag('strong')" 	value="B" />
+				<input type="button" name="em" 		class="button" onclick="tag('em')" 		value="I" />
+				<input type="button" name="strike" 	class="button" onclick="tag('strike')" 	value="Strike" />
+				<input type="button" name="p" 		class="button" onclick="tag('p')"		value="P" />
+				<input type="button" name="h2" 		class="button" onclick="tag('h2')" 		value="h2" />
+				<input type="button" name="br" 		class="button" onclick="tag('br')" 		value="BR" />
+				<input type="button" name="img" 	class="button" onclick="tag('img')" 	value="Image" />
+				<input type="button" name="link" 	class="button" onclick="tag('link')" 	value="Link" />
+				<input type="button" name="more" 	class="button" onclick="tag('more')" 	value="More" />
+				<input type="button" name="code" 	class="button" onclick="tag('code')" 	value="Code" />
+				</div>
+			</td>
 		</tr>
 		<tr>
 			<td align="right">posted:</td>
@@ -135,7 +159,7 @@
 		</tr>
 		<tr>
 			<td>&nbsp;</td>
-			<td><input type="submit" name="cancel" value="Cancel"> 
+			<td><input type="submit" name="cancel" value="Cancel">
 			    <input type="submit" name="preview" value="Preview">
   				<input type="submit" name="save" value="Save"></td>
 		</tr>
@@ -160,11 +184,25 @@
 			<input type="hidden" name="#key#" value="#htmlEditFormat(rc[key])#">
 		</cfif>
 	</cfloop>
-	
+
 	<input type="submit" name="return" value="Return"> <input type="submit" name="save" value="Save">
 	</form>
 	</cfoutput>
 
 </cfif>
+
+<cfoutput>
+<cfif getSetting("ENVIRONMENT") eq "DEVELOPMENT">
+	<script>
+	var googie1 = new GoogieSpell("../../includes/googiespell/", "http://jfetmac/applications/luismajano_com/includes/googiespell/googleapi.cfm?");
+	googie1.decorateTextarea("body");
+	</script>
+<cfelse>
+	<script>
+	var googie1 = new GoogieSpell("../../includes/googiespell/", "/includes/googiespell/googleapi.cfm?");
+	googie1.decorateTextarea("body");
+	</script>
+</cfif>
+</cfoutput>
 
 <cfsetting enablecfoutputonly=false>

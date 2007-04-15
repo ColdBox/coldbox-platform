@@ -3,9 +3,6 @@
 	font-family: Arial;
 }
 
-
-
-
 #menu {
 	float:left;
 	margin:40px 0 0 10px;
@@ -83,7 +80,7 @@
 }	
 
 .adminListHeader {
-	background-color: ##6699ff;
+	background-color: #999;
 	font-weight: bold;
 }
 
@@ -105,4 +102,23 @@
 
 .adminList1 {
 	background-color: ##ffff99;
+}
+
+.inserter_buttons{
+    background:#cbdcd1;
+    width:500px;
+    height:25px;
+    padding-top:5px
+}
+input[type=button], input[type=submit], input[type=reset] {
+ background: #eee;
+ color: #222;
+ border: 1px outset #ccc;
+ padding: .1em .5em;
+ font-size: 12px;
+}
+input[type=button]:hover, input[type=submit]:hover, input[type=reset]:hover {
+ background: #FFFFF0;
+ border: 1px inset #ccc;
+ cursor: hand;
 }
