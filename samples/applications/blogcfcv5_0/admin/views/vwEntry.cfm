@@ -75,7 +75,7 @@
 			<td align="right">categories:</td>
 			<td>
 			<cfif allCats.recordCount>
-			<select name="categories" multiple size=4 class="txtDropdown">
+			<select name="categories" multiple size=10 class="txtDropdown">
 				<cfloop query="allCats">
 				<option value="#categoryID#" <cfif Event.valueExists("categories") and listFind(Event.getValue("categories"),categoryID)>selected</cfif>>#categoryName#</option>
 				</cfloop>
@@ -105,8 +105,8 @@
 	        	</tr>
 		        <tr>
 	    	      <td style="padding-right: 5px;">
-		    	      <select name="cboRelatedEntriesCats" multiple="multiple" size="4" onclick="doPopulateEntries(0); checkRememberEntries(); updateRememberEntries();" style="width:100%;"></select></td>
-	        	  <td><select name="cboRelatedEntries" multiple="multiple" size="4" style="width:100%;" onclick="updateRememberEntries();"></select></td>
+		    	      <select name="cboRelatedEntriesCats" multiple="multiple" size="10" onclick="doPopulateEntries(0); checkRememberEntries(); updateRememberEntries();" style="width:100%;"></select></td>
+	        	  <td><select name="cboRelatedEntries" multiple="multiple" size="10" style="width:100%;" onclick="updateRememberEntries();"></select></td>
 		        </tr>
 				</table>
 
