@@ -34,7 +34,7 @@ Modification History:
 	</cffunction>
 
 <!------------------------------------------- INSTANCE MUTATORS AND ACCESSORS ------------------------------------------->
-
+	
 	<!--- ************************************************************* --->
 
 	<cffunction name="getPluginName" access="public" hint="Get the instance's pluginName" returntype="string" output="false">
