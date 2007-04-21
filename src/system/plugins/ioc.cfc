@@ -27,14 +27,17 @@ Modification History:
 		<cfset setpluginName("IoC")>
 		<cfset setpluginVersion("1.0")>
 		<cfset setpluginDescription("This is an inversion of control plugin.")>
+		
 		<!--- Local properties --->
 		<cfset instance.IOCFramework = getSetting("IOCFramework")>
 		<cfset instance.IOCDefinitionFile = getSetting("IOCDefinitionFile")>
 		<cfset instance.ExpandedIOCDefinitionFile = "">
 		<cfset instance.IoCFactory = structNew()>
+		
 		<!--- Constants --->
 		<cfset instance.COLDSPRING_FACTORY = getSetting("ColdspringBeanFactory",true)>
-		<cfset configure()>
+		
+		<!--- Return Instance --->
 		<cfreturn this>
 	</cffunction>
 

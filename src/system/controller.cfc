@@ -174,9 +174,10 @@ Description		: This is the main ColdBox front Controller.
 		<cfargument name="plugin" 		type="string" hint="The Custom Plugin object's name to instantiate" >
 		<cfreturn getPlugin(arguments.plugin,true)>
 	</cffunction>
-	<cffunction name="getPlugin" access="Public" returntype="any" hint="I am the Plugin cfc object factory." output="false">
-		<cfargument name="plugin" 		type="string" hint="The Plugin object's name to instantiate" >
+	<cffunction name="getPlugin" access="Public" returntype="any" hint="I am the Plugin cfc object factory." output="true">
+		<cfargument name="plugin" 		type="string"  hint="The Plugin object's name to instantiate" >
 		<cfargument name="customPlugin" type="boolean" required="false" default="false" hint="Used internally to create custom plugins.">
+		<cfargument name="newInstance"  type="boolean" required="false" default="false" hint="If true, it will create and return a new plugin. No caching or persistance.">
 		<!--- ************************************************************* --->
 		<cfset var oPlugin = "">
 		<cfset var MetaData = structNew()>
@@ -189,24 +190,30 @@ Description		: This is the main ColdBox front Controller.
 			<cfset pluginKey = "custom_plugin_" & arguments.plugin>
 			<cfset pluginPath = "#getSetting("MyPluginsLocation")#.#trim(arguments.plugin)#">
 		</cfif>
-
-		<!--- Lookup in Cache --->
-		<cfif instance.ColdboxOCM.lookup(pluginKey)>
-			<cfset oPlugin = instance.ColdboxOCM.get(pluginKey)>
-		<cfelse>
+		
+		<!--- Check FOr New Instance --->
+		<cfif arguments.newInstance>
 			<!--- Object not found, proceed to create and verify --->
 			<cfset oPlugin = CreateObject("component", pluginPath).init(this)>
-			<!--- Get Object's MetaData --->
-			<cfset MetaData = getMetaData(oPlugin)>
-
-			<!--- Test for caching parameters --->
-			<cfif structKeyExists(MetaData, "cache") and isBoolean(MetaData["cache"]) and MetaData["cache"]>
-				<cfif structKeyExists(MetaData,"cachetimeout") >
-					<cfset objTimeout = MetaData["cachetimeout"]>
+		<cfelse>
+			<!--- Lookup in Cache --->
+			<cfif instance.ColdboxOCM.lookup(pluginKey)>
+				<cfset oPlugin = instance.ColdboxOCM.get(pluginKey)>
+			<cfelse>
+				<!--- Object not found, proceed to create and verify --->
+				<cfset oPlugin = CreateObject("component", pluginPath).init(this)>
+				<!--- Get Object's MetaData --->
+				<cfset MetaData = getMetaData(oPlugin)>
+				<!--- Test for caching parameters --->
+				<cfif structKeyExists(MetaData, "cache") and isBoolean(MetaData["cache"]) and MetaData["cache"]>
+					<cfif structKeyExists(MetaData,"cachetimeout") >
+						<cfset objTimeout = MetaData["cachetimeout"]>
+					</cfif>
+					<cfset instance.ColdboxOCM.set(pluginKey,oPlugin,objTimeout)>
 				</cfif>
-				<cfset instance.ColdboxOCM.set(pluginKey,oPlugin,objTimeout)>
-			</cfif>
+			</cfif>		
 		</cfif>
+
 		<!--- Return Plugin --->
 		<cfreturn oPlugin>
 	</cffunction>

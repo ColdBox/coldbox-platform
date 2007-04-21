@@ -74,7 +74,7 @@ Modification History:
 		//IoC Plugin Manager
 		if ( ConfigSettings.IOCFramework neq "" ){
 			//Create IoC Factory and configure it.
-			controller.getPlugin("ioc");
+			controller.getPlugin("ioc").configure();
 		}
 
 		//Load i18N if application is using it.
