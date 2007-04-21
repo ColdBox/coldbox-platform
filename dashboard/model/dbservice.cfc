@@ -1,13 +1,15 @@
 <cfcomponent output="false" displayname="dbservice" hint="I am the Dashboard Service.">
 
-	<!--- Constructor --->
-	<cfset variables.instance = structnew()>
+<!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
 	<cffunction name="init" access="public" returntype="dbservice" output="false">
+		<cfset variables.instance = structnew()>
 		<cfset instance.settings = CreateObject("component","settings").init()>
 		<cfset instance.fwsettings = CreateObject("component","fwsettings").init()>
 		<cfreturn this>
 	</cffunction>
+
+<!------------------------------------------- PUBLIC ------------------------------------------->
 
 	<cffunction name="get" access="public" returntype="any" output="false">
 		<cfargument name="model" required="true" type="string" >

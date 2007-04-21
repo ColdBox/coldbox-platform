@@ -21,7 +21,7 @@ This is the main event handler for the ColdBox dashboard.
 			getColdboxOCM().set("isBD",server.ColdFusion.ProductName neq "Coldfusion Server",0);
 		</cfscript>
 	</cffunction>
-	
+
 	<!--- ************************************************************* --->
 
 	<cffunction name="onRequestStart" access="public" returntype="void" output="false">
@@ -33,10 +33,12 @@ This is the main event handler for the ColdBox dashboard.
 		</cfif>
 		<!--- GLOBAL EXIT HANDLERS: --->
 		<cfset Event.setValue("xehLogout","ehSecurity.doLogout")>
-		<!--- Inject dbservice to Eventon every request for usage --->
+		<!--- Inject dbservice to Event on every request for usage --->
 		<cfset Event.setValue("dbService",getColdBoxOCM().get("dbservice"))>
 		<!--- Authorization --->
-		<cfif (not storage.exists("authorized") or storage.getvar("authorized") eq false) and Event.getValue("event") neq "ehSecurity.doLogin">
+		<cfif (not storage.exists("authorized")
+			    or storage.getvar("authorized") eq false)
+			   and Event.getValue("event") neq "ehSecurity.doLogin">
 			<cfset Event.overrideEvent("ehSecurity.dspLogin")>
 		</cfif>
 	</cffunction>
@@ -44,7 +46,7 @@ This is the main event handler for the ColdBox dashboard.
 	<!--- ************************************************************* --->
 	<!--- FRAMESET SECTION												--->
 	<!--- ************************************************************* --->
-	
+
 	<cffunction name="dspFrameset" access="public" returntype="void" output="false">
 		<cfargument name="Event" type="coldbox.system.beans.requestContext">
 		<cfset var rc = Event.getCollection()>
@@ -54,7 +56,7 @@ This is the main event handler for the ColdBox dashboard.
 		<!--- Set the View --->
 		<cfset Event.setView("vwFrameset",true)>
 	</cffunction>
-	
+
 	<cffunction name="dspHeader" access="public" returntype="void" output="false">
 		<cfargument name="Event" type="coldbox.system.beans.requestContext">
 		<cfset var rc = Event.getCollection()>
@@ -67,22 +69,5 @@ This is the main event handler for the ColdBox dashboard.
 		<!--- Set the View --->
 		<cfset Event.setView("tags/header")>
 	</cffunction>
-	
-	<!--- ************************************************************* --->
-	<!--- TOOLS SECTION 												--->
-	<!--- ************************************************************* --->
-	
-	<cffunction name="dspTools" access="public" returntype="void" output="false">
-		<cfargument name="Event" type="coldbox.system.beans.requestContext">
-		<!--- EXIT HANDLERS: --->
-		<cfset rc.xehAppBuilder = "ehAppBuilder.dspAppBuilder">
-		<cfset rc.xehLogViewer = "ehLogViewer.dspLogViewer">
-		<cfset rc.xehCFCGenerator = "ehGenerator.dspcfcGenerator">
-		<!--- Set the Rollovers For This Section --->
-		<cfset rc.qRollovers = filterQuery(application.dbservice.get("settings").getRollovers(),"pagesection","tools")>
-		<!--- Set the View --->
-		<cfset Event.setView("vwTools")>
-	</cffunction>
 
-	
 </cfcomponent>

@@ -17,16 +17,15 @@ $(document).ready(function() {
 <!--- Sub Menu Links --->
 <ul>
 	<li><a href="javascript:doEvent('#Event.getValue("xehSettings")#', 'content', {})" onMouseOver="getHint('overview')" onMouseOut="resetHint()">Settings Overview</a></li>
-	
+
 	<li><a href="javascript:doEvent('#Event.getValue("xehGeneralSettings")#', 'content', {})" onMouseOver="getHint('generalsettings')" onMouseOut="resetHint()">General Settings</a></li>
-	
+
 	<li><a href="javascript:doEvent('#Event.getValue("xehCacheSettings")#', 'content', {})" onMouseOver="getHint('cachesettings')" onMouseOut="resetHint()">Cache Settings</a></li>
-	
+
 	<li><a href="javascript:doEvent('#Event.getValue("xehLogSettings")#', 'content', {})" onMouseOver="getHint('logfilesettings')" onMouseOut="resetHint()">Log File Settings</a></li>
-	
+
 	<li><a href="javascript:doEvent('#Event.getValue("xehPassword")#', 'content', {})" onMouseOver="getHint('passwordsettings')" onMouseOut="resetHint()">Change Dashboard Password</a></li>
-	
-	<li><a href="javascript:doEvent('#Event.getValue("xehProxy")#', 'content', {})" onMouseOver="getHint('proxysettings')" onMouseOut="resetHint()">Proxy Settings</a></li>
+
 </ul>
 
 </cfoutput>
