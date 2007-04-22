@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<snippet filetemplate="false" extension="cfm">
+<name>CacheSettings</name>
+<help></help>
+<starttext><![CDATA[<Cache>
+	<ObjectDefaultTimeout>$${Default Object Timeout:30}</ObjectDefaultTimeout>
+	<ObjectDefaultLastAccessTimeout>$${Default Object Last Acccess Timeout:10}</ObjectDefaultLastAccessTimeout>
+	<ReapFrequency>$${Default Reaping Frequency:2}</ReapFrequency>
+	<MaxObjects>$${Maximum Objects to Cache:0}</MaxObjects>
+	<FreeMemoryPercentageThreshold>$${Free Memory Percentage Threshold:0}</FreeMemoryPercentageThreshold>
+</Cache>]]></starttext>
+<endtext><![CDATA[]]></endtext>
+</snippet>
