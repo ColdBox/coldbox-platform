@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<snippet filetemplate="false" extension="cfm">
+<name>getColdBoxOCM</name>
+<help></help>
+<starttext><![CDATA[getColdBoxOCM()]]></starttext>
+<endtext><![CDATA[]]></endtext>
+</snippet>

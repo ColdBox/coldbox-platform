@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<snippet filetemplate="false" extension="cfm">
+<name>renderViewNoLayout</name>
+<help></help>
+<starttext><![CDATA[renderView("$${View name (No Extension)}", true)]]></starttext>
+<endtext><![CDATA[]]></endtext>
+</snippet>

@@ -2,6 +2,6 @@
 <snippet filetemplate="false" extension="cfm">
 <name>getMyPlugin</name>
 <help>Get a custom plugin</help>
-<starttext><![CDATA[getMyPlugin("$${Custom Plugin Name}")]]></starttext>
+<starttext><![CDATA[getPlugin("$${Custom Plugin Name}", true)]]></starttext>
 <endtext><![CDATA[]]></endtext>
 </snippet>
