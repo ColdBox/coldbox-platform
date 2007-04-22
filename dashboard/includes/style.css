@@ -1,350 +1,0 @@
-/* OVERALL APPLICATION LINKS */body{	margin: 0px;
-	padding: 0px;	font-family:Verdana, Arial, Helvetica, sans-serif;	font-size:10px;	
-	height: 100%;}hr{
-	color: #232332;
-}
-.copyright{
-	font-size: 9px;
-	font-style: italic;	
-}
-/* Visual Button Links */
-a.action {
-	font-size:11px;
-	font-weight: bold;
-	font-family: Verdana, Arial, Helvetica, sans-serif;
-	background:#FFCC00 url(../images/bg_actions.gif) no-repeat scroll;
-	color:#000000;
-	cursor:pointer;
-	display:block;
-	margin:0pt 10px 0pt 0pt;
-	text-align:center;
-	text-decoration:none;
-	height: 23px;
-	width: 130px;
-}
-a.silver {
-	background:#FFCC00 url(../images/bg_actions_silver.gif) no-repeat scroll;
-}
-a.action span {
-	display: block;
-	padding: 5px;
-	font-weight:bold;
-}
-a.action:hover {
-	background:#C8E7FA url(../images/bg_actions_hover.gif) no-repeat 100%;
-}
-a:link, a:visited{
-	font-weight:bold;
-	text-decoration:none;
-	color: #000000;
-}
-a:hover{
-	color: #E58108;
-}/* GUI BARS */
-.logo{
-	background: url(../images/dashboard_logo.gif) no-repeat;
-	width: 170px;
-	height: 60px;
-	background-color: "transparent";
-	margin-left: 10px;
-	margin-top: 5px;
-	float: left;
-	position: absolute;
-}
-.headerbar{
-	background: url(../images/header_bg.png) repeat;
-	height: 70px;
-}.statusbar{	background: url(../images/statusbar_bg.png) repeat-x;	height: 25px;	border-top: 1px solid #AAAAAA;	border-bottom: 1px solid #dddddd;	font-size:10px;}
-.browserbuttonsbar{
-	float:left; 
-	margin-left:10px;
-	margin-top: 3px;
-}
-.searchOptionsBar{
-	float:left;
-	margin-left:10px;
-	margin-top: 6px;
-}.advancedSearchBar{
-	height: 25px;
-	float:left;
-	margin-left: 0px;
-	padding-left: 10px;
-	padding-right:10px; 
-	height:inherit; 
-	border-left:1px solid cccccc;
-	border-right:1px solid cccccc;
-}
-/* TOP BUTTONS */
-#topbuttons{
-	float:left;
-	margin-top:5px;
-	text-align: center;
-	width: 75px;
-}
-#topbuttons a:link, #topbuttons a:visited{
-	color: #000000;
-	text-decoration: none;
-	font-size: 10px;
-	background-color: transparent;
-}
-/* DHTML BASED */.showlayer{	display: block;}.hidelayer{	display: none;}
-.cleardiv{
-	clear: both;
-}
-.paddingDiv{
- 	margin: 15px;
-}/*GUI Declarations */
-.loginbox{
-	width: 600px;
-	height: 350px;
-	border: 1px outset #cccccc;
-	margin: auto;
-	margin-top:60px;
-	background: url(../images/contentboxes_footer.png) repeat-x bottom;
-}
-.contentboxes_footer{
-	position: rel;
-	width: 100%;
-	left: 0px;
-	text-align: right;
-	float: right;
-	bottom: 0px;
-}
-.contentboxes_title{
-	margin-left: 20px;
-	padding-top: 5px;
-	font-size: 14px;
-	font-family: Arial, Helvetica, sans-serif;
-	font-weight: bold;
-}.myloader{	float:right;	width: 275px;	text-align:right;	font-size:9px;	vertical-align:middle;	margin-top:2px;}
-
-/* SIDE MENU */
-.sidemenu{
-	/* position: absolute; 
-	right: 0px;
-	top: 0px;*/
-	background: url(../images/sidemenu_bg.png) repeat;
-	height: 100%;
-	width: 221px;
-	border-left: 1px solid #999999;
-	border-bottom: 1px solid #999999;
-}
-.sidemenu a:link, .sidemenu a:visited{
-	font-weight: bold;
-	text-decoration: none;
-}
-.sidemenu_help{
-	font-size: 9px;
-	margin: 10px;
-	height: 30px;
-}
-.sidemenu_toolbar{
-	margin-top: 40px;
-	margin-left: 20px;
-}
-.sidemenu_toolbar_option{
-	margin-bottom: 5px;
-}
-ul{
-	list-style-image: url(../images/orange_arrows.gif);
-}
-li{
-	margin-left: -5px;
-	#margin-left: 0px;
-	margin-bottom: 8px;
-}.sidemenu_title{
-	margin-top: 10px;
-	background: url(../images/sidemenu_title_bg.png) no-repeat;
-	width:220px;
-	height: 42px;
-	font-weight: bold;
-	font-size: 11px;	
-}
-.sidemenu_title_img{
-	float: left;
-	margin-top: 5px;
-	margin-left:3px;
-}
-.sidemenu_title_text{
-	float:left;
-	margin-top: 15px;
-	margin-left: 3px;
-}
-/* CONTENT  */
-#content{
-	width: 700px;
-	height: 100%;
-	text-align:left;
-}
-.maincontentbox{
-	width: 700px;
-	border: 1px outset #cccccc;
-	background: url(../images/contentboxes_footer.png) repeat-x bottom;
-	margin-top:10px;
-}
-.contentboxes_header{
-	background: url(../images/contentboxes_header.png) repeat-x;
-	height: 50px;
-}
-.contentboxes{
-	margin: 10px;
-	margin-bottom: 50px;
-}
-.updatertext{
-	height:90%;
-	width:700px;
-	font-size:11px;
-	position: fixed;
-    top: 3%;
-    left: 10%;
-	background-color: #FFFFFF;
-	border:2px outset #cccccc;
-}
-.updatertext_header{
-  width: 100%;
-  height:23px;
-  background-color: #5DE3FF;
-  background-image: url(../images/th_sorted_bg.gif);
-  background-repeat: repeat-x;
-  font-weight: bold;
-  cursor: move;
-  display: block;
-}
-.updatertext_header_text{
-	padding:5px;
-	float: left;
-}
-.updatertext_header_close{
-	float:right;
-	padding:5px;
-}
-.updatertext_content{
-	width:98%;
-	margin:10px;
-	overflow:auto;
-	height: 90%;
-}
-.legend{
-	margin-top:50px;
-	background:#fffff0;
-	border:1px dotted #eaeaea;
-	padding:5px;		
-}
-/* HELP DIVS */
-.helpbox{
-	width: 450px;
-	height: 265px;
-	border: 1px solid #ddd;
-	background: url(../images/help_footer_bg.gif) #FBFFCD repeat-x bottom;
-	margin: 15px;
-	position: relative; 
-	margin: auto; 
-}
-.helpbox_header{
-	width: 100%;
-	background: url(../images/help_titlebar_bg.gif) repeat-x;
-	height: 30px;
-	font-weight: bold;
-}
-.helpbox_header_title{
-	padding-top:3px;
-	padding-left: 10px;
-}
-.helpbox_message{
-	width: 97%;
-	height: 200px;
-	overflow: auto;
-	overflow-x: hidden;
-	margin-left: 10px;
-	margin-right: 10px;
-	margin-bottom: 10px;
-}
-.helpbox_message ul{
-	list-style-image: url(../images/icons/icon_guide_tips.gif);
-}
-.helpbox_message li{
-	margin-left: -15px;
-	margin-bottom: 10px;
-	vertical-align: text-top;
-}/* FORM ELEMENTS */
-.redtext{
-	color: red;
-}.tablelisting{
-	font-size: 9px;
-	border-bottom: 1px solid #cccccc;
-}
-.tablelisting tr:hover { background: #E8F2FE }
-.tablelisting th {
-  text-align: left;
-  background-color: #F6F6F6;
-  background-image: url(../images/th_bg.gif);
-  background-repeat: repeat-x;
-  color: #000000;
-  border: 1px solid #7D7D7D;
-}
-.sort {
-  background-color: #5DE3FF;
-  background-image: url(../images/th_sorted_bg.gif);
-  background-repeat: repeat-x;
-  border-top: 1px solid #002F93;
-  border-bottom: 1px solid #0090FF;
-  color: #000000;
-  text-align: left;
-  font-weight: bold;
-}
-fieldset{
-	background-color: #f5f5f5;
-	border: 1px solid #ddd;
-}
-input[type=button], input[type=submit], input[type=reset] { background: #eee; color: #222; border: 1px outset #ccc; padding: .1em .5em; font-size: 12px;}
-input[type=button]:hover, input[type=submit]:hover, input[type=reset]:hover { background: #FFFFF0; border: 1px inset #ccc; cursor: hand;}input[type=button][disabled], input[type=submit][disabled],input[type=reset][disabled] { background: #f6f6f6; border-style: solid; color: #999;}input[type=text], input[type=password], input[type=checkbox], textarea, select { font-size:11px; border: 1px solid #d7d7d7 }input[type=text], input[type=password], input[type=checkbox], select { padding: .20em .3em }input[type=text]:focus, input[type=password]:focus, textarea:focus, input[type=checkbox]:focus, select:focus { border: 1px solid #886;}
-
-/* Generator */
-.menu_appgenerator{
-	margin-left:auto;
-	margin-right: auto;
-	width: 400px;
-	font-size: 9px;
-}
-.menu_appgenerator ul{
-	list-style: none;
-}
-.menu_appgenerator_step{
-	float: left;
-	height: 15px;
-	width:  60px;
-	text-align: center;
-	vertical-align: middle;
-	background-color: #F6F6F6;
-  	background-image: url(../images/th_bg.gif);
-  	background-repeat: repeat-x;
-	border-top: 1px solid #002F93; 
-	border-bottom: 1px solid #0090FF;
-	border-left: 1px solid #ffffff;
-  	color: #000000;
-	padding-top: 5px;
-}
-.menu_appgenerator_step_on{
-	float: left;
-	height: 15px;
-	width:  60px;
-	text-align: center;
-	vertical-align: middle;
-	background-color: #5DE3FF;
-  	background-image: url(../images/th_sorted_bg.gif);
-  	background-repeat: repeat-x;
-  	font-weight: bold;
-	border-top: 1px solid #002F93; 
-	border-bottom: 1px solid #0090FF;
-	border-left: 1px solid #ffffff;
-	color: #000000;
-	padding-top: 5px;
-}
-
-.jqmOverlay{ 
-	background-color: black;
-	opacity: 0.75;
-}
-
-
-
