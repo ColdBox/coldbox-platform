@@ -9,28 +9,21 @@
      ====================================================================== -->
 <project name="coldbox.newbuild" default="build" basedir="../../">
 
-	<property name="dir.build" value="ant/framework/build/coldbox" />
-	<property name="header.template" value="ant/framework/header.txt" />
-	<property name="header.generated" value="ant/framework/build/header_generated.txt" />
+	<!--Build Properties-->
+	<property name="dir.build" 			value="/Users/lmajano/Documents/MyDocs/My Programs/exports/coldbox" />
+	<property name="dir.dashboard"	    value="/Users/lmajano/Documents/MyDevelopment/applications/dashboard" />
 	
-	<target name="cleanup">
-		<delete dir="${dir.build}" />
-		<delete file="${header.generated}" />
-	</target>	
-		
-	<target name="init" description="Initialize the task">
-		<!--Init TimeStamp-->
-		<tstamp />
-		
-		<!--Ask for user input to create application-->
-		<input message="SVN Build Number?" addproperty="svn.build"/>
-		<input message="Framework Version?" addproperty="framework.version"/>
-		
-	</target>
-		
-	<target name="build" description="Copy Directories">
-        <!--Copy Files-->
-		<copy todir="${dir.build}/system">
+	<!--External Ant Tasks-->
+	<property name="ant.compilechecks"  value="ant/framework/ant_compile.xml" />
+	<property name="ant.dashboard"      value="${dir.dashboard}/build.xml" />
+	
+	<!--BUild-->
+	<target name="build" description="Build a new coldbox distribution">
+      	
+		<!--Need Compile Checks First -->
+		<ant antfile="${ant.compilechecks}" target="compile.checks" />
+			
+      	<copy todir="${dir.build}/system">
         	<fileset dir="src/system">
         	</fileset>
         </copy>
@@ -44,15 +37,11 @@
         	<fileset dir="install" />
         </copy>
 		
-		<copy todir="${dir.build}/dashboard">
-        	<fileset dir="dashboard" />
-        </copy>
-		
 		<copy todir="${dir.build}/ApplicationTemplate">
         	<fileset dir="ApplicationTemplate" />
         </copy>
 		
-		<!--Copy text files-->
+		<!--Copy text files to install folder-->
 		<copy todir="${dir.build}/install">
 			<fileset file="src/system/config/license.txt" />
 			<fileset file="src/system/config/readme.txt" />						
@@ -62,10 +51,15 @@
 		<copy todir="${dir.build}/install/SchemaDocs">
 			<fileset dir="documents/SchemaDocs"/>
 		</copy>
+		
 		<!--Copy Wallpapers-->
 		<copy todir="${dir.build}/install/wallpapers">
 			<fileset dir="documents/workbench/wallpapers"/>
 		</copy>
+		
+		<!--Copy Dashboard-->
+		<ant antfile="${ant.dashboard}" target="deploy.to.export" dir="${dir.dashboard}" />
+		
     </target>
 
 </project>
