@@ -14,8 +14,10 @@
         
         <!-- set global properties for this build -->
         <property name="src" 							location="src"/>
+    	<property name="src.system"						location="src/system" />
         <property name="samples"                        location="samples" />
         <property name="build" 							location="tmpbuild"/>
+    	<property name="dist"							location="dist" />
         
         <!--CFcompile Properties -->
         <property name="webroot"						location="/Users/lmajano/Documents/MyDevelopment/" />
@@ -102,10 +104,25 @@
             </java>                        
             <echo>Compile checks for ${build} complete.</echo>
         </target>
+    	
+    	<!-- Init -->
+        <target name="init.deploy">		
+            <!-- Create the time stamp -->
+            <tstamp/>            
+            <!-- Create the build directory structure used to compile -->
+            <mkdir dir="${build}"/>
+            <!-- Copy the source to build directory -->
+            <copy todir="${build}">
+            	<fileset dir="${src.system}">
+					<exclude name="**/*.xml.cfm"/>
+				</fileset>	
+            </copy>
+            <echo>Build setup for framework complete.</echo>		
+        </target> 
         
         <!--Deploy-->
-        <target name="deploy" depends="compile">
-            <echo>Starting to deploy dashboard...</echo>
+        <target name="deploy" depends="init.deploy">
+            <echo>Starting to deploy framework</echo>
             <java classname="coldfusion.tools.CommandLineInvoker" failonerror="true" fork="true">
                 <classpath>
                     <pathelement location="${jrun.jar}"/>
@@ -136,7 +153,7 @@
         <target name="movexmlfiles">
             <echo>Deploying *.xml.cfm files to distribution.</echo>
             <copy todir="${dist}" verbose="true">
-                <fileset dir="${src}">
+                <fileset dir="${src.system}">
                     <include name="**/*.xml.cfm"/>
                 </fileset>
             </copy>
