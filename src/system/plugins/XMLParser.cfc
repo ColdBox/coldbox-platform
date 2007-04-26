@@ -364,7 +364,7 @@ Modification History:
 				StructInsert(ConfigStruct,"MailPassword","");
 				StructInsert(ConfigStruct,"MailPort",25);
 			}
-			
+
 			//i18N Settings
 			i18NSettingNodes = XMLSearch(configXML, instance.searchi18NSettings);
 			//Check if empty
@@ -540,15 +540,15 @@ Modification History:
 			}
 			StructInsert(ConfigStruct,"ViewLayouts",LayoutViewStruct);
 			StructInsert(ConfigStruct, "ConfigTimeStamp", getPlugin("fileUtilities").FileLastModified(ConfigFileLocation));
-			
-			
+
+
 			//Cache Override Settings
 			CacheSettingNodes = XMLSearch(configXML, instance.searchCache);
 			//Create CacheSettings Structure
 			structInsert(ConfigStruct,"CacheSettings",structNew());
 			//Check if empty
 			if ( ArrayLen(CacheSettingNodes) gt 0 and ArrayLen(CacheSettingNodes[1].XMLChildren) gt 0){
-				
+
 				//Checks For Default Timeout
 				if ( structKeyExists(CacheSettingNodes[1], "ObjectDefaultTimeout") and isNumeric(CacheSettingNodes[1].ObjectDefaultTimeout.xmlText) )
 					StructInsert(ConfigStruct.CacheSettings, "ObjectDefaultTimeout", trim(CacheSettingNodes[1].ObjectDefaultTimeout.xmlText) );
@@ -569,27 +569,27 @@ Modification History:
 
 				//Check MaxObjects
 				if ( structKeyExists(CacheSettingNodes[1], "MaxObjects") and isNumeric(CacheSettingNodes[1].MaxObjects.xmlText)){
-					StructInsert(ConfigStruct.CacheSettings, "MaxObjects", trim(CacheSettingNodes[1].MaxObjects.xmlText) );						
+					StructInsert(ConfigStruct.CacheSettings, "MaxObjects", trim(CacheSettingNodes[1].MaxObjects.xmlText) );
 				}
 				else
 					throw("Invalid Max Objects. Please see schema.","Value=#CacheSettingNodes[1].MaxObjects.xmlText#","Framework.plugins.XMLParser.InvalidMaxObjects");
-				
+
 				//Check FreeMemoryPercentageThreshold
 				if ( structKeyExists(CacheSettingNodes[1], "FreeMemoryPercentageThreshold") and isNumeric(CacheSettingNodes[1].FreeMemoryPercentageThreshold.xmlText)){
-					StructInsert(ConfigStruct.CacheSettings, "FreeMemoryPercentageThreshold", trim(CacheSettingNodes[1].FreeMemoryPercentageThreshold.xmlText) );						
+					StructInsert(ConfigStruct.CacheSettings, "FreeMemoryPercentageThreshold", trim(CacheSettingNodes[1].FreeMemoryPercentageThreshold.xmlText) );
 				}
 				else
 					throw("Invalid Free Memory Percentage Threshold. Please see schema.","Value=#CacheSettingNodes[1].FreeMemoryPercentageThreshold.xmlText#","Framework.plugins.XMLParser.InvalidFreeMemoryPercentageThreshold");
-					
-					
+
+
 				//Set Override to true.
 				ConfigStruct.CacheSettings.Override = true;
 			}
 			else{
-				ConfigStruct.CacheSettings.Override = false;			
+				ConfigStruct.CacheSettings.Override = false;
 			}
-			
-			
+
+
 			//Determine which CF version for XML Parsing method
 			if (listfirst(server.coldfusion.productversion) gte 7){
 				//Finally Validate With XSD
@@ -612,9 +612,14 @@ Modification History:
 		<!--- ************************************************************* --->
 		<!--- Clean [] --->
 		<cfset var cleanList = "">
+		<cfset var i = 1>
+		<cfset var cleanArray = ArrayNew(1)>
 		<cfset cleanList = replace(replace(arguments.setting,"[","","all"),"]","","all")>
+		<cfloop from="1" to="#listLen(cleanList)#" index="i">
+			<cfset ArrayAppend(cleanArray,trim(listgetAt(cleanList,i)))>
+		</cfloop>
 		<!--- Create Array --->
-		<cfreturn listToArray(cleanList)>
+		<cfreturn cleanArray>
 	</cffunction>
 
 	<!--- ************************************************************* --->
