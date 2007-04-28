@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<snippet filetemplate="false" extension="cfm">
+<name>YourSetting</name>
+<help>A new Your Setting element</help>
+<starttext><![CDATA[<Setting name="$${Setting Name}" value="$${Value}" />]]></starttext>
+<endtext><![CDATA[]]></endtext>
+</snippet>

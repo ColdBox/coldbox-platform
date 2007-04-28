@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<snippet filetemplate="false" extension="cfm">
+<name>MailServerSettings</name>
+<help>Mail Server Settings</help>
+<starttext><![CDATA[<MailServerSettings>
+		<MailServer>$${Mail Server (Blank if using CFMX Settings)}</MailServer>
+		<MailPort>$${Mail Port (Blank if not used)}</MailPort>
+		<MailUsername>$${Mail Username (Blank if not used)}</MailUsername>
+		<MailPassword>$${Mail Password (Blank if not used)}</MailPassword>
+	</MailServerSettings>]]></starttext>
+<endtext><![CDATA[]]></endtext>
+</snippet>

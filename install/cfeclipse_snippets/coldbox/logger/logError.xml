@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<snippet filetemplate="false" extension="cfm">
+<name>logError</name>
+<help>Log Error</help>
+<starttext><![CDATA[getPlugin("logger").logError("$${Message}", $${Exception Struct}, $${Extra Information (Simple or Complex)})]]></starttext>
+<endtext><![CDATA[]]></endtext>
+</snippet>

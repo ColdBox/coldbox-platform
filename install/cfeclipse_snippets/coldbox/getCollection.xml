@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<snippet filetemplate="false" extension="cfm">
+<name>getCollection</name>
+<help>Get the request collection</help>
+<starttext><![CDATA[event.getCollection($${DeepCopy:false|true})]]></starttext>
+<endtext><![CDATA[]]></endtext>
+</snippet>

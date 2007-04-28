@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<snippet filetemplate="false" extension="cfm">
+<name>Event Handler Method</name>
+<help></help>
+<starttext><![CDATA[<cffunction name="$${Event Name}" access="public" returntype="void" output="false">
+	<cfargument name="Event" type="coldbox.system.beans.requestContext" required="yes">
+
+</cffunction>]]></starttext>
+<endtext><![CDATA[]]></endtext>
+</snippet>

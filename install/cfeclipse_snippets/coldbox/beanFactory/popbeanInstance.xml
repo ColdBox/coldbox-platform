@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<snippet filetemplate="false" extension="cfm">
+<name>popBeanInstance</name>
+<help>Populates a bean with an already created instance.</help>
+<starttext><![CDATA[getPlugin("beanFactory").populateBean($${Bean Instance})]]></starttext>
+<endtext><![CDATA[]]></endtext>
+</snippet>

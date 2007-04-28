@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<snippet filetemplate="false" extension="cfm">
+<name>View</name>
+<help>A new view element</help>
+<starttext><![CDATA[<View>$${View (No .cfm)}</View>]]></starttext>
+<endtext><![CDATA[]]></endtext>
+</snippet>

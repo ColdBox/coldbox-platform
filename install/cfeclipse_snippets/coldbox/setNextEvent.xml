@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<snippet filetemplate="false" extension="cfm">
+<name>setNextEvent</name>
+<help>setNextEvent method</help>
+<starttext><![CDATA[setNextEvent("$${event}","$${url params}")]]></starttext>
+<endtext><![CDATA[]]></endtext>
+</snippet>
