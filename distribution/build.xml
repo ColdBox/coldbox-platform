@@ -13,16 +13,16 @@
     </description>
 	
 	<!--Properties-->
-	<property name="ftp.server" value="ftp.coldboxframework.com" />
-	<property name="ftp.remotedir" value="/httpdocs/distribution" />
-	
-	<property name="coldbox_template" value="distribution/templates/coldbox.xml" />
-	<property name="coldbox_destination" value="distribution/coldbox.xml" />
-	<property name="coldbox_readme"   value="src/system/config/readme.txt" />
+	<property name="ftp.server" 	value="ftp.coldboxframework.com" />
+	<property name="ftp.remotedir" 	value="/httpdocs/distribution" />
+	<!--File Properties-->
+	<property name="coldbox_template" 		value="distribution/templates/coldbox.xml" />
+	<property name="coldbox_destination" 	value="distribution/coldbox.xml" />
+	<property name="coldbox_readme"   		value="src/system/config/readme.txt" />
 	<!--Dashboard Properties-->
-	<property name="dashboard_template" value="distribution/templates/dashboard.xml" />
-	<property name="dashboard_destination" value="distribution/dashboard.xml" />
-	<property name="dashboard_readme"  value="dashboard/readme.txt" />
+	<property name="dashboard_template" 	value="distribution/templates/dashboard.xml" />
+	<property name="dashboard_destination" 	value="distribution/dashboard.xml" />
+	<property name="dashboard_readme"  		value="/Users/lmajano/Documents/MyDevelopment/applications/dashboard/src/readme.txt" />
 	
     <target name="init">
         <tstamp />
