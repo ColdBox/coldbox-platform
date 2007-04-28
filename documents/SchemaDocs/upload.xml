@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<!-- ====================================================================== 
+     Mar 14, 2007 7:43:26 PM                                                        
+
+     SchemaDocs    
+     This task will upload the schema docs to the ftp site.
+                   
+     lmajano                                                                
+     ====================================================================== -->
+<project name="coldbox.schemadocs" default="ftp.deploy" basedir="../../">
+    <description>
+    	This task will upload the schema docs to the ftp site.
+    </description>
+	
+	<!-- ftp server to move files to -->
+	<property name="ftp.server" value="www.coldboxframework.com" />
+	<!-- directory in server to move files to (root relative) -->
+	<property name="ftp.remotedir" value="/httpdocs/documents/SchemaDocs" />
+	<property name="copy.dir" value="documents/SchemaDocs"/>
+	
+	<target name="ftp.deploy">
+       	<input message="Please enter ftp server username:" addproperty="ftp.username" />
+       	<input message="Please enter fpt server password:" addproperty="ftp.password" />
+      	<ftp action="send" server="${ftp.server}" userid="${ftp.username}" password="${ftp.password}" 
+       		remotedir="${ftp.remotedir}" passive="yes" verbose="yes">
+        	<fileset dir="${copy.dir}"/>
+       	</ftp>
+    </target>	
+		
+</project>
