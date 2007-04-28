@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Config>
+    <Application>ColdBox Dashboard</Application>
+    <Version>@@VERSION@@</Version>
+    <Filename>../builds/dashboard_@@VERSION@@.zip</Filename>
+    <UpdateDate>@@DATE@@</UpdateDate>
+    <Author>Luis Majano</Author>
+    <Description><![CDATA[@@README@@]]></Description>
+</Config>
