@@ -1,0 +1,21 @@
+[default]
+dsn=myblog
+owneremail=info@coldboxframework.com
+blogURL=http://jfetmac/applications/coldbox/samples/applications/blogcfcv5_0/index.cfm
+blogTitle=ColdboxBlog
+blogDescription=The ColdBox blogCFC
+blogDBType=MYSQL
+locale=en_US
+users=
+commentsFrom=
+mailserver=
+mailusername=
+mailpassword=
+pingurls=
+offset=0
+allowtrackbacks=yes
+trackbackspamlist=phentermine,searchterra,bolobomb.com,date.inter.by,cialis,propecia,viagra,tramadol,searchear.biz,pills and tablets,abrevaonline,flomax,glucophag,best links for home,best earning,soma,spam.com,zyban,amoxil,best tablets,hoodia,prozac,testanchor,4allfree.com,lipitor,actonel,acidophilus,accuzyme,abelcet,accupepinfo,acitretin,acetatablets,shemale,ultram,levitra,salbutamol,music in laguna beach season 2,radar music,vicarious visions,indocin,adatosil,myster-shopper,game.blog57.com,chibroxin,pop music hit,rio mp3,sonic heroes stage 7,mpe songs,convert mp3 wav,theme song mp3,busta rhymes mp3,mefenamic,fioricet,xenical,amifostine,adsorbocarpine,diamond jewelry,My new review,-mp3,poker,instantcredit,zayablo.com,mp3-,rolex-watches,ambien,hydrocodone,cat-bed,pet-bed,celexa,ephedra,bectra,christmas-discount,china tours,niodir.com,american hawaiian cruises,nissancar,greece-travel-guide,cruises-to-,carsblog,rx-pills,cell-phone,tour-dates,best price dog door,cheap-mortgage,best-mortgage,second-mortgage,credit-mortgage,secured-loan,overture suggestion,nightwish,fundslender,pharmacies,refimasters.info,digital camcorders,t35.com,50webs.com,nfl betting,hotelwebfind,toursearch.biz,dating-,fuckoff,fuck you,fucker,www.musicalinstruments-store.info,-store.info,ultra-shop.info,-insurance,music-,-music,ryan.in.ua,auto-transport,funny-gift-idea,naturallyclearskin.net,ESCABICALUTAMIDE,adefovir,Allegra,adipex,gambling-review,rivotril,alprazolam,bontril,acticort,join-4free.com,join-4free.info,menopauserelief,sexual-enhancement,skin-care-products,cheap-discount,payday loans,breast-enlargement,penis-,online-order,wrinkle-cream,bust-enhancement,anti-depression,cellulite-cream,urinary-changes,diet-pills,sexual-relaxation,hair-loss,cele-brex,mortgage loans,hemroids,glucose-levels-online,penis,hemorrhoids,nicotine-patch,cellulite-products,projectstopsmoking.com,paydayloans,casino,codeine,playingtheangel,buy mp3,hp ink,bar code,door hardware,check reader,hp printer,ipod car,theinformationconstruct.com,download mp3,buy adult,from John Miller,from Jhon Miller,sex,porn,fuck,rape,gay-mpegs,blowjob,pussy,lesbian,vaginas,gay-teen,young-teen,nude,teen-models,milf,hardcore,harcore,adult movie,clips-teens,fajne-gry,tits,teens-models,teen-,teens,vagina,pharmacy,credit-card,retailsoup.com,pufystik,iniebet,kakachka.com,creditreport,hardcre,naxidi,amnepox,cunts,francisgibson,takoe.com,takoe.net,sigaret.net,construction-tools.info,sigaret.net
+blogkeywords=
+ipblocklist=67.180.242.3
+maxentries=10
+usecaptcha=yes
