@@ -68,7 +68,7 @@ Modification History:
 	</cffunction>
 
 	<cffunction name="setContext" access="public" output="false" returntype="void" hint="Set the Request Context">
-		<cfargument name="Context" type="coldbox.system.beans.RequestContext" required="true">
+		<cfargument name="Context" type="coldbox.system.beans.requestContext" required="true">
 		<cfscript>
 			request.cb_requestContext = arguments.Context;
 		</cfscript>
