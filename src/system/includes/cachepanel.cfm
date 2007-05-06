@@ -15,8 +15,11 @@
 	</cfif>
 
 	<div class="fw_titles" onClick="toggle('fw_cache')">&gt;&nbsp; ColdBox Cache</div>
+	<cfif renderType eq "cachepanel">
+	<div class="fw_debugContentView" id="fw_cache">
+	<cfelse>
 	<div class="fw_debugContent" id="fw_cache">
-
+	</cfif>
 		<cfif renderType eq "main">
 		<div>
 		  <input type="button" value="Open Cache Monitor" name="cachemonitor" style="font-size:10px" title="Open the cache monitor in a new window." onClick="window.open('index.cfm?debugpanel=cache','cachemonitor','status=1,toolbar=0,location=0,resizable=1,scrollbars=1,height=750,width=750')">
