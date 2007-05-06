@@ -5,7 +5,7 @@
 			<xs:documentation>This is the holder for the frameworks configurations.</xs:documentation>
 		</xs:annotation>
 		<xs:complexType>
-			<xs:sequence>
+			<xs:all>
 				<xs:element maxOccurs="1" minOccurs="1" ref="Settings"/>
 				<xs:element maxOccurs="1" minOccurs="0" ref="YourSettings"/>
 				<xs:element maxOccurs="1" minOccurs="0" ref="MailServerSettings"/>
@@ -16,7 +16,7 @@
 				<xs:element maxOccurs="1" minOccurs="0" ref="i18N" />
 				<xs:element maxOccurs="1" minOccurs="0" ref="Datasources"/>
 				<xs:element maxOccurs="1" minOccurs="0" ref="Cache"/>
-			</xs:sequence>
+			</xs:all>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="Settings">
