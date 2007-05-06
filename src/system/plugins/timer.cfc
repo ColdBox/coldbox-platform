@@ -10,7 +10,7 @@ Modification History:
 ---------------------------------------------------------------------->
 <cfcomponent name="timer"
 			 hint="This is the timer plugin. It is used to time executions. Facade for request variable"
-			 extends="basePlugin"
+			 extends="coldbox.system.plugin"
 			 output="false"
 			 cache="true"
 			 cachetimeout="5">
