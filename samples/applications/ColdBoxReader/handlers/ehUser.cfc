@@ -90,7 +90,7 @@
 			} catch (any e) {
 				getPlugin("logger").logError("Error logging in user", e);
 				getPlugin("messagebox").setMessage("error", e.message);
-				dspLogin(Context);
+				dspLogin(event);
 			}
 		</cfscript>
 	</cffunction>
