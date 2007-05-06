@@ -14,7 +14,7 @@
 		<div class="fw_debugPanel">
 	</cfif>
 
-	<div class="fw_titles" onClick="toggle('fw_cache')">&gt;&nbsp; ColdBox Cache</div>
+	<div class="fw_titles" onClick="fw_toggle('fw_cache')">&gt;&nbsp; ColdBox Cache</div>
 	<cfif renderType eq "cachepanel">
 	<div class="fw_debugContentView" id="fw_cache">
 	<cfelse>

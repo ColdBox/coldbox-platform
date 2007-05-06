@@ -32,7 +32,7 @@ Modification History:
 	<cfif structkeyExists(RequestCollection, "tracerStack")>
 	<cfoutput>
 		<!--- <cfinclude template="style.cfm"> --->
-		<div class="fw_titles" onClick="toggle('fw_tracer')">&gt;&nbsp;Tracer Messages </div>
+		<div class="fw_titles" onClick="fw_toggle('fw_tracer')">&gt;&nbsp;Tracer Messages </div>
 		<div id="fw_tracer" class="fw_info">
 		<cfloop from="1" to="#arrayLen(RequestCollection.tracerStack)#" index="i">
 		<div class="fw_tracerMessage">
@@ -57,7 +57,7 @@ Modification History:
 <!--- **************************************************************--->
 <!--- DEBUGGING PANEL --->
 <!--- **************************************************************--->
-	<div class="fw_titles" onClick="toggle('fw_info')" >
+	<div class="fw_titles" onClick="fw_toggle('fw_info')" >
 		&gt; &nbsp;ColdBox Debugging Information
 	</div>
 
@@ -147,6 +147,7 @@ Modification History:
 		  	<td width="13%" align="center" class="fw_debugTablesTitles">Timestamp</td>
 			<td width="10%" align="center" class="fw_debugTablesTitles">Execution Time</td>
 			<td class="fw_debugTablesTitles">Framework Method</td>
+			<td width="75" align="center" class="fw_debugTablesTitles" >RC Snapshot</td>
 		  </tr>
 		  <cfloop query="request.DebugTimers">
 		  <cfif findnocase("render", method)>
@@ -162,10 +163,16 @@ Modification History:
 		  	<td align="center" class="fw_debugTablesCells">#TimeFormat(timestamp,"hh:MM:SS.l tt")#</td>
 			<td align="center" class="fw_debugTablesCells">#Time# ms</td>
 			<td class="fw_debugTablesCells"><span class="#color#">#Method#</span></td>
+			<td align="center" class="fw_debugTablesCells">
+				<cfif rc neq ''><a href="javascript:fw_poprc('fw_poprc_#id#')">View</a><cfelse>...</cfif>
+			</td>
+		  </tr>
+		  <tr id="fw_poprc_#id#" style="display:none">
+		  	<td colspan="4" style="padding:5px;background-color:##fffff0" >#rc#</td>
 		  </tr>
 		  </cfloop>
 		  <tr>
-			<td colspan="3" class="fw_debugTablesTitles">Total Framework Request Execution Time: #request.fwExecTime# ms</td>
+			<td colspan="4" class="fw_debugTablesTitles">Total Framework Request Execution Time: #request.fwExecTime# ms</td>
 		  </tr>
 		</table>
 		<!--- **************************************************************--->
@@ -185,7 +192,7 @@ Modification History:
 		<cfset dumpList = Event.getValue("dumpvar",0)>
 		<cfif dumplist neq 0>
 		<!--- Dump Var --->
-		<div class="fw_titles" onClick="toggle('fw_dumpvar')">&gt;&nbsp;Dumpvar </div>
+		<div class="fw_titles" onClick="fw_toggle('fw_dumpvar')">&gt;&nbsp;Dumpvar </div>
 		<div class="fw_debugContent" id="fw_dumpvar">
 			<cfloop list="#dumplist#" index="i">
 				<cfif isDefined("#i#")>
@@ -201,7 +208,7 @@ Modification History:
 <!--- **************************************************************--->
 <!--- Request Collection Debug --->
 <!--- **************************************************************--->
-	<div class="fw_titles"  onClick="toggle('fw_reqCollection')" >
+	<div class="fw_titles"  onClick="fw_toggle('fw_reqCollection')" >
 	&gt; &nbsp;Request Collection Structure
 	</div>
 	<div class="fw_debugContent" id="fw_reqCollection">
