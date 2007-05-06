@@ -7,7 +7,7 @@
 		<!--Default Debugmode boolean flag (Set to false in production environments)-->
 		<Setting name="DebugMode" 					value="true" />
 		<!--The Debug Password to use in order to activate/deactivate debugmode,activated by url actions -->
-		<Setting name="DebugPassword" 				value="Coldbox"/>
+		<Setting name="DebugPassword" 				value=""/>
 		<!--The fwreinit password to use in order to reinitialize the framework and application.Optional, else leave blank -->
 		<Setting name="ReinitPassword" 				value=""/>
 		<!--This feature is enabled by default to permit the url dumpvar parameter-->
@@ -21,11 +21,11 @@
 		<!--Default Event to run if no event is set or passed. Usually the event to be fired first (NOTE: use event handler syntax)-->
 		<Setting name="DefaultEvent" 				value="ehGeneral.dspHello"/>
 		<!--Event Handler to run on the start of a request, leave blank if not used. Emulates the Application.cfc onRequestStart method	-->
-		<Setting name="RequestStartHandler" 		value=""/>
+		<Setting name="RequestStartHandler" 		value="ehMain.onRequestStart"/>
 		<!--Event Handler to run at end of all requests, leave blank if not used. Emulates the Application.cfc onRequestEnd method-->
-		<Setting name="RequestEndHandler" 			value=""/>
+		<Setting name="RequestEndHandler" 			value="ehMain.onRequestEnd"/>
 		<!--Event Handler to run at the start of an application, leave blank if not used. Emulates the Application.cfc onApplicationStart method	-->
-		<Setting name="ApplicationStartHandler" 	value=""/>
+		<Setting name="ApplicationStartHandler" 	value="ehMain.onAppInit"/>
 		<!--The Email address from which all outgoing framework emails will be sent. -->
 		<Setting name="OwnerEmail" 					value="myemail@gmail.com" />
 		<!-- Enable Bug Reports to be emailed out, set to true by default if left blank -->
@@ -35,7 +35,7 @@
 		<!--The event handler to execute on all framework exceptions. Event Handler syntax required.-->
 		<Setting name="ExceptionHandler"			value="" />
 		<!--What event to fire when an invalid event is detected-->
-		<Setting name="onInvalidEvent" 				value="ehGeneral.dspHello" />
+		<Setting name="onInvalidEvent" 				value="" />
 		<!--Full path from the application's root to your custom error page, else leave blank. -->
 		<Setting name="CustomErrorTemplate"			value="" />
 		<!--Messagebox Style (css) class name to use. Look at the messagebox.cfm in the includes directory-->
