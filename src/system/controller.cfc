@@ -250,8 +250,6 @@ Description		: This is the main ColdBox front Controller.
 			<cfset arguments.event = RequestContext.getValue("event")>
 		</cfif>
 
-		<!--- Start Timer --->
-		<cfmodule template="includes/timer.cfm" timertag="invoking runEvent [#arguments.event#]">
 			<!--- Validate and Get registered handler --->
 			<cfset oEventBean = getRegisteredHandler(arguments.event)>
 			<!--- Set Executing Parameters --->
@@ -308,10 +306,13 @@ Description		: This is the main ColdBox front Controller.
 				</cfmodule>
 			</cfif>
 
-			<!--- Execute the Event --->
-			<cfinvoke component="#oEventHandler#" method="#ExecutingMethod#">
-				<cfinvokeargument name="event" value="#RequestContext#">
-			</cfinvoke>
+			<!--- Start Timer --->
+			<cfmodule template="includes/timer.cfm" timertag="invoking runEvent [#arguments.event#]">
+				<!--- Execute the Event --->
+				<cfinvoke component="#oEventHandler#" method="#ExecutingMethod#">
+					<cfinvokeargument name="event" value="#RequestContext#">
+				</cfinvoke>
+			</cfmodule>
 
 			<!--- PostHandler Execution --->
 			<cfif not arguments.prepostExempt and structKeyExists(oEventHandler,"postHandler")>
@@ -320,7 +321,6 @@ Description		: This is the main ColdBox front Controller.
 				</cfmodule>
 			</cfif>
 
-		</cfmodule>
 	</cffunction>
 
 	<cffunction name="throw" access="public" hint="Facade for cfthrow" output="false">
