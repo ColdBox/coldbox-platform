@@ -48,7 +48,7 @@ Sep/25/2005 - Luis Majano
 		<cfargument name="Event" type="coldbox.system.beans.requestContext">
 		<!--- Change Locale --->
 		<cfset getPlugin("i18n").setfwLocale(Event.getValue("locale"))>
-		<cfset dspHome(Context)>
+		<cfset runEvent("ehSamples.dspHome")>
 		<!--- or you can also use, runEvent("ehSamples.dspHome")  
 		--->
 	</cffunction>
