@@ -93,7 +93,7 @@ Modification History:
 		if ( controller.settingExists("ViewLayouts") ){
 			ViewLayouts = controller.getSetting("ViewLayouts");
 		}
-		return CreateObject("component","coldbox.system.beans.RequestContext").init(FORM, URL, DefaultLayout, ViewLayouts);
+		return CreateObject("component","coldbox.system.beans.requestContext").init(FORM, URL, DefaultLayout, ViewLayouts);
 		</cfscript>
 	</cffunction>
 
