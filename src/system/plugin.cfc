@@ -18,7 +18,7 @@ Modification History:
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
-	<cffunction name="init" access="public" returntype="any" output="false" hint="The plugin constructor.">
+	<cffunction name="init" access="public" returntype="plugin" output="false" hint="The plugin constructor.">
 		<cfargument name="controller" type="any" required="true">
 		<cfscript>
 			setController(arguments.controller);
