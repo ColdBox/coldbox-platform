@@ -39,7 +39,7 @@ Modification History:
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
-	<cffunction name="init" access="public" returntype="coldbox.system.plugin" output="false">
+	<cffunction name="init" access="public" returntype="XMLParser" output="false">
 		<cfargument name="controller" type="any" required="true">
 		<cfset super.Init(arguments.controller) />
 		<cfscript>
@@ -92,7 +92,7 @@ Modification History:
 			}
 			//Determine which CF version for XML Parsing method
 			if (listfirst(server.coldfusion.productversion) lt 7){
-				fwXML = xmlParse(getPlugin("fileutilities").readFile(instance.FrameworkConfigFile,false,"utf-8"));
+				fwXML = xmlParse(readFile(instance.FrameworkConfigFile,false,"utf-8"));
 			}
 			else{
 				//get XML for CFMX version 7 and above.
@@ -179,7 +179,7 @@ Modification History:
 			}
 			//Determine which CF version for XML Parsing method
 			if (listfirst(server.coldfusion.productversion) lt 7){
-				configXML = xmlParse(getPlugin("fileutilities").readFile(ConfigFileLocation,false,"utf-8"));
+				configXML = xmlParse(readFile(ConfigFileLocation,false,"utf-8"));
 			}
 			else{
 				//Parse XML and validate with XSD
@@ -642,5 +642,15 @@ Modification History:
 		<cfreturn newStructure>
 	</cffunction>
 
+	<!--- ************************************************************* --->
+	
+	<cffunction name="readFile" access="private" hint="Facade to Read a file's content" returntype="Any" output="false">
+		<!--- ************************************************************* --->
+		<cfargument name="FileToRead"	 		type="String"  required="yes" 	 hint="The absolute path to the file.">
+		<!--- ************************************************************* --->
+		<cfset var FileContents = "">
+		<cffile action="read" file="#arguments.FileToRead#" variable="FileContents">
+		<cfreturn FileContents>
+	</cffunction>
 
 </cfcomponent>
