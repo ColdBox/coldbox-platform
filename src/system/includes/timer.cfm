@@ -37,8 +37,8 @@ else{
 		QuerySetCell(request.DebugTimers, "Timestamp", now());
 		//Request Context SnapShot
 		if ( not findnocase("rendering",attributes.timertag) ){
-			rc = 
-			QuerySetCell(request.DebugTimers, "RC", application.cbController.getRequestService().getContext().getCollection().toString() );
+			rc = application.cbController.getRequestService().getContext().getCollection().toString();
+			QuerySetCell(request.DebugTimers, "RC", rc );
 		}
 		else{
 			QuerySetCell(request.DebugTimers, "RC", '');

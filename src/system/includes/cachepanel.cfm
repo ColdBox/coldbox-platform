@@ -118,7 +118,7 @@
 		  </tr>
 		  <cfloop collection="#cacheMetadata#" item="key">
 		  <tr >
-		  	<td class="fw_debugTablesCells">#key#</td>
+		  	<td class="fw_debugTablesCells">#listLast(key,"_")#</td>
 			<td align="center" class="fw_debugTablesCells">#cacheMetadata[key].hits#</td>
 			<td align="center" class="fw_debugTablesCells">#cacheMetadata[key].Timeout#</td>
 			<td align="center" class="fw_debugTablesCells">#dateformat(cacheMetadata[key].Created,"mm-dd-yyyy")# #timeformat(cacheMetadata[key].Created,"HH:mm:ss")#</td>

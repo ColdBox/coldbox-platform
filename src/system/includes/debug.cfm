@@ -76,13 +76,6 @@ Modification History:
 		</div>
 
 		<div class="fw_debugTitleCell">
-		  JVM Memory
-		</div>
-		<div class="fw_debugContentCell">
-		#NumberFormat(JVMFreeMemory)# KB / #NumberFormat(JVMTotalMemory)#	KB (Free/Total)
-		</div>
-
-		<div class="fw_debugTitleCell">
 		  TimeStamp:
 		</div>
 		<div class="fw_debugContentCell">
@@ -90,24 +83,10 @@ Modification History:
 		</div>
 
 		<div class="fw_debugTitleCell">
-		  Browser:
-		</div>
-		<div class="fw_debugContentCell">
-		#cgi.HTTP_USER_AGENT#
-		</div>
-
-		<div class="fw_debugTitleCell">
 		  Query String:
 		</div>
 		<div class="fw_debugContentCell">
 		<cfif cgi.QUERY_STRING eq ""><span class="fw_redText">N/A</span></cfif>#cgi.QUERY_STRING#
-		</div>
-
-		<div class="fw_debugTitleCell">
-		  Remote IP:
-		</div>
-		<div class="fw_debugContentCell">
-		#cgi.REMOTE_ADDR#
 		</div>
 
 		<div class="fw_debugTitleCell">
@@ -168,7 +147,7 @@ Modification History:
 			</td>
 		  </tr>
 		  <tr id="fw_poprc_#id#" style="display:none">
-		  	<td colspan="4" style="padding:5px;background-color:##fffff0" >#rc#</td>
+		  	<td colspan="4" style="padding:5px;background-color:##fffff0" wrap="true"><pre>#replace(rc,",","<br>","all")#</pre></td>
 		  </tr>
 		  </cfloop>
 		  <tr>
