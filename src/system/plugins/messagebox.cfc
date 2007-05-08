@@ -27,7 +27,7 @@ Modification History:
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
-	<cffunction name="init" access="public" returntype="coldbox.system.plugin" output="false">
+	<cffunction name="init" access="public" returntype="messagebox" output="false">
 		<cfargument name="controller" type="any" required="true">
 		<cfset super.Init(arguments.controller) />
 		<cfset setpluginName("Messagebox")>

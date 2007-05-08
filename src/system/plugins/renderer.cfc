@@ -31,7 +31,7 @@ Modification History:
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
-	<cffunction name="init" access="public" returntype="coldbox.system.plugin" output="false">
+	<cffunction name="init" access="public" returntype="renderer" output="false">
 		<cfargument name="controller" type="any" required="true">
 		<cfset super.Init(arguments.controller) />
 		<cfset setpluginName("Renderer")>

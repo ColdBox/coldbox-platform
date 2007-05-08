@@ -21,7 +21,7 @@ Modifications:
 
 	<!--- ************************************************************* --->
 
-	<cffunction name="init" access="public" returntype="coldbox.system.plugin" output="false">
+	<cffunction name="init" access="public" returntype="beanFactory" output="false">
 		<cfargument name="controller" type="any" required="true">
 		<cfscript>
 		super.Init(arguments.controller);

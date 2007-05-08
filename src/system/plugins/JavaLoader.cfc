@@ -26,7 +26,7 @@ Luis Majano		07/11/2006		Updated it to work with ColdBox. look at license in the
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
-	<cffunction name="init" access="public" returntype="coldbox.system.plugin" output="false">
+	<cffunction name="init" access="public" returntype="JavaLoader" output="false">
 		<cfargument name="controller" type="any" required="true">
 		<cfset super.Init(arguments.controller) />
 		<cfset setpluginName("Java Loader")>

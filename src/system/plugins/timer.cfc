@@ -17,7 +17,7 @@ Modification History:
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
-	<cffunction name="init" access="public" returntype="coldbox.system.plugin" output="false" hint="Constructor">
+	<cffunction name="init" access="public" returntype="timer" output="false" hint="Constructor">
 		<cfargument name="controller" type="any" required="true">
 		<cfset super.Init(arguments.controller) />
 		<cfset setpluginName("Timer Plugin")>
@@ -64,7 +64,7 @@ Modification History:
 	<cffunction name="getTimerScope" access="public" returntype="query" output="false" hint="Returns the entire timer query from the request scope.">
 		<!---Get the timer scope if it exists, else create it --->
 		<cfif not structKeyExists(request,"DebugTimers")>
-			<cfset request.DebugTimers = QueryNew("Method,Time,Timestamp")>
+			<cfset request.DebugTimers = QueryNew("Method,Time,Timestamp,RC")>
 		</cfif>
 		<cfreturn request.DebugTimers>
 	</cffunction>
@@ -80,6 +80,7 @@ Modification History:
 		QuerySetCell(qTimer, "Method", arguments.Label);
 		QuerySetCell(qTimer, "Time", arguments.Tickcount);
 		QuerySetCell(qTimer, "Timestamp", now());
+		QuerySetCell(qTimer, "RC", '');
 		</cfscript>
 	</cffunction>
 
