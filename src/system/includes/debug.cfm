@@ -29,20 +29,20 @@ Modification History:
 <!--- **************************************************************--->
 <!--- TRACER STACK--->
 <!--- **************************************************************--->
-	<cfif structkeyExists(RequestCollection, "tracerStack")>
+	<cfif structkeyExists(RequestCollection, "fw_tracerStack")>
 	<cfoutput>
 		<!--- <cfinclude template="style.cfm"> --->
 		<div class="fw_titles" onClick="fw_toggle('fw_tracer')">&gt;&nbsp;Tracer Messages </div>
 		<div id="fw_tracer" class="fw_info">
-		<cfloop from="1" to="#arrayLen(RequestCollection.tracerStack)#" index="i">
+		<cfloop from="1" to="#arrayLen(RequestCollection.fw_tracerStack)#" index="i">
 		<div class="fw_tracerMessage">
 		<strong>Message:</strong><br>
-		#RequestCollection.tracerStack[i].message#<br>
+		#RequestCollection.fw_tracerStack[i].message#<br>
 		<strong>ExtraInformation:<br></strong>
-		<cfif not isSimpleValue(RequestCollection.tracerStack[i].extrainfo)>
-			<cfdump var="#RequestCollection.tracerStack[i].extrainfo#">
-		<cfelseif RequestCollection.tracerStack[i].extrainfo neq "">
-			#RequestCollection.tracerStack[i].extrainfo#
+		<cfif not isSimpleValue(RequestCollection.fw_tracerStack[i].extrainfo)>
+			<cfdump var="#RequestCollection.fw_tracerStack[i].extrainfo#">
+		<cfelseif RequestCollection.fw_tracerStack[i].extrainfo neq "">
+			#RequestCollection.fw_tracerStack[i].extrainfo#
 		<cfelse>
 			{Not Sent}
 		</cfif>
