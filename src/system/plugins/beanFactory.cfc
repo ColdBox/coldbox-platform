@@ -75,9 +75,10 @@ Modifications:
 			<cfloop collection="#fields#" item="FieldKey">
 				<cfset FieldKey = Trim(FieldKey)>
 				<cfif structKeyExists(beanInstance, "set" & FieldKey)>
-					<cfinvoke component="#beanInstance#" method="set#FieldKey#">
+					<!--- <cfinvoke component="#beanInstance#" method="set#FieldKey#">
 						<cfinvokeargument name="#FieldKey#" value="#fields[FieldKey]#">
-					</cfinvoke>
+					</cfinvoke> --->
+					<cfset evaluate("beanInstance.set#FieldKey#(fields[FieldKey])")>
 				</cfif>
 			</cfloop>
 
