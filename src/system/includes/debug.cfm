@@ -76,6 +76,13 @@ Modification History:
 		</div>
 
 		<div class="fw_debugTitleCell">
+		  JVM Memory
+		</div>
+		<div class="fw_debugContentCell">
+		#NumberFormat(JVMFreeMemory)# KB / #NumberFormat(JVMTotalMemory)#	KB (Free/Total)
+		</div>
+
+		<div class="fw_debugTitleCell">
 		  TimeStamp:
 		</div>
 		<div class="fw_debugContentCell">

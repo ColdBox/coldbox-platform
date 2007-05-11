@@ -113,16 +113,19 @@
 		  	<td class="fw_debugTablesTitles">Object</td>
 			<td align="center" width="10%" align="center" class="fw_debugTablesTitles">Hits</td>
 			<td align="center" width="10%" align="center" class="fw_debugTablesTitles">Timeout (Min)</td>
-			<td align="center" width="20%" class="fw_debugTablesTitles">Created</td>
-			<td align="center" width="20%" class="fw_debugTablesTitles">Last Accessed</td>
+			<td align="center" width="10%" class="fw_debugTablesTitles">Created</td>
+			<td align="center" width="10%" class="fw_debugTablesTitles">Last Accessed</td>
+			<td align="center" width="10%" class="fw_debugTablesTitles">Expires On</td>
 		  </tr>
 		  <cfloop collection="#cacheMetadata#" item="key">
+		  <cfset expDate = dateadd("n",cacheMetaData[key].timeout,cacheMetadata[key].Created)>
 		  <tr >
 		  	<td class="fw_debugTablesCells">#listLast(key,"_")#</td>
 			<td align="center" class="fw_debugTablesCells">#cacheMetadata[key].hits#</td>
 			<td align="center" class="fw_debugTablesCells">#cacheMetadata[key].Timeout#</td>
-			<td align="center" class="fw_debugTablesCells">#dateformat(cacheMetadata[key].Created,"mm-dd-yyyy")# #timeformat(cacheMetadata[key].Created,"HH:mm:ss")#</td>
-			<td align="center" class="fw_debugTablesCells">#dateformat(cacheMetadata[key].lastaccesed,"mm-dd-yyyy")# #timeformat(cacheMetadata[key].lastaccesed,"HH:mm:ss")#</td>
+			<td align="center" class="fw_debugTablesCells">#dateformat(cacheMetadata[key].Created,"mmm-dd")# <Br/> #timeformat(cacheMetadata[key].Created,"hh:mm:ss tt")#</td>
+			<td align="center" class="fw_debugTablesCells">#dateformat(cacheMetadata[key].lastaccesed,"mmm-dd")# <br/> #timeformat(cacheMetadata[key].lastaccesed,"hh:mm:ss tt")#</td>
+		 	<td align="center" class="fw_debugTablesCells"><cfif cacheMetadata[key].timeout eq 0>---<cfelse>#dateFormat(expDate,"mmm-dd")# <br /> #timeformat(expDate,"hh:ss:ss tt")#</cfif></td>
 		  </tr>
 		  </cfloop>
 		</table>
