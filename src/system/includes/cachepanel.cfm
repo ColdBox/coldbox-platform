@@ -117,7 +117,7 @@
 			<td align="center" width="10%" class="fw_debugTablesTitles">Last Accessed</td>
 			<td align="center" width="10%" class="fw_debugTablesTitles">Expires On</td>
 		  </tr>
-		  <cfloop collection="#cacheMetadata#" item="key">
+		  <cfloop collection="#cacheKeyList#" item="key">
 		  <cfset expDate = dateadd("n",cacheMetaData[key].timeout,cacheMetadata[key].Created)>
 		  <tr >
 		  	<td class="fw_debugTablesCells">#listLast(key,"_")#</td>
