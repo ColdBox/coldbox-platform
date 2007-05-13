@@ -23,45 +23,46 @@ Modification History:
 ----------------------------------------------------------------------->
 <cfoutput>
 <cfinclude template="debugHeader.cfm">
-<br><br><br>
+
 <div class="fw_debugPanel">
 
-<!--- **************************************************************--->
-<!--- TRACER STACK--->
-<!--- **************************************************************--->
+	<!--- **************************************************************--->
+	<!--- TRACER STACK--->
+	<!--- **************************************************************--->
 	<cfif structkeyExists(RequestCollection, "fw_tracerStack")>
 	<cfoutput>
 		<!--- <cfinclude template="style.cfm"> --->
 		<div class="fw_titles" onClick="fw_toggle('fw_tracer')">&gt;&nbsp;Tracer Messages </div>
-		<div id="fw_tracer" class="fw_info">
-		<cfloop from="1" to="#arrayLen(RequestCollection.fw_tracerStack)#" index="i">
-		<div class="fw_tracerMessage">
-		<strong>Message:</strong><br>
-		#RequestCollection.fw_tracerStack[i].message#<br>
-		<strong>ExtraInformation:<br></strong>
-		<cfif not isSimpleValue(RequestCollection.fw_tracerStack[i].extrainfo)>
-			<cfdump var="#RequestCollection.fw_tracerStack[i].extrainfo#">
-		<cfelseif RequestCollection.fw_tracerStack[i].extrainfo neq "">
-			#RequestCollection.fw_tracerStack[i].extrainfo#
-		<cfelse>
-			{Not Sent}
-		</cfif>
-		</div>
-		</cfloop>
+		<div class="fw_debugContentView" id="fw_tracer">
+			<cfloop from="1" to="#arrayLen(RequestCollection.fw_tracerStack)#" index="i">
+				<div class="fw_tracerMessage">
+					<strong>Message:</strong><br>
+					#RequestCollection.fw_tracerStack[i].message#<br>
+					<strong>ExtraInformation:<br></strong>
+					<cfif not isSimpleValue(RequestCollection.fw_tracerStack[i].extrainfo)>
+						<cfdump var="#RequestCollection.fw_tracerStack[i].extrainfo#">
+					<cfelseif RequestCollection.fw_tracerStack[i].extrainfo neq "">
+						#RequestCollection.fw_tracerStack[i].extrainfo#
+					<cfelse>
+						{Not Sent}
+					</cfif>
+				</div>
+			</cfloop>
 		</div>
 	</cfoutput>
 	</cfif>
-<!--- **************************************************************--->
+	<!--- **************************************************************--->
 
 
-<!--- **************************************************************--->
-<!--- DEBUGGING PANEL --->
-<!--- **************************************************************--->
+	<!--- **************************************************************--->
+	<!--- DEBUGGING PANEL --->
+	<!--- **************************************************************--->
 	<div class="fw_titles" onClick="fw_toggle('fw_info')" >
 		&gt; &nbsp;ColdBox Debugging Information
 	</div>
 
 	<div class="fw_debugContentView" id="fw_info">
+
 		<div class="fw_debugTitleCell">
 		  Framework Info:
 		</div>
@@ -72,7 +73,7 @@ Modification History:
 		  Application Name:
 		</div>
 		<div class="fw_debugContentCell">
-		#controller.getSetting("AppName")#
+		#controller.getSetting("AppName")# <span class="fw_purpleText">(#lcase(controller.getSetting("Environment"))#)</span>
 		</div>
 
 		<div class="fw_debugTitleCell">
@@ -127,40 +128,42 @@ Modification History:
 		<!--- **************************************************************--->
 		<!--- Method Executions --->
 		<!--- **************************************************************--->
-		<em><p>Method execution times in execution order.</p></em>
+		<cfif structKeyExists(request,"DebugTimers")>
+		<em><p>Framework Method execution times in execution order.</p></em>
 		<table border="0" align="center" cellpadding="0" cellspacing="1" class="fw_debugTables">
-		  <tr >
-		  	<td width="13%" align="center" class="fw_debugTablesTitles">Timestamp</td>
-			<td width="10%" align="center" class="fw_debugTablesTitles">Execution Time</td>
-			<td class="fw_debugTablesTitles">Framework Method</td>
-			<td width="75" align="center" class="fw_debugTablesTitles" >RC Snapshot</td>
+		  <tr>
+		  	<th width="13%" align="center" >Timestamp</th>
+			<th width="10%" align="center" >Execution Time</th>
+			<th >Framework Method</th>
+			<th width="75" align="center" >RC Snapshot</th>
 		  </tr>
 		  <cfloop query="request.DebugTimers">
-		  <cfif findnocase("render", method)>
-		  	<cfset color = "fw_redText">
-		  <cfelseif findnocase("pre",method) or findnocase("post",method)>
-		  	<cfset color = "fw_purpleText">
-		  <cfelseif findnocase("runEvent", method)>
-		  	<cfset color = "fw_blueText">
-		  <cfelse>
-		  	<cfset color = "fw_greenText">
-		  </cfif>
-		  <tr >
-		  	<td align="center" class="fw_debugTablesCells">#TimeFormat(timestamp,"hh:MM:SS.l tt")#</td>
-			<td align="center" class="fw_debugTablesCells">#Time# ms</td>
-			<td class="fw_debugTablesCells"><span class="#color#">#Method#</span></td>
-			<td align="center" class="fw_debugTablesCells">
-				<cfif rc neq ''><a href="javascript:fw_poprc('fw_poprc_#id#')">View</a><cfelse>...</cfif>
-			</td>
-		  </tr>
-		  <tr id="fw_poprc_#id#" style="display:none">
-		  	<td colspan="4" style="padding:5px;background-color:##fffff0" wrap="true"><pre>#replace(rc,",","<br>","all")#</pre></td>
-		  </tr>
+			  <cfif findnocase("render", method)>
+			  	<cfset color = "fw_redText">
+			  <cfelseif findnocase("pre",method) or findnocase("post",method)>
+			  	<cfset color = "fw_purpleText">
+			  <cfelseif findnocase("runEvent", method)>
+			  	<cfset color = "fw_blueText">
+			  <cfelse>
+			  	<cfset color = "fw_greenText">
+			  </cfif>
+			  <tr <cfif currentrow mod 2 eq 0>class="even"</cfif>>
+			  	<td align="center" >#TimeFormat(timestamp,"hh:MM:SS.l tt")#</td>
+				<td align="center" >#Time# ms</td>
+				<td ><span class="#color#">#Method#</span></td>
+				<td align="center" >
+					<cfif rc neq ''><a href="javascript:fw_poprc('fw_poprc_#id#')">View</a><cfelse>...</cfif>
+				</td>
+			  </tr>
+			  <tr id="fw_poprc_#id#" style="display:none">
+			  	<td colspan="4" style="padding:5px;background-color:##fffff0" wrap="true"><pre>#replace(rc,",","<br>","all")#</pre></td>
+			  </tr>
 		  </cfloop>
 		  <tr>
-			<td colspan="4" class="fw_debugTablesTitles">Total Framework Request Execution Time: #request.fwExecTime# ms</td>
+			<th colspan="4">Total Framework Request Execution Time: #request.fwExecTime# ms</td>
 		  </tr>
 		</table>
+		</cfif>
 		<!--- **************************************************************--->
 	</div>
 
@@ -215,9 +218,9 @@ Modification History:
 	</div>
 <!--- **************************************************************--->
 
-	<br />
-	<em><strong>Approximate Debug Rendering Time: #GetTickCount()-DebugStartTime# ms</strong></em>
-	<br /><br />
+	<div class="fw_renderTime">
+	Approximate Debug Rendering Time: #GetTickCount()-DebugStartTime# ms
+	</div>
 
 </div>
 </cfoutput>

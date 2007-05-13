@@ -1,4 +1,5 @@
 <cfoutput>
+
 	<cfif renderType eq "cachepanel">
 		<!--- Setup the panel --->
 		<cfsetting showdebugoutput="false">
@@ -16,9 +17,9 @@
 
 	<div class="fw_titles" onClick="fw_toggle('fw_cache')">&gt;&nbsp; ColdBox Cache</div>
 	<cfif renderType eq "cachepanel">
-	<div class="fw_debugContentView" id="fw_cache">
+		<div class="fw_debugContentView" id="fw_cache">
 	<cfelse>
-	<div class="fw_debugContent" id="fw_cache">
+		<div class="fw_debugContent" id="fw_cache">
 	</cfif>
 		<cfif renderType eq "main">
 		<div>
@@ -110,12 +111,12 @@
 		<!--- Object Charts --->
 		<table border="0" align="center" cellpadding="0" cellspacing="1" class="fw_debugTables">
 		  <tr >
-		  	<th class="fw_debugTablesTitles">Object</td>
-			<th align="center" width="10%" align="center" class="fw_debugTablesTitles">Hits</td>
-			<th align="center" width="10%" align="center" class="fw_debugTablesTitles">Timeout (Min)</td>
-			<th align="center" width="10%" class="fw_debugTablesTitles">Created</td>
-			<th align="center" width="10%" class="fw_debugTablesTitles">Last Accessed</td>
-			<th align="center" width="10%" class="fw_debugTablesTitles">Expires On</td>
+		  	<th >Object</th>
+			<th align="center" width="10%" >Hits</th>
+			<th align="center" width="10%" >Timeout (Min)</th>
+			<th align="center" width="10%" >Created</th>
+			<th align="center" width="10%" >Last Accessed</th>
+			<th align="center" width="10%" >Expires On</th>
 		  </tr>
 		  <cfset cacheKeyIndex = 1>
 		  <cfloop list="#cacheKeyList#" index="key">
@@ -135,7 +136,8 @@
 	<!--- **************************************************************--->
 
 	<cfif renderType eq "cachepanel">
-	</div>
-	<div align="center" style="margin-top:10px"><input type="button" name="close" value="Close Monitor" onClick="window.close()" style="font-size:10px"></div>
+		</div>
+		<div align="center" style="margin-top:10px"><input type="button" name="close" value="Close Monitor" onClick="window.close()" style="font-size:10px"></div>
 	</cfif>
+
 </cfoutput>
