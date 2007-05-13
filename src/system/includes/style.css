@@ -22,7 +22,6 @@ cursor: pointer;cursor:hand;
    color: black;
    cursor: pointer;cursor:hand;
 }
-
 .fw_stacktrace{
 font-size: 11px;
 }
@@ -80,9 +79,23 @@ font-weight:bold;
 }
 .fw_debugTables{
 font-size: 11px;
-border:1px solid #93C2FF;
+border:1px outset #93C2FF;
 background-color: #eeeeee;
-width: 98%;
+width: 99%;
+}
+.fw_debugTables th{
+background-color: #93C2FF;
+font-weight:bold;
+padding: 5px 5px 5px 5px;
+}
+.fw_debugTables tr{
+background-color: white;
+}
+.fw_debugTables tr.even{
+background-color: #DFEDFF;
+}
+.fw_debugTables td{
+padding: 5px 5px 5px 5px;
 }
 .fw_debugTablesTitles{
 background-color: #93C2FF;

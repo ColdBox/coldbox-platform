@@ -51,7 +51,8 @@ Modification History:
 		<!--- Set local Variables --->
 		<cfset var itemTypes = controller.getColdboxOCM().getItemTypes()>
 		<cfset var cacheMetadata = controller.getColdboxOCM().getpool_metadata()>
-		<cfset var cacheKeyList = listSort(structKeyList(cacheMetaData),"TEXT")>
+		<cfset var cacheKeyList = listSort(structKeyList(cacheMetaData),"textnocase")>
+		<cfset var cacheKeyIndex = 1>
 		<!--- Setup Local Variables --->
 		<cfset var debugStartTime = GetTickCount()>
 		<cfset var RequestCollection = Event.getCollection()>
@@ -70,7 +71,8 @@ Modification History:
 		<!--- Set local Variables --->
 		<cfset var itemTypes = controller.getColdboxOCM().getItemTypes()>
 		<cfset var cacheMetadata = controller.getColdboxOCM().getpool_metadata()>
-		<cfset var cacheKeyList = listSort(structKeyList(cacheMetaData),"TEXT")>
+		<cfset var cacheKeyList = listSort(structKeyList(cacheMetaData),"textnocase")>
+		<cfset var cacheKeyIndex = 1>
 		<!--- Setup Local Variables --->
 		<cfset var RequestCollection = Event.getCollection()>
 		<!--- JVM Data --->
