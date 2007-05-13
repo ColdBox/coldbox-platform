@@ -67,7 +67,7 @@ Modification History:
 		<!--- ************************************************************* --->
 		<cfset var ObjectFound = false>
 
-		<cflock type="readonly" name="OCM_Operation" timeout="5">
+		<cflock type="readonly" name="OCM_Operation" timeout="30">
 			<cfif getobjectPool().lookup(arguments.objectKey)>
 				<cfset ObjectFound = true>
 			<cfelse>
@@ -90,7 +90,7 @@ Modification History:
 		<cfif lookup(arguments.objectKey)>
 			<!--- Record a Hit --->
 			<cfset hit()>
-			<cflock type="exclusive" name="OCM_Operation" timeout="5">
+			<cflock type="exclusive" name="OCM_Operation" timeout="30">
 				<cfset ObjectFound = getobjectPool().get(arguments.objectKey)>
 			</cflock>
 		</cfif>
@@ -125,7 +125,7 @@ Modification History:
 			</cfif>
 
 			<!--- Set object in Cache --->
-			<cflock type="exclusive" name="OCM_Operation" timeout="5">
+			<cflock type="exclusive" name="OCM_Operation" timeout="30">
 				<cfset getobjectPool().set(arguments.objectKey,arguments.MyObject,arguments.Timeout)>
 			</cflock>
 		</cfif>
@@ -139,7 +139,7 @@ Modification History:
 		<!--- ************************************************************* --->
 		<cfset var Results = false>
 		<cfif lookup(arguments.objectKey) >
-			<cflock type="exclusive" name="OCM_Operation" timeout="5">
+			<cflock type="exclusive" name="OCM_Operation" timeout="30">
 				<cfset Results = getobjectPool().clearKey(arguments.objectKey)>
 			</cflock>
 		</cfif>
@@ -149,7 +149,7 @@ Modification History:
 	<!--- ************************************************************* --->
 
 	<cffunction name="clear" access="public" output="false" returntype="void" hint="Clears the entire object cache.">
-		<cflock type="exclusive" name="OCM_Operation" timeout="5">
+		<cflock type="exclusive" name="OCM_Operation" timeout="30">
 			<cfset structDelete(variables,"objectPool")>
 			<cfset initPool()>
 			<cfset resetStatistics()>
