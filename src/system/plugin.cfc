@@ -13,7 +13,7 @@ Modification History:
 ----------------------------------------------------------------------->
 <cfcomponent name="plugin"
 			 hint="This is the plugin base cfc."
-			 extends="coldbox.system.util.actioncontroller"
+			 extends="frameworkSupertype"
 			 output="false">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
@@ -34,7 +34,7 @@ Modification History:
 	</cffunction>
 
 <!------------------------------------------- INSTANCE MUTATORS AND ACCESSORS ------------------------------------------->
-	
+
 	<!--- ************************************************************* --->
 
 	<cffunction name="getPluginName" access="public" hint="Get the instance's pluginName" returntype="string" output="false">
