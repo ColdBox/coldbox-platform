@@ -64,7 +64,7 @@ Modification History:
 	<cffunction name="getTimerScope" access="public" returntype="query" output="false" hint="Returns the entire timer query from the request scope.">
 		<!---Get the timer scope if it exists, else create it --->
 		<cfif not structKeyExists(request,"DebugTimers")>
-			<cfset request.DebugTimers = QueryNew("Method,Time,Timestamp,RC")>
+			<cfset request.DebugTimers = QueryNew("Id,Method,Time,Timestamp,RC")>
 		</cfif>
 		<cfreturn request.DebugTimers>
 	</cffunction>
@@ -77,6 +77,7 @@ Modification History:
 		<cfscript>
 		var qTimer = getTimerScope();
 		QueryAddRow(qTimer,1);
+		QuerySetCell(qTimer, "Id", createUUID());
 		QuerySetCell(qTimer, "Method", arguments.Label);
 		QuerySetCell(qTimer, "Time", arguments.Tickcount);
 		QuerySetCell(qTimer, "Timestamp", now());
