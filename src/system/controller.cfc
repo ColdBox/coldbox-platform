@@ -26,10 +26,10 @@ Description		: This is the main ColdBox front Controller.
 
 	<cffunction name="init" returntype="any" access="Public" hint="I am the constructor" output="false">
 		<cfscript>
-			//Create Managers & Services
-			instance.ColdboxOCM = getService("cache");
-			instance.RequestService = getService("request");
-			instance.DebuggerService = getService("debugger");
+			//Create & init ColdBox Services
+			instance.ColdboxOCM = CreateObject("component","cache.cacheManager").init(this);
+			instance.RequestService = CreateObject("component","services.requestService").init(this);
+			instance.DebuggerService = CreateObject("component","services.debuggerService").init(this);
 			//Return instance
 			return this;
 		</cfscript>
@@ -152,15 +152,6 @@ Description		: This is the main ColdBox front Controller.
 			case "exception":
 				servicePath = "services.exceptionService";
 				break;
-			case "debugger":
-				servicePath = "services.debuggerService";
-				break;
-			case "request":
-				servicePath = "services.requestService";
-				break;
-			case "cache":
-				servicePath = "cache.cacheManager";
-				break;
 			//Default Case
 			default:
 				throw("Invalid Service detected","service:#arguments.service#","Framework.ServiceNotDefinedException");
@@ -190,7 +181,7 @@ Description		: This is the main ColdBox front Controller.
 			<cfset pluginKey = "custom_plugin_" & arguments.plugin>
 			<cfset pluginPath = "#getSetting("MyPluginsLocation")#.#trim(arguments.plugin)#">
 		</cfif>
-		
+
 		<!--- Check FOr New Instance --->
 		<cfif arguments.newInstance>
 			<!--- Object not found, proceed to create and verify --->
@@ -211,7 +202,7 @@ Description		: This is the main ColdBox front Controller.
 					</cfif>
 					<cfset instance.ColdboxOCM.set(pluginKey,oPlugin,objTimeout)>
 				</cfif>
-			</cfif>		
+			</cfif>
 		</cfif>
 
 		<!--- Return Plugin --->
@@ -331,6 +322,7 @@ Description		: This is the main ColdBox front Controller.
 		<!--- ************************************************************* --->
 		<cfthrow type="#arguments.type#" message="#arguments.message#"  detail="#arguments.detail#">
 	</cffunction>
+
 <!------------------------------------------- PRIVATE ------------------------------------------->
 
 	<cffunction name="getRegisteredHandler" access="private" hint="I get a registered handler and method according to passed event from the registeredHandlers setting." returntype="coldbox.system.beans.eventhandlerBean"  output="false">
