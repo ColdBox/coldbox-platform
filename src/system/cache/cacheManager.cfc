@@ -231,7 +231,8 @@ Modification History:
 			if (not structisEmpty(objStruct)){
 
 				//Check reaping frequency
-				if ( dateDiff("n", getlastReapDatetime(), now() ) gt ccBean.getCacheReapFrequency() ){
+				if ( dateDiff("n", getlastReapDatetime(), now() ) gte ccBean.getCacheReapFrequency() ){
+
 					//Reaping about to start, set new reaping date.
 					setlastReapDatetime( now() );
 
@@ -240,12 +241,12 @@ Modification History:
 						//Override Timeout Check
 						if ( objStruct[key].Timeout gt 0 ){
 							//Check for creation timeouts and clear
-							if ( dateDiff("n", objStruct[key].created, now() ) gt  objStruct[key].Timeout ){
+							if ( dateDiff("n", objStruct[key].created, now() ) gte  objStruct[key].Timeout ){
 								clearKey(key);
 								continue;
 							}
 							//Check for last accessed timeout. If object has not been accessed in the default span
-							if ( dateDiff("n", objStruct[key].lastAccesed, now() ) gt  ccBean.getCacheObjectDefaultLastAccessTimeout() ){
+							if ( dateDiff("n", objStruct[key].lastAccesed, now() ) gte  ccBean.getCacheObjectDefaultLastAccessTimeout() ){
 								clearKey(key);
 								continue;
 							}
