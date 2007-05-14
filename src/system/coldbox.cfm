@@ -16,13 +16,6 @@ Description :
 	does not exists the framework will not start also.
 
 	Please view the quickstart guide if you have more questions.
-
-Modification History:
-06/07/2006 - Updated to coldbox.
-08/07/2006 - Ticket #45 fix, autoreloadflag cleaned handlers.
-08/20/2006 - Reusabel setupCalls()
-12/20/2006 - fwreinit password enabled.
-03/24/2007 - move to 2.0 Using Loader Service
 ---------------------------------------------------------------------->
 
 <!---------------------------------------------------------------------->
@@ -95,7 +88,7 @@ Modification History:
 
 	<!--- Create Request Context & Capture Request --->
 	<cfset Event = cbController.getRequestService().requestCapture()>
-	
+
 	<!--- Debugging Monitors Check --->
 	<cfif cbController.getDebuggerService().getDebugMode() and event.getValue("debugPanel","") neq "">
 		<!--- Which panel to render --->
@@ -104,7 +97,7 @@ Modification History:
 			<cfabort>
 		</cfif>
 	</cfif>
-	
+
 	<!--- Application Start Handler --->
 	<cfif cbController.getSetting("ApplicationStartHandler") neq "" and (not cbController.getAppStartHandlerFired())>
 		<cfset cbController.runEvent(cbController.getSetting("ApplicationStartHandler"),true)>
