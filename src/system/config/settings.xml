@@ -5,15 +5,14 @@
         <Setting name="Author" value="Luis Majano"/>
         <Setting name="AuthorEmail" value="info@coldboxframework.com"/>
         <Setting name="AuthorWebsite" value="http://www.coldboxframework.com"/>
-        <Setting name="Suffix" value="John 4:14"/>
-        <Setting name="Version" value="2.0.0"/>
+        <Setting name="Suffix" value="Philippians 3:7-11"/>
+        <Setting name="Version" value="2.0.1"/>
         <Setting name="Description" value="This is the ColdBox ColdFusion Framework for web applications."/>
         <Setting name="ModifyLogLocation" value="readme.txt"/>
         <Setting name="FrameworkBlog" value="http://www.luismajano.com/blog"/>
         <Setting name="FrameworkForums" value="http://www.luismajano.com/forums"/>
         <Setting name="FrameworkAPI" value="http://www.coldboxframework.com/documents/cfdocs"/>
         <Setting name="FrameworkTrac" value="http://ortus.svnrepository.com/coldbox/"/>
-        <Setting name="DashboardName" value="ColdboxDashboard"/>
         <!--AvailableLogFileEncodings:US-ASCII, ISO-8859-1, UTF-8, UTF-16BE, UTF-16LE,  UTF-16.-->
         <Setting name="AvailableLogFileEncodings" value="US-ASCII,ISO-8859-1,UTF-8,UTF-16BE,UTF-16LE,UTF-16"/>
         <Setting name="LogFileEncoding" value="UTF-8"/>
