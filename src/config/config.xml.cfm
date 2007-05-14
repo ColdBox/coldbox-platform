@@ -17,15 +17,15 @@
 		<Setting name="RequestStartHandler" 		value=""/>
 		<Setting name="RequestEndHandler" 			value=""/>
 		<Setting name="ApplicationStartHandler"		value="ehGeneral.onApplicationStart" />
-		<Setting name="OwnerEmail" 					value="lmajano@gmail.com"/>
+		<Setting name="OwnerEmail" 					value="info@luismajano.com"/>
 		<Setting name="EnableBugReports" 			value="true"/>
 		<Setting name="UDFLibraryFile" 				value="includes/udf.cfm" />
 		<Setting name="CustomErrorTemplate"			value="" />
 		<Setting name="MessageboxStyleClass"		value="mymessagebox" />
 		<Setting name="HandlersIndexAutoReload"   	value="false" />
-		<Setting name="ConfigAutoReload"			value="true" />
+		<Setting name="ConfigAutoReload"			value="false" />
 		<Setting name="ExceptionHandler"     		value="" />
-		<Setting name="onInvalidEvent" 				value="ehGeneral.doinvalid" />
+		<Setting name="onInvalidEvent" 				value="" />
 		<!--Base Path to plugins, as if to instantiate them. -->
 		<Setting name="MyPluginsLocation" 			value="coldbox.myplugins"/>
 		<Setting name="HandlerCaching" 				value="true"/>
@@ -37,11 +37,7 @@
 	</YourSettings>
 
 	<!--Optional,if blank it will use the CFMX administrator settings.-->
-	<MailServerSettings>
-		<MailServer></MailServer>
-		<MailUsername></MailUsername>
-		<MailPassword></MailPassword>
-	</MailServerSettings>
+	<MailServerSettings />
 
 	<BugTracerReports>
 		<BugEmail>lmajano@gmail.com</BugEmail>
@@ -83,7 +79,7 @@
 		<ObjectDefaultLastAccessTimeout>5</ObjectDefaultLastAccessTimeout>
 		<ReapFrequency>1</ReapFrequency>
 		<MaxObjects>15</MaxObjects>
-		<FreeMemoryPercentageThreshold>0</FreeMemoryPercentageThreshold>
+		<FreeMemoryPercentageThreshold>15</FreeMemoryPercentageThreshold>
 	</Cache>
 
 </Config>
