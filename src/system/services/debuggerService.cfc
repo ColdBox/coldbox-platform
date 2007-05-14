@@ -48,19 +48,26 @@ Modification History:
 	<cffunction name="renderDebugLog" access="public" hint="Return the debug log." output="false" returntype="Any">
 		<cfset var RenderedDebugging = "">
 		<cfset var Event = controller.getRequestService().getContext()>
+
 		<!--- Set local Variables --->
 		<cfset var itemTypes = controller.getColdboxOCM().getItemTypes()>
 		<cfset var cacheMetadata = controller.getColdboxOCM().getpool_metadata()>
 		<cfset var cacheKeyList = listSort(structKeyList(cacheMetaData),"textnocase")>
 		<cfset var cacheKeyIndex = 1>
+
 		<!--- Setup Local Variables --->
 		<cfset var debugStartTime = GetTickCount()>
 		<cfset var RequestCollection = Event.getCollection()>
+
 		<!--- Debug Rendering Type --->
 		<cfset var renderType = "main">
+
 		<!--- JVM Data --->
-		<cfset var JVMFreeMemory = controller.getPlugin("fileUtilities").getJVMfreeMemory()/1024>
-		<cfset var JVMTotalMemory = controller.getPlugin("fileUtilities").getJVMTotalMemory()/1024>
+		<cfset var JVMRuntime = controller.getColdboxOCM().getJavaRuntime().getRuntime()>
+		<cfset var JVMFreeMemory = JVMRuntime.freeMemory()/1024>
+		<cfset var JVMTotalMemory = JVMRuntime.totalMemory()/1024>
+
+		<!--- Render debuglog --->
 		<cfsavecontent variable="RederedDebugging"><cfinclude template="../includes/debug.cfm"></cfsavecontent>
 		<cfreturn RederedDebugging>
 	</cffunction>
@@ -68,18 +75,24 @@ Modification History:
 	<cffunction name="renderCachePanel" access="public" hint="Renders the caching panel." output="false" returntype="Any">
 		<cfset var event = controller.getRequestService().getContext()>
 		<cfset var RenderedDebugging = "">
+
 		<!--- Set local Variables --->
 		<cfset var itemTypes = controller.getColdboxOCM().getItemTypes()>
 		<cfset var cacheMetadata = controller.getColdboxOCM().getpool_metadata()>
 		<cfset var cacheKeyList = listSort(structKeyList(cacheMetaData),"textnocase")>
 		<cfset var cacheKeyIndex = 1>
+
 		<!--- Setup Local Variables --->
 		<cfset var RequestCollection = Event.getCollection()>
+
 		<!--- JVM Data --->
-		<cfset var JVMFreeMemory = controller.getPlugin("fileUtilities").getJVMfreeMemory()/1024>
-		<cfset var JVMTotalMemory = controller.getPlugin("fileUtilities").getJVMTotalMemory()/1024>
+		<cfset var JVMRuntime = controller.getColdboxOCM().getJavaRuntime().getRuntime()>
+		<cfset var JVMFreeMemory = JVMRuntime.freeMemory()/1024>
+		<cfset var JVMTotalMemory = JVMRuntime.totalMemory()/1024>
+
 		<!--- Debug Rendering Type --->
 		<cfset var renderType = "cachepanel">
+
 		<!--- Generate Debugging --->
 		<cfsavecontent variable="RederedDebugging"><cfinclude template="../includes/cachepanel.cfm"></cfsavecontent>
 		<cfreturn RederedDebugging>
