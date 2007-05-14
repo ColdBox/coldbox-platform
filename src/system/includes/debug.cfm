@@ -160,7 +160,7 @@ Modification History:
 			  </tr>
 		  </cfloop>
 		  <tr>
-			<th colspan="4">Total Framework Request Execution Time: #request.fwExecTime# ms</td>
+			<th colspan="4">Total Framework Request Execution Time: #request.fwExecTime# ms</th>
 		  </tr>
 		</table>
 		</cfif>
