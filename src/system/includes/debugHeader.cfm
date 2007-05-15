@@ -13,9 +13,9 @@ function fw_toggle(divid){
 }
 function fw_poprc(divid){
 	var _div = document.getElementById(divid);
-	if ( _div.style.display == 'none' )
-		document.getElementById(divid).style.display = "table-row";
+	if ( _div.className == 'hideRC' )
+		document.getElementById(divid).className = "showRC";
 	else
-		document.getElementById(divid).style.display = "none";
+		document.getElementById(divid).className = "hideRC";
 }
 </script>

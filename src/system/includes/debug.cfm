@@ -155,9 +155,11 @@ Modification History:
 					<cfif rc neq ''><a href="javascript:fw_poprc('fw_poprc_#id#')">View</a><cfelse>...</cfif>
 				</td>
 			  </tr>
-			  <tr id="fw_poprc_#id#" style="display:none">
-			  	<td colspan="4" style="padding:5px;background-color:##fffff0" wrap="true"><pre>#replace(rc,",","<br>","all")#</pre></td>
-			  </tr>
+			 <tr id="fw_poprc_#id#" class="hideRC">
+			  	<td colspan="4" style="padding:5px;" wrap="true">
+				  	<textarea rows=10 style="width:100%" readonly="true">#replacenocase(rc,",",chr(10) & chr(13),"all")#</textarea>
+				</td>
+	  		  </tr>
 		  </cfloop>
 		  <tr>
 			<th colspan="4">Total Framework Request Execution Time: #request.fwExecTime# ms</th>
