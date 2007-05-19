@@ -1,13 +1,13 @@
 <cfsetting enablecfoutputonly=true>
 <!---
 	Name         : datatable.cfm
-	Author       : Raymond Camden 
+	Author       : Raymond Camden
 	Created      : June 02, 2004
 	Last Updated : September 9, 2005
 	History      : JS fix (7/23/04)
 				   Minor formatting updates (rkc 8/29/05)
 				   finally add sorting (rkc 9/9/05)
-	Purpose		 : A VERY app specific datable tag. 
+	Purpose		 : A VERY app specific datable tag.
 --->
 
 <cfparam name="attributes.data" type="query">
@@ -47,7 +47,7 @@
 </cfif>
 
 <cfscript>
-function displayHeader(col) { 
+function displayHeader(col) {
 	if(col is "readonly") return "Read Only";
 	if(col is "datecreated") return "Date Created";
 	if(col is "messagecount") return "Posts";
@@ -68,7 +68,7 @@ function displayHeader(col) {
 <script>
 function checksubmit() {
 	var listingForm = document.getElementById("listing");
-	
+
 	if ( confirm("Do you wish to delete the selected items?") ){
 		if(listingForm.mark.length == null) {
 			if(listingForm.mark.checked) {
@@ -76,12 +76,12 @@ function checksubmit() {
 				return;
 			}
 		}
-	
+
 		for(i=0; i < listingForm.mark.length; i++) {
-			if(listingForm.mark[i].checked) 
+			if(listingForm.mark[i].checked)
 				listingForm.submit();
 		}
-	}	
+	}
 }
 </script>
 
@@ -89,13 +89,13 @@ function checksubmit() {
 	<p align="right">
 	[[
 	<cfif caller.Event.getValue("page",1) gt 1>
-		<a href="#cgi.script_name#?page=#caller.Event.getValue("page",1)-1#&sort=#urlEncodedFormat(caller.Event.getValue("sort"))#&dir=#caller.Event.getValue("dir")#">Previous</a>
+		<a href="#cgi.script_name#?event=#event.getCurrentEvent()#&page=#caller.Event.getValue("page",1)-1#&sort=#urlEncodedFormat(caller.Event.getValue("sort"))#&dir=#caller.Event.getValue("dir")#">Previous</a>
 	<cfelse>
 		Previous
 	</cfif>
 	--
 	<cfif caller.Event.getValue("page",1) * application.settings.perpage lt attributes.data.recordCount>
-		<a href="#cgi.script_name#?page=#caller.Event.getValue("page")+1#&sort=#urlEncodedFormat(caller.Event.getValue("sort"))#&dir=#caller.Event.getValue("dir")#">Next</a>
+		<a href="#cgi.script_name#?event=#event.getCurrentEvent()#&page=#caller.Event.getValue("page")+1#&sort=#urlEncodedFormat(caller.Event.getValue("sort"))#&dir=#caller.Event.getValue("dir")#">Next</a>
 	<cfelse>
 		Next
 	</cfif>
