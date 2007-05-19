@@ -89,13 +89,13 @@ function checksubmit() {
 	<p align="right">
 	[[
 	<cfif caller.Event.getValue("page",1) gt 1>
-		<a href="#cgi.script_name#?event=#event.getCurrentEvent()#&page=#caller.Event.getValue("page",1)-1#&sort=#urlEncodedFormat(caller.Event.getValue("sort"))#&dir=#caller.Event.getValue("dir")#">Previous</a>
+		<a href="#cgi.script_name#?event=#caller.event.getCurrentEvent()#&page=#caller.Event.getValue("page",1)-1#&sort=#urlEncodedFormat(caller.Event.getValue("sort"))#&dir=#caller.Event.getValue("dir")#">Previous</a>
 	<cfelse>
 		Previous
 	</cfif>
 	--
 	<cfif caller.Event.getValue("page",1) * application.settings.perpage lt attributes.data.recordCount>
-		<a href="#cgi.script_name#?event=#event.getCurrentEvent()#&page=#caller.Event.getValue("page")+1#&sort=#urlEncodedFormat(caller.Event.getValue("sort"))#&dir=#caller.Event.getValue("dir")#">Next</a>
+		<a href="#cgi.script_name#?event=#caller.event.getCurrentEvent()#&page=#caller.Event.getValue("page")+1#&sort=#urlEncodedFormat(caller.Event.getValue("sort"))#&dir=#caller.Event.getValue("dir")#">Next</a>
 	<cfelse>
 		Next
 	</cfif>
