@@ -21,6 +21,7 @@
 		<Setting name="MessageboxStyleClass" 	value=""/>
 		<Setting name="HandlersIndexAutoReload" value="false"/>
 		<Setting name="ConfigAutoReload" 		value="false"/>
+		<Setting name="HandlerCaching" 			value="false"/>
 	</Settings>
 
 	<YourSettings />
