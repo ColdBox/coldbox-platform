@@ -32,7 +32,7 @@ www.coldboxframework.com | www.luismajano.com | www.ortussolutions.com
 	<!-- Where the ColdBox system folder is -->
 	<property name="coldbox.system_path" value="${basedir}\src\system" />
 	<!-- Where to copy the refactored system folder -->
-	<property name="coldbox.destination" value="${basedir}\ant\install\system" />
+	<property name="coldbox.destination" value="${basedir}\install\system" />
 		
 	<!--Prefix Target-->
 	<target name="do.prefix" description="Choose the new coldbox prefix">
@@ -40,13 +40,6 @@ www.coldboxframework.com | www.luismajano.com | www.ortussolutions.com
 			   addproperty="coldbox.install_prefix" />
 		<input message="Please enter a refactoring prefix for the coldbox absolute path for includes: example=/shared/frameworks then it will translate to '/shared/frameworks/coldbox/system' instead of '/coldbox/system'?"
 			   addproperty="coldbox.install_prefix_absolute" />
-		<input message="New ColdBox cfc path = ${coldbox.install_prefix}.coldbox.system. New ColdBox asbolute path = ${coldbox.install_prefix_absolute}/coldbox/system .If you would like to continue, type y or n?"
-		       validargs="y,n"
-		       addproperty="do.prefix.continue" />
-		<condition property="do.abort">
-			<equals arg1="n" arg2="${do.prefix.continue}" />
-		</condition>
-		<fail if="do.abort">Build aborted by user</fail>
     </target>
 	
 	<!-- Copy system folder to refactoring destination-->
@@ -63,17 +56,17 @@ www.coldboxframework.com | www.luismajano.com | www.ortussolutions.com
 	
 	<!-- Refactor the coldbox Code-->
 	<target name="do.refactor" depends="do.prefix,do.copy" description="refactor the code">
+		<echo>Refactoring for coldbox absolute paths</echo>
+		<replace dir="${coldbox.destination}" value="${coldbox.install_prefix_absolute}/coldbox/system" summary="yes">
+		  	<include name="**/*.cfc" />
+			<include name="**/*.cfm" />
+			<replacetoken>/coldbox/system</replacetoken>
+		</replace>
 		<echo>Refactoring for coldbox instantitation and cfc paths</echo>
 		<replace dir="${coldbox.destination}" value="${coldbox.install_prefix}.coldbox." summary="yes">
 		  	<include name="**/*.cfc" />
 			<include name="**/*.cfm" />
 			<replacetoken>coldbox.</replacetoken>
-		</replace>
-		<echo>Refactoring for coldbox absolute paths</echo>
-		<replace dir="${coldbox.destination}" value="${coldbox.install_prefix}/coldbox/" summary="yes">
-		  	<include name="**/*.cfc" />
-			<include name="**/*.cfm" />
-			<replacetoken>/coldbox/</replacetoken>
 		</replace>
 	</target>
 
