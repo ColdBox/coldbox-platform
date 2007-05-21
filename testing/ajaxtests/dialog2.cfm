@@ -4,21 +4,7 @@
 <link href="style.css" rel="stylesheet" type="text/css">
 
 <style>
-.jqmWindow {
-    display: none;
-    
-    position: fixed;
-    top: 17%;
-    left: 50%;
-    
-    margin-left: -300px;
-    width: 600px;
-    
-    background-color: #EEE;
-    color: #333;
-    border: 1px solid black;
-    padding: 12px;
-}
+
 
 .jqmOverlay{ 
 	background-color: black;
