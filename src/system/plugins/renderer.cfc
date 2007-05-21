@@ -37,6 +37,11 @@ Modification History:
 		<cfset setpluginName("Renderer")>
 		<cfset setpluginVersion("1.1")>
 		<cfset setpluginDescription("This is the rendering service for ColdBox.")>
+		<!--- Set Conventions --->
+		<cfset instance.layoutsConvention = getController().getSetting("layoutsConvention",true)>
+		<cfset instance.viewsConvention = getController().getSetting("viewsConvention",true)>
+		<cfset instance.appMapping = getController().getSetting("AppMapping")>
+		<!--- Inject UDF --->
 		<cfset includeUDF()>
 		<cfreturn this>
 	</cffunction>
@@ -61,7 +66,7 @@ Modification History:
 				<cfthrow type="Framework.plugins.renderer.ViewNotSetException" message="The ""currentview"" variable has not been set, therefore there is no view to render." detail="Please remember to use the 'setView()' method in your handler.">
 			</cfif>
 			<!--- Render the View --->
-			<cfsavecontent variable="RenderedView"><cfoutput><cfinclude template="/#controller.getSetting("AppMapping")#/views/#arguments.view#.cfm"></cfoutput></cfsavecontent>
+			<cfsavecontent variable="RenderedView"><cfoutput><cfinclude template="/#getappMapping()#/#getViewsConvention()#/#arguments.view#.cfm"></cfoutput></cfsavecontent>
 		</cfmodule>
 		<cfreturn RenderedView>
 	</cffunction>
@@ -104,7 +109,7 @@ Modification History:
 			<cfif not Event.valueExists("currentLayout")>
 				<cfset RederedLayout = renderView()>
 			<cfelse>
-				<cfsavecontent variable="RederedLayout"><cfinclude template="/#controller.getSetting("AppMapping")#/layouts/#Event.getValue("currentLayout")#"></cfsavecontent>
+				<cfsavecontent variable="RederedLayout"><cfinclude template="/#getappMapping()#/#getLayoutsConvention()#/#Event.getValue("currentLayout")#"></cfsavecontent>
 			</cfif>
 		</cfmodule>
 		<cfreturn RederedLayout>
@@ -114,12 +119,12 @@ Modification History:
 
 <!------------------------------------------- PRIVATE ------------------------------------------->
 
-	<cffunction name="includeUDF" access="private" hint="Includes the UDF Library if found and exists. Called only by the framework." output="false" returntype="void">
+	<cffunction name="includeUDF" access="private" hint="UDF Mixin Injection. Called only by the framework." output="false" returntype="void">
 		<!--- check if UDFLibraryFile is defined  --->
 		<cfif controller.getSetting("UDFLibraryFile") neq "">
 			<!--- Check if file exists on app's includes --->
 			<cfif fileExists("#controller.getSetting("ApplicationPath",1)#/#controller.getSetting("UDFLibraryFile")#")>
-				<cfinclude template="/#controller.getSetting("AppMapping")#/#controller.getSetting("UDFLibraryFile")#">
+				<cfinclude template="/#getappMapping()#/#controller.getSetting("UDFLibraryFile")#">
 			<cfelseif fileExists(ExpandPath("#controller.getSetting("UDFLibraryFile")#"))>
 				<cfinclude template="#controller.getSetting("UDFLibraryFile")#">
 			<cfelse>
@@ -127,6 +132,23 @@ Modification History:
 			</cfif>
 		</cfif>
 	</cffunction>
+	
 	<!--- ************************************************************* --->
 
+	<cffunction name="getlayoutsConvention" access="public" output="false" returntype="string" hint="Get layoutsConvention">
+		<cfreturn instance.layoutsConvention/>
+	</cffunction>
+	
+	<!--- ************************************************************* --->
+	
+	<cffunction name="getviewsConvention" access="public" output="false" returntype="string" hint="Get viewsConvention">
+		<cfreturn instance.viewsConvention/>
+	</cffunction>
+	
+	<!--- ************************************************************* --->
+	
+	<cffunction name="getappMapping" access="public" output="false" returntype="string" hint="Get appMapping">
+		<cfreturn instance.appMapping/>
+	</cffunction>
+	
 </cfcomponent>

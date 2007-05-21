@@ -38,12 +38,15 @@
         <!--ColdBox Cache Parameter: Maximum number of Objects in cache (0=Unlimited)-->
         <Setting name="CacheMaxObjects" value="0"/>
         <!--ColdBox Cache Parameter: Free JVM Memory % Threshold (0=not used)-->
-        <Setting name="CacheFreeMemoryPercentageThreshold" value="0"/>
+        <Setting name="CacheFreeMemoryPercentageThreshold" value="1"/>
     </Settings>
     
-    <!-- Config XML File Declarations -->
-    <ConfigXMLFile>
-        <FilePath>config{sep}config.xml.cfm</FilePath>
-    </ConfigXMLFile>
+    <!-- Conventions -->
+    <Conventions>
+        <configLocation>config{sep}config.xml.cfm</configLocation>
+        <handlerLocation>handlers</handlerLocation>
+        <layoutsLocation>layouts</layoutsLocation>
+        <viewsLocation>views</viewsLocation>
+    </Conventions>
     
 </Config>

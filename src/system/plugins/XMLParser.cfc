@@ -62,7 +62,7 @@ Modification History:
 		variables.instance.searchCache = "//Cache";
 
 		//Search patterns for fw xml
-		variables.instance.searchConfigXML_Path = "//ConfigXMLFile/FilePath";
+		variables.instance.searchConventions = "//Conventions";
 
 		//Properties
 		variables.instance.FileSeparator = createObject("java","java.lang.System").getProperty("file.separator");
@@ -85,6 +85,7 @@ Modification History:
 		var SettingNodes = "";
 		var ConfigXMLFilePath = "";
 		var ParentAppPath = "";
+		var Conventions = "";
 		try{
 			//verify Framework settings File
 			if ( not fileExists(instance.FrameworkConfigFile) ){
@@ -103,15 +104,23 @@ Modification History:
 			//Insert Settings to Config Struct
 			for (i=1; i lte ArrayLen(SettingNodes); i=i+1)
 				StructInsert( settingsStruct, SettingNodes[i].XMLAttributes["name"], trim(SettingNodes[i].XMLAttributes["value"]));
+			
 			//OS File Separator
 			StructInsert(settingsStruct, "OSFileSeparator", instance.FileSeparator );
+			
+			//Conventions
+			conventions = XMLSearch(fwXML,instance.searchConventions);
+			StructInsert(settingsStruct, "HandlersConvention", conventions[1].handlerLocation.xmltext);
+			StructInsert(settingsStruct, "LayoutsConvention", conventions[1].layoutsLocation.xmltext);
+			StructInsert(settingsStruct, "ViewsConvention", conventions[1].viewsLocation.xmltext);
+			
 			//Get Config XML File Settings
-			ConfigXMLFilePath = XMLSearch(fwXML, instance.searchConfigXML_Path);
-			ConfigXMLFilePath = ExpandPath(replace(ConfigXMLFilePath[1].XMLText, "{sep}", instance.FileSeparator,"all"));
+			ConfigXMLFilePath = ExpandPath(replace(conventions[1].configLocation.xmltext, "{sep}", instance.FileSeparator,"all"));
 			StructInsert(settingsStruct, "ConfigFileLocation", ConfigXMLFilePath);
+			
 			//Schema Path
 			StructInsert(settingsStruct, "ConfigFileSchemaLocation", instance.FrameworkConfigXSDFile);
-			//Parent Application Path
+			//Application Path
 			StructInsert(settingsStruct, "ApplicationPath", ExpandPath("."));
 			//Load Framework Path too
 			StructInsert(settingsStruct, "FrameworkPath", ExpandPath("/coldbox/system") & instance.FileSeparator );
@@ -133,7 +142,8 @@ Modification History:
 		<cfscript>
 		//Create Config Structure
 		var ConfigStruct = StructNew();
-		var ConfigFileLocation = getController().getSetting("ConfigFileLocation", true);
+		var fwSettingsStruct = getController().getColdboxSettings();
+		var ConfigFileLocation = fwSettingsStruct["ConfigFileLocation"];
 		var configXML = "";
 		//Nodes
 		var SettingNodes = "";
@@ -436,7 +446,7 @@ Modification History:
 					ConfigStruct["AppMapping"] = removeChars(ConfigStruct["AppMapping"],1,1);
 				}
 				//Set the handler Invocation Path
-				ConfigStruct["HandlersInvocationPath"] = replace(ConfigStruct["AppMapping"],"/",".","all") & ".handlers";
+				ConfigStruct["HandlersInvocationPath"] = replace(ConfigStruct["AppMapping"],"/",".","all") & ".#fwSettingsStruct.handlersConvention#";
 
 				//Set the Default Handler Path
 				ConfigStruct["HandlersPath"] = ConfigStruct["AppMapping"];
@@ -444,17 +454,17 @@ Modification History:
 				//Set the physical path according to system.
 				//Test for CF 6.X
 				if ( listfirst(server.coldfusion.productversion) lt 7 ){
-					ConfigStruct["HandlersPath"] = replacenocase(cgi.SCRIPT_NAME, listlast(cgi.SCRIPT_NAME,"/"),"") & "handlers";
+					ConfigStruct["HandlersPath"] = replacenocase(cgi.SCRIPT_NAME, listlast(cgi.SCRIPT_NAME,"/"),"") & fwSettingsStruct.handlersConvention;
 				}
 				else{
-					ConfigStruct["HandlersPath"] = "/" & ConfigStruct["HandlersPath"] & "/handlers";
+					ConfigStruct["HandlersPath"] = "/" & ConfigStruct["HandlersPath"] & "/#fwSettingsStruct.handlersConvention#";
 				}
 				//Set the Handlerspath expanded.
 				ConfigStruct["HandlersPath"] = ExpandPath(ConfigStruct["HandlersPath"]);
 			}
 			else{
-				ConfigStruct["HandlersInvocationPath"] = "handlers";
-				ConfigStruct["HandlersPath"] = expandPath("handlers");
+				ConfigStruct["HandlersInvocationPath"] = "#fwSettingsStruct.handlersConvention#";
+				ConfigStruct["HandlersPath"] = expandPath("#fwSettingsStruct.handlersConvention#");
 			}
 
 			//Get Web Services From Config.
