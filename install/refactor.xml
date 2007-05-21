@@ -23,7 +23,7 @@ www.coldboxframework.com | www.luismajano.com | www.ortussolutions.com
         
                                                                      
      ====================================================================== -->
-<project name="coldbox.refactoring" default="do.refactor" basedir="../../">
+<project name="coldbox.refactoring" default="do.refactor" basedir="../">
     <description>
     	This ant task will copy the system folder here refactored with an
     	installation prefix.
