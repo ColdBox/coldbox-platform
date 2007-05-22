@@ -60,15 +60,15 @@ Modification History:
 
 	<!--- ************************************************************* --->
 
-	<cffunction name="getInstance" access="public" returntype="any" output="false">
+	<cffunction name="getMemento" access="public" returntype="any" output="false" hint="Get the memento">
 		<cfreturn variables.instance >
 	</cffunction>
 
 	<!--- ************************************************************* --->
 
-	<cffunction name="setInstance" access="public" returntype="void" output="false">
-		<cfargument name="instance" type="struct" required="true">
-		<cfset variables.instance = arguments.instance>
+	<cffunction name="setmemento" access="public" returntype="void" output="false" hint="Set the memento">
+		<cfargument name="memento" type="struct" required="true">
+		<cfset variables.instance = arguments.memento>
 	</cffunction>
 
 	<!--- ************************************************************* --->
