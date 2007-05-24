@@ -57,11 +57,9 @@
 	</Settings>
 
 	<!--Your Settings can go here, if not needed, use <YourSettings />. You can use these for anything you like.
-		<Setting name="MySetting"  				value="WOW" />
+		<YourSettings name="MySetting"  				value="WOW" />
 	 -->
-	<YourSettings>
-		<Setting name="MySetting" value="My Value"/>
-	</YourSettings>
+	<YourSettings></YourSettings>
 
 	<!--Optional,if blank it will use the CFMX administrator settings.-->
 	<MailServerSettings>
@@ -71,10 +69,10 @@
 		<MailPassword></MailPassword>
 	</MailServerSettings>
 
-	<!--Emails to Send bug reports, you can create as many as you like-->
-	<BugTracerReports>
-		<!--<BugEmail>myemail@gmail.com</BugEmail>-->
-	</BugTracerReports>
+	<!--Emails to Send bug reports, you can create as many as you like
+	<BugEmail>myemail@gmail.com</BugEmail>	
+	-->
+	<BugTracerReports></BugTracerReports>
 
 	<!--List url dev environments, this determines your dev/pro environment for the framework-->
 	<DevEnvironments>
@@ -84,27 +82,25 @@
 
 	<!--Webservice declarations your use in your application, if not use, leave blank
 	Note that for the same webservice name you can have a development url and a production url.
-	<WebServices />
+	<WebService name="TESTWS" URL="http://www.test.com/test.cfc?wsdl" DevURL="http://dev.test.com/test.cfc?wsdl" />
 	-->
-	<WebServices>
-		<!--<WebService name="TESTWS" URL="http://www.test.com/test.cfc?wsdl" DevURL="http://dev.test.com/test.cfc?wsdl" />-->
-	</WebServices>
+	<WebServices></WebServices>
 
 	<!--Declare Layouts for your application here-->
 	<Layouts>
 		<!--Declare the default layout, MANDATORY-->
 		<DefaultLayout>Layout.Main.cfm</DefaultLayout>
 		
-		<!--Declare other layouts, with view assignments if needed, else do not write them-->
+		<!--
+		Declare other layouts, with view assignments if needed, else do not write them
 		<Layout file="Layout.Popup.cfm" name="popup">
-			<!--You can declare all the views that you want to appear with the above layout-->
 			<View>vwTest</View>
 			<View>vwMyView</View>
 		</Layout>
+		-->
 	</Layouts>
 
 	<!--Internationalization and resource Bundle setup:
-
 	<i18N>
 		<DefaultResourceBundle>includes/main</DefaultResourceBundle>
 		<DefaultLocale>en_US</DefaultLocale>
@@ -113,10 +109,10 @@
 	-->
 	<i18N />
 	
-	<!--Datasource Setup, you can then retreive a datasourceBean via the getDatasource("name") method: -->
-	<Datasources>
-		<Datasource alias="MyDSNAlias" name="real_dsn_name"   dbtype="mysql"  username="" password="" />
-	</Datasources>
+	<!--Datasource Setup, you can then retreive a datasourceBean via the getDatasource("name") method: 
+	<Datasource alias="MyDSNAlias" name="real_dsn_name"   dbtype="mysql"  username="" password="" />	
+	-->
+	<Datasources></Datasources>
 	
 	<!--ColdBox Object Caching Settings Overrides the Framework-wide settings 
 	<Cache>
