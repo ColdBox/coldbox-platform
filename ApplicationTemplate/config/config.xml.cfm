@@ -28,7 +28,9 @@
 		<Setting name="ApplicationStartHandler" 	value="ehMain.onAppInit"/>
 		<!--The Email address from which all outgoing framework emails will be sent. -->
 		<Setting name="OwnerEmail" 					value="myemail@gmail.com" />
-		<!-- Enable Bug Reports to be emailed out, set to true by default if left blank -->
+		<!-- Enable Bug Reports to be emailed out, set to true by default if left blank
+			A sample template has been provided to you in includes/generic_error.cfm
+		 -->
 		<Setting name="EnableBugReports" 			value="true"/>
 		<!--UDF Library To Load on every request for your views and handlers -->
 		<Setting name="UDFLibraryFile" 				value="" />
