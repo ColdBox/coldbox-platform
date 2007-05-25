@@ -1,8 +1,10 @@
 Welcome to the ColdBox Application Template
 
-This is a skeleton for you to start a new ColdBox application. Below is a sample
+This is a skeleton for you to start a new ColdBox application or you can use the 
+Application Generator included in the ColdBox Dashboard. Below is a sample
 ColdBox application directory structure.  You need to follow this structure in order
-for ColdBox to work.
+for ColdBox to work via its conventions. You can also change the conventions using
+the ColdBox Dashboard or the settings.xml
 
 ******************************************************************************
 Sample Directory Structure For Your Application
@@ -12,7 +14,7 @@ Sample Directory Structure For Your Application
 	-handlers (Your ColdBox event handlers, can be orgainzed into folders) REQUIRED
 	-layouts  (Your layouts) REQUIRED
 	-views (Your views, can be orgainzed into folders) REQUIRED
-	-includes (Your include files if used.) OPTIONAL
+	-includes (Your include files if used.) OPTIONAL-includes a generic custom error template
 	-tags (Your cf tags if used) OPTIONAL
 	-images (Your images) OPTIONAL
 	-logs (For ColdBox Logging) OPTIONAL
@@ -73,6 +75,8 @@ How to start?
 
 4) Now that you have completed editing your config and Application.cfc, you are ready to see 
    results. Point your web browser to your application folder and you will see a message display:
+
+OPTIONAL: Skip all the steps, just fire up the ColdBox Dashboard and run the Application Generator.
 
 Welcome to Coldbox!!
 
