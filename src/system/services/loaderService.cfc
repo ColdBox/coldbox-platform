@@ -28,9 +28,10 @@ Modification History:
 
 	<!--- Setup Calls --->
 	<cffunction name="setupCalls" returntype="void" access="public" hint="I run the configLoader and register handlers.">
+		<cfargument name="overrideConfigFile" required="false" type="string" default="" hint="Only used for unit testing or reparsing of a specific coldbox config file.">
 		<cfscript>
 			//execute the configLoader
-			configLoader();
+			configLoader(arguments.overrideConfigFile);
 			//execute the handler registrations
 			registerHandlers();
 		</cfscript>
@@ -38,6 +39,7 @@ Modification History:
 
 	<!--- Config Loader Method --->
 	<cffunction name="configLoader" returntype="void" access="Public" hint="I Load the configurations and init the framework variables." output="false">
+		<cfargument name="overrideConfigFile" required="false" type="string" default="" hint="Only used for unit testing or reparsing of a specific coldbox config file.">
 		<cfscript>
 		var XMLParser = controller.getPlugin("XMLParser");
 		var CacheConfigBean = CreateObject("Component","coldbox.system.beans.cacheConfigBean");
@@ -45,7 +47,7 @@ Modification History:
 		var ConfigSettings = structNew();
 
 		//Load Coldbox Config Settings Structure
-		FrameworkSettings = XMLParser.loadFramework();
+		FrameworkSettings = XMLParser.loadFramework(arguments.overrideConfigFile);
 		controller.setColdboxSettings(FrameworkSettings);
 
 		//Create the Cache Config Bean with data from the settings.xml

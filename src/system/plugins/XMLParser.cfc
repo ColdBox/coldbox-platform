@@ -76,6 +76,7 @@ Modification History:
 <!------------------------------------------- PUBLIC ------------------------------------------->
 
 	<cffunction name="loadFramework" access="public" hint="Load the framework's configuration xml." output="false" returntype="any">
+		<cfargument name="overrideConfigFile" required="false" type="string" default="" hint="Only used for unit testing or reparsing of a specific coldbox config file.">
 		<cfscript>
 		var settingsStruct = StructNew();
 		var FrameworkParent = "";
@@ -114,9 +115,14 @@ Modification History:
 			StructInsert(settingsStruct, "LayoutsConvention", conventions[1].layoutsLocation.xmltext);
 			StructInsert(settingsStruct, "ViewsConvention", conventions[1].viewsLocation.xmltext);
 			
-			//Get Config XML File Settings
-			ConfigXMLFilePath = ExpandPath(replace(conventions[1].configLocation.xmltext, "{sep}", instance.FileSeparator,"all"));
-			StructInsert(settingsStruct, "ConfigFileLocation", ConfigXMLFilePath);
+			//Get Config XML File Settings or Override using arguments
+			if ( arguments.overrideConfigFile eq ""){
+				ConfigXMLFilePath = ExpandPath(replace(conventions[1].configLocation.xmltext, "{sep}", instance.FileSeparator,"all"));
+				StructInsert(settingsStruct, "ConfigFileLocation", ConfigXMLFilePath);
+			}
+			else{
+				StructInsert(settingsStruct, "ConfigFileLocation", arguments.overrideConfigFile);
+			}
 			
 			//Schema Path
 			StructInsert(settingsStruct, "ConfigFileSchemaLocation", instance.FrameworkConfigXSDFile);
@@ -182,7 +188,7 @@ Modification History:
 		var PathLocation = "";
 		//Testers
 		var tester = "";
-		try{
+		try{			
 			//Validate File
 			if ( not fileExists(ConfigFileLocation) ){
 				throw("The Config File: #ConfigFileLocation# can't be found.","","Framework.plugins.XMLParser.ConfigXMLFileNotFoundException");
