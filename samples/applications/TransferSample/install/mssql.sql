@@ -28,8 +28,8 @@ INSERT INTO [transfersample].[dbo].[users]
            ,[email]
            ,[create_date])
      VALUES
-           (newid(),
-           ,'luis'
-           ,'majano'
-           ,'info@coldboxframework.com'
+           (newid()
+           ,'admin'
+           ,'admin'
+           ,'admin@admin.com'
            ,getdate());
