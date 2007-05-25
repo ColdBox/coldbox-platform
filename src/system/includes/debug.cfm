@@ -108,21 +108,21 @@ Modification History:
 		  Current Event:
 		</div>
 		<div class="fw_debugContentCell">
-		<cfif Event.getValue("event","") eq ""><span class="fw_redText">N/A</span><cfelse>#Event.getValue("event")#</cfif>
+		<cfif Event.getCurrentEvent() eq ""><span class="fw_redText">N/A</span><cfelse>#Event.getCurrentEvent()#</cfif>
 		</div>
 
 		<div class="fw_debugTitleCell">
 		  Current Layout:
 		</div>
 		<div class="fw_debugContentCell">
-		<cfif Event.getValue("currentlayout","") eq ""><span class="fw_redText">N/A</span><cfelse>#Event.getValue("currentlayout")#</cfif>
+		<cfif Event.getCurrentLayout() eq ""><span class="fw_redText">N/A</span><cfelse>#Event.getCurrentLayout()#</cfif>
 		</div>
 
 		<div class="fw_debugTitleCell">
 		  Current View:
 		</div>
 		<div class="fw_debugContentCell">
-		<cfif Event.getValue("currentview","") eq ""><span class="fw_redText">N/A</span><cfelse>#Event.getValue("currentview")#</cfif>
+		<cfif Event.getCurrentView() eq ""><span class="fw_redText">N/A</span><cfelse>#Event.getCurrentView()#</cfif>
 		</div>
 
 		<!--- **************************************************************--->
