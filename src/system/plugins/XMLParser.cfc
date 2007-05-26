@@ -105,16 +105,16 @@ Modification History:
 			//Insert Settings to Config Struct
 			for (i=1; i lte ArrayLen(SettingNodes); i=i+1)
 				StructInsert( settingsStruct, SettingNodes[i].XMLAttributes["name"], trim(SettingNodes[i].XMLAttributes["value"]));
-			
+
 			//OS File Separator
 			StructInsert(settingsStruct, "OSFileSeparator", instance.FileSeparator );
-			
+
 			//Conventions
 			conventions = XMLSearch(fwXML,instance.searchConventions);
 			StructInsert(settingsStruct, "HandlersConvention", conventions[1].handlerLocation.xmltext);
 			StructInsert(settingsStruct, "LayoutsConvention", conventions[1].layoutsLocation.xmltext);
 			StructInsert(settingsStruct, "ViewsConvention", conventions[1].viewsLocation.xmltext);
-			
+
 			//Get Config XML File Settings or Override using arguments
 			if ( arguments.overrideConfigFile eq ""){
 				ConfigXMLFilePath = ExpandPath(replace(conventions[1].configLocation.xmltext, "{sep}", instance.FileSeparator,"all"));
@@ -123,7 +123,7 @@ Modification History:
 			else{
 				StructInsert(settingsStruct, "ConfigFileLocation", arguments.overrideConfigFile);
 			}
-			
+
 			//Schema Path
 			StructInsert(settingsStruct, "ConfigFileSchemaLocation", instance.FrameworkConfigXSDFile);
 			//Application Path
@@ -145,6 +145,7 @@ Modification History:
 	<!--- ************************************************************* --->
 
 	<cffunction name="parseConfig" access="public" returntype="struct" output="false">
+		<cfargument name="overrideAppMapping" type="string" required="false" default="" hint="Only used for unit testing or reparsing of a specific coldbox config file."/>
 		<cfscript>
 		//Create Config Structure
 		var ConfigStruct = StructNew();
@@ -188,7 +189,7 @@ Modification History:
 		var PathLocation = "";
 		//Testers
 		var tester = "";
-		try{			
+		try{
 			//Validate File
 			if ( not fileExists(ConfigFileLocation) ){
 				throw("The Config File: #ConfigFileLocation# can't be found.","","Framework.plugins.XMLParser.ConfigXMLFileNotFoundException");
@@ -207,7 +208,12 @@ Modification History:
 				throw("No Config element found in the configuration file","","Framework.plugins.XMLParser.ConfigXMLParsingException");
 
 			//Application Path
-			StructInsert(ConfigStruct, "ApplicationPath", ExpandPath("."));
+			if( arguments.overrideAppMapping neq "" ){
+				StructInsert(ConfigStruct, "ApplicationPath", ExpandPath(arguments.overrideAppMapping));
+			}
+			else{
+				StructInsert(ConfigStruct, "ApplicationPath", ExpandPath("."));
+			}
 
 			//Get SettingNodes
 			SettingNodes = XMLSearch(configXML, instance.searchSettings);
@@ -219,6 +225,11 @@ Modification History:
 			//Check for AppName or throw
 			if ( not StructKeyExists(ConfigStruct, "AppName") )
 				throw("There was no 'AppName' setting defined. This is required by the framework.","","Framework.plugins.XMLParser.ConfigXMLParsingException");
+
+			//overrideAppMapping if passed in.
+			if ( arguments.overrideAppMapping neq "" ){
+				ConfigStruct["AppMapping"] = arguments.overrideAppMapping;
+			}
 
 			//Calculate AppMapping if not set in the config, else auto-calculate
 			if ( not structKeyExists(ConfigStruct, "AppMapping") ){
@@ -659,7 +670,7 @@ Modification History:
 	</cffunction>
 
 	<!--- ************************************************************* --->
-	
+
 	<cffunction name="readFile" access="private" hint="Facade to Read a file's content" returntype="Any" output="false">
 		<!--- ************************************************************* --->
 		<cfargument name="FileToRead"	 		type="String"  required="yes" 	 hint="The absolute path to the file.">
