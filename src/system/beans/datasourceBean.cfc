@@ -34,7 +34,7 @@ Modification History:
 	    <cfargument name="datasourceStruct" 	type="struct" required="false" default="#structnew()#" hint="The structure holding the name,dbtype,username,and password variables." >
 	    <!--- ************************************************************* --->
 	    <cfif not structisEmpty(arguments.datasourceStruct)>
-		    <cfset setInstance(arguments.datasourceStruct)>
+		    <cfset setMemento(arguments.datasourceStruct)>
 	    </cfif>
 	    <cfreturn this >
 	</cffunction>
