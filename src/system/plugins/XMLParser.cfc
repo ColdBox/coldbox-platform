@@ -121,7 +121,7 @@ Modification History:
 				StructInsert(settingsStruct, "ConfigFileLocation", ConfigXMLFilePath);
 			}
 			else{
-				StructInsert(settingsStruct, "ConfigFileLocation", arguments.overrideConfigFile);
+				StructInsert(settingsStruct, "ConfigFileLocation", getAbsolutePath(arguments.overrideConfigFile) );
 			}
 
 			//Schema Path
@@ -680,4 +680,19 @@ Modification History:
 		<cfreturn FileContents>
 	</cffunction>
 
+	<cffunction name="getAbsolutePath" access="private" output="false" returntype="string" hint="Turn any system path, either relative or absolute, into a fully qualified one">
+		<!--- ************************************************************* --->
+		<cfargument name="path" type="string" required="true" hint="Abstract pathname">
+		<!--- ************************************************************* --->
+		<cfscript>
+		var FileObj = CreateObject("java","java.io.File").init(JavaCast("String",arguments.path));
+		if(FileObj.isAbsolute()){
+			return arguments.path;
+		}
+		else{
+			return ExpandPath(arguments.path);
+		}
+		</cfscript>
+	</cffunction>
+	
 </cfcomponent>

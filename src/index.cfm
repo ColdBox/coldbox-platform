@@ -10,6 +10,9 @@ Description :
 Modification History:
 
 ----------------------------------------------------------------------->
+<cfset COLDBOX_CONFIG_FILE = "config/dev_config.xml.cfm">
+
 <cfinclude template="system/coldbox.cfm">
+
 <cfdump var="#application.cbcontroller.getConfigSettings()#" label="App Config Settings">
 <cfsetting enablecfoutputonly="false">

@@ -17,6 +17,7 @@ Description :
 
 	Please view the quickstart guide if you have more questions.
 ---------------------------------------------------------------------->
+<cfparam name="COLDBOX_CONFIG_FILE" default="" type="string">
 
 <!---------------------------------------------------------------------->
 <cffunction name="isfwReinit" returntype="boolean">
@@ -53,7 +54,7 @@ Description :
 	<cflock type="exclusive" scope="application" timeout="#lockTimeout#">
 		<cfif not structkeyExists(application,"cbController") or not application.cbController.getColdboxInitiated() or isfwReinit()>
 			<cfset application.cbController = CreateObject("component","coldbox.system.controller").init()>
-			<cfset application.cbController.getService("loader").setupCalls()>
+			<cfset application.cbController.getService("loader").setupCalls(COLDBOX_CONFIG_FILE)>
 		</cfif>
 	</cflock>
 <cfelse>
@@ -61,7 +62,7 @@ Description :
 		<!--- AutoReload Tests --->
 		<cfif application.cbController.getSetting("ConfigAutoReload")>
 			<cflock type="exclusive" name="Coldbox_configloader" timeout="#lockTimeout#">
-				<cfset application.cbController.getService("loader").setupCalls()>
+				<cfset application.cbController.getService("loader").setupCalls(COLDBOX_CONFIG_FILE)>
 			</cflock>
 		<cfelseif application.cbController.getSetting("HandlersIndexAutoReload")>
 			<cflock type="exclusive" name="Coldbox_configloader" timeout="#lockTimeout#">

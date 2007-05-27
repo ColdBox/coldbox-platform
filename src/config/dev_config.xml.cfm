@@ -17,8 +17,8 @@
 		<Setting name="RequestStartHandler" 		value=""/>
 		<Setting name="RequestEndHandler" 			value=""/>
 		<Setting name="ApplicationStartHandler"		value="ehGeneral.onApplicationStart" />
-		<Setting name="OwnerEmail" 					value="info@luismajano.com"/>
-		<Setting name="EnableBugReports" 			value="true"/>
+		<Setting name="OwnerEmail" 					value="info@email.com"/>
+		<Setting name="EnableBugReports" 			value="false"/>
 		<Setting name="UDFLibraryFile" 				value="includes/udf.cfm" />
 		<Setting name="CustomErrorTemplate"			value="" />
 		<Setting name="MessageboxStyleClass"		value="mymessagebox" />
@@ -39,13 +39,10 @@
 	<!--Optional,if blank it will use the CFMX administrator settings.-->
 	<MailServerSettings />
 
-	<BugTracerReports>
-		<BugEmail>lmajano@gmail.com</BugEmail>
-	</BugTracerReports>
-
+	<BugTracerReports />
+ 
 	<DevEnvironments>
-		<url>dev</url>
-		<url>lmajano</url>
+		<url>localhost</url>
 	</DevEnvironments>
 
 	<WebServices >
@@ -75,11 +72,11 @@
 	</Datasources>
 	
 	<Cache>
-		<ObjectDefaultTimeout>15</ObjectDefaultTimeout>
-		<ObjectDefaultLastAccessTimeout>5</ObjectDefaultLastAccessTimeout>
+		<ObjectDefaultTimeout>5</ObjectDefaultTimeout>
+		<ObjectDefaultLastAccessTimeout>3</ObjectDefaultLastAccessTimeout>
 		<ReapFrequency>1</ReapFrequency>
-		<MaxObjects>15</MaxObjects>
-		<FreeMemoryPercentageThreshold>15</FreeMemoryPercentageThreshold>
+		<MaxObjects>50</MaxObjects>
+		<FreeMemoryPercentageThreshold>5</FreeMemoryPercentageThreshold>
 	</Cache>
 
 </Config>
