@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- yet another config -->
+<generator>
+	<bean>
+		<include file="setMemento.xsl" />
+		<include file="validate.xsl" />
+		<include file="getset.xsl" />
+		<include file="dump.xsl" />
+	</bean>
+	<dao>
+		<include file="create.xsl" />
+		<include file="read.xsl" />
+		<include file="update.xsl" />
+		<include file="delete.xsl" />
+		<include file="exists.xsl" />
+		<include file="save.xsl" />
+		<include file="queryRowToStruct.xsl" />
+	</dao>
+	<gateway>
+		<include file="getByAttributes.xsl" />
+	</gateway>
+	<service>
+		<include file="getBean.xsl" />
+		<include file="getBeansQuery.xsl" />
+		<include file="saveBean.xsl" />
+		<include file="deleteBean.xsl" />
+	</service>
+	<to />
+	<coldspring />
+</generator>
