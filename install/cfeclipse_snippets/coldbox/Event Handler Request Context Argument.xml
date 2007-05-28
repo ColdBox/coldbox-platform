@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<snippet filetemplate="false" extension="cfm">
+<name>Event Handler Request Event Argument</name>
+<help></help>
+    <starttext><![CDATA[<cfargument name="Event" type="coldbox.system.beans.requestContext" required="yes">]]></starttext>
+<endtext><![CDATA[]]></endtext>
+</snippet>
