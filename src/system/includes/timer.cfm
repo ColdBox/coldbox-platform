@@ -14,9 +14,9 @@ Description :
 Modification History:
 06/08/2006 - Updated for coldbox.
 ----------------------------------------------------------------------->
-
 <cfparam name="attributes.timertag" default="NO_TIMER_TAG">
-<cfif not structkeyExists(application,"cbController") and not application.cbController.getDebuggerService().getDebugMode()>
+<!--- Verify controller exists or debugger service --->
+<cfif not structkeyExists(application,"cbController") or not application.cbController.getDebuggerService().getDebugMode()>
 	<cfexit method="exittag">
 </cfif>
 <cfscript>
