@@ -16,34 +16,33 @@ Modification History:
 ----------------------------------------------------------------------->
 <cfparam name="attributes.timertag" default="NO_TIMER_TAG">
 <!--- Verify controller exists or debugger service --->
-<cfif not structkeyExists(application,"cbController") or not application.cbController.getDebuggerService().getDebugMode()>
-	<cfexit method="exittag">
-</cfif>
-<cfscript>
-//Check if DebugTimers is set
-if ( not structKeyExists(request,"DebugTimers") ){
-	request.DebugTimers = QueryNew("Id,Method,Time,Timestamp,RC");
-}
-//Start Processing
-if (thisTag.executionMode is "start")
-	variables.stime = getTickCount();
-else{
-	//In case timer is executed before the debug Mode has been set
-	if ( structKeyExists(variables, "stime") )	{
-		QueryAddRow(request.DebugTimers,1);
-		QuerySetCell(request.DebugTimers, "Id", createUUID());
-		QuerySetCell(request.DebugTimers, "Method", attributes.timertag);
-		QuerySetCell(request.DebugTimers, "Time", getTickCount() - stime);
-		QuerySetCell(request.DebugTimers, "Timestamp", now());
-		//Request Context SnapShot
-		if ( not findnocase("rendering",attributes.timertag) ){
-			rc = application.cbController.getRequestService().getContext().getCollection().toString();
-			QuerySetCell(request.DebugTimers, "RC", rc );
-		}
-		else{
-			QuerySetCell(request.DebugTimers, "RC", '');
+<cfif structkeyExists(application,"cbController") AND application.cbController.getDebuggerService().getDebugMode()>
+	<cfscript>
+	//Check if DebugTimers is set
+	if ( not structKeyExists(request,"DebugTimers") ){
+		request.DebugTimers = QueryNew("Id,Method,Time,Timestamp,RC");
+	}
+	//Start Processing
+	if (thisTag.executionMode is "start")
+		variables.stime = getTickCount();
+	else{
+		//In case timer is executed before the debug Mode has been set
+		if ( structKeyExists(variables, "stime") )	{
+			QueryAddRow(request.DebugTimers,1);
+			QuerySetCell(request.DebugTimers, "Id", createUUID());
+			QuerySetCell(request.DebugTimers, "Method", attributes.timertag);
+			QuerySetCell(request.DebugTimers, "Time", getTickCount() - stime);
+			QuerySetCell(request.DebugTimers, "Timestamp", now());
+			//Request Context SnapShot
+			if ( not findnocase("rendering",attributes.timertag) ){
+				rc = application.cbController.getRequestService().getContext().getCollection().toString();
+				QuerySetCell(request.DebugTimers, "RC", rc );
+			}
+			else{
+				QuerySetCell(request.DebugTimers, "RC", '');
+			}
 		}
 	}
-}
-</cfscript>
+	</cfscript>
+</cfif>
 <cfsetting enablecfoutputonly=false>
