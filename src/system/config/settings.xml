@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Config>
+    <Settings>
+        <Setting name="Codename" value="ColdBox"/>
+        <Setting name="Author" value="Luis Majano"/>
+        <Setting name="AuthorEmail" value="info@coldboxframework.com"/>
+        <Setting name="AuthorWebsite" value="http://www.coldboxframework.com"/>
+        <Setting name="Suffix" value="Philippians 3:7-11"/>
+        <Setting name="Version" value="2.0.1"/>
+        <Setting name="Description" value="This is the ColdBox ColdFusion Framework for web applications."/>
+        <Setting name="ModifyLogLocation" value="readme.txt"/>
+        <Setting name="FrameworkBlog" value="http://www.luismajano.com/blog"/>
+        <Setting name="FrameworkForums" value="http://www.luismajano.com/forums"/>
+        <Setting name="FrameworkAPI" value="http://www.coldboxframework.com/documents/cfdocs"/>
+        <Setting name="FrameworkTrac" value="http://ortus.svnrepository.com/coldbox/"/>
+        <!--AvailableLogFileEncodings:US-ASCII, ISO-8859-1, UTF-8, UTF-16BE, UTF-16LE,  UTF-16.-->
+        <Setting name="AvailableLogFileEncodings" value="US-ASCII,ISO-8859-1,UTF-8,UTF-16BE,UTF-16LE,UTF-16"/>
+        <Setting name="LogFileEncoding" value="UTF-8"/>
+        <!--LogFileWrite Buffer Size In bytes-->
+        <Setting name="LogFileBufferSize" value="32768"/>
+        <!--LogFile's Max Size in KBytes -->
+        <Setting name="LogFileMaxSize" value="5000"/>
+        <!--Available CF Character Sets For File Operations -->
+        <Setting name="AvailableCFCharacterSets" value="utf-8,iso-8859-1,windows-1252,us-ascii,shift_jis,iso-2022-jp,euc-jp,euc-kr,big5,euc-cn,utf-16"/>
+        <Setting name="DefaultFileCharacterSet" value="utf-8"/>
+        <!--Log Default Directory Name-->
+        <Setting name="DefaultLogDirectory" value="logs"/>
+        <!--IOC Frameworks-->
+        <Setting name="ColdspringBeanFactory" value="coldspring.beans.DefaultXmlBeanFactory"/>
+        <!--MessageBox Plugin Storage Scope (session|client)-->
+        <Setting name="MessageBoxStorage" value="session"/>
+        <!--ColdBox Cache Parameter: Default Object Timeout in Minutes -->
+        <Setting name="CacheObjectDefaultTimeout" value="30"/>
+        <!--ColdBox Cache Parameter: Default Object Last Accessed Timeout in Minutes -->
+        <Setting name="CacheObjectDefaultLastAccessTimeout" value="10"/>
+        <!--ColdBox Cache Parameter: Cache Reap Frequency in Minutes -->
+        <Setting name="CacheReapFrequency" value="1"/>
+        <!--ColdBox Cache Parameter: Maximum number of Objects in cache (0=Unlimited)-->
+        <Setting name="CacheMaxObjects" value="0"/>
+        <!--ColdBox Cache Parameter: Free JVM Memory % Threshold (0=not used)-->
+        <Setting name="CacheFreeMemoryPercentageThreshold" value="1"/>
+    </Settings>
+    
+    <!-- Conventions -->
+    <Conventions>
+        <configLocation>config{sep}config.xml.cfm</configLocation>
+        <handlerLocation>handlers</handlerLocation>
+        <layoutsLocation>layouts</layoutsLocation>
+        <viewsLocation>views</viewsLocation>
+    </Conventions>
+    
+</Config>
