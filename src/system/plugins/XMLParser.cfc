@@ -618,7 +618,7 @@ Modification History:
 
 
 			//Determine which CF version for XML Parsing method
-			if (listfirst(server.coldfusion.productversion) gte 7){
+			if (listfirst(server.coldfusion.productversion) gte 7 and not findnocase("railo",server.coldfusion.productname) ){
 				//Finally Validate With XSD
 				if ( not XMLValidate(configXML, getController().getSetting("ConfigFileSchemaLocation", true)).status )
 					throw("<br>The config.xml file does not validate with the framework's schema.<br>You can find the config schema <a href='/coldbox/system/config/#GetFileFromPath(getController().getSetting("ConfigFileSchemaLocation", 1))#'>here</a>","","Framework.plugins.XMLParser.ConfigXMLParsingException");
@@ -694,5 +694,5 @@ Modification History:
 		}
 		</cfscript>
 	</cffunction>
-	
+
 </cfcomponent>
