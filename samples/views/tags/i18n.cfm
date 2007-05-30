@@ -7,6 +7,6 @@
 <strong>i18nTimeFormat:</strong> <br />#getPlugin("i18n").i18nTimeFormat(getPlugin("i18n").toEpoch(now()),2)#<br />
 <hr>
 <strong>I18NUtilVersion:</strong> <br />#getPlugin("i18n").getVersion().I18NUtilVersion#<br>
-<strong>I18NUtilDate:</strong> <br />#getPlugin("i18n").dateLocaleFormat(getPlugin("i18n").getVersion().I18NUtilDate)#<br>
+<strong>I18NUtilDate:</strong> <br />#getPlugin("i18n").dateLocaleFormat(now())#<br>
 <strong>Java version:</strong> <br />#getPlugin("i18n").getVersion().javaVersion#<br>
 </cfoutput>
