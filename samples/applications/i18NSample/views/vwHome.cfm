@@ -97,11 +97,11 @@
 	</tr>
 	<tr valign="top">
 	<td align="right" valign="top"><b>i18nDateFormat:</b></td>
-	<td colspan="10" bgcolor="##b6e7ff">#getPlugin("i18n").i18nDateFormat(rc.now,rc..dateF,rc.thisTZ)#</td>
+	<td colspan="10" bgcolor="##b6e7ff">#getPlugin("i18n").i18nDateFormat(rc.now,rc.dateF,rc.thisTZ)#</td>
 	</tr>
 	<tr valign="top">
 	<td align="right" valign="top"><b>i18nTimeFormat:</b></td>
-	<td colspan="10" bgcolor="##b6e7ff">#getPlugin("i18n").i18nTimeFormat(rc.now,rc..timeF,rc.thisTZ)#</td>
+	<td colspan="10" bgcolor="##b6e7ff">#getPlugin("i18n").i18nTimeFormat(rc.now,rc.timeF,rc.thisTZ)#</td>
 	</tr>
 	<tr valign="top">
 	<td align="right" valign="top"><b>i18nDateParse:</b></td>
