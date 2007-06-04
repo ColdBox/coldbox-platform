@@ -92,6 +92,43 @@ Modification History:
 			if ( not fileExists(instance.FrameworkConfigFile) ){
 				throw("Error finding settings.xml configuration file. The file #instance.FrameworkConfigFile# cannot be found.","","Framework.plugins.XMLParser.ColdBoxSettingsNotFoundException");
 			}
+			
+			//Set the Coldfusion Server Properties
+			switch ( server.coldfusion.productname ){
+				
+				case "BlueDragon" :
+					if ( listfirst(server.coldfusion.productversion) lt 7 ){
+						settingsStruct["xmlParseActive"] = false;
+						settingsStruct["chartingActive"] = false;
+						settingsStruct["xmlValidateActive"] = false;
+					}
+					else{
+						settingsStruct["xmlParseActive"] = true;
+						settingsStruct["chartingActive"] = true;
+						settingsStruct["xmlValidateActive"] = true;
+					}	
+					break;
+				
+				case "Railo":
+					settingsStruct["xmlParseActive"] = false;
+					settingsStruct["chartingActive"] = false;
+					settingsStruct["xmlValidateActive"] = false;
+					break;
+				
+				default:
+					settingsStruct["chartingActive"] = true;
+					//Adobe CF
+					if ( listfirst(server.coldfusion.productversion) lt 7 ){
+						settingsStruct["xmlParseActive"] = false;
+						settingsStruct["xmlValidateActive"] = false;
+					}
+					else{
+						settingsStruct["xmlParseActive"] = true;
+						settingsStruct["xmlValidateActive"] = true;
+					}
+					break;				
+			}//end switch
+			
 			//Determine which CF version for XML Parsing method
 			if (listfirst(server.coldfusion.productversion) lt 7){
 				fwXML = xmlParse(readFile(instance.FrameworkConfigFile,false,"utf-8"));
@@ -134,6 +171,8 @@ Modification History:
 			StructInsert(settingsStruct, "FrameworkPluginsPath", settingsStruct.FrameworkPath & "plugins");
 			//Set the complete modifylog path
 			settingsStruct.ModifyLogLocation = "#settingsStruct.FrameworkPath#config#instance.FileSeparator#readme.txt";
+			
+			//return settings
 			return settingsStruct;
 		}//end of try
 		catch( Any Exception ){
