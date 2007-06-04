@@ -40,7 +40,7 @@
 	<MailServerSettings />
 
 	<BugTracerReports>
-		<BugEmail>lmajano@gmail.com</BugEmail>
+		<BugEmail>info@coldboxframework.com</BugEmail>
 	</BugTracerReports>
 
 	<DevEnvironments>

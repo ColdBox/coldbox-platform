@@ -17,7 +17,7 @@
 		<Setting name="RequestStartHandler" 		value=""/>
 		<Setting name="RequestEndHandler" 			value=""/>
 		<Setting name="ApplicationStartHandler"		value="" />
-		<Setting name="OwnerEmail" 					value="lmajano@gmail.com"/>
+		<Setting name="OwnerEmail" 					value="info@coldboxframework.com"/>
 		<Setting name="EnableBugReports" 			value="false"/>
 		<Setting name="UDFLibraryFile" 				value="" />
 		<Setting name="CustomErrorTemplate"			value="" />
