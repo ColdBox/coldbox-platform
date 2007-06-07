@@ -125,6 +125,14 @@ Modification History:
 		</cfscript>
 	</cffunction>
 
+	<cffunction name="getcontroller" access="public" output="false" returntype="string" hint="Get controller">
+		<cfreturn variables.controller/>
+	</cffunction>
+	
+	<cffunction name="setcontroller" access="public" output="false" returntype="void" hint="Set controller">
+		<cfargument name="controller" type="string" required="true"/>
+		<cfset variables.controller = arguments.controller/>
+	</cffunction>
 <!------------------------------------------- PRIVATE ------------------------------------------->
 
 	<cffunction name="recurseListing" access="private" output="false" returntype="array">
@@ -168,12 +176,4 @@ Modification History:
 		</cfscript>
 	</cffunction>
 
-
-	<cffunction name="dump" access="private" hint="Facade for cfmx dump" returntype="void">
-		<cfargument name="var" required="yes" type="any">
-		<cfdump var="#var#">
-	</cffunction>
-	<cffunction name="abort" access="private" hint="Facade for cfabort" returntype="void" output="false">
-		<cfabort>
-	</cffunction>
 </cfcomponent>

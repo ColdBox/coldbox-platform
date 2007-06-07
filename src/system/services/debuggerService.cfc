@@ -97,6 +97,15 @@ Modification History:
 		<cfsavecontent variable="RederedDebugging"><cfinclude template="../includes/cachepanel.cfm"></cfsavecontent>
 		<cfreturn RederedDebugging>
 	</cffunction>
+	
+	<cffunction name="getcontroller" access="public" output="false" returntype="string" hint="Get controller">
+		<cfreturn variables.controller/>
+	</cffunction>
+	
+	<cffunction name="setcontroller" access="public" output="false" returntype="void" hint="Set controller">
+		<cfargument name="controller" type="string" required="true"/>
+		<cfset variables.controller = arguments.controller/>
+	</cffunction>
 <!------------------------------------------- PRIVATE ------------------------------------------->
 
 	<cffunction name="getNamedHash" returntype="string" access="private" output="false" hint="Provide a hash name for the cookie.">

@@ -74,7 +74,7 @@ Modification History:
 				<!--- Save the Custom Report --->
 				<cfsavecontent variable="BugReport"><cfinclude template="/#controller.getSetting("AppMapping")#/#controller.getSetting("CustomErrorTemplate")#"></cfsavecontent>
 				<cfcatch type="any">
-					<cfset Exception = controller.ExceptionHandler(cfcatch,"Application","Error creating custom error template.")>
+					<cfset Exception = ExceptionHandler(cfcatch,"Application","Error creating custom error template.")>
 					<!--- Save the Bug Report --->
 					<cfsavecontent variable="BugReport"><cfinclude template="../includes/BugReport.cfm"></cfsavecontent>
 				</cfcatch>
@@ -84,6 +84,15 @@ Modification History:
 			<cfsavecontent variable="BugReport"><cfinclude template="../includes/BugReport.cfm"></cfsavecontent>
 		</cfif>
 		<cfreturn BugReport>
+	</cffunction>
+	
+	<cffunction name="getcontroller" access="public" output="false" returntype="string" hint="Get controller">
+		<cfreturn variables.controller/>
+	</cffunction>
+	
+	<cffunction name="setcontroller" access="public" output="false" returntype="void" hint="Set controller">
+		<cfargument name="controller" type="string" required="true"/>
+		<cfset variables.controller = arguments.controller/>
 	</cffunction>
 
 <!------------------------------------------- PRIVATE ------------------------------------------->

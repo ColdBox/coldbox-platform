@@ -80,6 +80,14 @@ Modification History:
 		</cfscript>
 	</cffunction>
 
+	<cffunction name="getcontroller" access="public" output="false" returntype="string" hint="Get controller">
+		<cfreturn variables.controller/>
+	</cffunction>
+	
+	<cffunction name="setcontroller" access="public" output="false" returntype="void" hint="Set controller">
+		<cfargument name="controller" type="string" required="true"/>
+		<cfset variables.controller = arguments.controller/>
+	</cffunction>
 <!------------------------------------------- PRIVATE ------------------------------------------->
 
 	<cffunction name="createContext" access="private" output="false" returntype="any" hint="Creates a new request context object">
