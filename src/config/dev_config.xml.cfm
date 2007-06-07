@@ -9,10 +9,10 @@
 		<Setting name="ReinitPassword" 				value=""/>
 		<!--This feature is enabled, by default-->
 		<Setting name="EnableDumpVar" 				value="true"/>
-		<Setting name="EnableColdfusionLogging" 	value="true"/>
+		<Setting name="EnableColdfusionLogging" 	value="false"/>
 		<Setting name="EnableColdboxLogging" 		value="true"/>
 		<!--Absolute path to where you want your log files to be stored-->
-		<Setting name="ColdboxLogsLocation"			value="../testing" />
+		<Setting name="ColdboxLogsLocation"			value="logs" />
 		<Setting name="DefaultEvent" 				value="ehGeneral.dspHello"/>
 		<Setting name="RequestStartHandler" 		value=""/>
 		<Setting name="RequestEndHandler" 			value=""/>
