@@ -15,30 +15,27 @@
 Send the error report --->
 <!---<cfset blogConfig = application.blog.getProperties()> --->
 
+<cfset rb = getController().getPlugin("resourcebundle")>
+
 <cfsavecontent variable="mail">
 <cfoutput>
 <link rel="stylesheet" href="includes/style.css" type="text/css" />
 <link rel="stylesheet" href="includes/layout.css" type="text/css" />
-#getResource("errorOccured")#:<br>
 <table border="1" width="100%">
 	<tr>
-		<td width="100">#getResource("date")#:</td>
+		<td width="100">#rb.getResource("date")#:</td>
 		<td>#dateFormat(now(),"m/d/yy")# #timeFormat(now(),"h:mm tt")#</td>
 	</tr>
 	<tr>
-		<td>#getResource("scriptName")#:</td>
-		<td>#cgi.script_name#?#cgi.query_string#</td>
-	</tr>
-	<tr>
-		<td>#getResource("browser")#:</td>
+		<td>#rb.getResource("browser")#:</td>
 		<td>#cgi.HTTP_USER_AGENT#</td>
 	</tr>
 	<tr>
-		<td>#getResource("referer")#:</td>
+		<td>#rb.getResource("referer")#:</td>
 		<td>#cgi.HTTP_REFERER#</td>
 	</tr>
 	<tr>
-		<td>#getResource("message")#:</td>
+		<td>#rb.getResource("message")#:</td>
 		<td>#Event.getValue("ExceptionBean").getMessage()#</td>
 	</tr>
 	<tr>
@@ -46,7 +43,7 @@ Send the error report --->
 		<td>#Event.getValue("ExceptionBean").getDetail()#</td>
 	</tr>
 	<tr>
-		<td>#getResource("type")#:</td>
+		<td>#rb.getResource("type")#:</td>
 		<td>#Event.getValue("ExceptionBean").getType()#</td>
 	</tr>
 	<tr>
@@ -54,7 +51,7 @@ Send the error report --->
 		<td>#Event.getValue("ExceptionBean").getStackTrace()#</td>
 	</tr>
 	<tr>
-		<td>#getResource("tagContext")#:</td>
+		<td>#rb.getResource("tagContext")#:</td>
 		<td><cfdump var="#Event.getValue("ExceptionBean").getTagcontext()#"></td>
 	</tr>
 </table>
@@ -62,12 +59,12 @@ Send the error report --->
 </cfsavecontent>
 
 <cfoutput>
-<div class="date">#getResource("errorpageheader")#</div>
+<div class="date">#rb.getResource("errorpageheader")#</div>
 <div class="body">
 <p>
-#getResource("errorpagebody")#
+#rb.getResource("errorpagebody")#
 </p>
-<cfif isUserInRole("admin") or 1>
+<cfif getController().getDebuggerService().getDebugMode()>
 	<cfoutput>#mail#</cfoutput>
 </cfif>
 </div>
