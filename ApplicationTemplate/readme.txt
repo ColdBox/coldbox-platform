@@ -78,6 +78,9 @@ How to start?
 
 OPTIONAL: Skip all the steps, just fire up the ColdBox Dashboard and run the Application Generator.
 
+UNIT TESTS: You will also find the unit tests ready for the event handlers inside the handlers
+            directory under the name tests. You will find a test suite and two test cases.
+
 Welcome to Coldbox!!
 
 Now get your mind out of procedural code, dive into OO Programming. Please make sure
