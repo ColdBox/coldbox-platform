@@ -5,12 +5,14 @@ www.coldboxframework.com | www.luismajano.com | www.ortussolutions.com
 
 Unit Testing for Event Handlers
 
-The following test cases have been created for testing of event handlers.
-One of the caveats you have to be aware about is that if an event handler produces
-a RELOCATION via setNextEvent()  Your unit tests will fails.
+The following test cases have been created for testing of event handlers, please
+note that the controller created is the ColdBox's testcontroller.
 
-Therefore, in event handler unit tests, please only tests handlers that do not 
-relocate or make sure that they do not relocate when unit testing. If not,
-YOU WILL RECEIVE ERRORS.
+The code speaks for itself. Just make sure you base your tests on the baseTest.cfc
 
-That is the only issue that I know about know. Enjoy your unit testing.
+Structure:
+AllTests.cfc - Test Suite for all test cases
+cases/baseTest.cfc - The base test case that all event handlers need to inherit from
+cases/ehGeneralTest.cfc - The test case for the ehGeneral.cfc handler
+cases/ehMaintTest.cfc - The test case for the ehMain.cfc handler
+

@@ -40,13 +40,13 @@ Modification History:
 		instance.ConfigMapping = ExpandPath(instance.AppMapping & "/config/config.xml.cfm");
 
 		//Initialize ColdBox
-		instance.controller = CreateObject("component", "coldbox.system.controller").init();
+		instance.controller = CreateObject("component", "coldbox.system.testcontroller").init();
 		instance.controller.getService("loader").configLoader(instance.ConfigMapping,instance.AppMapping);
 		instance.controller.getService("loader").registerHandlers();
 
 		//Create Initial Event Context
 		setupRequest();
-		//Clean up Initial Event Context due to MACH-II vars.
+		//Clean up Initial Event Context due to MACH-II vars of the unit test framework.
 		getRequestContext().clearCollection();
 
 		//EXECUTE THE APPLICATION START HANDLER: UNCOMMENT IF NEEDED AND FILL IT OUT.
