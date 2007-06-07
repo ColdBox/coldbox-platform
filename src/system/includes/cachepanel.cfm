@@ -90,7 +90,7 @@
 		 #controller.getColdBoxOCM().getSize()# / #controller.getColdboxOCM().getCacheConfigBean().getCacheMaxObjects()# (0=Unlimited)
 		</div>
 		<!--- **************************************************************--->
-		<cfif server.ColdFusion.ProductName eq "Coldfusion Server">
+		<cfif controller.getSetting("chartingActive",true)>
 			<!--- Why use a cfinclude? well, bluedragon would not compile this without it --->
 			<cfinclude template="cache_charting.cfm">
 		<cfelse>
