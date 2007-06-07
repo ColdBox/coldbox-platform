@@ -110,9 +110,9 @@ Modification History:
 					break;
 				
 				case "Railo":
-					settingsStruct["xmlParseActive"] = false;
+					settingsStruct["xmlParseActive"] = true;
 					settingsStruct["chartingActive"] = false;
-					settingsStruct["xmlValidateActive"] = false;
+					settingsStruct["xmlValidateActive"] = true;
 					break;
 				
 				default:
@@ -130,7 +130,7 @@ Modification History:
 			}//end switch
 			
 			//Determine which CF version for XML Parsing method
-			if (listfirst(server.coldfusion.productversion) lt 7){
+			if ( settingsStruct["xmlParseActive"] ){
 				fwXML = xmlParse(readFile(instance.FrameworkConfigFile,false,"utf-8"));
 			}
 			else{
@@ -657,7 +657,7 @@ Modification History:
 
 
 			//Determine which CF version for XML Parsing method
-			if (listfirst(server.coldfusion.productversion) gte 7 and not findnocase("railo",server.coldfusion.productname) ){
+			if ( fwSettingsStruct["xmlValidateActive"] ){
 				//Finally Validate With XSD
 				if ( not XMLValidate(configXML, getController().getSetting("ConfigFileSchemaLocation", true)).status )
 					throw("<br>The config.xml file does not validate with the framework's schema.<br>You can find the config schema <a href='/coldbox/system/config/#GetFileFromPath(getController().getSetting("ConfigFileSchemaLocation", 1))#'>here</a>","","Framework.plugins.XMLParser.ConfigXMLParsingException");
@@ -666,6 +666,7 @@ Modification History:
 		catch( Any Exception ){
 			throw("#Exception.Message# & #Exception.Detail#","","Framework.plugins.XMLParser.ConfigXMLParsingException");
 		}
+		
 		//finish
 		return ConfigStruct;
 		</cfscript>
