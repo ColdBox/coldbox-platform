@@ -26,7 +26,7 @@
         <!--Log Default Directory Name-->
         <Setting name="DefaultLogDirectory" value="logs"/>
 		<!--Default Event Name -->
-		<Setting name="EventName" value="event" />
+		<Setting name="EventName" value="event"/>
 		<!--IOC Frameworks-->
         <Setting name="ColdspringBeanFactory" value="coldspring.beans.DefaultXmlBeanFactory"/>
         <!--MessageBox Plugin Storage Scope (session|client)-->

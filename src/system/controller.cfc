@@ -215,11 +215,18 @@ Description		: This is the main ColdBox front Controller.
 		<cfargument name="queryString"  	hint="The query string to append, if needed."   type="string" required="No" default="" >
 		<cfargument name="addToken"			hint="Wether to add the tokens or not. Default is false" type="boolean" required="false" default="false"	>
 		<!--- ************************************************************* --->
-		<cfif len(trim(arguments.event)) eq 0><cfset arguments.event = getSetting("DefaultEvent")></cfif>
+		<cfset var EventName = getSetting("EventName")>
+		
+		<!--- Cleanup Event --->
+		<cfif len(trim(arguments.event)) eq 0>
+			<cfset arguments.event = getSetting("DefaultEvent")>
+		</cfif>
+		
+		<!--- Check if query String needs appending --->
 		<cfif len(trim(arguments.queryString)) eq 0>
-			<cflocation url="#cgi.SCRIPT_NAME#?event=#arguments.event#" addtoken="#arguments.addToken#">
+			<cflocation url="#cgi.SCRIPT_NAME#?#EventName#=#arguments.event#" addtoken="#arguments.addToken#">
 		<cfelse>
-			<cflocation url="#cgi.SCRIPT_NAME#?event=#arguments.event#&#arguments.queryString#" addtoken="#arguments.addToken#">
+			<cflocation url="#cgi.SCRIPT_NAME#?#EventName#=#arguments.event#&#arguments.queryString#" addtoken="#arguments.addToken#">
 		</cfif>
 	</cffunction>
 
@@ -235,10 +242,11 @@ Description		: This is the main ColdBox front Controller.
 		<cfset var ExecutingHandler = "">
 		<cfset var ExecutingMethod = "">
 		<cfset var RequestContext = instance.RequestService.getContext()>
+		<cfset var EventName = getSetting("EventName")>
 
 		<!--- Default Event Set --->
 		<cfif arguments.event eq "">
-			<cfset arguments.event = RequestContext.getValue("event")>
+			<cfset arguments.event = RequestContext.getValue(EventName)>
 		</cfif>
 
 			<!--- Validate and Get registered handler --->

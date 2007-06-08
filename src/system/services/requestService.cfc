@@ -13,7 +13,7 @@ Description :
 Modification History:
 01/18/2007 - Created
 ----------------------------------------------------------------------->
-<cfcomponent name="requestService" output="false">
+<cfcomponent name="requestService" output="false" hint="This service takes care of preparing and creating request contexts">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
@@ -30,8 +30,9 @@ Modification History:
 	<cffunction name="requestCapture" access="public" returntype="any" output="false" hint="I capture a request.">
 		<cfscript>
 			var Context = createContext();
-			var DebugPassword = controller.getSetting("debugPassword");
-
+			var DebugPassword = getController().getSetting("debugPassword");
+			var EventName = getController().getSetting("EventName");
+					
 			//Object Caching Garbage Collector
 			controller.getColdboxOCM().reap();
 
@@ -45,14 +46,15 @@ Modification History:
 
 			//Event Checks
 			//Default Event Definition
-			if ( not Context.valueExists("event"))
-				Context.setValue("event", controller.getSetting("DefaultEvent"));
+			if ( not Context.valueExists(EventName))
+				Context.setValue(EventName, controller.getSetting("DefaultEvent"));
 			//Event More Than 1 Check, grab the first event instance, other's are discarded
-			if ( listLen(Context.getValue("event")) gte 2 )
-				Context.setValue("event", getToken(Context.getValue("event"),2,","));
+			if ( listLen(Context.getValue(EventName)) gte 2 )
+				Context.setValue(EventName, getToken(Context.getValue(EventName),2,","));
 
 			//Set Request Context in storage
 			setContext(Context);
+			
 			//Return Context
 			return getContext();
 		</cfscript>
@@ -80,29 +82,34 @@ Modification History:
 		</cfscript>
 	</cffunction>
 
-	<cffunction name="getcontroller" access="public" output="false" returntype="string" hint="Get controller">
+<!------------------------------------------- ACCESSOR/MUTATORS ------------------------------------------->
+
+	<cffunction name="getcontroller" access="public" output="false" returntype="any" hint="Get controller">
 		<cfreturn variables.controller/>
 	</cffunction>
 	
 	<cffunction name="setcontroller" access="public" output="false" returntype="void" hint="Set controller">
-		<cfargument name="controller" type="string" required="true"/>
+		<cfargument name="controller" type="any" required="true"/>
 		<cfset variables.controller = arguments.controller/>
-	</cffunction>
+	</cffunction>	
+	
 <!------------------------------------------- PRIVATE ------------------------------------------->
 
 	<cffunction name="createContext" access="private" output="false" returntype="any" hint="Creates a new request context object">
 		<cfscript>
 		var DefaultLayout = "";
 		var ViewLayouts = structNew();
-
-		if ( controller.settingExists("DefaultLayout") ){
-			DefaultLayout = controller.getSetting("DefaultLayout");
+		var EventName = getController().getSetting("EventName");
+		
+		if ( getController().settingExists("DefaultLayout") ){
+			DefaultLayout = getController().getSetting("DefaultLayout");
 		}
-		if ( controller.settingExists("ViewLayouts") ){
-			ViewLayouts = controller.getSetting("ViewLayouts");
+		if ( getController().settingExists("ViewLayouts") ){
+			ViewLayouts = getController().getSetting("ViewLayouts");
 		}
-		return CreateObject("component","coldbox.system.beans.requestContext").init(FORM, URL, DefaultLayout, ViewLayouts);
+		//Return context.
+		return CreateObject("component","coldbox.system.beans.requestContext").init(FORM, URL, DefaultLayout, ViewLayouts, EventName);
 		</cfscript>
 	</cffunction>
-
+		
 </cfcomponent>

@@ -7,7 +7,7 @@ www.coldboxframework.com | www.luismajano.com | www.ortussolutions.com
 Author 	 :	Luis Majano
 Date     :	June 30, 2006
 Description :
-	I model a coldbox request. I hold the request's variables
+	I model a coldbox request. I hold the request's variables and more.
 
 Modification History:
 
@@ -17,24 +17,30 @@ Modification History:
 			 output="false">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
+	
 	<cfscript>
 		variables.context = structnew();
 		variables.defaultLayout = "";
 		variables.ViewLayouts = "";
+		variables.eventName = "";
 	</cfscript>
 
 	<cffunction name="init" access="public" output="false" hint="constructor" returntype="any">
 		<!--- ************************************************************* --->
-		<cfargument name="struct1" 		 type="any" 	required="true">
-		<cfargument name="struct2" 		 type="any" 	required="true">
+		<cfargument name="struct1" 		 type="any" 	required="true" hint="Usually the FORM scope">
+		<cfargument name="struct2" 		 type="any" 	required="true" hint="Usually the URL scope">
 		<cfargument name="DefaultLayout" type="string" 	required="true">
 		<cfargument name="ViewLayouts"   type="struct"  required="true">
+		<cfargument name="EventName" 	 type="string" 	required="true"/>
 		<!--- ************************************************************* --->
-		<cfset collectionAppend(arguments.struct1)>
-		<cfset collectionAppend(arguments.struct2)>
-		<cfset variables.defaultLayout = arguments.DefaultLayout>
-		<cfset variables.ViewLayouts = arguments.ViewLayouts>
-		<cfreturn this >
+		<cfscript>
+			collectionAppend(arguments.struct1);
+			collectionAppend(arguments.struct2);
+			setDefaultLayout(arguments.DefaultLayout);
+			setViewLayouts(arguments.ViewLayouts);
+			setEventName(arguments.EventName);
+			return this;
+		</cfscript>		
 	</cffunction>
 
 <!------------------------------------------- PUBLIC ------------------------------------------->
@@ -161,7 +167,9 @@ Modification History:
 	<cffunction name="getCurrentView" access="public" hint="Gets the current set view" returntype="string" output="false">
 		<cfreturn getValue("currentView","")>
 	</cffunction>
-
+	
+	<!--- ************************************************************* --->
+	
 	<cffunction name="setView" access="public" returntype="void" hint="I Set the view to render in this request.I am called from event handlers. Request Collection Name: currentView, currentLayout"  output="false">
 		<cfargument name="name"     hint="The name of the view to set. If a layout has been defined it will assign it, else if will assign the default layout." type="string">
 		<cfargument name="nolayout" type="boolean" required="false" default="false" hint="Boolean flag, wether the view sent in will be using a layout or not. Default is false. Uses a pre set layout or the default layout.">
@@ -197,24 +205,71 @@ Modification History:
 	<!--- ************************************************************* --->
 
 	<cffunction name="getCurrentEvent" access="public" hint="Gets the current set event" returntype="string" output="false">
-		<cfreturn getValue("event","")>
+		<cfreturn getValue(getEventName(),"")>
 	</cffunction>
-
+	
+	<!--- ************************************************************* --->
+	
 	<cffunction name="overrideEvent" access="Public" hint="I Override the current event in the request collection. This method does not execute the event, it just replaces the event to be executed by the framework's RunEvent() method. This method is usually called from an onRequestStart or onApplicationStart method."  output="false" returntype="void">
 		<cfargument name="event" hint="The name of the event to override." type="string">
 		<!--- ************************************************************* --->
 	    <cfscript>
-	    setValue("event",arguments.event);
+	    setValue(getEventName(),arguments.event);
 	    </cfscript>
 	</cffunction>
 
+	<!--- ************************************************************* --->
+	
 	<cffunction name="showdebugpanel" access="public" returntype="void" hint="I can override to show or not the debug panel. Very useful in AJAX debugging">
 		<cfargument name="show" type="boolean" required="true">
 		<cfset setValue("coldbox_debugpanel",arguments.show)>
 	</cffunction>
 
+	<!--- ************************************************************* --->
+	
 	<cffunction name="getdebugpanelFlag" access="public" returntype="boolean" hint="I return the debugpanel flag for this request.">
 		<cfreturn getValue("coldbox_debugpanel",true)>
+	</cffunction>
+	
+<!------------------------------------------- ACCESSORS/MUTATORS ------------------------------------------->
+
+	<!--- ************************************************************* --->
+	
+	<cffunction name="getDefaultLayout" access="public" returntype="string" output="false">
+		<cfreturn variables.DefaultLayout>
+	</cffunction>
+	
+	<!--- ************************************************************* --->
+	
+	<cffunction name="setDefaultLayout" access="public" returntype="void" output="false">
+		<cfargument name="DefaultLayout" type="string" required="true">
+		<cfset variables.DefaultLayout = arguments.DefaultLayout>
+	</cffunction>
+	
+	<!--- ************************************************************* --->
+	
+	<cffunction name="getViewLayouts" access="public" returntype="struct" output="false">
+		<cfreturn variables.ViewLayouts>
+	</cffunction>
+	
+	<!--- ************************************************************* --->
+	
+	<cffunction name="setViewLayouts" access="public" returntype="void" output="false">
+		<cfargument name="ViewLayouts" type="struct" required="true">
+		<cfset variables.ViewLayouts = arguments.ViewLayouts>
+	</cffunction>
+	
+	<!--- ************************************************************* --->
+	
+	<cffunction name="getEventName" access="public" returntype="string" output="false">
+		<cfreturn variables.EventName>
+	</cffunction>
+	
+	<!--- ************************************************************* --->
+	
+	<cffunction name="setEventName" access="public" returntype="void" output="false">
+		<cfargument name="EventName" type="string" required="true">
+		<cfset variables.EventName = arguments.EventName>
 	</cffunction>
 
 <!------------------------------------------- PRIVATE ------------------------------------------->
@@ -227,6 +282,5 @@ Modification History:
 		<!--- ************************************************************* --->
 		<cfthrow type="#arguments.type#" message="#arguments.message#"  detail="#arguments.detail#">
 	</cffunction>
-
 
 </cfcomponent>

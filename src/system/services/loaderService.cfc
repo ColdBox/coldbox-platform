@@ -125,14 +125,17 @@ Modification History:
 		</cfscript>
 	</cffunction>
 
-	<cffunction name="getcontroller" access="public" output="false" returntype="string" hint="Get controller">
+<!------------------------------------------- ACCESSOR/MUTATORS ------------------------------------------->
+
+	<cffunction name="getcontroller" access="public" output="false" returntype="any" hint="Get controller">
 		<cfreturn variables.controller/>
 	</cffunction>
 	
 	<cffunction name="setcontroller" access="public" output="false" returntype="void" hint="Set controller">
-		<cfargument name="controller" type="string" required="true"/>
+		<cfargument name="controller" type="any" required="true"/>
 		<cfset variables.controller = arguments.controller/>
-	</cffunction>
+	</cffunction>	
+	
 <!------------------------------------------- PRIVATE ------------------------------------------->
 
 	<cffunction name="recurseListing" access="private" output="false" returntype="array">

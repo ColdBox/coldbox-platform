@@ -53,7 +53,13 @@ Description :
 <cfif not structkeyExists(application,"cbController") or not application.cbController.getColdboxInitiated() or isfwReinit()>
 	<cflock type="exclusive" scope="application" timeout="#lockTimeout#">
 		<cfif not structkeyExists(application,"cbController") or not application.cbController.getColdboxInitiated() or isfwReinit()>
+			<!--- Clean up If Necessary --->
+			<cfif structkeyExists(application,"cbController")>
+				<cfset structDelete(application,"cbController")>
+			</cfif>
+			<!--- Create Brand New Controller --->
 			<cfset application.cbController = CreateObject("component","coldbox.system.controller").init()>
+			<!--- Setup the Framework And Application --->
 			<cfset application.cbController.getService("loader").setupCalls(COLDBOX_CONFIG_FILE)>
 		</cfif>
 	</cflock>

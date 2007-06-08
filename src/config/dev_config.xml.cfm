@@ -7,6 +7,7 @@
 		<Setting name="DebugMode" 					value="true"/>
 		<Setting name="DebugPassword" 				value="coldbox"/>
 		<Setting name="ReinitPassword" 				value=""/>
+		<Setting name="EventName" 					value="do"/>
 		<!--This feature is enabled, by default-->
 		<Setting name="EnableDumpVar" 				value="true"/>
 		<Setting name="EnableColdfusionLogging" 	value="true"/>
@@ -23,7 +24,7 @@
 		<Setting name="CustomErrorTemplate"			value="" />
 		<Setting name="MessageboxStyleClass"		value="mymessagebox" />
 		<Setting name="HandlersIndexAutoReload"   	value="false" />
-		<Setting name="ConfigAutoReload"			value="false" />
+		<Setting name="ConfigAutoReload"			value="true" />
 		<Setting name="ExceptionHandler"     		value="" />
 		<Setting name="onInvalidEvent" 				value="" />
 		<!--Base Path to plugins, as if to instantiate them. -->
