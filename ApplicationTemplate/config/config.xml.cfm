@@ -10,6 +10,8 @@
 		<Setting name="DebugPassword" 				value=""/>
 		<!--The fwreinit password to use in order to reinitialize the framework and application.Optional, else leave blank -->
 		<Setting name="ReinitPassword" 				value=""/>
+		<!--Default event name variable to use in URL/FORM etc. --->
+		<Setting name="EventName"					value="event" />
 		<!--This feature is enabled by default to permit the url dumpvar parameter-->
 		<Setting name="EnableDumpVar"				value="true" />
 		<!--Log Errors and entries on the coldfusion server logs, disabled by default if not used-->
