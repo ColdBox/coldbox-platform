@@ -292,7 +292,9 @@ Modification History:
 			//Check for Default Event
 			if ( not StructKeyExists(ConfigStruct, "DefaultEvent") )
 				throw("There was no 'DefaultEvent' setting defined. This is required by the framework.","","Framework.plugins.XMLParser.ConfigXMLParsingException");
-
+			//Check for Event Name
+			if ( not StructKeyExists(ConfigStruct, "EventName") )
+				ConfigStruct["EventName"] = fwSettingsStruct["EventName"] ;
 			//Check for Request Start Handler
 			if ( not StructKeyExists(ConfigStruct, "ApplicationStartHandler") )
 				ConfigStruct["ApplicationStartHandler"] = "";

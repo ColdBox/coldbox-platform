@@ -25,7 +25,9 @@
         <Setting name="DefaultFileCharacterSet" value="iso-8859-1"/>
         <!--Log Default Directory Name-->
         <Setting name="DefaultLogDirectory" value="logs"/>
-        <!--IOC Frameworks-->
+		<!--Default Event Name -->
+		<Setting name="EventName" value="event" />
+		<!--IOC Frameworks-->
         <Setting name="ColdspringBeanFactory" value="coldspring.beans.DefaultXmlBeanFactory"/>
         <!--MessageBox Plugin Storage Scope (session|client)-->
         <Setting name="MessageBoxStorage" value="session"/>
