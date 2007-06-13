@@ -53,6 +53,7 @@
 
 	<Layouts>
 		<DefaultLayout>Layout.Main.cfm</DefaultLayout>
+		<DefaultView>vwHello</DefaultView>
 		<Layout file="Layout.Login.cfm" name="login">
 			<View>vwLogin</View>
 		</Layout>

@@ -205,7 +205,8 @@
 		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref="DefaultLayout"/>
+				<xs:element ref="DefaultLayout" minOccurs="1" maxOccurs="1"/>
+				<xs:element ref="DefaultView"   minOccurs="0" maxOccurs="1"/>
 				<xs:element maxOccurs="unbounded" minOccurs="0" ref="Layout"/>
 			</xs:sequence>
 		</xs:complexType>
@@ -213,6 +214,16 @@
 	<xs:element name="DefaultLayout">
 		<xs:annotation>
 			<xs:documentation>The mandatory default layout to use.</xs:documentation>
+		</xs:annotation>
+		<xs:simpleType>
+			<xs:restriction base="xs:string">
+				<xs:minLength value="1"/>
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:element>
+	<xs:element name="DefaultView">
+		<xs:annotation>
+			<xs:documentation>The optional default view to use if no view is set.</xs:documentation>
 		</xs:annotation>
 		<xs:simpleType>
 			<xs:restriction base="xs:string">

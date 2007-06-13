@@ -32,17 +32,22 @@ Modification History:
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
 	<cffunction name="init" access="public" returntype="renderer" output="false">
+		<!--- ************************************************************* --->
 		<cfargument name="controller" type="any" required="true">
+		<!--- ************************************************************* --->
 		<cfset super.Init(arguments.controller) />
 		<cfset setpluginName("Renderer")>
 		<cfset setpluginVersion("1.1")>
 		<cfset setpluginDescription("This is the rendering service for ColdBox.")>
+		
 		<!--- Set Conventions --->
 		<cfset instance.layoutsConvention = getController().getSetting("layoutsConvention",true)>
 		<cfset instance.viewsConvention = getController().getSetting("viewsConvention",true)>
 		<cfset instance.appMapping = getController().getSetting("AppMapping")>
-		<!--- Inject UDF --->
+		
+		<!--- Inject UDF For Views/Layouts --->
 		<cfset includeUDF()>
+		
 		<cfreturn this>
 	</cffunction>
 
@@ -57,7 +62,7 @@ Modification History:
 
 		<!--- Test Default View --->
 		<cfif arguments.view eq "">
-			<cfset arguments.view = Event.getValue("currentView","")>
+			<cfset arguments.view = Event.getCurrentView()>
 		</cfif>
 
 		<cfmodule template="../includes/timer.cfm" timertag="Rendering View [#arguments.view#.cfm]">
@@ -68,6 +73,7 @@ Modification History:
 			<!--- Render the View --->
 			<cfsavecontent variable="RenderedView"><cfoutput><cfinclude template="/#getappMapping()#/#getViewsConvention()#/#arguments.view#.cfm"></cfoutput></cfsavecontent>
 		</cfmodule>
+		
 		<cfreturn RenderedView>
 	</cffunction>
 
@@ -103,15 +109,21 @@ Modification History:
 	<cffunction name="renderLayout" access="Public" hint="Renders the current layout." output="false" returntype="Any">
 		<cfset var RederedLayout = "">
 		<cfset var Event = controller.getRequestService().getContext()>
-
-		<cfmodule template="../includes/timer.cfm" timertag="Rendering Layout [#Event.getvalue('currentLayout','')#]">
-			<!--- Render With No Layout --->
-			<cfif not Event.valueExists("currentLayout")>
+		
+		<!--- Check if no view has been set, if not, then set the default view --->
+		<cfif event.getCurrentView() eq "">
+			<cfset event.setView(event.getDefaultView())>
+		</cfif>
+		
+		<cfmodule template="../includes/timer.cfm" timertag="Rendering Layout [#Event.getcurrentLayout()#]">
+			<!--- Render With No Layout Test--->
+			<cfif Event.getcurrentLayout() eq "">
 				<cfset RederedLayout = renderView()>
 			<cfelse>
-				<cfsavecontent variable="RederedLayout"><cfinclude template="/#getappMapping()#/#getLayoutsConvention()#/#Event.getValue("currentLayout")#"></cfsavecontent>
+				<cfsavecontent variable="RederedLayout"><cfinclude template="/#getappMapping()#/#getLayoutsConvention()#/#Event.getcurrentLayout()#"></cfsavecontent>
 			</cfif>
 		</cfmodule>
+		
 		<cfreturn RederedLayout>
 	</cffunction>
 

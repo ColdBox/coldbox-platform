@@ -21,6 +21,7 @@ Modification History:
 	<cfscript>
 		variables.context = structnew();
 		variables.defaultLayout = "";
+		variables.defaultView = "";
 		variables.ViewLayouts = "";
 		variables.eventName = "";
 	</cfscript>
@@ -30,6 +31,7 @@ Modification History:
 		<cfargument name="struct1" 		 type="any" 	required="true" hint="Usually the FORM scope">
 		<cfargument name="struct2" 		 type="any" 	required="true" hint="Usually the URL scope">
 		<cfargument name="DefaultLayout" type="string" 	required="true">
+		<cfargument name="DefaultView" 	 type="string" 	required="true">
 		<cfargument name="ViewLayouts"   type="struct"  required="true">
 		<cfargument name="EventName" 	 type="string" 	required="true"/>
 		<!--- ************************************************************* --->
@@ -37,6 +39,7 @@ Modification History:
 			collectionAppend(arguments.struct1);
 			collectionAppend(arguments.struct2);
 			setDefaultLayout(arguments.DefaultLayout);
+			setDefaultView(arguments.DefaultView);
 			setViewLayouts(arguments.ViewLayouts);
 			setEventName(arguments.EventName);
 			return this;
@@ -244,6 +247,19 @@ Modification History:
 	<cffunction name="setDefaultLayout" access="public" returntype="void" output="false">
 		<cfargument name="DefaultLayout" type="string" required="true">
 		<cfset variables.DefaultLayout = arguments.DefaultLayout>
+	</cffunction>
+	
+	<!--- ************************************************************* --->
+	
+	<cffunction name="getDefaultView" access="public" returntype="string" output="false">
+		<cfreturn variables.DefaultView>
+	</cffunction>
+	
+	<!--- ************************************************************* --->
+	
+	<cffunction name="setDefaultView" access="public" returntype="void" output="false">
+		<cfargument name="DefaultView" type="string" required="true">
+		<cfset variables.DefaultView = arguments.DefaultView>
 	</cffunction>
 	
 	<!--- ************************************************************* --->

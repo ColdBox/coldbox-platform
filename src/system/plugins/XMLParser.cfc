@@ -56,6 +56,7 @@ Modification History:
 		variables.instance.searchWS = "//WebServices/WebService";
 		variables.instance.searchLayouts = "//Layouts/Layout";
 		variables.instance.searchDefaultLayout = "//Layouts/DefaultLayout";
+		variables.instance.searchDefaultView = "//Layouts/DefaultView";
 		variables.instance.searchMailSettings = "//MailServerSettings";
 		variables.instance.searchi18NSettings = "//i18N";
 		variables.instance.searchDatasources = "//Datasources/Datasource";
@@ -207,6 +208,7 @@ Modification History:
 		var DevWS = StructNew();
 		var ProWS = StructNew();
 		//Layouts
+		var DefaultView = "";
 		var LayoutNodes = "";
 		var DefaultLayout = "";
 		var	LayoutViewStruct = StructNew();
@@ -594,7 +596,23 @@ Modification History:
 				throw("There was no default layout element found.","","Framework.plugins.XMLParser.ConfigXMLParsingException");
 			if ( ArrayLen(DefaultLayout) gt 1 )
 				throw("There were more than 1 DefaultLayout elements found. There can only be one.","","Framework.plugins.XMLParser.ConfigXMLParsingException");
+			//Insert Default Layout
 			StructInsert(ConfigStruct,"DefaultLayout",Trim(DefaultLayout[1].XMLText));
+			
+			//Default View into Config
+			DefaultView = XMLSearch(configXML,instance.searchDefaultView);
+			//validate Default Layout.
+			if ( ArrayLen(DefaultView) eq 0 ){
+				ConfigStruct["DefaultView"] = "";
+			}
+			else if ( ArrayLen(DefaultView) gt 1 ){
+				throw("There were more than 1 DefaultView elements found. There can only be one.","","Framework.plugins.XMLParser.ConfigXMLParsingException");
+			}
+			else{
+				//Set the Default View.
+				ConfigStruct["DefaultView"] = Trim(DefaultView[1].XMLText);
+			}
+			
 			//Get View Layouts
 			LayoutNodes = XMLSearch(configXML, instance.searchLayouts);
 			for (i=1; i lte ArrayLen(LayoutNodes); i=i+1){
@@ -666,7 +684,7 @@ Modification History:
 			}
 		}//end of try
 		catch( Any Exception ){
-			throw("#Exception.Message# & #Exception.Detail#","","Framework.plugins.XMLParser.ConfigXMLParsingException");
+			throw("#Exception.Message# & #Exception.Detail#",Exception.tagContext.toString(), "Framework.plugins.XMLParser.ConfigXMLParsingException");
 		}
 		
 		//finish
