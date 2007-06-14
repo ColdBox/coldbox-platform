@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <Config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-	xsi:noNamespaceSchemaLocation="http://www.coldboxframework.com/schema/config_2.0.1.xsd">
+	xsi:noNamespaceSchemaLocation="http://www.coldboxframework.com/schema/config_2.0.2.xsd">
 	<Settings>
 		<!--The name of your application.-->
 		<Setting name="AppName"						value="TransferSample"/>
@@ -12,6 +12,7 @@
 		<Setting name="ReinitPassword" 				value=""/>
 		<!--This feature is enabled by default to permit the url dumpvar parameter-->
 		<Setting name="EnableDumpVar"				value="true" />
+		<Setting name="EventName" 					value="event"/>
 		<!--Log Errors and entries on the coldfusion server logs, disabled by default if not used-->
 		<Setting name="EnableColdfusionLogging" 	value="false" />
 		<!--Log Errors and entries in ColdBox's own logging facilities. You choose the location, finally per application logging.-->

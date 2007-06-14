@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <Config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-	xsi:noNamespaceSchemaLocation="http://www.coldboxframework.com/schema/config_2.0.1.xsd">
+	xsi:noNamespaceSchemaLocation="http://www.coldboxframework.com/schema/config_2.0.2.xsd">
 	<Settings>
 		<Setting name="AppName" 					value="Sample UDF Library Usage"/>
 		<Setting name="DebugMode" 					value="true"/>
 		<Setting name="DebugPassword" 				value="coldbox"/>
+		<Setting name="EventName" 					value="event"/>
 		<Setting name="EnableDumpVar" 				value="true"/>
 		<Setting name="EnableColdfusionLogging" 	value="true"/>
 		<Setting name="EnableColdboxLogging"		value="false" />

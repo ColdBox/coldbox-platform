@@ -3,6 +3,7 @@ This is Oscar Arevalo's & Luis Majano's ColdBox RSS Reader.
 Requirements
 - ColdBox Framework
 - MySQL, MSSQL
+- ColdSpring Framework
 
 
 Installation Procedures.
