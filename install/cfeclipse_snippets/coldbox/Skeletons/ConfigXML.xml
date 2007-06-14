@@ -4,11 +4,12 @@
 <help>A new config.xml</help>
 <starttext><![CDATA[<?xml version="1.0" encoding="ISO-8859-1"?>
 <Config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
- xsi:noNamespaceSchemaLocation="http://www.coldboxframework.com/schema/config_2.0.1.xsd">
+ xsi:noNamespaceSchemaLocation="http://www.coldboxframework.com/schema/config_2.0.2.xsd">
 	<Settings>
 		<Setting name="AppName" 					value="$${Application name}"/>
 		<Setting name="DebugMode" 					value="$${Debug Mode:true|false}" />
 		<Setting name="DebugPassword" 				value="$${Debug Password}"/>
+		<Setting name="EventName" 					value="$${Event Name:event|do}"/>
 		<Setting name="ReinitPassword" 				value="$${Framework Reinit Password (Blank if not used)}"/>
 		<Setting name="EnableDumpVar"				value="$${Enable DumpVar:true|false}" />
 		<Setting name="EnableColdfusionLogging" 	value="$${Enable Coldfusion Logging:true|false}" />
