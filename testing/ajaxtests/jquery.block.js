@@ -1,14 +1,3 @@
-/*
- * jQuery blockUI plugin
- * Version 1.00 (02/28/2007)
- * @requires jQuery v1.1.1
- *
- * Examples at: http://malsup.com/jquery/block/
- * Copyright (c) 2007 M. Alsup
- * Dual licensed under the MIT and GPL licenses:
- * http://www.opensource.org/licenses/mit-license.php
- * http://www.gnu.org/licenses/gpl.html
- */
  (function($) {
 /**
  * blockUI provides a mechanism for blocking user interaction with a page (or parts of a page).
