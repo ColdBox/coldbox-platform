@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <Config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-	xsi:noNamespaceSchemaLocation="http://www.coldboxframework.com/schema/config_2.0.1.xsd">
+	xsi:noNamespaceSchemaLocation="http://www.coldboxframework.com/schema/config_2.0.2.xsd">
 	<Settings>
 		<!--The name of your application.-->
 		<Setting name="AppName"						value="Your App Name here"/>
@@ -10,7 +10,7 @@
 		<Setting name="DebugPassword" 				value=""/>
 		<!--The fwreinit password to use in order to reinitialize the framework and application.Optional, else leave blank -->
 		<Setting name="ReinitPassword" 				value=""/>
-		<!--Default event name variable to use in URL/FORM etc. --->
+		<!--Default event name variable to use in URL/FORM etc. -->
 		<Setting name="EventName"					value="event" />
 		<!--This feature is enabled by default to permit the url dumpvar parameter-->
 		<Setting name="EnableDumpVar"				value="true" />
