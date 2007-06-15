@@ -45,13 +45,14 @@ Description :
 </cffunction>
 <!---------------------------------------------------------------------->
 
-<!--- Initialize timing variable --->
+<!--- Initialize framework global variables --->
 <cfset request.fwExecTime = GetTickCount()>
 <cfset lockTimeout = 60>
+<cfset appHash = hash(application.applicationName & getBaseTemplatePath())>
 
 <!--- Initialize the Controller --->
 <cfif not structkeyExists(application,"cbController") or not application.cbController.getColdboxInitiated() or isfwReinit()>
-	<cflock type="exclusive" scope="application" timeout="#lockTimeout#">
+	<cflock type="exclusive" name="#appHash#" timeout="#lockTimeout#">
 		<cfif not structkeyExists(application,"cbController") or not application.cbController.getColdboxInitiated() or isfwReinit()>
 			<!--- Clean up If Necessary --->
 			<cfif structkeyExists(application,"cbController")>
@@ -67,11 +68,11 @@ Description :
 	<cftry>
 		<!--- AutoReload Tests --->
 		<cfif application.cbController.getSetting("ConfigAutoReload")>
-			<cflock type="exclusive" name="Coldbox_configloader" timeout="#lockTimeout#">
+			<cflock type="exclusive" name="#appHash#" timeout="#lockTimeout#">
 				<cfset application.cbController.getService("loader").setupCalls(COLDBOX_CONFIG_FILE)>
 			</cflock>
 		<cfelseif application.cbController.getSetting("HandlersIndexAutoReload")>
-			<cflock type="exclusive" name="Coldbox_configloader" timeout="#lockTimeout#">
+			<cflock type="exclusive" name="#appHash#" timeout="#lockTimeout#">
 				<cfset application.cbController.getService("loader").registerHandlers()>
 				<!--- Clear Cache --->
 				<cfset application.cbController.getColdboxOCM().clear()>
@@ -88,58 +89,61 @@ Description :
 	</cftry>
 </cfif>
 
-<!--- Start Application Requests --->
-<cftry>
-	<!--- Local Reference --->
-	<cfset cbController = application.cbController>
-
-	<!--- Create Request Context & Capture Request --->
-	<cfset Event = cbController.getRequestService().requestCapture()>
-
-	<!--- Debugging Monitors Check --->
-	<cfif cbController.getDebuggerService().getDebugMode() and event.getValue("debugPanel","") neq "">
-		<!--- Which panel to render --->
-		<cfif event.getValue("debugPanel") eq "cache">
-			<cfoutput>#cbController.getDebuggerService().renderCachePanel()#</cfoutput>
-			<cfabort>
-		</cfif>
+<cflock type="readonly" name="#appHash#" timeout="#lockTimeout#">
+	<!--- Start Application Requests --->
+	<cftry>
+			
+			<!--- Local Reference --->
+			<cfset cbController = application.cbController>
+		
+			<!--- Create Request Context & Capture Request --->
+			<cfset Event = cbController.getRequestService().requestCapture()>
+		
+			<!--- Debugging Monitors Check --->
+			<cfif cbController.getDebuggerService().getDebugMode() and event.getValue("debugPanel","") neq "">
+				<!--- Which panel to render --->
+				<cfif event.getValue("debugPanel") eq "cache">
+					<cfoutput>#cbController.getDebuggerService().renderCachePanel()#</cfoutput>
+					<cfabort>
+				</cfif>
+			</cfif>
+		
+			<!--- Application Start Handler --->
+			<cfif cbController.getSetting("ApplicationStartHandler") neq "" and (not cbController.getAppStartHandlerFired())>
+				<cfset cbController.runEvent(cbController.getSetting("ApplicationStartHandler"),true)>
+				<cfset cbController.setAppStartHandlerFired(true)>
+			</cfif>
+		
+			<!--- IF Found in config, run onRequestStart Handler --->
+			<cfif cbController.getSetting("RequestStartHandler") neq "">
+				<cfset cbController.runEvent(cbController.getSetting("RequestStartHandler"),true)>
+			</cfif>
+		
+			<!--- Run Default/Set Event --->
+			<cfset cbController.runEvent()>
+		
+			<!--- Render Layout/View pair using plugin factory --->
+			<cfoutput>#cbController.getPlugin("renderer").renderLayout()#</cfoutput>
+		
+			<!--- If Found in config, run onRequestEnd Handler --->
+			<cfif cbController.getSetting("RequestEndHandler") neq "">
+				<cfset cbController.runEvent(cbController.getSetting("RequestEndHandler"),true)>
+			</cfif>
+		
+		<!--- Trap Application Errors --->
+		<cfcatch type="any">
+			<cfset ExceptionService = application.cbController.getService("exception")>
+			<cfset ExceptionBean = ExceptionService.ExceptionHandler(cfcatch,"application","Application Execution Exception")>
+			<cfoutput>#ExceptionService.renderBugReport(ExceptionBean)#</cfoutput>
+		</cfcatch>
+	</cftry>
+	
+	<!--- DebugMode Renders --->
+	<cfif cbController.getDebuggerService().getDebugMode() and Event.getdebugpanelFlag()>
+		<!--- Time the request --->
+		<cfset request.fwExecTime = GetTickCount() - request.fwExecTime>
+		<!--- Render Debug Log --->
+		<cfoutput>#cbController.getDebuggerService().renderDebugLog()#</cfoutput>
 	</cfif>
-
-	<!--- Application Start Handler --->
-	<cfif cbController.getSetting("ApplicationStartHandler") neq "" and (not cbController.getAppStartHandlerFired())>
-		<cfset cbController.runEvent(cbController.getSetting("ApplicationStartHandler"),true)>
-		<cfset cbController.setAppStartHandlerFired(true)>
-	</cfif>
-
-	<!--- IF Found in config, run onRequestStart Handler --->
-	<cfif cbController.getSetting("RequestStartHandler") neq "">
-		<cfset cbController.runEvent(cbController.getSetting("RequestStartHandler"),true)>
-	</cfif>
-
-	<!--- Run Default/Set Event --->
-	<cfset cbController.runEvent()>
-
-	<!--- Render Layout/View pair using plugin factory --->
-	<cfoutput>#cbController.getPlugin("renderer").renderLayout()#</cfoutput>
-
-	<!--- If Found in config, run onRequestEnd Handler --->
-	<cfif cbController.getSetting("RequestEndHandler") neq "">
-		<cfset cbController.runEvent(cbController.getSetting("RequestEndHandler"),true)>
-	</cfif>
-
-	<!--- Trap Application Errors --->
-	<cfcatch type="any">
-		<cfset ExceptionService = application.cbController.getService("exception")>
-		<cfset ExceptionBean = ExceptionService.ExceptionHandler(cfcatch,"application","Application Execution Exception")>
-		<cfoutput>#ExceptionService.renderBugReport(ExceptionBean)#</cfoutput>
-	</cfcatch>
-</cftry>
-
-<!--- DebugMode Renders --->
-<cfif cbController.getDebuggerService().getDebugMode() and Event.getdebugpanelFlag()>
-	<!--- Time the request --->
-	<cfset request.fwExecTime = GetTickCount() - request.fwExecTime>
-	<!--- Render Debug Log --->
-	<cfoutput>#cbController.getDebuggerService().renderDebugLog()#</cfoutput>
-</cfif>
+</cflock>
 <cfsetting enablecfoutputonly="no">
