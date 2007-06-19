@@ -6,7 +6,7 @@ Description :
 	Unit test for the ehMain Handler.
 
 ----------------------------------------------------------------------->
-<cfcomponent name="ehMainTest" extends="baseTest" output="false">
+<cfcomponent name="ehMainTest" extends="coldbox.system.extras.baseTest" output="false">
 
 	<cffunction name="testonAppInit" access="public" returntype="void" output="false">
 		<cfscript>

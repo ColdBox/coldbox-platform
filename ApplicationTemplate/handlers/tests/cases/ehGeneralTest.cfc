@@ -5,7 +5,7 @@ Description :
 	Unit Tests integration for the ehGeneral Handler.
 
 ----------------------------------------------------------------------->
-<cfcomponent name="ehGeneralTest" extends="baseTest" output="false">
+<cfcomponent name="ehGeneralTest" extends="coldbox.system.extras.baseTest" output="false">
 
 	<cffunction name="testdspHello" access="public" returntype="void" output="false">
 		<cfscript>
