@@ -18,6 +18,7 @@ Description		: This is the main ColdBox front Controller.
 		variables.instance.ConfigSettings = structnew();
 		variables.instance.ColdboxSettings = structnew();
 		variables.instance.AppStartHandlerFired = false;
+		variables.instance.AppHash = "";
 		//Services & Managers
 		variables.instance.ColdboxOCM = structNew();
 		variables.instance.DebuggerService = structNew();
@@ -26,6 +27,8 @@ Description		: This is the main ColdBox front Controller.
 
 	<cffunction name="init" returntype="any" access="Public" hint="I am the constructor" output="false">
 		<cfscript>
+			//Set the App hash
+			instance.AppHash = hash(createUUID() & getTickCount());
 			//Create & init ColdBox Services
 			instance.ColdboxOCM = CreateObject("component","cache.cacheManager").init(this);
 			instance.RequestService = CreateObject("component","services.requestService").init(this);
@@ -73,6 +76,11 @@ Description		: This is the main ColdBox front Controller.
 		<cfset instance.ColdboxInitiated = arguments.ColdboxInitiated/>
 	</cffunction>
 
+	<!--- App hash Get --->
+	<cffunction name="getAppHash" access="public" output="false" returntype="string" hint="Get AppHash">
+		<cfreturn instance.AppHash/>
+	</cffunction>
+	
 	<!--- Accessor/Mutator App Start Handler Fired --->
 	<cffunction name="setAppStartHandlerFired" access="public" output="false" returntype="void" hint="Set AppStartHandlerFired">
 		<cfargument name="AppStartHandlerFired" type="boolean" required="true"/>

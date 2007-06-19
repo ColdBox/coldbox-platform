@@ -34,6 +34,8 @@ Modification History:
 		variables.lastReapDatetime = now();
 		//Runtime Java object
 		variables.javaRuntime = CreateObject("java", "java.lang.Runtime");
+		//Lock Name
+		variables.lockName = getController().getAppHash() & "_OCM_OPERATION";
 		//Init the object Pool on instantiation
 		initPool();
 		//return Cache Manager reference;
@@ -61,7 +63,7 @@ Modification History:
 		<!--- ************************************************************* --->
 		<cfset var ObjectFound = false>
 
-		<cflock type="readonly" name="OCM_Operation" timeout="30">
+		<cflock type="readonly" name="#getLockName()#" timeout="30">
 			<cfif getobjectPool().lookup(arguments.objectKey)>
 				<cfset ObjectFound = true>
 			<cfelse>
@@ -83,7 +85,7 @@ Modification History:
 
 		<!--- Lookup First --->
 		<cfif lookup(arguments.objectKey)>
-			<cflock type="exclusive" name="OCM_Operation" timeout="30">
+			<cflock type="exclusive" name="#getLockName()#" timeout="30">
 				<!--- Record a Hit --->
 				<cfset hit()>
 				<cfset ObjectFound = getobjectPool().get(arguments.objectKey)>
@@ -121,7 +123,7 @@ Modification History:
 			</cfif>
 
 			<!--- Set object in Cache --->
-			<cflock type="exclusive" name="OCM_Operation" timeout="30">
+			<cflock type="exclusive" name="#getLockName()#" timeout="30">
 				<cfset getobjectPool().set(arguments.objectKey,arguments.MyObject,arguments.Timeout)>
 			</cflock>
 		</cfif>
@@ -135,7 +137,7 @@ Modification History:
 		<!--- ************************************************************* --->
 		<cfset var Results = false>
 		<cfif getobjectPool().lookup(arguments.objectKey) >
-			<cflock type="exclusive" name="OCM_Operation" timeout="30">
+			<cflock type="exclusive" name="#getLockName()#" timeout="30">
 				<cfset Results = getobjectPool().clearKey(arguments.objectKey)>
 			</cflock>
 		</cfif>
@@ -145,7 +147,7 @@ Modification History:
 	<!--- ************************************************************* --->
 
 	<cffunction name="clear" access="public" output="false" returntype="void" hint="Clears the entire object cache.">
-		<cflock type="exclusive" name="OCM_Operation" timeout="30">
+		<cflock type="exclusive" name="#getLockName()#" timeout="30">
 			<cfset structDelete(variables,"objectPool")>
 			<cfset initPool()>
 			<cfset resetStatistics()>
@@ -294,7 +296,33 @@ Modification History:
 	<cffunction name="getjavaRuntime" access="public" returntype="any" output="false" hint="Get the java runtime object.">
 		<cfreturn variables.javaRuntime>
 	</cffunction>
-
+	
+	<!--- ************************************************************* --->
+	
+	<cffunction name="getcontroller" access="public" output="false" returntype="any" hint="Get controller">
+		<cfreturn variables.controller/>
+	</cffunction>
+	
+	<!--- ************************************************************* --->
+	
+	<cffunction name="setcontroller" access="public" output="false" returntype="void" hint="Set controller">
+		<cfargument name="controller" type="any" required="true"/>
+		<cfset variables.controller = arguments.controller/>
+	</cffunction>
+	
+	<!--- ************************************************************* --->
+	
+	<cffunction name="getlockName" access="public" output="false" returntype="string" hint="Get lockName">
+		<cfreturn variables.lockName/>
+	</cffunction>
+	
+	<!--- ************************************************************* --->
+	
+	<cffunction name="setlockName" access="public" output="false" returntype="void" hint="Set lockName">
+		<cfargument name="lockName" type="string" required="true"/>
+		<cfset variables.lockName = arguments.lockName/>
+	</cffunction>
+	
 <!------------------------------------------- PRIVATE ------------------------------------------->
 
 	<cffunction name="hit" access="private" output="false" returntype="void" hint="Record a hit">
@@ -316,6 +344,7 @@ Modification History:
 	<cffunction name="getObjectPool" access="private" returntype="any" output="false" hint="Get the internal object pool">
 		<cfreturn variables.objectPool >
 	</cffunction>
+	
 	<cffunction name="initPool" access="private" output="false" returntype="void" hint="Initialize and set the internal object Pool">
 		<cfscript>
 		variables.objectPool = CreateObject("component","objectPool").init();
