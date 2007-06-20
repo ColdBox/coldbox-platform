@@ -95,6 +95,10 @@
 		<!--Declare the default layout, MANDATORY-->
 		<DefaultLayout>Layout.Main.cfm</DefaultLayout>
 		
+		<!--Default View, OPTIONAL
+		<DefaultView></DefaultView>
+		-->
+		
 		<!--
 		Declare other layouts, with view assignments if needed, else do not write them
 		<Layout file="Layout.Popup.cfm" name="popup">
