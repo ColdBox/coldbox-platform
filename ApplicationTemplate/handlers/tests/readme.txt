@@ -8,11 +8,11 @@ Unit Testing for Event Handlers
 The following test cases have been created for testing of event handlers, please
 note that the controller created is the ColdBox's testcontroller.
 
-The code speaks for itself. Just make sure you base your tests on the baseTest.cfc
+The code speaks for itself. Just make sure you tests inherit from the base test
+that can be found at coldbox.system.extras.baseTest
 
 Structure:
 AllTests.cfc - Test Suite for all test cases
-cases/baseTest.cfc - The base test case that all event handlers need to inherit from
 cases/ehGeneralTest.cfc - The test case for the ehGeneral.cfc handler
 cases/ehMaintTest.cfc - The test case for the ehMain.cfc handler
 
