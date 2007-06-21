@@ -48,7 +48,7 @@ Modification History:
 		<cfscript>
 		//set the config bean
 		setCacheConfigBean(arguments.cacheConfigBean);
-		//Init the performance statistics
+		//Reset the statistics.
 		resetStatistics();
 		</cfscript>
 	</cffunction>
@@ -146,7 +146,7 @@ Modification History:
 
 	<!--- ************************************************************* --->
 
-	<cffunction name="clear" access="public" output="false" returntype="void" hint="Clears the entire object cache.">
+	<cffunction name="clear" access="public" output="false" returntype="void" hint="Clears the entire object cache. Call from a non-cached object.">
 		<cflock type="exclusive" name="#getLockName()#" timeout="30">
 			<cfset structDelete(variables,"objectPool")>
 			<cfset initPool()>
