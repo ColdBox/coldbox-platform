@@ -8,6 +8,23 @@ Description :
 ----------------------------------------------------------------------->
 <cfcomponent name="ehMainTest" extends="coldbox.system.extras.baseTest" output="false">
 
+	<cffunction name="setUp" returntype="void" access="private">
+		<cfscript>
+		//Setup ColdBox Mappings For this Test
+		setAppMapping("/applications/coldbox/ApplicationTemplate");
+		setConfigMapping(ExpandPath(instance.AppMapping & "/config/config.xml.cfm"));
+		
+		//Call the super setup method to setup the app.
+		super.setup();
+		
+		//EXECUTE THE APPLICATION START HANDLER: UNCOMMENT IF NEEDED AND FILL IT OUT.
+		//getController().runEvent("ehMain.onAppInit");
+
+		//EXECUTE THE ON REQUEST START HANDLER: UNCOMMENT IF NEEDED AND FILL IT OUT
+		//getController().runEvent("ehMain.onRequestStart");
+		</cfscript>
+	</cffunction>
+	
 	<cffunction name="testonAppInit" access="public" returntype="void" output="false">
 		<cfscript>
 		var event = "";

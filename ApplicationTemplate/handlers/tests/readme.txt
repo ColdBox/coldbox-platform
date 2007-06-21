@@ -9,7 +9,27 @@ The following test cases have been created for testing of event handlers, please
 note that the controller created is the ColdBox's testcontroller.
 
 The code speaks for itself. Just make sure you tests inherit from the base test
-that can be found at coldbox.system.extras.baseTest
+that can be found at coldbox.system.extras.baseTest and they create a setup method
+that follows the following pattern:
+
+<cffunction name="setUp" returntype="void" access="private">
+	<cfscript>
+	//Setup ColdBox Mappings For this Test
+	setAppMapping("/applications/coldbox/ApplicationTemplate");
+	setConfigMapping(ExpandPath(instance.AppMapping & "/config/config.xml.cfm"));
+		
+	//Call the super setup method to setup the app.
+	super.setup();
+		
+	//EXECUTE THE APPLICATION START HANDLER: UNCOMMENT IF NEEDED AND FILL IT OUT.
+	//getController().runEvent("ehMain.onAppInit");
+
+	//EXECUTE THE ON REQUEST START HANDLER: UNCOMMENT IF NEEDED AND FILL IT OUT
+	//getController().runEvent("ehMain.onRequestStart");
+	</cfscript>
+</cffunction>
+	
+	
 
 Structure:
 AllTests.cfc - Test Suite for all test cases
