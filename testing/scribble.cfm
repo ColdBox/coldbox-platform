@@ -1,5 +1,13 @@
-<cfset stime = "May-13-2007 06:01:02 PM ">
-<cfset minutes = dateDiff("n", stime, now() )>
-<cfoutput>#stime#</cfoutput><br>
-<cfoutput>#now()#</cfoutput><br>
-<cfoutput>#minutes#</cfoutput>
+<cfscript>
+FileObj = CreateObject("java","java.io.File").init(JavaCast("String",""));
+if(FileObj.isAbsolute()){
+	path = "";
+}
+else{
+	path = ExpandPath("");
+}
+</cfscript>
+
+<cfoutput>
+	File Absolute: #FileObj.isAbsolute()# <br /><br />
+	Path: #path#</cfoutput>
