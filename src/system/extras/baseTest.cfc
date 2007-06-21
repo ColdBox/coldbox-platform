@@ -31,14 +31,13 @@ Modification History:
 
 	<cfscript>
 	variables.instance = structnew();
+	variables.instance.AppMapping = "";
+	variables.instance.ConfigMapping = "";
+	variables.instance.controller = "";
 	</cfscript>
 
 	<cffunction name="setUp" returntype="void" access="private">
 		<cfscript>
-		//Setup ColdBox Mappings For Testing
-		instance.AppMapping = "/applications/coldbox/ApplicationTemplate";
-		instance.ConfigMapping = ExpandPath(instance.AppMapping & "/config/config.xml.cfm");
-
 		//Initialize ColdBox
 		instance.controller = CreateObject("component", "coldbox.system.testcontroller").init();
 		instance.controller.getService("loader").configLoader(instance.ConfigMapping,instance.AppMapping);
@@ -48,12 +47,6 @@ Modification History:
 		setupRequest();
 		//Clean up Initial Event Context due to MACH-II vars of the unit test framework.
 		getRequestContext().clearCollection();
-
-		//EXECUTE THE APPLICATION START HANDLER: UNCOMMENT IF NEEDED AND FILL IT OUT.
-		//instance.controller.runEvent("ehMain.onAppInit");
-
-		//EXECUTE THE ON REQUEST START HANDLER: UNCOMMENT IF NEEDED AND FILL IT OUT
-		//instance.controller.runEvent("ehMain.onRequestStart");
 		</cfscript>
 	</cffunction>
 
@@ -63,10 +56,20 @@ Modification History:
 	<cffunction name="getAppMapping" access="public" returntype="string" output="false">
 		<cfreturn instance.AppMapping>
 	</cffunction>
+	
+	<cffunction name="setAppMapping" access="public" output="false" returntype="void" hint="Set AppMapping">
+		<cfargument name="AppMapping" type="string" required="true"/>
+		<cfset instance.AppMapping = arguments.AppMapping/>
+	</cffunction>
 
 	<!--- getter for ConfigMapping --->
 	<cffunction name="getConfigMapping" access="public" returntype="string" output="false">
 		<cfreturn instance.ConfigMapping>
+	</cffunction>
+	
+	<cffunction name="setConfigMapping" access="public" output="false" returntype="void" hint="Set ConfigMapping">
+		<cfargument name="ConfigMapping" type="string" required="true"/>
+		<cfset instance.ConfigMapping = arguments.ConfigMapping/>
 	</cffunction>
 
 	<!--- getter for controller --->
