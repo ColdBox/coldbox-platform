@@ -4,4 +4,5 @@
 <p><a href="index.cfm?#getController().getSetting("eventName")#=log.ehTest.dspApi">Call Package Event</a></p>
 <p><a href="index.cfm?fwreinit=1">RELOAD</a></p>
 <p><a href="index.cfm?#getController().getSetting("eventName")#=testing">Error</a></p>
+<p><a href="index.cfm?#getController().getSetting("eventName")#=ehGeneral.doColdboxFactoryTests">ColdBox Factory Tests</a></p>
 </cfoutput>

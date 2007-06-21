@@ -3,9 +3,6 @@ function titleCase(str) {
 	return uCase(left(str,1)) & right(str,len(str)-1);
 }
 
-function isLoggedIn() {
-	return structKeyExists(session,"loggedin");
-}
 
 /**
  * Tests passed value to see if it is a valid e-mail address (supports subdomain nesting and new top-level domains).

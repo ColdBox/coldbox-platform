@@ -10,7 +10,6 @@ Description :
 Modification History:
 
 ----------------------------------------------------------------------->
-<cfset COLDBOX_CONFIG_FILE = "config/dev_config.xml.cfm">
 
 <cfinclude template="system/coldbox.cfm">
 
