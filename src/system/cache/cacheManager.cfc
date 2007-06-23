@@ -146,7 +146,7 @@ Modification History:
 
 	<!--- ************************************************************* --->
 
-	<cffunction name="clear" access="public" output="false" returntype="void" hint="Clears the entire object cache. Call from a non-cached object.">
+	<cffunction name="clear" access="public" output="false" returntype="void" hint="Clears the entire object cache. Call from a non-cached object or you will get 500 NULL errors, VERY VERY BAD!!.">
 		<cflock type="exclusive" name="#getLockName()#" timeout="30">
 			<cfset structDelete(variables,"objectPool")>
 			<cfset initPool()>
@@ -261,6 +261,22 @@ Modification History:
 
 	<!--- ************************************************************* --->
 
+	<cffunction name="expireAll" access="public" returntype="any" hint="Expire All Objects. Use this instead of clear() from within handlers or any cached object, this sets the metadata for the objects to expire in the next request. Note that this is not an inmmediate expiration. Clear should only be used from outside a cached object" output="false" >
+		<cfscript>
+			var key = "";
+			var objStruct = getObjectPool().getpool_metadata();
+			
+			//Check if no data in pool
+			if (not structisEmpty(objStruct)){
+				//Loop Through Metadata and set expiration timeouts.
+				for (key in objStruct){
+					objStruct[key].Timeout = 1;
+					objStruct[key].created = dateadd("n",-5,now());
+				}
+			}
+		</cfscript>
+	</cffunction>
+	
 <!------------------------------------------- ACCESSOR/MUTATORS ------------------------------------------->
 
 	<cffunction name="getlastReapDatetime" access="public" output="false" returntype="string" hint="Get the lastReapDatetime">
