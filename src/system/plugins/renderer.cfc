@@ -46,7 +46,7 @@ Modification History:
 		<cfset instance.appMapping = getController().getSetting("AppMapping")>
 		
 		<!--- Inject UDF For Views/Layouts --->
-		<cfset includeUDF()>
+		<cfset includeUDF(getController().getSetting("UDFLibraryFile"))>
 		
 		<cfreturn this>
 	</cffunction>
@@ -131,20 +131,6 @@ Modification History:
 
 <!------------------------------------------- PRIVATE ------------------------------------------->
 
-	<cffunction name="includeUDF" access="private" hint="UDF Mixin Injection. Called only by the framework." output="false" returntype="void">
-		<!--- check if UDFLibraryFile is defined  --->
-		<cfif controller.getSetting("UDFLibraryFile") neq "">
-			<!--- Check if file exists on app's includes --->
-			<cfif fileExists("#controller.getSetting("ApplicationPath",1)#/#controller.getSetting("UDFLibraryFile")#")>
-				<cfinclude template="/#getappMapping()#/#controller.getSetting("UDFLibraryFile")#">
-			<cfelseif fileExists(ExpandPath("#controller.getSetting("UDFLibraryFile")#"))>
-				<cfinclude template="#controller.getSetting("UDFLibraryFile")#">
-			<cfelse>
-				<cfthrow type="Framework.plugins.renderer.UDFLibraryNotFoundException" message="Error loading UDFLibraryFile.  The file declared in the config.xml: #controller.getSetting("UDFLibraryFile")# was not found in your application's include directory or in the following location: #ExpandPath(controller.getSetting("UDFLibraryFile"))#. Please make sure you verify the file's location.">
-			</cfif>
-		</cfif>
-	</cffunction>
-	
 	<!--- ************************************************************* --->
 
 	<cffunction name="getlayoutsConvention" access="public" output="false" returntype="string" hint="Get layoutsConvention">
