@@ -41,7 +41,12 @@
 	</YourSettings>
 
 	<!--Optional,if blank it will use the CFMX administrator settings.-->
-	<MailServerSettings />
+	<MailServerSettings >
+		<MailServer></MailServer>
+		<MailPort></MailPort>
+		<MailUsername></MailUsername>
+		<MailPassword></MailPassword>
+	</MailServerSettings>
 
 	<BugTracerReports>
 		<BugEmail>info@coldboxframework.com</BugEmail>
