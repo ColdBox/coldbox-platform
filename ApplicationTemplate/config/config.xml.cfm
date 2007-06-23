@@ -21,13 +21,13 @@
 		<!--The absolute or relative path to where you want to store your log files for this application-->
 		<Setting name="ColdboxLogsLocation"			value="logs" />
 		<!--Default Event to run if no event is set or passed. Usually the event to be fired first (NOTE: use event handler syntax)-->
-		<Setting name="DefaultEvent" 				value="ehGeneral.dspHello"/>
+		<Setting name="DefaultEvent" 				value="general.dspHome"/>
 		<!--Event Handler to run on the start of a request, leave blank if not used. Emulates the Application.cfc onRequestStart method	-->
-		<Setting name="RequestStartHandler" 		value="ehMain.onRequestStart"/>
+		<Setting name="RequestStartHandler" 		value="main.onRequestStart"/>
 		<!--Event Handler to run at end of all requests, leave blank if not used. Emulates the Application.cfc onRequestEnd method-->
-		<Setting name="RequestEndHandler" 			value="ehMain.onRequestEnd"/>
+		<Setting name="RequestEndHandler" 			value="main.onRequestEnd"/>
 		<!--Event Handler to run at the start of an application, leave blank if not used. Emulates the Application.cfc onApplicationStart method	-->
-		<Setting name="ApplicationStartHandler" 	value="ehMain.onAppInit"/>
+		<Setting name="ApplicationStartHandler" 	value="main.onAppInit"/>
 		<!--The Email address from which all outgoing framework emails will be sent. -->
 		<Setting name="OwnerEmail" 					value="myemail@gmail.com" />
 		<!-- Enable Bug Reports to be emailed out, set to true by default if left blank
@@ -96,7 +96,7 @@
 		<DefaultLayout>Layout.Main.cfm</DefaultLayout>
 		
 		<!--Default View, OPTIONAL
-		<DefaultView></DefaultView>
+		<DefaultView>home.cfm</DefaultView>
 		-->
 		
 		<!--

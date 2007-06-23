@@ -1,14 +1,14 @@
 <!-----------------------------------------------------------------------
-Author 	 :	ehMainTest.cfc
+Author 	 :	Luis Majano
 Date     :	September 25, 2005
 Description :
 
 	Unit test for the ehMain Handler.
 
 ----------------------------------------------------------------------->
-<cfcomponent name="ehMainTest" extends="coldbox.system.extras.baseTest" output="false">
+<cfcomponent name="mainTest" extends="coldbox.system.extras.baseTest" output="false">
 
-	<cffunction name="setUp" returntype="void" access="private">
+	<cffunction name="setUp" returntype="void" access="private" output="false">
 		<cfscript>
 		//Setup ColdBox Mappings For this Test
 		setAppMapping("/applications/coldbox/ApplicationTemplate");
@@ -18,10 +18,10 @@ Description :
 		super.setup();
 		
 		//EXECUTE THE APPLICATION START HANDLER: UNCOMMENT IF NEEDED AND FILL IT OUT.
-		//getController().runEvent("ehMain.onAppInit");
+		//getController().runEvent("main.onAppInit");
 
 		//EXECUTE THE ON REQUEST START HANDLER: UNCOMMENT IF NEEDED AND FILL IT OUT
-		//getController().runEvent("ehMain.onRequestStart");
+		//getController().runEvent("main.onRequestStart");
 		</cfscript>
 	</cffunction>
 	
@@ -31,7 +31,7 @@ Description :
 		
 		//Place any variables on the form or URL scope to test the handler.
 		//FORM.name = "luis"
-		event = execute("ehMain.onAppInit");
+		event = execute("main.onAppInit");
 			
 		//Do your asserts below
 				
@@ -44,7 +44,7 @@ Description :
 		
 		//Place any variables on the form or URL scope to test the handler.
 		//FORM.name = "luis"
-		event = execute("ehMain.onRequestStart");
+		event = execute("main.onRequestStart");
 			
 		//Do your asserts below
 				
@@ -57,7 +57,7 @@ Description :
 		
 		//Place any variables on the form or URL scope to test the handler.
 		//FORM.name = "luis"
-		event = execute("ehMain.onRequestEnd");
+		event = execute("main.onRequestEnd");
 			
 		//Do your asserts below
 			
@@ -76,7 +76,7 @@ Description :
 		FORM.exceptionBean = exceptionBean;
 		
 		//TEST EVENT EXECUTION
-		event = execute("ehMain.onException");
+		event = execute("main.onException");
 		
 		//Do your asserts HERE
 
