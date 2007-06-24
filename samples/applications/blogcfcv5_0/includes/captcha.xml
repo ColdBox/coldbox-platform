@@ -1,0 +1,146 @@
+<!--
+Copyright: (c) 2006 Maestro Publishing - Peter J. Farrell
+Author: Peter J. Farrell (pjf@maestropublishing.com)
+Package: Lyla Captcha - http://lyla.maestropublishing.com
+Based On the Work Of: Mark Mandel (mark@compoundtheory.com) - http://www.compoundtheory.com
+Version: 0.1 Alpha
+License:
+	(c) 2006 Maestro Publishing - Peter J. Farrell
+	Licensed under the Apache License, Version 2.0 (the "License");
+	you may not use this file except in compliance with the License. 
+	You may obtain a copy of the License at 
+	
+	http://www.apache.org/licenses/LICENSE-2.0 
+	
+	Unless required by applicable law or agreed to in writing, software 
+	distributed under the License is distributed on an "AS IS" BASIS, 
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
+	See the License for the specific language governing permissions and 
+	limitations under the License.
+	
+	This software MAY consist of voluntary contributions made by other individuals.
+
+Other Restrictions In Addition to the Apache 2.0 License:
+	- The "LylaCaptcha" attribution text must be displayed in the generated Captcha 
+	image. Please do not comment out or otherwise change the the source code to 
+	defeat this request.
+	- You may distribute Lyla Captcha within/embedded your application.
+	- Please to not sell the Lyla Captcha package by itself as this against the
+	spirit of this open source project.
+
+$Id$
+
+N.B.:
+**********************************************************************************
+* This license may differ from the license of the program that uses LylaCaptcha. *
+**********************************************************************************
+
+Shameless Begging:
+	If LylaCaptcha proves to be a useful captcha for you, please consider gifting me 
+	something on my Amazon Wishlist: http://www.amazon.com/gp/registry/2NDKJIPDUYE9W
+	
+	Or you may make a donation with PayPal: pjf@maestropublishing.com
+	
+	Your generosity is greatly appreciated and thank you for supporting Open Source 
+	Software authors.
+-->
+<captcha version="1.0">
+	<configs>
+		<config name="outputDirectory" value="../images/captcha/"/>
+		<config name="outputDirectoryIsRelative" value="true"/>
+		<config name="saltType" value="auto"/><!-- auto/defined -->
+		<config name="saltValue" value=""/>
+		<config name="jpegQuality" value="0.90"/>
+		<config name="jpegUseBaseline" value="true"/>
+		<config name="useAntiAlias" value="true"/>
+		<config name="randStrType" value="alpha"/>
+		<config name="randStrLen" value="6"/>
+		<config name="width" value="250"/>
+		<config name="height" value="75"/>
+		<config name="fontsize" value="30"/>
+		<config name="leftOffset" value="20"/>
+		<config name="shearXRange" value="25"/>
+		<config name="shearYRange" value="25"/>
+		<config name="fontColor" value="light"/>
+		<config name="backgroundColor" value="dark"/>
+		<config name="useGradientBackground" value="true"/>
+		<config name="backgroundColorUseCyclic" value="true"/>
+		<config name="useOvals" value="true"/>
+		<config name="ovalColor" value="medium"/>
+		<config name="ovalUseTransparency" value="true"/>
+		<config name="minOvals" value="15"/>
+		<config name="maxOvals" value="20"/>
+		<config name="useBackgroundLines" value="true"/>
+		<config name="backgroundLineColor" value="medium"/>
+		<config name="backgroundLineUseTransparency" value="true"/>
+		<config name="backgroundMinLines" value="5"/>
+		<config name="backgroundMaxLines" value="10"/>
+		<config name="useForegroundLines" value="true"/>
+		<config name="foregroundlineColor" value="light"/>
+		<config name="foregroundLineUseTransparency" value="true"/>
+		<config name="foregroundMinLines" value="5"/>
+		<config name="foregroundMaxLines" value="10"/>
+	</configs>
+	<fonts>
+		<font use="true" name="Arial"/>
+		<font use="true" name="Arial Black"/>
+		<font use="true" name="Arial Cursiva"/>
+		<font use="true" name="Arial Negreta"/>
+		<font use="true" name="Arial Negreta cursiva"/>
+		<font use="true" name="Comic Sans MS"/>
+		<font use="true" name="Comic Sans MS Negreta"/>
+		<font use="true" name="Courier New"/>
+		<font use="true" name="Courier New Cursiva"/>
+		<font use="true" name="Courier New Negreta"/>
+		<font use="true" name="Courier New Negreta cursiva"/>
+		<font use="true" name="Georgia "/>
+		<font use="true" name="Georgia Cursiva"/>
+		<font use="true" name="Georgia Negreta"/>
+		<font use="true" name="Georgia Negreta cursiva"/>
+		<font use="true" name="Impact"/>
+		<font use="true" name="Lucida Bright Demibold"/>
+		<font use="true" name="Lucida Bright Demibold Italic"/>
+		<font use="true" name="Lucida Bright Italic"/>
+		<font use="true" name="Lucida Bright Regular"/>
+		<font use="true" name="Lucida Console"/>
+		<font use="true" name="Lucida Sans Demibold"/>
+		<font use="true" name="Lucida Sans Regular"/>
+		<font use="true" name="Lucida Sans Typewriter Bold"/>
+		<font use="true" name="Lucida Sans Typewriter Regular"/>
+		<font use="true" name="Lucida Sans Unicode"/>
+		<font use="true" name="Microsoft Sans Serif"/>
+		<font use="true" name="Palatino Linotype"/>
+		<font use="true" name="Palatino Linotype Cursiva"/>
+		<font use="true" name="Palatino Linotype Negreta"/>
+		<font use="true" name="Palatino Linotype Negreta cursiva"/>
+		<font use="true" name="sansserif"/>
+		<font use="true" name="sansserif.bold"/>
+		<font use="true" name="sansserif.bolditalic"/>
+		<font use="true" name="sansserif.italic"/>
+		<font use="true" name="serif"/>
+		<font use="true" name="serif.bold"/>
+		<font use="true" name="serif.bolditalic"/>
+		<font use="true" name="serif.italic"/>
+		<font use="true" name="Tahoma"/>
+		<font use="true" name="Tahoma Negreta"/>
+		<font use="true" name="Times New Roman"/>
+		<font use="true" name="Times New Roman cursiva"/>
+		<font use="true" name="Times New Roman Negreta"/>
+		<font use="true" name="Times New Roman Negreta cursiva"/>	
+		<font use="true" name="Trebuchet MS"/>
+		<font use="true" name="Trebuchet MS Cursiva"/>
+		<font use="true" name="Trebuchet MS Negreta"/>
+		<font use="true" name="Trebuchet MS Negreta cursiva "/>
+		<font use="true" name="Verdana"/>
+		<font use="true" name="Verdana Cursiva"/>
+		<font use="true" name="Verdana Negreta"/>
+		<font use="true" name="Verdana Negreta cursiva"/>
+		<!--MacFonts-->
+		<font use="true" name="Courier"/>
+		<font use="true" name="Geneva"/>
+		<font use="true" name="Helvetica"/>
+		<font use="true" name="LucidaSans"/>
+		<font use="true" name="Monaco"/>
+		<font use="true" name="Times-Roman"/>
+	</fonts>
+</captcha>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- yet another config -->
+<generator>
+	<gateway>
+		<include file="getByAttributes.xsl" />
+	</gateway>
+	<service>
+		<include file="getBean.xsl" />
+		<include file="getBeansQuery.xsl" />
+		<include file="saveBean.xsl" />
+		<include file="deleteBean.xsl" />
+	</service>
+	<transfer />
+	<coldspring />
+</generator>
