@@ -1,1 +1,0 @@
-<cfoutput>#dateAdd("n",-5,now())#</cfoutput>
