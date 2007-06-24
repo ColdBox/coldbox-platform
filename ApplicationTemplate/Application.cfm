@@ -1,0 +1,1 @@
+<cfapplication name="#hash(getCurrentTemplatePath())#"			   clientmanagement="yes"			   sessionmanagement="yes"			   sessiontimeout="#CreateTimeSpan(0,0,30,0)#"			   setclientcookies="true">
