@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<snippet filetemplate="false" extension="cfm">
+<name>startTimer</name>
+<help></help>
+<starttext><![CDATA[getPlugin("timer").start("$${Label}")]]></starttext>
+<endtext><![CDATA[]]></endtext>
+</snippet>

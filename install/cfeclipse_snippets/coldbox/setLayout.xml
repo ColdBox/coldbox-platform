@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<snippet filetemplate="false" extension="cfm">
+<name>setLayout</name>
+<help>Set a layout</help>
+<starttext><![CDATA[event.setLayout("$${Layout name (No extension)}")]]></starttext>
+<endtext><![CDATA[]]></endtext>
+</snippet>

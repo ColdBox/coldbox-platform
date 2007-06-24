@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<snippet filetemplate="true" extension="cfc">
+<name>Custom Plugin</name>
+<help>A new Custom Plugin</help>
+<starttext><![CDATA[<!-----------------------------------------------------------------------
+Author 	 :	$${Author}
+Date     :	$${DATE}
+Description : 			
+ $${Plugin Description}
+		
+Modification History:
+
+----------------------------------------------------------------------->
+<cfcomponent name="$${Plugin Name}" hint="$${Hint}" extends="coldbox.system.plugin" output="false">
+  
+    <!--- ************************************************************* --->
+   
+    <cffunction name="init" access="public" returntype="$${CURRENTFILE}" output="false">
+		<cfargument name="controller" type="any" required="true">
+		<cfscript>
+  		super.Init(arguments.controller);
+  		setpluginName("$${Plugin Name}");
+  		setpluginVersion("$${Plugin Version}");
+  		setpluginDescription("$${Plugin Description}");
+  		return this;
+		</cfscript>
+	</cffunction>
+    
+	<!--- ************************************************************* --->
+	
+</cfcomponent>]]></starttext>
+<endtext><![CDATA[]]></endtext>
+</snippet>

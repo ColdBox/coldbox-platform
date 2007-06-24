@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<snippet filetemplate="false" extension="cfm">
+<name>getValueWithDefault</name>
+<help>getValue with a default</help>
+<starttext><![CDATA[event.getValue("$${variable name}", $${default})]]></starttext>
+<endtext><![CDATA[]]></endtext>
+</snippet>

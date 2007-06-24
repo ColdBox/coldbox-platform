@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<snippet filetemplate="false" extension="cfm">
+<name>createBean</name>
+<help></help>
+<starttext><![CDATA[getPlugin("beanFactory").create("$${bean type}", $${Call Init:false|true})]]></starttext>
+<endtext><![CDATA[]]></endtext>
+</snippet>

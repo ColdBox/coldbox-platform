@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<snippet filetemplate="false" extension="cfm">
+<name>LogEntry</name>
+<help>Log A New Entry</help>
+<starttext><![CDATA[getPlugin("logger").logEntry("$${Severity:information|error|warning|fatal}", "$${Message}", "$${Extra Information To Append (Simple Value)}")]]></starttext>
+<endtext><![CDATA[]]></endtext>
+</snippet>

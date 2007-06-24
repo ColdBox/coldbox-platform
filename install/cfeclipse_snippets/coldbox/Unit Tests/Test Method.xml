@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<snippet filetemplate="false" extension="cfm">
+<name>Test Method</name>
+<help></help>
+<starttext><![CDATA[<cffunction name="$${test name}" access="public" returntype="void" output="false">
+		<cfscript>
+		var event = "";
+		
+		//Place any variables on the form or URL scope to test the handler.
+		//FORM.name = "luis"
+		event = execute("$${event to test:}");
+			
+		//Do your asserts below
+		
+			
+		</cfscript>
+	</cffunction>]]></starttext>
+<endtext><![CDATA[]]></endtext>
+</snippet>

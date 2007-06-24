@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<snippet filetemplate="false" extension="cfm">
+<name>Datasource</name>
+<help>A new Datasource Element</help>
+<starttext><![CDATA[<Datasource alias="$${Alias}" name="$${Datasource Name}" dbtype="$${Database Type:oracle|mysql|mssql|other}" username="$${Username (Blank if using Datasource setting)}" password="$${Password (Blank if using Datasource setting)}" />]]></starttext>
+<endtext><![CDATA[]]></endtext>
+</snippet>

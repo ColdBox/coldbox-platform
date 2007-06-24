@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<snippet filetemplate="false" extension="cfm">
+<name>getMyPlugin</name>
+<help>Get a custom plugin</help>
+<starttext><![CDATA[getPlugin("$${Custom Plugin Name}", true)]]></starttext>
+<endtext><![CDATA[]]></endtext>
+</snippet>

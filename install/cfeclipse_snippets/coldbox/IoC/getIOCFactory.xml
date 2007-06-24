@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<snippet filetemplate="false" extension="cfm">
+<name>getIOCFactory</name>
+<help></help>
+<starttext><![CDATA[getPlugin("ioc").getIoCFactory()]]></starttext>
+<endtext><![CDATA[]]></endtext>
+</snippet>

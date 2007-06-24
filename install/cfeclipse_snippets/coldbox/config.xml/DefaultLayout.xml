@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<snippet filetemplate="false" extension="cfm">
+<name>DefaultLayout</name>
+<help>A default Layout Element</help>
+<starttext><![CDATA[<DefaultLayout>$${Default Layout:Layout.Main.cfm}</DefaultLayout>]]></starttext>
+<endtext><![CDATA[]]></endtext>
+</snippet>
