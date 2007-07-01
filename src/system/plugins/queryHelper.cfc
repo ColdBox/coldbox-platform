@@ -67,5 +67,29 @@ Modification History:
 	</cffunction>
 
 	<!--- ************************************************************* --->
-
+	
+	<!--- ************************************************************* ---> 
+    <!---    Returns an array of the values in the given column         --->
+    <!---------------------------------------------------------------------> 
+    <cffunction name="getColumnArray" access="public" returntype="array" output="no">
+        <cfargument name="qry"			type="query" required="true" /> 
+        <cfargument name="sColumn"		type="string" required="true" />
+        
+        <cfscript>
+            var stLocals = structNew();
+            var i = 0;
+             
+            stLocals.arValues = arrayNew(1);
+            if( arguments.qry.recordcount ){
+                arrayResize( stLocals.arValues, arguments.qry.recordcount );
+                
+                for( i = 1; i LTE arguments.qry.recordcount; i =i + 1 ){
+                    stLocals.arValues[i] = arguments.qry[arguments.sColumn][i];
+                }
+            }            
+            return stLocals.arValues ;
+        </cfscript>
+    </cffunction>
+	<!--- ************************************************************* --->
+	
 </cfcomponent>
