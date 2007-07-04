@@ -1,0 +1,833 @@
+<?xml version="1.0" ?>
+<!--
+	User Defined Custom tags. You can add your cfx and cf_ tags here.
+	Note:
+	this file will be over written when you upgrade the plugin, but the file
+	spec shouldn't change so you can just over write this file if you wish
+
+	Creator who made / supports the tag. Values are:
+    	MX          = 0x1;
+    	BlueDragon  = 0x2;
+    	W3C         = 0x4;
+    	UserDefined = 0x8;
+   	If support exists between two you can add them together. For example 3 means
+   	MX and BlueDragon. This file should only have 8s.
+
+    Single is if the tag lacks a closing tag
+    XMLStyle is: if a single tag, does it close thusly /&gt;
+
+    You can put cfx or cf_ tags in here - the tag name needs to be lowercase. 
+    Previous user.xml files suggested that you should miss the cf part of the tag
+    name off but in practice it only works if you include it.  The cfx_rohancrypt
+    example below illustrates the correct way to define custom tags.  You
+   	can also put functions in here, but that is only a hack - cfeclipse will be
+   	able to find your functions at a later date
+ -->
+<dictionary xmlns="http://www.cfeclipse.org/version1/dictionary"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.cfeclipse.org/version1/dictionary http://cfeclipse.tigris.org/version1/dictionary/dictionary.xsd"
+>
+	<tags>
+		<!--
+		<tag creator="8" name="cfx_rohancrypt" single="true" xmlstyle="false">
+			<help><![CDATA[
+				cfx_RohanCrypt is an encryption tag that supports 3des, des and
+				others. It will return the variable rohancrypt.response when
+				encrypting or decrypting a string, and operates directly on a
+				query's column if passed a query. The encrypted text is by default
+				base64 encoded using utf-8.
+			]]></help>
+			<parameter name="mode" type="String" required="true">
+				<help><![CDATA[
+					Sets the tags mode
+				]]></help>
+				<values>
+					<value option="&quot;genkey" />
+					<value option="&quot;encrypt" />
+					<value option="&quot;decrypt" />
+				</values>
+			</parameter>
+			<parameter name="keyfile" type="String" required="true">
+				<help><![CDATA[
+					Sets the key file to use (should be a generated rkey file)
+				]]></help>
+				<values />
+			</parameter>
+			<parameter name="string" type="String" required="false">
+				<help><![CDATA[
+					A string value to encrypt or decrypt
+				]]></help>
+				<values />
+			</parameter>
+			<parameter name="query" type="String" required="false">
+				<help><![CDATA[
+					The query to perform the action on. If you use this, you'll
+					need to use the column attribute too.
+				]]></help>
+				<values />
+			</parameter>
+			<parameter name="column" type="String" required="false">
+				<help><![CDATA[
+					The column that the action should be applied to.
+				]]></help>
+				<values />
+			</parameter>
+			<parameter name="type" type="String" required="false">
+				<help><![CDATA[
+					The encoding type the data should be save to or is comming
+					in as
+				]]></help>
+				<values>
+					<value option="&quot;hex" />
+					<value option="&quot;base64" />
+				</values>
+			</parameter>
+			<parameter name="iv" type="String" required="false">
+				<help><![CDATA[
+					The IV for this encryption session
+				]]></help>
+				<values />
+			</parameter>
+		</tag>
+		-->
+	</tags>
+
+	<functions>
+		<!--
+		<function creator="8" name="dostuff" returns="Object">
+			<help><![CDATA[
+				Does nothing this is an example
+			]]></help>
+			<parameter name="blarg" type="boolean" required="false">
+				<help><![CDATA[
+					Is it true?
+				]]></help>
+			</parameter>
+		</function>
+		-->
+		
+		<!--Framework Super Type Declarations -->
+		<function creator="8" name="abort" returns="void">
+			<help><![CDATA[
+				Facade to cfabort.
+			]]></help>
+		</function>
+		
+		<function creator="8" name="dump" returns="void">
+			<help><![CDATA[
+				Facade to cfdump
+			]]></help>
+			<parameter name="var" type="any" required="true">
+				<help><![CDATA[
+					The variable to dump
+				]]></help>
+			</parameter>
+		</function>
+		
+		<function creator="8" name="getColdboxOCM" returns="coldbox.cache.cacheManager">
+			<help><![CDATA[
+				Get a reference to the ColdBox Object Cache Manager
+			]]></help>
+		</function>
+		
+		<function creator="8" name="getController" returns="coldbox.system.controller">
+			<help><![CDATA[
+				Get a reference to the ColdBox Controller
+			]]></help>
+			<parameter name="var" type="any" required="true">
+				<help><![CDATA[
+					The variable to dump
+				]]></help>
+			</parameter>
+		</function>
+		
+		<function creator="8" name="getDatasource" returns="coldbox.system.beans.DatasourceBean">
+			<help><![CDATA[
+				Get a new datasource bean according to alias.
+			]]></help>
+			<parameter name="alias" type="string" required="true">
+				<help><![CDATA[
+					The alias name of the datasource to return.
+				]]></help>
+			</parameter>
+		</function>
+		
+		<function creator="8" name="getfwLocale" returns="String">
+			<help><![CDATA[
+				Get the default locale string used in the framework
+			]]></help>
+		</function>
+		
+		<function creator="8" name="getHash" returns="String">
+			<help><![CDATA[
+				Get the object's instance unique UUID
+			]]></help>
+		</function>
+		
+		<function creator="8" name="getMailSettings" returns="coldbox.system.beans.mailsettingsBean">
+			<help><![CDATA[
+				   I will return to you a mailsettingsBean modeled after your mail settings in your config.xml
+			]]></help>
+		</function>
+		
+		<function creator="8" name="getMyPlugin" returns="Object">
+			<help><![CDATA[
+				Facade to getPlugin with parameters to get or create an instance of a custom coldbox plugin.
+			]]></help>
+			<parameter name="plugin" type="string" required="true">
+				<help><![CDATA[
+					The path or name of the custom plugin to create.
+				]]></help>
+			</parameter>
+		</function>
+		
+		<function creator="8" name="getPlugin" returns="Object">
+			<help><![CDATA[
+				Get or create an instance of a custom or core plugin object.
+			]]></help>
+			<parameter name="plugin" type="string" required="true">
+				<help><![CDATA[
+					The name of the core plugin or custom plugin to create or get from cache. You can use dot notation for packaged plugins. ie (security.logger, logger)
+				]]></help>
+				<values default="">
+					<value option="&quot;beanFactory&quot;"/>
+					<value option="&quot;cfcViewer&quot;"/>
+					<value option="&quot;clientstorage&quot;"/>
+					<value option="&quot;fileUtilities&quot;"/>
+					<value option="&quot;FileWriter&quot;"/>
+					<value option="&quot;i18n&quot;"/>
+					<value option="&quot;ioc&quot;"/>
+					<value option="&quot;JavaLoader&quot;"/>
+					<value option="&quot;logger&quot;"/>
+					<value option="&quot;messagebox&quot;"/>
+					<value option="&quot;queryHelper&quot;"/>
+					<value option="&quot;renderer&quot;"/>
+					<value option="&quot;resourceBundle&quot;"/>
+					<value option="&quot;sessionstorage&quot;"/>
+					<value option="&quot;StringBuffer&quot;"/>
+					<value option="&quot;timer&quot;"/>
+					<value option="&quot;webservices&quot;"/>
+					<value option="&quot;XMLParser&quot;"/>
+					<value option="&quot;zip&quot;"/>
+				</values>
+			</parameter>
+			<parameter name="customPlugin" type="Boolean" required="false">
+				<help><![CDATA[
+					Flag to determine if the factory creates a core or custom plugin.
+				]]></help>
+				<values default="false">
+					<value option="&quot;true&quot;"/>
+					<value option="&quot;false&quot;"/>
+				</values>
+			</parameter>
+			<parameter name="newInstance" type="Boolean" required="false">
+				<help><![CDATA[
+					Flag to determine if the factory creates a new or cached instance.
+				]]></help>
+				<values default="false">
+					<value option="&quot;true&quot;"/>
+					<value option="&quot;false&quot;"/>
+				</values>
+			</parameter>
+		</function>
+		
+		<function creator="8" name="getResource" returns="String">
+			<help><![CDATA[
+				Returns a locale string resource from a resource bundle.
+			]]></help>
+			<parameter name="resource" type="string" required="true">
+				<help><![CDATA[
+					The name of the key to return.
+				]]></help>
+			</parameter>
+		</function>
+		
+		<function creator="8" name="getSetting" returns="Any">
+			<help><![CDATA[
+				Returns a setting value from the configuration structure or coldbox structure. This is determined by the FWSetting flag. If set to true then it retrieves from the ColdBox Structure, else from the application configuration structure.
+			]]></help>
+			<parameter name="name" type="string" required="true">
+				<help><![CDATA[
+					The name of the configuration setting, framework setting or custom setting to retrieve.
+				]]></help>
+				<values default="">
+					<value option="&quot;AppMapping&quot;"/>
+					<value option="&quot;AppName&quot;"/>
+					<value option="&quot;ApplicationPath&quot;"/>
+					<value option="&quot;ApplicationStartHandler&quot;"/>
+					<value option="&quot;BugEmails&quot;"/>
+					<value option="&quot;CacheSettings&quot;"/>
+					<value option="&quot;ColdboxLogsLocation&quot;"/>
+					<value option="&quot;ConfigAutoReload&quot;"/>
+					<value option="&quot;ConfigTimeStamp&quot;"/>
+					<value option="&quot;CustomErrorTemplate&quot;"/>
+					<value option="&quot;Datasources&quot;"/>
+					<value option="&quot;DebugMode&quot;"/>
+					<value option="&quot;DebugPassword&quot;"/>
+					<value option="&quot;DefaultEvent&quot;"/>
+					<value option="&quot;DefaultLayout&quot;"/>
+					<value option="&quot;DefaultLocale&quot;"/>
+					<value option="&quot;DefaultResourceBundle&quot;"/>
+					<value option="&quot;DefaultView&quot;"/>
+					<value option="&quot;DevEnvironments&quot;"/>
+					<value option="&quot;EnableBugReports&quot;"/>
+					<value option="&quot;EnableColdboxLogging&quot;"/>
+					<value option="&quot;EnableColdfusionLogging&quot;"/>
+					<value option="&quot;EnableDumpVar&quot;"/>
+					<value option="&quot;Environment&quot;"/>
+					<value option="&quot;EventName&quot;"/>
+					<value option="&quot;ExceptionHandler&quot;"/>
+					<value option="&quot;HandlerCaching&quot;"/>
+					<value option="&quot;HandlersIndexAutoReload&quot;"/>
+					<value option="&quot;HandlersPath&quot;"/>
+					<value option="&quot;IOCDefintionFile&quot;"/>
+					<value option="&quot;IOCFramework&quot;"/>
+					<value option="&quot;IOCObjectCaching&quot;"/>
+					<value option="&quot;LocaleStorage&quot;"/>
+					<value option="&quot;MailPassword&quot;"/>
+					<value option="&quot;MailPort&quot;"/>
+					<value option="&quot;MailServer&quot;"/>
+					<value option="&quot;MailUsername&quot;"/>
+					<value option="&quot;MessageboxStyleClass&quot;"/>
+					<value option="&quot;MyPluginsLocation&quot;"/>
+					<value option="&quot;OwnerEmail&quot;"/>
+					<value option="&quot;RBundles&quot;"/>
+					<value option="&quot;RegisteredHandlers&quot;"/>
+					<value option="&quot;ReinitPassword&quot;"/>
+					<value option="&quot;RequestEndHandler&quot;"/>
+					<value option="&quot;RequestStartHandler&quot;"/>
+					<value option="&quot;UDFLibraryFile&quot;"/>
+					<value option="&quot;ViewLayouts&quot;"/>
+					<value option="&quot;WebServices&quot;"/>
+					<value option="&quot;onInvalidEvent&quot;"/>
+					<value option="&quot;using_i18N&quot;"/>
+				</values>
+			</parameter>
+			<parameter name="FWSetting" type="Boolean" required="false">
+				<help><![CDATA[
+					Flag to determine if the setting to get is a configuration setting or a ColdBox setting.
+				]]></help>
+				<values default="false">
+					<value option="&quot;true&quot;"/>
+					<value option="&quot;false&quot;"/>
+				</values>
+			</parameter>
+		</function>
+		
+		<function creator="8" name="getSettingsBean" returns="coldbox.system.beans.configBean">
+			<help><![CDATA[
+				Returns a configBean configured with the application's configuration structure.
+			]]></help>
+		</function>
+		
+		<function creator="8" name="getSettingStructure" returns="Struct">
+			<help><![CDATA[
+				Returns a copy or reference to the Configuration or Coldbox Structure. This is determined by the FWSetting flag. If set to true then it retrieves from the ColdBox Structure, else from the application configuration structure.
+			]]></help>
+			<parameter name="FWSetting" type="Boolean" required="false">
+				<help><![CDATA[
+					Flag to determine if the setting to get is a configuration setting or a ColdBox setting.
+				]]></help>
+				<values default="false">
+					<value option="&quot;true&quot;"/>
+					<value option="&quot;false&quot;"/>
+				</values>
+			</parameter>
+			<parameter name="DeepCopyFlag" type="Boolean" required="false">
+				<help><![CDATA[
+					Whether to create a shallow or deep copy of the structure.
+				]]></help>
+				<values default="false">
+					<value option="&quot;true&quot;"/>
+					<value option="&quot;false&quot;"/>
+				</values>
+			</parameter>
+		</function>
+		
+		<function creator="8" name="include" returns="void">
+			<help><![CDATA[
+				Facade to cfinclude
+			]]></help>
+			<parameter name="template" type="String" required="true">
+				<help><![CDATA[
+					The file path to include
+				]]></help>
+			</parameter>
+		</function>
+		
+		<function creator="8" name="includeUDF" returns="void">
+			<help><![CDATA[
+				 Injects a UDF Library into the object
+			]]></help>
+			<parameter name="udflibrary" type="String" required="true">
+				<help><![CDATA[
+					The file path to include
+				]]></help>
+			</parameter>
+		</function>
+		
+		<function creator="8" name="renderExternalView" returns="void">
+			<help><![CDATA[
+				 Renders an external view. External to the Application's mapping.
+			]]></help>
+			<parameter name="view" type="String" required="true">
+				<help><![CDATA[
+					The full path of the external view to render.
+				]]></help>
+			</parameter>
+		</function>
+		
+		<function creator="8" name="renderView" returns="void">
+			<help><![CDATA[
+				 Renders a view.
+			]]></help>
+			<parameter name="view" type="String" required="true">
+				<help><![CDATA[
+					The path or name of the view. Do not append .cfm
+				]]></help>
+			</parameter>
+		</function>
+		
+		<function creator="8" name="runEvent" returns="void">
+			<help><![CDATA[
+				 Execute a coldbox event.
+			]]></help>
+			<parameter name="event" type="String" required="true">
+				<help><![CDATA[
+					The name of the event to execute. If not set, then the default event will be used.
+				]]></help>
+			</parameter>
+		</function>
+		
+		<function creator="8" name="setNextEvent" returns="void">
+			<help><![CDATA[
+				 Relocate to another event. This will relocate the browser
+			]]></help>
+			<parameter name="event" type="String" required="false">
+				<help><![CDATA[
+					The name of the event to relocate to. If not sent in, then the default event will be used.
+				]]></help>
+			</parameter>
+			<parameter name="queryString" type="String" required="false">
+				<help><![CDATA[
+					The query string to append to the relocation.
+				]]></help>
+			</parameter>
+			<parameter name="addToken" type="Boolean" required="false">
+				<help><![CDATA[
+					The query string to append to the relocation.
+				]]></help>
+				<values default="false">
+					<value option="&quot;true&quot;"/>
+					<value option="&quot;false&quot;"/>
+				</values>
+			</parameter>
+		</function>
+		
+		<function creator="8" name="setSetting" returns="void">
+			<help><![CDATA[
+				 Set a new setting in the configuration structure.
+			]]></help>
+			<parameter name="name" type="String" required="true">
+				<help><![CDATA[
+					The key name to use to save this setting. This must be unique.
+				]]></help>
+			</parameter>
+			<parameter name="value" type="Any" required="true">
+				<help><![CDATA[
+					The value to set for this setting. This can be anything.
+				]]></help>
+			</parameter>
+		</function>
+		
+		<function creator="8" name="settingExists" returns="void">
+			<help><![CDATA[
+				 Verify that a setting exists in the configuration or coldbox structures.
+			]]></help>
+			<parameter name="name" type="String" required="true">
+				<help><![CDATA[
+					The key name to check if it exists in the configuration or coldbox structure.
+				]]></help>
+			</parameter>
+			<parameter name="FWSetting" type="Boolean" required="false">
+				<help><![CDATA[
+					Flag to determine if the setting to verify is a configuration setting or a ColdBox setting.
+				]]></help>
+				<values default="false">
+					<value option="&quot;true&quot;"/>
+					<value option="&quot;false&quot;"/>
+				</values>
+			</parameter>
+		</function>
+		
+		<function creator="8" name="throw" returns="void">
+			<help><![CDATA[
+				 Facade to cfthrow
+			]]></help>
+			<parameter name="message" type="String" required="true">
+				<help><![CDATA[
+					The message of the exception
+				]]></help>
+			</parameter>
+			<parameter name="detail" type="String" required="false">
+				<help><![CDATA[
+					The detail of the exception
+				]]></help>
+			</parameter>
+			<parameter name="type" type="String" required="false">
+				<help><![CDATA[
+					The type of the exception. Defaults to framework.
+				]]></help>
+				<values default="">
+					<value option="&quot;framework&quot;"/>
+				</values>
+			</parameter>
+		</function>
+				
+	</functions>
+
+	<scopes>
+		<!-- <scope value="my.thing"></scope> -->
+		<scope value="event.clearCollection()" type="Void">
+			<help><![CDATA[ 
+			Clears the entire collection.
+		]]></help>
+		</scope>
+		<scope value="event.collectionAppend(structure,false)" type="Void">
+			<help><![CDATA[ 
+			Append a structure to the collection
+		]]></help>
+		</scope>
+		<scope value="event.getCollection()" type="Struct">
+			<help><![CDATA[ 
+			Gets a reference to the collection.
+		]]></help>
+		</scope>
+		<scope value="event.getCollection(DeepCopyFlag=true)" type="Struct">
+			<help><![CDATA[ 
+			Gets a depp copy of the collection.
+		]]></help>
+		</scope>
+		<scope value="event.getCurrentEvent()" type="String">
+			<help><![CDATA[ 
+			Gets the current event
+		]]></help>
+		</scope>
+		<scope value="event.getCurrentLayout()" type="String">
+			<help><![CDATA[ 
+			Gets the current layout
+		]]></help>
+		</scope>
+		<scope value="event.getCurrentView()" type="String">
+			<help><![CDATA[ 
+			Gets the current view
+		]]></help>
+		</scope>
+		<scope value="event.getDebugPanelFlag()" type="Boolean">
+			<help><![CDATA[ 
+			Gets the ColdBox debugging panel flag
+		]]></help>
+		</scope>
+		<scope value="event.getDefaultLayout()" type="String">
+			<help><![CDATA[ 
+			Gets the default layout
+		]]></help>
+		</scope>
+		<scope value="event.getDefaultView()" type="String">
+			<help><![CDATA[ 
+			Gets the default view
+		]]></help>
+		</scope>
+		<scope value="event.getEventName()" type="String">
+			<help><![CDATA[ 
+			Gets the event name variable.
+		]]></help>
+		</scope>
+		<scope value="event.getSize()" type="Numeric">
+			<help><![CDATA[ 
+			Gets the current size of the request collection
+		]]></help>
+		</scope>
+		<scope value="event.getValue('name')" type="Any">
+			<help><![CDATA[ 
+			Gets a value from the collection.
+		]]></help>
+		</scope>
+		<scope value="event.getValue('name',default)" type="Any">
+			<help><![CDATA[ 
+			Gets a value from the collection with a default value if not found.
+		]]></help>
+		</scope>
+		<scope value="event.getViewLayouts()" type="Struct">
+			<help><![CDATA[ 
+			Gets the structure of array of view/layout pairs.
+		]]></help>
+		</scope>
+		<scope value="event.overrideEvent('event')" type="void">
+			<help><![CDATA[ 
+			  I Override the current event in the request collection. This method does not execute the event, it just replaces the event to be executed by the framework's RunEvent() method. This method is usually called from an onRequestStart or onApplicationStart method.
+		]]></help>
+		</scope>
+		<scope value="event.paramValue('name','value')" type="void">
+			<help><![CDATA[ 
+			Param a name/value pair in the collection.
+		]]></help>
+		</scope>
+		<scope value="event.removeValue('name')" type="void">
+			<help><![CDATA[ 
+			Remove a name/value pair in the collection
+		]]></help>
+		</scope>
+		<scope value="event.setCollection(collection)" type="void">
+			<help><![CDATA[ 
+			Overwrite the collection with another collection
+		]]></help>
+		</scope>
+		<scope value="event.setDefaultLayout('Layout')" type="void">
+			<help><![CDATA[ 
+			Set the default layout for this request
+		]]></help>
+		</scope>
+		<scope value="event.setDefaultView('view')" type="void">
+			<help><![CDATA[ 
+			Set the default view for this request
+		]]></help>
+		</scope>
+		<scope value="event.setLayout('name')" type="void">
+			<help><![CDATA[ 
+			Set the layout to override and render. Layouts are pre-defined in the config.xml file. However I can override these settings if needed. Do not append a the cfm extension. Request Collection name: currentLayout
+		]]></help>
+		</scope>
+		<scope value="event.setValue('name', value)" type="void">
+			<help><![CDATA[ 
+			    I Set a value in the request collection
+		]]></help>
+		</scope>
+		<scope value="event.setView('view')" type="void">
+			<help><![CDATA[ 
+			 I Set the view to render in this request.I am called from event handlers.
+		]]></help>
+		</scope>
+		<scope value="event.showDebugPanel(true|false)" type="void">
+			<help><![CDATA[ 
+			 I can override to show or not the debug panel. Very useful in AJAX debugging
+		]]></help>
+		</scope>
+		<scope value="event.valueExists('name')" type="Boolean">
+			<help><![CDATA[ 
+			 I verify that a value exists in the request collection.
+		]]></help>
+		</scope>
+		
+		<!--RC Scope -->
+		<scope value="rc.clearCollection()" type="Void">
+			<help><![CDATA[ 
+			Clears the entire collection.
+		]]></help>
+		</scope>
+		<scope value="rc.collectionAppend(structure,false)" type="Void">
+			<help><![CDATA[ 
+			Append a structure to the collection
+		]]></help>
+		</scope>
+		<scope value="rc.getCollection()" type="Struct">
+			<help><![CDATA[ 
+			Gets a reference to the collection.
+		]]></help>
+		</scope>
+		<scope value="rc.getCollection(DeepCopyFlag=true)" type="Struct">
+			<help><![CDATA[ 
+			Gets a depp copy of the collection.
+		]]></help>
+		</scope>
+		<scope value="rc.getCurrentEvent()" type="String">
+			<help><![CDATA[ 
+			Gets the current event
+		]]></help>
+		</scope>
+		<scope value="rc.getCurrentLayout()" type="String">
+			<help><![CDATA[ 
+			Gets the current layout
+		]]></help>
+		</scope>
+		<scope value="rc.getCurrentView()" type="String">
+			<help><![CDATA[ 
+			Gets the current view
+		]]></help>
+		</scope>
+		<scope value="rc.getDebugPanelFlag()" type="Boolean">
+			<help><![CDATA[ 
+			Gets the ColdBox debugging panel flag
+		]]></help>
+		</scope>
+		<scope value="rc.getDefaultLayout()" type="String">
+			<help><![CDATA[ 
+			Gets the default layout
+		]]></help>
+		</scope>
+		<scope value="rc.getDefaultView()" type="String">
+			<help><![CDATA[ 
+			Gets the default view
+		]]></help>
+		</scope>
+		<scope value="rc.getEventName()" type="String">
+			<help><![CDATA[ 
+			Gets the event name variable.
+		]]></help>
+		</scope>
+		<scope value="rc.getSize()" type="Numeric">
+			<help><![CDATA[ 
+			Gets the current size of the request collection
+		]]></help>
+		</scope>
+		<scope value="rc.getValue('name')" type="Any">
+			<help><![CDATA[ 
+			Gets a value from the collection.
+		]]></help>
+		</scope>
+		<scope value="rc.getValue('name',default)" type="Any">
+			<help><![CDATA[ 
+			Gets a value from the collection with a default value if not found.
+		]]></help>
+		</scope>
+		<scope value="rc.getViewLayouts()" type="Struct">
+			<help><![CDATA[ 
+			Gets the structure of array of view/layout pairs.
+		]]></help>
+		</scope>
+		<scope value="rc.overrideEvent('event')" type="void">
+			<help><![CDATA[ 
+			  I Override the current event in the request collection. This method does not execute the event, it just replaces the event to be executed by the framework's RunEvent() method. This method is usually called from an onRequestStart or onApplicationStart method.
+		]]></help>
+		</scope>
+		<scope value="rc.paramValue('name','value')" type="void">
+			<help><![CDATA[ 
+			Param a name/value pair in the collection.
+		]]></help>
+		</scope>
+		<scope value="rc.removeValue('name')" type="void">
+			<help><![CDATA[ 
+			Remove a name/value pair in the collection
+		]]></help>
+		</scope>
+		<scope value="rc.setCollection(collection)" type="void">
+			<help><![CDATA[ 
+			Overwrite the collection with another collection
+		]]></help>
+		</scope>
+		<scope value="rc.setDefaultLayout('Layout')" type="void">
+			<help><![CDATA[ 
+			Set the default layout for this request
+		]]></help>
+		</scope>
+		<scope value="rc.setDefaultView('view')" type="void">
+			<help><![CDATA[ 
+			Set the default view for this request
+		]]></help>
+		</scope>
+		<scope value="rc.setLayout('name')" type="void">
+			<help><![CDATA[ 
+			Set the layout to override and render. Layouts are pre-defined in the config.xml file. However I can override these settings if needed. Do not append a the cfm extension. Request Collection name: currentLayout
+		]]></help>
+		</scope>
+		<scope value="rc.setValue('name', value)" type="void">
+			<help><![CDATA[ 
+			    I Set a value in the request collection
+		]]></help>
+		</scope>
+		<scope value="rc.setView('view')" type="void">
+			<help><![CDATA[ 
+			 I Set the view to render in this request.I am called from event handlers.
+		]]></help>
+		</scope>
+		<scope value="rc.showDebugPanel(true|false)" type="void">
+			<help><![CDATA[ 
+			 I can override to show or not the debug panel. Very useful in AJAX debugging
+		]]></help>
+		</scope>
+		<scope value="rc.valueExists('name')" type="Boolean">
+			<help><![CDATA[ 
+			 I verify that a value exists in the request collection.
+		]]></help>
+		</scope>
+		
+		<!--Controller-->
+		<scope value="controller.getAppHash()" type="String">
+			<help><![CDATA[ 
+			 Get the current application's unique ID.
+		]]></help>
+		</scope>
+		<scope value="controller.getColdboxOCM" type="coldbox.system.cache.cacheManager">
+			<help><![CDATA[ 
+			 Get a reference to the coldbox OCM
+		]]></help>
+		</scope>
+		<scope value="controller.getColdboxSettings()" type="Struct">
+			<help><![CDATA[ 
+			 Get the Coldbox Settings Structure by reference
+		]]></help>
+		</scope>
+		<scope value="controller.getConfigSettings()" type="Struct">
+			<help><![CDATA[ 
+			 Get the Configuration Settings Structure by reference
+		]]></help>
+		</scope>
+		<scope value="controller.getDebuggerService()" type="Any">
+			<help><![CDATA[ 
+			 Get the debugger service reference
+		]]></help>
+		</scope>
+		<scope value="controller.getRequestService()" type="Any">
+			<help><![CDATA[ 
+			 Get a reference to the request service
+		]]></help>
+		</scope>
+		<scope value="controller.getMyPlugin" type="Any">
+			<help><![CDATA[ 
+			 Get a custom plugin
+		]]></help>
+		</scope>
+		<scope value="controller.getPlugin" type="Any">
+			<help><![CDATA[ 
+			 Get a core/custom plugin
+		]]></help>
+		</scope>
+		<scope value="controller.getSetting" type="Any">
+			<help><![CDATA[ 
+			 Get a setting from the configuration or coldbox structures
+		]]></help>
+		</scope>
+		<scope value="controller.getSettingStructure" type="Struct">
+			<help><![CDATA[ 
+			 Get a reference or deep copy of the configuration or coldbox structures.
+		]]></help>
+		</scope>
+		<scope value="controller.runEvent" type="Void">
+			<help><![CDATA[ 
+			 Execute an event.
+		]]></help>
+		</scope>
+		<scope value="controller.setNextEvent" type="Void">
+			<help><![CDATA[ 
+			 Relocate to another event.
+		]]></help>
+		</scope>
+		<scope value="controller.setSetting" type="Void">
+			<help><![CDATA[ 
+			 Set a setting in the configuration structures
+		]]></help>
+		</scope>
+		<scope value="controller.settingExists" type="Void">
+			<help><![CDATA[ 
+			 Set a setting in the configuration structures
+		]]></help>
+		</scope>
+		<scope value="controller.throw" type="Void">
+			<help><![CDATA[ 
+			 Facade to cfthrow.
+		]]></help>
+		</scope>
+		
+	</scopes>
+
+</dictionary>
