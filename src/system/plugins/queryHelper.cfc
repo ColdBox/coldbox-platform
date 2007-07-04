@@ -69,27 +69,74 @@ Modification History:
 	<!--- ************************************************************* --->
 	
 	<!--- ************************************************************* ---> 
-    <!---    Returns an array of the values in the given column         --->
+    <!--- Returns an array of the values in the given column            --->
+	<!--- QoQ is case sensitive so use same columns name as in query    --->
+	<!--- don't use local word ... this is reserved word in QoQ         --->
     <!---------------------------------------------------------------------> 
-    <cffunction name="getColumnArray" access="public" returntype="array" output="no">
-        <cfargument name="qry"			type="query" required="true" /> 
-        <cfargument name="sColumn"		type="string" required="true" />
+    <cffunction name="getColumnArray" access="public" returntype="array" output="false" hint="Returns an array of the values">
+        <cfargument name="qry"			type="query"	required="true" hint="cf query" /> 
+        <cfargument name="ColumnName"	type="string"	required="true" hint="column name" />
         
         <cfscript>
-            var stLocals = structNew();
+            var stPrivate = structNew();
             var i = 0;
              
-            stLocals.arValues = arrayNew(1);
+            stPrivate.arValues = arrayNew(1);
             if( arguments.qry.recordcount ){
-                arrayResize( stLocals.arValues, arguments.qry.recordcount );
+                arrayResize( stPrivate.arValues, arguments.qry.recordcount );
                 
                 for( i = 1; i LTE arguments.qry.recordcount; i =i + 1 ){
-                    stLocals.arValues[i] = arguments.qry[arguments.sColumn][i];
+                    stPrivate.arValues[i] = arguments.qry[arguments.ColumnName][i];
                 }
             }            
-            return stLocals.arValues ;
+            return stPrivate.arValues ;
         </cfscript>
     </cffunction>
 	<!--- ************************************************************* --->
+	
+	<!--- ************************************************************* ---> 
+    <!--- Pass Column/s Name to get total/count of distinct values      --->
+	<!--- QoQ is case sensitive so use same columns name as in query    --->
+    <!--------------------------------------------------------------------->
+    <cffunction name="getCountDistinct" access="public" returntype="numeric" output="false" hint="Returns total/count disninct values"> 
+        <cfargument name="qry"			type="query"	required="true"  hint="cf query" />
+        <cfargument name="ColumnName"	type="string"	required="true"  hint="column/s name" /> 
+        <cfset var stPrivate = structNew() />
+		
+        <cfquery name="stPrivate.qryCount" dbtype="query">
+            SELECT DISTINCT #arguments.ColumnName# 
+            FROM    arguments.qry
+        </cfquery>
+		<cfreturn stPrivate.qryCount.RecordCount />
+    </cffunction>
+	<!--- ************************************************************* --->
+	
+    <!--- ********************************************************************* --->
+    <!--- Returns the row number of the first match, or 0 if no match or exists --->
+	<!--- QoQ is case sensitive so use same columns name as in query            ---> 
+    <!----------------------------------------------------------------------------->
+    <cffunction name="getRowNumber" access="public" returntype="numeric" output="false" hint="Returns the row number of the first match" >
+        <cfargument name="qry"			type="query"	required="true" hint="cf query" />
+		<cfargument name="ColumnValue"	type="string"	required="true" hint="column value" />
+        <cfargument name="ColumnName"	type="string"	required="true" hint="column name" />
+        
+        <cfscript>
+            var stPrivate = structNew();
+            var i = 0;
+            
+            stPrivate.sTestVal = trim(arguments.ColumnValue);
+             
+            for( i = 1; i LTE arguments.qry.RecordCount; i = i + 1 ){
+                stPrivate.sThisVal = trim(arguments.qry[arguments.ColumnName][i]);
+               
+                if( stPrivate.sThisVal EQ stPrivate.sTestVal ){
+                    return i;
+                }
+            }
+
+            return 0;
+        </cfscript>
+    </cffunction> 	
+	<!--- ********************************************************************* --->
 	
 </cfcomponent>
