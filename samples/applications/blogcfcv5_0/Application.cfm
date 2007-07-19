@@ -11,6 +11,5 @@
 <cfset prefix = right(prefix, 64 - len("_blog_#blogname#"))>
 
 <cfapplication name="#prefix#_blog_#blogname#"
-			   clientmanagement="yes"
 			   sessionmanagement="yes"
 			   setclientcookies="true" loginstorage="session">

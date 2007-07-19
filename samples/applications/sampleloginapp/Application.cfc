@@ -1,7 +1,6 @@
 <cfcomponent>
 <!--- Modify the Name of the application--->
 <cfset this.name = "Sample Login App"> 
-<cfset this.clientManagement = true> 
 <cfset this.sessionManagement = true> 
 <cfset this.sessionTimeout = createTimeSpan(0,0,30,0)> 
 <cfset this.setClientCookies = true>

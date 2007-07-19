@@ -1,7 +1,6 @@
 <cfcomponent>
 
-<cfset this.name = "ColdBox Hello World"> 
-<cfset this.clientManagement = true> 
+<cfset this.name = "ColdBox Hello World">
 <cfset this.sessionManagement = true> 
 <cfset this.sessionTimeout = createTimeSpan(0,0,30,0)> 
 <cfset this.setClientCookies = true>

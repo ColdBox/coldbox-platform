@@ -11,8 +11,7 @@
 <cfset prefix = reReplace(prefix, "[^a-zA-Z]","","all")>
 <cfset prefix = right(prefix, 64 - len("_blog_#blogname#"))>
 		
-<cfset this.name = "#prefix#_blog_#blogname#"> 
-<cfset this.clientManagement = true> 
+<cfset this.name = "#prefix#_blog_#blogname#">
 <cfset this.sessionManagement = true> 
 <cfset this.sessionTimeout = createTimeSpan(0,0,30,0)> 
 <cfset this.setClientCookies = true>

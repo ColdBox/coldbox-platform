@@ -7,7 +7,6 @@
 
 <!--- Modify the Name of the application--->
 <cfset this.name = "#prefix##appName#"> 
-<cfset this.clientManagement = true> 
 <cfset this.sessionManagement = true> 
 <cfset this.sessionTimeout = createTimeSpan(0,0,30,0)>
 <cfset this.loginStorage = "session">
