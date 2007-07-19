@@ -48,7 +48,7 @@ Description :
 <!--- Initialize framework global variables --->
 <cfset request.fwExecTime = GetTickCount()>
 <cfset lockTimeout = 60>
-<cfset appHash = hash(getBaseTemplatePath() & getTickCount())>
+<cfset appHash = hash(getBaseTemplatePath())>
 
 <!--- Initialize the Controller --->
 <cfif not structkeyExists(application,"cbController") or not application.cbController.getColdboxInitiated() or isfwReinit()>
