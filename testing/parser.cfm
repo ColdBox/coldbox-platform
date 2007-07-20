@@ -1,7 +1,7 @@
 <cftimer type="inline">
-<cffile action="read" file="#expandPath("../src/handlers/ehobe.cfc")#" variable="content">
-<textarea rows="20" cols="80"><cfoutput>#HTMLEditFormat(newcontent)#</cfoutput></textarea>
-<cfabort>
+<cffile action="read" file="#expandPath("../src/handlers/ehGeneral.cfc")#" variable="content">
+<textarea rows="20" cols="80"><cfoutput>#HTMLEditFormat(content)#</cfoutput></textarea>
+
 <cfscript>
 joStringBuffer = createObject("java","java.lang.StringBuffer").init();
 str = reFindnocase("<cffunction[^>/]*>",content,1,true);
