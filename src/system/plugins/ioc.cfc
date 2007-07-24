@@ -10,6 +10,7 @@ Description :
 	IoC Plugin, acts as a IoC Factory Decorator and Facade.
 
 Modification History:
+07/24/2007 - LightWire integration added by Aaron Roberson
 02/15/2007 - Created
 ----------------------------------------------------------------------->
 <cfcomponent name="ioc"
@@ -36,6 +37,7 @@ Modification History:
 		
 		<!--- Constants --->
 		<cfset instance.COLDSPRING_FACTORY = getSetting("ColdspringBeanFactory",true)>
+		<cfset instance.LIGHTWIRE_FACTORY = getSetting("LightWireBeanFactory",true)>
 		
 		<!--- Return Instance --->
 		<cfreturn this>
@@ -47,22 +49,21 @@ Modification History:
 
 	<cffunction name="configure" access="public" returntype="void" hint="Configure the IoC Plugin. Loads the IoC Factory and configures it." output="false">
 
-		<!--- Check the services file First --->
-		<cfset validateDefinitionFile()>
-
 		<!--- Load the appropriate ioc Framework Bean Factory --->
 		<cfswitch expression="#lcase(instance.IOCFramework)#">
 
 			<cfcase value="coldspring">
+				<!--- Check the services file First --->
+				<cfset validateDefinitionFile()>
 				<cfset instance.IoCFactory = createColdspring()>
 			</cfcase>
 
 			<cfcase value="lightwire">
-				<cfthrow message="Lightwire is not supported as of yet. Still in beta.">
+				<cfset instance.IoCFactory = createLightWire()>
 			</cfcase>
 
 			<cfdefaultcase>
-				<cfthrow type="Framework.plugins.ioc.InvalidIoCFramework" message="The only available IoC supported frameworks are coldspring and lightwire. You choose: #instance.IOCFramework#">
+				<cfthrow type="Framework.plugins.ioc.InvalidIoCFramework" message="The only available IoC supported frameworks are coldspring and lightwire. You chose: #instance.IOCFramework#">
 			</cfdefaultcase>
 		</cfswitch>
 
@@ -78,7 +79,7 @@ Modification History:
 			</cfcase>
 
 			<cfcase value="lightwire">
-				<cfthrow message="Lightwire is not supported as of yet. Still in beta.">
+				<cfset instance.IoCFactory.init(createLightwireConfigBean())>
 			</cfcase>
 
 		</cfswitch>
@@ -105,7 +106,7 @@ Modification History:
 				</cfcase>
 
 				<cfcase value="lightwire">
-					<cfthrow message="Lightwire is not supported as of yet. Still in beta.">
+					<cfset oBean = instance.IoCFactory.getBean(arguments.beanName)>
 				</cfcase>
 			</cfswitch>
 			<!--- If Caching on, then set object in cache --->
@@ -209,7 +210,25 @@ Modification History:
 	</cffunction>
 
 	<cffunction name="createLightwire" access="private" output="false" returntype="any" hint="Creates the lightwire factory and configures it">
-		<cfthrow message="Lightwire is not supported as of yet. Still in beta.">
+		<cfscript>
+			var lightwire = "";
+			// Create the LightWire Factory
+			lightwire = createObject("component", instance.LIGHTWIRE_FACTORY).init(createLightwireConfigBean());
+			return lightwire;
+		</cfscript>
+	</cffunction>
+	
+	<!--- Author: luis5198 - Date: 7/24/2007 --->
+	<cffunction name="createLightwireConfigBean" output="false" access="public" returntype="any" hint="Creates the lightwire config bean">
+		<cfscript>
+			var lightwireBeanConfig = "";
+			//Create the lightwire Config Bean.
+			lightwireBeanConfig = CreateObject("component", instance.IOCDefinitionFile);
+			//setter dependency on coldbox
+			lightwireBeanConfig.setController(getController());
+			//return it			
+			return lightwireBeanConfig.init();
+		</cfscript>
 	</cffunction>
 
 </cfcomponent>

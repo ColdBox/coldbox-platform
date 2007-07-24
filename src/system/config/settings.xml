@@ -29,6 +29,7 @@
 		<Setting name="EventName" value="event"/>
 		<!--IOC Frameworks-->
         <Setting name="ColdspringBeanFactory" value="coldspring.beans.DefaultXmlBeanFactory"/>
+		<Setting name="LightWireBeanFactory"  value="coldbox.system.extras.lightwire.LightWire" />
         <!--MessageBox Plugin Storage Scope (session|client)-->
         <Setting name="MessageBoxStorage" value="session"/>
         <!--ColdBox Cache Parameter: Default Object Timeout in Minutes -->
