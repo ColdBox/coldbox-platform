@@ -36,8 +36,8 @@
 	</Settings>
 
 	<YourSettings>
-		<Setting name="MyArray"  value="{1,2,3,4,5,6}"/>
-		<Setting name="MyStruct" value="[name:luis majano, email: info@email.com, active: true]"/>
+		<Setting name="MyArray"  value="[1,2,3,4,5,6]"/>
+		<Setting name="MyStruct" value="{ name: 'luis majano', email: 'info@email.com', active= true }"/>
 	</YourSettings>
 
 	<!--Optional,if blank it will use the CFMX administrator settings.-->

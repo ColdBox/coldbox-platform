@@ -698,15 +698,24 @@ Modification History:
 		<cfargument name="setting" type="string" required="true" hint="The setting to create an array from">
 		<!--- ************************************************************* --->
 		<!--- Clean [] --->
-		<cfset var cleanList = "">
-		<cfset var i = 1>
-		<cfset var cleanArray = ArrayNew(1)>
-		<cfset cleanList = replace(replace(arguments.setting,"[","","all"),"]","","all")>
-		<cfloop from="1" to="#listLen(cleanList)#" index="i">
-			<cfset ArrayAppend(cleanArray,trim(listgetAt(cleanList,i)))>
-		</cfloop>
-		<!--- Create Array --->
-		<cfreturn cleanArray>
+		<cfscript>
+			var cleanList = "";
+			var i = 1;
+			var cleanArray = ArrayNew(1);
+			var listLength = 0;
+			var quoteChar = "'";
+			
+			//clean List
+			cleanList = reReplace( arguments.setting, '^\[|\]$', '', "All");
+			//set length
+			listLength = listlen(cleanList);
+			//create array elements
+			for (i=1; i lte listLength; i=i+1){
+				ArrayAppend(cleanArray, reReplace( trim(listgetAt(cleanList,i)) , '^\#quoteChar#|\#quoteChar#$',"", "All" ) );
+			}
+			//return array
+			return cleanArray;
+		</cfscript>
 	</cffunction>
 
 	<!--- ************************************************************* --->
@@ -715,18 +724,34 @@ Modification History:
 		<cfargument name="setting" type="string" required="true" hint="The setting to create a struct from">
 		<!--- ************************************************************* --->
 		<!--- Clean {} --->
-		<cfset var cleanList = "">
-		<cfset var i = 1>
-		<cfset var newStructure = structnew()>
-		<cfset var structList = "">
-		<cfset cleanList = replace(replace(arguments.setting,"{","","all"),"}","","all")>
-		<!--- Loop Through list --->
-		<cfloop from="1" to="#listlen(cleanList)#" index="i">
-			<cfset structList = listgetAt(cleanList,i)>
-			<cfset structInsert(newStructure, trim(getToken(structList,1,":")), trim(getToken(structList,2,":")) )>
-		</cfloop>
-		<!--- Create Array --->
-		<cfreturn newStructure>
+		<cfscript>
+			var cleanList = "";
+			var i = 1;
+			var newStructure = structnew();
+			var structList = "";
+			var quoteChar = "'";
+			var listLength = "";
+			var value = "";
+			
+			//clean List
+			cleanList = reReplace( arguments.setting, '^\{|\}$', '', "All");
+			//set length
+			listLength = listlen(cleanList);
+			//create array elements
+			for (i=1; i lte listLength; i=i+1){
+				structList = listgetAt(cleanList,i);
+				if ( find(":",structList) ){
+					value = reReplace( trim(getToken(structList,2,":")) , '^\#quoteChar#|\#quoteChar#$',"", "All" );
+					structInsert(newStructure, trim(getToken(structList,1,":")), value );
+				}
+				else{
+					value = reReplace( trim(getToken(structList,2,"=")) , '^\#quoteChar#|\#quoteChar#$',"", "All" );
+					structInsert(newStructure, trim(getToken(structList,1,"=")), value );
+				}	
+			}
+			//return structure
+			return newStructure;
+		</cfscript>
 	</cffunction>
 
 	<!--- ************************************************************* --->
@@ -740,6 +765,8 @@ Modification History:
 		<cfreturn FileContents>
 	</cffunction>
 
+	<!--- ************************************************************* --->
+	
 	<cffunction name="getAbsolutePath" access="private" output="false" returntype="string" hint="Turn any system path, either relative or absolute, into a fully qualified one">
 		<!--- ************************************************************* --->
 		<cfargument name="path" type="string" required="true" hint="Abstract pathname">
