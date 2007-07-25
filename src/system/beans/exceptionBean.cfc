@@ -150,6 +150,8 @@ Modification History:
 	<cffunction name="getTagContextAsString" access="public" returntype="string" output="false" hint="I return the tagcontext in string format.">
 		<cfset var arrayTagContext = getTagContext()>
 		<cfset var rtnString = "">
+		<cfset var i = 1>
+		<cfset var entry = "">
 		<cfif structkeyExists(variables.instance.exceptionStruct, "TagContext") and ArrayLen(variables.instance.exceptionStruct.TagContext)>
 			<cfloop from="1" to="#arrayLen(arrayTagContext)#" index="i">
 			  <cfsavecontent variable="entry"><cfoutput>ID: <cfif not structKeyExists(arrayTagContext[i], "ID")>N/A<cfelse>#arrayTagContext[i].ID#</cfif>; LINE: #arrayTagContext[i].LINE#; TEMPLATE: #arrayTagContext[i].Template# #chr(13)#</cfoutput></cfsavecontent>

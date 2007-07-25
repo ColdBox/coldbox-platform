@@ -68,8 +68,8 @@ Modification History:
 		<cfset var JVMTotalMemory = JVMRuntime.totalMemory()/1024>
 
 		<!--- Render debuglog --->
-		<cfsavecontent variable="RederedDebugging"><cfinclude template="../includes/debug.cfm"></cfsavecontent>
-		<cfreturn RederedDebugging>
+		<cfsavecontent variable="RenderedDebugging"><cfinclude template="../includes/debug.cfm"></cfsavecontent>
+		<cfreturn RenderedDebugging>
 	</cffunction>
 
 	<cffunction name="renderCachePanel" access="public" hint="Renders the caching panel." output="false" returntype="Any">
@@ -94,8 +94,8 @@ Modification History:
 		<cfset var renderType = "cachepanel">
 
 		<!--- Generate Debugging --->
-		<cfsavecontent variable="RederedDebugging"><cfinclude template="../includes/cachepanel.cfm"></cfsavecontent>
-		<cfreturn RederedDebugging>
+		<cfsavecontent variable="RenderedDebugging"><cfinclude template="../includes/cachepanel.cfm"></cfsavecontent>
+		<cfreturn RenderedDebugging>
 	</cffunction>
 	
 <!------------------------------------------- ACCESSOR/MUTATORS ------------------------------------------->
