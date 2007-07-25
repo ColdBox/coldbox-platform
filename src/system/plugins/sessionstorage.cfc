@@ -40,7 +40,7 @@ Modification History:
 		<cfargument name="value" type="any"    required="true" hint="The value to set in the variable.">
 		<!--- ************************************************************* --->
 		<cfset var tmpVar = "">
-		<cfset session["#arguments.name#"] = #arguments.value#>
+		<cfset session[arguments.name] = arguments.value>
 	</cffunction>
 
 	<!--- ************************************************************* --->
@@ -51,8 +51,8 @@ Modification History:
 		<cfargument  name="default"  	type="any"     required="false"  	hint="The default value to set. If not used, a blank is returned." default="">
 		<!--- ************************************************************* --->
 		<cfset var rtnVar = "">
-		<cfif exists("#arguments.name#")>
-			<cfset rtnVar = session["#arguments.name#"]>
+		<cfif exists(arguments.name)>
+			<cfset rtnVar = session[arguments.name]>
 		<cfelse>
 			<cfset rtnVar = arguments.default>
 		</cfif>
@@ -66,7 +66,7 @@ Modification History:
 		<!--- ************************************************************* --->
 		<cfargument  name="name" type="string" required="true" 	hint="The variable name to retrieve.">
 		<!--- ************************************************************* --->
-		<cfif structKeyExists(session, "#arguments.name#")>
+		<cfif structKeyExists(session, arguments.name)>
 			<cfreturn true>
 		<cfelse>
 			<cfreturn false>
@@ -80,7 +80,7 @@ Modification History:
 		<cfargument  name="name" type="string" required="true" 	hint="The variable name to retrieve.">
 		<!--- ************************************************************* --->
 		<cfif exists(arguments.name)>
-			<cfset structdelete(session, "#arguments.name#")>
+			<cfset structdelete(session, arguments.name)>
 			<cfreturn true>
 		<cfelse>
 			<cfreturn false>

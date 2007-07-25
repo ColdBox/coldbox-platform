@@ -42,12 +42,12 @@ Modification History:
 		<cfset var tmpVar = "">
 		<!--- Test for simple mode --->
 		<cfif isSimpleValue(arguments.value)>
-			<cfset client["#arguments.name#"] = #arguments.value#>
+			<cfset client[arguments.name] = arguments.value>
 		<cfelse>
 			<!--- Wddx variable --->
 			<cfwddx action="cfml2wddx" input="#arguments.value#" output="tmpVar">
 			<!--- Set Variable --->
-			<cfset client["#arguments.name#"] = tmpVar>
+			<cfset client[arguments.name] = tmpVar>
 		</cfif>
 	</cffunction>
 
@@ -60,9 +60,9 @@ Modification History:
 		<!--- ************************************************************* --->
 		<cfset var wddxVar = "">
 		<cfset var rtnVar = "">
-		<cfif exists("#arguments.name#")>
+		<cfif exists(arguments.name)>
 			<!--- Get Value --->
-			<cfset rtnVar = client["#arguments.name#"]>
+			<cfset rtnVar = client[arguments.name]>
 			<cfif isWDDX(rtnVar)>
 				<!--- Unwddx packet --->
 				<cfwddx action="wddx2cfml" input="#rtnVar#" output="wddxVar">
@@ -81,7 +81,7 @@ Modification History:
 		<!--- ************************************************************* --->
 		<cfargument  name="name" type="string" required="true" 	hint="The variable name to retrieve.">
 		<!--- ************************************************************* --->
-		<cfif structKeyExists(client, "#arguments.name#")>
+		<cfif structKeyExists(client,arguments.name)>
 			<cfreturn true>
 		<cfelse>
 			<cfreturn false>
@@ -95,7 +95,7 @@ Modification History:
 		<cfargument  name="name" type="string" required="true" 	hint="The variable name to retrieve.">
 		<!--- ************************************************************* --->
 		<cfif exists(arguments.name)>
-			<cfset structdelete(client, "#arguments.name#")>
+			<cfset structdelete(client, arguments.name)>
 			<cfreturn true>
 		<cfelse>
 			<cfreturn false>
