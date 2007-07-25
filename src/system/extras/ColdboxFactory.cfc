@@ -23,8 +23,7 @@ Description :
 Modification History:
 5/30/2007 - Created Template
 ---------------------------------------------------------------------->
-<!--- Author: luis5198 - Date: 5/30/2007 --->
-<cfcomponent name="ColdboxFactory" output="false" hint="Create Config Beans, Controller and Plugins of the current running application">
+<cfcomponent name="ColdboxFactory" output="false" hint="Create Config Beans, Controller, Cache Manager and Plugins of the current running application">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
@@ -51,7 +50,12 @@ Modification History:
 		</cfscript>
 	</cffunction>
 	
-	<!--- Author: luis5198 - Date: 6/19/2007 --->
+	<cffunction name="getColdboxOCM" output="false" access="public" returntype="any" hint="Get the coldbox cache manager reference">
+		<cfscript>
+		return application.cbController.getColdboxOCM();
+		</cfscript>
+	</cffunction>
+	
 	<cffunction name="getPlugin" access="Public" returntype="any" hint="Plugin factory" output="true">
 		<cfargument name="plugin" 		type="string"  hint="The Plugin object's name to instantiate" >
 		<cfargument name="customPlugin" type="boolean" required="false" default="false" hint="Used internally to create custom plugins.">

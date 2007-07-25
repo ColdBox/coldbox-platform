@@ -36,5 +36,14 @@
 		<cfargument name="configBean" type="Any" required="true"/>
 		<cfset instance.configBean = arguments.configBean/>
 	</cffunction>
+	
+	<cffunction name="getcacheManager" access="public" output="false" returntype="any" hint="Get cacheManager">
+		<cfreturn instance.cacheManager/>
+	</cffunction>
+	
+	<cffunction name="setcacheManager" access="public" output="false" returntype="void" hint="Set cacheManager">
+		<cfargument name="cacheManager" type="any" required="true"/>
+		<cfset instance.cacheManager = arguments.cacheManager/>
+	</cffunction>
 
 </cfcomponent>

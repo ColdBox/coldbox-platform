@@ -21,6 +21,9 @@
         <property name="logger">
             <ref bean="loggerPlugin" />
         </property>
+        <property name="cacheManager">
+            <bean id="cacheManager" factory-bean="ColdboxFactory" factory-method="getColdboxOCM" />
+        </property>
     </bean>
 	
 </beans>
