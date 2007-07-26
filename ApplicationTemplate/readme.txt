@@ -1,3 +1,8 @@
+********************************************************************************
+Copyright 2005-2007 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+www.coldboxframework.com | www.luismajano.com | www.ortussolutions.com
+********************************************************************************
+
 Welcome to the ColdBox Application Template
 
 This is a skeleton for you to start a new ColdBox application or you can use the 
