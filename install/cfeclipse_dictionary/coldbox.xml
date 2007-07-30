@@ -540,7 +540,7 @@
 		</scope>
 		<scope value="event.getEventName()" type="String">
 			<help><![CDATA[ 
-			Gets the event name variable.
+			Gets the event name variable. (event= or do=)
 		]]></help>
 		</scope>
 		<scope value="event.getSize()" type="Numeric">
@@ -614,138 +614,6 @@
 		]]></help>
 		</scope>
 		<scope value="event.valueExists('name')" type="Boolean">
-			<help><![CDATA[ 
-			 I verify that a value exists in the request collection.
-		]]></help>
-		</scope>
-		
-		<!--RC Scope -->
-		<scope value="rc.clearCollection()" type="Void">
-			<help><![CDATA[ 
-			Clears the entire collection.
-		]]></help>
-		</scope>
-		<scope value="rc.collectionAppend(structure,false)" type="Void">
-			<help><![CDATA[ 
-			Append a structure to the collection
-		]]></help>
-		</scope>
-		<scope value="rc.getCollection()" type="Struct">
-			<help><![CDATA[ 
-			Gets a reference to the collection.
-		]]></help>
-		</scope>
-		<scope value="rc.getCollection(DeepCopyFlag=true)" type="Struct">
-			<help><![CDATA[ 
-			Gets a depp copy of the collection.
-		]]></help>
-		</scope>
-		<scope value="rc.getCurrentEvent()" type="String">
-			<help><![CDATA[ 
-			Gets the current event
-		]]></help>
-		</scope>
-		<scope value="rc.getCurrentLayout()" type="String">
-			<help><![CDATA[ 
-			Gets the current layout
-		]]></help>
-		</scope>
-		<scope value="rc.getCurrentView()" type="String">
-			<help><![CDATA[ 
-			Gets the current view
-		]]></help>
-		</scope>
-		<scope value="rc.getDebugPanelFlag()" type="Boolean">
-			<help><![CDATA[ 
-			Gets the ColdBox debugging panel flag
-		]]></help>
-		</scope>
-		<scope value="rc.getDefaultLayout()" type="String">
-			<help><![CDATA[ 
-			Gets the default layout
-		]]></help>
-		</scope>
-		<scope value="rc.getDefaultView()" type="String">
-			<help><![CDATA[ 
-			Gets the default view
-		]]></help>
-		</scope>
-		<scope value="rc.getEventName()" type="String">
-			<help><![CDATA[ 
-			Gets the event name variable.
-		]]></help>
-		</scope>
-		<scope value="rc.getSize()" type="Numeric">
-			<help><![CDATA[ 
-			Gets the current size of the request collection
-		]]></help>
-		</scope>
-		<scope value="rc.getValue('name')" type="Any">
-			<help><![CDATA[ 
-			Gets a value from the collection.
-		]]></help>
-		</scope>
-		<scope value="rc.getValue('name',default)" type="Any">
-			<help><![CDATA[ 
-			Gets a value from the collection with a default value if not found.
-		]]></help>
-		</scope>
-		<scope value="rc.getViewLayouts()" type="Struct">
-			<help><![CDATA[ 
-			Gets the structure of array of view/layout pairs.
-		]]></help>
-		</scope>
-		<scope value="rc.overrideEvent('event')" type="void">
-			<help><![CDATA[ 
-			  I Override the current event in the request collection. This method does not execute the event, it just replaces the event to be executed by the framework's RunEvent() method. This method is usually called from an onRequestStart or onApplicationStart method.
-		]]></help>
-		</scope>
-		<scope value="rc.paramValue('name','value')" type="void">
-			<help><![CDATA[ 
-			Param a name/value pair in the collection.
-		]]></help>
-		</scope>
-		<scope value="rc.removeValue('name')" type="void">
-			<help><![CDATA[ 
-			Remove a name/value pair in the collection
-		]]></help>
-		</scope>
-		<scope value="rc.setCollection(collection)" type="void">
-			<help><![CDATA[ 
-			Overwrite the collection with another collection
-		]]></help>
-		</scope>
-		<scope value="rc.setDefaultLayout('Layout')" type="void">
-			<help><![CDATA[ 
-			Set the default layout for this request
-		]]></help>
-		</scope>
-		<scope value="rc.setDefaultView('view')" type="void">
-			<help><![CDATA[ 
-			Set the default view for this request
-		]]></help>
-		</scope>
-		<scope value="rc.setLayout('name')" type="void">
-			<help><![CDATA[ 
-			Set the layout to override and render. Layouts are pre-defined in the config.xml file. However I can override these settings if needed. Do not append a the cfm extension. Request Collection name: currentLayout
-		]]></help>
-		</scope>
-		<scope value="rc.setValue('name', value)" type="void">
-			<help><![CDATA[ 
-			    I Set a value in the request collection
-		]]></help>
-		</scope>
-		<scope value="rc.setView('view')" type="void">
-			<help><![CDATA[ 
-			 I Set the view to render in this request.I am called from event handlers.
-		]]></help>
-		</scope>
-		<scope value="rc.showDebugPanel(true|false)" type="void">
-			<help><![CDATA[ 
-			 I can override to show or not the debug panel. Very useful in AJAX debugging
-		]]></help>
-		</scope>
-		<scope value="rc.valueExists('name')" type="Boolean">
 			<help><![CDATA[ 
 			 I verify that a value exists in the request collection.
 		]]></help>
