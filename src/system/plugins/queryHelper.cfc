@@ -76,7 +76,6 @@ Modification History:
     <cffunction name="getColumnArray" access="public" returntype="array" output="false" hint="Returns an array of the values">
         <cfargument name="qry"			type="query"	required="true" hint="cf query" /> 
         <cfargument name="ColumnName"	type="string"	required="true" hint="column name" />
-        
         <cfscript>
             var stPrivate = structNew();
             var i = 0;
@@ -119,7 +118,6 @@ Modification History:
         <cfargument name="qry"			type="query"	required="true" hint="cf query" />
 		<cfargument name="ColumnValue"	type="string"	required="true" hint="column value" />
         <cfargument name="ColumnName"	type="string"	required="true" hint="column name" />
-        
         <cfscript>
             var stPrivate = structNew();
             var i = 0;
