@@ -117,7 +117,7 @@
 			<help><![CDATA[
 				Facade to cfdump
 			]]></help>
-			<parameter name="var" type="any" required="true">
+			<parameter name="var" type="Any" required="true">
 				<help><![CDATA[
 					The variable to dump
 				]]></help>
@@ -134,7 +134,7 @@
 			<help><![CDATA[
 				Get a reference to the ColdBox Controller
 			]]></help>
-			<parameter name="var" type="any" required="true">
+			<parameter name="var" type="Any" required="true">
 				<help><![CDATA[
 					The variable to dump
 				]]></help>
@@ -435,7 +435,7 @@
 			</parameter>
 			<parameter name="value" type="Any" required="true">
 				<help><![CDATA[
-					The value to set for this setting. This can be anything.
+					The value to set for this setting. This can be Anything.
 				]]></help>
 			</parameter>
 		</function>
