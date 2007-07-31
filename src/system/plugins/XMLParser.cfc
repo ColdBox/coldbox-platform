@@ -48,7 +48,7 @@ Modification History:
 		setpluginVersion("2.0");
 		setpluginDescription("I am the framework's XML parser");
 
-		//Search Patterns for Config.xml
+		//Search Patterns for Config file
 		variables.instance.searchSettings = "//Settings/Setting";
 		variables.instance.searchYourSettings = "//YourSettings/Setting";
 		variables.instance.searchBugTracer = "//BugTracerReports/BugEmail";
@@ -85,9 +85,12 @@ Modification History:
 		var distanceString = "";
 		var fwXML = "";
 		var SettingNodes = "";
-		var ConfigXMLFilePath = "";
 		var ParentAppPath = "";
 		var Conventions = "";
+		var ConfigXMLFilePath = "";
+		var tempFilePath = "";
+		var configFileFound = false;
+
 		try{
 			//verify Framework settings File
 			if ( not fileExists(instance.FrameworkConfigFile) ){
@@ -95,29 +98,25 @@ Modification History:
 			}
 			
 			//Set the Coldfusion Server Properties
-			switch ( server.coldfusion.productname ){
-				
-				case "BlueDragon" :
-					if ( listfirst(server.coldfusion.productversion) lt 7 ){
-						settingsStruct["xmlParseActive"] = false;
-						settingsStruct["chartingActive"] = false;
-						settingsStruct["xmlValidateActive"] = false;
-					}
-					else{
-						settingsStruct["xmlParseActive"] = true;
-						settingsStruct["chartingActive"] = true;
-						settingsStruct["xmlValidateActive"] = true;
-					}	
-					break;
-				
-				case "Railo":
-					settingsStruct["xmlParseActive"] = true;
+			if ( server.coldfusion.productname eq "BlueDragon" ){
+				if ( listfirst(server.coldfusion.productversion) lt 7 ){
+					settingsStruct["xmlParseActive"] = false;
 					settingsStruct["chartingActive"] = false;
-					settingsStruct["xmlValidateActive"] = true;
-					break;
-				
-				default:
+					settingsStruct["xmlValidateActive"] = false;
+				}
+				else{
+					settingsStruct["xmlParseActive"] = true;
 					settingsStruct["chartingActive"] = true;
+					settingsStruct["xmlValidateActive"] = true;
+				}	
+			}//end if bluedragon
+			else if ( server.coldfusion.productname eq "Railo" ){
+				settingsStruct["xmlParseActive"] = true;
+				settingsStruct["chartingActive"] = false;
+				settingsStruct["xmlValidateActive"] = true;
+			}//end if railo
+			else{
+				settingsStruct["chartingActive"] = true;
 					//Adobe CF
 					if ( listfirst(server.coldfusion.productversion) lt 7 ){
 						settingsStruct["xmlParseActive"] = false;
@@ -127,8 +126,7 @@ Modification History:
 						settingsStruct["xmlParseActive"] = true;
 						settingsStruct["xmlValidateActive"] = true;
 					}
-					break;				
-			}//end switch
+			}//end if adobe.
 			
 			//Determine which CF version for XML Parsing method
 			if ( settingsStruct["xmlParseActive"] ){
@@ -153,9 +151,23 @@ Modification History:
 			StructInsert(settingsStruct, "LayoutsConvention", conventions[1].layoutsLocation.xmltext);
 			StructInsert(settingsStruct, "ViewsConvention", conventions[1].viewsLocation.xmltext);
 
-			//Get Config XML File Settings or Override using arguments
+			//Get ColdBox Config XML File Settings or Override using arguments
 			if ( arguments.overrideConfigFile eq ""){
-				ConfigXMLFilePath = ExpandPath(replace(conventions[1].configLocation.xmltext, "{sep}", instance.FileSeparator,"all"));
+				//Get the Config XML FIle paths
+				ConfigXMLFilePath = replace(conventions[1].configLocation.xmltext, "{sep}", instance.FileSeparator,"all");
+				//Check and validate the list.
+				for (i=1; listlen(ConfigXMLFilePath); i=i+1){
+					tempFilePath = ExpandPath(listgetAt(ConfigXMLFilePath,i));
+					if ( fileExists(tempFilePath) ){
+						ConfigXMLFilePath = tempFilePath;
+						configFileFound = true;
+						break;
+					}
+				}
+				//Validate the findings
+				if( not configFileFound )
+					throw("ColdBox Configuration File can't be found.","The accepted files are: #ConfigXMLFilePath#","Framework.plugins.XMLParser.ConfigXMLFileNotFoundException");
+				//Insert the correct config file location.
 				StructInsert(settingsStruct, "ConfigFileLocation", ConfigXMLFilePath);
 			}
 			else{
@@ -231,7 +243,7 @@ Modification History:
 		//Testers
 		var tester = "";
 		try{
-			//Validate File
+			//Validate File, just in case.
 			if ( not fileExists(ConfigFileLocation) ){
 				throw("The Config File: #ConfigFileLocation# can't be found.","","Framework.plugins.XMLParser.ConfigXMLFileNotFoundException");
 			}

@@ -12,7 +12,7 @@ Description :
 	This is the coldbox framework runnable template. You will need
 	a coldfusion mapping to your application's root directory in order
 	for the framework to work. You will place this mapping name in your
-	{appRoot}/config/config.xml.cfm. If this file
+	{appRoot}/config/coldbox.xml.cfm. If this file
 	does not exists the framework will not start also.
 
 	Please view the quickstart guide if you have more questions.

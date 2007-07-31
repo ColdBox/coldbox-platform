@@ -46,7 +46,7 @@
     
     <!-- Conventions -->
     <Conventions>
-        <configLocation>config{sep}config.xml.cfm</configLocation>
+        <configLocation>config{sep}coldbox.xml.cfm,config{sep}config.xml.cfm</configLocation>
         <handlerLocation>handlers</handlerLocation>
         <layoutsLocation>layouts</layoutsLocation>
         <viewsLocation>views</viewsLocation>

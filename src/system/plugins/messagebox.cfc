@@ -11,7 +11,7 @@ Description :
 	The user has three types of messages: 1) Warning 2) Error 3) Information
 	The message is stored in the session scope. It can be changed to client
 	by changing the framework's settings.xml file.
-	The look can be altered by creating a class and setting it in the config.xml.cfm
+	The look can be altered by creating a class and setting it in the config file
 
 Modification History:
 06/09/2006 - Updated for coldbox.

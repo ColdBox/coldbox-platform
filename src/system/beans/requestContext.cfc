@@ -196,7 +196,7 @@ Modification History:
 		<cfreturn getValue("currentLayout","")>
 	</cffunction>
 
-	<cffunction name="setLayout" access="public" returntype="void" hint="I Set the layout to override and render. Layouts are pre-defined in the config.xml file. However I can override these settings if needed. Do not append a the cfm extension. Request Collection name: currentLayout"  output="false">
+	<cffunction name="setLayout" access="public" returntype="void" hint="I Set the layout to override and render. Layouts are pre-defined in the config file. However I can override these settings if needed. Do not append a the cfm extension. Request Collection name: currentLayout"  output="false">
 		<cfargument name="name"  hint="The name of the layout file to set." type="string" >
 		<!--- ************************************************************* --->
 	  	<cfscript>
