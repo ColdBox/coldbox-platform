@@ -20,7 +20,7 @@ Description		: This is a unit test controller that basically overrides the setNe
 		<cfargument name="addToken"			hint="Wether to add the tokens or not. Default is false" type="boolean" required="false" default="false"	>
 		<!--- ************************************************************* --->
 		<!--- Nothing In here to validate Unit Tests --->
-		<cfset getRequestService().getContext().setValue("setnextevent",true)>
+		<cfset getRequestService().getContext().setValue("setnextevent","#arguments.event#&#arguments.queryString#")>
 	</cffunction>
 
 </cfcomponent>
