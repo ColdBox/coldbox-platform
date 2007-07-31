@@ -19,9 +19,9 @@ Modification History:
 
 	<cfscript>
 	variables.instance = structnew();
-	variables.instance.invocationPath = "";
-	variables.instance.handler = "";
-	variables.instance.method = "";
+	instance.invocationPath = "";
+	instance.handler = "";
+	instance.method = "";
 	</cfscript>
 
 
@@ -58,39 +58,39 @@ Modification History:
 
 	<cffunction name="setMethod" access="public" returntype="void" output="false">
 		<cfargument name="method" type="string" required="true" />
-		<cfset variables.instance.method = arguments.method>
+		<cfset instance.method = arguments.method>
 	</cffunction>
 
 	<!--- ************************************************************* --->
 
 	<cffunction name="getMethod" access="public" returntype="any" output="false">
-		<cfreturn variables.instance.method >
+		<cfreturn instance.method >
 	</cffunction>
 
 	<!--- ************************************************************* --->
 
 	<cffunction name="setHandler" access="public" returntype="void" output="false">
 		<cfargument name="handler" type="string" required="true" />
-		<cfset variables.instance.handler = arguments.handler >
+		<cfset instance.handler = arguments.handler >
 	</cffunction>
 
 	<!--- ************************************************************* --->
 
 	<cffunction name="getHandler" access="public" returntype="any" output="false">
-		<cfreturn variables.instance.handler >
+		<cfreturn instance.handler >
 	</cffunction>
 
 	<!--- ************************************************************* --->
 
 	<cffunction name="setInvocationPath" access="public" returntype="void" output="false">
 		<cfargument name="InvocationPath" type="string" required="true" />
-		<cfset variables.instance.InvocationPath = arguments.InvocationPath >
+		<cfset instance.InvocationPath = arguments.InvocationPath >
 	</cffunction>
 
 	<!--- ************************************************************* --->
 
 	<cffunction name="getInvocationPath" access="public" returntype="any" output="false">
-		<cfreturn variables.instance.InvocationPath >
+		<cfreturn instance.InvocationPath >
 	</cffunction>
 
 	<!--- ************************************************************* --->

@@ -25,10 +25,10 @@ Modification History:
 			//Init instance
 			variables.instance = structnew();
 			//instance names
-			variables.instance.pluginName = "";
-			variables.instance.pluginVersion = "";
-			variables.instance.pluginDescription = "";
-			variables.instance.pluginPath = getCurrentTemplatePath();
+			instance.pluginName = "";
+			instance.pluginVersion = "";
+			instance.pluginDescription = "";
+			instance.pluginPath = getCurrentTemplatePath();
 			return this;
 		</cfscript>
 	</cffunction>
@@ -38,46 +38,46 @@ Modification History:
 	<!--- ************************************************************* --->
 
 	<cffunction name="getPluginName" access="public" hint="Get the instance's pluginName" returntype="string" output="false">
-		<cfreturn variables.instance.pluginName>
+		<cfreturn instance.pluginName>
 	</cffunction>
 
 	<!--- ************************************************************* --->
 
 	<cffunction name="setPluginName" access="public" hint="Set the instance's pluginName" returntype="string" output="false">
 		<cfargument name="pluginName" required="true" type="string">
-		<cfset variables.instance.pluginName = arguments.pluginName>
+		<cfset instance.pluginName = arguments.pluginName>
 	</cffunction>
 
 	<!--- ************************************************************* --->
 
 	<cffunction name="getPluginVersion" access="public" hint="Get the instance's pluginVersion" returntype="string" output="false">
-		<cfreturn variables.instance.pluginVersion>
+		<cfreturn instance.pluginVersion>
 	</cffunction>
 
 	<!--- ************************************************************* --->
 
 	<cffunction name="setPluginVersion" access="public" hint="Set the instance's pluginVersion" returntype="string" output="false">
 		<cfargument name="pluginVersion" required="true" type="string">
-		<cfset variables.instance.pluginVersion = arguments.pluginVersion>
+		<cfset instance.pluginVersion = arguments.pluginVersion>
 	</cffunction>
 
 	<!--- ************************************************************* --->
 
 	<cffunction name="getPluginDescription" access="public" hint="Get the instance's pluginDescription" returntype="string" output="false">
-		<cfreturn variables.instance.pluginDescription>
+		<cfreturn instance.pluginDescription>
 	</cffunction>
 
 	<!--- ************************************************************* --->
 
 	<cffunction name="setPluginDescription" access="public" hint="Set the instance's pluginDescription" returntype="string" output="false">
 		<cfargument name="pluginDescription" required="true" type="string">
-		<cfset variables.instance.pluginDescription = arguments.pluginDescription>
+		<cfset instance.pluginDescription = arguments.pluginDescription>
 	</cffunction>
 
 	<!--- ************************************************************* --->
 
 	<cffunction name="getpluginPath" access="public" hint="Get the instance's pluginPath" returntype="string" output="false">
-		<cfreturn variables.instance.pluginPath>
+		<cfreturn instance.pluginPath>
 	</cffunction>
 
 	<!--- ************************************************************* --->

@@ -33,7 +33,7 @@ Luis Majano		07/11/2006		Updated it to work with ColdBox. look at license in the
 		<cfset setpluginVersion("1.0")>
 		<cfset setpluginDescription("Java Loader plugin, based on Mark Mandel's brain.")>
 		<!--- This plugins' properties --->
-		<cfset variables.instance.classLoader = "">
+		<cfset instance.classLoader = "">
 		<cfreturn this>
 	</cffunction>
 

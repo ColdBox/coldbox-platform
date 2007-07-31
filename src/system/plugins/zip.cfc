@@ -69,24 +69,24 @@ Modification History:
 		setpluginVersion("1.0");
 		setpluginDescription("This is a zip utility for the framework.");
 		//This plugin's properties
-		variables.instance.ioFile      = CreateObject("java","java.io.File");
-		variables.instance.ioInput     = CreateObject("java","java.io.FileInputStream");
-		variables.instance.ioOutput    = CreateObject("java","java.io.FileOutputStream");
-		variables.instance.ioBufOutput = CreateObject("java","java.io.BufferedOutputStream");
-		variables.instance.zipFile     = CreateObject("java","java.util.zip.ZipFile");
-		variables.instance.zipEntry    = CreateObject("java","java.util.zip.ZipEntry");
-		variables.instance.zipInput    = CreateObject("java","java.util.zip.ZipInputStream");
-		variables.instance.zipOutput   = CreateObject("java","java.util.zip.ZipOutputStream");
-		variables.instance.gzInput     = CreateObject("java","java.util.zip.GZIPInputStream");
-		variables.instance.gzOutput    = CreateObject("java","java.util.zip.GZIPOutputStream");
-		variables.instance.objDate     = CreateObject("java","java.util.Date");
+		instance.ioFile      = CreateObject("java","java.io.File");
+		instance.ioInput     = CreateObject("java","java.io.FileInputStream");
+		instance.ioOutput    = CreateObject("java","java.io.FileOutputStream");
+		instance.ioBufOutput = CreateObject("java","java.io.BufferedOutputStream");
+		instance.zipFile     = CreateObject("java","java.util.zip.ZipFile");
+		instance.zipEntry    = CreateObject("java","java.util.zip.ZipEntry");
+		instance.zipInput    = CreateObject("java","java.util.zip.ZipInputStream");
+		instance.zipOutput   = CreateObject("java","java.util.zip.ZipOutputStream");
+		instance.gzInput     = CreateObject("java","java.util.zip.GZIPInputStream");
+		instance.gzOutput    = CreateObject("java","java.util.zip.GZIPOutputStream");
+		instance.objDate     = CreateObject("java","java.util.Date");
 
 		/* Set Localized Variables */
-		variables.instance.os = Server.OS.Name;
-		variables.instance.slash = createObject("java","java.lang.System").getProperty("file.separator");
+		instance.os = Server.OS.Name;
+		instance.slash = createObject("java","java.lang.System").getProperty("file.separator");
 
 		//LM. To fix Overflow.
-		variables.instance.filename = "";
+		instance.filename = "";
 
 		//Return instance
 		return this;

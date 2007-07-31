@@ -60,7 +60,7 @@ Modification History:
 		<cfset setpluginName("StringBuffer")>
 		<cfset setpluginVersion("1.0")>
 		<cfset setpluginDescription("This is a facade to the java StringBuffer class.")>
-		<cfset variables.instance.joStringBuffer = createObject("java","java.lang.StringBuffer") />
+		<cfset instance.joStringBuffer = createObject("java","java.lang.StringBuffer") />
 		<cfreturn this>
 	</cffunction>
 

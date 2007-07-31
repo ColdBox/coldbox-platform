@@ -18,11 +18,11 @@ Modification History:
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 	<cfscript>
 		variables.instance = structnew();
-		variables.instance.name = "";
-		variables.instance.alias = "";
-		variables.instance.dbtype = "";
-		variables.instance.username = "";
-	    variables.instance.password = "" ;
+		instance.name = "";
+		instance.alias = "";
+		instance.dbtype = "";
+		instance.username = "";
+	    instance.password = "" ;
 	</cfscript>
 
 <!------------------------------------------- PUBLIC ------------------------------------------->
@@ -56,65 +56,65 @@ Modification History:
 
 	<cffunction name="setname" access="public" return="void" output="false" hint="Set name of the datasource, this maps to the Coldfusion datasource name">
 	  <cfargument name="name" type="string" required="true">
-	  <cfset variables.instance.name=arguments.name >
+	  <cfset instance.name=arguments.name >
 	</cffunction>
 
 	<!--- ************************************************************* --->
 
 	<cffunction name="getname" access="public" return="string" output="false" hint="Get the name">
-	  <cfreturn variables.instance.name >
+	  <cfreturn instance.name >
 	</cffunction>
 
 	<!--- ************************************************************* --->
 
 	<cffunction name="setalias" access="public" return="void" output="false" hint="Set alias of the datasource, this is used for reference to the structure.">
 	  <cfargument name="alias" type="string" required="true">
-	  <cfset variables.instance.alias=arguments.alias >
+	  <cfset instance.alias=arguments.alias >
 	</cffunction>
 
 	<!--- ************************************************************* --->
 
 	<cffunction name="getalias" access="public" return="string" output="false" hint="Get the alias">
-	  <cfreturn variables.instance.name >
+	  <cfreturn instance.name >
 	</cffunction>
 
 	<!--- ************************************************************* --->
 
 	<cffunction name="setDBType" access="public" return="void" output="false" hint="Set DBType">
 	  <cfargument name="dbtype" type="string" required="true">
-	  <cfset variables.instance.dbtype=arguments.dbtype >
+	  <cfset instance.dbtype=arguments.dbtype >
 	</cffunction>
 
 	<!--- ************************************************************* --->
 
 	<cffunction name="getDBType" access="public" return="string" output="false" hint="Get DBType">
-	  <cfreturn variables.instance.dbtype >
+	  <cfreturn instance.dbtype >
 	</cffunction>
 
 	<!--- ************************************************************* --->
 
 	<cffunction name="setUsername" access="public" return="void" output="false" hint="Set Username">
 	  <cfargument name="Username" type="string" required="true">
-	  <cfset variables.instance.Username=arguments.Username >
+	  <cfset instance.Username=arguments.Username >
 	</cffunction>
 
 	<!--- ************************************************************* --->
 
 	<cffunction name="getUsername" access="public" return="string" output="false" hint="Get Username">
-	  <cfreturn variables.instance.Username >
+	  <cfreturn instance.Username >
 	</cffunction>
 
 	<!--- ************************************************************* --->
 
 	<cffunction name="setPassword" access="public" return="void" output="false" hint="Set Password">
 	  <cfargument name="Password" type="string" required="true" >
-	  <cfset variables.instance.Password=arguments.Password >
+	  <cfset instance.Password=arguments.Password >
 	</cffunction>
 
 	<!--- ************************************************************* --->
 
 	<cffunction name="getPassword" access="public" return="string" output="false" hint="Get Password">
-	  <cfreturn variables.instance.Password >
+	  <cfreturn instance.Password >
 	</cffunction>
 
 	<!--- ************************************************************* --->

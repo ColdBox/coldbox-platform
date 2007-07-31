@@ -48,7 +48,7 @@ Modification History:
 	<cffunction name="getKey" access="public" returntype="any" output="false">
 		<cfargument name="key" type="string" required="true">
 		<cfif keyExists(arguments.key)>
-			<cfreturn Evaluate("variables.configStruct.#arguments.key#")>
+			<cfreturn Evaluate("configStruct.#arguments.key#")>
 		<cfelse>
 			<cfthrow message="Key not found in configStruct">
 		</cfif>
@@ -60,7 +60,7 @@ Modification History:
 		<cfargument name="key"   type="string" required="true">
 		<cfargument name="value" type="any" required="true">
 		<cfscript>
-		"variables.configStruct.#arguments.key#" = arguments.value;
+		"configStruct.#arguments.key#" = arguments.value;
 		</cfscript>
 	</cffunction>
 
@@ -68,7 +68,7 @@ Modification History:
 
 	<cffunction name="keyExists" access="public" returntype="any" output="false">
 		<cfargument name="key" type="string" required="true">
-		<cfreturn isDefined("variables.configStruct.#arguments.key#")>
+		<cfreturn isDefined("configStruct.#arguments.key#")>
 	</cffunction>
 
 	<!--- ************************************************************* --->

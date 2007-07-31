@@ -19,11 +19,12 @@ Modification History:
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 	
 	<cfscript>
-		variables.context = structnew();
-		variables.defaultLayout = "";
-		variables.defaultView = "";
-		variables.ViewLayouts = "";
-		variables.eventName = "";
+		variables.instance = structnew();
+		instance.context = structnew();
+		instance.defaultLayout = "";
+		instance.defaultView = "";
+		instance.ViewLayouts = "";
+		instance.eventName = "";
 	</cfscript>
 
 	<cffunction name="init" access="public" output="false" hint="constructor" returntype="any">
@@ -52,9 +53,9 @@ Modification History:
 		<cfargument name="DeepCopyFlag" hint="Default is false, gives a reference to the collection. True, creates a deep copy of the collection." type="boolean" required="no" default="false">
 		<cfscript>
 			if ( arguments.DeepCopyFlag )
-				return duplicate(variables.context);
+				return duplicate(instance.context);
 			else
-				return variables.context;
+				return instance.context;
 		</cfscript>
 	</cffunction>
 
@@ -62,13 +63,13 @@ Modification History:
 
 	<cffunction name="setCollection" access="public" returntype="void" output="false" hint="Overwrite the collection with another collection">
 		<cfargument name="collection" type="struct" required="true">
-		<cfset variables.context = arguments.collection>
+		<cfset instance.context = arguments.collection>
 	</cffunction>
 
 	<!--- ************************************************************* --->
 
 	<cffunction name="clearCollection" access="public" returntype="void" output="false" hint="Clear the entire collection">
-		<cfset structClear(variables.context)>
+		<cfset structClear(instance.context)>
 	</cffunction>
 
 	<!--- ************************************************************* --->
@@ -76,13 +77,13 @@ Modification History:
 	<cffunction name="collectionAppend" access="public" returntype="void" output="false" hint="Append a structure to the collection, with overwrite or not. Overwrite = false by default">
 		<cfargument name="collection" type="struct"  required="true">
 		<cfargument name="overwrite"  type="boolean" required="false" default="false" hint="If you need to override data in the collection, set this to true.">
-		<cfset structAppend(variables.context,arguments.collection, arguments.overwrite)>
+		<cfset structAppend(instance.context,arguments.collection, arguments.overwrite)>
 	</cffunction>
 
 	<!--- ************************************************************* --->
 
 	<cffunction name="getSize" access="public" returntype="numeric" output="false" hint="The number of elements in the collection">
-		<cfreturn structCount(variables.context)>
+		<cfreturn structCount(instance.context)>
 	</cffunction>
 
 	<!--- ************************************************************* --->
@@ -96,8 +97,8 @@ Modification History:
 					type="any" required="No" default="NONE">
 		<!--- ************************************************************* --->
 		<cfscript>
-			if ( isDefined("variables.context.#arguments.name#") ){
-				return Evaluate("variables.context.#arguments.name#");
+			if ( isDefined("instance.context.#arguments.name#") ){
+				return Evaluate("instance.context.#arguments.name#");
 			}
 			else if ( isSimpleValue(arguments.defaultValue) and arguments.defaultValue eq "NONE" )
 				throw("The variable: #arguments.name# is undefined in the request collection.","","Framework.ValueNotInRequestCollectionException");
@@ -125,7 +126,7 @@ Modification History:
 		<cfargument name="value" hint="The value of the variable to set" type="Any" >
 		<!--- ************************************************************* --->
 		<cfscript>
-			"variables.context.#arguments.name#" = arguments.value;
+			"instance.context.#arguments.name#" = arguments.value;
 		</cfscript>
 	</cffunction>
 
@@ -135,7 +136,7 @@ Modification History:
 		<cfargument name="name"  hint="The name of the variable to remove." type="string" >
 		<!--- ************************************************************* --->
 		<cfscript>
-			structDelete(variables.context,"#arguments.name#");
+			structDelete(instance.context,"#arguments.name#");
 		</cfscript>
 	</cffunction>
 
@@ -145,7 +146,7 @@ Modification History:
 		<cfargument name="name" hint="Name of the variable to find in the request collection" type="string">
 		<!--- ************************************************************* --->
 		<cfscript>
-			return isDefined("variables.context.#arguments.name#");
+			return isDefined("instance.context.#arguments.name#");
 		</cfscript>
 	</cffunction>
 
@@ -180,10 +181,10 @@ Modification History:
 	    <cfscript>
 	    if ( not arguments.nolayout ){
 		    if ( not getValue("layoutoverride",false) ){
-			    if ( StructKeyExists(variables.ViewLayouts, arguments.name) )
-					setValue("currentLayout",variables.ViewLayouts[arguments.name]);
+			    if ( StructKeyExists(instance.ViewLayouts, arguments.name) )
+					setValue("currentLayout",instance.ViewLayouts[arguments.name]);
 				else
-					setValue("currentLayout", variables.DefaultLayout);
+					setValue("currentLayout", instance.defaultLayout);
 			}
 		}
 		setValue("currentView",arguments.name);
@@ -239,53 +240,53 @@ Modification History:
 	<!--- ************************************************************* --->
 	
 	<cffunction name="getDefaultLayout" access="public" returntype="string" output="false">
-		<cfreturn variables.DefaultLayout>
+		<cfreturn instance.defaultLayout>
 	</cffunction>
 	
 	<!--- ************************************************************* --->
 	
 	<cffunction name="setDefaultLayout" access="public" returntype="void" output="false">
 		<cfargument name="DefaultLayout" type="string" required="true">
-		<cfset variables.DefaultLayout = arguments.DefaultLayout>
+		<cfset instance.defaultLayout = arguments.DefaultLayout>
 	</cffunction>
 	
 	<!--- ************************************************************* --->
 	
 	<cffunction name="getDefaultView" access="public" returntype="string" output="false">
-		<cfreturn variables.DefaultView>
+		<cfreturn instance.defaultView>
 	</cffunction>
 	
 	<!--- ************************************************************* --->
 	
 	<cffunction name="setDefaultView" access="public" returntype="void" output="false">
 		<cfargument name="DefaultView" type="string" required="true">
-		<cfset variables.DefaultView = arguments.DefaultView>
+		<cfset instance.defaultView = arguments.DefaultView>
 	</cffunction>
 	
 	<!--- ************************************************************* --->
 	
 	<cffunction name="getViewLayouts" access="public" returntype="struct" output="false">
-		<cfreturn variables.ViewLayouts>
+		<cfreturn instance.ViewLayouts>
 	</cffunction>
 	
 	<!--- ************************************************************* --->
 	
 	<cffunction name="setViewLayouts" access="public" returntype="void" output="false">
 		<cfargument name="ViewLayouts" type="struct" required="true">
-		<cfset variables.ViewLayouts = arguments.ViewLayouts>
+		<cfset instance.ViewLayouts = arguments.ViewLayouts>
 	</cffunction>
 	
 	<!--- ************************************************************* --->
 	
 	<cffunction name="getEventName" access="public" returntype="string" output="false">
-		<cfreturn variables.EventName>
+		<cfreturn instance.eventName>
 	</cffunction>
 	
 	<!--- ************************************************************* --->
 	
 	<cffunction name="setEventName" access="public" returntype="void" output="false">
 		<cfargument name="EventName" type="string" required="true">
-		<cfset variables.EventName = arguments.EventName>
+		<cfset instance.eventName = arguments.EventName>
 	</cffunction>
 
 <!------------------------------------------- PRIVATE ------------------------------------------->

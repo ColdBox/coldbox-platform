@@ -21,10 +21,10 @@ Modification History:
 
 	<cfscript>
 		variables.instance = structnew();
-		variables.instance.server = "";
-		variables.instance.username = "";
-	    variables.instance.password = "" ;
-		variables.instance.port = "";
+		instance.server = "";
+		instance.username = "";
+	    instance.password = "" ;
+		instance.port = "";
 	</cfscript>
 
 	<!--- ************************************************************* --->
@@ -64,52 +64,52 @@ Modification History:
 
 	<cffunction name="setserver" access="public" return="void" output="false" hint="Set server">
 	  <cfargument name="server" type="string" >
-	  <cfset variables.instance.server=arguments.server >
+	  <cfset instance.server=arguments.server >
 	</cffunction>
 
 	<!--- ************************************************************* --->
 
 	<cffunction name="getserver" access="public" return="string" output="false" hint="Get server">
-	  <cfreturn variables.instance.server >
+	  <cfreturn instance.server >
 	</cffunction>
 
 	<!--- ************************************************************* --->
 
 	<cffunction name="setport" access="public" return="void" output="false" hint="Set port">
 	  <cfargument name="port" type="string" >
-	  <cfset variables.instance.port=arguments.port >
+	  <cfset instance.port=arguments.port >
 	</cffunction>
 
 	<!--- ************************************************************* --->
 
 	<cffunction name="getport" access="public" return="string" output="false" hint="Get port">
-	  <cfreturn variables.instance.port >
+	  <cfreturn instance.port >
 	</cffunction>
 
 	<!--- ************************************************************* --->
 
 	<cffunction name="setUsername" access="public" return="void" output="false" hint="Set Username">
 	  <cfargument name="Username" type="string" >
-	  <cfset variables.instance.Username=arguments.Username >
+	  <cfset instance.Username=arguments.Username >
 	</cffunction>
 
 	<!--- ************************************************************* --->
 
 	<cffunction name="getUsername" access="public" return="string" output="false" hint="Get Username">
-	  <cfreturn variables.instance.Username >
+	  <cfreturn instance.Username >
 	</cffunction>
 
 	<!--- ************************************************************* --->
 
 	<cffunction name="setPassword" access="public" return="void" output="false" hint="Set Password">
 	  <cfargument name="Password" type="string" >
-	  <cfset variables.instance.Password=arguments.Password >
+	  <cfset instance.Password=arguments.Password >
 	</cffunction>
 
 	<!--- ************************************************************* --->
 
 	<cffunction name="getPassword" access="public" return="string" output="false" hint="Get Password">
-	  <cfreturn variables.instance.Password >
+	  <cfreturn instance.Password >
 	</cffunction>
 
 	<!--- ************************************************************* --->

@@ -31,9 +31,9 @@ Modification History:
 
 	<cfscript>
 	variables.instance = structnew();
-	variables.instance.AppMapping = "";
-	variables.instance.ConfigMapping = "";
-	variables.instance.controller = "";
+	instance.AppMapping = "";
+	instance.ConfigMapping = "";
+	instance.controller = "";
 	</cfscript>
 
 	<cffunction name="setUp" returntype="void" access="private">

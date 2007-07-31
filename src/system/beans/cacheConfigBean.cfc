@@ -27,11 +27,11 @@ Modification History:
 	    <!--- ************************************************************* --->
 		<cfscript>
 		variables.instance = structnew();
-		variables.instance.CacheObjectDefaultTimeout = arguments.CacheObjectDefaultTimeout;
-		variables.instance.CacheObjectDefaultLastAccessTimeout = arguments.CacheObjectDefaultLastAccessTimeout;
-		variables.instance.CacheReapFrequency = arguments.CacheReapFrequency;
-		variables.instance.CacheMaxObjects = arguments.CacheMaxObjects;
-		variables.instance.CacheFreeMemoryPercentageThreshold = arguments.CacheFreeMemoryPercentageThreshold;
+		instance.CacheObjectDefaultTimeout = arguments.CacheObjectDefaultTimeout;
+		instance.CacheObjectDefaultLastAccessTimeout = arguments.CacheObjectDefaultLastAccessTimeout;
+		instance.CacheReapFrequency = arguments.CacheReapFrequency;
+		instance.CacheMaxObjects = arguments.CacheMaxObjects;
+		instance.CacheFreeMemoryPercentageThreshold = arguments.CacheFreeMemoryPercentageThreshold;
 		return this;
 		</cfscript>
 	</cffunction>

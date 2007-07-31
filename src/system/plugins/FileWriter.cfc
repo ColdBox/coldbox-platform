@@ -41,9 +41,9 @@ Modification History:
 		<cfset setpluginVersion("1.0")>
 		<cfset setpluginDescription("Uses the java native classes to perform buffered file writing.")>
 		<!--- This instance constructor --->
-		<cfset variables.instance.joFileOutputStream = ''>
-		<cfset variables.instance.joOutputStreamWriter = ''>
-		<cfset variables.instance.joBufferedWriter = ''>
+		<cfset instance.joFileOutputStream = ''>
+		<cfset instance.joOutputStreamWriter = ''>
+		<cfset instance.joBufferedWriter = ''>
 		<cfreturn this>
 	</cffunction>
 

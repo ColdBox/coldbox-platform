@@ -30,8 +30,8 @@ Modification History:
 	<cffunction name="requestCapture" access="public" returntype="any" output="false" hint="I capture a request.">
 		<cfscript>
 			var Context = createContext();
-			var DebugPassword = getController().getSetting("debugPassword");
-			var EventName = getController().getSetting("EventName");
+			var DebugPassword = controller.getSetting("debugPassword");
+			var EventName = controller.getSetting("EventName");
 					
 			//Object Caching Garbage Collector
 			controller.getColdboxOCM().reap();
@@ -100,16 +100,16 @@ Modification History:
 		var DefaultLayout = "";
 		var DefaultView = "";
 		var ViewLayouts = structNew();
-		var EventName = getController().getSetting("EventName");
+		var EventName = controller.getSetting("EventName");
 		
-		if ( getController().settingExists("DefaultLayout") ){
-			DefaultLayout = getController().getSetting("DefaultLayout");
+		if ( controller.settingExists("DefaultLayout") ){
+			DefaultLayout = controller.getSetting("DefaultLayout");
 		}
-		if ( getController().settingExists("DefaultView") ){
-			DefaultView = getController().getSetting("DefaultView");
+		if ( controller.settingExists("DefaultView") ){
+			DefaultView = controller.getSetting("DefaultView");
 		}
-		if ( getController().settingExists("ViewLayouts") ){
-			ViewLayouts = getController().getSetting("ViewLayouts");
+		if ( controller.settingExists("ViewLayouts") ){
+			ViewLayouts = controller.getSetting("ViewLayouts");
 		}
 		//Return context.
 		return CreateObject("component","coldbox.system.beans.requestContext").init(FORM,URL,DefaultLayout,DefaultView,ViewLayouts,EventName);

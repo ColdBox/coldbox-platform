@@ -49,26 +49,26 @@ Modification History:
 		setpluginDescription("I am the framework's XML parser");
 
 		//Search Patterns for Config file
-		variables.instance.searchSettings = "//Settings/Setting";
-		variables.instance.searchYourSettings = "//YourSettings/Setting";
-		variables.instance.searchBugTracer = "//BugTracerReports/BugEmail";
-		variables.instance.searchDevURLS = "//DevEnvironments/url";
-		variables.instance.searchWS = "//WebServices/WebService";
-		variables.instance.searchLayouts = "//Layouts/Layout";
-		variables.instance.searchDefaultLayout = "//Layouts/DefaultLayout";
-		variables.instance.searchDefaultView = "//Layouts/DefaultView";
-		variables.instance.searchMailSettings = "//MailServerSettings";
-		variables.instance.searchi18NSettings = "//i18N";
-		variables.instance.searchDatasources = "//Datasources/Datasource";
-		variables.instance.searchCache = "//Cache";
+		instance.searchSettings = "//Settings/Setting";
+		instance.searchYourSettings = "//YourSettings/Setting";
+		instance.searchBugTracer = "//BugTracerReports/BugEmail";
+		instance.searchDevURLS = "//DevEnvironments/url";
+		instance.searchWS = "//WebServices/WebService";
+		instance.searchLayouts = "//Layouts/Layout";
+		instance.searchDefaultLayout = "//Layouts/DefaultLayout";
+		instance.searchDefaultView = "//Layouts/DefaultView";
+		instance.searchMailSettings = "//MailServerSettings";
+		instance.searchi18NSettings = "//i18N";
+		instance.searchDatasources = "//Datasources/Datasource";
+		instance.searchCache = "//Cache";
 
 		//Search patterns for fw xml
-		variables.instance.searchConventions = "//Conventions";
+		instance.searchConventions = "//Conventions";
 
 		//Properties
-		variables.instance.FileSeparator = createObject("java","java.lang.System").getProperty("file.separator");
-		variables.instance.FrameworkConfigFile = ExpandPath("/coldbox/system/config/settings.xml");
-		variables.instance.FrameworkConfigXSDFile = ExpandPath("/coldbox/system/config/config.xsd");
+		instance.FileSeparator = createObject("java","java.lang.System").getProperty("file.separator");
+		instance.FrameworkConfigFile = ExpandPath("/coldbox/system/config/settings.xml");
+		instance.FrameworkConfigXSDFile = ExpandPath("/coldbox/system/config/config.xsd");
 		//Return
 		return this;
 		</cfscript>

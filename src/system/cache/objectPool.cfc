@@ -18,9 +18,10 @@ Modification History:
 
 	<cffunction name="init" access="public" output="false" returntype="objectPool" hint="Constructor">
 		<cfscript>
-		variables.pool = structnew();
-		variables.pool_metadata = structnew();
-		return this;
+			variables.instance = structnew();
+			instance.pool = structnew();
+			instance.pool_metadata = structnew();
+			return this;
 		</cfscript>
 	</cffunction>
 
@@ -28,42 +29,42 @@ Modification History:
 
 	<!--- Getter/Setter For pool --->
 	<cffunction name="getpool" access="public" returntype="struct" output="false">
-		<cfreturn variables.pool >
+		<cfreturn instance.pool >
 	</cffunction>
 	<cffunction name="setpool" access="public" returntype="void" output="false">
 		<cfargument name="pool" type="struct" required="true">
-		<cfset variables.pool = arguments.pool>
+		<cfset instance.pool = arguments.pool>
 	</cffunction>
 
 	<!--- Getter/Setter for Pool Metdata --->
 	<cffunction name="getpool_metadata" access="public" returntype="struct" output="false">
-		<cfreturn variables.pool_metadata >
+		<cfreturn instance.pool_metadata >
 	</cffunction>
 	<cffunction name="setpool_metadata" access="public" returntype="void" output="false">
 		<cfargument name="pool_metadata" type="struct" required="true">
-		<cfset variables.pool_metadata = arguments.pool_metadata>
+		<cfset instance.pool_metadata = arguments.pool_metadata>
 	</cffunction>
 
 	<!--- Setter/Getter metdata property --->
 	<cffunction name="getObjectMetadata" access="public" returntype="struct" output="false">
 		<cfargument name="objectKey" type="string" required="true">
-		<cfreturn variables.pool_metadata[arguments.objectKey] >
+		<cfreturn instance.pool_metadata[arguments.objectKey] >
 	</cffunction>
 	<cffunction name="setObjectMetadata" access="public" returntype="void" output="false">
 		<cfargument name="objectKey" type="string" required="true">
 		<cfargument name="metadata"  type="struct" required="true">
-		<cfset variables.pool_metadata[arguments.objectKey] = arguments.metadata>
+		<cfset instance.pool_metadata[arguments.objectKey] = arguments.metadata>
 	</cffunction>
 	<cffunction name="getMetadataProperty" access="public" returntype="any" output="false">
 		<cfargument name="objectKey" type="string" required="true">
 		<cfargument name="property"  type="string" required="true">
-		<cfreturn variables.pool_metadata[arguments.objectKey][arguments.property] >
+		<cfreturn instance.pool_metadata[arguments.objectKey][arguments.property] >
 	</cffunction>
 	<cffunction name="setMetadataProperty" access="public" returntype="void" output="false">
 		<cfargument name="objectKey" type="string" required="true">
 		<cfargument name="property"  type="string" required="true">
 		<cfargument name="value"  	 type="any"    required="true">
-		<cfset variables.pool_metadata[arguments.objectKey][arguments.property] = arguments.value >
+		<cfset instance.pool_metadata[arguments.objectKey][arguments.property] = arguments.value >
 	</cffunction>
 
 	<!--- Simple Object Lookup --->
@@ -72,7 +73,7 @@ Modification History:
 		<cfargument name="objectKey" type="string" required="true">
 		<!--- ************************************************************* --->
 		<!--- Check for Object in Cache. --->
-		<cfreturn structKeyExists(variables.pool, arguments.objectKey) >
+		<cfreturn structKeyExists(instance.pool, arguments.objectKey) >
 	</cffunction>
 
 	<!--- Get an object from the pool --->
@@ -85,7 +86,7 @@ Modification History:
 		setMetadataProperty(arguments.objectKey,"hits", getMetaDataProperty(arguments.objectKey,"hits")+1);
 		setMetadataProperty(arguments.objectKey,"lastAccesed", now());
 		//Return object.
-		return variables.pool[arguments.objectKey];
+		return instance.pool[arguments.objectKey];
 		</cfscript>
 	</cffunction>
 
@@ -99,7 +100,7 @@ Modification History:
 		<cfscript>
 		var MetaData = structnew();
 		//Set new Object into cache.
-		variables.pool[arguments.objectKey] = arguments.MyObject;
+		instance.pool[arguments.objectKey] = arguments.MyObject;
 		//Create object's metdata
 		MetaData.hits = 1;
 		MetaData.Timeout = arguments.timeout;
@@ -118,8 +119,8 @@ Modification History:
 		<cfscript>
 		var Results = false;
 		try{
-			structDelete(variables.pool,arguments.objectKey);
-			structDelete(variables.pool_metadata,arguments.objectKey);
+			structDelete(instance.pool,arguments.objectKey);
+			structDelete(instance.pool_metadata,arguments.objectKey);
 			Results = true;
 		}
 		catch(Any e){
@@ -132,14 +133,14 @@ Modification History:
 	<!--- Get the size of the pool --->
 	<cffunction name="getSize" access="public" output="false" returntype="numeric" hint="Get the cache's size in items">
 		<cfscript>
-		return StructCount(variables.pool);
+		return StructCount(instance.pool);
 		</cfscript>
 	</cffunction>
 
 	<!--- Get the itemList --->
 	<cffunction name="getObjectsKeyList" access="public" output="false" returntype="string" hint="Get the cache's object entries listing.">
 		<cfscript>
-		return structKeyList(variables.pool);
+		return structKeyList(instance.pool);
 		</cfscript>
 	</cffunction>
 
