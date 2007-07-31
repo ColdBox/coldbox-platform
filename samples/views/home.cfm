@@ -48,6 +48,13 @@
 				  #getresource("nosetup")# <br />
 				  <a href="applications/helloworld/index.cfm" target="_blank">#getresource("opensample")#</a><br />
 				</p>
+				
+				<h3>LightWire Sample</h3>
+				<p> #getresource("by")# Luis Majano
+				  <br />
+				  #getresource("nosetup")# <br />
+				  <a href="applications/lightwiresample/index.cfm" target="_blank">#getresource("opensample")#</a><br />
+				</p>
 
 				<h3>JavaLoader</h3>
 				<p> #getresource("by")# Luis Majano

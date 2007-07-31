@@ -28,16 +28,16 @@ $(document).ready(function() {
 <body>
 <div id="container">
 
-	<div id="header">
-		<h1><img src="images/header.png" /></h1>
+	<div id="header" align="center">
+		<h1><img src="images/coldbox_250.png" /></h1>
 	</div>
 
 	<div id="navigation">
 		<ul>
-		<li class="selected"><a href="#cgi.SCRIPT_NAME#">#getResource("sampleshome")#</a></li>
-		<li><a href="http://www.homeportals.net"  target="_blank">Home Portals (Oscar Arevalo)</a></li>
-		<li><a href="http://www.camdenfamily.com/morpheus/blog/"  target="_blank">Ray Camden's Blog</a></li>
-		<li><a href="http://www.remotesynthesis.com/blog/" target="_blank">Open Source</a></li>
+			<li class="selected"><a href="#cgi.SCRIPT_NAME#">#getResource("sampleshome")#</a></li>
+			<li><a href="http://www.luismajano.com"  target="_blank">Luis Majano</a></li>
+			<li><a href="http://www.oscararevalo.com"  target="_blank">Oscar Arevalo</a></li>
+			<li><a href="http://www.robgonda.com"  target="_blank">Rob Gonda</a></li>
 		</ul>
 
 		<div align="right">
@@ -91,7 +91,7 @@ $(document).ready(function() {
 	</div>
 
 	<div id="footer">
-	<p>&copy; 2005-2006 <a href="http://www.luismajano.com">ColdBox by Luis Majano </a> | Design by <a href="http://andreasviklund.com">Andreas Viklund</a></p>
+	<p>&copy; 2005-2007 <a href="http://www.luismajano.com">ColdBox by Luis Majano </a> | Design by <a href="http://andreasviklund.com">Andreas Viklund</a></p>
 	</div>
 </div>
 

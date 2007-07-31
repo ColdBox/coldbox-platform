@@ -1,1 +1,0 @@
-<cfapplication name="i18N Sample Application"			   sessionmanagement="yes"			   sessiontimeout="#CreateTimeSpan(0,0,30,0)#"			   setclientcookies="true">
