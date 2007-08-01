@@ -246,13 +246,14 @@ Description		: This is the main ColdBox front Controller.
 		<!--- ************************************************************* --->
 		<cfset var oEventHandler = "">
 		<cfset var oEventBean = "">
+		<cfset var ExecutingEventData = "">
 		<cfset var objTimeout = "">
 		<cfset var MetaData = "">
 		<cfset var ExecutingHandler = "">
 		<cfset var ExecutingMethod = "">
 		<cfset var RequestContext = instance.RequestService.getContext()>
 		<cfset var EventName = getSetting("EventName")>
-
+		
 		<!--- Default Event Set --->
 		<cfif arguments.event eq "">
 			<cfset arguments.event = RequestContext.getValue(EventName)>
@@ -260,13 +261,13 @@ Description		: This is the main ColdBox front Controller.
 
 		<!--- Validate and Get registered handler --->
 		<cfset oEventBean = getRegisteredHandler(arguments.event)>
+		
 		<!--- Set Executing Parameters --->
 		<cfset ExecutingHandler = oEventBean.getRunnable()>
 		<cfset ExecutingMethod = oEventBean.getMethod()>
 
 		<!--- Check if using handler caching --->
 		<cfif getSetting("HandlerCaching")>
-
 			<!--- Lookup in Cache --->
 			<cfif instance.ColdboxOCM.lookup("handler_" & ExecutingHandler)>
 				<cfset oEventHandler = instance.ColdboxOCM.get("handler_" & ExecutingHandler)>
@@ -353,8 +354,9 @@ Description		: This is the main ColdBox front Controller.
 		var handlersList = getSetting("RegisteredHandlers");
 		var onInvalidEvent = getSetting("onInvalidEvent");
 		var HandlerBean = CreateObject("component","coldbox.system.beans.eventhandlerBean").init(getSetting("HandlersInvocationPath"));
+	
 		//Rip the method
-		HandlerReceived = getPlugin("fileUtilities").ripExtension(incomingEvent);
+		HandlerReceived = reReplace(incomingEvent,"\.[^.]*$","");
 		MethodReceived = listLast(incomingEvent,".");
 
 		//Check Registration
@@ -374,7 +376,7 @@ Description		: This is the main ColdBox front Controller.
 					//Log Invalid Event
 					getPlugin("logger").logEntry("error","Invalid Event detected: #HandlerReceived#.#MethodReceived#");
 					//Override Event
-					HandlerBean.setHandler(getPlugin("fileUtilities").ripExtension(onInvalidEvent));
+					HandlerBean.setHandler(reReplace(onInvalidEvent,"\.[^.]*$",""));
 					HandlerBean.setMethod(listLast(onInvalidEvent,"."));
 				}
 			}

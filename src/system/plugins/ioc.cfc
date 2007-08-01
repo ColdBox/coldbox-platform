@@ -218,8 +218,7 @@ Modification History:
 		</cfscript>
 	</cffunction>
 	
-	<!--- Author: luis5198 - Date: 7/24/2007 --->
-	<cffunction name="createLightwireConfigBean" output="false" access="public" returntype="any" hint="Creates the lightwire config bean">
+	<cffunction name="createLightwireConfigBean" output="false" access="private" returntype="any" hint="Creates the lightwire config bean">
 		<cfscript>
 			var lightwireBeanConfig = "";
 			//Create the lightwire Config Bean.
