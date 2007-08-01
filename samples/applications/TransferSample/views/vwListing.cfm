@@ -1,5 +1,5 @@
 <cfoutput>
-<cfset rc = event.getCollection()>
+
 <script language="javascript">
 	function confirmDelete(){
 		if (confirm("Do you really want to delete the selected user(s)?")){

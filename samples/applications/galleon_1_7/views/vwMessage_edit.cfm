@@ -10,7 +10,7 @@
 				 : fix bug if attachments turned off (rkc 11/14/06)
 	Purpose		 : Allows moderators/admins to edit post.
 --->
-<cfset rc = Event.getCollection()>
+
 <cfoutput>
 <p>
 <table width="500" cellpadding="6" class="tableDisplay" cellspacing="1" border="0">

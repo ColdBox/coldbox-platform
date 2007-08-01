@@ -59,17 +59,18 @@ Modification History:
 		<!--- ************************************************************* --->
 		<cfset var RenderedView = "">
 		<cfset var Event = controller.getRequestService().getContext()>
-
+		<cfset var rc = event.getCollection()>
+		
 		<!--- Test Default View --->
 		<cfif arguments.view eq "">
 			<cfset arguments.view = Event.getCurrentView()>
 		</cfif>
-
+		<!--- Test if we have a view to render --->
+		<cfif arguments.view eq "">
+			<cfthrow type="Framework.plugins.renderer.ViewNotSetException" message="The ""currentview"" variable has not been set, therefore there is no view to render." detail="Please remember to use the 'setView()' method in your handler.">
+		</cfif>
+			
 		<cfmodule template="../includes/timer.cfm" timertag="Rendering View [#arguments.view#.cfm]">
-			<!--- Test if we have a view to render --->
-			<cfif arguments.view eq "">
-				<cfthrow type="Framework.plugins.renderer.ViewNotSetException" message="The ""currentview"" variable has not been set, therefore there is no view to render." detail="Please remember to use the 'setView()' method in your handler.">
-			</cfif>
 			<!--- Render the View --->
 			<cfsavecontent variable="RenderedView"><cfoutput><cfinclude template="/#getappMapping()#/#getViewsConvention()#/#arguments.view#.cfm"></cfoutput></cfsavecontent>
 		</cfmodule>
@@ -85,7 +86,8 @@ Modification History:
 		<!--- ************************************************************* --->
 		<cfset var RenderedView = "">
 		<cfset var Event = controller.getRequestService().getContext()>
-
+		<cfset var rc = event.getCollection()>
+		
 		<cfmodule template="../includes/timer.cfm" timertag="Rendering View [#arguments.view#]">
 
 			<cftry>
@@ -109,6 +111,7 @@ Modification History:
 	<cffunction name="renderLayout" access="Public" hint="Renders the current layout." output="false" returntype="Any">
 		<cfset var RederedLayout = "">
 		<cfset var Event = controller.getRequestService().getContext()>
+		<cfset var rc = event.getCollection()>
 		
 		<!--- Check if no view has been set, if not, then set the default view --->
 		<cfif event.getCurrentView() eq "">

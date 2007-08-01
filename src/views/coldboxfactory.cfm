@@ -1,6 +1,4 @@
 <cfoutput>
-<cfset rc = event.getCollection()>
-
 <h2>ColdBox Factory Tests</h2>
 
 <table >

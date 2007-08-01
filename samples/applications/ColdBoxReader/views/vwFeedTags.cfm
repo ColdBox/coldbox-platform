@@ -1,6 +1,6 @@
 <cfset qryData = Event.getValue("qryData")>
 <cfset feedID = Event.getValue("feedID")>
-<cfset rc = Event.getCollection()>
+
 <div class="nicebox">
 
 	<div style="line-height:20px;">

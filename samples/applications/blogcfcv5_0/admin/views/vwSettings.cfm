@@ -7,7 +7,7 @@
 	Last Updated :
 	History      :
 --->
-<cfset rc = Event.getCollection()>
+
 <!--- quick utility func to change foo,moo to foo<newline>moo and reverse --->
 <cfscript>
 function toLines(str) { return replace(str, ",", chr(10), "all"); }

@@ -1,6 +1,6 @@
 <cfoutput>
 <!--- Collection Reference --->
-<cfset rc = event.getCollection()>
+
 
 <script language="javascript">
 	function confirmDelete(){

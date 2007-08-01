@@ -22,7 +22,7 @@
 --->
 
 <!--- Get References --->
-<cfset rc = Event.getCollection()>
+
 <cfset data = Event.getValue("data")>
 <!--- Displays pagination on right side, plus left side buttons for threads --->
 <cfmodule template="../tags/pagination.cfm" pages="#Event.getValue("pages")#" mode="messages" />

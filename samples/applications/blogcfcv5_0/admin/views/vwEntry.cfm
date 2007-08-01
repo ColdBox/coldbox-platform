@@ -172,7 +172,7 @@
 
 	<cfoutput>
 	<form action="index.cfm?#cgi.query_string#" method="post">
-	<cfset rc = Event.getCollection()>
+	
 	<cfloop item="key" collection="#rc#">
 		<cfif not listFindNoCase("preview,fieldnames,enclosure,event,fwreinit,allCats", key)>
 			<input type="hidden" name="#key#" value="#htmlEditFormat(rc[key])#">

@@ -1,4 +1,4 @@
-<cfset rc = Event.getCollection()>
+
 <cfoutput>
 <script language="JavaScript">
 function showit( vdiv ){

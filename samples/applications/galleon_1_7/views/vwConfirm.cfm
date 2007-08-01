@@ -7,7 +7,7 @@
 	History      : 
 	Purpose		 : Confirms a user.
 --->
-<cfset rc = Event.getCollection()>
+
 <cfoutput>
 <p>
 <table width="500" cellpadding="6" class="tableDisplay" cellspacing="1" border="0">

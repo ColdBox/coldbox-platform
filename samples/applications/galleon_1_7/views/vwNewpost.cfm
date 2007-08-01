@@ -16,7 +16,7 @@
 				   error if attachments disabled (rkc 11/6/06)
 	Purpose		 : Displays form to add a thread.
 --->
-<cfset rc = Event.getCollection()>
+
 <cfoutput>
 <p>
 <table width="500" cellpadding="6" class="tableDisplay" cellspacing="1" border="0">

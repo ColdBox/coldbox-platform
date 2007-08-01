@@ -13,7 +13,7 @@
 				   fix title (rkc 8/4/06)
 	Purpose		 : Displays threads for a forum
 --->
-<cfset rc = Event.getCollection()>
+
 <!--- Get References --->
 <cfset data = Event.getValue("data")>
 <!--- Displays pagination on right side, plus left side buttons for threads --->

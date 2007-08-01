@@ -1,5 +1,5 @@
 <cfset myFeed = Event.getValue("myFeed","")>
-<cfset rc = Event.getCollection()>
+
 <cfoutput>
 
 <h1>Add New Feed</h1>
