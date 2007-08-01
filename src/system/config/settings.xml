@@ -16,10 +16,9 @@
         <!--AvailableLogFileEncodings:US-ASCII, ISO-8859-1, UTF-8, UTF-16BE, UTF-16LE,  UTF-16.-->
         <Setting name="AvailableLogFileEncodings" value="US-ASCII,ISO-8859-1,UTF-8,UTF-16BE,UTF-16LE,UTF-16"/>
         <Setting name="LogFileEncoding" value="ISO-8859-1"/>
-        <!--LogFileWrite Buffer Size In bytes-->
-        <Setting name="LogFileBufferSize" value="32768"/>
         <!--LogFile's Max Size in KBytes -->
-        <Setting name="LogFileMaxSize" value="5000"/>
+        <Setting name="LogFileMaxSize" value="5"/>
+        <Setting name="LogFileMaxArchives" value="3"/>
         <!--Available CF Character Sets For File Operations -->
         <Setting name="AvailableCFCharacterSets" value="utf-8,iso-8859-1,windows-1252,us-ascii,shift_jis,iso-2022-jp,euc-jp,euc-kr,big5,euc-cn,utf-16"/>
         <Setting name="DefaultFileCharacterSet" value="iso-8859-1"/>

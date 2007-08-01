@@ -10,7 +10,7 @@
 		<Setting name="EventName" 					value="do"/>
 		<!--This feature is enabled, by default-->
 		<Setting name="EnableDumpVar" 				value="true"/>
-		<Setting name="EnableColdfusionLogging" 	value="true"/>
+		<Setting name="EnableColdfusionLogging" 	value="false"/>
 		<Setting name="EnableColdboxLogging" 		value="true"/>
 		<!--Absolute path to where you want your log files to be stored-->
 		<Setting name="ColdboxLogsLocation"			value="logs" />
@@ -24,12 +24,12 @@
 		<Setting name="CustomErrorTemplate"			value="" />
 		<Setting name="MessageboxStyleClass"		value="" />
 		<Setting name="HandlersIndexAutoReload"   	value="false" />
-		<Setting name="ConfigAutoReload"			value="true" />
+		<Setting name="ConfigAutoReload"			value="false" />
 		<Setting name="ExceptionHandler"     		value="" />
 		<Setting name="onInvalidEvent" 				value="" />
 		<!--Base Path to plugins, as if to instantiate them. -->
 		<Setting name="MyPluginsLocation" 			value="coldbox.myplugins"/>
-		<Setting name="HandlerCaching" 				value="false"/>
+		<Setting name="HandlerCaching" 				value="true"/>
 		<Setting name="IOCFramework" 				value="coldspring"/>
 		<Setting name="IOCDefinitionFile"		 	value="config/coldspring.xml.cfm"/>
 		<Setting name="IOCObjectCaching"			value="false"/>
