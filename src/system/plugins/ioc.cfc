@@ -100,15 +100,11 @@ Modification History:
 			<cfset oBean = getColdBoxOCM().get(beanKey)>
 		<cfelse>
 			<!--- Get Bean from IOC Framework --->
-			<cfswitch expression="#lcase(instance.IOCFramework)#">
-				<cfcase value="coldspring">
-					<cfset oBean = instance.IoCFactory.getBean(arguments.beanName)>
-				</cfcase>
-
-				<cfcase value="lightwire">
-					<cfset oBean = instance.IoCFactory.getBean(arguments.beanName)>
-				</cfcase>
-			</cfswitch>
+			<cfif lcase(instance.IOCFramework) eq "coldspring">
+				<cfset oBean = instance.IoCFactory.getBean(arguments.beanName)>
+			<cfelseif lcase(instance.IOCFramework) eq "lightwire">
+				<cfset oBean = instance.IoCFactory.getBean(arguments.beanName)>
+			</cfif>
 			<!--- If Caching on, then set object in cache --->
 			<cfif objCaching>
 				<!--- Get Object's MetaData, For Caching --->
