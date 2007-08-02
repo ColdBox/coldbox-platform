@@ -109,9 +109,9 @@ Modification History:
 			<cfif objCaching>
 				<!--- Get Object's MetaData, For Caching --->
 				<cfset MetaData = getMetaData(oBean)>
-				<!--- By Default, services with no cache flag are set to true --->
+				<!--- By Default, services with no cache flag are set to false --->
 				<cfif not structKeyExists(MetaData,"cache") or not isBoolean(MetaData.cache)>
-					<cfset MetaData.cache = true>
+					<cfset MetaData.cache = false>
 				</cfif>
 				<!--- Test for caching parameters --->
 				<cfif MetaData["cache"]>
