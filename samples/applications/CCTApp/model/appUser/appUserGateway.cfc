@@ -1,8 +1,8 @@
 <cfcomponent displayname="appUserGateway" hint="This is the appUserGateway component" output="false" cache="true" cachetimeout="0">
 	
 	<cffunction name="init" access="public" output="false" returntype="appUserGateway">
-		<cfargument name="oTransfer" type="any" required="true" />
-		<cfargument name="oDatasource" type="any" required="true" />
+		<cfargument name="oTransfer" type="transfer.com.Transfer" required="true" />
+		<cfargument name="oDatasource" type="transfer.com.sql.Datasource" required="true" />
 		
 		<cfset variables.oTransfer = arguments.oTransfer />
 		<cfset variables.oDatasource = arguments.oDatasource />
