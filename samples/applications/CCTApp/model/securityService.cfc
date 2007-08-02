@@ -1,8 +1,8 @@
 <cfcomponent displayname="securityService" hint="This is the securityService component" output="false" cache="true" cachetimeout="0">
 	
 	<cffunction name="init" access="public" output="false" returntype="securityService">
-		<cfargument name="oColdbox" type="any" required="true" />
-		<cfargument name="oTransfer" type="any" required="true" />
+		<cfargument name="oColdbox" 	type="coldbox.system.controller" required="true" />
+		<cfargument name="oTransfer" 	type="transfer.com.Transfer" required="true" />
 		
 		<cfset variables.oColdbox = arguments.oColdbox />
 		<cfset variables.oTransfer = arguments.oTransfer />
@@ -11,7 +11,7 @@
 	</cffunction>
 	
 	<cffunction name="logIn" access="public" returntype="void" output="false">
-		<cfargument name="oAppUser" type="any" required="true">
+		<cfargument name="oAppUser" type="transfer.com.TransferObject" required="true">
 		
 		<cfset variables.oColdbox.getPlugin("sessionstorage").setVar('loggedIn',true) />
 		<cfset variables.oColdbox.getPlugin("sessionstorage").setVar("appUserId",oAppUser.getAppUserId()) />
