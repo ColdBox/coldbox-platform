@@ -111,6 +111,12 @@
 				  <a href="#getSetting("TransferApp")#/install?TB_iframe=true&height=550&width=800" class="thickbox" title="Install Folder">#getresource("openinstall")#</a><br />
 				  <a href="#getSetting("TransferApp")#/index.cfm" target="_blank">#getresource("opensample")#</a><br />
 				</p>
+				
+				<h3>CCTApp Sample</h3>
+				<p> #getresource("by")# Tom de Manincor<br />
+				#getresource("needssetup")#
+				<br />
+				</p>
 
 				<h3>Illidium cfc Code Generator</h3>
 				<p> #getresource("by")# Brian Rinaldi<br />#getresource("needssetup")#
