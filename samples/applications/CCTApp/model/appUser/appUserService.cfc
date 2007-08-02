@@ -1,7 +1,7 @@
 <cfcomponent displayname="appUserService" hint="This is the appUserService component" output="false" cache="true" cachetimeout="15">	
 	<cffunction name="init" access="public" output="false" returntype="appUserService">
-		<cfargument name="oAppUserGateway" type="any" required="true" />
-		<cfargument name="oTransfer" type="any" required="true" />
+		<cfargument name="oAppUserGateway" type="coldbox.samples.applications.CCTApp.model.appUser.appUserGateway" required="true" />
+		<cfargument name="oTransfer" type="transfer.com.Transfer" required="true" />
 		
 		<cfset variables.oAppUserGateway = arguments.oAppUserGateway />
 		<cfset variables.oTransfer = arguments.oTransfer />
