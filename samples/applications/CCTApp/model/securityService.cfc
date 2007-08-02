@@ -1,6 +1,6 @@
 <cfcomponent displayname="securityService" hint="This is the securityService component" output="false" cache="true" cachetimeout="0">
 	
-	<cffunction name="init" access="public" output="false" returntype="securityService">
+	<cffunction name="init" access="public" output="false" returntype="coldbox.samples.applications.CCTApp.model.securityService">
 		<cfargument name="oColdbox" 	type="coldbox.system.controller" required="true" />
 		<cfargument name="oTransfer" 	type="transfer.com.Transfer" required="true" />
 		
