@@ -8,7 +8,7 @@
      section of the codlboxframework.com site.              
                                                                      
      ====================================================================== -->
-<project name="samples.build" default="help" basedir="../../">
+<project name="coldbox.samples.archive_and_deploy" default="help" basedir="../../">
     <description>
     	This covers zipping the samples, uploading to the downloads
     	     section of the codlboxframework.com site. 
