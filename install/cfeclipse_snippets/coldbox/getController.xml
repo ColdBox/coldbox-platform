@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<snippet filetemplate="false" extension="cfm">
+<name>getController</name>
+<help></help>
+<starttext><![CDATA[getController()]]></starttext>
+<endtext><![CDATA[]]></endtext>
+</snippet>

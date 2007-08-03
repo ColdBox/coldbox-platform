@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<snippet filetemplate="false" extension="cfm">
+<name>getWSURL</name>
+<help>Get the url of a named webservice</help>
+<starttext><![CDATA[getPlugin("webservices").getWS("$${Web Service Name}")]]></starttext>
+<endtext><![CDATA[]]></endtext>
+</snippet>

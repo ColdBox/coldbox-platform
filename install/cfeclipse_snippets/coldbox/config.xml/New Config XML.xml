@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<snippet filetemplate="true" extension="xml.cfm">
+<name>New Config XML</name>
+<help>A new config.xml</help>
+<starttext><![CDATA[<?xml version="1.0" encoding="ISO-8859-1"?>
+<Config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:noNamespaceSchemaLocation="http://www.coldboxframework.com/schema/config_2.0.3.xsd">
+	<Settings>
+		<Setting name="AppName" 					value="$${Application name}"/>
+		<Setting name="DebugMode" 					value="$${Debug Mode:true|false}" />
+		<Setting name="DebugPassword" 				value="$${Debug Password}"/>
+		<Setting name="EventName" 					value="$${Event Name:event|do}"/>
+		<Setting name="ReinitPassword" 				value="$${Framework Reinit Password (Blank if not used)}"/>
+		<Setting name="EnableDumpVar"				value="$${Enable DumpVar:true|false}" />
+		<Setting name="EnableColdfusionLogging" 	value="$${Enable Coldfusion Logging:true|false}" />
+		<Setting name="EnableColdboxLogging" 		value="$${Enable Coldbox Logging:true|false}" />
+		<Setting name="ColdboxLogsLocation"			value="$${Coldbox Logs Location (Blank if not used):logs}" />
+		<Setting name="DefaultEvent" 				value="$${Default Event Handler}"/>
+		<Setting name="RequestStartHandler" 		value="$${Request Start Handler (Blank if not used)}"/>
+		<Setting name="RequestEndHandler" 			value="$${Request End Handler (Blank if not used)}"/>
+		<Setting name="ApplicationStartHandler"  	value="$${Application Start Handler (Blank if not used)}" />
+		<Setting name="OwnerEmail"					value="$${Owner Email (Outgoing Account)}" />
+		<Setting name="EnableBugReports" 			value="$${Enable Bug Reports:true|false}"/>
+		<Setting name="UDFLibraryFile" 				value="$${UDF Library File (Blank if not used)}" />
+		<Setting name="CustomErrorTemplate" 		value="$${Custom Error Template (Blank if not used)}"/>
+		<Setting name="ExceptionHandler" 			value="$${Exception Handler (Blank if not used)}"/>
+		<Setting name="onInvalidEvent" 				value="$${On Invalid Event (Blank if not used)}"/>
+		<Setting name="MessageboxStyleClass" 		value="$${Messagebox Style Class (Blank if not used)}"/>
+		<Setting name="HandlersIndexAutoReload" 	value="$${Handlers Index Auto Reload:true|false}"/>
+		<Setting name="ConfigAutoReload" 			value="$${Config Auto Reload:true|false}"/>
+		<Setting name="HandlerCaching" 				value="$${Handler Caching:true|false}"/>
+		<Setting name="MyPluginsLocation"			value="$${Custom Plugins Invocation Path}" />
+		<Setting name="IOCFramework"				value="$${IOC Framework (Blank If not Used):|coldspring|lightwire}" />
+		<Setting name="IOCDefinitionFile"			value="$${IOC Service Definition File (Relative or Absolute if used)}" />
+		<Setting name="IOCObjectCaching"			value="$${IOC Object Caching:true|false}" />
+	</Settings>
+
+	<YourSettings>
+
+	</YourSettings>
+
+	<!--Optional,if blank it will use the CFMX administrator settings.-->
+	<MailServerSettings>
+		
+	</MailServerSettings>
+
+	<BugTracerReports>
+		
+	</BugTracerReports>
+
+	<DevEnvironments>
+		
+	</DevEnvironments>
+
+	<WebServices>
+
+	</WebServices>
+
+	<Layouts>
+		<DefaultLayout>$${Default Layout File:Layout.Main.cfm}</DefaultLayout>
+		<DefaultView></DefaultView>
+	</Layouts>
+
+	<i18N>
+
+	</i18N>
+
+	<Datasources>
+
+	</Datasources>
+	
+	<!--ColdBox Object Caching Settings Overrides the Framework-wide settings 
+	<Cache>
+		<ObjectDefaultTimeout>20</ObjectDefaultTimeout>
+		<ObjectDefaultLastAccessTimeout>5</ObjectDefaultLastAccessTimeout>
+		<ReapFrequency>1</ReapFrequency>
+		<MaxObjects>0</MaxObjects>
+		<FreeMemoryPercentageThreshold>0</FreeMemoryPercentageThreshold>
+	</Cache>
+	-->
+
+</Config>
+]]></starttext>
+<endtext><![CDATA[]]></endtext>
+</snippet>
