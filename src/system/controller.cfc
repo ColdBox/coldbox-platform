@@ -222,13 +222,32 @@ Description		: This is the main ColdBox front Controller.
 		<cfargument name="event"  			hint="The name of the event to run." 			type="string" required="No" default="#getSetting("DefaultEvent")#" >
 		<cfargument name="queryString"  	hint="The query string to append, if needed."   type="string" required="No" default="" >
 		<cfargument name="addToken"			hint="Wether to add the tokens or not. Default is false" type="boolean" required="false" default="false"	>
+		<cfargument name="persist" 			hint="What request collection keys to persist in the relocation" required="false" type="string" default="">
 		<!--- ************************************************************* --->
 		<cfset var EventName = getSetting("EventName")>
 		<cfset var frontController = listlast(cgi.script_name,"/")>
+		<cfset var PersistStruct = structnew()>
+		<cfset var PersistList = trim(arguments.persist)>
+		<cfset var tempPersistValue = "">
+		<cfset var i = 1>
+		<cfset var rc = structnew()>
 		
 		<!--- Cleanup Event --->
 		<cfif len(trim(arguments.event)) eq 0>
 			<cfset arguments.event = getSetting("DefaultEvent")>
+		</cfif>
+		
+		<!--- Persistance Logic --->
+		<cfif len(PersistList) neq 0>
+			<cfset rc = getRequestService().getContext().getCollection()>
+			<cfloop from="1" to="#listlen(PersistList)#" index="i">
+				<cfset tempPersistValue = listgetat(PersistList,i)>
+				<cfif structkeyExists(rc, tempPersistValue)>
+					<cfset PersistStruct[tempPersistValue] = rc[tempPersistValue]>
+				</cfif>
+			</cfloop>
+			<!--- Flash Save it --->
+			<cfset getPlugin("sessionstorage").setVar('_coldbox_persistStruct', PersistStruct)>
 		</cfif>
 		
 		<!--- Check if query String needs appending --->
