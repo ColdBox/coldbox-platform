@@ -28,9 +28,20 @@
 		<include file="saveBean.cfm" />
 		<include file="deleteBean.cfm" />
 	</service>
+	<handler fileNameAppend="" filetype="cfc" templateType="cfm">
+		<include file="dspList.cfm" />
+		<include file="dspEdit.cfm" />
+		<include file="doSave.cfm" />
+		<include file="doDelete.cfm" />
+ 	</handler>
+	<unittest fileNameAppend="" filetype="cfc" templateType="cfm">
+		<include file="testdspHome.cfm" />
+		<include file="testdspList.cfm" />
+		<include file="testdspEditor.cfm" />
+		<include file="testdoSave.cfm" />
+		<include file="testdoDelete.cfm" />
+ 	</unittest>
 	<coldspring filetype="xml" 			templateType="cfm" />
-	<handler 	fileNameAppend="" 		filetype="cfc" templateType="cfm" />
-	<unittest 	fileNameAppend="test" 	filetype="cfc" templateType="cfm" />
 	<list 		fileNameAppend="List" 	filetype="cfm" templatetype="cfm" />
 	<editor 	filenameAppend="Editor" filetype="cfm" templatetype="cfm" />
 	<style 		filetype="css" 			templateType="cfm" />
