@@ -69,6 +69,7 @@ Description :
 		<!--- AutoReload Tests --->
 		<cfif application.cbController.getSetting("ConfigAutoReload")>
 			<cflock type="exclusive" name="#appHash#" timeout="#lockTimeout#">
+				<cfset cbController.setAppStartHandlerFired(false)>
 				<cfset application.cbController.getService("loader").setupCalls(COLDBOX_CONFIG_FILE)>
 			</cflock>
 		<cfelseif application.cbController.getSetting("HandlersIndexAutoReload")>
