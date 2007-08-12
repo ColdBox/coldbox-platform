@@ -61,7 +61,9 @@
 	</Settings>
 
 	<!--Your Settings can go here, if not needed, use <YourSettings />. You can use these for anything you like.
-		<YourSettings name="MySetting"  				value="WOW" />
+		<YourSettings>
+			<Setting name="MySetting" value="My Value"/>
+		</YourSettings>
 	 -->
 	<YourSettings></YourSettings>
 
