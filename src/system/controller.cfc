@@ -119,7 +119,7 @@ Description		: This is the main ColdBox front Controller.
 		if ( arguments.FWSetting and settingExists(arguments.name,true) )
 			return Evaluate("instance.ColdboxSettings.#arguments.name#");
 		else if ( settingExists(arguments.name) )
-			 return Evaluate("instance.ConfigSettings.#arguments.name#");
+			 return instance.ConfigSettings[arguments.name];
 		else
 			throw("The setting #arguments.name# does not exist.","FWSetting flag is #arguments.FWSetting#","Framework.SettingNotFoundException");
 		</cfscript>
@@ -133,7 +133,7 @@ Description		: This is the main ColdBox front Controller.
 			return isDefined("instance.ColdboxSettings.#arguments.name#");
 		}
 		else{
-			return isDefined("instance.ConfigSettings.#arguments.name#");
+			return structKeyExists(instance.ConfigSettings, arguments.name);
 		}
 		</cfscript>
 	</cffunction>
@@ -142,7 +142,7 @@ Description		: This is the main ColdBox front Controller.
 		<cfargument name="value" type="any"      hint="The value of the setting (Can be simple or complex)">
 		<!--- ************************************************************* --->
 		<cfscript>
-		"instance.ConfigSettings.#arguments.name#" = arguments.value;
+		instance.ConfigSettings['#arguments.name#'] = arguments.value;
 		</cfscript>
 	</cffunction>
 
