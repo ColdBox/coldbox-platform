@@ -1,4 +1,4 @@
-<cfcomponent>
+<cfcomponent output="false">
 <!--- Galleon appnames --->
 <cfset appName = "galleonForums">
 <cfset prefix = getCurrentTemplatePath()>

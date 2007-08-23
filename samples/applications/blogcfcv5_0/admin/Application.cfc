@@ -1,4 +1,4 @@
-<cfcomponent>		
+<cfcomponent output="false">		
 <!--- Edit this line if you are not using a default blog --->
 <cfset blogname = "default">
 <!--- The prefix is now dynamic in case 2 people want to run blog.cfc on the same machine. Normally they

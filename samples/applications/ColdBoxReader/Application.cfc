@@ -1,4 +1,4 @@
-<cfcomponent>
+<cfcomponent output="false">
 
 <cfset this.name = "ColdBoxReader"> 
 <cfset this.clientManagement = true> 

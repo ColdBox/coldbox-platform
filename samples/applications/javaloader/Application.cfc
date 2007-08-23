@@ -1,4 +1,4 @@
-<cfcomponent>
+<cfcomponent output="false">
 
 <cfset this.name = "ColdBox JavaLoader">
 <cfset this.sessionManagement = true> 

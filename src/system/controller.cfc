@@ -28,7 +28,7 @@ Description		: This is the main ColdBox front Controller.
 	<cffunction name="init" returntype="any" access="Public" hint="I am the constructor" output="false">
 		<cfscript>
 			//Set the App hash
-			instance.AppHash = hash(createUUID() & getTickCount());
+			instance.AppHash = hash(createUUID());
 			//Create & init ColdBox Services
 			instance.ColdboxOCM = CreateObject("component","cache.cacheManager").init(this);
 			instance.RequestService = CreateObject("component","services.requestService").init(this);

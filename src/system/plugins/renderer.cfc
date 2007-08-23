@@ -108,7 +108,7 @@ Modification History:
 
 	<!--- ************************************************************* --->
 
-	<cffunction name="renderLayout" access="Public" hint="Renders the current layout." output="false" returntype="Any">
+	<cffunction name="renderLayout" access="Public" hint="Renders the current layout." output="false" returntype="string">
 		<cfset var RederedLayout = "">
 		<cfset var Event = controller.getRequestService().getContext()>
 		<cfset var rc = event.getCollection()>
@@ -123,7 +123,7 @@ Modification History:
 			<cfif Event.getcurrentLayout() eq "">
 				<cfset RederedLayout = renderView()>
 			<cfelse>
-				<cfsavecontent variable="RederedLayout"><cfinclude template="/#getappMapping()#/#getLayoutsConvention()#/#Event.getcurrentLayout()#"></cfsavecontent>
+				<cfsavecontent variable="RederedLayout"><cfoutput><cfinclude template="/#getappMapping()#/#getLayoutsConvention()#/#Event.getcurrentLayout()#"></cfoutput></cfsavecontent>
 			</cfif>
 		</cfmodule>
 		

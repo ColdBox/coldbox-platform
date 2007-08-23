@@ -1,4 +1,4 @@
-<cfcomponent>
+<cfcomponent output="false">
 <!--- Modify the Name of the application--->
 <cfset this.name = "ColdBox News WebService">
 <cfset this.clientManagement = true>

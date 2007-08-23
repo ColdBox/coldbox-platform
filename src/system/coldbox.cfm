@@ -123,9 +123,10 @@ Description :
 			<!--- Run Default/Set Event --->
 			<cfset cbController.runEvent()>
 		
-			<!--- Render Layout/View pair using plugin factory --->
-			<cfoutput>#cbController.getPlugin("renderer").renderLayout()#</cfoutput>
-		
+			<!--- Render Layout/View pair via set variable to eliminate whitespace--->
+			<cfset renderedContent = cbController.getPlugin("renderer").renderLayout()>
+			<cfoutput>#renderedContent#</cfoutput>
+			
 			<!--- If Found in config, run onRequestEnd Handler --->
 			<cfif cbController.getSetting("RequestEndHandler") neq "">
 				<cfset cbController.runEvent(cbController.getSetting("RequestEndHandler"),true)>

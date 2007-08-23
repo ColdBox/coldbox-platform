@@ -1,4 +1,4 @@
-<cfcomponent>
+<cfcomponent output="false">
 
 <cfset this.name = "ColdBox Hello World">
 <cfset this.sessionManagement = true> 
