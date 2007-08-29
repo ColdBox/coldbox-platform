@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <Config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-	xsi:noNamespaceSchemaLocation="http://www.coldboxframework.com/schema/config_2.0.3.xsd">
+	xsi:noNamespaceSchemaLocation="http://www.coldboxframework.com/schema/config_2.1.0.xsd">
 	<Settings>
 		<!--The name of your app-->
 		<Setting name="AppName" 					value="Galleon"/>
@@ -20,7 +20,7 @@
 		<Setting name="UDFLibraryFile" 				value="includes/udf.cfm" />
 		<Setting name="CustomErrorTemplate" 		value=""/>
 		<Setting name="ExceptionHandler" 			value=""/>
-		<Setting name="MessageboxStyleClass" 		value=""/>
+		<Setting name="MessageboxStyleOverride" 		value=""/>
 		<Setting name="HandlersIndexAutoReload" 	value="true"/>
 		<Setting name="ConfigAutoReload" 			value="false"/>
 		<Setting name="HandlerCaching"				value="true" />

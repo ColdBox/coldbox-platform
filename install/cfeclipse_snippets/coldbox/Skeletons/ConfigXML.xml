@@ -4,7 +4,7 @@
 <help>A new config.xml</help>
 <starttext><![CDATA[<?xml version="1.0" encoding="ISO-8859-1"?>
 <Config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
- xsi:noNamespaceSchemaLocation="http://www.coldboxframework.com/schema/config_2.0.3.xsd">
+ xsi:noNamespaceSchemaLocation="http://www.coldboxframework.com/schema/config_2.1.0.xsd">
 	<Settings>
 		<Setting name="AppName" 					value="$${Application name}"/>
 		<Setting name="DebugMode" 					value="$${Debug Mode:true|false}" />
@@ -25,7 +25,7 @@
 		<Setting name="CustomErrorTemplate" 		value="$${Custom Error Template (Blank if not used)}"/>
 		<Setting name="ExceptionHandler" 			value="$${Exception Handler (Blank if not used)}"/>
 		<Setting name="onInvalidEvent" 				value="$${On Invalid Event (Blank if not used)}"/>
-		<Setting name="MessageboxStyleClass" 		value="$${Messagebox Style Class (Blank if not used)}"/>
+		<Setting name="MessageboxStyleOverride" 		value="$${Override css:false|true}"/>
 		<Setting name="HandlersIndexAutoReload" 	value="$${Handlers Index Auto Reload:true|false}"/>
 		<Setting name="ConfigAutoReload" 			value="$${Config Auto Reload:true|false}"/>
 		<Setting name="HandlerCaching" 				value="$${Handler Caching:true|false}"/>

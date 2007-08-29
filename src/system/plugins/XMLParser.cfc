@@ -39,45 +39,51 @@ Modification History:
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
-	<cffunction name="init" access="public" returntype="XMLParser" output="false">
+	<cffunction name="init" access="public" returntype="XMLParser" output="false" hint="Constructor">
+		<!--- ************************************************************* --->
 		<cfargument name="controller" type="any" required="true">
-		<cfset super.Init(arguments.controller) />
+		<!--- ************************************************************* --->
 		<cfscript>
-		//Local Plugin Definition
-		setpluginName("XMLParser");
-		setpluginVersion("2.0");
-		setpluginDescription("I am the framework's XML parser");
-
-		//Search Patterns for Config file
-		instance.searchSettings = "//Settings/Setting";
-		instance.searchYourSettings = "//YourSettings/Setting";
-		instance.searchBugTracer = "//BugTracerReports/BugEmail";
-		instance.searchDevURLS = "//DevEnvironments/url";
-		instance.searchWS = "//WebServices/WebService";
-		instance.searchLayouts = "//Layouts/Layout";
-		instance.searchDefaultLayout = "//Layouts/DefaultLayout";
-		instance.searchDefaultView = "//Layouts/DefaultView";
-		instance.searchMailSettings = "//MailServerSettings";
-		instance.searchi18NSettings = "//i18N";
-		instance.searchDatasources = "//Datasources/Datasource";
-		instance.searchCache = "//Cache";
-
-		//Search patterns for fw xml
-		instance.searchConventions = "//Conventions";
-
-		//Properties
-		instance.FileSeparator = createObject("java","java.lang.System").getProperty("file.separator");
-		instance.FrameworkConfigFile = ExpandPath("/coldbox/system/config/settings.xml");
-		instance.FrameworkConfigXSDFile = ExpandPath("/coldbox/system/config/config.xsd");
-		//Return
-		return this;
+			//Call Super
+			super.init(arguments.controller);
+		
+			//Local Plugin Definition
+			setpluginName("XMLParser");
+			setpluginVersion("2.0");
+			setpluginDescription("I am the framework's XML parser");
+	
+			//Search Patterns for Config file
+			instance.searchSettings = "//Settings/Setting";
+			instance.searchYourSettings = "//YourSettings/Setting";
+			instance.searchBugTracer = "//BugTracerReports/BugEmail";
+			instance.searchDevURLS = "//DevEnvironments/url";
+			instance.searchWS = "//WebServices/WebService";
+			instance.searchLayouts = "//Layouts/Layout";
+			instance.searchDefaultLayout = "//Layouts/DefaultLayout";
+			instance.searchDefaultView = "//Layouts/DefaultView";
+			instance.searchMailSettings = "//MailServerSettings";
+			instance.searchi18NSettings = "//i18N";
+			instance.searchDatasources = "//Datasources/Datasource";
+			instance.searchCache = "//Cache";
+	
+			//Search patterns for fw xml
+			instance.searchConventions = "//Conventions";
+	
+			//Properties
+			instance.FileSeparator = createObject("java","java.lang.System").getProperty("file.separator");
+			instance.FrameworkConfigFile = ExpandPath("/coldbox/system/config/settings.xml");
+			instance.FrameworkConfigXSDFile = ExpandPath("/coldbox/system/config/config.xsd");
+			//Return
+			return this;
 		</cfscript>
 	</cffunction>
 
 <!------------------------------------------- PUBLIC ------------------------------------------->
 
-	<cffunction name="loadFramework" access="public" hint="Load the framework's configuration xml." output="false" returntype="any">
+	<cffunction name="loadFramework" access="public" hint="Load the framework's configuration xml." output="false" returntype="struct">
+		<!--- ************************************************************* --->
 		<cfargument name="overrideConfigFile" required="false" type="string" default="" hint="Only used for unit testing or reparsing of a specific coldbox config file.">
+		<!--- ************************************************************* --->
 		<cfscript>
 		var settingsStruct = StructNew();
 		var FrameworkParent = "";
@@ -129,13 +135,14 @@ Modification History:
 			}//end if adobe.
 			
 			//Determine which CF version for XML Parsing method
-			if ( settingsStruct["xmlParseActive"] ){
+			if ( not settingsStruct["xmlParseActive"] ){
 				fwXML = xmlParse(readFile(instance.FrameworkConfigFile,false,"utf-8"));
 			}
 			else{
 				//get XML for CFMX version 7 and above.
 				fwXML = xmlParse(instance.FrameworkConfigFile);
 			}
+		
 			//Get SettingNodes
 			SettingNodes = XMLSearch(fwXML, instance.searchSettings);
 			//Insert Settings to Config Struct
@@ -196,8 +203,10 @@ Modification History:
 
 	<!--- ************************************************************* --->
 
-	<cffunction name="parseConfig" access="public" returntype="struct" output="false">
+	<cffunction name="parseConfig" access="public" returntype="struct" output="false" hint="Parse the application configuration file.">
+		<!--- ************************************************************* --->
 		<cfargument name="overrideAppMapping" type="string" required="false" default="" hint="Only used for unit testing or reparsing of a specific coldbox config file."/>
+		<!--- ************************************************************* --->
 		<cfscript>
 		//Create Config Structure
 		var ConfigStruct = StructNew();
@@ -243,24 +252,27 @@ Modification History:
 		//Testers
 		var tester = "";
 		try{
+			
 			//Validate File, just in case.
 			if ( not fileExists(ConfigFileLocation) ){
 				throw("The Config File: #ConfigFileLocation# can't be found.","","Framework.plugins.XMLParser.ConfigXMLFileNotFoundException");
 			}
+			
 			//Determine which CF version for XML Parsing method
-			if (listfirst(server.coldfusion.productversion) lt 7){
+			if ( not fwSettingsStruct["xmlParseActive"] ){
 				configXML = xmlParse(readFile(ConfigFileLocation,false,"utf-8"));
 			}
 			else{
-				//Parse XML and validate with XSD
 				configXML = xmlParse(ConfigFileLocation);
 			}
 
-			//validate
+			//Validate the config
 			if ( not structKeyExists(configXML, "config")  )
 				throw("No Config element found in the configuration file","","Framework.plugins.XMLParser.ConfigXMLParsingException");
 
-			//Application Path
+			/* ::::::::::::::::::::::::::::::::::::::::: START CONFIG PARSING :::::::::::::::::::::::::::::::::::::::::::: */
+			
+			//Setup the Application Path
 			if( arguments.overrideAppMapping neq "" ){
 				StructInsert(ConfigStruct, "ApplicationPath", ExpandPath(arguments.overrideAppMapping));
 			}
@@ -306,18 +318,23 @@ Modification History:
 			//Check for Default Event
 			if ( not StructKeyExists(ConfigStruct, "DefaultEvent") )
 				throw("There was no 'DefaultEvent' setting defined. This is required by the framework.","","Framework.plugins.XMLParser.ConfigXMLParsingException");
+		
 			//Check for Event Name
 			if ( not StructKeyExists(ConfigStruct, "EventName") )
 				ConfigStruct["EventName"] = fwSettingsStruct["EventName"] ;
+			
 			//Check for Request Start Handler
 			if ( not StructKeyExists(ConfigStruct, "ApplicationStartHandler") )
 				ConfigStruct["ApplicationStartHandler"] = "";
+			
 			//Check for Request End Handler
 			if ( not StructKeyExists(ConfigStruct, "RequestStartHandler") )
 				ConfigStruct["RequestStartHandler"] = "";
+			
 			//Check for Application Start Handler
 			if ( not StructKeyExists(ConfigStruct, "RequestEndHandler") )
 				ConfigStruct["RequestEndHandler"] = "";
+		
 			//Check for InvalidEventHandler
 			if ( not StructKeyExists(ConfigStruct, "onInvalidEvent") )
 				ConfigStruct["onInvalidEvent"] = "";
@@ -325,9 +342,11 @@ Modification History:
 			//Check For DebugMode in settings
 			if ( not structKeyExists(ConfigStruct, "DebugMode") or not isBoolean(ConfigStruct.DebugMode) )
 				ConfigStruct["DebugMode"] = "false";
+		
 			//Check for DebugPassword in settings, else leave blank.
 			if ( not structKeyExists(ConfigStruct, "DebugPassword") )
 				ConfigStruct["DebugPassword"] = "";
+		
 			//Check for ReinitPassword
 			if ( not structKeyExists(ConfigStruct, "ReinitPassword") )
 				ConfigStruct["ReinitPassword"] = "";
@@ -335,9 +354,11 @@ Modification History:
 			//Check For Coldfusion Logging
 			if ( not structKeyExists(ConfigStruct, "EnableColdfusionLogging") or not isBoolean(ConfigStruct.EnableColdfusionLogging) )
 				ConfigStruct["EnableColdfusionLogging"] = "false";
+			
 			//Check For Coldbox Logging
 			if ( not structKeyExists(ConfigStruct, "EnableColdboxLogging") or not isBoolean(ConfigStruct.EnableColdboxLogging) )
 				ConfigStruct["EnableColdboxLogging"] = "false";
+			
 			//Check For Coldbox Log Location if it is defined.
 			if ( not structKeyExists(ConfigStruct, "ColdboxLogsLocation") or trim(ConfigStruct["ColdboxLogsLocation"]) eq "")
 				ConfigStruct["ColdboxLogsLocation"] = "";
@@ -345,9 +366,11 @@ Modification History:
 			//Check For Owner Email or Throw
 			if ( not StructKeyExists(ConfigStruct, "OwnerEmail") )
 				throw("There was no 'OwnerEmail' setting defined. This is required by the framework.","","Framework.plugins.XMLParser.ConfigXMLParsingException");
+		
 			//Check For EnableDumpvar or set to true
 			if ( not StructKeyExists(ConfigStruct, "EnableDumpVar") or not isBoolean(ConfigStruct.EnableDumpVar))
 				ConfigStruct["EnableDumpVar"] = "true";
+		
 			//Check For EnableBugReports Active or set to true
 			if ( not StructKeyExists(ConfigStruct, "EnableBugReports") or not isBoolean(ConfigStruct.EnableBugReports))
 				ConfigStruct["EnableBugReports"] = "true";
@@ -355,21 +378,24 @@ Modification History:
 			//Check For UDFLibraryFile
 			if ( not StructKeyExists(ConfigStruct, "UDFLibraryFile") )
 				ConfigStruct["UDFLibraryFile"] = "";
+		
 			//Check For CustomErrorTemplate Active or set to true
 			if ( not StructKeyExists(ConfigStruct, "CustomErrorTemplate") )
 				ConfigStruct["CustomErrorTemplate"] = "";
-			//Check for MessageboxStyleClass if found
-			if ( not structkeyExists(ConfigStruct, "MessageboxStyleClass") )
-				ConfigStruct["MessageboxStyleClass"] = "";
+			
+			//Check for MessageboxStyleOverride if found, default = false
+			if ( not structkeyExists(ConfigStruct, "MessageboxStyleOverride") or not isBoolean(ConfigStruct.MessageboxStyleOverride) )
+				ConfigStruct["MessageboxStyleOverride"] = "false";
 
 			//Check for HandlersIndexAutoReload, default = false
 			if ( not structkeyExists(ConfigStruct, "HandlersIndexAutoReload") or not isBoolean(ConfigStruct.HandlersIndexAutoReload) )
 				ConfigStruct["HandlersIndexAutoReload"] = false;
+			
 			//Check for ConfigAutoReload
 			if ( not structKeyExists(ConfigStruct, "ConfigAutoReload") or not isBoolean(ConfigStruct.ConfigAutoReload) )
 				ConfigStruct["ConfigAutoReload"] = false;
 
-			//Check for MessageboxStyleClass if found
+			//Check for ExceptionHandler if found
 			if ( not structkeyExists(ConfigStruct, "ExceptionHandler") )
 				ConfigStruct["ExceptionHandler"] = "";
 
@@ -524,7 +550,7 @@ Modification History:
 				ConfigStruct["HandlersPath"] = ConfigStruct["AppMapping"];
 
 				//Set the physical path according to system.
-				//Test for CF 6.X
+				//Test for CF 6.X, weird expandpath error on 6
 				if ( listfirst(server.coldfusion.productversion) lt 7 ){
 					ConfigStruct["HandlersPath"] = replacenocase(cgi.SCRIPT_NAME, listlast(cgi.SCRIPT_NAME,"/"),"") & fwSettingsStruct.handlersConvention;
 				}
@@ -535,6 +561,7 @@ Modification History:
 				ConfigStruct["HandlersPath"] = ExpandPath(ConfigStruct["HandlersPath"]);
 			}
 			else{
+				//We are at the root.
 				ConfigStruct["HandlersInvocationPath"] = "#fwSettingsStruct.handlersConvention#";
 				ConfigStruct["HandlersPath"] = expandPath("#fwSettingsStruct.handlersConvention#");
 			}
@@ -706,7 +733,8 @@ Modification History:
 
 <!------------------------------------------- PRIVATE ------------------------------------------->
 
-	<cffunction name="createArray" access="private" returntype="array" hint="Create a setting Array">
+	<cffunction name="createArray" access="private" returntype="array" hint="Create a setting Array" output="false">
+		<!--- ************************************************************* --->
 		<cfargument name="setting" type="string" required="true" hint="The setting to create an array from">
 		<!--- ************************************************************* --->
 		<!--- Clean [] --->
@@ -732,7 +760,8 @@ Modification History:
 
 	<!--- ************************************************************* --->
 
-	<cffunction name="createStruct" access="private" returntype="struct" hint="Create a setting Structure">
+	<cffunction name="createStruct" access="private" returntype="struct" hint="Create a setting Structure" output="false">
+		<!--- ************************************************************* --->
 		<cfargument name="setting" type="string" required="true" hint="The setting to create a struct from">
 		<!--- ************************************************************* --->
 		<!--- Clean {} --->
@@ -768,7 +797,7 @@ Modification History:
 
 	<!--- ************************************************************* --->
 
-	<cffunction name="readFile" access="private" hint="Facade to Read a file's content" returntype="Any" output="false">
+	<cffunction name="readFile" access="private" output="false" returntype="string"  hint="Facade to Read a file's content">
 		<!--- ************************************************************* --->
 		<cfargument name="FileToRead"	 		type="String"  required="yes" 	 hint="The absolute path to the file.">
 		<!--- ************************************************************* --->

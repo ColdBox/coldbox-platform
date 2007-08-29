@@ -38,7 +38,7 @@
 		<!--Full path from the application's root to your custom error page, else leave blank. -->
 		<Setting name="CustomErrorTemplate"			value="" />
 		<!--Messagebox Style (css) class name to use. Look at the messagebox.cfm in the includes directory-->
-		<Setting name="MessageboxStyleClass"		value="msgBox" />
+		<Setting name="MessageboxStyleOverride"		value="false" />
 		<!--Flag to Auto reload the internal handlers directory listing. False for production. -->
 		<Setting name="HandlersIndexAutoReload"   	value="true" />
 		<!--Flag to auto reload the config.xml settings. False for production. -->

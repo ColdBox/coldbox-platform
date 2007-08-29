@@ -33,7 +33,7 @@ Modification History:
 		<cfset setpluginName("Messagebox")>
 		<cfset setpluginVersion("1.1")>
 		<cfset setpluginDescription("This is a visual plugin that creates message boxes.")>
-		<cfset instance.storageScope = getController().getSetting("MessageBoxStorage",true)>
+		<cfset setStorageScope( getController().getSetting("MessageBoxStorage",true) )>
 		<cfreturn this>
 	</cffunction>
 
@@ -43,6 +43,9 @@ Modification History:
 	<cffunction name="getstorageScope" access="public" output="false" returntype="string" hint="Get storageScope">
 		<cfreturn instance.storageScope/>
 	</cffunction>
+	
+	<!--- ************************************************************* --->
+	
 	<cffunction name="setstorageScope" access="public" output="false" returntype="void" hint="Set storageScope. If not session/client, then it defaults to the framework setting.">
 		<cfargument name="storageScope" type="string" required="true"/>
 		<!--- Validate Scope --->

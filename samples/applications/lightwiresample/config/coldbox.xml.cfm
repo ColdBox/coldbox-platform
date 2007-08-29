@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <Config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-	xsi:noNamespaceSchemaLocation="http://www.coldboxframework.com/schema/config_2.0.3.xsd">
+	xsi:noNamespaceSchemaLocation="http://www.coldboxframework.com/schema/config_2.1.0.xsd">
 	<Settings>
 		<!--The name of your application.-->
 		<Setting name="AppName"						value="lightwiresample"/>
@@ -43,7 +43,7 @@
 		<!--Full path from the application's root to your custom error page, else leave blank. -->
 		<Setting name="CustomErrorTemplate"			value="" />
 		<!--Messagebox Style (css) class name to use. Look at the messagebox.cfm in the includes directory-->
-		<Setting name="MessageboxStyleClass"		value="" />
+		<Setting name="MessageboxStyleOverride"		value="" />
 		<!--Flag to Auto reload the internal handlers directory listing. False for production. -->
 		<Setting name="HandlersIndexAutoReload"   	value="true" />
 		<!--Flag to auto reload the config.xml settings. False for production. -->

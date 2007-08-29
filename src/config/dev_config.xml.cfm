@@ -22,7 +22,6 @@
 		<Setting name="EnableBugReports" 			value="false"/>
 		<Setting name="UDFLibraryFile" 				value="includes/udf.cfm" />
 		<Setting name="CustomErrorTemplate"			value="" />
-		<Setting name="MessageboxStyleClass"		value="mymessagebox" />
 		<Setting name="HandlersIndexAutoReload"   	value="false" />
 		<Setting name="ConfigAutoReload"			value="true" />
 		<Setting name="ExceptionHandler"     		value="" />

@@ -52,7 +52,7 @@
 									<xs:enumeration value="AppDevMapping"/>
 									<xs:enumeration value="AppName"/>				
 									<xs:enumeration value="UDFLibraryFile"/>	
-									<xs:enumeration value="MessageboxStyleClass" />
+									<xs:enumeration value="MessageboxStyleOverride" />
 									<xs:enumeration value="HandlersIndexAutoReload" />
 									<xs:enumeration value="ConfigAutoReload" />
 									<xs:enumeration value="MyPluginsLocation" />

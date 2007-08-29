@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <Config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-	xsi:noNamespaceSchemaLocation="http://www.coldboxframework.com/schema/config_2.0.3.xsd">
+	xsi:noNamespaceSchemaLocation="http://www.coldboxframework.com/schema/config_2.1.0.xsd">
 	<Settings>
 		<Setting name="AppName" 				value="Hello World"/>
 		<Setting name="DebugMode" 				value="true" />
@@ -18,7 +18,7 @@
 		<Setting name="UDFLibraryFile" 			value="" />
 		<Setting name="CustomErrorTemplate" 	value=""/>
 		<Setting name="ExceptionHandler" 		value=""/>
-		<Setting name="MessageboxStyleClass" 	value=""/>
+		<Setting name="MessageboxStyleOverride" 	value=""/>
 		<Setting name="HandlersIndexAutoReload" value="false"/>
 		<Setting name="ConfigAutoReload" 		value="false"/>		
 	</Settings>

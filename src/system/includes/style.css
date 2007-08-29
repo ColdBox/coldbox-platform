@@ -1,6 +1,6 @@
 /* DEBUG PANEL MAIN */
 .fw_debugPanel{
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: "HelveticaNeue-Light",Helvetica,Arial,sans-serif;
     font-size: 11px;
     font-weight: normal;
     color: #000000;
@@ -12,14 +12,13 @@
     font-weight:bold;
     color: white;
     border:1px outset #cccccc;
-    background-color: #3366CC;
+    background-color: #134A7A;
     padding:5px 5px 5px 5px;
-    cursor: pointer; cursor:hand;
+    cursor: pointer;
 }
 .fw_titles:hover{
-   background-color: #fcb554;
-   color: black;
-   cursor: pointer; cursor:hand;
+   background-color: #2068A6;
+   cursor: pointer;
 }
 .fw_tracerMessage{
     padding:5px 5px 5px 5px;
@@ -89,7 +88,7 @@
 	width: 99%;
 }
 .fw_debugTables th{
-	background-color: #93C2FF;
+	background-color: #CFE9FF;
 	font-weight:bold;
 	padding: 5px 5px 5px 5px;
 }
