@@ -53,11 +53,13 @@ Modification History:
 
 <!------------------------------------------- PUBLIC ------------------------------------------->
 
+	<!--- ************************************************************* --->
+	
 	<cffunction name="renderView"	access="Public" hint="Renders the current view." output="false" returntype="Any">
 		<!--- ************************************************************* --->
 		<cfargument name="view" required="false" default="" type="string" hint="If not passed in, the value in the currentView in the current RequestContext will be used.">
 		<!--- ************************************************************* --->
-		<cfset var RenderedView = "">
+		<cfset var cbox_RenderedView = "">
 		<cfset var Event = controller.getRequestService().getContext()>
 		<cfset var rc = event.getCollection()>
 		
@@ -65,17 +67,20 @@ Modification History:
 		<cfif arguments.view eq "">
 			<cfset arguments.view = Event.getCurrentView()>
 		</cfif>
+		
 		<!--- Test if we have a view to render --->
 		<cfif arguments.view eq "">
-			<cfthrow type="Framework.plugins.renderer.ViewNotSetException" message="The ""currentview"" variable has not been set, therefore there is no view to render." detail="Please remember to use the 'setView()' method in your handler.">
+			<cfthrow type="Framework.plugins.renderer.ViewNotSetException" 
+						  message="The ""currentview"" variable has not been set, therefore there is no view to render." 
+						  detail="Please remember to use the 'setView()' method in your handler.">
 		</cfif>
-			
+		
+		<!--- Render The View --->
 		<cfmodule template="../includes/timer.cfm" timertag="Rendering View [#arguments.view#.cfm]">
-			<!--- Render the View --->
-			<cfsavecontent variable="RenderedView"><cfoutput><cfinclude template="/#getappMapping()#/#getViewsConvention()#/#arguments.view#.cfm"></cfoutput></cfsavecontent>
+			<cfsavecontent variable="cbox_RenderedView"><cfoutput><cfinclude template="/#getappMapping()#/#getViewsConvention()#/#arguments.view#.cfm"></cfoutput></cfsavecontent>
 		</cfmodule>
 		
-		<cfreturn RenderedView>
+		<cfreturn cbox_RenderedView>
 	</cffunction>
 
 	<!--- ************************************************************* --->
@@ -84,15 +89,14 @@ Modification History:
 		<!--- ************************************************************* --->
 		<cfargument name="view" required="true" type="string" hint="The full path to the view. This can be an expanded path or relative. Include extension.">
 		<!--- ************************************************************* --->
-		<cfset var RenderedView = "">
+		<cfset var cbox_RenderedView = "">
 		<cfset var Event = controller.getRequestService().getContext()>
 		<cfset var rc = event.getCollection()>
 		
 		<cfmodule template="../includes/timer.cfm" timertag="Rendering View [#arguments.view#]">
-
 			<cftry>
 				<!--- Render the View --->
-				<cfsavecontent variable="RenderedView"><cfoutput><cfinclude template="#arguments.view#"></cfoutput></cfsavecontent>
+				<cfsavecontent variable="cbox_RenderedView"><cfoutput><cfinclude template="#arguments.view#"></cfoutput></cfsavecontent>
 				<!--- Catches --->
 				<cfcatch type="missinginclude">
 					<cfthrow type="Framework.plugin.renderer.RenderExternalViewNotFoundException" message="The external view: #arguments.view# cannot be found. Please check your paths." >
@@ -101,15 +105,15 @@ Modification History:
 					<cfthrow type="Framework.plugin.renderer.RenderExternalViewInvalidException" message="The external view: #arguments.view# threw an invalid exception when redering." >
 				</cfcatch>
 			</cftry>
-
 		</cfmodule>
-		<cfreturn RenderedView>
+
+		<cfreturn cbox_RenderedView>
 	</cffunction>
 
 	<!--- ************************************************************* --->
 
 	<cffunction name="renderLayout" access="Public" hint="Renders the current layout." output="false" returntype="string">
-		<cfset var RederedLayout = "">
+		<cfset var cbox_RederedLayout = "">
 		<cfset var Event = controller.getRequestService().getContext()>
 		<cfset var rc = event.getCollection()>
 		
@@ -121,13 +125,13 @@ Modification History:
 		<cfmodule template="../includes/timer.cfm" timertag="Rendering Layout [#Event.getcurrentLayout()#]">
 			<!--- Render With No Layout Test--->
 			<cfif Event.getcurrentLayout() eq "">
-				<cfset RederedLayout = renderView()>
+				<cfset cbox_RederedLayout = renderView()>
 			<cfelse>
-				<cfsavecontent variable="RederedLayout"><cfoutput><cfinclude template="/#getappMapping()#/#getLayoutsConvention()#/#Event.getcurrentLayout()#"></cfoutput></cfsavecontent>
+				<cfsavecontent variable="cbox_RederedLayout"><cfoutput><cfinclude template="/#getappMapping()#/#getLayoutsConvention()#/#Event.getcurrentLayout()#"></cfoutput></cfsavecontent>
 			</cfif>
 		</cfmodule>
 		
-		<cfreturn RederedLayout>
+		<cfreturn cbox_RederedLayout>
 	</cffunction>
 
 	<!--- ************************************************************* --->
@@ -136,19 +140,19 @@ Modification History:
 
 	<!--- ************************************************************* --->
 
-	<cffunction name="getlayoutsConvention" access="public" output="false" returntype="string" hint="Get layoutsConvention">
+	<cffunction name="getlayoutsConvention" access="private" output="false" returntype="string" hint="Get layoutsConvention">
 		<cfreturn instance.layoutsConvention/>
 	</cffunction>
 	
 	<!--- ************************************************************* --->
 	
-	<cffunction name="getviewsConvention" access="public" output="false" returntype="string" hint="Get viewsConvention">
+	<cffunction name="getviewsConvention" access="private" output="false" returntype="string" hint="Get viewsConvention">
 		<cfreturn instance.viewsConvention/>
 	</cffunction>
 	
 	<!--- ************************************************************* --->
 	
-	<cffunction name="getappMapping" access="public" output="false" returntype="string" hint="Get appMapping">
+	<cffunction name="getappMapping" access="private" output="false" returntype="string" hint="Get appMapping">
 		<cfreturn instance.appMapping/>
 	</cffunction>
 	
