@@ -18,10 +18,10 @@
 		<Setting name="RequestStartHandler" 		value=""/>
 		<Setting name="RequestEndHandler" 			value=""/>
 		<Setting name="ApplicationStartHandler"		value="ehGeneral.onApplicationStart" />
-		<Setting name="OwnerEmail" 					value="info@email.com"/>
-		<Setting name="EnableBugReports" 			value="false"/>
+		<Setting name="OwnerEmail" 					value="info@luismajano.com"/>
+		<Setting name="EnableBugReports" 			value="true"/>
 		<Setting name="UDFLibraryFile" 				value="includes/udf.cfm" />
-		<Setting name="CustomErrorTemplate"			value="" />
+		<Setting name="CustomErrorTemplate"			value="includes/MyBugReport.cfm" />
 		<Setting name="MessageboxStyleOverride"		value="true" />
 		<Setting name="HandlersIndexAutoReload"   	value="false" />
 		<Setting name="ConfigAutoReload"			value="false" />
@@ -41,15 +41,10 @@
 	</YourSettings>
 
 	<!--Optional,if blank it will use the CFMX administrator settings.-->
-	<MailServerSettings >
-		<MailServer></MailServer>
-		<MailPort></MailPort>
-		<MailUsername></MailUsername>
-		<MailPassword></MailPassword>
-	</MailServerSettings>
+	<MailServerSettings />
 
 	<BugTracerReports>
-		<BugEmail>info@coldboxframework.com</BugEmail>
+		<BugEmail>lmajano@gmail.com</BugEmail>
 	</BugTracerReports>
 
 	<DevEnvironments>

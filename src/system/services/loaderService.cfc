@@ -12,14 +12,14 @@ Description :
 Modification History:
 01/18/2007 - Created
 ----------------------------------------------------------------------->
-<cfcomponent name="loaderService" output="false" hint="The application and framework loader service">
+<cfcomponent name="loaderService" output="false" hint="The application and framework loader service" extends="baseService">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
 	<cffunction name="init" access="public" output="false" returntype="loaderService" hint="Constructor">
 		<cfargument name="controller" type="any" required="true">
 		<cfscript>
-			variables.controller = arguments.controller;
+			setController(arguments.controller);
 			return this;
 		</cfscript>
 	</cffunction>
@@ -27,7 +27,7 @@ Modification History:
 <!------------------------------------------- PUBLIC ------------------------------------------->
 
 	<!--- Setup Calls --->
-	<cffunction name="setupCalls" returntype="void" access="public" hint="I run the configLoader and register handlers.">
+	<cffunction name="setupCalls" returntype="void" access="public" hint="I execute the configuration and loading.." output="false">
 		<cfargument name="overrideConfigFile" type="string" required="false" default="" hint="Only used for unit testing or reparsing of a specific coldbox config file.">
 		<cfargument name="overrideAppMapping" type="string" required="false" default="" hint="Only used for unit testing or reparsing of a specific coldbox config file."/>
 		<cfscript>
@@ -124,17 +124,6 @@ Modification History:
 		controller.setSetting("RegisteredHandlers",arrayToList(HandlerArray));
 		</cfscript>
 	</cffunction>
-
-<!------------------------------------------- ACCESSOR/MUTATORS ------------------------------------------->
-
-	<cffunction name="getcontroller" access="public" output="false" returntype="any" hint="Get controller">
-		<cfreturn variables.controller/>
-	</cffunction>
-	
-	<cffunction name="setcontroller" access="public" output="false" returntype="void" hint="Set controller">
-		<cfargument name="controller" type="any" required="true"/>
-		<cfset variables.controller = arguments.controller/>
-	</cffunction>	
 	
 <!------------------------------------------- PRIVATE ------------------------------------------->
 

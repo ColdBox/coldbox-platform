@@ -19,21 +19,25 @@ Modification History:
 
 	<cfscript>
 		variables.instance = structnew();
+		variables.controller = structnew();
 	</cfscript>
-
 
 <!------------------------------------------- PUBLIC ------------------------------------------->
 
 	<cffunction name="getcontroller" access="public" output="false" returntype="any" hint="Get controller">
-		<cfreturn instance.controller/>
+		<cfreturn controller/>
 	</cffunction>
 	
 	<cffunction name="setcontroller" access="public" output="false" returntype="void" hint="Set controller">
 		<cfargument name="controller" type="any" required="true"/>
-		<cfset instance.controller = arguments.controller/>
+		<cfset variables.controller = arguments.controller/>
 	</cffunction>	
 	
 
 <!------------------------------------------- PRIVATE ------------------------------------------->
 
+	<cffunction name="getUtil" access="private" output="false" returntype="coldbox.system.extras.util" hint="Create and return a util object">
+		<cfreturn CreateObject("component","coldbox.system.extras.util")/>
+	</cffunction>
+	
 </cfcomponent>

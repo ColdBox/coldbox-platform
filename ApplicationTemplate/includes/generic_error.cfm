@@ -37,5 +37,9 @@
 	       </cfloop>
 		</td>
 	</tr>
+	<tr>
+		<td valign="top"><strong>Stack Trace</strong></td>
+		<td valign="top">#exceptionBean.getStackTrace()#</td>
+	</tr>
 </table>
 </cfoutput>

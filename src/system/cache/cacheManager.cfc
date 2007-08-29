@@ -337,6 +337,14 @@ Modification History:
 		<cfset instance.lockName = arguments.lockName/>
 	</cffunction>
 	
+	<!--- ************************************************************* --->
+	
+	<cffunction name="getObjectPool" access="public" returntype="any" output="false" hint="Get the internal object pool">
+		<cfreturn instance.objectPool >
+	</cffunction>
+	
+	<!--- ************************************************************* --->
+	
 <!------------------------------------------- PRIVATE ------------------------------------------->
 
 	<cffunction name="hit" access="private" output="false" returntype="void" hint="Record a hit">
@@ -355,10 +363,6 @@ Modification History:
 
 	<!--- ************************************************************* --->
 
-	<cffunction name="getObjectPool" access="private" returntype="any" output="false" hint="Get the internal object pool">
-		<cfreturn instance.objectPool >
-	</cffunction>
-	
 	<cffunction name="initPool" access="private" output="false" returntype="void" hint="Initialize and set the internal object Pool">
 		<cfscript>
 		instance.objectPool = CreateObject("component","objectPool").init();

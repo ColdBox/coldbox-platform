@@ -12,14 +12,14 @@ Description :
 Modification History:
 01/18/2007 - Created
 ----------------------------------------------------------------------->
-<cfcomponent name="exceptionService" output="false" hint="The exception service">
+<cfcomponent name="exceptionService" output="false" hint="The ColdBox exception service" extends="baseService">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
 	<cffunction name="init" access="public" output="false" returntype="exceptionService" hint="Constructor">
 		<cfargument name="controller" type="any" required="true">
 		<cfscript>
-			variables.controller = arguments.controller;
+			setController(arguments.controller);
 			return this;
 		</cfscript>
 	</cffunction>
@@ -85,18 +85,7 @@ Modification History:
 		</cfif>
 		<cfreturn BugReport>
 	</cffunction>
-	
-<!------------------------------------------- ACCESSOR/MUTATORS ------------------------------------------->
-
-	<cffunction name="getcontroller" access="public" output="false" returntype="any" hint="Get controller">
-		<cfreturn variables.controller/>
-	</cffunction>
-	
-	<cffunction name="setcontroller" access="public" output="false" returntype="void" hint="Set controller">
-		<cfargument name="controller" type="any" required="true"/>
-		<cfset variables.controller = arguments.controller/>
-	</cffunction>	
-	
+		
 <!------------------------------------------- PRIVATE ------------------------------------------->
 
 

@@ -379,9 +379,9 @@ Modification History:
 			if ( not StructKeyExists(ConfigStruct, "UDFLibraryFile") )
 				ConfigStruct["UDFLibraryFile"] = "";
 		
-			//Check For CustomErrorTemplate Active or set to true
+			//Check For CustomErrorTemplate
 			if ( not StructKeyExists(ConfigStruct, "CustomErrorTemplate") )
-				ConfigStruct["CustomErrorTemplate"] = "";
+				ConfigStruct["CustomErrorTemplate"] = "";			
 			
 			//Check for MessageboxStyleOverride if found, default = false
 			if ( not structkeyExists(ConfigStruct, "MessageboxStyleOverride") or not isBoolean(ConfigStruct.MessageboxStyleOverride) )

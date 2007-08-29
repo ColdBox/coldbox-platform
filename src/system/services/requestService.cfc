@@ -13,14 +13,14 @@ Description :
 Modification History:
 01/18/2007 - Created
 ----------------------------------------------------------------------->
-<cfcomponent name="requestService" output="false" hint="This service takes care of preparing and creating request contexts">
+<cfcomponent name="requestService" output="false" hint="This service takes care of preparing and creating request contexts. Facades to FORM and URL" extends="baseService">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
 	<cffunction name="init" access="public" output="false" returntype="requestService" hint="Constructor">
 		<cfargument name="controller" type="any" required="true">
 		<cfscript>
-			variables.controller = arguments.controller;
+			setController(arguments.controller);
 			return this;
 		</cfscript>
 	</cffunction>
@@ -90,17 +90,6 @@ Modification History:
 			return structKeyExists(request,"cb_requestContext");
 		</cfscript>
 	</cffunction>
-
-<!------------------------------------------- ACCESSOR/MUTATORS ------------------------------------------->
-
-	<cffunction name="getcontroller" access="public" output="false" returntype="any" hint="Get controller">
-		<cfreturn variables.controller/>
-	</cffunction>
-	
-	<cffunction name="setcontroller" access="public" output="false" returntype="void" hint="Set controller">
-		<cfargument name="controller" type="any" required="true"/>
-		<cfset variables.controller = arguments.controller/>
-	</cffunction>	
 	
 <!------------------------------------------- PRIVATE ------------------------------------------->
 
@@ -124,13 +113,5 @@ Modification History:
 		return CreateObject("component","coldbox.system.beans.requestContext").init(FORM,URL,DefaultLayout,DefaultView,ViewLayouts,EventName);
 		</cfscript>
 	</cffunction>
-	
-	<cffunction name="dump" access="private" hint="Facade for cfmx dump" returntype="void">
-		<cfargument name="var" required="yes" type="any">
-		<cfdump var="#var#">
-	</cffunction>
-	<cffunction name="abort" access="private" hint="Facade for cfabort" returntype="void" output="false">
-		<cfabort>
-	</cffunction>
-		
+			
 </cfcomponent>

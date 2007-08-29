@@ -1,6 +1,6 @@
-<cfcomponent hint="I am the LightWire factory that creates all singleton and transient objects, injecting them with all of their necessary dependencies as defined in the configuration file.">
+<cfcomponent hint="I am the LightWire factory that creates all singleton and transient objects, injecting them with all of their necessary dependencies as defined in the configuration file." output="false">
 
-<cffunction name="init" returntype="LightWire" access="public" output="true" hint="I initialize the LightWire object factory.">
+<cffunction name="init" returntype="LightWire" access="public" output="false" hint="I initialize the LightWire object factory.">
 	<cfargument name="ConfigBean" type="any" required="yes" hint="I am the initialized config bean.">
 	<cfscript>
 		var key = "";

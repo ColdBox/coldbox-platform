@@ -1,7 +1,7 @@
 <!-----------------------------------------------------------------------
 Template : baseTest.cfc
-Author 	 : luis5198
-Date     : 5/25/2007 5:59:04 PM
+Author 	  : Luis Majano
+Date        : 5/25/2007
 Description :
 	Base Unit Test Component based on CFCUnit.
 
@@ -22,8 +22,6 @@ Description :
 	3) Execute the on App start handler. You will need to fill out the name
 	   of the Application Start Handler to be executed.
 
-Modification History:
-5/25/2007 - Created Template
 ---------------------------------------------------------------------->
 <cfcomponent name="baseTest" extends="org.cfcunit.framework.TestCase" output="false">
 
