@@ -129,7 +129,6 @@ Modification History:
 		<!--- Method Executions --->
 		<!--- **************************************************************--->
 		<cfif structKeyExists(request,"DebugTimers")>
-		<em><p>Framework Method execution times in execution order.</p></em>
 		<table border="0" align="center" cellpadding="0" cellspacing="1" class="fw_debugTables">
 		  <tr>
 		  	<th width="13%" align="center" >Timestamp</th>
@@ -157,7 +156,7 @@ Modification History:
 			  </tr>
 			 <tr id="fw_poprc_#id#" class="hideRC">
 			  	<td colspan="4" style="padding:5px;" wrap="true">
-				  	<textarea rows=10 style="width:100%" readonly="true">#replacenocase(rc,",",chr(10) & chr(13),"all")#</textarea>
+				  	<textarea rows=12 style="width:100%" readonly="true">#replacenocase(rc,",",chr(10) & chr(13),"all")#</textarea>
 				</td>
 	  		  </tr>
 		  </cfloop>
