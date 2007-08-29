@@ -14,11 +14,14 @@ Description		: This is the main ColdBox front Controller.
 
 	<cfscript>
 		variables.instance = structnew();
+		
+		//properties
 		instance.ColdboxInitiated = false;
 		instance.ConfigSettings = structnew();
 		instance.ColdboxSettings = structnew();
 		instance.AppStartHandlerFired = false;
 		instance.AppHash = "";
+		
 		//Services & Managers
 		instance.ColdboxOCM = structNew();
 		instance.DebuggerService = structNew();
@@ -147,8 +150,8 @@ Description		: This is the main ColdBox front Controller.
 	</cffunction>
 
 	<!--- Service Locator --->
-	<cffunction name="getService" access="public" output="false" returntype="any" hint="Internal ColdBox Service Locator.">
-		<cfargument name="service" type="string" required="true" hint="The service/manager to create.">
+	<cffunction name="getService" access="public" output="false" returntype="any" hint="Internal ColdBox Transient Service Locator.">
+		<cfargument name="service" type="string" required="true" hint="The transient service/manager to create.">
 		<cfscript>
 		//Some services get loaded as singleton's, other are just created as needed
 		var servicePath = "";
@@ -178,43 +181,63 @@ Description		: This is the main ColdBox front Controller.
 		<cfargument name="customPlugin" type="boolean" required="false" default="false" hint="Used internally to create custom plugins.">
 		<cfargument name="newInstance"  type="boolean" required="false" default="false" hint="If true, it will create and return a new plugin. No caching or persistance.">
 		<!--- ************************************************************* --->
-		<cfset var oPlugin = "">
-		<cfset var MetaData = structNew()>
-		<cfset var objTimeout = "">
-		<cfset var pluginKey = "plugin_" & arguments.plugin>
-		<cfset var pluginPath = "coldbox.system.plugins.#trim(arguments.plugin)#">
+		<cfscript>
+		var oPlugin = "";
+		var MetaData = structNew();
+		var objTimeout = "";
+		var pluginKey = "plugin_" & arguments.plugin;
+		var pluginPath = "coldbox.system.plugins.#trim(arguments.plugin)#";
+		var pluginFilePath = "";
+		
+		/* Custom Plugin Test  */
+		if ( arguments.customPlugin ){
+			
+			/* Set plugin key and file path check */
+			pluginKey = "custom_plugin_" & arguments.plugin;
+			pluginFilePath = replace(arguments.plugin,".",getSetting("OSFileSeparator",true),"all") & ".cfc";
+						
+			/* Check for Convention First */
+			if ( fileExists(getSetting("MyPluginsPath") & getSetting("OSFileSeparator",true) & pluginFilePath ) ){
+				pluginPath = "#getSetting("MyPluginsInvocationPath")#.#arguments.plugin#";
+			}
+			else{
+				/* Will search the alternate custom location */
+				pluginPath = "#getSetting("MyPluginsLocation")#.#arguments.plugin#";
+			}
+		}//end if custom plugin
 
-		<!--- Custom Plugin Test --->
-		<cfif arguments.customPlugin>
-			<cfset pluginKey = "custom_plugin_" & arguments.plugin>
-			<cfset pluginPath = "#getSetting("MyPluginsLocation")#.#trim(arguments.plugin)#">
-		</cfif>
+		/* Check if a new instance is required */
+		if ( arguments.newInstance ){
+			/* Object not found, proceed to create and verify */
+			oPlugin = CreateObject("component", pluginPath).init(this);
+		}
+		else{
+			
+			/* Lookup in Cache */
+			if ( instance.ColdboxOCM.lookup(pluginKey) ){
+				oPlugin = instance.ColdboxOCM.get(pluginKey);
+			}
+			else{
+				/* Object not found, proceed to create and verify */
+				oPlugin = CreateObject("component", pluginPath).init(this);
+				/* Get Object's MetaData */
+				MetaData = getMetaData(oPlugin);
+				/* Test for caching parameters */
+				if ( structKeyExists(MetaData, "cache") and isBoolean(MetaData["cache"]) and MetaData["cache"] ){
+					if ( structKeyExists(MetaData,"cachetimeout") ){
+						objTimeout = MetaData["cachetimeout"];
+					}
+					/* Set in the cache */
+					instance.ColdboxOCM.set(pluginKey,oPlugin,objTimeout);
+				}//end if caching
+				
+			}//end if instance not in cache.
+			
+		}//end if not a new instance.
 
-		<!--- Check FOr New Instance --->
-		<cfif arguments.newInstance>
-			<!--- Object not found, proceed to create and verify --->
-			<cfset oPlugin = CreateObject("component", pluginPath).init(this)>
-		<cfelse>
-			<!--- Lookup in Cache --->
-			<cfif instance.ColdboxOCM.lookup(pluginKey)>
-				<cfset oPlugin = instance.ColdboxOCM.get(pluginKey)>
-			<cfelse>
-				<!--- Object not found, proceed to create and verify --->
-				<cfset oPlugin = CreateObject("component", pluginPath).init(this)>
-				<!--- Get Object's MetaData --->
-				<cfset MetaData = getMetaData(oPlugin)>
-				<!--- Test for caching parameters --->
-				<cfif structKeyExists(MetaData, "cache") and isBoolean(MetaData["cache"]) and MetaData["cache"]>
-					<cfif structKeyExists(MetaData,"cachetimeout") >
-						<cfset objTimeout = MetaData["cachetimeout"]>
-					</cfif>
-					<cfset instance.ColdboxOCM.set(pluginKey,oPlugin,objTimeout)>
-				</cfif>
-			</cfif>
-		</cfif>
-
-		<!--- Return Plugin --->
-		<cfreturn oPlugin>
+		/*  Return Plugin */
+		return oPlugin;
+		</cfscript>		
 	</cffunction>
 
 	<!--- Event Context Methods --->
@@ -406,4 +429,7 @@ Description		: This is the main ColdBox front Controller.
 		</cfscript>
 	</cffunction>
 
+	<cffunction name="getUtil" access="private" output="false" returntype="coldbox.system.extras.util" hint="Create and return a util object">
+		<cfreturn CreateObject("component","coldbox.system.extras.util")/>
+	</cffunction>
 </cfcomponent>

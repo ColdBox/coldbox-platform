@@ -155,6 +155,7 @@ Modification History:
 			//Conventions
 			conventions = XMLSearch(fwXML,instance.searchConventions);
 			StructInsert(settingsStruct, "HandlersConvention", conventions[1].handlerLocation.xmltext);
+			StructInsert(settingsStruct, "pluginsConvention", conventions[1].pluginsLocation.xmltext);
 			StructInsert(settingsStruct, "LayoutsConvention", conventions[1].layoutsLocation.xmltext);
 			StructInsert(settingsStruct, "ViewsConvention", conventions[1].viewsLocation.xmltext);
 
@@ -537,33 +538,44 @@ Modification History:
 			else
 				StructInsert(ConfigStruct,"Environment","PRODUCTION");
 
-			//Set the Handler Invocation & Physical Path for this Application
+			//Set the Handler & Custom Plugin Invocation & Physical Path for this Application
 			if( ConfigStruct["AppMapping"] neq ""){
+				
 				//Parse out the first / to create handler invocation Path
 				if ( left(ConfigStruct["AppMapping"],1) eq "/" ){
 					ConfigStruct["AppMapping"] = removeChars(ConfigStruct["AppMapping"],1,1);
 				}
-				//Set the handler Invocation Path
+				
+				//Set the handler, my plugins Invocation Path
 				ConfigStruct["HandlersInvocationPath"] = replace(ConfigStruct["AppMapping"],"/",".","all") & ".#fwSettingsStruct.handlersConvention#";
-
+				ConfigStruct["MyPluginsInvocationPath"] = replace(ConfigStruct["AppMapping"],"/",".","all") & ".#fwSettingsStruct.pluginsConvention#";
+				
 				//Set the Default Handler Path
 				ConfigStruct["HandlersPath"] = ConfigStruct["AppMapping"];
-
+				//Set the Default Plugin Path
+				ConfigStruct["MyPluginsPath"] = ConfigStruct["AppMapping"];
+				
 				//Set the physical path according to system.
 				//Test for CF 6.X, weird expandpath error on 6
 				if ( listfirst(server.coldfusion.productversion) lt 7 ){
 					ConfigStruct["HandlersPath"] = replacenocase(cgi.SCRIPT_NAME, listlast(cgi.SCRIPT_NAME,"/"),"") & fwSettingsStruct.handlersConvention;
+					ConfigStruct["MyPluginsPath"] = replacenocase(cgi.SCRIPT_NAME, listlast(cgi.SCRIPT_NAME,"/"),"") & fwSettingsStruct.pluginsConvention;
 				}
 				else{
 					ConfigStruct["HandlersPath"] = "/" & ConfigStruct["HandlersPath"] & "/#fwSettingsStruct.handlersConvention#";
+					ConfigStruct["MyPluginsPath"] = "/" & ConfigStruct["MyPluginsPath"] & "/#fwSettingsStruct.pluginsConvention#";
 				}
 				//Set the Handlerspath expanded.
 				ConfigStruct["HandlersPath"] = ExpandPath(ConfigStruct["HandlersPath"]);
+				ConfigStruct["MyPluginsPath"] = ExpandPath(ConfigStruct["MyPluginsPath"]);				
 			}
 			else{
-				//We are at the root.
+				/* Handler Registration */
 				ConfigStruct["HandlersInvocationPath"] = "#fwSettingsStruct.handlersConvention#";
 				ConfigStruct["HandlersPath"] = expandPath("#fwSettingsStruct.handlersConvention#");
+				/* Custom Plugins Registration */
+				ConfigStruct["MyPluginsInvocationPath"] = "#fwSettingsStruct.pluginsConvention#";
+				ConfigStruct["MyPluginsPath"] = expandPath("#fwSettingsStruct.pluginsConvention#");
 			}
 
 			//Get Web Services From Config.

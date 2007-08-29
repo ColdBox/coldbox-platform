@@ -47,6 +47,7 @@
     <Conventions>
         <configLocation>config{sep}coldbox.xml.cfm,config{sep}config.xml.cfm</configLocation>
         <handlerLocation>handlers</handlerLocation>
+        <pluginsLocation>plugins</pluginsLocation>
         <layoutsLocation>layouts</layoutsLocation>
         <viewsLocation>views</viewsLocation>
     </Conventions>
