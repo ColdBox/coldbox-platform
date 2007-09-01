@@ -21,13 +21,15 @@ Modification History:
 	<cffunction name="init" access="public" returntype="plugin" output="false" hint="The plugin constructor.">
 		<cfargument name="controller" type="any" required="true">
 		<cfscript>
+			/* Register Controller */
 			setController(arguments.controller);
 			
-			//instance names
+			/* Prepare a Plugin properties */
 			instance.pluginName = "";
 			instance.pluginVersion = "";
 			instance.pluginDescription = "";
 			instance.pluginPath = getCurrentTemplatePath();
+			
 			return this;
 		</cfscript>
 	</cffunction>
