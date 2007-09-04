@@ -95,8 +95,14 @@
 .fw_debugTables tr{
 	background-color: white;
 }
+.fw_debugTables tr:hover{
+	background-color: #FEFFAF;
+}
 .fw_debugTables tr.even{
 	background-color: #EFF6FF;
+}
+.fw_debugTables tr.even:hover{
+	background-color: #FEFFAF;
 }
 .fw_debugTables td{
 	padding: 5px 5px 5px 5px;
@@ -111,6 +117,12 @@
 }
 .fw_debugTables tr.hideRC{
 	display: none;
+}
+.fw_cachetable{
+	overflow: auto;
+	height: 375px;
+	border: 2px inset #cccccc;
+	background-color: white;
 }
 /* END OF Debugging Tables */
 

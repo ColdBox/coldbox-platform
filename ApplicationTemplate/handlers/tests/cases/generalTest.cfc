@@ -11,7 +11,7 @@ Description :
 		<cfscript>
 		//Setup ColdBox Mappings For this Test
 		setAppMapping("/applications/coldbox/ApplicationTemplate");
-		setConfigMapping(ExpandPath(instance.AppMapping & "/config/config.xml.cfm"));
+		setConfigMapping(ExpandPath(instance.AppMapping & "/config/coldbox.xml.cfm"));
 		
 		//Call the super setup method to setup the app.
 		super.setup();

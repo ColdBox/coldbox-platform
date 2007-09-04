@@ -27,9 +27,11 @@ Modification History:
 <!------------------------------------------- PUBLIC ------------------------------------------->
 
 	<!--- Setup Calls --->
-	<cffunction name="setupCalls" returntype="void" access="public" hint="I execute the configuration and loading.." output="false">
+	<cffunction name="setupCalls" returntype="void" access="public" hint="I execute the configuration and configuration.." output="false">
+		<!--- ************************************************************* --->
 		<cfargument name="overrideConfigFile" type="string" required="false" default="" hint="Only used for unit testing or reparsing of a specific coldbox config file.">
 		<cfargument name="overrideAppMapping" type="string" required="false" default="" hint="Only used for unit testing or reparsing of a specific coldbox config file."/>
+		<!--- ************************************************************* --->
 		<cfscript>
 			//execute the configLoader
 			configLoader(arguments.overrideConfigFile, arguments.overrideAppMapping);
@@ -39,64 +41,52 @@ Modification History:
 	</cffunction>
 
 	<!--- Config Loader Method --->
-	<cffunction name="configLoader" returntype="void" access="Public" hint="I Load the configurations and init the framework variables." output="false">
+	<cffunction name="configLoader" returntype="void" access="Public" hint="I Load the configurations, init the framework variables and more." output="false">
+		<!--- ************************************************************* --->
 		<cfargument name="overrideConfigFile" required="false" type="string" default="" hint="Only used for unit testing or reparsing of a specific coldbox config file.">
 		<cfargument name="overrideAppMapping" type="string" required="false" default="" hint="Only used for unit testing or reparsing of a specific coldbox config file."/>
+		<!--- ************************************************************* --->
 		<cfscript>
-		var XMLParser = controller.getPlugin("XMLParser");
-		var CacheConfigBean = CreateObject("Component","coldbox.system.beans.cacheConfigBean");
-		var FrameworkSettings = structNew();
-		var ConfigSettings = structNew();
-
-		//Load Coldbox Config Settings Structure
-		FrameworkSettings = XMLParser.loadFramework(arguments.overrideConfigFile);
-		controller.setColdboxSettings(FrameworkSettings);
-
-		//Create the Cache Config Bean with data from the settings.xml
-		CacheConfigBean = CacheConfigBean.init(FrameworkSettings.CacheObjectDefaultTimeout,
-											   FrameworkSettings.CacheObjectDefaultLastAccessTimeout,
-											   FrameworkSettings.CacheReapFrequency,
-											   FrameworkSettings.CacheMaxObjects,
-											   FrameworkSettings.CacheFreeMemoryPercentageThreshold);
-		//Configure the Object Cache.
-		controller.getColdboxOCM().configure(CacheConfigBean);
-
-		//Load Application Config Settings
-		ConfigSettings =XMLParser.parseConfig(arguments.overrideAppMapping);
-		controller.setConfigSettings(ConfigSettings);
-		//Check for Cache OVerride Settings
-		if ( ConfigSettings.CacheSettings.OVERRIDE ){
-			//Recreate the Config Bean
-			CacheConfigBean = CacheConfigBean.init(ConfigSettings.CacheSettings.ObjectDefaultTimeout,
-											   ConfigSettings.CacheSettings.ObjectDefaultLastAccessTimeout,
-											   ConfigSettings.CacheSettings.ReapFrequency,
-											   ConfigSettings.CacheSettings.MaxObjects,
-											   ConfigSettings.CacheSettings.FreeMemoryPercentageThreshold);
-			//Re-Configure the Object Cache.
+			var XMLParser = controller.getPlugin("XMLParser");
+			var CacheConfigBean = CreateObject("Component","coldbox.system.beans.cacheConfigBean");
+			var FrameworkSettings = structNew();
+			var ConfigSettings = structNew();
+	
+			//Load Coldbox Config Settings Structure
+			FrameworkSettings = XMLParser.loadFramework(arguments.overrideConfigFile);
+			controller.setColdboxSettings(FrameworkSettings);
+	
+			//Create the Cache Config Bean with data from the framework's settings.xml
+			CacheConfigBean = CacheConfigBean.init(FrameworkSettings.CacheObjectDefaultTimeout,
+												   FrameworkSettings.CacheObjectDefaultLastAccessTimeout,
+												   FrameworkSettings.CacheReapFrequency,
+												   FrameworkSettings.CacheMaxObjects,
+												   FrameworkSettings.CacheFreeMemoryPercentageThreshold);
+			
+			//Configure the Object Cache for first usage.
 			controller.getColdboxOCM().configure(CacheConfigBean);
-		}
-		//IoC Plugin Manager
-		if ( ConfigSettings.IOCFramework neq "" ){
-			//Create IoC Factory and configure it.
-			controller.getPlugin("ioc").configure();
-		}
-
-		//Load i18N if application is using it.
-		if ( ConfigSettings.using_i18N ){
-			//Create i18n Plugin and configure it.
-			controller.getPlugin("i18n").init_i18N(ConfigSettings.DefaultResourceBundle,ConfigSettings.DefaultLocale);
-		}
-
-		//Initialize AOP Logging if requested.
-		if ( ConfigSettings.EnableColdboxLogging ){
-			controller.getPlugin("logger").initLogLocation();
-		}
-
-		//Set Debugging Mode according to configuration
-		controller.getDebuggerService().setDebugMode(ConfigSettings.DebugMode);
-
-		// Flag the initiation, Framework is ready to serve requests. Praise be to GOD.
-		controller.setColdboxInitiated(true);
+	
+			//Load Application Config Settings Now that framework has been loaded.
+			ConfigSettings =XMLParser.parseConfig(arguments.overrideAppMapping);
+			controller.setConfigSettings(ConfigSettings);
+			
+			//Check for Cache OVerride Settings in Config
+			if ( ConfigSettings.CacheSettings.OVERRIDE ){
+				//Recreate the Config Bean
+				CacheConfigBean = CacheConfigBean.init(ConfigSettings.CacheSettings.ObjectDefaultTimeout,
+												   ConfigSettings.CacheSettings.ObjectDefaultLastAccessTimeout,
+												   ConfigSettings.CacheSettings.ReapFrequency,
+												   ConfigSettings.CacheSettings.MaxObjects,
+												   ConfigSettings.CacheSettings.FreeMemoryPercentageThreshold);
+				//Re-Configure the Object Cache.
+				controller.getColdboxOCM().configure(CacheConfigBean);
+			}
+			
+			//Register Aspects
+			registerAspects();
+	
+			// Flag the initiation, Framework is ready to serve requests. Praise be to GOD.
+			controller.setColdboxInitiated(true);
 		</cfscript>
 	</cffunction>
 
@@ -119,18 +109,46 @@ Modification History:
 
 		//Sort The Array
 		ArraySort(HandlerArray,"text");
-
+		
 		//Set registered Handlers
 		controller.setSetting("RegisteredHandlers",arrayToList(HandlerArray));
 		</cfscript>
 	</cffunction>
 	
+	<!--- Register the Aspects --->
+	<cffunction name="registerAspects" access="public" returntype="void" hint="Register the Aspects" output="false" >
+		<cfscript>
+		//IoC Plugin Manager Configuration
+		if ( controller.getSetting("IOCFramework") neq "" ){
+			//Create IoC Factory and configure it.
+			controller.getPlugin("ioc").configure();
+		}
+
+		//Load i18N if application is using it.
+		if ( controller.getSetting("using_i18N") ){
+			//Create i18n Plugin and configure it.
+			controller.getPlugin("i18n").init_i18N(controller.getSetting("DefaultResourceBundle"),controller.getSetting("DefaultLocale"));
+		}
+
+		//Initialize AOP Logging if requested.
+		if ( controller.getSetting("EnableColdboxLogging") ){
+			controller.getPlugin("logger").initLogLocation();
+		}
+
+		//Set Debugging Mode according to configuration File
+		controller.getDebuggerService().setDebugMode(controller.getSetting("DebugMode"));
+		</cfscript>
+	</cffunction>
+	
 <!------------------------------------------- PRIVATE ------------------------------------------->
 
+	<!--- Recursive Registration of Handler Directories --->
 	<cffunction name="recurseListing" access="private" output="false" returntype="array">
-		<cfargument name="fileArray" type="array"  required="true">
-		<cfargument name="Directory" type="string" required="true">
+		<!--- ************************************************************* --->
+		<cfargument name="fileArray" 	type="array"  required="true">
+		<cfargument name="Directory" 	type="string" required="true">
 		<cfargument name="HandlersPath" type="string" required="true">
+		<!--- ************************************************************* --->
 		<cfscript>
 		var oDirectory = CreateObject("java","java.io.File").init(arguments.Directory);
 		var Files = oDirectory.list();
@@ -139,7 +157,7 @@ Modification History:
 		var cleanHandler = "";
 
 		//Loop Through listing if any files found.
-		for ( i=1; i lte arrayLen(Files); i=i+1 ){
+		for (; i lte arrayLen(Files); i=i+1 ){
 			//get first reference as File Object
 			tempFile = CreateObject("java","java.io.File").init(oDirectory,Files[i]);
 			//Directory Check for recursion

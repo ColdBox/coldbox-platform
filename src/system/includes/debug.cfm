@@ -182,11 +182,16 @@ Modification History:
 		<cfset dumpList = Event.getValue("dumpvar",0)>
 		<cfif dumplist neq 0>
 		<!--- Dump Var --->
-		<div class="fw_titles" onClick="fw_toggle('fw_dumpvar')">&gt;&nbsp;Dumpvar </div>
+		<div class="fw_titles" onClick="fw_toggle('fw_dumpvar')">
+		&gt; &nbsp;Dumpvar 
+		</div>
 		<div class="fw_debugContent" id="fw_dumpvar">
 			<cfloop list="#dumplist#" index="i">
 				<cfif isDefined("#i#")>
 					<cfdump var="#evaluate(i)#" label="#i#">
+				<cfelseif event.valueExists(i)>
+					<cfset _tmpvar = event.getValue(i)>
+					<cfdump var="#_tmpvar#" label="#i#">
 				</cfif>
 			</cfloop>
 		</div>

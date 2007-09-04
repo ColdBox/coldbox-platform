@@ -24,14 +24,14 @@
 		<Setting name="CustomErrorTemplate"			value="includes/MyBugReport.cfm" />
 		<Setting name="MessageboxStyleOverride"		value="true" />
 		<Setting name="HandlersIndexAutoReload"   	value="false" />
-		<Setting name="ConfigAutoReload"			value="true" />
+		<Setting name="ConfigAutoReload"			value="false" />
 		<Setting name="ExceptionHandler"     		value="" />
 		<Setting name="onInvalidEvent" 				value="" />
 		<!--Base Path to plugins, as if to instantiate them. -->
 		<Setting name="MyPluginsLocation" 			value="coldbox.myplugins"/>
-		<Setting name="HandlerCaching" 				value="true"/>
+		<Setting name="HandlerCaching" 				value="false"/>
 		<Setting name="IOCFramework" 				value="coldspring"/>
-		<Setting name="IOCDefinitionFile"		 	value="config/coldspring.xml.cfm"/>
+		<Setting name="IOCDefinitionFile"		 	value="/coldbox/config/coldspring.xml.cfm"/>
 		<Setting name="IOCObjectCaching"			value="false"/>
 	</Settings>
 
@@ -67,7 +67,7 @@
 
 	<i18N>
 		<!--Default Resource Bundle without locale and properties extension-->
-		<DefaultResourceBundle>includes/main</DefaultResourceBundle>
+		<DefaultResourceBundle>/coldbox/includes/main</DefaultResourceBundle>
 		<!--Java Standard Locale-->
 		<DefaultLocale>en_US</DefaultLocale>
 		<!--session or client-->

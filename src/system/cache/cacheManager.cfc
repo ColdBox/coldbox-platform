@@ -275,8 +275,12 @@ Modification History:
 		</cfscript>
 	</cffunction>
 	
+	<!--- ************************************************************* --->
+	
 <!------------------------------------------- ACCESSOR/MUTATORS ------------------------------------------->
 
+	<!--- ************************************************************* --->
+	
 	<cffunction name="getlastReapDatetime" access="public" output="false" returntype="string" hint="Get the lastReapDatetime">
 		<cfscript>
 		return instance.lastReapDatetime;

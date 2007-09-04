@@ -21,7 +21,7 @@
 		<Setting name="EnableBugReports" 			value="false"/>
 		<Setting name="UDFLibraryFile" 				value="" />
 		<Setting name="CustomErrorTemplate"			value="" />
-		<Setting name="MessageboxStyleClass"		value="" />
+		<Setting name="MessageboxStyleOverride"		value="" />
 		<Setting name="HandlersIndexAutoReload"   	value="false" />
 		<Setting name="ConfigAutoReload"			value="false" />
 		<Setting name="ExceptionHandler"     		value="" />

@@ -1,5 +1,6 @@
 <cfoutput>
 
+	<!--- If cachepanel render the polling code --->
 	<cfif renderType eq "cachepanel">
 		<!--- Setup the panel --->
 		<cfsetting showdebugoutput="false">
@@ -15,6 +16,7 @@
 		<div class="fw_debugPanel">
 	</cfif>
 
+	<!--- Start Rendering the Cache panel  --->
 	<div class="fw_titles" onClick="fw_toggle('fw_cache')">&gt;&nbsp; ColdBox Cache</div>
 	<cfif renderType eq "cachepanel">
 		<div class="fw_debugContentView" id="fw_cache">
@@ -108,6 +110,7 @@
 		</cfif>
 
 		<h3>Cache Content Report (Time: #timeformat(now(),"hh:mm:ss tt")#)</h3>
+		<div class="fw_cachetable">
 		<!--- Object Charts --->
 		<table border="0" align="center" cellpadding="0" cellspacing="1" class="fw_debugTables">
 		  <tr >
@@ -120,21 +123,23 @@
 		  </tr>
 		  <cfset cacheKeyIndex = 1>
 		  <cfloop list="#cacheKeyList#" index="key">
-		  <cfset expDate = dateadd("n",cacheMetaData[key].timeout,cacheMetadata[key].Created)>
-		  <tr <cfif cacheKeyIndex mod 2 eq 0>class="even"</cfif>>
-		  	<td >#listLast(key,"_")#</td>
-			<td align="center" >#cacheMetadata[key].hits#</td>
-			<td align="center" >#cacheMetadata[key].Timeout#</td>
-			<td align="center" >#dateformat(cacheMetadata[key].Created,"mmm-dd")# <Br/> #timeformat(cacheMetadata[key].Created,"hh:mm:ss tt")#</td>
-			<td align="center">#dateformat(cacheMetadata[key].lastaccesed,"mmm-dd")# <br/> #timeformat(cacheMetadata[key].lastaccesed,"hh:mm:ss tt")#</td>
-		 	<td align="center" class="fw_redText" ><cfif cacheMetadata[key].timeout eq 0>---<cfelse>#dateFormat(expDate,"mmm-dd")# <br /> #timeformat(expDate,"hh:mm:ss tt")#</cfif></td>
-		  </tr>
-		  <cfset cacheKeyIndex = cacheKeyIndex + 1>
+			  <cfset expDate = dateadd("n",cacheMetaData[key].timeout,cacheMetadata[key].Created)>
+			  <tr <cfif cacheKeyIndex mod 2 eq 0>class="even"</cfif>>
+			  	<td >#listLast(key,"_")#</td>
+				<td align="center" >#cacheMetadata[key].hits#</td>
+				<td align="center" >#cacheMetadata[key].Timeout#</td>
+				<td align="center" >#dateformat(cacheMetadata[key].Created,"mmm-dd")# <Br/> #timeformat(cacheMetadata[key].Created,"hh:mm:ss tt")#</td>
+				<td align="center">#dateformat(cacheMetadata[key].lastaccesed,"mmm-dd")# <br/> #timeformat(cacheMetadata[key].lastaccesed,"hh:mm:ss tt")#</td>
+			 	<td align="center" class="fw_redText" ><cfif cacheMetadata[key].timeout eq 0>---<cfelse>#dateFormat(expDate,"mmm-dd")# <br /> #timeformat(expDate,"hh:mm:ss tt")#</cfif></td>
+			  </tr>
+			  <cfset cacheKeyIndex = cacheKeyIndex + 1>
 		  </cfloop>
 		</table>
+		</div>
 	</div>
 	<!--- **************************************************************--->
 
+	<!--- If in cachepanel mode, render the close monitor buttons --->
 	<cfif renderType eq "cachepanel">
 		</div>
 		<div align="center" style="margin-top:10px"><input type="button" name="close" value="Close Monitor" onClick="window.close()" style="font-size:10px"></div>

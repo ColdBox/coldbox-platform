@@ -12,15 +12,15 @@ Description :
 		<cfscript>
 		//Setup ColdBox Mappings For this Test
 		setAppMapping("/applications/coldbox/ApplicationTemplate");
-		setConfigMapping(ExpandPath(instance.AppMapping & "/config/config.xml.cfm"));
+		setConfigMapping(ExpandPath(instance.AppMapping & "/config/coldbox.xml.cfm"));
 		
 		//Call the super setup method to setup the app.
 		super.setup();
 		
-		//EXECUTE THE APPLICATION START HANDLER: UNCOMMENT IF NEEDED AND FILL IT OUT.
+		//EXECUTE THE APPLICATION START HANDLER: UNCOMMENT IF NEEDED AND FILL IT OUT WITH THE CORRECT HANDLER
 		//getController().runEvent("main.onAppInit");
 
-		//EXECUTE THE ON REQUEST START HANDLER: UNCOMMENT IF NEEDED AND FILL IT OUT
+		//EXECUTE THE ON REQUEST START HANDLER: UNCOMMENT IF NEEDED AND FILL IT OUT WITH THE CORRECT HANDLER
 		//getController().runEvent("main.onRequestStart");
 		</cfscript>
 	</cffunction>

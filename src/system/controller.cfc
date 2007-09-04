@@ -30,12 +30,15 @@ Description		: This is the main ColdBox front Controller.
 
 	<cffunction name="init" returntype="any" access="Public" hint="I am the constructor" output="false">
 		<cfscript>
-			//Set the App hash
-			instance.AppHash = hash(createUUID());
+			//Set the Application hash on creation
+			setAppHash( hash(createUUID()) );
+			
 			//Create & init ColdBox Services
-			instance.ColdboxOCM = CreateObject("component","cache.cacheManager").init(this);
-			instance.RequestService = CreateObject("component","services.requestService").init(this);
-			instance.DebuggerService = CreateObject("component","services.debuggerService").init(this);
+			setColdboxOCM( CreateObject("component","cache.cacheManager").init(this) );
+			setRequestService( CreateObject("component","services.requestService").init(this) );
+			setDebuggerService( CreateObject("component","services.debuggerService").init(this) );
+			setPluginService( CreateObject("component","services.pluginService").init(this) );
+			
 			//Return instance
 			return this;
 		</cfscript>
@@ -43,18 +46,43 @@ Description		: This is the main ColdBox front Controller.
 
 <!------------------------------------------- PUBLIC ------------------------------------------->
 
-	<!--- Getters / Setters Services & Managers --->
+	<!--- ColdBox Cache Manager --->
 	<cffunction name="getColdboxOCM" access="public" output="false" returntype="any" hint="Get ColdboxOCM">
 		<cfreturn instance.ColdboxOCM/>
 	</cffunction>
+	<cffunction name="setColdboxOCM" access="public" output="false" returntype="void" hint="Set ColdboxOCM">
+		<cfargument name="ColdboxOCM" type="any" required="true"/>
+		<cfset instance.ColdboxOCM = arguments.ColdboxOCM/>
+	</cffunction>
+	
+	<!--- Request Service --->
 	<cffunction name="getRequestService" access="public" output="false" returntype="any" hint="Get RequestService">
 		<cfreturn instance.RequestService/>
 	</cffunction>
+	<cffunction name="setRequestService" access="public" output="false" returntype="void" hint="Set RequestService">
+		<cfargument name="RequestService" type="any" required="true"/>
+		<cfset instance.RequestService = arguments.RequestService/>
+	</cffunction>
+	
+	<!--- Debugger Service --->
 	<cffunction name="getDebuggerService" access="public" output="false" returntype="any" hint="Get DebuggerService">
 		<cfreturn instance.DebuggerService/>
 	</cffunction>
+	<cffunction name="setDebuggerService" access="public" output="false" returntype="void" hint="Set DebuggerService">
+		<cfargument name="DebuggerService" type="any" required="true"/>
+		<cfset instance.DebuggerService = arguments.DebuggerService/>
+	</cffunction>
+	
+	<!--- Plugin Service --->
+	<cffunction name="getPluginService" access="public" output="false" returntype="any" hint="Get PluginService">
+		<cfreturn instance.PluginService/>
+	</cffunction>
+	<cffunction name="setPluginService" access="public" output="false" returntype="void" hint="Set PluginService">
+		<cfargument name="PluginService" type="Any" required="true"/>
+		<cfset instance.PluginService = arguments.PluginService/>
+	</cffunction>
 
-	<!--- Getter & Setter Internal Structures --->
+	<!--- Getter & Setter Internal Configuration Structures --->
 	<cffunction name="getConfigSettings" access="public" returntype="struct" output="false" hint="I retrieve the Config Settings Structure by Reference">
 		<cfreturn instance.ConfigSettings>
 	</cffunction>
@@ -79,9 +107,13 @@ Description		: This is the main ColdBox front Controller.
 		<cfset instance.ColdboxInitiated = arguments.ColdboxInitiated/>
 	</cffunction>
 
-	<!--- App hash Get --->
+	<!--- App hash --->
 	<cffunction name="getAppHash" access="public" output="false" returntype="string" hint="Get AppHash">
 		<cfreturn instance.AppHash/>
+	</cffunction>
+	<cffunction name="setAppHash" access="public" output="false" returntype="void" hint="Set AppHash">
+		<cfargument name="AppHash" type="string" required="true"/>
+		<cfset instance.AppHash = arguments.AppHash/>
 	</cffunction>
 	
 	<!--- Accessor/Mutator App Start Handler Fired --->
@@ -149,8 +181,8 @@ Description		: This is the main ColdBox front Controller.
 		</cfscript>
 	</cffunction>
 
-	<!--- Service Locator --->
-	<cffunction name="getService" access="public" output="false" returntype="any" hint="Internal ColdBox Transient Service Locator.">
+	<!--- Minimalistic Service Locator for rarely used services --->
+	<cffunction name="getService" access="public" output="false" returntype="any" hint="Internal ColdBox Transient Minimalistic Service Locator.">
 		<cfargument name="service" type="string" required="true" hint="The transient service/manager to create.">
 		<cfscript>
 		//Some services get loaded as singleton's, other are just created as needed
@@ -172,71 +204,18 @@ Description		: This is the main ColdBox front Controller.
 	</cffunction>
 
 	<!--- Plugin Factories --->
-	<cffunction name="getMyPlugin" access="Public" returntype="any" hint="I am the Custom Plugin cfc object factory." output="false">
-		<cfargument name="plugin" 		type="string" hint="The Custom Plugin object's name to instantiate" >
-		<cfreturn getPlugin(arguments.plugin,true)>
-	</cffunction>
 	<cffunction name="getPlugin" access="Public" returntype="any" hint="I am the Plugin cfc object factory." output="true">
 		<cfargument name="plugin" 		type="string"  hint="The Plugin object's name to instantiate" >
 		<cfargument name="customPlugin" type="boolean" required="false" default="false" hint="Used internally to create custom plugins.">
 		<cfargument name="newInstance"  type="boolean" required="false" default="false" hint="If true, it will create and return a new plugin. No caching or persistance.">
 		<!--- ************************************************************* --->
 		<cfscript>
-		var oPlugin = "";
-		var MetaData = structNew();
-		var objTimeout = "";
-		var pluginKey = "plugin_" & arguments.plugin;
-		var pluginPath = "coldbox.system.plugins.#trim(arguments.plugin)#";
-		var pluginFilePath = "";
-		
-		/* Custom Plugin Test  */
-		if ( arguments.customPlugin ){
-			
-			/* Set plugin key and file path check */
-			pluginKey = "custom_plugin_" & arguments.plugin;
-			pluginFilePath = replace(arguments.plugin,".",getSetting("OSFileSeparator",true),"all") & ".cfc";
-						
-			/* Check for Convention First */
-			if ( fileExists(getSetting("MyPluginsPath") & getSetting("OSFileSeparator",true) & pluginFilePath ) ){
-				pluginPath = "#getSetting("MyPluginsInvocationPath")#.#arguments.plugin#";
-			}
-			else{
-				/* Will search the alternate custom location */
-				pluginPath = "#getSetting("MyPluginsLocation")#.#arguments.plugin#";
-			}
-		}//end if custom plugin
-
-		/* Check if a new instance is required */
 		if ( arguments.newInstance ){
-			/* Object not found, proceed to create and verify */
-			oPlugin = CreateObject("component", pluginPath).init(this);
+			return getPluginService().new(arguments.plugin,arguments.customPlugin);
 		}
 		else{
-			
-			/* Lookup in Cache */
-			if ( instance.ColdboxOCM.lookup(pluginKey) ){
-				oPlugin = instance.ColdboxOCM.get(pluginKey);
-			}
-			else{
-				/* Object not found, proceed to create and verify */
-				oPlugin = CreateObject("component", pluginPath).init(this);
-				/* Get Object's MetaData */
-				MetaData = getMetaData(oPlugin);
-				/* Test for caching parameters */
-				if ( structKeyExists(MetaData, "cache") and isBoolean(MetaData["cache"]) and MetaData["cache"] ){
-					if ( structKeyExists(MetaData,"cachetimeout") ){
-						objTimeout = MetaData["cachetimeout"];
-					}
-					/* Set in the cache */
-					instance.ColdboxOCM.set(pluginKey,oPlugin,objTimeout);
-				}//end if caching
-				
-			}//end if instance not in cache.
-			
-		}//end if not a new instance.
-
-		/*  Return Plugin */
-		return oPlugin;
+			return getPluginService().get(arguments.plugin,arguments.customPlugin);
+		}
 		</cfscript>		
 	</cffunction>
 
@@ -293,10 +272,10 @@ Description		: This is the main ColdBox front Controller.
 		<cfset var MetaData = "">
 		<cfset var ExecutingHandler = "">
 		<cfset var ExecutingMethod = "">
-		<cfset var RequestContext = instance.RequestService.getContext()>
+		<cfset var RequestContext = getRequestService().getContext()>
 		<cfset var EventName = getSetting("EventName")>
 		
-		<!--- Default Event Set --->
+		<!--- Default Event Test --->
 		<cfif arguments.event eq "">
 			<cfset arguments.event = RequestContext.getValue(EventName)>
 		</cfif>
@@ -338,6 +317,7 @@ Description		: This is the main ColdBox front Controller.
 		<cfif not structKeyExists(oEventHandler,ExecutingMethod)>
 			<!--- Invalid Event Detected, log it --->
 			<cfset getPlugin("logger").logEntry("error","Invalid Event detected: #ExecutingHandler#.#ExecutingMethod#")>
+			<!--- If onInvalidEvent is registered, use it --->
 			<cfif getSetting("onInvalidEvent") neq "">
 				<!--- Test for invalid Event Error --->
 				<cfif compareNoCase(getSetting("onInvalidEvent"),arguments.event) eq 0>
@@ -432,4 +412,5 @@ Description		: This is the main ColdBox front Controller.
 	<cffunction name="getUtil" access="private" output="false" returntype="coldbox.system.extras.util" hint="Create and return a util object">
 		<cfreturn CreateObject("component","coldbox.system.extras.util")/>
 	</cffunction>
+	
 </cfcomponent>

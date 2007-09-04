@@ -20,31 +20,34 @@ Modification History:
 		<cfargument name="controller" type="any" required="true">
 		<cfscript>
 			setController(arguments.controller);
+			/* set the unique cookie name */
+			setCookieName("coldbox_debugmode_#controller.getAppHash()#");
 			return this;
 		</cfscript>
 	</cffunction>
 
 <!------------------------------------------- PUBLIC ------------------------------------------->
-
+	
+	<!--- Get the debug mode flag --->
 	<cffunction name="getDebugMode" access="public" hint="I Get the current user's debugmode" returntype="boolean"  output="false">
-		<cfset var appName = getNamedHash()>
-		<cfif structKeyExists(cookie,"ColdBox_debugMode_#appName#")>
-			<cfreturn cookie["ColdBox_debugMode_#appName#"]>
+		<cfif structKeyExists(cookie,getCookieName())>
+			<cfreturn cookie[getCookieName()]>
 		<cfelse>
 			<cfreturn false>
 		</cfif>
 	</cffunction>
 
+	<!--- Set the debug mode flag --->
 	<cffunction name="setDebugMode" access="public" hint="I set the current user's debugmode" returntype="void"  output="false">
 		<cfargument name="mode" type="boolean" required="true" >
-		<cfset var appName = getNamedHash()>
 		<cfif arguments.mode>
-			<cfcookie name="ColdBox_debugMode_#appName#" value="true">
-		<cfelseif structKeyExists(cookie,"ColdBox_debugMode_#appName#")>
-			<cfcookie name="ColdBox_debugMode_#appName#" value="false" expires="#now()#">
+			<cfcookie name="#getCookieName()#" value="true">
+		<cfelseif structKeyExists(cookie,getCookieName())>
+			<cfcookie name="#getCookieName()#" value="false" expires="#now()#">
 		</cfif>
 	</cffunction>
 
+	<!--- render the debug log --->
 	<cffunction name="renderDebugLog" access="public" hint="Return the debug log." output="false" returntype="Any">
 		<cfset var RenderedDebugging = "">
 		<cfset var Event = controller.getRequestService().getContext()>
@@ -72,6 +75,7 @@ Modification History:
 		<cfreturn RenderedDebugging>
 	</cffunction>
 
+	<!--- Render the cache panel --->
 	<cffunction name="renderCachePanel" access="public" hint="Renders the caching panel." output="false" returntype="Any">
 		<cfset var event = controller.getRequestService().getContext()>
 		<cfset var RenderedDebugging = "">
@@ -98,13 +102,16 @@ Modification History:
 		<cfreturn RenderedDebugging>
 	</cffunction>
 	
+	<!--- Get set the cookie name --->
+	<cffunction name="getcookieName" access="public" output="false" returntype="string" hint="Get cookieName">
+		<cfreturn instance.cookieName/>
+	</cffunction>
+	<cffunction name="setcookieName" access="public" output="false" returntype="void" hint="Set cookieName">
+		<cfargument name="cookieName" type="string" required="true"/>
+		<cfset instance.cookieName = arguments.cookieName/>
+	</cffunction>
 	
 <!------------------------------------------- PRIVATE ------------------------------------------->
 
-	<cffunction name="getNamedHash" returntype="string" access="private" output="false" hint="Provide a hash name for the cookie.">
-	<cfscript>
-		return hash(controller.getSetting("AppName"));
-	</cfscript>
-	</cffunction>
 
 </cfcomponent>
