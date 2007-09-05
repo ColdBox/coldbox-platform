@@ -81,6 +81,23 @@ Description :
 		</cfscript>
 	</cffunction>
 	
+	<cffunction name="testContextGetterSetters" access="public" returntype="Void" output="false" >
+		<cfscript>
+		var service = getController().getRequestService();
+		var context = "";
+		
+		context = service.getContext();	
+		assertComponent(context, "Context Create");
+		
+		structDelete(request, "cb_requestContext");
+		assertFalse( service.contextExists() , "Context exists");
+		
+		service.setContext(context);
+		assertTrue( structKeyExists(request,"cb_requestContext") ,"setter in request");
+				
+		</cfscript>
+	</cffunction>
+	
 	<cffunction name="tearDown" access="public" returntype="Void" hint="teardown" output="false" >
 		<cfscript>
 		structClear(cookie);
