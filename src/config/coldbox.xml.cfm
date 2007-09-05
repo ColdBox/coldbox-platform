@@ -8,26 +8,24 @@
 		<Setting name="DebugPassword" 				value="coldbox"/>
 		<Setting name="ReinitPassword" 				value=""/>
 		<Setting name="EventName" 					value="do"/>
-		<!--This feature is enabled, by default-->
 		<Setting name="EnableDumpVar" 				value="true"/>
 		<Setting name="EnableColdfusionLogging" 	value="false"/>
 		<Setting name="EnableColdboxLogging" 		value="true"/>
-		<!--Absolute path to where you want your log files to be stored-->
 		<Setting name="ColdboxLogsLocation"			value="logs" />
 		<Setting name="DefaultEvent" 				value="ehGeneral.dspHello"/>
 		<Setting name="RequestStartHandler" 		value=""/>
 		<Setting name="RequestEndHandler" 			value=""/>
 		<Setting name="ApplicationStartHandler"		value="ehGeneral.onApplicationStart" />
 		<Setting name="OwnerEmail" 					value="info@luismajano.com"/>
-		<Setting name="EnableBugReports" 			value="false"/>
+		<Setting name="EnableBugReports" 			value="true"/>
 		<Setting name="UDFLibraryFile" 				value="includes/udf.cfm" />
 		<Setting name="CustomErrorTemplate"			value="includes/MyBugReport.cfm" />
+		<Setting name="CustomEmailBugReport"		value="includes/EmailBugReport.cfm" />
 		<Setting name="MessageboxStyleOverride"		value="true" />
 		<Setting name="HandlersIndexAutoReload"   	value="false" />
 		<Setting name="ConfigAutoReload"			value="false" />
 		<Setting name="ExceptionHandler"     		value="" />
 		<Setting name="onInvalidEvent" 				value="" />
-		<!--Base Path to plugins, as if to instantiate them. -->
 		<Setting name="MyPluginsLocation" 			value="coldbox.myplugins"/>
 		<Setting name="HandlerCaching" 				value="false"/>
 		<Setting name="IOCFramework" 				value="coldspring"/>
@@ -44,7 +42,7 @@
 	<MailServerSettings />
 
 	<BugTracerReports>
-		<BugEmail>info@luismajano.com</BugEmail>
+		<BugEmail>info@coldboxframework.com</BugEmail>
 	</BugTracerReports>
 
 	<DevEnvironments>

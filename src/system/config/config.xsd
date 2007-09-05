@@ -33,35 +33,35 @@
 							</xs:annotation>
 							<xs:simpleType>
 								<xs:restriction base="xs:string">
-									<xs:enumeration value="OwnerEmail"/>
-									<xs:enumeration value="RequestEndHandler"/>
-									<xs:enumeration value="RequestStartHandler"/>
+									<xs:enumeration value="AppMapping"/>
+									<xs:enumeration value="AppName"/>	
 									<xs:enumeration value="ApplicationStartHandler" />
-									<xs:enumeration value="DefaultEvent"/>									
-									<xs:enumeration value="ExceptionHandler" />
 									<xs:enumeration value="CustomErrorTemplate" />
+									<xs:enumeration value="CustomEmailBugReport" />
+									<xs:enumeration value="ColdboxLogsLocation" />		
+									<xs:enumeration value="ConfigAutoReload" />
+									<xs:enumeration value="DebugMode"/>		
+									<xs:enumeration value="DebugPassword"/>
+									<xs:enumeration value="DefaultEvent"/>									
+									<xs:enumeration value="EventName"/>
+									<xs:enumeration value="ExceptionHandler" />
 									<xs:enumeration value="EnableBugReports"/>
 									<xs:enumeration value="EnableColdfusionLogging"/>
 									<xs:enumeration value="EnableDumpVar"/>	
 									<xs:enumeration value="EnableColdboxLogging"/>
-									<xs:enumeration value="ColdboxLogsLocation" />								
-									<xs:enumeration value="DebugMode"/>		
-									<xs:enumeration value="DebugPassword"/>
-									<xs:enumeration value="ReinitPassword"/>								
-									<xs:enumeration value="AppMapping"/>
-									<xs:enumeration value="AppDevMapping"/>
-									<xs:enumeration value="AppName"/>				
-									<xs:enumeration value="UDFLibraryFile"/>	
-									<xs:enumeration value="MessageboxStyleOverride" />
 									<xs:enumeration value="HandlersIndexAutoReload" />
-									<xs:enumeration value="ConfigAutoReload" />
-									<xs:enumeration value="MyPluginsLocation" />
-									<xs:enumeration value="onInvalidEvent"/>	
 									<xs:enumeration value="HandlerCaching" />
 									<xs:enumeration value="IOCFramework" />
 									<xs:enumeration value="IOCDefinitionFile" />
 									<xs:enumeration value="IOCObjectCaching" />
-									<xs:enumeration value="EventName"/>
+									<xs:enumeration value="MessageboxStyleOverride" />
+									<xs:enumeration value="MyPluginsLocation" />
+									<xs:enumeration value="onInvalidEvent"/>	
+									<xs:enumeration value="OwnerEmail"/>
+									<xs:enumeration value="RequestEndHandler"/>
+									<xs:enumeration value="RequestStartHandler"/>
+									<xs:enumeration value="ReinitPassword"/>								
+									<xs:enumeration value="UDFLibraryFile"/>	
 								</xs:restriction>
 							</xs:simpleType>
 						</xs:attribute>

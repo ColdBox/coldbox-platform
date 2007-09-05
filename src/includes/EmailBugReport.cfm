@@ -1,29 +1,29 @@
+<cfoutput>
 <style>
 .errorTables{
 	font-size: 13px;
 	font-family: Arial,Helvetica,sans-serif;
-	border:2px solid #000000;
+	border:2px solid ##000000;
 	width: 98%;
 }
 .errorTables th{
-	background-color: #A1D918;
-	color:#000000;
+	background-color: ##B3D0F5;
+	color:##000000;
 	font-weight: bold;
 	padding:5px 5px 5px 5px;
 }
 .errorTables td{
 	font-size: 10px;
-	background-color: #ffffff;
-	border:1px dotted #999999;
+	background-color: ##F9FAFD;
+	border:1px solid ##999999;
 	padding: 5px 5px 5px 5px;
 }
 
 </style>
-<cfoutput>
-<table border="1" cellpadding="0" cellspacing="3" class="errorTables" align="center">
+<table border="0" cellpadding="0" cellspacing="3" class="errorTables" align="center">
 
 	<tr>
-	  <th colspan="2" >Custom Bug Report Details </th>
+	  <th colspan="2" >My Email Bug Report</th>
 	</tr>
 	
 	<tr>
@@ -85,6 +85,11 @@
 	   <td >#cgi.HTTP_REFERER#</td>
 	 </tr>
 	</cfif>
+	
+	<tr>
+	   <td align="right" class="errorTablesTitles">Browser:</td>
+	   <td >#cgi.HTTP_USER_AGENT#</td>
+	</tr>
 	
 	 <cfif isStruct(exceptionBean.getExceptionStruct()) >
 	 <tr>
@@ -163,8 +168,40 @@
 			<td colspan="2" >#exceptionBean.getWhere()#</td>
 		  </tr>
 	  </cfif>
-	  
-	  </cfif>
+	
+	  <cfif ArrayLen(exceptionBean.getTagContext()) >
+		  <cfset arrayTagContext = exceptionBean.getTagContext()>
+		  <tr >
+			<th colspan="2" >Tag Context:</th>
+		  </tr>
+		  <cfloop from="1" to="#arrayLen(arrayTagContext)#" index="i">
+		  <tr >
+			<td align="right" class="errorTablesTitles">ID:</td>
+		    <td ><cfif not structKeyExists(arrayTagContext[i], "ID")>??<cfelse>#arrayTagContext[i].ID#</cfif></td>
+		  </tr>		
+		   <tr >
+			<td align="right" class="errorTablesTitles">LINE:</td>
+		    <td >#arrayTagContext[i].LINE#</td>
+		   </tr>		
+		   <tr >
+			<td align="right" class="errorTablesTitles">Template:</td>
+		    <td >#arrayTagContext[i].Template#</td>
+		   </tr>
+		   <tr >
+			<td colspan="2"></td>
+		    </tr>
+		  </cfloop>
+		  </cfif>
+	 </cfif>
+	 
+	 <tr >
+		<th colspan="2" >Stack Trace:</th>
+	 </tr>
+	 <tr>
+		<td colspan="2" >
+			<div class="stacktrace"><pre>#exceptionBean.getstackTrace()#</pre></div>
+		</td>
+	 </tr>
 
 </table>
 </cfoutput>

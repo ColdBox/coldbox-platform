@@ -382,7 +382,11 @@ Modification History:
 		
 			//Check For CustomErrorTemplate
 			if ( not StructKeyExists(ConfigStruct, "CustomErrorTemplate") )
-				ConfigStruct["CustomErrorTemplate"] = "";			
+				ConfigStruct["CustomErrorTemplate"] = "";
+			
+			//Check for CustomEmailBugReport
+			if ( not StructKeyExists(ConfigStruct, "CustomEmailBugReport") )
+				ConfigStruct["CustomEmailBugReport"] = "";	
 			
 			//Check for MessageboxStyleOverride if found, default = false
 			if ( not structkeyExists(ConfigStruct, "MessageboxStyleOverride") or not isBoolean(ConfigStruct.MessageboxStyleOverride) )

@@ -24,11 +24,11 @@ Modification History:
 
 <!------------------------------------------- PUBLIC ------------------------------------------->
 
-	<cffunction name="getcontroller" access="public" output="false" returntype="any" hint="Get controller">
+	<cffunction name="getcontroller" access="package" output="false" returntype="any" hint="Get controller">
 		<cfreturn controller/>
 	</cffunction>
 	
-	<cffunction name="setcontroller" access="public" output="false" returntype="void" hint="Set controller">
+	<cffunction name="setcontroller" access="package" output="false" returntype="void" hint="Set controller">
 		<cfargument name="controller" type="any" required="true"/>
 		<cfset variables.controller = arguments.controller/>
 	</cffunction>	
