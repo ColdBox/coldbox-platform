@@ -39,7 +39,6 @@ Modification History:
 		<cfargument name="name"  type="string" required="true" hint="The name of the variable.">
 		<cfargument name="value" type="any"    required="true" hint="The value to set in the variable.">
 		<!--- ************************************************************* --->
-		<cfset var tmpVar = "">
 		<cfset session[arguments.name] = arguments.value>
 	</cffunction>
 
@@ -50,14 +49,11 @@ Modification History:
 		<cfargument  name="name" 		type="string"  required="true" 		hint="The variable name to retrieve.">
 		<cfargument  name="default"  	type="any"     required="false"  	hint="The default value to set. If not used, a blank is returned." default="">
 		<!--- ************************************************************* --->
-		<cfset var rtnVar = "">
 		<cfif exists(arguments.name)>
-			<cfset rtnVar = session[arguments.name]>
+			<cfreturn session[arguments.name]>
 		<cfelse>
-			<cfset rtnVar = arguments.default>
+			<cfreturn arguments.default>
 		</cfif>
-		<!--- Return Var --->
-		<cfreturn rtnVar>
 	</cffunction>
 
 	<!--- ************************************************************* --->
@@ -66,11 +62,7 @@ Modification History:
 		<!--- ************************************************************* --->
 		<cfargument  name="name" type="string" required="true" 	hint="The variable name to retrieve.">
 		<!--- ************************************************************* --->
-		<cfif structKeyExists(session, arguments.name)>
-			<cfreturn true>
-		<cfelse>
-			<cfreturn false>
-		</cfif>
+		<cfreturn structKeyExists(session, arguments.name)>
 	</cffunction>
 
 	<!--- ************************************************************* --->
