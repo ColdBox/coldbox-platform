@@ -17,7 +17,7 @@
 		<Setting name="RequestEndHandler" 			value=""/>
 		<Setting name="ApplicationStartHandler"		value="ehGeneral.onApplicationStart" />
 		<Setting name="OwnerEmail" 					value="info@luismajano.com"/>
-		<Setting name="EnableBugReports" 			value="true"/>
+		<Setting name="EnableBugReports" 			value="false"/>
 		<Setting name="UDFLibraryFile" 				value="includes/udf.cfm" />
 		<Setting name="CustomErrorTemplate"			value="includes/MyBugReport.cfm" />
 		<Setting name="CustomEmailBugReport"		value="includes/EmailBugReport.cfm" />

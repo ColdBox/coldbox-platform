@@ -19,6 +19,7 @@ Description :
 		<cfset suite.addTestSuite(CreateObject("component", "cases.services.debuggerserviceTest"))>
 		<cfset suite.addTestSuite(CreateObject("component", "cases.services.pluginserviceTest"))>
 		<cfset suite.addTestSuite(CreateObject("component", "cases.services.requestserviceTest"))>
+		<cfset suite.addTestSuite(CreateObject("component", "cases.services.loaderserviceTest"))>
 		
 		<cfreturn suite/>  
 	</cffunction> 
