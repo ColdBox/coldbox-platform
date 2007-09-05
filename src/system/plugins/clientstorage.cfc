@@ -81,11 +81,7 @@ Modification History:
 		<!--- ************************************************************* --->
 		<cfargument  name="name" type="string" required="true" 	hint="The variable name to retrieve.">
 		<!--- ************************************************************* --->
-		<cfif structKeyExists(client,arguments.name)>
-			<cfreturn true>
-		<cfelse>
-			<cfreturn false>
-		</cfif>
+		<cfreturn structKeyExists(client,arguments.name)>
 	</cffunction>
 
 	<!--- ************************************************************* --->
