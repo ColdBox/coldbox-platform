@@ -1,1 +1,0 @@
-<cfdump var="#event.getCollection().oAppUser.getMemento()#">
