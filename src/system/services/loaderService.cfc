@@ -143,7 +143,7 @@ Modification History:
 <!------------------------------------------- PRIVATE ------------------------------------------->
 
 	<!--- Recursive Registration of Handler Directories --->
-	<cffunction name="recurseListing" access="private" output="false" returntype="array">
+	<cffunction name="recurseListing" access="private" output="false" returntype="array" hint="Recursive creation of handlers in a directory.">
 		<!--- ************************************************************* --->
 		<cfargument name="fileArray" 	type="array"  required="true">
 		<cfargument name="Directory" 	type="string" required="true">

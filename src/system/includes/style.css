@@ -17,7 +17,8 @@
     cursor: pointer;
 }
 .fw_titles:hover{
-   background-color: #80B0DA;
+   background-color: #B9D3FB;
+   color: black;
    cursor: pointer;
 }
 .fw_tracerMessage{

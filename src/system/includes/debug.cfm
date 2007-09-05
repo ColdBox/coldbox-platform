@@ -29,27 +29,29 @@ Modification History:
 	<!--- **************************************************************--->
 	<!--- TRACER STACK--->
 	<!--- **************************************************************--->
-	<cfif structkeyExists(RequestCollection, "fw_tracerStack")>
-	<cfoutput>
-		<!--- <cfinclude template="style.cfm"> --->
-		<div class="fw_titles" onClick="fw_toggle('fw_tracer')">&gt;&nbsp;Tracer Messages </div>
+	<cfif controller.getPlugin("sessionstorage").exists("fw_tracerStack")>
+		<cfset TracerArray = controller.getPlugin("sessionstorage").getVar("fw_tracerStack")>
+		<cfoutput>
+		<div class="fw_titles" onClick="fw_toggle('fw_tracer')">&gt;&nbsp; Tracer Messages </div>
 		<div class="fw_debugContentView" id="fw_tracer">
-			<cfloop from="1" to="#arrayLen(RequestCollection.fw_tracerStack)#" index="i">
+			<cfloop from="1" to="#arrayLen(TracerArray)#" index="i">
 				<div class="fw_tracerMessage">
 					<strong>Message:</strong><br>
-					#RequestCollection.fw_tracerStack[i].message#<br>
+					#TracerArray[i].message#<br>
 					<strong>ExtraInformation:<br></strong>
-					<cfif not isSimpleValue(RequestCollection.fw_tracerStack[i].extrainfo)>
-						<cfdump var="#RequestCollection.fw_tracerStack[i].extrainfo#">
-					<cfelseif RequestCollection.fw_tracerStack[i].extrainfo neq "">
-						#RequestCollection.fw_tracerStack[i].extrainfo#
+					<cfif not isSimpleValue(TracerArray[i].extrainfo)>
+						<cfdump var="#TracerArray[i].extrainfo#">
+					<cfelseif TracerArray[i].extrainfo neq "">
+						#TracerArray[i].extrainfo#
 					<cfelse>
 						{Not Sent}
 					</cfif>
 				</div>
 			</cfloop>
 		</div>
-	</cfoutput>
+		<!--- Rendered, now Remove --->
+		<cfset controller.getPlugin("sessionstorage").deleteVar("fw_tracerStack")>
+		</cfoutput>
 	</cfif>
 	<!--- **************************************************************--->
 
