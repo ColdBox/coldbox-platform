@@ -22,16 +22,79 @@ Modification History:
 <cfinclude template="style.css">
 </style>
 
-<table border="1" cellpadding="0" cellspacing="3" class="fw_errorTables" align="center">
-
-	<tr>
-	  <th colspan="2" >ColdBox Bug Report Details </th>
-	</tr>
+<style>
+.fw_errorDiv{
+	font-size:12px;
+	font-family: verdana;
+	margin: 5px;
+	padding: 5px;
+}
+.fw_errorDiv h3{
+	margin-top: 3px;
+	margin-bottom: 3px;
+	color: ##993333;
+}
+.fw_errorNotice{
+	padding: 5px;
+	background-color: ##FFF6CC;
+	border: 1px solid ##999999;
+}
+</style>
+<div class="fw_errorDiv">
+	<h1>Oops! Exception Encountered</h1>
 	
-	<tr>
-	  <td colspan="2"><h2>#Exception.getExtramessage()#</h2></td>
-	</tr>
+	<div class="fw_errorNotice">
+	<!--- CUSTOM SET MESSAGE --->
+	<h3>#Exception.getExtramessage()#</h3>
+	
+	<!--- ERROR TYPE --->
+	<cfif Exception.getType() neq "">
+	<strong>Error Type: </strong> #Exception.gettype()# : <cfif Exception.geterrorCode() eq "">[N/A]<cfelse>#Exception.getErrorCode()#</cfif><br />
+	</cfif>
+	
+	<!--- ERROR EXCEPTIONS --->
+	<cfif isStruct(Exception.getExceptionStruct()) >
+		<strong>Error Messages:</strong>
+		#Exception.getmessage()#<br />
+		<cfif Exception.getExtendedINfo() neq "">
+			#Exception.getExtendedInfo()#<br />
+	 	</cfif>
+	 	<cfif len(exception.getDetail()) neq 0>
+		 	#Exception.getDetail()#
+		 </cfif>
+	</cfif>
 
+	</div>
+</div>
+
+<table border="0" cellpadding="0" cellspacing="3" class="fw_errorTables" align="center">
+
+	<!--- TAG CONTEXT --->
+	<cfif ArrayLen(Exception.getTagContext()) >
+		  <cfset arrayTagContext = Exception.getTagContext()>
+		  <tr >
+			<th colspan="2" >Tag Context:</th>
+		  </tr>
+		  <cfloop from="1" to="#arrayLen(arrayTagContext)#" index="i">
+		  <tr >
+			<td align="right" class="fw_errorTablesTitles">ID:</td>
+		    <td ><cfif not structKeyExists(arrayTagContext[i], "ID")>??<cfelse>#arrayTagContext[i].ID#</cfif></td>
+		  </tr>		
+		   <tr >
+			<td align="right" class="fw_errorTablesTitles">LINE:</td>
+		    <td >#arrayTagContext[i].LINE#</td>
+		   </tr>		
+		   <tr >
+			<td align="right" class="fw_errorTablesTitles">Template:</td>
+		    <td >#arrayTagContext[i].Template#</td>
+		   </tr>
+		  </cfloop>
+	</cfif>
+	 
+	<tr>
+	   <th colspan="2" >Framework Snapshot</th>
+	</tr>
+	 
 	<cfif Exception.getErrorType() eq "Application">
 		<tr>
 		  <td width="75" align="right" class="fw_errorTablesTitles">Current Event: </td>
@@ -94,45 +157,11 @@ Modification History:
 	</tr>
 	
 	 <cfif isStruct(Exception.getExceptionStruct()) >
-	 <tr>
-	   <th colspan="2" >Exception Structure </th>
-	 </tr>
 	 
-	 <cfif Exception.getType() neq "">
-		  <tr >
-			<td colspan="2" class="fw_errorTablesTitles">Error Type & Code:</td>
-		  </tr>
-		  <tr>
-			<td colspan="2" >#Exception.gettype()# : <cfif Exception.geterrorCode() eq "">[N/A]<cfelse>#Exception.getErrorCode()#</cfif></td>
-		  </tr>
-	 </cfif>
-	 
-	 <cfif Exception.getExtendedINfo() neq "">
-		  <tr >
-			<td colspan="2" class="fw_errorTablesTitles">Extended Info:</td>
-		  </tr>
-		  <tr>
-			<td colspan="2" >#Exception.getExtendedInfo()#</td>
-		  </tr>
-	 </cfif>
-	
-	  <tr >
-		<td colspan="2" class="fw_errorTablesTitles">Message:</td>
-	  </tr>
-	  <tr>
-		<td colspan="2" >#Exception.getmessage()#</td>
-	  </tr>
-	
-	  <cfif len(exception.getDetail()) neq 0>
-		  <tr >
-			<td colspan="2" class="fw_errorTablesTitles">Detail:</td>
-		  </tr>
-		  <tr>
-			<td colspan="2" >#Exception.getDetail()#</td>
-		  </tr>
-	  </cfif>
-	
 	  <cfif Exception.getmissingFileName() neq  "">
+		  <tr>
+		   <th colspan="2" >Missing Include Exception</th>
+		  </tr>
 		  <tr >
 			<td colspan="2" class="fw_errorTablesTitles">Missing File Name:</td>
 		  </tr>
@@ -170,32 +199,8 @@ Modification History:
 			<td colspan="2" >#Exception.getWhere()#</td>
 		  </tr>
 	  </cfif>
-	
-	  <cfif ArrayLen(Exception.getTagContext()) >
-		  <cfset arrayTagContext = Exception.getTagContext()>
-		  <tr >
-			<th colspan="2" >Tag Context:</th>
-		  </tr>
-		  <cfloop from="1" to="#arrayLen(arrayTagContext)#" index="i">
-		  <tr >
-			<td align="right" class="fw_errorTablesTitles">ID:</td>
-		    <td ><cfif not structKeyExists(arrayTagContext[i], "ID")>??<cfelse>#arrayTagContext[i].ID#</cfif></td>
-		  </tr>		
-		   <tr >
-			<td align="right" class="fw_errorTablesTitles">LINE:</td>
-		    <td >#arrayTagContext[i].LINE#</td>
-		   </tr>		
-		   <tr >
-			<td align="right" class="fw_errorTablesTitles">Template:</td>
-		    <td >#arrayTagContext[i].Template#</td>
-		   </tr>
-		   <tr >
-			<td colspan="2"></td>
-		    </tr>
-		  </cfloop>
-		  </cfif>
-	 </cfif>
-	 
+	</cfif>
+	  
 	 <tr >
 		<th colspan="2" >Stack Trace:</th>
 	 </tr>
