@@ -17,19 +17,22 @@ Modification History:
 
 	<cffunction name="doSomething" access="public" returntype="Void" output="false">
 		<cfargument name="Event" type="coldbox.system.beans.requestContext" required="yes">
+		<cfset var rc = event.getCollection()>
+		 
+		 
 	</cffunction>
 	
 	<!--- ************************************************************* --->
 
 	<cffunction name="dspSomething" access="public" returntype="Void" output="false">
 		<cfargument name="Event" type="coldbox.system.beans.requestContext" required="yes">
+		<cfset var rc = event.getCollection()>
+		  
+		  
 	</cffunction>
 	
 	<!--- ************************************************************* --->
 	
-	<cffunction name="myPrivateFunction" access="private" returntype="Void" output="false">
-		<cfargument name="Event" type="coldbox.system.beans.requestContext" required="yes">
-	</cffunction>
 	
 </cfcomponent>]]></starttext>
 <endtext><![CDATA[]]></endtext>

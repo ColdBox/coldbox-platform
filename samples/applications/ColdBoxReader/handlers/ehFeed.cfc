@@ -15,7 +15,7 @@
 		<!--- Try to parse feed --->
 		<cfif Event.getValue("continue_button","") neq "">
 			<!--- Validate Feed --->
-			<cfif trim(len(rc.FeedURL)) eq 0 or not getPlugin("fileUtilities").isURL("#rc.FeedURL#")>
+			<cfif trim(len(rc.FeedURL)) eq 0 or not getPlugin("Utilities").isURL("#rc.FeedURL#")>
 				<cfset getPlugin("messagebox").setMessage("error","Please enter a valid Feed URL")>
 			<cfelse>
 				<cftry>

@@ -81,5 +81,9 @@
 		<!--session or client-->
 		<LocaleStorage>session</LocaleStorage>
 	</i18N>
+	
+	<Interceptors>
+		<Interceptor class="coldbox.system.interceptors.executionTracer" />
+	</Interceptors>
 
 </Config>

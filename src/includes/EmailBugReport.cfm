@@ -72,7 +72,7 @@
 	 </tr>
 	 <tr>
 	   <td align="right" class="errorTablesTitles"> Host &amp; Server: </td>
-	   <td >#cgi.http_host# #controller.getPlugin("fileUtilities").getInetHost()#</td>
+	   <td >#cgi.http_host# #controller.getPlugin("Utilities").getInetHost()#</td>
 	 </tr>
 	 <tr>
 	   <td align="right" class="errorTablesTitles">Query String: </td>

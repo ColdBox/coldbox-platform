@@ -193,7 +193,7 @@
 					<value option="&quot;beanFactory&quot;"/>
 					<value option="&quot;cfcViewer&quot;"/>
 					<value option="&quot;clientstorage&quot;"/>
-					<value option="&quot;fileUtilities&quot;"/>
+					<value option="&quot;Utilities&quot;"/>
 					<value option="&quot;FileWriter&quot;"/>
 					<value option="&quot;i18n&quot;"/>
 					<value option="&quot;ioc&quot;"/>
@@ -280,6 +280,7 @@
 					<value option="&quot;HandlerCaching&quot;"/>
 					<value option="&quot;HandlersIndexAutoReload&quot;"/>
 					<value option="&quot;HandlersPath&quot;"/>
+					<value option="&quot;InterceptorConfig&quot;"/>
 					<value option="&quot;IOCDefintionFile&quot;"/>
 					<value option="&quot;IOCFramework&quot;"/>
 					<value option="&quot;IOCObjectCaching&quot;"/>
@@ -691,6 +692,11 @@
 		]]></help>
 		</scope>
 		<scope value="controller.throw" type="Void">
+			<help><![CDATA[ 
+			 Facade to cfthrow.
+		]]></help>
+		</scope>
+		<scope value="controller.getUtil" type="coldbox.system.extras.util">
 			<help><![CDATA[ 
 			 Facade to cfthrow.
 		]]></help>

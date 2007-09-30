@@ -21,8 +21,10 @@ Modification History:
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
-	<cffunction name="init" access="public" returntype="clientstorage" output="false">
+	<cffunction name="init" access="public" returntype="clientstorage" output="false" hint="Constructor.">
+		<!--- ************************************************************* --->
 		<cfargument name="controller" type="any" required="true">
+		<!--- ************************************************************* --->
 		<cfset super.Init(arguments.controller) />
 		<cfset setpluginName("Client Storage")>
 		<cfset setpluginVersion("1.0")>

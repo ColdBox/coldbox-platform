@@ -34,7 +34,7 @@ Modification History:
 		<!--- ************************************************************* --->
 		<cfscript>
 			//execute the configLoader
-			configLoader(arguments.overrideConfigFile, arguments.overrideAppMapping);
+			configLoader(argumentCollection=arguments);
 			//execute the handler registrations
 			registerHandlers();
 		</cfscript>
@@ -82,9 +82,18 @@ Modification History:
 				controller.getColdboxOCM().configure(CacheConfigBean);
 			}
 			
+			//Register The Interceptors
+			getController().getInterceptorService().registerInterceptors();
+			
+			//Execute afterConfigurationLoad
+			getController().getInterceptorService().processState("afterConfigurationLoad");
+			
 			//Register Aspects
 			registerAspects();
 	
+			//Execute afterAspectsLoad
+			getController().getInterceptorService().processState("afterAspectsLoad");
+			
 			// Flag the initiation, Framework is ready to serve requests. Praise be to GOD.
 			controller.setColdboxInitiated(true);
 		</cfscript>
@@ -177,7 +186,7 @@ Modification History:
 				else
 					cleanHandler = removeChars(replacenocase(cleanHandler,"\",".","all"),1,1);
 				//Clean Extension
-				cleanHandler = controller.getPlugin("fileUtilities").ripExtension(cleanhandler);
+				cleanHandler = controller.getPlugin("Utilities").ripExtension(cleanhandler);
 				//Add data to array
 				ArrayAppend(arguments.fileArray,cleanHandler);
 			}

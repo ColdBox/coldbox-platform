@@ -103,7 +103,7 @@ Modification History:
 		  Server Instance:
 		</div>
 		<div class="fw_debugContentCell">
-	    #controller.getPlugin("fileUtilities").getInetHost()#
+	    #controller.getPlugin("Utilities").getInetHost()#
 		</div>
 
 		<div class="fw_debugTitleCell">

@@ -38,6 +38,7 @@ Description		: This is the main ColdBox front Controller.
 			setRequestService( CreateObject("component","services.requestService").init(this) );
 			setDebuggerService( CreateObject("component","services.debuggerService").init(this) );
 			setPluginService( CreateObject("component","services.pluginService").init(this) );
+			setInterceptorService( CreateObject("component", "services.interceptorService").init(this) );
 			
 			//Return instance
 			return this;
@@ -80,6 +81,15 @@ Description		: This is the main ColdBox front Controller.
 	<cffunction name="setPluginService" access="public" output="false" returntype="void" hint="Set PluginService">
 		<cfargument name="PluginService" type="Any" required="true"/>
 		<cfset instance.PluginService = arguments.PluginService/>
+	</cffunction>
+	
+	<!--- Interceptor Service --->
+	<cffunction name="getinterceptorService" access="public" output="false" returntype="any" hint="Get interceptorService">
+		<cfreturn instance.interceptorService/>
+	</cffunction>	
+	<cffunction name="setinterceptorService" access="public" output="false" returntype="void" hint="Set interceptorService">
+		<cfargument name="interceptorService" type="any" required="true"/>
+		<cfset instance.interceptorService = arguments.interceptorService/>
 	</cffunction>
 
 	<!--- Getter & Setter Internal Configuration Structures --->
@@ -274,12 +284,16 @@ Description		: This is the main ColdBox front Controller.
 		<cfset var ExecutingMethod = "">
 		<cfset var RequestContext = getRequestService().getContext()>
 		<cfset var EventName = getSetting("EventName")>
+		<cfset var interceptMetadata = structnew()>
 		
 		<!--- Default Event Test --->
 		<cfif arguments.event eq "">
 			<cfset arguments.event = RequestContext.getValue(EventName)>
 		</cfif>
-
+		
+		<!--- InterceptMetadata --->
+		<cfset interceptMetadata.processedEvent = arguments.event>
+		
 		<!--- Validate and Get registered handler --->
 		<cfset oEventBean = getRegisteredHandler(arguments.event)>
 		
@@ -323,13 +337,17 @@ Description		: This is the main ColdBox front Controller.
 				<cfif compareNoCase(getSetting("onInvalidEvent"),arguments.event) eq 0>
 					<cfthrow type="Framework.onInValidEventSettingException" message="An invalid event has been detected: #RequestContext.getValue("invalidevent","")# and the onInvalidEvent setting is also invalid: #getSetting("onInvalidEvent")#. Please check your settings.">
 				</cfif>
+				<cfset RequestContext.setValue("invalidevent","#ExecutingHandler#.#ExecutingMethod#")>
 				<!--- Relocate to Invalid Event --->
-				<cfset setNextEvent(getSetting("onInvalidEvent"),"invalidevent=#ExecutingHandler#.#ExecutingMethod#")>
+				<cfset setNextEvent(event=getSetting("onInvalidEvent"),persist="invalidevent")>
 			<cfelse>
 				<cfthrow type="Framework.InvalidEventException" message="An invalid event has been detected: #ExecutingHandler#.#ExecutingMethod#. This event does not exist in the specified handler controller.">
 			</cfif>
 		</cfif>
-
+		
+		<!--- Execute preEvent Interception --->
+		<cfset getInterceptorService().processState("preEvent",interceptMetadata)>
+			
 		<!--- PreHandler Execution --->
 		<cfif not arguments.prepostExempt and structKeyExists(oEventHandler,"preHandler")>
 			<cfmodule template="includes/timer.cfm" timertag="invoking runEvent [preHandler] for #arguments.event#">
@@ -351,6 +369,10 @@ Description		: This is the main ColdBox front Controller.
 			<cfset oEventHandler.postHandler(RequestContext)>
 			</cfmodule>
 		</cfif>
+		
+		<!--- Execute postEvent Interception --->
+		<cfset getInterceptorService().processState("postEvent",interceptMetadata)>
+		
 	</cffunction>
 
 	<cffunction name="throw" access="public" hint="Facade for cfthrow" output="false">

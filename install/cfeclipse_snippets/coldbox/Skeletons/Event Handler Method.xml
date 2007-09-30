@@ -4,7 +4,9 @@
 <help></help>
 <starttext><![CDATA[<cffunction name="$${Event Name}" access="public" returntype="void" output="false">
 	<cfargument name="Event" type="coldbox.system.beans.requestContext" required="yes">
-
+    <cfset var rc = event.getCollection()>
+        
+     
 </cffunction>]]></starttext>
 <endtext><![CDATA[]]></endtext>
 </snippet>

@@ -65,6 +65,8 @@ Modification History:
 			instance.searchi18NSettings = "//i18N";
 			instance.searchDatasources = "//Datasources/Datasource";
 			instance.searchCache = "//Cache";
+			instance.searchInterceptorCustomPoints = "//Interceptors/CustomInterceptionPoints";
+			instance.searchInterceptors = "//Interceptors/Interceptor";
 	
 			//Search patterns for fw xml
 			instance.searchConventions = "//Conventions";
@@ -243,6 +245,12 @@ Modification History:
 		var DatasourcesStruct = Structnew();
 		//Cache
 		var CacheSettingNodes = "";
+		//Interceptors
+		var InterceptorNodes = "";
+		var CustomInterceptionPoints = "";
+		var InterceptorStruct = structnew();
+		var InterceptorProperties = "";
+		var tempProperty = "";
 		//loopers
 		var i = 0;
 		var j = 0;
@@ -250,6 +258,8 @@ Modification History:
 		var webPath = "";
 		var localPath = "";
 		var PathLocation = "";
+		//helper
+		var oUtilities = getPlugin("Utilities");
 		//Testers
 		var tester = "";
 		try{
@@ -428,10 +438,10 @@ Modification History:
 					tester = trim(YourSettingNodes[i].XMLAttributes["value"]);
 					//Test for Array
 					if ( left(tester,1) eq "[" and right(tester,1) eq "]"){
-						StructInsert(ConfigStruct, YourSettingNodes[i].XMLAttributes["name"], createArray(tester) );
+						StructInsert(ConfigStruct, YourSettingNodes[i].XMLAttributes["name"], oUtilities.createArray(tester) );
 					}
 					else if ( left(tester,1) eq "{" and right(tester,1) eq "}"){
-						StructInsert(ConfigStruct, YourSettingNodes[i].XMLAttributes["name"], createStruct(tester) );
+						StructInsert(ConfigStruct, YourSettingNodes[i].XMLAttributes["name"], oUtilities.createStruct(tester) );
 					}
 					else
 						StructInsert( ConfigStruct, YourSettingNodes[i].XMLAttributes["name"], tester);
@@ -680,7 +690,7 @@ Modification History:
 				}
 			}
 			StructInsert(ConfigStruct,"ViewLayouts",LayoutViewStruct);
-			StructInsert(ConfigStruct, "ConfigTimeStamp", getPlugin("fileUtilities").FileLastModified(ConfigFileLocation));
+			StructInsert(ConfigStruct, "ConfigTimeStamp", oUtilities.FileLastModified(ConfigFileLocation));
 
 
 			//Cache Override Settings
@@ -729,8 +739,54 @@ Modification History:
 			else{
 				ConfigStruct.CacheSettings.Override = false;
 			}
-
-
+			
+			/* Interceptor Preparation. */
+			StructInsert( ConfigStruct, "InterceptorConfig", structnew() );
+			StructInsert( ConfigStruct.InterceptorConfig, "Interceptors", arraynew(1) );
+			
+			/* Start by Custom Interception Point */
+			CustomInterceptionPoints = XMLSearch(configXML,instance.searchInterceptorCustomPoints);
+			//validate Custom Interception Point
+			if ( ArrayLen(CustomInterceptionPoints) eq 0 )
+				StructInsert(ConfigStruct.InterceptorConfig,"CustomInterceptionPoints","");
+			else if ( ArrayLen(CustomInterceptionPoints) gt 1 )
+				throw("There were more than 1 CustomInterceptionPoints elements found. There can only be one.","","Framework.plugins.XMLParser.ConfigXMLParsingException");
+			else
+				StructInsert(ConfigStruct.InterceptorConfig,"CustomInterceptionPoints",Trim(CustomInterceptionPoints[1].XMLText));
+			
+			/* Parse all Interceptor Nodes now. */
+			InterceptorNodes = XMLSearch(configXML, instance.searchInterceptors);
+			for (i=1; i lte ArrayLen(InterceptorNodes); i=i+1){
+				//Interceptor Struct
+				InterceptorStruct = structnew();
+				//get Class
+				InterceptorStruct.class = Trim(InterceptorNodes[i].XMLAttributes["class"]);
+				//Prepare Properties
+				InterceptorStruct.properties = structnew();
+				
+				//Parse Interceptor Properties
+				if ( ArrayLen(InterceptorNodes[i].XMLChildren) gt 0 ){
+					for(j=1; j lte ArrayLen(InterceptorNodes[i].XMLChildren); j=j+1){
+						//Property Complex Check
+						tempProperty = Trim( InterceptorNodes[i].XMLChildren[j].XMLText );
+						//Check for Complex Setup
+						if ( left(tempProperty,1) eq "[" and right(tempProperty,1) eq "]"){
+							StructInsert( InterceptorStruct.properties, Trim(InterceptorNodes[i].XMLChildren[j].XMLAttributes["name"]), oUtilities.createArray(tempProperty) );
+						}
+						else if ( left(tester,1) eq "{" and right(tester,1) eq "}"){
+							StructInsert( InterceptorStruct.properties, Trim(InterceptorNodes[i].XMLChildren[j].XMLAttributes["name"]), oUtilities.createStruct(tempProperty) );
+						}
+						else{
+							StructInsert( InterceptorStruct.properties, Trim(InterceptorNodes[i].XMLChildren[j].XMLAttributes["name"]), tempProperty );
+						}
+					}//end loop of properties
+				}//end if no properties
+				
+				//Add to Array
+				ArrayAppend( ConfigStruct.InterceptorConfig.Interceptors, InterceptorStruct );
+				
+			}//end interceptor nodes
+						
 			//Determine which CF version for XML Parsing method
 			if ( fwSettingsStruct["xmlValidateActive"] ){
 				//Finally Validate With XSD
@@ -748,68 +804,6 @@ Modification History:
 	</cffunction>
 
 <!------------------------------------------- PRIVATE ------------------------------------------->
-
-	<cffunction name="createArray" access="private" returntype="array" hint="Create a setting Array" output="false">
-		<!--- ************************************************************* --->
-		<cfargument name="setting" type="string" required="true" hint="The setting to create an array from">
-		<!--- ************************************************************* --->
-		<!--- Clean [] --->
-		<cfscript>
-			var cleanList = "";
-			var i = 1;
-			var cleanArray = ArrayNew(1);
-			var listLength = 0;
-			var quoteChar = "'";
-			
-			//clean List
-			cleanList = reReplace( arguments.setting, '^\[|\]$', '', "All");
-			//set length
-			listLength = listlen(cleanList);
-			//create array elements
-			for (i=1; i lte listLength; i=i+1){
-				ArrayAppend(cleanArray, reReplace( trim(listgetAt(cleanList,i)) , '^\#quoteChar#|\#quoteChar#$',"", "All" ) );
-			}
-			//return array
-			return cleanArray;
-		</cfscript>
-	</cffunction>
-
-	<!--- ************************************************************* --->
-
-	<cffunction name="createStruct" access="private" returntype="struct" hint="Create a setting Structure" output="false">
-		<!--- ************************************************************* --->
-		<cfargument name="setting" type="string" required="true" hint="The setting to create a struct from">
-		<!--- ************************************************************* --->
-		<!--- Clean {} --->
-		<cfscript>
-			var cleanList = "";
-			var i = 1;
-			var newStructure = structnew();
-			var structList = "";
-			var quoteChar = "'";
-			var listLength = "";
-			var value = "";
-			
-			//clean List
-			cleanList = reReplace( arguments.setting, '^\{|\}$', '', "All");
-			//set length
-			listLength = listlen(cleanList);
-			//create array elements
-			for (i=1; i lte listLength; i=i+1){
-				structList = listgetAt(cleanList,i);
-				if ( find(":",structList) ){
-					value = reReplace( trim(getToken(structList,2,":")) , '^\#quoteChar#|\#quoteChar#$',"", "All" );
-					structInsert(newStructure, trim(getToken(structList,1,":")), value );
-				}
-				else{
-					value = reReplace( trim(getToken(structList,2,"=")) , '^\#quoteChar#|\#quoteChar#$',"", "All" );
-					structInsert(newStructure, trim(getToken(structList,1,"=")), value );
-				}	
-			}
-			//return structure
-			return newStructure;
-		</cfscript>
-	</cffunction>
 
 	<!--- ************************************************************* --->
 

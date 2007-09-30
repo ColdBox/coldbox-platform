@@ -34,8 +34,8 @@ Modification History:
 <!------------------------------------------- PUBLIC ------------------------------------------->
 	
 	<!--- Get a new plugin Instance --->
-	<cffunction name="new" access="public" returntype="any" hint="Create a New Plugin Instance" output="false" >
-		<cfargument name="plugin" required="true" type="string" hint="The plugin to create">
+	<cffunction name="new" access="public" returntype="any" hint="Create a New Plugin Instance wether its core or custom" output="false" >
+		<cfargument name="plugin" required="true" type="string"  hint="The named plugin to create">
 		<cfargument name="custom" required="true" type="boolean" hint="Custom plugin or coldbox plugin">
 		<cfscript>
 		return CreateObject("component", locatePluginPath(arguments.plugin,arguments.custom) ).init( controller );
@@ -44,9 +44,10 @@ Modification History:
 
 	<!--- Get a new or cached plugin instance --->
 	<cffunction name="get" access="public" returntype="any" hint="Get a new/cached plugin instance" output="false" >
-		<cfargument name="plugin" required="true" type="string" hint="The plugin to create">
+		<cfargument name="plugin" required="true" type="string"  hint="The named plugin to create">
 		<cfargument name="custom" required="true" type="boolean" hint="Custom plugin or coldbox plugin">
 		<cfscript>
+			/* Used for caching. */
 			var pluginKey = "plugin_" & arguments.plugin;
 			var pluginMD = "";
 			var objTimeout = "";
@@ -54,7 +55,7 @@ Modification History:
 			var MetaData = "";
 			var mdEntry = structnew();
 			
-			/* Differentiate Custom PluginKey */
+			/* Differentiate a Custom PluginKey */
 			if ( arguments.custom ){
 				pluginKey = "custom_plugin_" & arguments.plugin;
 			}
@@ -78,6 +79,7 @@ Modification History:
 					
 					/* Test for caching parameters */
 					if ( structKeyExists(MetaData, "cache") and isBoolean(MetaData["cache"]) and MetaData["cache"] ){
+						/* Plugins are NOT cached by default. */
 						mdEntry.cacheable = true;
 						if ( structKeyExists(MetaData,"cachetimeout") ){
 							mdEntry.timeout = MetaData["cachetimeout"];
@@ -129,19 +131,23 @@ Modification History:
 	</cffunction>
 	
 	<!--- Plugin Cache Metadata --->
-	<cffunction name="getcacheDictionary" access="public" output="false" returntype="struct" hint="Get cacheDictionary">
+	<cffunction name="getcacheDictionary" access="public" output="false" returntype="struct" hint="Get the plugin cache dictionary">
 		<cfreturn instance.cacheDictionary/>
 	</cffunction>
-	<cffunction name="setcacheDictionary" access="public" output="false" returntype="void" hint="Set cacheDictionary">
-		<cfargument name="cacheDictionary" type="struct" required="true"/>
-		<cfset instance.cacheDictionary = arguments.cacheDictionary/>
-	</cffunction>
+	
 
 
 <!------------------------------------------- PRIVATE ------------------------------------------->
 
-	<cffunction name="locatePluginPath" access="private" returntype="string" hint="Locate a plugin instantiation path" output="false" >
-		<cfargument name="plugin" required="true" type="string" hint="The plugin to validate the path">
+	<!--- Set the internal plugin cache dictionary. --->
+	<cffunction name="setcacheDictionary" access="private" output="false" returntype="void" hint="Set the plugin cache dictionary. NOT EXPOSED to avoid screwups">
+		<cfargument name="cacheDictionary" type="struct" required="true"/>
+		<cfset instance.cacheDictionary = arguments.cacheDictionary/>
+	</cffunction>
+	
+	<!--- Locate a Plugin Instantiation Path --->
+	<cffunction name="locatePluginPath" access="private" returntype="string" hint="Locate a full plugin instantiation path from the requested plugin name" output="false" >
+		<cfargument name="plugin" required="true" type="string" hint="The plugin to validate the path on.">
 		<cfargument name="custom" required="true" type="boolean" hint="Whether its a custom plugin or not.">
 		<cfscript>
 			var pluginPath = "";
@@ -153,7 +159,7 @@ Modification History:
 				/* Set plugin key and file path check */
 				pluginFilePath = replace(arguments.plugin,".",controller.getSetting("OSFileSeparator",true),"all") & ".cfc";
 							
-				/* Check for Convention First */
+				/* Check for Convention First, MyPluginsPath was already setup with conventions on XMLParser */
 				if ( fileExists(controller.getSetting("MyPluginsPath") & controller.getSetting("OSFileSeparator",true) & pluginFilePath ) ){
 					pluginPath = "#controller.getSetting("MyPluginsInvocationPath")#.#arguments.plugin#";
 				}

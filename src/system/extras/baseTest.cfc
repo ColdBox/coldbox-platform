@@ -51,27 +51,29 @@ Description :
 <!------------------------------------------- HELPERS ------------------------------------------->
 
 	<!--- getter for AppMapping --->
-	<cffunction name="getAppMapping" access="public" returntype="string" output="false">
+	<cffunction name="getAppMapping" access="public" returntype="string" output="false" hint="Get the AppMapping">
 		<cfreturn instance.AppMapping>
 	</cffunction>
 	
-	<cffunction name="setAppMapping" access="public" output="false" returntype="void" hint="Set AppMapping">
+	<!--- setter for AppMapping --->
+	<cffunction name="setAppMapping" access="public" output="false" returntype="void" hint="Set the AppMapping">
 		<cfargument name="AppMapping" type="string" required="true"/>
 		<cfset instance.AppMapping = arguments.AppMapping/>
 	</cffunction>
 
 	<!--- getter for ConfigMapping --->
-	<cffunction name="getConfigMapping" access="public" returntype="string" output="false">
+	<cffunction name="getConfigMapping" access="public" returntype="string" output="false" hint="Get the ConfigMapping">
 		<cfreturn instance.ConfigMapping>
 	</cffunction>
 	
-	<cffunction name="setConfigMapping" access="public" output="false" returntype="void" hint="Set ConfigMapping">
+	<!--- setter for ConfigMapping --->
+	<cffunction name="setConfigMapping" access="public" output="false" returntype="void" hint="Set the ConfigMapping">
 		<cfargument name="ConfigMapping" type="string" required="true"/>
 		<cfset instance.ConfigMapping = arguments.ConfigMapping/>
 	</cffunction>
 
 	<!--- getter for controller --->
-	<cffunction name="getcontroller" access="public" returntype="any" output="false">
+	<cffunction name="getcontroller" access="public" returntype="any" output="false" hint="Get a reference to the ColdBox controller">
 		<cfreturn instance.controller>
 	</cffunction>
 

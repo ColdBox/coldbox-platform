@@ -19,7 +19,7 @@
 		<Setting name="OwnerEmail" 					value="info@luismajano.com"/>
 		<Setting name="EnableBugReports" 			value="false"/>
 		<Setting name="UDFLibraryFile" 				value="includes/udf.cfm" />
-		<Setting name="CustomErrorTemplate"			value="includes/MyBugReport.cfm" />
+		<Setting name="CustomErrorTemplate"			value="" />
 		<Setting name="CustomEmailBugReport"		value="includes/EmailBugReport.cfm" />
 		<Setting name="MessageboxStyleOverride"		value="true" />
 		<Setting name="HandlersIndexAutoReload"   	value="false" />
@@ -84,5 +84,13 @@
 		<MaxObjects>15</MaxObjects>
 		<FreeMemoryPercentageThreshold>15</FreeMemoryPercentageThreshold>
 	</Cache>
+	
+	<Interceptors>
+		<CustomInterceptionPoints>onLog</CustomInterceptionPoints>
+		<Interceptor class="coldbox.interceptors.executionTracer">
+			<Property name="Simple">Luis</Property>
+			<Property name="Complex">[1,2,3,4,5]</Property>
+		</Interceptor>
+	</Interceptors>
 
 </Config>

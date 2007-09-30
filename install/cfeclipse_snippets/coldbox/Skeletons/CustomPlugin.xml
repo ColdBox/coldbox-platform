@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <snippet filetemplate="true" extension="cfc">
-<name>Custom Plugin</name>
-<help>A new Custom Plugin</help>
-<starttext><![CDATA[<!-----------------------------------------------------------------------
+ <name>Custom Plugin</name>
+ <help>A new Custom Plugin</help>
+ <starttext><![CDATA[<!-----------------------------------------------------------------------
 Author 	 :	$${Author}
 Date     :	$${DATE}
 Description : 			
@@ -22,6 +22,9 @@ Modification History:
   		setpluginName("$${Plugin Name}");
   		setpluginVersion("$${Plugin Version}");
   		setpluginDescription("$${Plugin Description}");
+  		//My own Constructor code here
+  		
+  		//Return instance
   		return this;
 		</cfscript>
 	</cffunction>
@@ -29,5 +32,5 @@ Modification History:
 	<!--- ************************************************************* --->
 	
 </cfcomponent>]]></starttext>
-<endtext><![CDATA[]]></endtext>
+ <endtext><![CDATA[]]></endtext>
 </snippet>

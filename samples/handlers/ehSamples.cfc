@@ -33,7 +33,7 @@ Sep/25/2005 - Luis Majano
 		<cfset var rc = Event.getCollection()>
 		<!--- Get Log File contents --->
 		<cftry>
-			<cfset rc.LogFileContents = getPlugin("fileUtilities").readFile(getPlugin("logger").getlogFullPath())>
+			<cfset rc.LogFileContents = getPlugin("Utilities").readFile(getPlugin("logger").getlogFullPath())>
 			<cfcatch type="any">
 				<cfset rc.LogFileContents = cfcatch.Detail & cfcatch.message>
 			</cfcatch>

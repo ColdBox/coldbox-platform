@@ -106,7 +106,8 @@ Modification History:
 		<!---JVM Threshold Checks --->
 		<cfset var isBelowThreshold = ThresholdChecks()>
 		<cfset var ccBean = getCacheConfigBean()>
-
+		<cfset var interceptMetadata = structnew()>
+		
 		<!--- Clean Args --->
 		<cfset arguments.objectKey = trim(arguments.objectKey)>
 		<cfset arguments.Timeout = trim(arguments.Timeout)>
@@ -125,6 +126,15 @@ Modification History:
 				<cfset getobjectPool().set(arguments.objectKey,arguments.MyObject,arguments.Timeout)>
 			</cflock>
 		</cfif>
+		
+		<!--- Only execute once the framework has been initialized --->
+		<cfif getController().getColdboxInitiated()>
+			<!--- InterceptMetadata --->
+			<cfset interceptMetadata.cacheObjectKey = arguments.objectKey>
+			<cfset interceptMetadata.cacheObjectTimeout = arguments.Timeout>
+			<!--- Execute afterCacheElementInsert Interception --->
+			<cfset getController().getInterceptorService().processState("afterCacheElementInsert",interceptMetadata)>
+		</cfif>
 	</cffunction>
 
 	<!--- ************************************************************* --->
@@ -134,11 +144,21 @@ Modification History:
 		<cfargument name="objectKey" type="string" required="true">
 		<!--- ************************************************************* --->
 		<cfset var Results = false>
+		<cfset var interceptMetadata = structnew()>
+		
+		<!--- Remove Object --->
 		<cfif getobjectPool().lookup(arguments.objectKey) >
 			<cflock type="exclusive" name="#getLockName()#" timeout="30">
 				<cfset Results = getobjectPool().clearKey(arguments.objectKey)>
 			</cflock>
 		</cfif>
+		
+		<!--- InterceptMetadata --->
+		<cfset interceptMetadata.cacheObjectKey = arguments.objectKey>
+		
+		<!--- Execute afterCacheElementInsert Interception --->
+		<cfset getController().getInterceptorService().processState("afterCacheElementInsert",interceptMetadata)>
+		
 		<cfreturn Results>
 	</cffunction>
 
@@ -200,18 +220,21 @@ Modification History:
 		itemTypes.handlers = 0;
 		itemTypes.other = 0;
 		itemTypes.ioc_beans = 0;
+		itemTypes.interceptors = 0;
 
 		//Sort the listing.
 		itemList = listSort(itemList, "textnocase");
 
 		//Count objects
 		for (x=1; x lte listlen(itemList) ; x = x+1){
-			if ( findnocase("plugin", listGetAt(itemList,x)) )
+			if ( findnocase("cboxplugin", listGetAt(itemList,x)) )
 				itemTypes.plugins = itemTypes.plugins + 1;
-			else if ( findnocase("handler", listGetAt(itemList,x)) )
+			else if ( findnocase("cboxhandler", listGetAt(itemList,x)) )
 				itemTypes.handlers = itemTypes.handlers + 1;
-			else if ( findnocase("ioc", listGetAt(itemList,x)) )
+			else if ( findnocase("cboxioc", listGetAt(itemList,x)) )
 				itemTypes.ioc_beans = itemTypes.ioc_beans + 1;
+			else if ( findnocase("cboxinterceptor", listGetAt(itemList,x)) )
+				itemTypes.interceptors = itemTypes.interceptors + 1;
 			else
 				itemTypes.other = itemTypes.other + 1;
 		}

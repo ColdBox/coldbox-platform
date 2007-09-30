@@ -16,6 +16,7 @@
 				<xs:element maxOccurs="1" minOccurs="0" ref="i18N" />
 				<xs:element maxOccurs="1" minOccurs="0" ref="Datasources"/>
 				<xs:element maxOccurs="1" minOccurs="0" ref="Cache"/>
+				<xs:element maxOccurs="1" minOccurs="0" ref="Interceptors"/>
 			</xs:all>
 		</xs:complexType>
 	</xs:element>
@@ -367,6 +368,44 @@
 					<xs:annotation>
 						<xs:documentation>The amount of free memory threshold needed to cache. If memory goes below this threshold, objects will no longer be cached.</xs:documentation>
 					</xs:annotation>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="Interceptors">
+		<xs:annotation><xs:documentation>These are the coldbox interceptor declarations</xs:documentation></xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element maxOccurs="1" minOccurs="0" name="CustomInterceptionPoints" type="xs:string" default="">
+					<xs:annotation>
+						<xs:documentation>A comma delimmited list of custom interception points to declare an use.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element minOccurs="0" maxOccurs="unbounded" name="Interceptor">
+					<xs:annotation>
+						<xs:documentation>An interceptor declaration.</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element maxOccurs="unbounded" minOccurs="0" name="Property">
+								<xs:annotation><xs:documentation>A property of the interceptor, can be simple or complex via ColdBox complex properties</xs:documentation></xs:annotation>
+								<xs:complexType>
+									<xs:simpleContent>
+										<xs:extension base="xs:string" >
+											<xs:attribute name="name" use="required" type="xs:string">
+												<xs:annotation><xs:documentation>The name of the property</xs:documentation></xs:annotation>
+											</xs:attribute>
+										</xs:extension>
+									</xs:simpleContent>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+						<xs:attribute name="class" use="required" type="xs:string">
+							<xs:annotation>
+								<xs:documentation>The instantiation class of the interceptor.</xs:documentation>
+							</xs:annotation>
+						</xs:attribute>
+					</xs:complexType>
 				</xs:element>
 			</xs:sequence>
 		</xs:complexType>

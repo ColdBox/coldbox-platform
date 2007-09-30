@@ -137,7 +137,7 @@ Modification History:
 	 </tr>
 	 <tr>
 	   <td align="right" class="fw_errorTablesTitles"> Host &amp; Server: </td>
-	   <td >#cgi.http_host# #controller.getPlugin("fileUtilities").getInetHost()#</td>
+	   <td >#cgi.http_host# #controller.getPlugin("Utilities").getInetHost()#</td>
 	 </tr>
 	 <tr>
 	   <td align="right" class="fw_errorTablesTitles">Query String: </td>

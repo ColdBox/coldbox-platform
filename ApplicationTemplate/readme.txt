@@ -19,39 +19,12 @@ Sample Directory Structure For Your Application
 	-handlers (Your ColdBox event handlers, can be orgainzed into folders) REQUIRED
 	-layouts  (Your layouts) REQUIRED
 	-views (Your views, can be orgainzed into folders) REQUIRED
+	-plugins (Your custom plugins by convention, can be organized into folders) OPTIONAL
+	-interceptors (Where you can put your interceptors) OPTIONAL
 	-includes (Your include files if used.) OPTIONAL-includes a generic custom error template
-	-tags (Your cf tags if used) OPTIONAL
-	-images (Your images) OPTIONAL
 	-logs (For ColdBox Logging) OPTIONAL
 	-{Any other folder(s) you want} OPTIONAL
 	
-******************************************************************************
-NAMING CONVENTIONS
-******************************************************************************
-Views (Optional): All my views start with 'vw', you can use 'dsp' anything you
-like, as long as you remember the name.
-	ex: vwMyview.cfm, vwHello.cfm, dspHello.cfm
-
-Layouts (Optional): All my layouts start with 'Layout.'. Again you can 
-use anything you like.
-	ex: Layout.Main.cfm, Layout.Popup.cfm, dspPopup.cfm, dspLayout.cfm
-
-Event Handlers (REQUIRED): 
-
-All event handlers method calls follow this regular expression:
-(dsp|do|on)[a-zA-Z]+ and they need to have an access of public in 
-order for ColdBox to register them. You can still create private methods
-but they can only be called from within the same handler.
-
-ex: ehGeneral.doLogin, ehTools.doParse, ehGeneral.dspHome, ehGeneral.dspContactInfo
-
-All event handlers start with 'eh' + the name. (OPTIONAL)
-You can name the handlers in whatever format you like.
-ex: ehGeneral.cfc, ehLuis.cfc, ehTools.cfc, ehBase.cfc, myhandler.cfc
-
-Valid PUBLIC method names should start with "on, dsp, do"
-PRIVATE methods do not have a nomenclature.
-
 ******************************************************************************
 QUICK START
 ******************************************************************************
@@ -59,18 +32,18 @@ How to start?
 
 1) Start off by copying the ApplicationTemplate folder to your web root and
    naming it to something you want. Remember that you need to have installed
-   ColdBox first. Simply by copying the coldbox distribution directory to the
+   ColdBox first. Copy the coldbox distribution directory to the
    web root. /WEBROOT/coldbox
 
-2) Open the config/config.xml.cfm file and change the AppName setting to whatever you want.
+2) Open the config/coldbox.xml.cfm file and change the AppName setting to whatever you want.
     
-   You can read the config.xml guide in order to understand all the variables in this file
+   You can read the coldbox.xml guide in order to understand all the variables in this file
    and adjust if needed.  
 
 3) Optional step, skip to step 4.
    If you need to change the name property of your Application.cfc or
    Application.cfm template.
-   Oopen the file Application.cfc or Application.cfm and change the name
+   Open the file Application.cfc or Application.cfm and change the name
    property to whatever you want it to be. Remember that every application will need
    its own name property. Also, please note that ColdBox uses the application
    scope as a requirement. 
