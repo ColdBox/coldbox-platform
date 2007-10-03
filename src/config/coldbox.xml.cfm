@@ -23,7 +23,7 @@
 		<Setting name="CustomEmailBugReport"		value="includes/EmailBugReport.cfm" />
 		<Setting name="MessageboxStyleOverride"		value="true" />
 		<Setting name="HandlersIndexAutoReload"   	value="false" />
-		<Setting name="ConfigAutoReload"			value="false" />
+		<Setting name="ConfigAutoReload"			value="true" />
 		<Setting name="ExceptionHandler"     		value="" />
 		<Setting name="onInvalidEvent" 				value="" />
 		<Setting name="MyPluginsLocation" 			value="coldbox.myplugins"/>
