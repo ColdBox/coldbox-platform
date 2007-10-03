@@ -27,7 +27,7 @@ Description :
 	<cffunction name="afterConfigurationLoad" access="public" returntype="void" hint="Executes after the framework and application configuration loads, but before the aspects get configured. " output="false" >
 		<!--- ************************************************************* --->
 		<cfargument name="event" required="true" type="coldbox.system.beans.requestContext" hint="The event object.">
-		<cfargument name="metadata" required="true" type="struct" hint="Metadata of intercepted info.">
+		<cfargument name="interceptData" required="true" type="struct" hint="interceptData of intercepted info.">
 		<!--- ************************************************************* --->
 		<!--- Set the tracing setting --->
 		<cfset setSetting("ExecutionTracerStartTime",now())>
@@ -37,7 +37,7 @@ Description :
 	<cffunction name="afterAspectsLoad" access="public" returntype="void" hint="Executes after the application aspects get configured." output="false" >
 		<!--- ************************************************************* --->
 		<cfargument name="event" required="true" type="coldbox.system.beans.requestContext" hint="The event object.">
-		<cfargument name="metadata" required="true" type="struct" hint="Metadata of intercepted info.">
+		<cfargument name="interceptData" required="true" type="struct" hint="interceptData of intercepted info.">
 		<!--- ************************************************************* --->
 		<cfset getPlugin("logger").logEntry("information","I am in the after after aspects load.")>
 	</cffunction>
@@ -46,7 +46,7 @@ Description :
 	<cffunction name="preProcess" access="public" returntype="void" hint="Executes before any event execution occurs" output="false" >
 		<!--- ************************************************************* --->
 		<cfargument name="event" required="true" type="coldbox.system.beans.requestContext" hint="The event object.">
-		<cfargument name="metadata" required="true" type="struct" hint="Metadata of intercepted info.">
+		<cfargument name="interceptData" required="true" type="struct" hint="interceptData of intercepted info.">
 		<!--- ************************************************************* --->
 		<cfset getPlugin("logger").logEntry("information","I am in the pre process method.")>
 	</cffunction>
@@ -55,25 +55,25 @@ Description :
 	<cffunction name="preEvent" access="public" returntype="void" hint="Executes right before any run event is executed." output="false" >
 		<!--- ************************************************************* --->
 		<cfargument name="event" 			required="true" type="coldbox.system.beans.requestContext" hint="The event object.">
-		<cfargument name="metadata" required="true" type="struct" hint="Metadata of intercepted info.">
+		<cfargument name="interceptData" required="true" type="struct" hint="interceptData of intercepted info.">
 		<!--- ************************************************************* --->
-		<cfset getPlugin("logger").logEntry("information","I am in the pre event method. Metadata: #arguments.metadata.toString()#")>
+		<cfset getPlugin("logger").logEntry("information","I am in the pre event method. interceptData: #arguments.interceptData.toString()#")>
 	</cffunction>
 	
 	<!--- Post Event Execution --->
 	<cffunction name="postEvent" access="public" returntype="void" hint="Executes after a run event is executed" output="false" >
 		<!--- ************************************************************* --->
 		<cfargument name="event" required="true" type="coldbox.system.beans.requestContext" hint="The event object.">
-		<cfargument name="metadata" required="true" type="struct" hint="Metadata of intercepted info.">
+		<cfargument name="interceptData" required="true" type="struct" hint="interceptData of intercepted info.">
 		<!--- ************************************************************* --->
-		<cfset getPlugin("logger").logEntry("information","I am in the post event method. Metadata: #arguments.metadata.toString()#")>
+		<cfset getPlugin("logger").logEntry("information","I am in the post event method. interceptData: #arguments.interceptData.toString()#")>
 	</cffunction>
 	
 	<!--- Pre Render Execution --->
 	<cffunction name="preRender" access="public" returntype="void" hint="Executes before the framework starts the rendering cycle." output="false" >
 		<!--- ************************************************************* --->
 		<cfargument name="event" required="true" type="coldbox.system.beans.requestContext" hint="The event object.">
-		<cfargument name="metadata" required="true" type="struct" hint="Metadata of intercepted info.">
+		<cfargument name="interceptData" required="true" type="struct" hint="interceptData of intercepted info.">
 		<!--- ************************************************************* --->
 		<cfset getPlugin("logger").logEntry("information","I am in the pre render point.")>
 	</cffunction>
@@ -82,7 +82,7 @@ Description :
 	<cffunction name="postRender" access="public" returntype="void" hint="Executes after the rendering cycle." output="false" >
 		<!--- ************************************************************* --->
 		<cfargument name="event" required="true" type="coldbox.system.beans.requestContext" hint="The event object.">
-		<cfargument name="metadata" required="true" type="struct" hint="Metadata of intercepted info.">
+		<cfargument name="interceptData" required="true" type="struct" hint="interceptData of intercepted info.">
 		<!--- ************************************************************* --->
 		<cfset getPlugin("logger").logEntry("information","I am in the post render point.")>
 	</cffunction>
@@ -91,7 +91,7 @@ Description :
 	<cffunction name="postProcess" access="public" returntype="void" hint="Executes after executions and renderings." output="false" >
 		<!--- ************************************************************* --->
 		<cfargument name="event" required="true" type="coldbox.system.beans.requestContext" hint="The event object.">
-		<cfargument name="metadata" required="true" type="struct" hint="Metadata of intercepted info.">
+		<cfargument name="interceptData" required="true" type="struct" hint="interceptData of intercepted info.">
 		<!--- ************************************************************* --->
 		<cfset getPlugin("logger").logEntry("information","I am in the post process point.")>
 	</cffunction>
@@ -100,18 +100,18 @@ Description :
 	<cffunction name="afterCacheElementInsert" access="public" returntype="void" hint="Executes after an object is inserted into the cache." output="false" >
 		<!--- ************************************************************* --->
 		<cfargument name="event" 			required="true" type="coldbox.system.beans.requestContext" hint="The event object.">
-		<cfargument name="metadata" required="true" type="struct" hint="Metadata of intercepted info.">
+		<cfargument name="interceptData" required="true" type="struct" hint="interceptData of intercepted info.">
 		<!--- ************************************************************* --->
-		<cfset getPlugin("logger").logEntry("information","Cache element inserted. Metadata: #arguments.metadata.toString()#")>
+		<cfset getPlugin("logger").logEntry("information","Cache element inserted. interceptData: #arguments.interceptData.toString()#")>
 	</cffunction>
 	
 	<!--- After an Element is removed from the cache --->
 	<cffunction name="afterCacheElementRemoved" access="public" returntype="void" hint="Executes after an object is removed from the cache." output="false" >
 		<!--- ************************************************************* --->
 		<cfargument name="event" 			required="true" type="coldbox.system.beans.requestContext" hint="The event object.">
-		<cfargument name="metadata" required="true" type="struct" hint="Metadata of intercepted info.">
+		<cfargument name="interceptData" required="true" type="struct" hint="interceptData of intercepted info.">
 		<!--- ************************************************************* --->
-		<cfset getPlugin("logger").logEntry("information","Cache element removed. Metadata: #arguments.metadata.toString()#")>
+		<cfset getPlugin("logger").logEntry("information","Cache element removed. interceptData: #arguments.interceptData.toString()#")>
 	</cffunction>
 
 </cfcomponent>

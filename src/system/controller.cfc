@@ -21,11 +21,6 @@ Description		: This is the main ColdBox front Controller.
 		instance.ColdboxSettings = structnew();
 		instance.AppStartHandlerFired = false;
 		instance.AppHash = "";
-		
-		//Services & Managers
-		instance.ColdboxOCM = structNew();
-		instance.DebuggerService = structNew();
-		instance.RequestService = structNew();
 	</cfscript>
 
 	<cffunction name="init" returntype="any" access="Public" hint="I am the constructor" output="false">

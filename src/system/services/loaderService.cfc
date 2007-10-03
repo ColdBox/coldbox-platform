@@ -67,7 +67,7 @@ Modification History:
 			controller.getColdboxOCM().configure(CacheConfigBean);
 	
 			//Load Application Config Settings Now that framework has been loaded.
-			ConfigSettings =XMLParser.parseConfig(arguments.overrideAppMapping);
+			ConfigSettings = XMLParser.parseConfig(arguments.overrideAppMapping);
 			controller.setConfigSettings(ConfigSettings);
 			
 			//Check for Cache OVerride Settings in Config

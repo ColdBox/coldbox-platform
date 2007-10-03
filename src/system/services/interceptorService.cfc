@@ -75,8 +75,8 @@ Description :
 	<!--- Process a State's Interceptors --->
 	<cffunction name="processState" access="public" returntype="void" hint="Process an interception state" output="false" >
 		<!--- ************************************************************* --->
-		<cfargument name="state" 	required="true" 	type="string" hint="An interception state to process">
-		<cfargument name="metadata" required="false" 	type="struct" default="#structNew()#" hint="A metadata structure used to pass intercepted information.">
+		<cfargument name="state" 		 required="true" 	type="string" hint="An interception state to process">
+		<cfargument name="interceptData" required="false" 	type="struct" default="#structNew()#" hint="A data structure used to pass intercepted information.">
 		<!--- ************************************************************* --->
 		<cfscript>
 			var event = getController().getRequestService().getContext();
@@ -86,7 +86,7 @@ Description :
 			}
 			/* Process The State if it exists, else just exit out. */
 			if ( structKeyExists(getinterceptionStates(), arguments.state) ){
-				structFind( getinterceptionStates(), arguments.state).process(event,arguments.metadata);	
+				structFind( getinterceptionStates(), arguments.state).process(event,arguments.interceptData);	
 			}
 		</cfscript>
 	</cffunction>
@@ -190,7 +190,7 @@ Description :
 	<cffunction name="createInterceptionStates" access="public" returntype="void" hint="Create the interception states container" output="false" >
 		<cfscript>
 		if ( not structIsEmpty(getInterceptionStates()) ){
-			structClear( getInterceptionStates );
+			structClear( getInterceptionStates() );
 			setInterceptionStates(structnew());
 		}
 		</cfscript>

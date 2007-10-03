@@ -45,8 +45,8 @@ Description :
 	<!--- Process the Interceptors --->
 	<cffunction name="process" access="public" returntype="void" hint="Process this state's interceptors" output="false" >
 		<!--- ************************************************************* --->
-		<cfargument name="event" 	required="true" 	type="any"    hint="The event context object.">
-		<cfargument name="metadata" required="true" 	type="struct" hint="A metadata structure used to pass intercepted information.">
+		<cfargument name="event" 		 required="true" 	type="any"    hint="The event context object.">
+		<cfargument name="interceptData" required="true" 	type="struct" hint="A data structure used to pass intercepted information.">
 		<!--- ************************************************************* --->
 		<cfscript>
 		var iterator = getInterceptors().keySet().iterator();
@@ -56,7 +56,7 @@ Description :
 		while( iterator.hasNext() ){
 			key = iterator.next();
 			/* Invoke the execution point */
-			invoker( getInterceptors().get(key), arguments.event, arguments.metadata );
+			invoker( getInterceptors().get(key), arguments.event, arguments.interceptData );
 		}		
 		</cfscript>
 	</cffunction>
@@ -88,13 +88,13 @@ Description :
 	<!--- Interceptor Invoker --->
 	<cffunction name="invoker" access="public" returntype="void" hint="Execute an interceptor execution point" output="false" >
 		<!--- ************************************************************* --->
-		<cfargument name="interceptor" 	required="true" type="any" 		hint="The interceptor reference from cache">
-		<cfargument name="event" 		required="true" type="any" 		hint="The event context">
-		<cfargument name="metadata" 	required="true" type="struct" 	hint="A metadata structure used to pass intercepted information.">
+		<cfargument name="interceptor" 		required="true" type="any" 		hint="The interceptor reference from cache">
+		<cfargument name="event" 		 	required="true" type="any" 		hint="The event context">
+		<cfargument name="interceptData" 	required="true" type="struct" 	hint="A metadata structure used to pass intercepted information.">
 		<!--- ************************************************************* --->
 		<cfinvoke component="#arguments.interceptor#" method="#getstate()#">
-			<cfinvokeargument name="event" 		value="#arguments.event#">
-			<cfinvokeargument name="metadata" 	value="#arguments.metadata#">
+			<cfinvokeargument name="event" 			value="#arguments.event#">
+			<cfinvokeargument name="interceptData" 	value="#arguments.interceptData#">
 		</cfinvoke>		
 	</cffunction>
 	
