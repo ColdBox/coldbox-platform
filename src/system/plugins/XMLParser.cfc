@@ -71,10 +71,11 @@ Modification History:
 			//Search patterns for fw xml
 			instance.searchConventions = "//Conventions";
 	
-			//Properties
+			//ColdBox Properties
 			instance.FileSeparator = createObject("java","java.lang.System").getProperty("file.separator");
 			instance.FrameworkConfigFile = ExpandPath("/coldbox/system/config/settings.xml");
 			instance.FrameworkConfigXSDFile = ExpandPath("/coldbox/system/config/config.xsd");
+			
 			//Return
 			return this;
 		</cfscript>
@@ -84,7 +85,8 @@ Modification History:
 
 	<cffunction name="loadFramework" access="public" hint="Load the framework's configuration xml." output="false" returntype="struct">
 		<!--- ************************************************************* --->
-		<cfargument name="overrideConfigFile" required="false" type="string" default="" hint="Only used for unit testing or reparsing of a specific coldbox config file.">
+		<cfargument name="overrideConfigFile" required="false" type="string" default="" 
+					hint="Only used for unit testing or reparsing of a specific coldbox config file.">
 		<!--- ************************************************************* --->
 		<cfscript>
 		var settingsStruct = StructNew();
@@ -98,6 +100,9 @@ Modification History:
 		var ConfigXMLFilePath = "";
 		var tempFilePath = "";
 		var configFileFound = false;
+		var oCFMLEngine = CreateObject("component","coldbox.system.util.CFMLEngine").init();
+		var CFMLEngine = oCFMLEngine.getEngine();
+		var CFMLVersion = oCFMLEngine.getVersion();
 
 		try{
 			//verify Framework settings File
@@ -105,9 +110,13 @@ Modification History:
 				throw("Error finding settings.xml configuration file. The file #instance.FrameworkConfigFile# cannot be found.","","Framework.plugins.XMLParser.ColdBoxSettingsNotFoundException");
 			}
 			
-			//Set the Coldfusion Server Properties
-			if ( server.coldfusion.productname eq "BlueDragon" ){
-				if ( listfirst(server.coldfusion.productversion) lt 7 ){
+			//Setup the ColdBox CFML Engine Info
+			settingsStruct["CFMLEngine"] = CFMLEngine;
+			settingsStruct["CFMLVersion"] = CFMLVersion;
+			
+			//Set Internal Parsing And Charting Properties
+			if ( CFMLEngine eq oCFMLEngine.BLUEDRAGON ){
+				if ( CFMLVersion lt 7 ){
 					settingsStruct["xmlParseActive"] = false;
 					settingsStruct["chartingActive"] = false;
 					settingsStruct["xmlValidateActive"] = false;
@@ -118,34 +127,33 @@ Modification History:
 					settingsStruct["xmlValidateActive"] = true;
 				}	
 			}//end if bluedragon
-			else if ( server.coldfusion.productname eq "Railo" ){
+			else if ( CFMLEngine eq oCFMLEngine.RAILO ){
 				settingsStruct["xmlParseActive"] = true;
 				settingsStruct["chartingActive"] = false;
 				settingsStruct["xmlValidateActive"] = true;
 			}//end if railo
 			else{
 				settingsStruct["chartingActive"] = true;
-					//Adobe CF
-					if ( listfirst(server.coldfusion.productversion) lt 7 ){
-						settingsStruct["xmlParseActive"] = false;
-						settingsStruct["xmlValidateActive"] = false;
-					}
-					else{
-						settingsStruct["xmlParseActive"] = true;
-						settingsStruct["xmlValidateActive"] = true;
-					}
+				//Adobe CF
+				if ( CFMLVersion lt 7 ){
+					settingsStruct["xmlParseActive"] = false;
+					settingsStruct["xmlValidateActive"] = false;
+				}
+				else{
+					settingsStruct["xmlParseActive"] = true;
+					settingsStruct["xmlValidateActive"] = true;
+				}
 			}//end if adobe.
 			
-			//Determine which CF version for XML Parsing method
+			//Determine Parsing Method.
 			if ( not settingsStruct["xmlParseActive"] ){
 				fwXML = xmlParse(readFile(instance.FrameworkConfigFile,false,"utf-8"));
 			}
 			else{
-				//get XML for CFMX version 7 and above.
 				fwXML = xmlParse(instance.FrameworkConfigFile);
 			}
 		
-			//Get SettingNodes
+			//Get SettingNodes From Config
 			SettingNodes = XMLSearch(fwXML, instance.searchSettings);
 			//Insert Settings to Config Struct
 			for (i=1; i lte ArrayLen(SettingNodes); i=i+1)
@@ -154,7 +162,7 @@ Modification History:
 			//OS File Separator
 			StructInsert(settingsStruct, "OSFileSeparator", instance.FileSeparator );
 
-			//Conventions
+			//Conventions Parsing
 			conventions = XMLSearch(fwXML,instance.searchConventions);
 			StructInsert(settingsStruct, "HandlersConvention", conventions[1].handlerLocation.xmltext);
 			StructInsert(settingsStruct, "pluginsConvention", conventions[1].pluginsLocation.xmltext);
@@ -176,7 +184,7 @@ Modification History:
 				}
 				//Validate the findings
 				if( not configFileFound )
-					throw("ColdBox Configuration File can't be found.","The accepted files are: #ConfigXMLFilePath#","Framework.plugins.XMLParser.ConfigXMLFileNotFoundException");
+					throw("ColdBox Application Configuration File can't be found.","The accepted files are: #ConfigXMLFilePath#","Framework.plugins.XMLParser.ConfigXMLFileNotFoundException");
 				//Insert the correct config file location.
 				StructInsert(settingsStruct, "ConfigFileLocation", ConfigXMLFilePath);
 			}
@@ -264,12 +272,14 @@ Modification History:
 		var tester = "";
 		try{
 			
+			/* ::::::::::::::::::::::::::::::::::::::::: CONFIG FILE PARSING & VALIDATION :::::::::::::::::::::::::::::::::::::::::::: */
+			
 			//Validate File, just in case.
 			if ( not fileExists(ConfigFileLocation) ){
 				throw("The Config File: #ConfigFileLocation# can't be found.","","Framework.plugins.XMLParser.ConfigXMLFileNotFoundException");
 			}
 			
-			//Determine which CF version for XML Parsing method
+			//Determine Parse Type
 			if ( not fwSettingsStruct["xmlParseActive"] ){
 				configXML = xmlParse(readFile(ConfigFileLocation,false,"utf-8"));
 			}
@@ -281,7 +291,7 @@ Modification History:
 			if ( not structKeyExists(configXML, "config")  )
 				throw("No Config element found in the configuration file","","Framework.plugins.XMLParser.ConfigXMLParsingException");
 
-			/* ::::::::::::::::::::::::::::::::::::::::: START CONFIG PARSING :::::::::::::::::::::::::::::::::::::::::::: */
+			/* ::::::::::::::::::::::::::::::::::::::::: APP MAPPING CALCULATIONS :::::::::::::::::::::::::::::::::::::::::::: */
 			
 			//Setup the Application Path
 			if( arguments.overrideAppMapping neq "" ){
@@ -291,6 +301,8 @@ Modification History:
 				StructInsert(ConfigStruct, "ApplicationPath", ExpandPath("."));
 			}
 
+			/* ::::::::::::::::::::::::::::::::::::::::: GET SETTINGS  :::::::::::::::::::::::::::::::::::::::::::: */
+			
 			//Get SettingNodes
 			SettingNodes = XMLSearch(configXML, instance.searchSettings);
 			if ( ArrayLen(SettingNodes) eq 0 )
@@ -301,12 +313,13 @@ Modification History:
 			//Check for AppName or throw
 			if ( not StructKeyExists(ConfigStruct, "AppName") )
 				throw("There was no 'AppName' setting defined. This is required by the framework.","","Framework.plugins.XMLParser.ConfigXMLParsingException");
-
 			//overrideAppMapping if passed in.
 			if ( arguments.overrideAppMapping neq "" ){
 				ConfigStruct["AppMapping"] = arguments.overrideAppMapping;
 			}
-
+			
+			/* ::::::::::::::::::::::::::::::::::::::::: APP MAPPING CALCULATIONS :::::::::::::::::::::::::::::::::::::::::::: */
+			
 			//Calculate AppMapping if not set in the config, else auto-calculate
 			if ( not structKeyExists(ConfigStruct, "AppMapping") ){
 				webPath = replacenocase(cgi.script_name,getFIleFromPath(cgi.script_name),"");
@@ -326,6 +339,8 @@ Modification History:
 				}
 			}
 
+			/* ::::::::::::::::::::::::::::::::::::::::: COLDBOX SETTINGS VALIDATION :::::::::::::::::::::::::::::::::::::::::::: */
+			
 			//Check for Default Event
 			if ( not StructKeyExists(ConfigStruct, "DefaultEvent") )
 				throw("There was no 'DefaultEvent' setting defined. This is required by the framework.","","Framework.plugins.XMLParser.ConfigXMLParsingException");
@@ -429,7 +444,14 @@ Modification History:
 				ConfigStruct["IOCDefinitionFile"] = "";
 			if ( not structKeyExists(ConfigStruct, "IOCObjectCaching") )
 				ConfigStruct["IOCObjectCaching"] = false;
-
+				
+			//RequestContextDecorator
+			if ( not structKeyExists(ConfigStruct, "RequestContextDecorator") or len(ConfigStruct["RequestContextDecorator"]) eq 0 ){
+				ConfigStruct["RequestContextDecorator"] = "";
+			}
+			
+			/* ::::::::::::::::::::::::::::::::::::::::: YOUR SETTINGS LOADING :::::::::::::::::::::::::::::::::::::::::::: */
+			
 			//Your Settings To Load
 			YourSettingNodes = XMLSearch(configXML, instance.searchYourSettings);
 			if ( ArrayLen(YourSettingNodes) gt 0 ){
@@ -447,7 +469,51 @@ Modification History:
 						StructInsert( ConfigStruct, YourSettingNodes[i].XMLAttributes["name"], tester);
 				}
 			}
-
+			
+			/* ::::::::::::::::::::::::::::::::::::::::: HANDLER & PLUGIN INVOCATION PATHS :::::::::::::::::::::::::::::::::::::::::::: */
+			
+			//Set the Handler & Custom Plugin Invocation & Physical Path for this Application
+			if( ConfigStruct["AppMapping"] neq ""){
+				
+				//Parse out the first / to create handler invocation Path
+				if ( left(ConfigStruct["AppMapping"],1) eq "/" ){
+					ConfigStruct["AppMapping"] = removeChars(ConfigStruct["AppMapping"],1,1);
+				}
+				
+				//Set the handler, my plugins Invocation Path
+				ConfigStruct["HandlersInvocationPath"] = replace(ConfigStruct["AppMapping"],"/",".","all") & ".#fwSettingsStruct.handlersConvention#";
+				ConfigStruct["MyPluginsInvocationPath"] = replace(ConfigStruct["AppMapping"],"/",".","all") & ".#fwSettingsStruct.pluginsConvention#";
+				
+				//Set the Default Handler Path
+				ConfigStruct["HandlersPath"] = ConfigStruct["AppMapping"];
+				//Set the Default Plugin Path
+				ConfigStruct["MyPluginsPath"] = ConfigStruct["AppMapping"];
+				
+				//Set the physical path according to system.
+				//Test for CF 6.X, weird expandpath error on 6
+				if ( listfirst(server.coldfusion.productversion) lt 7 ){
+					ConfigStruct["HandlersPath"] = replacenocase(cgi.SCRIPT_NAME, listlast(cgi.SCRIPT_NAME,"/"),"") & fwSettingsStruct.handlersConvention;
+					ConfigStruct["MyPluginsPath"] = replacenocase(cgi.SCRIPT_NAME, listlast(cgi.SCRIPT_NAME,"/"),"") & fwSettingsStruct.pluginsConvention;
+				}
+				else{
+					ConfigStruct["HandlersPath"] = "/" & ConfigStruct["HandlersPath"] & "/#fwSettingsStruct.handlersConvention#";
+					ConfigStruct["MyPluginsPath"] = "/" & ConfigStruct["MyPluginsPath"] & "/#fwSettingsStruct.pluginsConvention#";
+				}
+				//Set the Handlerspath expanded.
+				ConfigStruct["HandlersPath"] = ExpandPath(ConfigStruct["HandlersPath"]);
+				ConfigStruct["MyPluginsPath"] = ExpandPath(ConfigStruct["MyPluginsPath"]);				
+			}
+			else{
+				/* Handler Registration */
+				ConfigStruct["HandlersInvocationPath"] = "#fwSettingsStruct.handlersConvention#";
+				ConfigStruct["HandlersPath"] = expandPath("#fwSettingsStruct.handlersConvention#");
+				/* Custom Plugins Registration */
+				ConfigStruct["MyPluginsInvocationPath"] = "#fwSettingsStruct.pluginsConvention#";
+				ConfigStruct["MyPluginsPath"] = expandPath("#fwSettingsStruct.pluginsConvention#");
+			}
+			
+			/* ::::::::::::::::::::::::::::::::::::::::: MAIL SETTINGS :::::::::::::::::::::::::::::::::::::::::::: */
+			
 			//Mail Settings
 			MailSettingsNodes = XMLSearch(configXML, instance.searchMailSettings);
 			//Check if empty
@@ -488,6 +554,8 @@ Modification History:
 				StructInsert(ConfigStruct,"MailPort",25);
 			}
 
+			/* ::::::::::::::::::::::::::::::::::::::::: I18N SETTINGS :::::::::::::::::::::::::::::::::::::::::::: */
+			
 			//i18N Settings
 			i18NSettingNodes = XMLSearch(configXML, instance.searchi18NSettings);
 			//Check if empty
@@ -521,7 +589,9 @@ Modification History:
 				StructInsert(ConfigStruct,"LocaleStorage","");
 				StructInsert(ConfigStruct,"using_i18N",false);
 			}
-
+	
+			/* ::::::::::::::::::::::::::::::::::::::::: BUG MAIL SETTINGS :::::::::::::::::::::::::::::::::::::::::::: */
+			
 			//Bug Tracer Reports
 			BugEmailNodes = XMLSearch(configXML, instance.searchBugTracer);
 			for (i=1; i lte ArrayLen(BugEmailNodes); i=i+1){
@@ -532,6 +602,8 @@ Modification History:
 			//Insert Into Config
 			StructInsert(ConfigStruct, "BugEmails", BugEmails);
 
+			/* ::::::::::::::::::::::::::::::::::::::::: DEV ENV SETTINGS :::::::::::::::::::::::::::::::::::::::::::: */
+			
 			//Get Dev Environments
 			DevEnvironmentNodes = XMLSearch(configXML, instance.searchDevURLS);
 			//Insert DevEnvironments
@@ -551,47 +623,9 @@ Modification History:
 			}
 			else
 				StructInsert(ConfigStruct,"Environment","PRODUCTION");
-
-			//Set the Handler & Custom Plugin Invocation & Physical Path for this Application
-			if( ConfigStruct["AppMapping"] neq ""){
-				
-				//Parse out the first / to create handler invocation Path
-				if ( left(ConfigStruct["AppMapping"],1) eq "/" ){
-					ConfigStruct["AppMapping"] = removeChars(ConfigStruct["AppMapping"],1,1);
-				}
-				
-				//Set the handler, my plugins Invocation Path
-				ConfigStruct["HandlersInvocationPath"] = replace(ConfigStruct["AppMapping"],"/",".","all") & ".#fwSettingsStruct.handlersConvention#";
-				ConfigStruct["MyPluginsInvocationPath"] = replace(ConfigStruct["AppMapping"],"/",".","all") & ".#fwSettingsStruct.pluginsConvention#";
-				
-				//Set the Default Handler Path
-				ConfigStruct["HandlersPath"] = ConfigStruct["AppMapping"];
-				//Set the Default Plugin Path
-				ConfigStruct["MyPluginsPath"] = ConfigStruct["AppMapping"];
-				
-				//Set the physical path according to system.
-				//Test for CF 6.X, weird expandpath error on 6
-				if ( listfirst(server.coldfusion.productversion) lt 7 ){
-					ConfigStruct["HandlersPath"] = replacenocase(cgi.SCRIPT_NAME, listlast(cgi.SCRIPT_NAME,"/"),"") & fwSettingsStruct.handlersConvention;
-					ConfigStruct["MyPluginsPath"] = replacenocase(cgi.SCRIPT_NAME, listlast(cgi.SCRIPT_NAME,"/"),"") & fwSettingsStruct.pluginsConvention;
-				}
-				else{
-					ConfigStruct["HandlersPath"] = "/" & ConfigStruct["HandlersPath"] & "/#fwSettingsStruct.handlersConvention#";
-					ConfigStruct["MyPluginsPath"] = "/" & ConfigStruct["MyPluginsPath"] & "/#fwSettingsStruct.pluginsConvention#";
-				}
-				//Set the Handlerspath expanded.
-				ConfigStruct["HandlersPath"] = ExpandPath(ConfigStruct["HandlersPath"]);
-				ConfigStruct["MyPluginsPath"] = ExpandPath(ConfigStruct["MyPluginsPath"]);				
-			}
-			else{
-				/* Handler Registration */
-				ConfigStruct["HandlersInvocationPath"] = "#fwSettingsStruct.handlersConvention#";
-				ConfigStruct["HandlersPath"] = expandPath("#fwSettingsStruct.handlersConvention#");
-				/* Custom Plugins Registration */
-				ConfigStruct["MyPluginsInvocationPath"] = "#fwSettingsStruct.pluginsConvention#";
-				ConfigStruct["MyPluginsPath"] = expandPath("#fwSettingsStruct.pluginsConvention#");
-			}
-
+			
+			/* ::::::::::::::::::::::::::::::::::::::::: WS SETTINGS :::::::::::::::::::::::::::::::::::::::::::: */
+			
 			//Get Web Services From Config.
 			WebServiceNodes = XMLSearch(configXML, instance.searchWS);
 			if ( ArrayLen(WebServiceNodes) ){
@@ -614,6 +648,8 @@ Modification History:
 			}// end ArrayLen( WebServiceNodes)
 			StructInsert(ConfigStruct,"WebServices",WebServicesStruct);
 
+			/* ::::::::::::::::::::::::::::::::::::::::: DATASOURCES SETTINGS :::::::::::::::::::::::::::::::::::::::::::: */
+			
 			//Datasources Support
 			DatasourcesNodes = XMLSearch(configXML, instance.searchDatasources);
 			if ( ArrayLen(DatasourcesNodes) ){
@@ -653,7 +689,9 @@ Modification History:
 				}
 			}
 			StructInsert(ConfigStruct, "Datasources", DatasourcesStruct);
-
+			
+			/* ::::::::::::::::::::::::::::::::::::::::: LAYOUT VIEW SETTINGS :::::::::::::::::::::::::::::::::::::::::::: */
+			
 			//Layout into Config
 			DefaultLayout = XMLSearch(configXML,instance.searchDefaultLayout);
 			//validate Default Layout.
@@ -693,6 +731,8 @@ Modification History:
 			StructInsert(ConfigStruct, "ConfigTimeStamp", oUtilities.FileLastModified(ConfigFileLocation));
 
 
+			/* ::::::::::::::::::::::::::::::::::::::::: CACHE OVERRIDE SETTINGS :::::::::::::::::::::::::::::::::::::::::::: */
+			
 			//Cache Override Settings
 			CacheSettingNodes = XMLSearch(configXML, instance.searchCache);
 			//Create CacheSettings Structure
@@ -740,6 +780,8 @@ Modification History:
 				ConfigStruct.CacheSettings.Override = false;
 			}
 			
+			/* ::::::::::::::::::::::::::::::::::::::::: INTERCEPTOR SETTINGS :::::::::::::::::::::::::::::::::::::::::::: */
+			
 			/* Interceptor Preparation. */
 			StructInsert( ConfigStruct, "InterceptorConfig", structnew() );
 			StructInsert( ConfigStruct.InterceptorConfig, "Interceptors", arraynew(1) );
@@ -786,6 +828,8 @@ Modification History:
 				ArrayAppend( ConfigStruct.InterceptorConfig.Interceptors, InterceptorStruct );
 				
 			}//end interceptor nodes
+			
+			/* ::::::::::::::::::::::::::::::::::::::::: XSD VALIDATION :::::::::::::::::::::::::::::::::::::::::::: */
 						
 			//Determine which CF version for XML Parsing method
 			if ( fwSettingsStruct["xmlValidateActive"] ){

@@ -27,6 +27,7 @@ Modification History:
 
 <!------------------------------------------- PUBLIC ------------------------------------------->
 
+	<!--- Request Capture --->
 	<cffunction name="requestCapture" access="public" returntype="any" output="false" hint="I capture a request.">
 		<cfscript>
 			var Context = createContext();
@@ -93,12 +94,15 @@ Modification History:
 	
 <!------------------------------------------- PRIVATE ------------------------------------------->
 
+	<!--- Creates a new Context Object --->
 	<cffunction name="createContext" access="private" output="false" returntype="any" hint="Creates a new request context object">
 		<cfscript>
 		var DefaultLayout = "";
 		var DefaultView = "";
 		var ViewLayouts = structNew();
 		var EventName = controller.getSetting("EventName");
+		var oContext = "";
+		var oDecorator = "";
 		
 		if ( controller.settingExists("DefaultLayout") ){
 			DefaultLayout = controller.getSetting("DefaultLayout");
@@ -109,9 +113,20 @@ Modification History:
 		if ( controller.settingExists("ViewLayouts") ){
 			ViewLayouts = controller.getSetting("ViewLayouts");
 		}
-		//Return context.
-		return CreateObject("component","coldbox.system.beans.requestContext").init(FORM,URL,DefaultLayout,DefaultView,ViewLayouts,EventName);
+		
+		//Create the original request context
+		oContext = CreateObject("component","coldbox.system.beans.requestContext").init(FORM,URL,DefaultLayout,DefaultView,ViewLayouts,EventName);
+		
+		//Determine if we have a decorator, if we do, then decorate it.
+		if ( controller.getSetting("RequestContextDecorator") neq ""){
+			//Create the decorator
+			oDecorator = CreateObject("component",controller.getSetting("RequestContextDecorator")).init(oContext,FORM,URL,DefaultLayout,DefaultView,ViewLayouts,EventName);
+			//Return
+			return oDecorator;
+		}
+		//Return Context
+		return oContext;
 		</cfscript>
 	</cffunction>
-			
+
 </cfcomponent>

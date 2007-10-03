@@ -33,11 +33,10 @@ Modification History:
 		<cfset variables.controller = arguments.controller/>
 	</cffunction>	
 	
-
 <!------------------------------------------- PRIVATE ------------------------------------------->
 
 	<cffunction name="getUtil" access="private" output="false" returntype="coldbox.system.extras.util" hint="Create and return a util object">
-		<cfreturn CreateObject("component","coldbox.system.extras.util")/>
+		<cfreturn CreateObject("component","coldbox.system.util.util")/>
 	</cffunction>
 	
 </cfcomponent>
