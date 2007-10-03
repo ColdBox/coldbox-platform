@@ -48,7 +48,7 @@ Modification History:
 		<cfargument name="custom" required="true" type="boolean" hint="Custom plugin or coldbox plugin">
 		<cfscript>
 			/* Used for caching. */
-			var pluginKey = "plugin_" & arguments.plugin;
+			var pluginKey = "cboxplugin_" & arguments.plugin;
 			var pluginMD = "";
 			var objTimeout = "";
 			var oPlugin = structnew();
@@ -57,7 +57,7 @@ Modification History:
 			
 			/* Differentiate a Custom PluginKey */
 			if ( arguments.custom ){
-				pluginKey = "custom_plugin_" & arguments.plugin;
+				pluginKey = "cboxcustom_plugin_" & arguments.plugin;
 			}
 			
 			/* Lookup plugin in Cache */

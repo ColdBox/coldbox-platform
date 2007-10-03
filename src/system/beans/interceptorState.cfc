@@ -23,8 +23,10 @@ Description :
 	    <cfargument name="state" 		type="string" 	required="true" hint="The interception state I model">
 	    <!--- ************************************************************* --->
 		<cfscript>
+			var LinkedHashMap = CreateObject("java","java.util.LinkedHashMap").init(3);
+			var Collections = createObject("java", "java.util.Collections"); 
 			/* Create the interceptor container, start with 3 instead of 16 to save space */
-			setInterceptors( CreateObject("java","java.util.LinkedHashMap").init(3) );
+			setInterceptors( Collections.synchronizedMap(LinkedHashMap) );
 			setState( arguments.state );
 			/* Return instance */
 			return this;

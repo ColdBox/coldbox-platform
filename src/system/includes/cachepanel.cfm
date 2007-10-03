@@ -103,6 +103,7 @@
 			 <b>Plugins: </b> #itemTypes.plugins# &nbsp;
 			 <b>Handlers: </b> #itemTypes.handlers# &nbsp;
 			 <b>IoC Beans: </b> #itemTypes.ioc_beans# &nbsp;
+			 <b>Interceptors: </b> #itemTypes.interceptors# &nbsp;
 			 <b>Other: </b> #itemTypes.other#
 			</div>
 			<em>Charting is not supported in your coldfusion engine. Cache Charts skipped.</em>

@@ -18,8 +18,12 @@ Modification History:
 
 	<cffunction name="init" access="public" output="false" returntype="objectPool" hint="Constructor">
 		<cfscript>
+			var Collections = createObject("java", "java.util.Collections");
+			var Map = CreateObject("java","java.util.HashMap").init();
+			
+			/* Prepare instance */
 			variables.instance = structnew();
-			instance.pool = structnew();
+			instance.pool = Collections.synchronizedMap( Map );
 			instance.pool_metadata = structnew();
 			return this;
 		</cfscript>
