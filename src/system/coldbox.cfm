@@ -74,7 +74,7 @@ Description :
 			</cflock>
 		<cfelseif application.cbController.getSetting("HandlersIndexAutoReload")>
 			<cflock type="exclusive" name="#appHash#" timeout="#lockTimeout#">
-				<cfset application.cbController.getService("loader").registerHandlers()>
+				<cfset application.cbController.getHandlerService().registerHandlers()>
 			</cflock>
 		</cfif>
 

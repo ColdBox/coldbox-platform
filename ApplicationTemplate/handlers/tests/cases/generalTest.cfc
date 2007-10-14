@@ -47,7 +47,7 @@ Description :
 		event = execute("general.doSomething");
 			
 		//Do your asserts below for setnextevent you can test for a setnextevent boolean flag
-		assertEqualsBoolean(true, event.getValue("setnextevent","false"), "Set Next Event flag not test by test controller");
+		assertEqualsString("general.dspHome", event.getValue("setnextevent",""), "Relocation Test");
 			
 		</cfscript>
 	</cffunction>

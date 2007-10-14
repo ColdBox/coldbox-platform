@@ -32,9 +32,9 @@
         <!--MessageBox Plugin Storage Scope (session|client)-->
         <Setting name="MessageBoxStorage" value="session"/>
         <!--ColdBox Cache Parameter: Default Object Timeout in Minutes -->
-        <Setting name="CacheObjectDefaultTimeout" value="30"/>
+        <Setting name="CacheObjectDefaultTimeout" value="45"/>
         <!--ColdBox Cache Parameter: Default Object Last Accessed Timeout in Minutes -->
-        <Setting name="CacheObjectDefaultLastAccessTimeout" value="10"/>
+        <Setting name="CacheObjectDefaultLastAccessTimeout" value="15"/>
         <!--ColdBox Cache Parameter: Cache Reap Frequency in Minutes -->
         <Setting name="CacheReapFrequency" value="1"/>
         <!--ColdBox Cache Parameter: Maximum number of Objects in cache (0=Unlimited)-->

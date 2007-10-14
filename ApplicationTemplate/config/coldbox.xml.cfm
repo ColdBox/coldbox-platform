@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <Config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-	xsi:noNamespaceSchemaLocation="http://www.coldboxframework.com/schema/config_2.1.0.xsd">
+	xsi:noNamespaceSchemaLocation="http://www.coldboxframework.com/schema/config_2.5.0.xsd">
 	<Settings>
 		<!--The name of your application.-->
 		<Setting name="AppName"						value="Your App Name here"/>
@@ -58,6 +58,8 @@
 		<Setting name="IOCDefinitionFile"			value="" />
 		<!--IOC Object Caching, true/false. For ColdBox to cache your IoC beans-->
 		<Setting name="IOCObjectCaching"			value="false" />
+		<!--Request Context Decorator, leave blank if not using. Full instantiation path -->
+		<Setting name="RequestContextDecorator" 	value=""/>
 	</Settings>
 
 	<!--Your Settings can go here, if not needed, use <YourSettings />. You can use these for anything you like.

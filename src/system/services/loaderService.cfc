@@ -27,7 +27,7 @@ Modification History:
 <!------------------------------------------- PUBLIC ------------------------------------------->
 
 	<!--- Setup Calls --->
-	<cffunction name="setupCalls" returntype="void" access="public" hint="I execute the configuration and configuration.." output="false">
+	<cffunction name="setupCalls" returntype="void" access="public" hint="I execute the framework and application loading scripts" output="false">
 		<!--- ************************************************************* --->
 		<cfargument name="overrideConfigFile" type="string" required="false" default="" hint="Only used for unit testing or reparsing of a specific coldbox config file.">
 		<cfargument name="overrideAppMapping" type="string" required="false" default="" hint="Only used for unit testing or reparsing of a specific coldbox config file."/>
@@ -35,13 +35,13 @@ Modification History:
 		<cfscript>
 			//execute the configLoader
 			configLoader(argumentCollection=arguments);
-			//execute the handler registrations
-			registerHandlers();
+			//execute the handler registrations after configurations loaded
+			getController().getHandlerService().registerHandlers();
 		</cfscript>
 	</cffunction>
 
 	<!--- Config Loader Method --->
-	<cffunction name="configLoader" returntype="void" access="Public" hint="I Load the configurations, init the framework variables and more." output="false">
+	<cffunction name="configLoader" returntype="void" access="Public" hint="I Load the configurations only, init the framework variables and more." output="false">
 		<!--- ************************************************************* --->
 		<cfargument name="overrideConfigFile" required="false" type="string" default="" hint="Only used for unit testing or reparsing of a specific coldbox config file.">
 		<cfargument name="overrideAppMapping" type="string" required="false" default="" hint="Only used for unit testing or reparsing of a specific coldbox config file."/>
@@ -99,33 +99,8 @@ Modification History:
 		</cfscript>
 	</cffunction>
 
-	<!--- Handler Registration System --->
-	<cffunction name="registerHandlers" access="public" returntype="void" hint="I register your application's event handlers" output="false">
-		<cfscript>
-		var HandlersPath = controller.getSetting("HandlersPath");
-		var HandlerArray = Arraynew(1);
-
-		//Check for Handlers Directory Location
-		if ( not directoryExists(HandlersPath) )
-			controller.throw("The handlers directory: #handlerspath# does not exist please check your application structure or your Application Mapping.","","Framework.loaderService.HandlersDirectoryNotFoundException");
-
-		//Get recursive Array listing
-		HandlerArray = recurseListing(HandlerArray, HandlersPath, HandlersPath);
-
-		//Verify it
-		if ( ArrayLen(HandlerArray) eq 0 )
-			controller.throw("No handlers were found in: #HandlerPath#. So I have no clue how you are going to run this application.","","Framework.loaderService.NoHandlersFoundException");
-
-		//Sort The Array
-		ArraySort(HandlerArray,"text");
-		
-		//Set registered Handlers
-		controller.setSetting("RegisteredHandlers",arrayToList(HandlerArray));
-		</cfscript>
-	</cffunction>
-	
 	<!--- Register the Aspects --->
-	<cffunction name="registerAspects" access="public" returntype="void" hint="Register the Aspects" output="false" >
+	<cffunction name="registerAspects" access="public" returntype="void" hint="I Register the current Application's Aspects" output="false" >
 		<cfscript>
 		//IoC Plugin Manager Configuration
 		if ( controller.getSetting("IOCFramework") neq "" ){
@@ -151,48 +126,6 @@ Modification History:
 	
 <!------------------------------------------- PRIVATE ------------------------------------------->
 
-	<!--- Recursive Registration of Handler Directories --->
-	<cffunction name="recurseListing" access="private" output="false" returntype="array" hint="Recursive creation of handlers in a directory.">
-		<!--- ************************************************************* --->
-		<cfargument name="fileArray" 	type="array"  required="true">
-		<cfargument name="Directory" 	type="string" required="true">
-		<cfargument name="HandlersPath" type="string" required="true">
-		<!--- ************************************************************* --->
-		<cfscript>
-		var oDirectory = CreateObject("java","java.io.File").init(arguments.Directory);
-		var Files = oDirectory.list();
-		var i = 1;
-		var tempfile = "";
-		var cleanHandler = "";
-
-		//Loop Through listing if any files found.
-		for (; i lte arrayLen(Files); i=i+1 ){
-			//get first reference as File Object
-			tempFile = CreateObject("java","java.io.File").init(oDirectory,Files[i]);
-			//Directory Check for recursion
-			if ( tempFile.isDirectory() ){
-				//recurse, directory found.
-				arguments.fileArray = recurseListing(arguments.fileArray,tempFile.getPath(), arguments.HandlersPath);
-			}
-			else{
-				//Filter only cfc's
-				if ( listlast(tempFile.getName(),".") neq "cfc" )
-					continue;
-				//Clean entry by using Handler Path
-				cleanHandler = replacenocase(tempFile.getAbsolutePath(),arguments.handlersPath,"","all");
-				//Clean OS separators
-				if ( controller.getSetting("OSFileSeparator",1) eq "/")
-					cleanHandler = removeChars(replacenocase(cleanHandler,"/",".","all"),1,1);
-				else
-					cleanHandler = removeChars(replacenocase(cleanHandler,"\",".","all"),1,1);
-				//Clean Extension
-				cleanHandler = controller.getPlugin("Utilities").ripExtension(cleanhandler);
-				//Add data to array
-				ArrayAppend(arguments.fileArray,cleanHandler);
-			}
-		}
-		return arguments.fileArray;
-		</cfscript>
-	</cffunction>
+	
 
 </cfcomponent>

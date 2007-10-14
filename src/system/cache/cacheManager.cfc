@@ -108,10 +108,13 @@ Modification History:
 		<cfset var ccBean = getCacheConfigBean()>
 		<cfset var interceptMetadata = structnew()>
 		
+		<!--- Reap Cache to make space --->
+		<cfset reap()>
+		
 		<!--- Clean Args --->
 		<cfset arguments.objectKey = trim(arguments.objectKey)>
 		<cfset arguments.Timeout = trim(arguments.Timeout)>
-
+	
 		<!--- Max Objects in Cache Check --->
 		<cfif (ccBean.getCacheMaxObjects() eq 0 or getSize() lt ccBean.getCacheMaxObjects()) and
 			  (ccBean.getCacheFreeMemoryPercentageThreshold() eq 0 or isBelowThreshold)>

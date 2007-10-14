@@ -18,9 +18,16 @@ Description		: This is a unit test controller that basically overrides the setNe
 		<cfargument name="event"  			hint="The name of the event to run." 			type="string" required="No" default="#getSetting("DefaultEvent")#" >
 		<cfargument name="queryString"  	hint="The query string to append, if needed."   type="string" required="No" default="" >
 		<cfargument name="addToken"			hint="Wether to add the tokens or not. Default is false" type="boolean" required="false" default="false"	>
+		<cfargument name="persist" 			hint="What request collection keys to persist in the relocation" required="false" type="string" default="">
 		<!--- ************************************************************* --->
 		<!--- Nothing In here to validate Unit Tests --->
-		<cfset getRequestService().getContext().setValue("setnextevent","#arguments.event#&#arguments.queryString#")>
+		<cfif len(trim(arguments.queryString)) eq 0>
+			<cfset getRequestService().getContext().setValue("setnextevent","#arguments.event#")>
+		<cfelse>
+			<cfset getRequestService().getContext().setValue("setnextevent","#arguments.event#&#arguments.queryString#")>
+		</cfif>
+		<!--- Save also the persist collection keys --->
+		<cfset getRequestService().getContext().setValue("persistKeys","#arguments.persist#")>
 	</cffunction>
 
 </cfcomponent>

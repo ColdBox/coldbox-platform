@@ -34,6 +34,7 @@ Description		: This is the main ColdBox front Controller.
 			setDebuggerService( CreateObject("component","services.debuggerService").init(this) );
 			setPluginService( CreateObject("component","services.pluginService").init(this) );
 			setInterceptorService( CreateObject("component", "services.interceptorService").init(this) );
+			setHandlerService( CreateObject("component", "services.handlerService").init(this) );
 			
 			//Return instance
 			return this;
@@ -87,6 +88,15 @@ Description		: This is the main ColdBox front Controller.
 		<cfset instance.interceptorService = arguments.interceptorService/>
 	</cffunction>
 
+	<!--- Handler Service --->
+	<cffunction name="getHandlerService" access="public" output="false" returntype="any" hint="Get HandlerService">
+		<cfreturn instance.HandlerService/>
+	</cffunction>
+	<cffunction name="setHandlerService" access="public" output="false" returntype="void" hint="Set HandlerService">
+		<cfargument name="HandlerService" type="any" required="true"/>
+		<cfset instance.HandlerService = arguments.HandlerService/>
+	</cffunction>
+	
 	<!--- Getter & Setter Internal Configuration Structures --->
 	<cffunction name="getConfigSettings" access="public" returntype="struct" output="false" hint="I retrieve the Config Settings Structure by Reference">
 		<cfreturn instance.ConfigSettings>
