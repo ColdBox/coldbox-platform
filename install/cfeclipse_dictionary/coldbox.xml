@@ -193,6 +193,7 @@
 					<value option="&quot;beanFactory&quot;"/>
 					<value option="&quot;cfcViewer&quot;"/>
 					<value option="&quot;clientstorage&quot;"/>
+					<value option="&quot;cookiestorage&quot;"/>
 					<value option="&quot;Utilities&quot;"/>
 					<value option="&quot;FileWriter&quot;"/>
 					<value option="&quot;i18n&quot;"/>
