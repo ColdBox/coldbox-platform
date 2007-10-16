@@ -65,8 +65,6 @@ Modification History:
 		<cfargument  name="name" 		type="string"  required="true" 		hint="The variable name to retrieve.">
 		<cfargument  name="default"  	type="any"     required="false"  	hint="The default value to set. If not used, a blank is returned." default="">
 		<!--- ************************************************************* --->
-		<cfset var wddxVar = "">
-		<cfset var rtnVar = "">
 		<cfif exists(arguments.name)>
 			<!--- Return value --->
 			<cfreturn cookie[arguments.name] />
