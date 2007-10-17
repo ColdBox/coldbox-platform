@@ -102,6 +102,22 @@ Modification History:
 		<cfreturn RenderedDebugging>
 	</cffunction>
 	
+	<!--- Render Cache Dumpver --->
+	<cffunction name="renderCacheDumper" access="public" hint="Renders the caching key value dumper." output="false" returntype="Any">
+		<cfset var event = controller.getRequestService().getContext()>
+		<cfset var cachekey = URLDecode(event.getValue('key',''))>
+		<cfset var cacheValue = controller.getColdboxOCM().get(cachekey)>
+		<cfset var dumperContents = "">
+		
+		<cfif isSimpleValue(cacheValue)>
+			<cfsavecontent variable="dumperContents"><cfoutput><strong>#cachekey#</strong> = #cacheValue#</cfoutput></cfsavecontent>
+		<cfelse>
+			<cfsavecontent variable="dumperContents"><cfdump var="#cacheValue#" label="#cachekey#"></cfsavecontent>
+		</cfif>
+		
+		<cfreturn dumperContents>
+	</cffunction>
+	
 	<!--- Get set the cookie name --->
 	<cffunction name="getcookieName" access="public" output="false" returntype="string" hint="Get cookieName">
 		<cfreturn instance.cookieName/>

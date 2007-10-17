@@ -81,6 +81,20 @@ Description :
 		<!--- IMPLEMENTED BY INTERCEPTOR --->
 	</cffunction>
 	
+	<!--- Session Start --->
+	<cffunction name="sessionStart" access="public" returntype="void" hint="Executes on Session start" output="false" >
+		<cfargument name="event" 	required="true" type="coldbox.system.beans.requestContext" hint="The event object.">
+		<cfargument name="interceptData" required="true" type="struct" hint="A structure containing intercepted information. THE SESSION SCOPE">
+		<!--- IMPLEMENTED BY INTERCEPTOR --->
+	</cffunction>
+	
+	<!--- Session End --->
+	<cffunction name="sessionEnd" access="public" returntype="void" hint="Executes on Session end." output="false" >
+		<cfargument name="event" 	required="true" type="coldbox.system.beans.requestContext" hint="The event object.">
+		<cfargument name="interceptData" required="true" type="struct" hint="A structure containing intercepted information. THE SESSION SCOPE">
+		<!--- IMPLEMENTED BY INTERCEPTOR --->
+	</cffunction>
+	
 	<!--- Pre execution process --->
 	<cffunction name="preProcess" access="public" returntype="void" hint="Executes before any event execution occurs" output="false" >
 		<cfargument name="event" 	required="true" type="coldbox.system.beans.requestContext" hint="The event object.">

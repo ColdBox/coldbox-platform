@@ -1,4 +1,21 @@
-<cfcomponent output="false">		
+<!-----------------------------------------------------------------------
+********************************************************************************
+Copyright 2005-2007 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+www.coldboxframework.com | www.luismajano.com | www.ortussolutions.com
+********************************************************************************
+
+Author     :	Luis Majano
+Date        :	10/16/2007
+Description :
+	This is the Application.cfc for usage withing the ColdBox Framework.
+	Make sure that it extends the coldbox object:
+	coldbox.system.coldbox
+	
+	So if you have refactored your framework, make sure it extends coldbox.
+----------------------------------------------------------------------->
+<cfcomponent extends="coldbox.system.coldbox" output="false">
+<cfprocessingdirective suppresswhitespace="true">
+			
 <!--- Edit this line if you are not using a default blog --->
 <cfset blogname = "default">
 <!--- The prefix is now dynamic in case 2 people want to run blog.cfc on the same machine. Normally they
@@ -17,21 +34,61 @@
 <cfset this.setClientCookies = true>
 <cfset this.loginStorage = "session">
 		
-<cffunction name="onApplicationStart" returnType="boolean" output="false"> 
-	<cfreturn true> 
-</cffunction> 
-
-<cffunction name="onApplicationEnd" returnType="void"  output="false"> 
-	<cfargument name="applicationScope" required="true">
-</cffunction>
+<!--- COLDBOX PROPERTIES --->
+	<cfset COLDBOX_CONFIG_FILE = "">
 	
-<cffunction name="onSessionStart" returnType="void" output="false"> 
-</cffunction> 
+	<!--- on Application Start --->
+	<cffunction name="onApplicationStart" returnType="boolean" output="false">
+		<cfscript>
+			//Load ColdBox
+			loadColdBox();
+			return true;
+		</cfscript>
+	</cffunction>
+	
+	<!--- on Request Start --->
+	<cffunction name="onRequestStart" returnType="boolean" output="true">
+		<!--- ************************************************************* --->
+		<cfargument name="targetPage" type="string" required="true" />
+		<!--- ************************************************************* --->
+		<cfsetting enablecfoutputonly="yes">
+		
+		<!--- Process A ColdBox Request Only --->
+		<cfif findNoCase('index.cfm', listLast(arguments.targetPage, '/'))>
+			<cfset processColdBoxRequest()>
+		</cfif>
+		
+		<!--- WHATEVER YOU WANT BELOW --->
+		
+		<cfsetting enablecfoutputonly="no">
+		<cfreturn true>
+	</cffunction>
+	
+	<!--- on Application End --->
+	<cffunction name="onApplicationEnd" returnType="void"  output="false">
+		<!--- ************************************************************* --->
+		<cfargument name="applicationScope" type="struct" required="true">
+		<!--- ************************************************************* --->
+		<!--- WHATEVER YOU WANT BELOW --->
+	</cffunction>
+	
+	<!--- on Session Start --->
+	<cffunction name="onSessionStart" returnType="void" output="false">
+		<!--- DO NOT MODIFY THE FOLLOWING --->
+		<cfset super.onSessionStart()>
+		<!--- WHATEVER YOU WANT BELOW --->
+	</cffunction>
+	
+	<!--- on Session End --->
+	<cffunction name="onSessionEnd" returnType="void" output="false">
+		<!--- ************************************************************* --->
+		<cfargument name="sessionScope" type="struct" required="true">
+		<cfargument name="appScope" 	type="struct" required="false">
+		<!--- ************************************************************* --->
+		<!--- DO NOT MODIFY THE FOLLOWING --->
+		<cfset super.onSessionEnd(arguments=argumentCollection)>
+		<!--- WHATEVER YOU WANT BELOW --->
+	</cffunction>
 
-<cffunction name="onSessionEnd" returnType="void" output="false"> 
-	<cfargument name="sessionScope" type="struct" required="true"> 
-	<cfargument name="appScope" type="struct" required="false"> 
-</cffunction> 
- 
- 
+ </cfprocessingdirective>
 </cfcomponent>

@@ -42,6 +42,24 @@ Description :
 		<cfset getPlugin("logger").logEntry("information","I am in the after after aspects load.")>
 	</cffunction>
 	
+	<!--- session start process --->
+	<cffunction name="sessionStart" access="public" returntype="void" hint="Executes at on session start" output="false" >
+		<!--- ************************************************************* --->
+		<cfargument name="event" required="true" type="coldbox.system.beans.requestContext" hint="The event object.">
+		<cfargument name="interceptData" required="true" type="struct" hint="interceptData of intercepted info.">
+		<!--- ************************************************************* --->
+		<cfset getPlugin("logger").logEntry("information","I am in the on session start method: #arguments.interceptData.toString()#")>
+	</cffunction>
+	
+	<!--- session end process --->
+	<cffunction name="sessionEnd" access="public" returntype="void" hint="Executes at on session end" output="false" >
+		<!--- ************************************************************* --->
+		<cfargument name="event" required="true" type="coldbox.system.beans.requestContext" hint="The event object.">
+		<cfargument name="interceptData" required="true" type="struct" hint="interceptData of intercepted info.">
+		<!--- ************************************************************* --->
+		<cfset getPlugin("logger").logEntry("information","I am in the session end method: #arguments.interceptData.toString()#")>
+	</cffunction>
+	
 	<!--- Pre execution process --->
 	<cffunction name="preProcess" access="public" returntype="void" hint="Executes before any event execution occurs" output="false" >
 		<!--- ************************************************************* --->

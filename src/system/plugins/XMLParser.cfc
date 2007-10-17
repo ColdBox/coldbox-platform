@@ -360,6 +360,14 @@ Modification History:
 			//Check for Application Start Handler
 			if ( not StructKeyExists(ConfigStruct, "RequestEndHandler") )
 				ConfigStruct["RequestEndHandler"] = "";
+				
+			//Check for Session Start Handler
+			if ( not StructKeyExists(ConfigStruct, "SessionStartHandler") )
+				ConfigStruct["SessionStartHandler"] = "";
+				
+			//Check for Session End Handler
+			if ( not StructKeyExists(ConfigStruct, "SessionEndHandler") )
+				ConfigStruct["SessionEndHandler"] = "";
 		
 			//Check for InvalidEventHandler
 			if ( not StructKeyExists(ConfigStruct, "onInvalidEvent") )

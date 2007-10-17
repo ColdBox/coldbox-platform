@@ -28,6 +28,10 @@
 		<Setting name="RequestEndHandler" 			value="main.onRequestEnd"/>
 		<!--Event Handler to run at the start of an application, leave blank if not used. Emulates the Application.cfc onApplicationStart method	-->
 		<Setting name="ApplicationStartHandler" 	value="main.onAppInit"/>
+		<!--Event Handler to run at the start of a session, leave blank if not used.-->
+		<Setting name="SessionStartHandler" 		value="main.onSessionStart"/>
+		<!--Event Handler to run at the end of a session, leave blank if not used.-->
+		<Setting name="SessionEndHandler" 			value="main.onSessionEnd"/>
 		<!--The Email address from which all outgoing framework emails will be sent. -->
 		<Setting name="OwnerEmail" 					value="myemail@gmail.com" />
 		<!-- Enable Bug Reports to be emailed out, set to true by default if left blank

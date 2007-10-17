@@ -88,7 +88,7 @@
 		<ObjectDefaultLastAccessTimeout>5</ObjectDefaultLastAccessTimeout>
 		<ReapFrequency>1</ReapFrequency>
 		<MaxObjects>15</MaxObjects>
-		<FreeMemoryPercentageThreshold>15</FreeMemoryPercentageThreshold>
+		<FreeMemoryPercentageThreshold>0</FreeMemoryPercentageThreshold>
 	</Cache>
 
 </Config>
