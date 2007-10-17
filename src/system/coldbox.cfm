@@ -104,6 +104,15 @@ Description :
 				<cfif event.getValue("debugPanel") eq "cache">
 					<cfoutput>#cbController.getDebuggerService().renderCachePanel()#</cfoutput>
 					<cfabort>
+				<cfelseif event.getValue("debugPanel") eq "cacheviewer">
+					<cfset key = URLDecode(event.getValue('key',''))>
+					<cfset cacheValue = cbController.getColdboxOCM().get(key)>
+					<cfif isSimpleValue(cacheValue)>
+						<cfoutput><strong>#key#</strong> = #cacheValue#</cfoutput>
+					<cfelse>
+						<cfdump var="#cacheValue#" label="#key#">
+					</cfif>
+					<cfabort>
 				</cfif>
 			</cfif>
 		
