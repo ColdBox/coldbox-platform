@@ -56,6 +56,7 @@
 									<xs:enumeration value="IOCDefinitionFile" />
 									<xs:enumeration value="IOCObjectCaching" />
 									<xs:enumeration value="MessageboxStyleOverride" />
+									<xs:enumeration value="MessageboxStyleClass" />
 									<xs:enumeration value="MyPluginsLocation" />
 									<xs:enumeration value="onInvalidEvent"/>	
 									<xs:enumeration value="OwnerEmail"/>
