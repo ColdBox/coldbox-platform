@@ -40,8 +40,8 @@ Modification History:
 
 	<cffunction name="setVar" access="public" returntype="void" hint="Set a new permanent variable." output="false">
 		<!--- ************************************************************* --->
-		<cfargument name="name"  type="string" required="true"  hint="The name of the variable.">
-		<cfargument name="value" type="any"    required="true"  hint="The value to set in the variable.">
+		<cfargument name="name"  	type="string" 	required="true"  hint="The name of the variable.">
+		<cfargument name="value" 	type="any"    	required="true"  hint="The value to set in the variable.">
 		<cfargument name="expires"	type="numeric"	required="no"	default="1"	hint="Cookie Expire in number of days. [default cookie is session only]">
 		<!--- ************************************************************* --->
 		<cfset var tmpVar = "">
@@ -54,7 +54,7 @@ Modification History:
 			</cfif>
 		<cfelse>
 			<!--- throw error if this is complex object --->
-			<cfthrow type="Framework.plugin.cookiestorage.InvalidValue" message="Cannot store complex value in cookie">
+			<cfthrow type="Framework.plugins.cookiestorage.InvalidValue" message="Cannot store complex value in cookie">
 		</cfif>
 	</cffunction>
 
@@ -90,6 +90,7 @@ Modification History:
 		<cfargument  name="name" type="string" required="true" 	hint="The variable name to retrieve.">
 		<!--- ************************************************************* --->
 		<cfif exists(arguments.name)>
+			<cfcookie name="#arguments.name#" expires="NOW" value='NULL'>
 			<cfset structdelete(cookie, arguments.name)>
 			<cfreturn true>
 		<cfelse>
