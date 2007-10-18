@@ -38,7 +38,7 @@
         <!--ColdBox Cache Parameter: Cache Reap Frequency in Minutes -->
         <Setting name="CacheReapFrequency" value="1"/>
         <!--ColdBox Cache Parameter: Maximum number of Objects in cache (0=Unlimited)-->
-        <Setting name="CacheMaxObjects" value="0"/>
+        <Setting name="CacheMaxObjects" value="100"/>
         <!--ColdBox Cache Parameter: Free JVM Memory % Threshold (0=not used)-->
         <Setting name="CacheFreeMemoryPercentageThreshold" value="1"/>
     </Settings>
