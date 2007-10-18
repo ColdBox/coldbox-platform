@@ -38,8 +38,7 @@ Description :
 		<cfscript>
 		//Initialize ColdBox
 		instance.controller = CreateObject("component", "coldbox.system.testcontroller").init();
-		instance.controller.getService("loader").configLoader(instance.ConfigMapping,instance.AppMapping);
-		instance.controller.getService("loader").registerHandlers();
+		instance.controller.getService("loader").setupCalls(instance.ConfigMapping,instance.AppMapping);
 
 		//Create Initial Event Context
 		setupRequest();
