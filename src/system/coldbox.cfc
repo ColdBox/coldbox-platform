@@ -86,6 +86,7 @@ Description :
 		<cfset var Event = "">
 		<cfset var ExceptionService = "">
 		<cfset var ExceptionBean = "">
+		<cfset var renderedContent = "">
 		
 		<!--- Reload Checks --->
 		<cfset reloadChecks()>
