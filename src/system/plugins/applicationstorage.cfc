@@ -8,25 +8,25 @@ Author 	 :	Luis Majano
 Date     :	February 16,2007
 Description :
 	This is a plugin that enables the setting/getting of permanent variables in
-	the session scope.
+	the application scope.
 
 Modification History:
 
 ----------------------------------------------------------------------->
-<cfcomponent name="sessionstorage"
-			 hint="Session Storage plugin. It provides the user with a mechanism for permanent data storage using the session scope."
+<cfcomponent name="applicationstorage"
+			 hint="Application Storage plugin. It provides the user with a mechanism for permanent data storage using the application scope."
 			 extends="coldbox.system.plugin"
 			 output="false"
 			 cache="true">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
-	<cffunction name="init" access="public" returntype="sessionstorage" output="false">
+	<cffunction name="init" access="public" returntype="applicationstorage" output="false">
 		<cfargument name="controller" type="any" required="true">
 		<cfset super.Init(arguments.controller) />
-		<cfset setpluginName("Session Storage")>
+		<cfset setpluginName("Application Storage")>
 		<cfset setpluginVersion("1.0")>
-		<cfset setpluginDescription("A permanent data storage plugin using the session scope.")>
+		<cfset setpluginDescription("A permanent data storage plugin using the application scope.")>
 		<cfreturn this>
 	</cffunction>
 
@@ -39,7 +39,7 @@ Modification History:
 		<cfargument name="name"  type="string" required="true" hint="The name of the variable.">
 		<cfargument name="value" type="any"    required="true" hint="The value to set in the variable.">
 		<!--- ************************************************************* --->
-		<cfset session[arguments.name] = arguments.value>
+		<cfset Application[arguments.name] = arguments.value>
 	</cffunction>
 
 	<!--- ************************************************************* --->
@@ -50,7 +50,7 @@ Modification History:
 		<cfargument  name="default"  	type="any"     required="false"  	hint="The default value to set. If not used, a blank is returned." default="">
 		<!--- ************************************************************* --->
 		<cfif exists(arguments.name)>
-			<cfreturn session[arguments.name]>
+			<cfreturn Application[arguments.name]>
 		<cfelse>
 			<cfreturn arguments.default>
 		</cfif>
@@ -58,25 +58,24 @@ Modification History:
 
 	<!--- ************************************************************* --->
 
-	<cffunction name="exists" access="public" returntype="boolean" hint="Checks wether the permanent variable exists." output="false">
-		<!--- ************************************************************* --->
-		<cfargument  name="name" type="string" required="true" 	hint="The variable name to retrieve.">
-		<!--- ************************************************************* --->
-		<cfreturn structKeyExists(session, arguments.name)>
-	</cffunction>
-
-	<!--- ************************************************************* --->
-
-	<cffunction name="deleteVar" access="public" returntype="boolean" hint="Tries to delete a permanent client var." output="false">
+	<cffunction name="deleteVar" access="public" returntype="boolean" hint="Tries to delete a permanent application var." output="false">
 		<!--- ************************************************************* --->
 		<cfargument  name="name" type="string" required="true" 	hint="The variable name to retrieve.">
 		<!--- ************************************************************* --->
 		<cfif exists(arguments.name)>
-			<cfset structdelete(session, arguments.name)>
+			<cfset structdelete(Application, arguments.name)>
 			<cfreturn true>
 		<cfelse>
 			<cfreturn false>
 		</cfif>
+	</cffunction>
+
+	<!--- ************************************************************* --->
+	<cffunction name="exists" access="private" returntype="boolean" hint="Checks wether the permanent variable exists." output="false">
+		<!--- ************************************************************* --->
+		<cfargument  name="name" type="string" required="true" 	hint="The variable name to retrieve.">
+		<!--- ************************************************************* --->
+		<cfreturn structKeyExists(Application, arguments.name)>
 	</cffunction>
 
 	<!--- ************************************************************* --->
