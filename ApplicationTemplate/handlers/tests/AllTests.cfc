@@ -1,6 +1,6 @@
 <!-----------------------------------------------------------------------
 Template : AllTests.cfc
-Author 	 : luis5198
+Author 	 : Luis Majano
 Date     : 6/6/2007 5:59:04 PM
 Description :
 	

@@ -5,7 +5,6 @@
 	<cfreturn THIS>
 </cffunction>
 
-<!--- Author: luis5198 - Date: 7/24/2007 --->
 <!--- getter and setter for dsn --->
 <cffunction name="getdsn" access="public" returntype="string" output="false">
 	<cfreturn variables.dsn>

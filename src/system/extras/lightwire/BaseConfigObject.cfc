@@ -1,5 +1,4 @@
-<cfcomponent name="BaseConfigObject" output="false"><cffunction name="init" returntype="any" hint="I initialize default LightWire config properties." output="false">	<cfscript>		setLazyLoad("true");	</cfscript>	<cfreturn this></cffunction><!------------------------------------------- START COLDBOX INTEGRATION -------------------------------------------><!--- Author: luis5198 - Date: 7/24/2007 --->
-<!--- getter and setter for coldbox controller --->
+<cfcomponent name="BaseConfigObject" output="false"><cffunction name="init" returntype="any" hint="I initialize default LightWire config properties." output="false">	<cfscript>		setLazyLoad("true");	</cfscript>	<cfreturn this></cffunction><!------------------------------------------- START COLDBOX INTEGRATION -------------------------------------------><!--- getter and setter for coldbox controller --->
 <cffunction name="getcontroller" access="public" returntype="any" output="false" hint="Get the coldbox controller">
 	<cfreturn variables.controller>
 </cffunction>

@@ -1,6 +1,6 @@
 <!-----------------------------------------------------------------------
 Template : messagebox.cfc
-Author 	 : luis5198
+Author 	 : Luis Majano
 Date     : 3/13/2007 8:28:31 AM
 Description :
 	This is a timer plugin
