@@ -51,12 +51,10 @@ Description :
 		<cfargument name="interceptData" required="true" 	type="struct" hint="A data structure used to pass intercepted information.">
 		<!--- ************************************************************* --->
 		<cfscript>
-		var iterator = getInterceptors().keySet().iterator();
 		var key = "";
 		
 		/* Loop and execute each interceptor as registered in order */
-		while( iterator.hasNext() ){
-			key = iterator.next();
+		for( key in getInterceptors()){
 			/* Invoke the execution point */
 			invoker( getInterceptors().get(key), arguments.event, arguments.interceptData );
 		}		
