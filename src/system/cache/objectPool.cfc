@@ -97,9 +97,10 @@ Modification History:
 	<!--- Set an Object in the pool --->
 	<cffunction name="set" access="public" output="false" returntype="void" hint="sets an object in cache.">
 		<!--- ************************************************************* --->
-		<cfargument name="objectKey" 		type="string"  required="true">
-		<cfargument name="MyObject"			type="any" 	   required="true">
-		<cfargument name="Timeout"			type="string"  required="false" default="" hint="Timeout in minutes. If timeout = 0 then object never times out. If timeout is blank, then timeout will be inherited from framework.">
+		<cfargument name="objectKey" 			type="string"  required="true">
+		<cfargument name="MyObject"				type="any" 	   required="true">
+		<cfargument name="Timeout"				type="string"  required="false" default="" hint="Timeout in minutes. If timeout = 0 then object never times out. If timeout is blank, then timeout will be inherited from framework.">
+		<cfargument name="LastAccessTimeout"	type="string"  required="false" default="" hint="Timeout in minutes. If timeout is blank, then timeout will be inherited from framework.">
 		<!--- ************************************************************* --->
 		<cfscript>
 		var MetaData = structnew();
@@ -108,6 +109,7 @@ Modification History:
 		//Create object's metdata
 		MetaData.hits = 1;
 		MetaData.Timeout = arguments.timeout;
+		MetaData.LastAccessTimeout = arguments.LastAccessTimeout;
 		MetaData.Created = now();
 		MetaData.LastAccesed = now();
 		//Set the metadata

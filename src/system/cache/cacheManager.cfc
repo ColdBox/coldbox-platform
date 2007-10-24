@@ -16,34 +16,45 @@ Modification History:
 <cfcomponent name="cacheManager" hint="Manages handler,plugin,custom plugin and object caching. It is thread safe and implements locking for you." output="false">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
+	
+	<cfscript>
+		instance = structnew();
+	</cfscript>
 
 	<cffunction name="init" access="public" output="false" returntype="cacheManager" hint="Constructor">
 		<cfargument name="controller" type="any" required="true">
 		<cfscript>
-			variables.instance = structnew();
 			//Set Controller Injection
 			instance.controller = arguments.controller;
+			
 			//Cache Configuration
 			instance.CacheConfigBean = structnew();
 			//Object Pool
 			instance.objectPool = structnew();
+			
 			//Cache Performance
 			instance.cachePerformance = structNew();
 			instance.cachePerformance.Hits = 0;
 			instance.cachePerformance.Misses = 0;
-			//Reaping Controll
+			
+			//Reaping Control
 			instance.lastReapDatetime = now();
+			
 			//Runtime Java object
 			instance.javaRuntime = CreateObject("java", "java.lang.Runtime");
+			
 			//Lock Name
 			instance.lockName = getController().getAppHash() & "_OCM_OPERATION";
+			
 			//Init the object Pool on instantiation
 			initPool();
+			
 			//return Cache Manager reference;
 			return this;
 		</cfscript>
 	</cffunction>
 
+	<!--- Configure the Cache for Operation --->
 	<cffunction name="configure" access="public" output="false" returntype="void" hint="Configures the cache for operation.">
 		<cfargument name="cacheConfigBean" type="coldbox.system.beans.cacheConfigBean" required="true">
 		<cfscript>
@@ -84,14 +95,15 @@ Modification History:
 		<!--- ************************************************************* --->
 		<cfset var ObjectFound = StructNew()>
 
-		<!--- Lookup First --->
-		<cfif lookup(arguments.objectKey)>
-			<cflock type="exclusive" name="#getLockName()#" timeout="30">
+		<cflock type="exclusive" name="#getLockName()#" timeout="30">
+			<!--- Lookup First --->
+			<cfif getobjectPool().lookup(arguments.objectKey)>
 				<!--- Record a Hit --->
 				<cfset hit()>
 				<cfset ObjectFound = getobjectPool().get(arguments.objectKey)>
-			</cflock>
-		</cfif>
+			</cfif>
+		</cflock>
+		
 		<cfreturn ObjectFound>
 	</cffunction>
 
@@ -99,21 +111,23 @@ Modification History:
 
 	<cffunction name="set" access="public" output="false" returntype="void" hint="sets an object in cache.">
 		<!--- ************************************************************* --->
-		<cfargument name="objectKey" 		type="string"  required="true">
-		<cfargument name="MyObject"			type="any" 	   required="true">
-		<cfargument name="Timeout"			type="string"  required="false" default="" hint="Timeout in minutes. If timeout = 0 then object never times out. If timeout is blank, then timeout will be inherited from framework.">
+		<cfargument name="objectKey" 			type="string"  required="true" hint="The object cache key">
+		<cfargument name="MyObject"				type="any" 	   required="true" hint="The object to cache">
+		<cfargument name="Timeout"				type="string"  required="false" default="" hint="Timeout in minutes. If timeout = 0 then object never times out. If timeout is blank, then timeout will be inherited from framework.">
+		<cfargument name="LastAccessTimeout"	type="string"  required="false" default="" hint="Last Access Timeout in minutes. If timeout is blank, then timeout will be inherited from framework.">
 		<!--- ************************************************************* --->
 		<!---JVM Threshold Checks --->
 		<cfset var isBelowThreshold = ThresholdChecks()>
 		<cfset var ccBean = getCacheConfigBean()>
 		<cfset var interceptMetadata = structnew()>
 		
-		<!--- Reap Cache to make space --->
+		<!--- Reap Cache to make space, just in case. --->
 		<cfset reap()>
 		
-		<!--- Clean Args --->
+		<!--- Clean Arguments --->
 		<cfset arguments.objectKey = trim(arguments.objectKey)>
 		<cfset arguments.Timeout = trim(arguments.Timeout)>
+		<cfset arguments.LastAccessTimeout = trim(arguments.LastAccessTimeout)>
 	
 		<!--- Max Objects in Cache Check --->
 		<cfif (ccBean.getCacheMaxObjects() eq 0 or getSize() lt ccBean.getCacheMaxObjects()) and
@@ -123,10 +137,15 @@ Modification History:
 			<cfif arguments.Timeout eq "" or not isNumeric(arguments.Timeout) or arguments.Timeout lt 0>
 				<cfset arguments.Timeout = ccBean.getCacheObjectDefaultTimeout()>
 			</cfif>
+			
+			<!--- Test the Last Access Timeout --->
+			<cfif arguments.LastAccessTimeout eq "" or not isNumeric(arguments.LastAccessTimeout) or arguments.LastAccessTimeout lte 0>
+				<cfset arguments.LastAccessTimeout = ccBean.getCacheObjectDefaultLastAccessTimeout()>
+			</cfif>
 
 			<!--- Set object in Cache --->
 			<cflock type="exclusive" name="#getLockName()#" timeout="30">
-				<cfset getobjectPool().set(arguments.objectKey,arguments.MyObject,arguments.Timeout)>
+				<cfset getobjectPool().set(arguments.objectKey,arguments.MyObject,arguments.Timeout,arguments.LastAccessTimeout)>
 			</cflock>
 		</cfif>
 		
@@ -135,6 +154,7 @@ Modification History:
 			<!--- InterceptMetadata --->
 			<cfset interceptMetadata.cacheObjectKey = arguments.objectKey>
 			<cfset interceptMetadata.cacheObjectTimeout = arguments.Timeout>
+			<cfset interceptMetadata.cacheObjectLastAccessTimeout = arguments.LastAccessTimeout>
 			<!--- Execute afterCacheElementInsert Interception --->
 			<cfset getController().getInterceptorService().processState("afterCacheElementInsert",interceptMetadata)>
 		</cfif>
@@ -303,6 +323,19 @@ Modification History:
 	
 	<!--- ************************************************************* --->
 	
+	<cffunction name="expireKey" access="public" returntype="any" hint="Expire an Object. Use this instead of clearKey() from within handlers or any cached object, this sets the metadata for the objects to expire in the next request. Note that this is not an inmmediate expiration. Clear should only be used from outside a cached object" output="false" >
+		<!--- ************************************************************* --->
+		<cfargument name="objectKey" type="string" required="true">
+		<!--- ************************************************************* --->
+		<cfscript>
+			//Expire the object
+			getObjectPool().setMetadataProperty(arguments.objectKey,"Timeout", 1);
+			getObjectPool().setMetadataProperty(arguments.objectKey,"Created", dateAdd("n",-5,now()));
+		</cfscript>
+	</cffunction>
+	
+	<!--- ************************************************************* --->
+	
 <!------------------------------------------- ACCESSOR/MUTATORS ------------------------------------------->
 
 	<!--- ************************************************************* --->
@@ -404,21 +437,18 @@ Modification History:
 	<cffunction name="ThresholdChecks" access="private" output="false" returntype="boolean" hint="JVM Threshold checks">
 		<cfset var check = true>
 		<cfset var jvmThreshold = 0>
-		<cfset var jvmFreeMemory = "">
-		<cfset var jvmTotalMemory = "">
-		<cfset var ccBean = getCacheConfigBean()>
+		
 		<cftry>
 			<!--- Checks --->
-			<cfif ccBean.getCacheFreeMemoryPercentageThreshold() neq 0>
-				<cfset jvmFreeMemory = getJavaRuntime().getRuntime().freeMemory()>
-				<cfset jvmTotalMemory = getJavaRuntime().getRuntime().totalMemory()>
-				<cfset jvmThreshold = ((jvmFreeMemory/jvmTotalMemory)*100)>
-				<cfset check = ccBean.getCacheFreeMemoryPercentageThreshold() lt jvmThreshold>
+			<cfif getCacheConfigBean().getCacheFreeMemoryPercentageThreshold() neq 0>
+				<cfset jvmThreshold = ( (getJavaRuntime().getRuntime().freeMemory() / getJavaRuntime().getRuntime().totalMemory() ) * 100 )>
+				<cfset check = getCacheConfigBean().getCacheFreeMemoryPercentageThreshold() lt jvmThreshold>
 			</cfif>
 			<cfcatch type="any">
 				<cfset check = true>
 			</cfcatch>
 		</cftry>
+		
 		<cfreturn check>
 	</cffunction>
 
