@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<snippet filetemplate="false" extension="cfm">
+<name>getVar</name>
+<help>get variable</help>
+<starttext><![CDATA[getPlugin("applicationstorage").getVar("$${Variable Name}", $${Default value})]]></starttext>
+<endtext><![CDATA[]]></endtext>
+</snippet>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<snippet filetemplate="false" extension="cfm">
+<name>setVar</name>
+<help>Set Variable for applicationstorage</help>
+<starttext><![CDATA[getPlugin("cookiestorage").setVar("$${Variable Name}", $${Value}, $${Expires(days)})]]></starttext>
+<endtext><![CDATA[]]></endtext>
+</snippet>

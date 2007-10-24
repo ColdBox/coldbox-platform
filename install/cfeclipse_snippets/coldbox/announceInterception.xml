@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<snippet filetemplate="false" extension="cfm">
+<name>announceInterception</name>
+<help></help>
+<starttext><![CDATA[announceInterception(state="$${State Key}", interceptData="$${Interception Structure}")]]></starttext>
+<endtext><![CDATA[]]></endtext>
+</snippet>
