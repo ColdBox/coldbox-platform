@@ -8,10 +8,6 @@ Author: Luis Majano
 Date:   July 28, 2006
 Description: This is the framework's simple bean factory.
 
-Modifications:
-07/29/2006 - Added more hints.
-12/08/2006 - Added makeBean method thanks to Sana Ullah. It will create and or populate a bean with the same request collection field names.
-03/22/2007 - Modified Sana's code to only make one call to the trim() method
 ----------------------------------------------------------------------->
 <cfcomponent name="beanFactory"
 			 hint="I am a simple bean factory and you can use me if you want."

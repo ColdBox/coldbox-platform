@@ -98,6 +98,14 @@ Description :
 		return getRequestContext();
 		</cfscript>
 	</cffunction>
+	
+	<!--- Announce Interception --->
+	<cffunction name="announceInterception" access="public" returntype="void" hint="Announce an interception to the system." output="false" >
+		<cfargument name="state" 			required="true"  type="string" hint="The interception state to execute">
+		<cfargument name="interceptData" 	required="false" type="struct" default="#structNew()#" hint="A data structure used to pass intercepted information.">
+		<cfset getController().getInterceptorService().processState(argumentCollection=arguments)>
+	</cffunction>
+
 
 <!------------------------------------------- PRIVATE ------------------------------------------->
 

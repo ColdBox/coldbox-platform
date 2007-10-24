@@ -36,7 +36,7 @@
         <!--ColdBox Cache Parameter: Default Object Last Accessed Timeout in Minutes -->
         <Setting name="CacheObjectDefaultLastAccessTimeout" value="15"/>
         <!--ColdBox Cache Parameter: Cache Reap Frequency in Minutes -->
-        <Setting name="CacheReapFrequency" value="1"/>
+        <Setting name="CacheReapFrequency" value="3"/>
         <!--ColdBox Cache Parameter: Maximum number of Objects in cache (0=Unlimited)-->
         <Setting name="CacheMaxObjects" value="100"/>
         <!--ColdBox Cache Parameter: Free JVM Memory % Threshold (0=not used)-->

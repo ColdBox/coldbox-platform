@@ -26,8 +26,7 @@ Modification History:
 			 hint="This service renders layouts, views, framework includes, etc."
 			 extends="coldbox.system.plugin"
 			 output="false"
-			 cache="true"
-			 cachetimeout="0">
+			 cache="false">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 

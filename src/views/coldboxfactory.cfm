@@ -49,6 +49,25 @@
 		<td><cfdump var="#rc.testModel.getCacheManager().getItemTypes()#"></td>
 	</tr>
 	
+	<tr>
+		<td colspan="2"><hr></td>
+	</tr>
+	
+	<tr>
+		<td><strong>Datasource:</strong></td>
+		<td><cfdump var="#rc.testModel.getDatasource().getMemento()#"></td>
+	</tr>
+	
+	<tr>
+		<td colspan="2"><hr></td>
+	</tr>
+	
+	<tr>
+		<td><strong>Mail Settings:</strong></td>
+		<td><cfdump var="#rc.testModel.getMailSettings().getMemento()#"></td>
+	</tr>
+	
+	
 	
 </table>
 

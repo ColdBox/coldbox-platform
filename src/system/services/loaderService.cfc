@@ -102,6 +102,11 @@ Modification History:
 	<!--- Register the Aspects --->
 	<cffunction name="registerAspects" access="public" returntype="void" hint="I Register the current Application's Aspects" output="false" >
 		<cfscript>
+		//Initialize AOP Logging if requested.
+		if ( controller.getSetting("EnableColdboxLogging") ){
+			controller.getPlugin("logger").initLogLocation();
+		}
+		
 		//IoC Plugin Manager Configuration
 		if ( controller.getSetting("IOCFramework") neq "" ){
 			//Create IoC Factory and configure it.
@@ -112,12 +117,7 @@ Modification History:
 		if ( controller.getSetting("using_i18N") ){
 			//Create i18n Plugin and configure it.
 			controller.getPlugin("i18n").init_i18N(controller.getSetting("DefaultResourceBundle"),controller.getSetting("DefaultLocale"));
-		}
-
-		//Initialize AOP Logging if requested.
-		if ( controller.getSetting("EnableColdboxLogging") ){
-			controller.getPlugin("logger").initLogLocation();
-		}
+		}		
 
 		//Set Debugging Mode according to configuration File
 		controller.getDebuggerService().setDebugMode(controller.getSetting("DebugMode"));

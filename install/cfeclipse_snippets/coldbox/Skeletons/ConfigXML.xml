@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <snippet filetemplate="true" extension="xml.cfm">
-<name>New Config XML</name>
+<name>ConfigXML</name>
 <help>A new config.xml</help>
 <starttext><![CDATA[<?xml version="1.0" encoding="ISO-8859-1"?>
 <Config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -19,13 +19,15 @@
 		<Setting name="RequestStartHandler" 		value="$${Request Start Handler (Blank if not used)}"/>
 		<Setting name="RequestEndHandler" 			value="$${Request End Handler (Blank if not used)}"/>
 		<Setting name="ApplicationStartHandler"  	value="$${Application Start Handler (Blank if not used)}" />
+		<Setting name="SessionStartHandler"  		value="$${Session Start Handler (Blank if not used)}" />
+		<Setting name="SessionEndHandler"  			value="$${Session End Handler (Blank if not used)}" />
 		<Setting name="OwnerEmail"					value="$${Owner Email (Outgoing Account)}" />
 		<Setting name="EnableBugReports" 			value="$${Enable Bug Reports:true|false}"/>
 		<Setting name="UDFLibraryFile" 				value="$${UDF Library File (Blank if not used)}" />
 		<Setting name="CustomErrorTemplate" 		value="$${Custom Error Template (Blank if not used)}"/>
 		<Setting name="ExceptionHandler" 			value="$${Exception Handler (Blank if not used)}"/>
 		<Setting name="onInvalidEvent" 				value="$${On Invalid Event (Blank if not used)}"/>
-		<Setting name="MessageboxStyleOverride" 		value="$${Override css:false|true}"/>
+		<Setting name="MessageboxStyleOverride" 	value="$${Override css:false|true}"/>
 		<Setting name="HandlersIndexAutoReload" 	value="$${Handlers Index Auto Reload:true|false}"/>
 		<Setting name="ConfigAutoReload" 			value="$${Config Auto Reload:true|false}"/>
 		<Setting name="HandlerCaching" 				value="$${Handler Caching:true|false}"/>
@@ -33,6 +35,7 @@
 		<Setting name="IOCFramework"				value="$${IOC Framework (Blank If not Used):|coldspring|lightwire}" />
 		<Setting name="IOCDefinitionFile"			value="$${IOC Service Definition File (Relative or Absolute if used)}" />
 		<Setting name="IOCObjectCaching"			value="$${IOC Object Caching:true|false}"/>
+		<Setting name="RequestContextDecorator"		value="" />
 	</Settings>
 
 	<YourSettings>
@@ -58,6 +61,19 @@
 
 	<Layouts>
 		<DefaultLayout>Layout.Main.cfm</DefaultLayout>
+		
+		<!--Default View, OPTIONAL
+		<DefaultView>home</DefaultView>
+		-->
+		
+		<!--
+		Declare other layouts, with view assignments if needed, else do not write them
+		<Layout file="Layout.Popup.cfm" name="popup">
+			<View>vwTest</View>
+			<View>vwMyView</View>
+		</Layout>
+		-->
+		
 	</Layouts>
 
 	<i18N>
@@ -76,6 +92,18 @@
 		<MaxObjects>0</MaxObjects>
 		<FreeMemoryPercentageThreshold>0</FreeMemoryPercentageThreshold>
 	</Cache>
+	-->
+	
+	<!-- Interceptor Declarations 
+	<Interceptors>
+		<CustomInterceptionPoints>comma-delimited list</CustomInterceptionPoints>
+		<Interceptor class="full class name">
+			<Property name="myProp">value</Property>
+			<Property name="myArray">[1,2,3]</Property>
+			<Property name="myStruct">{ key1:1, key2=2 }</Property>
+		</Inteceptor>
+		<Interceptor class="no property" />
+	</Interceptors>
 	-->
 
 </Config>

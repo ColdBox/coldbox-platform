@@ -6,6 +6,7 @@
 		instance.controller = "";
 		instance.configBean = "";
 		instance.logger = "";
+		instance.datasource = "";
 		return this;
 		</cfscript>
 	</cffunction>
@@ -44,6 +45,23 @@
 	<cffunction name="setcacheManager" access="public" output="false" returntype="void" hint="Set cacheManager">
 		<cfargument name="cacheManager" type="any" required="true"/>
 		<cfset instance.cacheManager = arguments.cacheManager/>
+	</cffunction>
+	
+	<cffunction name="getdatasource" access="public" returntype="any" output="false">
+		<cfreturn instance.datasource>
+	</cffunction>
+	
+	<cffunction name="setdatasource" access="public" returntype="void" output="false">
+		<cfargument name="datasource" type="any" required="true">
+		<cfset instance.datasource = arguments.datasource>
+	</cffunction>
+	
+	<cffunction name="getmailSettings" access="public" returntype="any" output="false">
+		<cfreturn instance.mailSettings>
+	</cffunction>
+	<cffunction name="setmailSettings" access="public" returntype="void" output="false">
+		<cfargument name="mailSettings" type="any" required="true">
+		<cfset instance.mailSettings = arguments.mailSettings>
 	</cffunction>
 
 </cfcomponent>

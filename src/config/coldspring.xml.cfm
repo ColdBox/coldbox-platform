@@ -11,6 +11,14 @@
 	    </constructor-arg>
 	</bean>
 	
+	<bean id="myDatasource" factory-bean="ColdboxFactory" factory-method="getDatasource">
+	    <constructor-arg name="alias">
+	        <value>mysite</value>
+	    </constructor-arg>
+	</bean>
+	
+	<bean id="myMailSettings" factory-bean="ColdboxFactory" factory-method="getMailSettings" />
+	
     <bean id="testModel" class="coldbox.model.testModel" singleton="false">
         <property name="controller">
             <bean id="controller" factory-bean="ColdBoxFactory" factory-method="getColdbox" />
@@ -23,6 +31,12 @@
         </property>
         <property name="cacheManager">
             <bean id="cacheManager" factory-bean="ColdboxFactory" factory-method="getColdboxOCM" />
+        </property>
+		<property name="datasource">
+			<ref bean="myDatasource" />
+        </property>
+		<property name="mailsettings">
+			<ref bean="myMailSettings" />
         </property>
     </bean>
 	

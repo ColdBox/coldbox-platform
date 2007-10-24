@@ -41,21 +41,25 @@ Modification History:
 	<cffunction name="setVar" access="public" returntype="void" hint="Set a new permanent variable." output="false">
 		<!--- ************************************************************* --->
 		<cfargument name="name"  	type="string" 	required="true"  hint="The name of the variable.">
-		<cfargument name="value" 	type="any"    	required="true"  hint="The value to set in the variable.">
+		<cfargument name="value" 	type="any"    	required="true"  hint="The value to set in the variable, simple, array, query or structure.">
 		<cfargument name="expires"	type="numeric"	required="no"	default="1"	hint="Cookie Expire in number of days. [default cookie is session only]">
 		<!--- ************************************************************* --->
 		<cfset var tmpVar = "">
+		
 		<!--- Test for simple mode --->
 		<cfif isSimpleValue(arguments.value)>
-			<cfif arguments.expires EQ 1>
-				<cfcookie name="#arguments.name#" value="#arguments.value#" />
-			<cfelse>
-				<cfcookie name="#arguments.name#" value="#arguments.value#" expires="#arguments.expires#" />
-			</cfif>
+			<cfset tmpVar = arguments.value>
 		<cfelse>
-			<!--- throw error if this is complex object --->
-			<cfthrow type="Framework.plugins.cookiestorage.InvalidValue" message="Cannot store complex value in cookie">
+			<!--- Wddx variable --->
+			<cfwddx action="cfml2wddx" input="#arguments.value#" output="tmpVar">
 		</cfif>
+		
+		<!--- Store cookie with expiration info --->
+		<cfif arguments.expires EQ 1>
+			<cfcookie name="#arguments.name#" value="#tmpVar#" />
+		<cfelse>
+			<cfcookie name="#arguments.name#" value="#tmpVar#" expires="#arguments.expires#" />
+		</cfif>	
 	</cffunction>
 
 	<!--- ************************************************************* --->
@@ -65,13 +69,23 @@ Modification History:
 		<cfargument  name="name" 		type="string"  required="true" 		hint="The variable name to retrieve.">
 		<cfargument  name="default"  	type="any"     required="false"  	hint="The default value to set. If not used, a blank is returned." default="">
 		<!--- ************************************************************* --->
+		<cfset var wddxVar = "">
+		<cfset var rtnVar = "">
+		
 		<cfif exists(arguments.name)>
-			<!--- Return value --->
-			<cfreturn cookie[arguments.name] />
+			<!--- Get value --->
+			<cfset rtnVar = cookie[arguments.name]>
+			<cfif isWDDX(rtnVar)>
+				<!--- Unwddx packet --->
+				<cfwddx action="wddx2cfml" input="#rtnVar#" output="wddxVar">
+				<cfset rtnVar = wddxVar>
+			</cfif>
 		<cfelse>
-			<!--- Return empty value --->
-			<cfreturn arguments.default />
+			<!--- Return the default value --->
+			<cfset rtnVar = arguments.default>
 		</cfif>
+		<!--- Return Var --->
+		<cfreturn rtnVar>
 	</cffunction>
 
 	<!--- ************************************************************* --->
