@@ -20,13 +20,12 @@ Description		: This is the main ColdBox front Controller.
 		instance.ConfigSettings = structnew();
 		instance.ColdboxSettings = structnew();
 		instance.AppStartHandlerFired = false;
-		instance.AppHash = "";
 	</cfscript>
 
 	<cffunction name="init" returntype="any" access="Public" hint="I am the constructor" output="false">
 		<cfscript>
 			//Set the Application hash on creation
-			setAppHash( hash(createUUID()) );
+			setAppHash( hash(getBaseTemplatePath()) );
 			
 			//Create & init ColdBox Services
 			setColdboxOCM( CreateObject("component","cache.cacheManager").init(this) );

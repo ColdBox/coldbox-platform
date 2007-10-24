@@ -16,8 +16,8 @@ Sep/25/2005 - Luis Majano
 		//Create the JavaLoader with the helloworld.jar file. You can send one path or a comma delimited list.
 		var stime = getTickcount();
 		//Since caching is enabled for plugins, you will need to set it up only.
-		getPlugin("JavaLoader").setup("includes/helloworld.jar");
-		getPlugin("logger").tracer("My Java Loader has been Loaded into the application scope. It took #stime-gettickcount()# ms");
+		getPlugin("JavaLoader").setup( listToArray(ExpandPath("includes/helloworld.jar")) );
+		getPlugin("logger").tracer("My Java Loader has been Loaded. It took #stime-gettickcount()# ms");
 		</cfscript>
 	</cffunction>
 	<!--- ************************************************************* --->
@@ -27,7 +27,7 @@ Sep/25/2005 - Luis Majano
 		<cfargument name="Event" type="coldbox.system.beans.requestContext">
 		<cfscript>
 		//Load the hello world class
-		Event.setvalue("HelloWorldObj", getPlugin("javaLoader").create("HelloWorld").init());
+		Event.setvalue("HelloWorldObj", getPlugin("JavaLoader").create("HelloWorld").init());
 		getPlugin("logger").tracer("MyLoader just finished loading the HelloWorld Class object.");
 		Event.setView("vwHello");
 	</cfscript>

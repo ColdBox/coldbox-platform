@@ -34,8 +34,8 @@ Luis Majano		07/11/2006		Updated it to work with ColdBox. look at license in the
 		<cfset setpluginVersion("1.0")>
 		<cfset setpluginDescription("Java Loader plugin, based on Mark Mandel's brain.")>
 		
-		<!--- Set a static UUID for the loader --->
-		<cfset setStaticIDKey("cbox-javaloader-CF712A27-CF1E-5C1B-90A648E384F900AC")>
+		<!--- Set a static ID for the loader --->
+		<cfset setstaticIDKey("cbox-javaloader-#getController().getAppHash()#")>
 		<cfreturn this>
 	</cffunction>
 
@@ -53,9 +53,22 @@ Luis Majano		07/11/2006		Updated it to work with ColdBox. look at license in the
 		<cfargument name="parentClassLoader" hint="(Expert use only) The parent java.lang.ClassLoader to set when creating the URLClassLoader" 
 					type="any" default="" required="false">
 		<!--- ************************************************************* --->
-		<cfscript>
+			<cfset var JavaLoader = "">
 			
-		</cfscript>
+			<!--- setup the javaloader --->
+			<cfif ( not isJavaLoaderInScope() )>
+				<cflock name="#getStaticIDKey()#" throwontimeout="true" timeout="30" type="exclusive">
+					<cfif ( not isJavaLoaderInScope() )>
+						<!--- Place java loader in scope, create it. --->
+						<cfset setJavaLoaderInScope( CreateObject("component","coldbox.system.extras.javaloader.JavaLoader").init(argumentCollection=arguments) )>
+					</cfif>
+				</cflock>
+			<cfelse>
+				<cflock name="#getStaticIDKey()#" throwontimeout="true" timeout="30" type="readonly">
+					<!--- Get the javaloader. --->
+					<cfset getJavaLoaderFromScope().init(argumentCollection=arguments)>
+				</cflock>
+			</cfif>
 	</cffunction>
 
 	<!--- ************************************************************* --->
@@ -84,36 +97,38 @@ Luis Majano		07/11/2006		Updated it to work with ColdBox. look at license in the
 <!------------------------------------------- PRIVATE ------------------------------------------->
 
 	<!--- setJavaLoaderInScope --->
-	<cffunction name="setJavaLoaderInScope" output="false" access="public" returntype="any" hint="Set the javaloader in server scope">
+	<cffunction name="setJavaLoaderInScope" output="false" access="private" returntype="any" hint="Set the javaloader in server scope">
+		<!--- ************************************************************* --->
+		<cfargument name="javaloader" required="true" type="coldbox.system.extras.javaloader.javaLoader" hint="The javaloader instance to scope">
+		<!--- ************************************************************* --->
 		<cfscript>
-		
+			structInsert(server, getstaticIDKey(), arguments.javaloader);
 		</cfscript>
 	</cffunction>
 	
 	<!--- getJavaLoaderFromScope --->
-	<cffunction name="getJavaLoaderFromScope" output="false" access="public" returntype="any" hint="Get the javaloader from server scope">
+	<cffunction name="getJavaLoaderFromScope" output="false" access="private" returntype="any" hint="Get the javaloader from server scope">
 		<cfscript>
-		
+			return server[getstaticIDKey()];
 		</cfscript>
 	</cffunction>
 	
 	<!--- isJavaLoaderInScope --->
-	<cffunction name="isJavaLoaderInScope" output="false" access="public" returntype="boolean" hint="Checks if the javaloader has been loaded into server scope">
+	<cffunction name="isJavaLoaderInScope" output="false" access="private" returntype="boolean" hint="Checks if the javaloader has been loaded into server scope">
 		<cfscript>
-		
+			return structKeyExists( server, getstaticIDKey());
 		</cfscript>
 	</cffunction>
 	
 	<!--- Get the static javaloder id --->
-	<cffunction name="getstaticID" access="public" returntype="string" output="false">
-		<cfreturn instance.staticID>
+	<cffunction name="getstaticIDKey" access="private" returntype="string" output="false">
+		<cfreturn instance.staticIDKey>
 	</cffunction>
 	
 	<!--- set the static javaloader id --->
-	<cffunction name="setstaticID" access="public" returntype="void" output="false">
-		<cfargument name="staticID" type="string" required="true">
-		<cfset instance.staticID = arguments.staticID>
+	<cffunction name="setstaticIDKey" access="private" returntype="void" output="false">
+		<cfargument name="staticIDKey" type="string" required="true">
+		<cfset instance.staticIDKey = arguments.staticIDKey>
 	</cffunction>
 	
-
 </cfcomponent>
