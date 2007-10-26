@@ -15,7 +15,8 @@ Description :
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
 	<!--- Constructor --->
-	<cfparam name="variables.COLDBOX_CONFIG_FILE" default="" type="string">
+	<cfparam name="variables.COLDBOX_CONFIG_FILE" 	default="" type="string">
+	<cfparam name="variables.COLDBOX_APP_ROOT_PATH" default="#getDirectoryFromPath(getbaseTemplatePath())#" type="string">
 	
 	<cfscript>
 		instance = structnew();
@@ -27,6 +28,8 @@ Description :
 		request.fwExecTime = getTickCount();
 		//Set the COLDBOX CONFIG FILE
 		setCOLDBOX_CONFIG_FILE(COLDBOX_CONFIG_FILE);
+		//Set the Root
+		setCOLDBOX_APP_ROOT_PATH(COLDBOX_APP_ROOT_PATH);
 	</cfscript>
 
 <!------------------------------------------- PUBLIC ------------------------------------------->
@@ -38,7 +41,7 @@ Description :
 			<cfset structDelete(application,"cbController")>
 		</cfif>
 		<!--- Create Brand New Controller --->
-		<cfset application.cbController = CreateObject("component","coldbox.system.controller").init()>
+		<cfset application.cbController = CreateObject("component","coldbox.system.controller").init(COLDBOX_APP_ROOT_PATH)>
 		<!--- Setup the Framework And Application --->
 		<cfset application.cbController.getService("loader").setupCalls(COLDBOX_CONFIG_FILE)>
 	</cffunction>
@@ -47,7 +50,7 @@ Description :
 	<cffunction name="reloadChecks" access="public" returntype="void" hint="Reload checks and reload settings." output="false" >
 		<cfset var ExceptionService = "">
 		<cfset var ExceptionBean = "">
-		
+		 
 		<!--- Initialize the Controller If Needed--->
 		<cfif not structkeyExists(application,"cbController") or not application.cbController.getColdboxInitiated() or isfwReinit()>
 			<cflock type="exclusive" name="#getAppHash()#" timeout="#getLockTimeout()#">
@@ -57,6 +60,7 @@ Description :
 			</cflock>
 		<cfelse>
 			<cftry>
+				
 				<!--- AutoReload Tests --->
 				<cfif application.cbController.getSetting("ConfigAutoReload")>
 					<cflock type="exclusive" name="#getAppHash()#" timeout="#getLockTimeout()#">
@@ -68,7 +72,7 @@ Description :
 						<cfset application.cbController.getHandlerService().registerHandlers()>
 					</cflock>
 				</cfif>
-		
+				
 				<!--- Trap Framework Errors --->
 				<cfcatch type="any">
 					<cfset ExceptionService = application.cbController.getService("exception")>
@@ -125,15 +129,18 @@ Description :
 				<!--- Run Default/Set Event --->
 				<cfset cbController.runEvent()>
 				
-				<!--- Execute preRender Interception --->
-				<cfset cbController.getInterceptorService().processState("preRender")>
-				
-				<!--- Render Layout/View pair via set variable to eliminate whitespace--->
-				<cfset renderedContent = cbController.getPlugin("renderer").renderLayout()>
-				<cfoutput>#renderedContent#</cfoutput>
-				
-				<!--- Execute postRender Interception --->
-				<cfset cbController.getInterceptorService().processState("postRender")>
+				<!--- No Render Test --->
+				<cfif not event.isNoRender()>
+					<!--- Execute preRender Interception --->
+					<cfset cbController.getInterceptorService().processState("preRender")>
+					
+					<!--- Render Layout/View pair via set variable to eliminate whitespace--->
+					<cfset renderedContent = cbController.getPlugin("renderer").renderLayout()>
+					<cfoutput>#renderedContent#</cfoutput>
+					
+					<!--- Execute postRender Interception --->
+					<cfset cbController.getInterceptorService().processState("postRender")>
+				</cfif>
 				
 				<!--- If Found in config, run onRequestEnd Handler --->
 				<cfif cbController.getSetting("RequestEndHandler") neq "">
@@ -207,6 +214,12 @@ Description :
 	<cffunction name="setCOLDBOX_CONFIG_FILE" access="public" output="false" returntype="void" hint="Set COLDBOX_CONFIG_FILE">
 		<cfargument name="COLDBOX_CONFIG_FILE" type="string" required="true"/>
 		<cfset variables.COLDBOX_CONFIG_FILE = arguments.COLDBOX_CONFIG_FILE/>
+	</cffunction>
+	
+	<!--- setter COLDBOX_APP_ROOT_PATH --->
+	<cffunction name="setCOLDBOX_APP_ROOT_PATH" access="public" output="false" returntype="void" hint="Set COLDBOX_APP_ROOT_PATH">
+		<cfargument name="COLDBOX_APP_ROOT_PATH" type="string" required="true"/>
+		<cfset variables.COLDBOX_APP_ROOT_PATH = arguments.COLDBOX_APP_ROOT_PATH/>
 	</cffunction>
 	
 <!------------------------------------------- PRIVATE ------------------------------------------->	

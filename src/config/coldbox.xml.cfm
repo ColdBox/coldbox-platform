@@ -7,7 +7,7 @@
 		<Setting name="DebugMode" 					value="true"/>
 		<Setting name="DebugPassword" 				value="coldbox"/>
 		<Setting name="ReinitPassword" 				value=""/>
-		<Setting name="EventName" 					value="do"/>
+		<Setting name="EventName" 					value="event"/>
 		<Setting name="EnableDumpVar" 				value="true"/>
 		<Setting name="EnableColdfusionLogging" 	value="false"/>
 		<Setting name="EnableColdboxLogging" 		value="true"/>

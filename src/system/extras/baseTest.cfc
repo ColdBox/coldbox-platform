@@ -37,7 +37,7 @@ Description :
 	<cffunction name="setUp" returntype="void" access="private">
 		<cfscript>
 		//Initialize ColdBox
-		instance.controller = CreateObject("component", "coldbox.system.testcontroller").init();
+		instance.controller = CreateObject("component", "coldbox.system.testcontroller").init( expandPath(instance.AppMapping) );
 		instance.controller.getService("loader").setupCalls(instance.ConfigMapping,instance.AppMapping);
 
 		//Create Initial Event Context
@@ -90,12 +90,24 @@ Description :
 	<cffunction name="execute" access="public" output="false" returntype="any" hint="Executes a framework lifecycle">
 		<cfargument name="eventhandler" required="true" type="string" hint="">
 		<cfscript>
-		//Setup the request Context with setup FORM/URL variables set in the unit test.
-		setupRequest();
-		//TEST EVENT EXECUTION
-		getController().runEvent(eventhandler);
-		//Return the correct event context.
-		return getRequestContext();
+			var handlerResults = "";
+			var requestContext = "";
+			
+			//Setup the request Context with setup FORM/URL variables set in the unit test.
+			setupRequest();
+			
+			//TEST EVENT EXECUTION
+			handlerResults = getController().runEvent(eventhandler);
+			
+			//Return the correct event context.
+			requestContext = getRequestContext();
+			
+			//If we have results save
+			if ( isDefined("handlerResults") ){
+				requestContext.setValue("cbox_handler_results", handlerResults);
+			}
+			
+			return requestContext;
 		</cfscript>
 	</cffunction>
 	

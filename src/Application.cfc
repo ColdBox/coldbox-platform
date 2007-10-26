@@ -24,6 +24,9 @@ Description :
 	<cfset this.setClientCookies = true>
 	<cfset this.loginStorage = "session">
 	
+	<!--- COLDBOX STATIC PROPERTY, DO NOT CHANGE UNLESS THIS IS NOT THE ROOT OF YOUR COLDBOX APP --->
+	<cfset COLDBOX_APP_ROOT_PATH = getDirectoryFromPath(getCurrentTemplatePath())>
+
 	<!--- COLDBOX PROPERTIES --->
 	<cfset COLDBOX_CONFIG_FILE = "">
 	
@@ -42,7 +45,7 @@ Description :
 		<cfargument name="targetPage" type="string" required="true" />
 		<!--- ************************************************************* --->
 		<cfsetting enablecfoutputonly="yes">
-		
+
 		<!--- Reload Checks --->
 		<cfset reloadChecks()>
 		
@@ -50,9 +53,8 @@ Description :
 		<cfif findNoCase('index.cfm', listLast(arguments.targetPage, '/'))>
 			<cfset processColdBoxRequest()>
 		</cfif>
-		
+			
 		<!--- WHATEVER YOU WANT BELOW --->
-		
 		<cfsetting enablecfoutputonly="no">
 		<cfreturn true>
 	</cffunction>
@@ -77,10 +79,26 @@ Description :
 		<cfargument name="sessionScope" type="struct" required="true">
 		<cfargument name="appScope" 	type="struct" required="false">
 		<!--- ************************************************************* --->
-		<cfset super.onSessionEnd(arguments=argumentCollection)>
+		<cfset super.onSessionEnd(argumentCollection=arguments)>
 		<!--- WHATEVER YOU WANT BELOW --->
 	</cffunction>
 	
+	<cffunction name="OnError" access="public" returntype="void" output="true"
+		 hint="Fires when an exception occures that is not caught by a try/catch. Good for remoting errors.">
+		 <!--- Define arguments. --->
+		 <cfargument name="Exception" type="any" required="true" />
+		 <cfargument name="EventName" type="string" required="false" default="" />
+		 
+		 
+		 <cffile action="APPEND"
+			 	file="#ExpandPath( './error_log.txt' )#"
+			 	output="OnError : [#ARGUMENTS.Exception.message# #arguments.exception.detail# #arguments.exception.stacktrace#"
+			 	addnewline="true"
+		 />
+		 
+		 <!--- Return out. --->
+		 <cfreturn />
+	</cffunction>
 
 </cfprocessingdirective>
 </cfcomponent>

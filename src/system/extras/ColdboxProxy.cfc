@@ -42,7 +42,7 @@ Description :
 			}
 			
 			//Execute a pre process interception.
-			cbController.getInterceptorService().processState("preProcess")
+			cbController.getInterceptorService().processState("preProcess");
 			
 			//Request Start Handler if defined
 			if ( cbController.getSetting("RequestStartHandler") neq "" ){
@@ -58,7 +58,7 @@ Description :
 			}
 			
 			//Execute the post process interceptor
-			cbController.getInterceptorService().processState("postProcess")
+			cbController.getInterceptorService().processState("postProcess");
 			
 			//Return results
 			return results;
@@ -67,8 +67,10 @@ Description :
 	
 	<!--- process an interception --->
 	<cffunction name="announceInterception" output="false" access="public" returntype="any" hint="Process a remote interception.">
+		<!--- ************************************************************* --->
 		<cfargument name="state" 			type="string" required="true" hint="The intercept state"/>
 		<cfargument name="interceptData"    type="any" 	  required="false" default="" hint="The intercept data."/>
+		<!--- ************************************************************* --->
 		<cfscript>
 			var cbController = "";
 			var interceptionStructure = structnew();
@@ -85,6 +87,62 @@ Description :
 			cbController.getInterceptorService().processState(arguments.state,interceptionStructure);
 		</cfscript>
 	</cffunction>
+	
+	<!--- Get a setting --->
+	<cffunction name="getSetting" hint="I get a setting from the FW Config structures. Use the FWSetting boolean argument to retrieve from the fwSettingsStruct." access="public" returntype="any" output="false">
+		<!--- ************************************************************* --->
+		<cfargument name="name" 	    type="string"   	hint="Name of the setting key to retrieve"  >
+		<cfargument name="FWSetting"  	type="boolean" 	 	required="false"  hint="Boolean Flag. If true, it will retrieve from the fwSettingsStruct else from the configStruct. Default is false." default="false">
+		<!--- ************************************************************* --->
+		<cfscript>
+			var cbController = "";
+			var setting = "";
+			
+			//Verify the coldbox app is ok, else throw
+			if ( verifyColdBox() ){
+				cbController = application.cbController;
+			}
+			
+			//Get Setting else return ""
+			if( cbController.settingExists(argumentCollection=arguments) ){
+				setting = cbController.getSetting(argumentCollection=arguments);
+			}
+			
+			//Get settings
+			return setting;
+		</cfscript>
+	</cffunction>
+	
+	<!--- Get ColdBox Settings --->
+	<cffunction name="getColdboxSettings" access="public" returntype="struct" output="false" hint="I retrieve the ColdBox Settings Structure by Reference">
+		<cfscript>
+			var cbController = "";
+			
+			//Verify the coldbox app is ok, else throw
+			if ( verifyColdBox() ){
+				cbController = application.cbController;
+			}
+			
+			//Get settings
+			return cbController.getColdboxSettings();
+		</cfscript>
+	</cffunction>
+	
+	<!--- Get ColdBox Settings --->
+	<cffunction name="getConfigSettings" access="public" returntype="struct" output="false" hint="I retrieve the Config Settings Structure by Reference">
+		<cfscript>
+			var cbController = "";
+			
+			//Verify the coldbox app is ok, else throw
+			if ( verifyColdBox() ){
+				cbController = application.cbController;
+			}
+			
+			//Get settings
+			return cbController.getConfigSettings();
+		</cfscript>
+	</cffunction>
+	
 <!------------------------------------------- PRIVATE ------------------------------------------->	
 	
 	<!--- verifyColdBox --->

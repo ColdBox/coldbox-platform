@@ -247,6 +247,19 @@ Modification History:
 		<cfset setValue("coldbox_proxyrequest",true)>
 	</cffunction>
 	
+	<!--- ************************************************************* --->
+	
+	<cffunction name="NoRender" access="public" returntype="void" hint="Set the flag that tells the framework not to render, just execute">
+		<cfset setValue("coldbox_norender",true)>
+	</cffunction>
+	
+	<!--- ************************************************************* --->
+	
+	<cffunction name="isNoRender" access="public" returntype="boolean" hint="Is this a no render request">
+		<cfreturn getValue("coldbox_norender",false)>
+	</cffunction>
+	
+	
 <!------------------------------------------- ACCESSORS/MUTATORS ------------------------------------------->
 
 	<!--- ************************************************************* --->

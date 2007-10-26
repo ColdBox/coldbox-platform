@@ -174,8 +174,8 @@ Modification History:
 				//Get the Config XML FIle paths
 				ConfigXMLFilePath = replace(conventions[1].configLocation.xmltext, "{sep}", instance.FileSeparator,"all");
 				//Check and validate the list.
-				for (i=1; listlen(ConfigXMLFilePath); i=i+1){
-					tempFilePath = ExpandPath(listgetAt(ConfigXMLFilePath,i));
+				for (i=1; i lte listlen(ConfigXMLFilePath); i=i+1){
+					tempFilePath = controller.GetAppRootPath() & instance.FileSeparator & listgetAt(ConfigXMLFilePath,i);
 					if ( fileExists(tempFilePath) ){
 						ConfigXMLFilePath = tempFilePath;
 						configFileFound = true;
@@ -195,7 +195,7 @@ Modification History:
 			//Schema Path
 			StructInsert(settingsStruct, "ConfigFileSchemaLocation", instance.FrameworkConfigXSDFile);
 			//Application Path
-			StructInsert(settingsStruct, "ApplicationPath", ExpandPath("."));
+			StructInsert(settingsStruct, "ApplicationPath", controller.getAppRootPath() );
 			//Load Framework Path too
 			StructInsert(settingsStruct, "FrameworkPath", ExpandPath("/coldbox/system") & instance.FileSeparator );
 			//Load Plugins Path
@@ -298,7 +298,7 @@ Modification History:
 				StructInsert(ConfigStruct, "ApplicationPath", ExpandPath(arguments.overrideAppMapping));
 			}
 			else{
-				StructInsert(ConfigStruct, "ApplicationPath", ExpandPath("."));
+				StructInsert(ConfigStruct, "ApplicationPath", controller.getAppRootPath());
 			}
 
 			/* ::::::::::::::::::::::::::::::::::::::::: GET SETTINGS  :::::::::::::::::::::::::::::::::::::::::::: */

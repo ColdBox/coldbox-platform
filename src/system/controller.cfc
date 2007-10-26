@@ -20,12 +20,15 @@ Description		: This is the main ColdBox front Controller.
 		instance.ConfigSettings = structnew();
 		instance.ColdboxSettings = structnew();
 		instance.AppStartHandlerFired = false;
+		instance.AppRootPath = "";
 	</cfscript>
 
 	<cffunction name="init" returntype="any" access="Public" hint="I am the constructor" output="false">
+		<cfargument name="AppRootPath" type="string" required="true" hint="The app Root Path"/>
 		<cfscript>
 			//Set the Application hash on creation
-			setAppHash( hash(getBaseTemplatePath()) );
+			setAppHash( hash(arguments.AppRootPath) );
+			setAppRootPath(arguments.AppRootPath);
 			
 			//Create & init ColdBox Services
 			setColdboxOCM( CreateObject("component","cache.cacheManager").init(this) );
@@ -41,7 +44,16 @@ Description		: This is the main ColdBox front Controller.
 	</cffunction>
 
 <!------------------------------------------- PUBLIC ------------------------------------------->
-
+	
+	<!--- AppRootPath --->
+	<cffunction name="getAppRootPath" access="public" returntype="string" output="false">
+		<cfreturn instance.AppRootPath>
+	</cffunction>
+	<cffunction name="setAppRootPath" access="public" returntype="void" output="false">
+		<cfargument name="AppRootPath" type="string" required="true">
+		<cfset instance.AppRootPath = arguments.AppRootPath>
+	</cffunction>
+	
 	<!--- ColdBox Cache Manager --->
 	<cffunction name="getColdboxOCM" access="public" output="false" returntype="any" hint="Get ColdboxOCM">
 		<cfreturn instance.ColdboxOCM/>
