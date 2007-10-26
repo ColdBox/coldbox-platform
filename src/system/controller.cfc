@@ -275,7 +275,7 @@ Description		: This is the main ColdBox front Controller.
 	</cffunction>
 
 	<!--- Event Service Locator Factory --->
-	<cffunction name="runEvent" returntype="void" access="Public" hint="I am an event handler runnable factory. If no event is passed in then it will run the default event from the config file.">
+	<cffunction name="runEvent" returntype="any" access="Public" hint="I am an event handler runnable factory. If no event is passed in then it will run the default event from the config file.">
 		<cfargument name="event"         hint="The event to run. If no current event is set, use the default event from the config.xml" type="string" required="false" default="">
 		<cfargument name="prepostExempt" hint="If true, pre/post handlers will not be fired." type="boolean" required="false" default="false">
 		<!--- ************************************************************* --->
@@ -289,6 +289,7 @@ Description		: This is the main ColdBox front Controller.
 		<cfset var RequestContext = getRequestService().getContext()>
 		<cfset var EventName = getSetting("EventName")>
 		<cfset var interceptMetadata = structnew()>
+		<cfset var Results = "">
 		
 		<!--- Default Event Test --->
 		<cfif arguments.event eq "">
@@ -362,7 +363,7 @@ Description		: This is the main ColdBox front Controller.
 		<!--- Start Timer --->
 		<cfmodule template="includes/timer.cfm" timertag="invoking runEvent [#arguments.event#]">
 			<!--- Execute the Event --->
-			<cfinvoke component="#oEventHandler#" method="#ExecutingMethod#">
+			<cfinvoke component="#oEventHandler#" method="#ExecutingMethod#" returnvariable="Results">
 				<cfinvokeargument name="event" value="#RequestContext#">
 			</cfinvoke>
 		</cfmodule>
@@ -377,6 +378,10 @@ Description		: This is the main ColdBox front Controller.
 		<!--- Execute postEvent Interception --->
 		<cfset getInterceptorService().processState("postEvent",interceptMetadata)>
 		
+		<!--- Return Results for proxy if needed. --->
+		<cfif isDefined("Results")>
+			<cfreturn Results>
+		</cfif>
 	</cffunction>
 
 	<cffunction name="throw" access="public" hint="Facade for cfthrow" output="false">

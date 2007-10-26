@@ -88,9 +88,6 @@ Description :
 		<cfset var ExceptionBean = "">
 		<cfset var renderedContent = "">
 		
-		<!--- Reload Checks --->
-		<cfset reloadChecks()>
-		
 		<!--- Start Application Requests --->
 		<cflock type="readonly" name="#getAppHash()#" timeout="#getLockTimeout()#">
 			<cftry>
@@ -148,7 +145,7 @@ Description :
 			
 				<!--- Trap Application Errors --->
 				<cfcatch type="any">
-					<cfset ExceptionService = application.cbController.getService("exception")>
+					<cfset ExceptionService = cbController.getService("exception")>
 					<cfset ExceptionBean = ExceptionService.ExceptionHandler(cfcatch,"application","Application Execution Exception")>
 					<cfoutput>#ExceptionService.renderBugReport(ExceptionBean)#</cfoutput>
 				</cfcatch>
@@ -168,7 +165,10 @@ Description :
 	<!--- Session Start --->
 	<cffunction name="onSessionStart" returnType="void" output="false">
 		<cfscript>
-			var cbController = application.cbController;
+			var cbController = "";
+			
+			//Setup the local controller 
+			cbController = application.cbController;
 			
 			//Execute Session Start interceptors
 			cbController.getInterceptorService().processState("sessionStart",session);

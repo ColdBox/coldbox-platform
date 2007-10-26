@@ -64,4 +64,12 @@ Welcome to Coldbox!!
 Now get your mind out of procedural code, dive into OO Programming. Please make sure
 to fasten your seat belts, it WILL GET BUMPY!!
 
-
+******************************************************************************
+COLDBOX PROXY
+******************************************************************************
+The ColdBox proxy is used as a means to adapt the ColdBox event driven framework
+to a Flex/AIR application. You basically forward requests to the proxy with an
+associative array of parameters: The event to execute and any other parameters.
+The framework will then process the event as a ColdBox event. You can then treat
+your ColdBox application as a model application. You can use the debugger panel, etc
+to monitor your flex application.

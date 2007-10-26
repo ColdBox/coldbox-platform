@@ -43,6 +43,9 @@ Description :
 		<!--- ************************************************************* --->
 		<cfsetting enablecfoutputonly="yes">
 		
+		<!--- Reload Checks --->
+		<cfset reloadChecks()>
+		
 		<!--- Process A ColdBox Request Only --->
 		<cfif findNoCase('index.cfm', listLast(arguments.targetPage, '/'))>
 			<cfset processColdBoxRequest()>
@@ -63,8 +66,7 @@ Description :
 	</cffunction>
 	
 	<!--- on Session Start --->
-	<cffunction name="onSessionStart" returnType="void" output="false">
-		<!--- DO NOT MODIFY THE FOLLOWING --->
+	<cffunction name="onSessionStart" returnType="void" output="false">			
 		<cfset super.onSessionStart()>
 		<!--- WHATEVER YOU WANT BELOW --->
 	</cffunction>
@@ -75,10 +77,10 @@ Description :
 		<cfargument name="sessionScope" type="struct" required="true">
 		<cfargument name="appScope" 	type="struct" required="false">
 		<!--- ************************************************************* --->
-		<!--- DO NOT MODIFY THE FOLLOWING --->
 		<cfset super.onSessionEnd(arguments=argumentCollection)>
 		<!--- WHATEVER YOU WANT BELOW --->
 	</cffunction>
+	
 
 </cfprocessingdirective>
 </cfcomponent>

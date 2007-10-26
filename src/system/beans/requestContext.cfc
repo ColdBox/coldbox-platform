@@ -235,6 +235,18 @@ Modification History:
 		<cfreturn getValue("coldbox_debugpanel",true)>
 	</cffunction>
 	
+	<!--- ************************************************************* --->
+	
+	<cffunction name="isProxyRequest" access="public" returntype="boolean" hint="Is this a coldbox proxy request">
+		<cfreturn getValue("coldbox_proxyrequest",false)>
+	</cffunction>
+	
+	<!--- ************************************************************* --->
+	
+	<cffunction name="setProxyRequest" access="public" returntype="void" hint="Set that this is a proxy request">
+		<cfset setValue("coldbox_proxyrequest",true)>
+	</cffunction>
+	
 <!------------------------------------------- ACCESSORS/MUTATORS ------------------------------------------->
 
 	<!--- ************************************************************* --->

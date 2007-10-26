@@ -16,6 +16,8 @@
 		<Setting name="RequestStartHandler" 		value=""/>
 		<Setting name="RequestEndHandler" 			value=""/>
 		<Setting name="ApplicationStartHandler"		value="ehGeneral.onApplicationStart" />
+		<Setting name="SessionStartHandler"		    value="ehGeneral.onSessionStart" />
+		<Setting name="SessionEndHandler"		    value="ehGeneral.onSessionEnd" />
 		<Setting name="OwnerEmail" 					value="info@luismajano.com"/>
 		<Setting name="EnableBugReports" 			value="false"/>
 		<Setting name="UDFLibraryFile" 				value="includes/udf.cfm" />

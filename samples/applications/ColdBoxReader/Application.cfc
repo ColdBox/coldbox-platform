@@ -16,14 +16,15 @@ Description :
 <cfcomponent extends="coldbox.system.coldbox" output="false">
 <cfprocessingdirective suppresswhitespace="true">
 	
-	<cfset this.name = "ColdBoxReader"> 
-	<cfset this.clientManagement = true> 
-	<cfset this.sessionManagement = true> 
-	<cfset this.sessionTimeout = createTimeSpan(0,0,30,0)> 
+	<!--- APPLICATION CFC PROPERTIES --->
+	<cfset this.name = "coldbox">
+	<cfset this.clientManagement = true>
+	<cfset this.sessionManagement = true>
+	<cfset this.sessionTimeout = createTimeSpan(0,0,30,0)>
 	<cfset this.setClientCookies = true>
 	<cfset this.loginStorage = "session">
-		
-<!--- COLDBOX PROPERTIES --->
+	
+	<!--- COLDBOX PROPERTIES --->
 	<cfset COLDBOX_CONFIG_FILE = "">
 	
 	<!--- on Application Start --->
@@ -41,6 +42,9 @@ Description :
 		<cfargument name="targetPage" type="string" required="true" />
 		<!--- ************************************************************* --->
 		<cfsetting enablecfoutputonly="yes">
+		
+		<!--- Reload Checks --->
+		<cfset reloadChecks()>
 		
 		<!--- Process A ColdBox Request Only --->
 		<cfif findNoCase('index.cfm', listLast(arguments.targetPage, '/'))>
