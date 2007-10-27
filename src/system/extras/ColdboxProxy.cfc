@@ -16,7 +16,7 @@ Description :
 <!------------------------------------------- PUBLIC ------------------------------------------->	
 
 	<!--- process a remote call --->
-	<cffunction name="process" output="false" access="public" returntype="any" hint="Process a remote call and return data/objects back.">
+	<cffunction name="process" output="false" access="remote" returntype="any" hint="Process a remote call and return data/objects back.">
 		<!--- There are no arguments defined as they come in as a collection of arguments. --->
 		<cfscript>
 			var cbController = "";
@@ -66,10 +66,10 @@ Description :
 	</cffunction>
 	
 	<!--- process an interception --->
-	<cffunction name="announceInterception" output="false" access="public" returntype="any" hint="Process a remote interception.">
+	<cffunction name="announceInterception" output="false" access="remote" returntype="boolean" hint="Process a remote interception.">
 		<!--- ************************************************************* --->
-		<cfargument name="state" 			type="string" required="true" hint="The intercept state"/>
-		<cfargument name="interceptData"    type="any" 	  required="false" default="" hint="The intercept data."/>
+		<cfargument name="state" 			type="string" 	required="true" hint="The intercept state"/>
+		<cfargument name="interceptData"    type="any" 	    required="false" default="" hint="This method will take the contents and embedded into a structure"/>
 		<!--- ************************************************************* --->
 		<cfscript>
 			var cbController = "";
@@ -80,16 +80,18 @@ Description :
 				cbController = application.cbController;
 			}
 			
-			//Create Interception Structure
-			interceptionStructure.data = arguments.interceptData;
+			//emded contents
+			interceptionStructure.interceptData = arguments.interceptData;
 			
 			//Intercept
 			cbController.getInterceptorService().processState(arguments.state,interceptionStructure);
+			
+			return true;
 		</cfscript>
 	</cffunction>
 	
 	<!--- Get a setting --->
-	<cffunction name="getSetting" hint="I get a setting from the FW Config structures. Use the FWSetting boolean argument to retrieve from the fwSettingsStruct." access="public" returntype="any" output="false">
+	<cffunction name="getSetting" hint="I get a setting from the FW Config structures. Use the FWSetting boolean argument to retrieve from the fwSettingsStruct." access="remote" returntype="any" output="false">
 		<!--- ************************************************************* --->
 		<cfargument name="name" 	    type="string"   	hint="Name of the setting key to retrieve"  >
 		<cfargument name="FWSetting"  	type="boolean" 	 	required="false"  hint="Boolean Flag. If true, it will retrieve from the fwSettingsStruct else from the configStruct. Default is false." default="false">
@@ -114,7 +116,7 @@ Description :
 	</cffunction>
 	
 	<!--- Get ColdBox Settings --->
-	<cffunction name="getColdboxSettings" access="public" returntype="struct" output="false" hint="I retrieve the ColdBox Settings Structure by Reference">
+	<cffunction name="getColdboxSettings" access="remote" returntype="struct" output="false" hint="I retrieve the ColdBox Settings Structure by Reference">
 		<cfscript>
 			var cbController = "";
 			
@@ -129,7 +131,7 @@ Description :
 	</cffunction>
 	
 	<!--- Get ColdBox Settings --->
-	<cffunction name="getConfigSettings" access="public" returntype="struct" output="false" hint="I retrieve the Config Settings Structure by Reference">
+	<cffunction name="getConfigSettings" access="remote" returntype="struct" output="false" hint="I retrieve the Config Settings Structure by Reference">
 		<cfscript>
 			var cbController = "";
 			
@@ -146,7 +148,7 @@ Description :
 <!------------------------------------------- PRIVATE ------------------------------------------->	
 	
 	<!--- verifyColdBox --->
-	<cffunction name="verifyColdBox" output="false" access="public" returntype="boolean" hint="Verify the coldbox app">
+	<cffunction name="verifyColdBox" output="false" access="private" returntype="boolean" hint="Verify the coldbox app">
 		<cfscript>
 		//Verify the coldbox app is ok, else throw
 		if ( not structKeyExists(application,"cbController") ){
@@ -165,15 +167,6 @@ Description :
 		<cfargument name="type"  	type="string" 	required="no" default="Framework">
 		<!--- ************************************************************* --->
 		<cfthrow type="#arguments.type#" message="#arguments.message#"  detail="#arguments.detail#">
-	</cffunction>
-	<!--- Dump facade --->
-	<cffunction name="dump" access="private" hint="Facade for cfmx dump" returntype="void">
-		<cfargument name="var" required="yes" type="any">
-		<cfdump var="#var#">
-	</cffunction>
-	<!--- Abort Facade --->
-	<cffunction name="abort" access="private" hint="Facade for cfabort" returntype="void" output="false">
-		<cfabort>
 	</cffunction>
 	
 </cfcomponent>

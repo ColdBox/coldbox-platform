@@ -338,7 +338,7 @@ Modification History:
 						ConfigStruct.AppMapping = "";
 				}
 			}
-
+			
 			/* ::::::::::::::::::::::::::::::::::::::::: COLDBOX SETTINGS VALIDATION :::::::::::::::::::::::::::::::::::::::::::: */
 			
 			//Check for Default Event
@@ -492,9 +492,8 @@ Modification History:
 				ConfigStruct["HandlersInvocationPath"] = replace(ConfigStruct["AppMapping"],"/",".","all") & ".#fwSettingsStruct.handlersConvention#";
 				ConfigStruct["MyPluginsInvocationPath"] = replace(ConfigStruct["AppMapping"],"/",".","all") & ".#fwSettingsStruct.pluginsConvention#";
 				
-				//Set the Default Handler Path
+				//Set the Default Handler & Plugin Path
 				ConfigStruct["HandlersPath"] = ConfigStruct["AppMapping"];
-				//Set the Default Plugin Path
 				ConfigStruct["MyPluginsPath"] = ConfigStruct["AppMapping"];
 				
 				//Set the physical path according to system.
@@ -509,15 +508,20 @@ Modification History:
 				}
 				//Set the Handlerspath expanded.
 				ConfigStruct["HandlersPath"] = ExpandPath(ConfigStruct["HandlersPath"]);
-				ConfigStruct["MyPluginsPath"] = ExpandPath(ConfigStruct["MyPluginsPath"]);				
+				ConfigStruct["MyPluginsPath"] = ExpandPath(ConfigStruct["MyPluginsPath"]);
+					
 			}
 			else{
+				//Parse out the first / to create handler invocation Path
+				if ( left(ConfigStruct["AppMapping"],1) eq "/" ){
+					ConfigStruct["AppMapping"] = removeChars(ConfigStruct["AppMapping"],1,1);
+				}
 				/* Handler Registration */
 				ConfigStruct["HandlersInvocationPath"] = "#fwSettingsStruct.handlersConvention#";
-				ConfigStruct["HandlersPath"] = expandPath("#fwSettingsStruct.handlersConvention#");
+				ConfigStruct["HandlersPath"] = controller.getAppRootPath() & instance.FileSeparator & "#fwSettingsStruct.handlersConvention#";
 				/* Custom Plugins Registration */
 				ConfigStruct["MyPluginsInvocationPath"] = "#fwSettingsStruct.pluginsConvention#";
-				ConfigStruct["MyPluginsPath"] = expandPath("#fwSettingsStruct.pluginsConvention#");
+				ConfigStruct["MyPluginsPath"] = controller.getAppRootPath() & instance.FileSeparator & "#fwSettingsStruct.pluginsConvention#";
 			}
 			
 			/* ::::::::::::::::::::::::::::::::::::::::: MAIL SETTINGS :::::::::::::::::::::::::::::::::::::::::::: */
@@ -884,5 +888,5 @@ Modification History:
 		}
 		</cfscript>
 	</cffunction>
-
+	
 </cfcomponent>
