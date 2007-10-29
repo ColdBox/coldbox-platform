@@ -3,7 +3,7 @@
 	xsi:noNamespaceSchemaLocation="http://www.coldboxframework.com/schema/config_2.5.0.xsd">
 	<Settings>
 		<Setting name="AppName" 					value="Coldbox Flex Tester"/>
-		<Setting name="AppMapping" 					value="/coldbox/samples/applications/ColdboxFlexTester/bin"/>
+		<Setting name="AppMapping" 					value="/coldbox/samples/applications/ColdboxFlexTester/webroot"/>
 		<Setting name="DebugMode" 					value="true"/>
 		<Setting name="DebugPassword" 				value=""/>
 		<Setting name="ReinitPassword" 				value=""/>
@@ -79,7 +79,7 @@
 	
 	<Interceptors>
 		<CustomInterceptionPoints>onLog</CustomInterceptionPoints>
-		<Interceptor class="coldbox.samples.applications.ColdboxFlexTester.bin.interceptors.executionTracer">
+		<Interceptor class="coldbox.samples.applications.ColdboxFlexTester.webroot.interceptors.executionTracer">
 			<Property name="Simple">Luis</Property>
 			<Property name="Complex">[1,2,3,4,5]</Property>
 		</Interceptor>

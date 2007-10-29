@@ -53,7 +53,7 @@ Description :
 		<cfif findNoCase('index.cfm', listLast(arguments.targetPage, '/'))>
 			<cfset processColdBoxRequest()>
 		</cfif>
-			
+		 
 		<!--- WHATEVER YOU WANT BELOW --->
 		<cfsetting enablecfoutputonly="no">
 		<cfreturn true>

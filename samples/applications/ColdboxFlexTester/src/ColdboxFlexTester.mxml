@@ -11,19 +11,19 @@
 			
 			[Bindable]
 			public var aResult:Array;
-			public var cbProxyPath:String = "coldbox.samples.applications.ColdboxFlexTester.bin.coldboxproxy";
-			
-			/* non bindable vars */
+			//My Proxy Path
+			public var cbProxyPath:String = "coldbox.samples.applications.ColdboxFlexTester.webroot.coldboxproxy";
 			public var fwSetting:Boolean = false;
 			
 			/* PUBLIC FAULT Handler */
 			public function faultHandler(event:FaultEvent):void{
 				Alert.show(event.fault.toString());
 			}
-			/* Get a proxy object */
+			/* UTILITY METHOD TO GET A CBPROXY OBJECT */
 			public function getColdBoxProxy():RemoteObject{
 				var cProxy:RemoteObject = new RemoteObject( "ColdFusion" );
-				cProxy.source="cbProxyPath";
+				cProxy.source= cbProxyPath;
+				cProxy.showBusyCursor = true;
 				cProxy.addEventListener( FaultEvent.FAULT, faultHandler );
 				return cProxy;
 			}
@@ -51,11 +51,9 @@
 				var cProxy:RemoteObject = getColdBoxProxy();
 				cProxy.getSetting.addEventListener("result",handleSettingResults );
 				cProxy.getSetting(setting.text, fwSetting);		
-				//coldboxProxy.addEventListener("result",handleSettingResults);
-				//coldboxProxy.getSetting(setting.text, fwSetting);				
 			}
 			public function setFWSetting(event:ItemClickEvent):void{
-				if (event.currentTarget.selectedValue == "application") {
+				if (event.currentTarget.selectedValue == "application"){
 	            	fwSetting = false;
 	            }
 	            else{
@@ -76,13 +74,12 @@
 					array.push( { Language: key, Translation: oLanguages[key] } );	
 				}
 				var collection:ArrayCollection = new ArrayCollection(array);
-				grid_language.dataProvider = collection;
-				coldboxProxy.removeEventListener("result",handleLanguageTranslation);
-				
+				grid_language.dataProvider = collection;				
 			}
 			public function getTranslation():void{
-				coldboxProxy.addEventListener("result",handleLanguageTranslation);
-				coldboxProxy.process({event:"ehFlex.getIntroStructure"});
+				var cProxy:RemoteObject = getColdBoxProxy();
+				cProxy.process.addEventListener("result",handleLanguageTranslation );
+				cProxy.process({event:"ehFlex.getIntroStructure"});
 			}
 			
 			/* Populate comboboxes */
@@ -103,7 +100,6 @@
 				//Populate data grid
 				var collection:ArrayCollection = new ArrayCollection(array);
 				dg_settings.dataProvider = collection;
-				coldboxProxy.removeEventListener("result",handleGetConfigSettings);
 			}
 			public function handleGetFrameworkSettings(event:ResultEvent):void{
 				var settings:Object = new Object();
@@ -121,16 +117,18 @@
 				//Populate data grid
 				var collection:ArrayCollection = new ArrayCollection(array);
 				dg_settings.dataProvider = collection;
-				coldboxProxy.removeEventListener("result",handleGetFrameworkSettings);
 			}
 			public function populateCB( type:String ):void{
+				var cProxy:RemoteObject = getColdBoxProxy();
+				
+				
 				if( type == "appsettings" ){
-					coldboxProxy.addEventListener("result",handleGetConfigSettings);
-					coldboxProxy.getConfigSettings();
+					cProxy.getConfigSettings.addEventListener("result",handleGetConfigSettings );
+					cProxy.getConfigSettings();
 				}
 				else{
-					coldboxProxy.addEventListener("result",handleGetFrameworkSettings);
-					coldboxProxy.getColdboxSettings();
+					cProxy.getColdboxSettings.addEventListener("result",handleGetFrameworkSettings );
+					cProxy.getColdboxSettings();
 				}
 			}
 			
@@ -141,9 +139,9 @@
 				coldboxProxy.removeEventListener("result",handleInterception);
 			}
 			public function announceInterception():void{
-				coldboxProxy.addEventListener("result",handleInterception);
-				//Call interception
-				coldboxProxy.announceInterception("onLog",txtarea_interceptor.text);
+				var cProxy:RemoteObject = getColdBoxProxy();
+				cProxy.announceInterception.addEventListener("result",handleInterception );
+				cProxy.announceInterception("onLog",txtarea_interceptor.text);
 			}
 			
 			/* LOG */
@@ -153,8 +151,9 @@
 				coldboxProxy.removeEventListener("result",handleReadLog);
 			}
 			public function readLog():void{
-				coldboxProxy.addEventListener("result",handleReadLog);
-				coldboxProxy.process({event:"ehFlex.readLog"});
+				var cProxy:RemoteObject = getColdBoxProxy();
+				cProxy.process.addEventListener("result",handleReadLog );
+				cProxy.process({event:"ehFlex.readLog"});
 			}
 			
 			/* READ THE CACHE */
@@ -171,8 +170,9 @@
 				cachechart.dataProvider = collection;
 			}
 			public function readCache():void{
-				coldboxProxy.addEventListener("result",handleCacheResults);
-				coldboxProxy.process({event:"ehFlex.getCacheItemTypes"});
+				var cProxy:RemoteObject = getColdBoxProxy();
+				cProxy.process.addEventListener("result",handleCacheResults );
+				cProxy.process({event:"ehFlex.getCacheItemTypes"});
 			}
 		]]>
 	</mx:Script>
