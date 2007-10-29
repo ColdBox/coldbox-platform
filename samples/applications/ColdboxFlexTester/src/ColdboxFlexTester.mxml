@@ -3,6 +3,7 @@
 	
 	<mx:Script>
 		<![CDATA[
+			import mx.rpc.events.FaultEvent;
 			import mx.events.ItemClickEvent;
 			import mx.rpc.events.ResultEvent;
 			import mx.controls.Alert;
@@ -10,18 +11,32 @@
 			
 			[Bindable]
 			public var aResult:Array;
+			public var cbProxyPath:String = "coldbox.samples.applications.ColdboxFlexTester.bin.coldboxproxy";
 			
 			/* non bindable vars */
 			public var fwSetting:Boolean = false;
-
+			
+			/* PUBLIC FAULT Handler */
+			public function faultHandler(event:FaultEvent):void{
+				Alert.show(event.fault.toString());
+			}
+			/* Get a proxy object */
+			public function getColdBoxProxy():RemoteObject{
+				var cProxy:RemoteObject = new RemoteObject( "ColdFusion" );
+				cProxy.source="cbProxyPath";
+				cProxy.addEventListener( FaultEvent.FAULT, faultHandler );
+				return cProxy;
+			}
+			
 			/*  GET TEST ARRAY */
 			public function handleArrayResults(event:ResultEvent):void{
 				aResult=event.result as Array;
 				coldboxProxy.removeEventListener("result",handleArrayResults);
 			}			
 			public function getRemoteArray():void{
-				coldboxProxy.addEventListener("result",handleArrayResults);
-				coldboxProxy.process({event:"ehFlex.getIntroArrays"});
+				var cProxy:RemoteObject = getColdBoxProxy();
+				cProxy.process.addEventListener("result",handleArrayResults );
+				cProxy.process({event:"ehFlex.getIntroArrays"});
 			}
 						
 			/*  GET SETTINGS */
@@ -33,8 +48,11 @@
 					lbl_setting_results.text = setting;
 			}
 			public function getSetting():void{
-				coldboxProxy.addEventListener("result",handleSettingResults);
-				coldboxProxy.getSetting(setting.text, fwSetting);				
+				var cProxy:RemoteObject = getColdBoxProxy();
+				cProxy.getSetting.addEventListener("result",handleSettingResults );
+				cProxy.getSetting(setting.text, fwSetting);		
+				//coldboxProxy.addEventListener("result",handleSettingResults);
+				//coldboxProxy.getSetting(setting.text, fwSetting);				
 			}
 			public function setFWSetting(event:ItemClickEvent):void{
 				if (event.currentTarget.selectedValue == "application") {
