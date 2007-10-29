@@ -90,61 +90,6 @@ Description :
 		</cfscript>
 	</cffunction>
 	
-	<!--- Get a setting --->
-	<cffunction name="getSetting" hint="I get a setting from the FW Config structures. Use the FWSetting boolean argument to retrieve from the fwSettingsStruct." access="remote" returntype="any" output="false">
-		<!--- ************************************************************* --->
-		<cfargument name="name" 	    type="string"   	hint="Name of the setting key to retrieve"  >
-		<cfargument name="FWSetting"  	type="boolean" 	 	required="false"  hint="Boolean Flag. If true, it will retrieve from the fwSettingsStruct else from the configStruct. Default is false." default="false">
-		<!--- ************************************************************* --->
-		<cfscript>
-			var cbController = "";
-			var setting = "";
-			
-			//Verify the coldbox app is ok, else throw
-			if ( verifyColdBox() ){
-				cbController = application.cbController;
-			}
-			
-			//Get Setting else return ""
-			if( cbController.settingExists(argumentCollection=arguments) ){
-				setting = cbController.getSetting(argumentCollection=arguments);
-			}
-			
-			//Get settings
-			return setting;
-		</cfscript>
-	</cffunction>
-	
-	<!--- Get ColdBox Settings --->
-	<cffunction name="getColdboxSettings" access="remote" returntype="struct" output="false" hint="I retrieve the ColdBox Settings Structure by Reference">
-		<cfscript>
-			var cbController = "";
-			
-			//Verify the coldbox app is ok, else throw
-			if ( verifyColdBox() ){
-				cbController = application.cbController;
-			}
-			
-			//Get settings
-			return cbController.getColdboxSettings();
-		</cfscript>
-	</cffunction>
-	
-	<!--- Get ColdBox Settings --->
-	<cffunction name="getConfigSettings" access="remote" returntype="struct" output="false" hint="I retrieve the Config Settings Structure by Reference">
-		<cfscript>
-			var cbController = "";
-			
-			//Verify the coldbox app is ok, else throw
-			if ( verifyColdBox() ){
-				cbController = application.cbController;
-			}
-			
-			//Get settings
-			return cbController.getConfigSettings();
-		</cfscript>
-	</cffunction>
-	
 <!------------------------------------------- PRIVATE ------------------------------------------->	
 	
 	<!--- verifyColdBox --->
