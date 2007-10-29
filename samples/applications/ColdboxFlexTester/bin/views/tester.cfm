@@ -1,1 +1,0 @@
-<cfoutput>#event.getValue("data")#</cfoutput>
