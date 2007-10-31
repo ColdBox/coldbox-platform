@@ -33,9 +33,9 @@
 		<Setting name="AmazonURL" value="http://www.amazon.com/o/registry/7DPYG3RZG3AF"/>
 		<Setting name="ColdboxURL" value="http://www.luismajano.com/projects/coldbox"/>
 		<Setting name="BlogURL" value="http://www.luismajano.com/blog/index.cfm?mode=cat&amp;catid=C048ADD3-0C45-9C3D-A8F228EFB8C128DA"/>
-		<Setting name="ColdboxAPIURL" value="http://www.luismajano.com/projects/coldbox/cfdocs/index.cfm"/>
+		<Setting name="ColdboxAPIURL" value="http://www.coldboxframework.com/documents/cfdocs/index.cfm"/>
 		<Setting name="TracURL" value="http://ortus.svnrepository.com/coldbox/trac.cgi/"/>
-		<!---App Versionsettings -->
+		<!-- App Versionsettings -->
 		<Setting name="BlogcfcApp" value="applications/blogcfcv5_0" />
 		<Setting name="ForumsApp" value="applications/galleon_1_7" />
 		<Setting name="ColdboxReaderApp" value="applications/ColdBoxReader" />
