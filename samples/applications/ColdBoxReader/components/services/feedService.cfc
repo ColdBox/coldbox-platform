@@ -98,7 +98,7 @@
 		<cfset var feed = "">
 		<cfset arguments.url = ReplaceNoCase(arguments.url,"feed://","http://")>
 
-		<cfhttp method="get" url="#arguments.url#" resolveurl="yes" redirect="yes">
+		<cfhttp method="get" url="#arguments.url#" resolveurl="yes" redirect="yes" timeout="20">
 			<cfhttpparam type="Header" name="Accept-Encoding" value="deflate;q=0">
 			<cfhttpparam type="Header" name="TE" value="deflate;q=0">
 		</cfhttp>

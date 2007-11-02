@@ -53,7 +53,7 @@ Description :
 		var dummyFile = getController().getSetting("HandlersPath") & fs & "dummy.cfc";
 		
 		createFile( dummyFile );
-		service.registerHandlers();
+		getController().getHandlerService().registerHandlers();
 		AssertTrue( listFindNocase(getController().getSetting("RegisteredHandlers"), "dummy") );
 		removeFile( dummyFile );
 		

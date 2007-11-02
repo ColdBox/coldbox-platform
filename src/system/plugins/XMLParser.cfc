@@ -396,6 +396,8 @@ Modification History:
 			//Check For Coldbox Log Location if it is defined.
 			if ( not structKeyExists(ConfigStruct, "ColdboxLogsLocation") or trim(ConfigStruct["ColdboxLogsLocation"]) eq "")
 				ConfigStruct["ColdboxLogsLocation"] = "";
+			//Setup the ExpandedColdboxLogsLocation setting
+			ConfigStruct["ExpandedColdboxLogsLocation"] = "";
 
 			//Check For Owner Email or Throw
 			if ( not StructKeyExists(ConfigStruct, "OwnerEmail") )

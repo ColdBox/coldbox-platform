@@ -194,18 +194,25 @@ Description :
 		<cfargument name="appScope" 	type="struct" required="false">
 		<!--- ************************************************************* --->
 		<cfscript>
-			var cbController = appScope.cbController;
-			var event = cbController.getRequestService.getContext();
+			var cbController = "";
+			var event = "";
 			
-			//Execute Session End interceptors
-			cbController.getInterceptorService().processState("sessionEnd",sessionScope);
-			
-			//Execute Session Start Handler
-			if ( cbController.getSetting("SessionEndHandler") neq "" ){
-				//Place session reference on event object
-				event.setValue("sessionReference", sessionScope);
-				//Execute the Handler
-				cbController.runEvent(cbController.getSetting("SessionEndHandler"),true);
+			//Check for cb Controller
+			if ( structKeyExists(arguments.appScope,"cbController") ){
+				//setup the controller
+				cbController = arguments.appScope.cbController;
+				event = cbController.getRequestService().getContext();
+				
+				//Execute Session End interceptors
+				cbController.getInterceptorService().processState("sessionEnd",arguments.sessionScope);
+				
+				//Execute Session End Handler
+				if ( cbController.getSetting("SessionEndHandler") neq "" ){
+					//Place session reference on event object
+					event.setValue("sessionReference", arguments.sessionScope);
+					//Execute the Handler
+					cbController.runEvent(cbController.getSetting("SessionEndHandler"),true);
+				}
 			}
 		</cfscript>
 	</cffunction>

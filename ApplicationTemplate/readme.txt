@@ -73,3 +73,9 @@ associative array of parameters: The event to execute and any other parameters.
 The framework will then process the event as a ColdBox event. You can then treat
 your ColdBox application as a model application. You can use the debugger panel, etc
 to monitor your flex application.
+
+REQUIREMENTS:
+1) You will not to create the setting: AppMapping
+   You need to do this in order for the framework to correctly create the instantiation
+   paths.
+2) Your Imagination!!

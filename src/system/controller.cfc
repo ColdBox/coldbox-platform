@@ -295,6 +295,7 @@ Description		: This is the main ColdBox front Controller.
 		<cfset var oEventBean = "">
 		<cfset var ExecutingEventData = "">
 		<cfset var objTimeout = "">
+		<cfset var objLastAccessTimeout = "">
 		<cfset var MetaData = "">
 		<cfset var ExecutingHandler = "">
 		<cfset var ExecutingMethod = "">
@@ -335,8 +336,11 @@ Description		: This is the main ColdBox front Controller.
 					<cfif structKeyExists(MetaData,"cachetimeout") >
 						<cfset objTimeout = MetaData["cachetimeout"]>
 					</cfif>
+					<cfif structKeyExists(MetaData, "cacheLastAccessTimeout")>
+						<cfset objLastAccessTimeout = MetaData["cacheLastAccessTimeout"]>
+					</cfif>
 					<!--- Set the Runnable Object --->
-					<cfset instance.ColdboxOCM.set("handler_" & ExecutingHandler,oEventHandler,objTimeout)>
+					<cfset instance.ColdboxOCM.set("handler_" & ExecutingHandler,oEventHandler,objTimeout,objLastAccessTimeout)>
 				</cfif>
 			</cfif>
 		<cfelse>

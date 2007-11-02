@@ -13,14 +13,15 @@ Description :
 <cfcomponent displayname="AllTests" output="false">  
 	
 	<cffunction name="suite" returntype="org.cfcunit.framework.Test" access="public" output="false">  
-		<cfset var suite = CreateObject("component", "org.cfcunit.framework.TestSuite").init("ColdBox Services Suite")>  
+		<cfset var suite = CreateObject("component", "org.cfcunit.framework.TestSuite").init("ColdBox Test Suite")>  
 		
 		<!--- Add the test cases --->
-		<cfset suite.addTestSuite(CreateObject("component", "cases.services.debuggerserviceTest"))>
-		<cfset suite.addTestSuite(CreateObject("component", "cases.services.pluginserviceTest"))>
-		<cfset suite.addTestSuite(CreateObject("component", "cases.services.requestserviceTest"))>
-		<cfset suite.addTestSuite(CreateObject("component", "cases.services.loaderserviceTest"))>
+		<cfset suite.addTestSuite(CreateObject("component", "cases.coldboxfactoryTest"))>
+		<cfset suite.addTestSuite(CreateObject("component", "cases.util.utilTest"))>
+		<cfset suite.addTestSuite(CreateObject("component", "cases.settingsTest"))>
 		
+		<!--- Test Suites --->
+		<cfset suite.addTest(CreateObject("component", "AllServices").suite())>
 		<cfreturn suite/>  
 	</cffunction> 
 

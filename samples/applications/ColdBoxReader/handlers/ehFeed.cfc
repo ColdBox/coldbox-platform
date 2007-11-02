@@ -2,7 +2,7 @@
 
 	<cffunction name="dspAddFeed" access="public" returntype="void" output="false">
 		<cfargument name="Event" type="coldbox.system.beans.requestContext">
-		<cfset var csPlugin = getPlugin("clientstorage")>
+		<cfset var csPlugin = getPlugin("sessionstorage")>
 		<cfset var obj = "">
 		<cfset var rc = Event.getCollection()>
 		<!--- EXIT HANDLERS: --->
@@ -134,9 +134,9 @@
 		<cftry>
 			<cfset obj = getPlugin("ioc").getBean("feedService")>
 			<cfset qryData = obj.searchByTag(rc.tag)>
-			<cfset getPlugin("clientStorage").setVar("search_results", qryData)>
-			<cfset getPlugin("clientStorage").setVar("search_tag", rc.tag)>
-			<cfset getPlugin("clientStorage").setVar("search_term", "")>
+			<cfset getPlugin("sessionstorage").setVar("search_results", qryData)>
+			<cfset getPlugin("sessionstorage").setVar("search_tag", rc.tag)>
+			<cfset getPlugin("sessionstorage").setVar("search_term", "")>
 
 			<cfcatch type="any">
 				<cfset getPlugin("logger").logError("Error Searching by Tags", cfcatch)>
@@ -150,7 +150,7 @@
 	<cffunction name="doSearchByTerm" access="public" returntype="void" output="false">
 		<cfargument name="Event" type="coldbox.system.beans.requestContext">
 		<cfset var obj = "">
-		<cfset var plClient = getPlugin("clientStorage")>
+		<cfset var plClient = getPlugin("sessionstorage")>
 		<cfset var rc = Event.getCollection()>
 		<cftry>
 			<cfset term = Event.getValue("searchTerm")>
@@ -170,7 +170,7 @@
 
 	<cffunction name="dspSearchResults" access="public" returntype="void" output="false">
 		<cfargument name="Event" type="coldbox.system.beans.requestContext">
-		<cfset var plClient = getPlugin("clientStorage")>
+		<cfset var plClient = getPlugin("sessionstorage")>
 		<cfset var rc = Event.getCollection()>
 		<!--- EXIT HANDLERS: --->
 		<cfset rc.xehFeed = "ehFeed.dspViewFeed">

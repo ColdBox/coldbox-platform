@@ -20,7 +20,7 @@ Description :
 	<cfset this.name = "coldbox">
 	<cfset this.clientManagement = true>
 	<cfset this.sessionManagement = true>
-	<cfset this.sessionTimeout = createTimeSpan(0,0,30,0)>
+	<cfset this.sessionTimeout = createTimeSpan(0,0,5,0)>
 	<cfset this.setClientCookies = true>
 	<cfset this.loginStorage = "session">
 	
@@ -79,7 +79,15 @@ Description :
 		<cfargument name="sessionScope" type="struct" required="true">
 		<cfargument name="appScope" 	type="struct" required="false">
 		<!--- ************************************************************* --->
-		<cfset super.onSessionEnd(argumentCollection=arguments)>
+		<cftry>
+			<cfset super.onSessionEnd(argumentCollection=arguments)>
+			<cfcatch type="any">
+				<cffile action="APPEND"
+			 	file="#ExpandPath( './error_log.txt' )#"
+			 	output="OnError : [#cfcatch.message# #cfcatch.detail# #cfcatch.stacktrace#"
+			 	addnewline="true" />
+			</cfcatch>
+		</cftry>
 		<!--- WHATEVER YOU WANT BELOW --->
 	</cffunction>
 	

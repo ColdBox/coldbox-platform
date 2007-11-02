@@ -29,7 +29,7 @@
 	</Settings>
 
 	<YourSettings>
-			<Setting name="Version" value="2.0.0" />
+			<Setting name="Version" value="2.1.0" />
 			<Setting name="ModelBasePath" value="coldbox.samples.applications.ColdBoxReader.components" />
 	</YourSettings>
 

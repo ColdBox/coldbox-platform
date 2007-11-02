@@ -16,9 +16,14 @@ Description :
 <cfcomponent extends="coldbox.system.coldbox" output="false">
 <cfprocessingdirective suppresswhitespace="true">
 	
-	<!--- APPLICATION CFC PROPERTIES --->
-	<cfset this.name = hash(getCurrentTemplatePath())> 
-	<cfset this.clientManagement = true>
+	<!--- Galleon appnames --->
+	<cfset appName = "galleonForums">
+	<cfset prefix = getCurrentTemplatePath()>
+	<cfset prefix = reReplace(prefix, "[^a-zA-Z]","","all")>
+	<cfset prefix = right(prefix, 64 - len(appName))>
+	
+	<!--- Modify the Name of the application--->
+	<cfset this.name = "#prefix##appName#"> 
 	<cfset this.sessionManagement = true>
 	<cfset this.sessionTimeout = createTimeSpan(0,0,30,0)>
 	<cfset this.setClientCookies = true>
