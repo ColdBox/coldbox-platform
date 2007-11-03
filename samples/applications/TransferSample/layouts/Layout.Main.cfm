@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
-<title><cfoutput>#Event.getValue("title")#</cfoutput></title>
+<title><cfoutput>#rc.title#</cfoutput></title>
 <style type="text/css">
 <!--
 .Titles {
@@ -85,7 +85,7 @@ padding:10px;
 <table width="100%" border="0" cellspacing="0" cellpadding="10" >
 
   <tr style="border-bottom:1px solid ##eaeaea">
-    <td colspan="2" bgcolor="##0066CC"><span class="style1">#event.getvalue("title")#</span></td>
+    <td colspan="2" bgcolor="##0066CC"><span class="style1">#rc.title#</span></td>
   </tr>
   <tr>
     <td  rowspan="2" align="center" valign="middle">

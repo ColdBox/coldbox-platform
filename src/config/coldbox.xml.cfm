@@ -34,6 +34,7 @@
 		<Setting name="IOCDefinitionFile"		 	value="/coldbox/config/coldspring.xml.cfm"/>
 		<Setting name="IOCObjectCaching"			value="false"/>
 		<Setting name="RequestContextDecorator"		value="coldbox.model.myRequestContextDecorator" />
+		<Setting name="ProxyReturnCollection" 		value="false"/>
 	</Settings>
 
 	<YourSettings>

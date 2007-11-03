@@ -18,20 +18,20 @@
 	</div>
 
 	<div style="margin-top:10px;clear:both;" align="center">
-		<a class="action silver" href="?event=ehGeneral.dspHome" style="float:left">
+		<a class="action silver" href="?event=users.dspHome" style="float:left">
 			<span>Home</span>
 		</a>
-		<a class="action" href="?event=ehGeneral.dspUsers" title="List Users" style="float:left">
+		<a class="action" href="?event=users.dspUsers" title="List Users" style="float:left">
 			<span>List Users</span>
 		</a>
-		<a class="action" href="?event=ehGeneral.dspAddUser" title="Add User" style="float:left">
+		<a class="action" href="?event=users.dspAddUser" title="Add User" style="float:left">
 			<span>Add User</span>
 		</a>
 	</div>
 
 	<div style="margin-top:50px;clear:both" align="left">
 	<form name="delform" id="delform" action="index.cfm" method="post">
-		<input type="hidden" name="event" value="ehGeneral.doDelete">
+		<input type="hidden" name="event" value="users.doDelete">
 		<table width="100%" cellpadding="5" cellspacing="1" style="border:1px solid ##cccccc;font-size:11px">
 			<tr style="color:white;background:##004080;font-weight:bold;text-align:center">
 				<td width="20">&nbsp;</td>
@@ -44,7 +44,7 @@
 			<cfloop query="rc.users">
 			<tr style="background:##eaeaea">
 				<td><input type="checkbox" name="idlist" id="idlist" value="#id#"></td>
-				<td><a href="?event=ehGeneral.dspEditUser&id=#id#">#id#</a></td>
+				<td><a href="?event=users.dspEditUser&id=#id#">#id#</a></td>
 				<td>#fname#</td>
 				<td>#lname#</td>
 				<td>#email#</td>

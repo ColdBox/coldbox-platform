@@ -35,10 +35,11 @@ Modification History:
 		<!--- ************************************************************* --->
 		<cfscript>
 		var BugReport = "";
-		var ExceptionBean = controller.getPlugin("beanFactory").create("coldbox.system.beans.exceptionBean").init(errorStruct=arguments.Exception,extramessage=arguments.extraMessage,errorType=arguments.ErrorType);
+		var ExceptionBean = CreateObject("component","coldbox.system.beans.exceptionBean").init(errorStruct=arguments.Exception,extramessage=arguments.extraMessage,errorType=arguments.ErrorType);
 		var requestContext = controller.getRequestService().getContext();
+		
 		// Test Error Type
-		if ( not reFindnocase("(application|framework)",arguments.errorType) )
+		if ( not reFindnocase("(application|framework|coldboxproxy)",arguments.errorType) )
 			arguments.errorType = "application";
 
 		if ( arguments.ErrorType eq "application" ){
@@ -49,7 +50,7 @@ Modification History:
 					controller.runEvent(controller.getSetting("Exceptionhandler"));
 				}
 				catch(Any e){
-					ExceptionBean = controller.getPlugin("beanFactory").create("coldbox.system.beans.exceptionBean").init(errorStruct=e,extramessage="Error Running Custom Exception handler",errorType="application");
+					ExceptionBean = CreateObject("component","coldbox.system.beans.exceptionBean").init(errorStruct=e,extramessage="Error Running Custom Exception handler",errorType="application");
 					controller.getPlugin("logger").logErrorWithBean(ExceptionBean);
 				}
 			}
@@ -57,6 +58,10 @@ Modification History:
 				controller.getPlugin("logger").logErrorWithBean(ExceptionBean);
 			}
 		}
+		else if( arguments.ErrorType eq "coldboxproxy" ){
+			controller.getPlugin("logger").logErrorWithBean(ExceptionBean);
+		}
+		
 		//return
 		return ExceptionBean;
 		</cfscript>

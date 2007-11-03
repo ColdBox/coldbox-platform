@@ -18,20 +18,20 @@
 	</div>
 
 	<div style="margin-top:10px;clear:both;" align="center">
-		<a class="action silver" href="?event=ehGeneral.dspHome" style="float:left">
+		<a class="action silver" href="?event=users.dspHome" style="float:left">
 			<span>Home</span>
 		</a>
-		<a class="action" href="?event=ehGeneral.dspUsers" title="List Users" style="float:left">
+		<a class="action" href="?event=users.dspUsers" title="List Users" style="float:left">
 			<span>List Users</span>
 		</a>
-		<a class="action" href="?event=ehGeneral.dspAddUser" title="Add User" style="float:left">
+		<a class="action" href="?event=users.dspAddUser" title="Add User" style="float:left">
 			<span>Add User</span>
 		</a>
 	</div>
 
 	<div style="margin-top:50px;clear:both" align="left">
 		<form name="addform" id="addform" action="index.cfm" method="post">
-		<input type="hidden" name="event" value="ehGeneral.doUpdate">
+		<input type="hidden" name="event" value="users.doUpdate">
 		<input type="hidden" name="id" value="#rc.oUser.getID()#">
 		<table width="100%" cellpadding="5" cellspacing="1" style="border:1px solid ##cccccc;">
 

@@ -7,8 +7,6 @@
 		setConfigMapping(ExpandPath(instance.AppMapping & "/config/coldbox.xml.cfm"));
 		//Call the super setup method to setup the app.
 		super.setup();
-		//place controller in app scope for this.
-		application.cbController = getController();
 		</cfscript>
 	</cffunction>
 	

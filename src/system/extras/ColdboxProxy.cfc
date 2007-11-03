@@ -28,40 +28,54 @@ Description :
 				cbController = application.cbController;
 			}
 			
-			//Create the request context
-			Event = cbController.getRequestService().requestCapture();
-			//Append the arguments to the collection
-			Event.collectionAppend(arguments,true);
-			//Set that this is a proxy request.
-			Event.setProxyRequest();
-			
-			//Execute the app start handler if not fired already
-			if ( cbController.getSetting("ApplicationStartHandler") neq "" and (not cbController.getAppStartHandlerFired()) ){
-				cbController.runEvent(cbController.getSetting("ApplicationStartHandler"),true);
-				cbController.setAppStartHandlerFired(true);
-			}
-			
-			//Execute a pre process interception.
-			cbController.getInterceptorService().processState("preProcess");
-			
-			//Request Start Handler if defined
-			if ( cbController.getSetting("RequestStartHandler") neq "" ){
-				cbController.runEvent(cbController.getSetting("RequestStartHandler"),true);
-			}
+			try{
+				//Create the request context
+				Event = cbController.getRequestService().requestCapture();
+				//Append the arguments to the collection
+				Event.collectionAppend(arguments,true);
+				//Set that this is a proxy request.
+				Event.setProxyRequest();
 				
-			//Execute the Event
-			results = cbController.runEvent();
-			
-			//Request END Handler if defined
-			if ( cbController.getSetting("RequestEndHandler") neq "" ){
-				cbController.runEvent(cbController.getSetting("RequestEndHandler"),true);
+				//Execute the app start handler if not fired already
+				if ( cbController.getSetting("ApplicationStartHandler") neq "" and (not cbController.getAppStartHandlerFired()) ){
+					cbController.runEvent(cbController.getSetting("ApplicationStartHandler"),true);
+					cbController.setAppStartHandlerFired(true);
+				}
+				
+				//Execute a pre process interception.
+				cbController.getInterceptorService().processState("preProcess");
+				
+				//Request Start Handler if defined
+				if ( cbController.getSetting("RequestStartHandler") neq "" ){
+					cbController.runEvent(cbController.getSetting("RequestStartHandler"),true);
+				}
+					
+				//Execute the Event
+				results = cbController.runEvent();
+				
+				//Request END Handler if defined
+				if ( cbController.getSetting("RequestEndHandler") neq "" ){
+					cbController.runEvent(cbController.getSetting("RequestEndHandler"),true);
+				}
+				
+				//Execute the post process interceptor
+				cbController.getInterceptorService().processState("postProcess");
+			}
+			catch(Any e){
+				//Log Exception
+				cbController.getService("exception").ExceptionHandler(e,"coldboxproxy","Process Exception");
+				throw(e.message,e.detail & e.stacktrace,e.type);
 			}
 			
-			//Execute the post process interceptor
-			cbController.getInterceptorService().processState("postProcess");
-			
-			//Return results
-			return results;
+			//Determine what to return via the setting
+			if ( cbController.getSetting("ProxyReturnCollection") ){
+				//Return request collection
+				return Event.getCollection();
+			}
+			else{
+				//Return results from handler
+				return results;
+			}
 		</cfscript>		
 	</cffunction>
 	
@@ -84,8 +98,14 @@ Description :
 			interceptionStructure.interceptData = arguments.interceptData;
 			
 			//Intercept
-			cbController.getInterceptorService().processState(arguments.state,interceptionStructure);
-			
+			try{
+				cbController.getInterceptorService().processState(arguments.state,interceptionStructure);
+			}
+			catch(Any e){
+				//Log Exception
+				cbController.getService("exception").ExceptionHandler(e,"coldboxproxy","Interception Exception");
+				return false;
+			}
 			return true;
 		</cfscript>
 	</cffunction>

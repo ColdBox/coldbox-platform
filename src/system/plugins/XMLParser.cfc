@@ -460,6 +460,10 @@ Modification History:
 				ConfigStruct["RequestContextDecorator"] = "";
 			}
 			
+			//Check for ProxyReturnCollection
+			if ( not structKeyExists(ConfigStruct, "ProxyReturnCollection") or not isBoolean(ConfigStruct.ProxyReturnCollection) )
+				ConfigStruct["ProxyReturnCollection"] = false;
+			
 			/* ::::::::::::::::::::::::::::::::::::::::: YOUR SETTINGS LOADING :::::::::::::::::::::::::::::::::::::::::::: */
 			
 			//Your Settings To Load
