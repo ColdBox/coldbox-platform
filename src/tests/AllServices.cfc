@@ -17,7 +17,9 @@ Description :
 		
 		<!--- Add the test cases --->
 		<cfset suite.addTestSuite(CreateObject("component", "cases.services.debuggerserviceTest"))>
+		<cfset suite.addTestSuite(CreateObject("component", "cases.services.exceptionserviceTest"))>
 		<cfset suite.addTestSuite(CreateObject("component", "cases.services.pluginserviceTest"))>
+		<cfset suite.addTestSuite(CreateObject("component", "cases.services.interceptorserviceTest"))>
 		<cfset suite.addTestSuite(CreateObject("component", "cases.services.requestserviceTest"))>
 		<cfset suite.addTestSuite(CreateObject("component", "cases.services.loaderserviceTest"))>
 		

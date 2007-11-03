@@ -112,7 +112,7 @@ Description :
 <!------------------------------------------- PRIVATE ------------------------------------------->
 	
 	<!--- Append Interception Points --->
-	<cffunction name="appendInterceptionPoints" access="public" returntype="void" hint="Append a list of custom interception points to the CORE interception points" output="false" >
+	<cffunction name="appendInterceptionPoints" access="private" returntype="void" hint="Append a list of custom interception points to the CORE interception points" output="false" >
 		<!--- ************************************************************* --->
 		<cfargument name="customPoints" required="true" type="string" hint="A comma delimmited list of custom interception points to append">
 		<!--- ************************************************************* --->
@@ -132,7 +132,7 @@ Description :
 	</cffunction>
 	
 	<!--- Get an interceptors interception points via metadata --->
-	<cffunction name="parseMetadata" returntype="struct" access="public" output="false" hint="I get a components valid interception points">
+	<cffunction name="parseMetadata" returntype="struct" access="private" output="false" hint="I get a components valid interception points">
 		<!--- ************************************************************* --->
 		<cfargument name="metadata" required="true" type="any" 		hint="The recursive metadata">
 		<cfargument name="points" 	required="true" type="struct" 	hint="The active points">
@@ -164,7 +164,7 @@ Description :
 	</cffunction>
 	
 	<!--- Register an Interception Point --->
-	<cffunction name="RegisterInterceptionPoint" access="public" returntype="void" hint="Register an Interception point into a new or created interception state." output="false" >
+	<cffunction name="RegisterInterceptionPoint" access="private" returntype="void" hint="Register an Interception point into a new or created interception state." output="false" >
 		<!--- ************************************************************* --->
 		<cfargument name="interceptorKey" 	required="true" type="string" hint="The interceptor key in the cache.">
 		<cfargument name="state" 			required="true" type="string" hint="The state to create">
@@ -187,7 +187,7 @@ Description :
 	</cffunction>
 
 	<!--- Create Interception States --->
-	<cffunction name="createInterceptionStates" access="public" returntype="void" hint="Create the interception states container" output="false" >
+	<cffunction name="createInterceptionStates" access="private" returntype="void" hint="Create the interception states container" output="false" >
 		<cfscript>
 		if ( not structIsEmpty(getInterceptionStates()) ){
 			structClear( getInterceptionStates() );

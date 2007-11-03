@@ -52,24 +52,4 @@ Modification History:
 		</cfscript>
 	</cffunction>
 	
-	<cffunction name="testPluginCacheDictionary" access="public" returntype="void" output="false">
-		<cfscript>
-		var pluginKey = "plugin_unittester";
-		var service = getController().getPluginService();
-		var entry = structnew();
-		
-		entry.cacheable = true;
-		entry.timeout = 10;
-		
-		AssertFalse(service.lookupCacheMD(pluginKey),"lookup needs to be false");
-		
-		service.setCacheMD(pluginKey,entry);
-		
-		AssertTrue( service.getCacheMD(pluginKey).cacheable, "Cacheable test" );
-		AssertEqualsNumber(10, service.getCacheMD(pluginKey).timeout, "Timeout test" );
-
-		</cfscript>
-	</cffunction>
-
-	
 </cfcomponent>

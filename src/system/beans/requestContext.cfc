@@ -214,7 +214,15 @@ Modification History:
 	</cffunction>
 	
 	<cffunction name="getCurrentHandler" access="public" hint="Gets the current handler requested in the current event." returntype="string" output="false">
-		<cfreturn reReplace(getCurrentEvent(),"\.[^.]*$","")>
+		<cfscript>
+			var testHandler = reReplace(getCurrentEvent(),"\.[^.]*$","");
+			if( listLen(testHandler,".") eq 1){
+				return testHandler;
+			}
+			else{
+				return listLast(testHandler,".");
+			}
+		</cfscript>
 	</cffunction>
 	
 	<cffunction name="getCurrentAction" access="public" hint="Gets the current action requested in the current event." returntype="string" output="false">

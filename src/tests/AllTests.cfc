@@ -17,8 +17,10 @@ Description :
 		
 		<!--- Add the test cases --->
 		<cfset suite.addTestSuite(CreateObject("component", "cases.coldboxfactoryTest"))>
+		<cfset suite.addTestSuite(CreateObject("component", "cases.coldboxproxytest"))>
+		<cfset suite.addTestSuite(CreateObject("component", "cases.coldboxproxytest"))>
+		<cfset suite.addTestSuite(CreateObject("component", "cases.requestcontextTest"))>
 		<cfset suite.addTestSuite(CreateObject("component", "cases.util.utilTest"))>
-		<cfset suite.addTestSuite(CreateObject("component", "cases.settingsTest"))>
 		
 		<!--- Test Suites --->
 		<cfset suite.addTest(CreateObject("component", "AllServices").suite())>

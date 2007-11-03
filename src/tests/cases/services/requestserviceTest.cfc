@@ -21,7 +21,17 @@ Description :
 		</cfscript>
 	</cffunction>
 	
-	<cffunction name="testRequestCaptures" access="public" returntype="void" output="false">
+	<cffunction name="testRequestCapturesWithNoDecoration" access="public" returntype="void" output="false">
+		<cfscript>
+			var originalSetting = getcontroller().getSetting("RequestContextDecorator");
+			
+			getcontroller().setSetting("RequestContextDecorator","");
+			testRequestCapturesWithDecoration();
+			getcontroller().setSetting("RequestContextDecorator",originalSetting);			
+		</cfscript>
+	</cffunction>
+	
+	<cffunction name="testRequestCapturesWithDecoration" access="public" returntype="void" output="false">
 		<cfscript>
 		var service = getController().getRequestService();
 		var context = "";
