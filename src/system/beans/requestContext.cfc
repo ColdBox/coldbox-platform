@@ -136,7 +136,8 @@ Modification History:
 		<cfargument name="name"  hint="The name of the variable to remove." type="string" >
 		<!--- ************************************************************* --->
 		<cfscript>
-			structDelete(instance.context,"#arguments.name#");
+			if( valueExists(arguments.name) )
+				structDelete(instance.context,"#arguments.name#");
 		</cfscript>
 	</cffunction>
 
@@ -258,7 +259,13 @@ Modification History:
 	<!--- ************************************************************* --->
 	
 	<cffunction name="NoRender" access="public" returntype="void" hint="Set the flag that tells the framework not to render, just execute">
-		<cfset setValue("coldbox_norender",true)>
+		<cfargument name="remove" required="false" type="boolean" default="false" hint="If true, it removes the flag, else its set.">
+		<cfscript>
+			if (arguments.remove)
+				setValue("coldbox_norender",true);
+			else
+				removeValue("coldbox_norender");
+		</cfscript>		
 	</cffunction>
 	
 	<!--- ************************************************************* --->
