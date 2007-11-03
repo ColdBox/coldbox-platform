@@ -212,6 +212,14 @@ Modification History:
 		<cfreturn getValue(getEventName(),"")>
 	</cffunction>
 	
+	<cffunction name="getCurrentHandler" access="public" hint="Gets the current handler requested in the current event." returntype="string" output="false">
+		<cfreturn reReplace(getCurrentEvent(),"\.[^.]*$","")>
+	</cffunction>
+	
+	<cffunction name="getCurrentAction" access="public" hint="Gets the current action requested in the current event." returntype="string" output="false">
+		<cfreturn listLast(getCurrentEvent(),".")>
+	</cffunction>
+	
 	<!--- ************************************************************* --->
 	
 	<cffunction name="overrideEvent" access="Public" hint="I Override the current event in the request collection. This method does not execute the event, it just replaces the event to be executed by the framework's RunEvent() method. This method is usually called from an onRequestStart or onApplicationStart method."  output="false" returntype="void">
@@ -305,6 +313,12 @@ Modification History:
 	
 	<cffunction name="getEventName" access="public" returntype="string" output="false">
 		<cfreturn instance.eventName>
+	</cffunction>
+	
+	<!--- ************************************************************* --->
+	
+	<cffunction name="getSelf" access="public" output="false" returntype="string">
+	   <cfreturn "index.cfm?" & getEventName() & "=">
 	</cffunction>
 	
 	<!--- ************************************************************* --->
