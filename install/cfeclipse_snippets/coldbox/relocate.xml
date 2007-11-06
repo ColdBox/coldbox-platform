@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<snippet filetemplate="false" extension="cfm">
+<name>relocate</name>
+<help></help>
+<starttext><![CDATA[relocate( "$${URL}" )]]></starttext>
+<endtext><![CDATA[]]></endtext>
+</snippet>
