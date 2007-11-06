@@ -51,6 +51,7 @@
 									<xs:enumeration value="EnableDumpVar"/>	
 									<xs:enumeration value="EnableColdboxLogging"/>
 									<xs:enumeration value="HandlersIndexAutoReload" />
+									<xs:enumeration value="HandlersExternalLocation" />
 									<xs:enumeration value="HandlerCaching" />
 									<xs:enumeration value="IOCFramework" />
 									<xs:enumeration value="IOCDefinitionFile" />
@@ -242,9 +243,10 @@
 			<xs:documentation>A layout declaration to be used for the children views declared.</xs:documentation>
 		</xs:annotation>
 		<xs:complexType>
-			<xs:sequence>
+			<xs:choice maxOccurs="unbounded">
 				<xs:element maxOccurs="unbounded" minOccurs="0" ref="View"/>
-			</xs:sequence>
+				<xs:element maxOccurs="unbounded" minOccurs="0" ref="Folder"/>				
+			</xs:choice>
 			<xs:attribute name="file" type="xs:string" use="required">
 				<xs:annotation>
 					<xs:documentation>The filename of the layout template.</xs:documentation>
@@ -254,12 +256,22 @@
 				<xs:annotation>
 					<xs:documentation>A reference name to the layout.</xs:documentation>
 				</xs:annotation>
-			</xs:attribute>
+			</xs:attribute>			
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="View">
 		<xs:annotation>
 			<xs:documentation>The name of the view that will use the parent layout. This is the same name of the file without .cfm</xs:documentation>
+		</xs:annotation>
+		<xs:simpleType>
+			<xs:restriction base="xs:string">
+				<xs:minLength value="1"/>
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:element>
+	<xs:element name="Folder">
+		<xs:annotation>
+			<xs:documentation>The name of the folder that will use the parent layout.</xs:documentation>
 		</xs:annotation>
 		<xs:simpleType>
 			<xs:restriction base="xs:string">
