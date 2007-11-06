@@ -62,8 +62,11 @@
 	<Layouts>
 		<DefaultLayout>Layout.Main.cfm</DefaultLayout>
 		<DefaultView>vwHello</DefaultView>
-		<Layout file="Layout.Login.cfm" name="login">
+		<Layout file="Layout.tester.cfm" name="login">
 			<View>vwLogin</View>
+			<View>test</View>
+			<Folder>tags</Folder>
+			<Folder>pdf/single</Folder>
 		</Layout>
 	</Layouts>
 

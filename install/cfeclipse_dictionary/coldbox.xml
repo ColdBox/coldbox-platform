@@ -148,6 +148,7 @@ Description :
 					<value option="&quot;ioc&quot;"/>
 					<value option="&quot;JavaLoader&quot;"/>
 					<value option="&quot;logger&quot;"/>
+					<value option="&quot;MTlogger&quot;"/>
 					<value option="&quot;messagebox&quot;"/>
 					<value option="&quot;queryHelper&quot;"/>
 					<value option="&quot;renderer&quot;"/>
@@ -210,6 +211,7 @@ Description :
 					<value option="&quot;ColdboxLogsLocation&quot;"/>
 					<value option="&quot;ConfigAutoReload&quot;"/>
 					<value option="&quot;ConfigTimeStamp&quot;"/>
+					<value option="&quot;CustomEmailBugReport&quot;"/>
 					<value option="&quot;CustomErrorTemplate&quot;"/>
 					<value option="&quot;Datasources&quot;"/>
 					<value option="&quot;DebugMode&quot;"/>
@@ -227,21 +229,27 @@ Description :
 					<value option="&quot;Environment&quot;"/>
 					<value option="&quot;EventName&quot;"/>
 					<value option="&quot;ExceptionHandler&quot;"/>
+					<value option="&quot;FolderLayouts&quot;"/>
 					<value option="&quot;HandlerCaching&quot;"/>
 					<value option="&quot;HandlersIndexAutoReload&quot;"/>
+					<value option="&quot;HandlersExternalLocation&quot;"/>
+					<value option="&quot;HandlersInvocationPath&quot;"/>
 					<value option="&quot;HandlersPath&quot;"/>
-					<value option="&quot;InterceptorConfig&quot;"/>
 					<value option="&quot;IOCDefintionFile&quot;"/>
 					<value option="&quot;IOCFramework&quot;"/>
 					<value option="&quot;IOCObjectCaching&quot;"/>
+					<value option="&quot;InterceptorConfig&quot;"/>
 					<value option="&quot;LocaleStorage&quot;"/>
 					<value option="&quot;MailPassword&quot;"/>
 					<value option="&quot;MailPort&quot;"/>
 					<value option="&quot;MailServer&quot;"/>
 					<value option="&quot;MailUsername&quot;"/>
-					<value option="&quot;MessageboxStyleClass&quot;"/>
+					<value option="&quot;MessageboxStyleOverride&quot;"/>
+					<value option="&quot;MyPluginsInvocationPath&quot;"/>
 					<value option="&quot;MyPluginsLocation&quot;"/>
+					<value option="&quot;MyPluginsPath&quot;"/>
 					<value option="&quot;OwnerEmail&quot;"/>
+					<value option="&quot;ProxyReturnCollection&quot;"/>
 					<value option="&quot;RBundles&quot;"/>
 					<value option="&quot;RegisteredHandlers&quot;"/>
 					<value option="&quot;ReinitPassword&quot;"/>
@@ -487,7 +495,19 @@ Description :
 		]]></help>
 		</scope>
 		
+		<scope value="event.getCurrentAction()" type="String">
+			<help><![CDATA[ 
+			Gets the current event
+		]]></help>
+		</scope>
+		
 		<scope value="event.getCurrentEvent()" type="String">
+			<help><![CDATA[ 
+			Gets the current event
+		]]></help>
+		</scope>
+		
+		<scope value="event.getCurrentHandler()" type="String">
 			<help><![CDATA[ 
 			Gets the current event
 		]]></help>
@@ -529,6 +549,18 @@ Description :
 		]]></help>
 		</scope>
 		
+		<scope value="event.getFolderLayouts()" type="Struct">
+			<help><![CDATA[ 
+			Gets the structure of array of folder/layout pairs.
+		]]></help>
+		</scope>
+		
+		<scope value="event.getSelf()" type="String">
+			<help><![CDATA[ 
+			Gets the front controller appending with the event name: index.cfm?event=
+		]]></help>
+		</scope>
+	
 		<scope value="event.getSize()" type="Numeric">
 			<help><![CDATA[ 
 			Gets the current size of the request collection
@@ -547,9 +579,27 @@ Description :
 		]]></help>
 		</scope>
 		
+		<scope value="event.isProxyRequest" type="Boolean">
+			<help><![CDATA[ 
+			Determines if you are in a proxy request or not.
+		]]></help>
+		</scope>
+		
+		<scope value="event.isNoRender" type="Boolean">
+			<help><![CDATA[ 
+			Determines if this request will render output or not.
+		]]></help>
+		</scope>
+		
 		<scope value="event.getViewLayouts()" type="Struct">
 			<help><![CDATA[ 
 			Gets the structure of array of view/layout pairs.
+		]]></help>
+		</scope>
+		
+		<scope value="event.noRender(true|false)" type="void">
+			<help><![CDATA[ 
+			Sets whether to not render any output or not.
 		]]></help>
 		</scope>
 		

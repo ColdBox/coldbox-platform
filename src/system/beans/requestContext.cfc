@@ -29,12 +29,13 @@ Modification History:
 
 	<cffunction name="init" access="public" output="false" hint="constructor" returntype="any">
 		<!--- ************************************************************* --->
-		<cfargument name="struct1" 		 type="any" 	required="true" hint="Usually the FORM scope">
-		<cfargument name="struct2" 		 type="any" 	required="true" hint="Usually the URL scope">
-		<cfargument name="DefaultLayout" type="string" 	required="true">
-		<cfargument name="DefaultView" 	 type="string" 	required="true">
-		<cfargument name="ViewLayouts"   type="struct"  required="true">
-		<cfargument name="EventName" 	 type="string" 	required="true"/>
+		<cfargument name="struct1" 		 	type="any" 		required="true" hint="Usually the FORM scope">
+		<cfargument name="struct2" 		 	type="any" 		required="true" hint="Usually the URL scope">
+		<cfargument name="DefaultLayout" 	type="string" 	required="true">
+		<cfargument name="DefaultView" 	 	type="string" 	required="true">
+		<cfargument name="EventName" 	 	type="string" 	required="true"/>
+		<cfargument name="ViewLayouts"   	type="struct"   required="true">
+		<cfargument name="FolderLayouts"   	type="struct"   required="true">		
 		<!--- ************************************************************* --->
 		<cfscript>
 			collectionAppend(arguments.struct1);
@@ -42,6 +43,7 @@ Modification History:
 			setDefaultLayout(arguments.DefaultLayout);
 			setDefaultView(arguments.DefaultView);
 			setViewLayouts(arguments.ViewLayouts);
+			setFolderLayouts(arguments.FolderLayouts);
 			setEventName(arguments.EventName);
 			return this;
 		</cfscript>		
@@ -180,15 +182,33 @@ Modification History:
 		<cfargument name="nolayout" type="boolean" required="false" default="false" hint="Boolean flag, wether the view sent in will be using a layout or not. Default is false. Uses a pre set layout or the default layout.">
 		<!--- ************************************************************* --->
 	    <cfscript>
-	    if ( not arguments.nolayout ){
-		    if ( not getValue("layoutoverride",false) ){
-			    if ( StructKeyExists(instance.ViewLayouts, arguments.name) )
-					setValue("currentLayout",instance.ViewLayouts[arguments.name]);
-				else
-					setValue("currentLayout", instance.defaultLayout);
+		    var key = "";
+		    
+			//If we need a layout or we haven't overriden the current layout enter if...
+		    if ( arguments.nolayout eq false and getValue("layoutoverride",false) eq false ){
+		    		
+			    	//Verify that the view has a layout in the viewLayouts structure, else do the default Layout.
+				    if ( StructKeyExists(instance.ViewLayouts, arguments.name) )
+						setValue("currentLayout",instance.ViewLayouts[arguments.name]);
+					else{
+						//Check the folders
+						for( key in instance.FolderLayouts ){
+							if ( findnocase(key, arguments.name) ){
+								setValue("currentLayout",instance.FolderLayouts[key]);
+								break;
+							}
+						}
+					}
+					
+					//If not layout, then set default
+					if( not valueExists("currentLayout") ){
+						setValue("currentLayout", instance.defaultLayout);
+					}
+					
 			}
-		}
-		setValue("currentView",arguments.name);
+			
+			//Set the current view to render.
+			setValue("currentView",arguments.name);
 		</cfscript>
 	</cffunction>
 
@@ -322,6 +342,19 @@ Modification History:
 	<cffunction name="setViewLayouts" access="public" returntype="void" output="false">
 		<cfargument name="ViewLayouts" type="struct" required="true">
 		<cfset instance.ViewLayouts = arguments.ViewLayouts>
+	</cffunction>
+	
+	<!--- ************************************************************* --->
+	
+	<cffunction name="getFolderLayouts" access="public" returntype="struct" output="false">
+		<cfreturn instance.FolderLayouts>
+	</cffunction>
+	
+	<!--- ************************************************************* --->
+	
+	<cffunction name="setFolderLayouts" access="public" returntype="void" output="false">
+		<cfargument name="FolderLayouts" type="struct" required="true">
+		<cfset instance.FolderLayouts = arguments.FolderLayouts>
 	</cffunction>
 	
 	<!--- ************************************************************* --->

@@ -26,8 +26,6 @@ Description :
 		</cfscript>
 	</cffunction>
 
-
-
 <!------------------------------------------- PUBLIC ------------------------------------------->
 
 	<!--- Handler Registration System --->

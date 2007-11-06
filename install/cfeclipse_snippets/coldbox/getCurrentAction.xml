@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<snippet filetemplate="false" extension="cfm">
+<name>getCurrentAction</name>
+<help></help>
+<starttext><![CDATA[event.getCurrentAction()]]></starttext>
+<endtext><![CDATA[]]></endtext>
+</snippet>

@@ -15,13 +15,14 @@ Description :
 		
 	<cffunction name="init" access="public" output="false" hint="constructor" returntype="any">
 		<!--- ************************************************************* --->
-		<cfargument name="oContext" 	 type="any" 	required="true" hint="The original context we are decorating.">
-		<cfargument name="struct1" 		 type="any" 	required="true" hint="Usually the FORM scope">
-		<cfargument name="struct2" 		 type="any" 	required="true" hint="Usually the URL scope">
-		<cfargument name="DefaultLayout" type="string" 	required="true">
-		<cfargument name="DefaultView" 	 type="string" 	required="true">
-		<cfargument name="ViewLayouts"   type="struct"  required="true">
-		<cfargument name="EventName" 	 type="string" 	required="true"/>
+		<cfargument name="oContext" 	 	type="any" 		required="true" hint="The original context we are decorating.">
+		<cfargument name="struct1" 		 	type="any" 		required="true" hint="Usually the FORM scope">
+		<cfargument name="struct2" 		 	type="any" 		required="true" hint="Usually the URL scope">
+		<cfargument name="DefaultLayout" 	type="string" 	required="true">
+		<cfargument name="DefaultView" 	 	type="string" 	required="true">
+		<cfargument name="EventName" 	 	type="string" 	required="true"/>
+		<cfargument name="ViewLayouts"   	type="struct"   required="true">
+		<cfargument name="FolderLayouts"   	type="struct"   required="true">
 		<!--- ************************************************************* --->
 		<cfscript>
 			//Composite the original context

@@ -244,6 +244,7 @@ Modification History:
 		var LayoutNodes = "";
 		var DefaultLayout = "";
 		var	LayoutViewStruct = StructNew();
+		var	LayoutFolderStruct = StructNew();
 		//DevEnvironments
 		var DevEnvironmentNodes = "";
 		var DevEnvironmentArray = ArrayNew(1);
@@ -708,7 +709,7 @@ Modification History:
 			}
 			StructInsert(ConfigStruct, "Datasources", DatasourcesStruct);
 			
-			/* ::::::::::::::::::::::::::::::::::::::::: LAYOUT VIEW SETTINGS :::::::::::::::::::::::::::::::::::::::::::: */
+			/* ::::::::::::::::::::::::::::::::::::::::: LAYOUT VIEW FOLDER SETTINGS :::::::::::::::::::::::::::::::::::::::::::: */
 			
 			//Layout into Config
 			DefaultLayout = XMLSearch(configXML,instance.searchDefaultLayout);
@@ -740,15 +741,25 @@ Modification History:
 				//Get Layout for the views
 				Layout = Trim(LayoutNodes[i].XMLAttributes["file"]);
 				for(j=1; j lte ArrayLen(LayoutNodes[i].XMLChildren); j=j+1){
-					//Check for Key
-					if ( not StructKeyExists(LayoutViewStruct, Trim(LayoutNodes[i].XMLChildren[j].XMLText)) )
-						StructInsert(LayoutViewStruct, Trim(LayoutNodes[i].XMLChildren[j].XMLText),Layout);
-				}
-			}
+					
+					//Check for View
+					if( LayoutNodes[i].XMLChildren[j].XMLName eq "View" ){
+						//Check for Key, if it doesn't exist then create
+						if ( not StructKeyExists(LayoutViewStruct, Trim(LayoutNodes[i].XMLChildren[j].XMLText)) )
+							StructInsert(LayoutViewStruct, Trim(LayoutNodes[i].XMLChildren[j].XMLText), Layout);
+					}
+					//Check for Folder
+					else if( LayoutNodes[i].XMLChildren[j].XMLName eq "Folder" ){
+						//Check for Key, if it doesn't exist then create
+						if ( not StructKeyExists(LayoutFolderStruct, Trim(LayoutNodes[i].XMLChildren[j].XMLText)) )
+							StructInsert(LayoutFolderStruct, Trim(LayoutNodes[i].XMLChildren[j].XMLText), Layout);
+					}
+					
+				}//end for loop for the layout children
+			}//end for loop of all layout nodes
 			StructInsert(ConfigStruct,"ViewLayouts",LayoutViewStruct);
-			StructInsert(ConfigStruct, "ConfigTimeStamp", oUtilities.FileLastModified(ConfigFileLocation));
-
-
+			StructInsert(ConfigStruct,"FolderLayouts",LayoutFolderStruct);
+			
 			/* ::::::::::::::::::::::::::::::::::::::::: CACHE OVERRIDE SETTINGS :::::::::::::::::::::::::::::::::::::::::::: */
 			
 			//Cache Override Settings
@@ -847,6 +858,8 @@ Modification History:
 				
 			}//end interceptor nodes
 			
+			/* ::::::::::::::::::::::::::::::::::::::::: CONFIG FILE LAST MODIFIED SETTING :::::::::::::::::::::::::::::::::::::::::::: */
+			StructInsert(ConfigStruct, "ConfigTimeStamp", oUtilities.FileLastModified(ConfigFileLocation));
 			/* ::::::::::::::::::::::::::::::::::::::::: XSD VALIDATION :::::::::::::::::::::::::::::::::::::::::::: */
 						
 			//Determine which CF version for XML Parsing method
@@ -859,7 +872,6 @@ Modification History:
 		catch( Any Exception ){
 			throw("#Exception.Message# & #Exception.Detail#",Exception.tagContext.toString(), "Framework.plugins.XMLParser.ConfigXMLParsingException");
 		}
-		
 		//finish
 		return ConfigStruct;
 		</cfscript>
