@@ -33,7 +33,8 @@
 		<Setting name="IOCFramework" 				value=""/>
 		<Setting name="IOCDefinitionFile"		 	value=""/>
 		<Setting name="IOCObjectCaching"			value=""/>
-		<Setting name="RequestContextDecorator"		value="" />
+		<Setting name="RequestContextDecorator"		value="" />		
+		<Setting name="ProxyReturnCollection" 		value="false" />
 	</Settings>
 
 	<YourSettings>
