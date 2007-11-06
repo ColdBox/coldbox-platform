@@ -54,9 +54,26 @@
 	</target>
 
 	<target name="export-app" depends="clean,init" description="Clean export of entire application">
-	   <svn username="${svn.user}" password="${svn.password}" javasvn="true" javahl="false">
-			<export srcUrl= "${svn.url}/trunk" destPath="${src.dir}" force="true"/>
+	   	<svn username="${svn.user}" password="${svn.password}" javasvn="true" javahl="false">
+			<export srcUrl= "${svn.url}/${svn.appTemplate}" destPath="${src.dir}/${svn.appTemplate}" force="true"/>
+	   		<export srcUrl= "${svn.url}/${svn.documents}" destPath="${src.dir}/${svn.documents}" force="true"/>
+	   		<export srcUrl= "${svn.url}/${svn.install}" destPath="${src.dir}/${svn.install}" force="true"/>
+	   		<export srcUrl= "${svn.url}/${svn.samples}" destPath="${src.dir}/${svn.samples}" force="true"/>
+	   		<export srcUrl= "${svn.url}/${svn.source}" destPath="${src.dir}/${svn.source}" force="true"/>
 		</svn>
+		<!--
+	   	<svn username="${svn.user}" password="${svn.password}" javasvn="true" javahl="false">
+			<export srcUrl= "${svn.url}/${svn.documents}" destPath="${src.dir}/${svn.documents}" force="true"/>
+		</svn>
+	   	<svn username="${svn.user}" password="${svn.password}" javasvn="true" javahl="false">
+			<export srcUrl= "${svn.url}/${svn.install}" destPath="${src.dir}/${svn.install}" force="true"/>
+		</svn>
+	   	<svn username="${svn.user}" password="${svn.password}" javasvn="true" javahl="false">
+			<export srcUrl= "${svn.url}/${svn.samples}" destPath="${src.dir}/${svn.samples}" force="true"/>
+		</svn>
+	   	<svn username="${svn.user}" password="${svn.password}" javasvn="true" javahl="false">
+			<export srcUrl= "${svn.url}/${svn.source}" destPath="${src.dir}/${svn.source}" force="true"/>
+		</svn>-->
 	</target>
 
 	<target name="build" depends="export-app" description="Copies fileset from source to build directory, adding a label file">
@@ -100,7 +117,7 @@
 		<delete dir="${build.dir}"/>
 	</target>
 		
-	<target name="archive" depends="build" description="Creates a zip archive of site for (re)distribution">
+	<target name="archive" depends="deploy" description="Creates a zip archive of site for (re)distribution">
 		<zip destfile="${dist.dir}/coldboxNB_${build.label}.zip"
 	       basedir="${deploy.build}"
 	       update="true"
