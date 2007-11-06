@@ -22,7 +22,6 @@
 	<typedef resource="org/tigris/subversion/svnant/svnantlib.xml"/>
 
 	<!-- 	Ant Tasks	-->
-	
 	<target name="help" depends="usage"></target>
 
 	<target name="usage" description="Usage information">
@@ -33,9 +32,10 @@
 		Basic syntax:	ant [task(s)]
 		
 		Common tasks:
+			export-app
 			build
-			deploy
-			test
+			archive
+			clean
 		
 		The default ant task is: help
 		</echo>
@@ -48,9 +48,9 @@
 	</target>
 
 	<target name="clean" description="Remove all directories">
-		<delete dir="${src.dir}"/> 
-		<delete dir="${build.dir}"/> 
-		<delete dir="${dist.dir}"/> 
+		<delete dir="${src.dir}" verbose="true"/> 
+		<delete dir="${build.dir}" verbose="true"/> 
+		<delete dir="${dist.dir}" verbose="true"/> 
 	</target>
 
 	<target name="export-app" depends="clean,init" description="Clean export of entire application">
@@ -61,68 +61,50 @@
 	   		<export srcUrl= "${svn.url}/${svn.samples}" destPath="${src.dir}/${svn.samples}" force="true"/>
 	   		<export srcUrl= "${svn.url}/${svn.source}" destPath="${src.dir}/${svn.source}" force="true"/>
 		</svn>
-		<!--
-	   	<svn username="${svn.user}" password="${svn.password}" javasvn="true" javahl="false">
-			<export srcUrl= "${svn.url}/${svn.documents}" destPath="${src.dir}/${svn.documents}" force="true"/>
-		</svn>
-	   	<svn username="${svn.user}" password="${svn.password}" javasvn="true" javahl="false">
-			<export srcUrl= "${svn.url}/${svn.install}" destPath="${src.dir}/${svn.install}" force="true"/>
-		</svn>
-	   	<svn username="${svn.user}" password="${svn.password}" javasvn="true" javahl="false">
-			<export srcUrl= "${svn.url}/${svn.samples}" destPath="${src.dir}/${svn.samples}" force="true"/>
-		</svn>
-	   	<svn username="${svn.user}" password="${svn.password}" javasvn="true" javahl="false">
-			<export srcUrl= "${svn.url}/${svn.source}" destPath="${src.dir}/${svn.source}" force="true"/>
-		</svn>-->
 	</target>
 
 	<target name="build" depends="export-app" description="Copies fileset from source to build directory, adding a label file">
-		<copy todir="${build.dir}">
-			<fileset dir="${src.dir}"/>
-		 <!-- <filterset>
-				<filter token="VERSION" value="${build.label}"/>
-		  </filterset> -->
-		</copy>
-		<concat destfile="${build.dir}\${build.label}">Built on ${start.TODAY}</concat>
-	</target>
-
-	<target name="deploy" depends="build" description="Copies fileset to deploy directory">
-		<delete dir="${deploy.dir}"/>
-		
 		<!-- Copy Structure -->
-		<copy todir="${deploy.dir}/system">
-        	<fileset dir="${build.dir}/src/system">
+		<copy todir="${build.dir}/coldbox/system">
+        	<fileset dir="${src.dir}/src/system">
         	</fileset>
         </copy>		
-		<copy todir="${deploy.build}/samples">
-        	<fileset dir="${build.dir}/samples">
+		<copy todir="${build.dir}/coldbox/samples">
+        	<fileset dir="${src.dir}/samples">
         	</fileset>
         </copy>		
-		<copy todir="${deploy.build}/install">
-        	<fileset dir="${build.dir}/install" />
+		<copy todir="${build.dir}/coldbox/install">
+        	<fileset dir="${src.dir}/install" />
         </copy>		
-		<copy todir="${deploy.build}/ApplicationTemplate">
-        	<fileset dir="${build.dir}/ApplicationTemplate" />
+		<copy todir="${build.dir}/coldbox/ApplicationTemplate">
+        	<fileset dir="${src.dir}/ApplicationTemplate" />
         </copy>		
 		<!--Copy text files to install folder-->
-		<copy todir="${deploy.build}/install">
-			<fileset file="${build.dir}/src/system/config/license.txt" />
-			<fileset file="${build.dir}/src/system/config/readme.txt" />						
+		<copy todir="${build.dir}/coldbox/install">
+			<fileset file="${src.dir}/src/system/config/license.txt" />
+			<fileset file="${src.dir}/src/system/config/readme.txt" />						
 		</copy>		
 		<!--Copy Documents-->
-		<copy todir="${deploy.build}/install/SchemaDocs">
-			<fileset dir="${build.dir}/documents/SchemaDocs"/>
+		<copy todir="${build.dir}/coldbox/install/SchemaDocs">
+			<fileset dir="${src.dir}/documents/SchemaDocs"/>
 		</copy>
 		
-		<delete dir="${build.dir}"/>
+		<delete dir="${src.dir}"/>
+			
+		<concat destfile="${build.dir}\${build.label}">Built on ${start.TODAY}</concat>
 	</target>
 		
-	<target name="archive" depends="deploy" description="Creates a zip archive of site for (re)distribution">
-		<zip destfile="${dist.dir}/coldboxNB_${build.label}.zip"
-	       basedir="${deploy.build}"
+	<target name="archive" depends="build" description="Creates a zip archive of site for (re)distribution">
+		<zip destfile="${dist.dir}/coldboxNB.zip"
+	       basedir="${build.dir}"
 	       update="true"
 	  />
-		<checksum file="${dist.dir}/coldboxNB_${build.label}.zip"/>
+		<delete dir="${build.dir}" verbose="true"/>
+		<copy todir="${coldboxdownload.dir}">
+			<fileset dir="${dist.dir}"/>
+		</copy>
+		<delete dir="${dist.dir}" verbose="true"/>
+		
 	</target>
 	
 </project>
