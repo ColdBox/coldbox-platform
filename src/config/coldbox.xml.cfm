@@ -31,6 +31,7 @@
 		<Setting name="MyPluginsLocation" 			value="coldbox.myplugins"/>
 		<Setting name="HandlersExternalLocation" 	value="applications.coldbox.testing.testhandlers"/>
 		<Setting name="HandlerCaching" 				value="false"/>
+		<Setting name="EventCaching" 				value="true"/>
 		<Setting name="IOCFramework" 				value="coldspring"/>
 		<Setting name="IOCDefinitionFile"		 	value="/coldbox/config/coldspring.xml.cfm"/>
 		<Setting name="IOCObjectCaching"			value="false"/>

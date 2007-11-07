@@ -58,6 +58,8 @@
 		<Setting name="HandlersExternalLocation"   	value="" />
 		<!--Flag to cache handlers. Default if left blank is true. -->
 		<Setting name="HandlerCaching" 				value="false"/>
+		<!--Flag to cache events if metadata declared. Default is true -->
+		<Setting name="EventCaching" 				value="false"/>
 		<!--IOC Framework if Used, else leave blank-->
 		<Setting name="IOCFramework"				value="" />
 		<!--IOC Definition File Path, relative or absolute -->

@@ -58,6 +58,8 @@ Description :
 			var mdEntry = "";
 			var oRequestContext = controller.getRequestService().getContext();
 			
+			/* ::::::::::::::::::::::::::::::::::::::::: HANDLERS CACHING :::::::::::::::::::::::::::::::::::::::::::: */
+		
 			/* Are we caching handlers? */
 			if ( controller.getSetting("HandlerCaching") ){
 				
@@ -111,6 +113,8 @@ Description :
 				oEventHandler = newHandler(oEventHandlerBean.getRunnable());
 			}
 			
+			/* ::::::::::::::::::::::::::::::::::::::::: EVENT METHOD TESTING :::::::::::::::::::::::::::::::::::::::::::: */
+		
 			/* Method Testing and Validation */
 			if ( not structKeyExists(oEventHandler,oEventHandlerBean.getMethod()) ){
 				/* Invalid Event Detected, log it */
@@ -135,45 +139,50 @@ Description :
 				}
 			}//method check finalized.
 			
+			/* ::::::::::::::::::::::::::::::::::::::::: EVENT CACHING :::::::::::::::::::::::::::::::::::::::::::: */
+		
 			/* Event Caching Routines */
-			/* Determine if we have md and cacheable, else set it  */
-			if ( not getEventCacheDictionary().keyExists(eventCacheKey) ){
-				/* Get Event MetaData */
-				MetaData = getMetaData(oEventHandler[oEventHandlerBean.getMethod()]);
-				/* Get Default MD Entry */
-				mdEntry = getNewMDEntry();
-										
-				/* By Default, events with no cache flag are set to FALSE */
-				if ( not structKeyExists(MetaData,"cache") or not isBoolean(MetaData["cache"]) ){
-					MetaData.cache = false;
-				}
-				else{
-					/* Cache Entries for timeout and last access timeout */
-					if ( MetaData["cache"] ){
-						if ( structKeyExists(MetaData,"cachetimeout") ){
-							mdEntry.timeout = MetaData["cachetimeout"];
-						}
-						if ( structKeyExists(MetaData, "cacheLastAccessTimeout") ){
-							mdEntry.lastAccessTimeout = MetaData["cacheLastAccessTimeout"];
-						}
-					} // end we cached.
-					else{
+			if ( controller.getSetting("EventCaching") ){
+			
+				/* Determine if we have md and cacheable, else set it  */
+				if ( not getEventCacheDictionary().keyExists(eventCacheKey) ){
+					/* Get Event MetaData */
+					MetaData = getMetaData(oEventHandler[oEventHandlerBean.getMethod()]);
+					/* Get Default MD Entry */
+					mdEntry = getNewMDEntry();
+											
+					/* By Default, events with no cache flag are set to FALSE */
+					if ( not structKeyExists(MetaData,"cache") or not isBoolean(MetaData["cache"]) ){
 						MetaData.cache = false;
 					}
-				}//end we are caching.				
+					else{
+						/* Cache Entries for timeout and last access timeout */
+						if ( MetaData["cache"] ){
+							if ( structKeyExists(MetaData,"cachetimeout") ){
+								mdEntry.timeout = MetaData["cachetimeout"];
+							}
+							if ( structKeyExists(MetaData, "cacheLastAccessTimeout") ){
+								mdEntry.lastAccessTimeout = MetaData["cacheLastAccessTimeout"];
+							}
+						} // end we cached.
+						else{
+							MetaData.cache = false;
+						}
+					}//end we are caching.				
+					
+					/* Set Entry in dictionary */
+					getEventCacheDictionary().setKey(eventCacheKey,mdEntry);
+					
+				}//end of md cache dictionary.
 				
-				/* Set Entry in dictionary */
-				getEventCacheDictionary().setKey(eventCacheKey,mdEntry);
+				/* get dictionary entry for operations, it is now guaranteed. */
+				eventDictionaryEntry = getEventCacheDictionary().getKey(eventCacheKey);
 				
-			}//end of md cache dictionary.
-			
-			/* get dictionary entry for operations, it is now guaranteed. */
-			eventDictionaryEntry = getEventCacheDictionary().getKey(eventCacheKey);
-			
-			/* Do we need to cache this event?? */
-			if ( eventDictionaryEntry.cacheable and oRequestContext.getValue("fwCache",true) ){
-				/* Set the caching params for the controller to pick up. */
-			}
+				/* Do we need to cache this event?? */
+				if ( eventDictionaryEntry.cacheable and oRequestContext.getValue("fwCache",true) ){
+					/* Set the caching params for the controller to pick up. */
+				}
+			}//end if event caching.
 					
 			//return the tested and validated event handler
 			return oEventHandler;
@@ -355,9 +364,10 @@ Description :
 	</cffunction>
 	
 	<!--- Facade to cgi. --->
-	<cffunction name="getQueryString" access="public" returntype="string" hint="Get the Query String" output="false" >
+	<cffunction name="getQueryString" access="private" returntype="string" hint="Get the Query String" output="false" >
 		<cfscript>
 			return cgi.query_string;
 		</cfscript>
 	</cffunction>
+	
 </cfcomponent>

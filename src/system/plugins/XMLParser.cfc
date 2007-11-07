@@ -447,6 +447,10 @@ Modification History:
 			//Check for Handler Caching
 			if ( not structKeyExists(ConfigStruct, "HandlerCaching") or not isBoolean(ConfigStruct.HandlerCaching) )
 				ConfigStruct["HandlerCaching"] = true;
+			
+			//Check for Event Caching
+			if ( not structKeyExists(ConfigStruct, "EventCaching") or not isBoolean(ConfigStruct.EventCaching) )
+				ConfigStruct["EventCaching"] = true;
 
 			//Check for IOC Framework
 			if ( not structKeyExists(ConfigStruct, "IOCFramework") )

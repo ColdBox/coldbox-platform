@@ -50,6 +50,7 @@
 									<xs:enumeration value="EnableColdfusionLogging"/>
 									<xs:enumeration value="EnableDumpVar"/>	
 									<xs:enumeration value="EnableColdboxLogging"/>
+									<xs:enumeration value="EventCaching" />
 									<xs:enumeration value="HandlersIndexAutoReload" />
 									<xs:enumeration value="HandlersExternalLocation" />
 									<xs:enumeration value="HandlerCaching" />
