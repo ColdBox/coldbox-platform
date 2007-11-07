@@ -54,6 +54,8 @@
 		<Setting name="ConfigAutoReload"          	value="true" />
 		<!-- Declare the custom plugins base invocation path, if used. You have to use dot notation.Example: mymapping.myplugins	-->
 		<Setting name="MyPluginsLocation"   		value="" />
+		<!-- Declare the external handlers base invocation path, if used. You have to use dot notation.Example: mymapping.myhandlers	-->
+		<Setting name="HandlersExternalLocation"   	value="" />
 		<!--Flag to cache handlers. Default if left blank is true. -->
 		<Setting name="HandlerCaching" 				value="false"/>
 		<!--IOC Framework if Used, else leave blank-->
@@ -64,6 +66,8 @@
 		<Setting name="IOCObjectCaching"			value="false" />
 		<!--Request Context Decorator, leave blank if not using. Full instantiation path -->
 		<Setting name="RequestContextDecorator" 	value=""/>
+		<!--Flag if the proxy returns the entire request collection or what the event handlers return, default is false -->
+		<Setting name="ProxyReturnCollection" 		value="false"/>
 	</Settings>
 
 	<!--Your Settings can go here, if not needed, use <YourSettings />. You can use these for anything you like.

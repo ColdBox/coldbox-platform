@@ -14,18 +14,17 @@ Description		: This is the main ColdBox front Controller.
 
 	<cfscript>
 		variables.instance = structnew();
-		
-		//properties
-		instance.ColdboxInitiated = false;
-		instance.ConfigSettings = structnew();
-		instance.ColdboxSettings = structnew();
-		instance.AppStartHandlerFired = false;
-		instance.AppRootPath = "";
 	</cfscript>
 
 	<cffunction name="init" returntype="any" access="Public" hint="I am the constructor" output="false">
 		<cfargument name="AppRootPath" type="string" required="true" hint="The app Root Path"/>
 		<cfscript>
+			//properties
+			setColdboxInitiated(false);
+			setConfigSettings(structnew());
+			setColdboxSettings(structnew());
+			setAppStartHandlerFired(false);
+			
 			//Set the Application hash on creation
 			setAppHash( hash(arguments.AppRootPath) );
 			setAppRootPath(arguments.AppRootPath);
@@ -292,79 +291,23 @@ Description		: This is the main ColdBox front Controller.
 		<cfargument name="prepostExempt" hint="If true, pre/post handlers will not be fired." type="boolean" required="false" default="false">
 		<!--- ************************************************************* --->
 		<cfset var oEventHandler = "">
-		<cfset var oEventBean = "">
-		<cfset var ExecutingEventData = "">
-		<cfset var objTimeout = "">
-		<cfset var objLastAccessTimeout = "">
-		<cfset var MetaData = "">
-		<cfset var ExecutingHandler = "">
-		<cfset var ExecutingMethod = "">
-		<cfset var RequestContext = getRequestService().getContext()>
-		<cfset var EventName = getSetting("EventName")>
+		<cfset var oEventHandlerBean = "">
+		<cfset var oRequestContext = getRequestService().getContext()>
 		<cfset var interceptMetadata = structnew()>
 		<cfset var Results = "">
 		
 		<!--- Default Event Test --->
 		<cfif arguments.event eq "">
-			<cfset arguments.event = RequestContext.getValue(EventName)>
+			<cfset arguments.event = oRequestContext.getValue(getSetting("EventName"))>
 		</cfif>
+		
+		<!--- Validate the incoming event --->
+		<cfset oEventHandlerBean = getHandlerService().getRegisteredHandler(arguments.event)>
+		<!--- Get the event handler to execute --->
+		<cfset oEventHandler = getHandlerService().getHandler(oEventHandlerBean)>
 		
 		<!--- InterceptMetadata --->
 		<cfset interceptMetadata.processedEvent = arguments.event>
-		
-		<!--- Validate and Get registered handler --->
-		<cfset oEventBean = getRegisteredHandler(arguments.event)>
-		
-		<!--- Set Executing Parameters --->
-		<cfset ExecutingHandler = oEventBean.getRunnable()>
-		<cfset ExecutingMethod = oEventBean.getMethod()>
-
-		<!--- Check if using handler caching --->
-		<cfif getSetting("HandlerCaching")>
-			<!--- Lookup in Cache --->
-			<cfif instance.ColdboxOCM.lookup("handler_" & ExecutingHandler)>
-				<cfset oEventHandler = instance.ColdboxOCM.get("handler_" & ExecutingHandler)>
-			<cfelse>
-				<cfset oEventHandler = CreateObject("component",ExecutingHandler).init(this)>
-				<!--- Get Object MetaData --->
-				<cfset MetaData = getMetaData(oEventHandler)>
-				<!--- By Default, handlers with no cache flag are set to true --->
-				<cfif not structKeyExists(MetaData,"cache")>
-					<cfset MetaData.cache = true>
-				</cfif>
-				<cfif isBoolean(MetaData["cache"]) and MetaData["cache"]>
-					<cfif structKeyExists(MetaData,"cachetimeout") >
-						<cfset objTimeout = MetaData["cachetimeout"]>
-					</cfif>
-					<cfif structKeyExists(MetaData, "cacheLastAccessTimeout")>
-						<cfset objLastAccessTimeout = MetaData["cacheLastAccessTimeout"]>
-					</cfif>
-					<!--- Set the Runnable Object --->
-					<cfset instance.ColdboxOCM.set("handler_" & ExecutingHandler,oEventHandler,objTimeout,objLastAccessTimeout)>
-				</cfif>
-			</cfif>
-		<cfelse>
-			<!--- Create Runnable Object --->
-			<cfset oEventHandler = CreateObject("component",ExecutingHandler).init(this)>
-		</cfif>
-
-		<!--- Verify Event Method Exists --->
-		<cfif not structKeyExists(oEventHandler,ExecutingMethod)>
-			<!--- Invalid Event Detected, log it --->
-			<cfset getPlugin("logger").logEntry("error","Invalid Event detected: #ExecutingHandler#.#ExecutingMethod#")>
-			<!--- If onInvalidEvent is registered, use it --->
-			<cfif getSetting("onInvalidEvent") neq "">
-				<!--- Test for invalid Event Error --->
-				<cfif compareNoCase(getSetting("onInvalidEvent"),arguments.event) eq 0>
-					<cfthrow type="Framework.onInValidEventSettingException" message="An invalid event has been detected: #RequestContext.getValue("invalidevent","")# and the onInvalidEvent setting is also invalid: #getSetting("onInvalidEvent")#. Please check your settings.">
-				</cfif>
-				<cfset RequestContext.setValue("invalidevent","#ExecutingHandler#.#ExecutingMethod#")>
-				<!--- Relocate to Invalid Event --->
-				<cfset setNextEvent(event=getSetting("onInvalidEvent"),persist="invalidevent")>
-			<cfelse>
-				<cfthrow type="Framework.InvalidEventException" message="An invalid event has been detected: #ExecutingHandler#.#ExecutingMethod#. This event does not exist in the specified handler controller.">
-			</cfif>
-		</cfif>
 		
 		<!--- Execute preEvent Interception --->
 		<cfset getInterceptorService().processState("preEvent",interceptMetadata)>
@@ -372,22 +315,22 @@ Description		: This is the main ColdBox front Controller.
 		<!--- PreHandler Execution --->
 		<cfif not arguments.prepostExempt and structKeyExists(oEventHandler,"preHandler")>
 			<cfmodule template="includes/timer.cfm" timertag="invoking runEvent [preHandler] for #arguments.event#">
-			<cfset oEventHandler.preHandler(RequestContext)>
+			<cfset oEventHandler.preHandler(oRequestContext)>
 			</cfmodule>
 		</cfif>
 
 		<!--- Start Timer --->
 		<cfmodule template="includes/timer.cfm" timertag="invoking runEvent [#arguments.event#]">
 			<!--- Execute the Event --->
-			<cfinvoke component="#oEventHandler#" method="#ExecutingMethod#" returnvariable="Results">
-				<cfinvokeargument name="event" value="#RequestContext#">
+			<cfinvoke component="#oEventHandler#" method="#oEventHandlerBean.getMethod()#" returnvariable="Results">
+				<cfinvokeargument name="event" value="#oRequestContext#">
 			</cfinvoke>
 		</cfmodule>
 
 		<!--- PostHandler Execution --->
 		<cfif not arguments.prepostExempt and structKeyExists(oEventHandler,"postHandler")>
 			<cfmodule template="includes/timer.cfm" timertag="invoking runEvent [postHandler] for #arguments.event#">
-			<cfset oEventHandler.postHandler(RequestContext)>
+			<cfset oEventHandler.postHandler(oRequestContext)>
 			</cfmodule>
 		</cfif>
 		
@@ -456,6 +399,7 @@ Description		: This is the main ColdBox front Controller.
 		</cfscript>
 	</cffunction>
 
+	<!--- Get the util object --->
 	<cffunction name="getUtil" access="private" output="false" returntype="coldbox.system.util.util" hint="Create and return a util object">
 		<cfreturn CreateObject("component","coldbox.system.util.util")/>
 	</cffunction>

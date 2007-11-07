@@ -17,7 +17,9 @@ Modification History:
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
 	<cffunction name="init" access="public" output="false" returntype="pluginService" hint="Constructor">
+		<!--- ************************************************************* --->
 		<cfargument name="controller" type="any" required="true">
+		<!--- ************************************************************* --->
 		<cfscript>
 			/* Set Controller */
 			setController(arguments.controller);
@@ -35,8 +37,10 @@ Modification History:
 	
 	<!--- Get a new plugin Instance --->
 	<cffunction name="new" access="public" returntype="any" hint="Create a New Plugin Instance wether its core or custom" output="false" >
+		<!--- ************************************************************* --->
 		<cfargument name="plugin" required="true" type="string"  hint="The named plugin to create">
 		<cfargument name="custom" required="true" type="boolean" hint="Custom plugin or coldbox plugin">
+		<!--- ************************************************************* --->
 		<cfscript>
 		return CreateObject("component", locatePluginPath(arguments.plugin,arguments.custom) ).init( controller );
 		</cfscript>
@@ -44,8 +48,10 @@ Modification History:
 
 	<!--- Get a new or cached plugin instance --->
 	<cffunction name="get" access="public" returntype="any" hint="Get a new/cached plugin instance" output="false" >
+		<!--- ************************************************************* --->
 		<cfargument name="plugin" required="true" type="string"  hint="The named plugin to create">
 		<cfargument name="custom" required="true" type="boolean" hint="Custom plugin or coldbox plugin">
+		<!--- ************************************************************* --->
 		<cfscript>
 			/* Used for caching. */
 			var pluginKey = "cboxplugin_" & arguments.plugin;
@@ -130,20 +136,26 @@ Modification History:
 	
 	<!--- Set the coldbox plugins Path --->
 	<cffunction name="setColdBoxPluginsPath" access="private" output="false" returntype="void" hint="Set ColdBoxPluginsPath">
+		<!--- ************************************************************* --->
 		<cfargument name="ColdBoxPluginsPath" type="string" required="true"/>
+		<!--- ************************************************************* --->
 		<cfset instance.ColdBoxPluginsPath = arguments.ColdBoxPluginsPath/>
 	</cffunction>
 	
 	<!--- Set the internal plugin cache dictionary. --->
 	<cffunction name="setcacheDictionary" access="private" output="false" returntype="void" hint="Set the plugin cache dictionary. NOT EXPOSED to avoid screwups">
+		<!--- ************************************************************* --->
 		<cfargument name="cacheDictionary" type="coldbox.system.util.baseDictionary" required="true"/>
+		<!--- ************************************************************* --->
 		<cfset instance.cacheDictionary = arguments.cacheDictionary/>
 	</cffunction>
 	
 	<!--- Locate a Plugin Instantiation Path --->
 	<cffunction name="locatePluginPath" access="private" returntype="string" hint="Locate a full plugin instantiation path from the requested plugin name" output="false" >
+		<!--- ************************************************************* --->
 		<cfargument name="plugin" required="true" type="string" hint="The plugin to validate the path on.">
 		<cfargument name="custom" required="true" type="boolean" hint="Whether its a custom plugin or not.">
+		<!--- ************************************************************* --->
 		<cfscript>
 			var pluginPath = "";
 			var pluginFilePath = "";

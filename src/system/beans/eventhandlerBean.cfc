@@ -28,7 +28,7 @@ Modification History:
 	<!--- ************************************************************* --->
 
 	<cffunction name="init" access="public" returntype="coldbox.system.beans.eventhandlerBean" output="false">
-		<cfargument name="invocationPath" type="string" required="true" />
+		<cfargument name="invocationPath" type="string" required="false" default="" hint="The default invocation path" />
 		<cfset setInvocationPath(arguments.invocationPath)>
 		<cfreturn this >
 	</cffunction>

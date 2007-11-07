@@ -29,6 +29,7 @@
 		<Setting name="ExceptionHandler"     		value="" />
 		<Setting name="onInvalidEvent" 				value="" />
 		<Setting name="MyPluginsLocation" 			value="coldbox.myplugins"/>
+		<Setting name="HandlersExternalLocation" 	value="applications.coldbox.testing.testhandlers"/>
 		<Setting name="HandlerCaching" 				value="false"/>
 		<Setting name="IOCFramework" 				value="coldspring"/>
 		<Setting name="IOCDefinitionFile"		 	value="/coldbox/config/coldspring.xml.cfm"/>

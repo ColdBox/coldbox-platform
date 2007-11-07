@@ -465,6 +465,11 @@ Modification History:
 			if ( not structKeyExists(ConfigStruct, "ProxyReturnCollection") or not isBoolean(ConfigStruct.ProxyReturnCollection) )
 				ConfigStruct["ProxyReturnCollection"] = false;
 			
+			//Check for External Handlers Location
+			if ( not structKeyExists(ConfigStruct, "HandlersExternalLocation") or len(ConfigStruct["HandlersExternalLocation"]) eq 0 )
+				ConfigStruct["HandlersExternalLocation"] = "";
+			
+			
 			/* ::::::::::::::::::::::::::::::::::::::::: YOUR SETTINGS LOADING :::::::::::::::::::::::::::::::::::::::::::: */
 			
 			//Your Settings To Load
@@ -486,6 +491,14 @@ Modification History:
 			}
 			
 			/* ::::::::::::::::::::::::::::::::::::::::: HANDLER & PLUGIN INVOCATION PATHS :::::::::::::::::::::::::::::::::::::::::::: */
+			
+			//Set the Handlers External Configuration Paths
+			if( configStruct["HandlersExternalLocation"] neq "" ){
+				//Expand the external location to get a registration path
+				configStruct["HandlersExternalLocationPath"] = ExpandPath("/" & replace(ConfigStruct["HandlersExternalLocation"],".","/","all"));
+			}else{
+				configStruct["HandlersExternalLocationPath"] = "";
+			}
 			
 			//Set the Handler & Custom Plugin Invocation & Physical Path for this Application
 			if( ConfigStruct["AppMapping"] neq ""){
