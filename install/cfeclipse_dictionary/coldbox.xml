@@ -549,6 +549,12 @@ Description :
 		]]></help>
 		</scope>
 		
+		<scope value="event.getEventCacheableEntry()" type="Struct">
+			<help><![CDATA[ 
+			Gives you the event caching metadata structure
+		]]></help>
+		</scope>
+		
 		<scope value="event.getFolderLayouts()" type="Struct">
 			<help><![CDATA[ 
 			Gets the structure of array of folder/layout pairs.
@@ -576,6 +582,12 @@ Description :
 		<scope value="event.getValue('name',default)" type="Any">
 			<help><![CDATA[ 
 			Gets a value from the collection with a default value if not found.
+		]]></help>
+		</scope>
+		
+		<scope value="event.isEventCacheable" type="Boolean">
+			<help><![CDATA[ 
+			Determines if you the incoming event is cacheable or not.
 		]]></help>
 		</scope>
 		
