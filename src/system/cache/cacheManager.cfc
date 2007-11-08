@@ -244,6 +244,7 @@ Modification History:
 		itemTypes.other = 0;
 		itemTypes.ioc_beans = 0;
 		itemTypes.interceptors = 0;
+		itemTypes.events = 0;
 
 		//Sort the listing.
 		itemList = listSort(itemList, "textnocase");
@@ -258,6 +259,8 @@ Modification History:
 				itemTypes.ioc_beans = itemTypes.ioc_beans + 1;
 			else if ( findnocase("cboxinterceptor", listGetAt(itemList,x)) )
 				itemTypes.interceptors = itemTypes.interceptors + 1;
+			else if ( findnocase("cboxevent", listGetAt(itemList,x)) )
+				itemTypes.events = itemTypes.events + 1;
 			else
 				itemTypes.other = itemTypes.other + 1;
 		}

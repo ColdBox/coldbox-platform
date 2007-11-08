@@ -34,6 +34,8 @@ Modification History:
 			var DebugPassword = controller.getSetting("debugPassword");
 			var EventName = controller.getSetting("EventName");
 			var oSessionStorage = controller.getPlugin("sessionstorage");
+			var oEventHandlerBean = "";
+			var eventCacheKey = "";
 					
 			//Object Caching Garbage Collector
 			controller.getColdboxOCM().reap();
@@ -54,14 +56,41 @@ Modification History:
 					controller.getDebuggerService().setDebugMode(Context.getValue("debugMode"));
 			}
 
-			//Event Checks
 			//Default Event Definition
 			if ( not Context.valueExists(EventName))
 				Context.setValue(EventName, controller.getSetting("DefaultEvent"));
 			//Event More Than 1 Check, grab the first event instance, other's are discarded
 			if ( listLen(Context.getValue(EventName)) gte 2 )
 				Context.setValue(EventName, getToken(Context.getValue(EventName),2,","));
-
+			
+			/* Are we using event caching? */
+			if ( controller.getSetting("EventCaching") ){	
+				stime = getTickcount();
+				/* Get the handler bean for this event */
+				oEventHandlerBean = controller.gethandlerService().getRegisteredHandler(Context.getCurrentEvent());
+				
+				/* Check for Event Cache Purge */
+				if ( Context.valueExists("fwCache") ){
+					/* Remove flag to get real cache key */
+					Context.removeValue("fwCache");
+					Context.removeValue("fwReinit");
+					/* Clear the cache key. */
+					controller.getColdboxOCM().clearKey( oEventHandlerBean.getEventCacheKeyPrefix() & hash(Context.getCollection().toString()) );
+				}
+				else{
+					/* Clean some Framework URL Actions */
+					Context.removeValue("fwReinit");
+					
+					/* Setup the cache key */
+					eventCacheKey = oEventHandlerBean.getEventCacheKeyPrefix() & hash(Context.getCollection().toString());
+					/* Determine if this event has been cached */
+					if ( controller.getColdboxOCM().lookup(eventCacheKey) ){
+						/* Event has been found, flag it so we can render it */
+						Context.setEventCacheableEntry(eventCacheKey);
+					}
+				}//end else no purging
+			}//If using event caching.
+			
 			//Set Request Context in storage
 			setContext(Context);
 			

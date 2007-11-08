@@ -28,7 +28,7 @@ Sep/25/2005 - Luis Majano
 
 	<!--- ************************************************************* --->
 
-	<cffunction name="dspHome" access="public" returntype="void" output="false">
+	<cffunction name="dspHome" access="public" returntype="void" output="false" cache="true" cachetimeout="1">
 		<cfargument name="Event" type="coldbox.system.beans.requestContext">
 		<cfset var rc = Event.getCollection()>
 		<!--- Get Log File contents --->

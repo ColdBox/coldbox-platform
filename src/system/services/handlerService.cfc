@@ -21,7 +21,7 @@ Description :
 			/* Setup The Controller. */
 			setController(arguments.controller);
 			/* Setup the Event Handler Cache Dictionary */
-			setcacheDictionary(CreateObject("component","coldbox.system.util.baseDictionary").init('HandlersMetadata'));
+			setHandlerCacheDictionary(CreateObject("component","coldbox.system.util.baseDictionary").init('HandlersMetadata'));
 			/* Setup the Event Cache Dictionary */
 			setEventCacheDictionary(CreateObject("component","coldbox.system.util.baseDictionary").init('EventCache'));
 			
@@ -48,15 +48,13 @@ Description :
 		<cfscript>
 			/* Get the validated event handler bean */
 			var oEventHandler = "";
-			var cacheKey = "cboxhandler_" & oEventHandlerBean.getRunnable();
-			var eventCacheKey = "cboxevent_" & oEventHandlerBean.getRunnable() & "." & oEventHandlerBean.getMethod();
+			var oRequestContext = controller.getRequestService().getContext();
+			var cacheKey = oEventHandlerBean.getHandlerCacheKeyPrefix();
+			var eventCacheKey = "";
 			var MetaData = "";
-			var objTimeout = "";
-			var objLastAccessTimeout = "";
+			var mdEntry = "";
 			var handlerDictionaryEntry = "";
 			var eventDictionaryEntry = "";
-			var mdEntry = "";
-			var oRequestContext = controller.getRequestService().getContext();
 			
 			/* ::::::::::::::::::::::::::::::::::::::::: HANDLERS CACHING :::::::::::::::::::::::::::::::::::::::::::: */
 		
@@ -72,7 +70,7 @@ Description :
 					oEventHandler = newHandler(oEventHandlerBean.getRunnable());
 					
 					/* Determine if we have md and cacheable, else set it  */
-					if ( not getcacheDictionary().keyExists(cacheKey) ){
+					if ( not getHandlerCacheDictionary().keyExists(cacheKey) ){
 						/* Get Object MetaData */
 						MetaData = getMetaData(oEventHandler);
 						/* Get Default MD Entry */
@@ -84,6 +82,7 @@ Description :
 						}
 						/* Cache Entries for timeout and last access timeout */
 						if ( MetaData["cache"] ){
+							mdEntry.cacheable = true;
 							if ( structKeyExists(MetaData,"cachetimeout") ){
 								mdEntry.timeout = MetaData["cachetimeout"];
 							}
@@ -92,15 +91,15 @@ Description :
 							}
 						} // end we cached.
 						else{
-							MetaData.cache = false;
+							mdEntry.cacheable = false;
 						}
 						
 						/* Set Entry in dictionary */
-						getcacheDictionary().setKey(cacheKey,mdEntry);	
+						getHandlerCacheDictionary().setKey(cacheKey,mdEntry);	
 					}//end of md cache dictionary.
 					
 					/* Set dictionary entry for operations, it is now guaranteed. */
-					handlerDictionaryEntry = getcacheDictionary().getKey(cacheKey);
+					handlerDictionaryEntry = getHandlerCacheDictionary().getKey(cacheKey);
 					/* Do we Cache */
 					if ( handlerDictionaryEntry.cacheable ){
 						controller.getColdboxOCM().set(cacheKey,oEventHandler,handlerDictionaryEntry.timeout,handlerDictionaryEntry.lastAccessTimeout);
@@ -114,7 +113,7 @@ Description :
 			}
 			
 			/* ::::::::::::::::::::::::::::::::::::::::: EVENT METHOD TESTING :::::::::::::::::::::::::::::::::::::::::::: */
-		
+			
 			/* Method Testing and Validation */
 			if ( not structKeyExists(oEventHandler,oEventHandlerBean.getMethod()) ){
 				/* Invalid Event Detected, log it */
@@ -134,8 +133,8 @@ Description :
 				}
 				else{
 					getUtil().throw(message="An invalid event has been detected",
-										detail="An invalid event has been detected: #oEventHandlerBean.getRunnable()# This event does not exist in the specified handler.",
-										type="Framework.onInValidEventSettingException");
+									detail="An invalid event has been detected: #oEventHandlerBean.getRunnable()# This event does not exist in the specified handler.",
+									type="Framework.onInValidEventSettingException");
 				}
 			}//method check finalized.
 			
@@ -143,45 +142,47 @@ Description :
 		
 			/* Event Caching Routines */
 			if ( controller.getSetting("EventCaching") ){
-			
-				/* Determine if we have md and cacheable, else set it  */
-				if ( not getEventCacheDictionary().keyExists(eventCacheKey) ){
-					/* Get Event MetaData */
+				
+				/* Determine if we have md for the event to execute in the md dictionary, else set it  */
+				if ( not getEventCacheDictionary().keyExists(oEventHandlerBean.getFullEvent()) ){
+					/* Get Method MetaData */
 					MetaData = getMetaData(oEventHandler[oEventHandlerBean.getMethod()]);
-					/* Get Default MD Entry */
+					/* Get New Default MD Entry */
 					mdEntry = getNewMDEntry();
 											
 					/* By Default, events with no cache flag are set to FALSE */
 					if ( not structKeyExists(MetaData,"cache") or not isBoolean(MetaData["cache"]) ){
 						MetaData.cache = false;
 					}
-					else{
-						/* Cache Entries for timeout and last access timeout */
-						if ( MetaData["cache"] ){
-							if ( structKeyExists(MetaData,"cachetimeout") ){
-								mdEntry.timeout = MetaData["cachetimeout"];
-							}
-							if ( structKeyExists(MetaData, "cacheLastAccessTimeout") ){
-								mdEntry.lastAccessTimeout = MetaData["cacheLastAccessTimeout"];
-							}
-						} // end we cached.
-						else{
-							MetaData.cache = false;
+					/* Cache Entries for timeout and last access timeout */
+					if ( MetaData["cache"] ){
+						mdEntry.cacheable = true;
+						if ( structKeyExists(MetaData,"cachetimeout") ){
+							mdEntry.timeout = MetaData["cachetimeout"];
 						}
-					}//end we are caching.				
+						if ( structKeyExists(MetaData, "cacheLastAccessTimeout") ){
+							mdEntry.lastAccessTimeout = MetaData["cacheLastAccessTimeout"];
+						}
+					} //end cache metadata is true
+					else{
+						mdEntry.cacheable = false;
+					}			
 					
-					/* Set Entry in dictionary */
-					getEventCacheDictionary().setKey(eventCacheKey,mdEntry);
+					/* Set md Entry in dictionary */
+					getEventCacheDictionary().setKey(oEventHandlerBean.getFullEvent(),mdEntry);
 					
 				}//end of md cache dictionary.
 				
 				/* get dictionary entry for operations, it is now guaranteed. */
-				eventDictionaryEntry = getEventCacheDictionary().getKey(eventCacheKey);
+				eventDictionaryEntry = getEventCacheDictionary().getKey(oEventHandlerBean.getFullEvent());
 				
 				/* Do we need to cache this event?? */
-				if ( eventDictionaryEntry.cacheable and oRequestContext.getValue("fwCache",true) ){
-					/* Set the caching params for the controller to pick up. */
-				}
+				if ( eventDictionaryEntry.cacheable ){
+					/* Save the cache key in md Entry */
+					eventDictionaryEntry.cacheKey = oEventHandlerBean.getEventCacheKeyPrefix() & hash(oRequestContext.getCollection().toString());
+					/* Event is cacheable and we need to flag it so the renderer caches it. */
+					oRequestContext.setEventCacheableEntry(eventDictionaryEntry);
+				}//end if md says that this event is cacheable
 			}//end if event caching.
 					
 			//return the tested and validated event handler
@@ -254,6 +255,9 @@ Description :
 		var HandlerArray = Arraynew(1);
 		var HandlersExternalArray = ArrayNew(1);
 
+		/* Cleanup Just in Case */
+		clearDictionaries();
+		
 		/* ::::::::::::::::::::::::::::::::::::::::: HANDLERS BY CONVENTION :::::::::::::::::::::::::::::::::::::::::::: */
 		
 		//Check for Handlers Directory Location
@@ -284,15 +288,22 @@ Description :
 		</cfscript>
 	</cffunction>
 
+	<cffunction name="clearDictionaries" access="public" returntype="void" hint="Clear the internal cache dictionaries" output="false" >
+		<cfscript>
+			getHandlerCacheDictionary().clearAll();
+			getEventCacheDictionary().clearAll();
+		</cfscript>
+	</cffunction>
+	
 <!------------------------------------------- ACCESSOR/MUTATORS ------------------------------------------->
 	
 	<!--- Handler Cache Dictionary --->
-	<cffunction name="getcacheDictionary" access="public" returntype="coldbox.system.util.baseDictionary" output="false">
-		<cfreturn instance.cacheDictionary>
+	<cffunction name="getHandlerCacheDictionary" access="public" returntype="coldbox.system.util.baseDictionary" output="false">
+		<cfreturn instance.HandlerCacheDictionary>
 	</cffunction>
-	<cffunction name="setcacheDictionary" access="public" returntype="void" output="false">
-		<cfargument name="cacheDictionary" type="coldbox.system.util.baseDictionary" required="true">
-		<cfset instance.cacheDictionary = arguments.cacheDictionary>
+	<cffunction name="setHandlerCacheDictionary" access="public" returntype="void" output="false">
+		<cfargument name="HandlerCacheDictionary" type="coldbox.system.util.baseDictionary" required="true">
+		<cfset instance.HandlerCacheDictionary = arguments.HandlerCacheDictionary>
 	</cffunction>
 	
 	<!--- Event Cache Dictionary --->
@@ -314,6 +325,7 @@ Description :
 			mdEntry.cacheable = false;
 			mdEntry.timeout = "";
 			mdEntry.lastAccessTimeout = "";
+			mdEntry.cacheKey = "";
 			
 			return mdEntry;
 		</cfscript>
@@ -362,12 +374,6 @@ Description :
 		return arguments.fileArray;
 		</cfscript>
 	</cffunction>
-	
-	<!--- Facade to cgi. --->
-	<cffunction name="getQueryString" access="private" returntype="string" hint="Get the Query String" output="false" >
-		<cfscript>
-			return cgi.query_string;
-		</cfscript>
-	</cffunction>
+
 	
 </cfcomponent>

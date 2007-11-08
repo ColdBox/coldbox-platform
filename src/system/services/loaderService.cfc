@@ -47,11 +47,17 @@ Modification History:
 		<cfargument name="overrideAppMapping" type="string" required="false" default="" hint="Only used for unit testing or reparsing of a specific coldbox config file."/>
 		<!--- ************************************************************* --->
 		<cfscript>
-			var XMLParser = controller.getPlugin("XMLParser");
+			var XMLParser = "";
 			var CacheConfigBean = CreateObject("Component","coldbox.system.beans.cacheConfigBean");
 			var FrameworkSettings = structNew();
 			var ConfigSettings = structNew();
-	
+			
+			//Clear the Plugin Dictionary
+			controller.getPluginService().clearDictionary();
+			
+			//Prepare Parser
+			XMLParser = controller.getPlugin("XMLParser");
+			
 			//Load Coldbox Config Settings Structure
 			FrameworkSettings = XMLParser.loadFramework(arguments.overrideConfigFile);
 			controller.setColdboxSettings(FrameworkSettings);

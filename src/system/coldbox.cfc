@@ -99,7 +99,7 @@ Description :
 				<cfset cbController = application.cbController>
 				<!--- Create Request Context & Capture Request --->
 				<cfset Event = cbController.getRequestService().requestCapture()>
-			
+				
 				<!--- Debugging Monitors Check --->
 				<cfif cbController.getDebuggerService().getDebugMode() and event.getValue("debugPanel","") neq "">
 					<!--- Which panel to render --->
@@ -116,6 +116,13 @@ Description :
 				<cfif cbController.getSetting("ApplicationStartHandler") neq "" and (not cbController.getAppStartHandlerFired())>
 					<cfset cbController.runEvent(cbController.getSetting("ApplicationStartHandler"),true)>
 					<cfset cbController.setAppStartHandlerFired(true)>
+				</cfif>
+				
+				<!--- Before Any Execution, do we have cached content to deliver --->
+				<cfif Event.isEventCacheable()>
+					<cfset renderedContent = cbController.getColdboxOCM().get(Event.getEventCacheableEntry())>
+					<cfoutput>#renderedContent#</cfoutput>
+					<cfreturn>
 				</cfif>
 				
 				<!--- Execute preProcess Interception --->
@@ -136,6 +143,18 @@ Description :
 					
 					<!--- Render Layout/View pair via set variable to eliminate whitespace--->
 					<cfset renderedContent = cbController.getPlugin("renderer").renderLayout()>
+					
+					<!--- Check if caching the content --->
+					<cfif event.isEventCacheable()>
+						<cfset eventCacheEntry = Event.getEventCacheableEntry()>
+						<!--- Cache the content --->
+						<cfset cbController.getColdboxOCM().set(eventCacheEntry.cacheKey,
+																renderedContent,
+																eventCacheEntry.timeout,
+																eventCacheEntry.lastAccessTimeout)>
+					</cfif>
+					
+					<!--- Render the Content --->
 					<cfoutput>#renderedContent#</cfoutput>
 					
 					<!--- Execute postRender Interception --->

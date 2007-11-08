@@ -37,7 +37,7 @@ Modification History:
 
 	<!--- ************************************************************* --->
 
-	<cffunction name="getMemento" access="public" returntype="any" output="false" hint="Get the memento">
+	<cffunction name="getMemento" access="public" returntype="struct" output="false" hint="Get the memento">
 		<cfreturn variables.instance >
 	</cffunction>
 
@@ -47,10 +47,28 @@ Modification History:
 		<cfargument name="memento" type="struct" required="true">
 		<cfset variables.instance = arguments.memento>
 	</cffunction>
+	
+	<!--- ************************************************************* --->
+	
+	<cffunction name="getEventCacheKeyPrefix" access="public" returntype="string" output="false">
+		<cfreturn "cboxevent_" & getFullEvent() & "-">
+	</cffunction>
+	
+	<!--- ************************************************************* --->
+	
+	<cffunction name="getHandlerCacheKeyPrefix" access="public" returntype="string" output="false">
+		<cfreturn "cboxhandler_" & getRunnable()>
+	</cffunction>
+	
+	<!--- ************************************************************* --->
+	
+	<cffunction name="getFullEvent" access="public" returntype="string" output="false">
+		<cfreturn getHandler() & "." & getMethod()>
+	</cffunction>
 
 	<!--- ************************************************************* --->
-
-	<cffunction name="getRunnable" access="public" returntype="any" output="false">
+	
+	<cffunction name="getRunnable" access="public" returntype="string" output="false">
 		<cfreturn getInvocationPath() & "." & getHandler()>
 	</cffunction>
 
@@ -63,7 +81,7 @@ Modification History:
 
 	<!--- ************************************************************* --->
 
-	<cffunction name="getMethod" access="public" returntype="any" output="false">
+	<cffunction name="getMethod" access="public" returntype="string" output="false">
 		<cfreturn instance.method >
 	</cffunction>
 
@@ -76,7 +94,7 @@ Modification History:
 
 	<!--- ************************************************************* --->
 
-	<cffunction name="getHandler" access="public" returntype="any" output="false">
+	<cffunction name="getHandler" access="public" returntype="string" output="false">
 		<cfreturn instance.handler >
 	</cffunction>
 
@@ -89,7 +107,7 @@ Modification History:
 
 	<!--- ************************************************************* --->
 
-	<cffunction name="getInvocationPath" access="public" returntype="any" output="false">
+	<cffunction name="getInvocationPath" access="public" returntype="string" output="false">
 		<cfreturn instance.InvocationPath >
 	</cffunction>
 

@@ -118,6 +118,10 @@ Modification History:
 	<cffunction name="getcacheDictionary" access="public" output="false" returntype="struct" hint="Get the plugin cache dictionary">
 		<cfreturn instance.cacheDictionary/>
 	</cffunction>
+	
+	<cffunction name="clearDictionary" access="public" returntype="void" hint="Clear the cache dictionary" output="false" >
+		<cfset getcacheDictionary().clearAll()>
+	</cffunction>
 
 <!------------------------------------------- PRIVATE ------------------------------------------->
 	

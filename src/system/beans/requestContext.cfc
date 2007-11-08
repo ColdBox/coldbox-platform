@@ -302,6 +302,42 @@ Modification History:
 		<cfreturn getValue("coldbox_norender",false)>
 	</cffunction>
 	
+	<!--- ************************************************************* --->
+	
+	<cffunction name="getEventName" access="public" returntype="string" output="false">
+		<cfreturn instance.eventName>
+	</cffunction>
+	
+	<!--- ************************************************************* --->
+	
+	<cffunction name="getSelf" access="public" output="false" returntype="string">
+	   <cfreturn "index.cfm?" & getEventName() & "=">
+	</cffunction>
+	
+	<!--- ************************************************************* --->
+	
+	<cffunction name="isEventCacheable" access="public" returntype="boolean" hint="Check wether the incoming event has been flagged for caching" output="false" >
+		<cfscript>
+			return valueExists("cbox_eventCacheableEntry");
+		</cfscript>
+	</cffunction>
+	
+	<!--- ************************************************************* --->
+	
+	<cffunction name="setEventCacheableEntry" access="public" returntype="void" hint="Set the event cacheable entry" output="false" >
+		<cfargument name="mdCacheEntry" required="true" type="any" hint="The cache entry we need to get to cache">
+		<cfscript>
+			setValue("cbox_eventCacheableEntry",arguments.mdCacheEntry);
+		</cfscript>
+	</cffunction>
+	
+	<!--- ************************************************************* --->
+	
+	<cffunction name="getEventCacheableEntry" access="public" returntype="any" hint="Get the event cacheable entry" output="false" >
+		<cfscript>
+			return getValue("cbox_eventCacheableEntry",structnew());
+		</cfscript>
+	</cffunction>
 	
 <!------------------------------------------- ACCESSORS/MUTATORS ------------------------------------------->
 
@@ -355,18 +391,6 @@ Modification History:
 	<cffunction name="setFolderLayouts" access="public" returntype="void" output="false">
 		<cfargument name="FolderLayouts" type="struct" required="true">
 		<cfset instance.FolderLayouts = arguments.FolderLayouts>
-	</cffunction>
-	
-	<!--- ************************************************************* --->
-	
-	<cffunction name="getEventName" access="public" returntype="string" output="false">
-		<cfreturn instance.eventName>
-	</cffunction>
-	
-	<!--- ************************************************************* --->
-	
-	<cffunction name="getSelf" access="public" output="false" returntype="string">
-	   <cfreturn "index.cfm?" & getEventName() & "=">
 	</cffunction>
 	
 	<!--- ************************************************************* --->

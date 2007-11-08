@@ -22,6 +22,7 @@
 			<cfchartseries type="pie" colorlist="93C2FF" >
 				<cfchartdata item="Plugins" value="#itemTypes.plugins#">
 				<cfchartdata item="Handlers" value="#itemTypes.handlers#">
+				<cfchartdata item="Events" value="#itemTypes.events#">
 				<cfchartdata item="Interceptors" value="#itemTypes.interceptors#">
 				<cfchartdata item="IoC Objects" value="#itemTypes.ioc_beans#">
 				<cfchartdata item="Other Objects" value="#itemTypes.other#">

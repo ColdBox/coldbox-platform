@@ -25,12 +25,12 @@
 		<Setting name="CustomEmailBugReport"		value="includes/EmailBugReport.cfm" />
 		<Setting name="MessageboxStyleOverride"		value="true" />
 		<Setting name="HandlersIndexAutoReload"   	value="false" />
-		<Setting name="ConfigAutoReload"			value="true" />
+		<Setting name="ConfigAutoReload"			value="false" />
 		<Setting name="ExceptionHandler"     		value="" />
 		<Setting name="onInvalidEvent" 				value="" />
 		<Setting name="MyPluginsLocation" 			value="coldbox.myplugins"/>
 		<Setting name="HandlersExternalLocation" 	value="applications.coldbox.testing.testhandlers"/>
-		<Setting name="HandlerCaching" 				value="false"/>
+		<Setting name="HandlerCaching" 				value="true"/>
 		<Setting name="EventCaching" 				value="true"/>
 		<Setting name="IOCFramework" 				value="coldspring"/>
 		<Setting name="IOCDefinitionFile"		 	value="/coldbox/config/coldspring.xml.cfm"/>

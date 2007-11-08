@@ -102,6 +102,7 @@
 			<div class="fw_debugContentCell">
 			 <b>Plugins: </b> #itemTypes.plugins# &nbsp;
 			 <b>Handlers: </b> #itemTypes.handlers# &nbsp;
+			 <b>Events: </b> #itemTypes.events# &nbsp;
 			 <b>IoC Beans: </b> #itemTypes.ioc_beans# &nbsp;
 			 <b>Interceptors: </b> #itemTypes.interceptors# &nbsp;
 			 <b>Other: </b> #itemTypes.other#
