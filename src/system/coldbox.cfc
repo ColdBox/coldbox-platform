@@ -50,7 +50,7 @@ Description :
 	<cffunction name="reloadChecks" access="public" returntype="void" hint="Reload checks and reload settings." output="false" >
 		<cfset var ExceptionService = "">
 		<cfset var ExceptionBean = "">
-		 
+		
 		<!--- Initialize the Controller If Needed--->
 		<cfif not structkeyExists(application,"cbController") or not application.cbController.getColdboxInitiated() or isfwReinit()>
 			<cflock type="exclusive" name="#getAppHash()#" timeout="#getLockTimeout()#">

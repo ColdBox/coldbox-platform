@@ -54,7 +54,7 @@ Modification History:
 		<!--- ************************************************************* --->
 		<cfscript>
 			/* Used for caching. */
-			var pluginKey = "cboxplugin_" & arguments.plugin;
+			var pluginKey = "cboxplugin_plugin-" & arguments.plugin;
 			var oPlugin = structnew();
 			var MetaData = "";
 			var mdEntry = structnew();

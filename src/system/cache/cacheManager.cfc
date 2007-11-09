@@ -245,6 +245,7 @@ Modification History:
 		itemTypes.ioc_beans = 0;
 		itemTypes.interceptors = 0;
 		itemTypes.events = 0;
+		itemTypes.views = 0;
 
 		//Sort the listing.
 		itemList = listSort(itemList, "textnocase");
@@ -261,6 +262,8 @@ Modification History:
 				itemTypes.interceptors = itemTypes.interceptors + 1;
 			else if ( findnocase("cboxevent", listGetAt(itemList,x)) )
 				itemTypes.events = itemTypes.events + 1;
+			else if ( findnocase("cboxview", listGetAt(itemList,x)) )
+				itemTypes.views = itemTypes.views + 1;
 			else
 				itemTypes.other = itemTypes.other + 1;
 		}

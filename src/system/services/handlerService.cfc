@@ -193,7 +193,8 @@ Description :
 	<!--- Get a Registered Handler Bean --->
 	<cffunction name="getRegisteredHandler" access="public" hint="I get a registered handler and method according to passed event from the registeredHandlers setting." returntype="coldbox.system.beans.eventhandlerBean"  output="false">
 		<!--- ************************************************************* --->
-		<cfargument name="event" hint="The event to check and get." type="string" required="true">
+		<cfargument name="event"   type="string"  required="true"  hint="The event to check and get." >
+		<cfargument name="noThrow" type="boolean" required="false" hint="No error throwing, used by request service."/>
 		<!--- ************************************************************* --->
 		<cfscript>
 		var handlerIndex = 0;
@@ -224,24 +225,26 @@ Description :
 			HandlerBean.setHandler(listgetAt(handlersList,handlerExternalIndex));
 			HandlerBean.setMethod(MethodReceived);
 		}
-		//Check for invalid Event
-		else if ( onInvalidEvent neq "" ){
-				//Check if the invalid event is the same as the current event
-				if ( CompareNoCase(onInvalidEvent,event) eq 0){
-					throw("The invalid event handler: #onInvalidEvent# is also invalid. Please check your settings","","Framework.InvalidEventHandlerException");
+		else if( arguments.noThrow eq false ){
+			//Check for invalid Event
+			if ( onInvalidEvent neq "" ){
+					//Check if the invalid event is the same as the current event
+					if ( CompareNoCase(onInvalidEvent,event) eq 0){
+						throw("The invalid event handler: #onInvalidEvent# is also invalid. Please check your settings","","Framework.InvalidEventHandlerException");
+					}
+					else{
+						//Log Invalid Event
+						controller.getPlugin("logger").logEntry("error","Invalid Event detected: #HandlerReceived#.#MethodReceived#");
+						//Override Event
+						HandlerBean.setHandler(reReplace(onInvalidEvent,"\.[^.]*$",""));
+						HandlerBean.setMethod(listLast(onInvalidEvent,"."));
+					}
 				}
-				else{
-					//Log Invalid Event
-					controller.getPlugin("logger").logEntry("error","Invalid Event detected: #HandlerReceived#.#MethodReceived#");
-					//Override Event
-					HandlerBean.setHandler(reReplace(onInvalidEvent,"\.[^.]*$",""));
-					HandlerBean.setMethod(listLast(onInvalidEvent,"."));
-				}
+			else{
+				getUtil().throw("The event handler: #event# is not valid registered event.","","Framework.EventHandlerNotRegisteredException");
 			}
-		else{
-			throw("The event handler: #incomingEvent# is not valid registered event.","","Framework.EventHandlerNotRegisteredException");
-		}
-		
+		}//end if noThrow
+				
 		//Return validated Handler Bean
 		return HandlerBean;
 		</cfscript>

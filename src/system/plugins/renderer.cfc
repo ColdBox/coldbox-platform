@@ -51,6 +51,18 @@ Modification History:
 	</cffunction>
 
 <!------------------------------------------- PUBLIC ------------------------------------------->
+	
+	<!--- purgeView --->
+	<cffunction name="purgeView" output="false" access="public" returntype="void" hint="Purges a view from the cache.">
+		<!--- ************************************************************* --->
+		<cfargument name="view" required="true" type="string" hint="The view to purge from the cache">
+		<!--- ************************************************************* --->
+		<cfscript>
+			var cacheKey = "cboxview_view-" & arguments.view;
+			/* Clear the view */
+			controller.getColdBoxOCM().clearKey(cacheKey);
+		</cfscript>
+	</cffunction>
 
 	<!--- ************************************************************* --->
 	
@@ -61,6 +73,8 @@ Modification History:
 		<cfset var cbox_RenderedView = "">
 		<cfset var Event = controller.getRequestService().getContext()>
 		<cfset var rc = event.getCollection()>
+		<cfset var cacheKey = "">
+		<cfset var cacheEntry = "">
 		
 		<!--- Test Default View --->
 		<cfif arguments.view eq "">
@@ -74,11 +88,29 @@ Modification History:
 						  detail="Please remember to use the 'setView()' method in your handler.">
 		</cfif>
 		
-		<!--- Render The View --->
-		<cfmodule template="../includes/timer.cfm" timertag="Rendering View [#arguments.view#.cfm]">
-			<cfsavecontent variable="cbox_RenderedView"><cfoutput><cfinclude template="/#getappMapping()#/#getViewsConvention()#/#arguments.view#.cfm"></cfoutput></cfsavecontent>
-		</cfmodule>
+		<!--- Setup the cache key --->
+		<cfset cacheKey = "cboxview_view-" & arguments.view>
 		
+		<!--- Do we have a cached view?? --->
+		<cfif controller.getColdboxOCM().lookup(cacheKey)>
+			<!--- Render The View --->
+			<cfmodule template="../includes/timer.cfm" timertag="Rendering Cached View [#arguments.view#.cfm]">
+				<cfset cbox_RenderedView = controller.getColdBoxOCM().get(cacheKey)>
+			</cfmodule>
+		<cfelse>
+			<!--- Render The View --->
+			<cfmodule template="../includes/timer.cfm" timertag="Rendering View [#arguments.view#.cfm]">
+				<cfsavecontent variable="cbox_RenderedView"><cfoutput><cfinclude template="/#getappMapping()#/#getViewsConvention()#/#arguments.view#.cfm"></cfoutput></cfsavecontent>
+			</cfmodule>
+			<!--- Is this view cacheable, and if its the view we need to cache. --->
+			<cfif event.isViewCacheable() and (arguments.view eq event.getViewCacheableEntry().view)>
+				<!--- Cache it baby!! --->
+				<cfset cacheEntry = event.getViewCacheableEntry()>
+				<cfset controller.getColdboxOCM().set(cacheEntry.cacheKey,cbox_RenderedView,cacheEntry.timeout,cacheEntry.lastAccessTimeout)>
+			</cfif>
+		</cfif>
+		
+		<!--- Return cached, or rendered view --->
 		<cfreturn cbox_RenderedView>
 	</cffunction>
 
@@ -116,6 +148,7 @@ Modification History:
 		<cfset var Event = controller.getRequestService().getContext()>
 		<cfset var rc = event.getCollection()>
 		
+			
 		<!--- Check if no view has been set, if not, then set the default view --->
 		<cfif event.getCurrentView() eq "">
 			<cfset event.setView(event.getDefaultView())>

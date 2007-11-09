@@ -196,7 +196,7 @@
 	
 	<!--- ************************************************************* --->
 	
-	<cffunction name="testCurrentLayout" access="public" returntype="string" output="false">
+	<cffunction name="testCurrentLayout" access="public" returntype="void" output="false">
 		<cfscript>
 			var event = getRequestContext();
 			var layout = "layout.pdf";
@@ -312,12 +312,50 @@
 	
 	<!--- ************************************************************* --->
 	
-	<cffunction name="testgetSelf" access="public" output="false" returntype="string">
+	<cffunction name="testgetSelf" access="public" output="false" returntype="void">
 		<cfscript>
 			var event = getRequestContext();
 			var test = getController().getSetting("EventName");
 
 			assertEqualsString( "index.cfm?#test#=", event.getSelf() );
+			
+		</cfscript>
+	</cffunction>
+	
+	<!--- ************************************************************* --->
+	
+	<cffunction name="testEventCacheableEntry" access="public" output="false" returntype="void">
+		<cfscript>
+			var event = getRequestContext();
+			var centry = structnew();
+			
+			AssertFalse( event.isEventCacheable(), "event cacheable");
+			
+			centry.cacheable = true;
+			centry.test = true;
+			
+			event.setEventCacheableEntry(centry);
+			AssertTrue( event.isEventCacheable(), "event cacheable 2");
+			AssertEqualsStruct(centry, event.getEventCacheableEntry() );
+			
+		</cfscript>
+	</cffunction>
+	
+	<!--- ************************************************************* --->
+	
+	<cffunction name="testViewCacheableEntry" access="public" output="false" returntype="void">
+		<cfscript>
+			var event = getRequestContext();
+			var centry = structnew();
+			
+			AssertFalse( event.isViewCacheable(), "view cacheable");
+			
+			centry.cacheable = true;
+			centry.test = true;
+			
+			event.setViewCacheableEntry(centry);
+			AssertTrue( event.isViewCacheable(), "view cacheable 2");
+			AssertEqualsStruct(centry, event.getViewCacheableEntry() );
 			
 		</cfscript>
 	</cffunction>

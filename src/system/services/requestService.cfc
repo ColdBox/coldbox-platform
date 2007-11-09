@@ -67,7 +67,7 @@ Modification History:
 			if ( controller.getSetting("EventCaching") ){	
 				stime = getTickcount();
 				/* Get the handler bean for this event */
-				oEventHandlerBean = controller.gethandlerService().getRegisteredHandler(Context.getCurrentEvent());
+				oEventHandlerBean = controller.gethandlerService().getRegisteredHandler(event=Context.getCurrentEvent(),nothrow=true);
 				
 				/* Check for Event Cache Purge */
 				if ( Context.valueExists("fwCache") ){

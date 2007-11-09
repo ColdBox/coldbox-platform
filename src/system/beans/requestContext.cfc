@@ -178,8 +178,10 @@ Modification History:
 	<!--- ************************************************************* --->
 	
 	<cffunction name="setView" access="public" returntype="void" hint="I Set the view to render in this request.I am called from event handlers. Request Collection Name: currentView, currentLayout"  output="false">
-		<cfargument name="name"     hint="The name of the view to set. If a layout has been defined it will assign it, else if will assign the default layout." type="string">
-		<cfargument name="nolayout" type="boolean" required="false" default="false" hint="Boolean flag, wether the view sent in will be using a layout or not. Default is false. Uses a pre set layout or the default layout.">
+		<!--- ************************************************************* --->
+	    <cfargument name="name"     	type="string"  required="true"  hint="The name of the view to set. If a layout has been defined it will assign it, else if will assign the default layout. No extension please">
+		<cfargument name="nolayout" 	type="boolean" required="false" default="false" hint="Boolean flag, wether the view sent in will be using a layout or not. Default is false. Uses a pre set layout or the default layout.">
+		<cfargument name="cacheParams" 	type="struct" required="false" hint="A cache param structure. [Timeout=minutes, LastAccessTimeout=minutes]"/>
 		<!--- ************************************************************* --->
 	    <cfscript>
 		    var key = "";
@@ -205,6 +207,21 @@ Modification History:
 						setValue("currentLayout", instance.defaultLayout);
 					}
 					
+			}
+			//Do we need to cache the view
+			if( structKeyExists(arguments, "cacheParams") ){
+				//prepare the cache key
+				arguments.cacheParams.cacheKey = "cboxview_view-" & arguments.name;
+				arguments.cacheParams.view = arguments.name;
+				//arg cleanup
+				if ( not structKeyExists(arguments.cacheParams,"Timeout") or not isNumeric(arguments.cacheParams.Timeout) ){
+					arguments.cacheParams.Timeout = "";
+				}
+				if ( not structKeyExists(arguments.cacheParams,"LastAccessTimeout") or not isNumeric(arguments.cacheParams.LastAccessTimeout) ){
+					arguments.cacheParams.LastAccessTimeout = "";
+				}
+				//Save the view cache entry
+				setViewCacheableEntry(arguments.cacheParams);
 			}
 			
 			//Set the current view to render.
@@ -336,6 +353,31 @@ Modification History:
 	<cffunction name="getEventCacheableEntry" access="public" returntype="any" hint="Get the event cacheable entry" output="false" >
 		<cfscript>
 			return getValue("cbox_eventCacheableEntry",structnew());
+		</cfscript>
+	</cffunction>
+	
+	<!--- ************************************************************* --->
+	
+	<cffunction name="isViewCacheable" access="public" returntype="boolean" hint="Check wether the incoming view has been flagged for caching" output="false" >
+		<cfscript>
+			return valueExists("cbox_viewCacheableEntry");
+		</cfscript>
+	</cffunction>
+	
+	<!--- ************************************************************* --->
+	
+	<cffunction name="setViewCacheableEntry" access="public" returntype="void" hint="Set the view cacheable entry" output="false" >
+		<cfargument name="mdCacheEntry" required="true" type="any" hint="The cache entry we need to get to cache">
+		<cfscript>
+			setValue("cbox_viewCacheableEntry",arguments.mdCacheEntry);
+		</cfscript>
+	</cffunction>
+	
+	<!--- ************************************************************* --->
+	
+	<cffunction name="getViewCacheableEntry" access="public" returntype="any" hint="Get the event cacheable entry" output="false" >
+		<cfscript>
+			return getValue("cbox_viewCacheableEntry",structnew());
 		</cfscript>
 	</cffunction>
 	
