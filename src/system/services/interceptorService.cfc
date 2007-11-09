@@ -24,6 +24,10 @@ Description :
 			setInterceptionPoints('afterConfigurationLoad,afterAspectsLoad,sessionStart,sessionEnd,preProcess,preEvent,postEvent,preRender,postRender,postProcess,afterCacheElementInsert,afterCacheElementRemoved');
 			/* Init Container */
 			setInterceptionStates(structnew());
+			
+			/* Set public cache key */
+			this.INTERCEPTOR_CACHEKEY_PREFIX = "cboxinterceptor_interceptor-";
+			
 			/* Return Service */			
 			return this;
 		</cfscript>
@@ -52,7 +56,7 @@ Description :
 			/* Loop over the Interceptor Array, to begin registration */
 			for (; x lte arrayLen(interceptorConfig.interceptors); x=x+1){
 				/* Create Cache Interceptor Key */
-				interceptorKey = "cboxinterceptor_" & interceptorConfig.interceptors[x].class;
+				interceptorKey = this.INTERCEPTOR_CACHEKEY_PREFIX & interceptorConfig.interceptors[x].class;
 				/* Create the Interceptor Class */
 				oInterceptor = CreateObject("component", interceptorConfig.interceptors[x].class ).init(getController(),interceptorConfig.interceptors[x].properties);
 				/* Configure the Interceptor */

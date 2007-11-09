@@ -34,7 +34,6 @@ Modification History:
 			var DebugPassword = controller.getSetting("debugPassword");
 			var EventName = controller.getSetting("EventName");
 			var oSessionStorage = controller.getPlugin("sessionstorage");
-			var oEventHandlerBean = "";
 			var eventCacheKey = "";
 					
 			//Object Caching Garbage Collector
@@ -65,9 +64,6 @@ Modification History:
 			
 			/* Are we using event caching? */
 			if ( controller.getSetting("EventCaching") ){	
-				stime = getTickcount();
-				/* Get the handler bean for this event */
-				oEventHandlerBean = controller.gethandlerService().getRegisteredHandler(event=Context.getCurrentEvent(),nothrow=true);
 				
 				/* Check for Event Cache Purge */
 				if ( Context.valueExists("fwCache") ){
@@ -75,14 +71,15 @@ Modification History:
 					Context.removeValue("fwCache");
 					Context.removeValue("fwReinit");
 					/* Clear the cache key. */
-					controller.getColdboxOCM().clearKey( oEventHandlerBean.getEventCacheKeyPrefix() & hash(Context.getCollection().toString()) );
+					eventCacheKey = controller.getHandlerService().EVENT_CACHEKEY_PREFIX & Context.getCurrentEvent() & "-" & hash(Context.getCollection().toString());
+					controller.getColdboxOCM().clearKey( eventCacheKey );
 				}
 				else{
 					/* Clean some Framework URL Actions */
 					Context.removeValue("fwReinit");
 					
 					/* Setup the cache key */
-					eventCacheKey = oEventHandlerBean.getEventCacheKeyPrefix() & hash(Context.getCollection().toString());
+					eventCacheKey = controller.getHandlerService().EVENT_CACHEKEY_PREFIX & Context.getCurrentEvent() & "-" & hash(Context.getCollection().toString());
 					/* Determine if this event has been cached */
 					if ( controller.getColdboxOCM().lookup(eventCacheKey) ){
 						/* Event has been found, flag it so we can render it */

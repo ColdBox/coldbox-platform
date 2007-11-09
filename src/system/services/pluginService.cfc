@@ -28,6 +28,9 @@ Modification History:
 			setColdBoxPluginsPath('coldbox.system.plugins');
 			setCacheDictionary(CreateObject("component","coldbox.system.util.baseDictionary").init('PluginMetadata'));
 			
+			/* Public Cache Keys */
+			this.PLUGIN_CACHEKEY_PREFIX = "cboxplugin_plugin-";
+			this.CUSTOMPLUGIN_CACHEKEY_PREFIX = "cboxplugin_customplugin-";
 			/* Return instance */
 			return this;
 		</cfscript>
@@ -54,7 +57,7 @@ Modification History:
 		<!--- ************************************************************* --->
 		<cfscript>
 			/* Used for caching. */
-			var pluginKey = "cboxplugin_plugin-" & arguments.plugin;
+			var pluginKey = this.PLUGIN_CACHEKEY_PREFIX & arguments.plugin;
 			var oPlugin = structnew();
 			var MetaData = "";
 			var mdEntry = structnew();
@@ -62,7 +65,7 @@ Modification History:
 			
 			/* Differentiate a Custom PluginKey */
 			if ( arguments.custom ){
-				pluginKey = "cboxcustom_plugin_" & arguments.plugin;
+				pluginKey = this.CUSTOMPLUGIN_CACHEKEY_PREFIX & arguments.plugin;
 			}
 			
 			/* Lookup plugin in Cache */

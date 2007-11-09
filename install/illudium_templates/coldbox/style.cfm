@@ -62,3 +62,28 @@ input[type=text], input[type=password], input[type=checkbox], select { padding: 
 input[type=text]:focus, input[type=password]:focus, textarea:focus, input[type=checkbox]:focus, select:focus {
  border: 1px solid #886;
 }
+.formLayout label {
+      float:left;
+      color: #333366;
+      text-align:right;
+      font-weight:bold;
+      font-size:11px;
+      margin-right:8px;
+      display:block;
+      width:20em;
+      line-height:1.5em;
+      }
+ul.formLayout {
+      clear:both;
+      float:left;
+      list-style: none;
+      padding:0;
+      margin:8px 0;
+      width:99%;
+} 
+ul.formLayout li {
+     clear:both;
+     color:#000;
+     padding:0;
+     margin:6px 0;
+}

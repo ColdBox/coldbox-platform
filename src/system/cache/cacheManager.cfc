@@ -184,6 +184,40 @@ Modification History:
 		
 		<cfreturn Results>
 	</cffunction>
+	
+	<!--- ************************************************************* --->
+	
+	<cffunction name="clearAllEvents" access="public" output="false" returntype="void" hint="Clears all events from the cache.">
+		<cfscript>
+			var poolKeys = listSort(structKeyList(getObjectPool().getpool_metadata()),"textnocase");
+			var poolKeysLength = listlen(poolKeys);
+			var x = 1;
+			
+			//Find all the event keys.
+			for(x=1; x lte poolKeysLength; x=x+1){
+				if ( findnocase( getController().getHandlerService().EVENT_CACHEKEY_PREFIX, listGetAt(poolKeys,x) ) ){
+					clearKey(listGetAt(poolKeys,x));
+				}
+			}
+		</cfscript>
+	</cffunction>
+
+	<!--- ************************************************************* --->
+	
+	<cffunction name="clearAllViews" access="public" output="false" returntype="void" hint="Clears all views from the cache.">
+		<cfscript>
+			var poolKeys = listSort(structKeyList(getObjectPool().getpool_metadata()),"textnocase");
+			var poolKeysLength = listlen(poolKeys);
+			var x = 1;
+			
+			//Find all the event keys.
+			for(x=1; x lte poolKeysLength; x=x+1){
+				if ( findnocase( getController().getPlugin("renderer").VIEW_CACHEKEY_PREFIX, listGetAt(poolKeys,x) ) ){
+					clearKey(listGetAt(poolKeys,x));
+				}
+			}
+		</cfscript>
+	</cffunction>
 
 	<!--- ************************************************************* --->
 

@@ -17,6 +17,32 @@ Modification History:
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 	
+	<cffunction name="reap" access="public" output="false" returntype="void" hint="Reap the cache.">
+		<cfthread action="run" name="coldbox.cache.reap-#createUUID()#">  
+			<cfscript>  
+				super.reap(); 
+			</cfscript>
+		</cfthread>
+	</cffunction>
+	
+	<!--- ************************************************************* --->
+	
+	<cffunction name="clearAllEvents" access="public" output="false" returntype="void" hint="Clears all events from the cache.">
+		<cfthread action="run" name="coldbox.cache.clearAllEvents-#createUUID()#">  
+			<cfscript>  
+				super.clearAllEvents();  
+			</cfscript>          
+		</cfthread>
+	</cffunction>
 
-
+	<!--- ************************************************************* --->
+	
+	<cffunction name="clearAllViews" access="public" output="false" returntype="void" hint="Clears all views from the cache.">
+		<cfthread action="run" name="coldbox.cache.clearAllViews-#createUUID()#">  
+			<cfscript>  
+				super.clearAllViews();  
+			</cfscript>          
+		</cfthread>
+	</cffunction>
+	
 </cfcomponent>

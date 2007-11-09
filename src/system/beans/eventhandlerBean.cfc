@@ -47,19 +47,7 @@ Modification History:
 		<cfargument name="memento" type="struct" required="true">
 		<cfset variables.instance = arguments.memento>
 	</cffunction>
-	
-	<!--- ************************************************************* --->
-	
-	<cffunction name="getEventCacheKeyPrefix" access="public" returntype="string" output="false">
-		<cfreturn "cboxevent_" & getFullEvent() & "-">
-	</cffunction>
-	
-	<!--- ************************************************************* --->
-	
-	<cffunction name="getHandlerCacheKeyPrefix" access="public" returntype="string" output="false">
-		<cfreturn "cboxhandler_" & getRunnable()>
-	</cffunction>
-	
+		
 	<!--- ************************************************************* --->
 	
 	<cffunction name="getFullEvent" access="public" returntype="string" output="false">

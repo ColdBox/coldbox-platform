@@ -25,6 +25,10 @@ Description :
 			/* Setup the Event Cache Dictionary */
 			setEventCacheDictionary(CreateObject("component","coldbox.system.util.baseDictionary").init('EventCache'));
 			
+			/* Setup the public event cache key prefix */
+			this.EVENT_CACHEKEY_PREFIX = "cboxevent_event-";
+			this.HANDLER_CACHEKEY_PREFIX = "cboxhandler_handler-";
+			
 			/* Return Service */			
 			return this;
 		</cfscript>
@@ -49,7 +53,7 @@ Description :
 			/* Get the validated event handler bean */
 			var oEventHandler = "";
 			var oRequestContext = controller.getRequestService().getContext();
-			var cacheKey = oEventHandlerBean.getHandlerCacheKeyPrefix();
+			var cacheKey = this.HANDLER_CACHEKEY_PREFIX & oEventHandlerBean.getRunnable();
 			var eventCacheKey = "";
 			var MetaData = "";
 			var mdEntry = "";
@@ -179,7 +183,7 @@ Description :
 				/* Do we need to cache this event?? */
 				if ( eventDictionaryEntry.cacheable ){
 					/* Save the cache key in md Entry */
-					eventDictionaryEntry.cacheKey = oEventHandlerBean.getEventCacheKeyPrefix() & hash(oRequestContext.getCollection().toString());
+					eventDictionaryEntry.cacheKey = this.EVENT_CACHEKEY_PREFIX & oEventHandlerBean.getFullEvent() & "-" & hash(oRequestContext.getCollection().toString());
 					/* Event is cacheable and we need to flag it so the renderer caches it. */
 					oRequestContext.setEventCacheableEntry(eventDictionaryEntry);
 				}//end if md says that this event is cacheable

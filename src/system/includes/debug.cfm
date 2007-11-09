@@ -111,6 +111,7 @@ Modification History:
 		</div>
 		<div class="fw_debugContentCell">
 		<cfif Event.getCurrentEvent() eq ""><span class="fw_redText">N/A</span><cfelse>#Event.getCurrentEvent()#</cfif>
+		<cfif Event.isEventCacheable()><span class="fw_redText">&nbsp;CACHED EVENT</span></cfif>
 		</div>
 
 		<div class="fw_debugTitleCell">

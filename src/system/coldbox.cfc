@@ -118,13 +118,6 @@ Description :
 					<cfset cbController.setAppStartHandlerFired(true)>
 				</cfif>
 				
-				<!--- Before Any Execution, do we have cached content to deliver --->
-				<cfif Event.isEventCacheable()>
-					<cfset renderedContent = cbController.getColdboxOCM().get(Event.getEventCacheableEntry())>
-					<cfoutput>#renderedContent#</cfoutput>
-					<cfreturn>
-				</cfif>
-				
 				<!--- Execute preProcess Interception --->
 				<cfset cbController.getInterceptorService().processState("preProcess")>
 				
@@ -132,43 +125,52 @@ Description :
 				<cfif cbController.getSetting("RequestStartHandler") neq "">
 					<cfset cbController.runEvent(cbController.getSetting("RequestStartHandler"),true)>
 				</cfif>
-			
-				<!--- Run Default/Set Event --->
-				<cfset cbController.runEvent()>
 				
-				<!--- No Render Test --->
-				<cfif not event.isNoRender()>
-					<!--- Execute preRender Interception --->
-					<cfset cbController.getInterceptorService().processState("preRender")>
+				<!--- Before Any Execution, do we have cached content to deliver --->
+				<cfif Event.isEventCacheable()>
+					<cfset renderedContent = cbController.getColdboxOCM().get(Event.getEventCacheableEntry())>
+					<cfoutput>#renderedContent#</cfoutput>
+				<cfelse>
+				
+					<!--- Run Default/Set Event --->
+					<cfset cbController.runEvent()>
 					
-					<!--- Render Layout/View pair via set variable to eliminate whitespace--->
-					<cfset renderedContent = cbController.getPlugin("renderer").renderLayout()>
-					
-					<!--- Check if caching the content --->
-					<cfif event.isEventCacheable()>
-						<cfset eventCacheEntry = Event.getEventCacheableEntry()>
-						<!--- Cache the content --->
-						<cfset cbController.getColdboxOCM().set(eventCacheEntry.cacheKey,
-																renderedContent,
-																eventCacheEntry.timeout,
-																eventCacheEntry.lastAccessTimeout)>
+					<!--- No Render Test --->
+					<cfif not event.isNoRender()>
+						<!--- Execute preRender Interception --->
+						<cfset cbController.getInterceptorService().processState("preRender")>
+						
+						<!--- Render Layout/View pair via set variable to eliminate whitespace--->
+						<cfset renderedContent = cbController.getPlugin("renderer").renderLayout()>
+						
+						<!--- Check if caching the content --->
+						<cfif event.isEventCacheable()>
+							<cfset eventCacheEntry = Event.getEventCacheableEntry()>
+							<!--- Cache the content --->
+							<cfset cbController.getColdboxOCM().set(eventCacheEntry.cacheKey,
+																	renderedContent,
+																	eventCacheEntry.timeout,
+																	eventCacheEntry.lastAccessTimeout)>
+						</cfif>
+						
+						<!--- Render the Content --->
+						<cfoutput>#renderedContent#</cfoutput>
+						
+						<!--- Execute postRender Interception --->
+						<cfset cbController.getInterceptorService().processState("postRender")>
 					</cfif>
 					
-					<!--- Render the Content --->
-					<cfoutput>#renderedContent#</cfoutput>
+					<!--- If Found in config, run onRequestEnd Handler --->
+					<cfif cbController.getSetting("RequestEndHandler") neq "">
+						<cfset cbController.runEvent(cbController.getSetting("RequestEndHandler"),true)>
+					</cfif>
 					
-					<!--- Execute postRender Interception --->
-					<cfset cbController.getInterceptorService().processState("postRender")>
+					<!--- Execute postProcess Interception --->
+					<cfset cbController.getInterceptorService().processState("postProcess")>
+				
+				<!--- End else if not cached event --->
 				</cfif>
 				
-				<!--- If Found in config, run onRequestEnd Handler --->
-				<cfif cbController.getSetting("RequestEndHandler") neq "">
-					<cfset cbController.runEvent(cbController.getSetting("RequestEndHandler"),true)>
-				</cfif>
-				
-				<!--- Execute postProcess Interception --->
-				<cfset cbController.getInterceptorService().processState("postProcess")>
-			
 				<!--- Trap Application Errors --->
 				<cfcatch type="any">
 					<cfset ExceptionService = cbController.getService("exception")>

@@ -30,7 +30,7 @@
 		<Setting name="onInvalidEvent" 				value="" />
 		<Setting name="MyPluginsLocation" 			value="coldbox.myplugins"/>
 		<Setting name="HandlersExternalLocation" 	value="applications.coldbox.testing.testhandlers"/>
-		<Setting name="HandlerCaching" 				value="true"/>
+		<Setting name="HandlerCaching" 				value="false"/>
 		<Setting name="EventCaching" 				value="true"/>
 		<Setting name="IOCFramework" 				value="coldspring"/>
 		<Setting name="IOCDefinitionFile"		 	value="/coldbox/config/coldspring.xml.cfm"/>
@@ -88,7 +88,7 @@
 	<Cache>
 		<ObjectDefaultTimeout>15</ObjectDefaultTimeout>
 		<ObjectDefaultLastAccessTimeout>5</ObjectDefaultLastAccessTimeout>
-		<ReapFrequency>3</ReapFrequency>
+		<ReapFrequency>1</ReapFrequency>
 		<MaxObjects>100</MaxObjects>
 		<FreeMemoryPercentageThreshold>0</FreeMemoryPercentageThreshold>
 	</Cache>

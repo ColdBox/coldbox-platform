@@ -44,6 +44,9 @@ Modification History:
 		<cfset instance.viewsConvention = getController().getSetting("viewsConvention",true)>
 		<cfset instance.appMapping = getController().getSetting("AppMapping")>
 		
+		<!--- PUBLIC CacheKey Prefix --->
+		<cfset this.VIEW_CACHEKEY_PREFIX = "cboxview_view-">
+		
 		<!--- Inject UDF For Views/Layouts --->
 		<cfset includeUDF(getController().getSetting("UDFLibraryFile"))>
 		
@@ -58,7 +61,7 @@ Modification History:
 		<cfargument name="view" required="true" type="string" hint="The view to purge from the cache">
 		<!--- ************************************************************* --->
 		<cfscript>
-			var cacheKey = "cboxview_view-" & arguments.view;
+			var cacheKey = this.VIEW_CACHEKEY_PREFIX & arguments.view;
 			/* Clear the view */
 			controller.getColdBoxOCM().clearKey(cacheKey);
 		</cfscript>
@@ -66,6 +69,7 @@ Modification History:
 
 	<!--- ************************************************************* --->
 	
+	<!--- Render the View --->
 	<cffunction name="renderView"	access="Public" hint="Renders the current view." output="false" returntype="Any">
 		<!--- ************************************************************* --->
 		<cfargument name="view" required="false" default="" type="string" hint="If not passed in, the value in the currentView in the current RequestContext will be used.">
@@ -89,7 +93,7 @@ Modification History:
 		</cfif>
 		
 		<!--- Setup the cache key --->
-		<cfset cacheKey = "cboxview_view-" & arguments.view>
+		<cfset cacheKey = this.VIEW_CACHEKEY_PREFIX & arguments.view>
 		
 		<!--- Do we have a cached view?? --->
 		<cfif controller.getColdboxOCM().lookup(cacheKey)>
@@ -106,7 +110,7 @@ Modification History:
 			<cfif event.isViewCacheable() and (arguments.view eq event.getViewCacheableEntry().view)>
 				<!--- Cache it baby!! --->
 				<cfset cacheEntry = event.getViewCacheableEntry()>
-				<cfset controller.getColdboxOCM().set(cacheEntry.cacheKey,cbox_RenderedView,cacheEntry.timeout,cacheEntry.lastAccessTimeout)>
+				<cfset controller.getColdboxOCM().set(this.VIEW_CACHEKEY_PREFIX & cacheEntry.view,cbox_RenderedView,cacheEntry.timeout,cacheEntry.lastAccessTimeout)>
 			</cfif>
 		</cfif>
 		
@@ -187,5 +191,8 @@ Modification History:
 	<cffunction name="getappMapping" access="private" output="false" returntype="string" hint="Get appMapping">
 		<cfreturn instance.appMapping/>
 	</cffunction>
+	
+	<!--- ************************************************************* --->
+	
 	
 </cfcomponent>

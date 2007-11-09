@@ -19,6 +19,8 @@ Description		: This is the main ColdBox front Controller.
 	<cffunction name="init" returntype="any" access="Public" hint="I am the constructor" output="false">
 		<cfargument name="AppRootPath" type="string" required="true" hint="The app Root Path"/>
 		<cfscript>
+			var oCFMLEngine = CreateObject("component","coldbox.system.util.CFMLEngine").init();
+			
 			//properties
 			setColdboxInitiated(false);
 			setConfigSettings(structnew());
@@ -30,7 +32,12 @@ Description		: This is the main ColdBox front Controller.
 			setAppRootPath(arguments.AppRootPath);
 			
 			//Create & init ColdBox Services
-			setColdboxOCM( CreateObject("component","cache.cacheManager").init(this) );
+			if ( oCFMLEngine.getEngine() eq oCFMLEngine.ADOBE and oCFMLEngine.getVersion() gte 8 ){
+				setColdboxOCM( CreateObject("component","cache.MTcacheManager").init(this) );
+			}
+			else{
+				setColdboxOCM( CreateObject("component","cache.cacheManager").init(this) );
+			}
 			setRequestService( CreateObject("component","services.requestService").init(this) );
 			setDebuggerService( CreateObject("component","services.debuggerService").init(this) );
 			setPluginService( CreateObject("component","services.pluginService").init(this) );

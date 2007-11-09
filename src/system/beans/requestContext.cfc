@@ -181,10 +181,13 @@ Modification History:
 		<!--- ************************************************************* --->
 	    <cfargument name="name"     	type="string"  required="true"  hint="The name of the view to set. If a layout has been defined it will assign it, else if will assign the default layout. No extension please">
 		<cfargument name="nolayout" 	type="boolean" required="false" default="false" hint="Boolean flag, wether the view sent in will be using a layout or not. Default is false. Uses a pre set layout or the default layout.">
-		<cfargument name="cacheParams" 	type="struct" required="false" hint="A cache param structure. [Timeout=minutes, LastAccessTimeout=minutes]"/>
+		<cfargument name="cache" 		required="false" type="boolean" default="false" hint="True if you want to cache the view.">
+		<cfargument name="cacheTimeout" required="false" type="string" default=""	hint="The cache timeout">
+		<cfargument name="cacheLastAccessTimeout" required="false" type="string" default="" hint="The last access timeout">
 		<!--- ************************************************************* --->
 	    <cfscript>
 		    var key = "";
+		    var cacheEntry = structnew();
 		    
 			//If we need a layout or we haven't overriden the current layout enter if...
 		    if ( arguments.nolayout eq false and getValue("layoutoverride",false) eq false ){
@@ -209,19 +212,22 @@ Modification History:
 					
 			}
 			//Do we need to cache the view
-			if( structKeyExists(arguments, "cacheParams") ){
-				//prepare the cache key
-				arguments.cacheParams.cacheKey = "cboxview_view-" & arguments.name;
-				arguments.cacheParams.view = arguments.name;
+			if( arguments.cache ){
+				//prepare the cache keys
+				cacheEntry.view = arguments.name;
+				
 				//arg cleanup
-				if ( not structKeyExists(arguments.cacheParams,"Timeout") or not isNumeric(arguments.cacheParams.Timeout) ){
-					arguments.cacheParams.Timeout = "";
-				}
-				if ( not structKeyExists(arguments.cacheParams,"LastAccessTimeout") or not isNumeric(arguments.cacheParams.LastAccessTimeout) ){
-					arguments.cacheParams.LastAccessTimeout = "";
-				}
+				if ( not isNumeric(arguments.cacheTimeout) )
+					cacheEntry.Timeout = "";
+				else
+					cacheEntry.Timeout = arguments.CacheTimeout;
+				if ( not isNumeric(arguments.cacheLastAccessTimeout) )
+					cacheEntry.LastAccessTimeout = "";
+				else
+					cacheEntry.LastAccessTimeout = arguments.cacheLastAccessTimeout;
+					
 				//Save the view cache entry
-				setViewCacheableEntry(arguments.cacheParams);
+				setViewCacheableEntry(cacheEntry);
 			}
 			
 			//Set the current view to render.
