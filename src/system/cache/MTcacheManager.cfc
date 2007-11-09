@@ -18,7 +18,7 @@ Modification History:
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 	
 	<cffunction name="reap" access="public" output="false" returntype="void" hint="Reap the cache.">
-		<cfthread action="run" name="coldbox.cache.reap-#createUUID()#">  
+		<cfthread name="coldbox.cache.reap-#createUUID()#">  
 			<cfscript>  
 				super.reap(); 
 			</cfscript>
@@ -34,7 +34,7 @@ Modification History:
 		<cfargument name="async" 		type="boolean"  required="false" default="true" hint="Run asynchronously or not"/>
 		<!--- ************************************************************* --->
 		<cfif arguments.async>
-			<cfthread action="run" name="coldbox.cache.clearEvent-#createUUID()#">  
+			<cfthread name="coldbox.cache.clearEvent-#createUUID()#">  
 				<cfscript>  
 					super.clearEvent(argumentCollection=arguments); 
 				</cfscript>
@@ -53,7 +53,7 @@ Modification History:
 		<cfargument name="async" 		type="boolean"  required="false" default="true" hint="Run asynchronously or not"/>
 		<!--- ************************************************************* --->
 		<cfif arguments.async>
-			<cfthread action="run" name="coldbox.cache.clearAllEvents-#createUUID()#">  
+			<cfthread name="coldbox.cache.clearAllEvents-#createUUID()#">  
 				<cfscript>  
 					super.clearAllEvents();  
 				</cfscript>          
@@ -72,7 +72,7 @@ Modification History:
 		<cfargument name="async" 		type="boolean"  required="false" default="true" hint="Run asynchronously or not"/>
 		<!--- ************************************************************* --->
 		<cfif arguments.async>
-			<cfthread action="run" name="coldbox.cache.clearAllViews-#createUUID()#">  
+			<cfthread name="coldbox.cache.clearAllViews-#createUUID()#">  
 				<cfscript>  
 					super.clearAllViews();  
 				</cfscript>          

@@ -31,13 +31,16 @@ Description		: This is the main ColdBox front Controller.
 			setAppHash( hash(arguments.AppRootPath) );
 			setAppRootPath(arguments.AppRootPath);
 			
+			//TODO: change all this to object factory.
 			//Create & init ColdBox Services
-			if ( oCFMLEngine.getEngine() eq oCFMLEngine.ADOBE and oCFMLEngine.getVersion() gte 8 ){
+			if ( (oCFMLEngine.getEngine() eq oCFMLEngine.ADOBE and oCFMLEngine.getVersion() gte 8) or
+			     (oCFMLEngine.getEngine() eq oCFMLEngine.BLUEDRAGON and oCFMLEngine.getVersion() gte 7) ){
 				setColdboxOCM( CreateObject("component","cache.MTcacheManager").init(this) );
 			}
 			else{
 				setColdboxOCM( CreateObject("component","cache.cacheManager").init(this) );
 			}
+			//Setup the rest of the services.
 			setRequestService( CreateObject("component","services.requestService").init(this) );
 			setDebuggerService( CreateObject("component","services.debuggerService").init(this) );
 			setPluginService( CreateObject("component","services.pluginService").init(this) );
@@ -360,51 +363,6 @@ Description		: This is the main ColdBox front Controller.
 	</cffunction>
 
 <!------------------------------------------- PRIVATE ------------------------------------------->
-
-	<cffunction name="getRegisteredHandler" access="private" hint="I get a registered handler and method according to passed event from the registeredHandlers setting." returntype="coldbox.system.beans.eventhandlerBean"  output="false">
-		<!--- ************************************************************* --->
-		<cfargument name="event" hint="The event to check and get." type="string" required="true">
-		<!--- ************************************************************* --->
-		<cfscript>
-		var incomingEvent = arguments.event;
-		var handlerIndex = 0;
-		var HandlerReceived = "";
-		var MethodReceived = "";
-		var handlersList = getSetting("RegisteredHandlers");
-		var onInvalidEvent = getSetting("onInvalidEvent");
-		var HandlerBean = CreateObject("component","coldbox.system.beans.eventhandlerBean").init(getSetting("HandlersInvocationPath"));
-	
-		//Rip the method
-		HandlerReceived = reReplace(incomingEvent,"\.[^.]*$","");
-		MethodReceived = listLast(incomingEvent,".");
-
-		//Check Registration
-		handlerIndex = listFindNoCase(handlersList, HandlerReceived);
-
-		//Check for registration results
-		if ( handlerIndex ){
-			HandlerBean.setHandler(listgetAt(handlersList,handlerIndex));
-			HandlerBean.setMethod(MethodReceived);
-		}
-		else if ( onInvalidEvent neq "" ){
-				//Check if the invalid event is the same as the current event
-				if ( CompareNoCase(onInvalidEvent,incomingEvent) eq 0){
-					throw("The invalid event handler: #onInvalidEvent# is also invalid. Please check your settings","","Framework.InvalidEventHandlerException");
-				}
-				else{
-					//Log Invalid Event
-					getPlugin("logger").logEntry("error","Invalid Event detected: #HandlerReceived#.#MethodReceived#");
-					//Override Event
-					HandlerBean.setHandler(reReplace(onInvalidEvent,"\.[^.]*$",""));
-					HandlerBean.setMethod(listLast(onInvalidEvent,"."));
-				}
-			}
-		else{
-			throw("The event handler: #incomingEvent# is not valid registered event.","","Framework.EventHandlerNotRegisteredException");
-		}
-		return HandlerBean;
-		</cfscript>
-	</cffunction>
 
 	<!--- Get the util object --->
 	<cffunction name="getUtil" access="private" output="false" returntype="coldbox.system.util.util" hint="Create and return a util object">
