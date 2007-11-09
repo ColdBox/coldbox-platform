@@ -99,11 +99,11 @@
 	       basedir="${build.dir}"
 	       update="true"
 	  />
-		<delete dir="${build.dir}" verbose="true"/>
+		<delete dir="${build.dir}"/>
 		<copy todir="${coldboxdownload.dir}">
 			<fileset dir="${dist.dir}"/>
 		</copy>
-		<delete dir="${dist.dir}" verbose="true"/>
+		<delete dir="${dist.dir}"/>
 		
 	</target>
 	
