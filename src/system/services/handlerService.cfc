@@ -226,7 +226,7 @@ Description :
 		//Check for external location
 		else if( handlerExternalIndex ){
 			HandlerBean.setInvocationPath(controller.getSetting("HandlersExternalLocation"));
-			HandlerBean.setHandler(listgetAt(handlersList,handlerExternalIndex));
+			HandlerBean.setHandler(listgetAt(handlersExternalList,handlerExternalIndex));
 			HandlerBean.setMethod(MethodReceived);
 		}
 		else if( arguments.noThrow eq false ){
@@ -248,7 +248,7 @@ Description :
 				getUtil().throw("The event handler: #event# is not valid registered event.","","Framework.EventHandlerNotRegisteredException");
 			}
 		}//end if noThrow
-				
+	
 		//Return validated Handler Bean
 		return HandlerBean;
 		</cfscript>

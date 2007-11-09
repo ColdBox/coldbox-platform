@@ -19,7 +19,8 @@ Description		: This is the main ColdBox front Controller.
 	<cffunction name="init" returntype="any" access="Public" hint="I am the constructor" output="false">
 		<cfargument name="AppRootPath" type="string" required="true" hint="The app Root Path"/>
 		<cfscript>
-			var oCFMLEngine = CreateObject("component","coldbox.system.util.CFMLEngine").init();
+			//Public Variable.
+			this.oCFMLENGINE = CreateObject("component","coldbox.system.util.CFMLEngine").init();
 			
 			//properties
 			setColdboxInitiated(false);
@@ -33,8 +34,8 @@ Description		: This is the main ColdBox front Controller.
 			
 			//TODO: change all this to object factory.
 			//Create & init ColdBox Services
-			if ( (oCFMLEngine.getEngine() eq oCFMLEngine.ADOBE and oCFMLEngine.getVersion() gte 8) or
-			     (oCFMLEngine.getEngine() eq oCFMLEngine.BLUEDRAGON and oCFMLEngine.getVersion() gte 7) ){
+			if ( (this.oCFMLENGINE.getEngine() eq this.oCFMLENGINE.ADOBE and this.oCFMLENGINE.getVersion() gte 8) or
+			     (this.oCFMLENGINE.getEngine() eq this.oCFMLENGINE.BLUEDRAGON and this.oCFMLENGINE.getVersion() gte 7) ){
 				setColdboxOCM( CreateObject("component","cache.MTcacheManager").init(this) );
 			}
 			else{

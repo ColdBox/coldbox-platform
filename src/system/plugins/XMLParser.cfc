@@ -100,9 +100,8 @@ Modification History:
 		var ConfigXMLFilePath = "";
 		var tempFilePath = "";
 		var configFileFound = false;
-		var oCFMLEngine = CreateObject("component","coldbox.system.util.CFMLEngine").init();
-		var CFMLEngine = oCFMLEngine.getEngine();
-		var CFMLVersion = oCFMLEngine.getVersion();
+		var CFMLEngine = controller.oCFMLENGINE.getEngine();
+		var CFMLVersion = controller.oCFMLENGINE.getVersion();
 
 		try{
 			//verify Framework settings File
@@ -115,7 +114,7 @@ Modification History:
 			settingsStruct["CFMLVersion"] = CFMLVersion;
 			
 			//Set Internal Parsing And Charting Properties
-			if ( CFMLEngine eq oCFMLEngine.BLUEDRAGON ){
+			if ( CFMLEngine eq controller.oCFMLENGINE.BLUEDRAGON ){
 				if ( CFMLVersion lt 7 ){
 					settingsStruct["xmlParseActive"] = false;
 					settingsStruct["chartingActive"] = false;
@@ -127,7 +126,7 @@ Modification History:
 					settingsStruct["xmlValidateActive"] = true;
 				}	
 			}//end if bluedragon
-			else if ( CFMLEngine eq oCFMLEngine.RAILO ){
+			else if ( CFMLEngine eq controller.oCFMLENGINE.RAILO ){
 				settingsStruct["xmlParseActive"] = true;
 				settingsStruct["chartingActive"] = false;
 				settingsStruct["xmlValidateActive"] = true;

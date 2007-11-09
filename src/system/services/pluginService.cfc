@@ -183,6 +183,16 @@ Modification History:
 				}
 			}//end if custom plugin
 			else{
+				//MT CFML Engine switch for MT Logger
+				if ( arguments.plugin eq "logger" and 
+					 (
+					 	(controller.oCFMLENGINE.getEngine() eq controller.oCFMLENGINE.ADOBE and controller.oCFMLENGINE.getVersion() gte 8) or
+			     		(controller.oCFMLENGINE.getEngine() eq controller.oCFMLENGINE.BLUEDRAGON and controller.oCFMLENGINE.getVersion() gte 7)
+					 )
+				   ){
+					arguments.plugin = "MTlogger";
+				}
+				/* Create the plugin instantiation path */
 				pluginPath = getColdboxPluginsPath() & "." & trim(arguments.plugin);
 			}
 			
