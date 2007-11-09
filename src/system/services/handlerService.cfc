@@ -198,7 +198,7 @@ Description :
 	<cffunction name="getRegisteredHandler" access="public" hint="I get a registered handler and method according to passed event from the registeredHandlers setting." returntype="coldbox.system.beans.eventhandlerBean"  output="false">
 		<!--- ************************************************************* --->
 		<cfargument name="event"   type="string"  required="true"  hint="The event to check and get." >
-		<cfargument name="noThrow" type="boolean" required="false" hint="No error throwing, used by request service."/>
+		<cfargument name="noThrow" type="boolean" required="false" default="false" hint="No error throwing, used by request service."/>
 		<!--- ************************************************************* --->
 		<cfscript>
 		var handlerIndex = 0;
