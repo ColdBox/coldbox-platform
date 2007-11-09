@@ -46,6 +46,9 @@ Modification History:
 			//Lock Name
 			instance.lockName = getController().getAppHash() & "_OCM_OPERATION";
 			
+			//Event URL Facade Setup
+			instance.eventURLFacade = CreateObject("component","eventURLFacade").init(arguments.controller);
+			
 			//Init the object Pool on instantiation
 			initPool();
 			
@@ -187,7 +190,38 @@ Modification History:
 	
 	<!--- ************************************************************* --->
 	
+	<cffunction name="clearEvent" access="public" output="false" returntype="void" hint="Clears all the event permuations from the cache.">
+		<!--- ************************************************************* --->
+		<cfargument name="eventsnippet" type="string" 	required="true" hint="The event snippet to clear on. Can be partial or full">
+		<cfargument name="queryString" 	type="string" 	required="false" default="" hint="If passed in, it will create a unique hash out of it. For purging purposes"/>
+		<cfargument name="async" 		type="boolean"  required="false" default="true" hint="Run asynchronously or not"/>
+		<!--- ************************************************************* --->
+		<cfscript>
+			var poolKeys = listSort(structKeyList(getObjectPool().getpool_metadata()),"textnocase");
+			var poolKeysLength = listlen(poolKeys);
+			var x = 1;
+			var cacheKey = getController().getHandlerService().EVENT_CACHEKEY_PREFIX & arguments.eventsnippet;
+			
+			//Check if we are purging with query string
+			if( len(arguments.queryString) neq 0 ){
+				cacheKey = cacheKey & "-" & getEventURLFacade().buildHash(arguments.eventsnippet,arguments.queryString);
+			}
+			
+			//Find all the event keys.
+			for(x=1; x lte poolKeysLength; x=x+1){
+				if ( findnocase( cacheKey, listGetAt(poolKeys,x) ) ){
+					clearKey(listGetAt(poolKeys,x));
+				}
+			}
+		</cfscript>
+	</cffunction>
+
+	<!--- ************************************************************* --->
+	
 	<cffunction name="clearAllEvents" access="public" output="false" returntype="void" hint="Clears all events from the cache.">
+		<!--- ************************************************************* --->
+		<cfargument name="async" 		type="boolean"  required="false" default="true" hint="Run asynchronously or not"/>
+		<!--- ************************************************************* --->
 		<cfscript>
 			var poolKeys = listSort(structKeyList(getObjectPool().getpool_metadata()),"textnocase");
 			var poolKeysLength = listlen(poolKeys);
@@ -205,6 +239,9 @@ Modification History:
 	<!--- ************************************************************* --->
 	
 	<cffunction name="clearAllViews" access="public" output="false" returntype="void" hint="Clears all views from the cache.">
+		<!--- ************************************************************* --->
+		<cfargument name="async" 		type="boolean"  required="false" default="true" hint="Run asynchronously or not"/>
+		<!--- ************************************************************* --->
 		<cfscript>
 			var poolKeys = listSort(structKeyList(getObjectPool().getpool_metadata()),"textnocase");
 			var poolKeysLength = listlen(poolKeys);
@@ -377,6 +414,10 @@ Modification History:
 	<!--- ************************************************************* --->
 	
 <!------------------------------------------- ACCESSOR/MUTATORS ------------------------------------------->
+
+	<cffunction name="geteventURLFacade" access="public" returntype="any" output="false" hint="Get the event url facade object.">
+		<cfreturn instance.eventURLFacade>
+	</cffunction>
 
 	<!--- ************************************************************* --->
 	

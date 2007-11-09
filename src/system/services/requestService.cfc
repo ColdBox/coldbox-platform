@@ -67,19 +67,14 @@ Modification History:
 				
 				/* Check for Event Cache Purge */
 				if ( Context.valueExists("fwCache") ){
-					/* Remove flag to get real cache key */
-					Context.removeValue("fwCache");
-					Context.removeValue("fwReinit");
 					/* Clear the cache key. */
-					eventCacheKey = controller.getHandlerService().EVENT_CACHEKEY_PREFIX & Context.getCurrentEvent() & "-" & hash(Context.getCollection().toString());
+					eventCacheKey = controller.getHandlerService().EVENT_CACHEKEY_PREFIX & Context.getCurrentEvent() & "-" & controller.getColdboxOCM().getEventURLFacade().getUniqueHash(Context.getCurrentEvent());
 					controller.getColdboxOCM().clearKey( eventCacheKey );
 				}
 				else{
-					/* Clean some Framework URL Actions */
-					Context.removeValue("fwReinit");
-					
 					/* Setup the cache key */
-					eventCacheKey = controller.getHandlerService().EVENT_CACHEKEY_PREFIX & Context.getCurrentEvent() & "-" & hash(Context.getCollection().toString());
+					eventCacheKey = controller.getHandlerService().EVENT_CACHEKEY_PREFIX & Context.getCurrentEvent() & "-" & controller.getColdboxOCM().getEventURLFacade().getUniqueHash(Context.getCurrentEvent());
+					
 					/* Determine if this event has been cached */
 					if ( controller.getColdboxOCM().lookup(eventCacheKey) ){
 						/* Event has been found, flag it so we can render it */

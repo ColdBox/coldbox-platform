@@ -27,22 +27,61 @@ Modification History:
 	
 	<!--- ************************************************************* --->
 	
+	<cffunction name="clearEvent" access="public" output="false" returntype="void" hint="Clears all the event permuations from the cache.">
+		<!--- ************************************************************* --->
+		<cfargument name="eventsnippet" type="string" required="true" hint="The event snippet to clear on. Can be partial or full">
+		<cfargument name="queryString" 	type="string" 	required="false" default="" hint="If passed in, it will create a unique hash out of it. For purging purposes"/>
+		<cfargument name="async" 		type="boolean"  required="false" default="true" hint="Run asynchronously or not"/>
+		<!--- ************************************************************* --->
+		<cfif arguments.async>
+			<cfthread action="run" name="coldbox.cache.clearEvent-#createUUID()#">  
+				<cfscript>  
+					super.clearEvent(argumentCollection=arguments); 
+				</cfscript>
+			</cfthread>
+		<cfelse>
+			<cfscript>
+				super.clearEvent(argumentCollection=arguments);
+			</cfscript>
+		</cfif>
+	</cffunction>
+	
+	<!--- ************************************************************* --->
+		
 	<cffunction name="clearAllEvents" access="public" output="false" returntype="void" hint="Clears all events from the cache.">
-		<cfthread action="run" name="coldbox.cache.clearAllEvents-#createUUID()#">  
+		<!--- ************************************************************* --->
+		<cfargument name="async" 		type="boolean"  required="false" default="true" hint="Run asynchronously or not"/>
+		<!--- ************************************************************* --->
+		<cfif arguments.async>
+			<cfthread action="run" name="coldbox.cache.clearAllEvents-#createUUID()#">  
+				<cfscript>  
+					super.clearAllEvents();  
+				</cfscript>          
+			</cfthread>
+		<cfelse>
 			<cfscript>  
 				super.clearAllEvents();  
-			</cfscript>          
-		</cfthread>
+			</cfscript>
+		</cfif>
 	</cffunction>
 
 	<!--- ************************************************************* --->
 	
 	<cffunction name="clearAllViews" access="public" output="false" returntype="void" hint="Clears all views from the cache.">
-		<cfthread action="run" name="coldbox.cache.clearAllViews-#createUUID()#">  
+		<!--- ************************************************************* --->
+		<cfargument name="async" 		type="boolean"  required="false" default="true" hint="Run asynchronously or not"/>
+		<!--- ************************************************************* --->
+		<cfif arguments.async>
+			<cfthread action="run" name="coldbox.cache.clearAllViews-#createUUID()#">  
+				<cfscript>  
+					super.clearAllViews();  
+				</cfscript>          
+			</cfthread>
+		<cfelse>
 			<cfscript>  
 				super.clearAllViews();  
-			</cfscript>          
-		</cfthread>
+			</cfscript>
+		</cfif>
 	</cffunction>
 	
 </cfcomponent>

@@ -144,8 +144,8 @@ Description :
 			
 			/* ::::::::::::::::::::::::::::::::::::::::: EVENT CACHING :::::::::::::::::::::::::::::::::::::::::::: */
 		
-			/* Event Caching Routines */
-			if ( controller.getSetting("EventCaching") ){
+			/* Event Caching Routines, if using caching and we are executing the main event */
+			if ( controller.getSetting("EventCaching") and oEventHandlerBean.getFullEvent() eq oRequestContext.getCurrentEvent() ){
 				
 				/* Determine if we have md for the event to execute in the md dictionary, else set it  */
 				if ( not getEventCacheDictionary().keyExists(oEventHandlerBean.getFullEvent()) ){
@@ -183,7 +183,7 @@ Description :
 				/* Do we need to cache this event?? */
 				if ( eventDictionaryEntry.cacheable ){
 					/* Save the cache key in md Entry */
-					eventDictionaryEntry.cacheKey = this.EVENT_CACHEKEY_PREFIX & oEventHandlerBean.getFullEvent() & "-" & hash(oRequestContext.getCollection().toString());
+					eventDictionaryEntry.cacheKey = this.EVENT_CACHEKEY_PREFIX & oEventHandlerBean.getFullEvent() & "-" & getController().getColdboxOCM().getEventURLFacade().getUniqueHash(oEventHandlerBean.getFullEvent()) ;
 					/* Event is cacheable and we need to flag it so the renderer caches it. */
 					oRequestContext.setEventCacheableEntry(eventDictionaryEntry);
 				}//end if md says that this event is cacheable
