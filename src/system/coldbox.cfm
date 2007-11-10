@@ -14,12 +14,18 @@ Description :
 	Please view the quickstart guide if you have more questions.
 ---------------------------------------------------------------------->
 <cfparam name="COLDBOX_CONFIG_FILE" default="" type="string">
-
+<cfparam name="COLDBOX_APP_ROOT_PATH" default="#getDirectoryFromPath(getbaseTemplatePath())#" type="string">
+	
 <!--- Create the BootStrapper --->
 <cfset coldbox = CreateObject("component","coldbox")>
 
+<!--- Set the ColdBox App Root --->
+<cfset coldbox.setCOLDBOX_APP_ROOT_PATH(COLDBOX_APP_ROOT_PATH)>
 <!--- Set the Coldbox Config File --->
 <cfset coldbox.setCOLDBOX_CONFIG_FILE(COLDBOX_CONFIG_FILE)>
+
+<!--- Reload Checks --->
+<cfset coldbox.reloadChecks()>
 
 <!--- Process Request --->
 <cfset coldbox.processColdBoxRequest()>

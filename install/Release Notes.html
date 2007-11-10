@@ -1,0 +1,327 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>Untitled Document</title>
+<style>
+h2{
+	border-bottom: 1px solid #666666;
+}
+body{
+	font-size: 12px;
+}
+</style>
+</head>
+
+<body>
+
+<h1>Release Notes &amp; Change Log</h1>
+<h2><br />
+  Version 0.9.X (June 2006)</h2>
+<p>- Version updated to 0.9.x due to the fact that I had a name change and complete<br />
+  rewrite of the app from my TeXtus framework that I developed last year for <br />
+  private use.</p>
+<h2>Version 1.0.0 (July 5, 2006)</h2>
+<p>- First public beta version</p>
+<h2>Version 1.0.1 (July 10, 2006)</h2>
+<p>- Fixes for ApplicationStartHandler.</p>
+<h2>Version 1.0.2 (July 2006)</h2>
+<p>- CustomHandler receives the ExceptionBean via the request collection.<br />
+  - Eliminated unused files, code cleanup.<br />
+  - JavaLoader 0.2 plugin integration (Could not wait to release this)<br />
+  - datasourceBean is in place, forgot to include it.</p>
+<h2>Version 1.1.0 (October 2006) CODENAME: JOHN 3:16</h2>
+<p>- Varscoper Checks, Code Optimization and cleanup.<br />
+  - Global Server Installation Method.<br />
+  - CFMX 6.X &amp; BlueDragon are now fully Supported.<br />
+  - Datasources support via config.xml. You can now use the getDatasource(&quot;name&quot;) in the<br />
+  event handlers/plugins to retrieve a datsource bean.<br />
+  - Mail Settings bean support. You can now use the getMailSettings() to retreive it.<br />
+  - Messagebox.render(clearFlag) now has a clearFlag in order to clear or not, the message <br />
+  structure after rendering.<br />
+  - Eventhandler.cfc code optimization, no longer need of writing an init method. <br />
+  PLEASE REMOVE THEM unless you have any code that needs to be executed every time<br />
+  an event is called. Look at:<br />
+  http://ortus.svnrepository.com/coldbox/trac.cgi/wiki/cbEventHandlersGuide<br />
+  - Renderview can now accept a view name as a parameter. You can then render a view <br />
+  anywhere you want, layouts, within views, event handlers, etc, and as content variables.<br />
+  renderView(&quot;myTags/main_menu&quot;)<br />
+  - New Plugins: FileWriter &amp; StringBuffer<br />
+  - Framework/Application extensions via custom plugins, declared in config.xml.cfm<br />
+  - Coldbox Logging Facilities: ColdBox now provides you with a per application <br />
+  logging facility for errors and custom (error|fatal|information|warning) entries by <br />
+  simplify filling out two settings in your config.xml and using the logger plugin.<br />
+  - Event Handlers/Plugins now have a &quot;rc&quot; scope available, that is a direct line to the request collection.<br />
+  - New Method: paramValue(&quot;var name&quot;,&quot;default&quot;) same as cfparam but for the request collection.<br />
+  - cfcViewer plugin was revised. You can now use it to render documentation with any<br />
+  stylesheet.<br />
+  - New i18n and Resource Bundles Plugins based on Paul Hastings work.<br />
+  - ATTESORO JAVA RESOURCE BUNDLES UTILITY IS INCLUDED.<br />
+  - New Method: getSettingStructure( structure, deep_copy_flag ) Retrieves the entire configStruct<br />
+  or the fwSettingsStructure.<br />
+  - Mapping of Exception Types: http://ortus.svnrepository.com/coldbox/trac.cgi/wiki/cbExceptionsList<br />
+  - Check out the latest API: http://www.coldboxframework.com/documents/cfdocs/index.cfm<br />
+  - New Dashboard (Will be release later)<br />
+  - Eclipse Snippets<br />
+  - New sample applications: i18n Gallery, samples gallery, coldboxreader, Illidium CFC Generator</p>
+<h2>Version 2.0.0 ( April 28, 2007 ) CODENAME: JOHN 4:14</h2>
+<p>- License change to the Apache License, Version 2.0<br />
+  - New RequestContext bus. This is in order to enable caching and encapsulation of the <br />
+  request collection. Please see the compatibility guide. Your 1.1.0 and below code <br />
+  will have to be modified slightly to accomodate this. All event handler methods receive the <br />
+  requestContext bus object as an argument called 'event'.The object is also called 'event', <br />
+  for the layouts/views.<br />
+  <br />
+  - Addition of new Application Settings: <br />
+  - ReinitPassword: used to protect the fwreinit flag. Usage: fwreinit=password<br />
+  - onInvalidEvent: write the event to execute when an invalid event is detected, ehGeneral.dspHome<br />
+  - HandlerCaching: The framework will now cache your event handlers in application scope.<br />
+  Please turn off in development. This is also an intelligent cache. Look at documentation.<br />
+  - IOCFramework: You can now declare which framework you are using: coldspring or lightwire. <br />
+  - IOCDefinitionFile: Here is where you declare the configuration file to load onAppInit in conjunction<br />
+  with the IOCFramework declared.<br />
+  - AppMapping setting is now optional, if not set, framework auto calculates.<br />
+  - Deprecation of the AppDevMapping settings.<br />
+  - Addition of Complex Settings to the config.xml for Arrays and Structures<br />
+  - Arrays use [ ] notation: [1,2,3,4,5]<br />
+  - Structures use { } notation: {name:luis,country:el salvador,state:california}</p>
+<p>- Two new implicit methods for event handlers: PreHandler/PostHandler. If you create these methods<br />
+  in your handlers, then the framework will execute them accordingly.</p>
+<p>- Addition of an 'alias' property to the Datasource element, this is the alias to your name (dsn).<br />
+  This is a mandatory property so please update your XML.<br />
+  &lt;Datasource alias=&quot;blog_dsn&quot; name=&quot;myblog&quot; dbtype=&quot;oracle&quot; /&gt;<br />
+  <br />
+  - Addition of 'getHash()' method to your handlers and plugins. This will retrieve the unique<br />
+  UUID of the created instance.</p>
+<p>- Coldbox OCM (Object Cache Manager) : A facility for in-memory caching. This facility caches your<br />
+  event handlers, plugins, custom plugins and anything you want. Look at API for usage.<br />
+  - The framework has a reap frequency in which once every cycle,<br />
+  the framework will remove objects from the cache that have expired. This way, reaping is<br />
+  not performed on every request. A great way to balance cache access and reaping.<br />
+  Change in the framework's settings.xml<br />
+  - Metadata settings for caching for custom plugins and handlers via the cfcomponent tag:<br />
+  &lt;cfcomponent name=&quot;handler&quot; extends=&quot;coldbox.system.eventhandler&quot; cache=&quot;true&quot; cachetimeout=&quot;500&quot;&gt;<br />
+  The cachetimeout is in minutes. The cache flag is by default set to true if not set. So if you do not set it <br />
+  explicitly to false, the framework will cache it at the default framework's timeout.<br />
+  - Cache settings override via config.xml.cfm, please see wiki config guide.<br />
+  - Plugins: <br />
+  - Beanfactory.cfc - Addition of the populateBean method. It can now populate a named or instantiated<br />
+  bean from the request collection. Great for setting a bean with form data. <br />
+  It follows the bean contract, thanks to Sanah Ullah<br />
+  - FileUtilities.cfc - new methods: getJVMFreeMemory(), getJVMTotalMemory(), isCFUUID()<br />
+  - IOC.cfc - Added Inversion Of Control support via coldspring or lightwire.<br />
+  Coldspring is the only one supported now. Lightwire will be added in the next version.<br />
+  - sessionstorage.cfc - New facade plugin to use session scope for permanent values<br />
+  - renderer.cfc: renderExternalview(). Will render an external view. Any<br />
+  type of view: js,gif,etc.<br />
+  - queryHelper.cfc - New plugin to help you sort and filter queries.<br />
+  - timer.cfc - New plugin to help you time your code.<br />
+  - New argument to plugin factory: NewInstance it will create a new instance<br />
+  of the specified plugin. <br />
+  <br />
+  - New debugging Panel with object Cache Monitor<br />
+  - Tons of bug fixes, look at trac site.<br />
+  - Sample Applications:<br />
+  - Updated the entire Illidium CFC Generator by Brian Rinaldi. (Pre Flex)<br />
+  - Galleon Forums updated to version 1.7.008<br />
+  - ColdBoxReader now moved to a service architecture using ColdSpring and ColdBox new <br />
+  IOC plugin.<br />
+  - Transfer Sample Application<br />
+  - The framework now supports multi-package handler layout. you can now define packages<br />
+  for all your handlers due to ColdBox's new event registration system.<br />
+  - The framework now supports for compiled code execution. Event multi-package<br />
+  compiled layouts.<br />
+  - New eclipse snippets.<br />
+  - Refactoring and code optimization.<br />
+  - New ANT scripts.<br />
+  - Addition of the framework pre-compiled: compiled_system</p>
+<h2>Version 2.0.1 ( May 28, 2007 ) CODENAME: Philippians 3:7-11</h2>
+<p>- Mostly critical fixes and updates<br />
+  - #136-137 *nix critical fixes on case sensitive operations<br />
+  - #139 Timer Plugin critical extension fix.<br />
+  - #140 Cache Panel monitor tab not expanded by default.<br />
+  - #148 Cache contents now sorted with expiration date/time<br />
+  - #141 Sample Gallery changelocale fix<br />
+  - #143 ColdboxReader invalid login fix.<br />
+  - #144 Config.xsd updated with xs:all not a sequence anymore.<br />
+  - #145 BlueDragon and CFMX 6.X XMLParser critical read file fix<br />
+  - #146 Logger plugin fix for standalone usage.<br />
+  - #147 BeanFactory was not populating dynamic cfc's via cfinvoke<br />
+  - #149 Debugger Panel Enhancements and HTML/CSS cleanup.<br />
+  - #150 Cache lock timeouts increased to 30 seconds.<br />
+  - #151 Debugger Timer fails when not initialized.<br />
+  - #152 Critical Error when using Cache JVM Thresholds 500 error<br />
+  - #153 MSSQL 2000 scripts for coldbox reader fixes thanks to Anabel Fernandes<br />
+  from www.cfempire.com<br />
+  - #155 Galleon Admin Sample - Paging is invalid<br />
+  - #156 Login sample App Updated<br />
+  - #157 Custom Conventions now added. You can decide what your conventions are for your handlers/layouts/views/config<br />
+  - #158 Refactor.xml - Errors on absolute prefixes.<br />
+  - #159 Finalize Memento's to ColdBox Bean Objects<br />
+  - #160 Bug Report/Debugger enhance to use request Context Methods<br />
+  - #161 Custom Exception Template Included in Application Template<br />
+  - #165 Transfer Sample, MSSQL script is invalid<br />
+  - #166 Config Override Variable - Choose your own config file at startup.<br />
+  - #167 Timer Include Fix Initial testing logic for determining application in debug mode.<br />
+  - #168 You can now do Event Handler Unit Tests!! Hooray!!<br />
+  - Code cleanup<br />
+  - New Dashboard with tons of fixes and additions, look at dashboard's readme.</p>
+<p>Version 2.0.2 ( June 23, 2007 ) CODENAME: Proverbs 3:5-6<br />
+  - Full Railo 2.0 Support<br />
+  - Full BlueDragon 7 support<br />
+  - Application Template updated with new Unit Testing Suites.<br />
+  - New and Updated Eclipse Snippets.<br />
+  - New and Updated online guides.<br />
+  - #172 Discovery of CFML engines, framework adapts to each engine : Railo, BD and Adobe.<br />
+  - #173 BlueDragon 7 Charting now enabled.<br />
+  - #182 Unit Testing Controller created, it now support setnextevent And Test Suites<br />
+  - #191 New config layout setting: DefaultView - You can now declare a default view to render if now view has<br />
+  been selected.<br />
+  - #184 New Request Context (Event) methods: get-setDefaultLayout, get-setDefaultView, get-setViewLayouts<br />
+  - #179 Logger compliance to coldfusion logs and viewable via CF8 eclipse plugins.<br />
+  - #180 Event name is now configurable via the config.xml and you can even change the convention framework wide via<br />
+  the settings.xml or ColdBox Dashboard.<br />
+  - #181 ExceptionService Fix - if custom bug report fails, error calling exception handler<br />
+  - #174-175 Sample Applications Fix<br />
+  - #185 The BugReport has been updated to use the new request context methods. <br />
+  - #191 New Layout setting: DefaultView, you can now also choose a default view with no need to set it.<br />
+  This is an awesome tool for website prototypes.<br />
+  - #192 Updated method for handlers: includeUDF( udf_file ), this method was used internally by the framework to<br />
+  do method injections to event handlers. This is a great way to implement mix-ins and change<br />
+  the behavior of a handler by injection. You can now do injections at runtime for both event handlers<br />
+  and plugins.<br />
+  - #193 Critical Fix on Concurrency issues when reloading constantly or framed versions due to name locking.<br />
+  - #194 Concurency lock updates for the OCM.<br />
+  - #195 Introducing the ColdboFactory.cfc part of the extras folder. This factory is to be used via coldspring to<br />
+  create configBeans, plugins and a reference to the running application's ColdBox controller. For an in depth<br />
+  guide, please see the coldspring guide.<br />
+  - #197 A small fix on the setnextEvent method, where now it just relocates to the chosen front controller. This can<br />
+  be any file now: front.cfm, index.cfm, luis.cfm, anything.cfm</p>
+<h2>Version 2.0.3 (August 2007) CODENAME: Acts 5:29-32</h2>
+<p>- New Sample Apps: Lightwire Sample, CCTApp by Tom de Manincor<br />
+  - #169 Structure variable declarations in the config updated<br />
+  - #178 LightWire is now fully supported and included with ColdBox for out of the box IOC. Thanks to Aaron Roberson &amp; Peter bell.<br />
+  - #200 queryHelper new methods: getColumnArray(), getCountDistinct(), getRowNumber()<br />
+  - #205 Critical Concurrency fix in the coldbox.cfm template.<br />
+  - #206 Removal of client variable references.<br />
+  - #207 clientstorage plugin syntax updated<br />
+  - #208 sessionstorage plugin syntax updated<br />
+  - #209 ColdBoxFactory.cfc updated with new method - getColdboxOCM(). To get a reference to the cache manager<br />
+  from within coldspring.<br />
+  - #210 Samples Gallery Content Updated.<br />
+  - #211 Var scoping optimizations<br />
+  - #212 Illidium Scaffolding Templates<br />
+  - #213 Configuration file now named: coldbox.xml.cfm or config.xml.cfm<br />
+  - #214 Testcontroller - When unit testing relocations, the setnext event will now save the event and querystring<br />
+  in the request collection for assertions.<br />
+  - #215 Performance Optimizations<br />
+  - #217 Eclipse Dictionaries Updated<br />
+  - #218 ColdBox Cheat Sheet Updated<br />
+  - #219 JQuery updated to 1.1.3.1<br />
+  - #220 rc scope can now be found natively in all layouts and views. No need to declare it.<br />
+  This does not apply to handler/plugins.<br />
+  - #221 Logger plugin has been optmized and its 50% faster. You can also define the maximum number<br />
+  of archives to keep in the rotation.<br />
+  </p>
+<h2>Version 2.5.0 (December 2007) CODENAME: Romans 8:32<br />
+  </h2>
+<p>- A major upgrade to our ColdBox engine, lots of fixes and upgrades.<br />
+  - #127 Plugin Upgrade to JavaLoader 0.5<br />
+  - #135 Application.cfc Support, Application.cfm + index.cfm combo still supported but will be deprecated<br />
+  by the 2.7 version. Please update your apps to use the included Application.cfc.<br />
+  - #163 Project Interceptors : You can now intercept calls in over 12 execution points of a user request,<br />
+  even the ColdBox cache. Not only that, but you can also create your own observable execution points<br />
+  and use the API to announce your own interceptions. <br />
+  http://ortus.svnrepository.com/coldbox/trac.cgi/wiki/cbInterceptorsGuide<br />
+  - #164 onSessionStart/onSessionEnd Support added. You now have two new settings in your configuration file:<br />
+  SessionStartHandler and SessionEndHandler. You can now easily create events to be fired for these<br />
+  execution points or use interceptions.<br />
+  - #183 Coldbox.cfm - Migration to Application.cfc support, however Application.cfm is still supported.<br />
+  - #186 Custom Bug Report - Users can define the bug report to email out within the configuration file.<br />
+  - #199 Messagebox Custom CSS and Layout Update (messageboxstyleclass setting deprecated) You now have a <br />
+  new setting: MessageboxStyleOverride [boolean]. You can now just tell the framework that you<br />
+  will be overriding the styles of the messagebox. You can look at the guides or the messagebox.cfm<br />
+  file to see how to override the styles. (coldbox.system.includes.messagebox.cfm)<br />
+  - #202 Code Optimization and better encapsulation. This has caused a side effect on even more stable framework code.<br />
+  - #203 Update Samples Gallery Content<br />
+  - #222 Request Collection Persistance via SetNextEvent. You can now pass a comma delimmited list to the<br />
+  setnextevent method of the keys in the request collection that you would like to persist across the<br />
+  relocation. The framework will then reload them in the relocated request collection.<br />
+  - #223 Renderer Plugin - fixes on local naming.<br />
+  - #224 New Convention - Plugins. You can now create your custom plugins with no configuration declaration. Just<br />
+  create a folder called plugins on your application root. The framework will pick this path up for your<br />
+  getMyPlugin() calls. As always, you can change the conventions via the framework settings.xml file or<br />
+  the dashboard.<br />
+  - #225 GetMyPlugin - add new argument = 'newInstance', this was a fix of a missing argument on the facade.<br />
+  - #226 configAutoReload flag not resetting the appstart handler. Now it correctly reinits it.<br />
+  - #227 CF8 support for renderer plugin.<br />
+  - #228 white-space control, what is white space? no more with ColdBox 2.5<br />
+  - #229 Enhanced Event Registration System<br />
+  - #232 HandlersIndexAutoReload was cleaning cache, not anymore, its fixed now.!!<br />
+  - #233 Debugger Style &amp; Usability Enhancements<br />
+  - #234 Coldbox base service created, so future internal services can be expanded.<br />
+  - #235 Logger Critical Error on Bug Reports, not being able to send them fixed.<br />
+  - #236 DumpVar url action can now dump request collection variables, just pass in the request collection key(s)<br />
+  - #238 New CFEclipse snippets.<br />
+  - #239 New Facades: getDebugMode() setDebugMode() on SuperType, all plugins,handlers, and interceptors inherit this.<br />
+  - #240 Cache Panel overflow and row highlighting<br />
+  - #241 getMyPlugin on Controller deprecated, not needed any more. No more controller.getMyPlugin(), use getPlugin with<br />
+  the correct arguments.<br />
+  - #242 Application Template Unit Test Updates<br />
+  - #243 DebuggerService update of internal properties.<br />
+  - #244 New Plugin Service - More encapsulation and registration algorithms. It now stores metadata for quicker lookups.<br />
+  - #245 Tracer method updated to be able to persist values. You can now use the tracer method on the logger plugin<br />
+  accross multiple requests. Awesome!! You can have tracers anywhere now and until the debugger panel gets rendered<br />
+  you will see the messages.<br />
+  - #246 sessionstorage syntax updates<br />
+  - #247 clientstorage syntax updates<br />
+  - #249 DefaultView contains .cfm on application template, when it should not have. Fixed<br />
+  - #250 toStruct toArray new methods on the Utilities plugin, for converting convention strings to structs and arrays.<br />
+  - #253 fileUtilities renamed to utilities : Compatibility plugin left for this release. Will be deprecated by 2.7<br />
+  please update your code.<br />
+  - #255 LoaderService addition of new methods and delegations.<br />
+  - #256 Framework now includes more unit tests.<br />
+  - #258 FileWriter plugin deprecated, now found in contributed plugins page.<br />
+  - #259 onInvalidEvent redirection, remove queryString that was appended that included the invalid event. Now it can be<br />
+  found on the request collection.<br />
+  - #261 Event object has a new noRender() and isNoRender() method that you can use to tell the framework to just execute but not render <br />
+  any content. Silent execution.<br />
+  - #262 Updates to guides and docs.<br />
+  - #263 XMLParser.cfc : break up the parseConfig method into several internal blocks and cleanup.<br />
+  - #264 New FrameworkSuperType Method: relocate() facade to cflocation<br />
+  - #265 New Feature: Decorate your Request Context via the RequestContextDecorator. You can now decorate the internal<br />
+  request collection object (requestContext) and enhance its functionality following a very simple decorator<br />
+  pattern.<br />
+  - #266 New Plugin: cookie storage plugin by Sana Ullah for permanent cookie storage access.<br />
+  - #267 Debugger Cache Panel - Cache Key Viewer/Dumper. You can now click on the name of a cache key in the debugger<br />
+  panel and it will open a window to dump the contents of the cache key. You can now dig into the cache and <br />
+  verify your data.<br />
+  - #269 Cookiestorage now can store complex variables via wddx.<br />
+  - #273 Integration of interceptors to unit testing.<br />
+  - #275 ColdboxFactory added the ability to create datasource beans and mail setting beans.<br />
+  - #276 New Plugin: application storage plugin by Sana Ullah for permanent application storage access.<br />
+  - #278 Logger Plugin fix of not creating the correct directory structure. New setting created: ExpandedColdboxLogLocation<br />
+  - #281 BlueDragon Support for interceptors<br />
+  - #283 New Setting for ColdBox Proxy: ProxyReturnCollection [boolean] this determines if the proxy returns a structure or the<br />
+  the return values of the handlers.<br />
+  - #284 New cache metadata for objects: cacheLastAccessTimeout, you can use this on event or object caching.<br />
+  - #285 Broken link on samples updates<br />
+  - #288 New method on Event context: getSelf() to retrieve: index.cfm?event= or whatever event name you use.<br />
+  - #289 View Caching using the event.setView() method. You can also purge views via the renderer plugin<br />
+  - #290 A very awesome event caching system. You can set it via metadata and the framework will cache events and its permutations.<br />
+- #291 Flex/Air integration via the ColdBox Proxy.</p>
+<p><br />
+</p>
+<p>AS ALWAYS, VISIT THE WIKI FOR THE LATEST DOCUMENTATION<br />
+    <br />
+  ********************************************************************************<br />
+  THE DAILY BREAD<br />
+  ********************************************************************************<br />
+  &quot;I am the way, and the truth, and the life; no one comes to the Father, but by me (JESUS)&quot;<br />
+  Jn 14:1-12</p>
+<p>&quot;Anyone who drinks the water I give will never thirst— not ever. The water I give <br />
+  will be an artesian spring within, gushing fountains of endless life.&quot;<br />
+  Jn 4:14<br />
+  ******************************************************************************</p>
+</body>
+</html>

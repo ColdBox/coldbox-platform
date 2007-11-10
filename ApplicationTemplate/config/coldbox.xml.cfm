@@ -32,6 +32,12 @@
 		<Setting name="SessionStartHandler" 		value="main.onSessionStart"/>
 		<!--Event Handler to run at the end of a session, leave blank if not used.-->
 		<Setting name="SessionEndHandler" 			value="main.onSessionEnd"/>
+		<!--The event handler to execute on all framework exceptions. Event Handler syntax required.-->
+		<Setting name="ExceptionHandler"			value="" />
+		<!--What event to fire when an invalid event is detected-->
+		<Setting name="onInvalidEvent" 				value="" />
+		<!--Full path from the application's root to your custom error page, else leave blank. -->
+		<Setting name="CustomErrorTemplate"			value="" />
 		<!--The Email address from which all outgoing framework emails will be sent. -->
 		<Setting name="OwnerEmail" 					value="myemail@gmail.com" />
 		<!-- Enable Bug Reports to be emailed out, set to true by default if left blank
@@ -40,12 +46,6 @@
 		<Setting name="EnableBugReports" 			value="true"/>
 		<!--UDF Library To Load on every request for your views and handlers -->
 		<Setting name="UDFLibraryFile" 				value="" />
-		<!--The event handler to execute on all framework exceptions. Event Handler syntax required.-->
-		<Setting name="ExceptionHandler"			value="" />
-		<!--What event to fire when an invalid event is detected-->
-		<Setting name="onInvalidEvent" 				value="" />
-		<!--Full path from the application's root to your custom error page, else leave blank. -->
-		<Setting name="CustomErrorTemplate"			value="" />
 		<!--Messagebox Style Override. A boolean of wether to override the styles using your own css.-->
 		<Setting name="MessageboxStyleOverride"		value="" />
 		<!--Flag to Auto reload the internal handlers directory listing. False for production. -->
@@ -90,19 +90,18 @@
 	<!--Emails to Send bug reports, you can create as many as you like
 	<BugEmail>myemail@gmail.com</BugEmail>	
 	-->
-	<BugTracerReports></BugTracerReports>
+	<BugTracerReports/>
 
 	<!--List url dev environments, this determines your dev/pro environment for the framework-->
 	<DevEnvironments>
 		<url>dev</url>
-		<url>dev1</url>
 	</DevEnvironments>
 
 	<!--Webservice declarations your use in your application, if not use, leave blank
 	Note that for the same webservice name you can have a development url and a production url.
 	<WebService name="TESTWS" URL="http://www.test.com/test.cfc?wsdl" DevURL="http://dev.test.com/test.cfc?wsdl" />
 	-->
-	<WebServices></WebServices>
+	<WebServices />
 
 	<!--Declare Layouts for your application here-->
 	<Layouts>
@@ -114,10 +113,11 @@
 		-->
 		
 		<!--
-		Declare other layouts, with view assignments if needed, else do not write them
+		Declare other layouts, with view/folder assignments if needed, else do not write them
 		<Layout file="Layout.Popup.cfm" name="popup">
 			<View>vwTest</View>
 			<View>vwMyView</View>
+			<Folder>tags</Folder>
 		</Layout>
 		-->
 	</Layouts>
@@ -134,15 +134,15 @@
 	<!--Datasource Setup, you can then retreive a datasourceBean via the getDatasource("name") method: 
 	<Datasource alias="MyDSNAlias" name="real_dsn_name"   dbtype="mysql"  username="" password="" />	
 	-->
-	<Datasources></Datasources>
+	<Datasources />
 	
 	<!--ColdBox Object Caching Settings Overrides the Framework-wide settings 
 	<Cache>
-		<ObjectDefaultTimeout>20</ObjectDefaultTimeout>
-		<ObjectDefaultLastAccessTimeout>5</ObjectDefaultLastAccessTimeout>
-		<ReapFrequency>1</ReapFrequency>
-		<MaxObjects>0</MaxObjects>
-		<FreeMemoryPercentageThreshold>0</FreeMemoryPercentageThreshold>
+		<ObjectDefaultTimeout>45</ObjectDefaultTimeout>
+		<ObjectDefaultLastAccessTimeout>15</ObjectDefaultLastAccessTimeout>
+		<ReapFrequency>3</ReapFrequency>
+		<MaxObjects>100</MaxObjects>
+		<FreeMemoryPercentageThreshold>3</FreeMemoryPercentageThreshold>
 	</Cache>
 	-->
 	

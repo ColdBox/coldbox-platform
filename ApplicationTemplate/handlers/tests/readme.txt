@@ -28,11 +28,16 @@ that follows the following pattern:
 	//getController().runEvent("ehMain.onRequestStart");
 	</cfscript>
 </cffunction>
-	
-	
+
 
 Structure:
 AllTests.cfc - Test Suite for all test cases
 cases/ehGeneralTest.cfc - The test case for the ehGeneral.cfc handler
 cases/ehMaintTest.cfc - The test case for the ehMain.cfc handler
 
+
+SPECIAL CONSIDERATIONS:
+Make sure that if you are using any relative paths in your application, that they become
+absolute. This is because the unit testing occurs inside of the unit testing framework
+which is outside of this app root. So please remember for unit testing to use absolute
+mappings on files or references. I recommend also using a test configuration file.

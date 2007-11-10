@@ -7,7 +7,7 @@
 		<Setting name="DebugMode" 				value="true" />
 		<Setting name="DebugPassword" 			value="coldbox"/>
 		<Setting name="EnableColdfusionLogging" value="false" />
-		<Setting name="EventName" 					value="event"/>
+		<Setting name="EventName" 				value="event"/>
 		<Setting name="EnableColdboxLogging" 	value="true" />
 		<Setting name="ColdboxLogsLocation" 	value="logs"/>
 		<Setting name="DefaultEvent" 			value="ehGeneral.dspLogin"/>
@@ -19,7 +19,7 @@
 		<Setting name="UDFLibraryFile" 			value="" />
 		<Setting name="CustomErrorTemplate" 	value=""/>
 		<Setting name="ExceptionHandler" 		value=""/>
-		<Setting name="MessageboxStyleOverride" 	value=""/>
+		<Setting name="MessageboxStyleOverride" value=""/>
 		<Setting name="HandlersIndexAutoReload" value="false"/>
 		<Setting name="ConfigAutoReload" 		value="false"/>
 		<Setting name="HandlerCaching" 			value="false"/>
@@ -66,5 +66,9 @@
 	<i18N />
 	
 	<Datasources />
+	
+	<Interceptors>
+		<Interceptor class="coldbox.samples.applications.sampleloginapp.model.securityInterceptor" />
+	</Interceptors>
 	
 </Config>

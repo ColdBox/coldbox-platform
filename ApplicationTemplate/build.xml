@@ -11,9 +11,11 @@
      directory of your choice, full path.
      ====================================================================== -->
 <project name="coldbox.newapplication" default="generate" basedir=".">	
+	
 	<!--Properties-->
 	<property name="src.dir" 			value="." />
     
+	<!-- Init task -->
 	<target name="init" description="Initialize the task">
 		<!--Init TimeStamp-->
 		<tstamp />
@@ -24,6 +26,7 @@
 		       addproperty="destination" />
 	</target>
 
+	<!--Generate-->
 	<target name="generate" description="Generate the new skeleton" depends="init">
 		<echo>Generating new Application: ${app.name}</echo>
 		<echo>Destination Directory: ${basedir}/${destination}</echo>
