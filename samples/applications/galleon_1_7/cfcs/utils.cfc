@@ -96,34 +96,34 @@ Copyright for coloredCode function. Also note that Jeff Coughlin made some mods 
 
 		<cfscript>
 		/* Convert special characters so they do not get interpreted literally; italicize and boldface */
-		data = REReplaceNoCase(data, '&([[:alpha:]]{2,});', '«strong»«em»&amp;\1;«/em»«/strong»', 'ALL');
+		data = REReplaceNoCase(data, '&([[:alpha:]]{2,});', 'ï¿½strongï¿½ï¿½emï¿½&amp;\1;ï¿½/emï¿½ï¿½/strongï¿½', 'ALL');
 	
 		/* Convert many standalone (not within quotes) numbers to blue, ie. myValue = 0 */
-		data = REReplaceNoCase(data, "(gt|lt|eq|is|,|\(|\))([[:space:]]?[0-9]{1,})", "\1«span style='color: ##0000ff'»\2«/span»", "ALL");
+		data = REReplaceNoCase(data, "(gt|lt|eq|is|,|\(|\))([[:space:]]?[0-9]{1,})", "\1ï¿½span style='color: ##0000ff'ï¿½\2ï¿½/spanï¿½", "ALL");
 	
 		/* Convert normal tags to navy blue */
-		data = REReplaceNoCase(data, "<(/?)((!d|b|c(e|i|od|om)|d|e|f(r|o)|h|i|k|l|m|n|o|p|q|r|s|t(e|i|t)|u|v|w|x)[^>]*)>", "«span style='color: ##000080'»<\1\2>«/span»", "ALL");
+		data = REReplaceNoCase(data, "<(/?)((!d|b|c(e|i|od|om)|d|e|f(r|o)|h|i|k|l|m|n|o|p|q|r|s|t(e|i|t)|u|v|w|x)[^>]*)>", "ï¿½span style='color: ##000080'ï¿½<\1\2>ï¿½/spanï¿½", "ALL");
 	
 		/* Convert all table-related tags to teal */
-		data = REReplaceNoCase(data, "<(/?)(t(a|r|d|b|f|h)([^>]*)|c(ap|ol)([^>]*))>", "«span style='color: ##008080'»<\1\2>«/span»", "ALL");
+		data = REReplaceNoCase(data, "<(/?)(t(a|r|d|b|f|h)([^>]*)|c(ap|ol)([^>]*))>", "ï¿½span style='color: ##008080'ï¿½<\1\2>ï¿½/spanï¿½", "ALL");
 	
 		/* Convert all form-related tags to orange */
-		data = REReplaceNoCase(data, "<(/?)((bu|f(i|or)|i(n|s)|l(a|e)|se|op|te)([^>]*))>", "«span style='color: ##ff8000'»<\1\2>«/span»", "ALL");
+		data = REReplaceNoCase(data, "<(/?)((bu|f(i|or)|i(n|s)|l(a|e)|se|op|te)([^>]*))>", "ï¿½span style='color: ##ff8000'ï¿½<\1\2>ï¿½/spanï¿½", "ALL");
 	
 		/* Convert all tags starting with 'a' to green, since the others aren't used much and we get a speed gain */
-		data = REReplaceNoCase(data, "<(/?)(a[^>]*)>", "«span style='color: ##008000'»<\1\2>«/span»", "ALL");
+		data = REReplaceNoCase(data, "<(/?)(a[^>]*)>", "ï¿½span style='color: ##008000'ï¿½<\1\2>ï¿½/spanï¿½", "ALL");
 	
 		/* Convert all image and style tags to purple */
-		data = REReplaceNoCase(data, "<(/?)((im[^>]*)|(sty[^>]*))>", "«span style='color: ##800080'»<\1\2>«/span»", "ALL");
+		data = REReplaceNoCase(data, "<(/?)((im[^>]*)|(sty[^>]*))>", "ï¿½span style='color: ##800080'ï¿½<\1\2>ï¿½/spanï¿½", "ALL");
 	
 		/* Convert all ColdFusion, SCRIPT and WDDX tags to maroon */
-		data = REReplaceNoCase(data, "<(/?)((cf[^>]*)|(sc[^>]*)|(wddx[^>]*))>", "«span style='color: ##800000'»<\1\2>«/span»", "ALL");
+		data = REReplaceNoCase(data, "<(/?)((cf[^>]*)|(sc[^>]*)|(wddx[^>]*))>", "ï¿½span style='color: ##800000'ï¿½<\1\2>ï¿½/spanï¿½", "ALL");
 	
 		/* Convert all inline "//" comments to gray (revised) */
-		data = REReplaceNoCase(data, "([^:/]\/{2,2})([^[:cntrl:]]+)($|[[:cntrl:]])", "«span style='color: ##808080'»«em»\1\2«/em»«/span»", "ALL");
+		data = REReplaceNoCase(data, "([^:/]\/{2,2})([^[:cntrl:]]+)($|[[:cntrl:]])", "ï¿½span style='color: ##808080'ï¿½ï¿½emï¿½\1\2ï¿½/emï¿½ï¿½/spanï¿½", "ALL");
 	
 		/* Convert all multi-line script comments to gray */
-		data = REReplaceNoCase(data, "(\/\*[^\*]*\*\/)", "«span style='color: ##808080'»«em»\1«/em»«/span»", "ALL");
+		data = REReplaceNoCase(data, "(\/\*[^\*]*\*\/)", "ï¿½span style='color: ##808080'ï¿½ï¿½emï¿½\1ï¿½/emï¿½ï¿½/spanï¿½", "ALL");
 	
 		/* Convert all HTML and ColdFusion comments to gray */	
 		/* The next 10 lines of code can be replaced with the commented-out line following them, if you do care whether HTML and CFML 
@@ -133,15 +133,15 @@ Copyright for coloredCode function. Also note that Jeff Coughlin made some mods 
 			Match = REFindNoCase("<!--" & "-?([^-]*)-?-->", data, BOF, True);
 			if (Match.pos[1]) {
 				Orig = Mid(data, Match.pos[1], Match.len[1]);
-				Chunk = REReplaceNoCase(Orig, "«(/?[^»]*)»", "", "ALL");
+				Chunk = REReplaceNoCase(Orig, "ï¿½(/?[^ï¿½]*)ï¿½", "", "ALL");
 				BOF = ((Match.pos[1] + Len(Chunk)) + 38); // 38 is the length of the SPAN tags in the next line
-				data = Replace(data, Orig, "«span style='color: ##808080'»«em»#Chunk#«/em»«/span»");
+				data = Replace(data, Orig, "ï¿½span style='color: ##808080'ï¿½ï¿½emï¿½#Chunk#ï¿½/emï¿½ï¿½/spanï¿½");
 			} else EOF = 1;
 		}
 
 
 		/* Convert all quoted values to blue */
-		data = REReplaceNoCase(data, """([^""]*)""", "«span style=""color: ##0000ff""»""\1""«/span»", "all");
+		data = REReplaceNoCase(data, """([^""]*)""", "ï¿½span style=""color: ##0000ff""ï¿½""\1""ï¿½/spanï¿½", "all");
 
 		/* Convert left containers to their ASCII equivalent */
 		data = REReplaceNoCase(data, "<", "&lt;", "ALL");
@@ -150,7 +150,7 @@ Copyright for coloredCode function. Also note that Jeff Coughlin made some mods 
 		data = REReplaceNoCase(data, ">", "&gt;", "ALL");
 
 		/* Revert all pseudo-containers back to their real values to be interpreted literally (revised) */
-		data = REReplaceNoCase(data, "«([^»]*)»", "<\1>", "ALL");
+		data = REReplaceNoCase(data, "ï¿½([^ï¿½]*)ï¿½", "<\1>", "ALL");
 
 		/* ***New Feature*** Convert all FILE and UNC paths to active links (i.e, file:///, \\server\, c:\myfile.cfm) */
 		data = REReplaceNoCase(data, "(((file:///)|([a-z]:\\)|(\\\\[[:alpha:]]))+(\.?[[:alnum:]\/=^@*|:~`+$%?_##& -])+)", "<a target=""_blank"" href=""\1"">\1</a>", "ALL");
@@ -185,7 +185,7 @@ Copyright for coloredCode function. Also note that Jeff Coughlin made some mods 
 		
 	</cffunction>
 	
-	<cffunction name="isUserInAnyRole" access="public" returnType="boolean" output="false"
+	<cffunction name="isUserInAnyRole2" access="public" returnType="boolean" output="false"
 				hint="isUserInRole only does AND checks. This method allows for OR checks.">
 		
 		<cfargument name="rolelist" type="string" required="true">

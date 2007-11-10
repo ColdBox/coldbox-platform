@@ -78,7 +78,7 @@
 					
 					<cfif len(uinfo.signature)><div class="signature">#uinfo.signature#</div></cfif>
 					
-					<cfif isLoggedOn() and application.utils.isUserInAnyRole("forumsadmin,forumsmoderator")>
+					<cfif isLoggedOn() and application.utils.isUserInAnyRole2("forumsadmin,forumsmoderator")>
 						<p align="right"><a href="index.cfm?event=#Event.getValue("xehMessageEdit")#&id=#id#">[Edit Post]</a></p>
 					</cfif>
 				</td>
@@ -132,7 +132,7 @@
 				<tr>
 					<td>Please <a href="#link#">login</a> to post a response.</td>
 				</tr>
-			<cfelseif application.utils.isUserInAnyRole("forumsadmin,forumsmoderator") or not Event.getValue("readonly")>
+			<cfelseif application.utils.isUserInAnyRole2("forumsadmin,forumsmoderator") or not Event.getValue("readonly")>
 				<tr>
 					<td><b>Title: </b></td>
 					<td><input type="text" name="post_title" value="#Event.getValue("post_title")#" class="formBox"></td>

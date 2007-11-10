@@ -44,7 +44,7 @@
 		<cfset var newid = createUUID()>
 				
 		<!--- First see if we can add a thread. Because roles= doesn't allow for OR, we use a UDF --->
-		<cfif not variables.utils.isUserInAnyRole("forumsadmin,forumsmoderator,forumsmember")>
+		<cfif not variables.utils.isUserInAnyRole2("forumsadmin,forumsmoderator,forumsmember")>
 			<cfset variables.utils.throw("ThreadCFC","Unauthorized execution of addThread.")>
 		</cfif>
 		

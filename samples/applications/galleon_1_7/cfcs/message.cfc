@@ -69,7 +69,7 @@
 		<cfset var notifiedList = "">
 		
 		<!--- First see if we can add a message. Because roles= doesn't allow for OR, we use a UDF --->
-		<cfif not variables.utils.isUserInAnyRole("forumsadmin,forumsmoderator,forumsmember")>
+		<cfif not variables.utils.isUserInAnyRole2("forumsadmin,forumsmoderator,forumsmember")>
 			<cfset variables.utils.throw("Message CFC","Unauthorized execution of addMessage.")>
 		</cfif>
 
@@ -172,7 +172,7 @@ User:		#arguments.username#
 		<cfset var q = "">
 		
 		<!--- First see if we can delete a message. Because roles= doesn't allow for OR, we use a UDF --->
-		<cfif not variables.utils.isUserInAnyRole("forumsadmin,forumsmoderator")>
+		<cfif not variables.utils.isUserInAnyRole2("forumsadmin,forumsmoderator")>
 			<cfset variables.utils.throw("Message CFC","Unauthorized execution of deleteMessage.")>
 		</cfif>
 
@@ -395,7 +395,7 @@ You may include an image in your message like so: [img]url[/img].<br />
 		<cfargument name="id" type="uuid" required="true">
 		<cfargument name="message" type="struct" required="true">
 
-		<cfif not variables.utils.isUserInAnyRole("forumsadmin,forumsmoderator")>
+		<cfif not variables.utils.isUserInAnyRole2("forumsadmin,forumsmoderator")>
 			<cfset variables.utils.throw("Message CFC","Unauthorized execution of saveMessage.")>
 		</cfif>
 		
