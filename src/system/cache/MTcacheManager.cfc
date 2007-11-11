@@ -34,9 +34,11 @@ Modification History:
 		<cfargument name="async" 		type="boolean"  required="false" default="true" hint="Run asynchronously or not"/>
 		<!--- ************************************************************* --->
 		<cfif arguments.async>
-			<cfthread name="coldbox.cache.clearEvent-#createUUID()#">  
+			<cfthread name="coldbox.cache.clearEvent-#createUUID()#"
+					  eventsnippet="#arguments.eventsnippet#"
+					  queryString="#arguments.queryString#">  
 				<cfscript>  
-					super.clearEvent(argumentCollection=arguments); 
+					super.clearEvent(Attributes.eventsnippet,Attributes.queryString); 
 				</cfscript>
 			</cfthread>
 		<cfelse>
