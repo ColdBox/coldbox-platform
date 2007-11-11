@@ -234,7 +234,7 @@ Description :
 			if ( onInvalidEvent neq "" ){
 					//Check if the invalid event is the same as the current event
 					if ( CompareNoCase(onInvalidEvent,event) eq 0){
-						throw("The invalid event handler: #onInvalidEvent# is also invalid. Please check your settings","","Framework.InvalidEventHandlerException");
+						getUtil().throw("The invalid event handler: #onInvalidEvent# is also invalid. Please check your settings","","Framework.InvalidEventHandlerException");
 					}
 					else{
 						//Log Invalid Event
