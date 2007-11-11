@@ -539,12 +539,23 @@ Modification History:
 				if ( left(ConfigStruct["AppMapping"],1) eq "/" ){
 					ConfigStruct["AppMapping"] = removeChars(ConfigStruct["AppMapping"],1,1);
 				}
+				
 				/* Handler Registration */
 				ConfigStruct["HandlersInvocationPath"] = "#fwSettingsStruct.handlersConvention#";
-				ConfigStruct["HandlersPath"] = controller.getAppRootPath() & instance.FileSeparator & "#fwSettingsStruct.handlersConvention#";
+				if( right(controller.getAppRootPath(),1) eq instance.FileSeparator ){
+					ConfigStruct["HandlersPath"] = controller.getAppRootPath() & "#fwSettingsStruct.handlersConvention#";
+				}
+				else{
+					ConfigStruct["HandlersPath"] = controller.getAppRootPath() & instance.FileSeparator & "#fwSettingsStruct.handlersConvention#";
+				}
 				/* Custom Plugins Registration */
 				ConfigStruct["MyPluginsInvocationPath"] = "#fwSettingsStruct.pluginsConvention#";
-				ConfigStruct["MyPluginsPath"] = controller.getAppRootPath() & instance.FileSeparator & "#fwSettingsStruct.pluginsConvention#";
+				if( right(controller.getAppRootPath(),1) eq instance.FileSeparator ){
+					ConfigStruct["MyPluginsPath"] = controller.getAppRootPath() & "#fwSettingsStruct.pluginsConvention#";
+				}
+				else{
+					ConfigStruct["MyPluginsPath"] = controller.getAppRootPath() & instance.FileSeparator & "#fwSettingsStruct.pluginsConvention#";
+				}
 			}
 			
 			/* ::::::::::::::::::::::::::::::::::::::::: MAIL SETTINGS :::::::::::::::::::::::::::::::::::::::::::: */
