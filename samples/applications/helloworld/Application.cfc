@@ -14,14 +14,12 @@ Description :
 	So if you have refactored your framework, make sure it extends coldbox.
 ----------------------------------------------------------------------->
 <cfcomponent extends="coldbox.system.coldbox" output="false">
-<cfprocessingdirective suppresswhitespace="true">
-	
+
 	<!--- APPLICATION CFC PROPERTIES --->
 	<cfset this.name = hash(getCurrentTemplatePath())> 
 	<cfset this.sessionManagement = true>
 	<cfset this.sessionTimeout = createTimeSpan(0,0,30,0)>
 	<cfset this.setClientCookies = true>
-	<cfset this.loginStorage = "session">
 	
 	<!--- COLDBOX STATIC PROPERTY, DO NOT CHANGE UNLESS THIS IS NOT THE ROOT OF YOUR COLDBOX APP --->
 	<cfset COLDBOX_APP_ROOT_PATH = getDirectoryFromPath(getCurrentTemplatePath())>
@@ -82,5 +80,4 @@ Description :
 		<!--- WHATEVER YOU WANT BELOW --->
 	</cffunction>
 	
-</cfprocessingdirective>
 </cfcomponent>

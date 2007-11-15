@@ -14,7 +14,6 @@ Description :
 	So if you have refactored your framework, make sure it extends coldbox.
 ----------------------------------------------------------------------->
 <cfcomponent extends="coldbox.system.coldbox" output="false">
-<cfprocessingdirective suppresswhitespace="true">
 	
 	<!--- Galleon appnames --->
 	<cfset appName = "galleonForums">
@@ -87,6 +86,5 @@ Description :
 		<cfset super.onSessionEnd(argumentCollection=arguments)>
 		<!--- WHATEVER YOU WANT BELOW --->
 	</cffunction>
-	
-</cfprocessingdirective>
+
 </cfcomponent>

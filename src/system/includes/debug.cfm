@@ -131,7 +131,6 @@ Modification History:
 		<!--- **************************************************************--->
 		<!--- Method Executions --->
 		<!--- **************************************************************--->
-		<cfif structKeyExists(request,"DebugTimers")>
 		<table border="0" align="center" cellpadding="0" cellspacing="1" class="fw_debugTables">
 		  <tr>
 		  	<th width="13%" align="center" >Timestamp</th>
@@ -139,35 +138,40 @@ Modification History:
 			<th >Framework Method</th>
 			<th width="75" align="center" >RC Snapshot</th>
 		  </tr>
-		  <cfloop query="request.DebugTimers">
-			  <cfif findnocase("render", method)>
-			  	<cfset color = "fw_redText">
-			  <cfelseif findnocase("pre",method) or findnocase("post",method)>
-			  	<cfset color = "fw_purpleText">
-			  <cfelseif findnocase("runEvent", method)>
-			  	<cfset color = "fw_blueText">
-			  <cfelse>
-			  	<cfset color = "fw_greenText">
-			  </cfif>
-			  <tr <cfif currentrow mod 2 eq 0>class="even"</cfif>>
-			  	<td align="center" >#TimeFormat(timestamp,"hh:MM:SS.l tt")#</td>
-				<td align="center" >#Time# ms</td>
-				<td ><span class="#color#">#Method#</span></td>
-				<td align="center" >
-					<cfif rc neq ''><a href="javascript:fw_poprc('fw_poprc_#id#')">View</a><cfelse>...</cfif>
-				</td>
-			  </tr>
-			 <tr id="fw_poprc_#id#" class="hideRC">
-			  	<td colspan="4" style="padding:5px;" wrap="true">
-				  	<textarea rows=12 style="width:100%" readonly="true">#replacenocase(rc,",",chr(10) & chr(13),"all")#</textarea>
-				</td>
-	  		  </tr>
-		  </cfloop>
+		  <cfif structKeyExists(request,"DebugTimers")>
+			  <cfloop query="request.DebugTimers">
+				  <cfif findnocase("render", method)>
+				  	<cfset color = "fw_redText">
+				  <cfelseif findnocase("pre",method) or findnocase("post",method)>
+				  	<cfset color = "fw_purpleText">
+				  <cfelseif findnocase("runEvent", method)>
+				  	<cfset color = "fw_blueText">
+				  <cfelse>
+				  	<cfset color = "fw_greenText">
+				  </cfif>
+				  <tr <cfif currentrow mod 2 eq 0>class="even"</cfif>>
+				  	<td align="center" >#TimeFormat(timestamp,"hh:MM:SS.l tt")#</td>
+					<td align="center" >#Time# ms</td>
+					<td ><span class="#color#">#Method#</span></td>
+					<td align="center" >
+						<cfif rc neq ''><a href="javascript:fw_poprc('fw_poprc_#id#')">View</a><cfelse>...</cfif>
+					</td>
+				  </tr>
+				 <tr id="fw_poprc_#id#" class="hideRC">
+				  	<td colspan="4" style="padding:5px;" wrap="true">
+					  	<textarea rows=12 style="width:100%" readonly="true">#replacenocase(rc,",",chr(10) & chr(13),"all")#</textarea>
+					</td>
+		  		  </tr>
+			  </cfloop>
+		  <cfelse>
+		  	<tr>
+			  	<td colspan="4">No Timers Found...</td>			
+			</tr>
+		  </cfif>
 		  <tr>
 			<th colspan="4">Total Framework Request Execution Time: #request.fwExecTime# ms</th>
 		  </tr>
-		</table>
-		</cfif>
+		</table>		
 		<!--- **************************************************************--->
 	</div>
 

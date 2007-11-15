@@ -26,11 +26,8 @@ Modification History:
 		<cfscript>
 			//Set Controller Injection
 			instance.controller = arguments.controller;
-			
 			//Cache Configuration
 			instance.CacheConfigBean = structnew();
-			//Object Pool
-			instance.objectPool = structnew();
 			
 			//Cache Performance
 			instance.cachePerformance = structNew();
@@ -39,19 +36,14 @@ Modification History:
 			
 			//Reaping Control
 			instance.lastReapDatetime = now();
-			
-			//Runtime Java object
-			instance.javaRuntime = CreateObject("java", "java.lang.Runtime");
-			
 			//Lock Name
 			instance.lockName = getController().getAppHash() & "_OCM_OPERATION";
-			
+			//Runtime Java object
+			instance.javaRuntime = CreateObject("java", "java.lang.Runtime");
 			//Event URL Facade Setup
 			instance.eventURLFacade = CreateObject("component","eventURLFacade").init(arguments.controller);
-			
 			//Init the object Pool on instantiation
 			initPool();
-			
 			//return Cache Manager reference;
 			return this;
 		</cfscript>
@@ -104,6 +96,8 @@ Modification History:
 				<!--- Record a Hit --->
 				<cfset hit()>
 				<cfset ObjectFound = getobjectPool().get(arguments.objectKey)>
+			<cfelse>
+				<cfset miss()>
 			</cfif>
 		</cflock>
 		
@@ -112,7 +106,7 @@ Modification History:
 
 	<!--- ************************************************************* --->
 
-	<cffunction name="set" access="public" output="false" returntype="void" hint="sets an object in cache.">
+	<cffunction name="set" access="public" output="false" returntype="void" hint="sets an object in cache. Sets might be expensive">
 		<!--- ************************************************************* --->
 		<cfargument name="objectKey" 			type="string"  required="true" hint="The object cache key">
 		<cfargument name="MyObject"				type="any" 	   required="true" hint="The object to cache">
@@ -131,10 +125,21 @@ Modification History:
 		<cfset arguments.objectKey = trim(arguments.objectKey)>
 		<cfset arguments.Timeout = trim(arguments.Timeout)>
 		<cfset arguments.LastAccessTimeout = trim(arguments.LastAccessTimeout)>
-	
-		<!--- Max Objects in Cache Check --->
-		<cfif (ccBean.getCacheMaxObjects() eq 0 or getSize() lt ccBean.getCacheMaxObjects()) and
-			  (ccBean.getCacheFreeMemoryPercentageThreshold() eq 0 or isBelowThreshold)>
+		
+		<!--- JVMThreshold Check --->
+		<cfif ccBean.getCacheFreeMemoryPercentageThreshold() neq 0 and isBelowThreshold>
+			<!--- Evict Using Policy --->
+			<cfinvoke method="#ccBean.getCacheEvictionPolicy()#Eviction">
+			<cfset isBelowThreshold = ThresholdChecks()>
+		</cfif>
+		<!--- Check for max objects, no else to be sure. --->
+		<cfif ccBean.getCacheMaxObjects() neq 0 and getSize() gte ccBean.getCacheMaxObjects()>
+			<!--- Evict Using Policy --->
+			<cfinvoke method="#ccBean.getCacheEvictionPolicy()#Eviction">
+		</cfif>
+		
+		<!--- If Threshold is still reached, don't cache, its too dangerous --->
+		<cfif ccBean.getCacheFreeMemoryPercentageThreshold() eq 0 or isBelowThreshold>
 
 			<!--- Test Timeout Argument, if false, then inherit framework's timeout --->
 			<cfif arguments.Timeout eq "" or not isNumeric(arguments.Timeout) or arguments.Timeout lt 0>
@@ -150,6 +155,8 @@ Modification History:
 			<cflock type="exclusive" name="#getLockName()#" timeout="30">
 				<cfset getobjectPool().set(arguments.objectKey,arguments.MyObject,arguments.Timeout,arguments.LastAccessTimeout)>
 			</cflock>
+		<cfelse>
+			<cfset interceptMetadata.error = "JVM Threshold is too high, can't cache">
 		</cfif>
 		
 		<!--- Only execute once the framework has been initialized --->
@@ -364,12 +371,13 @@ Modification History:
 						//Override Timeout Check
 						if ( objStruct[key].Timeout gt 0 ){
 							//Check for creation timeouts and clear
-							if ( dateDiff("n", objStruct[key].created, now() ) gte  objStruct[key].Timeout ){
+							if ( dateDiff("n", objStruct[key].created, now() ) gte objStruct[key].Timeout ){
 								clearKey(key);
 								continue;
 							}
-							//Check for last accessed timeout. If object has not been accessed in the default span
-							if ( dateDiff("n", objStruct[key].lastAccesed, now() ) gte  ccBean.getCacheObjectDefaultLastAccessTimeout() ){
+							//Check for last accessed timeouts. If object has not been accessed in the default span
+							if ( ccBean.getCacheUseLastAccessTimeouts() and 
+							     dateDiff("n", objStruct[key].lastAccesed, now() ) gte ccBean.getCacheObjectDefaultLastAccessTimeout() ){
 								clearKey(key);
 								continue;
 							}
@@ -377,6 +385,48 @@ Modification History:
 					}//end for loop
 				}// end reaping frequency check
 			}//end if objects in pool
+		</cfscript>
+	</cffunction>
+	
+	<!--- ************************************************************* --->
+
+	<cffunction name="LFUEviction" access="public" output="false" returntype="void" hint="Evict the least frequently used.">
+		<cfscript>
+			var objStruct = getObjectPool().getpool_metadata();
+			var LFUhitIndex = structSort(objStruct,"numeric", "ASC", "hits");
+			var indexLength = ArrayLen(LFUhitIndex);
+			var x = 1;
+			
+			//Loop Through Metadata
+			for (x=1; x lte indexLength; x=x+1){
+				//Override Eternal Checks
+				if ( objStruct[LFUhitIndex[x]].Timeout gt 0 ){
+					//Evict it
+					clearKey(LFUhitIndex[x]);
+					break;
+				}//end timeout gt 0
+			}//end for loop
+		</cfscript>
+	</cffunction>
+
+	<!--- ************************************************************* --->
+	
+	<cffunction name="LRUEviction" access="public" output="false" returntype="void" hint="Evict the least frequently used.">
+		<cfscript>
+			var objStruct = getObjectPool().getpool_metadata();
+			var LRUhitIndex = structSort(objStruct,"numeric", "ASC", "LastAccessTimeout");
+			var indexLength = ArrayLen(LRUhitIndex);
+			var x = 1;
+			
+			//Loop Through Metadata
+			for (x=1; x lte indexLength; x=x+1){
+				//Override Eternal Checks
+				if ( objStruct[LRUhitIndex[x]].Timeout gt 0 ){
+					//Evict it
+					clearKey(LRUhitIndex[x]);
+					break;
+				}//end timeout gt 0
+			}//end for loop
 		</cfscript>
 	</cffunction>
 

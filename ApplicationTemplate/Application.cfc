@@ -14,8 +14,7 @@ Description :
 	So if you have refactored your framework, make sure it extends coldbox.
 ----------------------------------------------------------------------->
 <cfcomponent extends="coldbox.system.coldbox" output="false">
-<cfprocessingdirective suppresswhitespace="true">
-	
+
 	<!--- APPLICATION CFC PROPERTIES --->
 	<cfset this.name = hash(getCurrentTemplatePath())> 
 	<cfset this.sessionManagement = true>
@@ -81,5 +80,4 @@ Description :
 		<!--- WHATEVER YOU WANT BELOW --->
 	</cffunction>
 	
-</cfprocessingdirective>
 </cfcomponent>

@@ -136,15 +136,18 @@
 	-->
 	<Datasources />
 	
-	<!--ColdBox Object Caching Settings Overrides the Framework-wide settings 
+	<!--ColdBox Object Caching Settings Overrides the Framework-wide settings -->
 	<Cache>
 		<ObjectDefaultTimeout>45</ObjectDefaultTimeout>
 		<ObjectDefaultLastAccessTimeout>15</ObjectDefaultLastAccessTimeout>
+		<UseLastAccessTimeouts>true</UseLastAccessTimeouts>
 		<ReapFrequency>3</ReapFrequency>
 		<MaxObjects>100</MaxObjects>
-		<FreeMemoryPercentageThreshold>3</FreeMemoryPercentageThreshold>
+		<FreeMemoryPercentageThreshold>5</FreeMemoryPercentageThreshold>
+		<!-- LFU/LRU -->
+		<EvictionPolicy>LFU</EvictionPolicy>
 	</Cache>
-	-->
+	
 	
 	<!-- Interceptor Declarations 
 	<Interceptors>

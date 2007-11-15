@@ -24,6 +24,8 @@ Modification History:
 	    <cfargument name="CacheReapFrequency" 					type="numeric" required="true">
 	    <cfargument name="CacheMaxObjects" 						type="numeric" required="true">
 	    <cfargument name="CacheFreeMemoryPercentageThreshold" 	type="numeric" required="true">
+	    <cfargument name="CacheUseLastAccessTimeouts"			type="boolean" required="true">
+	    <cfargument name="CacheEvictionPolicy"					type="string"  required="true">
 	    <!--- ************************************************************* --->
 		<cfscript>
 		variables.instance = structnew();
@@ -32,6 +34,8 @@ Modification History:
 		instance.CacheReapFrequency = arguments.CacheReapFrequency;
 		instance.CacheMaxObjects = arguments.CacheMaxObjects;
 		instance.CacheFreeMemoryPercentageThreshold = arguments.CacheFreeMemoryPercentageThreshold;
+		instance.CacheUseLastAccessTimeouts = arguments.CacheUseLastAccessTimeouts;
+		instance.CacheEvictionPolicy = arguments.CacheEvictionPolicy;
 		return this;
 		</cfscript>
 	</cffunction>
@@ -81,6 +85,24 @@ Modification History:
 	<cffunction name="setCacheFreeMemoryPercentageThreshold" access="public" returntype="void" output="false">
 		<cfargument name="CacheFreeMemoryPercentageThreshold" type="numeric" required="true">
 		<cfset instance.CacheFreeMemoryPercentageThreshold = arguments.CacheFreeMemoryPercentageThreshold>
+	</cffunction>
+	
+	<!--- Getter/Setter For CacheUseLastAccessTimeouts --->
+	<cffunction name="getCacheUseLastAccessTimeouts" access="public" output="false" returntype="boolean" hint="Get CacheUseLastAccessTimeouts">
+		<cfreturn instance.CacheUseLastAccessTimeouts/>
+	</cffunction>	
+	<cffunction name="setCacheUseLastAccessTimeouts" access="public" output="false" returntype="void" hint="Set CacheUseLastAccessTimeouts">
+		<cfargument name="CacheUseLastAccessTimeouts" type="boolean" required="true"/>
+		<cfset instance.CacheUseLastAccessTimeouts = arguments.CacheUseLastAccessTimeouts/>
+	</cffunction>
+	
+	<!--- Getter/Setter For CacheEvictionPolicy --->
+	<cffunction name="getCacheEvictionPolicy" access="public" output="false" returntype="string" hint="Get CacheEvictionPolicy">
+		<cfreturn instance.CacheEvictionPolicy/>
+	</cffunction>
+	<cffunction name="setCacheEvictionPolicy" access="public" output="false" returntype="void" hint="Set CacheEvictionPolicy">
+		<cfargument name="CacheEvictionPolicy" type="string" required="true"/>
+		<cfset instance.CacheEvictionPolicy = arguments.CacheEvictionPolicy/>
 	</cffunction>
 
 	<!--- Getter/Setter memento --->

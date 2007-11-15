@@ -67,7 +67,9 @@ Modification History:
 												   FrameworkSettings.CacheObjectDefaultLastAccessTimeout,
 												   FrameworkSettings.CacheReapFrequency,
 												   FrameworkSettings.CacheMaxObjects,
-												   FrameworkSettings.CacheFreeMemoryPercentageThreshold);
+												   FrameworkSettings.CacheFreeMemoryPercentageThreshold,
+												   FrameworkSettings.CacheUseLastAccessTimeouts,
+												   FrameworkSettings.CacheEvictionPolicy);
 			
 			//Configure the Object Cache for first usage.
 			controller.getColdboxOCM().configure(CacheConfigBean);
@@ -83,7 +85,9 @@ Modification History:
 												   ConfigSettings.CacheSettings.ObjectDefaultLastAccessTimeout,
 												   ConfigSettings.CacheSettings.ReapFrequency,
 												   ConfigSettings.CacheSettings.MaxObjects,
-												   ConfigSettings.CacheSettings.FreeMemoryPercentageThreshold);
+												   ConfigSettings.CacheSettings.FreeMemoryPercentageThreshold,
+												   ConfigSettings.CacheSettings.UseLastAccessTimeouts,
+												   ConfigSettings.CacheSettings.EvictionPolicy);
 				//Re-Configure the Object Cache.
 				controller.getColdboxOCM().configure(CacheConfigBean);
 			}

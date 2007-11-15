@@ -10,7 +10,6 @@ Description :
 	This is the base component used to provide Application.cfc support.
 ----------------------------------------------------------------------->
 <cfcomponent name="coldbox" hint="This is the base component used to provide Application.cfc support" output="false">
-<cfprocessingdirective suppresswhitespace="true">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
@@ -295,5 +294,4 @@ Description :
 		<cfset instance.AppHash = arguments.AppHash/>
 	</cffunction>
 
-</cfprocessingdirective>
 </cfcomponent>

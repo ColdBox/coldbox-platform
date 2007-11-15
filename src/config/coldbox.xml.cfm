@@ -91,9 +91,10 @@
 		<ReapFrequency>1</ReapFrequency>
 		<MaxObjects>100</MaxObjects>
 		<FreeMemoryPercentageThreshold>0</FreeMemoryPercentageThreshold>
+		<UseLastAccessTimeouts>false</UseLastAccessTimeouts>
 	</Cache>
 	
-	<Interceptors>
+	<Interceptors throwOnInvalidStates="true">
 		<CustomInterceptionPoints>onLog</CustomInterceptionPoints>
 		<Interceptor class="coldbox.interceptors.executionTracer">
 			<Property name="Simple">Luis</Property>

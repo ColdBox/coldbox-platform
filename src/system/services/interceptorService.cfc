@@ -85,7 +85,7 @@ Description :
 		<cfscript>
 			var event = getController().getRequestService().getContext();
 			/* Validate incoming state */
-			if( not listfindnocase(getInterceptionPoints(),arguments.state) ){
+			if( getController().getSetting("InterceptorConfig").throwOnInvalidStates and not listfindnocase(getInterceptionPoints(),arguments.state) ){
 				getController().throw("The interception state sent in to process is not valid: #arguments.state#","","Framework.InterceptorService.InvalidInterceptionState");
 			}
 			/* Process The State if it exists, else just exit out. */

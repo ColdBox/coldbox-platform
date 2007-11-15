@@ -67,6 +67,7 @@ Modification History:
 			instance.searchCache = "//Cache";
 			instance.searchInterceptorCustomPoints = "//Interceptors/CustomInterceptionPoints";
 			instance.searchInterceptors = "//Interceptors/Interceptor";
+			instance.searchInterceptorBase = "//Interceptors";
 	
 			//Search patterns for fw xml
 			instance.searchConventions = "//Conventions";
@@ -254,6 +255,7 @@ Modification History:
 		//Cache
 		var CacheSettingNodes = "";
 		//Interceptors
+		var InterceptorBase = "";
 		var InterceptorNodes = "";
 		var CustomInterceptionPoints = "";
 		var InterceptorStruct = structnew();
@@ -787,7 +789,7 @@ Modification History:
 			StructInsert(ConfigStruct,"ViewLayouts",LayoutViewStruct);
 			StructInsert(ConfigStruct,"FolderLayouts",LayoutFolderStruct);
 			
-			/* ::::::::::::::::::::::::::::::::::::::::: CACHE OVERRIDE SETTINGS :::::::::::::::::::::::::::::::::::::::::::: */
+			/* :::::::::::::::::::::::::::::::::::::::::  OVERRIDE SETTINGS :::::::::::::::::::::::::::::::::::::::::::: */
 			
 			//Cache Override Settings
 			CacheSettingNodes = XMLSearch(configXML, instance.searchCache);
@@ -828,7 +830,25 @@ Modification History:
 				else
 					throw("Invalid Free Memory Percentage Threshold. Please see schema.","Value=#CacheSettingNodes[1].FreeMemoryPercentageThreshold.xmlText#","Framework.plugins.XMLParser.InvalidFreeMemoryPercentageThreshold");
 
-
+				//Check for CacheUseLastAccessTimeouts
+				if ( structKeyExists(CacheSettingNodes[1], "UseLastAccessTimeouts") and isBoolean(CacheSettingNodes[1].UseLastAccessTimeouts.xmlText) ){
+					StructInsert(ConfigStruct.CacheSettings, "UseLastAccessTimeouts", trim(CacheSettingNodes[1].UseLastAccessTimeouts.xmlText) );
+				}
+				else{
+					StructInsert(ConfigStruct.CacheSettings, "UseLastAccessTimeouts", fwSettingsStruct.CacheUseLastAccessTimeouts );
+				}	
+				
+				//Check for CacheEvictionPolicy
+				if ( structKeyExists(CacheSettingNodes[1], "EvictionPolicy") ){
+					StructInsert(ConfigStruct.CacheSettings, "EvictionPolicy", trim(CacheSettingNodes[1].EvictionPolicy.xmlText) );
+				}
+				else{
+					StructInsert(ConfigStruct.CacheSettings, "EvictionPolicy", fwSettingsStruct.CacheEvictionPolicy );
+				}			
+				
+				
+				
+				
 				//Set Override to true.
 				ConfigStruct.CacheSettings.Override = true;
 			}
@@ -842,6 +862,15 @@ Modification History:
 			StructInsert( ConfigStruct, "InterceptorConfig", structnew() );
 			StructInsert( ConfigStruct.InterceptorConfig, "Interceptors", arraynew(1) );
 			
+			/* Start by throwOnInvalidStates */
+			StructInsert( ConfigStruct.InterceptorConfig, "throwOnInvalidStates", true );
+			//Search for the override
+			InterceptorBase = XMLSearch(configXML,instance.searchInterceptorBase);
+			if ( ArrayLen(InterceptorBase) neq 0 and structKeyExists(InterceptorBase[1].XMLAttributes, "throwOnInvalidStates") ){
+				ConfigStruct.InterceptorConfig['throwOnInvalidStates'] = InterceptorBase[1].XMLAttributes.throwOnInvalidStates;
+			}
+			
+				
 			/* Start by Custom Interception Point */
 			CustomInterceptionPoints = XMLSearch(configXML,instance.searchInterceptorCustomPoints);
 			//validate Custom Interception Point

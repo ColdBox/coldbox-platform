@@ -14,8 +14,7 @@ Description :
 	So if you have refactored your framework, make sure it extends coldbox.
 ----------------------------------------------------------------------->
 <cfcomponent extends="coldbox.system.coldbox" output="false">
-<cfprocessingdirective suppresswhitespace="true">
-	
+
 	<!--- Edit this line if you are not using a default blog --->
 	<cfset blogname = "default">
 <!--- The prefix is now dynamic in case 2 people want to run blog.cfc on the same machine. Normally they
@@ -92,6 +91,5 @@ Description :
 		<cfset super.onSessionEnd(argumentCollection=arguments)>
 		<!--- WHATEVER YOU WANT BELOW --->
 	</cffunction>
-	
-</cfprocessingdirective>
+
 </cfcomponent>

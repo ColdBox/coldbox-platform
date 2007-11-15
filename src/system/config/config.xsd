@@ -361,7 +361,7 @@
 			<xs:documentation>These are the application caching settings. It overrides the framework-wide settings.</xs:documentation>
 		</xs:annotation>
 		<xs:complexType>
-			<xs:sequence>
+			<xs:all>
 				<xs:element maxOccurs="1" minOccurs="1" name="ObjectDefaultTimeout" type="xs:integer">
 					<xs:annotation>
 						<xs:documentation>The default object timeout in minutes</xs:documentation>
@@ -387,7 +387,23 @@
 						<xs:documentation>The amount of free memory threshold needed to cache. If memory goes below this threshold, objects will no longer be cached.</xs:documentation>
 					</xs:annotation>
 				</xs:element>
-			</xs:sequence>
+				<xs:element maxOccurs="1" minOccurs="0" name="UseLastAccessTimeouts" type="xs:boolean" default="true">
+					<xs:annotation>
+						<xs:documentation>Whether to reap using last access timeouts alongside default object timeouts</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element maxOccurs="1" minOccurs="0" name="EvictionPolicy" default="LFU">
+					<xs:annotation>
+						<xs:documentation>The default eviction policy</xs:documentation>
+					</xs:annotation>
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:enumeration value="LFU"/>
+							<xs:enumeration value="LRU"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+			</xs:all>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="Interceptors">
@@ -426,6 +442,11 @@
 					</xs:complexType>
 				</xs:element>
 			</xs:sequence>
+			<xs:attribute name="throwOnInvalidStates" type="xs:boolean" use="optional" default="true">
+				<xs:annotation>
+					<xs:documentation>Flag that determines if the interceptor service throws an error when an invalid state is announced.</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
 		</xs:complexType>
 	</xs:element>
 </xs:schema>
