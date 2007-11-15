@@ -272,6 +272,9 @@ Modification History:
 		var oUtilities = getPlugin("Utilities");
 		//Testers
 		var tester = "";
+		var xmlvalidation = "";
+		var errorDetails = "";
+		
 		try{
 			
 			/* ::::::::::::::::::::::::::::::::::::::::: CONFIG FILE PARSING & VALIDATION :::::::::::::::::::::::::::::::::::::::::::: */
@@ -921,13 +924,22 @@ Modification History:
 			//Determine which CF version for XML Parsing method
 			if ( fwSettingsStruct["xmlValidateActive"] ){
 				//Finally Validate With XSD
-				if ( not XMLValidate(configXML, getController().getSetting("ConfigFileSchemaLocation", true)).status )
-					throw("<br>The config.xml file does not validate with the framework's schema.<br>You can find the config schema <a href='/coldbox/system/config/#GetFileFromPath(getController().getSetting("ConfigFileSchemaLocation", 1))#'>here</a>","","Framework.plugins.XMLParser.ConfigXMLParsingException");
-			}
+				xmlvalidation = XMLValidate(configXML, getController().getSetting("ConfigFileSchemaLocation", true));
+				//Validate Errors
+				if(NOT xmlvalidation.status){
+					for(i = 1; i lte ArrayLen(xmlvalidation.errors); i = i + 1){
+						errorDetails = errorDetails & xmlvalidation.errors[i] & chr(10) & chr(13);
+					}
+					//Throw the error.
+					throw("<br>The config.xml file does not validate with the framework's schema.","The error details are:<br/> #errorDetails#","Framework.plugins.XMLParser.ConfigXMLParsingException");
+				}// if invalid status
+			}//if xml validation is on
+			
 		}//end of try
 		catch( Any Exception ){
 			throw("#Exception.Message# & #Exception.Detail#",Exception.tagContext.toString(), "Framework.plugins.XMLParser.ConfigXMLParsingException");
 		}
+		
 		//finish
 		return ConfigStruct;
 		</cfscript>
