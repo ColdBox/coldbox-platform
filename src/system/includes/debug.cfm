@@ -179,8 +179,10 @@ Modification History:
 <!--- **************************************************************--->
 <!--- Cache Performance --->
 <!--- **************************************************************--->
-
+	
+	<cflock name="#getController().getColdboxOCM().getLockName()#" type="readonly" timeout="30">
 	<cfinclude template="cachepanel.cfm">
+	</cflock>
 
 <!--- **************************************************************--->
 <!--- DUMP VAR --->

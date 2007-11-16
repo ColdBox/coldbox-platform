@@ -61,7 +61,7 @@ Modification History:
 			//Load Coldbox Config Settings Structure
 			FrameworkSettings = XMLParser.loadFramework(arguments.overrideConfigFile);
 			controller.setColdboxSettings(FrameworkSettings);
-	
+			
 			//Create the Cache Config Bean with data from the framework's settings.xml
 			CacheConfigBean = CacheConfigBean.init(FrameworkSettings.CacheObjectDefaultTimeout,
 												   FrameworkSettings.CacheObjectDefaultLastAccessTimeout,
@@ -70,10 +70,9 @@ Modification History:
 												   FrameworkSettings.CacheFreeMemoryPercentageThreshold,
 												   FrameworkSettings.CacheUseLastAccessTimeouts,
 												   FrameworkSettings.CacheEvictionPolicy);
-			
 			//Configure the Object Cache for first usage.
 			controller.getColdboxOCM().configure(CacheConfigBean);
-	
+			
 			//Load Application Config Settings Now that framework has been loaded.
 			ConfigSettings = XMLParser.parseConfig(arguments.overrideAppMapping);
 			controller.setConfigSettings(ConfigSettings);
@@ -94,7 +93,6 @@ Modification History:
 			
 			//Register The Interceptors
 			getController().getInterceptorService().registerInterceptors();
-			
 			//Execute afterConfigurationLoad
 			getController().getInterceptorService().processState("afterConfigurationLoad");
 			
@@ -113,24 +111,24 @@ Modification History:
 	<cffunction name="registerAspects" access="public" returntype="void" hint="I Register the current Application's Aspects" output="false" >
 		<cfscript>
 		//Initialize AOP Logging if requested.
-		if ( controller.getSetting("EnableColdboxLogging") ){
-			controller.getPlugin("logger").initLogLocation();
+		if ( getController().getSetting("EnableColdboxLogging") ){
+			getController().getPlugin("logger").initLogLocation();
 		}
-		
+
 		//IoC Plugin Manager Configuration
-		if ( controller.getSetting("IOCFramework") neq "" ){
+		if ( getController().getSetting("IOCFramework") neq "" ){
 			//Create IoC Factory and configure it.
-			controller.getPlugin("ioc").configure();
+			getController().getPlugin("ioc").configure();
 		}
 
 		//Load i18N if application is using it.
-		if ( controller.getSetting("using_i18N") ){
+		if ( getController().getSetting("using_i18N") ){
 			//Create i18n Plugin and configure it.
-			controller.getPlugin("i18n").init_i18N(controller.getSetting("DefaultResourceBundle"),controller.getSetting("DefaultLocale"));
+			getController().getPlugin("i18n").init_i18N(getController().getSetting("DefaultResourceBundle"),getController().getSetting("DefaultLocale"));
 		}		
 
 		//Set Debugging Mode according to configuration File
-		controller.getDebuggerService().setDebugMode(controller.getSetting("DebugMode"));
+		getController().getDebuggerService().setDebugMode(controller.getSetting("DebugMode"));
 		</cfscript>
 	</cffunction>
 	

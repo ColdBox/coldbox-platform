@@ -118,9 +118,6 @@ Modification History:
 		<cfset var ccBean = getCacheConfigBean()>
 		<cfset var interceptMetadata = structnew()>
 		
-		<!--- Reap Cache to make space, just in case. --->
-		<cfset reap()>
-		
 		<!--- Clean Arguments --->
 		<cfset arguments.objectKey = trim(arguments.objectKey)>
 		<cfset arguments.Timeout = trim(arguments.Timeout)>
