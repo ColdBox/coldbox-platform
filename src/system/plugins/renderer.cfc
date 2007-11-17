@@ -77,8 +77,8 @@ Modification History:
 		<cfset var cbox_RenderedView = "">
 		<cfset var Event = controller.getRequestService().getContext()>
 		<cfset var rc = event.getCollection()>
-		<cfset var cacheKey = "">
-		<cfset var cacheEntry = "">
+		<cfset var cbox_cacheKey = "">
+		<cfset var cbox_cacheEntry = "">
 		
 		<!--- Test Default View --->
 		<cfif arguments.view eq "">
@@ -93,13 +93,13 @@ Modification History:
 		</cfif>
 		
 		<!--- Setup the cache key --->
-		<cfset cacheKey = this.VIEW_CACHEKEY_PREFIX & arguments.view>
+		<cfset cbox_cacheKey = this.VIEW_CACHEKEY_PREFIX & arguments.view>
 		
 		<!--- Do we have a cached view?? --->
-		<cfif controller.getColdboxOCM().lookup(cacheKey)>
+		<cfif controller.getColdboxOCM().lookup(cbox_cacheKey)>
 			<!--- Render The View --->
 			<cfmodule template="../includes/timer.cfm" timertag="Rendering Cached View [#arguments.view#.cfm]">
-				<cfset cbox_RenderedView = controller.getColdBoxOCM().get(cacheKey)>
+				<cfset cbox_RenderedView = controller.getColdBoxOCM().get(cbox_cacheKey)>
 			</cfmodule>
 		<cfelse>
 			<!--- Render The View --->
@@ -109,8 +109,8 @@ Modification History:
 			<!--- Is this view cacheable, and if its the view we need to cache. --->
 			<cfif event.isViewCacheable() and (arguments.view eq event.getViewCacheableEntry().view)>
 				<!--- Cache it baby!! --->
-				<cfset cacheEntry = event.getViewCacheableEntry()>
-				<cfset controller.getColdboxOCM().set(this.VIEW_CACHEKEY_PREFIX & cacheEntry.view,cbox_RenderedView,cacheEntry.timeout,cacheEntry.lastAccessTimeout)>
+				<cfset cbox_cacheEntry = event.getViewCacheableEntry()>
+				<cfset controller.getColdboxOCM().set(this.VIEW_CACHEKEY_PREFIX & cbox_cacheEntry.view,cbox_RenderedView,cbox_cacheEntry.timeout,cbox_cacheEntry.lastAccessTimeout)>
 			</cfif>
 		</cfif>
 		

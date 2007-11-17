@@ -89,7 +89,12 @@
 		  Total Objects in Cache
 		</div>
 		<div class="fw_debugContentCell">
-		 #controller.getColdBoxOCM().getSize()# / #controller.getColdboxOCM().getCacheConfigBean().getCacheMaxObjects()# (0=Unlimited)
+		 <cfif controller.getColdboxOCM().getSize() gte controller.getColdboxOCM().getCacheConfigBean().getCacheMaxObjects()>
+		 	<span class="fw_redText">#controller.getColdBoxOCM().getSize()# / #controller.getColdboxOCM().getCacheConfigBean().getCacheMaxObjects()# (0=Unlimited)</span>
+		 <cfelse>
+		 	#controller.getColdBoxOCM().getSize()# / #controller.getColdboxOCM().getCacheConfigBean().getCacheMaxObjects()# (0=Unlimited) 
+		</cfif>
+		 
 		</div>
 		<!--- **************************************************************--->
 		<cfif controller.getSetting("chartingActive",true)>
@@ -125,6 +130,8 @@
 			<th align="center" width="10%" >Expires On</th>
 		  </tr>
 		  <cfset cacheKeyIndex = 1>
+		  <cfset cacheMetaData = controller.getColdboxOCM().getpool_metadata()>
+		  <cfset cacheKeyList = listSort(structKeyList(cacheMetaData),"textnocase")>
 		  <cfloop list="#cacheKeyList#" index="key">
 			  <cfset expDate = dateadd("n",cacheMetaData[key].timeout,cacheMetadata[key].Created)>
 			  <tr <cfif cacheKeyIndex mod 2 eq 0>class="even"</cfif>>

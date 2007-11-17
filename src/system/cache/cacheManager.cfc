@@ -88,7 +88,7 @@ Modification History:
 		<!--- ************************************************************* --->
 		<cfargument name="objectKey" type="string" required="true" hint="The key of the object to lookup.">
 		<!--- ************************************************************* --->
-		<cfset var ObjectFound = StructNew()>
+		<cfset var ObjectFound = "">
 
 		<cflock type="exclusive" name="#getLockName()#" timeout="30">
 			<!--- Lookup First --->
@@ -106,7 +106,7 @@ Modification History:
 
 	<!--- ************************************************************* --->
 
-	<cffunction name="set" access="public" output="false" returntype="void" hint="sets an object in cache. Sets might be expensive">
+	<cffunction name="set" access="public" output="false" returntype="boolean" hint="sets an object in cache. Sets might be expensive">
 		<!--- ************************************************************* --->
 		<cfargument name="objectKey" 			type="string"  required="true" hint="The object cache key">
 		<cfargument name="MyObject"				type="any" 	   required="true" hint="The object to cache">
@@ -114,7 +114,7 @@ Modification History:
 		<cfargument name="LastAccessTimeout"	type="string"  required="false" default="" hint="Last Access Timeout in minutes. If timeout is blank, then timeout will be inherited from framework.">
 		<!--- ************************************************************* --->
 		<!---JVM Threshold Checks --->
-		<cfset var isBelowThreshold = ThresholdChecks()>
+		<cfset var isJVMSafe = ThresholdChecks()>
 		<cfset var ccBean = getCacheConfigBean()>
 		<cfset var interceptMetadata = structnew()>
 		
@@ -124,10 +124,10 @@ Modification History:
 		<cfset arguments.LastAccessTimeout = trim(arguments.LastAccessTimeout)>
 		
 		<!--- JVMThreshold Check --->
-		<cfif ccBean.getCacheFreeMemoryPercentageThreshold() neq 0 and isBelowThreshold>
+		<cfif ccBean.getCacheFreeMemoryPercentageThreshold() neq 0 and isJVMSafe eq false>
 			<!--- Evict Using Policy --->
 			<cfinvoke method="#ccBean.getCacheEvictionPolicy()#Eviction">
-			<cfset isBelowThreshold = ThresholdChecks()>
+			<cfset isJVMSafe = ThresholdChecks()>
 		</cfif>
 		<!--- Check for max objects, no else to be sure. --->
 		<cfif ccBean.getCacheMaxObjects() neq 0 and getSize() gte ccBean.getCacheMaxObjects()>
@@ -135,9 +135,10 @@ Modification History:
 			<cfinvoke method="#ccBean.getCacheEvictionPolicy()#Eviction">
 		</cfif>
 		
-		<!--- If Threshold is still reached, don't cache, its too dangerous --->
-		<cfif ccBean.getCacheFreeMemoryPercentageThreshold() eq 0 or isBelowThreshold>
-
+		<!--- If not safe or too many objects is still reached, don't cache, its too dangerous --->
+		<cfif (ccBean.getCacheFreeMemoryPercentageThreshold() eq 0 or isJVMSafe) and
+			  (ccBean.getCacheMaxObjects() eq 0 or getSize() lt ccBean.getCacheMaxObjects())>
+			
 			<!--- Test Timeout Argument, if false, then inherit framework's timeout --->
 			<cfif arguments.Timeout eq "" or not isNumeric(arguments.Timeout) or arguments.Timeout lt 0>
 				<cfset arguments.Timeout = ccBean.getCacheObjectDefaultTimeout()>
@@ -147,23 +148,25 @@ Modification History:
 			<cfif arguments.LastAccessTimeout eq "" or not isNumeric(arguments.LastAccessTimeout) or arguments.LastAccessTimeout lte 0>
 				<cfset arguments.LastAccessTimeout = ccBean.getCacheObjectDefaultLastAccessTimeout()>
 			</cfif>
-
+			
 			<!--- Set object in Cache --->
 			<cflock type="exclusive" name="#getLockName()#" timeout="30">
 				<cfset getobjectPool().set(arguments.objectKey,arguments.MyObject,arguments.Timeout,arguments.LastAccessTimeout)>
 			</cflock>
+			
+			<!--- Only execute once the framework has been initialized --->
+			<cfif getController().getColdboxInitiated()>
+				<!--- InterceptMetadata --->
+				<cfset interceptMetadata.cacheObjectKey = arguments.objectKey>
+				<cfset interceptMetadata.cacheObjectTimeout = arguments.Timeout>
+				<cfset interceptMetadata.cacheObjectLastAccessTimeout = arguments.LastAccessTimeout>
+				<!--- Execute afterCacheElementInsert Interception --->
+				<cfset getController().getInterceptorService().processState("afterCacheElementInsert",interceptMetadata)>				
+			</cfif>
+			<!--- Return True --->
+			<cfreturn true>
 		<cfelse>
-			<cfset interceptMetadata.error = "JVM Threshold is too high, can't cache">
-		</cfif>
-		
-		<!--- Only execute once the framework has been initialized --->
-		<cfif getController().getColdboxInitiated()>
-			<!--- InterceptMetadata --->
-			<cfset interceptMetadata.cacheObjectKey = arguments.objectKey>
-			<cfset interceptMetadata.cacheObjectTimeout = arguments.Timeout>
-			<cfset interceptMetadata.cacheObjectLastAccessTimeout = arguments.LastAccessTimeout>
-			<!--- Execute afterCacheElementInsert Interception --->
-			<cfset getController().getInterceptorService().processState("afterCacheElementInsert",interceptMetadata)>
+			<cfreturn false>
 		</cfif>
 	</cffunction>
 
@@ -177,17 +180,16 @@ Modification History:
 		<cfset var interceptMetadata = structnew()>
 		
 		<!--- Remove Object --->
-		<cfif getobjectPool().lookup(arguments.objectKey) >
-			<cflock type="exclusive" name="#getLockName()#" timeout="30">
+		<cflock type="exclusive" name="#getLockName()#" timeout="30">
+			<cfif getobjectPool().lookup(arguments.objectKey)>
 				<cfset Results = getobjectPool().clearKey(arguments.objectKey)>
-			</cflock>
-		</cfif>
+			</cfif>
+		</cflock>
 		
 		<!--- InterceptMetadata --->
 		<cfset interceptMetadata.cacheObjectKey = arguments.objectKey>
-		
 		<!--- Execute afterCacheElementInsert Interception --->
-		<cfset getController().getInterceptorService().processState("afterCacheElementInsert",interceptMetadata)>
+		<cfset getController().getInterceptorService().processState("afterCacheElementRemoved",interceptMetadata)>
 		
 		<cfreturn Results>
 	</cffunction>
@@ -393,16 +395,17 @@ Modification History:
 			var LFUhitIndex = structSort(objStruct,"numeric", "ASC", "hits");
 			var indexLength = ArrayLen(LFUhitIndex);
 			var x = 1;
-			
+		
 			//Loop Through Metadata
 			for (x=1; x lte indexLength; x=x+1){
 				//Override Eternal Checks
 				if ( objStruct[LFUhitIndex[x]].Timeout gt 0 ){
 					//Evict it
-					clearKey(LFUhitIndex[x]);
+					expireKey(LFUhitIndex[x]);
 					break;
 				}//end timeout gt 0
 			}//end for loop
+			
 		</cfscript>
 	</cffunction>
 
@@ -420,7 +423,7 @@ Modification History:
 				//Override Eternal Checks
 				if ( objStruct[LRUhitIndex[x]].Timeout gt 0 ){
 					//Evict it
-					clearKey(LRUhitIndex[x]);
+					expireKey(LRUhitIndex[x]);
 					break;
 				}//end timeout gt 0
 			}//end for loop
@@ -570,7 +573,7 @@ Modification History:
 			<!--- Checks --->
 			<cfif getCacheConfigBean().getCacheFreeMemoryPercentageThreshold() neq 0>
 				<cfset jvmThreshold = ( (getJavaRuntime().getRuntime().freeMemory() / getJavaRuntime().getRuntime().totalMemory() ) * 100 )>
-				<cfset check = getCacheConfigBean().getCacheFreeMemoryPercentageThreshold() lt jvmThreshold>
+				<cfset check = getCacheConfigBean().getCacheFreeMemoryPercentageThreshold() lt jvmThreshold>				
 			</cfif>
 			<cfcatch type="any">
 				<cfset check = true>

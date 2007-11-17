@@ -62,7 +62,9 @@ Description :
 				/* Configure the Interceptor */
 				oInterceptor.configure();
 				/* Cache Interceptor */
-				getController().getColdBoxOCM().set(interceptorKey, oInterceptor, 0);
+				if ( not getController().getColdBoxOCM().set(interceptorKey, oInterceptor, 0) ){
+					getController().throw("The interceptor could not be cached, either the cache is full or out of memory.","Please check your cache limits, try increasing them or verify your server memory","Framework.InterceptorService.InterceptorCantBeCached");
+				}
 				
 				/* Parse Interception Points, thanks to inheritance. */
 				interceptionPointsFound = parseMetadata( getMetaData(oInterceptor), interceptionPointsFound);

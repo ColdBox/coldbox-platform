@@ -54,8 +54,8 @@ Modification History:
 
 		<!--- Set local Variables --->
 		<cfset var itemTypes = controller.getColdboxOCM().getItemTypes()>
-		<cfset var cacheMetadata = controller.getColdboxOCM().getpool_metadata()>
-		<cfset var cacheKeyList = listSort(structKeyList(cacheMetaData),"textnocase")>
+		<cfset var cacheMetadata = "">
+		<cfset var cacheKeyList = "">
 		<cfset var cacheKeyIndex = 1>
 
 		<!--- Setup Local Variables --->

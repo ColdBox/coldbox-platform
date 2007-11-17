@@ -148,9 +148,8 @@
 		<EvictionPolicy>LFU</EvictionPolicy>
 	</Cache>
 	
-	
 	<!-- Interceptor Declarations 
-	<Interceptors>
+	<Interceptors throwOnInvalidStates="true">
 		<CustomInterceptionPoints>comma-delimited list</CustomInterceptionPoints>
 		<Interceptor class="full class name">
 			<Property name="myProp">value</Property>
