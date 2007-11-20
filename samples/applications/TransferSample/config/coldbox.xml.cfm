@@ -98,7 +98,7 @@
 	
 	<Interceptors>
 		<Interceptor class="coldbox.system.interceptors.ses">
-			<Property name="configFile">config/ses.config.cfm</Property>
+			<Property name="configFile">config/routes.cfm</Property>
 		</Interceptor>
 	</Interceptors>
 
