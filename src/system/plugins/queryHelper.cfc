@@ -205,7 +205,38 @@ var InnerJoined = getPlugin("queryHelper","false").doInnerJoin(qry1,qry2,"fname"
     </cffunction>
 	<!--- ********************************************************************* --->
 
-
+	<!--- ********************************************************************* --->
+	<!--------------------------------------------->
+    <!--- Append From Query1 To Query2          --->
+    <!--------------------------------------------->
+    <cffunction name="doQueryAppend" access="public" returntype="query" output="false" hint="Append Query1 into Query2"> 
+        <cfargument name="qryFrom"	type="query" required="true" hint="Append Query1 into Query2" />
+        <cfargument name="qryTo"	type="query" required="true" hint="Query2 will have all record from Query1" />
+        
+        <cfscript>
+            var i = 0;
+            var ArrayCols = ListToArray(arguments.qryFrom.ColumnList);
+            var QryReturn = Duplicate(arguments.qryTo);
+            
+        try{
+            for( i = 1; i LTE arguments.qryFrom.RecordCount; i = i + 1 ){
+                QueryAddRow( QryReturn );
+	            //get value into return-query
+	            QryReturn = QrySetCell(	qryFrom = arguments.qryFrom, 
+	                                    qryTo = QryReturn,
+	                                    ArrayCols = ArrayCols,
+	                                    FromRowNumber = i,
+	                                    ToRowNumber = QryReturn.RecordCount 
+	                                    );
+            }
+        }Catch(An e){
+        	throw("Error in doQueryAppend():","#e.Detail#<br>#e.message#","Framework.plugins.queryHelper.InvalidQueryAppendException");
+        }    
+           return QryReturn;
+        </cfscript>
+    </cffunction>
+	<!--- ********************************************************************* --->
+	
 	
 	<!--- ********************************************************************* --->
 	<!--------------------------------------------------------->
