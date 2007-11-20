@@ -20,7 +20,7 @@ Description :
 	<cfscript>
 		instance = structnew();
 		//Set the timeout
-		setLockTimeout(60);
+		setLockTimeout(30);
 		//Set the app hash
 		setAppHash(hash(getBaseTemplatePath()));
 		//set request time

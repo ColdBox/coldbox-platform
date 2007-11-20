@@ -11,6 +11,12 @@
 
 	- http://coldcourse.riaforge.com
 	
+NOTE: The interceptor will create a new setting called: sesBaseURL with this value
+	so it can be used by your application for any HTML base tags or relocations.
+	The interceptor will also create the setting: htmlBaseURL so you can use in your
+	<base> html tags, this is the same as the baseURL without the index.cfm if used.
+	Else, htmlBaseURL and sesBaseURL should be the same.
+	
 -------------------------------------------- --->
 
 <!---
@@ -38,15 +44,21 @@
 	The Base URL for your site. This will only be used for forwarding requests if 
 	UniqueURLs is enabled.
    
-   If you want your URLs to look like http://localhost/handler/action then you should
-   put "http://localhost" here. For this option you'll need .htaccess or isapi rewrite support.
+    If you want your URLs to look like http://localhost/handler/action then you should
+    put "http://localhost" here. For this option you'll need .htaccess or isapi rewrite support.
    
-   If you want your URLs to look more like http://localhost/index.cfm/handler/action, then
-   put "http://localhost/index.cfm" here. No additional setup is required to use this setting.
+    If you want your URLs to look more like http://localhost/index.cfm/handler/action, then
+    put "http://localhost/index.cfm" here. No additional setup is required to use this setting.
 
-	You can place any tier detection within this section if needed.
+	You can place any tier detection within this section if needed. 
+	
+	NOTE: The interceptor will create a new setting called: sesBaseURL with this value
+	so it can be used by your application for any HTML base tags or relocations.
+	The interceptor will also create the setting: htmlBaseURL so you can use in your
+	<base> html tags, this is the same as the baseURL without the index.cfm if used.
+	Else, htmlBaseURL and sesBaseURL should be the same.
 --->
-<cfset setBaseURL("http://urldemo")>
+<cfset setBaseURL("http://#cgi.HTTP_HOST#/#getSetting('AppMapping')#/index.cfm")>
 
 
 <!--- -------------------------------------------

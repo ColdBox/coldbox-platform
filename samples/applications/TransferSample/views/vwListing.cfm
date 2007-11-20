@@ -17,14 +17,14 @@
 	 Transfer just retrieved the user's listing and I am rendering them below.
 	</div>
 
-	<div style="margin-top:10px;clear:both;" align="center">
-		<a class="action silver" href="?event=users.dspHome" style="float:left">
+	<div style="margin-top:10px;" align="center">
+		<a class="action silver" href="#getSetting('sesBaseURL')#/users/dspHome" style="float:left">
 			<span>Home</span>
 		</a>
-		<a class="action" href="?event=users.dspUsers" title="List Users" style="float:left">
+		<a class="action" href="#getSetting('sesBaseURL')#/users/dspUsers" style="float:left">
 			<span>List Users</span>
 		</a>
-		<a class="action" href="?event=users.dspAddUser" title="Add User" style="float:left">
+		<a class="action" href="#getSetting('sesBaseURL')#/users/dspAddUser" style="float:left">
 			<span>Add User</span>
 		</a>
 	</div>
@@ -44,7 +44,7 @@
 			<cfloop query="rc.users">
 			<tr style="background:##eaeaea">
 				<td><input type="checkbox" name="idlist" id="idlist" value="#id#"></td>
-				<td><a href="?event=users.dspEditUser&id=#id#">#id#</a></td>
+				<td><a href="#getSetting('sesBaseURL')#/users/dspEditUser/#id#">#id#</a></td>
 				<td>#fname#</td>
 				<td>#lname#</td>
 				<td>#email#</td>

@@ -13,7 +13,7 @@ Description :
 Modification History:
 3/19/2007 - Created Template
 ---------------------------------------------------------------------->
-<cfcomponent name="ehGeneral" extends="coldbox.system.eventhandler">
+<cfcomponent name="users" extends="coldbox.system.eventhandler" output="false">
 
 	<cffunction name="dspHome" access="public" returntype="void" output="false">
 		<cfargument name="Event" type="coldbox.system.beans.requestContext">
@@ -40,7 +40,7 @@ Modification History:
 			<cfset rc.Transfer.delete(rc.Transfer.get("users.users",i))>
 			<cfset getPlugin("messagebox").setMessage("info","User(s) removed successfully")>
 		</cfloop>
-		<cfset setNextEvent("users.dspUsers")>
+		<cfset setNextRoute("users/dspUsers")>
 	</cffunction>
 
 	<cffunction name="dspAddUser" access="public" returntype="void" output="false">
@@ -61,7 +61,7 @@ Modification History:
 		<cfset rc.Transfer.save(oUser)>
 		<cfset getPlugin("messagebox").setMessage("info", "User inserted")>
 		<!--- RElocate to listing --->
-		<cfset setNextEvent("users.dspUsers")>
+		<cfset setNextRoute("users/dspUsers")>
 	</cffunction>
 
 	<cffunction name="dspEditUser" access="public" returntype="void" output="false">
@@ -85,7 +85,7 @@ Modification History:
 		<cfset rc.Transfer.save(oUser)>
 		<cfset getPlugin("messagebox").setMessage("info", "User Updated")>
 		<!--- RElocate to listing --->
-		<cfset setNextEvent("users.dspUsers")>
+		<cfset setNextRoute("users/dspUsers")>
 	</cffunction>
 
 </cfcomponent>

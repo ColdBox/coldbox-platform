@@ -47,7 +47,9 @@ Description :
 			if ( len(getBaseURL()) eq 0 ){
 				throw('The baseURL property has not been defined. Please define it using the setBaseURL() method.','','interceptors.ses.invalidPropertyException');
 			}
-			
+			/* Save the base URL in the application settings */
+			setSetting('sesBaseURL', getBaseURL() );
+			setSetting('htmlBaseURL', replacenocase(getBaseURL(),"index.cfm",""));
 		</cfscript>
 	</cffunction>
 
@@ -71,6 +73,7 @@ Description :
 	
 			/* Check for invalid URL */
 			checkForInvalidURL( getCGIElement('path_info') , getCGIElement('script_name'), arguments.event );
+			
 			/* Find a course */
 			acourse = findCourse( getCGIElement('path_info'), event );
 			
@@ -221,7 +224,7 @@ Description :
 		</cfif>
 		
 		<!--- Compare route to URL --->
-		<!--- For each route in /config/routes.cfm --->
+		<!--- For each route in config --->
 		<cfloop from="1" to="#arrayLen(_courses)#" index="i">
 			<cfset arrayClear(routeParams) />
 			<cfset thisRoute = _courses[i] />

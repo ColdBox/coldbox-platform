@@ -5,7 +5,7 @@
 		<!--The name of your application.-->
 		<Setting name="AppName"						value="TransferSample"/>
 		<!--Default Debugmode boolean flag (Set to false in production environments)-->
-		<Setting name="DebugMode" 					value="true" />
+		<Setting name="DebugMode" 					value="false" />
 		<!--The Debug Password to use in order to activate/deactivate debugmode,activated by url actions -->
 		<Setting name="DebugPassword" 				value=""/>
 		<!--The fwreinit password to use in order to reinitialize the framework and application.Optional, else leave blank -->
@@ -16,9 +16,9 @@
 		<!--Log Errors and entries on the coldfusion server logs, disabled by default if not used-->
 		<Setting name="EnableColdfusionLogging" 	value="false" />
 		<!--Log Errors and entries in ColdBox's own logging facilities. You choose the location, finally per application logging.-->
-		<Setting name="EnableColdboxLogging"		value="true" />
+		<Setting name="EnableColdboxLogging"		value="false" />
 		<!--The absolute or relative path to where you want to store your log files for this application-->
-		<Setting name="ColdboxLogsLocation"			value="logs" />
+		<Setting name="ColdboxLogsLocation"			value="" />
 		<!--Default Event to run if no event is set or passed. Usually the event to be fired first (NOTE: use event handler syntax)-->
 		<Setting name="DefaultEvent" 				value="users.dspHome"/>
 		<!--Event Handler to run on the start of a request, leave blank if not used. Emulates the Application.cfc onRequestStart method	-->

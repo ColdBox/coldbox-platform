@@ -255,8 +255,9 @@ Description		: This is the main ColdBox front Controller.
 		</cfscript>		
 	</cffunction>
 
-	<!--- Event Context Methods --->
+	<!--- Set Next Event --->
 	<cffunction name="setNextEvent" access="Public" returntype="void" hint="I Set the next event to run and relocate the browser to that event."  output="false">
+		<!--- ************************************************************* --->
 		<cfargument name="event"  			hint="The name of the event to run." 			type="string" required="No" default="#getSetting("DefaultEvent")#" >
 		<cfargument name="queryString"  	hint="The query string to append, if needed."   type="string" required="No" default="" >
 		<cfargument name="addToken"			hint="Wether to add the tokens or not. Default is false" type="boolean" required="false" default="false"	>
@@ -264,11 +265,6 @@ Description		: This is the main ColdBox front Controller.
 		<!--- ************************************************************* --->
 		<cfset var EventName = getSetting("EventName")>
 		<cfset var frontController = listlast(cgi.script_name,"/")>
-		<cfset var PersistStruct = structnew()>
-		<cfset var PersistList = trim(arguments.persist)>
-		<cfset var tempPersistValue = "">
-		<cfset var i = 1>
-		<cfset var rc = structnew()>
 		
 		<!--- Cleanup Event --->
 		<cfif len(trim(arguments.event)) eq 0>
@@ -276,16 +272,8 @@ Description		: This is the main ColdBox front Controller.
 		</cfif>
 		
 		<!--- Persistance Logic --->
-		<cfif len(PersistList) neq 0>
-			<cfset rc = getRequestService().getContext().getCollection()>
-			<cfloop from="1" to="#listlen(PersistList)#" index="i">
-				<cfset tempPersistValue = listgetat(PersistList,i)>
-				<cfif structkeyExists(rc, tempPersistValue)>
-					<cfset PersistStruct[tempPersistValue] = rc[tempPersistValue]>
-				</cfif>
-			</cfloop>
-			<!--- Flash Save it --->
-			<cfset getPlugin("sessionstorage").setVar('_coldbox_persistStruct', PersistStruct)>
+		<cfif trim(len(arguments.persist)) neq 0>
+			<cfset persistVariables(arguments.persist)>
 		</cfif>
 		
 		<!--- Check if query String needs appending --->
@@ -295,9 +283,34 @@ Description		: This is the main ColdBox front Controller.
 			<cflocation url="#frontController#?#EventName#=#arguments.event#&#arguments.queryString#" addtoken="#arguments.addToken#">
 		</cfif>
 	</cffunction>
-
+	
+	<!--- Set Next Route --->
+	<cffunction name="setNextRoute" access="Public" returntype="void" hint="I Set the next ses route to relocate to. This method pre-pends the baseURL"  output="false">
+		<!--- ************************************************************* --->
+		<cfargument name="route"  			hint="The route to relocate to, do not prepend the baseURL or /." type="string" required="yes" >
+		<cfargument name="persist" 			hint="What request collection keys to persist in the relocation" required="false" type="string" default="">
+		<!--- ************************************************************* --->
+		<Cfset var routeLocation = getSetting("sesBaseURL")>
+		
+		<!--- Persistance Logic --->
+		<cfif trim(len(arguments.persist)) neq 0>
+			<cfset persistVariables(arguments.persist)>
+		</cfif>
+		
+		<!--- Create Route --->
+		<cfif right(routeLocation,1) eq "/">
+			<cfset routeLocation = routeLocation & arguments.route>
+		<cfelse>
+			<cfset routeLocation = routeLocation & "/" & arguments.route>
+		</cfif>
+		
+		<!--- Reroute --->
+		<cflocation url="#routeLocation#" addtoken="no">
+	</cffunction>
+	
 	<!--- Event Service Locator Factory --->
 	<cffunction name="runEvent" returntype="any" access="Public" hint="I am an event handler runnable factory. If no event is passed in then it will run the default event from the config file.">
+		<!--- ************************************************************* --->
 		<cfargument name="event"         hint="The event to run. If no current event is set, use the default event from the config.xml" type="string" required="false" default="">
 		<cfargument name="prepostExempt" hint="If true, pre/post handlers will not be fired." type="boolean" required="false" default="false">
 		<!--- ************************************************************* --->
@@ -366,6 +379,31 @@ Description		: This is the main ColdBox front Controller.
 	<!--- Get the util object --->
 	<cffunction name="getUtil" access="public" output="false" returntype="coldbox.system.util.util" hint="Create and return a util object">
 		<cfreturn CreateObject("component","coldbox.system.util.util")/>
+	</cffunction>
+
+<!------------------------------------------- PRIVATE ------------------------------------------->
+
+	<!--- Flash Perist variables. --->
+	<cffunction name="persistVariables" access="private" returntype="void" hint="Persist variables for flash redirections" output="false" >
+		<!--- ************************************************************* --->
+		<cfargument name="persist" 	hint="What request collection keys to persist in the relocation" required="false" type="string" default="">
+		<!--- ************************************************************* --->
+		<cfset var PersistList = trim(arguments.persist)>
+		<cfset var tempPersistValue = "">
+		<cfset var PersistStruct = structnew()>
+		<cfset var rc = getRequestService().getContext().getCollection()>
+		<cfset var i = 0>
+		
+		<!--- Persistance Logic --->
+		<cfloop from="1" to="#listlen(PersistList)#" index="i">
+			<cfset tempPersistValue = listgetat(PersistList,i)>
+			<cfif structkeyExists(rc, tempPersistValue)>
+				<cfset PersistStruct[tempPersistValue] = rc[tempPersistValue]>
+			</cfif>
+		</cfloop>
+		
+		<!--- Flash Save it --->
+		<cfset getPlugin("sessionstorage").setVar('_coldbox_persistStruct', PersistStruct)>
 	</cffunction>
 	
 </cfcomponent>

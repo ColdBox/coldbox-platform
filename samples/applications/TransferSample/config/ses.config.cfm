@@ -46,7 +46,7 @@
 
 	You can place any tier detection within this section if needed.
 --->
-<cfset setBaseURL("http://#cgi.HTTP_HOST#/coldbox/samples/applications/TransferSample/index.cfm")>
+<cfset setBaseURL("http://#cgi.HTTP_HOST#/#getSetting('AppMapping')#/index.cfm")>
 
 
 <!--- -------------------------------------------

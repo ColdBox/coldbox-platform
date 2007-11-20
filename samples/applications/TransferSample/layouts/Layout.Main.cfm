@@ -28,7 +28,7 @@ a.action {
 	font-size:11px;
 	font-weight: bold;
 	font-family: Verdana, Arial, Helvetica, sans-serif;
-	background:#FFCC00 url(images/bg_actions.gif) no-repeat scroll;
+	background:#FFCC00 url(<cfoutput>#getSetting('htmlBaseURL')#/images/bg_actions.gif</cfoutput>) no-repeat scroll;
 	color:#000000;
 	cursor:pointer;
 	display:block;
@@ -39,7 +39,7 @@ a.action {
 	width: 130px;
 }
 a.silver {
-	background:#FFCC00 url(images/bg_actions_silver.gif) no-repeat scroll;
+	background:#FFCC00 url(<cfoutput>#getSetting('htmlBaseURL')#/images/bg_actions_silver.gif</cfoutput>) no-repeat scroll;
 }
 a.action span {
 	display: block;
@@ -47,7 +47,7 @@ a.action span {
 	font-weight:bold;
 }
 a.action:hover {
-	background:#C8E7FA url(images/bg_actions_hover.gif) no-repeat 100%;
+	background:#C8E7FA url(<cfoutput>#getSetting('htmlBaseURL')#/images/bg_actions_hover.gif</cfoutput>) no-repeat 100%;
 }
 a:link, a:visited{
 	font-weight:bold;
@@ -79,6 +79,9 @@ padding:10px;
 }
 -->
 </style>
+<cfoutput>
+<base href="#getSetting('htmlBaseURL')#">
+</cfoutput>
 </head>
 <body>
 <cfoutput>

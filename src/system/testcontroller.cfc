@@ -29,5 +29,18 @@ Description		: This is a unit test controller that basically overrides the setNe
 		<!--- Save also the persist collection keys --->
 		<cfset getRequestService().getContext().setValue("persistKeys","#arguments.persist#")>
 	</cffunction>
+	
+	<!--- Event Context Methods --->
+	<cffunction name="setNextRoute" access="Public" returntype="void" hint="I Set the next ses route to relocate to. This method pre-pends the baseURL"  output="false">
+		<!--- ************************************************************* --->
+		<cfargument name="route"  			hint="The route to relocate to, do not prepend the baseURL or /." type="string" required="yes" >
+		<cfargument name="persist" 			hint="What request collection keys to persist in the relocation" required="false" type="string" default="">
+		<!--- ************************************************************* --->
+		<!--- Save the route --->
+		<cfset getRequestService().getContext().setValue("setNextRoute","#arguments.route#")>
+
+		<!--- Save also the persist collection keys --->
+		<cfset getRequestService().getContext().setValue("persistKeys","#arguments.persist#")>
+	</cffunction>
 
 </cfcomponent>
