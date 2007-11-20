@@ -2,7 +2,6 @@
 Copyright 2005-2007 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 www.coldboxframework.com | www.luismajano.com | www.ortussolutions.com
 ********************************************************************************
-
 Welcome to the ColdBox Application Template
 
 This is a skeleton for you to start a new ColdBox application or you can use the 
@@ -63,6 +62,16 @@ Welcome to Coldbox!!
 
 Now get your mind out of procedural code, dive into OO Programming. Please make sure
 to fasten your seat belts, it WILL GET BUMPY!!
+
+******************************************************************************
+PRETTY URLS/SES SUPPORT
+******************************************************************************
+ColdBox provides you with pretty URL support or SES.  The configuration file already has
+the ses interceptor declared and a sample routing configuration file has been created for 
+you with the three most common routes to get you started.  However, out of the box,
+the interceptor will use 'index.cfm/handler/action' to route requests. If you would
+like to eliminate the 'index.cfm' then please use the provided .htaccess or IsapiRewrite.ini
+files (If your web server supports it).
 
 ******************************************************************************
 COLDBOX PROXY
