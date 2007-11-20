@@ -178,15 +178,15 @@ var InnerJoined = getPlugin("queryHelper","false").doInnerJoin(qry1,qry2,"fname"
 		            QryReturn = QrySetCell(	qryFrom = qry1, 
 		                                    qryTo = QryReturn,
 		                                    ArrayCols = ListToArray(lstLeftColumns),
-		                                    intFromRowNumber = i,
-		                                    intToRowNumber = QryReturn.RecordCount 
+		                                    FromRowNumber = i,
+		                                    ToRowNumber = QryReturn.RecordCount 
 		                                    );
 		            //get value into return-query                        
 		            QryReturn = QrySetCell(  qryFrom = qry2, 
 		                                     qryTo = QryReturn,
 		                                     ArrayCols = ListToArray(lstRightColumns),
-		                                     intFromRowNumber = i,
-		                                     intToRowNumber = QryReturn.RecordCount 
+		                                     FromRowNumber = i,
+		                                     ToRowNumber = QryReturn.RecordCount 
 		                                 );
 		        }
 		    }
@@ -246,8 +246,8 @@ var InnerJoined = getPlugin("queryHelper","false").doInnerJoin(qry1,qry2,"fname"
         <cfargument name="qryFrom" type="query" required="true" /> 
         <cfargument name="qryTo" type="query" required="true" />
         <cfargument name="ArrayCols" type="array" required="true" />
-		<cfargument name="intFromRowNumber" type="numeric" required="true" />
-        <cfargument name="intToRowNumber" type="numeric" required="true" />
+		<cfargument name="FromRowNumber" type="numeric" required="true" />
+        <cfargument name="ToRowNumber" type="numeric" required="true" />
 		
         <cfscript>
             var i = 0;
@@ -259,10 +259,10 @@ var InnerJoined = getPlugin("queryHelper","false").doInnerJoin(qry1,qry2,"fname"
             for( i = 1; i LTE arrayLen(arguments.ArrayCols); i = i + 1 ){
                 // get the value of column
                 ColumName	= arguments.ArrayCols[i];
-                ColumValue	= arguments.qryFrom[ColumName][arguments.intFromRowNumber ];
+                ColumValue	= arguments.qryFrom[ColumName][arguments.FromRowNumber ];
                 // set it in the new row
                 if( structkeyExists( QryReturn, arguments.ArrayCols[i] ) ){
-                    QuerySetCell( QryReturn, ColumName, ColumValue , arguments.intToRowNumber );
+                    QuerySetCell( QryReturn, ColumName, ColumValue , arguments.ToRowNumber );
                 }
             }
             // return updated query
