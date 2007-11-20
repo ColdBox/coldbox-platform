@@ -28,22 +28,17 @@ Modification History:
 			instance.controller = arguments.controller;
 			//Cache Configuration
 			instance.CacheConfigBean = structnew();
-			
-			//Cache Performance
-			instance.cachePerformance = structNew();
-			instance.cachePerformance.Hits = 0;
-			instance.cachePerformance.Misses = 0;
-			
-			//Reaping Control
-			instance.lastReapDatetime = now();
 			//Lock Name
 			instance.lockName = getController().getAppHash() & "_OCM_OPERATION";
 			//Runtime Java object
 			instance.javaRuntime = CreateObject("java", "java.lang.Runtime");
-			//Event URL Facade Setup
-			instance.eventURLFacade = CreateObject("component","eventURLFacade").init(arguments.controller);
 			//Init the object Pool on instantiation
 			initPool();
+			//Event URL Facade Setup
+			instance.eventURLFacade = CreateObject("component","eventURLFacade").init(arguments.controller);
+			//Cache Stats
+			instance.cacheStats = CreateObject("component","cacheStats").init(this);
+			
 			//return Cache Manager reference;
 			return this;
 		</cfscript>
@@ -51,12 +46,14 @@ Modification History:
 
 	<!--- Configure the Cache for Operation --->
 	<cffunction name="configure" access="public" output="false" returntype="void" hint="Configures the cache for operation.">
+		<!--- ************************************************************* --->
 		<cfargument name="cacheConfigBean" type="coldbox.system.beans.cacheConfigBean" required="true">
+		<!--- ************************************************************* --->
 		<cfscript>
 		//set the config bean
 		setCacheConfigBean(arguments.cacheConfigBean);
 		//Reset the statistics.
-		resetStatistics();
+		getCacheStats().clearStats();
 		</cfscript>
 	</cffunction>
 
@@ -268,29 +265,8 @@ Modification History:
 		<cflock type="exclusive" name="#getLockName()#" timeout="30">
 			<cfset structDelete(variables,"objectPool")>
 			<cfset initPool()>
-			<cfset resetStatistics()>
+			<cfset getCacheStats().clearStats()>
 		</cflock>
-	</cffunction>
-
-	<!--- ************************************************************* --->
-
-	<cffunction name="resetStatistics" access="public" output="false" returntype="void" hint="Resets the cache statistics.">
-		<cfscript>
-		getcachePerformance().Hits = 0;
-		getcachePerformance().Misses = 0;
-		</cfscript>
-	</cffunction>
-
-	<!--- ************************************************************* --->
-
-	<cffunction name="getCachePerformanceRatio" access="public" output="false" returntype="numeric" hint="Get the cache's performance ratio">
-		<cfscript>
-	 	var requests = getcachePerformance().hits + getcachePerformance().misses;
-	 	if ( requests eq 0)
-	 		return 0;
-		else
-			return (getcachePerformance().Hits/requests) * 100;
-		</cfscript>
 	</cffunction>
 
 	<!--- ************************************************************* --->
@@ -406,6 +382,8 @@ Modification History:
 				}//end timeout gt 0
 			}//end for loop
 			
+			//Record Eviction 
+			getCacheStats().setEvictionCount(getCacheStats().getEvictionCount()+1);
 		</cfscript>
 	</cffunction>
 
@@ -427,6 +405,9 @@ Modification History:
 					break;
 				}//end timeout gt 0
 			}//end for loop
+			
+			//Record Eviction 
+			getCacheStats().setEvictionCount(getCacheStats().getEvictionCount()+1);
 		</cfscript>
 	</cffunction>
 
@@ -465,32 +446,17 @@ Modification History:
 	
 <!------------------------------------------- ACCESSOR/MUTATORS ------------------------------------------->
 
+	<!--- get Event URL Facade --->
 	<cffunction name="geteventURLFacade" access="public" returntype="any" output="false" hint="Get the event url facade object.">
 		<cfreturn instance.eventURLFacade>
 	</cffunction>
 
-	<!--- ************************************************************* --->
+	<!--- The cache stats --->
+	<cffunction name="getCacheStats" access="public" returntype="any" output="false" hint="Return the cache stats object.">
+		<cfreturn instance.cacheStats>
+	</cffunction>
 	
-	<cffunction name="getlastReapDatetime" access="public" output="false" returntype="string" hint="Get the lastReapDatetime">
-		<cfscript>
-		return instance.lastReapDatetime;
-		</cfscript>
-	</cffunction>
-	<cffunction name="setlastReapDatetime" access="public" returntype="void" output="false" hint="Set the lastReapDatetime">
-		<cfargument name="lastReapDatetime" type="string" required="true">
-		<cfset instance.lastReapDatetime = arguments.lastReapDatetime>
-	</cffunction>
-
-	<!--- ************************************************************* --->
-
-	<cffunction name="getcachePerformance" access="public" output="false" returntype="struct" hint="Get the cachePerformance structure">
-		<cfscript>
-		return instance.cachePerformance;
-		</cfscript>
-	</cffunction>
-
-	<!--- ************************************************************* --->
-
+	<!--- The cache Config Bean --->
 	<cffunction name="setCacheConfigBean" access="public" returntype="void" output="false">
 		<cfargument name="CacheConfigBean" type="coldbox.system.beans.cacheConfigBean" required="true">
 		<cfset instance.CacheConfigBean = arguments.CacheConfigBean>
@@ -499,51 +465,39 @@ Modification History:
 		<cfreturn instance.CacheConfigBean >
 	</cffunction>
 
-	<!--- ************************************************************* --->
-
+	<!--- Java Runtime --->
 	<cffunction name="getjavaRuntime" access="public" returntype="any" output="false" hint="Get the java runtime object.">
 		<cfreturn instance.javaRuntime>
 	</cffunction>
 	
-	<!--- ************************************************************* --->
-	
+	<!--- Controller --->
 	<cffunction name="getcontroller" access="public" output="false" returntype="any" hint="Get controller">
 		<cfreturn instance.controller/>
 	</cffunction>
-	
-	<!--- ************************************************************* --->
-	
 	<cffunction name="setcontroller" access="public" output="false" returntype="void" hint="Set controller">
 		<cfargument name="controller" type="any" required="true"/>
 		<cfset instance.controller = arguments.controller/>
 	</cffunction>
 	
-	<!--- ************************************************************* --->
-	
+	<!--- Lock Name --->
 	<cffunction name="getlockName" access="public" output="false" returntype="string" hint="Get lockName">
 		<cfreturn instance.lockName/>
 	</cffunction>
-	
-	<!--- ************************************************************* --->
-	
 	<cffunction name="setlockName" access="public" output="false" returntype="void" hint="Set lockName">
 		<cfargument name="lockName" type="string" required="true"/>
 		<cfset instance.lockName = arguments.lockName/>
 	</cffunction>
 	
-	<!--- ************************************************************* --->
-	
+	<!--- Get the internal object pool --->
 	<cffunction name="getObjectPool" access="public" returntype="any" output="false" hint="Get the internal object pool">
 		<cfreturn instance.objectPool >
 	</cffunction>
-	
-	<!--- ************************************************************* --->
 	
 <!------------------------------------------- PRIVATE ------------------------------------------->
 
 	<cffunction name="hit" access="private" output="false" returntype="void" hint="Record a hit">
 		<cfscript>
-		getcachePerformance().Hits = getcachePerformance().Hits + 1;
+			getCacheStats().setHits(getCacheStats().getHits()+1);
 		</cfscript>
 	</cffunction>
 
@@ -551,7 +505,7 @@ Modification History:
 
 	<cffunction name="miss" access="private" output="false" returntype="void" hint="Record a miss">
 		<cfscript>
-		getcachePerformance().misses = getcachePerformance().misses + 1;
+			getCacheStats().setmisses(getCacheStats().getmisses()+1);
 		</cfscript>
 	</cffunction>
 
@@ -559,7 +513,7 @@ Modification History:
 
 	<cffunction name="initPool" access="private" output="false" returntype="void" hint="Initialize and set the internal object Pool">
 		<cfscript>
-		instance.objectPool = CreateObject("component","objectPool").init();
+			instance.objectPool = CreateObject("component","objectPool").init();
 		</cfscript>
 	</cffunction>
 
