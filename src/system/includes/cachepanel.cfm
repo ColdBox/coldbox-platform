@@ -44,9 +44,9 @@
 		  Cache Performance
 		</div>
 		<div class="fw_debugContentCell">
-		 <em>Ratio:</em> #NumberFormat(controller.getColdboxOCM().getCachePerformanceRatio(),"999.99")#%  ==>
-		 <em>Hits:</em> #controller.getColdboxOCM().getCachePerformance().hits# |
-		 <em>Misses:</em> #controller.getColdboxOCM().getCachePerformance().misses#
+		 <em>Ratio:</em> #NumberFormat(controller.getColdboxOCM().getCacheStats().getCachePerformanceRatio(),"999.99")#%  ==>
+		 <em>Hits:</em> #controller.getColdboxOCM().getCacheStats().gethits()# |
+		 <em>Misses:</em> #controller.getColdboxOCM().getCacheStats().getmisses()#
 		</div>
 
 		<div class="fw_debugTitleCell">
@@ -60,8 +60,8 @@
 		  Last Reap
 		</div>
 		<div class="fw_debugContentCell">
-		 #DateFormat(controller.getColdboxOCM().getlastReapDatetime(),"MMM-DD-YYYY")#
-		 #TimeFormat(controller.getColdboxOCM().getlastReapDatetime(),"hh:mm:ss tt")#
+		 #DateFormat(controller.getColdboxOCM().getCacheStats().getlastReapDatetime(),"MMM-DD-YYYY")#
+		 #TimeFormat(controller.getColdboxOCM().getCacheStats().getlastReapDatetime(),"hh:mm:ss tt")#
 		</div>
 
 		<div class="fw_debugTitleCell">

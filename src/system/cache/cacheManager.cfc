@@ -336,10 +336,10 @@ Modification History:
 			if (not structisEmpty(objStruct)){
 
 				//Check reaping frequency
-				if ( dateDiff("n", getlastReapDatetime(), now() ) gte ccBean.getCacheReapFrequency() ){
+				if ( dateDiff("n", getCacheStats().getlastReapDatetime(), now() ) gte ccBean.getCacheReapFrequency() ){
 
 					//Reaping about to start, set new reaping date.
-					setlastReapDatetime( now() );
+					getCacheStats().setlastReapDatetime( now() );
 
 					//Loop Through Metadata
 					for (key in objStruct){

@@ -160,4 +160,11 @@
 	</Interceptors>
 	-->
 	
+	<Interceptors>
+		<!-- config file is relative to app root -->
+		<Interceptor class="coldbox.system.interceptors.ses">
+			<Property name="configFile">config/ses.config.cfm</Property>
+		</Interceptor>
+	</Interceptors>
+	
 </Config>

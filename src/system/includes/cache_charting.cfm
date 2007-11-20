@@ -12,8 +12,8 @@
 		<td align="center">
 		<cfchart format="png" show3d="true" backgroundcolor="##ffffff" chartwidth="100">
 			<cfchartseries type="bar" colorlist="93C2FF,ED2939" >
-				<cfchartdata item="Hits" value="#controller.getColdboxOCM().getCachePerformance().hits#">
-				<cfchartdata item="Misses" value="#controller.getColdboxOCM().getCachePerformance().misses#">
+				<cfchartdata item="Hits" value="#controller.getColdboxOCM().getCacheStats().getHits()#">
+				<cfchartdata item="Misses" value="#controller.getColdboxOCM().getCacheStats().getMisses()#">
 			</cfchartseries>
 		</cfchart>
 		</td>

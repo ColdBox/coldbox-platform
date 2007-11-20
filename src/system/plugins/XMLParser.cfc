@@ -893,7 +893,7 @@ Modification History:
 				InterceptorStruct.class = Trim(InterceptorNodes[i].XMLAttributes["class"]);
 				//Prepare Properties
 				InterceptorStruct.properties = structnew();
-				
+			
 				//Parse Interceptor Properties
 				if ( ArrayLen(InterceptorNodes[i].XMLChildren) gt 0 ){
 					for(j=1; j lte ArrayLen(InterceptorNodes[i].XMLChildren); j=j+1){
@@ -903,7 +903,7 @@ Modification History:
 						if ( left(tempProperty,1) eq "[" and right(tempProperty,1) eq "]"){
 							StructInsert( InterceptorStruct.properties, Trim(InterceptorNodes[i].XMLChildren[j].XMLAttributes["name"]), oUtilities.createArray(tempProperty) );
 						}
-						else if ( left(tester,1) eq "{" and right(tester,1) eq "}"){
+						else if ( left(tempProperty,1) eq "{" and right(tempProperty,1) eq "}"){
 							StructInsert( InterceptorStruct.properties, Trim(InterceptorNodes[i].XMLChildren[j].XMLAttributes["name"]), oUtilities.createStruct(tempProperty) );
 						}
 						else{
