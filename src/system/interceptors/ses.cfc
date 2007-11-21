@@ -66,6 +66,7 @@ Description :
 			/* Find which route this URL matches */
 			var acourse = "";
 			var key = "";
+			var cleanedPathInfo = "";
 	
 			/* Check if active */
 			if ( not getEnabled() )
@@ -73,15 +74,14 @@ Description :
 	
 			/* Check for invalid URL */
 			checkForInvalidURL( getCGIElement('path_info') , getCGIElement('script_name'), arguments.event );
-			
+			/* Clean up the path_info */
+			cleanedPathInfo = replaceNocase(getCGIElement('path_info'),getCGIElement('script_name'),'');
 			/* Find a course */
-			acourse = findCourse( getCGIElement('path_info'), event );
-			
+			acourse = findCourse( cleanedPathInfo, event );
 			/* Now course should have all the key/pairs from the URL we need to pass to our event object */
 			for( key in acourse ){
 				event.setValue( key, acourse[key] );
 			}
-			
 			/* Route to destination */
 			routeToDestination(acourse,event);
 		</cfscript>
@@ -112,7 +112,7 @@ Description :
 			<cfparam name="arguments.course.action" default="#getDefaultFrameworkAction()#" />
 			<cfset rc[getSetting('EventName')] = arguments.course.handler & "." & arguments.course.action />
 		</cfif>
-      
+      	
 		<!--- Remove what we set.. like a ninja --->
 		<cfset StructDelete(rc, "handler") />
 		<cfset StructDelete(rc, "action") />
@@ -238,7 +238,6 @@ Description :
 			<!--- If a match was made, use the result to route the request --->
 			<cfif match.len[1] IS NOT 0>
 				<cfset foundRoute = thisRoute />
-				
 				<!--- For each part of the URL in the route --->
 				<cfloop list="#thisRoute.pattern#" delimiters="/" index="thisPattern">
 					<!--- if this part of the route pattern is a variable --->
@@ -252,11 +251,11 @@ Description :
 			</cfif>
 			
 		</cfloop>
-		
 		<!--- Populate the params structure with the proper parts of the URL --->
 		<cfloop from="1" to="#arrayLen(routeParams)#" index="i">
 			<cfset "params.#routeParams[i]#" = mid(requestString,match.pos[i+1],match.len[i+1]) />
 		</cfloop>
+				
 		<!--- Now set the rest of the variables in the route --->
 		<cfloop collection="#foundRoute#" item="key">
 			<cfif key IS NOT "pattern">

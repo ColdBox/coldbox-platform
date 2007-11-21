@@ -100,6 +100,12 @@
 			<Property name="Simple">Luis</Property>
 			<Property name="Complex">[1,2,3,4,5]</Property>
 		</Interceptor>
+		<Interceptor class="coldbox.system.interceptors.ses">
+			<Property name="configFile">config/routes.cfm</Property>
+		</Interceptor>
+		<Interceptor class="coldbox.system.interceptors.environmentControl">
+			<Property name="configFile">config/environments.xml.cfm</Property>
+		</Interceptor>
 	</Interceptors>
 
 </Config>
