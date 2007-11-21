@@ -19,7 +19,7 @@
 		</td>
 		<td align="center">
 		<cfchart format="png" show3d="true" backgroundcolor="##ffffff" gridlines="true" chartwidth="275">
-			<cfchartseries type="pie" colorlist="93C2FF" >
+			<cfchartseries type="pie" colorlist="800080" >
 				<cfchartdata item="Plugins" value="#itemTypes.plugins#">
 				<cfchartdata item="Handlers" value="#itemTypes.handlers#">
 				<cfchartdata item="Events" value="#itemTypes.events#">
