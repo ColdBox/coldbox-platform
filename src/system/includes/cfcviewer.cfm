@@ -58,7 +58,11 @@ Modification History:
 			<cfset path = expandPath(mdpath)>
 			<cfparam name="md.Hint" 	default="">
 			<cfparam name="md.Extends" 	default="#StructNew()#">
+			
 			<cfset aMethods = md.Functions>
+			<cfif isStruct(aMethods)>
+				<cfset aMethods = ArrayNew(1)>
+			</cfif>
 			<cfoutput>
 				<a name="#instance.aCFC[j]#"></a>
 				<div class="cfc_h1">#md.name#</div>
