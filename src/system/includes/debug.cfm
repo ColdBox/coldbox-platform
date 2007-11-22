@@ -140,12 +140,14 @@ Modification History:
 		  </tr>
 		  <cfif structKeyExists(request,"DebugTimers")>
 			  <cfloop query="request.DebugTimers">
-				  <cfif findnocase("render", method)>
+				  <cfif findnocase("rendering", method)>
 				  	<cfset color = "fw_redText">
+				  <cfelseif findnocase("interception",method)>
+				  	<cfset color = "fw_blackText">
+				  <cfelseif findnocase("runEvent", method)>
+				  	<cfset color = "fw_blueText">">
 				  <cfelseif findnocase("pre",method) or findnocase("post",method)>
 				  	<cfset color = "fw_purpleText">
-				  <cfelseif findnocase("runEvent", method)>
-				  	<cfset color = "fw_blueText">
 				  <cfelse>
 				  	<cfset color = "fw_greenText">
 				  </cfif>

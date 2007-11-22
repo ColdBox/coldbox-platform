@@ -14,15 +14,13 @@ Description :
 	So if you have refactored your framework, make sure it extends coldbox.
 ----------------------------------------------------------------------->
 <cfcomponent extends="coldbox.system.coldbox" output="false">
-<cfprocessingdirective suppresswhitespace="true">
-	
+
 	<!--- APPLICATION CFC PROPERTIES --->
-	<cfset this.name = "coldbox">
-	<cfset this.clientManagement = true>
+	<cfset this.name = hash(getCurrentTemplatePath())> 
 	<cfset this.sessionManagement = true>
-	<cfset this.sessionTimeout = createTimeSpan(0,0,5,0)>
+	<cfset this.sessionTimeout = createTimeSpan(0,0,30,0)>
 	<cfset this.setClientCookies = true>
-	<cfset this.loginStorage = "session">
+	<cfset this.clientManagement = true>
 	
 	<!--- COLDBOX STATIC PROPERTY, DO NOT CHANGE UNLESS THIS IS NOT THE ROOT OF YOUR COLDBOX APP --->
 	<cfset COLDBOX_APP_ROOT_PATH = getDirectoryFromPath(getCurrentTemplatePath())>
@@ -79,36 +77,8 @@ Description :
 		<cfargument name="sessionScope" type="struct" required="true">
 		<cfargument name="appScope" 	type="struct" required="false">
 		<!--- ************************************************************* --->
-		<cftry>
-			<cfset super.onSessionEnd(argumentCollection=arguments)>
-			<cfcatch type="any">
-				<cffile action="APPEND"
-			 	file="#ExpandPath( './error_log.txt' )#"
-			 	output="OnError : [#cfcatch.message# #cfcatch.detail# #cfcatch.stacktrace#"
-			 	addnewline="true" />
-			</cfcatch>
-		</cftry>
+		<cfset super.onSessionEnd(argumentCollection=arguments)>
 		<!--- WHATEVER YOU WANT BELOW --->
 	</cffunction>
 	
-	<cffunction name="OnError" access="public" returntype="void" output="true"
-		 hint="Fires when an exception occures that is not caught by a try/catch. Good for remoting errors.">
-		 <!--- Define arguments. --->
-		 <cfargument name="Exception" type="any" required="true" />
-		 <cfargument name="EventName" type="string" required="false" default="" />
-		 
-		 
-		 <cffile action="APPEND"
-			 	file="#ExpandPath( './error_log.txt' )#"
-			 	output="OnError : [#ARGUMENTS.Exception.message# #arguments.exception.detail# #arguments.exception.stacktrace#"
-			 	addnewline="true"
-		 />
-		 
-		 <cfdump var="#Exception#">
-		 
-		 <!--- Return out. --->
-		 <cfreturn />
-	</cffunction>
-
-</cfprocessingdirective>
 </cfcomponent>

@@ -98,12 +98,12 @@ Modification History:
 		<!--- Do we have a cached view?? --->
 		<cfif controller.getColdboxOCM().lookup(cbox_cacheKey)>
 			<!--- Render The View --->
-			<cfmodule template="../includes/timer.cfm" timertag="Rendering Cached View [#arguments.view#.cfm]">
+			<cfmodule template="../includes/timer.cfm" timertag="rendering Cached View [#arguments.view#.cfm]">
 				<cfset cbox_RenderedView = controller.getColdBoxOCM().get(cbox_cacheKey)>
 			</cfmodule>
 		<cfelse>
 			<!--- Render The View --->
-			<cfmodule template="../includes/timer.cfm" timertag="Rendering View [#arguments.view#.cfm]">
+			<cfmodule template="../includes/timer.cfm" timertag="rendering View [#arguments.view#.cfm]">
 				<cfsavecontent variable="cbox_RenderedView"><cfoutput><cfinclude template="/#getappMapping()#/#getViewsConvention()#/#arguments.view#.cfm"></cfoutput></cfsavecontent>
 			</cfmodule>
 			<!--- Is this view cacheable, and if its the view we need to cache. --->
@@ -128,7 +128,7 @@ Modification History:
 		<cfset var Event = controller.getRequestService().getContext()>
 		<cfset var rc = event.getCollection()>
 		
-		<cfmodule template="../includes/timer.cfm" timertag="Rendering View [#arguments.view#]">
+		<cfmodule template="../includes/timer.cfm" timertag="rendering View [#arguments.view#]">
 			<cftry>
 				<!--- Render the View --->
 				<cfsavecontent variable="cbox_RenderedView"><cfoutput><cfinclude template="#arguments.view#"></cfoutput></cfsavecontent>
@@ -158,7 +158,7 @@ Modification History:
 			<cfset event.setView(event.getDefaultView())>
 		</cfif>
 		
-		<cfmodule template="../includes/timer.cfm" timertag="Rendering Layout [#Event.getcurrentLayout()#]">
+		<cfmodule template="../includes/timer.cfm" timertag="rendering Layout [#Event.getcurrentLayout()#]">
 			<!--- Render With No Layout Test--->
 			<cfif Event.getcurrentLayout() eq "">
 				<cfset cbox_RederedLayout = renderView()>

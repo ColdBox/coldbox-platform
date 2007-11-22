@@ -90,11 +90,14 @@ Description :
 			if( getController().getSetting("InterceptorConfig").throwOnInvalidStates and not listfindnocase(getInterceptionPoints(),arguments.state) ){
 				getController().throw("The interception state sent in to process is not valid: #arguments.state#","","Framework.InterceptorService.InvalidInterceptionState");
 			}
-			/* Process The State if it exists, else just exit out. */
-			if ( structKeyExists(getinterceptionStates(), arguments.state) ){
-				structFind( getinterceptionStates(), arguments.state).process(event,arguments.interceptData);	
-			}
 		</cfscript>
+				
+		<!--- Process The State if it exists, else just exit out. --->
+		<cfif structKeyExists(getinterceptionStates(), arguments.state) >
+			<cfmodule template="../includes/timer.cfm" timertag="interception [#arguments.state#]">
+				<cfset structFind( getinterceptionStates(), arguments.state).process(event,arguments.interceptData)>
+			</cfmodule>				
+		</cfif>
 	</cffunction>
 	
 	<!--- getter setter interceptionPoints --->
