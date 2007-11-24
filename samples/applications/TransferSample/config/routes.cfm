@@ -32,7 +32,7 @@
 
 	For SEO purposes it's always best to have one URL for everything, not 3!
 --->
-<cfset setUniqueURLs(false)>
+<cfset setUniqueURLs(true)>
 
 <!--- 
 	The Base URL for your site. This will only be used for forwarding requests if 

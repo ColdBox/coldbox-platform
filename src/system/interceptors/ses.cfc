@@ -136,10 +136,10 @@ Description :
 		
 		<cfif getUniqueURLs() 
 			  AND StructKeyExists(rc, EventName)
-			  AND (arguments.course EQ "/index.cfm")>
+			  AND (arguments.course EQ "/index.cfm" or arguments.course eq "")>
 			
 			<cfif StructKeyExists(rc, EventName)>
-				<cfset handler = reReplace(event,"\.[^.]*$","") />
+				<cfset handler = reReplace(rc[EventName],"\.[^.]*$","") />
 				<cfset action = ListLast( rc[EventName], "." ) />
 			</cfif>
 			
