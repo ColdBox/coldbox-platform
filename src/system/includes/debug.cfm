@@ -220,13 +220,21 @@ Modification History:
 	<div class="fw_debugContent" id="fw_reqCollection">
 		<table border="0" cellpadding="0" cellspacing="1" class="fw_debugTables" width="100%">
 		  <cfloop collection="#RequestCollection#" item="vars">
+		  <cfset varVal = event.getValue(vars)>
 		  <tr>
 			<td align="right" width="15%" class="fw_debugTablesTitles">#lcase(vars)#:</td>
 			<td  class="fw_debugTablesCells">
-			<cfif isSimpleValue(Event.getValue(vars)) >
-				<cfif Event.getValue(vars) eq ""><span class="fw_redText">N/A</span></cfif> #Event.getValue(vars)#
+			<cfif isSimpleValue(varVal) >
+				<cfif varVal eq ""><span class="fw_redText">N/A</span></cfif> #varVal#
 			<cfelse>
-				<cfdump var="#Event.getValue(vars)#">
+				<cfif isQuery(varVal) and (varVal.recordCount gt 50)>
+					<cfquery name="varVal" dbType="query" maxrows="50">
+						select * from varVal
+					</cfquery>
+					<cfdump var="#Event.getValue(vars)#" label="Query Truncated to 50 records">
+				<cfelse>
+					<cfdump var="#Event.getValue(vars)#">
+				</cfif>				
 			</cfif>
 			</td>
 		  </tr>
