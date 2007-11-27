@@ -67,6 +67,7 @@ Description :
 			var acourse = "";
 			var key = "";
 			var cleanedPathInfo = "";
+			var cleanedScriptName = replacenocase(getCGIElement('script_name'),"/index.cfm","");
 	
 			/* Check if active */
 			if ( not getEnabled() )
@@ -75,7 +76,7 @@ Description :
 			/* Check for invalid URL */
 			checkForInvalidURL( getCGIElement('path_info') , getCGIElement('script_name'), arguments.event );
 			/* Clean up the path_info */
-			cleanedPathInfo = replaceNocase(getCGIElement('path_info'),getCGIElement('script_name'),'');
+			cleanedPathInfo = replaceNocase(getCGIElement('path_info'),cleanedScriptName,'');
 			/* Find a course */
 			acourse = findCourse( cleanedPathInfo, event );
 			/* Now course should have all the key/pairs from the URL we need to pass to our event object */
