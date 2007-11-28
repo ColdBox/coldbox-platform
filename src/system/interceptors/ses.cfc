@@ -76,7 +76,12 @@ Description :
 			/* Check for invalid URL */
 			checkForInvalidURL( getCGIElement('path_info') , getCGIElement('script_name'), arguments.event );
 			/* Clean up the path_info */
+			try{
 			cleanedPathInfo = replaceNocase(getCGIElement('path_info'),cleanedScriptName,'');
+			}
+			catch(Any e){
+			throw('Unknown error check routes.cfm [#cleanedPathInfo#]/or try to reload the App','','interceptors.ses.unknownException');
+			}
 			/* Find a course */
 			acourse = findCourse( cleanedPathInfo, event );
 			/* Now course should have all the key/pairs from the URL we need to pass to our event object */
