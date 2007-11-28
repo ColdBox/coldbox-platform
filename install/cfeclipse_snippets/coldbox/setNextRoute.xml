@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<snippet filetemplate="false" extension="cfm">
+<name>setNextRoute</name>
+<help></help>
+<starttext><![CDATA[setNextRoute("$${Route (do not prepend /)}")]]></starttext>
+<endtext><![CDATA[]]></endtext>
+</snippet>

@@ -418,6 +418,22 @@ Description :
 			</parameter>
 		</function>
 		
+		<function creator="8" name="setNextRoute" returns="void">
+			<help><![CDATA[
+				 Relocate to another route via SES course. This will relocate the browser
+			]]></help>
+			<parameter name="route" type="String" required="false">
+				<help><![CDATA[
+					The route to relocate to: Ex: home/dspusers/id
+				]]></help>
+			</parameter>
+			<parameter name="persist" type="string" required="false">
+				<help><![CDATA[
+					A comma delimmited list of keys in the request collection to persist across the request.
+				]]></help>
+			</parameter>
+		</function>
+		
 		<function creator="8" name="setSetting" returns="void">
 			<help><![CDATA[
 				 Set a new setting in the configuration structure.
@@ -786,6 +802,11 @@ Description :
 		<scope value="controller.setNextEvent" type="Void">
 			<help><![CDATA[ 
 			 Relocate to another event.
+		]]></help>
+		</scope>
+		<scope value="controller.setNextRoute" type="Void">
+			<help><![CDATA[ 
+			 Relocate to another route
 		]]></help>
 		</scope>
 		<scope value="controller.setSetting" type="Void">
