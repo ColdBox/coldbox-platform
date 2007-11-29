@@ -66,8 +66,8 @@ Description :
 			/* Find which route this URL matches */
 			var acourse = "";
 			var key = "";
-			var cleanedPathInfo = "";
-			var cleanedScriptName = replacenocase(getCGIElement('script_name'),"/index.cfm","");
+			var cleanedPathInfo = getCGIElement('path_info');
+			var cleanedScriptName = trim(replacenocase(getCGIElement('script_name'),"/index.cfm",""));
 	
 			/* Check if active */
 			if ( not getEnabled() )
@@ -75,19 +75,19 @@ Description :
 	
 			/* Check for invalid URL */
 			checkForInvalidURL( getCGIElement('path_info') , getCGIElement('script_name'), arguments.event );
+			
 			/* Clean up the path_info */
-			try{
-			cleanedPathInfo = replaceNocase(getCGIElement('path_info'),cleanedScriptName,'');
-			}
-			catch(Any e){
-			throw('Unknown error check routes.cfm [#cleanedPathInfo#]/or try to reload the App','','interceptors.ses.unknownException');
-			}
+			if( len(cleanedScriptName) gt 0)
+				cleanedPathInfo = replaceNocase(getCGIElement('path_info'),cleanedScriptName,'');
+			
 			/* Find a course */
 			acourse = findCourse( cleanedPathInfo, event );
+			
 			/* Now course should have all the key/pairs from the URL we need to pass to our event object */
 			for( key in acourse ){
 				event.setValue( key, acourse[key] );
 			}
+			
 			/* Route to destination */
 			routeToDestination(acourse,event);
 		</cfscript>
@@ -336,7 +336,7 @@ Description :
 	
 	<!--- Get Default Framework Action --->
 	<cffunction name="getDefaultFrameworkAction" access="private" returntype="string" hint="Get the default framework action" output="false" >
-		<cfreturn listLast( getSetting('DefaultEvent'),".")>
+		<cfreturn listLast(getSetting('DefaultEvent'),".")>
 	</cffunction>
 	
 	<!--- CGI Element Facade. --->
