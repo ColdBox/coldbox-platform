@@ -57,22 +57,11 @@
 		<copy todir="${dir.build}/install/wallpapers">
 			<fileset dir="${dir.wallpapers}"/>
 		</copy>
-		
-		<!--Create Compiled source-->
-		<mkdir dir="${dir.build}/compiled_system" />
-		
-		<!--CompileSource-->
-		<ant antfile="ant/framework/ant_compile.xml" target="deploy" />
-		
-		<!--Move Compiled data-->
-		<copy todir="${dir.build}/compiled_system">
-			<fileset dir="dist" />
-		</copy>
-		
+				
 		<!--Remove Dist-->
 		<delete dir="dist" />
 		
-		<!--Copy Dashboard-->
+		<!--Compile Dashboard-->
 		<ant antfile="${ant.dashboard}" target="deploy.to.export" dir="${dir.dashboard}" />
 		
     </target>

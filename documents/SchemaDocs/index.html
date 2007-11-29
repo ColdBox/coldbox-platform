@@ -3,7 +3,7 @@
   PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
    <head>
-      <title>Documentation for ColdBox 2.5.X Configuration File - config.xsd</title>
+      <title>Documentation for ColdBox 2.5.0 Configuration File - config.xsd</title>
       <meta http-equiv="Content-Type" content="text/xml; charset=UTF-8"/>
       <style type="text/css">
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
@@ -725,7 +725,7 @@ function viewDocumentation(compDesc, compName, docTextArray) {
    </head>
    <body>
       <h1>
-         <a name="top">Documentation for ColdBox 2.5.X Configuration File</a>
+         <a name="top">Documentation for ColdBox 2.5.0 Configuration File</a>
       </h1>
       <div style="float: right;">
          <div id="printerControls" style="display:none;">
@@ -1242,26 +1242,41 @@ if (gc != null) {
          </div>
          <div id="h-634317729_xibox" class="contents">
             <div style="margin-left: 0em">&lt;Cache&gt; <br/>
-               <div style="margin-left: 1.5em">&lt;ObjectDefaultTimeout&gt; <span class="type">
+               <span class="group" style="margin-left: 1.5em">Start <a title="Look up 'All' in glossary" href="index.html#term_All">All</a> 
+                  <span class="occurs">[1]</span>
+               </span>
+               <br/>
+               <div style="margin-left: 3em">&lt;ObjectDefaultTimeout&gt; <span class="type">
                      <a href="#ns_xs" title="Find out namespace of 'xs' prefix">xs</a>:integer</span> &lt;/ObjectDefaultTimeout&gt; <span class="occurs">[1]</span> 
                   <p class="documentation">'The default object timeout in minutes'</p>
                </div>
-               <div style="margin-left: 1.5em">&lt;ObjectDefaultLastAccessTimeout&gt; <span class="type">
+               <div style="margin-left: 3em">&lt;ObjectDefaultLastAccessTimeout&gt; <span class="type">
                      <a href="#ns_xs" title="Find out namespace of 'xs' prefix">xs</a>:integer</span> &lt;/ObjectDefaultLastAccessTimeout&gt; <span class="occurs">[1]</span> 
                   <p class="documentation">'The default object last access timeout in minutes'</p>
                </div>
-               <div style="margin-left: 1.5em">&lt;ReapFrequency&gt; <span class="type">
+               <div style="margin-left: 3em">&lt;ReapFrequency&gt; <span class="type">
                      <a href="#ns_xs" title="Find out namespace of 'xs' prefix">xs</a>:integer</span> &lt;/ReapFrequency&gt; <span class="occurs">[1]</span> 
                   <p class="documentation">'The frequency in which the cache is reaped.'</p>
                </div>
-               <div style="margin-left: 1.5em">&lt;MaxObjects&gt; <span class="type">
+               <div style="margin-left: 3em">&lt;MaxObjects&gt; <span class="type">
                      <a href="#ns_xs" title="Find out namespace of 'xs' prefix">xs</a>:integer</span> &lt;/MaxObjects&gt; <span class="occurs">[1]</span> 
                   <p class="documentation">'The maximum number of objects to cache.'</p>
                </div>
-               <div style="margin-left: 1.5em">&lt;FreeMemoryPercentageThreshold&gt; <span class="type">
+               <div style="margin-left: 3em">&lt;FreeMemoryPercentageThreshold&gt; <span class="type">
                      <a href="#ns_xs" title="Find out namespace of 'xs' prefix">xs</a>:integer</span> &lt;/FreeMemoryPercentageThreshold&gt; <span class="occurs">[1]</span> 
                   <p class="documentation">'The amount of free memory threshold needed to cache. If memory goes below this threshold, objects will no longer be cached.'</p>
-               </div>&lt;/Cache&gt;</div>
+               </div>
+               <div style="margin-left: 3em">&lt;UseLastAccessTimeouts&gt; <span class="type">
+                     <a href="#ns_xs" title="Find out namespace of 'xs' prefix">xs</a>:boolean</span> &lt;/UseLastAccessTimeouts&gt; <span class="occurs">[0..1]</span> 
+                  <p class="documentation">'Whether to reap using last access timeouts alongside default object timeouts'</p>
+               </div>
+               <div style="margin-left: 3em">&lt;EvictionPolicy&gt; <span class="constraint">
+                     <span class="type">
+                        <a href="#ns_xs" title="Find out namespace of 'xs' prefix">xs</a>:string</span> (<em>value</em> comes from list: {'LFU'|'LRU'})</span> &lt;/EvictionPolicy&gt; <span class="occurs">[0..1]</span> 
+                  <p class="documentation">'The default eviction policy'</p>
+               </div>
+               <span class="group" style="margin-left: 1.5em">End All</span>
+               <br/>&lt;/Cache&gt;</div>
          </div>
          <script type="text/javascript">
 <!--
@@ -1297,7 +1312,7 @@ if (gc != null) {
          </div>
          <div id="h-634317729_scbox" class="contents">
             <div style="margin-left: 0em">&lt;<span class="scTag">xs:element</span> 
-               <span class="scTag">name</span>="<span class="scContent">Cache</span>"&gt;<div style="margin-left: 1.5em">&lt;<span class="scTag">xs:complexType</span>&gt;<div style="margin-left: 1.5em">&lt;<span class="scTag">xs:sequence</span>&gt;<div style="margin-left: 1.5em">&lt;<span class="scTag">xs:element</span> 
+               <span class="scTag">name</span>="<span class="scContent">Cache</span>"&gt;<div style="margin-left: 1.5em">&lt;<span class="scTag">xs:complexType</span>&gt;<div style="margin-left: 1.5em">&lt;<span class="scTag">xs:all</span>&gt;<div style="margin-left: 1.5em">&lt;<span class="scTag">xs:element</span> 
                         <span class="scTag">name</span>="<span class="scContent">ObjectDefaultTimeout</span>" <span class="scTag">type</span>="<span class="scContent">
                            <span class="type">
                               <a href="#ns_xs" title="Find out namespace of 'xs' prefix">xs</a>:integer</span>
@@ -1321,7 +1336,21 @@ if (gc != null) {
                         <span class="scTag">name</span>="<span class="scContent">FreeMemoryPercentageThreshold</span>" <span class="scTag">type</span>="<span class="scContent">
                            <span class="type">
                               <a href="#ns_xs" title="Find out namespace of 'xs' prefix">xs</a>:integer</span>
-                        </span>" <span class="scTag">maxOccurs</span>="<span class="scContent">1</span>" <span class="scTag">minOccurs</span>="<span class="scContent">1</span>" <span class="scTag">default</span>="<span class="scContent">0</span>"/&gt;</div>&lt;/<span class="scTag">xs:sequence</span>&gt;</div>&lt;/<span class="scTag">xs:complexType</span>&gt;</div>&lt;/<span class="scTag">xs:element</span>&gt;</div>
+                        </span>" <span class="scTag">maxOccurs</span>="<span class="scContent">1</span>" <span class="scTag">minOccurs</span>="<span class="scContent">1</span>" <span class="scTag">default</span>="<span class="scContent">0</span>"/&gt;</div>
+                     <div style="margin-left: 1.5em">&lt;<span class="scTag">xs:element</span> 
+                        <span class="scTag">name</span>="<span class="scContent">UseLastAccessTimeouts</span>" <span class="scTag">type</span>="<span class="scContent">
+                           <span class="type">
+                              <a href="#ns_xs" title="Find out namespace of 'xs' prefix">xs</a>:boolean</span>
+                        </span>" <span class="scTag">maxOccurs</span>="<span class="scContent">1</span>" <span class="scTag">minOccurs</span>="<span class="scContent">0</span>" <span class="scTag">default</span>="<span class="scContent">true</span>"/&gt;</div>
+                     <div style="margin-left: 1.5em">&lt;<span class="scTag">xs:element</span> 
+                        <span class="scTag">name</span>="<span class="scContent">EvictionPolicy</span>" <span class="scTag">maxOccurs</span>="<span class="scContent">1</span>" <span class="scTag">minOccurs</span>="<span class="scContent">0</span>" <span class="scTag">default</span>="<span class="scContent">LFU</span>"&gt;<div style="margin-left: 1.5em">&lt;<span class="scTag">xs:simpleType</span>&gt;<div style="margin-left: 1.5em">&lt;<span class="scTag">xs:restriction</span> 
+                              <span class="scTag">base</span>="<span class="scContent">
+                                 <span class="type">
+                                    <a href="#ns_xs" title="Find out namespace of 'xs' prefix">xs</a>:string</span>
+                              </span>"&gt;<div style="margin-left: 1.5em">&lt;<span class="scTag">xs:enumeration</span> 
+                                 <span class="scTag">value</span>="<span class="scContent">LFU</span>"/&gt;</div>
+                              <div style="margin-left: 1.5em">&lt;<span class="scTag">xs:enumeration</span> 
+                                 <span class="scTag">value</span>="<span class="scContent">LRU</span>"/&gt;</div>&lt;/<span class="scTag">xs:restriction</span>&gt;</div>&lt;/<span class="scTag">xs:simpleType</span>&gt;</div>&lt;/<span class="scTag">xs:element</span>&gt;</div>&lt;/<span class="scTag">xs:all</span>&gt;</div>&lt;/<span class="scTag">xs:complexType</span>&gt;</div>&lt;/<span class="scTag">xs:element</span>&gt;</div>
          </div>
          <script type="text/javascript">
 <!--
@@ -2506,7 +2535,7 @@ if (gc != null) {
             <img usemap="#h-1342888473" src="schemaDiagrams/h-1342888473.jpg"/>
             <!--
             Map ref: file:/Users/lmajano/Documents/MyDevelopment/applications/coldbox/documents/SchemaDocs//schemaDiagrams/h-1342888473.map--><map name="h-1342888473">
-               <area shape="rect" alt="h870682946" coords="209,59,326,95"
+               <area shape="rect" alt="h870682946" coords="209,108,326,144"
                      href="index.html#h870682946"/>
 
             </map>
@@ -2525,7 +2554,11 @@ if (gc != null) {
             <span class="caption">XML Instance Representation</span>
          </div>
          <div id="h1221367665_xibox" class="contents">
-            <div style="margin-left: 0em">&lt;Interceptors&gt; <br/>
+            <div style="margin-left: 0em">&lt;Interceptors<br/>
+               <span style="margin-left: 0.5em"> throwOnInvalidStates="<span class="type">
+                     <a href="#ns_xs" title="Find out namespace of 'xs' prefix">xs</a>:boolean</span> 
+                  <span class="occurs">[0..1]</span> 
+                  <p class="documentation">'Flag that determines if the interceptor service throws an error when an invalid state is announced.'</p>"</span>&gt; <br/>
                <div style="margin-left: 1.5em">&lt;CustomInterceptionPoints&gt; <span class="type">
                      <a href="#ns_xs" title="Find out namespace of 'xs' prefix">xs</a>:string</span> &lt;/CustomInterceptionPoints&gt; <span class="occurs">[0..1]</span> 
                   <p class="documentation">'A comma delimmited list of custom interception points to declare an use.'</p>
@@ -2604,7 +2637,12 @@ if (gc != null) {
                               <span class="scTag">name</span>="<span class="scContent">class</span>" <span class="scTag">type</span>="<span class="scContent">
                                  <span class="type">
                                     <a href="#ns_xs" title="Find out namespace of 'xs' prefix">xs</a>:string</span>
-                              </span>" <span class="scTag">use</span>="<span class="scContent">required</span>"/&gt;</div>&lt;/<span class="scTag">xs:complexType</span>&gt;</div>&lt;/<span class="scTag">xs:element</span>&gt;</div>&lt;/<span class="scTag">xs:sequence</span>&gt;</div>&lt;/<span class="scTag">xs:complexType</span>&gt;</div>&lt;/<span class="scTag">xs:element</span>&gt;</div>
+                              </span>" <span class="scTag">use</span>="<span class="scContent">required</span>"/&gt;</div>&lt;/<span class="scTag">xs:complexType</span>&gt;</div>&lt;/<span class="scTag">xs:element</span>&gt;</div>&lt;/<span class="scTag">xs:sequence</span>&gt;</div>
+                  <div style="margin-left: 1.5em">&lt;<span class="scTag">xs:attribute</span> 
+                     <span class="scTag">name</span>="<span class="scContent">throwOnInvalidStates</span>" <span class="scTag">type</span>="<span class="scContent">
+                        <span class="type">
+                           <a href="#ns_xs" title="Find out namespace of 'xs' prefix">xs</a>:boolean</span>
+                     </span>" <span class="scTag">use</span>="<span class="scContent">optional</span>" <span class="scTag">default</span>="<span class="scContent">true</span>"/&gt;</div>&lt;/<span class="scTag">xs:complexType</span>&gt;</div>&lt;/<span class="scTag">xs:element</span>&gt;</div>
          </div>
          <script type="text/javascript">
 <!--
