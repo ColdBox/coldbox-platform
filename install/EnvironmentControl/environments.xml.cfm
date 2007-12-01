@@ -2,7 +2,7 @@
 <!-- Declare as many tiers as you like with a unique name -->
 <environmentcontrol>
 	
-	<environment name="development">
+	<environment name="development" urls="dev,jfetmac">
 		<!--ColdBoxSpecific Settings -->
 		<Setting name="HandlerCaching"			value="false" />
 		<Setting name="HandlersIndexAutoReload" value="false" />
@@ -21,7 +21,7 @@
 		<Setting name="TierControlFired" value="TRUE" />
 	</environment>
 	
-	<environment name="qa">
+	<environment name="qa" urls="qa">
 		<!--ColdBoxSpecific-->
 		<Setting name="EnableDumpVar"			value="true" />
 		<Setting name="EnableColdboxLogging"	value="true" />

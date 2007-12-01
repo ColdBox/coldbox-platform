@@ -127,7 +127,7 @@ Modification History:
 		<div class="fw_debugContentCell">
 		<cfif Event.getCurrentView() eq ""><span class="fw_redText">N/A</span><cfelse>#Event.getCurrentView()#</cfif>
 		</div>
-
+		
 		<!--- **************************************************************--->
 		<!--- Method Executions --->
 		<!--- **************************************************************--->
@@ -145,7 +145,7 @@ Modification History:
 				  <cfelseif findnocase("interception",method)>
 				  	<cfset color = "fw_blackText">
 				  <cfelseif findnocase("runEvent", method)>
-				  	<cfset color = "fw_blueText">">
+				  	<cfset color = "fw_blueText">
 				  <cfelseif findnocase("pre",method) or findnocase("post",method)>
 				  	<cfset color = "fw_purpleText">
 				  <cfelse>
