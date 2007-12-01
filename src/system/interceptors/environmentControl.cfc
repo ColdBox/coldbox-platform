@@ -83,6 +83,7 @@ Description :
 				if ( listFindNoCase(trim(environmentsArray[i].XMLAttributes.urls),cgi.http_host) ){
 					//Place the ENVIRONMENT on the settings structure.
 					setSetting("ENVIRONMENT", trim(environmentsArray[i].XMLAttributes.name));
+					ENVIRONMENT = trim(environmentsArray[i].XMLAttributes.name);
 					break;
 				}
 			}
@@ -90,7 +91,6 @@ Description :
 			//Search for ENVIRONMENT settings.
 			SettingsArray = xmlSearch( oXML , "/environmentcontrol/environment[@name='#ENVIRONMENT#']/Setting");
 			settingsLength = ArrayLen(SettingsArray);
-			
 			//Check if settings for ENVIRONMENT found, else do nothing.
 			if (settingsLength gt 0){
 				//Loop And set
