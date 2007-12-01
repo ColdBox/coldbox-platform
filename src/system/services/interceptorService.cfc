@@ -67,6 +67,7 @@ Description :
 				}
 				
 				/* Parse Interception Points, thanks to inheritance. */
+				interceptionPointsFound = structnew();
 				interceptionPointsFound = parseMetadata( getMetaData(oInterceptor), interceptionPointsFound);
 				
 				/* Register this Interceptor's interception point with its appropriate interceptor state */
