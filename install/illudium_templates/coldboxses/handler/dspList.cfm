@@ -6,8 +6,8 @@
 		var oService = getPlugin("ioc").getBean("#root.bean.xmlAttributes.name#Service");
 		
 		//set The exit handlers
-		rc.xehEditor = "#root.bean.xmlAttributes.name#.dspEditor";
-		rc.xehDelete = "#root.bean.xmlAttributes.name#.doDelete";
+		rc.xehEditor = "#root.bean.xmlAttributes.name#/dspEditor";
+		rc.xehDelete = "#root.bean.xmlAttributes.name#/doDelete";
 		
 		//Get the listing
 		rc.q#root.bean.xmlAttributes.name# = oService.get#root.bean.xmlAttributes.name#s() ;

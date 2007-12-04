@@ -16,6 +16,6 @@
 		oService.save#root.bean.xmlAttributes.name#(o#root.bean.xmlAttributes.name#Bean);
 		
 		//Set redirect
-		setNextEvent("#root.bean.xmlAttributes.name#.list");
+		setNextRoute("#root.bean.xmlAttributes.name#/list");
 		<%/cfscript%>		
 	<%/cffunction%>

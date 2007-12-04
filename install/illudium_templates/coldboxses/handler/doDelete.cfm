@@ -10,6 +10,6 @@
 		
 		//Redirect with message box
 		getPlugin("messagebox").setMessage("info","The record was sucessfully deleted");
-		setNextEvent("#root.bean.xmlAttributes.name#.list");
+		setNextRoute("#root.bean.xmlAttributes.name#/list");
 		<%/cfscript%>		
 	<%/cffunction%>	

@@ -12,7 +12,7 @@
 		<Setting name="DebugPassword" 			value="" />
 		<Setting name="ReinitPassword" 			value="" />
 		<Setting name="EnableDumpVar"			value="false" />
-		<Setting name="EnableColdboxLogging"	value="false" />
+		<Setting name="EnableColdboxLogging"	value="true" />
 		<Setting name="onInvalidEvent"			value="" />
 		
 		<!--

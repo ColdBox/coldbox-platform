@@ -4,7 +4,7 @@
 
 <%cfoutput%>
 <div>
-[<a href="index.cfm?event=%rc.xehEditor%">Add New #root.bean.xmlAttributes.name#</a>]
+[<a href="index.cfm/%rc.xehEditor%">Add New #root.bean.xmlAttributes.name#</a>]
 </div>
 <br/><br/>
 %getPlugin("messagebox").renderit()%
@@ -27,7 +27,7 @@
 		<td>%rc.q#root.bean.xmlAttributes.name#.#primaryKey#[currentrow]%</td>
 		<cfloop from="1" to="#arrayLen(root.bean.dbtable.xmlChildren)#" index="i"><cfif root.bean.dbtable.xmlChildren[i].xmlAttributes.name neq primaryKey>	
 		<td><cfif root.bean.dbtable.xmlChildren[i].xmlAttributes.type eq "date">%dateFormat(#root.bean.dbtable.xmlChildren[i].xmlAttributes.name#,"MM-DD-YYYY")%<cfelseif root.bean.dbtable.xmlChildren[i].xmlAttributes.type eq "boolean">%yesnoformat(#root.bean.dbtable.xmlChildren[i].xmlAttributes.name#)%<cfelse>%#root.bean.dbtable.xmlChildren[i].xmlAttributes.name#%</cfif></td></cfif></cfloop>
-		<td><a href="index.cfm?event=%rc.xehEditor%&#primaryKey#=%#primaryKey#%">Edit </a> | <a href="index.cfm?event=%rc.xehDelete%&#primaryKey#=%#primaryKey#%">Delete</a></td>
+		<td><a href="index.cfm/%rc.xehEditor%?#primaryKey#=%#primaryKey#%">Edit </a> | <a href="index.cfm/%rc.xehDelete%?#primaryKey#=%#primaryKey#%">Delete</a></td>
 		
 	</tr>
 	<%/cfoutput%>

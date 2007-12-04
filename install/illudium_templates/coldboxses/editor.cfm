@@ -3,13 +3,14 @@
 
 <%cfoutput%>
 <div>
-[<a href="index.cfm?event=%rc.xehList%">Back To Listing</a>]
+[<a href="index.cfm/%rc.xehList%">Back To Listing</a>]
 </div>
 <br/>
 <%/cfoutput%>
 
 <%cfoutput%>
-<form name="editor_form" id="editor_form" action="index.cfm?event=%rc.xehSave%" method="post" >
+<form name="editor_form" id="editor_form" action="index.cfm" method="post" >
+<input type="hidden" name="event" value="%rc.xehSave%">
 <input type="hidden" name="#primaryKey#" value="%rc.o#root.bean.xmlAttributes.name#bean.get#primaryKey#()%" />
 
 <fieldset>
