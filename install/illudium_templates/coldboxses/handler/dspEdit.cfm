@@ -7,7 +7,7 @@
 		
 		//set the exit handlers
 		rc.xehSave = "#root.bean.xmlAttributes.name#.doSave";
-		rc.xehList = "#root.bean.xmlAttributes.name#/dspList";
+		rc.xehList = "#root.bean.xmlAttributes.name#/list";
 		
 		//Get #root.bean.xmlAttributes.name# bean with/without ID.
 		rc.o#root.bean.xmlAttributes.name#Bean = oService.get#root.bean.xmlAttributes.name#(event.getValue("#primaryKey#","0"));
