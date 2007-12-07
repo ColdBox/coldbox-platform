@@ -135,6 +135,10 @@ Modification History:
 	   <td align="right" class="fw_errorTablesTitles">Template Path : </td>
 	   <td >#CGI.CF_TEMPLATE_PATH#</td>
 	 </tr>
+	  <tr>
+	   <td align="right" class="fw_errorTablesTitles">Path Info : </td>
+	   <td >#CGI.PATH_INFO#</td>
+	 </tr>
 	 <tr>
 	   <td align="right" class="fw_errorTablesTitles"> Host &amp; Server: </td>
 	   <td >#cgi.http_host# #controller.getPlugin("Utilities").getInetHost()#</td>

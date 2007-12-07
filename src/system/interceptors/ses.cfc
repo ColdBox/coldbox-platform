@@ -29,7 +29,7 @@ Description :
 			
 			/* Verify the properties */
 			if( not propertyExists('configFile') ){
-				throw('The configFile property has not been defined. Please define it.','','interceptors.ses.invalidPropertyException');
+				throw('The configFile property has not been defined. Please define it.','','interceptors.ses.configFilePropertyNotDefined');
 			}
 			
 			/* Setup the config Path */

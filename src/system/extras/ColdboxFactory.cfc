@@ -82,14 +82,14 @@ Modification History:
 		var datasources = application.cbController.getSetting("Datasources");
 		//Check for datasources structure
 		if ( structIsEmpty(datasources) ){
-			throw("There are no datasources defined for this application.","","Framework.actioncontroller.DatasourceStructureEmptyException");
+			throw("There are no datasources defined for this application.","","Framework.coldboxFactory.DatasourceStructureEmptyException");
 		}
 		//Try to get the correct datasource.
 		if ( structKeyExists(datasources, arguments.alias) ){
 			return CreateObject("component",datasourceBeanPath).init(datasources[arguments.alias]);
 		}
 		else{
-			throw("The datasource: #arguments.alias# is not defined.","","Framework.actioncontroller.DatasourceNotFoundException");
+			throw("The datasource: #arguments.alias# is not defined.","","Framework.coldboxFactory.DatasourceNotFoundException");
 		}
 		</cfscript>
 	</cffunction>

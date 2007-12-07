@@ -32,7 +32,7 @@ Description :
 			
 			//Verify that the configFile propety is set
 			if( not propertyExists('configFile') ){
-				throw("Config File property does not exist. Please declare it.");
+				throw("Config File property does not exist. Please declare it.",'','interceptors.environmentControl.configFilePropertyNotDefined');
 			}
 			//Test if the file exists
 			if ( fileExists(getController().getAppRootPath() & getProperty('configFile')) ){
@@ -47,7 +47,7 @@ Description :
 			
 			//Does it exist
 			if ( not fileExists(configFile) ){
-				throw("The config file does not exist at the following location: #configFile#.");
+				throw("The config file does not exist at the following location: #configFile#.",'','interceptors.environmentControl.configFileNotFound');
 			}
 			//Verified, set it
 			setConfigFile(configFile);			
