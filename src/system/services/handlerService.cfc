@@ -52,9 +52,12 @@ Description :
 		<cfscript>
 			/* Get the validated event handler bean */
 			var oEventHandler = "";
+			/* Request context to check */
 			var oRequestContext = controller.getRequestService().getContext();
+			/* Cache Keys */
 			var cacheKey = this.HANDLER_CACHEKEY_PREFIX & oEventHandlerBean.getRunnable();
 			var eventCacheKey = "";
+			/* Metadata entry structures */
 			var MetaData = "";
 			var mdEntry = "";
 			var handlerDictionaryEntry = "";
@@ -125,14 +128,14 @@ Description :
 				/* If onInvalidEvent is registered, use it */
 				if ( controller.getSetting("onInvalidEvent") neq "" ){
 					/* Test for invalid Event Error */
-					if ( compareNoCase(controller.getSetting("onInvalidEvent"),event) eq 0 ){
+					if ( compareNoCase(controller.getSetting("onInvalidEvent"),oRequestContext.getCurrentEvent()) eq 0 ){
 						getUtil().throw(message="The onInvalid event is invalid",
 										detail="The onInvalidEvent setting is also invalid: #controller.getSetting('onInvalidEvent')#. Please check your settings",
 										type="Framework.onInValidEventSettingException");
 					}
 					//Place invalid event in request context.
 					oRequestContext.setValue("invalidevent",oEventHandlerBean.getRunnable());
-					/* Relocate to Invalid Event */
+					/* Relocate to Invalid Event, with collection persistance */
 					controller.setNextEvent(event=controller.getSetting("onInvalidEvent"),persist="invalidevent");
 				}
 				else{
