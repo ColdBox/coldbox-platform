@@ -18,7 +18,8 @@ Modification History:
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 	
 	<cffunction name="reap" access="public" output="false" returntype="void" hint="Reap the cache.">
-		<cfthread name="coldbox.cache.reap-#createUUID()#">  
+		<cfset var ThreadName = "coldbox.cache.reap_#replace(createUUID(),"-","","all")#">
+		<cfthread name="#threadName#">  
 			<cfscript>  
 				super.reap(); 
 			</cfscript>
@@ -33,8 +34,9 @@ Modification History:
 		<cfargument name="queryString" 	type="string" 	required="false" default="" hint="If passed in, it will create a unique hash out of it. For purging purposes"/>
 		<cfargument name="async" 		type="boolean"  required="false" default="true" hint="Run asynchronously or not"/>
 		<!--- ************************************************************* --->
+		<cfset var ThreadName = "coldbox.cache.clearEvent_#replace(createUUID(),"-","","all")#">
 		<cfif arguments.async>
-			<cfthread name="coldbox.cache.clearEvent-#createUUID()#"
+			<cfthread name="#threadName#"
 					  eventsnippet="#arguments.eventsnippet#"
 					  queryString="#arguments.queryString#">  
 				<cfscript>  
@@ -54,8 +56,9 @@ Modification History:
 		<!--- ************************************************************* --->
 		<cfargument name="async" 		type="boolean"  required="false" default="true" hint="Run asynchronously or not"/>
 		<!--- ************************************************************* --->
+		<cfset var ThreadName = "coldbox.cache.clearAllEvents_#replace(createUUID(),"-","","all")#">
 		<cfif arguments.async>
-			<cfthread name="coldbox.cache.clearAllEvents-#createUUID()#">  
+			<cfthread name="#threadName#">  
 				<cfscript>  
 					super.clearAllEvents();  
 				</cfscript>          
@@ -73,8 +76,9 @@ Modification History:
 		<!--- ************************************************************* --->
 		<cfargument name="async" 		type="boolean"  required="false" default="true" hint="Run asynchronously or not"/>
 		<!--- ************************************************************* --->
+		<cfset var ThreadName = "coldbox.cache.clearAllViews_#replace(createUUID(),"-","","all")#">
 		<cfif arguments.async>
-			<cfthread name="coldbox.cache.clearAllViews-#createUUID()#">  
+			<cfthread name="#threadName#">  
 				<cfscript>  
 					super.clearAllViews();  
 				</cfscript>          
