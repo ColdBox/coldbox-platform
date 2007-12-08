@@ -311,7 +311,7 @@ Description		: This is the main ColdBox front Controller.
 	<!--- Event Service Locator Factory --->
 	<cffunction name="runEvent" returntype="any" access="Public" hint="I am an event handler runnable factory. If no event is passed in then it will run the default event from the config file.">
 		<!--- ************************************************************* --->
-		<cfargument name="event"         hint="The event to run. If no current event is set, use the default event from the config.xml" type="string" required="false" default="">
+		<cfargument name="event"         hint="The event to run. If no current event is set, use the default event from the config.xml" type="any" required="false" default="">
 		<cfargument name="prepostExempt" hint="If true, pre/post handlers will not be fired." type="boolean" required="false" default="false">
 		<!--- ************************************************************* --->
 		<cfset var oEventHandler = "">

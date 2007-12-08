@@ -51,7 +51,7 @@ Modification History:
 
 <!------------------------------------------- PUBLIC ------------------------------------------->
 
-	<cffunction name="getCollection" returntype="struct" access="Public" hint="I Get a reference or deep copy of the request Collection" output="false">
+	<cffunction name="getCollection" returntype="any" access="Public" hint="I Get a reference or deep copy of the request Collection" output="false">
 		<cfargument name="DeepCopyFlag" hint="Default is false, gives a reference to the collection. True, creates a deep copy of the collection." type="boolean" required="no" default="false">
 		<cfscript>
 			if ( arguments.DeepCopyFlag )
@@ -77,7 +77,7 @@ Modification History:
 	<!--- ************************************************************* --->
 
 	<cffunction name="collectionAppend" access="public" returntype="void" output="false" hint="Append a structure to the collection, with overwrite or not. Overwrite = false by default">
-		<cfargument name="collection" type="struct"  required="true">
+		<cfargument name="collection" type="any"  	 required="true">
 		<cfargument name="overwrite"  type="boolean" required="false" default="false" hint="If you need to override data in the collection, set this to true.">
 		<cfset structAppend(instance.context,arguments.collection, arguments.overwrite)>
 	</cffunction>
@@ -91,7 +91,7 @@ Modification History:
 	<!--- ************************************************************* --->
 
 	<cffunction name="getValue" returntype="Any" access="Public" hint="I Get a value from the request collection." output="false">
-		<cfargument name="name" hint="Name of the variable to get from the request collection" type="string">
+		<cfargument name="name" hint="Name of the variable to get from the request collection" type="any">
 		<cfargument name="defaultValue"
 					hint="Default value to return if not found.There are no default values for complex structures. You can send [array][struct][query] and the
 						  method will return the empty complex variable.Please remember to include the brackets, syntax sensitive.You can also send complex variables
@@ -124,7 +124,7 @@ Modification History:
 	<!--- ************************************************************* --->
 
 	<cffunction name="setValue" access="Public" hint="I Set a value in the request collection" output="false" returntype="void">
-		<cfargument name="name"  hint="The name of the variable to set." type="string" >
+		<cfargument name="name"  hint="The name of the variable to set." type="any" >
 		<cfargument name="value" hint="The value of the variable to set" type="Any" >
 		<!--- ************************************************************* --->
 		<cfscript>
@@ -146,7 +146,7 @@ Modification History:
 	<!--- ************************************************************* --->
 
 	<cffunction name="valueExists" returntype="boolean" access="Public"	hint="I Check if a value exists in the request collection." output="false">
-		<cfargument name="name" hint="Name of the variable to find in the request collection" type="string">
+		<cfargument name="name" hint="Name of the variable to find in the request collection" type="any">
 		<!--- ************************************************************* --->
 		<cfscript>
 			return isDefined("instance.context.#arguments.name#");
@@ -156,7 +156,7 @@ Modification History:
 	<!--- ************************************************************* --->
 
 	<cffunction name="paramValue" returntype="void" access="Public"	hint="Just like cfparam, but for the request collection" output="false">
-		<cfargument name="name" 	hint="Name of the variable to param in the request collection" 	type="string">
+		<cfargument name="name" 	hint="Name of the variable to param in the request collection" 	type="any">
 		<cfargument name="value" 	hint="The value of the variable to set if not found." 			type="Any" >
 		<!--- ************************************************************* --->
 		<cfscript>
@@ -171,7 +171,7 @@ Modification History:
 
 	<!--- ************************************************************* --->
 
-	<cffunction name="getCurrentView" access="public" hint="Gets the current set view" returntype="string" output="false">
+	<cffunction name="getCurrentView" access="public" hint="Gets the current set view" returntype="any" output="false">
 		<cfreturn getValue("currentView","")>
 	</cffunction>
 	
@@ -237,12 +237,12 @@ Modification History:
 
 	<!--- ************************************************************* --->
 
-	<cffunction name="getCurrentLayout" access="public" hint="Gets the current set layout" returntype="string" output="false">
+	<cffunction name="getCurrentLayout" access="public" hint="Gets the current set layout" returntype="any" output="false">
 		<cfreturn getValue("currentLayout","")>
 	</cffunction>
 
 	<cffunction name="setLayout" access="public" returntype="void" hint="I Set the layout to override and render. Layouts are pre-defined in the config file. However I can override these settings if needed. Do not append a the cfm extension. Request Collection name: currentLayout"  output="false">
-		<cfargument name="name"  hint="The name of the layout file to set." type="string" >
+		<cfargument name="name"  hint="The name of the layout file to set." type="any" >
 		<!--- ************************************************************* --->
 	  	<cfscript>
 			setValue("currentLayout",trim(arguments.name) & ".cfm" );
@@ -252,11 +252,11 @@ Modification History:
 
 	<!--- ************************************************************* --->
 
-	<cffunction name="getCurrentEvent" access="public" hint="Gets the current set event" returntype="string" output="false">
+	<cffunction name="getCurrentEvent" access="public" hint="Gets the current set event" returntype="any" output="false">
 		<cfreturn getValue(getEventName(),"")>
 	</cffunction>
 	
-	<cffunction name="getCurrentHandler" access="public" hint="Gets the current handler requested in the current event." returntype="string" output="false">
+	<cffunction name="getCurrentHandler" access="public" hint="Gets the current handler requested in the current event." returntype="any" output="false">
 		<cfscript>
 			var testHandler = reReplace(getCurrentEvent(),"\.[^.]*$","");
 			if( listLen(testHandler,".") eq 1){
@@ -268,14 +268,14 @@ Modification History:
 		</cfscript>
 	</cffunction>
 	
-	<cffunction name="getCurrentAction" access="public" hint="Gets the current action requested in the current event." returntype="string" output="false">
+	<cffunction name="getCurrentAction" access="public" hint="Gets the current action requested in the current event." returntype="any" output="false">
 		<cfreturn listLast(getCurrentEvent(),".")>
 	</cffunction>
 	
 	<!--- ************************************************************* --->
 	
 	<cffunction name="overrideEvent" access="Public" hint="I Override the current event in the request collection. This method does not execute the event, it just replaces the event to be executed by the framework's RunEvent() method. This method is usually called from an onRequestStart or onApplicationStart method."  output="false" returntype="void">
-		<cfargument name="event" hint="The name of the event to override." type="string">
+		<cfargument name="event" hint="The name of the event to override." type="any">
 		<!--- ************************************************************* --->
 	    <cfscript>
 	    setValue(getEventName(),arguments.event);
@@ -327,13 +327,13 @@ Modification History:
 	
 	<!--- ************************************************************* --->
 	
-	<cffunction name="getEventName" access="public" returntype="string" output="false">
+	<cffunction name="getEventName" access="public" returntype="any" output="false">
 		<cfreturn instance.eventName>
 	</cffunction>
 	
 	<!--- ************************************************************* --->
 	
-	<cffunction name="getSelf" access="public" output="false" returntype="string">
+	<cffunction name="getSelf" access="public" output="false" returntype="any">
 	   <cfreturn "index.cfm?" & getEventName() & "=">
 	</cffunction>
 	
@@ -391,7 +391,7 @@ Modification History:
 
 	<!--- ************************************************************* --->
 	
-	<cffunction name="getDefaultLayout" access="public" returntype="string" output="false">
+	<cffunction name="getDefaultLayout" access="public" returntype="any" output="false">
 		<cfreturn instance.defaultLayout>
 	</cffunction>
 	
@@ -404,7 +404,7 @@ Modification History:
 	
 	<!--- ************************************************************* --->
 	
-	<cffunction name="getDefaultView" access="public" returntype="string" output="false">
+	<cffunction name="getDefaultView" access="public" returntype="any" output="false">
 		<cfreturn instance.defaultView>
 	</cffunction>
 	

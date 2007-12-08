@@ -63,7 +63,7 @@ Modification History:
 
 	<cffunction name="lookup" access="public" output="false" returntype="boolean" hint="Check if an object is in cache, if not found it records a miss.">
 		<!--- ************************************************************* --->
-		<cfargument name="objectKey" type="string" required="true" hint="The key of the object to lookup.">
+		<cfargument name="objectKey" type="any" required="true" hint="The key of the object to lookup.">
 		<!--- ************************************************************* --->
 		<cfset var ObjectFound = false>
 
@@ -83,7 +83,7 @@ Modification History:
 
 	<cffunction name="get" access="public" output="false" returntype="any" hint="Get an object from cache. If it doesn't exist it returns a blank structure.">
 		<!--- ************************************************************* --->
-		<cfargument name="objectKey" type="string" required="true" hint="The key of the object to lookup.">
+		<cfargument name="objectKey" type="any" required="true" hint="The key of the object to lookup.">
 		<!--- ************************************************************* --->
 		<cfset var ObjectFound = "">
 
@@ -105,10 +105,10 @@ Modification History:
 
 	<cffunction name="set" access="public" output="false" returntype="boolean" hint="sets an object in cache. Sets might be expensive">
 		<!--- ************************************************************* --->
-		<cfargument name="objectKey" 			type="string"  required="true" hint="The object cache key">
-		<cfargument name="MyObject"				type="any" 	   required="true" hint="The object to cache">
-		<cfargument name="Timeout"				type="string"  required="false" default="" hint="Timeout in minutes. If timeout = 0 then object never times out. If timeout is blank, then timeout will be inherited from framework.">
-		<cfargument name="LastAccessTimeout"	type="string"  required="false" default="" hint="Last Access Timeout in minutes. If timeout is blank, then timeout will be inherited from framework.">
+		<cfargument name="objectKey" 			type="any"  required="true" hint="The object cache key">
+		<cfargument name="MyObject"				type="any" 	required="true" hint="The object to cache">
+		<cfargument name="Timeout"				type="any"  required="false" default="" hint="Timeout in minutes. If timeout = 0 then object never times out. If timeout is blank, then timeout will be inherited from framework.">
+		<cfargument name="LastAccessTimeout"	type="any"  required="false" default="" hint="Last Access Timeout in minutes. If timeout is blank, then timeout will be inherited from framework.">
 		<!--- ************************************************************* --->
 		<!---JVM Threshold Checks --->
 		<cfset var isJVMSafe = ThresholdChecks()>
@@ -461,7 +461,7 @@ Modification History:
 		<cfargument name="CacheConfigBean" type="coldbox.system.beans.cacheConfigBean" required="true">
 		<cfset instance.CacheConfigBean = arguments.CacheConfigBean>
 	</cffunction>
-	<cffunction name="getCacheConfigBean" access="public" returntype="coldbox.system.beans.cacheConfigBean" output="false">
+	<cffunction name="getCacheConfigBean" access="public" returntype="any" output="false">
 		<cfreturn instance.CacheConfigBean >
 	</cffunction>
 
@@ -480,7 +480,7 @@ Modification History:
 	</cffunction>
 	
 	<!--- Lock Name --->
-	<cffunction name="getlockName" access="public" output="false" returntype="string" hint="Get lockName">
+	<cffunction name="getlockName" access="public" output="false" returntype="any" hint="Get lockName">
 		<cfreturn instance.lockName/>
 	</cffunction>
 	<cffunction name="setlockName" access="public" output="false" returntype="void" hint="Set lockName">

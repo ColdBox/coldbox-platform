@@ -50,13 +50,13 @@ Modification History:
 		
 	<!--- ************************************************************* --->
 	
-	<cffunction name="getFullEvent" access="public" returntype="string" output="false">
+	<cffunction name="getFullEvent" access="public" returntype="any" output="false">
 		<cfreturn getHandler() & "." & getMethod()>
 	</cffunction>
 
 	<!--- ************************************************************* --->
 	
-	<cffunction name="getRunnable" access="public" returntype="string" output="false">
+	<cffunction name="getRunnable" access="public" returntype="any" output="false">
 		<cfreturn getInvocationPath() & "." & getHandler()>
 	</cffunction>
 
@@ -69,33 +69,33 @@ Modification History:
 
 	<!--- ************************************************************* --->
 
-	<cffunction name="getMethod" access="public" returntype="string" output="false">
+	<cffunction name="getMethod" access="public" returntype="any" output="false">
 		<cfreturn instance.method >
 	</cffunction>
 
 	<!--- ************************************************************* --->
 
 	<cffunction name="setHandler" access="public" returntype="void" output="false">
-		<cfargument name="handler" type="string" required="true" />
+		<cfargument name="handler" type="any" required="true" />
 		<cfset instance.handler = arguments.handler >
 	</cffunction>
 
 	<!--- ************************************************************* --->
 
-	<cffunction name="getHandler" access="public" returntype="string" output="false">
+	<cffunction name="getHandler" access="public" returntype="any" output="false">
 		<cfreturn instance.handler >
 	</cffunction>
 
 	<!--- ************************************************************* --->
 
 	<cffunction name="setInvocationPath" access="public" returntype="void" output="false">
-		<cfargument name="InvocationPath" type="string" required="true" />
+		<cfargument name="InvocationPath" type="any" required="true" />
 		<cfset instance.InvocationPath = arguments.InvocationPath >
 	</cffunction>
 
 	<!--- ************************************************************* --->
 
-	<cffunction name="getInvocationPath" access="public" returntype="string" output="false">
+	<cffunction name="getInvocationPath" access="public" returntype="any" output="false">
 		<cfreturn instance.InvocationPath >
 	</cffunction>
 

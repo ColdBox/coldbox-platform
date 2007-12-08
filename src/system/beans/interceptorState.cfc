@@ -90,7 +90,7 @@ Description :
 		<!--- ************************************************************* --->
 		<cfargument name="interceptor" 		required="true" type="any" 		hint="The interceptor reference from cache">
 		<cfargument name="event" 		 	required="true" type="any" 		hint="The event context">
-		<cfargument name="interceptData" 	required="true" type="struct" 	hint="A metadata structure used to pass intercepted information.">
+		<cfargument name="interceptData" 	required="true" type="any" 		hint="A metadata structure used to pass intercepted information.">
 		<!--- ************************************************************* --->
 		<cfinvoke component="#arguments.interceptor#" method="#getstate()#">
 			<cfinvokeargument name="event" 			value="#arguments.event#">

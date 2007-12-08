@@ -32,7 +32,7 @@ Modification History:
 <!------------------------------------------- PUBLIC ------------------------------------------->
 
 	<!--- Getter/Setter For pool --->
-	<cffunction name="getpool" access="public" returntype="struct" output="false">
+	<cffunction name="getpool" access="public" returntype="any" output="false">
 		<cfreturn instance.pool >
 	</cffunction>
 	<cffunction name="setpool" access="public" returntype="void" output="false">
@@ -41,7 +41,7 @@ Modification History:
 	</cffunction>
 
 	<!--- Getter/Setter for Pool Metdata --->
-	<cffunction name="getpool_metadata" access="public" returntype="struct" output="false">
+	<cffunction name="getpool_metadata" access="public" returntype="any" output="false">
 		<cfreturn instance.pool_metadata >
 	</cffunction>
 	<cffunction name="setpool_metadata" access="public" returntype="void" output="false">
@@ -50,23 +50,23 @@ Modification History:
 	</cffunction>
 
 	<!--- Setter/Getter metdata property --->
-	<cffunction name="getObjectMetadata" access="public" returntype="struct" output="false">
-		<cfargument name="objectKey" type="string" required="true">
+	<cffunction name="getObjectMetadata" access="public" returntype="any" output="false">
+		<cfargument name="objectKey" type="any" required="true">
 		<cfreturn instance.pool_metadata[arguments.objectKey] >
 	</cffunction>
 	<cffunction name="setObjectMetadata" access="public" returntype="void" output="false">
-		<cfargument name="objectKey" type="string" required="true">
-		<cfargument name="metadata"  type="struct" required="true">
+		<cfargument name="objectKey" type="any" required="true">
+		<cfargument name="metadata"  type="any" required="true">
 		<cfset instance.pool_metadata[arguments.objectKey] = arguments.metadata>
 	</cffunction>
 	<cffunction name="getMetadataProperty" access="public" returntype="any" output="false">
-		<cfargument name="objectKey" type="string" required="true">
-		<cfargument name="property"  type="string" required="true">
+		<cfargument name="objectKey" type="any" required="true">
+		<cfargument name="property"  type="any" required="true">
 		<cfreturn instance.pool_metadata[arguments.objectKey][arguments.property] >
 	</cffunction>
 	<cffunction name="setMetadataProperty" access="public" returntype="void" output="false">
-		<cfargument name="objectKey" type="string" required="true">
-		<cfargument name="property"  type="string" required="true">
+		<cfargument name="objectKey" type="any" required="true">
+		<cfargument name="property"  type="any" required="true">
 		<cfargument name="value"  	 type="any"    required="true">
 		<cfset instance.pool_metadata[arguments.objectKey][arguments.property] = arguments.value >
 	</cffunction>
@@ -74,7 +74,7 @@ Modification History:
 	<!--- Simple Object Lookup --->
 	<cffunction name="lookup" access="public" output="false" returntype="boolean" hint="Check if an object is in cache.">
 		<!--- ************************************************************* --->
-		<cfargument name="objectKey" type="string" required="true">
+		<cfargument name="objectKey" type="any" required="true">
 		<!--- ************************************************************* --->
 		<!--- Check for Object in Cache. --->
 		<cfreturn structKeyExists(instance.pool, arguments.objectKey) >
@@ -83,7 +83,7 @@ Modification History:
 	<!--- Get an object from the pool --->
 	<cffunction name="get" access="public" output="false" returntype="any" hint="Get an object from cache. If it doesn't exist it returns a blank structure.">
 		<!--- ************************************************************* --->
-		<cfargument name="objectKey" type="string" required="true">
+		<cfargument name="objectKey" type="any" required="true">
 		<!--- ************************************************************* --->
 		<cfscript>
 		//Record Metadata
@@ -97,10 +97,10 @@ Modification History:
 	<!--- Set an Object in the pool --->
 	<cffunction name="set" access="public" output="false" returntype="void" hint="sets an object in cache.">
 		<!--- ************************************************************* --->
-		<cfargument name="objectKey" 			type="string"  required="true">
-		<cfargument name="MyObject"				type="any" 	   required="true">
-		<cfargument name="Timeout"				type="string"  required="false" default="" hint="Timeout in minutes. If timeout = 0 then object never times out. If timeout is blank, then timeout will be inherited from framework.">
-		<cfargument name="LastAccessTimeout"	type="string"  required="false" default="" hint="Timeout in minutes. If timeout is blank, then timeout will be inherited from framework.">
+		<cfargument name="objectKey" 			type="any"  required="true">
+		<cfargument name="MyObject"				type="any" 	required="true">
+		<cfargument name="Timeout"				type="any"  required="false" default="" hint="Timeout in minutes. If timeout = 0 then object never times out. If timeout is blank, then timeout will be inherited from framework.">
+		<cfargument name="LastAccessTimeout"	type="any"  required="false" default="" hint="Timeout in minutes. If timeout is blank, then timeout will be inherited from framework.">
 		<!--- ************************************************************* --->
 		<cfscript>
 		var MetaData = structnew();
