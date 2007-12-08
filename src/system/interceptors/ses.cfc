@@ -29,7 +29,7 @@ Description :
 			
 			/* Verify the properties */
 			if( not propertyExists('configFile') ){
-				throw('The configFile property has not been defined. Please define it.','','interceptors.ses.configFilePropertyNotDefined');
+				throw('The configFile property has not been defined. Please define it.','','interceptors.ses.invalidPropertyException');
 			}
 			
 			/* Setup the config Path */
@@ -200,6 +200,7 @@ Description :
 		<cfset var vali = "" />
 		<cfset var requestString = arguments.action />
 		<cfset var routeParams = arrayNew(1) />
+		<cfset var routeParamsLength = 0>
 		<cfset var thisRoute = structNew() />
 		<cfset var thisPattern = "" />
 		<cfset var match = structNew() />
@@ -210,6 +211,7 @@ Description :
 		<cfset var i = "" />
 		<cfset var rc = event.getCollection()>
 		<cfset var _courses = get_courses()>
+		<cfset var _coursesLength = ArrayLen(_courses)>
 		
 		<!--- fix URL variables (IIS only) --->
 		<cfif requestString CONTAINS "?">
@@ -231,7 +233,7 @@ Description :
 		
 		<!--- Compare route to URL --->
 		<!--- For each route in config --->
-		<cfloop from="1" to="#arrayLen(_courses)#" index="i">
+		<cfloop from="1" to="#_coursesLength#" index="i">
 			<cfset arrayClear(routeParams) />
 			<cfset thisRoute = _courses[i] />
 			
@@ -257,8 +259,10 @@ Description :
 			</cfif>
 			
 		</cfloop>
+		
 		<!--- Populate the params structure with the proper parts of the URL --->
-		<cfloop from="1" to="#arrayLen(routeParams)#" index="i">
+		<cfset routeParamsLength = arrayLen(routeParams)>
+		<cfloop from="1" to="#routeParamsLength#" index="i">
 			<cfset "params.#routeParams[i]#" = mid(requestString,match.pos[i+1],match.len[i+1]) />
 		</cfloop>
 				
