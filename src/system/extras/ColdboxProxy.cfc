@@ -25,7 +25,7 @@ Description :
 			
 			//Verify the coldbox app is ok, else throw
 			if ( verifyColdBox() ){
-				cbController = application.cbController;
+				cbController = getController();
 			}
 			
 			try{
@@ -91,7 +91,7 @@ Description :
 			
 			//Verify the coldbox app is ok, else throw
 			if ( verifyColdBox() ){
-				cbController = application.cbController;
+				cbController = getController();
 			}
 			
 			//emded contents
@@ -121,6 +121,13 @@ Description :
 		}
 		else
 			return true;
+		</cfscript>
+	</cffunction>
+	
+	<!--- Get the ColdBox Controller. --->
+	<cffunction name="getController" output="false" access="private" returntype="any" hint="Get the controller from application scope.">
+		<cfscript>
+			return application.cbController;
 		</cfscript>
 	</cffunction>
 
