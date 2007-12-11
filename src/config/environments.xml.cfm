@@ -20,6 +20,7 @@
 		-->		
 
 		<Setting name="TierControlFired" value="TRUE" />
+		<Setting name="MyBaseURL" value="cf8.jfetmac" />
 	</environment>
 	
 	<!-- give an environment a name and a comma delimmited list of url snippets to match -->

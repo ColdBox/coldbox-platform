@@ -42,6 +42,7 @@
 	<YourSettings>
 		<Setting name="MyArray"  value="[1,2,3,4,5,6]"/>
 		<Setting name="MyStruct" value="{ name: 'luis majano', email: 'info@email.com', active= true }"/>
+		<Setting name="MyBaseURL"  value="jfetmac" />
 	</YourSettings>
 
 	<!--Optional,if blank it will use the CFMX administrator settings.-->
@@ -96,16 +97,17 @@
 	
 	<Interceptors throwOnInvalidStates="true">
 		<CustomInterceptionPoints>onLog</CustomInterceptionPoints>
+		<Interceptor class="coldbox.system.interceptors.environmentControl">
+			<Property name="configFile">config/environments.xml.cfm</Property>
+			<Property name="fireOnInit">true</Property>
+		</Interceptor>
 		<Interceptor class="coldbox.interceptors.executionTracer">
 			<Property name="Simple">Luis</Property>
 			<Property name="Complex">[1,2,3,4,5]</Property>
-		</Interceptor>
+		</Interceptor>		
 		<Interceptor class="coldbox.system.interceptors.ses">
 			<Property name="configFile">config/routes.cfm</Property>
-		</Interceptor>
-		<Interceptor class="coldbox.system.interceptors.environmentControl">
-			<Property name="configFile">config/environments.xml.cfm</Property>
-		</Interceptor>
+		</Interceptor>		
 	</Interceptors>
 
 </Config>

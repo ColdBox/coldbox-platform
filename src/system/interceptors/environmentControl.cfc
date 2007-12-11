@@ -51,6 +51,18 @@ Description :
 			}
 			//Verified, set it
 			setConfigFile(configFile);			
+			
+			//Verify the fireOnInit flag
+			if( not propertyExists('fireOnInit') ){
+				setProperty('fireOnInit',false);
+			}
+			if( not isBoolean(getProperty('fireOnInit')) ){
+				setProperty('fireOnInit',false);
+			}
+			//Check if we need to fire the interception at configuration
+			if( getProperty('fireOnInit') ){
+				parseAndSet();
+			}
 		</cfscript>
 	</cffunction>
 
@@ -60,6 +72,25 @@ Description :
 		<!--- *********************************************************************** --->
 		<cfargument name="event" 	required="true" type="coldbox.system.beans.requestContext" hint="The event object.">
 		<cfargument name="interceptData" required="true" type="struct" hint="A structure containing intercepted information. NONE BY DEFAULT HERE">
+		<!--- *********************************************************************** --->
+		<cfscript>
+			parseAndSet();	
+		</cfscript>
+	</cffunction>
+	
+<!------------------------------------------- ACCESSOR/MUTATORS ------------------------------------------->	 
+
+	<cffunction name="getconfigFile" access="public" returntype="string" output="false">
+		<cfreturn instance.configFile>
+	</cffunction>
+	<cffunction name="setconfigFile" access="public" returntype="void" output="false">
+		<cfargument name="configFile" type="string" required="true">
+		<cfset instance.configFile = arguments.configFile>
+	</cffunction>
+	
+<!------------------------------------------- PRIVATE ------------------------------------------->	 
+	
+	<cffunction name="parseAndSet" output="false" access="private" returntype="void" hint="ENVIRONMENT control the settings">
 		<!--- *********************************************************************** --->
 		<cfscript>
 			var environmentsArray = ArrayNew(1);
@@ -100,17 +131,4 @@ Description :
 			}	
 		</cfscript>
 	</cffunction>
-
-<!------------------------------------------- ACCESSOR/MUTATORS ------------------------------------------->	 
-
-	<cffunction name="getconfigFile" access="public" returntype="string" output="false">
-		<cfreturn instance.configFile>
-	</cffunction>
-	<cffunction name="setconfigFile" access="public" returntype="void" output="false">
-		<cfargument name="configFile" type="string" required="true">
-		<cfset instance.configFile = arguments.configFile>
-	</cffunction>
-	
-<!------------------------------------------- PRIVATE ------------------------------------------->	 
-
 </cfcomponent>
