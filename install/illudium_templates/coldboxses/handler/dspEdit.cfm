@@ -6,7 +6,7 @@
 		var oService = getPlugin("ioc").getBean("#root.bean.xmlAttributes.name#Service");
 		
 		//set the exit handlers
-		rc.xehSave = "#root.bean.xmlAttributes.name#.doSave";
+		rc.xehSave = "#root.bean.xmlAttributes.name#/doSave";
 		rc.xehList = "#root.bean.xmlAttributes.name#/list";
 		
 		//Get #root.bean.xmlAttributes.name# bean with/without ID.

@@ -30,8 +30,7 @@
 	</div>
 
 	<div style="margin-top:50px;clear:both" align="left">
-	<form name="delform" id="delform" action="index.cfm" method="post">
-		<input type="hidden" name="event" value="users.doDelete">
+	<form name="delform" id="delform" action="#getSetting('sesBaseURL')#/users/doDelete" method="post">
 		<table width="100%" cellpadding="5" cellspacing="1" style="border:1px solid ##cccccc;font-size:11px">
 			<tr style="color:white;background:##004080;font-weight:bold;text-align:center">
 				<td width="20">&nbsp;</td>

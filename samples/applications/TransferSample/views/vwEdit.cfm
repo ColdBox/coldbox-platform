@@ -30,8 +30,7 @@
 	</div>
 
 	<div style="margin-top:50px;clear:both" align="left">
-		<form name="addform" id="addform" action="index.cfm" method="post">
-		<input type="hidden" name="event" value="users.doUpdate">
+		<form name="addform" id="addform" action="#getSetting('sesBaseURL')#/users/doUpdate" method="post">
 		<input type="hidden" name="id" value="#rc.oUser.getID()#">
 		<table width="100%" cellpadding="5" cellspacing="1" style="border:1px solid ##cccccc;">
 
@@ -46,17 +45,17 @@
 
 			<tr>
 				<td width="20" align="right" bgcolor="##eaeaea"><strong>First Name:</strong></td>
-				<td width="100"><input type="text" name="fname" id="fname" size="20" value="#rc.oUser.getfname()#"></td>
+				<td width="100"><input type="text" name="fname" id="fname" size="50" value="#rc.oUser.getfname()#"></td>
 			</tr>
 
 			<tr>
 				<td width="20"  align="right" bgcolor="##eaeaea"><strong>Last Name:</strong></td>
-				<td width="100"><input type="text" name="lname" id="lname" size="20" value="#rc.oUser.getlname()#"></td>
+				<td width="100"><input type="text" name="lname" id="lname" size="50" value="#rc.oUser.getlname()#"></td>
 			</tr>
 
 			<tr>
 				<td width="20"  align="right" bgcolor="##eaeaea"><strong>Email:</strong></td>
-				<td width="100"><input type="text" name="email" id="email" size="20" value="#rc.oUser.getemail()#"></td>
+				<td width="100"><input type="text" name="email" id="email" size="50" value="#rc.oUser.getemail()#"></td>
 			</tr>
 		</table>
 

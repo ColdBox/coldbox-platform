@@ -4,7 +4,7 @@
 
 <%cfoutput%>
 <div>
-[<a href="index.cfm/%rc.xehEditor%">Add New #root.bean.xmlAttributes.name#</a>]
+[<a href="%getSetting('sesBaseURL')%/%rc.xehEditor%">Add New #root.bean.xmlAttributes.name#</a>]
 </div>
 <br/><br/>
 %getPlugin("messagebox").renderit()%
@@ -14,10 +14,10 @@
 	<%cfoutput%>
 	<tr>
 		<th><%cfif rc.sortBy eq '#primaryKey#'%><%cfif rc.sortOrder eq "asc"%>&%%8249;<%cfelse%>&%%8250;<%/cfif%><%/cfif%>
-			<a href="index.cfm?event=%event.getCurrentEvent()%&sortBy=#primaryKey#&sortOrder=%rc.sortOrder%">#primaryKey#</a></th>
+			<a href="%rc.xehList%?sortBy=#primaryKey#&sortOrder=%rc.sortOrder%">#primaryKey#</a></th>
 		<cfloop from="1" to="#arrayLen(root.bean.dbtable.xmlChildren)#" index="i"><cfif root.bean.dbtable.xmlChildren[i].xmlAttributes.name neq primaryKey>
 		<th><%cfif rc.sortBy eq '#root.bean.dbtable.xmlChildren[i].xmlAttributes.name#'%><%cfif rc.sortOrder eq "asc"%>&%%8249;<%cfelse%>&%%8250;<%/cfif%><%/cfif%>
-			<a href="index.cfm?event=%event.getCurrentEvent()%&sortBy=#root.bean.dbtable.xmlChildren[i].xmlAttributes.name#&sortOrder=%rc.sortOrder%">#root.bean.dbtable.xmlChildren[i].xmlAttributes.name#</a></th></cfif></cfloop>
+			<a href="%rc.xehList%?sortBy=#root.bean.dbtable.xmlChildren[i].xmlAttributes.name#&sortOrder=%rc.sortOrder%">#root.bean.dbtable.xmlChildren[i].xmlAttributes.name#</a></th></cfif></cfloop>
 		<th>actions</th>
 	</tr>
 	<%/cfoutput%>
@@ -27,7 +27,7 @@
 		<td>%rc.q#root.bean.xmlAttributes.name#.#primaryKey#[currentrow]%</td>
 		<cfloop from="1" to="#arrayLen(root.bean.dbtable.xmlChildren)#" index="i"><cfif root.bean.dbtable.xmlChildren[i].xmlAttributes.name neq primaryKey>	
 		<td><cfif root.bean.dbtable.xmlChildren[i].xmlAttributes.type eq "date">%dateFormat(#root.bean.dbtable.xmlChildren[i].xmlAttributes.name#,"MM-DD-YYYY")%<cfelseif root.bean.dbtable.xmlChildren[i].xmlAttributes.type eq "boolean">%yesnoformat(#root.bean.dbtable.xmlChildren[i].xmlAttributes.name#)%<cfelse>%#root.bean.dbtable.xmlChildren[i].xmlAttributes.name#%</cfif></td></cfif></cfloop>
-		<td><a href="index.cfm/%rc.xehEditor%?#primaryKey#=%#primaryKey#%">Edit </a> | <a href="index.cfm/%rc.xehDelete%?#primaryKey#=%#primaryKey#%">Delete</a></td>
+		<td><a href="%getSetting('sesBaseURL')%/%rc.xehEditor%?#primaryKey#=%#primaryKey#%">Edit </a> | <a href="%getSetting('sesBaseURL')%/%rc.xehDelete%?#primaryKey#=%#primaryKey#%">Delete</a></td>
 		
 	</tr>
 	<%/cfoutput%>
