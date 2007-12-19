@@ -1,0 +1,49 @@
+This is Oscar Arevalo's & Luis Majano's ColdBox RSS Reader.
+
+Requirements
+- ColdBox Framework
+- MySQL, MSSQL
+- ColdSpring Framework
+
+
+Installation Procedures.
+1 MySQL) Open the coldboxreader.sql file and import it in to your MySQL schema. You can use the default
+   schema, coldboxreader, or you can import it to wherever you want. Just make sure your datasource
+   element in your config/config.xml.cfm points to the correct schema. Open the config/config.xml.cfm and
+  change the dbtype element to "MYSQL".
+
+1 MSSQL) Open the mssql_dbscript.sql to create the coldboxreader database and structure. Once the structure
+  has been created, then run the mssql_datascript.sql to insert the data. Open the config/config.xml.cfm and
+  change the dbtype element to "MSSQL".
+
+2) Create the datasource in your coldfusion administrator as coldboxreader, with your login and password.
+   You can rename the datasource to whatever you want as long as you change it in the config/config.xml.cfm
+   You can also put your login and password there.
+3) Open the application and enjoy. The default user created for you has the following login information:
+
+User: admin
+Password: coldbox
+
+You cannot change your passwords yet, so if you don't want that user, then delete him and create yours.
+All passwords are saved as hash strings using default coldfusion hash().
+
+Please visit Oscar's Home Portals Project and support it:
+http://www.homeportals.net
+Or my Wishlist at:
+http://www.amazon.com/o/registry/7DPYG3RZG3AF
+or Donate via 
+http://www.luismajano.com/projects/coldbox
+
+
+Version 1.1.0 (sep-10-2006)
+- Updated all the files
+- New coldboxService cfc as a daoFactory
+- New icons and new look
+- Bug Fixes and additions.
+
+Version 2.0.0 (feb-20-2007)
+- Moved to service objects architecture.
+- Usage of ColdSpring
+- Move of ColdBox 2.0.0
+- Added Update Profile
+- Added the My Feeds button.

@@ -1,0 +1,356 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF xmlns="http://purl.org/rss/1.0/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+		
+		
+		
+	<channel rdf:about="http://corfield.org">
+	<title>An Architect's View - ColdFusion, Software Design, Frameworks and more...</title>
+	<description>Thoughts from the Director of Architecture in IT at Macromedia on: ColdFusion MX, Rich Internet Applications, software design... and neat CFMX hacks!</description>
+	<link>http://corfield.org</link>
+	
+	<items>
+		<rdf:Seq>
+			
+			<rdf:li rdf:resource="http://corfield.org/entry/AOL_Google_and_Yahoo_say_Yes_Microsoft_says_No"/>
+			
+			<rdf:li rdf:resource="http://corfield.org/entry/BACFUG_21st_February__Extending_the_Language_of_Fusebox"/>
+			
+			<rdf:li rdf:resource="http://corfield.org/entry/Listen_to_me_on_cfframeworks"/>
+			
+			<rdf:li rdf:resource="http://corfield.org/entry/Payperuse_Community_Support"/>
+			
+			<rdf:li rdf:resource="http://corfield.org/entry/IMified"/>
+			
+			<rdf:li rdf:resource="http://corfield.org/entry/Want_to_help_redesign_fuseboxorg"/>
+			
+			<rdf:li rdf:resource="http://corfield.org/entry/Fusebox_5_Core_Architecture"/>
+			
+			<rdf:li rdf:resource="http://corfield.org/entry/TransferFactoryProxy"/>
+			
+			<rdf:li rdf:resource="http://corfield.org/entry/Geting_Fusebox_from_Subversion"/>
+			
+			<rdf:li rdf:resource="http://corfield.org/entry/Mach_II_15"/>
+			
+			<rdf:li rdf:resource="http://corfield.org/entry/Leave_that_code_alone"/>
+			
+			<rdf:li rdf:resource="http://corfield.org/entry/Assertions_for_Fusebox_51"/>
+			
+			<rdf:li rdf:resource="http://corfield.org/entry/Fusebox_60__what_do_you_want"/>
+			
+			<rdf:li rdf:resource="http://corfield.org/entry/What_blogs_do_I_read"/>
+			
+			<rdf:li rdf:resource="http://corfield.org/entry/cfObjective__Register_Now"/>
+			
+		</rdf:Seq>
+	</items>
+	
+	</channel>
+		
+		
+		
+		
+		
+		
+  	<item rdf:about="http://corfield.org/entry/AOL_Google_and_Yahoo_say_Yes_Microsoft_says_No">
+	<title>AOL, Google and Yahoo say Yes, Microsoft says No</title>
+	<description>IMified is a great service - they just added the ability to have text reminders sent to your cell phone if you're not on IM - but &lt;a href="http://blog.imified.com/index.php/2007/02/14/msn-says-no-to-imified/"&gt;Microsoft won't allow them to have more than 1,000 people registered&lt;/a&gt;. AOL, Yahoo and Google have no problem with this - and AOL even contacted them proactively to help.
+
+There's an email address in that blog entry you can use to tell Microsoft what you think of this and you can also "Digg" the article to raise its profile on the web.</description>
+	<link>http://corfield.org/entry/AOL_Google_and_Yahoo_say_Yes_Microsoft_says_No</link>
+	<dc:creator>seancorfield</dc:creator>
+	<dc:date>2007-02-15T14:01:00-05:00</dc:date>
+	<dc:subject>coldfusion</dc:subject>
+	
+	</item>
+		
+	 	
+		
+		
+		
+  	<item rdf:about="http://corfield.org/entry/BACFUG_21st_February__Extending_the_Language_of_Fusebox">
+	<title>BACFUG 21st February - Extending the Language of Fusebox</title>
+	<description>I will be speaking at &lt;a href="http://www.bacfug.org/"&gt;BACFUG&lt;/a&gt; next Wednesday, 21st, with a re-run of my Frameworks Conference talk "Extending the Language of Fusebox".
+
+Please RSVP on the BACFUG site (&lt;s&gt;and it really is the &lt;strong&gt;February&lt;/strong&gt; meeting on &lt;strong&gt;Wed, Feb 21&lt;/strong&gt; despite the website claiming it's January!&lt;/s&gt; - Jennifer just fixed this).
+
+Here's Jennifer's announcement:
+&lt;blockquote&gt;
+Next week at BACFUG, Sean Corfield will be lecturing on Extending the
+language of Fusebox.
+
+We're used to the XML language of application frameworks being a
+static, fixed thing. If it doesn't let you do what you want, you're
+out of luck. Not so with Fusebox 5! This recent release lets you
+define your own verbs, which offers a much richer, more expressive way
+to build applications. This session will briefly walk you through the
+architecture of Fusebox and then dive into how to use third party
+custom lexicons as well as how to write your own language extensions.
+Enjoy the power of higher-level abstractions without the performance
+penalties they so often bring!
+
+Wednesday, Feb 21, 7pm&lt;br /&gt;
+601 Townsend St, SF
+
+RSVP at: http://www.bacfug.org&lt;br /&gt;
+We must give Adobe security a list of attendees based on our RSVP
+list, so please sign up early if you plan to go.
+
+Also, Ben Forta will be in town in April 24 to give a Scorpio
+pre-release lecture! Same time and location as usual. RSVP details are
+still being worked out.
+&lt;/blockquote&gt;</description>
+	<link>http://corfield.org/entry/BACFUG_21st_February__Extending_the_Language_of_Fusebox</link>
+	<dc:creator>seancorfield</dc:creator>
+	<dc:date>2007-02-14T19:25:00-05:00</dc:date>
+	<dc:subject>fusebox</dc:subject>
+	<dc:subject>coldfusion</dc:subject>
+	
+	</item>
+		
+	 	
+		
+		
+		
+  	<item rdf:about="http://corfield.org/entry/Listen_to_me_on_cfframeworks">
+	<title>Listen to me on cfframeworks!</title>
+	<description>Nick Tong and Kola Oyedeji just &lt;a href="http://www.cfframeworks.com/blog/index.cfm/2007/2/13/Sean-Corfield-on-Fusebox-and-Frameworks"&gt;published their interview with me about frameworks in general and Fusebox 5 in particular&lt;/a&gt;. It's just over an hour long - I talk a lot! - but I hope you find time to fit it into your podcast listening schedule and that you enjoy it.</description>
+	<link>http://corfield.org/entry/Listen_to_me_on_cfframeworks</link>
+	<dc:creator>seancorfield</dc:creator>
+	<dc:date>2007-02-14T18:28:00-05:00</dc:date>
+	<dc:subject>coldfusion</dc:subject>
+	<dc:subject>fusebox</dc:subject>
+	
+	</item>
+		
+	 	
+		
+		
+		
+  	<item rdf:about="http://corfield.org/entry/Payperuse_Community_Support">
+	<title>Pay-per-use Community Support</title>
+	<description>Charlie Arehart has just launched a &lt;a href="http://carehart.org/blog/client/index.cfm/2007/2/13/Charlie-Arehart-offers-new-perminute-phonebased-support-service"&gt;fascinating new approach to community support&lt;/a&gt;. He's a well-known, long-time and very, very helpful member of the ColdFusion community but, like all of us, his time is both limited and valuable. Now you can take advantage of his knowledge through a personal support line for $1.99 / minute.
+
+I'll be very interested to see how this works for folks (and for Charlie) since I've often had folks offer to pay me to help them with specific problems. I'm just too busy to take on paid work outside Adobe so I have to turn those offers down (although I never turn down an iTunes Gift Certificate as a token of gratitude for any of the &lt;strong&gt;free&lt;/strong&gt; help I give out on IM).</description>
+	<link>http://corfield.org/entry/Payperuse_Community_Support</link>
+	<dc:creator>seancorfield</dc:creator>
+	<dc:date>2007-02-14T16:52:00-05:00</dc:date>
+	<dc:subject>coldfusion</dc:subject>
+	
+	</item>
+		
+	 	
+		
+		
+		
+  	<item rdf:about="http://corfield.org/entry/IMified">
+	<title>IMified</title>
+	<description>I've always been a big fan of the event gateways in ColdFusion so I think this new service, &lt;a href="http://www.forta.com/blog/index.cfm/2007/2/12/ColdFusion-IM-Gateways-Power-IMified"&gt;mentioned on Ben Forta's blog&lt;/a&gt;, is extremely cool. IMified is a instant messenger interface onto a number of other services such as Google Calendar, Basecamp and a number of blogging services. It also has built in reminders, to-dos and notes. Very nice, very simple and very free.</description>
+	<link>http://corfield.org/entry/IMified</link>
+	<dc:creator>seancorfield</dc:creator>
+	<dc:date>2007-02-12T17:50:00-05:00</dc:date>
+	<dc:subject>coldfusion</dc:subject>
+	
+	</item>
+		
+	 	
+		
+		
+		
+  	<item rdf:about="http://corfield.org/entry/Want_to_help_redesign_fuseboxorg">
+	<title>Want to help redesign fusebox.org?</title>
+	<description>Sandy Clark has &lt;a href="http://shayna.com/index.cfm?fuseaction=blog.display_entry&amp;id=167"&gt;announced the fusebox.org website redesign contest&lt;/a&gt;. This is part of the ongoing work by Team Fusebox in moving Fusebox forward with your help!</description>
+	<link>http://corfield.org/entry/Want_to_help_redesign_fuseboxorg</link>
+	<dc:creator>seancorfield</dc:creator>
+	<dc:date>2007-02-09T13:38:00-05:00</dc:date>
+	<dc:subject>coldfusion</dc:subject>
+	<dc:subject>fusebox</dc:subject>
+	
+	</item>
+		
+	 	
+		
+		
+		
+  	<item rdf:about="http://corfield.org/entry/Fusebox_5_Core_Architecture">
+	<title>Fusebox 5 Core Architecture</title>
+	<description>As part of the ongoing process of documenting Fusebox and coordinating help from the community on moving Fusebox forward, I just added some notes about the &lt;a href="http://trac.fuseboxframework.org/fusebox/wiki/FuseboxCoreArchitecture"&gt;Fusebox core files architecture and compilation principles&lt;/a&gt; to the wiki.
+
+You can see &lt;a href="http://trac.fuseboxframework.org/fusebox/wiki/TeamFusebox"&gt;who's who on Team Fusebox&lt;/a&gt; and what &lt;a href="http://trac.fuseboxframework.org/fusebox/wiki/FuseboxCommunityCoordinatingHelp"&gt;everyone is responsible for&lt;/a&gt;.</description>
+	<link>http://corfield.org/entry/Fusebox_5_Core_Architecture</link>
+	<dc:creator>seancorfield</dc:creator>
+	<dc:date>2007-02-09T12:57:00-05:00</dc:date>
+	<dc:subject>coldfusion</dc:subject>
+	<dc:subject>fusebox</dc:subject>
+	
+	</item>
+		
+	 	
+		
+		
+		
+  	<item rdf:about="http://corfield.org/entry/TransferFactoryProxy">
+	<title>TransferFactoryProxy</title>
+	<description>Update: this proxy is not needed to have a single instance of the Transfer factory shared between multiple Model-Glue applications. You can simply have an alias tag in each application that references the single &lt;tt&gt;transferFactory&lt;/tt&gt; object in the parent factory:
+&lt;div class="code"&gt;&lt;FONT COLOR=GREEN&gt;&amp;lt;alias name=&lt;FONT COLOR=BLUE&gt;"transferFactory"&lt;/FONT&gt; alias=&lt;FONT COLOR=BLUE&gt;"ormService"&lt;/FONT&gt;/&amp;gt;&lt;/FONT&gt;&lt;/div&gt;
+So why did I think this wouldn't work?
+
+I created a test case for parent / child bean factories and aliases, I put nothing but aliases in the child factories. ColdSpring couldn't find the aliases. I deduced (wrongly) that ColdSpring did not allow aliases in child factories to redefine beans in the parent factory.
+
+Silly me. Turns out that my test case uncovered a bug in ColdSpring: aliases only work if the factory contains at least one real bean. At least, that's what my test cases seem to show. I'm going to run this past the ColdSpring crew for confirmation.
+&lt;hr /&gt;
+Want to share a single instance of Transfer between multiple Model-Glue applications?
+
+&lt;em&gt;Original code / post edited out.&lt;/em&gt;
+
+The definition of &lt;tt&gt;transferFactory&lt;/tt&gt; is in your parent bean factory which you tell Model-Glue about by putting this line in your &lt;tt&gt;index.cfm&lt;/tt&gt;:
+&lt;div class="code"&gt;&lt;FONT COLOR=MAROON&gt;&amp;lt;cfset ModelGlue_PARENT_BEAN_FACTORY = application.cs /&amp;gt;&lt;/FONT&gt;&lt;/div&gt;
+(assuming your overall &lt;tt&gt;Application.cfc&lt;/tt&gt; is creating &lt;tt&gt;application.cs&lt;/tt&gt;).
+
+All the Model-Glue apps share that &lt;tt&gt;Application.cfc&lt;/tt&gt; and so they all have the same parent bean factory which contains the single instance of the Transfer factory object. Each Model-Glue app has &lt;s&gt;its own proxy object that delegates&lt;/s&gt; an alias that refers to the single factory object.</description>
+	<link>http://corfield.org/entry/TransferFactoryProxy</link>
+	<dc:creator>seancorfield</dc:creator>
+	<dc:date>2007-02-08T23:59:00-05:00</dc:date>
+	<dc:subject>orm</dc:subject>
+	<dc:subject>modelglue</dc:subject>
+	<dc:subject>coldspring</dc:subject>
+	<dc:subject>coldfusion</dc:subject>
+	
+	</item>
+		
+	 	
+		
+		
+		
+  	<item rdf:about="http://corfield.org/entry/Geting_Fusebox_from_Subversion">
+	<title>Getting Fusebox from Subversion</title>
+	<description>Simeon Bateman just put together a &lt;a href="http://www.youtube.com/watch?v=jupLPUpLmw4"&gt;quick video tutorial&lt;/a&gt; showing how to get the latest Fusebox source code from the Subversion repository using Subclipse in Eclipse/CFEclipse. Thanx Simeon!
+
+You can check out the stable Bleeding Edge Release (BER) under /framework/trunk which represents Fusebox 5.1 with some recent additions that I &lt;a href="http://corfield.org/entry/Assertions_for_Fusebox_51"&gt;mentioned the other day&lt;/a&gt;. Or you can be really adventurous and check out the (unstable) BER under /framework/branches/dev which represents experimental code that will become Fusebox 6.
+
+You can also check out the stable BER for Fusebox 5.0 for PHP (under /phpframework/trunk).</description>
+	<link>http://corfield.org/entry/Geting_Fusebox_from_Subversion</link>
+	<dc:creator>seancorfield</dc:creator>
+	<dc:date>2007-02-08T14:37:00-05:00</dc:date>
+	<dc:subject>fusebox</dc:subject>
+	<dc:subject>coldfusion</dc:subject>
+	
+	</item>
+		
+	 	
+		
+		
+		
+  	<item rdf:about="http://corfield.org/entry/Mach_II_15">
+	<title>Mach II 1.5</title>
+	<description>I'm really pleased to see some more ambitious movement on the Mach II project. Peter Farrell has posted about the &lt;a href="http://blog.maestropublishing.com/index.cfm?mode=entry&amp;amp;entry=95CA92EE-AA83-72A1-7446809B52E0342D"&gt;new complex properties&lt;/a&gt; that will be supported in Mach II 1.5. It's a very nice addition. It simplifies a lot of the plugin configuration code that's out there and makes the property manager a first class citizen - something that Ben Edwards and I agonized over for months during the early development of Mach II.</description>
+	<link>http://corfield.org/entry/Mach_II_15</link>
+	<dc:creator>seancorfield</dc:creator>
+	<dc:date>2007-02-07T00:45:00-05:00</dc:date>
+	<dc:subject>coldfusion</dc:subject>
+	<dc:subject>machii</dc:subject>
+	
+	</item>
+		
+	 	
+		
+		
+		
+  	<item rdf:about="http://corfield.org/entry/Leave_that_code_alone">
+	<title>Leave that code alone!</title>
+	<description>Brian Rinaldi has a great post on &lt;a href="http://www.remotesynthesis.com/blog/index.cfm/2007/2/6/On-Modifying-Open-Source-Projects"&gt;why it's usually a &lt;strong&gt;bad&lt;/strong&gt; idea to modify open source frameworks&lt;/a&gt;. He gives some very solid reasons why you should treat a framework as a black box instead of changing how it works. There's an interesting stream of comments too. I think the one thing that resonates most with me is not part of the original post but in one of Brian's own comments in the ensuring thread:
+&lt;blockquote&gt;
+I think there is a presumption by some people that open-source is open &lt;strong&gt;so that&lt;/strong&gt; you can modify the code. I think in many cases it is as much or more about transparency and soliciting input from the broader user community than it is about empowering users to modify the code.
+&lt;/blockquote&gt;
+Open source is really about culture and mindset and these two sentences sum up, for me, the core misunderstanding that many people have about the process.</description>
+	<link>http://corfield.org/entry/Leave_that_code_alone</link>
+	<dc:creator>seancorfield</dc:creator>
+	<dc:date>2007-02-06T22:54:00-05:00</dc:date>
+	<dc:subject>coldfusion</dc:subject>
+	<dc:subject>oss</dc:subject>
+	
+	</item>
+		
+	 	
+		
+		
+		
+  	<item rdf:about="http://corfield.org/entry/Assertions_for_Fusebox_51">
+	<title>Assertions for Fusebox 5.1</title>
+	<description>I just committed the assertions plugin I wrote en route to the Frameworks Conference. You can &lt;a href="http://trac.fuseboxframework.org/fusebox/browser/framework/trunk/extensions/plugins/assertions.cfm"&gt;view the source in the repository&lt;/a&gt; or download it via SVN.
+
+The code needs some cleanup but I figured it might be nice to get this out in front of people to get some feedback. This will eventually be the solution to &lt;a href="http://trac.fuseboxframework.org/fusebox/ticket/25"&gt;ticket 25&lt;/a&gt; as part of Fusebox 6.
+
+Also in the repository are the &lt;a href="http://trac.fuseboxframework.org/fusebox/browser/framework/trunk/extensions/lexicon/orm"&gt;Reactor and Transfer ORM lexicons&lt;/a&gt; that I showed at the Frameworks Conference. Again, these need code cleanup and enhancement but they should be a good starting point for people wanting to use either ORM library with Fusebox. A &lt;a href="http://trac.fuseboxframework.org/fusebox/browser/framework/trunk/extensions/lexicon/reactor"&gt;more comprehensive Reactor lexicon&lt;/a&gt; is also available.</description>
+	<link>http://corfield.org/entry/Assertions_for_Fusebox_51</link>
+	<dc:creator>seancorfield</dc:creator>
+	<dc:date>2007-02-05T01:00:00-05:00</dc:date>
+	<dc:subject>coldfusion</dc:subject>
+	<dc:subject>fusebox</dc:subject>
+	<dc:subject>orm</dc:subject>
+	
+	</item>
+		
+	 	
+		
+		
+		
+  	<item rdf:about="http://corfield.org/entry/Fusebox_60__what_do_you_want">
+	<title>Fusebox 6.0 - what do you want?</title>
+	<description>Yes, we've only just released Fusebox 5.1 but we're already looking into the future and we want your feedback!
+
+Fusebox is a very stable, mature application framework. The basic (XML) syntax hasn't changed much since Fusebox 4 was introduced almost four years ago and pretty much every single Fusebox 4.0 and 4.1 application still runs unchanged on Fusebox 5.0 and Fusebox 5.1.
+
+Backward compatibility is extremely important to protect everyone's investment in Fusebox so you can be assured that Fusebox 6 will also run all those existing applications.
+
+So what can we do to make Fusebox a better framework?
+
+We've heard a lot of calls to keep it simple (or even make it simpler) but we also hear requests to add new features. The recent Fusebox survey provided a lot of useful information and we're still analyzing that input. It's a fine line to tread to keep the framework true to it's vision while we try to address all of that input!
+
+The &lt;a href="http://trac.fuseboxframework.org/fusebox/wiki/FuseboxFrameworkVision"&gt;Fusebox framework vision&lt;/a&gt; (working draft).
+
+The &lt;a href="http://trac.fuseboxframework.org/fusebox/milestone/Fusebox%206.0"&gt;two themes for Fusebox 6&lt;/a&gt; are:
+&lt;ol&gt;
+&lt;li&gt;Simplify. Remove barriers. Make it easier for newbies. Make building applications faster by favoring convention over configuration.&lt;/li&gt;
+&lt;li&gt;Extend through extensibility. Provide new functionality outside the core. Add plugins, lexicons, even standardized circuits.&lt;/li&gt;
+&lt;/ol&gt;</description>
+	<link>http://corfield.org/entry/Fusebox_60__what_do_you_want</link>
+	<dc:creator>seancorfield</dc:creator>
+	<dc:date>2007-02-04T22:22:00-05:00</dc:date>
+	<dc:subject>coldfusion</dc:subject>
+	<dc:subject>fusebox</dc:subject>
+	
+	</item>
+		
+	 	
+		
+		
+		
+  	<item rdf:about="http://corfield.org/entry/What_blogs_do_I_read">
+	<title>What blogs do I read?</title>
+	<description>I've been asked several times "what blogs do you read?" so I figured I'd &lt;a href="http://corfield.org/articles/MySubscriptions.opml"&gt;post my feed list as an OPML file&lt;/a&gt; for folks to have a look at. Provided as-is, no warranty etc etc. Use at your own risk. There are some non-technical blogs on there. You might not like their content. You have been warned.</description>
+	<link>http://corfield.org/entry/What_blogs_do_I_read</link>
+	<dc:creator>seancorfield</dc:creator>
+	<dc:date>2007-02-04T15:23:00-05:00</dc:date>
+	<dc:subject>blogging</dc:subject>
+	
+	</item>
+		
+	 	
+		
+		
+		
+  	<item rdf:about="http://corfield.org/entry/cfObjective__Register_Now">
+	<title>cf.Objective() - Register Now!</title>
+	<description>The current &lt;a href="http://www.cfobjective.com/conference/index.cfm?event=page.speakers"&gt;list of speakers&lt;/a&gt; has been posted and you can now &lt;a href="http://www.cfobjective.com/conference/index.cfm?event=page.register"&gt;register for cf.Objective() 2007&lt;/a&gt;. The 3 day early bird price is just $395 - only $20 more than the 2 day price. The early bird price will expire in the middle of March. The event kicks off with a party on Thursday night and the sessions run Friday thru Sunday with Sunday being (mostly) repeats of the most popular sessions from Friday and Saturday.
+
+Adobe is the platinum sponsor for this conference and it will be &lt;strong&gt;the&lt;/strong&gt; place to get early Scorpio information this year!</description>
+	<link>http://corfield.org/entry/cfObjective__Register_Now</link>
+	<dc:creator>seancorfield</dc:creator>
+	<dc:date>2007-02-04T04:23:00-05:00</dc:date>
+	<dc:subject>cfobjective</dc:subject>
+	<dc:subject>coldfusion</dc:subject>
+	
+	</item>
+		
+	 	
+		</rdf:RDF>
