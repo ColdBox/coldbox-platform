@@ -1,0 +1,1 @@
+<cfapplication name="Coldbox Second Hello World" 				    sessionmanagement="true" 				    setclientcookies="true">

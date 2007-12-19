@@ -1,0 +1,1 @@
+<cfset rc = Event.getCollection()><cfoutput><h3>Form Bean Submitted:</h3><p>Results of the populateBean method from the bean factory plugin:</p><p>First Name	: #rc.FormBean.getfname()#<br>Last Name 	: #rc.FormBean.getlname()#<br>Email 		: #rc.FormBean.getEmail()#<br>Init Date 	: #rc.FormBean.getinitDate()#<br></p></cfoutput>
