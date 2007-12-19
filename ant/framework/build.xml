@@ -1,0 +1,69 @@
+<?xml version="1.0"?>
+<!-- ====================================================================== 
+     Mar 18, 2007 1:30:20 AM                                                        
+
+     coldbox.deploy    
+     ColdBox Deployment
+                   
+     lmajano                                                                
+     ====================================================================== -->
+<project name="coldbox.newbuild" default="build" basedir="../../">
+
+	<!--Build Properties-->
+	<property name="dir.build" 			value="/Users/lmajano/Documents/MyDocs/My Programs/exports/coldbox" />
+	<property name="dir.dashboard"	    value="/Users/lmajano/Documents/MyDevelopment/applications/dashboard" />
+	<property name="dir.wallpapers"		value="/Users/lmajano/Documents/MyDocs/My Programs/OrtusSolutions/ColdBox/workbench/wallpapers/" />
+	
+	<!--External Ant Tasks-->
+	<property name="ant.compilechecks"  value="ant/framework/ant_compile.xml" />
+	<property name="ant.dashboard"      value="${dir.dashboard}/build.xml" />
+	
+	<!--BUild-->
+	<target name="build" description="Build a new coldbox distribution">
+      	
+		<!--Need Compile Checks First -->
+		<ant antfile="${ant.compilechecks}" target="compile.checks" />
+			
+      	<copy todir="${dir.build}/system">
+        	<fileset dir="src/system">
+        	</fileset>
+        </copy>
+		
+		<copy todir="${dir.build}/samples">
+        	<fileset dir="samples">
+        	</fileset>
+        </copy>
+		
+		<copy todir="${dir.build}/install">
+        	<fileset dir="install" />
+        </copy>
+		
+		<copy todir="${dir.build}/ApplicationTemplate">
+        	<fileset dir="ApplicationTemplate" />
+        </copy>
+		
+		<!--Copy text files to install folder-->
+		<copy todir="${dir.build}/install">
+			<fileset file="src/system/config/license.txt" />
+			<fileset file="src/system/config/readme.txt" />						
+		</copy>
+		
+		<!--Copy Documents-->
+		<copy todir="${dir.build}/install/SchemaDocs">
+			<fileset dir="documents/SchemaDocs"/>
+		</copy>
+		
+		<!--Copy Wallpapers-->
+		<copy todir="${dir.build}/install/wallpapers">
+			<fileset dir="${dir.wallpapers}"/>
+		</copy>
+				
+		<!--Remove Dist-->
+		<delete dir="dist" />
+		
+		<!--Compile Dashboard-->
+		<ant antfile="${ant.dashboard}" target="deploy.to.export" dir="${dir.dashboard}" />
+		
+    </target>
+
+</project>
