@@ -90,6 +90,9 @@ Description :
 			
 			/* Route to destination */
 			routeToDestination(acourse,event);
+			
+			/* Execute Cache Test now that routing has been done */
+			getController().getRequestService().EventCachingTest(event);
 		</cfscript>
 	</cffunction>
 	

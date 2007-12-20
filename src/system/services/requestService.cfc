@@ -34,7 +34,6 @@ Modification History:
 			var DebugPassword = controller.getSetting("debugPassword");
 			var EventName = controller.getSetting("EventName");
 			var oSessionStorage = controller.getPlugin("sessionstorage");
-			var eventCacheKey = "";
 					
 			//Object Caching Garbage Collector
 			controller.getColdboxOCM().reap();
@@ -63,6 +62,21 @@ Modification History:
 				Context.setValue(EventName, getToken(Context.getValue(EventName),2,","));
 			
 			/* Are we using event caching? */
+			EventCachingTest(Context);
+			
+			//Set Request Context in storage
+			setContext(Context);
+			
+			//Return Context
+			return getContext();
+		</cfscript>
+	</cffunction>
+
+	<cffunction name="EventCachingTest" access="public" output="false" returntype="void" hint="Tests if the incoming context is an event cache">
+		<cfargument name="context" required="true" type="any" hint="">
+		<cfscript>
+			var eventCacheKey = "";
+			/* Are we using event caching? */
 			if ( controller.getSetting("EventCaching") ){	
 				
 				/* Check for Event Cache Purge */
@@ -74,7 +88,8 @@ Modification History:
 				else{
 					/* Setup the cache key */
 					eventCacheKey = controller.getHandlerService().EVENT_CACHEKEY_PREFIX & Context.getCurrentEvent() & "-" & controller.getColdboxOCM().getEventURLFacade().getUniqueHash(Context.getCurrentEvent());
-					
+					/* Cleanup the cache key, just in case. */
+					Context.removeValue('cbox_eventCacheableEntry');
 					/* Determine if this event has been cached */
 					if ( controller.getColdboxOCM().lookup(eventCacheKey) ){
 						/* Event has been found, flag it so we can render it */
@@ -82,15 +97,9 @@ Modification History:
 					}
 				}//end else no purging
 			}//If using event caching.
-			
-			//Set Request Context in storage
-			setContext(Context);
-			
-			//Return Context
-			return getContext();
 		</cfscript>
 	</cffunction>
-
+	
 	<cffunction name="getContext" access="public" output="false" returntype="any" hint="Get the Request Context">
 		<cfscript>
 			if ( contextExists() )
