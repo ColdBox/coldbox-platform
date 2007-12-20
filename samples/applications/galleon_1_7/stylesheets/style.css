@@ -1,0 +1,170 @@
+.tMain {
+	background-color: #66ccff; 
+}
+
+.tHeader {
+	background-color: #6699ff;
+	
+}
+
+td {
+	font-family: Verdana, Arial;
+	font-size: 11px;
+}
+
+.linktext, .linktext a {
+	font-size: 9px;
+	color: #235577;
+}
+
+.adminAppTitle {
+	font-family: Verdana, Arial;
+	font-weight: bold;
+	font-size: 18px;
+	margin-bottom: 5px;
+}
+
+.adminLeftMenu, .adminLeftMenu a {
+	background-color: #66ccff;
+	color: #000000;
+	font-family: Verdana, Arial;
+	font-size: 12px;
+	
+}
+
+.adminPageHeader {
+	font-family: Verdana, Arial;
+	font-weight: bold;
+	font-size: 16px;
+}
+
+.adminListHeader {
+	background-color: #6699ff;
+	font-weight: bold;
+}
+
+.adminListHeaderText, .adminListHeaderText a {
+	color: black;
+}
+
+.adminListTable, .adminListTable td {
+	border-style: solid;
+	border-width: 1px;
+}
+
+.adminList0 {
+	background-color: white;
+}
+
+.adminList1 {
+	background-color: #ffff99;
+}
+
+.topMenu {
+	font-family: Verdana;
+	font-size: 11px;
+	color: #000000;
+}
+
+.topMenu a, .footer a {
+	color: #235577;
+}
+
+.footer {
+	font-family: Verdana;
+	font-size: 10px;
+	color: #000000;
+}
+
+.tableDisplay {
+	background-color: #98acb4;;
+}
+
+.tableHeader {
+	background-color: #cdd9de;
+	font-family: Verdana;
+	font-weight: bold;
+	font-size: 11px;
+	color: #000000;
+}
+
+.tableSubHeader, .tableSubheader a {
+	background-color: #eff4f6;
+	font-family: Verdana;
+	font-weight: bold;
+	font-size: 10px;
+	color: #000000;
+}
+
+.tableRow0, .tableRow0 a {
+	background-color: #ffffff;
+	font-family: Verdana;
+	font-size: 11px;
+	color: #235577;
+}
+
+.tableRow1, .tableRow1 a {
+	background-color: #eff4f6;
+	font-family: Verdana;
+	font-size: 11px;
+	color: #235577;
+}
+
+.tableRowMain, .tableRowMain a {
+	background-color: #eff4f6;
+	font-family: Verdana;
+	font-size: 11px;
+	color: #000000;
+}
+
+.tableMessageCell {
+	background-color: #e0e8eb;
+}
+
+.tableMessageCellRight {
+	background-color: #ffffff;
+}
+
+.pageText {
+	font-family: Verdana;
+	font-size: 10px;
+	color: #000000;
+}
+
+.pageText a {
+	color: #d27010;
+}
+
+.formBox, .formDropDown, .formTextArea {
+	width: 250px;
+	font-family: Verdana;
+	font-size: 11px;
+}
+.siteName {
+	font-family: Verdana;
+	font-weight: bold;
+	font-size: 20px;
+}
+
+.siteName a {
+	text-decoration: none;
+	color: #235577;
+}
+
+.signature {
+	margin-top: 10px;
+	border-top: 1px dashed #999999;
+}
+
+.code {
+	font-family: courier,monospace;
+	font-size: .7em;
+	color: black;
+	border: solid thin #0000cc;
+	background-color: #ffffcc;
+	overflow: auto;
+	max-height: 200px;
+    padding: 4px 4px 4px 4px;
+    line-height: 15px;
+	 margin:5px 0 5px 0;	
+}

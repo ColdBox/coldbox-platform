@@ -1,0 +1,76 @@
+/*
+
+Tabs - important styles to ensure accessibility in print
+
+*/
+@media projection, screen { /* Use class for showing/hiding tab content, so that visibility can be better controlled in different media types... */
+    .tabs-hide {
+        display: none;
+    }
+}
+@media print {
+    .anchors {
+        display: none;
+    }
+}
+
+/*
+
+Tabs - not important for accessibility, just for the look of it...
+
+*/
+.anchors {
+    list-style: none;
+    margin: 0;
+    padding: 0 0 1px;
+}
+.anchors:after { /* clearing without presentational markup, IE gets extra treatment */
+    display: block;
+    clear: both;
+    content: " ";
+}
+.anchors li {
+    float: left;
+    margin: 0 1px 0 0;
+}
+.anchors a {
+    display: block;
+    position: relative;
+    top: 1px;
+    border: 1px solid #eaeaea;
+    border-bottom: 0;
+    z-index: 2;
+    padding: 2px 9px 1px;
+    color: #000;
+    text-decoration: none;
+}
+.anchors .tabs-selected a {
+    padding-bottom: 2px;
+    font-weight: bold;
+}
+.anchors .tabs-selected a, .anchors a:hover, .anchors a:focus, .anchors a:active,
+.fragment {
+    background: #7FA2DE;
+}
+.anchors .tabs-selected a:link, .anchors .tabs-selected a:visited,
+.anchors .tabs-disabled a:link, .anchors .tabs-disabled a:visited { /* @ Opera, use pseudo classes otherwise it confuses cursor... */
+    cursor: text;
+}
+.anchors a:hover, .anchors a:focus, .anchors a:active {
+    cursor: pointer;
+}
+.anchors .tabs-disabled {
+    opacity: .4;
+}
+.anchors .tabs-disabled a:hover, .anchors .tabs-disabled a:focus, .anchors .tabs-disabled a:active {
+    background: transparent;
+}
+.fragment {
+    padding: 0 10px;
+}
+.anchors .tabs-selected .tabs-loading {
+    padding-left: 25px;
+    background-image: url(loading.gif);
+    background-position: 4px 50%;
+    background-repeat: no-repeat;
+}
