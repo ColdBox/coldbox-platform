@@ -1,1 +1,0 @@
-<cfoutput >#hash("coldbox","SHA-384")#</cfoutput>
