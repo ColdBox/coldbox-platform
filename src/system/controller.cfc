@@ -16,7 +16,7 @@ Description		: This is the main ColdBox front Controller.
 		variables.instance = structnew();
 	</cfscript>
 
-	<cffunction name="init" returntype="any" access="Public" hint="I am the constructor" output="false">
+	<cffunction name="init" returntype="coldbox.system.controller" access="Public" hint="I am the constructor" output="false">
 		<cfargument name="AppRootPath" type="string" required="true" hint="The app Root Path"/>
 		<cfscript>
 			//Public Variable.
@@ -65,7 +65,7 @@ Description		: This is the main ColdBox front Controller.
 	</cffunction>
 	
 	<!--- ColdBox Cache Manager --->
-	<cffunction name="getColdboxOCM" access="public" output="false" returntype="any" hint="Get ColdboxOCM">
+	<cffunction name="getColdboxOCM" access="public" output="false" returntype="any" hint="Get ColdboxOCM: coldbox.system.cache.cacheManager">
 		<cfreturn instance.ColdboxOCM/>
 	</cffunction>
 	<cffunction name="setColdboxOCM" access="public" output="false" returntype="void" hint="Set ColdboxOCM">
@@ -311,7 +311,7 @@ Description		: This is the main ColdBox front Controller.
 	<!--- Event Service Locator Factory --->
 	<cffunction name="runEvent" returntype="any" access="Public" hint="I am an event handler runnable factory. If no event is passed in then it will run the default event from the config file.">
 		<!--- ************************************************************* --->
-		<cfargument name="event"         hint="The event to run. If no current event is set, use the default event from the config.xml" type="any" required="false" default="">
+		<cfargument name="event"         hint="The event to run as a string. If no current event is set, use the default event from the config.xml" type="any" required="false" default="">
 		<cfargument name="prepostExempt" hint="If true, pre/post handlers will not be fired." type="boolean" required="false" default="false">
 		<!--- ************************************************************* --->
 		<cfset var oEventHandler = "">
@@ -381,10 +381,8 @@ Description		: This is the main ColdBox front Controller.
 		<cfreturn CreateObject("component","coldbox.system.util.util")/>
 	</cffunction>
 
-<!------------------------------------------- PRIVATE ------------------------------------------->
-
 	<!--- Flash Perist variables. --->
-	<cffunction name="persistVariables" access="private" returntype="void" hint="Persist variables for flash redirections" output="false" >
+	<cffunction name="persistVariables" access="public" returntype="void" hint="Persist variables for flash redirections" output="false" >
 		<!--- ************************************************************* --->
 		<cfargument name="persist" 	hint="What request collection keys to persist in the relocation" required="false" type="string" default="">
 		<!--- ************************************************************* --->
@@ -405,5 +403,8 @@ Description		: This is the main ColdBox front Controller.
 		<!--- Flash Save it --->
 		<cfset getPlugin("sessionstorage").setVar('_coldbox_persistStruct', PersistStruct)>
 	</cffunction>
+	
+<!------------------------------------------- PRIVATE ------------------------------------------->
+
 	
 </cfcomponent>

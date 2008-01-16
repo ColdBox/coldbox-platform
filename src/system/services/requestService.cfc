@@ -131,9 +131,14 @@ Modification History:
 		var DefaultView = "";
 		var ViewLayouts = structNew();
 		var FolderLayouts = structNew();
-		var EventName = controller.getSetting("EventName");
+		var EventName = "";
 		var oContext = "";
 		var oDecorator = "";
+		
+		//EventName default
+		if( controller.settingExists("EventName") ){
+			EventName = controller.getSetting("EventName");
+		}
 		
 		if ( controller.settingExists("DefaultLayout") ){
 			DefaultLayout = controller.getSetting("DefaultLayout");
@@ -148,11 +153,18 @@ Modification History:
 			FolderLayouts = controller.getSetting("FolderLayouts");
 		}
 		
+		</cfscript>
+		
+		<!--- Param the structures --->
+		<cfparam name="FORM" default="#structNew()#">
+		<cfparam name="URL"  default="#structNew()#">		
+		
+		<cfscript>		
 		//Create the original request context
 		oContext = CreateObject("component","coldbox.system.beans.requestContext").init(FORM,URL,DefaultLayout,DefaultView,EventName,ViewLayouts,FolderLayouts);
 		
 		//Determine if we have a decorator, if we do, then decorate it.
-		if ( controller.getSetting("RequestContextDecorator") neq ""){
+		if ( controller.settingExists("RequestContextDecorator") and controller.getSetting("RequestContextDecorator") neq ""){
 			//Create the decorator
 			oDecorator = CreateObject("component",controller.getSetting("RequestContextDecorator")).init(oContext,FORM,URL,DefaultLayout,DefaultView,EventName,ViewLayouts,FolderLayouts);
 			//Return

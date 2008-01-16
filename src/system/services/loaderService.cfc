@@ -93,6 +93,10 @@ Modification History:
 			
 			//Register The Interceptors
 			getController().getInterceptorService().registerInterceptors();
+			
+			// Flag the initiation, Framework is ready to serve requests. Praise be to GOD.
+			controller.setColdboxInitiated(true);
+			
 			//Execute afterConfigurationLoad
 			getController().getInterceptorService().processState("afterConfigurationLoad");
 			
@@ -100,10 +104,7 @@ Modification History:
 			registerAspects();
 	
 			//Execute afterAspectsLoad
-			getController().getInterceptorService().processState("afterAspectsLoad");
-			
-			// Flag the initiation, Framework is ready to serve requests. Praise be to GOD.
-			controller.setColdboxInitiated(true);
+			getController().getInterceptorService().processState("afterAspectsLoad");			
 		</cfscript>
 	</cffunction>
 

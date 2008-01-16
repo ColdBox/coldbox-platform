@@ -1,4 +1,4 @@
-<cfcomponent name="ehUser" extends="coldbox.system.eventhandler">
+<cfcomponent name="ehUser" extends="coldbox.system.eventhandler" output="false" autowire="true">
 
 	<cffunction name="dspAccountActions" access="public" returntype="void" output="false">
 		<cfargument name="Event" type="coldbox.system.beans.requestContext">
@@ -37,7 +37,7 @@
 		<cfargument name="Event" type="coldbox.system.beans.requestContext">
 		<cfscript>
 			var password2 = Event.getValue("password2","");
-			var userService = getPlugin("ioc").getBean("userService");
+			var userService = getUserService();
 			var userBean = userService.createUserBean();
 			var rc = Event.getCollection();
 			//Populate Bean From Request Collection.
@@ -69,7 +69,7 @@
 	<cffunction name="doLogin" access="public" returntype="void" output="false">
 		<cfargument name="Event" type="coldbox.system.beans.requestContext">
 		<cfscript>
-			var userService = getPlugin("ioc").getBean("userService");
+			var userService = getUserService();
 			var userBean = userService.createUserBean();
 			var rc = Event.getCollection();
 			
@@ -107,7 +107,7 @@
 		<cfscript>
 			var username = Event.getValue("username","");
 			var newPassword = "";
-			var userService = getPlugin("ioc").getBean("userService");
+			var userService = getUserService();
 			var userBean = userService.createUserBean();
 			
 			if ( username eq "" ){
@@ -142,7 +142,7 @@
 			var password = Event.getValue("password","");
 			var confirmpassword = Event.getValue("confirmpassword","");
 			var email = Event.getValue("email","");
-			var userService = getPlugin("ioc").getBean("userService");
+			var userService = getUserService();
 			var userBean = userService.createUserBean();
 			
 			getPlugin("beanFactory").populateBean(userBean);
@@ -166,5 +166,15 @@
 		</cfscript>
 	</cffunction>
 	
+<!------------------------------------------ DEPENDENCIES -------------------------------------->
+	
+	<!--- Get User Service --->
+	<cffunction name="getuserService" access="public" output="false" returntype="any" hint="Get userService">
+		<cfreturn instance.userService/>
+	</cffunction>	
+	<cffunction name="setuserService" access="public" output="false" returntype="void" hint="Set userService">
+		<cfargument name="userService" type="any" required="true"/>
+		<cfset instance.userService = arguments.userService/>
+	</cffunction>
 	
 </cfcomponent>

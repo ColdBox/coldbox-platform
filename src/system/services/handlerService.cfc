@@ -40,7 +40,19 @@ Description :
 	<cffunction name="newHandler" access="public" returntype="any" hint="Create a New Handler Instance" output="false" >
 		<cfargument name="invocationPath" type="string" required="true" hint="The handler invocation path"/>
 		<cfscript>
-		return CreateObject("component", invocationPath ).init( controller );
+			//Create Handler
+			var oHandler = CreateObject("component", invocationPath ).init( controller );
+			var interceptMetadata = structnew();
+			
+			//Fill-up Intercepted MetaData
+			interceptMetadata.handlerPath = invocationPath;
+			interceptMetadata.oHandler = oHandler;
+			
+			//Fire Interception
+			getController().getInterceptorService().processState("afterHandlerCreation",interceptMetadata);
+			
+			//Return handler
+			return oHandler;
 		</cfscript>
 	</cffunction>
 	

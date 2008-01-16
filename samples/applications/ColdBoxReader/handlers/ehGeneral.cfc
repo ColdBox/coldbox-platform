@@ -10,7 +10,7 @@ feb/13/2006 - Oscar Arevalo
 aug/20/2006 - Luis Majano
 	- Modified for 1.1.0
 ----------------------------------------------------------------------->
-<cfcomponent name="ehGeneral" extends="coldbox.system.eventhandler">
+<cfcomponent name="ehGeneral" extends="coldbox.system.eventhandler" output="false" autowire="true">
 
 	<cffunction name="onRequestStart" access="public" returntype="void" output="false">
 		<cfargument name="Event" type="coldbox.system.beans.requestContext">
@@ -18,7 +18,7 @@ aug/20/2006 - Luis Majano
 		<!--- EXIT HANDLERS: --->
 		<cfset rc.xehSearch = "ehFeed.doSearchByTerm">
 		<cfif not structKeyExists(session, "oUserBean")>
-			<cfset session.oUserBean = getPlugin("ioc").getBean("UserService").createUserBean()>
+			<cfset session.oUserBean = getUserService().createUserBean()>
 		</cfif>
 	</cffunction>
 
@@ -47,7 +47,7 @@ aug/20/2006 - Luis Majano
 
 	<cffunction name="dspReader" access="public" returntype="void" output="false">
 		<cfargument name="Event" type="coldbox.system.beans.requestContext">
-		<cfset var obj = getPlugin("ioc").getBean("feedService")>
+		<cfset var obj = getFeedService()>
 		<cfset var FeedStruct = structnew()>
 		<cfset var rc = Event.getCollection()>
 		<!--- EXIT HANDLERS: --->
@@ -72,5 +72,24 @@ aug/20/2006 - Luis Majano
 		<cfset Event.setView("vwInfo")>
 	</cffunction>
 
-
+<!------------------------------------------ DEPENDENCIES -------------------------------------->
+	
+	<!--- Get User Service --->
+	<cffunction name="getuserService" access="public" output="false" returntype="any" hint="Get userService">
+		<cfreturn instance.userService/>
+	</cffunction>	
+	<cffunction name="setuserService" access="public" output="false" returntype="void" hint="Set userService">
+		<cfargument name="userService" type="any" required="true"/>
+		<cfset instance.userService = arguments.userService/>
+	</cffunction>
+	
+	<!--- feedService --->
+	<cffunction name="getfeedService" access="public" output="false" returntype="any" hint="Get feedService">
+		<cfreturn instance.feedService/>
+	</cffunction>	
+	<cffunction name="setfeedService" access="public" output="false" returntype="void" hint="Set feedService">
+		<cfargument name="feedService" type="any" required="true"/>
+		<cfset instance.feedService = arguments.feedService/>
+	</cffunction>
+	
 </cfcomponent>

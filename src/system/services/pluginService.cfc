@@ -45,7 +45,22 @@ Modification History:
 		<cfargument name="custom" required="true" type="boolean" hint="Custom plugin or coldbox plugin">
 		<!--- ************************************************************* --->
 		<cfscript>
-		return CreateObject("component", locatePluginPath(arguments.plugin,arguments.custom) ).init( controller );
+			var oPlugin = CreateObject("component", locatePluginPath(arguments.plugin,arguments.custom) ).init( controller );
+			var interceptMetadata = structnew();
+			
+			//Interception if application is up and running. We need the interceptors.
+			if ( getController().getColdboxInitiated() ){
+				//Fill-up Intercepted MetaData
+				interceptMetadata.pluginPath = arguments.plugin;
+				interceptMetadata.custom = arguments.custom;			
+				interceptMetadata.oPlugin = oPlugin;
+				
+				//Fire Interception
+				getController().getInterceptorService().processState("afterPluginCreation",interceptMetadata);
+			}
+			
+			//Return plugin
+			return oPlugin;
 		</cfscript>
 	</cffunction>
 

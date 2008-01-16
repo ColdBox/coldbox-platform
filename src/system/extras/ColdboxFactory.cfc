@@ -40,7 +40,7 @@ Modification History:
 <!------------------------------------------- HELPERS ------------------------------------------->
 	
 	<!--- Get a config bean --->
-	<cffunction name="getConfigBean" output="false" access="public" returntype="any" hint="Returns an application's config bean">
+	<cffunction name="getConfigBean" output="false" access="public" returntype="coldbox.system.beans.configBean" hint="Returns an application's config bean: coldbox.system.beans.configBean">
 		<cfscript>
 			var ConfigBean = CreateObject("component",configBeanPath);
 			ConfigBean.setConfigStruct(application.cbController.getSettingStructure(false,true));
@@ -49,21 +49,21 @@ Modification History:
 	</cffunction>
 	
 	<!--- Get the coldbox controller --->
-	<cffunction name="getColdbox" output="false" access="public" returntype="any" hint="Get the coldbox controller reference">
+	<cffunction name="getColdbox" output="false" access="public" returntype="coldbox.system.controller" hint="Get the coldbox controller reference: coldbox.system.controller">
 		<cfscript>
 		return application.cbController;
 		</cfscript>
 	</cffunction>
 	
 	<!--- Get the cache manager --->
-	<cffunction name="getColdboxOCM" output="false" access="public" returntype="any" hint="Get the coldbox cache manager reference">
+	<cffunction name="getColdboxOCM" output="false" access="public" returntype="coldbox.system.cache.cacheManager" hint="Get the coldbox cache manager reference: coldbox.system.cache.cacheManager">
 		<cfscript>
 		return application.cbController.getColdboxOCM();
 		</cfscript>
 	</cffunction>
 	
 	<!--- Get a plugin --->
-	<cffunction name="getPlugin" access="Public" returntype="any" hint="Plugin factory" output="true">
+	<cffunction name="getPlugin" access="Public" returntype="any" hint="Plugin factory, returns a new or cached instance of a plugin." output="true">
 		<cfargument name="plugin" 		type="string"  hint="The Plugin object's name to instantiate" >
 		<cfargument name="customPlugin" type="boolean" required="false" default="false" hint="Used internally to create custom plugins.">
 		<cfargument name="newInstance"  type="boolean" required="false" default="false" hint="If true, it will create and return a new plugin. No caching or persistance.">
@@ -74,7 +74,7 @@ Modification History:
 	</cffunction>
 	
 	<!--- Get a datasource --->
-	<cffunction name="getDatasource" access="public" output="false" returnType="any" hint="I will return to you a datasourceBean according to the alias of the datasource you wish to get from the configstruct">
+	<cffunction name="getDatasource" access="public" output="false" returnType="coldbox.system.beans.datasourceBean" hint="I will return to you a datasourceBean according to the alias of the datasource you wish to get from the configstruct: coldbox.system.beans.datasourceBean">
 		<!--- ************************************************************* --->
 		<cfargument name="alias" type="string" hint="The alias of the datasource to get from the configstruct (alias property in the config file)">
 		<!--- ************************************************************* --->
@@ -95,7 +95,7 @@ Modification History:
 	</cffunction>
 	
 	<!--- Get a mail settings bean --->
-	<cffunction name="getMailSettings" access="public" output="false" returnType="any" hint="I will return to you a mailsettingsBean modeled after your mail settings in your config file.">
+	<cffunction name="getMailSettings" access="public" output="false" returnType="coldbox.system.beans.mailsettingsBean" hint="I will return to you a mailsettingsBean modeled after your mail settings in your config file.">
 		<cfscript>
 		return CreateObject("component",mailsettingsBeanPath).init(application.cbController.getSetting("MailServer"),
 																   application.cbController.getSetting("MailUsername"),

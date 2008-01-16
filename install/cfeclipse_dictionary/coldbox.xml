@@ -339,6 +339,17 @@ Description :
 			</parameter>
 		</function>
 		
+		<function creator="8" name="persistVariables" returns="void">
+			<help><![CDATA[
+				 Persist variables in the flash RC.
+			]]></help>
+			<parameter name="persist" type="String" required="true">
+				<help><![CDATA[
+					The comma delimmited list of variables in the RC to flash persist.
+				]]></help>
+			</parameter>
+		</function>
+		
 		<function creator="8" name="relocate" returns="void">
 			<help><![CDATA[
 				 Facade to cflocation
@@ -792,7 +803,13 @@ Description :
 			<help><![CDATA[ 
 			 Get an util object.
 		]]></help>
-		</scope>		
+		</scope>	
+		
+		<scope value="controller.persistVariables('')" type="Void">
+			<help><![CDATA[ 
+			 Persist variables
+		]]></help>
+		</scope>
 		
 		<scope value="controller.runEvent" type="Void">
 			<help><![CDATA[ 

@@ -60,6 +60,12 @@
 	<cfreturn variables.getObject(arguments.ObjectName,"Transient") />
 </cffunction>
 
+<!--- Altered by Luis Majano for autowiring purposes. --->
+<cffunction name="containsBean" access="public" output="false" returntype="boolean" hint="returns true if the BeanFactory contains a bean definition that matches the given name">
+	<cfargument name="beanName" required="true" type="string" hint="name of bean to look for"/>
+		<cfreturn structKeyExists(variables.config, arguments.beanName)>
+</cffunction>
+
 <cffunction name="getObject" returntype="any" access="private" output="false" hint="I return a LightWire scoped object (Singleton or Transient) with all of its dependencies loaded.">
 	<cfargument name="ObjectName" type="string" required="yes" hint="I am the name of the object to return.">
 	<cfargument name="ObjectType" type="string" required="yes" hint="I am the type of object to return (Singleton or Transient).">
