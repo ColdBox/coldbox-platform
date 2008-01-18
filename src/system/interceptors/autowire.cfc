@@ -53,12 +53,18 @@ Description :
 			
 			/* Loop over the Interceptor Array, to begin autowiring */
 			for (; x lte arrayLen(interceptorConfig.interceptors); x=x+1){
+				
 				/* Get the cache path */
 				arguments.interceptData.interceptorPath = INTERCEPTOR_CACHEKEY_PREFIX & interceptorConfig.interceptors[x].class;
-				/* Try to get the interceptor Object. */
-				arguments.interceptData.oInterceptor = getColdboxOCM().get(arguments.interceptData.interceptorPath);
-				/* Autowire it */
-				processAutowire(argumentCollection=arguments);
+				
+				/* Exclude yourself */
+				if( not findnocase("coldbox.system.interceptors.autowire",interceptorConfig.interceptors[x].class) ){
+					/* Try to get the interceptor Object. */
+					arguments.interceptData.oInterceptor = getColdboxOCM().get(arguments.interceptData.interceptorPath);
+					/* Autowire it */
+					processAutowire(argumentCollection=arguments);
+				}
+				
 			}//end declared interceptor loop
 		</cfscript>
 	</cffunction>
