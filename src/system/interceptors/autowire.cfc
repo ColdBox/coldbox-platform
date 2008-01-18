@@ -7,7 +7,10 @@ www.coldboxframework.com | www.luismajano.com | www.ortussolutions.com
 Author     :	Luis Majano
 Date        :	01/15/2008
 Description :
-	This interceptor is used to autowire plugins and handlers.
+	This interceptor is used to autowire plugins, handlers and interceptors.
+	Plugins and handlers are autowired after creation. Intreceptors will always
+	be autowired after the aspects load. This is to give chance for all the correct
+	application aspects to be in place.
 	
 ----------------------------------------------------------------------->
 <cfcomponent name="autowire"
@@ -40,7 +43,24 @@ Description :
 		<cfargument name="event" 		 required="true" type="coldbox.system.beans.requestContext" hint="The event object.">
 		<cfargument name="interceptData" required="true" type="struct" hint="interceptData of intercepted info.">
 		<!--- ************************************************************* --->
-		
+		<cfscript>
+			var interceptorConfig = getController().getSetting("InterceptorConfig");
+			var INTERCEPTOR_CACHEKEY_PREFIX = getController().getInterceptorService().INTERCEPTOR_CACHEKEY_PREFIX;
+			var x = 1;
+			
+			/* Setup the targettype */
+			arguments.targetType = "interceptor";
+			
+			/* Loop over the Interceptor Array, to begin autowiring */
+			for (; x lte arrayLen(interceptorConfig.interceptors); x=x+1){
+				/* Get the cache path */
+				arguments.interceptData.interceptorPath = INTERCEPTOR_CACHEKEY_PREFIX & interceptorConfig.interceptors[x].class;
+				/* Try to get the interceptor Object. */
+				arguments.interceptData.oInterceptor = getColdboxOCM().get(arguments.interceptData.interceptorPath);
+				/* Autowire it */
+				processAutowire(argumentCollection=arguments);
+			}//end declared interceptor loop
+		</cfscript>
 	</cffunction>
 	
 	<!--- After Handler Creation --->
@@ -49,8 +69,10 @@ Description :
 		<cfargument name="event" 		 required="true" type="coldbox.system.beans.requestContext" hint="The event object.">
 		<cfargument name="interceptData" required="true" type="struct" hint="A structure containing intercepted data = [handlerPath (The path of the handler), oHandler (The actual handler object)]">
 		<!--- ************************************************************* --->
-		<cfset arguments.targetType = "handler">
-		<cfset processAutowire(argumentCollection=arguments)>
+		<cfscript>
+			arguments.targetType = "handler";
+			processAutowire(argumentCollection=arguments);
+		</cfscript>		
 	</cffunction>
 		
 	<!--- After Plugin Creation --->
@@ -59,8 +81,10 @@ Description :
 		<cfargument name="event" 		 required="true" type="coldbox.system.beans.requestContext" hint="The event object.">
 		<cfargument name="interceptData" required="true" type="struct" hint="A structure containing intercepted data = [pluginPath (The path of the plugin), custom (Flag if the plugin is custom or not), oPlugin (The actual plugin object)]">
 		<!--- ************************************************************* --->
-		<cfset arguments.targetType = "plugin">
-		<cfset processAutowire(argumentCollection=arguments)>
+		<cfscript>
+			arguments.targetType = "plugin";
+			processAutowire(argumentCollection=arguments);
+		</cfscript>	
 	</cffunction>
 	
 <!------------------------------------------- PRIVATE METHDOS ------------------------------------------->
@@ -92,6 +116,10 @@ Description :
 			else if( targetType eq "handler"){
 				targetObject = interceptData.oHandler;
 				targetCacheKey = interceptData.handlerPath;
+			}
+			else if( targetType eq "interceptor" ){
+				targetObject = interceptData.oInterceptor;
+				targetCacheKey = interceptData.interceptorPath;
 			}
 			
 			/* Do we have the incoming target object's data in the cache? */
@@ -169,7 +197,8 @@ Description :
 			/* Start Registering inheritances */
 			if ( structKeyExists(arguments.metadata, "extends") and 
 				 ( arguments.metadata.extends.name neq "coldbox.system.plugin" or
-				   arguments.metadata.extends.name neq "coldbox.system.eventhandler" )
+				   arguments.metadata.extends.name neq "coldbox.system.eventhandler" or
+				   arguments.metadata.extends.name neq "coldbox.system.interceptor" )
 			){
 				/* Recursive lookup */
 				parseMetadata(arguments.metadata.extends,dependencies);
