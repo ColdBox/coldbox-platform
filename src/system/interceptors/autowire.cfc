@@ -75,10 +75,10 @@ Description :
 		<cfargument name="event" 		 required="true" type="coldbox.system.beans.requestContext" hint="The event object.">
 		<cfargument name="interceptData" required="true" type="struct" hint="A structure containing intercepted data = [handlerPath (The path of the handler), oHandler (The actual handler object)]">
 		<!--- ************************************************************* --->
-		<cfscript>
-			arguments.targetType = "handler";
-			processAutowire(argumentCollection=arguments);
-		</cfscript>		
+		<cflock type="exclusive" name="cboxautowire_handler_#interceptData.handlerPath#" timeout="30">
+			<cfset arguments.targetType = "handler">
+			<cfset processAutowire(argumentCollection=arguments)>		
+		</cflock>
 	</cffunction>
 		
 	<!--- After Plugin Creation --->
@@ -87,10 +87,10 @@ Description :
 		<cfargument name="event" 		 required="true" type="coldbox.system.beans.requestContext" hint="The event object.">
 		<cfargument name="interceptData" required="true" type="struct" hint="A structure containing intercepted data = [pluginPath (The path of the plugin), custom (Flag if the plugin is custom or not), oPlugin (The actual plugin object)]">
 		<!--- ************************************************************* --->
-		<cfscript>
-			arguments.targetType = "plugin";
-			processAutowire(argumentCollection=arguments);
-		</cfscript>	
+		<cflock type="exclusive" name="cboxautowire_plugin_#interceptData.pluginPath#" timeout="30">
+			<cfset arguments.targetType = "plugin">
+			<cfset processAutowire(argumentCollection=arguments)>		
+		</cflock>
 	</cffunction>
 	
 <!------------------------------------------- PRIVATE METHDOS ------------------------------------------->
