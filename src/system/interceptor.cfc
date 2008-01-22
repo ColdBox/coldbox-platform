@@ -16,7 +16,7 @@ Description :
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
-	<cffunction name="init" access="public" returntype="interceptor" output="false">
+	<cffunction name="init" access="public" returntype="any" output="false">
 		<cfargument name="controller" type="any" 	required="true"  hint="The ColdBox controller reference">
 		<cfargument name="properties" type="struct" required="true"  hint="The Interceptor properties">
 		<cfscript>

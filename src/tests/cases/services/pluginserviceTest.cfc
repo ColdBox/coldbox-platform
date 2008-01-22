@@ -40,7 +40,7 @@ Modification History:
 	
 	<cffunction name="testPluginByConvention" access="public" returntype="void" output="false">
 		<cfscript>
-		var plugin = getController().getPluginService().get("date",true);
+		var plugin = getController().getPluginService().get("dateNoAutowire",true);
 		assertComponent(plugin);
 		</cfscript>
 	</cffunction>

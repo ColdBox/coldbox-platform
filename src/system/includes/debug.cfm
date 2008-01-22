@@ -170,9 +170,11 @@ Modification History:
 			  	<td colspan="4">No Timers Found...</td>			
 			</tr>
 		  </cfif>
+		  <cfif structKeyExists(request,"fwExecTime")>
 		  <tr>
 			<th colspan="4">Total Framework Request Execution Time: #request.fwExecTime# ms</th>
 		  </tr>
+		  </cfif>
 		</table>		
 		<!--- **************************************************************--->
 	</div>

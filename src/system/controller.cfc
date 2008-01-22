@@ -69,12 +69,12 @@ Description		: This is the main ColdBox front Controller.
 		<cfreturn instance.ColdboxOCM/>
 	</cffunction>
 	<cffunction name="setColdboxOCM" access="public" output="false" returntype="void" hint="Set ColdboxOCM">
-		<cfargument name="ColdboxOCM" type="any" required="true"/>
+		<cfargument name="ColdboxOCM" type="any" required="true" hint="coldbox.system.cache.cacheManager"/>
 		<cfset instance.ColdboxOCM = arguments.ColdboxOCM/>
 	</cffunction>
 	
 	<!--- Request Service --->
-	<cffunction name="getRequestService" access="public" output="false" returntype="any" hint="Get RequestService">
+	<cffunction name="getRequestService" access="public" output="false" returntype="any" hint="Get RequestService: coldbox.system.services.requestService">
 		<cfreturn instance.RequestService/>
 	</cffunction>
 	<cffunction name="setRequestService" access="public" output="false" returntype="void" hint="Set RequestService">
@@ -83,7 +83,7 @@ Description		: This is the main ColdBox front Controller.
 	</cffunction>
 	
 	<!--- Debugger Service --->
-	<cffunction name="getDebuggerService" access="public" output="false" returntype="any" hint="Get DebuggerService">
+	<cffunction name="getDebuggerService" access="public" output="false" returntype="any" hint="Get DebuggerService: coldbox.system.services.debuggerService">
 		<cfreturn instance.DebuggerService/>
 	</cffunction>
 	<cffunction name="setDebuggerService" access="public" output="false" returntype="void" hint="Set DebuggerService">
@@ -92,7 +92,7 @@ Description		: This is the main ColdBox front Controller.
 	</cffunction>
 	
 	<!--- Plugin Service --->
-	<cffunction name="getPluginService" access="public" output="false" returntype="any" hint="Get PluginService">
+	<cffunction name="getPluginService" access="public" output="false" returntype="any" hint="Get PluginService: coldbox.system.services.pluginService">
 		<cfreturn instance.PluginService/>
 	</cffunction>
 	<cffunction name="setPluginService" access="public" output="false" returntype="void" hint="Set PluginService">
@@ -101,7 +101,7 @@ Description		: This is the main ColdBox front Controller.
 	</cffunction>
 	
 	<!--- Interceptor Service --->
-	<cffunction name="getinterceptorService" access="public" output="false" returntype="any" hint="Get interceptorService">
+	<cffunction name="getinterceptorService" access="public" output="false" returntype="any" hint="Get interceptorService: coldbox.system.services.interceptorService">
 		<cfreturn instance.interceptorService/>
 	</cffunction>	
 	<cffunction name="setinterceptorService" access="public" output="false" returntype="void" hint="Set interceptorService">
@@ -110,7 +110,7 @@ Description		: This is the main ColdBox front Controller.
 	</cffunction>
 
 	<!--- Handler Service --->
-	<cffunction name="getHandlerService" access="public" output="false" returntype="any" hint="Get HandlerService">
+	<cffunction name="getHandlerService" access="public" output="false" returntype="any" hint="Get HandlerService: coldbox.system.services.handlerService">
 		<cfreturn instance.HandlerService/>
 	</cffunction>
 	<cffunction name="setHandlerService" access="public" output="false" returntype="void" hint="Set HandlerService">
@@ -311,7 +311,7 @@ Description		: This is the main ColdBox front Controller.
 	<!--- Event Service Locator Factory --->
 	<cffunction name="runEvent" returntype="any" access="Public" hint="I am an event handler runnable factory. If no event is passed in then it will run the default event from the config file.">
 		<!--- ************************************************************* --->
-		<cfargument name="event"         hint="The event to run as a string. If no current event is set, use the default event from the config.xml" type="any" required="false" default="">
+		<cfargument name="event"         hint="The event to run as a string. If no current event is set, use the default event from the config.xml. This is a string" type="any" required="false" default="">
 		<cfargument name="prepostExempt" hint="If true, pre/post handlers will not be fired." type="boolean" required="false" default="false">
 		<!--- ************************************************************* --->
 		<cfset var oEventHandler = "">
@@ -367,6 +367,7 @@ Description		: This is the main ColdBox front Controller.
 		</cfif>
 	</cffunction>
 
+	<!--- Utility throw. --->
 	<cffunction name="throw" access="public" hint="Facade for cfthrow" output="false">
 		<!--- ************************************************************* --->
 		<cfargument name="message" 	type="string" 	required="yes">

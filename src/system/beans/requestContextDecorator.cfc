@@ -15,7 +15,7 @@ Description :
 		
 	<cffunction name="init" access="public" output="false" hint="constructor" returntype="any">
 		<!--- ************************************************************* --->
-		<cfargument name="oContext" 	 	type="any" 		required="true" hint="The original context we are decorating.">
+		<cfargument name="oContext" 	 	type="any" 		required="true" hint="The original context we are decorating. coldbox.system.beans.requestContext">
 		<cfargument name="struct1" 		 	type="any" 		required="true" hint="Usually the FORM scope">
 		<cfargument name="struct2" 		 	type="any" 		required="true" hint="Usually the URL scope">
 		<cfargument name="DefaultLayout" 	type="string" 	required="true">
@@ -42,7 +42,7 @@ Description :
 	</cffunction>
 	
 	<!--- Get the original context --->
-	<cffunction name="getrequestContext" access="public" output="false" returntype="any" hint="Get the original request context.">
+	<cffunction name="getrequestContext" access="public" output="false" returntype="any" hint="Get the original request context. coldbox.system.beans.requestContext">
 		<cfreturn instance.requestContext/>
 	</cffunction>
 	

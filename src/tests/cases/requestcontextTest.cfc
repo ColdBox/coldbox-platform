@@ -204,7 +204,7 @@
 			event.clearCollection();
 			
 			event.setLayout(layout);
-			AssertEqualsString( layout, event.getCurrentLayout() );
+			AssertEqualsString( layout & ".cfm", event.getCurrentLayout() );
 		</cfscript>
 	</cffunction>
 

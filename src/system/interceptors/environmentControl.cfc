@@ -38,6 +38,9 @@ Description :
 			if ( fileExists(getController().getAppRootPath() & getProperty('configFile')) ){
 				configFile = getController().getAppRootPath() & getProperty('configFile');
 			}
+			if( fileExists(getController().getAppRootPath() & getSetting("OSFileSeparator",true) & getProperty('configFile'))  ){
+				configFile = getController().getAppRootPath() & getSetting("OSFileSeparator",true) & getProperty('configFile');
+			}
 			else if( fileExists( ExpandPath(getProperty('configFile')) ) ){
 				configFile = ExpandPath( getProperty('configFile') );
 			}

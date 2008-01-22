@@ -252,7 +252,7 @@ Description :
 <!------------------------------------------- PRIVATE ------------------------------------------->	
 	
 	<!--- FW needs reinit --->
-	<cffunction name="isfwReinit" access="public" returntype="boolean" hint="Verify if we need to reboot" output="false" >
+	<cffunction name="isfwReinit" access="private" returntype="boolean" hint="Verify if we need to reboot" output="false" >
 		<cfscript>
 			var reinitPass = "";
 			if ( not application.cbController.settingExists("ReinitPassword") )
@@ -277,19 +277,19 @@ Description :
 	</cffunction>
 	
 	<!--- Getter setter lock timeout --->
-	<cffunction name="getLockTimeout" access="public" output="false" returntype="numeric" hint="Get LockTimeout">
+	<cffunction name="getLockTimeout" access="private" output="false" returntype="numeric" hint="Get LockTimeout">
 		<cfreturn instance.LockTimeout/>
 	</cffunction>
-	<cffunction name="setLockTimeout" access="public" output="false" returntype="void" hint="Set LockTimeout">
+	<cffunction name="setLockTimeout" access="private" output="false" returntype="void" hint="Set LockTimeout">
 		<cfargument name="LockTimeout" type="numeric" required="true"/>
 		<cfset instance.LockTimeout = arguments.LockTimeout/>
 	</cffunction>
 	
 	<!--- AppHash --->
-	<cffunction name="getAppHash" access="public" output="false" returntype="string" hint="Get AppHash">
+	<cffunction name="getAppHash" access="private" output="false" returntype="string" hint="Get AppHash">
 		<cfreturn instance.AppHash/>
 	</cffunction>
-	<cffunction name="setAppHash" access="public" output="false" returntype="void" hint="Set AppHash">
+	<cffunction name="setAppHash" access="private" output="false" returntype="void" hint="Set AppHash">
 		<cfargument name="AppHash" type="string" required="true"/>
 		<cfset instance.AppHash = arguments.AppHash/>
 	</cffunction>

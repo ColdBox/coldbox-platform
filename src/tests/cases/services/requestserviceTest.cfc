@@ -66,15 +66,15 @@ Description :
 		var service = getController().getRequestService();
 		var context = "";
 		
-		/* Set debugmode to false to tests */
-		getcontroller().getDebuggerService().setDebugMode(false);
-		
 		/* Setup test variables */
 		form.debugmode = true;
 		form.debugpass = "invalid";
 		
 		/* Catpure the request */
 		context = service.requestCapture();
+		
+		/* Set debugmode to false to tests */
+		getcontroller().getDebuggerService().setDebugMode(false);
 		
 		/* Tests */
 		AssertFalse(getcontroller().getDebuggerService().getDebugMode(), "Debug Mode test invalid password");
