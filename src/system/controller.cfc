@@ -36,17 +36,17 @@ Description		: This is the main ColdBox front Controller.
 			//Create & init ColdBox Services
 			if ( (this.oCFMLENGINE.getEngine() eq this.oCFMLENGINE.ADOBE and this.oCFMLENGINE.getVersion() gte 8) or
 			     (this.oCFMLENGINE.getEngine() eq this.oCFMLENGINE.BLUEDRAGON and this.oCFMLENGINE.getVersion() gte 7) ){
-				setColdboxOCM( CreateObject("component","cache.MTcacheManager").init(this) );
+				setColdboxOCM( CreateObject("component","coldbox.system.cache.MTcacheManager").init(this) );
 			}
 			else{
-				setColdboxOCM( CreateObject("component","cache.cacheManager").init(this) );
+				setColdboxOCM( CreateObject("component","coldbox.system.cache.cacheManager").init(this) );
 			}
 			//Setup the rest of the services.
-			setRequestService( CreateObject("component","services.requestService").init(this) );
-			setDebuggerService( CreateObject("component","services.debuggerService").init(this) );
-			setPluginService( CreateObject("component","services.pluginService").init(this) );
-			setInterceptorService( CreateObject("component", "services.interceptorService").init(this) );
-			setHandlerService( CreateObject("component", "services.handlerService").init(this) );
+			setRequestService( CreateObject("component","coldbox.system.services.requestService").init(this) );
+			setDebuggerService( CreateObject("component","coldbox.system.services.debuggerService").init(this) );
+			setPluginService( CreateObject("component","coldbox.system.services.pluginService").init(this) );
+			setInterceptorService( CreateObject("component", "coldbox.system.services.interceptorService").init(this) );
+			setHandlerService( CreateObject("component", "coldbox.system.services.handlerService").init(this) );
 			
 			//Return instance
 			return this;
@@ -226,10 +226,10 @@ Description		: This is the main ColdBox front Controller.
 		switch(arguments.service){
 			//Loader
 			case "loader":
-				servicePath = "services.loaderService";
+				servicePath = "coldbox.system.services.loaderService";
 				break;
 			case "exception":
-				servicePath = "services.exceptionService";
+				servicePath = "coldbox.system.services.exceptionService";
 				break;
 			//Default Case
 			default:
