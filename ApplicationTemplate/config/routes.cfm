@@ -58,8 +58,11 @@ NOTE: The interceptor will create a new setting called: sesBaseURL with this val
 	<base> html tags, this is the same as the baseURL without the index.cfm if used.
 	Else, htmlBaseURL and sesBaseURL should be the same.
 --->
-<cfset setBaseURL("http://#cgi.HTTP_HOST#/#getSetting('AppMapping')#/index.cfm")>
-
+<cfif len(getSetting("AppMapping")) lte 1>
+	<cfset setBaseURL("http://#cgi.HTTP_HOST#/index.cfm")>
+<cfelse>
+	<cfset setBaseURL("http://#cgi.HTTP_HOST#/#getSetting('AppMapping')#/index.cfm")>
+</cfif>
 
 <!--- -------------------------------------------
 	Add your Courses here...
