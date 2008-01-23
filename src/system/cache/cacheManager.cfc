@@ -422,8 +422,11 @@ Modification History:
 			if (not structisEmpty(objStruct)){
 				//Loop Through Metadata and set expiration timeouts.
 				for (key in objStruct){
-					objStruct[key].Timeout = 1;
-					objStruct[key].created = dateadd("n",-5,now());
+					//Override Eternal Objects
+					if ( objStruct[key].Timeout gt 0 ){
+						objStruct[key].Timeout = 1;
+						objStruct[key].created = dateadd("n",-5,now());
+					}
 				}
 			}
 		</cfscript>
