@@ -5,7 +5,7 @@
         <Setting name="Author" value="Luis Majano"/>
         <Setting name="AuthorEmail" value="info@coldboxframework.com"/>
         <Setting name="AuthorWebsite" value="http://www.coldboxframework.com"/>
-        <Setting name="Suffix" value="Romans 8:32"/>
+        <Setting name="Suffix" value="Romanos 8:32"/>
         <Setting name="Version" value="2.5.2"/>
         <Setting name="Description" value="This is the ColdBox ColdFusion Framework for web applications."/>
         <Setting name="ModifyLogLocation" value="readme.txt"/>
@@ -36,7 +36,7 @@
         <!--ColdBox Cache Parameter: Default Object Last Accessed Timeout in Minutes -->
         <Setting name="CacheObjectDefaultLastAccessTimeout" value="20"/>
         <!--ColdBox Cache Parameter: Cache Reap Frequency in Minutes -->
-        <Setting name="CacheReapFrequency" value="3"/>
+        <Setting name="CacheReapFrequency" value="1"/>
         <!--ColdBox Cache Parameter: Maximum number of Objects in cache (0=Unlimited)-->
         <Setting name="CacheMaxObjects" value="100"/>
         <!--ColdBox Cache Parameter: Free JVM Memory % Threshold (0=not used)-->
