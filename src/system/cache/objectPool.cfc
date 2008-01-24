@@ -20,11 +20,16 @@ Modification History:
 		<cfscript>
 			var Collections = createObject("java", "java.util.Collections");
 			var Map = CreateObject("java","java.util.HashMap").init();
+			var MetadataMap = CreateObject("java","java.util.HashMap").init();
 			
 			/* Prepare instance */
 			variables.instance = structnew();
+			
+			/* Instantiate object pools */
 			instance.pool = Collections.synchronizedMap( Map );
-			instance.pool_metadata = structnew();
+			instance.pool_metadata = Collections.synchronizedMap( MetadataMap );
+			
+			/* Return pool */
 			return this;
 		</cfscript>
 	</cffunction>
@@ -33,7 +38,7 @@ Modification History:
 
 	<!--- Getter/Setter For pool --->
 	<cffunction name="getpool" access="public" returntype="any" output="false">
-		<cfreturn instance.pool >
+		<cfreturn instance.pool>
 	</cffunction>
 	<cffunction name="setpool" access="public" returntype="void" output="false">
 		<cfargument name="pool" type="struct" required="true">
@@ -86,11 +91,11 @@ Modification History:
 		<cfargument name="objectKey" type="any" required="true">
 		<!--- ************************************************************* --->
 		<cfscript>
-		//Record Metadata
-		setMetadataProperty(arguments.objectKey,"hits", getMetaDataProperty(arguments.objectKey,"hits")+1);
-		setMetadataProperty(arguments.objectKey,"lastAccesed", now());
-		//Return object.
-		return instance.pool[arguments.objectKey];
+			//Record Metadata
+			setMetadataProperty(arguments.objectKey,"hits", getMetaDataProperty(arguments.objectKey,"hits")+1);
+			setMetadataProperty(arguments.objectKey,"lastAccesed", now());
+			//Return object.
+			return instance.pool[arguments.objectKey];
 		</cfscript>
 	</cffunction>
 
@@ -103,17 +108,17 @@ Modification History:
 		<cfargument name="LastAccessTimeout"	type="any"  required="false" default="" hint="Timeout in minutes. If timeout is blank, then timeout will be inherited from framework.">
 		<!--- ************************************************************* --->
 		<cfscript>
-		var MetaData = structnew();
-		//Set new Object into cache.
-		instance.pool[arguments.objectKey] = arguments.MyObject;
-		//Create object's metdata
-		MetaData.hits = 1;
-		MetaData.Timeout = arguments.timeout;
-		MetaData.LastAccessTimeout = arguments.LastAccessTimeout;
-		MetaData.Created = now();
-		MetaData.LastAccesed = now();
-		//Set the metadata
-		setObjectMetaData(arguments.objectkey,MetaData);
+			var MetaData = structnew();
+			//Set new Object into cache.
+			instance.pool[arguments.objectKey] = arguments.MyObject;
+			//Create object's metdata
+			MetaData.hits = 1;
+			MetaData.Timeout = arguments.timeout;
+			MetaData.LastAccessTimeout = arguments.LastAccessTimeout;
+			MetaData.Created = now();
+			MetaData.LastAccesed = now();
+			//Set the metadata
+			setObjectMetaData(arguments.objectkey,MetaData);
 		</cfscript>
 	</cffunction>
 
