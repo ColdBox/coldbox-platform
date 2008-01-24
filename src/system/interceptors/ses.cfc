@@ -110,17 +110,8 @@ Description :
 		<!--- ************************************************************* --->
 		<cfset var rc = event.getCollection()>
 		
-		<!--- If they're accessing a default action explicity, and unique URLs are on --->
-		<cfif getUniqueURLs()
-				AND StructKeyExists(arguments.course,"handler") 
-				AND StructKeyExists(arguments.course,"action")
-				AND arguments.course.action EQ getDefaultFrameworkAction()>
-			<cfheader statuscode="301" statustext="Moved permanently" />
-			<cfheader name="Location" value="#getBaseURL()#/#arguments.course.handler##serializeURL('',event)#" />
-			<cfabort />
-			
 		<!--- If handler is set --->		
-		<cfelseif StructKeyExists(arguments.course,"handler")>
+		<cfif StructKeyExists(arguments.course,"handler")>
 			<cfparam name="arguments.course.action" default="#getDefaultFrameworkAction()#" />
 			<cfset rc[getSetting('EventName')] = arguments.course.handler & "." & arguments.course.action />
 		</cfif>
