@@ -402,7 +402,7 @@ Description		: This is the main ColdBox front Controller.
 		</cfloop>
 		
 		<!--- Flash Save it --->
-		<cfset getPlugin("sessionstorage").setVar('_coldbox_persistStruct', PersistStruct)>
+		<cfset getPlugin("sessionStorage").setVar('_coldbox_persistStruct', PersistStruct)>
 	</cffunction>
 	
 <!------------------------------------------- PRIVATE ------------------------------------------->
