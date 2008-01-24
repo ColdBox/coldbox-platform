@@ -173,22 +173,25 @@ Modification History:
 		<!--- ************************************************************* --->
 		<cfargument name="objectKey" type="string" required="true">
 		<!--- ************************************************************* --->
-		<cfset var Results = false>
+		<cfset var ClearCheck = false>
 		<cfset var interceptMetadata = structnew()>
 		
 		<!--- Remove Object --->
 		<cflock type="exclusive" name="#getLockName()#" timeout="30">
 			<cfif getobjectPool().lookup(arguments.objectKey)>
-				<cfset Results = getobjectPool().clearKey(arguments.objectKey)>
+				<cfset ClearCheck = getobjectPool().clearKey(arguments.objectKey)>
 			</cfif>
 		</cflock>
 		
-		<!--- InterceptMetadata --->
-		<cfset interceptMetadata.cacheObjectKey = arguments.objectKey>
-		<!--- Execute afterCacheElementInsert Interception --->
-		<cfset getController().getInterceptorService().processState("afterCacheElementRemoved",interceptMetadata)>
+		<!--- Only fire if object removed. --->
+		<cfif ClearCheck>
+			<!--- InterceptMetadata --->
+			<cfset interceptMetadata.cacheObjectKey = arguments.objectKey>
+			<!--- Execute afterCacheElementInsert Interception --->
+			<cfset getController().getInterceptorService().processState("afterCacheElementRemoved",interceptMetadata)>
+		</cfif>
 		
-		<cfreturn Results>
+		<cfreturn ClearCheck>
 	</cffunction>
 	
 	<!--- ************************************************************* --->
