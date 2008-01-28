@@ -32,6 +32,13 @@ Description :
 			else{
 				setDebugMode(getProperty("debugMode"));
 			}
+			/* DI Complete Method */
+			if(propertyExists("completeDIMethodName")){
+				setCompleteDIMethodName(getProperty("completeDIMethodName"));
+			}
+			else{
+				setCompleteDIMethodName('onDIComplete');
+			}
 		</cfscript>
 	</cffunction>
 
@@ -173,6 +180,10 @@ Description :
 					}
 					
 				}//end for loop of dependencies.
+				
+				/* Process After ID Complete */
+				processAfterCompleteDI(targetObject);
+				
 			}//if autowiring			
 		</cfscript>
 	</cffunction>
@@ -226,6 +237,20 @@ Description :
 		</cfinvoke>
 	</cffunction>
 	
+	<!--- Process After DI Complete --->
+	<cffunction name="processAfterCompleteDI" hint="see if we have a method to call after DI, and if so, call it" access="private" returntype="void" output="false">
+		<!--- ************************************************************* --->
+		<cfargument name="targetObject" hint="the target object to call on" type="any" required="Yes">
+		<!--- ************************************************************* --->
+		<cfset var meta = 0 />
+		<cfif StructKeyExists(arguments.targetObject, getCompleteDIMethodName())>
+			<cfset meta = getMetaData(arguments.targetObject[getCompleteDIMethodName()]) />
+			<cfif NOT StructKeyExists(meta, "access") OR meta.access eq "public">
+				<cfinvoke component="#arguments.targetObject#" method="#getCompleteDIMethodName()#" />
+			</cfif>
+		</cfif>
+	</cffunction>
+	
 	<!--- Get a new MD cache entry structure --->
 	<cffunction name="getNewMDEntry" access="private" returntype="struct" hint="Get a new metadata entry structure" output="false" >
 		<cfscript>
@@ -256,6 +281,19 @@ Description :
 	<cffunction name="setdebugMode" access="private" output="false" returntype="void" hint="Set debugMode">
 		<cfargument name="debugMode" type="boolean" required="true"/>
 		<cfset instance.debugMode = arguments.debugMode/>
+	</cffunction>
+	
+	<!--- Method to be called after DI --->
+	<cffunction name="getCompleteDIMethodName" access="private" returntype="string" output="false">
+		<cfreturn instance.completeDIMethodName />
+	</cffunction>
+	<cffunction name="setCompleteDIMethodName" access="private" returntype="void" output="false">
+		<cfargument name="completeDIMethodName" type="string" required="true">
+		<cfset instance.completeDIMethodName = arguments.completeDIMethodName />
+	</cffunction>
+
+	<cffunction name="hasCompleteDIMethodName" hint="do we have a after complete DI method" access="private" returntype="boolean" output="false">
+		<cfreturn StructKeyExists(instance, "completeDIMethodName") />
 	</cffunction>
 
 </cfcomponent>
