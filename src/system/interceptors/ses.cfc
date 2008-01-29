@@ -221,7 +221,7 @@ Description :
 		</cfif>
 		
 		<!--- Remove the leading slash in the request (if there was something more than just a slash to begin with) to match our routes --->
-		<cfif len(requestString) GT 1>
+		<cfif len(requestString) GT 1 and left(requestString,1) eq "/">
 			<cfset requestString = right(requestString,len(requestString)-1) />
 		</cfif>
 		<cfif right(requestString,1) IS NOT "/">
