@@ -24,7 +24,7 @@ Description :
 			
 			/* If AppMapping is not Blank check */
 			if( getController().getSetting('AppMapping') neq "" ){
-				configFilePath = configFilePath & getController().getSetting('AppMapping') & "/"
+				configFilePath = configFilePath & getController().getSetting('AppMapping') & "/";
 			}
 			
 			/* Setup the default properties */
