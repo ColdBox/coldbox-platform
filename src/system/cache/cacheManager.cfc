@@ -331,38 +331,42 @@ Modification History:
 
 	<cffunction name="reap" access="public" output="false" returntype="void" hint="Reap the cache.">
 		<cfscript>
-			var key = "";
-			var objStruct = getObjectPool().getpool_metadata();
+			var keyIndex = 1;
+			var poolStruct = getObjectPool().getpool_metadata();
+			var poolKeys = listToArray(structKeyList(poolStruct));
+			var poolKeysLength = ArrayLen(poolKeys);
+			var thisKey = "";
 			var ccBean = getCacheConfigBean();
+			
+			//Check reaping frequency
+			if ( dateDiff("n", getCacheStats().getlastReapDatetime(), now() ) gte ccBean.getCacheReapFrequency() ){
 
-			//Check if no data in pool
-			if (not structisEmpty(objStruct)){
-
-				//Check reaping frequency
-				if ( dateDiff("n", getCacheStats().getlastReapDatetime(), now() ) gte ccBean.getCacheReapFrequency() ){
-
-					//Reaping about to start, set new reaping date.
-					getCacheStats().setlastReapDatetime( now() );
-
-					//Loop Through Metadata
-					for (key in objStruct){
-						//Override Timeout Check
-						if ( objStruct[key].Timeout gt 0 ){
-							//Check for creation timeouts and clear
-							if ( dateDiff("n", objStruct[key].created, now() ) gte objStruct[key].Timeout ){
-								clearKey(key);
-								continue;
-							}
-							//Check for last accessed timeouts. If object has not been accessed in the default span
-							if ( ccBean.getCacheUseLastAccessTimeouts() and 
-							     dateDiff("n", objStruct[key].lastAccesed, now() ) gte ccBean.getCacheObjectDefaultLastAccessTimeout() ){
-								clearKey(key);
-								continue;
-							}
-						}//end timeout gt 0
-					}//end for loop
-				}// end reaping frequency check
-			}//end if objects in pool
+				//Reaping about to start, set new reaping date.
+				getCacheStats().setlastReapDatetime( now() );
+				
+				//Loop Through Metadata
+				for (keyIndex=1; keyIndex lte poolKeysLength; keyIndex=keyIndex+1){
+					
+					//This Key
+					thisKey = poolKeys[keyIndex];
+					
+					//Override Timeout Check
+					if ( poolStruct[thisKey].Timeout gt 0 ){
+						//Check for creation timeouts and clear
+						if ( dateDiff("n", poolStruct[thisKey].created, now() ) gte poolStruct[thisKey].Timeout ){
+							clearKey(thisKey);
+							continue;
+						}
+						//Check for last accessed timeouts. If object has not been accessed in the default span
+						if ( ccBean.getCacheUseLastAccessTimeouts() and 
+						     dateDiff("n", poolStruct[thisKey].lastAccesed, now() ) gte ccBean.getCacheObjectDefaultLastAccessTimeout() ){
+							clearKey(thisKey);
+							continue;
+						}
+					}//end timeout gt 0
+					
+				}//end for loop
+			}// end reaping frequency check
 		</cfscript>
 	</cffunction>
 	
@@ -418,18 +422,16 @@ Modification History:
 
 	<cffunction name="expireAll" access="public" returntype="any" hint="Expire All Objects. Use this instead of clear() from within handlers or any cached object, this sets the metadata for the objects to expire in the next request. Note that this is not an inmmediate expiration. Clear should only be used from outside a cached object" output="false" >
 		<cfscript>
-			var key = "";
-			var objStruct = getObjectPool().getpool_metadata();
+			var keyIndex = 1;
+			var poolKeys = listToArray(structKeyList(getObjectPool().getpool_metadata()));
+			var poolKeysLength = ArrayLen(poolKeys);
 			
-			//Check if no data in pool
-			if (not structisEmpty(objStruct)){
-				//Loop Through Metadata and set expiration timeouts.
-				for (key in objStruct){
-					//Override Eternal Objects
-					if ( objStruct[key].Timeout gt 0 ){
-						objStruct[key].Timeout = 1;
-						objStruct[key].created = dateadd("n",-5,now());
-					}
+			//Loop Through Metadata
+			for (keyIndex=1; keyIndex lte poolKeysLength; keyIndex=keyIndex+1){
+				//Override for Eternal Objects
+				if ( getObjectPool().getMetadataProperty(poolKeys[keyIndex],"Timeout") gt 0 ){
+					getObjectPool().setMetadataProperty(poolKeys[keyIndex],"Timeout", 1);
+					getObjectPool().setMetadataProperty(poolKeys[keyIndex],"created", dateadd("n",-5,now()) );
 				}
 			}
 		</cfscript>
