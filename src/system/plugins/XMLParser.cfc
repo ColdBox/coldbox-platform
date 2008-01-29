@@ -343,6 +343,12 @@ Modification History:
 						ConfigStruct.AppMapping = "";
 				}
 			}
+			else{
+				/* Clean the first / if found */
+				if( len(ConfigStruct.AppMapping) eq 1 ){
+					ConfigStruct.AppMapping = "";
+				}
+			}
 			
 			/* ::::::::::::::::::::::::::::::::::::::::: COLDBOX SETTINGS VALIDATION :::::::::::::::::::::::::::::::::::::::::::: */
 			
