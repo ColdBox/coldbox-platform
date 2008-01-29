@@ -20,7 +20,12 @@ Description :
 
 	<cffunction name="Configure" access="public" returntype="void" hint="This is where the ses plugin configures itself." output="false" >
 		<cfscript>
-			var configFilePath = "/#getController().getSetting('AppMapping')#/";
+			var configFilePath = "/";
+			
+			/* If AppMapping is not Blank check */
+			if( getController().getSetting('AppMapping') neq "" ){
+				configFilePath = configFilePath & getController().getSetting('AppMapping') & "/"
+			}
 			
 			/* Setup the default properties */
 			set_courses( ArrayNew(1) );
