@@ -38,9 +38,9 @@
         <!--ColdBox Cache Parameter: Cache Reap Frequency in Minutes -->
         <Setting name="CacheReapFrequency" value="1"/>
         <!--ColdBox Cache Parameter: Maximum number of Objects in cache (0=Unlimited)-->
-        <Setting name="CacheMaxObjects" value="100"/>
+        <Setting name="CacheMaxObjects" value="50"/>
         <!--ColdBox Cache Parameter: Free JVM Memory % Threshold (0=not used)-->
-        <Setting name="CacheFreeMemoryPercentageThreshold" value="1"/>
+        <Setting name="CacheFreeMemoryPercentageThreshold" value="3"/>
         <!--ColdBox Cache Parameter: Whether reaping with default last access timeouts -->
         <Setting name="CacheUseLastAccessTimeouts" value="true"/> 
         <!--ColdBox Cache Parameter: The default eviction policy (LFU or LRU) -->

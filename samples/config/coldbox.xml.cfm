@@ -41,6 +41,7 @@
 		<Setting name="ColdboxReaderApp" value="applications/ColdBoxReader" />
 		<Setting name="cfcGeneratorApp" value="applications/cfcGenerator" />
 		<Setting name="TransferApp" value="applications/TransferSample" />
+		<Setting name="TransferApp2" value="applications/TransferSample2" />
 	</YourSettings>
 
 	<!--Optional,if blank it will use the CFMX administrator settings.-->
