@@ -385,12 +385,13 @@ Modification History:
 				if ( objStruct[LFUhitIndex[x]].Timeout gt 0 ){
 					//Evict it
 					expireKey(LFUhitIndex[x]);
+					//Record Eviction 
+					getCacheStats().setEvictionCount(getCacheStats().getEvictionCount()+1);
 					break;
 				}//end timeout gt 0
 			}//end for loop
 			
-			//Record Eviction 
-			getCacheStats().setEvictionCount(getCacheStats().getEvictionCount()+1);
+			
 		</cfscript>
 	</cffunction>
 
@@ -409,12 +410,11 @@ Modification History:
 				if ( objStruct[LRUhitIndex[x]].Timeout gt 0 ){
 					//Evict it
 					expireKey(LRUhitIndex[x]);
+					//Record Eviction 
+					getCacheStats().setEvictionCount(getCacheStats().getEvictionCount()+1);
 					break;
 				}//end timeout gt 0
 			}//end for loop
-			
-			//Record Eviction 
-			getCacheStats().setEvictionCount(getCacheStats().getEvictionCount()+1);
 		</cfscript>
 	</cffunction>
 

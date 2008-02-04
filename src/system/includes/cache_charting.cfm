@@ -10,10 +10,11 @@
 		</cfchart>
 		</td>
 		<td align="center">
-		<cfchart format="png" show3d="true" backgroundcolor="##ffffff" chartwidth="100">
+		<cfchart format="png" show3d="true" backgroundcolor="##ffffff" chartwidth="125">
 			<cfchartseries type="bar" colorlist="93C2FF,ED2939" >
 				<cfchartdata item="Hits" value="#controller.getColdboxOCM().getCacheStats().getHits()#">
 				<cfchartdata item="Misses" value="#controller.getColdboxOCM().getCacheStats().getMisses()#">
+				<cfchartdata item="Evictions" value="#controller.getColdboxOCM().getCacheStats().getEvictionCount()#">
 			</cfchartseries>
 		</cfchart>
 		</td>

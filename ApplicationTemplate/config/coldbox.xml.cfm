@@ -147,7 +147,7 @@
 		<ReapFrequency>1</ReapFrequency>
 		<MaxObjects>50</MaxObjects>
 		<FreeMemoryPercentageThreshold>3</FreeMemoryPercentageThreshold>
-		<EvictionPolicy>LFU</EvictionPolicy>
+		<EvictionPolicy>LRU</EvictionPolicy>
 	</Cache>
 	-->
 	
