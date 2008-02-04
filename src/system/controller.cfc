@@ -34,8 +34,7 @@ Description		: This is the main ColdBox front Controller.
 			
 			//TODO: change all this to object factory.
 			//Create & init ColdBox Services
-			if ( (this.oCFMLENGINE.getEngine() eq this.oCFMLENGINE.ADOBE and this.oCFMLENGINE.getVersion() gte 8) or
-			     (this.oCFMLENGINE.getEngine() eq this.oCFMLENGINE.BLUEDRAGON and this.oCFMLENGINE.getVersion() gte 7) ){
+			if ( this.oCFMLENGINE.isMT() ){
 				setColdboxOCM( CreateObject("component","coldbox.system.cache.MTcacheManager").init(this) );
 			}
 			else{
