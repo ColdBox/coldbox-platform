@@ -46,7 +46,23 @@ Description :
 			
 			return engine;
 		</cfscript>
-	</cffunction>	
+	</cffunction>
+	
+	<!--- Test if we can use MT --->
+	<cffunction name="isMT" access="public" returntype="boolean" hint="Checks if the engine is MT." output="false" >
+		<cfscript>
+			var version = getVersion();
+			var engine = getEngine();
+			
+			if ( (engine eq this.ADOBE and version gte 8) or
+				 (engine eq this.BLUEDRAGON and version gte 7) ){
+				return true;	 
+			}
+			else{
+				return false;
+			}
+		</cfscript>
+	</cffunction>
 
 <!------------------------------------------- PRIVATE ------------------------------------------->
 

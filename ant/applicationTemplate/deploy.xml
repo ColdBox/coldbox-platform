@@ -8,7 +8,7 @@
      section of the codlboxframework.com site.              
                                                                      
      ====================================================================== -->
-<project name="applicationtemplate.build" default="help" basedir="../../">
+<project name="coldbox.applicationtemplate.build" default="help" basedir="../../">
     <description>
             This covers zipping the application template, uploading to the downloads
     </description>

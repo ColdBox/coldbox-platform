@@ -44,9 +44,10 @@
 		  Cache Performance
 		</div>
 		<div class="fw_debugContentCell">
-		 <em>Ratio:</em> #NumberFormat(controller.getColdboxOCM().getCacheStats().getCachePerformanceRatio(),"999.99")#%  ==>
+		 <em>Hit Ratio:</em> #NumberFormat(controller.getColdboxOCM().getCacheStats().getCachePerformanceRatio(),"999.99")#%  ==>
 		 <em>Hits:</em> #controller.getColdboxOCM().getCacheStats().gethits()# |
-		 <em>Misses:</em> #controller.getColdboxOCM().getCacheStats().getmisses()#
+		 <em>Misses:</em> #controller.getColdboxOCM().getCacheStats().getmisses()# |
+		 <em>Evictions:</em> #controller.getColdboxOCM().getCacheStats().getEvictionCount()#
 		</div>
 
 		<div class="fw_debugTitleCell">
@@ -68,7 +69,14 @@
 		  Reap Frequency
 		</div>
 		<div class="fw_debugContentCell">
-		 Every #controller.getColdboxOCM().getCacheConfigBean().getCacheReapFrequency()# Minutes
+		 Every #controller.getColdboxOCM().getCacheConfigBean().getCacheReapFrequency()# Minute(s)
+		</div>
+		
+		<div class="fw_debugTitleCell">
+		  Eviction Policy
+		</div>
+		<div class="fw_debugContentCell">
+		 #controller.getColdboxOCM().getCacheConfigBean().getCacheEvictionPolicy()#
 		</div>
 
 		<div class="fw_debugTitleCell">
@@ -78,12 +86,14 @@
 		 #controller.getColdboxOCM().getCacheConfigBean().getCacheObjectDefaultTimeout()# Minutes
 		</div>
 
+		<cfif controller.getColdboxOCM().getCacheConfigBean().getCacheUseLastAccessTimeouts()>
 		<div class="fw_debugTitleCell">
 		  Last Access Timeout
 		</div>
 		<div class="fw_debugContentCell">
 		 #controller.getColdboxOCM().getCacheConfigBean().getCacheObjectDefaultLastAccessTimeout()# Minutes
 		</div>
+		</cfif>
 
 		<div class="fw_debugTitleCell">
 		  Total Objects in Cache

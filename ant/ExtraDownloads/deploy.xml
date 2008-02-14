@@ -6,7 +6,7 @@
      extradownloads              
                                                                      
      ====================================================================== -->
-<project name="coldbox.extradownloads.archive_and_deploy" basedir="." default="ftp.deploy">
+<project name="coldbox.extradownloads" basedir="." default="ftp.deploy">
     <description>
     	This covers zipping the samples, uploading to the downloads
     	     section of the codlboxframework.com site. 

@@ -5,7 +5,7 @@
         <Setting name="Author" value="Luis Majano"/>
         <Setting name="AuthorEmail" value="info@coldboxframework.com"/>
         <Setting name="AuthorWebsite" value="http://www.coldboxframework.com"/>
-        <Setting name="Suffix" value="Romanos 8:32"/>
+        <Setting name="Suffix" value="Gálatas 5:1"/>
         <Setting name="Version" value="2.5.2"/>
         <Setting name="Description" value="This is the ColdBox ColdFusion Framework for web applications."/>
         <Setting name="ModifyLogLocation" value="readme.txt"/>
@@ -44,7 +44,7 @@
         <!--ColdBox Cache Parameter: Whether reaping with default last access timeouts -->
         <Setting name="CacheUseLastAccessTimeouts" value="true"/> 
         <!--ColdBox Cache Parameter: The default eviction policy (LFU or LRU) -->
-        <Setting name="CacheEvictionPolicy" value="LFU"/>              
+        <Setting name="CacheEvictionPolicy" value="LRU"/>              
     </Settings>
     
     <!-- Conventions -->

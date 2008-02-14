@@ -214,12 +214,7 @@ Modification History:
 		<cfargument name="plugin" required="true" type="string" hint="The plugin to validate the path on.">
 		<cfscript>
 		//MT CFML Engine switch for MT Logger
-		if ( arguments.plugin eq "logger" and 
-			 (
-			 	(controller.oCFMLENGINE.getEngine() eq controller.oCFMLENGINE.ADOBE and controller.oCFMLENGINE.getVersion() gte 8) or
-	     		(controller.oCFMLENGINE.getEngine() eq controller.oCFMLENGINE.BLUEDRAGON and controller.oCFMLENGINE.getVersion() gte 7)
-			 )
-		   ){
+		if ( arguments.plugin eq "logger" and controller.oCFMLENGINE.isMT() ){
 			return "MTlogger";
 		}
 		return arguments.plugin;

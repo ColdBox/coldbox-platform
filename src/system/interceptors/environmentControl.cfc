@@ -56,11 +56,8 @@ Description :
 			setConfigFile(configFile);			
 			
 			//Verify the fireOnInit flag
-			if( not propertyExists('fireOnInit') ){
-				setProperty('fireOnInit',false);
-			}
-			if( not isBoolean(getProperty('fireOnInit')) ){
-				setProperty('fireOnInit',false);
+			if( not propertyExists('fireOnInit') or not isBoolean(getProperty('fireOnInit')) ){
+				setProperty('fireOnInit',true);
 			}
 			//Check if we need to fire the interception at configuration
 			if( getProperty('fireOnInit') ){
