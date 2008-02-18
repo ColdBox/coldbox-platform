@@ -30,9 +30,11 @@ Description :
 	
 	<!--- on Application Start --->
 	<cffunction name="onApplicationStart" returnType="boolean" output="false">
+		<cfset var start = getTickCOunt()>
 		<cfscript>
 			//Load ColdBox
 			loadColdBox();
+			request.fwloadTime = getTickCount() - start;
 			return true;
 		</cfscript>
 	</cffunction>
@@ -42,10 +44,11 @@ Description :
 		<!--- ************************************************************* --->
 		<cfargument name="targetPage" type="string" required="true" />
 		<!--- ************************************************************* --->
+		<cfset var start = getTickCount()>
 		<cfsetting enablecfoutputonly="yes">
-
 		<!--- Reload Checks --->
 		<cfset reloadChecks()>
+		<cfset request.fwLoadTIme = getTickCount() - start>
 		
 		<!--- Process A ColdBox Request Only --->
 		<cfif findNoCase('index.cfm', listLast(arguments.targetPage, '/'))>
