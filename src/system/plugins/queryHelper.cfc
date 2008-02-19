@@ -229,7 +229,7 @@ var InnerJoined = getPlugin("queryHelper","false").doInnerJoin(qry1,qry2,"fname"
 	                                    ToRowNumber = QryReturn.RecordCount 
 	                                    );
             }
-        }Catch(An e){
+        }Catch(Any e){
         	throw("Error in doQueryAppend():","#e.Detail#<br>#e.message#","Framework.plugins.queryHelper.InvalidQueryAppendException");
         }    
            return QryReturn;
