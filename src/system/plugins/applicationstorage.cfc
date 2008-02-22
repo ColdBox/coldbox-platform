@@ -71,7 +71,7 @@ Modification History:
 	</cffunction>
 
 	<!--- ************************************************************* --->
-	<cffunction name="exists" access="private" returntype="boolean" hint="Checks wether the permanent variable exists." output="false">
+	<cffunction name="exists" access="public" returntype="boolean" hint="Checks wether the permanent variable exists." output="false">
 		<!--- ************************************************************* --->
 		<cfargument  name="name" type="string" required="true" 	hint="The variable name to retrieve.">
 		<!--- ************************************************************* --->
