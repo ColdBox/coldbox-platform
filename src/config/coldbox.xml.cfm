@@ -28,7 +28,7 @@
 		<Setting name="ConfigAutoReload"			value="false" />
 		<Setting name="ExceptionHandler"     		value="" />
 		<Setting name="onInvalidEvent" 				value="" />
-		<Setting name="MyPluginsLocation" 			value="coldbox.myplugins"/>
+		<Setting name="MyPluginsLocation" 			value="applications.coldbox.testing.testplugins"/>
 		<Setting name="HandlersExternalLocation" 	value="applications.coldbox.testing.testhandlers"/>
 		<Setting name="HandlerCaching" 				value="false"/>
 		<Setting name="EventCaching" 				value="true"/>
