@@ -358,6 +358,16 @@ What gets returned on the FeedStructure:
 
 	<!--- ******************************************************************************** --->
 
+	<cffunction name="isDateISO8601" access="public" returntype="boolean" hint="Checks if a date is in ISO8601 Format" output="false" >
+		<cfargument name="datetime" required="true" type="string" hint="The datetime string to check">
+		<cfscript>
+			if( REFind("[[:digit:]]T[[:digit:]]", arguments.datetime) )
+				return true;
+			else
+				return false;
+		</cfscript>
+	</cffunction>
+
 <!---------------------------------------- PRIVATE --------------------------------------------------->
 
 	<cffunction name="parseFeed" access="private" returntype="struct" hint="This parses a feed as an xml doc and returns it as a structure of elements.">
@@ -412,8 +422,12 @@ What gets returned on the FeedStructure:
 				/* Author Email */			
 				if( find("@",feed.author) ) feed.authorEmail = feed.author;
 				/* Date & Date Updated */
-				feed.Date = parseRFC822(findCreatedDate(xmlDoc.xmlRoot.channel));
-				feed.DateUpdated = parseRFC822(findUpdatedDate(xmlDoc.xmlRoot.channel));
+				feed.Date = findCreatedDate(xmlDoc.xmlRoot.channel);
+				if( isDateISO8601(feed.Date) ) feed.Date = parseISO8601(feed.Date);
+				else feed.Date = parseRFC822(feed.Date);
+				feed.DateUpdated = findUpdatedDate(xmlDoc.xmlRoot.channel);
+				if( isDateISO8601(feed.DateUpdated) ) feed.DateUpdated = parseISO8601(feed.DateUpdated);
+				else feed.DateUpdated = parseRFC822(feed.DateUpdated);
 				/* Image */
 				if(StructKeyExists(xmlDoc.xmlRoot.channel,"image")) {
 					if(StructKeyExists(xmlDoc.xmlRoot.channel.image,"url")) feed.Image.URL = xmlDoc.xmlRoot.channel.image.url.xmlText;
@@ -576,8 +590,14 @@ What gets returned on the FeedStructure:
 					node.link = items[x].source.XmlAttributes.url;
 				}
 				/* Date and Updated Dates */
-				node.Date = parseRFC822(findCreatedDate(items[x]));
-				node.DateUpdated = parseRFC822(findUpdatedDate(items[x]));
+				node.Date = findCreatedDate(items[x]);
+				if( isDateISO8601(node.Date) ) node.Date = parseISO8601(node.Date);
+				else node.Date = parseRFC822(node.Date);
+				node.DateUpdated = findUpdatedDate(items[x]);
+				if( isDateISO8601(node.DateUpdated) ) node.DateUpdated = parseISO8601(node.DateUpdated);
+				else node.DateUpdated = parseRFC822(node.DateUpdated);
+				
+				
 				/* Enclosure */
 				if( structKeyExists(items[x],"enclosure") and structKeyExists(items[x].enclosure.XmlAttributes,"url") ){
 					node.enclosure = items[x].enclosure.XmlAttributes.url;
