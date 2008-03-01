@@ -105,6 +105,9 @@ What gets returned on the FeedStructure:
 				else if( directoryExists( ExpandPath(getSetting('rssReader_cacheLocation')) ) ){
 					setCacheLocation( ExpandPath(getSetting('rssReader_cacheLocation')) );
 				}
+				else if( directoryExists(getSetting('rssReader_cacheLocation')) ){
+					setCacheLocation( getSetting('rssReader_cacheLocation') );
+				}
 				else{
 					throw('The cache location directory could not be found. Please check again. #getSetting('rssReader_cacheLocation')#','','rss.rssReader.InvalidCacheLocationException');
 				}
