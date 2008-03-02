@@ -192,24 +192,23 @@ Modification History:
 			//If we need a layout or we haven't overriden the current layout enter if...
 		    if ( arguments.nolayout eq false and getValue("layoutoverride",false) eq false ){
 		    		
-			    	//Verify that the view has a layout in the viewLayouts structure, else do the default Layout.
-				    if ( StructKeyExists(instance.ViewLayouts, arguments.name) )
-						setValue("currentLayout",instance.ViewLayouts[arguments.name]);
-					else{
-						//Check the folders
-						for( key in instance.FolderLayouts ){
-							if ( findnocase(key, arguments.name) ){
-								setValue("currentLayout",instance.FolderLayouts[key]);
-								break;
-							}
+		    	//Verify that the view has a layout in the viewLayouts structure.
+			    if ( StructKeyExists(instance.ViewLayouts, arguments.name) )
+					setValue("currentLayout",instance.ViewLayouts[arguments.name]);
+				else{
+					//Check the folders structure
+					for( key in instance.FolderLayouts ){
+						if ( findnocase(key, arguments.name) ){
+							setValue("currentLayout",instance.FolderLayouts[key]);
+							break;
 						}
 					}
-					
-					//If not layout, then set default
-					if( not valueExists("currentLayout") ){
-						setValue("currentLayout", instance.defaultLayout);
-					}
-					
+				}
+				
+				//If not layout, then set default
+				if( not valueExists("currentLayout") ){
+					setValue("currentLayout", instance.defaultLayout);
+				}					
 			}
 			//Do we need to cache the view
 			if( arguments.cache ){
