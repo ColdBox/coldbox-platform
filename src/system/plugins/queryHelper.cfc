@@ -15,6 +15,45 @@ Modification History:
 qry1, qry2 joined on column name ('fname')
 var InnerJoined = getPlugin("queryHelper","false").doInnerJoin(qry1,qry2,"fname","fname");
 ----------------------------------------------------------------------->
+<!--- example test cases 
+<cfscript>
+	variables.q1 = queryNew('idt,fname,lname,phone,location');
+	variables.q2 = queryNew('idt,fname,lname,phone,location');
+	variables.q3 = queryNew('idt,fname,lname,telephone,city');
+</cfscript>
+
+<cfloop from="1" to="10" index="i">
+	<cfset queryAddRow(q1,1) />
+	<cfset querySetCell(q1, 'idt', '#i#')>
+	<cfset querySetCell(q1, 'fname', 'fname-q1-#chr(65 + i)#')>
+	<cfset querySetCell(q1, 'lname', 'lname-q1-#chr(65 + i)#')>
+	<cfset querySetCell(q1, 'phone', 'phone-q1-954-555-5555-#i#')>
+	<cfset querySetCell(q1, 'location', 'location-q1-#chr(65 + i)#')>
+</cfloop>
+
+<cfloop from="11" to="20" index="i">
+	<cfset queryAddRow(q2,1) />
+	<cfset querySetCell(q2, 'idt', '#i#')>
+	<cfset querySetCell(q2, 'fname', 'fname-q2-#chr(75 + i)#')>
+	<cfset querySetCell(q2, 'lname', 'lname-q2-#chr(75 + i)#')>
+	<cfset querySetCell(q2, 'phone', 'phone-q2-954-555-5555-#i#')>
+	<cfset querySetCell(q2, 'location', 'location-q2-#chr(75 + i)#')>
+</cfloop>
+
+<cfloop from="6" to="15" index="i">
+	<cfset queryAddRow(q3,1) />
+	<cfset querySetCell(q3, 'idt', '#i#')>
+	<cfset querySetCell(q3, 'fname', 'fname-q3-#chr(65 + i)#')>
+	<cfset querySetCell(q3, 'lname', 'lname-q3-#chr(65 + i)#')>
+	<cfset querySetCell(q3, 'telephone', 'phone-q3-954-555-5555-#i#')>
+	<cfset querySetCell(q3, 'city', 'location-q3-#chr(65 + i)#')>
+</cfloop>
+
+queryPlugin = getPlugin("queryHelper",false)
+queryPlugin.doInnerJoin(q1,q3,"idt","idt")
+queryPlugin.doLeftOuterJoin(q1,q3,"idt","idt")
+--->
+
 <cfcomponent name="queryHelper"
 			 hint="A query helper plugin."
 			 extends="coldbox.system.plugin"
@@ -71,35 +110,34 @@ var InnerJoined = getPlugin("queryHelper","false").doInnerJoin(qry1,qry2,"fname"
 
 	<!--- ************************************************************* --->
 	
-	<!--- ************************************************************* ---> 
-    <!--- Returns an array of the values in the given column            --->
-	<!--- QoQ is case sensitive so use same columns name as in query    --->
-	<!--- don't use local word ... this is reserved word in QoQ         --->
-    <!---------------------------------------------------------------------> 
-    <cffunction name="getColumnArray" access="public" returntype="array" output="false" hint="Returns an array of the values">
+	<!--- ********************************************************************* ---> 
+    <!--- Returns an array of the values in the given column                    --->
+	<!--- QoQ is case sensitive so use same columns name as in query            --->
+	<!--- don't use local word ... this is reserved word in QoQ                 --->
+    <!-----------------------------------------------------------------------------> 
+    <cffunction name="getColumnArray" access="public" returntype="any" output="false" hint="Returns an array of the values">
         <cfargument name="qry"			type="query"	required="true" hint="cf query" /> 
         <cfargument name="ColumnName"	type="string"	required="true" hint="column name" />
         <cfscript>
-            var stPrivate = structNew();
+            var arValues = ArrayNew(1);
             var i = 0;
              
-            stPrivate.arValues = arrayNew(1);
             if( arguments.qry.recordcount ){
-                arrayResize( stPrivate.arValues, arguments.qry.recordcount );
+                arrayResize( arValues, arguments.qry.recordcount );
                 
                 for( i = 1; i LTE arguments.qry.recordcount; i =i + 1 ){
-                    stPrivate.arValues[i] = arguments.qry[arguments.ColumnName][i];
+                    ArrayAppend(arValues, arguments.qry[arguments.ColumnName][i]);
                 }
             }            
-            return stPrivate.arValues ;
+            return arValues;
         </cfscript>
     </cffunction>
 	<!--- ************************************************************* --->
 	
-	<!--- ************************************************************* ---> 
-    <!--- Pass Column/s Name to get total/count of distinct values      --->
-	<!--- QoQ is case sensitive so use same columns name as in query    --->
-    <!--------------------------------------------------------------------->
+	<!--- ********************************************************************* ---> 
+    <!--- Pass Column/s Name to get total/count of distinct values              --->
+	<!--- QoQ is case sensitive so use same columns name as in query            --->
+    <!----------------------------------------------------------------------------->
     <cffunction name="getCountDistinct" access="public" returntype="numeric" output="false" hint="Returns total/count disninct values"> 
         <cfargument name="qry"			type="query"	required="true"  hint="cf query" />
         <cfargument name="ColumnName"	type="string"	required="true"  hint="column/s name" /> 
@@ -141,15 +179,15 @@ var InnerJoined = getPlugin("queryHelper","false").doInnerJoin(qry1,qry2,"fname"
 	<!--- ********************************************************************* --->
 	
 	<!--- ********************************************************************* --->
-	<!--------------------------------------------->
-    <!---  similar to inner join for QofQ's     --->
-    <!--------------------------------------------->
+    <!---  similar to inner join for QofQ's                                     --->
+    <!----------------------------------------------------------------------------->
     <cffunction name="doInnerJoin" access="public" returntype="query" output="false" hint="Return inner-joined Query"> 
         <cfargument name="qryLeft"		type="query" required="true" />
         <cfargument name="qryRight"		type="query" required="true" />
         <cfargument name="LeftJoinColumn"	type="string" required="true" /> 
         <cfargument name="RightJoinColumn"	type="string" required="true" />
-        <cfargument name="OrderByElement"	type="string" required="false" default="" /> 
+        <cfargument name="OrderByElement"	type="string" required="false" default="" />
+		<cfargument name="CaseSensitive"	type="boolean" required="false" default="false" />
 		<cfscript>
 			var qry1 = arguments.qryLeft;
 		    var qry2 = arguments.qryRight;
@@ -157,7 +195,8 @@ var InnerJoined = getPlugin("queryHelper","false").doInnerJoin(qry1,qry2,"fname"
 		    var lstLeftColumns	= "";
 		    var lstCols			= "";
 		    var QryReturn		= "";
-		    var qryTmpJoin		= "";
+		    var valueExists		= "";
+		    var bProceed		= false;
 		    var i = 0;	
 		try{	
 		    // get all the fields in qry_right that are not in qry_left
@@ -170,8 +209,22 @@ var InnerJoined = getPlugin("queryHelper","false").doInnerJoin(qry1,qry2,"fname"
 		    QryReturn = queryNew( lstCols );
 
 		    for( i = 1; i LTE qry1.recordcount; i = i + 1 ){
-		        // if the columns match
-		        if( qry1[arguments.LeftJoinColumn ][i] EQ qry2[arguments.RightJoinColumn][i] ){
+		    	bProceed = false;
+		    	
+		        if(CaseSensitive){
+		        	valueExists = ListFind(ArrayToList(getColumnArray(qry2,arguments.RightJoinColumn)),trim(qry1[arguments.LeftJoinColumn][i]));
+		        	if(valueExists GT 0){
+		        		bProceed = true;
+		        	}
+		        }
+		        else{
+		        	valueExists = ListFindNoCase(ArrayToList(getColumnArray(qry2,arguments.RightJoinColumn)),trim(qry1[arguments.LeftJoinColumn][i]));
+		        	if(valueExists GT 0){
+		        		bProceed = true;
+		        	}
+		        }
+		    	// if the columns match	        
+		        if( bProceed ){
 		            // add a row in query
 		            QueryAddRow( QryReturn );
 		            //get value into return-query
@@ -185,11 +238,12 @@ var InnerJoined = getPlugin("queryHelper","false").doInnerJoin(qry1,qry2,"fname"
 		            QryReturn = QrySetCell(  qryFrom = qry2, 
 		                                     qryTo = QryReturn,
 		                                     ArrayCols = ListToArray(lstRightColumns),
-		                                     FromRowNumber = i,
+		                                     FromRowNumber = valueExists,
 		                                     ToRowNumber = QryReturn.RecordCount 
 		                                 );
 		        }
 		    }
+		    
 		    if(len(arguments.OrderByElement)){
 		    	return sortQuery(qry = QryReturn, sortBy = arguments.OrderByElement );
 		    }
@@ -197,18 +251,112 @@ var InnerJoined = getPlugin("queryHelper","false").doInnerJoin(qry1,qry2,"fname"
 		    	return QryReturn;
 		    }
 		    
-		 }Catch(Any e){
+		 }catch(Any e){
 			throw("Error in doInnerJoin():","#e.Detail#<br>#e.message#","Framework.plugins.queryHelper.InvalidInnerJoinException");
 		 }
 		</cfscript>
 		
     </cffunction>
 	<!--- ********************************************************************* --->
-
+	
 	<!--- ********************************************************************* --->
-	<!--------------------------------------------->
-    <!--- Append From Query1 To Query2          --->
-    <!--------------------------------------------->
+    <!--- similar to left outer join for QofQ's                                 --->
+    <!----------------------------------------------------------------------------->
+    <cffunction name="doLeftOuterJoin" access="public" returntype="query" output="false" hint="Return left outer-joined Query"> 
+        <cfargument name="qryLeft"		type="query" required="true" />
+        <cfargument name="qryRight"		type="query" required="true" />
+        <cfargument name="LeftJoinColumn"	type="string" required="true" /> 
+        <cfargument name="RightJoinColumn"	type="string" required="true" />
+        <cfargument name="OrderByElement"	type="string" required="false" default="" />
+		<cfargument name="CaseSensitive"	type="boolean" required="false" default="false" />
+		<cfscript>
+			var qry1 = arguments.qryLeft;
+		    var qry2 = arguments.qryRight;
+		    var lstRightColumns	= "";
+		    var lstLeftColumns	= "";
+		    var lstCols			= "";
+		    var QryReturn		= "";
+		    var valueExists		= "";
+		    var ToRowNumber		= "";
+		    var i = 0;	
+		try{	
+		    // get all the fields in qry_right that are not in qry_left
+		    lstRightColumns	= getUnMatchedElements( FirstList=qry1.ColumnList , secondList=qry2.ColumnList );
+		    lstLeftColumns	= qry1.ColumnList;
+		             
+		    // full column list
+		    lstCols = listAppend( lstLeftColumns, lstRightColumns );
+		            
+		    QryReturn = queryNew( lstCols );
+			// add additional columns to qry1 as this these column might be empty or with values.
+			for( i = 1; i LTE ListLen(lstRightColumns); i = i + 1 ){
+				QueryAddColumn(qry1, ListGetAt(lstRightColumns, i), ArrayNew(1));
+			}
+					
+		    for( i = 1; i LTE qry1.recordcount; i = i + 1 ){
+		    	 // add a row in query
+		         QueryAddRow( QryReturn );
+		    	
+		        if(CaseSensitive){
+		        	valueExists = ListFind(ArrayToList(getColumnArray(qry2,arguments.RightJoinColumn)),trim(qry1[arguments.LeftJoinColumn][i]));
+		        }
+		        else{
+		        	valueExists = ListFindNoCase(ArrayToList(getColumnArray(qry2,arguments.RightJoinColumn)),trim(qry1[arguments.LeftJoinColumn][i]));
+		        }
+		        
+		    	// if the columns match	        
+		        if( valueExists GT 0 ){
+		            //get value into return-query
+		            QryReturn = QrySetCell(	qryFrom = qry1, 
+		                                    qryTo = QryReturn,
+		                                    ArrayCols = ListToArray(lstLeftColumns),
+		                                    FromRowNumber = i,
+		                                    ToRowNumber = QryReturn.RecordCount 
+		                                    );
+		            //get value into return-query                        
+		            QryReturn = QrySetCell(  qryFrom = qry2, 
+		                                     qryTo = QryReturn,
+		                                     ArrayCols = ListToArray(lstRightColumns),
+		                                     FromRowNumber = valueExists,
+		                                     ToRowNumber = QryReturn.RecordCount 
+		                                 );
+		        }
+		       else{
+		       		//get value into return-query
+		       		if(QryReturn.RecordCount EQ 0){
+		       			ToRowNumber = 1;
+		       		}
+		       		else{
+		       			ToRowNumber = QryReturn.RecordCount;
+		       		}
+		       		
+		            QryReturn = QrySetCell(	qryFrom = qry1, 
+		                                    qryTo = QryReturn,
+		                                    ArrayCols = ListToArray(lstCols),
+		                                    FromRowNumber = i,
+		                                    ToRowNumber = QryReturn.RecordCount 
+		                                    );
+		       }
+		    }
+		    
+		    if(len(arguments.OrderByElement)){
+		    	return sortQuery(qry = QryReturn, sortBy = arguments.OrderByElement );
+		    }
+		    else{
+		    	return QryReturn;
+		    }
+		    
+		 }catch(Any e){
+			throw("Error in doLeftOuterJoin():","#e.Detail#<br>#e.message#","Framework.plugins.queryHelper.InvalidInnerJoinException");
+		 }
+		</cfscript>
+		
+    </cffunction>
+	<!--- ********************************************************************* --->
+	
+	<!--- ********************************************************************* --->
+    <!--- Append From Query1 To Query2                                          --->
+    <!----------------------------------------------------------------------------->
     <cffunction name="doQueryAppend" access="public" returntype="query" output="false" hint="Append Query1 into Query2"> 
         <cfargument name="qryFrom"	type="query" required="true" hint="Append Query1 into Query2" />
         <cfargument name="qryTo"	type="query" required="true" hint="Query2 will have all record from Query1" />
@@ -237,12 +385,10 @@ var InnerJoined = getPlugin("queryHelper","false").doInnerJoin(qry1,qry2,"fname"
     </cffunction>
 	<!--- ********************************************************************* --->
 	
-	
 	<!--- ********************************************************************* --->
-	<!--------------------------------------------------------->
-	<!---Returns element which are only present in second-list--->
-	<!--------------------------------------------------------->
-	<cffunction name="getUnMatchedElements" access="private" returntype="string" output="false" hint="Returns element which are only present in second-list">
+	<!--- Returns element which are only present in second-list                 --->
+	<!----------------------------------------------------------------------------->
+	<cffunction name="getUnMatchedElements" access="public" returntype="string" output="false" hint="Returns element which are only present in second-list">
 		<cfargument name="FirstList"  type="string" required="true" hint="first list which be compared to second list" />
 		<cfargument name="secondList" type="string" required="true" hint="second list which be compared from first list" />
 		<cfscript>
@@ -258,7 +404,7 @@ var InnerJoined = getPlugin("queryHelper","false").doInnerJoin(qry1,qry2,"fname"
                 	sReturn = listAppend( sReturn, ArrayCols[i] );
                 }
             }
-            // return copy of the query with the new row appended
+            // Returns element which are only present in second-list
             return sReturn;
             
          }Catch(Any e){
@@ -270,9 +416,38 @@ var InnerJoined = getPlugin("queryHelper","false").doInnerJoin(qry1,qry2,"fname"
 	<!--- ********************************************************************* --->
 	
 	<!--- ********************************************************************* --->
-	<!--------------------------------------------------------->
+	<!--- Returns unique elements from two list                                 --->
+	<!----------------------------------------------------------------------------->
+	<cffunction name="getUniqueElements" access="public" returntype="any" output="false" hint="Returns unique elements from two list">
+		<cfargument name="FirstList"  type="string" required="true" hint="first list which be compared to second list" />
+		<cfargument name="secondList" type="string" required="true" hint="second list which be compared from first list" />
+		<cfscript>
+            var i = 0;
+            var sReturn	= "";
+            var CombinedList = arguments.FirstList;
+        try{ 
+        	CombinedList = ListAppend(CombinedList,arguments.secondList);
+            // loop over each column and insert value into query
+            for( i = 1; i LTE ListLen(CombinedList); i = i + 1 ){
+                // get the value of column
+                if(listFindNoCase( sReturn, listGetAt(CombinedList, i) ) EQ 0){
+                	sReturn = ListAppend( sReturn, listGetAt(CombinedList, i) );
+                }
+            }
+            // return unique list of elements
+            return sReturn;
+            
+         }Catch(Any e){
+			throw("Error in QrySetCell():","#e.Detail#<br>#e.message#","Framework.plugins.queryHelper.InvalidElementLoopException");
+		 }
+        </cfscript>
+		
+	</cffunction>
+	<!--- ********************************************************************* --->
+	
+	<!--- ********************************************************************* --->
     <!---copy value in a row from qryFrom to qryTo without adding additional row--->
-    <!---------------------------------------------------------> 
+    <!-----------------------------------------------------------------------------> 
     <cffunction name="QrySetCell" access="private" returntype="query" output="false" hint="Insert value into query">
         <cfargument name="qryFrom" type="query" required="true" /> 
         <cfargument name="qryTo" type="query" required="true" />
