@@ -112,7 +112,7 @@ Description :
 			/* Verify it exists else throw error */
 			if( getController().getColdboxOCM().lookup(interceptorKey) ){
 				throw(message="Interceptor class: #arguments.interceptorClass# not found in cache.",
-					  type="Framework.InterceptorService.InvalidInterceptionClass")
+					  type="Framework.InterceptorService.InvalidInterceptionClass");
 			}
 			else{
 				return getController().getColdboxOCM().get(interceptorKey);
