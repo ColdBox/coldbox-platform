@@ -141,13 +141,13 @@ queryPlugin.doLeftOuterJoin(q1,q3,"idt","idt")
     <cffunction name="getCountDistinct" access="public" returntype="numeric" output="false" hint="Returns total/count disninct values"> 
         <cfargument name="qry"			type="query"	required="true"  hint="cf query" />
         <cfargument name="ColumnName"	type="string"	required="true"  hint="column/s name" /> 
-        <cfset var stPrivate = structNew() />
+        <cfset var qryCount = "" />
 		
-        <cfquery name="stPrivate.qryCount" dbtype="query">
+        <cfquery name="qryCount" dbtype="query">
             SELECT DISTINCT #arguments.ColumnName# 
             FROM    arguments.qry
         </cfquery>
-		<cfreturn stPrivate.qryCount.RecordCount />
+		<cfreturn qryCount.RecordCount />
     </cffunction>
 	<!--- ************************************************************* --->
 	
@@ -160,19 +160,19 @@ queryPlugin.doLeftOuterJoin(q1,q3,"idt","idt")
 		<cfargument name="ColumnValue"	type="string"	required="true" hint="column value" />
         <cfargument name="ColumnName"	type="string"	required="true" hint="column name" />
         <cfscript>
-            var stPrivate = structNew();
+            var sTestVal = "";
+            var sThisVal = "";
             var i = 0;
             
-            stPrivate.sTestVal = trim(arguments.ColumnValue);
+            sTestVal = trim(arguments.ColumnValue);
              
             for( i = 1; i LTE arguments.qry.RecordCount; i = i + 1 ){
-                stPrivate.sThisVal = trim(arguments.qry[arguments.ColumnName][i]);
+                sThisVal = trim(arguments.qry[arguments.ColumnName][i]);
                
-                if( stPrivate.sThisVal EQ stPrivate.sTestVal ){
+                if( sThisVal EQ sTestVal ){
                     return i;
                 }
             }
-
             return 0;
         </cfscript>
     </cffunction> 	
@@ -388,7 +388,7 @@ queryPlugin.doLeftOuterJoin(q1,q3,"idt","idt")
 	<!--- ********************************************************************* --->
 	<!--- Returns element which are only present in second-list                 --->
 	<!----------------------------------------------------------------------------->
-	<cffunction name="getUnMatchedElements" access="public" returntype="string" output="false" hint="Returns element which are only present in second-list">
+	<cffunction name="getUnMatchedElements" access="private" returntype="string" output="false" hint="Returns element which are only present in second-list">
 		<cfargument name="FirstList"  type="string" required="true" hint="first list which be compared to second list" />
 		<cfargument name="secondList" type="string" required="true" hint="second list which be compared from first list" />
 		<cfscript>
@@ -408,7 +408,7 @@ queryPlugin.doLeftOuterJoin(q1,q3,"idt","idt")
             return sReturn;
             
          }Catch(Any e){
-			throw("Error in QrySetCell():","#e.Detail#<br>#e.message#","Framework.plugins.queryHelper.InvalidElementLoopException");
+			throw("Error in getUnMatchedElements():","#e.Detail#<br>#e.message#","Framework.plugins.queryHelper.InvalidElementLoopException");
 		 }
         </cfscript>
 		
@@ -418,7 +418,7 @@ queryPlugin.doLeftOuterJoin(q1,q3,"idt","idt")
 	<!--- ********************************************************************* --->
 	<!--- Returns unique elements from two list                                 --->
 	<!----------------------------------------------------------------------------->
-	<cffunction name="getUniqueElements" access="public" returntype="any" output="false" hint="Returns unique elements from two list">
+	<cffunction name="getUniqueElements" access="private" returntype="any" output="false" hint="Returns unique elements from two list">
 		<cfargument name="FirstList"  type="string" required="true" hint="first list which be compared to second list" />
 		<cfargument name="secondList" type="string" required="true" hint="second list which be compared from first list" />
 		<cfscript>
@@ -438,7 +438,7 @@ queryPlugin.doLeftOuterJoin(q1,q3,"idt","idt")
             return sReturn;
             
          }Catch(Any e){
-			throw("Error in QrySetCell():","#e.Detail#<br>#e.message#","Framework.plugins.queryHelper.InvalidElementLoopException");
+			throw("Error in getUniqueElements():","#e.Detail#<br>#e.message#","Framework.plugins.queryHelper.InvalidElementLoopException");
 		 }
         </cfscript>
 		
