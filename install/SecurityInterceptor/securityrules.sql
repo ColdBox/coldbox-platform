@@ -1,6 +1,7 @@
+--Primary key, can be anything you want.
+	
 CREATE TABLE securityrules
 (
-	--Primary key, can be anything you want.
 	securityrule_id VARCHAR(36) NOT NULL,
 	whitelist VARCHAR(255),
 	securelist VARCHAR(255),
