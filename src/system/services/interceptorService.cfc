@@ -101,6 +101,25 @@ Description :
 		</cfif>
 	</cffunction>
 	
+	<!--- Get Interceptor --->
+	<cffunction name="getInterceptor" access="public" output="false" returntype="any" hint="Get an interceptor">
+		<!--- ************************************************************* --->
+		<cfargument name="interceptorClass" required="true" type="string" hint="The qualified class of the itnerceptor to retrieve">
+		<!--- ************************************************************* --->
+		<cfscript>
+			var interceptorKey = this.INTERCEPTOR_CACHEKEY_PREFIX & arguments.interceptorClass;
+			
+			/* Verify it exists else throw error */
+			if( getController().getColdboxOCM().lookup(interceptorKey) ){
+				throw(message="Interceptor class: #arguments.interceptorClass# not found in cache.",
+					  type="Framework.InterceptorService.InvalidInterceptionClass")
+			}
+			else{
+				return getController().getColdboxOCM().get(interceptorKey);
+			}
+		</cfscript>
+	</cffunction>
+	
 	<!--- getter setter interceptionPoints --->
 	<cffunction name="getinterceptionPoints" access="public" output="false" returntype="string" hint="Get the interceptionPoints ENUM">
 		<cfreturn instance.interceptionPoints/>
