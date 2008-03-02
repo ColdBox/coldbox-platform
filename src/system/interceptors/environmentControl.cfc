@@ -38,20 +38,19 @@ Description :
 			if ( fileExists(getController().getAppRootPath() & getProperty('configFile')) ){
 				configFile = getController().getAppRootPath() & getProperty('configFile');
 			}
-			if( fileExists(getController().getAppRootPath() & getSetting("OSFileSeparator",true) & getProperty('configFile'))  ){
+			else if( fileExists(getController().getAppRootPath() & getSetting("OSFileSeparator",true) & getProperty('configFile'))  ){
 				configFile = getController().getAppRootPath() & getSetting("OSFileSeparator",true) & getProperty('configFile');
 			}
 			else if( fileExists( ExpandPath(getProperty('configFile')) ) ){
 				configFile = ExpandPath( getProperty('configFile') );
 			}
+			else if( fileExists( getProperty('configFile') ) ){
+				configFile = getProperty('configFile');
+			}
 			else{
-				throw('Config File could not be located. Please check again.','','interceptors.environmentControl.configFileNotFound');
+				throw('Config File could not be located: #getProperty('configFile')#. Please check again.','','interceptors.environmentControl.configFileNotFound');
 			}
 			
-			//Does it exist
-			if ( not fileExists(configFile) ){
-				throw("The config file does not exist at the following location: #configFile#.",'','interceptors.environmentControl.configFileNotFound');
-			}
 			//Verified, set it
 			setConfigFile(configFile);			
 			
