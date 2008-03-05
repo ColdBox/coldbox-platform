@@ -130,6 +130,8 @@
 		var Position = "";
 		var Count = 1;
 		var ConfigCount = 1;
+		var Key	= "";
+		
 		If (StructCount(variables.Config[arguments.ObjectName].ConstructorDependencyStruct))
 			{ObjectDependencyList = StructKeyList(variables.Config[arguments.ObjectName].ConstructorDependencyStruct);}
 
@@ -216,6 +218,7 @@
 		var ObjectPath = "";
 		var ObjectFactory = "";
 		var ObjectMethod = "";
+		var Key	= "";
 		// Get any constructor properties
 		If (StructKeyExists(variables.Config[arguments.ObjectName], "ConstructorProperties"))
 			{InitStruct = variables.Config[arguments.ObjectName].ConstructorProperties;}
