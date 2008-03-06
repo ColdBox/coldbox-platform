@@ -227,8 +227,13 @@ Modification History:
 			<td align="right" width="15%" class="fw_debugTablesTitles">#lcase(vars)#:</td>
 			<td  class="fw_debugTablesCells">
 			<cfif isSimpleValue(varVal) >
-				<cfif varVal eq ""><span class="fw_redText">N/A</span></cfif> #varVal#
+				<cfif varVal eq "">
+					<span class="fw_redText">N/A</span>
+				<cfelse>
+					#htmlEditFormat(varVal)#
+				</cfif>
 			<cfelse>
+				<!--- Max Display For Queries  --->
 				<cfif isQuery(varVal) and (varVal.recordCount gt 50)>
 					<cfquery name="varVal" dbType="query" maxrows="50">
 						select * from varVal
