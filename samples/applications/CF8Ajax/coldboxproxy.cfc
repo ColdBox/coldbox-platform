@@ -66,12 +66,31 @@ Description :
 		
 		<cfset arguments["event"] = "ehGeneral.doEmployees">
 		<!--- Anything before --->
-		
+		<!--- just a dummy thread sleep --->
+		<cfset sleep(2000)>
 		<!--- Call the actual proxy --->
 		<cfset qry = super.process(argumentCollection=arguments)>
 
 		<!--- Anything after --->
 		<cfreturn qry>
+	</cffunction>
+	
+	<cffunction name="validateCredentials" output="false" access="remote" returntype="boolean" hint="Process a remote call and return data/objects back.">
+		<cfargument name="username" type="string">
+		<cfargument name="password" type="string">
+		<!--- set event handler --->
+		<cfset arguments["event"] = "ehGeneral.validateCredentials">
+		
+		<!--- just a dummy thread sleep --->
+		<cfset sleep(500)>
+		<!--- Call the actual proxy --->
+		<!--- <cfset qry = super.process(argumentCollection=arguments)> --->
+		<!--- this is dummy code to verify username and [password] --->
+		<cfif username eq "guest" and password eq "guest">
+			<cfreturn true>	
+		<cfelse>
+			<cfreturn false>	
+		</cfif>
 	</cffunction>
 	
 </cfcomponent>

@@ -1,3 +1,16 @@
+<!-----------------------------------------------------------------------
+********************************************************************************
+Copyright 2005-2007 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+www.coldboxframework.com | www.luismajano.com | www.ortussolutions.com
+********************************************************************************
+
+Author     :	Sana Ullah
+Date        :	March 05 2008
+Description :
+	This proxy is an inherited coldbox remote proxy used for enabling
+	coldbox as a model framework.
+----------------------------------------------------------------------->
+
 <!--- Declare the CF Ajax Proxy HERE --->
 <cfajaxproxy cfc="#rc.locColdBoxProxy#" jsclassname="cbProxy">
 
