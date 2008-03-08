@@ -93,4 +93,16 @@ Description :
 		</cfif>
 	</cffunction>
 	
+	<cffunction name="dspTab2" output="false" access="remote" returntype="any" hint="Process a remote call and return data/objects back.">
+		<cfset results = "" />
+		<!--- call even handler to get query data etc --->
+		<cfset arguments["event"] = "ehGeneral.dspTab2">
+
+		<!--- just a dummy thread sleep --->
+		<cfset sleep(2000)>
+		<!--- Call the actual proxy --->
+		<cfset results = super.process(argumentCollection=arguments)>
+		<cfreturn results>
+	</cffunction>
+	
 </cfcomponent>
