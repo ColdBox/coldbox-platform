@@ -22,89 +22,101 @@ Modification History:
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
-	<cffunction name="init" access="public" returntype="ioc" output="false">
-		<cfargument name="controller" type="any" required="true">
-		<cfset super.Init(arguments.controller) />
-		<cfset setpluginName("IoC")>
-		<cfset setpluginVersion("1.0")>
-		<cfset setpluginDescription("This is an inversion of control plugin.")>
-		
-		<!--- Local properties --->
-		<cfset instance.IOCFramework = getSetting("IOCFramework")>
-		<cfset instance.IOCDefinitionFile = getSetting("IOCDefinitionFile")>
-		<cfset instance.ExpandedIOCDefinitionFile = "">
-		<cfset instance.IoCFactory = structNew()>
-		
-		<!--- Constants --->
-		<cfset instance.COLDSPRING_FACTORY = getSetting("ColdspringBeanFactory",true)>
-		<cfset instance.LIGHTWIRE_FACTORY = getSetting("LightWireBeanFactory",true)>
-		
-		<!--- Return Instance --->
-		<cfreturn this>
+	<cffunction name="init" access="public" returntype="ioc" output="false" hint="The ioc constructor">
+		<!--- ************************************************************* --->
+		<cfargument name="controller" type="any" required="true" hint="coldbox.system.controller">
+		<!--- ************************************************************* --->
+		<cfscript>
+			super.Init(arguments.controller);
+			
+			/* Plugin Properties */
+			setpluginName("IoC");
+			setpluginVersion("2.0");
+			setpluginDescription("This is an inversion of control plugin.");
+			
+			/* Local Properties */
+			
+			/* Setup the framework chosen in the config */
+			setIOCFramework( getSetting("IOCFramework") );
+			/* Setup the ioc definition file or cfc from the config */
+			setIOCDefinitionFile( getSetting("IOCDefinitionFile") );
+			/* Setup the initial expanded file */
+			setExpandedIOCDefinitionFile("");
+			/* Create an empty factory placeholder */
+			setIOCFactory( structNew() );
+			
+			/* Constants, from the framework settings. The instantiation paths for the frameworks. */
+			setCOLDSPRING_FACTORY( getSetting("ColdspringBeanFactory",true) );
+			setLIGHTWIRE_FACTORY( getSetting("LightWireBeanFactory",true) );
+			
+			/* Return instance. */
+			return this;
+		</cfscript>
 	</cffunction>
 
 <!------------------------------------------- PUBLIC ------------------------------------------->
 
-	<!--- ************************************************************* --->
-
+	<!--- Configure the plugin --->
 	<cffunction name="configure" access="public" returntype="void" hint="Configure the IoC Plugin. Loads the IoC Factory and configures it." output="false">
-
 		<!--- Load the appropriate ioc Framework Bean Factory --->
-		<cfswitch expression="#lcase(instance.IOCFramework)#">
+		<cfswitch expression="#lcase(getIOCFramework())#">
 
 			<cfcase value="coldspring">
 				<!--- Check the services file First --->
 				<cfset validateDefinitionFile()>
-				<cfset instance.IoCFactory = createColdspring()>
+				<cfset setIoCFactory( createColdspring() )>
 			</cfcase>
 
 			<cfcase value="lightwire">
-				<cfset instance.IoCFactory = createLightWire()>
+				<cfset setIoCFactory( createLightWire() )>
 			</cfcase>
 
 			<cfdefaultcase>
-				<cfthrow type="Framework.plugins.ioc.InvalidIoCFramework" message="The only available IoC supported frameworks are coldspring and lightwire. You chose: #instance.IOCFramework#">
+				<cfthrow type="Framework.plugins.ioc.InvalidIoCFramework" message="The only available IoC supported frameworks are coldspring and lightwire. You chose: #getIOCFramework()#">
 			</cfdefaultcase>
 		</cfswitch>
 
 	</cffunction>
 
-	<!--- ************************************************************* --->
-
-	<cffunction name="reloadDefinitionFile" access="public" output="false" returntype="void" hint="Reloads the IoC factory with the Definition File">
-		<cfswitch expression="#lcase(instance.IOCFramework)#">
+	<!--- Reload the Definition File --->
+	<cffunction name="reloadDefinitionFile" access="public" output="false" returntype="void" hint="Reloads the IoC factory with the Definition File or Object">
+		
+		<cfswitch expression="#lcase(getIOCFramework())#">
 
 			<cfcase value="coldspring">
-				<cfset instance.IoCFactory.loadBeansFromXmlFile( instance.ExpandedIOCDefinitionFile )>
+				<cfset getIoCFactory().loadBeansFromXmlFile( getExpandedIOCDefinitionFile() )>
 			</cfcase>
 
 			<cfcase value="lightwire">
-				<cfset instance.IoCFactory.init(createLightwireConfigBean())>
+				<cfset getIoCFactory().init( createLightwireConfigBean() )>
 			</cfcase>
 
 		</cfswitch>
 	</cffunction>
 
-	<!--- ************************************************************* --->
-
-	<cffunction name="getBean" access="public" output="false" returntype="any" hint="Facade to get Bean">
-		<cfargument name="beanName" type="string" required="true">
+	<!--- Get a Bean --->
+	<cffunction name="getBean" access="public" output="false" returntype="any" hint="Get a Bean from the object factories">
+		<!--- ************************************************************* --->
+		<cfargument name="beanName" type="string" required="true" hint="The bean name to retrieve from the object factory">
+		<!--- ************************************************************* --->
 		<cfset var oBean = "">
 		<cfset var beanKey = "ioc_" & arguments.beanName>
 		<cfset var MetaData = structNew()>
 		<cfset var objTimeout = "">
 		<cfset var objCaching = getSetting("IOCObjectCaching")>
 
-		<!--- Check if IOC Caching is set --->
+		<!--- Check if IOC Caching is set, and if we have it cached. --->
 		<cfif objCaching and getColdBoxOCM().lookup(beanKey)>
 			<cfset oBean = getColdBoxOCM().get(beanKey)>
 		<cfelse>
+		
 			<!--- Get Bean from IOC Framework --->
-			<cfif lcase(instance.IOCFramework) eq "coldspring">
-				<cfset oBean = instance.IoCFactory.getBean(arguments.beanName)>
+			<cfif lcase(getIOCFramework()) eq "coldspring">
+				<cfset oBean = getIoCFactory().getBean(arguments.beanName)>
 			<cfelseif lcase(instance.IOCFramework) eq "lightwire">
-				<cfset oBean = instance.IoCFactory.getBean(arguments.beanName)>
+				<cfset oBean = getIoCFactory().getBean(arguments.beanName)>
 			</cfif>
+			
 			<!--- If Caching on, then set object in cache --->
 			<cfif objCaching>
 				<!--- Get Object's MetaData, For Caching --->
@@ -118,119 +130,147 @@ Modification History:
 					<cfif structKeyExists(MetaData,"cachetimeout") >
 						<cfset objTimeout = MetaData["cachetimeout"]>
 					</cfif>
+					<!--- Cache the object --->
 					<cfset getColdboxOCM().set(beanKey,oBean,objTimeout)>
 				</cfif>
 			</cfif>
+			
 		</cfif>
+		
 		<!--- Return Bean --->
 		<cfreturn oBean>
 	</cffunction>
 
-	<!--- ************************************************************* --->
+<!------------------------------------------- ACCESSOR/MUTATORS ------------------------------------------->
 
+
+	<!--- get/set the actual IoC Factory --->
 	<cffunction name="getIoCFactory" access="public" output="false" returntype="any" hint="Returns the IoC Factory in use.">
 		<cfreturn instance.IoCFactory>
 	</cffunction>
 	<cffunction name="setIoCFactory" access="public" output="false" returntype="void" hint="Override and set the IoCFactory">
-		<cfargument name="IoCFactory" type="string" required="true"/>
+		<cfargument name="IoCFactory" type="any" required="true"/>
 		<cfset instance.IoCFactory = arguments.IoCFactory/>
 	</cffunction>
 
-	<!--- ************************************************************* --->
-
-	<cffunction name="getIOCFramework" access="public" output="false" returntype="string" hint="Get IOCFramework">
+	<!--- get/set which IoC Framework is Used --->
+	<cffunction name="getIOCFramework" access="public" output="false" returntype="string" hint="Gets the IoC Framework used: lightwire or coldspring">
 		<cfreturn instance.IOCFramework/>
 	</cffunction>
-	<cffunction name="setIOCFramework" access="public" output="false" returntype="void" hint="Set IOCFramework">
+	<cffunction name="setIOCFramework" access="public" output="false" returntype="void" hint="Set the IoC Framework used: lightwire or coldspring">
 		<cfargument name="IOCFramework" type="string" required="true"/>
 		<cfset instance.IOCFramework = arguments.IOCFramework/>
 	</cffunction>
 
-	<!--- ************************************************************* --->
-
-	<cffunction name="getIOCDefinitionFile" access="public" output="false" returntype="string" hint="Get IOCDefinitionFile">
+	<!--- get/set The Definition file --->
+	<cffunction name="getIOCDefinitionFile" access="public" output="false" returntype="string" hint="Get the IOCDefinitionFile">
 		<cfreturn instance.IOCDefinitionFile/>
 	</cffunction>
-	<cffunction name="setIOCDefinitionFile" access="public" output="false" returntype="void" hint="Set IOCDefinitionFile">
-		<cfargument name="IOCDefinitionFile" type="string" required="true"/>
+	<cffunction name="setIOCDefinitionFile" access="public" output="false" returntype="void" hint="Set the IOCDefinitionFile">
+		<cfargument name="IOCDefinitionFile" type="string" required="true" hint="The relative or absolute location of the coldspring main xml file."/>
 		<cfset instance.IOCDefinitionFile = arguments.IOCDefinitionFile/>
 	</cffunction>
 
-	<!--- ************************************************************* --->
-
-	<cffunction name="getExpandedIOCDefinitionFile" access="public" output="false" returntype="string" hint="Get ExpandedIOCDefinitionFile">
+	<!--- Get/set the Expanded IoC Definiton File --->
+	<cffunction name="getExpandedIOCDefinitionFile" access="public" output="false" returntype="string" hint="Get ExpandedIOCDefinitionFile, only used for coldspring">
 		<cfreturn instance.ExpandedIOCDefinitionFile/>
 	</cffunction>
-
 	<cffunction name="setExpandedIOCDefinitionFile" access="public" output="false" returntype="void" hint="Set ExpandedIOCDefinitionFile">
-		<cfargument name="ExpandedIOCDefinitionFile" type="string" required="true"/>
+		<cfargument name="ExpandedIOCDefinitionFile" type="string" required="true" hint="The expanded path of the main coldspring xml file"/>
 		<cfset instance.ExpandedIOCDefinitionFile = arguments.ExpandedIOCDefinitionFile/>
 	</cffunction>
 
-	<!--- ************************************************************* --->
+	<!--- get/set the Coldspring Factory Path --->
+	<cffunction name="getCOLDSPRING_FACTORY" access="public" output="false" returntype="string" hint="Get COLDSPRING_FACTORY. This is the instantiation path for coldspring">
+		<cfreturn instance.COLDSPRING_FACTORY/>
+	</cffunction>
+	<cffunction name="setCOLDSPRING_FACTORY" access="public" output="false" returntype="void" hint="Set COLDSPRING_FACTORY">
+		<cfargument name="COLDSPRING_FACTORY" type="string" required="true" hint="The instantiation path for coldspring"/>
+		<cfset instance.COLDSPRING_FACTORY = arguments.COLDSPRING_FACTORY/>
+	</cffunction>	
+	
+	<!--- get/set the Lightwire factory path --->
+	<cffunction name="getLIGHTWIRE_FACTORY" access="public" output="false" returntype="string" hint="Get LIGHTWIRE_FACTORY. This is the instantiation path for lightwire">
+		<cfreturn instance.LIGHTWIRE_FACTORY/>
+	</cffunction>	
+	<cffunction name="setLIGHTWIRE_FACTORY" access="public" output="false" returntype="void" hint="Set LIGHTWIRE_FACTORY">
+		<cfargument name="LIGHTWIRE_FACTORY" type="string" required="true" hint="This is the instantiation path for lightwire"/>
+		<cfset instance.LIGHTWIRE_FACTORY = arguments.LIGHTWIRE_FACTORY/>
+	</cffunction>
 
 <!------------------------------------------- PRIVATE ------------------------------------------->
 
-	<cffunction name="validateDefinitionFile" access="private" output="false" returntype="void" hint="Validate the IoC Definition File">
+	<!--- Validate the definition file --->
+	<cffunction name="validateDefinitionFile" access="private" output="false" returntype="void" hint="Validate the IoC Definition File. Called internally to verify the file location and get the correct path to it.">
 		<cfscript>
-		var ExpandedPath = ExpandPath(instance.IOCDefinitionFile);
-		var appRoot = getController().getAppRootPath();
-		
-		/* Clean app root */
-		if( right(appRoot,1) neq getSetting("OSFileSeparator",true) ){
-			appRoot = appRoot & getSetting("OSFileSeparator",true);
-		}		
-		/* Absolute Path Check */
-		if( fileExists(getIOCDefinitionFile()) ){
-			setExpandedIOCDefinitionFile( getIOCDefinitionFile() );
-		}
-		/* Relative App Path Check */
-		else if( fileExists(appRoot & getIOCDefinitionFile()) ){
-			setExpandedIOCDefinitionFile( appRoot & getIOCDefinitionFile() );
-		}
-		/* Expand Path Check */
-		else if( fileExists( expandPath(getIOCDefinitionFile()) ){
-			setExpandedIOCDefinitionFile( ExpandPath(getIOCDefinitionFile()) );
-		}
-		else{
-			throw("The definition file: #instance.IOCDefinitionFile# does not exist. Please check your path","","Framework.plugins.ioc.InvalidDefitinionFile");
-		}
+			var appRoot = getController().getAppRootPath();
+			
+			/* Clean app root */
+			if( right(appRoot,1) neq getSetting("OSFileSeparator",true) ){
+				appRoot = appRoot & getSetting("OSFileSeparator",true);
+			}		
+			
+			/* Absolute Path Check */
+			if( fileExists(getIOCDefinitionFile()) ){
+				setExpandedIOCDefinitionFile( getIOCDefinitionFile() );
+			}
+			/* Relative App Path Check */
+			else if( fileExists(appRoot & getIOCDefinitionFile()) ){
+				setExpandedIOCDefinitionFile( appRoot & getIOCDefinitionFile() );
+			}
+			/* Expand Path Check */
+			else if( fileExists( expandPath(getIOCDefinitionFile()) ) ){
+				setExpandedIOCDefinitionFile( ExpandPath(getIOCDefinitionFile()) );
+			}
+			else{
+				throw("The definition file: #getIOCDefinitionFile()# does not exist. Please check your path","","Framework.plugins.ioc.InvalidDefitinionFile");
+			}
 		</cfscript>
 	</cffunction>
-
+	
+	<!--- Create Coldspring --->
 	<cffunction name="createColdspring" access="private" output="false" returntype="any" hint="Creates the coldspring factory and configures it">
 		<cfscript>
-		var coldpsring = "";
-		//Get properties structure and add an element called coldbox_controller as a reference to the controller
-		var settingsStruct = StructNew();
-		//insert coldbox_controller
-		structInsert(settingsStruct,"coldbox_controller",controller);
-		//Copy the settings Structure
-		structAppend(settingsStruct, getSettingStructure());
-		//Create the Coldspring Factory
-		coldpsring = createObject("component",instance.COLDSPRING_FACTORY).init(structnew(),settingsStruct);
-		//Load Definition File
-		coldpsring.loadBeansFromXmlFile( instance.ExpandedIOCDefinitionFile );
-		return coldpsring;
+			var coldpsring = "";
+			var settingsStruct = StructNew();
+			
+			//insert coldbox_controller
+			structInsert(settingsStruct,"coldbox_controller",controller);
+			//Copy the settings Structure
+			structAppend(settingsStruct, getSettingStructure());
+			
+			//Create the Coldspring Factory
+			coldpsring = createObject("component",getCOLDSPRING_FACTORY()).init(structnew(),settingsStruct);
+			//Load Definition File
+			coldpsring.loadBeansFromXmlFile( getExpandedIOCDefinitionFile() );
+			
+			return coldpsring;
 		</cfscript>
 	</cffunction>
 
+	<!--- Create Lightwire --->
 	<cffunction name="createLightwire" access="private" output="false" returntype="any" hint="Creates the lightwire factory and configures it">
 		<cfscript>
 			var lightwire = "";
+			
 			// Create the LightWire Factory
-			lightwire = createObject("component", instance.LIGHTWIRE_FACTORY).init(createLightwireConfigBean());
+			lightwire = createObject("component", getLIGHTWIRE_FACTORY()).init(createLightwireConfigBean());
+			
 			return lightwire;
 		</cfscript>
 	</cffunction>
 	
+	<!--- Create Lightwire Config Bean --->
 	<cffunction name="createLightwireConfigBean" output="false" access="private" returntype="any" hint="Creates the lightwire config bean">
 		<cfscript>
 			var lightwireBeanConfig = "";
+			
 			//Create the lightwire Config Bean.
-			lightwireBeanConfig = CreateObject("component", instance.IOCDefinitionFile);
+			lightwireBeanConfig = CreateObject("component", getIOCDefinitionFile());
+			
 			//setter dependency on coldbox
 			lightwireBeanConfig.setController(getController());
+			
 			//return it			
 			return lightwireBeanConfig.init();
 		</cfscript>
