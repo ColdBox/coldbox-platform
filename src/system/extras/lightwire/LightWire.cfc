@@ -46,7 +46,7 @@
 	<cfargument name="ObjectName" type="string" required="yes" hint="I am the name of the object to generate.">
 	<!--- If the object doesn't exist, lazy load it  --->
 	<cfif not StructKeyExists(variables.Singleton, arguments.ObjectName)>
-		<cflock name="#ObjectName#Loading" timeout="5">
+		<cflock name="#ObjectName#Loading" timeout="5" throwontimeout="true">
 		<cfif not StructKeyExists(variables.Singleton, arguments.ObjectName)>
 			<cfset variables.Singleton[arguments.ObjectName] = variables.getObject(arguments.ObjectName,"Singleton")>
 		</cfif>
@@ -134,7 +134,7 @@
 		
 		If (StructCount(variables.Config[arguments.ObjectName].ConstructorDependencyStruct))
 			{ObjectDependencyList = StructKeyList(variables.Config[arguments.ObjectName].ConstructorDependencyStruct);}
-
+		
 		// Add the original object name to each element in the object dependency list for circular dependency checking
 		For (Count = 1; Count lte listlen(ObjectDependencyList); Count = Count + 1)
    		{ 
@@ -147,7 +147,7 @@
    		};
    		// Replace the original object dependency list with the one prepended with its dependency parent for circular dependency resolution checking
 		ObjectDependencyList = TempObjectDependencyList;
-						
+							
 		while (ListLen(ObjectDependencyList))
 		{
 			// Get the first object dependency set on the list
@@ -177,7 +177,7 @@
 					
 					// Add it to the list of dependent objects to create
 					ObjectstoCreateList = ListAppend(ObjectstoCreateList,LoopObjectName);			
-
+					
 					// And we need to add its dependencies to this list if it has any
 					If (StructCount(variables.Config[LoopObjectName].ConstructorDependencyStruct))
 					{
@@ -242,7 +242,11 @@
 			ObjectPath = Replace(ObjectPath,"..",".","all");
 			
 			// Create the object and initialize it
-			ReturnObject = CreateObject("component",ObjectPath).init(ArgumentCollection=InitStruct);
+			ReturnObject = CreateObject("component",ObjectPath);
+			//LuisMajano: Initialize if available. It might not have an init constructor
+			if( structKeyExists(ReturnObject,"init") ){
+				ReturnObject = ReturnObject.init(ArgumentCollection=InitStruct);
+			}
 		}
 		Else
 		{
@@ -330,9 +334,9 @@
 
 		// Always Mixin LightWire Factory
 		arguments.object.lightwireMixin("LightWire", variables.singleton.LightWire);			
-		
 		// Finally implement InitMethod if exists
-		If (Len(variables.Config[arguments.ObjectName].InitMethod) GT 0)
+		//LuisMajano, check if the initMethod property exists, else its a factoryBean.
+		If ( structKeyExists(variables.config[arguments.objectName],"InitMethod") and Len(variables.Config[arguments.ObjectName].InitMethod) GT 0)
 		{
 			InitMethod = variables.Config[arguments.ObjectName].InitMethod;
 			evaluate("arguments.object.#InitMethod#()");
@@ -356,4 +360,12 @@
 	<cfreturn ReturnString>
 </cffunction>
 
+	<cffunction name="dump" access="private" hint="Facade for cfmx dump" returntype="void">
+		<cfargument name="var" required="yes" type="any">
+		<cfdump var="#var#">
+	</cffunction>
+	<!--- Abort Facade --->
+	<cffunction name="abort" access="private" hint="Facade for cfabort" returntype="void" output="false">
+		<cfabort>
+	</cffunction>
 </cfcomponent>
