@@ -1,8 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <snippet filetemplate="true" extension="cfc">
- <name>Custom Plugin</name>
- <help>A new Custom Plugin</help>
- <starttext><![CDATA[<!-----------------------------------------------------------------------
+<name>CustomPlugin</name>
+<help>A new Custom Plugin</help>
+<starttext><![CDATA[<!-----------------------------------------------------------------------
+Author 	 :	$${Author}
+Date     :	$${DATE}
+Description : 			
+ $${Interceptor Description}
+		
+Modification History:
+
+----------------------------------------------------------------------->
+<cfcomponent name="$${Interceptor Name}" hint="$${Hint}" extends="coldbox.system.interceptor" output="false">
+  
+<!------------------------------------------- PUBLIC ------------------------------------------->	 	
+
+   
+    <cffunction name="configure" access="public" returntype="void" output="false" hint="Configure your interceptor">
+		
+	</cffunction>
+
+    
+
+<!------------------------------------------- PRIVATE ------------------------------------------->	 	
+
+
+</cfcomponent>
+<!-----------------------------------------------------------------------
 Author 	 :	$${Author}
 Date     :	$${DATE}
 Description : 			
@@ -11,9 +35,15 @@ Description :
 Modification History:
 
 ----------------------------------------------------------------------->
-<cfcomponent name="$${Plugin Name}" hint="$${Hint}" extends="coldbox.system.plugin" output="false">
+<cfcomponent name="$${Plugin Name}" 
+			 hint="$${Hint}" 
+			 extends="coldbox.system.plugin" 
+			 output="false" 
+			 autowire="$${Autowire:false|true}"
+			 cache="$${Cache:true|false}"
+			 cacheTimeout="$${Cache Timeout:0}">
   
-    <!--- ************************************************************* --->
+<!------------------------------------------- CONSTRUCTOR ------------------------------------------->	
    
     <cffunction name="init" access="public" returntype="$${CURRENTFILE}" output="false">
 		<cfargument name="controller" type="any" required="true">
@@ -28,9 +58,13 @@ Modification History:
   		return this;
 		</cfscript>
 	</cffunction>
+
+<!------------------------------------------- PUBLIC ------------------------------------------->	
+
     
-	<!--- ************************************************************* --->
+<!------------------------------------------- PRIVATE ------------------------------------------->	
+
 	
 </cfcomponent>]]></starttext>
- <endtext><![CDATA[]]></endtext>
+<endtext><![CDATA[]]></endtext>
 </snippet>

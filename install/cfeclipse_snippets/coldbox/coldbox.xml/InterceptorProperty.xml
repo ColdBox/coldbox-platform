@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<snippet filetemplate="false" extension="cfm">
+<name>InterceptorProperty</name>
+<help></help>
+<starttext><![CDATA[<Property name="$${Property Name}">$${Property Value}</Property>]]></starttext>
+<endtext><![CDATA[]]></endtext>
+</snippet>

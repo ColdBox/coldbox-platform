@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<snippet filetemplate="false" extension="cfm">
+<name>NewRemoteEvent</name>
+<help></help>
+<starttext><![CDATA[<!--- $${Event Name} --->
+<cffunction name="$${Event Name}" access="public" returntype="$${Return Type:any|array|binary|boolean|date|guid|numeric|query|string|struct|uuid|void|}"" output="false" hint="$${Hint}">
+	<cfargument name="Event" type="coldbox.system.beans.requestContext" required="yes">
+    <cfset var rc = event.getCollection()>
+        
+     
+</cffunction>]]></starttext>
+<endtext><![CDATA[]]></endtext>
+</snippet>
