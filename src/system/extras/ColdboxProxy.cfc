@@ -64,7 +64,10 @@ Description :
 			catch(Any e){
 				//Log Exception
 				cbController.getService("exception").ExceptionHandler(e,"coldboxproxy","Process Exception");
-				throw(e.message,e.detail & e.stacktrace,e.type);
+				if( not structKeyExists(e,"stacktrace") ){
+					e.stacktrace = "";
+				}
+				throw(e.message.toString(),e.detail.toString() & e.stacktrace.toString(),e.type.toString());
 			}
 			
 			//Determine what to return via the setting
@@ -130,13 +133,73 @@ Description :
 			return application.cbController;
 		</cfscript>
 	</cffunction>
+	
+	<!--- Facade: Get a plugin --->
+	<cffunction name="getPlugin" access="private" returntype="any" hint="Plugin factory, returns a new or cached instance of a plugin." output="true">
+		<cfargument name="plugin" 		type="string"  hint="The Plugin object's name to instantiate" >
+		<cfargument name="customPlugin" type="boolean" required="false" default="false" hint="Used internally to create custom plugins.">
+		<cfargument name="newInstance"  type="boolean" required="false" default="false" hint="If true, it will create and return a new plugin. No caching or persistance.">
+		<!--- ************************************************************* --->
+		<cfscript>
+		return getController().getPlugin(argumentCollection=arguments);
+		</cfscript>
+	</cffunction>
+	
+	<!--- Facade: Get the IOC Plugin. --->
+	<cffunction name="getIoCFactory" output="false" access="private" returntype="any" hint="Gets the IOC Factory in usage: coldspring or lightwire">
+		<cfscript>
+			return getController().getPlugin("ioc").getIoCFactory();
+		</cfscript>
+	</cffunction>
+	
+	<!--- Facade: Get the an ioc bean --->
+	<cffunction name="getBean" output="false" access="private" returntype="any" hint="Get a bean from the ioc plugin.">
+		<cfargument name="beanName" type="string" required="true" hint="The bean name to get."/>
+		<cfscript>
+			return getController().getPlugin("ioc").getBean(arguments.beanName);
+		</cfscript>
+	</cffunction>
+	
+	<!--- Facade: Get COldBox OCM --->
+	<cffunction name="getColdboxOCM" access="private" output="false" returntype="any" hint="Get ColdboxOCM: coldbox.system.cache.cacheManager">
+		<cfreturn getController().getColdboxOCM()/>
+	</cffunction>
+	
+	<!--- Bootstrapper LoadColdBox --->
+	<cffunction name="loadColdbox" access="private" output="false" returntype="void" hint="Load or bootsrap a coldbox application, and place the coldbox controller in application scope.">
+		<!--- ************************************************************* --->
+		<cfargument name="appMapping" 		type="string"  required="true" hint="The appMapping location of the coldbox application to load"/>
+		<cfargument name="configLocation" 	type="string"  required="true" hint="The absolute location of the config file to use"/>
+		<cfargument name="reloadApp" 		type="boolean" required="false" hint="Flag to reload the application or not"/>
+		<!--- ************************************************************* --->
+		<cfset var cbController = "">
+		
+		<!--- Reload Checks --->
+		<cfif not structKeyExists(application,"cbController") or not application.cbController.getColdboxInitiated() or arguments.reloadApp>
+			<cflock type="exclusive" name="#getAppHash()#" timeout="#getLockTimeout()#" throwontimeout="true">
+				<cfscript>
+				if ( not structkeyExists(application,"cbController") or not application.cbController.getColdboxInitiated() or arguments.reloadApp ){
+					/* Cleanup, Just in Case */
+					if( structKeyExists(application,"cbController") ){
+						structDelete(application,"cbController")
+					}
+					/* Load it Up baby!! */
+					cbController = CreateObject("component", "coldbox.system.controller").init( expandPath(arguments.AppMapping) );
+					cbController.getService("loader").setupCalls(arguments.configLocation,arguments.AppMapping);
+					/* Put in Scope */
+					application.cbController = cbController;
+				}				
+				</cfscript>
+			</cflock>
+		</cfif>		
+	</cffunction>
 
 	<!--- Throw Facade --->
 	<cffunction name="throw" access="private" hint="Facade for cfthrow" output="false">
 		<!--- ************************************************************* --->
-		<cfargument name="message" 	type="string" 	required="yes">
-		<cfargument name="detail" 	type="string" 	required="no" default="">
-		<cfargument name="type"  	type="string" 	required="no" default="Framework">
+		<cfargument name="message" 	type="any" 	required="yes">
+		<cfargument name="detail" 	type="any" 	required="no" default="">
+		<cfargument name="type"  	type="any" 	required="no" default="Framework">
 		<!--- ************************************************************* --->
 		<cfthrow type="#arguments.type#" message="#arguments.message#"  detail="#arguments.detail#">
 	</cffunction>
