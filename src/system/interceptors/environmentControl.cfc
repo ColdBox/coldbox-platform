@@ -29,21 +29,26 @@ Description :
 	<cffunction name="Configure" access="public" returntype="void" hint="This is the configuration method for your interceptors" output="false" >
 		<cfscript>
 			var configFile = "";
+			var appRoot = getController().getAppRootPath();
+		
+			/* Clean app root */
+			if( right(appRoot,1) neq getSetting("OSFileSeparator",true) ){
+				appRoot = appRoot & getSetting("OSFileSeparator",true);
+			}
 			
 			//Verify that the configFile propety is set
 			if( not propertyExists('configFile') ){
 				throw("Config File property does not exist. Please declare it.",'','interceptors.environmentControl.configFilePropertyNotDefined');
 			}
-			//Test if the file exists
-			if ( fileExists(getController().getAppRootPath() & getProperty('configFile')) ){
-				configFile = getController().getAppRootPath() & getProperty('configFile');
+			//Test if the file exists AS RELATIVE
+			if ( fileExists(appRoot & getProperty('configFile')) ){
+				configFile = appRoot & getProperty('configFile');
 			}
-			else if( fileExists(getController().getAppRootPath() & getSetting("OSFileSeparator",true) & getProperty('configFile'))  ){
-				configFile = getController().getAppRootPath() & getSetting("OSFileSeparator",true) & getProperty('configFile');
-			}
+			/* Test as expanded relative */
 			else if( fileExists( ExpandPath(getProperty('configFile')) ) ){
 				configFile = ExpandPath( getProperty('configFile') );
 			}
+			/* Test as absolute */
 			else if( fileExists( getProperty('configFile') ) ){
 				configFile = getProperty('configFile');
 			}

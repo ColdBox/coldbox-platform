@@ -219,17 +219,22 @@ and then extracted by this interceptor. They must be a valid rules query.
 			var xmlRules = "";
 			var x=1;
 			var node = "";
+			var appRoot = getController().getAppRootPath();
+		
+			/* Clean app root */
+			if( right(appRoot,1) neq getSetting("OSFileSeparator",true) ){
+				appRoot = appRoot & getSetting("OSFileSeparator",true);
+			}
 			
 			//Test if the file exists
-			if ( fileExists(getController().getAppRootPath() & getProperty('rulesFile')) ){
-				rulesFile = getController().getAppRootPath() & getProperty('rulesFile');
+			if ( fileExists(appRoot & getProperty('rulesFile')) ){
+				rulesFile = appRoot & getProperty('rulesFile');
 			}
-			else if( fileExists(getController().getAppRootPath() & getSetting("OSFileSeparator",true) & getProperty('rulesFile'))  ){
-				rulesFile = getController().getAppRootPath() & getSetting("OSFileSeparator",true) & getProperty('rulesFile');
-			}
+			/* Expanded Relative */
 			else if( fileExists( ExpandPath(getProperty('rulesFile')) ) ){
 				rulesFile = ExpandPath( getProperty('rulesFile') );
 			}
+			/* Absolute Path */
 			else if( fileExists( getProperty('rulesFile') ) ){
 				rulesFile = getProperty('rulesFile');
 			}
