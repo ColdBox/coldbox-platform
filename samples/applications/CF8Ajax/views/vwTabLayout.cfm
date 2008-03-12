@@ -16,8 +16,8 @@ Description : demo for using ajax tabs with event-model and proxy-model.
 	<cflayoutarea title="Tab 1" source="index.cfm?event=ehGeneral.dspTab1" name="tab1">
 	
 	</cflayoutarea>
-	
-	<cflayoutarea title="Tab 2" source="#rc.locColdBoxProxy#.cfc?method=dspTab2" name="tab2">
+	<!--- This binding is via local scope. --->
+	<cflayoutarea title="Tab 2" source="coldboxproxy.cfc?method=dspTab2&cfdebug" name="tab2">
 	
 	</cflayoutarea>
 
