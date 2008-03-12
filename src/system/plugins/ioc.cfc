@@ -174,13 +174,23 @@ Modification History:
 	<cffunction name="validateDefinitionFile" access="private" output="false" returntype="void" hint="Validate the IoC Definition File">
 		<cfscript>
 		var ExpandedPath = ExpandPath(instance.IOCDefinitionFile);
-		//Relative Path Check
-		if ( fileExists(ExpandedPath) ){
-			instance.ExpandedIOCDefinitionFile = ExpandedPath;
+		var appRoot = getController().getAppRootPath();
+		
+		/* Clean app root */
+		if( right(appRoot,1) neq getSetting("OSFileSeparator",true) ){
+			appRoot = appRoot & getSetting("OSFileSeparator",true);
+		}		
+		/* Absolute Path Check */
+		if( fileExists(getIOCDefinitionFile()) ){
+			setExpandedIOCDefinitionFile( getIOCDefinitionFile() );
 		}
-		//Full Path Check
-		else if ( fileExists(instance.IOCDefinitionFile)){
-			instance.ExpandedIOCDefinitionFile = instance.IOCDefinitionFile;
+		/* Relative App Path Check */
+		else if( fileExists(appRoot & getIOCDefinitionFile()) ){
+			setExpandedIOCDefinitionFile( appRoot & getIOCDefinitionFile() );
+		}
+		/* Expand Path Check */
+		else if( fileExists( expandPath(getIOCDefinitionFile()) ){
+			setExpandedIOCDefinitionFile( ExpandPath(getIOCDefinitionFile()) );
 		}
 		else{
 			throw("The definition file: #instance.IOCDefinitionFile# does not exist. Please check your path","","Framework.plugins.ioc.InvalidDefitinionFile");
