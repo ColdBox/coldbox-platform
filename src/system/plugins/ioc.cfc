@@ -109,7 +109,7 @@ Modification History:
 		<cfif objCaching and getColdBoxOCM().lookup(beanKey)>
 			<cfset oBean = getColdBoxOCM().get(beanKey)>
 		<cfelse>
-		
+			
 			<!--- Get Bean from IOC Framework --->
 			<cfif lcase(getIOCFramework()) eq "coldspring">
 				<cfset oBean = getIoCFactory().getBean(arguments.beanName)>
@@ -119,20 +119,22 @@ Modification History:
 			
 			<!--- If Caching on, then set object in cache --->
 			<cfif objCaching>
-				<!--- Get Object's MetaData, For Caching --->
-				<cfset MetaData = getMetaData(oBean)>
-				<!--- By Default, services with no cache flag are set to false --->
-				<cfif not structKeyExists(MetaData,"cache") or not isBoolean(MetaData.cache)>
-					<cfset MetaData.cache = false>
-				</cfif>
-				<!--- Test for caching parameters --->
-				<cfif MetaData["cache"]>
-					<cfif structKeyExists(MetaData,"cachetimeout") >
-						<cfset objTimeout = MetaData["cachetimeout"]>
+				<cflock name="ioc.objectCaching.#arguments.beanName#" type="exclusive" timeout="30" throwontimeout="true">
+					<!--- Get Object's MetaData, For Caching --->
+					<cfset MetaData = getMetaData(oBean)>
+					<!--- By Default, services with no cache flag are set to false --->
+					<cfif not structKeyExists(MetaData,"cache") or not isBoolean(MetaData.cache)>
+						<cfset MetaData.cache = false>
 					</cfif>
-					<!--- Cache the object --->
-					<cfset getColdboxOCM().set(beanKey,oBean,objTimeout)>
-				</cfif>
+					<!--- Test for caching parameters --->
+					<cfif MetaData["cache"]>
+						<cfif structKeyExists(MetaData,"cachetimeout") >
+							<cfset objTimeout = MetaData["cachetimeout"]>
+						</cfif>
+						<!--- Cache the object --->
+						<cfset getColdboxOCM().set(beanKey,oBean,objTimeout)>
+					</cfif>
+				</cflock>
 			</cfif>
 			
 		</cfif>
