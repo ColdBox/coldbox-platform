@@ -52,7 +52,7 @@ Description :
 		
 		<!--- Initialize the Controller If Needed--->
 		<cfif not structkeyExists(application,"cbController") or not application.cbController.getColdboxInitiated() or isfwReinit()>
-			<cflock type="exclusive" name="#getAppHash()#" timeout="#getLockTimeout()#">
+			<cflock type="exclusive" name="#getAppHash()#" timeout="#getLockTimeout()#" throwontimeout="true">
 				<cfif not structkeyExists(application,"cbController") or not application.cbController.getColdboxInitiated() or isfwReinit()>
 					<cfset loadColdBox()>
 				</cfif>
@@ -62,12 +62,12 @@ Description :
 				
 				<!--- AutoReload Tests --->
 				<cfif application.cbController.getSetting("ConfigAutoReload")>
-					<cflock type="exclusive" name="#getAppHash()#" timeout="#getLockTimeout()#">
+					<cflock type="exclusive" name="#getAppHash()#" timeout="#getLockTimeout()#" throwontimeout="true">
 						<cfset application.cbController.setAppStartHandlerFired(false)>
 						<cfset application.cbController.getService("loader").setupCalls(COLDBOX_CONFIG_FILE)>
 					</cflock>
 				<cfelseif application.cbController.getSetting("HandlersIndexAutoReload")>
-					<cflock type="exclusive" name="#getAppHash()#" timeout="#getLockTimeout()#">
+					<cflock type="exclusive" name="#getAppHash()#" timeout="#getLockTimeout()#" throwontimeout="true">
 						<cfset application.cbController.getHandlerService().registerHandlers()>
 					</cflock>
 				</cfif>
@@ -90,9 +90,10 @@ Description :
 		<cfset var ExceptionService = "">
 		<cfset var ExceptionBean = "">
 		<cfset var renderedContent = "">
+		<cfset var eventCacheEntry = "">
 		
 		<!--- Start Application Requests --->
-		<cflock type="readonly" name="#getAppHash()#" timeout="#getLockTimeout()#">
+		<cflock type="readonly" name="#getAppHash()#" timeout="#getLockTimeout()#" throwontimeout="true">
 			<cftry>
 				<!--- Local Reference --->
 				<cfset cbController = application.cbController>
