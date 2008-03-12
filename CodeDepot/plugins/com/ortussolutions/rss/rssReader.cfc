@@ -352,8 +352,16 @@ What gets returned on the FeedStructure:
 			<cfhttpparam type="Header" name="TE" value="deflate;q=0">
 		</cfhttp>
 		
-		<!--- Try to xml parse the document --->
-		<cfset xmlDoc = XMLParse(trim(feedResult.FileContent))>
+		<cftry>
+			<!--- Try to xml parse the document --->
+			<cfset xmlDoc = XMLParse(trim(feedResult.FileContent))>
+			
+			<cfcatch type="any">
+				<cfthrow type="rss.rssReader.FeedParsingException"
+						 message="Error parsing the feed into an XML document. Please verify that the feed is correct and valid"
+						 detail="The returned cfhttp content is: #feedResult.fileContent.toString()#">
+			</cfcatch>
+		</cftry>
 		
 		<!--- Return a universal parsed structure --->
 		<cfreturn parseFeed(xmlDoc,arguments.itemsType)>
