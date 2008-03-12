@@ -181,7 +181,7 @@ Description :
 				if ( not structkeyExists(application,"cbController") or not application.cbController.getColdboxInitiated() or arguments.reloadApp ){
 					/* Cleanup, Just in Case */
 					if( structKeyExists(application,"cbController") ){
-						structDelete(application,"cbController")
+						structDelete(application,"cbController");
 					}
 					/* Load it Up baby!! */
 					cbController = CreateObject("component", "coldbox.system.controller").init( expandPath(arguments.AppMapping) );
