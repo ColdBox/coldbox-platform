@@ -23,7 +23,8 @@ Application Settings:
 RSS Retrieval Methods:
 	- readFeed( feedURL, itemsType[default=query] ) : Retrieve a feed from cfhttp, parse, cache, and return results in query or array format.
 	- retrieveFeed( feedURL, itemsType[default=query] ) : Retrieve a feed from cfhttp, parse, and return results in query or array format.
-
+	- parseFeed( xmlDoc, itemsType[default=query] ) : Parse a feed xml document into the normalized struct.
+	
 RSS File Caching Methods:
 	- flushCache() : Flush/Remove the entire cache
 	- getCacheSize() : numeric : How many feeds do we have in the cache.
@@ -385,12 +386,12 @@ What gets returned on the FeedStructure:
 				return false;
 		</cfscript>
 	</cffunction>
+	
+	<!--- ******************************************************************************** --->
 
-<!---------------------------------------- PRIVATE --------------------------------------------------->
-
-	<cffunction name="parseFeed" access="private" returntype="struct" hint="This parses a feed as an xml doc and returns it as a structure of elements.">
+	<cffunction name="parseFeed" access="public" returntype="struct" hint="This parses a feed as an xml doc and returns it as a structure of elements.">
 		<!--- ******************************************************************************** --->
-		<cfargument name="xmlDoc" type="xml" required="yes" hint="The xmldoc to parse.">
+		<cfargument name="xmlDoc" 		type="xml" required="yes" hint="The xmldoc to parse.">
 		<cfargument name="itemsType" 	type="string" required="false" default="query" hint="The type of the items either query or Array. Query is by default."/>
 		<!--- ******************************************************************************** --->
 		<cfset var feed = StructNew()>
@@ -486,8 +487,8 @@ What gets returned on the FeedStructure:
 			return feed;
 		</cfscript>
 	</cffunction>
-
-	<!--- ******************************************************************************** --->
+	
+<!---------------------------------------- PRIVATE --------------------------------------------------->
 	
 	<!--- Parse Atom Items --->
 	<cffunction name="parseAtomItems" access="private" returntype="any" hint="Parse the items an return an array of structures" output="false" >
