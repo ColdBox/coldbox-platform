@@ -391,7 +391,7 @@ What gets returned on the FeedStructure:
 
 	<cffunction name="parseFeed" access="public" returntype="struct" hint="This parses a feed as an xml doc and returns it as a structure of elements.">
 		<!--- ******************************************************************************** --->
-		<cfargument name="xmlDoc" 		type="xml" required="yes" hint="The xmldoc to parse.">
+		<cfargument name="xmlDoc" 		type="xml" required="yes" hint="The xmldoc to parse and normalize. Must be a coldfusion xml doc object not a string.">
 		<cfargument name="itemsType" 	type="string" required="false" default="query" hint="The type of the items either query or Array. Query is by default."/>
 		<!--- ******************************************************************************** --->
 		<cfset var feed = StructNew()>
