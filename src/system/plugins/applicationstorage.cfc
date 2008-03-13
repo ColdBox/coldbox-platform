@@ -94,7 +94,7 @@ Modification History:
 
 	<!--- ************************************************************* --->
 	
-	<cffunction name="cleanAll" access="public" returntype="void" hint="Cleans the entire coldbox application storage" output="false">
+	<cffunction name="clearAll" access="public" returntype="void" hint="Clear the entire coldbox application storage" output="false">
 		<cflock name="#getLockName()#" type="exclusive" timeout="30" throwontimeout="true">
 			<cfset structClear(Application.cbAppStorage)>
 		</cflock>
@@ -103,7 +103,7 @@ Modification History:
 <!------------------------------------------- PRIVATE ------------------------------------------->
 	
 	<!--- Create Storage --->
-	<cffunction name="createStorage" access="public" returntype="void" hint="Create the app storage scope" output="false" >
+	<cffunction name="createAppStorage" access="public" returntype="void" hint="Create the app storage scope" output="false" >
 		<!--- Create App Storage Scope --->
 		<cflock name="#getLockName()#" type="exclusive" timeout="30" throwontimeout="true">
 			<cfset application.cbAppStorage = structNew()>
