@@ -363,6 +363,13 @@ What gets returned on the FeedStructure:
 			</cfcatch>
 		</cftry>
 		
+		<!--- Validate If its an Atom or RSS feed --->
+		<cfif not structKeyExists(xmlDoc,"rss") and not structKeyExists(xmlDoc,"feed")>
+			<cfthrow type="rss.rssReader.FeedParsingException"
+					 message="Cannot continue parsing the feed since it does not seem to be a valid RSS or ATOM feed. Please verify that the feed is correct and valid"
+					 detail="The xmldocument is: #htmlEditFormat(toString(xmlDoc))#">
+		</cfif>
+		
 		<!--- Return a universal parsed structure --->
 		<cfreturn parseFeed(xmlDoc,arguments.itemsType)>
 	</cffunction>
