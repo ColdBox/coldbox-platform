@@ -6,30 +6,6 @@
 Author 	 :	$${Author}
 Date     :	$${DATE}
 Description : 			
- $${Interceptor Description}
-		
-Modification History:
-
------------------------------------------------------------------------>
-<cfcomponent name="$${Interceptor Name}" hint="$${Hint}" extends="coldbox.system.interceptor" output="false">
-  
-<!------------------------------------------- PUBLIC ------------------------------------------->	 	
-
-   
-    <cffunction name="configure" access="public" returntype="void" output="false" hint="Configure your interceptor">
-		
-	</cffunction>
-
-    
-
-<!------------------------------------------- PRIVATE ------------------------------------------->	 	
-
-
-</cfcomponent>
-<!-----------------------------------------------------------------------
-Author 	 :	$${Author}
-Date     :	$${DATE}
-Description : 			
  $${Plugin Description}
 		
 Modification History:
