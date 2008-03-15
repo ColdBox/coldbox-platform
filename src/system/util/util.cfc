@@ -30,7 +30,7 @@ Modification History:
 	</cffunction>
 	
 	<cffunction name="include" access="public" hint="Facade for cfinclude" returntype="void" output="false">
-		<cfargument name="template" type="string">
+		<cfargument name="template" type="string" required="yes">
 		<cfinclude template="#template#">
 	</cffunction>
 
