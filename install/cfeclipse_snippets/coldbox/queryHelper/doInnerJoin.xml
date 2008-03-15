@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<snippet filetemplate="false" extension="cfm">
+<name>doInnerJoin</name>
+<help></help>
+<starttext><![CDATA[getPlugin("queryHelper").doInnerJoin($${query Left}, $${query Right}, "$${Left Join Column Name}", "$${Right Join Column Name}")]]></starttext>
+<endtext><![CDATA[]]></endtext>
+</snippet>

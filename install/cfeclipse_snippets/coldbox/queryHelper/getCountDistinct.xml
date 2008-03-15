@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<snippet filetemplate="false" extension="cfm">
+<name>getCountDistinct</name>
+<help></help>
+<starttext><![CDATA[getPlugin("queryHelper").getCountDistinct($${query}, "$${Column Name}")]]></starttext>
+<endtext><![CDATA[]]></endtext>
+</snippet>
