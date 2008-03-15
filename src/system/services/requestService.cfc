@@ -166,7 +166,7 @@ Modification History:
 		//Determine if we have a decorator, if we do, then decorate it.
 		if ( controller.settingExists("RequestContextDecorator") and controller.getSetting("RequestContextDecorator") neq ""){
 			//Create the decorator
-			oDecorator = CreateObject("component",controller.getSetting("RequestContextDecorator")).init(oContext,FORM,URL,DefaultLayout,DefaultView,EventName,ViewLayouts,FolderLayouts);
+			oDecorator = CreateObject("component",controller.getSetting("RequestContextDecorator")).init(oContext);
 			//Return
 			return oDecorator;
 		}

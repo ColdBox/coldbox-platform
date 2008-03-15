@@ -16,19 +16,12 @@ Description :
 	<cffunction name="init" access="public" output="false" hint="constructor" returntype="any">
 		<!--- ************************************************************* --->
 		<cfargument name="oContext" 	 	type="any" 		required="true" hint="The original context we are decorating. coldbox.system.beans.requestContext">
-		<cfargument name="struct1" 		 	type="any" 		required="true" hint="Usually the FORM scope">
-		<cfargument name="struct2" 		 	type="any" 		required="true" hint="Usually the URL scope">
-		<cfargument name="DefaultLayout" 	type="string" 	required="true">
-		<cfargument name="DefaultView" 	 	type="string" 	required="true">
-		<cfargument name="EventName" 	 	type="string" 	required="true"/>
-		<cfargument name="ViewLayouts"   	type="struct"   required="true">
-		<cfargument name="FolderLayouts"   	type="struct"   required="true">
 		<!--- ************************************************************* --->
 		<cfscript>
+			//Set the memento state
+			setMemento(arguments.oContext.getMemento());
 			//Composite the original context
 			setRequestContext(arguments.oContext);
-			//setup yourself now
-			super.init(argumentCollection=arguments);
 			//Configure this decorated request context.
 			configure();
 			return this;

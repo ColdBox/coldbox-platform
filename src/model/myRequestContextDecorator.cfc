@@ -17,6 +17,17 @@
 			</cfif>
 			
 		</cfloop>
+		
+		<!--- 
+		States maintain tests.
+		<cfdump var="#getRequestContext().getCollection()#">
+		<cfdump var="#getCollection()#">
+		<cfset setValue("luis",now())>
+		<cfdump var="#getRequestContext().getCollection()#">
+		<cfdump var="#getCollection()#">
+		<cfabort> 
+		--->
+		
 	</cffunction>	
 	
 <!------------------------------------------- PRIVATE ------------------------------------------->

@@ -352,9 +352,6 @@ Modification History:
 			setValue("cbox_eventCacheableEntry",arguments.mdCacheEntry);
 		</cfscript>
 	</cffunction>
-	
-	<!--- ************************************************************* --->
-	
 	<cffunction name="getEventCacheableEntry" access="public" returntype="any" hint="Get the event cacheable entry" output="false" >
 		<cfscript>
 			return getValue("cbox_eventCacheableEntry",structnew());
@@ -377,9 +374,6 @@ Modification History:
 			setValue("cbox_viewCacheableEntry",arguments.mdCacheEntry);
 		</cfscript>
 	</cffunction>
-	
-	<!--- ************************************************************* --->
-	
 	<cffunction name="getViewCacheableEntry" access="public" returntype="any" hint="Get the event cacheable entry" output="false" >
 		<cfscript>
 			return getValue("cbox_viewCacheableEntry",structnew());
@@ -393,9 +387,6 @@ Modification History:
 	<cffunction name="getDefaultLayout" access="public" returntype="any" output="false" hint="Get's the default layout of the application: String">
 		<cfreturn instance.defaultLayout>
 	</cffunction>
-	
-	<!--- ************************************************************* --->
-	
 	<cffunction name="setDefaultLayout" access="public" returntype="void" output="false">
 		<cfargument name="DefaultLayout" type="string" required="true">
 		<cfset instance.defaultLayout = arguments.DefaultLayout>
@@ -406,9 +397,6 @@ Modification History:
 	<cffunction name="getDefaultView" access="public" returntype="any" output="false" hint="Get's the default view of the application: String">
 		<cfreturn instance.defaultView>
 	</cffunction>
-	
-	<!--- ************************************************************* --->
-	
 	<cffunction name="setDefaultView" access="public" returntype="void" output="false">
 		<cfargument name="DefaultView" type="string" required="true">
 		<cfset instance.defaultView = arguments.DefaultView>
@@ -419,9 +407,6 @@ Modification History:
 	<cffunction name="getViewLayouts" access="public" returntype="struct" output="false">
 		<cfreturn instance.ViewLayouts>
 	</cffunction>
-	
-	<!--- ************************************************************* --->
-	
 	<cffunction name="setViewLayouts" access="public" returntype="void" output="false">
 		<cfargument name="ViewLayouts" type="struct" required="true">
 		<cfset instance.ViewLayouts = arguments.ViewLayouts>
@@ -432,9 +417,6 @@ Modification History:
 	<cffunction name="getFolderLayouts" access="public" returntype="struct" output="false">
 		<cfreturn instance.FolderLayouts>
 	</cffunction>
-	
-	<!--- ************************************************************* --->
-	
 	<cffunction name="setFolderLayouts" access="public" returntype="void" output="false">
 		<cfargument name="FolderLayouts" type="struct" required="true">
 		<cfset instance.FolderLayouts = arguments.FolderLayouts>
@@ -445,6 +427,16 @@ Modification History:
 	<cffunction name="setEventName" access="public" returntype="void" output="false">
 		<cfargument name="EventName" type="string" required="true">
 		<cfset instance.eventName = arguments.EventName>
+	</cffunction>
+	
+	<!--- ************************************************************* --->
+	
+	<cffunction name="getmemento" access="public" returntype="any" output="false">
+		<cfreturn variables.instance>
+	</cffunction>
+	<cffunction name="setmemento" access="public" returntype="void" output="false">
+		<cfargument name="memento" type="any" required="true">
+		<cfset variables.instance = arguments.memento>
 	</cffunction>
 
 <!------------------------------------------- PRIVATE ------------------------------------------->
