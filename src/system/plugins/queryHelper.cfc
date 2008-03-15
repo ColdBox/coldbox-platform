@@ -278,7 +278,9 @@ queryPlugin.doLeftOuterJoin(q1,q3,"idt","idt")
 		    var QryReturn		= "";
 		    var valueExists		= "";
 		    var ToRowNumber		= "";
-		    var i = 0;	
+			var ArrayCols		= ArrayNew(1);
+		    var i = 0;
+				
 		try{	
 		    // get all the fields in qry_right that are not in qry_left
 		    lstRightColumns	= getUnMatchedElements( FirstList=qry1.ColumnList , secondList=qry2.ColumnList );
@@ -290,7 +292,7 @@ queryPlugin.doLeftOuterJoin(q1,q3,"idt","idt")
 		    QryReturn = queryNew( lstCols );
 			// add additional columns to qry1 as this these column might be empty or with values.
 			for( i = 1; i LTE ListLen(lstRightColumns); i = i + 1 ){
-				QueryAddColumn(qry1, ListGetAt(lstRightColumns, i), ArrayNew(1));
+				QueryAddColumn(qry1, ListGetAt(lstRightColumns, i), ArrayCols);
 			}
 					
 		    for( i = 1; i LTE qry1.recordcount; i = i + 1 ){
