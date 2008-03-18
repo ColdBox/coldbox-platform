@@ -120,6 +120,22 @@ Modification History:
 				return arguments.defaultValue;
 		</cfscript>
 	</cffunction>
+	
+	<cffunction name="getTrimValue" returntype="Any" access="Public" hint="I Get a value from the request collection and if simple value, I will trim it." output="false">
+		<cfargument name="name" hint="Name of the variable to get from the request collection: String" type="any">
+		<cfargument name="defaultValue"
+					hint="Default value to return if not found.There are no default values for complex structures. You can send [array][struct][query] and the
+						  method will return the empty complex variable.Please remember to include the brackets, syntax sensitive.You can also send complex variables
+						  as the defaultValue argument."
+					type="any" required="No" default="NONE">
+		<!--- ************************************************************* --->
+		<cfscript>
+			var value = getValue(argumentCollection=arguments);
+			/* Verify if Simple */
+			if( isSimpleValue(value) ){ value = trim(value); }
+			return value;
+		</cfscript>
+	</cffunction>
 
 	<!--- ************************************************************* --->
 
