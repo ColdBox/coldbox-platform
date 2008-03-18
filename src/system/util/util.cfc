@@ -11,7 +11,7 @@ Modification History:
 ---------------------------------------------------------------------->
 <cfcomponent name="util" output="false" hint="A utility method cfc">
 
-	<cffunction name="throw" access="public" hint="Facade for cfthrow" output="false">
+	<cffunction name="throwit" access="public" hint="Facade for cfthrow" output="false">
 		<!--- ************************************************************* --->
 		<cfargument name="message" 	type="string" 	required="yes">
 		<cfargument name="detail" 	type="string" 	required="no" default="">
@@ -20,16 +20,16 @@ Modification History:
 		<cfthrow type="#arguments.type#" message="#arguments.message#"  detail="#arguments.detail#">
 	</cffunction>
 	
-	<cffunction name="dump" access="public" hint="Facade for cfmx dump" returntype="void">
+	<cffunction name="dumpit" access="public" hint="Facade for cfmx dump" returntype="void">
 		<cfargument name="var" required="yes" type="any">
 		<cfdump var="#var#">
 	</cffunction>
 	
-	<cffunction name="abort" access="public" hint="Facade for cfabort" returntype="void" output="false">
+	<cffunction name="abortit" access="public" hint="Facade for cfabort" returntype="void" output="false">
 		<cfabort>
 	</cffunction>
 	
-	<cffunction name="include" access="public" hint="Facade for cfinclude" returntype="void" output="false">
+	<cffunction name="includeit" access="public" hint="Facade for cfinclude" returntype="void" output="false">
 		<cfargument name="template" type="string" required="yes">
 		<cfinclude template="#template#">
 	</cffunction>
