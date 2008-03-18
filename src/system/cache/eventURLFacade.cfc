@@ -39,17 +39,18 @@ Modification History:
 		<cfscript>
 			var urlCopy = duplicate(URL);
 			var eventName = getController().getSetting('eventName');
+			var urlActionsList = "fwReinit,fwCache,debugMode,debugpass,dumpvar,debugpanel";
+			var x = 1;
 			
 			//Remove event if it exists
 			if( structKeyExists(urlCopy, eventName) ){
 				structDelete(urlCopy,eventName);
 			}
 			//Remove fw URL Actions
-			if( structKeyExists(urlCopy, "fwReinit") ){
-				structDelete(urlCopy,"fwReinit");
-			}
-			if( structKeyExists(urlCopy, "fwCache") ){
-				structDelete(urlCopy,"fwCache");
+			for(x=1; x lte listLen(urlActionsList); x=x+1){
+				if( structKeyExists(urlCopy, listgetAt(urlActionsList,x)) ){
+					structDelete(urlCopy,listgetAt(urlActionsList,x));
+				}
 			}
 			
 			//Add incoming event to hash
