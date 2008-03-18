@@ -141,9 +141,9 @@ Description :
 				if ( controller.getSetting("onInvalidEvent") neq "" ){
 					/* Test for invalid Event Error */
 					if ( compareNoCase(controller.getSetting("onInvalidEvent"),oRequestContext.getCurrentEvent()) eq 0 ){
-						getUtil().throw(message="The onInvalid event is invalid",
-										detail="The onInvalidEvent setting is also invalid: #controller.getSetting('onInvalidEvent')#. Please check your settings",
-										type="Framework.onInValidEventSettingException");
+						getUtil().throwit(message="The onInvalid event is invalid",
+										  detail="The onInvalidEvent setting is also invalid: #controller.getSetting('onInvalidEvent')#. Please check your settings",
+										  type="Framework.onInValidEventSettingException");
 					}
 					//Place invalid event in request context.
 					oRequestContext.setValue("invalidevent",oEventHandlerBean.getRunnable());
@@ -151,9 +151,9 @@ Description :
 					controller.setNextEvent(event=controller.getSetting("onInvalidEvent"),persist="invalidevent");
 				}
 				else{
-					getUtil().throw(message="An invalid event has been detected",
-									detail="An invalid event has been detected: #oEventHandlerBean.getRunnable()# This event does not exist in the specified handler.",
-									type="Framework.onInValidEventSettingException");
+					getUtil().throwit(message="An invalid event has been detected",
+									  detail="An invalid event has been detected: #oEventHandlerBean.getRunnable()# This event does not exist in the specified handler.",
+									  type="Framework.onInValidEventSettingException");
 				}
 			}//method check finalized.
 			
@@ -249,7 +249,7 @@ Description :
 			if ( onInvalidEvent neq "" ){
 					//Check if the invalid event is the same as the current event
 					if ( CompareNoCase(onInvalidEvent,event) eq 0){
-						getUtil().throw("The invalid event handler: #onInvalidEvent# is also invalid. Please check your settings","","Framework.InvalidEventHandlerException");
+						getUtil().throwit("The invalid event handler: #onInvalidEvent# is also invalid. Please check your settings","","Framework.InvalidEventHandlerException");
 					}
 					else{
 						//Log Invalid Event
@@ -260,7 +260,7 @@ Description :
 					}
 				}
 			else{
-				getUtil().throw("The event handler: #event# is not valid registered event.","","Framework.EventHandlerNotRegisteredException");
+				getUtil().throwit("The event handler: #event# is not valid registered event.","","Framework.EventHandlerNotRegisteredException");
 			}
 		}//end if noThrow
 	

@@ -191,7 +191,7 @@ Description		: This is the main ColdBox front Controller.
 		else if ( settingExists(arguments.name) )
 			 return instance.ConfigSettings[arguments.name];
 		else
-			throw("The setting #arguments.name# does not exist.","FWSetting flag is #arguments.FWSetting#","Framework.SettingNotFoundException");
+			getUtil().throw("The setting #arguments.name# does not exist.","FWSetting flag is #arguments.FWSetting#","Framework.SettingNotFoundException");
 		</cfscript>
 	</cffunction>
 	<cffunction name="settingExists" returntype="boolean" access="Public"	hint="I Check if a value exists in the configstruct or the fwsettingsStruct." output="false">
@@ -232,7 +232,7 @@ Description		: This is the main ColdBox front Controller.
 				break;
 			//Default Case
 			default:
-				throw("Invalid Service detected","service:#arguments.service#","Framework.ServiceNotDefinedException");
+				getUtil().throw("Invalid Service detected","service:#arguments.service#","Framework.ServiceNotDefinedException");
 		}
 		return CreateObject("component",servicePath).init(this);
 		</cfscript>
@@ -366,21 +366,6 @@ Description		: This is the main ColdBox front Controller.
 		</cfif>
 	</cffunction>
 
-	<!--- Utility throw. --->
-	<cffunction name="throw" access="public" hint="Facade for cfthrow" output="false">
-		<!--- ************************************************************* --->
-		<cfargument name="message" 	type="string" 	required="yes">
-		<cfargument name="detail" 	type="string" 	required="no" default="">
-		<cfargument name="type"  	type="string" 	required="no" default="Framework">
-		<!--- ************************************************************* --->
-		<cfthrow type="#arguments.type#" message="#arguments.message#"  detail="#arguments.detail#">
-	</cffunction>
-
-	<!--- Get the util object --->
-	<cffunction name="getUtil" access="public" output="false" returntype="coldbox.system.util.util" hint="Create and return a util object">
-		<cfreturn CreateObject("component","coldbox.system.util.util")/>
-	</cffunction>
-
 	<!--- Flash Perist variables. --->
 	<cffunction name="persistVariables" access="public" returntype="void" hint="Persist variables for flash redirections" output="false" >
 		<!--- ************************************************************* --->
@@ -406,5 +391,9 @@ Description		: This is the main ColdBox front Controller.
 	
 <!------------------------------------------- PRIVATE ------------------------------------------->
 
+	<!--- Get the util object --->
+	<cffunction name="getUtil" access="private" output="false" returntype="coldbox.system.util.util" hint="Create and return a util object">
+		<cfreturn CreateObject("component","coldbox.system.util.util")/>
+	</cffunction>
 	
 </cfcomponent>
