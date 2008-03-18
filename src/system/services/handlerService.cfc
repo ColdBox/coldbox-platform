@@ -176,9 +176,11 @@ Description :
 					/* Cache Entries for timeout and last access timeout */
 					if ( MetaData["cache"] ){
 						mdEntry.cacheable = true;
-						if ( structKeyExists(MetaData,"cachetimeout") ){
+						/* Event Timeout */
+						if ( structKeyExists(MetaData,"cachetimeout") and MetaData.cachetimeout neq 0 ){
 							mdEntry.timeout = MetaData["cachetimeout"];
 						}
+						/* Last Access Timeout */
 						if ( structKeyExists(MetaData, "cacheLastAccessTimeout") ){
 							mdEntry.lastAccessTimeout = MetaData["cacheLastAccessTimeout"];
 						}
