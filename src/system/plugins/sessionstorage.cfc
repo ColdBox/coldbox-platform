@@ -17,8 +17,7 @@ Modification History:
 			 hint="Session Storage plugin. It provides the user with a mechanism for permanent data storage using the session scope."
 			 extends="coldbox.system.plugin"
 			 output="false"
-			 cache="true"
-			 cachetimeout="0">
+			 cache="true">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
@@ -35,7 +34,7 @@ Modification History:
 			/* Lock Name */
 			setLockName( getController().getAppHash() & "_SESSION_STORAGE" );
 			
-			/* Create App Storage */
+			/* Create Storage */
 			createStorage();			
 			
 			return this;
@@ -50,27 +49,29 @@ Modification History:
 		<cfargument name="name"  type="string" required="true" hint="The name of the variable.">
 		<cfargument name="value" type="any"    required="true" hint="The value to set in the variable.">
 		<!--- ************************************************************* --->
-		<cfset var storage = "">
-		<cflock name="#getLockName()#" type="exclusive" timeout="30" throwontimeout="true">
-			<cfscript>
-				storage = getStorage();
-				storage[arguments.name] = arguments.value;
-			</cfscript>
+		<cfset var storage = getStorage()>
+		
+		<cflock name="#getLockName()#" type="exclusive" timeout="10" throwontimeout="true">
+			<cfset storage[arguments.name] = arguments.value>
 		</cflock>
 	</cffunction>
-	
+
 	<!--- Get A Variable --->
 	<cffunction name="getVar" access="public" returntype="any" hint="Get a new permanent variable. If the variable does not exist. The method returns blank." output="false">
 		<!--- ************************************************************* --->
 		<cfargument  name="name" 		type="string"  required="true" 		hint="The variable name to retrieve.">
 		<cfargument  name="default"  	type="any"     required="false"  	hint="The default value to set. If not used, a blank is returned." default="">
 		<!--- ************************************************************* --->
-		<cfscript>
-			if ( exists(arguments.name) )
-				return structFind(getStorage(),arguments.name);
-			else
-				arguments.default;
-		</cfscript>
+		<cfset var storage = getStorage()>
+		
+		<cflock name="#getLockName()#" type="readonly" timeout="10" throwontimeout="true">
+			<cfscript>
+				if ( structKeyExists( storage, arguments.name) )
+					return storage[arguments.name];
+				else
+					arguments.default;
+			</cfscript>
+		</cflock>
 	</cffunction>
 
 	<!--- Delete a variable --->
@@ -79,9 +80,10 @@ Modification History:
 		<cfargument  name="name" type="string" required="true" 	hint="The variable name to retrieve.">
 		<!--- ************************************************************* --->
 		<cfset var results = false>
+		<cfset var storage = getStorage()>
 		
-		<cflock name="#getLockName()#" type="exclusive" timeout="30" throwontimeout="true">
-			<cfset results = structdelete(getStorage(), arguments.name, true)>
+		<cflock name="#getLockName()#" type="exclusive" timeout="10" throwontimeout="true">
+			<cfset results = structdelete(storage, arguments.name, true)>
 		</cflock>
 		
 		<cfreturn results>
@@ -97,14 +99,19 @@ Modification History:
 
 	<!--- Clear All From Storage --->
 	<cffunction name="clearAll" access="public" returntype="void" hint="Clear the entire coldbox application storage" output="false">
-		<cflock name="#getLockName()#" type="exclusive" timeout="30" throwontimeout="true">
+		<cflock name="#getLockName()#" type="exclusive" timeout="10" throwontimeout="true">
 			<cfset structClear(getStorage())>
 		</cflock>
 	</cffunction>
 	
 	<!--- Get Storage --->
 	<cffunction name="getStorage" access="public" returntype="any" hint="Get the entire storage scope" output="false" >
-		<cfreturn session.cbStorage>
+		<cfscript>
+			if( not structKeyExists(session, "cbStorage") ){
+				createStorage();
+			}
+			return session.cbStorage;
+		</cfscript>
 	</cffunction>
 
 <!------------------------------------------- PRIVATE ------------------------------------------->

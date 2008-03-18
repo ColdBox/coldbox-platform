@@ -9,7 +9,7 @@ Date        :	9/3/2007
 Description :
 	securityTest
 ----------------------------------------------------------------------->
-<cfcomponent name="appstoragetest" extends="coldbox.system.extras.baseTest" output="false">
+<cfcomponent name="sessionstoragetest" extends="coldbox.system.extras.baseTest" output="false">
 
 	<cffunction name="setUp" returntype="void" access="private" output="false">
 		<cfscript>
@@ -24,11 +24,11 @@ Description :
 	<cffunction name="testPlugin" access="public" returntype="void" output="false">
 		<!--- Now test some events --->
 		<cfscript>
-			var plugin = getController().getPlugin("applicationstorage");
+			var plugin = getController().getPlugin("sessionstorage");
 			
 			assertComponent(plugin);
 			
-			assertTrue( isStruct(application.cbStorage), "Application storage check");
+			assertTrue( isStruct(session.cbStorage), "session storage check");
 			
 			
 		</cfscript>
@@ -37,7 +37,7 @@ Description :
 	<cffunction name="testMethods" access="public" returntype="void" output="false">
 		<!--- Now test some events --->
 		<cfscript>
-			var plugin = getController().getPlugin("applicationstorage");
+			var plugin = getController().getPlugin("sessionstorage");
 			
 			plugin.setVar("tester", 1);
 			
@@ -53,14 +53,21 @@ Description :
 			plugin.setVar("tester2", now());
 			
 			plugin.clearAll();
-			AssertTrue( structISEmpty(application.cbStorage), "Clear & Test" );
+			AssertTrue( structISEmpty(session.cbStorage), "Clear & Test" );
+			
+			//Remove it
+			structDelete(session, "cbStorage");
+			//Try to add to it
+			plugin.setVar("tester", 123);
+			AssertTrue( plugin.exists("tester") ,"Removal Reconstruction test.");	
+					
 		</cfscript>
 	</cffunction>
 	
 	<!--- tearDown --->
 	<cffunction name="tearDown" output="false" access="public" returntype="void" hint="">
 		<cfscript>
-		structDelete(application,"cbStorage");
+		structDelete(session,"cbStorage");
 		</cfscript>
 	</cffunction>
 	

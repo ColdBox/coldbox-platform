@@ -17,8 +17,7 @@ Modification History:
 			 hint="Application Storage plugin. It provides the user with a mechanism for permanent data storage using the application scope."
 			 extends="coldbox.system.plugin"
 			 output="false"
-			 cache="true"
-			 cachetimeout="0">
+			 cache="true">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
@@ -50,12 +49,10 @@ Modification History:
 		<cfargument name="name"  type="string" required="true" hint="The name of the variable.">
 		<cfargument name="value" type="any"    required="true" hint="The value to set in the variable.">
 		<!--- ************************************************************* --->
-		<cfset var storage = "">
-		<cflock name="#getLockName()#" type="exclusive" timeout="30" throwontimeout="true">
-			<cfscript>
-				storage = getStorage();
-				storage[arguments.name] = arguments.value;
-			</cfscript>
+		<cfset var storage = getStorage()>
+		
+		<cflock name="#getLockName()#" type="exclusive" timeout="10" throwontimeout="true">
+			<cfset storage[arguments.name] = arguments.value>
 		</cflock>
 	</cffunction>
 
@@ -65,12 +62,16 @@ Modification History:
 		<cfargument  name="name" 		type="string"  required="true" 		hint="The variable name to retrieve.">
 		<cfargument  name="default"  	type="any"     required="false"  	hint="The default value to set. If not used, a blank is returned." default="">
 		<!--- ************************************************************* --->
-		<cfscript>
-			if ( exists(arguments.name) )
-				return structFind(getStorage(),arguments.name);
-			else
-				arguments.default;
-		</cfscript>
+		<cfset var storage = getStorage()>
+		
+		<cflock name="#getLockName()#" type="readonly" timeout="10" throwontimeout="true">
+			<cfscript>
+				if ( structKeyExists( storage, arguments.name) )
+					return storage[arguments.name];
+				else
+					arguments.default;
+			</cfscript>
+		</cflock>
 	</cffunction>
 
 	<!--- Delete a variable --->
@@ -79,9 +80,10 @@ Modification History:
 		<cfargument  name="name" type="string" required="true" 	hint="The variable name to retrieve.">
 		<!--- ************************************************************* --->
 		<cfset var results = false>
+		<cfset var storage = getStorage()>
 		
-		<cflock name="#getLockName()#" type="exclusive" timeout="30" throwontimeout="true">
-			<cfset results = structdelete(getStorage(), arguments.name, true)>
+		<cflock name="#getLockName()#" type="exclusive" timeout="10" throwontimeout="true">
+			<cfset results = structdelete(storage, arguments.name, true)>
 		</cflock>
 		
 		<cfreturn results>
@@ -97,22 +99,27 @@ Modification History:
 
 	<!--- Clear All From Storage --->
 	<cffunction name="clearAll" access="public" returntype="void" hint="Clear the entire coldbox application storage" output="false">
-		<cflock name="#getLockName()#" type="exclusive" timeout="30" throwontimeout="true">
+		<cflock name="#getLockName()#" type="exclusive" timeout="10" throwontimeout="true">
 			<cfset structClear(getStorage())>
 		</cflock>
 	</cffunction>
 	
 	<!--- Get Storage --->
 	<cffunction name="getStorage" access="public" returntype="any" hint="Get the entire storage scope" output="false" >
-		<cfreturn application.cbStorage>
+		<cfscript>
+			if( not structKeyExists(application, "cbStorage") ){
+				createStorage();
+			}
+			return application.cbStorage;
+		</cfscript>
 	</cffunction>
 
 <!------------------------------------------- PRIVATE ------------------------------------------->
 	
 	<!--- Create Storage --->
-	<cffunction name="createStorage" access="private" returntype="void" hint="Create the app storage scope" output="false" >
+	<cffunction name="createStorage" access="private" returntype="void" hint="Create the app storage scope. Thread Safe" output="false" >
 		<!--- Create App Storage Scope --->
-		<cflock name="#getLockName()#" type="exclusive" timeout="30" throwontimeout="true">
+		<cflock name="#getLockName()#" type="exclusive" timeout="10" throwontimeout="true">
 			<cfset application.cbStorage = structNew()>
 		</cflock>
 	</cffunction>
