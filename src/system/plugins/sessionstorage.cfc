@@ -63,15 +63,18 @@ Modification History:
 		<cfargument  name="default"  	type="any"     required="false"  	hint="The default value to set. If not used, a blank is returned." default="">
 		<!--- ************************************************************* --->
 		<cfset var storage = getStorage()>
+		<cfset var results = "">
 		
 		<cflock name="#getLockName()#" type="readonly" timeout="10" throwontimeout="true">
 			<cfscript>
 				if ( structKeyExists( storage, arguments.name) )
-					return storage[arguments.name];
+					results = storage[arguments.name];
 				else
-					arguments.default;
+					results = arguments.default;
 			</cfscript>
 		</cflock>
+		
+		<cfreturn results>
 	</cffunction>
 
 	<!--- Delete a variable --->

@@ -191,7 +191,7 @@ Description		: This is the main ColdBox front Controller.
 		else if ( settingExists(arguments.name) )
 			 return instance.ConfigSettings[arguments.name];
 		else
-			getUtil().throw("The setting #arguments.name# does not exist.","FWSetting flag is #arguments.FWSetting#","Framework.SettingNotFoundException");
+			getUtil().throwit("The setting #arguments.name# does not exist.","FWSetting flag is #arguments.FWSetting#","Framework.SettingNotFoundException");
 		</cfscript>
 	</cffunction>
 	<cffunction name="settingExists" returntype="boolean" access="Public"	hint="I Check if a value exists in the configstruct or the fwsettingsStruct." output="false">
@@ -232,7 +232,7 @@ Description		: This is the main ColdBox front Controller.
 				break;
 			//Default Case
 			default:
-				getUtil().throw("Invalid Service detected","service:#arguments.service#","Framework.ServiceNotDefinedException");
+				getUtil().throwit("Invalid Service detected","service:#arguments.service#","Framework.ServiceNotDefinedException");
 		}
 		return CreateObject("component",servicePath).init(this);
 		</cfscript>
