@@ -70,6 +70,14 @@ NOTE: The interceptor will create a new setting called: sesBaseURL with this val
 	on Rails.  The idea is that the number of variables in a URL will be the first indicator
 	of which course to use.
 	
+	ColdBox 2.6 added an extension to the :variable so you can declare a numerical value:
+	
+	Ex: handler/action/:id-numeric Will match if the id position is numeric
+	Ex: handler/action/:id Will match any alphanumeric position.
+	
+	This extends the custom courses to distinguish between alphanumeric and numeric placeholders.
+	
+	
 	Here's the general setup:
 	<cfset addCourse(	pattern="handler/action/:id",	# Set the pattern
 						handler="handler_name",		# Set the handler
@@ -97,7 +105,10 @@ NOTE: The interceptor will create a new setting called: sesBaseURL with this val
 	to put quotes and stuff
 	
 	Examples:
-	<cfset addCourse(	pattern="blog/entry/:year/:month/:day",
+	<cfset addCourse(	pattern="entry/:year-numeric/:month-numeric/:day-numeric",
+						handler="blog",
+						action="entry" )>
+	<cfset addCourse(	pattern="entry/:year-numeric/:month/:day-numeric",
 						handler="blog",
 						action="entry" )>
 	<cfset addCourse(	pattern="profile/view/:username",

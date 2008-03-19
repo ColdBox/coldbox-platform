@@ -240,16 +240,20 @@ Description :
 			<cfset thisRoute = _courses[i] />
 			
 			<!--- Replace any :parts with a regular expression for matching against the URL --->
-			<cfset thisPattern = REReplace(thisRoute.pattern, ":.*?/", "(.+?)/", "all") />
+			<!--- Replace -numeric with regex equiv --->
+			<cfset thisPattern = REReplace(thisRoute.pattern, ":.[^-]*?/", "(.+?)/", "all") />
+			<cfset thisPattern = REReplace(thisPattern, ":.*?-numeric/", "([0-9]+?)/", "all") />
 			
 			<!--- Try to match this route against the URL --->
 			<cfset match = REFindNoCase(thisPattern,requestString,1,true) />
-			
+
 			<!--- If a match was made, use the result to route the request --->
 			<cfif match.len[1] IS NOT 0>
-				<cfset foundRoute = thisRoute />
+				<cfset foundRoute = thisRoute />				
 				<!--- For each part of the URL in the route --->
 				<cfloop list="#thisRoute.pattern#" delimiters="/" index="thisPattern">
+					<!--- Clean thisPattern of -numeric --->
+					<cfset thisPattern = replacenocase(thisPattern,"-numeric","","all")>
 					<!--- if this part of the route pattern is a variable --->
 					<cfif find(":",thisPattern)>
 						<cfset arrayAppend(routeParams,right(thisPattern,len(thisPattern)-1)) />
@@ -267,7 +271,7 @@ Description :
 		<cfloop from="1" to="#routeParamsLength#" index="i">
 			<cfset "params.#routeParams[i]#" = mid(requestString,match.pos[i+1],match.len[i+1]) />
 		</cfloop>
-				
+		
 		<!--- Now set the rest of the variables in the route --->
 		<cfloop collection="#foundRoute#" item="key">
 			<cfif key IS NOT "pattern">
