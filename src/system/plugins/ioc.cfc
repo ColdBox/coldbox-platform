@@ -270,9 +270,19 @@ Modification History:
 			//Create the lightwire Config Bean.
 			lightwireBeanConfig = CreateObject("component", getIOCDefinitionFile());
 			
-			//setter dependency on coldbox
-			lightwireBeanConfig.setController(getController());
+			/* Start Injection Set */
+			getPlugin("methodInjector").start(lightwireBeanConfig);
 			
+			/* Inject Controller getter and setters */
+			lightwireBeanConfig.injectMixin(setController);
+			lightwireBeanConfig.injectMixin(getController);
+			
+			/* Stop Injection Set. */
+			getPlugin("methodInjector").stop(lightwireBeanConfig);
+			
+			//setter dependency on coldbox mixin
+			lightwireBeanConfig.setController(getController());
+					
 			//return it			
 			return lightwireBeanConfig.init();
 		</cfscript>

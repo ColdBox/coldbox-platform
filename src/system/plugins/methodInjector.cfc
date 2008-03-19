@@ -35,6 +35,7 @@ Description :
 			/* Place our two methods on the mixins struct */
 			instance.mixins["removeMixin"] = variables.removeMixin;
 			instance.mixins["injectMixin"] = variables.injectMixin;
+			instance.mixins["invokerMixin"] = variables.invokerMixin;
 			
 			/* Remove mixin methods */
 			stop(this);
@@ -46,53 +47,26 @@ Description :
 <!------------------------------------------- PUBLIC METHODS ------------------------------------------->
 
 	<!--- Start Method Injection on a CFC --->
-	<cffunction name="start" hint="start method injection set" access="public" returntype="void" output="false">
+	<cffunction name="start" hint="start method injection set. Injects: injectMixin,removeMixin, invokerMixin" access="public" returntype="void" output="false">
 		<!--- ************************************************************* --->
 		<cfargument name="CFC" hint="The cfc to inject the method into" type="web-inf.cftags.component" required="Yes">
 		<!--- ************************************************************* --->
 		<cfscript>
 			arguments.CFC["injectMixin"] = instance.mixins.injectMixin;
 			arguments.CFC["removeMixin"] = instance.mixins.removeMixin;
+			arguments.CFC["invokerMixin"] = instance.mixins.invokerMixin;
 		</cfscript>
 	</cffunction>
 	
 	<!--- Stop the injection, do cleanup --->
-	<cffunction name="stop" hint="stop injection block" access="public" returntype="void" output="false">
+	<cffunction name="stop" hint="stop injection block. Removes mixed in methods." access="public" returntype="void" output="false">
 		<!--- ************************************************************* --->
 		<cfargument name="CFC" hint="The cfc to inject the method into" type="web-inf.cftags.component" required="Yes">
 		<!--- ************************************************************* --->
 		<cfscript>
 			StructDelete(arguments.CFC, "injectMixin");
 			StructDelete(arguments.CFC, "removeMixin");
-		</cfscript>
-	</cffunction>
-	
-	<!--- The actual call to inject a method on the CFC --->
-	<cffunction name="injectMethod" hint="Injects a method into a CFC" access="public" returntype="web-inf.cftags.component" output="false">
-		<!--- ************************************************************* --->
-		<cfargument name="CFC" hint="The cfc to inject the method into" type="web-inf.cftags.component" required="Yes">
-		<cfargument name="UDF" hint="UDF to be checked" type="any" required="Yes">
-		<!--- ************************************************************* --->
-		<cfscript>
-			try{
-				arguments.CFC.injectMixin(arguments.UDF);
-			}
-			catch(Any e){
-				throw("#e.message#","Error inserting method #toString(arguments.UDF)#","plugins.methodInjector.InjectionException");
-			}
-			/* return CFC */
-			return arguments.CFC;
-		</cfscript>
-	</cffunction>
-	
-	<!--- Remove a method from a CFC --->
-	<cffunction name="removeMethod" hint="Take a public Method off a CFC" access="public" returntype="void" output="false">
-		<!--- ************************************************************* --->
-		<cfargument name="CFC" 		hint="The cfc to inject the method into" type="web-inf.cftags.component" required="Yes">
-		<cfargument name="UDFName" 	hint="Name of the UDF to be removed" type="string" required="Yes">
-		<!--- ************************************************************* --->
-		<cfscript>
-			arguments.CFC.removeMixin(arguments.UDFName);
+			StructDelete(arguments.CFC, "invokerMixin");
 		</cfscript>
 	</cffunction>
 
@@ -110,14 +84,13 @@ Description :
 			if( not structKeyExists(metadata, "access") ){
 				metadata.access = "public";
 			}
+			
+			/* Place UDF on the variables Scope */
+			variables[metadata.name] = arguments.UDF;
 	
 			if(metadata.access neq "private"){
 				/* Place UDF on the this public scope */
 				this[metaData.name] = arguments.UDF;
-			}
-			else{
-				/* Place UDF on the variables Scope */
-				variables[metadata.name] = arguments.UDF;
 			}
 		</cfscript>
 	</cffunction>
@@ -131,6 +104,39 @@ Description :
 			StructDelete(this, arguments.udfName);
 			StructDelete(variables, arguments.udfName);
 		</cfscript>
+	</cffunction>
+	
+	<!--- Invoker Mixin --->
+	<cffunction name="invokerMixin" hint="[mixin, removed at init] - calls private methods" access="public" returntype="any" output="false">
+		<!--- ************************************************************* --->
+		<cfargument name="method" 		 type="string" required="Yes" hint="Name of the private method to call">
+		<cfargument name="argCollection" type="struct" required="No"  hint="Can be called with an argument collection struct">
+		<cfargument name="argList" 		 type="string" required="No"  hint="Can be called with an argument list">
+		<!--- ************************************************************* --->
+		<cfset var results = "">
+		<cfset var key = "">
+		
+		<!--- Determine type of invocation --->
+		<cfif structKeyExists(arguments,"argCollection")>
+			<cfinvoke method="#arguments.method#" 
+					  returnvariable="results" 
+					  argumentcollection="#arguments.argCollection#" />
+		<cfelseif structKeyExists(arguments, "argList")>
+			<cfinvoke method="#arguments.method#" 
+					  returnvariable="results">
+				<cfloop list="#argList#" index="key">
+					<cfinvokeargument name="#listFirst(key,'=')#" value="#listLast(key,'=')#">
+				</cfloop>
+			</cfinvoke>
+		<cfelse>
+			<cfinvoke method="#arguments.method#" 
+					  returnvariable="results" />
+		</cfif>
+		
+		<!--- Return results if Found --->
+		<cfif isDefined("results")>
+			<cfreturn results>
+		</cfif>
 	</cffunction>
 
 </cfcomponent>
