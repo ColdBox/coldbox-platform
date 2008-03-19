@@ -36,7 +36,7 @@ Modification History:
 			//Request Context SnapShot
 			if ( not findnocase("rendering",attributes.timertag) ){
 				rc = application.cbController.getRequestService().getContext().getCollection().toString();
-				QuerySetCell(request.DebugTimers, "RC", rc );
+				QuerySetCell(request.DebugTimers, "RC", htmlEditFormat(rc) );
 			}
 			else{
 				QuerySetCell(request.DebugTimers, "RC", '');
