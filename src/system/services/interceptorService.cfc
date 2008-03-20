@@ -63,7 +63,7 @@ Description :
 				oInterceptor.configure();
 				/* Cache Interceptor */
 				if ( not getController().getColdBoxOCM().set(interceptorKey, oInterceptor, 0) ){
-					getController().throw("The interceptor could not be cached, either the cache is full or out of memory.","Please check your cache limits, try increasing them or verify your server memory","Framework.InterceptorService.InterceptorCantBeCached");
+					getUtil().throwit("The interceptor could not be cached, either the cache is full or out of memory.","Please check your cache limits, try increasing them or verify your server memory","Framework.InterceptorService.InterceptorCantBeCached");
 				}
 				
 				/* Parse Interception Points, thanks to inheritance. */
@@ -89,7 +89,7 @@ Description :
 			var event = getController().getRequestService().getContext();
 			/* Validate incoming state */
 			if( getController().getSetting("InterceptorConfig").throwOnInvalidStates and not listfindnocase(getInterceptionPoints(),arguments.state) ){
-				getController().throw("The interception state sent in to process is not valid: #arguments.state#","","Framework.InterceptorService.InvalidInterceptionState");
+				getUtil().throwit("The interception state sent in to process is not valid: #arguments.state#","","Framework.InterceptorService.InvalidInterceptionState");
 			}
 		</cfscript>
 				
@@ -111,8 +111,8 @@ Description :
 			
 			/* Verify it exists else throw error */
 			if( getController().getColdboxOCM().lookup(interceptorKey) ){
-				throw(message="Interceptor class: #arguments.interceptorClass# not found in cache.",
-					  type="Framework.InterceptorService.InvalidInterceptionClass");
+				getUtil().throwit(message="Interceptor class: #arguments.interceptorClass# not found in cache.",
+					  			  type="Framework.InterceptorService.InvalidInterceptionClass");
 			}
 			else{
 				return getController().getColdboxOCM().get(interceptorKey);

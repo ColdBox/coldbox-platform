@@ -286,12 +286,12 @@ Description :
 		
 		//Check for Handlers Directory Location
 		if ( not directoryExists(HandlersPath) )
-			controller.throw("The handlers directory: #handlerspath# does not exist please check your application structure or your Application Mapping.","","Framework.loaderService.HandlersDirectoryNotFoundException");
+			getUtil().throwit("The handlers directory: #handlerspath# does not exist please check your application structure or your Application Mapping.","","Framework.loaderService.HandlersDirectoryNotFoundException");
 		//Get recursive Array listing
 		HandlerArray = recurseListing(HandlerArray, HandlersPath, HandlersPath);
 		//Verify it
 		if ( ArrayLen(HandlerArray) eq 0 )
-			controller.throw("No handlers were found in: #HandlerPath#. So I have no clue how you are going to run this application.","","Framework.loaderService.NoHandlersFoundException");
+			getUtil().throwit("No handlers were found in: #HandlerPath#. So I have no clue how you are going to run this application.","","Framework.loaderService.NoHandlersFoundException");
 		//Set registered Handlers
 		controller.setSetting("RegisteredHandlers",arrayToList(HandlerArray));
 		
@@ -300,7 +300,7 @@ Description :
 		if( HandlersExternalLocationPath neq ""){
 			//Check for Handlers Directory Location
 			if ( not directoryExists(HandlersExternalLocationPath) )
-				controller.throw("The external handlers directory: #HandlersExternalLocationPath# does not exist please check your application structure.","","Framework.loaderService.HandlersDirectoryNotFoundException");
+				getUtil().throwit("The external handlers directory: #HandlersExternalLocationPath# does not exist please check your application structure.","","Framework.loaderService.HandlersDirectoryNotFoundException");
 			//Get recursive Array listing
 			HandlersExternalArray = recurseListing(HandlersExternalArray, HandlersExternalLocationPath, HandlersExternalLocationPath);
 			
