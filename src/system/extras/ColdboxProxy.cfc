@@ -31,6 +31,12 @@ Description :
 			try{
 				//Create the request context
 				Event = cbController.getRequestService().requestCapture();
+				
+				/* Test Event Name */
+				if( not structKeyExists(arguments, "#event.getEventName()#") ){
+					throwit("Event not detected","The #event.geteventName()# variable does not exist in the arguments.");
+				}
+				
 				//Append the arguments to the collection
 				Event.collectionAppend(arguments,true);
 				//Set that this is a proxy request.
@@ -136,6 +142,7 @@ Description :
 	
 	<!--- Facade: Get a plugin --->
 	<cffunction name="getPlugin" access="private" returntype="any" hint="Plugin factory, returns a new or cached instance of a plugin." output="true">
+		<!--- ************************************************************* --->
 		<cfargument name="plugin" 		type="string"  hint="The Plugin object's name to instantiate" >
 		<cfargument name="customPlugin" type="boolean" required="false" default="false" hint="Used internally to create custom plugins.">
 		<cfargument name="newInstance"  type="boolean" required="false" default="false" hint="If true, it will create and return a new plugin. No caching or persistance.">
@@ -201,6 +208,17 @@ Description :
 		<cfargument name="detail" 	type="any" 	required="no" default="">
 		<!--- ************************************************************* --->
 		<cfthrow type="coldboxproxyException" message="#arguments.message#"  detail="#arguments.detail#">
+	</cffunction>
+	
+	<!--- Dump it Facade --->
+	<cffunction name="dumpit" access="private" hint="Facade for cfmx dump" returntype="void">
+		<cfargument name="var" required="yes" type="any">
+		<cfdump var="#var#">
+	</cffunction>
+	
+	<!--- Abort it facade --->
+	<cffunction name="abortit" access="private" hint="Facade for cfabort" returntype="void" output="false">
+		<cfabort>
 	</cffunction>
 	
 </cfcomponent>

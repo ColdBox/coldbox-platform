@@ -23,6 +23,22 @@ Description :
 		</cfscript>
 	</cffunction>
 	
+	<cffunction name="testNoEvent" access="public" returntype="void" output="false">
+		<cfscript>
+		var proxy = CreateObject("component","coldbox.coldboxproxy");
+		var results = "";
+		
+		//Test With default ProxyReturnCollection = false
+		try{
+			results = proxy.process();
+			Fail("Proxy did not throw");
+		}
+		catch(Any e){
+			AssertTrue(true);
+		}
+		</cfscript>
+	</cffunction>
+	
 	<cffunction name="testProxyNoCollection" access="public" returntype="void" output="false">
 		<cfscript>
 		var proxy = CreateObject("component","coldbox.coldboxproxy");
@@ -38,7 +54,7 @@ Description :
 		
 		</cfscript>
 	</cffunction>
-	
+
 	<cffunction name="testProxyWithCollection" access="public" returntype="void" output="false">
 		<cfscript>
 		var proxy = CreateObject("component","coldbox.coldboxproxy");
@@ -65,6 +81,31 @@ Description :
 		results = proxy.announceInterception(state='onLog',interceptData='');
 		AssertTrue(results,"onLog intercepted");
 		
+		</cfscript>
+	</cffunction>
+	
+	<cffunction name="testProxyPrivateMethods" access="public" returntype="void" output="false">
+		<cfscript>
+		var proxy = CreateObject("component","coldbox.coldboxproxy");
+		var results = "";
+		
+		/* Get Method Injector */
+		getController().getPlugin("methodInjector").start(proxy);
+		
+		/* Verify Test */
+		
+		/* GetPlugin */
+		
+		/* Get IOCFactory */
+		
+		/* Get Bean */
+		
+		/* Get ColdBoxOCM */
+		
+		/* Load ColdBox */
+		
+		/* Stop Injection */
+		getController().getPlugin("methodInjector").stop(proxy);
 		</cfscript>
 	</cffunction>
 	
