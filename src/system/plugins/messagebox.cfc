@@ -36,7 +36,7 @@ Modification History:
 			
 			/* Plugin Properties */
 			setpluginName("Messagebox");
-			setpluginVersion("1.1");
+			setpluginVersion("2.0");
 			setpluginDescription("This is a visual plugin that creates message boxes.");
 			
 			/* Setup The initial storage scope. */
