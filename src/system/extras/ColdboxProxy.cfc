@@ -67,7 +67,7 @@ Description :
 				if( not structKeyExists(e,"stacktrace") ){
 					e.stacktrace = "";
 				}
-				throw(e.message.toString(),e.detail.toString() & e.stacktrace.toString(),e.type.toString());
+				throwit(e.message.toString(),e.detail.toString() & e.stacktrace.toString());
 			}
 			
 			//Determine what to return via the setting
@@ -120,7 +120,7 @@ Description :
 		<cfscript>
 		//Verify the coldbox app is ok, else throw
 		if ( not structKeyExists(application,"cbController") ){
-			throw("ColdBox Not Found", "The coldbox main controller has not been initialized", "framework.controllerNotFoundException");
+			throwit("ColdBox Controller Not Found", "The coldbox main controller has not been initialized");
 		}
 		else
 			return true;
@@ -195,13 +195,12 @@ Description :
 	</cffunction>
 
 	<!--- Throw Facade --->
-	<cffunction name="throw" access="private" hint="Facade for cfthrow" output="false">
+	<cffunction name="throwit" access="private" hint="Facade for cfthrow" output="false">
 		<!--- ************************************************************* --->
 		<cfargument name="message" 	type="any" 	required="yes">
 		<cfargument name="detail" 	type="any" 	required="no" default="">
-		<cfargument name="type"  	type="any" 	required="no" default="Framework">
 		<!--- ************************************************************* --->
-		<cfthrow type="#arguments.type#" message="#arguments.message#"  detail="#arguments.detail#">
+		<cfthrow type="coldboxproxyException" message="#arguments.message#"  detail="#arguments.detail#">
 	</cffunction>
 	
 </cfcomponent>

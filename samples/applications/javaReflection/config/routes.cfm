@@ -7,7 +7,9 @@
 	I actually ENCOURAGE you to use the getSetting() for tier detection.
 	
 	All credits to Adam Fortuna, Rob Cameron & Per Djurner of Coldfusion On Wheels 
-	for innovating this routing method in Coldfusion.
+	(http://www.cfwheels.com/) for innovating this routing method in Coldfusion.
+
+	- http://coldcourse.riaforge.com
 	
 NOTE: The interceptor will create a new setting called: sesBaseURL with this value
 	so it can be used by your application for any HTML base tags or relocations.
@@ -18,15 +20,17 @@ NOTE: The interceptor will create a new setting called: sesBaseURL with this val
 -------------------------------------------- --->
 
 <!---
-	Do you want ColdCourse to be on or off?
+	Do you want ColdCourse to be on or off? If it's off it'll just short circuit
+	any page requests that come in, in effect it'll do nothing. Only framework 
+	specific actions will work if this is set to off.
 --->
 <cfset setEnabled(true)>
 
 <!--- 
-	This determines if non-ses urls should be routed back to the ses.
+	This determines if non-coldcourse urls should be routed back to coldcourse.
 	In other words, if someone goes to http://localhost/index.cfm?event=home.main
-	should we redirect (301, permanantly moved) to the ses url: 
-	http://localhost/index.cfm/home/main ?
+	should we redirect (301, permanantly moved) to the coldcourse url: 
+	http://localhost/home/main ?
 
 	This will also make sure that any trailing index pages get redirected as well, so 
 	if you go to http://localhost/home/index it would redirect to http://localhost/home 
@@ -38,10 +42,7 @@ NOTE: The interceptor will create a new setting called: sesBaseURL with this val
 
 <!--- 
 	The Base URL for your site. This will only be used for forwarding requests if 
-	UniqueURLs is enabled and for creating the new Application settings:
-	
-	- sesBaseURL
-	- htmlBaseURL
+	UniqueURLs is enabled.
    
     If you want your URLs to look like http://localhost/handler/action then you should
     put "http://localhost" here. For this option you'll need .htaccess or isapi rewrite support.
@@ -68,14 +69,6 @@ NOTE: The interceptor will create a new setting called: sesBaseURL with this val
 	The syntax of these is the same as that of Coldfusion on Wheels, and similar to Ruby 
 	on Rails.  The idea is that the number of variables in a URL will be the first indicator
 	of which course to use.
-	
-	ColdBox 2.6 added an extension to the :variable so you can declare a numerical value:
-	
-	Ex: handler/action/:id-numeric Will match if the id position is numeric
-	Ex: handler/action/:id Will match any alphanumeric position.
-	
-	This extends the custom courses to distinguish between alphanumeric and numeric placeholders.
-	
 	
 	Here's the general setup:
 	<cfset addCourse(	pattern="handler/action/:id",	# Set the pattern
@@ -104,10 +97,7 @@ NOTE: The interceptor will create a new setting called: sesBaseURL with this val
 	to put quotes and stuff
 	
 	Examples:
-	<cfset addCourse(	pattern="entry/:year-numeric/:month-numeric/:day-numeric",
-						handler="blog",
-						action="entry" )>
-	<cfset addCourse(	pattern="entry/:year-numeric/:month/:day-numeric",
+	<cfset addCourse(	pattern="blog/entry/:year/:month/:day",
 						handler="blog",
 						action="entry" )>
 	<cfset addCourse(	pattern="profile/view/:username",

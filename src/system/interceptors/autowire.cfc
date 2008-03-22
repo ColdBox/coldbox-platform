@@ -27,17 +27,11 @@ Description :
 			
 			/* Get set properties */
 			if( not propertyExists("debugMode") or not isBoolean(getProperty("debugMode")) ){
-				setDebugMode(false);
-			}
-			else{
-				setDebugMode(getProperty("debugMode"));
+				setProperty("debugMode",false);
 			}
 			/* DI Complete Method */
-			if(propertyExists("completeDIMethodName")){
-				setCompleteDIMethodName(getProperty("completeDIMethodName"));
-			}
-			else{
-				setCompleteDIMethodName('onDIComplete');
+			if(not propertyExists("completeDIMethodName")){
+				setProperty("completeDIMethodName",'onDIComplete');
 			}
 		</cfscript>
 	</cffunction>
@@ -160,9 +154,14 @@ Description :
 			
 			/* We are now assured that the DI cache has data. */
 			targetDIEntry = getDICacheDictionary().getKey(targetCacheKey);
-			/* Do we Inject Dependencies */
+			/* Do we Inject Dependencies, are we AutoWiring */
 			if ( targetDIEntry.autowire ){
+				/* Dependencies Length */
 				dependenciesLength = arrayLen(targetDIEntry.dependencies);
+				
+				/* Let's inject our mixins */
+				getPlugin("methodInjector").start(targetObject);
+				
 				/* Loop over dependencies and inject. */
 				for(x=1; x lte dependenciesLength;x=x+1){
 					
@@ -171,11 +170,11 @@ Description :
 						/* Inject dependency */
 						injectBean(targetObject, targetDIEntry.dependencies[x], getPlugin("ioc").getBean(targetDIEntry.dependencies[x]));
 						/* Debug Mode Check */
-						if( getDebugMode() ){
+						if( getProperty("debugMode") ){
 							getPlugin("logger").logEntry("information","Bean: #targetDIEntry.dependencies[x]# injected into #targetCacheKey#.");
 						}
 					}
-					else if( getDebugMode() ){
+					else if( getProperty("debugMode") ){
 						getPlugin("logger").logEntry("warning","Bean: #targetDIEntry.dependencies[x]# not found in factory");
 					}
 					
@@ -183,6 +182,9 @@ Description :
 				
 				/* Process After ID Complete */
 				processAfterCompleteDI(targetObject);
+				
+				/* Let's cleanup our mixins */
+				getPlugin("methodInjector").stop(targetObject);
 				
 			}//if autowiring			
 		</cfscript>
@@ -201,9 +203,7 @@ Description :
 			if( structKeyExists(arguments.metadata, "functions") ){
 				for(x=1; x lte ArrayLen(arguments.metadata.functions); x=x+1 ){
 					/* Verify we have a setter */
-					if( left(arguments.metadata.functions[x].name,3) eq "set" and 
-						(not StructKeyExists(arguments.metadata.functions[x], "access") or 
-							 arguments.metadata.functions[x].access eq "public") ){
+					if( left(arguments.metadata.functions[x].name,3) eq "set" ){
 						/* Found Setter, append property Name */
 						ArrayAppend(arguments.dependencies,Right(arguments.metadata.functions[x].name, Len(arguments.metadata.functions[x].name)-3));
 					
@@ -232,9 +232,16 @@ Description :
 		<cfargument name="beanName"  	 type="string" 	required="true" hint="The name of the property to inject"/>
 		<cfargument name="beanObject" 	 type="any" 	required="true" hint="The bean object to inject." />
 		<!--- ************************************************************* --->
-		<cfinvoke component="#arguments.targetBean#" method="set#arguments.beanName#">
-			<cfinvokeargument name="#arguments.beanName#" value="#arguments.beanObject#" />
-		</cfinvoke>
+		<cfscript>
+			var argCollection = structnew();
+			argCollection[arguments.beanName] = arguments.beanObject;
+		</cfscript>
+		
+		<!--- Call our mixin invoker --->
+		<cfinvoke component="#arguments.targetBean#" method="invokerMixin">
+			<cfinvokeargument name="method"  		value="set#arguments.beanName#">
+			<cfinvokeargument name="argCollection"  value="#argCollection#">
+		</cfinvoke>		
 	</cffunction>
 	
 	<!--- Process After DI Complete --->
@@ -243,11 +250,12 @@ Description :
 		<cfargument name="targetObject" hint="the target object to call on" type="any" required="Yes">
 		<!--- ************************************************************* --->
 		<cfset var meta = 0 />
-		<cfif StructKeyExists(arguments.targetObject, getCompleteDIMethodName())>
-			<cfset meta = getMetaData(arguments.targetObject[getCompleteDIMethodName()]) />
-			<cfif NOT StructKeyExists(meta, "access") OR meta.access eq "public">
-				<cfinvoke component="#arguments.targetObject#" method="#getCompleteDIMethodName()#" />
-			</cfif>
+		<!--- Check if method exists --->
+		<cfif StructKeyExists(arguments.targetObject, getProperty('CompleteDIMethodName'))>
+			<!--- Call our mixin invoker --->
+			<cfinvoke component="#arguments.targetObject#" method="invokerMixin">
+				<cfinvokeargument name="method"  		value="#getProperty('CompleteDIMethodName')#">
+			</cfinvoke>
 		</cfif>
 	</cffunction>
 	
@@ -263,8 +271,6 @@ Description :
 		</cfscript>
 	</cffunction>
 	
-<!------------------------------------------- PRIVATE PROPERTIES ------------------------------------------->
-	
 	<!--- Get Set DI CACHE Dictionary --->
 	<cffunction name="getDICacheDictionary" access="private" output="false" returntype="coldbox.system.util.baseDictionary" hint="Get DICacheDictionary">
 		<cfreturn instance.DICacheDictionary/>
@@ -272,28 +278,6 @@ Description :
 	<cffunction name="setDICacheDictionary" access="private" output="false" returntype="void" hint="Set DICacheDictionary">
 		<cfargument name="DICacheDictionary" type="coldbox.system.util.baseDictionary" required="true"/>
 		<cfset instance.DICacheDictionary = arguments.DICacheDictionary/>
-	</cffunction>
-	
-	<!--- Get set DebugMode --->
-	<cffunction name="getdebugMode" access="private" output="false" returntype="boolean" hint="Get debugMode">
-		<cfreturn instance.debugMode/>
-	</cffunction>	
-	<cffunction name="setdebugMode" access="private" output="false" returntype="void" hint="Set debugMode">
-		<cfargument name="debugMode" type="boolean" required="true"/>
-		<cfset instance.debugMode = arguments.debugMode/>
-	</cffunction>
-	
-	<!--- Method to be called after DI --->
-	<cffunction name="getCompleteDIMethodName" access="private" returntype="string" output="false">
-		<cfreturn instance.completeDIMethodName />
-	</cffunction>
-	<cffunction name="setCompleteDIMethodName" access="private" returntype="void" output="false">
-		<cfargument name="completeDIMethodName" type="string" required="true">
-		<cfset instance.completeDIMethodName = arguments.completeDIMethodName />
-	</cffunction>
-
-	<cffunction name="hasCompleteDIMethodName" hint="do we have a after complete DI method" access="private" returntype="boolean" output="false">
-		<cfreturn StructKeyExists(instance, "completeDIMethodName") />
 	</cffunction>
 
 </cfcomponent>

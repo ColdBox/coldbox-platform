@@ -66,8 +66,7 @@ Description :
 		
 		<cfset arguments["event"] = "ehGeneral.doEmployees">
 		<!--- Anything before --->
-		<!--- just a dummy thread sleep --->
-		<cfset sleep(2000)>
+		
 		<!--- Call the actual proxy --->
 		<cfset qry = super.process(argumentCollection=arguments)>
 
@@ -81,8 +80,6 @@ Description :
 		<!--- set event handler --->
 		<cfset arguments["event"] = "ehGeneral.validateCredentials">
 		
-		<!--- just a dummy thread sleep --->
-		<cfset sleep(500)>
 		<!--- Call the actual proxy --->
 		<!--- <cfset qry = super.process(argumentCollection=arguments)> --->
 		<!--- this is dummy code to verify username and [password] --->
@@ -98,8 +95,6 @@ Description :
 		<!--- call even handler to get query data etc --->
 		<cfset arguments["event"] = "ehGeneral.dspTab2">
 
-		<!--- just a dummy thread sleep --->
-		<cfset sleep(2000)>
 		<!--- Call the actual proxy --->
 		<cfset results = super.process(argumentCollection=arguments)>
 		<cfreturn results>

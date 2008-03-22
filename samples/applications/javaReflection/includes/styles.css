@@ -1,0 +1,477 @@
+.titleTable { 
+	width: 100%;
+}
+.titleTableTitle {
+	padding-left: 15px;
+	padding-right: 5px;
+	font-size: 13px;
+	height: 44px;
+	background-image: url(../images/titleTableTop.jpg);
+	background-repeat: repeat-x;
+}
+.titleTableTopNav {
+	font-size: 12px;
+	background-image: url(../images/titleTableTop.jpg);
+	background-repeat: repeat-x;
+}
+.titleTableRow2 {
+	color: #000000;
+	height: 31px;
+	background-image: url(../images/titleTableMiddle.jpg);
+	background-repeat: repeat-x;
+}
+.titleTableSubTitle {
+	font-size: 20px;
+	padding-left: 15px;
+	padding-right: 5px;
+}
+.titleTableSubNav {
+	white-space: nowrap;
+	font-size: 12px;
+}
+.titleTableRow3 {
+	height: 5px;
+	background-image: url(../images/titleTableBottom.jpg);
+	background-repeat: repeat-x;
+}
+
+.classHeaderTable {
+	margin-top: 20px;
+}
+.classHeaderTable td {
+	vertical-align: top;
+	padding-bottom: 4px;
+}
+.classHeaderTableLabel {
+	font-weight: bold;
+	padding-right: 15px;
+}
+.classSignature {
+	text-indent: -20px;
+	padding-left: 20px;
+}
+.inheritanceList {
+	text-indent: -20px;
+	padding-left: 20px;
+}
+.inheritArrow {
+	width: 15px;
+	height: 9px;
+}
+.classFrameContent {
+	margin-right: 5px;
+	margin-left: 10px;
+	margin-top: 10px;
+	margin-bottom: 10px;
+}
+.classFrameContent td {
+	white-space: nowrap;
+	padding-right: 5px;
+}
+
+.label {
+	color: #444444;
+	font-weight: bold;
+}
+
+strong {
+	color: #444444;
+}
+
+.summarySection {
+	margin-left: 20px;
+	margin-right: 10px;
+}
+.summaryTableTitle {
+	font-weight: bold;
+	font-size: 18px;
+	padding-top: 20px;
+	padding-bottom: 5px;
+}
+* .summaryTable {
+	margin-top: 5px;
+	border: #999999 1px solid;
+	width: 100%;
+	margin-bottom: 20px;
+}
+html>body .summaryTable {
+	margin-top: 5px;
+	border: #999999 1px solid;
+	width: 100%;
+	margin-bottom: 20px;
+	margin-right: 10px;
+}
+.summaryTable th {
+	color: #FFFFFF;
+	background-color: #627C9D;
+	white-space: nowrap;
+}
+.summaryTable td {
+	border-top: #999999 1px solid;
+	vertical-align: top;
+}
+.summaryTablePaddingCol {
+
+	width: 5px;
+}
+.summaryTablesigCol{
+	padding-top: 6px;
+	width: 10%; 
+}
+
+.summaryTableInheritanceCol {
+	padding-top: 6px;
+	width: 20px; 
+}
+.summaryTableSignatureCol {
+	padding-right: 10px;
+}
+.summaryTableOperatorCol {
+	padding-left: 10px;
+	padding-right: 10px;
+	font-weight: bold;
+}
+.summaryTableStatementCol {
+	padding-left: 10px;
+	padding-right: 10px;
+	font-weight: bold;
+	white-space: nowrap;
+}
+.summarySignature {
+	text-indent: -20px;
+	padding-left: 20px;
+	
+}
+.summaryTableOwnerCol {
+	padding-right: 10px;
+	width: 10px;
+}
+.summaryTableCol, .summaryTableSecondCol {
+}
+.signatureLink {
+	font-weight: bold;
+}
+.summaryTableDescription {
+	padding-top: 3px;
+	padding-bottom: 3px;
+	color: #333333;
+}
+.summaryTableLastCol {
+	padding-right: 10px;
+}
+.inheritedSummaryImage {
+	width: 14px;
+	height: 14px;
+}
+
+
+
+.detailSectionHeader {
+	color: #434343;
+	font-size: 18px;
+	padding-left: 10px;
+	padding-top: 4px;
+	padding-bottom: 4px;
+	margin-top: 40px;
+	margin-bottom: 3px;
+	background-image: url(../images/detailSectionHeader.jpg);
+	background-repeat: repeat-x;
+}
+.detailHeader {
+	margin-left: 20px;
+	margin-top: 10px;
+	margin-bottom: 3px;
+}
+.detailHeaderName {
+	font-weight: bold;
+	font-size: 16px;
+	vertical-align: baseline;
+	white-space: nowrap;
+}
+.detailHeaderType {
+	font-size: 12px;
+	vertical-align: baseline;
+	padding-right: 10px;
+	padding-left: 7px;
+	white-space: nowrap;
+}
+.detailHeaderParens {
+	font-size: 14px;
+	font-weight: bold;
+	padding-left: 1px;
+	padding-bottom: 2px;
+}
+.detailHeaderRule {
+	background-image: url(../images/detailHeaderRule.jpg);
+	background-repeat: repeat-x;
+	width: 100%;
+	background-position: 50%;
+}
+.detailBody {
+	margin-left: 20px;
+	margin-right: 15px;
+	margin-bottom: 20px;
+}
+.exampleHeader {
+	background-color: #C8D1DF;
+	padding-left: 10px;
+	padding-top: 3px;
+	padding-bottom: 3px;
+}
+
+
+body {
+	font-family: Tahoma, Verdana, Arial, Helvetica, sans-serif;
+	color: #000000;
+	background-color:#FFFFFF;
+}
+
+body, td, th {
+	font-size: 13px;
+}
+
+.MainContent {
+	margin-left: 20px;
+	margin-right: 10px;
+	margin-bottom: 10px;
+}
+
+code {
+	font-family: "Lucida Console", "Courier New", Courier, monospace; 
+	font-size: 12px;
+}
+
+pre {
+	font-family: "Lucida Console", "Courier New", Courier, monospace; 
+	font-size: 12px;
+}
+
+th	{
+	text-align: left;
+	font-weight: bold;
+	vertical-align: bottom;
+}
+
+table {
+	background-color: white;
+}
+
+table.withBorder {
+	border-color: #BBBBBB;
+	border-width: 1px;
+	border-style: solid;
+}
+
+.innertable {
+	border-collapse: collapse; /* to eliminate the default table cellspacing=2 */
+}
+
+.innertable th {
+	border: 1px solid #000000;
+	background:#DDDDDD;
+	padding: 2px 3px 2px 3px;
+}
+
+.innertable td {
+	border: 1px solid #000000;
+	padding: 2px 3px 2px 3px;
+}
+
+.paramSpacer {
+	font-size: 5px;
+}
+
+/* Custom Classes */
+.row0 {
+	background-color: #F2F2F2;
+}
+
+.row1 {
+	background-color: #FFFFFF;
+}
+
+
+
+.idxrow {
+	padding-top: 5px;
+}
+
+.SummaryTableHeader {
+    background-color: #CCCCCC;
+}
+
+.InheritedTableHeader {
+    background-color: #EEEEEE;
+}
+
+.PackageTableHeader {
+    background-color: #EEEEEE;
+}
+
+
+/* Links */
+a:link {
+	color: #0000CC;
+	text-decoration: none;
+}
+
+a:visited {
+    color: #0000CC;
+	text-decoration: none;
+} 
+
+a:hover {
+	text-decoration: underline;
+	color: #0000CC;
+}
+
+a:active {
+	text-decoration: none;
+	color: #0000CC;
+}
+
+/* Headings */
+h1, h2, h3, h4, h5, h6	{
+	font-family: "Trebuchet MS", "Bitstream Vera Sans", verdana, lucida, arial, helvetica, sans-serif;
+	font-weight: bold;
+	margin-top: 3px;
+	margin-bottom: 3px;
+	letter-spacing: 1px;
+	width: 90%;
+}
+
+h1 {
+	font-size: 18px;
+}
+
+h2 {
+	font-size: 16px;
+}
+
+h3 {
+	font-size: 14px;
+}
+
+h4 {
+	font-size: 12px;
+	color: #666666;
+}
+
+h5 {
+	font-size: 11px;
+}
+.inheritanceList {
+	line-height: 19px;
+}
+.private {
+    color: #999999;
+}
+
+
+/* IE */
+* html .listing {
+   width: 93%;
+   padding-left: 6%;
+   padding-right: 5px;
+   padding-top: 5px;
+   padding-bottom: 5px;
+   overflow-x: auto;	
+   background-color: #F2F2F2;
+   margin-bottom: 10px;
+   margin-top: 10px;
+   font-family: "Lucida Console", "Courier New", Courier, monospace;
+   font-size: 12px;
+}
+
+/* Firefox, Netscape */
+html>body .listing pre
+{
+   overflow: auto;
+   padding-left: 40px;
+   padding-right: 5px;
+   padding-top: 5px;
+   padding-bottom: 5px;
+   background-color: #F2F2F2;
+   margin-top: 10px;
+   margin-bottom: 10px;
+   font-family: "Lucida Console", "Courier New", Courier, monospace;
+   font-size: 12px;
+}   
+
+.listingIcons
+{
+	padding: 0px;
+	margin-top: 10px;
+	height: 15px;
+}  
+
+.pageTop
+{
+	height:10px;
+}
+
+
+/* These are for the CODE snippet coloring. */
+	span.cfmlcodecolor {
+		color: #840000 ;
+		}
+		
+	span.commentcodecolor {
+		color: #808080 ;
+		/* font-style: italic ; */
+		}
+
+	span.attributecodecolor {
+		color: #0000FF ;
+		}
+		
+	span.numbercodecolor {
+		color: #FF00FF ;
+		}
+		
+	span.htmlcodecolor {
+		color: #000080 ;
+		}
+		
+.codeBlock {
+	background: white;
+	padding: 0px;
+	margin: 1px;
+	border: 5px solid #627C9D;
+}
+
+.codeTrigger{
+	color: #444444;
+	font-weight: bold;
+	padding-left: 20px;
+}
+
+.notImplementedTip-tip {
+	color: #000;
+	border: 1px solid #627C9D;
+	width: 160px;
+	z-index: 13000;
+}
+
+ 
+.notImplementedTip-title {
+	font-weight: bold;
+	font-size: 11px;
+	margin: 0;
+	color: #3E4F14;
+	padding: 4px 4px 4px;
+	background-image: url(../images/detailSectionHeader.jpg);
+	border-bottom: 1px solid #B5CF74;
+}
+ 
+.notImplementedTip-text{
+	font-size: 11px;
+	padding: 4px 8px 8px;
+	background: #FFFFFF;
+}
+.errMessage {
+	color: red;
+	font-weight: bold;
+	padding-left: 20px;
+	padding-top: 20px;
+}

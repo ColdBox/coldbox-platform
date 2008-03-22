@@ -1,4 +1,8 @@
-<!---
+<!-----------------------------------------------------------------------
+********************************************************************************
+Copyright 2005-2007 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+www.coldboxframework.com | www.luismajano.com | www.ortussolutions.com
+********************************************************************************
 Serialize and deserialize JSON data into native ColdFusion objects
 http://www.epiphantastic.com/cfjson/
 
@@ -6,33 +10,40 @@ Authors: Jehiah Czebotar (jehiah@gmail.com)
          Thomas Messier  (thomas@epiphantastic.com)
 
 Version: 1.9 February 20, 2008
-Modified By: Sana Ullah (adjusted the compatibility with coldbox plugins).
---->
-
-
+Modifications:
+	- Sana Ullah (adjusted the compatibility with coldbox plugins).
+	- Luis Majano (adaptations & best practices)
+----------------------------------------------------------------------->
 <cfcomponent name="json"
 			 hint="JSON Plugin is used to serialize and deserialize JSON data to/from native ColdFusion objects."
 			 extends="coldbox.system.plugin"
 			 output="false"
 			 cache="true">
 
-	<!--- ************************************************************* --->
+<!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
-	<cffunction name="init" access="public" returntype="json" output="false">
-		<cfargument name="controller" type="any" required="true">
+	<cffunction name="init" access="public" returntype="applicationstorage" output="false">
+		<cfargument name="controller" type="any" required="true" hint="coldbox.system.controller">
 		<cfscript>
-		super.Init(arguments.controller);
-		setpluginName("JSON");
-		setpluginVersion("1.9");
-		setpluginDescription("JSON Plugin is used to serialize and deserialize JSON data to/from native ColdFusion objects");
-		return this;
+			super.Init(arguments.controller);
+			
+			/* Plugin Properties */
+			setpluginName("JSON");
+			setpluginVersion("1.9");
+			setpluginDescription("JSON Plugin is used to serialize and deserialize JSON data to/from native ColdFusion objects");
+			
+			/* Return Instance */
+			return this;
 		</cfscript>
 	</cffunction>
+
+<!------------------------------------------- PUBLIC ------------------------------------------->
 	
-	<cffunction name="decode" access="remote" returntype="any" output="no"
-			hint="Converts data frm JSON to CF format">
-		<cfargument name="data" type="string" required="Yes" />
-		
+	<!--- Decode from JSON to CF --->
+	<cffunction name="decode" access="public" returntype="any" output="no" hint="Converts data from JSON to CF format">
+		<!--- ************************************************************* --->
+		<cfargument name="data" type="string" required="Yes" hint="JSON Packet" />
+		<!--- ************************************************************* --->
 		<!--- DECLARE VARIABLES --->
 		<cfset var ar = ArrayNew(1) />
 		<cfset var st = StructNew() />
@@ -231,16 +242,16 @@ Modified By: Sana Ullah (adjusted the compatibility with coldbox plugins).
 		</cfif>
 	</cffunction>
 	
-	
 	<!--- CONVERTS DATA FROM CF TO JSON FORMAT --->
-	<cffunction name="encode" access="remote" returntype="string" output="No"
-			hint="Converts data from CF to JSON format">
-		<cfargument name="data" type="any" required="Yes" />
-		<cfargument name="queryFormat" type="string" required="No" default="query" /> <!-- query or array -->
-		<cfargument name="queryKeyCase" type="string" required="No" default="lower" /> <!-- lower or upper -->
-		<cfargument name="stringNumbers" type="boolean" required="No" default=false >
-		<cfargument name="formatDates" type="boolean" required="No" default=false >
-		<cfargument name="columnListFormat" type="string" required="No" default="string" > <!-- string or array -->
+	<cffunction name="encode" access="public" returntype="string" output="No" hint="Converts data from CF to JSON format">
+		<!--- ************************************************************* --->
+		<cfargument name="data" 			type="any" 		required="Yes" hint="The CF structure" />
+		<cfargument name="queryFormat" 		type="string" 	required="No" default="query" hint="query or array" />
+		<cfargument name="queryKeyCase" 	type="string" 	required="No" default="lower" hint="lower or upper"/>
+		<cfargument name="stringNumbers" 	type="boolean" 	required="No" default="false" >
+		<cfargument name="formatDates" 		type="boolean" 	required="No" default="false" >
+		<cfargument name="columnListFormat" type="string" 	required="No" default="string" hint="string or array" >
+		<!--- ************************************************************* --->
 		
 		<!--- VARIABLE DECLARATION --->
 		<cfset var jsonString = "" />
@@ -396,18 +407,19 @@ Modified By: Sana Ullah (adjusted the compatibility with coldbox plugins).
 		</cfif>
 	</cffunction>
 	
-	<cffunction name="validate" access="remote" output="yes" returntype="boolean"
-			hint="I validate a JSON document against a JSON schema">
-		<cfargument name="doc" type="string" required="No" />
-		<cfargument name="schema" type="string" required="No" />
-		<cfargument name="errorVar" type="string" required="No" default="jsonSchemaErrors" />
-		<cfargument name="stopOnError" type="boolean" required="No" default=true />
-		
+	<!--- Validate a JSON document --->
+	<cffunction name="validate" access="remote" output="yes" returntype="boolean" hint="I validate a JSON document against a JSON schema">
+		<!--- ************************************************************* --->
+		<cfargument name="doc" 			type="string" 	required="No" />
+		<cfargument name="schema"	 	type="string" 	required="No" />
+		<cfargument name="errorVar" 	type="string" 	required="No" default="jsonSchemaErrors" />
+		<cfargument name="stopOnError" 	type="boolean" 	required="No" default=true />
 		<!--- These arguments are for internal use only --->
-		<cfargument name="_doc" type="any" required="No" />
-		<cfargument name="_schema" type="any" required="No" />
-		<cfargument name="_item" type="string" required="No" default="root" />
-    	
+		<cfargument name="_doc" 		type="any" 		required="No" />
+		<cfargument name="_schema" 		type="any" 		required="No" />
+		<cfargument name="_item" 		type="string" 	required="No" default="root" />
+    	<!--- ************************************************************* --->
+		
 		<cfset var schemaRules = "" />
 		<cfset var jsonDoc = "" />
 		<cfset var i = 0 />
@@ -556,4 +568,5 @@ Modified By: Sana Ullah (adjusted the compatibility with coldbox plugins).
 			<cfreturn true />
 		</cfif>
     </cffunction>
+	
 </cfcomponent>

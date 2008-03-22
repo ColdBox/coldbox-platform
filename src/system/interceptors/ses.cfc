@@ -73,12 +73,12 @@ Description :
 			var key = "";
 			var cleanedPathInfo = getCGIElement('path_info');
 			var cleanedScriptName = trim(replacenocase(getCGIElement('script_name'),"/index.cfm",""));
-	
+			
 			/* Clean again */
 			cleanedScriptName = trim(replacenocase(getCGIElement('script_name'),"\index.cfm",""));
 			
-			/* Check if active */
-			if ( not getEnabled() )
+			/* Check if active or in proxy mode */
+			if ( not getEnabled() or event.isProxyRequest() )
 				return;
 	
 			/* Check for invalid URL */
