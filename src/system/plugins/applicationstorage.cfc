@@ -22,7 +22,9 @@ Modification History:
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
 	<cffunction name="init" access="public" returntype="applicationstorage" output="false">
+		<!--- ************************************************************* --->
 		<cfargument name="controller" type="any" required="true" hint="coldbox.system.controller">
+		<!--- ************************************************************* --->
 		<cfscript>
 			super.Init(arguments.controller);
 			

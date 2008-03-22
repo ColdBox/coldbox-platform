@@ -20,6 +20,8 @@ Description :
 		<cfset suite.addTestSuite(CreateObject("component", "cases.plugins.cookiestorageTest"))>
 		<cfset suite.addTestSuite(CreateObject("component", "cases.plugins.sessionstorageTest"))>
 		<cfset suite.addTestSuite(CreateObject("component", "cases.plugins.appstorageTest"))>
+		<cfset suite.addTestSuite(CreateObject("component", "cases.plugins.javaloaderTest"))>
+		<cfset suite.addTestSuite(CreateObject("component", "cases.plugins.messageboxTest"))>
 		
 		<cfreturn suite/>  
 	</cffunction> 
