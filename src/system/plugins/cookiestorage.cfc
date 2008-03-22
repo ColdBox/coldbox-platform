@@ -24,20 +24,24 @@ Modification History:
 
 	<cffunction name="init" access="public" returntype="cookiestorage" output="false" hint="Constructor.">
 		<!--- ************************************************************* --->
-		<cfargument name="controller" type="any" required="true">
+		<cfargument name="controller" type="any" required="true" hint="coldbox.system.controller">
 		<!--- ************************************************************* --->
-		<cfset super.Init(arguments.controller) />
-		<cfset setpluginName("Cookie Storage")>
-		<cfset setpluginVersion("1.0")>
-		<cfset setpluginDescription("A permanent data storage plugin.")>
-	
-		<cfreturn this>
+		<cfscript>	
+			super.Init(arguments.controller);
+			
+			/* Plugin Properties */
+			setpluginName("Cookie Storage");
+			setpluginVersion("1.0");
+			setpluginDescription("A permanent data storage plugin.");
+			
+			/* Return Instance. */
+			return this;
+		</cfscript>
 	</cffunction>
 
 <!------------------------------------------- PUBLIC ------------------------------------------->
 
-	<!--- ************************************************************* --->
-
+	<!--- Set A Cookie --->
 	<cffunction name="setVar" access="public" returntype="void" hint="Set a new permanent variable." output="false">
 		<!--- ************************************************************* --->
 		<cfargument name="name"  	type="string" 	required="true"  hint="The name of the variable.">
@@ -62,8 +66,7 @@ Modification History:
 		</cfif>	
 	</cffunction>
 
-	<!--- ************************************************************* --->
-
+	<!--- Get a Cookie Var --->
 	<cffunction name="getVar" access="public" returntype="any" hint="Get a new permanent variable. If the cookie does not exist. The method returns blank." output="false">
 		<!--- ************************************************************* --->
 		<cfargument  name="name" 		type="string"  required="true" 		hint="The variable name to retrieve.">
@@ -88,8 +91,7 @@ Modification History:
 		<cfreturn rtnVar>
 	</cffunction>
 
-	<!--- ************************************************************* --->
-
+	<!--- Check if a cookie value exists --->
 	<cffunction name="exists" access="public" returntype="boolean" hint="Checks wether the permanent variable exists." output="false">
 		<!--- ************************************************************* --->
 		<cfargument  name="name" type="string" required="true" 	hint="The variable name to retrieve.">
@@ -97,8 +99,7 @@ Modification History:
 		<cfreturn structKeyExists(cookie,arguments.name)>
 	</cffunction>
 
-	<!--- ************************************************************* --->
-
+	<!--- Delete a Cookie Value --->
 	<cffunction name="deleteVar" access="public" returntype="boolean" hint="Tries to delete a permanent cookie var." output="false">
 		<!--- ************************************************************* --->
 		<cfargument  name="name" type="string" required="true" 	hint="The variable name to retrieve.">
@@ -111,7 +112,5 @@ Modification History:
 			<cfreturn false>
 		</cfif>
 	</cffunction>
-
-	<!--- ************************************************************* --->
 	
 </cfcomponent>

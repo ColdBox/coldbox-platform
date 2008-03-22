@@ -17,14 +17,18 @@ Description: This is the framework's simple bean factory.
 
 	<!--- ************************************************************* --->
 
-	<cffunction name="init" access="public" returntype="beanFactory" output="false">
-		<cfargument name="controller" type="any" required="true">
+	<cffunction name="init" access="public" returntype="beanFactory" output="false" hint="constructor">
+		<cfargument name="controller" type="any" required="true" hint="coldbox.system.controller">
 		<cfscript>
-		super.Init(arguments.controller);
-		setpluginName("Bean Factory");
-		setpluginVersion("1.0");
-		setpluginDescription("I am a simple bean factory");
-		return this;
+			super.Init(arguments.controller);
+			
+			/* Plugin Properties */
+			setpluginName("Bean Factory");
+			setpluginVersion("1.0");
+			setpluginDescription("I am a simple bean factory");
+			
+			/* Return instance */
+			return this;
 		</cfscript>
 	</cffunction>
 
@@ -79,7 +83,7 @@ Description: This is the framework's simple bean factory.
 				<cfthrow type="Framework.plugins.beanFactory.PopulateBeanException" message="Error populating bean." detail="#cfcatch.Detail#<br>#cfcatch.message#">
 			</cfcatch>
 		</cftry>
-
+		<!--- Return Instance --->
 		<cfreturn beanInstance />
 	</cffunction>
 

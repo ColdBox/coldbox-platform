@@ -23,19 +23,24 @@ Modification History:
 
 	<cffunction name="init" access="public" returntype="clientstorage" output="false" hint="Constructor.">
 		<!--- ************************************************************* --->
-		<cfargument name="controller" type="any" required="true">
+		<cfargument name="controller" type="any" required="true" hint="coldbox.system.controller">
 		<!--- ************************************************************* --->
-		<cfset super.Init(arguments.controller) />
-		<cfset setpluginName("Client Storage")>
-		<cfset setpluginVersion("1.0")>
-		<cfset setpluginDescription("A permanent data storage plugin.")>
-		<cfreturn this>
+		<cfscript>
+			super.Init(arguments.controller);
+			
+			/* Plugin Properties */
+			setpluginName("Client Storage");
+			setpluginVersion("1.0");
+			setpluginDescription("A permanent data storage plugin.");
+			
+			/* Return Instance */
+			return this;
+		</cfscript>			
 	</cffunction>
 
 <!------------------------------------------- PUBLIC ------------------------------------------->
 
-	<!--- ************************************************************* --->
-
+	<!--- Set a variable --->
 	<cffunction name="setVar" access="public" returntype="void" hint="Set a new permanent variable." output="false">
 		<!--- ************************************************************* --->
 		<cfargument name="name"  type="string" required="true" hint="The name of the variable.">
@@ -53,8 +58,7 @@ Modification History:
 		</cfif>
 	</cffunction>
 
-	<!--- ************************************************************* --->
-
+	<!--- Get a variable --->
 	<cffunction name="getVar" access="public" returntype="any" hint="Get a new permanent variable. If the variable does not exist. The method returns blank." output="false">
 		<!--- ************************************************************* --->
 		<cfargument  name="name" 		type="string"  required="true" 		hint="The variable name to retrieve.">
@@ -62,6 +66,7 @@ Modification History:
 		<!--- ************************************************************* --->
 		<cfset var wddxVar = "">
 		<cfset var rtnVar = "">
+		
 		<cfif exists(arguments.name)>
 			<!--- Get Value --->
 			<cfset rtnVar = client[arguments.name]>
@@ -73,12 +78,12 @@ Modification History:
 		<cfelse>
 			<cfset rtnVar = arguments.default>
 		</cfif>
+		
 		<!--- Return Var --->
 		<cfreturn rtnVar>
 	</cffunction>
 
-	<!--- ************************************************************* --->
-
+	<!--- Exists Check --->
 	<cffunction name="exists" access="public" returntype="boolean" hint="Checks wether the permanent variable exists." output="false">
 		<!--- ************************************************************* --->
 		<cfargument  name="name" type="string" required="true" 	hint="The variable name to retrieve.">
@@ -86,20 +91,13 @@ Modification History:
 		<cfreturn structKeyExists(client,arguments.name)>
 	</cffunction>
 
-	<!--- ************************************************************* --->
-
+	<!--- Delete a Var --->
 	<cffunction name="deleteVar" access="public" returntype="boolean" hint="Tries to delete a permanent client var." output="false">
 		<!--- ************************************************************* --->
 		<cfargument  name="name" type="string" required="true" 	hint="The variable name to retrieve.">
 		<!--- ************************************************************* --->
-		<cfif exists(arguments.name)>
-			<cfset structdelete(client, arguments.name)>
-			<cfreturn true>
-		<cfelse>
-			<cfreturn false>
-		</cfif>
+		<cfreturn structdelete(client, arguments.name, true)>
 	</cffunction>
 
-	<!--- ************************************************************* --->
 
 </cfcomponent>

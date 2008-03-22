@@ -27,23 +27,29 @@ Luis Majano		07/11/2006		Updated it to work with ColdBox. look at license in the
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
-	<cffunction name="init" access="public" returntype="JavaLoader" output="false">
-		<cfargument name="controller" type="any" required="true">
-		<cfset super.Init(arguments.controller) />
-		<cfset setpluginName("Java Loader")>
-		<cfset setpluginVersion("1.0")>
-		<cfset setpluginDescription("Java Loader plugin, based on Mark Mandel's brain.")>
-		
-		<!--- Set a static ID for the loader --->
-		<cfset setstaticIDKey("cbox-javaloader-#getController().getAppHash()#")>
-		<cfreturn this>
+	<cffunction name="init" access="public" returntype="JavaLoader" output="false" hint="Constructor">
+		<!--- ************************************************************* --->
+		<cfargument name="controller" type="any" required="true" hint="coldbox.system.controller">
+		<!--- ************************************************************* --->
+		<cfscript>
+			super.Init(arguments.controller);
+			
+			/* Plugin Properties */
+			setpluginName("Java Loader");
+			setpluginVersion("1.0");
+			setpluginDescription("Java Loader plugin, based on Mark Mandel's brain.");
+			
+			/* Set a static ID for the loader */
+			setstaticIDKey("cbox-javaloader-#getController().getAppHash()#");
+			
+			return this;
+		</cfscript>
 	</cffunction>
 
 
 <!------------------------------------------- PUBLIC ------------------------------------------->
 
-	<!--- ************************************************************* --->
-
+	<!--- Setup the Loader --->
 	<cffunction name="setup" hint="setup the loader" access="public" returntype="any" output="false">
 		<!--- ************************************************************* --->
 		<cfargument name="loadPaths" hint="An array of directories of classes, or paths to .jar files to load" 
@@ -71,8 +77,7 @@ Luis Majano		07/11/2006		Updated it to work with ColdBox. look at license in the
 			</cfif>
 	</cffunction>
 
-	<!--- ************************************************************* --->
-
+	<!--- Create a Class --->
 	<cffunction name="create" hint="Retrieves a reference to the java class. To create a instance, you must run init() on this object" access="public" returntype="any" output="false">
 		<!--- ************************************************************* --->
 		<cfargument name="className" hint="The name of the class to create" type="string" required="Yes">
@@ -80,19 +85,20 @@ Luis Majano		07/11/2006		Updated it to work with ColdBox. look at license in the
 		<cfreturn getJavaLoaderFromScope().create(argumentCollection=arguments)>
 	</cffunction>
 
-	<!--- ************************************************************* --->
-
+	<!--- Get URL Class Loader --->
 	<cffunction name="getURLClassLoader" hint="Returns the java.net.URLClassLoader in case you need access to it" access="public" returntype="any" output="false">
 		<cfreturn getJavaLoaderFromScope().getURLClassLoader() />
 	</cffunction>
 
-	<!--- ************************************************************* --->
-
+	<!--- Get This Version --->
 	<cffunction name="getVersion" hint="Retrieves the version of the loader you are using" access="public" returntype="string" output="false">
 		<cfreturn getJavaLoaderFromScope().getVersion()>
 	</cffunction>
-
-	<!--- ************************************************************* --->
+	
+	<!--- Get the static javaloder id --->
+	<cffunction name="getstaticIDKey" access="public" returntype="string" output="false" hint="Return the original server id static key">
+		<cfreturn instance.staticIDKey>
+	</cffunction>
 
 <!------------------------------------------- PRIVATE ------------------------------------------->
 
@@ -118,12 +124,7 @@ Luis Majano		07/11/2006		Updated it to work with ColdBox. look at license in the
 		<cfscript>
 			return structKeyExists( server, getstaticIDKey());
 		</cfscript>
-	</cffunction>
-	
-	<!--- Get the static javaloder id --->
-	<cffunction name="getstaticIDKey" access="private" returntype="string" output="false">
-		<cfreturn instance.staticIDKey>
-	</cffunction>
+	</cffunction>	
 	
 	<!--- set the static javaloader id --->
 	<cffunction name="setstaticIDKey" access="private" returntype="void" output="false">
