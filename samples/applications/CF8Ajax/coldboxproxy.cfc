@@ -74,6 +74,28 @@ Description :
 		<cfreturn qry>
 	</cffunction>
 	
+	<cffunction name="getNames" output="false" access="remote" returntype="Any"  hint="Process a remote call and return data/objects back.">
+		<cfset var qry  =  "" />
+		<!--- CFSELECT (bind )  --->
+		<cfset var TwoDimensionalArray =  ArrayNew(2) />
+		<cfset arguments["event"] = "ehGeneral.doEmployees">
+		<!--- Anything before --->
+		
+		<!--- Call the actual proxy --->
+		<cfset qry = super.process(argumentCollection=arguments)>
+		
+		<!--- <cfset TwoDimensionalArray[1][1] = '0' />
+		<cfset TwoDimensionalArray[1][2] = 'Please select' /> --->
+		
+		<cfloop query="qry">
+			<cfset TwoDimensionalArray[qry.CurrentRow][1] = trim(qry.idt)>
+            <cfset TwoDimensionalArray[qry.CurrentRow][2] = trim(qry.fname)>
+		</cfloop>
+
+		<!--- Anything after --->
+		<cfreturn TwoDimensionalArray>
+	</cffunction>
+	
 	<cffunction name="validateCredentials" output="false" access="remote" returntype="boolean" hint="Process a remote call and return data/objects back.">
 		<cfargument name="username" type="string">
 		<cfargument name="password" type="string">
