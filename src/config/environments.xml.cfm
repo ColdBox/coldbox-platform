@@ -14,7 +14,7 @@
 		<Setting name="EnableDumpVar"			value="false" />
 		<Setting name="EnableColdboxLogging"	value="true" />
 		<Setting name="onInvalidEvent"			value="" />
-		
+		<Setting name="Cachesettings.FreeMemoryPercentageThreshold" value="0" />
 		<!--
 			AppSpecific Settings: <Setting name="MySetting" value="Hello" />
 		-->		

@@ -8,9 +8,10 @@ http://www.epiphantastic.com/cfjson/
 
 Authors: Jehiah Czebotar (jehiah@gmail.com)
          Thomas Messier  (thomas@epiphantastic.com)
-
 Version: 1.9 February 20, 2008
+
 Modifications:
+	- Contributed by Ernst van der Linden (evdlinden@gmail.com) ]
 	- Sana Ullah (adjusted the compatibility with coldbox plugins).
 	- Luis Majano (adaptations & best practices)
 ----------------------------------------------------------------------->
@@ -333,12 +334,14 @@ Modifications:
 			</cfif>
 			
 			<cfset dJSONString.append('"#recordcountKey#":' & _data.recordcount) />
+			
 			<cfif arguments.columnListFormat EQ "array">
 				<cfset columnlist = "[" & ListQualify(columnlist, '"') & "]" />
 				<cfset dJSONString.append(',"#columnlistKey#":' & columnlist) />
 			<cfelse>
 				<cfset dJSONString.append(',"#columnlistKey#":"' & columnlist & '"') />
 			</cfif>
+			
 			<cfset dJSONString.append(',"#dataKey#":') />
 			
 			<!--- Make query a structure of arrays --->

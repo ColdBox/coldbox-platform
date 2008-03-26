@@ -45,10 +45,20 @@ Modification History:
 			/* Create an empty factory placeholder */
 			setIOCFactory( structNew() );
 			
-			/* Constants, from the framework settings. The instantiation paths for the frameworks. */
-			setCOLDSPRING_FACTORY( getSetting("ColdspringBeanFactory",true) );
-			setLIGHTWIRE_FACTORY( getSetting("LightWireBeanFactory",true) );
-			
+			/* This can be overriden by the custom settings now: */
+			if( settingExists('ColdspringBeanFactory') ){
+				setCOLDSPRING_FACTORY( getSetting("ColdspringBeanFactory") );
+			}
+			else{
+				setCOLDSPRING_FACTORY( getSetting("ColdspringBeanFactory",true) );
+			}
+			if( settingExists('LightWireBeanFactory') ){
+				setLIGHTWIRE_FACTORY( getSetting("LightWireBeanFactory") );
+			}
+			else{
+				setLIGHTWIRE_FACTORY( getSetting("LightWireBeanFactory",true) );
+			}
+						
 			/* Return instance. */
 			return this;
 		</cfscript>

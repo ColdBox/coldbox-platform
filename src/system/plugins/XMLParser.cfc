@@ -493,11 +493,9 @@ Modification History:
 				for (i=1; i lte ArrayLen(YourSettingNodes); i=i+1){
 					tester = trim(YourSettingNodes[i].XMLAttributes["value"]);
 					//Test for Array
-					if ( left(tester,1) eq "[" and right(tester,1) eq "]"){
-						StructInsert(ConfigStruct, YourSettingNodes[i].XMLAttributes["name"], oUtilities.createArray(tester) );
-					}
-					else if ( left(tester,1) eq "{" and right(tester,1) eq "}"){
-						StructInsert(ConfigStruct, YourSettingNodes[i].XMLAttributes["name"], oUtilities.createStruct(tester) );
+					if ( left(tester,1) eq "[" and right(tester,1) eq "]" OR
+					     left(tester,1) eq "{" and right(tester,1) eq "}"){
+						StructInsert(ConfigStruct, YourSettingNodes[i].XMLAttributes["name"], getPlugin("json").decode(tester) );
 					}
 					else
 						StructInsert( ConfigStruct, YourSettingNodes[i].XMLAttributes["name"], tester);
@@ -906,11 +904,9 @@ Modification History:
 						//Property Complex Check
 						tempProperty = Trim( InterceptorNodes[i].XMLChildren[j].XMLText );
 						//Check for Complex Setup
-						if ( left(tempProperty,1) eq "[" and right(tempProperty,1) eq "]"){
-							StructInsert( InterceptorStruct.properties, Trim(InterceptorNodes[i].XMLChildren[j].XMLAttributes["name"]), oUtilities.createArray(tempProperty) );
-						}
-						else if ( left(tempProperty,1) eq "{" and right(tempProperty,1) eq "}"){
-							StructInsert( InterceptorStruct.properties, Trim(InterceptorNodes[i].XMLChildren[j].XMLAttributes["name"]), oUtilities.createStruct(tempProperty) );
+						if ( left(tempProperty,1) eq "[" and right(tempProperty,1) eq "]" OR
+						     left(tempProperty,1) eq "{" and right(tempProperty,1) eq "}"){
+							StructInsert( InterceptorStruct.properties, Trim(InterceptorNodes[i].XMLChildren[j].XMLAttributes["name"]), getPlugin('json').decode(tempProperty) );
 						}
 						else{
 							StructInsert( InterceptorStruct.properties, Trim(InterceptorNodes[i].XMLChildren[j].XMLAttributes["name"]), tempProperty );
