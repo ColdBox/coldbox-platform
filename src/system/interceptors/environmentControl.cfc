@@ -134,8 +134,8 @@ Description :
 				for ( i=1; i lte settingsLength; i=i+1){
 					thisValue = trim(SettingsArray[i].xmlAttributes.value);
 					/* json decoding */
-					if ( left(thisValue,1) eq "[" and right(thisValue,1) eq "]" OR
-					     left(thisValue,1) eq "{" and right(thisValue,1) eq "}"){
+					if ( (left(thisValue,1) eq "[" AND right(thisValue,1) eq "]") OR
+					     (left(thisValue,1) eq "{" AND right(thisValue,1) eq "}") ){
 					     	thisValue = getPlugin("json").decode(thisValue);
 					}
 					
