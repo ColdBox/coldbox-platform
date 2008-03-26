@@ -493,8 +493,8 @@ Modification History:
 				for (i=1; i lte ArrayLen(YourSettingNodes); i=i+1){
 					tester = trim(YourSettingNodes[i].XMLAttributes["value"]);
 					//Test for Array
-					if ( (left(thisValue,1) eq "[" AND right(thisValue,1) eq "]") OR
-					     (left(thisValue,1) eq "{" AND right(thisValue,1) eq "}") ){
+					if ( (left(tester,1) eq "[" AND right(tester,1) eq "]") OR
+					     (left(tester,1) eq "{" AND right(tester,1) eq "}") ){
 						StructInsert(ConfigStruct, YourSettingNodes[i].XMLAttributes["name"], getPlugin("json").decode(tester) );
 					}
 					else
@@ -904,8 +904,8 @@ Modification History:
 						//Property Complex Check
 						tempProperty = Trim( InterceptorNodes[i].XMLChildren[j].XMLText );
 						//Check for Complex Setup
-						if ( (left(thisValue,1) eq "[" AND right(thisValue,1) eq "]") OR
-					     	 (left(thisValue,1) eq "{" AND right(thisValue,1) eq "}") ){
+						if ( (left(tempProperty,1) eq "[" AND right(tempProperty,1) eq "]") OR
+					     	 (left(tempProperty,1) eq "{" AND right(tempProperty,1) eq "}") ){
 							StructInsert( InterceptorStruct.properties, Trim(InterceptorNodes[i].XMLChildren[j].XMLAttributes["name"]), getPlugin('json').decode(tempProperty) );
 						}
 						else{
