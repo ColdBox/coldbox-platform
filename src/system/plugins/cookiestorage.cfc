@@ -11,7 +11,7 @@ Description :
 	Usage: 
 	set		controller.getPlugin("cookiestorage").setVar(name="name1",value="hello1",expires="11")
 	get		controller.getPlugin("cookiestorage").getVar(name="name1")
-Modification History:
+Modification History: March 23,2008 Added new feature to encrypt/decrypt cookie value
 
 ----------------------------------------------------------------------->
 <cfcomponent name="cookiestorage"
@@ -33,6 +33,19 @@ Modification History:
 			setpluginName("Cookie Storage");
 			setpluginVersion("1.0");
 			setpluginDescription("A permanent data storage plugin.");
+			
+			/* set CFML engine encryption CF, BD, Railo*/
+			variables.alogrithm = "CFMX_COMPAT";
+			variables.encKey  	= "ColdBoxToolKit";
+			
+			// set alogrithm according to CFML engine
+			if(controller.oCFMLENGINE.getEngine() EQ 'BLUEDRAGON'){
+				variables.alogrithm = "BD_DEFAULT";
+			}
+			
+			if(controller.settingExists('cookiestorage_encryption_seed') and len(controller.getSetting('cookiestorage_encryption_seed'))){
+				variables.encKey  = controller.getSetting('cookiestorage_encryption_seed');
+			}
 			
 			/* Return Instance. */
 			return this;
@@ -60,9 +73,9 @@ Modification History:
 		
 		<!--- Store cookie with expiration info --->
 		<cfif arguments.expires EQ 1>
-			<cfcookie name="#arguments.name#" value="#tmpVar#" />
+			<cfcookie name="#arguments.name#" value="#encryptit(tmpVar)#" />
 		<cfelse>
-			<cfcookie name="#arguments.name#" value="#tmpVar#" expires="#arguments.expires#" />
+			<cfcookie name="#arguments.name#" value="#encryptit(tmpVar)#" expires="#arguments.expires#" />
 		</cfif>	
 	</cffunction>
 
@@ -77,10 +90,10 @@ Modification History:
 		
 		<cfif exists(arguments.name)>
 			<!--- Get value --->
-			<cfset rtnVar = cookie[arguments.name]>
+			<cfset rtnVar = decryptit(cookie[arguments.name])>
 			<cfif isWDDX(rtnVar)>
 				<!--- Unwddx packet --->
-				<cfwddx action="wddx2cfml" input="#rtnVar#" output="wddxVar">
+				<cfwddx action="wddx2cfml" input="#decryptitrtnVar#" output="wddxVar">
 				<cfset rtnVar = wddxVar>
 			</cfif>
 		<cfelse>
@@ -111,6 +124,21 @@ Modification History:
 		<cfelse>
 			<cfreturn false>
 		</cfif>
+	</cffunction>
+	
+	<!--- *********************** Private Methods ************************** --->
+	<cffunction name="encryptit" access="private" returntype="Any" hint="Return encypted value" output="false">
+		<cfargument name="encValue" hint="string to be encrypted" required="yes" type="string" />
+		<cfset var encodings = "Hex" />
+		
+		<cfreturn encrypt(arguments.encValue,variables.encKey,variables.alogrithm,encodings) />		
+	</cffunction>
+	
+	<cffunction name="decryptit" access="private" returntype="Any" hint="Return decrypted value" output="false">
+		<cfargument name="decValue" hint="string to be decrypted" required="yes" type="string" />
+		<cfset var encodings = "Hex" />
+		
+		<cfreturn decrypt(arguments.decValue,variables.encKey,variables.alogrithm,encodings) />		
 	</cffunction>
 	
 </cfcomponent>
