@@ -33,7 +33,7 @@ Modification History:
 			var Context = createContext();
 			var DebugPassword = controller.getSetting("debugPassword");
 			var EventName = controller.getSetting("EventName");
-			var oSessionStorage = controller.getPlugin("sessionStorage");
+			var oSessionStorage = controller.getPlugin("sessionstorage");
 					
 			//Object Caching Garbage Collector
 			controller.getColdboxOCM().reap();

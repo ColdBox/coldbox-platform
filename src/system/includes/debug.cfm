@@ -29,8 +29,8 @@ Modification History:
 	<!--- **************************************************************--->
 	<!--- TRACER STACK--->
 	<!--- **************************************************************--->
-	<cfif controller.getPlugin("sessionStorage").exists("fw_tracerStack")>
-		<cfset TracerArray = controller.getPlugin("sessionStorage").getVar("fw_tracerStack")>
+	<cfif controller.getPlugin("sessionstorage").exists("fw_tracerStack")>
+		<cfset TracerArray = controller.getPlugin("sessionstorage").getVar("fw_tracerStack")>
 		<cfoutput>
 		<div class="fw_titles" onClick="fw_toggle('fw_tracer')">&gt;&nbsp; Tracer Messages </div>
 		<div class="fw_debugContentView" id="fw_tracer">
@@ -50,7 +50,7 @@ Modification History:
 			</cfloop>
 		</div>
 		<!--- Rendered, now Remove --->
-		<cfset controller.getPlugin("sessionStorage").deleteVar("fw_tracerStack")>
+		<cfset controller.getPlugin("sessionstorage").deleteVar("fw_tracerStack")>
 		</cfoutput>
 	</cfif>
 	<!--- **************************************************************--->

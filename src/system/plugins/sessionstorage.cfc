@@ -13,7 +13,7 @@ Description :
 Modification History:
 
 ----------------------------------------------------------------------->
-<cfcomponent name="sessionStorage"
+<cfcomponent name="sessionstorage"
 			 hint="Session Storage plugin. It provides the user with a mechanism for permanent data storage using the session scope."
 			 extends="coldbox.system.plugin"
 			 output="false"
@@ -21,7 +21,7 @@ Modification History:
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
-	<cffunction name="init" access="public" returntype="sessionStorage" output="false">
+	<cffunction name="init" access="public" returntype="sessionstorage" output="false">
 		<cfargument name="controller" type="any" required="true">
 		<cfscript>
 			super.Init(arguments.controller);
