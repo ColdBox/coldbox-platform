@@ -104,6 +104,7 @@ Description :
 			var ENVIRONMENT = "";
 			var oXML = "";
 			var configSettings = getController().getConfigSettings();
+			var thisValue = "";
 		
 			//Parse it
 			oXML = XMLParse(getConfigFile());
@@ -131,13 +132,20 @@ Description :
 			if (settingsLength gt 0){
 				//Loop And set
 				for ( i=1; i lte settingsLength; i=i+1){
+					thisValue = trim(SettingsArray[i].xmlAttributes.value);
+					/* json decoding */
+					if ( left(thisValue,1) eq "[" and right(thisValue,1) eq "]" OR
+					     left(thisValue,1) eq "{" and right(thisValue,1) eq "}"){
+					     	thisValue = getPlugin("json").decode(thisValue);
+					}
+					
 					/* Check if overriding a set setting */
 					if( settingExists(trim(SettingsArray[i].xmlAttributes.name)) ){
-						setSetting( trim(SettingsArray[i].xmlAttributes.name) , trim(SettingsArray[i].xmlAttributes.value) );
+						setSetting( trim(SettingsArray[i].xmlAttributes.name) , thisValue );
 					}
 					else{
 						/* Do a full set */
-						configSettings[trim(SettingsArray[i].xmlAttributes.name)] = trim(SettingsArray[i].xmlAttributes.value);
+						"configSettings.#trim(SettingsArray[i].xmlAttributes.name)#" = thisValue)";
 					}					
 				}
 			}	
