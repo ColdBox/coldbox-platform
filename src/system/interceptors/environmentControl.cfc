@@ -137,7 +137,7 @@ Description :
 					}
 					else{
 						/* Do a full set */
-						"configSettings.#trim(SettingsArray[i].xmlAttributes.name)#" = trim(SettingsArray[i].xmlAttributes.value)";
+						configSettings[trim(SettingsArray[i].xmlAttributes.name)] = trim(SettingsArray[i].xmlAttributes.value);
 					}					
 				}
 			}	
