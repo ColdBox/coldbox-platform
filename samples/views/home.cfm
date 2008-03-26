@@ -96,6 +96,21 @@
 				  #getresource("nosetup")# <br />
 				  <a href="applications/ColdboxFlexTester/bin/ColdboxFlexTester.html" target="_blank">#getresource("opensample")#</a><br />
 				</p>
+				
+				<h3>Java Reflection Tool</h3>
+				<p> #getresource("by")# Luis Majano
+				  <br />
+				  #getresource("nosetup")# <br />
+				  <a href="applications/javaReflection/index.cfm" target="_blank">#getresource("opensample")#</a><br />
+				</p>
+				
+				<h3>ColdFusion 8 Ajax Sampler</h3>
+				<p> #getresource("by")# Sana Ullah & Luis Majano
+				  <br />
+				  #getresource("nosetup")# <br />
+				  <a href="applications/CF8Ajax/index.cfm" target="_blank">#getresource("opensample")#</a><br />
+				</p>
+				
 				</div>
 			</div>
 

@@ -13,6 +13,7 @@
 <link rel="stylesheet" href="includes/Thickbox/ThickBox.css" type="text/css" media="screen,projection" />
 <link rel="stylesheet" href="includes/tabs/tabs.css" type="text/css" media="screen,projection" />
 </cfif>
+
 <!--- JQUERY CODE --->
 <script language="javascript" src="includes/jquery-latest.pack.js"></script>
 <script language="javascript" src="includes/Thickbox/thickbox.js"></script>
@@ -36,8 +37,7 @@ $(document).ready(function() {
 		<ul>
 			<li class="selected"><a href="#cgi.SCRIPT_NAME#">#getResource("sampleshome")#</a></li>
 			<li><a href="http://www.luismajano.com"  target="_blank">Luis Majano</a></li>
-			<li><a href="http://www.oscararevalo.com"  target="_blank">Oscar Arevalo</a></li>
-			<li><a href="http://www.robgonda.com"  target="_blank">Rob Gonda</a></li>
+			<li><a href="http://www.coldboxframework.com"  target="_blank">ColdBox Site</a></li>
 		</ul>
 
 		<div align="right">
@@ -75,23 +75,12 @@ $(document).ready(function() {
 		</ul>
 		<br>
 
-		<div id="searchbar">
-		<h2>#getResource("searchblog")# </h2>
-		<form action="#getSetting("SearchURL")#" method="post" name="search">
-		<fieldset style="text-align:center">
-		<input type="search" value="#getresource("search")# #getresource("archives")#" name="search" id="search" alt="#getResource("searchblog")# "  onfocus="if (this.value == '#getresource("search")# #getresource("archives")#') {this.value = '';}" onblur="if (this.value == '') {this.value='#getresource("search")# #getresource("archives")#'}" size="20" />
-		<br /><br>
-		<input type="submit" value="#getResource("search")#" id="searchbutton" name="searchbutton" />
-		</fieldset>
-		</form>
-		</div>
-
 		<p align="center"><a href="#getSetting("ColdboxURL")#"><img src="images/poweredby.png" border=0></a></p>
 
 	</div>
 
 	<div id="footer">
-	<p>&copy; 2005-2007 <a href="http://www.luismajano.com">ColdBox by Luis Majano </a> | Design by <a href="http://andreasviklund.com">Andreas Viklund</a></p>
+	<p>&copy; 2005-#dateformat(now(),"YYYY")# <a href="http://www.luismajano.com">ColdBox by Luis Majano </a> | Design by <a href="http://andreasviklund.com">Andreas Viklund</a></p>
 	</div>
 </div>
 
