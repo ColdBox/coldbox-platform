@@ -103,6 +103,7 @@ Description :
 			var i = 1;
 			var ENVIRONMENT = "";
 			var oXML = "";
+			var configSettings = getController().getConfigSettings();
 		
 			//Parse it
 			oXML = XMLParse(getConfigFile());
@@ -130,7 +131,14 @@ Description :
 			if (settingsLength gt 0){
 				//Loop And set
 				for ( i=1; i lte settingsLength; i=i+1){
-					setSetting( trim(SettingsArray[i].xmlAttributes.name) , trim(SettingsArray[i].xmlAttributes.value) );
+					/* Check if overriding a set setting */
+					if( settingExists(trim(SettingsArray[i].xmlAttributes.name)) ){
+						setSetting( trim(SettingsArray[i].xmlAttributes.name) , trim(SettingsArray[i].xmlAttributes.value) );
+					}
+					else{
+						/* Do a full set */
+						"configSettings.#trim(SettingsArray[i].xmlAttributes.name)#" = trim(SettingsArray[i].xmlAttributes.value)";
+					}					
 				}
 			}	
 		</cfscript>
