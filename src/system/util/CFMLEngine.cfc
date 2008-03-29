@@ -63,6 +63,24 @@ Description :
 			}
 		</cfscript>
 	</cffunction>
+	
+	<!--- Test if we can use JSON methods --->
+	<cffunction name="isJSON" access="public" returntype="boolean" hint="Checks if the engine can use json methods." output="false" >
+		<cfscript>
+			var version = getVersion();
+			var engine = getEngine();
+			
+			if ( (engine eq this.ADOBE and version gte 8) or
+				 (engine eq this.RAILO) ){
+				return true;	 
+			}
+			else{
+				return false;
+			}
+		</cfscript>
+	</cffunction>
+	
+	
 
 <!------------------------------------------- PRIVATE ------------------------------------------->
 
