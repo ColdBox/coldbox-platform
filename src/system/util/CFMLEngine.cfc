@@ -65,7 +65,7 @@ Description :
 	</cffunction>
 	
 	<!--- Test if we can use JSON methods --->
-	<cffunction name="isJSON" access="public" returntype="boolean" hint="Checks if the engine can use json methods." output="false" >
+	<cffunction name="isJSONSupported" access="public" returntype="boolean" hint="Checks if the engine can use json methods." output="false" >
 		<cfscript>
 			var version = getVersion();
 			var engine = getEngine();

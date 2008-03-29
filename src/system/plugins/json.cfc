@@ -33,9 +33,6 @@ Modifications:
 			setpluginVersion("1.9");
 			setpluginDescription("JSON Plugin is used to serialize and deserialize JSON data to/from native ColdFusion objects");
 			
-			/* Native JSON Support Enabled? */
-			setNativeSupport(getController().oCFMLENGINE.isJSON());
-			
 			/* Return Instance */
 			return this;
 		</cfscript>
@@ -76,11 +73,6 @@ Modifications:
 		<cfset var unescapetoVals2 = '\,",/,#Chr(8)#,#Chr(9)#,#Chr(10)#,#Chr(12)#,#Chr(13)#' />
 		<cfset var dJSONString = "" />
 		<cfset var _data = Trim(arguments.data) />
-		
-		<!--- Native Support Detection --->
-		<cfif getNativeSupport()>
-			<cfreturn deserializeJSON(_data)>
-		</cfif>
 		
 		<!--- NUMBER --->
 		<cfif IsNumeric(_data)>
@@ -277,11 +269,6 @@ Modifications:
 		<cfset var escapeVals = "\,"",/,#Chr(8)#,#Chr(9)#,#Chr(10)#,#Chr(12)#,#Chr(13)#" />
 		
 		<cfset var _data = arguments.data />
-		
-		<!--- Native Support Detection --->
-		<cfif getNativeSupport()>
-			<cfreturn serializeJSON(_data)>
-		</cfif>
 		
 		<!--- BOOLEAN --->
 		<cfif IsBoolean(_data) AND NOT IsNumeric(_data) AND NOT ListFindNoCase("Yes,No", _data)>
@@ -586,13 +573,5 @@ Modifications:
 	
 <!------------------------------------------- PRIVATE ------------------------------------------->
 
-	<!--- Native support for JSON provided by engine --->
-	<cffunction name="getNativeSupport" access="public" output="false" returntype="boolean" hint="Get NativeSupport">
-		<cfreturn instance.NativeSupport/>
-	</cffunction>	
-	<cffunction name="setNativeSupport" access="public" output="false" returntype="void" hint="Set NativeSupport">
-		<cfargument name="NativeSupport" type="boolean" required="true"/>
-		<cfset instance.NativeSupport = arguments.NativeSupport/>
-	</cffunction>
 	
 </cfcomponent>
