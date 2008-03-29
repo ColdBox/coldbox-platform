@@ -118,7 +118,15 @@ Description :
 		<cfset getController().getInterceptorService().processState(argumentCollection=arguments)>
 	</cffunction>
 
-
+	<!--- Interceptor Facade --->
+	<cffunction name="getInterceptor" access="public" output="false" returntype="any" hint="Get an interceptor">
+		<!--- ************************************************************* --->
+		<cfargument name="interceptorClass" required="true" type="string" hint="The qualified class of the itnerceptor to retrieve">
+		<!--- ************************************************************* --->
+		<cfscript>
+			return getController().getInterceptorService().getInterceptor(arguments.interceptorClass);
+		</cfscript>
+	</cffunction>
 <!------------------------------------------- PRIVATE ------------------------------------------->
 
 	<cffunction name="dump" access="private" hint="Facade for cfmx dump" returntype="void">

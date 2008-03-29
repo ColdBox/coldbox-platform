@@ -41,7 +41,7 @@
 
 	<YourSettings>
 		<Setting name="MyArray"  value="[1,2,3,4,5,6]"/>
-		<Setting name="MyStruct" value="{ name: 'luis majano', email: 'info@email.com', active= true }"/>
+		<Setting name="MyStruct" value="{name:'luis majano', email:'info@email.com', active:'true'}"/>
 		<Setting name="MyBaseURL"  value="jfetmac" />
 	</YourSettings>
 

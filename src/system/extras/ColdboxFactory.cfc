@@ -73,6 +73,16 @@ Modification History:
 		</cfscript>
 	</cffunction>
 	
+	<!--- Interceptor Facade --->
+	<cffunction name="getInterceptor" access="public" output="false" returntype="any" hint="Get an interceptor">
+		<!--- ************************************************************* --->
+		<cfargument name="interceptorClass" required="true" type="string" hint="The qualified class of the itnerceptor to retrieve">
+		<!--- ************************************************************* --->
+		<cfscript>
+			return application.cbController.getInterceptorService().getInterceptor(arguments.interceptorClass);
+		</cfscript>
+	</cffunction>
+	
 	<!--- Get a datasource --->
 	<cffunction name="getDatasource" access="public" output="false" returnType="coldbox.system.beans.datasourceBean" hint="I will return to you a datasourceBean according to the alias of the datasource you wish to get from the configstruct: coldbox.system.beans.datasourceBean">
 		<!--- ************************************************************* --->

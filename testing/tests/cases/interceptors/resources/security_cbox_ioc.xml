@@ -74,6 +74,7 @@
 			<Property name="rulesSource">ioc</Property>
 			<Property name="rulesBean">security</Property>
 			<Property name="rulesBeanMethod">getRules</Property>
+			<Property name="validator">applications.coldbox.testing.testmodel.security</Property>
 		</Interceptor>		
 	</Interceptors>
 

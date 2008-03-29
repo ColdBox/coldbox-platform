@@ -19,12 +19,14 @@ that can be found in an event.
 	   <whitelist>user\.login,user\.logout,^main.*</whitelist>
 	   <securelist>^user\..*,^admin</securelist>
 	   <roles>admin</roles>
+	   <permissions></permissions>
 	   <redirect>user.login</redirect>
 	</rule>
 	<rule>
 		<whitelist>user\.login,user\.logout,^main.*</whitelist>
 		<securelist>^moderator</securelist>
 		<roles>moderator</roles>
+		<permissions></permissions>
 		<redirect>user.login</redirect>
 	</rule>
 </rules>

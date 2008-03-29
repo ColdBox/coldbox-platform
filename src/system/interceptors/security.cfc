@@ -7,11 +7,47 @@ www.coldboxframework.com | www.luismajano.com | www.ortussolutions.com
 Author     :	Luis Majano
 Date        :	02/29/2008
 Description :
-	This interceptor provides security to an application. It is very flexible
-	and customizable. It bases off on the ability to secure events by creating
-	rules. This interceptor will then try to match a rule to the incoming even
-	and the user's credentials. The only requirement is that the developer
-	use the coldfusion <cfloging> and <cfloginuser> and set the roles accordingly.
+
+This interceptor provides security to an application. It is very flexible
+and customizable. It bases off on the ability to secure events by creating
+rules. This interceptor will then try to match a rule to the incoming event
+and the user's credentials on roles and/or permissions. 
+	
+Default Security:
+This interceptor will try to use ColdFusion's cflogin + cfloginuser authentication
+by default. However, if you are using your own authentication mechanisims you can
+still use this interceptor by implementing a Security Validator Object.
+
+Ex:
+<cflogin>
+	Your login logic here
+	<cfloginuser name="name" password="password" roles="ROLES HERE">
+</cflogin>
+
+When in default mode, the permissions are ignored and only roles are checked.
+
+Security Validator Object:
+A security validator object is a simple cfc that implements the following function:
+
+userValidator(roles,permissions) : boolean
+
+This function must return a boolean variable and it must validate a user according
+to the rule that just ran by testing the roles or permissions list that is sent in.
+
+Declaring the Validator:
+You have two ways to declare the security validator: 
+
+1) This validator object can be set as a property in the interceptor declaration as an 
+instantiation path. The interceptor will create it and try to execute it.  
+
+2) You can register the validator via the "registerValidator()" method on this interceptor. 
+This must be called from the application start handler or other interceptors as long as it 
+executes before any preProcess execution occurs:
+
+<cfset getInterceptor('coldbox.system.interceptors.security').registerValidator(myValidator)>
+
+That validator object can from anywhere you want using the mentioned technique above.
+
 
 Interceptor Properties:
 
@@ -19,7 +55,10 @@ Interceptor Properties:
  - useRoutes : boolean [default=false] Whether to redirec to events or routes
  - rulesSource : string [xml|db|ioc|ocm] Where to get the rules from.
  - debugMode : boolean [default=false] If on, then it logs actions via the logger plugin.
- 
+ - validator : string [default=""] If set, it must be a valid instantiation path to a security validator object.
+
+* Please note that when using regular expressions, you specify and escape the metadata characters.
+
 XML properties:
 The rules will be extracted from an xml configuration file. The format is
 defined in the sample.
@@ -34,10 +73,11 @@ The rules will be taken off a cfquery using the properties below.
 
 The table MUST have the following columns:
 Rules Query
- - whitelist
- - securelist
- - roles
- - redirect
+ - whitelist : varchar [null]
+ - securelist : varchar
+ - roles : varchar [null]
+ - permissions : varchar [null]
+ - redirect : varchar
 
 IOC properties:
 The rules will be grabbed off an IoC bean as a query. They must be a valid rules query.
@@ -98,6 +138,7 @@ and then extracted by this interceptor. They must be a valid rules query.
 		<cfargument name="interceptData" required="true" type="struct" hint="interceptData of intercepted info.">
 		<!--- ************************************************************* --->
 		<cfscript>
+			/* Load Rules */
 			switch( getProperty('rulesSource') ){
 				case "xml" : { 
 					loadXMLRules(); 
@@ -112,6 +153,17 @@ and then extracted by this interceptor. They must be a valid rules query.
 					break; 
 				}		
 			}//end of switch
+			
+			/* See if using validator */
+			if( propertyExists('validator') ){
+				/* Try to create Validator */
+				try{
+					setValidator(CreateObject("component",getProperty('validator')));
+				}
+				catch(Any e){
+					throw("Error creating validator",e.message & e.details, "interceptors.security.validatorCreationException");
+				}
+			}
 		</cfscript>
 	</cffunction>
 	
@@ -144,7 +196,7 @@ and then extracted by this interceptor. They must be a valid rules query.
 				/* is currentEvent in the secure list and is user in role */
 				if( isEventInPattern(currentEvent,rules[x].securelist) ){
 					/* Verify if user is logged in and in roles */	
-					if( _isUserInAnyRole(rules[x].roles) eq false ){
+					if( _isUserInValidState(rules[x].roles, rules[x].permissions) eq false ){
 						/* Log if Necessary */
 						if( getProperty('debugMode') ){
 							getPlugin("logger").logEntry("warning","User not in appropriate roles #rules[x].roles# for event=#currentEvent#");
@@ -173,21 +225,43 @@ and then extracted by this interceptor. They must be a valid rules query.
 		</cfscript>
 	</cffunction>
 	
+	<!--- Register a validator --->
+	<cffunction name="registerValidator" access="public" returntype="void" hint="Register a validator object with this interceptor" output="false" >
+		<cfargument name="validatorObject" required="true" type="any" hint="The validator object to register">
+		<cfscript>
+			/* Test if it has the correct method on it */
+			if( structKeyExists(arguments.validatorObject,"userValidator") ){
+				setValidator(arguments.validatorObject);
+			}
+			else{
+				throw(message="Validator object does not have a 'userValidator' method ",type="interceptors.security.validatorException");
+			}
+		</cfscript>
+	</cffunction>	
+	
 <!------------------------------------------- PRIVATE METHDOS ------------------------------------------->
 	
 	<!--- isEventInPattern --->
-	<cffunction name="_isUserInAnyRole" access="private" returntype="boolean" output="false" hint="Verifies that the user is in any role">
+	<cffunction name="_isUserInValidState" access="private" returntype="boolean" output="false" hint="Verifies that the user is in any role">
 		<!--- ************************************************************* --->
 		<cfargument name="roleList" 	required="true" type="string" hint="The role list needed to match.">
+		<cfargument name="permsList" 	required="true" type="string" hint="The permissions list needed to match.">
 		<!--- ************************************************************* --->
 		<cfset var thisRole = "">
-		<!--- Loop Over Roles --->
-		<cfloop list="#arguments.roleList#" index="thisRole">
-			<cfif isUserInRole(thisRole)>
-				<cfreturn true>
-			</cfif>
-		</cfloop>	
-		<cfreturn false>	
+		
+		<!--- Verify if using validator --->
+		<cfif isValidatorUsed()>
+			<!--- Validate via Validator --->
+			<cfreturn getValidator().userValidator(arguments.roleList,arguments.permsList)>
+		<cfelse>
+			<!--- Loop Over Roles --->
+			<cfloop list="#arguments.roleList#" index="thisRole">
+				<cfif isUserInRole(thisRole)>
+					<cfreturn true>
+				</cfif>
+			</cfloop>	
+			<cfreturn false>
+		</cfif>	
 	</cffunction>
 	
 	<!--- isEventInPattern --->
@@ -251,6 +325,7 @@ and then extracted by this interceptor. They must be a valid rules query.
 				node.whitelist = trim(xmlRules[x].whitelist.xmlText);
 				node.securelist = trim(xmlRules[x].securelist.xmlText);
 				node.roles = trim(xmlRules[x].roles.xmlText);
+				node.permissions = trim(xmlRules[x].permissions.xmlText);
 				node.redirect = trim(xmlRules[x].redirect.xmlText);
 				ArrayAppend(getProperty('rules'),node);
 			}
@@ -331,7 +406,7 @@ and then extracted by this interceptor. They must be a valid rules query.
 		<!--- ************************************************************* --->
 		<cfargument name="qRules" type="query" required="true" hint="The query to check">
 		<!--- ************************************************************* --->
-		<cfset var validColumns = "whitelist,securelist,roles,redirect">
+		<cfset var validColumns = "whitelist,securelist,roles,permissions,redirect">
 		<cfset var col = "">
 		<!--- Validate Query --->
 		<cfloop list="#validColumns#" index="col">
@@ -357,6 +432,7 @@ and then extracted by this interceptor. They must be a valid rules query.
 				node.whitelist = qRules.whitelist[x];
 				node.securelist = qRules.securelist[x];
 				node.roles = qRules.roles[x];
+				node.permissions = qRules.permissions[x];
 				node.redirect = qRules.redirect[x];
 				ArrayAppend(rtnArray,node);
 			}
@@ -418,5 +494,21 @@ and then extracted by this interceptor. They must be a valid rules query.
 			}//end of switch statement			
 		</cfscript>
 	</cffunction>
-
+	
+	<!--- Get/Set Validator --->
+	<cffunction name="getvalidator" access="private" output="false" returntype="any" hint="Get validator">
+		<cfreturn instance.validator/>
+	</cffunction>	
+	<cffunction name="setvalidator" access="private" output="false" returntype="void" hint="Set validator">
+		<cfargument name="validator" type="any" required="true"/>
+		<cfset instance.validator = arguments.validator/>
+	</cffunction>
+	
+	<!--- Check if using validator --->
+	<cffunction name="isValidatorUsed" access="private" returntype="boolean" hint="Check to see if using the validator" output="false" >
+		<cfscript>
+			return structKeyExists(instance, "validator");
+		</cfscript>
+	</cffunction>
+	
 </cfcomponent>

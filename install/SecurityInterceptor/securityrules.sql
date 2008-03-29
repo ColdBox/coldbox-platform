@@ -6,6 +6,7 @@ CREATE TABLE securityrules
 	whitelist VARCHAR(255),
 	securelist VARCHAR(255),
 	roles VARCHAR(255),
+	permissions VARCHAR(255),
 	redirect VARCHAR(255),
 	PRIMARY KEY (securityrule_id),
 	UNIQUE (securityrule_id)

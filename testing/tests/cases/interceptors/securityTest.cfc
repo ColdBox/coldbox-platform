@@ -141,6 +141,41 @@ Description :
 		</cfscript>
 	</cffunction>
 	
+	<cffunction name="testRegisterValidator" access="public" returntype="void" output="false">
+		<cfscript>
+		var validator = CreateObject("component","applications.coldbox.testing.testmodel.security");
+		var event = getRequestContext();
+		AssertComponent(validator);
+		
+		/* Register */
+		getInterceptor('coldbox.system.interceptors.security').registerValidator(validator);
+		
+		/* Test */
+		event.setValue('event','admin.list');
+		getInterceptor('coldbox.system.interceptors.security').preProcess(event,structnew());
+				
+		</cfscript>
+	</cffunction>
+	
+	<cffunction name="testCreatedValidator" access="public" returntype="void" output="false">
+		<cfscript>
+		var mypath = getDirectoryFromPath(getMetaData(this).path);
+		var slash = createObject("java","java.lang.System").getProperty("file.separator");
+		var event = getRequestContext();
+		
+		//Setup ColdBox Mappings For this Test
+		setAppMapping("/coldbox");
+		setConfigMapping("#mypath#resources#slash#security_cbox_ioc.xml");
+		
+		//resetup
+		getController().getService("loader").setupCalls(getConfigMapping(),getAppMapping());
+		
+		/* Test */
+		event.setValue('event','admin.list');
+		getInterceptor('coldbox.system.interceptors.security').preProcess(event,structnew());
+		</cfscript>
+	</cffunction>
+	
 	
 	<cffunction name="getInterceptor" returntype="any" access="private" output="false">
 		<cfargument name="interceptor">
@@ -149,8 +184,8 @@ Description :
 			
 			cachekey = cachekey & arguments.interceptor;
 			
-			if( getController().getOCM().lookup(cacheKey) ){
-				return getController().getOCM().get(cachekey);
+			if( getController().getColdBoxOCM().lookup(cacheKey) ){
+				return getController().getColdBoxOCM().get(cachekey);
 			}
 			else
 				throw("Invalid interceptor");
@@ -159,13 +194,14 @@ Description :
 	
 	<cffunction name="getRules" access="private" returntype="query" hint="" output="false" >
 		<cfscript>
-			var qRules = querynew("rule_id,securelist,whitelist,roles,redirect");
+			var qRules = querynew("rule_id,securelist,whitelist,roles,permissions,redirect");
 			
 			QueryAddRow(qRules,1);
 			QuerySetcell(qrules,"rule_id",createUUID());
 			QuerySetcell(qrules,"securelist","^user\..*, ^admin");
 			QuerySetcell(qrules,"whitelist","user.login,user.logout,^main.*");
-			QuerySetcell(qrules,"roles","admin");			
+			QuerySetcell(qrules,"roles","admin");	
+			QuerySetcell(qrules,"permissions","WRITE");		
 			QuerySetcell(qrules,"redirect","user.login");
 						
 			return qRules;

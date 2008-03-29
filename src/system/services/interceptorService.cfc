@@ -110,7 +110,7 @@ Description :
 			var interceptorKey = this.INTERCEPTOR_CACHEKEY_PREFIX & arguments.interceptorClass;
 			
 			/* Verify it exists else throw error */
-			if( getController().getColdboxOCM().lookup(interceptorKey) ){
+			if( not getController().getColdboxOCM().lookup(interceptorKey) ){
 				getUtil().throwit(message="Interceptor class: #arguments.interceptorClass# not found in cache.",
 					  			  type="Framework.InterceptorService.InvalidInterceptionClass");
 			}
