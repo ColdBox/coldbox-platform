@@ -16,7 +16,7 @@ Description :
 <!------------------------------------------- PUBLIC ------------------------------------------->	
 
 	<!--- process a remote call --->
-	<cffunction name="process" output="false" access="remote" returntype="any" hint="Process a remote call and return data/objects back.">
+	<cffunction name="process" output="false" access="remote" returntype="any" hint="Process a remote call into ColdBox's event model and return data/objects back.">
 		<!--- There are no arguments defined as they come in as a collection of arguments. --->
 		<cfscript>
 			var cbController = "";
@@ -173,17 +173,18 @@ Description :
 	</cffunction>
 	
 	<!--- Bootstrapper LoadColdBox --->
-	<cffunction name="loadColdbox" access="private" output="false" returntype="void" hint="Load or bootsrap a coldbox application, and place the coldbox controller in application scope.">
+	<cffunction name="loadColdbox" access="private" output="false" returntype="void" hint="Load or bootstrap a coldbox application, and place the coldbox controller in application scope.">
 		<!--- ************************************************************* --->
 		<cfargument name="appMapping" 		type="string"  required="true" hint="The appMapping location of the coldbox application to load"/>
 		<cfargument name="configLocation" 	type="string"  required="true" hint="The absolute location of the config file to use"/>
-		<cfargument name="reloadApp" 		type="boolean" required="false" hint="Flag to reload the application or not"/>
+		<cfargument name="reloadApp" 		type="boolean" required="false" default="false" hint="Flag to reload the application or not"/>
 		<!--- ************************************************************* --->
 		<cfset var cbController = "">
+		<cfset var appHash = hash(getBaseTemplatePath())>
 		
 		<!--- Reload Checks --->
 		<cfif not structKeyExists(application,"cbController") or not application.cbController.getColdboxInitiated() or arguments.reloadApp>
-			<cflock type="exclusive" name="#getAppHash()#" timeout="#getLockTimeout()#" throwontimeout="true">
+			<cflock type="exclusive" name="#appHash#" timeout="30" throwontimeout="true">
 				<cfscript>
 				if ( not structkeyExists(application,"cbController") or not application.cbController.getColdboxInitiated() or arguments.reloadApp ){
 					/* Cleanup, Just in Case */
