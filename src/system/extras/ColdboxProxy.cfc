@@ -152,6 +152,16 @@ Description :
 		</cfscript>
 	</cffunction>
 	
+	<!--- Interceptor Facade --->
+	<cffunction name="getInterceptor" access="private" output="false" returntype="any" hint="Get an interceptor">
+		<!--- ************************************************************* --->
+		<cfargument name="interceptorClass" required="true" type="string" hint="The qualified class of the itnerceptor to retrieve">
+		<!--- ************************************************************* --->
+		<cfscript>
+			return getController().getInterceptorService().getInterceptor(arguments.interceptorClass);
+		</cfscript>
+	</cffunction>
+	
 	<!--- Facade: Get the IOC Plugin. --->
 	<cffunction name="getIoCFactory" output="false" access="private" returntype="any" hint="Gets the IOC Factory in usage: coldspring or lightwire">
 		<cfscript>
