@@ -15,6 +15,8 @@ Description :
 	<cffunction name="suite" returntype="org.cfcunit.framework.Test" access="public" output="false">  
 		<cfset var suite = CreateObject("component", "org.cfcunit.framework.TestSuite").init("ColdBox Plugins Suite")>  
 		
+		
+		
 		<!--- Add the test cases --->
 		<cfset suite.addTestSuite(CreateObject("component", "cases.plugins.clientstorageTest"))>
 		<cfset suite.addTestSuite(CreateObject("component", "cases.plugins.cookiestorageTest"))>
@@ -22,6 +24,8 @@ Description :
 		<cfset suite.addTestSuite(CreateObject("component", "cases.plugins.appstorageTest"))>
 		<cfset suite.addTestSuite(CreateObject("component", "cases.plugins.javaloaderTest"))>
 		<cfset suite.addTestSuite(CreateObject("component", "cases.plugins.messageboxTest"))>
+		<cfset suite.addTestSuite(CreateObject("component", "cases.plugins.queryHelperTest"))>
+		<cfset suite.addTestSuite(CreateObject("component", "cases.plugins.jsonTest"))>
 		
 		<cfreturn suite/>  
 	</cffunction> 

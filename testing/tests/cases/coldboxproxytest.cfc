@@ -87,22 +87,37 @@ Description :
 	<cffunction name="testProxyPrivateMethods" access="public" returntype="void" output="false">
 		<cfscript>
 		var proxy = CreateObject("component","coldbox.coldboxproxy");
-		var results = "";
+		var local = structnew();
 		
 		/* Get Method Injector */
 		getController().getPlugin("methodInjector").start(proxy);
 		
 		/* Verify Test */
-		
+		proxy.invokerMixin("verifyColdBox");
 		/* GetPlugin */
+		local.plugin = proxy.invokerMixin(method='getPlugin',argList="plugin=logger");
+		assertComponent(local.plugin);
 		
 		/* Get IOCFactory */
+		local.obj = proxy.invokerMixin(method='getIoCFactory');
+		assertComponent(local.obj);
 		
 		/* Get Bean */
+		local.obj = proxy.invokerMixin(method='getBean',argList="beanName=testModel");
+		assertComponent(local.obj);
 		
 		/* Get ColdBoxOCM */
+		local.obj = proxy.invokerMixin(method='getColdBoxOCM');
+		assertComponent(local.obj);
 		
 		/* Load ColdBox */
+		local.load = structnew();
+		local.load.appMapping = "/coldbox";
+		local.load.configLocation = ExpandPath(local.load.appMapping & "/config/coldbox.xml.cfm");
+		local.load.reloadApp = true;
+		
+		proxy.invokerMixin(method='loadColdbox',argCollection=local.load);
+		
 		
 		/* Stop Injection */
 		getController().getPlugin("methodInjector").stop(proxy);

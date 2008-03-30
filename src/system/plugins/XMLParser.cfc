@@ -852,10 +852,6 @@ Modification History:
 				else{
 					StructInsert(ConfigStruct.CacheSettings, "EvictionPolicy", fwSettingsStruct.CacheEvictionPolicy );
 				}			
-				
-				
-				
-				
 				//Set Override to true.
 				ConfigStruct.CacheSettings.Override = true;
 			}

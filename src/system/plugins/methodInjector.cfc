@@ -111,7 +111,7 @@ Description :
 		<!--- ************************************************************* --->
 		<cfargument name="method" 		 type="string" required="Yes" hint="Name of the private method to call">
 		<cfargument name="argCollection" type="struct" required="No"  hint="Can be called with an argument collection struct">
-		<cfargument name="argList" 		 type="string" required="No"  hint="Can be called with an argument list, for simple values only">
+		<cfargument name="argList" 		 type="string" required="No"  hint="Can be called with an argument list, for simple values only: ex: 'plugin=logger,number=1'">
 		<!--- ************************************************************* --->
 		<cfset var results = "">
 		<cfset var key = "">
