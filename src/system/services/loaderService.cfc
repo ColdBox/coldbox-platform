@@ -63,13 +63,7 @@ Modification History:
 			controller.setColdboxSettings(FrameworkSettings);
 			
 			//Create the Cache Config Bean with data from the framework's settings.xml
-			CacheConfigBean = CacheConfigBean.init(FrameworkSettings.CacheObjectDefaultTimeout,
-												   FrameworkSettings.CacheObjectDefaultLastAccessTimeout,
-												   FrameworkSettings.CacheReapFrequency,
-												   FrameworkSettings.CacheMaxObjects,
-												   FrameworkSettings.CacheFreeMemoryPercentageThreshold,
-												   FrameworkSettings.CacheUseLastAccessTimeouts,
-												   FrameworkSettings.CacheEvictionPolicy);
+			CacheConfigBean.populate(FrameworkSettings);
 			//Configure the Object Cache for first usage.
 			controller.getColdboxOCM().configure(CacheConfigBean);
 			
@@ -81,12 +75,12 @@ Modification History:
 			if ( ConfigSettings.CacheSettings.OVERRIDE ){
 				//Recreate the Config Bean
 				CacheConfigBean = CacheConfigBean.init(ConfigSettings.CacheSettings.ObjectDefaultTimeout,
-												   ConfigSettings.CacheSettings.ObjectDefaultLastAccessTimeout,
-												   ConfigSettings.CacheSettings.ReapFrequency,
-												   ConfigSettings.CacheSettings.MaxObjects,
-												   ConfigSettings.CacheSettings.FreeMemoryPercentageThreshold,
-												   ConfigSettings.CacheSettings.UseLastAccessTimeouts,
-												   ConfigSettings.CacheSettings.EvictionPolicy);
+													   ConfigSettings.CacheSettings.ObjectDefaultLastAccessTimeout,
+													   ConfigSettings.CacheSettings.ReapFrequency,
+													   ConfigSettings.CacheSettings.MaxObjects,
+													   ConfigSettings.CacheSettings.FreeMemoryPercentageThreshold,
+													   ConfigSettings.CacheSettings.UseLastAccessTimeouts,
+													   ConfigSettings.CacheSettings.EvictionPolicy);
 				//Re-Configure the Object Cache.
 				controller.getColdboxOCM().configure(CacheConfigBean);
 			}

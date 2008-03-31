@@ -17,7 +17,7 @@ Modification History:
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
-	<cffunction name="init" access="public" output="false" hint="constructor" returntype="coldbox.system.beans.cacheConfigBean">
+	<cffunction name="init" access="public" output="false" hint="constructor" returntype="cacheConfigBean">
 	    <!--- ************************************************************* --->
 	    <cfargument name="CacheObjectDefaultTimeout" 			type="numeric" required="true">
 	    <cfargument name="CacheObjectDefaultLastAccessTimeout"  type="numeric" required="true">
@@ -28,15 +28,15 @@ Modification History:
 	    <cfargument name="CacheEvictionPolicy"					type="string"  required="true">
 	    <!--- ************************************************************* --->
 		<cfscript>
-		variables.instance = structnew();
-		instance.CacheObjectDefaultTimeout = arguments.CacheObjectDefaultTimeout;
-		instance.CacheObjectDefaultLastAccessTimeout = arguments.CacheObjectDefaultLastAccessTimeout;
-		instance.CacheReapFrequency = arguments.CacheReapFrequency;
-		instance.CacheMaxObjects = arguments.CacheMaxObjects;
-		instance.CacheFreeMemoryPercentageThreshold = arguments.CacheFreeMemoryPercentageThreshold;
-		instance.CacheUseLastAccessTimeouts = arguments.CacheUseLastAccessTimeouts;
-		instance.CacheEvictionPolicy = arguments.CacheEvictionPolicy;
-		return this;
+			variables.instance = structnew();
+			instance.CacheObjectDefaultTimeout = arguments.CacheObjectDefaultTimeout;
+			instance.CacheObjectDefaultLastAccessTimeout = arguments.CacheObjectDefaultLastAccessTimeout;
+			instance.CacheReapFrequency = arguments.CacheReapFrequency;
+			instance.CacheMaxObjects = arguments.CacheMaxObjects;
+			instance.CacheFreeMemoryPercentageThreshold = arguments.CacheFreeMemoryPercentageThreshold;
+			instance.CacheUseLastAccessTimeouts = arguments.CacheUseLastAccessTimeouts;
+			instance.CacheEvictionPolicy = arguments.CacheEvictionPolicy;
+			return this;
 		</cfscript>
 	</cffunction>
 
@@ -112,6 +112,24 @@ Modification History:
 	<cffunction  name="setmemento" access="public" returntype="void" output="false" hint="Set the memento">
 		<cfargument name="memento" type="struct" required="true">
 		<cfset variables.instance = arguments.memento>
+	</cffunction>
+	
+	<!--- Populate from struct --->
+	<cffunction name="populate" access="public" returntype="void" hint="Populate with a memento">
+		<!--- ************************************************************* --->
+		<cfargument name="memento"  required="true" type="struct" 	hint="The structure to populate the object with.">
+		<!--- ************************************************************* --->
+		<cfscript>
+			var key = "";
+			
+			/* Populate Bean */
+			for(key in arguments.memento){
+				/* Check if setter exists */
+				if( structKeyExists(this,"set" & key) ){
+					evaluate("set#key#(arguments.memento[key])");
+				}
+			}
+		</cfscript>
 	</cffunction>
 
 <!------------------------------------------- PRIVATE ------------------------------------------->

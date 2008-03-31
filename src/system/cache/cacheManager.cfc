@@ -13,7 +13,9 @@ Modification History:
 01/18/2007 - Created
 
 ----------------------------------------------------------------------->
-<cfcomponent name="cacheManager" hint="Manages handler,plugin,custom plugin and object caching. It is thread safe and implements locking for you." output="false">
+<cfcomponent name="cacheManager" 
+			 hint="Manages handler,plugin,custom plugin and object caching. It is thread safe and implements locking for you." 
+			 output="false">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 	
@@ -24,86 +26,131 @@ Modification History:
 	<cffunction name="init" access="public" output="false" returntype="cacheManager" hint="Constructor">
 		<cfargument name="controller" type="any" required="true">
 		<cfscript>
-			//Set Controller Injection
-			instance.controller = arguments.controller;
-			//Cache Configuration
-			instance.CacheConfigBean = structnew();
-			//Lock Name
+			/* Set Controller Injection */
+			setController( arguments.controller );
+			/* Lock Name */
 			instance.lockName = getController().getAppHash() & "_OCM_OPERATION";
-			//Runtime Java object
+			/* Runtime Java object */
 			instance.javaRuntime = CreateObject("java", "java.lang.Runtime");
-			//Init the object Pool on instantiation
+			/* Event URL Facade Setup */
+			instance.eventURLFacade = CreateObject("component","coldbox.system.cache.util.eventURLFacade").init(arguments.controller);
+			/* Cache Stats */
+			instance.cacheStats = CreateObject("component","coldbox.system.cache.util.cacheStats").init(this);
+			/* Set the NOTFOUND public constant */
+			this.NOT_FOUND = '_NOTFOUND_';		
+			/* Init the object Pool on instantiation */
 			initPool();
-			//Event URL Facade Setup
-			instance.eventURLFacade = CreateObject("component","eventURLFacade").init(arguments.controller);
-			//Cache Stats
-			instance.cacheStats = CreateObject("component","cacheStats").init(this);
-			
-			//return Cache Manager reference;
+			/* return Cache Manager reference */
 			return this;
 		</cfscript>
 	</cffunction>
 
 	<!--- Configure the Cache for Operation --->
-	<cffunction name="configure" access="public" output="false" returntype="void" hint="Configures the cache for operation.">
+	<cffunction name="configure" access="public" output="false" returntype="void" hint="Configures the cache for operation, sets the configuration object, sets and creates the eviction policy and clears the stats. If this method is not called, the cache is useless.">
 		<!--- ************************************************************* --->
-		<cfargument name="cacheConfigBean" type="coldbox.system.beans.cacheConfigBean" required="true">
+		<cfargument name="cacheConfigBean" type="coldbox.system.beans.cacheConfigBean" required="true" hint="The configuration object">
 		<!--- ************************************************************* --->
-		<cfscript>
-		//set the config bean
-		setCacheConfigBean(arguments.cacheConfigBean);
-		//Reset the statistics.
-		getCacheStats().clearStats();
+		<cfscript>			
+			//set the config bean
+			setCacheConfigBean(arguments.cacheConfigBean);
+			//Reset the statistics.
+			getCacheStats().clearStats();
+			//Setup the eviction Policy to use
+			setEvictionPolicy( CreateObject("component","coldbox.system.cache.policies.#getCacheConfigBean().getCacheEvictionPolicy()#").init(this) );
 		</cfscript>
 	</cffunction>
 
 <!------------------------------------------- PUBLIC ------------------------------------------->
 
-	<!--- ************************************************************* --->
-
+	<!--- Simple cache Lookup --->
 	<cffunction name="lookup" access="public" output="false" returntype="boolean" hint="Check if an object is in cache, if not found it records a miss.">
 		<!--- ************************************************************* --->
 		<cfargument name="objectKey" type="any" required="true" hint="The key of the object to lookup.">
 		<!--- ************************************************************* --->
-		<cfset var ObjectFound = false>
-
-		<cflock type="readonly" name="#getLockName()#" timeout="30">
-			<cfif getobjectPool().lookup(arguments.objectKey)>
-				<cfset ObjectFound = true>
-			<cfelse>
-				<!--- Log miss --->
-				<cfset miss()>
-			</cfif>
+		<cfset var local = structnew()>
+		
+		<!--- Init some vars --->
+		<cfset local.needCleanup = false>
+		<cfset local.ObjectFound = false>
+		<cfset local.tmpObj = 0>
+		
+		<cflock type="readonly" name="#getLockName()#" timeout="30" throwontimeout="true">
+			<cfscript>
+				/* Check if in pool first */
+				if( getObjectPool().lookup(arguments.objectKey) ){
+					/* Get Object from cache */
+					local.tmpObj = getobjectPool().get(arguments.objectKey);
+					/* Validate it */
+					if( not structKeyExists(local, "tmpObj") ){
+						needCleanup = true;
+						miss();
+					}
+					else{
+						/* Object Found */
+						local.ObjectFound = true;
+					}					
+				}// first lookup test
+				else{
+					/* log miss */
+					miss();
+				}
+			</cfscript>
 		</cflock>
-
-		<cfreturn ObjectFound>
+		
+		<!--- Check if needs clearing --->
+		<cfif local.needCleanup>
+			<cfset clearKey(arguments.objectKey)>
+		</cfif>
+		
+		<cfreturn local.ObjectFound>
 	</cffunction>
 
-	<!--- ************************************************************* --->
-
-	<cffunction name="get" access="public" output="false" returntype="any" hint="Get an object from cache. If it doesn't exist it returns a blank structure.">
+	<!--- Get an object from the cache --->
+	<cffunction name="get" access="public" output="false" returntype="any" hint="Get an object from cache. If it doesn't exist it returns the THIS.NOT_FOUND value">
 		<!--- ************************************************************* --->
 		<cfargument name="objectKey" type="any" required="true" hint="The key of the object to lookup.">
 		<!--- ************************************************************* --->
-		<cfset var ObjectFound = "">
-
-		<cflock type="exclusive" name="#getLockName()#" timeout="30">
-			<!--- Lookup First --->
-			<cfif getobjectPool().lookup(arguments.objectKey)>
-				<!--- Record a Hit --->
-				<cfset hit()>
-				<cfset ObjectFound = getobjectPool().get(arguments.objectKey)>
-			<cfelse>
-				<cfset miss()>
-			</cfif>
+		<cfset var local = structNew()>
+		
+		<!--- INit Vars --->
+		<cfset local.needCleanup = false>
+		<cfset local.tmpObj = 0>
+		<cfset local.targetObject = this.NOT_FOUND>
+	
+		<cflock type="exclusive" name="#getLockName()#" timeout="30" throwontimeout="true">
+			<cfscript>
+				/* Check if in pool first */
+				if( getObjectPool().lookup(arguments.objectKey) ){
+					/* Get Object from cache */
+					local.tmpObj = getobjectPool().get(arguments.objectKey);
+					/* Validate it */
+					if( not structKeyExists(local,"tmpObj") ){
+						needCleanup = true;
+						miss();
+					}
+					else{
+						local.targetObject = local.tmpObj;
+						hit();
+					}
+				}
+				else{
+					/* log miss */
+					miss();
+				}
+			</cfscript>
 		</cflock>
 		
-		<cfreturn ObjectFound>
+		<!--- Check if needs clearing --->
+		<cfif local.needCleanup>
+			<cfset clearKey(arguments.objectKey)>
+		</cfif>
+		
+		<!--- Return Target Object --->
+		<cfreturn local.targetObject>
 	</cffunction>
 
-	<!--- ************************************************************* --->
-
-	<cffunction name="set" access="public" output="false" returntype="boolean" hint="sets an object in cache. Sets might be expensive">
+	<!--- Set an Object in the cache --->
+	<cffunction name="set" access="public" output="false" returntype="boolean" hint="sets an object in cache. Sets might be expensive. If the JVM threshold is used and it has been reached, the object won't be cached. If the pool is at maximum it will expire using its eviction policy and still cache the object. Cleanup will be done later.">
 		<!--- ************************************************************* --->
 		<cfargument name="objectKey" 			type="any"  required="true" hint="The object cache key">
 		<cfargument name="MyObject"				type="any" 	required="true" hint="The object to cache">
@@ -120,21 +167,21 @@ Modification History:
 		<cfset arguments.Timeout = trim(arguments.Timeout)>
 		<cfset arguments.LastAccessTimeout = trim(arguments.LastAccessTimeout)>
 		
-		<!--- JVMThreshold Check --->
+		<!--- JVMThreshold Check if enabled. --->
 		<cfif ccBean.getCacheFreeMemoryPercentageThreshold() neq 0 and isJVMSafe eq false>
 			<!--- Evict Using Policy --->
-			<cfinvoke method="#ccBean.getCacheEvictionPolicy()#Eviction">
+			<cfset getEvictionPolicy().execute()>
+			<!--- Do another Check, just in case --->
 			<cfset isJVMSafe = ThresholdChecks()>
 		</cfif>
-		<!--- Check for max objects, no else to be sure. --->
+		<!--- Check for max objects reached --->
 		<cfif ccBean.getCacheMaxObjects() neq 0 and getSize() gte ccBean.getCacheMaxObjects()>
 			<!--- Evict Using Policy --->
-			<cfinvoke method="#ccBean.getCacheEvictionPolicy()#Eviction">
+			<cfset getEvictionPolicy().execute()>
 		</cfif>
 		
-		<!--- If not safe or too many objects is still reached, don't cache, its too dangerous --->
-		<cfif (ccBean.getCacheFreeMemoryPercentageThreshold() eq 0 or isJVMSafe) and
-			  (ccBean.getCacheMaxObjects() eq 0 or getSize() lt ccBean.getCacheMaxObjects())>
+		<!--- Check if the JVM is safe for caching, if not, don't cache. --->
+		<cfif ccBean.getCacheFreeMemoryPercentageThreshold() eq 0 or isJVMSafe>
 			
 			<!--- Test Timeout Argument, if false, then inherit framework's timeout --->
 			<cfif arguments.Timeout eq "" or not isNumeric(arguments.Timeout) or arguments.Timeout lt 0>
@@ -147,7 +194,7 @@ Modification History:
 			</cfif>
 			
 			<!--- Set object in Cache --->
-			<cflock type="exclusive" name="#getLockName()#" timeout="30">
+			<cflock type="exclusive" name="#getLockName()#" timeout="30" throwontimeout="true">
 				<cfset getobjectPool().set(arguments.objectKey,arguments.MyObject,arguments.Timeout,arguments.LastAccessTimeout)>
 			</cflock>
 			
@@ -167,17 +214,16 @@ Modification History:
 		</cfif>
 	</cffunction>
 
-	<!--- ************************************************************* --->
-
-	<cffunction name="clearKey" access="public" output="false" returntype="boolean" hint="Clears a key from the cache.">
+	<!--- Clear an object from the cache --->
+	<cffunction name="clearKey" access="public" output="false" returntype="boolean" hint="Clears an object from the cache by using its cache key. Returns false if object was not removed or did not exist anymore">
 		<!--- ************************************************************* --->
-		<cfargument name="objectKey" type="string" required="true">
+		<cfargument name="objectKey" type="string" required="true" hint="The key the object was stored under.">
 		<!--- ************************************************************* --->
 		<cfset var ClearCheck = false>
 		<cfset var interceptMetadata = structnew()>
 		
 		<!--- Remove Object --->
-		<cflock type="exclusive" name="#getLockName()#" timeout="30">
+		<cflock type="exclusive" name="#getLockName()#" timeout="30" throwontimeout="true">
 			<cfif getobjectPool().lookup(arguments.objectKey)>
 				<cfset ClearCheck = getobjectPool().clearKey(arguments.objectKey)>
 			</cfif>
@@ -194,9 +240,28 @@ Modification History:
 		<cfreturn ClearCheck>
 	</cffunction>
 	
-	<!--- ************************************************************* --->
+	<!--- Clear By Key Snippet --->
+	<cffunction name="clearByKeySnippet" access="public" returntype="void" hint="Clears keys using the passed in object key snippet" output="false" >
+		<!--- ************************************************************* --->
+		<cfargument name="keySnippet" 	type="string" 	required="true" hint="The key snippet to use to clear keys. It matches using findnocase">
+		<cfargument name="async" 		type="boolean"  required="false" default="true" hint="Run asynchronously or not. It defaults to true"/>
+		<!--- ************************************************************* --->
+		<cfscript>
+			var poolKeys = listSort(structKeyList(getObjectPool().getpool_metadata()),"textnocase");
+			var poolKeysLength = listlen(poolKeys);
+			var x = 1;
+			
+			//Find all the keys that match
+			for(x=1; x lte poolKeysLength; x=x+1){
+				if ( findnocase( arguments.keySnippet, listGetAt(poolKeys,x) ) ){
+					clearKey(listGetAt(poolKeys,x));
+				}
+			}
+		</cfscript>
+	</cffunction>
 	
-	<cffunction name="clearEvent" access="public" output="false" returntype="void" hint="Clears all the event permuations from the cache.">
+	<!--- Clear an event --->
+	<cffunction name="clearEvent" access="public" output="false" returntype="void" hint="Clears all the event permutations from the cache.">
 		<!--- ************************************************************* --->
 		<cfargument name="eventsnippet" type="string" 	required="true" hint="The event snippet to clear on. Can be partial or full">
 		<cfargument name="queryString" 	type="string" 	required="false" default="" hint="If passed in, it will create a unique hash out of it. For purging purposes"/>
@@ -222,8 +287,7 @@ Modification History:
 		</cfscript>
 	</cffunction>
 
-	<!--- ************************************************************* --->
-	
+	<!--- Clear All the Events form the cache --->
 	<cffunction name="clearAllEvents" access="public" output="false" returntype="void" hint="Clears all events from the cache.">
 		<!--- ************************************************************* --->
 		<cfargument name="async" 		type="boolean"  required="false" default="true" hint="Run asynchronously or not"/>
@@ -242,8 +306,7 @@ Modification History:
 		</cfscript>
 	</cffunction>
 
-	<!--- ************************************************************* --->
-	
+	<!--- Clear All The Views from the Cache. --->
 	<cffunction name="clearAllViews" access="public" output="false" returntype="void" hint="Clears all views from the cache.">
 		<!--- ************************************************************* --->
 		<cfargument name="async" 		type="boolean"  required="false" default="true" hint="Run asynchronously or not"/>
@@ -252,42 +315,143 @@ Modification History:
 			var poolKeys = listSort(structKeyList(getObjectPool().getpool_metadata()),"textnocase");
 			var poolKeysLength = listlen(poolKeys);
 			var x = 1;
+			var cacheKey = getController().getPlugin("renderer").VIEW_CACHEKEY_PREFIX;
 			
 			//Find all the event keys.
 			for(x=1; x lte poolKeysLength; x=x+1){
-				if ( findnocase( getController().getPlugin("renderer").VIEW_CACHEKEY_PREFIX, listGetAt(poolKeys,x) ) ){
+				if ( findnocase( cacheKey, listGetAt(poolKeys,x) ) ){
 					clearKey(listGetAt(poolKeys,x));
 				}
 			}
 		</cfscript>
 	</cffunction>
 
-	<!--- ************************************************************* --->
-
-	<cffunction name="clear" access="public" output="false" returntype="void" hint="Clears the entire object cache. Call from a non-cached object or you will get 500 NULL errors, VERY VERY BAD!!.">
-		<cflock type="exclusive" name="#getLockName()#" timeout="30">
+	<!--- Clear The Pool --->
+	<cffunction name="clear" access="public" output="false" returntype="void" hint="Clears the entire object cache and recreates the object pool and statistics. Call from a non-cached object or you will get 500 NULL errors, VERY VERY BAD!!.">
+		<cflock type="exclusive" name="#getLockName()#" timeout="30" throwontimeout="true">
 			<cfset structDelete(variables,"objectPool")>
 			<cfset initPool()>
 			<cfset getCacheStats().clearStats()>
 		</cflock>
 	</cffunction>
 
-	<!--- ************************************************************* --->
-
+	<!--- Get the Cache Size --->
 	<cffunction name="getSize" access="public" output="false" returntype="numeric" hint="Get the cache's size in items">
 		<cfscript>
 		return getObjectPool().getSize();
 		</cfscript>
 	</cffunction>
 
-	<!--- ************************************************************* --->
-
-	<cffunction name="getpool_metadata" access="public" returntype="struct" output="false" hint="Get the pool's metadata structure">
-		<cfreturn getObjectPool().getpool_metadata()>
+	<!--- Reap the Cache --->
+	<cffunction name="reap" access="public" output="false" returntype="void" hint="Reap the cache.">
+		<cfscript>
+			var keyIndex = 1;
+			var poolStruct = getObjectPool().getpool_metadata();
+			var poolKeys = listToArray(structKeyList(poolStruct));
+			var poolKeysLength = ArrayLen(poolKeys);
+			var thisKey = "";
+			var ccBean = getCacheConfigBean();
+			var reflocal = structNew();
+			
+			/* Expire and cleanup if in frequency */
+			if ( dateDiff("n", getCacheStats().getlastReapDatetime(), now() ) gte ccBean.getCacheReapFrequency() ){
+				
+				/* Init Ref Key Vars */
+				reflocal.softRef = getObjectPool().getReferenceQueue().poll();
+				
+				/* Let's reap the garbage collected soft references first before expriring */
+				while( StructKeyExists(reflocal, "softRef") ){
+					/* Clean if it still exists */
+					if( softRefLookup(reflocal.softRef) ){
+						clearKey( getSoftRefKey(refLocal.softRef) );
+					}
+					/* Poll Again */
+					reflocal.softRef = getObjectPool().getReferenceQueue().poll();
+				}
+				
+				//Reaping about to start, set new reaping date.
+				getCacheStats().setlastReapDatetime( now() );
+				
+				//Loop Through Metadata
+				for (keyIndex=1; keyIndex lte poolKeysLength; keyIndex=keyIndex+1){
+					
+					//This Key
+					thisKey = poolKeys[keyIndex];
+					
+					//Override Timeout Check
+					if ( poolStruct[thisKey].Timeout gt 0 ){
+						//Check for creation timeouts and clear
+						if ( dateDiff("n", poolStruct[thisKey].created, now() ) gte poolStruct[thisKey].Timeout ){
+							clearKey(thisKey);
+							continue;
+						}
+						//Check for last accessed timeouts. If object has not been accessed in the default span
+						if ( ccBean.getCacheUseLastAccessTimeouts() and 
+						     dateDiff("n", poolStruct[thisKey].lastAccesed, now() ) gte ccBean.getCacheObjectDefaultLastAccessTimeout() ){
+							clearKey(thisKey);
+							continue;
+						}
+					}//end timeout gt 0
+					
+				}//end looping over keys				
+			}// end reaping frequency check			
+		</cfscript>
 	</cffunction>
-
-	<!--- ************************************************************* --->
-
+	
+	<!--- Expire All Objects --->
+	<cffunction name="expireAll" access="public" returntype="void" hint="Expire All Objects. Use this instead of clear() from within handlers or any cached object, this sets the metadata for the objects to expire in the next request. Note that this is not an inmmediate expiration. Clear should only be used from outside a cached object" output="false" >
+		<cfscript>
+			var keyIndex = 1;
+			var poolKeys = listToArray(structKeyList(getObjectPool().getpool_metadata()));
+			var poolKeysLength = ArrayLen(poolKeys);
+			
+			//Loop Through Metadata
+			for (keyIndex=1; keyIndex lte poolKeysLength; keyIndex=keyIndex+1){
+				//Override for Eternal Objects
+				if ( getObjectPool().getMetadataProperty(poolKeys[keyIndex],"Timeout") gt 0 ){
+					getObjectPool().setMetadataProperty(poolKeys[keyIndex],"Timeout", 1);
+					getObjectPool().setMetadataProperty(poolKeys[keyIndex],"created", dateadd("n",-5,now()) );
+				}
+			}
+		</cfscript>
+	</cffunction>
+	
+	<!--- Expire an Object --->
+	<cffunction name="expireKey" access="public" returntype="void" hint="Expire an Object. Use this instead of clearKey() from within handlers or any cached object, this sets the metadata for the objects to expire in the next request. Note that this is not an inmmediate expiration. Clear should only be used from outside a cached object" output="false" >
+		<!--- ************************************************************* --->
+		<cfargument name="objectKey" type="string" required="true">
+		<!--- ************************************************************* --->
+		<cfscript>
+			//Expire the object
+			getObjectPool().setMetadataProperty(arguments.objectKey,"Timeout", 1);
+			getObjectPool().setMetadataProperty(arguments.objectKey,"Created", dateAdd("n",-5,now()));
+		</cfscript>
+	</cffunction>
+	
+	<!--- Expire an Object --->
+	<cffunction name="expireByKeySnippet" access="public" returntype="void" hint="Same as expireKey but can touch multiple objects depending on the keysnippet that is sent in." output="false" >
+		<!--- ************************************************************* --->
+		<cfargument name="keySnippet" type="string" required="true">
+		<!--- ************************************************************* --->
+		<cfscript>
+			var keyIndex = 1;
+			var poolKeys = listToArray(structKeyList(getObjectPool().getpool_metadata()));
+			var poolKeysLength = ArrayLen(poolKeys);
+			
+			//Loop Through Metadata
+			for (keyIndex=1; keyIndex lte poolKeysLength; keyIndex=keyIndex+1){
+				//Override for Eternal Objects and we match keys
+				if ( getObjectPool().getMetadataProperty(poolKeys[keyIndex],"Timeout") gt 0 and
+				     findnocase(arguments.keySnippet, poolKeys[keyIndex]) )
+				{
+					getObjectPool().setMetadataProperty(poolKeys[keyIndex],"Timeout", 1);
+					getObjectPool().setMetadataProperty(poolKeys[keyIndex],"created", dateadd("n",-5,now()) );
+				}
+			}
+		</cfscript>
+	</cffunction>
+	
+	<!--- Get The Cache Item Types --->
 	<cffunction name="getItemTypes" access="public" output="false" returntype="struct" hint="Get the item types of the cache.">
 		<cfscript>
 		var x = 1;
@@ -327,149 +491,24 @@ Modification History:
 		</cfscript>
 	</cffunction>
 
-	<!--- ************************************************************* --->
-
-	<cffunction name="reap" access="public" output="false" returntype="void" hint="Reap the cache.">
-		<cfscript>
-			var keyIndex = 1;
-			var poolStruct = getObjectPool().getpool_metadata();
-			var poolKeys = listToArray(structKeyList(poolStruct));
-			var poolKeysLength = ArrayLen(poolKeys);
-			var thisKey = "";
-			var ccBean = getCacheConfigBean();
-			
-			//Check reaping frequency
-			if ( dateDiff("n", getCacheStats().getlastReapDatetime(), now() ) gte ccBean.getCacheReapFrequency() ){
-
-				//Reaping about to start, set new reaping date.
-				getCacheStats().setlastReapDatetime( now() );
-				
-				//Loop Through Metadata
-				for (keyIndex=1; keyIndex lte poolKeysLength; keyIndex=keyIndex+1){
-					
-					//This Key
-					thisKey = poolKeys[keyIndex];
-					
-					//Override Timeout Check
-					if ( poolStruct[thisKey].Timeout gt 0 ){
-						//Check for creation timeouts and clear
-						if ( dateDiff("n", poolStruct[thisKey].created, now() ) gte poolStruct[thisKey].Timeout ){
-							clearKey(thisKey);
-							continue;
-						}
-						//Check for last accessed timeouts. If object has not been accessed in the default span
-						if ( ccBean.getCacheUseLastAccessTimeouts() and 
-						     dateDiff("n", poolStruct[thisKey].lastAccesed, now() ) gte ccBean.getCacheObjectDefaultLastAccessTimeout() ){
-							clearKey(thisKey);
-							continue;
-						}
-					}//end timeout gt 0
-					
-				}//end for loop
-			}// end reaping frequency check
-		</cfscript>
-	</cffunction>
-	
-	<!--- ************************************************************* --->
-
-	<cffunction name="LFUEviction" access="public" output="false" returntype="void" hint="Evict the least frequently used.">
-		<cfscript>
-			var objStruct = getObjectPool().getpool_metadata();
-			var LFUhitIndex = structSort(objStruct,"numeric", "ASC", "hits");
-			var indexLength = ArrayLen(LFUhitIndex);
-			var x = 1;
-		
-			//Loop Through Metadata
-			for (x=1; x lte indexLength; x=x+1){
-				//Override Eternal Checks
-				if ( objStruct[LFUhitIndex[x]].Timeout gt 0 ){
-					//Evict it
-					expireKey(LFUhitIndex[x]);
-					//Record Eviction 
-					getCacheStats().setEvictionCount(getCacheStats().getEvictionCount()+1);
-					break;
-				}//end timeout gt 0
-			}//end for loop
-			
-			
-		</cfscript>
-	</cffunction>
-
-	<!--- ************************************************************* --->
-	
-	<cffunction name="LRUEviction" access="public" output="false" returntype="void" hint="Evict the least frequently used.">
-		<cfscript>
-			var objStruct = getObjectPool().getpool_metadata();
-			var LRUhitIndex = structSort(objStruct,"numeric", "ASC", "LastAccessTimeout");
-			var indexLength = ArrayLen(LRUhitIndex);
-			var x = 1;
-			
-			//Loop Through Metadata
-			for (x=1; x lte indexLength; x=x+1){
-				//Override Eternal Checks
-				if ( objStruct[LRUhitIndex[x]].Timeout gt 0 ){
-					//Evict it
-					expireKey(LRUhitIndex[x]);
-					//Record Eviction 
-					getCacheStats().setEvictionCount(getCacheStats().getEvictionCount()+1);
-					break;
-				}//end timeout gt 0
-			}//end for loop
-		</cfscript>
-	</cffunction>
-
-	<!--- ************************************************************* --->
-
-	<cffunction name="expireAll" access="public" returntype="any" hint="Expire All Objects. Use this instead of clear() from within handlers or any cached object, this sets the metadata for the objects to expire in the next request. Note that this is not an inmmediate expiration. Clear should only be used from outside a cached object" output="false" >
-		<cfscript>
-			var keyIndex = 1;
-			var poolKeys = listToArray(structKeyList(getObjectPool().getpool_metadata()));
-			var poolKeysLength = ArrayLen(poolKeys);
-			
-			//Loop Through Metadata
-			for (keyIndex=1; keyIndex lte poolKeysLength; keyIndex=keyIndex+1){
-				//Override for Eternal Objects
-				if ( getObjectPool().getMetadataProperty(poolKeys[keyIndex],"Timeout") gt 0 ){
-					getObjectPool().setMetadataProperty(poolKeys[keyIndex],"Timeout", 1);
-					getObjectPool().setMetadataProperty(poolKeys[keyIndex],"created", dateadd("n",-5,now()) );
-				}
-			}
-		</cfscript>
-	</cffunction>
-	
-	<!--- ************************************************************* --->
-	
-	<cffunction name="expireKey" access="public" returntype="any" hint="Expire an Object. Use this instead of clearKey() from within handlers or any cached object, this sets the metadata for the objects to expire in the next request. Note that this is not an inmmediate expiration. Clear should only be used from outside a cached object" output="false" >
-		<!--- ************************************************************* --->
-		<cfargument name="objectKey" type="string" required="true">
-		<!--- ************************************************************* --->
-		<cfscript>
-			//Expire the object
-			getObjectPool().setMetadataProperty(arguments.objectKey,"Timeout", 1);
-			getObjectPool().setMetadataProperty(arguments.objectKey,"Created", dateAdd("n",-5,now()));
-		</cfscript>
-	</cffunction>
-	
-	<!--- ************************************************************* --->
-	
 <!------------------------------------------- ACCESSOR/MUTATORS ------------------------------------------->
 
 	<!--- get Event URL Facade --->
-	<cffunction name="geteventURLFacade" access="public" returntype="any" output="false" hint="Get the event url facade object.">
+	<cffunction name="geteventURLFacade" access="public" returntype="coldbox.system.cache.util.eventURLFacade" output="false" hint="Get the event url facade object.">
 		<cfreturn instance.eventURLFacade>
 	</cffunction>
 
 	<!--- The cache stats --->
-	<cffunction name="getCacheStats" access="public" returntype="any" output="false" hint="Return the cache stats object.">
+	<cffunction name="getCacheStats" access="public" returntype="coldbox.system.cache.util.cacheStats" output="false" hint="Return the cache stats object.">
 		<cfreturn instance.cacheStats>
 	</cffunction>
 	
 	<!--- The cache Config Bean --->
-	<cffunction name="setCacheConfigBean" access="public" returntype="void" output="false">
+	<cffunction name="setCacheConfigBean" access="public" returntype="void" output="false" hint="Set the cache configuration bean.">
 		<cfargument name="CacheConfigBean" type="coldbox.system.beans.cacheConfigBean" required="true">
 		<cfset instance.CacheConfigBean = arguments.CacheConfigBean>
 	</cffunction>
-	<cffunction name="getCacheConfigBean" access="public" returntype="any" output="false">
+	<cffunction name="getCacheConfigBean" access="public" returntype="coldbox.system.beans.cacheConfigBean" output="false" hint="Get the current cache configuration bean.">
 		<cfreturn instance.CacheConfigBean >
 	</cffunction>
 
@@ -479,54 +518,62 @@ Modification History:
 	</cffunction>
 	
 	<!--- Controller --->
-	<cffunction name="getcontroller" access="public" output="false" returntype="any" hint="Get controller">
+	<cffunction name="getcontroller" access="public" output="false" returntype="any" hint="Get ColdBox controller">
 		<cfreturn instance.controller/>
 	</cffunction>
-	<cffunction name="setcontroller" access="public" output="false" returntype="void" hint="Set controller">
+	<cffunction name="setcontroller" access="public" output="false" returntype="void" hint="Set ColdBox controller">
 		<cfargument name="controller" type="any" required="true"/>
 		<cfset instance.controller = arguments.controller/>
 	</cffunction>
 	
 	<!--- Lock Name --->
-	<cffunction name="getlockName" access="public" output="false" returntype="any" hint="Get lockName">
+	<cffunction name="getlockName" access="public" output="false" returntype="string" hint="Get the lockName used for cache operations">
 		<cfreturn instance.lockName/>
-	</cffunction>
-	<cffunction name="setlockName" access="public" output="false" returntype="void" hint="Set lockName">
-		<cfargument name="lockName" type="string" required="true"/>
-		<cfset instance.lockName = arguments.lockName/>
 	</cffunction>
 	
 	<!--- Get the internal object pool --->
-	<cffunction name="getObjectPool" access="public" returntype="any" output="false" hint="Get the internal object pool">
+	<cffunction name="getObjectPool" access="public" returntype="any" output="false" hint="Get the internal object pool: coldbox.system.cache.objectPool or MTobjectPool">
 		<cfreturn instance.objectPool >
 	</cffunction>
-	
-<!------------------------------------------- PRIVATE ------------------------------------------->
 
+	<!--- Get the Pool Metadata --->
+	<cffunction name="getpool_metadata" access="public" returntype="struct" output="false" hint="Get the pool's metadata structure">
+		<cfreturn getObjectPool().getpool_metadata()>
+	</cffunction>
+
+<!------------------------------------------- PRIVATE ------------------------------------------->
+	
+	<!--- Get Set the set eviction Policy --->
+	<cffunction name="getevictionPolicy" access="private" returntype="coldbox.system.cache.policies.abstractEvictionPolicy" output="false">
+		<cfreturn instance.evictionPolicy>
+	</cffunction>
+	<cffunction name="setevictionPolicy" access="private" returntype="void" output="false">
+		<cfargument name="evictionPolicy" type="coldbox.system.cache.policies.abstractEvictionPolicy" required="true">
+		<cfset instance.evictionPolicy = arguments.evictionPolicy>
+	</cffunction>
+	
+	<!--- Record a Hit --->
 	<cffunction name="hit" access="private" output="false" returntype="void" hint="Record a hit">
 		<cfscript>
 			getCacheStats().setHits(getCacheStats().getHits()+1);
 		</cfscript>
 	</cffunction>
 
-	<!--- ************************************************************* --->
-
+	<!--- Record a Miss --->
 	<cffunction name="miss" access="private" output="false" returntype="void" hint="Record a miss">
 		<cfscript>
 			getCacheStats().setmisses(getCacheStats().getmisses()+1);
 		</cfscript>
 	</cffunction>
 
-	<!--- ************************************************************* --->
-
+	<!--- Initialize our object cache pool --->
 	<cffunction name="initPool" access="private" output="false" returntype="void" hint="Initialize and set the internal object Pool">
 		<cfscript>
-			instance.objectPool = CreateObject("component","objectPool").init();
+			instance.objectPool = CreateObject("component","coldbox.system.cache.objectPool").init();
 		</cfscript>
 	</cffunction>
 
-	<!--- ************************************************************* --->
-
+	<!--- Threshold JVM Checks --->
 	<cffunction name="ThresholdChecks" access="private" output="false" returntype="boolean" hint="JVM Threshold checks">
 		<cfset var check = true>
 		<cfset var jvmThreshold = 0>

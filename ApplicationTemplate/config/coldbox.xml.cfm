@@ -141,12 +141,12 @@
 	
 	<!--ColdBox Object Caching Settings Overrides the Framework-wide settings 
 	<Cache>
-		<ObjectDefaultTimeout>45</ObjectDefaultTimeout>
-		<ObjectDefaultLastAccessTimeout>15</ObjectDefaultLastAccessTimeout>
+		<ObjectDefaultTimeout>60</ObjectDefaultTimeout>
+		<ObjectDefaultLastAccessTimeout>30</ObjectDefaultLastAccessTimeout>
 		<UseLastAccessTimeouts>true</UseLastAccessTimeouts>
 		<ReapFrequency>1</ReapFrequency>
-		<MaxObjects>50</MaxObjects>
-		<FreeMemoryPercentageThreshold>3</FreeMemoryPercentageThreshold>
+		<MaxObjects>100</MaxObjects>
+		<FreeMemoryPercentageThreshold>1</FreeMemoryPercentageThreshold>
 		<EvictionPolicy>LRU</EvictionPolicy>
 	</Cache>
 	-->
