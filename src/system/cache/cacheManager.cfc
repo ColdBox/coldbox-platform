@@ -346,9 +346,9 @@ Modification History:
 	<cffunction name="reap" access="public" output="false" returntype="void" hint="Reap the cache.">
 		<cfscript>
 			var keyIndex = 1;
-			var poolStruct = getObjectPool().getpool_metadata();
-			var poolKeys = listToArray(structKeyList(poolStruct));
-			var poolKeysLength = ArrayLen(poolKeys);
+			var poolStruct = "";
+			var poolKeys = "";
+			var poolKeysLength = 0;
 			var thisKey = "";
 			var ccBean = getCacheConfigBean();
 			var reflocal = structNew();
@@ -368,6 +368,11 @@ Modification History:
 					/* Poll Again */
 					reflocal.softRef = getObjectPool().getReferenceQueue().poll();
 				}
+				
+				/* Let's Get our reaping vars ready */
+				poolStruct = getObjectPool().getpool_metadata();
+				poolKeys = listToArray(structKeyList(poolStruct));
+				poolKeysLength = ArrayLen(poolKeys);
 				
 				//Reaping about to start, set new reaping date.
 				getCacheStats().setlastReapDatetime( now() );
