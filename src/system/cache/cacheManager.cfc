@@ -362,8 +362,8 @@ Modification History:
 				/* Let's reap the garbage collected soft references first before expriring */
 				while( StructKeyExists(reflocal, "softRef") ){
 					/* Clean if it still exists */
-					if( softRefLookup(reflocal.softRef) ){
-						clearKey( getSoftRefKey(refLocal.softRef) );
+					if( getObjectPool().softRefLookup(reflocal.softRef) ){
+						clearKey( getObjectPool().getSoftRefKey(refLocal.softRef) );
 					}
 					/* Poll Again */
 					reflocal.softRef = getObjectPool().getReferenceQueue().poll();
