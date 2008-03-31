@@ -161,7 +161,9 @@ Modification History:
 				  </tr>
 				 <tr id="fw_poprc_#id#" class="hideRC">
 				  	<td colspan="4" style="padding:5px;" wrap="true">
-					  	<textarea rows=12 style="width:100%" readonly="true">#replacenocase(rc,",",chr(10) & chr(13),"all")#</textarea>
+					  	<div style="overflow:auto;width:98%; height:150px;padding:5px">
+						  #replacenocase(rc,",",chr(10) & chr(13),"all")#
+						</div>
 					</td>
 		  		  </tr>
 			  </cfloop>
