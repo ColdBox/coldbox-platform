@@ -50,7 +50,7 @@ Description:
 	</cffunction>
 
 <!------------------------------------------- PUBLIC ------------------------------------------->
-	<cffunction name="sanitizer" returntype="query" output="false" hint="clean HTML from XSS scripts">
+	<cffunction name="sanitizer" returntype="Any" output="false" hint="clean HTML from XSS scripts">
 		<cfargument name="HtmlData" type="string" required="yes" hint="html text">
 		
 		<cfscript>
