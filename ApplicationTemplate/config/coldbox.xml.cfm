@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <Config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-	xsi:noNamespaceSchemaLocation="http://www.coldboxframework.com/schema/config_2.5.0.xsd">
+	xsi:noNamespaceSchemaLocation="http://www.coldboxframework.com/schema/config_2.6.0.xsd">
 	<Settings>
 		<!--The name of your application.-->
 		<Setting name="AppName"						value="Your App Name here"/>
@@ -78,7 +78,17 @@
 		</YourSettings>
 	 -->
 	<YourSettings></YourSettings>
-
+	
+	<!-- Custom Conventions : You can override the framework wide conventions
+	<Conventions>
+		<handlersLocation></handlersLocation>
+		<pluginsLocation></pluginsLocation>
+		<layoutsLocation></layoutsLocation>
+		<viewsLocation></viewsLocation>
+		<eventAction></eventAction>		
+	</Conventions>	
+	-->
+	
 	<!--Optional,if blank it will use the CFMX administrator settings.-->
 	<MailServerSettings>
 		<MailServer></MailServer>

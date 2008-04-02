@@ -68,7 +68,7 @@ Modification History:
 			instance.searchInterceptorCustomPoints = "//Interceptors/CustomInterceptionPoints";
 			instance.searchInterceptors = "//Interceptors/Interceptor";
 			instance.searchInterceptorBase = "//Interceptors";
-	
+			
 			//Search patterns for fw xml
 			instance.searchConventions = "//Conventions";
 	
@@ -108,24 +108,15 @@ Modification History:
 			//verify Framework settings File
 			if ( not fileExists(instance.FrameworkConfigFile) ){
 				throw("Error finding settings.xml configuration file. The file #instance.FrameworkConfigFile# cannot be found.","","Framework.plugins.XMLParser.ColdBoxSettingsNotFoundException");
-			}
-			
+			}			
 			//Setup the ColdBox CFML Engine Info
 			settingsStruct["CFMLEngine"] = CFMLEngine;
-			settingsStruct["CFMLVersion"] = CFMLVersion;
-			
+			settingsStruct["CFMLVersion"] = CFMLVersion;			
 			//Set Internal Parsing And Charting Properties
 			if ( CFMLEngine eq controller.oCFMLENGINE.BLUEDRAGON ){
-				if ( CFMLVersion lt 7 ){
-					settingsStruct["xmlParseActive"] = false;
-					settingsStruct["chartingActive"] = false;
-					settingsStruct["xmlValidateActive"] = false;
-				}
-				else{
-					settingsStruct["xmlParseActive"] = true;
-					settingsStruct["chartingActive"] = true;
-					settingsStruct["xmlValidateActive"] = true;
-				}	
+				settingsStruct["xmlParseActive"] = true;
+				settingsStruct["chartingActive"] = true;
+				settingsStruct["xmlValidateActive"] = true;	
 			}//end if bluedragon
 			else if ( CFMLEngine eq controller.oCFMLENGINE.RAILO ){
 				settingsStruct["xmlParseActive"] = true;
@@ -135,14 +126,8 @@ Modification History:
 			else{
 				settingsStruct["chartingActive"] = true;
 				//Adobe CF
-				if ( CFMLVersion lt 7 ){
-					settingsStruct["xmlParseActive"] = false;
-					settingsStruct["xmlValidateActive"] = false;
-				}
-				else{
-					settingsStruct["xmlParseActive"] = true;
-					settingsStruct["xmlValidateActive"] = true;
-				}
+				settingsStruct["xmlParseActive"] = true;
+				settingsStruct["xmlValidateActive"] = true;
 			}//end if adobe.
 			
 			//Determine Parsing Method.
@@ -168,6 +153,7 @@ Modification History:
 			StructInsert(settingsStruct, "pluginsConvention", conventions[1].pluginsLocation.xmltext);
 			StructInsert(settingsStruct, "LayoutsConvention", conventions[1].layoutsLocation.xmltext);
 			StructInsert(settingsStruct, "ViewsConvention", conventions[1].viewsLocation.xmltext);
+			StructInsert(settingsStruct, "EventAction", conventions[1].eventAction.xmltext);
 
 			//Get ColdBox Config XML File Settings or Override using arguments
 			if ( arguments.overrideConfigFile eq ""){
@@ -261,6 +247,8 @@ Modification History:
 		var InterceptorStruct = structnew();
 		var InterceptorProperties = "";
 		var tempProperty = "";
+		//Conventions
+		var Conventions = "";
 		//loopers
 		var i = 0;
 		var j = 0;
@@ -500,6 +488,18 @@ Modification History:
 					else
 						StructInsert( ConfigStruct, YourSettingNodes[i].XMLAttributes["name"], tester);
 				}
+			}
+			
+			/* ::::::::::::::::::::::::::::::::::::::::: YOUR CONVENTIONS LOADING :::::::::::::::::::::::::::::::::::::::::::: */
+			
+			conventions = XMLSearch(configXML,instance.searchConventions);
+			if( ArrayLen(conventions) gt 0){
+				/* Override conventions on a per found basis. */
+				if( structKeyExists(conventions[1],"handlersLocation") ){ fwSettingsStruct["handlersConvention"] = trim(conventions[1].handlersLocation.xmltext); }
+				if( structKeyExists(conventions[1],"pluginsLocation") ){ fwSettingsStruct["pluginsConvention"] = trim(conventions[1].pluginsLocation.xmltext); }
+				if( structKeyExists(conventions[1],"layoutsLocation") ){ fwSettingsStruct["LayoutsConvention"] = trim(conventions[1].layoutsLocation.xmltext); }
+				if( structKeyExists(conventions[1],"viewsLocation") ){ fwSettingsStruct["ViewsConvention"] = trim(conventions[1].viewsLocation.xmltext); }
+				if( structKeyExists(conventions[1],"eventAction") ){ fwSettingsStruct["eventAction"] = trim(conventions[1].eventAction.xmltext); }
 			}
 			
 			/* ::::::::::::::::::::::::::::::::::::::::: HANDLER & PLUGIN INVOCATION PATHS :::::::::::::::::::::::::::::::::::::::::::: */

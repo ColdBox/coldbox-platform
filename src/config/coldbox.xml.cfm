@@ -44,6 +44,16 @@
 		<Setting name="MyStruct" value="{name:'luis majano', email:'info@email.com', active:'true'}"/>
 		<Setting name="MyBaseURL"  value="jfetmac" />
 	</YourSettings>
+	
+	<!-- Custom Conventions : You can override the framework wide conventions -->
+	<Conventions>
+		<handlersLocation>_handlers</handlersLocation>
+		<pluginsLocation>plugins</pluginsLocation>
+		<layoutsLocation>layouts</layoutsLocation>
+		<viewsLocation>views</viewsLocation>
+		<eventAction>index</eventAction>		
+	</Conventions>	
+
 
 	<!--Optional,if blank it will use the CFMX administrator settings.-->
 	<MailServerSettings />

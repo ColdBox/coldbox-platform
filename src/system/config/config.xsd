@@ -17,6 +17,7 @@
 				<xs:element maxOccurs="1" minOccurs="0" ref="Datasources"/>
 				<xs:element maxOccurs="1" minOccurs="0" ref="Cache"/>
 				<xs:element maxOccurs="1" minOccurs="0" ref="Interceptors"/>
+				<xs:element maxOccurs="1" minOccurs="0" ref="Conventions"/>
 			</xs:all>
 		</xs:complexType>
 	</xs:element>
@@ -446,6 +447,40 @@
 					<xs:documentation>Flag that determines if the interceptor service throws an error when an invalid state is announced.</xs:documentation>
 				</xs:annotation>
 			</xs:attribute>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="Conventions">
+		<xs:annotation>
+			<xs:documentation>These are the custom conventions you can place for your current application.</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:all>
+				<xs:element maxOccurs="1" minOccurs="0" name="handlersLocation" type="xs:string">
+					<xs:annotation>
+						<xs:documentation>The default location of your handlers</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element maxOccurs="1" minOccurs="0" name="pluginsLocation" type="xs:string">
+					<xs:annotation>
+						<xs:documentation>The default location of your plugins</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element maxOccurs="1" minOccurs="0" name="layoutsLocation" type="xs:string">
+					<xs:annotation>
+						<xs:documentation>The default location of your layouts.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element maxOccurs="1" minOccurs="0" name="viewsLocation" type="xs:string">
+					<xs:annotation>
+						<xs:documentation>The default location of your views.</xs:documentation>
+					</xs:annotation>
+				</xs:element>	
+				<xs:element maxOccurs="1" minOccurs="0" name="eventAction" type="xs:string">
+					<xs:annotation>
+						<xs:documentation>The default event action if not specified.</xs:documentation>
+					</xs:annotation>
+				</xs:element>			
+			</xs:all>
 		</xs:complexType>
 	</xs:element>
 </xs:schema>

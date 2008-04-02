@@ -47,6 +47,17 @@ Description :
 			</parameter>
 		</function>
 		
+		<function creator="8" name="cfhtmlhead" returns="void">
+			<help><![CDATA[
+				Facade to cfhtmlhead
+			]]></help>
+			<parameter name="content" type="Any" required="true">
+				<help><![CDATA[
+					The content to include at the head
+				]]></help>
+			</parameter>
+		</function>
+		
 		<function creator="8" name="dump" returns="void">
 			<help><![CDATA[
 				Facade to cfdump
@@ -102,6 +113,17 @@ Description :
 			<help><![CDATA[
 				Get the object's instance unique UUID
 			]]></help>
+		</function>
+		
+		<function creator="8" name="getInterceptor" returns="Any">
+			<help><![CDATA[
+				Get a declared interceptor from cache.
+			]]></help>
+			<parameter name="interceptorClass" type="string" required="true">
+				<help><![CDATA[
+					The interceptor full class name.
+				]]></help>
+			</parameter>
 		</function>
 		
 		<function creator="8" name="getMailSettings" returns="coldbox.system.beans.mailsettingsBean">
@@ -834,11 +856,6 @@ Description :
 		<scope value="controller.settingExists" type="Void">
 			<help><![CDATA[ 
 			 Set a setting in the configuration structures
-		]]></help>
-		</scope>
-		<scope value="controller.throw" type="Void">
-			<help><![CDATA[ 
-			 Facade to cfthrow.
 		]]></help>
 		</scope>
 		
