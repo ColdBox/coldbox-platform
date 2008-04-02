@@ -80,7 +80,7 @@ Description :
 			
 			assertTrue(isValid('numeric',plugin.getRowNumber(variables.q1, '8', 'idt')), "Returned value is not number");
 			
-			assertTrue(isValid('numeric',plugin.getRowNumber(variables.q1, '8', 'idt')), "Returned value is not number");
+			assertTrue(isValid('numeric',plugin.getRowNumber(variables.q3, '15', 'idt')), "Returned value is not number");
 			
 			assertTrue(isQuery(plugin.doInnerJoin(q1,q3,"idt","idt")), "Returned value is not query");
 			
