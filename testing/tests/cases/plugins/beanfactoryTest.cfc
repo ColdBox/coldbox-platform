@@ -7,9 +7,9 @@ www.coldboxframework.com | www.luismajano.com | www.ortussolutions.com
 Author     :	Luis Majano
 Date        :	9/3/2007
 Description :
-	securityTest
+	beanFactoryTest
 ----------------------------------------------------------------------->
-<cfcomponent name="appstoragetest" extends="coldbox.system.extras.baseTest" output="false">
+<cfcomponent name="beanfactoryTest" extends="coldbox.system.extras.baseTest" output="false">
 
 	<cffunction name="setUp" returntype="void" access="private" output="false">
 		<cfscript>
