@@ -184,8 +184,8 @@ queryPlugin.doLeftOuterJoin(q1,q3,"idt","idt")
     <cffunction name="doInnerJoin" access="public" returntype="query" output="false" hint="Return inner-joined Query"> 
         <cfargument name="qryLeft"		type="query" required="true" />
         <cfargument name="qryRight"		type="query" required="true" />
-        <cfargument name="LeftJoinColumn"	type="string" required="true" /> 
-        <cfargument name="RightJoinColumn"	type="string" required="true" />
+        <cfargument name="LeftJoinColumn"	type="string" required="true"  hint="this is column, not the value of column" /> 
+        <cfargument name="RightJoinColumn"	type="string" required="true"  hint="this is column, not the value of column" />
         <cfargument name="OrderByElement"	type="string" required="false" default="" />
 		<cfargument name="CaseSensitive"	type="boolean" required="false" default="false" />
 		<cfscript>
@@ -265,8 +265,8 @@ queryPlugin.doLeftOuterJoin(q1,q3,"idt","idt")
     <cffunction name="doLeftOuterJoin" access="public" returntype="query" output="false" hint="Return left outer-joined Query"> 
         <cfargument name="qryLeft"		type="query" required="true" />
         <cfargument name="qryRight"		type="query" required="true" />
-        <cfargument name="LeftJoinColumn"	type="string" required="true" /> 
-        <cfargument name="RightJoinColumn"	type="string" required="true" />
+        <cfargument name="LeftJoinColumn"	type="string" required="true" hint="this is column, not the value of column" /> 
+        <cfargument name="RightJoinColumn"	type="string" required="true" hint="this is column, not the value of column" />
         <cfargument name="OrderByElement"	type="string" required="false" default="" />
 		<cfargument name="CaseSensitive"	type="boolean" required="false" default="false" />
 		<cfscript>
@@ -467,7 +467,7 @@ queryPlugin.doLeftOuterJoin(q1,q3,"idt","idt")
             for( i = 1; i LTE arrayLen(arguments.ArrayCols); i = i + 1 ){
                 // get the value of column
                 ColumName	= arguments.ArrayCols[i];
-                ColumValue	= arguments.qryFrom[ColumName][arguments.FromRowNumber ];
+                ColumValue	= arguments.qryFrom[ColumName][arguments.FromRowNumber];
                 // set it in the new row
                 if( structkeyExists( QryReturn, arguments.ArrayCols[i] ) ){
                     QuerySetCell( QryReturn, ColumName, ColumValue , arguments.ToRowNumber );
