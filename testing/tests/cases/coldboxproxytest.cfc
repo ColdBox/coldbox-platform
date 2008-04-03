@@ -9,7 +9,7 @@ Date        :	9/3/2007
 Description :
 	Request service Test
 ----------------------------------------------------------------------->
-<cfcomponent name="requestserviceTest" extends="coldbox.system.extras.baseTest" output="false">
+<cfcomponent name="requestserviceTest" extends="coldbox.system.extras.testing.baseTest" output="false">
 
 	<cffunction name="setUp" returntype="void" access="private" output="false">
 		<cfscript>

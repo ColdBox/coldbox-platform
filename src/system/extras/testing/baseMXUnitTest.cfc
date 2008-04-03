@@ -3,11 +3,9 @@ Template : baseTest.cfc
 Author 	  : Luis Majano
 Date        : 5/25/2007
 Description :
-	Base Unit Test Component based on CFCUnit.
-
-	If you would like to change this to CFUnit, then change the extends
-	portion to net.sourceforge.cfunit.framework.TestCase
-
+	Base Unit Test Component based on MXUnit.
+	{ADD MORE DESCRIPTION HERE}
+	
 	This is a base test component for testing coldbox handlers. All you need
 	to do is add the extends portions of your test cases to this base test
 	and you will have a coldbox handler test.  The setup method will need
@@ -23,15 +21,15 @@ Description :
 	   of the Application Start Handler to be executed.
 
 ---------------------------------------------------------------------->
-<cfcomponent name="baseTest" extends="org.cfcunit.framework.TestCase" output="false">
+<cfcomponent name="baseTest" extends="mxunit.framework.TestCase" output="false" hint="A base unit test case for MXUnit">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
 	<cfscript>
-	variables.instance = structnew();
-	instance.AppMapping = "";
-	instance.ConfigMapping = "";
-	instance.controller = "";
+		variables.instance = structnew();
+		instance.AppMapping = "";
+		instance.ConfigMapping = "";
+		instance.controller = "";
 	</cfscript>
 
 	<cffunction name="setUp" returntype="void" access="private">

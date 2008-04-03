@@ -1,4 +1,4 @@
-<cfcomponent name="requestcontextTest" extends="coldbox.system.extras.baseTest" output="false">
+<cfcomponent name="requestcontextTest" extends="coldbox.system.extras.testing.baseTest" output="false">
 
 	<cffunction name="setUp" returntype="void" access="private" output="false">
 		<cfscript>
