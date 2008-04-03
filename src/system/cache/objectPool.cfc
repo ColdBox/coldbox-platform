@@ -255,7 +255,7 @@ Modification History:
 	<cffunction name="isSoftReference" access="private" returntype="boolean" hint="Whether the passed object is a soft reference" output="false" >
 		<cfargument name="MyObject"	 type="any" required="true" hint="The object to test">
 		<cfscript>
-			if( getMetaData(MyObject).name eq "java.lang.ref.SoftReference" ){
+			if( isObject(arguments.myObject) and getMetaData(arguments.MyObject).name eq "java.lang.ref.SoftReference" ){
 				return true;
 			}
 			else{
