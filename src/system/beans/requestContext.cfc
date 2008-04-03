@@ -214,7 +214,7 @@ Modification History:
 				else{
 					//Check the folders structure
 					for( key in instance.FolderLayouts ){
-						if ( findnocase(key, arguments.name) ){
+						if ( reFindnocase('^#key#', arguments.name) ){
 							setValue("currentLayout",instance.FolderLayouts[key]);
 							break;
 						}

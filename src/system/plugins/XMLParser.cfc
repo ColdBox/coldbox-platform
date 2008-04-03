@@ -230,7 +230,8 @@ Modification History:
 		var LayoutNodes = "";
 		var DefaultLayout = "";
 		var	LayoutViewStruct = StructNew();
-		var	LayoutFolderStruct = StructNew();
+		var Collections = createObject("java", "java.util.Collections"); 
+		var	LayoutFolderStruct = Collections.synchronizedMap(CreateObject("java","java.util.LinkedHashMap").init());
 		//DevEnvironments
 		var DevEnvironmentNodes = "";
 		var DevEnvironmentArray = ArrayNew(1);
