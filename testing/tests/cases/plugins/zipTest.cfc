@@ -25,8 +25,8 @@ Description :
 		<!--- Now test some events --->
 		<cfscript>
 			var plugin = getController().getPlugin("zip");
-			
-			assertComponent(plugin);			
+
+			assertComponent(plugin);
 		</cfscript>
 	</cffunction>
 	
@@ -40,23 +40,15 @@ Description :
 		</cfscript>
 	</cffunction>	
 	
-	<cffunction name="testDeleteFiles" access="public" returntype="void" output="false">
+	<cffunction name="testExtractAndDelete" access="public" returntype="void" output="false">
 		<!--- Now test some events --->
 		<cfscript>
 			var plugin = getController().getPlugin("zip");
 			var direactoryPath = ExpandPath('/applications/coldbox/testing/tests/resources');
+			
+			assertTrue(plugin.Extract(zipFilePath = direactoryPath  & '\Test1.zip', extractFiles = 'security.xml.cfm', useFolderNames= true, overwriteFiles = true),'something gone wrong');
 			
 			assertTrue(plugin.DeleteFiles(zipFilePath = direactoryPath  & '\Test1.zip', files = 'security.xml.cfm'),'something gone wrong');			
-		</cfscript>
-	</cffunction>
-	
-	<cffunction name="testExtract" access="public" returntype="void" output="false">
-		<!--- Now test some events --->
-		<cfscript>
-			var plugin = getController().getPlugin("zip");
-			var direactoryPath = ExpandPath('/applications/coldbox/testing/tests/resources');
-			
-			assertTrue(plugin.Extract(zipFilePath = direactoryPath  & '\Test1.zip', extractFiles = 'security.xml.cfm', useFolderNames= true, overwriteFiles = true),'something gone wrong');			
 		</cfscript>
 	</cffunction>
 	
@@ -66,7 +58,7 @@ Description :
 			var plugin = getController().getPlugin("zip");
 			var direactoryPath = ExpandPath('/applications/coldbox/testing/tests/resources')  & '\Test1.zip';
 			
-			assertTrue(isQuery(plugin.List(zipFilePath = direactoryPath  & '\Test1.zip')),'something gone wrong');			
+			assertTrue(isQuery(plugin.List(zipFilePath = direactoryPath)),'something gone wrong');			
 		</cfscript>
 	</cffunction>
 	
@@ -86,8 +78,14 @@ Description :
 			var plugin = getController().getPlugin("zip");
 			var direactoryPath = ExpandPath('/applications/coldbox/testing/tests/resources');
 			
-			assertTrue(plugin.gzipExtract(gzipFilePath = direactoryPath & '\security.xml.cfm.gzip', filePath = direactoryPath & '\t1\security.xml.cfm'),'something gone wrong');			
+			assertTrue(plugin.gzipExtract(gzipFilePath = direactoryPath & '\security.xml.cfm.gz', filePath = direactoryPath),'something gone wrong');			
 		</cfscript>
 	</cffunction>
+	
+	<!--- tearDown ..... its funny but its runs before the other methods --->
+	<!--- <cffunction name="tearDown" output="false" access="public" returntype="void" hint="delete generated zip files">
+		<cffile action="delete" file="#ExpandPath('/applications/coldbox/testing/tests/resources')#\Test1.zip">
+		<cffile action="delete" file="#ExpandPath('/applications/coldbox/testing/tests/resources')#\security.xml.cfm.gz"> 
+	</cffunction> --->
 		
 </cfcomponent>
