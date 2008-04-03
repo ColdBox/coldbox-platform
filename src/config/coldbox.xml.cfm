@@ -47,7 +47,7 @@
 	
 	<!-- Custom Conventions : You can override the framework wide conventions -->
 	<Conventions>
-		<handlersLocation>_handlers</handlersLocation>
+		<handlersLocation>handlers</handlersLocation>
 		<pluginsLocation>plugins</pluginsLocation>
 		<layoutsLocation>layouts</layoutsLocation>
 		<viewsLocation>views</viewsLocation>

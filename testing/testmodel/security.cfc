@@ -24,8 +24,7 @@
 	
 	
 	<cffunction name="userValidator" access="public" returntype="boolean" hint="Validate a user" output="false" >
-		<cfargument name="roles" required="true" type="string" hint="">
-		<cfargument name="permissions" required="true" type="string" hint="">
+		<cfargument name="rule" required="true" type="struct" hint="">
 		<cfreturn true>
 	</cffunction>
 </cfcomponent>
