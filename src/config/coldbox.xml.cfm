@@ -69,7 +69,7 @@
 
 	<WebServices >
 		<WebService URL="http://www.test.com/test.cfc?wsdl" name="TestWS"/>
-		<WebService URL="http://www.coldbox.com/testit.cfc?wsdl" name="AnotherTestWS" DevURL="http://test.coldbox.com/test.cfm?wsdl"/>
+		<WebService URL="http://www.coldboxframework.com/distribution/updatews.cfc?wsdl" name="AnotherTestWS" DevURL="http://www.coldboxframework.com/distribution/updatews.cfc?wsdl"/>
 	</WebServices>
 
 	<Layouts>
