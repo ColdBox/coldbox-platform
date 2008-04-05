@@ -101,17 +101,19 @@ Modification History:
 
 	<!--- Clear All From Storage --->
 	<cffunction name="clearAll" access="public" returntype="void" hint="Clear the entire coldbox application storage" output="false">
+		<cfset var storage = getStorage()>
+		
 		<cflock name="#getLockName()#" type="exclusive" timeout="10" throwontimeout="true">
-			<cfset structClear(getStorage())>
+			<cfset structClear(storage)>
 		</cflock>
 	</cffunction>
 	
 	<!--- Get Storage --->
 	<cffunction name="getStorage" access="public" returntype="any" hint="Get the entire storage scope" output="false" >
 		<cfscript>
-			if( not structKeyExists(application, "cbStorage") ){
-				createStorage();
-			}
+			/* Verify Storage Exists */
+			createStorage();
+			
 			return application.cbStorage;
 		</cfscript>
 	</cffunction>
@@ -120,10 +122,14 @@ Modification History:
 	
 	<!--- Create Storage --->
 	<cffunction name="createStorage" access="private" returntype="void" hint="Create the app storage scope. Thread Safe" output="false" >
-		<!--- Create App Storage Scope --->
-		<cflock name="#getLockName()#" type="exclusive" timeout="10" throwontimeout="true">
-			<cfset application.cbStorage = structNew()>
-		</cflock>
+		<cfif not structKeyExists(application, "cbStorage")>
+			<!--- Create application Storage Scope --->
+			<cflock name="#getLockName()#" type="exclusive" timeout="30" throwontimeout="true">
+				<cfif not structKeyExists(application, "cbStorage")>
+					<cfset application.cbStorage = structNew()>
+				</cfif>
+			</cflock>
+		</cfif>
 	</cffunction>
 
 	<!--- get/set lockname --->

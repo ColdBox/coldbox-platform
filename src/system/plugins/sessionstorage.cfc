@@ -34,8 +34,8 @@ Modification History:
 			/* Lock Name */
 			setLockName( getController().getAppHash() & "_SESSION_STORAGE" );
 			
-			/* Create Storage */
-			createStorage();			
+			/* Create Storage if needed */
+			createStorage();
 			
 			return this;
 		</cfscript>
@@ -102,17 +102,19 @@ Modification History:
 
 	<!--- Clear All From Storage --->
 	<cffunction name="clearAll" access="public" returntype="void" hint="Clear the entire coldbox application storage" output="false">
+		<cfset var storage = getStorage()>
+		
 		<cflock name="#getLockName()#" type="exclusive" timeout="10" throwontimeout="true">
-			<cfset structClear(getStorage())>
+			<cfset structClear(storage)>
 		</cflock>
 	</cffunction>
 	
 	<!--- Get Storage --->
 	<cffunction name="getStorage" access="public" returntype="any" hint="Get the entire storage scope" output="false" >
 		<cfscript>
-			if( not structKeyExists(session, "cbStorage") ){
-				createStorage();
-			}
+			/* Verify Storage Exists */
+			createStorage();
+			/* Return it */
 			return session.cbStorage;
 		</cfscript>
 	</cffunction>
@@ -121,10 +123,14 @@ Modification History:
 	
 	<!--- Create Storage --->
 	<cffunction name="createStorage" access="private" returntype="void" hint="Create the session storage scope" output="false" >
-		<!--- Create session Storage Scope --->
-		<cflock name="#getLockName()#" type="exclusive" timeout="30" throwontimeout="true">
-			<cfset session.cbStorage = structNew()>
-		</cflock>
+		<cfif not structKeyExists(session, "cbStorage")>
+			<!--- Create session Storage Scope --->
+			<cflock name="#getLockName()#" type="exclusive" timeout="30" throwontimeout="true">
+				<cfif not structKeyExists(session, "cbStorage")>
+					<cfset session.cbStorage = structNew()>
+				</cfif>
+			</cflock>
+		</cfif>
 	</cffunction>
 
 	<!--- get/set lockname --->
