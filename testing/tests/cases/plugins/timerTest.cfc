@@ -36,7 +36,13 @@ Description :
 			var plugin    = getController().getPlugin("timer");
 			var Utilities = getController().getPlugin("Utilities");
 			plugin.start('t1'); 
-			Utilities.sleeper(2000);
+			
+			Utilities.sleeper(1000);
+			
+			plugin.logTime('t2', '3000');
+			
+			Utilities.sleeper(1000);
+			
 			plugin.stop('t1'); 
 			
 			assertTrue(IsQuery(plugin.getTimerScope()));
