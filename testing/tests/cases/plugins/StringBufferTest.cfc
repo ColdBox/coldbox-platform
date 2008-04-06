@@ -22,7 +22,7 @@ Description :
 	</cffunction>
 	
 	<cffunction name="testPlugin" access="public" returntype="void" output="false">
-		<!--- Now test is returned value is object --->
+		<!--- Returned value is object...? --->
 		<cfscript>
 			var plugin = getController().getPlugin("StringBuffer");
 
@@ -42,13 +42,27 @@ Description :
 			plugin.append(st1);
 			plugin.insertStr(10,st2); 
 			
-			//assertEqualsNumber(plugin.indexOf('9T'), '10');
+			assertEqualsNumber(plugin.indexOf('9'), '10');
 			
-			//assertEqualsNumber(plugin.lastIndexOf('9T'), '10');
-			assertEqualsNumber(plugin.length(), '16');
-			assertEqualsString(plugin.substring('9','10'), '9T');
+			// this is something not working not sure why
+			//assertEqualsNumber(plugin.lastIndexOf('T'), '10', 'lastIndexOf() something gone wrong');
+			assertEqualsNumber(plugin.length(), '16', 'length() something gone wrong');
 			
-			asssertTrue(IsValid("numeric" , plugin.capacity()));
+			//substring from position and before from end of position 
+			assertEqualsString(plugin.substring('10','12'), '9T', 'substring() something gone wrong');
+			
+			assertTrue(IsValid("numeric" , plugin.capacity()));
+			
+			assertTrue(IsObject(plugin.getStringBuffer()));
+			
+			plugin.replaceStr('10', '12', '7P');
+			assertEqualsString(plugin.getString(), 'StringTest7Pest2', 'getString() something gone wrong');
+			
+			plugin.append('7V');
+			assertEqualsString(plugin.getString(), 'StringTest7Pest27V', 'getString() something gone wrong');
+			
+			plugin.delete(16, 18);
+			assertEqualsString(plugin.getString(), 'StringTest7Pest2', 'getString() something gone wrong');
 		</cfscript>
 		
 	</cffunction>
