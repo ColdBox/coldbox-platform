@@ -70,6 +70,8 @@ Description :
 			
 			plugin.appendFile(direactoryPath & '\unittest.txt', 'unitest');
 			
+			plugin.getAbsolutePath(direactoryPath);
+			
 			//assertEqualsString(plugin.readFile(direactoryPath & '\unittest.txt'), 'unitest-#chr(10)##chr(13)#unitest','Returned values are not equal');
 			
 			assertTrue(IsValid("date",plugin.FileLastModified(direactoryPath & '\unittest.txt')));
@@ -84,14 +86,13 @@ Description :
 			
 			assertTrue(plugin.isDirectory(direactoryPath));
 			
-			plugin.getAbsolutePath(direactoryPath);
+			assertEqualsString(plugin.checkCharSet('iso-8859-1'),'iso-8859-1', 'checkCharSet() something gone wrong');
 			
-			plugin.checkCharSet('UTF-8');
-			
-			//assertEqualsString(plugin.ripExtension('unittest.txt'),'txt');
+			assertEqualsString(plugin.ripExtension('unittest.txt'),'txt', 'ripExtension() something gone wrong');
 			
 			assertTrue(plugin.removeFile(direactoryPath & '\unittest.txt'));
 		</cfscript>
+
 	</cffunction>
 
 </cfcomponent>
