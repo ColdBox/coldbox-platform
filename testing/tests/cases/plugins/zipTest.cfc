@@ -30,58 +30,31 @@ Description :
 		</cfscript>
 	</cffunction>
 	
-	<cffunction name="testAddFiles" access="public" returntype="void" output="false">
-		<!--- Now test some events --->
+	<cffunction name="testMethods" access="public" returntype="void" output="false">
+		<!--- test methods --->
 		<cfscript>
-			var plugin = getController().getPlugin("zip");
+			var plugin		    = getController().getPlugin("zip");
+			var pluginUtility	= getController().getPlugin("Utilities");
 			var direactoryPath = ExpandPath('/applications/coldbox/testing/tests/resources');
 			
-			assertTrue(plugin.AddFiles(zipFilePath = direactoryPath  & '\Test1.zip', directory = direactoryPath, savePaths = true),'something gone wrong');			
-		</cfscript>
-	</cffunction>	
-	
-	<cffunction name="testExtractAndDelete" access="public" returntype="void" output="false">
-		<!--- Now test some events --->
-		<cfscript>
-			var plugin = getController().getPlugin("zip");
-			var direactoryPath = ExpandPath('/applications/coldbox/testing/tests/resources');
+			assertTrue(plugin.AddFiles(zipFilePath = direactoryPath  & '\Test1.zip', directory = direactoryPath, savePaths = true),'AddFiles() something gone wrong');
 			
-			assertTrue(plugin.Extract(zipFilePath = direactoryPath  & '\Test1.zip', extractFiles = 'security.xml.cfm', useFolderNames= true, overwriteFiles = true),'something gone wrong');
+			assertTrue(plugin.Extract(zipFilePath = direactoryPath  & '\Test1.zip', extractFiles = 'security.xml.cfm', useFolderNames= true, overwriteFiles = true),'Extract() something gone wrong');
 			
-			assertTrue(plugin.DeleteFiles(zipFilePath = direactoryPath  & '\Test1.zip', files = 'security.xml.cfm'),'something gone wrong');			
+			assertTrue(plugin.DeleteFiles(zipFilePath = direactoryPath  & '\Test1.zip', files = 'security.xml.cfm'),'DeleteFiles() something gone wrong');
+			
+			assertTrue(isQuery(plugin.List(zipFilePath = direactoryPath  & '\Test1.zip')),'List() something gone wrong');
+			
+			assertTrue(plugin.gzipAddFile(gzipFilePath = direactoryPath, filePath = direactoryPath & '\security.xml.cfm'),'gzipAddFile() something gone wrong');
+			
+			assertTrue(plugin.gzipExtract(gzipFilePath = direactoryPath & '\security.xml.cfm.gz', filePath = direactoryPath),'gzipExtract() something gone wrong');
+			
+			assertTrue(pluginUtility.removeFile(direactoryPath & '\Test1.zip'));
+			assertTrue(pluginUtility.removeFile(direactoryPath & '\security.xml.cfm.gz'));		
 		</cfscript>
+		
 	</cffunction>
-	
-	<cffunction name="testList" access="public" returntype="void" output="false">
-		<!--- Now test some events --->
-		<cfscript>
-			var plugin = getController().getPlugin("zip");
-			var direactoryPath = ExpandPath('/applications/coldbox/testing/tests/resources')  & '\Test1.zip';
-			
-			assertTrue(isQuery(plugin.List(zipFilePath = direactoryPath)),'something gone wrong');			
-		</cfscript>
-	</cffunction>
-	
-	<cffunction name="testgzipAddFile" access="public" returntype="void" output="false">
-		<!--- Now test some events --->
-		<cfscript>
-			var plugin = getController().getPlugin("zip");
-			var direactoryPath = ExpandPath('/applications/coldbox/testing/tests/resources');
-			
-			assertTrue(plugin.gzipAddFile(gzipFilePath = direactoryPath, filePath = direactoryPath & '\security.xml.cfm'),'something gone wrong');			
-		</cfscript>
-	</cffunction>
-	
-	<cffunction name="testgzipExtract" access="public" returntype="void" output="false">
-		<!--- Now test some events --->
-		<cfscript>
-			var plugin = getController().getPlugin("zip");
-			var direactoryPath = ExpandPath('/applications/coldbox/testing/tests/resources');
-			
-			assertTrue(plugin.gzipExtract(gzipFilePath = direactoryPath & '\security.xml.cfm.gz', filePath = direactoryPath),'something gone wrong');			
-		</cfscript>
-	</cffunction>
-	
+
 	<!--- tearDown ..... its funny but its runs before the other methods --->
 	<!--- <cffunction name="tearDown" output="false" access="public" returntype="void" hint="delete generated zip files">
 		<cffile action="delete" file="#ExpandPath('/applications/coldbox/testing/tests/resources')#\Test1.zip">
