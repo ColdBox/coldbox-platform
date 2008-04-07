@@ -83,7 +83,7 @@ Modification History:
 					/* Validate it */
 					if( not structKeyExists(local, "tmpObj") ){
 						needCleanup = true;
-						miss();
+						getCacheStats().miss();
 					}
 					else{
 						/* Object Found */
@@ -92,7 +92,7 @@ Modification History:
 				}// first lookup test
 				else{
 					/* log miss */
-					miss();
+					getCacheStats().miss();
 				}
 			</cfscript>
 		</cflock>
@@ -126,16 +126,16 @@ Modification History:
 					/* Validate it */
 					if( not structKeyExists(local,"tmpObj") ){
 						needCleanup = true;
-						miss();
+						getCacheStats().miss();
 					}
 					else{
 						local.targetObject = local.tmpObj;
-						hit();
+						getCacheStats().hit();
 					}
 				}
 				else{
 					/* log miss */
-					miss();
+					getCacheStats().miss();
 				}
 			</cfscript>
 		</cflock>
@@ -243,18 +243,31 @@ Modification History:
 	<!--- Clear By Key Snippet --->
 	<cffunction name="clearByKeySnippet" access="public" returntype="void" hint="Clears keys using the passed in object key snippet" output="false" >
 		<!--- ************************************************************* --->
-		<cfargument name="keySnippet" 	type="string" 	required="true" hint="The key snippet to use to clear keys. It matches using findnocase">
-		<cfargument name="async" 		type="boolean"  required="false" default="true" hint="Run asynchronously or not. It defaults to true"/>
+		<cfargument name="keySnippet"  	type="string"  required="true"  hint="the cache key snippet to use">
+		<cfargument name="regex" 		type="boolean" required="false" default="false" hint="Use regex or not">
+		<cfargument name="async" 		type="boolean" required="false" default="true" hint="Run asynchronously or not"/>
 		<!--- ************************************************************* --->
 		<cfscript>
 			var poolKeys = listSort(structKeyList(getObjectPool().getpool_metadata()),"textnocase");
 			var poolKeysLength = listlen(poolKeys);
 			var x = 1;
+			var tester = 0;
+			var thisKey = "";
 			
-			//Find all the keys that match
+			//Find all the event keys.
 			for(x=1; x lte poolKeysLength; x=x+1){
-				if ( findnocase( arguments.keySnippet, listGetAt(poolKeys,x) ) ){
-					clearKey(listGetAt(poolKeys,x));
+				/* Get List Value */
+				thisKey = listGetAt(poolKeys,x);
+				/* Using Regex */
+				if( arguments.regex ){
+					tester = refindnocase( cacheKeySnippet, thisKey );
+				}
+				else{
+					tester = findnocase( cacheKeySnippet, thisKey );
+				}
+				/* Test Evaluation */
+				if ( tester ){
+					clearKey( thisKey );
 				}
 			}
 		</cfscript>
@@ -268,9 +281,6 @@ Modification History:
 		<cfargument name="async" 		type="boolean"  required="false" default="true" hint="Run asynchronously or not"/>
 		<!--- ************************************************************* --->
 		<cfscript>
-			var poolKeys = listSort(structKeyList(getObjectPool().getpool_metadata()),"textnocase");
-			var poolKeysLength = listlen(poolKeys);
-			var x = 1;
 			var cacheKey = getController().getHandlerService().EVENT_CACHEKEY_PREFIX & arguments.eventsnippet;
 			
 			//Check if we are purging with query string
@@ -278,31 +288,35 @@ Modification History:
 				cacheKey = cacheKey & "-" & getEventURLFacade().buildHash(arguments.eventsnippet,arguments.queryString);
 			}
 			
-			//Find all the event keys.
-			for(x=1; x lte poolKeysLength; x=x+1){
-				if ( findnocase( cacheKey, listGetAt(poolKeys,x) ) ){
-					clearKey(listGetAt(poolKeys,x));
-				}
-			}
+			/* Clear All Events by Criteria */
+			clearByKeySnippet(keySnippet=cacheKey,regex=false,async=false);
 		</cfscript>
 	</cffunction>
-
+	
 	<!--- Clear All the Events form the cache --->
 	<cffunction name="clearAllEvents" access="public" output="false" returntype="void" hint="Clears all events from the cache.">
 		<!--- ************************************************************* --->
 		<cfargument name="async" 		type="boolean"  required="false" default="true" hint="Run asynchronously or not"/>
 		<!--- ************************************************************* --->
 		<cfscript>
-			var poolKeys = listSort(structKeyList(getObjectPool().getpool_metadata()),"textnocase");
-			var poolKeysLength = listlen(poolKeys);
-			var x = 1;
+			var cacheKey = getController().getHandlerService().EVENT_CACHEKEY_PREFIX;
 			
-			//Find all the event keys.
-			for(x=1; x lte poolKeysLength; x=x+1){
-				if ( findnocase( getController().getHandlerService().EVENT_CACHEKEY_PREFIX, listGetAt(poolKeys,x) ) ){
-					clearKey(listGetAt(poolKeys,x));
-				}
-			}
+			/* Clear All Events */
+			clearByKeySnippet(keySnippet=cacheKey,regex=false,async=false);
+		</cfscript>
+	</cffunction>
+
+	<!--- clear View --->
+	<cffunction name="clearView" output="false" access="public" returntype="void" hint="Clears all view name permutations from the cache according to the view name.">
+		<!--- ************************************************************* --->
+		<cfargument name="viewSnippet"  required="true" type="string" hint="The view name snippet to purge from the cache">
+		<cfargument name="async" 		type="boolean"  required="false" default="true" hint="Run asynchronously or not"/>
+		<!--- ************************************************************* --->
+		<cfscript>
+			var cacheKey = this.VIEW_CACHEKEY_PREFIX & arguments.viewSnippet;
+			
+			/* Clear All View snippets */
+			clearByKeySnippet(keySnippet=cacheKey,regex=false,async=false);
 		</cfscript>
 	</cffunction>
 
@@ -312,33 +326,28 @@ Modification History:
 		<cfargument name="async" 		type="boolean"  required="false" default="true" hint="Run asynchronously or not"/>
 		<!--- ************************************************************* --->
 		<cfscript>
-			var poolKeys = listSort(structKeyList(getObjectPool().getpool_metadata()),"textnocase");
-			var poolKeysLength = listlen(poolKeys);
-			var x = 1;
 			var cacheKey = getController().getPlugin("renderer").VIEW_CACHEKEY_PREFIX;
 			
-			//Find all the event keys.
-			for(x=1; x lte poolKeysLength; x=x+1){
-				if ( findnocase( cacheKey, listGetAt(poolKeys,x) ) ){
-					clearKey(listGetAt(poolKeys,x));
-				}
-			}
+			/* Clear All the views */
+			clearByKeySnippet(keySnippet=cacheKey,regex=false,async=false);
 		</cfscript>
 	</cffunction>
 
 	<!--- Clear The Pool --->
 	<cffunction name="clear" access="public" output="false" returntype="void" hint="Clears the entire object cache and recreates the object pool and statistics. Call from a non-cached object or you will get 500 NULL errors, VERY VERY BAD!!.">
 		<cflock type="exclusive" name="#getLockName()#" timeout="30" throwontimeout="true">
-			<cfset structDelete(variables,"objectPool")>
-			<cfset initPool()>
-			<cfset getCacheStats().clearStats()>
+			<cfscript>
+				structDelete(variables,"objectPool");
+				initPool();
+				getCacheStats().clearStats();
+			</cfscript>			
 		</cflock>
 	</cffunction>
 
 	<!--- Get the Cache Size --->
 	<cffunction name="getSize" access="public" output="false" returntype="numeric" hint="Get the cache's size in items">
 		<cfscript>
-		return getObjectPool().getSize();
+			return getObjectPool().getSize();
 		</cfscript>
 	</cffunction>
 
@@ -364,6 +373,8 @@ Modification History:
 					/* Clean if it still exists */
 					if( getObjectPool().softRefLookup(reflocal.softRef) ){
 						clearKey( getObjectPool().getSoftRefKey(refLocal.softRef) );
+						/* GC Collection Hit */
+						getCacheStats().gcHit();
 					}
 					/* Poll Again */
 					reflocal.softRef = getObjectPool().getReferenceQueue().poll();
@@ -405,6 +416,9 @@ Modification History:
 	
 	<!--- Expire All Objects --->
 	<cffunction name="expireAll" access="public" returntype="void" hint="Expire All Objects. Use this instead of clear() from within handlers or any cached object, this sets the metadata for the objects to expire in the next request. Note that this is not an inmmediate expiration. Clear should only be used from outside a cached object" output="false" >
+		<!--- ************************************************************* --->
+		<cfargument name="async" 		type="boolean" required="false" default="true" hint="Run asynchronously or not"/>
+		<!--- ************************************************************* --->
 		<cfscript>
 			var keyIndex = 1;
 			var poolKeys = listToArray(structKeyList(getObjectPool().getpool_metadata()));
@@ -425,34 +439,43 @@ Modification History:
 	<cffunction name="expireKey" access="public" returntype="void" hint="Expire an Object. Use this instead of clearKey() from within handlers or any cached object, this sets the metadata for the objects to expire in the next request. Note that this is not an inmmediate expiration. Clear should only be used from outside a cached object" output="false" >
 		<!--- ************************************************************* --->
 		<cfargument name="objectKey" type="string" required="true">
+		<cfargument name="async" 	 type="boolean" required="false" default="true" hint="Run asynchronously or not"/>
 		<!--- ************************************************************* --->
 		<cfscript>
-			//Expire the object
-			getObjectPool().setMetadataProperty(arguments.objectKey,"Timeout", 1);
-			getObjectPool().setMetadataProperty(arguments.objectKey,"Created", dateAdd("n",-5,now()));
+			/* Expire this object */
+			expireByKeySnippet(keySnippet=arguments.objectKey,regex=false,async=false);
 		</cfscript>
 	</cffunction>
 	
 	<!--- Expire an Object --->
 	<cffunction name="expireByKeySnippet" access="public" returntype="void" hint="Same as expireKey but can touch multiple objects depending on the keysnippet that is sent in." output="false" >
 		<!--- ************************************************************* --->
-		<cfargument name="keySnippet" type="string" required="true">
+		<cfargument name="keySnippet" type="string" required="true" hint="The key snippet to use">
+		<cfargument name="regex" 	  type="boolean" required="false" default="false" hint="Use regex or not">
+		<cfargument name="async" 	 type="boolean" required="false" default="true" hint="Run asynchronously or not"/>
 		<!--- ************************************************************* --->
 		<cfscript>
 			var keyIndex = 1;
 			var poolKeys = listToArray(structKeyList(getObjectPool().getpool_metadata()));
 			var poolKeysLength = ArrayLen(poolKeys);
+			var tester = 0;
 			
-			//Loop Through Metadata
+			/* Loop Through Metadata */
 			for (keyIndex=1; keyIndex lte poolKeysLength; keyIndex=keyIndex+1){
-				//Override for Eternal Objects and we match keys
-				if ( getObjectPool().getMetadataProperty(poolKeys[keyIndex],"Timeout") gt 0 and
-				     findnocase(arguments.keySnippet, poolKeys[keyIndex]) )
-				{
+				/* Using Regex? */
+				if( arguments.regex ){
+					tester = reFindnocase(arguments.keySnippet, poolKeys[keyIndex]);
+				}
+				else{
+					tester = findnocase(arguments.keySnippet, poolKeys[keyIndex]);
+				}
+				
+				/* Override for Eternal Objects and we match keys */
+				if ( getObjectPool().getMetadataProperty(poolKeys[keyIndex],"Timeout") gt 0 and tester ){
 					getObjectPool().setMetadataProperty(poolKeys[keyIndex],"Timeout", 1);
 					getObjectPool().setMetadataProperty(poolKeys[keyIndex],"created", dateadd("n",-5,now()) );
 				}
-			}
+			}//end key loops
 		</cfscript>
 	</cffunction>
 	
@@ -557,20 +580,6 @@ Modification History:
 		<cfset instance.evictionPolicy = arguments.evictionPolicy>
 	</cffunction>
 	
-	<!--- Record a Hit --->
-	<cffunction name="hit" access="private" output="false" returntype="void" hint="Record a hit">
-		<cfscript>
-			getCacheStats().setHits(getCacheStats().getHits()+1);
-		</cfscript>
-	</cffunction>
-
-	<!--- Record a Miss --->
-	<cffunction name="miss" access="private" output="false" returntype="void" hint="Record a miss">
-		<cfscript>
-			getCacheStats().setmisses(getCacheStats().getmisses()+1);
-		</cfscript>
-	</cffunction>
-
 	<!--- Initialize our object cache pool --->
 	<cffunction name="initPool" access="private" output="false" returntype="void" hint="Initialize and set the internal object Pool">
 		<cfscript>

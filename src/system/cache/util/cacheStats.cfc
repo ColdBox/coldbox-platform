@@ -22,8 +22,10 @@ Description :
 		<cfargument name="cacheManager" type="any" required="true" hint="THe cache manager"/>
 		<!--- ************************************************************************* --->
 		<cfscript>
+			/* Set Dependencies */
 			setCacheManager(arguments.cacheManager);
 			setLastReapDateTime(now());
+			/* Clear the stats */
 			clearStats();
 			//return reference;
 			return this;
@@ -50,14 +52,43 @@ Description :
 		</cfscript>
 	</cffunction>
 	
+	<!--- Record an eviction Hit --->
+	<cffunction name="evictionHit" access="public" output="false" returntype="void" hint="Record an eviction hit">
+		<cfscript>
+			setEvictionCount(getEvictionCount()+1);
+		</cfscript>
+	</cffunction>
+	
+	<!--- Record a GC Hit --->
+	<cffunction name="gcHit" access="public" output="false" returntype="void" hint="Record a garbage collection hit">
+		<cfscript>
+			setGarbageCollections(getGarbageCollections()+1);
+		</cfscript>
+	</cffunction>
+	
+	<!--- Record a Hit --->
+	<cffunction name="hit" access="public" output="false" returntype="void" hint="Record a hit">
+		<cfscript>
+			setHits(getHits()+1);
+		</cfscript>
+	</cffunction>
+
+	<!--- Record a Miss --->
+	<cffunction name="miss" access="public" output="false" returntype="void" hint="Record a miss">
+		<cfscript>
+			setmisses(getmisses()+1);
+		</cfscript>
+	</cffunction>
+	
 	<!--- clear --->
 	<cffunction name="clearStats" output="false" access="public" returntype="void" hint="Clear the stats">
 		<cfscript>
 			setHits(0);
 			setMisses(0);
 			setEvictionCount(0);
+			setGarbageCollections(0);
 		</cfscript>
-	</cffunction>
+	</cffunction>	
 	
 	<!--- The Cache Manager --->
 	<cffunction name="getcacheManager" access="public" returntype="any" output="false">
@@ -66,6 +97,15 @@ Description :
 	<cffunction name="setcacheManager" access="public" returntype="void" output="false">
 		<cfargument name="cacheManager" type="any" required="true">
 		<cfset instance.cacheManager = arguments.cacheManager>
+	</cffunction>
+	
+	<!--- Get/Set Garbage Collections --->
+	<cffunction name="getGarbageCollections" access="public" output="false" returntype="numeric" hint="Get GarbageCollections">
+		<cfreturn instance.GarbageCollections/>
+	</cffunction>	
+	<cffunction name="setGarbageCollections" access="public" output="false" returntype="void" hint="Set GarbageCollections">
+		<cfargument name="GarbageCollections" type="numeric" required="true"/>
+		<cfset instance.GarbageCollections = arguments.GarbageCollections/>
 	</cffunction>
 	
 	<!--- Eviction Count --->

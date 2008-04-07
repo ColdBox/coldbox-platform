@@ -42,7 +42,7 @@ Description :
 					//Evict it
 					getCacheManager().expireKey(LFUhitIndex[x]);
 					//Record Eviction 
-					getCacheManager().getCacheStats().setEvictionCount(getCacheManager().getCacheStats().getEvictionCount()+1);
+					getCacheManager().getCacheStats().evictionHit();
 					break;
 				}//end timeout gt 0
 			}//end for loop			
