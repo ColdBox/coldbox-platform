@@ -26,7 +26,7 @@ Modification History:
 	
 	<cffunction name="testExceptionhandler" access="public" returntype="void" output="false">
 		<cfscript>
-			var service = getController().getService("exception");
+			var service = getController().getExceptionService();
 			var exceptionBean = "";
 			
 			AssertComponent(service,"component test");
@@ -45,7 +45,7 @@ Modification History:
 	
 	<cffunction name="testrenderBugReport" access="public" returntype="void" output="false">
 		<cfscript>
-			var service = getController().getService("exception");
+			var service = getController().getExceptionService();
 			var exceptionBean = "";
 			var log = "";
 			

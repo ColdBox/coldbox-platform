@@ -69,7 +69,7 @@ Description :
 			}
 			catch(Any e){
 				//Log Exception
-				cbController.getService("exception").ExceptionHandler(e,"coldboxproxy","Process Exception");
+				cbController.getExceptionService().ExceptionHandler(e,"coldboxproxy","Process Exception");
 				if( not structKeyExists(e,"stacktrace") ){
 					e.stacktrace = "";
 				}
@@ -112,7 +112,7 @@ Description :
 			}
 			catch(Any e){
 				//Log Exception
-				cbController.getService("exception").ExceptionHandler(e,"coldboxproxy","Interception Exception");
+				cbController.getExceptionService().ExceptionHandler(e,"coldboxproxy","Interception Exception");
 				return false;
 			}
 			return true;
@@ -203,7 +203,7 @@ Description :
 					}
 					/* Load it Up baby!! */
 					cbController = CreateObject("component", "coldbox.system.controller").init( expandPath(arguments.AppMapping) );
-					cbController.getService("loader").setupCalls(arguments.configLocation,arguments.AppMapping);
+					cbController.getLoaderService().setupCalls(arguments.configLocation,arguments.AppMapping);
 					/* Put in Scope */
 					application.cbController = cbController;
 				}				

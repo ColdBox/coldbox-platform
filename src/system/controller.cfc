@@ -41,11 +41,13 @@ Description		: This is the main ColdBox front Controller.
 				setColdboxOCM( CreateObject("component","coldbox.system.cache.cacheManager").init(this) );
 			}
 			//Setup the rest of the services.
+			setLoaderService( CreateObject("component", "coldbox.system.services.loaderService").init(this) );
 			setRequestService( CreateObject("component","coldbox.system.services.requestService").init(this) );
 			setDebuggerService( CreateObject("component","coldbox.system.services.debuggerService").init(this) );
 			setPluginService( CreateObject("component","coldbox.system.services.pluginService").init(this) );
 			setInterceptorService( CreateObject("component", "coldbox.system.services.interceptorService").init(this) );
 			setHandlerService( CreateObject("component", "coldbox.system.services.handlerService").init(this) );
+			setExceptionService( CreateObject("component", "coldbox.system.services.exceptionService").init(this) );
 			
 			//Return instance
 			return this;
@@ -70,6 +72,24 @@ Description		: This is the main ColdBox front Controller.
 	<cffunction name="setColdboxOCM" access="public" output="false" returntype="void" hint="Set ColdboxOCM">
 		<cfargument name="ColdboxOCM" type="any" required="true" hint="coldbox.system.cache.cacheManager"/>
 		<cfset instance.ColdboxOCM = arguments.ColdboxOCM/>
+	</cffunction>
+	
+	<!--- Loader Service --->
+	<cffunction name="getLoaderService" access="public" output="false" returntype="any" hint="Get LoaderService: coldbox.system.services.loaderService">
+		<cfreturn instance.LoaderService/>
+	</cffunction>
+	<cffunction name="setLoaderService" access="public" output="false" returntype="void" hint="Set LoaderService">
+		<cfargument name="LoaderService" type="any" required="true"/>
+		<cfset instance.LoaderService = arguments.LoaderService/>
+	</cffunction>
+	
+	<!--- Exception Service --->
+	<cffunction name="getExceptionService" access="public" output="false" returntype="any" hint="Get ExceptionService: coldbox.system.services.exceptionService">
+		<cfreturn instance.ExceptionService/>
+	</cffunction>
+	<cffunction name="setExceptionService" access="public" output="false" returntype="void" hint="Set ExceptionService">
+		<cfargument name="ExceptionService" type="any" required="true"/>
+		<cfset instance.ExceptionService = arguments.ExceptionService/>
 	</cffunction>
 	
 	<!--- Request Service --->
@@ -217,24 +237,21 @@ Description		: This is the main ColdBox front Controller.
 	</cffunction>
 
 	<!--- Minimalistic Service Locator for rarely used services --->
-	<cffunction name="getService" access="public" output="false" returntype="any" hint="Internal ColdBox Transient Minimalistic Service Locator.">
+	<cffunction name="getService" access="public" output="false" returntype="any" hint="DEPRECATED: Internal ColdBox Transient Minimalistic Service Locator.">
 		<cfargument name="service" type="string" required="true" hint="The transient service/manager to create.">
 		<cfscript>
-		//Some services get loaded as singleton's, other are just created as needed
-		var servicePath = "";
 		switch(arguments.service){
 			//Loader
 			case "loader":
-				servicePath = "coldbox.system.services.loaderService";
+				return getLoaderService();
 				break;
 			case "exception":
-				servicePath = "coldbox.system.services.exceptionService";
+				return getExceptionService();
 				break;
 			//Default Case
 			default:
 				getUtil().throwit("Invalid Service detected","service:#arguments.service#","Framework.ServiceNotDefinedException");
 		}
-		return CreateObject("component",servicePath).init(this);
 		</cfscript>
 	</cffunction>
 

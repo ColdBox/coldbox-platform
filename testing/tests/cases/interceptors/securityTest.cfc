@@ -65,7 +65,7 @@ Description :
 			setConfigMapping("#mypath#resources#slash#security_cbox_xml.xml");
 			
 			//resetup
-			getController().getService("loader").setupCalls(getConfigMapping(),getAppMapping());
+			getController().getLoaderService().setupCalls(getConfigMapping(),getAppMapping());
 		</cfscript>
 		<!--- Login a user --->
 		<cflogout>
@@ -100,7 +100,7 @@ Description :
 		setConfigMapping("#mypath#resources#slash#security_cbox_db.xml");
 		
 		//resetup
-		getController().getService("loader").setupCalls(getConfigMapping(),getAppMapping());
+		getController().getLoaderService().setupCalls(getConfigMapping(),getAppMapping());
 	
 		</cfscript>
 	</cffunction>
@@ -115,7 +115,7 @@ Description :
 		setConfigMapping("#mypath#resources#slash#security_cbox_ioc.xml");
 		
 		//resetup
-		getController().getService("loader").setupCalls(getConfigMapping(),getAppMapping());
+		getController().getLoaderService().setupCalls(getConfigMapping(),getAppMapping());
 				
 		</cfscript>
 	</cffunction>
@@ -130,7 +130,7 @@ Description :
 		setConfigMapping("#mypath#resources#slash#security_cbox_ocm.xml");
 		
 		//resetup
-		getController().getService("loader").setupCalls(getConfigMapping(),getAppMapping());
+		getController().getLoaderService().setupCalls(getConfigMapping(),getAppMapping());
 		
 		/* Place rules on OCM */
 		getController().getColdboxOCM().set('qSecurityRules', getRules(),0);
@@ -168,7 +168,7 @@ Description :
 		setConfigMapping("#mypath#resources#slash#security_cbox_ioc.xml");
 		
 		//resetup
-		getController().getService("loader").setupCalls(getConfigMapping(),getAppMapping());
+		getController().getLoaderService().setupCalls(getConfigMapping(),getAppMapping());
 		
 		/* Test */
 		event.setValue('event','admin.list');

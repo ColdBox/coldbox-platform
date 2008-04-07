@@ -42,7 +42,7 @@ Description :
 		<!--- Create Brand New Controller --->
 		<cfset application.cbController = CreateObject("component","coldbox.system.controller").init(COLDBOX_APP_ROOT_PATH)>
 		<!--- Setup the Framework And Application --->
-		<cfset application.cbController.getService("loader").setupCalls(COLDBOX_CONFIG_FILE)>
+		<cfset application.cbController.getLoaderService().setupCalls(COLDBOX_CONFIG_FILE)>
 	</cffunction>
 	
 	<!--- Reload Checks --->
@@ -64,7 +64,7 @@ Description :
 				<cfif application.cbController.getSetting("ConfigAutoReload")>
 					<cflock type="exclusive" name="#getAppHash()#" timeout="#getLockTimeout()#" throwontimeout="true">
 						<cfset application.cbController.setAppStartHandlerFired(false)>
-						<cfset application.cbController.getService("loader").setupCalls(COLDBOX_CONFIG_FILE)>
+						<cfset application.cbController.getLoaderService().setupCalls(COLDBOX_CONFIG_FILE)>
 					</cflock>
 				<cfelseif application.cbController.getSetting("HandlersIndexAutoReload")>
 					<cflock type="exclusive" name="#getAppHash()#" timeout="#getLockTimeout()#" throwontimeout="true">
@@ -74,7 +74,7 @@ Description :
 				
 				<!--- Trap Framework Errors --->
 				<cfcatch type="any">
-					<cfset ExceptionService = application.cbController.getService("exception")>
+					<cfset ExceptionService = application.cbController.getExceptionService()>
 					<cfset ExceptionBean = ExceptionService.ExceptionHandler(cfcatch,"framework","Framework Initialization/Configuration Exception")>
 					<cfoutput>#ExceptionService.renderBugReport(ExceptionBean)#</cfoutput>
 					<cfabort>
@@ -173,7 +173,7 @@ Description :
 				
 				<!--- Trap Application Errors --->
 				<cfcatch type="any">
-					<cfset ExceptionService = cbController.getService("exception")>
+					<cfset ExceptionService = cbController.getExceptionService()>
 					<cfset ExceptionBean = ExceptionService.ExceptionHandler(cfcatch,"application","Application Execution Exception")>
 					<cfoutput>#ExceptionService.renderBugReport(ExceptionBean)#</cfoutput>
 				</cfcatch>
