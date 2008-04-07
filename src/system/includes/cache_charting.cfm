@@ -5,22 +5,23 @@
 		<cfchart format="png" show3d="true" backgroundcolor="##ffffff" gridlines="true" chartwidth="275">
 			<cfchartseries type="pie" colorlist="85ca0a,1e3aca" >
 				<cfchartdata item="Free Memory (KB)"  value="#JVMFreeMemory#">
-				<cfchartdata item="Total Memory (KB)" value="#JVMTotalMemory#">
+				<cfchartdata item="Used Memory (KB)" value="#JVMTotalMemory-JVMFreeMemory#">
 			</cfchartseries>
 		</cfchart>
 		</td>
 		<td align="center">
-		<cfchart format="png" show3d="true" backgroundcolor="##ffffff" chartwidth="125">
-			<cfchartseries type="bar" colorlist="93C2FF,ED2939" >
+		<cfchart format="png" show3d="true" backgroundcolor="##ffffff" chartwidth="200" chartheight="300" showlegend="true">
+			<cfchartseries type="bar" colorlist="93C2FF,ED2939,FF6F9D">
 				<cfchartdata item="Hits" value="#controller.getColdboxOCM().getCacheStats().getHits()#">
 				<cfchartdata item="Misses" value="#controller.getColdboxOCM().getCacheStats().getMisses()#">
+				<cfchartdata item="Garbage Collections" value="#controller.getColdboxOCM().getCacheStats().getGarbageCollections()#">
 				<cfchartdata item="Evictions" value="#controller.getColdboxOCM().getCacheStats().getEvictionCount()#">
 			</cfchartseries>
 		</cfchart>
 		</td>
 		<td align="center">
 		<cfchart format="png" show3d="true" backgroundcolor="##ffffff" gridlines="true" chartwidth="275">
-			<cfchartseries type="pie" colorlist="800080" >
+			<cfchartseries type="pie" colorlist="800010" >
 				<cfchartdata item="Plugins" value="#itemTypes.plugins#">
 				<cfchartdata item="Handlers" value="#itemTypes.handlers#">
 				<cfchartdata item="Events" value="#itemTypes.events#">

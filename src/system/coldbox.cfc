@@ -127,7 +127,7 @@ Description :
 				</cfif>
 				
 				<!--- Before Any Execution, do we have cached content to deliver --->
-				<cfif Event.isEventCacheable()>
+				<cfif Event.isEventCacheable() and cbController.getColdboxOCM().lookup(Event.getEventCacheableEntry())>
 					<cfset renderedContent = cbController.getColdboxOCM().get(Event.getEventCacheableEntry())>
 					<cfoutput>#renderedContent#</cfoutput>
 				<cfelse>
