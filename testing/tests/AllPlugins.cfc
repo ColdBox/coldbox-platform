@@ -18,14 +18,21 @@ Description :
 		
 		
 		<!--- Add the test cases --->
+		<cfset suite.addTestSuite(CreateObject("component", "cases.plugins.appstorageTest"))>
+		<cfset suite.addTestSuite(CreateObject("component", "cases.plugins.beanfactoryTest"))>
 		<cfset suite.addTestSuite(CreateObject("component", "cases.plugins.clientstorageTest"))>
 		<cfset suite.addTestSuite(CreateObject("component", "cases.plugins.cookiestorageTest"))>
-		<cfset suite.addTestSuite(CreateObject("component", "cases.plugins.sessionstorageTest"))>
-		<cfset suite.addTestSuite(CreateObject("component", "cases.plugins.appstorageTest"))>
 		<cfset suite.addTestSuite(CreateObject("component", "cases.plugins.javaloaderTest"))>
+		<cfset suite.addTestSuite(CreateObject("component", "cases.plugins.jsonTest"))>
 		<cfset suite.addTestSuite(CreateObject("component", "cases.plugins.messageboxTest"))>
 		<cfset suite.addTestSuite(CreateObject("component", "cases.plugins.queryHelperTest"))>
-		<cfset suite.addTestSuite(CreateObject("component", "cases.plugins.jsonTest"))>
+		<cfset suite.addTestSuite(CreateObject("component", "cases.plugins.sessionstorageTest"))>
+		<cfset suite.addTestSuite(CreateObject("component", "cases.plugins.StringBufferTest"))>
+		<cfset suite.addTestSuite(CreateObject("component", "cases.plugins.timerTest"))>
+		<cfset suite.addTestSuite(CreateObject("component", "cases.plugins.UtilitiesTest"))>
+		<cfset suite.addTestSuite(CreateObject("component", "cases.plugins.webservicesTest"))>
+		<cfset suite.addTestSuite(CreateObject("component", "cases.plugins.zipTest"))>
+		
 		
 		<cfreturn suite/>  
 	</cffunction> 

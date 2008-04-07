@@ -12,153 +12,222 @@ Description :
 Modification History:
 10/13/2006 - Updated Oscar's code to filter access types
 ----------------------------------------------------------------------->
-
 <cfoutput>
 <!--- Style Sheet --->
 <link rel="stylesheet" href="#instance.styleSheet#" type="text/css" />
 
+<!--- Header Anchor --->
 <a name="cfcdocstop"></a>
 
 <!--- Start Content --->
 <div class="cfc_content">
 
-	<div class="cfc_h1">CFC Viewer - #instance.cfcPath#</div>
-
+	<!--- Title --->
+	<div class="cfc_h1">CFC Viewer - #getDirPath()#</div>
+	
+	<!--- Package & Component Listing --->
 	<div class="cfc_componentlisting">
-
-		<div class="cfc_h3">Packages / Directories</div>
+		
+		<!--- Packages --->
+		<div class="cfc_h3">Available Packages (#arrayLen(instance.aPacks)#)</div>
+		<div class="cfc_packagecontent">
 		<ul>
+			<li><a href="#buildRootLink()#">#getRootPath()#</a></li>
+			<ul>
 			<cfloop from="1" to="#ArrayLen(instance.aPacks)#" index="i">
-				<li>#instance.aPacks[i]#</li>
+				<li><a href="#buildLink(instance.aPacks[i])#">#instance.aPacks[i]#</a></li>
 			</cfloop>
 			<cfif ArrayLen(instance.aPacks) eq 0>
-				<li><em>None</em></li>
+				<li><em>None Found</em></li>
 			</cfif>
+			</ul>
 		</ul>
-
-		<div class="cfc_h3">Components</div>
+		</div>
+		
+		<!--- Components --->
+		<div class="cfc_h3">Package Components (#arrayLen(instance.aCFC)#)</div>
+		<div class="cfc_packagecontent">
 		<ul>
 			<cfloop from="1" to="#ArrayLen(instance.aCFC)#" index="i">
 				<li><a href="###instance.aCFC[i]#">#instance.aCFC[i]#</a></li>
 			</cfloop>
-
 			<cfif ArrayLen(instance.aCFC) eq 0>
-				<li><em>None</em></li>
+				<li><em>None Found</em></li>
 			</cfif>
 		</ul>
+		</div>
 	</div>
 	</cfoutput>
 
 	<p>&nbsp;</p>
-
-	<cfloop from="1" to="#ArrayLen(instance.aCFC)#" index="j">
-		<cftry>
-			<cfset mdpath = instance.cfcPath & "/" & instance.aCFC[j] & ".cfc">
-			<cfset md = getCFCMetaData(instance.aCFC[j])>
-			<cfset path = expandPath(mdpath)>
-			<cfparam name="md.Hint" 	default="">
-			<cfparam name="md.Extends" 	default="#StructNew()#">
+	
+	<!--- Loop Over cfcs --->
+	<cfloop from="1" to="#ArrayLen(getaCFC())#" index="j">
+		<!--- Get MD for CFC --->
+		<cfset md = getCFCMetaData(instance.aCFC[j])>
+		
+		<!--- Param Some Properties --->
+		<cfparam name="md.Hint" 	default="">
+		<cfparam name="md.Extends" 	default="#StructNew()#">
+		<cfparam name="md.cache" 	default="">
+		<cfparam name="md.cacheTimeout" default="">
+		<cfparam name="md.cacheLastAccessTimeout" 	default="">
+		
+		<!--- Get Functions --->
+		<cfset aMethods = md.Functions>
+		<!--- Verify Functions --->
+		<cfif isStruct(aMethods)>
+			<cfset aMethods = ArrayNew(1)>
+		</cfif>
+		<!--- Output Methods. --->
+		<cfoutput>
+			<!--- Title --->
+			<a name="#instance.aCFC[j]#"></a>
+			<div class="cfc_h1">#listLast(md.name,".")#</div>
 			
-			<cfset aMethods = md.Functions>
-			<cfif isStruct(aMethods)>
-				<cfset aMethods = ArrayNew(1)>
-			</cfif>
-			<cfoutput>
-				<a name="#instance.aCFC[j]#"></a>
-				<div class="cfc_h1">#md.name#</div>
-				<table class="cfc_component" width="100%">
+			<!--- Table Summary --->
+			<table class="cfc_componentsummary" width="100%">
+				<tr>
+					<td><strong>Package</strong></td>
+					<td width="100%">#getPlugin("Utilities").ripExtension(md.name)#</td>
+				</tr>
+				<tr>
+					<td><strong>Hint</strong></td>
+					<td>#md.hint#</td>
+				</tr>
+				<cfif md.cache.length()>
+				<tr>
+					<td><strong>Cache</strong></td>
+					<td>#md.cache#</td>
+				</tr>
+				</cfif>
+				<cfif md.cacheTimeout.length()>
+				<tr>
+					<td><strong>Cache Timeout</strong></td>
+					<td>#md.cacheTimeout# Minutes</td>
+				</tr>
+				</cfif>
+				<cfif md.cacheLastAccessTimeout.length()>
+				<tr>
+					<td><strong>Cache Last Access Timeout</strong></td>
+					<td>#md.cacheLastAccessTimeout# Minutes</td>
+				</tr>
+				</cfif>
+				
+				<cfif ArrayLen(md.InheritanceTree)>
+				<tr>
+					<td valign="top"><strong>Inheritance</strong></td>
+					<td valign="top">
+					<cfloop from="#ArrayLen(md.InheritanceTree)#" to="1" index="x" step="-1">
+						<p style="padding-left: #(ArrayLen(md.InheritanceTree) - x)*30#px;margin:5px">
+							|-----+ #md.InheritanceTree[x].name#
+						</p>
+					</cfloop>
+					<p style="padding-left: #(ArrayLen(md.InheritanceTree))*32#px;margin:5px">|---+ <strong>#md.name#</strong></p>
+					</td>
+				</tr>
+				</cfif>
+			</table>
+			
+			<!--- Table Summary --->
+			<table class="cfc_component" width="100%">
+				<!--- Method Summary --->
+				<tr valign="top">
+					<td >
+						<div class="cfc_h2">Method Summary</div>
+						<br />
 
-					<tr>
-						<td class="cfc_hint">#md.Hint#</td>
-					</tr>
+						<table cellspacing="0" width="100%">
 
-					<tr valign="top">
-						<td >
-							<div class="cfc_h2">Methods:</div>
-							<br />
+							<tr valign="top" >
+								<td class="cfc_methodstitle" width="40" align="right">Access</td>
+								<td class="cfc_methodstitle" width="40" align="right" >Returns</td>
+								<td class="cfc_methodstitle" >Name</td>
+							</tr>
 
-							<table cellspacing="0" width="100%">
+							<cfloop from="1" to="#ArrayLen(aMethods)#" index="i">
+								<cfset thisMethod = aMethods[i]>
+								<!--- Verify Methods --->
+								<cfparam name="thisMethod.Name" default="">
+								<cfparam name="thisMethod.Hint" default="">
+								<cfparam name="thisMethod.Access" default="public">
+								<cfparam name="thisMethod.ReturnType" default="">
+								<cfparam name="thisMethod.Parameters" default="#ArrayNew(1)#">
+								<cfparam name="thisMethod.cache" 	default="false">
+								<cfparam name="thisMethod.cacheTimeout" default="">
+								<!--- Verify Access --->
+								<cfif thisMethod.Access eq "">
+									<cfset thisMethod.Access = "public">
+								</cfif>
+								
+								<!--- Display Methods --->
+								<cfif listFindNoCase(instance.lstAccessTypes, thisMethod.Access)>
+									<cfset aParams = thisMethod.Parameters>
+									<cfset lstParams = "">
+									<cfloop from="1" to="#ArrayLen(aParams)#" index="j">
+										<cfset thisParam = aParams[j]>
+										<cfparam name="thisParam.Name" default="">
+										<cfparam name="thisParam.Required" default="true" type="boolean">
+										<cfparam name="thisParam.Type" default="">
+										<cfparam name="thisParam.Default" default="">
 
-								<tr valign="top" >
-									<td class="cfc_methodstitle" width="40" align="right">Access</td>
-									<td class="cfc_methodstitle" width="40" align="right" >Returns</td>
-									<td class="cfc_methodstitle" >Name</td>
-								</tr>
+										<cfset tmpParam = "#thisParam.Type# <b>#thisParam.Name#</b>">
+										<cfif Not thisParam.Required>
+											<cfset tmpParam = "<i>[#tmpParam# = '#thisParam.Default#']</i>">
+										</cfif>
+										<cfset tmpParam = "&nbsp;#tmpParam#">
 
-								<cfloop from="1" to="#ArrayLen(aMethods)#" index="i">
-									<cfset thisMethod = aMethods[i]>
-									<cfparam name="thisMethod.Name" default="">
-									<cfparam name="thisMethod.Hint" default="">
-									<cfparam name="thisMethod.Access" default="public">
-									<cfparam name="thisMethod.ReturnType" default="">
-									<cfparam name="thisMethod.Parameters" default="#ArrayNew(1)#">
+										<cfset lstParams = ListAppend(lstParams, tmpParam)>
+									</cfloop>
 
-									<cfif thisMethod.Access eq "">
-										<cfset thisMethod.Access = "public">
-									</cfif>
+									<tr valign="top" onmouseover="this.className='cfc_methodrowsOn'" onmouseout="this.className='cfc_methodrows'" class="cfc_methodrows">
+										<td align="right" class="cfc_methodcells">#lcase(thisMethod.Access)#</td>
+										<td class="cfc_methodcells" align="right">
+										<cfif thisMethod.ReturnType neq "">
+										#lcase(thisMethod.ReturnType)#
+										<cfelse>
+										any
+										</cfif>
+										</td>
+										<td class="cfc_methodcells">
+											<b>#thisMethod.Name#</b><cfif lstParams neq "">(#lstParams# )<cfelse>()</cfif>
+											<br><br />
+											#thisMethod.Hint#
+										</td>
+									</tr>
+								</cfif>
+							</cfloop>
+					  </table>
+					
+					<cfif ArrayLen(md.inheritanceTree)>
+						<!--- Inheritance Method Summary --->
+						<tr valign="top">
+							<td >
+								<div class="cfc_h2">Inheritance Summary</div>
+								<br />
 
-									<cfif listFindNoCase(instance.lstAccessTypes, thisMethod.Access)>
-										<cfset aParams = thisMethod.Parameters>
-										<cfset lstParams = "">
-										<cfloop from="1" to="#ArrayLen(aParams)#" index="j">
-											<cfset thisParam = aParams[j]>
-											<cfparam name="thisParam.Name" default="">
-											<cfparam name="thisParam.Required" default="true" type="boolean">
-											<cfparam name="thisParam.Type" default="">
-											<cfparam name="thisParam.Default" default="">
-
-
-											<cfset tmpParam = "#thisParam.Type# <b>#thisParam.Name#</b>">
-											<cfif Not thisParam.Required>
-												<cfset tmpParam = "<i>[#tmpParam# = '#thisParam.Default#']</i>">
-											</cfif>
-											<cfset tmpParam = "&nbsp;#tmpParam#">
-
-											<cfset lstParams = ListAppend(lstParams, tmpParam)>
-										</cfloop>
-
-										<tr valign="top" onmouseover="this.className='cfc_methodrowsOn'" onmouseout="this.className='cfc_methodrows'" class="cfc_methodrows">
-											<td align="right" class="cfc_methodcells">#lcase(thisMethod.Access)#</td>
-											<td class="cfc_methodcells" align="right">
-											<cfif thisMethod.ReturnType neq "">
-											#lcase(thisMethod.ReturnType)#
-											<cfelse>
-											any
-											</cfif>
-											</td>
-											<td class="cfc_methodcells">
-												<b>#thisMethod.Name#</b>
-												<cfif lstParams neq "">
-													(#lstParams#)
-												<cfelse>
-													()
-												</cfif>
-												<br><br />
-												#thisMethod.Hint#
-											</td>
-										</tr>
-									</cfif>
+								<cfloop from="1" to="#arrayLen(md.inheritanceTree)#" index="x">
+								<table cellspacing="0" width="100%">
+									<tr valign="top">
+										<td class="cfc_methodstitle">Inherited Methods From: <strong>#md.inheritanceTree[x].name#</strong></td>
+									</tr>
+									<tr valign="top" class="cfc_methodrows" >
+										<td class="cfc_methodcells" style="line-height:1.3">
+											<cfloop from="1" to="#arrayLen(md.inheritanceTree[x].functions)#" index="y">
+											#md.inheritanceTree[x].functions[y]#<cfif arrayLen(md.inheritanceTree[x].functions) neq y>, </cfif>
+											</cfloop>											
+										</td>
+									</tr>					
+								</table>
 								</cfloop>
-						  </table>
-
-						   <br />
-							<div class="cfc_h2">Extends:</div>
-							<cfif IsSimpleValue(md.Extends)>
-								<ul><li>#md.Extends#</li></ul>
-							<cfelseif IsDefined("md.Extends.Name") and md.Extends.Name neq "WEB-INF.cftags.component">
-								<ul><li>#md.Extends.Name#</li></ul>
-							<cfelse>
-								<ul><li><em>Nothing</em></li></ul>
-							</cfif>
-						</td>
-					</tr>
-				</table>
-				<br>
-			</cfoutput>
-			<cfcatch>
-				<cfdump var="#cfcatch#">
-			</cfcatch>
-		</cftry>
+							</td>
+						</tr>					
+					</cfif>							
+					</td>
+				</tr>
+			</table>
+			<br>
+		</cfoutput>
 
 		<div align="right"><a href="#cfcdocstop">^Top</a></div>
 		<hr size="1"><br />
