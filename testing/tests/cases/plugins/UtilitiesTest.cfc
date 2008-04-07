@@ -88,11 +88,10 @@ Description :
 			
 			assertEqualsString(plugin.checkCharSet('iso-8859-1'),'iso-8859-1', 'checkCharSet() something gone wrong');
 			
-			assertEqualsString(plugin.ripExtension('unittest.txt'),'txt', 'ripExtension() something gone wrong');
+			assertEqualsString(plugin.ripExtension('unittest.txt'),'unittest', 'ripExtension() something gone wrong');
 			
 			assertTrue(plugin.removeFile(direactoryPath & '\unittest.txt'));
 		</cfscript>
-
 	</cffunction>
 
 </cfcomponent>
