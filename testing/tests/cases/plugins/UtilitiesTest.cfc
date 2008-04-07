@@ -35,6 +35,11 @@ Description :
 		<cfscript>
 			var plugin = getController().getPlugin("Utilities");
 			var direactoryPath = ExpandPath('/applications/coldbox/testing/tests/resources');
+			var sStruct	= structNew() ;
+			var sString = "";
+			
+			sStruct["1"] = "ColdBox";
+			sStruct["2"] = "Great Toolkit";
 
 			assertTrue(plugin.isCFUUID(CreateUUID()), 'The value is not CF UUID');
 			
@@ -91,6 +96,16 @@ Description :
 			assertEqualsString(plugin.ripExtension('unittest.txt'),'unittest', 'ripExtension() something gone wrong');
 			
 			assertTrue(plugin.removeFile(direactoryPath & '\unittest.txt'));
+			
+			sString = plugin._serialize(sStruct);
+		
+			assertTrue(IsStruct(plugin._deserialize(sString)));
+			
+			plugin._serializeToFile( sStruct , direactoryPath & '\serialized.txt');
+			
+			assertTrue(IsStruct(plugin._deserializeFromFile(direactoryPath & '\serialized.txt')));
+			
+			assertTrue(plugin.removeFile(direactoryPath & '\serialized.txt'));
 		</cfscript>
 	</cffunction>
 
