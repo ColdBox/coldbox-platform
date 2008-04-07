@@ -35,16 +35,27 @@ Modification History: March 23,2008 Added new feature to encrypt/decrypt cookie 
 			setpluginDescription("A permanent data storage plugin.");
 			
 			/* set CFML engine encryption CF, BD, Railo*/
-			variables.alogrithm = "CFMX_COMPAT";
-			variables.encKey  	= "ColdBoxToolKit";
+			setEncryptionAlgorithm("CFMX_COMPAT");
+			setEncryptionKey("ColdBoxToolkit");
+			setEncryption(false);
+			setEncryptionEncoding("HEX");
 			
-			// set alogrithm according to CFML engine
+			/* set defautl alogrithm according to CFML engine */
 			if(controller.oCFMLENGINE.getEngine() EQ 'BLUEDRAGON'){
-				variables.alogrithm = "BD_DEFAULT";
+				setEncryptionAlgorithm("BD_DEFAULT");
 			}
 			
-			if(controller.settingExists('cookiestorage_encryption_seed') and len(controller.getSetting('cookiestorage_encryption_seed'))){
-				variables.encKey  = controller.getSetting('cookiestorage_encryption_seed');
+			/* Do we Encrypt. */
+			if(settingExists('cookiestorage_encryption') and len(getSetting('cookiestorage_encryption'))){
+				setEncryptionKey(getSetting('cookiestorage_encryption'));
+			}
+			/* Override the Seed if sent in. */
+			if(settingExists('cookiestorage_encryption_seed') and len(getSetting('cookiestorage_encryption_seed'))){
+				setEncryptionKey(getSetting('cookiestorage_encryption_seed'));
+			}
+			/* Override the Algorithm if used. */
+			if(settingExists('cookiestorage_encryption_algorithm') and len(getSetting('cookiestorage_encryption_algorithm'))){
+				setEncryptionAlgorithm(getSetting('cookiestorage_encryption_algorithm'));
 			}
 			
 			/* Return Instance. */
@@ -71,11 +82,16 @@ Modification History: March 23,2008 Added new feature to encrypt/decrypt cookie 
 			<cfwddx action="cfml2wddx" input="#arguments.value#" output="tmpVar">
 		</cfif>
 		
+		<!--- Encryption? --->
+		<cfif getEncryption()>
+			<cfset tmpVar = EncryptIt(tmpVar)>		
+		</cfif>
+		
 		<!--- Store cookie with expiration info --->
 		<cfif arguments.expires EQ 1>
-			<cfcookie name="#arguments.name#" value="#encryptit(tmpVar)#" />
+			<cfcookie name="#arguments.name#" value="#tmpVar#" />
 		<cfelse>
-			<cfcookie name="#arguments.name#" value="#encryptit(tmpVar)#" expires="#arguments.expires#" />
+			<cfcookie name="#arguments.name#" value="#tmpVar#" expires="#arguments.expires#" />
 		</cfif>	
 	</cffunction>
 
@@ -90,7 +106,13 @@ Modification History: March 23,2008 Added new feature to encrypt/decrypt cookie 
 		
 		<cfif exists(arguments.name)>
 			<!--- Get value --->
-			<cfset rtnVar = decryptit(cookie[arguments.name])>
+			<cfset rtnVar = cookie[arguments.name]>
+			
+			<!--- Decrypt? --->
+			<cfif getEncryption() and rtnVar.length()>
+				<cfset rtnVar = DecryptIt(rtnVar)>
+			</cfif>
+			
 			<cfif isWDDX(rtnVar)>
 				<!--- Unwddx packet --->
 				<cfwddx action="wddx2cfml" input="#decryptitrtnVar#" output="wddxVar">
@@ -126,19 +148,55 @@ Modification History: March 23,2008 Added new feature to encrypt/decrypt cookie 
 		</cfif>
 	</cffunction>
 	
-	<!--- *********************** Private Methods ************************** --->
-	<cffunction name="encryptit" access="private" returntype="Any" hint="Return encypted value" output="false">
-		<cfargument name="encValue" hint="string to be encrypted" required="yes" type="string" />
-		<cfset var encodings = "Hex" />
-		
-		<cfreturn encrypt(arguments.encValue,variables.encKey,variables.alogrithm,encodings) />		
+	<!--- Get/Set Encryption Key --->
+	<cffunction name="getEncryptionKey" access="public" output="false" returntype="string" hint="Get EncryptionKey">
+		<cfreturn instance.EncryptionKey/>
+	</cffunction>
+	<cffunction name="setEncryptionKey" access="public" output="false" returntype="void" hint="Set EncryptionKey">
+		<cfargument name="EncryptionKey" type="string" required="true"/>
+		<cfset instance.EncryptionKey = arguments.EncryptionKey/>
+	</cffunction>
+
+	<!--- Get/Set Encryption Algorithm --->
+	<cffunction name="getEncryptionAlgorithm" access="public" output="false" returntype="string" hint="Get EncryptionAlgorithm">
+		<cfreturn instance.EncryptionAlgorithm/>
+	</cffunction>
+	<cffunction name="setEncryptionAlgorithm" access="public" output="false" returntype="void" hint="Set EncryptionAlgorithm">
+		<cfargument name="EncryptionAlgorithm" type="string" required="true"/>
+		<cfset instance.EncryptionAlgorithm = arguments.EncryptionAlgorithm/>
 	</cffunction>
 	
+	<!--- Get/set Encrypting values or not. --->
+	<cffunction name="getEncryption" access="public" output="false" returntype="boolean" hint="Get Encryption">
+		<cfreturn instance.Encryption/>
+	</cffunction>
+	<cffunction name="setEncryption" access="public" output="false" returntype="void" hint="Set Encryption">
+		<cfargument name="Encryption" type="boolean" required="true"/>
+		<cfset instance.Encryption = arguments.Encryption/>
+	</cffunction>
+	
+	<!--- Encryption Encoding --->
+	<cffunction name="getEncryptionEncoding" access="public" output="false" returntype="string" hint="Get EncryptionEncoding">
+		<cfreturn instance.EncryptionEncoding/>
+	</cffunction>	
+	<cffunction name="setEncryptionEncoding" access="public" output="false" returntype="void" hint="Set EncryptionEncoding">
+		<cfargument name="EncryptionEncoding" type="string" required="true"/>
+		<cfset instance.EncryptionEncoding = arguments.EncryptionEncoding/>
+	</cffunction>
+
+<!------------------------------------------- PUBLIC ------------------------------------------->
+
+	<!--- Encrypt Data --->
+	<cffunction name="encryptit" access="private" returntype="Any" hint="Return encypted value" output="false">
+		<cfargument name="encValue" hint="string to be encrypted" required="yes" type="string" />
+		<cfreturn encrypt(arguments.encValue,getEncryptionKey(),getEncryptionAlgorithm(),getEncryptionEncoding()) />		
+	</cffunction>
+	
+	
+	<!--- Decrypt Data --->
 	<cffunction name="decryptit" access="private" returntype="Any" hint="Return decrypted value" output="false">
 		<cfargument name="decValue" hint="string to be decrypted" required="yes" type="string" />
-		<cfset var encodings = "Hex" />
-		
-		<cfreturn decrypt(arguments.decValue,variables.encKey,variables.alogrithm,encodings) />		
+		<cfreturn decrypt(arguments.decValue,getEncryptionKey(),getEncryptionAlgorithm(),getEncryptionEncoding()) />		
 	</cffunction>
 	
 </cfcomponent>

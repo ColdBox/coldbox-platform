@@ -57,6 +57,37 @@ Description :
 			
 		</cfscript>
 	</cffunction>
+	
+	<cffunction name="testWithEncryption" access="public" returntype="void" output="false">
+		<!--- Now test some events --->
+		<cfscript>
+			var plugin = getController().getPlugin("cookiestorage");
+			var complex = structnew();
+			
+			complex.date = now();
+			complex.id = createUUID();
+			
+			/* set Encryption */
+			plugin.setEncryption(true);
+			plugin.setEncryptionKey('My#createUUID()#-Unit Test Key');
+			
+			/* Set */
+			plugin.setVar("tester", 1);
+			AssertTrue( plugin.exists("tester") ,"Test set & Exists");
+			AssertEqualsNumber(1, plugin.getVar("tester"), "Get & Set Test");
+			
+			AssertFalse( plugin.exists("nothing") ,"False Assertion on exists" );
+			plugin.deleteVar("tester");
+			AssertFalse( plugin.getVar("tester").length() ,"Remove & Exists for tester simple");
+			
+			plugin.setVar("tester", complex );
+			AssertTrue( plugin.exists("tester") ,"Test Complex set & Exists");
+			
+			plugin.deleteVar("tester");
+			AssertFalse( plugin.getVar("tester").length() ,"Remove & Exists for complex");
+		
+		</cfscript>
+	</cffunction>
 		
 	
 </cfcomponent>
