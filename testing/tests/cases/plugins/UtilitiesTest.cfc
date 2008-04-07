@@ -37,6 +37,7 @@ Description :
 			var direactoryPath = ExpandPath('/applications/coldbox/testing/tests/resources');
 			var sStruct	= structNew() ;
 			var sString = "";
+			var sObject = CreateObject("component","applications.coldbox.testing.tests.resources.test1");
 			
 			sStruct["1"] = "ColdBox";
 			sStruct["2"] = "Great Toolkit";
@@ -106,7 +107,14 @@ Description :
 			assertTrue(IsStruct(plugin._deserializeFromFile(direactoryPath & '\serialized.txt')));
 			
 			assertTrue(plugin.removeFile(direactoryPath & '\serialized.txt'));
+			// serialise component, its CF8
+			plugin._serializeToFile( sObject , direactoryPath & '\serializedCFC.txt');
+			
+			assertTrue(IsObject(plugin._deserializeFromFile(direactoryPath & '\serializedCFC.txt')));
+			
+			assertTrue(plugin.removeFile(direactoryPath & '\serializedCFC.txt'));
 		</cfscript>
+		
 	</cffunction>
 
 </cfcomponent>
