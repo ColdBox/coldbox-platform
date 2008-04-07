@@ -205,6 +205,7 @@ Modification History:
 		<cfargument name="overrideAppMapping" type="string" required="false" default="" hint="Only used for unit testing or reparsing of a specific coldbox config file."/>
 		<!--- ************************************************************* --->
 		<cfscript>
+		var Collections = createObject("java", "java.util.Collections"); 
 		//Create Config Structure
 		var ConfigStruct = StructNew();
 		var fwSettingsStruct = getController().getColdboxSettings();
@@ -229,8 +230,7 @@ Modification History:
 		var DefaultView = "";
 		var LayoutNodes = "";
 		var DefaultLayout = "";
-		var	LayoutViewStruct = StructNew();
-		var Collections = createObject("java", "java.util.Collections"); 
+		var	LayoutViewStruct = Collections.synchronizedMap(CreateObject("java","java.util.LinkedHashMap").init());
 		var	LayoutFolderStruct = Collections.synchronizedMap(CreateObject("java","java.util.LinkedHashMap").init());
 		//DevEnvironments
 		var DevEnvironmentNodes = "";
@@ -484,7 +484,7 @@ Modification History:
 					//Test for Array
 					if ( (left(tester,1) eq "[" AND right(tester,1) eq "]") OR
 					     (left(tester,1) eq "{" AND right(tester,1) eq "}") ){
-						StructInsert(ConfigStruct, YourSettingNodes[i].XMLAttributes["name"], getPlugin("json").decode(tester) );
+						StructInsert(ConfigStruct, YourSettingNodes[i].XMLAttributes["name"], getPlugin("json").decode(replace(tester,"'","""","all")) );
 					}
 					else
 						StructInsert( ConfigStruct, YourSettingNodes[i].XMLAttributes["name"], tester);
@@ -903,7 +903,7 @@ Modification History:
 						//Check for Complex Setup
 						if ( (left(tempProperty,1) eq "[" AND right(tempProperty,1) eq "]") OR
 					     	 (left(tempProperty,1) eq "{" AND right(tempProperty,1) eq "}") ){
-							StructInsert( InterceptorStruct.properties, Trim(InterceptorNodes[i].XMLChildren[j].XMLAttributes["name"]), getPlugin('json').decode(tempProperty) );
+							StructInsert( InterceptorStruct.properties, Trim(InterceptorNodes[i].XMLChildren[j].XMLAttributes["name"]), getPlugin('json').decode(replace(tempProperty,"'","""","all")) );
 						}
 						else{
 							StructInsert( InterceptorStruct.properties, Trim(InterceptorNodes[i].XMLChildren[j].XMLAttributes["name"]), tempProperty );

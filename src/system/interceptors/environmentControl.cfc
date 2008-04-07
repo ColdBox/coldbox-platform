@@ -136,7 +136,7 @@ Description :
 					/* json decoding */
 					if ( (left(thisValue,1) eq "[" AND right(thisValue,1) eq "]") OR
 					     (left(thisValue,1) eq "{" AND right(thisValue,1) eq "}") ){
-					     	thisValue = getPlugin("json").decode(thisValue);
+					     	thisValue = getPlugin("json").decode(replace(thisValue,"'","""","all"));
 					}
 					
 					/* Check if overriding a set setting */
