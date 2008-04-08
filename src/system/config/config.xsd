@@ -70,6 +70,7 @@
 									<xs:enumeration value="SessionStartHandler"/>
 									<xs:enumeration value="SessionEndHandler"/>						
 									<xs:enumeration value="UDFLibraryFile"/>	
+									<xs:enumeration value="FlashURLPersistScope"/>										
 								</xs:restriction>
 							</xs:simpleType>
 						</xs:attribute>

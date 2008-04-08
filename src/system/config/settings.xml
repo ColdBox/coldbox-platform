@@ -26,6 +26,8 @@
         <Setting name="DefaultLogDirectory" value="logs"/>
 		<!--Default Event Name -->
 		<Setting name="EventName" value="event"/>
+		<!--Default Storage Scope For Flash URL Persist session or client only-->
+		<Setting name="FlashURLPersistScope" value="session" />
 		<!--IOC Frameworks-->
         <Setting name="ColdspringBeanFactory" value="coldspring.beans.DefaultXmlBeanFactory"/>
 		<Setting name="LightWireBeanFactory" value="coldbox.system.extras.lightwire.LightWire"/>

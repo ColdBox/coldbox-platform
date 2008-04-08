@@ -403,7 +403,11 @@ Description		: This is the main ColdBox front Controller.
 		</cfloop>
 		
 		<!--- Flash Save it --->
-		<cfset getPlugin("sessionstorage").setVar('_coldbox_persistStruct', PersistStruct)>
+		<cfif getSetting("FlashURLPersistScope",1) eq "session">
+			<cfset getPlugin("sessionstorage").setVar('_coldbox_persistStruct', PersistStruct)>
+		<cfelse>
+			<cfset getPlugin("clientstorage").setVar('_coldbox_persistStruct', PersistStruct)>
+		</cfif>
 	</cffunction>
 	
 <!------------------------------------------- PRIVATE ------------------------------------------->

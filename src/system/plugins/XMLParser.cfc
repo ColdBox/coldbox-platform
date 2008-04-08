@@ -471,6 +471,11 @@ Modification History:
 			//Check for External Handlers Location
 			if ( not structKeyExists(ConfigStruct, "HandlersExternalLocation") or len(ConfigStruct["HandlersExternalLocation"]) eq 0 )
 				ConfigStruct["HandlersExternalLocation"] = "";
+				
+			/* Flash URL Persist Scope Override */
+			if( structKeyExists(ConfigStruct,"FlashURLPersistScope") and reFindnocase("^(session|client)$",ConfigStruct["FlashURLPersistScope"]) ){
+				fwSettingsStruct["FlashURLPersistScope"] = ConfigStruct["FlashURLPersistScope"];
+			}
 			
 			
 			/* ::::::::::::::::::::::::::::::::::::::::: YOUR SETTINGS LOADING :::::::::::::::::::::::::::::::::::::::::::: */
