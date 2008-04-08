@@ -34,49 +34,56 @@ Modification History:
 		<!--- ************************************************************* --->
 		<cfargument name="controller" type="any" required="true">
 		<!--- ************************************************************* --->
-		<cfset super.Init(arguments.controller) />
-		<cfset setpluginName("Renderer")>
-		<cfset setpluginVersion("1.1")>
-		<cfset setpluginDescription("This is the rendering service for ColdBox.")>
+		<cfscript>
+		super.Init(arguments.controller);
 		
-		<!--- Set Conventions --->
-		<cfset instance.layoutsConvention = getController().getSetting("layoutsConvention",true)>
-		<cfset instance.viewsConvention = getController().getSetting("viewsConvention",true)>
-		<cfset instance.appMapping = getController().getSetting("AppMapping")>
+		/* Plugin Properties */
+		setpluginName("Renderer");
+		setpluginVersion("2.0");
+		setpluginDescription("This is the rendering service for ColdBox.");
 		
-		<!--- PUBLIC CacheKey Prefix --->
-		<cfset this.VIEW_CACHEKEY_PREFIX = "cboxview_view-">
+		/* Set Conventions */
+		instance.layoutsConvention = getController().getSetting("layoutsConvention",true);
+		instance.viewsConvention = getController().getSetting("viewsConvention",true);
+		instance.appMapping = getController().getSetting("AppMapping");
 		
-		<!--- Inject UDF For Views/Layouts --->
-		<cfset includeUDF(getController().getSetting("UDFLibraryFile"))>
+		/* PUBLIC CacheKey Prefix */
+		this.VIEW_CACHEKEY_PREFIX = "cboxview_view-";
 		
-		<cfreturn this>
+		/* Inject UDF For Views/Layouts */
+		includeUDF(getController().getSetting("UDFLibraryFile"));
+		
+		/* Return renderer */
+		return this;
+		</cfscript>
 	</cffunction>
 
 <!------------------------------------------- PUBLIC ------------------------------------------->
 	
 	<!--- purgeView --->
-	<cffunction name="purgeView" output="false" access="public" returntype="void" hint="Purges a view from the cache.">
+	<cffunction name="purgeView" output="false" access="public" returntype="void" hint="Purges a view from the cache, also see the cache manager for purging views.">
 		<!--- ************************************************************* --->
 		<cfargument name="view" required="true" type="string" hint="The view to purge from the cache">
 		<!--- ************************************************************* --->
 		<cfscript>
 			var cacheKey = this.VIEW_CACHEKEY_PREFIX & arguments.view;
 			/* Clear the view */
-			controller.getColdBoxOCM().clearKey(cacheKey);
+			getColdBoxOCM().clearKey(cacheKey);
 		</cfscript>
 	</cffunction>
 
-	<!--- ************************************************************* --->
-	
 	<!--- Render the View --->
 	<cffunction name="renderView"	access="Public" hint="Renders the current view." output="false" returntype="Any">
 		<!--- ************************************************************* --->
-		<cfargument name="view" required="false" default="" type="string" hint="If not passed in, the value in the currentView in the current RequestContext will be used.">
+		<cfargument name="view" 					required="false" type="string"  default=""		hint="If not passed in, the value in the currentView in the current RequestContext will be used.">
+		<cfargument name="cache" 					required="false" type="boolean" default="false" hint="True if you want to cache the view.">
+		<cfargument name="cacheTimeout" 			required="false" type="string"  default=""		hint="The cache timeout">
+		<cfargument name="cacheLastAccessTimeout" 	required="false" type="string"  default="" 		hint="The last access timeout">
 		<!--- ************************************************************* --->
 		<cfset var cbox_RenderedView = "">
 		<cfset var Event = controller.getRequestService().getContext()>
 		<cfset var rc = event.getCollection()>
+		<!--- Cache Entries --->
 		<cfset var cbox_cacheKey = "">
 		<cfset var cbox_cacheEntry = "">
 		
@@ -96,21 +103,24 @@ Modification History:
 		<cfset cbox_cacheKey = this.VIEW_CACHEKEY_PREFIX & arguments.view>
 		
 		<!--- Do we have a cached view?? --->
-		<cfif controller.getColdboxOCM().lookup(cbox_cacheKey)>
+		<cfif getColdboxOCM().lookup(cbox_cacheKey)>
 			<!--- Render The View --->
 			<cfmodule template="../includes/timer.cfm" timertag="rendering Cached View [#arguments.view#.cfm]">
-				<cfset cbox_RenderedView = controller.getColdBoxOCM().get(cbox_cacheKey)>
+				<cfset cbox_RenderedView = getColdBoxOCM().get(cbox_cacheKey)>
 			</cfmodule>
 		<cfelse>
 			<!--- Render The View --->
 			<cfmodule template="../includes/timer.cfm" timertag="rendering View [#arguments.view#.cfm]">
 				<cfsavecontent variable="cbox_RenderedView"><cfoutput><cfinclude template="/#getappMapping()#/#getViewsConvention()#/#arguments.view#.cfm"></cfoutput></cfsavecontent>
 			</cfmodule>
-			<!--- Is this view cacheable, and if its the view we need to cache. --->
+			<!--- Is this view cacheable by setting, and if its the view we need to cache. --->
 			<cfif event.isViewCacheable() and (arguments.view eq event.getViewCacheableEntry().view)>
 				<!--- Cache it baby!! --->
 				<cfset cbox_cacheEntry = event.getViewCacheableEntry()>
-				<cfset controller.getColdboxOCM().set(this.VIEW_CACHEKEY_PREFIX & cbox_cacheEntry.view,cbox_RenderedView,cbox_cacheEntry.timeout,cbox_cacheEntry.lastAccessTimeout)>
+				<cfset getColdboxOCM().set(this.VIEW_CACHEKEY_PREFIX & cbox_cacheEntry.view,cbox_RenderedView,cbox_cacheEntry.timeout,cbox_cacheEntry.lastAccessTimeout)>
+			<!--- Are we caching explicitly --->
+			<cfelseif arguments.cache>
+				<cfset getColdboxOCM().set(cbox_cacheKey,cbox_RenderedView,arguments.cacheTimeout,cacheLastAccessTimeout)>
 			</cfif>
 		</cfif>
 		
@@ -118,8 +128,7 @@ Modification History:
 		<cfreturn cbox_RenderedView>
 	</cffunction>
 
-	<!--- ************************************************************* --->
-
+	<!--- Render an external View --->
 	<cffunction name="renderExternalView"	access="Public" hint="Renders an external view." output="false" returntype="Any">
 		<!--- ************************************************************* --->
 		<cfargument name="view" required="true" type="string" hint="The full path to the view. This can be an expanded path or relative. Include extension.">
@@ -145,8 +154,7 @@ Modification History:
 		<cfreturn cbox_RenderedView>
 	</cffunction>
 
-	<!--- ************************************************************* --->
-
+	<!--- Render the layout --->
 	<cffunction name="renderLayout" access="Public" hint="Renders the current layout." output="false" returntype="string">
 		<cfset var cbox_RederedLayout = "">
 		<cfset var Event = controller.getRequestService().getContext()>
@@ -170,8 +178,7 @@ Modification History:
 		<cfreturn cbox_RederedLayout>
 	</cffunction>
 
-	<!--- ************************************************************* --->
-
+	
 <!------------------------------------------- PRIVATE ------------------------------------------->
 
 	<!--- ************************************************************* --->
@@ -192,7 +199,6 @@ Modification History:
 		<cfreturn instance.appMapping/>
 	</cffunction>
 	
-	<!--- ************************************************************* --->
-	
+	<!--- ************************************************************* --->	
 	
 </cfcomponent>
