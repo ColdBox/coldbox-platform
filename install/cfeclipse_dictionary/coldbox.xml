@@ -47,7 +47,7 @@ Description :
 			</parameter>
 		</function>
 		
-		<function creator="8" name="cfhtmlhead" returns="void">
+		<function creator="8" name="htmlhead" returns="void">
 			<help><![CDATA[
 				Facade to cfhtmlhead
 			]]></help>
