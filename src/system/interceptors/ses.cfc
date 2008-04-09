@@ -346,7 +346,7 @@ Description :
 	
 	<!--- Get Default Framework Action --->
 	<cffunction name="getDefaultFrameworkAction" access="private" returntype="string" hint="Get the default framework action" output="false" >
-		<cfreturn listLast(getSetting('DefaultEvent'),".")>
+		<cfreturn getController().getSetting("eventAction",1)>
 	</cffunction>
 	
 	<!--- CGI Element Facade. --->

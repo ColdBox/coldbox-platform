@@ -153,7 +153,7 @@ Description :
 				}
 				else{
 					getUtil().throwit(message="An invalid event has been detected",
-									  detail="An invalid event has been detected: #oEventHandlerBean.getRunnable()# This event does not exist in the specified handler.",
+									  detail="An invalid event has been detected: [#oEventHandlerBean.getRunnable()#] The action requested: [#oEventHandlerBean.getMethod()#] does not exists in the specified handler.",
 									  type="Framework.onInValidEventSettingException");
 				}
 			}//method check finalized.
@@ -215,7 +215,7 @@ Description :
 	<!--- Get a Registered Handler Bean --->
 	<cffunction name="getRegisteredHandler" access="public" hint="I get a registered handler and method according to passed event from the registeredHandlers setting." returntype="coldbox.system.beans.eventhandlerBean"  output="false">
 		<!--- ************************************************************* --->
-		<cfargument name="event"   type="any"  		required="true"  hint="The event to check and get." >
+		<cfargument name="event"   type="any"  		required="true"  hint="The full event string to check and get." >
 		<cfargument name="noThrow" type="any" 		required="false" default="false" hint="No error throwing, used by request service."/>
 		<!--- ************************************************************* --->
 		<cfscript>
@@ -228,14 +228,31 @@ Description :
 		var onInvalidEvent = controller.getSetting("onInvalidEvent");
 		var HandlerBean = CreateObject("component","coldbox.system.beans.eventhandlerBean").init(controller.getSetting("HandlersInvocationPath"));
 	
+		//Try to do list localization in the registry for default event string
+		handlerIndex = listFindNoCase(handlersList, event);
+		handlerExternalIndex = listFindNoCase(handlersExternalList, event);
+		
+		/* Do a Default Action Test First, if default action desired. */
+		if( handlerIndex ){
+			HandlerBean.setHandler(listgetAt(handlersList,handlerIndex));
+			HandlerBean.setMethod(controller.getSetting('EventAction',1));
+			return HandlerBean;
+		}
+		//Check for external location
+		else if( handlerExternalIndex ){
+			HandlerBean.setInvocationPath(controller.getSetting("HandlersExternalLocation"));
+			HandlerBean.setHandler(listgetAt(handlersExternalList,handlerExternalIndex));
+			HandlerBean.setMethod(controller.getSetting('EventAction',1));
+			return HandlerBean;
+		}
+		
 		//Rip the handler and method.
 		HandlerReceived = reReplace(event,"\.[^.]*$","");
 		MethodReceived = listLast(event,".");
-
-		//Try to do list localization in the registry
+		//Try to do list localization in the registry for full event string.
 		handlerIndex = listFindNoCase(handlersList, HandlerReceived);
 		handlerExternalIndex = listFindNoCase(handlersExternalList, HandlerReceived);
-		
+				
 		//Check for conventions location
 		if ( handlerIndex ){
 			HandlerBean.setHandler(listgetAt(handlersList,handlerIndex));
