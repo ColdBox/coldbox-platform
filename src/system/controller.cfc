@@ -327,14 +327,16 @@ Description		: This is the main ColdBox front Controller.
 	<!--- Event Service Locator Factory --->
 	<cffunction name="runEvent" returntype="any" access="Public" hint="I am an event handler runnable factory. If no event is passed in then it will run the default event from the config file.">
 		<!--- ************************************************************* --->
-		<cfargument name="event"         hint="The event to run as a string. If no current event is set, use the default event from the config.xml. This is a string" type="any" required="false" default="">
-		<cfargument name="prepostExempt" hint="If true, pre/post handlers will not be fired." type="boolean" required="false" default="false">
+		<cfargument name="event"         type="any" 	required="false" default="" hint="The event to run as a string. If no current event is set, use the default event from the config.xml. This is a string">
+		<cfargument name="prepostExempt" type="boolean" required="false" default="false" hint="If true, pre/post handlers will not be fired.">
+		<cfargument name="private" 		 type="boolean" required="false" default="false" hint="Execute a private event or not, default is false"/>
 		<!--- ************************************************************* --->
 		<cfset var oEventHandler = "">
 		<cfset var oEventHandlerBean = "">
 		<cfset var oRequestContext = getRequestService().getContext()>
 		<cfset var interceptMetadata = structnew()>
 		<cfset var Results = "">
+		<cfset var privateArgCollection = structnew()>
 		
 		<!--- Default Event Test --->
 		<cfif arguments.event eq "">
@@ -343,6 +345,9 @@ Description		: This is the main ColdBox front Controller.
 		
 		<!--- Validate the incoming event --->
 		<cfset oEventHandlerBean = getHandlerService().getRegisteredHandler(arguments.event)>
+		<!--- Private Event or Not? --->
+		<cfset oEventHandlerBean.setisPrivate(arguments.private)>
+		
 		<!--- Get the event handler to execute --->
 		<cfset oEventHandler = getHandlerService().getHandler(oEventHandlerBean)>
 		
@@ -359,13 +364,31 @@ Description		: This is the main ColdBox front Controller.
 			</cfmodule>
 		</cfif>
 
-		<!--- Start Timer --->
-		<cfmodule template="includes/timer.cfm" timertag="invoking runEvent [#arguments.event#]">
-			<!--- Execute the Event --->
-			<cfinvoke component="#oEventHandler#" method="#oEventHandlerBean.getMethod()#" returnvariable="Results">
-				<cfinvokeargument name="event" value="#oRequestContext#">
-			</cfinvoke>
-		</cfmodule>
+		<!--- Private or Public Event Execution --->
+		<cfif arguments.private>
+			<!--- Inject Mixins --->
+			<cfset getPlugin("methodInjector").start(oEventHandler)>
+			<!--- Private Arg Collection --->
+			<cfset privateArgCollection["event"] = oRequestContext>
+			<!--- Start Timer --->
+			<cfmodule template="includes/timer.cfm" timertag="invoking private runEvent [#arguments.event#]">
+				<!--- Call Private Event --->
+				<cfinvoke component="#oEventHandler#" method="invokerMixin" returnvariable="Results">
+					<cfinvokeargument name="method" value="#oEventHandlerBean.getMethod()#">
+					<cfinvokeargument name="argCollection" value="#privateArgCollection#">
+				</cfinvoke>
+			</cfmodule>
+			<!--- Cleanup Mixins --->
+			<cfset getPlugin("methodInjector").stop(oEventHandler)>
+		<cfelse>
+			<!--- Start Timer --->
+			<cfmodule template="includes/timer.cfm" timertag="invoking runEvent [#arguments.event#]">
+				<!--- Execute the Public Event --->
+				<cfinvoke component="#oEventHandler#" method="#oEventHandlerBean.getMethod()#" returnvariable="Results">
+					<cfinvokeargument name="event" value="#oRequestContext#">
+				</cfinvoke>
+			</cfmodule>
+		</cfif>	
 
 		<!--- PostHandler Execution --->
 		<cfif not arguments.prepostExempt and structKeyExists(oEventHandler,"postHandler")>

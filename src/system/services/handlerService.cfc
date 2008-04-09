@@ -134,7 +134,8 @@ Description :
 			/* ::::::::::::::::::::::::::::::::::::::::: EVENT METHOD TESTING :::::::::::::::::::::::::::::::::::::::::::: */
 			
 			/* Method Testing and Validation */
-			if ( not structKeyExists(oEventHandler,oEventHandlerBean.getMethod()) ){
+			if ( not oEventHandlerBean.getisPrivate() and not structKeyExists(oEventHandler,oEventHandlerBean.getMethod()) ){
+				getUtil().dumpit(getMetaData(oEventHandler).functions);getUtil().abortit();
 				/* Invalid Event Detected, log it */
 				controller.getPlugin("logger").logEntry("error","Invalid Event detected: #oEventHandlerBean.getRunnable()#");
 				/* If onInvalidEvent is registered, use it */
