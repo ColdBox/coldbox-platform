@@ -420,18 +420,8 @@ Modification History:
 		<cfargument name="async" 		type="boolean" required="false" default="true" hint="Run asynchronously or not"/>
 		<!--- ************************************************************* --->
 		<cfscript>
-			var keyIndex = 1;
-			var poolKeys = listToArray(structKeyList(getObjectPool().getpool_metadata()));
-			var poolKeysLength = ArrayLen(poolKeys);
-			
-			//Loop Through Metadata
-			for (keyIndex=1; keyIndex lte poolKeysLength; keyIndex=keyIndex+1){
-				//Override for Eternal Objects
-				if ( getObjectPool().getMetadataProperty(poolKeys[keyIndex],"Timeout") gt 0 ){
-					getObjectPool().setMetadataProperty(poolKeys[keyIndex],"Timeout", 1);
-					getObjectPool().setMetadataProperty(poolKeys[keyIndex],"created", dateadd("n",-5,now()) );
-				}
-			}
+			/* Expire All Objects */
+			expireByKeySnippet(keySnippet=".*",regex=true,async=false);
 		</cfscript>
 	</cffunction>
 	
