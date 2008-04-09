@@ -49,7 +49,7 @@ Modification History:
 		<div class="cfc_packagecontent">
 		<ul>
 			<cfloop from="1" to="#ArrayLen(instance.aCFC)#" index="i">
-				<li><a href="###instance.aCFC[i]#">#instance.aCFC[i]#</a></li>
+				<li><a href="#getLinkBaseURL()####instance.aCFC[i]#">#instance.aCFC[i]#</a></li>
 			</cfloop>
 			<cfif ArrayLen(instance.aCFC) eq 0>
 				<li><em>None Found</em></li>
@@ -67,11 +67,14 @@ Modification History:
 		<cfset md = getCFCMetaData(instance.aCFC[j])>
 		
 		<!--- Param Some Properties --->
-		<cfparam name="md.Hint" 	default="">
-		<cfparam name="md.Extends" 	default="#StructNew()#">
-		<cfparam name="md.cache" 	default="">
+		<cfparam name="md.Hint" 		default="">
+		<cfparam name="md.Type" 		default="">
+		<cfparam name="md.Extends" 		default="#StructNew()#">
+		<cfparam name="md.implements" 	default="#structNew()#">
+		<cfparam name="md.cache" 		default="">
 		<cfparam name="md.cacheTimeout" default="">
 		<cfparam name="md.cacheLastAccessTimeout" 	default="">
+		<cfparam name="md.Properties"	default="#arrayNew(1)#">
 		
 		<!--- Get Functions --->
 		<cfset aMethods = md.Functions>
@@ -79,6 +82,7 @@ Modification History:
 		<cfif isStruct(aMethods)>
 			<cfset aMethods = ArrayNew(1)>
 		</cfif>
+		
 		<!--- Output Methods. --->
 		<cfoutput>
 			<!--- Title --->
@@ -88,13 +92,19 @@ Modification History:
 			<!--- Table Summary --->
 			<table class="cfc_componentsummary" width="100%">
 				<tr>
-					<td><strong>Package</strong></td>
-					<td width="100%">#getPlugin("Utilities").ripExtension(md.name)#</td>
+					<td nowrap="true"><strong>Object Type</strong></td>
+					<td width="100%">#md.Type#</td>
 				</tr>
+				<tr>
+					<td><strong>Package</strong></td>
+					<td>#getPlugin("Utilities").ripExtension(md.name)#</td>
+				</tr>
+				<cfif md.hint.length()>
 				<tr>
 					<td><strong>Hint</strong></td>
 					<td>#md.hint#</td>
 				</tr>
+				</cfif>
 				<cfif md.cache.length()>
 				<tr>
 					<td><strong>Cache</strong></td>
@@ -111,6 +121,19 @@ Modification History:
 				<tr>
 					<td><strong>Cache Last Access Timeout</strong></td>
 					<td>#md.cacheLastAccessTimeout# Minutes</td>
+				</tr>
+				</cfif>
+				
+				<cfif not structIsEmpty(md.implements)>
+				<tr>
+					<td><strong>Implements</strong></td>
+					<td>
+					<cfset interfaceIndex = 1>
+					<cfloop collection="#md.implements#" item="interface">
+						#interface#<cfif interfaceIndex neq structCount(md.implements)>, </cfif>
+						<cfset interfaceIndex = interfaceIndex + 1>
+					</cfloop>
+					</td>
 				</tr>
 				</cfif>
 				
@@ -131,14 +154,54 @@ Modification History:
 			
 			<!--- Table Summary --->
 			<table class="cfc_component" width="100%">
+				
+				<!--- Properties Summary --->
+				<tr valign="top">
+					<td >
+						<div class="cfc_h2">Properties Summary</div>
+						<br />
+
+						<cfif arrayLen(md.properties)>
+						<table cellspacing="0" width="100%">
+							<tr valign="top" >
+								<td class="cfc_methodstitle" width="40" align="right">Name</td>
+								<td class="cfc_methodstitle" width="40" align="right" >Type</td>
+								<td class="cfc_methodstitle" width="40" align="right" >Required</td>
+								<td class="cfc_methodstitle" width="40" align="right" >Default</td>
+								<td class="cfc_methodstitle" >Hint</td>
+							</tr>
+							<cfloop from="1" to="#arrayLen(md.properties)#" index="x">
+								<cfset thisProperty = md.Properties[x]>
+								<!--- Verify Methods --->
+								<cfparam name="thisProperty.Name" 		default="">
+								<cfparam name="thisProperty.Type" 		default="">
+								<cfparam name="thisProperty.Required" 	default="">
+								<cfparam name="thisProperty.Default" 	default="">
+								<cfparam name="thisProperty.hint" 		default="">
+							<tr valign="top" onmouseover="this.className='cfc_methodrowsOn'" onmouseout="this.className='cfc_methodrows'" class="cfc_methodrows">
+								<td align="right" class="cfc_methodcells"><strong>#thisProperty.name#</strong></td>
+								<td class="cfc_methodcells" align="right">#thisProperty.Type#</td>
+								<td class="cfc_methodcells" align="right">#thisProperty.Required#</td>
+								<td class="cfc_methodcells" align="right">#thisProperty.Default#</td>
+								<td class="cfc_methodcells">
+									#thisProperty.Hint#
+								</td>
+							</tr>
+							</cfloop>
+						</table>
+						<cfelse>
+						<em>No properties found.</em>
+						</cfif>
+					</td>
+				</tr>					
+				
 				<!--- Method Summary --->
 				<tr valign="top">
 					<td >
-						<div class="cfc_h2">Method Summary</div>
+						<br /><div class="cfc_h2">Method Summary</div>
 						<br />
 
 						<table cellspacing="0" width="100%">
-
 							<tr valign="top" >
 								<td class="cfc_methodstitle" width="40" align="right">Access</td>
 								<td class="cfc_methodstitle" width="40" align="right" >Returns</td>
@@ -162,15 +225,14 @@ Modification History:
 								
 								<!--- Display Methods --->
 								<cfif listFindNoCase(instance.lstAccessTypes, thisMethod.Access)>
-									<cfset aParams = thisMethod.Parameters>
 									<cfset lstParams = "">
-									<cfloop from="1" to="#ArrayLen(aParams)#" index="j">
-										<cfset thisParam = aParams[j]>
+									<cfloop from="1" to="#ArrayLen(thisMethod.Parameters)#" index="j">
+										<cfset thisParam = thisMethod.Parameters[j]>
 										<cfparam name="thisParam.Name" default="">
 										<cfparam name="thisParam.Required" default="true" type="boolean">
 										<cfparam name="thisParam.Type" default="">
 										<cfparam name="thisParam.Default" default="">
-
+										
 										<cfset tmpParam = "#thisParam.Type# <b>#thisParam.Name#</b>">
 										<cfif Not thisParam.Required>
 											<cfset tmpParam = "<i>[#tmpParam# = '#thisParam.Default#']</i>">
@@ -184,9 +246,9 @@ Modification History:
 										<td align="right" class="cfc_methodcells">#lcase(thisMethod.Access)#</td>
 										<td class="cfc_methodcells" align="right">
 										<cfif thisMethod.ReturnType neq "">
-										#lcase(thisMethod.ReturnType)#
+											#lcase(thisMethod.ReturnType)#
 										<cfelse>
-										any
+											any
 										</cfif>
 										</td>
 										<td class="cfc_methodcells">
@@ -198,38 +260,39 @@ Modification History:
 								</cfif>
 							</cfloop>
 					  </table>
-					
-					<cfif ArrayLen(md.inheritanceTree)>
-						<!--- Inheritance Method Summary --->
-						<tr valign="top">
-							<td >
-								<div class="cfc_h2">Inheritance Summary</div>
-								<br />
-
-								<cfloop from="1" to="#arrayLen(md.inheritanceTree)#" index="x">
-								<table cellspacing="0" width="100%">
-									<tr valign="top">
-										<td class="cfc_methodstitle">Inherited Methods From: <strong>#md.inheritanceTree[x].name#</strong></td>
-									</tr>
-									<tr valign="top" class="cfc_methodrows" >
-										<td class="cfc_methodcells" style="line-height:1.3">
-											<cfloop from="1" to="#arrayLen(md.inheritanceTree[x].functions)#" index="y">
-											#md.inheritanceTree[x].functions[y]#<cfif arrayLen(md.inheritanceTree[x].functions) neq y>, </cfif>
-											</cfloop>											
-										</td>
-									</tr>					
-								</table>
-								</cfloop>
-							</td>
-						</tr>					
-					</cfif>							
 					</td>
 				</tr>
+			
+				<cfif ArrayLen(md.inheritanceTree)>
+				<!--- Inheritance Method Summary --->
+				<tr valign="top">
+					<td >
+						<br /><div class="cfc_h2">Inheritance Summary</div>
+						<br />
+
+						<cfloop from="1" to="#arrayLen(md.inheritanceTree)#" index="x">
+						<table cellspacing="0" width="100%">
+							<tr valign="top">
+								<td class="cfc_methodstitle">Inherited Methods From: <strong>#md.inheritanceTree[x].name#</strong></td>
+							</tr>
+							<tr valign="top" class="cfc_methodrows" >
+								<td class="cfc_methodcells" style="line-height:1.3">
+									<cfloop from="1" to="#arrayLen(md.inheritanceTree[x].functions)#" index="y">
+									#md.inheritanceTree[x].functions[y]#<cfif arrayLen(md.inheritanceTree[x].functions) neq y>, </cfif>
+									</cfloop>											
+								</td>
+							</tr>					
+						</table>
+						</cfloop>
+					</td>
+				</tr>					
+				</cfif>	
+					
 			</table>
 			<br>
 		</cfoutput>
 
-		<div align="right"><a href="#cfcdocstop">^Top</a></div>
+		<div align="right"><a href="#getLinkBaseURL()##cfcdocstop">^Top</a></div>
 		<hr size="1"><br />
 	</cfloop>
 </div>
