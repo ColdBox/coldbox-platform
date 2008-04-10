@@ -76,6 +76,7 @@ Modification History:
 		<cfparam name="md.Hint" 		default="">
 		<cfparam name="md.Type" 		default="">
 		<cfparam name="md.Extends" 		default="#StructNew()#">
+		<cfparam name="md.Functions"	default="#ArrayNew(1)#">
 		<cfparam name="md.implements" 	default="#structNew()#">
 		<cfparam name="md.cache" 		default="">
 		<cfparam name="md.cacheTimeout" default="">
@@ -206,7 +207,8 @@ Modification History:
 					<td >
 						<br /><div class="cfc_h2">Method Summary</div>
 						<br />
-
+						
+						<cfif arrayLen(md.aMethods)>						
 						<table cellspacing="0" width="100%">
 							<tr valign="top" >
 								<td class="cfc_methodstitle" width="40" align="right">Access</td>
@@ -266,6 +268,9 @@ Modification History:
 								</cfif>
 							</cfloop>
 					  </table>
+					  <cfelse>
+					 	 <em>No Methods found.</em>
+					  </cfif>
 					</td>
 				</tr>
 			
