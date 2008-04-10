@@ -55,7 +55,8 @@ That validator object can from anywhere you want using the mentioned technique a
 Interceptor Properties:
 
  - useRegex : boolean [default=true] Whether to use regex on event matching
- - useRoutes : boolean [default=false] Whether to redirec to events or routes
+ - useRoutes : boolean [default=false] Whether to redirect to events or routes
+ - queryChecks : boolean [deafult=true] Whether to validate the query for valid fields.
  - rulesSource : string [xml|db|ioc|ocm] Where to get the rules from.
  - debugMode : boolean [default=false] If on, then it logs actions via the logger plugin.
  - validator : string [default=""] If set, it must be a valid instantiation path to a security validator object.
@@ -125,6 +126,11 @@ and then extracted by this interceptor. They must be a valid rules query.
 					  detail="The valid sources are xml,db,ioc, and ocm.",
 					  type="interceptors.security.settingUndefinedException");
 			}
+			/* Query Checks */
+			if( not propertyExists("queryChecks") or not isBoolean(getProperty("queryChecks")) ){
+				setProperty("queryChecks",true);
+			}
+			
 			/* Now Call sourcesCheck */
 			RulesSourceChecks();
 			
@@ -174,10 +180,10 @@ and then extracted by this interceptor. They must be a valid rules query.
 			if( propertyExists('validatorIOC') ){
 				/* Try to create Validator */
 				try{
-					setValidator( getPlugin("ioc").getProperty('validatorIOC') );
+					setValidator( getPlugin("ioc").getBean(getProperty('validatorIOC')) );
 				}
 				catch(Any e){
-					throw("Error creating validator",e.message & e.details, "interceptors.security.validatorCreationException");
+					throw("Error creating validator",e.message & e.detail, "interceptors.security.validatorCreationException");
 				}
 			}
 		</cfscript>
@@ -267,7 +273,7 @@ and then extracted by this interceptor. They must be a valid rules query.
 		<!--- Verify if using validator --->
 		<cfif isValidatorUsed()>
 			<!--- Validate via Validator --->
-			<cfreturn getValidator().userValidator(arguments.rule)>
+			<cfreturn getValidator().userValidator(arguments.rule,getPlugin("messagebox"))>
 		<cfelse>
 			<!--- Loop Over Roles --->
 			<cfloop list="#arguments.rule.roles#" index="thisRole">
@@ -423,12 +429,16 @@ and then extracted by this interceptor. They must be a valid rules query.
 		<!--- ************************************************************* --->
 		<cfset var validColumns = "whitelist,securelist,roles,permissions,redirect">
 		<cfset var col = "">
-		<!--- Validate Query --->
-		<cfloop list="#validColumns#" index="col">
-			<cfif not listfindnocase(arguments.qRules.columnlist,col)>
-				<cfthrow message="The required column: #col# was not found in the rules query" type="interceptors.security.invalidRuleQuery">
-			</cfif>
-		</cfloop>
+		
+		<!--- Verify only if used --->
+		<cfif getProperty("queryChecks")>
+			<!--- Validate Query --->
+			<cfloop list="#validColumns#" index="col">
+				<cfif not listfindnocase(arguments.qRules.columnlist,col)>
+					<cfthrow message="The required column: #col# was not found in the rules query" type="interceptors.security.invalidRuleQuery">
+				</cfif>
+			</cfloop>
+		</cfif>
 	</cffunction>
 	
 	<!--- queryToArray --->

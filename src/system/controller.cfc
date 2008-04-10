@@ -47,7 +47,6 @@ Description		: This is the main ColdBox front Controller.
 			setPluginService( CreateObject("component","coldbox.system.services.pluginService").init(this) );
 			setInterceptorService( CreateObject("component", "coldbox.system.services.interceptorService").init(this) );
 			setHandlerService( CreateObject("component", "coldbox.system.services.handlerService").init(this) );
-			setExceptionService( CreateObject("component", "coldbox.system.services.exceptionService").init(this) );
 			
 			//Return instance
 			return this;
@@ -85,11 +84,7 @@ Description		: This is the main ColdBox front Controller.
 	
 	<!--- Exception Service --->
 	<cffunction name="getExceptionService" access="public" output="false" returntype="any" hint="Get ExceptionService: coldbox.system.services.exceptionService">
-		<cfreturn instance.ExceptionService/>
-	</cffunction>
-	<cffunction name="setExceptionService" access="public" output="false" returntype="void" hint="Set ExceptionService">
-		<cfargument name="ExceptionService" type="any" required="true"/>
-		<cfset instance.ExceptionService = arguments.ExceptionService/>
+		<cfreturn CreateObject("component", "coldbox.system.services.exceptionService").init(this)/>
 	</cffunction>
 	
 	<!--- Request Service --->

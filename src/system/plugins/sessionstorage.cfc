@@ -123,7 +123,7 @@ Modification History:
 	
 	<!--- Create Storage --->
 	<cffunction name="createStorage" access="private" returntype="void" hint="Create the session storage scope" output="false" >
-		<cfif not structKeyExists(session, "cbStorage")>
+		<cfif isDefined("session") and not structKeyExists(session, "cbStorage")>
 			<!--- Create session Storage Scope --->
 			<cflock name="#getLockName()#" type="exclusive" timeout="30" throwontimeout="true">
 				<cfif not structKeyExists(session, "cbStorage")>

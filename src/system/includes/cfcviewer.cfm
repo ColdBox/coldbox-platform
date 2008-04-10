@@ -14,7 +14,13 @@ Modification History:
 ----------------------------------------------------------------------->
 <cfoutput>
 <!--- Style Sheet --->
+<cfif not instance.styleSheet.length()>
+	<style>
+	<cfinclude template="/coldbox/system/includes/cfcviewer.css">
+	</style>
+<cfelse>
 <link rel="stylesheet" href="#instance.styleSheet#" type="text/css" />
+</cfif>
 
 <!--- Header Anchor --->
 <a name="cfcdocstop"></a>
