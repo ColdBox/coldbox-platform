@@ -21,7 +21,7 @@
 		<!--The absolute or relative path to where you want to store your log files for this application-->
 		<Setting name="ColdboxLogsLocation"			value="logs" />
 		<!--Default Event to run if no event is set or passed. Usually the event to be fired first (NOTE: use event handler syntax)-->
-		<Setting name="DefaultEvent" 				value="general.dspHome"/>
+		<Setting name="DefaultEvent" 				value="general.index"/>
 		<!--Event Handler to run on the start of a request, leave blank if not used. Emulates the Application.cfc onRequestStart method	-->
 		<Setting name="RequestStartHandler" 		value="main.onRequestStart"/>
 		<!--Event Handler to run at end of all requests, leave blank if not used. Emulates the Application.cfc onRequestEnd method-->
@@ -70,6 +70,8 @@
 		<Setting name="RequestContextDecorator" 	value=""/>
 		<!--Flag if the proxy returns the entire request collection or what the event handlers return, default is false -->
 		<Setting name="ProxyReturnCollection" 		value="false"/>
+		<!-- What scope are flash persistance variables using. -->
+		<Setting name="FlashURLPersistScope" 		value="session"/>
 	</Settings>
 
 	<!--Your Settings can go here, if not needed, use <YourSettings />. You can use these for anything you like.

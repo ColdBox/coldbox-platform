@@ -24,13 +24,13 @@ Description :
 		</cfscript>
 	</cffunction>
 	
-	<cffunction name="testdspHome" access="public" returntype="void" output="false">
+	<cffunction name="testindex" access="public" returntype="void" output="false">
 		<cfscript>
 		var event = "";
 		
 		//Place any variables on the form or URL scope to test the handler.
 		//FORM.name = "luis"
-		event = execute("general.dspHome");
+		event = execute("general.index");
 			
 		//Do your asserts below
 		assertEqualsString("Welcome to ColdBox!", event.getValue("welcomeMessage",""), "Failed to assert welcome message");
@@ -47,7 +47,7 @@ Description :
 		event = execute("general.doSomething");
 			
 		//Do your asserts below for setnextevent you can test for a setnextevent boolean flag
-		assertEqualsString("general.dspHome", event.getValue("setnextevent",""), "Relocation Test");
+		assertEqualsString("general.index", event.getValue("setnextevent",""), "Relocation Test");
 			
 		</cfscript>
 	</cffunction>

@@ -25,26 +25,28 @@ Modification History:
 		instance.defaultView = "";
 		instance.ViewLayouts = "";
 		instance.eventName = "";
+		instance.isSES = false;
+		instance.sesBaseURL = "";
 	</cfscript>
 
 	<cffunction name="init" access="public" output="false" hint="constructor" returntype="coldbox.system.beans.requestContext">
 		<!--- ************************************************************* --->
 		<cfargument name="struct1" 		 	type="any" 		required="true" hint="Usually the FORM scope">
 		<cfargument name="struct2" 		 	type="any" 		required="true" hint="Usually the URL scope">
-		<cfargument name="DefaultLayout" 	type="string" 	required="true">
-		<cfargument name="DefaultView" 	 	type="string" 	required="true">
-		<cfargument name="EventName" 	 	type="string" 	required="true"/>
-		<cfargument name="ViewLayouts"   	type="struct"   required="true">
-		<cfargument name="FolderLayouts"   	type="struct"   required="true">		
+		<cfargument name="properties" 		type="struct" 	required="true" hint="The context properties">
 		<!--- ************************************************************* --->
 		<cfscript>
+			/* Append Collections */
 			collectionAppend(arguments.struct1);
 			collectionAppend(arguments.struct2);
-			setDefaultLayout(arguments.DefaultLayout);
-			setDefaultView(arguments.DefaultView);
-			setViewLayouts(arguments.ViewLayouts);
-			setFolderLayouts(arguments.FolderLayouts);
-			setEventName(arguments.EventName);
+			/* Setup context properties */
+			setDefaultLayout(arguments.properties.DefaultLayout);
+			setDefaultView(arguments.properties.DefaultView);
+			setViewLayouts(arguments.properties.ViewLayouts);
+			setFolderLayouts(arguments.properties.FolderLayouts);
+			setEventName(arguments.properties.EventName);
+			setisSES(arguments.properties.isSES);
+			setsesBaseURL(arguments.properties.sesBaseURL);
 			return this;
 		</cfscript>		
 	</cffunction>
@@ -352,6 +354,23 @@ Modification History:
 	   <cfreturn "index.cfm?" & getEventName() & "=">
 	</cffunction>
 	
+	<cffunction name="buildLink" access="public" output="false" returntype="any" hint="Builds a link to a passed event, either SES or normal link. If the ses interceptor is declared it will create routes.">
+		<cfargument name="linkto" required="true" type="string" hint="The event or route you want to create the link to">
+	    <cfscript>
+		if( isSES() ){
+			if( right(getSESbaseURL(),1) eq  "/"){
+				return getSESBaseURL() & arguments.linkto;
+			}
+			else{
+				return getSESBaseURL() & "/" & arguments.linkto;
+			}
+		}
+		else{
+			return "index.cfm?#getEventName()#=#arguments.linkto#";
+		}		
+		</cfscript>
+	</cffunction>
+	
 	<!--- ************************************************************* --->
 	
 	<cffunction name="isEventCacheable" access="public" returntype="boolean" hint="Check wether the incoming event has been flagged for caching" output="false" >
@@ -394,6 +413,26 @@ Modification History:
 		<cfscript>
 			return getValue("cbox_viewCacheableEntry",structnew());
 		</cfscript>
+	</cffunction>
+	
+	<!--- ************************************************************* --->
+	
+	<cffunction name="isSES" access="public" output="false" returntype="boolean" hint="Determine if you are in SES mode.">
+		<cfreturn instance.isSES/>
+	</cffunction>
+	<cffunction name="setisSES" access="public" output="false" returntype="void" hint="Set isSES flag">
+		<cfargument name="isSES" type="boolean" required="true"/>
+		<cfset instance.isSES = arguments.isSES/>
+	</cffunction>
+	
+	<!--- ************************************************************* --->
+	
+	<cffunction name="getsesBaseURL" access="public" output="false" returntype="string" hint="Get the sesBaseURL">
+		<cfreturn instance.sesBaseURL/>
+	</cffunction>
+	<cffunction name="setsesBaseURL" access="public" output="false" returntype="void" hint="Set the sesBaseURL">
+		<cfargument name="sesBaseURL" type="string" required="true"/>
+		<cfset instance.sesBaseURL = arguments.sesBaseURL/>
 	</cffunction>
 	
 <!------------------------------------------- ACCESSORS/MUTATORS ------------------------------------------->

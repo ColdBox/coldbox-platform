@@ -119,6 +119,8 @@ Description :
 		<cfif StructKeyExists(arguments.course,"handler")>
 			<cfparam name="arguments.course.action" default="#getDefaultFrameworkAction()#" />
 			<cfset rc[getSetting('EventName')] = arguments.course.handler & "." & arguments.course.action />
+			<!--- Verify we are in ses mode. --->
+			<cfset event.setIsSES(true)>
 		</cfif>
       	
 		<!--- Remove what we set.. like a ninja --->

@@ -20,7 +20,9 @@ Modification History:
 	<cffunction name="init" access="public" output="false" returntype="requestService" hint="Constructor">
 		<cfargument name="controller" type="any" required="true">
 		<cfscript>
-			setController(arguments.controller);
+			setController(arguments.controller);			
+			/* Setup context properties */
+			setContextProperties(structnew());
 			return this;
 		</cfscript>
 	</cffunction>
@@ -80,6 +82,7 @@ Modification History:
 		</cfscript>
 	</cffunction>
 
+	<!--- Event caching test --->
 	<cffunction name="EventCachingTest" access="public" output="false" returntype="void" hint="Tests if the incoming context is an event cache">
 		<cfargument name="context" required="true" type="any" hint="">
 		<cfscript>
@@ -108,6 +111,7 @@ Modification History:
 		</cfscript>
 	</cffunction>
 	
+	<!--- Get the Context --->
 	<cffunction name="getContext" access="public" output="false" returntype="any" hint="Get the Request Context">
 		<cfscript>
 			if ( contextExists() )
@@ -117,6 +121,7 @@ Modification History:
 		</cfscript>
 	</cffunction>
 
+	<!--- Set the context --->
 	<cffunction name="setContext" access="public" output="false" returntype="void" hint="Set the Request Context">
 		<cfargument name="Context" type="coldbox.system.beans.requestContext" required="true">
 		<cfscript>
@@ -124,10 +129,20 @@ Modification History:
 		</cfscript>
 	</cffunction>
 
+	<!--- Check if context exists --->
 	<cffunction name="contextExists" access="public" output="false" returntype="boolean" hint="Does the request context exist">
 		<cfscript>
 			return structKeyExists(request,"cb_requestContext");
 		</cfscript>
+	</cffunction>
+	
+	<!--- Get / Set context properties --->
+	<cffunction name="getContextProperties" access="public" output="false" returntype="struct" hint="Get ContextProperties">
+		<cfreturn instance.ContextProperties/>
+	</cffunction>	
+	<cffunction name="setContextProperties" access="public" output="false" returntype="void" hint="Set ContextProperties">
+		<cfargument name="ContextProperties" type="struct" required="true"/>
+		<cfset instance.ContextProperties = arguments.ContextProperties/>
 	</cffunction>
 	
 <!------------------------------------------- PRIVATE ------------------------------------------->
@@ -135,32 +150,11 @@ Modification History:
 	<!--- Creates a new Context Object --->
 	<cffunction name="createContext" access="private" output="false" returntype="any" hint="Creates a new request context object">
 		<cfscript>
-		var DefaultLayout = "";
-		var DefaultView = "";
-		var ViewLayouts = structNew();
-		var FolderLayouts = structNew();
-		var EventName = "";
 		var oContext = "";
 		var oDecorator = "";
 		
-		//EventName default
-		if( controller.settingExists("EventName") ){
-			EventName = controller.getSetting("EventName");
-		}
-		
-		if ( controller.settingExists("DefaultLayout") ){
-			DefaultLayout = controller.getSetting("DefaultLayout");
-		}
-		if ( controller.settingExists("DefaultView") ){
-			DefaultView = controller.getSetting("DefaultView");
-		}
-		if ( controller.settingExists("ViewLayouts") ){
-			ViewLayouts = controller.getSetting("ViewLayouts");
-		}
-		if ( controller.settingExists("FolderLayouts") ){
-			FolderLayouts = controller.getSetting("FolderLayouts");
-		}
-		
+		/* Load Properties */
+		loadProperties();
 		</cfscript>
 		
 		<!--- Param the structures --->
@@ -169,10 +163,10 @@ Modification History:
 		
 		<cfscript>		
 		//Create the original request context
-		oContext = CreateObject("component","coldbox.system.beans.requestContext").init(FORM,URL,DefaultLayout,DefaultView,EventName,ViewLayouts,FolderLayouts);
+		oContext = CreateObject("component","coldbox.system.beans.requestContext").init(FORM,URL,getContextProperties());
 		
 		//Determine if we have a decorator, if we do, then decorate it.
-		if ( controller.settingExists("RequestContextDecorator") and controller.getSetting("RequestContextDecorator") neq ""){
+		if ( getContextProperties().isUsingDecorator ){
 			//Create the decorator
 			oDecorator = CreateObject("component",controller.getSetting("RequestContextDecorator")).init(oContext);
 			//Return
@@ -180,6 +174,54 @@ Modification History:
 		}
 		//Return Context
 		return oContext;
+		</cfscript>
+	</cffunction>
+	
+	<!--- Lazy Load Context Properties --->
+	<cffunction name="loadProperties" access="public" returntype="void" hint="Load the context properties" output="false" >
+		<cfscript>
+			var Properties = structnew();
+			
+			/* Verify we have context properties */
+			if( structisEmpty(getContextProperties()) ){
+				/* Setup Context Properties */
+				Properties.DefaultLayout = "";
+				Properties.DefaultView = "";
+				Properties.ViewLayouts = structNew();
+				Properties.FolderLayouts = structNew();
+				Properties.EventName = "";
+				Properties.isSES = false;
+				Properties.sesbaseURL = "";
+				
+				/* Get default context properties */
+				if( controller.settingExists("EventName") ){
+					Properties.EventName = controller.getSetting("EventName");
+				}		
+				if ( controller.settingExists("DefaultLayout") ){
+					Properties.DefaultLayout = controller.getSetting("DefaultLayout");
+				}
+				if ( controller.settingExists("DefaultView") ){
+					Properties.DefaultView = controller.getSetting("DefaultView");
+				}
+				if ( controller.settingExists("ViewLayouts") ){
+					Properties.ViewLayouts = controller.getSetting("ViewLayouts");
+				}
+				if ( controller.settingExists("FolderLayouts") ){
+					Properties.FolderLayouts = controller.getSetting("FolderLayouts");
+				}
+				if( controller.settingExists("sesbaseURL") ){
+					Properties.sesbaseurl = controller.getSetting('sesBaseURL');
+				}
+				/* Decorator */
+				if ( controller.settingExists("RequestContextDecorator") and controller.getSetting("RequestContextDecorator") neq ""){
+					Properties.isUsingDecorator = true;
+				}
+				else{
+					Properties.isUsingDecorator = false;
+				}
+				/* Persist them */
+				setContextProperties(Properties);		
+			}// end if empty properties
 		</cfscript>
 	</cffunction>
 
