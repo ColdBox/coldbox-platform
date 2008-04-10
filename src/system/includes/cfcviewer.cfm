@@ -208,7 +208,7 @@ Modification History:
 						<br /><div class="cfc_h2">Method Summary</div>
 						<br />
 						
-						<cfif arrayLen(md.aMethods)>						
+						<cfif arrayLen(aMethods)>						
 						<table cellspacing="0" width="100%">
 							<tr valign="top" >
 								<td class="cfc_methodstitle" width="40" align="right">Access</td>
