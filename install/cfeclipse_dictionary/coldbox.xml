@@ -919,7 +919,7 @@ Description :
 		</scope>
 		<scope value="controller.settingExists" type="Void">
 			<help><![CDATA[ 
-			 Set a setting in the configuration structures
+			 Verify that a setting exists in the configuration or coldbox structures.
 		]]></help>
 		</scope>
 		
