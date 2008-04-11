@@ -301,9 +301,10 @@ Modification History:
 					
 			</table>
 			<br>
-		</cfoutput>
+		
 
-		<div align="right"><a href="#getLinkBaseURL()##cfcdocstop">^Top</a></div>
+		<div align="right"><a href="#getLinkBaseURL()###cfcdocstop">^Top</a></div>
 		<hr size="1"><br />
+		</cfoutput>
 	</cfloop>
 </div>

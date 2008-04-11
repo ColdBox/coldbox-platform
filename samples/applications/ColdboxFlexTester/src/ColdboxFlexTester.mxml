@@ -177,15 +177,6 @@
 		]]>
 	</mx:Script>
 	
-	<mx:RemoteObject
-		id="coldboxProxy"
-		destination="ColdFusion"
-		source="coldbox.samples.applications.ColdboxFlexTester.bin.coldboxproxy" 
-		showBusyCursor="true"
-		fault="Alert.show(event.fault.message)"
-		>
-	</mx:RemoteObject>
-	
 	<mx:Button label="Ask ColdBox For Array" click="getRemoteArray()" x="10" y="20" width="170"/>
 	<mx:List id="myArrayResults" dataProvider="{aResult}" width="170" x="10" y="50"/>
 	

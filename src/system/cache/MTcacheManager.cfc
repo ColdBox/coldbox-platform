@@ -23,11 +23,17 @@ Modification History:
 	<!--- reap the cache --->
 	<cffunction name="reap" access="public" output="false" returntype="void" hint="Reap the cache.">
 		<cfset var ThreadName = "coldbox.cache.reap_#replace(createUUID(),"-","","all")#">
-		<cfthread name="#threadName#">  
-			<cfscript>  
-				super.reap(); 
-			</cfscript>
-		</cfthread>
+		
+		<!--- Reap only if in frequency --->
+		<cfif dateDiff("n", getCacheStats().getlastReapDatetime(), now() ) gte getCacheConfigBean().getCacheReapFrequency() >
+			
+			<cfthread name="#threadName#">  
+				<cfscript>  
+					super.reap(); 
+				</cfscript>
+			</cfthread>
+		
+		</cfif>
 	</cffunction>
 	
 	<!--- Expire All Objects --->
