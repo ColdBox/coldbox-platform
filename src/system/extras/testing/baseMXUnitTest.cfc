@@ -127,11 +127,11 @@ Description :
 	</cffunction>
 <!------------------------------------------- PRIVATE ------------------------------------------->
 
-	<cffunction name="dump" access="private" hint="Facade for cfmx dump" returntype="void">
+	<cffunction name="dumpit" access="private" hint="Facade for cfmx dump" returntype="void">
 		<cfargument name="var" required="yes" type="any">
 		<cfdump var="#var#">
 	</cffunction>
-	<cffunction name="abort" access="private" hint="Facade for cfabort" returntype="void" output="false">
+	<cffunction name="abortit" access="private" hint="Facade for cfabort" returntype="void" output="false">
 		<cfabort>
 	</cffunction>
 

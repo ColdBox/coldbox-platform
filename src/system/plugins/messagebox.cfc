@@ -27,7 +27,7 @@ Modification History:
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
-	<cffunction name="init" access="public" returntype="messagebox" output="false">
+	<cffunction name="init" access="public" returntype="messagebox" output="false" hint="Constructor">
 		<!--- ************************************************************* --->
 		<cfargument name="controller" type="any" required="true" hint="coldbox.system.controller">
 		<!--- ************************************************************* --->
@@ -81,7 +81,7 @@ Modification History:
 		<cfargument name="type"     	required="true"   type="string" hint="The message type.Available types [error][warning][info]">
 		<cfargument name="message"  	required="false"  type="string" default="" hint="The message to show.">
 		<cfargument name="messageArray" required="false"  type="Array"  hint="You can also send in an array of messages to render separated by a <br />">
-		''<!--- ************************************************************* --->
+		<!--- ************************************************************* --->
 		<cfset var msgStruct = structnew()>
 		<cfset var i = 1>
 		
@@ -94,7 +94,10 @@ Modification History:
 			<!--- Array Check --->
 			<cfif structKeyExists(arguments, "messageArray")>
 				<cfloop from="1" to="#arrayLen(arguments.messageArray)#" index="i">
-					<cfset msgStruct.message = msgStruct.message & arguments.messageArray[i] & "<br/>">
+					<cfset msgStruct.message = msgStruct.message & arguments.messageArray[i]>
+					<cfif i neq ArrayLen(arguments.messageArray)>
+						<cfset msgStruct.message = msgStruct.message & "<br/>">	
+					</cfif>
 				</cfloop>
 			</cfif>
 			
@@ -104,6 +107,57 @@ Modification History:
 			<cfthrow type="Framework.plugins.messagebox.InvalidMessageTypeException" message="The message type sent in: #arguments.type# is invalid. Available types: error,warning,info">
 		</cfif>
 	</cffunction>
+	
+	<!--- Append A message --->			
+	<cffunction name="append" access="public" returntype="void" hint="Append a message to the messagebox. If there is no message, then it sets the type to information." output="false" >
+		<!--- ************************************************************* --->
+		<cfargument name="message"  	required="true"  type="string" default="" hint="The message to append, it does not include any breaks or delimiters. You must send that.">
+		<!--- ************************************************************* --->
+		<cfscript>
+			var currentMessage = "";
+			var newMessage = "";
+			
+			/* Do we have a message? */
+			if( isEmpty() ){
+				/* Set default message */
+				setMessage('information',arguments.message);
+			}
+			else{
+				/* Get Current Message */
+				currentMessage = getMessage();
+				/* Append */
+				newMessage = currentMessage.message & arguments.message;
+				/* Set it back */
+				setMessage(currentMessage.type,newMessage);				
+			}
+		</cfscript>
+	</cffunction>
+	
+	<!--- Append A message --->			
+	<cffunction name="appendArray" access="public" returntype="void" hint="Append an array of messages to the messagebox. If there is no message, then it sets the type to information." output="false" >
+		<!--- ************************************************************* --->
+		<cfargument name="messageArray"  	required="true"  type="Array" default="" hint="The array of messages to append. You must send that.">
+		<!--- ************************************************************* --->
+		<cfscript>
+			var currentMessage = "";
+			var newMessage = "";
+			
+			/* Do we have a message? */
+			if( isEmpty() ){
+				/* Set default message */
+				setMessage(type='information',messageArray=arguments.messageArray);
+			}
+			else{
+				/* Get Current Message */
+				currentMessage = getMessage();
+				/* Append */
+				ArrayPrePend(arguments.messageArray,currentMessage.message);
+				/* Set it back */
+				setMessage(type=currentMessage.type,messageArray=arguments.messageArray);				
+			}
+		</cfscript>
+	</cffunction>
+	
 
 	<!--- Get a Message --->
 	<cffunction name="getMessage" access="public" hint="Returns a structure of the message if it exists, else a blank structure." returntype="any" output="false">

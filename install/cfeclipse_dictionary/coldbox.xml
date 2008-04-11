@@ -8,11 +8,7 @@ www.coldboxframework.com | www.luismajano.com | www.ortussolutions.com
 Author     :	Luis Majano
 Date        :	10/16/2007
 Description :
-	This is the Application.cfc for usage withing the ColdBox Framework.
-	Make sure that it extends the coldbox object:
-	coldbox.system.coldbox
-	
-	So if you have refactored your framework, make sure it extends coldbox.
+	This is the CFEclipse Dictionary for ColdBox
  -->
 <dictionary xmlns="http://www.cfeclipse.org/version1/dictionary"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -43,17 +39,6 @@ Description :
 			<parameter name="interceptData" type="struct" required="false">
 				<help><![CDATA[
 					The interception data structure to send in for interception.
-				]]></help>
-			</parameter>
-		</function>
-		
-		<function creator="8" name="htmlhead" returns="void">
-			<help><![CDATA[
-				Facade to cfhtmlhead
-			]]></help>
-			<parameter name="content" type="Any" required="true">
-				<help><![CDATA[
-					The content to include at the head
 				]]></help>
 			</parameter>
 		</function>
@@ -169,9 +154,11 @@ Description :
 					<value option="&quot;i18n&quot;"/>
 					<value option="&quot;ioc&quot;"/>
 					<value option="&quot;JavaLoader&quot;"/>
+					<value option="&quot;json&quot;"/>
 					<value option="&quot;logger&quot;"/>
-					<value option="&quot;MTlogger&quot;"/>
 					<value option="&quot;messagebox&quot;"/>
+					<value option="&quot;methodInjector&quot;"/>
+					<value option="&quot;MTlogger&quot;"/>
 					<value option="&quot;queryHelper&quot;"/>
 					<value option="&quot;renderer&quot;"/>
 					<value option="&quot;resourceBundle&quot;"/>
@@ -249,12 +236,15 @@ Description :
 					<value option="&quot;EnableColdfusionLogging&quot;"/>
 					<value option="&quot;EnableDumpVar&quot;"/>
 					<value option="&quot;Environment&quot;"/>
+					<value option="&quot;EventCaching&quot;"/>
 					<value option="&quot;EventName&quot;"/>
 					<value option="&quot;ExceptionHandler&quot;"/>
+					<value option="&quot;ExpandedColdboxLogsLocation&quot;"/>
 					<value option="&quot;FolderLayouts&quot;"/>
 					<value option="&quot;HandlerCaching&quot;"/>
-					<value option="&quot;HandlersIndexAutoReload&quot;"/>
 					<value option="&quot;HandlersExternalLocation&quot;"/>
+					<value option="&quot;HandlersExternalLocationPath&quot;"/>
+					<value option="&quot;HandlersIndexAutoReload&quot;"/>
 					<value option="&quot;HandlersInvocationPath&quot;"/>
 					<value option="&quot;HandlersPath&quot;"/>
 					<value option="&quot;IOCDefintionFile&quot;"/>
@@ -273,17 +263,20 @@ Description :
 					<value option="&quot;OwnerEmail&quot;"/>
 					<value option="&quot;ProxyReturnCollection&quot;"/>
 					<value option="&quot;RBundles&quot;"/>
+					<value option="&quot;RegisteredExternalHandlers&quot;"/>
 					<value option="&quot;RegisteredHandlers&quot;"/>
 					<value option="&quot;ReinitPassword&quot;"/>
+					<value option="&quot;RequestContextDecorator&quot;"/>
 					<value option="&quot;RequestEndHandler&quot;"/>
 					<value option="&quot;RequestStartHandler&quot;"/>
-					<value option="&quot;RequestContextDecorator&quot;"/>
 					<value option="&quot;UDFLibraryFile&quot;"/>
 					<value option="&quot;SessionStartHandler&quot;"/>
 					<value option="&quot;SessionEndHandler&quot;"/>
 					<value option="&quot;ViewLayouts&quot;"/>
 					<value option="&quot;WebServices&quot;"/>
 					<value option="&quot;onInvalidEvent&quot;"/>
+					<value option="&quot;htmlBaseURL&quot;"/>
+					<value option="&quot;sesBaseURL&quot;"/>
 					<value option="&quot;using_i18N&quot;"/>
 				</values>
 			</parameter>
@@ -328,6 +321,17 @@ Description :
 			</parameter>
 		</function>
 		
+		<function creator="8" name="htmlhead" returns="void">
+			<help><![CDATA[
+				Facade to cfhtmlhead
+			]]></help>
+			<parameter name="content" type="Any" required="true">
+				<help><![CDATA[
+					The content to include at the head
+				]]></help>
+			</parameter>
+		</function>
+		
 		<function creator="8" name="include" returns="void">
 			<help><![CDATA[
 				Facade to cfinclude
@@ -350,17 +354,6 @@ Description :
 			</parameter>
 		</function>
 		
-		<function creator="8" name="purgeView" returns="void">
-			<help><![CDATA[
-				 Purges a view using the renderer plugin
-			]]></help>
-			<parameter name="view" type="String" required="true">
-				<help><![CDATA[
-					The view to purge.
-				]]></help>
-			</parameter>
-		</function>
-		
 		<function creator="8" name="persistVariables" returns="void">
 			<help><![CDATA[
 				 Persist variables in the flash RC.
@@ -368,6 +361,17 @@ Description :
 			<parameter name="persist" type="String" required="true">
 				<help><![CDATA[
 					The comma delimmited list of variables in the RC to flash persist.
+				]]></help>
+			</parameter>
+		</function>
+		
+		<function creator="8" name="purgeView" returns="void">
+			<help><![CDATA[
+				 Purges a view using the renderer plugin
+			]]></help>
+			<parameter name="view" type="String" required="true">
+				<help><![CDATA[
+					The view to purge.
 				]]></help>
 			</parameter>
 		</function>
@@ -408,6 +412,25 @@ Description :
 					The path or name of the view. Do not append .cfm
 				]]></help>
 			</parameter>
+			<parameter name="cache" type="boolean" required="false">
+				<help><![CDATA[
+					Cache the view or not
+				]]></help>
+				<values default="false">
+					<value option="&quot;true&quot;"/>
+					<value option="&quot;false&quot;"/>
+				</values>
+			</parameter>
+			<parameter name="cacheTimeout" type="numeric" required="false">
+				<help><![CDATA[
+					The timeout in minutes
+				]]></help>
+			</parameter>
+			<parameter name="cacheLastAccessTimeout" type="numeric" required="false">
+				<help><![CDATA[
+					The last access timeout in minutes
+				]]></help>
+			</parameter>
 		</function>
 		
 		<function creator="8" name="runEvent" returns="void">
@@ -418,6 +441,16 @@ Description :
 				<help><![CDATA[
 					The name of the event to execute. If not set, then the default event will be used.
 				]]></help>
+			</parameter>
+			<parameter name="prepostExempt" type="boolean" required="false">
+				<help><![CDATA[
+					Exempt this execution of pre/post handler conventions.
+				]]></help>
+			<parameter name="private" type="boolean" required="false">
+				<help><![CDATA[
+				If set, it will try to execute a private event.
+			]]></help>
+			</parameter>
 			</parameter>
 		</function>
 		
@@ -531,6 +564,13 @@ Description :
 
 	<scopes>
 		<!-- <scope value="my.thing"></scope> -->
+		
+		<scope value="event.buildLink('event or route')" type="Void">
+			<help><![CDATA[ 
+			Clears the entire collection.
+		]]></help>
+		</scope>
+		
 		<scope value="event.clearCollection()" type="Void">
 			<help><![CDATA[ 
 			Clears the entire collection.
@@ -626,10 +666,22 @@ Description :
 			Gets the front controller appending with the event name: index.cfm?event=
 		]]></help>
 		</scope>
+		
+		<scope value="event.getsesBaseURL()" type="String">
+			<help><![CDATA[ 
+			IF using ses, then it will give you the ses base set in your routes file.
+		]]></help>
+		</scope>
 	
 		<scope value="event.getSize()" type="Numeric">
 			<help><![CDATA[ 
 			Gets the current size of the request collection
+		]]></help>
+		</scope>
+		
+		<scope value="event.getTrimValue('name')" type="Any">
+			<help><![CDATA[ 
+			Gets a value from the collection.
 		]]></help>
 		</scope>
 		
@@ -645,21 +697,27 @@ Description :
 		]]></help>
 		</scope>
 		
-		<scope value="event.isEventCacheable" type="Boolean">
+		<scope value="event.isEventCacheable()" type="Boolean">
 			<help><![CDATA[ 
 			Determines if you the incoming event is cacheable or not.
 		]]></help>
 		</scope>
 		
-		<scope value="event.isProxyRequest" type="Boolean">
+		<scope value="event.isProxyRequest()" type="Boolean">
 			<help><![CDATA[ 
 			Determines if you are in a proxy request or not.
 		]]></help>
 		</scope>
 		
-		<scope value="event.isNoRender" type="Boolean">
+		<scope value="event.isNoRender()" type="Boolean">
 			<help><![CDATA[ 
 			Determines if this request will render output or not.
+		]]></help>
+		</scope>
+		
+		<scope value="event.isSES()" type="Boolean">
+			<help><![CDATA[ 
+			Determines if you are executing inside of an SES route.
 		]]></help>
 		</scope>
 		
@@ -740,9 +798,9 @@ Description :
 		]]></help>
 		</scope>
 		
-		
-		
+		<!-- *************************************************************************** -->
 		<!--Controller-->
+		<!-- *************************************************************************** -->
 		<scope value="controller.getAppHash()" type="String">
 			<help><![CDATA[ 
 			 Get the current application's unique ID.
@@ -774,6 +832,12 @@ Description :
 		</scope>
 		
 		<scope value="controller.getDebuggerService()" type="Any">
+			<help><![CDATA[ 
+			 Get the debugger service reference
+		]]></help>
+		</scope>
+		
+		<scope value="controller.getExceptionService()" type="Any">
 			<help><![CDATA[ 
 			 Get the debugger service reference
 		]]></help>
