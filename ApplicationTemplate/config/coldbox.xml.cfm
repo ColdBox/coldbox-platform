@@ -77,6 +77,16 @@
 	<!--Your Settings can go here, if not needed, use <YourSettings />. You can use these for anything you like.
 		<YourSettings>
 			<Setting name="MySetting" value="My Value"/>
+			
+			<!-- whether to encrypt the values or not -->
+			<Setting name="cookiestorage_encryption" value="true"/>
+			<!-- The encryption seed to use. Else, use a default one (Not Recommened) -->
+			<Setting name="cookiestorage_encryption_seed" value="mykey"/>
+			<!-- The encryption algorithm to use (According to CFML Engine) -->
+			<Setting name="cookiestorage_encryption_algorithm" value="CFMX_COMPAT or BD_DEFAULT"/>
+			
+			<!-- Messagebox Plugin (You can now override the storage scope without affecting all framework applications) -->
+			<Setting name="messagebox_storage_scope" value="session or client" />
 		</YourSettings>
 	 -->
 	<YourSettings></YourSettings>
