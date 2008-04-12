@@ -88,7 +88,8 @@ Description :
 
 	<!--- prepare request, execute request and retrieve request --->
 	<cffunction name="execute" access="public" output="false" returntype="any" hint="Executes a framework lifecycle">
-		<cfargument name="eventhandler" required="true" type="string" hint="">
+		<cfargument name="eventhandler" required="true" type="string" hint="The event to execute">
+		<cfargument name="private" required="false" type="boolean" default="false" hint="Call a private event or not">
 		<cfscript>
 			var handlerResults = "";
 			var requestContext = "";
@@ -97,7 +98,7 @@ Description :
 			setupRequest();
 			
 			//TEST EVENT EXECUTION
-			handlerResults = getController().runEvent(eventhandler);
+			handlerResults = getController().runEvent(event=eventhandler,private=arguments.private);
 			
 			//Return the correct event context.
 			requestContext = getRequestContext();
