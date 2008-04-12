@@ -5,7 +5,7 @@
 		<!--The name of your application.-->
 		<Setting name="AppName"						value="CF8Ajax"/>
 		<!--Default Debugmode boolean flag (Set to false in production environments)-->
-		<Setting name="DebugMode" 					value="false" />
+		<Setting name="DebugMode" 					value="true" />
 		<!--The Debug Password to use in order to activate/deactivate debugmode,activated by url actions -->
 		<Setting name="DebugPassword" 				value=""/>
 		<!--The fwreinit password to use in order to reinitialize the framework and application.Optional, else leave blank -->
@@ -21,7 +21,7 @@
 		<!--The absolute or relative path to where you want to store your log files for this application-->
 		<Setting name="ColdboxLogsLocation"			value="logs" />
 		<!--Default Event to run if no event is set or passed. Usually the event to be fired first (NOTE: use event handler syntax)-->
-		<Setting name="DefaultEvent" 				value="ehGeneral.dspHome"/>
+		<Setting name="DefaultEvent" 				value="ehGeneral.index"/>
 		<!--Event Handler to run on the start of a request, leave blank if not used. Emulates the Application.cfc onRequestStart method	-->
 		<Setting name="RequestStartHandler" 		value="ehMain.onRequestStart"/>
 		<!--Event Handler to run at end of all requests, leave blank if not used. Emulates the Application.cfc onRequestEnd method-->
@@ -45,40 +45,70 @@
 		 -->
 		<Setting name="EnableBugReports" 			value="true"/>
 		<!--UDF Library To Load on every request for your views and handlers -->
-		<Setting name="UDFLibraryFile" 				value="" />
+		<Setting name="UDFLibraryFile" 				value="includes/udf.cfm" />
 		<!--Messagebox Style Override. A boolean of wether to override the styles using your own css.-->
 		<Setting name="MessageboxStyleOverride"		value="" />
 		<!--Flag to Auto reload the internal handlers directory listing. False for production. -->
 		<Setting name="HandlersIndexAutoReload"   	value="true" />
 		<!--Flag to auto reload the config.xml settings. False for production. -->
-		<Setting name="ConfigAutoReload"          	value="false" />
+		<Setting name="ConfigAutoReload"          	value="true" />
 		<!-- Declare the custom plugins base invocation path, if used. You have to use dot notation.Example: mymapping.myplugins	-->
-		<Setting name="MyPluginsLocation"   		value="" />
+		<Setting name="MyPluginsLocation"   		value="plugins" />
 		<!-- Declare the external handlers base invocation path, if used. You have to use dot notation.Example: mymapping.myhandlers	-->
 		<Setting name="HandlersExternalLocation"   	value="" />
 		<!--Flag to cache handlers. Default if left blank is true. -->
 		<Setting name="HandlerCaching" 				value="false"/>
 		<!--Flag to cache events if metadata declared. Default is true -->
-		<Setting name="EventCaching" 				value="true"/>
+		<Setting name="EventCaching" 				value="false"/>
 		<!--IOC Framework if Used, else leave blank-->
-		<Setting name="IOCFramework"				value="" />
+		<Setting name="IOCFramework"				value="lightwire" />
 		<!--IOC Definition File Path, relative or absolute -->
-		<Setting name="IOCDefinitionFile"			value="" />
+		<Setting name="IOCDefinitionFile"			value="config/BeanConfig" />
 		<!--IOC Object Caching, true/false. For ColdBox to cache your IoC beans-->
-		<Setting name="IOCObjectCaching"			value="false" />
+		<Setting name="IOCObjectCaching"			value="true" />
 		<!--Request Context Decorator, leave blank if not using. Full instantiation path -->
 		<Setting name="RequestContextDecorator" 	value=""/>
 		<!--Flag if the proxy returns the entire request collection or what the event handlers return, default is false -->
-		<Setting name="ProxyReturnCollection" 		value="false"/>
+		<Setting name="ProxyReturnCollection" 		value="true"/>
+		<!-- What scope are flash persistance variables using. -->
+		<Setting name="FlashURLPersistScope" 		value="session"/>
 	</Settings>
 
-	<!--Your Settings can go here, if not needed, use <YourSettings />. You can use these for anything you like.
+	<!-- Your Settings can go here, if not needed, use <YourSettings />. You can use these for anything you like.
 		<YourSettings>
 			<Setting name="MySetting" value="My Value"/>
+			
+			whether to encrypt the values or not
+			<Setting name="cookiestorage_encryption" value="true"/>
+			The encryption seed to use. Else, use a default one (Not Recommened)
+			<Setting name="cookiestorage_encryption_seed" value="mykey"/>
+			The encryption algorithm to use (According to CFML Engine)
+			<Setting name="cookiestorage_encryption_algorithm" value="CFMX_COMPAT or BD_DEFAULT"/>
+			
+			Messagebox Plugin (You can now override the storage scope without affecting all framework applications)
+			<Setting name="messagebox_storage_scope" value="session or client" />
 		</YourSettings>
 	 -->
-	<YourSettings></YourSettings>
-
+	<YourSettings>
+		<!-- whether to encrypt the values or not -->
+		<Setting name="cookiestorage_encryption" value="true"/>
+		<!-- The encryption seed to use. Else, use a default one (Not Recommened) -->
+		<Setting name="cookiestorage_encryption_seed" value="MyCF8AjaxHey"/>
+		<!-- The encryption algorithm to use (According to CFML Engine) -->
+		<Setting name="cookiestorage_encryption_algorithm" value="CFMX_COMPAT"/>
+		<!-- Messagebox Plugin (You can now override the storage scope without affecting all framework applications) -->
+		<Setting name="messagebox_storage_scope" value="session" />
+	</YourSettings>
+	
+	<!-- Custom Conventions : You can override the framework wide conventions -->
+	<Conventions>
+		<handlersLocation>handlers</handlersLocation>
+		<pluginsLocation>plugins</pluginsLocation>
+		<layoutsLocation>layouts</layoutsLocation>
+		<viewsLocation>views</viewsLocation>
+		<eventAction>index</eventAction>		
+	</Conventions>	
+	
 	<!--Optional,if blank it will use the CFMX administrator settings.-->
 	<MailServerSettings>
 		<MailServer></MailServer>
@@ -137,19 +167,20 @@
 	<!--Datasource Setup, you can then retreive a datasourceBean via the getDatasource("name") method: 
 	<Datasource alias="MyDSNAlias" name="real_dsn_name"   dbtype="mysql"  username="" password="" />	
 	-->
-	<Datasources />
+	<Datasources>
+		<Datasource alias="cfartgallery" name="cfartgallery"   dbtype="Apache Derby Embedded"  username="" password="" />
+	</Datasources>
 	
-	<!--ColdBox Object Caching Settings Overrides the Framework-wide settings 
+	<!--ColdBox Object Caching Settings Overrides the Framework-wide settings--> 
 	<Cache>
-		<ObjectDefaultTimeout>45</ObjectDefaultTimeout>
-		<ObjectDefaultLastAccessTimeout>15</ObjectDefaultLastAccessTimeout>
+		<ObjectDefaultTimeout>60</ObjectDefaultTimeout>
+		<ObjectDefaultLastAccessTimeout>30</ObjectDefaultLastAccessTimeout>
 		<UseLastAccessTimeouts>true</UseLastAccessTimeouts>
 		<ReapFrequency>1</ReapFrequency>
-		<MaxObjects>50</MaxObjects>
-		<FreeMemoryPercentageThreshold>3</FreeMemoryPercentageThreshold>
+		<MaxObjects>100</MaxObjects>
+		<FreeMemoryPercentageThreshold>1</FreeMemoryPercentageThreshold>
 		<EvictionPolicy>LRU</EvictionPolicy>
 	</Cache>
-	-->
 	
 	<!-- Interceptor Declarations 
 	<Interceptors throwOnInvalidStates="true">
@@ -165,6 +196,12 @@
 	
 	<Interceptors>
 		<!-- config file is relative to app root -->
+		<Interceptor class="coldbox.system.interceptors.environmentControl"> 
+			<Property name="configFile">config/environments.xml.cfm</Property>
+			<Property name="fireOnInit">false</Property> 
+			<Property name="afterConfigurationLoad">true</Property>
+		</Interceptor>
+		
 		<Interceptor class="coldbox.system.interceptors.ses">
 			<Property name="configFile">config/routes.cfm</Property>
 		</Interceptor>

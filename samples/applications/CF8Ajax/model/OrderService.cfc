@@ -6,11 +6,13 @@ www.coldboxframework.com | www.luismajano.com | www.ortussolutions.com
 
 Author      :	Sana Ullah
 Date        :	March 05 2008
-Description :	Home Page.
+Description :
 ----------------------------------------------------------------------->
-
-<cfoutput>
-<h1>#Event.getValue("welcomeMessage")#</h1>
-<h5>You are running #getSetting("codename",1)# #getSetting("version",1)# (#getsetting("suffix",1)#)</h5>
-</cfoutput>
-
+<cfcomponent output="false">
+	
+	<cffunction name="qry" output="false" access="public" returntype="any">
+	
+		<cfreturn true>
+	</cffunction>
+	
+</cfcomponent>

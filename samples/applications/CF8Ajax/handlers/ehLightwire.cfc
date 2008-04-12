@@ -6,11 +6,17 @@ www.coldboxframework.com | www.luismajano.com | www.ortussolutions.com
 
 Author      :	Sana Ullah
 Date        :	March 05 2008
-Description :	Home Page.
+Description :	Lightwire implmentation.
 ----------------------------------------------------------------------->
+<cfcomponent name="ehLightwire" extends="coldbox.system.eventhandler" output="false">
+	
+	<!--- This init format is mandatory if you are writing init code else is optional, include the super.init(arguments.controller). ---> 
+	<cffunction name="init" access="public" returntype="any" output="false">
+		<cfargument name="controller" type="any">
+		<cfset super.init(arguments.controller)>
+		<!--- Any constructor code here --->
+		<cfreturn this>
+	</cffunction>
 
-<cfoutput>
-<h1>#Event.getValue("welcomeMessage")#</h1>
-<h5>You are running #getSetting("codename",1)# #getSetting("version",1)# (#getsetting("suffix",1)#)</h5>
-</cfoutput>
 
+</cfcomponent>
