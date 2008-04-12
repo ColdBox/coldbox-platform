@@ -181,7 +181,7 @@
 		<Interceptor class="full class name">
 			<Property name="myProp">value</Property>
 			<Property name="myArray">[1,2,3]</Property>
-			<Property name="myStruct">{ key1:1, key2=2 }</Property>
+			<Property name="myStruct">{ key1:1, key2:2 }</Property>
 		</Inteceptor>
 		<Interceptor class="no property" />
 	</Interceptors>
