@@ -5,7 +5,7 @@
 		<!--The name of your application.-->
 		<Setting name="AppName"						value="CF8Ajax"/>
 		<!--Default Debugmode boolean flag (Set to false in production environments)-->
-		<Setting name="DebugMode" 					value="true" />
+		<Setting name="DebugMode" 					value="false" />
 		<!--The Debug Password to use in order to activate/deactivate debugmode,activated by url actions -->
 		<Setting name="DebugPassword" 				value=""/>
 		<!--The fwreinit password to use in order to reinitialize the framework and application.Optional, else leave blank -->
@@ -49,21 +49,21 @@
 		<!--Messagebox Style Override. A boolean of wether to override the styles using your own css.-->
 		<Setting name="MessageboxStyleOverride"		value="" />
 		<!--Flag to Auto reload the internal handlers directory listing. False for production. -->
-		<Setting name="HandlersIndexAutoReload"   	value="true" />
+		<Setting name="HandlersIndexAutoReload"   	value="false" />
 		<!--Flag to auto reload the config.xml settings. False for production. -->
-		<Setting name="ConfigAutoReload"          	value="true" />
+		<Setting name="ConfigAutoReload"          	value="false" />
 		<!-- Declare the custom plugins base invocation path, if used. You have to use dot notation.Example: mymapping.myplugins	-->
 		<Setting name="MyPluginsLocation"   		value="plugins" />
 		<!-- Declare the external handlers base invocation path, if used. You have to use dot notation.Example: mymapping.myhandlers	-->
 		<Setting name="HandlersExternalLocation"   	value="" />
 		<!--Flag to cache handlers. Default if left blank is true. -->
-		<Setting name="HandlerCaching" 				value="false"/>
+		<Setting name="HandlerCaching" 				value="true"/>
 		<!--Flag to cache events if metadata declared. Default is true -->
-		<Setting name="EventCaching" 				value="false"/>
-		<!--IOC Framework if Used, else leave blank-->
-		<Setting name="IOCFramework"				value="lightwire" />
-		<!--IOC Definition File Path, relative or absolute -->
-		<Setting name="IOCDefinitionFile"			value="config/BeanConfig" />
+		<Setting name="EventCaching" 				value="true"/>
+		<!--IOC Framework if Used, else leave blank lightwire-->
+		<Setting name="IOCFramework"				value="" />
+		<!--IOC Definition File Path, relative or absolute coldbox.samples.applications.CF8Ajax.config.BeanConfig-->
+		<Setting name="IOCDefinitionFile"			value="" />
 		<!--IOC Object Caching, true/false. For ColdBox to cache your IoC beans-->
 		<Setting name="IOCObjectCaching"			value="true" />
 		<!--Request Context Decorator, leave blank if not using. Full instantiation path -->

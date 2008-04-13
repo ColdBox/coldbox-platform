@@ -17,5 +17,61 @@ Description :	ColdBox Plugins are very powerfull for AOP, I will try to have sam
 		<!--- Any constructor code here --->
 		<cfreturn this>
 	</cffunction>
+	
+	<cffunction name="preHandler" output="false" returntype="void" access="public">
+	  <cfargument name="Event" type="coldbox.system.beans.requestContext">
+	  <cfscript>
+	  //Execute any pre-event code here. Like AOP logging, etc.
+	  </cfscript>
+	</cffunction>
 
+	<cffunction name="dspHome" access="public" returntype="void" output="false">
+		<cfargument name="Event" type="coldbox.system.beans.requestContext">
+		<!--- Do Your Logic Here to prepare a view --->
+		<cfset Event.setValue("welcomeMessage","Welcome to ColdBox!")>	
+		<!--- Set the View To Display, after Logic --->
+		<cfset Event.setView("plugin/vwPluginHome")>
+	</cffunction>
+	
+	<!--- application storage plugin  ---> 
+	<cffunction name="dspApplicationStorage" access="public" returntype="any" output="false">
+		<cfargument name="Event" type="coldbox.system.beans.requestContext">
+		<!--- get Request Collection --->
+		<cfset var rc = event.getCollection() />
+		
+		<!--- rc scope will be available in our .cfc files, so set plugin rc scope---> 
+		<cfset rc.plugin = controller.getPlugin("applicationstorage") />
+		
+		<cfif not rc.plugin.exists("MyTestComp")>
+			 <cfset rc.plugin.setVar(name = "MyTestComp", value= CreateObject("component","coldbox.samples.applications.CF8Ajax.model.test1")) />		
+		</cfif>
+		
+		<!--- Set the View To Display, after Logic --->
+		<cfset Event.setView("plugin/vwApplicationStorage")>
+	</cffunction>
+	
+	<!--- Session Storage plugin  --->
+	<cffunction name="dspSessionStorage" access="public" returntype="any" output="false">
+		<cfargument name="Event" type="coldbox.system.beans.requestContext">
+		<!--- get Request Collection --->
+		<cfset var rc = event.getCollection() />
+		
+		<!--- rc scope will be available in our .cfc files, so set plugin rc scope---> 
+		<cfset rc.plugin = controller.getPlugin("applicationstorage") />
+		
+		<cfif not rc.plugin.exists("MyTestComp")>
+			 <cfset rc.plugin.setVar(name = "MyTestComp", value= CreateObject("component","coldbox.samples.applications.CF8Ajax.model.test1")) />		
+		</cfif>
+		
+		<!--- Set the View To Display, after Logic --->
+		<cfset Event.setView("plugin/vwSessionStorage")>
+	</cffunction>
+	
+	<cffunction name="postHandler" output="false" returntype="void" access="public">
+	  <cfargument name="Event" type="coldbox.system.beans.requestContext">
+	  <cfscript>
+	  //Execute any pre-event code here. Like AOP logging, etc.
+	  </cfscript>
+	</cffunction>
+	
 </cfcomponent>

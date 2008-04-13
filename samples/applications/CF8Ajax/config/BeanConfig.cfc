@@ -79,9 +79,9 @@ Adds a constructor property to a bean.
 			
 			// BEAN DEFINITIONS (see top of bean for instructions)
 			// Item Service
-			addSingleton("#CFMapping#.model.ArtService","ArtService");
-			addSingleton("#CFMapping#.model.GalleryService","GalleryService");
-			addSingleton("#CFMapping#.model.OrderService","OrderService");
+			addSingleton("coldbox.samples.applications.CF8Ajax.model.ArtService","ArtService");
+			addSingleton("coldbox.samples.applications.CF8Ajax.model.GalleryService","GalleryService");
+			addSingleton("coldbox.samples.applications.CF8Ajax.model.OrderService","OrderService");
 		</cfscript>
 		
 		<cfreturn this>
