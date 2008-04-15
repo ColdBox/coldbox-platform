@@ -67,7 +67,8 @@ Adds a constructor property to a bean.
 
 	<cffunction name="init" output="false" returntype="any" hint="I initialize the config bean.">
 		<cfscript>
-			var dsn	= getController().getSetting("cfartgallery");
+			var ColdboxFactory = CreateObject("component","coldbox.system.extras.ColdboxFactory");
+			var dsn	= ColdboxFactory.getDatasource("cfartgallery").getAlias();
 			// Call the base init() method to set sensible defaults. Do NOT remove this.
 			Super.init();
 			// OPTIONAL: Set lazy loading: true or false. If true, Singletons will only be created when requested. If false, they will all be created when LightWire is first initialized. Default if you don't set: LazyLoad = true.
@@ -81,12 +82,18 @@ Adds a constructor property to a bean.
 			// Item Service
 			addSingleton("coldbox.samples.applications.CF8Ajax.model.ArtService","ArtService");
 			addConstructorProperty("ArtService", "dsn", dsn);
+			// by adding ColdboxFactory in service layer; we will have access these fantastic features (Plugin, Cache, Interceptor, Coldbox, Mailsettings)
+			//simply enjoy the power of ColdBox within service layer.
+			addConstructorProperty("ArtService", "ColdboxFactory", ColdboxFactory);
 			
 			addSingleton("coldbox.samples.applications.CF8Ajax.model.GalleryService","GalleryService");
 			addConstructorProperty("GalleryService", "dsn", dsn);
+			addConstructorProperty("GalleryService", "ColdboxFactory", ColdboxFactory);
+			
 			
 			addSingleton("coldbox.samples.applications.CF8Ajax.model.OrderService","OrderService");
 			addConstructorProperty("OrderService", "dsn", dsn);
+			addConstructorProperty("OrderService", "ColdboxFactory", ColdboxFactory);
 		</cfscript>
 		
 		<cfreturn this>
