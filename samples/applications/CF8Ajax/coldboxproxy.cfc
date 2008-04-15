@@ -26,52 +26,46 @@ Description :
 		<cfreturn results>
 	</cffunction>
 	
-	<cffunction name="getData" output="false" access="remote" returntype="any" hint="Process a remote call and return data/objects back.">
+	<cffunction name="getAllArtist" output="false" access="remote" returntype="any" hint="Process a remote call and return data/objects back.">
 		<cfargument name="page">
 		<cfargument name="pageSize">
 		<cfargument name="gridsortcolumn">
 		<cfargument name="gridstartdirection">
 		
 		<cfset var results = "">
+		<!--- Its very iteresting.. how I am intracting with service-layer, just bypassing controller layer --->
 		
-		<!--- Bind to which event has the data --->
-		<cfset arguments["event"] = "ehGeneral.doData">
-		
-		<!--- Call the actual proxy --->
-		<cfset results = super.process(argumentCollection=arguments)>
+		<cfset results = getBean("ArtService").getAllArtist() />
+		<!--- ColdBox is making things so simple -- just one line of code --->
 		
 		<!--- Convert Query for Paging --->
 		<cfreturn QueryConvertForGrid(results,page,pageSize)>
 	</cffunction>
 	
-	<cffunction name="lookupName" output="false" access="remote" returntype="any" hint="Process a remote call and return data/objects back.">
+	<cffunction name="SearchName" output="false" access="remote" returntype="Any" hint="Process a remote call and return data/objects back.">
 		<cfargument name="search" type="any" required="false" default="">
-		<cfset var qry = "">
-		<cfset var results = ArrayNew(1)>
 		
-		<!--- Bind to which event has the data --->
-		<cfset arguments["event"] = "ehGeneral.doLookupName">
+		<cfset var results = "">
+		<cfset var plugin = "" />
+		<cfset var ReturnValue = "" />
 		
-		<!--- Call the actual proxy --->
-		<cfset results = super.process(argumentCollection=arguments)>
-		<!--- Cleanup --->
+		<!--- Its very iteresting.. how I am intracting with service-layer, just bypassing controller layer --->
+		<cfset results = getBean("ArtService").getFindByName(arguments.search) />
+		<!--- get plugin to convert query values into Array --->
+		<cfset plugin = getPlugin("queryHelper") />
 		
-		<!--- Anything after --->
-		<cfreturn results>
+		<cfset ReturnValue = plugin.getColumnArray(qry = results, ColumnName = "ARTNAME") />
+		<!--- <cfdump var="#ReturnValue#"> <cfabort> --->
+		<cfreturn ReturnValue>
 	</cffunction>
-	
-	<cffunction name="getEmployees" output="false" access="remote" returnFormat="json" hint="Process a remote call and return data/objects back.">
-		<cfargument name="id" type="any" required="false" default="0">
-		<cfset var qry = "">
-		
-		<cfset arguments["event"] = "ehGeneral.doEmployees">
-		<!--- Anything before --->
-		
-		<!--- Call the actual proxy --->
-		<cfset qry = super.process(argumentCollection=arguments)>
 
-		<!--- Anything after --->
-		<cfreturn qry>
+	<cffunction name="getArtists" output="false" access="remote" returntype="Any" hint="Process a remote call and return data/objects back.">
+		<cfargument name="ARTISTID" type="numeric" required="false" default="0">
+		<cfset var ReturnValue = "" />
+		<!--- Its very iteresting.. how I am intracting with service-layer, just bypassing controller layer --->
+		<cfset ReturnValue = getBean("ArtService").getAllArtist(argumentCollection=arguments) />
+		
+		<cfreturn ReturnValue>
 	</cffunction>
 	
 	<cffunction name="getNames" output="false" access="remote" returntype="Any"  hint="Process a remote call and return data/objects back.">
@@ -84,12 +78,12 @@ Description :
 		<!--- Call the actual proxy --->
 		<cfset qry = super.process(argumentCollection=arguments)>
 		
-		<!--- <cfset TwoDimensionalArray[1][1] = '0' />
-		<cfset TwoDimensionalArray[1][2] = 'Please select' /> --->
+		<cfset TwoDimensionalArray[1][1] = '0' />
+		<cfset TwoDimensionalArray[1][2] = 'Please select' />
 		
 		<cfloop query="qry">
-			<cfset TwoDimensionalArray[qry.CurrentRow][1] = trim(qry.idt)>
-            <cfset TwoDimensionalArray[qry.CurrentRow][2] = trim(qry.fname)>
+			<cfset TwoDimensionalArray[qry.CurrentRow + 1][1] = trim(qry.idt)>
+            <cfset TwoDimensionalArray[qry.CurrentRow + 1][2] = trim(qry.fname)>
 		</cfloop>
 
 		<!--- Anything after --->

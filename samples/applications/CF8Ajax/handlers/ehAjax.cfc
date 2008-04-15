@@ -25,16 +25,35 @@ Description :
 		<!--- Do Your Logic Here to prepare a view --->
 		<cfset Event.setValue("welcomeMessage","Welcome to ColdBox!")>	
 		<!--- Set the View To Display, after Logic --->
-		<cfset Event.setView("/ajax/vwAjaxHome")>
+		<cfset Event.setView("ajax/vwAjaxHome")>
 	</cffunction>
 	
 	<!--- CFGRID example --->
 	<cffunction name="dspGrid" access="public" returntype="any" output="false">
 		<cfargument name="Event" type="coldbox.system.beans.requestContext">
 		<!--- Do Your Logic Here to prepare a view --->
-		<cfset Event.setValue("welcomeMessage","Welcome to ColdBox!")>
+		<cfset Event.setValue("welcomeMessage","Welcome to ColdBox and CF8 CFGRID!")>
 		<!--- Set the View To Display, after Logic --->
-		<cfset Event.setView("/ajax/vwCFGrid")>
+		<cfset Event.setView("ajax/vwCFGrid")>
 	</cffunction>
-
+	
+	<!--- CFINPUT Auto Suggest example --->
+	<cffunction name="dspCFInput" access="public" returntype="any" output="false">
+		<cfargument name="Event" type="coldbox.system.beans.requestContext">
+		<!--- Do Your Logic Here to prepare a view --->
+		<cfset Event.setValue("welcomeMessage","Welcome to ColdBox and CF8 CFINPUT Aut-Suggest!")>
+		<!--- Set the View To Display, after Logic --->
+		<cfset Event.setView("ajax/vwCFinputAutoSuggest")>
+	</cffunction>
+	
+	<!--- CFAJAXPROXY feature... using client side javascript  --->
+	<cffunction name="dspAjaxProxy" access="public" returntype="void" output="false">
+		<cfargument name="Event" type="coldbox.system.beans.requestContext">
+		
+		<!--- Do Your Logic Here to prepare a view --->
+		<cfset Event.setValue("welcomeMessage","Welcome to ColdBox and CF8 Ajax Proxy feature!")>	
+		<!--- Set the View To Display, after Logic --->
+		<cfset Event.setView("ajax/vwCFAjaxProxy")>
+	</cffunction>
+	
 </cfcomponent>

@@ -22,9 +22,11 @@ cfform is mendatory for using ajax stuff
 			pageSize="10"
 			width="100%"	
     		preservePageOnSort="yes"		
-	        bind="cfc:#rc.locColdBoxProxy#.getData({cfgridpage},{cfgridpagesize},{cfgridsortcolumn},{cfgridsortdirection})" >
-		    <cfgridcolumn name="idt" display=true header="Employee ID"/>
-			<cfgridcolumn name="fname" display=true header="First Name"/>
-			<cfgridcolumn name="lname" display=true header="Last Name"/>
+	        bind="cfc:#rc.locColdBoxProxy#.getAllArtist({cfgridpage},{cfgridpagesize},{cfgridsortcolumn},{cfgridsortdirection})" >
+		    <cfgridcolumn name="ARTISTID"	display="true" header="ARTIST ID"/>
+			<cfgridcolumn name="ARTNAME"	display="true" header="Name"/>
+			<cfgridcolumn name="FIRSTNAME"	display="true" header="First Name"/>
+			<cfgridcolumn name="LASTNAME"	display="true" header="Last Name"/>
+			<cfgridcolumn name="EMAIL"		display="true" header="Email"/>
     </cfgrid>
 </cfform>
