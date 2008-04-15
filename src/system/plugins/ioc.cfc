@@ -246,8 +246,6 @@ Modification History:
 			var coldpsring = "";
 			var settingsStruct = StructNew();
 			
-			//insert coldbox_controller
-			structInsert(settingsStruct,"coldbox_controller",controller);
 			//Copy the settings Structure
 			structAppend(settingsStruct, getSettingStructure());
 			
@@ -276,25 +274,35 @@ Modification History:
 	<cffunction name="createLightwireConfigBean" output="false" access="private" returntype="any" hint="Creates the lightwire config bean">
 		<cfscript>
 			var lightwireBeanConfig = "";
+			var usingXML = listLast(getIOCDefinitionFile(),".") eq "xml" or listLast(getIOCDefinitionFile(),".") eq "cfm";
+			var settingsStruct = StructNew();
 			
-			//Create the lightwire Config Bean.
-			lightwireBeanConfig = CreateObject("component", getIOCDefinitionFile());
+			/* Create the lightwire Config Bean. */
+			if( not usingXML ){
+				/* Create the declared config bean */
+				lightwireBeanConfig = CreateObject("component", getIOCDefinitionFile());
+			}
+			else{
+				/* Create ColdBox config Bean */
+				lightwireBeanConfig = CreateObject("component", "coldbox.system.extras.lightwire.BaseConfigObject"),init();	
+				/* validate definiton file */
+				validateDefinitionFile();
+				/* Copy the settings Structure */
+				structAppend(settingsStruct, getSettingStructure());			
+			}
 			
-			/* Start Injection Set */
-			getPlugin("methodInjector").start(lightwireBeanConfig);
-			
-			/* Inject Controller getter and setters */
-			lightwireBeanConfig.injectMixin(setController);
-			lightwireBeanConfig.injectMixin(getController);
-			
-			/* Stop Injection Set. */
-			getPlugin("methodInjector").stop(lightwireBeanConfig);
-			
-			//setter dependency on coldbox mixin
+			/* setter dependency on coldbox */
 			lightwireBeanConfig.setController(getController());
-					
-			//return it			
-			return lightwireBeanConfig.init();
+			
+			/* Do we need to configure */
+			if( usingXML ){
+				/* Read in and parse the XML */
+				lightwireBeanConfig.parseXMLConfigFile(getExpandedIOCDefinitionFile(),settingsStruct);
+				return lightwireBeanConfig;
+			}
+			else{
+				return lightwireBeanConfig.init();
+			}					
 		</cfscript>
 	</cffunction>
 

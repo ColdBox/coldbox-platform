@@ -73,7 +73,7 @@ Description :
 <!------------------------------------------- PRIVATE ------------------------------------------->
 
 	<!--- mixin --->
-	<cffunction name="injectMixin" hint="[mixin, removed at init] - injects a method into the CFC scope" access="public" returntype="void" output="false">
+	<cffunction name="injectMixin" hint="injects a method into the CFC scope" access="public" returntype="void" output="false">
 		<!--- ************************************************************* --->
 		<cfargument name="UDF" hint="UDF to be checked" type="any" required="Yes">
 		<!--- ************************************************************* --->
@@ -95,8 +95,26 @@ Description :
 		</cfscript>
 	</cffunction>
 	
+	<!--- mixin --->
+	<cffunction name="injectPropertyMixin" hint="injects a property into the passed scope" access="public" returntype="void" output="false">
+		<!--- ************************************************************* --->
+		<cfargument name="propertyName" 	type="string" 	required="true" hint="The name of the property to inject."/>
+		<cfargument name="propertyValue" 	type="any" 		required="true" hint="The value of the property to inject"/>
+		<cfargument name="scope" 			type="string" 	required="false" default="variables" hint="The scope to which inject the property to."/>
+		<!--- ************************************************************* --->
+		<cfscript>
+			/* Inject Property */
+			if( structKeyExists(arguments.scope,arguments.propertyName) ){
+				structUpdate(arguments.scope,arguments.propertyName,arguments.propertyValue);
+			}	
+			else{
+				structInsert(arguments.scope,arguments.propertyName,arguments.propertyValue);
+			}			
+		</cfscript>
+	</cffunction>
+	
 	<!--- Remove Mixin --->
-	<cffunction name="removeMixin" hint="[mixin, removed at init] - injects a method into the CFC scope" access="public" returntype="void" output="false">
+	<cffunction name="removeMixin" hint="removes a method in a CFC" access="public" returntype="void" output="false">
 		<!--- ************************************************************* --->
 		<cfargument name="UDFName" hint="Name of the UDF to be removed" type="string" required="Yes">
 		<!--- ************************************************************* --->
@@ -106,8 +124,19 @@ Description :
 		</cfscript>
 	</cffunction>
 	
+	<!--- Remove Mixin --->
+	<cffunction name="removePropertyMixin" hint="removes a property from the cfc used." access="public" returntype="void" output="false">
+		<!--- ************************************************************* --->
+		<cfargument name="propertyName" 	type="string" 	required="true" hint="The name of the property to remove."/>
+		<cfargument name="scope" 			type="string" 	required="false" default="variables" hint="The scope to which inject the property to."/>
+		<!--- ************************************************************* --->
+		<cfscript>
+			structDelete(arguments.scope,arguments.propertyName);
+		</cfscript>
+	</cffunction>
+	
 	<!--- Invoker Mixin --->
-	<cffunction name="invokerMixin" hint="[mixin, removed at init] - calls private methods" access="public" returntype="any" output="false">
+	<cffunction name="invokerMixin" hint="calls private/packaged/public methods" access="public" returntype="any" output="false">
 		<!--- ************************************************************* --->
 		<cfargument name="method" 		 type="string" required="Yes" hint="Name of the private method to call">
 		<cfargument name="argCollection" type="struct" required="No"  hint="Can be called with an argument collection struct">
