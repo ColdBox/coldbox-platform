@@ -3,7 +3,7 @@
 	xsi:noNamespaceSchemaLocation="http://www.coldboxframework.com/schema/config_2.6.0.xsd">
 	<Settings>
 		<!--The name of your application.-->
-		<Setting name="AppName"						value="ColdBox Java Reflection"/>
+		<Setting name="AppName"						value="ColdBox cfcviewer Sample"/>
 		<!--Default Debugmode boolean flag (Set to false in production environments)-->
 		<Setting name="DebugMode" 					value="false" />
 		<!--The Debug Password to use in order to activate/deactivate debugmode,activated by url actions -->
@@ -13,15 +13,15 @@
 		<!--Default event name variable to use in URL/FORM etc. -->
 		<Setting name="EventName"					value="event" />
 		<!--This feature is enabled by default to permit the url dumpvar parameter-->
-		<Setting name="EnableDumpVar"				value="false" />
+		<Setting name="EnableDumpVar"				value="true" />
 		<!--Log Errors and entries on the coldfusion server logs, disabled by default if not used-->
 		<Setting name="EnableColdfusionLogging" 	value="false" />
 		<!--Log Errors and entries in ColdBox's own logging facilities. You choose the location, finally per application logging.-->
-		<Setting name="EnableColdboxLogging"		value="false" />
+		<Setting name="EnableColdboxLogging"		value="true" />
 		<!--The absolute or relative path to where you want to store your log files for this application-->
-		<Setting name="ColdboxLogsLocation"			value="" />
+		<Setting name="ColdboxLogsLocation"			value="logs" />
 		<!--Default Event to run if no event is set or passed. Usually the event to be fired first (NOTE: use event handler syntax)-->
-		<Setting name="DefaultEvent" 				value="general.dspHome"/>
+		<Setting name="DefaultEvent" 				value="general.index"/>
 		<!--Event Handler to run on the start of a request, leave blank if not used. Emulates the Application.cfc onRequestStart method	-->
 		<Setting name="RequestStartHandler" 		value="main.onRequestStart"/>
 		<!--Event Handler to run at end of all requests, leave blank if not used. Emulates the Application.cfc onRequestEnd method-->
@@ -57,9 +57,9 @@
 		<!-- Declare the external handlers base invocation path, if used. You have to use dot notation.Example: mymapping.myhandlers	-->
 		<Setting name="HandlersExternalLocation"   	value="" />
 		<!--Flag to cache handlers. Default if left blank is true. -->
-		<Setting name="HandlerCaching" 				value="false"/>
+		<Setting name="HandlerCaching" 				value="true"/>
 		<!--Flag to cache events if metadata declared. Default is true -->
-		<Setting name="EventCaching" 				value="false"/>
+		<Setting name="EventCaching" 				value="true"/>
 		<!--IOC Framework if Used, else leave blank-->
 		<Setting name="IOCFramework"				value="" />
 		<!--IOC Definition File Path, relative or absolute -->
@@ -70,6 +70,8 @@
 		<Setting name="RequestContextDecorator" 	value=""/>
 		<!--Flag if the proxy returns the entire request collection or what the event handlers return, default is false -->
 		<Setting name="ProxyReturnCollection" 		value="false"/>
+		<!-- What scope are flash persistance variables using. -->
+		<Setting name="FlashURLPersistScope" 		value="session"/>
 	</Settings>
 
 	<!--Your Settings can go here, if not needed, use <YourSettings />. You can use these for anything you like.
@@ -78,9 +80,24 @@
 		</YourSettings>
 	 -->
 	<YourSettings></YourSettings>
-
+	
+	<!-- Custom Conventions : You can override the framework wide conventions
+	<Conventions>
+		<handlersLocation></handlersLocation>
+		<pluginsLocation></pluginsLocation>
+		<layoutsLocation></layoutsLocation>
+		<viewsLocation></viewsLocation>
+		<eventAction></eventAction>		
+	</Conventions>	
+	-->
+	
 	<!--Optional,if blank it will use the CFMX administrator settings.-->
-	<MailServerSettings />
+	<MailServerSettings>
+		<MailServer></MailServer>
+		<MailPort></MailPort>
+		<MailUsername></MailUsername>
+		<MailPassword></MailPassword>
+	</MailServerSettings>
 
 	<!--Emails to Send bug reports, you can create as many as you like
 	<BugEmail>myemail@gmail.com</BugEmail>	
@@ -88,7 +105,9 @@
 	<BugTracerReports/>
 
 	<!--List url dev environments, this determines your dev/pro environment for the framework-->
-	<DevEnvironments />
+	<DevEnvironments>
+		<url>dev</url>
+	</DevEnvironments>
 
 	<!--Webservice declarations your use in your application, if not use, leave blank
 	Note that for the same webservice name you can have a development url and a production url.
@@ -134,12 +153,12 @@
 	
 	<!--ColdBox Object Caching Settings Overrides the Framework-wide settings 
 	<Cache>
-		<ObjectDefaultTimeout>45</ObjectDefaultTimeout>
-		<ObjectDefaultLastAccessTimeout>15</ObjectDefaultLastAccessTimeout>
+		<ObjectDefaultTimeout>60</ObjectDefaultTimeout>
+		<ObjectDefaultLastAccessTimeout>30</ObjectDefaultLastAccessTimeout>
 		<UseLastAccessTimeouts>true</UseLastAccessTimeouts>
 		<ReapFrequency>1</ReapFrequency>
-		<MaxObjects>50</MaxObjects>
-		<FreeMemoryPercentageThreshold>3</FreeMemoryPercentageThreshold>
+		<MaxObjects>100</MaxObjects>
+		<FreeMemoryPercentageThreshold>1</FreeMemoryPercentageThreshold>
 		<EvictionPolicy>LRU</EvictionPolicy>
 	</Cache>
 	-->

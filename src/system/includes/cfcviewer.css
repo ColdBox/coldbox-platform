@@ -1,11 +1,10 @@
 .cfc_content{
-	font-family: Verdana,Arial,Helvetica,sans-serif;
-	font-size: 10px;
+	font-family: "Lucida Console,Courier New,Courier,monospace";
+	font-size: 13px;
 	margin: 3px;
 }
 .cfc_content a:link, .cfc_content a:visited{
 	color: blue;
-	font-size: 10px;
 }
 .cfc_content a:hover{
 	color: black;
@@ -65,13 +64,12 @@
 	padding: 5px;
 	border-left: 1px outset #cccccc;
 	border-right: 1px outset #cccccc;
+	font-size: 13px;
 }
 .cfc_componentsummary td{
 	padding: 3px;
 }
 .cfc_component{
-	font-family: "Lucida Console,Courier New,Courier,monospace";
-	font-size: 13px;
 	background-color: #f5f5f5;
 	padding: 2px;
 	border-bottom: 1px outset #cccccc;
@@ -81,16 +79,19 @@
 .cfc_methodstable{
 	border:1px solid #cccccc;
 	padding: 5px;
+	font-size: 13px;
 }
 .cfc_methodstitle{
 	background-color: #eaeaea;
 	font-weight: bold;
 	padding: 5px;
 	border: 1px dotted #dddddd;
+	font-size: 13px;
 }
 .cfc_methodcells{
 	padding: 5px;
 	border: 1px dotted #dddddd;
+	font-size: 13px;
 }
 .cfc_methodrows{
 	background-color: #FFFFFF;

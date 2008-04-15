@@ -97,11 +97,11 @@
 				  <a href="applications/ColdboxFlexTester/bin/ColdboxFlexTester.html" target="_blank">#getresource("opensample")#</a><br />
 				</p>
 				
-				<h3>Java Reflection Tool</h3>
+				<h3>ColdBox cfcViewer Sample</h3>
 				<p> #getresource("by")# Luis Majano
 				  <br />
 				  #getresource("nosetup")# <br />
-				  <a href="applications/javaReflection/index.cfm" target="_blank">#getresource("opensample")#</a><br />
+				  <a href="applications/cfcViewerSample/index.cfm" target="_blank">#getresource("opensample")#</a><br />
 				</p>
 				
 				<h3>ColdFusion 8 Ajax Sampler</h3>
