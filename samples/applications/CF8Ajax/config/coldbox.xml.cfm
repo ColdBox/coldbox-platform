@@ -61,9 +61,9 @@
 		<!--Flag to cache events if metadata declared. Default is true -->
 		<Setting name="EventCaching" 				value="true"/>
 		<!--IOC Framework if Used, else leave blank lightwire-->
-		<Setting name="IOCFramework"				value="" />
+		<Setting name="IOCFramework"				value="lightwire" />
 		<!--IOC Definition File Path, relative or absolute coldbox.samples.applications.CF8Ajax.config.BeanConfig-->
-		<Setting name="IOCDefinitionFile"			value="" />
+		<Setting name="IOCDefinitionFile"			value="coldbox.samples.applications.CF8Ajax.config.BeanConfig" />
 		<!--IOC Object Caching, true/false. For ColdBox to cache your IoC beans-->
 		<Setting name="IOCObjectCaching"			value="true" />
 		<!--Request Context Decorator, leave blank if not using. Full instantiation path -->
@@ -93,11 +93,14 @@
 		<!-- whether to encrypt the values or not -->
 		<Setting name="cookiestorage_encryption" value="true"/>
 		<!-- The encryption seed to use. Else, use a default one (Not Recommened) -->
-		<Setting name="cookiestorage_encryption_seed" value="MyCF8AjaxHey"/>
+		<Setting name="cookiestorage_encryption_seed" value="MyCF8AjaxKey"/>
 		<!-- The encryption algorithm to use (According to CFML Engine) -->
 		<Setting name="cookiestorage_encryption_algorithm" value="CFMX_COMPAT"/>
 		<!-- Messagebox Plugin (You can now override the storage scope without affecting all framework applications) -->
 		<Setting name="messagebox_storage_scope" value="session" />
+		
+		<!-- set datasource -->
+		<Setting name="cfartgallery" value="cfartgallery" />
 	</YourSettings>
 	
 	<!-- Custom Conventions : You can override the framework wide conventions -->
@@ -198,7 +201,6 @@
 		<!-- config file is relative to app root -->
 		<Interceptor class="coldbox.system.interceptors.environmentControl"> 
 			<Property name="configFile">config/environments.xml.cfm</Property>
-			<Property name="fireOnInit">false</Property> 
 			<Property name="afterConfigurationLoad">true</Property>
 		</Interceptor>
 		

@@ -8,7 +8,7 @@ Author      :	Sana Ullah
 Date        :	March 05 2008
 Description :
 ----------------------------------------------------------------------->
-<cfcomponent output="false">
+<cfcomponent displayname="ArtService" output="false" extends="BaseService">
 	
 	<cffunction name="qry" output="false" access="public" returntype="any">
 	

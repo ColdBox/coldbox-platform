@@ -67,7 +67,7 @@ Adds a constructor property to a bean.
 
 	<cffunction name="init" output="false" returntype="any" hint="I initialize the config bean.">
 		<cfscript>
-			var CFMapping	= getcontroller().getSetting('AppMapping');
+			var dsn	= getController().getSetting("cfartgallery");
 			// Call the base init() method to set sensible defaults. Do NOT remove this.
 			Super.init();
 			// OPTIONAL: Set lazy loading: true or false. If true, Singletons will only be created when requested. If false, they will all be created when LightWire is first initialized. Default if you don't set: LazyLoad = true.
@@ -80,8 +80,13 @@ Adds a constructor property to a bean.
 			// BEAN DEFINITIONS (see top of bean for instructions)
 			// Item Service
 			addSingleton("coldbox.samples.applications.CF8Ajax.model.ArtService","ArtService");
+			addConstructorProperty("ArtService", "dsn", dsn);
+			
 			addSingleton("coldbox.samples.applications.CF8Ajax.model.GalleryService","GalleryService");
+			addConstructorProperty("GalleryService", "dsn", dsn);
+			
 			addSingleton("coldbox.samples.applications.CF8Ajax.model.OrderService","OrderService");
+			addConstructorProperty("OrderService", "dsn", dsn);
 		</cfscript>
 		
 		<cfreturn this>

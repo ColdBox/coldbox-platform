@@ -34,7 +34,7 @@ Description :	ColdBox Plugins are very powerfull for AOP, I will try to have sam
 	</cffunction>
 	
 	<!--- application storage plugin  ---> 
-	<cffunction name="dspApplicationStorage" access="public" returntype="any" output="false">
+	<cffunction name="dspApplicationStorage" access="public" returntype="void" output="false">
 		<cfargument name="Event" type="coldbox.system.beans.requestContext">
 		<!--- get Request Collection --->
 		<cfset var rc = event.getCollection() />
@@ -51,7 +51,7 @@ Description :	ColdBox Plugins are very powerfull for AOP, I will try to have sam
 	</cffunction>
 	
 	<!--- Session Storage plugin  --->
-	<cffunction name="dspSessionStorage" access="public" returntype="any" output="false">
+	<cffunction name="dspSessionStorage" access="public" returntype="void" output="false">
 		<cfargument name="Event" type="coldbox.system.beans.requestContext">
 		<!--- get Request Collection --->
 		<cfset var rc = event.getCollection() />
@@ -65,6 +65,31 @@ Description :	ColdBox Plugins are very powerfull for AOP, I will try to have sam
 		
 		<!--- Set the View To Display, after Logic --->
 		<cfset Event.setView("plugin/vwSessionStorage")>
+	</cffunction>
+	
+	<!--- Session Storage plugin  --->
+	<cffunction name="dspCookieStorage" access="public" returntype="void" output="false">
+		<cfargument name="Event" type="coldbox.system.beans.requestContext">
+		<!--- get Request Collection --->
+		<cfset var rc = event.getCollection() />
+		<cfset var UserInfo = structNew() />
+		<cfset var SimpleValue = "something very simple will be store in cookie" />
+		
+		<cfset UserInfo["FirtName"] = "Sana" />
+		<cfset UserInfo["LastName"] = "Ullah" />
+		<cfset UserInfo["Role"] = "Moderator" />
+		<cfset UserInfo["Email"] = "test31@test31.co.uk" />
+		
+		<!--- rc scope will be available in our .cfc files, so set plugin rc scope---> 
+		<cfset rc.plugin = controller.getPlugin("cookiestorage") />
+		
+		<cfif not rc.plugin.exists("UserInfo")>
+			 <cfset rc.plugin.setVar(name = "UserInfo", value= UserInfo, expires= 1) />
+			 <cfset rc.plugin.setVar(name = "SimpleValue", value= SimpleValue, expires= 1) />		
+		</cfif>
+		
+		<!--- Set the View To Display, after Logic --->
+		<cfset Event.setView("plugin/vwCookieStorage")>
 	</cffunction>
 	
 	<cffunction name="postHandler" output="false" returntype="void" access="public">

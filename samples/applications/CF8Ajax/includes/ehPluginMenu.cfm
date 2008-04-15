@@ -12,4 +12,5 @@ Description : right hand menu for ajax features.
 <ul>
 	<li><a href="index.cfm?event=ehPlugin.dspApplicationStorage">Application Storage</a></li>
 	<li><a href="index.cfm?event=ehPlugin.dspSessionStorage">Session Storage</a></li>
+	<li><a href="index.cfm?event=ehPlugin.dspCookieStorage">Cookie Storage</a></li>
 </ul>
