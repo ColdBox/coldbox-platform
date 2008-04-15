@@ -123,7 +123,7 @@ queryPlugin.doLeftOuterJoin(q1,q3,"idt","idt")
             var i = 0;
              
             if( arguments.qry.recordcount ){
-                arrayResize( arValues, arguments.qry.recordcount );
+                //arrayResize( arValues, arguments.qry.recordcount );
                 
                 for( i = 1; i LTE arguments.qry.recordcount; i =i + 1 ){
                     ArrayAppend(arValues, arguments.qry[arguments.ColumnName][i]);
