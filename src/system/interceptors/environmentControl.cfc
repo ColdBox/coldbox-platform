@@ -56,6 +56,9 @@ Description :
 				throw('Config File could not be located: #getProperty('configFile')#. Please check again.','','interceptors.environmentControl.configFileNotFound');
 			}
 			
+			/* execute check */
+			setProperty('interceptorCompleted',false);
+			
 			//Verified, set it
 			setConfigFile(configFile);			
 			
@@ -66,6 +69,7 @@ Description :
 			//Check if we need to fire the interception at configuration
 			if( getProperty('fireOnInit') ){
 				parseAndSet();
+				setProperty('interceptorCompleted',true);
 			}
 		</cfscript>
 	</cffunction>
@@ -78,7 +82,10 @@ Description :
 		<cfargument name="interceptData" required="true" type="struct" hint="A structure containing intercepted information. NONE BY DEFAULT HERE">
 		<!--- *********************************************************************** --->
 		<cfscript>
-			parseAndSet();	
+			if( getProperty('interceptorCompleted') eq false){
+				parseAndSet();	
+				setProperty('interceptorCompleted',true);
+			}
 		</cfscript>
 	</cffunction>
 	
