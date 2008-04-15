@@ -115,7 +115,7 @@ Modification History: March 23,2008 Added new feature to encrypt/decrypt cookie 
 			
 			<cfif isWDDX(rtnVar)>
 				<!--- Unwddx packet --->
-				<cfwddx action="wddx2cfml" input="#decryptitrtnVar#" output="wddxVar">
+				<cfwddx action="wddx2cfml" input="#rtnVar#" output="wddxVar">
 				<cfset rtnVar = wddxVar>
 			</cfif>
 		<cfelse>
@@ -187,14 +187,14 @@ Modification History: March 23,2008 Added new feature to encrypt/decrypt cookie 
 <!------------------------------------------- PUBLIC ------------------------------------------->
 
 	<!--- Encrypt Data --->
-	<cffunction name="encryptit" access="private" returntype="Any" hint="Return encypted value" output="false">
+	<cffunction name="EncryptIt" access="private" returntype="Any" hint="Return encypted value" output="false">
 		<cfargument name="encValue" hint="string to be encrypted" required="yes" type="string" />
 		<cfreturn encrypt(arguments.encValue,getEncryptionKey(),getEncryptionAlgorithm(),getEncryptionEncoding()) />		
 	</cffunction>
 	
 	
 	<!--- Decrypt Data --->
-	<cffunction name="decryptit" access="private" returntype="Any" hint="Return decrypted value" output="false">
+	<cffunction name="DecryptIt" access="private" returntype="Any" hint="Return decrypted value" output="false">
 		<cfargument name="decValue" hint="string to be decrypted" required="yes" type="string" />
 		<cfreturn decrypt(arguments.decValue,getEncryptionKey(),getEncryptionAlgorithm(),getEncryptionEncoding()) />		
 	</cffunction>
