@@ -10,10 +10,11 @@ Description : demo for using ajax tabs with event-model and proxy-model.
 ----------------------------------------------------------------------->
 <cflayout type="tab" tabheight="100">
 	<cflayoutarea title="Tab 0" selected="true" name="tab0">
-		This is the tab zero.
+		<h1>This is the tab zero.</h1>
+		<h2>Some contents.....</h2>
 	</cflayoutarea>
 	
-	<cflayoutarea title="Tab 1" source="index.cfm?event=ehGeneral.dspTab1" name="tab1">
+	<cflayoutarea title="Tab 1" source="index.cfm?event=ehAjax.dspTab1" name="tab1">
 	
 	</cflayoutarea>
 	<!--- This binding is via local scope. --->

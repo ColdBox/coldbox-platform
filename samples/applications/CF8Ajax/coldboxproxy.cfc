@@ -63,7 +63,7 @@ Description :
 		<cfargument name="ARTISTID" type="numeric" required="false" default="0">
 		<cfset var ReturnValue = "" />
 		<!--- Its very iteresting.. how I am intracting with service-layer, just bypassing controller layer --->
-		<cfset ReturnValue = getBean("ArtService").getAllArtist(argumentCollection=arguments) />
+		<cfset ReturnValue = getBean("ArtService").getArtist(argumentCollection=arguments) />
 		
 		<cfreturn ReturnValue>
 	</cffunction>
@@ -72,18 +72,16 @@ Description :
 		<cfset var qry  =  "" />
 		<!--- CFSELECT (bind )  --->
 		<cfset var TwoDimensionalArray =  ArrayNew(2) />
-		<cfset arguments["event"] = "ehGeneral.doEmployees">
-		<!--- Anything before --->
 		
-		<!--- Call the actual proxy --->
-		<cfset qry = super.process(argumentCollection=arguments)>
+		<!--- Get Qry Directly from ArtService.cfc --->
+		<cfset qry = getBean("ArtService").getArtist() />
 		
 		<cfset TwoDimensionalArray[1][1] = '0' />
 		<cfset TwoDimensionalArray[1][2] = 'Please select' />
 		
 		<cfloop query="qry">
-			<cfset TwoDimensionalArray[qry.CurrentRow + 1][1] = trim(qry.idt)>
-            <cfset TwoDimensionalArray[qry.CurrentRow + 1][2] = trim(qry.fname)>
+			<cfset TwoDimensionalArray[qry.CurrentRow + 1][1] = trim(qry.ARTISTID)>
+            <cfset TwoDimensionalArray[qry.CurrentRow + 1][2] = trim(qry.FIRSTNAME & chr(32) & qry.LASTNAME)>
 		</cfloop>
 
 		<!--- Anything after --->
@@ -94,7 +92,7 @@ Description :
 		<cfargument name="username" type="string">
 		<cfargument name="password" type="string">
 		<!--- set event handler --->
-		<cfset arguments["event"] = "ehGeneral.validateCredentials">
+		<cfset arguments["event"] = "ehAjax.validateCredentials">
 		
 		<!--- Call the actual proxy --->
 		<!--- <cfset qry = super.process(argumentCollection=arguments)> --->
@@ -109,7 +107,7 @@ Description :
 	<cffunction name="dspTab2" output="false" access="remote" returntype="any" hint="Process a remote call and return data/objects back.">
 		<cfset results = "" />
 		<!--- call even handler to get query data etc --->
-		<cfset arguments["event"] = "ehGeneral.dspTab2">
+		<cfset arguments["event"] = "ehAjax.dspTab2">
 
 		<!--- Call the actual proxy --->
 		<cfset results = super.process(argumentCollection=arguments)>

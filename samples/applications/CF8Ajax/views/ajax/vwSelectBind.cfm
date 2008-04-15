@@ -10,22 +10,17 @@ Description :
 	This proxy is an inherited coldbox remote proxy used for enabling
 	coldbox as a model framework.
 ----------------------------------------------------------------------->
-<!--- 
-CF8 cfgrid using ajax 
-cfform is mendatory for using ajax stuff
---->
+<!---  CF8 cfgrid using ajax cfform is mendatory for using ajax stuff --->
+<h1>cfselect bind to remote cfc:</h1>
 <cfoutput>
 <cfform name="mycfform">
-    <!--- 
-        The States selector. 
-        The bindonload attribute is required to fill the selector. 
-    --->
-    <cfselect name="employeeID" bind="cfc:#rc.locColdBoxProxy#.getNames()" bindonload="true">
+    <!--- The States selector.  The bindonload attribute is required to fill the selector. --->
+    <cfselect name="ArtistID" bind="cfc:#rc.locColdBoxProxy#.getNames()" bindonload="true">
         <option name="0">--select--</option>
     </cfselect>
+	
     <!--- <cfselect name="city" bind="cfc:bindFcns.getcities({state})">
         <option name="0">--city--</option>
     </cfselect> --->
 </cfform>
-<cfdump var="#rc.locColdBoxProxy#">
 </cfoutput>

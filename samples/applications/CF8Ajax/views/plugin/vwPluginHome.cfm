@@ -10,6 +10,7 @@ Description :	Home Page.
 ----------------------------------------------------------------------->
 
 <cfoutput>
-<h5>You are running #getSetting("codename",1)# #getSetting("version",1)# (#getsetting("suffix",1)#)</h5>
+<h1>ColdBox Plugin implementation examples:</h1> 	
+<h2>You are running #getSetting("codename",1)# #getSetting("version",1)# (#getsetting("suffix",1)#)</h2>
 </cfoutput>
 

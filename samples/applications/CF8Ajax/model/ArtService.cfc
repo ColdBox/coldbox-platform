@@ -26,6 +26,20 @@ Description :
 		<cfreturn qryAllArtist>
 	</cffunction>
 	
+	<cffunction name="getArtist" output="false" access="public" returntype="query">
+		<cfargument name="ARTISTID" type="numeric" required="false" default="0">
+		
+		<cfset var qryAllArtist = "" />
+		<cfquery name="qryAllArtist" datasource="#variables.dsn#">		
+			SELECT DISTINCT * FROM ARTISTS
+			<cfif arguments.ARTISTID GT 0>
+			WHERE ARTISTID = <cfqueryparam cfsqltype="cf_sql_integer" value="#arguments.ARTISTID#">
+			</cfif>
+		</cfquery>
+		
+		<cfreturn qryAllArtist>
+	</cffunction>
+	
 	<cffunction name="getFindByName" output="false" access="public" returntype="query">
 		<cfargument name="SearchString" type="string" required="true">
 		

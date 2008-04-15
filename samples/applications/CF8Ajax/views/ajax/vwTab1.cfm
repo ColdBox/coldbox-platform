@@ -9,8 +9,8 @@ Date        :	March 05 2008
 Description :
 ----------------------------------------------------------------------->
 
-This is the first tab.<br>
-content are display using event model<br>
+<h1>This is the first tab.</h1>
+<h2>content are display using event model.</h2>
 
 <pre>
 	<h2>index.cfm?event=ehGeneral.dspTab1</h2>
