@@ -32,7 +32,7 @@
 		<Setting name="HandlersExternalLocation" 	value="applications.coldbox.testing.testhandlers"/>
 		<Setting name="HandlerCaching" 				value="false"/>
 		<Setting name="EventCaching" 				value="true"/>
-		<Setting name="IOCFramework" 				value="coldspring"/>
+		<Setting name="IOCFramework" 				value="lightwire"/>
 		<Setting name="IOCDefinitionFile"		 	value="/coldbox/config/coldspring.xml.cfm"/>
 		<Setting name="IOCObjectCaching"			value="false"/>
 		<Setting name="RequestContextDecorator"		value="coldbox.model.myRequestContextDecorator" />

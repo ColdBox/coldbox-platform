@@ -276,6 +276,7 @@ Modification History:
 			var lightwireBeanConfig = "";
 			var usingXML = listLast(getIOCDefinitionFile(),".") eq "xml" or listLast(getIOCDefinitionFile(),".") eq "cfm";
 			var settingsStruct = StructNew();
+			var oMethodInjector = getPlugin("methodInjector");
 			
 			/* Create the lightwire Config Bean. */
 			if( not usingXML ){
@@ -284,12 +285,22 @@ Modification History:
 			}
 			else{
 				/* Create ColdBox config Bean */
-				lightwireBeanConfig = CreateObject("component", "coldbox.system.extras.lightwire.BaseConfigObject"),init();	
+				lightwireBeanConfig = CreateObject("component", "coldbox.system.extras.lightwire.BaseConfigObject").init();	
 				/* validate definiton file */
 				validateDefinitionFile();
 				/* Copy the settings Structure */
 				structAppend(settingsStruct, getSettingStructure());			
 			}
+			
+			/* Mixin start */
+			oMethodInjector.start(lightwireBeanConfig);
+			
+			/* Inject controller methods */
+			lightWireBeanConfig.injectMixin( oMethodInjector.setController );
+			lightWireBeanConfig.injectMixin( oMethodInjector.getController );
+			
+			/* Mixin stop */
+			oMethodInjector.stop(lightwireBeanConfig);
 			
 			/* setter dependency on coldbox */
 			lightwireBeanConfig.setController(getController());
