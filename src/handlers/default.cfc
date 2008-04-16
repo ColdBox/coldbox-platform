@@ -37,6 +37,17 @@ Modification History:
 		<cfset event.setView('vwQuote')>
 	</cffunction>
 	
+	<!--- onMissingAction --->
+	<cffunction name="onMissingAction" access="public" returntype="void" output="false" hint="on missing action">
+		<cfargument name="Event" type="coldbox.system.beans.requestContext" required="yes">
+	    <cfargument name="missingAction" required="true" type="string" hint="">
+	    <cfset var rc = event.getCollection()>
+	   	<cfscript>
+			rc.missingAction = arguments.missingAction;
+			event.setView('missingAction');
+		</cfscript> 
+	</cffunction>
+	
 <!------------------------------------------- PRIVATE ------------------------------------------->	 	
 
 	
