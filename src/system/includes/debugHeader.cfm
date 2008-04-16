@@ -33,4 +33,17 @@ function fw_openwindow(mypage,myname,w,h,features) {
 	win = window.open(mypage,myname,settings);
 	win.window.focus();
 }
+function fw_reinitframework(usingPassword){
+	var reinitPass = '';
+	
+	if( usingPassword ){
+		reinitPass = prompt("Reinit Password?");
+		window.location='index.cfm?fwreinit=' + reinitPass;
+	}else{
+		window.location='index.cfm?fwreinit=1';
+	}
+}
+function fw_pollmonitor(panel, frequency){
+	window.location='index.cfm?debugpanel='+panel+'&frequency='+frequency;
+}
 </script>

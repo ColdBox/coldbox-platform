@@ -8,6 +8,7 @@
 			<xs:all>
 				<xs:element maxOccurs="1" minOccurs="1" ref="Settings"/>
 				<xs:element maxOccurs="1" minOccurs="0" ref="YourSettings"/>
+				<xs:element maxOccurs="1" minOccurs="0" ref="DebuggerSettings"/>
 				<xs:element maxOccurs="1" minOccurs="0" ref="MailServerSettings"/>
 				<xs:element maxOccurs="1" minOccurs="0" ref="BugTracerReports"/>
 				<xs:element maxOccurs="1" minOccurs="0" ref="DevEnvironments"/>
@@ -448,6 +449,98 @@
 					<xs:documentation>Flag that determines if the interceptor service throws an error when an invalid state is announced.</xs:documentation>
 				</xs:annotation>
 			</xs:attribute>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="DebuggerSettings">
+		<xs:annotation>
+			<xs:documentation>These are the settings to configure the coldbox debugger</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:all>
+				<xs:element maxOccurs="1" minOccurs="0" name="PersistentRequestProfiler" type="xs:boolean" default="false">
+					<xs:annotation>
+						<xs:documentation>Whether to activate or not the request profile persisten storage</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element maxOccurs="1" minOccurs="0" name="maxPersistentRequestProfilers" type="xs:integer">
+					<xs:annotation>
+						<xs:documentation>The maximum number of request profilers to keep in the stack.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element maxOccurs="1" minOccurs="0" name="maxRCPanelQueryRows" type="xs:integer">
+					<xs:annotation>
+						<xs:documentation>The maximum number of records to dump on a query in the request collection panel.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element maxOccurs="1" minOccurs="0" name="TracerPanel">
+					<xs:annotation>
+						<xs:documentation>The tracer panel info</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:attribute name="show" type="xs:boolean" use="required">
+							<xs:annotation>
+								<xs:documentation>Whether to show or not this panel</xs:documentation>
+							</xs:annotation>
+						</xs:attribute>
+						<xs:attribute name="expanded" type="xs:boolean" use="required">
+							<xs:annotation>
+								<xs:documentation>Whether this panel is expanded or not.</xs:documentation>
+							</xs:annotation>
+						</xs:attribute>
+					</xs:complexType>
+				</xs:element>
+				<xs:element maxOccurs="1" minOccurs="0" name="InfoPanel">
+					<xs:annotation>
+						<xs:documentation>The info panel info</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:attribute name="show" type="xs:boolean" use="required">
+							<xs:annotation>
+								<xs:documentation>Whether to show or not this panel</xs:documentation>
+							</xs:annotation>
+						</xs:attribute>
+						<xs:attribute name="expanded" type="xs:boolean" use="required">
+							<xs:annotation>
+								<xs:documentation>Whether this panel is expanded or not.</xs:documentation>
+							</xs:annotation>
+						</xs:attribute>
+					</xs:complexType>
+				</xs:element>	
+				<xs:element maxOccurs="1" minOccurs="0" name="CachePanel">
+					<xs:annotation>
+						<xs:documentation>The cache panel info</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:attribute name="show" type="xs:boolean" use="required">
+							<xs:annotation>
+								<xs:documentation>Whether to show or not this panel</xs:documentation>
+							</xs:annotation>
+						</xs:attribute>
+						<xs:attribute name="expanded" type="xs:boolean" use="required">
+							<xs:annotation>
+								<xs:documentation>Whether this panel is expanded or not.</xs:documentation>
+							</xs:annotation>
+						</xs:attribute>
+					</xs:complexType>
+				</xs:element>
+				<xs:element maxOccurs="1" minOccurs="0" name="RCPanel">
+					<xs:annotation>
+						<xs:documentation>The request collection panel info</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:attribute name="show" type="xs:boolean" use="required">
+							<xs:annotation>
+								<xs:documentation>Whether to show or not this panel</xs:documentation>
+							</xs:annotation>
+						</xs:attribute>
+						<xs:attribute name="expanded" type="xs:boolean" use="required">
+							<xs:annotation>
+								<xs:documentation>Whether this panel is expanded or not.</xs:documentation>
+							</xs:annotation>
+						</xs:attribute>
+					</xs:complexType>
+				</xs:element>	
+			</xs:all>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="Conventions">

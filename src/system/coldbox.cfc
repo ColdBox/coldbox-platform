@@ -101,13 +101,16 @@ Description :
 				<cfset Event = cbController.getRequestService().requestCapture()>
 				
 				<!--- Debugging Monitors Check --->
-				<cfif cbController.getDebuggerService().getDebugMode() and event.getValue("debugPanel","") neq "">
+				<cfif cbController.getDebuggerService().getDebugMode()>
 					<!--- Which panel to render --->
-					<cfif event.getValue("debugPanel") eq "cache">
+					<cfif event.getValue("debugPanel","") eq "cache">
 						<cfoutput>#cbController.getDebuggerService().renderCachePanel()#</cfoutput>
 						<cfabort>
-					<cfelseif event.getValue("debugPanel") eq "cacheviewer">
+					<cfelseif event.getValue("debugPanel","") eq "cacheviewer">
 						<cfoutput>#cbController.getDebuggerService().renderCacheDumper()#</cfoutput>
+						<cfabort>
+					<cfelseif event.getValue("debugPanel","") eq "profiler">
+						<cfoutput>#cbController.getDebuggerService().renderProfiler()#</cfoutput>
 						<cfabort>
 					</cfif>
 				</cfif>
@@ -179,12 +182,22 @@ Description :
 				</cfcatch>
 			</cftry>
 			
-			<!--- DebugMode Renders --->
-			<cfif cbController.getDebuggerService().getDebugMode() and Event.getdebugpanelFlag()>
-				<!--- Time the request --->
-				<cfset request.fwExecTime = GetTickCount() - request.fwExecTime>
-				<!--- Render Debug Log --->
-				<cfoutput>#cbController.getDebuggerService().renderDebugLog()#</cfoutput>
+			<!--- DebugMode Routines --->
+			<cfif cbController.getDebuggerService().getDebugMode()>
+				
+				<!--- Request Profilers --->
+				<cfif cbController.getDebuggerService().getDebuggerConfigBean().getPersistentRequestProfiler() and
+					  structKeyExists(request,"debugTimers")>
+					<cfset cbController.getDebuggerService().pushProfiler(request.DebugTimers)>
+				</cfif>
+					
+				<!--- Render DebugPanel --->
+				<cfif Event.getdebugpanelFlag()>
+					<!--- Time the request --->
+					<cfset request.fwExecTime = GetTickCount() - request.fwExecTime>
+					<!--- Render Debug Log --->
+					<cfoutput>#cbController.getDebuggerService().renderDebugLog()#</cfoutput>
+				</cfif>
 			</cfif>
 		</cflock>
 		

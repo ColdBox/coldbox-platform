@@ -12,7 +12,7 @@
 		<!--- Meta Tag Refresh --->
 		<meta http-equiv="refresh" content="#url.frequency#">
 		<!--- Include Header --->
-		<cfinclude template="debugHeader.cfm">
+		<cfinclude template="/coldbox/system/includes/debugHeader.cfm">
 		<div class="fw_debugPanel">
 	</cfif>
 
@@ -21,7 +21,7 @@
 	<cfif renderType eq "cachepanel">
 		<div class="fw_debugContentView" id="fw_cache">
 	<cfelse>
-		<div class="fw_debugContent" id="fw_cache">
+		<div class="fw_debugContent<cfif getDebuggerConfigBean().getExpandedCachePanel()>View</cfif>" id="fw_cache">
 	</cfif>
 		<cfif renderType eq "main">
 		<div>
@@ -31,7 +31,7 @@
 		<cfelse>
 		<div>
 			<strong>Monitor Refresh Frequency (Seconds): </strong>
-			<select id="frequency" style="font-size:10px" onChange="window.location='index.cfm?debugpanel=cache&frequency='+this.value">
+			<select id="frequency" style="font-size:10px" onChange="fw_pollmonitor('cache',this.value)">
 				<cfloop from="5" to="30" index="i" step="5">
 				<option value="#i#" <cfif url.frequency eq i>selected</cfif>>#i#</option>
 				</cfloop>
@@ -110,7 +110,7 @@
 		<!--- **************************************************************--->
 		<cfif controller.getSetting("chartingActive",true)>
 			<!--- Why use a cfinclude? well, bluedragon would not compile this without it --->
-			<cfinclude template="cache_charting.cfm">
+			<cfinclude template="/coldbox/system/includes/panels/cache_charting.cfm">
 		<cfelse>
 			<div class="fw_debugTitleCell">
 			  Objects In Cache:

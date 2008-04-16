@@ -23,29 +23,33 @@ Modification History:
 ----------------------------------------------------------------------->
 <cfoutput>
 <cfinclude template="debugHeader.cfm">
-
+<div style="margin-top:40px"></div>
 <div class="fw_debugPanel">
 
 	<!--- **************************************************************--->
 	<!--- TRACER STACK--->
 	<!--- **************************************************************--->
-	<cfif controller.getPlugin("sessionstorage").exists("fw_tracerStack")>
+	<cfif getDebuggerConfigBean().getShowTracerPanel() and controller.getPlugin("sessionstorage").exists("fw_tracerStack")>
 		<cfset TracerArray = controller.getPlugin("sessionstorage").getVar("fw_tracerStack")>
 		<cfoutput>
 		<div class="fw_titles" onClick="fw_toggle('fw_tracer')">&gt;&nbsp; Tracer Messages </div>
-		<div class="fw_debugContentView" id="fw_tracer">
+		<div class="fw_debugContent<cfif getDebuggerConfigBean().getExpandedTracerPanel()>View</cfif>" id="fw_tracer">
 			<cfloop from="1" to="#arrayLen(TracerArray)#" index="i">
 				<div class="fw_tracerMessage">
+					
+					<!--- Message --->
 					<strong>Message:</strong><br>
 					#TracerArray[i].message#<br>
-					<strong>ExtraInformation:<br></strong>
+					
+					<!--- Extra Information --->
 					<cfif not isSimpleValue(TracerArray[i].extrainfo)>
+						<strong>ExtraInformation:<br></strong>
 						<cfdump var="#TracerArray[i].extrainfo#">
 					<cfelseif TracerArray[i].extrainfo neq "">
+						<strong>ExtraInformation:<br></strong>
 						#TracerArray[i].extrainfo#
-					<cfelse>
-						{Not Sent}
 					</cfif>
+					
 				</div>
 			</cfloop>
 		</div>
@@ -59,12 +63,22 @@ Modification History:
 	<!--- **************************************************************--->
 	<!--- DEBUGGING PANEL --->
 	<!--- **************************************************************--->
+	<cfif getDebuggerConfigBean().getShowInfoPanel()>
 	<div class="fw_titles" onClick="fw_toggle('fw_info')" >
 		&gt; &nbsp;ColdBox Debugging Information
 	</div>
 
-	<div class="fw_debugContentView" id="fw_info">
-
+	<div class="fw_debugContent<cfif getDebuggerConfigBean().getExpandedInfoPanel()>View</cfif>" id="fw_info">
+		
+		<div>
+			<input type="button" value="Reinitialize Framework" name="reinitframework" style="font-size:10px" title="Reinitialize the framework." onClick="fw_reinitframework(#iif(controller.getSetting('ReinitPassword').length(),'true','false')#)">
+			<cfif getDebuggerConfigBean().getPersistentRequestProfiler()>
+			&nbsp;
+			<input type="button" value="Open Profiler Monitor" name="profilermonitor" style="font-size:10px" title="Open the profiler monitor in a new window." onClick="window.open('index.cfm?debugpanel=profiler','profilermonitor','status=1,toolbar=0,location=0,resizable=1,scrollbars=1,height=750,width=800')">
+			</cfif>
+		  <br><br>
+		</div>
+		
 		<div class="fw_debugTitleCell">
 		  Framework Info:
 		</div>
@@ -180,16 +194,18 @@ Modification History:
 		</table>		
 		<!--- **************************************************************--->
 	</div>
-
+	</cfif>
 
 <!--- **************************************************************--->
 <!--- Cache Performance --->
 <!--- **************************************************************--->
 	
-	<cflock name="#getController().getColdboxOCM().getLockName()#" type="readonly" timeout="30">
-	<cfinclude template="cachepanel.cfm">
-	</cflock>
-
+	<cfif getDebuggerConfigBean().getShowCachePanel()>
+		<cflock name="#getController().getColdboxOCM().getLockName()#" type="readonly" timeout="30">
+		<cfinclude template="panels/cachepanel.cfm">
+		</cflock>
+	</cfif>
+	
 <!--- **************************************************************--->
 <!--- DUMP VAR --->
 <!--- **************************************************************--->
@@ -218,10 +234,11 @@ Modification History:
 <!--- **************************************************************--->
 <!--- Request Collection Debug --->
 <!--- **************************************************************--->
+	<cfif getDebuggerConfigBean().getShowRCPanel()>
 	<div class="fw_titles"  onClick="fw_toggle('fw_reqCollection')" >
 	&gt; &nbsp;Request Collection Structure
 	</div>
-	<div class="fw_debugContent" id="fw_reqCollection">
+	<div class="fw_debugContent<cfif getDebuggerConfigBean().getExpandedRCPanel()>View</cfif>" id="fw_reqCollection">
 		<table border="0" cellpadding="0" cellspacing="1" class="fw_debugTables" width="100%">
 		  <cfloop collection="#RequestCollection#" item="vars">
 		  <cfset varVal = event.getValue(vars)>
@@ -236,11 +253,11 @@ Modification History:
 				</cfif>
 			<cfelse>
 				<!--- Max Display For Queries  --->
-				<cfif isQuery(varVal) and (varVal.recordCount gt 50)>
-					<cfquery name="varVal" dbType="query" maxrows="50">
+				<cfif isQuery(varVal) and (varVal.recordCount gt getDebuggerConfigBean().getmaxRCPanelQueryRows())>
+					<cfquery name="varVal" dbType="query" maxrows="#getDebuggerConfigBean().getmaxRCPanelQueryRows()#">
 						select * from varVal
 					</cfquery>
-					<cfdump var="#Event.getValue(vars)#" label="Query Truncated to 50 records">
+					<cfdump var="#Event.getValue(vars)#" label="Query Truncated to #getDebuggerConfigBean().getmaxRCPanelQueryRows()# records">
 				<cfelse>
 					<cfdump var="#Event.getValue(vars)#">
 				</cfif>				
@@ -250,6 +267,7 @@ Modification History:
 		  </cfloop>
 		</table>
 	</div>
+	</cfif>
 <!--- **************************************************************--->
 
 	<div class="fw_renderTime">

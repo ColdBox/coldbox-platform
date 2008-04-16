@@ -19,9 +19,12 @@ Modification History:
 	<cffunction name="init" access="public" output="false" returntype="debuggerService" hint="Constructor">
 		<cfargument name="controller" type="any" required="true">
 		<cfscript>
+			/* Set Controller */
 			setController(arguments.controller);
 			/* set the unique cookie name */
 			setCookieName("coldbox_debugmode_#controller.getAppHash()#");
+			/* Create persisten profilers */
+			setProfilers(arrayNew(1));
 			return this;
 		</cfscript>
 	</cffunction>
@@ -98,7 +101,7 @@ Modification History:
 		<cfset var renderType = "cachepanel">
 
 		<!--- Generate Debugging --->
-		<cfsavecontent variable="RenderedDebugging"><cfinclude template="../includes/cachepanel.cfm"></cfsavecontent>
+		<cfsavecontent variable="RenderedDebugging"><cfinclude template="/coldbox/system/includes/panels/cachepanel.cfm"></cfsavecontent>
 		<cfreturn RenderedDebugging>
 	</cffunction>
 	
@@ -118,6 +121,19 @@ Modification History:
 		<cfreturn dumperContents>
 	</cffunction>
 	
+	<!--- Render Profilers --->
+	<cffunction name="renderProfiler" access="public" hint="Renders the execution profilers." output="false" returntype="Any">
+		<cfset var profilerContents = "">
+		<cfset var profilers = getProfilers()>
+		<cfset var profilersCount = ArrayLen(profilers)>
+		<cfset var x = 1>
+		<cfset var local = structnew()>
+		
+		<cfsavecontent variable="profilerContents"><cfinclude template="/coldbox/system/includes/panels/profilerpanel.cfm"></cfsavecontent>
+				
+		<cfreturn profilerContents>
+	</cffunction>
+	
 	<!--- Get set the cookie name --->
 	<cffunction name="getcookieName" access="public" output="false" returntype="string" hint="Get cookieName">
 		<cfreturn instance.cookieName/>
@@ -125,6 +141,52 @@ Modification History:
 	<cffunction name="setcookieName" access="public" output="false" returntype="void" hint="Set cookieName">
 		<cfargument name="cookieName" type="string" required="true"/>
 		<cfset instance.cookieName = arguments.cookieName/>
+	</cffunction>
+	
+	<!--- Configuration Bean --->
+	<cffunction name="getdebuggerConfigBean" access="public" output="false" returntype="coldbox.system.beans.debuggerConfigBean" hint="Get debuggerConfigBean">
+		<cfreturn instance.debuggerConfigBean/>
+	</cffunction>	
+	<cffunction name="setdebuggerConfigBean" access="public" output="false" returntype="void" hint="Set debuggerConfigBean">
+		<cfargument name="debuggerConfigBean" type="coldbox.system.beans.debuggerConfigBean" required="true"/>
+		<cfset instance.debuggerConfigBean = arguments.debuggerConfigBean/>
+	</cffunction>
+	
+	<!--- Persistent Profilers --->
+	<cffunction name="getProfilers" access="public" output="false" returntype="array" hint="Get Profilers">
+		<cfreturn instance.Profilers/>
+	</cffunction>
+	<cffunction name="setProfilers" access="public" output="false" returntype="void" hint="Set Profilers">
+		<cfargument name="Profilers" type="array" required="true"/>
+		<cfset instance.Profilers = arguments.Profilers/>
+	</cffunction>
+	
+	<!--- Push a profiler --->
+	<cffunction name="pushProfiler" access="public" returntype="void" hint="Push a profiler record" output="false" >
+		<cfargument name="profilerRecord" required="true" type="query" hint="The profiler query for this request">
+		<cfscript>
+			var newRecord = structnew();
+			
+			/* Size Check */
+			if( ArrayLen(getProfilers()) gte getDebuggerConfigBean().getmaxPersistentRequestProfilers() ){
+				popProfiler();
+			}
+			/* Append the new profiler */
+			newRecord.datetime = now();
+			newRecord.ip = cgi.REMOTE_ADDR;
+			newRecord.timers = arguments.profilerRecord;
+			
+			ArrayAppend(getProfilers(),newRecord);
+		</cfscript>
+		
+	</cffunction>
+	
+	<!--- Pop a profiler --->
+	<cffunction name="popProfiler" access="public" returntype="void" hint="Pop a profiler record" output="false" >
+		<cfscript>
+			/* Delete eldest Entry */
+			ArrayDeleteAt(getProfilers(),1);
+		</cfscript>
 	</cffunction>
 	
 <!------------------------------------------- PRIVATE ------------------------------------------->

@@ -68,6 +68,7 @@ Modification History:
 			instance.searchInterceptorCustomPoints = "//Interceptors/CustomInterceptionPoints";
 			instance.searchInterceptors = "//Interceptors/Interceptor";
 			instance.searchInterceptorBase = "//Interceptors";
+			instance.searchDebuggerSettings = "//DebuggerSettings";
 			
 			//Search patterns for fw xml
 			instance.searchConventions = "//Conventions";
@@ -241,6 +242,7 @@ Modification History:
 		var DatasourcesStruct = Structnew();
 		//Cache
 		var CacheSettingNodes = "";
+		var DebuggerSettingNodes = "";
 		//Interceptors
 		var InterceptorBase = "";
 		var InterceptorNodes = "";
@@ -865,6 +867,52 @@ Modification History:
 				ConfigStruct.CacheSettings.Override = false;
 			}
 			
+			/* ::::::::::::::::::::::::::::::::::::::::: DEBUGGER SETTINGS :::::::::::::::::::::::::::::::::::::::::::: */
+			
+			/* DEBUGGER SETTING NODES */
+			DebuggerSettingNodes = XMLSearch(configXML, instance.searchDebuggerSettings);
+			//Create debugger settings Structure
+			structInsert(ConfigStruct,"DebuggerSettings",structNew());
+			//Check if empty
+			if ( ArrayLen(DebuggerSettingNodes) gt 0 and ArrayLen(DebuggerSettingNodes[1].XMLChildren) gt 0){
+				/* PersistentRequestProfiler */
+				if ( structKeyExists(DebuggerSettingNodes[1], "PersistentRequestProfiler") and isBoolean(DebuggerSettingNodes[1].PersistentRequestProfiler.xmlText) )
+					StructInsert(ConfigStruct.DebuggerSettings, "PersistentRequestProfiler", trim(DebuggerSettingNodes[1].PersistentRequestProfiler.xmlText) );
+				/* maxPersistentRequestProfilers */
+				if ( structKeyExists(DebuggerSettingNodes[1], "maxPersistentRequestProfilers") and isNumeric(DebuggerSettingNodes[1].maxPersistentRequestProfilers.xmlText) )
+					StructInsert(ConfigStruct.DebuggerSettings, "maxPersistentRequestProfilers", trim(DebuggerSettingNodes[1].maxPersistentRequestProfilers.xmlText) );
+				/* maxRCPanelQueryRows */
+				if ( structKeyExists(DebuggerSettingNodes[1], "maxRCPanelQueryRows") and isNumeric(DebuggerSettingNodes[1].maxRCPanelQueryRows.xmlText) )
+					StructInsert(ConfigStruct.DebuggerSettings, "maxRCPanelQueryRows", trim(DebuggerSettingNodes[1].maxRCPanelQueryRows.xmlText) );
+				
+				/* TracerPanel */
+				if ( structKeyExists(DebuggerSettingNodes[1], "TracerPanel") ){
+					StructInsert(ConfigStruct.DebuggerSettings, "showTracerPanel", trim(DebuggerSettingNodes[1].TracerPanel.xmlAttributes.show) );
+					StructInsert(ConfigStruct.DebuggerSettings, "expandedTracerPanel", trim(DebuggerSettingNodes[1].TracerPanel.xmlAttributes.expanded) );
+				}
+				/* InfoPanel */
+				if ( structKeyExists(DebuggerSettingNodes[1], "InfoPanel") ){
+					StructInsert(ConfigStruct.DebuggerSettings, "showInfoPanel", trim(DebuggerSettingNodes[1].InfoPanel.xmlAttributes.show) );
+					StructInsert(ConfigStruct.DebuggerSettings, "expandedInfoPanel", trim(DebuggerSettingNodes[1].InfoPanel.xmlAttributes.expanded) );
+				}
+				/* CachePanel */
+				if ( structKeyExists(DebuggerSettingNodes[1], "CachePanel") ){
+					StructInsert(ConfigStruct.DebuggerSettings, "showCachePanel", trim(DebuggerSettingNodes[1].CachePanel.xmlAttributes.show) );
+					StructInsert(ConfigStruct.DebuggerSettings, "expandedCachePanel", trim(DebuggerSettingNodes[1].CachePanel.xmlAttributes.expanded) );
+				}
+				/* RCPanel */
+				if ( structKeyExists(DebuggerSettingNodes[1], "RCPanel") ){
+					StructInsert(ConfigStruct.DebuggerSettings, "showRCPanel", trim(DebuggerSettingNodes[1].RCPanel.xmlAttributes.show) );
+					StructInsert(ConfigStruct.DebuggerSettings, "expandedRCPanel", trim(DebuggerSettingNodes[1].RCPanel.xmlAttributes.expanded) );
+				}	
+				
+				//Set Override to true.
+				ConfigStruct.DebuggerSettings.Override = true;			
+			}
+			else{
+				ConfigStruct.DebuggerSettings.Override = false;
+			}
+						
 			/* ::::::::::::::::::::::::::::::::::::::::: INTERCEPTOR SETTINGS :::::::::::::::::::::::::::::::::::::::::::: */
 			
 			/* Interceptor Preparation. */

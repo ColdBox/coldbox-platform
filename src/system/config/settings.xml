@@ -47,7 +47,19 @@
         <!--ColdBox Cache Parameter: Whether reaping with default last access timeouts -->
         <Setting name="CacheUseLastAccessTimeouts" value="true"/> 
         <!--ColdBox Cache Parameter: The default eviction policy (LFU or LRU) -->
-        <Setting name="CacheEvictionPolicy" value="LRU"/>              
+        <Setting name="CacheEvictionPolicy" value="LRU"/> 
+        <!-- Debugger settings -->
+        <Setting name="PersistentRequestProfiler" value="false"></Setting>
+        <Setting name="maxPersistentRequestProfilers" value="10"></Setting>
+        <Setting name="maxRCPanelQueryRows" value="50"></Setting>
+        <Setting name="showTracerPanel" value="true"></Setting>
+        <Setting name="expandedTracerPanel" value="true"></Setting>
+        <Setting name="showInfoPanel" value="true"></Setting>
+        <Setting name="expandedInfoPanel" value="true"></Setting>
+        <Setting name="showCachePanel" value="true"></Setting>
+        <Setting name="expandedCachePanel" value="false"></Setting>
+        <Setting name="showRCPanel" value="true"></Setting>
+        <Setting name="expandedRCPanel" value="false"></Setting>         
     </Settings>
     
     <!-- Conventions -->

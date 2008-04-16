@@ -49,6 +49,7 @@ Modification History:
 		<cfscript>
 			var XMLParser = "";
 			var CacheConfigBean = CreateObject("Component","coldbox.system.beans.cacheConfigBean");
+			var DebuggerConfigBean = CreateObject("Component","coldbox.system.beans.debuggerConfigBean");
 			var FrameworkSettings = structNew();
 			var ConfigSettings = structNew();
 			
@@ -85,6 +86,17 @@ Modification History:
 				controller.getColdboxOCM().configure(CacheConfigBean);
 			}
 			
+			/* Check for Debugger Override Config or populate debugger config bean with framework settings*/
+			if( ConfigSettings.DebuggerSettings.OVERRIDE ){
+				DebuggerConfigBean.populate(ConfigSettings.DebuggerSettings);
+			}
+			else{
+				DebuggerConfigBean.populate(FrameworkSettings);
+			}
+			
+			/* Configure the Debugger with framework wide settings.*/
+			controller.getDebuggerService().setDebuggerConfigBean(DebuggerConfigBean);
+				
 			//Register The Interceptors
 			getController().getInterceptorService().registerInterceptors();
 			

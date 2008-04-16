@@ -54,7 +54,18 @@
 		<eventAction>index</eventAction>		
 	</Conventions>	
 
-
+	<DebuggerSettings>
+		<!--Settings-->
+		<PersistentRequestProfiler>true</PersistentRequestProfiler>
+		<maxPersistentRequestProfilers>10</maxPersistentRequestProfilers>
+		<maxRCPanelQueryRows>50</maxRCPanelQueryRows>
+		<!--Panels-->
+		<TracerPanel 	show="true" expanded="false" />
+		<InfoPanel 		show="true" expanded="false" />
+		<CachePanel 	show="true" expanded="false" />
+		<RCPanel		show="false" expanded="false" />
+	</DebuggerSettings>
+	
 	<!--Optional,if blank it will use the CFMX administrator settings.-->
 	<MailServerSettings />
 
