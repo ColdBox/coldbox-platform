@@ -135,7 +135,15 @@ Description :
 			
 			/* Method Testing and Validation */
 			if ( not oEventHandlerBean.getisPrivate() and not structKeyExists(oEventHandler,oEventHandlerBean.getMethod()) ){
-				getUtil().dumpit(getMetaData(oEventHandler).functions);getUtil().abortit();
+				
+				/* Check if the handler has an onMissingAction() method, virtual Events */
+				if( structKeyExists(oEventHandler,"onMissingAction") ){
+					oEventHandlerBean.setisMissingAction(true);
+					oEventHandlerBean.setMissingAction(oEventHandlerBean.getMethod());
+					/* Let's execute our missing action */
+					return oEventHandler;
+				}
+				
 				/* Invalid Event Detected, log it */
 				controller.getPlugin("logger").logEntry("error","Invalid Event detected: #oEventHandlerBean.getRunnable()#");
 				/* If onInvalidEvent is registered, use it */

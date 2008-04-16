@@ -366,7 +366,7 @@ Description		: This is the main ColdBox front Controller.
 			<!--- Private Arg Collection --->
 			<cfset privateArgCollection["event"] = oRequestContext>
 			<!--- Start Timer --->
-			<cfmodule template="includes/timer.cfm" timertag="invoking private runEvent [#arguments.event#]">
+			<cfmodule template="includes/timer.cfm" timertag="invoking PRIVATE runEvent [#arguments.event#]">
 				<!--- Call Private Event --->
 				<cfinvoke component="#oEventHandler#" method="invokerMixin" returnvariable="Results">
 					<cfinvokeargument name="method" value="#oEventHandlerBean.getMethod()#">
@@ -378,10 +378,18 @@ Description		: This is the main ColdBox front Controller.
 		<cfelse>
 			<!--- Start Timer --->
 			<cfmodule template="includes/timer.cfm" timertag="invoking runEvent [#arguments.event#]">
-				<!--- Execute the Public Event --->
-				<cfinvoke component="#oEventHandler#" method="#oEventHandlerBean.getMethod()#" returnvariable="Results">
-					<cfinvokeargument name="event" value="#oRequestContext#">
-				</cfinvoke>
+				<cfif oEventHandlerBean.getisMissingAction()>
+					<!--- Execute the Public Event --->
+					<cfinvoke component="#oEventHandler#" method="onMissingAction" returnvariable="Results">
+						<cfinvokeargument name="event" 			value="#oRequestContext#">
+						<cfinvokeargument name="missingAction"  value="#oEventHandlerBean.getMissingAction()#">
+					</cfinvoke>
+				<cfelse>
+					<!--- Execute the Public Event --->
+					<cfinvoke component="#oEventHandler#" method="#oEventHandlerBean.getMethod()#" returnvariable="Results">
+						<cfinvokeargument name="event" value="#oRequestContext#">
+					</cfinvoke>
+				</cfif>
 			</cfmodule>
 		</cfif>	
 

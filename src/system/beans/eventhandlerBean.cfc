@@ -23,6 +23,8 @@ Modification History:
 		instance.handler = "";
 		instance.method = "";
 		instance.isPrivate = false;
+		instance.isMissingAction = false;
+		instance.MissingAction = "";
 	</cfscript>
 
 	<cffunction name="init" access="public" returntype="coldbox.system.beans.eventhandlerBean" output="false">
@@ -86,6 +88,24 @@ Modification History:
 	</cffunction>
 	<cffunction name="getInvocationPath" access="public" returntype="any" output="false">
 		<cfreturn instance.InvocationPath >
+	</cffunction>
+	
+	<!--- Is missing Action --->
+	<cffunction name="getisMissingAction" access="public" returntype="boolean" output="false">
+		<cfreturn instance.isMissingAction>
+	</cffunction>
+	<cffunction name="setisMissingAction" access="public" returntype="void" output="false">
+		<cfargument name="isMissingAction" type="boolean" required="true">
+		<cfset instance.isMissingAction = arguments.isMissingAction>
+	</cffunction>
+	
+	<!--- Missing Action item. --->
+	<cffunction name="getmissingAction" access="public" returntype="string" output="false">
+		<cfreturn instance.missingAction>
+	</cffunction>
+	<cffunction name="setmissingAction" access="public" returntype="void" output="false">
+		<cfargument name="missingAction" type="string" required="true">
+		<cfset instance.missingAction = arguments.missingAction>
 	</cffunction>
 
 </cfcomponent>
