@@ -5,14 +5,14 @@ Description :
 	Unit Tests integration for the ehGeneral Handler.
 
 ----------------------------------------------------------------------->
-<cfcomponent name="generalTest" extends="coldbox.system.extras.baseTest" output="false">
-
-	<cffunction name="setUp" returntype="void" access="private" output="false">
+<cfcomponent name="generalTest" extends="coldbox.system.extras.testing.baseMXUnitTest" output="false">
+	
+	<cffunction name="setUp" returntype="void" access="public" output="false">
 		<cfscript>
 		//Setup ColdBox Mappings For this Test
 		setAppMapping("/applications/coldbox/ApplicationTemplate");
 		setConfigMapping(ExpandPath(instance.AppMapping & "/config/coldbox.xml.cfm"));
-		
+			
 		//Call the super setup method to setup the app.
 		super.setup();
 		
@@ -31,9 +31,11 @@ Description :
 		//Place any variables on the form or URL scope to test the handler.
 		//FORM.name = "luis"
 		event = execute("general.index");
-			
+		
+		debug(event.getCollection());
+		
 		//Do your asserts below
-		assertEqualsString("Welcome to ColdBox!", event.getValue("welcomeMessage",""), "Failed to assert welcome message");
+		assertEquals("Welcome to ColdBox!", event.getValue("welcomeMessage",""), "Failed to assert welcome message");
 			
 		</cfscript>
 	</cffunction>
@@ -45,9 +47,11 @@ Description :
 		//Place any variables on the form or URL scope to test the handler.
 		//FORM.name = "luis"
 		event = execute("general.doSomething");
+		
+		debug(event.getCollection());
 			
 		//Do your asserts below for setnextevent you can test for a setnextevent boolean flag
-		assertEqualsString("general.index", event.getValue("setnextevent",""), "Relocation Test");
+		assertEquals("general.index", event.getValue("setnextevent",""), "Relocation Test");
 			
 		</cfscript>
 	</cffunction>

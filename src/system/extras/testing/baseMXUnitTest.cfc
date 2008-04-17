@@ -21,7 +21,7 @@ Description :
 	   of the Application Start Handler to be executed.
 
 ---------------------------------------------------------------------->
-<cfcomponent name="baseTest" extends="mxunit.framework.TestCase" output="false" hint="A base unit test case for MXUnit">
+<cfcomponent name="baseMXUnitTest" extends="mxunit.framework.TestCase" output="false" hint="A base unit test case for MXUnit">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
@@ -32,7 +32,7 @@ Description :
 		instance.controller = "";
 	</cfscript>
 
-	<cffunction name="setUp" returntype="void" access="private">
+	<cffunction name="setup" returntype="void" access="public">
 		<cfscript>
 		//Initialize ColdBox
 		instance.controller = CreateObject("component", "coldbox.system.testcontroller").init( expandPath(instance.AppMapping) );
@@ -48,44 +48,44 @@ Description :
 <!------------------------------------------- HELPERS ------------------------------------------->
 
 	<!--- getter for AppMapping --->
-	<cffunction name="getAppMapping" access="public" returntype="string" output="false" hint="Get the AppMapping">
+	<cffunction name="getAppMapping" access="private" returntype="string" output="false" hint="Get the AppMapping">
 		<cfreturn instance.AppMapping>
 	</cffunction>
 	
 	<!--- setter for AppMapping --->
-	<cffunction name="setAppMapping" access="public" output="false" returntype="void" hint="Set the AppMapping">
+	<cffunction name="setAppMapping" access="private" output="false" returntype="void" hint="Set the AppMapping">
 		<cfargument name="AppMapping" type="string" required="true"/>
 		<cfset instance.AppMapping = arguments.AppMapping/>
 	</cffunction>
 
 	<!--- getter for ConfigMapping --->
-	<cffunction name="getConfigMapping" access="public" returntype="string" output="false" hint="Get the ConfigMapping">
+	<cffunction name="getConfigMapping" access="private" returntype="string" output="false" hint="Get the ConfigMapping">
 		<cfreturn instance.ConfigMapping>
 	</cffunction>
 	
 	<!--- setter for ConfigMapping --->
-	<cffunction name="setConfigMapping" access="public" output="false" returntype="void" hint="Set the ConfigMapping">
+	<cffunction name="setConfigMapping" access="private" output="false" returntype="void" hint="Set the ConfigMapping">
 		<cfargument name="ConfigMapping" type="string" required="true"/>
 		<cfset instance.ConfigMapping = arguments.ConfigMapping/>
 	</cffunction>
 
 	<!--- getter for controller --->
-	<cffunction name="getcontroller" access="public" returntype="any" output="false" hint="Get a reference to the ColdBox controller">
+	<cffunction name="getcontroller" access="private" returntype="any" output="false" hint="Get a reference to the ColdBox controller">
 		<cfreturn instance.controller>
 	</cffunction>
 
 	<!--- Get current request context --->
-	<cffunction name="getRequestContext" access="public" output="false" returntype="any" hint="Get the event object">
+	<cffunction name="getRequestContext" access="private" output="false" returntype="any" hint="Get the event object">
 		<cfreturn getController().getRequestService().getContext() >
 	</cffunction>
 
 	<!--- Setup a request context --->
-	<cffunction name="setupRequest" access="public" output="false" returntype="void" hint="Setup a request with FORM/URL data">
+	<cffunction name="setupRequest" access="private" output="false" returntype="void" hint="Setup a request with FORM/URL data">
 		<cfset getController().getRequestService().requestCapture() >
 	</cffunction>
 
 	<!--- prepare request, execute request and retrieve request --->
-	<cffunction name="execute" access="public" output="false" returntype="any" hint="Executes a framework lifecycle">
+	<cffunction name="execute" access="private" output="false" returntype="any" hint="Executes a framework lifecycle">
 		<cfargument name="eventhandler" required="true" type="string" hint="The event to execute">
 		<cfargument name="private" required="false" type="boolean" default="false" hint="Call a private event or not">
 		<cfscript>
@@ -111,14 +111,14 @@ Description :
 	</cffunction>
 	
 	<!--- Announce Interception --->
-	<cffunction name="announceInterception" access="public" returntype="void" hint="Announce an interception to the system." output="false" >
+	<cffunction name="announceInterception" access="private" returntype="void" hint="Announce an interception to the system." output="false" >
 		<cfargument name="state" 			required="true"  type="string" hint="The interception state to execute">
 		<cfargument name="interceptData" 	required="false" type="struct" default="#structNew()#" hint="A data structure used to pass intercepted information.">
 		<cfset getController().getInterceptorService().processState(argumentCollection=arguments)>
 	</cffunction>
 
 	<!--- Interceptor Facade --->
-	<cffunction name="getInterceptor" access="public" output="false" returntype="any" hint="Get an interceptor">
+	<cffunction name="getInterceptor" access="private" output="false" returntype="any" hint="Get an interceptor">
 		<!--- ************************************************************* --->
 		<cfargument name="interceptorClass" required="true" type="string" hint="The qualified class of the itnerceptor to retrieve">
 		<!--- ************************************************************* --->
@@ -126,7 +126,6 @@ Description :
 			return getController().getInterceptorService().getInterceptor(arguments.interceptorClass);
 		</cfscript>
 	</cffunction>
-<!------------------------------------------- PRIVATE ------------------------------------------->
 
 	<cffunction name="dumpit" access="private" hint="Facade for cfmx dump" returntype="void">
 		<cfargument name="var" required="yes" type="any">

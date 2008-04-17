@@ -26,7 +26,6 @@ Description :
 			if( getController().getSetting('AppMapping') neq "" ){
 				configFilePath = configFilePath & getController().getSetting('AppMapping') & "/";
 			}
-			
 			/* Setup the default properties */
 			set_courses( ArrayNew(1) );
 			setUniqueURLs(true);

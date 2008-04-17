@@ -13,8 +13,8 @@ Description :
 		<cfset var suite = CreateObject("component", "org.cfcunit.framework.TestSuite").init("Test Suite")>  
 		
 		<!--- Add the test cases --->
-		<cfset suite.addTestSuite(CreateObject("component", "cases.generalTest"))>
-		<cfset suite.addTestSuite(CreateObject("component", "cases.mainTest"))>
+		<cfset suite.addTestSuite(CreateObject("component", "generalTest"))>
+		<cfset suite.addTestSuite(CreateObject("component", "mainTest"))>
 		
 		<cfreturn suite/>  
 	</cffunction> 

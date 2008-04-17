@@ -9,7 +9,7 @@ The following test cases have been created for testing of event handlers, please
 note that the controller created is the ColdBox's testcontroller.
 
 The code speaks for itself. Just make sure you tests inherit from the base test
-that can be found at coldbox.system.extras.baseTest and they create a setup method
+that can be found at coldbox.system.extras.testing.baseTest and they create a setup method
 that follows the following pattern:
 
 <cffunction name="setUp" returntype="void" access="private">
@@ -31,9 +31,11 @@ that follows the following pattern:
 
 
 Structure:
-AllTests.cfc - Test Suite for all test cases
-cases/ehGeneralTest.cfc - The test case for the ehGeneral.cfc handler
-cases/ehMaintTest.cfc - The test case for the ehMain.cfc handler
+cfcunit - cfcunit enabled tests
+mxunit - mxunit enabled tests
+ - AllTests.cfc - Test Suite for all test cases
+ - GeneralTest.cfc - The test case for the ehGeneral.cfc handler
+ - MaintTest.cfc - The test case for the ehMain.cfc handler
 
 
 SPECIAL CONSIDERATIONS:
