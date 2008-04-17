@@ -105,12 +105,13 @@ Description :
 	</cffunction>
 	
 	<cffunction name="dspTab2" output="false" access="remote" returntype="any" hint="Process a remote call and return data/objects back.">
-		<cfset results = "" />
+		<cfset var results = "" />
 		<!--- call even handler to get query data etc --->
 		<cfset arguments["event"] = "ehAjax.dspTab2">
 
 		<!--- Call the actual proxy --->
 		<cfset results = super.process(argumentCollection=arguments)>
+		<cfdump var="#results#"><cfabort>
 		<cfreturn results>
 	</cffunction>
 	

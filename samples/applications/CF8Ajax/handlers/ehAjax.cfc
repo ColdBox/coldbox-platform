@@ -75,10 +75,10 @@ Description :
 	<!--- tab2 content --->
 	<cffunction name="dspTab2" access="public" returntype="any" output="false">
 		<cfargument name="Event" type="coldbox.system.beans.requestContext">
-		<!--- Set the View To Display, after Logic --->
-
+		<!--- no debuggin panel --->
+		<cfset Event.showdebugpanel(false)  />
 		<!--- set view without any layout --->
-		<cfset Event.setView(name = 'vwTab2',noLayout = true) />
+		<cfset Event.setView(name = 'ajax/vwTab2',noLayout = true) />
 		<!--- send back to proxy --->
 		<cfreturn renderView('ajax/vwTab2') />
 	</cffunction>

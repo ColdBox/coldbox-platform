@@ -69,7 +69,7 @@
 		<!--Request Context Decorator, leave blank if not using. Full instantiation path -->
 		<Setting name="RequestContextDecorator" 	value=""/>
 		<!--Flag if the proxy returns the entire request collection or what the event handlers return, default is false -->
-		<Setting name="ProxyReturnCollection" 		value="true"/>
+		<Setting name="ProxyReturnCollection" 		value="false"/>
 		<!-- What scope are flash persistance variables using. -->
 		<Setting name="FlashURLPersistScope" 		value="session"/>
 	</Settings>
@@ -111,6 +111,23 @@
 		<viewsLocation>views</viewsLocation>
 		<eventAction>index</eventAction>		
 	</Conventions>	
+	
+	<!--
+	Control the ColdBox Debugger. The panels are self explanatory. The other settings are explained below.
+	PersistentRequestProfiler : Activate the event profiler across multiple requests
+	maxPersistentRequestProfilers : Max records to keep in the profiler. Don't get gready.
+	maxRCPanelQueryRows : If a query is dumped in the RC panel, it will be truncated to this many rows.
+	-->
+	<DebuggerSettings>
+		<PersistentRequestProfiler>true</PersistentRequestProfiler>
+		<maxPersistentRequestProfilers>10</maxPersistentRequestProfilers>
+		<maxRCPanelQueryRows>50</maxRCPanelQueryRows>
+		
+		<TracerPanel 	show="true" expanded="true" />
+		<InfoPanel 		show="true" expanded="true" />
+		<CachePanel 	show="true" expanded="false" />
+		<RCPanel		show="true" expanded="false" />
+	</DebuggerSettings>
 	
 	<!--Optional,if blank it will use the CFMX administrator settings.-->
 	<MailServerSettings>

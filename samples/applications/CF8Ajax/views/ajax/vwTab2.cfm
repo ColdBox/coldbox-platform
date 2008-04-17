@@ -10,7 +10,8 @@ Description :
 ----------------------------------------------------------------------->
 
 <cfoutput>
+<h1>	
 This is the second tab.
 Content are displayed using coldboxproxy! ColdBoxProxy.cfc?method=dspTab2
+</h1>
 </cfoutput>
-
