@@ -89,9 +89,9 @@ Modification History: March 23,2008 Added new feature to encrypt/decrypt cookie 
 		
 		<!--- Store cookie with expiration info --->
 		<cfif arguments.expires EQ 1>
-			<cfcookie name="#arguments.name#" value="#tmpVar#" />
+			<cfcookie name="#uCase(arguments.name)#" value="#tmpVar#" />
 		<cfelse>
-			<cfcookie name="#arguments.name#" value="#tmpVar#" expires="#arguments.expires#" />
+			<cfcookie name="#uCase(arguments.name)#" value="#tmpVar#" expires="#arguments.expires#" />
 		</cfif>	
 	</cffunction>
 
@@ -106,7 +106,7 @@ Modification History: March 23,2008 Added new feature to encrypt/decrypt cookie 
 		
 		<cfif exists(arguments.name)>
 			<!--- Get value --->
-			<cfset rtnVar = cookie[arguments.name]>
+			<cfset rtnVar = cookie[uCase(arguments.name)]>
 			
 			<!--- Decrypt? --->
 			<cfif getEncryption() and rtnVar.length()>
@@ -131,7 +131,7 @@ Modification History: March 23,2008 Added new feature to encrypt/decrypt cookie 
 		<!--- ************************************************************* --->
 		<cfargument  name="name" type="string" required="true" 	hint="The variable name to retrieve.">
 		<!--- ************************************************************* --->
-		<cfreturn structKeyExists(cookie,arguments.name)>
+		<cfreturn structKeyExists(cookie,uCase(arguments.name))>
 	</cffunction>
 
 	<!--- Delete a Cookie Value --->
