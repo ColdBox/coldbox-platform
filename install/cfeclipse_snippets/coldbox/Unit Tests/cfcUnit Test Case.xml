@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<snippet filetemplate="true" extension="cfc">
+<name>cfcUnit Test Case</name>
+<help></help>
+<starttext><![CDATA[<cfcomponent name="$${test Name}" extends="coldbox.system.extras.testing.baseTest" output="false">
+
+	<cffunction name="setUp" returntype="void" access="private" output="false">
+		<cfscript>
+		//Setup ColdBox Mappings For this Test
+		setAppMapping("$${App Mapping}");
+		setConfigMapping(ExpandPath(instance.AppMapping & "/config/config.xml.cfm"));
+		
+		//Call the super setup method to setup the app.
+		super.setup();
+		
+		//EXECUTE THE APPLICATION START HANDLER: UNCOMMENT IF NEEDED AND FILL IT OUT.
+		//getController().runEvent("main.onAppInit");
+
+		//EXECUTE THE ON REQUEST START HANDLER: UNCOMMENT IF NEEDED AND FILL IT OUT
+		//getController().runEvent("main.onRequestStart");
+		</cfscript>
+	</cffunction>
+	
+
+</cfcomponent>]]></starttext>
+<endtext><![CDATA[]]></endtext>
+</snippet>

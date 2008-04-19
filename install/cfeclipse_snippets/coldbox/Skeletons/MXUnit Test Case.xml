@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <snippet filetemplate="true" extension="cfc">
-<name>Unit Test Case</name>
+<name>MXUnit Test Case</name>
 <help></help>
-<starttext><![CDATA[<cfcomponent name="$${test Name}" extends="coldbox.system.extras.baseTest" output="false">
+<starttext><![CDATA[<cfcomponent name="$${test Name}" extends="coldbox.system.extras.testing.baseMXUnitTest" output="false">
 
 	<cffunction name="setUp" returntype="void" access="private" output="false">
 		<cfscript>
 		//Setup ColdBox Mappings For this Test
-		setAppMapping("$${Application Mapping}");
+		setAppMapping("$${App Mapping}");
 		setConfigMapping(ExpandPath(instance.AppMapping & "/config/config.xml.cfm"));
 		
 		//Call the super setup method to setup the app.

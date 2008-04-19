@@ -49,7 +49,7 @@
         <!--ColdBox Cache Parameter: The default eviction policy (LFU or LRU) -->
         <Setting name="CacheEvictionPolicy" value="LRU"/> 
         <!-- Debugger settings -->
-        <Setting name="PersistentRequestProfiler" value="false"></Setting>
+        <Setting name="PersistentRequestProfiler" value="true"></Setting>
         <Setting name="maxPersistentRequestProfilers" value="10"></Setting>
         <Setting name="maxRCPanelQueryRows" value="50"></Setting>
         <Setting name="showTracerPanel" value="true"></Setting>

@@ -34,9 +34,6 @@ Modification History:
 			/* Lock Name */
 			setLockName( getController().getAppHash() & "_SESSION_STORAGE" );
 			
-			/* Create Storage if needed */
-			createStorage();
-			
 			return this;
 		</cfscript>
 	</cffunction>
@@ -97,7 +94,11 @@ Modification History:
 		<!--- ************************************************************* --->
 		<cfargument  name="name" type="string" required="true" 	hint="The variable name to retrieve.">
 		<!--- ************************************************************* --->
-		<cfreturn structKeyExists( getStorage(), arguments.name)>
+		<cfif not isDefined("session") or not structKeyExists(session,"cbStorage")>
+			<cfreturn false>
+		<cfelse>
+			<cfreturn structKeyExists( getStorage(), arguments.name)>
+		</cfif>
 	</cffunction>
 
 	<!--- Clear All From Storage --->

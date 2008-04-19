@@ -360,12 +360,12 @@
 	<cfreturn ReturnString>
 </cffunction>
 
-	<cffunction name="dump" access="private" hint="Facade for cfmx dump" returntype="void">
-		<cfargument name="var" required="yes" type="any">
-		<cfdump var="#var#">
-	</cffunction>
-	<!--- Abort Facade --->
-	<cffunction name="abort" access="private" hint="Facade for cfabort" returntype="void" output="false">
-		<cfabort>
-	</cffunction>
+<cffunction name="dumpit" access="private" hint="Facade for cfmx dump" returntype="void">
+	<cfargument name="var" required="yes" type="any">
+	<cfdump var="#var#">
+</cffunction>
+<!--- Abort Facade --->
+<cffunction name="abortit" access="private" hint="Facade for cfabort" returntype="void" output="false">
+	<cfabort>
+</cffunction>
 </cfcomponent>
