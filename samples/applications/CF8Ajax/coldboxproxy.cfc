@@ -111,7 +111,7 @@ Description :
 
 		<!--- Call the actual proxy --->
 		<cfset results = super.process(argumentCollection=arguments)>
-		<cfdump var="#results#"><cfabort>
+		<!--- <cfdump var="#results#"><cfabort> --->
 		<cfreturn results>
 	</cffunction>
 	

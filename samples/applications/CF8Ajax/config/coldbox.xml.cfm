@@ -69,7 +69,7 @@
 		<!--Request Context Decorator, leave blank if not using. Full instantiation path -->
 		<Setting name="RequestContextDecorator" 	value=""/>
 		<!--Flag if the proxy returns the entire request collection or what the event handlers return, default is false -->
-		<Setting name="ProxyReturnCollection" 		value="false"/>
+		<Setting name="ProxyReturnCollection" 		value="true"/>
 		<!-- What scope are flash persistance variables using. -->
 		<Setting name="FlashURLPersistScope" 		value="session"/>
 	</Settings>
