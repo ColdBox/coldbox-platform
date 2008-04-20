@@ -1,7 +1,7 @@
 <cfsilent>
 <!-----------------------------------------------------------------------
 ********************************************************************************
-Copyright 2005-2007 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+Copyright 2005-2008 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 www.coldboxframework.com | www.luismajano.com | www.ortussolutions.com
 ********************************************************************************
 
@@ -117,19 +117,21 @@ Modification History:
 	 
 	 <tr>
 	   <td align="right" class="fw_errorTablesTitles">Coldfusion ID: </td>
-	   <td ><cfif structkeyExists(session, "cfid")>
+	   <td >
+		<cfif isDefined("session") and structkeyExists(session, "cfid")>
 		CFID=#session.CFID# ;
-		<cfelseif structkeyExists(client,"cfid")>
+		<cfelseif isDefined("client") and structkeyExists(client,"cfid")>
 		CFID=#client.CFID# ;
 		</cfif>
-		<cfif structkeyExists(session,"CFToken")>
+		<cfif isDefined("session") and structkeyExists(session,"CFToken")>
 		CFToken=#session.CFToken# ;
-		<cfelseif structkeyExists(client,"CFTOken")>
+		<cfelseif isDefined("client") and structkeyExists(client,"CFToken")>
 		CFToken=#client.CFToken# ;
 		</cfif>
-		<cfif structkeyExists(session,"sessionID")>
+		<cfif isDefined("session") and structkeyExists(session,"sessionID")>
 		JSessionID=#session.sessionID#
-		</cfif></td>
+		</cfif>
+		</td>
 	 </tr>
 	 <tr>
 	   <td align="right" class="fw_errorTablesTitles">Template Path : </td>

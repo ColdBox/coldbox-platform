@@ -1,1 +1,1 @@
-<cfapplication name="ColdBox update service" >
+<cfapplication name="ColdBox update service">

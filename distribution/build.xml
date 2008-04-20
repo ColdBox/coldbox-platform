@@ -68,7 +68,8 @@
       	<ftp action="send" server="${ftp.server}" userid="${ftp.username}" password="${ftp.password}" 
        		remotedir="${ftp.remotedir}" passive="yes" verbose="yes">
         	<fileset file="${coldbox_destination}" />
-      		<fileset file="${dashboard_destination}" />      		
+      		<fileset file="${dashboard_destination}" />      
+      		<fileset file="distribution/updatews.cfc" />
        	</ftp>
     </target>
 
