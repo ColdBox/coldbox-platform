@@ -92,14 +92,14 @@ Modification History:
 		var datasources = application.cbController.getSetting("Datasources");
 		//Check for datasources structure
 		if ( structIsEmpty(datasources) ){
-			throw("There are no datasources defined for this application.","","Framework.coldboxFactory.DatasourceStructureEmptyException");
+			getUtil().throwit("There are no datasources defined for this application.","","Framework.coldboxFactory.DatasourceStructureEmptyException");
 		}
 		//Try to get the correct datasource.
 		if ( structKeyExists(datasources, arguments.alias) ){
 			return CreateObject("component",datasourceBeanPath).init(datasources[arguments.alias]);
 		}
 		else{
-			throw("The datasource: #arguments.alias# is not defined.","","Framework.coldboxFactory.DatasourceNotFoundException");
+			getUtil().throwit("The datasource: #arguments.alias# is not defined.","","Framework.coldboxFactory.DatasourceNotFoundException");
 		}
 		</cfscript>
 	</cffunction>
@@ -116,5 +116,9 @@ Modification History:
 	
 <!------------------------------------------- PRIVATE ------------------------------------------->
 	
-
+	<!--- Get the util object --->
+	<cffunction name="getUtil" access="private" output="false" returntype="coldbox.system.util.util" hint="Create and return a util object">
+		<cfreturn CreateObject("component","coldbox.system.util.util")/>
+	</cffunction>
+	
 </cfcomponent>

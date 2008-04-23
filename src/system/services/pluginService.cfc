@@ -141,6 +141,7 @@ Modification History:
 		<cfreturn instance.cacheDictionary/>
 	</cffunction>
 	
+	<!--- Clear the metadata dictionary --->
 	<cffunction name="clearDictionary" access="public" returntype="void" hint="Clear the cache dictionary" output="false" >
 		<cfset getcacheDictionary().clearAll()>
 	</cffunction>

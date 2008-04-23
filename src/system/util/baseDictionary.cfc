@@ -65,10 +65,8 @@ Description :
 		<cfargument name="value" required="true" type="any" 	hint="The value of the key">
 		<!--- ************************************************************* --->
 		<cfscript>
-			if( keyExists(arguments.key) ){
-				clearKey(arguments.key);			
-			}
-			structInsert( getDictionary(), arguments.key, arguments.value );
+			var dictionary = getDictionary();
+			dictionary[arguments.key] = arguments.value;
 		</cfscript>
 	</cffunction>
 	
@@ -78,11 +76,7 @@ Description :
 		<cfargument name="key" required="true" type="string" hint="The key to remove">
 		<!--- ************************************************************* --->
 		<cfscript>
-			if ( keyExists(arguments.key) ){
-				structDelete( getDictionary(), arguments.key );
-				return true;
-			}
-			return false;
+			return structDelete( getDictionary(), arguments.key );
 		</cfscript>
 	</cffunction>
 	

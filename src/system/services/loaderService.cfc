@@ -53,8 +53,9 @@ Modification History:
 			var FrameworkSettings = structNew();
 			var ConfigSettings = structNew();
 			
-			//Clear the Plugin Dictionary
+			/* Clear the Cache Dictionaries */
 			controller.getPluginService().clearDictionary();
+			controller.getHandlerService().clearDictionaries();
 			
 			//Prepare Parser
 			XMLParser = controller.getPlugin("XMLParser");

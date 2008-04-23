@@ -338,6 +338,7 @@ Description :
 		</cfscript>
 	</cffunction>
 
+	<!--- Clear All Dictioanries --->
 	<cffunction name="clearDictionaries" access="public" returntype="void" hint="Clear the internal cache dictionaries" output="false" >
 		<cfscript>
 			getHandlerCacheDictionary().clearAll();
