@@ -30,7 +30,7 @@ Modification History:
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
-	<cffunction name="init" access="public" returntype="renderer" output="false">
+	<cffunction name="init" access="public" returntype="renderer" output="false" hint="Constructor">
 		<!--- ************************************************************* --->
 		<cfargument name="controller" type="any" required="true">
 		<!--- ************************************************************* --->
@@ -159,8 +159,7 @@ Modification History:
 		<cfset var cbox_RederedLayout = "">
 		<cfset var Event = controller.getRequestService().getContext()>
 		<cfset var rc = event.getCollection()>
-		
-			
+					
 		<!--- Check if no view has been set, if not, then set the default view --->
 		<cfif event.getCurrentView() eq "">
 			<cfset event.setView(event.getDefaultView())>
@@ -181,24 +180,19 @@ Modification History:
 	
 <!------------------------------------------- PRIVATE ------------------------------------------->
 
-	<!--- ************************************************************* --->
-
+	<!--- Get Layouts Convention --->
 	<cffunction name="getlayoutsConvention" access="private" output="false" returntype="string" hint="Get layoutsConvention">
 		<cfreturn instance.layoutsConvention/>
 	</cffunction>
 	
-	<!--- ************************************************************* --->
-	
+	<!--- Get Views Convention --->
 	<cffunction name="getviewsConvention" access="private" output="false" returntype="string" hint="Get viewsConvention">
 		<cfreturn instance.viewsConvention/>
 	</cffunction>
 	
-	<!--- ************************************************************* --->
-	
+	<!--- Get App Mapping --->	
 	<cffunction name="getappMapping" access="private" output="false" returntype="string" hint="Get appMapping">
 		<cfreturn instance.appMapping/>
-	</cffunction>
-	
-	<!--- ************************************************************* --->	
+	</cffunction>	
 	
 </cfcomponent>

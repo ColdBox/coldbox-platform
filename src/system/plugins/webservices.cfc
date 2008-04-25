@@ -79,6 +79,8 @@ Modification History:
 		<!--- Get the Webservice from the configStruct --->
 		<cfset var ws = getWS(arguments.webservice)>
 		<cfset var rpcService = "">
+		<cfset var factory = 0>
+		
 		<cfif ws neq "">
 			<cfobject type="java" action="create" name="factory" class="coldfusion.server.ServiceFactory">
 			<cfset rpcService = factory.XmlRpcService>

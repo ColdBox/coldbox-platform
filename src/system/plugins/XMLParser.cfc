@@ -104,6 +104,7 @@ Modification History:
 		var configFileFound = false;
 		var CFMLEngine = controller.oCFMLENGINE.getEngine();
 		var CFMLVersion = controller.oCFMLENGINE.getVersion();
+		var i = 1;
 
 		try{
 			//verify Framework settings File

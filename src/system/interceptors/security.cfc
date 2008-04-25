@@ -448,6 +448,7 @@ and then extracted by this interceptor. They must be a valid rules query.
 		<!--- ************************************************************* --->
 		<cfscript>
 			var x =1;
+			var y =1;
 			var node = "";
 			var rtnArray = ArrayNew(1);
 			var columns = arguments.qRules.columnlist;

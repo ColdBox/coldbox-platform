@@ -73,6 +73,7 @@ Modifications:
 		<cfset var unescapetoVals2 = '\,",/,#Chr(8)#,#Chr(9)#,#Chr(10)#,#Chr(12)#,#Chr(13)#' />
 		<cfset var dJSONString = "" />
 		<cfset var _data = Trim(arguments.data) />
+		<cfset var pos = 0>
 		
 		<!--- NUMBER --->
 		<cfif IsNumeric(_data)>
