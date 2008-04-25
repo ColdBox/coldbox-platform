@@ -82,7 +82,7 @@ Modification History:
 					local.tmpObj = getobjectPool().get(arguments.objectKey);
 					/* Validate it */
 					if( not structKeyExists(local, "tmpObj") ){
-						needCleanup = true;
+						local.needCleanup = true;
 						getCacheStats().miss();
 					}
 					else{
@@ -125,7 +125,7 @@ Modification History:
 					local.tmpObj = getobjectPool().get(arguments.objectKey);
 					/* Validate it */
 					if( not structKeyExists(local,"tmpObj") ){
-						needCleanup = true;
+						local.needCleanup = true;
 						getCacheStats().miss();
 					}
 					else{
