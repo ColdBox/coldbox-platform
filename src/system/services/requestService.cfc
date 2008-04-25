@@ -32,7 +32,7 @@ Modification History:
 	<!--- Request Capture --->
 	<cffunction name="requestCapture" access="public" returntype="any" output="false" hint="I capture a request.">
 		<cfscript>
-			var Context = createContext();
+			var Context = getContext();
 			var DebugPassword = controller.getSetting("debugPassword");
 			var EventName = controller.getSetting("EventName");
 			var oFlashStorage = "";
@@ -74,11 +74,8 @@ Modification History:
 			/* Are we using event caching? */
 			EventCachingTest(Context);
 			
-			//Set Request Context in storage
-			setContext(Context);
-			
 			//Return Context
-			return getContext();
+			return Context;
 		</cfscript>
 	</cffunction>
 
@@ -123,7 +120,7 @@ Modification History:
 
 	<!--- Set the context --->
 	<cffunction name="setContext" access="public" output="false" returntype="void" hint="Set the Request Context">
-		<cfargument name="Context" type="coldbox.system.beans.requestContext" required="true">
+		<cfargument name="Context" type="any" required="true">
 		<cfscript>
 			request.cb_requestContext = arguments.Context;
 		</cfscript>
@@ -153,7 +150,7 @@ Modification History:
 		var oContext = "";
 		var oDecorator = "";
 		
-		/* Load Properties */
+		/* Ensure Loaded Properties */
 		loadProperties();
 		</cfscript>
 		
@@ -169,9 +166,15 @@ Modification History:
 		if ( getContextProperties().isUsingDecorator ){
 			//Create the decorator
 			oDecorator = CreateObject("component",controller.getSetting("RequestContextDecorator")).init(oContext);
+			//Set Request Context in storage
+			setContext(oDecorator);
 			//Return
 			return oDecorator;
 		}
+		
+		//Set Request Context in storage
+		setContext(oContext);
+		
 		//Return Context
 		return oContext;
 		</cfscript>
