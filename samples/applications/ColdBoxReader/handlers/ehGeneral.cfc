@@ -75,19 +75,19 @@ aug/20/2006 - Luis Majano
 <!------------------------------------------ DEPENDENCIES -------------------------------------->
 	
 	<!--- Get User Service --->
-	<cffunction name="getuserService" access="public" output="false" returntype="any" hint="Get userService">
+	<cffunction name="getuserService" access="private" output="false" returntype="any" hint="Get userService">
 		<cfreturn instance.userService/>
 	</cffunction>	
-	<cffunction name="setuserService" access="public" output="false" returntype="void" hint="Set userService">
+	<cffunction name="setuserService" access="private" output="false" returntype="void" hint="Set userService">
 		<cfargument name="userService" type="any" required="true"/>
 		<cfset instance.userService = arguments.userService/>
 	</cffunction>
 	
 	<!--- feedService --->
-	<cffunction name="getfeedService" access="public" output="false" returntype="any" hint="Get feedService">
+	<cffunction name="getfeedService" access="private" output="false" returntype="any" hint="Get feedService">
 		<cfreturn instance.feedService/>
 	</cffunction>	
-	<cffunction name="setfeedService" access="public" output="false" returntype="void" hint="Set feedService">
+	<cffunction name="setfeedService" access="private" output="false" returntype="void" hint="Set feedService">
 		<cfargument name="feedService" type="any" required="true"/>
 		<cfset instance.feedService = arguments.feedService/>
 	</cffunction>

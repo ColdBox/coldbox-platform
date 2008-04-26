@@ -63,5 +63,9 @@
 	<Datasources>
 		<Datasource alias="coldboxreader" name="coldboxreader" dbtype="mysql" username="" password="" />
 	</Datasources>
+	
+	<Interceptors>
+		<Interceptor class="coldbox.system.interceptors.autowire" />
+	</Interceptors>
 
 </Config>
