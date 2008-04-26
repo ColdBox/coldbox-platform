@@ -129,7 +129,7 @@ What gets returned on the FeedStructure:
 				}//end if cahce eq file
 				else{
 					/* Ram Cache */
-					setCachePrefix('rssreader_');
+					setCachePrefix('rssreader-');
 				}		
 				
 				/* Cache Timeout */
@@ -250,7 +250,7 @@ What gets returned on the FeedStructure:
 			
 			/* only expire if using file cache, ram is done by CB */
 			if( getCacheType() eq "file"){
-				qFile = readCacheDir(filter=URLToCacheKey(arguments.feedURL))>
+				qFile = readCacheDir(filter=URLToCacheKey(arguments.feedURL));
 				/* Exists Check */
 				if ( qFile.recordcount gt 0 and DateDiff("n", qFile.dateLastModified, now()) gt getCacheTimeout() ){
 					removeCachedFeed(arguments.feedURL);
@@ -297,7 +297,7 @@ What gets returned on the FeedStructure:
 		<cfset var objectIn = "">
 		
 		<cfif getCacheType() eq "ram">
-			<cfset getColdboxOCM().get(URLToCacheKey(arguments.feedURL))>
+			<cfset results = getColdboxOCM().get(URLToCacheKey(arguments.feedURL))>
 		<cfelse>
 			<cfset cacheFile = getCacheLocation() & getSetting("OSFileSeparator",true) & URLToCacheKey(arguments.feedURL)>
 			<!--- Secure Cache Read. --->
