@@ -16,6 +16,7 @@ Description :
 	
 Application Settings:
 	- rssReader_useCache 		: boolean [default=true] (Use the file cache or not)
+	- rssReader_cacheType		: string (ram,file) (Default is ram)
 	- rssReader_cacheLocation 	: string (Where to store the file caching, relative to the app or absolute)
 	- rssReader_cacheTimeout 	: numeric [default=30] (In minutes, the timeout of the file cache)
 	- rssReader_httpTimeout 	: numeric [default=30] (In seconds, the timeout of the cfhttp call)
@@ -90,29 +91,47 @@ What gets returned on the FeedStructure:
 			
 			/* Setup Caching variables if using it */
 			if( getUseCache() ){	
-				/* File Separator */
-				slash = getSetting("OSFileSeparator",true);
-				/* Cache Location */
-				if( not settingExists('rssReader_cacheLocation') ){
-					throw(message="The Setting rssReader_cacheLocation is missing. Please create it.",type='rss.rssReader.InvalidSettingException');
-				}
-				/* Tests if the directory exists: Full Path */
-				if ( directoryExists( getController().getAppRootPath() & getSetting('rssReader_cacheLocation') ) ){
-					setCacheLocation( getController().getAppRootPath() & getSetting('rssReader_cacheLocation') );
-				}
-				if ( directoryExists( getController().getAppRootPath() & slash & getSetting('rssReader_cacheLocation') ) ){
-					setCacheLocation( getController().getAppRootPath() & slash & getSetting('rssReader_cacheLocation') );
-				}
-				else if( directoryExists( ExpandPath(getSetting('rssReader_cacheLocation')) ) ){
-					setCacheLocation( ExpandPath(getSetting('rssReader_cacheLocation')) );
-				}
-				else if( directoryExists(getSetting('rssReader_cacheLocation')) ){
-					setCacheLocation( getSetting('rssReader_cacheLocation') );
+				
+				/* ram caching? used by default */
+				if( not settingExists('rssReader_cacheType') or not reFindNoCase("^(ram|file)$",getSetting('rssReader_cacheType')) ){
+					setCacheType('ram');
 				}
 				else{
-					throw('The cache location directory could not be found. Please check again. #getSetting('rssReader_cacheLocation')#','','rss.rssReader.InvalidCacheLocationException');
+					setCacheType(getSetting('rssReader_cacheType'));
 				}
-							
+				
+				/* file caching? */
+				if( getCacheType() eq "file" ){
+					/* Cache prefix */
+					setCachePrefix('');
+					/* File Separator */
+					slash = getSetting("OSFileSeparator",true);
+					/* Cache Location */
+					if( not settingExists('rssReader_cacheLocation') ){
+						throw(message="The Setting rssReader_cacheLocation is missing. Please create it.",type='rss.rssReader.InvalidSettingException');
+					}
+					/* Tests if the directory exists: Full Path */
+					if ( directoryExists( getController().getAppRootPath() & getSetting('rssReader_cacheLocation') ) ){
+						setCacheLocation( getController().getAppRootPath() & getSetting('rssReader_cacheLocation') );
+					}
+					if ( directoryExists( getController().getAppRootPath() & slash & getSetting('rssReader_cacheLocation') ) ){
+						setCacheLocation( getController().getAppRootPath() & slash & getSetting('rssReader_cacheLocation') );
+					}
+					else if( directoryExists( ExpandPath(getSetting('rssReader_cacheLocation')) ) ){
+						setCacheLocation( ExpandPath(getSetting('rssReader_cacheLocation')) );
+					}
+					else if( directoryExists(getSetting('rssReader_cacheLocation')) ){
+						setCacheLocation( getSetting('rssReader_cacheLocation') );
+					}
+					else{
+						throw('The cache location directory could not be found. Please check again. #getSetting('rssReader_cacheLocation')#','','rss.rssReader.InvalidCacheLocationException');
+					}
+				}//end if cahce eq file
+				else{
+					/* Ram Cache */
+					setCachePrefix('rssreader_');
+				}		
+				
 				/* Cache Timeout */
 				if( not settingExists('rssReader_cacheTimeout') ){
 					setCacheTimeout(30);
@@ -145,19 +164,23 @@ What gets returned on the FeedStructure:
 		<cfset var qFiles = "">
 		<cfset var slash = getSetting("OSFileSeparator",true)>
 		
-		<!--- Lock and get Files and Remove. --->		
-		<cflock name="#getLockName()#" type="exclusive" timeout="30" throwontimeout="true">
-			<cfset qFiles = readCacheDir()>
-			<!--- Recursively Delete --->
-			<cfloop query="qFiles">
-				<!--- Delete File --->
-				<cffile action="delete" file="#qFiles.directory##slash##qFiles.name#">
-			</cfloop>
-		</cflock>
+		<cfif getCacheType() eq "ram">
+			<cfset getColdboxOCM().clearByKeySnippet(getCachePrefix)>
+		<cfelse>
+			<!--- Lock and get Files and Remove. --->		
+			<cflock name="#getLockName()#" type="exclusive" timeout="30" throwontimeout="true">
+				<cfset qFiles = readCacheDir()>
+				<!--- Recursively Delete --->
+				<cfloop query="qFiles">
+					<!--- Delete File --->
+					<cffile action="delete" file="#qFiles.directory##slash##qFiles.name#">
+				</cfloop>
+			</cflock>
+		</cfif>
 	</cffunction>
 	
 	<!--- How many elements in Cache --->
-	<cffunction name="getCacheSize" output="false" access="public" returntype="numeric" hint="Returns the number of elements in the cache directory">
+	<cffunction name="getCacheSize" output="false" access="public" returntype="numeric" hint="Returns the number of elements in the cache directory. Only used for file caching.">
 		<cfset var size = 0>
 		<cflock name="#getLockName()#" type="readonly" timeout="30" throwontimeout="true">
 			<cfset size = readCacheDir().recordcount>
@@ -171,13 +194,19 @@ What gets returned on the FeedStructure:
 		<cfargument name="feedURL" type="string" required="yes" hint="The url to check if its in the cache.">
 		<!--- ******************************************************************************** --->
 		<cfset var results = false>
-		<!--- Secure Cache Read. --->
-		<cflock name="#getLockName()#" type="readonly" timeout="30" throwontimeout="true">
-			<!--- Check if feed is in cache. --->
-			<cfif readCacheDir(filter=URLToCacheKey(arguments.feedURL)).recordcount neq 0>
-				<cfset results = true>
-			</cfif>
-		</cflock>
+		
+		<cfif getCacheType() eq "ram">
+			<cfreturn getColdboxOCM().lookup(URLToCacheKey(arguments.feedURL))>
+		<cfelse>
+			<!--- Secure Cache Read. --->
+			<cflock name="#getLockName()#" type="readonly" timeout="30" throwontimeout="true">
+				<!--- Check if feed is in cache. --->
+				<cfif readCacheDir(filter=URLToCacheKey(arguments.feedURL)).recordcount neq 0>
+					<cfset results = true>
+				</cfif>
+			</cflock>
+		</cfif>
+		
 		<cfreturn results>
 	</cffunction>
 	
@@ -189,10 +218,14 @@ What gets returned on the FeedStructure:
 		<cfset var results = false>
 		<cfset var qFile = "">
 		
-		<!--- Secure Cache Read. --->
-		<cflock name="#getLockName()#" type="readonly" timeout="30" throwontimeout="true">
-			<!--- Check if feed is in cache. --->
-			<cfset qFile = readCacheDir(filter=URLToCacheKey(arguments.feedURL))>
+		<cfif getCacheType() eq "ram">
+			<cfreturn getColdboxOCM().lookup(URLToCacheKey(arguments.feedURL))>
+		<cfelse>
+			<!--- Secure Cache Read. --->
+			<cflock name="#getLockName()#" type="readonly" timeout="30" throwontimeout="true">
+				<!--- Check if feed is in cache. --->
+				<cfset qFile = readCacheDir(filter=URLToCacheKey(arguments.feedURL))>			
+			</cflock>
 			<!--- Exists Check --->
 			<cfif qFile.recordcount eq 0>
 				<cfthrow message="The feed does not exist in the cache." type="customPlugins.rss.rssReader">
@@ -200,8 +233,8 @@ What gets returned on the FeedStructure:
 			<!--- Timeout Check --->
 			<cfif DateDiff("n", qFile.dateLastModified, now()) gt getCacheTimeout()>
 				<cfset results = true>					
-			</cfif>				
-		</cflock>
+			</cfif>	
+		</cfif>
 		
 		<cfreturn results>
 	</cffunction>
@@ -211,15 +244,19 @@ What gets returned on the FeedStructure:
 		<!--- ******************************************************************************** --->
 		<cfargument name="feedURL" type="string" required="yes" hint="The url to check if its in the cache.">
 		<!--- ******************************************************************************** --->
-		<cfset var results = false>
-		<cfset var qFile = "">
-		
-		<!--- Check if feed is in cache. --->
-		<cfset qFile = readCacheDir(filter=URLToCacheKey(arguments.feedURL))>
-		<!--- Exists Check --->
-		<cfif qFile.recordcount gt 0 and DateDiff("n", qFile.dateLastModified, now()) gt getCacheTimeout()>
-			<cfset removeCachedFeed(arguments.feedURL)>		
-		</cfif>
+		<cfscript>
+			var results = false;
+			var qFile = "";
+			
+			/* only expire if using file cache, ram is done by CB */
+			if( getCacheType() eq "file"){
+				qFile = readCacheDir(filter=URLToCacheKey(arguments.feedURL))>
+				/* Exists Check */
+				if ( qFile.recordcount gt 0 and DateDiff("n", qFile.dateLastModified, now()) gt getCacheTimeout() ){
+					removeCachedFeed(arguments.feedURL);
+				}
+			}
+		</cfscript>
 	</cffunction>
 	
 	<!--- flushCache --->
@@ -228,17 +265,23 @@ What gets returned on the FeedStructure:
 		<cfargument name="feedURL" type="string" required="yes" hint="The url to purge from the cache.">
 		<!--- ******************************************************************************** --->
 		<cfset var results = false>
-		<cfset var cacheFile = getCacheLocation() & getSetting("OSFileSeparator",true) & URLToCacheKey(arguments.feedURL)>
+		<cfset var cacheFile = "">
 		
-		<!--- Lock and get Files and Remove. --->		
-		<cflock name="#getLockName()#" type="exclusive" timeout="30" throwontimeout="true">
-			<!--- Is feed Cached check --->
-			<cfif isFeedCached(arguments.feedURL)>
-				<!--- Now remove it. --->
-				<cffile action="delete" file="#cacheFile#.xml">
-				<cfset results = true>
-			</cfif>
-		</cflock>
+		<cfif getCacheType() eq "ram">
+			<cfreturn getColdboxOCM().clearKey(URLToCacheKey(arguments.feedURL))>
+		<cfelse>
+			<!--- Cache File --->
+			<cfset cacheFile = getCacheLocation() & getSetting("OSFileSeparator",true) & URLToCacheKey(arguments.feedURL)>
+			<!--- Lock and get Files and Remove. --->		
+			<cflock name="#getLockName()#" type="exclusive" timeout="30" throwontimeout="true">
+				<!--- Is feed Cached check --->
+				<cfif isFeedCached(arguments.feedURL)>
+					<!--- Now remove it. --->
+					<cffile action="delete" file="#cacheFile#.xml">
+					<cfset results = true>
+				</cfif>
+			</cflock>
+		</cfif>
 		
 		<cfreturn results>
 	</cffunction>
@@ -249,19 +292,24 @@ What gets returned on the FeedStructure:
 		<cfargument name="feedURL" type="string" required="yes" hint="The url to check if its in the cache.">
 		<!--- ******************************************************************************** --->
 		<cfset var results = structNew()>
-		<cfset var cacheFile = getCacheLocation() & getSetting("OSFileSeparator",true) & URLToCacheKey(arguments.feedURL)>
+		<cfset var cacheFile = "">
 		<cfset var fileIn = "">
 		<cfset var objectIn = "">
 		
-		<!--- Secure Cache Read. --->
-		<cflock name="#getLockName()#" type="exclusive" timeout="30" throwontimeout="true">
-			<cfif isFeedCached(arguments.feedURL)>
-				<cfset fileIn = CreateObject("java","java.io.FileInputStream").init('#cacheFile#.xml')>
-				<cfset objectIn = CreateObject("java","java.io.ObjectInputStream").init(fileIn)>
-				<cfset results = objectIn.readObject()>
-				<cfset objectIn.close()>
-			</cfif>
-		</cflock>
+		<cfif getCacheType() eq "ram">
+			<cfset getColdboxOCM().get(URLToCacheKey(arguments.feedURL))>
+		<cfelse>
+			<cfset cacheFile = getCacheLocation() & getSetting("OSFileSeparator",true) & URLToCacheKey(arguments.feedURL)>
+			<!--- Secure Cache Read. --->
+			<cflock name="#getLockName()#" type="exclusive" timeout="30" throwontimeout="true">
+				<cfif isFeedCached(arguments.feedURL)>
+					<cfset fileIn = CreateObject("java","java.io.FileInputStream").init('#cacheFile#.xml')>
+					<cfset objectIn = CreateObject("java","java.io.ObjectInputStream").init(fileIn)>
+					<cfset results = objectIn.readObject()>
+					<cfset objectIn.close()>
+				</cfif>
+			</cflock>
+		</cfif>
 		
 		<cfreturn results>
 	</cffunction>
@@ -273,25 +321,31 @@ What gets returned on the FeedStructure:
 		<cfargument name="feedStruct" 	type="any" 	  required="yes" hint="The contents of the feed to cache">
 		<!--- ******************************************************************************** --->
 		<cfset var cacheKey = URLToCacheKey(arguments.feedURL)>
-		<cfset var cacheFile = getCacheLocation() & getSetting("OSFileSeparator",true) & cacheKey >
+		<cfset var cacheFile = "">
 		<cfset var fileOut = "">
 		<cfset var objectOut = "">
 		
-		<!--- Secure Cache Write. --->
-		<cflock name="#getLockName()#" type="exclusive" timeout="30" throwontimeout="true">
-			<cfset fileOut = CreateObject("java","java.io.FileOutputStream").init('#cacheFile#.xml')>
-			<cfset objectOut = CreateObject("java","java.io.ObjectOutputStream").init(fileOut)>
-			<cfset objectOut.writeObject(arguments.feedStruct)>
-			<cfset objectOut.close()>
-		</cflock>
+		<cfif getCacheType() eq "ram">
+			<cfset getColdboxOCM().set(cacheKey, feedStruct, getCacheTimeout())>
+		<cfelse>
+			<cfset cacheFile = getCacheLocation() & getSetting("OSFileSeparator",true) & cacheKey>
+			<!--- Secure Cache Write. --->
+			<cflock name="#getLockName()#" type="exclusive" timeout="30" throwontimeout="true">
+				<cfset fileOut = CreateObject("java","java.io.FileOutputStream").init('#cacheFile#.xml')>
+				<cfset objectOut = CreateObject("java","java.io.ObjectOutputStream").init(fileOut)>
+				<cfset objectOut.writeObject(arguments.feedStruct)>
+				<cfset objectOut.close()>
+			</cflock>
+		</cfif>
 	</cffunction>
 	
 <!---------------------------------------- PUBLIC RSS METHODS --------------------------------------------------->
 	
-	<cffunction name="readFeed" access="public" returntype="struct" hint="Read a feed from http or from local cache. Return a universal structure representation of the feed.">
+	<cffunction name="readFeed" access="public" returntype="struct" hint="Read a feed from http if new or from local cache. Return a universal structure representation of the feed.">
 		<!--- ******************************************************************************** --->
-		<cfargument name="feedURL" 		type="string" required="yes" hint="The feed url to parse or retrieve from cache.">
-		<cfargument name="itemsType" 	type="string" required="false" default="query" hint="The type of the items either query or Array. Query is by default."/>
+		<cfargument name="feedURL" 		type="string"  required="yes" hint="The feed url to parse or retrieve from cache.">
+		<cfargument name="itemsType" 	type="string"  required="false" default="query" hint="The type of the items either query or Array. Query is by default."/>
+		<cfargument name="maxItems" 	type="numeric" required="false" default="0" hint="The max number of entries to retrieve, default is all"/>
 		<!--- ******************************************************************************** --->
 		<cfscript>
 			var FeedStruct = structnew();
@@ -313,7 +367,7 @@ What gets returned on the FeedStructure:
 			}
 			else{
 				/* We need to do the entire deal */
-				FeedStruct = retrieveFeed(arguments.feedURL,arguments.itemsType);
+				FeedStruct = retrieveFeed(arguments.feedURL,arguments.itemsType,arguments.maxItems);
 				/* Set in Cache */
 				setCachedFeed(arguments.feedURL,FeedStruct);
 			}
@@ -329,6 +383,7 @@ What gets returned on the FeedStructure:
 		<!--- ******************************************************************************** --->
 		<cfargument name="feedURL" 		type="string" required="yes" hint="The url to retrieve the feed from.">
 		<cfargument name="itemsType" 	type="string" required="false" default="query" hint="The type of the items either query or Array. Query is by default."/>
+		<cfargument name="maxItems" 	type="numeric" required="false" default="0" hint="The max number of entries to retrieve, default is all"/>
 		<!--- ******************************************************************************** --->
 		<cfset var xmlDoc = "">
 		<cfset var feedResult = structnew()>
@@ -372,7 +427,7 @@ What gets returned on the FeedStructure:
 		</cfif>
 		
 		<!--- Return a universal parsed structure --->
-		<cfreturn parseFeed(xmlDoc,arguments.itemsType)>
+		<cfreturn parseFeed(xmlDoc,arguments.itemsType,arguments.maxItems)>
 	</cffunction>
 
 	<!--- ******************************************************************************** --->
@@ -393,6 +448,7 @@ What gets returned on the FeedStructure:
 		<!--- ******************************************************************************** --->
 		<cfargument name="xmlDoc" 		type="xml" required="yes" hint="The xmldoc to parse and normalize. Must be a coldfusion xml doc object not a string.">
 		<cfargument name="itemsType" 	type="string" required="false" default="query" hint="The type of the items either query or Array. Query is by default."/>
+		<cfargument name="maxItems" 	type="numeric" required="false" default="0" hint="The max number of entries to retrieve, default is all"/>
 		<!--- ******************************************************************************** --->
 		<cfset var feed = StructNew()>
 		<cfset var isRSS1 = false>
@@ -424,8 +480,8 @@ What gets returned on the FeedStructure:
 			// get Content by Type
 			if(isRSS1 or isRSS2) {
 				/* Parse Items */
-				if(isRSS1) feed.items = parseRSSItems(xmlDoc.xmlRoot.item,arguments.itemsType);
-				if(isRSS2) feed.items = parseRSSItems(xmlDoc.xmlRoot.channel.item,arguments.itemsType);
+				if(isRSS1) feed.items = parseRSSItems(xmlDoc.xmlRoot.item,arguments.itemsType,arguments.maxItems);
+				if(isRSS2) feed.items = parseRSSItems(xmlDoc.xmlRoot.channel.item,arguments.itemsType,arguments.maxItems);
 				
 				/* Parse Title */
 				if(StructKeyExists(xmlDoc.xmlRoot.channel,"title")) feed.Title = xmlDoc.xmlRoot.channel.title.xmlText;
@@ -456,7 +512,7 @@ What gets returned on the FeedStructure:
 			}//end if rss 1 or 2
 			else if(isAtom) {
 				/* Parse Items */
-				feed.items = parseAtomItems(xmlDoc.xmlRoot.entry,arguments.itemsType);
+				feed.items = parseAtomItems(xmlDoc.xmlRoot.entry,arguments.itemsType,arguments.maxItems);
 				/* Title */
 				if(StructKeyExists(xmlDoc.xmlRoot,"title"))	feed.Title = normalizeAtomTextConstruct(xmlDoc.xmlRoot.title);				
 				/* Feed Description */
@@ -493,8 +549,9 @@ What gets returned on the FeedStructure:
 	<!--- Parse Atom Items --->
 	<cffunction name="parseAtomItems" access="private" returntype="any" hint="Parse the items an return an array of structures" output="false" >
 		<!--- ******************************************************************************** --->
-		<cfargument name="items" required="true" type="any" hint="The xml of items">
-		<cfargument name="itemsType" 	type="string" required="false" default="query" hint="The type of the items either query or Array. Query is by default."/>
+		<cfargument name="items" 		type="any" 		required="true" hint="The xml of items">
+		<cfargument name="itemsType" 	type="string" 	required="false" default="query" hint="The type of the items either query or Array. Query is by default."/>
+		<cfargument name="maxItems" 	type="numeric" 	required="false" default="0" hint="The max number of entries to retrieve, default is all"/>
 		<!--- ******************************************************************************** --->
 		<cfscript>
 			var x = 1;
@@ -502,6 +559,11 @@ What gets returned on the FeedStructure:
 			var itemLength = arrayLen(arguments.items);
 			var rtnItems = "";
 			var node = "";
+			
+			/* Items Length */
+			if( arguments.maxItems neq 0 ){
+				itemLength = arguments.maxItems;
+			}
 			
 			/* Correct Return Items Type*/
 			if( arguments.itemsType eq "array")
@@ -566,14 +628,20 @@ What gets returned on the FeedStructure:
 	<!--- Parse rss items --->
 	<cffunction name="parseRSSItems" access="private" returntype="any" hint="Parse the items an return an array of structures" output="false" >
 		<!--- ******************************************************************************** --->
-		<cfargument name="items" required="true" type="any" hint="The xml of items">
-		<cfargument name="itemsType" 	type="string" required="false" default="query" hint="The type of the items either query or Array. Query is by default."/>
+		<cfargument name="items" 		type="any" 		required="true" hint="The xml of items">
+		<cfargument name="itemsType" 	type="string" 	required="false" default="query" hint="The type of the items either query or Array. Query is by default."/>
+		<cfargument name="maxItems" 	type="numeric" 	required="false" default="0" hint="The max number of entries to retrieve, default is all"/>
 		<!--- ******************************************************************************** --->
 		<cfscript>
 			var x = 1;
 			var itemLength = arrayLen(arguments.items);
 			var rtnItems = "";
 			var node = "";
+			
+			/* Items Length */
+			if( arguments.maxItems neq 0 ){
+				itemLength = arguments.maxItems;
+			}
 			
 			/* Correct Return Items Type*/
 			if( arguments.itemsType eq "array")
@@ -659,7 +727,12 @@ What gets returned on the FeedStructure:
 		<cfargument name="feedURL" type="string" required="yes" hint="The feed url to parse or retrieve from cache.">
 		<!--- ******************************************************************************** --->
 		<cfscript>
-			return hash( lcase(trim(arguments.feedURL)) );
+			var key = hash( lcase(trim(arguments.feedURL)) );
+			if( getCacheType() eq "ram"){
+				return getCachePrefix() & key;
+			}else{
+				return key;
+			}
 		</cfscript>
 	</cffunction>
 	
@@ -854,6 +927,24 @@ What gets returned on the FeedStructure:
 	<cffunction name="setuseCache" access="public" returntype="void" output="false" hint="Set whether to use file caching or not">
 		<cfargument name="useCache" type="boolean" required="true">
 		<cfset instance.useCache = arguments.useCache>
+	</cffunction>
+	
+	<!--- Get/Set cache Type --->
+	<cffunction name="getcacheType" access="public" returntype="string" output="false">
+		<cfreturn instance.cacheType>
+	</cffunction>
+	<cffunction name="setcacheType" access="public" returntype="void" output="false">
+		<cfargument name="cacheType" type="string" required="true">
+		<cfset instance.cacheType = arguments.cacheType>
+	</cffunction>
+	
+	<!--- Get/set cache prefix. --->
+	<cffunction name="getcachePrefix" access="public" returntype="string" output="false">
+		<cfreturn instance.cachePrefix>
+	</cffunction>
+	<cffunction name="setcachePrefix" access="public" returntype="void" output="false">
+		<cfargument name="cachePrefix" type="string" required="true">
+		<cfset instance.cachePrefix = arguments.cachePrefix>
 	</cffunction>
 		
 </cfcomponent>

@@ -37,9 +37,6 @@ Modification History:
 			var EventName = controller.getSetting("EventName");
 			var oFlashStorage = "";
 					
-			//Object Caching Garbage Collector
-			controller.getColdboxOCM().reap();
-			
 			/* Get Flash Persistance Storage */
 			if( controller.getSetting("FlashURLPersistScope",1) eq "session" ){
 				oFlashStorage = controller.getPlugin("sessionstorage");
@@ -55,7 +52,10 @@ Modification History:
 				//Remove Flash persistance
 				oFlashStorage.deleteVar('_coldbox_persistStruct');
 			}	
-
+			
+			//Object Caching Garbage Collector
+			controller.getColdboxOCM().reap();
+			
 			//Debug Mode Checks
 			if ( Context.valueExists("debugMode") and isBoolean(Context.getValue("debugMode")) ){
 				if ( DebugPassword eq "")

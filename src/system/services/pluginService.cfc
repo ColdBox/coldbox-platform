@@ -77,6 +77,7 @@ Modification History:
 			var MetaData = "";
 			var mdEntry = structnew();
 			var pluginDictionaryEntry = "";
+			var tester = "";
 			
 			/* Differentiate a Custom PluginKey */
 			if ( arguments.custom ){
@@ -88,10 +89,10 @@ Modification History:
 				arguments.plugin = isMT(arguments.plugin);
 			
 			/* Lookup plugin in Cache */
-			if ( controller.getColdboxOCM().lookup(pluginKey) ){
-				oPlugin = controller.getColdboxOCM().get(pluginKey);
-			}
-			else{
+			oPlugin = controller.getColdboxOCM().get(pluginKey);
+			
+			/* Verify it */
+			if( not isObject(oPlugin) ){
 				/* Object not found, proceed to create and verify */
 				oPlugin = new(argumentCollection=arguments);
 				

@@ -81,10 +81,10 @@ Description :
 			if ( controller.getSetting("HandlerCaching") ){
 				
 				/* Lookup in Cache */
-				if ( controller.getColdboxOCM().lookup(cacheKey) ){
-					oEventHandler = controller.getColdboxOCM().get(cacheKey);
-				}
-				else{
+				oEventHandler = controller.getColdboxOCM().get(cacheKey);
+				
+				/* Verify it. */
+				if( not isObject(oEventHandler) ){
 					/* Create a new handler */
 					oEventHandler = newHandler(oEventHandlerBean.getRunnable());
 					
