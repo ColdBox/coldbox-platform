@@ -3,23 +3,18 @@
      Mar 15, 2007 4:11:44 PM                                                        
 	 Luis Majano
 	
-     extradownloads              
+     code dpeot              
                                                                      
      ====================================================================== -->
-<project name="coldbox.extradownloads" basedir="." default="ftp.deploy">
+<project name="coldbox.codedepot" basedir="." default="ftp.deploy">
     <description>
-    	This covers zipping the samples, uploading to the downloads
-    	     section of the codlboxframework.com site. 
+    	the code depot plugin pack
     </description>
 	
 	<property name="ftp.server"  		value="ftp.coldboxframework.com" />
-	<property name="ftp.remotedir" 		value="/httpdocs/downloads" />
+	<property name="ftp.remotedir" 		value="/httpdocs/downloads/depot/plugins" />
 	
-	<property name="src.dictionary"     value="../../install/cfeclipse_dictionary" />
-	<property name="src.snippets"     	value="../../install/cfeclipse_snippets" />
-	<property name="src.illudium"     	value="../../install/illudium_templates" />
-	<property name="src.cheatsheet"    	value="../../install/ColdboxCheatSheet.pdf" />
-	
+	<property name="src.plugins"     	value="../../CodeDepot/plugins" />
 	<property name="build" 				value="build" />
 	
 	<target name="do.cleanup">
@@ -27,11 +22,13 @@
 	</target>
 	
 	<target name="do.archive">
+		<delete dir="${build}"/>
 		<mkdir dir="${build}"/>
-		<zip destfile="${build}/cfeclipse_dictionary.zip" basedir="${src.dictionary}"></zip>
-		<zip destfile="${build}/cfeclipse_snippets.zip" basedir="${src.snippets}"></zip>
-		<zip destfile="${build}/illudium_templates.zip" basedir="${src.illudium}"></zip>
-		<copy file="${src.cheatsheet}" todir="${build}" />
+		<zip destfile="${build}/pluginpack.zip">
+			<fileset dir="${src.plugins}">
+				<exclude name="public/" />
+			</fileset>
+		</zip>
 	</target>
 	
 	<target name="ftp.deploy" depends="do.archive" >
