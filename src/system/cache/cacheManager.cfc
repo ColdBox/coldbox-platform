@@ -260,10 +260,10 @@ Modification History:
 				thisKey = listGetAt(poolKeys,x);
 				/* Using Regex */
 				if( arguments.regex ){
-					tester = refindnocase( cacheKeySnippet, thisKey );
+					tester = refindnocase( arguments.keySnippet, thisKey );
 				}
 				else{
-					tester = findnocase( cacheKeySnippet, thisKey );
+					tester = findnocase( arguments.keySnippet, thisKey );
 				}
 				/* Test Evaluation */
 				if ( tester ){
