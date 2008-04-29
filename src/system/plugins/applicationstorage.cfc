@@ -117,6 +117,13 @@ Modification History:
 			return application.cbStorage;
 		</cfscript>
 	</cffunction>
+	
+	<!--- remove Storage --->
+	<cffunction name="removeStorage" access="public" returntype="void" hint="remove the entire storage scope" output="false" >
+		<cflock name="#getLockName()#" type="exclusive" timeout="30" throwontimeout="true">
+			<cfset structDelete(application, "cbStorage")>
+		</cflock>
+	</cffunction>
 
 <!------------------------------------------- PRIVATE ------------------------------------------->
 	
