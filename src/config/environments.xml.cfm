@@ -8,7 +8,7 @@
 		<Setting name="HandlerCaching"			value="false" />
 		<Setting name="HandlersIndexAutoReload" value="false" />
 		<Setting name="IOCObjectCaching"		value="false" />
-		<Setting name="DebugMode"	 			value="false" />
+		<Setting name="DebugMode"	 			value="true" />
 		<Setting name="DebugPassword" 			value="" />
 		<Setting name="ReinitPassword" 			value="" />
 		<Setting name="EnableDumpVar"			value="false" />

@@ -76,6 +76,9 @@ Description :
 				throwit(e.message.toString(),e.detail.toString() & e.stacktrace.toString());
 			}
 			
+			/* Request Profilers */
+			pushTimers(cbController);
+				
 			//Determine what to return via the setting
 			if ( cbController.getSetting("ProxyReturnCollection") ){
 				//Return request collection
@@ -115,11 +118,30 @@ Description :
 				cbController.getExceptionService().ExceptionHandler(e,"coldboxproxy","Interception Exception");
 				return false;
 			}
+			
+			/* Request Profilers */
+			pushTimers(cbController);
+			
 			return true;
 		</cfscript>
 	</cffunction>
 	
 <!------------------------------------------- PRIVATE ------------------------------------------->	
+	
+	<!--- Push Timers --->
+	<cffunction name="pushTimers" access="private" returntype="void" hint="Push timers into stack" output="false" >
+		<cfargument name="cbController" required="true" type="any" hint="the coldbox controller">
+		<cfscript>
+			var dService = arguments.cbController.getDebuggerService();
+			
+			/* Request Profilers */
+			if ( dService.getDebuggerConfigBean().getPersistentRequestProfiler() and
+				 structKeyExists(request,"debugTimers") ){
+				/* Push timers */
+				dService.pushProfiler(request.DebugTimers);
+			}
+		</cfscript>
+	</cffunction>
 	
 	<!--- verifyColdBox --->
 	<cffunction name="verifyColdBox" output="false" access="private" returntype="boolean" hint="Verify the coldbox app">
