@@ -287,6 +287,9 @@ Description		: This is the main ColdBox front Controller.
 			<cfset persistVariables(arguments.persist)>
 		</cfif>
 		
+		<!--- Push Timers --->
+		<cfset pushTimers()>
+		
 		<!--- Check if query String needs appending --->
 		<cfif len(trim(arguments.queryString)) eq 0>
 			<cflocation url="#frontController#?#EventName#=#arguments.event#" addtoken="#arguments.addToken#">
@@ -314,6 +317,9 @@ Description		: This is the main ColdBox front Controller.
 		<cfelse>
 			<cfset routeLocation = routeLocation & "/" & arguments.route>
 		</cfif>
+		
+		<!--- Push Timers --->
+		<cfset pushTimers()>
 		
 		<!--- Reroute --->
 		<cflocation url="#routeLocation#" addtoken="no">
@@ -441,6 +447,18 @@ Description		: This is the main ColdBox front Controller.
 	<!--- Get the util object --->
 	<cffunction name="getUtil" access="private" output="false" returntype="coldbox.system.util.util" hint="Create and return a util object">
 		<cfreturn CreateObject("component","coldbox.system.util.util")/>
+	</cffunction>
+	
+	<!--- Push Timers --->
+	<cffunction name="pushTimers" access="private" returntype="void" hint="Push timers into stack" output="false" >
+		<cfscript>
+			/* Request Profilers */
+			if ( getDebuggerService().getDebuggerConfigBean().getPersistentRequestProfiler() and
+				 structKeyExists(request,"debugTimers") ){
+				/* Push timers */
+				getDebuggerService().pushProfiler(request.DebugTimers);
+			}
+		</cfscript>
 	</cffunction>
 	
 </cfcomponent>
