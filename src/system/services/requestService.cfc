@@ -36,6 +36,11 @@ Modification History:
 			var DebugPassword = controller.getSetting("debugPassword");
 			var EventName = controller.getSetting("EventName");
 			var oFlashStorage = "";
+			
+			/* Collection Appends */
+			initFORMURL();
+			Context.collectionAppend(FORM);
+			Context.collectionAppend(URL);			
 					
 			/* Get Flash Persistance Storage */
 			if( controller.getSetting("FlashURLPersistScope",1) eq "session" ){
@@ -143,7 +148,12 @@ Modification History:
 	</cffunction>
 	
 <!------------------------------------------- PRIVATE ------------------------------------------->
-
+	
+	<cffunction name="initFORMURL" access="private" returntype="void" hint="param form/url" output="false" >
+		<cfparam name="FORM" default="#structNew()#">
+		<cfparam name="URL"  default="#structNew()#">		
+	</cffunction>
+	
 	<!--- Creates a new Context Object --->
 	<cffunction name="createContext" access="private" output="false" returntype="any" hint="Creates a new request context object">
 		<cfscript>
@@ -152,13 +162,10 @@ Modification History:
 		
 		/* Ensure Loaded Properties */
 		loadProperties();
-		</cfscript>
 		
-		<!--- Param the structures --->
-		<cfparam name="FORM" default="#structNew()#">
-		<cfparam name="URL"  default="#structNew()#">		
-		
-		<cfscript>		
+		/* Param FORM/URL */
+		initFORMURL();
+			
 		//Create the original request context
 		oContext = CreateObject("component","coldbox.system.beans.requestContext").init(FORM,URL,getContextProperties());
 		
@@ -181,7 +188,7 @@ Modification History:
 	</cffunction>
 	
 	<!--- Lazy Load Context Properties --->
-	<cffunction name="loadProperties" access="public" returntype="void" hint="Load the context properties" output="false" >
+	<cffunction name="loadProperties" access="private" returntype="void" hint="Load the context properties" output="false" >
 		<cfscript>
 			var Properties = structnew();
 			

@@ -75,7 +75,7 @@ Modification History:
 	</cffunction>
 
 	<!--- Delete a variable --->
-	<cffunction name="deleteVar" access="public" returntype="boolean" hint="Tries to delete a permanent application var." output="false">
+	<cffunction name="deleteVar" access="public" returntype="boolean" hint="Tries to delete a permanent session var." output="false">
 		<!--- ************************************************************* --->
 		<cfargument  name="name" type="string" required="true" 	hint="The variable name to retrieve.">
 		<!--- ************************************************************* --->
@@ -102,7 +102,7 @@ Modification History:
 	</cffunction>
 
 	<!--- Clear All From Storage --->
-	<cffunction name="clearAll" access="public" returntype="void" hint="Clear the entire coldbox application storage" output="false">
+	<cffunction name="clearAll" access="public" returntype="void" hint="Clear the entire coldbox session storage" output="false">
 		<cfset var storage = getStorage()>
 		
 		<cflock name="#getLockName()#" type="exclusive" timeout="10" throwontimeout="true">
