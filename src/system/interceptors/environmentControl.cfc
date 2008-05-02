@@ -102,7 +102,6 @@ Description :
 <!------------------------------------------- PRIVATE ------------------------------------------->	 
 	
 	<cffunction name="parseAndSet" output="false" access="private" returntype="void" hint="ENVIRONMENT control the settings">
-		<!--- *********************************************************************** --->
 		<cfscript>
 			var environmentsArray = ArrayNew(1);
 			var SettingsArray = ArrayNew(1);
@@ -123,14 +122,7 @@ Description :
 				throw("No environment elements found.","Please check your environment file again","interceptors.environmentControl.elementException");
 			}
 			/* Detect the environment */
-			for(i=1; i lte ArrayLen(environmentsArray); i=i+1){
-				if ( listFindNoCase(trim(environmentsArray[i].XMLAttributes.urls),cgi.http_host) ){
-					//Place the ENVIRONMENT on the settings structure.
-					setSetting("ENVIRONMENT", trim(environmentsArray[i].XMLAttributes.name));
-					ENVIRONMENT = trim(environmentsArray[i].XMLAttributes.name);
-					break;
-				}
-			}
+			ENVIRONMENT = detectEnvironment(environmentsArray);
 			
 			//Search for ENVIRONMENT settings.
 			SettingsArray = xmlSearch( oXML , "/environmentcontrol/environment[@name='#ENVIRONMENT#']/Setting");
@@ -158,4 +150,22 @@ Description :
 			}	
 		</cfscript>
 	</cffunction>
+	
+	<cffunction name="detectEnvironment" access="private" returntype="string" hint="Detect the running environment and return the name" output="false" >
+		<!--- *********************************************************************** --->
+		<cfargument name="environmentsArray" required="true" type="array" hint="The environment array">
+		<!--- *********************************************************************** --->
+		<cfscript>
+			for(i=1; i lte ArrayLen(arguments.environmentsArray); i=i+1){
+				if ( listFindNoCase(trim(arguments.environmentsArray[i].XMLAttributes.urls),cgi.http_host) ){
+					//Place the ENVIRONMENT on the settings structure.
+					setSetting("ENVIRONMENT", trim(arguments.environmentsArray[i].XMLAttributes.name));
+					return trim(arguments.environmentsArray[i].XMLAttributes.name);
+					break;
+				}
+			}
+			return "";
+		</cfscript>
+	</cffunction>
+	
 </cfcomponent>
