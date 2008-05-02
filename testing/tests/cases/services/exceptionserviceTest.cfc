@@ -12,9 +12,9 @@ Description :
 Modification History:
 01/18/2007 - Created
 ----------------------------------------------------------------------->
-<cfcomponent name="exceptionserviceTest" extends="coldbox.system.extras.testing.baseTest" output="false">
+<cfcomponent name="exceptionserviceTest" extends="coldbox.system.extras.testing.baseMXUnitTest" output="false">
 
-	<cffunction name="setUp" returntype="void" access="private" output="false">
+	<cffunction name="setUp" returntype="void" access="public" output="false">
 		<cfscript>
 		//Setup ColdBox Mappings For this Test
 		setAppMapping("/coldbox");
@@ -29,16 +29,16 @@ Modification History:
 			var service = getController().getExceptionService();
 			var exceptionBean = "";
 			
-			AssertComponent(service,"component test");
+			AssertTrue( isObject(service),"component test");
 			
 			exceptionBean = service.ExceptionHandler(structnew(),"application","Unit Testing");
-			AssertComponent(exceptionBean,"exception handling test1");
+			AssertTrue( isObject(exceptionBean),"exception handling test1");
 			
 			exceptionBean = service.ExceptionHandler(structnew(),"framework","Unit Testing");
-			AssertComponent(exceptionBean,"exception handling test2");
+			AssertTrue( isObject(exceptionBean),"exception handling test2");
 			
 			exceptionBean = service.ExceptionHandler(structnew(),"coldboxproxy","Unit Testing");
-			AssertComponent(exceptionBean,"exception handling test3");
+			AssertTrue( isObject(exceptionBean),"exception handling test3");
 		
 		</cfscript>
 	</cffunction>
@@ -49,14 +49,14 @@ Modification History:
 			var exceptionBean = "";
 			var log = "";
 			
-			AssertComponent(service,"component test");
+			AssertTrue( isObject(service),"component test");
 			
 			exceptionBean = service.ExceptionHandler(structnew(),"application","Unit Testing");
-			AssertComponent(exceptionBean,"exception handling test1");
+			AssertTrue( isObject(exceptionBean),"exception handling test1");
 			
 			log = service.renderBugReport(exceptionBean);
 			
-			assertSimpleValue(log, "Rendering exception");			
+			assertTrue( isSimpleValue(log), "Rendering exception");			
 		</cfscript>
 	</cffunction>
 

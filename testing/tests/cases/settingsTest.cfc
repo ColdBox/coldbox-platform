@@ -1,6 +1,6 @@
-<cfcomponent name="settingsTest" extends="coldbox.system.extras.testing.baseTest" output="false">
+<cfcomponent name="settingsTest" extends="coldbox.system.extras.testing.baseMXUnitTest" output="false">
 
-	<cffunction name="setUp" returntype="void" access="private" output="false">
+	<cffunction name="setUp" returntype="void" access="public" output="false">
 		<cfscript>
 		//Setup ColdBox Mappings For this Test
 		setAppMapping("/coldbox");
@@ -55,7 +55,7 @@
 			
 			obj = "test_#createUUID()#";
 			getController().setSetting(obj,obj);
-			AssertEqualsString( obj, getController().getSetting(obj) );
+			AssertEquals( obj, getController().getSetting(obj) );
 			
 			
 		</cfscript>

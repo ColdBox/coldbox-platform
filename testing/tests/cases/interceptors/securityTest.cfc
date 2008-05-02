@@ -9,9 +9,9 @@ Date        :	9/3/2007
 Description :
 	securityTest
 ----------------------------------------------------------------------->
-<cfcomponent name="securityTest" extends="coldbox.system.extras.testing.baseTest" output="false">
+<cfcomponent name="securityTest" extends="coldbox.system.extras.testing.baseMXUnitTest" output="false">
 
-	<cffunction name="setUp" returntype="void" access="private" output="false">
+	<cffunction name="setUp" returntype="void" access="public" output="false">
 		<cfscript>
 		var mypath = getDirectoryFromPath(getMetaData(this).path);
 		var slash = createObject("java","java.lang.System").getProperty("file.separator");
@@ -38,7 +38,7 @@ Description :
 			//get Context
 			event = getRequestContext();
 			//Assert Relocation, first test should be blank.
-			assertEqualsString( "", event.getValue("setnextevent",""), "Whitelist event." );
+			assertEquals( "", event.getValue("setnextevent",""), "Whitelist event." );
 			
 			event.clearCollection();
 			//Test 2: user.profile, not logged in, so secure it
@@ -81,7 +81,7 @@ Description :
 		//get Context
 		event = getRequestContext();
 		//Assert Relocation, first test should be blank.
-		assertEqualsString( "", event.getValue("setnextevent",""), "User is in role, no redirection." );
+		assertEquals( "", event.getValue("setnextevent",""), "User is in role, no redirection." );
 		</cfscript>
 		<!--- logout again. --->
 		<cflogout>
@@ -145,7 +145,7 @@ Description :
 		<cfscript>
 		var validator = CreateObject("component","applications.coldbox.testing.testmodel.security");
 		var event = getRequestContext();
-		AssertComponent(validator);
+		AssertTrue(isObject(validator));
 		
 		/* Register */
 		getInterceptor('coldbox.system.interceptors.security').registerValidator(validator);

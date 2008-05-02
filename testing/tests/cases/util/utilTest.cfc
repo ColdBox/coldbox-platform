@@ -1,4 +1,4 @@
-<cfcomponent name="utilTest" output="false" extends="org.cfcunit.framework.TestCase">
+<cfcomponent name="utilTest" output="false" extends="mxunit.framework.TestCase">
 	
 	<cffunction name="testCFMLEngine" access="public" returntype="void" output="false" >
 		<cfscript>
@@ -13,19 +13,19 @@
 	<cffunction name="testDictionary" access="public" returntype="void" hint="Test the dictionary" output="false" >
 		<cfscript>
 			var obj = CreateObject("component","coldbox.system.util.baseDictionary").init();
-			AssertComponent(obj);
+			AssertTrue( isObject(obj) );
 			
 			obj = CreateObject("component","coldbox.system.util.baseDictionary").init('MyTest');
-			AssertComponent(obj);
+			AssertTrue( isObject(obj) );
 			
-			AssertEqualsString("MyTest", obj.getName() ,"name test");
+			AssertEquals("MyTest", obj.getName() ,"name test");
 			
-			AssertEqualsStruct(structnew(), obj.getDictionary(), "dictionary test");
+			AssertEquals(structnew(), obj.getDictionary(), "dictionary test");
 			
 			AssertFalse( obj.keyExists('nothing'), "key test");
 			
 			obj.setKey('test','test');
-			AssertEqualsString('test', obj.getKey('test'), "get Key test");
+			AssertEquals('test', obj.getKey('test'), "get Key test");
 			AssertTrue( obj.keyExists('test'), "Exists Test");
 			
 			obj.clearKey('test');

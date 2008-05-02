@@ -9,9 +9,9 @@ Date        :	9/3/2007
 Description :
 	Request service Test
 ----------------------------------------------------------------------->
-<cfcomponent name="requestserviceTest" extends="coldbox.system.extras.testing.baseTest" output="false">
+<cfcomponent name="requestserviceTest" extends="coldbox.system.extras.testing.baseMXUnitTest" output="false">
 
-	<cffunction name="setUp" returntype="void" access="private" output="false">
+	<cffunction name="setUp" returntype="void" access="public" output="false">
 		<cfscript>
 		//Setup ColdBox Mappings For this Test
 		setAppMapping("/coldbox");
@@ -96,19 +96,19 @@ Description :
 		proxy.invokerMixin("verifyColdBox");
 		/* GetPlugin */
 		local.plugin = proxy.invokerMixin(method='getPlugin',argList="plugin=logger");
-		assertComponent(local.plugin);
+		AssertTrue( isObject(local.plugin) );
 		
 		/* Get IOCFactory */
 		local.obj = proxy.invokerMixin(method='getIoCFactory');
-		assertComponent(local.obj);
+		AssertTrue( isObject(local.obj) );
 		
 		/* Get Bean */
 		local.obj = proxy.invokerMixin(method='getBean',argList="beanName=testModel");
-		assertComponent(local.obj);
+		AssertTrue( isObject(local.obj) );
 		
 		/* Get ColdBoxOCM */
 		local.obj = proxy.invokerMixin(method='getColdBoxOCM');
-		assertComponent(local.obj);
+		AssertTrue( isObject(local.obj) );
 		
 		/* Load ColdBox */
 		local.load = structnew();

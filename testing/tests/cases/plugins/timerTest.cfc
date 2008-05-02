@@ -9,7 +9,7 @@ Date        :	April 04, 2008
 Description :
 	timerTest
 ----------------------------------------------------------------------->
-<cfcomponent name="timerTest" extends="coldbox.system.extras.testing.baseTest" output="false">
+<cfcomponent name="timerTest" extends="coldbox.system.extras.testing.baseMXUnitTest" output="false">
 
 	<cffunction name="setUp" returntype="void" access="private" output="false">
 		<cfscript>

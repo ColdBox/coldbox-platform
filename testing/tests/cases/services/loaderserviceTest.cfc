@@ -9,9 +9,9 @@ Date        :	9/3/2007
 Description :
 	loaderserviceTest
 ----------------------------------------------------------------------->
-<cfcomponent name="loaderserviceTest" extends="coldbox.system.extras.testing.baseTest" output="false">
+<cfcomponent name="loaderserviceTest" extends="coldbox.system.extras.testing.baseMXUnitTest" output="false">
 
-	<cffunction name="setUp" returntype="void" access="private" output="false">
+	<cffunction name="setUp" returntype="void" access="public" output="false">
 		<cfscript>
 		//Setup ColdBox Mappings For this Test
 		setAppMapping("/coldbox");

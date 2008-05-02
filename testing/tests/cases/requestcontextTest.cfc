@@ -1,6 +1,6 @@
-<cfcomponent name="requestcontextTest" extends="coldbox.system.extras.testing.baseTest" output="false">
+<cfcomponent name="requestcontextTest" extends="coldbox.system.extras.testing.baseMXUnitTest" output="false">
 
-	<cffunction name="setUp" returntype="void" access="private" output="false">
+	<cffunction name="setUp" returntype="void" access="public" output="false">
 		<cfscript>
 		//Setup ColdBox Mappings For this Test
 		setAppMapping("/coldbox");
@@ -26,7 +26,7 @@
 			
 			event.setCollection(structnew());
 			
-			AssertEqualsStruct( structnew(), event.getCollection() );
+			AssertEquals( structnew(), event.getCollection() );
 		</cfscript>
 	</cffunction>
 
@@ -41,7 +41,7 @@
 			event.setCollection(test);
 			event.clearCollection();
 			
-			AssertEqualsStruct( structnew(), event.getCollection() );
+			AssertEquals( structnew(), event.getCollection() );
 		</cfscript>
 	</cffunction>
 
@@ -56,7 +56,7 @@
 			event.clearCollection();
 			event.collectionAppend(test);
 			
-			AssertEqualsStruct( test, event.getCollection() );
+			AssertEquals( test, event.getCollection() );
 		</cfscript>
 	</cffunction>
 
@@ -71,7 +71,7 @@
 			event.clearCollection();
 			event.collectionAppend(test);
 			
-			AssertEqualsNumber( 1, event.getSize() );
+			AssertEquals( 1, event.getSize() );
 		</cfscript>
 	</cffunction>
 
@@ -86,9 +86,9 @@
 			event.clearCollection();
 			event.collectionAppend(test);
 			
-			AssertEqualsString( test.today , event.getValue("today") );
+			assertEquals( test.today , event.getValue("today") );
 			
-			AssertEqualsString( "null", event.getValue("invalidVar", "null") );
+			assertEquals( "null", event.getValue("invalidVar", "null") );
 			
 			assertTrue( isArray(event.getValue("invalidVar", "[array]") ) );
 			
@@ -111,7 +111,7 @@
 			
 			event.setValue("test", test.today);
 			
-			AssertEqualsString(test.today, event.getValue("test") );
+			assertEquals(test.today, event.getValue("test") );
 			
 		</cfscript>
 	</cffunction>
@@ -127,10 +127,10 @@
 			event.clearCollection();
 			
 			event.setValue("test", test.today);
-			AssertEqualsString(test.today, event.getValue("test") );
+			assertEquals(test.today, event.getValue("test") );
 			
 			event.removeValue("test");
-			assertEqualsBoolean( false, event.getValue("test", false) );
+			assertEquals( false, event.getValue("test", false) );
 			
 		</cfscript>
 	</cffunction>
@@ -183,13 +183,13 @@
 			event.clearCollection();
 			
 			event.setView(view);
-			AssertEqualsString( view, event.getCurrentView() );
+			assertEquals( view, event.getCurrentView() );
 			
 			event.clearCollection();
 			
 			event.setView(view, true);
-			AssertEqualsString( view, event.getCurrentView() );
-			AssertEqualsString( '', event.getCurrentLayout() );
+			assertEquals( view, event.getCurrentView() );
+			assertEquals( '', event.getCurrentLayout() );
 			
 		</cfscript>
 	</cffunction>
@@ -204,7 +204,7 @@
 			event.clearCollection();
 			
 			event.setLayout(layout);
-			AssertEqualsString( layout & ".cfm", event.getCurrentLayout() );
+			assertEquals( layout & ".cfm", event.getCurrentLayout() );
 		</cfscript>
 	</cffunction>
 
@@ -217,25 +217,25 @@
 			
 			event.setValue("event", defaultEvent);
 			
-			AssertEqualsString( defaultEvent, event.getCurrentEvent() );
-			AssertEqualsString( "ehTest", event.getCurrentHandler() );
-			AssertEqualsString( "doSomething", event.getCurrentAction() );
+			assertEquals( defaultEvent, event.getCurrentEvent() );
+			assertEquals( "ehTest", event.getCurrentHandler() );
+			assertEquals( "doSomething", event.getCurrentAction() );
 			
 			defaultEvent = "blog.content.doSomething";
 			
 			event.setValue("event", defaultEvent);
 			
-			AssertEqualsString( defaultEvent, event.getCurrentEvent() );
-			AssertEqualsString( "content", event.getCurrentHandler() );
-			AssertEqualsString( "doSomething", event.getCurrentAction() );
+			assertEquals( defaultEvent, event.getCurrentEvent() );
+			assertEquals( "content", event.getCurrentHandler() );
+			assertEquals( "doSomething", event.getCurrentAction() );
 			
 			defaultEvent = "blog.content.security.doSomething";
 			
 			event.setValue("event", defaultEvent);
 			
-			AssertEqualsString( defaultEvent, event.getCurrentEvent() );
-			AssertEqualsString( "security", event.getCurrentHandler() );
-			AssertEqualsString( "doSomething", event.getCurrentAction() );
+			assertEquals( defaultEvent, event.getCurrentEvent() );
+			assertEquals( "security", event.getCurrentHandler() );
+			assertEquals( "doSomething", event.getCurrentAction() );
 			
 		</cfscript>
 	</cffunction>
@@ -251,7 +251,7 @@
 			event.setValue("event","blog.dspEntries");
 			event.overrideEvent(newEvent);
 			
-			AssertEqualsString( newEvent , event.getCurrentEvent() );
+			assertEquals( newEvent , event.getCurrentEvent() );
 		</cfscript>
 	</cffunction>
 
@@ -305,7 +305,7 @@
 			var event = getRequestContext();
 			var test = getController().getSetting("EventName");
 
-			assertEqualsString( test, event.getEventName() );
+			assertEquals( test, event.getEventName() );
 			
 		</cfscript>
 	</cffunction>
@@ -317,7 +317,7 @@
 			var event = getRequestContext();
 			var test = getController().getSetting("EventName");
 
-			assertEqualsString( "index.cfm?#test#=", event.getSelf() );
+			assertEquals( "index.cfm?#test#=", event.getSelf() );
 			
 		</cfscript>
 	</cffunction>
@@ -336,7 +336,7 @@
 			
 			event.setEventCacheableEntry(centry);
 			AssertTrue( event.isEventCacheable(), "event cacheable 2");
-			AssertEqualsStruct(centry, event.getEventCacheableEntry() );
+			AssertEquals(centry, event.getEventCacheableEntry() );
 			
 		</cfscript>
 	</cffunction>
@@ -355,7 +355,7 @@
 			
 			event.setViewCacheableEntry(centry);
 			AssertTrue( event.isViewCacheable(), "view cacheable 2");
-			AssertEqualsStruct(centry, event.getViewCacheableEntry() );
+			AssertEquals(centry, event.getViewCacheableEntry() );
 			
 		</cfscript>
 	</cffunction>

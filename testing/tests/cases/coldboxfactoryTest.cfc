@@ -9,9 +9,9 @@ Date        :	9/3/2007
 Description :
 	Request service Test
 ----------------------------------------------------------------------->
-<cfcomponent name="requestserviceTest" extends="coldbox.system.extras.testing.baseTest" output="false">
+<cfcomponent name="requestserviceTest" extends="coldbox.system.extras.testing.baseMXUnitTest" output="false">
 
-	<cffunction name="setUp" returntype="void" access="private" output="false">
+	<cffunction name="setUp" returntype="void" access="public" output="false">
 		<cfscript>
 		//Setup ColdBox Mappings For this Test
 		setAppMapping("/coldbox");
@@ -30,18 +30,18 @@ Description :
 		
 		//Create objects
 		obj = factory.getConfigBean();
-		AssertComponent(obj,"config bean");
+		AssertTrue( isObject(obj),"config bean");
 		
 		obj = factory.getColdbox();
-		AssertSameComponent(getController(), obj, "Controller");
+		AssertEquals(getController(), obj, "Controller");
 		
 		obj = factory.getColdboxOCM();
-		AssertSameComponent(getController().getColdBoxOCM(), obj, "OCM");
+		AssertEquals(getController().getColdBoxOCM(), obj, "OCM");
 		
 		obj = factory.getPlugin("logger");
-		AssertSameComponent(getController().getPlugin("logger"), obj, "Logger Plugin");
+		AssertEquals(getController().getPlugin("logger"), obj, "Logger Plugin");
 		
-		AssertComponent(factory.getInterceptor("coldbox.system.interceptors.ses"), "Interceptor");
+		AssertTrue( isObject(factory.getInterceptor("coldbox.system.interceptors.ses")), "Interceptor");
 		
 		obj = factory.getPlugin("date",true);
 		AssertTrue(structKeyExists(obj,"getToday"), "Date Plugin");

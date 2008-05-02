@@ -12,9 +12,9 @@ Description :
 Modification History:
 01/18/2007 - Created
 ----------------------------------------------------------------------->
-<cfcomponent name="pluginserviceTest" extends="coldbox.system.extras.testing.baseTest" output="false">
+<cfcomponent name="pluginserviceTest" extends="coldbox.system.extras.testing.baseMXUnitTest" output="false">
 
-	<cffunction name="setUp" returntype="void" access="private" output="false">
+	<cffunction name="setUp" returntype="void" access="public" output="false">
 		<cfscript>
 		//Setup ColdBox Mappings For this Test
 		setAppMapping("/coldbox");
@@ -27,28 +27,28 @@ Modification History:
 	<cffunction name="testNewInstanceViaController" access="public" returntype="void" output="false">
 		<cfscript>
 		var plugin = getController().getPlugin("logger",false,true);
-		assertComponent(plugin);
+		AssertTrue( isObject(plugin));
 		</cfscript>
 	</cffunction>
 	
 	<cffunction name="testNormalPluginViaController" access="public" returntype="void" output="false">
 		<cfscript>
 		var plugin = getController().getPlugin("logger",false);
-		assertComponent(plugin);
+		AssertTrue( isObject(plugin));
 		</cfscript>
 	</cffunction>
 	
 	<cffunction name="testPluginByConvention" access="public" returntype="void" output="false">
 		<cfscript>
 		var plugin = getController().getPluginService().get("dateNoAutowire",true);
-		assertComponent(plugin);
+		AssertTrue( isObject(plugin));
 		</cfscript>
 	</cffunction>
 	
 	<cffunction name="testPluginByConfiguration" access="public" returntype="void" output="false">
 		<cfscript>
 		var plugin = getController().getPluginService().get("myclientstorage",true);
-		assertComponent(plugin);
+		AssertTrue( isObject(plugin));
 		</cfscript>
 	</cffunction>
 	

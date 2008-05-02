@@ -9,9 +9,9 @@ Date        :	9/3/2007
 Description :
 	Request service Test
 ----------------------------------------------------------------------->
-<cfcomponent name="requestserviceTest" extends="coldbox.system.extras.testing.baseTest" output="false">
+<cfcomponent name="requestserviceTest" extends="coldbox.system.extras.testing.baseMXUnitTest" output="false">
 
-	<cffunction name="setUp" returntype="void" access="private" output="false">
+	<cffunction name="setUp" returntype="void" access="public" output="false">
 		<cfscript>
 		//Setup ColdBox Mappings For this Test
 		setAppMapping("/coldbox");
@@ -35,28 +35,35 @@ Description :
 		<cfscript>
 		var service = getController().getRequestService();
 		var context = "";
-		var _coldbox_persistStruct = structnew();
+		var persistStruct = structnew();
 		var today = now();
+		var sessionstorage = getController().getPlugin("sessionstorage");
 		
-		/* Fill up the falsh storage */
-		_coldbox_persistStruct.flashvariable = today;
-		/* Store it in session */
-		session._coldbox_persistStruct = _coldbox_persistStruct;
+		/* Fill up the flash storage */
+		sessionstorage.setVar('_coldbox_persistStruct', structnew());
+		persistStruct = sessionstorage.getVar('_coldbox_persistStruct');
+		persistStruct.flashvariable = today;
 		
 		/* Setup test variables */
 		form.name = 'luis majano';
-		url.name = "pio majano";
 		form.event = "ehGeneral.dspHome,movies.list";
+		
+		url.name = "pio majano";
 		url.today = today;
 		
 		/* Catpure the request */
 		context = service.requestCapture();
 		
+		debug(context.getCollection());
+		
 		/* Tests */
-		AssertComponent(context, "Context Creation");
+		AssertTrue( isObject(context), "Context Creation");
 		AssertTrue(today eq context.getValue('flashvariable') , "Flash variable creation");
+		
 		AssertTrue(url.today eq context.getValue('today') , "URL Append");
+		
 		AssertTrue(form.name eq context.getValue('name'), "Name test and precedence");
+		
 		AssertTrue(context.valueExists('event'), "Multi-Event Test");
 		</cfscript>
 	</cffunction>
@@ -67,8 +74,8 @@ Description :
 		var context = "";
 		
 		/* Setup test variables */
-		form.debugmode = true;
-		form.debugpass = "invalid";
+		url.debugmode = true;
+		url.debugpass = "invalid";
 		
 		/* Catpure the request */
 		context = service.requestCapture();
@@ -80,8 +87,9 @@ Description :
 		AssertFalse(getcontroller().getDebuggerService().getDebugMode(), "Debug Mode test invalid password");
 		
 		/* Now test with right password. */
-		form.debugmode = true;
-		form.debugpass = "coldbox";
+		url.debugmode = true;
+		url.debugpass = "coldbox";
+		getController().setSetting('debugPassword',"coldbox");
 		
 		/* Catpure the request */
 		context = service.requestCapture();
@@ -97,7 +105,7 @@ Description :
 		var context = "";
 		
 		context = service.getContext();	
-		assertComponent(context, "Context Create");
+		AssertTrue( isObject(context), "Context Create");
 		
 		structDelete(request, "cb_requestContext");
 		assertFalse( service.contextExists() , "Context exists");

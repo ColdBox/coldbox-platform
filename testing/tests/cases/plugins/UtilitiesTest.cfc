@@ -9,7 +9,7 @@ Date        :	April 04, 2008
 Description :
 	UtilitiesTest
 ----------------------------------------------------------------------->
-<cfcomponent name="UtilitiesTest" extends="coldbox.system.extras.testing.baseTest" output="false">
+<cfcomponent name="UtilitiesTest" extends="coldbox.system.extras.testing.baseMXUnitTest" output="false">
 
 	<cffunction name="setUp" returntype="void" access="private" output="false">
 		<cfscript>

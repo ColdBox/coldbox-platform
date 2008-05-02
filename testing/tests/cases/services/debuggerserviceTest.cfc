@@ -12,9 +12,9 @@ Description :
 Modification History:
 01/18/2007 - Created
 ----------------------------------------------------------------------->
-<cfcomponent name="debuggerserviceTest" extends="coldbox.system.extras.testing.baseTest" output="false">
+<cfcomponent name="debuggerserviceTest" extends="coldbox.system.extras.testing.baseMXUnitTest" output="false">
 
-	<cffunction name="setUp" returntype="void" access="private" output="false">
+	<cffunction name="setUp" returntype="void" access="public" output="false">
 		<cfscript>
 		//Setup ColdBox Mappings For this Test
 		setAppMapping("/coldbox");
@@ -47,7 +47,7 @@ Modification History:
 		var service = getController().getDebuggerService();
 		var debugLog = service.renderDebugLog();
 		
-		assertSimpleValue(debugLog);		
+		assertTrue( isSimpleValue(debugLog));		
 		</cfscript>
 	</cffunction>
 	
@@ -56,7 +56,7 @@ Modification History:
 		var service = getController().getDebuggerService();
 		var cachePanel = service.renderCachePanel();
 		
-		assertSimpleValue(cachePanel);		
+		assertTrue(isSimpleValue(cachePanel));		
 		</cfscript>
 	</cffunction>
 	
