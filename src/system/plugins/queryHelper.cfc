@@ -60,6 +60,8 @@ queryPlugin.doLeftOuterJoin(q1,q3,"idt","idt")
 			 output="false"
 			 cache="true">
 
+<!------------------------------------------- CONSTRUCTOR ------------------------------------------->
+
 	<cffunction name="init" access="public" returntype="queryHelper" output="false">
 		<cfargument name="controller" type="any" required="true">
 		<cfset super.Init(arguments.controller) />
@@ -69,8 +71,9 @@ queryPlugin.doLeftOuterJoin(q1,q3,"idt","idt")
 		<cfreturn this>
 	</cffunction>
 
-	<!--- ************************************************************* --->
+<!------------------------------------------- PUBLIC ------------------------------------------->
 
+	<!--- FILTER A QUERY --->
 	<cffunction name="filterQuery" access="public" returntype="query" hint="Filters a query by the given value" output="false">
 		<!--- ************************************************************* --->
 		<cfargument name="qry" 			type="query" 	required="yes" hint="Query to filter">
@@ -87,8 +90,7 @@ queryPlugin.doLeftOuterJoin(q1,q3,"idt","idt")
 		<cfreturn qryNew>
 	</cffunction>
 
-	<!--- ************************************************************* --->
-
+	<!--- Sort a query --->
 	<cffunction name="sortQuery" access="public" returntype="query" hint="Sorts a query by the given field" output="false">
 		<!--- ************************************************************* --->
 		<cfargument name="qry" 			type="query" 	required="yes" hint="Query to sort">
@@ -108,8 +110,6 @@ queryPlugin.doLeftOuterJoin(q1,q3,"idt","idt")
 		<cfreturn qryNew>
 	</cffunction>
 
-	<!--- ************************************************************* --->
-	
 	<!--- ********************************************************************* ---> 
     <!--- Returns an array of the values in the given column                    --->
 	<!--- QoQ is case sensitive so use same columns name as in query            --->
@@ -132,7 +132,6 @@ queryPlugin.doLeftOuterJoin(q1,q3,"idt","idt")
             return arValues;
         </cfscript>
     </cffunction>
-	<!--- ************************************************************* --->
 	
 	<!--- ********************************************************************* ---> 
     <!--- Pass Column/s Name to get total/count of distinct values              --->
@@ -149,7 +148,6 @@ queryPlugin.doLeftOuterJoin(q1,q3,"idt","idt")
         </cfquery>
 		<cfreturn qryCount.RecordCount />
     </cffunction>
-	<!--- ************************************************************* --->
 	
     <!--- ********************************************************************* --->
     <!--- Returns the row number of the first match, or 0 if no match or exists --->
@@ -176,7 +174,6 @@ queryPlugin.doLeftOuterJoin(q1,q3,"idt","idt")
             return 0;
         </cfscript>
     </cffunction> 	
-	<!--- ********************************************************************* --->
 	
 	<!--- ********************************************************************* --->
     <!---  similar to inner join for QofQ's                                     --->
@@ -257,7 +254,6 @@ queryPlugin.doLeftOuterJoin(q1,q3,"idt","idt")
 		</cfscript>
 		
     </cffunction>
-	<!--- ********************************************************************* --->
 	
 	<!--- ********************************************************************* --->
     <!--- similar to left outer join for QofQ's                                 --->
@@ -354,7 +350,6 @@ queryPlugin.doLeftOuterJoin(q1,q3,"idt","idt")
 		</cfscript>
 		
     </cffunction>
-	<!--- ********************************************************************* --->
 	
 	<!--- ********************************************************************* --->
     <!--- Append From Query1 To Query2                                          --->
@@ -385,7 +380,25 @@ queryPlugin.doLeftOuterJoin(q1,q3,"idt","idt")
            return QryReturn;
         </cfscript>
     </cffunction>
-	<!--- ********************************************************************* --->
+	
+	<!--- Filter by Null --->
+	<cffunction name="filterNull" access="public" returntype="query" hint="Filters a query by NULL" output="false">
+		<!--- ************************************************************* --->
+		<cfargument name="qry"        type="query"    required="yes" hint="Query to filter">
+		<cfargument name="field"      type="string"   required="yes" hint="Field to filter on">
+		<cfargument name="null"       type="string"   required="no" default="NULL" hint="NULL by default, also accepts NOT NULL">
+		<!--- ************************************************************* --->
+		<cfset var qryNew = QueryNew("")>
+		<cfquery name="qryNew" dbtype="query">
+		   SELECT *
+		      FROM arguments.qry
+		      WHERE #trim(arguments.field)# IS #arguments.null#
+		</cfquery>
+		<cfreturn qryNew>	
+	</cffunction>
+
+<!------------------------------------------- PRIVATE ------------------------------------------->
+
 	
 	<!--- ********************************************************************* --->
 	<!--- Returns element which are only present in second-list                 --->
