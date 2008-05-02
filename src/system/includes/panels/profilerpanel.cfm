@@ -1,3 +1,16 @@
+<cfsetting enablecfoutputonly="true">
+<!-----------------------------------------------------------------------
+********************************************************************************
+Copyright 2005-2008 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+www.coldboxframework.com | www.luismajano.com | www.ortussolutions.com
+********************************************************************************
+
+Template :  debug.cfm
+Author 	 :	Luis Majano
+Date     :	September 25, 2005
+Description :
+	Debugging template for the application
+----------------------------------------------------------------------->
 <cfoutput>
 
 	<!--- Setup the panel --->
@@ -19,7 +32,12 @@
 	
 	<div class="fw_debugPanel">
 	
-	<!--- Start Rendering the Cache panel  --->
+	<!--- **************************************************************--->
+	<!--- TRACER STACK--->
+	<!--- **************************************************************--->
+	<cfinclude template="/coldbox/system/includes/panels/tracerspanel.cfm">
+	
+	<!--- Start Rendering the Execution Profiler panel  --->
 	<div class="fw_titles">&gt;&nbsp; ColdBox Execution Profiler Report</div>
 	<div class="fw_debugContentView" id="fw_executionprofiler">
 	
@@ -97,3 +115,4 @@
 	<div align="center" style="margin-top:10px"><input type="button" name="close" value="Close Monitor" onClick="window.close()" style="font-size:10px"></div>
 	
 </cfoutput>
+<cfsetting enablecfoutputonly="false">
