@@ -39,7 +39,7 @@ Modification History:
 			
 			/* Collection Appends */
 			initFORMURL();
-			Context.collectionAppend(FORM);
+			Context.collectionAppend(FORM,true);
 			Context.collectionAppend(URL);			
 					
 			/* Get Flash Persistance Storage */
