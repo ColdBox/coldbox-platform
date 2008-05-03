@@ -11,7 +11,7 @@ Description :
 ----------------------------------------------------------------------->
 <cfcomponent name="UtilitiesTest" extends="coldbox.system.extras.testing.baseMXUnitTest" output="false">
 
-	<cffunction name="setUp" returntype="void" access="private" output="false">
+	<cffunction name="setUp" returntype="void" access="public" output="false">
 		<cfscript>
 		//Setup ColdBox Mappings For this Test
 		setAppMapping("/coldbox");
@@ -26,7 +26,7 @@ Description :
 		<cfscript>
 			var plugin = getController().getPlugin("Utilities");
 
-			assertComponent(plugin);
+			AssertTrue( isObject(plugin) );
 		</cfscript>
 	</cffunction>
 
@@ -78,7 +78,7 @@ Description :
 			
 			plugin.getAbsolutePath(direactoryPath);
 			
-			//assertEqualsString(plugin.readFile(direactoryPath & '\unittest.txt'), 'unitest-#chr(10)##chr(13)#unitest','Returned values are not equal');
+			//AssertEquals(plugin.readFile(direactoryPath & '\unittest.txt'), 'unitest-#chr(10)##chr(13)#unitest','Returned values are not equal');
 			
 			assertTrue(IsValid("date",plugin.FileLastModified(direactoryPath & '\unittest.txt')));
 			
@@ -92,9 +92,9 @@ Description :
 			
 			assertTrue(plugin.isDirectory(direactoryPath));
 			
-			assertEqualsString(plugin.checkCharSet('iso-8859-1'),'iso-8859-1', 'checkCharSet() something gone wrong');
+			AssertEquals(plugin.checkCharSet('iso-8859-1'),'iso-8859-1', 'checkCharSet() something gone wrong');
 			
-			assertEqualsString(plugin.ripExtension('unittest.txt'),'unittest', 'ripExtension() something gone wrong');
+			AssertEquals(plugin.ripExtension('unittest.txt'),'unittest', 'ripExtension() something gone wrong');
 			
 			assertTrue(plugin.removeFile(direactoryPath & '\unittest.txt'));
 			

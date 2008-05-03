@@ -11,7 +11,7 @@ Description :
 ----------------------------------------------------------------------->
 <cfcomponent name="sessionstoragetest" extends="coldbox.system.extras.testing.baseMXUnitTest" output="false">
 
-	<cffunction name="setUp" returntype="void" access="private" output="false">
+	<cffunction name="setUp" returntype="void" access="public" output="false">
 		<cfscript>
 		//Setup ColdBox Mappings For this Test
 		setAppMapping("/coldbox");
@@ -26,7 +26,7 @@ Description :
 		<cfscript>
 			var plugin = getController().getPlugin("JavaLoader");
 			
-			assertComponent(plugin);
+			AssertTrue( isObject(plugin) );
 			
 		</cfscript>
 	</cffunction>	
@@ -50,7 +50,7 @@ Description :
 				Fail(e.toString());
 			}
 			
-			AssertEqualsString( myClass.hello(), "Hello World", "Saying Hello");
+			AssertEquals( myClass.hello(), "Hello World", "Saying Hello");
 			
 		</cfscript>
 	</cffunction>

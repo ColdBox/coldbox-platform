@@ -11,7 +11,7 @@ Description :
 ----------------------------------------------------------------------->
 <cfcomponent name="sessionstoragetest" extends="coldbox.system.extras.testing.baseMXUnitTest" output="false">
 
-	<cffunction name="setUp" returntype="void" access="private" output="false">
+	<cffunction name="setUp" returntype="void" access="public" output="false">
 		<cfscript>
 		//Setup ColdBox Mappings For this Test
 		setAppMapping("/coldbox");
@@ -26,10 +26,7 @@ Description :
 		<cfscript>
 			var plugin = getController().getPlugin("sessionstorage");
 			
-			assertComponent(plugin);
-			
-			assertTrue( isStruct(session.cbStorage), "session storage check");
-			
+			AssertTrue( isObject(plugin) );
 			
 		</cfscript>
 	</cffunction>	
@@ -42,7 +39,7 @@ Description :
 			plugin.setVar("tester", 1);
 			
 			AssertTrue( plugin.exists("tester") ,"Test set & Exists");
-			AssertEqualsNumber(1, plugin.getVar("tester"), "Get & Set Test");
+			AssertEquals(1, plugin.getVar("tester"), "Get & Set Test");
 			
 			AssertFalse( plugin.exists("nothing") ,"False Assertion on exists" );
 			

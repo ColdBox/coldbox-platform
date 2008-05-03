@@ -11,7 +11,7 @@ Description :
 ----------------------------------------------------------------------->
 <cfcomponent name="timerTest" extends="coldbox.system.extras.testing.baseMXUnitTest" output="false">
 
-	<cffunction name="setUp" returntype="void" access="private" output="false">
+	<cffunction name="setUp" returntype="void" access="public" output="false">
 		<cfscript>
 		//Setup ColdBox Mappings For this Test
 		setAppMapping("/coldbox");
@@ -26,7 +26,7 @@ Description :
 		<cfscript>
 			var plugin = getController().getPlugin("timer");
 
-			assertComponent(plugin);
+			AssertTrue( isObject(plugin) );
 		</cfscript>
 	</cffunction>
 	

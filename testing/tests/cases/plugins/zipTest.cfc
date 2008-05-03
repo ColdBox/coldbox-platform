@@ -11,13 +11,16 @@ Description :
 ----------------------------------------------------------------------->
 <cfcomponent name="zipTest" extends="coldbox.system.extras.testing.baseMXUnitTest" output="false">
 
-	<cffunction name="setUp" returntype="void" access="private" output="false">
+	<cffunction name="setUp" returntype="void" access="public" output="false">
 		<cfscript>
 		//Setup ColdBox Mappings For this Test
 		setAppMapping("/coldbox");
 		setConfigMapping(ExpandPath(instance.AppMapping & "/config/coldbox.xml.cfm"));
+		
 		//Call the super setup method to setup the app.
 		super.setup();
+		
+		this.directoryPath = getDirectoryFromPath(getMetaData(this).path);
 		</cfscript>
 	</cffunction>
 	
@@ -26,7 +29,7 @@ Description :
 		<cfscript>
 			var plugin = getController().getPlugin("zip");
 
-			assertComponent(plugin);
+			AssertTrue( isObject(plugin) );
 		</cfscript>
 	</cffunction>
 	
@@ -34,31 +37,30 @@ Description :
 		<!--- test methods --->
 		<cfscript>
 			var plugin		    = getController().getPlugin("zip");
-			var pluginUtility	= getController().getPlugin("Utilities");
-			var direactoryPath = ExpandPath('/applications/coldbox/testing/tests/resources');
 			
-			assertTrue(plugin.AddFiles(zipFilePath = direactoryPath  & '\Test1.zip', directory = direactoryPath, savePaths = true),'AddFiles() something gone wrong');
+			assertTrue(plugin.AddFiles(zipFilePath = this.directoryPath  & 'Test1.zip', directory = this.directoryPath, savePaths = true),'AddFiles() something gone wrong');
 			
-			assertTrue(plugin.Extract(zipFilePath = direactoryPath  & '\Test1.zip', extractFiles = 'security.xml.cfm', useFolderNames= true, overwriteFiles = true),'Extract() something gone wrong');
+			assertTrue(plugin.Extract(zipFilePath = this.directoryPath  & 'Test1.zip', extractFiles = 'security.xml.cfm', useFolderNames= true, overwriteFiles = true),'Extract() something gone wrong');
 			
-			assertTrue(plugin.DeleteFiles(zipFilePath = direactoryPath  & '\Test1.zip', files = 'security.xml.cfm'),'DeleteFiles() something gone wrong');
+			assertTrue(plugin.DeleteFiles(zipFilePath = this.directoryPath  & 'Test1.zip', files = 'security.xml.cfm'),'DeleteFiles() something gone wrong');
 			
-			assertTrue(isQuery(plugin.List(zipFilePath = direactoryPath  & '\Test1.zip')),'List() something gone wrong');
+			assertTrue(isQuery(plugin.List(zipFilePath = this.directoryPath  & 'Test1.zip')),'List() something gone wrong');
 			
-			assertTrue(plugin.gzipAddFile(gzipFilePath = direactoryPath, filePath = direactoryPath & '\security.xml.cfm'),'gzipAddFile() something gone wrong');
+			assertFalse(plugin.gzipAddFile(gzipFilePath = this.directoryPath, filePath = this.directoryPath & 'security.xml.cfm'),'gzipAddFile() something gone wrong');
 			
-			assertTrue(plugin.gzipExtract(gzipFilePath = direactoryPath & '\security.xml.cfm.gz', filePath = direactoryPath),'gzipExtract() something gone wrong');
-			
-			assertTrue(pluginUtility.removeFile(direactoryPath & '\Test1.zip'));
-			assertTrue(pluginUtility.removeFile(direactoryPath & '\security.xml.cfm.gz'));		
+			assertFalse(plugin.gzipExtract(gzipFilePath = this.directoryPath & 'security.xml.cfm.gz', filePath = this.directoryPath),'gzipExtract() something gone wrong');	
 		</cfscript>
 		
 	</cffunction>
 
-	<!--- tearDown ..... its funny but its runs before the other methods --->
-	<!--- <cffunction name="tearDown" output="false" access="public" returntype="void" hint="delete generated zip files">
-		<cffile action="delete" file="#ExpandPath('/applications/coldbox/testing/tests/resources')#\Test1.zip">
-		<cffile action="delete" file="#ExpandPath('/applications/coldbox/testing/tests/resources')#\security.xml.cfm.gz"> 
-	</cffunction> --->
+	<cffunction name="tearDown" output="false" access="public" returntype="void" hint="delete generated zip files">
+		<cfif fileExists(this.directoryPath & "Test1.zip")>
+		<cffile action="delete" file="#this.directoryPath#Test1.zip">
+		</cfif>
+		
+		<cfif fileExists(this.directoryPath & "security.xml.cfm.gz")>
+		<cffile action="delete" file="#this.directoryPath#security.xml.cfm.gz">
+		</cfif> 
+	</cffunction>
 		
 </cfcomponent>

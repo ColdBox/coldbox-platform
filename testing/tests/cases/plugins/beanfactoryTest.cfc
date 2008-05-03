@@ -11,7 +11,7 @@ Description :
 ----------------------------------------------------------------------->
 <cfcomponent name="beanfactoryTest" extends="coldbox.system.extras.testing.baseMXUnitTest" output="false">
 
-	<cffunction name="setUp" returntype="void" access="private" output="false">
+	<cffunction name="setUp" returntype="void" access="public" output="false">
 		<cfscript>
 		//Setup ColdBox Mappings For this Test
 		setAppMapping("/coldbox");
@@ -26,7 +26,7 @@ Description :
 		<cfscript>
 			var plugin = getController().getPlugin("beanFactory");
 			
-			assertComponent(plugin);			
+			assertTrue( isObject(plugin) );			
 		</cfscript>
 	</cffunction>	
 	
@@ -38,10 +38,7 @@ Description :
 			
 			/* test create */
 			local.obj = plugin.create('applications.coldbox.testing.testmodel.formBean');
-			AssertComponent(local.obj,"Verify create");
-			
-			
-			
+
 		</cfscript>
 	</cffunction>
 	
@@ -75,7 +72,7 @@ Description :
 			local.objInstance = local.obj.getInstance();
 			/* Assert Population */
 			for( local.key in local.objInstance ){
-				AssertEqualsString(local.objInstance[local.key], local.myStruct[local.key], "Asserting #local.key# From Struct" );
+				AssertEquals(local.objInstance[local.key], local.myStruct[local.key], "Asserting #local.key# From Struct" );
 			}
 			
 			/* Populate From JSON */
@@ -83,7 +80,7 @@ Description :
 			local.objInstance = local.obj.getInstance();
 			/* Assert Population */
 			for( local.key in local.objInstance ){
-				AssertEqualsString(local.objInstance[local.key], local.myStruct[local.key], "Asserting #local.key# From JSON" );
+				AssertEquals(local.objInstance[local.key], local.myStruct[local.key], "Asserting #local.key# From JSON" );
 			}
 			
 			/* Populate From JSON */
@@ -91,7 +88,7 @@ Description :
 			local.objInstance = local.obj.getInstance();
 			/* Assert Population */
 			for( local.key in local.objInstance ){
-				AssertEqualsString(local.objInstance[local.key], local.myStruct[local.key], "Asserting #local.key# From Request Collection" );
+				AssertEquals(local.objInstance[local.key], local.myStruct[local.key], "Asserting #local.key# From Request Collection" );
 			}
 			
 		</cfscript>

@@ -11,7 +11,7 @@ Description :
 ----------------------------------------------------------------------->
 <cfcomponent name="sessionstoragetest" extends="coldbox.system.extras.testing.baseMXUnitTest" output="false">
 
-	<cffunction name="setUp" returntype="void" access="private" output="false">
+	<cffunction name="setUp" returntype="void" access="public" output="false">
 		<cfscript>
 		//Setup ColdBox Mappings For this Test
 		setAppMapping("/coldbox");
@@ -26,7 +26,7 @@ Description :
 		<cfscript>
 			var plugin = getController().getPlugin("messagebox");
 			
-			assertComponent(plugin);
+			AssertTrue( isObject(plugin) );
 					
 		</cfscript>
 	</cffunction>	
@@ -41,16 +41,16 @@ Description :
 			getController().setSetting("messagebox_storage_scope","session");
 			/* get Plugin */
 			plugin = getController().getPlugin("messagebox");
-			AssertEqualsString( plugin.getStorageScope(), "session", "Custom Storage");
+			AssertEquals( plugin.getStorageScope(), "session", "Custom Storage");
 			
 			/* Set Message */
 			plugin.setMessage("info","TestMessage");
-			AssertEqualsString( plugin.getMessage().message, "TestMessage", "Set and Get.");
+			AssertEquals( plugin.getMessage().message, "TestMessage", "Set and Get.");
 			AssertFalse( plugin.isEmpty(), "Empty Test");
 			
 			/* Append */
 			plugin.append("pio");
-			AssertEqualsString( plugin.getMessage().message, "TestMessagepio", "Append Test");
+			AssertEquals( plugin.getMessage().message, "TestMessagepio", "Append Test");
 			
 			/* Append an array */
 			messages = "unit test";
@@ -58,18 +58,18 @@ Description :
 						
 			/* Clear */
 			plugin.clearMessage();
-			AssertEqualsString( plugin.getMessage().message, "", "Clear first, then get test.");
+			AssertEquals( plugin.getMessage().message, "", "Clear first, then get test.");
 			AssertTrue( plugin.isEmpty(), "Empty Test");
 			
 			/* Append on empty */
 			plugin.append("pio");
-			AssertEqualsString( plugin.getMessage().message, "pio", "Append on empty Test");
+			AssertEquals( plugin.getMessage().message, "pio", "Append on empty Test");
 			plugin.clearMessage();
 			
 			/* Append on empty Array */
 			messages = "unit test";
 			plugin.appendArray(listToArray(messages));
-			AssertEqualsString( plugin.getMessage().message, "unit test", "Append on Empty");
+			AssertEquals( plugin.getMessage().message, "unit test", "Append on Empty");
 						
 			
 			/* Set Array Message */
