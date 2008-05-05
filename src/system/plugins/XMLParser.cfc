@@ -182,8 +182,13 @@ Modification History:
 
 			//Schema Path
 			StructInsert(settingsStruct, "ConfigFileSchemaLocation", instance.FrameworkConfigXSDFile);
-			//Application Path
+			//Fix Application Path to last / standard.
+			if( right(controller.getAppRootPath(),1) neq  instance.FileSeparator){
+				controller.setAppRootPath( controller.getAppRootPath() & instance.FileSeparator );
+			}
+			//Now set the correct path.
 			StructInsert(settingsStruct, "ApplicationPath", controller.getAppRootPath() );
+			
 			//Load Framework Path too
 			StructInsert(settingsStruct, "FrameworkPath", ExpandPath("/coldbox/system") & instance.FileSeparator );
 			//Load Plugins Path

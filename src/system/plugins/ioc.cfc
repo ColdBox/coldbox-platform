@@ -112,7 +112,6 @@ Modification History:
 		<cfset var oBean = "">
 		<cfset var beanKey = "ioc_" & arguments.beanName>
 		<cfset var MetaData = structNew()>
-		<cfset var objTimeout = "">
 		<cfset var objCaching = getSetting("IOCObjectCaching")>
 
 		<!--- Check if IOC Caching is set, and if we have it cached. --->
@@ -129,22 +128,29 @@ Modification History:
 			
 			<!--- If Caching on, then set object in cache --->
 			<cfif objCaching>
-				<cflock name="ioc.objectCaching.#arguments.beanName#" type="exclusive" timeout="30" throwontimeout="true">
-					<!--- Get Object's MetaData, For Caching --->
-					<cfset MetaData = getMetaData(oBean)>
-					<!--- By Default, services with no cache flag are set to false --->
-					<cfif not structKeyExists(MetaData,"cache") or not isBoolean(MetaData.cache)>
-						<cfset MetaData.cache = false>
+				
+				<!--- Get Object's MetaData, For Caching --->
+				<cfset MetaData = getMetaData(oBean)>
+				<!--- By Default, services with no cache flag are set to false --->
+				<cfif not structKeyExists(MetaData,"cache") or not isBoolean(MetaData.cache)>
+					<cfset MetaData.cache = false>
+				</cfif>
+				
+				<!--- Test for caching parameters --->
+				<cfif MetaData["cache"]>
+					<!--- Cache Metadata --->
+					<cfif not structKeyExists(MetaData,"cachetimeout") or not isNumeric(metadata.cacheTimeout) >
+						<cfset MetaData.cacheTimeout = "">
 					</cfif>
-					<!--- Test for caching parameters --->
-					<cfif MetaData["cache"]>
-						<cfif structKeyExists(MetaData,"cachetimeout") >
-							<cfset objTimeout = MetaData["cachetimeout"]>
-						</cfif>
+					<cfif not structKeyExists(MetaData,"cacheLastAccessTimeout") or not isNumeric(metadata.cacheLastAccessTimeout) >
+						<cfset MetaData.cacheLastAccessTimeout = "">
+					</cfif>
+					
+					<cflock name="ioc.objectCaching.#arguments.beanName#" type="exclusive" timeout="30" throwontimeout="true">
 						<!--- Cache the object --->
-						<cfset getColdboxOCM().set(beanKey,oBean,objTimeout)>
-					</cfif>
-				</cflock>
+						<cfset getColdboxOCM().set(beanKey,oBean,metadata.cacheTimeout,metadata.cacheLastAccessTimeout)>
+					</cflock>
+				</cfif>
 			</cfif>
 			
 		</cfif>

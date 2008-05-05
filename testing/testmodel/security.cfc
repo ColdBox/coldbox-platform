@@ -1,4 +1,4 @@
-<cfcomponent output="false"> 
+<cfcomponent output="false" cache="true" cachetimeout="5" cacheLastAccessTimeout="1"> 
 
 	<cffunction name="init" access="public" returntype="security" hint="" output="false" >
 		<cfscript>

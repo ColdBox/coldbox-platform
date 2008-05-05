@@ -30,6 +30,7 @@ Description		: This is the main ColdBox front Controller.
 			
 			//Set the Application hash on creation
 			setAppHash( hash(arguments.AppRootPath) );
+			//App Root
 			setAppRootPath(arguments.AppRootPath);
 			
 			//TODO: change all this to object factory.
@@ -56,10 +57,10 @@ Description		: This is the main ColdBox front Controller.
 <!------------------------------------------- PUBLIC ------------------------------------------->
 	
 	<!--- AppRootPath --->
-	<cffunction name="getAppRootPath" access="public" returntype="string" output="false">
+	<cffunction name="getAppRootPath" access="public" returntype="string" output="false" hint="Get this application's physical path">
 		<cfreturn instance.AppRootPath>
 	</cffunction>
-	<cffunction name="setAppRootPath" access="public" returntype="void" output="false">
+	<cffunction name="setAppRootPath" access="public" returntype="void" output="false" hint="Set this application's physical path.">
 		<cfargument name="AppRootPath" type="string" required="true">
 		<cfset instance.AppRootPath = arguments.AppRootPath>
 	</cffunction>
