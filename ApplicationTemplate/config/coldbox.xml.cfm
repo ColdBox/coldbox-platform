@@ -51,7 +51,7 @@
 		<!--Flag to Auto reload the internal handlers directory listing. False for production. -->
 		<Setting name="HandlersIndexAutoReload"   	value="true" />
 		<!--Flag to auto reload the config.xml settings. False for production. -->
-		<Setting name="ConfigAutoReload"          	value="true" />
+		<Setting name="ConfigAutoReload"          	value="false" />
 		<!-- Declare the custom plugins base invocation path, if used. You have to use dot notation.Example: mymapping.myplugins	-->
 		<Setting name="MyPluginsLocation"   		value="" />
 		<!-- Declare the external handlers base invocation path, if used. You have to use dot notation.Example: mymapping.myhandlers	-->
