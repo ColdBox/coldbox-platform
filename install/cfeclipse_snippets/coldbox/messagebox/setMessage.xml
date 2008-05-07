@@ -2,6 +2,6 @@
 <snippet filetemplate="false" extension="cfm">
 <name>setMessage</name>
 <help>Set Message</help>
-<starttext><![CDATA[getPlugin("messagebox").setMessage("$${Message Type:info|error|warning}", "$${Message}")]]></starttext>
+<starttext><![CDATA[getPlugin("messagebox").setMessage(type="$${Message Type:info|error|warning}", message="$${Message}")]]></starttext>
 <endtext><![CDATA[]]></endtext>
 </snippet>

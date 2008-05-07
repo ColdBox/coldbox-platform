@@ -2,6 +2,6 @@
 <snippet filetemplate="false" extension="cfm">
 <name>setView</name>
 <help>Set a view</help>
-<starttext><![CDATA[event.setView("$${View name (No extension)}")]]></starttext>
+<starttext><![CDATA[event.setView(name="$${View name (No extension)}",nolayout="$${No Layout:false|true}",cache="$${cache:false|true}",cacheTimeout="$${Timeout (minutes)}",cacheLastAccessTimeout="$${Last Access Timeout (minutes)}")]]></starttext>
 <endtext><![CDATA[]]></endtext>
 </snippet>

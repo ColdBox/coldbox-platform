@@ -11,14 +11,14 @@ Description :
 	you want.  You must then set it as a property of the interceptor in your config
 	file.  The path will be expanded, so please make sure it works.
 	
-	<Interceptor class="environment">
+	<Interceptor class="coldbox.system.interceptors.environment">
 		<Property name='configFile'>config/environments.xml.cfm</Property>
 		<Property name='fireOnInit'>false</Property>
 	</Interceptor>
 	
 	That's it. Just make sure you write up correctly your environment xml file.
 	
-	For an in depth guide read: 
+	For an in-depth guide read: 
 	http://ortus.svnrepository.com/coldbox/trac.cgi/wiki/cbEnvironmentControl
 
 Sample:

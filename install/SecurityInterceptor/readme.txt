@@ -17,10 +17,11 @@ Ex:
 Security Validator Object:
 A security validator object is a simple cfc that implements the following function:
 
-userValidator(roles,permissions) : boolean
+userValidator(rule, messagebox) : boolean
 
 This function must return a boolean variable and it must validate a user according
-to the rule that just ran by testing the roles or permissions list that is sent in.
+to the rule that just ran by testing the rule that got sent in. It will also receive
+a reference to a messagebox plugin, so it can set messages on it if needed.
 
 Declaring the Validator:
 You have two ways to declare the security validator: 

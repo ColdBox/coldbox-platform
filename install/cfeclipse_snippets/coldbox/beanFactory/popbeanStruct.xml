@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<snippet filetemplate="false" extension="cfm">
+<name>popbeanStruct</name>
+<help></help>
+<starttext><![CDATA[getPlugin("beanFactory").populateFromStruct($${Bean Instance}, $${struct})]]></starttext>
+<endtext><![CDATA[]]></endtext>
+</snippet>
