@@ -60,6 +60,9 @@ Description :
 				
 				/* Exclude yourself */
 				if( not findnocase("coldbox.system.interceptors.autowire",interceptorConfig.interceptors[x].class) ){
+					
+					/* No locking necessary here, since the after aspects load is executed in thread safe conditions */
+					
 					/* Try to get the interceptor Object. */
 					arguments.interceptData.oInterceptor = getColdboxOCM().get(arguments.interceptData.interceptorPath);
 					/* Autowire it */
@@ -76,10 +79,12 @@ Description :
 		<cfargument name="event" 		 required="true" type="coldbox.system.beans.requestContext" hint="The event object.">
 		<cfargument name="interceptData" required="true" type="struct" hint="A structure containing intercepted data = [handlerPath (The path of the handler), oHandler (The actual handler object)]">
 		<!--- ************************************************************* --->
-		<cflock type="exclusive" name="cboxautowire_handler_#interceptData.handlerPath#" timeout="30">
-			<cfset arguments.targetType = "handler">
+		<cfset arguments.targetType = "handler">
+			
+		<cflock type="exclusive" name="cboxautowire_handler_#interceptData.handlerPath#" timeout="30" throwontimeout="true">
 			<cfset processAutowire(argumentCollection=arguments)>		
 		</cflock>
+		
 	</cffunction>
 		
 	<!--- After Plugin Creation --->
@@ -88,10 +93,12 @@ Description :
 		<cfargument name="event" 		 required="true" type="coldbox.system.beans.requestContext" hint="The event object.">
 		<cfargument name="interceptData" required="true" type="struct" hint="A structure containing intercepted data = [pluginPath (The path of the plugin), custom (Flag if the plugin is custom or not), oPlugin (The actual plugin object)]">
 		<!--- ************************************************************* --->
-		<cflock type="exclusive" name="cboxautowire_plugin_#interceptData.pluginPath#" timeout="30">
-			<cfset arguments.targetType = "plugin">
+		<cfset arguments.targetType = "plugin">
+			
+		<cflock type="exclusive" name="cboxautowire_plugin_#interceptData.pluginPath#" timeout="30" throwontimeout="true">
 			<cfset processAutowire(argumentCollection=arguments)>		
 		</cflock>
+		
 	</cffunction>
 	
 <!------------------------------------------- PRIVATE METHDOS ------------------------------------------->
