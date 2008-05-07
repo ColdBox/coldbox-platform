@@ -32,10 +32,12 @@ Description :
 			/* Our mixins Struct */
 			instance.mixins = StructNew();
 			
-			/* Place our two methods on the mixins struct */
+			/* Place our methods on the mixins struct */
 			instance.mixins["removeMixin"] = variables.removeMixin;
 			instance.mixins["injectMixin"] = variables.injectMixin;
 			instance.mixins["invokerMixin"] = variables.invokerMixin;
+			instance.mixins["injectPropertyMixin"] = variables.injectPropertyMixin;
+			instance.mixins["removePropertyMixin"] = variables.removePropertyMixin;
 			
 			/* Remove mixin methods */
 			stop(this);
@@ -47,14 +49,17 @@ Description :
 <!------------------------------------------- PUBLIC METHODS ------------------------------------------->
 
 	<!--- Start Method Injection on a CFC --->
-	<cffunction name="start" hint="start method injection set. Injects: injectMixin,removeMixin, invokerMixin" access="public" returntype="void" output="false">
+	<cffunction name="start" hint="start method injection set. Injects: injectMixin,removeMixin,invokerMixin,injectPropertyMixin,removePropertyMixin" access="public" returntype="void" output="false">
 		<!--- ************************************************************* --->
 		<cfargument name="CFC" hint="The cfc to inject the method into" type="web-inf.cftags.component" required="Yes">
 		<!--- ************************************************************* --->
 		<cfscript>
-			arguments.CFC["injectMixin"] = instance.mixins.injectMixin;
-			arguments.CFC["removeMixin"] = instance.mixins.removeMixin;
-			arguments.CFC["invokerMixin"] = instance.mixins.invokerMixin;
+			var udf = 0;
+			
+			/* Inject Mixins methods */
+			for( udf in instance.mixins ){
+				arguments.CFC[udf] = instance.mixins[udf];
+			}
 		</cfscript>
 	</cffunction>
 	
@@ -64,9 +69,13 @@ Description :
 		<cfargument name="CFC" hint="The cfc to inject the method into" type="web-inf.cftags.component" required="Yes">
 		<!--- ************************************************************* --->
 		<cfscript>
-			StructDelete(arguments.CFC, "injectMixin");
-			StructDelete(arguments.CFC, "removeMixin");
-			StructDelete(arguments.CFC, "invokerMixin");
+			var udf = 0;
+			
+			/* Inject Mixins methods */
+			for( udf in instance.mixins ){
+				arguments.CFC[udf] = instance.mixins[udf];
+				StructDelete(arguments.CFC, udf);
+			}
 		</cfscript>
 	</cffunction>
 	
@@ -113,12 +122,7 @@ Description :
 		<!--- ************************************************************* --->
 		<cfscript>
 			/* Inject Property */
-			if( structKeyExists(arguments.scope,arguments.propertyName) ){
-				structUpdate(arguments.scope,arguments.propertyName,arguments.propertyValue);
-			}	
-			else{
-				structInsert(arguments.scope,arguments.propertyName,arguments.propertyValue);
-			}			
+			"#arguments.scope#.#arguments.propertyName#" = arguments.propertyValue;
 		</cfscript>
 	</cffunction>
 	
@@ -140,7 +144,7 @@ Description :
 		<cfargument name="scope" 			type="string" 	required="false" default="variables" hint="The scope to which inject the property to."/>
 		<!--- ************************************************************* --->
 		<cfscript>
-			structDelete(arguments.scope,arguments.propertyName);
+			structDelete(evaluate(arguments.scope),arguments.propertyName);
 		</cfscript>
 	</cffunction>
 	

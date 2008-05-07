@@ -14,6 +14,9 @@ Sep/25/2005 - Luis Majano
 ----------------------------------------------------------------------->
 <cfcomponent name="baseHandler" extends="coldbox.system.eventhandler" output="false">
 
+<!--- Autowire --->
+<cfproperty name="badService" type="ioc" scope="instance">
+
 	<cffunction name="doColdboxFactoryTests" access="public" returntype="any" hint="" output="false" >
 		<cfargument name="Event" type="coldbox.system.beans.requestContext">
 		<cfscript>

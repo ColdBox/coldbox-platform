@@ -104,8 +104,13 @@ Description :
 		<cfargument name="targetType" 	 required="true" type="string" hint="Either plugin or handler">
 		<!--- ************************************************************* --->
 		<cfscript>
+			/* Targets */
 			var targetCacheKey = "";
 			var targetObject = "";
+			
+			/* Dependencies */
+			var thisDependency = "";
+			var thisScope = "";
 			
 			/* Metadata entry structures */
 			var MetaData = "";
@@ -143,8 +148,9 @@ Description :
 				}
 				/* Lookup Dependencies if using autowire */
 				if ( MetaData["autowire"] ){
+					/* Set md entry to true for autowiring */
 					mdEntry.autowire = true;
-					//Recurse for dependencies here, in order to build them.
+					/* Recurse for dependencies here, in order to build them. */
 					mdEntry.dependencies = parseMetadata(MetaData,mdEntry.dependencies);
 				}
 				
@@ -158,24 +164,38 @@ Description :
 			if ( targetDIEntry.autowire ){
 				/* Dependencies Length */
 				dependenciesLength = arrayLen(targetDIEntry.dependencies);
-				
 				/* Let's inject our mixins */
 				getPlugin("methodInjector").start(targetObject);
 				
 				/* Loop over dependencies and inject. */
 				for(x=1; x lte dependenciesLength;x=x+1){
 					
+					/* Defaults */
+					thisDependency = targetDIEntry.dependencies[x];
+					thisScope = "";
+					
+					/* Check for property and scopes */
+					if( listlen(thisDependency) gt 1 ){
+						thisDependency = listFirst(targetDIEntry.dependencies[x]);
+						thisScope = listLast(targetDIEntry.dependencies[x]);
+					}
+					
 					/* Verify that bean exists in the IOC container. */
-					if( getPlugin("ioc").getIOCFactory().containsBean(targetDIEntry.dependencies[x]) ){
+					if( getPlugin("ioc").getIOCFactory().containsBean(thisDependency) ){
+						
 						/* Inject dependency */
-						injectBean(targetObject, targetDIEntry.dependencies[x], getPlugin("ioc").getBean(targetDIEntry.dependencies[x]));
+						injectBean(targetBean=targetObject,
+								   beanName=thisDependency,
+								   beanObject=getPlugin("ioc").getBean(thisDependency),
+								   scope=thisScope);
+						
 						/* Debug Mode Check */
 						if( getProperty("debugMode") ){
-							getPlugin("logger").logEntry("information","Bean: #targetDIEntry.dependencies[x]# injected into #targetCacheKey#.");
+							getPlugin("logger").logEntry("information","Bean: #thisDependency#,Scope: #thisScope# --> injected into #targetCacheKey#.");
 						}
 					}
 					else if( getProperty("debugMode") ){
-						getPlugin("logger").logEntry("warning","Bean: #targetDIEntry.dependencies[x]# not found in factory");
+						getPlugin("logger").logEntry("warning","Bean: #thisDependency#,Scope: #thisScope# --> not found in factory");
 					}
 					
 				}//end for loop of dependencies.
@@ -198,50 +218,85 @@ Description :
 		<!--- ************************************************************* --->
 		<cfscript>
 			var x = 1;
+			var md = arguments.metadata;
+			var cbox_reserved_functions = "setSetting,setDebugMode,setNextEvent,setNextRoute,setController,settingExists";
 			
-			/* Look for functions first */		
-			if( structKeyExists(arguments.metadata, "functions") ){
-				for(x=1; x lte ArrayLen(arguments.metadata.functions); x=x+1 ){
+			/* Look For cfProperties */
+			if( structKeyExists(md,"properties") and ArrayLen(md.properties) gt 0){
+				for(x=1; x lte ArrayLen(md.properties); x=x+1 ){
+					
+					/* Check if type is ioc */
+					if( structKeyExists(md.properties[x],"type") and md.properties[x].type eq "ioc" ){
+						/* Scope Check */
+						if( not structKeyExists(md.properties[x],"scope") ){
+							md.properties[x].scope = "variables";
+						}		
+						/* Add Property Dependency */
+						ArrayAppend( arguments.dependencies, md.properties[x].name & "," & md.properties[x].scope );
+					}
+					
+				}//end for loop		
+			}//end if properties found.
+			
+			/* Look for cfFunctions */		
+			if( structKeyExists(md, "functions") ){
+				for(x=1; x lte ArrayLen(md.functions); x=x+1 ){
 					/* Verify we have a setter */
-					if( left(arguments.metadata.functions[x].name,3) eq "set" ){
+					if( left(md.functions[x].name,3) eq "set" and not listFindNoCase(cbox_reserved_functions,md.functions[x].name) ){
 						/* Found Setter, append property Name */
-						ArrayAppend(arguments.dependencies,Right(arguments.metadata.functions[x].name, Len(arguments.metadata.functions[x].name)-3));
+						ArrayAppend(arguments.dependencies,Right(md.functions[x].name, Len(md.functions[x].name)-3));
 					
 					}//end if setter found.
 				}//end loop of functions
 			}//end if functions found
 			
 			/* Start Registering inheritances */
-			if ( structKeyExists(arguments.metadata, "extends") and 
-				 ( arguments.metadata.extends.name neq "coldbox.system.plugin" or
-				   arguments.metadata.extends.name neq "coldbox.system.eventhandler" or
-				   arguments.metadata.extends.name neq "coldbox.system.interceptor" )
+			if ( structKeyExists(md, "extends") and 
+				 ( md.extends.name neq "coldbox.system.plugin" or
+				   md.extends.name neq "coldbox.system.eventhandler" or
+				   md.extends.name neq "coldbox.system.interceptor" )
 			){
 				/* Recursive lookup */
-				parseMetadata(arguments.metadata.extends,dependencies);
+				arguments.dependencies = parseMetadata(md.extends,dependencies);
 			}
-			//return the dependencies found
+			
+			/* return the dependencies found */
 			return arguments.dependencies;
 		</cfscript>	
 	</cffunction>
 	
 	<!--- Inject Bean --->
-	<cffunction name="injectBean" access="private" returntype="void" output="false" hint="Inject a bean with dependencies">
+	<cffunction name="injectBean" access="private" returntype="void" output="false" hint="Inject a bean with dependencies via setters or property injections">
 		<!--- ************************************************************* --->
 		<cfargument name="targetBean"  	 type="any" 	required="true" hint="The bean that will be injected with dependencies" />
 		<cfargument name="beanName"  	 type="string" 	required="true" hint="The name of the property to inject"/>
 		<cfargument name="beanObject" 	 type="any" 	required="true" hint="The bean object to inject." />
+		<cfargument name="scope" 		 type="string"  required="true" hint="The scope to inject a property into.">
 		<!--- ************************************************************* --->
 		<cfscript>
 			var argCollection = structnew();
 			argCollection[arguments.beanName] = arguments.beanObject;
 		</cfscript>
 		
-		<!--- Call our mixin invoker --->
-		<cfinvoke component="#arguments.targetBean#" method="invokerMixin">
-			<cfinvokeargument name="method"  		value="set#arguments.beanName#">
-			<cfinvokeargument name="argCollection"  value="#argCollection#">
-		</cfinvoke>		
+		<!--- Property or Setter --->
+		<cfif len(arguments.scope) eq 0>
+			
+			<!--- Call our mixin invoker --->
+			<cfinvoke component="#arguments.targetBean#" method="invokerMixin">
+				<cfinvokeargument name="method"  		value="set#arguments.beanName#">
+				<cfinvokeargument name="argCollection"  value="#argCollection#">
+			</cfinvoke>	
+			
+		<cfelse>
+			
+			<!--- Call our property injector mixin --->
+			<cfinvoke component="#arguments.targetBean#" method="injectPropertyMixin">
+				<cfinvokeargument name="propertyName"  	value="#arguments.beanName#">
+				<cfinvokeargument name="propertyValue"  value="#arguments.beanObject#">
+				<cfinvokeargument name="scope"			value="#arguments.scope#">
+			</cfinvoke>	
+			
+		</cfif>			
 	</cffunction>
 	
 	<!--- Process After DI Complete --->

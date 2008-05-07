@@ -7,10 +7,8 @@
 	<cfif name neq "index.cfm">
 	<tr>
 		<td>#name#</td>
-		<td>[<a href="#name#" target="results">Run</a>]</td>
+		<td>[<a href="#name#" target="_blank">Run</a>]</td>
 	</tr>
 	</cfif>
 </cfoutput>
 </table>
-
-<iframe name="results" src="" width="100%" height="500"></iframe>

@@ -6,7 +6,7 @@
 	<environment name="development" urls="localhost,dev,jfetmac">
 		<!--ColdBoxSpecific Settings -->
 		<Setting name="HandlerCaching"			value="false" />
-		<Setting name="HandlersIndexAutoReload" value="false" />
+		<Setting name="HandlersIndexAutoReload" value="true" />
 		<Setting name="IOCObjectCaching"		value="false" />
 		<Setting name="DebugMode"	 			value="true" />
 		<Setting name="DebugPassword" 			value="" />
