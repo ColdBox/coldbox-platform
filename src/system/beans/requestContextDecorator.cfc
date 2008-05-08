@@ -15,15 +15,22 @@ Description :
 		
 	<cffunction name="init" access="public" output="false" hint="constructor" returntype="any">
 		<!--- ************************************************************* --->
-		<cfargument name="oContext" 	 	type="any" 		required="true" hint="The original context we are decorating. coldbox.system.beans.requestContext">
+		<cfargument name="oContext" 	type="any" 	required="true" hint="The original context we are decorating. coldbox.system.beans.requestContext">
+		<cfargument name="controller" 	type="any" 	required="true"	hint="The coldbox controller">
 		<!--- ************************************************************* --->
 		<cfscript>
-			//Set the memento state
+			/* Set Controller */
+			setController(arguments.controller);
+			
+			/* Set the memento state */
 			setMemento(arguments.oContext.getMemento());
-			//Composite the original context
+			
+			/* Composite the original context */
 			setRequestContext(arguments.oContext);
-			//Configure this decorated request context.
+			
+			/* Configure this decorated request context. */
 			configure();
+			
 			return this;
 		</cfscript>		
 	</cffunction>
@@ -47,5 +54,13 @@ Description :
 
 <!------------------------------------------- PRIVATE ------------------------------------------->
 
+	<!--- Get Set Controller --->
+	<cffunction name="getcontroller" access="private" output="false" returntype="any" hint="Get controller: coldbox.system.controller">
+		<cfreturn instance.controller/>
+	</cffunction>	
+	<cffunction name="setcontroller" access="private" output="false" returntype="void" hint="Set controller">
+		<cfargument name="controller" type="any" required="true"/>
+		<cfset instance.controller = arguments.controller/>
+	</cffunction>
 
 </cfcomponent>

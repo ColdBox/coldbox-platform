@@ -171,10 +171,12 @@ Modification History:
 		
 		//Determine if we have a decorator, if we do, then decorate it.
 		if ( getContextProperties().isUsingDecorator ){
+			
 			//Create the decorator
-			oDecorator = CreateObject("component",controller.getSetting("RequestContextDecorator")).init(oContext);
+			oDecorator = CreateObject("component",controller.getSetting("RequestContextDecorator")).init(oContext,controller);
 			//Set Request Context in storage
 			setContext(oDecorator);
+			
 			//Return
 			return oDecorator;
 		}

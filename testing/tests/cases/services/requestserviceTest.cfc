@@ -95,7 +95,7 @@ Description :
 		context = service.requestCapture();
 		
 		/* Tests */
-		AssertTrue(getcontroller().getDebuggerService().getDebugMode(), "Debug Mode test good password");
+		AssertTrue(getcontroller().getDebuggerService().getDebugMode(), "Debug Mode test good password: #getcontroller().getDebuggerService().getDebugMode()#");
 		</cfscript>
 	</cffunction>
 	
