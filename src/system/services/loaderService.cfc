@@ -87,12 +87,12 @@ Modification History:
 				controller.getColdboxOCM().configure(CacheConfigBean);
 			}
 			
-			/* Check for Debugger Override Config or populate debugger config bean with framework settings*/
+			/* Populate Debugger with settings from the framework */
+			DebuggerConfigBean.populate(FrameworkSettings);
+			
+			/* Check for Debugger Override, if true, then overpopulate with configuration settings overriding framework settings. */
 			if( ConfigSettings.DebuggerSettings.OVERRIDE ){
 				DebuggerConfigBean.populate(ConfigSettings.DebuggerSettings);
-			}
-			else{
-				DebuggerConfigBean.populate(FrameworkSettings);
 			}
 			
 			/* Configure the Debugger with framework wide settings.*/
