@@ -27,6 +27,7 @@ Modification History:
 		instance.eventName = "";
 		instance.isSES = false;
 		instance.sesBaseURL = "";
+		instance.routedStruct = structnew();
 	</cfscript>
 
 	<cffunction name="init" access="public" output="false" hint="constructor" returntype="coldbox.system.beans.requestContext">
@@ -47,6 +48,9 @@ Modification History:
 			setEventName(arguments.properties.EventName);
 			setisSES(arguments.properties.isSES);
 			setsesBaseURL(arguments.properties.sesBaseURL);
+			setRoutedStruct(structnew());
+			
+			/* Return Context */
 			return this;
 		</cfscript>		
 	</cffunction>
@@ -433,6 +437,16 @@ Modification History:
 	<cffunction name="setsesBaseURL" access="public" output="false" returntype="void" hint="Set the sesBaseURL">
 		<cfargument name="sesBaseURL" type="string" required="true"/>
 		<cfset instance.sesBaseURL = arguments.sesBaseURL/>
+	</cffunction>
+	
+	<!--- ************************************************************* --->
+	
+	<cffunction name="getroutedStruct" access="public" output="false" returntype="struct" hint="Get the routed structure of key-value pairs. What the ses interceptor could match.">
+		<cfreturn instance.routedStruct/>
+	</cffunction>	
+	<cffunction name="setroutedStruct" access="public" output="false" returntype="void" hint="Set routed struct of key-value pairs. This is used only by the SES interceptor. Not for public use.">
+		<cfargument name="routedStruct" type="struct" required="true"/>
+		<cfset instance.routedStruct = arguments.routedStruct/>
 	</cffunction>
 	
 <!------------------------------------------- ACCESSORS/MUTATORS ------------------------------------------->

@@ -86,7 +86,9 @@ Modification History:
 
 	<!--- Event caching test --->
 	<cffunction name="EventCachingTest" access="public" output="false" returntype="void" hint="Tests if the incoming context is an event cache">
-		<cfargument name="context" required="true" type="any" hint="">
+		<!--- ************************************************************* --->
+		<cfargument name="context" 			required="true" type="any" hint="The request context to test for event caching.">
+		<!--- ************************************************************* --->
 		<cfscript>
 			var eventCacheKey = "";
 			/* Are we using event caching? */
@@ -94,13 +96,14 @@ Modification History:
 				
 				/* Check for Event Cache Purge */
 				if ( Context.valueExists("fwCache") ){
-					/* Clear the cache key. */
-					eventCacheKey = controller.getHandlerService().EVENT_CACHEKEY_PREFIX & Context.getCurrentEvent() & "-" & controller.getColdboxOCM().getEventURLFacade().getUniqueHash(Context.getCurrentEvent());
+					/* setup the cache key. */
+					eventCacheKey = controller.getHandlerService().EVENT_CACHEKEY_PREFIX & Context.getCurrentEvent() & "-" & controller.getColdboxOCM().getEventURLFacade().getUniqueHash(Context);
+					/* Clear the key from the cache */
 					controller.getColdboxOCM().clearKey( eventCacheKey );
 				}
 				else{
 					/* Setup the cache key */
-					eventCacheKey = controller.getHandlerService().EVENT_CACHEKEY_PREFIX & Context.getCurrentEvent() & "-" & controller.getColdboxOCM().getEventURLFacade().getUniqueHash(Context.getCurrentEvent());
+					eventCacheKey = controller.getHandlerService().EVENT_CACHEKEY_PREFIX & Context.getCurrentEvent() & "-" & controller.getColdboxOCM().getEventURLFacade().getUniqueHash(Context);
 					/* Cleanup the cache key, just in case. */
 					Context.removeValue('cbox_eventCacheableEntry');
 					/* Determine if this event has been cached */

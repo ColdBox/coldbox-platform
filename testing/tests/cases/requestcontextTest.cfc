@@ -360,5 +360,22 @@
 		</cfscript>
 	</cffunction>
 	
+	<!--- ************************************************************* --->
+	
+	<cffunction name="testRoutedStruct" access="public" output="false" returntype="void">
+		<cfscript>
+			var event = getRequestContext();
+			var routedStruct = structnew();
+			
+			routedStruct.page = "aboutus";
+			routedStruct.day = "13";
+			
+			event.setRoutedStruct(routedStruct);
+			
+			AssertEquals(event.getRoutedStruct(),routedStruct);
+			
+		</cfscript>
+	</cffunction>
+	
 
 </cfcomponent>

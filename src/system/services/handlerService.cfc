@@ -146,6 +146,7 @@ Description :
 				
 				/* Invalid Event Detected, log it */
 				controller.getPlugin("logger").logEntry("error","Invalid Event detected: #oEventHandlerBean.getRunnable()#");
+				
 				/* If onInvalidEvent is registered, use it */
 				if ( controller.getSetting("onInvalidEvent") neq "" ){
 					/* Test for invalid Event Error */
@@ -209,10 +210,11 @@ Description :
 				/* Do we need to cache this event?? */
 				if ( eventDictionaryEntry.cacheable ){
 					/* Save the cache key in md Entry */
-					eventDictionaryEntry.cacheKey = this.EVENT_CACHEKEY_PREFIX & oEventHandlerBean.getFullEvent() & "-" & getController().getColdboxOCM().getEventURLFacade().getUniqueHash(oEventHandlerBean.getFullEvent()) ;
+					eventDictionaryEntry.cacheKey = this.EVENT_CACHEKEY_PREFIX & oEventHandlerBean.getFullEvent() & "-" & getController().getColdboxOCM().getEventURLFacade().getUniqueHash(oRequestContext) ;
 					/* Event is cacheable and we need to flag it so the renderer caches it. */
 					oRequestContext.setEventCacheableEntry(eventDictionaryEntry);
 				}//end if md says that this event is cacheable
+				
 			}//end if event caching.
 					
 			//return the tested and validated event handler

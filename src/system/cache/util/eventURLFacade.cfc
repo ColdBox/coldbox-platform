@@ -34,29 +34,36 @@ Modification History:
 	<!--- getUniqueHash --->
 	<cffunction name="getUniqueHash" output="false" access="public" returntype="string" hint="Get's the unique incoming URL hash">
 		<!--- **************************************************************************** --->
-		<cfargument name="event" type="string" required="true" hint="The event to incorporate into the hash"/>
+		<cfargument name="event" type="any" required="true" hint="The event request context to incorporate into the hash"/>
 		<!--- **************************************************************************** --->
 		<cfscript>
 			var urlCopy = duplicate(URL);
 			var eventName = getController().getSetting('eventName');
 			var urlActionsList = "fwReinit,fwCache,debugMode,debugpass,dumpvar,debugpanel";
 			var x = 1;
+			var routedStruct = arguments.event.getRoutedStruct();
 			
-			//Remove event if it exists
+			/* Remove event if it exists */
 			if( structKeyExists(urlCopy, eventName) ){
 				structDelete(urlCopy,eventName);
 			}
-			//Remove fw URL Actions
+			
+			/* Remove fw URL Actions */
 			for(x=1; x lte listLen(urlActionsList); x=x+1){
 				if( structKeyExists(urlCopy, listgetAt(urlActionsList,x)) ){
 					structDelete(urlCopy,listgetAt(urlActionsList,x));
 				}
 			}
 			
-			//Add incoming event to hash
-			urlCopy[eventName] = arguments.event;
+			/* Add incoming event to hash */
+			urlCopy[eventName] = arguments.event.getCurrentEvent();
 			
-			//Get a unique key
+			/* Incorporate Routed Structs */
+			for( key in routedStruct ){
+				urlCopy[key] = routedStruct[key];
+			}
+			
+			/* Get a unique key */
 			return hash(urlCopy.toString());			
 		</cfscript>
 	</cffunction>

@@ -5,7 +5,7 @@
         <Setting name="Author" value="Luis Majano"/>
         <Setting name="AuthorEmail" value="info@coldboxframework.com"/>
         <Setting name="AuthorWebsite" value="http://www.coldboxframework.com"/>
-        <Setting name="Suffix" value="Beta 1: FAITH"/>
+        <Setting name="Suffix" value="RC1: FAITH"/>
         <Setting name="Version" value="2.6.0"/>
         <Setting name="Description" value="This is the ColdBox ColdFusion Framework for web applications."/>
         <Setting name="ModifyLogLocation" value="readme.txt"/>
@@ -43,7 +43,7 @@
         <!--ColdBox Cache Parameter: Maximum number of Objects in cache (0=Unlimited)-->
         <Setting name="CacheMaxObjects" value="100"/>
         <!--ColdBox Cache Parameter: Free JVM Memory % Threshold (0=not used)-->
-        <Setting name="CacheFreeMemoryPercentageThreshold" value="1"/>
+        <Setting name="CacheFreeMemoryPercentageThreshold" value="3"/>
         <!--ColdBox Cache Parameter: Whether reaping with default last access timeouts -->
         <Setting name="CacheUseLastAccessTimeouts" value="true"/> 
         <!--ColdBox Cache Parameter: The default eviction policy (LFU or LRU) -->

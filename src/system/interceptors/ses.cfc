@@ -72,12 +72,13 @@ Description :
 			var key = "";
 			var cleanedPathInfo = getCGIElement('path_info');
 			var cleanedScriptName = trim(replacenocase(getCGIElement('script_name'),"/index.cfm",""));
+			var routedStruct = structnew();
 			
 			/* Clean again */
 			cleanedScriptName = trim(replacenocase(getCGIElement('script_name'),"\index.cfm",""));
 			
 			/* Check if active or in proxy mode */
-			if ( not getEnabled() or event.isProxyRequest() )
+			if ( not getEnabled() or arguments.event.isProxyRequest() )
 				return;
 	
 			/* Check for invalid URL */
@@ -88,18 +89,21 @@ Description :
 				cleanedPathInfo = replaceNocase(getCGIElement('path_info'),cleanedScriptName,'');
 			
 			/* Find a course */
-			acourse = findCourse( cleanedPathInfo, event );
+			acourse = findCourse( cleanedPathInfo, arguments.event );
 			
 			/* Now course should have all the key/pairs from the URL we need to pass to our event object */
 			for( key in acourse ){
-				event.setValue( key, acourse[key] );
+				arguments.event.setValue( key, acourse[key] );
+				routedStruct[key] = acourse[key];
 			}
+			/* Save the Routed Variables */
+			arguments.event.setRoutedStruct(routedStruct);
 			
 			/* Route to destination */
-			routeToDestination(acourse,event);
+			routeToDestination(acourse,arguments.event);
 			
 			/* Execute Cache Test now that routing has been done */
-			getController().getRequestService().EventCachingTest(event);
+			getController().getRequestService().EventCachingTest(arguments.event);
 		</cfscript>
 	</cffunction>
 	
