@@ -221,7 +221,41 @@ Description :
 			return oEventHandler;
 		</cfscript>
 	</cffunction>
+	
+	<!--- Default Event Check --->
+	<cffunction name="defaultEventCheck" access="public" returntype="void" hint="Do a default Event check on the incoming event" output="false" >
+		<!--- ************************************************************* --->
+		<cfargument name="event"   type="any"  required="true"  hint="The created event context to test." >
+		<!--- ************************************************************* --->
+		<cfscript>
+			var handlerIndex = 0;
+			var handlerExternalIndex = 0;
+			var handlersList = controller.getSetting("RegisteredHandlers");
+			var handlersExternalList = controller.getSetting("RegisteredExternalHandlers");
+			var currentEvent = arguments.event.getCurrentEvent();
+			var EventName = controller.getSetting("EventName");
 		
+			/* Verify our incoming event in our registration lists */
+			handlerIndex = listFindNoCase(handlersList, currentEvent);
+			handlerExternalIndex = listFindNoCase(handlersExternalList, currentEvent);
+			
+			/* Do a Default Action Test First, if default action desired. */
+			if( handlerIndex ){
+				/* Append the default event action */
+				currentEvent = currentEvent & "." & controller.getSetting('EventAction',1);
+				/* Save it as the current Event */
+				event.setValue(EventName,currentEvent);
+			}
+			/* Check for external location */
+			else if( handlerExternalIndex ){
+				/* Append the default event action */
+				currentEvent = currentEvent & "." & controller.getSetting('EventAction',1);
+				/* Save it as the current EVent */
+				event.setValue(EventName,currentEvent);
+			}			
+		</cfscript>
+	</cffunction>
+	
 	<!--- Get a Registered Handler Bean --->
 	<cffunction name="getRegisteredHandler" access="public" hint="I get a registered handler and method according to passed event from the registeredHandlers setting." returntype="coldbox.system.beans.eventhandlerBean"  output="false">
 		<!--- ************************************************************* --->
@@ -238,60 +272,49 @@ Description :
 		var onInvalidEvent = controller.getSetting("onInvalidEvent");
 		var HandlerBean = CreateObject("component","coldbox.system.beans.eventhandlerBean").init(controller.getSetting("HandlersInvocationPath"));
 	
-		//Try to do list localization in the registry for default event string
-		handlerIndex = listFindNoCase(handlersList, event);
-		handlerExternalIndex = listFindNoCase(handlersExternalList, event);
-		
-		/* Do a Default Action Test First, if default action desired. */
-		if( handlerIndex ){
-			HandlerBean.setHandler(listgetAt(handlersList,handlerIndex));
-			HandlerBean.setMethod(controller.getSetting('EventAction',1));
-			return HandlerBean;
-		}
-		//Check for external location
-		else if( handlerExternalIndex ){
-			HandlerBean.setInvocationPath(controller.getSetting("HandlersExternalLocation"));
-			HandlerBean.setHandler(listgetAt(handlersExternalList,handlerExternalIndex));
-			HandlerBean.setMethod(controller.getSetting('EventAction',1));
-			return HandlerBean;
-		}
-		
-		//Rip the handler and method.
+		/* Rip the handler and method. */
 		HandlerReceived = reReplace(event,"\.[^.]*$","");
 		MethodReceived = listLast(event,".");
-		//Try to do list localization in the registry for full event string.
+		
+		/* Try to do list localization in the registry for full event string. */
 		handlerIndex = listFindNoCase(handlersList, HandlerReceived);
 		handlerExternalIndex = listFindNoCase(handlersExternalList, HandlerReceived);
-				
-		//Check for conventions location
+
+		/* The following is done in order to get the appropriate case-sensitive handler registrations, we do not use the incomign event syntax. */
+						
+		/* Check for conventions location */
 		if ( handlerIndex ){
 			HandlerBean.setHandler(listgetAt(handlersList,handlerIndex));
 			HandlerBean.setMethod(MethodReceived);
 		}
-		//Check for external location
+		/* Check for external location */
 		else if( handlerExternalIndex ){
 			HandlerBean.setInvocationPath(controller.getSetting("HandlersExternalLocation"));
 			HandlerBean.setHandler(listgetAt(handlersExternalList,handlerExternalIndex));
 			HandlerBean.setMethod(MethodReceived);
 		}
+		/* Else maybe invalid event. */
 		else if( arguments.noThrow eq false ){
-			//Check for invalid Event
+			
+			/* Check for invalid Event */
 			if ( onInvalidEvent neq "" ){
-					//Check if the invalid event is the same as the current event
+					/* Check if the invalid event is the same as the current event */
 					if ( CompareNoCase(onInvalidEvent,event) eq 0){
 						getUtil().throwit("The invalid event handler: #onInvalidEvent# is also invalid. Please check your settings","","Framework.InvalidEventHandlerException");
 					}
 					else{
-						//Log Invalid Event
+						/* Log Invalid Event */
 						controller.getPlugin("logger").logEntry("error","Invalid Event detected: #HandlerReceived#.#MethodReceived#");
-						//Override Event
+						/* Override Event */
 						HandlerBean.setHandler(reReplace(onInvalidEvent,"\.[^.]*$",""));
 						HandlerBean.setMethod(listLast(onInvalidEvent,"."));
 					}
 				}
 			else{
+				/* Throw invalid event */
 				getUtil().throwit("The event handler: #event# is not valid registered event.","","Framework.EventHandlerNotRegisteredException");
 			}
+			
 		}//end if noThrow
 	
 		//Return validated Handler Bean
@@ -371,7 +394,7 @@ Description :
 <!------------------------------------------- PRIVATE ------------------------------------------->
 	
 	<!--- Get a new MD cache entry structure --->
-	<cffunction name="getNewMDEntry" access="public" returntype="struct" hint="Get a new metadata entry structure" output="false" >
+	<cffunction name="getNewMDEntry" access="private" returntype="struct" hint="Get a new metadata entry structure" output="false" >
 		<cfscript>
 			var mdEntry = structNew();
 			

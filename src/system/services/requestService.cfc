@@ -18,11 +18,14 @@ Modification History:
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
 	<cffunction name="init" access="public" output="false" returntype="requestService" hint="Constructor">
-		<cfargument name="controller" type="any" required="true">
+		<cfargument name="controller" type="any" required="true" hint="Coldbox controller">
 		<cfscript>
+			
 			setController(arguments.controller);			
+			
 			/* Setup context properties */
 			setContextProperties(structnew());
+			
 			return this;
 		</cfscript>
 	</cffunction>
@@ -30,7 +33,7 @@ Modification History:
 <!------------------------------------------- PUBLIC ------------------------------------------->
 
 	<!--- Request Capture --->
-	<cffunction name="requestCapture" access="public" returntype="any" output="false" hint="I capture a request.">
+	<cffunction name="requestCapture" access="public" returntype="any" output="false" hint="I capture an incoming request. Returns: coldbox.system.beans.requestContext">
 		<cfscript>
 			var Context = getContext();
 			var DebugPassword = controller.getSetting("debugPassword");
@@ -50,18 +53,19 @@ Modification History:
 				/* Get Client Storage */
 				oFlashStorage = controller.getPlugin("clientstorage");				
 			}
+			
 			/* Flash Persistance Contruction */	
 			if ( oFlashStorage.exists('_coldbox_persistStruct') ){
-				//Append flash persistance structure and overwrite if needed.
+				/* Append flash persistance structure and overwrite if needed. */
 				Context.collectionAppend(oFlashStorage.getVar('_coldbox_persistStruct'),true);
-				//Remove Flash persistance
+				/* Remove Flash persistance */
 				oFlashStorage.deleteVar('_coldbox_persistStruct');
 			}	
 			
-			//Object Caching Garbage Collector
+			/* Object Caching Garbage Collector */
 			controller.getColdboxOCM().reap();
 			
-			//Debug Mode Checks
+			/* Debug Mode Checks */
 			if ( Context.valueExists("debugMode") and isBoolean(Context.getValue("debugMode")) ){
 				if ( DebugPassword eq "")
 					controller.getDebuggerService().setDebugMode(Context.getValue("debugMode"));
@@ -69,17 +73,20 @@ Modification History:
 					controller.getDebuggerService().setDebugMode(Context.getValue("debugMode"));
 			}
 
-			//Default Event Definition
+			/* Default Event Definition */
 			if ( not Context.valueExists(EventName))
 				Context.setValue(EventName, controller.getSetting("DefaultEvent"));
-			//Event More Than 1 Check, grab the first event instance, other's are discarded
+			/* Event More Than 1 Check, grab the first event instance, other's are discarded */
 			if ( listLen(Context.getValue(EventName)) gte 2 )
 				Context.setValue(EventName, getToken(Context.getValue(EventName),2,","));
+			
+			/* Default Event Checks */
+			controller.getHandlerService().defaultEventCheck(Context);
 			
 			/* Are we using event caching? */
 			EventCachingTest(Context);
 			
-			//Return Context
+			/* Return captured Context */
 			return Context;
 		</cfscript>
 	</cffunction>

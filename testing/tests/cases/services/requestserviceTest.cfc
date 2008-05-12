@@ -26,12 +26,13 @@ Description :
 			var originalSetting = getcontroller().getSetting("RequestContextDecorator");
 			
 			getcontroller().setSetting("RequestContextDecorator","");
-			testRequestCapturesWithDecoration();
-			getcontroller().setSetting("RequestContextDecorator",originalSetting);			
+			testRequestCaptures();
+			getcontroller().setSetting("RequestContextDecorator",originalSetting);
+				
 		</cfscript>
 	</cffunction>
 	
-	<cffunction name="testRequestCapturesWithDecoration" access="public" returntype="void" output="false">
+	<cffunction name="testRequestCaptures" access="public" returntype="void" output="false">
 		<cfscript>
 		var service = getController().getRequestService();
 		var context = "";
@@ -59,11 +60,8 @@ Description :
 		/* Tests */
 		AssertTrue( isObject(context), "Context Creation");
 		AssertTrue(today eq context.getValue('flashvariable') , "Flash variable creation");
-		
 		AssertTrue(url.today eq context.getValue('today') , "URL Append");
-		
 		AssertTrue(form.name eq context.getValue('name'), "Name test and precedence");
-		
 		AssertTrue(context.valueExists('event'), "Multi-Event Test");
 		</cfscript>
 	</cffunction>
@@ -96,6 +94,24 @@ Description :
 		
 		/* Tests */
 		AssertTrue(getcontroller().getDebuggerService().getDebugMode(), "Debug Mode test good password: #getcontroller().getDebuggerService().getDebugMode()#");
+		</cfscript>
+	</cffunction>
+	
+	<cffunction name="testDefaultEvent" access="public" returntype="void" output="false">
+		<cfscript>
+		var service = getController().getRequestService();
+		var context = "";
+		
+		/* Setup test variables */
+		url.event = "default";
+		
+		/* Catpure the request */
+		context = service.requestCapture();
+		
+		/* Tests */
+		AssertTrue( isObject(context), "Context Creation");
+		AssertTrue( url.event neq context.getCurrentEvent(), "Event mismatch");
+		AssertEquals( context.getCurrentEvent(), url.event & "." & getController().getSetting("EventAction",1) );
 		</cfscript>
 	</cffunction>
 	
