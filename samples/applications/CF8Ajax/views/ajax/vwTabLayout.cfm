@@ -8,7 +8,7 @@ Author     :	Sana Ullah
 Date        :	March 05 2008
 Description : demo for using ajax tabs with event-model and proxy-model.
 ----------------------------------------------------------------------->
-<cflayout type="tab" tabheight="100">
+<cflayout type="tab" tabheight="600">
 	<cflayoutarea title="Tab 0" selected="true" name="tab0">
 		<h1>This is the tab zero.</h1>
 		<h2>Some contents.....</h2>
