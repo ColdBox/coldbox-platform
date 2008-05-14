@@ -172,7 +172,7 @@ Mark Mandel		27/08/2007		Created
 		var method = 0;
 		var counter = 1;
 		var argLen = ArrayLen(arguments.methodArgs);
-		var paremeters = 0;
+		var parameters = 0;
 		var paramLen = 0;
 		var pCounter = 0;
 		var param = 0;
@@ -234,7 +234,7 @@ Mark Mandel		27/08/2007		Created
 						}
 						else
 						{
-							found eq false;
+							found = false;
 						}
 					}
 					else
