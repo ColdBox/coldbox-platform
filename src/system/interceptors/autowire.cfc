@@ -101,14 +101,12 @@ Description :
 		
 	</cffunction>
 	
-<!------------------------------------------- PRIVATE METHDOS ------------------------------------------->
-	
 	<!--- After Plugin Creation --->
-	<cffunction name="processAutowire" access="private" returntype="void" output="false" >
+	<cffunction name="processAutowire" access="public" returntype="void" output="false" hint="Process autowiring using a targetype and data.">
 		<!--- ************************************************************* --->
 		<cfargument name="event" 		 required="true" type="coldbox.system.beans.requestContext" hint="The event object.">
 		<cfargument name="interceptData" required="true" type="struct" hint="A structure containing intercepted data = [pluginPath (The path of the plugin), custom (Flag if the plugin is custom or not), oPlugin (The actual plugin object)]">
-		<cfargument name="targetType" 	 required="true" type="string" hint="Either plugin or handler">
+		<cfargument name="targetType" 	 required="true" type="string" hint="Either plugin or handler or interceptor">
 		<!--- ************************************************************* --->
 		<cfscript>
 			/* Targets */
@@ -216,6 +214,8 @@ Description :
 			}//if autowiring			
 		</cfscript>
 	</cffunction>
+	
+<!------------------------------------------- PRIVATE METHDOS ------------------------------------------->
 	
 	<!--- Get an object's dependencies via metadata --->
 	<cffunction name="parseMetadata" returntype="array" access="private" output="false" hint="I get a components dependencies via searching for 'setters'">

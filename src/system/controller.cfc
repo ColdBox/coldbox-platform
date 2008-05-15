@@ -24,6 +24,7 @@ Description		: This is the main ColdBox front Controller.
 			
 			//properties
 			setColdboxInitiated(false);
+			setAspectsInitiated(false);
 			setConfigSettings(structnew());
 			setColdboxSettings(structnew());
 			setAppStartHandlerFired(false);
@@ -149,13 +150,22 @@ Description		: This is the main ColdBox front Controller.
 		<cfset instance.ColdboxSettings = arguments.ColdboxSettings/>
 	</cffunction>
 
-	<!--- Accessor ColdBox Initiation Flag --->
+	<!--- ColdBox Initiation Flag --->
 	<cffunction name="getColdboxInitiated" access="public" output="false" returntype="boolean" hint="Get ColdboxInitiated">
 		<cfreturn instance.ColdboxInitiated/>
 	</cffunction>
 	<cffunction name="setColdboxInitiated" access="public" output="false" returntype="void" hint="Set ColdboxInitiated">
 		<cfargument name="ColdboxInitiated" type="boolean" required="true"/>
 		<cfset instance.ColdboxInitiated = arguments.ColdboxInitiated/>
+	</cffunction>
+	
+	<!--- Aspects Initiated Flag --->
+	<cffunction name="getAspectsInitiated" access="public" output="false" returntype="boolean" hint="Get AspectsInitiated">
+		<cfreturn instance.AspectsInitiated/>
+	</cffunction>	
+	<cffunction name="setAspectsInitiated" access="public" output="false" returntype="void" hint="Set AspectsInitiated">
+		<cfargument name="AspectsInitiated" type="boolean" required="true"/>
+		<cfset instance.AspectsInitiated = arguments.AspectsInitiated/>
 	</cffunction>
 
 	<!--- App hash --->

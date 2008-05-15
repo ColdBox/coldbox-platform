@@ -44,6 +44,14 @@ Description :
 		<cfset getInterceptors().put(arguments.interceptorKey, arguments.Interceptor)>
 	</cffunction>
 	
+	<!--- Remove an interceptor key from this state --->
+	<cffunction name="unregister" access="public" returntype="void" hint="Unregister an interceptor class from this state" output="false" >
+		<!--- ************************************************************* --->
+		<cfargument name="InterceptorKey" 	required="true" type="string" 	hint="The interceptor key class to Unregister">
+		<!--- ************************************************************* --->
+		<cfset getInterceptors().remove(arguments.interceptorKey)>
+	</cffunction>	
+	
 	<!--- Process the Interceptors --->
 	<cffunction name="process" access="public" returntype="void" hint="Process this state's interceptors" output="false" >
 		<!--- ************************************************************* --->

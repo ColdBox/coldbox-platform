@@ -40,10 +40,6 @@ Description :
 		<cfscript>
 			var interceptorConfig = getController().getSetting("InterceptorConfig");
 			var x = 1;
-			var oInterceptor = "";
-			var interceptorKey = "";
-			var interceptionPointsFound = structnew();
-			var stateKey = "";
 			
 			/* Create a spanking new Interception States Container */
 			createInterceptionStates();
@@ -55,32 +51,14 @@ Description :
 			
 			/* Loop over the Interceptor Array, to begin registration */
 			for (; x lte arrayLen(interceptorConfig.interceptors); x=x+1){
-				/* Create Cache Interceptor Key */
-				interceptorKey = this.INTERCEPTOR_CACHEKEY_PREFIX & interceptorConfig.interceptors[x].class;
-				/* Create the Interceptor Class */
-				oInterceptor = CreateObject("component", interceptorConfig.interceptors[x].class ).init(getController(),interceptorConfig.interceptors[x].properties);
-				/* Configure the Interceptor */
-				oInterceptor.configure();
-				/* Cache Interceptor */
-				if ( not getController().getColdBoxOCM().set(interceptorKey, oInterceptor, 0) ){
-					getUtil().throwit("The interceptor could not be cached, either the cache is full or out of memory.","Please check your cache limits, try increasing them or verify your server memory","Framework.InterceptorService.InterceptorCantBeCached");
-				}
-				
-				/* Parse Interception Points, thanks to inheritance. */
-				interceptionPointsFound = structnew();
-				interceptionPointsFound = parseMetadata( getMetaData(oInterceptor), interceptionPointsFound);
-				
-				/* Register this Interceptor's interception point with its appropriate interceptor state */
-				for(stateKey in interceptionPointsFound){
-					RegisterInterceptionPoint(interceptorKey,stateKey);
-				}
-				
-			}//end declared interceptor loop
+				/* register this interceptor */
+				registerInterceptor(interceptorConfig.interceptors[x].class,interceptorConfig.interceptors[x].properties);				
+			}//end declared interceptor loop			
 		</cfscript>
 	</cffunction>
 
 	<!--- Process a State's Interceptors --->
-	<cffunction name="processState" access="public" returntype="void" hint="Process an interception state" output="false" >
+	<cffunction name="processState" access="public" returntype="void" hint="Process an interception state announcement" output="false" >
 		<!--- ************************************************************* --->
 		<cfargument name="state" 		 required="true" 	type="string" hint="An interception state to process">
 		<cfargument name="interceptData" required="false" 	type="struct" default="#structNew()#" hint="A data structure used to pass intercepted information.">
@@ -101,10 +79,69 @@ Description :
 		</cfif>
 	</cffunction>
 	
-	<!--- Get Interceptor --->
-	<cffunction name="getInterceptor" access="public" output="false" returntype="any" hint="Get an interceptor">
+	<!--- Register an Interceptor --->
+	<cffunction name="registerInterceptor" access="public" output="false" returntype="void" hint="Register an interceptor. This method is here for runtime additions. If the interceptor is already in a state, it will not be added again.">
 		<!--- ************************************************************* --->
-		<cfargument name="interceptorClass" required="true" type="string" hint="The qualified class of the itnerceptor to retrieve">
+		<cfargument name="interceptorClass" 		required="true" 	type="string" 	hint="The qualified class of the interceptor to register">
+		<cfargument name="interceptorProperties" 	required="false" 	type="struct" 	hint="The structure of properties to register this interceptor with.">
+		<!--- ************************************************************* --->
+		<cfscript>
+			var interceptorKey = this.INTERCEPTOR_CACHEKEY_PREFIX & arguments.interceptorClass;
+			var oInterceptor = "";
+			var interceptionPointsFound = structNew();
+			var stateKey = "";
+			var interceptData = structnew();
+			var autowireInterceptor = this.INTERCEPTOR_CACHEKEY_PREFIX & "coldbox.system.interceptors.autowire";			
+		</cfscript>
+		
+		<!--- Double Lock --->
+		<cfif not getController().getColdboxOCM().lookup(interceptorKey)>
+			<cflock name="interceptorService.registerInterceptor.#arguments.interceptorClass#" type="exclusive" throwontimeout="true" timeout="30">
+				<cfscript>
+				/* Verify if the interceptor is already in cache, if it is, then it means it has already been processed. */
+				if( not getController().getColdboxOCM().lookup(interceptorKey) ){
+					
+					/* Create the Interceptor Class */
+					oInterceptor = CreateObject("component", arguments.interceptorClass ).init(getController(),interceptorProperties);
+					/* Configure the Interceptor */
+					oInterceptor.configure();
+					
+					/* Cache Interceptor */
+					if ( not getController().getColdBoxOCM().set(interceptorKey, oInterceptor, 0) ){
+						getUtil().throwit("The interceptor could not be cached, either the cache is full, the threshold has been reached or we are out of memory.","Please check your cache limits, try increasing them or verify your server memory","Framework.InterceptorService.InterceptorCantBeCached");
+					}
+					
+					/* Parse Interception Points, thanks to inheritance. */
+					interceptionPointsFound = structnew();
+					interceptionPointsFound = parseMetadata( getMetaData(oInterceptor), interceptionPointsFound);
+					
+					/* Register this Interceptor's interception point with its appropriate interceptor state */
+					for(stateKey in interceptionPointsFound){
+						RegisterInterceptionPoint(interceptorKey,stateKey);
+					}
+					
+					/* Can we autowire? is it declared */
+					if( getController().getAspectsInitiated() and getController().getColdboxOCM().lookup(autowireInterceptor) ){
+						/* We can autowire manually, because we are loading at runtime. */
+						oAutowire = getController().getColdboxOCM().get(autowireInterceptor);
+						
+						/* Intercept Data. */
+						interceptData.oInterceptor = oInterceptor;
+						interceptData.interceptorPath = interceptorKey;
+						
+						/* Autowire it */
+						oAutowire.processAutowire(getController().getRequestService().getContext(),interceptData,"interceptor");
+					}
+				}
+				</cfscript>
+			</cflock>
+		</cfif>
+	</cffunction>
+	
+	<!--- Get Interceptor --->
+	<cffunction name="getInterceptor" access="public" output="false" returntype="any" hint="Get an interceptor according to its class name">
+		<!--- ************************************************************* --->
+		<cfargument name="interceptorClass" required="true" type="string" hint="The qualified class of the interceptor to retrieve">
 		<!--- ************************************************************* --->
 		<cfscript>
 			var interceptorKey = this.INTERCEPTOR_CACHEKEY_PREFIX & arguments.interceptorClass;
@@ -117,6 +154,26 @@ Description :
 			else{
 				return getController().getColdboxOCM().get(interceptorKey);
 			}
+		</cfscript>
+	</cffunction>
+	
+	<!--- Append Interception Points --->
+	<cffunction name="appendInterceptionPoints" access="private" returntype="void" hint="Append a list of custom interception points to the CORE interception points" output="false" >
+		<!--- ************************************************************* --->
+		<cfargument name="customPoints" required="true" type="string" hint="A comma delimmited list of custom interception points to append. If they already exists, then they will not be added again.">
+		<!--- ************************************************************* --->
+		<cfscript>
+			var x = 1;
+			var currentList = getInterceptionPoints();
+			
+			/* Loop and Add */
+			for(;x lte listlen(arguments.customPoints); x=x+1 ){
+				if ( not listfindnocase(currentList, listgetAt(arguments.customPoints,x)) ){
+					currentList = currentList & "," & listgetAt(arguments.customPoints,x);
+				}
+			}
+			/* Save */
+			setInterceptionPoints(currentList);			
 		</cfscript>
 	</cffunction>
 	
@@ -139,26 +196,6 @@ Description :
 	</cffunction>
 
 <!------------------------------------------- PRIVATE ------------------------------------------->
-	
-	<!--- Append Interception Points --->
-	<cffunction name="appendInterceptionPoints" access="private" returntype="void" hint="Append a list of custom interception points to the CORE interception points" output="false" >
-		<!--- ************************************************************* --->
-		<cfargument name="customPoints" required="true" type="string" hint="A comma delimmited list of custom interception points to append">
-		<!--- ************************************************************* --->
-		<cfscript>
-			var x = 1;
-			var currentList = getInterceptionPoints();
-			
-			/* Loop and Add */
-			for(;x lte listlen(arguments.customPoints); x=x+1 ){
-				if ( not listfindnocase(currentList, listgetAt(arguments.customPoints,x)) ){
-					currentList = currentList & "," & listgetAt(arguments.customPoints,x);
-				}
-			}
-			/* Save */
-			setInterceptionPoints(currentList);			
-		</cfscript>
-	</cffunction>
 	
 	<!--- Get an interceptors interception points via metadata --->
 	<cffunction name="parseMetadata" returntype="struct" access="private" output="false" hint="I get a components valid interception points">
