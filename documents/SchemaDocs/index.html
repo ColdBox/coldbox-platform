@@ -894,7 +894,8 @@ if (gc != null) {
       <table class="properties">
          <tr>
             <th>
-               <a title="Look up 'Target Namespace' in glossary" href="index.html#term_TargetNS">Target Namespace</a>
+               <a title="Look up 'Target Namespace' in glossary"
+                  href="index.html#term_TargetNS">Target Namespace</a>
             </th>
             <td>None</td>
          </tr>
@@ -2167,48 +2168,48 @@ if (gc != null) {
                <div style="margin-left: 3em">&lt;TracerPanel<br/>
                   <span style="margin-left: 0.5em"> show="<span class="type">
                         <a href="#ns_xs" title="Find out namespace of 'xs' prefix">xs</a>:boolean</span> 
-                     <span class="occurs">[1]</span> 
+                     <span class="occurs">[0..1]</span> 
                      <p class="documentation">'Whether to show or not this panel'</p>"</span>
                   <br/>
                   <span style="margin-left: 0.5em"> expanded="<span class="type">
                         <a href="#ns_xs" title="Find out namespace of 'xs' prefix">xs</a>:boolean</span> 
-                     <span class="occurs">[1]</span> 
+                     <span class="occurs">[0..1]</span> 
                      <p class="documentation">'Whether this panel is expanded or not.'</p>"</span>/&gt;  <span class="occurs">[0..1]</span> 
                   <p class="documentation">'The tracer panel info'</p>
                </div>
                <div style="margin-left: 3em">&lt;InfoPanel<br/>
                   <span style="margin-left: 0.5em"> show="<span class="type">
                         <a href="#ns_xs" title="Find out namespace of 'xs' prefix">xs</a>:boolean</span> 
-                     <span class="occurs">[1]</span> 
+                     <span class="occurs">[0..1]</span> 
                      <p class="documentation">'Whether to show or not this panel'</p>"</span>
                   <br/>
                   <span style="margin-left: 0.5em"> expanded="<span class="type">
                         <a href="#ns_xs" title="Find out namespace of 'xs' prefix">xs</a>:boolean</span> 
-                     <span class="occurs">[1]</span> 
+                     <span class="occurs">[0..1]</span> 
                      <p class="documentation">'Whether this panel is expanded or not.'</p>"</span>/&gt;  <span class="occurs">[0..1]</span> 
                   <p class="documentation">'The info panel info'</p>
                </div>
                <div style="margin-left: 3em">&lt;CachePanel<br/>
                   <span style="margin-left: 0.5em"> show="<span class="type">
                         <a href="#ns_xs" title="Find out namespace of 'xs' prefix">xs</a>:boolean</span> 
-                     <span class="occurs">[1]</span> 
+                     <span class="occurs">[0..1]</span> 
                      <p class="documentation">'Whether to show or not this panel'</p>"</span>
                   <br/>
                   <span style="margin-left: 0.5em"> expanded="<span class="type">
                         <a href="#ns_xs" title="Find out namespace of 'xs' prefix">xs</a>:boolean</span> 
-                     <span class="occurs">[1]</span> 
+                     <span class="occurs">[0..1]</span> 
                      <p class="documentation">'Whether this panel is expanded or not.'</p>"</span>/&gt;  <span class="occurs">[0..1]</span> 
                   <p class="documentation">'The cache panel info'</p>
                </div>
                <div style="margin-left: 3em">&lt;RCPanel<br/>
                   <span style="margin-left: 0.5em"> show="<span class="type">
                         <a href="#ns_xs" title="Find out namespace of 'xs' prefix">xs</a>:boolean</span> 
-                     <span class="occurs">[1]</span> 
+                     <span class="occurs">[0..1]</span> 
                      <p class="documentation">'Whether to show or not this panel'</p>"</span>
                   <br/>
                   <span style="margin-left: 0.5em"> expanded="<span class="type">
                         <a href="#ns_xs" title="Find out namespace of 'xs' prefix">xs</a>:boolean</span> 
-                     <span class="occurs">[1]</span> 
+                     <span class="occurs">[0..1]</span> 
                      <p class="documentation">'Whether this panel is expanded or not.'</p>"</span>/&gt;  <span class="occurs">[0..1]</span> 
                   <p class="documentation">'The request collection panel info'</p>
                </div>
@@ -2269,45 +2270,45 @@ if (gc != null) {
                               <span class="scTag">name</span>="<span class="scContent">show</span>" <span class="scTag">type</span>="<span class="scContent">
                                  <span class="type">
                                     <a href="#ns_xs" title="Find out namespace of 'xs' prefix">xs</a>:boolean</span>
-                              </span>" <span class="scTag">use</span>="<span class="scContent">required</span>"/&gt;</div>
+                              </span>" <span class="scTag">use</span>="<span class="scContent">optional</span>" <span class="scTag">default</span>="<span class="scContent">true</span>"/&gt;</div>
                            <div style="margin-left: 1.5em">&lt;<span class="scTag">xs:attribute</span> 
                               <span class="scTag">name</span>="<span class="scContent">expanded</span>" <span class="scTag">type</span>="<span class="scContent">
                                  <span class="type">
                                     <a href="#ns_xs" title="Find out namespace of 'xs' prefix">xs</a>:boolean</span>
-                              </span>" <span class="scTag">use</span>="<span class="scContent">required</span>"/&gt;</div>&lt;/<span class="scTag">xs:complexType</span>&gt;</div>&lt;/<span class="scTag">xs:element</span>&gt;</div>
+                              </span>" <span class="scTag">use</span>="<span class="scContent">optional</span>" <span class="scTag">default</span>="<span class="scContent">true</span>"/&gt;</div>&lt;/<span class="scTag">xs:complexType</span>&gt;</div>&lt;/<span class="scTag">xs:element</span>&gt;</div>
                      <div style="margin-left: 1.5em">&lt;<span class="scTag">xs:element</span> 
                         <span class="scTag">name</span>="<span class="scContent">InfoPanel</span>" <span class="scTag">maxOccurs</span>="<span class="scContent">1</span>" <span class="scTag">minOccurs</span>="<span class="scContent">0</span>"&gt;<div style="margin-left: 1.5em">&lt;<span class="scTag">xs:complexType</span>&gt;<div style="margin-left: 1.5em">&lt;<span class="scTag">xs:attribute</span> 
                               <span class="scTag">name</span>="<span class="scContent">show</span>" <span class="scTag">type</span>="<span class="scContent">
                                  <span class="type">
                                     <a href="#ns_xs" title="Find out namespace of 'xs' prefix">xs</a>:boolean</span>
-                              </span>" <span class="scTag">use</span>="<span class="scContent">required</span>"/&gt;</div>
+                              </span>" <span class="scTag">use</span>="<span class="scContent">optional</span>" <span class="scTag">default</span>="<span class="scContent">true</span>"/&gt;</div>
                            <div style="margin-left: 1.5em">&lt;<span class="scTag">xs:attribute</span> 
                               <span class="scTag">name</span>="<span class="scContent">expanded</span>" <span class="scTag">type</span>="<span class="scContent">
                                  <span class="type">
                                     <a href="#ns_xs" title="Find out namespace of 'xs' prefix">xs</a>:boolean</span>
-                              </span>" <span class="scTag">use</span>="<span class="scContent">required</span>"/&gt;</div>&lt;/<span class="scTag">xs:complexType</span>&gt;</div>&lt;/<span class="scTag">xs:element</span>&gt;</div>
+                              </span>" <span class="scTag">use</span>="<span class="scContent">optional</span>" <span class="scTag">default</span>="<span class="scContent">true</span>"/&gt;</div>&lt;/<span class="scTag">xs:complexType</span>&gt;</div>&lt;/<span class="scTag">xs:element</span>&gt;</div>
                      <div style="margin-left: 1.5em">&lt;<span class="scTag">xs:element</span> 
                         <span class="scTag">name</span>="<span class="scContent">CachePanel</span>" <span class="scTag">maxOccurs</span>="<span class="scContent">1</span>" <span class="scTag">minOccurs</span>="<span class="scContent">0</span>"&gt;<div style="margin-left: 1.5em">&lt;<span class="scTag">xs:complexType</span>&gt;<div style="margin-left: 1.5em">&lt;<span class="scTag">xs:attribute</span> 
                               <span class="scTag">name</span>="<span class="scContent">show</span>" <span class="scTag">type</span>="<span class="scContent">
                                  <span class="type">
                                     <a href="#ns_xs" title="Find out namespace of 'xs' prefix">xs</a>:boolean</span>
-                              </span>" <span class="scTag">use</span>="<span class="scContent">required</span>"/&gt;</div>
+                              </span>" <span class="scTag">use</span>="<span class="scContent">optional</span>" <span class="scTag">default</span>="<span class="scContent">true</span>"/&gt;</div>
                            <div style="margin-left: 1.5em">&lt;<span class="scTag">xs:attribute</span> 
                               <span class="scTag">name</span>="<span class="scContent">expanded</span>" <span class="scTag">type</span>="<span class="scContent">
                                  <span class="type">
                                     <a href="#ns_xs" title="Find out namespace of 'xs' prefix">xs</a>:boolean</span>
-                              </span>" <span class="scTag">use</span>="<span class="scContent">required</span>"/&gt;</div>&lt;/<span class="scTag">xs:complexType</span>&gt;</div>&lt;/<span class="scTag">xs:element</span>&gt;</div>
+                              </span>" <span class="scTag">use</span>="<span class="scContent">optional</span>" <span class="scTag">default</span>="<span class="scContent">false</span>"/&gt;</div>&lt;/<span class="scTag">xs:complexType</span>&gt;</div>&lt;/<span class="scTag">xs:element</span>&gt;</div>
                      <div style="margin-left: 1.5em">&lt;<span class="scTag">xs:element</span> 
                         <span class="scTag">name</span>="<span class="scContent">RCPanel</span>" <span class="scTag">maxOccurs</span>="<span class="scContent">1</span>" <span class="scTag">minOccurs</span>="<span class="scContent">0</span>"&gt;<div style="margin-left: 1.5em">&lt;<span class="scTag">xs:complexType</span>&gt;<div style="margin-left: 1.5em">&lt;<span class="scTag">xs:attribute</span> 
                               <span class="scTag">name</span>="<span class="scContent">show</span>" <span class="scTag">type</span>="<span class="scContent">
                                  <span class="type">
                                     <a href="#ns_xs" title="Find out namespace of 'xs' prefix">xs</a>:boolean</span>
-                              </span>" <span class="scTag">use</span>="<span class="scContent">required</span>"/&gt;</div>
+                              </span>" <span class="scTag">use</span>="<span class="scContent">optional</span>" <span class="scTag">default</span>="<span class="scContent">true</span>"/&gt;</div>
                            <div style="margin-left: 1.5em">&lt;<span class="scTag">xs:attribute</span> 
                               <span class="scTag">name</span>="<span class="scContent">expanded</span>" <span class="scTag">type</span>="<span class="scContent">
                                  <span class="type">
                                     <a href="#ns_xs" title="Find out namespace of 'xs' prefix">xs</a>:boolean</span>
-                              </span>" <span class="scTag">use</span>="<span class="scContent">required</span>"/&gt;</div>&lt;/<span class="scTag">xs:complexType</span>&gt;</div>&lt;/<span class="scTag">xs:element</span>&gt;</div>&lt;/<span class="scTag">xs:all</span>&gt;</div>&lt;/<span class="scTag">xs:complexType</span>&gt;</div>&lt;/<span class="scTag">xs:element</span>&gt;</div>
+                              </span>" <span class="scTag">use</span>="<span class="scContent">optional</span>" <span class="scTag">default</span>="<span class="scContent">false</span>"/&gt;</div>&lt;/<span class="scTag">xs:complexType</span>&gt;</div>&lt;/<span class="scTag">xs:element</span>&gt;</div>&lt;/<span class="scTag">xs:all</span>&gt;</div>&lt;/<span class="scTag">xs:complexType</span>&gt;</div>&lt;/<span class="scTag">xs:element</span>&gt;</div>
          </div>
          <script type="text/javascript">
 <!--

@@ -477,12 +477,12 @@
 						<xs:documentation>The tracer panel info</xs:documentation>
 					</xs:annotation>
 					<xs:complexType>
-						<xs:attribute name="show" type="xs:boolean" use="required">
+						<xs:attribute name="show" type="xs:boolean" use="optional" default="true">
 							<xs:annotation>
 								<xs:documentation>Whether to show or not this panel</xs:documentation>
 							</xs:annotation>
 						</xs:attribute>
-						<xs:attribute name="expanded" type="xs:boolean" use="required">
+						<xs:attribute name="expanded" type="xs:boolean" use="optional" default="true">
 							<xs:annotation>
 								<xs:documentation>Whether this panel is expanded or not.</xs:documentation>
 							</xs:annotation>
@@ -494,12 +494,12 @@
 						<xs:documentation>The info panel info</xs:documentation>
 					</xs:annotation>
 					<xs:complexType>
-						<xs:attribute name="show" type="xs:boolean" use="required">
+						<xs:attribute name="show" type="xs:boolean" use="optional" default="true">
 							<xs:annotation>
 								<xs:documentation>Whether to show or not this panel</xs:documentation>
 							</xs:annotation>
 						</xs:attribute>
-						<xs:attribute name="expanded" type="xs:boolean" use="required">
+						<xs:attribute name="expanded" type="xs:boolean" use="optional" default="true">
 							<xs:annotation>
 								<xs:documentation>Whether this panel is expanded or not.</xs:documentation>
 							</xs:annotation>
@@ -511,12 +511,12 @@
 						<xs:documentation>The cache panel info</xs:documentation>
 					</xs:annotation>
 					<xs:complexType>
-						<xs:attribute name="show" type="xs:boolean" use="required">
+						<xs:attribute name="show" type="xs:boolean" use="optional" default="true">
 							<xs:annotation>
 								<xs:documentation>Whether to show or not this panel</xs:documentation>
 							</xs:annotation>
 						</xs:attribute>
-						<xs:attribute name="expanded" type="xs:boolean" use="required">
+						<xs:attribute name="expanded" type="xs:boolean" use="optional" default="false">
 							<xs:annotation>
 								<xs:documentation>Whether this panel is expanded or not.</xs:documentation>
 							</xs:annotation>
@@ -528,12 +528,12 @@
 						<xs:documentation>The request collection panel info</xs:documentation>
 					</xs:annotation>
 					<xs:complexType>
-						<xs:attribute name="show" type="xs:boolean" use="required">
+						<xs:attribute name="show" type="xs:boolean" use="optional" default="true">
 							<xs:annotation>
 								<xs:documentation>Whether to show or not this panel</xs:documentation>
 							</xs:annotation>
 						</xs:attribute>
-						<xs:attribute name="expanded" type="xs:boolean" use="required">
+						<xs:attribute name="expanded" type="xs:boolean" use="optional" default="false">
 							<xs:annotation>
 								<xs:documentation>Whether this panel is expanded or not.</xs:documentation>
 							</xs:annotation>
