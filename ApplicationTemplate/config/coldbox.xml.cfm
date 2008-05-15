@@ -4,6 +4,15 @@
 	<Settings>
 		<!--The name of your application.-->
 		<Setting name="AppName"						value="Your App Name here"/>
+		<!-- ColdBox set-up information for J2EE installation.
+		     As context-root are actually virtual locations which does not correspond to physical location of files. for example 
+		     /openbd   /var/www/html/tomcat/deploy/bluedragon
+
+		     AppMapping setting will adjust physical location of Project/App files and coldbox will load handlers,plugis,config file etc
+		     Create a cf mapping and enable this value. 
+		     /MyApp /var/www/html/tomcat/deploy/bluedragon/MyAppFolder
+		<Setting name="AppMapping"					value="/MyApp"/>      
+		-->
 		<!--Default Debugmode boolean flag (Set to false in production environments)-->
 		<Setting name="DebugMode" 					value="true" />
 		<!--The Debug Password to use in order to activate/deactivate debugmode,activated by url actions -->
