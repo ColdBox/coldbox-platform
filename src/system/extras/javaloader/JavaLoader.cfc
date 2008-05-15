@@ -101,7 +101,7 @@ Mark Mandel		22/06/2006		Added verification that the path exists
 </cffunction>
 
 <cffunction name="getVersion" hint="Retrieves the version of the loader you are using" access="public" returntype="string" output="false">
-	<cfreturn "0.5">
+	<cfreturn "0.6">
 </cffunction>
 
 <!------------------------------------------- PACKAGE ------------------------------------------->

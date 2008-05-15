@@ -1,4 +1,4 @@
-JavaLoader v0.5
+JavaLoader v0.6
 Author: Mark Mandel
 Date: 2nd October 2007
 
@@ -9,7 +9,7 @@ root of your web application, or make a mapping called
 'javaloader' to the javaloader folder.
 
 
-Utilisation
+Utilization
 ----------------
 To access the JavaLoader CFC, you call createObject on it like so:
 
