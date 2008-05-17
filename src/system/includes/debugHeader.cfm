@@ -1,8 +1,5 @@
-<!--- Style --->
-<style>
-<cfinclude template="style.css">
-</style>
-<script  language="javascript" type="text/javascript">
+<style><cfinclude template="style.css"></style>
+<script language="javascript" type="text/javascript">
 function fw_toggle(divid){
 	if ( document.getElementById(divid).className == "fw_debugContent"){
 		document.getElementById(divid).className = "fw_debugContentView";
@@ -20,11 +17,15 @@ function fw_poprc(divid){
 }
 function fw_openwindow(mypage,myname,w,h,features) {
 	if(screen.width){
-	var winl = (screen.width-w)/2;
-	var wint = (screen.height-h)/2;
-	}else{winl = 0;wint =0;}
+		var winl = (screen.width-w)/2;
+		var wint = (screen.height-h)/2;
+	}
+	else{
+		winl = 0;wint =0;
+	}
 	if (winl < 0) winl = 0;
 	if (wint < 0) wint = 0;
+	
 	var settings = 'height=' + h + ',';
 	settings += 'width=' + w + ',';
 	settings += 'top=' + wint + ',';
@@ -34,13 +35,14 @@ function fw_openwindow(mypage,myname,w,h,features) {
 	win.window.focus();
 }
 function fw_reinitframework(usingPassword){
-	var reinitPass = '';
-	
+	var reinitForm = document.getElementById('fw_reinitcoldbox');
 	if( usingPassword ){
-		reinitPass = prompt("Reinit Password?");
-		window.location='index.cfm?fwreinit=' + reinitPass;
+		reinitForm.fwreinit.value = prompt("Reinit Password?");
+		if( reinitForm.fwreinit.value.length ){
+			reinitForm.submit();
+		}
 	}else{
-		window.location='index.cfm?fwreinit=1';
+		reinitForm.submit();
 	}
 }
 function fw_pollmonitor(panel, frequency){

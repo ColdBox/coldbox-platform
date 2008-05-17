@@ -269,24 +269,41 @@ Description :
 	<cffunction name="isfwReinit" access="private" returntype="boolean" hint="Verify if we need to reboot" output="false" >
 		<cfscript>
 			var reinitPass = "";
-			if ( not application.cbController.settingExists("ReinitPassword") )
-				return true;
-			else
+			var incomingPass = "";
+			
+			/* Check if we have a reinit password at hand. */
+			if ( application.cbController.settingExists("ReinitPassword") ){
 				reinitPass = application.cbController.getSetting("ReinitPassword");
-		
-			if ( structKeyExists(url,"fwreinit") ){
+			}
+			
+			/* Verify the reinit key is passed */
+			if ( structKeyExists(url,"fwreinit") or structKeyExists(form,"fwreinit") ){
+				
+				/* pass Checks */
 				if ( reinitPass eq "" ){
 					return true;
 				}
-				else if ( Compare(reinitPass, url.fwreinit) eq 0){
-					return true;
-				}
 				else{
-					return false;
-				}
-			}
-			else
+					/* Get the incoming pass from form or url */
+					if( structKeyExists(form,"fwreinit") ){
+						incomingPass = form.fwreinit;
+					}
+					else{
+						incomingPass = url.fwreinit;
+					}
+					/* Compare the passwords */
+					if( Compare(reinitPass, incomingPass) eq 0 ){
+						return true;
+					}
+					else{
+						return false;
+					}
+				}//end if reinitpass neq ""
+				
+			}//else if reinit found.
+			else{
 				return false;
+			}
 		</cfscript>
 	</cffunction>
 	
