@@ -11,7 +11,13 @@
 		     AppMapping setting will adjust physical location of Project/App files and coldbox will load handlers,plugis,config file etc
 		     Create a cf mapping and enable this value. 
 		     /MyApp /var/www/html/tomcat/deploy/bluedragon/MyAppFolder
+		
+		If you are using a coldbox app to power flex/remote apps, you NEED to set the AppMapping also. In Summary,
+		the AppMapping is either a CF mapping or the path from the webroot to this application root. If this setting
+		is not set, then coldbox will try to auto-calculate it for you. Please read the docs.
+		
 		<Setting name="AppMapping"					value="/MyApp"/>      
+		
 		-->
 		<!--Default Debugmode boolean flag (Set to false in production environments)-->
 		<Setting name="DebugMode" 					value="true" />
