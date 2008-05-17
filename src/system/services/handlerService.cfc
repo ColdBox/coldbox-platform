@@ -342,7 +342,7 @@ Description :
 		HandlerArray = recurseListing(HandlerArray, HandlersPath, HandlersPath);
 		//Verify it
 		if ( ArrayLen(HandlerArray) eq 0 )
-			getUtil().throwit("No handlers were found in: #HandlerPath#. So I have no clue how you are going to run this application.","","Framework.loaderService.NoHandlersFoundException");
+			getUtil().throwit("No handlers were found in: #HandlersPath#. So I have no clue how you are going to run this application.","","Framework.loaderService.NoHandlersFoundException");
 		//Set registered Handlers
 		controller.setSetting("RegisteredHandlers",arrayToList(HandlerArray));
 		
