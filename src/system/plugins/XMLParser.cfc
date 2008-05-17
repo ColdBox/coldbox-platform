@@ -893,23 +893,19 @@ Modification History:
 				
 				/* TracerPanel */
 				if ( structKeyExists(DebuggerSettingNodes[1], "TracerPanel") ){
-					StructInsert(ConfigStruct.DebuggerSettings, "showTracerPanel", trim(DebuggerSettingNodes[1].TracerPanel.xmlAttributes.show) );
-					StructInsert(ConfigStruct.DebuggerSettings, "expandedTracerPanel", trim(DebuggerSettingNodes[1].TracerPanel.xmlAttributes.expanded) );
+					debugPanelAttributeInsert(ConfigStruct.DebuggerSettings,"TracerPanel",DebuggerSettingNodes[1].TracerPanel.xmlAttributes);
 				}
 				/* InfoPanel */
 				if ( structKeyExists(DebuggerSettingNodes[1], "InfoPanel") ){
-					StructInsert(ConfigStruct.DebuggerSettings, "showInfoPanel", trim(DebuggerSettingNodes[1].InfoPanel.xmlAttributes.show) );
-					StructInsert(ConfigStruct.DebuggerSettings, "expandedInfoPanel", trim(DebuggerSettingNodes[1].InfoPanel.xmlAttributes.expanded) );
+					debugPanelAttributeInsert(ConfigStruct.DebuggerSettings,"InfoPanel",DebuggerSettingNodes[1].InfoPanel.xmlAttributes);
 				}
 				/* CachePanel */
 				if ( structKeyExists(DebuggerSettingNodes[1], "CachePanel") ){
-					StructInsert(ConfigStruct.DebuggerSettings, "showCachePanel", trim(DebuggerSettingNodes[1].CachePanel.xmlAttributes.show) );
-					StructInsert(ConfigStruct.DebuggerSettings, "expandedCachePanel", trim(DebuggerSettingNodes[1].CachePanel.xmlAttributes.expanded) );
+					debugPanelAttributeInsert(ConfigStruct.DebuggerSettings,"CachePanel",DebuggerSettingNodes[1].CachePanel.xmlAttributes);
 				}
 				/* RCPanel */
 				if ( structKeyExists(DebuggerSettingNodes[1], "RCPanel") ){
-					StructInsert(ConfigStruct.DebuggerSettings, "showRCPanel", trim(DebuggerSettingNodes[1].RCPanel.xmlAttributes.show) );
-					StructInsert(ConfigStruct.DebuggerSettings, "expandedRCPanel", trim(DebuggerSettingNodes[1].RCPanel.xmlAttributes.expanded) );
+					debugPanelAttributeInsert(ConfigStruct.DebuggerSettings,"RCPanel",DebuggerSettingNodes[1].RCPanel.xmlAttributes);
 				}	
 				
 				//Set Override to true.
@@ -1004,9 +1000,27 @@ Modification History:
 	</cffunction>
 
 <!------------------------------------------- PRIVATE ------------------------------------------->
+					
+	<!--- Debug Panel attribute insert --->
+	<cffunction name="debugPanelAttributeInsert" access="private" returntype="void" hint="Insert a key into a panel attribute" output="false" >
+		<!--- ************************************************************* --->
+		<cfargument name="Config"			required="true" type="struct" hint="">
+		<cfargument name="Panel" 			required="true" type="string" hint="">
+		<cfargument name="PanelXML" 		required="true" type="any" hint="">
+		<!--- ************************************************************* --->
+		<cfscript>
+			/* Show Key */
+			if( structKeyExists(arguments.panelXML,"show") ){
+				StructInsert(arguments.config, "show#arguments.Panel#", trim(arguments.panelXML.show) );
+			}	
+			/* Expanded Key */
+			if( structKeyExists(arguments.panelXML,"expanded") ){
+				StructInsert(arguments.config, "expanded#arguments.Panel#", trim(arguments.panelXML.expanded) );
+			}		
+		</cfscript>
+	</cffunction>
 
-	<!--- ************************************************************* --->
-
+	<!--- read file --->
 	<cffunction name="readFile" access="private" output="false" returntype="string"  hint="Facade to Read a file's content">
 		<!--- ************************************************************* --->
 		<cfargument name="FileToRead"	 		type="String"  required="yes" 	 hint="The absolute path to the file.">
@@ -1016,8 +1030,7 @@ Modification History:
 		<cfreturn FileContents>
 	</cffunction>
 
-	<!--- ************************************************************* --->
-	
+	<!--- Get Absolute Path --->
 	<cffunction name="getAbsolutePath" access="private" output="false" returntype="string" hint="Turn any system path, either relative or absolute, into a fully qualified one">
 		<!--- ************************************************************* --->
 		<cfargument name="path" type="string" required="true" hint="Abstract pathname">
