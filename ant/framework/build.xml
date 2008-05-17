@@ -37,17 +37,15 @@
 	</target>
 	
 	<!-- FTP Upload of new build -->
-	<target name="ftp.deploy">
+	<target name="ftp.deploy" depends="build">
        	<input message="Please enter ftp server username:" addproperty="ftp.username" />
        	<input message="Please enter fpt server password:" addproperty="ftp.password" />
       	
 		<ftp action="send" server="${ftp.server}" userid="${ftp.username}" password="${ftp.password}" 
        		remotedir="${ftp.remotedir}" passive="yes" verbose="yes">
         	<fileset file="${dir.exports}/coldbox_${coldbox.version}.zip" />
-       	</ftp>
-		
+       	</ftp>		
 	</target>
-
 	
 	<!--BUild-->
 	<target name="build" description="Build a new coldbox distribution" depends="compilechecks">
