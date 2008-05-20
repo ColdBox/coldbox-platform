@@ -29,7 +29,7 @@ Modification History:
 
 	<!--- The beans paths --->
 	<cfset variables.configBeanPath = "coldbox.system.beans.configBean">
-	<Cfset variables.datasourceBeanPath = "coldbox.system.beans.datasourceBean">
+	<cfset variables.datasourceBeanPath = "coldbox.system.beans.datasourceBean">
 	<cfset variables.mailsettingsBeanPath = "coldbox.system.beans.mailsettingsBean">
 	
 	<!--- Check App Config --->
