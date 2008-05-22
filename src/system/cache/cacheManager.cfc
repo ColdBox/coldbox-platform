@@ -228,7 +228,6 @@ Modification History:
 				<cfset ClearCheck = getobjectPool().clearKey(arguments.objectKey)>
 			</cfif>
 		</cflock>
-		
 		<!--- Only fire if object removed. --->
 		<cfif ClearCheck>
 			<!--- InterceptMetadata --->
@@ -596,6 +595,9 @@ Modification History:
 		<cfreturn check>
 	</cffunction>
 
-	<!--- ************************************************************* --->
+	<!--- Get Util --->
+	<cffunction name="getUtil" access="private" output="false" returntype="coldbox.system.util.util" hint="Create and return a util object">
+		<cfreturn CreateObject("component","coldbox.system.util.util")/>
+	</cffunction>
 
 </cfcomponent>
