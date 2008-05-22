@@ -21,61 +21,105 @@ Modification History:
 		setConfigMapping(ExpandPath(instance.AppMapping & "/config/coldbox.xml.cfm"));
 		//Call the super setup method to setup the app.
 		super.setup();
+		
+		this.iservice = getController().getInterceptorService();
 		</cfscript>
 	</cffunction>
 	
 	<cffunction name="testInterceptionPoints" access="public" returntype="void" output="false">
 		<cfscript>
-		var service = getController().getInterceptorService();
 		
 		//test registration again
-		AssertTrue( listLen(service.getInterceptionPoints()) gt 0 );
+		AssertTrue( listLen(this.iservice.getInterceptionPoints()) gt 0 );
 		
 		</cfscript>
 	</cffunction>
 	
+	<cffunction name="testgetStateContainer" access="public" returntype="void" output="false">
+		<cfscript>
+		
+		state = this.iservice.getStateContainer('nothing');
+		
+		AssertFalse( isObject(state) );
+		
+		state = this.iservice.getStateContainer('preProcess');
+		
+		AssertTrue( isObject(state) );
+				
+		</cfscript>
+	</cffunction>
+	
+	<cffunction name="testUnregister" access="public" returntype="void" output="false">
+		<cfscript>
+		
+		state = this.iservice.getStateContainer('preProcess');
+		
+		this.iservice.unregister('coldbox.system.interceptors.ses','preProcess');
+		
+		interceptor = state.getInterceptor(this.iservice.INTERCEPTOR_CACHEKEY_PREFIX & 'coldbox.system.interceptors.ses');
+		
+		AssertFalse( isObject(interceptor) );	
+		
+		</cfscript>
+	</cffunction>
+	
+	
 	<cffunction name="testregisterInterceptors" access="public" returntype="void" output="false">
 		<cfscript>
-		var service = getController().getInterceptorService();
 		var states = "";
 		
 		//test registration again
-		service.registerInterceptors();
-		states = service.getinterceptionStates();
-		AssertFalse( structisEmpty(states), "registration failed");
+		this.iservice.setInterceptionStates(structnew());
+		AssertTrue( structIsEmpty(this.iservice.getInterceptionStates()));
+		
+		/* Register */
+		this.iservice.registerInterceptors();
+		states = this.iservice.getinterceptionStates();
+		
+		AssertFalse( structIsEmpty(states) );
+		</cfscript>
+	</cffunction>
+	
+	<cffunction name="testAppendInterceptionPoints" access="public" returntype="void" output="false">
+		<cfscript>
+		var points = this.iservice.getINterceptionPoints();
+		
+		this.iservice.appendInterceptionPoints('unitTest');
+		
+		AssertTrue( listLen(this.iservice.getINterceptionPoints()), listLen(points)+1);
+		
+		this.iservice.appendInterceptionPoints('unitTest');
+		AssertTrue( listLen(this.iservice.getINterceptionPoints()), listLen(points)+1);
 		
 		</cfscript>
 	</cffunction>
 	
 	<cffunction name="testSimpleProcessInterception" access="public" returntype="void" output="false">
 		<cfscript>
-		var service = getController().getInterceptorService();
 		
-		service.processState("preProcess");
+		this.iservice.processState("preProcess");
 		
 		</cfscript>
 	</cffunction>
 	
 	<cffunction name="testProcessInterception" access="public" returntype="void" output="false">
 		<cfscript>
-		var service = getController().getInterceptorService();
 		var md = structnew();
 		
 		md.test = "UNIT TESTING";
 		md.today = now();
 		
-		service.processState("preProcess",md);
+		this.iservice.processState("preProcess",md);
 		
 		</cfscript>
 	</cffunction>
 	
 	<cffunction name="testProcessInvalidInterception" access="public" returntype="void" output="false">
 		<cfscript>
-		var service = getController().getInterceptorService();
 		var md = structnew();
 		
 		try{
-			service.processState("nada loco",md);
+			this.iservice.processState("nada loco",md);
 		}
 		catch("Framework.InterceptorService.InvalidInterceptionState" e){
 			AssertTrue(true);

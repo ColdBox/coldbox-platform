@@ -25,9 +25,11 @@ Description :
 		<cfscript>
 			var LinkedHashMap = CreateObject("java","java.util.LinkedHashMap").init(3);
 			var Collections = createObject("java", "java.util.Collections"); 
+			
 			/* Create the interceptor container, start with 3 instead of 16 to save space */
 			setInterceptors( Collections.synchronizedMap(LinkedHashMap) );
 			setState( arguments.state );
+			
 			/* Return instance */
 			return this;
 		</cfscript>
@@ -52,6 +54,20 @@ Description :
 		<cfset getInterceptors().remove(arguments.interceptorKey)>
 	</cffunction>	
 	
+	<cffunction name="getInterceptor" access="public" returntype="any" hint="Get an interceptor from this state. Else return a blank structure if not found" output="false" >
+		<!--- ************************************************************* --->
+		<cfargument name="InterceptorKey" 	required="true" type="string" 	hint="The interceptor key class to Unregister">
+		<!--- ************************************************************* --->
+		<cfscript>
+			if( structKeyExists(getInterceptors(), arguments.InterceptorKey) ){
+				return structFind(getInterceptors(), arguments.InterceptorKey);
+			}
+			else{
+				return structnew();
+			}
+		</cfscript>
+	</cffunction>
+	
 	<!--- Process the Interceptors --->
 	<cffunction name="process" access="public" returntype="void" hint="Process this state's interceptors" output="false" >
 		<!--- ************************************************************* --->
@@ -70,10 +86,10 @@ Description :
 	</cffunction>
 	
 	<!--- getter setter state --->
-	<cffunction name="getstate" access="public" output="false" returntype="string" hint="Get state">
+	<cffunction name="getstate" access="public" output="false" returntype="string" hint="Get the state's name">
 		<cfreturn instance.state/>
 	</cffunction>	
-	<cffunction name="setstate" access="public" output="false" returntype="void" hint="Set state">
+	<cffunction name="setstate" access="public" output="false" returntype="void" hint="Set the state's name">
 		<!--- ************************************************************* --->
 		<cfargument name="state" type="string" required="true"/>
 		<!--- ************************************************************* --->

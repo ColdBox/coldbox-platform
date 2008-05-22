@@ -94,52 +94,36 @@ Description :
 			var autowireInterceptor = this.INTERCEPTOR_CACHEKEY_PREFIX & "coldbox.system.interceptors.autowire";			
 		</cfscript>
 		
-		<!--- Double Lock --->
-		<cfif not getController().getColdboxOCM().lookup(interceptorKey)>
-			<cflock name="interceptorService.registerInterceptor.#arguments.interceptorClass#" type="exclusive" throwontimeout="true" timeout="30">
-				<cfscript>
-				/* Verify if the interceptor is already in cache, if it is, then it means it has already been processed. */
-				if( not getController().getColdboxOCM().lookup(interceptorKey) ){
-					
-					/* Create the Interceptor Class */
-					oInterceptor = CreateObject("component", arguments.interceptorClass ).init(getController(),interceptorProperties);
-					/* Configure the Interceptor */
-					oInterceptor.configure();
-					
-					/* Cache Interceptor */
-					if ( not getController().getColdBoxOCM().set(interceptorKey, oInterceptor, 0) ){
-						getUtil().throwit("The interceptor could not be cached, either the cache is full, the threshold has been reached or we are out of memory.","Please check your cache limits, try increasing them or verify your server memory","Framework.InterceptorService.InterceptorCantBeCached");
-					}
-					
-					/* Parse Interception Points, thanks to inheritance. */
-					interceptionPointsFound = structnew();
-					interceptionPointsFound = parseMetadata( getMetaData(oInterceptor), interceptionPointsFound);
-					
-					/* Register this Interceptor's interception point with its appropriate interceptor state */
-					for(stateKey in interceptionPointsFound){
-						RegisterInterceptionPoint(interceptorKey,stateKey);
-					}
-					
-					/* Can we autowire? is it declared */
-					if( getController().getAspectsInitiated() and getController().getColdboxOCM().lookup(autowireInterceptor) ){
-						/* We can autowire manually, because we are loading at runtime. */
-						oAutowire = getController().getColdboxOCM().get(autowireInterceptor);
-						
-						/* Intercept Data. */
-						interceptData.oInterceptor = oInterceptor;
-						interceptData.interceptorPath = interceptorKey;
-						
-						/* Autowire it */
-						oAutowire.processAutowire(getController().getRequestService().getContext(),interceptData,"interceptor");
-					}
+		<!--- Lock this registration --->
+		<cflock name="interceptorService.registerInterceptor.#arguments.interceptorClass#" type="exclusive" throwontimeout="true" timeout="30">
+			<cfscript>
+				/* Create the Interceptor Class */
+				oInterceptor = CreateObject("component", arguments.interceptorClass ).init(getController(),interceptorProperties);
+				/* Configure the Interceptor */
+				oInterceptor.configure();
+				
+				/* Cache Interceptor */
+				if ( not getController().getColdBoxOCM().set(interceptorKey, oInterceptor, 0) ){
+					getUtil().throwit("The interceptor could not be cached, either the cache is full, the threshold has been reached or we are out of memory.","Please check your cache limits, try increasing them or verify your server memory","Framework.InterceptorService.InterceptorCantBeCached");
 				}
-				</cfscript>
-			</cflock>
-		</cfif>
+				
+				/* Parse Interception Points, thanks to inheritance. */
+				interceptionPointsFound = structnew();
+				interceptionPointsFound = parseMetadata( getMetaData(oInterceptor), interceptionPointsFound);
+				
+				/* Register this Interceptor's interception point with its appropriate interceptor state */
+				for(stateKey in interceptionPointsFound){
+					RegisterInterceptionPoint(interceptorKey,stateKey);
+				}
+				
+				/* TODO: Autowire from plugin */
+			
+			</cfscript>
+		</cflock>
 	</cffunction>
 	
 	<!--- Get Interceptor --->
-	<cffunction name="getInterceptor" access="public" output="false" returntype="any" hint="Get an interceptor according to its class name">
+	<cffunction name="getInterceptor" access="public" output="false" returntype="any" hint="Get an interceptor according to its class name from cache, not from a state. If retrieved, it does not mean that the interceptor is registered still. It just means, that it is in cache.">
 		<!--- ************************************************************* --->
 		<cfargument name="interceptorClass" required="true" type="string" hint="The qualified class of the interceptor to retrieve">
 		<!--- ************************************************************* --->
@@ -158,7 +142,7 @@ Description :
 	</cffunction>
 	
 	<!--- Append Interception Points --->
-	<cffunction name="appendInterceptionPoints" access="private" returntype="void" hint="Append a list of custom interception points to the CORE interception points" output="false" >
+	<cffunction name="appendInterceptionPoints" access="public" returntype="void" hint="Append a list of custom interception points to the CORE interception points" output="false" >
 		<!--- ************************************************************* --->
 		<cfargument name="customPoints" required="true" type="string" hint="A comma delimmited list of custom interception points to append. If they already exists, then they will not be added again.">
 		<!--- ************************************************************* --->
@@ -193,6 +177,43 @@ Description :
 	<cffunction name="setinterceptionStates" access="public" output="false" returntype="void" hint="Set interceptionStates">
 		<cfargument name="interceptionStates" type="struct" required="true"/>
 		<cfset instance.interceptionStates = arguments.interceptionStates/>
+	</cffunction>
+	
+	<!--- Get State Container --->
+	<cffunction name="getStateContainer" access="public" returntype="any" hint="Get a State Container, it will return a blank structure if the state is not found." output="false" >
+		<cfargument name="state" required="true" type="string" hint="The state to retrieve">
+		<cfscript>
+			var states = getInterceptionStates();
+			
+			if( structKeyExists(states,arguments.state) ){
+				return states[arguments.state];
+			}
+			else{
+				return structnew();
+			}
+		</cfscript>
+	</cffunction>
+	
+	<!--- Unregister From a State --->
+	<cffunction name="unregister" access="public" returntype="boolean" hint="Unregister an interceptor from an interception state. If the state does not exists, it returns false" output="false" >
+		<!--- ************************************************************* --->
+		<cfargument name="interceptorClass" 	required="true" type="string" hint="The qualified class of the interceptor to unregister">
+		<cfargument name="state" 				required="true" type="string" hint="The named state to unregister this interceptor from">
+		<!--- ************************************************************* --->
+		<cfscript>
+			/* Verify the state */
+			var foundState = getStateContainer(arguments.state);
+			var interceptorKey = this.INTERCEPTOR_CACHEKEY_PREFIX & arguments.interceptorClass;
+			
+			/* State Exists */
+			if( isObject(foundState) ){
+				foundState.unregister(interceptorKey);
+				return true;
+			}	
+			else{
+				return false;
+			}						
+		</cfscript>
 	</cffunction>
 
 <!------------------------------------------- PRIVATE ------------------------------------------->
@@ -255,10 +276,7 @@ Description :
 	<!--- Create Interception States --->
 	<cffunction name="createInterceptionStates" access="private" returntype="void" hint="Create the interception states container" output="false" >
 		<cfscript>
-		if ( not structIsEmpty(getInterceptionStates()) ){
-			structClear( getInterceptionStates() );
 			setInterceptionStates(structnew());
-		}
 		</cfscript>
 	</cffunction>
 

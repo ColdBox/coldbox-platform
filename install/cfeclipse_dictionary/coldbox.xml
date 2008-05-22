@@ -364,18 +364,7 @@ Description :
 				]]></help>
 			</parameter>
 		</function>
-		
-		<function creator="8" name="purgeView" returns="void">
-			<help><![CDATA[
-				 Purges a view using the renderer plugin
-			]]></help>
-			<parameter name="view" type="String" required="true">
-				<help><![CDATA[
-					The view to purge.
-				]]></help>
-			</parameter>
-		</function>
-		
+				
 		<function creator="8" name="relocate" returns="void">
 			<help><![CDATA[
 				 Facade to cflocation
