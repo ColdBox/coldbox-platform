@@ -79,9 +79,9 @@ link = The link to use for paging, including a placeholder for the page @page@
 	<cffunction name="getPagingBandGap" access="public" returntype="numeric" hint="Get the paging carrousel band gap" output="false">
 		<cfreturn instance.PagingBandGap>
 	</cffunction>
-	<cffunction name="setPagingMaxRows" access="public" returntype="void" hint="Set the paging max rows setting" output="false">
-		<cfargument name="pagingMaxRows" required="true" type="numeric">
-		<cfset instance.pagingMaxRows = arguments.pagingMaxRows>
+	<cffunction name="setPagingBandGap" access="public" returntype="void" hint="Set the paging band gap" output="false">
+		<cfargument name="PagingBandGap" required="true" type="numeric">
+		<cfset instance.PagingBandGap = arguments.PagingBandGap>
 	</cffunction>
 	
 	<!--- Get boundaries --->
@@ -97,7 +97,7 @@ link = The link to use for paging, including a placeholder for the page @page@
 				maxRows = arguments.pagingMaxRows;
 			}
 						
-			boundaries.startrow = ((event.getValue("page",1) * maxrows - maxRows)+1;
+			boundaries.startrow = (event.getValue("page",1) * maxrows - maxRows)+1;
 			boundaries.maxrow = boundaries.startrow + maxRows - 1;
 		
 			return boundaries;
