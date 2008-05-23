@@ -54,7 +54,10 @@ link = The link to use for paging, including a placeholder for the page @page@
   		setpluginName("paging");
   		setpluginVersion("1.0");
   		setpluginDescription("Paging plugin");
-  		//My own Constructor code here
+  		
+  		/* Paging properties */
+  		setPagingMaxRows( getSetting("PagingMaxRows") );
+  		setPagingBandGap( getSetting('PagingBandGap') );
   		
   		//Return instance
   		return this;
@@ -63,14 +66,39 @@ link = The link to use for paging, including a placeholder for the page @page@
 
 <!------------------------------------------- PUBLIC ------------------------------------------->	
 	
+	<!--- Get/Set paging max rows --->
+	<cffunction name="getPagingMaxRows" access="public" returntype="numeric" hint="Get the paging max rows setting" output="false">
+		<cfreturn instance.pagingMaxRows>
+	</cffunction>
+	<cffunction name="setPagingMaxRows" access="public" returntype="void" hint="Set the paging max rows setting" output="false">
+		<cfargument name="pagingMaxRows" required="true" type="numeric">
+		<cfset instance.pagingMaxRows = arguments.pagingMaxRows>
+	</cffunction>
+	
+	<!--- Get/Set paging band gap --->
+	<cffunction name="getPagingBandGap" access="public" returntype="numeric" hint="Get the paging carrousel band gap" output="false">
+		<cfreturn instance.PagingBandGap>
+	</cffunction>
+	<cffunction name="setPagingMaxRows" access="public" returntype="void" hint="Set the paging max rows setting" output="false">
+		<cfargument name="pagingMaxRows" required="true" type="numeric">
+		<cfset instance.pagingMaxRows = arguments.pagingMaxRows>
+	</cffunction>
+	
 	<!--- Get boundaries --->
 	<cffunction name="getboundaries" access="public" returntype="struct" hint="Calculate the startrow and maxrow" output="false" >
-		<cfargument name="page" required="true" type="numeric" hint="The page you are on.">
+		<cfargument name="PagingMaxRows" required="false" type="numeric" hint="You can override the paging max rows here.">
 		<cfscript>
 			var boundaries = structnew();
+			var event = getController().getRequestService().getContext();
+			var maxRows = getPagingMaxRows();
 			
-			boundaries.startrow = ((arguments.page * getSetting("PagingMaxRows")) - getSetting("PagingMaxRows"))+1;
-			boundaries.maxrow = boundaries.startrow + getSetting("PagingMaxRows") - 1;
+			/* Check for Override */
+			if( structKeyExists(arguments,"PagingMaxRows") ){
+				maxRows = arguments.pagingMaxRows;
+			}
+						
+			boundaries.startrow = ((event.getValue("page",1) * maxrows - maxRows)+1;
+			boundaries.maxrow = boundaries.startrow + maxRows - 1;
 		
 			return boundaries;
 		</cfscript>
@@ -81,17 +109,23 @@ link = The link to use for paging, including a placeholder for the page @page@
 		<!--- ***************************************************************** --->
 		<cfargument name="FoundRows"    required="true"  type="numeric" hint="The found rows to page">
 		<cfargument name="link"   		required="true"  type="string"  hint="The link to use, you must place the @page@ place holder so the link ca be created correctly">
+		<cfargument name="PagingMaxRows" required="false" type="numeric" hint="You can override the paging max rows here.">
 		<!--- ***************************************************************** --->
 		<cfset var event = getController().getRequestService().getContext()>
 		<cfset var pagingTabs = "">
-		<cfset var maxRows = getSetting('PagingMaxRows')>
-		<cfset var bandGap = getSetting('PagingBandGap')>
+		<cfset var maxRows = getPagingMaxRows()>
+		<cfset var bandGap = getPagingBandGap()>
 		<cfset var totalPages = 0>
 		<cfset var theLink = arguments.link>
 		<!--- Paging vars --->
-		<cfset var currentPage = event.getValue("page")>
+		<cfset var currentPage = event.getValue("page",1)>
 		<cfset var pageFrom = 0>
 		<cfset var pageTo = 0>
+		
+		<!--- Override --->
+		<cfif structKeyExists(arguments, "pagingMaxRows")>
+			<cfset maxRows = arguments.pagingMaxRows>
+		</cfif>
 		
 		<!--- Only page if records found --->
 		<cfif arguments.FoundRows neq 0>
