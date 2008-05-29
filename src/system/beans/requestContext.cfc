@@ -414,9 +414,7 @@ Modification History:
 		</cfscript>
 	</cffunction>
 	<cffunction name="getViewCacheableEntry" access="public" returntype="any" hint="Get the event cacheable entry" output="false" >
-		<cfscript>
-			return getValue("cbox_viewCacheableEntry",structnew());
-		</cfscript>
+		<cfreturn getValue("cbox_viewCacheableEntry",structnew())>
 	</cffunction>
 	
 	<!--- ************************************************************* --->

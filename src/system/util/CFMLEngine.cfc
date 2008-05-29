@@ -27,9 +27,7 @@ Description :
 
 	<!--- Get the current CFML Version --->
 	<cffunction name="getVersion" access="public" returntype="numeric" hint="Returns the current running CFML version" output="false" >
-		<cfscript>
-			return listfirst(server.coldfusion.productversion);
-		</cfscript>
+		<cfreturn listfirst(server.coldfusion.productversion)>
 	</cffunction>
 	
 	<!--- Get the CFML Engine according to my standards --->

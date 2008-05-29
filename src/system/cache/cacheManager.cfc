@@ -345,9 +345,7 @@ Modification History:
 
 	<!--- Get the Cache Size --->
 	<cffunction name="getSize" access="public" output="false" returntype="numeric" hint="Get the cache's size in items">
-		<cfscript>
-			return getObjectPool().getSize();
-		</cfscript>
+		<cfreturn getObjectPool().getSize()>
 	</cffunction>
 
 	<!--- Reap the Cache --->

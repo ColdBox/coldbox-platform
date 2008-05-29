@@ -196,7 +196,7 @@ queryPlugin.doLeftOuterJoin(q1,q3,"idt","idt")
 		    var bProceed		= false;
 		    var i = 0;	
 		try{	
-		    // get all the fields in qry_right that are not in qry_left
+		    // get all the fields in qry_right which are not in qry_left
 		    lstRightColumns	= getUnMatchedElements( FirstList=qry1.ColumnList , secondList=qry2.ColumnList );
 		    lstLeftColumns	= qry1.ColumnList;
 		             
@@ -278,7 +278,7 @@ queryPlugin.doLeftOuterJoin(q1,q3,"idt","idt")
 		    var i = 0;
 				
 		try{	
-		    // get all the fields in qry_right that are not in qry_left
+		    // get all the fields in qry_right which are not in qry_left
 		    lstRightColumns	= getUnMatchedElements( FirstList=qry1.ColumnList , secondList=qry2.ColumnList );
 		    lstLeftColumns	= qry1.ColumnList;
 		             
@@ -286,7 +286,7 @@ queryPlugin.doLeftOuterJoin(q1,q3,"idt","idt")
 		    lstCols = listAppend( lstLeftColumns, lstRightColumns );
 		            
 		    QryReturn = queryNew( lstCols );
-			// add additional columns to qry1 as this these column might be empty or with values.
+			// add additional columns to qry1, these columns may have null value.
 			for( i = 1; i LTE ListLen(lstRightColumns); i = i + 1 ){
 				QueryAddColumn(qry1, ListGetAt(lstRightColumns, i), ArrayCols);
 			}
@@ -399,7 +399,6 @@ queryPlugin.doLeftOuterJoin(q1,q3,"idt","idt")
 
 <!------------------------------------------- PRIVATE ------------------------------------------->
 
-	
 	<!--- ********************************************************************* --->
 	<!--- Returns element which are only present in second-list                 --->
 	<!----------------------------------------------------------------------------->
@@ -412,7 +411,7 @@ queryPlugin.doLeftOuterJoin(q1,q3,"idt","idt")
             var ArrayCols = "";
         try{ 
         	ArrayCols = ListToArray(arguments.secondList);
-            // loop over each column and insert value into query
+            // loop over each column and append to list.
             for( i = 1; i LTE ArrayLen(ArrayCols); i = i + 1 ){
                 // get the value of column
                 if(listFindNoCase( arguments.FirstList, ArrayCols[i] ) EQ 0){

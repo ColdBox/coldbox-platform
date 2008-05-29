@@ -50,9 +50,7 @@ Modification History:
 	
 	<!--- Get the coldbox controller --->
 	<cffunction name="getColdbox" output="false" access="public" returntype="coldbox.system.controller" hint="Get the coldbox controller reference: coldbox.system.controller">
-		<cfscript>
-		return application.cbController;
-		</cfscript>
+		<cfreturn application.cbController>
 	</cffunction>
 	
 	<!--- Get the cache manager --->
@@ -68,9 +66,7 @@ Modification History:
 		<cfargument name="customPlugin" type="boolean" required="false" default="false" hint="Used internally to create custom plugins.">
 		<cfargument name="newInstance"  type="boolean" required="false" default="false" hint="If true, it will create and return a new plugin. No caching or persistance.">
 		<!--- ************************************************************* --->
-		<cfscript>
-		return application.cbController.getPlugin(argumentCollection=arguments);
-		</cfscript>
+		<cfreturn application.cbController.getPlugin(argumentCollection=arguments)>
 	</cffunction>
 	
 	<!--- Interceptor Facade --->
@@ -78,9 +74,7 @@ Modification History:
 		<!--- ************************************************************* --->
 		<cfargument name="interceptorClass" required="true" type="string" hint="The qualified class of the itnerceptor to retrieve">
 		<!--- ************************************************************* --->
-		<cfscript>
-			return application.cbController.getInterceptorService().getInterceptor(arguments.interceptorClass);
-		</cfscript>
+		<cfreturn application.cbController.getInterceptorService().getInterceptor(arguments.interceptorClass)>
 	</cffunction>
 	
 	<!--- Get a datasource --->
@@ -106,12 +100,11 @@ Modification History:
 	
 	<!--- Get a mail settings bean --->
 	<cffunction name="getMailSettings" access="public" output="false" returnType="coldbox.system.beans.mailsettingsBean" hint="I will return to you a mailsettingsBean modeled after your mail settings in your config file.">
-		<cfscript>
-		return CreateObject("component",mailsettingsBeanPath).init(application.cbController.getSetting("MailServer"),
+		<cfreturn CreateObject("component",mailsettingsBeanPath).init(application.cbController.getSetting("MailServer"),
 																   application.cbController.getSetting("MailUsername"),
 																   application.cbController.getSetting("MailPassword"), 
-																   application.cbController.getSetting("MailPort"));
-		</cfscript>
+																   application.cbController.getSetting("MailPort"))>
+
 	</cffunction>
 	
 <!------------------------------------------- PRIVATE ------------------------------------------->

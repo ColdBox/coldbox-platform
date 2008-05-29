@@ -177,9 +177,7 @@ Description :
 		<cfargument name="customPlugin" type="boolean" required="false" default="false" hint="Used internally to create custom plugins.">
 		<cfargument name="newInstance"  type="boolean" required="false" default="false" hint="If true, it will create and return a new plugin. No caching or persistance.">
 		<!--- ************************************************************* --->
-		<cfscript>
-		return getController().getPlugin(argumentCollection=arguments);
-		</cfscript>
+		<cfreturn getController().getPlugin(argumentCollection=arguments)>
 	</cffunction>
 	
 	<!--- Interceptor Facade --->
@@ -187,24 +185,18 @@ Description :
 		<!--- ************************************************************* --->
 		<cfargument name="interceptorClass" required="true" type="string" hint="The qualified class of the itnerceptor to retrieve">
 		<!--- ************************************************************* --->
-		<cfscript>
-			return getController().getInterceptorService().getInterceptor(arguments.interceptorClass);
-		</cfscript>
+		<cfreturn getController().getInterceptorService().getInterceptor(arguments.interceptorClass)>
 	</cffunction>
 	
 	<!--- Facade: Get the IOC Plugin. --->
 	<cffunction name="getIoCFactory" output="false" access="private" returntype="any" hint="Gets the IOC Factory in usage: coldspring or lightwire">
-		<cfscript>
-			return getController().getPlugin("ioc").getIoCFactory();
-		</cfscript>
+		<cfreturn getController().getPlugin("ioc").getIoCFactory()>
 	</cffunction>
 	
 	<!--- Facade: Get the an ioc bean --->
 	<cffunction name="getBean" output="false" access="private" returntype="any" hint="Get a bean from the ioc plugin.">
 		<cfargument name="beanName" type="string" required="true" hint="The bean name to get."/>
-		<cfscript>
-			return getController().getPlugin("ioc").getBean(arguments.beanName);
-		</cfscript>
+		<cfreturn getController().getPlugin("ioc").getBean(arguments.beanName)>
 	</cffunction>
 	
 	<!--- Facade: Get COldBox OCM --->

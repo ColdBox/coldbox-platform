@@ -53,9 +53,7 @@ Description :
 		<!--- ************************************************************* --->
 		<cfargument name="key" required="true" type="string" hint="The key to return">
 		<!--- ************************************************************* --->
-		<cfscript>
-		return structKeyExists( getDictionary(), arguments.key );
-		</cfscript>
+		<cfreturn structKeyExists( getDictionary(), arguments.key )>
 	</cffunction>
 	
 	<!--- set a new Key --->
@@ -75,9 +73,7 @@ Description :
 		<!--- ************************************************************* --->
 		<cfargument name="key" required="true" type="string" hint="The key to remove">
 		<!--- ************************************************************* --->
-		<cfscript>
-			return structDelete( getDictionary(), arguments.key );
-		</cfscript>
+		<cfreturn structDelete( getDictionary(), arguments.key )>
 	</cffunction>
 	
 	<!--- Clear All --->

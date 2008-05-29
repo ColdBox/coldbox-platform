@@ -536,9 +536,7 @@ and then extracted by this interceptor. They must be a valid rules query.
 	
 	<!--- Check if using validator --->
 	<cffunction name="isValidatorUsed" access="private" returntype="boolean" hint="Check to see if using the validator" output="false" >
-		<cfscript>
-			return structKeyExists(instance, "validator");
-		</cfscript>
+		<cfreturn structKeyExists(instance, "validator")>
 	</cffunction>
 	
 </cfcomponent>

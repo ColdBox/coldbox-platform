@@ -63,9 +63,7 @@ Modification History:
 	<!--- Check if the soft reference exists --->
 	<cffunction name="softRefLookup" access="public" returntype="boolean" hint="See if the soft reference is in the key map" output="false" >
 		<cfargument name="softRef" required="true" type="any" hint="The soft reference to check">
-		<cfscript>
-			return structKeyExists(getSoftRefKeyMap(),arguments.softRef);
-		</cfscript>
+		<cfreturn structKeyExists(getSoftRefKeyMap(),arguments.softRef)>
 	</cffunction>
 	
 	<!--- Get the ref key --->
@@ -220,16 +218,12 @@ Modification History:
 
 	<!--- Get the size of the pool --->
 	<cffunction name="getSize" access="public" output="false" returntype="numeric" hint="Get the cache's size in items">
-		<cfscript>
-			return StructCount(getPool());
-		</cfscript>
+		<cfreturn StructCount(getPool())>
 	</cffunction>
 
 	<!--- Get the itemList --->
 	<cffunction name="getObjectsKeyList" access="public" output="false" returntype="string" hint="Get the cache's object entries listing.">
-		<cfscript>
-			return structKeyList(getPool());
-		</cfscript>
+		<cfreturn structKeyList(getPool())>
 	</cffunction>
 
 <!------------------------------------------- PRIVATE ------------------------------------------->

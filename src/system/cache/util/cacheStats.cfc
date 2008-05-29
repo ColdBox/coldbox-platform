@@ -47,9 +47,7 @@ Description :
 	
 	<!--- Get Cache object count --->
 	<cffunction name="getObjectCount" access="public" output="false" returntype="numeric" hint="Get the cache's object count">
-		<cfscript>
-	 	return getCacheManager().getSize();
-		</cfscript>
+		<cfreturn getCacheManager().getSize()>
 	</cffunction>
 	
 	<!--- Record an eviction Hit --->
