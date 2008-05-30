@@ -11,7 +11,7 @@
 
 	<!--Build Properties-->
 	<property name="build.dir" 			value="_tmpbuild" />
-	<property name="src.dir"			value="src/system" />
+	<property name="src.dir"			value="system" />
 	<!-- FTP -->
 	<property name="ftp.server"  		value="ftp.coldboxframework.com" />
 	<property name="ftp.remotedir" 		value="/httpdocs/builds/" />

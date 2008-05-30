@@ -52,7 +52,7 @@
       	
 		<!-- Copy src -->	
       	<copy todir="${dir.build}/system">
-        	<fileset dir="src/system">
+        	<fileset dir="system">
         	</fileset>
         </copy>
 		
@@ -74,8 +74,8 @@
 		
 		<!--Copy text files to install folder-->
 		<copy todir="${dir.build}/install">
-			<fileset file="src/system/config/license.txt" />
-			<fileset file="src/system/config/readme.txt" />						
+			<fileset file="system/config/license.txt" />
+			<fileset file="system/config/readme.txt" />						
 		</copy>
 		
 		<!--Copy Documents-->

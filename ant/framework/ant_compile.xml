@@ -13,8 +13,7 @@
         </description>
         
         <!-- set global properties for this build -->
-        <property name="src" 							location="src"/>
-    	<property name="src.system"						location="src/system" />
+        <property name="src.system"						location="system" />
         <property name="samples"                        location="samples" />
         <property name="build" 							location="tmpbuild"/>
     	<property name="dist"							location="dist" />
@@ -63,7 +62,7 @@
             <mkdir dir="${build}"/>
             <!-- Copy the source to build directory -->
             <copy todir="${build}">
-            	<fileset dir="${src}">
+            	<fileset dir="${src.system}">
 					<exclude name="**/*.xml.cfm"/>
 				</fileset>	
             </copy>

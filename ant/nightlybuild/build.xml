@@ -66,7 +66,7 @@
 	<target name="build" depends="export-app" description="Copies fileset from source to build directory, adding a label file">
 		<!-- Copy Structure -->
 		<copy todir="${build.dir}/coldbox/system">
-        	<fileset dir="${src.dir}/src/system">
+        	<fileset dir="${src.dir}/system">
         	</fileset>
         </copy>		
 		<copy todir="${build.dir}/coldbox/samples">
@@ -81,8 +81,8 @@
         </copy>		
 		<!--Copy text files to install folder-->
 		<copy todir="${build.dir}/coldbox/install">
-			<fileset file="${src.dir}/src/system/config/license.txt" />
-			<fileset file="${src.dir}/src/system/config/readme.txt" />						
+			<fileset file="${src.dir}/system/config/license.txt" />
+			<fileset file="${src.dir}/system/config/readme.txt" />						
 		</copy>		
 		<!--Copy Documents-->
 		<copy todir="${build.dir}/coldbox/install/SchemaDocs">
