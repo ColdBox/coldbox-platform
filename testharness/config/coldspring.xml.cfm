@@ -19,7 +19,7 @@
 	
 	<bean id="myMailSettings" factory-bean="ColdboxFactory" factory-method="getMailSettings" />
 	
-    <bean id="testModel" class="coldbox.model.testModel" singleton="false">
+    <bean id="testModel" class="coldbox.testharness.model.testModel" singleton="false">
         <property name="controller">
             <bean id="controller" factory-bean="ColdBoxFactory" factory-method="getColdbox" />
         </property>

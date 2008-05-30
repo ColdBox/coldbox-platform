@@ -2,8 +2,8 @@
 <Config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
  xsi:noNamespaceSchemaLocation="../system/config/config.xsd">
 	<Settings>
-		<Setting name="AppName" 					value="coldbox tester"/>
-		<Setting name="AppMapping"					value="/coldbox" />
+		<Setting name="AppName" 					value="coldbox testharness"/>
+		<Setting name="AppMapping"					value="/coldbox/testharness" />
 		<Setting name="DebugMode" 					value="true"/>
 		<Setting name="DebugPassword" 				value="coldbox"/>
 		<Setting name="ReinitPassword" 				value=""/>
@@ -18,7 +18,7 @@
 		<Setting name="ApplicationStartHandler"		value="ehGeneral.onApplicationStart" />
 		<Setting name="SessionStartHandler"		    value="ehGeneral.onSessionStart" />
 		<Setting name="SessionEndHandler"		    value="ehGeneral.onSessionEnd" />
-		<Setting name="OwnerEmail" 					value="info@luismajano.com"/>
+		<Setting name="OwnerEmail" 					value="email@myemail.com"/>
 		<Setting name="EnableBugReports" 			value="false"/>
 		<Setting name="UDFLibraryFile" 				value="includes/udf.cfm" />
 		<Setting name="CustomErrorTemplate"			value="" />
@@ -28,14 +28,14 @@
 		<Setting name="ConfigAutoReload"			value="false" />
 		<Setting name="ExceptionHandler"     		value="" />
 		<Setting name="onInvalidEvent" 				value="" />
-		<Setting name="MyPluginsLocation" 			value="applications.coldbox.testing.testplugins"/>
-		<Setting name="HandlersExternalLocation" 	value="applications.coldbox.testing.testhandlers"/>
+		<Setting name="MyPluginsLocation" 			value="coldbox.testing.testplugins"/>
+		<Setting name="HandlersExternalLocation" 	value="coldbox.testing.testhandlers"/>
 		<Setting name="HandlerCaching" 				value="false"/>
 		<Setting name="EventCaching" 				value="true"/>
 		<Setting name="IOCFramework" 				value="lightwire"/>
-		<Setting name="IOCDefinitionFile"		 	value="/coldbox/config/coldspring.xml.cfm"/>
+		<Setting name="IOCDefinitionFile"		 	value="config/coldspring.xml.cfm"/>
 		<Setting name="IOCObjectCaching"			value="false"/>
-		<Setting name="RequestContextDecorator"		value="coldbox.model.myRequestContextDecorator" />
+		<Setting name="RequestContextDecorator"		value="coldbox.testharness.model.myRequestContextDecorator" />
 		<Setting name="ProxyReturnCollection" 		value="false"/>
 	</Settings>
 
@@ -95,7 +95,7 @@
 
 	<i18N>
 		<!--Default Resource Bundle without locale and properties extension-->
-		<DefaultResourceBundle>/coldbox/includes/main</DefaultResourceBundle>
+		<DefaultResourceBundle>/coldbox/testharness/includes/main</DefaultResourceBundle>
 		<!--Java Standard Locale-->
 		<DefaultLocale>en_US</DefaultLocale>
 		<!--session or client-->
@@ -125,7 +125,7 @@
 		<Interceptor class="coldbox.system.interceptors.autowire">
 			<Property name="debugMode">true</Property>
 		</Interceptor>
-		<!--<Interceptor class="coldbox.interceptors.executionTracer">
+		<!--<Interceptor class="coldbox.testharness.interceptors.executionTracer">
 			<Property name="Simple">Luis</Property>
 			<Property name="Complex">[1,2,3,4,5]</Property>
 		</Interceptor>	-->	
