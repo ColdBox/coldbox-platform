@@ -442,7 +442,7 @@ Description :
 				else
 					cleanHandler = removeChars(replacenocase(cleanHandler,"\",".","all"),1,1);
 				//Clean Extension
-				cleanHandler = controller.getPlugin("Utilities").ripExtension(cleanhandler);
+				cleanHandler = getUtil().ripExtension(cleanhandler);
 				//Add data to array
 				ArrayAppend(arguments.fileArray,cleanHandler);
 			}

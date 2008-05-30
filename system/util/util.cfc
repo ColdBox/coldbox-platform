@@ -11,6 +11,11 @@ Modification History:
 ---------------------------------------------------------------------->
 <cfcomponent name="util" output="false" hint="A utility method cfc">
 
+	<cffunction name="ripExtension" access="public" returntype="string" output="false" hint="Rip the extension of a filename.">
+		<cfargument name="filename" type="string" required="true">
+		<cfreturn reReplace(arguments.filename,"\.[^.]*$","")>
+	</cffunction>
+
 	<cffunction name="throwit" access="public" hint="Facade for cfthrow" output="false">
 		<!--- ************************************************************* --->
 		<cfargument name="message" 	type="string" 	required="yes">
