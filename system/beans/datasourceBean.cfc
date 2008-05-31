@@ -75,7 +75,7 @@ Modification History:
 	<!--- ************************************************************* --->
 
 	<cffunction name="getalias" access="public" return="string" output="false" hint="Get the alias">
-	  <cfreturn instance.name >
+	  <cfreturn instance.alias >
 	</cffunction>
 
 	<!--- ************************************************************* --->

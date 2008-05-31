@@ -17,7 +17,7 @@ Description :
 		var slash = createObject("java","java.lang.System").getProperty("file.separator");
 		
 		//Setup ColdBox Mappings For this Test
-		setAppMapping("/coldbox");
+		setAppMapping("/coldbox/testharness");
 		setConfigMapping("#mypath#resources#slash#environment_cbox.xml");
 		//Call the super setup method to setup the app.
 		super.setup();

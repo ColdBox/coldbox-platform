@@ -17,7 +17,7 @@ Description :
 		var slash = createObject("java","java.lang.System").getProperty("file.separator");
 		
 		//Setup ColdBox Mappings For this Test
-		setAppMapping("/coldbox");
+		setAppMapping("/coldbox/testharness");
 		setConfigMapping("#mypath#resources#slash#security_cbox_xml.xml");
 		
 		//Call the super setup method to setup the app.
@@ -61,7 +61,7 @@ Description :
 			var slash = createObject("java","java.lang.System").getProperty("file.separator");
 			
 			//Setup ColdBox Mappings For this Test
-			setAppMapping("/coldbox");
+			setAppMapping("/coldbox/testharness");
 			setConfigMapping("#mypath#resources#slash#security_cbox_xml.xml");
 			
 			//resetup
@@ -96,7 +96,7 @@ Description :
 		var slash = createObject("java","java.lang.System").getProperty("file.separator");
 		
 		//Setup ColdBox Mappings For this Test
-		setAppMapping("/coldbox");
+		setAppMapping("/coldbox/testharness");
 		setConfigMapping("#mypath#resources#slash#security_cbox_db.xml");
 		
 		//resetup
@@ -111,7 +111,7 @@ Description :
 		var slash = createObject("java","java.lang.System").getProperty("file.separator");
 		
 		//Setup ColdBox Mappings For this Test
-		setAppMapping("/coldbox");
+		setAppMapping("/coldbox/testharness");
 		setConfigMapping("#mypath#resources#slash#security_cbox_ioc.xml");
 		
 		//resetup
@@ -126,7 +126,7 @@ Description :
 		var slash = createObject("java","java.lang.System").getProperty("file.separator");
 		
 		//Setup ColdBox Mappings For this Test
-		setAppMapping("/coldbox");
+		setAppMapping("/coldbox/testharness");
 		setConfigMapping("#mypath#resources#slash#security_cbox_ocm.xml");
 		
 		//resetup
@@ -164,7 +164,7 @@ Description :
 		var event = getRequestContext();
 		
 		//Setup ColdBox Mappings For this Test
-		setAppMapping("/coldbox");
+		setAppMapping("/coldbox/testharness");
 		setConfigMapping("#mypath#resources#slash#security_cbox_ioc.xml");
 		
 		//resetup
