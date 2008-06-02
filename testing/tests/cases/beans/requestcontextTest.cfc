@@ -3,7 +3,7 @@
 	<cffunction name="setUp" returntype="void" access="public" output="false">
 		<cfscript>
 		//Setup ColdBox Mappings For this Test
-		setAppMapping("/coldbox");
+		setAppMapping("/coldbox/testharness");
 		setConfigMapping(ExpandPath(instance.AppMapping & "/config/coldbox.xml.cfm"));
 		//Call the super setup method to setup the app.
 		super.setup();
@@ -376,6 +376,40 @@
 			
 		</cfscript>
 	</cffunction>
+	
+	<cffunction name="testSES" access="public" output="false" returntype="void">
+		<cfscript>
+			var event = getRequestContext();
+			base = "http://www.luismajano.com/index.cfm";
+			
+			event.setsesBaseURL(base);
+			assertEquals( event.getsesBaseURL(), base );
+			
+			event.setisSES(true);
+			assertEquals( event.isSES(), true );
+			
+			
+		</cfscript>
+	</cffunction>
+	
+	<cffunction name="testBuildLink" access="public" output="false" returntype="void">
+		<cfscript>
+			var event = getRequestContext();
+			base = "http://www.luismajano.com/index.cfm";
+			
+			event.setisSES(false);
+			testurl = event.buildLink('general.index');
+			AssertEquals(testurl, "index.cfm?event=general.index" );
+			
+			event.setisSES(true);
+			event.setsesBaseURL(base);
+			testurl = event.buildLink('general/index');
+			AssertEquals(testurl, base & "/general/index" );
+			
+		</cfscript>
+	</cffunction>
+	
+	
 	
 
 </cfcomponent>

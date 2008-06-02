@@ -13,7 +13,7 @@ Description :
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 		
-	<cffunction name="init" access="public" output="false" hint="constructor" returntype="any">
+	<cffunction name="init" access="public" output="false" hint="constructor" returntype="requestContextDecorator">
 		<!--- ************************************************************* --->
 		<cfargument name="oContext" 	type="any" 	required="true" hint="The original context we are decorating. coldbox.system.beans.requestContext">
 		<cfargument name="controller" 	type="any" 	required="true"	hint="The coldbox controller">

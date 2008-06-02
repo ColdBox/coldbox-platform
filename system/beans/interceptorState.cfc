@@ -110,7 +110,7 @@ Description :
 <!------------------------------------------- PRIVATE ------------------------------------------->
 
 	<!--- Interceptor Invoker --->
-	<cffunction name="invoker" access="public" returntype="void" hint="Execute an interceptor execution point" output="false" >
+	<cffunction name="invoker" access="private" returntype="void" hint="Execute an interceptor execution point" output="false" >
 		<!--- ************************************************************* --->
 		<cfargument name="interceptor" 		required="true" type="any" 		hint="The interceptor reference from cache">
 		<cfargument name="event" 		 	required="true" type="any" 		hint="The event context">

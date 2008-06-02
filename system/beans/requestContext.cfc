@@ -109,7 +109,7 @@ Modification History:
 				return Evaluate("instance.context.#arguments.name#");
 			}
 			else if ( isSimpleValue(arguments.defaultValue) and arguments.defaultValue eq "NONE" )
-				throw("The variable: #arguments.name# is undefined in the request collection.","","Framework.ValueNotInRequestCollectionException");
+				throwit("The variable: #arguments.name# is undefined in the request collection.","","Framework.ValueNotInRequestCollectionException");
 			else if ( isSimpleValue(arguments.defaultValue) ){
 				if ( refind("\[[A-Za-z]*\]", arguments.defaultValue) ){
 					if ( findnocase("array", arguments.defaultvalue) )
@@ -508,7 +508,7 @@ Modification History:
 
 <!------------------------------------------- PRIVATE ------------------------------------------->
 
-	<cffunction name="throw" access="private" hint="Facade for cfthrow" output="false">
+	<cffunction name="throwit" access="private" hint="Facade for cfthrow" output="false">
 		<!--- ************************************************************* --->
 		<cfargument name="message" 	type="string" 	required="yes">
 		<cfargument name="detail" 	type="string" 	required="no" default="">
