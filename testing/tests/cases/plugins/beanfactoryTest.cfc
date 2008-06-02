@@ -37,7 +37,7 @@ Description :
 			var local = structnew();
 			
 			/* test create */
-			local.obj = plugin.create('applications.coldbox.testing.testmodel.formBean');
+			local.obj = plugin.create('coldbox.testing.testmodel.formBean');
 
 		</cfscript>
 	</cffunction>
@@ -50,7 +50,7 @@ Description :
 			var event = getRequestContext();
 			
 			/* We are using the formBean object: fname,lname,email,initDate */
-			local.obj = plugin.create('applications.coldbox.testing.testmodel.formBean');
+			local.obj = plugin.create('coldbox.testing.testmodel.formBean');
 			
 			/* Struct */
 			local.myStruct = structnew();
@@ -91,6 +91,32 @@ Description :
 				AssertEquals(local.objInstance[local.key], local.myStruct[local.key], "Asserting #local.key# From Request Collection" );
 			}
 			
+		</cfscript>
+	</cffunction>
+	
+	<cffunction name="testpopulateFromQuery" access="public" returntype="void" output="false">
+		<!--- Now test some events --->
+		<cfscript>
+			var plugin = getController().getPlugin("beanFactory");
+			var local = structnew();
+			
+			// We are using the formBean object: fname,lname,email,initDate 
+			local.obj = plugin.create('coldbox.testing.testmodel.formBean');
+			
+			// Query 
+			local.myQuery = QueryNew('fname,lname,email,initDate');
+			QueryAddRow(local.myQuery,1);
+			querySetCell(local.myQuery, "fname", "Sana");
+			querySetCell(local.myQuery, "lname", "Ullah");
+			querySetCell(local.myQuery, "email", "test13@test13.com");
+			querySetCell(local.myQuery, "initDate", now());
+		
+			// Populate From Query 
+			local.obj = plugin.populateFromQuery(local.obj,local.myQuery);
+			
+			AssertEquals(local.myQuery["fname"][1],local.obj.getfname());
+			AssertEquals(local.myQuery["lname"][1],local.obj.getlname());
+			AssertEquals(local.myQuery["email"][1],local.obj.getemail());
 		</cfscript>
 	</cffunction>
 	
