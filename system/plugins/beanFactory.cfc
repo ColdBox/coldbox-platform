@@ -127,9 +127,27 @@ Description: This is the framework's simple bean factory.
 		</cfscript>
 	</cffunction>
 
-
+	<cffunction name="populateFromQuery" access="public" returntype="Any" hint="Populate a named or instantiated bean from query" output="false">
+		<cfargument name="FormBean"  required="true"  type="any" 	 hint="This can be an instantiated bean object or a bean instantitation path as a string. If you pass an instantiation path and the bean has an 'init' method. It will be executed. This method follows the bean contract (set{property_name}). Example: setUsername(), setfname()">
+		<cfargument name="qry"       required="true"  type="query"   hint="query to popluate bean object">
+		<cfargument name="RowNumber" required="false" type="Numeric" hint="query row number" default="1">
+		
+		<cfscript>
+			//by default to take values from first row of the query
+			var row = arguments.RowNumber;
+			//columns array
+			var cols = listToArray(qry.columnList);
+			//new struct to hold query colum name and value
+			var stReturn = structnew();
+			var i   = 1;
+			//build the struct from the query row
+			for(i = 1; i lte arraylen(cols); i = i + 1){
+				stReturn[cols[i]] = arguments.qry[cols[i]][row];
+			}		
+			//populate bean and return
+			return populateFromStruct(arguments.FormBean, stReturn);
+		</cfscript>
+	</cffunction>
 <!------------------------------------------- PRIVATE ------------------------------------------->
-
-
 
 </cfcomponent>
