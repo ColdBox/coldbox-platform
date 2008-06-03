@@ -23,8 +23,7 @@ Description :
 		setLockTimeout(30);
 		//Set the app hash
 		setAppHash(hash(getBaseTemplatePath()));
-		//set request time
-		request.fwExecTime = getTickCount();
+		
 		//Set the COLDBOX CONFIG FILE
 		setCOLDBOX_CONFIG_FILE(COLDBOX_CONFIG_FILE);
 		//Set the Root
@@ -95,6 +94,9 @@ Description :
 		<!--- Start Application Requests --->
 		<cflock type="readonly" name="#getAppHash()#" timeout="#getLockTimeout()#" throwontimeout="true">
 			<cftry>
+				<!--- set request time --->
+				<cfset request.fwExecTime = getTickCount()>
+				
 				<!--- Local Reference --->
 				<cfset cbController = application.cbController>
 				<!--- Create Request Context & Capture Request --->
@@ -204,7 +206,7 @@ Description :
 	</cffunction>
 	
 	<!--- Session Start --->
-	<cffunction name="onSessionStart" returnType="void" output="false">
+	<cffunction name="onSessionStart" returnType="void" output="false" hint="An onSessionStart method to use or call from your Application.cfc">
 		<cfscript>
 			var cbController = "";
 			
@@ -222,7 +224,7 @@ Description :
 	</cffunction>
 	
 	<!--- Session End --->
-	<cffunction name="onSessionEnd" returnType="void" output="false">
+	<cffunction name="onSessionEnd" returnType="void" output="false" hint="An onSessionEnd method to use or call from your Application.cfc">
 		<!--- ************************************************************* --->
 		<cfargument name="sessionScope" type="struct" required="true">
 		<cfargument name="appScope" 	type="struct" required="false">
@@ -263,10 +265,8 @@ Description :
 		<cfset variables.COLDBOX_APP_ROOT_PATH = arguments.COLDBOX_APP_ROOT_PATH/>
 	</cffunction>
 	
-<!------------------------------------------- PRIVATE ------------------------------------------->	
-	
 	<!--- FW needs reinit --->
-	<cffunction name="isfwReinit" access="private" returntype="boolean" hint="Verify if we need to reboot" output="false" >
+	<cffunction name="isfwReinit" access="public" returntype="boolean" hint="Verify if we need to reboot the framework" output="false" >
 		<cfscript>
 			var reinitPass = "";
 			var incomingPass = "";
@@ -306,6 +306,8 @@ Description :
 			}
 		</cfscript>
 	</cffunction>
+	
+<!------------------------------------------- PRIVATE ------------------------------------------->	
 	
 	<!--- Getter setter lock timeout --->
 	<cffunction name="getLockTimeout" access="private" output="false" returntype="numeric" hint="Get LockTimeout">
