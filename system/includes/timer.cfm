@@ -14,14 +14,17 @@ Description :
 Modification History:
 06/08/2006 - Updated for coldbox.
 ----------------------------------------------------------------------->
-<cfparam name="attributes.timertag" default="NO_TIMER_TAG">
-<!--- Verify controller exists or debugger service --->
-<cfif structkeyExists(application,"cbController") AND application.cbController.getDebuggerService().getDebugMode()>
-	<cfscript>
+<cfparam name="attributes.timertag" 	default="NO_TIMER_TAG">
+<cfparam name="attributes.debugmode"	default="false">
+
+<cfscript>
+if (attributes.debugmode){
+	
 	//Check if DebugTimers is set
 	if ( not structKeyExists(request,"DebugTimers") ){
 		request.DebugTimers = QueryNew("Id,Method,Time,Timestamp,RC");
 	}
+	
 	//Start Processing
 	if (thisTag.executionMode is "start")
 		variables.stime = getTickCount();
@@ -33,6 +36,7 @@ Modification History:
 			QuerySetCell(request.DebugTimers, "Method", attributes.timertag);
 			QuerySetCell(request.DebugTimers, "Time", getTickCount() - stime);
 			QuerySetCell(request.DebugTimers, "Timestamp", now());
+			
 			//Request Context SnapShot
 			if ( not findnocase("rendering",attributes.timertag) ){
 				rc = application.cbController.getRequestService().getContext().getCollection().toString();
@@ -41,8 +45,12 @@ Modification History:
 			else{
 				QuerySetCell(request.DebugTimers, "RC", '');
 			}
-		}
-	}
-	</cfscript>
-</cfif>
+			
+		}//if stime declared
+		
+	}//end if in end execution mode
+	
+}//end if not in debugmode
+</cfscript>
+
 <cfsetting enablecfoutputonly=false>

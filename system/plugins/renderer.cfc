@@ -86,6 +86,7 @@ Modification History:
 		<!--- Cache Entries --->
 		<cfset var cbox_cacheKey = "">
 		<cfset var cbox_cacheEntry = "">
+		<cfset var debugMode = getController().getDebuggerService().getDebugMode()>
 		
 		<!--- Test Default View --->
 		<cfif arguments.view eq "">
@@ -105,12 +106,12 @@ Modification History:
 		<!--- Do we have a cached view?? --->
 		<cfif getColdboxOCM().lookup(cbox_cacheKey)>
 			<!--- Render The View --->
-			<cfmodule template="../includes/timer.cfm" timertag="rendering Cached View [#arguments.view#.cfm]">
+			<cfmodule template="../includes/timer.cfm" timertag="rendering Cached View [#arguments.view#.cfm]" debugMode="#debugMode#">
 				<cfset cbox_RenderedView = getColdBoxOCM().get(cbox_cacheKey)>
 			</cfmodule>
 		<cfelse>
 			<!--- Render The View --->
-			<cfmodule template="../includes/timer.cfm" timertag="rendering View [#arguments.view#.cfm]">
+			<cfmodule template="../includes/timer.cfm" timertag="rendering View [#arguments.view#.cfm]" debugMode="#debugMode#">
 				<cfsavecontent variable="cbox_RenderedView"><cfoutput><cfinclude template="/#getappMapping()#/#getViewsConvention()#/#arguments.view#.cfm"></cfoutput></cfsavecontent>
 			</cfmodule>
 			<!--- Is this view cacheable by setting, and if its the view we need to cache. --->
@@ -136,8 +137,9 @@ Modification History:
 		<cfset var cbox_RenderedView = "">
 		<cfset var Event = controller.getRequestService().getContext()>
 		<cfset var rc = event.getCollection()>
+		<cfset var debugMode = getController().getDebuggerService().getDebugMode()>
 		
-		<cfmodule template="../includes/timer.cfm" timertag="rendering View [#arguments.view#]">
+		<cfmodule template="../includes/timer.cfm" timertag="rendering View [#arguments.view#]" debugMode="#debugMode#">
 			<cftry>
 				<!--- Render the View --->
 				<cfsavecontent variable="cbox_RenderedView"><cfoutput><cfinclude template="#arguments.view#"></cfoutput></cfsavecontent>
@@ -159,13 +161,15 @@ Modification History:
 		<cfset var cbox_RederedLayout = "">
 		<cfset var Event = controller.getRequestService().getContext()>
 		<cfset var rc = event.getCollection()>
+		<cfset var debugMode = getController().getDebuggerService().getDebugMode()>
+		
 					
 		<!--- Check if no view has been set, if not, then set the default view --->
 		<cfif event.getCurrentView() eq "">
 			<cfset event.setView(event.getDefaultView())>
 		</cfif>
 		
-		<cfmodule template="../includes/timer.cfm" timertag="rendering Layout [#Event.getcurrentLayout()#]">
+		<cfmodule template="../includes/timer.cfm" timertag="rendering Layout [#Event.getcurrentLayout()#]" debugMode="#debugMode#">
 			<!--- Render With No Layout Test--->
 			<cfif Event.getcurrentLayout() eq "">
 				<cfset cbox_RederedLayout = renderView()>

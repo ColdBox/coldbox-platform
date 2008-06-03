@@ -73,7 +73,7 @@ Description :
 				
 		<!--- Process The State if it exists, else just exit out. --->
 		<cfif structKeyExists(getinterceptionStates(), arguments.state) >
-			<cfmodule template="../includes/timer.cfm" timertag="interception [#arguments.state#]">
+			<cfmodule template="../includes/timer.cfm" timertag="interception [#arguments.state#]" debugmode="#getController().getDebuggerService().getDebugMode()#">
 				<cfset structFind( getinterceptionStates(), arguments.state).process(event,arguments.interceptData)>
 			</cfmodule>				
 		</cfif>

@@ -349,6 +349,7 @@ Description		: This is the main ColdBox front Controller.
 		<cfset var interceptMetadata = structnew()>
 		<cfset var Results = "">
 		<cfset var privateArgCollection = structnew()>
+		<cfset var debugMode = getDebuggerService().getDebugMode()>
 		
 		<!--- Default Event Test --->
 		<cfif arguments.event eq "">
@@ -371,7 +372,7 @@ Description		: This is the main ColdBox front Controller.
 			
 		<!--- PreHandler Execution --->
 		<cfif not arguments.prepostExempt and structKeyExists(oEventHandler,"preHandler")>
-			<cfmodule template="includes/timer.cfm" timertag="invoking runEvent [preHandler] for #arguments.event#">
+			<cfmodule template="includes/timer.cfm" timertag="invoking runEvent [preHandler] for #arguments.event#" debugmode="#debugMode#">
 			<cfset oEventHandler.preHandler(oRequestContext)>
 			</cfmodule>
 		</cfif>
@@ -383,7 +384,7 @@ Description		: This is the main ColdBox front Controller.
 			<!--- Private Arg Collection --->
 			<cfset privateArgCollection["event"] = oRequestContext>
 			<!--- Start Timer --->
-			<cfmodule template="includes/timer.cfm" timertag="invoking PRIVATE runEvent [#arguments.event#]">
+			<cfmodule template="includes/timer.cfm" timertag="invoking PRIVATE runEvent [#arguments.event#]" debugmode="#debugMode#">
 				<!--- Call Private Event --->
 				<cfinvoke component="#oEventHandler#" method="invokerMixin" returnvariable="Results">
 					<cfinvokeargument name="method" value="#oEventHandlerBean.getMethod()#">
@@ -394,7 +395,7 @@ Description		: This is the main ColdBox front Controller.
 			<cfset getPlugin("methodInjector").stop(oEventHandler)>
 		<cfelse>
 			<!--- Start Timer --->
-			<cfmodule template="includes/timer.cfm" timertag="invoking runEvent [#arguments.event#]">
+			<cfmodule template="includes/timer.cfm" timertag="invoking runEvent [#arguments.event#]" debugmode="#debugMode#">
 				<cfif oEventHandlerBean.getisMissingAction()>
 					<!--- Execute the Public Event --->
 					<cfinvoke component="#oEventHandler#" method="onMissingAction" returnvariable="Results">
@@ -412,7 +413,7 @@ Description		: This is the main ColdBox front Controller.
 
 		<!--- PostHandler Execution --->
 		<cfif not arguments.prepostExempt and structKeyExists(oEventHandler,"postHandler")>
-			<cfmodule template="includes/timer.cfm" timertag="invoking runEvent [postHandler] for #arguments.event#">
+			<cfmodule template="includes/timer.cfm" timertag="invoking runEvent [postHandler] for #arguments.event#" debugmode="#debugMode#">
 			<cfset oEventHandler.postHandler(oRequestContext)>
 			</cfmodule>
 		</cfif>
