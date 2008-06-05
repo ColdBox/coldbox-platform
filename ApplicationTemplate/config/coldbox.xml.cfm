@@ -104,6 +104,9 @@
 			
 			Messagebox Plugin (You can now override the storage scope without affecting all framework applications)
 			<Setting name="messagebox_storage_scope" value="session or client" />
+			
+			Complex Settings follow JSON Syntax. www.json.org.  
+			*IMPORTANT: use single quotes in this xml file for JSON notation, ColdBox will translate it to double quotes.
 		</YourSettings>
 	 -->
 	<YourSettings></YourSettings>
