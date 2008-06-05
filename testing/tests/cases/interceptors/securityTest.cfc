@@ -14,11 +14,10 @@ Description :
 	<cffunction name="setUp" returntype="void" access="public" output="false">
 		<cfscript>
 		var mypath = getDirectoryFromPath(getMetaData(this).path);
-		var slash = createObject("java","java.lang.System").getProperty("file.separator");
 		
 		//Setup ColdBox Mappings For this Test
 		setAppMapping("/coldbox/testharness");
-		setConfigMapping("#mypath#resources#slash#security_cbox_xml.xml");
+		setConfigMapping("#mypath#../../resources/interceptor_configs/security_cbox_xml.xml");
 		
 		//Call the super setup method to setup the app.
 		super.setup();
@@ -58,11 +57,10 @@ Description :
 		<!--- Now test some events --->
 		<cfscript>
 			var mypath = getDirectoryFromPath(getMetaData(this).path);
-			var slash = createObject("java","java.lang.System").getProperty("file.separator");
 			
 			//Setup ColdBox Mappings For this Test
 			setAppMapping("/coldbox/testharness");
-			setConfigMapping("#mypath#resources#slash#security_cbox_xml.xml");
+			setConfigMapping("#mypath#../../resources/interceptor_configs/security_cbox_xml.xml");
 			
 			//resetup
 			getController().getLoaderService().setupCalls(getConfigMapping(),getAppMapping());
@@ -93,11 +91,11 @@ Description :
 	<cffunction name="testDBLoad" access="public" returntype="void" output="false">
 		<cfscript>
 		var mypath = getDirectoryFromPath(getMetaData(this).path);
-		var slash = createObject("java","java.lang.System").getProperty("file.separator");
+		
 		
 		//Setup ColdBox Mappings For this Test
 		setAppMapping("/coldbox/testharness");
-		setConfigMapping("#mypath#resources#slash#security_cbox_db.xml");
+		setConfigMapping("#mypath#../../resources/interceptor_configs/security_cbox_db.xml");
 		
 		//resetup
 		getController().getLoaderService().setupCalls(getConfigMapping(),getAppMapping());
@@ -108,11 +106,11 @@ Description :
 	<cffunction name="testIOCLoad" access="public" returntype="void" output="false">
 		<cfscript>
 		var mypath = getDirectoryFromPath(getMetaData(this).path);
-		var slash = createObject("java","java.lang.System").getProperty("file.separator");
+		
 		
 		//Setup ColdBox Mappings For this Test
 		setAppMapping("/coldbox/testharness");
-		setConfigMapping("#mypath#resources#slash#security_cbox_ioc.xml");
+		setConfigMapping("#mypath#../../resources/interceptor_configs/security_cbox_ioc.xml");
 		
 		//resetup
 		getController().getLoaderService().setupCalls(getConfigMapping(),getAppMapping());
@@ -123,11 +121,11 @@ Description :
 	<cffunction name="testOCMLoad" access="public" returntype="void" output="false">
 		<cfscript>
 		var mypath = getDirectoryFromPath(getMetaData(this).path);
-		var slash = createObject("java","java.lang.System").getProperty("file.separator");
+		
 		
 		//Setup ColdBox Mappings For this Test
 		setAppMapping("/coldbox/testharness");
-		setConfigMapping("#mypath#resources#slash#security_cbox_ocm.xml");
+		setConfigMapping("#mypath#../../resources/interceptor_configs/security_cbox_ocm.xml");
 		
 		//resetup
 		getController().getLoaderService().setupCalls(getConfigMapping(),getAppMapping());
@@ -160,12 +158,12 @@ Description :
 	<cffunction name="testCreatedValidator" access="public" returntype="void" output="false">
 		<cfscript>
 		var mypath = getDirectoryFromPath(getMetaData(this).path);
-		var slash = createObject("java","java.lang.System").getProperty("file.separator");
+		
 		var event = getRequestContext();
 		
 		//Setup ColdBox Mappings For this Test
 		setAppMapping("/coldbox/testharness");
-		setConfigMapping("#mypath#resources#slash#security_cbox_ioc.xml");
+		setConfigMapping("#mypath#../../resources/interceptor_configs/security_cbox_ioc.xml");
 		
 		//resetup
 		getController().getLoaderService().setupCalls(getConfigMapping(),getAppMapping());

@@ -36,7 +36,10 @@ Description :
 			/* enableSetterInjection */
 			if(not propertyExists("enableSetterInjection")){
 				setProperty("enableSetterInjection",'true');
-			}
+			}		
+			
+			/* Create our beanFactory plugin, we do this here, because we need it not to execute an endless loop */
+			instance.beanFactory = getPlugin("beanFactory");	
 		</cfscript>
 	</cffunction>
 
@@ -114,108 +117,32 @@ Description :
 		<!--- ************************************************************* --->
 		<cfscript>
 			/* Targets */
-			var targetCacheKey = "";
+			var targetPath = "";
 			var targetObject = "";
-			
-			/* Dependencies */
-			var thisDependency = "";
-			var thisScope = "";
-			
-			/* Metadata entry structures */
-			var MetaData = "";
-			var mdEntry = "";
-			var targetDIEntry = "";
-			var dependenciesLength = 0;
-			var x = 1;
-			var tmpBean = "";
 			
 			/* Determine targets by type */
 			if ( targetType eq "plugin" ){
 				targetObject = interceptData.oPlugin;
-				targetCacheKey = interceptData.custom & "_" & interceptData.pluginPath;
+				targetPath = interceptData.custom & "_" & interceptData.pluginPath;
 			}
 			else if( targetType eq "handler"){
 				targetObject = interceptData.oHandler;
-				targetCacheKey = interceptData.handlerPath;
+				targetPath = interceptData.handlerPath;
 			}
 			else if( targetType eq "interceptor" ){
 				targetObject = interceptData.oInterceptor;
-				targetCacheKey = interceptData.interceptorPath;
+				targetPath = interceptData.interceptorPath;
 			}
 			
-			/* Do we have the incoming target object's data in the cache? */
-			if ( not getDICacheDictionary().keyExists(targetCacheKey) ){
-				/* Get Object MetaData */
-				MetaData = getMetaData(targetObject);
-				/* Get Empty Default MD Entry */
-				mdEntry = getNewMDEntry();
-										
-				/* By Default, objects are NOT autowired*/
-				if ( not structKeyExists(MetaData,"autowire") or not isBoolean(MetaData["autowire"]) ){
-					MetaData.autowire = false;
-					mdEntry.autowire = false;
-				}
-				/* Lookup Dependencies if using autowire */
-				if ( MetaData["autowire"] ){
-					/* Set md entry to true for autowiring */
-					mdEntry.autowire = true;
-					/* Recurse for dependencies here, in order to build them. */
-					mdEntry.dependencies = parseMetadata(MetaData,mdEntry.dependencies);
-				}
-				
-				/* Set Entry in dictionary */
-				getDICacheDictionary().setKey(targetCacheKey,mdEntry);
-			}
-			
-			/* We are now assured that the DI cache has data. */
-			targetDIEntry = getDICacheDictionary().getKey(targetCacheKey);
-			/* Do we Inject Dependencies, are we AutoWiring */
-			if ( targetDIEntry.autowire ){
-				/* Dependencies Length */
-				dependenciesLength = arrayLen(targetDIEntry.dependencies);
-				/* Let's inject our mixins */
-				getPlugin("methodInjector").start(targetObject);
-				
-				/* Loop over dependencies and inject. */
-				for(x=1; x lte dependenciesLength;x=x+1){
-					
-					/* Defaults */
-					thisDependency = targetDIEntry.dependencies[x];
-					thisScope = "";
-					
-					/* Check for property and scopes */
-					if( listlen(thisDependency) gt 1 ){
-						thisDependency = listFirst(targetDIEntry.dependencies[x]);
-						thisScope = listLast(targetDIEntry.dependencies[x]);
-					}
-					
-					/* Verify that bean exists in the IOC container. */
-					if( getPlugin("ioc").getIOCFactory().containsBean(thisDependency) ){
-						
-						/* Inject dependency */
-						injectBean(targetBean=targetObject,
-								   beanName=thisDependency,
-								   beanObject=getPlugin("ioc").getBean(thisDependency),
-								   scope=thisScope);
-						
-						/* Debug Mode Check */
-						if( getProperty("debugMode") ){
-							getPlugin("logger").logEntry("information","Bean: #thisDependency#,Scope: #thisScope# --> injected into #targetCacheKey#.");
-						}
-					}
-					else if( getProperty("debugMode") ){
-						getPlugin("logger").logEntry("warning","Bean: #thisDependency#,Scope: #thisScope# --> not found in factory");
-					}
-					
-				}//end for loop of dependencies.
-				
-				/* Process After ID Complete */
-				processAfterCompleteDI(targetObject);
-				
-				/* Let's cleanup our mixins */
-				getPlugin("methodInjector").stop(targetObject);
-				
-			}//if autowiring			
+			/* Exclude the core plugins from autowires */
+			if( not findnocase("coldbox.system.plugins",targetPath) ){
+				/* Process Autowire */
+				instance.beanFactory.autowire(target=targetObject,
+											  useSetterInjection=getProperty('enableSetterInjection'),
+											  annotationCheck=true,
+											  onDICompleteUDF=getProperty('completeDIMethodName'),
+											  debugMode=getProperty('debugMode'));
+			}	
 		</cfscript>
 	</cffunction>
 	

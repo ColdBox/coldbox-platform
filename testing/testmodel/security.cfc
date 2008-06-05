@@ -1,5 +1,16 @@
 <cfcomponent output="false" cache="true" cachetimeout="5" cacheLastAccessTimeout="1"> 
 
+<!--- Some Autowire stuff --->
+<cfproperty name="myMailSettings" type="ioc">
+<cfproperty name="myDatasource" type="ioc" scope="instance">
+<cfproperty name="loggerPlugin" type="ioc" scope="this">
+
+	<!--- Setter INjection Test. --->
+	<cffunction name="setMyDatasource" access="public" output="false" returntype="void" hint="Set MyDatasource">
+		<cfargument name="MyDatasource" type="any" required="true"/>
+		<cfset variables.setterInjection.MyDatasource = arguments.MyDatasource/>
+	</cffunction>
+
 	<cffunction name="init" access="public" returntype="security" hint="" output="false" >
 		<cfscript>
 		return this;

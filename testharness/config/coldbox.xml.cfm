@@ -124,6 +124,7 @@
 		</Interceptor>
 		<Interceptor class="coldbox.system.interceptors.autowire">
 			<Property name="debugMode">true</Property>
+			<Property name="enableSetterInjection">false</Property>
 		</Interceptor>
 		<!--<Interceptor class="coldbox.testharness.interceptors.executionTracer">
 			<Property name="Simple">Luis</Property>

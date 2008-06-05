@@ -71,7 +71,7 @@
 	
 	<Interceptors throwOnInvalidStates="true">
 		<Interceptor class="coldbox.system.interceptors.environmentControl">
-			<Property name="configFile">/applications/coldbox/testing/tests/cases/interceptors/resources/environments.xml.cfm</Property>
+			<Property name="configFile">/applications/coldbox/testing/tests/resources/environments.xml.cfm</Property>
 			<Property name="fireOnInit">true</Property>
 		</Interceptor>		
 	</Interceptors>

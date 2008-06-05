@@ -14,11 +14,10 @@ Description :
 	<cffunction name="setUp" returntype="void" access="public" output="false">
 		<cfscript>
 		var mypath = getDirectoryFromPath(getMetaData(this).path);
-		var slash = createObject("java","java.lang.System").getProperty("file.separator");
 		
 		//Setup ColdBox Mappings For this Test
 		setAppMapping("/coldbox/testharness");
-		setConfigMapping("#mypath#resources#slash#environment_cbox.xml");
+		setConfigMapping("#mypath#../../resources/interceptor_configs/environment_cbox.xml");
 		//Call the super setup method to setup the app.
 		super.setup();
 		</cfscript>
