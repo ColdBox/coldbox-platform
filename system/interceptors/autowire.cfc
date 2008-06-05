@@ -33,6 +33,10 @@ Description :
 			if(not propertyExists("completeDIMethodName")){
 				setProperty("completeDIMethodName",'onDIComplete');
 			}
+			/* enableSetterInjection */
+			if(not propertyExists("enableSetterInjection")){
+				setProperty("enableSetterInjection",'true');
+			}
 		</cfscript>
 	</cffunction>
 
@@ -238,6 +242,8 @@ Description :
 						if( not structKeyExists(md.properties[x],"scope") ){
 							md.properties[x].scope = "variables";
 						}		
+						/* Cleanup Name */
+						md.properties[x].name = replace(md.properties[x].name,".","_","all");
 						/* Add Property Dependency */
 						ArrayAppend( arguments.dependencies, md.properties[x].name & "," & md.properties[x].scope );
 					}
@@ -245,8 +251,8 @@ Description :
 				}//end for loop		
 			}//end if properties found.
 			
-			/* Look for cfFunctions */		
-			if( structKeyExists(md, "functions") ){
+			/* Look for cfFunctions and if setter injection is enabled. */		
+			if( getProperty('enableSetterInjection') and structKeyExists(md, "functions") ){
 				for(x=1; x lte ArrayLen(md.functions); x=x+1 ){
 					/* Verify we have a setter */
 					if( left(md.functions[x].name,3) eq "set" and not listFindNoCase(cbox_reserved_functions,md.functions[x].name) ){
