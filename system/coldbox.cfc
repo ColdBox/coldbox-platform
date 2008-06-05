@@ -266,10 +266,14 @@ Description :
 	
 	<!--- FW needs reinit --->
 	<cffunction name="isfwReinit" access="public" returntype="boolean" hint="Verify if we need to reboot the framework" output="false" >
+		<cfset var reinitPass = "">
+		<cfset var incomingPass = "">
+		
+		<!--- CF Parm Structures just in case. --->
+		<cfparam name="FORM" default="#StructNew()#">
+		<cfparam name="URL"	 default="#StructNew()#">
+		
 		<cfscript>
-			var reinitPass = "";
-			var incomingPass = "";
-			
 			/* Check if we have a reinit password at hand. */
 			if ( application.cbController.settingExists("ReinitPassword") ){
 				reinitPass = application.cbController.getSetting("ReinitPassword");
