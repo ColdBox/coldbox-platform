@@ -241,7 +241,11 @@ Description :
 			}
 			
 			/* Start Registering inheritances */
-			if ( structKeyExists(arguments.metadata, "extends") and arguments.metadata.extends.name neq "coldbox.system.interceptor"){
+			if ( structKeyExists(arguments.metadata, "extends") and 
+				 (arguments.metadata.extends.name neq "coldbox.system.interceptor" or
+				  arguments.metadata.extends.name neq "coldbox.system.plugin" or
+				  arguments.metadata.extends.name neq "coldbox.system.eventhandler" )
+			){
 				/* Recursive lookup */
 				parseMetadata(arguments.metadata.extends,pointsFound);
 			}
