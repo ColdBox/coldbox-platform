@@ -10,7 +10,7 @@ Description :
 	<cffunction name="setUp" returntype="void" access="public" output="false">
 		<cfscript>
 		//Setup ColdBox Mappings For this Test
-		setAppMapping("/applications/coldbox/ApplicationTemplate");
+		setAppMapping("/coldbox/ApplicationTemplate");
 		setConfigMapping(ExpandPath(instance.AppMapping & "/config/coldbox.xml.cfm"));
 			
 		//Call the super setup method to setup the app.

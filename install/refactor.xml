@@ -30,7 +30,7 @@ www.coldboxframework.com | www.luismajano.com | www.ortussolutions.com
     </description>
 	
 	<!-- Where the ColdBox system folder is -->
-	<property name="coldbox.system_path" value="${basedir}\src\system" />
+	<property name="coldbox.system_path" value="${basedir}\system" />
 	<!-- Where to copy the refactored system folder -->
 	<property name="coldbox.destination" value="${basedir}\install\system" />
 		
