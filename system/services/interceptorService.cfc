@@ -52,7 +52,7 @@ Description :
 			/* Loop over the Interceptor Array, to begin registration */
 			for (; x lte arrayLen(interceptorConfig.interceptors); x=x+1){
 				/* register this interceptor */
-				registerInterceptor(interceptorConfig.interceptors[x].class,interceptorConfig.interceptors[x].properties);				
+				registerInterceptor(interceptorClass=interceptorConfig.interceptors[x].class,interceptorProperties=interceptorConfig.interceptors[x].properties);				
 			}//end declared interceptor loop			
 		</cfscript>
 	</cffunction>
@@ -73,39 +73,54 @@ Description :
 				
 		<!--- Process The State if it exists, else just exit out. --->
 		<cfif structKeyExists(getinterceptionStates(), arguments.state) >
-			<cfmodule template="../includes/timer.cfm" timertag="interception [#arguments.state#]" debugmode="#getController().getDebuggerService().getDebugMode()#">
+			<cfmodule template="../includes/timer.cfm" timertag="interception [#arguments.state#]" controller="#getController()#">
 				<cfset structFind( getinterceptionStates(), arguments.state).process(event,arguments.interceptData)>
 			</cfmodule>				
 		</cfif>
 	</cffunction>
 	
 	<!--- Register an Interceptor --->
-	<cffunction name="registerInterceptor" access="public" output="false" returntype="void" hint="Register an interceptor. This method is here for runtime additions. If the interceptor is already in a state, it will not be added again.">
+	<cffunction name="registerInterceptor" access="public" output="false" returntype="void" hint="Register an interceptor. This method is here for runtime additions. If the interceptor is already in a state, it will not be added again. You can register an interceptor by class or with an already instantiated and configured object.">
 		<!--- ************************************************************* --->
-		<cfargument name="interceptorClass" 		required="true" 	type="string" 	hint="The qualified class of the interceptor to register">
-		<cfargument name="interceptorProperties" 	required="false" 	type="struct" 	hint="The structure of properties to register this interceptor with.">
+		<cfargument name="interceptorClass" 		required="false" 	type="string" 	hint="Mutex with interceptorObject, this is the qualified class of the interceptor to register">
+		<cfargument name="interceptorObject" 		required="false" 	type="any" 		hint="Mutex with interceptor Class, this is used to register an already instantiated object as an interceptor">
+		<cfargument name="interceptorProperties" 	required="false" 	type="struct"	default="#structNew()#" 	hint="The structure of properties to register this interceptor with.">
 		<!--- ************************************************************* --->
 		<cfscript>
-			var interceptorKey = this.INTERCEPTOR_CACHEKEY_PREFIX & arguments.interceptorClass;
+			var interceptorKey = '';
 			var oInterceptor = "";
+			var interceptorName = "";
 			var interceptionPointsFound = structNew();
 			var stateKey = "";
-			var interceptData = structnew();
-			var autowireInterceptor = this.INTERCEPTOR_CACHEKEY_PREFIX & "coldbox.system.interceptors.autowire";			
+			var interceptData = structnew();			
 		</cfscript>
 		
+		<!--- Determine Registration Name and set local interception object if sent --->
+		<cfif structKeyExists(arguments,"interceptorClass") >
+			<cfset interceptorName = arguments.interceptorClass>
+		<cfelseif structKeyExists(arguments,"interceptorObject")>
+			<cfset interceptorName = getMetaData(arguments.interceptorObject).name>
+			<cfset oInterceptor = arguments.interceptorObject>
+		<cfelse>
+			<cfthrow message="Invalid registration" detail="You did not send in an interceptorClass or interceptorObject for registration" type="Framework.InterceptorService.InvalidRegistration">
+		</cfif>
+		
 		<!--- Lock this registration --->
-		<cflock name="interceptorService.registerInterceptor.#arguments.interceptorClass#" type="exclusive" throwontimeout="true" timeout="30">
+		<cflock name="interceptorService.registerInterceptor.#interceptorName#" type="exclusive" throwontimeout="true" timeout="30">
 			<cfscript>
-				/* Create the Interceptor Class */
-				oInterceptor = CreateObject("component", arguments.interceptorClass ).init(getController(),interceptorProperties);
-				/* Configure the Interceptor */
-				oInterceptor.configure();
-				
-				/* Cache Interceptor */
-				if ( not getController().getColdBoxOCM().set(interceptorKey, oInterceptor, 0) ){
-					getUtil().throwit("The interceptor could not be cached, either the cache is full, the threshold has been reached or we are out of memory.","Please check your cache limits, try increasing them or verify your server memory","Framework.InterceptorService.InterceptorCantBeCached");
-				}
+				/* Did we send in a class to instantiate */
+				if( structKeyExists(arguments,"interceptorClass") ){
+					/* Cache Key */
+					interceptorKey = this.INTERCEPTOR_CACHEKEY_PREFIX & arguments.interceptorClass;
+					/* Create the Interceptor Class */
+					oInterceptor = CreateObject("component", arguments.interceptorClass ).init(getController(),interceptorProperties);
+					/* Configure the Interceptor */
+					oInterceptor.configure();
+					/* Cache Interceptor */
+					if ( not getController().getColdBoxOCM().set(interceptorKey, oInterceptor, 0) ){
+						getUtil().throwit("The interceptor could not be cached, either the cache is full, the threshold has been reached or we are out of memory.","Please check your cache limits, try increasing them or verify your server memory","Framework.InterceptorService.InterceptorCantBeCached");
+					}
+				}//end if class is sent.
 				
 				/* Parse Interception Points, thanks to inheritance. */
 				interceptionPointsFound = structnew();
@@ -116,8 +131,10 @@ Description :
 					RegisterInterceptionPoint(interceptorKey,stateKey);
 				}
 				
-				/* TODO: Autowire from plugin */
-			
+				/* Autowire this interceptor only if called after aspect registration */
+				if( getController().getAspectsInitiated() ){
+					getController().getPlugin("beanFactory").autowire(target=oInterceptor,annotationCheck=true);
+				}			
 			</cfscript>
 		</cflock>
 	</cffunction>

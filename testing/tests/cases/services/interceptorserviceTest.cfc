@@ -130,6 +130,29 @@ Modification History:
 		</cfscript>
 	</cffunction>
 	
+	<cffunction name="testManualRegistration" access="public" returntype="void" output="false">
+		<cfscript>
+			this.iservice.appendInterceptionPoints('unitTest');
+			this.iservice.registerInterceptor(interceptorClass='coldbox.testing.testinterceptors.mock');
+			
+			AssertTrue( isObject(this.iservice.getStateContainer('unittest')) );
+			
+		</cfscript>
+	</cffunction>
+	
+	<cffunction name="testManualObjectRegistration" access="public" returntype="void" output="false">
+		<cfscript>
+			var obj = CreateObject("component","coldbox.testing.testinterceptors.mock");
+			
+			this.iservice.appendInterceptionPoints('unitTest');
+			this.iservice.registerInterceptor(interceptorObject=obj);
+			
+			AssertTrue( isObject(this.iservice.getStateContainer('unittest')) );
+			
+		</cfscript>
+	</cffunction>
+	
+	
 	
 	
 </cfcomponent>

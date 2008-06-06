@@ -15,41 +15,50 @@ Modification History:
 06/08/2006 - Updated for coldbox.
 ----------------------------------------------------------------------->
 <cfparam name="attributes.timertag" 	default="NO_TIMER_TAG">
-<cfparam name="attributes.debugmode"	default="false">
+<cfparam name="attributes.controller"	default="">
 
 <cfscript>
-if (attributes.debugmode){
+if (isObject(attributes.controller)){
 	
-	//Check if DebugTimers is set
-	if ( not structKeyExists(request,"DebugTimers") ){
-		request.DebugTimers = QueryNew("Id,Method,Time,Timestamp,RC");
-	}
+	/* Get properties */
+	debugMode = attributes.controller.getDebuggerService().getDebugMode();
 	
-	//Start Processing
-	if (thisTag.executionMode is "start")
-		variables.stime = getTickCount();
-	else{
-		//In case timer is executed before the debug Mode has been set
-		if ( structKeyExists(variables, "stime") )	{
-			QueryAddRow(request.DebugTimers,1);
-			QuerySetCell(request.DebugTimers, "Id", createUUID());
-			QuerySetCell(request.DebugTimers, "Method", attributes.timertag);
-			QuerySetCell(request.DebugTimers, "Time", getTickCount() - stime);
-			QuerySetCell(request.DebugTimers, "Timestamp", now());
-			
-			//Request Context SnapShot
-			if ( not findnocase("rendering",attributes.timertag) ){
-				rc = application.cbController.getRequestService().getContext().getCollection().toString();
-				QuerySetCell(request.DebugTimers, "RC", htmlEditFormat(rc) );
-			}
-			else{
-				QuerySetCell(request.DebugTimers, "RC", '');
-			}
-			
-		}//if stime declared
+	if( debugMode ){
 		
-	}//end if in end execution mode
+		/* Check if DebugTimers is set */
+		if ( not structKeyExists(request,"DebugTimers") ){
+			request.DebugTimers = QueryNew("Id,Method,Time,Timestamp,RC");
+		}
+		
+		/* Start Processing */
+		if (thisTag.executionMode is "start")
+			variables.stime = getTickCount();
+		else{
+			/* Collection */
+			collection = attributes.controller.getRequestService().getContext().getCollection();
 	
+			//In case timer is executed before the debug Mode has been set
+			if ( structKeyExists(variables, "stime") )	{
+				
+				QueryAddRow(request.DebugTimers,1);
+				QuerySetCell(request.DebugTimers, "Id", createUUID());
+				QuerySetCell(request.DebugTimers, "Method", attributes.timertag);
+				QuerySetCell(request.DebugTimers, "Time", getTickCount() - stime);
+				QuerySetCell(request.DebugTimers, "Timestamp", now());
+				
+				//Request Context SnapShot
+				if ( not findnocase("rendering",attributes.timertag) ){
+					rc = collection.toString();
+					QuerySetCell(request.DebugTimers, "RC", htmlEditFormat(rc) );
+				}
+				else{
+					QuerySetCell(request.DebugTimers, "RC", '');
+				}
+				
+			}//if stime declared
+			
+		}//end if in end execution mode
+	}//end if in debugmode	
 }//end if not in debugmode
 </cfscript>
 

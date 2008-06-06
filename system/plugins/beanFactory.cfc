@@ -283,7 +283,7 @@ Description: This is the framework's simple bean factory.
 		<cfscript>
 			var x = 1;
 			var md = arguments.metadata;
-			var cbox_reserved_functions = "setSetting,setDebugMode,setNextEvent,setNextRoute,setController,settingExists";
+			var cbox_reserved_functions = "setSetting,setDebugMode,setNextEvent,setNextRoute,setController,settingExists,setPluginName,setPluginVersion,setPluginDescription,setProperty,setproperties";
 			
 			/* Look For cfProperties */
 			if( structKeyExists(md,"properties") and ArrayLen(md.properties) gt 0){

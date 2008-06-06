@@ -106,12 +106,12 @@ Modification History:
 		<!--- Do we have a cached view?? --->
 		<cfif getColdboxOCM().lookup(cbox_cacheKey)>
 			<!--- Render The View --->
-			<cfmodule template="../includes/timer.cfm" timertag="rendering Cached View [#arguments.view#.cfm]" debugMode="#debugMode#">
+			<cfmodule template="../includes/timer.cfm" timertag="rendering Cached View [#arguments.view#.cfm]" controller="#getController()#">
 				<cfset cbox_RenderedView = getColdBoxOCM().get(cbox_cacheKey)>
 			</cfmodule>
 		<cfelse>
 			<!--- Render The View --->
-			<cfmodule template="../includes/timer.cfm" timertag="rendering View [#arguments.view#.cfm]" debugMode="#debugMode#">
+			<cfmodule template="../includes/timer.cfm" timertag="rendering View [#arguments.view#.cfm]" controller="#getController()#">
 				<cfsavecontent variable="cbox_RenderedView"><cfoutput><cfinclude template="/#getappMapping()#/#getViewsConvention()#/#arguments.view#.cfm"></cfoutput></cfsavecontent>
 			</cfmodule>
 			<!--- Is this view cacheable by setting, and if its the view we need to cache. --->
@@ -139,7 +139,7 @@ Modification History:
 		<cfset var rc = event.getCollection()>
 		<cfset var debugMode = getController().getDebuggerService().getDebugMode()>
 		
-		<cfmodule template="../includes/timer.cfm" timertag="rendering View [#arguments.view#]" debugMode="#debugMode#">
+		<cfmodule template="../includes/timer.cfm" timertag="rendering View [#arguments.view#]" controller="#getController()#">
 			<cftry>
 				<!--- Render the View --->
 				<cfsavecontent variable="cbox_RenderedView"><cfoutput><cfinclude template="#arguments.view#"></cfoutput></cfsavecontent>
@@ -169,7 +169,7 @@ Modification History:
 			<cfset event.setView(event.getDefaultView())>
 		</cfif>
 		
-		<cfmodule template="../includes/timer.cfm" timertag="rendering Layout [#Event.getcurrentLayout()#]" debugMode="#debugMode#">
+		<cfmodule template="../includes/timer.cfm" timertag="rendering Layout [#Event.getcurrentLayout()#]" controller="#getController()#">
 			<!--- Render With No Layout Test--->
 			<cfif Event.getcurrentLayout() eq "">
 				<cfset cbox_RederedLayout = renderView()>
