@@ -85,6 +85,7 @@ Description :
 		<cfargument name="interceptorClass" 		required="false" 	type="string" 	hint="Mutex with interceptorObject, this is the qualified class of the interceptor to register">
 		<cfargument name="interceptorObject" 		required="false" 	type="any" 		hint="Mutex with interceptor Class, this is used to register an already instantiated object as an interceptor">
 		<cfargument name="interceptorProperties" 	required="false" 	type="struct"	default="#structNew()#" 	hint="The structure of properties to register this interceptor with.">
+		<cfargument name="customPoints" 			required="false" 	type="string" 	default="" hint="A comma delimmited list of custom interception points, if the object or class sent in observes them.">
 		<!--- ************************************************************* --->
 		<cfscript>
 			var interceptorKey = '';
@@ -121,6 +122,9 @@ Description :
 						getUtil().throwit("The interceptor could not be cached, either the cache is full, the threshold has been reached or we are out of memory.","Please check your cache limits, try increasing them or verify your server memory","Framework.InterceptorService.InterceptorCantBeCached");
 					}
 				}//end if class is sent.
+				
+				/* Append Custom Poings */
+				appendInterceptionPoints(arguments.customPoints);
 				
 				/* Parse Interception Points, thanks to inheritance. */
 				interceptionPointsFound = structnew();

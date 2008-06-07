@@ -122,7 +122,8 @@ Modification History:
 			}//end if bluedragon
 			else if ( CFMLEngine eq controller.oCFMLENGINE.RAILO ){
 				settingsStruct["xmlParseActive"] = true;
-				settingsStruct["chartingActive"] = false;
+				if( CFMLVersion gte 8 ){ settingsStruct["chartingActive"] = true; }
+				else{ settingsStruct["chartingActive"] = false; }
 				settingsStruct["xmlValidateActive"] = true;
 			}//end if railo
 			else{

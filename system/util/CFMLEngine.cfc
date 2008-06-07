@@ -69,7 +69,8 @@ Description :
 			var engine = getEngine();
 			
 			if ( (engine eq this.ADOBE and version gte 8) or
-				 (engine eq this.RAILO) ){
+				 (engine eq this.RAILO) or
+				 (engine eq this.RAILO and version gte 8) ){
 				return true;	 
 			}
 			else{

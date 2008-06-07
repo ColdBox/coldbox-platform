@@ -152,6 +152,17 @@ Modification History:
 		</cfscript>
 	</cffunction>
 	
+	<cffunction name="testManualObjectRegistration2" access="public" returntype="void" output="false">
+		<cfscript>
+			var obj = CreateObject("component","coldbox.testing.testinterceptors.mock");
+			
+			this.iservice.registerInterceptor(interceptorObject=obj,customPoints='unitTest');
+			
+			AssertTrue( isObject(this.iservice.getStateContainer('unittest')) );
+			
+		</cfscript>
+	</cffunction>
+	
 	
 	
 	
