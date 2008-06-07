@@ -16,6 +16,7 @@
 	<property name="ftp.remotedir" 		value="/httpdocs/downloads" />
 	
 	<property name="src.dictionary"     value="../../install/cfeclipse_dictionary" />
+	<property name="src.dwdictionary"     value="../../install/dreamweaver_dictionary" />
 	<property name="src.snippets"     	value="../../install/cfeclipse_snippets" />
 	<property name="src.illudium"     	value="../../install/illudium_templates" />
 	<property name="src.cheatsheet"    	value="../../install/ColdboxCheatSheet.pdf" />
@@ -29,6 +30,7 @@
 	<target name="do.archive">
 		<mkdir dir="${build}"/>
 		<zip destfile="${build}/cfeclipse_dictionary.zip" basedir="${src.dictionary}"></zip>
+		<zip destfile="${build}/dreamweaver_dictionary.zip" basedir="${src.dwdictionary}"></zip>
 		<zip destfile="${build}/cfeclipse_snippets.zip" basedir="${src.snippets}"></zip>
 		<zip destfile="${build}/illudium_templates.zip" basedir="${src.illudium}"></zip>
 		<copy file="${src.cheatsheet}" todir="${build}" />
