@@ -11,7 +11,7 @@
 	    </constructor-arg>
 	</bean>
 	
-	<bean id="myDatasource" factory-bean="ColdboxFactory" factory-method="getDatasource">
+	<bean id="myDatasource" factory-bean="ColdboxFactory" factory-method="getDatasource" lazy-init="true">
 	    <constructor-arg name="alias">
 	        <value>mysite</value>
 	    </constructor-arg>

@@ -56,10 +56,12 @@
 	</Layouts>
 
 	<i18N/>
-
-	<Datasources>		
-	</Datasources>
 	
+	<Datasources>
+		<Datasource alias="mysite" name="mysite" dbtype="mysql"  username="root" password="pass" />
+		<Datasource alias="blog_dsn" name="myblog" dbtype="oracle" username="root" password="pass" />
+	</Datasources>
+
 	<Cache>
 		<ObjectDefaultTimeout>15</ObjectDefaultTimeout>
 		<ObjectDefaultLastAccessTimeout>5</ObjectDefaultLastAccessTimeout>

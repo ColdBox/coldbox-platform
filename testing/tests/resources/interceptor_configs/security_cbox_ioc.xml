@@ -57,7 +57,9 @@
 
 	<i18N/>
 
-	<Datasources>		
+	<Datasources>
+		<Datasource alias="mysite" name="mysite" dbtype="mysql"  username="root" password="pass" />
+		<Datasource alias="blog_dsn" name="myblog" dbtype="oracle" username="root" password="pass" />
 	</Datasources>
 	
 	<Cache>

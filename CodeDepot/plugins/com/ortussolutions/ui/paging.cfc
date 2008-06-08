@@ -121,6 +121,7 @@ link = The link to use for paging, including a placeholder for the page @page@
 		<cfset var currentPage = event.getValue("page",1)>
 		<cfset var pageFrom = 0>
 		<cfset var pageTo = 0>
+		<cfset var pageIndex = 0>
 		
 		<!--- Override --->
 		<cfif structKeyExists(arguments, "pagingMaxRows")>

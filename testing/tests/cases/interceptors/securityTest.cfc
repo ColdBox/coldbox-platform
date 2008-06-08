@@ -21,6 +21,15 @@ Description :
 		
 		//Call the super setup method to setup the app.
 		super.setup();
+		
+		/* Place in app for testing */
+		application.cbController = getController();
+		</cfscript>
+	</cffunction>
+	
+	<cffunction name="teardown" returntype="void" access="public" output="false">
+		<cfscript>
+		structdelete(application,"cbcontroller");
 		</cfscript>
 	</cffunction>
 	
@@ -28,6 +37,7 @@ Description :
 		<!--- Now test some events --->
 		<cfscript>
 			var event = "";
+			var im = structnew();
 			
 			//First Test : white list on rule 1
 			url.event = 'user.login';
@@ -49,6 +59,20 @@ Description :
 			event = getRequestContext();
 			//Assert Relocation, first test should be blank.
 			assertTrue( len(event.getValue("setnextevent","")), "Secured event. #event.getValue("setnextevent","")#" );
+			
+			//Pre Event Security
+			event.clearCollection();
+			//Test 2: user.profile, not logged in, so secure it
+			url.event = 'user.profile';
+			setupRequest();			
+			im.processedEvent = "user.profile";
+			//Now intercept
+			announceinterception('preEvent',im);
+			//get Context
+			event = getRequestContext();
+			//Assert Relocation, first test should be blank.
+			assertTrue( len(event.getValue("setnextevent","")), "Secured event. #event.getValue("setnextevent","")#" );
+			
 		</cfscript>
 		<cfreturn>
 	</cffunction>	

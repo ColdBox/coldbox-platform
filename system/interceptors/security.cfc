@@ -61,6 +61,7 @@ Interceptor Properties:
  - debugMode : boolean [default=false] If on, then it logs actions via the logger plugin.
  - validator : string [default=""] If set, it must be a valid instantiation path to a security validator object.
  - validatorIOC : string [default=''] If set, it is the name of the bean to autowire this interceptor from.
+ - preEventSecurity: boolean [default=false] If on, then it will also execute the rule processing on every pre-Event
 
 * Please note that when using regular expressions, you specify and escape the metadata characters.
 * If the validator property is used, the interceptor will create it and store it in the interceptor.
@@ -130,6 +131,10 @@ and then extracted by this interceptor. They must be a valid rules query.
 			if( not propertyExists("queryChecks") or not isBoolean(getProperty("queryChecks")) ){
 				setProperty("queryChecks",true);
 			}
+			/* PreEvent Security */
+			if( not propertyExists("preEventSecurity") or not isBoolean(getProperty("preEventSecurity")) ){
+				setProperty("preEventSecurity",false);
+			}
 			
 			/* Now Call sourcesCheck */
 			RulesSourceChecks();
@@ -196,15 +201,42 @@ and then extracted by this interceptor. They must be a valid rules query.
 		<cfargument name="interceptData" required="true" type="struct" hint="interceptData of intercepted info.">
 		<!--- ************************************************************* --->
 		<cfscript>
-			var rules = getProperty('rules');
-			var rulesLen = arrayLen(rules);
-			var x = 1;
-			var currentEvent = event.getCurrentEvent();
-			
 			/* Load OCM rules */
 			if( getProperty('rulesSource') eq "ocm" and not getProperty('rulesLoaded') ){
 				loadOCMRules();
 			}
+			
+			/* Execute Rule processing */
+			processRules(arguments.event,arguments.interceptData,arguments.event.getCurrentEvent());
+			
+		</cfscript>
+	</cffunction>
+	
+	<!--- pre-event --->
+	<cffunction name="preEvent" access="public" returntype="void" output="false" >
+		<!--- ************************************************************* --->
+		<cfargument name="event" 		 required="true" type="coldbox.system.beans.requestContext" hint="The event object.">
+		<cfargument name="interceptData" required="true" type="struct" hint="interceptData of intercepted info.">
+		<!--- ************************************************************* --->
+		<cfscript>
+			
+			/* Execute Rule processing */
+			processRules(arguments.event,arguments.interceptData,arguments.interceptData.processedEvent);
+			
+		</cfscript>
+	</cffunction>
+	
+	<!--- Process Rules --->
+	<cffunction name="processRules" access="public" returntype="void" hint="Process security rules. This method is called from an interception point" output="false" >
+		<!--- ************************************************************* --->
+		<cfargument name="event" 		 required="true" type="coldbox.system.beans.requestContext" hint="The event object.">
+		<cfargument name="interceptData" required="true" type="struct" hint="interceptData of intercepted info.">
+		<cfargument name="currentEvent"  required="true" type="string" hint="The event to check">
+		<!--- ************************************************************* --->
+		<cfscript>
+			var x = 1;
+			var rules = getProperty('rules');
+			var rulesLen = arrayLen(rules);
 			
 			/* Loop through Rules */
 			for(x=1; x lte rulesLen; x=x+1){

@@ -58,7 +58,9 @@
 
 	<i18N/>
 
-	<Datasources>		
+	<Datasources>
+		<Datasource alias="mysite" name="mysite" dbtype="mysql"  username="root" password="pass" />
+		<Datasource alias="blog_dsn" name="myblog" dbtype="oracle" username="root" password="pass" />
 	</Datasources>
 	
 	<Cache>
@@ -75,6 +77,7 @@
 			<Property name="rulesSource">xml</Property>
 			<Property name="rulesFile">/applications/coldbox/testing/tests/resources/security.xml.cfm</Property>
 			<Property name="debugMode">true</Property>
+			<Property name="preEventSecurity">true</Property>
 		</Interceptor>		
 	</Interceptors>
 
