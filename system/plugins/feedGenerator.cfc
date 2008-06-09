@@ -8,8 +8,7 @@ Author      :	Luis Majano
 Date        :	02/22/2008
 License		: 	Apache 2 License
 Description :
-	This is a rss feed generator. It will be able to output rss 2.0 feeds only.
-	
+	This is a feed generator. It will be able to output rss 2.0 feeds only as of now.	
 	You need to set the following settings in your application (coldbox.xml.cfm)
 
 METHODS:
@@ -90,24 +89,23 @@ Therefore, you must use the columnmap attribute to map the input query column na
 <cfset columnMapStruct.link = "ORDERID">
 
 ----------------------------------------------------------------------->
-<cfcomponent name="rssGenerator" 
+<cfcomponent name="feedGenerator" 
 			 extends="coldbox.system.plugin"
-			 hint="An rss generator plugin. This plugin only generates RSS 2.0 feeds."
-			 cache="true"
-			 cacheTimeout="45">
+			 hint="A feed generator plugin. This plugin only generates RSS 2.0 feeds."
+			 cache="true">
 
 <!---------------------------------------- CONSTRUCTOR --------------------------------------------------->
 
-	<cffunction name="init" access="public" returntype="rssGenerator" output="false" hint="Plugin Constructor.">
+	<cffunction name="init" access="public" returntype="feedGenerator" output="false" hint="Plugin Constructor.">
 		<cfargument name="controller" type="any" required="true">
 		<cfscript>
 			/* Super */
 			super.Init(arguments.controller);
 			
 			/* Plugin Properties */
-			setpluginName("ColdBox RSS Generator");
+			setpluginName("ColdBox Feed Generator");
 			setpluginVersion("1.0");
-			setpluginDescription("I am a RSS generator plugin.");
+			setpluginDescription("I am a Feed generator plugin.");
 			
 			/* Return instance */
 			return this;
@@ -116,7 +114,7 @@ Therefore, you must use the columnmap attribute to map the input query column na
 
 <!---------------------------------------- PUBLIC RSS METHODS --------------------------------------------------->
 	
-	<cffunction name="createFeed" access="public" returntype="xml" hint="Create an RSS 2.0 feed.">
+	<cffunction name="createFeed" access="public" returntype="xml" hint="Create an RSS 2.0 feed." output="false">
 		<!--- ******************************************************************************** --->
 		<cfargument name="feedStruct" 	type="struct" required="yes" hint="The structure used to build a feed. Look at docs for more info.">
 		<cfargument name="ColumnMap" 	type="struct" required="false" hint="The column mapper to use for the items query."/>
@@ -268,7 +266,7 @@ Therefore, you must use the columnmap attribute to map the input query column na
 				if( not listfindnocase( fsKeys, listGetAt(mandatoryItems,x) ) ){
 					throw("Invalid feed structure found.",
 						  "The mandatory key: #listGetAt(mandatoryItems,x)# was not found in the structure",
-						  "rss.rssGenerator.InvalidFeedStructure");
+						  "ColdBox.plugins.feedGenerator.InvalidFeedStructure");
 				}
 			}
 			
@@ -291,7 +289,7 @@ Therefore, you must use the columnmap attribute to map the input query column na
 			/* Image Element Validation */
 			if( structKeyExists(arguments.feedStruct, "image") ){
 				if( not isStruct(arguments.feedStruct.image) ){
-					throw("Invalid image element.","The image element must be a structure containing the elements: url,title and link","rss.rssGenerator.InvalidFeedStructure");
+					throw("Invalid image element.","The image element must be a structure containing the elements: url,title and link","ColdBox.feedGenerator.InvalidFeedStructure");
 				}
 				if( not structKeyExists(arguments.feedStruct.image,"url") ){
 					arguments.feedStruct.image["url"] = "";
@@ -305,7 +303,7 @@ Therefore, you must use the columnmap attribute to map the input query column na
 			}
 			/* Query validation */
 			if( not isQuery(arguments.feedStruct.items) ){
-				throw("Invalid items query","The items element must be a valid query.","rss.rssGenerator.InvalidFeedStructure");
+				throw("Invalid items query","The items element must be a valid query.","ColdBox.feedGenerator.InvalidFeedStructure");
 			}			
 		</cfscript>
 	</cffunction>
@@ -353,6 +351,9 @@ Therefore, you must use the columnmap attribute to map the input query column na
 		</cfscript>
 	</cffunction>
 
+<!---------------------------------------- PRIVATE --------------------------------------------------->
+
+
 	<!--- generateRFC822Date --->
 	<cffunction name="generateRFC822Date" output="false" access="private" returntype="string" hint="Generate an RFC8222 Date from a date object. Conformed to GMT">
 		<!--- ******************************************************************************** --->
@@ -365,7 +366,7 @@ Therefore, you must use the columnmap attribute to map the input query column na
 			var GMTTm = "";
 			/* Validate we have a real date to work with */
 			if( not isDate(arguments.targetDate) ){
-				throw("The date sent in for parsing is not valid","TargetDate: #arguments.targetDate#","rss.rssGenerator.InvalidDate");
+				throw("The date sent in for parsing is not valid","TargetDate: #arguments.targetDate#","ColdBox.feedGenerator.InvalidDate");
 			}
 			/* Calculate with offset the GMT DateTime Object */
 			GDT = dateAdd('s',TZ.utcTotalOffset,arguments.targetDate);

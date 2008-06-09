@@ -95,7 +95,7 @@ Modification History:
 		
 		<!--- Test if we have a view to render --->
 		<cfif arguments.view eq "">
-			<cfthrow type="Framework.plugins.renderer.ViewNotSetException" 
+			<cfthrow type="ColdBox.plugins.renderer.ViewNotSetException" 
 						  message="The ""currentview"" variable has not been set, therefore there is no view to render." 
 						  detail="Please remember to use the 'setView()' method in your handler.">
 		</cfif>

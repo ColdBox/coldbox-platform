@@ -62,7 +62,7 @@ Description: This is the framework's simple bean factory.
 				return beanInstance;
 			}
 			Catch(Any e){
-				throw("Error creating bean: #arguments.bean#","#e.Detail#<br>#e.message#","Framework.plugins.beanFactory.BeanCreationException");
+				throw("Error creating bean: #arguments.bean#","#e.Detail#<br>#e.message#","ColdBox.plugins.beanFactory.BeanCreationException");
 			}
 		</cfscript>
 	</cffunction>
@@ -126,7 +126,7 @@ Description: This is the framework's simple bean factory.
 				return beanInstance;
 			}
 			catch(Any e){
-				throw(type="Framework.plugins.beanFactory.PopulateBeanException",message="Error populating bean.",detail="#e.Detail#<br>#e.message#");
+				throw(type="ColdBox.plugins.beanFactory.PopulateBeanException",message="Error populating bean.",detail="#e.Detail#<br>#e.message#");
 			}
 		</cfscript>
 	</cffunction>

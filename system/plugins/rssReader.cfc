@@ -15,11 +15,11 @@ Description :
 	You need to set the following settings in your application (coldbox.xml.cfm)
 	
 Application Settings:
-	- rssReader_useCache 		: boolean [default=true] (Use the file cache or not)
-	- rssReader_cacheType		: string (ram,file) (Default is ram)
-	- rssReader_cacheLocation 	: string (Where to store the file caching, relative to the app or absolute)
-	- rssReader_cacheTimeout 	: numeric [default=30] (In minutes, the timeout of the file cache)
-	- rssReader_httpTimeout 	: numeric [default=30] (In seconds, the timeout of the cfhttp call)
+	- feedReader_useCache 		: boolean [default=true] (Use the file cache or not)
+	- feedReader_cacheType		: string (ram,file) (Default is ram)
+	- feedReader_cacheLocation 	: string (Where to store the file caching, relative to the app or absolute)
+	- feedReader_cacheTimeout 	: numeric [default=30] (In minutes, the timeout of the file cache)
+	- feedReader_httpTimeout 	: numeric [default=30] (In seconds, the timeout of the cfhttp call)
 	
 RSS Retrieval Methods:
 	- readFeed( feedURL, itemsType[default=query] ) : Retrieve a feed from cfhttp, parse, cache, and return results in query or array format.
@@ -60,15 +60,14 @@ What gets returned on the FeedStructure:
 	
 
 ----------------------------------------------------------------------->
-<cfcomponent name="rssReader" 
+<cfcomponent name="feedReader" 
 			 extends="coldbox.system.plugin"
-			 hint="A rss reader plugin. We recommend that when you call the readFeed method, that you use url's as settings. ex: readFeed(getSetting('myFeedURL')).  The settings this plugin uses are the following: rssReader_useCache:boolean [default=true], rssReader_cacheLocation:string, rssReader_cacheTimeout:numeric [default=30 min], rssReader_httpTimeout:numeric [default=30 sec]. If the cacheLocation directory does not exits, the plugin will throw an error. So please remember to create the directory."
-			 cache="true"
-			 cacheTimeout="45">
+			 hint="A rss reader plugin. We recommend that when you call the readFeed method, that you use url's as settings. ex: readFeed(getSetting('myFeedURL')).  The settings this plugin uses are the following: feedReader_useCache:boolean [default=true], feedReader_cacheLocation:string, feedReader_cacheTimeout:numeric [default=30 min], feedReader_httpTimeout:numeric [default=30 sec]. If the cacheLocation directory does not exits, the plugin will throw an error. So please remember to create the directory."
+			 cache="true">
 
 <!---------------------------------------- CONSTRUCTOR --------------------------------------------------->
 
-	<cffunction name="init" access="public" returntype="rssReader" output="false" hint="Plugin Constructor.">
+	<cffunction name="init" access="public" returntype="feedReader" output="false" hint="Plugin Constructor.">
 		<cfargument name="controller" type="any" required="true">
 		<cfscript>
 			var cacheLocation = "";
@@ -78,26 +77,26 @@ What gets returned on the FeedStructure:
 			super.Init(arguments.controller);
 			
 			/* Plugin Properties */
-			setpluginName("rssReader");
+			setpluginName("feedReader");
 			setpluginVersion("1.0");
-			setpluginDescription("I am a rss feed reader.");
+			setpluginDescription("I am a rss feed reader for rss and atom feeds.");
 			
 			/* Check if using Cache and set useCache setting */
-			if( not settingExists('rssReader_useCache') or not isBoolean(getSetting('rssReader_useCache')) ){
+			if( not settingExists('feedReader_useCache') or not isBoolean(getSetting('feedReader_useCache')) ){
 				setUseCache(true);
 			}else{
-				setUseCache(getSetting('rssReader_useCache'));
+				setUseCache(getSetting('feedReader_useCache'));
 			}
 			
 			/* Setup Caching variables if using it */
 			if( getUseCache() ){	
 				
 				/* ram caching? used by default */
-				if( not settingExists('rssReader_cacheType') or not reFindNoCase("^(ram|file)$",getSetting('rssReader_cacheType')) ){
+				if( not settingExists('feedReader_cacheType') or not reFindNoCase("^(ram|file)$",getSetting('feedReader_cacheType')) ){
 					setCacheType('ram');
 				}
 				else{
-					setCacheType(getSetting('rssReader_cacheType'));
+					setCacheType(getSetting('feedReader_cacheType'));
 				}
 				
 				/* file caching? */
@@ -107,24 +106,24 @@ What gets returned on the FeedStructure:
 					/* File Separator */
 					slash = getSetting("OSFileSeparator",true);
 					/* Cache Location */
-					if( not settingExists('rssReader_cacheLocation') ){
-						throw(message="The Setting rssReader_cacheLocation is missing. Please create it.",type='rss.rssReader.InvalidSettingException');
+					if( not settingExists('feedReader_cacheLocation') ){
+						throw(message="The Setting feedReader_cacheLocation is missing. Please create it.",type='rss.feedReader.InvalidSettingException');
 					}
 					/* Tests if the directory exists: Full Path */
-					if ( directoryExists( getController().getAppRootPath() & getSetting('rssReader_cacheLocation') ) ){
-						setCacheLocation( getController().getAppRootPath() & getSetting('rssReader_cacheLocation') );
+					if ( directoryExists( getController().getAppRootPath() & getSetting('feedReader_cacheLocation') ) ){
+						setCacheLocation( getController().getAppRootPath() & getSetting('feedReader_cacheLocation') );
 					}
-					if ( directoryExists( getController().getAppRootPath() & slash & getSetting('rssReader_cacheLocation') ) ){
-						setCacheLocation( getController().getAppRootPath() & slash & getSetting('rssReader_cacheLocation') );
+					if ( directoryExists( getController().getAppRootPath() & slash & getSetting('feedReader_cacheLocation') ) ){
+						setCacheLocation( getController().getAppRootPath() & slash & getSetting('feedReader_cacheLocation') );
 					}
-					else if( directoryExists( ExpandPath(getSetting('rssReader_cacheLocation')) ) ){
-						setCacheLocation( ExpandPath(getSetting('rssReader_cacheLocation')) );
+					else if( directoryExists( ExpandPath(getSetting('feedReader_cacheLocation')) ) ){
+						setCacheLocation( ExpandPath(getSetting('feedReader_cacheLocation')) );
 					}
-					else if( directoryExists(getSetting('rssReader_cacheLocation')) ){
-						setCacheLocation( getSetting('rssReader_cacheLocation') );
+					else if( directoryExists(getSetting('feedReader_cacheLocation')) ){
+						setCacheLocation( getSetting('feedReader_cacheLocation') );
 					}
 					else{
-						throw('The cache location directory could not be found. Please check again. #getSetting('rssReader_cacheLocation')#','','rss.rssReader.InvalidCacheLocationException');
+						throw('The cache location directory could not be found. Please check again. #getSetting('feedReader_cacheLocation')#','','rss.feedReader.InvalidCacheLocationException');
 					}
 				}//end if cahce eq file
 				else{
@@ -133,24 +132,24 @@ What gets returned on the FeedStructure:
 				}		
 				
 				/* Cache Timeout */
-				if( not settingExists('rssReader_cacheTimeout') ){
+				if( not settingExists('feedReader_cacheTimeout') ){
 					setCacheTimeout(30);
 				}
 				else{
-					setCacheTimeout(getSetting('rssReader_cacheTimeout'));
+					setCacheTimeout(getSetting('feedReader_cacheTimeout'));
 				}
 			}//end else using cache
 			
 			/* HTTP Timeout */
-			if( not settingExists('rssReader_httpTimeout') ){
+			if( not settingExists('feedReader_httpTimeout') ){
 				sethttpTimeout(30);
 			}
 			else{
-				sethttpTimeout(getSetting('rssReader_httpTimeout'));
+				sethttpTimeout(getSetting('feedReader_httpTimeout'));
 			}
 			
 			/* Set The lock Name */
-			setLockName('rss.rssReaderCacheOperation');
+			setLockName('feedReaderCacheOperation');
 			
 			/* Return instance */
 			return this;
@@ -228,7 +227,7 @@ What gets returned on the FeedStructure:
 			</cflock>
 			<!--- Exists Check --->
 			<cfif qFile.recordcount eq 0>
-				<cfthrow message="The feed does not exist in the cache." type="customPlugins.rss.rssReader">
+				<cfthrow message="The feed does not exist in the cache." type="customPlugins.rss.feedReader">
 			</cfif>
 			<!--- Timeout Check --->
 			<cfif DateDiff("n", qFile.dateLastModified, now()) gt getCacheTimeout()>
@@ -351,7 +350,7 @@ What gets returned on the FeedStructure:
 			var FeedStruct = structnew();
 			/* Check if using cache */
 			if( not getUseCache() ){
-				throw("You are tying to use a method that needs caching enabled.","Please look at the plugin's settings or just use the 'retrieveFeed' method.","rss.rssReader.InvalidSettingException");
+				throw("You are tying to use a method that needs caching enabled.","Please look at the plugin's settings or just use the 'retrieveFeed' method.","rss.feedReader.InvalidSettingException");
 			}
 			/* Check for itemsType */
 			if( not reFindnocase("^(query|array)$",arguments.itemsType) ){
@@ -413,7 +412,7 @@ What gets returned on the FeedStructure:
 			<cfset xmlDoc = XMLParse(trim(feedResult.FileContent))>
 			
 			<cfcatch type="any">
-				<cfthrow type="rss.rssReader.FeedParsingException"
+				<cfthrow type="rss.feedReader.FeedParsingException"
 						 message="Error parsing the feed into an XML document. Please verify that the feed is correct and valid"
 						 detail="The returned cfhttp content is: #feedResult.fileContent.toString()#">
 			</cfcatch>
@@ -421,7 +420,7 @@ What gets returned on the FeedStructure:
 		
 		<!--- Validate If its an Atom or RSS feed --->
 		<cfif not structKeyExists(xmlDoc,"rss") and not structKeyExists(xmlDoc,"feed")>
-			<cfthrow type="rss.rssReader.FeedParsingException"
+			<cfthrow type="rss.feedReader.FeedParsingException"
 					 message="Cannot continue parsing the feed since it does not seem to be a valid RSS or ATOM feed. Please verify that the feed is correct and valid"
 					 detail="The xmldocument is: #htmlEditFormat(toString(xmlDoc))#">
 		</cfif>
@@ -455,7 +454,8 @@ What gets returned on the FeedStructure:
 		<cfset var isRSS2 = false>
 		<cfset var isAtom = false>
 		<cfset var x = 1>
-
+		<cfset var oUtilities = getPlugin("Utilities")>
+		
 		<cfscript>
 			/* Set the elements */
 			feed.title = "";
@@ -498,11 +498,11 @@ What gets returned on the FeedStructure:
 				if( find("@",feed.author) ) feed.authorEmail = feed.author;
 				/* Date & Date Updated */
 				feed.Date = findCreatedDate(xmlDoc.xmlRoot.channel);
-				if( isDateISO8601(feed.Date) ) feed.Date = parseISO8601(feed.Date);
-				else feed.Date = parseRFC822(feed.Date);
+				if( isDateISO8601(feed.Date) ) feed.Date = oUtilities.parseISO8601(feed.Date);
+				else feed.Date = oUtilities.parseRFC822(feed.Date);
 				feed.DateUpdated = findUpdatedDate(xmlDoc.xmlRoot.channel);
-				if( isDateISO8601(feed.DateUpdated) ) feed.DateUpdated = parseISO8601(feed.DateUpdated);
-				else feed.DateUpdated = parseRFC822(feed.DateUpdated);
+				if( isDateISO8601(feed.DateUpdated) ) feed.DateUpdated = oUtilities.parseISO8601(feed.DateUpdated);
+				else feed.DateUpdated = oUtilities.parseRFC822(feed.DateUpdated);
 				/* Image */
 				if(StructKeyExists(xmlDoc.xmlRoot.channel,"image")) {
 					if(StructKeyExists(xmlDoc.xmlRoot.channel.image,"url")) feed.Image.URL = xmlDoc.xmlRoot.channel.image.url.xmlText;
@@ -536,8 +536,8 @@ What gets returned on the FeedStructure:
 					if( structKeyExists(xmlDoc.xmlRoot.author,"email") ) feed.authorEmail = xmlDoc.xmlRoot.author.email.xmlText;
 				}	
 				/* Feed Date */
-				feed.Date = parseISO8601(findCreatedDate(xmlDoc.xmlRoot));
-				feed.DateUpdated = parseISO8601(findUpdatedDate(xmlDoc.xmlRoot));
+				feed.Date = oUtilities.parseISO8601(findCreatedDate(xmlDoc.xmlRoot));
+				feed.DateUpdated = oUtilities.parseISO8601(findUpdatedDate(xmlDoc.xmlRoot));
 			}
 			/* Return the feed struct */
 			return feed;
@@ -559,6 +559,7 @@ What gets returned on the FeedStructure:
 			var itemLength = arrayLen(arguments.items);
 			var rtnItems = "";
 			var node = "";
+			var oUtilities = getPlugin("Utilities");
 			
 			/* Items Length */
 			if( arguments.maxItems neq 0 ){
@@ -602,8 +603,8 @@ What gets returned on the FeedStructure:
 					}//end for loop of links
 				}//if there are any links.
 				/* Date and Updated Dates */
-				node.Date = parseISO8601(findCreatedDate(items[x]));
-				node.DateUpdated = parseISO8601(findUpdatedDate(items[x]));
+				node.Date = oUtilities.parseISO8601(findCreatedDate(items[x]));
+				node.DateUpdated = oUtilities.parseISO8601(findUpdatedDate(items[x]));
 				
 				if( arguments.itemsType eq "array" ){
 					/* Append to Array */
@@ -637,6 +638,7 @@ What gets returned on the FeedStructure:
 			var itemLength = arrayLen(arguments.items);
 			var rtnItems = "";
 			var node = "";
+			var oUtilities = getPlugin("Utilities");
 			
 			/* Items Length */
 			if( arguments.maxItems neq 0 ){
@@ -678,11 +680,11 @@ What gets returned on the FeedStructure:
 				}
 				/* Date and Updated Dates */
 				node.Date = findCreatedDate(items[x]);
-				if( isDateISO8601(node.Date) ) node.Date = parseISO8601(node.Date);
-				else node.Date = parseRFC822(node.Date);
+				if( isDateISO8601(node.Date) ) node.Date = oUtilities.parseISO8601(node.Date);
+				else node.Date = oUtilities.parseRFC822(node.Date);
 				node.DateUpdated = findUpdatedDate(items[x]);
-				if( isDateISO8601(node.DateUpdated) ) node.DateUpdated = parseISO8601(node.DateUpdated);
-				else node.DateUpdated = parseRFC822(node.DateUpdated);
+				if( isDateISO8601(node.DateUpdated) ) node.DateUpdated = oUtilities.parseISO8601(node.DateUpdated);
+				else node.DateUpdated = oUtilities.parseRFC822(node.DateUpdated);
 				
 				
 				/* Enclosure */
@@ -749,7 +751,7 @@ What gets returned on the FeedStructure:
 				}
 				else if( arguments.entity.xmlAttributes.type is "xhtml" ){
 					if( not structKeyExists(arguments.entity,"div") ){
-						throw("Invalid Atom: XHTML Text construct does not contain a child div.",'','rss.rssReader.InvalidAtomConstruct');	
+						throw("Invalid Atom: XHTML Text construct does not contain a child div.",'','rss.feedReader.InvalidAtomConstruct');	
 					}
 					for(x=1;x lte ArrayLen(arguments.entity.xmlChildren);x=x+1){
 						results = results & arguments.entity.xmlChildren[x].toString();
@@ -801,84 +803,6 @@ What gets returned on the FeedStructure:
 			else if(StructKeyExists(arguments.xmlRoot,"published"))
 				createdDate = arguments.xmlRoot.published.xmlText;	
 			return createdDate;
-		</cfscript>
-	</cffunction>
-	
-	<!--- Parse ISO8601 Dates --->
-	<cffunction name="parseISO8601" access="private" output="false" returntype="string" hint="Parse a UTC or iso8601 date to a normal CF datetime object">
-		<!--- ******************************************************************************** --->
-		<cfargument name="datetime" type="string" required="true" hint="The datetime string to convert"/>
-		<!--- ******************************************************************************** --->
-		<cfset var returnDate = arguments.datetime>
-		<cfset var datebits = structnew()>
-		<cfset var roundedSeconds = "00">
-		<cfset var wddxPacket = "">
-		
-		<!--- Date Bits Initialization --->
-		<cfset datebits.main = returnDate>
-		<cfset datebits.offset = "">
-		
-		<!--- Parse if its an ISO Date --->
-		<cfif REFind("[[:digit:]]T[[:digit:]]", datebits.main)>
-			<cfscript>
-			/* Test for Z */
-			if( datebits.main contains "Z" ){
-				/* Set Offset to 0 and replace the Z with nothing. */
-				datebits.offset = "+00:00";
-				datebits.main = replace(arguments.datetime, "Z", "", "ONE");
-			}			
-			/* test for containz + */
-			else if( datebits.main contains "+"){
-				/* Split offset and remove it from main datetime */
-				datebits.offset = "+" & ListLast(datebits.main,"+");
-				datebits.main = replace(datebits.main,datebits.offset,"","ONE");
-			}				
-			else{
-				/* Split negative offset and remove it from main datetime */
-				datebits.offset = "-" & ListLast(datebits.main,"-");
-				datebits.main = replace(datebits.main,datebits.offset,"","ONE");
-			}
-			/* If no seconds, add them */
-			if( listLen(datebits.main, ":") lt 3){
-				datebits.main = datebits.main & ":00";
-			}	
-			/* If it has fractional seconds, round it up. BIG DEAL!! */
-			roundedSeconds = numberFormat(round(listLast(datebits.main,":")),"00");
-			datebits.main =	listSetAt(datebits.main, listLen(datebits.main,":"), roundedSeconds,":");
-			/* Append All */
-			datebits.main = datebits.main & datebits.offset;
-			
-			/* Wddx hack to get a datetime object */
-			wddxPacket = "<wddxPacket version='1.0'><header/><data><dateTime>#datebits.main#</dateTime></data></wddxPacket>";
-			</cfscript>
-			<!--- WDDX Hack --->
-			<cfwddx action="wddx2cfml" input="#wddxPacket#" output="wddxPacket" />
-			<cfset returnDate = DateConvert("local2utc", wddxPacket) />
-		</cfif>	
-			
-		<!--- Return the date --->
-		<cfreturn returnDate>
-	</cffunction>
-	
-	<!--- Parse ISO8601 Dates --->
-	<cffunction name="parseRFC822" access="private" output="false" returntype="string" hint="Parse RFC822 dates, returns empty string if not a valid date.">
-		<!--- ******************************************************************************** --->
-		<cfargument name="datetime" type="string" required="true" hint="The datetime string to convert"/>
-		<!--- ******************************************************************************** --->
-		<cfscript>
-			var formatter = CreateObject("java", "java.text.SimpleDateFormat").init("EEE, dd MMM yyyy HH:mm:ss Z");
-			var parsePosition = CreateObject("java", "java.text.ParsePosition").init(0);
-			var results = arguments.datetime;	
-					
-			/* Parse the date */
-			if( len(arguments.datetime) neq 0 )
-				results = formatter.parse(arguments.datetime, parsePosition);
-			
-			/* Null Check */
-			if( isDefined("results") ){
-				return results;
-			}else
-				return arguments.datetime;
 		</cfscript>
 	</cffunction>
 	

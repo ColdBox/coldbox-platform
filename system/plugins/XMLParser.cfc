@@ -109,7 +109,7 @@ Modification History:
 		try{
 			//verify Framework settings File
 			if ( not fileExists(instance.FrameworkConfigFile) ){
-				throw("Error finding settings.xml configuration file. The file #instance.FrameworkConfigFile# cannot be found.","","Framework.plugins.XMLParser.ColdBoxSettingsNotFoundException");
+				throw("Error finding settings.xml configuration file. The file #instance.FrameworkConfigFile# cannot be found.","","ColdBox.plugins.XMLParser.ColdBoxSettingsNotFoundException");
 			}			
 			//Setup the ColdBox CFML Engine Info
 			settingsStruct["CFMLEngine"] = CFMLEngine;
@@ -173,7 +173,7 @@ Modification History:
 				}
 				//Validate the findings
 				if( not configFileFound )
-					throw("ColdBox Application Configuration File can't be found.","The accepted files are: #ConfigXMLFilePath#","Framework.plugins.XMLParser.ConfigXMLFileNotFoundException");
+					throw("ColdBox Application Configuration File can't be found.","The accepted files are: #ConfigXMLFilePath#","ColdBox.plugins.XMLParser.ConfigXMLFileNotFoundException");
 				//Insert the correct config file location.
 				StructInsert(settingsStruct, "ConfigFileLocation", ConfigXMLFilePath);
 			}
@@ -201,7 +201,7 @@ Modification History:
 			return settingsStruct;
 		}//end of try
 		catch( Any Exception ){
-			throw("Error Loading Framework Configuration.","#Exception.Message# #Exception.Detail#","Framework.plugins.XMLParser.ColdboxSettingsParsingException");
+			throw("Error Loading Framework Configuration.","#Exception.Message# #Exception.Detail#","ColdBox.plugins.XMLParser.ColdboxSettingsParsingException");
 		}
 		</cfscript>
 	</cffunction>
@@ -279,7 +279,7 @@ Modification History:
 			
 			//Validate File, just in case.
 			if ( not fileExists(ConfigFileLocation) ){
-				throw("The Config File: #ConfigFileLocation# can't be found.","","Framework.plugins.XMLParser.ConfigXMLFileNotFoundException");
+				throw("The Config File: #ConfigFileLocation# can't be found.","","ColdBox.plugins.XMLParser.ConfigXMLFileNotFoundException");
 			}
 			
 			//Determine Parse Type
@@ -292,7 +292,7 @@ Modification History:
 
 			//Validate the config
 			if ( not structKeyExists(configXML, "config")  )
-				throw("No Config element found in the configuration file","","Framework.plugins.XMLParser.ConfigXMLParsingException");
+				throw("No Config element found in the configuration file","","ColdBox.plugins.XMLParser.ConfigXMLParsingException");
 
 			/* ::::::::::::::::::::::::::::::::::::::::: APP MAPPING CALCULATIONS :::::::::::::::::::::::::::::::::::::::::::: */
 			
@@ -309,13 +309,13 @@ Modification History:
 			//Get SettingNodes
 			SettingNodes = XMLSearch(configXML, instance.searchSettings);
 			if ( ArrayLen(SettingNodes) eq 0 )
-				throw("No Setting elements could be found in the configuration file.","","Framework.plugins.XMLParser.ConfigXMLParsingException");
+				throw("No Setting elements could be found in the configuration file.","","ColdBox.plugins.XMLParser.ConfigXMLParsingException");
 			//Insert Settings to Config Struct
 			for (i=1; i lte ArrayLen(SettingNodes); i=i+1)
 				StructInsert( ConfigStruct, SettingNodes[i].XMLAttributes["name"], trim(SettingNodes[i].XMLAttributes["value"]));
 			//Check for AppName or throw
 			if ( not StructKeyExists(ConfigStruct, "AppName") )
-				throw("There was no 'AppName' setting defined. This is required by the framework.","","Framework.plugins.XMLParser.ConfigXMLParsingException");
+				throw("There was no 'AppName' setting defined. This is required by the framework.","","ColdBox.plugins.XMLParser.ConfigXMLParsingException");
 			//overrideAppMapping if passed in.
 			if ( arguments.overrideAppMapping neq "" ){
 				ConfigStruct["AppMapping"] = arguments.overrideAppMapping;
@@ -352,7 +352,7 @@ Modification History:
 			
 			//Check for Default Event
 			if ( not StructKeyExists(ConfigStruct, "DefaultEvent") )
-				throw("There was no 'DefaultEvent' setting defined. This is required by the framework.","","Framework.plugins.XMLParser.ConfigXMLParsingException");
+				throw("There was no 'DefaultEvent' setting defined. This is required by the framework.","","ColdBox.plugins.XMLParser.ConfigXMLParsingException");
 		
 			//Check for Event Name
 			if ( not StructKeyExists(ConfigStruct, "EventName") )
@@ -410,7 +410,7 @@ Modification History:
 
 			//Check For Owner Email or Throw
 			if ( not StructKeyExists(ConfigStruct, "OwnerEmail") )
-				throw("There was no 'OwnerEmail' setting defined. This is required by the framework.","","Framework.plugins.XMLParser.ConfigXMLParsingException");
+				throw("There was no 'OwnerEmail' setting defined. This is required by the framework.","","ColdBox.plugins.XMLParser.ConfigXMLParsingException");
 		
 			//Check For EnableDumpvar or set to true
 			if ( not StructKeyExists(ConfigStruct, "EnableDumpVar") or not isBoolean(ConfigStruct.EnableDumpVar))
@@ -729,11 +729,11 @@ Modification History:
 
 					//Required Entries
 					if ( not structKeyExists(DatasourcesNodes[i].XMLAttributes, "Alias") or len(Trim(DatasourcesNodes[i].XMLAttributes["Alias"])) eq 0 )
-						throw("This datasource entry's alias cannot be blank","","Framework.plugins.XMLParser.ConfigXMLParsingException");
+						throw("This datasource entry's alias cannot be blank","","ColdBox.plugins.XMLParser.ConfigXMLParsingException");
 					else
 						StructInsert(DSNStruct,"Alias", Trim(DatasourcesNodes[i].XMLAttributes["Alias"]));
 					if ( not structKeyExists(DatasourcesNodes[i].XMLAttributes, "Name") or len(Trim(DatasourcesNodes[i].XMLAttributes["Name"])) eq 0 )
-						throw("This datasource entry's name cannot be blank","","Framework.plugins.XMLParser.ConfigXMLParsingException");
+						throw("This datasource entry's name cannot be blank","","ColdBox.plugins.XMLParser.ConfigXMLParsingException");
 					else
 						StructInsert(DSNStruct,"Name", Trim(DatasourcesNodes[i].XMLAttributes["Name"]));
 
@@ -755,7 +755,7 @@ Modification History:
 					if ( not structKeyExists(DatasourcesStruct,DSNStruct.Alias) )
 						StructInsert(DatasourcesStruct, DSNStruct.Alias , DSNStruct);
 					else
-						throw("The datasource alias: #dsnStruct.Alias# has already been declared.","","Framework.plugins.XMLParser.ConfigXMLParsingException");
+						throw("The datasource alias: #dsnStruct.Alias# has already been declared.","","ColdBox.plugins.XMLParser.ConfigXMLParsingException");
 				}
 			}
 			StructInsert(ConfigStruct, "Datasources", DatasourcesStruct);
@@ -766,9 +766,9 @@ Modification History:
 			DefaultLayout = XMLSearch(configXML,instance.searchDefaultLayout);
 			//validate Default Layout.
 			if ( ArrayLen(DefaultLayout) eq 0 )
-				throw("There was no default layout element found.","","Framework.plugins.XMLParser.ConfigXMLParsingException");
+				throw("There was no default layout element found.","","ColdBox.plugins.XMLParser.ConfigXMLParsingException");
 			if ( ArrayLen(DefaultLayout) gt 1 )
-				throw("There were more than 1 DefaultLayout elements found. There can only be one.","","Framework.plugins.XMLParser.ConfigXMLParsingException");
+				throw("There were more than 1 DefaultLayout elements found. There can only be one.","","ColdBox.plugins.XMLParser.ConfigXMLParsingException");
 			//Insert Default Layout
 			StructInsert(ConfigStruct,"DefaultLayout",Trim(DefaultLayout[1].XMLText));
 			
@@ -779,7 +779,7 @@ Modification History:
 				ConfigStruct["DefaultView"] = "";
 			}
 			else if ( ArrayLen(DefaultView) gt 1 ){
-				throw("There were more than 1 DefaultView elements found. There can only be one.","","Framework.plugins.XMLParser.ConfigXMLParsingException");
+				throw("There were more than 1 DefaultView elements found. There can only be one.","","ColdBox.plugins.XMLParser.ConfigXMLParsingException");
 			}
 			else{
 				//Set the Default View.
@@ -824,33 +824,33 @@ Modification History:
 				if ( structKeyExists(CacheSettingNodes[1], "ObjectDefaultTimeout") and isNumeric(CacheSettingNodes[1].ObjectDefaultTimeout.xmlText) )
 					StructInsert(ConfigStruct.CacheSettings, "ObjectDefaultTimeout", trim(CacheSettingNodes[1].ObjectDefaultTimeout.xmlText) );
 				else
-					throw("Invalid object timeout. Please see schema.","Value=#CacheSettingNodes[1].ObjectDefaultTimeout.xmlText#","Framework.plugins.XMLParser.InvalidCacheObjectDefaultTimeout");
+					throw("Invalid object timeout. Please see schema.","Value=#CacheSettingNodes[1].ObjectDefaultTimeout.xmlText#","ColdBox.plugins.XMLParser.InvalidCacheObjectDefaultTimeout");
 
 				//Check ObjectDefaultLastAccessTimeout
 				if ( structKeyExists(CacheSettingNodes[1], "ObjectDefaultLastAccessTimeout") and isNumeric(CacheSettingNodes[1].ObjectDefaultLastAccessTimeout.xmlText))
 					StructInsert(ConfigStruct.CacheSettings, "ObjectDefaultLastAccessTimeout", trim(CacheSettingNodes[1].ObjectDefaultLastAccessTimeout.xmlText) );
 				else
-					throw("Invalid object last access timeout. Please see schema.","Value=#CacheSettingNodes[1].ObjectDefaultLastAccessTimeout.xmlText#","Framework.plugins.XMLParser.InvalidObjectDefaultLastAccessTimeout");
+					throw("Invalid object last access timeout. Please see schema.","Value=#CacheSettingNodes[1].ObjectDefaultLastAccessTimeout.xmlText#","ColdBox.plugins.XMLParser.InvalidObjectDefaultLastAccessTimeout");
 
 				//Check ReapFrequency
 				if ( structKeyExists(CacheSettingNodes[1], "ReapFrequency") and isNumeric(CacheSettingNodes[1].ReapFrequency.xmlText))
 					StructInsert(ConfigStruct.CacheSettings, "ReapFrequency", trim(CacheSettingNodes[1].ReapFrequency.xmlText) );
 				else
-					throw("Invalid reaping frequency. Please see schema.","Value=#CacheSettingNodes[1].ReapFrequency.xmlText#","Framework.plugins.XMLParser.InvalidReapFrequency");
+					throw("Invalid reaping frequency. Please see schema.","Value=#CacheSettingNodes[1].ReapFrequency.xmlText#","ColdBox.plugins.XMLParser.InvalidReapFrequency");
 
 				//Check MaxObjects
 				if ( structKeyExists(CacheSettingNodes[1], "MaxObjects") and isNumeric(CacheSettingNodes[1].MaxObjects.xmlText)){
 					StructInsert(ConfigStruct.CacheSettings, "MaxObjects", trim(CacheSettingNodes[1].MaxObjects.xmlText) );
 				}
 				else
-					throw("Invalid Max Objects. Please see schema.","Value=#CacheSettingNodes[1].MaxObjects.xmlText#","Framework.plugins.XMLParser.InvalidMaxObjects");
+					throw("Invalid Max Objects. Please see schema.","Value=#CacheSettingNodes[1].MaxObjects.xmlText#","ColdBox.plugins.XMLParser.InvalidMaxObjects");
 
 				//Check FreeMemoryPercentageThreshold
 				if ( structKeyExists(CacheSettingNodes[1], "FreeMemoryPercentageThreshold") and isNumeric(CacheSettingNodes[1].FreeMemoryPercentageThreshold.xmlText)){
 					StructInsert(ConfigStruct.CacheSettings, "FreeMemoryPercentageThreshold", trim(CacheSettingNodes[1].FreeMemoryPercentageThreshold.xmlText) );
 				}
 				else
-					throw("Invalid Free Memory Percentage Threshold. Please see schema.","Value=#CacheSettingNodes[1].FreeMemoryPercentageThreshold.xmlText#","Framework.plugins.XMLParser.InvalidFreeMemoryPercentageThreshold");
+					throw("Invalid Free Memory Percentage Threshold. Please see schema.","Value=#CacheSettingNodes[1].FreeMemoryPercentageThreshold.xmlText#","ColdBox.plugins.XMLParser.InvalidFreeMemoryPercentageThreshold");
 
 				//Check for CacheUseLastAccessTimeouts
 				if ( structKeyExists(CacheSettingNodes[1], "UseLastAccessTimeouts") and isBoolean(CacheSettingNodes[1].UseLastAccessTimeouts.xmlText) ){
@@ -937,7 +937,7 @@ Modification History:
 			if ( ArrayLen(CustomInterceptionPoints) eq 0 )
 				StructInsert(ConfigStruct.InterceptorConfig,"CustomInterceptionPoints","");
 			else if ( ArrayLen(CustomInterceptionPoints) gt 1 )
-				throw("There were more than 1 CustomInterceptionPoints elements found. There can only be one.","","Framework.plugins.XMLParser.ConfigXMLParsingException");
+				throw("There were more than 1 CustomInterceptionPoints elements found. There can only be one.","","ColdBox.plugins.XMLParser.ConfigXMLParsingException");
 			else
 				StructInsert(ConfigStruct.InterceptorConfig,"CustomInterceptionPoints",Trim(CustomInterceptionPoints[1].XMLText));
 			
@@ -986,13 +986,13 @@ Modification History:
 						errorDetails = errorDetails & xmlvalidation.errors[i] & chr(10) & chr(13);
 					}
 					//Throw the error.
-					throw("<br>The config.xml file does not validate with the framework's schema.","The error details are:<br/> #errorDetails#","Framework.plugins.XMLParser.ConfigXMLParsingException");
+					throw("<br>The config.xml file does not validate with the framework's schema.","The error details are:<br/> #errorDetails#","ColdBox.plugins.XMLParser.ConfigXMLParsingException");
 				}// if invalid status
 			}//if xml validation is on
 			
 		}//end of try
 		catch( Any Exception ){
-			throw("#Exception.Message# & #Exception.Detail#",Exception.tagContext.toString(), "Framework.plugins.XMLParser.ConfigXMLParsingException");
+			throw("#Exception.Message# & #Exception.Detail#",Exception.tagContext.toString(), "ColdBox.plugins.XMLParser.ConfigXMLParsingException");
 		}
 		
 		//finish

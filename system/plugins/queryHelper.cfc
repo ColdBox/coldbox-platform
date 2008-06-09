@@ -249,7 +249,7 @@ queryPlugin.doLeftOuterJoin(q1,q3,"idt","idt")
 		    }
 		    
 		 }catch(Any e){
-			throw("Error in doInnerJoin():","#e.Detail#<br>#e.message#","Framework.plugins.queryHelper.InvalidInnerJoinException");
+			throw("Error in doInnerJoin():","#e.Detail#<br>#e.message#","ColdBox.plugins.queryHelper.InvalidInnerJoinException");
 		 }
 		</cfscript>
 		
@@ -345,7 +345,7 @@ queryPlugin.doLeftOuterJoin(q1,q3,"idt","idt")
 		    }
 		    
 		 }catch(Any e){
-			throw("Error in doLeftOuterJoin():","#e.Detail#<br>#e.message#","Framework.plugins.queryHelper.InvalidInnerJoinException");
+			throw("Error in doLeftOuterJoin():","#e.Detail#<br>#e.message#","ColdBox.plugins.queryHelper.InvalidInnerJoinException");
 		 }
 		</cfscript>
 		
@@ -375,7 +375,7 @@ queryPlugin.doLeftOuterJoin(q1,q3,"idt","idt")
 	                                    );
             }
         }Catch(Any e){
-        	throw("Error in doQueryAppend():","#e.Detail#<br>#e.message#","Framework.plugins.queryHelper.InvalidQueryAppendException");
+        	throw("Error in doQueryAppend():","#e.Detail#<br>#e.message#","ColdBox.plugins.queryHelper.InvalidQueryAppendException");
         }    
            return QryReturn;
         </cfscript>
@@ -422,7 +422,7 @@ queryPlugin.doLeftOuterJoin(q1,q3,"idt","idt")
             return sReturn;
             
          }Catch(Any e){
-			throw("Error in getUnMatchedElements():","#e.Detail#<br>#e.message#","Framework.plugins.queryHelper.InvalidElementLoopException");
+			throw("Error in getUnMatchedElements():","#e.Detail#<br>#e.message#","ColdBox.plugins.queryHelper.InvalidElementLoopException");
 		 }
         </cfscript>
 		
@@ -452,7 +452,7 @@ queryPlugin.doLeftOuterJoin(q1,q3,"idt","idt")
             return sReturn;
             
          }Catch(Any e){
-			throw("Error in getUniqueElements():","#e.Detail#<br>#e.message#","Framework.plugins.queryHelper.InvalidElementLoopException");
+			throw("Error in getUniqueElements():","#e.Detail#<br>#e.message#","ColdBox.plugins.queryHelper.InvalidElementLoopException");
 		 }
         </cfscript>
 		
@@ -489,7 +489,7 @@ queryPlugin.doLeftOuterJoin(q1,q3,"idt","idt")
             return QryReturn;
             
           }Catch(Any e){
-			throw("Error in QrySetCell():","#e.Detail#<br>#e.message#","Framework.plugins.queryHelper.InvalidQrySetCellException");
+			throw("Error in QrySetCell():","#e.Detail#<br>#e.message#","ColdBox.plugins.queryHelper.InvalidQrySetCellException");
 		 }
         </cfscript>
 		 

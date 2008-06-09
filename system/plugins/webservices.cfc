@@ -49,7 +49,7 @@ Modification History:
 				<cfreturn getController().getSetting("WebServices").PRO[arguments.name]>
 			</cfif>
 		</cfif>
-		<cfthrow type="Framework.plugins.webservices.WebServiceNotFoundException" message="The webservice #arguments.name# was not found in the configuration structure.">
+		<cfthrow type="ColdBox.plugins.webservices.WebServiceNotFoundException" message="The webservice #arguments.name# was not found in the configuration structure.">
 	</cffunction>
 
 	<!--- ************************************************************* --->
@@ -67,7 +67,7 @@ Modification History:
 				<cfreturn CreateObject("webservice", getController().getSetting("WebServices").PRO[arguments.name] )>
 			</cfif>
 		</cfif>
-		<cfthrow type="Framework.plugins.webservices.WebServiceNotFoundException" message="The webservice #arguments.name# was not found in the configuration structure.">
+		<cfthrow type="ColdBox.plugins.webservices.WebServiceNotFoundException" message="The webservice #arguments.name# was not found in the configuration structure.">
 	</cffunction>
 
 	<!--- ************************************************************* --->

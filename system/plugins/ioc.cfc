@@ -82,7 +82,7 @@ Modification History:
 			</cfcase>
 
 			<cfdefaultcase>
-				<cfthrow type="Framework.plugins.ioc.InvalidIoCFramework" message="The only available IoC supported frameworks are coldspring and lightwire. You chose: #getIOCFramework()#">
+				<cfthrow type="ColdBox.plugins.ioc.InvalidIoCFramework" message="The only available IoC supported frameworks are coldspring and lightwire. You chose: #getIOCFramework()#">
 			</cfdefaultcase>
 		</cfswitch>
 
@@ -241,7 +241,7 @@ Modification History:
 				setExpandedIOCDefinitionFile( ExpandPath(getIOCDefinitionFile()) );
 			}
 			else{
-				throw("The definition file: #getIOCDefinitionFile()# does not exist. Please check your path","","Framework.plugins.ioc.InvalidDefitinionFile");
+				throw("The definition file: #getIOCDefinitionFile()# does not exist. Please check your path","","ColdBox.plugins.ioc.InvalidDefitinionFile");
 			}
 		</cfscript>
 	</cffunction>
