@@ -90,8 +90,7 @@ Description :
 			
 		<cflock type="exclusive" name="cboxautowire_handler_#interceptData.handlerPath#" timeout="30" throwontimeout="true">
 			<cfset processAutowire(argumentCollection=arguments)>		
-		</cflock>
-		
+		</cflock>		
 	</cffunction>
 		
 	<!--- After Plugin Creation --->
@@ -104,8 +103,7 @@ Description :
 			
 		<cflock type="exclusive" name="cboxautowire_plugin_#interceptData.pluginPath#" timeout="30" throwontimeout="true">
 			<cfset processAutowire(argumentCollection=arguments)>		
-		</cflock>
-		
+		</cflock>		
 	</cffunction>
 	
 	<!--- After Plugin Creation --->
@@ -148,131 +146,6 @@ Description :
 	
 <!------------------------------------------- PRIVATE METHDOS ------------------------------------------->
 	
-	<!--- Get an object's dependencies via metadata --->
-	<cffunction name="parseMetadata" returntype="array" access="private" output="false" hint="I get a components dependencies via searching for 'setters'">
-		<!--- ************************************************************* --->
-		<cfargument name="metadata" 		required="true" type="any" 		hint="The recursive metadata">
-		<cfargument name="dependencies" 	required="true" type="array" 	hint="The dependencies">
-		<!--- ************************************************************* --->
-		<cfscript>
-			var x = 1;
-			var md = arguments.metadata;
-			var cbox_reserved_functions = "setSetting,setDebugMode,setNextEvent,setNextRoute,setController,settingExists";
-			
-			/* Look For cfProperties */
-			if( structKeyExists(md,"properties") and ArrayLen(md.properties) gt 0){
-				for(x=1; x lte ArrayLen(md.properties); x=x+1 ){
-					
-					/* Check if type is ioc */
-					if( structKeyExists(md.properties[x],"type") and md.properties[x].type eq "ioc" ){
-						/* Scope Check */
-						if( not structKeyExists(md.properties[x],"scope") ){
-							md.properties[x].scope = "variables";
-						}		
-						/* Cleanup Name */
-						md.properties[x].name = replace(md.properties[x].name,".","_","all");
-						/* Add Property Dependency */
-						ArrayAppend( arguments.dependencies, md.properties[x].name & "," & md.properties[x].scope );
-					}
-					
-				}//end for loop		
-			}//end if properties found.
-			
-			/* Look for cfFunctions and if setter injection is enabled. */		
-			if( getProperty('enableSetterInjection') and structKeyExists(md, "functions") ){
-				for(x=1; x lte ArrayLen(md.functions); x=x+1 ){
-					/* Verify we have a setter */
-					if( left(md.functions[x].name,3) eq "set" and not listFindNoCase(cbox_reserved_functions,md.functions[x].name) ){
-						/* Found Setter, append property Name */
-						ArrayAppend(arguments.dependencies,Right(md.functions[x].name, Len(md.functions[x].name)-3));
-					
-					}//end if setter found.
-				}//end loop of functions
-			}//end if functions found
-			
-			/* Start Registering inheritances */
-			if ( structKeyExists(md, "extends") and 
-				 ( md.extends.name neq "coldbox.system.plugin" or
-				   md.extends.name neq "coldbox.system.eventhandler" or
-				   md.extends.name neq "coldbox.system.interceptor" )
-			){
-				/* Recursive lookup */
-				arguments.dependencies = parseMetadata(md.extends,dependencies);
-			}
-			
-			/* return the dependencies found */
-			return arguments.dependencies;
-		</cfscript>	
-	</cffunction>
-	
-	<!--- Inject Bean --->
-	<cffunction name="injectBean" access="private" returntype="void" output="false" hint="Inject a bean with dependencies via setters or property injections">
-		<!--- ************************************************************* --->
-		<cfargument name="targetBean"  	 type="any" 	required="true" hint="The bean that will be injected with dependencies" />
-		<cfargument name="beanName"  	 type="string" 	required="true" hint="The name of the property to inject"/>
-		<cfargument name="beanObject" 	 type="any" 	required="true" hint="The bean object to inject." />
-		<cfargument name="scope" 		 type="string"  required="true" hint="The scope to inject a property into.">
-		<!--- ************************************************************* --->
-		<cfscript>
-			var argCollection = structnew();
-			argCollection[arguments.beanName] = arguments.beanObject;
-		</cfscript>
-		
-		<!--- Property or Setter --->
-		<cfif len(arguments.scope) eq 0>
-			
-			<!--- Call our mixin invoker --->
-			<cfinvoke component="#arguments.targetBean#" method="invokerMixin">
-				<cfinvokeargument name="method"  		value="set#arguments.beanName#">
-				<cfinvokeargument name="argCollection"  value="#argCollection#">
-			</cfinvoke>	
-			
-		<cfelse>
-			
-			<!--- Call our property injector mixin --->
-			<cfinvoke component="#arguments.targetBean#" method="injectPropertyMixin">
-				<cfinvokeargument name="propertyName"  	value="#arguments.beanName#">
-				<cfinvokeargument name="propertyValue"  value="#arguments.beanObject#">
-				<cfinvokeargument name="scope"			value="#arguments.scope#">
-			</cfinvoke>	
-			
-		</cfif>			
-	</cffunction>
-	
-	<!--- Process After DI Complete --->
-	<cffunction name="processAfterCompleteDI" hint="see if we have a method to call after DI, and if so, call it" access="private" returntype="void" output="false">
-		<!--- ************************************************************* --->
-		<cfargument name="targetObject" hint="the target object to call on" type="any" required="Yes">
-		<!--- ************************************************************* --->
-		<cfset var meta = 0 />
-		<!--- Check if method exists --->
-		<cfif StructKeyExists(arguments.targetObject, getProperty('CompleteDIMethodName'))>
-			<!--- Call our mixin invoker --->
-			<cfinvoke component="#arguments.targetObject#" method="invokerMixin">
-				<cfinvokeargument name="method"  		value="#getProperty('CompleteDIMethodName')#">
-			</cfinvoke>
-		</cfif>
-	</cffunction>
-	
-	<!--- Get a new MD cache entry structure --->
-	<cffunction name="getNewMDEntry" access="private" returntype="struct" hint="Get a new metadata entry structure" output="false" >
-		<cfscript>
-			var mdEntry = structNew();
-			
-			mdEntry.autowire = false;
-			mdEntry.dependencies = Arraynew(1);
-			
-			return mdEntry;
-		</cfscript>
-	</cffunction>
-	
-	<!--- Get Set DI CACHE Dictionary --->
-	<cffunction name="getDICacheDictionary" access="private" output="false" returntype="coldbox.system.util.baseDictionary" hint="Get DICacheDictionary">
-		<cfreturn instance.DICacheDictionary/>
-	</cffunction>
-	<cffunction name="setDICacheDictionary" access="private" output="false" returntype="void" hint="Set DICacheDictionary">
-		<cfargument name="DICacheDictionary" type="coldbox.system.util.baseDictionary" required="true"/>
-		<cfset instance.DICacheDictionary = arguments.DICacheDictionary/>
-	</cffunction>
+
 
 </cfcomponent>

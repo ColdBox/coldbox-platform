@@ -23,6 +23,7 @@
 		<Setting name="HandlersIndexAutoReload" 	value="false"/>
 		<Setting name="ConfigAutoReload"			value="false"/>
 		<Setting name="MyPluginsLocation"			value="" />
+		<Setting name="HandlerCaching"				value="true" />
 	</Settings>
 	
 	<YourSettings />
