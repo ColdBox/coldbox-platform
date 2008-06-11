@@ -107,7 +107,7 @@ What gets returned on the FeedStructure:
 					slash = getSetting("OSFileSeparator",true);
 					/* Cache Location */
 					if( not settingExists('feedReader_cacheLocation') ){
-						throw(message="The Setting feedReader_cacheLocation is missing. Please create it.",type='rss.feedReader.InvalidSettingException');
+						throw(message="The Setting feedReader_cacheLocation is missing. Please create it.",type='plugins.feedReader.InvalidSettingException');
 					}
 					/* Tests if the directory exists: Full Path */
 					if ( directoryExists( getController().getAppRootPath() & getSetting('feedReader_cacheLocation') ) ){
@@ -123,7 +123,7 @@ What gets returned on the FeedStructure:
 						setCacheLocation( getSetting('feedReader_cacheLocation') );
 					}
 					else{
-						throw('The cache location directory could not be found. Please check again. #getSetting('feedReader_cacheLocation')#','','rss.feedReader.InvalidCacheLocationException');
+						throw('The cache location directory could not be found. Please check again. #getSetting('feedReader_cacheLocation')#','','plugins.feedReader.InvalidCacheLocationException');
 					}
 				}//end if cahce eq file
 				else{
@@ -227,7 +227,7 @@ What gets returned on the FeedStructure:
 			</cflock>
 			<!--- Exists Check --->
 			<cfif qFile.recordcount eq 0>
-				<cfthrow message="The feed does not exist in the cache." type="customPlugins.rss.feedReader">
+				<cfthrow message="The feed does not exist in the cache." type="customPlugins.plugins.feedReader">
 			</cfif>
 			<!--- Timeout Check --->
 			<cfif DateDiff("n", qFile.dateLastModified, now()) gt getCacheTimeout()>
@@ -350,7 +350,7 @@ What gets returned on the FeedStructure:
 			var FeedStruct = structnew();
 			/* Check if using cache */
 			if( not getUseCache() ){
-				throw("You are tying to use a method that needs caching enabled.","Please look at the plugin's settings or just use the 'retrieveFeed' method.","rss.feedReader.InvalidSettingException");
+				throw("You are tying to use a method that needs caching enabled.","Please look at the plugin's settings or just use the 'retrieveFeed' method.","plugins.feedReader.InvalidSettingException");
 			}
 			/* Check for itemsType */
 			if( not reFindnocase("^(query|array)$",arguments.itemsType) ){
@@ -412,15 +412,15 @@ What gets returned on the FeedStructure:
 			<cfset xmlDoc = XMLParse(trim(feedResult.FileContent))>
 			
 			<cfcatch type="any">
-				<cfthrow type="rss.feedReader.FeedParsingException"
+				<cfthrow type="plugins.feedReader.FeedParsingException"
 						 message="Error parsing the feed into an XML document. Please verify that the feed is correct and valid"
 						 detail="The returned cfhttp content is: #feedResult.fileContent.toString()#">
 			</cfcatch>
 		</cftry>
 		
 		<!--- Validate If its an Atom or RSS feed --->
-		<cfif not structKeyExists(xmlDoc,"rss") and not structKeyExists(xmlDoc,"feed")>
-			<cfthrow type="rss.feedReader.FeedParsingException"
+		<cfif not structKeyExists(xmlDoc,"rss") and not structKeyExists(xmlDoc,"feed") and not structKeyExists(xmlDoc,"rdf:RDF")>
+			<cfthrow type="plugins.feedReader.FeedParsingException"
 					 message="Cannot continue parsing the feed since it does not seem to be a valid RSS or ATOM feed. Please verify that the feed is correct and valid"
 					 detail="The xmldocument is: #htmlEditFormat(toString(xmlDoc))#">
 		</cfif>
@@ -751,7 +751,7 @@ What gets returned on the FeedStructure:
 				}
 				else if( arguments.entity.xmlAttributes.type is "xhtml" ){
 					if( not structKeyExists(arguments.entity,"div") ){
-						throw("Invalid Atom: XHTML Text construct does not contain a child div.",'','rss.feedReader.InvalidAtomConstruct');	
+						throw("Invalid Atom: XHTML Text construct does not contain a child div.",'','plugins.feedReader.InvalidAtomConstruct');	
 					}
 					for(x=1;x lte ArrayLen(arguments.entity.xmlChildren);x=x+1){
 						results = results & arguments.entity.xmlChildren[x].toString();
