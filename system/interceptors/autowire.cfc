@@ -22,9 +22,6 @@ Description :
 
 	<cffunction name="Configure" access="public" returntype="void" hint="This is the configuration method for your interceptors" output="false" >
 		<cfscript>
-			/* Setup the Event Handler Cache Dictionary */
-			setDICacheDictionary(CreateObject("component","coldbox.system.util.baseDictionary").init('DIMetadata'));
-			
 			/* Get set properties */
 			if( not propertyExists("debugMode") or not isBoolean(getProperty("debugMode")) ){
 				setProperty("debugMode",false);
