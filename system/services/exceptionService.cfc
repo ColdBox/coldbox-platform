@@ -72,7 +72,7 @@ Modification History:
 		<!--- ************************************************************* --->
 		<cfargument name="ExceptionBean" type="any" required="true">
 		<!--- ************************************************************* --->
-		<cfset var BugReport = "">
+		<cfset var cboxBugReport = "">
 		<cfset var Exception = arguments.ExceptionBean>
 		<cfset var Event = controller.getRequestService().getContext()>
 		<!--- test for custom bug report --->
@@ -81,18 +81,18 @@ Modification History:
 				<!--- Place exception in the requset Collection --->
 				<Cfset Event.setvalue("ExceptionBean",Exception)>
 				<!--- Save the Custom Report --->
-				<cfsavecontent variable="BugReport"><cfinclude template="/#controller.getSetting("AppMapping")#/#controller.getSetting("CustomErrorTemplate")#"></cfsavecontent>
+				<cfsavecontent variable="cboxBugReport"><cfinclude template="/#controller.getSetting("AppMapping")#/#controller.getSetting("CustomErrorTemplate")#"></cfsavecontent>
 				<cfcatch type="any">
 					<cfset Exception = ExceptionHandler(cfcatch,"Application","Error creating custom error template.")>
 					<!--- Save the Bug Report --->
-					<cfsavecontent variable="BugReport"><cfinclude template="../includes/BugReport.cfm"></cfsavecontent>
+					<cfsavecontent variable="cboxBugReport"><cfinclude template="../includes/BugReport.cfm"></cfsavecontent>
 				</cfcatch>
 			</cftry>
 		<cfelse>
 			<!--- Save the Bug Report --->
-			<cfsavecontent variable="BugReport"><cfinclude template="../includes/BugReport.cfm"></cfsavecontent>
+			<cfsavecontent variable="cboxBugReport"><cfinclude template="../includes/BugReport.cfm"></cfsavecontent>
 		</cfif>
-		<cfreturn BugReport>
+		<cfreturn cboxBugReport>
 	</cffunction>
 	
 	<!--- Render an Email Bug Report --->
@@ -100,7 +100,7 @@ Modification History:
 		<!--- ************************************************************* --->
 		<cfargument name="ExceptionBean" type="any" required="true">
 		<!--- ************************************************************* --->
-		<cfset var BugReport = "">
+		<cfset var cboxBugReport = "">
 		<cfset var Exception = arguments.ExceptionBean>
 		<cfset var Event = controller.getRequestService().getContext()>
 		<!--- test for custom bug report --->
@@ -109,18 +109,18 @@ Modification History:
 				<!--- Place exception in the requset Collection --->
 				<Cfset Event.setvalue("ExceptionBean",Exception)>
 				<!--- Save the Custom Email Bug Report --->
-				<cfsavecontent variable="BugReport"><cfinclude template="/#controller.getSetting("AppMapping")#/#controller.getSetting("CustomEmailBugReport")#"></cfsavecontent>
+				<cfsavecontent variable="cboxBugReport"><cfinclude template="/#controller.getSetting("AppMapping")#/#controller.getSetting("CustomEmailBugReport")#"></cfsavecontent>
 				<cfcatch type="any">
 					<cfset Exception = ExceptionHandler(cfcatch,"Application","Error creating custom email bug report.")>
 					<!--- Save the Bug Report --->
-					<cfsavecontent variable="BugReport"><cfinclude template="../includes/BugReport.cfm"></cfsavecontent>
+					<cfsavecontent variable="cboxBugReport"><cfinclude template="../includes/BugReport.cfm"></cfsavecontent>
 				</cfcatch>
 			</cftry>
 		<cfelse>
 			<!--- Render the Default Email Bug Report --->
-			<cfsavecontent variable="BugReport"><cfinclude template="../includes/BugReport.cfm"></cfsavecontent>
+			<cfsavecontent variable="cboxBugReport"><cfinclude template="../includes/BugReport.cfm"></cfsavecontent>
 		</cfif>
-		<cfreturn BugReport>		
+		<cfreturn cboxBugReport>		
 	</cffunction>
 		
 <!------------------------------------------- PRIVATE ------------------------------------------->

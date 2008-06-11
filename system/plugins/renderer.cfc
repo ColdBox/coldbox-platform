@@ -12,15 +12,6 @@ Description :
 	will be produced sporadically.  This has been logged with Adobe as a bug
 	on the cfmodule tag.  Thus, it uses a output=true and a simple
 	cfinclude.
-
-Modification History:
-10/13/2005 - Upgraded the reqCollection to the request scope.
-12/23/2005 - Eliminate the dump of application structures.
-01/03/2006 - Added var results = "" to init.
-01/20/2006 - Removed Dumpvar, to debug template.
-06/28/2006 - Updated for Coldbox.
-07/27/2006 - renderview with view argument, added cfoutput support.
-02/12/2007 - Migrated to 1.2.0 format
 ----------------------------------------------------------------------->
 <cfcomponent name="renderer"
 			 hint="This service renders layouts, views, framework includes, etc."
@@ -51,7 +42,7 @@ Modification History:
 		this.VIEW_CACHEKEY_PREFIX = "cboxview_view-";
 		
 		/* Inject UDF For Views/Layouts */
-		includeUDF(getController().getSetting("UDFLibraryFile"));
+		includeUDF(controller.getSetting("UDFLibraryFile"));
 		
 		/* Return renderer */
 		return this;
@@ -82,11 +73,11 @@ Modification History:
 		<!--- ************************************************************* --->
 		<cfset var cbox_RenderedView = "">
 		<cfset var Event = controller.getRequestService().getContext()>
+		<!--- Create View Scope --->
 		<cfset var rc = event.getCollection()>
 		<!--- Cache Entries --->
 		<cfset var cbox_cacheKey = "">
 		<cfset var cbox_cacheEntry = "">
-		<cfset var debugMode = getController().getDebuggerService().getDebugMode()>
 		
 		<!--- Test Default View --->
 		<cfif arguments.view eq "">
@@ -112,7 +103,7 @@ Modification History:
 		<cfelse>
 			<!--- Render The View --->
 			<cfmodule template="../includes/timer.cfm" timertag="rendering View [#arguments.view#.cfm]" controller="#getController()#">
-				<cfsavecontent variable="cbox_RenderedView"><cfoutput><cfinclude template="/#getappMapping()#/#getViewsConvention()#/#arguments.view#.cfm"></cfoutput></cfsavecontent>
+				<cfsavecontent variable="cbox_RenderedView"><cfoutput><cfinclude template="/#instance.appMapping#/#instance.viewsConvention#/#arguments.view#.cfm"></cfoutput></cfsavecontent>
 			</cfmodule>
 			<!--- Is this view cacheable by setting, and if its the view we need to cache. --->
 			<cfif event.isViewCacheable() and (arguments.view eq event.getViewCacheableEntry().view)>
@@ -121,7 +112,7 @@ Modification History:
 				<cfset getColdboxOCM().set(this.VIEW_CACHEKEY_PREFIX & cbox_cacheEntry.view,cbox_RenderedView,cbox_cacheEntry.timeout,cbox_cacheEntry.lastAccessTimeout)>
 			<!--- Are we caching explicitly --->
 			<cfelseif arguments.cache>
-				<cfset getColdboxOCM().set(cbox_cacheKey,cbox_RenderedView,arguments.cacheTimeout,cacheLastAccessTimeout)>
+				<cfset getColdboxOCM().set(cbox_cacheKey,cbox_RenderedView,arguments.cacheTimeout,arguments.cacheLastAccessTimeout)>
 			</cfif>
 		</cfif>
 		
@@ -132,26 +123,47 @@ Modification History:
 	<!--- Render an external View --->
 	<cffunction name="renderExternalView"	access="Public" hint="Renders an external view." output="false" returntype="Any">
 		<!--- ************************************************************* --->
-		<cfargument name="view" required="true" type="string" hint="The full path to the view. This can be an expanded path or relative. Include extension.">
+		<cfargument name="view" 					required="true"  type="string" hint="The full path to the view. This can be an expanded path or relative. Include extension.">
+		<cfargument name="cache" 					required="false" type="boolean" default="false" hint="True if you want to cache the view.">
+		<cfargument name="cacheTimeout" 			required="false" type="string"  default=""		hint="The cache timeout">
+		<cfargument name="cacheLastAccessTimeout" 	required="false" type="string"  default="" 		hint="The last access timeout">
 		<!--- ************************************************************* --->
 		<cfset var cbox_RenderedView = "">
 		<cfset var Event = controller.getRequestService().getContext()>
+		<!--- Create View Scope --->
 		<cfset var rc = event.getCollection()>
-		<cfset var debugMode = getController().getDebuggerService().getDebugMode()>
+		<!--- Cache Entries --->
+		<cfset var cbox_cacheKey = "">
+		<cfset var cbox_cacheEntry = "">
 		
-		<cfmodule template="../includes/timer.cfm" timertag="rendering View [#arguments.view#]" controller="#getController()#">
-			<cftry>
-				<!--- Render the View --->
-				<cfsavecontent variable="cbox_RenderedView"><cfoutput><cfinclude template="#arguments.view#"></cfoutput></cfsavecontent>
-				<!--- Catches --->
-				<cfcatch type="missinginclude">
-					<cfthrow type="Framework.plugin.renderer.RenderExternalViewNotFoundException" message="The external view: #arguments.view# cannot be found. Please check your paths." >
-				</cfcatch>
-				<cfcatch type="any">
-					<cfthrow type="Framework.plugin.renderer.RenderExternalViewInvalidException" message="The external view: #arguments.view# threw an invalid exception when redering." >
-				</cfcatch>
-			</cftry>
-		</cfmodule>
+		<!--- Setup the cache key --->
+		<cfset cbox_cacheKey = this.VIEW_CACHEKEY_PREFIX & "external-" & arguments.view>
+		
+		<!--- Do we have a cached view?? --->
+		<cfif getColdboxOCM().lookup(cbox_cacheKey)>
+			<!--- Render The View --->
+			<cfmodule template="../includes/timer.cfm" timertag="rendering Cached External View [#arguments.view#.cfm]" controller="#getController()#">
+				<cfset cbox_RenderedView = getColdBoxOCM().get(cbox_cacheKey)>
+			</cfmodule>
+		<cfelse>
+			<cfmodule template="../includes/timer.cfm" timertag="rendering External View [#arguments.view#.cfm]" controller="#getController()#">
+				<cftry>
+					<!--- Render the View --->
+					<cfsavecontent variable="cbox_RenderedView"><cfoutput><cfinclude template="#arguments.view#.cfm"></cfoutput></cfsavecontent>
+					<!--- Catches --->
+					<cfcatch type="missinginclude">
+						<cfthrow type="Framework.plugin.renderer.RenderExternalViewNotFoundException" message="The external view: #arguments.view# cannot be found. Please check your paths." >
+					</cfcatch>
+					<cfcatch type="any">
+						<cfthrow type="Framework.plugin.renderer.RenderExternalViewInvalidException" message="The external view: #arguments.view# threw an invalid exception when redering." >
+					</cfcatch>
+				</cftry>
+			</cfmodule>
+			<!--- Are we caching explicitly --->
+			<cfif arguments.cache>
+				<cfset getColdboxOCM().set(cbox_cacheKey,cbox_RenderedView,arguments.cacheTimeout,arguments.cacheLastAccessTimeout)>
+			</cfif>
+		</cfif>
 
 		<cfreturn cbox_RenderedView>
 	</cffunction>
@@ -161,9 +173,7 @@ Modification History:
 		<cfset var cbox_RederedLayout = "">
 		<cfset var Event = controller.getRequestService().getContext()>
 		<cfset var rc = event.getCollection()>
-		<cfset var debugMode = getController().getDebuggerService().getDebugMode()>
-		
-					
+							
 		<!--- Check if no view has been set, if not, then set the default view --->
 		<cfif event.getCurrentView() eq "">
 			<cfset event.setView(event.getDefaultView())>
@@ -174,7 +184,7 @@ Modification History:
 			<cfif Event.getcurrentLayout() eq "">
 				<cfset cbox_RederedLayout = renderView()>
 			<cfelse>
-				<cfsavecontent variable="cbox_RederedLayout"><cfoutput><cfinclude template="/#getappMapping()#/#getLayoutsConvention()#/#Event.getcurrentLayout()#"></cfoutput></cfsavecontent>
+				<cfsavecontent variable="cbox_RederedLayout"><cfoutput><cfinclude template="/#instance.appMapping#/#instance.layoutsConvention#/#Event.getcurrentLayout()#"></cfoutput></cfsavecontent>
 			</cfif>
 		</cfmodule>
 		
