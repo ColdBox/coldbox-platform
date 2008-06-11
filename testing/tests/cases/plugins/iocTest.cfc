@@ -105,7 +105,7 @@ Description :
 		<!--- Now test is returned value is object --->
 		<cfscript>
 			var plugin = getController().getPlugin("ioc");
-			var newfile = Expandpath('/applications/coldbox/testing/tests/resources/coldspring.xml.cfm');
+			var newfile = Expandpath('/coldbox/testing/tests/resources/coldspring.xml.cfm');
 			
 			plugin.setIOCDefinitionFile(newFile);
 			
@@ -121,7 +121,7 @@ Description :
 		<cfscript>
 			var plugin = getController().getPlugin("ioc");
 			var cs = getController().getSetting('ColdspringBeanFactory',1);
-			var newfile = Expandpath('/applications/coldbox/testing/tests/resources/coldspring.xml.cfm');
+			var newfile = Expandpath('/coldbox/testing/tests/resources/coldspring.xml.cfm');
 			
 			makePublic(plugin,"createColdspring","_createColdspring");
 			
@@ -141,7 +141,7 @@ Description :
 		<cfscript>
 			var plugin = getController().getPlugin("ioc");
 			var lw = getController().getSetting('LightWireBeanFactory',1);
-			var newfile = Expandpath('/applications/coldbox/testing/tests/resources/coldspring.xml.cfm');
+			var newfile = Expandpath('/coldbox/testing/tests/resources/coldspring.xml.cfm');
 			
 			makePublic(plugin,"createLightwire","_createLightwire");
 			
@@ -160,7 +160,7 @@ Description :
 		<!--- Now test is returned value is object --->
 		<cfscript>
 			var plugin = getController().getPlugin("ioc");
-			var newfile = '/applications/coldbox/testing/tests/resources/coldspring.xml.cfm';
+			var newfile = '/coldbox/testing/tests/resources/coldspring.xml.cfm';
 			var security = 0;
 			
 			//set IOC Caching

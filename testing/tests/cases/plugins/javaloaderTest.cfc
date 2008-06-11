@@ -35,7 +35,7 @@ Description :
 		<!--- Now test some events --->
 		<cfscript>
 			var plugin = getController().getPlugin("JavaLoader");
-			var testJar = expandPath('/applications/coldbox/testing/tests/resources/helloworld.jar');
+			var testJar = expandPath('/coldbox/testing/tests/resources/helloworld.jar');
 			var myClass = "";
 			
 			//Load it
