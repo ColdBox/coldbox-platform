@@ -34,10 +34,10 @@ Description :
 		<!--- Now test test plugin as a object --->
 		<cfscript>
 			var plugin = getController().getPlugin("Utilities");
-			var direactoryPath = ExpandPath('/applications/coldbox/testing/tests/resources');
+			var direactoryPath = ExpandPath('/coldbox/testing/tests/resources');
 			var sStruct	= structNew() ;
 			var sString = "";
-			var sObject = CreateObject("component","applications.coldbox.testing.tests.resources.test1");
+			var sObject = CreateObject("component","coldbox.testing.tests.resources.test1");
 			
 			sStruct["1"] = "ColdBox";
 			sStruct["2"] = "Great Toolkit";
