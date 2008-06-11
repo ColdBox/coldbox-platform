@@ -96,6 +96,12 @@
 		
 		<!-- Zip it -->
 		<zip destfile="${dir.exports}/coldbox_${coldbox.version}.zip" basedir="${dir.build}"></zip>
+		<!-- Zip Standalone -->
+		<zip destfile="${dir.exports}/coldbox_standalone_${coldbox.version}.zip">
+			<fileset dir="${dir.build}/system" />
+			<fileset dir="${dir.build}/install" />
+			<fileset dir="${dir.build}/ApplicationTemplate" />									
+		</zip>		
 		
     </target>
 
