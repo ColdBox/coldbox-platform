@@ -254,7 +254,7 @@ Description :
 			<cfset match = REFindNoCase(thisPattern,requestString,1,true) />
 
 			<!--- If a match was made, use the result to route the request --->
-			<cfif match.len[1] IS NOT 0>
+			<cfif match.len[1] IS NOT 0 AND match.pos[1] EQ 1>
 				<cfset foundRoute = thisRoute />				
 				<!--- For each part of the URL in the route --->
 				<cfloop list="#thisRoute.pattern#" delimiters="/" index="thisPattern">

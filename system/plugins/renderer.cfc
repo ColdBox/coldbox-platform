@@ -34,9 +34,10 @@ Description :
 		setpluginDescription("This is the rendering service for ColdBox.");
 		
 		/* Set Conventions */
-		instance.layoutsConvention = getController().getSetting("layoutsConvention",true);
-		instance.viewsConvention = getController().getSetting("viewsConvention",true);
-		instance.appMapping = getController().getSetting("AppMapping");
+		instance.layoutsConvention = controller.getSetting("layoutsConvention",true);
+		instance.viewsConvention = controller.getSetting("viewsConvention",true);
+		instance.appMapping = controller.getSetting("AppMapping");
+		instance.viewsExternalLocation = controller.getSetting('ViewsExternalLocation');
 		
 		/* PUBLIC CacheKey Prefix */
 		this.VIEW_CACHEKEY_PREFIX = "cboxview_view-";
@@ -72,6 +73,7 @@ Description :
 		<cfargument name="cacheLastAccessTimeout" 	required="false" type="string"  default="" 		hint="The last access timeout">
 		<!--- ************************************************************* --->
 		<cfset var cbox_RenderedView = "">
+		<cfset var cbox_viewpath = "">
 		<cfset var Event = controller.getRequestService().getContext()>
 		<!--- Create View Scope --->
 		<cfset var rc = event.getCollection()>
@@ -97,13 +99,24 @@ Description :
 		<!--- Do we have a cached view?? --->
 		<cfif getColdboxOCM().lookup(cbox_cacheKey)>
 			<!--- Render The View --->
-			<cfmodule template="../includes/timer.cfm" timertag="rendering Cached View [#arguments.view#.cfm]" controller="#getController()#">
+			<cfmodule template="../includes/timer.cfm" timertag="rendering Cached View [#arguments.view#.cfm]" controller="#controller#">
 				<cfset cbox_RenderedView = getColdBoxOCM().get(cbox_cacheKey)>
 			</cfmodule>
 		<cfelse>
+			<!--- The View Path is by convention or external?? --->
+			<cfset cbox_viewpath = "/#instance.appMapping#/#instance.viewsConvention#/#arguments.view#.cfm">
+			<cfif not fileExists(expandPath(cbox_viewpath))>
+				<cfset cbox_viewpath = "#instance.viewsExternalLocation#/#arguments.view#.cfm">
+			</cfif>
+			<cfif not fileExists(expandPath(cbox_viewpath))>
+				<cfthrow message="View not located" 
+						 detail="The view: #arguments.view#.cfm could not be located in the conventions folder or in the external location. Please verify the view name" 
+						 type="Framework.plugin.renderer.ViewNotFound">
+			</cfif>
+			
 			<!--- Render The View --->
-			<cfmodule template="../includes/timer.cfm" timertag="rendering View [#arguments.view#.cfm]" controller="#getController()#">
-				<cfsavecontent variable="cbox_RenderedView"><cfoutput><cfinclude template="/#instance.appMapping#/#instance.viewsConvention#/#arguments.view#.cfm"></cfoutput></cfsavecontent>
+			<cfmodule template="../includes/timer.cfm" timertag="rendering View [#arguments.view#.cfm]" controller="#controller#">
+				<cfsavecontent variable="cbox_RenderedView"><cfoutput><cfinclude template="#cbox_viewpath#"></cfoutput></cfsavecontent>
 			</cfmodule>
 			<!--- Is this view cacheable by setting, and if its the view we need to cache. --->
 			<cfif event.isViewCacheable() and (arguments.view eq event.getViewCacheableEntry().view)>
@@ -142,11 +155,11 @@ Description :
 		<!--- Do we have a cached view?? --->
 		<cfif getColdboxOCM().lookup(cbox_cacheKey)>
 			<!--- Render The View --->
-			<cfmodule template="../includes/timer.cfm" timertag="rendering Cached External View [#arguments.view#.cfm]" controller="#getController()#">
+			<cfmodule template="../includes/timer.cfm" timertag="rendering Cached External View [#arguments.view#.cfm]" controller="#controller#">
 				<cfset cbox_RenderedView = getColdBoxOCM().get(cbox_cacheKey)>
 			</cfmodule>
 		<cfelse>
-			<cfmodule template="../includes/timer.cfm" timertag="rendering External View [#arguments.view#.cfm]" controller="#getController()#">
+			<cfmodule template="../includes/timer.cfm" timertag="rendering External View [#arguments.view#.cfm]" controller="#controller#">
 				<cftry>
 					<!--- Render the View --->
 					<cfsavecontent variable="cbox_RenderedView"><cfoutput><cfinclude template="#arguments.view#.cfm"></cfoutput></cfsavecontent>
@@ -179,7 +192,7 @@ Description :
 			<cfset event.setView(event.getDefaultView())>
 		</cfif>
 		
-		<cfmodule template="../includes/timer.cfm" timertag="rendering Layout [#Event.getcurrentLayout()#]" controller="#getController()#">
+		<cfmodule template="../includes/timer.cfm" timertag="rendering Layout [#Event.getcurrentLayout()#]" controller="#controller#">
 			<!--- Render With No Layout Test--->
 			<cfif Event.getcurrentLayout() eq "">
 				<cfset cbox_RederedLayout = renderView()>

@@ -11,4 +11,5 @@
 <p><a href="index.cfm?#getController().getSetting("eventName")#=ehGeneral.dspFolderTester2">Test Folder Layout 2</a></p>
 <hr>
 <p><a href="index.cfm?#getController().getSetting("eventName")#=ehTest.dspExternal">External Handler</a></p>
+<p><a href="index.cfm?#getController().getSetting("eventName")#=ehGeneral.externalview">External View</a></p>
 </cfoutput>

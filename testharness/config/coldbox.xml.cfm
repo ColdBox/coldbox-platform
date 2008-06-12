@@ -29,6 +29,7 @@
 		<Setting name="ExceptionHandler"     		value="" />
 		<Setting name="onInvalidEvent" 				value="" />
 		<Setting name="MyPluginsLocation" 			value="coldbox.testing.testplugins"/>
+		<Setting name="ViewsExternalLocation"		value="/coldbox/testing/testviews" />
 		<Setting name="HandlersExternalLocation" 	value="coldbox.testing.testhandlers"/>
 		<Setting name="HandlerCaching" 				value="false"/>
 		<Setting name="EventCaching" 				value="true"/>
@@ -100,6 +101,7 @@
 		<DefaultLocale>en_US</DefaultLocale>
 		<!--session or client-->
 		<LocaleStorage>session</LocaleStorage>
+		<UknownTranslation>nothing</UknownTranslation>
 	</i18N>
 
 	<Datasources>

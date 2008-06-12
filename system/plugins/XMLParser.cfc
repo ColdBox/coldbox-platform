@@ -183,10 +183,12 @@ Modification History:
 
 			//Schema Path
 			StructInsert(settingsStruct, "ConfigFileSchemaLocation", instance.FrameworkConfigXSDFile);
+			
 			//Fix Application Path to last / standard.
 			if( right(controller.getAppRootPath(),1) neq  instance.FileSeparator){
 				controller.setAppRootPath( controller.getAppRootPath() & instance.FileSeparator );
 			}
+			
 			//Now set the correct path.
 			StructInsert(settingsStruct, "ApplicationPath", controller.getAppRootPath() );
 			
@@ -566,20 +568,30 @@ Modification History:
 				
 				/* Handler Registration */
 				ConfigStruct["HandlersInvocationPath"] = "#fwSettingsStruct.handlersConvention#";
-				if( right(controller.getAppRootPath(),1) eq instance.FileSeparator ){
-					ConfigStruct["HandlersPath"] = controller.getAppRootPath() & "#fwSettingsStruct.handlersConvention#";
-				}
-				else{
-					ConfigStruct["HandlersPath"] = controller.getAppRootPath() & instance.FileSeparator & "#fwSettingsStruct.handlersConvention#";
-				}
+				ConfigStruct["HandlersPath"] = controller.getAppRootPath() & "#fwSettingsStruct.handlersConvention#";
+
 				/* Custom Plugins Registration */
 				ConfigStruct["MyPluginsInvocationPath"] = "#fwSettingsStruct.pluginsConvention#";
-				if( right(controller.getAppRootPath(),1) eq instance.FileSeparator ){
-					ConfigStruct["MyPluginsPath"] = controller.getAppRootPath() & "#fwSettingsStruct.pluginsConvention#";
+				ConfigStruct["MyPluginsPath"] = controller.getAppRootPath() & "#fwSettingsStruct.pluginsConvention#";
+			}
+			
+			/* ::::::::::::::::::::::::::::::::::::::::: EXTERNAL VIEWS LOCATION :::::::::::::::::::::::::::::::::::::::::::: */
+			
+			/* check for ViewsExternalLocation */
+			if( configStruct["ViewsExternalLocation"] neq "" ){
+				/* Verify the locations, do relative to the app mapping first */
+				if( directoryExists(controller.getAppRootPath() & configStruct["ViewsExternalLocation"]) ){
+					configStruct["ViewsExternalLocation"] = "/" & ConfigStruct["AppMapping"] & "/" & configStruct["ViewsExternalLocation"];
 				}
-				else{
-					ConfigStruct["MyPluginsPath"] = controller.getAppRootPath() & instance.FileSeparator & "#fwSettingsStruct.pluginsConvention#";
+				else if( not directoryExists(expandPath(configStruct["ViewsExternalLocation"])) ){
+					throw("ViewsExternalLocation could not be found.","The directories tested was relative and expanded using #configStruct['ViewsExternalLocation']#. Please verify your setting.","ColdBox.plugins.XMLParser.ConfigXMLParsingException");
 				}
+				/* Cleanup */
+				if ( right(configStruct["ViewsExternalLocation"],1) eq "/" ){
+					 configStruct["ViewsExternalLocation"] = left(configStruct["ViewsExternalLocation"],len(configStruct["ViewsExternalLocation"])-1);
+				}
+			}else{
+				configStruct["ViewsExternalLocation"] = "";
 			}
 			
 			/* ::::::::::::::::::::::::::::::::::::::::: MAIL SETTINGS :::::::::::::::::::::::::::::::::::::::::::: */
@@ -632,7 +644,7 @@ Modification History:
 			if ( ArrayLen(i18NSettingNodes) gt 0 and ArrayLen(i18NSettingNodes[1].XMLChildren) gt 0){
 				//Parse i18N Settings
 				for (i=1; i lte ArrayLen(i18NSettingNodes[1].XMLChildren); i=i+1){
-
+					
 					//Set the Resource Bundle if Using it.
 					if ( i18NSettingNodes[1].XMLChildren[i].XMLName eq "DefaultResourceBundle" and len(trim(i18NSettingNodes[1].XMLChildren[i].XMLText)) neq 0 ){
 						i18NSettingNodes[1].XMLChildren[i].XMLText = expandPath(trim(i18NSettingNodes[1].XMLChildren[i].XMLText));
@@ -646,20 +658,26 @@ Modification History:
 					//Insert to structure.
 					StructInsert(ConfigStruct, trim(i18NSettingNodes[1].XMLChildren[i].XMLName),trim(i18NSettingNodes[1].XMLChildren[i].XMLText));
 				}
+				
 				//set i18n
 				StructInsert(ConfigStruct,"using_i18N",true);
-				//Check if resource bundle was used.
+				
+				/* Empty Checks */
 				if ( not structKeyExists(ConfigStruct, "DefaultResourceBundle") ){
 					StructInsert(ConfigStruct,"DefaultResourceBundle","");
+				}
+				if ( not structKeyExists(ConfigStruct, "UknownTranslation") ){
+					StructInsert(ConfigStruct,"UknownTranslation","");
 				}
 			}
 			else{
 				StructInsert(ConfigStruct,"DefaultResourceBundle","");
 				StructInsert(ConfigStruct,"DefaultLocale","");
 				StructInsert(ConfigStruct,"LocaleStorage","");
+				StructInsert(ConfigStruct,"UknownTranslation","");
 				StructInsert(ConfigStruct,"using_i18N",false);
 			}
-	
+			
 			/* ::::::::::::::::::::::::::::::::::::::::: BUG MAIL SETTINGS :::::::::::::::::::::::::::::::::::::::::::: */
 			
 			//Bug Tracer Reports

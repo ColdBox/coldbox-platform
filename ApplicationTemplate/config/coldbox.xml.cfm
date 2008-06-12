@@ -69,6 +69,8 @@
 		<Setting name="ConfigAutoReload"          	value="false" />
 		<!-- Declare the custom plugins base invocation path, if used. You have to use dot notation.Example: mymapping.myplugins	-->
 		<Setting name="MyPluginsLocation"   		value="" />
+		<!-- Declare the external views location. It can be relative to this app or external. This in turn is used to do cfincludes. -->
+		<Setting name="ViewsExternalLocation" 		value=""/>
 		<!-- Declare the external handlers base invocation path, if used. You have to use dot notation.Example: mymapping.myhandlers	-->
 		<Setting name="HandlersExternalLocation"   	value="" />
 		<!--Flag to cache handlers. Default if left blank is true. -->
@@ -190,6 +192,7 @@
 		<DefaultResourceBundle>includes/main</DefaultResourceBundle>
 		<DefaultLocale>en_US</DefaultLocale>
 		<LocaleStorage>session</LocaleStorage>
+		<UknownTranslation></UknownTranslation>
 	</i18N>
 	-->
 	<i18N />

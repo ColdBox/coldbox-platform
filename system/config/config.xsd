@@ -53,6 +53,7 @@
 									<xs:enumeration value="EnableDumpVar"/>	
 									<xs:enumeration value="EnableColdboxLogging"/>
 									<xs:enumeration value="EventCaching" />
+									<xs:enumeration value="FlashURLPersistScope"/>
 									<xs:enumeration value="HandlersIndexAutoReload" />
 									<xs:enumeration value="HandlersExternalLocation" />
 									<xs:enumeration value="HandlerCaching" />
@@ -70,8 +71,8 @@
 									<xs:enumeration value="ReinitPassword"/>
 									<xs:enumeration value="SessionStartHandler"/>
 									<xs:enumeration value="SessionEndHandler"/>						
-									<xs:enumeration value="UDFLibraryFile"/>	
-									<xs:enumeration value="FlashURLPersistScope"/>										
+									<xs:enumeration value="UDFLibraryFile"/>		
+									<xs:enumeration value="ViewsExternalLocation" />																		
 								</xs:restriction>
 							</xs:simpleType>
 						</xs:attribute>
@@ -288,13 +289,13 @@
 			<xs:documentation>Internationalization Section.</xs:documentation>
 		</xs:annotation>
 		<xs:complexType>
-			<xs:sequence>
-				<xs:element maxOccurs="1" minOccurs="0" name="DefaultResourceBundle">
+			<xs:all>
+				<xs:element maxOccurs="1" minOccurs="0" name="DefaultResourceBundle" type="xs:string" default="">
 					<xs:annotation>
 						<xs:documentation>The path to the resource bundle to load.</xs:documentation>
 					</xs:annotation>
 				</xs:element>				
-				<xs:element maxOccurs="1" minOccurs="0" name="DefaultLocale" >
+				<xs:element maxOccurs="1" minOccurs="0" name="DefaultLocale" type="xs:string">
 					<xs:annotation>
 						<xs:documentation>The default locale in the standard Java locale names</xs:documentation>
 					</xs:annotation>
@@ -310,7 +311,12 @@
 						</xs:restriction>
 					</xs:simpleType>
 				</xs:element>
-			</xs:sequence>
+				<xs:element maxOccurs="1" minOccurs="0" name="UknownTranslation" type="xs:string" default="">
+					<xs:annotation>
+						<xs:documentation>The key to use when a translation is not found. default is _UNKNOWNTRANSLATION_</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:all>
 		</xs:complexType>
 	</xs:element>
 	
