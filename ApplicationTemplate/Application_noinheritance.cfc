@@ -1,6 +1,6 @@
 <!-----------------------------------------------------------------------
 ********************************************************************************
-Copyright 2005-2008 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+Copyright 2005-2007 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 www.coldboxframework.com | www.luismajano.com | www.ortussolutions.com
 ********************************************************************************
 
@@ -13,14 +13,13 @@ Description :
 	
 	So if you have refactored your framework, make sure it extends coldbox.
 ----------------------------------------------------------------------->
-<cfcomponent output="false">
+<cfcomponent extends="coldbox.system.coldbox" output="false">
 
 	<!--- APPLICATION CFC PROPERTIES --->
 	<cfset this.name = hash(getCurrentTemplatePath())> 
 	<cfset this.sessionManagement = true>
 	<cfset this.sessionTimeout = createTimeSpan(0,0,30,0)>
 	<cfset this.setClientCookies = true>
-	<cfset this.clientManagement = true>
 	
 	<!--- COLDBOX STATIC PROPERTY, DO NOT CHANGE UNLESS THIS IS NOT THE ROOT OF YOUR COLDBOX APP --->
 	<cfset COLDBOX_APP_ROOT_PATH = getDirectoryFromPath(getCurrentTemplatePath())>
@@ -30,11 +29,8 @@ Description :
 	
 	<!--- on Application Start --->
 	<cffunction name="onApplicationStart" returnType="boolean" output="false">
-		<cfset var start = getTickCOunt()>
 		<cfscript>
-			request.fwloadTime = getTickCount() - start;
-			
-			/* Load Bootstrapper and load coldbox */
+			//Load ColdBox
 			application.cbBootstrap = CreateObject("component","coldbox.system.coldbox").init(COLDBOX_CONFIG_FILE,COLDBOX_APP_ROOT_PATH);
 			application.cbBootstrap.loadColdbox();
 			return true;
@@ -46,8 +42,8 @@ Description :
 		<!--- ************************************************************* --->
 		<cfargument name="targetPage" type="string" required="true" />
 		<!--- ************************************************************* --->
-		<cfset var start = getTickCount()>
 		<cfsetting enablecfoutputonly="yes">
+
 		<!--- BootStrap Reinit Check --->
 		<cfif not structKeyExists(application,"cbBootstrap") or application.cbBootStrap.isfwReinit()>
 			<cflock name="coldbox.bootstrap" type="exclusive" timeout="20" throwontimeout="true">
@@ -56,8 +52,6 @@ Description :
 		</cfif>
 		<!--- Reload Checks --->
 		<cfset application.cbBootstrap.reloadChecks()>
-		
-		<cfset request.fwLoadTIme = getTickCount() - start>
 		
 		<!--- Process A ColdBox Request Only --->
 		<cfif findNoCase('index.cfm', listLast(arguments.targetPage, '/'))>

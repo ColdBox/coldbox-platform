@@ -32,6 +32,18 @@ Description :
 
 <!------------------------------------------- PUBLIC ------------------------------------------->
 
+	<!--- Init --->
+	<cffunction name="init" access="public" returntype="coldbox" hint="Used when not using inheritance" output="false" >
+		<cfargument name="COLDBOX_CONFIG_FILE" 	 required="true" type="string" hint="The coldbox config file from the application.cfc">
+		<cfargument name="COLDBOX_APP_ROOT_PATH" required="true" type="string" hint="The coldbox app root path from the application.cfc">
+		<cfscript>
+			/* Set vars for two main locations */
+			setCOLDBOX_CONFIG_FILE(arguments.COLDBOX_CONFIG_FILE);
+			setCOLDBOX_APP_ROOT_PATH(arguments.COLDBOX_APP_ROOT_PATH);
+			return this;
+		</cfscript>
+	</cffunction>
+
 	<!--- Load ColdBox --->
 	<cffunction name="loadColdbox" access="public" returntype="void" hint="Load the framework" output="false" >
 		<!--- Clean up If Necessary --->

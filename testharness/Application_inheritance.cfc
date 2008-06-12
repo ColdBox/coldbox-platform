@@ -13,7 +13,7 @@ Description :
 	
 	So if you have refactored your framework, make sure it extends coldbox.
 ----------------------------------------------------------------------->
-<cfcomponent output="false">
+<cfcomponent extends="coldbox.system.coldbox" output="false">
 
 	<!--- APPLICATION CFC PROPERTIES --->
 	<cfset this.name = hash(getCurrentTemplatePath())> 
@@ -32,11 +32,9 @@ Description :
 	<cffunction name="onApplicationStart" returnType="boolean" output="false">
 		<cfset var start = getTickCOunt()>
 		<cfscript>
+			//Load ColdBox
+			loadColdBox();
 			request.fwloadTime = getTickCount() - start;
-			
-			/* Load Bootstrapper and load coldbox */
-			application.cbBootstrap = CreateObject("component","coldbox.system.coldbox").init(COLDBOX_CONFIG_FILE,COLDBOX_APP_ROOT_PATH);
-			application.cbBootstrap.loadColdbox();
 			return true;
 		</cfscript>
 	</cffunction>
@@ -48,20 +46,13 @@ Description :
 		<!--- ************************************************************* --->
 		<cfset var start = getTickCount()>
 		<cfsetting enablecfoutputonly="yes">
-		<!--- BootStrap Reinit Check --->
-		<cfif not structKeyExists(application,"cbBootstrap") or application.cbBootStrap.isfwReinit()>
-			<cflock name="coldbox.bootstrap" type="exclusive" timeout="20" throwontimeout="true">
-				<cfset application.cbBootstrap = CreateObject("component","coldbox.system.coldbox").init(COLDBOX_CONFIG_FILE,COLDBOX_APP_ROOT_PATH)>
-			</cflock>
-		</cfif>
 		<!--- Reload Checks --->
-		<cfset application.cbBootstrap.reloadChecks()>
-		
+		<cfset reloadChecks()>
 		<cfset request.fwLoadTIme = getTickCount() - start>
 		
 		<!--- Process A ColdBox Request Only --->
 		<cfif findNoCase('index.cfm', listLast(arguments.targetPage, '/'))>
-			<cfset application.cbBootstrap.processColdBoxRequest()>
+			<cfset processColdBoxRequest()>
 		</cfif>
 			
 		<!--- WHATEVER YOU WANT BELOW --->
@@ -79,7 +70,7 @@ Description :
 	
 	<!--- on Session Start --->
 	<cffunction name="onSessionStart" returnType="void" output="false">			
-		<cfset application.cbBootstrap.onSessionStart()>
+		<cfset super.onSessionStart()>
 		<!--- WHATEVER YOU WANT BELOW --->
 	</cffunction>
 	
@@ -89,7 +80,7 @@ Description :
 		<cfargument name="sessionScope" type="struct" required="true">
 		<cfargument name="appScope" 	type="struct" required="false">
 		<!--- ************************************************************* --->
-		<cfset appScope.cbBootstrap.onSessionEnd(argumentCollection=arguments)>
+		<cfset super.onSessionEnd(argumentCollection=arguments)>
 		<!--- WHATEVER YOU WANT BELOW --->
 	</cffunction>
 	
