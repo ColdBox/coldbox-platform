@@ -13,7 +13,7 @@ Description :
 	
 	So if you have refactored your framework, make sure it extends coldbox.
 ----------------------------------------------------------------------->
-<cfcomponent extends="coldbox.system.coldbox" output="false">
+<cfcomponent output="false">
 
 	<!--- APPLICATION CFC PROPERTIES --->
 	<cfset this.name = hash(getCurrentTemplatePath())> 
@@ -31,7 +31,8 @@ Description :
 	<cffunction name="onApplicationStart" returnType="boolean" output="false">
 		<cfscript>
 			//Load ColdBox
-			loadColdBox();
+			application.cbBootstrap = CreateObject("component","coldbox.system.coldbox").init(COLDBOX_CONFIG_FILE,COLDBOX_APP_ROOT_PATH);
+			application.cbBootstrap.loadColdbox();
 			return true;
 		</cfscript>
 	</cffunction>
@@ -43,12 +44,18 @@ Description :
 		<!--- ************************************************************* --->
 		<cfsetting enablecfoutputonly="yes">
 
+		<!--- BootStrap Reinit Check --->
+		<cfif not structKeyExists(application,"cbBootstrap") or application.cbBootStrap.isfwReinit()>
+			<cflock name="coldbox.bootstrap" type="exclusive" timeout="20" throwontimeout="true">
+				<cfset application.cbBootstrap = CreateObject("component","coldbox.system.coldbox").init(COLDBOX_CONFIG_FILE,COLDBOX_APP_ROOT_PATH)>
+			</cflock>
+		</cfif>
 		<!--- Reload Checks --->
-		<cfset reloadChecks()>
+		<cfset application.cbBootstrap.reloadChecks()>
 		
 		<!--- Process A ColdBox Request Only --->
 		<cfif findNoCase('index.cfm', listLast(arguments.targetPage, '/'))>
-			<cfset processColdBoxRequest()>
+			<cfset application.cbBootstrap.processColdBoxRequest()>
 		</cfif>
 			
 		<!--- WHATEVER YOU WANT BELOW --->
@@ -66,7 +73,7 @@ Description :
 	
 	<!--- on Session Start --->
 	<cffunction name="onSessionStart" returnType="void" output="false">			
-		<cfset super.onSessionStart()>
+		<cfset application.cbBootstrap.onSessionStart()>
 		<!--- WHATEVER YOU WANT BELOW --->
 	</cffunction>
 	
@@ -76,7 +83,7 @@ Description :
 		<cfargument name="sessionScope" type="struct" required="true">
 		<cfargument name="appScope" 	type="struct" required="false">
 		<!--- ************************************************************* --->
-		<cfset super.onSessionEnd(argumentCollection=arguments)>
+		<cfset appScope.cbBootstrap.onSessionEnd(argumentCollection=arguments)>
 		<!--- WHATEVER YOU WANT BELOW --->
 	</cffunction>
 	
