@@ -578,7 +578,7 @@ Modification History:
 			/* ::::::::::::::::::::::::::::::::::::::::: EXTERNAL VIEWS LOCATION :::::::::::::::::::::::::::::::::::::::::::: */
 			
 			/* check for ViewsExternalLocation */
-			if( configStruct["ViewsExternalLocation"] neq "" ){
+			if( structKeyExists(configStruct,"ViewsExternalLocation") and configStruct["ViewsExternalLocation"] neq "" ){
 				/* Verify the locations, do relative to the app mapping first */
 				if( directoryExists(controller.getAppRootPath() & configStruct["ViewsExternalLocation"]) ){
 					configStruct["ViewsExternalLocation"] = "/" & ConfigStruct["AppMapping"] & "/" & configStruct["ViewsExternalLocation"];
