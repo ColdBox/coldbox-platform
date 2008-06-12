@@ -177,7 +177,7 @@ and then extracted by this interceptor. They must be a valid rules query.
 					setValidator(CreateObject("component",getProperty('validator')));
 				}
 				catch(Any e){
-					throw("Error creating validator",e.message & e.details, "interceptors.security.validatorCreationException");
+					throw("Error creating validator",e.message & e.detail, "interceptors.security.validatorCreationException");
 				}
 			}
 			
