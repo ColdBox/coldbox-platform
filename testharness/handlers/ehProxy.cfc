@@ -58,5 +58,35 @@
 	</cffunction>
 
 	<!--- ************************************************************* --->
+	
+	<!--- jsondata --->
+	<cffunction name="jsondata" access="public" returntype="void" output="false" hint="">
+		<cfargument name="Event" type="coldbox.system.beans.requestContext" required="yes">
+	    <cfset var test = structnew()>
+	    
+	    <cfset test.name = "Luis Majano">
+	    <cfset test.id = createUUID()>
+	    <cfset test.date = now()>
+	    
+	    <cfset event.renderData(type="JSON",data=test)> 
+	</cffunction>
+	
+	<!--- jsondata --->
+	<cffunction name="plaindata" access="public" returntype="void" output="false" hint="">
+		<cfargument name="Event" type="coldbox.system.beans.requestContext" required="yes">
+
+	    <cfset event.renderData(type="plain",data='<h2>Hello Luis</h2>')> 
+	</cffunction>
+	
+	<cffunction name="xmldata" access="public" returntype="void" output="false" hint="">
+		<cfargument name="Event" type="coldbox.system.beans.requestContext" required="yes">
+		 <cfset var test = structnew()>
+	    
+	    <cfset test.name = "Luis Majano">
+	    <cfset test.id = createUUID()>
+	    <cfset test.date = now()>
+	    
+	    <cfset event.renderData(type="wddx",data=test)> 
+	</cffunction>
 		
 </cfcomponent>

@@ -510,8 +510,9 @@ Modification History:
 	
 	<cffunction name="renderData" access="public" returntype="void" hint="Use this method to tell the framework to render data for you. The framework will take care of marshalling the data for you" output="false" >
 		<!--- ************************************************************* --->
-		<cfargument name="type" required="true" type="string" hint="The type of data to render. Valid types are JSON, WDDX, PLAIN. THe deafult is PLAIN. IF an invalid type is sent in, this method will throw an error">
-		<cfargument name="data" required="true" type="any" hint="The data you would like to marshall and return by the framework">
+		<cfargument name="type" 		required="true" type="string" default="PLAIN" hint="The type of data to render. Valid types are JSON, WDDX, PLAIN. THe deafult is PLAIN. IF an invalid type is sent in, this method will throw an error">
+		<cfargument name="data" 		required="true" type="any" 	 hint="The data you would like to marshall and return by the framework">
+		<cfargument name="contenttype"  required="true" type="string" default="text/html" hint="The content type of the data. This will be used in the cfcontent tag: text/html, text/plain, text/xml, text/json, etc. The default value is text/html. However, if you choose JSON this method will choose text/plain, if you choose WDDX this method will choose text/xml for you. The default encoding is utf-8"/>
 		<!--- ************************************************************* --->
 		<cfscript>
 			var rd = structnew();
@@ -523,6 +524,17 @@ Modification History:
 			/* Populate */
 			rd.type = arguments.type;
 			rd.data = arguments.data;
+			
+			/* Some smart selects */
+			if( rd.type eq "JSON" ){
+				rd.contenttype = 'text/plain';
+			}
+			else if( rd.type eq "WDDX" ){
+				rd.contenttype = 'text/xml';
+			}
+			else{
+				rd.contenttype = arguments.contenttype;
+			}
 			
 			/* Save */
 			setValue('cbox_renderdata',rd);			

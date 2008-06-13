@@ -157,8 +157,13 @@ Description :
 						<!--- Execute preRender Interception --->
 						<cfset cbController.getInterceptorService().processState("preRender")>
 						
-						<!--- Render Layout/View pair via set variable to eliminate whitespace--->
-						<cfset renderedContent = cbController.getPlugin("renderer").renderLayout()>
+						<!--- Check for Marshalling and data render --->
+						<cfif not structisEmpty(event.getRenderData())>
+							<cfset renderedContent = cbController.getPlugin("Utilities").marshallData(argumentCollection=event.getRenderData())>
+						<cfelse>
+							<!--- Render Layout/View pair via set variable to eliminate whitespace--->
+							<cfset renderedContent = cbController.getPlugin("renderer").renderLayout()>
+						</cfif>
 						
 						<!--- Check if caching the content --->
 						<cfif event.isEventCacheable()>
@@ -170,9 +175,18 @@ Description :
 																	eventCacheEntry.lastAccessTimeout)>
 						</cfif>
 						
+						<!--- Render Content Type if using Render Data --->
+						<cfif not structisEmpty(event.getRenderData())>
+							<!--- Render the Data Content Type --->
+							<cfcontent type="#event.getRenderData().contentType#" reset="true">
+							<cfsetting showdebugoutput="false">
+							<!--- Remove panels --->
+							<cfset event.showDebugPanel(false)>
+						</cfif>
+						
 						<!--- Render the Content --->
 						<cfoutput>#renderedContent#</cfoutput>
-						
+							
 						<!--- Execute postRender Interception --->
 						<cfset cbController.getInterceptorService().processState("postRender")>
 					</cfif>
