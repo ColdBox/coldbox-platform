@@ -185,6 +185,7 @@ Description: This is the framework's simple bean factory.
 			
 			/* Helpers */
 			var oIOC = '';
+			var oOCM = '';
 			var oMethodInjector = '';
 		</cfscript>
 		
@@ -232,40 +233,56 @@ Description: This is the framework's simple bean factory.
 			/* References */
 			oMethodInjector = getPlugin("methodInjector");
 			oIOC = getPlugin("ioc");
+			oOCM = getColdboxOCM();
 			
 			/* Let's inject our mixins */
 			oMethodInjector.start(targetObject);
 			
 			/* Loop over dependencies and inject. */
-			for(x=1; x lte dependenciesLength;x=x+1){
-				
-				/* Defaults */
+			for(x=1; x lte dependenciesLength; x=x+1){
+				/* Get Dependency */
 				thisDependency = targetDIEntry.dependencies[x];
-				thisScope = "";
 				
-				/* Check for property and scopes */
-				if( listlen(thisDependency) gt 1 ){
-					thisDependency = listFirst(targetDIEntry.dependencies[x]);
-					thisScope = listLast(targetDIEntry.dependencies[x]);
-				}
-				
-				/* Verify that bean exists in the IOC container. */
-				if( oIOC.getIOCFactory().containsBean(thisDependency) ){
-					
-					/* Inject dependency */
-					injectBean(targetBean=targetObject,
-							   beanName=thisDependency,
-							   beanObject=oIOC.getBean(thisDependency),
-							   scope=thisScope);
-					
-					/* Debug Mode Check */
-					if( arguments.debugMode ){
-						getPlugin("logger").logEntry("information","Bean: #thisDependency#,Scope: #thisScope# --> injected into #targetCacheKey#.");
+				/* Determine Type of Injection */
+				if( thisDependency.type eq "ioc" ){
+					/* Verify that bean exists in the IOC container. */
+					if( oIOC.getIOCFactory().containsBean(thisDependency.name) ){
+						
+						/* Inject dependency */
+						injectBean(targetBean=targetObject,
+								   beanName=thisDependency.name,
+								   beanObject=oIOC.getBean(thisDependency.name),
+								   scope=thisDependency.scope);
+						
+						/* Debug Mode Check */
+						if( arguments.debugMode ){
+							getPlugin("logger").logEntry("information","Dependency: #thisDependency.toString()# --> injected into #targetCacheKey#.");
+						}
 					}
-				}
-				else if( arguments.debugMode ){
-					getPlugin("logger").logEntry("warning","Bean: #thisDependency#,Scope: #thisScope# --> not found in factory");
-				}
+					else if( arguments.debugMode ){
+						getPlugin("logger").logEntry("warning","Dependency: #thisDependency.toString()# --> not found in factory");
+					}
+				}//end if IOC Injection
+				//Else its OCM injection
+				else{
+					/* Verify that bean exists in the Cache container. */
+					if( oOCM.lookup(thisDependency.name) ){
+						
+						/* Inject dependency */
+						injectBean(targetBean=targetObject,
+								   beanName=thisDependency.name,
+								   beanObject=oOCM.get(thisDependency.name),
+								   scope=thisDependency.scope);
+						
+						/* Debug Mode Check */
+						if( arguments.debugMode ){
+							getPlugin("logger").logEntry("information","Dependency: #thisDependency.toString()# --> injected into #targetCacheKey#.");
+						}
+					}
+					else if( arguments.debugMode ){
+						getPlugin("logger").logEntry("warning","Dependency: #thisDependency.toString()# --> not found in factory");
+					}
+				}//end if OCM injection							
 				
 			}//end for loop of dependencies.
 			
@@ -291,22 +308,27 @@ Description: This is the framework's simple bean factory.
 		<cfscript>
 			var x = 1;
 			var md = arguments.metadata;
+			var entry = structnew();
 			var cbox_reserved_functions = "setSetting,setDebugMode,setNextEvent,setNextRoute,setController,settingExists,setPluginName,setPluginVersion,setPluginDescription,setProperty,setproperties";
 			
 			/* Look For cfProperties */
 			if( structKeyExists(md,"properties") and ArrayLen(md.properties) gt 0){
 				for(x=1; x lte ArrayLen(md.properties); x=x+1 ){
-					
 					/* Check if type is ioc */
-					if( structKeyExists(md.properties[x],"type") and md.properties[x].type eq "ioc" ){
+					if( structKeyExists(md.properties[x],"type") and (md.properties[x].type eq "ioc" or md.properties[x].type eq "ocm") ){
+						/* New MD Entry */
+						entry = structnew();
 						/* Scope Check */
 						if( not structKeyExists(md.properties[x],"scope") ){
 							md.properties[x].scope = "variables";
 						}		
-						/* Cleanup Name */
-						md.properties[x].name = replace(md.properties[x].name,".","_","all");
+						/* Setup Entry */
+						entry.name 	= replace(md.properties[x].name,".","_","all");
+						entry.scope = md.properties[x].scope;
+						entry.type 	= md.properties[x].type;
+						
 						/* Add Property Dependency */
-						ArrayAppend( arguments.dependencies, md.properties[x].name & "," & md.properties[x].scope );
+						ArrayAppend( arguments.dependencies, entry );
 					}
 					
 				}//end for loop		
@@ -317,8 +339,15 @@ Description: This is the framework's simple bean factory.
 				for(x=1; x lte ArrayLen(md.functions); x=x+1 ){
 					/* Verify we have a setter */
 					if( left(md.functions[x].name,3) eq "set" and not listFindNoCase(cbox_reserved_functions,md.functions[x].name) ){
+						
+						/* New MD Entry */
+						entry = structnew();
+						entry.name = Right(md.functions[x].name, Len(md.functions[x].name)-3);
+						entry.scope = "";
+						entry.type = "ioc";
+						
 						/* Found Setter, append property Name */
-						ArrayAppend(arguments.dependencies,Right(md.functions[x].name, Len(md.functions[x].name)-3));
+						ArrayAppend(arguments.dependencies, entry);
 					
 					}//end if setter found.
 				}//end loop of functions
