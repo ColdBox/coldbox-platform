@@ -117,6 +117,7 @@ Place the following code between before the </menugroup> tag:
 	<menuitem label="noRender(true|false)" icon="shared/mm/images/hintCB.gif" />
 	<menuitem label="overrideEvent('event')" icon="shared/mm/images/hintCB.gif" />
 	<menuitem label="paramValue('name','value')" icon="shared/mm/images/hintCB.gif" />
+	<menuitem label="renderData( JSON|WDDX|PLAIN, data )" icon="shared/mm/images/hintCB.gif" />
 	<menuitem label="removeValue('name')" icon="shared/mm/images/hintCB.gif" />
 	<menuitem label="setCollection(collection)" icon="shared/mm/images/hintCB.gif" />
 	<menuitem label="setDefaultLayout('Layout')" icon="shared/mm/images/hintCB.gif" />

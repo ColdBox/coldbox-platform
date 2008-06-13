@@ -409,7 +409,22 @@
 		</cfscript>
 	</cffunction>
 	
-	
+	<cffunction name="testRenderData" access="public" output="false" returntype="void">
+		<cfscript>
+			var event = getRequestContext();
+			
+			AssertEquals( event.getRenderData(), structnew());
+			
+			event.renderData('JSON',"[1,2,3,4]");
+			
+			test = structnew();
+			test.type = "JSON";
+			test.data = "[1,2,3,4]";
+			
+			AssertEquals( event.getRenderData(), test);
+			
+		</cfscript>
+	</cffunction>
 	
 
 </cfcomponent>

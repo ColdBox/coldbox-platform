@@ -16,12 +16,12 @@ Description :
 <!------------------------------------------- PUBLIC ------------------------------------------->	
 
 	<!--- process a remote call --->
-	<cffunction name="process" output="false" access="remote" returntype="any" hint="Process a remote call into ColdBox's event model and return data/objects back.">
+	<cffunction name="process" output="false" access="remote" returntype="any" hint="Process a remote call into ColdBox's event model and return data/objects back. If no results where found, this method returns null/void">
 		<!--- There are no arguments defined as they come in as a collection of arguments. --->
 		<cfscript>
 			var cbController = "";
 			var event = "";
-			var results = "";
+			var local = structnew();
 			
 			/* Get ColdBox Controller */
 			cbController = getController();
@@ -55,7 +55,7 @@ Description :
 				}
 					
 				//Execute the Event
-				results = cbController.runEvent();
+				local.results = cbController.runEvent();
 				
 				//Request END Handler if defined
 				if ( cbController.getSetting("RequestEndHandler") neq "" ){
@@ -88,8 +88,14 @@ Description :
 				return Event.getCollection();
 			}
 			else{
-				//Return results from handler
-				return results;
+				/* Check for Marshalling */
+				if ( not structisEmpty(Event.getRenderData()) ){
+					return getPlugin("Utilities").marshallData(argumentCollection=Event.getRenderData());
+				}
+				//Return results from handler only if found, else method will produce a null result
+				if( structKeyExists(local,"results") ){
+					return local.results;
+				}
 			}
 		</cfscript>		
 	</cffunction>

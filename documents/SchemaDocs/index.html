@@ -1,9 +1,6 @@
-
-<!DOCTYPE html
-  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
    <head>
-      <title>Documentation for ColdBox 2.6.0 Configuration File - config.xsd</title>
+      <title>Documentation for ColdBox 2.6.0 Configuration - config.xsd</title>
       <meta http-equiv="Content-Type" content="text/xml; charset=UTF-8"/>
       <style type="text/css">
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
@@ -725,7 +722,7 @@ function viewDocumentation(compDesc, compName, docTextArray) {
    </head>
    <body>
       <h1>
-         <a name="top">Documentation for ColdBox 2.6.0 Configuration File</a>
+         <a name="top">Documentation for ColdBox 2.6.0 Configuration</a>
       </h1>
       <div style="float: right;">
          <div id="printerControls" style="display:none;">
@@ -894,8 +891,7 @@ if (gc != null) {
       <table class="properties">
          <tr>
             <th>
-               <a title="Look up 'Target Namespace' in glossary"
-                  href="index.html#term_TargetNS">Target Namespace</a>
+               <a title="Look up 'Target Namespace' in glossary" href="index.html#term_TargetNS">Target Namespace</a>
             </th>
             <td>None</td>
          </tr>
@@ -2835,13 +2831,7 @@ if (gc != null) {
             <img usemap="#h51475927" src="schemaDiagrams/h51475927.jpg"/>
             <!--
             Map ref: file:/Users/lmajano/Documents/MyDevelopment/applications/coldbox/documents/SchemaDocs//schemaDiagrams/h51475927.map--><map name="h51475927">
-               <area shape="rect" alt="h-785168978" coords="168,0,354,49"
-                     href="index.html#h-785168978"/>
-
-               <area shape="rect" alt="h751539160" coords="168,59,300,108"
-                     href="index.html#h751539160"/>
-
-            </map>
+</map>
          </div>
          <script type="text/javascript">
 <!--
@@ -2858,17 +2848,29 @@ if (gc != null) {
          </div>
          <div id="h-573566623_xibox" class="contents">
             <div style="margin-left: 0em">&lt;i18N&gt; <br/>
-               <div style="margin-left: 1.5em">&lt;DefaultResourceBundle&gt; ... &lt;/DefaultResourceBundle&gt; <span class="occurs">[0..1]</span> 
+               <span class="group" style="margin-left: 1.5em">Start <a title="Look up 'All' in glossary" href="index.html#term_All">All</a> 
+                  <span class="occurs">[1]</span>
+               </span>
+               <br/>
+               <div style="margin-left: 3em">&lt;DefaultResourceBundle&gt; <span class="type">
+                     <a href="#ns_xs" title="Find out namespace of 'xs' prefix">xs</a>:string</span> &lt;/DefaultResourceBundle&gt; <span class="occurs">[0..1]</span> 
                   <p class="documentation">'The path to the resource bundle to load.'</p>
                </div>
-               <div style="margin-left: 1.5em">&lt;DefaultLocale&gt; ... &lt;/DefaultLocale&gt; <span class="occurs">[0..1]</span> 
+               <div style="margin-left: 3em">&lt;DefaultLocale&gt; <span class="type">
+                     <a href="#ns_xs" title="Find out namespace of 'xs' prefix">xs</a>:string</span> &lt;/DefaultLocale&gt; <span class="occurs">[0..1]</span> 
                   <p class="documentation">'The default locale in the standard Java locale names'</p>
                </div>
-               <div style="margin-left: 1.5em">&lt;LocaleStorage&gt; <span class="constraint">
+               <div style="margin-left: 3em">&lt;LocaleStorage&gt; <span class="constraint">
                      <span class="type">
                         <a href="#ns_xs" title="Find out namespace of 'xs' prefix">xs</a>:string</span> (<em>value</em> comes from list: {'client'|'session'})</span> &lt;/LocaleStorage&gt; <span class="occurs">[0..1]</span> 
                   <p class="documentation">'The storage scope of the locale setting. Preferred is session.'</p>
-               </div>&lt;/i18N&gt;</div>
+               </div>
+               <div style="margin-left: 3em">&lt;UknownTranslation&gt; <span class="type">
+                     <a href="#ns_xs" title="Find out namespace of 'xs' prefix">xs</a>:string</span> &lt;/UknownTranslation&gt; <span class="occurs">[0..1]</span> 
+                  <p class="documentation">'The key to use when a translation is not found. default is _UNKNOWNTRANSLATION_'</p>
+               </div>
+               <span class="group" style="margin-left: 1.5em">End All</span>
+               <br/>&lt;/i18N&gt;</div>
          </div>
          <script type="text/javascript">
 <!--
@@ -2904,10 +2906,16 @@ if (gc != null) {
          </div>
          <div id="h-573566623_scbox" class="contents">
             <div style="margin-left: 0em">&lt;<span class="scTag">xs:element</span> 
-               <span class="scTag">name</span>="<span class="scContent">i18N</span>"&gt;<div style="margin-left: 1.5em">&lt;<span class="scTag">xs:complexType</span>&gt;<div style="margin-left: 1.5em">&lt;<span class="scTag">xs:sequence</span>&gt;<div style="margin-left: 1.5em">&lt;<span class="scTag">xs:element</span> 
-                        <span class="scTag">name</span>="<span class="scContent">DefaultResourceBundle</span>" <span class="scTag">maxOccurs</span>="<span class="scContent">1</span>" <span class="scTag">minOccurs</span>="<span class="scContent">0</span>"/&gt;</div>
+               <span class="scTag">name</span>="<span class="scContent">i18N</span>"&gt;<div style="margin-left: 1.5em">&lt;<span class="scTag">xs:complexType</span>&gt;<div style="margin-left: 1.5em">&lt;<span class="scTag">xs:all</span>&gt;<div style="margin-left: 1.5em">&lt;<span class="scTag">xs:element</span> 
+                        <span class="scTag">name</span>="<span class="scContent">DefaultResourceBundle</span>" <span class="scTag">type</span>="<span class="scContent">
+                           <span class="type">
+                              <a href="#ns_xs" title="Find out namespace of 'xs' prefix">xs</a>:string</span>
+                        </span>" <span class="scTag">maxOccurs</span>="<span class="scContent">1</span>" <span class="scTag">minOccurs</span>="<span class="scContent">0</span>" <span class="scTag">default</span>=""/&gt;</div>
                      <div style="margin-left: 1.5em">&lt;<span class="scTag">xs:element</span> 
-                        <span class="scTag">name</span>="<span class="scContent">DefaultLocale</span>" <span class="scTag">maxOccurs</span>="<span class="scContent">1</span>" <span class="scTag">minOccurs</span>="<span class="scContent">0</span>"/&gt;</div>
+                        <span class="scTag">name</span>="<span class="scContent">DefaultLocale</span>" <span class="scTag">type</span>="<span class="scContent">
+                           <span class="type">
+                              <a href="#ns_xs" title="Find out namespace of 'xs' prefix">xs</a>:string</span>
+                        </span>" <span class="scTag">maxOccurs</span>="<span class="scContent">1</span>" <span class="scTag">minOccurs</span>="<span class="scContent">0</span>"/&gt;</div>
                      <div style="margin-left: 1.5em">&lt;<span class="scTag">xs:element</span> 
                         <span class="scTag">name</span>="<span class="scContent">LocaleStorage</span>" <span class="scTag">maxOccurs</span>="<span class="scContent">1</span>" <span class="scTag">minOccurs</span>="<span class="scContent">0</span>"&gt;<div style="margin-left: 1.5em">&lt;<span class="scTag">xs:simpleType</span>&gt;<div style="margin-left: 1.5em">&lt;<span class="scTag">xs:restriction</span> 
                               <span class="scTag">base</span>="<span class="scContent">
@@ -2916,7 +2924,12 @@ if (gc != null) {
                               </span>"&gt;<div style="margin-left: 1.5em">&lt;<span class="scTag">xs:enumeration</span> 
                                  <span class="scTag">value</span>="<span class="scContent">client</span>"/&gt;</div>
                               <div style="margin-left: 1.5em">&lt;<span class="scTag">xs:enumeration</span> 
-                                 <span class="scTag">value</span>="<span class="scContent">session</span>"/&gt;</div>&lt;/<span class="scTag">xs:restriction</span>&gt;</div>&lt;/<span class="scTag">xs:simpleType</span>&gt;</div>&lt;/<span class="scTag">xs:element</span>&gt;</div>&lt;/<span class="scTag">xs:sequence</span>&gt;</div>&lt;/<span class="scTag">xs:complexType</span>&gt;</div>&lt;/<span class="scTag">xs:element</span>&gt;</div>
+                                 <span class="scTag">value</span>="<span class="scContent">session</span>"/&gt;</div>&lt;/<span class="scTag">xs:restriction</span>&gt;</div>&lt;/<span class="scTag">xs:simpleType</span>&gt;</div>&lt;/<span class="scTag">xs:element</span>&gt;</div>
+                     <div style="margin-left: 1.5em">&lt;<span class="scTag">xs:element</span> 
+                        <span class="scTag">name</span>="<span class="scContent">UknownTranslation</span>" <span class="scTag">type</span>="<span class="scContent">
+                           <span class="type">
+                              <a href="#ns_xs" title="Find out namespace of 'xs' prefix">xs</a>:string</span>
+                        </span>" <span class="scTag">maxOccurs</span>="<span class="scContent">1</span>" <span class="scTag">minOccurs</span>="<span class="scContent">0</span>" <span class="scTag">default</span>=""/&gt;</div>&lt;/<span class="scTag">xs:all</span>&gt;</div>&lt;/<span class="scTag">xs:complexType</span>&gt;</div>&lt;/<span class="scTag">xs:element</span>&gt;</div>
          </div>
          <script type="text/javascript">
 <!--
@@ -3595,7 +3608,7 @@ if (gc != null) {
                <div style="margin-left: 1.5em">&lt;Setting<br/>
                   <span style="margin-left: 0.5em"> name="<span class="constraint">
                         <span class="type">
-                           <a href="#ns_xs" title="Find out namespace of 'xs' prefix">xs</a>:string</span> (<em>value</em> comes from list: {'AppMapping'|'AppName'|'ApplicationStartHandler'|'CustomErrorTemplate'|'CustomEmailBugReport'|'ColdboxLogsLocation'|'ConfigAutoReload'|'DebugMode'|'DebugPassword'|'DefaultEvent'|'EventName'|'ExceptionHandler'|'EnableBugReports'|'EnableColdfusionLogging'|'EnableDumpVar'|'EnableColdboxLogging'|'EventCaching'|'HandlersIndexAutoReload'|'HandlersExternalLocation'|'HandlerCaching'|'IOCFramework'|'IOCDefinitionFile'|'IOCObjectCaching'|'MessageboxStyleOverride'|'MyPluginsLocation'|'onInvalidEvent'|'OwnerEmail'|'ProxyReturnCollection'|'RequestEndHandler'|'RequestStartHandler'|'RequestContextDecorator'|'ReinitPassword'|'SessionStartHandler'|'SessionEndHandler'|'UDFLibraryFile'|'FlashURLPersistScope'})</span> 
+                           <a href="#ns_xs" title="Find out namespace of 'xs' prefix">xs</a>:string</span> (<em>value</em> comes from list: {'AppMapping'|'AppName'|'ApplicationStartHandler'|'CustomErrorTemplate'|'CustomEmailBugReport'|'ColdboxLogsLocation'|'ConfigAutoReload'|'DebugMode'|'DebugPassword'|'DefaultEvent'|'EventName'|'ExceptionHandler'|'EnableBugReports'|'EnableColdfusionLogging'|'EnableDumpVar'|'EnableColdboxLogging'|'EventCaching'|'FlashURLPersistScope'|'HandlersIndexAutoReload'|'HandlersExternalLocation'|'HandlerCaching'|'IOCFramework'|'IOCDefinitionFile'|'IOCObjectCaching'|'MessageboxStyleOverride'|'MyPluginsLocation'|'onInvalidEvent'|'OwnerEmail'|'ProxyReturnCollection'|'RequestEndHandler'|'RequestStartHandler'|'RequestContextDecorator'|'ReinitPassword'|'SessionStartHandler'|'SessionEndHandler'|'UDFLibraryFile'|'ViewsExternalLocation'})</span> 
                      <span class="occurs">[1]</span> 
                      <p class="documentation">'The name of the framework\'s settings.'</p>"</span>
                   <br/>
@@ -3680,6 +3693,8 @@ if (gc != null) {
                                     <div style="margin-left: 1.5em">&lt;<span class="scTag">xs:enumeration</span> 
                                        <span class="scTag">value</span>="<span class="scContent">EventCaching</span>"/&gt;</div>
                                     <div style="margin-left: 1.5em">&lt;<span class="scTag">xs:enumeration</span> 
+                                       <span class="scTag">value</span>="<span class="scContent">FlashURLPersistScope</span>"/&gt;</div>
+                                    <div style="margin-left: 1.5em">&lt;<span class="scTag">xs:enumeration</span> 
                                        <span class="scTag">value</span>="<span class="scContent">HandlersIndexAutoReload</span>"/&gt;</div>
                                     <div style="margin-left: 1.5em">&lt;<span class="scTag">xs:enumeration</span> 
                                        <span class="scTag">value</span>="<span class="scContent">HandlersExternalLocation</span>"/&gt;</div>
@@ -3716,7 +3731,7 @@ if (gc != null) {
                                     <div style="margin-left: 1.5em">&lt;<span class="scTag">xs:enumeration</span> 
                                        <span class="scTag">value</span>="<span class="scContent">UDFLibraryFile</span>"/&gt;</div>
                                     <div style="margin-left: 1.5em">&lt;<span class="scTag">xs:enumeration</span> 
-                                       <span class="scTag">value</span>="<span class="scContent">FlashURLPersistScope</span>"/&gt;</div>&lt;/<span class="scTag">xs:restriction</span>&gt;</div>&lt;/<span class="scTag">xs:simpleType</span>&gt;</div>&lt;/<span class="scTag">xs:attribute</span>&gt;</div>
+                                       <span class="scTag">value</span>="<span class="scContent">ViewsExternalLocation</span>"/&gt;</div>&lt;/<span class="scTag">xs:restriction</span>&gt;</div>&lt;/<span class="scTag">xs:simpleType</span>&gt;</div>&lt;/<span class="scTag">xs:attribute</span>&gt;</div>
                            <div style="margin-left: 1.5em">&lt;<span class="scTag">xs:attribute</span> 
                               <span class="scTag">name</span>="<span class="scContent">value</span>" <span class="scTag">type</span>="<span class="scContent">
                                  <span class="type">

@@ -40,7 +40,8 @@ Modification History:
 			/* Append Collections */
 			collectionAppend(arguments.struct1);
 			collectionAppend(arguments.struct2);
-			/* Setup context properties */
+			
+			/* Setup context properties as they got sent in */
 			setDefaultLayout(arguments.properties.DefaultLayout);
 			setDefaultView(arguments.properties.DefaultView);
 			setViewLayouts(arguments.properties.ViewLayouts);
@@ -48,7 +49,6 @@ Modification History:
 			setEventName(arguments.properties.EventName);
 			setisSES(arguments.properties.isSES);
 			setsesBaseURL(arguments.properties.sesBaseURL);
-			setRoutedStruct(structnew());
 			
 			/* Return Context */
 			return this;
@@ -504,6 +504,33 @@ Modification History:
 	<cffunction name="setmemento" access="public" returntype="void" output="false">
 		<cfargument name="memento" type="any" required="true">
 		<cfset variables.instance = arguments.memento>
+	</cffunction>
+	
+	<!--- ************************************************************* --->
+	
+	<cffunction name="renderData" access="public" returntype="void" hint="Use this method to tell the framework to render data for you. The framework will take care of marshalling the data for you" output="false" >
+		<!--- ************************************************************* --->
+		<cfargument name="type" required="true" type="string" hint="The type of data to render. Valid types are JSON, WDDX, PLAIN. THe deafult is PLAIN. IF an invalid type is sent in, this method will throw an error">
+		<cfargument name="data" required="true" type="any" hint="The data you would like to marshall and return by the framework">
+		<!--- ************************************************************* --->
+		<cfscript>
+			var rd = structnew();
+			
+			/* Validate */
+			if( not reFindnocase("^(JSON|WDDX|PLAIN)$",arguments.type) ){
+				throw("Invalid type","The type you sent #arguments.type# is not a valid type. Valid types are JSON,WDDX and PLAIN","Framework.InvalidRenderTypeException");
+			}
+			/* Populate */
+			rd.type = arguments.type;
+			rd.data = arguments.data;
+			
+			/* Save */
+			setValue('cbox_renderdata',rd);			
+		</cfscript>
+	</cffunction>
+	
+	<cffunction name="getrenderData" access="public" output="false" returntype="struct" hint="Get the renderData structure.">
+		<cfreturn getValue("cbox_renderdata", structnew() )/>
 	</cffunction>
 
 <!------------------------------------------- PRIVATE ------------------------------------------->

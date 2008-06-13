@@ -186,7 +186,12 @@ Description :
 		<cfset var cbox_RederedLayout = "">
 		<cfset var Event = controller.getRequestService().getContext()>
 		<cfset var rc = event.getCollection()>
-							
+		
+		<!-- Check for Marshalling -->
+		<cfif not structisEmpty(event.getRenderData())>
+			<cfreturn getPlugin("Utilities").marshallData(argumentCollection=event.getRenderData())>
+		</cfif>
+		
 		<!--- Check if no view has been set, if not, then set the default view --->
 		<cfif event.getCurrentView() eq "">
 			<cfset event.setView(event.getDefaultView())>

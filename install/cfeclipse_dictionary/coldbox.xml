@@ -270,9 +270,11 @@ Description :
 					<value option="&quot;RequestEndHandler&quot;"/>
 					<value option="&quot;RequestStartHandler&quot;"/>
 					<value option="&quot;UDFLibraryFile&quot;"/>
+					<value option="&quot;UnknownTranslation&quot;"/>					
 					<value option="&quot;SessionStartHandler&quot;"/>
 					<value option="&quot;SessionEndHandler&quot;"/>
 					<value option="&quot;ViewLayouts&quot;"/>
+					<value option="&quot;ViewsExternalLocation&quot;"/>
 					<value option="&quot;WebServices&quot;"/>
 					<value option="&quot;onInvalidEvent&quot;"/>
 					<value option="&quot;htmlBaseURL&quot;"/>
@@ -632,15 +634,15 @@ Description :
 		]]></help>
 		</scope>
 		
-		<scope value="event.getEventName()" type="String">
-			<help><![CDATA[ 
-			Gets the event name variable. (event= or do=)
-		]]></help>
-		</scope>
-		
 		<scope value="event.getEventCacheableEntry()" type="Struct">
 			<help><![CDATA[ 
 			Gives you the event caching metadata structure
+		]]></help>
+		</scope>
+		
+		<scope value="event.getEventName()" type="String">
+			<help><![CDATA[ 
+			Gets the event name variable. (event= or do=)
 		]]></help>
 		</scope>
 		
@@ -649,6 +651,18 @@ Description :
 			Gets the structure of array of folder/layout pairs.
 		]]></help>
 		</scope>
+		
+		<scope value="event.getRenderData()" type="Struct">
+			<help><![CDATA[ 
+			Get the render data structure
+		]]></help>
+		</scope>	
+		
+		<scope value="event.getRoutedStruct()" type="Struct">
+			<help><![CDATA[ 
+			Gets the name-value pairs that got routed by the SES interceptor. For metdata purposes only.
+		]]></help>
+		</scope>		
 		
 		<scope value="event.getSelf()" type="String">
 			<help><![CDATA[ 
@@ -686,15 +700,15 @@ Description :
 		]]></help>
 		</scope>
 		
-		<scope value="event.isEventCacheable()" type="Boolean">
+		<scope value="event.getViewLayouts()" type="Struct">
 			<help><![CDATA[ 
-			Determines if you the incoming event is cacheable or not.
+			Gets the structure of array of view/layout pairs.
 		]]></help>
 		</scope>
 		
-		<scope value="event.isProxyRequest()" type="Boolean">
+		<scope value="event.isEventCacheable()" type="Boolean">
 			<help><![CDATA[ 
-			Determines if you are in a proxy request or not.
+			Determines if you the incoming event is cacheable or not.
 		]]></help>
 		</scope>
 		
@@ -704,18 +718,18 @@ Description :
 		]]></help>
 		</scope>
 		
+		<scope value="event.isProxyRequest()" type="Boolean">
+			<help><![CDATA[ 
+			Determines if you are in a proxy request or not.
+		]]></help>
+		</scope>
+		
 		<scope value="event.isSES()" type="Boolean">
 			<help><![CDATA[ 
 			Determines if you are executing inside of an SES route.
 		]]></help>
 		</scope>
-		
-		<scope value="event.getViewLayouts()" type="Struct">
-			<help><![CDATA[ 
-			Gets the structure of array of view/layout pairs.
-		]]></help>
-		</scope>
-		
+			
 		<scope value="event.noRender(true|false)" type="void">
 			<help><![CDATA[ 
 			Sets whether to not render any output or not.
@@ -737,6 +751,12 @@ Description :
 		<scope value="event.removeValue('name')" type="void">
 			<help><![CDATA[ 
 			Remove a name/value pair in the collection
+		]]></help>
+		</scope>
+		
+		<scope value="event.renderData('JSON,WDDX,PLAIN', data)" type="void">
+			<help><![CDATA[ 
+			Set data to be rendered and marshalled by the framework.
 		]]></help>
 		</scope>
 		
