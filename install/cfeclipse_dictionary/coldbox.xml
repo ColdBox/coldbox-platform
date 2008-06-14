@@ -754,7 +754,7 @@ Description :
 		]]></help>
 		</scope>
 		
-		<scope value="event.renderData('JSON,WDDX,PLAIN', data)" type="void">
+		<scope value="event.renderData(type='JSON,WDDX,PLAIN', data=, contentType=)" type="void">
 			<help><![CDATA[ 
 			Set data to be rendered and marshalled by the framework.
 		]]></help>
