@@ -28,6 +28,8 @@ Description :
 	<!--- COLDBOX PROPERTIES --->
 	<cfset COLDBOX_CONFIG_FILE = "">
 	
+	<cfset this.mappings["/coldbox"] = expandPath('../') />
+	
 	<!--- on Application Start --->
 	<cffunction name="onApplicationStart" returnType="boolean" output="false">
 		<cfset var start = getTickCOunt()>

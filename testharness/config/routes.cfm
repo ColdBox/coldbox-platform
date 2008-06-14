@@ -104,13 +104,11 @@ NOTE: The interceptor will create a new setting called: sesBaseURL with this val
 	<cfset addCourse(":handler/:action")>
 	<cfset addCourse(":handler")>			
 -------------------------------------------- --->
-					
+
 <!--- CUSTOM COURSES GO HERE (they will be checked in order) --->
 <cfset addCourse(pattern="test/:id-numeric/:name",handler="ehGeneral",action="dspHello")>
 <cfset addCourse(pattern="test/:id/:name",handler="ehGeneral",action="dspHello")>
 
 <!--- STANDARD COLDBOX COURSES, DO NOT MODIFY UNLESS YOU DON'T LIKE THEM --->
-<cfset addCourse(":handler/:action/:id")>
-<cfset addCourse(":handler/:action")>
-<cfset addCourse(":handler")>
+<cfset addCourse(":handler/:action?/:id?")>
 

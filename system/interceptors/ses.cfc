@@ -199,7 +199,7 @@ Description :
 	<!--- Find a Course --->
 	<cffunction name="findCourse" access="private" output="false" returntype="Struct" hint="Figures out which course matches this request">
 		<!--- ************************************************************* --->
-		<cfargument name="action" required="true" type="any" hint="The action">
+		<cfargument name="action" required="true" type="any" hint="The action evaluated by the path_info">
 		<cfargument name="event"  required="true" type="any" hint="The event object.">
 		<!--- ************************************************************* --->
 		<cfset var varMatch = "" />
@@ -293,19 +293,56 @@ Description :
 		<!--- ************************************************************* --->
 		<cfargument name="pattern" type="string" required="true" hint="The pattern to match against the URL." />
 		<!--- ************************************************************* --->
-		<cfset var thisCourse= structNew() />
-		<cfset var arg = "" />		
-			
-		<cfloop collection="#arguments#" item="arg">
-			<cfset thisCourse[arg] = arguments[arg] />
-		</cfloop>
+		<cfscript>
+		var thisCourse = structNew();
+		var thisPattern = "";
+		var arg = "";
+		var x =1;
+		var base = "";
+		var optionals = "";
+		var courseList = "";
+		var tempCourse = structnew();
 		
-		<!--- Add a trailing slash to ease pattern matching --->
-		<cfif right(thisCourse.pattern,1) IS NOT "/">
-			<cfset thisCourse.pattern = thisCourse.pattern & "/" />
-		</cfif>
-		
-		<cfset arrayAppend(get_courses(),thisCourse) />	
+		/* Create our our course struct */
+		for(arg in arguments){
+			thisCourse[arg] = arguments[arg];
+		}
+		/* Add trailing / to make it easier to parse */
+		if( right(thisCourse.pattern,1) IS NOT "/" ){
+			thisCourse.pattern = thisCourse.pattern & "/";
+		}		
+		/* Check if we have optional args by looking for a ? */
+		if( findnocase("?",thisCourse.pattern) ){
+			/* Parse our base & optionals */
+			for(x=1; x lte listLen(thisCourse.pattern,"/"); x=x+1){
+				thisPattern = listgetAt(thisCourse.pattern,x,"/");
+				/* Check for ? */
+				if( not findnocase("?",thisPattern) ){ 
+					base = base & thisPattern & "/"; 
+				}
+				else{ 
+					optionals = optionals & replacenocase(thisPattern,"?","","all") & "/";
+				}
+			}
+			/* Register our courseList */
+			courseList = base & optionals;
+			/* Recurse and register in reverse order */
+			for(x=1; x lte listLen(optionals,"/"); x=x+1){
+				/* Create new Course */
+				thisCourse.pattern = courseList;
+				/* Register Course */
+				addCourse(argumentCollection=thisCourse);	
+				/* Remove last bit */
+				courseList = listDeleteat(courseList,listlen(courseList,"/"),"/");		
+			}
+			thisCourse.pattern = base;
+			addCourse(argumentCollection=thisCourse);
+		}
+		else{
+			/* Append to our courses a basic course */
+			ArrayAppend(get_courses(), thisCourse);
+		}
+		</cfscript>
 	</cffunction>
 	
 	<!--- Getter/Setter for uniqueURLs --->

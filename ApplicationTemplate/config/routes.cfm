@@ -18,12 +18,12 @@ NOTE: The interceptor will create a new setting called: sesBaseURL with this val
 -------------------------------------------- --->
 
 <!---
-	Do you want ColdCourse to be on or off?
+	Do you want SES Interception to be on or off?
 --->
 <cfset setEnabled(true)>
 
 <!--- 
-	This determines if non-ses urls should be routed back to the ses.
+	This determines if non-ses urls should be routed back to ses.
 	In other words, if someone goes to http://localhost/index.cfm?event=home.main
 	should we redirect (301, permanantly moved) to the ses url: 
 	http://localhost/index.cfm/home/main ?
@@ -70,17 +70,26 @@ NOTE: The interceptor will create a new setting called: sesBaseURL with this val
 	of which course to use.
 	
 	ColdBox 2.6 added an extension to the :variable so you can declare a numerical value:
-	
 	Ex: handler/action/:id-numeric Will match if the id position is numeric
 	Ex: handler/action/:id Will match any alphanumeric position.
-	
 	This extends the custom courses to distinguish between alphanumeric and numeric placeholders.
 	
+	ColdBox also introduces the Optional Variable Place Holders by adding a "?" at the end of the var name
+	Ex: handler/:action?
+	The action? denotes that this is an optional variable, so ColdBox will construct two routes for you
+	handler/:action and handler/ in that order of preference.  This is great for creating a single route
+	for multiple optional parameters.
+	Ex: /blog/:year/:month?/:day? ColdBox will then be creating the following routes for you.
+	/blog/:year/:month/:day
+	/blog/:year/:month
+	/blog/:year
+	
+	How cool is that. Just remember that there cannot be required variable placeholders after optional ones.
 	
 	Here's the general setup:
 	<cfset addCourse(	pattern="handler/action/:id",	# Set the pattern
-						handler="handler_name",		# Set the handler
-						action="action_name" )>				# Set the action
+						handler="handler_name",			# Set the handler
+						action="action_name" )>			# Set the action
 						
 	Notice how the "pattern" argument has three parts. In this case if a request comes in that starts with
 	"/handler/action", such as "http://localhost/handler/action/oneOtherItem", this course will match.
@@ -96,7 +105,6 @@ NOTE: The interceptor will create a new setting called: sesBaseURL with this val
 	a second paramter, then only URLs that start with /user will qualify for having the thrid argument of
 	username, while everywhere else will use a third argument of ID.
 	
-	THe Coldfusion on Wheels help files say it best:
 	By the way, what's with the : syntax?  In the Ruby programming language, any variable 
 	starting with a : is a symbol. Symbols are just like strings but they always point to 
 	the same place in memory and are therefore more efficient.  They don't work that way 
@@ -113,16 +121,11 @@ NOTE: The interceptor will create a new setting called: sesBaseURL with this val
 	<cfset addCourse(	pattern="profile/view/:username",
 						handler="profile",
 						action="view" )>	
-	<cfset addCourse(":handler/:action/:id")>
-	<cfset addCourse(":handler/:action")>
-	<cfset addCourse(":handler")>			
+	<cfset addCourse(":handler/:action?/:id?")>		
 -------------------------------------------- --->
 					
 <!--- CUSTOM COURSES GO HERE (they will be checked in order) --->
 
 
 <!--- STANDARD COLDBOX COURSES, DO NOT MODIFY UNLESS YOU DON'T LIKE THEM --->
-<cfset addCourse(":handler/:action/:id")>
-<cfset addCourse(":handler/:action")>
-<cfset addCourse(":handler")>
-
+<cfset addCourse(":handler/:action?/:id?")>

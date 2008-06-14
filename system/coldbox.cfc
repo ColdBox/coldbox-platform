@@ -158,7 +158,7 @@ Description :
 						<cfset cbController.getInterceptorService().processState("preRender")>
 						
 						<!--- Check for Marshalling and data render --->
-						<cfif not structisEmpty(event.getRenderData())>
+						<cfif isStruct(event.getRenderData()) and not structisEmpty(event.getRenderData())>
 							<cfset renderedContent = cbController.getPlugin("Utilities").marshallData(argumentCollection=event.getRenderData())>
 						<cfelse>
 							<!--- Render Layout/View pair via set variable to eliminate whitespace--->
@@ -176,11 +176,11 @@ Description :
 						</cfif>
 						
 						<!--- Render Content Type if using Render Data --->
-						<cfif not structisEmpty(event.getRenderData())>
+						<cfif isStruct(event.getRenderData()) and not structisEmpty(event.getRenderData())>
 							<!--- Render the Data Content Type --->
 							<cfcontent type="#event.getRenderData().contentType#" reset="true">
-							<cfsetting showdebugoutput="false">
 							<!--- Remove panels --->
+							<cfsetting showdebugoutput="false">
 							<cfset event.showDebugPanel(false)>
 						</cfif>
 						
