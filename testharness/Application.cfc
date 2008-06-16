@@ -52,7 +52,8 @@ Description :
 		<cfsetting enablecfoutputonly="yes">
 		<!--- BootStrap Reinit Check --->
 		<cfif not structKeyExists(application,"cbBootstrap") or application.cbBootStrap.isfwReinit()>
-			<cflock name="coldbox.bootstrap" type="exclusive" timeout="20" throwontimeout="true">
+			<cflock name="coldbox.bootstrap_#hash(getCurrentTemplatePath())#" type="exclusive" timeout="5" throwontimeout="true">
+				<cfset structDelete(application,"cbBootStrap")>
 				<cfset application.cbBootstrap = CreateObject("component","coldbox.system.coldbox").init(COLDBOX_CONFIG_FILE,COLDBOX_APP_ROOT_PATH)>
 			</cflock>
 		</cfif>
