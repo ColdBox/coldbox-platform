@@ -203,9 +203,8 @@ Description :
 		<cfargument name="event"  required="true" type="any" hint="The event object.">
 		<!--- ************************************************************* --->
 		<cfset var varMatch = "" />
-		<cfset var valMatch = ""/>
-		<cfset var vari = "" />
-		<cfset var vali = "" />
+		<cfset var qsValues = "" />
+		<cfset var qsVal = "" />
 		<cfset var requestString = arguments.action />
 		<cfset var routeParams = arrayNew(1) />
 		<cfset var routeParamsLength = 0>
@@ -223,12 +222,15 @@ Description :
 		
 		<!--- fix URL variables (IIS only) --->
 		<cfif requestString CONTAINS "?">
+			<!--- Match the positioning of the ? --->
 			<cfset varMatch = REFind("\?.*=", requestString, 1, "TRUE") />
-			<cfset valMatch = REFind("=.*$", requestString, 1, "TRUE") />
-			<cfset vari = Mid(requestString, (varMatch.pos[1]+1), (varMatch.len[1]-2)) />
-			<cfset vali = Mid(requestString, (valMatch.pos[1]+1), (valMatch.len[1]-1)) />
-			<cfset rc[vari] = vali />
-			<cfset requestString = Mid(requestString, 1, (var_match.pos[1]-1)) />
+			<!--- Now copy values to the RC. --->
+			<cfset qsValues = REreplacenocase(requestString,"^.*\?","","all")>
+			<cfloop list="#qsValues#" index="qsVal" delimiters="&">
+				<cfset rc[listFirst(qsVal,"=")] = listLast(qsVal,"=")>
+			</cfloop>
+			<!--- Clean the request string. --->
+			<cfset requestString = Mid(requestString, 1, (varMatch.pos[1]-1)) />
 		</cfif>
 		
 		<!--- Remove the leading slash in the request (if there was something more than just a slash to begin with) to match our routes --->
