@@ -128,10 +128,10 @@
 			<Property name="debugMode">true</Property>
 			<Property name="enableSetterInjection">false</Property>
 		</Interceptor>
-		<!--<Interceptor class="coldbox.testharness.interceptors.executionTracer">
+		<Interceptor class="coldbox.testharness.interceptors.executionTracer">
 			<Property name="Simple">Luis</Property>
 			<Property name="Complex">[1,2,3,4,5]</Property>
-		</Interceptor>	-->	
+		</Interceptor>	
 		<Interceptor class="coldbox.system.interceptors.ses">
 			<Property name="configFile">config/routes.cfm</Property>
 		</Interceptor>		

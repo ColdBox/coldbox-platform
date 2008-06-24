@@ -23,6 +23,14 @@ Description :
 
 <!------------------------------------------- INTERCEPTION POINTS ------------------------------------------->
 
+	<cffunction name="preProcess" access="public" returntype="void" hint="My very own custom interception point. " output="false" >
+		<!--- ************************************************************* --->
+		<cfargument name="event" required="true" type="coldbox.system.beans.requestContext" hint="The event object.">
+		<cfargument name="interceptData" required="true" type="struct" hint="Metadata of intercepted info.">
+		<!--- ************************************************************* --->
+		
+	</cffunction>
+
 	<!--- Custom Interception Point --->
 	<cffunction name="onLog" access="public" returntype="void" hint="My very own custom interception point. " output="false" >
 		<!--- ************************************************************* --->

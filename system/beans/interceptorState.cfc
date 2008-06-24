@@ -81,6 +81,10 @@ Description :
 		for( key in getInterceptors()){
 			/* Invoke the execution point */
 			invoker( getInterceptors().get(key), arguments.event, arguments.interceptData );
+			/* Check for _stopchain */
+			if( arguments.event.valueExists('_stopchain') ){
+				break;
+			}
 		}		
 		</cfscript>
 	</cffunction>
