@@ -76,15 +76,14 @@ Description :
 		<!--- ************************************************************* --->
 		<cfscript>
 		var key = "";
+		var stopChain = "";
 		
 		/* Loop and execute each interceptor as registered in order */
 		for( key in getInterceptors()){
 			/* Invoke the execution point */
-			invoker( getInterceptors().get(key), arguments.event, arguments.interceptData );
-			/* Check for _stopchain */
-			if( arguments.event.valueExists('_stopchain') ){
-				break;
-			}
+			stopChain = invoker( getInterceptors().get(key), arguments.event, arguments.interceptData );
+			/* Check for results */
+			if( stopChain ){ break; }
 		}		
 		</cfscript>
 	</cffunction>
@@ -114,16 +113,26 @@ Description :
 <!------------------------------------------- PRIVATE ------------------------------------------->
 
 	<!--- Interceptor Invoker --->
-	<cffunction name="invoker" access="private" returntype="void" hint="Execute an interceptor execution point" output="false" >
+	<cffunction name="invoker" access="private" returntype="any" hint="Execute an interceptor execution point" output="false" >
 		<!--- ************************************************************* --->
 		<cfargument name="interceptor" 		required="true" type="any" 		hint="The interceptor reference from cache">
 		<cfargument name="event" 		 	required="true" type="any" 		hint="The event context">
 		<cfargument name="interceptData" 	required="true" type="any" 		hint="A metadata structure used to pass intercepted information.">
 		<!--- ************************************************************* --->
-		<cfinvoke component="#arguments.interceptor#" method="#getstate()#">
+		<cfset var results = false>
+		
+		<!--- Invoke the interceptor --->
+		<cfinvoke component="#arguments.interceptor#" method="#getstate()#" returnvariable="results">
 			<cfinvokeargument name="event" 			value="#arguments.event#">
 			<cfinvokeargument name="interceptData" 	value="#arguments.interceptData#">
-		</cfinvoke>		
+		</cfinvoke>
+		
+		<!--- Check if we have results --->
+		<cfif isDefined("results") and isBoolean(results)>
+			<cfreturn results>
+		<cfelse>
+			<cfreturn false>
+		</cfif>			
 	</cffunction>
 	
 </cfcomponent>
