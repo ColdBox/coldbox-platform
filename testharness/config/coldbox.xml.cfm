@@ -23,7 +23,7 @@
 		<Setting name="UDFLibraryFile" 				value="includes/udf.cfm" />
 		<Setting name="CustomErrorTemplate"			value="" />
 		<Setting name="CustomEmailBugReport"		value="includes/EmailBugReport.cfm" />
-		<Setting name="MessageboxStyleOverride"		value="true" />
+		<Setting name="MessageboxStyleOverride"		value="false" />
 		<Setting name="HandlersIndexAutoReload"   	value="true" />
 		<Setting name="ConfigAutoReload"			value="true" />
 		<Setting name="ExceptionHandler"     		value="" />
