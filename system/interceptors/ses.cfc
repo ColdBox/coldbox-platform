@@ -47,6 +47,11 @@ Description :
 				throw("Error including config file: #e.message#",e.detail,"interceptors.ses.executingConfigException");
 			}
 			
+			/* Loose Matching Property: default = false */
+			if( not propertyExists('looseMatching') or not isBoolean(getProperty('looseMatching')) ){
+				setProperty('looseMatching',false);
+			}
+			
 			/* Validate the base URL */
 			if ( len(getBaseURL()) eq 0 ){
 				throw('The baseURL property has not been defined. Please define it using the setBaseURL() method.','','interceptors.ses.invalidPropertyException');
@@ -254,9 +259,10 @@ Description :
 			
 			<!--- Try to match this route against the URL --->
 			<cfset match = REFindNoCase(thisPattern,requestString,1,true) />
-
+			
 			<!--- If a match was made, use the result to route the request --->
-			<cfif match.len[1] IS NOT 0 AND match.pos[1] EQ 1>
+			<cfif (match.len[1] IS NOT 0 AND getProperty('looseMatching')) OR 
+				  (not getProperty('looseMatching') and match.len[1] IS NOT 0 and match.pos[1] EQ 1) >
 				<cfset foundRoute = thisRoute />				
 				<!--- For each part of the URL in the route --->
 				<cfloop list="#thisRoute.pattern#" delimiters="/" index="thisPattern">

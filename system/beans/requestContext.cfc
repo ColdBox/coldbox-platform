@@ -359,9 +359,15 @@ Modification History:
 	</cffunction>
 	
 	<cffunction name="buildLink" access="public" output="false" returntype="any" hint="Builds a link to a passed event, either SES or normal link. If the ses interceptor is declared it will create routes.">
-		<cfargument name="linkto" required="true" type="string" hint="The event or route you want to create the link to">
+		<cfargument name="linkto" 		required="true" 	type="string"  hint="The event or route you want to create the link to">
+	    <cfargument name="translate"  	required="false" 	type="boolean" default="true" hint="Translate between . and / depending on the ses mode. So you can just use dot notation."/>
 	    <cfscript>
 		if( isSES() ){
+			/* Translate link */
+			if( arguments.translate ){
+				arguments.linkto = replace(arguments.linkto,".","/","all");
+			}
+			/* Prepare link */
 			if( right(getSESbaseURL(),1) eq  "/"){
 				return getSESBaseURL() & arguments.linkto;
 			}
