@@ -4,13 +4,18 @@
 	<cfif renderType eq "cachepanel">
 		<!--- Setup the panel --->
 		<cfsetting showdebugoutput="false">
-		<cfparam name="url.frequency" default="5">
+		<cfparam name="url.frequency" default="0">
+		
 		<!--- Verify Frequency --->
 		<cfif not isNumeric(url.Frequency)>
-			<cfset url.frequency = 5>
+			<cfset url.frequency = 0>
 		</cfif>
+		
+		<cfif url.frequency gt 0>
 		<!--- Meta Tag Refresh --->
 		<meta http-equiv="refresh" content="#url.frequency#">
+		</cfif>
+		
 		<!--- Include Header --->
 		<cfinclude template="/coldbox/system/includes/debugHeader.cfm">
 		<div class="fw_debugPanel">
@@ -32,8 +37,9 @@
 		<div>
 			<strong>Monitor Refresh Frequency (Seconds): </strong>
 			<select id="frequency" style="font-size:10px" onChange="fw_pollmonitor('cache',this.value)">
+				<option value="0">No Polling</option>
 				<cfloop from="5" to="30" index="i" step="5">
-				<option value="#i#" <cfif url.frequency eq i>selected</cfif>>#i#</option>
+				<option value="#i#" <cfif url.frequency eq i>selected</cfif>>#i# sec</option>
 				</cfloop>
 			</select>
 			<hr>

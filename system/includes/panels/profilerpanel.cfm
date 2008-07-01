@@ -15,11 +15,11 @@ Description :
 
 	<!--- Setup the panel --->
 	<cfsetting showdebugoutput="false">
-	<cfparam name="url.frequency" default="20">
+	<cfparam name="url.frequency" default="0">
 	
 	<!--- Verify Frequency --->
 	<cfif not isNumeric(url.Frequency)>
-		<cfset url.frequency = 20>
+		<cfset url.frequency = 0>
 	</cfif>
 	
 	<cfif url.frequency gt 0>
@@ -44,9 +44,9 @@ Description :
 		<div>
 			<strong>Monitor Refresh Frequency (Seconds): </strong>
 			<select id="frequency" style="font-size:10px" onChange="fw_pollmonitor('profiler',this.value)">
-				<option value="0">Stop Polling</option>
-				<cfloop from="10" to="30" index="i" step="5">
-				<option value="#i#" <cfif url.frequency eq i>selected</cfif>>#i#</option>
+				<option value="0">No Polling</option>
+				<cfloop from="5" to="30" index="i" step="5">
+				<option value="#i#" <cfif url.frequency eq i>selected</cfif>>#i# sec</option>
 				</cfloop>
 			</select>
 			<hr>
