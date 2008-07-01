@@ -13,7 +13,11 @@ Description :
 Modification History:
 3/19/2007 - Created Template
 ---------------------------------------------------------------------->
-<cfcomponent name="users" extends="coldbox.system.eventhandler" output="false">
+<cfcomponent name="users" extends="coldbox.system.eventhandler" output="false" autowire="true">
+	
+	<!--- Dependency Injection from the cache --->
+	<cfproperty name="Transfer" type="ocm" scope="instance" />
+
 
 	<cffunction name="dspHome" access="public" returntype="void" output="false">
 		<cfargument name="Event" type="coldbox.system.beans.requestContext">
@@ -25,7 +29,7 @@ Modification History:
 		<cfargument name="Event" type="coldbox.system.beans.requestContext">
 		<cfset var rc = event.getCollection()>
 		<!--- Do Your Logic Here to prepare a view --->
-		<cfset rc.Users = rc.Transfer.list("users.users","lname",false)>
+		<cfset rc.Users = instance.transfer.list("users.users","lname",false)>
 		<!--- Set the View To Display, after Logic --->
 		<cfset Event.setView("vwListing")>
 	</cffunction>
@@ -37,7 +41,7 @@ Modification History:
 		<!--- Do Your Logic Here to prepare a view --->
 		<cfset event.paramValue("idlist","")>
 		<cfloop list="#rc.idlist#" index="i">
-			<cfset rc.Transfer.delete(rc.Transfer.get("users.users",i))>
+			<cfset instance.transfer.delete(instance.transfer.get("users.users",i))>
 			<cfset getPlugin("messagebox").setMessage("info","User(s) removed successfully")>
 		</cfloop>
 		<cfset setNextRoute("users/dspUsers")>
@@ -54,11 +58,11 @@ Modification History:
 		<cfset var rc = event.getCollection()>
 		<cfset var oUser = "">
 		<!--- Get Transfer Object --->
-		<cfset oUser = rc.Transfer.new("users.users")>
+		<cfset oUser = instance.transfer.new("users.users")>
 		<!--- Populate it with RC data --->
 		<cfset getPlugin("beanFactory").populateBean(oUser)>
 		<!--- Add new User --->
-		<cfset rc.Transfer.save(oUser)>
+		<cfset instance.transfer.save(oUser)>
 		<cfset getPlugin("messagebox").setMessage("info", "User inserted")>
 		<!--- RElocate to listing --->
 		<cfset setNextRoute("users/dspUsers")>
@@ -68,7 +72,7 @@ Modification History:
 		<cfargument name="Event" type="coldbox.system.beans.requestContext">
 		<cfset var rc = event.getCollection()>
 		<!--- Get User id --->
-		<cfset rc.oUser = rc.Transfer.get("users.users",rc.id)>
+		<cfset rc.oUser = instance.transfer.get("users.users",rc.id)>
 		<!--- Set the View To Display, after Logic --->
 		<cfset Event.setView("vwEdit")>
 	</cffunction>
@@ -78,11 +82,11 @@ Modification History:
 		<cfset var rc = event.getCollection()>
 		<cfset var oUser = "">
 		<!--- Get Transfer Object --->
-		<cfset oUser = rc.Transfer.get("users.users",rc.id)>
+		<cfset oUser = instance.transfer.get("users.users",rc.id)>
 		<!--- Populate it with RC data --->
 		<cfset getPlugin("beanFactory").populateBean(oUser)>
 		<!--- Update User --->
-		<cfset rc.Transfer.save(oUser)>
+		<cfset instance.transfer.save(oUser)>
 		<cfset getPlugin("messagebox").setMessage("info", "User Updated")>
 		<!--- RElocate to listing --->
 		<cfset setNextRoute("users/dspUsers")>

@@ -100,6 +100,8 @@
 		<Interceptor class="coldbox.system.interceptors.ses">
 			<Property name="configFile">config/routes.cfm</Property>
 		</Interceptor>
+		<Interceptor class="coldbox.system.interceptors.autowire">
+		</Interceptor>
 	</Interceptors>
 
 </Config>

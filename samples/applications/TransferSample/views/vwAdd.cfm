@@ -13,20 +13,10 @@
 	 Enter a new user information below and Transfer will create a new record.
 	</div>
 
-	<div style="margin-top:10px;" align="center">
-		<a class="action silver" href="#getSetting('sesBaseURL')#/users/dspHome" style="float:left">
-			<span>Home</span>
-		</a>
-		<a class="action" href="#getSetting('sesBaseURL')#/users/dspUsers" style="float:left">
-			<span>List Users</span>
-		</a>
-		<a class="action" href="#getSetting('sesBaseURL')#/users/dspAddUser" style="float:left">
-			<span>Add User</span>
-		</a>
-	</div>
+	#renderView('tags/menu',true,10)#
 
 	<div style="margin-top:50px;clear:both" align="left">
-		<form name="addform" id="addform" action="#getSetting('sesBaseURL')#/users/doAdd" method="post">
+		<form name="addform" id="addform" action="#event.buildLink('users.doAdd')#" method="post">
 		<table width="100%" cellpadding="5" cellspacing="1" style="border:1px solid ##cccccc;">
 
 			<tr>

@@ -216,6 +216,7 @@ Description :
 		<cfset var conventionString = "">
 		<cfset var conventionStringLen = 0>
 		<cfset var tmpVar = "">
+		<cfset var leftOverLen = 0>
 		<cfset var routeParams = arrayNew(1) />
 		<cfset var routeParamsLength = 0>
 		<cfset var thisRoute = structNew() />
@@ -290,19 +291,22 @@ Description :
 		</cfloop>
 		
 		<!--- Convention String, where it will translate the remaining name-value pairs into vars --->
-		<cfset conventionString		= right(requestString,len(requestString)-(match.pos[arraylen(match.pos)]+match.len[arrayLen(match.len)]))>
-		<cfset conventionStringLen 	= listLen(conventionString,'/')>
-		<cfset tmpVar 				= "">
-		<cfif conventionStringLen gt 1>
-			<cfloop from="1" to="#conventionStringLen#" index="i">
-				<cfif i mod 2 eq 0>
-					<!--- Even --->
-					<cfset params[tmpVar] = listGetAt(conventionString,i,'/')>
-				<cfelse>
-					<!--- Odd --->
-					<cfset tmpVar = listGetAt(conventionString,i,'/')>
-				</cfif>
-			</cfloop>
+		<cfset leftOverLen = len(requestString)-(match.pos[arraylen(match.pos)]+match.len[arrayLen(match.len)])>
+		<cfif leftOverLen gt 0>
+			<cfset conventionString		= right(requestString,leftOverLen)>
+			<cfset conventionStringLen 	= listLen(conventionString,'/')>
+			<cfset tmpVar 				= "">
+			<cfif conventionStringLen gt 1>
+				<cfloop from="1" to="#conventionStringLen#" index="i">
+					<cfif i mod 2 eq 0>
+						<!--- Even --->
+						<cfset params[tmpVar] = listGetAt(conventionString,i,'/')>
+					<cfelse>
+						<!--- Odd --->
+						<cfset tmpVar = listGetAt(conventionString,i,'/')>
+					</cfif>
+				</cfloop>
+			</cfif>
 		</cfif>
 		
 		<!--- Now set the rest of the variables in the route: handler & action --->

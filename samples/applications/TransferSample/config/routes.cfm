@@ -97,7 +97,4 @@
 
 
 <!--- STANDARD COLDBOX COURSES, DO NOT MODIFY UNLESS YOU DON'T LIKE THEM --->
-<cfset addCourse(":handler/:action/:id")>
-<cfset addCourse(":handler/:action")>
-<cfset addCourse(":handler")>
-
+<cfset addCourse(":handler/:action?/:id?")>
