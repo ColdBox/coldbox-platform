@@ -27,7 +27,10 @@ Description :
 			cbController = getController();
 			
 			try{
-				//Create the request context
+				/* Trace the incoming arguments. */
+				tracer('Process: Incoming arguments',arguments);
+				
+				/* Create the request context */
 				Event = cbController.getRequestService().requestCapture();
 				
 				/* Test Event Name */
@@ -66,36 +69,44 @@ Description :
 				cbController.getInterceptorService().processState("postProcess");
 			}
 			catch(Any e){
-				//Log Exception
+				/* Log Exception */
 				cbController.getExceptionService().ExceptionHandler(e,"coldboxproxy","Process Exception");
+				
 				/* Verify stacktrace */
 				if( not structKeyExists(e,"stacktrace") ){
 					e.stacktrace = "";
 				}
+				
 				/* Request Profilers */
-				pushTimers(cbController);
-			
+				pushTimers();
 				/* Custom throw. */
 				throwit(e.message.toString(),e.detail.toString() & e.stacktrace.toString());
 			}
 			
 			/* Request Profilers */
-			pushTimers(cbController);
+			pushTimers();
 				
-			//Determine what to return via the setting
+			/* Determine what to return via the setting */
 			if ( cbController.getSetting("ProxyReturnCollection") ){
-				//Return request collection
+				/* Return request collection */
 				return Event.getCollection();
 			}
 			else{
 				/* Check for Marshalling */
 				if ( not structisEmpty(Event.getRenderData()) ){
-					return getPlugin("Utilities").marshallData(argumentCollection=Event.getRenderData());
+					local.results = getPlugin("Utilities").marshallData(argumentCollection=Event.getRenderData());
 				}
-				//Return results from handler only if found, else method will produce a null result
+				/* Return results from handler only if found, else method will produce a null result */
 				if( structKeyExists(local,"results") ){
+					/* Trace the results */
+					tracer('Process: Outgoing Results',local.results);
+					/* Return The results */
 					return local.results;
 				}
+				else{
+					/* Trace the results */
+					tracer('No outgoing results found in the local scope.');
+				}				
 			}
 		</cfscript>		
 	</cffunction>
@@ -116,7 +127,10 @@ Description :
 			/* emded contents */
 			interceptionStructure.interceptData = arguments.interceptData;
 			
-			//Intercept
+			/* Trace the incoming arguments */
+			tracer('AnnounceInterception: incoming arguments',arguments);
+					
+			/* Intercept */
 			try{
 				cbController.getInterceptorService().processState(arguments.state,interceptionStructure);
 			}
@@ -124,13 +138,13 @@ Description :
 				//Log Exception
 				cbController.getExceptionService().ExceptionHandler(e,"coldboxproxy","Interception Exception");
 				/* Request Profilers */
-				pushTimers(cbController);
+				pushTimers();
 				/* Return */
 				return false;
 			}
 			
 			/* Request Profilers */
-			pushTimers(cbController);
+			pushTimers();
 			
 			/* Return */
 			return true;
@@ -139,17 +153,34 @@ Description :
 	
 <!------------------------------------------- PRIVATE ------------------------------------------->	
 	
+	<!--- Trace messages to the tracer panel --->
+	<cffunction name="tracer" access="private" returntype="void" hint="Trace messages to the tracer panel, will only trace if in debug mode." output="false" >
+		<!--- ************************************************************* --->
+		<cfargument name="message"    type="string" required="Yes" hint="Message to Send" >
+		<cfargument name="ExtraInfo"  required="No" default="" type="any" hint="Extra Information to dump on the trace">
+		<!--- ************************************************************* --->
+		<cfscript>
+			var cbController = getController();
+			
+			if( cbController.getDebuggerService().getDebugMode() ){
+				cbController.getPlugin("logger").tracer(argumentCollection=arguments);
+			}
+		</cfscript>
+	</cffunction>
+	
 	<!--- Push Timers --->
 	<cffunction name="pushTimers" access="private" returntype="void" hint="Push timers into debugging stack" output="false" >
-		<cfargument name="cbController" required="true" type="any" hint="the coldbox controller">
 		<cfscript>
-			var dService = arguments.cbController.getDebuggerService();
+			var cbController = getController();
+			var dService = cbController.getDebuggerService();
 			
-			/* Request Profilers */
-			if ( dService.getDebuggerConfigBean().getPersistentRequestProfiler() and
-				 structKeyExists(request,"debugTimers") ){
-				/* Push timers */
-				dService.pushProfiler(request.DebugTimers);
+			/* Only push if in debug mode. */
+			if( cbController.getDebuggerService().getDebugMode() ){
+				/* Request Profilers */
+				if ( dService.getDebuggerConfigBean().getPersistentRequestProfiler() and structKeyExists(request,"debugTimers") ){
+					/* Push timers */
+					dService.pushProfiler(request.DebugTimers);
+				}
 			}
 		</cfscript>
 	</cffunction>
