@@ -43,7 +43,7 @@
 	<YourSettings>
 		<Setting name="MyStruct" value="{name:'luis majano', email:'info@email.com', active:'true'}"/>
 		<Setting name="MyArray"  value="[1,2,3,4,5,6]"/>
-		<Setting name="MyBaseURL"  value="jfetmac" />
+		<Setting name="MyBaseURL"  value="apps.jfetmac" />
 	</YourSettings>
 	
 	<!-- Custom Conventions : You can override the framework wide conventions -->

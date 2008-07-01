@@ -153,31 +153,33 @@ Description :
 
 		<cfset httpRequestData = GetHttpRequestData()/>
 		
+		<!--- Only verify if unique URLS are on, we have an event and a valid empty course. --->
 		<cfif getUniqueURLs() 
 			  AND StructKeyExists(rc, EventName)
 			  AND (arguments.course EQ "/index.cfm" or arguments.course eq "")>
 			
+			<!--- Clean for handler & Action --->
 			<cfif StructKeyExists(rc, EventName)>
 				<cfset handler = reReplace(rc[EventName],"\.[^.]*$","") />
 				<cfset action = ListLast( rc[EventName], "." ) />
 			</cfif>
-			
+			<!--- course a handler --->
 			<cfif len(handler)>
 				<cfset newpath = "/" & handler />
 			</cfif>
-			
+			<!--- Course path with handler + action if not the default event action --->
 			<cfif len(handler) 
 				  AND len(action) 
 				  AND action NEQ getDefaultFrameworkAction()>
 				<cfset newpath = newpath & "/" & action />
 			</cfif>
-			
+			<!--- Relocation headers --->
 			<cfif httpRequestData.method EQ "GET">
 				<cfheader statuscode="301" statustext="Moved permanently" />
 			<cfelse>
 				<cfheader statuscode="303" statustext="See Other" />
 			</cfif>
-			
+			<!--- Relocate --->
 			<cfheader name="Location" value="#getBaseURL()##newpath##serializeURL(httpRequestData.content,event)#" />
 			<cfabort />
 		</cfif>
@@ -211,6 +213,9 @@ Description :
 		<cfset var qsValues = "" />
 		<cfset var qsVal = "" />
 		<cfset var requestString = arguments.action />
+		<cfset var conventionString = "">
+		<cfset var conventionStringLen = 0>
+		<cfset var tmpVar = "">
 		<cfset var routeParams = arrayNew(1) />
 		<cfset var routeParamsLength = 0>
 		<cfset var thisRoute = structNew() />
@@ -259,11 +264,11 @@ Description :
 			
 			<!--- Try to match this route against the URL --->
 			<cfset match = REFindNoCase(thisPattern,requestString,1,true) />
-			
+		
 			<!--- If a match was made, use the result to route the request --->
 			<cfif (match.len[1] IS NOT 0 AND getProperty('looseMatching')) OR 
 				  (not getProperty('looseMatching') and match.len[1] IS NOT 0 and match.pos[1] EQ 1) >
-				<cfset foundRoute = thisRoute />				
+				<cfset foundRoute = thisRoute />
 				<!--- For each part of the URL in the route --->
 				<cfloop list="#thisRoute.pattern#" delimiters="/" index="thisPattern">
 					<!--- Clean thisPattern of -numeric --->
@@ -273,11 +278,9 @@ Description :
 						<cfset arrayAppend(routeParams,right(thisPattern,len(thisPattern)-1)) />
 					</cfif>
 				</cfloop>
-				
 				<!--- And leave the loop 'cause we found our route --->
 				<cfbreak />
-			</cfif>
-			
+			</cfif>			
 		</cfloop>
 		
 		<!--- Populate the params structure with the proper parts of the URL --->
@@ -286,7 +289,23 @@ Description :
 			<cfset "params.#routeParams[i]#" = mid(requestString,match.pos[i+1],match.len[i+1]) />
 		</cfloop>
 		
-		<!--- Now set the rest of the variables in the route --->
+		<!--- Convention String, where it will translate the remaining name-value pairs into vars --->
+		<cfset conventionString		= right(requestString,len(requestString)-(match.pos[arraylen(match.pos)]+match.len[arrayLen(match.len)]))>
+		<cfset conventionStringLen 	= listLen(conventionString,'/')>
+		<cfset tmpVar 				= "">
+		<cfif conventionStringLen gt 1>
+			<cfloop from="1" to="#conventionStringLen#" index="i">
+				<cfif i mod 2 eq 0>
+					<!--- Even --->
+					<cfset params[tmpVar] = listGetAt(conventionString,i,'/')>
+				<cfelse>
+					<!--- Odd --->
+					<cfset tmpVar = listGetAt(conventionString,i,'/')>
+				</cfif>
+			</cfloop>
+		</cfif>
+		
+		<!--- Now set the rest of the variables in the route: handler & action --->
 		<cfloop collection="#foundRoute#" item="key">
 			<cfif key IS NOT "pattern">
 				<cfset params[key] = foundRoute[key] />
@@ -297,7 +316,7 @@ Description :
 	</cffunction>
 	
 	<!--- Add a new Course --->
-	<cffunction name="addCourse" access="private" hint="Adds a route to dispatch" output="false">
+	<cffunction name="addCourse" access="public" hint="Adds a route to dispatch" output="false">
 		<!--- ************************************************************* --->
 		<cfargument name="pattern" type="string" required="true" hint="The pattern to match against the URL." />
 		<!--- ************************************************************* --->

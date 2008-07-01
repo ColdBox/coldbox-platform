@@ -58,7 +58,7 @@ NOTE: The interceptor will create a new setting called: sesBaseURL with this val
 	<base> html tags, this is the same as the baseURL without the index.cfm if used.
 	Else, htmlBaseURL and sesBaseURL should be the same.
 --->
-<cfset setBaseURL("http://#getSetting('MyBaseURL')#/coldbox/index.cfm")>
+<cfset setBaseURL("http://#getSetting('MyBaseURL')#/coldbox/testharness/index.cfm")>
 
 
 <!--- -------------------------------------------
