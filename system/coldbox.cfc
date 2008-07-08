@@ -270,6 +270,8 @@ Description :
 				if ( cbController.getSetting("SessionEndHandler") neq "" ){
 					//Place session reference on event object
 					event.setValue("sessionReference", arguments.sessionScope);
+					//Place app reference on event object
+					event.setValue("applicationReference", arguments.appScope);
 					//Execute the Handler
 					cbController.runEvent(cbController.getSetting("SessionEndHandler"),true);
 				}
