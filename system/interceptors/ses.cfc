@@ -149,30 +149,45 @@ Description :
 		<cfset var newpath = "" />
 		<cfset var httpRequestData = "">
 		<cfset var EventName = getSetting('EventName')>
+		<cfset var DefaultEvent = getSetting('DefaultEvent')>
 		<cfset var rc = event.getCollection()>
-
+		
+		<!--- Get the HTTP Data --->
 		<cfset httpRequestData = GetHttpRequestData()/>
 		
-		<!--- Only verify if unique URLS are on, we have an event and a valid empty course. --->
+		<!--- 
+		Verify we have uniqueURLs ON, the event var exists, course is empty or index.cfm
+		AND
+		if the incoming event is not the default OR it is the default via the URL.
+		--->
 		<cfif getUniqueURLs() 
 			  AND StructKeyExists(rc, EventName)
-			  AND (arguments.course EQ "/index.cfm" or arguments.course eq "")>
+			  AND (arguments.course EQ "/index.cfm" or arguments.course eq "")
+			  AND (
+			  		rc[EventName] NEQ DefaultEvent
+			  		OR
+			  		( structKeyExists(url,EventName) AND rc[EventName] EQ DefaultEvent )
+			  )>
 			
-			<!--- Clean for handler & Action --->
-			<cfif StructKeyExists(rc, EventName)>
-				<cfset handler = reReplace(rc[EventName],"\.[^.]*$","") />
-				<cfset action = ListLast( rc[EventName], "." ) />
+			<!--- New Pathing Calculations if not the default event. If default, relocate to the domain. --->
+			<cfif rc[EventName] neq getSetting('DefaultEvent')>
+				<!--- Clean for handler & Action --->
+				<cfif StructKeyExists(rc, EventName)>
+					<cfset handler = reReplace(rc[EventName],"\.[^.]*$","") />
+					<cfset action = ListLast( rc[EventName], "." ) />
+				</cfif>
+				<!--- course a handler --->
+				<cfif len(handler)>
+					<cfset newpath = "/" & handler />
+				</cfif>
+				<!--- Course path with handler + action if not the default event action --->
+				<cfif len(handler) 
+					  AND len(action) 
+					  AND action NEQ getDefaultFrameworkAction()>
+					<cfset newpath = newpath & "/" & action />
+				</cfif>
 			</cfif>
-			<!--- course a handler --->
-			<cfif len(handler)>
-				<cfset newpath = "/" & handler />
-			</cfif>
-			<!--- Course path with handler + action if not the default event action --->
-			<cfif len(handler) 
-				  AND len(action) 
-				  AND action NEQ getDefaultFrameworkAction()>
-				<cfset newpath = newpath & "/" & action />
-			</cfif>
+			
 			<!--- Relocation headers --->
 			<cfif httpRequestData.method EQ "GET">
 				<cfheader statuscode="301" statustext="Moved permanently" />
@@ -181,7 +196,7 @@ Description :
 			</cfif>
 			<!--- Relocate --->
 			<cfheader name="Location" value="#getBaseURL()##newpath##serializeURL(httpRequestData.content,event)#" />
-			<cfabort />
+			<cfabort />			
 		</cfif>
 	</cffunction>
 	
