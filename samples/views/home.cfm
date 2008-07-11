@@ -138,7 +138,14 @@
 				<p> #getresource("by")# Ernst van der Linden<br />ColdBox-ColdSpring-Transfer<bR>
 				#getresource("needssetup")#
 				<br />
-				  <a href="#getSetting("TransferApp2")#/readme.txt?TB_iframe=true&height=550&width=800" class="thickbox" title="Readme.txt">Readme.txt</a><br />
+				  <a href="#getSetting("SecurityApp")#/readme.txt?TB_iframe=true&height=550&width=800" class="thickbox" title="Readme.txt">Readme.txt</a><br />
+				</p>
+				
+				<h3>Security & Transfer Sample</h3>
+				<p> #getresource("by")# Ernst van der Linden & Luis Majano<br />ColdBox-LightWire-Transfer<bR>
+				#getresource("needssetup")#
+				<br />
+				 <a href="#getSetting("TransferApp")#/index.cfm" target="_blank">#getresource("opensample")#</a><br />
 				</p>
 				
 				<h3>CCTApp Sample</h3>
