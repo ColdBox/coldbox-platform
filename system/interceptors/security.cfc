@@ -154,6 +154,8 @@ and then extracted by this interceptor. They must be a valid rules query.
 		<cfargument name="interceptData" required="true" type="struct" hint="interceptData of intercepted info.">
 		<!--- ************************************************************* --->
 		<cfscript>
+			var oValidator = "";
+			
 			/* Load Rules */
 			switch( getProperty('rulesSource') ){
 				case "xml" : { 
@@ -174,7 +176,14 @@ and then extracted by this interceptor. They must be a valid rules query.
 			if( propertyExists('validator') ){
 				/* Try to create Validator */
 				try{
-					setValidator(CreateObject("component",getProperty('validator')));
+					/* Create it */
+					oValidator = CreateObject("component",getProperty('validator'));
+					/* Verify the init */
+					if( structKeyExists(oValidator, "init") ){
+						oValidator = oValidator.init();
+					}
+					/* Cache It */
+					setValidator(oValidator);
 				}
 				catch(Any e){
 					throw("Error creating validator",e.message & e.detail, "interceptors.security.validatorCreationException");
