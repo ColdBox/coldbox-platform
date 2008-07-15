@@ -246,6 +246,10 @@ and then extracted by this interceptor. They must be a valid rules query.
 			var x = 1;
 			var rules = getProperty('rules');
 			var rulesLen = arrayLen(rules);
+			var rc = event.getCollection();
+			
+			/* Init the called url */
+			rc._securedURL = "";
 			
 			/* Loop through Rules */
 			for(x=1; x lte rulesLen; x=x+1){
@@ -265,10 +269,24 @@ and then extracted by this interceptor. They must be a valid rules query.
 							getPlugin("logger").logEntry("warning","User not in appropriate roles #rules[x].roles# for event=#currentEvent#");
 						}
 						/* Redirect */
-						if( getProperty('useRoutes') ) 
-							setNextRoute(rules[x].redirect);
-						else 
-							setNextEvent(rules[x].redirect);
+						if( getProperty('useRoutes') ){
+							/* Save the secured URL */
+							rc._securedURL = "#cgi.script_name##cgi.path_info#";
+							if( cgi.query_string neq ""){
+								rc._securedURL = rc._securedURL & "?#cgi.query_string#";
+							}
+							/* Route to safe event */
+							setNextRoute(rules[x].redirect,"_securedURL");
+						}
+						else{ 
+							/* Save the secured URL */
+							rc._securedURL = "#cgi.script_name#";
+							if( cgi.query_string neq ""){
+								rc._securedURL = rc._securedURL & "?#cgi.query_string#";
+							}
+							/* Route to safe event */
+							setNextEvent(rules[x].redirect,"_securedURL");
+						}
 						break;
 					}//end user in roles
 					else{
