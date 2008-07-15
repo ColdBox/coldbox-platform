@@ -134,6 +134,13 @@
 		</Interceptor>	
 		<Interceptor class="coldbox.system.interceptors.ses">
 			<Property name="configFile">config/routes.cfm</Property>
+		</Interceptor>
+		
+		<Interceptor class="coldbox.system.interceptors.security">
+	        <Property name="rulesSource">xml</Property>
+	        <Property name="rulesFile">config/security.xml.cfm</Property>
+	        <Property name="debugMode">true</Property>
+	        <Property name="preEventSecurity">true</Property>
 		</Interceptor>		
 	</Interceptors>
 

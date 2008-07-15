@@ -12,4 +12,5 @@
 <hr>
 <p><a href="index.cfm?#getController().getSetting("eventName")#=ehTest.dspExternal">External Handler</a></p>
 <p><a href="index.cfm?#getController().getSetting("eventName")#=ehGeneral.externalview">External View</a></p>
+<p><a href="index.cfm?#getController().getSetting("eventName")#=ehSecure.dspUser">Security Int Test</a></p>
 </cfoutput>
