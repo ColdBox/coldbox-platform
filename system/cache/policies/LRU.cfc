@@ -40,7 +40,7 @@ Description :
 				//Override Eternal Checks
 				if ( objStruct[LRUhitIndex[x]].Timeout gt 0 ){
 					//Evict it
-					expireKey(LRUhitIndex[x]);
+					getCacheManager().expireKey(LRUhitIndex[x]);
 					//Record Eviction 
 					getCacheManager().getCacheStats().evictionHit();
 					break;
