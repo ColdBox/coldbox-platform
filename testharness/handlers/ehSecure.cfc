@@ -33,8 +33,8 @@ Modification History:
 	<cffunction name="dspUser" access="public" returntype="Void" output="false">
 		<cfargument name="Event" type="coldbox.system.beans.requestContext" required="yes">
 		<cfset var rc = event.getCollection()>
-		 <!--- testing secure handlers/methods --->
-		 <cfset event.setView('vwLoginForm')>
+		
+		<cfset event.renderData('plain','I got in')>
 	</cffunction>
 	
 	

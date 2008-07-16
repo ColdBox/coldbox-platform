@@ -13,91 +13,7 @@ and customizable. It bases off on the ability to secure events by creating
 rules. This interceptor will then try to match a rule to the incoming event
 and the user's credentials on roles and/or permissions. 
 	
-Default Security:
-This interceptor will try to use ColdFusion's cflogin + cfloginuser authentication
-by default. However, if you are using your own authentication mechanisims you can
-still use this interceptor by implementing a Security Validator Object.
-
-Ex:
-<cflogin>
-	Your login logic here
-	<cfloginuser name="name" password="password" roles="ROLES HERE">
-</cflogin>
-
-When in default mode, the permissions are ignored and only roles are checked.
-
-Security Validator Object:
-A security validator object is a simple cfc that implements the following function:
-
-userValidator(rule:struct) : boolean
-
-This function must return a boolean variable and it must validate a user according
-to the rule that just ran by testing the rule that got sent in. The rule will contain
-all the fields contained in the database or xml validation file.
-
-Declaring the Validator:
-You have three ways to declare the security validator: 
-
-1) This validator object can be set as a property in the interceptor declaration as an 
-instantiation path. The interceptor will create it and try to execute it.  
-
-2) You can register the validator via the "registerValidator()" method on this interceptor. 
-This must be called from the application start handler or other interceptors as long as it 
-executes before any preProcess execution occurs:
-
-<cfset getInterceptor('coldbox.system.interceptors.security').registerValidator(myValidator)>
-
-That validator object can from anywhere you want using the mentioned technique above.
-
-3) Using the validatorIOC property. You set the name of the bean to extract from the IoC
-   plugin and it will autowire this interceptor.
-
-Interceptor Properties:
-
- - useRegex : boolean [default=true] Whether to use regex on event matching
- - useRoutes : boolean [default=false] Whether to redirect to events or routes
- - queryChecks : boolean [deafult=true] Whether to validate the query for valid fields.
- - rulesSource : string [xml|db|ioc|ocm] Where to get the rules from.
- - debugMode : boolean [default=false] If on, then it logs actions via the logger plugin.
- - validator : string [default=""] If set, it must be a valid instantiation path to a security validator object.
- - validatorIOC : string [default=''] If set, it is the name of the bean to autowire this interceptor from.
- - preEventSecurity: boolean [default=false] If on, then it will also execute the rule processing on every pre-Event
-
-* Please note that when using regular expressions, you specify and escape the metadata characters.
-* If the validator property is used, the interceptor will create it and store it in the interceptor.
-
-XML properties:
-The rules will be extracted from an xml configuration file. The format is
-defined in the sample.
- - rulesFile : string The relative or absolute location of the rules file.
-
-DB properties:
-The rules will be taken off a cfquery using the properties below.
- - rulesDSN : string The datasource to use to connect to the rules table.
- - rulesTable : string The table of where the rules are
- - rulesSQL* : string You can write your own sql if you want. (optional)
- - rulesOrderBy* : string How to order the rules (optional)
-
-The table MUST have the following columns:
-Rules Query
- - whitelist : varchar [null]
- - securelist : varchar
- - roles : varchar [null]
- - permissions : varchar [null]
- - redirect : varchar
-
-IOC properties:
-The rules will be grabbed off an IoC bean as a query. They must be a valid rules query.
- - rulesBean : string The bean to call on the IoC container
- - rulesBeanMethod : string The method to call on the bean
- - rulesBeanArgs* : string The arguments to send if any (optional)
-
-OCM Properties:
-The rules will be placed by the user in the ColdBox cache manager
-and then extracted by this interceptor. They must be a valid rules query.
- - rulesOCMkey : string The key of the rules that will be placed in the OCM.
-
-* Optional properties
+For the latest usage, please visit the wiki.
 ----------------------------------------------------------------------->
 <cfcomponent name="security"
 			 hint="This is a security interceptor"
@@ -248,9 +164,6 @@ and then extracted by this interceptor. They must be a valid rules query.
 			var rulesLen = arrayLen(rules);
 			var rc = event.getCollection();
 			
-			/* Init the called url */
-			rc._securedURL = "";
-			
 			/* Loop through Rules */
 			for(x=1; x lte rulesLen; x=x+1){
 				/* is current event in this whitelist pattern? then continue to next rule */
@@ -276,7 +189,7 @@ and then extracted by this interceptor. They must be a valid rules query.
 								rc._securedURL = rc._securedURL & "?#cgi.query_string#";
 							}
 							/* Route to safe event */
-							setNextRoute(rules[x].redirect,"_securedURL");
+							setNextRoute(route=rules[x].redirect,persist="_securedURL");
 						}
 						else{ 
 							/* Save the secured URL */
@@ -285,7 +198,7 @@ and then extracted by this interceptor. They must be a valid rules query.
 								rc._securedURL = rc._securedURL & "?#cgi.query_string#";
 							}
 							/* Route to safe event */
-							setNextEvent(rules[x].redirect,"_securedURL");
+							setNextEvent(event=rules[x].redirect,persist="_securedURL");
 						}
 						break;
 					}//end user in roles
@@ -332,7 +245,7 @@ and then extracted by this interceptor. They must be a valid rules query.
 		<!--- Verify if using validator --->
 		<cfif isValidatorUsed()>
 			<!--- Validate via Validator --->
-			<cfreturn getValidator().userValidator(arguments.rule,getPlugin("messagebox"))>
+			<cfreturn getValidator().userValidator(arguments.rule,getPlugin("messagebox"),controller)>
 		<cfelse>
 			<!--- Loop Over Roles --->
 			<cfloop list="#arguments.rule.roles#" index="thisRole">
