@@ -66,6 +66,12 @@ Modification History:
 		<div class="fw_debugContentCell">
 		#controller.getSetting("AppName")# <span class="fw_purpleText">(#lcase(controller.getSetting("Environment"))#)</span>
 		</div>
+		<div class="fw_debugTitleCell">
+		  Template:
+		</div>
+		<div class="fw_debugContentCell">
+			#cgi.PATH_TRANSLATED#
+		</div>
 
 		<div class="fw_debugTitleCell">
 		  JVM Memory
