@@ -285,11 +285,6 @@ Description :
 			<cfif (match.len[1] IS NOT 0 AND getProperty('looseMatching')) OR 
 				  (not getProperty('looseMatching') and match.len[1] IS NOT 0 and match.pos[1] EQ 1) >
 				<cfset foundRoute = thisRoute />
-				<cfdump var="#requestString#">
-				<cfdump var="#thisPattern#">
-				<cfdump var="#foundRoute#">
-				<cfdump var="#match#">
-				<cfabort>
 				<!--- For each part of the URL in the route --->
 				<cfloop list="#thisRoute.pattern#" delimiters="/" index="thisPattern">
 					<!--- Clean thisPattern of -numeric --->
