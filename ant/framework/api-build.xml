@@ -24,19 +24,6 @@
 		<mkdir  dir="${build.dir}" />
 	</target>
 	
-	<!-- FTP Upload of new build -->
-	<target name="ftp.deploy" depends="build">
-       	<input message="Please enter ftp server username:" addproperty="ftp.username" />
-       	<input message="Please enter fpt server password:" addproperty="ftp.password" />
-      	
-		<ftp action="send" server="${ftp.server}" userid="${ftp.username}" password="${ftp.password}" 
-       		remotedir="${ftp.remotedir}" passive="false" verbose="yes" newer="true">
-        	<fileset dir="${build.dir}">
-        	</fileset>
-       	</ftp>
-		<delete dir="${build.dir}" />
-	</target>
-	
 	<!--BUild-->
 	<target name="build" description="Build a new coldbox distribution" depends="init">
       	<!-- Copy src -->	
@@ -46,5 +33,18 @@
         	</fileset>
         </copy>
     </target>
-
+	
+	<!-- FTP Upload of new build -->
+	<target name="ftp.deploy" depends="build">
+       	<input message="Please enter ftp server username:" addproperty="ftp.username" />
+       	<input message="Please enter fpt server password:" addproperty="ftp.password" />
+      	
+		<ftp action="send" server="${ftp.server}" userid="${ftp.username}" password="${ftp.password}" 
+       		 remotedir="${ftp.remotedir}" passive="false" verbose="yes" newer="true" preservelastmodified="true">
+        	<fileset dir="${build.dir}" />
+       	</ftp>
+		
+		<delete dir="${build.dir}" />
+	</target>
+	
 </project>

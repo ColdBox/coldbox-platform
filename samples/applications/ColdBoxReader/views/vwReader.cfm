@@ -1,6 +1,3 @@
-<cfset qryFeeds = Event.getValue("qryFeeds")>
-<cfset qryTopFeeds = Event.getValue("qryTopFeeds")>
-
 <h1>About ColdBoxReader</h1>
 <p>
 	ColdBoxReader is an application for shared reading of RSS/Atom feeds. Users submit RSS/Atom feeds
@@ -14,11 +11,11 @@
 <hr /><br />
 
 <p><b>Recently Added:</b>
-<cfoutput query="qryFeeds" maxrows="5">
+<cfoutput query="rc.qryFeeds" maxrows="5">
 <div style="line-height:20px;">
-	<img src="images/archives.gif">&nbsp;<a href="javascript:doEvent('#Event.getValue("xehViewFeed")#','centercontent',{feedID:'#qryFeeds.feedID#'});"><strong>#qryFeeds.feedname#</strong></a>
+	<img src="images/archives.gif">&nbsp;<a href="javascript:doEvent('#Event.getValue("xehViewFeed")#','centercontent',{feedID:'#rc.qryFeeds.feedID#'});"><strong>#rc.qryFeeds.feedname#</strong></a>
 	<span style="font-size:0.9em;">
-		 by #qryFeeds.username# on #dateformat(qryFeeds.createdon,"mmm dd")# #lstimeFormat(qryFeeds.createdOn)#
+		 by #rc.qryFeeds.username# on #dateformat(rc.qryFeeds.createdon,"mmm dd")# #lstimeFormat(rc.qryFeeds.createdOn)#
 	</span>
 </div>
 </cfoutput>
@@ -27,12 +24,12 @@
 
 <br /><br />
 <p><b>Most Visited:</b>
-<cfoutput query="qryTopFeeds">
+<cfoutput query="rc.qryTopFeeds">
 	<div style="line-height:20px;">
-		[#qryTopFeeds.views#]&nbsp;
-		<img src="images/archives.gif">&nbsp;<a href="javascript:doEvent('#Event.getValue("xehViewFeed")#','centercontent',{feedID:'#qryTopFeeds.feedID#'});"><strong>#qryTopFeeds.feedname#</strong></a>
+		[#rc.qryTopFeeds.views#]&nbsp;
+		<img src="images/archives.gif">&nbsp;<a href="javascript:doEvent('#Event.getValue("xehViewFeed")#','centercontent',{feedID:'#rc.qryTopFeeds.feedID#'});"><strong>#rc.qryTopFeeds.feedname#</strong></a>
 		<span style="font-size:0.9em;">
-			 by #qryTopFeeds.username# on #dateformat(qryTopFeeds.createdon,"mmm dd")# #lstimeFormat(qryFeeds.createdOn)#
+			 by #rc.qryTopFeeds.username# on #dateformat(rc.qryTopFeeds.createdon,"mmm dd")# #lstimeFormat(rc.qryFeeds.createdOn)#
 		</span>
 	</div>
 </cfoutput>

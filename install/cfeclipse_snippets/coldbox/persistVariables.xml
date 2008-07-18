@@ -2,6 +2,6 @@
 <snippet filetemplate="false" extension="cfm">
 <name>persistVariables</name>
 <help></help>
-<starttext><![CDATA[persistVariables('$${RC variable list}')]]></starttext>
+<starttext><![CDATA[persistVariables(persist='$${RC variable list}',varStruct=structnew())]]></starttext>
 <endtext><![CDATA[]]></endtext>
 </snippet>

@@ -1,5 +1,9 @@
 <cfcomponent name="ehUser" extends="coldbox.system.eventhandler" output="false" autowire="true">
 
+	<!--- Dependency Injections --->
+	<cfproperty name="userService" type="ioc" scope="instance" />
+	
+	
 	<cffunction name="dspAccountActions" access="public" returntype="void" output="false">
 		<cfargument name="Event" type="coldbox.system.beans.requestContext">
 		<cfset var rc = Event.getCollection()>
@@ -169,12 +173,8 @@
 <!------------------------------------------ DEPENDENCIES -------------------------------------->
 	
 	<!--- Get User Service --->
-	<cffunction name="getuserService" access="public" output="false" returntype="any" hint="Get userService">
+	<cffunction name="getuserService" access="private" output="false" returntype="any" hint="Get userService">
 		<cfreturn instance.userService/>
 	</cffunction>	
-	<cffunction name="setuserService" access="public" output="false" returntype="void" hint="Set userService">
-		<cfargument name="userService" type="any" required="true"/>
-		<cfset instance.userService = arguments.userService/>
-	</cffunction>
 	
 </cfcomponent>

@@ -1,5 +1,9 @@
 <cfcomponent name="ehUser" extends="coldbox.system.eventhandler" output="false" autowire="true">
-
+	
+	<!--- Dependency Injections --->
+	<cfproperty name="tagService"  type="ioc" scope="instance" />
+	<cfproperty name="feedService" type="ioc" scope="instance" />
+	
 	<cffunction name="dspAddFeed" access="public" returntype="void" output="false">
 		<cfargument name="Event" type="coldbox.system.beans.requestContext">
 		<cfset var csPlugin = getPlugin("sessionstorage")>
@@ -213,22 +217,13 @@
 <!------------------------------------------ DEPENDENCIES -------------------------------------->
 	
 	<!--- tag service --->
-	<cffunction name="gettagService" access="public" output="false" returntype="any" hint="Get tagService">
+	<cffunction name="gettagService" access="private" output="false" returntype="any" hint="Get tagService">
 		<cfreturn instance.tagService/>
 	</cffunction>
 	
-	<cffunction name="settagService" access="public" output="false" returntype="void" hint="Set tagService">
-		<cfargument name="tagService" type="any" required="true"/>
-		<cfset instance.tagService = arguments.tagService/>
-	</cffunction>
-	
 	<!--- feedService --->
-	<cffunction name="getfeedService" access="public" output="false" returntype="any" hint="Get feedService">
+	<cffunction name="getfeedService" access="private" output="false" returntype="any" hint="Get feedService">
 		<cfreturn instance.feedService/>
 	</cffunction>	
-	<cffunction name="setfeedService" access="public" output="false" returntype="void" hint="Set feedService">
-		<cfargument name="feedService" type="any" required="true"/>
-		<cfset instance.feedService = arguments.feedService/>
-	</cffunction>
 	
 </cfcomponent>

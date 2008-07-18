@@ -429,28 +429,42 @@ Description		: This is the main ColdBox front Controller.
 	<!--- Flash Perist variables. --->
 	<cffunction name="persistVariables" access="public" returntype="void" hint="Persist variables for flash redirections" output="false" >
 		<!--- ************************************************************* --->
-		<cfargument name="persist" 	hint="What request collection keys to persist in the relocation" required="false" type="string" default="">
+		<cfargument name="persist" 	 	required="false" type="string" default="" hint="What request collection keys to persist in the relocation.">
+		<cfargument name="varStruct" 	required="false" type="struct" hint="A structure key-value pairs to persist.">
 		<!--- ************************************************************* --->
 		<cfset var PersistList = trim(arguments.persist)>
 		<cfset var tempPersistValue = "">
 		<cfset var PersistStruct = structnew()>
 		<cfset var rc = getRequestService().getContext().getCollection()>
 		<cfset var i = 0>
+		<cfset var oStorage = 0>
 		
 		<!--- Persistance Logic --->
-		<cfloop from="1" to="#listlen(PersistList)#" index="i">
-			<cfset tempPersistValue = listgetat(PersistList,i)>
+		<cfloop list="#PersistList#" index="tempPersistValue">
+			<!--- Check that it exists in the collection --->
 			<cfif structkeyExists(rc, tempPersistValue)>
 				<cfset PersistStruct[tempPersistValue] = rc[tempPersistValue]>
 			</cfif>
 		</cfloop>
 		
+		<!--- Verify varStruct --->
+		<cfif structKeyExists(arguments,"varStruct")>
+			<cfset structAppend(PersistStruct, arguments.varStruct,true)>
+		</cfif>
+		
 		<!--- Flash Save it --->
 		<cfif getSetting("FlashURLPersistScope",1) eq "session">
-			<cfset getPlugin("sessionstorage").setVar('_coldbox_persistStruct', PersistStruct)>
+			<cfset oStorage = getPlugin("sessionstorage")>
 		<cfelse>
-			<cfset getPlugin("clientstorage").setVar('_coldbox_persistStruct', PersistStruct)>
+			<cfset oStorage = getPlugin("clientstorage")>
 		</cfif>
+		
+		<!--- Check for Existance --->
+		<cfif oStorage.exists('_coldbox_persistStruct')>
+			<cfset structAppend( oStorage.getVar('_coldbox_persistStruct'), PersistStruct,true)>
+		<cfelse>
+			<cfset oStorage.setVar('_coldbox_persistStruct', PersistStruct)>
+		</cfif>		
 	</cffunction>
 	
 <!------------------------------------------- PRIVATE ------------------------------------------->

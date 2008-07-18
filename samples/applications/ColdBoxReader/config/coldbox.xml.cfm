@@ -22,8 +22,8 @@
 		<Setting name="MessageboxStyleOverride" 		value="true"/>
 		<Setting name="HandlersIndexAutoReload" 	value="false"/>
 		<Setting name="ConfigAutoReload" 			value="false"/>
-		<Setting name="HandlerCaching"				value="true" />
-		<Setting name="IOCFramework" 				value="coldspring"/>
+		<Setting name="HandlerCaching"				value="false" />
+		<Setting name="IOCFramework" 				value="lightwire"/>
 		<Setting name="IOCDefinitionFile" 			value="config/services.xml.cfm"/>
 		<Setting name="IOCObjectCaching"			value="true" />
 	</Settings>

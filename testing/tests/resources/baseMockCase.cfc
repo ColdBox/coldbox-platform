@@ -9,12 +9,11 @@ Date        :	9/3/2007
 Description :
 	securityTest
 ----------------------------------------------------------------------->
-<cfcomponent name="baseMockCase" output="false">
+<cfcomponent name="baseMockCase" output="false" extends="mxunit.framework.TestCase">
 
 	<cffunction name="setUp" returntype="void" access="public" output="false">
 		<cfscript>
 		mockfactory = createObject("component","coldbox.testing.coldmock.MockFactory").init();
-		controller = mockfactory.createMock('coldbox.system.controller');
 		</cfscript>
 	</cffunction>
 	
