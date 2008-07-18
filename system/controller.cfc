@@ -284,6 +284,7 @@ Description		: This is the main ColdBox front Controller.
 		<cfargument name="queryString"  	hint="The query string to append, if needed."   type="string" required="No" default="" >
 		<cfargument name="addToken"			hint="Wether to add the tokens or not. Default is false" type="boolean" required="false" default="false"	>
 		<cfargument name="persist" 			hint="What request collection keys to persist in the relocation" required="false" type="string" default="">
+		<cfargument name="varStruct" 		required="false" type="struct" hint="A structure key-value pairs to persist.">
 		<!--- ************************************************************* --->
 		<cfset var EventName = getSetting("EventName")>
 		<cfset var frontController = listlast(cgi.script_name,"/")>
@@ -294,9 +295,7 @@ Description		: This is the main ColdBox front Controller.
 		</cfif>
 		
 		<!--- Persistance Logic --->
-		<cfif trim(len(arguments.persist)) neq 0>
-			<cfset persistVariables(arguments.persist)>
-		</cfif>
+		<cfset persistVariables(argumentCollection=arguments)>
 		
 		<!--- Push Timers --->
 		<cfset pushTimers()>
@@ -314,13 +313,12 @@ Description		: This is the main ColdBox front Controller.
 		<!--- ************************************************************* --->
 		<cfargument name="route"  			hint="The route to relocate to, do not prepend the baseURL or /." type="string" required="yes" >
 		<cfargument name="persist" 			hint="What request collection keys to persist in the relocation" required="false" type="string" default="">
+		<cfargument name="varStruct" 		required="false" type="struct" hint="A structure key-value pairs to persist.">
 		<!--- ************************************************************* --->
 		<Cfset var routeLocation = getSetting("sesBaseURL")>
 		
 		<!--- Persistance Logic --->
-		<cfif trim(len(arguments.persist)) neq 0>
-			<cfset persistVariables(arguments.persist)>
-		</cfif>
+		<cfset persistVariables(argumentCollection=arguments)>
 		
 		<!--- Create Route --->
 		<cfif right(routeLocation,1) eq "/">
