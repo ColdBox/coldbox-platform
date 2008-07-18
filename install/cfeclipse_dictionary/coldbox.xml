@@ -478,6 +478,11 @@ Description :
 					A comma delimmited list of keys in the request collection to persist.
 				]]></help>
 			</parameter>
+			<parameter name="varStruct" type="struct" required="false">
+				<help><![CDATA[
+					A structure of key-value pairs to persist. Keys in this structure take precedence of what exists in the persist list, if named the same
+				]]></help>
+			</parameter>
 		</function>
 		
 		<function creator="8" name="setNextRoute" returns="void">
@@ -492,6 +497,11 @@ Description :
 			<parameter name="persist" type="string" required="false">
 				<help><![CDATA[
 					A comma delimmited list of keys in the request collection to persist across the request.
+				]]></help>
+			</parameter>
+			<parameter name="varStruct" type="struct" required="false">
+				<help><![CDATA[
+					A structure of key-value pairs to persist. Keys in this structure take precedence of what exists in the persist list, if named the same
 				]]></help>
 			</parameter>
 		</function>

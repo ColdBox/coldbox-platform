@@ -2,6 +2,6 @@
 <snippet filetemplate="false" extension="cfm">
 <name>setNextEventWithPersistance</name>
 <help></help>
-<starttext><![CDATA[setNextEvent(event="$${event}",queryString="$${url params}",persist="$${Persitance key list}")]]></starttext>
+<starttext><![CDATA[setNextEvent(event="$${event}",queryString="$${url params}",persist="$${Persitance key list}",varStruct=structNew())]]></starttext>
 <endtext><![CDATA[]]></endtext>
 </snippet>
