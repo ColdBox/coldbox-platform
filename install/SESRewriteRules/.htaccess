@@ -1,5 +1,14 @@
 RewriteEngine on
 
+#Ignore images and this would be last rule --if the condition matched
+RewriteRule ^/(.*\.(png|gif|jpg|bmp)) /$1 [NC,P,L]
+
+#Ignore CSS or JS files  and this would be last rule --if the condition matched
+RewriteRule ^/(.*\.(css|js)) /$1 [NC,P,L]
+
+#Ignore txt/doc/pdf/xls files  and this would be last rule --if the condition matched
+RewriteRule ^/(.*\.(txt|pdf|doc|xls)) /$1 [NC,P,L]
+
 RewriteRule ^$ index.cfm [QSA]
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
