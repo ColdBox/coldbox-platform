@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE beans SYSTEM "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+
+	<!-- coldbox -->
+	<bean id="ColdboxFactory" class="coldbox.system.extras.ColdboxFactory" singleton="true"/>
+	<!-- coldbox bean factory -->
+	<bean id="ColdBoxBeanFactory" factory-bean="ColdBoxFactory" factory-method="getPlugin" singleton="true">
+   		<constructor-arg name="plugin">
+	       <value>beanFactory</value>
+		</constructor-arg>	
+   	</bean>
+	<!-- MyDatasource -->
+	<bean id="MyDSN" factory-bean="ColdBoxFactory" factory-method="getDatasource">
+       <constructor-arg name="alias">
+          <value>${TransferDSNAlias}</value>
+       </constructor-arg>
+    </bean>
+   	<!-- coldbox-transfer observer -->
+   	<bean id="TDOBeanInjectorObserver" class="coldbox.system.extras.transfer.TDOBeanInjectorObserver" lazy-init="false">
+   		<constructor-arg name="Transfer"><ref bean="Transfer"></ref></constructor-arg>
+   		<constructor-arg name="ColdBoxBeanFactory"><ref bean="ColdBoxBeanFactory"></ref></constructor-arg>
+   	</bean>
+   	<!-- Coldbox-transfer Config -->
+   	<bean id="TransferConfigFactory" class="coldbox.system.extras.transfer.TransferConfigFactory" singleton="true">
+   		<!-- ColdBox Datasource Bean -->
+	    <constructor-arg name="DSNBean"><ref bean="MyDSN" /></constructor-arg>
+	    <!-- Config Path -->
+	    <constructor-arg name="configPath"><value>${TransferConfigPath}</value></constructor-arg>
+	    <!-- Definitions Path -->
+	    <constructor-arg name="definitionPath"><value>${TransferDefinitionsPath}</value></constructor-arg>
+   	</bean>
+	
+	<!-- transfer -->
+	<bean id="TransferFactory" class="transfer.TransferFactory" singleton="true">
+	   <constructor-arg name="configuration"><bean factory-bean="TransferConfigFactory" factory-method="getTransferConfig" /></constructor-arg>
+	</bean>
+	<bean id="Transfer" factory-bean="TransferFactory" factory-method="getTransfer"  />
+	<bean id="Datasource" factory-bean="TransferFactory" factory-method="getDatasource" />
+	<bean id="Transaction" factory-bean="TransferFactory" factory-method="getTransaction" />
+	
+</beans>

@@ -1,4 +1,8 @@
 <!---
+********************************************************************************
+Copyright 2005-2008 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+www.coldboxframework.com | www.luismajano.com | www.ortussolutions.com
+********************************************************************************
 LICENSE
 Copyright 2008 Brian Kotek & Luis Majano
 
