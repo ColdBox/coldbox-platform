@@ -157,8 +157,9 @@ Usage:
 		<!--- ************************************************************* --->
 		<!--- Autowire the decorator --->
 		<cfset getColdBoxBeanFactory().autowire(target=arguments.event.getTransferObject(),
-												onDICompleteUDF=getonDICompleteUDF()),
-												debugMode=getDebugMode()/>
+												useSetterInjection=getUseSetterInjection(),
+												onDICompleteUDF=getonDICompleteUDF(),
+												debugMode=getDebugMode() )>
 	</cffunction>
 
 <!---------------------------------------- PRIVATE --------------------------------------------------->

@@ -20,13 +20,13 @@ Description :
 	</cfscript>
 
 	<!--- Init --->
-	<cffunction name="init" access="public" returntype="any" hint="Constructor.">
+	<cffunction name="init" access="public" returntype="TransferConfigFactory" hint="Constructor.">
 		<cfreturn this>
 	</cffunction>
 
 <!---------------------------------------- PUBLIC --------------------------------------------------->
 	
-	<cffunction name="getTransferConfig" hint="Constructor" access="public" returntype="transfer.com.config.Configuration" output="false">
+	<cffunction name="getTransferConfig" access="public" returntype="any" output="false" hint="Get a Transfer Config Object with ColdBox settings.">
 	    <!--- ************************************************************* --->
 		<cfargument name="datasourcePath"     type="string"   required="no"   default="" />
 		<cfargument name="configPath"         type="string"   required="no"   default="" />
