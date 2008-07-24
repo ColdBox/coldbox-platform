@@ -22,7 +22,7 @@
    	</bean>
 	
 	<!-- Coldbox-transfer Config Factory -->
-	<bean id="TransferConfigFactory" class="model.transferhelpers.TransferConfigFactory" singleton="true" />
+	<bean id="TransferConfigFactory" class="coldbox.system.extras.transfer.TransferConfigFactory" singleton="true" />
 	
 	<!-- transfer -->
 	<bean id="TransferFactory" class="transfer.TransferFactory" singleton="true">
