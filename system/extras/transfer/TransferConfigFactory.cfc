@@ -15,6 +15,17 @@ Description :
 
 <!---------------------------------------- CONSTRUCTOR --------------------------------------------------->
 	
+	<cfscript>
+		instance = structnew();
+	</cfscript>
+
+	<!--- Init --->
+	<cffunction name="init" access="public" returntype="any" hint="Constructor.">
+		<cfreturn this>
+	</cffunction>
+
+<!---------------------------------------- PUBLIC --------------------------------------------------->
+	
 	<cffunction name="getTransferConfig" hint="Constructor" access="public" returntype="transfer.com.config.Configuration" output="false">
 	    <!--- ************************************************************* --->
 		<cfargument name="datasourcePath"     type="string"   required="no"   default="" />
@@ -35,8 +46,5 @@ Description :
 			return TransferConfig;
 		</cfscript>
 	</cffunction>
-
-<!---------------------------------------- PUBLIC --------------------------------------------------->
-	
 	
 </cfcomponent>
