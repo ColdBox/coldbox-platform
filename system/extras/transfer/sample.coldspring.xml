@@ -20,19 +20,22 @@
    		<constructor-arg name="Transfer"><ref bean="Transfer"></ref></constructor-arg>
    		<constructor-arg name="ColdBoxBeanFactory"><ref bean="ColdBoxBeanFactory"></ref></constructor-arg>
    	</bean>
-   	<!-- Coldbox-transfer Config -->
-   	<bean id="TransferConfigFactory" class="coldbox.system.extras.transfer.TransferConfigFactory" singleton="true">
-   		<!-- ColdBox Datasource Bean -->
-	    <constructor-arg name="DSNBean"><ref bean="MyDSN" /></constructor-arg>
-	    <!-- Config Path -->
-	    <constructor-arg name="configPath"><value>${TransferConfigPath}</value></constructor-arg>
-	    <!-- Definitions Path -->
-	    <constructor-arg name="definitionPath"><value>${TransferDefinitionsPath}</value></constructor-arg>
-   	</bean>
+	
+	<!-- Coldbox-transfer Config Factory -->
+	<bean id="TransferConfigFactory" class="model.transferhelpers.TransferConfigFactory" singleton="true" />
 	
 	<!-- transfer -->
 	<bean id="TransferFactory" class="transfer.TransferFactory" singleton="true">
-	   <constructor-arg name="configuration"><bean factory-bean="TransferConfigFactory" factory-method="getTransferConfig" /></constructor-arg>
+		<constructor-arg name="configuration">
+			<bean factory-bean="TransferConfigFactory" factory-method="getTransferConfig">
+				<!-- Config Path -->
+				<constructor-arg name="configPath"><value>${TransferConfigPath}</value></constructor-arg>
+				<!-- Definitions Path -->
+				<constructor-arg name="definitionPath"><value>${TransferDefinitionsPath}</value></constructor-arg>
+				<!-- ColdBox Datasource Bean -->
+				<constructor-arg name="dsnBean"><ref bean="MyDSN" /></constructor-arg>
+			</bean>
+		</constructor-arg>
 	</bean>
 	<bean id="Transfer" factory-bean="TransferFactory" factory-method="getTransfer"  />
 	<bean id="Datasource" factory-bean="TransferFactory" factory-method="getDatasource" />
