@@ -104,7 +104,7 @@ Description :
 		</cfif>
 	</cffunction>
 	
-	<cffunction name="dspTab2" output="false" access="remote" returntype="any" hint="Process a remote call and return data/objects back.">
+	<cffunction name="dspTab2" output="false" access="remote" returnformat="plain" hint="Process a remote call and return data/objects back.">
 		<cfset var results = "" />
 		<!--- call even handler to get query data etc --->
 		<cfset arguments["event"] = "ehAjax.dspTab2">
