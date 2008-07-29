@@ -132,6 +132,7 @@ Usage:
 		<cfargument name="useSetterInjection" 	required="false" 	type="boolean" 	default="true"	hint="Whether to use setter injection alongside the annotations property injection. cfproperty injection takes precedence.">
 		<cfargument name="onDICompleteUDF" 		required="false" 	type="string"	default="onDIComplete" hint="After Dependencies are injected, this method will look for this UDF and call it if it exists. The default value is onDIComplete">
 		<cfargument name="debugMode" 			required="false" 	type="boolean"  default="false" hint="Whether to log debug messages. Default is false">
+		<cfargument name="stopRecursion" 		required="false" 	type="string"   default="transfer.com.TransferDecorator" hint="The stop recursion class. Ex: transfer.com.TransferDecorator">
 		<!--- ************************************************************* --->
 		<cfscript>
 			/* Add Observer */
@@ -142,6 +143,7 @@ Usage:
 			setDebugMode(arguments.debugMode);
 			setuseSetterInjection(arguments.useSetterInjection);
 			setonDICompleteUDF(trim(arguments.onDICompleteUDF));
+			setStopRecursion(trim(arguments.stopRecursion));
 									
 			/* Return instance */
 			return this;
@@ -159,7 +161,8 @@ Usage:
 		<cfset getColdBoxBeanFactory().autowire(target=arguments.event.getTransferObject(),
 												useSetterInjection=getUseSetterInjection(),
 												onDICompleteUDF=getonDICompleteUDF(),
-												debugMode=getDebugMode() )>
+												debugMode=getDebugMode(),
+												stopRecursion=getStopRecursion() )>
 	</cffunction>
 
 <!---------------------------------------- PRIVATE --------------------------------------------------->
@@ -197,6 +200,14 @@ Usage:
 	<cffunction name="setonDICompleteUDF" access="private" returntype="void" output="false">
 		<cfargument name="onDICompleteUDF" type="string" required="true">
 		<cfset instance.onDICompleteUDF = arguments.onDICompleteUDF>
+	</cffunction>
+	<!--- Stop Recursion String --->
+	<cffunction name="getstopRecursion" access="public" output="false" returntype="string" hint="Get stopRecursion">
+		<cfreturn instance.stopRecursion/>
+	</cffunction>	
+	<cffunction name="setstopRecursion" access="public" output="false" returntype="void" hint="Set stopRecursion">
+		<cfargument name="stopRecursion" type="string" required="true"/>
+		<cfset instance.stopRecursion = arguments.stopRecursion/>
 	</cffunction>
 
 </cfcomponent>

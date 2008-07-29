@@ -19,6 +19,12 @@
    	<bean id="TDOBeanInjectorObserver" class="coldbox.system.extras.transfer.TDOBeanInjectorObserver" lazy-init="false">
    		<constructor-arg name="Transfer"><ref bean="Transfer"></ref></constructor-arg>
    		<constructor-arg name="ColdBoxBeanFactory"><ref bean="ColdBoxBeanFactory"></ref></constructor-arg>
+   		<!-- OPTIONAL ARGUMENTS
+   		<constructor-arg name="useSetterInjection"><value>false</value></constructor-arg>
+   		<constructor-arg name="onDICompleteUDF"><value>onDIComplete</value></constructor-arg>
+   		<constructor-arg name="debugMode"><value>false</value></constructor-arg>
+   		<constructor-arg name="stopRecursion"><value>transfer.com.TransferDecorator</value></constructor-arg>
+   		-->
    	</bean>
 	
 	<!-- Coldbox-transfer Config Factory -->

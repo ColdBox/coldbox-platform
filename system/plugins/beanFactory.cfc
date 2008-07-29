@@ -165,6 +165,7 @@ Description: This is the framework's simple bean factory.
 		<cfargument name="annotationCheck" 		required="false" 	type="boolean"  default="false" hint="This value determines if we check if the target contains an autowire annotation in the cfcomponent tag: autowire=true|false, it will only autowire if that metadata attribute is set to true. The default is false, which will autowire automatically.">
 		<cfargument name="onDICompleteUDF" 		required="false" 	type="string"	default="onDIComplete" hint="After Dependencies are injected, this method will look for this UDF and call it if it exists. The default value is onDIComplete">
 		<cfargument name="debugMode" 			required="false" 	type="boolean"  default="false" hint="Whether to log debug messages. Default is false">
+		<cfargument name="stopRecursion" 		required="false" 	type="string"   default="" hint="The stop recursion class. Ex: transfer.com.TransferDecorator. By default all ColdBox base classes are included.">
 		<!--- ************************************************************* --->
 		<cfscript>
 			/* Targets */
@@ -212,7 +213,7 @@ Description: This is the framework's simple bean factory.
 							/* Set md entry to true for autowiring */
 							mdEntry.autowire = true;
 							/* Recurse for dependencies here, in order to build them. */
-							mdEntry.dependencies = parseMetadata(MetaData,mdEntry.dependencies,arguments.useSetterInjection);
+							mdEntry.dependencies = parseMetadata(MetaData,mdEntry.dependencies,arguments.useSetterInjection,arguments.stopRecursion);
 						}
 						
 						/* Set Entry in dictionary */
@@ -301,9 +302,10 @@ Description: This is the framework's simple bean factory.
 	<!--- Get an object's dependencies via metadata --->
 	<cffunction name="parseMetadata" returntype="array" access="private" output="false" hint="I get a components dependencies via searching for 'setters'">
 		<!--- ************************************************************* --->
-		<cfargument name="metadata" 			required="true" type="any" 		hint="The recursive metadata">
-		<cfargument name="dependencies" 		required="true" type="array" 	hint="The dependencies">
-		<cfargument name="useSetterInjection" 	required="false" 	type="boolean" 	default="true"	hint="Whether to use setter injection alongside the annotations property injection. cfproperty injection takes precedence.">
+		<cfargument name="metadata" 			required="true"  type="any" 	hint="The recursive metadata">
+		<cfargument name="dependencies" 		required="true"  type="array" 	hint="The dependencies">
+		<cfargument name="useSetterInjection" 	required="false" type="boolean" default="true"	hint="Whether to use setter injection alongside the annotations property injection. cfproperty injection takes precedence.">
+		<cfargument name="stopRecursion" 		required="false" type="string" 	default="" hint="The stop recursion class">
 		<!--- ************************************************************* --->
 		<cfscript>
 			var x = 1;
@@ -354,13 +356,14 @@ Description: This is the framework's simple bean factory.
 			}//end if functions found
 			
 			/* Start Registering inheritances */
-			if ( structKeyExists(md, "extends") and 
-				 ( md.extends.name neq "coldbox.system.plugin" or
-				   md.extends.name neq "coldbox.system.eventhandler" or
-				   md.extends.name neq "coldbox.system.interceptor" )
+			if ( structKeyExists(md, "extends") AND 
+				 ( md.extends.name NEQ "coldbox.system.plugin" OR
+				   md.extends.name NEQ "coldbox.system.eventhandler" OR
+				   md.extends.name NEQ "coldbox.system.interceptor" OR
+				   (len(arguments.stopRecursion) and md.extends.name NEQ arguments.stopRecursion) )
 			){
 				/* Recursive lookup */
-				arguments.dependencies = parseMetadata(md.extends,dependencies);
+				arguments.dependencies = parseMetadata(md.extends,dependencies,arguments.stopRecursion);
 			}
 			
 			/* return the dependencies found */
