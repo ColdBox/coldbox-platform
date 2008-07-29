@@ -231,9 +231,10 @@ Description :
 	
 	<!--- Session Start --->
 	<cffunction name="onSessionStart" returnType="void" output="false" hint="An onSessionStart method to use or call from your Application.cfc">
+		<cfset var cbController = "">
+		
+		<cflock type="readonly" name="#getAppHash()#" timeout="#getLockTimeout()#" throwontimeout="true">
 		<cfscript>
-			var cbController = "";
-			
 			//Setup the local controller 
 			cbController = application.cbController;
 			
@@ -245,6 +246,7 @@ Description :
 				cbController.runEvent(cbController.getSetting("SessionStartHandler"),true);
 			}
 		</cfscript>
+		</cflock>
 	</cffunction>
 	
 	<!--- Session End --->
@@ -253,10 +255,11 @@ Description :
 		<cfargument name="sessionScope" type="struct" required="true">
 		<cfargument name="appScope" 	type="struct" required="false">
 		<!--- ************************************************************* --->
+		<cfset var cbController = "">
+		<cfset var event = "">
+		
+		<cflock type="readonly" name="#getAppHash()#" timeout="#getLockTimeout()#" throwontimeout="true">
 		<cfscript>
-			var cbController = "";
-			var event = "";
-			
 			//Check for cb Controller
 			if ( structKeyExists(arguments.appScope,"cbController") ){
 				//setup the controller
@@ -277,6 +280,7 @@ Description :
 				}
 			}
 		</cfscript>
+		</cflock>
 	</cffunction>
 
 	<!--- setter COLDBOX CONFIG FILE --->
