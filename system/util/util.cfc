@@ -25,6 +25,17 @@ Modification History:
 		<cfthrow type="#arguments.type#" message="#arguments.message#"  detail="#arguments.detail#">
 	</cffunction>
 	
+	<cffunction name="rethrowit" access="public" returntype="void" hint="" output="false" >
+		<cfargument name="throwObject" required="true" type="any" hint="">
+		<cfthrow object="#arguments.throwObject#">
+	</cffunction>
+	
+	<cffunction name="relocate" access="private" hint="Facade for cflocation" returntype="void">
+		<cfargument name="url" 		required="true" 	type="string">
+		<cfargument name="addtoken" required="false" 	type="boolean" default="false">
+		<cflocation url="#arguments.url#" addtoken="#addtoken#">
+	</cffunction>
+	
 	<cffunction name="dumpit" access="public" hint="Facade for cfmx dump" returntype="void">
 		<cfargument name="var" required="yes" type="any">
 		<cfdump var="#var#">

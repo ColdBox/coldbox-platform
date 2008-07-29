@@ -114,7 +114,12 @@ Description :
 					/* Cache Key */
 					interceptorKey = this.INTERCEPTOR_CACHEKEY_PREFIX & arguments.interceptorClass;
 					/* Create the Interceptor Class */
-					oInterceptor = CreateObject("component", arguments.interceptorClass ).init(getController(),interceptorProperties);
+					try{
+						oInterceptor = CreateObject("component", arguments.interceptorClass ).init(getController(),interceptorProperties);
+					}
+					catch(Any e){
+						getUtil().rethrowit(e);
+					}
 					/* Configure the Interceptor */
 					oInterceptor.configure();
 					/* Cache Interceptor */
