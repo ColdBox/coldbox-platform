@@ -363,7 +363,7 @@ Description: This is the framework's simple bean factory.
 				   (len(arguments.stopRecursion) and md.extends.name NEQ arguments.stopRecursion) )
 			){
 				/* Recursive lookup */
-				arguments.dependencies = parseMetadata(md.extends,dependencies,arguments.stopRecursion);
+				arguments.dependencies = parseMetadata(md.extends,dependencies,arguments.useSetterInjection,arguments.stopRecursion);
 			}
 			
 			/* return the dependencies found */

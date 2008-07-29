@@ -96,7 +96,7 @@
 
 	<i18N>
 		<!--Default Resource Bundle without locale and properties extension-->
-		<DefaultResourceBundle>/coldbox/testharness/includes/main</DefaultResourceBundle>
+		<DefaultResourceBundle>includes/main</DefaultResourceBundle>
 		<!--Java Standard Locale-->
 		<DefaultLocale>en_US</DefaultLocale>
 		<!--session or client-->
