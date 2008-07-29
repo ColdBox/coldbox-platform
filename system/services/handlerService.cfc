@@ -158,12 +158,17 @@ Description :
 					//Place invalid event in request context.
 					oRequestContext.setValue("invalidevent",oEventHandlerBean.getRunnable());
 					/* Relocate to Invalid Event, with collection persistance */
-					controller.setNextEvent(event=controller.getSetting("onInvalidEvent"),persist="invalidevent");
+					if( oRequestContext.isSES() ){
+						controller.setNextRoute(route=controller.getSetting("onInvalidEvent"),persist="invalidevent");
+					}
+					else{
+						controller.setNextEvent(event=controller.getSetting("onInvalidEvent"),persist="invalidevent");
+					}
 				}
 				else{
 					getUtil().throwit(message="An invalid event has been detected",
 									  detail="An invalid event has been detected: [#oEventHandlerBean.getRunnable()#] The action requested: [#oEventHandlerBean.getMethod()#] does not exists in the specified handler.",
-									  type="Framework.onInValidEventSettingException");
+									  type="Framework.invalidEventException");
 				}
 			}//method check finalized.
 			
