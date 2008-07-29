@@ -420,6 +420,7 @@
 			test = structnew();
 			test.type = "JSON";
 			test.data = "[1,2,3,4]";
+			test.contenttype="text/plain";
 			
 			AssertEquals( event.getRenderData(), test);
 			

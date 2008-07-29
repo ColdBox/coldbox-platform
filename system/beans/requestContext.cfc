@@ -149,9 +149,7 @@ Modification History:
 		<cfargument name="name"  hint="The name of the variable to set. String" type="any" >
 		<cfargument name="value" hint="The value of the variable to set" type="Any" >
 		<!--- ************************************************************* --->
-		<cfscript>
-			"instance.context.#arguments.name#" = arguments.value;
-		</cfscript>
+		<cfset "instance.context.#arguments.name#" = arguments.value>
 	</cffunction>
 
 	<!--- ************************************************************* --->
@@ -160,8 +158,9 @@ Modification History:
 		<cfargument name="name"  hint="The name of the variable to remove." type="string" >
 		<!--- ************************************************************* --->
 		<cfscript>
-			if( valueExists(arguments.name) )
+			if( valueExists(arguments.name) ){
 				structDelete(instance.context,"#arguments.name#");
+			}
 		</cfscript>
 	</cffunction>
 
@@ -170,9 +169,7 @@ Modification History:
 	<cffunction name="valueExists" returntype="boolean" access="Public"	hint="I Check if a value exists in the request collection." output="false">
 		<cfargument name="name" hint="Name of the variable to find in the request collection: String" type="any">
 		<!--- ************************************************************* --->
-		<cfscript>
-			return isDefined("instance.context.#arguments.name#");
-		</cfscript>
+		<cfreturn isDefined("instance.context.#arguments.name#")>
 	</cffunction>
 
 	<!--- ************************************************************* --->
@@ -182,8 +179,9 @@ Modification History:
 		<cfargument name="value" 	hint="The value of the variable to set if not found." 			type="Any" >
 		<!--- ************************************************************* --->
 		<cfscript>
-			if ( not valueExists(arguments.name) )
+			if ( not valueExists(arguments.name) ){
 				setValue(arguments.name, arguments.value);
+			}
 		</cfscript>
 	</cffunction>
 
@@ -212,11 +210,12 @@ Modification History:
 		    var cacheEntry = structnew();
 		    
 			//If we need a layout or we haven't overriden the current layout enter if...
-		    if ( arguments.nolayout eq false and getValue("layoutoverride",false) eq false ){
+		    if ( NOT arguments.nolayout AND NOT getValue("layoutoverride",false) ){
 		    		
 		    	//Verify that the view has a layout in the viewLayouts structure.
-			    if ( StructKeyExists(instance.ViewLayouts, arguments.name) )
+			    if ( StructKeyExists(instance.ViewLayouts, arguments.name) ){
 					setValue("currentLayout",instance.ViewLayouts[arguments.name]);
+			    }
 				else{
 					//Check the folders structure
 					for( key in instance.FolderLayouts ){
@@ -224,14 +223,20 @@ Modification History:
 							setValue("currentLayout",instance.FolderLayouts[key]);
 							break;
 						}
-					}
-				}
+					}//end for loop
+				}//end else
 				
 				//If not layout, then set default
 				if( not valueExists("currentLayout") ){
 					setValue("currentLayout", instance.defaultLayout);
 				}					
+			}//end if overridding layout
+			
+			/* Clean layout if true */
+			if( arguments.nolayout ){
+				removeValue('currentLayout');
 			}
+			
 			//Do we need to cache the view
 			if( arguments.cache ){
 				//prepare the cache keys
