@@ -76,6 +76,11 @@ Description :
 		</cfscript>
 	</cffunction>
 
+	<!--- Get the Interceptor Service --->
+	<cffunction name="getInterceptorService" access="public" returntype="coldbox.system.services.interceptorService" output="false">
+		<cfreturn variables.controller.getInterceptorService()>
+	</cffunction>
+	
 <!------------------------------------------- INTERCEPTION POINTS ------------------------------------------->
 
 	<!--- After Configuration Load --->

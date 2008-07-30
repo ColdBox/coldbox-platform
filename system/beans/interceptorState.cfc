@@ -54,6 +54,21 @@ Description :
 		<cfset getInterceptors().remove(arguments.interceptorKey)>
 	</cffunction>	
 	
+	<!--- exists --->
+	<cffunction name="exists" output="false" access="public" returntype="boolean" hint="Checks if the passed interceptor key already exists">
+		<!--- ************************************************************* --->
+		<cfargument name="InterceptorKey" 	required="true" type="string" 	hint="The interceptor key class to register">
+		<!--- ************************************************************* --->
+		<cfscript>
+			if( structKeyExists(getInterceptors(), arguments.InterceptorKey) ){
+				return true;
+			}
+			else{
+				return false;
+			}
+		</cfscript>
+	</cffunction>
+	
 	<cffunction name="getInterceptor" access="public" returntype="any" hint="Get an interceptor from this state. Else return a blank structure if not found" output="false" >
 		<!--- ************************************************************* --->
 		<cfargument name="InterceptorKey" 	required="true" type="string" 	hint="The interceptor key class to Unregister">

@@ -101,7 +101,8 @@ Description :
 			<cfset interceptorName = arguments.interceptorClass>
 		<cfelseif structKeyExists(arguments,"interceptorObject")>
 			<cfset interceptorName = getMetaData(arguments.interceptorObject).name>
-			<cfset oInterceptor = arguments.interceptorObject>
+			<cfset interceptorKey = this.INTERCEPTOR_CACHEKEY_PREFIX & interceptorName>
+			<cfset oInterceptor = arguments.interceptorObject>			
 		<cfelse>
 			<cfthrow message="Invalid registration" detail="You did not send in an interceptorClass or interceptorObject for registration" type="Framework.InterceptorService.InvalidRegistration">
 		</cfif>
@@ -137,7 +138,7 @@ Description :
 				
 				/* Register this Interceptor's interception point with its appropriate interceptor state */
 				for(stateKey in interceptionPointsFound){
-					RegisterInterceptionPoint(interceptorKey,stateKey);
+					RegisterInterceptionPoint(interceptorKey,stateKey,oInterceptor);
 				}
 				
 				/* Autowire this interceptor only if called after aspect registration */
@@ -175,6 +176,9 @@ Description :
 		<cfscript>
 			var x = 1;
 			var currentList = getInterceptionPoints();
+			
+			/* Validate customPoints */
+			if( len(trim(arguments.customPoints)) eq 0){ return; }
 			
 			/* Loop and Add */
 			for(;x lte listlen(arguments.customPoints); x=x+1 ){
@@ -285,6 +289,7 @@ Description :
 		<!--- ************************************************************* --->
 		<cfargument name="interceptorKey" 	required="true" type="string" hint="The interceptor key in the cache.">
 		<cfargument name="state" 			required="true" type="string" hint="The state to create">
+		<cfargument name="oInterceptor" 	required="true" type="any" 	  hint="The interceptor to register">
 		<!--- ************************************************************* --->
 		<cfscript>
 			var oInterceptorState = "";
@@ -298,8 +303,12 @@ Description :
 				/* Get the State we need to register in */
 				oInterceptorState = structFind( getInterceptionStates(), arguments.state );
 			}
-			/* Register it */
-			oInterceptorState.register(arguments.interceptorKey, getController().getColdBoxOCM().get(arguments.interceptorKey) );			
+			
+			/* Verify if the interceptor is already in the state */
+			if( NOT oInterceptorState.exists(arguments.interceptorKey) ){
+				/* Register it */
+				oInterceptorState.register(arguments.interceptorKey, arguments.oInterceptor );	
+			}	
 		</cfscript>
 	</cffunction>
 
