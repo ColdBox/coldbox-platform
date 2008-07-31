@@ -204,8 +204,13 @@ Description :
 				
 				<!--- Trap Application Errors --->
 				<cfcatch type="any">
+					<!--- Get Exception Service --->
 					<cfset ExceptionService = cbController.getExceptionService()>
+					
+					<!--- Handle The Exception --->
 					<cfset ExceptionBean = ExceptionService.ExceptionHandler(cfcatch,"application","Application Execution Exception")>
+					
+					<!--- Render The Exception --->
 					<cfoutput>#ExceptionService.renderBugReport(ExceptionBean)#</cfoutput>
 				</cfcatch>
 			</cftry>

@@ -37,12 +37,19 @@ Modification History:
 		var BugReport = "";
 		var ExceptionBean = CreateObject("component","coldbox.system.beans.exceptionBean").init(errorStruct=arguments.Exception,extramessage=arguments.extraMessage,errorType=arguments.ErrorType);
 		var requestContext = controller.getRequestService().getContext();
+		var interceptData = structnew();
 		
-		// Test Error Type
+		/* Test Error Type */
 		if ( not reFindnocase("(application|framework|coldboxproxy)",arguments.errorType) )
 			arguments.errorType = "application";
-
-		if ( arguments.ErrorType eq "application" ){
+		
+		/* Test type of error, proxy errors */	
+		if ( arguments.ErrorType neq "framework" ){
+			
+			/* Execute onException interceptions */
+			interceptData.exception = arguments.exception;
+			getController().getInterceptorService().processState("onException",interceptData);
+		
 			//Run custom Exception handler if Found, else run default
 			if ( controller.getSetting("ExceptionHandler") neq "" ){
 				try{
@@ -57,10 +64,7 @@ Modification History:
 			else{
 				controller.getPlugin("logger").logErrorWithBean(ExceptionBean);
 			}
-		}
-		else if( arguments.ErrorType eq "coldboxproxy" ){
-			controller.getPlugin("logger").logErrorWithBean(ExceptionBean);
-		}
+		}		
 		
 		//return
 		return ExceptionBean;

@@ -136,6 +136,8 @@
 			<Property name="configFile">config/routes.cfm</Property>
 		</Interceptor>
 		
+		<Interceptor class="coldbox.testharness.interceptors.errorObserver" />
+		
 		<Interceptor class="coldbox.system.interceptors.security">
 	        <Property name="rulesSource">xml</Property>
 	        <Property name="rulesFile">config/security.xml.cfm</Property>

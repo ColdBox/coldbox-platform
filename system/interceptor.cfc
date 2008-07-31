@@ -184,5 +184,12 @@ Description :
 		<cfargument name="interceptData" required="true" type="struct" hint="A structure containing intercepted information = [cacheObjectKey]">
 		<!--- IMPLEMENTED BY INTERCEPTOR --->
 	</cffunction>
+	
+	<!--- onException --->
+	<cffunction name="onException" access="public" returntype="boolean" hint="Executes after an exception has been detected." output="false" >
+		<cfargument name="event" 	required="true" type="any" hint="The event object : coldbox.system.beans.requestContext">
+		<cfargument name="interceptData" required="true" type="struct" hint="A structure containing intercepted information = [exception]">
+		<!--- IMPLEMENTED BY INTERCEPTOR --->
+	</cffunction>
 
 </cfcomponent>
