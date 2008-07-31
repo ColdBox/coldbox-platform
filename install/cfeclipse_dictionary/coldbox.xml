@@ -151,6 +151,8 @@ Description :
 					<value option="&quot;cfcViewer&quot;"/>
 					<value option="&quot;clientstorage&quot;"/>
 					<value option="&quot;cookiestorage&quot;"/>
+					<value option="&quot;feedGenerator&quot;"/>
+					<value option="&quot;feedReader&quot;"/>
 					<value option="&quot;i18n&quot;"/>
 					<value option="&quot;ioc&quot;"/>
 					<value option="&quot;JavaLoader&quot;"/>
