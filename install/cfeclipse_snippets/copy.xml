@@ -1,27 +1,43 @@
 <project name="copysnippets" basedir="." default="hereToLocalSnippets">
-
+	
+	<!--
+	INSTRUCTIONS:
+	
+	This ant file is designed to help you easily copy the coldbox cfeclipse snippets
+	from this distribution into your own snippets directory. In addition, it will
+	also copy the keyboard shortcuts into your own shortcuts file... it will NOT
+	overwrite your other non-mxunit shortcuts! (plus... it makes a backup of your existing
+	shortcuts file, too).
+	
+	1) Create a file named copy.properties in this directory
+	2) populate it like so: snipdir.options=c:/my/path/to/cf/snippets
+	   
+	   The paths must be forward slashes!
+	   
+	   On my computer, the path is:
+	   snipdir.options=C:/Users/Marc/EclipseWorkspaces/MyCFWorkspace/.metadata/.plugins/org.cfeclipse.cfml/snippets
+	   
+	   note: this can be a comma-separated list, too, just in case you have multiple snippets locations 
+	   (for different eclipse installs, for example)
+	   
+	3) Right click on this copy.xml file and select "Run as Ant Build".
+	      
+	-->
+	
 	<available file="copy.properties" property="propsavailable" />
 
 
 	<target name="init" depends="createDefaultPropertiesFile">
 		<path id="cp">
-			<fileset dir="../lib">
+			<fileset dir="lib">
 				<include name="**/*.jar" />
 			</fileset>
 		</path>
 
 		<taskdef resource="net/sf/antcontrib/antlib.xml" classpathref="cp" />
-		<!-- populate it like so:
-			snipdir.options=c:/my/path/to/cf/snippets
-			
-			note: this can be a comma-separated list, too
-			 -->
 		<property file="copy.properties" />
 		
 		<property name="snipdirname" value="coldbox"/>
-
-
-
 	</target>
 
 
@@ -31,7 +47,7 @@
 		<input addproperty="overwrite" validargs="true,false" message="overwrite existing snippets if they exist?" />
 
 
-		<property name="snip.location" location="" />
+		<property name="snip.location" location="snippets" />
 
 		<fail message="snippet directory ${local.snipdir} does not exist">
 			<condition>
@@ -51,7 +67,7 @@
 			<fileset dir="${local.snipdir}" includes="${snipdirname}/" />
 		</copy>
 
-		<copyKeyCombos from="${local.snipdir}\keyCombos.properties" to="${snip.location}\keyCombos.properties" propValuePattern="/${snipdirname}/" />
+		<copyKeyCombos from="${local.snipdir}/keyCombos.properties" to="${snip.location}/keyCombos.properties" propValuePattern="/${snipdirname}/" />
 	</target>
 
 	<target name="hereToLocalSnippets" depends="initSnipCopy">
@@ -60,7 +76,7 @@
 			<fileset dir="${snip.location}" includes="${snipdirname}/" />
 		</copy>
 		
-		<copyKeyCombos from="${snip.location}\keyCombos.properties" to="${local.snipdir}\keyCombos.properties" propValuePattern="/${snipdirname}/" />
+		<copyKeyCombos from="${snip.location}/keyCombos.properties" to="${local.snipdir}/keyCombos.properties" propValuePattern="/${snipdirname}/" />
 		
 	</target>
 
