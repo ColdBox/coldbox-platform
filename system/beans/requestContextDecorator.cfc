@@ -19,11 +19,11 @@ Description :
 		<cfargument name="controller" 	type="any" 	required="true"	hint="The coldbox controller">
 		<!--- ************************************************************* --->
 		<cfscript>
-			/* Set Controller */
-			setController(arguments.controller);
-			
 			/* Set the memento state */
 			setMemento(arguments.oContext.getMemento());
+			
+			/* Set Controller */
+			setController(arguments.controller);
 			
 			/* Composite the original context */
 			setRequestContext(arguments.oContext);

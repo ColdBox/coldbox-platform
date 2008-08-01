@@ -8,6 +8,7 @@
 	<cffunction name="Configure" access="public" returntype="void" hint="My Configuration" output="false" >
 		<cfset var key = "">
 		<cfset var rc = getRequestContext().getCollection()>
+		
 		<!--- I will trim all of the request collection --->
 		<cfloop collection="#rc#" item="key">
 			
@@ -19,6 +20,7 @@
 		</cfloop>
 		
 		<!--- 
+		<cfdump var="#getController()#"><cfabort>
 		States maintain tests.
 		<cfdump var="#getRequestContext().getCollection()#">
 		<cfdump var="#getCollection()#">

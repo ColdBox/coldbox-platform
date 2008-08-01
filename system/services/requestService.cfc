@@ -184,6 +184,7 @@ Modification History:
 			
 			//Create the decorator
 			oDecorator = CreateObject("component",controller.getSetting("RequestContextDecorator")).init(oContext,controller);
+			
 			//Set Request Context in storage
 			setContext(oDecorator);
 			
