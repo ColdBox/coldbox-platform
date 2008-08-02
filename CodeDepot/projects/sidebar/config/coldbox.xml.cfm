@@ -201,12 +201,7 @@
 		<UknownTranslation></UknownTranslation>
 	</i18N>
 	-->
-	<i18N>
-		<DefaultResourceBundle>includes/i18n/main</DefaultResourceBundle>
-		<DefaultLocale>en_US</DefaultLocale>
-		<LocaleStorage>session</LocaleStorage>
-		<UknownTranslation>{i18n translate}</UknownTranslation>		
-	</i18N>
+	<i18N />
 	
 	<!--Datasource Setup, you can then retreive a datasourceBean via the getDatasource("name") method: 
 	<Datasource alias="MyDSNAlias" name="real_dsn_name"   dbtype="mysql"  username="" password="" />	
