@@ -23,7 +23,7 @@ Description :
 			setMemento(arguments.oContext.getMemento());
 			
 			/* Set Controller */
-			setController(arguments.controller);
+			instance.controller = arguments.controller;
 			
 			/* Composite the original context */
 			setRequestContext(arguments.oContext);
@@ -58,9 +58,5 @@ Description :
 	<cffunction name="getcontroller" access="private" output="false" returntype="any" hint="Get controller: coldbox.system.controller">
 		<cfreturn instance.controller/>
 	</cffunction>	
-	<cffunction name="setcontroller" access="private" output="false" returntype="void" hint="Set controller">
-		<cfargument name="controller" type="any" required="true"/>
-		<cfset instance.controller = arguments.controller/>
-	</cffunction>
 
 </cfcomponent>

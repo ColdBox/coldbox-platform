@@ -24,7 +24,7 @@ Modification History:
 	<cffunction name="init" access="public" output="false" returntype="eventURLFacade" hint="Constructor">
 		<cfargument name="controller" type="any" required="true">
 		<cfscript>
-			setController( arguments.controller );
+			instance.controller = arguments.controller;
 			return this;
 		</cfscript>
 	</cffunction>
@@ -38,7 +38,7 @@ Modification History:
 		<!--- **************************************************************************** --->
 		<cfscript>
 			var urlCopy = duplicate(URL);
-			var eventName = getController().getSetting('eventName');
+			var eventName = instance.controller.getSetting('eventName');
 			var urlActionsList = "fwReinit,fwCache,debugMode,debugpass,dumpvar,debugpanel";
 			var x = 1;
 			var routedStruct = arguments.event.getRoutedStruct();
@@ -78,7 +78,7 @@ Modification History:
 			var x =1;
 			
 			//add event to structure
-			myStruct[getController().getSetting('eventName')] = arguments.event;
+			myStruct[instance.controller.getSetting('eventName')] = arguments.event;
 			
 			//Build structure from arg list
 			for(x=1;x lte listlen(arguments.args,"&"); x=x+1){
@@ -88,18 +88,6 @@ Modification History:
 			//return hash
 			return hash(myStruct.toString());
 		</cfscript>
-	</cffunction>
-	
-
-
-<!------------------------------------------- ACCESSOR MUTATORS ------------------------------------------->
-
-	<cffunction name="getcontroller" access="public" returntype="any" output="false">
-		<cfreturn instance.controller>
-	</cffunction>
-	<cffunction name="setcontroller" access="public" returntype="void" output="false">
-		<cfargument name="controller" type="any" required="true">
-		<cfset instance.controller = arguments.controller>
 	</cffunction>
 
 </cfcomponent>

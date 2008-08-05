@@ -46,20 +46,12 @@ Modification History:
 	<cffunction name="getReferenceQueue" access="public" output="false" returntype="any" hint="Get ReferenceQueue">
 		<cfreturn instance.ReferenceQueue/>
 	</cffunction>	
-	<cffunction name="setReferenceQueue" access="public" output="false" returntype="void" hint="Set ReferenceQueue">
-		<cfargument name="ReferenceQueue" type="any" required="true"/>
-		<cfset instance.ReferenceQueue = arguments.ReferenceQueue/>
-	</cffunction>
 	
 	<!--- Get/Set Soft Reference KeyMap --->
 	<cffunction name="getSoftRefKeyMap" access="public" output="false" returntype="any" hint="Get SoftRefKeyMap">
 		<cfreturn instance.SoftRefKeyMap/>
 	</cffunction>	
-	<cffunction name="setSoftRefKeyMap" access="public" output="false" returntype="void" hint="Set SoftRefKeyMap">
-		<cfargument name="SoftRefKeyMap" type="any" required="true"/>
-		<cfset instance.SoftRefKeyMap = arguments.SoftRefKeyMap/>
-	</cffunction>
-	
+		
 	<!--- Check if the soft reference exists --->
 	<cffunction name="softRefLookup" access="public" returntype="boolean" hint="See if the soft reference is in the key map" output="false" >
 		<cfargument name="softRef" required="true" type="any" hint="The soft reference to check">
@@ -79,18 +71,10 @@ Modification History:
 	<cffunction name="getpool" access="public" returntype="any" output="false" hint="Get the cache pool">
 		<cfreturn instance.pool>
 	</cffunction>
-	<cffunction name="setpool" access="public" returntype="void" output="false" hint="Set the cache pool">
-		<cfargument name="pool" type="struct" required="true">
-		<cfset instance.pool = arguments.pool>
-	</cffunction>
-
+	
 	<!--- Getter/Setter for Pool Metdata --->
 	<cffunction name="getpool_metadata" access="public" returntype="any" output="false" hint="Get the cache pool metadata">
 		<cfreturn instance.pool_metadata >
-	</cffunction>
-	<cffunction name="setpool_metadata" access="public" returntype="void" output="false" hint="Set the cache pool metadata">
-		<cfargument name="pool_metadata" type="struct" required="true">
-		<cfset instance.pool_metadata = arguments.pool_metadata>
 	</cffunction>
 
 	<!--- Setter/Getter metdata property --->
@@ -228,6 +212,31 @@ Modification History:
 
 <!------------------------------------------- PRIVATE ------------------------------------------->
 
+	<!--- Set the pool_metadata --->
+	<cffunction name="setpool_metadata" access="public" returntype="void" output="false" hint="Set the cache pool metadata">
+		<cfargument name="pool_metadata" type="struct" required="true">
+		<cfset instance.pool_metadata = arguments.pool_metadata>
+	</cffunction>
+	
+	<!--- Set the object pool --->
+	<cffunction name="setpool" access="private" returntype="void" output="false" hint="Set the cache pool">
+		<cfargument name="pool" type="struct" required="true">
+		<cfset instance.pool = arguments.pool>
+	</cffunction>
+
+	<!--- Set the reference queue --->
+	<cffunction name="setReferenceQueue" access="private" output="false" returntype="void" hint="Set ReferenceQueue">
+		<cfargument name="ReferenceQueue" type="any" required="true"/>
+		<cfset instance.ReferenceQueue = arguments.ReferenceQueue/>
+	</cffunction>
+	
+	<!--- Set the soft ref key map --->
+	<cffunction name="setSoftRefKeyMap" access="private" output="false" returntype="void" hint="Set SoftRefKeyMap">
+		<cfargument name="SoftRefKeyMap" type="any" required="true"/>
+		<cfset instance.SoftRefKeyMap = arguments.SoftRefKeyMap/>
+	</cffunction>
+	
+	<!--- Create a soft referenec --->
 	<cffunction name="createSoftReference" access="private" returntype="any" hint="Create SR, register cached object and reference" output="false" >
 		<!--- ************************************************************* --->
 		<cfargument name="objectKey" type="any"  	required="true" hint="The value of the key pair">
@@ -246,6 +255,7 @@ Modification History:
 		</cfscript>
 	</cffunction>
 	
+	<!--- Check if this is a soft referene --->
 	<cffunction name="isSoftReference" access="private" returntype="boolean" hint="Whether the passed object is a soft reference" output="false" >
 		<cfargument name="MyObject"	 type="any" required="true" hint="The object to test">
 		<cfscript>
