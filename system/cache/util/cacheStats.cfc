@@ -23,7 +23,7 @@ Description :
 		<!--- ************************************************************************* --->
 		<cfscript>
 			/* Set Dependencies */
-			setCacheManager(arguments.cacheManager);
+			instance.cacheManager = arguments.cacheManager;
 			setLastReapDateTime(now());
 			/* Clear the stats */
 			clearStats();
@@ -47,7 +47,7 @@ Description :
 	
 	<!--- Get Cache object count --->
 	<cffunction name="getObjectCount" access="public" output="false" returntype="numeric" hint="Get the cache's object count">
-		<cfreturn getCacheManager().getSize()>
+		<cfreturn instance.cacheManager.getSize()>
 	</cffunction>
 	
 	<!--- Record an eviction Hit --->
@@ -87,16 +87,7 @@ Description :
 			setGarbageCollections(0);
 		</cfscript>
 	</cffunction>	
-	
-	<!--- The Cache Manager --->
-	<cffunction name="getcacheManager" access="public" returntype="any" output="false">
-		<cfreturn instance.cacheManager>
-	</cffunction>
-	<cffunction name="setcacheManager" access="public" returntype="void" output="false">
-		<cfargument name="cacheManager" type="any" required="true">
-		<cfset instance.cacheManager = arguments.cacheManager>
-	</cffunction>
-	
+		
 	<!--- Get/Set Garbage Collections --->
 	<cffunction name="getGarbageCollections" access="public" output="false" returntype="numeric" hint="Get GarbageCollections">
 		<cfreturn instance.GarbageCollections/>

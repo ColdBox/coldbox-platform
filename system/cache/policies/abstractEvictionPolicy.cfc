@@ -28,10 +28,10 @@ Description :
 <!------------------------------------------- PRIVATE ------------------------------------------->
 	
 	<!--- The Cache Manager --->
-	<cffunction name="getcacheManager" access="public" returntype="coldbox.system.cache.cacheManager" output="false">
+	<cffunction name="getcacheManager" access="private" returntype="coldbox.system.cache.cacheManager" output="false">
 		<cfreturn instance.cacheManager>
 	</cffunction>
-	<cffunction name="setcacheManager" access="public" returntype="void" output="false">
+	<cffunction name="setcacheManager" access="private" returntype="void" output="false">
 		<cfargument name="cacheManager" type="coldbox.system.cache.cacheManager" required="true">
 		<cfset instance.cacheManager = arguments.cacheManager>
 	</cffunction>

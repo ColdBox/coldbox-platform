@@ -14,7 +14,7 @@ Description :
 	<cffunction name="setUp" returntype="void" access="public" output="false">
 		<cfscript>
 		super.setup();
-		pool = CreateObject("component","coldbox.system.cache.objectPool").init();
+		pool = CreateObject("component","coldbox.system.cache.MTobjectPool").init();
 		</cfscript>
 	</cffunction>
 	
