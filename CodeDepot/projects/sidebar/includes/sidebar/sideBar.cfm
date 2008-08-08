@@ -4,9 +4,11 @@ Date     :	7/31/2008
 Description : Shows the ColdBox Sidebar 
 		
 Modification History:
+08/08/2008 evdlinden: Removed Spry plugin calls, added yOffset interceptor property 
 
-To do: strip all relevant url params for building proper urls
-Insert custom links feaure
+To do:
+- strip all relevant url params for building proper urls
+- Insert custom links feaure
 ----------------------------------------------------------------------->
 <!--- Get Event --->
 <cfset rc = Event.getCollection()>
@@ -14,9 +16,9 @@ Insert custom links feaure
 <cfhtmlhead text='<script language="javascript" src="includes/sidebar/sideBar.js" type="text/javascript"></script>' />
 <cfhtmlhead text='<link rel="stylesheet" href="includes/sidebar/sideBar.css" type="text/css" media="screen">' />
 
-<!--- SideBar settings --->
+<!--- SideBar dimension settings --->
 <cfset sideBar = StructNew()>
-<cfset sideBar.yOffset = 100><!--- Config setting! --->
+<cfset sideBar.yOffset = getproperty('yOffset')>
 <cfset sideBar.width = 200>
 <cfset sideBar.visibleWidth = 30>
 <cfset sideBar.invisibleWidth = sideBar.width - sideBar.visibleWidth>

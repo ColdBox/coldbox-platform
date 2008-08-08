@@ -26,7 +26,7 @@ Todo: implement postRender, so we can discard the plugin
 
 <!------------------------------------------- INTERCEPTION POINTS ------------------------------------------->
 
-	<cffunction name="postRender" access="public" returntype="void" output="true" >
+	<cffunction name="preProcess" access="public" returntype="void" output="true" >
 		<cfargument name="event" required="true" type="coldbox.system.beans.requestContext">
 
 		<!--- Enable SideBar? Debug mode? SideBar enabled? No proxy Request? --->
@@ -67,15 +67,15 @@ Todo: implement postRender, so we can discard the plugin
         <cfreturn isDefined("request.sideBarData")>
 	</cffunction>
 	
-	<cffunction name="render" access="public" returntype="string">
+	<cffunction name="render" access="public" output="true" returntype="string">
 		<cfargument name="event" required="true" type="coldbox.system.beans.requestContext">
 		
-		<cfset var sideBar = ''>
+		<cfset var renderedSideBar = ''>
 		<!--- Render? --->
 		<cfif getIsRender()>
-			<cfsavecontent variable="sideBar"><cfinclude template="../includes/sideBar/sideBar.cfm"></cfsavecontent>			
+			<cfsavecontent variable="renderedSideBar"><cfinclude template="../includes/sideBar/sideBar.cfm"></cfsavecontent>
 		</cfif>
-		<cfreturn sideBar>	
+		<cfreturn renderedSideBar>	
 	</cffunction>
     
 	<cffunction name="setIsRender" access="private" returntype="void">
