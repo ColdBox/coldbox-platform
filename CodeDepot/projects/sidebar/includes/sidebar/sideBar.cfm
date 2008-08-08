@@ -6,9 +6,13 @@ Description : Shows the ColdBox Sidebar
 Modification History:
 
 To do: strip all relevant url params for building proper urls
+Insert custom links feaure
 ----------------------------------------------------------------------->
-<cfset getPlugin('Spry',true).setCSSLink('includes/css/sideBar.css','screen')>
-<cfset getPlugin('Spry',true).setJSLink('includes/js/sideBar.js')>
+<!--- Get Event --->
+<cfset rc = Event.getCollection()>
+
+<cfhtmlhead text='<script language="javascript" src="includes/sidebar/sideBar.js" type="text/javascript"></script>' />
+<cfhtmlhead text='<link rel="stylesheet" href="includes/sidebar/sideBar.css" type="text/css" media="screen">' />
 
 <!--- SideBar settings --->
 <cfset sideBar = StructNew()>
@@ -16,7 +20,6 @@ To do: strip all relevant url params for building proper urls
 <cfset sideBar.width = 200>
 <cfset sideBar.visibleWidth = 30>
 <cfset sideBar.invisibleWidth = sideBar.width - sideBar.visibleWidth>
-
 
 <!--- 
 START: TEMP
@@ -74,7 +77,7 @@ END: TEMP
 		<table border="0" cellpadding="0" cellspacing="0" width="#sideBar.width#">
 			<tr>
 				<td class="top" width="#sideBar.invisibleWidth#" nowrap><h1>Settings</h1></td>
-				<td background="" rowspan="15" width="#sideBar.visibleWidth#" nowrap class="bar" valign="middle" align="left"><img src="includes/img/sideBar/bar.png" width="30" height="240" border="0" /></td>
+				<td background="" rowspan="15" width="#sideBar.visibleWidth#" nowrap class="bar" valign="middle" align="left"><img src="includes/sideBar/sideBar.png" width="30" height="240" border="0" /></td>
 			</tr>
 			<tr>
 				<td><input type="checkbox" name="sbIsShowSideBar" value="1" checked><span class="checkboxlabel">Show SideBar</span></td>

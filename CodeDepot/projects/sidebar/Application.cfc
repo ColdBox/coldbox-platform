@@ -53,9 +53,13 @@ Description :
 			
 		<!--- WHATEVER YOU WANT BELOW --->
 		<cfsetting enablecfoutputonly="no">
+		
+		<!--- SideBar --->
+		#application.cbController.getInterceptorService().getInterceptor("sidebar.interceptors.sideBar").render(application.cbController.getRequestService().getContext())#
+		
 		<cfreturn true>
 	</cffunction>
-	
+		
 	<!--- on Application End --->
 	<cffunction name="onApplicationEnd" returnType="void"  output="false">
 		<!--- ************************************************************* --->
@@ -78,6 +82,26 @@ Description :
 		<!--- ************************************************************* --->
 		<cfset super.onSessionEnd(argumentCollection=arguments)>
 		<!--- WHATEVER YOU WANT BELOW --->
+	</cffunction>
+	
+	<!--- evdlinden 8/8/2008: on onError 
+	Requires delete cftry tag in coldbox.cfc
+	--->
+	<cffunction name="onError" output="true">
+		<cfargument name="Exception" required="true">
+		<cfargument name="EventName" type="String" required="true">
+		
+		<cfscript>
+			var ExceptionService = application.cbController.getExceptionService();
+			var ExceptionBean = ExceptionService.ExceptionHandler(arguments.Exception.RootCause,"application","Application Execution Exception");
+		
+			// Execute Bug Report
+			writeOutput(ExceptionService.renderBugReport(ExceptionBean));			
+			// Execute onException Interception 
+			application.cbController.getInterceptorService().processState("onException");
+			writeOutput( application.cbController.getInterceptorService().getInterceptor("sidebar.interceptors.sideBar").render() );
+		</cfscript>
+		
 	</cffunction>
 	
 </cfcomponent>
