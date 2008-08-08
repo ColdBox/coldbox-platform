@@ -111,13 +111,7 @@
 			*IMPORTANT: use single quotes in this xml file for JSON notation, ColdBox will translate it to double quotes.
 		</YourSettings>
 	 -->
-	<YourSettings>
-	
-		<!-- Path to Spry library, relative from your application root e.g. includes/Spry -->
-		<Setting name="spry.relativePath" value="includes/Spry" />
-		<Setting name="SideBar" value="true" />
-		
-	</YourSettings>	
+	<YourSettings />
 	
 	<!-- Custom Conventions : You can override the framework wide conventions of the locations of the needed objects
 	<Conventions>
@@ -241,7 +235,9 @@
 				<Property name="configFile">config/routes.cfm</Property>
 			</Interceptor>
 		 -->	
- 		<Interceptor class="coldbox.CodeDepot.projects.sidebar.interceptors.sideBar" />
+ 		<Interceptor class="sidebar.interceptors.sideBar">
+			<Property name="isEnabled">true</Property>
+		</Interceptor>
 	</Interceptors>
 	
 </Config>
