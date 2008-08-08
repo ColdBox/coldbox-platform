@@ -70,7 +70,7 @@ evdlinden: will be implemented in plugin or interceptor
 		<table border="0" cellpadding="0" cellspacing="0" width="#sideBar.width#">
 			<tr>
 				<td class="top" width="#sideBar.invisibleWidth#" nowrap><h1>Settings</h1></td>
-				<td background="" rowspan="#(15 + ArrayLen(sideBar.links))#" width="#sideBar.visibleWidth#" nowrap class="bar" valign="middle" align="left"><img src="includes/sideBar/sideBar.png" width="30" height="240" border="0" /></td>
+				<td background="" rowspan="#(15 + ArrayLen(sideBar.links))#" width="#sideBar.visibleWidth#" nowrap class="bar" valign="middle" align="left"><img src="includes/sideBar/sideBar.png" width="22" height="176" border="0" /></td>
 			</tr>
 			<tr>
 				<td><input type="checkbox" name="sbIsShowSideBar" value="1" checked><span class="checkboxlabel">Show SideBar</span></td>

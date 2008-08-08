@@ -82,7 +82,7 @@ Todo: implement postRender, so we can discard the plugin
 		<cfset sideBar.links = getproperty('links')>
 		<cfset sideBar.yOffset = getproperty('yOffset')>
 		<cfset sideBar.width = getproperty('width')>
-		<cfset sideBar.visibleWidth = 30>
+		<cfset sideBar.visibleWidth = 22>
 		<cfset sideBar.invisibleWidth = sideBar.width - sideBar.visibleWidth>
 		
 		
