@@ -241,7 +241,11 @@
 			<Property name="width">200</Property>
  			<Property name="links">
 				[
-				{"desc":"Ernst","href":"http:\/\/evdlinden.behindthe.net"}
+				{"desc":"ColdBox Live Docs","href":"http:\/\/ortus.svnrepository.com\/coldbox\/trac.cgi"}
+				,{"desc":"ColdBox API","href":"http:\/\/www.coldboxframework.com\/api\/"}
+				,{"desc":"ColdBox Forums","href":"http:\/\/groups.google.com\/group\/coldbox"}
+				,{"desc":"Coldfusion Live Docs","href":"http:\/\/livedocs.adobe.com\/coldfusion\/8\/htmldocs\/help.html?content=Part_3_CFML_Ref_1.html"}
+				,{"desc":"Ernst","href":"http:\/\/evdlinden.behindthe.net"}
 				,{"desc":"Luis","href":"http:\/\/www.luismajano.com"}
 				]
 			</Property>

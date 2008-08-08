@@ -116,27 +116,16 @@ evdlinden: will be implemented in plugin or interceptor
 			<tr>
 				<td><a href="">Clear Log</a></td>
 			</tr>	
-			<tr>
-				<td><h1>Help</h1></td>
-			</tr>
-			<tr>
-				<td><a href="http://ortus.svnrepository.com/coldbox/trac.cgi" target="_blank">ColdBox Live Docs</a></td>
 			</tr>	
 			<tr>
-				<td><a href="http://www.coldboxframework.com/api/" target="_blank">ColdBox API</a></td>
+				<td><a href="http://groups.google.com/group/coldbox" target="_blank"></a></td>
 			</tr>	
-			<tr>
-				<td><a href="http://groups.google.com/group/coldbox" target="_blank">ColdBox Forums</a></td>
-			</tr>	
-			<tr>
-				<td class="bottom"><a href="http://livedocs.adobe.com/coldfusion/8/htmldocs/help.html?content=Part_3_CFML_Ref_1.html" target="_blank">Coldfusion Live Docs</a></td>
-			</tr>	
-			<!--- Custom links? --->
+			<!--- links? --->
 			<cfif ArrayLen(sideBar.links)>
 				<tr>
-					<td><h1>My Links</h1></td>
+					<td><h1>Links</h1></td>
 				</tr>
-				<!--- Loop custom links --->
+				<!--- Loop links --->
 				<cfloop index="i" from="1" to="#ArrayLen(sideBar.links)#">
 				<tr>
 					<td class="bottom"><a href="#sideBar.links[i].href#" target="_blank">#sideBar.links[i].desc#</a></td>
