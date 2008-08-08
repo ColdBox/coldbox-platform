@@ -9,19 +9,13 @@ Modification History:
 To do:
 - strip all relevant url params for building proper urls
 - Insert custom links feaure
+- Set all local vars in interceptor function scope!!
 ----------------------------------------------------------------------->
 <!--- Get Event --->
 <cfset rc = Event.getCollection()>
 
 <cfhtmlhead text='<script language="javascript" src="includes/sidebar/sideBar.js" type="text/javascript"></script>' />
 <cfhtmlhead text='<link rel="stylesheet" href="includes/sidebar/sideBar.css" type="text/css" media="screen">' />
-
-<!--- SideBar dimension settings --->
-<cfset sideBar = StructNew()>
-<cfset sideBar.yOffset = getproperty('yOffset')>
-<cfset sideBar.width = 200>
-<cfset sideBar.visibleWidth = 30>
-<cfset sideBar.invisibleWidth = sideBar.width - sideBar.visibleWidth>
 
 <!--- 
 START: TEMP
@@ -70,16 +64,13 @@ evdlinden: will be implemented in plugin or interceptor
 	<cfset clearCacheHref = currentURL & "&clearCache=1">
 </cfif>
 
-<!--- 
-END: TEMP
- --->
 <cfoutput>
 <div id="SideBarContainer" style="visibility:hidden;position:absolute;left:0px;top:#sideBar.yOffset#px;z-index:20;width:#sideBar.width#px">
 	<div id="SideBar" style="position:absolute;left:-#sideBar.invisibleWidth#px;top:0;z-Index:20;" onmouseover="moveOut()" onmouseout="moveBack()">
 		<table border="0" cellpadding="0" cellspacing="0" width="#sideBar.width#">
 			<tr>
 				<td class="top" width="#sideBar.invisibleWidth#" nowrap><h1>Settings</h1></td>
-				<td background="" rowspan="15" width="#sideBar.visibleWidth#" nowrap class="bar" valign="middle" align="left"><img src="includes/sideBar/sideBar.png" width="30" height="240" border="0" /></td>
+				<td background="" rowspan="#(15 + ArrayLen(sideBar.links))#" width="#sideBar.visibleWidth#" nowrap class="bar" valign="middle" align="left"><img src="includes/sideBar/sideBar.png" width="30" height="240" border="0" /></td>
 			</tr>
 			<tr>
 				<td><input type="checkbox" name="sbIsShowSideBar" value="1" checked><span class="checkboxlabel">Show SideBar</span></td>
@@ -135,11 +126,23 @@ END: TEMP
 				<td><a href="http://www.coldboxframework.com/api/" target="_blank">ColdBox API</a></td>
 			</tr>	
 			<tr>
-				<td class="bottom"><a href="http://groups.google.com/group/coldbox" target="_blank">ColdBox Forums</a></td>
+				<td><a href="http://groups.google.com/group/coldbox" target="_blank">ColdBox Forums</a></td>
 			</tr>	
 			<tr>
 				<td class="bottom"><a href="http://livedocs.adobe.com/coldfusion/8/htmldocs/help.html?content=Part_3_CFML_Ref_1.html" target="_blank">Coldfusion Live Docs</a></td>
 			</tr>	
+			<!--- Custom links? --->
+			<cfif ArrayLen(sideBar.links)>
+				<tr>
+					<td><h1>My Links</h1></td>
+				</tr>
+				<!--- Loop custom links --->
+				<cfloop index="i" from="1" to="#ArrayLen(sideBar.links)#">
+				<tr>
+					<td class="bottom"><a href="#sideBar.links[i].href#" target="_blank">#sideBar.links[i].desc#</a></td>
+				</tr>						
+				</cfloop>
+			</cfif>
 		</table>
 	</div>
 </div>	

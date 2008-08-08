@@ -54,7 +54,7 @@ Description :
 		<!--- WHATEVER YOU WANT BELOW --->
 		<cfsetting enablecfoutputonly="no">
 		
-		<!--- SideBar --->
+		<!--- SideBar: Hack --->
 		#application.cbController.getInterceptorService().getInterceptor("sidebar.interceptors.sideBar").render(application.cbController.getRequestService().getContext())#
 		
 		<cfreturn true>

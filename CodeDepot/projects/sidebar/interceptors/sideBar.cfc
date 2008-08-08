@@ -20,7 +20,12 @@ Todo: implement postRender, so we can discard the plugin
 			if( not propertyExists('yOffset') or not isNumeric(getproperty('yOffset')) ){
 				setProperty('yOffset',100);
 			}
-			
+			if( not propertyExists('links') or not isArray(getproperty('links')) ){
+				setProperty('links',ArrayNew(1));
+			}
+			if( not propertyExists('width') or not isNumeric(getproperty('width')) ){
+				setProperty('width',200);
+			}
 		</cfscript>
 	</cffunction>
 
@@ -71,6 +76,16 @@ Todo: implement postRender, so we can discard the plugin
 		<cfargument name="event" required="true" type="coldbox.system.beans.requestContext">
 		
 		<cfset var renderedSideBar = ''>
+		<cfset var i = 0>
+		<!--- SideBar dimension settings --->
+		<cfset var sideBar = StructNew()>
+		<cfset sideBar.links = getproperty('links')>
+		<cfset sideBar.yOffset = getproperty('yOffset')>
+		<cfset sideBar.width = getproperty('width')>
+		<cfset sideBar.visibleWidth = 30>
+		<cfset sideBar.invisibleWidth = sideBar.width - sideBar.visibleWidth>
+		
+		
 		<!--- Render? --->
 		<cfif getIsRender()>
 			<cfsavecontent variable="renderedSideBar"><cfinclude template="../includes/sideBar/sideBar.cfm"></cfsavecontent>

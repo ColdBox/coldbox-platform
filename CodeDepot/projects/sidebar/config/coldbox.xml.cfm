@@ -235,9 +235,16 @@
 				<Property name="configFile">config/routes.cfm</Property>
 			</Interceptor>
 		 -->	
- 		<Interceptor class="coldbox.CodeDepot.projects.sidebar.interceptors.sideBar">
+ 		<Interceptor class="sidebar.interceptors.sideBar">
 			<Property name="isEnabled">true</Property>
 			<Property name="yOffset">100</Property>
+			<Property name="width">200</Property>
+ 			<Property name="links">
+				[
+				{"desc":"Ernst","href":"http:\/\/evdlinden.behindthe.net"}
+				,{"desc":"Luis","href":"http:\/\/www.luismajano.com"}
+				]
+			</Property>
 		</Interceptor>
 	</Interceptors>
 	
