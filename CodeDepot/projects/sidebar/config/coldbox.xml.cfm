@@ -235,7 +235,7 @@
 				<Property name="configFile">config/routes.cfm</Property>
 			</Interceptor>
 		 -->	
- 		<Interceptor class="sidebar.interceptors.sideBar">
+ 		<Interceptor class="coldbox.CodeDepot.projects.sidebar.interceptors.sideBar">
 			<Property name="isEnabled">true</Property>
 		</Interceptor>
 	</Interceptors>
