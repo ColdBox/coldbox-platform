@@ -647,7 +647,7 @@ Modification History:
 					
 					//Set the Resource Bundle if Using it.
 					if ( i18NSettingNodes[1].XMLChildren[i].XMLName eq "DefaultResourceBundle" and len(trim(i18NSettingNodes[1].XMLChildren[i].XMLText)) neq 0 ){
-						i18NSettingNodes[1].XMLChildren[i].XMLText = expandPath(trim(i18NSettingNodes[1].XMLChildren[i].XMLText));
+						i18NSettingNodes[1].XMLChildren[i].XMLText = trim(i18NSettingNodes[1].XMLChildren[i].XMLText);
 					}
 					//Check if locale is valid.
 					if ( i18NSettingNodes[1].XMLChildren[i].XMLName eq "DefaultLocale" ){
