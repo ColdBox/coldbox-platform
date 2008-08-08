@@ -237,6 +237,7 @@
 		 -->	
  		<Interceptor class="coldbox.CodeDepot.projects.sidebar.interceptors.sideBar">
 			<Property name="isEnabled">true</Property>
+			<Property name="yOffset">100</Property>
 		</Interceptor>
 	</Interceptors>
 	
