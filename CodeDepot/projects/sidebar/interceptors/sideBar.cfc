@@ -17,6 +17,9 @@ Todo: implement postRender, so we can discard the plugin
 			if( not propertyExists('isEnabled') or not isBoolean(getproperty('isEnabled')) ){
 				setProperty('isEnabled',true);
 			}
+			if( not propertyExists('yOffset') or not isNumeric(getproperty('yOffset')) ){
+				setProperty('yOffset',100);
+			}
 			
 		</cfscript>
 	</cffunction>
