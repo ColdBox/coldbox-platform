@@ -35,6 +35,9 @@ Todo: implement postRender, so we can discard the plugin
 			if( not propertyExists('cssPath') or not REFindNoCase("[A-Z]",getproperty('cssPath')) ){
 				setProperty('cssPath',"includes/sidebar/sideBar.css");
 			}
+			if( not propertyExists('imageVAlign') or not ListFindNoCase('top,middle,bottom', getproperty('imageVAlign') ) ){
+				setProperty('imageVAlign',"middle");
+			}
 		</cfscript>
 	</cffunction>
 
@@ -94,6 +97,7 @@ Todo: implement postRender, so we can discard the plugin
 		<cfset sideBar.visibleWidth = getproperty('visibleWidth')>
 		<cfset sideBar.invisibleWidth = sideBar.width - sideBar.visibleWidth>
 		<cfset sideBar.imagePath = getproperty('imagePath')>
+		<cfset sideBar.imageVAlign = getproperty('imageVAlign')>
 		<cfset sideBar.cssPath = getproperty('cssPath')>
 		
 		<!--- Render? --->

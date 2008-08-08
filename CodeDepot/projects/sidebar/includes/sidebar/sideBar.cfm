@@ -70,7 +70,7 @@ evdlinden: will be implemented in plugin or interceptor
 		<table border="0" cellpadding="0" cellspacing="0" width="#sideBar.width#">
 			<tr>
 				<td class="top" width="#sideBar.invisibleWidth#" nowrap><h1>Settings</h1></td>
-				<td background="" rowspan="#(15 + ArrayLen(sideBar.links))#" width="#sideBar.visibleWidth#" nowrap class="bar" valign="middle" align="left"><img src="#sideBar.imagePath#" width="22" height="160" border="0" /></td>
+				<td background="" rowspan="#(15 + ArrayLen(sideBar.links))#" width="#sideBar.visibleWidth#" nowrap class="bar" valign="#sideBar.imageVAlign#" align="left"><img src="#sideBar.imagePath#" width="22" height="160" border="0" /></td>
 			</tr>
 			<tr>
 				<td><input type="checkbox" name="sbIsShowSideBar" value="1" checked><span class="checkboxlabel">Show SideBar</span></td>
@@ -116,7 +116,7 @@ evdlinden: will be implemented in plugin or interceptor
 			<tr>
 				<td><a href="">Clear Log</a></td>
 			</tr>	
-			<!--- Custom links? --->
+			<!--- Links? --->
 			<cfif ArrayLen(sideBar.links)>
 				<tr>
 					<td><h1>Links</h1></td>

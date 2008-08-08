@@ -255,7 +255,9 @@
 			<Property name="visibleWidth"></Property>
 			<!--Full path from the application's root, else leave blank. -->
 			<Property name="imagePath"></Property>
-			<!--Full path from the application's root, else leave blank. -->
+			<!-- Vertical alignment of the image: top,middle or bottom, else leave blank  -->
+			<Property name="imageVAlign">top</Property>
+			<!--Full path from the application's root, else leave blank -->
 			<Property name="cssPath"></Property>
 		</Interceptor>
 	</Interceptors>
