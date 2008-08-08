@@ -15,7 +15,7 @@ To do:
 <cfset rc = Event.getCollection()>
 
 <cfhtmlhead text='<script language="javascript" src="includes/sidebar/sideBar.js" type="text/javascript"></script>' />
-<cfhtmlhead text='<link rel="stylesheet" href="includes/sidebar/sideBar.css" type="text/css" media="screen">' />
+<cfhtmlhead text='<link rel="stylesheet" href="#sideBar.cssPath#" type="text/css" media="screen">' />
 
 <!--- 
 START: TEMP
@@ -70,7 +70,7 @@ evdlinden: will be implemented in plugin or interceptor
 		<table border="0" cellpadding="0" cellspacing="0" width="#sideBar.width#">
 			<tr>
 				<td class="top" width="#sideBar.invisibleWidth#" nowrap><h1>Settings</h1></td>
-				<td background="" rowspan="#(15 + ArrayLen(sideBar.links))#" width="#sideBar.visibleWidth#" nowrap class="bar" valign="middle" align="left"><img src="includes/sideBar/sideBar.png" width="22" height="160" border="0" /></td>
+				<td background="" rowspan="#(15 + ArrayLen(sideBar.links))#" width="#sideBar.visibleWidth#" nowrap class="bar" valign="middle" align="left"><img src="#sideBar.imagePath#" width="22" height="160" border="0" /></td>
 			</tr>
 			<tr>
 				<td><input type="checkbox" name="sbIsShowSideBar" value="1" checked><span class="checkboxlabel">Show SideBar</span></td>
@@ -116,16 +116,12 @@ evdlinden: will be implemented in plugin or interceptor
 			<tr>
 				<td><a href="">Clear Log</a></td>
 			</tr>	
-			</tr>	
-			<tr>
-				<td><a href="http://groups.google.com/group/coldbox" target="_blank"></a></td>
-			</tr>	
-			<!--- links? --->
+			<!--- Custom links? --->
 			<cfif ArrayLen(sideBar.links)>
 				<tr>
 					<td><h1>Links</h1></td>
 				</tr>
-				<!--- Loop links --->
+				<!--- Loop custom links --->
 				<cfloop index="i" from="1" to="#ArrayLen(sideBar.links)#">
 				<tr>
 					<td class="bottom"><a href="#sideBar.links[i].href#" target="_blank">#sideBar.links[i].desc#</a></td>

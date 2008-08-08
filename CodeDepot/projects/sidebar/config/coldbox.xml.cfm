@@ -237,18 +237,26 @@
 		 -->	
  		<Interceptor class="sidebar.interceptors.sideBar">
 			<Property name="isEnabled">true</Property>
-			<Property name="yOffset">100</Property>
-			<Property name="width">200</Property>
+			<!-- Y offset, else leave blank -->
+			<Property name="yOffset"></Property>
+			<!-- Links (JSON array of objects), else leave blank -->
  			<Property name="links">
 				[
 				{"desc":"ColdBox Live Docs","href":"http:\/\/ortus.svnrepository.com\/coldbox\/trac.cgi"}
 				,{"desc":"ColdBox API","href":"http:\/\/www.coldboxframework.com\/api\/"}
 				,{"desc":"ColdBox Forums","href":"http:\/\/groups.google.com\/group\/coldbox"}
 				,{"desc":"Coldfusion Live Docs","href":"http:\/\/livedocs.adobe.com\/coldfusion\/8\/htmldocs\/help.html?content=Part_3_CFML_Ref_1.html"}
-				,{"desc":"Ernst","href":"http:\/\/evdlinden.behindthe.net"}
-				,{"desc":"Luis","href":"http:\/\/www.luismajano.com"}
 				]
 			</Property>
+			
+			<!-- Width of the sidebar including visible width, else leave blank -->
+			<Property name="width"></Property>
+			<!-- Visible width, else leave blank  -->
+			<Property name="visibleWidth"></Property>
+			<!--Full path from the application's root, else leave blank. -->
+			<Property name="imagePath"></Property>
+			<!--Full path from the application's root, else leave blank. -->
+			<Property name="cssPath"></Property>
 		</Interceptor>
 	</Interceptors>
 	

@@ -26,6 +26,15 @@ Todo: implement postRender, so we can discard the plugin
 			if( not propertyExists('width') or not isNumeric(getproperty('width')) ){
 				setProperty('width',200);
 			}
+			if( not propertyExists('visibleWidth') or not isNumeric(getproperty('visibleWidth')) ){
+				setProperty('visibleWidth',12);
+			}
+			if( not propertyExists('imagePath') or not REFindNoCase("[A-Z]",getproperty('imagePath')) ){
+				setProperty('imagePath',"includes/sideBar/sideBar.png");
+			}
+			if( not propertyExists('cssPath') or not REFindNoCase("[A-Z]",getproperty('cssPath')) ){
+				setProperty('cssPath',"includes/sidebar/sideBar.css");
+			}
 		</cfscript>
 	</cffunction>
 
@@ -77,14 +86,15 @@ Todo: implement postRender, so we can discard the plugin
 		
 		<cfset var renderedSideBar = ''>
 		<cfset var i = 0>
-		<!--- SideBar dimension settings --->
+		<!--- SideBar Settings --->
 		<cfset var sideBar = StructNew()>
 		<cfset sideBar.links = getproperty('links')>
 		<cfset sideBar.yOffset = getproperty('yOffset')>
 		<cfset sideBar.width = getproperty('width')>
-		<cfset sideBar.visibleWidth = 22>
+		<cfset sideBar.visibleWidth = getproperty('visibleWidth')>
 		<cfset sideBar.invisibleWidth = sideBar.width - sideBar.visibleWidth>
-		
+		<cfset sideBar.imagePath = getproperty('imagePath')>
+		<cfset sideBar.cssPath = getproperty('cssPath')>
 		
 		<!--- Render? --->
 		<cfif getIsRender()>
