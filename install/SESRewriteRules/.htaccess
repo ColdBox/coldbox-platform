@@ -1,13 +1,23 @@
 RewriteEngine on
 
+#SQL Injection Protection --Read More www.cybercrime.gov
+#Please use these rules if below words does not conflict with your friendly-urls. You may modify accordingly 
+RewriteRule ^.*EXEC\(@.*$				/notfound.htm [L,F,NC]
+RewriteRule ^.*CAST\(.*$				/notfound.htm [L,F,NC] 
+RewriteRule ^.*DECLARE.*$				/notfound.htm [L,F,NC]  
+RewriteRule ^.*DECLARE%20.*$			/notfound.htm [L,F,NC]
+RewriteRule ^.*NVARCHAR.*$				/notfound.htm [L,F,NC]  
+RewriteRule ^.*sp_password.*$			/notfound.htm [L,F,NC]
+RewriteRule ^.*%20xp_.*$ 				/notfound.htm [L,F,NC]
+
 #Ignore images and this would be last rule --if the condition matched
-RewriteRule ^/(.*\.(png|gif|jpg|bmp)) /$1 [NC,P,L]
+RewriteRule ^/(.*\.(png|gif|jpg|bmp)) /$1 [L,PT,NC]
 
 #Ignore CSS or JS files  and this would be last rule --if the condition matched
-RewriteRule ^/(.*\.(css|js)) /$1 [NC,P,L]
+RewriteRule ^/(.*\.(css|js)) /$1 [L,PT,NC]
 
 #Ignore txt/doc/pdf/xls files  and this would be last rule --if the condition matched
-RewriteRule ^/(.*\.(txt|pdf|doc|xls)) /$1 [NC,P,L]
+RewriteRule ^/(.*\.(txt|pdf|doc|xls)) /$1 [L,PT,NC]
 
 RewriteRule ^$ index.cfm [QSA]
 RewriteCond %{REQUEST_FILENAME} !-f
