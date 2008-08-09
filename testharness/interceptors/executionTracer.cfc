@@ -28,7 +28,7 @@ Description :
 		<cfargument name="event" required="true" type="coldbox.system.beans.requestContext" hint="The event object.">
 		<cfargument name="interceptData" required="true" type="struct" hint="Metadata of intercepted info.">
 		<!--- ************************************************************* --->
-		
+		 <cfset appendToBuffer('<h2>I love my buffer</h2>')>
 	</cffunction>
 
 	<!--- Custom Interception Point --->

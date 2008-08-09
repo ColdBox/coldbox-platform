@@ -70,9 +70,9 @@ Description :
 				<cfif not isBufferInScope()>
 					<!--- Create Buffer --->
 					<cfif instance.JDKVersion gte 1.5>
-						<cfset oBuffer = createObject("java","java.lang.StringBuilder").init()>
+						<cfset oBuffer = createObject("java","java.lang.StringBuilder").init('')>
 					<cfelse>
-						<cfset oBuffer = createObject("java","java.lang.StringBuffer").init()>
+						<cfset oBuffer = createObject("java","java.lang.StringBuffer").init('')>
 					</cfif>
 					<!--- Place in Scope --->
 					<cfset request[instance.bufferKey] = oBuffer>
