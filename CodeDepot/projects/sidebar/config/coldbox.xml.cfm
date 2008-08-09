@@ -236,18 +236,23 @@
 			</Interceptor>
 		 -->	
  		<Interceptor class="sidebar.interceptors.sideBar">
-			<Property name="isEnabled">true</Property>
+			<!-- Enabled true/false, else leave blank -->
+			<Property name="isEnabled"></Property>
 			<!-- Y offset, else leave blank -->
 			<Property name="yOffset"></Property>
-			<!-- Links (JSON array of objects), else leave blank -->
- 			<Property name="links">
+			<!-- Links (JSON array of objects), else leave blank
+			e.g. 
 				[
 				{"desc":"ColdBox Live Docs","href":"http:\/\/ortus.svnrepository.com\/coldbox\/trac.cgi"}
 				,{"desc":"ColdBox API","href":"http:\/\/www.coldboxframework.com\/api\/"}
 				,{"desc":"ColdBox Forums","href":"http:\/\/groups.google.com\/group\/coldbox"}
-				,{"desc":"Coldfusion Live Docs","href":"http:\/\/livedocs.adobe.com\/coldfusion\/8\/htmldocs\/help.html?content=Part_3_CFML_Ref_1.html"}
-				]
-			</Property>
+				,{"desc":"My API","href":"http:\/\/localhost\/myApi/"}
+				,{"desc":"My Database Schema","href":"http:\/\/localhost\/myDatabaseSchema.pdf"}
+				,{"desc":"My Batch File","href":"C:\/\/Batch Files\/myBatch.bat"}
+				,{"desc":"My Program","href":"C:\/\/Program Files\/My Program.exe"}
+				]			
+			 -->
+ 			<Property name="links"></Property>
 			
 			<!-- Width of the sidebar including visible width, else leave blank -->
 			<Property name="width"></Property>

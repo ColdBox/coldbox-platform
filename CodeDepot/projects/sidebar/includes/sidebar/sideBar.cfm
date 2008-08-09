@@ -67,7 +67,7 @@ evdlinden: will be implemented in plugin or interceptor
 <cfelse>
 	<cfset clearCacheHref = currentURL & "&clearCache=1">
 </cfif>
-
+			
 <cfoutput>
 <div id="SideBarContainer" style="visibility:hidden;position:absolute;left:0px;top:#sideBar.yOffset#px;z-index:20;width:#sideBar.width#px">
 	<div id="SideBar" style="position:absolute;left:-#sideBar.invisibleWidth#px;top:0;z-Index:20;" onmouseover="moveOut()" onmouseout="moveBack()">

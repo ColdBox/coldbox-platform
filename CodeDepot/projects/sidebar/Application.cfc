@@ -54,8 +54,6 @@ Description :
 		<!--- WHATEVER YOU WANT BELOW --->
 		<cfsetting enablecfoutputonly="no">
 		
-		<!--- SideBar: Hack. Needs to be in the interceptor buffer --->
-		
 		<cfreturn true>
 	</cffunction>
 		

@@ -4,39 +4,43 @@ Date     :	7/31/2008
 Description : Intercepts if we need to call the ColdBox SideBar plugin
 		
 Modification History:
-
-Todo: implement postRender, so we can discard the plugin
+08/08/2008 evdlinden : getRenderedSideBar(), onException()
+08/09/2008 evdlinden : postRender appendToBuffer, onException appendToBuffer, xmlParse of sideBar properties
 ----------------------------------------------------------------------->
 <cfcomponent name="sideBar" output="true" extends="coldbox.system.interceptor">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
 	<cffunction name="Configure" access="public" returntype="void" hint="This is the configuration method for your interceptors" output="false" >
+		
 		<cfscript>
+			// Read SideBar XML
+			readSideBarXML();
+			
 			/* Start processing properties */
-			if( not propertyExists('isEnabled') or not isBoolean(getproperty('isEnabled')) ){
-				setProperty('isEnabled',true);
+			if( not propertyExists( 'isEnabled') or not isBoolean(getproperty('isEnabled') ) ){
+				setProperty('isEnabled', getPropertyDefault('isEnabled') );
 			}
-			if( not propertyExists('yOffset') or not isNumeric(getproperty('yOffset')) ){
-				setProperty('yOffset',100);
+			if( not propertyExists( 'yOffset') or not isNumeric(getproperty('yOffset') ) ){
+				setProperty('yOffset', getPropertyDefault('yOffset'));
 			}
-			if( not propertyExists('links') or not isArray(getproperty('links')) ){
-				setProperty('links',ArrayNew(1));
+			if( not propertyExists( 'links') or not isArray(getproperty('links') ) ){
+				setProperty('links', getPropertyDefault('links') );
 			}
 			if( not propertyExists('width') or not isNumeric(getproperty('width')) ){
-				setProperty('width',200);
+				setProperty('width', getPropertyDefault('width') );
 			}
 			if( not propertyExists('visibleWidth') or not isNumeric(getproperty('visibleWidth')) ){
-				setProperty('visibleWidth',12);
+				setProperty( 'visibleWidth', getPropertyDefault('visibleWidth') );
 			}
 			if( not propertyExists('imagePath') or not REFindNoCase("[A-Z]",getproperty('imagePath')) ){
-				setProperty('imagePath',"includes/sideBar/sideBar.png");
+				setProperty( 'imagePath', getPropertyDefault('imagePath') );
 			}
 			if( not propertyExists('cssPath') or not REFindNoCase("[A-Z]",getproperty('cssPath')) ){
-				setProperty('cssPath',"includes/sidebar/sideBar.css");
+				setProperty( 'cssPath', getPropertyDefault('cssPath') );
 			}
 			if( not propertyExists('imageVAlign') or not ListFindNoCase('top,middle,bottom', getproperty('imageVAlign') ) ){
-				setProperty('imageVAlign',"middle");
+				setProperty( 'imageVAlign', getPropertyDefault('imageVAlign') );
 			}
 		</cfscript>
 	</cffunction>
@@ -85,4 +89,56 @@ Todo: implement postRender, so we can discard the plugin
         <cfreturn (getproperty('isEnabled') AND NOT arguments.event.isProxyRequest())>
 	</cffunction>
 		
+	<cffunction name="setPropertyDefault" access="private" returntype="void">
+		<cfargument name="propertyName" required="true" type="string">
+		<cfargument name="propertyValue" required="true" type="any">
+		<cfset StructInsert(getSideBarDefaults(), arguments.propertyName, arguments.propertyValue)>       
+	</cffunction>
+
+	<cffunction name="getPropertyDefault" access="private" returntype="any">
+		<cfargument name="propertyName" required="true" type="string">
+		<cfreturn StructFind(getSideBarDefaults(), arguments.propertyName)>   
+	</cffunction>
+	
+	<cffunction name="getSideBarDefaults" access="private" returntype="struct">
+		<!--- SideBarDefaults exists ? --->
+		<cfif not propertyExists('sideBarDefaults')>
+			<cfset setProperty('sideBarDefaults',StructNew())>
+		</cfif>	
+		<cfreturn getproperty('sideBarDefaults')>       
+	</cffunction>
+		
+	<cffunction name="readSideBarXML" access="private" returntype="void">
+		<cfset var i = 0>
+		<cfset var k = 0>
+		<cfset var sideBarXMLDoc = ''>
+		<cfset var sideBarXML = ''>
+		<cfset var properties = ''>
+		<cfset var property = StructNew()>
+		
+ 		<cftry>
+			<!--- Read SideBar XML --->
+			<cffile action="read" file="#ExpandPath('includes/sidebar/sideBar.xml.cfm')#" variable="sideBarXMLDoc">
+			<!--- Parse XML --->
+			<cfset sideBarXML = XmlParse(sideBarXMLDoc)>
+			<!--- Set xml properties array --->
+			<cfset properties = sideBarXML['Sidebar']['Properties']['Property']>
+		
+			<!--- Loop properties --->
+			 <cfloop index="i" from="1" to="#ArrayLen(properties)#">
+				 <!--- Property has properties? --->
+				 <cfif properties[i].xmlAttributes['name'] EQ "links">
+					<!--- Decode JSON --->
+					<cfset property.value = getPlugin('JSON').decode( properties[i].xmlText )>
+				<cfelse>
+					<cfset property.value = properties[i].xmlText>
+				</cfif>
+				<cfset setPropertyDefault(properties[i].xmlAttributes['name'],property.value)>
+			</cfloop>
+			
+			<cfcatch type="any">
+				<cfthrow message="SideBar: xml file default properties read error. Check default SideBar.xml file ." detail="#cfcatch.message#"> 
+			</cfcatch>
+		</cftry>	
+	</cffunction>		
 </cfcomponent>
