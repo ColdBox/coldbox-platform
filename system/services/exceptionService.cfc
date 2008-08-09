@@ -37,7 +37,6 @@ Modification History:
 		var BugReport = "";
 		var ExceptionBean = CreateObject("component","coldbox.system.beans.exceptionBean").init(errorStruct=arguments.Exception,extramessage=arguments.extraMessage,errorType=arguments.ErrorType);
 		var requestContext = controller.getRequestService().getContext();
-		var interceptData = structnew();
 		
 		/* Test Error Type */
 		if ( not reFindnocase("(application|framework|coldboxproxy)",arguments.errorType) )
@@ -46,10 +45,6 @@ Modification History:
 		/* Test type of error, proxy errors */	
 		if ( arguments.ErrorType neq "framework" ){
 			
-			/* Execute onException interceptions */
-			interceptData.exception = arguments.exception;
-			getController().getInterceptorService().processState("onException",interceptData);
-		
 			//Run custom Exception handler if Found, else run default
 			if ( controller.getSetting("ExceptionHandler") neq "" ){
 				try{

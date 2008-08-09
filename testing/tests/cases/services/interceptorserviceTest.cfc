@@ -26,6 +26,12 @@ Modification History:
 		</cfscript>
 	</cffunction>
 	
+	<cffunction name="testgetrequestBuffer" output="false">
+		<cfscript>
+			AssertTrue( isObject(this.iService.getRequestBuffer()));
+		</cfscript>
+	</cffunction>
+	
 	<cffunction name="testInterceptionPoints" access="public" returntype="void" output="false">
 		<cfscript>
 		
@@ -69,7 +75,8 @@ Modification History:
 		var states = "";
 		
 		//test registration again
-		this.iservice.setInterceptionStates(structnew());
+		makePublic(this.iservice,"createInterceptionStates","_createInterceptionStates");
+		this.iservice._createInterceptionStates();
 		AssertTrue( structIsEmpty(this.iservice.getInterceptionStates()));
 		
 		/* Register */
@@ -110,6 +117,24 @@ Modification History:
 		md.today = now();
 		
 		this.iservice.processState("preProcess",md);
+		
+		this.iservice.getRequestBuffer().append('luis');
+		
+		this.iservice.processState("preProcess",md);
+		</cfscript>
+	</cffunction>
+	
+	<cffunction name="testProcessInterceptionWithBuffer" access="public" returntype="void" output="false">
+		<cfscript>
+		var md = structnew();
+		
+		md.test = "UNIT TESTING";
+		md.today = now();
+			
+		this.iservice.getRequestBuffer().append('luis');
+		
+		this.iservice.processState("preProcess",md);
+		
 		
 		</cfscript>
 	</cffunction>

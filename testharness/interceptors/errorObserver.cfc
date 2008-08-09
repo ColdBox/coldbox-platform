@@ -29,6 +29,9 @@ Description :
 		<cfargument name="interceptData" required="true" type="struct" hint="Metadata of intercepted info.">
 		<!--- ************************************************************* --->
 		<cfset getPlugin("logger").logEntry("information","an error ocurred")>
+		<cfscript>
+			appendToBuffer('<h1>This is a Test</h1>');
+		</cfscript>
 	</cffunction>
 
 

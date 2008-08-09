@@ -20,13 +20,18 @@ Description :
 		<cfscript>
 			/* Setup The Controller. */
 			setController(arguments.controller);
+			
 			/* Register the interception points ENUM */
-			setInterceptionPoints('afterConfigurationLoad,afterAspectsLoad,afterHandlerCreation,afterPluginCreation,sessionStart,sessionEnd,preProcess,preEvent,postEvent,preRender,postRender,postProcess,afterCacheElementInsert,afterCacheElementRemoved,onException');
+			instance.InterceptionPoints = 'afterConfigurationLoad,afterAspectsLoad,afterHandlerCreation,afterPluginCreation,sessionStart,sessionEnd,preProcess,preEvent,postEvent,preRender,postRender,postProcess,afterCacheElementInsert,afterCacheElementRemoved,onException';
+			
 			/* Init Container */
-			setInterceptionStates(structnew());
+			instance.interceptionStates = structnew();
 			
 			/* Set public cache key */
 			this.INTERCEPTOR_CACHEKEY_PREFIX = "cboxinterceptor_interceptor-";
+			
+			/* Init the Request Buffer */
+			instance.requestBuffer = CreateObject("component","coldbox.system.util.RequestBuffer").init(arguments.controller.oCFMLENGINE.JDK_VERSION);
 			
 			/* Return Service */			
 			return this;
@@ -58,25 +63,30 @@ Description :
 	</cffunction>
 
 	<!--- Process a State's Interceptors --->
-	<cffunction name="processState" access="public" returntype="void" hint="Process an interception state announcement" output="false" >
+	<cffunction name="processState" access="public" returntype="void" hint="Process an interception state announcement" output="true">
 		<!--- ************************************************************* --->
 		<cfargument name="state" 		 required="true" 	type="string" hint="An interception state to process">
 		<cfargument name="interceptData" required="false" 	type="struct" default="#structNew()#" hint="A data structure used to pass intercepted information.">
 		<!--- ************************************************************* --->
-		<cfscript>
-			var event = getController().getRequestService().getContext();
-			/* Validate incoming state */
-			if( getController().getSetting("InterceptorConfig").throwOnInvalidStates and not listfindnocase(getInterceptionPoints(),arguments.state) ){
-				getUtil().throwit("The interception state sent in to process is not valid: #arguments.state#","","Framework.InterceptorService.InvalidInterceptionState");
-			}
-		</cfscript>
-				
+		<cfset var event = 0><cfsetting enablecfoutputonly="true"><cfsilent>
+			
+		<!--- Setup Event --->
+		<cfset event = getController().getRequestService().getContext()>
+		
+		<!--- Validate Incoming State --->
+		<cfif getController().getSetting("InterceptorConfig").throwOnInvalidStates and not listfindnocase(getInterceptionPoints(),arguments.state)>
+			<cfset getUtil().throwit("The interception state sent in to process is not valid: #arguments.state#","","Framework.InterceptorService.InvalidInterceptionState")>
+		</cfif>
+		
 		<!--- Process The State if it exists, else just exit out. --->
 		<cfif structKeyExists(getinterceptionStates(), arguments.state) >
 			<cfmodule template="../includes/timer.cfm" timertag="interception [#arguments.state#]" controller="#getController()#">
 				<cfset structFind( getinterceptionStates(), arguments.state).process(event,arguments.interceptData)>
 			</cfmodule>				
 		</cfif>
+		
+		<!--- Process Output Buffer: looks weird, but we are outputting stuff. --->
+		</cfsilent><cfif getRequestBuffer().isBufferInScope()><cfset writeOutput(getRequestBuffer().getString())><cfset getRequestBuffer().clear()></cfif><cfsetting enablecfoutputonly="false">
 	</cffunction>
 	
 	<!--- Register an Interceptor --->
@@ -186,27 +196,23 @@ Description :
 					currentList = currentList & "," & listgetAt(arguments.customPoints,x);
 				}
 			}
-			/* Save */
-			setInterceptionPoints(currentList);			
+			/* Save New Interception Points */
+			instance.InterceptionPoints = currentList;			
 		</cfscript>
 	</cffunction>
 	
-	<!--- getter setter interceptionPoints --->
+	<!--- getter interceptionPoints --->
 	<cffunction name="getinterceptionPoints" access="public" output="false" returntype="string" hint="Get the interceptionPoints ENUM">
 		<cfreturn instance.interceptionPoints/>
 	</cffunction>
-	<cffunction name="setinterceptionPoints" access="public" output="false" returntype="void" hint="Set the interceptionPoints ENUM">
-		<cfargument name="interceptionPoints" type="string" required="true"/>
-		<cfset instance.interceptionPoints = arguments.interceptionPoints/>
-	</cffunction>
 
-	<!--- getter setter interception states --->
+	<!--- getter interception states --->
 	<cffunction name="getinterceptionStates" access="public" output="false" returntype="struct" hint="Get interceptionStates">
 		<cfreturn instance.interceptionStates/>
 	</cffunction>
-	<cffunction name="setinterceptionStates" access="public" output="false" returntype="void" hint="Set interceptionStates">
-		<cfargument name="interceptionStates" type="struct" required="true"/>
-		<cfset instance.interceptionStates = arguments.interceptionStates/>
+	
+	<cffunction name="getRequestBuffer" access="public" returntype="any" output="false" hint="Get a coldbox request buffer: coldbox.system.util.RequestBuffer">
+		<cfreturn instance.RequestBuffer>
 	</cffunction>
 	
 	<!--- Get State Container --->
@@ -315,7 +321,7 @@ Description :
 	<!--- Create Interception States --->
 	<cffunction name="createInterceptionStates" access="private" returntype="void" hint="Create the interception states container" output="false" >
 		<cfscript>
-			setInterceptionStates(structnew());
+			instance.interceptionStates = structnew();
 		</cfscript>
 	</cffunction>
 

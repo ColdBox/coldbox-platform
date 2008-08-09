@@ -135,10 +135,17 @@ Description :
 				cbController.getInterceptorService().processState(arguments.state,interceptionStructure);
 			}
 			catch(Any e){
-				//Log Exception
+				/* Intercept Exception */
+				interceptData = structnew();
+				interceptData.exception = e;
+				cbController.getInterceptorService().processState("onException",interceptData);
+				
+				/* Log Exception */
 				cbController.getExceptionService().ExceptionHandler(e,"coldboxproxy","Interception Exception");
+				
 				/* Request Profilers */
 				pushTimers();
+				
 				/* Return */
 				return false;
 			}

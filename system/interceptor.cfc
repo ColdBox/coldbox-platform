@@ -81,6 +81,29 @@ Description :
 		<cfreturn variables.controller.getInterceptorService()>
 	</cffunction>
 	
+<!------------------------------------------- BUFFER METHODS ------------------------------------------>
+
+	<!--- clearBuffer --->
+	<cffunction name="clearBuffer" output="false" access="public" returntype="any" hint="Clear the interceptor buffer">
+		<cfset getInterceptorService().getRequestBuffer().clear()>
+	</cffunction>
+	
+	<!--- appendToBuffer --->
+	<cffunction name="appendToBuffer" output="false" access="public" returntype="void" hint="Append to the interceptor buffer.">
+		<cfargument name="str" type="string" required="true" hint="The string to append"/>
+		<cfset getInterceptorService().getRequestBuffer().append(arguments.str)>
+	</cffunction>
+	
+	<!--- getBufferString --->
+	<cffunction name="getBufferString" output="false" access="public" returntype="any" hint="Get the string representation of the buffer">
+		<cfreturn getInterceptorService().getRequestBuffer().getString()>
+	</cffunction>
+	
+	<!--- getBufferObject --->
+	<cffunction name="getBufferObject" output="false" access="public" returntype="any" hint="Get the request buffer object: coldbox.system.util.RequestBuffer">
+		<cfreturn getInterceptorService().getRequestBuffer()>
+	</cffunction>
+	
 <!------------------------------------------- INTERCEPTION POINTS ------------------------------------------->
 
 	<!--- After Configuration Load --->

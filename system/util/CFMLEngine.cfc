@@ -19,6 +19,10 @@ Description :
 			this.ADOBE = "ADOBE";
 			this.BLUEDRAGON = "BLUEDRAGON";
 			this.RAILO = "RAILO";
+			
+			/* JDK Version */
+			this.JDK_VERSION = CreateObject("java", "java.lang.System").getProperty("java.version");
+			
 			return this;
 		</cfscript>
 	</cffunction>
@@ -69,7 +73,6 @@ Description :
 			var engine = getEngine();
 			
 			if ( (engine eq this.ADOBE and version gte 8) or
-				 (engine eq this.RAILO) or
 				 (engine eq this.RAILO and version gte 8) ){
 				return true;	 
 			}
@@ -94,7 +97,6 @@ Description :
 			}
 		</cfscript>
 	</cffunction>
-	
 	
 
 <!------------------------------------------- PRIVATE ------------------------------------------->

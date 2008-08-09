@@ -24,9 +24,16 @@ Description :
 	<cffunction name="testPlugin" access="public" returntype="void" output="false">
 		<!--- Returned value is object...? --->
 		<cfscript>
-			var plugin = getController().getPlugin("StringBuffer");
-
-			AssertTrue( isObject(plugin) );
+			//JDK 1.5 TEST
+			var plugin = getController().getPlugin("StringBuffer").setup('test');
+			obj = plugin.getStringBuffer().init();
+			AssertEquals( getMetadata(obj).name, "java.lang.StringBuilder" );
+			
+			//JDK 1.4 TeST
+			getController().oCFMLENGINE.JDK_VERSION = 1.4;
+			plugin = getController().getPlugin("StringBuffer").setup('test');
+			obj = plugin.getStringBuffer().init();
+			AssertEquals( getMetadata(obj).name, "java.lang.StringBuffer" );
 		</cfscript>
 	</cffunction>
 	
