@@ -22,6 +22,10 @@ START: TEMP
 evdlinden: will be implemented in plugin or interceptor
  --->
 
+<!--- SideBar URL Param list --->
+<cfset sideBar.urlParamList = "fwreinit,debugmode,dumpVar,sbClearCache,sbClearScope,sbClearLog,sbEnable">
+
+
 <!--- Set Current URL --->
 <cfset currentURL = "#CGI.SCRIPT_NAME#?#CGI.QUERY_STRING#">
 
@@ -70,7 +74,7 @@ evdlinden: will be implemented in plugin or interceptor
 		<table border="0" cellpadding="0" cellspacing="0" width="#sideBar.width#">
 			<tr>
 				<td class="top" width="#sideBar.invisibleWidth#" nowrap><h1>Settings</h1></td>
-				<td background="" rowspan="#(15 + ArrayLen(sideBar.links))#" width="#sideBar.visibleWidth#" nowrap class="bar" valign="#sideBar.imageVAlign#" align="left"><img src="#sideBar.imagePath#" width="22" height="160" border="0" /></td>
+				<td background="" rowspan="#(12 + ArrayLen(sideBar.links))#" width="#sideBar.visibleWidth#" nowrap class="bar" valign="#sideBar.imageVAlign#" align="left"><img src="#sideBar.imagePath#" width="22" height="160" border="0" /></td>
 			</tr>
 			<tr>
 				<td><input type="checkbox" name="sbIsShowSideBar" value="1" checked><span class="checkboxlabel">Show SideBar</span></td>

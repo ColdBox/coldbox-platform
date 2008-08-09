@@ -55,7 +55,6 @@ Description :
 		<cfsetting enablecfoutputonly="no">
 		
 		<!--- SideBar: Hack. Needs to be in the interceptor buffer --->
-		#application.cbController.getInterceptorService().getInterceptor("sidebar.interceptors.sideBar").render(application.cbController.getRequestService().getContext())#
 		
 		<cfreturn true>
 	</cffunction>

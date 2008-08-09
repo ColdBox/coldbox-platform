@@ -43,48 +43,21 @@ Todo: implement postRender, so we can discard the plugin
 
 <!------------------------------------------- INTERCEPTION POINTS ------------------------------------------->
 
-	<cffunction name="preProcess" access="public" returntype="void" output="true" >
+	<cffunction name="postRender" access="public" returntype="void" output="true" >
 		<cfargument name="event" required="true" type="coldbox.system.beans.requestContext">
-
-		<!--- Enable SideBar? Debug mode? SideBar enabled? No proxy Request? --->
-		<cfif getproperty('isEnabled') AND NOT Event.isProxyRequest()>
-			<cfset setIsRender(true)>
-		</cfif>
-
+		<!--- Append rendered sideBar to buffer --->
+		<cfset appendToBuffer(getRenderedSideBar(arguments.event))>
 	</cffunction>
 
 	<cffunction name="onException" access="public" returntype="void" output="true" >
 		<cfargument name="event" required="true" type="coldbox.system.beans.requestContext">
-
-		<!--- Enable SideBar? Debug mode? SideBar enabled? No proxy Request? --->
-		<cfif getproperty('isEnabled') AND NOT Event.isProxyRequest()>
-			<cfset setIsRender(true)>
-		</cfif>
-
+		<!--- Append rendered sideBar to buffer --->
+		<cfset appendToBuffer(getRenderedSideBar(arguments.event))>
 	</cffunction>
 
 <!------------------------------------------- PRIVATE METHDOS ------------------------------------------->
-
-	<cffunction name="getSideBarData" access="private" returntype="struct">
-		<cfset var sideBarData = StructNew()>
-		
-		<!--- No SideBar data available? --->
-		<cfif not getIsSideBarData()>
-
-			<cfset sideBarData.isRender = false>
-			<!--- Put in request collection --->
-			<cfset request.sideBarData = sideBarData>
-			
-		</cfif>		
-		
-		<cfreturn request.sideBarData>
-	</cffunction>
-
-	<cffunction name="getIsSideBarData" access="private" returntype="boolean">
-        <cfreturn isDefined("request.sideBarData")>
-	</cffunction>
 	
-	<cffunction name="render" access="public" output="true" returntype="string">
+	<cffunction name="getRenderedSideBar" access="public" output="true" returntype="string">
 		<cfargument name="event" required="true" type="coldbox.system.beans.requestContext">
 		
 		<cfset var renderedSideBar = ''>
@@ -101,19 +74,15 @@ Todo: implement postRender, so we can discard the plugin
 		<cfset sideBar.cssPath = getproperty('cssPath')>
 		
 		<!--- Render? --->
-		<cfif getIsRender()>
+		<cfif getIsRender(arguments.event)>
 			<cfsavecontent variable="renderedSideBar"><cfinclude template="../includes/sideBar/sideBar.cfm"></cfsavecontent>
 		</cfif>
 		<cfreturn renderedSideBar>	
 	</cffunction>
-    
-	<cffunction name="setIsRender" access="private" returntype="void">
-		<cfargument name="isRender" type="boolean" required="true">
-		<cfset getSideBarData().isRender = arguments.isRender>
-	</cffunction>
 
 	<cffunction name="getIsRender" access="private" returntype="boolean">
-        <cfreturn getSideBarData().isRender>
+		<cfargument name="event" required="true" type="coldbox.system.beans.requestContext">
+        <cfreturn (getproperty('isEnabled') AND NOT arguments.event.isProxyRequest())>
 	</cffunction>
 		
 </cfcomponent>
