@@ -78,7 +78,7 @@ Modification History:
 	
 			<!--- Clear Scope? --->
 			<cfif isDefined("rc.sbClearScope") AND ListFindNoCase( "session,client", event.getValue('sbClearScope','') )>
-				<cfset StructClear( rc.sbClearScope )>
+				<cfset StructClear( evaluate(rc.sbClearScope) )>
 			</cfif>
 	
 			<!--- Clear Log? --->
