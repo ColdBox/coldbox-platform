@@ -6,6 +6,7 @@ Description : Intercepts if we need to call the ColdBox SideBar plugin
 Modification History:
 08/08/2008 evdlinden : getRenderedSideBar(), onException()
 08/09/2008 evdlinden : postRender appendToBuffer, onException appendToBuffer, xmlParse of sideBar properties
+08/10/2008 evdlinden : use properties instead of sideBar structure
 ----------------------------------------------------------------------->
 <cfcomponent name="sideBar" output="true" extends="coldbox.system.interceptor">
 
@@ -42,21 +43,56 @@ Modification History:
 			if( not propertyExists('imageVAlign') or not ListFindNoCase('top,middle,bottom', getproperty('imageVAlign') ) ){
 				setProperty( 'imageVAlign', getPropertyDefault('imageVAlign') );
 			}
+			// Calculate and set invisible width
+			setProperty( 'invisibleWidth', ( getproperty('width') - getproperty('visibleWidth') ) );
+			
+			// URL params which are used by the sideBar
+			setProperty( 'urlParamNameList', "fwreinit,debugmode,dumpVar,sbIsClearCache,sbClearScope,sbIsClearLog,sbIsEnable");
+			
 		</cfscript>
 	</cffunction>
 
 <!------------------------------------------- INTERCEPTION POINTS ------------------------------------------->
 
+	<cffunction name="preProcess" access="public" returntype="void" output="true" >
+		<cfargument name="event" required="true" type="coldbox.system.beans.requestContext">
+
+		<!--- Execute SideBar actions --->
+
+		<!--- Clear Cache? --->
+		<cfif isBoolean( event.getValue('sbIsClearCache','') ) AND event.getValue('sbIsClearCache',false)>
+			<cfset getColdboxOCM().expireAll()>
+		</cfif>
+
+		<!--- Clear Scope? --->
+		<cfif isDefined("rc.sbClearScope") AND ListFindNoCase( "session,client", event.getValue('sbClearScope','') )>
+			<cfset StructClear( rc.sbClearScope )>
+		</cfif>
+
+		<!--- Clear Log? --->
+		<cfif isBoolean( event.getValue('sbIsClearLog','') ) AND event.getValue('sbIsClearLog',false)>
+			<cfset getPlugin("logger").removeLogFile()>
+		</cfif>
+		
+		
+	</cffunction>
+
 	<cffunction name="postRender" access="public" returntype="void" output="true" >
 		<cfargument name="event" required="true" type="coldbox.system.beans.requestContext">
-		<!--- Append rendered sideBar to buffer --->
-		<cfset appendToBuffer(getRenderedSideBar(arguments.event))>
+		<!--- Render SideBar? --->
+		<cfif getIsRender(event)>
+			<!--- Append rendered sideBar to buffer --->
+			<cfset appendToBuffer( getRenderedSideBar(arguments.event) )>
+		</cfif>
 	</cffunction>
 
 	<cffunction name="onException" access="public" returntype="void" output="true" >
 		<cfargument name="event" required="true" type="coldbox.system.beans.requestContext">
-		<!--- Append rendered sideBar to buffer --->
-		<cfset appendToBuffer(getRenderedSideBar(arguments.event))>
+		<!--- Render SideBar? --->
+		<cfif getIsRender(event)>
+			<!--- Append rendered sideBar to buffer --->
+			<cfset appendToBuffer( getRenderedSideBar(arguments.event) )>
+		</cfif>
 	</cffunction>
 
 <!------------------------------------------- PRIVATE METHDOS ------------------------------------------->
@@ -65,28 +101,38 @@ Modification History:
 		<cfargument name="event" required="true" type="coldbox.system.beans.requestContext">
 		
 		<cfset var renderedSideBar = ''>
+		<cfset var links = getproperty('links')>
 		<cfset var i = 0>
-		<!--- SideBar Settings --->
-		<cfset var sideBar = StructNew()>
-		<cfset sideBar.links = getproperty('links')>
-		<cfset sideBar.yOffset = getproperty('yOffset')>
-		<cfset sideBar.width = getproperty('width')>
-		<cfset sideBar.visibleWidth = getproperty('visibleWidth')>
-		<cfset sideBar.invisibleWidth = sideBar.width - sideBar.visibleWidth>
-		<cfset sideBar.imagePath = getproperty('imagePath')>
-		<cfset sideBar.imageVAlign = getproperty('imageVAlign')>
-		<cfset sideBar.cssPath = getproperty('cssPath')>
-		
+		<cfset var rc = event.getCollection()>
+
+		<cfset rc.currentURL = getCurrentURL()>
+		<!--- Reload framework link --->
+		<cfset rc.fwReInitHref = rc.currentURL & '&fwreinit=1'>
+		<!--- Enable/disable DebugMode link --->
+		<cfset rc.debugModeHref = rc.currentURL & '&debugmode=#( IIF( not getDebugMode(), DE("1"), DE("0") )  )#'>		
+		<!--- Clear cache link --->
+		<cfset rc.clearCacheHref = rc.currentURL & '&sbIsClearCache=1'>
+		<!--- Clear scope link --->
+		<cfset rc.clearScopeHref = "location.href='#rc.currentURL#&sbClearScope='+ getElementById('sbClearScope').value;">
+		<!--- Clear log link --->
+		<cfset rc.clearLogHref = rc.currentURL & '&sbIsClearLog=1'>
+		<!--- Cache panel link --->
+		<cfset rc.cachePanelHref = "window.open('index.cfm?debugpanel=cache','cache','status=1,toolbar=0,location=0,resizable=1,scrollbars=1,height=750,width=800')">
+		<!--- Profiler link --->
+		<cfset rc.profilerHref = "window.open('index.cfm?debugpanel=profiler','profilermonitor','status=1,toolbar=0,location=0,resizable=1,scrollbars=1,height=750,width=800')">
+		<!--- Dump var link --->
+		<cfset rc.dumpvarHref = "location.href='#rc.currentURL#&dumpvar='+ getElementById('sbDumpVar').value;">
+
 		<!--- Render? --->
 		<cfif getIsRender(arguments.event)>
 			<cfsavecontent variable="renderedSideBar"><cfinclude template="../includes/sideBar/sideBar.cfm"></cfsavecontent>
 		</cfif>
 		<cfreturn renderedSideBar>	
 	</cffunction>
-
+	
 	<cffunction name="getIsRender" access="private" returntype="boolean">
 		<cfargument name="event" required="true" type="coldbox.system.beans.requestContext">
-        <cfreturn (getproperty('isEnabled') AND NOT arguments.event.isProxyRequest())>
+        <cfreturn ( getproperty('isEnabled') AND NOT arguments.event.isProxyRequest() )>
 	</cffunction>
 		
 	<cffunction name="setPropertyDefault" access="private" returntype="void">
@@ -141,4 +187,20 @@ Modification History:
 			</cfcatch>
 		</cftry>	
 	</cffunction>		
+
+	<cffunction name="getCurrentURL" access="private" returntype="string">
+		<cfset var noSideBarQueryString = ''>
+		<cfset var i = ''>
+		
+		<!--- Loop all URL params and build query string --->
+		<cfloop index="i" list="#StructKeyList(URL)#">
+			<!--- Not used by sideBar? --->
+			<cfif not ListFindNoCase( getProperty( 'urlParamNameList') ,i)>
+				<cfset noSideBarQueryString = ListAppend(noSideBarQueryString,"#LCASE(i)#=#URL[i]#","&")>			
+			</cfif>
+		</cfloop>		
+		<cfreturn "#CGI.SCRIPT_NAME#?#noSideBarQueryString#">
+		
+	</cffunction>
+
 </cfcomponent>
