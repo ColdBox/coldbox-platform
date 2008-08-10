@@ -57,23 +57,25 @@ Modification History:
 	<cffunction name="preProcess" access="public" returntype="void" output="true" >
 		<cfargument name="event" required="true" type="coldbox.system.beans.requestContext">
 
-		<!--- Execute SideBar actions --->
+		<!--- Execute SideBar actions? --->
+		<cfif getIsRender(arguments.event)>
 
-		<!--- Clear Cache? --->
-		<cfif isBoolean( event.getValue('sbIsClearCache','') ) AND event.getValue('sbIsClearCache',false)>
-			<cfset getColdboxOCM().expireAll()>
-		</cfif>
-
-		<!--- Clear Scope? --->
-		<cfif isDefined("rc.sbClearScope") AND ListFindNoCase( "session,client", event.getValue('sbClearScope','') )>
-			<cfset StructClear( rc.sbClearScope )>
-		</cfif>
-
-		<!--- Clear Log? --->
-		<cfif isBoolean( event.getValue('sbIsClearLog','') ) AND event.getValue('sbIsClearLog',false)>
-			<cfset getPlugin("logger").removeLogFile()>
-		</cfif>
+			<!--- Clear Cache? --->
+			<cfif isBoolean( event.getValue('sbIsClearCache','') ) AND event.getValue('sbIsClearCache',false)>
+				<cfset getColdboxOCM().expireAll()>
+			</cfif>
+	
+			<!--- Clear Scope? --->
+			<cfif isDefined("rc.sbClearScope") AND ListFindNoCase( "session,client", event.getValue('sbClearScope','') )>
+				<cfset StructClear( rc.sbClearScope )>
+			</cfif>
+	
+			<!--- Clear Log? --->
+			<cfif isBoolean( event.getValue('sbIsClearLog','') ) AND event.getValue('sbIsClearLog',false)>
+				<cfset getPlugin("logger").removeLogFile()>
+			</cfif>
 		
+		</cfif>		
 		
 	</cffunction>
 
