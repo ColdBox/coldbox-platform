@@ -23,7 +23,7 @@ Modification History:
 				<td background="" rowspan="#(12 + ArrayLen(links))#" width="#getproperty('visibleWidth')#" nowrap class="bar" valign="#getproperty('imageVAlign')#" align="left"><img src="#getproperty('imagePath')#" width="22" height="160" border="0" /></td>
 			</tr>
 			<tr>
-				<td><input type="checkbox" name="sbIsEnable" value="1" checked><span class="checkboxlabel">Show SideBar</span></td>
+				<td><input type="checkbox" name="sbIsEnabled" value="1" checked  onclick="location.href='#rc.enableHref#'"><span class="checkboxlabel">Show SideBar</span></td>
 			</tr>	
 			<tr>
 				<td><h1>Debug</h1></td>

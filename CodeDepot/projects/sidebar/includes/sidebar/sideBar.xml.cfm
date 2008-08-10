@@ -13,7 +13,7 @@ Modification History:
 			<Property name="isEnabled">true</Property> 
 			
 			<!-- Y offset -->
-			<Property name="yOffset">100</Property>
+			<Property name="yOffset">50</Property>
 			
 			<!-- Links (JSON array of objects) -->
 			<Property name="links">

@@ -22,6 +22,10 @@ Modification History:
 			if( not propertyExists( 'isEnabled') or not isBoolean(getproperty('isEnabled') ) ){
 				setProperty('isEnabled', getPropertyDefault('isEnabled') );
 			}
+			
+			// Set enabled state on configure
+			setProperty('isEnabledOnConfigure',getProperty('isEnabled'));
+			
 			if( not propertyExists( 'yOffset') or not isNumeric(getproperty('yOffset') ) ){
 				setProperty('yOffset', getPropertyDefault('yOffset'));
 			}
@@ -47,7 +51,7 @@ Modification History:
 			setProperty( 'invisibleWidth', ( getproperty('width') - getproperty('visibleWidth') ) );
 			
 			// URL params which are used by the sideBar
-			setProperty( 'urlParamNameList', "fwreinit,debugmode,dumpVar,sbIsClearCache,sbClearScope,sbIsClearLog,sbIsEnable");
+			setProperty( 'urlParamNameList', "fwreinit,debugmode,dumpVar,sbIsClearCache,sbClearScope,sbIsClearLog,sbIsEnabled");
 			
 		</cfscript>
 	</cffunction>
@@ -56,6 +60,13 @@ Modification History:
 
 	<cffunction name="preProcess" access="public" returntype="void" output="true" >
 		<cfargument name="event" required="true" type="coldbox.system.beans.requestContext">
+		
+		<cfset var rc = event.getCollection()>
+
+		<!--- Enable/disable the sidebar? Has been enabled on configure? --->
+		<cfif getProperty('isEnabledOnConfigure') AND isBoolean( event.getValue('sbIsEnabled','') )>
+			<cfset setProperty('isEnabled',rc.sbIsEnabled)>
+		</cfif>
 
 		<!--- Execute SideBar actions? --->
 		<cfif getIsRender(arguments.event)>
@@ -108,6 +119,8 @@ Modification History:
 		<cfset var rc = arguments.event.getCollection()>
 
 		<cfset rc.currentURL = getCurrentURL()>
+		<!--- Enable link --->
+		<cfset rc.enableHref = rc.currentURL & '&sbIsEnabled=0'>
 		<!--- Reload framework link --->
 		<cfset rc.fwReInitHref = rc.currentURL & '&fwreinit=1'>
 		<!--- Enable/disable DebugMode link --->

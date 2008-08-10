@@ -236,7 +236,7 @@
 			</Interceptor>
 		 -->	
  		<Interceptor class="sidebar.interceptors.sideBar">
-			<!-- Enabled true/false, else leave blank -->
+			<!-- Enabled true/false, else leave blank. -->
 			<Property name="isEnabled"></Property>
 			<!-- Y offset, else leave blank -->
 			<Property name="yOffset"></Property>
