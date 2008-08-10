@@ -82,7 +82,7 @@ Modification History:
 	<cffunction name="postRender" access="public" returntype="void" output="true" >
 		<cfargument name="event" required="true" type="coldbox.system.beans.requestContext">
 		<!--- Render SideBar? --->
-		<cfif getIsRender(event)>
+		<cfif getIsRender(arguments.event)>
 			<!--- Append rendered sideBar to buffer --->
 			<cfset appendToBuffer( getRenderedSideBar(arguments.event) )>
 		</cfif>
@@ -91,7 +91,7 @@ Modification History:
 	<cffunction name="onException" access="public" returntype="void" output="true" >
 		<cfargument name="event" required="true" type="coldbox.system.beans.requestContext">
 		<!--- Render SideBar? --->
-		<cfif getIsRender(event)>
+		<cfif getIsRender(arguments.event)>
 			<!--- Append rendered sideBar to buffer --->
 			<cfset appendToBuffer( getRenderedSideBar(arguments.event) )>
 		</cfif>
@@ -105,7 +105,7 @@ Modification History:
 		<cfset var renderedSideBar = ''>
 		<cfset var links = getproperty('links')>
 		<cfset var i = 0>
-		<cfset var rc = event.getCollection()>
+		<cfset var rc = arguments.event.getCollection()>
 
 		<cfset rc.currentURL = getCurrentURL()>
 		<!--- Reload framework link --->
@@ -124,6 +124,10 @@ Modification History:
 		<cfset rc.profilerHref = "window.open('index.cfm?debugpanel=profiler','profilermonitor','status=1,toolbar=0,location=0,resizable=1,scrollbars=1,height=750,width=800')">
 		<!--- Dump var link --->
 		<cfset rc.dumpvarHref = "location.href='#rc.currentURL#&dumpvar='+ getElementById('sbDumpVar').value;">
+		<!--- Search ColdBox Live Docs link --->
+		<cfset rc.searchCBLiveDocsHref = "window.open('http://ortus.svnrepository.com/coldbox/trac.cgi/search?q='+ getElementById('sbSearchCBLiveDocs').value + '&wiki=on','CBLiveDocsSearchResults')">
+		<!--- Search ColdBox Forums link --->
+		<cfset rc.searchCBForumsHref = "window.open('http://groups.google.com/group/coldbox/search?q='+ getElementById('sbSearchCBForums').value + '&qt_g','CBForumsSearchResults')">
 
 		<!--- Render? --->
 		<cfif getIsRender(arguments.event)>

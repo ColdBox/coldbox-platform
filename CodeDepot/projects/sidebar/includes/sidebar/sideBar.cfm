@@ -16,6 +16,7 @@ Modification History:
 <cfoutput>
 <div id="SideBarContainer" style="visibility:hidden;position:absolute;left:0px;top:#getproperty('yOffset')#px;z-index:20;width:#getproperty('width')#px">
 	<div id="SideBar" style="position:absolute;left:-#getproperty('invisibleWidth')#px;top:0;z-Index:20;" onmouseover="moveOut()" onmouseout="moveBack()">
+		<form id="sbForm" style="margin:0;">
 		<table border="0" cellpadding="0" cellspacing="0" width="#getproperty('width')#">
 			<tr>
 				<td class="top" width="#getproperty('invisibleWidth')#" nowrap><h1>Settings</h1></td>
@@ -66,6 +67,21 @@ Modification History:
 			<tr>
 				<td><a href="#rc.clearLogHref#">Clear Log</a></td>
 			</tr>	
+			<tr>
+				<td><h1>Search</h1></td>
+			</tr>
+			<tr>
+				<td><span class="inputlabel">ColdBox Live Docs</span>
+					<input type="text" name="sbSearchCBLiveDocs" style="width:75px;">
+					<input type="button" value="Search" onclick="#rc.searchCBLiveDocsHref#">
+				</td>
+			</tr>				
+			<tr>
+				<td><span class="inputlabel">ColdBox Forums</span>
+					<input type="text" name="sbSearchCBForums" style="width:75px;">
+					<input type="button" value="Search" onclick="#rc.searchCBForumsHref#">
+				</td>
+			</tr>				
 			<!--- Links? --->
 			<cfif ArrayLen(links)>
 				<tr>
@@ -79,6 +95,7 @@ Modification History:
 				</cfloop>
 			</cfif>
 		</table>
+		</form>
 	</div>
 </div>	
 
