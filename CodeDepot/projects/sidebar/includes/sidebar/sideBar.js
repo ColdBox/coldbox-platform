@@ -1,3 +1,12 @@
+/*********************************************************************
+Author 	 :	Ernst van der Linden
+Date     :	7/31/2008
+Description : Shows the ColdBox Sidebar 
+		
+Modification History:
+08/10/2008 evdlinden : FireFox problem solved
+**********************************************************************/
+
 NS6 = (document.getElementById&&!document.all);
 IE = (document.all);
 moving=setTimeout('null',1);
@@ -34,7 +43,7 @@ function initSideBar() {
 	if (NS6){
 		sideBar=document.getElementById("SideBar").style;
 		sideBarContainer=document.getElementById("SideBarContainer").style;
-		sideBarContainer.clip="rect(0 "+document.getElementById("SideBar").offsetWidth+" "+document.getElementById("SideBar").offsetHeight+" 0)";
+		sideBarContainer.clip="rect(0 "+(document.getElementById("SideBar").offsetWidth)+" "+document.getElementById("SideBar").offsetHeight+" 0)";
 		sideBar.visibility="visible";
 	}
 	else if (IE) {

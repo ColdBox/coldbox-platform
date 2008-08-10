@@ -7,7 +7,7 @@ Modification History:
 08/08/2008 evdlinden : Removed Spry plugin calls, added yOffset interceptor property, skinning posibility 
 08/09/2008 evdlinden : Links and custom links combined
 08/09/2008 evdlinden : sideBar struct deleted, only use interceptor properties now
-08/10/2008 evdlinden : all local vars to interceptor scope and request collection
+08/10/2008 evdlinden : all local vars to interceptor scope and request collection. Enable/disable sideBar through url param sbIsEnabled=1; FireFox problem solved
 ----------------------------------------------------------------------->
 
 <cfhtmlhead text='<script language="javascript" src="includes/sidebar/sideBar.js" type="text/javascript"></script>' />
@@ -15,7 +15,7 @@ Modification History:
 
 <cfoutput>
 <div id="SideBarContainer" style="visibility:hidden;position:absolute;left:0px;top:#getproperty('yOffset')#px;z-index:20;width:#getproperty('width')#px">
-	<div id="SideBar" style="position:absolute;left:-#getproperty('invisibleWidth')#px;top:0;z-Index:20;" onmouseover="moveOut()" onmouseout="moveBack()">
+	<div id="SideBar" style="position:absolute;left:-#( getproperty('invisibleWidth'))#px;top:0;z-Index:20;" onmouseover="moveOut()" onmouseout="moveBack()">
 		<form id="sbForm" style="margin:0;">
 		<table border="0" cellpadding="0" cellspacing="0" width="#getproperty('width')#">
 			<tr>
@@ -35,7 +35,7 @@ Modification History:
 			<cfif getDebugMode()>
 			<tr>
 				<td><span class="inputlabel">Dump Variable</span>
-					<input type="text" name="sbDumpVar" style="width:75px;">
+					<input type="text" id="sbDumpVar" style="width:75px;">
 					<input type="button" value="Dump" onclick="#rc.dumpvarHref#">
 				</td>
 			</tr>	
@@ -72,13 +72,13 @@ Modification History:
 			</tr>
 			<tr>
 				<td><span class="inputlabel">ColdBox Live Docs</span>
-					<input type="text" name="sbSearchCBLiveDocs" style="width:75px;">
+					<input type="text" id="sbSearchCBLiveDocs" style="width:75px;">
 					<input type="button" value="Search" onclick="#rc.searchCBLiveDocsHref#">
 				</td>
 			</tr>				
 			<tr>
 				<td><span class="inputlabel">ColdBox Forums</span>
-					<input type="text" name="sbSearchCBForums" style="width:75px;">
+					<input type="text" id="sbSearchCBForums" style="width:75px;">
 					<input type="button" value="Search" onclick="#rc.searchCBForumsHref#">
 				</td>
 			</tr>				
@@ -100,9 +100,15 @@ Modification History:
 </div>	
 
 <script type="text/javascript">
+	// Left and width correction?
+	if (NS6){
+		document.getElementById("SideBar").style.left = parseInt(document.getElementById("SideBar").style.left)+10+"px"; 
+		sideBarWidth= #getproperty('invisibleWidth')# - 10;
+	} else {
+		sideBarWidth= #getproperty('invisibleWidth')#;
+	}
 	slideSpeed=20 
 	waitTime=100; 
-	sideBarWidth= #getproperty('invisibleWidth')#;
 	setTimeout('initSideBar();', 1)
 </script>
 </cfoutput>

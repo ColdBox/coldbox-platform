@@ -6,7 +6,7 @@ Description : Intercepts if we need to call the ColdBox SideBar plugin
 Modification History:
 08/08/2008 evdlinden : getRenderedSideBar(), onException()
 08/09/2008 evdlinden : postRender appendToBuffer, onException appendToBuffer, xmlParse of sideBar properties
-08/10/2008 evdlinden : use properties instead of sideBar structure
+08/10/2008 evdlinden : use properties instead of sideBar structure. Enable/disable sideBar through url param sbIsEnabled=1
 ----------------------------------------------------------------------->
 <cfcomponent name="sideBar" output="true" extends="coldbox.system.interceptor">
 
