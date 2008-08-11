@@ -35,7 +35,13 @@ Description :
 	<cffunction name="clear" output="false" access="public" returntype="void" hint="Clear the buffer">
 		<cfscript>
 			var oBuffer = getBufferObject();
-			oBuffer.delete(0,oBuffer.length());	
+			/* Jdk Version bug for CF */
+			if( instance.JDKVersion gte 1.6 ){
+				oBuffer.delete(0,oBuffer.toString().length());
+			}
+			else{
+				oBuffer.delete(0,oBuffer.length());
+			}
 		</cfscript>
 	</cffunction>
 	
@@ -47,7 +53,15 @@ Description :
 
 	<!--- length --->
 	<cffunction name="length" output="false" access="public" returntype="numeric" hint="Returns the length (character count)">
-		<cfreturn getBufferObject().length()>
+		<cfscript>
+			/* Jdk Version bug for CF */
+			if( instance.JDKVersion gte 1.6 ){
+				getBufferObject().toString().length();
+			}
+			else{
+				getBufferObject().length();
+			}
+		</cfscript>
 	</cffunction>
 	
 	<!--- getString --->

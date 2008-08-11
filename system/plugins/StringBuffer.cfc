@@ -180,7 +180,11 @@ Modification History:
 	<!--- ************************************************************* --->
 
 	<cffunction name="length" returntype="numeric" access="public" output="No" hint="Returns the length (character count) of this string buffer.">
-		<cfreturn instance.joStringBuffer.length() />
+		<cfif getController().oCFMLENGINE.JDK_VERSION gte 1.6>
+			<cfreturn instance.joStringBuffer.toString().length() />
+		<cfelse>
+			<cfreturn instance.joStringBuffer.length() />
+		</cfif>
 	</cffunction>
 
 	<!--- ************************************************************* --->
