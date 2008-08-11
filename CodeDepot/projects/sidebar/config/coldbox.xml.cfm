@@ -112,8 +112,8 @@
 		</YourSettings>
 	 -->
 	<YourSettings>
-		<!-- Enabled true/false, else leave blank. -->
-		<Setting name="SideBar" value="false" />
+		<!-- Show SideBar? true/false, else leave blank. -->
+		<Setting name="SideBar" value="true" />
 	</YourSettings>
 	
 	<!-- Custom Conventions : You can override the framework wide conventions of the locations of the needed objects
