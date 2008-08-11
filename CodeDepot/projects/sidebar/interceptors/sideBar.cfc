@@ -19,12 +19,11 @@ Modification History:
 			readSideBarXML();
 			
 			/* Start processing properties */
-			if( not propertyExists( 'isEnabled') or not isBoolean(getproperty('isEnabled') ) ){
+			if( not settingExists('SideBar') or not isBoolean( getSetting('SideBar') ) ){
 				setProperty('isEnabled', getPropertyDefault('isEnabled') );
+			} else {
+				setProperty('isEnabled', getSetting('SideBar') );
 			}
-			
-			// Set enabled state on configure
-			setProperty('isEnabledOnConfigure',getProperty('isEnabled'));
 			
 			if( not propertyExists( 'yOffset') or not isNumeric(getproperty('yOffset') ) ){
 				setProperty('yOffset', getPropertyDefault('yOffset'));
@@ -63,8 +62,8 @@ Modification History:
 		
 		<cfset var rc = event.getCollection()>
 
-		<!--- Enable/disable the sidebar? Has been enabled on configure? --->
-		<cfif getProperty('isEnabledOnConfigure') AND isBoolean( event.getValue('sbIsEnabled','') )>
+		<!--- Enable/disable the sidebar? Has been enabled in config? --->
+		<cfif settingExists('SideBar') AND isBoolean( getSetting('SideBar') ) AND getSetting('SideBar') AND isBoolean( event.getValue('sbIsEnabled','') )>
 			<cfset setProperty('isEnabled',rc.sbIsEnabled)>
 		</cfif>
 

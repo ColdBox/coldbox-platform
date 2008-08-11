@@ -111,7 +111,10 @@
 			*IMPORTANT: use single quotes in this xml file for JSON notation, ColdBox will translate it to double quotes.
 		</YourSettings>
 	 -->
-	<YourSettings />
+	<YourSettings>
+		<!-- Enabled true/false, else leave blank. -->
+		<Setting name="SideBar" value="false" />
+	</YourSettings>
 	
 	<!-- Custom Conventions : You can override the framework wide conventions of the locations of the needed objects
 	<Conventions>
@@ -236,8 +239,6 @@
 			</Interceptor>
 		 -->	
  		<Interceptor class="sidebar.interceptors.sideBar">
-			<!-- Enabled true/false, else leave blank. -->
-			<Property name="isEnabled"></Property>
 			<!-- Y offset, else leave blank -->
 			<Property name="yOffset"></Property>
 			<!-- Links (JSON array of objects), else leave blank
