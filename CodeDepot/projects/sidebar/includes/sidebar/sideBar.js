@@ -17,7 +17,8 @@ function moveOut() {
 		moving = setTimeout('moveOut()', slideSpeed);
 		slideSideBar(10);
 	}else {
-		clearTimeout(moving);moving=setTimeout('null',1);
+		clearTimeout(moving);
+		moving=setTimeout('null',1);
 	}
 };
 function moveBack() {
@@ -35,8 +36,42 @@ function moveBack1() {
 	}
 }
 function slideSideBar(num){
-	if (IE) {sideBar.pixelLeft += num;}
-	if (NS6) {sideBar.left = parseInt(sideBar.left)+num+"px";}
+	if (IE) {
+		sideBar.pixelLeft += num;
+	}
+	if (NS6) {
+		sideBar.left = parseInt(sideBar.left)+num+"px";
+	}
+}
+
+function scrollSlideBar() {
+	var smooth = 0;
+	if (NS6) {
+		winY = window.pageYOffset;
+	}
+	if (IE) {
+		winY = truebody().scrollTop;
+	}
+	if (winY!=lastY&&winY>YOffset) {
+		smooth = .2 * (winY - lastY - YOffset);
+	}else if (YOffset+lastY>YOffset) {
+		smooth = .2 * (winY - lastY - (YOffset-(YOffset-winY)));
+	} else {
+		smooth=0;
+	}
+	if(smooth > 0){
+		 smooth = Math.ceil(smooth);
+	}else {
+		smooth = Math.floor(smooth);
+	}	
+	if (IE){
+		sideBar.pixelTop+=smooth;
+	} 
+	if (NS6){
+		sideBar.top=parseInt(sideBar.top)+smooth+"px"	
+	} 
+	lastY = lastY+smooth;
+	setTimeout('scrollSlideBar()', 1)
 }
 
 function initSideBar() {
@@ -51,5 +86,8 @@ function initSideBar() {
 		sideBarContainer=document.all("SideBarContainer").style;
 		sideBarContainer.clip="rect(0 "+SideBar.offsetWidth+" "+SideBar.offsetHeight+" 0)";
 		sideBarContainer.visibility = "visible";
+	}
+	if(isScrollSlideBar){
+		scrollSlideBar();
 	}
 }

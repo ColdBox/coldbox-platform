@@ -112,6 +112,9 @@ Modification History:
 	}
 	slideSpeed=20 
 	waitTime=100; 
-	setTimeout('initSideBar();', 1)
+	lastY=0;	
+	YOffset = #getproperty('yOffset')#;
+	isScrollSlideBar=1;
+	setTimeout('initSideBar();', 1);
 </script>
 </cfoutput>
