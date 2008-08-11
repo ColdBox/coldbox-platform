@@ -151,9 +151,9 @@ Modification History:
 		<!--- Search ColdBox Live Docs link --->
 		<cfset rc.searchCBLiveDocsHref = "window.open('http://ortus.svnrepository.com/coldbox/trac.cgi/search?q='+ getElementById('sbSearchCBLiveDocs').value + '&wiki=on','CBLiveDocsSearchResults')">
 		<!--- ColdBox Forums link --->
-		<cfset rc.CBForumsHref = "http://groups.google.com/group/coldbox">
+		<cfset rc.CBForumsHref = "http://forums.coldboxframework.com/index.cfm">
 		<!--- Search ColdBox Forums link --->
-		<cfset rc.searchCBForumsHref = "window.open('http://groups.google.com/group/coldbox/search?q='+ getElementById('sbSearchCBForums').value + '&qt_g','CBForumsSearchResults')">
+		<cfset rc.searchCBForumsHref = "window.open('http://forums.coldboxframework.com/index.cfm?event=ehForums.doSearch&searchterms='+ getElementById('sbSearchCBForums').value + '&searchtype=any','CBForumsSearchResults')">
 
 		<!--- Render? --->
 		<cfif getIsRender(arguments.event)>
