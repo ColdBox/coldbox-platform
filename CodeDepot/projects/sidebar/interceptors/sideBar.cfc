@@ -1,14 +1,15 @@
 <!-----------------------------------------------------------------------
-Author 	 :	Ernst van der Linden
+Author 	 :	Ernst van der Linden (evdlinden@gmail.com)
 Date     :	7/31/2008
-Description : Intercepts if we need to call the ColdBox SideBar plugin
+Description : Intercepts if we need to render the ColdBox SideBar
 		
 Modification History:
 08/08/2008 evdlinden : getRenderedSideBar(), onException()
 08/09/2008 evdlinden : postRender appendToBuffer, onException appendToBuffer, xmlParse of sideBar properties
 08/10/2008 evdlinden : use properties instead of sideBar structure. Enable/disable sideBar through url param sbIsEnabled=1
+08/11/2008 evdlinden : implmented afterAspectsLoad. Enable/disable property needs to be set afterConfigurationLoad interceptor points, which is used by the environment interceptor
 ----------------------------------------------------------------------->
-<cfcomponent name="sideBar" output="true" extends="coldbox.system.interceptor">
+<cfcomponent name="coldBoxSideBar" output="true" extends="coldbox.system.interceptor">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
@@ -19,11 +20,6 @@ Modification History:
 			readSideBarXML();
 			
 			/* Start processing properties */
-			if( not settingExists('SideBar') or not isBoolean( getSetting('SideBar') ) ){
-				setProperty('isEnabled', getPropertyDefault('isEnabled') );
-			} else {
-				setProperty('isEnabled', getSetting('SideBar') );
-			}
 			
 			if( not propertyExists( 'yOffset') or not isNumeric(getproperty('yOffset') ) ){
 				setProperty('yOffset', getPropertyDefault('yOffset'));
@@ -57,13 +53,27 @@ Modification History:
 
 <!------------------------------------------- INTERCEPTION POINTS ------------------------------------------->
 
-	<cffunction name="preProcess" access="public" returntype="void" output="true" >
+	<cffunction name="afterAspectsLoad" access="public" returntype="void" output="false">
 		<cfargument name="event" required="true" type="coldbox.system.beans.requestContext">
 		
 		<cfset var rc = event.getCollection()>
 
-		<!--- Enable/disable the sidebar? Has been enabled in config? --->
-		<cfif settingExists('SideBar') AND isBoolean( getSetting('SideBar') ) AND getSetting('SideBar') AND isBoolean( event.getValue('sbIsEnabled','') )>
+		<!--- Set isEnabled property after environmentControl interception --->
+		<cfif not settingExists('ColdBoxSideBar') or not isBoolean( getSetting('ColdBoxSideBar') )>
+			<cfset setProperty('isEnabled', getPropertyDefault('isEnabled') )>
+		<cfelse>
+			<cfset setProperty('isEnabled', getSetting('ColdBoxSideBar') )>
+		</cfif>
+		
+	</cffunction>
+	
+	<cffunction name="preProcess" access="public" returntype="void" output="false">
+		<cfargument name="event" required="true" type="coldbox.system.beans.requestContext">
+		
+		<cfset var rc = event.getCollection()>
+
+		<!--- Enable/disable the sidebar through url? Has been enabled in config? --->
+		<cfif settingExists('ColdBoxSideBar') AND isBoolean( getSetting('ColdBoxSideBar') ) AND getSetting('ColdBoxSideBar') AND isBoolean( event.getValue('sbIsEnabled','') )>
 			<cfset setProperty('isEnabled',rc.sbIsEnabled)>
 		</cfif>
 
@@ -89,7 +99,7 @@ Modification History:
 		
 	</cffunction>
 
-	<cffunction name="postRender" access="public" returntype="void" output="true" >
+	<cffunction name="postRender" access="public" returntype="void" output="true">
 		<cfargument name="event" required="true" type="coldbox.system.beans.requestContext">
 		<!--- Render SideBar? --->
 		<cfif getIsRender(arguments.event)>
@@ -98,7 +108,7 @@ Modification History:
 		</cfif>
 	</cffunction>
 
-	<cffunction name="onException" access="public" returntype="void" output="true" >
+	<cffunction name="onException" access="public" returntype="void" output="true">
 		<cfargument name="event" required="true" type="coldbox.system.beans.requestContext">
 		<!--- Render SideBar? --->
 		<cfif getIsRender(arguments.event)>
@@ -136,8 +146,12 @@ Modification History:
 		<cfset rc.profilerHref = "window.open('index.cfm?debugpanel=profiler','profilermonitor','status=1,toolbar=0,location=0,resizable=1,scrollbars=1,height=750,width=800')">
 		<!--- Dump var link --->
 		<cfset rc.dumpvarHref = "location.href='#rc.currentURL#&dumpvar='+ getElementById('sbDumpVar').value;">
+		<!--- ColdBox Live Docs link --->
+		<cfset rc.CBLiveDocsHref = "http://ortus.svnrepository.com/coldbox/trac.cgi">
 		<!--- Search ColdBox Live Docs link --->
 		<cfset rc.searchCBLiveDocsHref = "window.open('http://ortus.svnrepository.com/coldbox/trac.cgi/search?q='+ getElementById('sbSearchCBLiveDocs').value + '&wiki=on','CBLiveDocsSearchResults')">
+		<!--- ColdBox Forums link --->
+		<cfset rc.CBForumsHref = "http://groups.google.com/group/coldbox">
 		<!--- Search ColdBox Forums link --->
 		<cfset rc.searchCBForumsHref = "window.open('http://groups.google.com/group/coldbox/search?q='+ getElementById('sbSearchCBForums').value + '&qt_g','CBForumsSearchResults')">
 

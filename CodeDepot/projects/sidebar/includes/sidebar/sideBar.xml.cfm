@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <!-- 
-Author 	 :	Ernst van der Linden
+Author 	 :	Ernst van der Linden (evdlinden@gmail.com)
 Date     :	08/09/2008
 Description : Default properties of the SideBar. 
 		
@@ -10,7 +10,7 @@ Modification History:
 	<Properties>
 			
 			<!-- Enable, true/false -->
-			<Property name="isEnabled">true</Property> 
+			<Property name="isEnabled">false</Property> 
 			
 			<!-- Y offset -->
 			<Property name="yOffset">50</Property>
@@ -19,9 +19,8 @@ Modification History:
 			<Property name="links">
 				<![CDATA[
 					[
-					{"desc":"ColdBox Live Docs","href":"http:\/\/ortus.svnrepository.com\/coldbox\/trac.cgi"}
-					,{"desc":"ColdBox API","href":"http:\/\/www.coldboxframework.com\/api\/"}
-					,{"desc":"ColdBox Forums","href":"http:\/\/groups.google.com\/group\/coldbox"}
+					{"desc":"ColdBox API","href":"http:\/\/www.coldboxframework.com\/api\/"}
+					,{"desc":"ColdBox Credits","href":"http:\/\/ortus.svnrepository.com\/coldbox\/trac.cgi\/wiki\/cbCredits"}
 					]
 				]]>
 			</Property>

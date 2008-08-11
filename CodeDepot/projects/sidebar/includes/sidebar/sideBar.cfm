@@ -1,5 +1,5 @@
 <!-----------------------------------------------------------------------
-Author 	 :	Ernst van der Linden
+Author 	 :	Ernst van der Linden (evdlinden@gmail.com)
 Date     :	7/31/2008
 Description : Shows the ColdBox Sidebar 
 		
@@ -33,18 +33,21 @@ Modification History:
 			</tr>	
 			<!--- DebugMode? --->
 			<cfif getDebugMode()>
-			<tr>
-				<td><span class="inputlabel">Dump Variable</span>
-					<input type="text" id="sbDumpVar" style="width:75px;">
-					<input type="button" value="Dump" onclick="#rc.dumpvarHref#">
-				</td>
-			</tr>	
-			<tr>
-				<td><a onclick="#rc.cachePanelHref#">Open Cache Monitor</a></td>
-			</tr>	
-			<tr>
-				<td><a onclick="#rc.profilerHref#">Open Profiler Monitor</a></td>
-			</tr>	
+				<!--- Dump var enabled? --->
+				<cfif getSetting("EnableDumpVar")>
+					<tr>
+						<td><span class="inputlabel">Dump Variable</span>
+							<input type="text" id="sbDumpVar" style="width:75px;">
+							<input type="button" value="Dump" onclick="#rc.dumpvarHref#">
+						</td>
+					</tr>	
+				</cfif>
+				<tr>
+					<td><a onclick="#rc.cachePanelHref#">Open Cache Monitor</a></td>
+				</tr>	
+				<tr>
+					<td><a onclick="#rc.profilerHref#">Open Profiler Monitor</a></td>
+				</tr>	
 			</cfif>
 			<tr>
 				<td><h1>Reset</h1></td>
@@ -71,13 +74,13 @@ Modification History:
 				<td><h1>Search</h1></td>
 			</tr>
 			<tr>
-				<td><span class="inputlabel">ColdBox Live Docs</span>
+				<td><span class="inputlabel"><a href="#rc.CBLiveDocsHref#" target="_blank">ColdBox Live Docs</a></span>
 					<input type="text" id="sbSearchCBLiveDocs" style="width:75px;">
 					<input type="button" value="Search" onclick="#rc.searchCBLiveDocsHref#">
 				</td>
 			</tr>				
 			<tr>
-				<td><span class="inputlabel">ColdBox Forums</span>
+				<td><span class="inputlabel"><a href="#rc.CBForumsHref#" target="_blank">ColdBox Forums</a></span>
 					<input type="text" id="sbSearchCBForums" style="width:75px;">
 					<input type="button" value="Search" onclick="#rc.searchCBForumsHref#">
 				</td>

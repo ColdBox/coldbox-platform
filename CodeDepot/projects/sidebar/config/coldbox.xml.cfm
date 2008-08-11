@@ -113,7 +113,7 @@
 	 -->
 	<YourSettings>
 		<!-- Show SideBar? true/false, else leave blank. -->
-		<Setting name="SideBar" value="true" />
+		<Setting name="ColdBoxSideBar" value="false" />
 	</YourSettings>
 	
 	<!-- Custom Conventions : You can override the framework wide conventions of the locations of the needed objects
@@ -231,14 +231,19 @@
 	</Interceptors>
 	-->
 	
-	
 	<Interceptors>
 		<!-- SES
 	 		<Interceptor class="coldbox.system.interceptors.ses">
 				<Property name="configFile">config/routes.cfm</Property>
 			</Interceptor>
 		 -->	
- 		<Interceptor class="sidebar.interceptors.sideBar">
+
+		<Interceptor class="coldbox.system.interceptors.environmentControl">
+		  <Property name="configFile">config/environments.xml.cfm</Property>
+		  <Property name="fireOnInit">false</Property>
+		</Interceptor> 		
+
+		<Interceptor class="sidebar.interceptors.sideBar">
 			<!-- Y offset, else leave blank -->
 			<Property name="yOffset"></Property>
 			<!-- Links (JSON array of objects), else leave blank
