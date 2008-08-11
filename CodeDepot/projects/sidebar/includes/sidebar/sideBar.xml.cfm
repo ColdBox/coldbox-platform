@@ -22,10 +22,6 @@ Modification History:
 					{"desc":"ColdBox Live Docs","href":"http:\/\/ortus.svnrepository.com\/coldbox\/trac.cgi"}
 					,{"desc":"ColdBox API","href":"http:\/\/www.coldboxframework.com\/api\/"}
 					,{"desc":"ColdBox Forums","href":"http:\/\/groups.google.com\/group\/coldbox"}
-					,{"desc":"My API","href":"http:\/\/localhost\/myApi/"}
-					,{"desc":"My Database Schema","href":"http:\/\/localhost\/myDatabaseSchema.pdf"}
-					,{"desc":"My Batch File","href":"C:\/\/Batch Files\/myBatch.bat"}
-					,{"desc":"My Program","href":"C:\/\/Program Files\/My Program.exe"}
 					]
 				]]>
 			</Property>
