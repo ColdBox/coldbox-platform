@@ -75,13 +75,13 @@ function initSideBar() {
 	if (NS6){
 		sideBar=document.getElementById("ColdBoxSideBar").style;
 		sideBarContainer=document.getElementById("ColdBoxSideBarContainer").style;
-		sideBarContainer.clip="rect(0 "+(document.getElementById("SideBar").offsetWidth)+" "+document.getElementById("ColdBoxSideBar").offsetHeight+" 0)";
+		sideBarContainer.clip="rect(0 "+(document.getElementById("ColdBoxSideBar").offsetWidth)+" "+document.getElementById("ColdBoxSideBar").offsetHeight+" 0)";
 		sideBar.visibility="visible";
 	}
 	else if (IE) {
 		sideBar=document.all("ColdBoxSideBar").style;
 		sideBarContainer=document.all("ColdBoxSideBarContainer").style;
-		sideBarContainer.clip="rect(0 "+SideBar.offsetWidth+" "+SideBar.offsetHeight+" 0)";
+		sideBarContainer.clip="rect(0 "+ColdBoxSideBar.offsetWidth+" "+ColdBoxSideBar.offsetHeight+" 0)";
 		sideBarContainer.visibility = "visible";
 	}
 	if(isScrollSideBar){

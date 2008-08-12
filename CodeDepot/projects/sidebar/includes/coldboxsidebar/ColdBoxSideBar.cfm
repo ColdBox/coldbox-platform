@@ -18,7 +18,7 @@ Modification History:
 <div id="ColdBoxSideBarContainer" style="visibility:hidden;position:absolute;left:0px;top:#getproperty('yOffset')#px;z-index:9999;width:#getproperty('width')#px">
 	<div id="ColdBoxSideBar" style="position:absolute;left:-#( getproperty('invisibleWidth'))#px;top:0;z-Index:9999;" onmouseover="moveOut()" onmouseout="moveBack()">
 		<form id="sbForm" style="margin:0;">
-		<table border="0" cellpadding="0" cellspacing="0" width="#getproperty('width')#">
+		<table id="ColdBoxSideBarTable" border="0" cellpadding="0" cellspacing="0" width="#getproperty('width')#">
 			<tr>
 				<td class="top" width="#getproperty('invisibleWidth')#" nowrap><h1>Settings</h1></td>
 				<td background="" rowspan="#(12 + ArrayLen(local.links))#" width="#getproperty('visibleWidth')#" nowrap class="bar" valign="#getproperty('imageVAlign')#" align="left"><img src="#getproperty('imagePath')#" width="22" height="160" border="0" /></td>

@@ -163,7 +163,7 @@ Modification History:
 
 		<!--- Render? --->
 		<cfif getIsRender(arguments.event)>
-			<cfsavecontent variable="renderedSideBar"><cfinclude template="../includes/sideBar/sideBar.cfm"></cfsavecontent>
+			<cfsavecontent variable="renderedSideBar"><cfinclude template="../includes/coldboxsideBar/ColdBoxSideBar.cfm"></cfsavecontent>
 		</cfif>
 		<cfreturn renderedSideBar>	
 	</cffunction>

@@ -5,18 +5,18 @@ Description : Default stylesheet of the SideBar.
 		
 Modification History:
 */
-#SideBar table{
+#ColdBoxSideBar table{
 	font-family: Verdana, Tahoma, Arial, Helvetica, sans-serif;	
-	font-size: 10px;
+	font-size: 10px !important;
 }
- #SideBar h1 {
+ #ColdBoxSideBar h1 {
 	font-size: 11px;
 	color: #CC0001;
 	margin:0;
 	text-transform: uppercase;
 }
 
-#SideBar td {
+#ColdBoxSideBar td {
 	background-color: #fff;
 	border-top: 1px solid #EBEBEB;
 	border-right: 2px solid #EBEBEB;
@@ -24,46 +24,46 @@ Modification History:
 	padding-left:7px;
 }
 
-#SideBar td.top {
+#ColdBoxSideBar td.top {
 	border-top: 2px solid #EBEBEB;
 }
-#SideBar td.bottom {
+#ColdBoxSideBar td.bottom {
 	border-bottom: 2px solid #EBEBEB;
 }
 
-#SideBar td.bar {
+#ColdBoxSideBar td.bar {
 	padding: 0;
 	border: 0;
 	background-color: transparent;
 	width:20px;
 }
 
-#SideBar select {
+#ColdBoxSideBar select {
 	font-size: 11px;
 }
 
-#SideBar input {
+#ColdBoxSideBar input {
 	font-size: 11px;
 }
 
-#SideBar .checkboxlabel {
+#ColdBoxSideBar .checkboxlabel {
 	font-weight:bold;
 	color: #0087dd;
 	display:inline;
 	padding-left:3px;
 }
-#SideBar .inputlabel {
+#ColdBoxSideBar .inputlabel {
 	font-weight:bold;
 	color: #0087dd;
 	display:block;
 	margin-bottom:3px;
 }
-#SideBar a {
+#ColdBoxSideBar a {
 	cursor: pointer;
 	font-weight:bold;
 	color: #0087dd;
 	text-decoration: none;
 }
-#SideBar a:hover {
+#ColdBoxSideBar a:hover {
 	text-decoration: underline;
 }
