@@ -18,28 +18,28 @@ Modification History:
 <div id="ColdBoxSideBarContainer" style="visibility:hidden;position:absolute;left:0px;top:#getproperty('yOffset')#px;z-index:9999;width:#getproperty('width')#px">
 	<div id="ColdBoxSideBar" style="position:absolute;left:-#( getproperty('invisibleWidth'))#px;top:0;z-Index:9999;" onmouseover="moveOut()" onmouseout="moveBack()">
 		<form id="sbForm" style="margin:0;">
-		<table id="ColdBoxSideBarTable" border="0" cellpadding="0" cellspacing="0" width="#getproperty('width')#">
+		<table id="ColdBoxSideBarTbl" border="0" cellpadding="0" cellspacing="0" width="#getproperty('width')#">
 			<tr>
-				<td class="top" width="#getproperty('invisibleWidth')#" nowrap><h1>Settings</h1></td>
-				<td background="" rowspan="#(12 + ArrayLen(local.links))#" width="#getproperty('visibleWidth')#" nowrap class="bar" valign="#getproperty('imageVAlign')#" align="left"><img src="#getproperty('imagePath')#" width="22" height="160" border="0" /></td>
+				<td class="ColdBoxSideBarTop" width="#getproperty('invisibleWidth')#" nowrap><h1>Settings</h1></td>
+				<td background="" rowspan="#(12 + ArrayLen(local.links))#" width="#getproperty('visibleWidth')#" nowrap class="ColdBoxSideBarImgBar" valign="#getproperty('imageVAlign')#" align="left"><img src="#getproperty('imagePath')#" width="22" height="160" border="0" /></td>
 			</tr>
 			<tr>
-				<td><input type="checkbox" name="sbIsEnabled" value="1" checked  onclick="location.href='#local.enableHref#'"><span class="checkboxlabel">Show SideBar</span></td>
+				<td><input type="checkbox" class="ColdBoxSideBarCheckBox" name="sbIsEnabled" value="1" checked  onclick="location.href='#local.enableHref#'"><span class="ColdBoxSideBarCheckboxlabel">Show SideBar</span></td>
 			</tr>	
 			<tr>
 				<td><h1>Debug</h1></td>
 			</tr>
 			<tr>
-				<td><input type="checkbox" name="sbIsDebugmode" value="1" onclick="location.href='#local.debugModeHref#'" #iif(getDebugMode(),DE('checked'),'')#><span class="checkboxlabel">Show Debug Panel</span></td>
+				<td><input type="checkbox" class="ColdBoxSideBarCheckBox" name="sbIsDebugmode" value="1" onclick="location.href='#local.debugModeHref#'" #iif(getDebugMode(),DE('checked'),'')#><span class="ColdBoxSideBarCheckboxlabel">Show Debug Panel</span></td>
 			</tr>	
 			<!--- DebugMode? --->
 			<cfif getDebugMode()>
 				<!--- Dump var enabled? --->
 				<cfif getSetting("EnableDumpVar")>
 					<tr>
-						<td><span class="inputlabel">Dump Variable</span>
-							<input type="text" id="sbDumpVar" style="width:75px;">
-							<input type="button" value="Dump" onclick="#local.dumpvarHref#">
+						<td><span class="ColdBoxSideBarInputlabel">Dump Variable</span>
+							<input type="text" class="ColdBoxSideBarText" id="sbDumpVar">
+							<input type="button" class="ColdBoxSideBarBtn" value="Dump" onclick="#local.dumpvarHref#">
 						</td>
 					</tr>	
 				</cfif>
@@ -60,12 +60,12 @@ Modification History:
 				<td><a href="#local.clearCacheHref#">Clear Cache</a></td>
 			</tr>	
 			<tr>
-				<td><span class="inputlabel">Clear Scope</span>
-				<select id="sbClearScope" name="sbClearScope" size="1" style="width:75px;">
+				<td><span class="ColdBoxSideBarInputlabel">Clear Scope</span>
+				<select id="sbClearScope" name="sbClearScope" size="1">
 					<option value="session">Session</option>
 					<option value="client">Client</option>
 				</select>
-				<input type="button" value="Clear" onclick="#local.clearScopeHref#">
+				<input type="button" class="ColdBoxSideBarBtn" value="Clear" onclick="#local.clearScopeHref#">
 				</td>
 			</tr>	
 			<tr>
@@ -75,15 +75,15 @@ Modification History:
 				<td><h1>Search</h1></td>
 			</tr>
 			<tr>
-				<td><span class="inputlabel"><a href="#local.CBLiveDocsHref#" target="_blank">ColdBox Live Docs</a></span>
-					<input type="text" id="sbSearchCBLiveDocs" style="width:75px;">
-					<input type="button" value="Search" onclick="#local.searchCBLiveDocsHref#">
+				<td><span class="ColdBoxSideBarInputlabel"><a href="#local.CBLiveDocsHref#" target="_blank">ColdBox Live Docs</a></span>
+					<input type="text" class="ColdBoxSideBarText" id="sbSearchCBLiveDocs">
+					<input type="button" class="ColdBoxSideBarBtn" value="Search" onclick="#local.searchCBLiveDocsHref#">
 				</td>
 			</tr>				
 			<tr>
-				<td><span class="inputlabel"><a href="#local.CBForumsHref#" target="_blank">ColdBox Forums</a></span>
-					<input type="text" id="sbSearchCBForums" style="width:75px;">
-					<input type="button" value="Search" onclick="#local.searchCBForumsHref#">
+				<td><span class="ColdBoxSideBarInputlabel"><a href="#local.CBForumsHref#" target="_blank">ColdBox Forums</a></span>
+					<input type="text" class="ColdBoxSideBarText" id="sbSearchCBForums">
+					<input type="button" class="ColdBoxSideBarBtn" value="Search" onclick="#local.searchCBForumsHref#">
 				</td>
 			</tr>				
 			<!--- Links? --->
@@ -106,7 +106,7 @@ Modification History:
 <script type="text/javascript">
 	// Left and width correction?
 	if (NS6){
-		document.getElementById("ColdBox").style.left = parseInt(document.getElementById("ColdBox").style.left)+10+"px"; 
+		document.getElementById("ColdBoxSideBar").style.left = parseInt(document.getElementById("ColdBoxSideBar").style.left)+10+"px"; 
 		sideBarWidth= #(getproperty('invisibleWidth') - 10)#;
 	} else {
 		sideBarWidth= #getproperty('invisibleWidth')#;
