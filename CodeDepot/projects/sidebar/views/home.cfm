@@ -11,7 +11,7 @@
 <br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
 
 
-
+<a href="javascript:alert(getScrollXY().y)">srcOfY</a>
 
 
 </cfoutput>

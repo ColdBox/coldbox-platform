@@ -244,8 +244,10 @@
 		</Interceptor> 		
 
 		<Interceptor class="sidebar.interceptors.sideBar">
-			<!-- Y offset, else leave blank -->
+			<!-- Y offset: number, else leave blank -->
 			<Property name="yOffset"></Property>
+			<!-- Scroll: true/false, else leave blank -->
+			<Property name="isScroll">true</Property>
 			<!-- Links (JSON array of objects), else leave blank
 			e.g. 
 				[

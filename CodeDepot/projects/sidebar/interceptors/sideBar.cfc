@@ -8,6 +8,7 @@ Modification History:
 08/09/2008 evdlinden : postRender appendToBuffer, onException appendToBuffer, xmlParse of sideBar properties
 08/10/2008 evdlinden : use properties instead of sideBar structure. Enable/disable sideBar through url param sbIsEnabled=1
 08/11/2008 evdlinden : implmented afterAspectsLoad. Enable/disable property needs to be set afterConfigurationLoad interceptor points, which is used by the environment interceptor
+08/12/2008 evdlinden : getRenderedSideBar, switched from request scope to local var scope. We don't want to show sideBar vars if in debugmode. isScroll property implemented. 
 ----------------------------------------------------------------------->
 <cfcomponent name="coldBoxSideBar" output="true" extends="coldbox.system.interceptor">
 
@@ -23,6 +24,9 @@ Modification History:
 			
 			if( not propertyExists( 'yOffset') or not isNumeric(getproperty('yOffset') ) ){
 				setProperty('yOffset', getPropertyDefault('yOffset'));
+			}
+			if( not propertyExists( 'isScroll') or not isBoolean(getproperty('isScroll') ) ){
+				setProperty('isScroll', getPropertyDefault('isScroll'));
 			}
 			if( not propertyExists( 'links') or not isArray(getproperty('links') ) ){
 				setProperty('links', getPropertyDefault('links') );
@@ -123,37 +127,38 @@ Modification History:
 		<cfargument name="event" required="true" type="coldbox.system.beans.requestContext">
 		
 		<cfset var renderedSideBar = ''>
-		<cfset var links = getproperty('links')>
-		<cfset var i = 0>
-		<cfset var rc = arguments.event.getCollection()>
+		<cfset var i =0>
+		<cfset var local = StructNew()>
 
-		<cfset rc.currentURL = getCurrentURL()>
+		<cfset local.links = getproperty('links')>
+		<!--- Get current url without sideBar relevant params --->
+		<cfset local.currentURL = getCurrentURL()>
 		<!--- Enable link --->
-		<cfset rc.enableHref = rc.currentURL & '&sbIsEnabled=0'>
+		<cfset local.enableHref = local.currentURL & '&sbIsEnabled=0'>
 		<!--- Reload framework link --->
-		<cfset rc.fwReInitHref = rc.currentURL & '&fwreinit=1'>
+		<cfset local.fwReInitHref = local.currentURL & '&fwreinit=1'>
 		<!--- Enable/disable DebugMode link --->
-		<cfset rc.debugModeHref = rc.currentURL & '&debugmode=#( IIF( not getDebugMode(), DE("1"), DE("0") )  )#'>		
+		<cfset local.debugModeHref = local.currentURL & '&debugmode=#( IIF( not getDebugMode(), DE("1"), DE("0") )  )#'>		
 		<!--- Clear cache link --->
-		<cfset rc.clearCacheHref = rc.currentURL & '&sbIsClearCache=1'>
+		<cfset local.clearCacheHref = local.currentURL & '&sbIsClearCache=1'>
 		<!--- Clear scope link --->
-		<cfset rc.clearScopeHref = "location.href='#rc.currentURL#&sbClearScope='+ getElementById('sbClearScope').value;">
+		<cfset local.clearScopeHref = "location.href='#local.currentURL#&sbClearScope='+ getElementById('sbClearScope').value;">
 		<!--- Clear log link --->
-		<cfset rc.clearLogHref = rc.currentURL & '&sbIsClearLog=1'>
+		<cfset local.clearLogHref = local.currentURL & '&sbIsClearLog=1'>
 		<!--- Cache panel link --->
-		<cfset rc.cachePanelHref = "window.open('index.cfm?debugpanel=cache','cache','status=1,toolbar=0,location=0,resizable=1,scrollbars=1,height=750,width=800')">
+		<cfset local.cachePanelHref = "window.open('index.cfm?debugpanel=cache','cache','status=1,toolbar=0,location=0,resizable=1,scrollbars=1,height=750,width=800')">
 		<!--- Profiler link --->
-		<cfset rc.profilerHref = "window.open('index.cfm?debugpanel=profiler','profilermonitor','status=1,toolbar=0,location=0,resizable=1,scrollbars=1,height=750,width=800')">
+		<cfset local.profilerHref = "window.open('index.cfm?debugpanel=profiler','profilermonitor','status=1,toolbar=0,location=0,resizable=1,scrollbars=1,height=750,width=800')">
 		<!--- Dump var link --->
-		<cfset rc.dumpvarHref = "location.href='#rc.currentURL#&dumpvar='+ getElementById('sbDumpVar').value;">
+		<cfset local.dumpvarHref = "location.href='#local.currentURL#&dumpvar='+ getElementById('sbDumpVar').value;">
 		<!--- ColdBox Live Docs link --->
-		<cfset rc.CBLiveDocsHref = "http://ortus.svnrepository.com/coldbox/trac.cgi">
+		<cfset local.CBLiveDocsHref = "http://ortus.svnrepository.com/coldbox/trac.cgi">
 		<!--- Search ColdBox Live Docs link --->
-		<cfset rc.searchCBLiveDocsHref = "window.open('http://ortus.svnrepository.com/coldbox/trac.cgi/search?q='+ getElementById('sbSearchCBLiveDocs').value + '&wiki=on','CBLiveDocsSearchResults')">
+		<cfset local.searchCBLiveDocsHref = "window.open('http://ortus.svnrepository.com/coldbox/trac.cgi/search?q='+ getElementById('sbSearchCBLiveDocs').value + '&wiki=on','CBLiveDocsSearchResults')">
 		<!--- ColdBox Forums link --->
-		<cfset rc.CBForumsHref = "http://forums.coldboxframework.com/index.cfm">
+		<cfset local.CBForumsHref = "http://forums.coldboxframework.com/index.cfm">
 		<!--- Search ColdBox Forums link --->
-		<cfset rc.searchCBForumsHref = "window.open('http://forums.coldboxframework.com/index.cfm?event=ehForums.doSearch&searchterms='+ getElementById('sbSearchCBForums').value + '&searchtype=any','CBForumsSearchResults')">
+		<cfset local.searchCBForumsHref = "window.open('http://forums.coldboxframework.com/index.cfm?event=ehForums.doSearch&searchterms='+ getElementById('sbSearchCBForums').value + '&searchtype=any','CBForumsSearchResults')">
 
 		<!--- Render? --->
 		<cfif getIsRender(arguments.event)>

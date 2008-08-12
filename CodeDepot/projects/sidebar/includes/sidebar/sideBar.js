@@ -10,7 +10,7 @@ Modification History:
 NS6 = (document.getElementById&&!document.all);
 IE = (document.all);
 moving=setTimeout('null',1);
-
+	
 function moveOut() {
 	if ((NS6)&&parseInt(sideBar.left)<0 || IE && sideBar.pixelLeft<0){
 		clearTimeout(moving);
@@ -35,6 +35,7 @@ function moveBack1() {
 		moving=setTimeout('null',1);
 	}
 }
+
 function slideSideBar(num){
 	if (IE) {
 		sideBar.pixelLeft += num;
@@ -44,18 +45,14 @@ function slideSideBar(num){
 	}
 }
 
-function scrollSlideBar() {
+function scrollSideBar() {
 	var smooth = 0;
-	if (NS6) {
-		winY = window.pageYOffset;
-	}
-	if (IE) {
-		winY = truebody().scrollTop;
-	}
-	if (winY!=lastY&&winY>YOffset) {
-		smooth = .2 * (winY - lastY - YOffset);
-	}else if (YOffset+lastY>YOffset) {
-		smooth = .2 * (winY - lastY - (YOffset-(YOffset-winY)));
+	var windowY = getScrollXY().y;
+
+	if (windowY!=lastWindowY&&windowY>YOffset) {
+		smooth = .2 * (windowY - lastWindowY - YOffset);
+	}else if (YOffset+lastWindowY>YOffset) {
+		smooth = .2 * (windowY - lastWindowY - (YOffset-(YOffset-windowY)));
 	} else {
 		smooth=0;
 	}
@@ -65,13 +62,13 @@ function scrollSlideBar() {
 		smooth = Math.floor(smooth);
 	}	
 	if (IE){
-		sideBar.pixelTop+=smooth;
+		sideBar.top=parseInt(sideBar.top)+smooth+"px";
 	} 
 	if (NS6){
-		sideBar.top=parseInt(sideBar.top)+smooth+"px"	
+		sideBar.top=parseInt(sideBar.top)+smooth+"px";	
 	} 
-	lastY = lastY+smooth;
-	setTimeout('scrollSlideBar()', 1)
+	lastWindowY = lastWindowY+smooth;
+	setTimeout('scrollSideBar()', 1)
 }
 
 function initSideBar() {
@@ -87,7 +84,25 @@ function initSideBar() {
 		sideBarContainer.clip="rect(0 "+SideBar.offsetWidth+" "+SideBar.offsetHeight+" 0)";
 		sideBarContainer.visibility = "visible";
 	}
-	if(isScrollSlideBar){
-		scrollSlideBar();
+	if(isScrollSideBar){
+		scrollSideBar();
 	}
+}
+
+function getScrollXY() {
+  var scrollXY = {x:0,y:0};
+  if( typeof( window.pageYOffset ) == 'number' ) {
+    //Netscape compliant
+    scrollXY.y = window.pageYOffset;
+    scrollXY.x = window.pageXOffset;
+  } else if( document.body && ( document.body.scrollLeft || document.body.scrollTop ) ) {
+    //DOM compliant
+    scrollXY.y = document.body.scrollTop;
+    scrollXY.x = document.body.scrollLeft;
+  } else if( document.documentElement && ( document.documentElement.scrollLeft || document.documentElement.scrollTop ) ) {
+    //IE6 standards compliant mode
+    scrollXY.y = document.documentElement.scrollTop;
+    scrollXY.x = document.documentElement.scrollLeft;
+  }
+  return scrollXY;
 }

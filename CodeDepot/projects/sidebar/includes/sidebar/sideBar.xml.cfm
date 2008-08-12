@@ -5,6 +5,7 @@ Date     :	08/09/2008
 Description : Default properties of the SideBar. 
 		
 Modification History:
+08/12/2008 evdlinden : isScroll property implemented. 
 -->
 <Sidebar>
 	<Properties>
@@ -14,6 +15,9 @@ Modification History:
 			
 			<!-- Y offset -->
 			<Property name="yOffset">50</Property>
+
+			<!-- Static -->
+			<Property name="isScroll">true</Property>
 			
 			<!-- Links (JSON array of objects) -->
 			<Property name="links">
