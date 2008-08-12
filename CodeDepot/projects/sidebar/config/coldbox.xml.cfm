@@ -243,11 +243,11 @@
 		  <Property name="fireOnInit">false</Property>
 		</Interceptor> 		
 
-		<Interceptor class="sidebar.interceptors.sideBar">
+		<Interceptor class="sidebar.interceptors.coldboxSideBar">
 			<!-- Y offset: number, else leave blank -->
 			<Property name="yOffset"></Property>
 			<!-- Scroll: true/false, else leave blank -->
-			<Property name="isScroll">true</Property>
+			<Property name="isScroll">false</Property>
 			<!-- Links (JSON array of objects), else leave blank
 			e.g. 
 				[

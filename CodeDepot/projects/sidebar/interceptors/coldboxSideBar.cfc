@@ -8,9 +8,10 @@ Modification History:
 08/09/2008 evdlinden : postRender appendToBuffer, onException appendToBuffer, xmlParse of sideBar properties
 08/10/2008 evdlinden : use properties instead of sideBar structure. Enable/disable sideBar through url param sbIsEnabled=1
 08/11/2008 evdlinden : implmented afterAspectsLoad. Enable/disable property needs to be set afterConfigurationLoad interceptor points, which is used by the environment interceptor
-08/12/2008 evdlinden : getRenderedSideBar, switched from request scope to local var scope. We don't want to show sideBar vars if in debugmode. isScroll property implemented. 
+08/12/2008 evdlinden : getRenderedSideBar, switched from request scope to local var scope. We don't want to show sideBar vars if in debugmode. 
+					   isScroll property implemented. Changed xml location (SideBar=ColdBoxSideBar)
 ----------------------------------------------------------------------->
-<cfcomponent name="coldBoxSideBar" output="true" extends="coldbox.system.interceptor">
+<cfcomponent name="coldboxSideBar" output="true" extends="coldbox.system.interceptor">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
@@ -201,7 +202,7 @@ Modification History:
 		
  		<cftry>
 			<!--- Read SideBar XML --->
-			<cffile action="read" file="#ExpandPath('includes/sidebar/sideBar.xml.cfm')#" variable="sideBarXMLDoc">
+			<cffile action="read" file="#ExpandPath('includes/coldboxsidebar/coldboxSideBar.xml.cfm')#" variable="sideBarXMLDoc">
 			<!--- Parse XML --->
 			<cfset sideBarXML = XmlParse(sideBarXMLDoc)>
 			<!--- Set xml properties array --->
@@ -220,7 +221,7 @@ Modification History:
 			</cfloop>
 			
 			<cfcatch type="any">
-				<cfthrow message="SideBar: xml file default properties read error. Check default SideBar.xml file ." detail="#cfcatch.message#"> 
+				<cfthrow message="ColdBoxSideBar: xml file default properties read error. Check default ColdBoxSideBar.xml file ." detail="#cfcatch.message#"> 
 			</cfcatch>
 		</cftry>	
 	</cffunction>		
