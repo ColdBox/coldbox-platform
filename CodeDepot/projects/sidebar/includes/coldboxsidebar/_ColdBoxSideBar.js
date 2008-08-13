@@ -20,7 +20,7 @@ coldbox.SideBar = function(arguments){
 coldbox.SideBar.prototype.init = function(arguments)
 {
 	// Needed for FireFox display problem
-	var NS6CorrectionX = 10
+	var NS6CorrectionX = 10;
 	
 	// Used to store time out functions. Needs to be in global scope
 	this.moving = setTimeout('null',1);
