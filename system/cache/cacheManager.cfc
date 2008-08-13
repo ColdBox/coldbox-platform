@@ -148,6 +148,22 @@ Modification History:
 		<!--- Return Target Object --->
 		<cfreturn local.targetObject>
 	</cffunction>
+	
+	<!--- getCachedObjectMetadata --->
+	<cffunction name="getCachedObjectMetadata" output="false" access="public" returntype="struct" hint="Get the cached object's metadata structure. If the object does not exist, it returns an empty structure.">
+		<!--- ************************************************************* --->
+		<cfargument name="objectKey" type="any" required="true" hint="The key of the object to lookup its metadata">
+		<!--- ************************************************************* --->
+		<cfscript>
+			/* Check if in the pool first */
+			if( getObjectPool().lookup(arguments.objectKey) ){
+				return getObjectPool().getObjectMetadata(arguments.objectKey);
+			}
+			else{
+				return structnew();
+			}
+		</cfscript>
+	</cffunction>
 
 	<!--- Set an Object in the cache --->
 	<cffunction name="set" access="public" output="false" returntype="boolean" hint="sets an object in cache. Sets might be expensive. If the JVM threshold is used and it has been reached, the object won't be cached. If the pool is at maximum it will expire using its eviction policy and still cache the object. Cleanup will be done later.">
