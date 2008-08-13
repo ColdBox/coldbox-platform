@@ -104,15 +104,6 @@ Modification History:
 </div>	
 
 <script type="text/javascript">
-	// Left and width correction?
-	/*
-	if (NS6){
-		document.getElementById("ColdBoxSideBar").style.left = parseInt(document.getElementById("ColdBoxSideBar").style.left)+10+"px"; 
-		sideBarWidth= #(getproperty('invisibleWidth') - 10)#;
-	} else {
-		sideBarWidth= #getproperty('invisibleWidth')#;
-	}
-	*/
 	coldBoxSideBar = new coldbox.SideBar
 						( 
 							{

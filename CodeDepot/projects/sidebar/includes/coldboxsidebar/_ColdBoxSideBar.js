@@ -19,6 +19,9 @@ coldbox.SideBar = function(arguments){
 
 coldbox.SideBar.prototype.init = function(arguments)
 {
+	// Needed for FireFox display problem
+	var NS6CorrectionX = 10
+	
 	// Used to store time out functions. Needs to be in global scope
 	this.moving = setTimeout('null',1);
 
@@ -35,6 +38,11 @@ coldbox.SideBar.prototype.init = function(arguments)
 	if ( this.getIsNS6() ){
 		this.setSideBarElement( document.getElementById(arguments.elementId) );
 		this.setContainerElement( document.getElementById(arguments.containerElementId) );
+		// Left correction
+		this.getSideBarElement().style.left = parseInt(this.getSideBarElement().style.left) + NS6CorrectionX + "px"; 
+		// Width correction
+		this.setWidth( (this.getWidth()-NS6CorrectionX) );
+		
 	} else if ( this.getIsIE() ) {
 		this.setSideBarElement( document.all(arguments.elementId) );
 		this.setContainerElement( document.all(arguments.containerElementId) );
