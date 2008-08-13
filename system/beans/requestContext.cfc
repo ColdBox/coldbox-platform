@@ -338,7 +338,7 @@ Modification History:
 	<cffunction name="NoRender" access="public" returntype="void" hint="Set the flag that tells the framework not to render, just execute">
 		<cfargument name="remove" required="false" type="boolean" default="false" hint="If true, it removes the flag, else its set.">
 		<cfscript>
-			if (arguments.remove)
+			if (arguments.remove eq false)
 				setValue("coldbox_norender",true);
 			else
 				removeValue("coldbox_norender");
