@@ -16,7 +16,7 @@ Modification History:
 
 <cfoutput>
 <div id="ColdBoxSideBarContainer" style="visibility:hidden;position:absolute;left:0px;top:#getproperty('yOffset')#px;z-index:9999;width:#getproperty('width')#px">
-	<div id="ColdBoxSideBar" style="position:absolute;left:-#( getproperty('invisibleWidth'))#px;top:0;z-Index:9999;" onmouseover="moveOut()" onmouseout="moveBack()">
+	<div id="ColdBoxSideBar" style="position:absolute;left:-#( getproperty('invisibleWidth'))#px;top:0;z-Index:9999;" onmouseover="coldBoxSideBar.moveOut()" onmouseout="coldBoxSideBar.moveBack()">
 		<form id="sbForm" style="margin:0;">
 		<table id="ColdBoxSideBarTbl" border="0" cellpadding="0" cellspacing="0" width="#getproperty('width')#">
 			<tr>
@@ -105,17 +105,25 @@ Modification History:
 
 <script type="text/javascript">
 	// Left and width correction?
+	/*
 	if (NS6){
 		document.getElementById("ColdBoxSideBar").style.left = parseInt(document.getElementById("ColdBoxSideBar").style.left)+10+"px"; 
 		sideBarWidth= #(getproperty('invisibleWidth') - 10)#;
 	} else {
 		sideBarWidth= #getproperty('invisibleWidth')#;
 	}
-	slideSpeed=20;
-	waitTime=100; 
-	lastWindowY=0;	
-	YOffset=#getproperty('yOffset')#;
-	isScrollSideBar=#getproperty('isScroll')#;
-	setTimeout('initSideBar();', 1);
+	*/
+	coldBoxSideBar = new coldbox.SideBar
+						( 
+							{
+								elementId:"ColdBoxSideBar"
+								,containerElementId:"ColdBoxSideBarContainer"		
+							 	,width: #getproperty("invisibleWidth")#
+							 	,slideSpeed:20
+							 	,waitTime:100
+							 	,yOffset:#getproperty("yOffset")#
+							 	,isScroll:#getproperty("isScroll")#
+							}
+						);
 </script>
 </cfoutput>
