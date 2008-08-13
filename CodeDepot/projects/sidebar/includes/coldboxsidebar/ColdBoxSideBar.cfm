@@ -119,8 +119,8 @@ Modification History:
 								elementId:"ColdBoxSideBar"
 								,containerElementId:"ColdBoxSideBarContainer"		
 							 	,width: #getproperty("invisibleWidth")#
-							 	,slideSpeed:20
-							 	,waitTime:100
+							 	,slideSpeed:#getproperty("slideSpeed")#
+							 	,waitTimeBeforeClose:#getproperty("waitTimeBeforeClose")#
 							 	,yOffset:#getproperty("yOffset")#
 							 	,isScroll:#getproperty("isScroll")#
 							}

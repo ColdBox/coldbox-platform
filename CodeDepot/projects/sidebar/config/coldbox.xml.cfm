@@ -248,6 +248,10 @@
 			<Property name="yOffset"></Property>
 			<!-- Scroll: true/false, else leave blank -->
 			<Property name="isScroll">false</Property>
+			<!-- Slide Speed: number, else leave blank -->
+			<Property name="slideSpeed"></Property>
+			<!-- Wait time before closing: number, else leave blank -->
+			<Property name="waitTimeBeforeClose"></Property>
 			<!-- Links (JSON array of objects), else leave blank
 			e.g. 
 				[
@@ -261,7 +265,6 @@
 				]			
 			 -->
  			<Property name="links"></Property>
-			
 			<!-- Width of the sidebar including visible width, else leave blank -->
 			<Property name="width"></Property>
 			<!-- Visible width, else leave blank  -->

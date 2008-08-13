@@ -26,7 +26,7 @@ coldbox.SideBar.prototype.init = function(arguments)
 	this.setIsIE( (document.all) );
 	this.setLastWindowY(0); 
 	this.setSlideSpeed(arguments.slideSpeed); 
-	this.setWaitTime(arguments.waitTime);   
+	this.setWaitTimeBeforeClose(arguments.waitTimeBeforeClose);   
 	this.setYOffset(arguments.yOffset);   
 	this.setIsScroll(arguments.isScroll);   
 	this.setWidth(arguments.width);   
@@ -66,8 +66,8 @@ coldbox.SideBar.prototype.getIsNS6 = function(){ return this.isNS6;}
 coldbox.SideBar.prototype.setSlideSpeed = function(slideSpeed){ this.slideSpeed = slideSpeed; }
 coldbox.SideBar.prototype.getSlideSpeed = function(){ return this.slideSpeed;}
 // Wait Time
-coldbox.SideBar.prototype.setWaitTime = function(waitTime){ this.waitTime = waitTime; }
-coldbox.SideBar.prototype.getWaitTime = function(){ return this.waitTime;}
+coldbox.SideBar.prototype.setWaitTimeBeforeClose = function(waitTimeBeforeClose){ this.waitTimeBeforeClose = waitTimeBeforeClose; }
+coldbox.SideBar.prototype.getWaitTimeBeforeClose = function(){ return this.waitTimeBeforeClose;}
 // Y Offset
 coldbox.SideBar.prototype.setYOffset = function(yOffset){ this.yOffset = yOffset; }
 coldbox.SideBar.prototype.getYOffset = function(){ return this.yOffset;}
@@ -98,7 +98,7 @@ coldbox.SideBar.prototype.moveBack = function(){
 	var self = this;	
 	clearTimeout(this.moving);
 	var selfMoveBack1 = function moveBack1(){ self.moveBack1(); }
-	this.moving = setTimeout(selfMoveBack1, this.getWaitTime());
+	this.moving = setTimeout(selfMoveBack1, this.getWaitTimeBeforeClose());
 }
 // Move Back 1
 coldbox.SideBar.prototype.moveBack1 = function(){

@@ -26,6 +26,12 @@ Modification History:
 			if( not propertyExists( 'yOffset') or not isNumeric(getproperty('yOffset') ) ){
 				setProperty('yOffset', getPropertyDefault('yOffset'));
 			}
+			if( not propertyExists( 'slideSpeed') or not isNumeric(getproperty('slideSpeed') ) ){
+				setProperty('slideSpeed', getPropertyDefault('slideSpeed'));
+			}
+			if( not propertyExists( 'waitTimeBeforeClose') or not isNumeric(getproperty('waitTimeBeforeClose') ) ){
+				setProperty('waitTimeBeforeClose', getPropertyDefault('waitTimeBeforeClose'));
+			}
 			if( not propertyExists( 'isScroll') or not isBoolean(getproperty('isScroll') ) ){
 				setProperty('isScroll', getPropertyDefault('isScroll'));
 			}

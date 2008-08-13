@@ -16,6 +16,12 @@ Modification History:
 			<!-- Y offset -->
 			<Property name="yOffset">50</Property>
 
+			<!-- Slide Speed -->
+			<Property name="slideSpeed">15</Property>
+
+			<!-- Wait Time Before Close -->
+			<Property name="waitTimeBeforeClose">250</Property>
+
 			<!-- Static -->
 			<Property name="isScroll">false</Property>
 			
