@@ -1,7 +1,7 @@
 /*********************************************************************
 Author 	 :	Ernst van der Linden
 Date     :	7/31/2008
-Description : Shows the ColdBox Sidebar 
+Description : JS Functions for the ColdBox Sidebar 
 		
 Modification History:
 08/10/2008 evdlinden : FireFox problem solved

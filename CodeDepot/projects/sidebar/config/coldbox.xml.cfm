@@ -113,7 +113,7 @@
 	 -->
 	<YourSettings>
 		<!-- Show SideBar? true/false, else leave blank. -->
-		<Setting name="ColdBoxSideBar" value="false" />
+		<Setting name="ColdBoxSideBar" value="enable" />
 	</YourSettings>
 	
 	<!-- Custom Conventions : You can override the framework wide conventions of the locations of the needed objects
@@ -247,7 +247,7 @@
 			<!-- Y offset: number, else leave blank -->
 			<Property name="yOffset"></Property>
 			<!-- Scroll: true/false, else leave blank -->
-			<Property name="isScroll">false</Property>
+			<Property name="isScroll"></Property>
 			<!-- Slide Speed: number, else leave blank -->
 			<Property name="slideSpeed"></Property>
 			<!-- Wait time before closing: number, else leave blank -->
