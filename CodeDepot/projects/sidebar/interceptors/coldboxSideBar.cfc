@@ -20,6 +20,15 @@ Modification History:
 		<cfscript>
 			// Read SideBar XML
 			readSideBarXML();
+			// Set css default path
+			setPropertyDefault('cssPath','#CGI.SCRIPT_NAME#?sbContent=css');
+			// Set image default path
+			setPropertyDefault('imagePath','#CGI.SCRIPT_NAME#?sbContent=img');
+			// Set js path
+			setProperty( 'jsPath', '#CGI.SCRIPT_NAME#?sbContent=js' );
+						
+			// URL params which are used by the sideBar
+			setProperty( 'urlParamNameList', "fwreinit,debugmode,dumpVar,sbIsClearCache,sbClearScope,sbIsClearLog,sbIsEnabled");
 			
 			/* Start processing properties */
 			
@@ -47,28 +56,28 @@ Modification History:
 			if( not propertyExists('imagePath') or not REFindNoCase("[A-Z]",getproperty('imagePath')) ){
 				setProperty( 'imagePath', getPropertyDefault('imagePath') );
 			}
-			if( not propertyExists('cssPath') or not REFindNoCase("[A-Z]",getproperty('cssPath')) ){
-				setProperty( 'cssPath', getPropertyDefault('cssPath') );
-			}
 			if( not propertyExists('imageVAlign') or not ListFindNoCase('top,middle,bottom', getproperty('imageVAlign') ) ){
 				setProperty( 'imageVAlign', getPropertyDefault('imageVAlign') );
 			}
+			if( not propertyExists('cssPath') or not REFindNoCase("[A-Z]",getproperty('cssPath')) ){
+				setProperty( 'cssPath', getPropertyDefault('cssPath') );
+			}
 			// Calculate and set invisible width
 			setProperty( 'invisibleWidth', ( getproperty('width') - getproperty('visibleWidth') ) );
-			
-			// URL params which are used by the sideBar
-			setProperty( 'urlParamNameList', "fwreinit,debugmode,dumpVar,sbIsClearCache,sbClearScope,sbIsClearLog,sbIsEnabled");
 			
 		</cfscript>
 	</cffunction>
 
 <!------------------------------------------- INTERCEPTION POINTS ------------------------------------------->
 
-	<cffunction name="afterAspectsLoad" access="public" returntype="void" output="false">
+	<cffunction name="afterAspectsLoad" access="public" returntype="void" output="true">
 		<cfargument name="event" required="true" type="coldbox.system.beans.requestContext">
 		
 		<cfset var rc = event.getCollection()>
-
+		<cfset var contentType = ''>
+		<cfset var fileContent = ''>
+		<cfset var filePath = ''>
+		
 		<!--- Set isEnabled property after environmentControl interception --->
 		<cfif not settingExists('ColdBoxSideBar') or not isBoolean( getSetting('ColdBoxSideBar') )>
 			<cfset setProperty('isEnabled', getPropertyDefault('isEnabled') )>
@@ -82,6 +91,28 @@ Modification History:
 		<cfargument name="event" required="true" type="coldbox.system.beans.requestContext">
 		
 		<cfset var rc = event.getCollection()>
+
+		<!--- Get Content(js,css,img) of SideBar?  --->
+		<cfif settingExists('ColdBoxSideBar') AND isBoolean( getSetting('ColdBoxSideBar') ) AND getSetting('ColdBoxSideBar') AND ListFindNoCase("css,js,img",event.getValue('sbContent',''))>
+			<!--- Get binary content --->
+			<cfswitch expression="#rc.sbContent#">
+				<cfcase value="css">
+					<cfset contentType = 'text/css'>
+					<cfset filePath = ExpandPath( getPropertyDefault('includesDirectory') & '_ColdBoxSideBar.css')>
+				</cfcase>
+				<cfcase value="js">
+					<cfset contentType = 'text/js'>
+					<cfset filePath = ExpandPath( getPropertyDefault('includesDirectory') & '_ColdBoxSideBar.js')>
+				</cfcase>
+				<cfcase value="img">
+					<cfset contentType = 'image/png'>
+					<cfset filePath = ExpandPath( getPropertyDefault('includesDirectory') & 'ColdBoxSideBar.png')>
+				</cfcase>
+			</cfswitch>
+			<!--- Output binary file content  --->
+			<cfcontent type="#contentType#" variable="#getFileContent(filePath,true)#">
+			<cfabort>
+		</cfif>
 
 		<!--- Enable/disable the sidebar through url? Has been enabled in config? --->
 		<cfif settingExists('ColdBoxSideBar') AND isBoolean( getSetting('ColdBoxSideBar') ) AND getSetting('ColdBoxSideBar') AND isBoolean( event.getValue('sbIsEnabled','') )>
@@ -245,6 +276,26 @@ Modification History:
 		</cfloop>		
 		<cfreturn "#CGI.SCRIPT_NAME#?#noSideBarQueryString#">
 		
+	</cffunction>
+
+	<cffunction name="getFileContent" access="private" returntype="any">
+		<cfargument name="filePath" type="string" required="true">
+		<cfargument name="isBinary" type="boolean" default="false" required="false">
+		
+		<cfset var fileContent = ''>
+		<cfset var readType = 'read'>
+		
+		<!--- Binary read? --->
+		<cfif arguments.isBinary>
+			<cfset readType = 'readbinary'>
+		</cfif>
+		
+		<!--- Absolute filePath? --->
+		
+		<!--- read the file binary data --->
+		<cffile action="#readType#" file="#arguments.filePath#" variable="fileContent">
+
+		<cfreturn fileContent>				
 	</cffunction>
 
 </cfcomponent>

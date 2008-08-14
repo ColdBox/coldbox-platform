@@ -6,6 +6,7 @@ Description : Default properties of the SideBar.
 		
 Modification History:
 08/12/2008 evdlinden : isScroll property implemented. SideBar changed to ColdBoxSideBar: css, image
+08/14/2008 evdlinden : imgPath,cssPAth and jsPath now in interceptor.
 -->
 <Sidebar>
 	<Properties>
@@ -41,14 +42,11 @@ Modification History:
 			<!-- Visible width  -->
 			<Property name="visibleWidth">12</Property>
 			
-			<!--Full path from the application's root. -->
-			<Property name="imagePath">includes/coldboxsideBar/ColdBoxSideBar.png</Property>
-			
 			<!-- Vertical alignment of the image: top,middle or bottom  -->
 			<Property name="imageVAlign">middle</Property>
 			
-			<!--Full path from the application's root -->
-			<Property name="cssPath">includes/coldboxsidebar/_ColdBoxSideBar.css</Property>
-
+			<!-- includes directory: normally /coldbox/includes/coldboxsidebar/ -->
+			<Property name="includesDirectory">/sidebar/includes/coldboxsidebar/</Property>
+			
 	</Properties>
 </Sidebar>

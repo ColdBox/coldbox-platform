@@ -11,17 +11,19 @@ Modification History:
 08/12/2008 evdlinden : getRenderedSideBar, switched from request scope to local var scope. We don't want to show sideBar vars if in debugmode. isScroll property implemented. 
 ----------------------------------------------------------------------->
 
-<cfhtmlhead text='<script language="javascript" src="includes/coldboxsidebar/_ColdBoxSideBar.js" type="text/javascript"></script>' />
-<cfhtmlhead text='<link rel="stylesheet" href="#getproperty('cssPath')#" type="text/css" media="screen">' />
-
+<cfhtmlhead text='<script language="javascript" src="#TRIM(getproperty('jsPath'))#" type="text/javascript"></script>' />
+<cfhtmlhead text='<link rel="stylesheet" href="#TRIM(getproperty('cssPath'))#" type="text/css" media="screen">' />
 <cfoutput>
+<!-- 
+ColdBox SideBar: created on 7/31/2008 by Ernst van der Linden (evdlinden@gmail.com | http://evdlinden.behindthe.net)
+ -->
 <div id="ColdBoxSideBarContainer" style="visibility:hidden;position:absolute;left:0px;top:#getproperty('yOffset')#px;z-index:9999;width:#getproperty('width')#px">
 	<div id="ColdBoxSideBar" style="position:absolute;left:-#( getproperty('invisibleWidth'))#px;top:0;z-Index:9999;" onmouseover="coldBoxSideBar.moveOut()" onmouseout="coldBoxSideBar.moveBack()">
 		<form id="sbForm" style="margin:0;">
 		<table id="ColdBoxSideBarTbl" border="0" cellpadding="0" cellspacing="0" width="#getproperty('width')#">
 			<tr>
 				<td class="ColdBoxSideBarTop" width="#getproperty('invisibleWidth')#" nowrap><h1>Settings</h1></td>
-				<td background="" rowspan="#(12 + ArrayLen(local.links))#" width="#getproperty('visibleWidth')#" nowrap class="ColdBoxSideBarImgBar" valign="#getproperty('imageVAlign')#" align="left"><img src="#getproperty('imagePath')#" width="22" height="160" border="0" /></td>
+				<td background="" rowspan="#(12 + ArrayLen(local.links))#" width="#getproperty('visibleWidth')#" nowrap class="ColdBoxSideBarImgBar" valign="#getproperty('imageVAlign')#" align="left"><img src="#TRIM(getproperty('imagePath'))#" width="22" height="160" border="0" /></td>
 			</tr>
 			<tr>
 				<td><input type="checkbox" class="ColdBoxSideBarCheckBox" name="sbIsEnabled" value="1" checked  onclick="location.href='#local.enableHref#'"><span class="ColdBoxSideBarCheckboxlabel">Show SideBar</span></td>
