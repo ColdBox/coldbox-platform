@@ -74,9 +74,6 @@ Modification History:
 		<cfargument name="event" required="true" type="coldbox.system.beans.requestContext">
 		
 		<cfset var rc = event.getCollection()>
-		<cfset var contentType = ''>
-		<cfset var fileContent = ''>
-		<cfset var filePath = ''>
 		
 		<!--- Set isEnabled property after environmentControl interception --->
 		<cfif not settingExists('ColdBoxSideBar') or not isBoolean( getSetting('ColdBoxSideBar') )>
@@ -91,7 +88,10 @@ Modification History:
 		<cfargument name="event" required="true" type="coldbox.system.beans.requestContext">
 		
 		<cfset var rc = event.getCollection()>
-
+		<cfset var contentType = ''>
+		<cfset var fileContent = ''>
+		<cfset var filePath = ''>
+		
 		<!--- Get Content(js,css,img) of SideBar?  --->
 		<cfif settingExists('ColdBoxSideBar') AND isBoolean( getSetting('ColdBoxSideBar') ) AND getSetting('ColdBoxSideBar') AND ListFindNoCase("css,js,img",event.getValue('sbContent',''))>
 			<!--- Get binary content --->
@@ -108,6 +108,9 @@ Modification History:
 					<cfset contentType = 'image/png'>
 					<cfset filePath = ExpandPath( getPropertyDefault('includesDirectory') & 'ColdBoxSideBar.png')>
 				</cfcase>
+				<cfdefaultcase>
+					<cfabort>
+				</cfdefaultcase>
 			</cfswitch>
 			<!--- Output binary file content  --->
 			<cfcontent type="#contentType#" variable="#getFileContent(filePath,true)#">
