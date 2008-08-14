@@ -89,7 +89,6 @@ Modification History:
 		
 		<cfset var rc = event.getCollection()>
 		<cfset var contentType = ''>
-		<cfset var fileContent = ''>
 		<cfset var filePath = ''>
 		
 		<!--- Get Content(js,css,img) of SideBar?  --->
