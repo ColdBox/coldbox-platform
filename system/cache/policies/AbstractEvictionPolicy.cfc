@@ -7,9 +7,9 @@ www.coldboxframework.com | www.luismajano.com | www.ortussolutions.com
 Author     :	Luis Majano
 Date        :	11/14/2007
 Description :
-	This is an abstractEviction Policy object.
+	This is an AbstractEviction Policy object.
 ----------------------------------------------------------------------->
-<cfcomponent name="abstractEvictionPolicy" hint="An abstract cache eviction policy" output="false">
+<cfcomponent name="AbstractEvictionPolicy" hint="An abstract cache eviction policy" output="false">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 	

@@ -46,7 +46,7 @@
         <Setting name="CacheFreeMemoryPercentageThreshold" value="3"/>
         <!--ColdBox Cache Parameter: Whether reaping with default last access timeouts -->
         <Setting name="CacheUseLastAccessTimeouts" value="true"/> 
-        <!--ColdBox Cache Parameter: The default eviction policy (LFU or LRU) -->
+        <!--ColdBox Cache Parameter: The default eviction policy (LFU or LRU or FIFO) -->
         <Setting name="CacheEvictionPolicy" value="LRU"/> 
         <!-- Debugger settings -->
         <Setting name="PersistentRequestProfiler" value="true"></Setting>

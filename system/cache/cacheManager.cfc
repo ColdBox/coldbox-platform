@@ -27,9 +27,9 @@ Modification History:
 		<cfargument name="controller" type="any" required="true">
 		<cfscript>
 			/* Set Controller Injection */
-			setController( arguments.controller );
+			instance.controller = arguments.controller;
 			/* Lock Name */
-			instance.lockName = getController().getAppHash() & "_OCM_OPERATION";
+			instance.lockName = instance.controller.getAppHash() & "_OCM_OPERATION";
 			/* Runtime Java object */
 			instance.javaRuntime = CreateObject("java", "java.lang.Runtime");
 			/* Event URL Facade Setup */
@@ -50,13 +50,23 @@ Modification History:
 		<!--- ************************************************************* --->
 		<cfargument name="cacheConfigBean" type="coldbox.system.beans.cacheConfigBean" required="true" hint="The configuration object">
 		<!--- ************************************************************* --->
-		<cfscript>			
+		<cfscript>		
+			var oEvictionPolicy = 0;
+				
 			//set the config bean
 			setCacheConfigBean(arguments.cacheConfigBean);
 			//Reset the statistics.
 			getCacheStats().clearStats();
+			
 			//Setup the eviction Policy to use
-			setEvictionPolicy( CreateObject("component","coldbox.system.cache.policies.#getCacheConfigBean().getCacheEvictionPolicy()#").init(this) );
+			try{
+				oEvictionPolicy = CreateObject("component","coldbox.system.cache.policies.#getCacheConfigBean().getCacheEvictionPolicy()#").init(this);
+			}
+			Catch(Any e){
+				getUtil().throwit('Error creating eviction policy','Error creating the eviction policy object: #e.message# #e.detail#','cacheManager.EvictionPolicyCreationException');	
+			}
+			/* Save the Policy */
+			instance.evictionPolicy = oEvictionPolicy;
 		</cfscript>
 	</cffunction>
 
@@ -186,14 +196,14 @@ Modification History:
 		<!--- JVMThreshold Check if enabled. --->
 		<cfif ccBean.getCacheFreeMemoryPercentageThreshold() neq 0 and isJVMSafe eq false>
 			<!--- Evict Using Policy --->
-			<cfset getEvictionPolicy().execute()>
+			<cfset instance.evictionPolicy.execute()>
 			<!--- Do another Check, just in case --->
 			<cfset isJVMSafe = ThresholdChecks()>
 		</cfif>
 		<!--- Check for max objects reached --->
 		<cfif ccBean.getCacheMaxObjects() neq 0 and getSize() gte ccBean.getCacheMaxObjects()>
 			<!--- Evict Using Policy --->
-			<cfset getEvictionPolicy().execute()>
+			<cfset instance.evictionPolicy.execute()>
 		</cfif>
 		
 		<!--- Check if the JVM is safe for caching, if not, don't cache. --->
@@ -215,13 +225,13 @@ Modification History:
 			</cflock>
 			
 			<!--- Only execute once the framework has been initialized --->
-			<cfif getController().getColdboxInitiated()>
+			<cfif instance.controller.getColdboxInitiated()>
 				<!--- InterceptMetadata --->
 				<cfset interceptMetadata.cacheObjectKey = arguments.objectKey>
 				<cfset interceptMetadata.cacheObjectTimeout = arguments.Timeout>
 				<cfset interceptMetadata.cacheObjectLastAccessTimeout = arguments.LastAccessTimeout>
 				<!--- Execute afterCacheElementInsert Interception --->
-				<cfset getController().getInterceptorService().processState("afterCacheElementInsert",interceptMetadata)>				
+				<cfset instance.controller.getInterceptorService().processState("afterCacheElementInsert",interceptMetadata)>				
 			</cfif>
 			<!--- Return True --->
 			<cfreturn true>
@@ -249,7 +259,7 @@ Modification History:
 			<!--- InterceptMetadata --->
 			<cfset interceptMetadata.cacheObjectKey = arguments.objectKey>
 			<!--- Execute afterCacheElementInsert Interception --->
-			<cfset getController().getInterceptorService().processState("afterCacheElementRemoved",interceptMetadata)>
+			<cfset instance.controller.getInterceptorService().processState("afterCacheElementRemoved",interceptMetadata)>
 		</cfif>
 		
 		<cfreturn ClearCheck>
@@ -296,7 +306,7 @@ Modification History:
 		<cfargument name="async" 		type="boolean"  required="false" default="true" hint="Run asynchronously or not"/>
 		<!--- ************************************************************* --->
 		<cfscript>
-			var cacheKey = getController().getHandlerService().EVENT_CACHEKEY_PREFIX & arguments.eventsnippet;
+			var cacheKey = instance.controller.getHandlerService().EVENT_CACHEKEY_PREFIX & arguments.eventsnippet;
 			
 			//Check if we are purging with query string
 			if( len(arguments.queryString) neq 0 ){
@@ -314,7 +324,7 @@ Modification History:
 		<cfargument name="async" 		type="boolean"  required="false" default="true" hint="Run asynchronously or not"/>
 		<!--- ************************************************************* --->
 		<cfscript>
-			var cacheKey = getController().getHandlerService().EVENT_CACHEKEY_PREFIX;
+			var cacheKey = instance.controller.getHandlerService().EVENT_CACHEKEY_PREFIX;
 			
 			/* Clear All Events */
 			clearByKeySnippet(keySnippet=cacheKey,regex=false,async=false);
@@ -341,7 +351,7 @@ Modification History:
 		<cfargument name="async" 		type="boolean"  required="false" default="true" hint="Run asynchronously or not"/>
 		<!--- ************************************************************* --->
 		<cfscript>
-			var cacheKey = getController().getPlugin("renderer").VIEW_CACHEKEY_PREFIX;
+			var cacheKey = instance.controller.getPlugin("renderer").VIEW_CACHEKEY_PREFIX;
 			
 			/* Clear All the views */
 			clearByKeySnippet(keySnippet=cacheKey,regex=false,async=false);
@@ -483,7 +493,7 @@ Modification History:
 	</cffunction>
 	
 	<!--- Get The Cache Item Types --->
-	<cffunction name="getItemTypes" access="public" output="false" returntype="struct" hint="Get the item types of the cache.">
+	<cffunction name="getItemTypes" access="public" output="false" returntype="struct" hint="Get the item types of the cache. These are calculated according to internal coldbox entry prefixes">
 		<cfscript>
 		var x = 1;
 		var itemList = getObjectPool().getObjectsKeyList();
@@ -535,7 +545,7 @@ Modification History:
 	</cffunction>
 	
 	<!--- The cache Config Bean --->
-	<cffunction name="setCacheConfigBean" access="public" returntype="void" output="false" hint="Set the cache configuration bean.">
+	<cffunction name="setCacheConfigBean" access="public" returntype="void" output="false" hint="Set & Override the cache configuration bean. You can use this to programmatically alter the cache.">
 		<cfargument name="CacheConfigBean" type="coldbox.system.beans.cacheConfigBean" required="true">
 		<cfset instance.CacheConfigBean = arguments.CacheConfigBean>
 	</cffunction>
@@ -546,15 +556,6 @@ Modification History:
 	<!--- Java Runtime --->
 	<cffunction name="getjavaRuntime" access="public" returntype="any" output="false" hint="Get the java runtime object.">
 		<cfreturn instance.javaRuntime>
-	</cffunction>
-	
-	<!--- Controller --->
-	<cffunction name="getcontroller" access="public" output="false" returntype="any" hint="Get ColdBox controller">
-		<cfreturn instance.controller/>
-	</cffunction>
-	<cffunction name="setcontroller" access="public" output="false" returntype="void" hint="Set ColdBox controller">
-		<cfargument name="controller" type="any" required="true"/>
-		<cfset instance.controller = arguments.controller/>
 	</cffunction>
 	
 	<!--- Lock Name --->
@@ -569,20 +570,17 @@ Modification History:
 
 	<!--- Get the Pool Metadata --->
 	<cffunction name="getpool_metadata" access="public" returntype="struct" output="false" hint="Get the pool's metadata structure">
-		<cfreturn getObjectPool().getpool_metadata()>
+		<cfreturn duplicate(getObjectPool().getpool_metadata())>
 	</cffunction>
 
-<!------------------------------------------- PRIVATE ------------------------------------------->
-	
-	<!--- Get Set the set eviction Policy --->
-	<cffunction name="getevictionPolicy" access="private" returntype="coldbox.system.cache.policies.abstractEvictionPolicy" output="false">
-		<cfreturn instance.evictionPolicy>
-	</cffunction>
-	<cffunction name="setevictionPolicy" access="private" returntype="void" output="false">
-		<cfargument name="evictionPolicy" type="coldbox.system.cache.policies.abstractEvictionPolicy" required="true">
+	<!--- Set The Eviction Policy --->
+	<cffunction name="setevictionPolicy" access="private" returntype="void" output="false" hint="You can now override the set eviction policy by programmatically sending it in.">
+		<cfargument name="evictionPolicy" type="coldbox.system.cache.policies.AbstractEvictionPolicy" required="true">
 		<cfset instance.evictionPolicy = arguments.evictionPolicy>
 	</cffunction>
 	
+<!------------------------------------------- PRIVATE ------------------------------------------->
+		
 	<!--- Initialize our object cache pool --->
 	<cffunction name="initPool" access="private" output="false" returntype="void" hint="Initialize and set the internal object Pool">
 		<cfscript>

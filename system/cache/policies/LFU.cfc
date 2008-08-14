@@ -7,12 +7,12 @@ www.coldboxframework.com | www.luismajano.com | www.ortussolutions.com
 Author     :	Luis Majano
 Date        :	11/14/2007
 Description :
-	This is an abstractEviction Policy object.
+	This is an AbstractEviction Policy object.
 ----------------------------------------------------------------------->
 <cfcomponent name="LFU" 
 			 output="false" 
 			 hint="LFU Eviction Policy Command" 
-			 extends="coldbox.system.cache.policies.abstractEvictionPolicy">
+			 extends="coldbox.system.cache.policies.AbstractEvictionPolicy">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
