@@ -421,13 +421,19 @@ Modification History:
 					if ( poolStruct[thisKey].Timeout gt 0 ){
 						//Check for creation timeouts and clear
 						if ( dateDiff("n", poolStruct[thisKey].created, now() ) gte poolStruct[thisKey].Timeout ){
+							/* Clear The Key */
 							clearKey(thisKey);
+							/* Announce Expiration */
+							announceExpiration(thisKey);
 							continue;
 						}
 						//Check for last accessed timeouts. If object has not been accessed in the default span
 						if ( ccBean.getCacheUseLastAccessTimeouts() and 
 						     dateDiff("n", poolStruct[thisKey].lastAccesed, now() ) gte ccBean.getCacheObjectDefaultLastAccessTimeout() ){
+							/* Clear the Key */
 							clearKey(thisKey);
+							/* Announce Expiration */
+							announceExpiration(thisKey);
 							continue;
 						}
 					}//end timeout gt 0
@@ -580,7 +586,19 @@ Modification History:
 	</cffunction>
 	
 <!------------------------------------------- PRIVATE ------------------------------------------->
-		
+	
+	<!--- announceExpiration --->
+	<cffunction name="announceExpiration" output="false" access="private" returntype="void" hint="Announce an Expiration">
+		<cfargument name="objectKey" type="string" required="true" hint="The object key to announce expiration"/>
+		<cfscript>
+			var interceptData = structnew();
+			/* interceptData */
+			interceptData.cacheObjectKey = arguments.objectKey;
+			/* Execute afterCacheElementExpired Interception */
+			instance.controller.getInterceptorService().processState("afterCacheElementExpired",interceptData);
+		</cfscript>
+	</cffunction>
+	
 	<!--- Initialize our object cache pool --->
 	<cffunction name="initPool" access="private" output="false" returntype="void" hint="Initialize and set the internal object Pool">
 		<cfscript>
