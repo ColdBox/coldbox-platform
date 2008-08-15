@@ -255,7 +255,7 @@
 			<!-- Links (JSON array of objects), else leave blank
 			e.g. 
 				[
-				"{desc":"ColdBox API","href":"http:\/\/www.coldboxframework.com\/api\/"}
+				{"desc":"ColdBox API","href":"http:\/\/www.coldboxframework.com\/api\/"}
 				,{"desc":"ColdBox Credits","href":"http:\/\/ortus.svnrepository.com\/coldbox\/trac.cgi\/wiki\/cbCredits"}
 				,{"desc":"ColdBox SideBar Help","href":"http:\/\/ortus.svnrepository.com\/coldbox\/trac.cgi\/wiki\/cbSideBar"}
 				,{"desc":"Transfer Docs","href":"http:\/\/docs.transfer-orm.com\/"}
