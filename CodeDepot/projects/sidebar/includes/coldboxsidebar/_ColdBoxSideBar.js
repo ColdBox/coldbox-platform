@@ -1,5 +1,5 @@
 /*********************************************************************
-Author 	 :	Ernst van der Linden
+Author 	 :	Ernst van der Linden (evdlinden@gmail.com | http://evdlinden.behindthe.net)
 Date     :	7/31/2008
 Description : JS Functions for the ColdBox Sidebar 
 		

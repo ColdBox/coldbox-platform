@@ -1,5 +1,5 @@
 <!-----------------------------------------------------------------------
-Author 	 :	Ernst van der Linden (evdlinden@gmail.com)
+Author 	 :	Ernst van der Linden (evdlinden@gmail.com | http://evdlinden.behindthe.net)
 Date     :	7/31/2008
 Description : Intercepts if we need to render the ColdBox SideBar
 		
