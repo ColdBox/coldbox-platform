@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <!-- 
-Author 	 :	Ernst van der Linden (evdlinden@gmail.com | http://evdlinden.behindthe.net)
+Author 	 :	Ernst van der Linden ( evdlinden@gmail.com | http://evdlinden.behindthe.net )
 Date     :	08/09/2008
 Description : Default properties of the SideBar. 
 		
