@@ -31,6 +31,7 @@ Modification History:
 				<![CDATA[
 					[
 					{"desc":"ColdBox API","href":"http:\/\/www.coldboxframework.com\/api\/"}
+				    ,{"desc":"ColdBox SideBar Help","href":"http:\/\/ortus.svnrepository.com\/coldbox\/trac.cgi\/wiki\/cbSideBar"}
 					,{"desc":"ColdBox Credits","href":"http:\/\/ortus.svnrepository.com\/coldbox\/trac.cgi\/wiki\/cbCredits"}
 					]
 				]]>

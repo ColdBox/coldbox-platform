@@ -257,7 +257,8 @@
 				[
 				"{desc":"ColdBox API","href":"http:\/\/www.coldboxframework.com\/api\/"}
 				,{"desc":"ColdBox Credits","href":"http:\/\/ortus.svnrepository.com\/coldbox\/trac.cgi\/wiki\/cbCredits"}
-				,{"desc":"Transfer Dcos","href":"http:\/\/docs.transfer-orm.com\/"}
+				,{"desc":"ColdBox SideBar Help","href":"http:\/\/ortus.svnrepository.com\/coldbox\/trac.cgi\/wiki\/cbSideBar"}
+				,{"desc":"Transfer Docs","href":"http:\/\/docs.transfer-orm.com\/"}
 				,{"desc":"My API","href":"http:\/\/localhost\/myApi/"}
 				,{"desc":"My Database Schema","href":"http:\/\/localhost\/myDatabaseSchema.pdf"}
 				]			
