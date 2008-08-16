@@ -27,7 +27,8 @@
 	<!-- Init -->
 	<target name="init" description="Init">
 		<!-- Version -->
-		<input addproperty="coldbox.version" message="Version" />		
+		<input addproperty="coldbox.version" message="ColdBox Version" />	
+		<input addproperty="dashboard.version" message="Dashboard Version" />
 	</target>
 	
 	<!--Framework Compile Checks -->
@@ -44,6 +45,8 @@
 		<ftp action="send" server="${ftp.server}" userid="${ftp.username}" password="${ftp.password}" 
        		remotedir="${ftp.remotedir}" passive="yes" verbose="yes">
         	<fileset file="${dir.exports}/coldbox_${coldbox.version}.zip" />
+			<fileset file="${dir.exports}/coldbox_standalone_${coldbox.version}.zip" />
+			<fileset file="${dir.exports}/dashboard_${dashboard.version}.zip" />
        	</ftp>		
 	</target>
 	
@@ -100,6 +103,10 @@
 		<!-- Zip Standalone -->
 		<zip destfile="${dir.exports}/coldbox_standalone_${coldbox.version}.zip" basedir="${dir.build}" excludes="dashboard/**,samples/**">								
 		</zip>	
+		
+		<!-- Zip Dashboard -->
+		<zip destfile="${dir.exports}/dashboard_${dashboard.version}.zip" basedir="${dir.build}" includes="dashboard/**">								
+		</zip>
 		
     </target>
 
