@@ -111,7 +111,10 @@
 			*IMPORTANT: use single quotes in this xml file for JSON notation, ColdBox will translate it to double quotes.
 		</YourSettings>
 	 -->
-	<YourSettings></YourSettings>
+	<YourSettings>
+		<!-- Show SideBar? true/false, else leave blank. -->
+		<Setting name="ColdBoxSideBar" value="true" />
+	</YourSettings>
 	
 	<!-- Custom Conventions : You can override the framework wide conventions of the locations of the needed objects
 	<Conventions>
@@ -230,6 +233,39 @@
 		<!-- config file is relative to app root -->
 		<Interceptor class="coldbox.system.interceptors.ses">
 			<Property name="configFile">config/routes.cfm</Property>
+		</Interceptor>
+		<!--- Developer's ColdBox Sidebar --->
+		<Interceptor class="coldbox.system.interceptors.coldboxSideBar">
+			<!-- Y offset: number, else leave blank -->
+			<Property name="yOffset"></Property>
+			<!-- Scroll: true/false, else leave blank -->
+			<Property name="isScroll"></Property>
+			<!-- Slide Speed: number, else leave blank -->
+			<Property name="slideSpeed"></Property>
+			<!-- Wait time before closing: number, else leave blank -->
+			<Property name="waitTimeBeforeClose"></Property>
+			<!-- Links (JSON array of objects), else leave blank
+			e.g. 
+				[
+				{"desc":"ColdBox API","href":"http:\/\/www.coldboxframework.com\/api\/"}
+				,{"desc":"ColdBox Credits","href":"http:\/\/ortus.svnrepository.com\/coldbox\/trac.cgi\/wiki\/cbCredits"}
+				,{"desc":"ColdBox SideBar Help","href":"http:\/\/ortus.svnrepository.com\/coldbox\/trac.cgi\/wiki\/cbSideBar"}
+				,{"desc":"Transfer Docs","href":"http:\/\/docs.transfer-orm.com\/"}
+				,{"desc":"My API","href":"http:\/\/localhost\/myApi/"}
+				,{"desc":"My Database Schema","href":"http:\/\/localhost\/myDatabaseSchema.pdf"}
+				]			
+			 -->
+ 			<Property name="links"></Property>
+			<!-- Width of the sidebar including visible width, else leave blank -->
+			<Property name="width"></Property>
+			<!-- Visible width, else leave blank  -->
+			<Property name="visibleWidth"></Property>
+			<!--Full path from the application's root, else leave blank. -->
+			<Property name="imagePath"></Property>
+			<!-- Vertical alignment of the image: top,middle or bottom, else leave blank  -->
+			<Property name="imageVAlign"></Property>
+			<!--Full path from the application's root, else leave blank -->
+			<Property name="cssPath"></Property>
 		</Interceptor>
 	</Interceptors>
 	
