@@ -110,34 +110,17 @@ ColdBox SideBar: created on 7/31/2008 by Ernst van der Linden (evdlinden@gmail.c
 </div>	
 
 <script type="text/javascript">
-	// Needed to check if ColdBox namespace exists
-	coldBoxSideBarTimeOut = setTimeout('setupColdBoxSideBar();', 1);
-	
-	function setupColdBoxSideBar(){
-	
-		// ColdBox namespace?
-		if (typeof coldbox != 'undefined') {
-			// clear time out
-			clearTimeout(coldBoxSideBarTimeOut);
-			coldBoxSideBarTimeOut=setTimeout('null',1);
-					
-			// Setup ColdBox SideBar
-			coldBoxSideBar = new coldbox.SideBar ( 
-									{
-										elementId:"ColdBoxSideBar"
-										,containerElementId:"ColdBoxSideBarContainer"		
-									 	,width: #getproperty("invisibleWidth")#
-									 	,slideSpeed:#getproperty("slideSpeed")#
-									 	,waitTimeBeforeClose:#getproperty("waitTimeBeforeClose")#
-									 	,yOffset:#getproperty("yOffset")#
-									 	,isScroll:#getproperty("isScroll")#
-									}
-								);	
-		
-		} else {
-			// Wait a while and try setting up ColdBox SideBar again
-			coldBoxSideBarTimeOut = setTimeout('setupColdBoxSideBar();', 1);
-		}	
-	}
+	// Setup ColdBox SideBar
+	coldBoxSideBar = new coldbox.SideBar ( 
+							{
+								elementId:"ColdBoxSideBar"
+								,containerElementId:"ColdBoxSideBarContainer"		
+							 	,width: #getproperty("invisibleWidth")#
+							 	,slideSpeed:#getproperty("slideSpeed")#
+							 	,waitTimeBeforeClose:#getproperty("waitTimeBeforeClose")#
+							 	,yOffset:#getproperty("yOffset")#
+							 	,isScroll:#getproperty("isScroll")#
+							}
+						);	
 </script>
 </cfoutput>
