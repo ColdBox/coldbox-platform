@@ -234,7 +234,7 @@
 		<Interceptor class="coldbox.system.interceptors.ses">
 			<Property name="configFile">config/routes.cfm</Property>
 		</Interceptor>
-		<!--- Developer's ColdBox Sidebar --->
+		<!-- Developer's ColdBox Sidebar -->
 		<Interceptor class="coldbox.system.interceptors.coldboxSideBar">
 			<!-- Y offset: number, else leave blank -->
 			<Property name="yOffset"></Property>
