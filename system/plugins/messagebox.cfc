@@ -208,7 +208,7 @@ Modification History:
 		<cfset var results = "">
 		
 		<cfif msgStruct.type.length() neq 0>
-			<cfsavecontent variable="results"><cfinclude template="../includes/messagebox.cfm"></cfsavecontent>
+			<cfsavecontent variable="results"><cfinclude template="../includes/messagebox/messagebox.cfm"></cfsavecontent>
 		<cfelse>
 			<cfset results = "">
 		</cfif>

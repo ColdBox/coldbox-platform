@@ -16,7 +16,7 @@ Modification History:
 <!--- Style Sheet --->
 <cfif not instance.styleSheet.length()>
 	<style>
-	<cfinclude template="/coldbox/system/includes/cfcviewer.css">
+	<cfinclude template="/coldbox/system/includes/cfcviewer/cfcviewer.css">
 	</style>
 <cfelse>
 <link rel="stylesheet" href="#instance.styleSheet#" type="text/css" />

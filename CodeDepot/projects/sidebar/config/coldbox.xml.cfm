@@ -243,7 +243,7 @@
 		  <Property name="fireOnInit">false</Property>
 		</Interceptor> 		
 
-		<Interceptor class="sidebar.interceptors.coldboxSideBar">
+		<Interceptor class="coldbox.system.interceptors.coldboxSideBar">
 			<!-- Y offset: number, else leave blank -->
 			<Property name="yOffset"></Property>
 			<!-- Scroll: true/false, else leave blank -->

@@ -3,7 +3,7 @@
 <environmentcontrol>
         
 	<!-- give an environment a name and a comma delimited list of url snippets to match -->
-	<environment name="development" urls="localhost">
+	<environment name="development" urls="localhost,cf8apps.lmajano:8080,apps.jfetmac,jfetmac">
 
 		<!--ColdBoxSpecific Settings -->
 		<Setting name="HandlerCaching" value="false" />
