@@ -22,7 +22,7 @@ Description :
 			setController(arguments.controller);
 			
 			/* Register the interception points ENUM */
-			instance.InterceptionPoints = 'afterConfigurationLoad,afterAspectsLoad,afterHandlerCreation,afterPluginCreation,sessionStart,sessionEnd,preProcess,preEvent,postEvent,preRender,postRender,postProcess,afterCacheElementInsert,afterCacheElementRemoved,onException';
+			instance.InterceptionPoints = 'afterConfigurationLoad,afterAspectsLoad,afterHandlerCreation,afterPluginCreation,sessionStart,sessionEnd,preProcess,preEvent,postEvent,preRender,postRender,postProcess,afterCacheElementInsert,afterCacheElementRemoved,onException,afterCacheElementExpired';
 			
 			/* Init Container */
 			instance.interceptionStates = structnew();
