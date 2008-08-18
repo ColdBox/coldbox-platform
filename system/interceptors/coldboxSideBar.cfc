@@ -25,12 +25,19 @@ Modification History:
 		<cfscript>
 			// Read SideBar XML
 			readSideBarXML();
+			/* Check for an app base Path */
+			if( not propertyExists('baseAppPath') ){
+				/* Else Default to cgi.script_name */
+				setProperty('baseAppPath','#CGI.SCRIPT_NAME#');
+			}
+			
 			// Set css default path
-			setPropertyDefault('cssPath','#CGI.SCRIPT_NAME#?sbContent=css');
+			setPropertyDefault('cssPath','#getProperty("baseAppPath")#?sbContent=css');
 			// Set image default path
-			setPropertyDefault('imagePath','#CGI.SCRIPT_NAME#?sbContent=img');
+			setPropertyDefault('imagePath','#getProperty("baseAppPath")#?sbContent=img');
+			
 			// Set js path
-			setProperty( 'jsPath', '#CGI.SCRIPT_NAME#?sbContent=js' );
+			setProperty( 'jsPath', '#getProperty("baseAppPath")#?sbContent=js' );
 						
 			// URL params which are used by the sideBar
 			setProperty( 'urlParamNameList', "fwreinit,debugmode,dumpVar,sbIsClearCache,sbClearScope,sbIsClearLog,sbIsEnabled");
@@ -290,7 +297,7 @@ Modification History:
 				<cfset noSideBarQueryString = ListAppend(noSideBarQueryString,"#LCASE(i)#=#URL[i]#","&")>			
 			</cfif>
 		</cfloop>		
-		<cfreturn "#CGI.SCRIPT_NAME#?#noSideBarQueryString#">		
+		<cfreturn "#getProperty('baseAppPath')#?#noSideBarQueryString#">		
 	</cffunction>
 
 	<!--- getFileContent --->

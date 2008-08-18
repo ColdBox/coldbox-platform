@@ -36,7 +36,7 @@ ColdBox SideBar: created on 7/31/2008 by Ernst van der Linden (evdlinden@gmail.c
 				<td><h1>Debug</h1></td>
 			</tr>
 			<tr>
-				<td><input type="checkbox" class="ColdBoxSideBarCheckBox" name="sbIsDebugmode" value="1" onclick="location.href='#local.debugModeHref#'" #iif(getDebugMode(),DE('checked'),'')#><span class="ColdBoxSideBarCheckboxlabel">Show Debug Panel</span></td>
+				<td><input type="checkbox" class="ColdBoxSideBarCheckBox" name="sbIsDebugmode" value="1" onclick="location.href='#local.debugModeHref#'" <cfif getDebugMode()>checked="true"</cfif>><span class="ColdBoxSideBarCheckboxlabel">Show Debug Panel</span></td>
 			</tr>	
 			<!--- DebugMode? --->
 			<cfif getDebugMode()>
