@@ -74,9 +74,11 @@ ColdBox SideBar: created on 7/31/2008 by Ernst van der Linden (evdlinden@gmail.c
 				<input type="button" class="ColdBoxSideBarBtn" value="Clear" onclick="#local.clearScopeHref#">
 				</td>
 			</tr>	
+			<cfif getSetting('EnableColdboxLogging')>
 			<tr>
 				<td><a href="#local.clearLogHref#">Clear Log</a></td>
 			</tr>	
+			</cfif>
 			<tr>
 				<td><h1>Search</h1></td>
 			</tr>
@@ -86,7 +88,7 @@ ColdBox SideBar: created on 7/31/2008 by Ernst van der Linden (evdlinden@gmail.c
 					<input type="button" class="ColdBoxSideBarBtn" value="Search" onclick="#local.searchCBLiveDocsHref#">
 				</td>
 			</tr>				
-			<tr>
+		<tr>
 				<td><span class="ColdBoxSideBarInputlabel"><a href="#local.CBForumsHref#" target="_blank">ColdBox Forums</a></span>
 					<input type="text" class="ColdBoxSideBarText" id="sbSearchCBForums">
 					<input type="button" class="ColdBoxSideBarBtn" value="Search" onclick="#local.searchCBForumsHref#">
