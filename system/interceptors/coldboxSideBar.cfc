@@ -169,9 +169,11 @@ Modification History:
 	<cffunction name="onException" access="public" returntype="void" output="true">
 		<cfargument name="event" required="true" type="coldbox.system.beans.requestContext">
 		<!--- Render SideBar? --->
-		<cfif getIsRender(arguments.event)>
-			<!--- Append rendered sideBar to buffer --->
-			<cfset appendToBuffer( getRenderedSideBar(arguments.event) )>
+		<cfif isStruct(event.getRenderData()) and structisEmpty(event.getRenderData())>
+			<cfif getIsRender(arguments.event) >
+				<!--- Append rendered sideBar to buffer --->
+				<cfset appendToBuffer( getRenderedSideBar(arguments.event) )>
+			</cfif>
 		</cfif>
 	</cffunction>
 
