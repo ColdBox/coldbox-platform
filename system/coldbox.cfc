@@ -329,11 +329,15 @@ Description :
 				}
 				else{
 					/* Get the incoming pass from form or url */
-					if( structKeyExists(form,"fwreinit") ){
-						incomingPass = form.fwreinit;
+					if( structKeyExists(form,"reinitPass") ){
+						incomingPass = form.reinitPass;
 					}
-					else{
-						incomingPass = url.fwreinit;
+					else{ if(structKeyExists(url,"reinitPass")){
+							incomingPass = url.reinitPass;
+						  }
+						  else{
+						   	incomingPass = "";
+						  }	
 					}
 					/* Compare the passwords */
 					if( Compare(reinitPass, incomingPass) eq 0 ){
