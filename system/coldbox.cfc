@@ -318,8 +318,7 @@ Description :
 			/* Check if we have a reinit password at hand. */
 			if ( application.cbController.settingExists("ReinitPassword") ){
 				reinitPass = application.cbController.getSetting("ReinitPassword");
-			}
-			
+			}			
 			/* Verify the reinit key is passed */
 			if ( structKeyExists(url,"fwreinit") or structKeyExists(form,"fwreinit") ){
 				
@@ -329,15 +328,11 @@ Description :
 				}
 				else{
 					/* Get the incoming pass from form or url */
-					if( structKeyExists(form,"reinitPass") ){
-						incomingPass = form.reinitPass;
+					if( structKeyExists(form,"fwreinit") ){
+						incomingPass = form.fwreinit;
 					}
-					else{ if(structKeyExists(url,"reinitPass")){
-							incomingPass = url.reinitPass;
-						  }
-						  else{
-						   	incomingPass = "";
-						  }	
+					else{
+						incomingPass = url.fwreinit;
 					}
 					/* Compare the passwords */
 					if( Compare(reinitPass, incomingPass) eq 0 ){
