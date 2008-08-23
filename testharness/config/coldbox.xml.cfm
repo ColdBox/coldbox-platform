@@ -124,16 +124,22 @@
 			<Property name="configFile">config/environments.xml.cfm</Property>
 			<Property name="fireOnInit">true</Property>
 		</Interceptor>
+		<Interceptor class="coldbox.CodeDepot.interceptors.com.ortussolutions.deployment.Deploy">
+			<Property name="tagFile">config/_deploy.tag</Property>
+			<Property name="cleanupCommandObject">coldbox.testharness.model.DeployCleanup</Property>
+		</Interceptor>
 		<Interceptor class="coldbox.system.interceptors.autowire">
 			<Property name="debugMode">true</Property>
 			<Property name="enableSetterInjection">false</Property>
 		</Interceptor>
+		<!-- 
 		<Interceptor class="coldbox.testharness.interceptors.executionTracer">
 			<Property name="Simple">Luis</Property>
 			<Property name="Complex">[1,2,3,4,5]</Property>
-		</Interceptor>	
+		</Interceptor>
+			-->	
 		<Interceptor class="coldbox.system.interceptors.ses">
-			<Property name="configFile">config/routes.cfm</Property>
+			<Property name="configFile">/config/routes.cfm</Property>
 		</Interceptor>
 		
 		<Interceptor class="coldbox.testharness.interceptors.errorObserver" />

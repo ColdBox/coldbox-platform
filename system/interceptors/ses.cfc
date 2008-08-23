@@ -37,7 +37,7 @@ Description :
 			}
 			
 			/* Setup the config Path */
-			configFilePath = configFilePath & getProperty('configFile');
+			configFilePath = configFilePath & reReplace(getProperty('ConfigFile'),"^/","");
 			
 			/* We are ready to roll. Import config to setup the routes. */
 			try{
