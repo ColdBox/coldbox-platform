@@ -76,11 +76,8 @@ Description :
 			var acourse = "";
 			var key = "";
 			var cleanedPathInfo = getCGIElement('path_info');
-			var cleanedScriptName = trim(replacenocase(getCGIElement('script_name'),"/index.cfm",""));
+			var cleanedScriptName = trim(reReplacenocase(getCGIElement('script_name'),"[/\\]index\.cfm",""));
 			var routedStruct = structnew();
-			
-			/* Clean again */
-			cleanedScriptName = trim(replacenocase(getCGIElement('script_name'),"\index.cfm",""));
 			
 			/* Check if active or in proxy mode */
 			if ( not getEnabled() or arguments.event.isProxyRequest() )
