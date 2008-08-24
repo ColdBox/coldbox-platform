@@ -126,7 +126,7 @@
 		</Interceptor>
 		<Interceptor class="coldbox.CodeDepot.interceptors.com.ortussolutions.deployment.Deploy">
 			<Property name="tagFile">config/_deploy.tag</Property>
-			<Property name="cleanupCommandObject">coldbox.testharness.model.DeployCleanup</Property>
+			<Property name="deployCommandObject">coldbox.testharness.model.DeployCleanup</Property>
 		</Interceptor>
 		<Interceptor class="coldbox.system.interceptors.autowire">
 			<Property name="debugMode">true</Property>

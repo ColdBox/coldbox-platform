@@ -52,10 +52,10 @@ Interceptor Properties:
 			setSetting("_deploytagTimestamp", FileLastModified(instance.tagFilepath) );
 			
 			/* Check for a cleanupCommandObject */
-			if( propertyExists('cleanupCommandObject') ){
+			if( propertyExists('deployCommandObject') ){
 				try{
 					/* Create it */
-					instance.cleanupCommandObject = createObject("component",getProperty('cleanupCommandObject')).init(controller);
+					instance.deployCommandObject = createObject("component",getProperty('deployCommandObject')).init(controller);
 				}
 				catch(Any e){
 					rethrowit(e);
@@ -97,8 +97,8 @@ Interceptor Properties:
 						try{
 							
 							/* cleanup command */
-							if( propertyExists('cleanupCommandObject') ){
-								instance.cleanupCommandObject.execute();
+							if( propertyExists('deployCommandObject') ){
+								instance.deployCommandObject.execute();
 							}
 							
 							/* Reload ColdBox */
