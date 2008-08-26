@@ -46,7 +46,7 @@ Modification History: March 23,2008 Added new feature to encrypt/decrypt cookie 
 			}
 			
 			/* Do we Encrypt. */
-			if(settingExists('cookiestorage_encryption') and len(getSetting('cookiestorage_encryption'))){
+			if(settingExists('cookiestorage_encryption') and isBoolean(getSetting('cookiestorage_encryption'))){
 				setEncryption(getSetting('cookiestorage_encryption'));
 			}
 			/* Override the Seed if sent in. */
