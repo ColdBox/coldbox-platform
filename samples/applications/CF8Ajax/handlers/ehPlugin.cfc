@@ -73,7 +73,7 @@ Description :	ColdBox Plugins are very powerfull for AOP, I will try to have sam
 		<!--- get Request Collection --->
 		<cfset var rc = event.getCollection() />
 		<cfset var UserInfo = structNew() />
-		<cfset var SimpleValue = "something very simple will be store in cookie" />
+		<cfset var SimpleValue = "This value was encrypted by cookie plugin" />
 		
 		<cfset UserInfo["FirtName"] = "Sana" />
 		<cfset UserInfo["LastName"] = "Ullah" />

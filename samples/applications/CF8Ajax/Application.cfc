@@ -21,6 +21,8 @@ Description :
 	<cfset this.sessionTimeout = createTimeSpan(0,0,30,0)>
 	<cfset this.setClientCookies = true>
 	
+	<!--- Create CF-Mapping for Ajax to work properly... --->
+	<cfset this.mappings['/cf8ajax'] = getDirectoryFromPath(getCurrentTemplatePath())>
 	<!--- COLDBOX STATIC PROPERTY, DO NOT CHANGE UNLESS THIS IS NOT THE ROOT OF YOUR COLDBOX APP --->
 	<cfset COLDBOX_APP_ROOT_PATH = getDirectoryFromPath(getCurrentTemplatePath())>
 

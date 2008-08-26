@@ -10,6 +10,7 @@ Description :
 	This proxy is an inherited coldbox remote proxy used for enabling
 	coldbox as a model framework.
 ----------------------------------------------------------------------->
+<cfajaxproxy cfc="#rc.locColdBoxProxy#" jsclassname="coldboxproxy" />
 
 <script type="text/javascript">
     function doLogin() {
@@ -23,13 +24,11 @@ Description :
         if (auth.validateCredentials()) {
             ColdFusion.Window.hide("loginWindow");
         } else {
-            var msg = document.getElementById("loginWindow_title");
+            var msg = document.getElementById("invalidmsg");
             msg.innerHTML = "Incorrect username/password. Please try again!";
         }
     }
 </script>
-
-<cfajaxproxy cfc="#rc.locColdBoxProxy#" />
 
 <cfif structKeyExists(URL,"logout") and URL.logout>
     <cflogout />
@@ -40,13 +39,14 @@ Description :
                 draggable="false" modal="true" 
                 title="Please login to use this system"
                 initshow="true" width="400" height="250">
-        <!--- Notice that the form does not have a submit button.
-            Submission is done by the doLogin function. --->
+		<div id="invalidmsg" style="font-weight:bold;"></div><br /><br>			
+        <!--- Notice that the form does not have a submit button. Submission is done by the doLogin function. --->
         <cfform name="loginForm" format="xml">
             <cfinput type="text" name="username" label="username" /><br />
             <cfinput type="password" name="password" label="password" />
             <cfinput type="button" name="login" value="Login!" onclick="doLogin();" />
         </cfform>
+		
 		<div id="info-d">
 			Try some wrong username for testing<br>
 			Correct login info:<br />

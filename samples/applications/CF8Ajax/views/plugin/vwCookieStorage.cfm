@@ -31,11 +31,9 @@ coldbox.xml.cfm these setting should be there to activate the encryption in cook
 	This here is dump of struct which was stored in Cookie-Scope. <br />
 	<pre><cfset writeoutput("rc.plugin.getVar('UserInfo')")></pre>
 	<cfdump var="#rc.plugin.getVar('UserInfo')#" label="Stored CF-Struct in Cookie scope">
-	<br />
-	A simple value stored in cookie.
-	""
-	<cfdump var="#rc.plugin.getVar('SimpleValue')#" label="A simple value stored in cookie">
-	""
+	<cfoutput>#RepeatString('<br />',4)#</cfoutput>
+	<h3>A simple value stored in cookie.</h3><hr>
+	<cfoutput><strong> "" #rc.plugin.getVar('SimpleValue')# "" </strong></cfoutput>
 </p>
 
 <br /><br />

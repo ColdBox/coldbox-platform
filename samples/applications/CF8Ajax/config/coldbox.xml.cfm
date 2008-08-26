@@ -4,6 +4,8 @@
 	<Settings>
 		<!--The name of your application.-->
 		<Setting name="AppName"						value="CF8Ajax"/>
+		<!-- I have CF-Mapping  'cf8ajax' which this.mappings['/cf8ajac'] for Ajax stuff to work properly -->
+		<Setting name="AppMapping"					value="cf8ajax"/>
 		<!--Default Debugmode boolean flag (Set to false in production environments)-->
 		<Setting name="DebugMode" 					value="false" />
 		<!--The Debug Password to use in order to activate/deactivate debugmode,activated by url actions -->

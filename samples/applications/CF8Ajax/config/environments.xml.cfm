@@ -31,7 +31,7 @@
 
 	</environment>
 
-	<environment name="staging" urls="staging.realestate.com">
+	<environment name="staging" urls="staging.cf8ajax.com">
 		<!--ColdBoxSpecific Settings -->
 		<Setting name="BaseURL"	value="http://staging.cf8ajax.com/" />
 		<!-- custom settigns  -->
