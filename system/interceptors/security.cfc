@@ -96,7 +96,7 @@ For the latest usage, please visit the wiki.
 					oValidator = CreateObject("component",getProperty('validator'));
 					/* Verify the init */
 					if( structKeyExists(oValidator, "init") ){
-						oValidator = oValidator.init();
+						oValidator = oValidator.init(controller);
 					}
 					/* Cache It */
 					setValidator(oValidator);
