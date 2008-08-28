@@ -273,11 +273,11 @@ Description :
 			<!--- Replace any :parts with a regular expression for matching against the URL --->
 			<!--- Replace -numeric with regex equiv --->
 			<cfset thisPattern = REReplace(thisRoute.pattern, ":.[^-]*?/", "([^/]+?)/", "all") />
-			<cfset thisPattern = REReplace(thisPattern, ":.*?-numeric/", "(([0-9]+)+?)/", "all") />
+			<cfset thisPattern = REReplace(thisPattern, ":.*?-numeric/", "([0-9]+?)/", "all") />
 			
 			<!--- Try to match this route against the URL --->
 			<cfset match = REFindNoCase(thisPattern,requestString,1,true) />
-		
+			<cfdump var="#requestString#"><cfabort>
 			<!--- If a match was made, use the result to route the request --->
 			<cfif (match.len[1] IS NOT 0 AND getProperty('looseMatching')) OR 
 				  (not getProperty('looseMatching') and match.len[1] IS NOT 0 and match.pos[1] EQ 1) >
