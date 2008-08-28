@@ -277,7 +277,7 @@ Description :
 			
 			<!--- Try to match this route against the URL --->
 			<cfset match = REFindNoCase(thisPattern,requestString,1,true) />
-			<cfdump var="#requestString#"><cfabort>
+			
 			<!--- If a match was made, use the result to route the request --->
 			<cfif (match.len[1] IS NOT 0 AND getProperty('looseMatching')) OR 
 				  (not getProperty('looseMatching') and match.len[1] IS NOT 0 and match.pos[1] EQ 1) >
