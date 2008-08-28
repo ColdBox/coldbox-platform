@@ -221,28 +221,16 @@ Modification History:
 	<!--- Validate the definition file --->
 	<cffunction name="validateDefinitionFile" access="private" output="false" returntype="void" hint="Validate the IoC Definition File. Called internally to verify the file location and get the correct path to it.">
 		<cfscript>
-			var appRoot = getController().getAppRootPath();
+			var foundFilePath = "";
 			
-			/* Clean app root */
-			if( right(appRoot,1) neq getSetting("OSFileSeparator",true) ){
-				appRoot = appRoot & getSetting("OSFileSeparator",true);
-			}		
-			
-			/* Relative App Path Check */
-			if( fileExists(appRoot & getIOCDefinitionFile()) ){
-				setExpandedIOCDefinitionFile( appRoot & getIOCDefinitionFile() );
-			}
-			/* Expand Path Check */
-			else if( fileExists( expandPath(getIOCDefinitionFile()) ) ){
-				setExpandedIOCDefinitionFile( ExpandPath(getIOCDefinitionFile()) );
-			}
-			/* Absolute Path Check */
-			else if( fileExists(getIOCDefinitionFile()) ){
-				setExpandedIOCDefinitionFile( getIOCDefinitionFile() );
-			}
-			else{
+			/* Try to locate the path */
+			foundFilePath = locateFilePath(getIOCDefinitionFile());
+			/* Validate it */
+			if( len(foundFilePath) eq 0 ){
 				throw("The definition file: #getIOCDefinitionFile()# does not exist. Please check your path","","ColdBox.plugins.ioc.InvalidDefitinionFile");
 			}
+			/* Save the found location path */
+			setExpandedIOCDefinitionFile( foundFilePath );
 		</cfscript>
 	</cffunction>
 	

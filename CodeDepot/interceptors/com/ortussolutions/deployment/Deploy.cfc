@@ -19,8 +19,9 @@ Instructions:
 Interceptor Properties:
 
 - tagFile : config/_deploy.tag [required]
-- cleanupCommandObject : The class path of the cleanup command object to use [optional]. Must implement
-  an init(controller) and an execute() method.
+- deployCommandObject : The class path of the deploy command object to use [optional]. Must implement
+  an init(controller) and an execute() method.  This command object will be executed before the framework
+  reinit bit is set.
 	
 ----------------------------------------------------------------------->
 <cfcomponent hint="Deployment Control Interceptor"

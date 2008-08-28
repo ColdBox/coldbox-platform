@@ -286,28 +286,14 @@ For the latest usage, please visit the wiki.
 			var xmlRules = "";
 			var x=1;
 			var node = "";
-			var appRoot = getController().getAppRootPath();
-		
-			/* Clean app root */
-			if( right(appRoot,1) neq getSetting("OSFileSeparator",true) ){
-				appRoot = appRoot & getSetting("OSFileSeparator",true);
-			}
 			
-			//Test if the file exists
-			if ( fileExists(appRoot & getProperty('rulesFile')) ){
-				rulesFile = appRoot & getProperty('rulesFile');
-			}
-			/* Expanded Relative */
-			else if( fileExists( ExpandPath(getProperty('rulesFile')) ) ){
-				rulesFile = ExpandPath( getProperty('rulesFile') );
-			}
-			/* Absolute Path */
-			else if( fileExists( getProperty('rulesFile') ) ){
-				rulesFile = getProperty('rulesFile');
-			}
-			else{
+			/* Try to locate the file path */
+			rulesFile = locateFilePath(getProperty('rulesFile'));
+			/* Validate Location */
+			if( len(rulesFile) eq 0 ){
 				throw('Security Rules File could not be located: #getProperty('rulesFile')#. Please check again.','','interceptors.security.rulesFileNotFound');
 			}
+			
 			/* Set the correct expanded path now */
 			setProperty('rulesFile',rulesFile);
 			/* Read in and parse */

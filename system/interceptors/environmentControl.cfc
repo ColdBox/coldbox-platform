@@ -29,30 +29,15 @@ Description :
 	<cffunction name="Configure" access="public" returntype="void" hint="This is the configuration method for your interceptors" output="false" >
 		<cfscript>
 			var configFile = "";
-			var appRoot = getController().getAppRootPath();
-		
-			/* Clean app root */
-			if( right(appRoot,1) neq getSetting("OSFileSeparator",true) ){
-				appRoot = appRoot & getSetting("OSFileSeparator",true);
-			}
 			
-			//Verify that the configFile propety is set
+			/* Verify that the configFile propety is set */
 			if( not propertyExists('configFile') ){
 				throw("Config File property does not exist. Please declare it.",'','interceptors.environmentControl.configFilePropertyNotDefined');
 			}
-			//Test if the file exists AS RELATIVE
-			if ( fileExists(appRoot & getProperty('configFile')) ){
-				configFile = appRoot & getProperty('configFile');
-			}
-			/* Test as expanded relative */
-			else if( fileExists( ExpandPath(getProperty('configFile')) ) ){
-				configFile = ExpandPath( getProperty('configFile') );
-			}
-			/* Test as absolute */
-			else if( fileExists( getProperty('configFile') ) ){
-				configFile = getProperty('configFile');
-			}
-			else{
+			/* Try to locate the path */
+			configFile = locateFilePath(getProperty('configFile'));
+			/* Validate it */
+			if( len(configFile) eq 0 ){
 				throw('Config File could not be located: #getProperty('configFile')#. Please check again.','','interceptors.environmentControl.configFileNotFound');
 			}
 			
