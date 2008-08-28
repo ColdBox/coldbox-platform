@@ -228,17 +228,17 @@ Modification History:
 				appRoot = appRoot & getSetting("OSFileSeparator",true);
 			}		
 			
-			/* Absolute Path Check */
-			if( fileExists(getIOCDefinitionFile()) ){
-				setExpandedIOCDefinitionFile( getIOCDefinitionFile() );
-			}
 			/* Relative App Path Check */
-			else if( fileExists(appRoot & getIOCDefinitionFile()) ){
+			if( fileExists(appRoot & getIOCDefinitionFile()) ){
 				setExpandedIOCDefinitionFile( appRoot & getIOCDefinitionFile() );
 			}
 			/* Expand Path Check */
 			else if( fileExists( expandPath(getIOCDefinitionFile()) ) ){
 				setExpandedIOCDefinitionFile( ExpandPath(getIOCDefinitionFile()) );
+			}
+			/* Absolute Path Check */
+			else if( fileExists(getIOCDefinitionFile()) ){
+				setExpandedIOCDefinitionFile( getIOCDefinitionFile() );
 			}
 			else{
 				throw("The definition file: #getIOCDefinitionFile()# does not exist. Please check your path","","ColdBox.plugins.ioc.InvalidDefitinionFile");
