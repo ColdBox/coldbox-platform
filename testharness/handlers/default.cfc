@@ -37,6 +37,15 @@ Modification History:
 		<cfset event.setView('vwQuote')>
 	</cffunction>
 	
+	<!--- implicit --->
+	<cffunction name="implicit" access="public" returntype="void" output="false" hint="">
+		<cfargument name="Event" type="coldbox.system.beans.requestContext" required="yes">
+	    <cfset var rc = event.getCollection()>
+	    
+	    <cfset rc.ImplicitView = "The implicit view has to be done for event: #event.getCurrentEvent()#">    
+	     
+	</cffunction>
+	
 	<!--- onMissingAction --->
 	<cffunction name="onMissingAction" access="public" returntype="void" output="false" hint="on missing action">
 		<cfargument name="Event" type="coldbox.system.beans.requestContext" required="yes">

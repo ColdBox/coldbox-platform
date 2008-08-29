@@ -182,14 +182,20 @@ Description :
 	</cffunction>
 
 	<!--- Render the layout --->
-	<cffunction name="renderLayout" access="Public" hint="Renders the current layout." output="false" returntype="string">
+	<cffunction name="renderLayout" access="Public" hint="Renders the current layout + view Combinations if declared." output="false" returntype="string">
 		<cfset var cbox_RederedLayout = "">
 		<cfset var Event = controller.getRequestService().getContext()>
 		<cfset var rc = event.getCollection()>
 		
-		<!--- Check if no view has been set, if not, then set the default view --->
+		<!--- Check if no view has been set. --->
 		<cfif event.getCurrentView() eq "">
-			<cfset event.setView(event.getDefaultView())>
+			<!--- Implicit Views according to event --->
+			<cfset event.setView( replace(event.getCurrentEvent(),".","/","all") )>
+			<!--- Check if default view set, if yes, then set it. --->
+			<cfif event.getDefaultView() neq "">
+				<!--- Set the Default View --->
+				<cfset event.setView(event.getDefaultView())>
+			</cfif>
 		</cfif>
 		
 		<cfmodule template="../includes/timer.cfm" timertag="rendering Layout [#Event.getcurrentLayout()#]" controller="#controller#">
