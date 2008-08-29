@@ -78,6 +78,7 @@ Description :
 			var cleanedPathInfo = getCGIElement('path_info');
 			var cleanedScriptName = trim(reReplacenocase(getCGIElement('script_name'),"[/\\]index\.cfm",""));
 			var routedStruct = structnew();
+			var reservedKeys = "handler,action";
 			
 			/* Check if active or in proxy mode */
 			if ( not getEnabled() or arguments.event.isProxyRequest() )
@@ -96,7 +97,10 @@ Description :
 			/* Now course should have all the key/pairs from the URL we need to pass to our event object */
 			for( key in acourse ){
 				arguments.event.setValue( key, acourse[key] );
-				routedStruct[key] = acourse[key];
+				/* Reserved Keys Check */
+				if( not listFindNoCase(reservedKeys,key) ){
+					routedStruct[key] = acourse[key];
+				}
 			}
 			/* Save the Routed Variables */
 			arguments.event.setRoutedStruct(routedStruct);
