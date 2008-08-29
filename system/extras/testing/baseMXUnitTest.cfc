@@ -30,6 +30,8 @@ Description :
 		instance.AppMapping = "";
 		instance.ConfigMapping = "";
 		instance.controller = "";
+		/* Public Persistence Properties */
+		this.PERSIST_FRAMEWORK = false;
 	</cfscript>
 
 	<cffunction name="setup" returntype="void" access="public">
@@ -37,11 +39,25 @@ Description :
 		//Initialize ColdBox
 		instance.controller = CreateObject("component", "coldbox.system.testcontroller").init( expandPath(instance.AppMapping) );
 		instance.controller.getLoaderService().setupCalls(instance.ConfigMapping,instance.AppMapping);
-
+		
+		/* Verify Persistence */
+		if( this.PERSIST_FRAMEWORK ){
+			application.cbController = instance.controller;
+		}
+		
 		//Create Initial Event Context
 		setupRequest();
-		//Clean up Initial Event Context due to MACH-II vars of the unit test framework.
+		
+		//Clean up Initial Event Context
 		getRequestContext().clearCollection();
+		</cfscript>
+	</cffunction>
+	
+	<cffunction name="tearDown" access="public" returntype="void" hint="The teardown" output="false" >
+		<cfscript>
+			if( this.PERSIST_FRAMEWORK ){
+				structDelete(application,"cbController");
+			}
 		</cfscript>
 	</cffunction>
 
@@ -71,6 +87,9 @@ Description :
 
 	<!--- getter for controller --->
 	<cffunction name="getcontroller" access="private" returntype="any" output="false" hint="Get a reference to the ColdBox controller">
+		<cfif this.PERSIST_FRAMEWORK>
+			<cfset instance.controller = application.cbController>
+		</cfif>
 		<cfreturn instance.controller>
 	</cffunction>
 

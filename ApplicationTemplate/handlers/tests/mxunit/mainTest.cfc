@@ -8,6 +8,11 @@ Description :
 ----------------------------------------------------------------------->
 <cfcomponent name="mainTest" extends="coldbox.system.extras.testing.baseMXUnitTest" output="false">
 	
+	<cfscript>
+		//Uncomment the following if you need the controller in application scope.
+		//this.PERSIST_FRAMEWORK = true;
+	</cfscript>
+	
 	<cffunction name="setup" returntype="void" access="public" output="false">
 		<cfscript>
 		//Setup ColdBox Mappings For this Test
