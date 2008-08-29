@@ -124,7 +124,7 @@
 			<Property name="configFile">config/environments.xml.cfm</Property>
 			<Property name="fireOnInit">true</Property>
 		</Interceptor>
-		<Interceptor class="coldbox.CodeDepot.interceptors.com.ortussolutions.deployment.Deploy">
+		<Interceptor class="coldbox.system.interceptors.deploy">
 			<Property name="tagFile">config/_deploy.tag</Property>
 			<Property name="deployCommandObject">coldbox.testharness.model.DeployCleanup</Property>
 		</Interceptor>
