@@ -220,7 +220,7 @@ Modification History:
 
 		<!--- Render? --->
 		<cfif getIsRender(arguments.event)>
-			<cfsavecontent variable="renderedSideBar"><cfinclude template="../includes/coldboxsideBar/ColdBoxSideBar.cfm"></cfsavecontent>
+			<cfsavecontent variable="renderedSideBar"><cfinclude template="../includes/coldboxsidebar/ColdBoxSideBar.cfm"></cfsavecontent>
 		</cfif>
 		<cfreturn renderedSideBar>	
 	</cffunction>
@@ -264,7 +264,7 @@ Modification History:
 		
  		<cftry>
 			<!--- Read SideBar XML --->
-			<cffile action="read" file="#ExpandPath('/coldbox/system/config/coldboxSideBar.xml.cfm')#" variable="sideBarXMLDoc">
+			<cffile action="read" file="#ExpandPath('/coldbox/system/config/ColdBoxSideBar.xml.cfm')#" variable="sideBarXMLDoc">
 			<!--- Parse XML --->
 			<cfset sideBarXML = XmlParse(sideBarXMLDoc)>
 			<!--- Set xml properties array --->
@@ -275,7 +275,7 @@ Modification History:
 				 <!--- Property has properties? --->
 				 <cfif properties[i].xmlAttributes['name'] EQ "links">
 					<!--- Decode JSON --->
-					<cfset property.value = getPlugin('JSON').decode( properties[i].xmlText )>
+					<cfset property.value = getPlugin('json').decode( properties[i].xmlText )>
 				<cfelse>
 					<cfset property.value = properties[i].xmlText>
 				</cfif>
