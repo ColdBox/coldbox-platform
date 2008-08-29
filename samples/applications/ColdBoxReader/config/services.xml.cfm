@@ -19,7 +19,12 @@
 			<value>coldboxreader</value>
 		</constructor-arg>
 	</bean>
-    
+	<bean id="feedReader" factory-bean="ColdBoxFactory" factory-method="getPlugin">
+		<constructor-arg name="plugin">
+			<value>feedReader</value>
+		</constructor-arg>
+	</bean>
+	
     <bean id="feedDAO"
         class="coldbox.samples.applications.ColdBoxReader.components.dao.feed" singleton="false">
         <constructor-arg name="dsnBean">
@@ -35,6 +40,9 @@
         <constructor-arg name="ModelBasePath">
             <value>${ModelBasePath}</value>
         </constructor-arg>
+		<constructor-arg name="feedReader">
+			<ref bean="feedReader" />
+		</constructor-arg>
     </bean>
     
     <bean id="tagDAO"
@@ -72,6 +80,9 @@
         </constructor-arg>
         <constructor-arg name="ModelBasePath">
             <value>${ModelBasePath}</value>
+        </constructor-arg>
+		<constructor-arg name="OwnerEmail">
+             <value>${OwnerEmail}</value>
         </constructor-arg>
     </bean>
     

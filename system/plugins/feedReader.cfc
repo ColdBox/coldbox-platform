@@ -110,21 +110,14 @@ What gets returned on the FeedStructure:
 						throw(message="The Setting feedReader_cacheLocation is missing. Please create it.",type='plugins.feedReader.InvalidSettingException');
 					}
 					/* Tests if the directory exists: Full Path */
-					if ( directoryExists( getController().getAppRootPath() & getSetting('feedReader_cacheLocation') ) ){
-						setCacheLocation( getController().getAppRootPath() & getSetting('feedReader_cacheLocation') );
-					}
-					if ( directoryExists( getController().getAppRootPath() & slash & getSetting('feedReader_cacheLocation') ) ){
-						setCacheLocation( getController().getAppRootPath() & slash & getSetting('feedReader_cacheLocation') );
-					}
-					else if( directoryExists( ExpandPath(getSetting('feedReader_cacheLocation')) ) ){
-						setCacheLocation( ExpandPath(getSetting('feedReader_cacheLocation')) );
-					}
-					else if( directoryExists(getSetting('feedReader_cacheLocation')) ){
-						setCacheLocation( getSetting('feedReader_cacheLocation') );
-					}
-					else{
+					/* Try to locate the path */
+					cacheLocation = locateDirectoryPath(getSetting('feedReader_cacheLocation'));
+					/* Validate it */
+					if( len(cacheLocation) eq 0 ){
 						throw('The cache location directory could not be found. Please check again. #getSetting('feedReader_cacheLocation')#','','plugins.feedReader.InvalidCacheLocationException');
 					}
+					/* Set the location */
+					setCacheLocation(cacheLocation);
 				}//end if cahce eq file
 				else{
 					/* Ram Cache */
@@ -583,8 +576,10 @@ What gets returned on the FeedStructure:
 				node.description = "";
 				node.date = "";	
 				node.DateUpdated = "";
+				
 				/* Get Title */
 				if( structKeyExists(items[x],"title") ) node.title = normalizeAtomTextConstruct(items[x].title);
+				
 				/* Description, prefers content over summary */
 				if ( structKeyExists(items[x],"content") ) 
 					node.description = normalizeAtomTextConstruct(items[x].content);
@@ -746,16 +741,16 @@ What gets returned on the FeedStructure:
 			var x = 1;
 			/* Check for type */
 			if( structKeyExists(arguments.entity.xmlAttributes,"type") ){
-				if( arguments.entity.xmlAttributes.type is "html" or arguments.entity.xmlAttributes.type is "text"){
-					results = arguments.entity.xmlText;
-				}
-				else if( arguments.entity.xmlAttributes.type is "xhtml" ){
+				if( arguments.entity.xmlAttributes.type is "xhtml" ){
 					if( not structKeyExists(arguments.entity,"div") ){
 						throw("Invalid Atom: XHTML Text construct does not contain a child div.",'','plugins.feedReader.InvalidAtomConstruct');	
 					}
 					for(x=1;x lte ArrayLen(arguments.entity.xmlChildren);x=x+1){
 						results = results & arguments.entity.xmlChildren[x].toString();
 					}
+				}
+				else{
+					results = arguments.entity.xmlText;
 				}
 			}//end type exists
 			else{

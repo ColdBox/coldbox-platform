@@ -20,6 +20,72 @@ Description :
 
 	<functions>
 		
+		<!-- courses.cfm Declarations-->
+		<function creator="8" name="setEnabled" returns="void">
+			<help><![CDATA[
+				Enable/Disable the ses routing.
+			]]></help>
+			<parameter name="enabled" type="boolean" required="true">
+				<help><![CDATA[
+					Enable bit
+				]]></help>
+				<values default="true">
+					<value option="&quot;true&quot;"/>
+					<value option="&quot;false&quot;"/>
+				</values>
+			</parameter>
+		</function>
+		
+		<function creator="8" name="setBaseURL" returns="void">
+			<help><![CDATA[
+				Set the application's base URL. If using full rewrite then don't append index.cfm.
+				If using standard routing, then append the index.cfm
+			]]></help>
+			<parameter name="baseURL" type="string" required="true">
+				<help><![CDATA[
+					The base URL of your application
+				]]></help>
+			</parameter>
+		</function>
+		
+		<function creator="8" name="setUniqueURLS" returns="void">
+			<help><![CDATA[
+				Enable/Disable unique URL's. Any non-ses url will be translated to ses.
+			]]></help>
+			<parameter name="uniqueURLs" type="boolean" required="true">
+				<help><![CDATA[
+					Enable unique url's
+				]]></help>
+				<values default="false">
+					<value option="&quot;true&quot;"/>
+					<value option="&quot;false&quot;"/>
+				</values>
+			</parameter>
+		</function>
+		
+		<function creator="8" name="addCourse" returns="void">
+			<help><![CDATA[
+				Add a new course to the ses routing tables.
+			]]></help>
+			<parameter name="pattern" type="string" required="true">
+				<help><![CDATA[
+					The pattern to match. : is the placeholder for a variable.
+					? is for optional placeholder
+					-numeric is for a numeric placehold
+				]]></help>
+			</parameter>
+			<parameter name="handler" type="string" required="false">
+				<help><![CDATA[
+					The event handler to redirect to
+				]]></help>
+			</parameter>
+			<parameter name="action" type="string" required="false">
+				<help><![CDATA[
+					The action to execute
+				]]></help>
+			</parameter>
+		</function>		
+		
 		<!--Framework Super Type Declarations -->
 		<function creator="8" name="abort" returns="void">
 			<help><![CDATA[

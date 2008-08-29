@@ -1,17 +1,17 @@
-<cfcomponent name="ehUser" extends="coldbox.system.eventhandler" output="false" autowire="true">
+<cfcomponent name="user" extends="coldbox.system.eventhandler" output="false" autowire="true">
 	
 	<!--- Dependency Injections --->
 	<cfproperty name="tagService"  type="ioc" scope="instance" />
 	<cfproperty name="feedService" type="ioc" scope="instance" />
 	
 	<cffunction name="dspAddFeed" access="public" returntype="void" output="false">
-		<cfargument name="Event" type="coldbox.system.beans.requestContext">
-		<cfset var csPlugin = getPlugin("sessionstorage")>
+		<cfargument name="Event" type="any">
 		<cfset var obj = "">
 		<cfset var rc = Event.getCollection()>
+		
 		<!--- EXIT HANDLERS: --->
-		<cfset rc.xehAddFeed = "ehFeed.doAddFeed">
-		<cfset rc.xehNewFeed = "ehFeed.dspAddFeed">
+		<cfset rc.xehAddFeed = "feed.doAddFeed">
+		<cfset rc.xehNewFeed = "feed.dspAddFeed">
 
 		<!--- Feed Validated? --->
 		<cfset rc.feedValidated = false>
@@ -19,16 +19,15 @@
 		<!--- Try to parse feed --->
 		<cfif Event.getValue("continue_button","") neq "">
 			<!--- Validate Feed --->
-			<cfif trim(len(rc.FeedURL)) eq 0 or not getPlugin("Utilities").isURL("#rc.FeedURL#")>
+			<cfif trim(len(rc.FeedURL)) eq 0 or not getPlugin("Utilities").isURL(rc.FeedURL)>
 				<cfset getPlugin("messagebox").setMessage("error","Please enter a valid Feed URL")>
 			<cfelse>
 				<cftry>
-					<cfset obj = getFeedService()>
 					<!--- Verify Feed in user's feeds --->
-					<cfif obj.verifyFeed(rc.feedURL, session.oUserBean.getuserID())>
+					<cfif getFeedService().verifyFeed(rc.feedURL, rc.oUserBean.getuserID())>
 						<cfset getPlugin("messagebox").setMessage("warning","The feed you are trying to add is already in your feeds collection. You cannot add it twice.")>
 					<cfelse>
-						<cfset rc.myFeed = obj.retrieveFeed(rc.feedURL)>
+						<cfset rc.myFeed = getFeedService().retrieveFeed(rc.feedURL)>
 						<cfset rc.feedValidated = true>
 					</cfif>
 					<cfcatch type="any">
@@ -38,88 +37,85 @@
 				</cftry>
 			</cfif>
 		</cfif>
-		<!--- Set view --->
-		<cfset Event.setView("vwAddFeed")>
 	</cffunction>
 
 	<cffunction name="dspViewFeed" access="public" returntype="void" output="false">
-		<cfargument name="Event" type="coldbox.system.beans.requestContext">
-		<cfset var obj = getFeedService()>
+		<cfargument name="Event" type="any">
 		<cfset var rc = Event.getCollection()>
+		
 		<!--- EXIT HANDLERS: --->
-		<cfset rc.xehFeeds = "ehGeneral.dspReader">
-		<cfset rc.xehMyFeeds = "ehFeed.dspMyFeeds">
-		<cfset rc.xehReload = "ehFeed.dspViewFeed">
-		<cfset rc.xehFeedInfo = "ehFeed.dspFeedInfo">
-		<cfset rc.xehFeedTags = "ehFeed.dspFeedTags">
-		<cfset rc.xehFeedComments = "ehFeed.dspFeedComments">
+		<cfset rc.xehfeeds = "general.dspReader">
+		<cfset rc.xehMyFeeds = "feed.dspMyFeeds">
+		<cfset rc.xehReload = "feed.dspViewFeed">
+		<cfset rc.xehfeedInfo = "feed.dspFeedInfo">
+		<cfset rc.xehfeedTags = "feed.dspFeedTags">
+		<cfset rc.xehfeedComments = "feed.dspFeedComments">
+		
 		<!--- Get feed --->
-		<cfset rc.feed = obj.readFeed(rc.feedID,"#GetSetting("ApplicationPath",1)#")>
-		<cfset Event.setView("vwViewFeed")>
+		<cfset rc.feed = getFeedService().readFeed(rc.feedID)>
 	</cffunction>
 
 	<cffunction name="dspFeedInfo" access="public" returntype="void" output="false">
-		<cfargument name="Event" type="coldbox.system.beans.requestContext">
-		<cfset var obj = getFeedService()>
+		<cfargument name="Event" type="any">
 		<cfset var rc = Event.getCollection()>
-		<cfset rc.qryData = obj.getFeedInfo(rc.feedID)>
-		<cfset Event.setView("vwFeedInfo")>
+		
+		<cfset rc.qryData = getFeedService().getFeedInfo(rc.feedID)>
 	</cffunction>
 
 	<cffunction name="dspFeedTags" access="public" returntype="void" output="false">
-		<cfargument name="Event" type="coldbox.system.beans.requestContext">
+		<cfargument name="Event" type="any">
 		<cfset var obj = getTagService()>
 		<cfset var rc = Event.getCollection()>
+		
 		<!--- EXIT HANDLERS: --->
-		<cfset rc.xehSearchByTag = "ehFeed.doSearchByTag">
-		<cfset rc.xehAddTag = "ehFeed.doAddTags">
+		<cfset rc.xehSearchByTag = "feed.doSearchByTag">
+		<cfset rc.xehAddTag = "feed.doAddTags">
 		<cfset rc.qryData = obj.getTags(rc.feedID)>
-		<cfif session.oUserBean.getVerified()>
+		<cfif rc.oUserBean.getVerified()>
 			<cfif rc.qryData.recordCount gt 0>
-				<cfset rc.qryMyTags = getPlugin("QueryHelper").filterQuery(rc.qryData,"CreatedBy",session.oUserBean.getUserID(),"cf_sql_varchar")>
+				<cfset rc.qryMyTags = getPlugin("QueryHelper").filterQuery(rc.qryData,"CreatedBy",rc.oUserBean.getUserID(),"cf_sql_varchar")>
 			<cfelse>
 				<cfset rc.qryMyTags = QueryNew("")>
 			</cfif>
 		</cfif>
-		<cfset Event.setView("vwFeedTags")>
 	</cffunction>
 
 	<cffunction name="dspAllTags" access="public" returntype="void" output="false">
-		<cfargument name="Event" type="coldbox.system.beans.requestContext">
+		<cfargument name="Event" type="any">
 		<cfset var obj = getTagService()>
 		<cfset var rc = Event.getCollection()>
+		
 		<!--- EXIT HANDLERS: --->
-		<cfset rc.xehSearchTag = "ehFeed.doSearchByTag">
+		<cfset rc.xehSearchTag = "feed.doSearchByTag">
 		<cfset rc.qryData = obj.getTags()>
-		<cfset Event.setView("vwAllTags")>
 	</cffunction>
 
 	<cffunction name="doAddFeed" access="public" returntype="void" output="false">
-		<cfargument name="Event" type="coldbox.system.beans.requestContext">
+		<cfargument name="Event" type="any">
 		<cfset var obj = "">
 		<cfset var rc = Event.getCollection()>
 		<cftry>
 			<cfset obj = getFeedService()>
-			<cfset obj.saveFeed(rc.feedID, rc.feedName, rc.feedURL, rc.FeedAuthor, rc.description, rc.imgURL, rc.siteURL, session.oUserBean.getuserID())>
+			<cfset obj.saveFeed(rc.feedID, rc.feedName, rc.feedURL, rc.FeedAuthor, rc.description, rc.imgURL, rc.siteURL, rc.oUserBean.getuserID())>
 			<cfset getPlugin("messagebox").setMessage("info", "The feed: #rc.feedName# has been added successfully")>
 			<cfcatch type="any">
 				<cfset getPlugin("messagebox").setMessage("error","Error adding Feed:" & cfcatch.message & "<br>" & cfcatch.detail)>
 				<cfset getPlugin("logger").logError("Error Adding Feed", cfcatch)>
-				<cfset setNextEvent("ehFeed.dspAddFeed")>
+				<cfset setNextEvent("feed.dspAddFeed")>
 			</cfcatch>
 		</cftry>
-		<cfset setNextEvent("ehGeneral.dspReader")>
+		<cfset setNextEvent("general.dspReader")>
 	</cffunction>
 
 	<cffunction name="doAddTags" access="public" returntype="void" output="false">
-		<cfargument name="Event" type="coldbox.system.beans.requestContext">
+		<cfargument name="Event" type="any">
 		<cfset var obj = "">
 		<cfset var rc = Event.getCollection()>
 		<cftry>
 
 			<cfif rc.tags neq "">
 				<cfset obj = getTagService()>
-				<cfset obj.addFeedTags(rc.feedID, rc.tags, session.oUserBean.getUserID())>
+				<cfset obj.addFeedTags(rc.feedID, rc.tags, rc.oUserBean.getUserID())>
 			</cfif>
 
 			<cfcatch type="any">
@@ -127,41 +123,44 @@
 				<cfset getPlugin("messagebox").setMessage("error", cfcatch.message & "<br>" & cfcatch.detail)>
 			</cfcatch>
 		</cftry>
-		<cfset setNextEvent("ehFeed.dspFeedTags","feedID=#rc.feedID#")>
+		<cfset setNextEvent("feed.dspFeedTags","feedID=#rc.feedID#")>
 	</cffunction>
 
 	<cffunction name="doSearchByTag" access="public" returntype="void" output="false">
-		<cfargument name="Event" type="coldbox.system.beans.requestContext">
-		<cfset var obj = "">
+		<cfargument name="Event" type="any">
 		<cfset var qryData = "">
 		<cfset var rc = Event.getCollection()>
+		<cfset var sessionstorage = getPlugin("sessionstorage")>
+		
 		<cftry>
-			<cfset obj = getFeedService()>
-			<cfset qryData = obj.searchByTag(rc.tag)>
-			<cfset getPlugin("sessionstorage").setVar("search_results", qryData)>
-			<cfset getPlugin("sessionstorage").setVar("search_tag", rc.tag)>
-			<cfset getPlugin("sessionstorage").setVar("search_term", "")>
+			
+			<cfset qryData = getFeedService().searchByTag(rc.tag)>
+			
+			<cfset sessionstorage.setVar("search_results", qryData)>
+			<cfset sessionstorage.setVar("search_tag", rc.tag)>
+			<cfset sessionstorage.setVar("search_term", "")>	
+				
+			<cfset setNextEvent("feed.dspSearchResults")>
 
 			<cfcatch type="any">
 				<cfset getPlugin("logger").logError("Error Searching by Tags", cfcatch)>
 				<cfset getPlugin("messagebox").setMessage("error", cfcatch.message & "<br>" & cfcatch.detail)>
 				<cfset setNextEvent()>
 			</cfcatch>
-		</cftry>
-		<cfset setNextEvent("ehFeed.dspSearchResults")>
+		</cftry>		
 	</cffunction>
 
 	<cffunction name="doSearchByTerm" access="public" returntype="void" output="false">
-		<cfargument name="Event" type="coldbox.system.beans.requestContext">
+		<cfargument name="Event" type="any">
 		<cfset var obj = "">
-		<cfset var plClient = getPlugin("sessionstorage")>
+		<cfset var sessionstorage = getPlugin("sessionstorage")>
 		<cfset var rc = Event.getCollection()>
 		<cftry>
 			<cfset term = Event.getValue("searchTerm")>
 			<cfset obj = getFeedService()>
-			<cfset plClient.setVar("search_results", duplicate(obj.searchByTerm(rc.searchTerm)))>
-			<cfset plClient.setVar("search_tag", "")>
-			<cfset plClient.setVar("search_term", rc.searchTerm)>
+			<cfset sessionstorage.setVar("search_results", duplicate(obj.searchByTerm(rc.searchTerm)))>
+			<cfset sessionstorage.setVar("search_tag", "")>
+			<cfset sessionstorage.setVar("search_term", rc.searchTerm)>
 
 			<cfcatch type="any">
 				<cfset getPlugin("messagebox").setMessage("error", cfcatch.message & "<br>" & cfcatch.detail)>
@@ -169,24 +168,25 @@
 				<cfset Event.setView("vwMain")>
 			</cfcatch>
 		</cftry>
-		<cfset setNextEvent("ehFeed.dspSearchResults")>
+		<cfset setNextEvent("feed.dspSearchResults")>
 	</cffunction>
 
 	<cffunction name="dspSearchResults" access="public" returntype="void" output="false">
-		<cfargument name="Event" type="coldbox.system.beans.requestContext">
-		<cfset var plClient = getPlugin("sessionstorage")>
+		<cfargument name="Event" type="any">
+		<cfset var sessionstorage = getPlugin("sessionstorage")>
 		<cfset var rc = Event.getCollection()>
+		
 		<!--- EXIT HANDLERS: --->
-		<cfset rc.xehFeed = "ehFeed.dspViewFeed">
-		<cfset rc.xehTags = "ehFeed.dspAllTags">
+		<cfset rc.xehfeed = "feed.dspViewFeed">
+		<cfset rc.xehTags = "feed.dspAllTags">
 
 		<cftry>
-			<cfif Not plClient.exists("search_results")>
+			<cfif Not sessionstorage.exists("search_results")>
 				<cfthrow message="The search results are not in the client scope.">
 			<cfelse>
-				<cfset Event.setValue("qryData", plClient.getVar("search_results") )>
-				<cfset Event.setValue("tag", plClient.getVar("search_tag") )>
-				<cfset Event.setValue("term",plClient.getVar("search_term") )>
+				<cfset Event.setValue("qryData", sessionstorage.getVar("search_results") )>
+				<cfset Event.setValue("tag", sessionstorage.getVar("search_tag") )>
+				<cfset Event.setValue("term",sessionstorage.getVar("search_term") )>
 			</cfif>
 
 			<cfcatch type="any">
@@ -196,21 +196,20 @@
 				<cfset getPlugin("messagebox").setMessage("error", cfcatch.message & "<br>" & cfcatch.detail)>
 			</cfcatch>
 		</cftry>
-		<cfset Event.setView("vwSearchResults")>
 	</cffunction>
 	
 	<cffunction name="dspMyFeeds" access="public" returntype="void" output="false">
-		<cfargument name="Event" type="coldbox.system.beans.requestContext">
+		<cfargument name="Event" type="any">
 		<cfset var obj = getFeedService()>
 		<cfset var rc = Event.getCollection()>
 		<!--- EXIT HANDLERS: --->
-		<cfset rc.xehViewFeed = "ehFeed.dspViewFeed">
-		<cfset rc.xehShowTags = "ehFeed.dspAllTags">
-		<cfset rc.xehShowInfo = "ehGeneral.dspInfo">
-		<cfset rc.xehAccountActions = "ehUser.dspAccountActions">
+		<cfset rc.xehViewFeed = "feed.dspViewFeed">
+		<cfset rc.xehShowTags = "feed.dspAllTags">
+		<cfset rc.xehShowInfo = "general.dspInfo">
+		<cfset rc.xehAccountActions = "user.dspAccountActions">
+		
 		<!--- Get Feeds --->
-		<cfset rc.qryFeeds = obj.getAllMyFeeds(session.oUserBean.getuserID())>
-		<cfset Event.setView("vwMyfeeds")>
+		<cfset rc.qryFeeds = obj.getAllMyFeeds(rc.oUserBean.getuserID())>
 	</cffunction>
 
 

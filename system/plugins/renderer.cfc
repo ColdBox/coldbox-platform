@@ -190,7 +190,7 @@ Description :
 		<!--- Check if no view has been set. --->
 		<cfif event.getCurrentView() eq "">
 			<!--- Implicit Views according to event --->
-			<cfset event.setView( replace(event.getCurrentEvent(),".","/","all") )>
+			<cfset event.setView( lcase(replace(event.getCurrentEvent(),".","/","all")) )>
 			<!--- Check if default view set, if yes, then set it. --->
 			<cfif event.getDefaultView() neq "">
 				<!--- Set the Default View --->

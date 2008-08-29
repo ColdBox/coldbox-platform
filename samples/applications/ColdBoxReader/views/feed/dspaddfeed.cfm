@@ -11,7 +11,7 @@
 		<input type="text" name="feedURL" value="#Event.getValue("feedURL","")#" size="50" style="padding:3px;font-size:12px;font-family:Verdana, Arial, Helvetica, sans-serif;" />
 		<br><br>
 		<div align="center">
-		<input type="button" value="Go Back" onClick="doEvent('ehGeneral.dspReader','centercontent',{})" />
+		<input type="button" value="Go Back" onClick="doEvent('general.dspReader','centercontent',{})" />
 		<input type="submit" value="Continue >>" name="continue_button" id="continue_button" />
 		</div>
 	</form>

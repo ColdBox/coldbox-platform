@@ -2,7 +2,7 @@
 	<div class="nicebox" id="infobox" style="display:block;">
 	<cfoutput>
 		
-	<cfif not Session.oUserBean.getVerified()>
+	<cfif not rc.oUserBean.getVerified()>
 		<div style="margin-bottom:10px;">
 			<strong>Welcome To ColdBox Reader</strong>
 		</div>
@@ -14,13 +14,13 @@
 			<strong>Welcome to your ColdBox Reader.</strong>
 		</div>
 		<strong>Your Email:</strong><br>
-		#session.oUserBean.getemail()#<Br><br />
+		#rc.oUserBean.getemail()#<Br><br />
 
 		<strong>Last Login:</strong><br />
-		#dateFormat(session.oUserBean.getlastLogin(), "MMM DD, YYYY")# at  #TimeFormat(session.oUserBean.getlastLogin(), "hh:MM:SS tt")#<br /><br />
+		#dateFormat(rc.oUserBean.getlastLogin(), "MMM DD, YYYY")# at  #TimeFormat(rc.oUserBean.getlastLogin(), "hh:MM:SS tt")#<br /><br />
 
 		<strong>Account Created On:</strong><br />
-		#dateFormat(session.oUserBean.getCreatedOn(), "MMM DD, YYYY")#  at  #TimeFormat(session.oUserBean.getCreatedOn(), "hh:MM:SS tt")#<br />
+		#dateFormat(rc.oUserBean.getCreatedOn(), "MMM DD, YYYY")#  at  #TimeFormat(rc.oUserBean.getCreatedOn(), "hh:MM:SS tt")#<br />
 		
 		<div align="center">
 		<br />
@@ -30,7 +30,7 @@
 	</cfoutput>
 	</div>
 	
-	<cfif Session.oUserBean.getVerified()>
+	<cfif rc.oUserBean.getVerified()>
 	
 		<div class="nicebox" id="infoupdatebox" style="display:none;">
 		<cfoutput>
@@ -44,7 +44,7 @@
 					<td><b>Email Address:</b></td>
 				</tr>
 				<tr>
-					<td><input type="text" name="email" value="#session.oUserBean.getEmail()#" size="20" /></td>
+					<td><input type="text" name="email" value="#rc.oUserBean.getEmail()#" size="20" /></td>
 				</tr>
 				<tr>
 					<td><b>New Password:</b></td>

@@ -3,18 +3,18 @@
 	xsi:noNamespaceSchemaLocation="http://www.coldboxframework.com/schema/config_2.6.0.xsd">
 	<Settings>
 		<Setting name="AppName"						value="Illudium PU-36 Code Generator"/>
-		<Setting name="DebugMode" 					value="true" />
-		<Setting name="DebugPassword" 				value="Coldbox"/>
+		<Setting name="DebugMode" 					value="false" />
+		<Setting name="DebugPassword" 				value=""/>
 		<Setting name="EventName" 					value="event"/>
 		<Setting name="EnableDumpVar"				value="true" />
 		<Setting name="EnableColdfusionLogging" 	value="false" />
 		<Setting name="EnableColdboxLogging"		value="true" />
 		<Setting name="ColdboxLogsLocation"			value="logs" />
 		<Setting name="DefaultEvent" 				value="ehGeneral.dspHome"/>
-		<Setting name="RequestStartHandler" 		value="ehGeneral.onRequestStart"/>
+		<Setting name="RequestStartHandler" 		value="main.onRequestStart"/>
 		<Setting name="RequestEndHandler" 			value=""/>
-		<Setting name="ApplicationStartHandler" 	value="ehGeneral.onAppInit"/>
-		<Setting name="OwnerEmail" 					value="myemail@gmail.com" />
+		<Setting name="ApplicationStartHandler" 	value="main.onAppInit"/>
+		<Setting name="OwnerEmail" 					value="myemail@email.com" />
 		<Setting name="EnableBugReports" 			value="false"/>
 		<Setting name="UDFLibraryFile" 				value="" />
 		<Setting name="ExceptionHandler"			value="" />
@@ -27,7 +27,7 @@
 	</Settings>
 
 	<YourSettings>
-		<Setting name="adminPass" 	value=""/>
+		<Setting name="adminPass" 	value="coldfusion"/>
 		<Setting name="xslBasePath" value="./xsl/" />
 	</YourSettings>
 
@@ -67,5 +67,9 @@
 	<i18N />
 	
 	<Datasources />
+	
+	<Interceptors>
+		<Interceptor class="coldbox.system.interceptors.autowire" />
+	</Interceptors>
 
 </Config>

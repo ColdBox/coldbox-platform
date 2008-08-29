@@ -1,113 +1,113 @@
-<cfcomponent name="ehUser" extends="coldbox.system.eventhandler" output="false" autowire="true">
+<cfcomponent name="user" extends="coldbox.system.eventhandler" output="false" autowire="true">
 
 	<!--- Dependency Injections --->
 	<cfproperty name="userService" type="ioc" scope="instance" />
-	
-	
+		
 	<cffunction name="dspAccountActions" access="public" returntype="void" output="false">
-		<cfargument name="Event" type="coldbox.system.beans.requestContext">
+		<cfargument name="Event" type="any">
 		<cfset var rc = Event.getCollection()>
 		<cfset var obj = "">
 		<cfset var qry = "">
-		<!--- EXIT HANDLERS: --->
-		<cfset rc.xehLogout = "ehUser.doLogout">
-		<cfset rc.xehLogin = "ehUser.dspLogin">
-		<cfset rc.xehSignup = "ehUser.dspSignUp">
-		<cfset rc.xehHome = "ehGeneral.dspReader">
-		<cfset rc.xehAddFeed = "ehFeed.dspAddFeed">
-		<cfset rc.xehMyFeeds = "ehFeed.dspMyFeeds">
 		
-		<!--- Set View --->
-		<cfset Event.setView("vwAccountActions")>
+		<!--- EXIT HANDLERS: --->
+		<cfset rc.xehLogout = "user.doLogout">
+		<cfset rc.xehLogin = "user.dspLogin">
+		<cfset rc.xehSignup = "user.dspSignUp">
+		<cfset rc.xehHome = "general.dspReader">
+		<cfset rc.xehAddFeed = "feed.dspAddFeed">
+		<cfset rc.xehMyFeeds = "feed.dspMyFeeds">
+		
 	</cffunction>
 
 	<cffunction name="dspLogin" access="public" returntype="void" output="false">
-		<cfargument name="Event" type="coldbox.system.beans.requestContext">
+		<cfargument name="Event" type="any">
 		<cfset var rc = Event.getCollection()>
 		<!--- EXIT HANDLERS: ---->
-		<cfset rc.xehLogin = "ehUser.doLogin">
-		<cfset Event.setView("vwLogin")>
+		<cfset rc.xehLogin = "user.doLogin">
+		
 	</cffunction>
 
 	<cffunction name="dspSignUp" access="public" returntype="void" output="false">
-		<cfargument name="Event" type="coldbox.system.beans.requestContext">
+		<cfargument name="Event" type="any">
 		<cfset var rc = Event.getCollection()>
 		<!--- EXIT HANDLERS: --->
-		<cfset rc.xehCreate = "ehUser.doCreateAccount">
-		<cfset Event.setView("vwSignUp")>
+		<cfset rc.xehCreate = "user.doCreateAccount">
+		
 	</cffunction>
 
 	<cffunction name="doCreateAccount" access="public" returntype="void" output="false">
-		<cfargument name="Event" type="coldbox.system.beans.requestContext">
+		<cfargument name="Event" type="any">
 		<cfscript>
+			var rc = Event.getCollection();
+			
 			var password2 = Event.getValue("password2","");
 			var userService = getUserService();
 			var userBean = userService.createUserBean();
-			var rc = Event.getCollection();
+			
 			//Populate Bean From Request Collection.
 			getPlugin("beanFactory").populateBean(userBean);
 			
+			/* Validate vars */
 			if ( userBean.getUserName() eq "" or userBean.getPassword() eq "" or userBean.getemail() eq ""){
 				getPlugin("messagebox").setMessage("warning", "Please enter all the account information in order to create an account.");
-				setNextEvent("ehUser.dspSignUp");
+				setNextEvent("user.dspSignUp");
 			}
 			if ( compare(UserBean.getpassword(),password2) neq 0 ){
 				getPlugin("messagebox").setMessage("warning", "The passwords do not match.");
-				setNextEvent("ehUser.dspSignup");
+				setNextEvent("user.dspSignup");
 			}
+			
 			try {
-				userService.saveUser(userBean);
-				userBean.setVerified(true);
+				/* Create new User */
+				userService.saveUser(userBean,true);
 				//set session object
-				session.oUserBean = userBean;
+				getPlugin("sessionstorage").setVar("oUserBean",userBean);
 				//relocate
-				setNextEvent("ehGeneral.dspReader");
-
-			} catch (any e) {
+				setNextEvent("general.dspReader");
+			}
+			catch (any e) {
 				getPlugin("messagebox").setMessage("error", e.message & "<br>" & e.detail);
-				dspSignUp(Event);
+				dspSignUp(event);
 			}
 		</cfscript>
 	</cffunction>
 
 	<cffunction name="doLogin" access="public" returntype="void" output="false">
-		<cfargument name="Event" type="coldbox.system.beans.requestContext">
+		<cfargument name="Event" type="any">
 		<cfscript>
 			var userService = getUserService();
 			var userBean = userService.createUserBean();
 			var rc = Event.getCollection();
 			
-			try {
-				
-				getPlugin("beanFactory").populateBean(userBean);
-				userService.checkLogin(userBean);
-				if (userBean.getVerified()){
-					structDelete(session,"oUserBean");
-					session.oUserBean = userBean;
-					getPlugin("messagebox").setMessage("info","Welcome back to the ColdBox Reader #userBean.getusername()#!");
-					setNextEvent("ehGeneral.dspReader");
-				}
-				else{
-					throw("Username/Password not recognized.");
-				}
-
-			} catch (any e) {
-				getPlugin("logger").logError("Error logging in user", e);
+			/* Populate bean */
+			getPlugin("beanFactory").populateBean(userBean);
+			
+			/* Send For Authorization */
+			userService.checkLogin(userBean);
+			
+			/* Validate Authorization */
+			if (userBean.getVerified()){
+				/* persist it */
+				getPlugin("sessionstorage").setVar("oUserBean",userBean);
+				/* Messagebox */
+				getPlugin("messagebox").setMessage("info","Welcome back to the ColdBox Reader #userBean.getusername()#!");
+				setNextEvent("general.dspReader");
+			}
+			else{
 				getPlugin("messagebox").setMessage("error", e.message);
-				dspLogin(event);
+				setNextEvent('user.dspLogin');
 			}
 		</cfscript>
 	</cffunction>
 
 	<cffunction name="doLogout" access="public" returntype="void" output="false">
-		<cfargument name="Event" type="coldbox.system.beans.requestContext">
-		<cfset StructDelete(session,"oUserBean")>
-		<cfset setNextEvent("ehGeneral.dspReader")>
+		<cfargument name="Event" type="any">
+		<cfset getPlugin("sessionstorage").deleteVar("oUserBean")>
+		<cfset setNextEvent("general.dspReader")>
 	</cffunction>
 
-
 	<cffunction name="doNewPassword" access="public" returntype="void" output="false">
-		<cfargument name="Event" type="coldbox.system.beans.requestContext">
+		<cfargument name="Event" type="any">
 		<cfscript>
 			var username = Event.getValue("username","");
 			var newPassword = "";
@@ -125,7 +125,9 @@
 					userService.getUserByUsername(userBean);
 					//Verify user
 					if ( userBean.getUserID() neq "" ){
-						userService.generateNewPassword(userBean, getSetting("MailUsername"), getMailSettings());
+						/* Generate and send new pass */
+						userService.generateNewPassword(userBean);
+						/* mbox */
 						getPlugin("messagebox").setMessage("info", "A new password has been generated and sent to your email on file. Please log in and change your password.");
 					}
 					else{
@@ -135,13 +137,14 @@
 					getPlugin("messagebox").setMessage("error", e.message & "<br>" & e.detail);
 				}
 			}
-			setNextEvent("ehUser.dspLogin");
+			/* relocate to login */
+			setNextEvent("user.dspLogin");
 			return;
 		</cfscript>	
 	</cffunction>
 	
 	<cffunction name="doUpdateProfile" access="public" returntype="void" output="false">
-		<cfargument name="Event" type="coldbox.system.beans.requestContext">
+		<cfargument name="Event" type="any">
 		<cfscript>
 			var password = Event.getValue("password","");
 			var confirmpassword = Event.getValue("confirmpassword","");
@@ -159,14 +162,19 @@
 				getPlugin("messagebox").setMessage("warning", "The passwords do not match. Please try again.");
 			}
 			try {
-				userBean.setUserID(session.oUserBean.getUserID());
+				
+				userBean.setUserID(rc.oUserBean.getUserID());
 				userService.saveUser(userBean);
+				getPlugin("sessionstorage").setVar("oUserBean",userBean);
+				
 				getPlugin("messagebox").setMessage("info", "Your profile has been updated successfully.");
 
 			} catch (any e) {
 				getPlugin("messagebox").setMessage("error", e.message & "<br>" & e.detail);
 			}
-			setNextEvent("ehGeneral.dspInfo");
+			
+			/* Relocate to info */
+			setNextEvent("general.dspInfo");
 		</cfscript>
 	</cffunction>
 	
