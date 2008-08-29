@@ -19,6 +19,7 @@ Description		: This is a unit test controller that basically overrides the setNe
 		<cfargument name="queryString"  	hint="The query string to append, if needed."   type="string" required="No" default="" >
 		<cfargument name="addToken"			hint="Wether to add the tokens or not. Default is false" type="boolean" required="false" default="false"	>
 		<cfargument name="persist" 			hint="What request collection keys to persist in the relocation" required="false" type="string" default="">
+		<cfargument name="varStruct" 		required="false" type="struct" hint="A structure key-value pairs to persist.">
 		<!--- ************************************************************* --->
 		<!--- Nothing In here to validate Unit Tests --->
 		<cfif len(trim(arguments.queryString)) eq 0>
@@ -28,6 +29,8 @@ Description		: This is a unit test controller that basically overrides the setNe
 		</cfif>
 		<!--- Save also the persist collection keys --->
 		<cfset getRequestService().getContext().setValue("persistKeys","#arguments.persist#")>
+		<!--- Save also the persist collection keys --->
+		<cfset getRequestService().getContext().setValue("persistVarStruct","#arguments.varStruct#")>
 	</cffunction>
 	
 	<!--- Event Context Methods --->
@@ -35,12 +38,15 @@ Description		: This is a unit test controller that basically overrides the setNe
 		<!--- ************************************************************* --->
 		<cfargument name="route"  			hint="The route to relocate to, do not prepend the baseURL or /." type="string" required="yes" >
 		<cfargument name="persist" 			hint="What request collection keys to persist in the relocation" required="false" type="string" default="">
+		<cfargument name="varStruct" 		required="false" type="struct" hint="A structure key-value pairs to persist.">
 		<!--- ************************************************************* --->
 		<!--- Save the route --->
 		<cfset getRequestService().getContext().setValue("setNextRoute","#arguments.route#")>
 
 		<!--- Save also the persist collection keys --->
 		<cfset getRequestService().getContext().setValue("persistKeys","#arguments.persist#")>
+		<!--- Save also the persist collection keys --->
+		<cfset getRequestService().getContext().setValue("persistVarStruct","#arguments.varStruct#")>
 	</cffunction>
 
 </cfcomponent>
