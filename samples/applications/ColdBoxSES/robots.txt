@@ -1,0 +1,11 @@
+User-Agent: *
+Disallow: /config/
+Disallow: /handlers/
+Disallow: /includes/
+Disallow: /interceptors/
+Disallow: /layouts/
+Disallow: /logs/
+Disallow: /model/
+Disallow: /plugins/
+Disallow: /views/
+Allow: /

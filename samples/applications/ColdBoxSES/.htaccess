@@ -1,0 +1,38 @@
+RewriteEngine on
+#RepeatLimit 0
+
+#SQL Injection Protection --Read More www.cybercrime.gov
+#Please use these rules if below words does not conflict with your friendly-urls. You may modify accordingly
+RewriteRule ^.*EXEC\(@.*$        /notfound.htm [L,F,NC]
+RewriteRule ^.*CAST\(.*$        /notfound.htm [L,F,NC]
+RewriteRule ^.*DECLARE.*$        /notfound.htm [L,F,NC] 
+RewriteRule ^.*DECLARE%20.*$    /notfound.htm [L,F,NC]
+RewriteRule ^.*NVARCHAR.*$        /notfound.htm [L,F,NC] 
+RewriteRule ^.*sp_password.*$    /notfound.htm [L,F,NC]
+RewriteRule ^.*%20xp_.*$         /notfound.htm [L,F,NC]
+
+#if this call related to CFIDE then just pass as it
+RewriteCond %{REQUEST_URI} ^/(.*(CFIDE|administrator|GRAPH)).*$
+RewriteRule ^(.*)$ - [NC,L]
+
+#dealing with flash / flex communication
+RewriteCond %{REQUEST_URI} ^/(flashservices|flex2gateway).*$
+RewriteRule ^(.*)$ index.cfm/%{REQUEST_URI} [QSA,L]
+
+#if image request then deliver as it is. otherwise not found message
+RewriteCond %{REQUEST_URI} \.(bmp|gif|jpe?g|png)$
+RewriteRule ^(.*)$ - [NC,L]
+
+#Ignore CSS or JS files  and this would be last rule --if the condition matched
+RewriteCond %{REQUEST_URI} \.(css|js)$
+RewriteRule ^(.*)$ - [NC,L]
+
+#Ignore txt/doc/pdf/xls files  and this would be last rule --if the condition matched
+RewriteCond %{REQUEST_URI} \.(txt|pdf|doc|xls|xml)$
+RewriteRule ^(.*)$ - [NC,L]
+
+#if there index.cfm or /blog/entry like pattern then forward request to index.cfm with query string
+RewriteRule ^$ index.cfm [QSA]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.cfm/%{REQUEST_URI} [QSA,L]
