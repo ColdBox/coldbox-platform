@@ -238,7 +238,7 @@ Modification History:
 					<cfquery name="varVal" dbType="query" maxrows="#getDebuggerConfigBean().getmaxRCPanelQueryRows()#">
 						select * from varVal
 					</cfquery>
-					<cfdump var="#Event.getValue(vars)#" label="Query Truncated to #getDebuggerConfigBean().getmaxRCPanelQueryRows()# records">
+					<cfdump var="#varVal#" label="Query Truncated to #getDebuggerConfigBean().getmaxRCPanelQueryRows()# records">
 				<cfelse>
 					<cfdump var="#Event.getValue(vars)#">
 				</cfif>				
