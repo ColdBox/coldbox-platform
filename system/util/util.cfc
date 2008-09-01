@@ -25,8 +25,8 @@ Modification History:
 		<cfthrow type="#arguments.type#" message="#arguments.message#"  detail="#arguments.detail#">
 	</cffunction>
 	
-	<cffunction name="rethrowit" access="public" returntype="void" hint="" output="false" >
-		<cfargument name="throwObject" required="true" type="any" hint="">
+	<cffunction name="rethrowit" access="public" returntype="void" hint="Rethrow an exception" output="false" >
+		<cfargument name="throwObject" required="true" type="any" hint="The exception object">
 		<cfthrow object="#arguments.throwObject#">
 	</cffunction>
 	

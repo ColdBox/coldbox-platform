@@ -35,7 +35,7 @@ Description :
 				
 				/* Test Event Name */
 				if( not structKeyExists(arguments, "#event.getEventName()#") ){
-					throwit("Event not detected","The #event.geteventName()# variable does not exist in the arguments.");
+					getUtil().throwit("Event not detected","The #event.geteventName()# variable does not exist in the arguments.");
 				}
 				
 				//Append the arguments to the collection
@@ -67,24 +67,16 @@ Description :
 				
 				//Execute the post process interceptor
 				cbController.getInterceptorService().processState("postProcess");
-			}
-			catch(Any e){
-				/* Log Exception */
-				cbController.getExceptionService().ExceptionHandler(e,"coldboxproxy","Process Exception");
-				
-				/* Verify stacktrace */
-				if( not structKeyExists(e,"stacktrace") ){
-					e.stacktrace = "";
-				}
 				
 				/* Request Profilers */
 				pushTimers();
-				/* Custom throw. */
-				throwit(e.message.toString(),e.detail.toString() & e.stacktrace.toString());
 			}
-			
-			/* Request Profilers */
-			pushTimers();
+			catch(Any e){
+				/* Log Exception */
+				handleException(e);
+				/* Rethrow it */
+				getUtil().rethrowit(e);
+			}
 				
 			/* Determine what to return via the setting */
 			if ( cbController.getSetting("ProxyReturnCollection") ){
@@ -135,19 +127,10 @@ Description :
 				cbController.getInterceptorService().processState(arguments.state,interceptionStructure);
 			}
 			catch(Any e){
-				/* Intercept Exception */
-				interceptData = structnew();
-				interceptData.exception = e;
-				cbController.getInterceptorService().processState("onException",interceptData);
-				
-				/* Log Exception */
-				cbController.getExceptionService().ExceptionHandler(e,"coldboxproxy","Interception Exception");
-				
-				/* Request Profilers */
-				pushTimers();
-				
-				/* Return */
-				return false;
+				/* Handle Exception */
+				handleException(e);				
+				/* Rethrow it */
+				getUtil().rethrowit(e);
 			}
 			
 			/* Request Profilers */
@@ -157,8 +140,31 @@ Description :
 			return true;
 		</cfscript>
 	</cffunction>
-	
+		
 <!------------------------------------------- PRIVATE ------------------------------------------->	
+	
+	<!--- handleException --->
+	<cffunction name="handleException" output="false" access="private" returntype="void" hint="Handle a ColdBox request Exception">
+		<cfargument name="exceptionObject" type="any" required="true" hint="The exception object"/>
+		<cfscript>
+			var cbController = "";
+			var interceptData = structnew();
+			
+			/* Get ColdBox Controller */
+			cbController = getController();
+			
+			/* Intercept Exception */
+			interceptData = structnew();
+			interceptData.exception = arguments.exceptionObject;
+			cbController.getInterceptorService().processState("onException",interceptData);
+			
+			/* Log Exception */
+			cbController.getExceptionService().ExceptionHandler(arguments.exceptionObject,"coldboxproxy","ColdBox Proxy Exception");
+			
+			/* Request Profilers */
+			pushTimers();
+		</cfscript>
+	</cffunction>
 	
 	<!--- Trace messages to the tracer panel --->
 	<cffunction name="tracer" access="private" returntype="void" hint="Trace messages to the tracer panel, will only trace if in debug mode." output="false" >
@@ -195,12 +201,13 @@ Description :
 	<!--- verifyColdBox --->
 	<cffunction name="verifyColdBox" output="false" access="private" returntype="boolean" hint="Verify the coldbox app">
 		<cfscript>
-		//Verify the coldbox app is ok, else throw
-		if ( not structKeyExists(application,"cbController") ){
-			throwit("ColdBox Controller Not Found", "The coldbox main controller has not been initialized");
-		}
-		else
-			return true;
+			//Verify the coldbox app is ok, else throw
+			if ( not structKeyExists(application,"cbController") ){
+				getUtil().throwit("ColdBox Controller Not Found", "The coldbox main controller has not been initialized");
+			}
+			else{
+				return true;
+			}
 		</cfscript>
 	</cffunction>
 	
@@ -283,23 +290,9 @@ Description :
 			<cfset cbController.setAppStartHandlerFired(true)>
 		</cfif>
 	</cffunction>
-
-	<!--- Throw Facade --->
-	<cffunction name="throwit" access="private" hint="Facade for cfthrow" output="false">
-		<!--- ************************************************************* --->
-		<cfargument name="message" 	type="any" 	required="yes">
-		<cfargument name="detail" 	type="any" 	required="no" default="">
-		<!--- ************************************************************* --->
-		<cfthrow type="coldboxproxyException" message="#arguments.message#"  detail="#arguments.detail#">
-	</cffunction>	
-	<!--- Dump it Facade --->
-	<cffunction name="dumpit" access="private" hint="Facade for cfmx dump" returntype="void">
-		<cfargument name="var" required="yes" type="any">
-		<cfdump var="#var#">
-	</cffunction>	
-	<!--- Abort it facade --->
-	<cffunction name="abortit" access="private" hint="Facade for cfabort" returntype="void" output="false">
-		<cfabort>
+	
+	<cffunction name="getUtil" access="private" output="false" returntype="coldbox.system.util.util" hint="Create and return a util object">
+		<cfreturn CreateObject("component","coldbox.system.util.util")/>
 	</cffunction>
 	
 </cfcomponent>
