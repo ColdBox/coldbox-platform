@@ -43,6 +43,12 @@ Modification History:
 	width:20px !important;
 }
 
+#ColdBoxSideBar form {
+	background-color: transparent !important;
+	margin:0px !important;
+	padding:0px !important;
+}
+
 #ColdBoxSideBar input.ColdBoxSideBarCheckBox {
 }
 
