@@ -314,6 +314,7 @@ Description		: This is the main ColdBox front Controller.
 		<cfargument name="route"  			hint="The route to relocate to, do not prepend the baseURL or /." type="string" required="yes" >
 		<cfargument name="persist" 			hint="What request collection keys to persist in the relocation" required="false" type="string" default="">
 		<cfargument name="varStruct" 		required="false" type="struct" hint="A structure key-value pairs to persist.">
+		<cfargument name="addToken"			hint="Wether to add the tokens or not. Default is false" type="boolean" required="false" default="false"	>
 		<!--- ************************************************************* --->
 		<Cfset var routeLocation = getSetting("sesBaseURL")>
 		
@@ -331,7 +332,7 @@ Description		: This is the main ColdBox front Controller.
 		<cfset pushTimers()>
 		
 		<!--- Reroute --->
-		<cflocation url="#routeLocation#" addtoken="no">
+		<cflocation url="#routeLocation#" addtoken="#arguments.addToken#">
 	</cffunction>
 	
 	<!--- Event Service Locator Factory --->
