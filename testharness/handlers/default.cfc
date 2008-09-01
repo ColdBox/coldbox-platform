@@ -47,7 +47,6 @@ Modification History:
 	</cffunction>
 	
 	<!--- RSS --->
-	<!--- rss --->
 	<cffunction name="rss" access="public" returntype="void" output="false" hint="">
 		<cfargument name="Event" type="coldbox.system.beans.requestContext" required="yes">
 	    <cfset var rc = event.getCollection()>
@@ -66,6 +65,16 @@ Modification History:
 			rc.missingAction = arguments.missingAction;
 			event.setView('missingAction');
 		</cfscript> 
+	</cffunction>
+	
+	<!--- testRoute --->
+	<cffunction name="testRoute" access="public" returntype="void" output="false" hint="">
+		<cfargument name="Event" type="coldbox.system.beans.requestContext" required="yes">
+	    <cfset var rc = event.getCollection()>
+	    
+	    <cfset getPlugin("messagebox").setMessage("warning","I am relocating from <strong>default.testRoute</strong>")>
+	    
+	    <cfset setNextEvent('default.index',"page=2&issues=1")>
 	</cffunction>
 	
 <!------------------------------------------- PRIVATE ------------------------------------------->	 	

@@ -278,33 +278,48 @@ Description		: This is the main ColdBox front Controller.
 	</cffunction>
 
 	<!--- Set Next Event --->
-	<cffunction name="setNextEvent" access="Public" returntype="void" hint="I Set the next event to run and relocate the browser to that event."  output="false">
+	<cffunction name="setNextEvent" access="Public" returntype="void" hint="I Set the next event to run and relocate the browser to that event. If you are in SES mode, this method will use routing instead"  output="false">
 		<!--- ************************************************************* --->
 		<cfargument name="event"  			hint="The name of the event to run." 			type="string" required="No" default="#getSetting("DefaultEvent")#" >
 		<cfargument name="queryString"  	hint="The query string to append, if needed."   type="string" required="No" default="" >
-		<cfargument name="addToken"			hint="Wether to add the tokens or not. Default is false" type="boolean" required="false" default="false"	>
+		<cfargument name="addToken"			hint="Whether to add the tokens or not. Default is false" type="boolean" required="false" default="false"	>
 		<cfargument name="persist" 			hint="What request collection keys to persist in the relocation" required="false" type="string" default="">
-		<cfargument name="varStruct" 		required="false" type="struct" hint="A structure key-value pairs to persist.">
+		<cfargument name="varStruct" 		hint="A structure key-value pairs to persist." required="false" type="struct" default="#structNew()#" >
 		<!--- ************************************************************* --->
 		<cfset var EventName = getSetting("EventName")>
 		<cfset var frontController = listlast(cgi.script_name,"/")>
+		<cfset var oRequestContext = getRequestService().getContext()>
+		<cfset var routeString = 0>
 		
 		<!--- Cleanup Event --->
 		<cfif len(trim(arguments.event)) eq 0>
 			<cfset arguments.event = getSetting("DefaultEvent")>
 		</cfif>
 		
-		<!--- Persistance Logic --->
-		<cfset persistVariables(argumentCollection=arguments)>
+		<!--- Are we in SES Mode? --->
+		<cfif oRequestContext.isSES()>
+			<!--- setup the route --->
+			<cfset routeString = replace(arguments.event,".","/","all")>
+			<cfif len(trim(arguments.queryString))>
+				<cfset routeString = routeString & "/" & replace(arguments.queryString,"&","/","all")>
+				<cfset routeString = replace(routeString,"=","/","all")>
+			</cfif>
+			<!--- Relocate with routing --->
+			<cfset setNextRoute(route=routeString,
+						 		persist=arguments.persist,varStruct=arguments.varStruct,
+						 		addToken=arguments.addToken)>
 		
-		<!--- Push Timers --->
-		<cfset pushTimers()>
-		
-		<!--- Check if query String needs appending --->
-		<cfif len(trim(arguments.queryString)) eq 0>
-			<cflocation url="#frontController#?#EventName#=#arguments.event#" addtoken="#arguments.addToken#">
 		<cfelse>
-			<cflocation url="#frontController#?#EventName#=#arguments.event#&#arguments.queryString#" addtoken="#arguments.addToken#">
+			<!--- Persistance Logic --->
+			<cfset persistVariables(argumentCollection=arguments)>
+			<!--- Push Timers --->
+			<cfset pushTimers()>
+			<!--- Check if query String needs appending --->
+			<cfif len(trim(arguments.queryString)) eq 0>
+				<cflocation url="#frontController#?#EventName#=#arguments.event#" addtoken="#arguments.addToken#">
+			<cfelse>
+				<cflocation url="#frontController#?#EventName#=#arguments.event#&#arguments.queryString#" addtoken="#arguments.addToken#">
+			</cfif>		
 		</cfif>
 	</cffunction>
 	
@@ -313,7 +328,7 @@ Description		: This is the main ColdBox front Controller.
 		<!--- ************************************************************* --->
 		<cfargument name="route"  			hint="The route to relocate to, do not prepend the baseURL or /." type="string" required="yes" >
 		<cfargument name="persist" 			hint="What request collection keys to persist in the relocation" required="false" type="string" default="">
-		<cfargument name="varStruct" 		required="false" type="struct" hint="A structure key-value pairs to persist.">
+		<cfargument name="varStruct" 		hint="A structure key-value pairs to persist." required="false" type="struct">
 		<cfargument name="addToken"			hint="Wether to add the tokens or not. Default is false" type="boolean" required="false" default="false"	>
 		<!--- ************************************************************* --->
 		<Cfset var routeLocation = getSetting("sesBaseURL")>

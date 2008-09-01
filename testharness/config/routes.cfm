@@ -58,7 +58,7 @@ NOTE: The interceptor will create a new setting called: sesBaseURL with this val
 	<base> html tags, this is the same as the baseURL without the index.cfm if used.
 	Else, htmlBaseURL and sesBaseURL should be the same.
 --->
-<cfset setBaseURL("http://#getSetting('MyBaseURL')#/coldbox/testharness/index.cfm")>
+<cfset setBaseURL("http://#cgi.http_host#/#getSetting('AppMapping')#/index.cfm")>
 
 
 <!--- -------------------------------------------
@@ -110,6 +110,6 @@ NOTE: The interceptor will create a new setting called: sesBaseURL with this val
 <cfset addCourse(pattern="test/:id/:name?",handler="ehGeneral",action="dspHello")>
 
 <!--- STANDARD COLDBOX COURSES, DO NOT MODIFY UNLESS YOU DON'T LIKE THEM --->
-<cfset addCourse(":handler/:action/:id-numeric?")>
+<cfset addCourse(":handler/:action?/:id-numeric?")>
 <!--- <cfset addCourse(":handler/:action?/:id?")> --->
 
