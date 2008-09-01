@@ -46,6 +46,17 @@ Modification History:
 	     
 	</cffunction>
 	
+	<!--- RSS --->
+	<!--- rss --->
+	<cffunction name="rss" access="public" returntype="void" output="false" hint="">
+		<cfargument name="Event" type="coldbox.system.beans.requestContext" required="yes">
+	    <cfset var rc = event.getCollection()>
+	    <cfscript>
+			//get rss feed
+			rc.feed = getPlugin("feedReader").readFeed(feedURL="http://news.google.com/nwshp?hl=en&tab=wn&output=rss");
+		</cfscript>	     
+	</cffunction>
+	
 	<!--- onMissingAction --->
 	<cffunction name="onMissingAction" access="public" returntype="void" output="false" hint="on missing action">
 		<cfargument name="Event" type="coldbox.system.beans.requestContext" required="yes">

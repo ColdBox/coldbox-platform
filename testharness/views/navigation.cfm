@@ -14,4 +14,5 @@
 <p><a href="index.cfm?#getController().getSetting("eventName")#=ehGeneral.externalview">External View</a></p>
 <p><a href="index.cfm?#getController().getSetting("eventName")#=ehSecure.dspUser">Security Int Test</a></p>
 <p><a href="index.cfm?#getController().getSetting("eventName")#=default.implicit">Implicit Views</a></p>
+<p><a href="index.cfm?#getController().getSetting("eventName")#=default.rss">RSS Reader</a></p>
 </cfoutput>
