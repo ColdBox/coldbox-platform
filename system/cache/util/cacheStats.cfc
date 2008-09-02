@@ -34,6 +34,11 @@ Description :
 	
 <!------------------------------------------- PUBLIC ------------------------------------------->
 	
+	<!--- getAssociatedCacheManager --->
+	<cffunction name="getAssociatedCacheManager" output="false" access="public" returntype="coldbox.system.cache.cacheManager" hint="Get the associated Cache Manager for this stats object">
+		<cfreturn instance.cacheManager>
+	</cffunction>
+	
 	<!--- Get Cache Performance --->
 	<cffunction name="getCachePerformanceRatio" access="public" output="false" returntype="numeric" hint="Get the cache's performance ratio">
 		<cfscript>
