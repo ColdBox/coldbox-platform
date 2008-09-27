@@ -113,7 +113,7 @@ ColdBox SideBar: created on 7/31/2008 by Ernst van der Linden (evdlinden@gmail.c
 
 <script type="text/javascript">
 	// Setup ColdBox SideBar
-	coldBoxSideBar = new coldbox.SideBar ( 
+	coldBoxSideBar = new cbox.SideBar ( 
 							{
 								elementId:"ColdBoxSideBar"
 								,containerElementId:"ColdBoxSideBarContainer"		

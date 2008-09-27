@@ -49,6 +49,9 @@
 		<Setting name="feedReader_useCache"  value="true" />
 		<Setting name="feedReader_cacheType"  value="ram" />
 		<Setting name="feedReader_cacheTimeout"  value="10" />
+		
+		<!-- Show SideBar? true/false, else leave blank. -->
+		<Setting name="ColdBoxSideBar" value="true" />
 	</YourSettings>
 	
 	<!-- Custom Conventions : You can override the framework wide conventions -->
@@ -154,7 +157,41 @@
 	        <Property name="rulesFile">config/security.xml.cfm</Property>
 	        <Property name="debugMode">true</Property>
 	        <Property name="preEventSecurity">true</Property>
-		</Interceptor>		
+		</Interceptor>	
+		
+		<!-- Developer's ColdBox Sidebar -->
+		<Interceptor class="coldbox.system.interceptors.coldboxSideBar">
+			<!-- Y offset: number, else leave blank -->
+			<Property name="yOffset"></Property>
+			<!-- Scroll: true/false, else leave blank -->
+			<Property name="isScroll"></Property>
+			<!-- Slide Speed: number, else leave blank -->
+			<Property name="slideSpeed"></Property>
+			<!-- Wait time before closing: number, else leave blank -->
+			<Property name="waitTimeBeforeClose"></Property>
+			<!-- Links (JSON array of objects), else leave blank
+			e.g. 
+				[
+				{"desc":"ColdBox API","href":"http:\/\/www.coldboxframework.com\/api\/"}
+				,{"desc":"ColdBox Credits","href":"http:\/\/ortus.svnrepository.com\/coldbox\/trac.cgi\/wiki\/cbCredits"}
+				,{"desc":"ColdBox SideBar Help","href":"http:\/\/ortus.svnrepository.com\/coldbox\/trac.cgi\/wiki\/cbSideBar"}
+				,{"desc":"Transfer Docs","href":"http:\/\/docs.transfer-orm.com\/"}
+				,{"desc":"My API","href":"http:\/\/localhost\/myApi/"}
+				,{"desc":"My Database Schema","href":"http:\/\/localhost\/myDatabaseSchema.pdf"}
+				]			
+			 -->
+ 			<Property name="links"></Property>
+			<!-- Width of the sidebar including visible width, else leave blank -->
+			<Property name="width"></Property>
+			<!-- Visible width, else leave blank  -->
+			<Property name="visibleWidth"></Property>
+			<!--Full path from the application's root, else leave blank. -->
+			<Property name="imagePath"></Property>
+			<!-- Vertical alignment of the image: top,middle or bottom, else leave blank  -->
+			<Property name="imageVAlign"></Property>
+			<!--Full path from the application's root, else leave blank -->
+			<Property name="cssPath"></Property>
+		</Interceptor>	
 	</Interceptors>
 
 </Config>

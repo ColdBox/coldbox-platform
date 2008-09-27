@@ -13,15 +13,15 @@ Modification History:
 **********************************************************************/
 
 /* ColdBox Namespace */
-var coldbox;
-if (!coldbox) coldbox = {};
+var cbox;
+if (!cbox) cbox = {};
 
 // SideBar					
-coldbox.SideBar = function(arguments){
+cbox.SideBar = function(arguments){
 	this.init(arguments);
 }
 
-coldbox.SideBar.prototype.init = function(arguments)
+cbox.SideBar.prototype.init = function(arguments)
 {
 	// Needed for FireFox display problem
 	var NS6CorrectionX = 10;
@@ -63,37 +63,37 @@ coldbox.SideBar.prototype.init = function(arguments)
 	}	
 }
 // SideBar Element 
-coldbox.SideBar.prototype.setSideBarElement = function(sideBarElement){ this.sideBarElement = sideBarElement; }
-coldbox.SideBar.prototype.getSideBarElement = function(){ return this.sideBarElement}
+cbox.SideBar.prototype.setSideBarElement = function(sideBarElement){ this.sideBarElement = sideBarElement; }
+cbox.SideBar.prototype.getSideBarElement = function(){ return this.sideBarElement}
 // Container element
-coldbox.SideBar.prototype.setContainerElement = function(containerElement){ this.containerElement = containerElement; }
-coldbox.SideBar.prototype.getContainerElement = function(){ return this.containerElement}
+cbox.SideBar.prototype.setContainerElement = function(containerElement){ this.containerElement = containerElement; }
+cbox.SideBar.prototype.getContainerElement = function(){ return this.containerElement}
 // IE?
-coldbox.SideBar.prototype.setIsIE = function(isIE){ this.isIE = isIE; }
-coldbox.SideBar.prototype.getIsIE = function(){ return this.isIE;}
+cbox.SideBar.prototype.setIsIE = function(isIE){ this.isIE = isIE; }
+cbox.SideBar.prototype.getIsIE = function(){ return this.isIE;}
 // NS6?
-coldbox.SideBar.prototype.setIsNS6 = function(isNS6){ this.isNS6 = isNS6; }
-coldbox.SideBar.prototype.getIsNS6 = function(){ return this.isNS6;}
+cbox.SideBar.prototype.setIsNS6 = function(isNS6){ this.isNS6 = isNS6; }
+cbox.SideBar.prototype.getIsNS6 = function(){ return this.isNS6;}
 // Slide Speed
-coldbox.SideBar.prototype.setSlideSpeed = function(slideSpeed){ this.slideSpeed = slideSpeed; }
-coldbox.SideBar.prototype.getSlideSpeed = function(){ return this.slideSpeed;}
+cbox.SideBar.prototype.setSlideSpeed = function(slideSpeed){ this.slideSpeed = slideSpeed; }
+cbox.SideBar.prototype.getSlideSpeed = function(){ return this.slideSpeed;}
 // Wait Time
-coldbox.SideBar.prototype.setWaitTimeBeforeClose = function(waitTimeBeforeClose){ this.waitTimeBeforeClose = waitTimeBeforeClose; }
-coldbox.SideBar.prototype.getWaitTimeBeforeClose = function(){ return this.waitTimeBeforeClose;}
+cbox.SideBar.prototype.setWaitTimeBeforeClose = function(waitTimeBeforeClose){ this.waitTimeBeforeClose = waitTimeBeforeClose; }
+cbox.SideBar.prototype.getWaitTimeBeforeClose = function(){ return this.waitTimeBeforeClose;}
 // Y Offset
-coldbox.SideBar.prototype.setYOffset = function(yOffset){ this.yOffset = yOffset; }
-coldbox.SideBar.prototype.getYOffset = function(){ return this.yOffset;}
+cbox.SideBar.prototype.setYOffset = function(yOffset){ this.yOffset = yOffset; }
+cbox.SideBar.prototype.getYOffset = function(){ return this.yOffset;}
 // Scroll?
-coldbox.SideBar.prototype.setIsScroll = function(isScroll){ this.isScroll = isScroll; }
-coldbox.SideBar.prototype.getIsScroll = function(){ return this.isScroll;}
+cbox.SideBar.prototype.setIsScroll = function(isScroll){ this.isScroll = isScroll; }
+cbox.SideBar.prototype.getIsScroll = function(){ return this.isScroll;}
 // Last Window Y
-coldbox.SideBar.prototype.setLastWindowY = function(lastWindowY){ this.lastWindowY = lastWindowY; }
-coldbox.SideBar.prototype.getLastWindowY = function(){ return this.lastWindowY;}
+cbox.SideBar.prototype.setLastWindowY = function(lastWindowY){ this.lastWindowY = lastWindowY; }
+cbox.SideBar.prototype.getLastWindowY = function(){ return this.lastWindowY;}
 // Width
-coldbox.SideBar.prototype.setWidth = function(width){ this.width = width; }
-coldbox.SideBar.prototype.getWidth = function(){ return this.width;}
+cbox.SideBar.prototype.setWidth = function(width){ this.width = width; }
+cbox.SideBar.prototype.getWidth = function(){ return this.width;}
 // Move Out
-coldbox.SideBar.prototype.moveOut = function(){ 
+cbox.SideBar.prototype.moveOut = function(){ 
 	var self = this;	
 	if ( (this.getIsNS6() )&& parseInt( this.getSideBarElement().style.left)<0 || this.getIsIE() && this.getSideBarElement().style.pixelLeft<0){
 		clearTimeout(this.moving);
@@ -106,14 +106,14 @@ coldbox.SideBar.prototype.moveOut = function(){
 	}
 }
 // Move Back
-coldbox.SideBar.prototype.moveBack = function(){
+cbox.SideBar.prototype.moveBack = function(){
 	var self = this;	
 	clearTimeout(this.moving);
 	var selfMoveBack1 = function moveBack1(){ self.moveBack1(); }
 	this.moving = setTimeout(selfMoveBack1, this.getWaitTimeBeforeClose());
 }
 // Move Back 1
-coldbox.SideBar.prototype.moveBack1 = function(){
+cbox.SideBar.prototype.moveBack1 = function(){
 	var self = this;
 	if ((this.getIsNS6()) && parseInt(this.getSideBarElement().style.left)>(-this.getWidth()) || this.getIsIE() && this.getSideBarElement().style.pixelLeft>(-this.getWidth())) {
 		clearTimeout(this.moving);
@@ -126,7 +126,7 @@ coldbox.SideBar.prototype.moveBack1 = function(){
 	}
 }
 // Slide
-coldbox.SideBar.prototype.slide = function(num){
+cbox.SideBar.prototype.slide = function(num){
 	if (this.getIsIE()) {
 		this.getSideBarElement().style.pixelLeft += num;
 	}
@@ -135,7 +135,7 @@ coldbox.SideBar.prototype.slide = function(num){
 	}
 }
 // Scroll
-coldbox.SideBar.prototype.scrollSideBar = function(){
+cbox.SideBar.prototype.scrollSideBar = function(){
 	var self = this;
 	var smooth = 0;
 	var windowY = getScrollXY().y;
