@@ -182,9 +182,7 @@ Modification History:
 <!--- **************************************************************--->
 	
 	<cfif getDebuggerConfigBean().getShowCachePanel()>
-		<cflock name="#getController().getColdboxOCM().getLockName()#" type="readonly" timeout="30">
 		<cfinclude template="panels/cachepanel.cfm">
-		</cflock>
 	</cfif>
 	
 <!--- **************************************************************--->

@@ -28,10 +28,10 @@ Modification History:
 		<cfscript>
 			/* Set Controller Injection */
 			instance.controller = arguments.controller;
-			/* Lock Name */
-			instance.lockName = instance.controller.getAppHash() & "_OCM_OPERATION";
 			/* Runtime Java object */
 			instance.javaRuntime = CreateObject("java", "java.lang.Runtime");
+			/* Locking Timeout */
+			instance.lockTimeout = "15";
 			/* Event URL Facade Setup */
 			instance.eventURLFacade = CreateObject("component","coldbox.system.cache.util.eventURLFacade").init(arguments.controller);
 			/* Cache Stats */
@@ -84,7 +84,7 @@ Modification History:
 		<cfset local.ObjectFound = false>
 		<cfset local.tmpObj = 0>
 		
-		<cflock type="readonly" name="#getLockName()#" timeout="30" throwontimeout="true">
+		<cflock type="readonly" name="coldbox.cacheManager.#arguments.objectKey#" timeout="#instance.lockTimeout#" throwontimeout="true">
 			<cfscript>
 				/* Check if in pool first */
 				if( getObjectPool().lookup(arguments.objectKey) ){
@@ -127,7 +127,7 @@ Modification History:
 		<cfset local.tmpObj = 0>
 		<cfset local.targetObject = this.NOT_FOUND>
 	
-		<cflock type="exclusive" name="#getLockName()#" timeout="30" throwontimeout="true">
+		<cflock type="exclusive" name="coldbox.cacheManager.#arguments.objectKey#" timeout="#instance.lockTimeout#" throwontimeout="true">
 			<cfscript>
 				/* Check if in pool first */
 				if( getObjectPool().lookup(arguments.objectKey) ){
@@ -220,7 +220,7 @@ Modification History:
 			</cfif>
 			
 			<!--- Set object in Cache --->
-			<cflock type="exclusive" name="#getLockName()#" timeout="30" throwontimeout="true">
+			<cflock type="exclusive" name="coldbox.cacheManager.#arguments.objectKey#" timeout="#instance.lockTimeout#" throwontimeout="true">
 				<cfset getobjectPool().set(arguments.objectKey,arguments.MyObject,arguments.Timeout,arguments.LastAccessTimeout)>
 			</cflock>
 			
@@ -249,7 +249,7 @@ Modification History:
 		<cfset var interceptMetadata = structnew()>
 		
 		<!--- Remove Object --->
-		<cflock type="exclusive" name="#getLockName()#" timeout="30" throwontimeout="true">
+		<cflock type="exclusive" name="coldbox.cacheManager.#arguments.objectKey#" timeout="#instance.lockTimeout#" throwontimeout="true">
 			<cfif getobjectPool().lookup(arguments.objectKey)>
 				<cfset ClearCheck = getobjectPool().clearKey(arguments.objectKey)>
 			</cfif>
@@ -359,14 +359,12 @@ Modification History:
 	</cffunction>
 
 	<!--- Clear The Pool --->
-	<cffunction name="clear" access="public" output="false" returntype="void" hint="Clears the entire object cache and recreates the object pool and statistics. Call from a non-cached object or you will get 500 NULL errors, VERY VERY BAD!!.">
-		<cflock type="exclusive" name="#getLockName()#" timeout="30" throwontimeout="true">
-			<cfscript>
-				structDelete(variables,"objectPool");
-				initPool();
-				getCacheStats().clearStats();
-			</cfscript>			
-		</cflock>
+	<cffunction name="clear" access="public" output="false" returntype="void" hint="Clears the entire object cache and recreates the object pool and statistics. Call from a non-cached object or you will get 500 NULL errors, VERY VERY BAD!!. TRY NOT TO USE THIS METHOD">
+		<cfscript>
+			structDelete(variables,"objectPool");
+			initPool();
+			getCacheStats().clearStats();
+		</cfscript>			
 	</cffunction>
 
 	<!--- Get the Cache Size --->
@@ -558,16 +556,6 @@ Modification History:
 	<cffunction name="getCacheConfigBean" access="public" returntype="coldbox.system.beans.cacheConfigBean" output="false" hint="Get the current cache configuration bean.">
 		<cfreturn instance.CacheConfigBean >
 	</cffunction>
-
-	<!--- Java Runtime --->
-	<cffunction name="getjavaRuntime" access="public" returntype="any" output="false" hint="Get the java runtime object.">
-		<cfreturn instance.javaRuntime>
-	</cffunction>
-	
-	<!--- Lock Name --->
-	<cffunction name="getlockName" access="public" output="false" returntype="string" hint="Get the lockName used for cache operations">
-		<cfreturn instance.lockName/>
-	</cffunction>
 	
 	<!--- Get the internal object pool --->
 	<cffunction name="getObjectPool" access="public" returntype="any" output="false" hint="Get the internal object pool: coldbox.system.cache.objectPool or MTobjectPool">
@@ -580,9 +568,14 @@ Modification History:
 	</cffunction>
 
 	<!--- Set The Eviction Policy --->
-	<cffunction name="setevictionPolicy" access="private" returntype="void" output="false" hint="You can now override the set eviction policy by programmatically sending it in.">
+	<cffunction name="setevictionPolicy" access="public" returntype="void" output="false" hint="You can now override the set eviction policy by programmatically sending it in.">
 		<cfargument name="evictionPolicy" type="coldbox.system.cache.policies.AbstractEvictionPolicy" required="true">
 		<cfset instance.evictionPolicy = arguments.evictionPolicy>
+	</cffunction>
+	
+	<!--- Get the Java Runtime --->
+	<cffunction name="getjavaRuntime" access="public" returntype="any" output="false" hint="Get the java runtime object for reporting purposes.">
+		<cfreturn instance.javaRuntime>
 	</cffunction>
 	
 <!------------------------------------------- PRIVATE ------------------------------------------->
@@ -614,7 +607,7 @@ Modification History:
 		<cftry>
 			<!--- Checks --->
 			<cfif getCacheConfigBean().getCacheFreeMemoryPercentageThreshold() neq 0>
-				<cfset jvmThreshold = ( (getJavaRuntime().getRuntime().freeMemory() / getJavaRuntime().getRuntime().totalMemory() ) * 100 )>
+				<cfset jvmThreshold = ( (instance.javaRuntime.getRuntime().freeMemory() / instance.javaRuntime.getRuntime().totalMemory() ) * 100 )>
 				<cfset check = getCacheConfigBean().getCacheFreeMemoryPercentageThreshold() lt jvmThreshold>				
 			</cfif>
 			<cfcatch type="any">
