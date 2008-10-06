@@ -4,7 +4,7 @@
 	<Settings>
 		<!--The name of your application.-->
 		<Setting name="AppName"						value="ColdBox_SES_Sample"/>
-		<Setting name="AppMapping"					value="/ColdBoxSES"/> 
+		<!-- <Setting name="AppMapping"					value="/coldbox/samples/applications/ColdBoxSES"/> --> 
 		<!-- ColdBox set-up information for J2EE installation.
 		     As context-root are actually virtual locations which does not correspond to physical location of files. for example 
 		     /openbd   /var/www/html/tomcat/deploy/bluedragon
