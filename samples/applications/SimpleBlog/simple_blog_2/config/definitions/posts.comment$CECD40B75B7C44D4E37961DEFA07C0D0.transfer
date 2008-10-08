@@ -1,0 +1,381 @@
+<cffunction name="init" access="public" returntype="transfer.com.TransferObject" default="transfer.com.TransferObject" hint="Constructor for Transfer class posts.comment" output="false">
+<cfargument name="transfer" type="transfer.com.Transfer" required="true" hint="The Transfer library">
+<cfargument name="utility" type="transfer.com.util.Utility" required="true" hint="The Utility object">
+<cfargument name="nullable" type="transfer.com.sql.Nullable" required="true" hint="The Nullable lookup object">
+<cfargument name="thisObject" type="transfer.com.TransferObject" required="true" hint="What is determined to be the base 'this' object for this TransferObject">
+<cfscript>
+instance = StructNew();
+setThisObject(arguments.thisObject);
+setTransfer(arguments.transfer);
+setUtility(arguments.utility);
+setSystem(createObject("java", "java.lang.System"));
+setNullable(arguments.nullable);
+setClassName("posts.comment");
+setIsDirty(true);
+setIsPersisted(false);
+setIsClone(false);
+setcomment_id(getNullable().getNullUUID(getClassName(), "comment_id"));
+setcomment("");
+settime(Now());
+setLoaded(StructNew());
+setParententryisLoaded(true);
+if(StructKeyExists(this, "configure") OR StructKeyExists(variables, "configure"))
+{
+configure();
+}
+return this;
+</cfscript>
+</cffunction>
+
+<cffunction name="equalsTransfer" access="public" returntype="boolean" default="boolean" hint="If an object is persisted, returns true if they are of the same class and same id. If not, returns true if they are the same object." output="false">
+<cfargument name="transfer" type="transfer.com.TransferObject" required="true" hint="The TransferObject to test against">
+<cfscript>
+if(getIsPersisted())
+{
+if(getClassName() neq arguments.transfer.getClassName())
+{
+return false;
+}
+return (getcomment_id() eq arguments.transfer.getcomment_id());
+}
+else
+{
+return sameTransfer(arguments.transfer);
+}
+</cfscript>
+</cffunction>
+
+<cffunction name="getcomment_id" access="public" returntype="uuid" default="uuid" hint="Accessor for property comment_id" output="false">
+<cfscript>
+return instance.comment_id;
+</cfscript>
+</cffunction>
+
+<cffunction name="setcomment_id" access="public" returntype="void" default="void" hint="Mutator for property comment_id" output="false">
+<cfargument name="comment_id" type="uuid" required="true" hint="The value to set comment_id to">
+<cfscript>
+if(NOT StructKeyExists(instance, "comment_id") OR getcomment_id() neq arguments.comment_id)
+{
+instance.comment_id = UCase(arguments.comment_id);
+setIsDirty(true);
+}
+</cfscript>
+</cffunction>
+
+<cffunction name="getcomment" access="public" returntype="string" default="string" hint="Accessor for property comment" output="false">
+<cfscript>
+return instance.comment;
+</cfscript>
+</cffunction>
+
+<cffunction name="setcomment" access="public" returntype="void" default="void" hint="Mutator for property comment" output="false">
+<cfargument name="comment" type="string" required="true" hint="The value to set comment to">
+<cfscript>
+if(NOT StructKeyExists(instance, "comment") OR Compare(getcomment(), arguments.comment) neq 0)
+{
+instance.comment = (arguments.comment);
+setIsDirty(true);
+}
+</cfscript>
+</cffunction>
+
+<cffunction name="gettime" access="public" returntype="date" default="date" hint="Accessor for property time" output="false">
+<cfscript>
+return instance.time;
+</cfscript>
+</cffunction>
+
+<cffunction name="settime" access="public" returntype="void" default="void" hint="Mutator for property time" output="false">
+<cfargument name="time" type="date" required="true" hint="The value to set time to">
+<cfscript>
+if(NOT StructKeyExists(instance, "time") OR gettime() neq arguments.time)
+{
+instance.time = (arguments.time);
+setIsDirty(true);
+}
+</cfscript>
+</cffunction>
+
+<cffunction name="getParententryisLoaded" access="public" returntype="boolean" default="boolean" hint="Whether or not the composition 'Parententry' has been loaded yet" output="false">
+<cfscript>
+if(NOT StructKeyExists(getLoaded(), "Parententry"))
+{
+setParententryisLoaded(false);
+}
+return StructFind(getLoaded(), "Parententry");
+</cfscript>
+</cffunction>
+
+<cffunction name="setParententryisLoaded" access="private" returntype="void" default="void" hint="Set the loaded state of composition 'arguments.name'" output="false">
+<cfargument name="loaded" type="boolean" required="true" hint="Whether or not this composition has been loaded">
+<cfscript>
+StructInsert(getLoaded(), "Parententry", arguments.loaded, true);
+</cfscript>
+</cffunction>
+
+<cffunction name="loadParententry" access="package" returntype="void" default="void" hint="Lazy load composition 'Parententry'" output="false">
+<cfif NOT getParententryisLoaded()>
+<cflock name="transfer.load.posts.comment.#getSystem().identityHashCode(this)#" timeout="60">
+<cfif NOT getParententryisLoaded()>
+<cfscript>
+getTransfer().loadParentOneToMany(getThisObject(), "Parententry");
+</cfscript>
+</cfif>
+</cflock>
+</cfif>
+</cffunction>
+
+<cffunction name="setMemento" access="public" returntype="void" default="void" hint="set the state of this object from a memento" output="false">
+<cfargument name="memento" type="struct" required="true" hint="the memento to set the state with">
+<cfscript>
+var composite = 0;
+if(NOT getIsPersisted())
+{
+setcomment_id(arguments.memento.comment_id);
+}
+setPropertyMemento(arguments.memento);
+setParententryisLoaded(false);
+setParententryMemento(memento,false);
+</cfscript>
+</cffunction>
+
+<cffunction name="setPropertyMemento" access="public" returntype="void" default="void" hint="set the Property state of this object with a memento" output="false">
+<cfargument name="memento" type="struct" required="true" hint="the memento to set the state with">
+<cfscript>
+setcomment(arguments.memento.comment);
+settime(arguments.memento.time);
+</cfscript>
+</cffunction>
+
+<cffunction name="setParententryMemento" access="public" returntype="void" default="void" hint="set the state of composition parent onetomany 'Parententry'" output="false">
+<cfargument name="memento" type="struct" required="true" hint="the memento to set the state with">
+<cfargument name="retrieveParent" type="boolean" required="false" hint="Whether or not to force retrieval of the parent" default="true">
+<cfscript>
+var composite = 0;
+if(StructKeyExists(arguments.memento, "parententry_transferObject"))
+{
+setParententry(arguments.memento.parententry_transferObject, false, true);
+}
+else if(arguments.retrieveParent)
+{
+if(StructKeyExists(arguments.memento, "parententry_entry_id"))
+{
+composite = getTransfer().get("posts.entry", arguments.memento.parententry_entry_id);
+if(getIsClone() AND composite.getIsPersisted())
+{
+composite = composite.clone();
+}
+setParententryisLoaded(true);
+if(composite.getIsPersisted())
+{
+setParententry(composite, false, true);
+}
+else
+{
+removeParententry();
+}
+}
+else
+{
+removeParententry();
+}
+}
+</cfscript>
+</cffunction>
+
+<cffunction name="getMemento" access="public" returntype="struct" default="struct" hint="Returns the memento for all non-lazy members of this object" output="false">
+<cfscript>
+var memento = StructNew();
+memento.comment_id = getcomment_id();
+memento.transfer_isDirty = getIsDirty();
+memento.transfer_isPersisted = getIsPersisted();
+StructAppend(memento, getPropertyMemento());
+return memento;
+</cfscript>
+</cffunction>
+
+<cffunction name="getPropertyMemento" access="public" returntype="struct" default="struct" hint="returns the memento for properties" output="false">
+<cfscript>
+var memento = StructNew();
+memento.comment = getcomment();
+memento.time = gettime();
+return memento;
+</cfscript>
+</cffunction>
+
+<cffunction name="getParententryMemento" access="public" returntype="struct" default="struct" hint="returns the memento for the parent onetomany posts.entry" output="false">
+<cfscript>
+var memento = StructNew();
+if(hasParententry())
+{
+memento.parententry_entry_id = getParententry().getentry_id();
+}
+return memento;
+</cfscript>
+</cffunction>
+
+<cffunction name="copyValuesTo" access="public" returntype="void" default="void" hint="Copies the values of this object to one of the same class" output="false">
+<cfargument name="transfer" type="transfer.com.TransferObject" required="true" hint="The object to copy values to">
+<cfscript>
+if(arguments.transfer.getClassName() neq "posts.comment")
+{
+throw("InvalidTransferClassException","The supplied Transfer class was not the one specified in the configuration file ","The Transfer class of '#arguments.transfer.getClassName()#' does not match the expected class of 'posts.comment'");
+}
+arguments.transfer.setMemento(getMemento());
+if(getParententryisLoaded() AND getIsDirty())
+{
+arguments.transfer.setParententryMemento(getParententryMemento(), true);
+}
+</cfscript>
+</cffunction>
+
+<cffunction name="getParententry" access="public" returntype="transfer.com.TransferObject" default="transfer.com.TransferObject" hint="Access for parent posts.comment" output="false">
+<cfscript>
+if(NOT getParententryisLoaded())
+{
+loadParententry();
+}
+if(NOT structKeyExists(instance, "entry"))
+{
+throw("OneToManyParentNotSetException","A OneToMany Parent TransferObject has not been initialised.","In TransferObject 'posts.comment' onetomany parent 'posts.entry' does not exist, when calling getParententry()");
+}
+return instance.entry;
+</cfscript>
+</cffunction>
+
+<cffunction name="setParententry" access="public" returntype="void" default="void" hint="Mutator for parent posts.comment" output="false">
+<cfargument name="transfer" type="transfer.com.TransferObject" required="true" hint="the object to set as parent">
+<cfargument name="loadChildren" type="boolean" required="false" hint="Expert/Transfer use only: whether or not to load the children." default="true">
+<cfargument name="loadingFromMemento" type="boolean" required="false" hint="Expert/Transfer use only: if this is loading from a memento or not" default="false">
+<cfscript>
+if(arguments.transfer.getClassName() neq "posts.entry")
+{
+throw("InvalidTransferClassException","The supplied Transfer class was not the one specified in the configuration file ","The Transfer class of '#arguments.transfer.getClassName()#' does not match the expected class of 'posts.entry'");
+}
+if(NOT getParententryIsLoaded() OR NOT hasParententry() OR NOT getParententry().equalsTransfer(arguments.transfer))
+{
+if(getParententryIsLoaded() AND hasParententry())
+{
+removeParententry();
+}
+instance.entry = arguments.transfer;
+setParententryisLoaded(true);
+setIsDirty(true);
+}
+else if(NOT getParententry().sameTransfer(arguments.transfer))
+{
+instance.entry = arguments.transfer;
+}
+if(arguments.loadChildren AND NOT getParententry().getOriginalTransferObject().getcommentIsLoaded())
+{
+getParententry().getOriginalTransferObject().loadcomment();
+}
+if(getParententry().getOriginalTransferObject().getcommentIsLoaded()AND NOT getParententry().getOriginalTransferObject().containscomment(getThisObject(), arguments.loadingFromMemento))
+{
+getParententry().getOriginalTransferObject().addcomment(getThisObject());
+}
+</cfscript>
+</cffunction>
+
+<cffunction name="hasParententry" access="public" returntype="boolean" default="boolean" hint="Whether or not this object has a parent posts.comment" output="false">
+<cfscript>
+if(NOT getParententryisLoaded())
+{
+loadParententry();
+}
+return StructKeyExists(instance,"entry");
+</cfscript>
+</cffunction>
+
+<cffunction name="removeParententry" access="public" returntype="void" default="void" hint="Remove the parent posts.comment from this object" output="false">
+<cfscript>
+if(NOT getParententryisLoaded())
+{
+loadParententry();
+}
+if(hasParententry())
+{
+getParententry().getOriginalTransferObject().removecomment(getThisObject());
+StructDelete(instance,"entry");
+setIsDirty(true);
+setParententryisLoaded(true);
+}
+</cfscript>
+</cffunction>
+
+<cffunction name="validateCacheState" access="package" returntype="boolean" default="boolean" hint="if this object is cached, then validate that all it's composites are cached too" output="false">
+<cfscript>
+var iterator = 0;
+var item = 0;
+if(getIsPersisted() AND NOT getTransfer().validateIsCached(getThisObject()))
+{
+if(getParententryisLoaded() AND hasParententry())
+{
+if(getIsClone() AND getParententry().getIsClone())
+{
+return true;
+}
+return false;
+}
+return true;
+}
+if(getParententryisLoaded() AND hasParententry())
+{
+item = getParententry();
+if(item.getIsClone() OR NOT getTransfer().validateIsCached(item))
+{
+return false;
+}
+}
+return true;
+</cfscript>
+</cffunction>
+
+<cffunction name="actionAfterCreateTransferEvent" access="public" returntype="void" default="void" hint="Observer action method for when creates occur" output="false">
+<cfargument name="event" type="transfer.com.events.TransferEvent" required="true" hint="The Transfer Event Object">
+<cfscript>
+var className = arguments.event.getTransferObject().getClassName();
+</cfscript>
+</cffunction>
+
+<cffunction name="actionAfterDeleteTransferEvent" access="public" returntype="void" default="void" hint="Observer action method for when deletes occur" output="false">
+<cfargument name="event" type="transfer.com.events.TransferEvent" required="true" hint="The Transfer Event Object">
+<cfscript>
+var className = arguments.event.getTransferObject().getClassName();
+if(className eq "posts.entry")
+{
+if(hasParententry() AND arguments.event.getTransferObject().equalsTransfer(getParententry()))
+{
+removeParententry();
+}
+}
+</cfscript>
+</cffunction>
+
+<cffunction name="actionAfterUpdateTransferEvent" access="public" returntype="void" default="void" hint="Observer method action for when updates occur" output="false">
+<cfargument name="event" type="transfer.com.events.TransferEvent" required="true" hint="The Transfer Event Object">
+<cfscript>
+var className = arguments.event.getTransferObject().getClassName();
+</cfscript>
+</cffunction>
+
+<cffunction name="actionAfterDiscardTransferEvent" access="public" returntype="void" default="void" hint="Observer action method for when discards occur" output="false">
+<cfargument name="event" type="transfer.com.events.TransferEvent" required="true" hint="The Transfer Event Object">
+<cfscript>
+var discard = false;
+var className = arguments.event.getTransferObject().getClassName();
+if(className eq "posts.entry")
+{
+if(getParententryisLoaded() AND hasParententry() AND arguments.event.getTransferObject().equalsTransfer(getParententry()))
+{
+discard = true;
+}
+}
+if(discard)
+{
+getTransfer().discard(getThisObject());
+}
+</cfscript>
+</cffunction>
+
+

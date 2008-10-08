@@ -1,0 +1,1 @@
+<div class="copyright">&copy; Henrik Joreteg <cfoutput>#year(now())#</cfoutput></div>

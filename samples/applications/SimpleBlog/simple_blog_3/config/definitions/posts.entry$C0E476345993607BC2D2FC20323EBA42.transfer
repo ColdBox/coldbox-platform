@@ -1,0 +1,595 @@
+<cffunction name="init" access="public" returntype="transfer.com.TransferObject" default="transfer.com.TransferObject" hint="Constructor for Transfer class posts.entry" output="false">
+<cfargument name="transfer" type="transfer.com.Transfer" required="true" hint="The Transfer library">
+<cfargument name="utility" type="transfer.com.util.Utility" required="true" hint="The Utility object">
+<cfargument name="nullable" type="transfer.com.sql.Nullable" required="true" hint="The Nullable lookup object">
+<cfargument name="thisObject" type="transfer.com.TransferObject" required="true" hint="What is determined to be the base 'this' object for this TransferObject">
+<cfscript>
+instance = StructNew();
+setThisObject(arguments.thisObject);
+setTransfer(arguments.transfer);
+setUtility(arguments.utility);
+setSystem(createObject("java", "java.lang.System"));
+setNullable(arguments.nullable);
+setClassName("posts.entry");
+setIsDirty(true);
+setIsPersisted(false);
+setIsClone(false);
+setentry_id(getNullable().getNullUUID(getClassName(), "entry_id"));
+settitle("");
+setentryBody("");
+setauthor("");
+settime(Now());
+setLoaded(StructNew());
+setcommentisLoaded(true);
+setcommentCollection(ArrayNew(1));
+setcommentIDCollection(StructNew());
+if(StructKeyExists(this, "configure") OR StructKeyExists(variables, "configure"))
+{
+configure();
+}
+return this;
+</cfscript>
+</cffunction>
+
+<cffunction name="equalsTransfer" access="public" returntype="boolean" default="boolean" hint="If an object is persisted, returns true if they are of the same class and same id. If not, returns true if they are the same object." output="false">
+<cfargument name="transfer" type="transfer.com.TransferObject" required="true" hint="The TransferObject to test against">
+<cfscript>
+if(getIsPersisted())
+{
+if(getClassName() neq arguments.transfer.getClassName())
+{
+return false;
+}
+return (getentry_id() eq arguments.transfer.getentry_id());
+}
+else
+{
+return sameTransfer(arguments.transfer);
+}
+</cfscript>
+</cffunction>
+
+<cffunction name="getentry_id" access="public" returntype="uuid" default="uuid" hint="Accessor for property entry_id" output="false">
+<cfscript>
+return instance.entry_id;
+</cfscript>
+</cffunction>
+
+<cffunction name="setentry_id" access="public" returntype="void" default="void" hint="Mutator for property entry_id" output="false">
+<cfargument name="entry_id" type="uuid" required="true" hint="The value to set entry_id to">
+<cfscript>
+if(NOT StructKeyExists(instance, "entry_id") OR getentry_id() neq arguments.entry_id)
+{
+instance.entry_id = UCase(arguments.entry_id);
+setIsDirty(true);
+}
+</cfscript>
+</cffunction>
+
+<cffunction name="gettitle" access="public" returntype="string" default="string" hint="Accessor for property title" output="false">
+<cfscript>
+return instance.title;
+</cfscript>
+</cffunction>
+
+<cffunction name="settitle" access="public" returntype="void" default="void" hint="Mutator for property title" output="false">
+<cfargument name="title" type="string" required="true" hint="The value to set title to">
+<cfscript>
+if(NOT StructKeyExists(instance, "title") OR Compare(gettitle(), arguments.title) neq 0)
+{
+instance.title = (arguments.title);
+setIsDirty(true);
+}
+</cfscript>
+</cffunction>
+
+<cffunction name="getentryBody" access="public" returntype="string" default="string" hint="Accessor for property entryBody" output="false">
+<cfscript>
+return instance.entryBody;
+</cfscript>
+</cffunction>
+
+<cffunction name="setentryBody" access="public" returntype="void" default="void" hint="Mutator for property entryBody" output="false">
+<cfargument name="entryBody" type="string" required="true" hint="The value to set entryBody to">
+<cfscript>
+if(NOT StructKeyExists(instance, "entryBody") OR Compare(getentryBody(), arguments.entryBody) neq 0)
+{
+instance.entryBody = (arguments.entryBody);
+setIsDirty(true);
+}
+</cfscript>
+</cffunction>
+
+<cffunction name="getauthor" access="public" returntype="string" default="string" hint="Accessor for property author" output="false">
+<cfscript>
+return instance.author;
+</cfscript>
+</cffunction>
+
+<cffunction name="setauthor" access="public" returntype="void" default="void" hint="Mutator for property author" output="false">
+<cfargument name="author" type="string" required="true" hint="The value to set author to">
+<cfscript>
+if(NOT StructKeyExists(instance, "author") OR Compare(getauthor(), arguments.author) neq 0)
+{
+instance.author = (arguments.author);
+setIsDirty(true);
+}
+</cfscript>
+</cffunction>
+
+<cffunction name="gettime" access="public" returntype="date" default="date" hint="Accessor for property time" output="false">
+<cfscript>
+return instance.time;
+</cfscript>
+</cffunction>
+
+<cffunction name="settime" access="public" returntype="void" default="void" hint="Mutator for property time" output="false">
+<cfargument name="time" type="date" required="true" hint="The value to set time to">
+<cfscript>
+if(NOT StructKeyExists(instance, "time") OR gettime() neq arguments.time)
+{
+instance.time = (arguments.time);
+setIsDirty(true);
+}
+</cfscript>
+</cffunction>
+
+<cffunction name="getcommentisLoaded" access="public" returntype="boolean" default="boolean" hint="Whether or not the composition 'comment' has been loaded yet" output="false">
+<cfscript>
+if(NOT StructKeyExists(getLoaded(), "comment"))
+{
+setcommentisLoaded(false);
+}
+return StructFind(getLoaded(), "comment");
+</cfscript>
+</cffunction>
+
+<cffunction name="setcommentisLoaded" access="private" returntype="void" default="void" hint="Set the loaded state of composition 'arguments.name'" output="false">
+<cfargument name="loaded" type="boolean" required="true" hint="Whether or not this composition has been loaded">
+<cfscript>
+StructInsert(getLoaded(), "comment", arguments.loaded, true);
+</cfscript>
+</cffunction>
+
+<cffunction name="loadcomment" access="package" returntype="void" default="void" hint="Lazy load composition 'comment'" output="false">
+<cfif NOT getcommentisLoaded()>
+<cflock name="transfer.load.posts.entry.#getSystem().identityHashCode(this)#" timeout="60">
+<cfif NOT getcommentisLoaded()>
+<cfscript>
+getTransfer().loadOneToMany(getThisObject(), "comment");
+</cfscript>
+</cfif>
+</cflock>
+</cfif>
+</cffunction>
+
+<cffunction name="setMemento" access="public" returntype="void" default="void" hint="set the state of this object from a memento" output="false">
+<cfargument name="memento" type="struct" required="true" hint="the memento to set the state with">
+<cfscript>
+var composite = 0;
+if(NOT getIsPersisted())
+{
+setentry_id(arguments.memento.entry_id);
+}
+setPropertyMemento(arguments.memento);
+setcommentisLoaded(false);
+</cfscript>
+</cffunction>
+
+<cffunction name="setPropertyMemento" access="public" returntype="void" default="void" hint="set the Property state of this object with a memento" output="false">
+<cfargument name="memento" type="struct" required="true" hint="the memento to set the state with">
+<cfscript>
+settitle(arguments.memento.title);
+setentryBody(arguments.memento.entryBody);
+setauthor(arguments.memento.author);
+settime(arguments.memento.time);
+</cfscript>
+</cffunction>
+
+<cffunction name="setcommentMemento" access="public" returntype="void" default="void" hint="set the state of composition onetomany 'comment'" output="false">
+<cfargument name="memento" type="array" required="true" hint="the memento to set the state with">
+<cfscript>
+var isDirty = false;
+var iterator = 0;
+var collection = ArrayNew(1);
+var idcollection = StructNew();
+var counter = 0;
+var len = 0;
+var item = 0;
+var composite = 0;
+</cfscript>
+<cflock name="transfer.posts.entry.comment.#getentry_id()#" timeout="60">
+<cfscript>
+len = ArrayLen(arguments.memento);
+for(counter = 1; counter lte len; counter = counter + 1)
+{
+composite = arguments.memento[counter];
+composite.parententry_transferObject = getThisObject();
+item = getComposite("posts.comment", composite, "comment_id");
+StructInsert(idcollection, "pk:" & item.getcomment_id(), 1, true);
+StructInsert(idcollection, "obj:" & getSystem().identityHashCode(item), 1, true);
+arrayAppend(collection, item);
+}
+setcommentIDCollection(idcollection);
+setcommentCollection(collection);
+iterator = collection.iterator();
+while(iterator.hasNext())
+{
+item = iterator.next();
+isDirty = item.getIsDirty();
+item.setParententry(getThisObject(), false, true);
+if(NOT isDirty)
+{
+item.getOriginalTransferObject().setIsDirty(composite.transfer_isDirty);
+item.getOriginalTransferObject().setIsPersisted(composite.transfer_isPersisted);
+}
+}
+setcommentisLoaded(true);
+</cfscript>
+</cflock>
+</cffunction>
+
+<cffunction name="getMemento" access="public" returntype="struct" default="struct" hint="Returns the memento for all non-lazy members of this object" output="false">
+<cfscript>
+var memento = StructNew();
+memento.entry_id = getentry_id();
+memento.transfer_isDirty = getIsDirty();
+memento.transfer_isPersisted = getIsPersisted();
+StructAppend(memento, getPropertyMemento());
+return memento;
+</cfscript>
+</cffunction>
+
+<cffunction name="getPropertyMemento" access="public" returntype="struct" default="struct" hint="returns the memento for properties" output="false">
+<cfscript>
+var memento = StructNew();
+memento.title = gettitle();
+memento.entryBody = getentryBody();
+memento.author = getauthor();
+memento.time = gettime();
+return memento;
+</cfscript>
+</cffunction>
+
+<cffunction name="getcommentMemento" access="public" returntype="array" default="array" hint="returns the memento for the onetomany comment" output="false">
+<cfscript>
+var memento = ArrayNew(1);
+var iterator = getcommentIterator();
+var item = 0;
+while(iterator.hasNext())
+{
+item = iterator.next();
+ArrayAppend(memento, item.getMemento());
+}
+return memento;
+</cfscript>
+</cffunction>
+
+<cffunction name="copyValuesTo" access="public" returntype="void" default="void" hint="Copies the values of this object to one of the same class" output="false">
+<cfargument name="transfer" type="transfer.com.TransferObject" required="true" hint="The object to copy values to">
+<cfscript>
+if(arguments.transfer.getClassName() neq "posts.entry")
+{
+throw("InvalidTransferClassException","The supplied Transfer class was not the one specified in the configuration file ","The Transfer class of '#arguments.transfer.getClassName()#' does not match the expected class of 'posts.entry'");
+}
+arguments.transfer.setMemento(getMemento());
+if(getcommentisLoaded())
+{
+arguments.transfer.setcommentMemento(getcommentMemento());
+}
+</cfscript>
+</cffunction>
+
+<cffunction name="getcommentCollection" access="private" returntype="array" default="array" hint="Accessor for the internal collection for comment" output="false">
+<cfscript>
+return instance.comment;
+</cfscript>
+</cffunction>
+
+<cffunction name="setcommentCollection" access="private" returntype="void" default="void" hint="Mutator for the internal collection for comment" output="false">
+<cfargument name="comment" type="array" required="true" hint="The array to set">
+<cfscript>
+instance.comment = arguments.comment;
+</cfscript>
+</cffunction>
+
+<cffunction name="getcommentIDCollection" access="private" returntype="struct" default="struct" hint="Accessor for internal id collection, for faster contain*() calls" output="false">
+<cfreturn instance.commentIDCollection />
+</cffunction>
+
+<cffunction name="setcommentIDCollection" access="private" returntype="void" default="void" hint="Mutator for internal id collection, for faster contain*() calls" output="false">
+<cfargument name="collection" type="struct" required="true" hint="the key for the id to be stored under">
+<cfset instance.commentIDCollection = arguments.collection />
+</cffunction>
+
+<cffunction name="getcomment" access="public" returntype="transfer.com.TransferObject" default="transfer.com.TransferObject" hint="Returns the posts.comment object at the given index in the array" output="false">
+<cfargument name="index" type="numeric" required="true" hint="The index in the array to retrieve">
+<cfscript>
+if(NOT getcommentisLoaded())
+{
+loadcomment();
+}
+return getcommentCollection().get(JavaCast("int", arguments.index - 1));
+</cfscript>
+</cffunction>
+
+<cffunction name="getcommentArray" access="public" returntype="array" default="array" hint="returns the entire array of posts.comment" output="false">
+<cfscript>
+var array = ArrayNew(1);
+if(NOT getcommentisLoaded())
+{
+loadcomment();
+}
+array.addAll(getcommentCollection());
+return array;
+</cfscript>
+</cffunction>
+
+<cffunction name="getcommentIterator" access="public" returntype="any" default="any" hint="return a java.util.Iterator of posts.comment objects" output="false">
+<cfscript>
+if(NOT getcommentisLoaded())
+{
+loadcomment();
+}
+return getcommentArray().iterator();
+</cfscript>
+</cffunction>
+
+<cffunction name="containscomment" access="public" returntype="boolean" default="boolean" hint="If this array contains a particular instance of posts.comment" output="false">
+<cfargument name="object" type="transfer.com.TransferObject" required="true" hint="The object to look for">
+<cfargument name="pkCheckOnly" type="boolean" required="false" hint="Expert/Transfer use only: only checks primary keys" default="false">
+<cfscript>
+var composite = 0;
+var array = getcommentArray();
+var counter = 1;
+var len = 0;
+var check = false;
+var idcollection = getcommentidCollection();
+if(arguments.object.getClassName() neq "posts.comment")
+{
+throw("InvalidTransferClassException","The supplied Transfer class was not the one specified in the configuration file ","The Transfer class of '#arguments.object.getClassName()#' does not match the expected class of 'posts.comment'");
+}
+if(arguments.object.getIsPersisted() AND StructKeyExists(idcollection, "pk:" & arguments.object.getcomment_id()))
+{
+return true;
+}
+if(arguments.pkCheckOnly)
+{
+return false;
+}
+if(StructKeyExists(idcollection, "obj:" & getSystem().identityHashCode(arguments.object)))
+{
+check = true;
+}
+if(NOT check)
+{
+len = ArrayLen(array);
+for(; counter lte len; counter = counter + 1)
+{
+composite = array[counter];
+if(composite.equalsTransfer(arguments.object))
+{
+check = true;
+break;
+}
+}
+}
+if(check AND arguments.object.getIsPersisted())
+{
+StructInsert(idcollection, "pk:" & arguments.object.getcomment_id(), 1, true);
+}
+return check;
+</cfscript>
+</cffunction>
+
+<cffunction name="findcomment" access="public" returntype="numeric" default="numeric" hint="Find the index number that the given object is at in the Array. Returns -1 if it can't be found.'" output="false">
+<cfargument name="object" type="transfer.com.TransferObject" required="true" hint="The object to search for">
+<cfscript>
+var iterator = 0;
+var composite = 0;
+var counter = 0;
+if(NOT getcommentisLoaded())
+{
+loadcomment();
+}
+iterator = getcommentCollection().iterator();
+if(arguments.object.getClassName() neq "posts.comment")
+{
+throw("InvalidTransferClassException","The supplied Transfer class was not the one specified in the configuration file ","The Transfer class of '#arguments.object.getClassName()#' does not match the expected class of 'posts.comment'");
+}
+while(iterator.hasNext())
+{
+composite = iterator.next();
+counter = counter + 1;
+if(composite.equalsTransfer(arguments.object))
+{
+return counter;
+}
+}
+return -1;
+</cfscript>
+</cffunction>
+
+<cffunction name="addcomment" access="package" returntype="void" default="void" hint="Add an object of type posts.comment to the array" output="false">
+<cfargument name="object" type="transfer.com.TransferObject" required="true" hint="The object to add">
+<cflock name="transfer.posts.entry.comment.#getentry_id()#" timeout="60">
+<cfscript>
+if(arguments.object.getClassName() neq "posts.comment")
+{
+throw("InvalidTransferClassException","The supplied Transfer class was not the one specified in the configuration file ","The Transfer class of '#arguments.object.getClassName()#' does not match the expected class of 'posts.comment'");
+}
+if(NOT getcommentisLoaded())
+{
+loadcomment();
+}
+if(arguments.object.getIsPersisted())
+{
+StructInsert(getcommentIDCollection(), "pk:" & arguments.object.getcomment_id(), 1, true);
+}
+StructInsert(getcommentIDCollection(), "obj:" & getSystem().identityHashCode(arguments.object), 1, true);
+ArrayAppend(getcommentCollection(), arguments.object);
+</cfscript>
+</cflock>
+</cffunction>
+
+<cffunction name="removecomment" access="package" returntype="void" default="void" hint="remove an object of type posts.comment from the array" output="false">
+<cfargument name="object" type="transfer.com.TransferObject" required="true" hint="the object to remove">
+<cfscript>
+var iterator = 0;
+var composite = 0;
+if(arguments.object.getClassName() neq "posts.comment")
+{
+throw("InvalidTransferClassException","The supplied Transfer class was not the one specified in the configuration file ","The Transfer class of '#arguments.object.getClassName()#' does not match the expected class of 'posts.comment'");
+}
+</cfscript>
+<cflock name="transfer.posts.entry.comment.#getentry_id()#" timeout="60">
+<cfscript>
+if(NOT getcommentisLoaded())
+{
+loadcomment();
+}
+iterator = getcommentCollection().iterator();
+while(iterator.hasNext())
+{
+composite = iterator.next();
+if(composite.equalsTransfer(arguments.object))
+{
+iterator.remove();
+if(arguments.object.getIsPersisted())
+{
+StructDelete(getcommentIDCollection(), "pk:" & arguments.object.getcomment_id());
+}
+StructDelete(getcommentIDCollection(), "obj:" & getSystem().identityHashCode(arguments.object));
+return;
+}
+}
+</cfscript>
+</cflock>
+</cffunction>
+
+<cffunction name="clearcomment" access="package" returntype="void" default="void" hint="Clear all the elements from the array" output="false">
+<cflock name="transfer.posts.entry.comment.#getentry_id()#" timeout="60">
+<cfscript>
+ArrayClear(getcommentCollection());
+StructClear(getcommentIDCollection());
+</cfscript>
+</cflock>
+</cffunction>
+
+<cffunction name="sortcomment" access="public" returntype="void" default="void" hint="Sort all elements in the array comment" output="false">
+<cflock name="transfer.posts.entry.comment.#getentry_id()#" timeout="60">
+<cfscript>
+if(NOT arrayisEmpty(getcommentCollection()))
+{
+setcommentCollection(getUtility().quickSort(getcommentCollection(), commentComparator));
+}
+</cfscript>
+</cflock>
+</cffunction>
+
+<cffunction name="commentComparator" access="private" returntype="numeric" default="numeric" hint="The Comparator HOF for sorting" output="false">
+<cfargument name="object1" type="transfer.com.TransferObject" required="true" hint="object one">
+<cfargument name="object2" type="transfer.com.TransferObject" required="true" hint="object two">
+<cfscript>
+if(arguments.object1.gettime() lt arguments.object2.gettime())
+{
+return -1;
+}
+else if(arguments.object1.gettime() gt arguments.object2.gettime())
+{
+return 1;
+}
+return 0;
+</cfscript>
+</cffunction>
+
+<cffunction name="validateCacheState" access="package" returntype="boolean" default="boolean" hint="if this object is cached, then validate that all it's composites are cached too" output="false">
+<cfscript>
+var iterator = 0;
+var item = 0;
+if(getIsPersisted() AND NOT getTransfer().validateIsCached(getThisObject()))
+{
+return true;
+}
+return true;
+</cfscript>
+</cffunction>
+
+<cffunction name="actionAfterCreateTransferEvent" access="public" returntype="void" default="void" hint="Observer action method for when creates occur" output="false">
+<cfargument name="event" type="transfer.com.events.TransferEvent" required="true" hint="The Transfer Event Object">
+<cfscript>
+var className = arguments.event.getTransferObject().getClassName();
+if(className eq "posts.comment")
+{
+if(arguments.event.getTransferObject().hasParententry())
+{
+if(arguments.event.getTransferObject().getParententry().equalsTransfer(getThisObject()))
+{
+if(NOT containscomment(arguments.event.getTransferObject()))
+{
+arguments.event.getTransferObject().setParententry(getThisObject());
+}
+sortcomment();
+}
+}
+}
+</cfscript>
+</cffunction>
+
+<cffunction name="actionAfterDeleteTransferEvent" access="public" returntype="void" default="void" hint="Observer action method for when deletes occur" output="false">
+<cfargument name="event" type="transfer.com.events.TransferEvent" required="true" hint="The Transfer Event Object">
+<cfscript>
+var className = arguments.event.getTransferObject().getClassName();
+if(className eq "posts.comment")
+{
+if(getcommentIsLoaded() AND containscomment(arguments.event.getTransferObject()))
+{
+removecomment(arguments.event.getTransferObject());
+}
+}
+</cfscript>
+</cffunction>
+
+<cffunction name="actionAfterUpdateTransferEvent" access="public" returntype="void" default="void" hint="Observer method action for when updates occur" output="false">
+<cfargument name="event" type="transfer.com.events.TransferEvent" required="true" hint="The Transfer Event Object">
+<cfscript>
+var className = arguments.event.getTransferObject().getClassName();
+if(className eq "posts.comment")
+{
+if(arguments.event.getTransferObject().hasParententry())
+{
+if(arguments.event.getTransferObject().getParententry().equalsTransfer(getThisObject()))
+{
+if(NOT containscomment(arguments.event.getTransferObject()))
+{
+arguments.event.getTransferObject().setParententry(getThisObject());
+}
+sortcomment();
+}
+}
+}
+</cfscript>
+</cffunction>
+
+<cffunction name="actionAfterDiscardTransferEvent" access="public" returntype="void" default="void" hint="Observer action method for when discards occur" output="false">
+<cfargument name="event" type="transfer.com.events.TransferEvent" required="true" hint="The Transfer Event Object">
+<cfscript>
+var discard = false;
+var className = arguments.event.getTransferObject().getClassName();
+if(className eq "posts.comment")
+{
+if(arguments.event.getTransferObject().getOriginalTransferObject().getParententryisLoaded() AND arguments.event.getTransferObject().hasParententry() AND arguments.event.getTransferObject().getParententry().equalsTransfer(getThisObject())
+AND
+containscomment(arguments.event.getTransferObject()))
+{
+discard = true;
+}
+}
+if(discard)
+{
+getTransfer().discard(getThisObject());
+}
+</cfscript>
+</cffunction>
+
+
