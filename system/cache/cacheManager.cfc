@@ -338,7 +338,7 @@ Modification History:
 		<cfargument name="async" 		type="boolean"  required="false" default="true" hint="Run asynchronously or not"/>
 		<!--- ************************************************************* --->
 		<cfscript>
-			var cacheKey = this.VIEW_CACHEKEY_PREFIX & arguments.viewSnippet;
+			var cacheKey = instance.controller.getPlugin("renderer").VIEW_CACHEKEY_PREFIX & arguments.viewSnippet;
 			
 			/* Clear All View snippets */
 			clearByKeySnippet(keySnippet=cacheKey,regex=false,async=false);
@@ -467,9 +467,9 @@ Modification History:
 	<!--- Expire an Object --->
 	<cffunction name="expireByKeySnippet" access="public" returntype="void" hint="Same as expireKey but can touch multiple objects depending on the keysnippet that is sent in." output="false" >
 		<!--- ************************************************************* --->
-		<cfargument name="keySnippet" type="string" required="true" hint="The key snippet to use">
+		<cfargument name="keySnippet" type="string"  required="true" hint="The key snippet to use">
 		<cfargument name="regex" 	  type="boolean" required="false" default="false" hint="Use regex or not">
-		<cfargument name="async" 	 type="boolean" required="false" default="true" hint="Run asynchronously or not"/>
+		<cfargument name="async" 	  type="boolean" required="false" default="true" hint="Run asynchronously or not"/>
 		<!--- ************************************************************* --->
 		<cfscript>
 			var keyIndex = 1;
