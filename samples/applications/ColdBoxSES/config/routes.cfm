@@ -34,7 +34,7 @@ NOTE: The interceptor will create a new setting called: sesBaseURL with this val
 
 	For SEO purposes it's always best to have one URL for everything, not 3!
 --->
-<cfset setUniqueURLs(true)>
+<cfset setUniqueURLs(false)>
 
 <!--- 
 	The Base URL for your site. This will only be used for forwarding requests if 
@@ -129,7 +129,7 @@ NOTE: The interceptor will create a new setting called: sesBaseURL with this val
 					handler="ehSES",
 					action="testcase1" )>
 
-<cfset addCourse(	pattern="/blog/:entrytitle",
+<cfset addCourse(	pattern="blog/:entrytitle",
 					handler="ehSES",
 					action="testcase2" )>
 
