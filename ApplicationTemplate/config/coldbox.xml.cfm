@@ -152,24 +152,22 @@
 		<MailPassword></MailPassword>
 	</MailServerSettings>
 
-	<!--Emails to Send bug reports, you can create as many as you like
-	<BugEmail>myemail@gmail.com</BugEmail>	
-	-->
-	<BugTracerReports/>
-
+	<!--Emails to Send bug reports, you can create as many as you like -->
+	<BugTracerReports>
+		<!-- <BugEmail>myemail@gmail.com</BugEmail> -->
+	</BugTracerReports>
+	
 	<!--List url dev environments, this determines your dev/pro environment for the framework-->
 	<DevEnvironments>
 		<url>dev</url>
 	</DevEnvironments>
 
 	<!--Webservice declarations your use in your application, if not use, leave blank
-	Note that for the same webservice name you can have a development url and a production url.
+	Note that for the same webservice name you can have a development url and a production url.-->
 	<WebServices>
-		<WebService name="TESTWS1" URL="http://www.test.com/test1.cfc?wsdl" DevURL="http://dev.test.com/test1.cfc?wsdl" />
-		<WebService name="TESTWS2" URL="http://www.test.com/test2.cfc?wsdl" DevURL="http://dev.test.com/test2.cfc?wsdl" />
+		<!-- <WebService name="TESTWS1" URL="http://www.test.com/test1.cfc?wsdl" DevURL="http://dev.test.com/test1.cfc?wsdl" /> -->
+		<!-- <WebService name="TESTWS2" URL="http://www.test.com/test2.cfc?wsdl" DevURL="http://dev.test.com/test2.cfc?wsdl" /> -->
 	</WebServices>
-	-->
-	<WebServices />
 
 	<!--Declare Layouts for your application here-->
 	<Layouts>
@@ -200,11 +198,10 @@
 	-->
 	<i18N />
 	
-	<!--Datasource Setup, you can then retreive a datasourceBean via the getDatasource("name") method: 
-	<Datasource alias="MyDSNAlias" name="real_dsn_name"   dbtype="mysql"  username="" password="" />	
-	-->
-	<Datasources />
-	
+	<!--Datasource Setup, you can then retreive a datasourceBean via the getDatasource("name") method: -->
+	<Datasources>
+		<!-- <Datasource alias="MyDSNAlias" name="real_dsn_name"   dbtype="mysql"  username="" password="" /> -->
+	</Datasources>
 	<!--ColdBox Object Caching Settings Overrides the Framework-wide settings 
 	<Cache>
 		<ObjectDefaultTimeout>60</ObjectDefaultTimeout>
