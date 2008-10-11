@@ -30,7 +30,7 @@ Modification History:
 		<cfthrow object="#arguments.throwObject#">
 	</cffunction>
 	
-	<cffunction name="relocate" access="private" hint="Facade for cflocation" returntype="void">
+	<cffunction name="relocate" access="public" hint="Facade for cflocation" returntype="void">
 		<cfargument name="url" 		required="true" 	type="string">
 		<cfargument name="addtoken" required="false" 	type="boolean" default="false">
 		<cflocation url="#arguments.url#" addtoken="#addtoken#">
@@ -38,7 +38,9 @@ Modification History:
 	
 	<cffunction name="dumpit" access="public" hint="Facade for cfmx dump" returntype="void">
 		<cfargument name="var" required="yes" type="any">
+		<cfargument name="isAbort" type="boolean" default="false" required="false" hint="Abort also"/>
 		<cfdump var="#var#">
+		<cfif arguments.isAbort><cfabort></cfif>
 	</cffunction>
 	
 	<cffunction name="abortit" access="public" hint="Facade for cfabort" returntype="void" output="false">

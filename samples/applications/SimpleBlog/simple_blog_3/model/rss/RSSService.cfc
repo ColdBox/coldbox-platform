@@ -9,13 +9,12 @@
 	</cfscript>
 	
 	<cffunction name="init" access="public" returntype="any" output="false" hint="constructor">
-        <cfargument name="transfer" type="any">
-		<cfargument name="settings" type="any">
-			<cfset instance.transfer = arguments.transfer >
-			<cfset instance.settings = arguments.settings >
+    	<cfargument name="entryService" type="any" 	  required="true" hint="The entry service"/>
+		<cfargument name="settings" 	type="struct" required="true" hint="The settings Structure">
+			
+		<cfset instance.entryService = arguments.entryService >
+		<cfset instance.settings = arguments.settings >
 		
-		<!--- Any constructor code here --->
-				
 		<cfreturn this>
 	</cffunction>
 
@@ -24,13 +23,10 @@
 	<cffunction name="getFullRSS" access="public" returntype="any" output="false">
 		
 		<cfscript>
-			var EntryService = CreateObject("component","#instance.settings.appname#.model.entries.EntryService").init(instance.transfer);
-	    	var entries = EntryService.getLatestEntries();
+			var entries = instance.EntryService.getLatestEntries();
 			var myArray = ArrayNew(1);
 			var feedStruct = StructNew();
 			var feed = "";
-			
-			test = instance.settings;
 			
 			QueryAddColumn(entries, "link", myArray);
 			
@@ -42,14 +38,10 @@
 			feedStruct.description = "A blog built with ColdBox in order to learn ColdBox.";
 			feedStruct.pubDate = "time";
 			feedStruct.link = instance.settings.sesBaseUrl;
-			
-			
-			
 			feedStruct.items = entries;
 			
 			return feedStruct;
 		</cfscript>
-		<cfdump var="#test#"><cfabort>
 	</cffunction>
 	
 </cfcomponent>

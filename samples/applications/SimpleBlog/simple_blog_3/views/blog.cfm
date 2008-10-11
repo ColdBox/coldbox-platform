@@ -1,7 +1,10 @@
 <cfoutput>
 	<h1>Blog</h1>
 	
-	<a href="#event.buildLink('general.newPost')#">Compose New Post</a>
+	<ul>
+		<li><a href="#event.buildLink('general.newPost')#">Compose New Post</a></li>
+		<li><a href="#event.buildLink('general.rss')#">RSS 2.0</a></li>
+	</ul>
 	
 	<cfloop query="rc.posts">
 		<div class="blogPost">

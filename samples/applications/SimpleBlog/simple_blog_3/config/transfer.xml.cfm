@@ -6,7 +6,7 @@
 		<package name="posts">
 
 			<!--Entry-->
-			<object name="entry" table="entry"  decorator="simple_blog_3.model.entries.Entry" >
+			<object name="entry" table="entries"  decorator="simple_blog_3.model.entries.Entry" >
 				<id name="entry_id" column="entry_id" type="UUID" generate="true" />
 				<property name="title" 		type="string" />
 				<property name="entryBody" 	type="string" />
@@ -25,7 +25,7 @@
 			</object>
 
 			<!--Comment-->
-			<object name="comment" table="comment">
+			<object name="comment" table="comments">
 				<id name="comment_id" column="comment_id" type="UUID" generate="true" />
 				<property name="comment"	type="string" />
 				<property name="time"		type="date" />

@@ -173,7 +173,7 @@ setIsDirty(true);
 var composite = 0;
 if(NOT getIsPersisted())
 {
-setuser_id(StructFind(arguments.memento, "user_id"));
+setuser_id(arguments.memento.user_id);
 }
 setPropertyMemento(arguments.memento);
 </cfscript>
@@ -182,22 +182,21 @@ setPropertyMemento(arguments.memento);
 <cffunction name="setPropertyMemento" access="public" returntype="void" default="void" hint="set the Property state of this object with a memento" output="false">
 <cfargument name="memento" type="struct" required="true" hint="the memento to set the state with">
 <cfscript>
-setfirstName(StructFind(arguments.memento, "firstName"));
-setlastName(StructFind(arguments.memento, "lastName"));
-setuserName(StructFind(arguments.memento, "userName"));
-setpassword(StructFind(arguments.memento, "password"));
-setuserType(StructFind(arguments.memento, "userType"));
-setlastLogin(StructFind(arguments.memento, "lastLogin"));
+setfirstName(arguments.memento.firstName);
+setlastName(arguments.memento.lastName);
+setuserName(arguments.memento.userName);
+setpassword(arguments.memento.password);
+setuserType(arguments.memento.userType);
+setlastLogin(arguments.memento.lastLogin);
 </cfscript>
 </cffunction>
 
 <cffunction name="getMemento" access="public" returntype="struct" default="struct" hint="Returns the memento for all non-lazy members of this object" output="false">
 <cfscript>
-var memento = createObject("java", "java.util.HashMap").init();
-StructInsert(memento, "user_id", getuser_id());
-StructInsert(memento, "transfer_isDirty", getIsDirty());
-StructInsert(memento, "transfer_isPersisted", getIsPersisted());
-StructInsert(memento, "transfer_isProxied", false);
+var memento = StructNew();
+memento.user_id = getuser_id();
+memento.transfer_isDirty = getIsDirty();
+memento.transfer_isPersisted = getIsPersisted();
 StructAppend(memento, getPropertyMemento());
 return memento;
 </cfscript>
@@ -205,13 +204,13 @@ return memento;
 
 <cffunction name="getPropertyMemento" access="public" returntype="struct" default="struct" hint="returns the memento for properties" output="false">
 <cfscript>
-var memento = createObject("java", "java.util.HashMap").init();
-StructInsert(memento, "firstName", getfirstName());
-StructInsert(memento, "lastName", getlastName());
-StructInsert(memento, "userName", getuserName());
-StructInsert(memento, "password", getpassword());
-StructInsert(memento, "userType", getuserType());
-StructInsert(memento, "lastLogin", getlastLogin());
+var memento = StructNew();
+memento.firstName = getfirstName();
+memento.lastName = getlastName();
+memento.userName = getuserName();
+memento.password = getpassword();
+memento.userType = getuserType();
+memento.lastLogin = getlastLogin();
 return memento;
 </cfscript>
 </cffunction>

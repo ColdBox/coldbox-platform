@@ -9,16 +9,15 @@ in the ColdBox system directory.
 extends = coldbox.system.eventhandler
 	
 ----------------------------------------------------------------------->
-
 <cfcomponent displayname="admin" extends="coldbox.system.eventhandler" output="false" autowire="true">
 	
-<!----------------------------------- CONSTRUCTOR --------------------------------------->	
-
-	
+	<!--- Dependencies --->
 	<cfproperty name="SecurityService" type="ioc" scope="instance">
 	<cfproperty name="EntryService" type="ioc" scope="instance">
 	
 	
+<!----------------------------------- CONSTRUCTOR --------------------------------------->	
+
 	<cffunction name="init" access="public" returntype="any" output="false" hint="constructor">
 		<cfargument name="controller" type="any">
 		<cfset super.init(arguments.controller)>
@@ -53,7 +52,7 @@ extends = coldbox.system.eventhandler
 	
 	<!--- newPost --->
 	<cffunction name="newPost" access="public" returntype="void" output="false" hint="">
-		<cfargument name="Event" type="coldbox.system.beans.requestContext" required="yes">
+		<cfargument name="Event" type="any" required="yes">
 	    <cfset var rc = event.getCollection()>
 	        
 	    <cfset Event.setView("admin/newPost")>
@@ -62,23 +61,16 @@ extends = coldbox.system.eventhandler
 	
 	<!--- doNewPost --->
 	<cffunction name="doNewPost" access="public" returntype="void" output="false" hint="Action to handle new post operation">
-		<cfargument name="Event" type="coldbox.system.beans.requestContext" required="yes">
+		<cfargument name="Event" type="any" required="yes">
 	    <cfset var rc = event.getCollection()>
 	    <cfset var newPost = "">
 	    
 	    <cfscript>
 	    	newPost = instance.EntryService.getEntry("posts.entry");
-	    	/*newPost.settitle(rc.title);
-	    	newPost.setpost(rc.post);
-	    	newPost.setauthor(rc.author);
-	    	*/
 	    	getPlugin("beanFactory").populateBean(newPost);
 	    	instance.EntryService.saveEntry(newPost);
-	    
-	    	getColdboxOcm().clearEvent("general.blog");
-	    
+	    	getColdboxOcm().clearAllEvents(false);
 	    	setNextRoute("general/blog");
-	    	
 	    </cfscript>    
 	     
 	</cffunction>
@@ -87,7 +79,6 @@ extends = coldbox.system.eventhandler
 	<cffunction name="doLogin" access="public" returntype="void" output="false">
 		<cfargument name="Event" type="any">
 		<cfset var rc = event.getCollection()>
-			
 			
 			<cfif instance.SecurityService.isUserVerified(rc.username, rc.password)>
 				<cfset setNextRoute("admin/index")>

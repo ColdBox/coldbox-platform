@@ -26,7 +26,7 @@ Description :
 <!----------------------------------- PUBLIC METHODS --------------------------------------->
 
 	<!--- getEntry --->
-	<cffunction name="getEntry" access="public" returntype="any" output="false" hint="">
+	<cffunction name="getEntry" access="public" returntype="any" output="false" hint="Get an entry object">
 		<cfargument name="id" type="any" required="false">
 	       
 	    <cfscript>

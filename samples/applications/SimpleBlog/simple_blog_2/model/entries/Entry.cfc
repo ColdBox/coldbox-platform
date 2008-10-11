@@ -1,4 +1,4 @@
-<cfcomponent displayname="Entry" hint="Entry deceorator" extends="Transfer.com.TransferDecorator" output="false">
+<cfcomponent displayname="Entry" hint="Entry deceorator" extends="transfer.com.TransferDecorator" output="false">
 	
 	<!--- getTime --->
 	<cffunction name="getTime" access="public" returntype="any" output="false" hint="Decorator for Entry getTime function.">

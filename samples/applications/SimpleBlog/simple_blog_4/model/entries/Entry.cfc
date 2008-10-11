@@ -1,5 +1,6 @@
-<cfcomponent displayname="Entry" hint="Entry deceorator" extends="Transfer.com.TransferDecorator" output="false">
+<cfcomponent displayname="Entry" hint="Entry deceorator" extends="transfer.com.TransferDecorator" output="false">
 	
+	<!--- Dependencies injected by COldBox Bean Injector --->
 	<cfproperty name="DateUtil" type="ioc" scope="instance">
 	
 	<!--- getTime --->

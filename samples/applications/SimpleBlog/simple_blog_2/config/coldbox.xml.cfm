@@ -3,7 +3,7 @@
 	xsi:noNamespaceSchemaLocation="http://www.coldboxframework.com/schema/config_2.6.0.xsd">
 	<Settings>
 		<!--The name of your application.-->
-		<Setting name="AppName"						value="simple_blog"/>
+		<Setting name="AppName"						value="simple_blog2"/>
 		<!-- ColdBox set-up information for J2EE installation.
 			As context-root are actually virtual locations which does not correspond to physical location of files. for example 
 			/openbd   /var/www/html/tomcat/deploy/bluedragon
@@ -16,10 +16,9 @@
 			the AppMapping is either a CF mapping or the path from the webroot to this application root. If this setting
 			is not set, then coldbox will try to auto-calculate it for you. Please read the docs.-->
 			
-		<Setting name="AppMapping"					value="/simple_blog_2"/>      
-			
+	
 		<!--Default Debugmode boolean flag (Set to false in production environments)-->
-		<Setting name="DebugMode" 					value="true" />
+		<Setting name="DebugMode" 					value="false" />
 		<!--The Debug Password to use in order to activate/deactivate debugmode,activated by url actions -->
 		<Setting name="DebugPassword" 				value=""/>
 		<!--The fwreinit password to use in order to reinitialize the framework and application.Optional, else leave blank -->
@@ -39,25 +38,25 @@
 		<!--Event Handler to run on the start of a request, leave blank if not used. Emulates the Application.cfc onRequestStart method	-->
 		<Setting name="RequestStartHandler" 		value="main.onRequestStart"/>
 		<!--Event Handler to run at end of all requests, leave blank if not used. Emulates the Application.cfc onRequestEnd method-->
-		<Setting name="RequestEndHandler" 			value="main.onRequestEnd"/>
+		<Setting name="RequestEndHandler" 			value=""/>
 		<!--Event Handler to run at the start of an application, leave blank if not used. Emulates the Application.cfc onApplicationStart method	-->
 		<Setting name="ApplicationStartHandler" 	value="main.onAppInit"/>
 		<!--Event Handler to run at the start of a session, leave blank if not used.-->
-		<Setting name="SessionStartHandler" 		value="main.onSessionStart"/>
+		<Setting name="SessionStartHandler" 		value=""/>
 		<!--Event Handler to run at the end of a session, leave blank if not used.-->
-		<Setting name="SessionEndHandler" 			value="main.onSessionEnd"/>
+		<Setting name="SessionEndHandler" 			value=""/>
 		<!--The Email address from which all outgoing framework emails will be sent. -->
-		<Setting name="OwnerEmail" 					value="hjoreteg@esri.com" />
+		<Setting name="OwnerEmail" 					value="myemail@email.com" />
 		<!-- Enable Bug Reports to be emailed out, set to true by default if left blank -->
 		<Setting name="EnableBugReports" 			value="false"/>
 		<!--UDF Library To Load on every request for your views and handlers -->
 		<Setting name="UDFLibraryFile" 				value="" />
 		<!--The event handler to execute on all framework exceptions. Event Handler syntax required.-->
-		<Setting name="ExceptionHandler"			value="main.onException" />
+		<Setting name="ExceptionHandler"			value="" />
 		<!--What event to fire when an invalid event is detected-->
 		<Setting name="onInvalidEvent" 				value="" />
 		<!--Full path from the application's root to your custom error page, else leave blank. -->
-		<Setting name="CustomErrorTemplate"			value="includes/generic_error.cfm" />
+		<Setting name="CustomErrorTemplate"			value="" />
 		<!--Messagebox Style (css) class name to use. Look at the messagebox.cfm in the includes directory-->
 		<Setting name="MessageboxStyleOverride"		value="false" />
 		<!--Flag to Auto reload the internal handlers directory listing. False for production. -->
@@ -127,7 +126,7 @@
 		PersistentRequestProfiler : Activate the event profiler across multiple requests
 		maxPersistentRequestProfilers : Max records to keep in the profiler. Don't get gready.
 		maxRCPanelQueryRows : If a query is dumped in the RC panel, it will be truncated to this many rows.-->
-		
+	<!--
 	<DebuggerSettings>
 		<PersistentRequestProfiler>true</PersistentRequestProfiler>
 		<maxPersistentRequestProfilers>10</maxPersistentRequestProfilers>
@@ -138,31 +137,23 @@
 		<CachePanel 	show="true" expanded="false" />
 		<RCPanel		show="true" expanded="true" />
 	</DebuggerSettings>
-	
+	-->
 	
 	<!--Optional,if blank it will use the CFMX administrator settings.-->
-	<MailServerSettings>
-		<MailServer></MailServer>
-		<MailPort></MailPort>
-		<MailUsername></MailUsername>
-		<MailPassword></MailPassword>
-	</MailServerSettings>
+	<MailServerSettings />
 
 	<!--Emails to Send bug reports, you can create as many as you like-->
-	<BugTracerReports>
-
-	</BugTracerReports>
+	<BugTracerReports />
 
 	<!--List url dev environments, this determines your dev/pro environment for the framework-->
-	<DevEnvironments>
-		<url>localhost</url>
-	</DevEnvironments>
-
+	<DevEnvironments />
+	
 	<!--Webservice declarations your use in your application, if not use, leave blank
 	Note that for the same webservice name you can have a development url and a production url.
 	<WebService name="TESTWS" URL="http://www.test.com/test.cfc?wsdl" DevURL="http://dev.test.com/test.cfc?wsdl" />
 	-->
 	<WebServices />
+	
 	<!--Declare Layouts for your application here-->
 	<Layouts>
 		<!--Declare the default layout, MANDATORY-->
@@ -189,7 +180,7 @@
 	<i18N />
 	
 	<Datasources>
- 		<Datasource alias="blogDSN" name="blogengine"   dbtype="mssql"  username="" password="" />
+ 		<Datasource alias="blogDSN" name="simpleblog"   dbtype="mssql"  username="" password="" />
 	</Datasources>
 
 	
@@ -223,6 +214,7 @@
 		</Interceptor>
 		
 		<Interceptor class="coldbox.system.interceptors.autowire">
+			<Property name="enableSetterInjection">false</Property>
 		</Interceptor> 
 
 	</Interceptors>

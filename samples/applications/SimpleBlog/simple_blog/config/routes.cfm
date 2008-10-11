@@ -58,8 +58,11 @@ NOTE: The interceptor will create a new setting called: sesBaseURL with this val
 	Else, htmlBaseURL and sesBaseURL should be the same.
 --->
 
-<cfset setBaseURL("http://jorteg.esri.com/simple_blog/index.cfm/")>
-
+<cfif len(getSetting("AppMapping")) lte 1>
+	<cfset setBaseURL("http://#cgi.HTTP_HOST#/index.cfm")>
+<cfelse>
+	<cfset setBaseURL("http://#cgi.HTTP_HOST#/#getSetting('AppMapping')#/index.cfm")>
+</cfif>
 
 <!--- -------------------------------------------
 	Add your Courses here...
