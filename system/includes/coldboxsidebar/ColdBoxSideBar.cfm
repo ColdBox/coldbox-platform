@@ -12,7 +12,8 @@ Modification History:
 08/09/2008 evdlinden : Links and custom links combined
 08/09/2008 evdlinden : sideBar struct deleted, only use interceptor properties now
 08/10/2008 evdlinden : all local vars to interceptor scope and request collection. Enable/disable sideBar through url param sbIsEnabled=1; FireFox problem solved
-08/12/2008 evdlinden : getRenderedSideBar, switched from request scope to local var scope. We don't want to show sideBar vars if in debugmode. isScroll property implemented. 
+08/12/2008 evdlinden : getRenderedSideBar, switched from request scope to local var scope. We don't want to show sideBar vars if in debugmode. isScroll property implemented.
+10/13/2008 evdlinden : added waitTimeBeforeOpen property, open and close function 
 ----------------------------------------------------------------------->
 
 <cfhtmlhead text='<script language="javascript" src="#TRIM(getproperty('jsPath'))#" type="text/javascript"></script>' />
@@ -22,7 +23,7 @@ Modification History:
 ColdBox SideBar: created on 7/31/2008 by Ernst van der Linden (evdlinden@gmail.com | http://evdlinden.behindthe.net)
  -->
 <div id="ColdBoxSideBarContainer" style="visibility:hidden;position:absolute;left:0px;top:#getproperty('yOffset')#px;z-index:9999;width:#getproperty('width')#px">
-	<div id="ColdBoxSideBar" style="position:absolute;left:-#( getproperty('invisibleWidth'))#px;top:0;z-Index:9999;" onmouseover="coldBoxSideBar.moveOut()" onmouseout="coldBoxSideBar.moveBack()">
+	<div id="ColdBoxSideBar" style="position:absolute;left:-#( getproperty('invisibleWidth'))#px;top:0;z-Index:9999;" onmouseover="coldBoxSideBar.open()" onmouseout="coldBoxSideBar.close()">
 		<form id="sbForm" style="margin:0;">
 		<table id="ColdBoxSideBarTbl" border="0" cellpadding="0" cellspacing="0" width="#getproperty('width')#">
 			<tr>
@@ -119,6 +120,7 @@ ColdBox SideBar: created on 7/31/2008 by Ernst van der Linden (evdlinden@gmail.c
 								,containerElementId:"ColdBoxSideBarContainer"		
 							 	,width: #getproperty("invisibleWidth")#
 							 	,slideSpeed:#getproperty("slideSpeed")#
+							 	,waitTimeBeforeOpen:#getproperty("waitTimeBeforeOpen")#
 							 	,waitTimeBeforeClose:#getproperty("waitTimeBeforeClose")#
 							 	,yOffset:#getproperty("yOffset")#
 							 	,isScroll:#getproperty("isScroll")#

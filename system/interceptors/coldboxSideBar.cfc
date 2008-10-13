@@ -14,6 +14,7 @@ Modification History:
 08/11/2008 evdlinden : implmented afterAspectsLoad. Enable/disable property needs to be set afterConfigurationLoad interceptor points, which is used by the environment interceptor
 08/12/2008 evdlinden : getRenderedSideBar, switched from request scope to local var scope. We don't want to show sideBar vars if in debugmode. 
 					   isScroll property implemented. Changed xml location (SideBar=ColdBoxSideBar)
+10/13/2008 evdlinden : added waitTimeBeforeOpen property					   
 ----------------------------------------------------------------------->
 <cfcomponent name="coldboxSideBar" output="true" extends="coldbox.system.interceptor" hint="The ColdBox Developer Side Bar">
 
@@ -49,6 +50,9 @@ Modification History:
 			}
 			if( not propertyExists( 'slideSpeed') or not isNumeric(getproperty('slideSpeed') ) ){
 				setProperty('slideSpeed', getPropertyDefault('slideSpeed'));
+			}
+			if( not propertyExists( 'waitTimeBeforeOpen') or not isNumeric(getproperty('waitTimeBeforeOpen') ) ){
+				setProperty('waitTimeBeforeOpen', getPropertyDefault('waitTimeBeforeOpen'));
 			}
 			if( not propertyExists( 'waitTimeBeforeClose') or not isNumeric(getproperty('waitTimeBeforeClose') ) ){
 				setProperty('waitTimeBeforeClose', getPropertyDefault('waitTimeBeforeClose'));

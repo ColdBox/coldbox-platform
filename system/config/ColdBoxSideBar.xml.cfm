@@ -11,6 +11,7 @@ Description : Default properties of the SideBar.
 Modification History:
 08/12/2008 evdlinden : isScroll property implemented. SideBar changed to ColdBoxSideBar: css, image
 08/14/2008 evdlinden : imgPath,cssPAth and jsPath now in interceptor.
+10/13/2008 evdlinden : added waitTimeBeforeOpen
 -->
 <Sidebar>
 	<Properties>
@@ -24,6 +25,9 @@ Modification History:
 			<!-- Slide Speed -->
 			<Property name="slideSpeed">15</Property>
 
+			<!-- Wait Time Before Open -->
+			<Property name="waitTimeBeforeOpen">0</Property>
+						
 			<!-- Wait Time Before Close -->
 			<Property name="waitTimeBeforeClose">250</Property>
 

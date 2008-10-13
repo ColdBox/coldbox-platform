@@ -9,7 +9,8 @@ Description : JS Functions for the ColdBox Sidebar
 		
 Modification History:
 08/10/2008 evdlinden : FireFox problem solved
-* 08/13/2008 evdlinden : Total renew; Now you can create a sidebar in the ColdBox namespace.
+08/13/2008 evdlinden : Total renew; Now you can create a sidebar in the ColdBox namespace.
+10/13/2008 evdlinden : added waitTimeBeforeOpen, open and close function
 **********************************************************************/
 
 /* ColdBox Namespace */
@@ -33,6 +34,7 @@ cbox.SideBar.prototype.init = function(arguments)
 	this.setIsIE( (document.all) );
 	this.setLastWindowY(0); 
 	this.setSlideSpeed(arguments.slideSpeed); 
+	this.setWaitTimeBeforeOpen(arguments.waitTimeBeforeOpen);   
 	this.setWaitTimeBeforeClose(arguments.waitTimeBeforeClose);   
 	this.setYOffset(arguments.yOffset);   
 	this.setIsScroll(arguments.isScroll);   
@@ -77,7 +79,10 @@ cbox.SideBar.prototype.getIsNS6 = function(){ return this.isNS6;}
 // Slide Speed
 cbox.SideBar.prototype.setSlideSpeed = function(slideSpeed){ this.slideSpeed = slideSpeed; }
 cbox.SideBar.prototype.getSlideSpeed = function(){ return this.slideSpeed;}
-// Wait Time
+// Wait Time Open
+cbox.SideBar.prototype.setWaitTimeBeforeOpen= function(waitTimeBeforeOpen){ this.waitTimeBeforeOpen = waitTimeBeforeOpen; }
+cbox.SideBar.prototype.getWaitTimeBeforeOpen= function(){ return this.waitTimeBeforeOpen;}
+// Wait Time Close
 cbox.SideBar.prototype.setWaitTimeBeforeClose = function(waitTimeBeforeClose){ this.waitTimeBeforeClose = waitTimeBeforeClose; }
 cbox.SideBar.prototype.getWaitTimeBeforeClose = function(){ return this.waitTimeBeforeClose;}
 // Y Offset
@@ -92,6 +97,17 @@ cbox.SideBar.prototype.getLastWindowY = function(){ return this.lastWindowY;}
 // Width
 cbox.SideBar.prototype.setWidth = function(width){ this.width = width; }
 cbox.SideBar.prototype.getWidth = function(){ return this.width;}
+// Open: wait before moveOut
+cbox.SideBar.prototype.open = function(){ 
+	var self = this;	
+	clearTimeout(this.moving);
+	var selfMoveOut = function moveOut(){ self.moveOut(); }
+	this.moving = setTimeout(selfMoveOut, this.getWaitTimeBeforeOpen());	
+}
+// Close
+cbox.SideBar.prototype.close = function(){
+	this.moveBack();
+}
 // Move Out
 cbox.SideBar.prototype.moveOut = function(){ 
 	var self = this;	
