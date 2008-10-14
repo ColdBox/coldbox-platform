@@ -34,8 +34,6 @@ Modification History:
 			setpluginVersion("2.0");
 			setpluginDescription("This is an inversion of control plugin.");
 			
-			/* Local Properties */
-			
 			/* Setup the framework chosen in the config */
 			setIOCFramework( getSetting("IOCFramework") );
 			/* Setup the ioc definition file or cfc from the config */
@@ -58,7 +56,7 @@ Modification History:
 			else{
 				setLIGHTWIRE_FACTORY( getSetting("LightWireBeanFactory",true) );
 			}
-						
+			
 			/* Return instance. */
 			return this;
 		</cfscript>
@@ -109,7 +107,7 @@ Modification History:
 		<!--- ************************************************************* --->
 		<cfargument name="beanName" type="string" required="true" hint="The bean name to retrieve from the object factory">
 		<!--- ************************************************************* --->
-		<cfset var oBean = "">
+		<cfset var oBean = 0>
 		<cfset var beanKey = "ioc_" & arguments.beanName>
 		<cfset var MetaData = structNew()>
 		<cfset var objCaching = getSetting("IOCObjectCaching")>
@@ -118,13 +116,15 @@ Modification History:
 		<cfif objCaching and getColdBoxOCM().lookup(beanKey)>
 			<cfset oBean = getColdBoxOCM().get(beanKey)>
 		<cfelse>
-			
 			<!--- Get Bean from IOC Framework --->
 			<cfif lcase(getIOCFramework()) eq "coldspring">
 				<cfset oBean = getIoCFactory().getBean(arguments.beanName)>
 			<cfelseif lcase(instance.IOCFramework) eq "lightwire">
 				<cfset oBean = getIoCFactory().getBean(arguments.beanName)>
 			</cfif>
+			
+			<!--- Autowire Support --->
+			<cfset getPlugin("beanFactory").autowire(target=oBean,annotationCheck=true)>
 			
 			<!--- If Caching on, then set object in cache --->
 			<cfif objCaching>
@@ -145,14 +145,12 @@ Modification History:
 					<cfif not structKeyExists(MetaData,"cacheLastAccessTimeout") or not isNumeric(metadata.cacheLastAccessTimeout) >
 						<cfset MetaData.cacheLastAccessTimeout = "">
 					</cfif>
-					
+					<!--- Cache the object --->
 					<cflock name="ioc.objectCaching.#arguments.beanName#" type="exclusive" timeout="30" throwontimeout="true">
-						<!--- Cache the object --->
 						<cfset getColdboxOCM().set(beanKey,oBean,metadata.cacheTimeout,metadata.cacheLastAccessTimeout)>
 					</cflock>
 				</cfif>
-			</cfif>
-			
+			</cfif>			
 		</cfif>
 		
 		<!--- Return Bean --->
