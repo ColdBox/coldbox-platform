@@ -41,10 +41,9 @@ Description: This is the framework's simple bean factory.
 <!------------------------------------------- PUBLIC ------------------------------------------->
 
 	<!--- Just create and call init, simple --->
-	<cffunction name="create" hint="Create a named bean, simple as that" access="public" output="false" returntype="Any">
+	<cffunction name="create" hint="Create a named bean, simple as that. If the bean has an init() method, it will be called." access="public" output="false" returntype="Any">
 		<!--- ************************************************************* --->
 		<cfargument name="bean" 		required="true"  type="string" hint="The type of bean to create and return. Uses full cfc path mapping.Ex: coldbox.beans.exceptionBean">
-		<cfargument name="callInitFlag"	required="false" type="boolean" default="false" hint="[DEPRECATED] Flag to call an init method on the bean.">
 		<!--- ************************************************************* --->
 		<cfscript>
 			var beanInstance = "";
@@ -70,21 +69,25 @@ Description: This is the framework's simple bean factory.
 	<!--- Populate a bean from the request Collection --->
 	<cffunction name="populateBean" access="public" output="false" returntype="Any" hint="Populate a named or instantiated bean (java/cfc) from the request collection items">
 		<!--- ************************************************************* --->
-		<cfargument name="FormBean" required="true" type="any" hint="This can be an instantiated bean object or a bean instantitation path as a string. If you pass an instantiation path and the bean has an 'init' method. It will be executed. This method follows the bean contract (set{property_name}). Example: setUsername(), setfname()">
+		<cfargument name="formBean" 		required="true" 	type="any" 	hint="This can be an instantiated bean object or a bean instantitation path as a string. If you pass an instantiation path and the bean has an 'init' method. It will be executed. This method follows the bean contract (set{property_name}). Example: setUsername(), setfname()">
+		<cfargument name="scope" 			required="false" 	type="string"   default=""   hint="Use scope injection instead of setters population. Ex: scope=variables.instance."/>
+		<cfargument name="trustedSetter"  	required="false" type="boolean" default="false" hint="If set to true, the setter method will be called even if it does not exist in the bean"/>
 		<!--- ************************************************************* --->
 		<cfscript>
 			var rc = controller.getRequestService().getContext().getCollection();
 			
 			/* Inflate from Request Collection */
-			return populateFromStruct(arguments.FormBean,rc);			
+			return populateFromStruct(arguments.formBean,rc,arguments.scope);			
 		</cfscript>
 	</cffunction>
 	
 	<!--- Populate a bean from a structure --->
 	<cffunction name="populateFromJSON" access="public" returntype="any" hint="Populate a named or instantiated bean from a json string" output="false" >
 		<!--- ************************************************************* --->
-		<cfargument name="FormBean" 	required="true" type="any" 		hint="This can be an instantiated bean object or a bean instantitation path as a string. If you pass an instantiation path and the bean has an 'init' method. It will be executed. This method follows the bean contract (set{property_name}). Example: setUsername(), setfname()">
-		<cfargument name="JSONString"   required="true" type="string" 	hint="The JSON string to populate the object with. It has to be valid JSON and also a structure with name-key value pairs. ">
+		<cfargument name="formBean" 		required="true" 	type="any" 		hint="This can be an instantiated bean object or a bean instantitation path as a string. If you pass an instantiation path and the bean has an 'init' method. It will be executed. This method follows the bean contract (set{property_name}). Example: setUsername(), setfname()">
+		<cfargument name="JSONString"   	required="true" 	type="string" 	hint="The JSON string to populate the object with. It has to be valid JSON and also a structure with name-key value pairs. ">
+		<cfargument name="scope" 			required="false" 	type="string"   default=""   hint="Use scope injection instead of setters population. Ex: scope=variables.instance."/>
+		<cfargument name="trustedSetter"  	required="false" type="boolean" default="false" hint="If set to true, the setter method will be called even if it does not exist in the bean"/>
 		<!--- ************************************************************* --->
 		<cfscript>
 			var inflatedStruct = "";
@@ -93,50 +96,18 @@ Description: This is the framework's simple bean factory.
 			inflatedStruct = getPlugin("json").decode(arguments.JSONString);
 			
 			/* populate and return */
-			return populateFromStruct(arguments.FormBean,inflatedStruct);
+			return populateFromStruct(arguments.formBean,inflatedStruct,arguments.scope);
 		</cfscript>
 	</cffunction>
-
-	<!--- Populate a bean from a structure --->
-	<cffunction name="populateFromStruct" access="public" returntype="any" hint="Populate a named or instantiated bean from a structure" output="false" >
-		<!--- ************************************************************* --->
-		<cfargument name="FormBean" required="true" type="any" 		hint="This can be an instantiated bean object or a bean instantitation path as a string. If you pass an instantiation path and the bean has an 'init' method. It will be executed. This method follows the bean contract (set{property_name}). Example: setUsername(), setfname()">
-		<cfargument name="memento"  required="true" type="struct" 	hint="The structure to populate the object with.">
-		<!--- ************************************************************* --->
-		<cfscript>
-			var beanInstance = "";
-			var key = "";
-			
-			try{
-				/* Create or just use form bean */
-				if( isSimpleValue(arguments.formBean) ){
-					beanInstance = create(arguments.formBean);
-				}
-				else{
-					beanInstance = arguments.formBean;
-				}
-				/* Populate Bean */
-				for(key in arguments.memento){
-					/* Check if setter exists */
-					if( structKeyExists(beanInstance,"set" & key) ){
-						evaluate("beanInstance.set#key#(arguments.memento[key])");
-					}
-				}
-				/* Return if created */
-				return beanInstance;
-			}
-			catch(Any e){
-				throw(type="ColdBox.plugins.beanFactory.PopulateBeanException",message="Error populating bean.",detail="#e.Detail#<br>#e.message#");
-			}
-		</cfscript>
-	</cffunction>
-
+	
 	<!--- Populate from Query --->
 	<cffunction name="populateFromQuery" access="public" returntype="Any" hint="Populate a named or instantiated bean from query" output="false">
 		<!--- ************************************************************* --->
-		<cfargument name="FormBean"  required="true"  type="any" 	 hint="This can be an instantiated bean object or a bean instantitation path as a string. If you pass an instantiation path and the bean has an 'init' method. It will be executed. This method follows the bean contract (set{property_name}). Example: setUsername(), setfname()">
-		<cfargument name="qry"       required="true"  type="query"   hint="The query to popluate the bean object with">
-		<cfargument name="RowNumber" required="false" type="Numeric" hint="The query row number to use for population" default="1">
+		<cfargument name="formBean"  		required="true"  type="any" 	 hint="This can be an instantiated bean object or a bean instantitation path as a string. If you pass an instantiation path and the bean has an 'init' method. It will be executed. This method follows the bean contract (set{property_name}). Example: setUsername(), setfname()">
+		<cfargument name="qry"       		required="true"  type="query"   hint="The query to popluate the bean object with">
+		<cfargument name="RowNumber" 		required="false" type="Numeric" hint="The query row number to use for population" default="1">
+		<cfargument name="scope" 			required="false" type="string"   default=""   hint="Use scope injection instead of setters population. Ex: scope=variables.instance."/>
+		<cfargument name="trustedSetter"  	required="false" type="boolean" default="false" hint="If set to true, the setter method will be called even if it does not exist in the bean"/>
 		<!--- ************************************************************* --->
 		<cfscript>
 			//by default to take values from first row of the query
@@ -153,10 +124,62 @@ Description: This is the framework's simple bean factory.
 			}		
 			
 			//populate bean and return
-			return populateFromStruct(arguments.FormBean, stReturn);
+			return populateFromStruct(arguments.formBean,stReturn,scope);
 		</cfscript>
 	</cffunction>
-	
+
+	<!--- Populate a bean from a structure --->
+	<cffunction name="populateFromStruct" access="public" returntype="any" hint="Populate a named or instantiated bean from a structure" output="false" >
+		<!--- ************************************************************* --->
+		<cfargument name="formBean" 		required="true"  type="any" 	hint="This can be an instantiated bean object or a bean instantitation path as a string. If you pass an instantiation path and the bean has an 'init' method. It will be executed. This method follows the bean contract (set{property_name}). Example: setUsername(), setfname()">
+		<cfargument name="memento"  		required="true"  type="struct" 	hint="The structure to populate the object with.">
+		<cfargument name="scope" 			required="false" type="string"  hint="Use scope injection instead of setters population."/>
+		<cfargument name="trustedSetter"  	required="false" type="boolean" default="false" hint="If set to true, the setter method will be called even if it does not exist in the bean"/>
+		<!--- ************************************************************* --->
+		<cfscript>
+			var beanInstance = "";
+			var key = "";
+			
+			try{
+				/* Create or just use form bean */
+				if( isSimpleValue(arguments.formBean) ){
+					beanInstance = create(arguments.formBean);
+				}
+				else{
+					beanInstance = arguments.formBean;
+				}
+				
+				/* Determine Method of popuation */
+				if( structKeyExists(arguments,"scope") and len(trim(arguments.scope)) neq 0 ){
+					/* Mix the Bean */
+					getPlugin("methodInjector").start(beanInstance);
+					/* Populate Bean */
+					for(key in arguments.memento){
+						beanInstance.populatePropertyMixin(propertyName=key,propertyValue=arguments.memento[key],scope=arguments.scope);
+					}
+					/* Un-Mix It */
+					getPlugin("methodInjector").stop(beanInstance);
+				}
+				//Setter Population
+				else{
+					/* Populate Bean */
+					for(key in arguments.memento){
+						/* Check if setter exists */
+						if( structKeyExists(beanInstance,"set" & key) or arguments.trustedSetter ){
+							evaluate("beanInstance.set#key#(arguments.memento[key])");
+						}
+					}
+				}
+				
+				/* Return if created */
+				return beanInstance;
+			}
+			catch(Any e){
+				throw(type="ColdBox.plugins.beanFactory.PopulateBeanException",message="Error populating bean.",detail="#e.Detail#<br>#e.message#");
+			}
+		</cfscript>
+	</cffunction>
+
 	<!--- Autowire --->
 	<cffunction name="autowire" access="public" returntype="void" output="false" hint="Autowire an object using the IoC plugin.">
 		<!--- ************************************************************* --->

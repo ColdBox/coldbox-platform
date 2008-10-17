@@ -28,14 +28,15 @@ Description :
 	
 	<cffunction name="getTransferConfig" access="public" returntype="any" output="false" hint="Get a Transfer Config Object with ColdBox settings.">
 	    <!--- ************************************************************* --->
-		<cfargument name="datasourcePath"     type="string"   required="no"   default="" hint="The transfer datasource file path, in our case, not needed."/>
-		<cfargument name="configPath"         type="string"   required="no"   default="" hint="The transfer configuration file path"/>
-		<cfargument name="definitionPath"     type="string"   required="no"   default="" hint="The transfer definition path"/>
+		<cfargument name="datasourcePath"     type="string"   required="false"  default="" hint="The transfer datasource file path, in our case, not needed."/>
+		<cfargument name="configPath"         type="string"   required="false"  default="" hint="The transfer configuration file path"/>
+		<cfargument name="definitionPath"     type="string"   required="false"  default="" hint="The transfer definition path"/>
 		<cfargument name="dsnBean"            type="coldbox.system.beans.datasourceBean" required="true" hint="The coldbox datasource bean" />
+		<cfargument name="configClassPath" 	  type="string"   required="false"	default="transfer.com.config.Configuration" hint="The default transfer configuration object. Alter at will."/>
 		<!--- ************************************************************* --->
 		<cfscript>
 			/* Create Transfer Config */
-			var TransferConfig = CreateObject("component","transfer.com.config.Configuration").init(argumentCollection=arguments);
+			var TransferConfig = CreateObject("component",arguments.configClassPath).init(argumentCollection=arguments);
 			
 			/* Setup the datasource via ColdBox */
 			TransferConfig.setDatasourceName(arguments.dsnBean.getName());

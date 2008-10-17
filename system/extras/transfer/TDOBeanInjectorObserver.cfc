@@ -127,8 +127,8 @@ Usage:
 	<!--- Init --->
 	<cffunction name="init" access="public" returntype="any" hint="Constructor.">
 		<!--- ************************************************************* --->
-		<cfargument name="transfer"			  	type="any" 		required="true" hint="The transfer.transfer object" />
-		<cfargument name="ColdBoxBeanFactory" 	type="any" 		required="true" hint="The coldbox bean factory"/>
+		<cfargument name="transfer"			  	required="true"		type="any" 		 hint="The transfer.transfer object" />
+		<cfargument name="ColdBoxBeanFactory" 	required="true"		type="any" 		 hint="The coldbox bean factory"/>
 		<cfargument name="useSetterInjection" 	required="false" 	type="boolean" 	default="true"	hint="Whether to use setter injection alongside the annotations property injection. cfproperty injection takes precedence.">
 		<cfargument name="onDICompleteUDF" 		required="false" 	type="string"	default="onDIComplete" hint="After Dependencies are injected, this method will look for this UDF and call it if it exists. The default value is onDIComplete">
 		<cfargument name="debugMode" 			required="false" 	type="boolean"  default="false" hint="Whether to log debug messages. Default is false">

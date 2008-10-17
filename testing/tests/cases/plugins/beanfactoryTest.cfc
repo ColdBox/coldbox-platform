@@ -13,11 +13,11 @@ Description :
 
 	<cffunction name="setUp" returntype="void" access="public" output="false">
 		<cfscript>
-		//Setup ColdBox Mappings For this Test
-		setAppMapping("/coldbox/testharness");
-		setConfigMapping(ExpandPath(instance.AppMapping & "/config/coldbox.xml.cfm"));
-		//Call the super setup method to setup the app.
-		super.setup();
+			//Setup ColdBox Mappings For this Test
+			setAppMapping("/coldbox/testharness");
+			setConfigMapping(ExpandPath(instance.AppMapping & "/config/coldbox.xml.cfm"));
+			//Call the super setup method to setup the app.
+			super.setup();
 		</cfscript>
 	</cffunction>
 	
@@ -70,14 +70,30 @@ Description :
 			/* Populate From Struct */
 			local.obj = plugin.populateFromStruct(local.obj,local.myStruct);
 			local.objInstance = local.obj.getInstance();
-			debug("Timer: #getTickCount()-stime#");
+			//debug("Timer: #getTickCount()-stime#");
+			
 			/* Assert Population */
 			for( local.key in local.objInstance ){
 				AssertEquals(local.objInstance[local.key], local.myStruct[local.key], "Asserting #local.key# From Struct" );
 			}
 			
+			/* populate using scope now */
+			local.obj = plugin.populateFromStruct('coldbox.testing.testmodel.formBean',local.myStruct,"variables.instance");
+			local.objInstance = local.obj.getInstance();
+			/* Assert Population */
+			for( local.key in local.objInstance ){
+				AssertEquals(local.objInstance[local.key], local.myStruct[local.key], "Asserting by Scope #local.key# From Struct" );
+			}		
 			
+			/* Populate using onMissingMethod */
+			local.obj = plugin.populateFromStruct(formBean='coldbox.testing.testmodel.formImplicitBean',memento=local.myStruct,trustedSetter=true);
+			local.objInstance = local.obj.getInstance();
+			/* Assert Population */
+			for( local.key in local.objInstance ){
+				AssertEquals(local.objInstance[local.key], local.myStruct[local.key], "Asserting by Trusted Setter #local.key# From Struct" );
+			}		
 			
+				
 		</cfscript>
 	</cffunction>
 	

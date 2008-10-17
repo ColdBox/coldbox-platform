@@ -365,7 +365,7 @@ Description		: This is the main ColdBox front Controller.
 		<cfset var privateArgCollection = structnew()>
 		
 		<!--- Default Event Test --->
-		<cfif arguments.event eq "">
+		<cfif len(trim(arguments.event)) eq 0>
 			<cfset arguments.event = oRequestContext.getValue(getSetting("EventName"))>
 		</cfif>
 		
@@ -392,20 +392,16 @@ Description		: This is the main ColdBox front Controller.
 
 		<!--- Private or Public Event Execution --->
 		<cfif arguments.private>
-			<!--- Inject Mixins --->
-			<cfset getPlugin("methodInjector").start(oEventHandler)>
 			<!--- Private Arg Collection --->
 			<cfset privateArgCollection["event"] = oRequestContext>
 			<!--- Start Timer --->
 			<cfmodule template="includes/timer.cfm" timertag="invoking PRIVATE runEvent [#arguments.event#]" controller="#this#">
 				<!--- Call Private Event --->
-				<cfinvoke component="#oEventHandler#" method="invokerMixin" returnvariable="local.results">
+				<cfinvoke component="#oEventHandler#" method="_privateInvoker" returnvariable="local.results">
 					<cfinvokeargument name="method" value="#oEventHandlerBean.getMethod()#">
 					<cfinvokeargument name="argCollection" value="#privateArgCollection#">
 				</cfinvoke>
 			</cfmodule>
-			<!--- Cleanup Mixins --->
-			<cfset getPlugin("methodInjector").stop(oEventHandler)>
 		<cfelse>
 			<!--- Start Timer --->
 			<cfmodule template="includes/timer.cfm" timertag="invoking runEvent [#arguments.event#]" controller="#this#">

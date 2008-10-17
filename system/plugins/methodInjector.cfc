@@ -33,11 +33,12 @@ Description :
 			instance.mixins = StructNew();
 			
 			/* Place our methods on the mixins struct */
-			instance.mixins["removeMixin"] = variables.removeMixin;
-			instance.mixins["injectMixin"] = variables.injectMixin;
-			instance.mixins["invokerMixin"] = variables.invokerMixin;
-			instance.mixins["injectPropertyMixin"] = variables.injectPropertyMixin;
-			instance.mixins["removePropertyMixin"] = variables.removePropertyMixin;
+			instance.mixins["removeMixin"] 				= variables.removeMixin;
+			instance.mixins["injectMixin"] 				= variables.injectMixin;
+			instance.mixins["invokerMixin"] 			= variables.invokerMixin;
+			instance.mixins["injectPropertyMixin"] 		= variables.injectPropertyMixin;
+			instance.mixins["removePropertyMixin"] 		= variables.removePropertyMixin;
+			instance.mixins["populatePropertyMixin"] 	= variables.populatePropertyMixin;
 			
 			/* Remove mixin methods */
 			stop(this);
@@ -51,32 +52,36 @@ Description :
 	<!--- Start Method Injection on a CFC --->
 	<cffunction name="start" hint="start method injection set. Injects: injectMixin,removeMixin,invokerMixin,injectPropertyMixin,removePropertyMixin" access="public" returntype="void" output="false">
 		<!--- ************************************************************* --->
-		<cfargument name="CFC" hint="The cfc to inject the method into" type="web-inf.cftags.component" required="Yes">
+		<cfargument name="CFC" hint="The cfc to inject the method into" type="any" required="Yes">
 		<!--- ************************************************************* --->
-		<cfscript>
-			var udf = 0;
-			
-			/* Inject Mixins methods */
-			for( udf in instance.mixins ){
-				arguments.CFC[udf] = instance.mixins[udf];
-			}
-		</cfscript>
+		<cfset var udf = 0>
+		
+		<cflock name="plugin.methodInjector.#getmetadata(arguments.cfc).name#" type="exclusive" timeout="5" throwontimeout="true">
+			<cfscript>
+				/* Inject Mixins methods */
+				for( udf in instance.mixins ){
+					arguments.CFC[udf] = instance.mixins[udf];
+				}
+			</cfscript>
+		</cflock>		
 	</cffunction>
 	
 	<!--- Stop the injection, do cleanup --->
 	<cffunction name="stop" hint="stop injection block. Removes mixed in methods." access="public" returntype="void" output="false">
 		<!--- ************************************************************* --->
-		<cfargument name="CFC" hint="The cfc to inject the method into" type="web-inf.cftags.component" required="Yes">
+		<cfargument name="CFC" hint="The cfc to inject the method into" type="any" required="Yes">
 		<!--- ************************************************************* --->
-		<cfscript>
-			var udf = 0;
-			
-			/* Inject Mixins methods */
-			for( udf in instance.mixins ){
-				arguments.CFC[udf] = instance.mixins[udf];
-				StructDelete(arguments.CFC, udf);
-			}
-		</cfscript>
+		<cfset var udf = 0>
+		
+		<cflock name="plugin.methodInjector.#getmetadata(arguments.cfc).name#" type="exclusive" timeout="5" throwontimeout="true">
+			<cfscript>
+				/* Remove Mixin Methods */
+				for( udf in instance.mixins ){
+					arguments.CFC[udf] = instance.mixins[udf];
+					StructDelete(arguments.CFC, udf);
+				}
+			</cfscript>
+		</cflock>
 	</cffunction>
 	
 	<!--- ColdBox Controller Accessor/Mutators used to mixing --->
@@ -110,6 +115,22 @@ Description :
 				/* Place UDF on the this public scope */
 				this[metaData.name] = arguments.UDF;
 			}
+		</cfscript>
+	</cffunction>
+	
+	<!--- mixin --->
+	<cffunction name="populatePropertyMixin" hint="Populates a property if it exists" access="public" returntype="void" output="false">
+		<!--- ************************************************************* --->
+		<cfargument name="propertyName" 	type="string" 	required="true" hint="The name of the property to inject."/>
+		<cfargument name="propertyValue" 	type="any" 		required="true" hint="The value of the property to inject"/>
+		<cfargument name="scope" 			type="string" 	required="false" default="variables" hint="The scope to which inject the property to."/>
+		<!--- ************************************************************* --->
+		<cfscript>
+			/* Validate Property */
+			if( structKeyExists(evaluate(arguments.scope),arguments.propertyName) ){
+				/* Populate Property */
+				"#arguments.scope#.#arguments.propertyName#" = arguments.propertyValue;
+			}			
 		</cfscript>
 	</cffunction>
 	

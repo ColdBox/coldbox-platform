@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<transfer xsi:noNamespaceSchemaLocation="../../transfer/resources/xsd/transfer.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<transfer xsi:noNamespaceSchemaLocation="transfer.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<objectCache>
 		<defaultcache>
-			<scope type="none" />
+			<maxobjects value="100" />
+			<maxminutespersisted value="30" />
 		</defaultcache>
 	</objectCache>
 	<objectDefinitions>

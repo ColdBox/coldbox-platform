@@ -1,0 +1,770 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+
+	<xsd:element name="transfer">
+		<xsd:annotation><xsd:documentation>Top level element for the xml file</xsd:documentation></xsd:annotation>
+		<xsd:complexType>
+			<xsd:sequence maxOccurs="1" minOccurs="1">
+				<xsd:element name="includes" maxOccurs="1" minOccurs="0" type="includes">
+					<xsd:annotation>
+					<xsd:documentation>
+					Configure any include files that are used in the configuration of Transfer
+					</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+				<xsd:element name="objectCache" type="objectCache" maxOccurs="1" minOccurs="0">
+					<xsd:annotation><xsd:documentation>
+					Configure the settings for all object caching parameters. 
+					If this is not set, the default values are used. More details on caching can be found at Using Caching
+					</xsd:documentation></xsd:annotation>
+				</xsd:element>
+				<xsd:element name="nullValues" type="nullValues" maxOccurs="1" minOccurs="0">
+				<xsd:annotation><xsd:documentation>
+				Configure the default null values for properties
+				</xsd:documentation></xsd:annotation>
+				</xsd:element>
+				<xsd:element name="objectDefinitions" type="objectDefinitions" maxOccurs="1" minOccurs="1">
+				<xsd:annotation><xsd:documentation>
+				All the Object defintions
+				</xsd:documentation></xsd:annotation>
+				</xsd:element>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	
+	<!-- ** Cache Control ** -->
+	
+	<xsd:complexType name="objectCache" >
+		<xsd:sequence maxOccurs="1" minOccurs="1">
+			<xsd:element name="scopes" maxOccurs="1" minOccurs="0">
+			<xsd:annotation><xsd:documentation>
+			Defines the keys that Transfer stores it's caching when using caching in shared scopes. If this is not set, the default values are used.
+			</xsd:documentation></xsd:annotation>
+				<xsd:complexType>
+					<xsd:sequence minOccurs="1" maxOccurs="unbounded">
+						<xsd:element type="scope" name="application" maxOccurs="1" minOccurs="0">
+							<xsd:annotation><xsd:documentation>
+							The scope key for 'application' cached objects, if not set, all caching is done under the 'application.transfer' scope. 
+							</xsd:documentation></xsd:annotation>
+						</xsd:element>
+						<xsd:element type="scope" name="session" maxOccurs="1" minOccurs="0">
+							<xsd:annotation><xsd:documentation>
+							The scope key for 'session', and cached objects, if not set, all caching is done under the 'session.transfer' scope. This also applies to 'transaction' scoped objects, as these caches share these scopes. 						
+							</xsd:documentation></xsd:annotation>
+						</xsd:element>
+						<xsd:element type="scope" name="request" maxOccurs="1" minOccurs="0">
+							<xsd:annotation><xsd:documentation>
+							he scope key for 'request' cached objects, if not set, all caching is done under the 'request.transfer' scope. 
+							</xsd:documentation></xsd:annotation>
+						</xsd:element>
+						<xsd:element type="scope" name="server" maxOccurs="1" minOccurs="0">
+							<xsd:annotation><xsd:documentation>
+							The scope key for 'server' cached objects, if not set, all caching is done under the 'server.transfer' scope. 
+							</xsd:documentation></xsd:annotation>
+						</xsd:element>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element type="defaultcache" name="defaultcache" maxOccurs="1" minOccurs="0">
+				<xsd:annotation><xsd:documentation>
+				This sets the default values for caching of objects within Transfer. If this is not set, the default values are used.
+				</xsd:documentation></xsd:annotation>
+			</xsd:element>
+			<xsd:element type="cache" name="cache" maxOccurs="unbounded" minOccurs="0">
+				<xsd:annotation><xsd:documentation>
+				This overwrites the default settings for caching for a specific class
+				</xsd:documentation></xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	
+	<xsd:complexType name="cache">
+		<xsd:complexContent>
+			<xsd:extension base="defaultcache">
+				<xsd:attribute name="class" use="required">
+					<xsd:annotation><xsd:documentation>
+						The class to set the caching settings for
+					</xsd:documentation></xsd:annotation>
+					<xsd:simpleType>
+						<xsd:restriction base="xsd:string">
+							<xsd:pattern value="[\.a-zA-Z0-9_]+"></xsd:pattern>
+						</xsd:restriction>
+					</xsd:simpleType>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	
+	<xsd:complexType name="defaultcache">
+		<xsd:sequence maxOccurs="1" minOccurs="1">
+			<xsd:element name="maxobjects" maxOccurs="1" minOccurs="0">
+				<xsd:annotation><xsd:documentation>
+					The maximum number of objects to store for any one Object class. 
+				</xsd:documentation></xsd:annotation>
+				<xsd:complexType>
+					<xsd:attribute name="value" type="xsd:integer" use="required">
+						<xsd:annotation><xsd:documentation>
+							The number of TransferObjects to cache, defaults to unlimited (0).
+						</xsd:documentation></xsd:annotation>
+					</xsd:attribute>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="maxminutespersisted" maxOccurs="1" minOccurs="0">
+				<xsd:annotation><xsd:documentation>
+					The maximum number of minutes to store any TransferObject of a given class. 
+				</xsd:documentation></xsd:annotation>
+				<xsd:complexType>
+					<xsd:attribute name="value" type="xsd:integer" use="required">
+						<xsd:annotation><xsd:documentation>
+						The number of minutes to cache, defaults to unlimited (0).
+						</xsd:documentation></xsd:annotation>
+					</xsd:attribute>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="scope" maxOccurs="1" minOccurs="0">
+				<xsd:annotation><xsd:documentation>
+				The scope to store all TransferObjects under. Details on the types of caching available can found at Using Caching. 
+				</xsd:documentation></xsd:annotation>
+				<xsd:complexType>
+					<xsd:attribute name="type" use="required">
+						<xsd:annotation><xsd:documentation>
+						'instance', 'application', 'session', 'request', 'transaction', 'server', 'none'. Defaults to 'instance'.
+						</xsd:documentation></xsd:annotation>
+						<xsd:simpleType>
+							<xsd:restriction base="xsd:string">
+								<xsd:enumeration value="instance"/>
+								<xsd:enumeration value="application"/>
+								<xsd:enumeration value="session"/>
+								<xsd:enumeration value="request"/>
+								<xsd:enumeration value="transaction"/>
+								<xsd:enumeration value="server"/>
+								<xsd:enumeration value="none"/>
+							</xsd:restriction>
+						</xsd:simpleType>
+					</xsd:attribute>
+				</xsd:complexType>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	
+	<xsd:complexType name="scope">
+		<xsd:attribute name="key" use="required">
+			<xsd:annotation><xsd:documentation>
+			The key to set the cache under, e.g. 'transfer'
+			</xsd:documentation></xsd:annotation>
+			<xsd:simpleType>
+				<xsd:restriction base="xsd:string">
+					<xsd:pattern value="[a-zA-Z0-9_]+"></xsd:pattern>
+				</xsd:restriction>
+			</xsd:simpleType>
+		</xsd:attribute>
+	</xsd:complexType>
+	
+	<!-- ** Null Values ** -->
+	
+	<xsd:complexType name="nullValues">
+		<xsd:sequence maxOccurs="1" minOccurs="1">
+			<xsd:element name="string" type="null" maxOccurs="1" minOccurs="0">
+				<xsd:annotation><xsd:documentation>The default null value for all string types. Defaults to ''.</xsd:documentation></xsd:annotation>
+			</xsd:element>
+			<xsd:element name="numeric" type="null" maxOccurs="1" minOccurs="0">
+				<xsd:annotation><xsd:documentation>The default null value for all numeric types. Defaults to 0.</xsd:documentation></xsd:annotation>
+			</xsd:element>
+			<xsd:element name="date" type="null" maxOccurs="1" minOccurs="0">
+				<xsd:annotation><xsd:documentation>The default null value for all date types.</xsd:documentation></xsd:annotation>
+			</xsd:element>
+			<xsd:element name="boolean" type="null" maxOccurs="1" minOccurs="0">
+				<xsd:annotation><xsd:documentation>The default null value for all boolean types. Defaults to 1/1/100.</xsd:documentation></xsd:annotation>
+			</xsd:element>
+			<xsd:element name="UUID" type="null" maxOccurs="1" minOccurs="0">
+				<xsd:annotation><xsd:documentation>The default null value for all UUID types. Defaults to '00000000-0000-0000-0000000000000000'.</xsd:documentation></xsd:annotation>
+			</xsd:element>
+			<xsd:element name="GUID" type="null" maxOccurs="1" minOccurs="0">
+				<xsd:annotation><xsd:documentation>The default null value for all GUID types. Defaults to '00000000-0000-0000-0000-000000000000'.</xsd:documentation></xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	
+	<xsd:complexType name="null">
+		<xsd:attribute name="value" type="xsd:string" use="required">
+			<xsd:annotation><xsd:documentation>The null value to use.</xsd:documentation></xsd:annotation>
+		</xsd:attribute>
+	</xsd:complexType>
+	
+	<!-- ** Objects Definitions ** -->
+	
+	<xsd:complexType name="objectDefinitions">
+		<xsd:sequence>
+			<xsd:choice maxOccurs="unbounded" minOccurs="1">
+				<xsd:element name="package" type="package" minOccurs="0" maxOccurs="1">
+				<xsd:annotation><xsd:documentation>
+					Organisational element to store various objects of similar aspect together
+				</xsd:documentation></xsd:annotation>
+				</xsd:element>
+				<xsd:element name="object" type="object" minOccurs="0" maxOccurs="1">
+				<xsd:annotation><xsd:documentation>
+					A class definition for a transfer.com.TransferObject  to be manufactured into a bean that represents a record in the set database table.
+				</xsd:documentation></xsd:annotation>
+				</xsd:element>
+			</xsd:choice>
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:complexType name="object">
+		<xsd:sequence>
+			<xsd:choice maxOccurs="1" minOccurs="1">
+				<xsd:element type="id" name="id" maxOccurs="1" minOccurs="1">
+				<xsd:annotation><xsd:documentation>
+					This is the definition of the primary key as set in the database.
+					This results in getter and setter functions on the TransferObject. Details on all these methods can be found at generated methods.
+					There can only be one ID declaration.
+				</xsd:documentation></xsd:annotation>
+				</xsd:element>
+				<xsd:element type="compositeid" name="compositeid" maxOccurs="1" minOccurs="1">
+				</xsd:element>
+			</xsd:choice>
+			<xsd:choice minOccurs="0" maxOccurs="unbounded">
+				<xsd:element type="property" name="property" maxOccurs="1" minOccurs="0">
+				<xsd:annotation><xsd:documentation>
+					A single property on the TransferObject.
+					This results in getter and setter functions on the TransferObject. Details on these methods can be found at generated methods.
+					TransferObjects can have multiple property declarations.
+				</xsd:documentation></xsd:annotation>
+				</xsd:element>
+				<xsd:element name="manytoone" minOccurs="0" maxOccurs="1">
+					<xsd:annotation><xsd:documentation>
+						This defines a relationship when many of a this object's table records link directly to one of another tables. e.g. 'tbl_User.lnkIDPermission = tbl_Permission.IDPermission'.
+						It creates getter and setter functions on the TransferObject that get and set the composite TransferObject. Details on these methods can be found at generated methods.
+						TransferObjects can have multiple manytoone declarations. 			
+					</xsd:documentation></xsd:annotation>
+					<xsd:complexType>
+						<xsd:sequence maxOccurs="1" minOccurs="1">
+							<xsd:element type="link" name="link" maxOccurs="1" minOccurs="1">
+								<xsd:annotation><xsd:documentation>
+									Defines what other TransferObject the composition is made up of.
+								</xsd:documentation></xsd:annotation>
+							</xsd:element>
+						</xsd:sequence>
+						<xsd:attribute ref="name" use="required">
+							<xsd:annotation><xsd:documentation>The name of this relationship, e.g. 'Permission'.</xsd:documentation></xsd:annotation>
+						</xsd:attribute>
+						<xsd:attribute ref="lazy">
+							<xsd:annotation><xsd:documentation>
+								If this is set to 'true', the manytoone composition will only be loaded when requested. This defaults to 'false'.
+							</xsd:documentation></xsd:annotation>
+						</xsd:attribute>
+					</xsd:complexType>
+				</xsd:element>				
+				<xsd:element name="onetomany" minOccurs="0" maxOccurs="1">
+					<xsd:annotation><xsd:documentation>
+						This defines a relationship where one of this object's table records corresponds to many of another tables records. e.g. 'tbl_User.IDUser = tbl_Post.lnkIDUser'.
+						This creates several methods on the parent and child TransferObjects, dependent on the set collection type. Details on all these methods can be found at generated methods.
+						TransferObjects can have multiple one to many declarations.
+						name The name of this collection, e.g. 'Permission'.
+					</xsd:documentation></xsd:annotation>
+					<xsd:complexType>
+						<xsd:sequence maxOccurs="1" minOccurs="1">
+							<xsd:element type="link" name="link" maxOccurs="1" minOccurs="1">
+								<xsd:annotation><xsd:documentation>
+									Defines the TransferObject the composition is made up of. 
+								</xsd:documentation></xsd:annotation>
+							</xsd:element>
+							<xsd:element type="collection" name="collection" maxOccurs="1" minOccurs="1">
+								<xsd:annotation><xsd:documentation>
+									This element sets the details of the type of collection of TransferObject that is added to the parent.
+								</xsd:documentation></xsd:annotation>
+							</xsd:element>
+						</xsd:sequence>
+						<xsd:attribute ref="name" use="required">
+							<xsd:annotation><xsd:documentation>
+								The name of this collection, e.g. 'Permission'. 
+							</xsd:documentation></xsd:annotation>
+						</xsd:attribute>
+						<xsd:attribute ref="lazy">
+							<xsd:annotation><xsd:documentation>
+								If this is set to 'true', the onetomany composition will only be loaded when requested. This defaults to 'false'.
+							</xsd:documentation></xsd:annotation>
+						</xsd:attribute>
+					</xsd:complexType>
+				</xsd:element>
+				<xsd:element name="manytomany" minOccurs="0" maxOccurs="1">
+					<xsd:annotation><xsd:documentation>
+						This defines a relationship where many of this object's table records corresponds to many of another tables. This is normally accomplished at a database level by use of an intermediary linking table. e.g. 'tbl_User.IDUser = lnk_UserPermssion.lnkIDUser AND lnk_UserPermission.lnkIDPermission = tbl_Permission.IDPermission'.
+						This creates several methods on the parent TransferObject, dependent on the set collection type. Details on all these methods can be found at generated methods.
+						TransferObjects can have multiple manytomany declarations.
+					</xsd:documentation></xsd:annotation>
+					<xsd:complexType>
+						<xsd:sequence maxOccurs="1" minOccurs="1">
+							<xsd:element type="link" name="link" maxOccurs="2" minOccurs="2">
+								<xsd:annotation><xsd:documentation>
+									The first link specifies the connection information for the intermediary table to the parent table. 
+									The second link defines the TransferObject the composition is made up of.
+								</xsd:documentation></xsd:annotation>
+							</xsd:element>
+							<xsd:element type="collection" name="collection" maxOccurs="1" minOccurs="1">
+								<xsd:annotation><xsd:documentation>
+									This element sets the details of the type of collection of TransferObject that is added to the parent. 
+								</xsd:documentation></xsd:annotation>
+							</xsd:element>
+						</xsd:sequence>
+						<xsd:attribute ref="name" use="required">
+							<xsd:annotation><xsd:documentation>
+								The name of this collection, e.g. 'Permission'.
+							</xsd:documentation></xsd:annotation>
+						</xsd:attribute>
+						<xsd:attribute ref="table" use="required">
+							<xsd:annotation><xsd:documentation>
+								The name of the intermediary table that creates the many to many relationship. e.g. 'lnk_UserPermission' 
+							</xsd:documentation></xsd:annotation>
+						</xsd:attribute>
+						<xsd:attribute ref="tablealias" use="optional">
+							<xsd:annotation><xsd:documentation>
+								This is an table alias that will be used for get() operations in Transfer.
+								This is usually most useful for Oracle when the generated alias is over 30 characters.
+							</xsd:documentation></xsd:annotation>
+						</xsd:attribute>
+						<xsd:attribute ref="lazy">
+							<xsd:annotation><xsd:documentation>
+								If this is set to 'true', the manytomany composition will only be loaded when requested. This defaults to 'false'.
+							</xsd:documentation></xsd:annotation>
+						</xsd:attribute>
+					</xsd:complexType>
+				</xsd:element>
+	 			<xsd:element type="function" name="function" minOccurs="0" maxOccurs="1">
+	 				<xsd:annotation><xsd:documentation>
+	 					A cfml function that you want added to this TransferObject.
+						TransferObjects can have multiple function declarations.
+						Details on custom methods can be found at custom methods.
+	 				</xsd:documentation></xsd:annotation>
+				</xsd:element>
+			</xsd:choice>
+		</xsd:sequence>
+		<xsd:attribute ref="name" use="required">
+			<xsd:annotation><xsd:documentation>
+				The name of the TransferObject, e.g. 'User'.
+			</xsd:documentation></xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute ref="table" use="optional">
+			<xsd:annotation><xsd:documentation>
+				The database table that the TransferObject refers to, e.g. 'tbl_User'. Defaults to the value of @name
+			</xsd:documentation></xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="sequence" use="optional">
+			<xsd:annotation><xsd:documentation>
+				Specifically for Oracle and PostGreSQL support. This is the name of the sequence that corresponds with this object's table. Defaults to the value of @table + '_seq'
+			</xsd:documentation></xsd:annotation>
+			<xsd:simpleType>
+				<xsd:restriction base="xsd:string">
+					<xsd:pattern value="[a-zA-Z0-9_\.]+"></xsd:pattern>
+				</xsd:restriction>
+			</xsd:simpleType>
+		</xsd:attribute>	
+		<xsd:attribute name="decorator" use="optional">
+			<xsd:annotation><xsd:documentation>
+				Specify the Decorator CFC that will wrap around this TransferObject.
+				This object must extend transfer.com.TransferDecorator.
+				More details on Decorators can be found at Creating Decorators.
+			</xsd:documentation></xsd:annotation>
+			<xsd:simpleType>
+				<xsd:restriction base="xsd:string">
+					<xsd:pattern value="[a-zA-Z0-9_\.\-]+"></xsd:pattern>
+				</xsd:restriction>
+			</xsd:simpleType>
+		</xsd:attribute>		
+		<xsd:attribute ref="tablealias" use="optional">
+			<xsd:annotation><xsd:documentation>
+				This is an table alias that will be used for get() operations in Transfer.
+				This is usually most useful for Oracle when the generated alias is over 30 characters.
+			</xsd:documentation></xsd:annotation>
+		</xsd:attribute>
+	</xsd:complexType>
+	
+	<xsd:complexType name="id">
+		<xsd:attribute ref="name" use="required">
+			<xsd:annotation><xsd:documentation>
+				The name of the ID, e.g. 'IDUser' 
+			</xsd:documentation></xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute ref="type" use="required" >
+			<xsd:annotation><xsd:documentation>
+				The typing of the primary key, either numeric, string, date, boolean, UUID, GUID. 
+			</xsd:documentation></xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute ref="column">
+			<xsd:annotation><xsd:documentation>
+				The primary key column on the table of this TransferObject. e.g. 'IDUser'. Defaults to the value of @name. 
+			</xsd:documentation></xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="generate" use="optional" type="xsd:boolean" default="false">
+			<xsd:annotation><xsd:documentation>
+				If this is set to true, Transfer will generate the primary key when the record is inserted into the database. 
+				Otherwise it will assume that the primary key is automatically generated by the database. 
+				Transfer currently supports generating numeric, UUID, and GUID IDs. Defaults to false.				
+			</xsd:documentation></xsd:annotation>
+		</xsd:attribute>
+	</xsd:complexType>		
+	
+	<xsd:complexType name="compositeid">
+		<xsd:choice maxOccurs="unbounded" minOccurs="1">
+			<xsd:element name="property" maxOccurs="1" minOccurs="0">
+				<xsd:complexType>
+					<xsd:attribute ref="name" use="required"/>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="manytoone" maxOccurs="1" minOccurs="0">
+				<xsd:complexType>
+					<xsd:attribute ref="name" use="required"></xsd:attribute>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="parentonetomany">
+				<xsd:complexType>
+					<xsd:attribute name="class" use="required">
+						<xsd:simpleType>
+							<xsd:restriction base="xsd:string">
+								<xsd:pattern value="[\.a-zA-Z0-9_]+"></xsd:pattern>
+							</xsd:restriction>
+						</xsd:simpleType>		
+					</xsd:attribute>
+				</xsd:complexType>
+			</xsd:element>
+		</xsd:choice>
+	</xsd:complexType>
+	
+	<xsd:complexType name="property">
+		<xsd:attribute ref="name" use="required">
+			<xsd:annotation><xsd:documentation>
+				The name of the property, e.g. 'Name' 
+			</xsd:documentation></xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute ref="type" use="required">
+			<xsd:annotation><xsd:documentation>
+				The type of the property. Either numeric, string, date, boolean, UUID, GUID. 
+			</xsd:documentation></xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="set" use="optional" type="xsd:boolean" default="true">
+			<xsd:annotation><xsd:documentation>
+				If this is set to 'false' the setter function has a scope of private. Defaults to 'true'. 
+			</xsd:documentation></xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute ref="column" use="optional">
+			<xsd:annotation><xsd:documentation>
+				The column on the table this property refers to, e.g. 'user_Name'. Defaults to the value of @name 
+			</xsd:documentation></xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="ignore-insert" type="xsd:boolean" use="optional" default="false">
+			<xsd:annotation><xsd:documentation>
+				Will ignore this property when performing an insert of this object into its table. 
+			</xsd:documentation></xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="refresh-insert" type="xsd:boolean" use="optional" default="false" >
+			<xsd:annotation><xsd:documentation>
+				This will query the database for the value of this column and refresh its state after an insert.
+			</xsd:documentation></xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="ignore-update" type="xsd:boolean" use="optional" default="false">
+			<xsd:annotation><xsd:documentation>
+				Will ignore this property when performing an update of this object into its table.
+			</xsd:documentation></xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="refresh-update" type="xsd:boolean" use="optional" default="false" >
+			<xsd:annotation><xsd:documentation>
+				This will query the database for the value of this column and refresh its state after an update.
+			</xsd:documentation></xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute ref="nullable" use="optional" default="false">
+			<xsd:annotation><xsd:documentation>
+				Defines whether or not values from this property can be inserted into the database as NULL values. 
+			</xsd:documentation></xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute ref="nullvalue" use="optional">
+			<xsd:annotation><xsd:documentation>
+				Overrides the default null value for this property. Only relevent if @nullable='true'. 
+			</xsd:documentation></xsd:annotation>
+		</xsd:attribute>
+	</xsd:complexType>
+	
+	<xsd:complexType name="package">
+		<xsd:sequence>
+			<xsd:choice maxOccurs="unbounded" minOccurs="1">
+				<xsd:element name="package" type="package" minOccurs="0" maxOccurs="1">
+				<xsd:annotation><xsd:documentation>
+					Organisational element to store various objects of similar aspect together
+				</xsd:documentation></xsd:annotation>
+				</xsd:element>
+				<xsd:element name="object" type="object" minOccurs="0" maxOccurs="1">
+				<xsd:annotation><xsd:documentation>
+					A class definition for a transfer.com.TransferObject to be manufactured into a bean that represents a record in the set database table.
+				</xsd:documentation></xsd:annotation>
+				</xsd:element>
+			</xsd:choice>
+		</xsd:sequence>
+		<xsd:attribute ref="name" use="required">
+			<xsd:annotation><xsd:documentation>
+				The name of the package
+			</xsd:documentation></xsd:annotation>
+		</xsd:attribute>
+	</xsd:complexType>
+
+	<xsd:complexType name="link">
+		<xsd:attribute name="to" use="required">
+			<xsd:annotation><xsd:documentation>
+				The class name of the TransferObject this links to, e.g. 'user.Permission'.
+			</xsd:documentation></xsd:annotation>
+			<xsd:simpleType>
+				<xsd:restriction base="xsd:string">
+					<xsd:pattern value="[\.a-zA-Z0-9_]+"></xsd:pattern>
+				</xsd:restriction>
+			</xsd:simpleType>		
+		</xsd:attribute>
+		<xsd:attribute ref="column" use="required">
+			<xsd:annotation><xsd:documentation>
+				The column on the child TranferObject table that is the foreign key, e.g. lnkUserID.
+			</xsd:documentation></xsd:annotation>
+		</xsd:attribute>
+	</xsd:complexType>
+	
+	<xsd:complexType name="collection">
+		<xsd:sequence maxOccurs="1" minOccurs="0">
+			<xsd:element name="condition" maxOccurs="1" minOccurs="0">
+				<xsd:annotation><xsd:documentation>
+					Used to place a filtering condition on the child elements that are retrieved from the database. 
+				</xsd:documentation></xsd:annotation>
+				<xsd:complexType>
+					<xsd:attribute ref="property">
+						<xsd:annotation><xsd:documentation>
+							The property on the child object to filter by. 
+						</xsd:documentation></xsd:annotation>
+					</xsd:attribute>
+					<xsd:attribute name="value" type="xsd:string">
+						<xsd:annotation><xsd:documentation>
+							(required if property has a value)  The value of the property to filter by. 
+						</xsd:documentation></xsd:annotation>
+					</xsd:attribute>
+					<xsd:attribute name="where" type="xsd:string">
+						<xsd:annotation><xsd:documentation>
+							(required if property/value is not set)  
+							The SQL statement to filter the child object by. Child properties enclosed with '{}' will be resolved to their column names.
+						</xsd:documentation></xsd:annotation>
+					</xsd:attribute>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:choice maxOccurs="1" minOccurs="0">
+			<xsd:element name="key" maxOccurs="1" minOccurs="0">
+				<xsd:annotation><xsd:documentation>
+					(if collection[@type] = 'struct')
+					The property to be used in the key when adding and retrieving items from parent. 
+					This property much have a unique value. 
+				</xsd:documentation></xsd:annotation>
+				<xsd:complexType>
+					<xsd:attribute ref="property" use="required">
+						<xsd:annotation><xsd:documentation>
+							The name of the property on the child TransferObject to be used as the key, e.g. 'permissionName'.
+						</xsd:documentation></xsd:annotation>
+					</xsd:attribute>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="order" maxOccurs="1" minOccurs="0">
+				<xsd:annotation><xsd:documentation>
+					(optional if collection[@type] = 'array')
+					The order in which to sort the collection.
+				</xsd:documentation></xsd:annotation>
+				<xsd:complexType>
+					<xsd:attribute ref="property" use="required">
+						<xsd:annotation><xsd:documentation>
+							The name of the property on the child TransferObject to sort the array by. 
+						</xsd:documentation></xsd:annotation>
+					</xsd:attribute>
+					<xsd:attribute name="order" use="optional" default="asc">
+						<xsd:annotation><xsd:documentation>
+							The order to sort by, either 'asc' or 'desc'.
+						</xsd:documentation></xsd:annotation>
+						<xsd:simpleType>
+							<xsd:restriction base="xsd:string">
+								<xsd:enumeration value="asc"></xsd:enumeration>
+								<xsd:enumeration value="desc"></xsd:enumeration>
+							</xsd:restriction>
+						</xsd:simpleType>
+					</xsd:attribute>
+				</xsd:complexType>
+			</xsd:element>
+			</xsd:choice>
+		</xsd:sequence>
+		<xsd:attribute name="type" use="required">
+			<xsd:annotation><xsd:documentation>
+				Either 'struct' or 'array'. 
+				If 'struct' is selected, a structure is used to manage the composite TransferObjects, 
+				whereas an array is used when the type is set to 'array'.
+			</xsd:documentation></xsd:annotation>
+			<xsd:simpleType>
+				<xsd:restriction base="xsd:string">
+					<xsd:enumeration value="array"/>
+					<xsd:enumeration value="struct"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+		</xsd:attribute>
+	</xsd:complexType>
+
+	<xsd:complexType name="function">
+		<xsd:sequence minOccurs="1" maxOccurs="1">
+			<xsd:element name="argument" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation><xsd:documentation>
+					A defined argument for the function
+					A Function can have multiple function declarations. 
+				</xsd:documentation></xsd:annotation>
+				<xsd:complexType>
+					<xsd:attribute ref="name" use="required">
+						<xsd:annotation><xsd:documentation>The name of the argument</xsd:documentation></xsd:annotation>
+					</xsd:attribute>
+					<xsd:attribute name="type" use="required">
+						<xsd:annotation><xsd:documentation>
+						The type of the argument
+						</xsd:documentation></xsd:annotation>
+						<xsd:simpleType>
+							<xsd:restriction base="xsd:string">
+								<xsd:pattern value="[\.a-zA-Z0-9_]+"></xsd:pattern>
+							</xsd:restriction>
+						</xsd:simpleType>								
+					</xsd:attribute>
+					<xsd:attribute name="required" type="xsd:boolean" default="false">
+						<xsd:annotation><xsd:documentation>
+							If the argument is required, defaults to 'false'.
+						</xsd:documentation></xsd:annotation>
+					</xsd:attribute>
+					<xsd:attribute name="default" type="xsd:string">
+						<xsd:annotation><xsd:documentation>
+							The default value for this argument if it is not set.
+						</xsd:documentation></xsd:annotation>
+					</xsd:attribute>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="body" type="xsd:string" maxOccurs="1" minOccurs="1">
+				<xsd:annotation><xsd:documentation>
+					The cfml body of the function. It may be neccessary to utilise a CDATA declaration in this area.
+					There can only be one body declaration per function.
+				</xsd:documentation></xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+		<xsd:attribute ref="name" use="required">	
+			<xsd:annotation><xsd:documentation>
+				The name of the argument
+			</xsd:documentation></xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="access" use="required">
+			<xsd:annotation><xsd:documentation>
+				Access of the function, public, private or package.
+			</xsd:documentation></xsd:annotation>
+			<xsd:simpleType>
+				<xsd:restriction base="xsd:string">
+					<xsd:enumeration value="public"/>
+					<xsd:enumeration value="private"/>
+					<xsd:enumeration value="package"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+		</xsd:attribute>
+		<xsd:attribute name="returntype" use="required">
+			<xsd:annotation><xsd:documentation>
+				Type of what is returned by this function.
+			</xsd:documentation></xsd:annotation>
+			<xsd:simpleType>
+				<xsd:restriction base="xsd:string">
+					<xsd:pattern value="[\.a-zA-Z0-9_]+"></xsd:pattern>
+				</xsd:restriction>
+			</xsd:simpleType>
+		</xsd:attribute>					
+	</xsd:complexType>
+	
+	<!-- includes -->
+	<xsd:complexType name="includes">
+		<xsd:sequence maxOccurs="1" minOccurs="1">
+			<xsd:element name="include" maxOccurs="unbounded" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>
+					This is an include of a Transfer configuration file.
+					</xsd:documentation>
+				</xsd:annotation>
+				<xsd:complexType>
+					<xsd:attribute name="path" type="xsd:string" use="required">
+						<xsd:annotation>
+						<xsd:documentation>
+						The relative path from your application root to the include file.
+						</xsd:documentation>
+						</xsd:annotation>
+					</xsd:attribute>
+					<xsd:attribute name="overwrite" type="xsd:boolean" use="optional" default="false">
+						<xsd:annotation>
+						<xsd:documentation>
+						Whether or not to overwrite the previous configurations.  Defaults to 'false'.
+						</xsd:documentation>
+						</xsd:annotation>
+					</xsd:attribute>
+				</xsd:complexType>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	
+	
+	<!-- ## attrbibutes ## -->
+
+	<xsd:attribute name="name">
+		<xsd:simpleType>
+			<xsd:restriction base="xsd:string">
+				<xsd:pattern value="[a-zA-Z0-9_]+"></xsd:pattern>
+			</xsd:restriction>
+		</xsd:simpleType>
+	</xsd:attribute>
+
+	<xsd:attribute name="type">
+		<xsd:simpleType>
+			<xsd:restriction base="xsd:string">
+				<xsd:enumeration value="string"/>
+				<xsd:enumeration value="numeric"/>
+				<xsd:enumeration value="boolean"/>
+				<xsd:enumeration value="date"/>
+				<xsd:enumeration value="UUID"/>
+				<xsd:enumeration value="GUID"/>
+			</xsd:restriction>
+		</xsd:simpleType>
+	</xsd:attribute>
+	
+	<xsd:attribute name="table">
+		<xsd:simpleType>
+			<xsd:restriction base="xsd:string">
+				<xsd:pattern value="[a-zA-Z0-9_\.\[\]\-]+"></xsd:pattern>
+			</xsd:restriction>
+		</xsd:simpleType>
+	</xsd:attribute>	
+	
+	<xsd:attribute name="tablealias">
+		<xsd:annotation><xsd:documentation>
+			This is an table alias that will be used for get() operations in Transfer.
+			This is usually most useful for Oracle when the generated alias is over 30 characters.
+		</xsd:documentation></xsd:annotation>
+		<xsd:simpleType>
+			<xsd:restriction base="xsd:string">
+				<xsd:pattern value="[a-zA-Z0-9_]+"></xsd:pattern>
+			</xsd:restriction>
+		</xsd:simpleType>
+	</xsd:attribute>
+	
+	<xsd:attribute name="lazy" type="xsd:boolean" />
+	
+	<xsd:attribute name="nullable" type="xsd:boolean" />
+	<xsd:attribute name="nullvalue" type="xsd:string" />
+
+	<xsd:attribute name="column">
+		<xsd:simpleType>
+			<xsd:restriction base="xsd:string">
+				<xsd:pattern value="[a-zA-Z0-9_]+"></xsd:pattern>
+			</xsd:restriction>
+		</xsd:simpleType>
+	</xsd:attribute>			
+
+	<xsd:attribute name="property">
+		<xsd:simpleType>
+			<xsd:restriction base="xsd:string">
+				<xsd:pattern value="[a-zA-Z0-9_]+"></xsd:pattern>
+			</xsd:restriction>
+		</xsd:simpleType>					
+	</xsd:attribute>
+
+</xsd:schema>
