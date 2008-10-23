@@ -33,9 +33,9 @@ Modification History:
 			/* Locking Timeout */
 			instance.lockTimeout = "15";
 			/* Event URL Facade Setup */
-			instance.eventURLFacade = CreateObject("component","coldbox.system.cache.util.eventURLFacade").init(arguments.controller);
+			instance.eventURLFacade = CreateObject("component","coldbox.system.cache.util.EventURLFacade").init(arguments.controller);
 			/* Cache Stats */
-			instance.cacheStats = CreateObject("component","coldbox.system.cache.util.cacheStats").init(this);
+			instance.cacheStats = CreateObject("component","coldbox.system.cache.util.CacheStats").init(this);
 			/* Set the NOTFOUND public constant */
 			this.NOT_FOUND = '_NOTFOUND_';		
 			/* Init the object Pool on instantiation */
@@ -539,12 +539,12 @@ Modification History:
 <!------------------------------------------- ACCESSOR/MUTATORS ------------------------------------------->
 
 	<!--- get Event URL Facade --->
-	<cffunction name="geteventURLFacade" access="public" returntype="coldbox.system.cache.util.eventURLFacade" output="false" hint="Get the event url facade object.">
+	<cffunction name="geteventURLFacade" access="public" returntype="coldbox.system.cache.util.EventURLFacade" output="false" hint="Get the event url facade object.">
 		<cfreturn instance.eventURLFacade>
 	</cffunction>
 
 	<!--- The cache stats --->
-	<cffunction name="getCacheStats" access="public" returntype="coldbox.system.cache.util.cacheStats" output="false" hint="Return the cache stats object.">
+	<cffunction name="getCacheStats" access="public" returntype="coldbox.system.cache.util.CacheStats" output="false" hint="Return the cache stats object.">
 		<cfreturn instance.cacheStats>
 	</cffunction>
 	
