@@ -268,11 +268,11 @@ For the latest usage, please visit the wiki.
 		<cfloop list="#arguments.patternList#" index="pattern">
 			<!--- Using Regex --->
 			<cfif getProperty('useRegex')>
-				<cfif reFindNocase(pattern,arguments.currentEvent)>
+				<cfif reFindNocase(trim(pattern),arguments.currentEvent)>
 					<cfreturn true>
 				</cfif>
-			<cfelseif FindNocase(pattern,arguments.currentEvent)>
-					<cfreturn true>
+			<cfelseif FindNocase(trim(pattern),arguments.currentEvent)>
+				<cfreturn true>
 			</cfif>	
 		</cfloop>	
 		<cfreturn false>	
