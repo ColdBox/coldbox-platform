@@ -87,9 +87,10 @@ Description :
 			/* Check for invalid URL */
 			checkForInvalidURL( getCGIElement('path_info') , getCGIElement('script_name'), arguments.event );
 			
-			/* Clean up the path_info */
+			/* Clean up the path_info from index.cfm and nested pathing */
+			cleanedPathInfo = trim(reReplacenocase(getCGIElement('path_info'),"[/\\]index\.cfm",""));
 			if( len(cleanedScriptName) gt 0)
-				cleanedPathInfo = replaceNocase(getCGIElement('path_info'),cleanedScriptName,'');
+				cleanedPathInfo = replaceNocase(cleanedPathInfo,cleanedScriptName,'');
 			
 			/* Find a course */
 			acourse = findCourse( cleanedPathInfo, arguments.event );
