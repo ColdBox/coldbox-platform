@@ -13,7 +13,7 @@ Modification History:
 01/18/2007 - Created
 
 ----------------------------------------------------------------------->
-<cfcomponent name="eventURLFacade" hint="This object acas as an url facade for event caching" output="false">
+<cfcomponent name="EventURLFacade" hint="This object acas as an url facade for event caching" output="false">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 	
@@ -21,7 +21,7 @@ Modification History:
 		instance = structnew();
 	</cfscript>
 
-	<cffunction name="init" access="public" output="false" returntype="eventURLFacade" hint="Constructor">
+	<cffunction name="init" access="public" output="false" returntype="EventURLFacade" hint="Constructor">
 		<cfargument name="controller" type="any" required="true">
 		<cfscript>
 			instance.controller = arguments.controller;

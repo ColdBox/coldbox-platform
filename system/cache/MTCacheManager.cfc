@@ -209,7 +209,7 @@ Modification History:
 	<!--- Init the pool --->
 	<cffunction name="initPool" access="private" output="false" returntype="void" hint="Initialize and set the internal object Pool">
 		<cfscript>
-			instance.objectPool = CreateObject("component","coldbox.system.cache.MTobjectPool").init();
+			instance.objectPool = CreateObject("component","coldbox.system.cache.MTObjectPool").init();
 		</cfscript>
 	</cffunction>
 	

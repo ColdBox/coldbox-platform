@@ -12,14 +12,14 @@ Description :
 Modification History:
 01/18/2007 - Created
 ----------------------------------------------------------------------->
-<cfcomponent name="MTobjectPool" 
+<cfcomponent name="MTObjectPool" 
 			 hint="I manage persistance for objects." 
 			 output="false"
 			 extends="coldbox.system.cache.objectPool">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
-	<cffunction name="init" access="public" output="false" returntype="MTobjectPool" hint="Constructor">
+	<cffunction name="init" access="public" output="false" returntype="MTObjectPool" hint="Constructor">
 		<cfscript>
 			/* Since we use JDK 5> we can use the concurrent package. */
 			var Map = CreateObject("java","java.util.concurrent.ConcurrentHashMap").init();

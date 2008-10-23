@@ -9,7 +9,7 @@ Date        :	11/14/2007
 Description :
 	This is a cache statistics object
 ----------------------------------------------------------------------->
-<cfcomponent name="cacheStats" output="false" hint="This object keeps the cache statistics">
+<cfcomponent name="CacheStats" output="false" hint="This object keeps the cache statistics">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 	
@@ -17,7 +17,7 @@ Description :
 		instance = structnew();
 	</cfscript>
 
-	<cffunction name="init" access="public" output="false" returntype="cacheStats" hint="Constructor">
+	<cffunction name="init" access="public" output="false" returntype="CacheStats" hint="Constructor">
 		<!--- ************************************************************************* --->
 		<cfargument name="cacheManager" type="any" required="true" hint="The associated cache manager"/>
 		<!--- ************************************************************************* --->

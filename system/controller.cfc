@@ -37,7 +37,7 @@ Description		: This is the main ColdBox front Controller.
 			//TODO: change all this to object factory.
 			//Create & init ColdBox Services
 			if ( this.oCFMLENGINE.isMT() ){
-				setColdboxOCM( CreateObject("component","coldbox.system.cache.MTcacheManager").init(this) );
+				setColdboxOCM( CreateObject("component","coldbox.system.cache.MTCacheManager").init(this) );
 			}
 			else{
 				setColdboxOCM( CreateObject("component","coldbox.system.cache.CacheManager").init(this) );
