@@ -215,7 +215,7 @@ Description :
 				/* Do we need to cache this event?? */
 				if ( eventDictionaryEntry.cacheable ){
 					/* Save the cache key in md Entry */
-					eventDictionaryEntry.cacheKey = this.EVENT_CACHEKEY_PREFIX & oEventHandlerBean.getFullEvent() & "-" & getController().getColdboxOCM().getEventURLFacade().getUniqueHash(oRequestContext) ;
+					eventDictionaryEntry.cacheKey = this.EVENT_CACHEKEY_PREFIX & oEventHandlerBean.getFullEvent() & "-" & oEventHandler.EVENT_CACHE_SUFFIX & "-" & getController().getColdboxOCM().getEventURLFacade().getUniqueHash(oRequestContext) ;
 					/* Event is cacheable and we need to flag it so the renderer caches it. */
 					oRequestContext.setEventCacheableEntry(eventDictionaryEntry);
 				}//end if md says that this event is cacheable
