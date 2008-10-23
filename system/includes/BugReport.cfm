@@ -19,7 +19,7 @@ Modification History:
 </cfsilent>
 <cfoutput>
 <style>
-<cfinclude template="style.css">
+<cfinclude template="Style.css">
 </style>
 
 <style>

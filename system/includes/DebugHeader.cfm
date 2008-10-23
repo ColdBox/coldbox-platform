@@ -1,4 +1,4 @@
-<style><cfinclude template="style.css"></style>
+<style><cfinclude template="Style.css"></style>
 <script language="javascript" type="text/javascript">
 function fw_toggle(divid){
 	if ( document.getElementById(divid).className == "fw_debugContent"){
