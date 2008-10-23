@@ -1,7 +1,7 @@
 <cfoutput>
 
-	<!--- If cachepanel render the polling code --->
-	<cfif renderType eq "cachepanel">
+	<!--- If CachePanel render the polling code --->
+	<cfif renderType eq "CachePanel">
 		<!--- Setup the panel --->
 		<cfsetting showdebugoutput="false">
 		<cfparam name="url.frequency" default="0">
@@ -23,7 +23,7 @@
 
 	<!--- Start Rendering the Cache panel  --->
 	<div class="fw_titles" onClick="fw_toggle('fw_cache')">&gt;&nbsp; ColdBox Cache</div>
-	<cfif renderType eq "cachepanel">
+	<cfif renderType eq "CachePanel">
 		<div class="fw_debugContentView" id="fw_cache">
 	<cfelse>
 		<div class="fw_debugContent<cfif getDebuggerConfigBean().getExpandedCachePanel()>View</cfif>" id="fw_cache">
@@ -116,7 +116,7 @@
 		<!--- **************************************************************--->
 		<cfif controller.getSetting("chartingActive",true)>
 			<!--- Why use a cfinclude? well, bluedragon would not compile this without it --->
-			<cfinclude template="/coldbox/system/includes/panels/cache_charting.cfm">
+			<cfinclude template="/coldbox/system/includes/panels/CacheCharting.cfm">
 		<cfelse>
 			<div class="fw_debugTitleCell">
 			  Objects In Cache:
@@ -167,8 +167,8 @@
 	</div>
 	<!--- **************************************************************--->
 
-	<!--- If in cachepanel mode, render the close monitor buttons --->
-	<cfif renderType eq "cachepanel">
+	<!--- If in CachePanel mode, render the close monitor buttons --->
+	<cfif renderType eq "CachePanel">
 		</div>
 		<div align="center" style="margin-top:10px"><input type="button" name="close" value="Close Monitor" onClick="window.close()" style="font-size:10px"></div>
 	</cfif>

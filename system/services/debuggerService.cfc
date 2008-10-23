@@ -98,10 +98,10 @@ Modification History:
 		<cfset var JVMTotalMemory = JVMRuntime.totalMemory()/1024>
 
 		<!--- Debug Rendering Type --->
-		<cfset var renderType = "cachepanel">
+		<cfset var renderType = "CachePanel">
 
 		<!--- Generate Debugging --->
-		<cfsavecontent variable="RenderedDebugging"><cfinclude template="/coldbox/system/includes/panels/cachepanel.cfm"></cfsavecontent>
+		<cfsavecontent variable="RenderedDebugging"><cfinclude template="/coldbox/system/includes/panels/CachePanel.cfm"></cfsavecontent>
 		<cfreturn RenderedDebugging>
 	</cffunction>
 	
@@ -129,7 +129,7 @@ Modification History:
 		<cfset var x = 1>
 		<cfset var local = structnew()>
 		
-		<cfsavecontent variable="profilerContents"><cfinclude template="/coldbox/system/includes/panels/profilerpanel.cfm"></cfsavecontent>
+		<cfsavecontent variable="profilerContents"><cfinclude template="/coldbox/system/includes/panels/ProfilerPanel.cfm"></cfsavecontent>
 				
 		<cfreturn profilerContents>
 	</cffunction>

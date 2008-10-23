@@ -29,7 +29,7 @@ Modification History:
 	<!--- **************************************************************--->
 	<!--- TRACER STACK--->
 	<!--- **************************************************************--->
-	<cfinclude template="/coldbox/system/includes/panels/tracerspanel.cfm">
+	<cfinclude template="/coldbox/system/includes/panels/TracersPanel.cfm">
 	
 
 	<!--- **************************************************************--->
@@ -182,7 +182,7 @@ Modification History:
 <!--- **************************************************************--->
 	
 	<cfif getDebuggerConfigBean().getShowCachePanel()>
-		<cfinclude template="panels/cachepanel.cfm">
+		<cfinclude template="panels/CachePanel.cfm">
 	</cfif>
 	
 <!--- **************************************************************--->

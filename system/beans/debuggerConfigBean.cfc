@@ -100,7 +100,7 @@ Modification History:
 		<cfset instance.expandedInfoPanel = arguments.expandedInfoPanel/>
 	</cffunction>
 	
-	<!--- show cachepanel --->
+	<!--- show CachePanel --->
 	<cffunction name="getshowCachePanel" access="public" output="false" returntype="boolean" hint="Get showCachePanel">
 		<cfreturn instance.showCachePanel/>
 	</cffunction>

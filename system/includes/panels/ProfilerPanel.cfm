@@ -35,7 +35,7 @@ Description :
 	<!--- **************************************************************--->
 	<!--- TRACER STACK--->
 	<!--- **************************************************************--->
-	<cfinclude template="/coldbox/system/includes/panels/tracerspanel.cfm">
+	<cfinclude template="/coldbox/system/includes/panels/TracersPanel.cfm">
 	
 	<!--- Start Rendering the Execution Profiler panel  --->
 	<div class="fw_titles">&gt;&nbsp; ColdBox Execution Profiler Report</div>
