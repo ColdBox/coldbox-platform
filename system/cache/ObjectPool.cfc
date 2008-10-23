@@ -12,11 +12,11 @@ Description :
 Modification History:
 01/18/2007 - Created
 ----------------------------------------------------------------------->
-<cfcomponent name="objectPool" hint="I manage persistance for objects." output="false">
+<cfcomponent name="ObjectPool" hint="I manage persistance for objects." output="false">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
-	<cffunction name="init" access="public" output="false" returntype="objectPool" hint="Constructor">
+	<cffunction name="init" access="public" output="false" returntype="ObjectPool" hint="Constructor">
 		<cfscript>
 			var Collections = createObject("java", "java.util.Collections");
 			/* Create the reference maps */

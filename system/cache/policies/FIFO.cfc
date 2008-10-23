@@ -18,7 +18,7 @@ Description :
 
 	<!--- init --->
 	<cffunction name="init" output="false" access="public" returntype="FIFO" hint="Constructor">
-		<cfargument name="cacheManager" type="coldbox.system.cache.cacheManager" required="true" hint="The cache manager"/>
+		<cfargument name="cacheManager" type="coldbox.system.cache.CacheManager" required="true" hint="The cache manager"/>
 		<cfscript>
 			setCacheManager(arguments.cacheManager);
 			return this;

@@ -13,7 +13,7 @@ Modification History:
 01/18/2007 - Created
 
 ----------------------------------------------------------------------->
-<cfcomponent name="cacheManager" 
+<cfcomponent name="CacheManager" 
 			 hint="Manages handler,plugin,custom plugin and object caching. It is thread safe and implements locking for you." 
 			 output="false">
 
@@ -23,7 +23,7 @@ Modification History:
 		instance = structnew();
 	</cfscript>
 
-	<cffunction name="init" access="public" output="false" returntype="cacheManager" hint="Constructor">
+	<cffunction name="init" access="public" output="false" returntype="CacheManager" hint="Constructor">
 		<cfargument name="controller" type="any" required="true">
 		<cfscript>
 			/* Set Controller Injection */
@@ -595,7 +595,7 @@ Modification History:
 	<!--- Initialize our object cache pool --->
 	<cffunction name="initPool" access="private" output="false" returntype="void" hint="Initialize and set the internal object Pool">
 		<cfscript>
-			instance.objectPool = CreateObject("component","coldbox.system.cache.objectPool").init();
+			instance.objectPool = CreateObject("component","coldbox.system.cache.ObjectPool").init();
 		</cfscript>
 	</cffunction>
 

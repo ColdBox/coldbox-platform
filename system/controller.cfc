@@ -40,7 +40,7 @@ Description		: This is the main ColdBox front Controller.
 				setColdboxOCM( CreateObject("component","coldbox.system.cache.MTcacheManager").init(this) );
 			}
 			else{
-				setColdboxOCM( CreateObject("component","coldbox.system.cache.cacheManager").init(this) );
+				setColdboxOCM( CreateObject("component","coldbox.system.cache.CacheManager").init(this) );
 			}
 			//Setup the rest of the services.
 			setLoaderService( CreateObject("component", "coldbox.system.services.loaderService").init(this) );
@@ -67,11 +67,11 @@ Description		: This is the main ColdBox front Controller.
 	</cffunction>
 	
 	<!--- ColdBox Cache Manager --->
-	<cffunction name="getColdboxOCM" access="public" output="false" returntype="any" hint="Get ColdboxOCM: coldbox.system.cache.cacheManager">
+	<cffunction name="getColdboxOCM" access="public" output="false" returntype="any" hint="Get ColdboxOCM: coldbox.system.cache.CacheManager">
 		<cfreturn instance.ColdboxOCM/>
 	</cffunction>
 	<cffunction name="setColdboxOCM" access="public" output="false" returntype="void" hint="Set ColdboxOCM">
-		<cfargument name="ColdboxOCM" type="any" required="true" hint="coldbox.system.cache.cacheManager"/>
+		<cfargument name="ColdboxOCM" type="any" required="true" hint="coldbox.system.cache.CacheManager"/>
 		<cfset instance.ColdboxOCM = arguments.ColdboxOCM/>
 	</cffunction>
 	

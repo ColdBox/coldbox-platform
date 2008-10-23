@@ -19,7 +19,7 @@ Description :
 
 	<cffunction name="init" access="public" output="false" returntype="cacheStats" hint="Constructor">
 		<!--- ************************************************************************* --->
-		<cfargument name="cacheManager" type="any" required="true" hint="THe cache manager"/>
+		<cfargument name="cacheManager" type="any" required="true" hint="The associated cache manager"/>
 		<!--- ************************************************************************* --->
 		<cfscript>
 			/* Set Dependencies */
@@ -35,7 +35,7 @@ Description :
 <!------------------------------------------- PUBLIC ------------------------------------------->
 	
 	<!--- getAssociatedCacheManager --->
-	<cffunction name="getAssociatedCacheManager" output="false" access="public" returntype="coldbox.system.cache.cacheManager" hint="Get the associated Cache Manager for this stats object">
+	<cffunction name="getAssociatedCacheManager" output="false" access="public" returntype="coldbox.system.cache.CacheManager" hint="Get the associated Cache Manager for this stats object">
 		<cfreturn instance.cacheManager>
 	</cffunction>
 	

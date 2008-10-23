@@ -15,7 +15,7 @@ Modification History:
 ----------------------------------------------------------------------->
 <cfcomponent name="MTCacheManager" 
 			 hint="The multi-threaded cache manager." 
-			 extends="coldbox.system.cache.cacheManager" 
+			 extends="coldbox.system.cache.CacheManager" 
 			 output="false">
 
 <!------------------------------------------- PUBLIC ------------------------------------------->

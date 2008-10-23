@@ -54,7 +54,7 @@ Modification History:
 	</cffunction>
 	
 	<!--- Get the cache manager --->
-	<cffunction name="getColdboxOCM" output="false" access="public" returntype="any" hint="Get the coldbox cache manager reference: coldbox.system.cache.cacheManager">
+	<cffunction name="getColdboxOCM" output="false" access="public" returntype="any" hint="Get the coldbox cache manager reference: coldbox.system.cache.CacheManager">
 		<cfscript>
 		return application.cbController.getColdboxOCM();
 		</cfscript>

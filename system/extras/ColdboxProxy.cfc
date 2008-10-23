@@ -251,7 +251,7 @@ Description :
 	</cffunction>
 	
 	<!--- Facade: Get COldBox OCM --->
-	<cffunction name="getColdboxOCM" access="private" output="false" returntype="any" hint="Get ColdboxOCM: coldbox.system.cache.cacheManager">
+	<cffunction name="getColdboxOCM" access="private" output="false" returntype="any" hint="Get ColdboxOCM: coldbox.system.cache.CacheManager">
 		<cfreturn getController().getColdboxOCM()/>
 	</cffunction>
 	
