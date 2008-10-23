@@ -9,7 +9,7 @@ Description :
 Modification History:
 
 ---------------------------------------------------------------------->
-<cfcomponent name="util" output="false" hint="A utility method cfc">
+<cfcomponent name="Util" output="false" hint="A utility method cfc">
 
 	<cffunction name="ripExtension" access="public" returntype="string" output="false" hint="Rip the extension of a filename.">
 		<cfargument name="filename" type="string" required="true">

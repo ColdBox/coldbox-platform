@@ -480,8 +480,8 @@ Description		: This is the main ColdBox front Controller.
 <!------------------------------------------- PRIVATE ------------------------------------------->
 
 	<!--- Get the util object --->
-	<cffunction name="getUtil" access="private" output="false" returntype="coldbox.system.util.util" hint="Create and return a util object">
-		<cfreturn CreateObject("component","coldbox.system.util.util")/>
+	<cffunction name="getUtil" access="private" output="false" returntype="coldbox.system.util.Util" hint="Create and return a util object">
+		<cfreturn CreateObject("component","coldbox.system.util.Util")/>
 	</cffunction>
 	
 	<!--- Push Timers --->
