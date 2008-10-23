@@ -11,13 +11,13 @@ Description :
 Modification History:
 
 ----------------------------------------------------------------------->
-<cfcomponent name="cacheConfigBean"
+<cfcomponent name="CacheConfigBean"
 			 hint="I configure a cache manager."
 			 output="false">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
-	<cffunction name="init" access="public" output="false" hint="constructor" returntype="cacheConfigBean">
+	<cffunction name="init" access="public" output="false" hint="constructor" returntype="CacheConfigBean">
 	    <!--- ************************************************************* --->
 	    <cfargument name="CacheObjectDefaultTimeout" 			type="numeric" required="true">
 	    <cfargument name="CacheObjectDefaultLastAccessTimeout"  type="numeric" required="true">

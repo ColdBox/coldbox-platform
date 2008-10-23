@@ -4,7 +4,7 @@
 	
 	<cffunction name="setUp" returntype="void" access="public">
 		<cfscript>
-			this.ccbean = createObject("component","coldbox.system.beans.cacheConfigBean");
+			this.ccbean = createObject("component","coldbox.system.cache.config.CacheConfigBean");
 			this.memento = structnew();
 			
 			this.memento.CacheObjectDefaultTimeout = 20;

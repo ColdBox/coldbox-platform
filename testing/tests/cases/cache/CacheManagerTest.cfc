@@ -20,7 +20,7 @@ Description :
 		mockController.mockMethod('getInterceptorService').returns(mockService);
 		mockController.mockMethod('getAppHash').returns(hash(createUUID()) );
 		
-		ccbean = createObject("component","coldbox.system.beans.cacheConfigBean");
+		ccbean = createObject("component","coldbox.system.cache.config.CacheConfigBean");
 		memento = structnew();
 		memento.CacheObjectDefaultTimeout = 20;
 		memento.CacheObjectDefaultLastAccessTimeout = 20;

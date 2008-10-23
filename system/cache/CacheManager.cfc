@@ -48,7 +48,7 @@ Modification History:
 	<!--- Configure the Cache for Operation --->
 	<cffunction name="configure" access="public" output="false" returntype="void" hint="Configures the cache for operation, sets the configuration object, sets and creates the eviction policy and clears the stats. If this method is not called, the cache is useless.">
 		<!--- ************************************************************* --->
-		<cfargument name="cacheConfigBean" type="coldbox.system.beans.cacheConfigBean" required="true" hint="The configuration object">
+		<cfargument name="cacheConfigBean" type="coldbox.system.cache.config.CacheConfigBean" required="true" hint="The configuration object">
 		<!--- ************************************************************* --->
 		<cfscript>		
 			var oEvictionPolicy = 0;
@@ -550,10 +550,10 @@ Modification History:
 	
 	<!--- The cache Config Bean --->
 	<cffunction name="setCacheConfigBean" access="public" returntype="void" output="false" hint="Set & Override the cache configuration bean. You can use this to programmatically alter the cache.">
-		<cfargument name="CacheConfigBean" type="coldbox.system.beans.cacheConfigBean" required="true">
+		<cfargument name="CacheConfigBean" type="coldbox.system.cache.config.CacheConfigBean" required="true">
 		<cfset instance.CacheConfigBean = arguments.CacheConfigBean>
 	</cffunction>
-	<cffunction name="getCacheConfigBean" access="public" returntype="coldbox.system.beans.cacheConfigBean" output="false" hint="Get the current cache configuration bean.">
+	<cffunction name="getCacheConfigBean" access="public" returntype="coldbox.system.cache.config.CacheConfigBean" output="false" hint="Get the current cache configuration bean.">
 		<cfreturn instance.CacheConfigBean >
 	</cffunction>
 	
