@@ -22,7 +22,7 @@ Modification History:
 02/01/2007 - Updated context references
 ----------------------------------------------------------------------->
 <cfoutput>
-<cfinclude template="debugHeader.cfm">
+<cfinclude template="DebugHeader.cfm">
 <div style="margin-top:40px"></div>
 <div class="fw_debugPanel">
 

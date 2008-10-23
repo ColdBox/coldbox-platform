@@ -4,7 +4,7 @@
 Copyright 2005-2008 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 www.coldboxframework.com | www.luismajano.com | www.ortussolutions.com
 ********************************************************************************
-Template :  timer.cfm
+Template :  Timer.cfm
 Author 	 :	Luis Majano
 Date     :	September 25, 2005
 Description :

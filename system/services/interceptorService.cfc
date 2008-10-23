@@ -80,7 +80,7 @@ Description :
 		
 		<!--- Process The State if it exists, else just exit out. --->
 		<cfif structKeyExists(getinterceptionStates(), arguments.state) >
-			<cfmodule template="../includes/timer.cfm" timertag="interception [#arguments.state#]" controller="#getController()#">
+			<cfmodule template="../includes/Timer.cfm" timertag="interception [#arguments.state#]" controller="#getController()#">
 				<cfset structFind( getinterceptionStates(), arguments.state).process(event,arguments.interceptData)>
 			</cfmodule>				
 		</cfif>

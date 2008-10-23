@@ -99,7 +99,7 @@ Description :
 		<!--- Do we have a cached view?? --->
 		<cfif getColdboxOCM().lookup(cbox_cacheKey)>
 			<!--- Render The View --->
-			<cfmodule template="../includes/timer.cfm" timertag="rendering Cached View [#arguments.view#.cfm]" controller="#controller#">
+			<cfmodule template="../includes/Timer.cfm" timertag="rendering Cached View [#arguments.view#.cfm]" controller="#controller#">
 				<cfset cbox_RenderedView = getColdBoxOCM().get(cbox_cacheKey)>
 			</cfmodule>
 		<cfelse>
@@ -115,7 +115,7 @@ Description :
 			</cfif>
 			
 			<!--- Render The View --->
-			<cfmodule template="../includes/timer.cfm" timertag="rendering View [#arguments.view#.cfm]" controller="#controller#">
+			<cfmodule template="../includes/Timer.cfm" timertag="rendering View [#arguments.view#.cfm]" controller="#controller#">
 				<cfsavecontent variable="cbox_RenderedView"><cfoutput><cfinclude template="#cbox_viewpath#"></cfoutput></cfsavecontent>
 			</cfmodule>
 			<!--- Is this view cacheable by setting, and if its the view we need to cache. --->
@@ -155,11 +155,11 @@ Description :
 		<!--- Do we have a cached view?? --->
 		<cfif getColdboxOCM().lookup(cbox_cacheKey)>
 			<!--- Render The View --->
-			<cfmodule template="../includes/timer.cfm" timertag="rendering Cached External View [#arguments.view#.cfm]" controller="#controller#">
+			<cfmodule template="../includes/Timer.cfm" timertag="rendering Cached External View [#arguments.view#.cfm]" controller="#controller#">
 				<cfset cbox_RenderedView = getColdBoxOCM().get(cbox_cacheKey)>
 			</cfmodule>
 		<cfelse>
-			<cfmodule template="../includes/timer.cfm" timertag="rendering External View [#arguments.view#.cfm]" controller="#controller#">
+			<cfmodule template="../includes/Timer.cfm" timertag="rendering External View [#arguments.view#.cfm]" controller="#controller#">
 				<cftry>
 					<!--- Render the View --->
 					<cfsavecontent variable="cbox_RenderedView"><cfoutput><cfinclude template="#arguments.view#.cfm"></cfoutput></cfsavecontent>
@@ -198,7 +198,7 @@ Description :
 			</cfif>
 		</cfif>
 		
-		<cfmodule template="../includes/timer.cfm" timertag="rendering Layout [#Event.getcurrentLayout()#]" controller="#controller#">
+		<cfmodule template="../includes/Timer.cfm" timertag="rendering Layout [#Event.getcurrentLayout()#]" controller="#controller#">
 			<!--- Render With No Layout Test--->
 			<cfif Event.getcurrentLayout() eq "">
 				<cfset cbox_RederedLayout = renderView()>

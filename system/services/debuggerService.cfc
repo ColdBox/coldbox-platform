@@ -74,7 +74,7 @@ Modification History:
 		<cfset var JVMTotalMemory = JVMRuntime.totalMemory()/1024>
 
 		<!--- Render debuglog --->
-		<cfsavecontent variable="RenderedDebugging"><cfinclude template="../includes/debug.cfm"></cfsavecontent>
+		<cfsavecontent variable="RenderedDebugging"><cfinclude template="../includes/Debug.cfm"></cfsavecontent>
 		<cfreturn RenderedDebugging>
 	</cffunction>
 

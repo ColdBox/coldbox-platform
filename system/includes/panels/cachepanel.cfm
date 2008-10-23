@@ -17,7 +17,7 @@
 		</cfif>
 		
 		<!--- Include Header --->
-		<cfinclude template="/coldbox/system/includes/debugHeader.cfm">
+		<cfinclude template="/coldbox/system/includes/DebugHeader.cfm">
 		<div class="fw_debugPanel">
 	</cfif>
 
