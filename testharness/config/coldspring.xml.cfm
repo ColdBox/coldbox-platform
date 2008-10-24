@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans default-autowire="byName">    
+<beans default-autowire="byName" default-lazy-init="true">    
     
-    <bean id="ColdboxFactory" class="coldbox.system.extras.ColdboxFactory" />
+    <bean id="ColdboxFactory" class="coldbox.system.extras.ColdboxFactory" lazy-init="false" />
     
 	<bean id="ConfigBean" factory-bean="ColdboxFactory" factory-method="getConfigBean" />
 	
