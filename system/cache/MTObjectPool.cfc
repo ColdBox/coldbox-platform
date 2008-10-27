@@ -15,7 +15,7 @@ Modification History:
 <cfcomponent name="MTObjectPool" 
 			 hint="I manage persistance for objects." 
 			 output="false"
-			 extends="coldbox.system.cache.objectPool">
+			 extends="coldbox.system.cache.ObjectPool">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
