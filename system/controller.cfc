@@ -43,12 +43,12 @@ Description		: This is the main ColdBox front Controller.
 				setColdboxOCM( CreateObject("component","coldbox.system.cache.CacheManager").init(this) );
 			}
 			//Setup the rest of the services.
-			setLoaderService( CreateObject("component", "coldbox.system.services.loaderService").init(this) );
-			setRequestService( CreateObject("component","coldbox.system.services.requestService").init(this) );
-			setDebuggerService( CreateObject("component","coldbox.system.services.debuggerService").init(this) );
-			setPluginService( CreateObject("component","coldbox.system.services.pluginService").init(this) );
-			setInterceptorService( CreateObject("component", "coldbox.system.services.interceptorService").init(this) );
-			setHandlerService( CreateObject("component", "coldbox.system.services.handlerService").init(this) );
+			setLoaderService( CreateObject("component", "coldbox.system.services.LoaderService").init(this) );
+			setRequestService( CreateObject("component","coldbox.system.services.RequestService").init(this) );
+			setDebuggerService( CreateObject("component","coldbox.system.services.DebuggerService").init(this) );
+			setPluginService( CreateObject("component","coldbox.system.services.PluginService").init(this) );
+			setInterceptorService( CreateObject("component", "coldbox.system.services.InterceptorService").init(this) );
+			setHandlerService( CreateObject("component", "coldbox.system.services.HandlerService").init(this) );
 			
 			//Return instance
 			return this;
@@ -76,7 +76,7 @@ Description		: This is the main ColdBox front Controller.
 	</cffunction>
 	
 	<!--- Loader Service --->
-	<cffunction name="getLoaderService" access="public" output="false" returntype="any" hint="Get LoaderService: coldbox.system.services.loaderService">
+	<cffunction name="getLoaderService" access="public" output="false" returntype="any" hint="Get LoaderService: coldbox.system.services.LoaderService">
 		<cfreturn instance.LoaderService/>
 	</cffunction>
 	<cffunction name="setLoaderService" access="public" output="false" returntype="void" hint="Set LoaderService">
@@ -85,12 +85,12 @@ Description		: This is the main ColdBox front Controller.
 	</cffunction>
 	
 	<!--- Exception Service --->
-	<cffunction name="getExceptionService" access="public" output="false" returntype="any" hint="Get ExceptionService: coldbox.system.services.exceptionService">
-		<cfreturn CreateObject("component", "coldbox.system.services.exceptionService").init(this)/>
+	<cffunction name="getExceptionService" access="public" output="false" returntype="any" hint="Get ExceptionService: coldbox.system.services.ExceptionService">
+		<cfreturn CreateObject("component", "coldbox.system.services.ExceptionService").init(this)/>
 	</cffunction>
 	
 	<!--- Request Service --->
-	<cffunction name="getRequestService" access="public" output="false" returntype="any" hint="Get RequestService: coldbox.system.services.requestService">
+	<cffunction name="getRequestService" access="public" output="false" returntype="any" hint="Get RequestService: coldbox.system.services.RequestService">
 		<cfreturn instance.RequestService/>
 	</cffunction>
 	<cffunction name="setRequestService" access="public" output="false" returntype="void" hint="Set RequestService">
@@ -99,7 +99,7 @@ Description		: This is the main ColdBox front Controller.
 	</cffunction>
 	
 	<!--- Debugger Service --->
-	<cffunction name="getDebuggerService" access="public" output="false" returntype="any" hint="Get DebuggerService: coldbox.system.services.debuggerService">
+	<cffunction name="getDebuggerService" access="public" output="false" returntype="any" hint="Get DebuggerService: coldbox.system.services.DebuggerService">
 		<cfreturn instance.DebuggerService/>
 	</cffunction>
 	<cffunction name="setDebuggerService" access="public" output="false" returntype="void" hint="Set DebuggerService">
@@ -108,7 +108,7 @@ Description		: This is the main ColdBox front Controller.
 	</cffunction>
 	
 	<!--- Plugin Service --->
-	<cffunction name="getPluginService" access="public" output="false" returntype="any" hint="Get PluginService: coldbox.system.services.pluginService">
+	<cffunction name="getPluginService" access="public" output="false" returntype="any" hint="Get PluginService: coldbox.system.services.PluginService">
 		<cfreturn instance.PluginService/>
 	</cffunction>
 	<cffunction name="setPluginService" access="public" output="false" returntype="void" hint="Set PluginService">
@@ -117,7 +117,7 @@ Description		: This is the main ColdBox front Controller.
 	</cffunction>
 	
 	<!--- Interceptor Service --->
-	<cffunction name="getinterceptorService" access="public" output="false" returntype="any" hint="Get interceptorService: coldbox.system.services.interceptorService">
+	<cffunction name="getinterceptorService" access="public" output="false" returntype="any" hint="Get interceptorService: coldbox.system.services.InterceptorService">
 		<cfreturn instance.interceptorService/>
 	</cffunction>	
 	<cffunction name="setinterceptorService" access="public" output="false" returntype="void" hint="Set interceptorService">
@@ -126,7 +126,7 @@ Description		: This is the main ColdBox front Controller.
 	</cffunction>
 
 	<!--- Handler Service --->
-	<cffunction name="getHandlerService" access="public" output="false" returntype="any" hint="Get HandlerService: coldbox.system.services.handlerService">
+	<cffunction name="getHandlerService" access="public" output="false" returntype="any" hint="Get HandlerService: coldbox.system.services.HandlerService">
 		<cfreturn instance.HandlerService/>
 	</cffunction>
 	<cffunction name="setHandlerService" access="public" output="false" returntype="void" hint="Set HandlerService">

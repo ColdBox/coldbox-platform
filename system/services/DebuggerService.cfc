@@ -12,7 +12,7 @@ Description :
 Modification History:
 01/18/2007 - Created
 ----------------------------------------------------------------------->
-<cfcomponent name="debuggerService" output="false" hint="The coldbox debugger service" extends="baseService">
+<cfcomponent name="debuggerService" output="false" hint="The coldbox debugger service" extends="coldbox.system.services.BaseService">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 

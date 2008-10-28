@@ -13,7 +13,7 @@ Description :
 Modification History:
 08/25/2007 - Created
 ----------------------------------------------------------------------->
-<cfcomponent name="baseService" hint="A ColdBox base internal service" output="false">
+<cfcomponent name="BaseService" hint="A ColdBox base internal service" output="false">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 

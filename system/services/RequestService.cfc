@@ -13,7 +13,7 @@ Description :
 Modification History:
 01/18/2007 - Created
 ----------------------------------------------------------------------->
-<cfcomponent name="requestService" output="false" hint="This service takes care of preparing and creating request contexts. Facades to FORM and URL" extends="baseService">
+<cfcomponent name="requestService" output="false" hint="This service takes care of preparing and creating request contexts. Facades to FORM and URL" extends="coldbox.system.services.BaseService">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 

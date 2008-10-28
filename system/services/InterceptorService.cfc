@@ -9,7 +9,7 @@ Date        :	9/28/2007
 Description :
 	The interceptor service for all interception related methods.
 ----------------------------------------------------------------------->
-<cfcomponent name="interceptorService" output="false" hint="The coldbox interceptor service" extends="baseService">
+<cfcomponent name="interceptorService" output="false" hint="The coldbox interceptor service" extends="coldbox.system.services.BaseService">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 

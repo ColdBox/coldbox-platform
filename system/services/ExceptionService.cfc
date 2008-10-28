@@ -12,7 +12,7 @@ Description :
 Modification History:
 01/18/2007 - Created
 ----------------------------------------------------------------------->
-<cfcomponent name="exceptionService" output="false" hint="The ColdBox exception service" extends="baseService">
+<cfcomponent name="exceptionService" output="false" hint="The ColdBox exception service" extends="coldbox.system.services.BaseService">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 

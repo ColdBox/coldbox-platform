@@ -12,7 +12,7 @@ Description :
 Modification History:
 01/18/2007 - Created
 ----------------------------------------------------------------------->
-<cfcomponent name="pluginService" output="false" hint="The coldbox plugin service" extends="baseService">
+<cfcomponent name="pluginService" output="false" hint="The coldbox plugin service" extends="coldbox.system.services.BaseService">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
