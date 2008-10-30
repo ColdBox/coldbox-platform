@@ -266,17 +266,17 @@ Modification History:
 	<cffunction name="createLightwireConfigBean" output="false" access="private" returntype="any" hint="Creates the lightwire config bean">
 		<cfscript>
 			var lightwireBeanConfig = "";
-			var usingXML = listLast(getIOCDefinitionFile(),".") eq "xml" or listLast(getIOCDefinitionFile(),".") eq "cfm";
+			var isUsingXML = listLast(getIOCDefinitionFile(),".") eq "xml" or listLast(getIOCDefinitionFile(),".") eq "cfm";
 			var settingsStruct = StructNew();
 			var oMethodInjector = getPlugin("methodInjector");
 			
 			/* Create the lightwire Config Bean. */
-			if( not usingXML ){
-				/* Create the declared config bean */
+			if( not isUsingXML ){
+				/* Create the declared config bean, but do not init it */
 				lightwireBeanConfig = CreateObject("component", getIOCDefinitionFile());
 			}
 			else{
-				/* Create ColdBox config Bean */
+				/* Create base ColdBox config Bean */
 				lightwireBeanConfig = CreateObject("component", "coldbox.system.extras.lightwire.BaseConfigObject").init();	
 				/* validate definiton file */
 				validateDefinitionFile();
@@ -298,7 +298,7 @@ Modification History:
 			lightwireBeanConfig.setController(getController());
 			
 			/* Do we need to configure */
-			if( usingXML ){
+			if( isUsingXML ){
 				/* Read in and parse the XML */
 				lightwireBeanConfig.parseXMLConfigFile(getExpandedIOCDefinitionFile(),settingsStruct);
 				return lightwireBeanConfig;

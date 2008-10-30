@@ -19,7 +19,11 @@
 	
 	<bean id="myMailSettings" factory-bean="ColdboxFactory" factory-method="getMailSettings" />
 	
-    <bean id="testModel" class="coldbox.testharness.model.testModel" singleton="false">
+	<bean id="StringBuffer" class="java.lang.StringBuffer" type="java" singleton="false" />
+	
+    <bean id="UpdateWS" class="http://www.coldboxframework.com/distribution/updatews.cfc?wsdl" type="webservice" />
+	
+    <bean id="testModel" class="coldbox.testharness.model.testModel" singleton="true" lazy-init="false">
         <property name="controller">
             <bean id="controller" factory-bean="ColdBoxFactory" factory-method="getColdbox" />
         </property>
@@ -37,6 +41,12 @@
         </property>
 		<property name="mailsettings">
 			<ref bean="myMailSettings" />
+        </property>
+        <property name="StringBuffer">
+            <ref bean="StringBuffer" />
+        </property>
+        <property name="UpdateWS">
+            <ref bean="UpdateWS" />
         </property>
     </bean>
 	

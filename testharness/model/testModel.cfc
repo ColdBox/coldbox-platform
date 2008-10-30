@@ -78,5 +78,23 @@
 			return qRules;
 		</cfscript>	
 	</cffunction>
+	
+	
+	<cffunction name="getStringBuffer" access="public" output="false" returntype="any" hint="Get StringBuffer">
+		<cfreturn instance.StringBuffer/>
+	</cffunction>	
+	<cffunction name="setStringBuffer" access="public" output="false" returntype="void" hint="Set StringBuffer">
+		<cfargument name="StringBuffer" type="any" required="true"/>
+		<cfset instance.StringBuffer = arguments.StringBuffer/>
+	</cffunction>
+	
+	<cffunction name="getupdateWS" access="public" output="false" returntype="any" hint="Get updateWS">
+		<cfreturn instance.updateWS/>
+	</cffunction>
+	
+	<cffunction name="setupdateWS" access="public" output="false" returntype="void" hint="Set updateWS">
+		<cfargument name="updateWS" type="any" required="true"/>
+		<cfset instance.updateWS = arguments.updateWS/>
+	</cffunction>
 
 </cfcomponent>

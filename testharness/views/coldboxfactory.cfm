@@ -67,6 +67,24 @@
 		<td><cfdump var="#rc.testModel.getMailSettings().getMemento()#"></td>
 	</tr>
 	
+	<tr>
+		<td colspan="2"><hr></td>
+	</tr>
+	
+	<tr>
+		<td><strong>String Buffer:</strong></td>
+		<td><cfdump var="#rc.testModel.getStringBuffer()#" expand="false"></td>
+	</tr>
+	
+	<tr>
+		<td colspan="2"><hr></td>
+	</tr>
+	
+	<tr>
+		<td><strong>Update Web Service:</strong></td>
+		<td><cfdump var="#rc.testModel.getUpdateWS()#" expand="false"></td>
+	</tr>
+	
 	
 	
 </table>
