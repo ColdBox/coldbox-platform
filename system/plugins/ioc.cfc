@@ -31,7 +31,7 @@ Modification History:
 			
 			/* Plugin Properties */
 			setpluginName("IoC");
-			setpluginVersion("2.0");
+			setpluginVersion("2.1");
 			setpluginDescription("This is an inversion of control plugin.");
 			
 			/* Setup the framework chosen in the config */

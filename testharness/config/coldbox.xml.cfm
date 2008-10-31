@@ -151,6 +151,7 @@
 		</Interceptor>
 		
 		<Interceptor class="coldbox.testharness.interceptors.errorObserver" />
+		<Interceptor class="coldbox.testharness.interceptors.iocObserver" />
 		
 		<Interceptor class="coldbox.system.interceptors.security">
 	        <Property name="rulesSource">xml</Property>

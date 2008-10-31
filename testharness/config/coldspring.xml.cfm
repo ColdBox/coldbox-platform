@@ -3,27 +3,31 @@
     
     <bean id="ColdboxFactory" class="coldbox.system.extras.ColdboxFactory" lazy-init="false" />
     
-	<bean id="ConfigBean" factory-bean="ColdboxFactory" factory-method="getConfigBean" />
-	
-	<bean id="loggerPlugin" factory-bean="ColdboxFactory" factory-method="getPlugin">
-	    <constructor-arg name="plugin">
-	        <value>logger</value>
-	    </constructor-arg>
-	</bean>
-	
-	<bean id="myDatasource" factory-bean="ColdboxFactory" factory-method="getDatasource">
-	    <constructor-arg name="alias">
-	        <value>mysite</value>
-	    </constructor-arg>
-	</bean>
-	
-	<bean id="myMailSettings" factory-bean="ColdboxFactory" factory-method="getMailSettings" />
-	
-	<bean id="StringBuffer" class="java.lang.StringBuffer" type="java" singleton="false" />
-	
-    <bean id="UpdateWS" class="http://www.coldboxframework.com/distribution/updatews.cfc?wsdl" type="webservice" />
-	
-    <bean id="testModel" class="coldbox.testharness.model.testModel" singleton="true" lazy-init="false">
+    <bean id="myMailSettings" factory-bean="ColdboxFactory" factory-method="getMailSettings" />
+    
+    <bean id="ConfigBean" factory-bean="ColdboxFactory" factory-method="getConfigBean" />
+    
+    <bean id="loggerPlugin" factory-bean="ColdboxFactory" factory-method="getPlugin">
+        <constructor-arg name="plugin">
+            <value>logger</value>
+        </constructor-arg>
+        <constructor-arg name="ConfigBean">
+            <ref bean="ConfigBean" />
+        </constructor-arg>
+    </bean>
+    
+    <bean id="myDatasource" factory-bean="ColdboxFactory" factory-method="getDatasource">
+        <constructor-arg name="alias">
+            <value>mysite</value>
+        </constructor-arg>
+        <constructor-arg name="testing">
+            <ref bean="loggerPlugin" />    
+        </constructor-arg>
+    </bean>
+    
+    <bean id="testModel" class="coldbox.testharness.model.testModel" singleton="true">
+        <constructor-arg name="myDatasource"><ref bean="myDatasource" /></constructor-arg>
+        <constructor-arg name="Test"><value>Test</value></constructor-arg>
         <property name="controller">
             <bean id="controller" factory-bean="ColdBoxFactory" factory-method="getColdbox" />
         </property>

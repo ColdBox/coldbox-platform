@@ -5,7 +5,8 @@
 	<!--- Init --->
 	<cffunction name="init" returntype="LightWire" access="public" output="false" hint="I initialize the LightWire object factory.">
 		<!---************************************************************************************************ --->
-		<cfargument name="ConfigBean" type="any" required="yes" hint="I am the initialized config bean.">
+		<cfargument name="ConfigBean" 		type="any" required="true" 	hint="I am the initialized config bean.">
+		<cfargument name="parentFactory" 	type="any" required="false" hint="The lightwire parent factory to associate this factory with">
 		<!---************************************************************************************************ --->
 		<cfscript>
 			var key = "";
@@ -21,9 +22,17 @@
 			variables.config = ConfigBean.getConfigStruct();
 			/* Alias Mappings */
 			variables.aliasMap = structnew();
-			/* Hierarchy Factory */
-			variables.parentFactory = structnew();
-						
+			
+			/* Check Parent Factory */
+			if( structKeyExists(arguments,"parentFactory") ){
+				/* Hierarchy Factory */
+				variables.parentFactory = arguments.parentFactory;
+			}
+			else{
+				/* Hierarchy Factory */
+				variables.parentFactory = structnew();
+			}
+				
 			/* Are we lazy loading? */
 			if (NOT ConfigBean.getLazyLoad()){
 	   			beanStruct = variables.config;
@@ -163,11 +172,10 @@
 		<!---************************************************************************************************ --->
 		<cfscript>
 			// Firstly get a list of all constructor dependent singleton objects that haven't been created (if any) - n levels deep
-			var ObjectstoCreateList = variables.getDependentObjectList(arguments.ObjectName);
+			var ObjectstoCreateList = getDependentObjectList(arguments.ObjectName);
 			var LoopObjectName = "";
 			var TemporaryObjects = StructNew();
 			var Count = 1;		
-			var ListLength = 0;		
 			var ReturnObject = "";		
 			var LoopObjectList = ObjectstoCreateList;		
 			
@@ -177,13 +185,12 @@
 				// Get the last object name
 				LoopObjectName = ListLast(LoopObjectList);
 				// Call createNewObject() to create and constructor initialize it
-	   			variables.Singleton[LoopObjectName] = variables.createNewObject(LoopObjectName,"Singleton");
+	   			variables.Singleton[LoopObjectName] = createNewObject(LoopObjectName,"Singleton");
 	   			// Remove that object name from the list
-				ListLength = ListLen(LoopObjectList);
-				LoopObjectList = ListDeleteAt(LoopObjectList,ListLength);
+				LoopObjectList = ListDeleteAt(LoopObjectList,ListLen(LoopObjectList));
 			};
 			// Then create the original object
-			ReturnObject = variables.createNewObject(arguments.ObjectName,arguments.ObjectType);
+			ReturnObject = createNewObject(arguments.ObjectName,arguments.ObjectType);
 			// And if it is a singleton, cache it within LightWire
 			If (arguments.ObjectType EQ "Singleton")
 				variables.Singleton[arguments.ObjectName] = ReturnObject;
@@ -195,10 +202,9 @@
 				// Get the last object name
 				LoopObjectName = ListLast(LoopObjectList);
 				// Call setterandmixinInject() to inject any setter or mixin dependencies
-	   			variables.Singleton[LoopObjectName] = variables.setterandMixinInject(LoopObjectName,variables.Singleton[LoopObjectName]);
+	   			variables.Singleton[LoopObjectName] = setterandMixinInject(LoopObjectName,variables.Singleton[LoopObjectName]);
 	   			// Remove that object name from the list
-				ListLength = ListLen(LoopObjectList);
-				LoopObjectList = ListDeleteAt(LoopObjectList,ListLength);
+				LoopObjectList = ListDeleteAt(LoopObjectList,ListLen(LoopObjectList));
 			};
 	   		
 	   		// Finally for the requested object, do any setter and mixin injections required
@@ -291,10 +297,10 @@
 									// Append new object with parent dependency to object dependency list
 									ObjectDependencyList = ListAppend(ObjectDependencyList,LoopObjectDependencySet & "|" & Key);			
 								};
-							};
-						};
-					};
-				};
+							};//end for
+						};//end if structCOunt
+					};//end if circular
+				};//end if not a singleton
 				// Remove the current object name from the list
 				ObjectDependencyList = ListDeleteAt(ObjectDependencyList,1);
 			};
