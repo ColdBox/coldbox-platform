@@ -163,9 +163,13 @@
 		<cfreturn structKeyExists(variables.config, arguments.beanName)>		
 	</cffunction>
 	
-	<!-- Get The Cached Singleton List -->
+	<!--- Get The Cached Singleton List --->
 	<cffunction name="getCachedSingletonKeyList" access="public" returntype="string" hint="A list of all the cached singleton keys in the factory" output="false" >
 		<cfreturn structKeyList(variables.singleton)>
+	</cffunction>
+	<!--- Get the config Structure --->
+	<cffunction name="getConfig" access="public" returntype="struct" hint="Get the config structure used in this factory." output="false" >
+		<cfreturn variables.config>
 	</cffunction>
 
 <!------------------------------------------------- PRIVATE ---------------------------------------------------------->	
