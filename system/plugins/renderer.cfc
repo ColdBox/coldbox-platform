@@ -43,7 +43,9 @@ Description :
 		this.VIEW_CACHEKEY_PREFIX = "cboxview_view-";
 		
 		/* Inject UDF For Views/Layouts */
-		includeUDF(controller.getSetting("UDFLibraryFile"));
+		if(Len(Trim(controller.getSetting("UDFLibraryFile")))){
+			includeUDF(controller.getSetting("UDFLibraryFile"));
+		}
 		
 		/* Return renderer */
 		return this;
