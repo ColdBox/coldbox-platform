@@ -46,11 +46,8 @@
 	   		for(key in beanStruct){
    				/* Create every singleton */
 	   			if (variables.Config[key].Singleton){
-	   				/* Verify they are not in the singleton cache */
-					if(not StructKeyExists(variables.Singleton,key)){
-						/* Only create if hasn't already been created as dependency of earlier singleton */
-						variables.Singleton[key] = getObject(key);
-					}
+	   				/* Produce the Singleton */
+	   				getSingleton(key);
 	   			}
    			}
    			
@@ -110,11 +107,12 @@
 		<!---************************************************************************************************ --->
 		<!--- VerifyBean --->
 		<cfset verifyBean(arguments.objectname)>
+		
 		<!--- If the object doesn't exist, lazy load it  --->
 		<cfif not StructKeyExists(variables.Singleton, arguments.ObjectName)>
-			<cflock name="#ObjectName#Loading" timeout="5" throwontimeout="true">
+			<cflock name="#ObjectName#Loading" type="exclusive" timeout="5" throwontimeout="true">
 				<cfif not StructKeyExists(variables.Singleton, arguments.ObjectName)>
-					<cfset variables.Singleton[arguments.ObjectName] = getObject(arguments.ObjectName)>
+					<cfset getObject(arguments.ObjectName,"Singleton")>
 				</cfif>
 			</cflock>
 		</cfif>
@@ -130,7 +128,7 @@
 			/* Verify Bean Def exists */
 			verifyBean(arguments.objectName);
 			/* Return Object */
-			return getObject(arguments.ObjectName);
+			return getObject(arguments.ObjectName,"Transient");
 		</cfscript>
 	</cffunction>
 	
@@ -163,8 +161,8 @@
 		<cfreturn structKeyExists(variables.config, arguments.beanName)>		
 	</cffunction>
 	
-	<!--- Get The Cached Singleton List --->
-	<cffunction name="getCachedSingletonKeyList" access="public" returntype="string" hint="A list of all the cached singleton keys in the factory" output="false" >
+	<!--- Get The Singleton List --->
+	<cffunction name="getSingletonKeyList" access="public" returntype="string" hint="A list of all the cached singleton keys in the factory" output="false" >
 		<cfreturn structKeyList(variables.singleton)>
 	</cffunction>
 	<!--- Get the config Structure --->
@@ -178,12 +176,17 @@
 	<cffunction name="getObject" returntype="any" access="private" output="false" hint="I return a LightWire scoped object (Singleton or Transient) with all of its dependencies loaded.">
 		<!---************************************************************************************************ --->
 		<cfargument name="ObjectName" type="string" required="yes" hint="I am the name of the object to return.">
+		<cfargument name="ObjectType" type="string" required="yes" hint="I am the type of object to return (Singleton or Transient).">
 		<!---************************************************************************************************ --->
 		<cfscript>
 			var ReturnObject = "";		
 			
 			/* Create the Object */
 			ReturnObject = createNewObject(arguments.ObjectName);
+			
+			/* Singleton Cache for dependencies satisfaction on setters, so lookup is satisfied. */
+			if( arguments.ObjectType eq "Singleton")
+				variables.singleton[arguments.objectName] = ReturnObject;
 			
 			/* Finally for the requested object, do any setter and mixin injections required */
 	   		ReturnObject = setterandMixinInject(arguments.ObjectName,ReturnObject);
