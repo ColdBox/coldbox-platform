@@ -26,8 +26,9 @@
     </bean>
     
     <bean id="testModel" class="coldbox.testharness.model.testModel" singleton="true">
-        <constructor-arg name="myDatasource"><ref bean="myDatasource" /></constructor-arg>
+        <constructor-arg name="UpdateWS"><ref bean="UpdateWS" /></constructor-arg>
         <constructor-arg name="Test"><value>Test</value></constructor-arg>
+        
         <property name="controller">
             <bean id="controller" factory-bean="ColdBoxFactory" factory-method="getColdbox" />
         </property>
@@ -49,6 +50,7 @@
         <property name="StringBuffer">
             <ref bean="StringBuffer" />
         </property>
+        
         <property name="UpdateWS">
             <ref bean="UpdateWS" />
         </property>

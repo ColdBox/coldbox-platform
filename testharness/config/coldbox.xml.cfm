@@ -19,7 +19,7 @@
 		<Setting name="SessionStartHandler"		    value="ehGeneral.onSessionStart" />
 		<Setting name="SessionEndHandler"		    value="ehGeneral.onSessionEnd" />
 		<Setting name="OwnerEmail" 					value="info@coldboxframework.com"/>
-		<Setting name="EnableBugReports" 			value="true"/>
+		<Setting name="EnableBugReports" 			value="false"/>
 		<Setting name="UDFLibraryFile" 				value="includes/udf.cfm" />
 		<Setting name="CustomErrorTemplate"			value="" />
 		<Setting name="CustomEmailBugReport"		value="includes/EmailBugReport.cfm" />
