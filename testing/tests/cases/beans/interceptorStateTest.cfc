@@ -1,4 +1,4 @@
-<cfcomponent name="interceptorStateTest" extends="mxunit.framework.TestCase">
+<cfcomponent name="interceptorStateTest" extends="coldbox.testing.tests.resources.baseMockCase">
 	<!--- setup and teardown --->
 	
 	<cffunction name="setUp" returntype="void" access="public">

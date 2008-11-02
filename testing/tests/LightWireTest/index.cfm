@@ -15,7 +15,9 @@ LightWireTest/index.cfm
 <cfoutput>
 	
 <strong>LightWire Test</strong><br />
-
+<br /><br />
+<cfoutput>Total REtrieval Time: #getTickcount()-stime# ms</cfoutput>
+<br /><br />
 <strong>Product Service:</strong>
 <cfdump var="#ProductService#">
 
@@ -48,8 +50,6 @@ AnotherMixinProperty = #ProductService.getAnotherMixinProperty()#<br />
 </cfoutput>
 <cfdump var="#ConfigStruct#" expand="false">
 
-<br /><br />
-<cfoutput>Total Execution Time: #getTickcount()-stime# ms</cfoutput>
 <br /><br />
 <strong>Here is the singleton Report:</strong><br />
 <cfdump var="#myBeanFactory.getSingletonKeyList()#">

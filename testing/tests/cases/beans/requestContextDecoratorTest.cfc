@@ -1,4 +1,4 @@
-<cfcomponent name="requestContextDecoratorTest" extends="mxunit.framework.TestCase">
+<cfcomponent name="requestContextDecoratorTest" extends="coldbox.testing.tests.resources.baseMockCase">
 	
 	<!--- setup and teardown --->
 	

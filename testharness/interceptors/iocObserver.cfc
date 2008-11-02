@@ -30,7 +30,7 @@ Description :
 		<!--- ************************************************************* --->
 		<cfscript>
 			var lightwireBeanConfig = CreateObject("component", "coldbox.system.extras.lightwire.BaseConfigObject").init();	
-			var defFile = getSetting('ApplicationPath') & "config/parent.xml.cfm";
+			var defFile = getSetting('ApplicationPath') & "/config/parent.xml.cfm";
 			var parentLightwire = 0;
 			
 			/* Setup Parent Factory */

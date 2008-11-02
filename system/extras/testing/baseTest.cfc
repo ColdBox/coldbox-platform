@@ -33,19 +33,19 @@ Description :
 		instance.ConfigMapping = "";
 		instance.controller = "";
 		/* Public Persistence Properties */
-		this.PERSIST_FRAMEWORK = false;
+		this.PERSIST_FRAMEWORK = true;
 	</cfscript>
 
 	<cffunction name="setup" returntype="void" access="public">
 		<cfscript>
 		//Initialize ColdBox
 		instance.controller = CreateObject("component", "coldbox.system.testcontroller").init( expandPath(instance.AppMapping) );
-		instance.controller.getLoaderService().setupCalls(instance.ConfigMapping,instance.AppMapping);
-		
 		/* Verify Persistence */
 		if( this.PERSIST_FRAMEWORK ){
 			application.cbController = instance.controller;
 		}
+		/* Setup */
+		instance.controller.getLoaderService().setupCalls(instance.ConfigMapping,instance.AppMapping);
 		
 		//Create Initial Event Context
 		setupRequest();

@@ -6,11 +6,11 @@
 	<cffunction name="init" returntype="LightWire" access="public" output="false" hint="I initialize the LightWire object factory.">
 		<!---************************************************************************************************ --->
 		<cfargument name="ConfigBean" 		type="any" required="true" 	hint="I am the initialized config bean.">
-		<cfargument name="parentFactory" 	type="any" required="false" hint="The lightwire parent factory to associate this factory with">
+		<cfargument name="parentFactory" 	type="any" required="false" hint="The lightwire parent factory to associate this factory with.">
 		<!---************************************************************************************************ --->
 		<cfscript>
 			var key = "";
-			var beanStruct = structnew();
+			var beansToConstruct = structnew();
 			
 			/* Factory ID */
 			THIS.FACTORY_ID = hash(createUUID());
@@ -29,21 +29,22 @@
 				variables.parentFactory = arguments.parentFactory;
 			}
 			else{
-				/* Hierarchy Factory */
+				/* Hierarchy Default Factory of Nothing */
 				variables.parentFactory = structnew();
 			}
 				
 			/* Are we lazy loading? */
 			if (NOT ConfigBean.getLazyLoad()){
-	   			beanStruct = variables.config;
+	   			/* Construct All Singletons from Config */
+	   			beansToConstruct = variables.config;
 	   		}
 	   		else{
 	   			/* We are not lazy Loading, just get the non-lazy beans then */
-	   			beanStruct = ConfigBean.getnonLazyBeans();
+	   			beansToConstruct = ConfigBean.getnonLazyBeans();
 	   		}	   		
 	   		
 	   		/* Create The appropriate Beans: either non lazy beans or all singletons according to lazy property */
-	   		for(key in beanStruct){
+	   		for(key in beansToConstruct){
    				/* Create every singleton */
 	   			if (variables.Config[key].Singleton){
 	   				/* Produce the Singleton */
@@ -70,30 +71,30 @@
 	<!--- Get a Bean --->
 	<cffunction name="getBean" returntype="any" access="public" output="false" hint="I return a bean with all of its dependencies loaded from the factory hierarchy.">
 		<!---************************************************************************************************ --->
-		<cfargument name="ObjectName" type="string" required="yes" hint="I am the name of the object to generate.">
+		<cfargument name="ObjectName" type="string" required="yes" hint="I am the name of the object to try to generate.">
 		<!---************************************************************************************************ --->
 		<cfscript>
 			var ReturnObject = 0;
-			var Parent = getParentFactory();
-			
-			/* Verify Bean exists in hierarchy */
-			verifyBean(arguments.objectName);
+			var Parent = variables.parentFactory;
 			
 			/* If we pass to this line, then the bean is guaranteed to be in the hiearchy */
 			/* Which Factory will we use? */
 			if( localFactoryContainsBean(arguments.objectName) ){
 				/* Singleton or Transient? */
 				if(variables.config[arguments.ObjectName].Singleton){	
-					ReturnObject = getSingleton(arguments.ObjectName); 
+					ReturnObject = getSingleton(arguments.ObjectName,false); 
 				}
 				else{ 
-					ReturnObject = getTransient(arguments.ObjectName); 
+					ReturnObject = getTransient(arguments.ObjectName,false); 
 				}
 			}
 			/* Else return it from the parent hierarchy */
-			else if( isObject(Parent) ){
+			else if( isObject(Parent) and Parent.containsBean(arguments.objectName) ){
 				ReturnObject = Parent.getBean(arguments.objectName);
-			}						
+			}		
+			else{
+				throwit("Bean definition not found","The bean #arguments.objectName# has not bean defined","Lightwire.BeanNotFoundException");
+			}				
 			
 			/* Return object */
 			return returnObject;
@@ -103,14 +104,17 @@
 	<!--- Get a Singleton --->
 	<cffunction name="getSingleton" returntype="any" access="public" output="false" hint="I return a LightWire scoped Singleton with all of its dependencies loaded from the local factory only. Please use getBean()">
 		<!---************************************************************************************************ --->
-		<cfargument name="ObjectName" type="string" required="yes" hint="I am the name of the object to generate.">
+		<cfargument name="ObjectName" 	type="string" 	required="yes" hint="I am the name of the object to generate.">
+		<cfargument name="verifyCheck"  type="boolean" 	required="false"	default="true" hint="Verify the bean config existence or not">
 		<!---************************************************************************************************ --->
 		<!--- VerifyBean --->
-		<cfset verifyBean(arguments.objectname)>
+		<cfif arguments.verifyCheck>
+			<cfset verifyBean(arguments.objectname)>
+		</cfif>
 		
 		<!--- If the object doesn't exist, lazy load it  --->
 		<cfif not StructKeyExists(variables.Singleton, arguments.ObjectName)>
-			<cflock name="#ObjectName#Loading" type="exclusive" timeout="5" throwontimeout="true">
+			<cflock name="#THIS.FACTORY_ID#.#ObjectName#.Loading" type="exclusive" timeout="5" throwontimeout="true">
 				<cfif not StructKeyExists(variables.Singleton, arguments.ObjectName)>
 					<cfset getObject(arguments.ObjectName,"Singleton")>
 				</cfif>
@@ -122,11 +126,14 @@
 	<!--- Get a Transient --->
 	<cffunction name="getTransient" returntype="any" access="public" output="false" hint="I return a transient object from the local factory only. Please use getBean()">
 		<!---************************************************************************************************ --->
-		<cfargument name="ObjectName" type="string" required="yes" hint="I am the name of the object to create." />	
+		<cfargument name="ObjectName" 	type="string" 	required="true" 	hint="I am the name of the object to create." />	
+		<cfargument name="verifyCheck"  type="boolean" 	required="false"	default="true" hint="Verify the bean config existence or not">
 		<!---************************************************************************************************ --->
 		<cfscript>
 			/* Verify Bean Def exists */
-			verifyBean(arguments.objectName);
+			if (arguments.verifyCheck){
+				verifyBean(arguments.objectName);
+			}
 			/* Return Object */
 			return getObject(arguments.ObjectName,"Transient");
 		</cfscript>
@@ -181,7 +188,7 @@
 		<cfscript>
 			var ReturnObject = "";		
 			
-			/* Create the Object */
+			/* Create the Object and its dependencies */
 			ReturnObject = createNewObject(arguments.ObjectName);
 			
 			/* Singleton Cache for dependencies satisfaction on setters, so lookup is satisfied. */
@@ -191,7 +198,7 @@
 			/* Finally for the requested object, do any setter and mixin injections required */
 	   		ReturnObject = setterandMixinInject(arguments.ObjectName,ReturnObject);
 			
-			//Return Object
+			/* Return Object */
 			return ReturnObject;
 		</cfscript>
 	</cffunction>
@@ -268,36 +275,33 @@
 			var Key = "";
 			var MixinInjectionList = "";
 			var ObjectType = variables.Config[arguments.ObjectName].Type;
-			var argCollection = structnew();
+			var ObjectConfig = variables.Config[arguments.ObjectName];
+			var tempArgCollection = structnew();
 			
 			// SETTER DEPENDENCIES
 			// If there are any setter dependencies
-			If (StructCount(variables.Config[arguments.ObjectName].SetterDependencyStruct))	{ 
-				// Inject them all 
-				For (Key in variables.Config[arguments.ObjectName].SetterDependencyStruct){ 
-					/* Avoid Self References */
-					If (key NEQ arguments.ObjectName){
-						/* Clean args */
-						argCollection = structnew();
-						/* Get Object Name */
-						DependentObjectName = Config[arguments.ObjectName].SetterDependencyStruct[Key];
-						/* Add to Struct */
-						argCollection[DependentObjectName] = getBean(key);
-						/* Invoke it */
-						invoker(object=arguments.object,method="set#DependentObjectName#",argCollection=argCollection);
-					};
+			// Inject them all 
+			For (Key in ObjectConfig.SetterDependencyStruct){ 
+				/* Avoid Self References */
+				If (key NEQ arguments.ObjectName){
+					/* Clean args */
+					tempArgCollection = structnew();
+					/* Get Object Name */
+					DependentObjectName = ObjectConfig.SetterDependencyStruct[Key];
+					/* Add to Struct */
+					tempArgCollection[DependentObjectName] = getBean(key);
+					/* Invoke it */
+					invoker(object=arguments.object,method="set#DependentObjectName#",argCollection=tempArgCollection);
 				};
-			};			
+			};
 			// SETTER PROPERTIES
 			// If there are any setter properties
-			If (StructKeyExists(variables.Config[arguments.ObjectName],"SetterProperties")){ 
-	   			For (key in variables.Config[arguments.ObjectName].SetterProperties){
-					/* Get Object Value */
-					DependentObjectValue = variables.Config[arguments.ObjectName].SetterProperties[key];
-					/* Invoke it */
-					invoker(object=arguments.object,method="set#key#",argList="#key#=#DependentObjectValue#");	
-	   			};
-			};
+			For (key in ObjectConfig.SetterProperties){
+				/* Get Object Value */
+				DependentObjectValue = ObjectConfig.SetterProperties[key];
+				/* Invoke it */
+				invoker(object=arguments.object,method="set#key#",argList="#key#=#DependentObjectValue#");	
+   			};
 			// MIXIN DEPENDENCIES
 			/* Only Mixin if CFC */
 			if( ObjectType eq "cfc" ){
@@ -306,33 +310,29 @@
 				arguments.object.lightwireGetAnnotations = variables.lightwireGetAnnotations;
 				
 				// If there are any mixin dependencies
-				// If (StructKeyExists(variables.Config[arguments.ObjectName],"MixinDependencies"))
-				If (StructCount(variables.Config[arguments.ObjectName].MixinDependencyStruct)){ 
-					// Inject them all 
-					For (Key in variables.Config[arguments.ObjectName].MixinDependencyStruct){ 
-						// Get current object name
-						If (Key NEQ arguments.ObjectName){
-							arguments.object.lightwireMixin(ElementName=Config[arguments.ObjectName].MixinDependencyStruct[Key],ElementValue=getBean(Key));			
-						};
+				// If (StructKeyExists(ObjectConfig,"MixinDependencies"))
+				// Inject them all 
+				For (Key in ObjectConfig.MixinDependencyStruct){ 
+					// Get current object name
+					If (Key NEQ arguments.ObjectName){
+						arguments.object.lightwireMixin(ElementName=Config[arguments.ObjectName].MixinDependencyStruct[Key],ElementValue=getBean(Key));			
 					};
 				};
-				
+			
 				// MIXIN DEPENDENCIES (annotations)
 				MixinInjectionList = arguments.object.lightwireGetAnnotations();
 				For (Count = 1; Count lte listlen(MixinInjectionList); Count = Count + 1){ 
 					// Get current object name
 					LoopObjectName = ListGetAt(MixinInjectionList, Count);
 					/* Mix it in */
-					arguments.object.lightwireMixin(ElementName=LoopObjectName,ElementValue=getSingleton(LoopObjectName));
+					arguments.object.lightwireMixin(ElementName=LoopObjectName,ElementValue=getBean(LoopObjectName));
 		   		};				
 		
 				// MIXIN PROPERTIES
 				// If there are any mixin properties
-				If (StructKeyExists(variables.Config[arguments.ObjectName],"MixinProperties")){ 
-		   			For (key in variables.Config[arguments.ObjectName].MixinProperties){
-						arguments.object.lightwireMixin(ElementName=key,ElementValue=variables.Config[arguments.ObjectName].MixinProperties[key]);			
-		   			};
-				};
+				For (key in ObjectConfig.MixinProperties){
+					arguments.object.lightwireMixin(ElementName=key,ElementValue=ObjectConfig.MixinProperties[key]);			
+		   		};
 					
 				/* Always Mixin LightWire Factory */
 				arguments.object.lightwireMixin(ElementName="LightWire",ElementValue=this);	
@@ -345,127 +345,33 @@
 			
 			// Finally implement InitMethod if exists
 			//LuisMajano, check if the initMethod property exists, else its a factoryBean.
-			If ( structKeyExists(variables.config[arguments.objectName],"InitMethod") and Len(variables.Config[arguments.ObjectName].InitMethod) GT 0){
+			If ( structKeyExists(ObjectConfig,"InitMethod") and Len(ObjectConfig.InitMethod) GT 0){
 				/* Invoke the INitMethod */
-				invoker(object=arguments.object,method=variables.Config[arguments.ObjectName].InitMethod);
+				invoker(object=arguments.object,method=ObjectConfig.InitMethod);
 			};
 			
 			return arguments.object;
 		</cfscript>
 	</cffunction>
 	
-	<!--- Get Object Dependency Lists --->					
-	<cffunction name="getDependentObjectList" returntype="string" access="private" output="false" hint="I return a comma delimited list of all of the dependencies that have not been created yet for an object - n-levels down.">
-		<!---************************************************************************************************ --->
-		<cfargument name="ObjectName" type="string" required="yes" hint="I am the name of the object to get the dependencies for.">
-		<!---************************************************************************************************ --->
-		<cfscript>
-			var ObjectDependencyList = "";
-			var TempObjectDependencyList = "";
-			var ObjectstoCreateList = "";
-			var LoopObjectName = "";
-			var LoopObjectDependencySet = "";
-			var CircularDependency = "";
-			var ListLength = "";
-			var NewObjectName = "";
-			var Position = "";
-			var Count = 1;
-			var ConfigCount = 1;
-			var Key	= "";
-			
-			If (StructCount(variables.Config[arguments.ObjectName].ConstructorDependencyStruct))
-				{ObjectDependencyList = StructKeyList(variables.Config[arguments.ObjectName].ConstructorDependencyStruct);}
-			
-			// Add the original object name to each element in the object dependency list for circular dependency checking
-			For (Count = 1; Count lte listlen(ObjectDependencyList); Count = Count + 1)
-	   		{ 
-				// Get current object name
-				LoopObjectName = ListGetAt(ObjectDependencyList, Count);
-				// Prepend it with ObjectName
-				LoopObjectName = ListAppend(arguments.ObjectName,LoopObjectName,"|");
-				// Add it to the new object dependency list
-				TempObjectDependencyList = ListAppend(TempObjectDependencyList,LoopObjectName);
-	   		};
-	   		// Replace the original object dependency list with the one prepended with its dependency parent for circular dependency resolution checking
-			ObjectDependencyList = TempObjectDependencyList;
-								
-			while (ListLen(ObjectDependencyList))
-			{
-				// Get the first object dependency set on the list
-				LoopObjectDependencySet = ListFirst(ObjectDependencyList);
-				// Get the list of the object name within that dependency set
-				LoopObjectName = ListLast(LoopObjectDependencySet,"|");
-				// Remove that last record from the list
-				ListLength = ListLen(LoopObjectDependencySet,"|");
-				LoopObjectDependencySet = ListDeleteAt(LoopObjectDependencySet,ListLength,"|");
-				
-				If (not StructKeyExists(variables.Singleton,LoopObjectName))
-				{
-					// This object doesn't exist
-					// Firstly make sure the dependency != circular
-					If (ListFindNoCase(LoopObjectName,LoopObjectDependencySet,"|")) 
-					{
-						CircularDependency = ListAppend(CircularDependency,"#LoopObjectName# is dependent on a parent. Its dependency path is #LoopObjectDependencySet#");
-					}
-					Else
-					{
-						// If it already exists on the list  of objects to create remove it from where it is
-						while (ListFindNoCase(ObjectstoCreateList,LoopObjectName))
-						{
-							Position = ListFindNoCase(ObjectstoCreateList,LoopObjectName);
-							ObjectstoCreateList = ListDeleteAt(ObjectstoCreateList,Position);
-						};
-						
-						// Add it to the list of dependent objects to create
-						ObjectstoCreateList = ListAppend(ObjectstoCreateList,LoopObjectName);			
-						
-						// And we need to add its dependencies to this list if it has any, because it might exists in the parent hierarchy also
-						If ( structKeyExists(variables.Config,LoopObjectName) and StructCount(variables.Config[LoopObjectName].ConstructorDependencyStruct))
-						{
-							// Set the parent dependency set for this object
-							LoopObjectDependencySet = ListAppend(LoopObjectDependencySet,LoopObjectName,"|");
-							
-	   						For (Key in variables.Config[LoopObjectName].ConstructorDependencyStruct)
-	   						{ 
-								// Firstly make sure the new dependency != circular
-								If (ListFindNoCase(LoopObjectDependencySet,Key,"|")) 
-								{
-									CircularDependency = ListAppend(CircularDependency,"#Key# is dependent on a parent. Its dependency path is #LoopObjectDependencySet#");
-								}
-								Else
-								{
-									// Append new object with parent dependency to object dependency list
-									ObjectDependencyList = ListAppend(ObjectDependencyList,LoopObjectDependencySet & "|" & Key);			
-								};
-							};//end for
-						};//end if structCOunt
-					};//end if circular
-				};//end if not a singleton
-				// Remove the current object name from the list
-				ObjectDependencyList = ListDeleteAt(ObjectDependencyList,1);
-			};
-			
-			return ObjectstoCreateList;
-		</cfscript>
-	</cffunction>
-	
 	<!--- LightWire Mixin --->
 	<cffunction name="lightwireMixin" returntype="void" access="public" output="false" hint="I add the passed elements to the variables scope within this object. I am mixed in by LightWire to support mixin injection of dependencies and properties.">
 		<!---************************************************************************************************ --->
-		<cfargument name="ElementName" type="string" required="yes" hint="I am the name of the element to mix in.">
-		<cfargument name="ElementValue" type="any" required="yes" hint="I am the value of the element to mix in.">
+		<cfargument name="ElementName"  type="string" required="yes" hint="I am the name of the element to mix in.">
+		<cfargument name="ElementValue" type="any" 	  required="yes" hint="I am the value of the element to mix in.">
 		<!---************************************************************************************************ --->
-		<cfset variables[ElementName] = ElementValue>
+		<cfset variables[arguments.ElementName] = arguments.ElementValue>
 	</cffunction>
 	
 	<!--- LightWire Annotations --->
 	<cffunction name="lightwireGetAnnotations" returntype="string" access="public" output="false" hint="I return the comma delimited list of beans to mixin based on variables.MixinObjectNameList if it was set in the init().">
 		<cfscript>
 			var ReturnString = "";
-			If(StructKeyExists(variables, "MixinObjectNameList"))
-			{ReturnString = variables.MixinObjectNameList;};
+			If(StructKeyExists(variables, "MixinObjectNameList")){
+				ReturnString = variables.MixinObjectNameList;
+			}
+			return ReturnString;
 		</cfscript>
-		<cfreturn ReturnString>
 	</cffunction>
 
 <!------------------------------------------------- PRIVATE ---------------------------------------------------------->	

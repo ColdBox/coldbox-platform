@@ -3,7 +3,7 @@
 <h4>ColdBox Unit Folder Tests</h4>
 
 <strong>MXUnit Tests</strong>
-<table style="font-size:13px;" cellpadding="5" cellspacing="1" border="1">
+<table style="font-size:13px;float:left;margin-right:5px" cellpadding="5" cellspacing="1" border="1">
 <cfoutput query="qTests">
 	<cfif name neq "index.cfm">
 	<tr>
@@ -15,7 +15,7 @@
 </table>
 
 <strong>LightWire Tests</strong>
-<table style="font-size:13px;" cellpadding="5" cellspacing="1" border="1">
+<table style="font-size:13px;float:left;margin-right:5px" cellpadding="5" cellspacing="1" border="1">
 	<tr>
 		<td>LightWire Test</td>
 		<td>[<a href="LightWireTest/index.cfm" target="testframe">Run</a>]</td>

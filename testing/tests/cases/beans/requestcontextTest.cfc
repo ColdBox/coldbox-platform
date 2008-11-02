@@ -2,12 +2,23 @@
 
 	<cffunction name="setUp" returntype="void" access="public" output="false">
 		<cfscript>
-		//Setup ColdBox Mappings For this Test
-		setAppMapping("/coldbox/testharness");
-		setConfigMapping(ExpandPath(instance.AppMapping & "/config/coldbox.xml.cfm"));
-		//Call the super setup method to setup the app.
-		super.setup();
+			oRC = createObject("component","coldbox.system.beans.requestContext");	
+			
+			/* Properties */
+			props.DefaultLayout = "Main.cfm";
+			props.DefaultView = "";
+			props.FolderLayouts = structnew();
+			props.ViewLayouts = structnew();
+			props.EventName = "event";
+			props.isSES = false;
+			props.sesBaseURL = "http://jfetmac/applications/coldbox/testharness/index.cfm";
+			
+			/* Init it */
+			oRC.init(structnew(),structnew(),props);
 		</cfscript>
+	</cffunction>
+	<cffunction name="getRequestContext" access="private" returntype="any" hint="" output="false" >
+		<cfreturn oRC>
 	</cffunction>
 	
 	<cffunction name="testgetCollection" returntype="void" access="Public" output="false">
@@ -23,10 +34,11 @@
 	<cffunction name="testsetCollection" access="public" returntype="void" output="false">
 		<cfscript>
 			var event = getRequestContext();
+			var test = {name='luis',test=now()};
 			
-			event.setCollection(structnew());
+			event.setCollection(test);
 			
-			AssertEquals( structnew(), event.getCollection() );
+			AssertEquals( test, event.getCollection() );
 		</cfscript>
 	</cffunction>
 
@@ -289,11 +301,11 @@
 		<cfscript>
 			var event = getRequestContext();
 			
-			event.NoRender(true);
-			AssertTrue( event.isNoRender() );
-			
-			event.NoRender(false);
+			event.NoRender(remove=true);
 			AssertFalse( event.isNoRender() );
+			
+			event.NoRender(remove=false);
+			AssertTrue( event.isNoRender() );
 			
 		</cfscript>
 	</cffunction>
@@ -303,7 +315,7 @@
 	<cffunction name="testgetEventName" access="public" returntype="void" output="false">
 		<cfscript>
 			var event = getRequestContext();
-			var test = getController().getSetting("EventName");
+			var test = props.eventName;
 
 			assertEquals( test, event.getEventName() );
 			
@@ -315,7 +327,7 @@
 	<cffunction name="testgetSelf" access="public" output="false" returntype="void">
 		<cfscript>
 			var event = getRequestContext();
-			var test = getController().getSetting("EventName");
+			var test = props.eventname;
 
 			assertEquals( "index.cfm?#test#=", event.getSelf() );
 			

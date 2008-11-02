@@ -1,4 +1,4 @@
-<cfcomponent name="configBeanTest" extends="mxunit.framework.TestCase">
+<cfcomponent name="configBeanTest" extends="coldbox.testing.tests.resources.baseMockCase">
 	<!--- setup and teardown --->
 	
 	<cffunction name="setUp" returntype="void" access="public">

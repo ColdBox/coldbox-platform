@@ -1,4 +1,4 @@
-<cfcomponent name="mailsettingsBeanTest" extends="mxunit.framework.TestCase">
+<cfcomponent name="mailsettingsBeanTest" extends="coldbox.testing.tests.resources.baseMockCase">
 	
 	<!--- setup and teardown --->
 	

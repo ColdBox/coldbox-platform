@@ -1,4 +1,4 @@
-<cfcomponent name="eventhandlerBeanTest" extends="mxunit.framework.TestCase">
+<cfcomponent name="eventhandlerBeanTest" extends="coldbox.testing.tests.resources.baseMockCase">
 	
 	<!--- setup and teardown --->
 	

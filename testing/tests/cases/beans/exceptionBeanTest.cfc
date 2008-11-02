@@ -1,4 +1,4 @@
-<cfcomponent name="exceptionBeanTest" extends="mxunit.framework.TestCase">
+<cfcomponent name="exceptionBeanTest" extends="coldbox.testing.tests.resources.baseMockCase">
 	
 	<!--- setup and teardown --->
 	
