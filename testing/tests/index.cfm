@@ -22,7 +22,7 @@
 	</tr>
 	<tr>
 		<td>LightWire XML Test</td>
-		<td>[<a href="LightWireXMLTest/index.cfm" target="testframe">Run</a>]</td>
+		<td>[<a href="LightWireTest/xmltest.cfm" target="testframe">Run</a>]</td>
 	</tr>
 </table>
 
