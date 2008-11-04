@@ -1,6 +1,5 @@
 <cfoutput>
 <h2>ColdBox Factory Tests</h2>
-
 <table >
 	<tr>
 		<td><strong>TestModel:</strong></td>
@@ -84,8 +83,6 @@
 		<td><strong>Update Web Service:</strong></td>
 		<td><cfdump var="#rc.testModel.getUpdateWS()#" expand="false"></td>
 	</tr>
-	
-	
 	
 </table>
 
