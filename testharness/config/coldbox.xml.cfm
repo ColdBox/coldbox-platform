@@ -84,7 +84,6 @@
 
 	<DevEnvironments>
 		<url>dev</url>
-		<url>lmajano</url>
 	</DevEnvironments>
 
 	<WebServices >
@@ -150,8 +149,8 @@
 			<Property name="configFile">/config/routes.cfm</Property>
 		</Interceptor>
 		
-		<Interceptor class="coldbox.testharness.interceptors.errorObserver" />
-		<Interceptor class="coldbox.testharness.interceptors.iocObserver" />
+		<Interceptor class="${AppMapping}.interceptors.errorObserver" />
+		<Interceptor class="${AppMapping}.interceptors.iocObserver" />
 		
 		<Interceptor class="coldbox.system.interceptors.security">
 	        <Property name="rulesSource">xml</Property>

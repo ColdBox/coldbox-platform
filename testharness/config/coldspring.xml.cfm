@@ -7,21 +7,17 @@
     
     <bean id="ConfigBean" factory-bean="ColdboxFactory" factory-method="getConfigBean" />
     
+    <alias name="loggerPlugin" alias="logger" />
     <bean id="loggerPlugin" factory-bean="ColdboxFactory" factory-method="getPlugin">
         <constructor-arg name="plugin">
             <value>logger</value>
         </constructor-arg>
-        <constructor-arg name="ConfigBean">
-            <ref bean="ConfigBean" />
-        </constructor-arg>
     </bean>
     
+    <alias name="myDatasource" alias="dsn,mydsn" />
     <bean id="myDatasource" factory-bean="ColdboxFactory" factory-method="getDatasource">
         <constructor-arg name="alias">
             <value>mysite</value>
-        </constructor-arg>
-        <constructor-arg name="testing">
-            <ref bean="loggerPlugin" />    
         </constructor-arg>
     </bean>
     
@@ -42,7 +38,7 @@
             <bean id="cacheManager" factory-bean="ColdboxFactory" factory-method="getColdboxOCM" />
         </property>
 		<property name="datasource">
-			<ref bean="myDatasource" />
+			<ref bean="mydsn" />
         </property>
 		<property name="mailsettings">
 			<ref bean="myMailSettings" />
