@@ -155,7 +155,7 @@ Usage:
 	<!--- Observer --->
 	<cffunction name="actionAfterNewTransferEvent" hint="Do something on the new object" access="public" returntype="void" output="false">
 	    <!--- ************************************************************* --->
-		<cfargument name="event" hint="" type="transfer.com.events.TransferEvent" required="Yes">
+		<cfargument name="event" type="any" required="Yes" hint="The transfer.com.events.TransferEvent">
 		<!--- ************************************************************* --->
 		<!--- Autowire the decorator --->
 		<cfset getColdBoxBeanFactory().autowire(target=arguments.event.getTransferObject(),

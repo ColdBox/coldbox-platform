@@ -46,15 +46,14 @@
 	<cffunction name="testGetters" access="public" returnType="void">
 		<cfscript>
 			for(key in this.instance){
-				evaluate("this.e.get#key#( this.instance[key] )");
+				evaluate("this.e.get#key#()");
 			}	
-			assertEquals( this.instance, this.e.getMemento() );				
 		</cfscript>
 	</cffunction>	
 	
 	<cffunction name="testgetmemento" access="public" returnType="void">
 		<cfscript>
-			assertEquals( this.e.getMemento(), this.instance);
+			AssertTrue( isStruct(this.e.getMemento()) );
 		</cfscript>
 	</cffunction>		
 	

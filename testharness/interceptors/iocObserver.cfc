@@ -33,14 +33,16 @@ Description :
 			var defFile = getSetting('ApplicationPath') & "/config/parent.xml.cfm";
 			var parentLightwire = 0;
 			
-			/* Setup Parent Factory */
-			lightwireBeanConfig.parseXMLConfigFile(defFile,getSettingStructure());
-			
-			/* Create the parent Lightwire factory */
-			parentLightwire = createObject("component","coldbox.system.extras.lightwire.LightWire").init(lightwireBeanConfig);
-			
-			/* set it up */
-			getPlugin("ioc").getIOCFactory().setParentFactory(parentLightwire);
+			if( getPlugin("ioc").getIOCFramework() eq "lightwire"){
+				/* Setup Parent Factory */
+				lightwireBeanConfig.parseXMLConfigFile(defFile,getSettingStructure());
+				
+				/* Create the parent Lightwire factory */
+				parentLightwire = createObject("component","coldbox.system.extras.lightwire.LightWire").init(lightwireBeanConfig);
+				
+				/* set it up */
+				getPlugin("ioc").getIOCFactory().setParentFactory(parentLightwire);
+			}
 		</cfscript>
 	</cffunction>
 

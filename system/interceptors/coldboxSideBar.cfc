@@ -26,6 +26,10 @@ Modification History:
 		<cfscript>
 			// Read SideBar XML
 			readSideBarXML();
+			
+			/* Default Is Enabled */
+			setProperty('isEnabled', false );
+			
 			/* Check for an app base Path */
 			if( not propertyExists('baseAppPath') ){
 				/* Else Default to cgi.script_name */
