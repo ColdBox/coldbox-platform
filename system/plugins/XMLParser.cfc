@@ -78,6 +78,9 @@ Modification History:
 			instance.FrameworkConfigFile = ExpandPath("/coldbox/system/config/settings.xml");
 			instance.FrameworkConfigXSDFile = ExpandPath("/coldbox/system/config/config.xsd");
 			
+			/* Regex for JSON */
+			instance.jsonRegex = "^(\{|\[)(.)*(\}|\])$";
+			
 			//Return
 			return this;
 		</cfscript>
@@ -305,29 +308,12 @@ Modification History:
 			else{
 				StructInsert(ConfigStruct, "ApplicationPath", controller.getAppRootPath());
 			}
-
-			/* ::::::::::::::::::::::::::::::::::::::::: GET SETTINGS  :::::::::::::::::::::::::::::::::::::::::::: */
-			
-			//Get SettingNodes
-			SettingNodes = XMLSearch(configXML, instance.searchSettings);
-			if ( ArrayLen(SettingNodes) eq 0 )
-				throw("No Setting elements could be found in the configuration file.","","ColdBox.plugins.XMLParser.ConfigXMLParsingException");
-			//Insert Settings to Config Struct
-			for (i=1; i lte ArrayLen(SettingNodes); i=i+1)
-				StructInsert( ConfigStruct, SettingNodes[i].XMLAttributes["name"], trim(SettingNodes[i].XMLAttributes["value"]));
-			//Check for AppName or throw
-			if ( not StructKeyExists(ConfigStruct, "AppName") )
-				throw("There was no 'AppName' setting defined. This is required by the framework.","","ColdBox.plugins.XMLParser.ConfigXMLParsingException");
-			//overrideAppMapping if passed in.
-			if ( arguments.overrideAppMapping neq "" ){
-				ConfigStruct["AppMapping"] = arguments.overrideAppMapping;
-			}
 			
 			/* ::::::::::::::::::::::::::::::::::::::::: APP MAPPING CALCULATIONS :::::::::::::::::::::::::::::::::::::::::::: */
 			
 			//Calculate AppMapping if not set in the config, else auto-calculate
 			if ( not structKeyExists(ConfigStruct, "AppMapping") ){
-				webPath = replacenocase(cgi.script_name,getFIleFromPath(cgi.script_name),"");
+				webPath = replacenocase(cgi.script_name,getFileFromPath(cgi.script_name),"");
 				localPath = getDirectoryFromPath(replacenocase(getTemplatePath(),"\","/","all"));
 				PathLocation = findnocase(webPath, localPath);
 				if ( PathLocation neq 0)
@@ -348,6 +334,24 @@ Modification History:
 				if( len(ConfigStruct.AppMapping) eq 1 ){
 					ConfigStruct.AppMapping = "";
 				}
+			}
+			
+			/* ::::::::::::::::::::::::::::::::::::::::: GET SETTINGS  :::::::::::::::::::::::::::::::::::::::::::: */
+			
+			//Get SettingNodes
+			SettingNodes = XMLSearch(configXML, instance.searchSettings);
+			if ( ArrayLen(SettingNodes) eq 0 )
+				throw("No Setting elements could be found in the configuration file.","","ColdBox.plugins.XMLParser.ConfigXMLParsingException");
+			//Insert Settings to Config Struct
+			for (i=1; i lte ArrayLen(SettingNodes); i=i+1){
+				ConfigStruct[trim(SettingNodes[i].XMLAttributes["name"])] = placeHolderReplacer(trim(SettingNodes[i].XMLAttributes["value"]),ConfigStruct);
+			}
+			//Check for AppName or throw
+			if ( not StructKeyExists(ConfigStruct, "AppName") )
+				throw("There was no 'AppName' setting defined. This is required by the framework.","","ColdBox.plugins.XMLParser.ConfigXMLParsingException");
+			//overrideAppMapping if passed in.
+			if ( arguments.overrideAppMapping neq "" ){
+				ConfigStruct["AppMapping"] = arguments.overrideAppMapping;
 			}
 			
 			/* ::::::::::::::::::::::::::::::::::::::::: COLDBOX SETTINGS VALIDATION :::::::::::::::::::::::::::::::::::::::::::: */
@@ -493,13 +497,13 @@ Modification History:
 			
 			//Your Settings To Load
 			YourSettingNodes = XMLSearch(configXML, instance.searchYourSettings);
-			if ( ArrayLen(YourSettingNodes) gt 0 ){
+			if ( ArrayLen(YourSettingNodes) ){
 				//Insert Your Settings to Config Struct
 				for (i=1; i lte ArrayLen(YourSettingNodes); i=i+1){
-					tester = trim(YourSettingNodes[i].XMLAttributes["value"]);
-					//Test for Array
-					if ( (left(tester,1) eq "[" AND right(tester,1) eq "]") OR
-					     (left(tester,1) eq "{" AND right(tester,1) eq "}") ){
+					/* Get Setting with PlaceHolding */
+					tester = placeHolderReplacer(trim(YourSettingNodes[i].XMLAttributes["value"]),ConfigStruct);
+					//Test for JSON
+					if( reFindNocase(instance.jsonRegex,tester) ){
 						StructInsert(ConfigStruct, YourSettingNodes[i].XMLAttributes["name"], getPlugin("json").decode(replace(tester,"'","""","all")) );
 					}
 					else
@@ -510,7 +514,7 @@ Modification History:
 			/* ::::::::::::::::::::::::::::::::::::::::: YOUR CONVENTIONS LOADING :::::::::::::::::::::::::::::::::::::::::::: */
 			
 			conventions = XMLSearch(configXML,instance.searchConventions);
-			if( ArrayLen(conventions) gt 0){
+			if( ArrayLen(conventions) ){
 				/* Override conventions on a per found basis. */
 				if( structKeyExists(conventions[1],"handlersLocation") ){ fwSettingsStruct["handlersConvention"] = trim(conventions[1].handlersLocation.xmltext); }
 				if( structKeyExists(conventions[1],"pluginsLocation") ){ fwSettingsStruct["pluginsConvention"] = trim(conventions[1].pluginsLocation.xmltext); }
@@ -965,18 +969,17 @@ Modification History:
 				//Interceptor Struct
 				InterceptorStruct = structnew();
 				//get Class
-				InterceptorStruct.class = Trim(InterceptorNodes[i].XMLAttributes["class"]);
+				InterceptorStruct.class = placeHolderReplacer(Trim(InterceptorNodes[i].XMLAttributes["class"]),ConfigStruct);
 				//Prepare Properties
 				InterceptorStruct.properties = structnew();
 			
 				//Parse Interceptor Properties
-				if ( ArrayLen(InterceptorNodes[i].XMLChildren) gt 0 ){
+				if ( ArrayLen(InterceptorNodes[i].XMLChildren) ){
 					for(j=1; j lte ArrayLen(InterceptorNodes[i].XMLChildren); j=j+1){
 						//Property Complex Check
-						tempProperty = Trim( InterceptorNodes[i].XMLChildren[j].XMLText );
+						tempProperty = placeHolderReplacer(Trim( InterceptorNodes[i].XMLChildren[j].XMLText ),ConfigStruct);
 						//Check for Complex Setup
-						if ( (left(tempProperty,1) eq "[" AND right(tempProperty,1) eq "]") OR
-					     	 (left(tempProperty,1) eq "{" AND right(tempProperty,1) eq "}") ){
+						if( reFindNocase(instance.jsonRegex,tempProperty) ){
 							StructInsert( InterceptorStruct.properties, Trim(InterceptorNodes[i].XMLChildren[j].XMLAttributes["name"]), getPlugin('json').decode(replace(tempProperty,"'","""","all")) );
 						}
 						else{
@@ -1062,6 +1065,47 @@ Modification History:
 		else{
 			return ExpandPath(arguments.path);
 		}
+		</cfscript>
+	</cffunction>
+	
+	<!--- PlaceHolder Replacer --->
+	<cffunction name="placeHolderReplacer" access="private" returntype="any" hint="PlaceHolder Replacer" output="false" >
+		<!---************************************************************************************************ --->
+		<cfargument name="str" 		required="true" type="any" hint="The string to look for replacements">
+		<cfargument name="settings" required="true" type="any" hint="The structure of settings to use in replacing">
+		<!---************************************************************************************************ --->
+		<cfscript>
+			var returnString = arguments.str;
+			var regex = "\$\{([0-9a-z\-\.\_]+)\}";
+			var lookup = 0;
+			var varName = 0;
+			var varValue = 0;
+			/* Loop and Replace */
+			while(true){
+				/* Search For Pattern */
+				lookup = reFindNocase(regex,returnString,1,true);	
+				/* Found? */
+				if( lookup.pos[1] ){
+					/* Get Variable Name From Pattern */
+					varName = mid(returnString,lookup.pos[2],lookup.len[2]);
+					/* Lookup Value */
+					if( isDefined("arguments.settings.#varName#") ){
+						varValue = Evaluate("arguments.settings.#varName#");
+					}
+					else{
+						varValue = "VAR_NOT_FOUND";
+					}
+					/* Remove PlaceHolder Entirely */
+					returnString = removeChars(returnString, lookup.pos[1], lookup.len[1]);
+					/* Insert Var Value */
+					returnString = insert(varValue, returnString, lookup.pos[1]-1);
+				}
+				else{
+					break;
+				}	
+			}
+			/* Return Parsed String. */
+			return returnString;
 		</cfscript>
 	</cffunction>
 	

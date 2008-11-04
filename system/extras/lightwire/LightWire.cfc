@@ -6,7 +6,7 @@
 	<cffunction name="init" returntype="LightWire" access="public" output="false" hint="I initialize the LightWire object factory.">
 		<!---************************************************************************************************ --->
 		<cfargument name="ConfigBean" 		type="any" required="true" 	hint="I am the initialized config bean.">
-		<cfargument name="parentFactory" 	type="any" required="false" hint="The lightwire parent factory to associate this factory with.">
+		<cfargument name="parentFactory" 	type="any" required="false" default="#structNew()#" hint="The lightwire parent factory to associate this factory with.">
 		<!---************************************************************************************************ --->
 		<cfscript>
 			var key = "";
@@ -21,17 +21,9 @@
 			/* Config Structure */
 			variables.config = ConfigBean.getConfigStruct();
 			/* Alias Mappings */
-			variables.aliasMap = structnew();
-			
-			/* Check Parent Factory */
-			if( structKeyExists(arguments,"parentFactory") ){
-				/* Hierarchy Factory */
-				variables.parentFactory = arguments.parentFactory;
-			}
-			else{
-				/* Hierarchy Default Factory of Nothing */
-				variables.parentFactory = structnew();
-			}
+			variables.aliasStruct = ConfigBean.getAliasStruct();
+			/* Hierarchy Factory */
+			variables.parentFactory = arguments.parentFactory;
 				
 			/* Are we lazy loading? */
 			if (NOT ConfigBean.getLazyLoad()){
@@ -81,7 +73,7 @@
 			/* Which Factory will we use? */
 			if( localFactoryContainsBean(arguments.objectName) ){
 				/* Singleton or Transient? */
-				if(variables.config[arguments.ObjectName].Singleton){	
+				if(variables.config[nameResolution(arguments.ObjectName)].Singleton){	
 					ReturnObject = getSingleton(arguments.ObjectName,false); 
 				}
 				else{ 
@@ -109,17 +101,22 @@
 		<!---************************************************************************************************ --->
 		<!--- VerifyBean --->
 		<cfif arguments.verifyCheck>
+			<!--- Bean Verification --->
 			<cfset verifyBean(arguments.objectname)>
 		</cfif>
 		
+		<!--- Name Resolution --->
+		<cfset arguments.ObjectName = nameResolution(arguments.ObjectName)>
+		
 		<!--- If the object doesn't exist, lazy load it  --->
 		<cfif not StructKeyExists(variables.Singleton, arguments.ObjectName)>
-			<cflock name="#THIS.FACTORY_ID#.#ObjectName#.Loading" type="exclusive" timeout="5" throwontimeout="true">
+			<cflock name="#THIS.FACTORY_ID#.#arguments.ObjectName#.Loading" type="exclusive" timeout="5" throwontimeout="true">
 				<cfif not StructKeyExists(variables.Singleton, arguments.ObjectName)>
 					<cfset getObject(arguments.ObjectName,"Singleton")>
 				</cfif>
 			</cflock>
 		</cfif>
+		<!--- Return From Cache --->
 		<cfreturn variables.Singleton[arguments.ObjectName] />	
 	</cffunction>
 	
@@ -132,10 +129,11 @@
 		<cfscript>
 			/* Verify Bean Def exists */
 			if (arguments.verifyCheck){
+				/* Bean Verification */
 				verifyBean(arguments.objectName);
 			}
 			/* Return Object */
-			return getObject(arguments.ObjectName,"Transient");
+			return getObject(nameResolution(arguments.ObjectName),"Transient");
 		</cfscript>
 	</cffunction>
 	
@@ -165,7 +163,7 @@
 		<!---************************************************************************************************ --->
 		<cfargument name="beanName" required="true" type="string" hint="name of the bean to look for"/>
 		<!---************************************************************************************************ --->
-		<cfreturn structKeyExists(variables.config, arguments.beanName)>		
+		<cfreturn structKeyExists(variables.config, nameResolution(arguments.beanName))>		
 	</cffunction>
 	
 	<!--- Get The Singleton List --->
@@ -306,8 +304,7 @@
 			/* Only Mixin if CFC */
 			if( ObjectType eq "cfc" ){
 				/* Give it the Lightwire methods to allow for mixin injection and annotations */
-				arguments.object.lightwireMixin = variables.lightwireMixin;
-				arguments.object.lightwireGetAnnotations = variables.lightwireGetAnnotations;
+				mixinSet(object=arguments.object,name=arguments.ObjectName);
 				
 				// If there are any mixin dependencies
 				// If (StructKeyExists(ObjectConfig,"MixinDependencies"))
@@ -338,8 +335,7 @@
 				arguments.object.lightwireMixin(ElementName="LightWire",ElementValue=this);	
 				
 				/* Cleanup Mixins */
-				structDelete(arguments.object,"lightwireMixin");
-				structDelete(arguments.object,"lightwireGetAnnotations");	
+				mixinSet(object=arguments.object,name=arguments.ObjectName,remove=true);
 									
 			}//end if mixin for cfc's only
 			
@@ -352,6 +348,28 @@
 			
 			return arguments.object;
 		</cfscript>
+	</cffunction>
+	
+	<!--- Mixin Set --->
+	<cffunction name="mixinSet" access="private" returntype="void" hint="Start or Stop the Mixin Set" output="false" >
+		<!---************************************************************************************************ --->
+		<cfargument name="object" 	type="any" 		required="true" 	hint="I am the object to inject dependencies into.">
+		<cfargument name="name" 	type="any" 		required="true" 	hint="I am the object name.">
+		<cfargument name="remove" 	type="boolean" 	required="false" default="false"	hint="Remove or Add Mixins">
+		<!---************************************************************************************************ --->
+		<!--- Add Mixins --->
+		<cflock name="#THIS.FACTORY_ID#.#arguments.name#.mixin" type="exclusive" timeout="5" throwontimeout="true">
+		<cfscript>
+			if( arguments.remove ){
+				structDelete(arguments.object,"lightwireMixin");
+				structDelete(arguments.object,"lightwireGetAnnotations");
+			}
+			else{
+				arguments.object.lightwireMixin = variables.lightwireMixin;
+				arguments.object.lightwireGetAnnotations = variables.lightwireGetAnnotations;
+			}	
+		</cfscript>
+		</cflock>	
 	</cffunction>
 	
 	<!--- LightWire Mixin --->
@@ -411,6 +429,21 @@
 		<cfif isDefined("results")>
 			<cfreturn results>
 		</cfif>
+	</cffunction>
+	
+	<!--- Get Bean Name --->
+	<cffunction name="nameResolution" access="private" returntype="any" hint="Get a bean name via alias or bean name" output="false" >
+		<!--- ************************************************************* --->
+		<cfargument name="name" required="true" type="any" hint="Bean name or alias to resolve.">
+		<!--- ************************************************************* --->
+		<cfscript>
+			/* Check if name is in an alias struct. */
+			if( structKeyExists(variables.aliasStruct,arguments.name) ){
+				return variables.aliasStruct[arguments.name];
+			}
+			/* Else return bean name */
+			return arguments.name;
+		</cfscript>
 	</cffunction>
 
 	<!--- VerifyBean --->

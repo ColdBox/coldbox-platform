@@ -280,11 +280,11 @@ Description		: This is the main ColdBox front Controller.
 	<!--- Set Next Event --->
 	<cffunction name="setNextEvent" access="Public" returntype="void" hint="I Set the next event to run and relocate the browser to that event. If you are in SES mode, this method will use routing instead"  output="false">
 		<!--- ************************************************************* --->
-		<cfargument name="event"  			hint="The name of the event to run." 			type="string" required="No" default="#getSetting("DefaultEvent")#" >
-		<cfargument name="queryString"  	hint="The query string to append, if needed."   type="string" required="No" default="" >
-		<cfargument name="addToken"			hint="Whether to add the tokens or not. Default is false" type="boolean" required="false" default="false"	>
-		<cfargument name="persist" 			hint="What request collection keys to persist in the relocation" required="false" type="string" default="">
-		<cfargument name="varStruct" 		hint="A structure key-value pairs to persist." required="false" type="struct" default="#structNew()#" >
+		<cfargument name="event"  			type="string"  required="false" default="#getSetting("DefaultEvent")#" hint="The name of the event to run.">
+		<cfargument name="queryString"  	type="string"  required="false" default="" hint="The query string to append, if needed.">
+		<cfargument name="addToken"		 	type="boolean" required="false" default="false"	hint="Whether to add the tokens or not. Default is false">
+		<cfargument name="persist" 			type="string"  required="false" default="" hint="What request collection keys to persist in the relocation">
+		<cfargument name="varStruct" 		type="struct"  required="false" default="#structNew()#" hint="A structure key-value pairs to persist.">
 		<!--- ************************************************************* --->
 		<cfset var EventName = getSetting("EventName")>
 		<cfset var frontController = listlast(cgi.script_name,"/")>
@@ -326,10 +326,10 @@ Description		: This is the main ColdBox front Controller.
 	<!--- Set Next Route --->
 	<cffunction name="setNextRoute" access="Public" returntype="void" hint="I Set the next ses route to relocate to. This method pre-pends the baseURL"  output="false">
 		<!--- ************************************************************* --->
-		<cfargument name="route"  			hint="The route to relocate to, do not prepend the baseURL or /." type="string" required="yes" >
-		<cfargument name="persist" 			hint="What request collection keys to persist in the relocation" required="false" type="string" default="">
-		<cfargument name="varStruct" 		hint="A structure key-value pairs to persist." required="false" type="struct">
-		<cfargument name="addToken"			hint="Wether to add the tokens or not. Default is false" type="boolean" required="false" default="false"	>
+		<cfargument name="route"  		required="yes" 	 type="string" hint="The route to relocate to, do not prepend the baseURL or /.">
+		<cfargument name="persist" 		required="false" type="string" default="" hint="What request collection keys to persist in the relocation">
+		<cfargument name="varStruct" 	required="false" type="struct" hint="A structure key-value pairs to persist.">
+		<cfargument name="addToken"		required="false" type="boolean" default="false"	hint="Wether to add the tokens or not. Default is false">
 		<!--- ************************************************************* --->
 		<Cfset var routeLocation = getSetting("sesBaseURL")>
 		

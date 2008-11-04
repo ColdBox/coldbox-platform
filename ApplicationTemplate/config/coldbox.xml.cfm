@@ -157,11 +157,6 @@
 		<!-- <BugEmail>myemail@gmail.com</BugEmail> -->
 	</BugTracerReports>
 	
-	<!--List url dev environments, this determines your dev/pro environment for the framework-->
-	<DevEnvironments>
-		<url>dev</url>
-	</DevEnvironments>
-
 	<!--Webservice declarations your use in your application, if not use, leave blank
 	Note that for the same webservice name you can have a development url and a production url.-->
 	<WebServices>

@@ -40,6 +40,7 @@ Description :
 		instance.controller = CreateObject("component", "coldbox.system.testcontroller").init( expandPath(instance.AppMapping) );
 		/* Verify Persistence */
 		if( this.PERSIST_FRAMEWORK ){
+			structDelete(application,"cbController");
 			application.cbController = instance.controller;
 		}
 		/* Setup */
