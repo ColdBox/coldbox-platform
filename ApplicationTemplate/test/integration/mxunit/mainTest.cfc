@@ -9,8 +9,8 @@ Description :
 <cfcomponent name="mainTest" extends="coldbox.system.extras.testing.baseMXUnitTest" output="false">
 	
 	<cfscript>
-		//Uncomment the following if you need the controller in application scope.
-		//this.PERSIST_FRAMEWORK = true;
+		//Uncomment the following if you dont' need the controller in application scope for testing.
+		//this.PERSIST_FRAMEWORK = false;
 	</cfscript>
 	
 	<cffunction name="setup" returntype="void" access="public" output="false">
@@ -88,7 +88,8 @@ Description :
 		var sessionReference = "";
 		
 		//Place a fake session structure here, it mimics what the handler receives
-		FORM.sessionReference = structnew();
+		URL.sessionReference = structnew();
+		URL.applicationReference = structnew();
 		
 		event = execute("main.onSessionEnd");
 			
@@ -106,7 +107,7 @@ Description :
 		//Initialize an exception
 		exceptionBean.init(erroStruct=structnew(), extramessage="My unit test exception", extraInfo="Any extra info, simple or complex");
 		//Place it on form or url scope to attach it to request
-		FORM.exceptionBean = exceptionBean;
+		URL.exceptionBean = exceptionBean;
 		
 		//TEST EVENT EXECUTION
 		event = execute("main.onException");

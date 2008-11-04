@@ -9,11 +9,15 @@ The following test cases have been created for testing of event handlers, please
 note that the controller created is the ColdBox's testcontroller.
 
 The code speaks for itself. Just make sure you tests inherit from the base test
-that can be found at coldbox.system.extras.testing.baseTest and they create a setup method
-that follows the following pattern:
+according to testing framework. 
+
+Then create a setup method that follows the following pattern:
 
 <cffunction name="setUp" returntype="void" access="private">
 	<cfscript>
+	//Persist Framework in application scope for test.
+	THIS.PERSIST_FRAMEWORK = true or false;
+	
 	//Setup ColdBox Mappings For this Test
 	setAppMapping("/applications/coldbox/ApplicationTemplate");
 	setConfigMapping(ExpandPath(instance.AppMapping & "/config/config.xml.cfm"));
@@ -31,11 +35,15 @@ that follows the following pattern:
 
 
 Structure:
-cfcunit - cfcunit enabled tests
-mxunit - mxunit enabled tests
- - AllTests.cfc - Test Suite for all test cases
- - GeneralTest.cfc - The test case for the ehGeneral.cfc handler
- - MaintTest.cfc - The test case for the ehMain.cfc handler
+-integration
+	- cfcunit - cfcunit enabled tests
+	- mxunit - mxunit enabled tests
+ 		- GeneralTest.cfc - The test case for the General.cfc handler
+ 		- MaintTest.cfc - The test case for the Main.cfc handler
+ -unit
+ 	- For all your unit test cases.
+ -mocks
+ 	- For any mock testing or mock objects.
 
 
 SPECIAL CONSIDERATIONS:
