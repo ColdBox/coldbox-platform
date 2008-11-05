@@ -416,7 +416,7 @@ Modification History:
 
 			//Check For Owner Email or Throw
 			if ( not StructKeyExists(ConfigStruct, "OwnerEmail") )
-				throw("There was no 'OwnerEmail' setting defined. This is required by the framework.","","ColdBox.plugins.XMLParser.ConfigXMLParsingException");
+				ConfigStruct["OwnerEmail"] = "";
 		
 			//Check For EnableDumpvar or set to true
 			if ( not StructKeyExists(ConfigStruct, "EnableDumpVar") or not isBoolean(ConfigStruct.EnableDumpVar))

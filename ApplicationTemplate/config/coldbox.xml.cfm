@@ -60,7 +60,7 @@
 		 -->
 		<Setting name="EnableBugReports" 			value="true"/>
 		<!--UDF Library To Load on every request for your views and handlers -->
-		<Setting name="UDFLibraryFile" 				value="" />
+		<Setting name="UDFLibraryFile" 				value="includes/helpers/ApplicationHelper.cfm" />
 		<!--Messagebox Style Override. A boolean of wether to override the styles using your own css.-->
 		<Setting name="MessageboxStyleOverride"		value="" />
 		<!--Flag to Auto reload the internal handlers directory listing. False for production. -->
@@ -197,6 +197,7 @@
 	<Datasources>
 		<!-- <Datasource alias="MyDSNAlias" name="real_dsn_name"   dbtype="mysql"  username="" password="" /> -->
 	</Datasources>
+	
 	<!--ColdBox Object Caching Settings Overrides the Framework-wide settings 
 	<Cache>
 		<ObjectDefaultTimeout>60</ObjectDefaultTimeout>
@@ -222,10 +223,15 @@
 	-->
 	
 	<Interceptors>
-		<!-- config file is relative to app root -->
+		<!-- USE ENVIRONMENT CONTROL -->
+		<Interceptor class="coldbox.system.interceptors.environment">
+			<Property name='configFile'>config/environments.xml.cfm</Property>
+		</Interceptor>
+		<!-- USE SES -->
 		<Interceptor class="coldbox.system.interceptors.ses">
 			<Property name="configFile">config/routes.cfm</Property>
 		</Interceptor>
+		
 		<!-- Developer's ColdBox Sidebar -->
 		<Interceptor class="coldbox.system.interceptors.coldboxSideBar">
 			<!-- Y offset: number, else leave blank -->
