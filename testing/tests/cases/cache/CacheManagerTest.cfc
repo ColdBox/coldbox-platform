@@ -32,6 +32,7 @@ Description :
 		ccbean.init(argumentCollection=memento);
 		
 		cm = createObject("component","coldbox.system.cache.cacheManager").init(mockController);
+		cm.configure(ccbean);
 		</cfscript>
 	</cffunction>
 	
@@ -45,6 +46,86 @@ Description :
 		<cfscript>
 			makePublic(cm,"announceExpiration","_announceExpiration");
 			cm._announceExpiration('test');
+		</cfscript>
+	</cffunction>
+	
+	<cffunction name="testClearMulti" output="false">
+		<cfscript>
+			mockController.mockMethod('getInterceptorService').returns(mockService,mockService);
+			/* testList */
+			list = 'luis,test,whatever,MyTest';
+			
+			cm.set('MyTest',now());
+			
+			removed = cm.clearKeyMulti(list);
+			
+			AssertTrue(removed["MyTest"]);
+			
+		</cfscript>
+	</cffunction>
+	
+	<cffunction name="testgetCachedObjectMetadataMulti" output="false">
+		<cfscript>
+			mockController.mockMethod('getInterceptorService').returns(mockService,mockService);
+			
+			/* testList */
+			list = 'MyTest,Luis,Whatever';
+			
+			cm.set('MyTest',now());
+			cm.set('Luis',now());
+			
+			retrieved = cm.getCachedObjectMetadataMulti(list);
+			
+			AssertTrue( isStruct(retrieved['Luis']) );
+			AssertTrue( isStruct(retrieved['MyTest']) );
+			AssertFalse( structKeyExists(retrieved,'Whatever') );
+		</cfscript>
+	</cffunction>
+	
+	<cffunction name="testgetCachedObjectMetadata" output="false">
+		<cfscript>
+			mockController.mockMethod('getInterceptorService').returns(mockService,mockService);
+			
+			cm.set('MyTest',now());
+			
+			md = cm.getCachedObjectMetadata('MyTest');
+
+			AssertTrue( not structisempty(md) );
+		</cfscript>
+	</cffunction>
+	
+	<cffunction name="testGetMulti" output="false">
+		<cfscript>
+			mockController.mockMethod('getInterceptorService').returns(mockService,mockService);
+			
+			/* testList */
+			list = 'MyTest,Luis,Whatever';
+			
+			cm.set('MyTest',now());
+			cm.set('Luis',now());
+			
+			retrieved = cm.getMulti(list);
+			
+			AssertTrue(structKeyExists(retrieved,"Luis"));
+			AssertTrue(structKeyExists(retrieved,"MyTest"));
+			AssertFalse(structKeyExists(retrieved,"Whatever"));
+		</cfscript>
+	</cffunction>
+	
+	<cffunction name="testSetMulti" output="false">
+		<cfscript>
+			mockController.mockMethod('getInterceptorService').returns(mockService,mockService,mockService);
+			
+			/* testList */
+			mapping.MyTest = now();
+			mapping.Myname = "Luis Majano";
+			mapping.MyEmail = "whatever@gmail.com";
+			
+			cm.setMulti(mapping=mapping);
+			
+			AssertTrue(cm.lookup('MyTest'));
+			AssertTrue(cm.lookup('Myname'));
+			AssertTrue(cm.lookup('MyEmail'));
 		</cfscript>
 	</cffunction>
 	

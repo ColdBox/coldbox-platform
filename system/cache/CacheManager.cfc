@@ -159,6 +159,32 @@ Modification History:
 		<cfreturn local.targetObject>
 	</cffunction>
 	
+	<!--- Get multiple objects from the cache --->
+	<cffunction name="getMulti" access="public" output="false" returntype="struct" hint="The returned value is a structure of name-value pairs of all the keys that where found. Not found values will not be returned">
+		<!--- ************************************************************* --->
+		<cfargument name="keys" 			type="string" required="true" hint="The comma delimited list of keys to retrieve from the cache.">
+		<cfargument name="prefix" 			type="string" required="false" default="" hint="A prefix to prepend to the keys">
+		<!--- ************************************************************* --->
+		<cfscript>
+			var returnStruct = structnew();
+			var x = 1;
+			var thisKey = "";
+			/* Clear Prefix */
+			arguments.prefix = trim(arguments.prefix);
+			
+			/* Loop on Keys */
+			for(x=1;x lte listLen(arguments.keys);x=x+1){
+				thisKey = arguments.prefix & listGetAt(arguments.keys,x);
+				if( lookup(thisKey) ){
+					returnStruct[thiskey] = get(thisKey);
+				}
+			}
+			
+			/* Return Struct */
+			return returnStruct;
+		</cfscript>
+	</cffunction>
+	
 	<!--- getCachedObjectMetadata --->
 	<cffunction name="getCachedObjectMetadata" output="false" access="public" returntype="struct" hint="Get the cached object's metadata structure. If the object does not exist, it returns an empty structure.">
 		<!--- ************************************************************* --->
@@ -174,7 +200,53 @@ Modification History:
 			}
 		</cfscript>
 	</cffunction>
+	
+	<!--- getCachedObjectMetadata --->
+	<cffunction name="getCachedObjectMetadataMulti" output="false" access="public" returntype="struct" hint="Get the cached object's metadata structure. If the object does not exist, it returns an empty structure.">
+		<!--- ************************************************************* --->
+		<cfargument name="keys" 	type="string" required="true" hint="The comma delimited list of keys to retrieve from the cache.">
+		<cfargument name="prefix" 	type="string" required="false" default="" hint="A prefix to prepend to the keys">
+		<!--- ************************************************************* --->
+		<cfscript>
+			var returnStruct = structnew();
+			var x = 1;
+			var thisKey = "";
+			/* Clear Prefix */
+			arguments.prefix = trim(arguments.prefix);
+			
+			/* Loop on Keys */
+			for(x=1;x lte listLen(arguments.keys);x=x+1){
+				thisKey = arguments.prefix & listGetAt(arguments.keys,x);
+				if( lookup(thisKey) ){
+					returnStruct[thiskey] = getCachedObjectMetadata(thisKey);
+				}
+			}
+			
+			/* Return Struct */
+			return returnStruct;
+		</cfscript>
+	</cffunction>
 
+	<!--- Set Multi Object in the cache --->
+	<cffunction name="setMulti" access="public" output="false" returntype="void" hint="Sets Multiple Ojects in the cache. Sets might be expensive. If the JVM threshold is used and it has been reached, the object won't be cached. If the pool is at maximum it will expire using its eviction policy and still cache the object. Cleanup will be done later.">
+		<!--- ************************************************************* --->
+		<cfargument name="mapping" 				type="struct"  	required="true" hint="The structure of name value pairs to cache">
+		<cfargument name="Timeout"				type="any"  	required="false" default="" hint="Timeout in minutes. If timeout = 0 then object never times out. If timeout is blank, then timeout will be inherited from framework.">
+		<cfargument name="LastAccessTimeout"	type="any"  	required="false" default="" hint="Last Access Timeout in minutes. If timeout is blank, then timeout will be inherited from framework.">
+		<cfargument name="prefix" 				type="string" 	required="false" default="" hint="A prefix to prepend to the keys">
+		<!--- ************************************************************* --->
+		<cfscript>
+			var key = 0;
+			/* Clear Prefix */
+			arguments.prefix = trim(arguments.prefix);
+			/* Loop Over mappings */
+			for(key in arguments.mapping){
+				/* Cache theses puppies */
+				set(objectKey=arguments.prefix & key,MyObject=arguments.mapping[key],Timeout=arguments.timeout,LastAccessTimeout=arguments.LastAccessTimeout);
+			}
+		</cfscript>
+	</cffunction>
+	
 	<!--- Set an Object in the cache --->
 	<cffunction name="set" access="public" output="false" returntype="boolean" hint="sets an object in cache. Sets might be expensive. If the JVM threshold is used and it has been reached, the object won't be cached. If the pool is at maximum it will expire using its eviction policy and still cache the object. Cleanup will be done later.">
 		<!--- ************************************************************* --->
@@ -224,15 +296,14 @@ Modification History:
 				<cfset getobjectPool().set(arguments.objectKey,arguments.MyObject,arguments.Timeout,arguments.LastAccessTimeout)>
 			</cflock>
 			
-			<!--- Only execute once the framework has been initialized --->
-			<cfif instance.controller.getColdboxInitiated()>
-				<!--- InterceptMetadata --->
-				<cfset interceptMetadata.cacheObjectKey = arguments.objectKey>
-				<cfset interceptMetadata.cacheObjectTimeout = arguments.Timeout>
-				<cfset interceptMetadata.cacheObjectLastAccessTimeout = arguments.LastAccessTimeout>
-				<!--- Execute afterCacheElementInsert Interception --->
-				<cfset instance.controller.getInterceptorService().processState("afterCacheElementInsert",interceptMetadata)>				
-			</cfif>
+			<!--- InterceptMetadata --->
+			<cfset interceptMetadata.cacheObjectKey = arguments.objectKey>
+			<cfset interceptMetadata.cacheObjectTimeout = arguments.Timeout>
+			<cfset interceptMetadata.cacheObjectLastAccessTimeout = arguments.LastAccessTimeout>
+			
+			<!--- Execute afterCacheElementInsert Interception --->
+			<cfset instance.controller.getInterceptorService().processState("afterCacheElementInsert",interceptMetadata)>				
+			
 			<!--- Return True --->
 			<cfreturn true>
 		<cfelse>
@@ -263,6 +334,30 @@ Modification History:
 		</cfif>
 		
 		<cfreturn ClearCheck>
+	</cffunction>
+	
+	<!--- Clear an object from the cache --->
+	<cffunction name="clearKeyMulti" access="public" output="false" returntype="struct" hint="Clears objects from the cache by using its cache key. The returned value is a structure of name-value pairs of all the keys that where removed from the operation.">
+		<!--- ************************************************************* --->
+		<cfargument name="keys" 		type="string" required="true" hint="The comma-delimmitted list of keys to remove.">
+		<cfargument name="prefix" 		type="string" required="false" default="" hint="A prefix to prepend to the keys">
+		<!--- ************************************************************* --->
+		<cfscript>
+			var returnStruct = structnew();
+			var x = 1;
+			var thisKey = "";
+			/* Clear Prefix */
+			arguments.prefix = trim(arguments.prefix);
+			
+			/* Loop on Keys */
+			for(x=1;x lte listLen(arguments.keys);x=x+1){
+				thisKey = arguments.prefix & listGetAt(arguments.keys,x);
+				returnStruct[thiskey] = clearKey(thisKey);
+			}
+			
+			/* Return Struct */
+			return returnStruct;
+		</cfscript>
 	</cffunction>
 	
 	<!--- Clear By Key Snippet --->

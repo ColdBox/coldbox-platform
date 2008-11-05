@@ -69,7 +69,12 @@ Description :
 		<cfargument name="interceptData" required="false" 	type="struct" default="#structNew()#" hint="A data structure used to pass intercepted information.">
 		<!--- ************************************************************* --->
 		<cfset var event = 0><cfsetting enablecfoutputonly="true"><cfsilent>
-			
+		
+		<!--- Is ColdBox Inited? --->
+		<cfif not getController().getColdboxInitiated()>
+			<cfreturn>
+		</cfif>
+		
 		<!--- Setup Event --->
 		<cfset event = getController().getRequestService().getContext()>
 		
