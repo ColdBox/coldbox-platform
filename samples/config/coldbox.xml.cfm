@@ -32,8 +32,8 @@
 		<Setting name="ForumsURL" 			value="http://forums.coldboxframework.com" />
 		<Setting name="AmazonURL" 			value="http://www.amazon.com/o/registry/7DPYG3RZG3AF"/>
 		<Setting name="ColdboxURL" 			value="http://www.coldboxframework.com"/>
-		<Setting name="BlogURL" 			value="http://www.coldboxframework.com/index.cfm/about/news"/>
-		<Setting name="ColdboxAPIURL" 		value="http://www.coldboxframework.com/api"/>
+		<Setting name="BlogURL" 			value="${ColdboxURL}/index.cfm/about/news"/>
+		<Setting name="ColdboxAPIURL" 		value="${ColdboxURL}/api"/>
 		<Setting name="TracURL" 			value="http://ortus.svnrepository.com/coldbox/trac.cgi/"/>
 		<!-- App Versionsettings -->
 		<Setting name="BlogcfcApp" 			value="applications/blogcfcv5_0" />
@@ -46,23 +46,13 @@
 	</YourSettings>
 
 	<!--Optional,if blank it will use the CFMX administrator settings.-->
-	<MailServerSettings>
-		<MailServer/>
-		<MailUsername/>
-		<MailPassword/>
-	</MailServerSettings>
+	<MailServerSettings />
 
 	<!--Emails to Send bug reports-->
-	<BugTracerReports>
-		<!--<BugEmail>youremailhere</BugEmail>-->
-	</BugTracerReports>
+	<BugTracerReports />
 
 	<!--List url dev environments, this determines your dev/pro environment-->
-	<DevEnvironments>
-		<url>dev</url>
-		<url>lmajano</url>
-		<url>jeftmac</url>
-	</DevEnvironments>
+	<DevEnvironments />
 
 	<!--Webservice declarations your use in your app, if not use, leave blank
 		<WebServices />
@@ -77,15 +67,13 @@
 
 	<i18N>
 		<!--Default Resource Bundle without locale and properties extension-->
-		<DefaultResourceBundle>includes/main</DefaultResourceBundle>
+		<DefaultResourceBundle>includes/i18n/main</DefaultResourceBundle>
 		<!--Java Standard Locale-->
 		<DefaultLocale>en_US</DefaultLocale>
 		<!--session or client-->
-		<LocaleStorage>session</LocaleStorage>
+		<LocaleStorage>cookie</LocaleStorage>
 	</i18N>
 	
-	<Interceptors>
-		<Interceptor class="coldbox.system.interceptors.executionTracer" />
-	</Interceptors>
+	<Interceptors />
 
 </Config>

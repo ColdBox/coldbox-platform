@@ -28,39 +28,3 @@ http://{your web address}/coldbox/samples
 **IMPORTANT: Some sample applications need installation of server side components or
              databases. Please look at each of the installation instructions on each
              application.
-
-
-*******************************************************
-Credits
-*******************************************************
-1. BlogCFC by Raymond Camden (www.camdenfamily.com/morpheus/blog)
-	A full featured blog application
-	Ray's Version: 5.0.290
-	
-2. Galleon Forums by Raymond Camden (www.camdenfamily.com/morpheus/blog)
-	An incredible user-friendly forums application.
-	Ray's Version: 1.5.290
-	
-3. Hello World by Luis Majano
-	A simple introduction to ColdBox
-	
-4. News WebService by Luis Majano
-	A simple application that gets news via web services.
-	
-5. Sample Login App by Luis Majano
-	A simple login application to show one technique for security.
-	
-6. Sample UDF Library Usage by Luis Majano
-	A simple application to show you how to use a UDF library if needed.
-	
-7. ColdBoxReader by Oscar Arevalo/Luis Majano
-	An RSS reader with AJAX interaction, coldspring and a service architecture.
-	
-8. i18N Sample by Paul Hastings/Luis Majano
-	A showcase gallery of i18N interactions
-	
-9. JavaLoader by Luis Majano
-	Interaction for using Mark Mandel's Java Loader
-	
-10. Illidium PU-36 CFC Generator by Brian Rinaldi/Luis Majano
-	Brian Rinaldi's cfc generator ported to ColdBox

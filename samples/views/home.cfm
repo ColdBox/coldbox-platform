@@ -42,6 +42,8 @@
 
 			<div id="section-1" >
 				<div class="boxscrolling">
+				
+				<!--- Hello World --->
 				<h3>Hello World</h3>
 				<p> #getresource("by")# Luis Majano
 				  <br />
@@ -49,6 +51,7 @@
 				  <a href="applications/helloworld/index.cfm" target="_blank">#getresource("opensample")#</a><br />
 				</p>
 				
+				<!--- LightWire --->
 				<h3>LightWire Sample</h3>
 				<p> #getresource("by")# Luis Majano
 				  <br />
@@ -56,33 +59,38 @@
 				  <a href="applications/lightwiresample/index.cfm" target="_blank">#getresource("opensample")#</a><br />
 				</p>
 
+				<!--- Java Loader --->
 				<h3>JavaLoader</h3>
 				<p> #getresource("by")# Luis Majano
 				  <br />#getresource("javaloadermessage")#<br>
 				  #getresource("nosetup")# <br />
 				  <a href="applications/javaloader/index.cfm" target="_blank">#getresource("opensample")#</a><br />
 				</p>
-
+				
+				<!--- Web Services --->
 				<h3>News Web Service</h3>
 				<p> #getresource("by")# Luis Majano
 				  <br />
 				  <a href="applications/NewsWebservice/index.cfm" target="_blank">#getresource("opensample")#</a><br />
 				</p>
-
+	
+				<!--- Sample Login App --->
 				<h3>Sample Login App</h3>
 				<p> #getresource("by")# Luis Majano
 				  <br />
 				  #getresource("nosetup")# <br />
 				  <a href="applications/sampleloginapp/index.cfm" target="_blank">#getresource("opensample")#</a><br />
 				</p>
-
+				
+				<!--- UDF --->
 				<h3>UDF Library Usage</h3>
 				<p> #getresource("by")# Luis Majano
 				  <br />
 				  #getresource("nosetup")# <br />
 				  <a href="applications/udf_library_usage/index.cfm" target="_blank">#getresource("opensample")#</a><br />
 				</p>
-
+				
+				<!--- i18n --->
 				<h3>i18N Sample Gallery</h3>
 				<p> #getresource("by")# Paul Hastings & Luis Majano
 				  <br />
@@ -90,6 +98,7 @@
 				  <a href="applications/i18NSample/index.cfm" target="_blank">#getresource("opensample")#</a><br />
 				</p>
 				
+				<!--- Flex --->
 				<h3>ColdBox Flex Tester</h3>
 				<p> #getresource("by")# Luis Majano
 				  <br />
@@ -97,6 +106,7 @@
 				  <a href="applications/ColdboxFlexTester/bin/ColdboxFlexTester.html" target="_blank">#getresource("opensample")#</a><br />
 				</p>
 				
+				<!--- CFC Viewer --->
 				<h3>ColdBox cfcViewer Sample</h3>
 				<p> #getresource("by")# Luis Majano
 				  <br />
@@ -104,6 +114,7 @@
 				  <a href="applications/cfcViewerSample/index.cfm" target="_blank">#getresource("opensample")#</a><br />
 				</p>
 				
+				<!--- CF 8 AjAX --->
 				<h3>ColdFusion 8 Ajax Sampler</h3>
 				<p> #getresource("by")# Sana Ullah & Luis Majano
 				  <br />
@@ -111,11 +122,29 @@
 				  <a href="applications/CF8Ajax/index.cfm" target="_blank">#getresource("opensample")#</a><br />
 				</p>
 				
+				<!--- SES --->
+				<h3>Coldbox SES</h3>
+				<p> #getresource("by")# Sana Ullah & Luis Majano
+				  <br />
+				  #getresource("nosetup")# <br />
+				  <a href="applications/ColdBoxSES/index.cfm" target="_blank">#getresource("opensample")#</a><br />
+				</p>
+				
 				</div>
 			</div>
 
 			<div id="section-2" >
 				<div class="boxscrolling">
+				
+				<!--- Simple Blog --->
+				<h3>Simple Blog</h3>
+				<p> #getresource("by")# Henrik Joreteg & Luis Majano<bR>
+				#getresource("needssetup")#
+				<br />
+				  <a href="applications/SimpleBlog/install/readme.txt?TB_iframe=true&height=550&width=800" class="thickbox" title="Readme.txt">Install.txt</a><br />
+				</p>
+				
+				<!--- Ajax Reader --->
 				<h3>Ajax ColdBoxReader</h3>
 				<p> #getresource("by")# Oscar Arevalo<br />#getresource("coldboxreadermessage")#<bR>
 				#getresource("needssetup")#
@@ -124,7 +153,8 @@
 				  <a href="#getSetting("ColdboxReaderApp")#/install?TB_iframe=true&height=550&width=800" class="thickbox" title="Install Folder">#getresource("openinstall")#</a><br />
 				  <a href="#getSetting("ColdboxReaderApp")#/index.cfm" target="_blank">#getresource("opensample")#</a><br />
 				</p>
-
+				
+				<!--- Transfer Sample --->
 				<h3>Transfer Sample</h3>
 				<p> #getresource("by")# Luis Majano<br />#getresource("transfermessage")#<bR>
 				#getresource("needssetup")#
@@ -134,26 +164,23 @@
 				  <a href="#getSetting("TransferApp")#/index.cfm" target="_blank">#getresource("opensample")#</a><br />
 				</p>
 				
+				<!--- Advanced Transfer Sample --->
 				<h3>Advanced Transfer Sample</h3>
 				<p> #getresource("by")# Ernst van der Linden<br />ColdBox-ColdSpring-Transfer<bR>
 				#getresource("needssetup")#
 				<br />
-				  <a href="#getSetting("SecurityApp")#/readme.txt?TB_iframe=true&height=550&width=800" class="thickbox" title="Readme.txt">Readme.txt</a><br />
+				  <a href="#getSetting("TransferApp2")#/readme.txt?TB_iframe=true&height=550&width=800" class="thickbox" title="Readme.txt">Readme.txt</a><br />
 				</p>
 				
+				<!--- Security Sample --->
 				<h3>Security & Transfer Sample</h3>
 				<p> #getresource("by")# Ernst van der Linden & Luis Majano<br />ColdBox-LightWire-Transfer<bR>
 				#getresource("needssetup")#
 				<br />
-				 <a href="#getSetting("TransferApp")#/index.cfm" target="_blank">#getresource("opensample")#</a><br />
+				 <a href="#getSetting("SecurityApp")#/index.cfm" target="_blank">#getresource("opensample")#</a><br />
 				</p>
 				
-				<h3>CCTApp Sample</h3>
-				<p> #getresource("by")# Tom de Manincor<br />
-				#getresource("needssetup")#
-				<br />
-				</p>
-
+				<!--- Illidium --->
 				<h3>Illidium cfc Code Generator</h3>
 				<p> #getresource("by")# Brian Rinaldi<br />#getresource("needssetup")#
 				<br />
@@ -163,36 +190,9 @@
 				  <a href="#getSetting("cfcGeneratorApp")#/index.cfm" target="_blank">#getresource("open")# cfcGenerator</a><br />
 				</p>
 
-				<h3>BlogCFC</h3>
-				<p> #getresource("by")# Raymond Camden<br />#getresource("needssetup")#
-				<br />
-				<font color="##53231d">#getResource("portMessage")#</font>
-				<br />
-				  <a href="#getSetting("blogcfcApp")#/install/readme.txt?TB_iframe=true&height=550&width=800" class="thickbox" title="Readme.txt">Readme.txt</a><br />
-				  <a href="#getSetting("blogcfcApp")#/install?TB_iframe=true&height=550&width=800" class="thickbox" title="Install Folder">#getresource("openinstall")#</a><br />
-				  <a href="#getSetting("blogcfcApp")#/index.cfm" target="_blank">#getresource("open")# BlogCFC</a><br />
-				</p>
-
-				<h3>Galleon Forums</h3>
-				<p> #getresource("by")# Raymond Camden<br />#getresource("needssetup")#
-				<br />
-				<font color="##53231d">#getResource("portMessage")#</font>
-				<br />
-				  <a href="#getSetting("forumsApp")#/installation/readme.txt?TB_iframe=true&height=550&width=800" class="thickbox" title="Readme.txt">Readme.txt</a><br />
-				  <a href="#getSetting("forumsApp")#/installation/?TB_iframe=true&height=550&width=800" class="thickbox" title="Install Folder">#getresource("openinstall")#</a><br />
-				  <a href="#getSetting("forumsApp")#/index.cfm" target="_blank">#getresource("open")# Galleon #getresource("forums")#</a><br />
-				  <a href="#getSetting("forumsApp")#/admin/index.cfm" target="_blank">#getresource("open")# #getresource("administrator")#</a><br />
-				</p>
+				
 				</div>
 			</div>
-		</div>
-
-		<h2>ColdBox #getResource("LogFile")#:
-			<a href="##?TB_inline&height=550&width=800&inlineId=logFileContents" class="thickbox" title="#getResource("LogFile")#"><input type="button" value="#getResource("open")# Log" id="logbutton" name="logbutton" /></a>
-		</h2>
-
-		<div class="boxscrolling" id="logFileContents">
-		#htmlCodeFormat(Event.getValue("LogFileContents"))#
 		</div>
 
 	</div>

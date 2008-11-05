@@ -308,6 +308,7 @@
 						<xs:restriction base="xs:string">
 							<xs:enumeration value="client"/>
 							<xs:enumeration value="session"/>
+							<xs:enumeration value="cookie"/>
 						</xs:restriction>
 					</xs:simpleType>
 				</xs:element>
