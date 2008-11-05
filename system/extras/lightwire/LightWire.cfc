@@ -89,7 +89,7 @@
 			}				
 			
 			/* Return object */
-			return returnObject;
+			return ReturnObject;
 		</cfscript>	
 	</cffunction>
 	
