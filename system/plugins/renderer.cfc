@@ -30,7 +30,7 @@ Description :
 		
 		/* Plugin Properties */
 		setpluginName("Renderer");
-		setpluginVersion("2.0");
+		setpluginVersion("2.1");
 		setpluginDescription("This is the rendering service for ColdBox.");
 		
 		/* Set Conventions */
@@ -76,6 +76,8 @@ Description :
 		<!--- ************************************************************* --->
 		<cfset var cbox_RenderedView = "">
 		<cfset var cbox_viewpath = "">
+		<cfset var cbox_viewHelperPath = "">
+		<!--- Local Event --->
 		<cfset var Event = controller.getRequestService().getContext()>
 		<!--- Create View Scope --->
 		<cfset var rc = event.getCollection()>
@@ -84,12 +86,12 @@ Description :
 		<cfset var cbox_cacheEntry = "">
 		
 		<!--- Test Default View --->
-		<cfif arguments.view eq "">
+		<cfif len(trim(arguments.view)) eq 0>
 			<cfset arguments.view = Event.getCurrentView()>
 		</cfif>
 		
 		<!--- Test if we have a view to render --->
-		<cfif arguments.view eq "">
+		<cfif len(trim(arguments.view)) eq 0>
 			<cfthrow type="ColdBox.plugins.renderer.ViewNotSetException" 
 						  message="The ""currentview"" variable has not been set, therefore there is no view to render." 
 						  detail="Please remember to use the 'setView()' method in your handler.">
@@ -107,19 +109,37 @@ Description :
 		<cfelse>
 			<!--- The View Path is by convention or external?? --->
 			<cfset cbox_viewpath = "/#instance.appMapping#/#instance.viewsConvention#/#arguments.view#.cfm">
+			<!--- Check if View in Conventions --->
 			<cfif not fileExists(expandPath(cbox_viewpath))>
+				<!--- Set the Path to be the External Location --->
 				<cfset cbox_viewpath = "#instance.viewsExternalLocation#/#arguments.view#.cfm">
-			</cfif>
-			<cfif not fileExists(expandPath(cbox_viewpath))>
-				<cfthrow message="View not located" 
-						 detail="The view: #arguments.view#.cfm could not be located in the conventions folder or in the external location. Please verify the view name" 
-						 type="Framework.plugin.renderer.ViewNotFound">
+				<!--- Verify the External Location now --->
+				<cfif not fileExists(expandPath(cbox_viewpath))>
+					<cfthrow message="View not located" 
+							 detail="The view: #arguments.view#.cfm could not be located in the conventions folder or in the external location. Please verify the view name" 
+							 type="Framework.plugin.renderer.ViewNotFound">
+				</cfif>
+				<!--- Helper? --->
+				<cfif fileExists(expandPath("#instance.viewsExternalLocation#/#arguments.view#Helper.cfm"))>
+					<cfset cbox_viewHelperPath =  "#instance.viewsExternalLocation#/#arguments.view#Helper.cfm">
+				</cfif>				
+			<cfelse>
+				<!--- Do we have a conventions Helper --->
+				<cfif fileExists(expandPath("/#instance.appMapping#/#instance.viewsConvention#/#arguments.view#Helper.cfm"))>
+					<cfset cbox_viewHelperPath =  "/#instance.appMapping#/#instance.viewsConvention#/#arguments.view#Helper.cfm">
+				</cfif>
 			</cfif>
 			
-			<!--- Render The View --->
+			<!--- Render The View & Its Helper --->
 			<cfmodule template="../includes/Timer.cfm" timertag="rendering View [#arguments.view#.cfm]" controller="#controller#">
-				<cfsavecontent variable="cbox_RenderedView"><cfoutput><cfinclude template="#cbox_viewpath#"></cfoutput></cfsavecontent>
+				<cfsavecontent variable="cbox_RenderedView">
+				<cfoutput>
+					<cfif len(cbox_viewHelperPath)><cfinclude template="#cbox_viewHelperPath#"></cfif>
+					<cfinclude template="#cbox_viewpath#">
+				</cfoutput>
+				</cfsavecontent>
 			</cfmodule>
+			
 			<!--- Is this view cacheable by setting, and if its the view we need to cache. --->
 			<cfif event.isViewCacheable() and (arguments.view eq event.getViewCacheableEntry().view)>
 				<!--- Cache it baby!! --->
@@ -184,7 +204,7 @@ Description :
 	</cffunction>
 
 	<!--- Render the layout --->
-	<cffunction name="renderLayout" access="Public" hint="Renders the current layout + view Combinations if declared." output="false" returntype="string">
+	<cffunction name="renderLayout" access="Public" hint="Renders the current layout + view Combinations if declared." output="false" returntype="any">
 		<cfset var cbox_RederedLayout = "">
 		<cfset var Event = controller.getRequestService().getContext()>
 		<cfset var rc = event.getCollection()>
@@ -192,7 +212,7 @@ Description :
 		<!--- Check if no view has been set. --->
 		<cfif event.getCurrentView() eq "">
 			<!--- Implicit Views according to event --->
-			<cfset event.setView( lcase(replace(event.getCurrentEvent(),".","/","all")) )>
+			<cfset event.setView(replace(event.getCurrentEvent(),".","/","all"))>
 			<!--- Check if default view set, if yes, then set it. --->
 			<cfif event.getDefaultView() neq "">
 				<!--- Set the Default View --->
@@ -201,7 +221,7 @@ Description :
 		</cfif>
 		
 		<cfmodule template="../includes/Timer.cfm" timertag="rendering Layout [#Event.getcurrentLayout()#]" controller="#controller#">
-			<!--- Render With No Layout Test--->
+			<!--- Render With No Layout?--->
 			<cfif Event.getcurrentLayout() eq "">
 				<cfset cbox_RederedLayout = renderView()>
 			<cfelse>
@@ -209,9 +229,9 @@ Description :
 			</cfif>
 		</cfmodule>
 		
+		<!--- Return Layout --->
 		<cfreturn cbox_RederedLayout>
 	</cffunction>
-
 	
 <!------------------------------------------- PRIVATE ------------------------------------------->
 

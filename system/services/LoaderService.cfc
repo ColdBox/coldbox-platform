@@ -12,11 +12,11 @@ Description :
 Modification History:
 01/18/2007 - Created
 ----------------------------------------------------------------------->
-<cfcomponent name="loaderService" output="false" hint="The application and framework loader service" extends="coldbox.system.services.BaseService">
+<cfcomponent name="LoaderService" output="false" hint="The application and framework loader service" extends="coldbox.system.services.BaseService">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
-	<cffunction name="init" access="public" output="false" returntype="loaderService" hint="Constructor">
+	<cffunction name="init" access="public" output="false" returntype="LoaderService" hint="Constructor">
 		<cfargument name="controller" type="any" required="true">
 		<cfscript>
 			setController(arguments.controller);

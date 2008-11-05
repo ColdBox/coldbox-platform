@@ -16,7 +16,7 @@ Modification History:
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
-	<cffunction name="init" access="public" output="false" returntype="exceptionService" hint="Constructor">
+	<cffunction name="init" access="public" output="false" returntype="ExceptionService" hint="Constructor">
 		<cfargument name="controller" type="any" required="true">
 		<cfscript>
 			setController(arguments.controller);

@@ -16,7 +16,7 @@ Modification History:
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
-	<cffunction name="init" access="public" output="false" returntype="debuggerService" hint="Constructor">
+	<cffunction name="init" access="public" output="false" returntype="DebuggerService" hint="Constructor">
 		<cfargument name="controller" type="any" required="true">
 		<cfscript>
 			/* Set Controller */

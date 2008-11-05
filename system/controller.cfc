@@ -34,7 +34,6 @@ Description		: This is the main ColdBox front Controller.
 			//App Root
 			setAppRootPath(arguments.AppRootPath);
 			
-			//TODO: change all this to object factory.
 			//Create & init ColdBox Services
 			if ( this.oCFMLENGINE.isMT() ){
 				setColdboxOCM( CreateObject("component","coldbox.system.cache.MTCacheManager").init(this) );
@@ -262,7 +261,7 @@ Description		: This is the main ColdBox front Controller.
 	</cffunction>
 
 	<!--- Plugin Factories --->
-	<cffunction name="getPlugin" access="Public" returntype="any" hint="I am the Plugin cfc object factory." output="true">
+	<cffunction name="getPlugin" access="Public" returntype="any" hint="I am the Plugin cfc object factory." output="false">
 		<cfargument name="plugin" 		type="string"  hint="The Plugin object's name to instantiate" >
 		<cfargument name="customPlugin" type="boolean" required="false" default="false" hint="Used internally to create custom plugins.">
 		<cfargument name="newInstance"  type="boolean" required="false" default="false" hint="If true, it will create and return a new plugin. No caching or persistance.">
@@ -353,9 +352,10 @@ Description		: This is the main ColdBox front Controller.
 	<!--- Event Service Locator Factory --->
 	<cffunction name="runEvent" returntype="any" access="Public" hint="I am an event handler runnable factory. If no event is passed in then it will run the default event from the config file.">
 		<!--- ************************************************************* --->
-		<cfargument name="event"         type="any" 	required="false" default="" hint="The event to run as a string. If no current event is set, use the default event from the config.xml. This is a string">
+		<cfargument name="event"         type="any" 	required="false" default="" 	 hint="The event to run as a string. If no current event is set, use the default event from the config.xml. This is a string">
 		<cfargument name="prepostExempt" type="boolean" required="false" default="false" hint="If true, pre/post handlers will not be fired.">
 		<cfargument name="private" 		 type="boolean" required="false" default="false" hint="Execute a private event or not, default is false"/>
+		<cfargument name="default" 		 type="boolean" required="false" default="false" hint="The flag that let's this service now if it is the default set event running or not. USED BY THE FRAMEWORK ONLY">
 		<!--- ************************************************************* --->
 		<cfset var oEventHandler = "">
 		<cfset var oEventHandlerBean = "">
@@ -364,9 +364,9 @@ Description		: This is the main ColdBox front Controller.
 		<cfset var local = structnew()>
 		<cfset var privateArgCollection = structnew()>
 		
-		<!--- Default Event Test --->
+		<!--- Default Event Check --->
 		<cfif len(trim(arguments.event)) eq 0>
-			<cfset arguments.event = oRequestContext.getValue(getSetting("EventName"))>
+			<cfset arguments.event = oRequestContext.getCurrentEvent()>
 		</cfif>
 		
 		<!--- Validate the incoming event --->
@@ -379,15 +379,22 @@ Description		: This is the main ColdBox front Controller.
 		
 		<!--- InterceptMetadata --->
 		<cfset interceptMetadata.processedEvent = arguments.event>
-		
 		<!--- Execute preEvent Interception --->
 		<cfset getInterceptorService().processState("preEvent",interceptMetadata)>
 			
 		<!--- PreHandler Execution --->
 		<cfif not arguments.prepostExempt and structKeyExists(oEventHandler,"preHandler")>
 			<cfmodule template="includes/Timer.cfm" timertag="invoking runEvent [preHandler] for #arguments.event#" controller="#this#">
-			<cfset oEventHandler.preHandler(oRequestContext)>
+				<cfset oEventHandler.preHandler(oRequestContext)>
 			</cfmodule>
+		</cfif>
+		
+		<!--- Verify if event was overriden --->
+		<cfif (arguments.default) and (arguments.event neq oRequestContext.getCurrentEvent())>
+			<!--- Validate the overriden event --->
+			<cfset oEventHandlerBean = getHandlerService().getRegisteredHandler(oRequestContext.getCurrentEvent())>
+			<!--- Get the new event handler to execute --->
+			<cfset oEventHandler = getHandlerService().getHandler(oEventHandlerBean)>
 		</cfif>
 
 		<!--- Private or Public Event Execution --->

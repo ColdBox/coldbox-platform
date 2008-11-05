@@ -9,11 +9,11 @@ Date        :	10/10/2007
 Description :
 	This is the main ColdBox handler service.
 ----------------------------------------------------------------------->
-<cfcomponent name="handlerService" extends="coldbox.system.services.BaseService" hint="This is the main Coldbox Handler service" output="false">
+<cfcomponent name="HandlerService" extends="coldbox.system.services.BaseService" hint="This is the main Coldbox Handler service" output="false">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
-	<cffunction name="init" access="public" output="false" returntype="handlerService" hint="Constructor">
+	<cffunction name="init" access="public" output="false" returntype="HandlerService" hint="Constructor">
 		<!--- ************************************************************* --->
 		<cfargument name="controller" type="any" required="true">
 		<!--- ************************************************************* --->

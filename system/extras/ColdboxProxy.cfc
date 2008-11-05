@@ -58,7 +58,7 @@ Description :
 				}
 					
 				//Execute the Event
-				local.results = cbController.runEvent();
+				local.results = cbController.runEvent(default=true);
 				
 				//Request END Handler if defined
 				if ( cbController.getSetting("RequestEndHandler") neq "" ){
@@ -222,7 +222,7 @@ Description :
 	</cffunction>
 	
 	<!--- Facade: Get a plugin --->
-	<cffunction name="getPlugin" access="private" returntype="any" hint="Plugin factory, returns a new or cached instance of a plugin." output="true">
+	<cffunction name="getPlugin" access="private" returntype="any" hint="Plugin factory, returns a new or cached instance of a plugin." output="false">
 		<!--- ************************************************************* --->
 		<cfargument name="plugin" 		type="string"  hint="The Plugin object's name to instantiate" >
 		<cfargument name="customPlugin" type="boolean" required="false" default="false" hint="Used internally to create custom plugins.">

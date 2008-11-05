@@ -4,7 +4,7 @@
 	<Settings>
 		<Setting name="AppName" 					value="coldbox testharness"/>
 		<Setting name="AppMapping"					value="/coldbox/testharness" />
-		<Setting name="DebugMode" 					value="true"/>
+		<Setting name="DebugMode" 					value="false"/>
 		<Setting name="DebugPassword" 				value="coldbox"/>
 		<Setting name="ReinitPassword" 				value=""/>
 		<Setting name="EventName" 					value="event"/>

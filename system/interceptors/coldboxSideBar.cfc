@@ -16,7 +16,7 @@ Modification History:
 					   isScroll property implemented. Changed xml location (SideBar=ColdBoxSideBar)
 10/13/2008 evdlinden : added waitTimeBeforeOpen property					   
 ----------------------------------------------------------------------->
-<cfcomponent name="coldboxSideBar" output="true" extends="coldbox.system.interceptor" hint="The ColdBox Developer Side Bar">
+<cfcomponent name="coldboxSideBar" output="false" extends="coldbox.system.interceptor" hint="The ColdBox Developer Side Bar">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 	
@@ -91,7 +91,7 @@ Modification History:
 <!------------------------------------------- INTERCEPTION POINTS ------------------------------------------->
 
 	<!--- afterAspectsLoad --->
-	<cffunction name="afterAspectsLoad" access="public" returntype="void" output="true">
+	<cffunction name="afterAspectsLoad" access="public" returntype="void" output="false">
 		<cfargument name="event" required="true" type="coldbox.system.beans.requestContext">
 		
 		<!--- Set isEnabled property after environmentControl interception --->
@@ -164,7 +164,7 @@ Modification History:
 	</cffunction>
 
 	<!--- postRender --->
-	<cffunction name="postRender" access="public" returntype="void" output="true">
+	<cffunction name="postRender" access="public" returntype="void" output="false">
 		<cfargument name="event" required="true" type="coldbox.system.beans.requestContext">
 		<!--- Render SideBar? --->
 		<cfif isStruct(event.getRenderData()) and structisEmpty(event.getRenderData())>
@@ -177,7 +177,7 @@ Modification History:
 	</cffunction>
 
 	<!--- onException --->
-	<cffunction name="onException" access="public" returntype="void" output="true">
+	<cffunction name="onException" access="public" returntype="void" output="false">
 		<cfargument name="event" required="true" type="coldbox.system.beans.requestContext">
 		<!--- Render SideBar? --->
 		<cfif getIsRender(arguments.event) >
@@ -189,7 +189,7 @@ Modification History:
 <!------------------------------------------- PRIVATE METHDOS ------------------------------------------->
 	
 	<!--- getRenderedSideBar --->
-	<cffunction name="getRenderedSideBar" access="public" output="true" returntype="string" hint="Render our beautiful sidebar">
+	<cffunction name="getRenderedSideBar" access="public" output="false" returntype="string" hint="Render our beautiful sidebar">
 		<cfargument name="event" required="true" type="coldbox.system.beans.requestContext">
 		
 		<cfset var renderedSideBar = ''>

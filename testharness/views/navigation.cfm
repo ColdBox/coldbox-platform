@@ -17,4 +17,6 @@
 <p><a href="#getSetting("sesbaseURL")#?#getController().getSetting("eventName")#=default.rss">RSS Reader</a></p>
 <p><a href="#getSetting("sesbaseURL")#?#getController().getSetting("eventName")#=default.testroute">Test SetNextEvent Route</a></p>
 <p><a href="#getSetting("sesbaseURL")#?#getController().getSetting("eventName")#=default">Default Handler</a></p>
+
+<p><a href="#getSetting("sesbaseURL")#?#getController().getSetting("eventName")#=default.protect">PreHandler Protection</a></p>
 </cfoutput>

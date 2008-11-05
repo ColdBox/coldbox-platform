@@ -12,11 +12,11 @@ Description :
 Modification History:
 01/18/2007 - Created
 ----------------------------------------------------------------------->
-<cfcomponent name="pluginService" output="false" hint="The coldbox plugin service" extends="coldbox.system.services.BaseService">
+<cfcomponent name="PluginService" output="false" hint="The coldbox plugin service" extends="coldbox.system.services.BaseService">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
-	<cffunction name="init" access="public" output="false" returntype="pluginService" hint="Constructor">
+	<cffunction name="init" access="public" output="false" returntype="PluginService" hint="Constructor">
 		<!--- ************************************************************* --->
 		<cfargument name="controller" type="any" required="true">
 		<!--- ************************************************************* --->

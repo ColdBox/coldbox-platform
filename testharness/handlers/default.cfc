@@ -37,6 +37,28 @@ Modification History:
 		<cfset event.setView('vwQuote')>
 	</cffunction>
 	
+	<!--- Pre Handler --->
+	<cffunction name="preHandler" access="public" returntype="any" hint="" output="false" >
+		<cfargument name="Event" type="coldbox.system.beans.requestContext" required="yes">
+	    <cfset event.overrideEvent('default.override')>
+	</cffunction>
+	<!--- protect --->
+	<cffunction name="protect" access="public" returntype="void" output="false" hint="">
+		<cfargument name="Event" type="coldbox.system.beans.requestContext" required="yes">
+	    <cfset var rc = event.getCollection()>
+	    
+	    <cfset getPlugin("messagebox").setMessage(type="error", message="Override did not work")>    
+	    <cfset event.setView('default/protect')>
+	</cffunction>
+	<!--- override --->
+	<cffunction name="override" access="public" returntype="void" output="false" hint="">
+		<cfargument name="Event" type="coldbox.system.beans.requestContext" required="yes">
+	    <cfset var rc = event.getCollection()>
+	    
+	    <cfset getPlugin("messagebox").setMessage(type="info", message="Override Worked")>
+	    <cfset event.setView('default/protect')>
+	</cffunction>
+	
 	<!--- implicit --->
 	<cffunction name="implicit" access="public" returntype="void" output="false" hint="">
 		<cfargument name="Event" type="coldbox.system.beans.requestContext" required="yes">

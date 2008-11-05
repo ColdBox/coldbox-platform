@@ -9,11 +9,11 @@ Date        :	9/28/2007
 Description :
 	The interceptor service for all interception related methods.
 ----------------------------------------------------------------------->
-<cfcomponent name="interceptorService" output="false" hint="The coldbox interceptor service" extends="coldbox.system.services.BaseService">
+<cfcomponent name="InterceptorService" output="false" hint="The coldbox interceptor service" extends="coldbox.system.services.BaseService">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
-	<cffunction name="init" access="public" output="false" returntype="interceptorService" hint="Constructor">
+	<cffunction name="init" access="public" output="false" returntype="InterceptorService" hint="Constructor">
 		<!--- ************************************************************* --->
 		<cfargument name="controller" type="any" required="true">
 		<!--- ************************************************************* --->

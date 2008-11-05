@@ -13,11 +13,11 @@ Description :
 Modification History:
 01/18/2007 - Created
 ----------------------------------------------------------------------->
-<cfcomponent name="requestService" output="false" hint="This service takes care of preparing and creating request contexts. Facades to FORM and URL" extends="coldbox.system.services.BaseService">
+<cfcomponent name="RequestService" output="false" hint="This service takes care of preparing and creating request contexts. Facades to FORM and URL" extends="coldbox.system.services.BaseService">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
-	<cffunction name="init" access="public" output="false" returntype="requestService" hint="Constructor">
+	<cffunction name="init" access="public" output="false" returntype="RequestService" hint="Constructor">
 		<cfargument name="controller" type="any" required="true" hint="Coldbox controller">
 		<cfscript>
 			

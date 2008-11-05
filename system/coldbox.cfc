@@ -150,7 +150,7 @@ Description :
 				<cfelse>
 				
 					<!--- Run Default/Set Event --->
-					<cfset cbController.runEvent()>
+					<cfset cbController.runEvent(default=true)>
 					
 					<!--- No Render Test --->
 					<cfif not event.isNoRender()>
