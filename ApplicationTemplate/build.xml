@@ -10,54 +10,201 @@
      The task will generate a new application template for you in a 
      directory of your choice, full path.
      ====================================================================== -->
-<project name="coldbox.newapplication" default="generate" basedir=".">	
+<project name="coldbox.newapplication" default="run" basedir=".">	
 	
 	<!--Properties-->
 	<property name="src.dir" 			value="." />
-    
+	<property name="base.errortemplate"	value="includes/templates/generic_error.cfm" />
+	<property name="base.config"		value="config/coldbox.xml.cfm" />
+	<property name="base.htacess"		value="../install/SESRewriteRules/.htaccess" />
+	<property name="base.isapi"			value="../install/SESRewriteRules/IsapiRewrite4.ini" />
+	   
+	<!-- Load Contrib Tasks -->
+	<path id="cp">
+		<fileset dir="../install/antlib">
+			<include name="**/*.jar" />
+		</fileset>
+	</path>
+	<!-- Define Tasks -->
+	<taskdef resource="net/sf/antcontrib/antlib.xml" classpathref="cp" />
+	<taskdef name="antform" classname="com.sardak.antform.AntForm"	classpathref="cp"/>
+	
+	<!-- Create Form -->
+	<target name="createForm" description="Create the input forms">
+		<antform title="ColdBox Application Generator"
+				 image="../install/poweredby_assets/chat_icon.png"
+				 width="650"
+				 height="600"
+				 icon="../install/poweredby_assets/chat_icon.png">
+			<Controlbar>
+				<Button label="Cancel" type="cancel" />
+				<Button label="Reset" type="reset" />
+				<Button label="Generate" type="ok" target="generate" newproject="false" />				
+			</Controlbar>
+				
+			<!--Ask for user input to create application-->
+			<textProperty label="Application Name"
+					      property="app.name"
+						  columns="25"
+						  Required="true"
+						  tooltip="The name of the application to generate"
+						  focus="true"/>
+			<!-- Destination -->
+			<fileselectionproperty label="Destination Directory"
+								   property="app.destination"
+								   directoryChooser="true"
+								   Required="true"
+								   columns="25"
+								   tooltip="Destination Directory (ex: /data/webroot)"/>
+			<!-- Inheritance -->
+			<label>Application.cfc with inheritance is the default. If not chosen, then I will build a composition Application.cfc (Inheritance is recommended)</label>
+			<radioSelectionProperty label="Application.cfc Inheritance?"
+							   property="app.useInheritance"
+							   values="true,false"
+							   tooltip="Create the application.cfc using inheritance" />
+			<!-- Error Template -->
+			<label>Configure the application to use a custom error template. The default is to use the framework's error template.</label>
+			<radioSelectionProperty label="Use Custom Error Template?"
+							   property="app.useErrorTemplate"
+							   values="false,true"
+							   tooltip="Configure the application to use a custom error template." />
+			<!-- Favs Template -->
+			<label>Generate a robots.txt, favicon and more.</label>
+			<radioSelectionProperty label="Generate Extras?"
+							   property="app.favs"
+							   values="true,false"
+							   tooltip="Generate a favicon,robots.txt and more." />
+			<!-- Favs Template -->
+			<label>Choose your URL rewrite engine if any. This will create an appropriate .htaccess or isapirewrite.ini file or none and configure your routes.</label>
+			<selectionProperty label="URL Rewrite Engine?"
+							   property="app.rewrite"
+							   values="None,mod_rewrite,Isapi"
+							   tooltip="Choose your URL rewrite engine." />
+			<!-- Unit Testing -->
+			<selectionProperty label="Unit Testing Engine?"
+							   property="app.unittest"
+							   values="mxunit,cfcunit"
+							   tooltip="Choose your Unit Testing Engine." />	
+			
+		</antform>
+		
+	</target>
+	
 	<!-- Init task -->
 	<target name="init" description="Initialize the task">
 		<!--Init TimeStamp-->
-		<tstamp />
-		<!--Ask for user input to create application-->
-		<input message="What is the name of your application: (Ex:blog,forum)?"
-		       addproperty="app.name"/>
-		<input message="What is the destination directory: (Ex:/data/webroot)?" 
-		       addproperty="destination" />
+		<tstamp />		
 	</target>
-
+	
+	<!-- Run the generator -->
+	<target name="run" description="Run the Generator" depends="init,createForm" />
+	
 	<!--Generate-->
 	<target name="generate" description="Generate the new skeleton" depends="init">
 		<echo>Generating new Application: ${app.name}</echo>
-		<echo>Destination Directory: ${basedir}/${destination}</echo>
+		<echo>Destination Directory: ${basedir}/${app.destination}</echo>
 		<echo>Generation Date: ${TODAY}</echo>
-
+		
 		<!--Generate-->
-		<copy todir="${destination}/${app.name}">
+		<copy todir="${app.destination}/${app.name}">
 			<fileset dir="${src.dir}">
-				<exclude name="${destination}" />
+				<exclude name="${app.destination}" />
 				<exclude name="header.txt" />
 				<exclude name="build.xml" />
 				<exclude name="**/*.xml.cfm" />
 			</fileset>
 		</copy>
-		<copy todir="${destination}/${app.name}">
+		<copy todir="${app.destination}/${app.name}">
 			<fileset dir="${src.dir}">
-				<exclude name="${destination}" />
+				<exclude name="${app.destination}" />
 				<exclude name="header.txt" />
 				<exclude name="build.xml" />
 				<include name="**/*.xml.cfm" />
 			</fileset>
 		</copy>
 		<!--Replace AppName in Config -->
-		<replace file="${destination}/${app.name}/config/coldbox.xml.cfm" value="${app.name}" summary="yes">
+		<replace file="${app.destination}/${app.name}/${base.config}" value="${app.name}" summary="yes">
 			<replacetoken>Your App Name here</replacetoken>
 		</replace>
 		<!--Replace AppName in eclipse project -->
-		<replace file="${destination}/${app.name}/.project" value="${app.name}" summary="yes">
+		<replace file="${app.destination}/${app.name}/.project" value="${app.name}" summary="yes">
 			<replacetoken>@appname@</replacetoken>
 		</replace>
 		<!--Delete Header File-->
-		<delete file="${destination}/${app.name}/readme.txt" />
+		<delete file="${app.destination}/${app.name}/build.xml" />
+		<!-- Inheritance If -->
+		<if>
+			<equals arg1="${app.useInheritance}" arg2="true" casesensitive="false" />
+			<then>
+				<delete file="${app.destination}/${app.name}/Application_noinheritance.cfc" />
+			</then>
+			<else>
+				<delete file="${app.destination}/${app.name}/Application.cfc" />
+				<move file="${app.destination}/${app.name}/Application_noinheritance.cfc"
+				      tofile="${app.destination}/${app.name}/Application.cfc" />
+			</else>
+		</if>
+		<!-- Error Template -->
+		<if>
+			<equals arg1="${app.useErrorTemplate}" arg2="true" casesensitive="false" />
+			<then>
+				<replace file="${app.destination}/${app.name}/${base.config}" value="${base.errortemplate}" summary="yes">
+					<replacetoken>@errortemplate@</replacetoken>
+				</replace>
+			</then>
+			<else>
+				<replace file="${app.destination}/${app.name}/${base.config}" value="" summary="yes">
+					<replacetoken>@errortemplate@</replacetoken>
+				</replace>
+			</else>
+		</if>
+		<!--Favs -->
+		<if>
+			<equals arg1="${app.favs}" arg2="false" />
+			<then>
+				<delete file="${app.destination}/${app.name}/robots.txt" />
+				<delete file="${app.destination}/${app.name}/favicon.ico" />		
+			</then>
+		</if>
+		<!-- Rewrite Setup -->
+		<if>
+			<equals arg1="${app.rewrite}" arg2="mod_rewrite" />
+			<then>
+				<copy file="${base.htacess}" todir="${app.destination}/${app.name}/" />	
+				<antcall target="replaceRewrite" />
+			</then>
+		</if>
+		<if>
+			<equals arg1="${app.rewrite}" arg2="isapi" />
+			<then>
+				<copy file="${base.isapi}" todir="${app.destination}/${app.name}/" />	
+				<antcall target="replaceRewrite" />
+			</then>
+		</if>
+		<!-- Unit Testing -->
+		<if>
+			<equals arg1="${app.unittest}" arg2="mxunit" />
+			<then>
+				<delete dir="${app.destination}/${app.name}/test/integration/cfcunit" />
+				<move todir="${app.destination}/${app.name}/test/integration">
+					<fileset dir="${app.destination}/${app.name}/test/integration/mxunit" />
+				</move>
+				<delete dir="${app.destination}/${app.name}/test/integration/mxunit" />								
+			</then>
+			<else>
+				<delete dir="${app.destination}/${app.name}/test/integration/mxunit" />
+				<move todir="${app.destination}/${app.name}/test/integration">
+					<fileset dir="${app.destination}/${app.name}/test/integration/cfunit" />
+				</move>
+				<delete dir="${app.destination}/${app.name}/test/integration/cfcunit" />
+			</else>
+		</if>
+	</target>
+	
+	<!-- Rewrite Engine Setup -->
+	<target name="replaceRewrite" >
+		<replace file="${app.destination}/${app.name}/config/routes.cfm" value="" summary="yes">
+			<replacetoken>/index.cfm</replacetoken>
+		</replace>
 	</target>
 </project>

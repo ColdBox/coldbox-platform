@@ -40,25 +40,25 @@
 		<!--Event Handler to run on the start of a request, leave blank if not used. Emulates the Application.cfc onRequestStart method	-->
 		<Setting name="RequestStartHandler" 		value="main.onRequestStart"/>
 		<!--Event Handler to run at end of all requests, leave blank if not used. Emulates the Application.cfc onRequestEnd method-->
-		<Setting name="RequestEndHandler" 			value="main.onRequestEnd"/>
+		<Setting name="RequestEndHandler" 			value=""/>
 		<!--Event Handler to run at the start of an application, leave blank if not used. Emulates the Application.cfc onApplicationStart method	-->
 		<Setting name="ApplicationStartHandler" 	value="main.onAppInit"/>
 		<!--Event Handler to run at the start of a session, leave blank if not used.-->
-		<Setting name="SessionStartHandler" 		value="main.onSessionStart"/>
+		<Setting name="SessionStartHandler" 		value=""/>
 		<!--Event Handler to run at the end of a session, leave blank if not used.-->
-		<Setting name="SessionEndHandler" 			value="main.onSessionEnd"/>
+		<Setting name="SessionEndHandler" 			value=""/>
 		<!--The event handler to execute on all framework exceptions. Event Handler syntax required.-->
 		<Setting name="ExceptionHandler"			value="" />
 		<!--What event to fire when an invalid event is detected-->
 		<Setting name="onInvalidEvent" 				value="" />
 		<!--Full path from the application's root to your custom error page, else leave blank. -->
-		<Setting name="CustomErrorTemplate"			value="" />
+		<Setting name="CustomErrorTemplate"			value="@errortemplate@" />
 		<!--The Email address from which all outgoing framework emails will be sent. -->
-		<Setting name="OwnerEmail" 					value="myemail@gmail.com" />
+		<Setting name="OwnerEmail" 					value="" />
 		<!-- Enable Bug Reports to be emailed out, set to true by default if left blank
 			A sample template has been provided to you in includes/generic_error.cfm
 		 -->
-		<Setting name="EnableBugReports" 			value="true"/>
+		<Setting name="EnableBugReports" 			value="false"/>
 		<!--UDF Library To Load on every request for your views and handlers -->
 		<Setting name="UDFLibraryFile" 				value="includes/helpers/ApplicationHelper.cfm" />
 		<!--Messagebox Style Override. A boolean of wether to override the styles using your own css.-->
@@ -112,8 +112,7 @@
 		</YourSettings>
 	 -->
 	<YourSettings>
-		<!-- Show SideBar? true/false, else leave blank. -->
-		<Setting name="ColdBoxSideBar" value="true" />
+		
 	</YourSettings>
 	
 	<!-- Custom Conventions : You can override the framework wide conventions of the locations of the needed objects
@@ -131,7 +130,7 @@
 	PersistentRequestProfiler : Activate the event profiler across multiple requests
 	maxPersistentRequestProfilers : Max records to keep in the profiler. Don't get gready.
 	maxRCPanelQueryRows : If a query is dumped in the RC panel, it will be truncated to this many rows.
-	
+	-->
 	<DebuggerSettings>
 		<PersistentRequestProfiler>true</PersistentRequestProfiler>
 		<maxPersistentRequestProfilers>10</maxPersistentRequestProfilers>
@@ -141,8 +140,7 @@
 		<InfoPanel 		show="true" expanded="true" />
 		<CachePanel 	show="true" expanded="false" />
 		<RCPanel		show="true" expanded="false" />
-	</DebuggerSettings>
-	-->
+	</DebuggerSettings>	
 	
 	<!--Optional,if blank it will use the CFMX administrator settings.-->
 	<MailServerSettings>
@@ -198,7 +196,7 @@
 		<!-- <Datasource alias="MyDSNAlias" name="real_dsn_name"   dbtype="mysql"  username="" password="" /> -->
 	</Datasources>
 	
-	<!--ColdBox Object Caching Settings Overrides the Framework-wide settings 
+	<!--ColdBox Object Caching Settings Overrides the Framework-wide settings -->
 	<Cache>
 		<ObjectDefaultTimeout>60</ObjectDefaultTimeout>
 		<ObjectDefaultLastAccessTimeout>30</ObjectDefaultLastAccessTimeout>
@@ -208,7 +206,7 @@
 		<FreeMemoryPercentageThreshold>1</FreeMemoryPercentageThreshold>
 		<EvictionPolicy>LRU</EvictionPolicy>
 	</Cache>
-	-->
+	
 	
 	<!-- Interceptor Declarations 
 	<Interceptors throwOnInvalidStates="true">
@@ -224,47 +222,17 @@
 	
 	<Interceptors>
 		<!-- USE ENVIRONMENT CONTROL -->
-		<Interceptor class="coldbox.system.interceptors.environment">
+		<Interceptor class="coldbox.system.interceptors.environmentControl">
 			<Property name='configFile'>config/environments.xml.cfm</Property>
+		</Interceptor>
+		<!-- USE AUTOWIRING -->
+		<Interceptor class="coldbox.system.interceptors.autowire">
+			<Property name='enableSetterInjection'>true</Property>
 		</Interceptor>
 		<!-- USE SES -->
 		<Interceptor class="coldbox.system.interceptors.ses">
 			<Property name="configFile">config/routes.cfm</Property>
-		</Interceptor>
-		
-		<!-- Developer's ColdBox Sidebar -->
-		<Interceptor class="coldbox.system.interceptors.coldboxSideBar">
-			<!-- Y offset: number, else leave blank -->
-			<Property name="yOffset"></Property>
-			<!-- Scroll: true/false, else leave blank -->
-			<Property name="isScroll"></Property>
-			<!-- Slide Speed: number, else leave blank -->
-			<Property name="slideSpeed"></Property>
-			<!-- Wait time before closing: number, else leave blank -->
-			<Property name="waitTimeBeforeClose"></Property>
-			<!-- Links (JSON array of objects), else leave blank
-			e.g. 
-				[
-				{"desc":"ColdBox API","href":"http:\/\/www.coldboxframework.com\/api\/"}
-				,{"desc":"ColdBox Credits","href":"http:\/\/ortus.svnrepository.com\/coldbox\/trac.cgi\/wiki\/cbCredits"}
-				,{"desc":"ColdBox SideBar Help","href":"http:\/\/ortus.svnrepository.com\/coldbox\/trac.cgi\/wiki\/cbSideBar"}
-				,{"desc":"Transfer Docs","href":"http:\/\/docs.transfer-orm.com\/"}
-				,{"desc":"My API","href":"http:\/\/localhost\/myApi/"}
-				,{"desc":"My Database Schema","href":"http:\/\/localhost\/myDatabaseSchema.pdf"}
-				]			
-			 -->
- 			<Property name="links"></Property>
-			<!-- Width of the sidebar including visible width, else leave blank -->
-			<Property name="width"></Property>
-			<!-- Visible width, else leave blank  -->
-			<Property name="visibleWidth"></Property>
-			<!--Full path from the application's root, else leave blank. -->
-			<Property name="imagePath"></Property>
-			<!-- Vertical alignment of the image: top,middle or bottom, else leave blank  -->
-			<Property name="imageVAlign"></Property>
-			<!--Full path from the application's root, else leave blank -->
-			<Property name="cssPath"></Property>
-		</Interceptor>
+		</Interceptor>		
 	</Interceptors>
 	
 </Config>

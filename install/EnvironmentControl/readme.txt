@@ -11,7 +11,7 @@ Description :
 	you want.  You must then set it as a property of the interceptor in your config
 	file.  The path will be expanded, so please make sure it works.
 	
-	<Interceptor class="coldbox.system.interceptors.environment">
+	<Interceptor class="coldbox.system.interceptors.environmentControl">
 		<Property name='configFile'>config/environments.xml.cfm</Property>
 		<Property name='fireOnInit'>false</Property>
 	</Interceptor>
