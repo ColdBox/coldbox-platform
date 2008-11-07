@@ -1,6 +1,6 @@
 <!-----------------------------------------------------------------------Author 	 :	Your NameDate     :	September 25, 2005Description : 				This is a ColdBox event handler for general methods.Please note that the extends needs to point to the eventhandler.cfcin the ColdBox system directory.extends = coldbox.system.eventhandler	-----------------------------------------------------------------------><cfcomponent name="general" extends="coldbox.system.eventhandler" output="false">		<!--- Event Caching Suffix: It will be appended to every event cached key. This can be a locale, dynamic, etc. --->	<cfset this.EVENT_CACHE_SUFFIX = ""><!------------------------------------------- CONSTRUCTOR ------------------------------------------>
 	<!--- This init is mandatory, including the super.init(). ---> 	<cffunction name="init" access="public" returntype="general" output="false">		<cfargument name="controller" type="any">		<cfset super.init(arguments.controller)>		<!--- Any constructor code here --->		<cfreturn this>	</cffunction><!----------------------------------------- IMPLICIT EVENTS ------------------------------------------>
-	<!--- UNCOMMENT TO USE THEM		<!--- preHandler --->
+	<!--- UNCOMMENT HANDLER IMPLICIT EVENTS		<!--- preHandler --->
 	<cffunction name="preHandler" access="public" returntype="void" output="false" hint="Executes before any event in this handler">
 		<cfargument name="Event" type="any" required="yes">
 		<cfset var rc = event.getCollection()>
