@@ -252,12 +252,14 @@ Modifications:
 		<cfargument name="stringNumbers" 	type="boolean" 	required="No" default="false" >
 		<cfargument name="formatDates" 		type="boolean" 	required="No" default="false" >
 		<cfargument name="columnListFormat" type="string" 	required="No" default="string" hint="string or array" >
+		<cfargument name="keyCase"			type="string" 	required="No" default="lower"  hint="lower or upper"/>
 		<!--- ************************************************************* --->
 		
 		<!--- VARIABLE DECLARATION --->
 		<cfset var jsonString = "" />
 		<cfset var tempVal = "" />
 		<cfset var arKeys = "" />
+		<cfset var arKey = "" />
 		<cfset var colPos = 1 />
 		<cfset var i = 1 />
 		<cfset var column = ""/>
@@ -307,10 +309,18 @@ Modifications:
 			<cfset arKeys = StructKeyArray(_data) />
 			<cfloop from="1" to="#ArrayLen(arKeys)#" index="i">
 				<cfset tempVal = encode( _data[ arKeys[i] ], arguments.queryFormat, arguments.queryKeyCase, arguments.stringNumbers, arguments.formatDates, arguments.columnListFormat ) />
-				<cfif dJSONString.toString() EQ "">
-					<cfset dJSONString.append('"' & arKeys[i] & '":' & tempVal) />
+				
+				<!--- Key to lower Case? --->
+				<cfif arguments.keyCase EQ "lower">
+					<cfset arKey = LCASE(arKeys[i]) />
 				<cfelse>
-					<cfset dJSONString.append("," & '"' & arKeys[i] & '":' & tempVal) />
+					<cfset arKey = UCASE(arKeys[i]) />
+				</cfif>
+				
+				<cfif dJSONString.toString() EQ "">
+					<cfset dJSONString.append('"' & arKey & '":' & tempVal) />
+				<cfelse>
+					<cfset dJSONString.append("," & '"' & arKey & '":' & tempVal) />
 				</cfif>
 			</cfloop>
 			
