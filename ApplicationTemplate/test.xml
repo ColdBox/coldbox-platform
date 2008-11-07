@@ -1,0 +1,307 @@
+<?xml version="1.0"?>
+<project default="testmenu">
+	<property file="properties.txt"/>
+	<property file="properties2.txt"/>
+	<property file="files.properties"/>
+	<property file="table.properties"/>
+	<path id="runtime.cp">
+		<pathelement location="bin/"/>
+		<fileset dir="../install/antlib" includes="antform.jar"/>
+	</path>
+	<taskdef name="antform" classname="com.sardak.antform.AntForm"
+		classpathref="runtime.cp"/>
+	<taskdef name="antmenu" classname="com.sardak.antform.AntMenu"
+		classpathref="runtime.cp"/>
+
+	<!-- test the taskdef  with a mail-like user form -->
+	<target name="test" description="test the antform with a stylesheet">
+		<antform title="Send Mail" 
+			save="properties.txt"
+			stylesheet="style.test"
+			image="doc/images/testlogo.jpg"
+			focus="OK">
+			<label>To send a mail, use the following form. Pick a recipient, type a subject and a body...the script will do the rest.</label>
+			<radioSelectionProperty label="Recipient: " 
+				property="recipient" 
+				values="address1@somewhere.com; address2@somewhere.com; address4@somewhere.com" 
+				separator=";"/>
+			<separator/>
+			<textProperty label="Subject : " property="subject" />
+			<multilineTextProperty label="Message body: "
+				property="body"/>
+			<booleanProperty label="Send immediately: " property="send"/>
+		</antform>
+		<antcall target="other"/>
+	</target>
+
+	<target name="simpleecho">
+		<echo>simple echo</echo>
+	</target>
+
+	<!-- test antform with a mail-like user form for non-editable properties -->
+	<target name="testne" description="test antform with a mail-like user form for non-editable properties">
+		<echo>antforms test -> non editable properties...</echo>
+		<antform title="Non-editable properties"
+			okMessage="OK" resetMessage="reset"
+			save="properties.txt">
+			<label>These properties are non-editable: you can see what they're set to but you can't change the values.</label>
+			<radioSelectionProperty label="Recipient: " 
+				property="recipient" 
+				values="address1@somewhere.com; address2@somewhere.com; address4@somewhere.com" 
+				separator=";" editable="false"/>
+			<textProperty label="Subject : " property="subject"  editable="false"/>
+			<multilineTextProperty label="Message body: " property="body" editable="false"/>
+			<booleanProperty label="Send immediately: " property="send" editable="false"/>
+		</antform>
+		<antcall target="other"/>
+	</target>
+
+	<target name="ts">
+		<tstamp>
+      			<format property="touch.time" pattern="MM/dd/yyyy hh:mm aa"/>
+		</tstamp>		
+		<echo>${touch.time}</echo>
+	</target>
+	<!-- test the antmenu task -->
+	<target name="testmenu">		
+		<antmenu image="doc/images/logo-small.jpg" 
+			title="AntForm &amp; AntMenu tests"
+			stylesheet="style.test">
+			<AntMenuItem name="AntMenu Tests">
+				<AntMenuItem name="Mail-type form" target="test"/>
+				<AntMenuItem name="Spinners &amp; dateProperty test" target="spinners"/>
+				<AntMenuItem name="Test non-editable properties" target="testne"/>
+				<AntMenuItem name="Login &amp; password test" target="password"/>
+				<AntMenuItem name="AntForm with inner menu test" target="afm"/>
+				<AntMenuItem name="Wizards test" target="wizard1"/>
+			</AntMenuItem>				
+			<AntMenuItem name="AntMenu tests">
+				<AntMenuItem name="This test" target="testmenu"/>
+			</AntMenuItem>				
+			<label>A short label with a few explanatory words concerning the menu at hand.</label>
+			<link label="Echo 1 target" target="echo1"/>
+			<link label="Echo 2 target" target="echo2"/>
+			<link label="Echo 3 target" target="echo3"/>			
+			<link label="End" target="end"/>
+		</antmenu>
+	</target>
+
+	<!-- test the filechoser -->
+	<target name="testfc">
+		<antform stylesheet="style.test" okMessage="OK" focus="OK"
+			title="File choosing test" save="properties.txt">
+			<label rows="1" columns="40">Choose a file and a directory</label>
+			<fileSelectionProperty required="true" label="Choose a file: " property="filename"/>
+			<fileSelectionProperty label="Choose a directory: "
+				directoryChooser="true" property="dirname"/>
+		</antform>
+	</target>
+	
+	<!-- test the linkbar -->
+	<target name="testlb">
+		<antform stylesheet="style.test" okMessage="OK" focus="OK" title="Linkbar test">
+			<label>Choose a result, or go to other results screen</label>
+			<radioSelectionProperty label="Results: " property="res"
+				values="1,2,3"/>			
+			<linkBar>
+				<link label="Previous 3 results"
+					target="echo1"/>
+				<link label="Next 3 results" target="echo2"/>
+			</linkBar>
+			<checkSelectionProperty label="Results: " property="res2"
+				values="1,2,3"/>			
+		</antform>
+		<echo>${res2}</echo>
+	</target>
+
+	<!-- echo the result of the file chooser-->
+	<target name="echofc" description="Test file chooser" depends="testfc">
+		<echo>${filename}</echo>
+		<echo>${dirname}</echo>
+	</target>	
+	<!-- password fields -->
+	<target name="password" description="test the password field">
+		<antform title="a login form" width="600" height="300"
+			focus="login" save="properties.txt">
+			<label>A Simple login form. This form shows how to hide text property values by swtiching on the password attribute, and also shows how to use required values: the form will not submit until both login and password have been typed into their field widgets.</label>
+			<textProperty label="login :" property="login"
+				required="true"/>
+			<textProperty required="true" label="password :" property="password" password="true"/>
+			
+		</antform>
+		<antcall target="login"/>
+	</target>
+
+	<!-- test wizard behaviour, step 1 -->
+	<target name="wizard1"  description="wizard test 1">
+		<antform title="Wizard step 1" image="doc/images/logo-small.jpg"
+			lookAndFeel="com.sun.java.swing.plaf.windows.WindowsLookAndFeel"
+			okMessage="Next" resetMessage="Main menu"
+			nextTarget="wizard2"
+			previousTarget="testmenu">
+			<label>This is the FIRST step in the wizard</label>
+			<textProperty label="How happy are you?"
+				property="happiness" />
+		</antform>
+	</target>
+
+	<!-- test wizard behaviour, step 2 -->
+	<target name="wizard2" description="wizard test 2">
+		<antform title="Wizard step 2" okMessage="Next" image="doc/images/logo-small.jpg"
+			resetMessage="Previous" nextTarget="wizard3"
+			previousTarget="wizard1">
+			<label>This is the SECOND step in the wizard</label>
+		</antform>
+	</target>
+
+	
+	<!-- test wizard behaviour, step 3 -->
+	<target name="wizard3" description="wizard test 3">
+		<antform title="Wizard step 3" okMessage="Finish" image="doc/images/logo-small.jpg"
+			resetMessage="Previous" nextTarget="end"
+			previousTarget="wizard2">
+			<label>This is the THIRD  step in the wizard</label>
+		</antform>
+	</target>
+
+
+	<!-- antform with added menu -->
+	<target name="afm" description="AntForm with menu">
+		<antform title="In-menu test" stylesheet="style.test"
+			image="doc/images/testlogo.jpg">
+			<AntMenuItem name="Echo targets">
+				<AntMenuItem name="Launch echo 1 task" target="echo1"/>
+				<AntMenuItem name="Launch echo 2 task" target="echo2"/>
+			</AntMenuItem>				
+			<AntMenuItem name="Wizard targets">
+				<AntMenuItem name="Launch wizard task">
+					<AntMenuItem name="Launch wizard 1" target="wizard1"/>
+					<AntMenuItem name="Launch wizard 2" target="wizard2"/>
+					<AntMenuItem name="Launch wizard 3" target="wizard3"/>
+				</AntMenuItem>				
+			</AntMenuItem>				
+			<label>This is a test with an inner menu</label>
+		</antform>
+	</target>
+	
+	<!-- echo login/password information from the password task -->
+	<target name="login">
+		<echo>Login: ${login}</echo>
+		<echo>Password: ${password}</echo>
+	</target>		
+
+	<!-- echo something -->
+	<target name="echo1">
+		<echo>Echo 1</echo>
+		<antcall target="testmenu"/>
+	</target>
+	<!-- echo something -->
+	<target name="echo2">
+		<echo>Echo 2</echo>
+		<antcall target="testmenu"/>
+	</target>
+	<!-- echo something -->
+	<target name="echo3">
+		<echo>Echo 3</echo>
+		<antcall target="testmenu"/>
+	</target>
+		<!-- echo something -->
+	<target name="end">
+		<echo>The End.</echo>
+	</target>
+
+	<!-- check if the properties were correctly modified -->
+	<target name="other" if="send">
+		<echo>subject: ${subject}</echo>
+		<echo>recipient: ${recipient}</echo>
+		<echo>body: ${body}</echo>		
+	</target>
+
+	<!-- fail a test due to unset properties -->
+	<target name="fail">
+		<echo>test destined to fail</echo>
+		<antform>
+			<textproperty label="a label"/>
+		</antform>
+	</target>
+
+	<!-- spinners test -->
+	<target  name="spinners">
+		<antform save="properties2.txt" stylesheet="style.test"
+			title="Spinners demo">
+			<numberProperty label="a number" property="spinnernumber" min="0" max="50" step="1"/>
+			<listProperty label="a list of values" property="spinnervalues"
+				values="val1,val2,val3"/>
+			<dateProperty label="A date" property="spinnerdate"
+				dateFormat="dd/MM/yyyy"/>
+		</antform>
+		<echo>${spinnernumber} ${spinnervalues} ${spinnerdate}</echo> 
+	</target>
+
+	<!-- path -->
+	<path id="home">
+		<fileset dir="c:/downloads"/>
+	</path>
+
+	<!-- get directory contents to a selection -->
+	<target name="dirContents">
+		<pathconvert refid="home" property="homecontents" pathSep=","/>			
+		<echo>${homecontents}</echo>
+		<antform title="a login form" width="900" height="300">
+			<label>A list  of files</label>
+			<selectionProperty label="Files: " property="files" values="${homecontents}" separator=","/>
+		</antform>
+	</target>
+
+
+	<property name="if1" value="some value"/>
+	<target name="ifunless">
+		<antform nextTarget="ifunless">
+			<booleanProperty label="unless" property="unless" unless="if1"/>
+			<textProperty label="if" property="if2" if="if1"/>
+			<textProperty label="if2" property="if2" if="if2"/>
+		</antform>
+	</target>
+
+	<target name="cancel">
+		<antform title="Cancel Test">
+			<cancel label="Cancel"/>
+		</antform>
+	</target>
+
+	<!-- a simple table test -->
+	<target name="table">
+		<antform save="table.properties" title="Table test">
+			<table label="a table" property="table" rowSeparator=";"
+				columnSeparator=","
+				columnWidth="10"
+				data="1,2,3,4,5,6,7,8,9,10"
+				columns="col1,col2,col3,col4,col5,col6,col7,col8,col9,col10"/>
+		</antform>
+	</target>
+	
+	<!-- a simple tabs test -->
+	<target name="tab">
+		<antform title="A Simple tab test">
+			<tab label="Tab 1"/>
+			<label>This is tab 1</label>
+			<textProperty label="Text one"  property="text1"/>
+			<tab label="Tab 2"/>			
+			<label>This is tab 2</label>
+			<textProperty label="Text two"  property="text2"/>
+			<tab label="Tab 3"/>		
+			<label>This is tab 3</label>
+			<textProperty label="Text three"  property="text3"/>
+		</antform>
+		<echo>text1=${text1}</echo>
+		<echo>text2=${text2}</echo>
+		<echo>text3=${text3}</echo>
+	</target>
+
+	<target name="icon" description="test the antform with an icon">
+		<antform title="my title" icon="doc/images/testlogo.jpg" />
+		<antform title="my title" icon="doc/images/valid-xhtml10.png" />
+		<antform title="my title" icon="doc/images/vim_created.gif" />
+	</target>
+</project>
+
