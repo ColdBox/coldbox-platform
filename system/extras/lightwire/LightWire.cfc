@@ -214,24 +214,31 @@
 			var ObjectMethod = "";
 			var Key	= "";
 			var CreateType = 0;
+			var ConstructorProperties = variables.Config[arguments.ObjectName].ConstructorProperties;
+			var ConstructorDependencies = variables.Config[arguments.ObjectName].ConstructorDependencyStruct;
 			
 			/* Map Type to CF create object types */
 			if( variables.Config[arguments.ObjectName].Type eq "cfc" ){ CreateType = "component"; }
 			if( variables.Config[arguments.ObjectName].Type eq "java" ){ CreateType = "java"; }
 			if( variables.Config[arguments.ObjectName].Type eq "webservice" ){ CreateType = "webservice"; }
 			
-			/* Get any constructor properties */
-			If (StructKeyExists(variables.Config[arguments.ObjectName], "ConstructorProperties")){
-				InitStruct = variables.Config[arguments.ObjectName].ConstructorProperties;
-			}			
-			/* Do we have any Constructor Dependencies */		
-			If (StructCount(variables.Config[arguments.ObjectName].ConstructorDependencyStruct)){
-				/* Loop over each Depdnency and Build It */
-				for(Key in variables.Config[arguments.ObjectName].ConstructorDependencyStruct){
-					/* Construct it via getBean() recursively */
-					InitStruct[variables.Config[arguments.ObjectName].ConstructorDependencyStruct[key]] = getBean(Key);
-		   		}		
-			}	
+			/* Setup constructor properties */
+			for(key in ConstructorProperties){
+				/* Check for Java Cast */
+				if( len(ConstructorProperties[key].cast) ){
+					InitStruct[key] = JavaCast(ConstructorProperties[key].cast, ConstructorProperties[key].value);
+				}
+				else{
+					InitStruct[key] = ConstructorProperties[key].value;
+				}
+			}
+						
+			/* Setup Constructor Dependencies */		
+			for(Key in ConstructorDependencies){
+				/* Construct it via getBean() recursively */
+				InitStruct[ConstructorDependencies[key]] = getBean(Key);
+	   		}	
+	   			
 			/* Create a Normal or Factory Bean? */
 			If ( not variables.config[arguments.ObjectName].isFactoryBean){
 				/* Get the configured object path */
@@ -296,7 +303,12 @@
 			// If there are any setter properties
 			For (key in ObjectConfig.SetterProperties){
 				/* Get Object Value */
-				DependentObjectValue = ObjectConfig.SetterProperties[key];
+				if( len(ObjectConfig.SetterProperties[key].cast) ){
+					DependentObjectValue = JavaCast(ObjectConfig.SetterProperties[key].cast,ObjectConfig.SetterProperties[key].value);
+				}
+				else{
+					DependentObjectValue = ObjectConfig.SetterProperties[key].value;
+				}
 				/* Invoke it */
 				invoker(object=arguments.object,method="set#key#",argList="#key#=#DependentObjectValue#");	
    			};
@@ -307,32 +319,37 @@
 				mixinSet(object=arguments.object,name=arguments.ObjectName);
 				
 				// If there are any mixin dependencies
-				// If (StructKeyExists(ObjectConfig,"MixinDependencies"))
 				// Inject them all 
 				For (Key in ObjectConfig.MixinDependencyStruct){ 
 					// Get current object name
 					If (Key NEQ arguments.ObjectName){
-						arguments.object.lightwireMixin(ElementName=Config[arguments.ObjectName].MixinDependencyStruct[Key],ElementValue=getBean(Key));			
+						arguments.object.lightwireMixin(ElementName=ObjectConfig.MixinDependencyStruct[Key].propertyname,
+														ElementValue=getBean(Key),
+														ElementScope=ObjectConfig.MixinDependencyStruct[Key].scope);			
 					};
 				};
 			
-				// MIXIN DEPENDENCIES (annotations)
-				MixinInjectionList = arguments.object.lightwireGetAnnotations();
-				For (Count = 1; Count lte listlen(MixinInjectionList); Count = Count + 1){ 
-					// Get current object name
-					LoopObjectName = ListGetAt(MixinInjectionList, Count);
-					/* Mix it in */
-					arguments.object.lightwireMixin(ElementName=LoopObjectName,ElementValue=getBean(LoopObjectName));
-		   		};				
-		
 				// MIXIN PROPERTIES
 				// If there are any mixin properties
 				For (key in ObjectConfig.MixinProperties){
-					arguments.object.lightwireMixin(ElementName=key,ElementValue=ObjectConfig.MixinProperties[key]);			
+					/* Get Object Value */
+					if( len(ObjectConfig.MixinProperties[key].cast) ){
+						DependentObjectValue = JavaCast(ObjectConfig.MixinProperties[key].cast,ObjectConfig.MixinProperties[key].value);
+					}
+					else{
+						DependentObjectValue = ObjectConfig.MixinProperties[key].value;
+					}
+					arguments.object.lightwireMixin(ElementName=key,ElementValue=DependentObjectValue,ElementScope=ObjectConfig.MixinProperties[key].scope);			
 		   		};
-					
-				/* Always Mixin LightWire Factory */
-				arguments.object.lightwireMixin(ElementName="LightWire",ElementValue=this);	
+				
+				/* Check if setBeanFactory is Found, if it is, call it with lightwire */
+				if( structKeyExists(arguments.object,"setBeanFactory") ){
+					arguments.object.setBeanFactory(this);
+				}
+				else{
+					/* Always Mixin LightWire Factory into variables scope. */
+					arguments.object.lightwireMixin(ElementName="LightWire",ElementValue=this);
+				}
 				
 				/* Cleanup Mixins */
 				mixinSet(object=arguments.object,name=arguments.ObjectName,remove=true);
@@ -362,36 +379,33 @@
 		<cfscript>
 			if( arguments.remove ){
 				structDelete(arguments.object,"lightwireMixin");
-				structDelete(arguments.object,"lightwireGetAnnotations");
 			}
 			else{
 				arguments.object.lightwireMixin = variables.lightwireMixin;
-				arguments.object.lightwireGetAnnotations = variables.lightwireGetAnnotations;
 			}	
 		</cfscript>
 		</cflock>	
 	</cffunction>
 	
 	<!--- LightWire Mixin --->
-	<cffunction name="lightwireMixin" returntype="void" access="public" output="false" hint="I add the passed elements to the variables scope within this object. I am mixed in by LightWire to support mixin injection of dependencies and properties.">
+	<cffunction name="lightwireMixin" returntype="void" access="public" output="false" hint="I add the passed elements to the scope passed within this object. I am mixed in by LightWire to support mixin injection of dependencies and properties.">
 		<!---************************************************************************************************ --->
 		<cfargument name="ElementName"  type="string" required="yes" hint="I am the name of the element to mix in.">
 		<cfargument name="ElementValue" type="any" 	  required="yes" hint="I am the value of the element to mix in.">
+		<cfargument name="ElementScope" type="string" required="false" default="variables" hint="The scope to which inject the property to."/>
 		<!---************************************************************************************************ --->
-		<cfset variables[arguments.ElementName] = arguments.ElementValue>
+		<cfscript>
+			/* Check for scope again, just in case */
+			if( len(trim(arguments.ElementScope)) ){
+				"#arguments.ElementScope#.#arguments.ElementName#" = arguments.ElementValue;
+			}
+			else{
+				variables[arguments.ElementName] = arguments.ElementValue;
+			}
+		</cfscript>
+		
 	</cffunction>
 	
-	<!--- LightWire Annotations --->
-	<cffunction name="lightwireGetAnnotations" returntype="string" access="public" output="false" hint="I return the comma delimited list of beans to mixin based on variables.MixinObjectNameList if it was set in the init().">
-		<cfscript>
-			var ReturnString = "";
-			If(StructKeyExists(variables, "MixinObjectNameList")){
-				ReturnString = variables.MixinObjectNameList;
-			}
-			return ReturnString;
-		</cfscript>
-	</cffunction>
-
 <!------------------------------------------------- PRIVATE ---------------------------------------------------------->	
 	
 	<!--- Invoker Mixin --->
