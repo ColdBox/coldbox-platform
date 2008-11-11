@@ -80,7 +80,7 @@ Modification History:
 			if ( listLen(Context.getValue(EventName)) gte 2 )
 				Context.setValue(EventName, getToken(Context.getValue(EventName),2,","));
 			
-			/* Default Event Checks */
+			/* Default Event Action Checks */
 			controller.getHandlerService().defaultEventCheck(Context);
 			
 			/* Are we using event caching? */

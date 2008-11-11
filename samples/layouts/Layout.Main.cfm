@@ -6,18 +6,15 @@
 <meta http-equiv="content-type" content="text/html; charset=utf-8" />
 <meta name="description" content="Your website description goes here" />
 <meta name="keywords" content="your,keywords,goes,here" />
-<cfif false>
-<link rel="stylesheet" href="../includes/andreas08.css" type="text/css" media="screen,projection" />
-<cfelse>
-<link rel="stylesheet" href="includes/andreas08.css" type="text/css" media="screen,projection" />
-<link rel="stylesheet" href="includes/Thickbox/ThickBox.css" type="text/css" media="screen,projection" />
-<link rel="stylesheet" href="includes/tabs/tabs.css" type="text/css" media="screen,projection" />
-</cfif>
+
+<link rel="stylesheet" href="includes/styles/andreas08.css" type="text/css" media="screen,projection" />
+<link rel="stylesheet" href="includes/javascript/Thickbox/ThickBox.css" type="text/css" media="screen,projection" />
+<link rel="stylesheet" href="includes/javascript/tabs/tabs.css" type="text/css" media="screen,projection" />
 
 <!--- JQUERY CODE --->
-<script language="javascript" src="includes/jquery-latest.pack.js"></script>
-<script language="javascript" src="includes/Thickbox/thickbox.js"></script>
-<script language="javascript" src="includes/tabs/jquery.tabs.pack.js"></script>
+<script language="javascript" src="includes/javascript/jquery-latest.pack.js"></script>
+<script language="javascript" src="includes/javascript/Thickbox/thickbox.js"></script>
+<script language="javascript" src="includes/javascript/tabs/jquery.tabs.pack.js"></script>
 
 <script language="javascript">
 $(document).ready(function() {
@@ -30,7 +27,7 @@ $(document).ready(function() {
 <div id="container">
 
 	<div id="header" align="center">
-		<h1><img src="images/coldbox_250.png" /></h1>
+		<h1><img src="includes/images/coldbox_250.png" /></h1>
 	</div>
 
 	<div id="navigation">
@@ -75,7 +72,7 @@ $(document).ready(function() {
 		</ul>
 		<br>
 
-		<p align="center"><a href="#getSetting("ColdboxURL")#"><img src="images/poweredby.png" border=0></a></p>
+		<p align="center"><a href="#getSetting("ColdboxURL")#"><img src="includes/images/poweredby.png" border=0></a></p>
 
 	</div>
 
