@@ -49,7 +49,7 @@ Modification History:
 			<Property name="width">200</Property>
 			
 			<!-- Visible width  -->
-			<Property name="visibleWidth">12</Property>
+			<Property name="visibleWidth">10</Property>
 			
 			<!-- Vertical alignment of the image: top,middle or bottom  -->
 			<Property name="imageVAlign">middle</Property>

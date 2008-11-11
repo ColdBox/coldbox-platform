@@ -9,7 +9,7 @@
 </p>
 </div>
 
-<table cellpadding="10">
+<table cellpadding="10" width="98%" align="center">
     <tr>
         <td valign="top">
             <h3>Getting Started</h3>

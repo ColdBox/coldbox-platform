@@ -92,6 +92,7 @@
 	width: 99%;
 }
 .fw_debugTables th{
+	font-size: 11px;
 	background-color: #CFE9FF;
 	font-weight:bold;
 	padding: 5px 5px 5px 5px;
@@ -110,6 +111,7 @@
 }
 .fw_debugTables td{
 	padding: 5px 5px 5px 5px;
+	font-size: 11px;
 }
 .fw_debugTables textarea{
 	border: 1px solid #eeeeee;

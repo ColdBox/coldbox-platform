@@ -24,7 +24,7 @@ ColdBox SideBar: created on 7/31/2008 by Ernst van der Linden (evdlinden@gmail.c
  -->
 <div id="ColdBoxSideBarContainer" style="visibility:hidden;position:absolute;left:0px;top:#getproperty('yOffset')#px;z-index:9999;width:#getproperty('width')#px">
 	<div id="ColdBoxSideBar" style="position:absolute;left:-#( getproperty('invisibleWidth'))#px;top:0;z-Index:9999;" onmouseover="coldBoxSideBar.open()" onmouseout="coldBoxSideBar.close()">
-		<form id="sbForm" style="margin:0;">
+		<form id="sbForm" style="margin:0;padding:0">
 		<table id="ColdBoxSideBarTbl" border="0" cellpadding="0" cellspacing="0" width="#getproperty('width')#">
 			<tr>
 				<td class="ColdBoxSideBarTop" width="#getproperty('invisibleWidth')#" nowrap><h1>Settings</h1></td>
@@ -89,7 +89,7 @@ ColdBox SideBar: created on 7/31/2008 by Ernst van der Linden (evdlinden@gmail.c
 					<input type="button" class="ColdBoxSideBarBtn" value="Search" onclick="#local.searchCBLiveDocsHref#">
 				</td>
 			</tr>				
-		<tr>
+			<tr>
 				<td><span class="ColdBoxSideBarInputlabel"><a href="#local.CBForumsHref#" target="_blank">ColdBox Forums</a></span>
 					<input type="text" class="ColdBoxSideBarText" id="sbSearchCBForums">
 					<input type="button" class="ColdBoxSideBarBtn" value="Search" onclick="#local.searchCBForumsHref#">
@@ -103,7 +103,7 @@ ColdBox SideBar: created on 7/31/2008 by Ernst van der Linden (evdlinden@gmail.c
 				<!--- Loop custom links --->
 				<cfloop index="i" from="1" to="#ArrayLen(local.links)#">
 				<tr>
-					<td class="bottom"><a href="#local.links[i].href#" target="_blank">#local.links[i].desc#</a></td>
+					<td <cfif i eq ArrayLen(local.links)>class="bottom"</cfif>><a href="#local.links[i].href#" target="_blank">#local.links[i].desc#</a></td>
 				</tr>						
 				</cfloop>
 			</cfif>
