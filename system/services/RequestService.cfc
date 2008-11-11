@@ -20,7 +20,7 @@ Modification History:
 	<cffunction name="init" access="public" output="false" returntype="RequestService" hint="Constructor">
 		<cfargument name="controller" type="any" required="true" hint="Coldbox controller">
 		<cfscript>
-			
+			/* Setup Controller */
 			setController(arguments.controller);			
 			
 			/* Setup context properties */

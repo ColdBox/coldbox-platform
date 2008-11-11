@@ -373,7 +373,6 @@ Description		: This is the main ColdBox front Controller.
 		<cfset oEventHandlerBean = getHandlerService().getRegisteredHandler(arguments.event)>
 		<!--- Private Event or Not? --->
 		<cfset oEventHandlerBean.setisPrivate(arguments.private)>
-		
 		<!--- Get the event handler to execute --->
 		<cfset oEventHandler = getHandlerService().getHandler(oEventHandlerBean)>
 		

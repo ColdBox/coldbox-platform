@@ -286,7 +286,7 @@ Description :
 		handlerExternalIndex = listFindNoCase(handlersExternalList, HandlerReceived);
 
 		/* The following is done in order to get the appropriate case-sensitive handler registrations, we do not use the incomign event syntax. */
-						
+				
 		/* Check for conventions location */
 		if ( handlerIndex ){
 			HandlerBean.setHandler(listgetAt(handlersList,handlerIndex));
@@ -300,9 +300,8 @@ Description :
 		}
 		/* Else maybe invalid event. */
 		else if( arguments.noThrow eq false ){
-			
 			/* Check for invalid Event */
-			if ( onInvalidEvent neq "" ){
+			if ( len(trim(onInvalidEvent)) ){
 					/* Check if the invalid event is the same as the current event */
 					if ( CompareNoCase(onInvalidEvent,event) eq 0){
 						getUtil().throwit("The invalid event handler: #onInvalidEvent# is also invalid. Please check your settings","","Framework.InvalidEventHandlerException");
@@ -321,7 +320,7 @@ Description :
 			}
 			
 		}//end if noThrow
-	
+		
 		//Return validated Handler Bean
 		return HandlerBean;
 		</cfscript>
