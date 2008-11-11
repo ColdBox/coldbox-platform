@@ -11,27 +11,23 @@
      directory of your choice, full path.
      ====================================================================== -->
 <project name="coldbox.newapplication" default="wizard" basedir=".">	
+	<!-- Properties -->
+	<property file="build.properties"/>
 	
-	<!--Properties-->
-	<property name="src.dir" 			value="." />
-	<property name="base.errortemplate"	value="includes/templates/generic_error.cfm" />
-	<property name="base.config"		value="config/coldbox.xml.cfm" />
-	<property name="base.htacess"		value="../install/SESRewriteRules/.htaccess" />
-	<property name="base.isapi"			value="../install/SESRewriteRules/IsapiRewrite4.ini" />
-	   
 	<!-- Load Contrib Tasks -->
 	<path id="cp">
 		<fileset dir="../install/antlib">
 			<include name="**/*.jar" />
 		</fileset>
 	</path>
+	<!-- Define Tasks -->
+	<taskdef resource="net/sf/antcontrib/antlib.xml" classpathref="cp" />
 	
 	<!-- Init task -->
 	<target name="init" description="Initialize the task">
 		<!--Init TimeStamp-->
-		<tstamp />		
-		<!-- Define Tasks -->
-		<taskdef resource="net/sf/antcontrib/antlib.xml" classpathref="cp" />
+		<tstamp />
+		<echoproperties regex="gen" />
 	</target>
 
 	<!-- Old School -->
@@ -61,6 +57,10 @@
 		<input message="Choose your Unit Testing Engine?"
 					   validargs="mxunit,cfcunit" defaultvalue="mxunit"
 				       addproperty="app.unittest" />	
+		<!-- Side Bar -->
+		<input message="Would you like to configure this application to use the ColdBox SideBar?"
+			   validargs="yes,no" defaultvalue="yes"
+		       addproperty="app.sidebar" />	
 		<!-- Run Generation -->
 		<antcall target="generate" inheritall="true" inheritrefs="true" />
 	</target>
@@ -153,18 +153,38 @@
 			<then>
 				<delete dir="${app.destination}/${app.name}/test/integration/cfcunit" />
 				<move todir="${app.destination}/${app.name}/test/integration">
-					<fileset dir="${app.destination}/${app.name}/test/integration/mxunit" />
+					<fileset dir="${app.destination}/${app.name}/test/integration/mxunit" includes="**/*.cfc" />
 				</move>
 				<delete dir="${app.destination}/${app.name}/test/integration/mxunit" />								
 			</then>
 			<else>
 				<delete dir="${app.destination}/${app.name}/test/integration/mxunit" />
 				<move todir="${app.destination}/${app.name}/test/integration">
-					<fileset dir="${app.destination}/${app.name}/test/integration/cfunit" />
+					<fileset dir="${app.destination}/${app.name}/test/integration/cfcunit" includes="**/*.cfc" />
 				</move>
 				<delete dir="${app.destination}/${app.name}/test/integration/cfcunit" />
 			</else>
 		</if>
+		<!-- Side Bar-->
+		<if>
+			<equals arg1="${app.sidebar}" arg2="yes" />
+			<then>
+				<replace file="${app.destination}/${app.name}/${base.config}" value="${gen.sidebar_setting}" summary="yes">
+					<replacetoken><![CDATA[<!-- @YOURSETTINGS@ -->]]></replacetoken>
+				</replace>
+				<replace file="${app.destination}/${app.name}/${base.config}" value="${gen.sidebar_interceptor}" summary="yes">
+					<replacetoken><![CDATA[<!-- @SIDEBAR@ -->]]></replacetoken>
+				</replace>
+			</then>	
+			<else>
+				<replace file="${app.destination}/${app.name}/${base.config}" value="" summary="yes">
+					<replacetoken><![CDATA[<!-- @YOURSETTINGS@ -->]]></replacetoken>
+				</replace>
+				<replace file="${app.destination}/${app.name}/${base.config}" value="" summary="yes">
+					<replacetoken><![CDATA[<!-- @SIDEBAR@ -->]]></replacetoken>
+				</replace>
+			</else>
+		</if>	
 	</target>
 	
 	<!-- Rewrite Engine Setup -->
@@ -221,6 +241,12 @@
 							   property="app.favs"
 							   values="true,false"
 							   tooltip="Generate a favicon,robots.txt and more." />
+			<!-- Sidebar Template -->
+			<label>Configure your application to use the ColdBox SideBar.</label>
+			<radioSelectionProperty label="ColdBox SideBar?"
+							   property="app.sidebar"
+							   values="true,false"
+							   tooltip="Configure the app for the ColdBox SideBar." />
 			<!-- Favs Template -->
 			<label>Choose your URL rewrite engine if any. This will create an appropriate .htaccess or isapirewrite.ini file or none and configure your routes.</label>
 			<selectionProperty label="URL Rewrite Engine?"

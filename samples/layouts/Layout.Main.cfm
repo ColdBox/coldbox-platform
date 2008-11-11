@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
 <title>ColdBox: A ColdFusion Framework : #getResource("samplesgallery")#</title>
-<meta http-equiv="content-type" content="text/html; charset=iso-8859-1" />
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
 <meta name="description" content="Your website description goes here" />
 <meta name="keywords" content="your,keywords,goes,here" />
 <cfif false>

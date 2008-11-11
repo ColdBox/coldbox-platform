@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!-- 
 Declare as many rule elements as you want, order is important 
 Remember that the securelist can contain a list of regular
