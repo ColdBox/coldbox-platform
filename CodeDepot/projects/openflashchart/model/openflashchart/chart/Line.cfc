@@ -61,6 +61,15 @@
 		<cfreturn this.width>
 	</cffunction>
 
+	<cffunction name="setLineStyle" access="public" returntype="void">
+		<cfargument name="lineStyle" type="string" required="true" hint="">
+		<cfset this.lineStyle = arguments.lineStyle>		
+	</cffunction>
+
+	<cffunction name="getLineStyle" access="public" returntype="string" hint="Returns lineStyle">
+		<cfreturn this.lineStyle>
+	</cffunction>
+
 	<cffunction name="getData" access="public" returntype="struct" hint="Returns chart data">
 		<cfset var data = super.getData()>
 		<cfset data.values = ArrayNew(1)>
@@ -91,6 +100,11 @@
 		<!--- width? --->
 		<cfif isDefined("this.width")>
 			<cfset data.width = this.width>
+		</cfif>
+
+		<!--- lineStyle? --->
+		<cfif isDefined("this.lineStyle")>
+			<cfset data['line-style'] = this.lineStyle>
 		</cfif>
 		
 		<!--- Loop all values --->
