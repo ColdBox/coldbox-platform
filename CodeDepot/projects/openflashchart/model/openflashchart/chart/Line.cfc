@@ -95,7 +95,7 @@
 		
 		<!--- Loop all values --->
 		<cfloop index="i" from="1" to="#ArrayLen(this.values)#">
-			<!--- Item is bar value object? Get data? --->
+			<!--- Item is value object? Get data? --->
 			<cfif not isSimpleValue(this.values[i])>
 				<cfset ArrayAppend(data.values,this.values[i].getData())>
 			<cfelse>

@@ -24,7 +24,7 @@ chart.addElement(sketchBar);
 /*
 glassBar = CreateObject('component','ofcplugin.model.openflashchart.chart.bar.Glass').init();
 glassBar.setValues( ListToArray('2,5,6,4,2,3,5,9') );
-glassBar.setAlpha('10%');
+glassBar.setAlpha(0.2);
 glassBar.setTooltip('Some value: ##val## <br>Hello: ##x_label##');
 glassBar.setColor('##424581');
 chart.addElement(glassBar);
@@ -41,7 +41,8 @@ chart.addElement(filled);
 /*
 fadeBar = CreateObject('component','ofcplugin.model.openflashchart.chart.bar.Fade').init();
 fadeBar.setValues( ListToArray('9,1,8,5,2,5,9,2') );
-fadeBar.setAlpha('10%');
+fadeBar.setTooltip('Nice huh: ##val## <br>Hello: ##x_label##');
+fadeBar.setAlpha(0.3);
 fadeBar.setColor('##82BEF4');
 chart.addElement(fadeBar);
 */
@@ -76,6 +77,7 @@ dottedLine.setColor('##82BEF4');
 chart.addElement(dottedLine);
 */
 // Hollow Line
+/*
 hollowLine = CreateObject('component','ofcplugin.model.openflashchart.chart.line.Hollow').init();
 hollowLine.setValues( ListToArray('9,1,8,5,2,5,9,2') );
 hollowLine.setWidth(3);
@@ -84,6 +86,28 @@ hollowLine.setDotSize(7);
 hollowLine.setColor('##82BEF4');
 hollowLine.setTooltip('Some value: ##val## <br>Hello: ##x_label##');
 chart.addElement(hollowLine);
+*/
+//Pie
+pie = CreateObject('component','ofcplugin.model.openflashchart.chart.Pie').init();
+pie.setColors( ListToArray('##82BEF4,##8098B2,##0081CE,##323287,##82BEF4,##8098B2,##0081CE,##323287') );
+pie.setIsLabels(true);
+pie.setStartAngle(90);
+
+// Values
+pievalue1 = CreateObject('component','ofcplugin.model.openflashchart.chart.pie.value').init();
+pievalue1.setValue(10);
+pievalue1.setLabel('sdfsd');
+pie.addValue(pievalue1);
+pievalue2 = CreateObject('component','ofcplugin.model.openflashchart.chart.pie.value').init();
+pievalue2.setValue(100);
+pievalue2.setLabel('haha ernesto');
+pievalue2.setLabelColor('##82BEF4');
+pievalue2.setFontSize(25);
+pie.addValue(pievalue2);
+pievalue1.getData();
+pie.setTooltip('Some value: ##val## <br>Hello: ');
+pie.setIsAnimate(false);
+chart.addElement(pie);
 
 chartData = chart.getData();
 </cfscript>

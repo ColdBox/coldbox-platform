@@ -59,7 +59,7 @@
 		<cfif isDefined("this.tooltip")>
 			<cfset data.tip = this.tooltip>
 		</cfif>
-			
+
 		<cfreturn data>
 	</cffunction>	
 </cfcomponent>
