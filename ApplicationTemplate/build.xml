@@ -10,7 +10,7 @@
      The task will generate a new application template for you in a 
      directory of your choice, full path.
      ====================================================================== -->
-<project name="coldbox.newapplication" default="wizard" basedir=".">	
+<project name="coldbox.newapplication" default="run" basedir=".">	
 	<!-- Properties -->
 	<property file="build.properties"/>
 	
@@ -23,15 +23,32 @@
 	<!-- Define Tasks -->
 	<taskdef resource="net/sf/antcontrib/antlib.xml" classpathref="cp" />
 	
-	<!-- Init task -->
-	<target name="init" description="Initialize the task">
+	<!-- init -->
+	<target name="init" description="Init the generator">
 		<!--Init TimeStamp-->
 		<tstamp />
 		<echoproperties regex="gen" />
+		<!-- Input -->
+		<input message="Open the SwingGUI Generator or the AntInput Generator. (If you are running this build in Mac OSX from within Eclipse please use AntInput unless running from the command line)"
+		   	   addproperty="wizardType"
+		 	   validargs="SwingGUI,AntInput"
+			   defaultvalue="SwingGUI" />
+		<condition property="guiwizard.yes">
+			<equals arg1="${wizardType}" arg2="SwingGUI" />
+		</condition>
+		<condition property="guiwizard.no">
+			<equals arg1="${wizardType}" arg2="AntInput" />
+		</condition>	
+		<condition property="guiwizard.no">
+			<equals arg1="${wizardType}" arg2="" />
+		</condition>
 	</target>
+	
+	<!-- Run this Wizard -->
+	<target name="run" description="run the wizard" depends="init,wizard,wizardGUI" />
 
-	<!-- Old School -->
-	<target name="wizard" description="Question Wizard" depends="init">
+	<!-- Old School Wizard -->
+	<target name="wizard" description="Question Wizard" if="guiwizard.no">
 		<!--Ask for user input to create application-->
 		<input message="What is the name of your application: (Ex:blog,forum)?"
 		       addproperty="app.name"/>
@@ -65,6 +82,77 @@
 		<antcall target="generate" inheritall="true" inheritrefs="true" />
 	</target>
 	
+	<!-- Wizard GUI -->
+	<target name="wizardGUI" 
+			description="Create the input forms using AntForm GUI. Quirky in Mac OSX from within Eclipse. Run from the command line."
+			if="guiwizard.yes">
+		
+			<taskdef name="antform" classname="com.sardak.antform.AntForm"	classpathref="cp"/>
+			<antform title="ColdBox Application Generator"
+				 image="../install/poweredby_assets/chat_icon.png"
+				 width="650"
+				 height="700"
+				 lookandfeel="javax.swing.plaf.metal.MetalLookAndFeel"
+				 icon="../install/poweredby_assets/chat_icon.png">
+			<Controlbar>
+				<Button label="Cancel" type="cancel" />
+				<Button label="Reset" type="reset" />
+				<Button label="Generate" type="ok" target="generate" newproject="false" />				
+			</Controlbar>
+				
+			<!--Ask for user input to create application-->
+			<textProperty label="Application Name"
+					      property="app.name"
+						  columns="25"
+						  Required="true"
+						  tooltip="The name of the application to generate"
+						  focus="true"/>
+			<!-- Destination -->
+			<fileselectionproperty label="Destination Directory"
+								   property="app.destination"
+								   directoryChooser="true"
+								   Required="true"
+								   columns="25"
+								   tooltip="Destination Directory (ex: /data/webroot)"/>
+			<!-- Inheritance -->
+			<label>Application.cfc with inheritance is the default. If not chosen, then I will build a composition Application.cfc (Inheritance is recommended)</label>
+			<radioSelectionProperty label="Application.cfc Inheritance?"
+							   property="app.useInheritance"
+							   values="true,false"
+							   tooltip="Create the application.cfc using inheritance" />
+			<!-- Error Template -->
+			<label>Configure the application to use a custom error template. The default is to use the framework's error template.</label>
+			<radioSelectionProperty label="Use Custom Error Template?"
+							   property="app.useErrorTemplate"
+							   values="false,true"
+							   tooltip="Configure the application to use a custom error template." />
+			<!-- Favs Template -->
+			<label>Generate a robots.txt, favicon and more.</label>
+			<radioSelectionProperty label="Generate Extras?"
+							   property="app.favs"
+							   values="true,false"
+							   tooltip="Generate a favicon,robots.txt and more." />
+			<!-- Sidebar Template -->
+			<label>Configure your application to use the ColdBox SideBar.</label>
+			<radioSelectionProperty label="ColdBox SideBar?"
+							   property="app.sidebar"
+							   values="true,false"
+							   tooltip="Configure the app for the ColdBox SideBar." />
+			<!-- Favs Template -->
+			<label>Choose your URL rewrite engine if any. This will create an appropriate .htaccess or isapirewrite.ini file or none and configure your routes.</label>
+			<selectionProperty label="URL Rewrite Engine?"
+							   property="app.rewrite"
+							   values="mod_rewrite,Isapi,none"
+							   tooltip="Choose your URL rewrite engine." />
+			<!-- Unit Testing -->
+			<selectionProperty label="Unit Testing Engine?"
+							   property="app.unittest"
+							   values="mxunit,cfcunit"
+							   tooltip="Choose your Unit Testing Engine." />	
+			
+		</antform>		
+	</target>
+
 	<!--Generate-->
 	<target name="generate" description="Generate the new skeleton">
 		<echo>Generating new Application: ${app.name}</echo>
@@ -195,72 +283,4 @@
 		</replace>
 	</target>
 	
-	<!-- Generator GUI -->
-	<target name="generatorGUI" description="Create the input forms using AntForm GUI. Quirky in Mac OSX from within Eclipse. Run from the command line.">
-			<taskdef name="antform" classname="com.sardak.antform.AntForm"	classpathref="cp"/>
-			<antform title="ColdBox Application Generator"
-				 image="../install/poweredby_assets/chat_icon.png"
-				 width="650"
-				 height="650"
-				 lookandfeel="javax.swing.plaf.metal.MetalLookAndFeel"
-				 icon="../install/poweredby_assets/chat_icon.png">
-			<Controlbar>
-				<Button label="Cancel" type="cancel" />
-				<Button label="Reset" type="reset" />
-				<Button label="Generate" type="ok" target="generate" newproject="false" />				
-			</Controlbar>
-				
-			<!--Ask for user input to create application-->
-			<textProperty label="Application Name"
-					      property="app.name"
-						  columns="25"
-						  Required="true"
-						  tooltip="The name of the application to generate"
-						  focus="true"/>
-			<!-- Destination -->
-			<fileselectionproperty label="Destination Directory"
-								   property="app.destination"
-								   directoryChooser="true"
-								   Required="true"
-								   columns="25"
-								   tooltip="Destination Directory (ex: /data/webroot)"/>
-			<!-- Inheritance -->
-			<label>Application.cfc with inheritance is the default. If not chosen, then I will build a composition Application.cfc (Inheritance is recommended)</label>
-			<radioSelectionProperty label="Application.cfc Inheritance?"
-							   property="app.useInheritance"
-							   values="true,false"
-							   tooltip="Create the application.cfc using inheritance" />
-			<!-- Error Template -->
-			<label>Configure the application to use a custom error template. The default is to use the framework's error template.</label>
-			<radioSelectionProperty label="Use Custom Error Template?"
-							   property="app.useErrorTemplate"
-							   values="false,true"
-							   tooltip="Configure the application to use a custom error template." />
-			<!-- Favs Template -->
-			<label>Generate a robots.txt, favicon and more.</label>
-			<radioSelectionProperty label="Generate Extras?"
-							   property="app.favs"
-							   values="true,false"
-							   tooltip="Generate a favicon,robots.txt and more." />
-			<!-- Sidebar Template -->
-			<label>Configure your application to use the ColdBox SideBar.</label>
-			<radioSelectionProperty label="ColdBox SideBar?"
-							   property="app.sidebar"
-							   values="true,false"
-							   tooltip="Configure the app for the ColdBox SideBar." />
-			<!-- Favs Template -->
-			<label>Choose your URL rewrite engine if any. This will create an appropriate .htaccess or isapirewrite.ini file or none and configure your routes.</label>
-			<selectionProperty label="URL Rewrite Engine?"
-							   property="app.rewrite"
-							   values="None,mod_rewrite,Isapi"
-							   tooltip="Choose your URL rewrite engine." />
-			<!-- Unit Testing -->
-			<selectionProperty label="Unit Testing Engine?"
-							   property="app.unittest"
-							   values="mxunit,cfcunit"
-							   tooltip="Choose your Unit Testing Engine." />	
-			
-		</antform>		
-	</target>
-
 </project>
