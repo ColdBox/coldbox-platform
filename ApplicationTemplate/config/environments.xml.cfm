@@ -10,7 +10,7 @@
 			AppSpecific Settings to override: <Setting name="MySetting" value="Hello" />
 		-->		
 
-		<Setting name="TierControlFired" value="TRUE" />
+		<Setting name="ColdBoxSideBar" value="true" />
 	</environment>
 	
 	<environment name="qa" urls="qa">
