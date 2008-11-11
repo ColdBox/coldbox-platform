@@ -96,8 +96,9 @@
 		<replace file="${app.destination}/${app.name}/.project" value="${app.name}" summary="yes">
 			<replacetoken>@appname@</replacetoken>
 		</replace>
-		<!--Delete Header File-->
+		<!--Delete Header Files-->
 		<delete file="${app.destination}/${app.name}/build.xml" />
+		<delete file="${app.destination}/${app.name}/build.properties" />
 		<!-- Inheritance If -->
 		<if>
 			<equals arg1="${app.useInheritance}" arg2="true" casesensitive="false" />
