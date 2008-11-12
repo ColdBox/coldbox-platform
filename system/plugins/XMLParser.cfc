@@ -329,20 +329,14 @@ Modification History:
 						ConfigStruct.AppMapping = "";
 				}
 			}
-			else{
-				/* Clean the first / if found */
-				if( len(ConfigStruct.AppMapping) eq 1 ){
-					ConfigStruct.AppMapping = "";
-				}
-			}
-			
+
 			/* ::::::::::::::::::::::::::::::::::::::::: GET SETTINGS  :::::::::::::::::::::::::::::::::::::::::::: */
 			
 			//Get SettingNodes
 			SettingNodes = XMLSearch(configXML, instance.searchSettings);
 			if ( ArrayLen(SettingNodes) eq 0 )
 				throw("No Setting elements could be found in the configuration file.","","ColdBox.plugins.XMLParser.ConfigXMLParsingException");
-			//Insert Settings to Config Struct
+			//Insert  ColdBox Settings to Config Struct
 			for (i=1; i lte ArrayLen(SettingNodes); i=i+1){
 				ConfigStruct[trim(SettingNodes[i].XMLAttributes["name"])] = placeHolderReplacer(trim(SettingNodes[i].XMLAttributes["value"]),ConfigStruct);
 			}
@@ -352,6 +346,10 @@ Modification History:
 			//overrideAppMapping if passed in.
 			if ( arguments.overrideAppMapping neq "" ){
 				ConfigStruct["AppMapping"] = arguments.overrideAppMapping;
+			}
+			/* Clean the first / if found */
+			if( len(ConfigStruct.AppMapping) eq 1 ){
+				ConfigStruct.AppMapping = "";
 			}
 			
 			/* ::::::::::::::::::::::::::::::::::::::::: COLDBOX SETTINGS VALIDATION :::::::::::::::::::::::::::::::::::::::::::: */

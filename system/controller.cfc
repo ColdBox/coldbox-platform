@@ -369,7 +369,7 @@ Description		: This is the main ColdBox front Controller.
 			<cfset arguments.event = oRequestContext.getCurrentEvent()>
 		</cfif>
 		
-		<!--- Validate the incoming event --->
+		<!--- Validate the incoming event and get a Handler Bean simulating the event to execute --->
 		<cfset oEventHandlerBean = getHandlerService().getRegisteredHandler(arguments.event)>
 		<!--- Private Event or Not? --->
 		<cfset oEventHandlerBean.setisPrivate(arguments.private)>
@@ -383,9 +383,16 @@ Description		: This is the main ColdBox front Controller.
 			
 		<!--- PreHandler Execution --->
 		<cfif not arguments.prepostExempt and structKeyExists(oEventHandler,"preHandler")>
-			<cfmodule template="includes/Timer.cfm" timertag="invoking runEvent [preHandler] for #arguments.event#" controller="#this#">
-				<cfset oEventHandler.preHandler(oRequestContext)>
-			</cfmodule>
+			<!--- Validate ONLY & EXCEPT lists --->
+			<cfif ( (len(oEventHandler.PREHANDLER_ONLY) AND listfindnocase(oEventHandler.PREHANDLER_ONLY,oEventHandlerBean.getMethod())) 
+				     OR 
+				    (len(oEventHandler.PREHANDLER_ONLY) EQ 0) )
+				  AND
+				  ( listFindNoCase(oEventHandler.PREHANDLER_EXCEPT,oEventHandlerBean.getMethod()) EQ 0 )>
+				<cfmodule template="includes/Timer.cfm" timertag="invoking runEvent [preHandler] for #arguments.event#" controller="#this#">
+					<cfset oEventHandler.preHandler(oRequestContext)>
+				</cfmodule>
+			</cfif>
 		</cfif>
 		
 		<!--- Verify if event was overriden --->
@@ -412,7 +419,7 @@ Description		: This is the main ColdBox front Controller.
 			<!--- Start Timer --->
 			<cfmodule template="includes/Timer.cfm" timertag="invoking runEvent [#arguments.event#]" controller="#this#">
 				<cfif oEventHandlerBean.getisMissingAction()>
-					<!--- Execute the Public Event --->
+					<!--- Execute OnMissingACtion() --->
 					<cfinvoke component="#oEventHandler#" method="onMissingAction" returnvariable="local.results">
 						<cfinvokeargument name="event" 			value="#oRequestContext#">
 						<cfinvokeargument name="missingAction"  value="#oEventHandlerBean.getMissingAction()#">
@@ -428,9 +435,15 @@ Description		: This is the main ColdBox front Controller.
 
 		<!--- PostHandler Execution --->
 		<cfif not arguments.prepostExempt and structKeyExists(oEventHandler,"postHandler")>
+			<cfif ( (len(oEventHandler.POSTHANDLER_ONLY) AND listfindnocase(oEventHandler.POSTHANDLER_ONLY,oEventHandlerBean.getMethod())) 
+				     OR 
+				    (len(oEventHandler.POSTHANDLER_ONLY) EQ 0) )
+				  AND
+				  ( listFindNoCase(oEventHandler.POSTHANDLER_EXCEPT,oEventHandlerBean.getMethod()) EQ 0 )>
 			<cfmodule template="includes/Timer.cfm" timertag="invoking runEvent [postHandler] for #arguments.event#" controller="#this#">
-			<cfset oEventHandler.postHandler(oRequestContext)>
+				<cfset oEventHandler.postHandler(oRequestContext)>
 			</cfmodule>
+			</cfif>
 		</cfif>
 		
 		<!--- Execute postEvent Interception --->
