@@ -58,17 +58,12 @@
 	</Settings>
 
 	<!--Your Settings can go here, if not needed, use <YourSettings />. You can use these for anything you like.-->
-	<YourSettings>
-		<Setting name="TransferSettings" value="{'datasourceFile':'config/datasource.xml.cfm', 'transferFile':'config/transfer.xml.cfm', 'definitions':'config/definitions'}"/>
-	</YourSettings>
+	<YourSettings />
+	
 
 	<!--Optional,if blank it will use the CFMX administrator settings.-->
-	<MailServerSettings>
-		<MailServer></MailServer>
-		<MailPort></MailPort>
-		<MailUsername></MailUsername>
-		<MailPassword></MailPassword>
-	</MailServerSettings>
+	<MailServerSettings />
+	
 
 	<!--Emails to Send bug reports, you can create as many as you like-->
 	<BugTracerReports>
@@ -76,12 +71,8 @@
 	</BugTracerReports>
 
 	<!--List url dev environments, this determines your dev/pro environment for the framework-->
-	<DevEnvironments>
-		<url>dev</url>
-		<url>jfetmac</url>
-		<url>localhost</url>
-	</DevEnvironments>
-
+	<DevEnvironments />
+	
 	<WebServices />
 
 	<!--Declare Layouts for your application here-->
@@ -94,13 +85,21 @@
 	<i18N />
 	
 	<!--Datasource Setup, you can then retreive a datasourceBean via the getDatasource("name") method: -->
-	<Datasources />
+	<Datasources>
+		<Datasource alias="MyDSN" name="transfersample" dbtype="mysql"/>
+	</Datasources>
 	
 	<Interceptors>
 		<Interceptor class="coldbox.system.interceptors.ses">
 			<Property name="configFile">config/routes.cfm</Property>
 		</Interceptor>
 		<Interceptor class="coldbox.system.interceptors.autowire">
+		</Interceptor>
+		<!-- Transfer Loader -->
+		<Interceptor class="coldbox.system.extras.transfer.TransferLoader">
+			<Property name="ConfigPath">/${AppMapping}/config/transfer.xml.cfm</Property>
+			<Property name="definitionPath">/${AppMapping}/config/definitions</Property>
+			<Property name="datasourceAlias">MyDSN</Property>
 		</Interceptor>
 	</Interceptors>
 

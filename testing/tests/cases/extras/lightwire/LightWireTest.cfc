@@ -58,7 +58,9 @@
 			factory = createObject("component","coldbox.system.extras.lightwire.LightWire").init(config);
 			
 			testSet(factory);
-		
+			
+			AssertTrue( isObject(factory.getBean('StringBuffer')));
+			
 		</cfscript>
 	</cffunction>
 	
@@ -119,6 +121,8 @@
 			
 			/* Product */
 			AssertTrue( isObject(Product.getProductDAO()));
+			
+			
 		</cfscript>
 	</cffunction>
 

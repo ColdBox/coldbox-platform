@@ -13,14 +13,7 @@ Description :
 Modification History:
 3/19/2007 - Created Template
 ----------------------------------------------------------------------><cfcomponent name="ehGeneral" extends="coldbox.system.eventhandler">	<cffunction name="onAppInit" access="public" returntype="void" output="false">		<cfargument name="Event" type="coldbox.system.beans.requestContext">		<!--- ON Application Start Here --->
-		<!--- Create our Transfer Factory --->
-		<cfset var DSFile = getSetting("TransferSettings").datasourceFile>
-		<cfset var TFile = getSetting("TransferSettings").transferFile>
-		<cfset var Definitions = "/" & getSetting("AppMapping") & "/" & getSetting("TransferSettings").Definitions>
-		<cfset var TransferFactory = CreateObject("component","transfer.TransferFactory").init(DSFile,TFile,Definitions)>		
-		<!--- Place in Cache Indefinetely --->
-		<cfset getColdBoxOCM().set("TransferFactory",TransferFactory, 0)>
-		<cfset getColdBoxOCM().set("Transfer",TransferFactory.getTransfer(), 0)>
+		<!--- Transfer Loaded by Interceptor --->
 	</cffunction>	<cffunction name="onRequestStart" access="public" returntype="void" output="false">		<cfargument name="Event" type="coldbox.system.beans.requestContext">		<!--- On Request Start Code Here --->
 		<cfset var rc = event.getCollection()>
 		<!--- Set a title for my App--->

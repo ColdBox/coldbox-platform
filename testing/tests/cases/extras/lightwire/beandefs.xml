@@ -11,6 +11,13 @@
 		<property name="ProductService">
 			<ref bean="PS" />
 		</property>
+		<property name="JsonProperty">
+			<value>[{name:'luis'},{name:'Jose'}]</value>
+		</property>
+	</bean>
+	
+	<bean id="StringBuffer" class="java.lang.StringBuffer" type="java" singleton="false">
+		<constructor-arg name="capacity" castTo="int"><value>16000</value></constructor-arg>
 	</bean>
 	
 	<alias name="ProductService" alias="PS" />
@@ -27,6 +34,7 @@
 		<property name="MySetterTitle">
 			<value>My Setter Title Goes Here</value>
 		</property>
+		
 		<mixin name="MyMixinTitle">
 			<value>My Mixin Title Goes Here</value>
 		</mixin>

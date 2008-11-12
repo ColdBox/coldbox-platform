@@ -108,7 +108,7 @@
 		</YourSettings>
 	-->
 	<YourSettings>
-		<Setting name="TransferSettings" value="{'datasourceFile':'config/datasource.xml.cfm', 'transferFile':'config/transfer.xml.cfm', 'definitions':'config/definitions'}"/>
+		
 	</YourSettings>
 	
 	<!-- Custom Conventions : You can override the framework wide conventions
@@ -216,6 +216,13 @@
 		<Interceptor class="coldbox.system.interceptors.autowire">
 			<Property name="enableSetterInjection">false</Property>
 		</Interceptor> 
+		
+		<!-- Transfer Loader -->
+		<Interceptor class="coldbox.system.extras.transfer.TransferLoader">
+			<Property name="ConfigPath">/${AppMapping}/config/transfer.xml.cfm</Property>
+			<Property name="definitionPath">/${AppMapping}/config/definitions</Property>
+			<Property name="datasourceAlias">blogDSN</Property>
+		</Interceptor>
 
 	</Interceptors>
 	

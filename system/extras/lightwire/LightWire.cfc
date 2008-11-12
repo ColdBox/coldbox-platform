@@ -333,12 +333,7 @@
 				// If there are any mixin properties
 				For (key in ObjectConfig.MixinProperties){
 					/* Get Object Value */
-					if( len(ObjectConfig.MixinProperties[key].cast) ){
-						DependentObjectValue = JavaCast(ObjectConfig.MixinProperties[key].cast,ObjectConfig.MixinProperties[key].value);
-					}
-					else{
-						DependentObjectValue = ObjectConfig.MixinProperties[key].value;
-					}
+					DependentObjectValue = ObjectConfig.MixinProperties[key].value;
 					arguments.object.lightwireMixin(ElementName=key,ElementValue=DependentObjectValue,ElementScope=ObjectConfig.MixinProperties[key].scope);			
 		   		};
 				
