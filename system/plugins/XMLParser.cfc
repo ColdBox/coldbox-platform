@@ -338,7 +338,7 @@ Modification History:
 				throw("No Setting elements could be found in the configuration file.","","ColdBox.plugins.XMLParser.ConfigXMLParsingException");
 			//Insert  ColdBox Settings to Config Struct
 			for (i=1; i lte ArrayLen(SettingNodes); i=i+1){
-				ConfigStruct[trim(SettingNodes[i].XMLAttributes["name"])] = placeHolderReplacer(trim(SettingNodes[i].XMLAttributes["value"]),ConfigStruct);
+				ConfigStruct[trim(SettingNodes[i].XMLAttributes["name"])] = oUtilities.placeHolderReplacer(trim(SettingNodes[i].XMLAttributes["value"]),ConfigStruct);
 			}
 			//Check for AppName or throw
 			if ( not StructKeyExists(ConfigStruct, "AppName") )
@@ -499,7 +499,7 @@ Modification History:
 				//Insert Your Settings to Config Struct
 				for (i=1; i lte ArrayLen(YourSettingNodes); i=i+1){
 					/* Get Setting with PlaceHolding */
-					tester = placeHolderReplacer(trim(YourSettingNodes[i].XMLAttributes["value"]),ConfigStruct);
+					tester = oUtilities.placeHolderReplacer(trim(YourSettingNodes[i].XMLAttributes["value"]),ConfigStruct);
 					//Test for JSON
 					if( reFindNocase(instance.jsonRegex,tester) ){
 						StructInsert(ConfigStruct, YourSettingNodes[i].XMLAttributes["name"], getPlugin("json").decode(replace(tester,"'","""","all")) );
@@ -959,7 +959,7 @@ Modification History:
 			else if ( ArrayLen(CustomInterceptionPoints) gt 1 )
 				throw("There were more than 1 CustomInterceptionPoints elements found. There can only be one.","","ColdBox.plugins.XMLParser.ConfigXMLParsingException");
 			else
-				StructInsert(ConfigStruct.InterceptorConfig,"CustomInterceptionPoints",Trim(CustomInterceptionPoints[1].XMLText));
+				StructInsert(ConfigStruct.InterceptorConfig,"CustomInterceptionPoints",oUtilities.placeHolderReplacer(Trim(CustomInterceptionPoints[1].XMLText),ConfigStruct));
 			
 			/* Parse all Interceptor Nodes now. */
 			InterceptorNodes = XMLSearch(configXML, instance.searchInterceptors);
@@ -967,7 +967,7 @@ Modification History:
 				//Interceptor Struct
 				InterceptorStruct = structnew();
 				//get Class
-				InterceptorStruct.class = placeHolderReplacer(Trim(InterceptorNodes[i].XMLAttributes["class"]),ConfigStruct);
+				InterceptorStruct.class = oUtilities.placeHolderReplacer(Trim(InterceptorNodes[i].XMLAttributes["class"]),ConfigStruct);
 				//Prepare Properties
 				InterceptorStruct.properties = structnew();
 			
@@ -975,7 +975,7 @@ Modification History:
 				if ( ArrayLen(InterceptorNodes[i].XMLChildren) ){
 					for(j=1; j lte ArrayLen(InterceptorNodes[i].XMLChildren); j=j+1){
 						//Property Complex Check
-						tempProperty = placeHolderReplacer(Trim( InterceptorNodes[i].XMLChildren[j].XMLText ),ConfigStruct);
+						tempProperty = oUtilities.placeHolderReplacer(Trim( InterceptorNodes[i].XMLChildren[j].XMLText ),ConfigStruct);
 						//Check for Complex Setup
 						if( reFindNocase(instance.jsonRegex,tempProperty) ){
 							StructInsert( InterceptorStruct.properties, Trim(InterceptorNodes[i].XMLChildren[j].XMLAttributes["name"]), getPlugin('json').decode(replace(tempProperty,"'","""","all")) );
@@ -1063,47 +1063,6 @@ Modification History:
 		else{
 			return ExpandPath(arguments.path);
 		}
-		</cfscript>
-	</cffunction>
-	
-	<!--- PlaceHolder Replacer --->
-	<cffunction name="placeHolderReplacer" access="private" returntype="any" hint="PlaceHolder Replacer" output="false" >
-		<!---************************************************************************************************ --->
-		<cfargument name="str" 		required="true" type="any" hint="The string to look for replacements">
-		<cfargument name="settings" required="true" type="any" hint="The structure of settings to use in replacing">
-		<!---************************************************************************************************ --->
-		<cfscript>
-			var returnString = arguments.str;
-			var regex = "\$\{([0-9a-z\-\.\_]+)\}";
-			var lookup = 0;
-			var varName = 0;
-			var varValue = 0;
-			/* Loop and Replace */
-			while(true){
-				/* Search For Pattern */
-				lookup = reFindNocase(regex,returnString,1,true);	
-				/* Found? */
-				if( lookup.pos[1] ){
-					/* Get Variable Name From Pattern */
-					varName = mid(returnString,lookup.pos[2],lookup.len[2]);
-					/* Lookup Value */
-					if( isDefined("arguments.settings.#varName#") ){
-						varValue = Evaluate("arguments.settings.#varName#");
-					}
-					else{
-						varValue = "VAR_NOT_FOUND";
-					}
-					/* Remove PlaceHolder Entirely */
-					returnString = removeChars(returnString, lookup.pos[1], lookup.len[1]);
-					/* Insert Var Value */
-					returnString = insert(varValue, returnString, lookup.pos[1]-1);
-				}
-				else{
-					break;
-				}	
-			}
-			/* Return Parsed String. */
-			return returnString;
 		</cfscript>
 	</cffunction>
 	

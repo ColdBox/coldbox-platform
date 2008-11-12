@@ -19,7 +19,7 @@
 	
 	<bean id="myMailSettings" factory-bean="ColdboxFactory" factory-method="getMailSettings" />
 	
-	<bean id="security" class="coldbox.testing.testmodel.security" />
+	<bean id="security" class="${TestingModelPath}.security" />
 
 	
 </beans>

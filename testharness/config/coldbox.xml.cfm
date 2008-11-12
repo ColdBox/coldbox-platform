@@ -52,6 +52,9 @@
 		
 		<!-- Show SideBar? true/false, else leave blank. -->
 		<Setting name="ColdBoxSideBar" value="true" />
+		
+		<!--Testing Model Path -->
+		<Setting name="TestingModelPath" value="coldbox.testing.testmodel" />
 	</YourSettings>
 	
 	<!-- Custom Conventions : You can override the framework wide conventions -->

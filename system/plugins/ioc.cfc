@@ -123,19 +123,17 @@ Modification History:
 				<cfset oBean = getIoCFactory().getBean(arguments.beanName)>
 			</cfif>
 			
-			<!--- Autowire Support --->
+			<!--- Autowire Support For Model Objects --->
 			<cfset getPlugin("beanFactory").autowire(target=oBean,annotationCheck=true)>
 			
 			<!--- If Caching on, then set object in cache --->
 			<cfif objCaching>
-				
 				<!--- Get Object's MetaData, For Caching --->
 				<cfset MetaData = getMetaData(oBean)>
 				<!--- By Default, services with no cache flag are set to false --->
 				<cfif not structKeyExists(MetaData,"cache") or not isBoolean(MetaData.cache)>
 					<cfset MetaData.cache = false>
 				</cfif>
-				
 				<!--- Test for caching parameters --->
 				<cfif MetaData["cache"]>
 					<!--- Cache Metadata --->
@@ -237,14 +235,18 @@ Modification History:
 		<cfscript>
 			var coldpsring = "";
 			var settingsStruct = StructNew();
+			var ConfigContents = "";
+			var oUtil = getPlugin("Utilities");
 			
 			//Copy the settings Structure
 			structAppend(settingsStruct, getSettingStructure());
-			
 			//Create the Coldspring Factory
 			coldpsring = createObject("component",getCOLDSPRING_FACTORY()).init(structnew(),settingsStruct);
-			//Load Definition File
-			coldpsring.loadBeansFromXmlFile( getExpandedIOCDefinitionFile() );
+			/* Read the XML File and do string replacement First */
+			ConfigContents = oUtil.readFile(getExpandedIOCDefinitionFile());
+			ConfigContents = oUtil.placeHolderReplacer(ConfigContents,settingsStruct);
+			/* Load BEan Definitions */
+			coldpsring.loadBeansFromXmlRaw( ConfigContents );
 			
 			return coldpsring;
 		</cfscript>

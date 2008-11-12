@@ -126,13 +126,14 @@ Description :
 			makePublic(plugin,"createColdspring","_createColdspring");
 			
 			plugin.setIOCDefinitionFile(newfile);
+			plugin.setIOCFramework('coldspring');
+			
 			makePublic(plugin, "validateDefinitionFile", "_validateDefinitionFile");
 			plugin._validateDefinitionFile();
 			
 			plugin.setCOLDSPRING_FACTORY(cs);
 			
-			plugin._createColdspring();
-			
+			plugin._createColdspring();			
 		</cfscript>
 	</cffunction>
 	
