@@ -13,7 +13,7 @@
 	<cffunction name="tearDown" returntype="void" access="public">
 		<!--- Any code needed to return your environment to normal goes here --->
 	</cffunction>
-	
+		
 	<cffunction name="testDefaultCreationSet" access="public" returntype="any" hint="" output="false" >
 		<cfset testSet()>
 	</cffunction>	

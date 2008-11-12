@@ -72,8 +72,15 @@ Adds a constructor property to a bean.
 		
 		settings.dsn = "mytest";
 		
+		/* Parse XML Config FIle */
 		parseXMLConfigFile(arguments.filePath,settings);
 		
+		/* Parse again using XML Raw */
+		ConfigFile = FileRead(ExpandPath('/coldbox/testing/tests/cases/extras/lightwire/beandefs.xml'));
+		parseXMLRaw(ConfigFile,settings);
+		
+		/* Parse with XML Object */
+		parseXMLObj(xmlparse(ConfigFile),settings);
 		return this;
 	</cfscript>
 </cffunction>
