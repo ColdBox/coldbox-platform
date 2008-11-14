@@ -702,7 +702,7 @@ Modification History:
 		<cftry>
 			<!--- Checks --->
 			<cfif getCacheConfigBean().getCacheFreeMemoryPercentageThreshold() neq 0>
-				<cfset jvmThreshold = ( (instance.javaRuntime.getRuntime().freeMemory() / instance.javaRuntime.getRuntime().totalMemory() ) * 100 )>
+				<cfset jvmThreshold = ( (instance.javaRuntime.getRuntime().freeMemory() / instance.javaRuntime.getRuntime().maxMemory() ) * 100 )>
 				<cfset check = getCacheConfigBean().getCacheFreeMemoryPercentageThreshold() lt jvmThreshold>				
 			</cfif>
 			<cfcatch type="any">
