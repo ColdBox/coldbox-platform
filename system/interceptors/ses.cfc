@@ -301,6 +301,9 @@ Description :
 			</cfif>			
 		</cfloop>
 		
+		<!--- Package Resolver --->
+		<cfset requestString = packageResolver(requestString,routeParams)>
+		
 		<!--- Populate the params structure with the proper parts of the URL --->
 		<cfset routeParamsLength = arrayLen(routeParams)>
 		<cfloop from="1" to="#routeParamsLength#" index="i">
@@ -448,6 +451,69 @@ Description :
 				return cgi[arguments.cgielement];
 			else
 				return "";
+		</cfscript>
+	</cffunction>
+	
+	<!--- Package Resolver --->
+	<cffunction name="packageResolver" access="private" returntype="any" hint="Resolve handler packages" output="false" >
+		<!--- ************************************************************* --->
+		<cfargument name="routingString" 	required="true" type="any" hint="The routing string">
+		<cfargument name="routeParams" 		required="true" type="any" hint="The route params array">
+		<!--- ************************************************************* --->
+		<cfscript>
+			var root = getSetting("HandlersPath");
+			var extRoot = getSetting("HandlersExternalLocationPath");
+			var x = 1;
+			var newEvent = "";
+			var thisFolder = "";
+			var foundPaths = "";
+			var rString = arguments.routingString;
+			var routeParamsLen = ArrayLen(routeParams);
+			var returnString = arguments.routingString;
+			
+			/* Verify if we have a handler on the route params */
+			if( findnocase("handler", arrayToList(arguments.routeParams)) ){
+				/* Cleanup routing string to position of :handler */
+				for(x=1; x lte routeParamsLen; x=x+1){
+					if( routeParams[x] neq "handler" ){
+						rString = replace(rString,listFirst(rString,"/") & "/","");
+					}
+					else{
+						break;
+					}
+				}	
+				/* Now Find Packaging in our stripped rString */
+				for(x=1; x lte listLen(rString,"/"); x=x+1){
+					/* Get Folder */
+					thisFolder = listgetAt(rString,x,"/");
+					/* Check if package exists in convention OR external location */
+					if( directoryExists(root & "/" & foundPaths & thisFolder) OR
+					    directoryExists(extRoot & "/" & foundPaths & thisFolder) ){
+						
+						/* Save Found Paths */
+						foundPaths = foundPaths & thisFolder & "/";
+						if(len(newEvent) eq 0){
+							newEvent = thisFolder;
+						}
+						else{
+							newEvent = newEvent & "." & thisFolder;
+						}
+						
+					}//end if folder found
+					else{
+						newEvent = newEvent & "." & thisFolder;
+						break;
+					}//end not a folder.
+				}//end for loop
+				
+				/* Replace Return String */
+				if( len(newEvent) ){
+					returnString = replacenocase(returnString, replace(newEvent,".","/","all"), newEvent);
+				}	
+			}//end if handler found	
+			
+			
+			return returnString;
 		</cfscript>
 	</cffunction>
 
