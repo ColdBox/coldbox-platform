@@ -48,7 +48,6 @@ Modification History:
 		<cfargument name="name"  type="string" required="true" hint="The name of the variable.">
 		<cfargument name="value" type="any"    required="true" hint="The value to set in the variable.">
 		<!--- ************************************************************* --->
-		
 		<cflock name="#getLockName()#" type="exclusive" timeout="10" throwontimeout="true">
 			<cfset cluster[arguments.name] = arguments.value>
 		</cflock>
@@ -60,7 +59,6 @@ Modification History:
 		<cfargument  name="name" 		type="string"  required="true" 		hint="The variable name to retrieve.">
 		<cfargument  name="default"  	type="any"     required="false"  	hint="The default value to set. If not used, a blank is returned." default="">
 		<!--- ************************************************************* --->
-		
 		<cflock name="#getLockName()#" type="readonly" timeout="10" throwontimeout="true">
 			<cfscript>
 				if ( structKeyExists( Cluster, arguments.name) )
@@ -95,12 +93,12 @@ Modification History:
 
 	<!--- Clear All From Storage --->
 	<cffunction name="clearAll" access="public" returntype="void" hint="Clear the entire coldbox application storage" output="false">
-		
 		<cflock name="#getLockName()#" type="exclusive" timeout="10" throwontimeout="true">
 			<cfset StructClear(cluster)>
 		</cflock>
 	</cffunction>
 <!------------------------------------------- PRIVATE ------------------------------------------->
+	
 	<!--- get/set lockname --->
 	<cffunction name="getlockName" access="private" output="false" returntype="string" hint="Get lockName">
 		<cfreturn instance.lockName/>
