@@ -303,10 +303,14 @@ Description :
 		</cfloop>
 		
 		<!--- Package Resolver --->
-		<cfset packagedRequestString = packageResolver(requestString,routeParams)>
-		<cfif compare(packagedRequestString,requestString) neq 0>
-			<!--- New routing string located, reFind Courses and return results. --->
-			<cfreturn findCourse(packagedRequestString,arguments.event)>
+		<cfif thisRoute.packageResolverExempt>
+			<!--- Resolve packages for handler placeholder --->
+			<cfset packagedRequestString = packageResolver(requestString,routeParams)>
+			<!--- If it resolved, reset the patterns --->
+			<cfif compare(packagedRequestString,requestString) neq 0>
+				<!--- New routing string located, reFind Courses and return results. --->
+				<cfreturn findCourse(packagedRequestString,arguments.event)>
+			</cfif>
 		</cfif>
 		
 		<!--- Populate the params structure with the proper parts of the URL --->
@@ -347,7 +351,10 @@ Description :
 	<!--- Add a new Course --->
 	<cffunction name="addCourse" access="public" hint="Adds a route to dispatch" output="false">
 		<!--- ************************************************************* --->
-		<cfargument name="pattern" type="string" required="true" hint="The pattern to match against the URL." />
+		<cfargument name="pattern" type="string" required="true"  hint="The pattern to match against the URL." />
+		<cfargument name="handler" type="string" required="false" hint="The handler to path to execute if passed.">
+		<cfargument name="action"  type="string" required="false" hint="The action to assign if passed.">
+		<cfargument name="packageResolverExempt" type="boolean" required="false" default="false" hint="If this is set to true, then the interceptor will not try to do handler package resolving. Else a package will always be resolved.">
 		<!--- ************************************************************* --->
 		<cfscript>
 		var thisCourse = structNew();
@@ -361,7 +368,8 @@ Description :
 		
 		/* Create our our course struct */
 		for(arg in arguments){
-			thisCourse[arg] = arguments[arg];
+			if( structKeyExists(arguments,arg) )
+				thisCourse[arg] = arguments[arg];
 		}
 		/* Add trailing / to make it easier to parse */
 		if( right(thisCourse.pattern,1) IS NOT "/" ){
@@ -492,9 +500,10 @@ Description :
 					/* Get Folder */
 					thisFolder = listgetAt(rString,x,"/");
 					/* Check if package exists in convention OR external location */
-					if( directoryExists(root & "/" & foundPaths & thisFolder) OR
-					    directoryExists(extRoot & "/" & foundPaths & thisFolder) ){
-						
+					if( directoryExists(root & "/" & foundPaths & thisFolder) 
+						OR
+					    ( len(extRoot) AND directoryExists(extRoot & "/" & foundPaths & thisFolder) ) 
+					    ){
 						/* Save Found Paths */
 						foundPaths = foundPaths & thisFolder & "/";
 						if(len(newEvent) eq 0){
@@ -506,15 +515,16 @@ Description :
 						
 					}//end if folder found
 					else{
-						newEvent = newEvent & "." & thisFolder;
+						//newEvent = newEvent & "." & thisFolder;
 						break;
 					}//end not a folder.
 				}//end for loop
-				
 				/* Replace Return String */
 				if( len(newEvent) ){
 					returnString = replacenocase(returnString, replace(newEvent,".","/","all"), newEvent);
 				}	
+				dump(returnString,1);
+				
 			}//end if handler found	
 			
 			return returnString;
