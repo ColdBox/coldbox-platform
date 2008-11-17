@@ -230,6 +230,7 @@ Description :
 		<cfset var qsValues = "" />
 		<cfset var qsVal = "" />
 		<cfset var requestString = arguments.action />
+		<cfset var packagedRequestString = "">
 		<cfset var conventionString = "">
 		<cfset var conventionStringLen = 0>
 		<cfset var tmpVar = "">
@@ -302,7 +303,11 @@ Description :
 		</cfloop>
 		
 		<!--- Package Resolver --->
-		<cfset requestString = packageResolver(requestString,routeParams)>
+		<cfset packagedRequestString = packageResolver(requestString,routeParams)>
+		<cfif compare(packagedRequestString,requestString) neq 0>
+			<!--- New routing string located, reFind Courses and return results. --->
+			<cfreturn findCourse(packagedRequestString,arguments.event)>
+		</cfif>
 		
 		<!--- Populate the params structure with the proper parts of the URL --->
 		<cfset routeParamsLength = arrayLen(routeParams)>
@@ -511,7 +516,6 @@ Description :
 					returnString = replacenocase(returnString, replace(newEvent,".","/","all"), newEvent);
 				}	
 			}//end if handler found	
-			
 			
 			return returnString;
 		</cfscript>
