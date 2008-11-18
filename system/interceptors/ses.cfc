@@ -303,7 +303,7 @@ Description :
 		</cfloop>
 		
 		<!--- Package Resolver --->
-		<cfif thisRoute.packageResolverExempt>
+		<cfif thisRoute.packageResolverExempt eq false>
 			<!--- Resolve packages for handler placeholder --->
 			<cfset packagedRequestString = packageResolver(requestString,routeParams)>
 			<!--- If it resolved, reset the patterns --->
@@ -506,13 +506,13 @@ Description :
 					    ){
 						/* Save Found Paths */
 						foundPaths = foundPaths & thisFolder & "/";
+						/* Save new Event */
 						if(len(newEvent) eq 0){
-							newEvent = thisFolder;
+							newEvent = thisFolder & ".";
 						}
 						else{
-							newEvent = newEvent & "." & thisFolder;
-						}
-						
+							newEvent = newEvent & thisFolder & ".";
+						}						
 					}//end if folder found
 					else{
 						//newEvent = newEvent & "." & thisFolder;
@@ -521,10 +521,8 @@ Description :
 				}//end for loop
 				/* Replace Return String */
 				if( len(newEvent) ){
-					returnString = replacenocase(returnString, replace(newEvent,".","/","all"), newEvent);
-				}	
-				dump(returnString,1);
-				
+					returnString = replacenocase(returnString,replace(newEvent,".","/","all"),newEvent);
+				}					
 			}//end if handler found	
 			
 			return returnString;

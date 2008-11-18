@@ -76,20 +76,25 @@ queryPlugin.doLeftOuterJoin(q1,q3,"idt","idt")
 	<!--- FILTER A QUERY --->
 	<cffunction name="filterQuery" access="public" returntype="query" hint="Filters a query by the given value" output="false">
 		<!--- ************************************************************* --->
-		<cfargument name="qry" 			type="query" 	required="yes" hint="Query to filter">
-		<cfargument name="field" 		type="string" 	required="yes" hint="Field to filter on">
-		<cfargument name="value" 		type="string" 	required="yes" hint="Value to filter on">
-		<cfargument name="cfsqltype" 	type="string" 	required="no" default="cf_sql_varchar" hint="The cf sql type of the value.">
+		<cfargument name="qry" 			type="query" 	required="true" hint="Query to filter">
+		<cfargument name="field" 		type="string" 	required="true" hint="Field to filter on">
+		<cfargument name="value" 		type="string" 	required="true" hint="Value to filter on">
+		<cfargument name="cfsqltype" 	type="string" 	required="false" default="cf_sql_varchar" hint="The cf sql type of the value.">
+		<cfargument name="list" 		type="boolean"  required="false" default="false" hint="Whether to do a where IN list."/>
 		<!--- ************************************************************* --->
 		<cfset var qryNew = QueryNew("")>
 		<cfquery name="qryNew" dbtype="query">
 			SELECT *
 				FROM arguments.qry
+				<cfif arguments.list>
+				WHERE #trim(arguments.field)# IN <cfqueryparam cfsqltype="#trim(arguments.cfsqltype)#" value="#trim(arguments.value)#" list="true">
+				<cfelse>
 				WHERE #trim(arguments.field)# = <cfqueryparam cfsqltype="#trim(arguments.cfsqltype)#" value="#trim(arguments.value)#">
+				</cfif>
 		</cfquery>
 		<cfreturn qryNew>
 	</cffunction>
-
+	
 	<!--- Sort a query --->
 	<cffunction name="sortQuery" access="public" returntype="query" hint="Sorts a query by the given field" output="false">
 		<!--- ************************************************************* --->
