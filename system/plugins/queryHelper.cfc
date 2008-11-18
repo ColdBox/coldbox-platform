@@ -87,7 +87,7 @@ queryPlugin.doLeftOuterJoin(q1,q3,"idt","idt")
 			SELECT *
 				FROM arguments.qry
 				<cfif arguments.list>
-				WHERE #trim(arguments.field)# IN <cfqueryparam cfsqltype="#trim(arguments.cfsqltype)#" value="#trim(arguments.value)#" list="true">
+				WHERE #trim(arguments.field)# IN (<cfqueryparam cfsqltype="#trim(arguments.cfsqltype)#" value="#trim(arguments.value)#" list="true">)
 				<cfelse>
 				WHERE #trim(arguments.field)# = <cfqueryparam cfsqltype="#trim(arguments.cfsqltype)#" value="#trim(arguments.value)#">
 				</cfif>
