@@ -17,7 +17,17 @@ Description :
 <cfparam name="COLDBOX_APP_ROOT_PATH" default="#getDirectoryFromPath(getbaseTemplatePath())#" type="string">
 	
 <!--- Create the BootStrapper --->
-<cfset coldbox = CreateObject("component","coldbox")>
+<cfif not structKeyExists(application,"cbBootstrap") or application.cbBootstrap.isfwReinit()>
+	<cflock name="coldbox.bootstrap_#hash(getBaseTemplatePath())#" type="exclusive" timeout="5" throwontimeout="true">
+	<cfif not structKeyExists(application,"cbBootstrap") or application.cbBootstrap.isfwReinit()>
+		<cfset structDelete(application,"cbBootStrap")>
+		<cfset application.cbBootStrap = CreateObject("component","coldbox")>
+	</cfif>
+	</cflock>
+</cfif>
+
+<!--- Reference --->
+<Cfset coldbox = application.cbBootStrap>
 
 <!--- Set the ColdBox App Root --->
 <cfset coldbox.setCOLDBOX_APP_ROOT_PATH(COLDBOX_APP_ROOT_PATH)>
