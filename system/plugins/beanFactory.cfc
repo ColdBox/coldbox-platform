@@ -380,10 +380,15 @@ Description: This is the framework's simple bean factory.
 			
 			/* Start Registering inheritances */
 			if ( structKeyExists(md, "extends") AND 
-				 ( md.extends.name NEQ "coldbox.system.plugin" OR
-				   md.extends.name NEQ "coldbox.system.eventhandler" OR
-				   md.extends.name NEQ "coldbox.system.interceptor" OR
-				   (len(arguments.stopRecursion) and md.extends.name NEQ arguments.stopRecursion) )
+				 ( md.extends.name NEQ "coldbox.system.plugin" AND
+				   md.extends.name NEQ "coldbox.system.eventhandler" AND
+				   md.extends.name NEQ "coldbox.system.interceptor" AND
+				   (
+				   	(len(arguments.stopRecursion) and md.extends.name NEQ arguments.stopRecursion ) 
+				   	 OR
+				   	( len(arguments.stopRecursion) eq 0 )
+				   ) 
+				  )
 			){
 				/* Recursive lookup */
 				arguments.dependencies = parseMetadata(md.extends,dependencies,arguments.useSetterInjection,arguments.stopRecursion);
