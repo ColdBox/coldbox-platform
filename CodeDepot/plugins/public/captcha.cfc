@@ -10,6 +10,9 @@ validate method), an error message also appears under the image, which can be cu
  sets a flag in the session scope to tell the plugin to display the error message if the user is redirected back to the form.)
 
 This plugin is free to use and modify and is provided with NO WARRANTY of merchantability or fitness for a particular purpose. 
+
+Updates
+11/16/2008 - Luis Majano - Cleanup
 ----------------------------------------------------------------------->
 <cfcomponent name="captcha" 
 			 hint="plugin for CF8 built in captcha functionality" 
@@ -25,7 +28,7 @@ This plugin is free to use and modify and is provided with NO WARRANTY of mercha
 		<cfscript>
   		super.Init(arguments.controller);
   		setpluginName("captcha");
-  		setpluginVersion("0.25");
+  		setpluginVersion("0.30");
   		setpluginDescription("CAPTCHA plugin for CF8 cfimage captcha functionality");
 		
   		//Return instance
@@ -40,7 +43,7 @@ This plugin is free to use and modify and is provided with NO WARRANTY of mercha
 		<cfargument name="text" type="string" default="#makeRandomString(arguments.length)#" />
 		<cfargument name="width" type="string" default="200" hint="width of captcha image in pixels" />
 		<cfargument name="height" type="string" default="50" hint="height of captcha image in pixels" />
-		<cfargument name="fonts" type="string" default="verdana,arial,helvetica" hint="fonts to use for characters in captcha image" />
+		<cfargument name="fonts" type="string" default="verdana,arial,times new roman,courier" hint="fonts to use for characters in captcha image" />
 		<cfargument name="message" type="string" default="Please enter the correct code shown in the graphic." hint="Message to display below captcha if validate method failed.">
 		<cfset var ret = "" />
 		
@@ -49,8 +52,7 @@ This plugin is free to use and modify and is provided with NO WARRANTY of mercha
 			<cfimage action="captcha" 
 					 text="#arguments.text#"
 					 width="#arguments.width#" 
-					 height="#arguments.height#"
-					 fonts="#arguments.fonts#" />
+					 height="#arguments.height#" />
 			<cfif not isValidated()>
 			<br /><span class="cb_captchamessage"><cfoutput>#arguments.message#</cfoutput></span>
 			</cfif>
@@ -76,11 +78,14 @@ This plugin is free to use and modify and is provided with NO WARRANTY of mercha
 <!------------------------------------------- PRIVATE ------------------------------------------->
 
 	<cffunction name="getCaptchaStorage" access="private" returntype="any" output="false">
+		<cfset var oSession = getPlugin("sessionstorage")>
+		<cfset var captcha = {captchaCode = "", validated = true}>
 		
-        <cfif not structKeyExists(session,"cb_captcha")>
-        	<cfset session.cb_captcha = {captchaCode = "", validated = true} />
-        </cfif>
-        <cfreturn session.cb_captcha />
+		<cfif not oSession.exists("cb_captcha")>
+			<cfset oSession.setVar("cb_captcha",captcha)>
+		</cfif>
+		
+		<cfreturn oSession.getVar("cb_captcha")>
 	</cffunction>
 	
 	<cffunction name="setCaptchaCode" access="public" returntype="void" output="false">
@@ -102,7 +107,7 @@ This plugin is free to use and modify and is provided with NO WARRANTY of mercha
 	</cffunction>
 	
 	<cffunction name="clearCaptcha" access="private" returntype="void" output="false">
-		<cfset structDelete(session,"cb_captcha") />
+		<cfset getPlugin("sessionstorage").deleteVar("cb_captcha")>
 	</cffunction>
 
 	<cffunction name="makeRandomString" access="private" returnType="string" output="false">
