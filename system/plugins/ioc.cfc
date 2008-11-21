@@ -244,7 +244,7 @@ Modification History:
 			coldpsring = createObject("component",getCOLDSPRING_FACTORY()).init(structnew(),settingsStruct);
 			/* Read the XML File and do string replacement First */
 			ConfigContents = oUtil.readFile(getExpandedIOCDefinitionFile());
-			ConfigContents = oUtil.placeHolderReplacer(ConfigContents,settingsStruct);
+			ConfigContents = oUtil.placeHolderReplacer(ConfigContents,settingsStruct);	
 			/* Load BEan Definitions */
 			coldpsring.loadBeansFromXmlRaw( ConfigContents );
 			
