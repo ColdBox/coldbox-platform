@@ -78,7 +78,7 @@ Modification History:
 		<cfif Exception.getErrortype() eq "application" and controller.getSetting("CustomErrorTemplate") neq "">
 			<cftry>
 				<!--- Place exception in the requset Collection --->
-				<Cfset Event.setvalue("ExceptionBean",Exception)>
+				<cfset Event.setvalue("ExceptionBean",Exception)>
 				<!--- Save the Custom Report --->
 				<cfsavecontent variable="cboxBugReport"><cfinclude template="/#controller.getSetting("AppMapping")#/#controller.getSetting("CustomErrorTemplate")#"></cfsavecontent>
 				<cfcatch type="any">
@@ -106,7 +106,7 @@ Modification History:
 		<cfif Exception.getErrortype() eq "application" and controller.getSetting("CustomEmailBugReport") neq "">
 			<cftry>
 				<!--- Place exception in the requset Collection --->
-				<Cfset Event.setvalue("ExceptionBean",Exception)>
+				<cfset Event.setvalue("ExceptionBean",Exception)>
 				<!--- Save the Custom Email Bug Report --->
 				<cfsavecontent variable="cboxBugReport"><cfinclude template="/#controller.getSetting("AppMapping")#/#controller.getSetting("CustomEmailBugReport")#"></cfsavecontent>
 				<cfcatch type="any">
