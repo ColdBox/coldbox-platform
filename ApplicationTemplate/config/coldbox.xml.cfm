@@ -203,7 +203,7 @@
 		<UseLastAccessTimeouts>true</UseLastAccessTimeouts>
 		<ReapFrequency>1</ReapFrequency>
 		<MaxObjects>100</MaxObjects>
-		<FreeMemoryPercentageThreshold>1</FreeMemoryPercentageThreshold>
+		<FreeMemoryPercentageThreshold>0</FreeMemoryPercentageThreshold>
 		<EvictionPolicy>LRU</EvictionPolicy>
 	</Cache>
 	
