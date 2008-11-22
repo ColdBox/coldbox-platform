@@ -94,19 +94,15 @@
 		<!--Remove Dist-->
 		<delete dir="dist" />
 		
-		<!--Compile Dashboard-->
+		<!--Export Dashboard-->
 		<ant antfile="${ant.dashboard}" target="deploy.to.export" dir="${dir.dashboard}" />
 		
-		<!-- Zip it -->
+		<!-- Zip Bundle -->
 		<zip destfile="${dir.exports}/coldbox_${coldbox.version}.zip" basedir="${dir.build}"></zip>
 		
 		<!-- Zip Standalone -->
 		<zip destfile="${dir.exports}/coldbox_standalone_${coldbox.version}.zip" basedir="${dir.build}" excludes="dashboard/**,samples/**">								
 		</zip>	
-		
-		<!-- Zip Dashboard -->
-		<zip destfile="${dir.exports}/dashboard_${dashboard.version}.zip" basedir="${dir.build}" includes="dashboard/**">								
-		</zip>
 		
     </target>
 
