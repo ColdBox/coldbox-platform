@@ -27,12 +27,16 @@
 	<!-- Init -->
 	<target name="init" description="Init">
 		<!-- Version -->
-		<input addproperty="coldbox.version" message="ColdBox Version" />	
-		<input addproperty="dashboard.version" message="Dashboard Version" />
+		<input addproperty="coldbox.version" message="ColdBox Version" />
+		<input addproperty="doCompile" message="Compile?" defaultvalue="true" validargs="true,false" />
+		
+		<condition property="compile.true">
+			<istrue value="${doCompile}"/>
+		</condition>
 	</target>
 	
 	<!--Framework Compile Checks -->
-	<target name="compilechecks" description="Compile framework checks." depends="init">
+	<target name="compilechecks" description="Compile framework checks." depends="init" if="compile.true">
 		<!--Need Compile Checks First -->
 		<ant antfile="${ant.compilechecks}" target="compile.checks" />		
 	</target>
@@ -105,5 +109,9 @@
 		</zip>	
 		
     </target>
-
+	
+	<target name="test">
+		<!--Export Dashboard-->
+		<ant antfile="${ant.dashboard}" target="deploy.to.export" dir="${dir.dashboard}"/>
+	</target>
 </project>
