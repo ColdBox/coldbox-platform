@@ -121,7 +121,8 @@
 		<pluginsLocation></pluginsLocation>
 		<layoutsLocation></layoutsLocation>
 		<viewsLocation></viewsLocation>
-		<eventAction></eventAction>		
+		<eventAction></eventAction>	
+		<modelsLocation></modelsLocation>	
 	</Conventions>	
 	-->
 	

@@ -160,6 +160,7 @@ Modification History:
 			StructInsert(settingsStruct, "LayoutsConvention", conventions[1].layoutsLocation.xmltext);
 			StructInsert(settingsStruct, "ViewsConvention", conventions[1].viewsLocation.xmltext);
 			StructInsert(settingsStruct, "EventAction", conventions[1].eventAction.xmltext);
+			StructInsert(settingsStruct, "ModelsConvention", conventions[1].modelsLocation.xmltext);
 
 			//Get ColdBox Config XML File Settings or Override using arguments
 			if ( arguments.overrideConfigFile eq ""){
@@ -519,9 +520,10 @@ Modification History:
 				if( structKeyExists(conventions[1],"layoutsLocation") ){ fwSettingsStruct["LayoutsConvention"] = trim(conventions[1].layoutsLocation.xmltext); }
 				if( structKeyExists(conventions[1],"viewsLocation") ){ fwSettingsStruct["ViewsConvention"] = trim(conventions[1].viewsLocation.xmltext); }
 				if( structKeyExists(conventions[1],"eventAction") ){ fwSettingsStruct["eventAction"] = trim(conventions[1].eventAction.xmltext); }
+				if( structKeyExists(conventions[1],"modelsLocation") ){ fwSettingsStruct["ModelsConvention"] = trim(conventions[1].modelsLocation.xmltext); }
 			}
 			
-			/* ::::::::::::::::::::::::::::::::::::::::: HANDLER & PLUGIN INVOCATION PATHS :::::::::::::::::::::::::::::::::::::::::::: */
+			/* ::::::::::::::::::::::::::::::::::::::::: HANDLER-MODELS-PLUGIN INVOCATION PATHS :::::::::::::::::::::::::::::::::::::::::::: */
 			
 			//Set the Handlers External Configuration Paths
 			if( configStruct["HandlersExternalLocation"] neq "" ){
@@ -531,39 +533,37 @@ Modification History:
 				configStruct["HandlersExternalLocationPath"] = "";
 			}
 			
-			//Set the Handler & Custom Plugin Invocation & Physical Path for this Application
+			//Set the Handlers,Models, & Custom Plugin Invocation & Physical Path for this Application
 			if( ConfigStruct["AppMapping"] neq ""){
 				
-				//Parse out the first / to create handler invocation Path
+				//Parse out the first / to create invocation Path
 				if ( left(ConfigStruct["AppMapping"],1) eq "/" ){
 					ConfigStruct["AppMapping"] = removeChars(ConfigStruct["AppMapping"],1,1);
 				}
 				
-				//Set the handler, my plugins Invocation Path
+				//Set the Invocation Path
 				ConfigStruct["HandlersInvocationPath"] = replace(ConfigStruct["AppMapping"],"/",".","all") & ".#fwSettingsStruct.handlersConvention#";
 				ConfigStruct["MyPluginsInvocationPath"] = replace(ConfigStruct["AppMapping"],"/",".","all") & ".#fwSettingsStruct.pluginsConvention#";
+				ConfigStruct["ModelsInvocationPath"] = replace(ConfigStruct["AppMapping"],"/",".","all") & ".#fwSettingsStruct.ModelsConvention#";
 				
-				//Set the Default Handler & Plugin Path
+				//Set the Location Path
 				ConfigStruct["HandlersPath"] = ConfigStruct["AppMapping"];
 				ConfigStruct["MyPluginsPath"] = ConfigStruct["AppMapping"];
+				ConfigStruct["ModelsPath"] = ConfigStruct["AppMapping"];
 				
 				//Set the physical path according to system.
-				//Test for CF 6.X, weird expandpath error on 6
-				if ( listfirst(server.coldfusion.productversion) lt 7 ){
-					ConfigStruct["HandlersPath"] = replacenocase(cgi.SCRIPT_NAME, listlast(cgi.SCRIPT_NAME,"/"),"") & fwSettingsStruct.handlersConvention;
-					ConfigStruct["MyPluginsPath"] = replacenocase(cgi.SCRIPT_NAME, listlast(cgi.SCRIPT_NAME,"/"),"") & fwSettingsStruct.pluginsConvention;
-				}
-				else{
-					ConfigStruct["HandlersPath"] = "/" & ConfigStruct["HandlersPath"] & "/#fwSettingsStruct.handlersConvention#";
-					ConfigStruct["MyPluginsPath"] = "/" & ConfigStruct["MyPluginsPath"] & "/#fwSettingsStruct.pluginsConvention#";
-				}
+				ConfigStruct["HandlersPath"] = "/" & ConfigStruct["HandlersPath"] & "/#fwSettingsStruct.handlersConvention#";
+				ConfigStruct["MyPluginsPath"] = "/" & ConfigStruct["MyPluginsPath"] & "/#fwSettingsStruct.pluginsConvention#";
+				ConfigStruct["ModelsPath"] = "/" & ConfigStruct["ModelsPath"] & "/#fwSettingsStruct.ModelsConvention#";
+				
 				//Set the Handlerspath expanded.
 				ConfigStruct["HandlersPath"] = ExpandPath(ConfigStruct["HandlersPath"]);
 				ConfigStruct["MyPluginsPath"] = ExpandPath(ConfigStruct["MyPluginsPath"]);
+				ConfigStruct["ModelsPath"] = ExpandPath(ConfigStruct["ModelsPath"]);
 					
 			}
 			else{
-				//Parse out the first / to create handler invocation Path
+				//Parse out the first / to create the invocation Path
 				if ( left(ConfigStruct["AppMapping"],1) eq "/" ){
 					ConfigStruct["AppMapping"] = removeChars(ConfigStruct["AppMapping"],1,1);
 				}
@@ -573,8 +573,12 @@ Modification History:
 				ConfigStruct["HandlersPath"] = controller.getAppRootPath() & "#fwSettingsStruct.handlersConvention#";
 
 				/* Custom Plugins Registration */
-				ConfigStruct["MyPluginsInvocationPath"] = "#fwSettingsStruct.pluginsConvention#";
-				ConfigStruct["MyPluginsPath"] = controller.getAppRootPath() & "#fwSettingsStruct.pluginsConvention#";
+				ConfigStruct["MyPluginsInvocationPath"] = "#fwSettingsStruct.ModelsConvention#";
+				ConfigStruct["MyPluginsPath"] = controller.getAppRootPath() & "#fwSettingsStruct.ModelsConvention#";
+				
+				/* Models Registration */
+				ConfigStruct["ModelsInvocationPath"] = "#fwSettingsStruct.ModelsConvention#";
+				ConfigStruct["ModelsPath"] = controller.getAppRootPath() & "#fwSettingsStruct.ModelsConvention#";
 			}
 			
 			/* ::::::::::::::::::::::::::::::::::::::::: EXTERNAL VIEWS LOCATION :::::::::::::::::::::::::::::::::::::::::::: */

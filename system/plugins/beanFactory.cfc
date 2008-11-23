@@ -65,6 +65,72 @@ Description: This is the framework's simple bean factory.
 			}
 		</cfscript>
 	</cffunction>
+	
+	<!--- Get Model --->
+	<cffunction name="getModel" access="public" returntype="any" hint="Create or retrieve model objects by convention" output="false" >
+		<!--- ************************************************************* --->
+		<cfargument name="name" 				required="true"  type="string" hint="The name of the model to retrieve">
+		<cfargument name="useSetterInjection" 	required="false" type="boolean" default="false"	hint="Whether to use setter injection alongside the annotations property injection. cfproperty injection takes precedence.">
+		<cfargument name="onDICompleteUDF" 		required="false" type="string"	default="onDIComplete" hint="After Dependencies are injected, this method will look for this UDF and call it if it exists. The default value is onDIComplete">
+		<cfargument name="debugMode" 			required="false" type="boolean" default="false" hint="Debugging Mode or not">
+		<!--- ************************************************************* --->
+		<cfscript>
+			var oModel = 0;
+			var ModelsPath = getSetting("ModelsPath");
+			var ModelsInvocationPath = getSetting("ModelsInvocationPath");
+			var checkPath = ModelsPath & "/" & replace(arguments.name,".","/","all") & ".cfc";
+			var modelClassPath = ModelsInvocationPath & "." & arguments.name;
+			var md = 0;
+		</cfscript>
+		
+		
+		<!--- Verify if model exists in cache --->
+		<cfif ( getColdboxOCM().lookup(arguments.name) )>
+			<cfset oModel = getColdBoxOCM().get(arguments.name)>
+		<!--- Else Create It --->
+		<cfelseif ( fileExists(checkPath) )>
+			<cflock name="beanfactory.createmodel.#arguments.name#" type="exclusive" timeout="20" throwontimeout="true">
+				<cfscript>
+				if( fileExists(checkPath) ){
+					/* Create the model object */
+					oModel = createObject("component", modelClassPath);
+					/* Verify Init() and execute */
+					if( structKeyExists(oModel,"init") ){
+						oModel.init();
+					}
+					/* Caching Metadata */
+					md = getMetadata(oModel);
+					if( not structKeyExists(md,"cache") or not isBoolean(md.cache) ){
+						md.cache = false;
+					}
+					/* Are we Caching? */
+					if( md.cache ){
+						/* Prepare Timeouts and info. */
+						if( not structKeyExists(md,"cachetimeout") or not isNumeric(md.cacheTimeout) ){
+							md.cacheTimeout = "";
+						}
+						if( not structKeyExists(md,"cacheLastAccessTimeout") or not isNumeric(md.cacheLastAccessTimeout) ){
+							md.cacheLastAccessTimeout = "";
+						}
+						/* Cache This Puppy. */
+						getColdBoxOCM().set(arguments.name,oModel,md.cacheTimeout,md.CacheLastAccessTimeout);
+					}
+					
+					/* Autowire Dependencies */
+					autowire(target=oModel,
+							 useSetterInjection=arguments.useSetterInjection,
+							 annotationCheck=false,
+							 onDICompleteUDF=arguments.onDICompleteUDF,
+							 debugMode=arguments.debugmode);
+				}
+				</cfscript>
+			</cflock>
+		<cfelse>
+			<cfset throw("Model Not Found","The model path is not valid: #checkPath#","plugin.beanFactory.modelNotFoundException")>
+		</cfif>
+		
+		<cfreturn oModel>
+	</cffunction>
 
 	<!--- Populate a bean from the request Collection --->
 	<cffunction name="populateBean" access="public" output="false" returntype="Any" hint="Populate a named or instantiated bean (java/cfc) from the request collection items">
@@ -253,15 +319,10 @@ Description: This is the framework's simple bean factory.
 		if ( targetDIEntry.autowire ){
 			/* Dependencies Length */
 			dependenciesLength = arrayLen(targetDIEntry.dependencies);
-			
 			/* References */
 			oMethodInjector = getPlugin("methodInjector");
-			oIOC = getPlugin("ioc");
-			oOCM = getColdboxOCM();
-			
 			/* Let's inject our mixins */
 			oMethodInjector.start(targetObject);
-			
 			/* Loop over dependencies and inject. */
 			for(x=1; x lte dependenciesLength; x=x+1){
 				/* Get Dependency */
@@ -269,50 +330,19 @@ Description: This is the framework's simple bean factory.
 				
 				/* Determine Type of Injection */
 				if( thisDependency.type eq "ioc" ){
-					/* Verify that bean exists in the IOC container. */
-					if( oIOC.getIOCFactory().containsBean(thisDependency.name) ){
-						
-						/* Inject dependency */
-						injectBean(targetBean=targetObject,
-								   beanName=thisDependency.name,
-								   beanObject=oIOC.getBean(thisDependency.name),
-								   scope=thisDependency.scope);
-						
-						/* Debug Mode Check */
-						if( arguments.debugMode ){
-							getPlugin("logger").logEntry("information","Dependency: #thisDependency.toString()# --> injected into #targetCacheKey#.");
-						}
-					}
-					else if( arguments.debugMode ){
-						getPlugin("logger").logEntry("warning","Dependency: #thisDependency.toString()# --> not found in factory");
-					}
-				}//end if IOC Injection
-				//Else its OCM injection
+					injectIOC(thisDependency,targetObject,arguments.debugMode);
+				}
+				else if (thisDependency.type eq "ocm"){
+					injectOCM(thisDependency,targetObject,arguments.debugMode);
+				}
 				else{
-					/* Verify that bean exists in the Cache container. */
-					if( oOCM.lookup(thisDependency.name) ){
-						
-						/* Inject dependency */
-						injectBean(targetBean=targetObject,
-								   beanName=thisDependency.name,
-								   beanObject=oOCM.get(thisDependency.name),
-								   scope=thisDependency.scope);
-						
-						/* Debug Mode Check */
-						if( arguments.debugMode ){
-							getPlugin("logger").logEntry("information","Dependency: #thisDependency.toString()# --> injected into #targetCacheKey#.");
-						}
-					}
-					else if( arguments.debugMode ){
-						getPlugin("logger").logEntry("warning","Dependency: #thisDependency.toString()# --> not found in factory");
-					}
-				}//end if OCM injection							
+					/* Try to inject coldbox dependencies */
+					injectColdboxDSL(thisDependency,targetObject,arguments.debugMode);
+				}							
 				
 			}//end for loop of dependencies.
-			
 			/* Process After ID Complete */
 			processAfterCompleteDI(targetObject,onDICompleteUDF);
-			
 			/* Let's cleanup our mixins */
 			getPlugin("methodInjector").stop(targetObject);
 			
@@ -320,8 +350,142 @@ Description: This is the framework's simple bean factory.
 	</cfscript>
 	</cffunction>
 	
+	
 <!------------------------------------------- PRIVATE ------------------------------------------->
+	
+	<!--- injectColdboxDSL --->
+	<cffunction name="injectColdboxDSL" access="private" returntype="void" hint="Inject dependencies using the coldbox dependency DSL" output="false" >
+		<!--- ************************************************************* --->
+		<cfargument name="Definition" 	required="true" type="any" hint="The dependency definition structure">
+		<cfargument name="targetObject" required="true" type="any" hint="The target object">
+		<cfargument name="debugMode" 	required="true" type="boolean" hint="The debug mode">
+		<!--- ************************************************************* --->
+		<cfscript>
+			var thisDependency = arguments.Definition;
+			var thisType = thisDependency.type;
+			var thisTypeLen = listLen(thisType,":");
+			var thisLocationType = "";
+			var thisLocationKey = "";
+			var locatedDependency = "_NOT_FOUND_";
+			
+			/* 1 stage dependency */
+			if( thisTypeLen eq 1 ){
+				/* Coldbox Reference is the only one available */
+				locatedDependency = getController();
+			}
+			/* 2 stage dependencies */
+			else if(thisTypeLen eq 2){
+				/* configBean or mailsettingsbean */
+				thisLocationType = listLast(thisType,":");
+				if( thisLocationType eq "configbean" ){
+					locatedDependency = getSettingsBean();
+				}	
+				else if( thisLocationType eq "mailsettingsbean" ){
+					locatedDependency = getMailSettings();
+				}
+			}
+			/* 3 stage dependencies */
+			else if(thisTypeLen eq 3){
+				thisLocationType = getToken(thisType,2,":");
+				thisLocationKey = getToken(thisType,3,":");
+				/* Fork on types */
+				if( thisLocationType eq "setting" ){
+					locatedDependency = getSetting(thisLocationKey);
+				}
+				else if( thisLocationType eq "plugin" ){
+					locatedDependency = getPlugin(thisLocationKey);
+				}
+				else if( thisLocationType eq "myplugin" ){
+					locatedDependency = getMyPlugin(thisLocationKey);
+				}
+				else if( thisLocationType eq "datasource" ){
+					locatedDependency = getDatasource(thisLocationKey);
+				}
+				else if( thisLocationType eq "model" ){
+					locatedDependency = getModel(thisLocationKey);
+				}
+			}//end 3 stage DSL
+			
+			/* Verify injetion */
+			if( isSimpleValue(locatedDependency) AND locatedDependency EQ "_NOT_FOUND_" ){
+				/* Only log if debugmode, else no injection */
+				if( arguments.debugMode ){
+					getPlugin("logger").logEntry("warning","Dependency: #thisDependency.toString()# --> not found in factory");
+				}
+			}
+			else{
+				/* Inject Dependency */
+				injectBean(targetBean=arguments.targetObject,
+						   beanName=thisDependency.name,
+						   beanObject=locatedDependency,
+						   scope=thisDependency.scope);
+				/* Debug Mode Check */
+				if( arguments.debugMode ){
+					getPlugin("logger").logEntry("information","Dependency: #thisDependency.toString()# --> injected into #getMetadata(arguments.targetObject).name#.");
+				}
+			}
+		</cfscript>
+	</cffunction>
 
+	<!--- injectIOC --->
+	<cffunction name="injectIOC" access="private" returntype="void" hint="Inject a bean with IOC dependencies" output="false" >
+		<!--- ************************************************************* --->
+		<cfargument name="Definition" 	required="true" type="any" hint="The dependency definition structure">
+		<cfargument name="targetObject" required="true" type="any" hint="The target object">
+		<cfargument name="debugMode" 	required="true" type="boolean" hint="The debug mode">
+		<!--- ************************************************************* --->
+		<cfscript>
+			var oIOC = getPlugin("ioc");
+			var thisDependency = arguments.Definition;
+			/* Verify that bean exists in the IOC container. */
+			if( oIOC.getIOCFactory().containsBean(thisDependency.name) ){
+				/* Inject dependency */
+				injectBean(targetBean=arguments.targetObject,
+						   beanName=thisDependency.name,
+						   beanObject=oIOC.getBean(thisDependency.name),
+						   scope=thisDependency.scope);
+				
+				/* Debug Mode Check */
+				if( arguments.debugMode ){
+					getPlugin("logger").logEntry("information","Dependency: #thisDependency.toString()# --> injected into #getMetadata(arguments.targetObject).name#.");
+				}
+			}
+			else if( arguments.debugMode ){
+				getPlugin("logger").logEntry("warning","Dependency: #thisDependency.toString()# --> not found in factory");
+			}
+		</cfscript>
+	</cffunction>
+	
+	<!--- injectOCM --->
+	<cffunction name="injectOCM" access="private" returntype="void" hint="Inject a bean with OCM dependencies" output="false" >
+		<!--- ************************************************************* --->
+		<cfargument name="Definition" 	required="true" type="any" hint="The dependency definition structure">
+		<cfargument name="targetObject" required="true" type="any" hint="The target object">
+		<cfargument name="debugMode" 	required="true" type="boolean" hint="The debug mode">
+		<!--- ************************************************************* --->
+		<cfscript>
+			var oOCM = getColdboxOCM();
+			var thisDependency = arguments.Definition;
+			/* Verify that bean exists in the Cache container. */
+			if( oOCM.lookup(thisDependency.name) ){
+				
+				/* Inject dependency */
+				injectBean(targetBean=arguments.targetObject,
+						   beanName=thisDependency.name,
+						   beanObject=oOCM.get(thisDependency.name),
+						   scope=thisDependency.scope);
+				
+				/* Debug Mode Check */
+				if( arguments.debugMode ){
+					getPlugin("logger").logEntry("information","Dependency: #thisDependency.toString()# --> injected into #getMetadata(arguments.targetObject).name#.");
+				}
+			}
+			else if( arguments.debugMode ){
+				getPlugin("logger").logEntry("warning","Dependency: #thisDependency.toString()# --> not found in factory");
+			}
+		</cfscript>
+	</cffunction>
+	
 	<!--- Get an object's dependencies via metadata --->
 	<cffunction name="parseMetadata" returntype="array" access="private" output="false" hint="I get a components dependencies via searching for 'setters'">
 		<!--- ************************************************************* --->
@@ -335,12 +499,22 @@ Description: This is the framework's simple bean factory.
 			var md = arguments.metadata;
 			var entry = structnew();
 			var cbox_reserved_functions = "setSetting,setDebugMode,setNextEvent,setNextRoute,setController,settingExists,setPluginName,setPluginVersion,setPluginDescription,setProperty,setproperties";
+			var foundDependencies = "";
+			
+			/* Look for Object's attributes, and override if found. */
+			if( structKeyExists(md,"autowire_stoprecursion") ){
+				arguments.stopRecursion = md["autowire_stoprecursion"];
+			}
+			if( structKeyExists(md,"autowire_setterinjection") and isBoolean(md["autowire_setterinjection"]) ){
+				arguments.useSetterInjection = md["autowire_setterinjection"];
+			}
 			
 			/* Look For cfProperties */
 			if( structKeyExists(md,"properties") and ArrayLen(md.properties) gt 0){
 				for(x=1; x lte ArrayLen(md.properties); x=x+1 ){
-					/* Check if type is ioc */
-					if( structKeyExists(md.properties[x],"type") and (md.properties[x].type eq "ioc" or md.properties[x].type eq "ocm") ){
+					/* Check types */
+					if( structKeyExists(md.properties[x],"type") AND 
+					   (md.properties[x].type eq "ioc" OR md.properties[x].type eq "ocm" OR findNoCase("coldbox",md.properties[x].type)) ){
 						/* New MD Entry */
 						entry = structnew();
 						/* Scope Check */
@@ -348,9 +522,12 @@ Description: This is the framework's simple bean factory.
 							md.properties[x].scope = "variables";
 						}		
 						/* Setup Entry */
-						entry.name 	= replace(md.properties[x].name,".","_","all");
+						entry.name 	= md.properties[x].name;
 						entry.scope = md.properties[x].scope;
 						entry.type 	= md.properties[x].type;
+						
+						/* Add to found list */
+						listAppend(foundDependencies,entry.name);
 						
 						/* Add Property Dependency */
 						ArrayAppend( arguments.dependencies, entry );
@@ -363,7 +540,8 @@ Description: This is the framework's simple bean factory.
 			if( arguments.useSetterInjection and structKeyExists(md, "functions") ){
 				for(x=1; x lte ArrayLen(md.functions); x=x+1 ){
 					/* Verify we have a setter */
-					if( left(md.functions[x].name,3) eq "set" and not listFindNoCase(cbox_reserved_functions,md.functions[x].name) ){
+					if( left(md.functions[x].name,3) eq "set" AND NOT 
+					    listFindNoCase(cbox_reserved_functions,md.functions[x].name) ){
 						
 						/* New MD Entry */
 						entry = structnew();
@@ -371,8 +549,12 @@ Description: This is the framework's simple bean factory.
 						entry.scope = "";
 						entry.type = "ioc";
 						
-						/* Found Setter, append property Name */
-						ArrayAppend(arguments.dependencies, entry);
+						/* Add if not already in properties */
+						if( not listFindNoCase(foundDependencies,entry.name) ){
+							/* Found Setter, append property Name */
+							listAppend(foundDependencies,entry.name);
+							ArrayAppend(arguments.dependencies, entry);
+						}
 					
 					}//end if setter found.
 				}//end loop of functions

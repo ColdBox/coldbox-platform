@@ -70,6 +70,7 @@
         <layoutsLocation>layouts</layoutsLocation>
         <viewsLocation>views</viewsLocation>
         <eventAction>index</eventAction>
+        <modelslocation>model</modelslocation>
     </Conventions>
     
 </Config>
