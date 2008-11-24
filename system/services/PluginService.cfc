@@ -196,11 +196,11 @@ Modification History:
 							
 				/* Check for Convention First, MyPluginsPath was already setup with conventions on XMLParser */
 				if ( fileExists(controller.getSetting("MyPluginsPath") & controller.getSetting("OSFileSeparator",true) & pluginFilePath ) ){
-					pluginPath = "#controller.getSetting("MyPluginsInvocationPath")#.#arguments.plugin#";
+					pluginPath = "#controller.getSetting('MyPluginsInvocationPath')#.#arguments.plugin#";
 				}
 				else{
 					/* Will search the alternate custom location */
-					pluginPath = "#controller.getSetting("MyPluginsLocation")#.#arguments.plugin#";
+					pluginPath = "#controller.getSetting('MyPluginsLocation')#.#arguments.plugin#";
 				}
 			}//end if custom plugin
 			else{
