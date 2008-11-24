@@ -5,8 +5,11 @@ Description :
 	This is a service for handling blog entries.
 	
 ----------------------------------------------------------------------->
-<cfcomponent displayname="EntryService" hint="Service layer for handling blog entries" output="false">
-
+<cfcomponent displayname="EntryService" hint="Service layer for handling blog entries" output="false" cache="true" cachetimeout="0">
+ 
+	<!--- Dependencies --->
+	<cfproperty name="Transfer" type="ocm" scope="instance">
+	
 <!----------------------------------- CONSTRUCTOR --------------------------------------->	
 	
 	<cfscript>
@@ -15,11 +18,6 @@ Description :
 	</cfscript>
 	
 	<cffunction name="init" access="public" returntype="any" output="false" hint="constructor">
-		<cfargument name="transfer" type="any">
-		<cfset instance.transfer = arguments.transfer>
-		<!--- Any constructor code here --->
-			
-		
 		<cfreturn this>
 	</cffunction>
 

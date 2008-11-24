@@ -177,6 +177,40 @@ Description :
 			</parameter>
 		</function>
 		
+		<function creator="8" name="getModel" returns="Any">
+			<help><![CDATA[
+				Get a model from cache or created
+			]]></help>
+			<parameter name="name" type="string" required="true">
+				<help><![CDATA[
+					The name of the model to create or get
+				]]></help>
+			</parameter>
+			<parameter name="useSetterInjection" type="boolean" required="false">
+				<help><![CDATA[
+					Use setter injection for autowiring or not. The default for this setting is false.
+				]]></help>
+				<values default="false">
+					<value option="&quot;true&quot;"/>
+					<value option="&quot;false&quot;"/>
+				</values>
+			</parameter>
+			<parameter name="onDICompleteUDF" type="string" required="false">
+				<help><![CDATA[
+					The name of the method to execute after autowiring.  By default it is onDIComplete()
+				]]></help>
+			</parameter>
+			<parameter name="debugMode" type="boolean" required="false">
+				<help><![CDATA[
+					Do debuggin on autowiring.
+				]]></help>
+				<values default="false">
+					<value option="&quot;true&quot;"/>
+					<value option="&quot;false&quot;"/>
+				</values>
+			</parameter>
+		</function>
+		
 		<function creator="8" name="getMailSettings" returns="coldbox.system.beans.mailsettingsBean">
 			<help><![CDATA[
 				   I will return to you a mailsettingsBean modeled after your mail settings in your config.xml
@@ -421,6 +455,31 @@ Description :
 				<help><![CDATA[
 					The file path to include
 				]]></help>
+			</parameter>
+		</function>
+		
+		<function creator="8" name="populateModel" returns="Any">
+			<help><![CDATA[
+				Populate a named or created model object.
+			]]></help>
+			<parameter name="model" type="any" required="true">
+				<help><![CDATA[
+					The name of the model to retrieve or it can also be a model instance.
+				]]></help>
+			</parameter>
+			<parameter name="scope" type="string" required="false">
+				<help><![CDATA[
+					If a scope is used, then the population is done by looking at this scope and doing scope property injections.
+				]]></help>
+			</parameter>
+			<parameter name="trustedSetter" type="boolean" required="false">
+				<help><![CDATA[
+					If trusted setter is used, then the factory will not try to see if the setter exists. It will just call it.
+				]]></help>
+				<values default="false">
+					<value option="&quot;true&quot;"/>
+					<value option="&quot;false&quot;"/>
+				</values>
 			</parameter>
 		</function>
 		

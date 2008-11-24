@@ -108,7 +108,7 @@ Description: This is the framework's simple bean factory.
 		<cfargument name="name" 				required="true"  type="string" hint="The name of the model to retrieve">
 		<cfargument name="useSetterInjection" 	required="false" type="boolean" default="false"	hint="Whether to use setter injection alongside the annotations property injection. cfproperty injection takes precedence.">
 		<cfargument name="onDICompleteUDF" 		required="false" type="string"	default="onDIComplete" hint="After Dependencies are injected, this method will look for this UDF and call it if it exists. The default value is onDIComplete">
-		<cfargument name="debugMode" 			required="false" type="boolean" default="false" hint="Debugging Mode or not">
+		<cfargument name="debugMode" 			required="false" type="boolean" default="true" hint="Debugging Mode or not">
 		<!--- ************************************************************* --->
 		<cfscript>
 			var oModel = 0;
@@ -600,7 +600,7 @@ Description: This is the framework's simple bean factory.
 				}
 			}
 			else if( arguments.debugMode ){
-				getPlugin("logger").logEntry("warning","Dependency: #thisDependency.toString()# --> not found in factory");
+				getPlugin("logger").logEntry("warning","Dependency: #thisDependency.toString()# --> not found in ColdBox Cache");
 			}
 		</cfscript>
 	</cffunction>

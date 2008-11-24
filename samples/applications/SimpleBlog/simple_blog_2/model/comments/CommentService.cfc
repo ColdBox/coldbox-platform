@@ -1,5 +1,8 @@
-<cfcomponent displayname="CommentService" hint="Service to handle comment operations." output="false">
+<cfcomponent displayname="CommentService" hint="Service to handle comment operations." output="false" cache="true" cachetimeout="0">
 
+	<!--- Dependencies --->
+	<cfproperty name="Transfer" type="ocm" scope="instance">
+	
 <!----------------------------------- CONSTRUCTOR --------------------------------------->	
 	
 	<cfscript>
@@ -8,12 +11,7 @@
 	</cfscript>
 	
 	<cffunction name="init" access="public" returntype="any" output="false" hint="constructor">
-        <cfargument name="transfer" type="any">
-			<cfset instance.transfer = arguments.transfer >
-		
-		<!--- Any constructor code here --->
-				
-		<cfreturn this>
+        <cfreturn this>
 	</cffunction>
 
 <!----------------------------------- PUBLIC METHODS --------------------------------------->

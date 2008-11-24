@@ -1,4 +1,8 @@
-<cfcomponent hint="Creates RSS feeds" output="false">
+<cfcomponent hint="Creates RSS feeds" output="false" cache="true" cachetimeout="0">
+	
+	<!--- Dependencies --->
+	<cfproperty name="EntryService" type="model:EntryService" scope="instance">
+	<cfproperty name="ConfigBean" 	type="coldbox:configBean" scope="instance">
 	
 <!----------------------------------- CONSTRUCTOR --------------------------------------->	
 	
@@ -9,13 +13,7 @@
 	</cfscript>
 	
 	<cffunction name="init" access="public" returntype="any" output="false" hint="constructor">
-    	<cfargument name="entryService" type="any" 	  required="true" hint="The entry service"/>
-		<cfargument name="settings" 	type="struct" required="true" hint="The settings Structure">
-			
-		<cfset instance.entryService = arguments.entryService >
-		<cfset instance.settings = arguments.settings >
-		
-		<cfreturn this>
+    	<cfreturn this>
 	</cffunction>
 
 <!----------------------------------- PUBLIC METHODS --------------------------------------->
@@ -31,13 +29,13 @@
 			QueryAddColumn(entries, "link", myArray);
 			
 			for(i = 1; i <= entries.recordCount; i = i + 1){
-				entries.link[i] = instance.settings.sesBaseUrl & "general/viewPost/" & entries.entry_Id[i];
+				entries.link[i] = instance.ConfigBean.getKey('sesBaseUrl') & "general/viewPost/" & entries.entry_Id[i];
 			}
 			
 			feedStruct.title = "Simple Blog 3";
 			feedStruct.description = "A blog built with ColdBox in order to learn ColdBox.";
 			feedStruct.pubDate = "time";
-			feedStruct.link = instance.settings.sesBaseUrl;
+			feedStruct.link = instance.ConfigBean.getKey('sesBaseUrl');
 			feedStruct.items = entries;
 			
 			return feedStruct;
