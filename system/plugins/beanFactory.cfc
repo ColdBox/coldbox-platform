@@ -13,7 +13,8 @@ Description: This is the framework's simple bean factory.
 			 hint="I am a simple bean factory and you can use me if you want."
 			 extends="coldbox.system.plugin"
 			 output="false"
-			 cache="true">
+			 cache="true"
+			 cacheTimeout="0">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
