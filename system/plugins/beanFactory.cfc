@@ -22,6 +22,9 @@ Description: This is the framework's simple bean factory.
 		<cfargument name="controller" type="any" required="true" hint="coldbox.system.controller">
 		<!--- ************************************************************* --->
 		<cfscript>
+			var modelMappingsFile = "/";
+			
+			/* Super Init */
 			super.Init(arguments.controller);
 			
 			/* Plugin Properties */
@@ -32,6 +35,24 @@ Description: This is the framework's simple bean factory.
 			/* Setup the Autowire DI Dictionary */
 			setDICacheDictionary(CreateObject("component","coldbox.system.util.BaseDictionary").init('DIMetadata'));
 			
+			/* Model Mappings */
+			instance.modelMappings = structnew();
+			
+			/* Run Model Mappings */
+			if( fileExists(getSetting("ApplicationPath") & "config/modelMappings.cfm") ){
+				try{
+					/* If AppMapping is not Blank check */
+					if( getSetting('AppMapping') neq "" ){
+						modelMappingsFile = modelMappingsFile & getSetting('AppMapping');
+					}
+					modelMappingsFile = modelMappingsFile & "/config/modelMappings.cfm";
+					/* Include it */
+					include(modelMappingsFile);
+				}
+				catch(Any e){
+					throw("Error including model mappings file: #e.message#",e.detail,"plugin.beanFactory.ModelMappingsIncludeException");
+				}
+			}
 			
 			/* Return instance */
 			return this;
@@ -39,6 +60,21 @@ Description: This is the framework's simple bean factory.
 	</cffunction>
 
 <!------------------------------------------- PUBLIC ------------------------------------------->
+	
+	<!--- Get Model Mappings --->
+	<cffunction name="getModelMappings" access="public" returntype="struct" hint="Get the model mappings structure" output="false" >
+		<cfreturn instance.modelMappings>
+	</cffunction>
+	
+	<!--- Add Model Mapping --->
+	<cffunction name="addModelMapping" access="public" returntype="void" hint="Add a new model mapping. Ex: addModelMapping('myBean','security.test.FormBean')" output="false" >
+		<!--- ************************************************************* --->
+		<cfargument name="alias" required="true" type="string" hint="The model alias">
+		<cfargument name="model" required="true" type="string" hint="The model class path (From the model conventions downward)">
+		<!--- ************************************************************* --->
+		<cfset var mappings = getModelMappings()>
+		<cfset mappings[arguments.alias] = arguments.model>
+	</cffunction>
 
 	<!--- Just create and call init, simple --->
 	<cffunction name="create" hint="Create a named bean, simple as that. If the bean has an init() method, it will be called." access="public" output="false" returntype="Any">
@@ -78,16 +114,24 @@ Description: This is the framework's simple bean factory.
 			var oModel = 0;
 			var ModelsPath = getSetting("ModelsPath");
 			var ModelsInvocationPath = getSetting("ModelsInvocationPath");
-			var checkPath = ModelsPath & "/" & replace(arguments.name,".","/","all") & ".cfc";
-			var modelClassPath = ModelsInvocationPath & "." & arguments.name;
+			var checkPath = 0;
+			var modelClassPath = 0;
 			var md = 0;
+			var modelMappings = getModelMappings();
+			
+			/* Resolve name in Alias Checks */
+			if( structKeyExists(modelMappings,arguments.name) ){
+				arguments.name = modelMappings[arguments.name];
+			}
+			/* Setup Paths */
+			checkPath = ModelsPath & "/" & replace(arguments.name,".","/","all") & ".cfc";
+			modelClassPath = ModelsInvocationPath & "." & arguments.name;
 		</cfscript>
-		
 		
 		<!--- Verify if model exists in cache --->
 		<cfif ( getColdboxOCM().lookup(arguments.name) )>
 			<cfset oModel = getColdBoxOCM().get(arguments.name)>
-		<!--- Else Create It --->
+		<!--- Else Create It if it exists --->
 		<cfelseif ( fileExists(checkPath) )>
 			<cflock name="beanfactory.createmodel.#arguments.name#" type="exclusive" timeout="20" throwontimeout="true">
 				<cfscript>
@@ -131,11 +175,35 @@ Description: This is the framework's simple bean factory.
 		
 		<cfreturn oModel>
 	</cffunction>
+	
+	<!--- Populate a model object from the request Collection --->
+	<cffunction name="populateModel" access="public" output="false" returntype="Any" hint="Populate a named or instantiated model (java/cfc) from the request collection items">
+		<!--- ************************************************************* --->
+		<cfargument name="model" 			required="true"  type="any" 	hint="The name of the model to get and populate or the acutal model object. If you already have an instance of a model, then use the populateBean() method">
+		<cfargument name="scope" 			required="false" type="string"  default=""   hint="Use scope injection instead of setters population. Ex: scope=variables.instance."/>
+		<cfargument name="trustedSetter"  	required="false" type="boolean" default="false" hint="If set to true, the setter method will be called even if it does not exist in the bean"/>
+		<!--- ************************************************************* --->
+		<cfscript>
+			var rc = controller.getRequestService().getContext().getCollection();
+			var oModel = 0;
+			
+			/* Do we have a model or name */
+			if( isSimpleValue(arguments.model) ){
+				oModel = getModel(model);
+			}
+			else{
+				oModel = arguments.model;
+			}
+			
+			/* Inflate from Request Collection */
+			return populateFromStruct(oModel,rc,arguments.scope,arguments.trustedSetter);			
+		</cfscript>
+	</cffunction>
 
 	<!--- Populate a bean from the request Collection --->
 	<cffunction name="populateBean" access="public" output="false" returntype="Any" hint="Populate a named or instantiated bean (java/cfc) from the request collection items">
 		<!--- ************************************************************* --->
-		<cfargument name="formBean" 		required="true" 	type="any" 	hint="This can be an instantiated bean object or a bean instantitation path as a string. If you pass an instantiation path and the bean has an 'init' method. It will be executed. This method follows the bean contract (set{property_name}). Example: setUsername(), setfname()">
+		<cfargument name="formBean" 		required="true" 	type="any" 	hint="This can be an instantiated bean object or a bean instantitation path as a string.  This method follows the bean contract (set{property_name}). Example: setUsername(), setfname()">
 		<cfargument name="scope" 			required="false" 	type="string"   default=""   hint="Use scope injection instead of setters population. Ex: scope=variables.instance."/>
 		<cfargument name="trustedSetter"  	required="false" type="boolean" default="false" hint="If set to true, the setter method will be called even if it does not exist in the bean"/>
 		<!--- ************************************************************* --->
@@ -143,7 +211,7 @@ Description: This is the framework's simple bean factory.
 			var rc = controller.getRequestService().getContext().getCollection();
 			
 			/* Inflate from Request Collection */
-			return populateFromStruct(arguments.formBean,rc,arguments.scope);			
+			return populateFromStruct(arguments.formBean,rc,arguments.scope,arguments.trustedSetter);			
 		</cfscript>
 	</cffunction>
 	
@@ -162,7 +230,7 @@ Description: This is the framework's simple bean factory.
 			inflatedStruct = getPlugin("json").decode(arguments.JSONString);
 			
 			/* populate and return */
-			return populateFromStruct(arguments.formBean,inflatedStruct,arguments.scope);
+			return populateFromStruct(arguments.formBean,inflatedStruct,arguments.scope,arguments.trustedSetter);
 		</cfscript>
 	</cffunction>
 	
@@ -315,6 +383,7 @@ Description: This is the framework's simple bean factory.
 		<cfscript>
 		/* We are now assured that the DI cache has data. */
 		targetDIEntry = getDICacheDictionary().getKey(targetCacheKey);
+		
 		/* Do we Inject Dependencies, are we AutoWiring */
 		if ( targetDIEntry.autowire ){
 			/* Dependencies Length */
@@ -328,17 +397,21 @@ Description: This is the framework's simple bean factory.
 				/* Get Dependency */
 				thisDependency = targetDIEntry.dependencies[x];
 				
-				/* Determine Type of Injection */
+				/* Determine Type of Injection according to Type */
 				if( thisDependency.type eq "ioc" ){
 					injectIOC(thisDependency,targetObject,arguments.debugMode);
 				}
 				else if (thisDependency.type eq "ocm"){
 					injectOCM(thisDependency,targetObject,arguments.debugMode);
 				}
-				else{
+				else if ( listFirst(thisDependency.type,":") eq "coldbox" ){
 					/* Try to inject coldbox dependencies */
 					injectColdboxDSL(thisDependency,targetObject,arguments.debugMode);
-				}							
+				}
+				else if ( listFirst(thisDependency.type,":") eq "model" ){
+					/* Try to inject coldbox dependencies */
+					injectModelDSL(thisDependency,targetObject,arguments.debugMode);
+				}								
 				
 			}//end for loop of dependencies.
 			/* Process After ID Complete */
@@ -352,6 +425,56 @@ Description: This is the framework's simple bean factory.
 	
 	
 <!------------------------------------------- PRIVATE ------------------------------------------->
+	
+	<!--- injectModelDSL --->
+	<cffunction name="injectModelDSL" access="private" returntype="void" hint="Inject dependencies using the model dependency DSL" output="false" >
+		<!--- ************************************************************* --->
+		<cfargument name="Definition" 	required="true" type="any" hint="The dependency definition structure">
+		<cfargument name="targetObject" required="true" type="any" hint="The target object">
+		<cfargument name="debugMode" 	required="true" type="boolean" hint="The debug mode">
+		<!--- ************************************************************* --->
+		<cfscript>
+			var thisDependency = arguments.Definition;
+			var thisType = thisDependency.type;
+			var thisTypeLen = listLen(thisType,":");
+			var thisLocationType = "";
+			var thisLocationKey = "";
+			var locatedDependency = "_NOT_FOUND_";
+			
+			/* 2 stage dependency dsl */
+			if(thisTypeLen eq 2){
+				thisLocationType = getToken(thisType,2,":");
+				/* Get model object*/
+				locatedDependency = getModel(thisLocationType);
+			}
+			/* 3 stage dependency dsl */
+			else if(thisTypeLen eq 3){
+				thisLocationType = getToken(thisType,2,":");
+				thisLocationKey = getToken(thisType,3,":");
+				/* Call model method to get dependency */
+				locatedDependency = evaluate("getModel(thisLocationType).#thisLocationKey#()");
+			}//end 3 stage DSL
+			
+			/* Verify injetion */
+			if( isSimpleValue(locatedDependency) AND locatedDependency EQ "_NOT_FOUND_" ){
+				/* Only log if debugmode, else no injection */
+				if( arguments.debugMode ){
+					getPlugin("logger").logEntry("warning","Dependency: #thisDependency.toString()# --> not found in factory");
+				}
+			}
+			else{
+				/* Inject Dependency */
+				injectBean(targetBean=arguments.targetObject,
+						   beanName=thisDependency.name,
+						   beanObject=locatedDependency,
+						   scope=thisDependency.scope);
+				/* Debug Mode Check */
+				if( arguments.debugMode ){
+					getPlugin("logger").logEntry("information","Dependency: #thisDependency.toString()# --> injected into #getMetadata(arguments.targetObject).name#.");
+				}
+			}
+		</cfscript>
+	</cffunction>
 	
 	<!--- injectColdboxDSL --->
 	<cffunction name="injectColdboxDSL" access="private" returntype="void" hint="Inject dependencies using the coldbox dependency DSL" output="false" >
@@ -370,17 +493,16 @@ Description: This is the framework's simple bean factory.
 			
 			/* 1 stage dependency */
 			if( thisTypeLen eq 1 ){
-				/* Coldbox Reference is the only one available */
+				/* Coldbox Reference is the only one available on 1 stage DSL */
 				locatedDependency = getController();
 			}
-			/* 2 stage dependencies */
+			/* 2 stage dependencies. Model:Test or Coldbox:etc */
 			else if(thisTypeLen eq 2){
-				/* configBean or mailsettingsbean */
-				thisLocationType = listLast(thisType,":");
-				if( thisLocationType eq "configbean" ){
+				thisLocationKey = getToken(thisType,2,":");
+				if( thisLocationKey eq "configbean" ){
 					locatedDependency = getSettingsBean();
 				}	
-				else if( thisLocationType eq "mailsettingsbean" ){
+				else if( thisLocationKey eq "mailsettingsbean" ){
 					locatedDependency = getMailSettings();
 				}
 			}
@@ -400,9 +522,6 @@ Description: This is the framework's simple bean factory.
 				}
 				else if( thisLocationType eq "datasource" ){
 					locatedDependency = getDatasource(thisLocationKey);
-				}
-				else if( thisLocationType eq "model" ){
-					locatedDependency = getModel(thisLocationKey);
 				}
 			}//end 3 stage DSL
 			
@@ -500,6 +619,7 @@ Description: This is the framework's simple bean factory.
 			var entry = structnew();
 			var cbox_reserved_functions = "setSetting,setDebugMode,setNextEvent,setNextRoute,setController,settingExists,setPluginName,setPluginVersion,setPluginDescription,setProperty,setproperties";
 			var foundDependencies = "";
+			var DSLNamespaces = "coldbox,ioc,ocm";
 			
 			/* Look for Object's attributes, and override if found. */
 			if( structKeyExists(md,"autowire_stoprecursion") ){
@@ -512,9 +632,12 @@ Description: This is the framework's simple bean factory.
 			/* Look For cfProperties */
 			if( structKeyExists(md,"properties") and ArrayLen(md.properties) gt 0){
 				for(x=1; x lte ArrayLen(md.properties); x=x+1 ){
-					/* Check types */
+					/* Check types are valid for autowiring. */
 					if( structKeyExists(md.properties[x],"type") AND 
-					   (md.properties[x].type eq "ioc" OR md.properties[x].type eq "ocm" OR findNoCase("coldbox",md.properties[x].type)) ){
+						( listFindNoCase(DSLNamespaces,md.properties[x].type) OR
+						  findnocase("model",md.properties[x].type) OR
+						  findnocase("coldbox",md.properties[x].type) )  	
+					){
 						/* New MD Entry */
 						entry = structnew();
 						/* Scope Check */
