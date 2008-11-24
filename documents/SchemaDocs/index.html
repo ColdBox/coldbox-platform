@@ -3,7 +3,7 @@
   PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
    <head>
-      <title>Documentation for ColdBox 2.6.2 Configuration - config.xsd</title>
+      <title>Documentation for ColdBox 2.6.2 Config - config.xsd</title>
       <meta http-equiv="Content-Type" content="text/xml; charset=UTF-8"/>
       <style type="text/css">
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
@@ -725,7 +725,7 @@ function viewDocumentation(compDesc, compName, docTextArray) {
    </head>
    <body>
       <h1>
-         <a name="top">Documentation for ColdBox 2.6.2 Configuration</a>
+         <a name="top">Documentation for ColdBox 2.6.2 Config</a>
       </h1>
       <div style="float: right;">
          <div id="printerControls" style="display:none;">
@@ -1721,6 +1721,10 @@ if (gc != null) {
                      <a href="#ns_xs" title="Find out namespace of 'xs' prefix">xs</a>:string</span> &lt;/eventAction&gt; <span class="occurs">[0..1]</span> 
                   <p class="documentation">'The default event action if not specified.'</p>
                </div>
+               <div style="margin-left: 3em">&lt;modelsLocation&gt; <span class="type">
+                     <a href="#ns_xs" title="Find out namespace of 'xs' prefix">xs</a>:string</span> &lt;/modelsLocation&gt; <span class="occurs">[0..1]</span> 
+                  <p class="documentation">'The default location of your models.'</p>
+               </div>
                <span class="group" style="margin-left: 1.5em">End All</span>
                <br/>&lt;/Conventions&gt;</div>
          </div>
@@ -1780,6 +1784,11 @@ if (gc != null) {
                         </span>" <span class="scTag">maxOccurs</span>="<span class="scContent">1</span>" <span class="scTag">minOccurs</span>="<span class="scContent">0</span>"/&gt;</div>
                      <div style="margin-left: 1.5em">&lt;<span class="scTag">xs:element</span> 
                         <span class="scTag">name</span>="<span class="scContent">eventAction</span>" <span class="scTag">type</span>="<span class="scContent">
+                           <span class="type">
+                              <a href="#ns_xs" title="Find out namespace of 'xs' prefix">xs</a>:string</span>
+                        </span>" <span class="scTag">maxOccurs</span>="<span class="scContent">1</span>" <span class="scTag">minOccurs</span>="<span class="scContent">0</span>"/&gt;</div>
+                     <div style="margin-left: 1.5em">&lt;<span class="scTag">xs:element</span> 
+                        <span class="scTag">name</span>="<span class="scContent">modelsLocation</span>" <span class="scTag">type</span>="<span class="scContent">
                            <span class="type">
                               <a href="#ns_xs" title="Find out namespace of 'xs' prefix">xs</a>:string</span>
                         </span>" <span class="scTag">maxOccurs</span>="<span class="scContent">1</span>" <span class="scTag">minOccurs</span>="<span class="scContent">0</span>"/&gt;</div>&lt;/<span class="scTag">xs:all</span>&gt;</div>&lt;/<span class="scTag">xs:complexType</span>&gt;</div>&lt;/<span class="scTag">xs:element</span>&gt;</div>
