@@ -37,6 +37,9 @@ Description :
 			if( not propertyExists('TransferCacheKey') ){
 				setProperty('TransferCacheKey',"Transfer");
 			}
+			if( not propertyExists('TransactionCacheKey') ){
+				setProperty('TransactionCacheKey','TransferTransaction');
+			}
 			/* Optional Transfer Factory Path */
 			if( not propertyExists('TransferFactoryClassPath') ){
 				setProperty('TransferFactoryClassPath',"transfer.TransferFactory");
@@ -68,7 +71,9 @@ Description :
 			
 			/* Transfer is loaded, now cache it */
 			getColdboxOCM().set(getProperty('TransferFactoryCacheKey'),TransferFactory,0);
-			getColdboxOCM().set(getProperty('TransferCacheKey'), TransferFactory.getTransfer(),0);			
+			getColdboxOCM().set(getProperty('TransferCacheKey'), TransferFactory.getTransfer(),0);
+			getColdboxOCM().set(getProperty('TransactionCacheKey'), TransferFactory.getTransaction(),0);
+						
 		</cfscript>
 	</cffunction>
 	

@@ -34,7 +34,7 @@
 			<cfloop query="rc.users">
 			<tr style="background:##eaeaea">
 				<td><input type="checkbox" name="idlist" id="idlist" value="#id#"></td>
-				<td><a href="#event.buildLink('users.dspEditUser.id.' & id)#">#id#</a></td>
+				<td><a href="#event.buildLink('users.dspEditUser.' & id)#">#id#</a></td>
 				<td>#fname#</td>
 				<td>#lname#</td>
 				<td>#email#</td>

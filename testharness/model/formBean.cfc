@@ -11,8 +11,10 @@
 
 	<!--- ************************************************************* --->
 	<cffunction name="init" access="public" output="false" hint="I return a form bean instance" returntype="any">
+		<cfargument name="AppName" type="string" _wireme="coldbox:setting:AppName" hint="My setting name"/>
 		<cfscript>
 		instance.initDate = now();
+		instance.fname = arguments.appName;
 		return this;
 		</cfscript>
 	</cffunction>

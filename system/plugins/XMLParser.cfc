@@ -485,6 +485,10 @@ Modification History:
 			//Check for External Handlers Location
 			if ( not structKeyExists(ConfigStruct, "HandlersExternalLocation") or len(ConfigStruct["HandlersExternalLocation"]) eq 0 )
 				ConfigStruct["HandlersExternalLocation"] = "";
+			
+			//Check for Models External Location
+			if ( not structKeyExists(ConfigStruct, "ModelsExternalLocation") or len(ConfigStruct["ModelsExternalLocation"]) eq 0 )
+				ConfigStruct["ModelsExternalLocation"] = "";
 				
 			/* Flash URL Persist Scope Override */
 			if( structKeyExists(ConfigStruct,"FlashURLPersistScope") and reFindnocase("^(session|client)$",ConfigStruct["FlashURLPersistScope"]) ){
@@ -529,8 +533,17 @@ Modification History:
 			if( configStruct["HandlersExternalLocation"] neq "" ){
 				//Expand the external location to get a registration path
 				configStruct["HandlersExternalLocationPath"] = ExpandPath("/" & replace(ConfigStruct["HandlersExternalLocation"],".","/","all"));
-			}else{
+			}
+			else{
 				configStruct["HandlersExternalLocationPath"] = "";
+			}
+			//Set the Models External Configuration Paths
+			if( configStruct["ModelsExternalLocation"] neq "" ){
+				//Expand the external location to get a registration path
+				configStruct["ModelsExternalLocationPath"] = ExpandPath("/" & replace(ConfigStruct["ModelsExternalLocation"],".","/","all"));
+			}
+			else{
+				configStruct["ModelsExternalLocationPath"] = "";
 			}
 			
 			//Set the Handlers,Models, & Custom Plugin Invocation & Physical Path for this Application
