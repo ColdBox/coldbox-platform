@@ -586,8 +586,8 @@ Modification History:
 				ConfigStruct["HandlersPath"] = controller.getAppRootPath() & "#fwSettingsStruct.handlersConvention#";
 
 				/* Custom Plugins Registration */
-				ConfigStruct["MyPluginsInvocationPath"] = "#fwSettingsStruct.ModelsConvention#";
-				ConfigStruct["MyPluginsPath"] = controller.getAppRootPath() & "#fwSettingsStruct.ModelsConvention#";
+				ConfigStruct["MyPluginsInvocationPath"] = "#fwSettingsStruct.pluginsConvention#";
+				ConfigStruct["MyPluginsPath"] = controller.getAppRootPath() & "#fwSettingsStruct.pluginsConvention#";
 				
 				/* Models Registration */
 				ConfigStruct["ModelsInvocationPath"] = "#fwSettingsStruct.ModelsConvention#";
