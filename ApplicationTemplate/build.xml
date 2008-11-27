@@ -89,11 +89,11 @@
 		
 			<taskdef name="antform" classname="com.sardak.antform.AntForm"	classpathref="cp"/>
 			<antform title="ColdBox Application Generator"
-				 image="../install/poweredby_assets/chat_icon.png"
+				 image="../install/Logos-Images-Icons/chat_icon.png"
 				 width="650"
 				 height="700"
 				 lookandfeel="javax.swing.plaf.metal.MetalLookAndFeel"
-				 icon="../install/poweredby_assets/chat_icon.png">
+				 icon="../install/Logos-Images-Icons/chat_icon.png">
 			<Controlbar>
 				<Button label="Cancel" type="cancel" />
 				<Button label="Reset" type="reset" />
