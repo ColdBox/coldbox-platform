@@ -76,7 +76,7 @@
 				       addproperty="app.unittest" />	
 		<!-- Side Bar -->
 		<input message="Would you like to configure this application to use the ColdBox SideBar?"
-			   validargs="yes,no" defaultvalue="yes"
+			   validargs="true,false" defaultvalue="true"
 		       addproperty="app.sidebar" />	
 		<!-- Run Generation -->
 		<antcall target="generate" inheritall="true" inheritrefs="true" />
@@ -256,7 +256,7 @@
 		</if>
 		<!-- Side Bar-->
 		<if>
-			<equals arg1="${app.sidebar}" arg2="yes" />
+			<equals arg1="${app.sidebar}" arg2="true" />
 			<then>
 				<replace file="${app.destination}/${app.name}/${base.config}" value="${gen.sidebar_setting}" summary="yes">
 					<replacetoken><![CDATA[<!-- @YOURSETTINGS@ -->]]></replacetoken>
