@@ -105,35 +105,6 @@ Description: This is the framework's simple bean factory.
 		</cfscript>
 	</cffunction>
 	
-	<!--- getConstructorArguments --->
-	<cffunction name="getConstructorArguments" output="false" access="private" returntype="struct" hint="The constructor argument collection">
-		<!--- ************************************************************* --->
-		<cfargument name="model" type="any" required="true" default="" hint="The model object"/>
-		<!--- ************************************************************* --->
-		<cfscript>
-			var md = getMetadata(model.init);
-			var params = md.parameters;
-			var paramLen = ArrayLen(md.parameters);
-			var x =1;
-			var args = structnew();
-			var definition = structnew();
-			
-			for(x=1;x lte paramLen; x=x+1){
-				/* Check Marker */
-				if( structKeyExists(params[x],instance.argumentMarker) ){
-					/* Definition */
-					definition.type = params[x][instance.argumentMarker];
-					definition.name = params[x].name;
-					definition.scope="";
-					/* Get Dependency */
-					args[definition.name] = getDSLDependency(definition);
-				}
-			}
-			
-			return args;			
-		</cfscript>
-	</cffunction>
-	
 	<!--- Get Model --->
 	<cffunction name="getModel" access="public" returntype="any" hint="Create or retrieve model objects by convention" output="false" >
 		<!--- ************************************************************* --->
@@ -467,6 +438,35 @@ Description: This is the framework's simple bean factory.
 	</cffunction>
 	
 <!------------------------------------------- PRIVATE ------------------------------------------->
+	
+	<!--- getConstructorArguments --->
+	<cffunction name="getConstructorArguments" output="false" access="private" returntype="struct" hint="The constructor argument collection">
+		<!--- ************************************************************* --->
+		<cfargument name="model" type="any" required="true" default="" hint="The model object"/>
+		<!--- ************************************************************* --->
+		<cfscript>
+			var md = getMetadata(model.init);
+			var params = md.parameters;
+			var paramLen = ArrayLen(md.parameters);
+			var x =1;
+			var args = structnew();
+			var definition = structnew();
+			
+			for(x=1;x lte paramLen; x=x+1){
+				/* Check Marker */
+				if( structKeyExists(params[x],instance.argumentMarker) ){
+					/* Definition */
+					definition.type = params[x][instance.argumentMarker];
+					definition.name = params[x].name;
+					definition.scope="";
+					/* Get Dependency */
+					args[definition.name] = getDSLDependency(definition);
+				}
+			}
+			
+			return args;			
+		</cfscript>
+	</cffunction>
 	
 	<!--- getDSLDependency --->
 	<cffunction name="getDSLDependency" output="false" access="private" returntype="any" hint="get a dsl dependency">
