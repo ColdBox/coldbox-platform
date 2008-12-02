@@ -92,9 +92,9 @@ Description :
 		
 		<!--- Test if we have a view to render --->
 		<cfif len(trim(arguments.view)) eq 0>
-			<cfthrow type="ColdBox.plugins.renderer.ViewNotSetException" 
-						  message="The ""currentview"" variable has not been set, therefore there is no view to render." 
-						  detail="Please remember to use the 'setView()' method in your handler.">
+			<cfthrow type="plugins.renderer.ViewNotSetException" 
+				     message="The ""currentview"" variable has not been set, therefore there is no view to render." 
+					 detail="Please remember to use the 'setView()' method in your handler.">
 		</cfif>
 		
 		<!--- Setup the cache key --->
@@ -104,7 +104,7 @@ Description :
 		<cfif getColdboxOCM().lookup(cbox_cacheKey)>
 			<!--- Render The View --->
 			<cfmodule template="../includes/Timer.cfm" timertag="rendering Cached View [#arguments.view#.cfm]" controller="#controller#">
-				<cfset cbox_RenderedView = getColdBoxOCM().get(cbox_cacheKey)>
+				<cfset cbox_RenderedView = controller.getColdBoxOCM().get(cbox_cacheKey)>
 			</cfmodule>
 		<cfelse>
 			<!--- The View Path is by convention or external?? --->
@@ -117,7 +117,7 @@ Description :
 				<cfif not fileExists(expandPath(cbox_viewpath))>
 					<cfthrow message="View not located" 
 							 detail="The view: #arguments.view#.cfm could not be located in the conventions folder or in the external location. Please verify the view name" 
-							 type="Framework.plugin.renderer.ViewNotFound">
+							 type="plugins.renderer.ViewNotFound">
 				</cfif>
 				<!--- Helper? --->
 				<cfif fileExists(expandPath("#instance.viewsExternalLocation#/#arguments.view#Helper.cfm"))>
@@ -132,12 +132,7 @@ Description :
 			
 			<!--- Render The View & Its Helper --->
 			<cfmodule template="../includes/Timer.cfm" timertag="rendering View [#arguments.view#.cfm]" controller="#controller#">
-				<cfsavecontent variable="cbox_RenderedView">
-				<cfoutput>
-					<cfif len(cbox_viewHelperPath)><cfinclude template="#cbox_viewHelperPath#"></cfif>
-					<cfinclude template="#cbox_viewpath#">
-				</cfoutput>
-				</cfsavecontent>
+				<cfsavecontent variable="cbox_RenderedView"><cfif len(cbox_viewHelperPath)><cfoutput><cfinclude template="#cbox_viewHelperPath#"></cfoutput></cfif><cfoutput><cfinclude template="#cbox_viewpath#"></cfoutput></cfsavecontent>
 			</cfmodule>
 			
 			<!--- Is this view cacheable by setting, and if its the view we need to cache. --->
@@ -187,10 +182,10 @@ Description :
 					<cfsavecontent variable="cbox_RenderedView"><cfoutput><cfinclude template="#arguments.view#.cfm"></cfoutput></cfsavecontent>
 					<!--- Catches --->
 					<cfcatch type="missinginclude">
-						<cfthrow type="Framework.plugin.renderer.RenderExternalViewNotFoundException" message="The external view: #arguments.view# cannot be found. Please check your paths." >
+						<cfthrow type="plugins.renderer.RenderExternalViewNotFoundException" message="The external view: #arguments.view# cannot be found. Please check your paths." >
 					</cfcatch>
 					<cfcatch type="any">
-						<cfthrow type="Framework.plugin.renderer.RenderExternalViewInvalidException" message="The external view: #arguments.view# threw an invalid exception when redering." >
+						<cfthrow type="plugins.renderer.RenderExternalViewInvalidException" message="The external view: #arguments.view# threw an invalid exception when redering." >
 					</cfcatch>
 				</cftry>
 			</cfmodule>
@@ -208,6 +203,7 @@ Description :
 		<cfset var cbox_RederedLayout = "">
 		<cfset var Event = controller.getRequestService().getContext()>
 		<cfset var rc = event.getCollection()>
+		<cfset var cbox_CurrentLayout = Event.getcurrentLayout()>
 		
 		<!--- Check if no view has been set. --->
 		<cfif event.getCurrentView() eq "">
@@ -220,12 +216,12 @@ Description :
 			</cfif>
 		</cfif>
 		
-		<cfmodule template="../includes/Timer.cfm" timertag="rendering Layout [#Event.getcurrentLayout()#]" controller="#controller#">
+		<cfmodule template="../includes/Timer.cfm" timertag="rendering Layout [#cbox_CurrentLayout#]" controller="#controller#">
 			<!--- Render With No Layout?--->
-			<cfif Event.getcurrentLayout() eq "">
+			<cfif cbox_CurrentLayout eq "">
 				<cfset cbox_RederedLayout = renderView()>
 			<cfelse>
-				<cfsavecontent variable="cbox_RederedLayout"><cfoutput><cfinclude template="/#instance.appMapping#/#instance.layoutsConvention#/#Event.getcurrentLayout()#"></cfoutput></cfsavecontent>
+				<cfsavecontent variable="cbox_RederedLayout"><cfoutput><cfinclude template="/#instance.appMapping#/#instance.layoutsConvention#/#cbox_CurrentLayout#"></cfoutput></cfsavecontent>
 			</cfif>
 		</cfmodule>
 		
