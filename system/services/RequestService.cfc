@@ -24,7 +24,7 @@ Modification History:
 			setController(arguments.controller);			
 			
 			/* Setup context properties */
-			setContextProperties(structnew());
+			instance.ContextProperties = structnew();
 			
 			return this;
 		</cfscript>
@@ -98,33 +98,44 @@ Modification History:
 		<!--- ************************************************************* --->
 		<cfscript>
 			var eventCacheKey = "";
+			var oEventURLFacade = getController().getColdboxOCM().getEventURLFacade();
+			var EventDictionary = 0;
+			
+			/* Cache Test */
+			if( structKeyExists(request,"cb_eventcacheTested") ){
+				return;
+			}
 			/* Are we using event caching? */
-			if ( controller.getSetting("EventCaching") ){	
-				
+			if ( controller.getSetting("EventCaching") ){
+				/* Get Entry */
+				EventDictionary = getController().getHandlerService().getEventMetaDataEntry(Context.getCurrentEvent());	
+				/* setup the cache key. */
+				eventCacheKey = oEventURLFacade.buildEventKey(EventDictionary.prefix,
+															  EventDictionary.suffix,
+															  Context.getCurrentEvent(),
+															  Context);
 				/* Check for Event Cache Purge */
 				if ( Context.valueExists("fwCache") ){
-					/* setup the cache key. */
-					eventCacheKey = controller.getHandlerService().EVENT_CACHEKEY_PREFIX & Context.getCurrentEvent() & "-" & controller.getColdboxOCM().getEventURLFacade().getUniqueHash(Context);
 					/* Clear the key from the cache */
 					controller.getColdboxOCM().clearKey( eventCacheKey );
 				}
 				else{
-					/* Setup the cache key */
-					eventCacheKey = controller.getHandlerService().EVENT_CACHEKEY_PREFIX & Context.getCurrentEvent() & "-" & controller.getColdboxOCM().getEventURLFacade().getUniqueHash(Context);
 					/* Cleanup the cache key, just in case. */
-					Context.removeValue('cbox_eventCacheableEntry');
+					Context.removeEventCacheableEntry();
 					/* Determine if this event has been cached */
 					if ( controller.getColdboxOCM().lookup(eventCacheKey) ){
 						/* Event has been found, flag it so we can render it */
 						Context.setEventCacheableEntry(eventCacheKey);
 					}
 				}//end else no purging
+				/* Marker Test */
+				request.cb_eventcacheTested = true;
 			}//If using event caching.
 		</cfscript>
 	</cffunction>
 	
 	<!--- Get the Context --->
-	<cffunction name="getContext" access="public" output="false" returntype="any" hint="Get the Request Context">
+	<cffunction name="getContext" access="public" output="false" returntype="any" hint="Get the Request Context from request scope or create a new one.">
 		<cfscript>
 			if ( contextExists() )
 				return request.cb_requestContext;
@@ -152,10 +163,6 @@ Modification History:
 	<cffunction name="getContextProperties" access="public" output="false" returntype="struct" hint="Get ContextProperties">
 		<cfreturn instance.ContextProperties/>
 	</cffunction>	
-	<cffunction name="setContextProperties" access="public" output="false" returntype="void" hint="Set ContextProperties">
-		<cfargument name="ContextProperties" type="struct" required="true"/>
-		<cfset instance.ContextProperties = arguments.ContextProperties/>
-	</cffunction>
 	
 <!------------------------------------------- PRIVATE ------------------------------------------->
 	
@@ -172,22 +179,17 @@ Modification History:
 		
 		/* Ensure Loaded Properties */
 		loadProperties();
-		
 		/* Param FORM/URL */
 		initFORMURL();
-			
 		//Create the original request context
-		oContext = CreateObject("component","coldbox.system.beans.requestContext").init(FORM,URL,getContextProperties());
+		oContext = CreateObject("component","coldbox.system.beans.requestContext").init(FORM,URL,instance.ContextProperties);
 		
 		//Determine if we have a decorator, if we do, then decorate it.
-		if ( getContextProperties().isUsingDecorator ){
-			
+		if ( instance.ContextProperties.isUsingDecorator ){
 			//Create the decorator
-			oDecorator = CreateObject("component",controller.getSetting("RequestContextDecorator")).init(oContext,controller);
-			
+			oDecorator = CreateObject("component",instance.ContextProperties.decorator).init(oContext,controller);
 			//Set Request Context in storage
 			setContext(oDecorator);
-			
 			//Return
 			return oDecorator;
 		}
@@ -206,7 +208,7 @@ Modification History:
 			var Properties = structnew();
 			
 			/* Verify we have context properties */
-			if( structisEmpty(getContextProperties()) ){
+			if( structisEmpty(instance.ContextProperties) ){
 				/* Setup Context Properties */
 				Properties.DefaultLayout = "";
 				Properties.DefaultView = "";
@@ -215,6 +217,7 @@ Modification History:
 				Properties.EventName = "";
 				Properties.isSES = false;
 				Properties.sesbaseURL = "";
+				Properties.decorator = "";
 				
 				/* Get default context properties */
 				if( controller.settingExists("EventName") ){
@@ -238,12 +241,13 @@ Modification History:
 				/* Decorator */
 				if ( controller.settingExists("RequestContextDecorator") and controller.getSetting("RequestContextDecorator") neq ""){
 					Properties.isUsingDecorator = true;
+					Properties.decorator = controller.getSetting("RequestContextDecorator");
 				}
 				else{
 					Properties.isUsingDecorator = false;
 				}
 				/* Persist them */
-				setContextProperties(Properties);		
+				instance.ContextProperties = Properties;		
 			}// end if empty properties
 		</cfscript>
 	</cffunction>

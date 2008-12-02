@@ -40,4 +40,9 @@ Modification History:
 		<cfreturn variables.util/>
 	</cffunction>
 	
+	<cffunction name="debug" access="private" returntype="void" hint="Send debug to log file" output="false" >
+		<cfargument name="content" required="true" type="any" hint="">
+		<cfset variables.controller.getPlugin("logger").logEntry("debug",content)>
+	</cffunction>
+	
 </cfcomponent>

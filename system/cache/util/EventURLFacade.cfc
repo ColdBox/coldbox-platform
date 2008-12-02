@@ -13,7 +13,7 @@ Modification History:
 01/18/2007 - Created
 
 ----------------------------------------------------------------------->
-<cfcomponent name="EventURLFacade" hint="This object acas as an url facade for event caching" output="false">
+<cfcomponent name="EventURLFacade" hint="This object acts as an url facade for event caching" output="false">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 	
@@ -68,6 +68,7 @@ Modification History:
 		</cfscript>
 	</cffunction>
 	
+	<!--- Build Hash --->
 	<cffunction name="buildHash" output="false" access="public" returntype="string" hint="build a unique hash according to event and args">
 		<!--- **************************************************************************** --->
 		<cfargument name="event" type="string" required="true" hint="The event to incorporate into the hash"/>
@@ -88,6 +89,23 @@ Modification History:
 			//return hash
 			return hash(myStruct.toString());
 		</cfscript>
+	</cffunction>
+	
+	<!--- Build Event Key --->
+	<cffunction name="buildEventKey" access="public" returntype="any" hint="Build an event key according to passed in params" output="false" >
+		<!--- **************************************************************************** --->
+		<cfargument name="keyPrefix" 	 required="true" type="any" hint="The handler service cache key prefix">
+		<cfargument name="keySuffix" 	 required="true" type="any" hint="A handler key suffix if used.">
+		<cfargument name="targetEvent" 	 required="true" type="any" hint="The target event string">
+		<cfargument name="targetContext" required="true" type="any" hint="The target event context to test.">
+		<!--- **************************************************************************** --->
+		<cfscript>
+			var key = "";
+			
+			key = arguments.keyPrefix & arguments.targetEvent & "-" & arguments.keySuffix & "-" & getUniqueHash(arguments.targetContext);
+			
+			return key;
+		</cfscript>		
 	</cffunction>
 
 </cfcomponent>

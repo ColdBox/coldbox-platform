@@ -398,14 +398,13 @@ Modification History:
 	
 	<cffunction name="setEventCacheableEntry" access="public" returntype="void" hint="Set the event cacheable entry" output="false" >
 		<cfargument name="mdCacheEntry" required="true" type="any" hint="The cache entry we need to get to cache">
-		<cfscript>
-			setValue("cbox_eventCacheableEntry",arguments.mdCacheEntry);
-		</cfscript>
+		<cfset setValue("cbox_eventCacheableEntry",arguments.mdCacheEntry)>
 	</cffunction>
 	<cffunction name="getEventCacheableEntry" access="public" returntype="any" hint="Get the event cacheable entry" output="false" >
-		<cfscript>
-			return getValue("cbox_eventCacheableEntry",structnew());
-		</cfscript>
+		<cfreturn getValue("cbox_eventCacheableEntry",structnew())>
+	</cffunction>
+	<cffunction name="removeEventCacheableEntry" access="public" returntype="void" hint="Remove the cacheable entry" output="false" >
+		<cfset removeValue('cbox_eventCacheableEntry')>
 	</cffunction>
 	
 	<!--- ************************************************************* --->

@@ -108,12 +108,10 @@ Description :
 			<cftry>
 				<!--- set request time --->
 				<cfset request.fwExecTime = getTickCount()>
-				
 				<!--- Local Reference --->
 				<cfset cbController = application.cbController>
 				<!--- Create Request Context & Capture Request --->
 				<cfset Event = cbController.getRequestService().requestCapture()>
-				
 				<!--- Debugging Monitors Check --->
 				<cfif cbController.getDebuggerService().getDebugMode()>
 					<!--- Which panel to render --->

@@ -69,6 +69,8 @@ Description :
 			/* Cache Keys */
 			var cacheKey = this.HANDLER_CACHEKEY_PREFIX & oEventHandlerBean.getRunnable();
 			var eventCacheKey = "";
+			/* Cache Util */
+			var oEventURLFacade = getController().getColdboxOCM().getEventURLFacade();
 			/* Metadata entry structures */
 			var MetaData = "";
 			var mdEntry = "";
@@ -183,7 +185,6 @@ Description :
 					MetaData = getMetaData(oEventHandler[oEventHandlerBean.getMethod()]);
 					/* Get New Default MD Entry */
 					mdEntry = getNewMDEntry();
-											
 					/* By Default, events with no cache flag are set to FALSE */
 					if ( not structKeyExists(MetaData,"cache") or not isBoolean(MetaData["cache"]) ){
 						MetaData.cache = false;
@@ -202,11 +203,13 @@ Description :
 					} //end cache metadata is true
 					else{
 						mdEntry.cacheable = false;
-					}			
-					
+					}
+					/* Handler Evetn Cache Key Suffix */
+					mdEntry.suffix = oEventHandler.EVENT_CACHE_SUFFIX;
+					/* Handler Events Prefix */
+					mdEntry.prefix = this.EVENT_CACHEKEY_PREFIX;
 					/* Set md Entry in dictionary */
 					getEventCacheDictionary().setKey(oEventHandlerBean.getFullEvent(),mdEntry);
-					
 				}//end of md cache dictionary.
 				
 				/* get dictionary entry for operations, it is now guaranteed. */
@@ -215,13 +218,16 @@ Description :
 				/* Do we need to cache this event?? */
 				if ( eventDictionaryEntry.cacheable ){
 					/* Save the cache key in md Entry */
-					eventDictionaryEntry.cacheKey = this.EVENT_CACHEKEY_PREFIX & oEventHandlerBean.getFullEvent() & "-" & oEventHandler.EVENT_CACHE_SUFFIX & "-" & getController().getColdboxOCM().getEventURLFacade().getUniqueHash(oRequestContext) ;
+					eventDictionaryEntry.cacheKey = oEventURLFacade.buildEventKey(eventDictionaryEntry.prefix,
+																				  eventDictionaryEntry.suffix,
+																				  oEventHandlerBean.getFullEvent(),
+																				  oRequestContext);
 					/* Event is cacheable and we need to flag it so the renderer caches it. */
 					oRequestContext.setEventCacheableEntry(eventDictionaryEntry);
 				}//end if md says that this event is cacheable
 				
 			}//end if event caching.
-					
+			
 			//return the tested and validated event handler
 			return oEventHandler;
 		</cfscript>
@@ -395,10 +401,26 @@ Description :
 		<cfset instance.EventCacheDictionary = arguments.EventCacheDictionary>
 	</cffunction>
 	
+	<cffunction name="getEventMetaDataEntry" access="public" returntype="struct" hint="Get an event string's metadata entry" output="false" >
+		<!--- ************************************************************* --->
+		<cfargument name="targetEvent" required="true" type="any" hint="The target event">
+		<!--- ************************************************************* --->
+		<cfscript>
+			var entry = getEventCacheDictionary().getKey(arguments.targetEvent);
+			
+			if( isSimpleValue(entry) ){
+				return getNewMDEntry();
+			}
+			else{
+				return entry;			
+			}
+		</cfscript>
+	</cffunction>
+	
 <!------------------------------------------- PRIVATE ------------------------------------------->
 	
 	<!--- Get a new MD cache entry structure --->
-	<cffunction name="getNewMDEntry" access="private" returntype="struct" hint="Get a new metadata entry structure" output="false" >
+	<cffunction name="getNewMDEntry" access="public" returntype="struct" hint="Get a new metadata entry structure" output="false" >
 		<cfscript>
 			var mdEntry = structNew();
 			
@@ -406,6 +428,8 @@ Description :
 			mdEntry.timeout = "";
 			mdEntry.lastAccessTimeout = "";
 			mdEntry.cacheKey = "";
+			mdEntry.suffix = "";
+			mdEntry.prefix = "";
 			
 			return mdEntry;
 		</cfscript>
