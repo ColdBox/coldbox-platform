@@ -76,7 +76,7 @@
 				       addproperty="app.unittest" />	
 		<!-- Side Bar -->
 		<input message="Would you like to configure this application to use the ColdBox SideBar?"
-			   validargs="true,false" defaultvalue="true"
+			   validargs="true,false" defaultvalue="false"
 		       addproperty="app.sidebar" />	
 		<!-- Run Generation -->
 		<antcall target="generate" inheritall="true" inheritrefs="true" />
@@ -136,7 +136,7 @@
 			<label>Configure your application to use the ColdBox SideBar.</label>
 			<radioSelectionProperty label="ColdBox SideBar?"
 							   property="app.sidebar"
-							   values="true,false"
+							   values="false,true"
 							   tooltip="Configure the app for the ColdBox SideBar." />
 			<!-- Favs Template -->
 			<label>Choose your URL rewrite engine if any. This will create an appropriate .htaccess or isapirewrite.ini file or none and configure your routes.</label>
@@ -204,7 +204,7 @@
 			<equals arg1="${app.useErrorTemplate}" arg2="true" casesensitive="false" />
 			<then>
 				<replace file="${app.destination}/${app.name}/${base.config}" value="${base.errortemplate}" summary="yes">
-					<replacetoken>@errortemplate@</replacetoken>
+					<replacetoken><![CDATA[<Setting name="CustomErrorTemplate"			value="" />]]></replacetoken>
 				</replace>
 			</then>
 			<else>
@@ -280,6 +280,12 @@
 	<target name="replaceRewrite" description="Replace some rewrite stuff">
 		<replace file="${app.destination}/${app.name}/config/routes.cfm" value="" summary="yes">
 			<replacetoken>/index.cfm</replacetoken>
+		</replace>
+	</target>
+	
+	<target name="test">
+		<replace file="config/test.xml" value="${base.errortemplatexml}" summary="yes">
+			<replacetoken><![CDATA[<Setting name="CustomErrorTemplate"			value="" />]]></replacetoken>
 		</replace>
 	</target>
 	

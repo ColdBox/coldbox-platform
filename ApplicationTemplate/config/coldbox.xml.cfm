@@ -52,7 +52,7 @@
 		<!--What event to fire when an invalid event is detected-->
 		<Setting name="onInvalidEvent" 				value="" />
 		<!--Full path from the application's root to your custom error page, else leave blank. -->
-		<Setting name="CustomErrorTemplate"			value="@errortemplate@" />
+		<Setting name="CustomErrorTemplate"			value="" />
 		<!--The Email address from which all outgoing framework emails will be sent. -->
 		<Setting name="OwnerEmail" 					value="" />
 		<!-- Enable Bug Reports to be emailed out, set to true by default if left blank
