@@ -833,14 +833,14 @@ Modification History:
 					//Check for View
 					if( LayoutNodes[i].XMLChildren[j].XMLName eq "View" ){
 						//Check for Key, if it doesn't exist then create
-						if ( not StructKeyExists(LayoutViewStruct, Trim(LayoutNodes[i].XMLChildren[j].XMLText)) )
-							StructInsert(LayoutViewStruct, Trim(LayoutNodes[i].XMLChildren[j].XMLText), Layout);
+						if ( not StructKeyExists(LayoutViewStruct, lcase(Trim(LayoutNodes[i].XMLChildren[j].XMLText))) )
+							StructInsert(LayoutViewStruct, lcase(Trim(LayoutNodes[i].XMLChildren[j].XMLText)), Layout);
 					}
 					//Check for Folder
 					else if( LayoutNodes[i].XMLChildren[j].XMLName eq "Folder" ){
 						//Check for Key, if it doesn't exist then create
-						if ( not StructKeyExists(LayoutFolderStruct, Trim(LayoutNodes[i].XMLChildren[j].XMLText)) )
-							StructInsert(LayoutFolderStruct, Trim(LayoutNodes[i].XMLChildren[j].XMLText), Layout);
+						if ( not StructKeyExists(LayoutFolderStruct, lcase(Trim(LayoutNodes[i].XMLChildren[j].XMLText))) )
+							StructInsert(LayoutFolderStruct, lcase(Trim(LayoutNodes[i].XMLChildren[j].XMLText)), Layout);
 					}
 					
 				}//end for loop for the layout children

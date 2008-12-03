@@ -214,10 +214,12 @@ Description :
 				<!--- Set the Default View --->
 				<cfset event.setView(event.getDefaultView())>
 			</cfif>
+			<!--- Reset the layout --->
+			<cfset cbox_CurrentLayout = Event.getcurrentLayout()>
 		</cfif>
 		
+		<!--- Render --->
 		<cfmodule template="../includes/Timer.cfm" timertag="rendering Layout [#cbox_CurrentLayout#]" controller="#controller#">
-			<!--- Render With No Layout?--->
 			<cfif cbox_CurrentLayout eq "">
 				<cfset cbox_RederedLayout = renderView()>
 			<cfelse>

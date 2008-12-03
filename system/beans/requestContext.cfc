@@ -213,13 +213,13 @@ Modification History:
 		    if ( NOT arguments.nolayout AND NOT getValue("layoutoverride",false) ){
 		    		
 		    	//Verify that the view has a layout in the viewLayouts structure.
-			    if ( StructKeyExists(instance.ViewLayouts, arguments.name) ){
-					setValue("currentLayout",instance.ViewLayouts[arguments.name]);
+			    if ( StructKeyExists(instance.ViewLayouts, lcase(arguments.name)) ){
+					setValue("currentLayout",instance.ViewLayouts[lcase(arguments.name)]);
 			    }
 				else{
 					//Check the folders structure
 					for( key in instance.FolderLayouts ){
-						if ( reFindnocase('^#key#', arguments.name) ){
+						if ( reFindnocase('^#key#', lcase(arguments.name)) ){
 							setValue("currentLayout",instance.FolderLayouts[key]);
 							break;
 						}

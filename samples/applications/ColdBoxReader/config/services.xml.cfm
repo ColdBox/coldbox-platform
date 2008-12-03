@@ -1,17 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans default-autowire="byName">
     
-    <!--ColdBox Datasource Bean, created by the config structure's dsn alias
-	DEPRECATED FOR COLDSPRING 1.2
-    <bean id="datasourceBean" class="coldbox.system.beans.datasourceBean">
-        <property name="name"><value>${Datasources.coldboxreader.name}</value></property>
-        <property name="DBType"><value>${Datasources.coldboxreader.DBTYPE}</value></property>
-        <property name="Username"><value>${Datasources.coldboxreader.Username}</value></property>
-        <property name="Password"><value>${Datasources.coldboxreader.Password}</value></property>
-    </bean>
-	
-	-->
-	
 	<!-- ColdBox Related Beans -->
 	<bean id="ColdboxFactory" class="coldbox.system.extras.ColdboxFactory" autowire="no" />
     <bean id="datasourceBean" factory-bean="ColdBoxFactory" factory-method="getDatasource">
