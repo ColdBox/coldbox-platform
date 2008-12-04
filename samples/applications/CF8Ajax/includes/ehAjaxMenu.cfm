@@ -16,4 +16,5 @@ Description : right hand menu for ajax features.
   <li><a href="index.cfm?event=ehAjax.dspLogin">CFAJAX LOGIN</a></li>
   <li><a href="index.cfm?event=ehAjax.dspTabLayout">CFLAYOUT TAB</a></li>
   <li><a href="index.cfm?event=ehAjax.dspSelectBind">CFSELECT BIND</a></li>
+  <li><a href="index.cfm?event=ehAjax.dspHtmlEvent">HTML Sample</a>
 </ul>

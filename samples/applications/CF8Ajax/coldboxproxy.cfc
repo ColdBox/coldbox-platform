@@ -115,4 +115,11 @@ Description :
 		<cfreturn results>
 	</cffunction>
 	
+	<cffunction name="process2" output="false" access="remote" returnformat="plain" hint="Process a remote call and return data/objects back.">
+		<cfargument name="Args" type="Any">
+		<cfset var results = "" />
+		<cfset results = super.process(argumentCollection=Args)>
+		<!--- <cfdump var="#results#"><cfabort> --->
+		<cfreturn results>
+	</cffunction>
 </cfcomponent>
