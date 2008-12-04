@@ -47,6 +47,7 @@ Modification History:
 	background-color: transparent !important;
 	margin:0px !important;
 	padding:0px !important;
+	width:auto !important;
 }
 
 #ColdBoxSideBar input.ColdBoxSideBarCheckBox {
@@ -89,4 +90,7 @@ Modification History:
 }
 #ColdBoxSideBar a:hover {
 	text-decoration: underline !important;
+}
+#ColdBoxSideBar table tbody tr td {
+	text-align:left !important;
 }

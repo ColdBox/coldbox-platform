@@ -55,6 +55,10 @@ Description: This is the framework's simple bean factory.
 			
 			/* Constructor Argument Marker */
 			instance.argumentMarker = "_wireme";
+			/* Check setting */
+			if( settingExists("beanFactory_argumentMarker") ){
+				instance.argumentMarker = getSetting("beanFactory_argumentMarker");
+			}
 			instance.NOT_FOUND = "_NOT_FOUND_";
 			
 			/* Return instance */
