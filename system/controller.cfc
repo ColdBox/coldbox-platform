@@ -284,11 +284,18 @@ Description		: This is the main ColdBox front Controller.
 		<cfargument name="addToken"		 	type="boolean" required="false" default="false"	hint="Whether to add the tokens or not. Default is false">
 		<cfargument name="persist" 			type="string"  required="false" default="" hint="What request collection keys to persist in the relocation">
 		<cfargument name="varStruct" 		type="struct"  required="false" default="#structNew()#" hint="A structure key-value pairs to persist.">
+		<cfargument name="ssl"				type="boolean" required="false" default="false"	hint="Whether to relocate in SSL or not, only used when in SES mode.">
+		<cfargument name="baseURL" 			type="string"  required="false" default="" hint="Use this baseURL instead of the index.cfm that is used by default. You can use this for ssl or any full base url you would like to use. Ex: https://mysite.com/index.cfm"/>
 		<!--- ************************************************************* --->
 		<cfset var EventName = getSetting("EventName")>
 		<cfset var frontController = listlast(cgi.script_name,"/")>
 		<cfset var oRequestContext = getRequestService().getContext()>
 		<cfset var routeString = 0>
+		
+		<!--- Front Controller Base URL --->
+		<cfif len(trim(arguments.baseURL)) neq 0>
+			<cfset frontController = arguments.baseURL>
+		</cfif>
 		
 		<!--- Cleanup Event --->
 		<cfif len(trim(arguments.event)) eq 0>
@@ -306,8 +313,8 @@ Description		: This is the main ColdBox front Controller.
 			<!--- Relocate with routing --->
 			<cfset setNextRoute(route=routeString,
 						 		persist=arguments.persist,varStruct=arguments.varStruct,
-						 		addToken=arguments.addToken)>
-		
+						 		addToken=arguments.addToken,
+						 		ssl=arguments.ssl)>		
 		<cfelse>
 			<!--- Persistance Logic --->
 			<cfset persistVariables(argumentCollection=arguments)>
@@ -325,12 +332,18 @@ Description		: This is the main ColdBox front Controller.
 	<!--- Set Next Route --->
 	<cffunction name="setNextRoute" access="Public" returntype="void" hint="I Set the next ses route to relocate to. This method pre-pends the baseURL"  output="false">
 		<!--- ************************************************************* --->
-		<cfargument name="route"  		required="yes" 	 type="string" hint="The route to relocate to, do not prepend the baseURL or /.">
+		<cfargument name="route"  		required="true"	 type="string" hint="The route to relocate to, do not prepend the baseURL or /.">
 		<cfargument name="persist" 		required="false" type="string" default="" hint="What request collection keys to persist in the relocation">
 		<cfargument name="varStruct" 	required="false" type="struct" hint="A structure key-value pairs to persist.">
 		<cfargument name="addToken"		required="false" type="boolean" default="false"	hint="Wether to add the tokens or not. Default is false">
+		<cfargument name="ssl"			required="false" type="boolean" default="false"	hint="Whether to relocate in SSL or not">
 		<!--- ************************************************************* --->
 		<Cfset var routeLocation = getSetting("sesBaseURL")>
+		
+		<!--- SSL --->
+		<cfif arguments.ssl>
+			<cfset routeLocation = replacenocase(routeLocation,"http:","https:")>
+		</cfif>
 		
 		<!--- Persistance Logic --->
 		<cfset persistVariables(argumentCollection=arguments)>
@@ -456,10 +469,10 @@ Description		: This is the main ColdBox front Controller.
 	</cffunction>
 
 	<!--- Flash Perist variables. --->
-	<cffunction name="persistVariables" access="public" returntype="void" hint="Persist variables for flash redirections" output="false" >
+	<cffunction name="persistVariables" access="public" returntype="void" hint="Persist variables for flash redirections, it can use a structure of name-value pairs or keys from the request collection" output="false" >
 		<!--- ************************************************************* --->
-		<cfargument name="persist" 	 	required="false" type="string" default="" hint="What request collection keys to persist in the relocation.">
-		<cfargument name="varStruct" 	required="false" type="struct" hint="A structure key-value pairs to persist.">
+		<cfargument name="persist" 	 	required="false" type="string" default="" hint="What request collection keys to persist in the relocation. Keys must exist in the relocation">
+		<cfargument name="varStruct" 	required="false" type="struct" hint="A structure of key-value pairs to persist.">
 		<!--- ************************************************************* --->
 		<cfset var PersistList = trim(arguments.persist)>
 		<cfset var tempPersistValue = "">

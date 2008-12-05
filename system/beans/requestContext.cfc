@@ -360,28 +360,44 @@ Modification History:
 	<!--- ************************************************************* --->
 	
 	<cffunction name="getSelf" access="public" output="false" returntype="any" hint="Returns index.cfm?{eventName}= : String">
-	   <cfreturn "index.cfm?" & getEventName() & "=">
+	   <cfreturn listlast(cgi.script_name,"/") & getEventName() & "=">
 	</cffunction>
 	
 	<cffunction name="buildLink" access="public" output="false" returntype="any" hint="Builds a link to a passed event, either SES or normal link. If the ses interceptor is declared it will create routes.">
+		<!--- ************************************************************* --->
 		<cfargument name="linkto" 		required="true" 	type="string"  hint="The event or route you want to create the link to">
 	    <cfargument name="translate"  	required="false" 	type="boolean" default="true" hint="Translate between . and / depending on the ses mode. So you can just use dot notation."/>
-	    <cfscript>
+	    <cfargument name="ssl" 			required="false"    type="boolean" default="false" hint="If true, it will change http to https if found in the ses base url."/>
+	    <cfargument name="baseURL" 		required="false" 	type="string"  default="" hint="If not using SES, you can use this argument to create your own base url apart from the default of index.cfm. Example: https://mysample.com/index.cfm"/>
+	    <!--- ************************************************************* --->
+		<cfscript>
+		var sesBaseURL = getSESbaseURL();
+		var frontController = listlast(cgi.script_name,"/");
+		
+		/* baseURL */
+		if( len(trim(arguments.baseURL)) neq 0 ){
+			frontController = arguments.baseURL;
+		}
+		
 		if( isSES() ){
+			/* SSL */
+			if( arguments.ssl ){
+				sesBaseURL = replacenocase(sesBaseURL,"http:","https:");
+			}
 			/* Translate link */
 			if( arguments.translate ){
 				arguments.linkto = replace(arguments.linkto,".","/","all");
 			}
 			/* Prepare link */
-			if( right(getSESbaseURL(),1) eq  "/"){
-				return getSESBaseURL() & arguments.linkto;
+			if( right(sesBaseURL,1) eq  "/"){
+				return sesBaseURL & arguments.linkto;
 			}
 			else{
-				return getSESBaseURL() & "/" & arguments.linkto;
+				return sesBaseURL & "/" & arguments.linkto;
 			}
 		}
 		else{
-			return "index.cfm?#getEventName()#=#arguments.linkto#";
+			return "#frontController#?#getEventName()#=#arguments.linkto#";
 		}		
 		</cfscript>
 	</cffunction>

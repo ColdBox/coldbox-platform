@@ -73,6 +73,8 @@
 		<Setting name="ViewsExternalLocation" 		value=""/>
 		<!-- Declare the external handlers base invocation path, if used. You have to use dot notation.Example: mymapping.myhandlers	-->
 		<Setting name="HandlersExternalLocation"   	value="" />
+		<!-- Declare the external models base invocation path, if used. You have to use dot notation.Example: mymapping.mymodels	-->
+		<Setting name="ModelsExternalLocation"   	value="" />
 		<!--Flag to cache handlers. Default if left blank is true. -->
 		<Setting name="HandlerCaching" 				value="false"/>
 		<!--Flag to cache events if metadata declared. Default is true -->
