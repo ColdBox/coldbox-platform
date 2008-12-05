@@ -31,6 +31,7 @@
 		<Setting name="MyPluginsLocation" 			value="coldbox.testing.testplugins"/>
 		<Setting name="ViewsExternalLocation"		value="/coldbox/testing/testviews" />
 		<Setting name="HandlersExternalLocation" 	value="coldbox.testing.testhandlers"/>
+		<Setting name="ModelsExternalLocation"   	value="coldbox.testing.testmodel" />
 		<Setting name="HandlerCaching" 				value="false"/>
 		<Setting name="EventCaching" 				value="true"/>
 		<Setting name="IOCFramework" 				value="lightwire"/>

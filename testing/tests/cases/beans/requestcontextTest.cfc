@@ -408,6 +408,7 @@
 		<cfscript>
 			var event = getRequestContext();
 			base = "http://www.luismajano.com/index.cfm";
+			basessl = "https://www.luismajano.com/index.cfm";
 			
 			event.setisSES(false);
 			testurl = event.buildLink('general.index');
@@ -417,6 +418,11 @@
 			event.setsesBaseURL(base);
 			testurl = event.buildLink('general/index');
 			AssertEquals(testurl, base & "/general/index" );
+			
+			event.setisSES(true);
+			event.setsesBaseURL(base);
+			testurl = event.buildLink(linkto='general/index',ssl=true);
+			AssertEquals(testurl, basessl & "/general/index" );
 			
 		</cfscript>
 	</cffunction>
