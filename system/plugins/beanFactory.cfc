@@ -359,8 +359,6 @@ Description: This is the framework's simple bean factory.
 			var tmpBean = "";
 			
 			/* Helpers */
-			var oIOC = '';
-			var oOCM = '';
 			var oMethodInjector = '';
 		</cfscript>
 		

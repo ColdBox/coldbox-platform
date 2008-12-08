@@ -41,7 +41,6 @@ Modification History:
 			var oFlashStorage = "";
 			
 			/* Collection Appends */
-			initFORMURL();
 			Context.collectionAppend(FORM,true);
 			Context.collectionAppend(URL);			
 					
@@ -100,6 +99,7 @@ Modification History:
 			var eventCacheKey = "";
 			var oEventURLFacade = getController().getColdboxOCM().getEventURLFacade();
 			var EventDictionary = 0;
+			var oOCM = controller.getColdboxOCM();
 			
 			/* Cache Test */
 			if( structKeyExists(request,"cb_eventcacheTested") ){
@@ -109,6 +109,12 @@ Modification History:
 			if ( controller.getSetting("EventCaching") ){
 				/* Get Entry */
 				EventDictionary = getController().getHandlerService().getEventMetaDataEntry(Context.getCurrentEvent());	
+				
+				/* Verify that it is cacheable, else quit, no need for testing anymore. */
+				if( not EventDictionary.cacheable ){
+					return;	
+				}
+				
 				/* setup the cache key. */
 				eventCacheKey = oEventURLFacade.buildEventKey(EventDictionary.prefix,
 															  EventDictionary.suffix,
@@ -117,17 +123,16 @@ Modification History:
 				/* Check for Event Cache Purge */
 				if ( Context.valueExists("fwCache") ){
 					/* Clear the key from the cache */
-					controller.getColdboxOCM().clearKey( eventCacheKey );
+					oOCM.clearKey( eventCacheKey );
 				}
-				else{
+				/* Determine if this event has been cached */
+				else if ( oOCM.lookup(eventCacheKey) ){
 					/* Cleanup the cache key, just in case. */
 					Context.removeEventCacheableEntry();
-					/* Determine if this event has been cached */
-					if ( controller.getColdboxOCM().lookup(eventCacheKey) ){
-						/* Event has been found, flag it so we can render it */
-						Context.setEventCacheableEntry(eventCacheKey);
-					}
+					/* Event has been found, flag it so we can render it */
+					Context.setEventCacheableEntry(eventCacheKey);
 				}//end else no purging
+				
 				/* Marker Test */
 				request.cb_eventcacheTested = true;
 			}//If using event caching.
@@ -137,7 +142,7 @@ Modification History:
 	<!--- Get the Context --->
 	<cffunction name="getContext" access="public" output="false" returntype="any" hint="Get the Request Context from request scope or create a new one.">
 		<cfscript>
-			if ( contextExists() )
+			if ( structKeyExists(request,"cb_requestContext") )
 				return request.cb_requestContext;
 			else
 				return createContext();

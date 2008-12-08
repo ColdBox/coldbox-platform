@@ -32,9 +32,9 @@ Modification History:
 
 	<cffunction name="init" access="public" output="false" hint="constructor" returntype="coldbox.system.beans.requestContext">
 		<!--- ************************************************************* --->
-		<cfargument name="struct1" 		 	type="any" 		required="true" hint="Usually the FORM scope">
-		<cfargument name="struct2" 		 	type="any" 		required="true" hint="Usually the URL scope">
-		<cfargument name="properties" 		type="struct" 	required="true" hint="The context properties">
+		<cfargument name="struct1" 		 	type="any"	required="true" hint="Usually the FORM scope">
+		<cfargument name="struct2" 		 	type="any"	required="true" hint="Usually the URL scope">
+		<cfargument name="properties" 		type="any" 	required="true" hint="The context properties struct">
 		<!--- ************************************************************* --->
 		<cfscript>
 			/* Append Collections */
@@ -83,7 +83,7 @@ Modification History:
 	<!--- ************************************************************* --->
 
 	<cffunction name="collectionAppend" access="public" returntype="void" output="false" hint="Append a structure to the collection, with overwrite or not. Overwrite = false by default">
-		<cfargument name="collection" type="struct"  required="true">
+		<cfargument name="collection" type="any"  required="true" hint="A collection to append">
 		<cfargument name="overwrite"  type="boolean" required="false" default="false" hint="If you need to override data in the collection, set this to true.">
 		<cfset structAppend(instance.context,arguments.collection, arguments.overwrite)>
 	</cffunction>

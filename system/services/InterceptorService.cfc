@@ -75,9 +75,6 @@ Description :
 			<cfreturn>
 		</cfif>
 		
-		<!--- Setup Event --->
-		<cfset event = getController().getRequestService().getContext()>
-		
 		<!--- Validate Incoming State --->
 		<cfif getController().getSetting("InterceptorConfig").throwOnInvalidStates and not listfindnocase(getInterceptionPoints(),arguments.state)>
 			<cfset getUtil().throwit("The interception state sent in to process is not valid: #arguments.state#","","Framework.InterceptorService.InvalidInterceptionState")>
@@ -85,6 +82,8 @@ Description :
 		
 		<!--- Process The State if it exists, else just exit out. --->
 		<cfif structKeyExists(getinterceptionStates(), arguments.state) >
+			<!--- Setup Event --->
+			<cfset event = getController().getRequestService().getContext()>
 			<cfmodule template="../includes/Timer.cfm" timertag="interception [#arguments.state#]" controller="#getController()#">
 				<cfset structFind( getinterceptionStates(), arguments.state).process(event,arguments.interceptData)>
 			</cfmodule>				

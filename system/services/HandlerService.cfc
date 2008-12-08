@@ -60,12 +60,13 @@ Description :
 	<cffunction name="getHandler" output="false" access="public" returntype="any" hint="Returns a valid event handler object ready for execution">
 		<!--- ************************************************************* --->
 		<cfargument name="oEventHandlerBean" type="coldbox.system.beans.eventhandlerBean" required="true" hint="The event handler bean to use"/>
+		<cfargument name="RequestContext"    type="any" required="true" hint="The request Context"/>
 		<!--- ************************************************************* --->
 		<cfscript>
 			/* Get the validated event handler bean */
 			var oEventHandler = "";
 			/* Request context to check */
-			var oRequestContext = controller.getRequestService().getContext();
+			var oRequestContext = arguments.RequestContext;
 			/* Cache Keys */
 			var cacheKey = this.HANDLER_CACHEKEY_PREFIX & oEventHandlerBean.getRunnable();
 			var eventCacheKey = "";

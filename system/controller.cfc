@@ -21,7 +21,6 @@ Description		: This is the main ColdBox front Controller.
 		<cfscript>
 			//Public Variable.
 			this.oCFMLENGINE = CreateObject("component","coldbox.system.util.CFMLEngine").init();
-			
 			//properties
 			setColdboxInitiated(false);
 			setAspectsInitiated(false);
@@ -387,7 +386,7 @@ Description		: This is the main ColdBox front Controller.
 		<!--- Private Event or Not? --->
 		<cfset oEventHandlerBean.setisPrivate(arguments.private)>
 		<!--- Get the event handler to execute --->
-		<cfset oEventHandler = getHandlerService().getHandler(oEventHandlerBean)>
+		<cfset oEventHandler = getHandlerService().getHandler(oEventHandlerBean,oRequestContext)>
 		
 		<!--- InterceptMetadata --->
 		<cfset interceptMetadata.processedEvent = arguments.event>
