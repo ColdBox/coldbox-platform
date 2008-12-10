@@ -30,8 +30,8 @@ Description: This is the framework's simple bean factory.
 			
 			/* Plugin Properties */
 			setpluginName("Bean Factory");
-			setpluginVersion("2.0");
-			setpluginDescription("I am a simple bean factory");
+			setpluginVersion("3.0");
+			setpluginDescription("I am an awesome conventions,IoC and DI bean factory");
 			
 			/* Setup the Autowire DI Dictionary */
 			setDICacheDictionary(CreateObject("component","coldbox.system.util.BaseDictionary").init('DIMetadata'));
@@ -54,11 +54,12 @@ Description: This is the framework's simple bean factory.
 			}
 			
 			/* Constructor Argument Marker */
-			instance.argumentMarker = "_wireme";
-			/* Check setting */
-			if( settingExists("beanFactory_argumentMarker") ){
-				instance.argumentMarker = getSetting("beanFactory_argumentMarker");
+			instance.dslMarker = "_wireme";
+			/* Check setting For Argument Marker Override */
+			if( settingExists("beanFactory_dslMarker") ){
+				instance.dslMarker = getSetting("beanFactory_dslMarker");
 			}
+			/* Not Found Marker Constant */
 			instance.NOT_FOUND = "_NOT_FOUND_";
 			
 			/* Return instance */
@@ -77,12 +78,12 @@ Description: This is the framework's simple bean factory.
 	<cffunction name="addModelMapping" access="public" returntype="void" hint="Add a new model mapping. Ex: addModelMapping('myBean','security.test.FormBean')" output="false" >
 		<!--- ************************************************************* --->
 		<cfargument name="alias" required="true" type="string" hint="The model alias">
-		<cfargument name="model" required="true" type="string" hint="The model class path (From the model conventions downward)">
+		<cfargument name="path"  required="true" type="string" hint="The model class path (From the model conventions downward)">
 		<!--- ************************************************************* --->
 		<cfset var mappings = getModelMappings()>
-		<cfset mappings[arguments.alias] = arguments.model>
+		<cfset mappings[arguments.alias] = arguments.path>
 	</cffunction>
-
+	
 	<!--- Just create and call init, simple --->
 	<cffunction name="create" hint="Create a named bean, simple as that. If the bean has an init() method, it will be called." access="public" output="false" returntype="Any">
 		<!--- ************************************************************* --->
@@ -90,7 +91,6 @@ Description: This is the framework's simple bean factory.
 		<!--- ************************************************************* --->
 		<cfscript>
 			var beanInstance = "";
-			
 			try{
 				/* Try to create bean */
 				beanInstance = createObject("component","#arguments.bean#");
@@ -442,7 +442,7 @@ Description: This is the framework's simple bean factory.
 <!------------------------------------------- PRIVATE ------------------------------------------->
 	
 	<!--- getConstructorArguments --->
-	<cffunction name="getConstructorArguments" output="false" access="private" returntype="struct" hint="The constructor argument collection">
+	<cffunction name="getConstructorArguments" output="false" access="private" returntype="struct" hint="The constructor argument collection for a model object">
 		<!--- ************************************************************* --->
 		<cfargument name="model" type="any" required="true" default="" hint="The model object"/>
 		<!--- ************************************************************* --->
@@ -456,9 +456,9 @@ Description: This is the framework's simple bean factory.
 			
 			for(x=1;x lte paramLen; x=x+1){
 				/* Check Marker */
-				if( structKeyExists(params[x],instance.argumentMarker) ){
+				if( structKeyExists(params[x],instance.dslMarker) ){
 					/* Definition */
-					definition.type = params[x][instance.argumentMarker];
+					definition.type = params[x][instance.dslMarker];
 					definition.name = params[x].name;
 					definition.scope="";
 					/* Get Dependency */
@@ -516,6 +516,42 @@ Description: This is the framework's simple bean factory.
 		</cfscript>
 	</cffunction>	
 	
+	<!--- getLibraryDSL --->
+	<cffunction name="getLibraryDSL" access="private" returntype="any" hint="Get dependencies using the library dependency DSL" output="false" >
+		<!--- ************************************************************* --->
+		<cfargument name="Definition" 	required="true" type="any" hint="The dependency definition structure">
+		<!--- ************************************************************* --->
+		<cfscript>
+			var thisDependency = arguments.Definition;
+			var thisType = thisDependency.type;
+			var thisTypeLen = listLen(thisType,":");
+			var thisLocationType = "";
+			var thisLocationKey = "";
+			var locatedDependency = instance.NOT_FOUND;
+			
+			/* 1 stage dependency dsl : Get Library */
+			if(thisTypeLen eq 1){
+				/* Get Library according to Property Name */
+				locatedDependency = getModel(arguments.Definition.name);
+			}
+			/* 2 stage dependency dsl : Get Library */
+			else if(thisTypeLen eq 2){
+				thisLocationType = getToken(thisType,2,":");
+				/* Get model object*/
+				locatedDependency = getModel(thisLocationType);
+			}
+			/* 3 stage dependency dsl : Library Factories*/
+			else if(thisTypeLen eq 3){
+				thisLocationType = getToken(thisType,2,":");
+				thisLocationKey = getToken(thisType,3,":");
+				/* Call model method to get dependency */
+				locatedDependency = evaluate("getModel(thisLocationType).#thisLocationKey#()");
+			}//end 3 stage DSL
+			
+			return locatedDependency;
+		</cfscript>
+	</cffunction>
+	
 	<!--- getModelDSL --->
 	<cffunction name="getModelDSL" access="private" returntype="any" hint="Get dependencies using the model dependency DSL" output="false" >
 		<!--- ************************************************************* --->
@@ -529,18 +565,18 @@ Description: This is the framework's simple bean factory.
 			var thisLocationKey = "";
 			var locatedDependency = instance.NOT_FOUND;
 			
-			/* 1 stage dependency dsl */
+			/* 1 stage dependency dsl : Get Model */
 			if(thisTypeLen eq 1){
 				/* Get Model according to Property Name */
 				locatedDependency = getModel(arguments.Definition.name);
 			}
-			/* 2 stage dependency dsl */
+			/* 2 stage dependency dsl : Get Model */
 			else if(thisTypeLen eq 2){
 				thisLocationType = getToken(thisType,2,":");
 				/* Get model object*/
 				locatedDependency = getModel(thisLocationType);
 			}
-			/* 3 stage dependency dsl */
+			/* 3 stage dependency dsl : Model Factories*/
 			else if(thisTypeLen eq 3){
 				thisLocationType = getToken(thisType,2,":");
 				thisLocationKey = getToken(thisType,3,":");
@@ -565,38 +601,36 @@ Description: This is the framework's simple bean factory.
 			var thisLocationKey = "";
 			var locatedDependency = instance.NOT_FOUND;
 			
-			/* 1 stage dependency */
+			/* 1 stage dependency: ColdBox */
 			if( thisTypeLen eq 1 ){
 				/* Coldbox Reference is the only one available on 1 stage DSL */
 				locatedDependency = getController();
 			}
-			/* 2 stage dependencies. Model:Test or Coldbox:etc */
+			/* 2 stage dependencies. Coldbox:ConfigBean */
 			else if(thisTypeLen eq 2){
 				thisLocationKey = getToken(thisType,2,":");
-				if( thisLocationKey eq "configbean" ){
-					locatedDependency = getSettingsBean();
-				}	
-				else if( thisLocationKey eq "mailsettingsbean" ){
-					locatedDependency = getMailSettings();
-				}
+				switch( thisLocationKey ){
+					case "configbean" 			: { locatedDependency = getSettingsBean(); break; }
+					case "mailsettingsbean"		: { locatedDependency = getMailSettings(); break; }
+					case "loaderService"		: { locatedDependency = getController().getLoaderService(); break; }
+					case "requestService"		: { locatedDependency = getController().getrequestService(); break; }
+					case "debuggerService"		: { locatedDependency = getController().getDebuggerService(); break; }
+					case "pluginService"		: { locatedDependency = getController().getPluginService(); break; }
+					case "handlerService"		: { locatedDependency = getController().gethandlerService(); break; }
+					case "interceptorService"	: { locatedDependency = getController().getinterceptorService(); break; }
+					case "cacheManager"			: { locatedDependency = getController().getColdboxOCM(); break; }
+				}//end of services
 			}
 			/* 3 stage dependencies */
 			else if(thisTypeLen eq 3){
 				thisLocationType = getToken(thisType,2,":");
 				thisLocationKey = getToken(thisType,3,":");
-				/* Fork on types */
-				if( thisLocationType eq "setting" ){
-					locatedDependency = getSetting(thisLocationKey);
-				}
-				else if( thisLocationType eq "plugin" ){
-					locatedDependency = getPlugin(thisLocationKey);
-				}
-				else if( thisLocationType eq "myplugin" ){
-					locatedDependency = getMyPlugin(thisLocationKey);
-				}
-				else if( thisLocationType eq "datasource" ){
-					locatedDependency = getDatasource(thisLocationKey);
-				}
+				switch(thisLocationType){
+					case "setting" 				: { locatedDependency = getSetting(thisLocationKey); break; }
+					case "plugin" 				: { locatedDependency = getPlugin(thisLocationKey); break; }
+					case "myplugin" 			: { locatedDependency = getMyPlugin(thisLocationKey); break; }
+					case "datasource" 			: { locatedDependency = getDatasource(thisLocationKey); break; }
+				}//end of services
 			}//end 3 stage DSL
 			
 			return locatedDependency;
@@ -703,7 +737,14 @@ Description: This is the framework's simple bean factory.
 						entry = structnew();
 						entry.name = Right(md.functions[x].name, Len(md.functions[x].name)-3);
 						entry.scope = "";
-						entry.type = "ioc";
+						
+						/* Check Marker or use IOC as default type */
+						if( structKeyExists(md.functions[x],instance.dslMarker) ){
+							entry.type = md.functions[x][instance.dslMarker];
+						}
+						else{
+							entry.type = "ioc";
+						}
 						
 						/* Add if not already in properties */
 						if( not listFindNoCase(foundDependencies,entry.name) ){
@@ -749,25 +790,20 @@ Description: This is the framework's simple bean factory.
 			var argCollection = structnew();
 			argCollection[arguments.beanName] = arguments.beanObject;
 		</cfscript>
-		
 		<!--- Property or Setter --->
 		<cfif len(arguments.scope) eq 0>
-			
 			<!--- Call our mixin invoker --->
 			<cfinvoke component="#arguments.targetBean#" method="invokerMixin">
 				<cfinvokeargument name="method"  		value="set#arguments.beanName#">
 				<cfinvokeargument name="argCollection"  value="#argCollection#">
-			</cfinvoke>	
-			
+			</cfinvoke>
 		<cfelse>
-			
 			<!--- Call our property injector mixin --->
 			<cfinvoke component="#arguments.targetBean#" method="injectPropertyMixin">
 				<cfinvokeargument name="propertyName"  	value="#arguments.beanName#">
 				<cfinvokeargument name="propertyValue"  value="#arguments.beanObject#">
 				<cfinvokeargument name="scope"			value="#arguments.scope#">
 			</cfinvoke>	
-			
 		</cfif>			
 	</cffunction>
 	

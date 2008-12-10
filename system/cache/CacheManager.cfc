@@ -77,27 +77,27 @@ Modification History:
 		<!--- ************************************************************* --->
 		<cfargument name="objectKey" type="any" required="true" hint="The key of the object to lookup.">
 		<!--- ************************************************************* --->
-		<cfset var local = structnew()>
+		<cfset var refLocal = structnew()>
 		
 		<!--- Init some vars --->
-		<cfset local.needCleanup = false>
-		<cfset local.ObjectFound = false>
-		<cfset local.tmpObj = 0>
+		<cfset refLocal.needCleanup = false>
+		<cfset refLocal.ObjectFound = false>
+		<cfset refLocal.tmpObj = 0>
 		
 		<cflock type="readonly" name="coldbox.cacheManager.#arguments.objectKey#" timeout="#instance.lockTimeout#" throwontimeout="true">
 			<cfscript>
 				/* Check if in pool first */
 				if( getObjectPool().lookup(arguments.objectKey) ){
 					/* Get Object from cache */
-					local.tmpObj = getobjectPool().get(arguments.objectKey);
+					refLocal.tmpObj = getobjectPool().get(arguments.objectKey);
 					/* Validate it */
-					if( not structKeyExists(local, "tmpObj") ){
-						local.needCleanup = true;
+					if( not structKeyExists(refLocal, "tmpObj") ){
+						refLocal.needCleanup = true;
 						getCacheStats().miss();
 					}
 					else{
 						/* Object Found */
-						local.ObjectFound = true;
+						refLocal.ObjectFound = true;
 					}					
 				}// first lookup test
 				else{
@@ -108,11 +108,11 @@ Modification History:
 		</cflock>
 		
 		<!--- Check if needs clearing --->
-		<cfif local.needCleanup>
+		<cfif refLocal.needCleanup>
 			<cfset clearKey(arguments.objectKey)>
 		</cfif>
 		
-		<cfreturn local.ObjectFound>
+		<cfreturn refLocal.ObjectFound>
 	</cffunction>
 
 	<!--- Get an object from the cache --->
@@ -120,26 +120,26 @@ Modification History:
 		<!--- ************************************************************* --->
 		<cfargument name="objectKey" type="any" required="true" hint="The key of the object to lookup.">
 		<!--- ************************************************************* --->
-		<cfset var local = structNew()>
+		<cfset var refLocal = structNew()>
 		
 		<!--- INit Vars --->
-		<cfset local.needCleanup = false>
-		<cfset local.tmpObj = 0>
-		<cfset local.targetObject = this.NOT_FOUND>
+		<cfset refLocal.needCleanup = false>
+		<cfset refLocal.tmpObj = 0>
+		<cfset refLocal.targetObject = this.NOT_FOUND>
 	
 		<cflock type="exclusive" name="coldbox.cacheManager.#arguments.objectKey#" timeout="#instance.lockTimeout#" throwontimeout="true">
 			<cfscript>
 				/* Check if in pool first */
 				if( getObjectPool().lookup(arguments.objectKey) ){
 					/* Get Object from cache */
-					local.tmpObj = getobjectPool().get(arguments.objectKey);
+					refLocal.tmpObj = getobjectPool().get(arguments.objectKey);
 					/* Validate it */
-					if( not structKeyExists(local,"tmpObj") ){
-						local.needCleanup = true;
+					if( not structKeyExists(refLocal,"tmpObj") ){
+						refLocal.needCleanup = true;
 						getCacheStats().miss();
 					}
 					else{
-						local.targetObject = local.tmpObj;
+						refLocal.targetObject = refLocal.tmpObj;
 						getCacheStats().hit();
 					}
 				}
@@ -151,12 +151,12 @@ Modification History:
 		</cflock>
 		
 		<!--- Check if needs clearing --->
-		<cfif local.needCleanup>
+		<cfif refLocal.needCleanup>
 			<cfset clearKey(arguments.objectKey)>
 		</cfif>
 		
 		<!--- Return Target Object --->
-		<cfreturn local.targetObject>
+		<cfreturn refLocal.targetObject>
 	</cffunction>
 	
 	<!--- Get multiple objects from the cache --->

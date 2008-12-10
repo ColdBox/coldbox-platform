@@ -21,7 +21,7 @@ Description :
 		<cfscript>
 			var cbController = "";
 			var event = "";
-			var local = structnew();
+			var refLocal = structnew();
 			
 			/* Get ColdBox Controller */
 			cbController = getController();
@@ -58,7 +58,7 @@ Description :
 				}
 					
 				//Execute the Event
-				local.results = cbController.runEvent(default=true);
+				refLocal.results = cbController.runEvent(default=true);
 				
 				//Request END Handler if defined
 				if ( cbController.getSetting("RequestEndHandler") neq "" ){
@@ -85,15 +85,22 @@ Description :
 			}
 			else{
 				/* Check for Marshalling */
-				if ( not structisEmpty(Event.getRenderData()) ){
-					local.results = getPlugin("Utilities").marshallData(argumentCollection=Event.getRenderData());
+				refLocal.marshalData = Event.getRenderData();
+				if ( not structisEmpty(refLocal.marshalData) ){
+					/* Marshal Data */
+					refLocal.results = getPlugin("Utilities").marshallData(argumentCollection=refLocal.marshalData);
+					/* Set Return Format according to Marshalling Type if not incoming */
+					if( not structKeyExists(arguments, "returnFormat") ){
+						arguments.returnFormat = refLocal.marshalData.type;
+					}
 				}
+				
 				/* Return results from handler only if found, else method will produce a null result */
-				if( structKeyExists(local,"results") ){
+				if( structKeyExists(refLocal,"results") ){
 					/* Trace the results */
-					tracer('Process: Outgoing Results',local.results);
+					tracer('Process: Outgoing Results',refLocal.results);
 					/* Return The results */
-					return local.results;
+					return refLocal.results;
 				}
 				else{
 					/* Trace the results */

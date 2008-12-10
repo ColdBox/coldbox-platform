@@ -11,10 +11,10 @@ Description :
 	This is a great place to alias model paths into names so when you 
 	refactor you can easily do this.
 	
-	All you need to do is call one method: addModelMapping(alias,model)
+	All you need to do is call one method: addModelMapping(alias,path)
 	
 	Alias : The alias to create
-	Model : The model name or class path to alias.
+	path : The model class path to alias.
 	
 	Example:
 	
@@ -23,6 +23,7 @@ Description :
 ----------------------------------------------------------------------->
 <cfscript>
 	/* Add all the model mappings you want */
-	/* addModelMapping(alias="",model="") */
+	/* addModelMapping(alias="",path="") */
 	addModelMapping('MyFormBean','formBean');
+		
 </cfscript>

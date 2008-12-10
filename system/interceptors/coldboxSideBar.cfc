@@ -194,37 +194,37 @@ Modification History:
 		
 		<cfset var renderedSideBar = ''>
 		<cfset var i =0>
-		<cfset var local = StructNew()>
+		<cfset var refLocal = StructNew()>
 
-		<cfset local.links = getproperty('links')>
+		<cfset refLocal.links = getproperty('links')>
 		<!--- Get current url without sideBar relevant params --->
-		<cfset local.currentURL = getCurrentURL()>
+		<cfset refLocal.currentURL = getCurrentURL()>
 		<!--- Enable link --->
-		<cfset local.enableHref = local.currentURL & '&sbIsEnabled=0'>
+		<cfset refLocal.enableHref = refLocal.currentURL & '&sbIsEnabled=0'>
 		<!--- Reload framework link --->
-		<cfset local.fwReInitHref = local.currentURL & '&fwreinit=1'>
+		<cfset refLocal.fwReInitHref = refLocal.currentURL & '&fwreinit=1'>
 		<!--- Enable/disable DebugMode link --->
-		<cfset local.debugModeHref = local.currentURL & '&debugmode=#( IIF( not getDebugMode(), DE("1"), DE("0") )  )#'>		
+		<cfset refLocal.debugModeHref = refLocal.currentURL & '&debugmode=#( IIF( not getDebugMode(), DE("1"), DE("0") )  )#'>		
 		<!--- Clear cache link --->
-		<cfset local.clearCacheHref = local.currentURL & '&sbIsClearCache=1'>
+		<cfset refLocal.clearCacheHref = refLocal.currentURL & '&sbIsClearCache=1'>
 		<!--- Clear scope link --->
-		<cfset local.clearScopeHref = "location.href='#local.currentURL#&sbClearScope='+ getElementById('sbClearScope').value;">
+		<cfset refLocal.clearScopeHref = "location.href='#refLocal.currentURL#&sbClearScope='+ getElementById('sbClearScope').value;">
 		<!--- Clear log link --->
-		<cfset local.clearLogHref = local.currentURL & '&sbIsClearLog=1'>
+		<cfset refLocal.clearLogHref = refLocal.currentURL & '&sbIsClearLog=1'>
 		<!--- Cache panel link --->
-		<cfset local.cachePanelHref = "window.open('index.cfm?debugpanel=cache','cache','status=1,toolbar=0,location=0,resizable=1,scrollbars=1,height=750,width=800')">
+		<cfset refLocal.cachePanelHref = "window.open('index.cfm?debugpanel=cache','cache','status=1,toolbar=0,location=0,resizable=1,scrollbars=1,height=750,width=800')">
 		<!--- Profiler link --->
-		<cfset local.profilerHref = "window.open('index.cfm?debugpanel=profiler','profilermonitor','status=1,toolbar=0,location=0,resizable=1,scrollbars=1,height=750,width=800')">
+		<cfset refLocal.profilerHref = "window.open('index.cfm?debugpanel=profiler','profilermonitor','status=1,toolbar=0,location=0,resizable=1,scrollbars=1,height=750,width=800')">
 		<!--- Dump var link --->
-		<cfset local.dumpvarHref = "location.href='#local.currentURL#&dumpvar='+ getElementById('sbDumpVar').value;">
+		<cfset refLocal.dumpvarHref = "location.href='#refLocal.currentURL#&dumpvar='+ getElementById('sbDumpVar').value;">
 		<!--- ColdBox Live Docs link --->
-		<cfset local.CBLiveDocsHref = "http://ortus.svnrepository.com/coldbox/trac.cgi">
+		<cfset refLocal.CBLiveDocsHref = "http://ortus.svnrepository.com/coldbox/trac.cgi">
 		<!--- Search ColdBox Live Docs link --->
-		<cfset local.searchCBLiveDocsHref = "window.open('http://ortus.svnrepository.com/coldbox/trac.cgi/search?q='+ getElementById('sbSearchCBLiveDocs').value + '&wiki=on','CBLiveDocsSearchResults')">
+		<cfset refLocal.searchCBLiveDocsHref = "window.open('http://ortus.svnrepository.com/coldbox/trac.cgi/search?q='+ getElementById('sbSearchCBLiveDocs').value + '&wiki=on','CBLiveDocsSearchResults')">
 		<!--- ColdBox Forums link --->
-		<cfset local.CBForumsHref = "http://forums.coldboxframework.com/index.cfm">
+		<cfset refLocal.CBForumsHref = "http://forums.coldboxframework.com/index.cfm">
 		<!--- Search ColdBox Forums link --->
-		<cfset local.searchCBForumsHref = "window.open('http://forums.coldboxframework.com/index.cfm?event=ehForums.doSearch&searchterms='+ getElementById('sbSearchCBForums').value + '&searchtype=any','CBForumsSearchResults')">
+		<cfset refLocal.searchCBForumsHref = "window.open('http://forums.coldboxframework.com/index.cfm?event=ehForums.doSearch&searchterms='+ getElementById('sbSearchCBForums').value + '&searchtype=any','CBForumsSearchResults')">
 
 		<!--- Render? --->
 		<cfif getIsRender(arguments.event)>

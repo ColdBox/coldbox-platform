@@ -28,16 +28,16 @@ ColdBox SideBar: created on 7/31/2008 by Ernst van der Linden (evdlinden@gmail.c
 		<table id="ColdBoxSideBarTbl" border="0" cellpadding="0" cellspacing="0" width="#getproperty('width')#">
 			<tr>
 				<td class="ColdBoxSideBarTop" width="#getproperty('invisibleWidth')#" nowrap><h1>Settings</h1></td>
-				<td background="" rowspan="#(12 + ArrayLen(local.links))#" width="#getproperty('visibleWidth')#" nowrap class="ColdBoxSideBarImgBar" valign="#getproperty('imageVAlign')#" align="left"><img src="#TRIM(getproperty('imagePath'))#" width="22" height="160" border="0" /></td>
+				<td background="" rowspan="#(12 + ArrayLen(refLocal.links))#" width="#getproperty('visibleWidth')#" nowrap class="ColdBoxSideBarImgBar" valign="#getproperty('imageVAlign')#" align="left"><img src="#TRIM(getproperty('imagePath'))#" width="22" height="160" border="0" /></td>
 			</tr>
 			<tr>
-				<td><input type="checkbox" class="ColdBoxSideBarCheckBox" name="sbIsEnabled" value="1" checked  onclick="location.href='#local.enableHref#'"><span class="ColdBoxSideBarCheckboxlabel">Show SideBar</span></td>
+				<td><input type="checkbox" class="ColdBoxSideBarCheckBox" name="sbIsEnabled" value="1" checked  onclick="location.href='#refLocal.enableHref#'"><span class="ColdBoxSideBarCheckboxlabel">Show SideBar</span></td>
 			</tr>	
 			<tr>
 				<td><h1>Debug</h1></td>
 			</tr>
 			<tr>
-				<td><input type="checkbox" class="ColdBoxSideBarCheckBox" name="sbIsDebugmode" value="1" onclick="location.href='#local.debugModeHref#'" <cfif getDebugMode()>checked="true"</cfif>><span class="ColdBoxSideBarCheckboxlabel">Show Debug Panel</span></td>
+				<td><input type="checkbox" class="ColdBoxSideBarCheckBox" name="sbIsDebugmode" value="1" onclick="location.href='#refLocal.debugModeHref#'" <cfif getDebugMode()>checked="true"</cfif>><span class="ColdBoxSideBarCheckboxlabel">Show Debug Panel</span></td>
 			</tr>	
 			<!--- DebugMode? --->
 			<cfif getDebugMode()>
@@ -46,25 +46,25 @@ ColdBox SideBar: created on 7/31/2008 by Ernst van der Linden (evdlinden@gmail.c
 					<tr>
 						<td><span class="ColdBoxSideBarInputlabel">Dump Variable</span>
 							<input type="text" class="ColdBoxSideBarText" id="sbDumpVar">
-							<input type="button" class="ColdBoxSideBarBtn" value="Dump" onclick="#local.dumpvarHref#">
+							<input type="button" class="ColdBoxSideBarBtn" value="Dump" onclick="#refLocal.dumpvarHref#">
 						</td>
 					</tr>	
 				</cfif>
 				<tr>
-					<td><a onclick="#local.cachePanelHref#">Open Cache Monitor</a></td>
+					<td><a onclick="#refLocal.cachePanelHref#">Open Cache Monitor</a></td>
 				</tr>	
 				<tr>
-					<td><a onclick="#local.profilerHref#">Open Profiler Monitor</a></td>
+					<td><a onclick="#refLocal.profilerHref#">Open Profiler Monitor</a></td>
 				</tr>	
 			</cfif>
 			<tr>
 				<td><h1>Reset</h1></td>
 			</tr>
 			<tr>
-				<td><a href="#local.fwReInitHref#">Reload Framework</a></td>
+				<td><a href="#refLocal.fwReInitHref#">Reload Framework</a></td>
 			</tr>	
 			<tr>
-				<td><a href="#local.clearCacheHref#">Clear Cache</a></td>
+				<td><a href="#refLocal.clearCacheHref#">Clear Cache</a></td>
 			</tr>	
 			<tr>
 				<td><span class="ColdBoxSideBarInputlabel">Clear Scope</span>
@@ -72,38 +72,38 @@ ColdBox SideBar: created on 7/31/2008 by Ernst van der Linden (evdlinden@gmail.c
 					<option value="session">Session</option>
 					<option value="client">Client</option>
 				</select>
-				<input type="button" class="ColdBoxSideBarBtn" value="Clear" onclick="#local.clearScopeHref#">
+				<input type="button" class="ColdBoxSideBarBtn" value="Clear" onclick="#refLocal.clearScopeHref#">
 				</td>
 			</tr>	
 			<cfif getSetting('EnableColdboxLogging')>
 			<tr>
-				<td><a href="#local.clearLogHref#">Clear Log</a></td>
+				<td><a href="#refLocal.clearLogHref#">Clear Log</a></td>
 			</tr>	
 			</cfif>
 			<tr>
 				<td><h1>Search</h1></td>
 			</tr>
 			<tr>
-				<td><span class="ColdBoxSideBarInputlabel"><a href="#local.CBLiveDocsHref#" target="_blank">ColdBox Live Docs</a></span>
+				<td><span class="ColdBoxSideBarInputlabel"><a href="#refLocal.CBLiveDocsHref#" target="_blank">ColdBox Live Docs</a></span>
 					<input type="text" class="ColdBoxSideBarText" id="sbSearchCBLiveDocs">
-					<input type="button" class="ColdBoxSideBarBtn" value="Search" onclick="#local.searchCBLiveDocsHref#">
+					<input type="button" class="ColdBoxSideBarBtn" value="Search" onclick="#refLocal.searchCBLiveDocsHref#">
 				</td>
 			</tr>				
 			<tr>
-				<td><span class="ColdBoxSideBarInputlabel"><a href="#local.CBForumsHref#" target="_blank">ColdBox Forums</a></span>
+				<td><span class="ColdBoxSideBarInputlabel"><a href="#refLocal.CBForumsHref#" target="_blank">ColdBox Forums</a></span>
 					<input type="text" class="ColdBoxSideBarText" id="sbSearchCBForums">
-					<input type="button" class="ColdBoxSideBarBtn" value="Search" onclick="#local.searchCBForumsHref#">
+					<input type="button" class="ColdBoxSideBarBtn" value="Search" onclick="#refLocal.searchCBForumsHref#">
 				</td>
 			</tr>				
 			<!--- Links? --->
-			<cfif ArrayLen(local.links)>
+			<cfif ArrayLen(refLocal.links)>
 				<tr>
 					<td><h1>Links</h1></td>
 				</tr>
 				<!--- Loop custom links --->
-				<cfloop index="i" from="1" to="#ArrayLen(local.links)#">
+				<cfloop index="i" from="1" to="#ArrayLen(refLocal.links)#">
 				<tr>
-					<td <cfif i eq ArrayLen(local.links)>class="bottom"</cfif>><a href="#local.links[i].href#" target="_blank">#local.links[i].desc#</a></td>
+					<td <cfif i eq ArrayLen(refLocal.links)>class="bottom"</cfif>><a href="#refLocal.links[i].href#" target="_blank">#refLocal.links[i].desc#</a></td>
 				</tr>						
 				</cfloop>
 			</cfif>

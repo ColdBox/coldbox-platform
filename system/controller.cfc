@@ -373,7 +373,7 @@ Description		: This is the main ColdBox front Controller.
 		<cfset var oEventHandlerBean = "">
 		<cfset var oRequestContext = getRequestService().getContext()>
 		<cfset var interceptMetadata = structnew()>
-		<cfset var local = structnew()>
+		<cfset var refLocal = structnew()>
 		<cfset var privateArgCollection = structnew()>
 		
 		<!--- Default Event Check --->
@@ -422,7 +422,7 @@ Description		: This is the main ColdBox front Controller.
 			<!--- Start Timer --->
 			<cfmodule template="includes/Timer.cfm" timertag="invoking PRIVATE runEvent [#arguments.event#]" controller="#this#">
 				<!--- Call Private Event --->
-				<cfinvoke component="#oEventHandler#" method="_privateInvoker" returnvariable="local.results">
+				<cfinvoke component="#oEventHandler#" method="_privateInvoker" returnvariable="refLocal.results">
 					<cfinvokeargument name="method" value="#oEventHandlerBean.getMethod()#">
 					<cfinvokeargument name="argCollection" value="#privateArgCollection#">
 				</cfinvoke>
@@ -432,13 +432,13 @@ Description		: This is the main ColdBox front Controller.
 			<cfmodule template="includes/Timer.cfm" timertag="invoking runEvent [#arguments.event#]" controller="#this#">
 				<cfif oEventHandlerBean.getisMissingAction()>
 					<!--- Execute OnMissingACtion() --->
-					<cfinvoke component="#oEventHandler#" method="onMissingAction" returnvariable="local.results">
+					<cfinvoke component="#oEventHandler#" method="onMissingAction" returnvariable="refLocal.results">
 						<cfinvokeargument name="event" 			value="#oRequestContext#">
 						<cfinvokeargument name="missingAction"  value="#oEventHandlerBean.getMissingAction()#">
 					</cfinvoke>
 				<cfelse>
 					<!--- Execute the Public Event --->
-					<cfinvoke component="#oEventHandler#" method="#oEventHandlerBean.getMethod()#" returnvariable="local.results">
+					<cfinvoke component="#oEventHandler#" method="#oEventHandlerBean.getMethod()#" returnvariable="refLocal.results">
 						<cfinvokeargument name="event" value="#oRequestContext#">
 					</cfinvoke>
 				</cfif>
@@ -462,8 +462,8 @@ Description		: This is the main ColdBox front Controller.
 		<cfset getInterceptorService().processState("postEvent",interceptMetadata)>
 		
 		<!--- Return Results for proxy if needed. --->
-		<cfif structKeyExists(local,"results")>
-			<cfreturn local.results>
+		<cfif structKeyExists(refLocal,"results")>
+			<cfreturn refLocal.results>
 		</cfif>
 	</cffunction>
 

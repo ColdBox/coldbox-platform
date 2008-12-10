@@ -42,6 +42,7 @@ Description :
 		instance.controller = CreateObject("component", "coldbox.system.testcontroller").init( expandPath(instance.AppMapping) );
 		/* Verify Persistence */
 		if( this.PERSIST_FRAMEWORK ){
+			structDelete(application,"cbController");
 			application.cbController = instance.controller;
 		}
 		/* Setup */
@@ -147,11 +148,31 @@ Description :
 			return getController().getInterceptorService().getInterceptor(arguments.interceptorClass);
 		</cfscript>
 	</cffunction>
+	
+	<!--- Get Model --->
+	<cffunction name="getModel" access="private" returntype="any" hint="Create or retrieve model objects by convention" output="false" >
+		<!--- ************************************************************* --->
+		<cfargument name="name" 				required="true"  type="string" hint="The name of the model to retrieve">
+		<cfargument name="useSetterInjection" 	required="false" type="boolean" default="false"	hint="Whether to use setter injection alongside the annotations property injection. cfproperty injection takes precedence.">
+		<cfargument name="onDICompleteUDF" 		required="false" type="string"	default="onDIComplete" hint="After Dependencies are injected, this method will look for this UDF and call it if it exists. The default value is onDIComplete">
+		<cfargument name="debugMode" 			required="false" type="boolean" default="false" hint="Debugging Mode or not">
+		<!--- ************************************************************* --->
+		<cfreturn getController().getPlugin("beanFactory").getModel(argumentCollection=arguments)>
+	</cffunction>
 
+	<!--- Dump facade --->
 	<cffunction name="dumpit" access="private" hint="Facade for cfmx dump" returntype="void">
 		<cfargument name="var" required="yes" type="any">
+		<cfargument name="isAbort" type="boolean" default="false" required="false" hint="Abort also"/>
 		<cfdump var="#var#">
+		<cfif arguments.isAbort><cfabort></cfif>
 	</cffunction>
+	<!--- Rethrow Facade --->
+	<cffunction name="rethrowit" access="private" returntype="void" hint="Rethrow facade" output="false" >
+		<cfargument name="throwObject" required="true" type="any" hint="The cfcatch object">
+		<cfthrow object="#arguments.throwObject#">
+	</cffunction>
+	<!--- Abort Facade --->
 	<cffunction name="abortit" access="private" hint="Facade for cfabort" returntype="void" output="false">
 		<cfabort>
 	</cffunction>

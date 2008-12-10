@@ -127,7 +127,7 @@ Modification History:
 		<cfset var profilers = getProfilers()>
 		<cfset var profilersCount = ArrayLen(profilers)>
 		<cfset var x = 1>
-		<cfset var local = structnew()>
+		<cfset var refLocal = structnew()>
 		
 		<cfsavecontent variable="profilerContents"><cfinclude template="/coldbox/system/includes/panels/ProfilerPanel.cfm"></cfsavecontent>
 				

@@ -182,7 +182,7 @@ Therefore, you must use the columnmap attribute to map the input query column na
 		<!--- ******************************************************************************** --->
 		<cfset var itemsXML = "">
 		<cfset var items = arguments.feedStruct.items>
-		<cfset var local = structnew()>
+		<cfset var refLocal = structnew()>
 		<cfset var map = getDefaultPropertyMap()>
 		
 		<!--- do we have to override our map --->
@@ -195,38 +195,38 @@ Therefore, you must use the columnmap attribute to map the input query column na
 		<cfoutput query="items">
 		<cfscript>
 			/* For some optional variables */
-			local = structnew();
+			refLocal = structnew();
 			/* Date Tests */
 			if( structKeyExists(items, "#map.pubdate#") ){
-				local.pubDate = generateRFC822Date(items[map.pubdate][currentRow]);
+				refLocal.pubDate = generateRFC822Date(items[map.pubdate][currentRow]);
 			}
-			else{ local.pubDate = generateRFC822Date(now()); }
+			else{ refLocal.pubDate = generateRFC822Date(now()); }
 			/* PermaLink Tests */
 			if( structKeyExists(items,"#map.guid_permalink#") ){
-				local.permalink = xmlFormat(items[map.guid_permalink][currentrow]);
+				refLocal.permalink = xmlFormat(items[map.guid_permalink][currentrow]);
 			}
-			else{ local.permalink = false; }
+			else{ refLocal.permalink = false; }
 			/* Enclosure tests */
 			if( structKeyExists(items,"#map.enclosure_url#") ){
-				local.enclosure = structnew();
-				local.enclosure.url = xmlFormat(items[map.enclosure_url][currentrow]);
+				refLocal.enclosure = structnew();
+				refLocal.enclosure.url = xmlFormat(items[map.enclosure_url][currentrow]);
 				/* Length */
 				if( structKeyExists(items, "#map.enclosure_length#") ){
-					local.enclosure.length = xmlFormat(items[map.enclosure_length][currentrow]);
+					refLocal.enclosure.length = xmlFormat(items[map.enclosure_length][currentrow]);
 				}
-				else{ local.enclosure.length = ""; }
+				else{ refLocal.enclosure.length = ""; }
 				/* Type */
 				if( structKeyExists(items, "#map.enclosure_type#") ){
-					local.enclosure.type = xmlFormat(items[map.enclosure_type][currentrow]);
+					refLocal.enclosure.type = xmlFormat(items[map.enclosure_type][currentrow]);
 				}
-				else{ local.enclosure.type = ""; }				
+				else{ refLocal.enclosure.type = ""; }				
 			} //end of enclosure setup.
 		</cfscript>
 		<item>
 			<title>#xmlFormat(items[map.title][currentrow])#</title>
 			<description>#xmlFormat(items[map.description][currentrow])#</description>
 			<link>#xmlFormat(items[map.link][currentrow])#</link>
-			<pubDate>#local.pubDate#</pubDate>
+			<pubDate>#refLocal.pubDate#</pubDate>
 			<!--- Optional author --->
 			<cfif structKeyExists(items,"#map.author#")>
 			<author>#xmlFormat(items[map.author][currentrow])#</author>
@@ -237,11 +237,11 @@ Therefore, you must use the columnmap attribute to map the input query column na
 			</cfif>
 			<!--- Optional guid --->
 			<cfif structKeyExists(items,"#map.guid#")>
-			<guid isPermaLink="#local.permaLink#">#xmlFormat(items[map.guid][currentrow])#</guid>
+			<guid isPermaLink="#refLocal.permaLink#">#xmlFormat(items[map.guid][currentrow])#</guid>
 			</cfif>
 			<!--- Optional Enclosure --->
-			<cfif structKeyExists(local,"enclosure")>
-			<enclosure url="#local.enclosure.url#" length="#local.enclosure.length#" type="#local.enclosure.type#"></enclosure>
+			<cfif structKeyExists(refLocal,"enclosure")>
+			<enclosure url="#refLocal.enclosure.url#" length="#refLocal.enclosure.length#" type="#refLocal.enclosure.type#"></enclosure>
 			</cfif>			
 		</item>
 		</cfoutput>

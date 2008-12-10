@@ -62,8 +62,8 @@ Description :
 		<p>Below you can see the incoming request profilers. Click on the desired profiler to view its execution report.</p>
 		<!--- Render Profilers --->
 		<cfloop from="#profilersCount#" to="1" step="-1" index="x">
-			<cfset local.thisProfiler = profilers[x]>
-			<div class="fw_titles" onClick="fw_toggle('fw_executionprofile_#x#')">&gt;&nbsp; #dateformat(local.thisProfiler.datetime,"mm/dd/yyyy")# #timeformat(local.thisProfiler.datetime,"hh:mm:ss.l tt")# (#local.thisProfiler.ip#)</div>
+			<cfset refLocal.thisProfiler = profilers[x]>
+			<div class="fw_titles" onClick="fw_toggle('fw_executionprofile_#x#')">&gt;&nbsp; #dateformat(refLocal.thisProfiler.datetime,"mm/dd/yyyy")# #timeformat(refLocal.thisProfiler.datetime,"hh:mm:ss.l tt")# (#refLocal.thisProfiler.ip#)</div>
 			<div class="fw_debugContent" id="fw_executionprofile_#x#">
 			<!--- **************************************************************--->
 			<!--- Method Executions --->
@@ -75,7 +75,7 @@ Description :
 				<th >Framework Method</th>
 				<th width="75" align="center" >RC Snapshot</th>
 			  </tr>
-				  <cfloop query="local.thisProfiler.timers">
+				  <cfloop query="refLocal.thisProfiler.timers">
 					  <cfif findnocase("rendering", method)>
 					  	<cfset color = "fw_redText">
 					  <cfelseif findnocase("interception",method)>
