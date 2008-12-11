@@ -42,13 +42,14 @@ Description:
 			//Load .jar files
 			getPlugin("JavaLoader").setup(loadPaths=AntiSamyJarPath,loadColdFusionClassPath = true);
 			
-			//Load eBay policyfile and assume you have .xml file in inlcudes folder
-			instance.PolicyFileStruct['ebay']	 = expandPath('/coldbox/system/extras/AntiSamy/antisamy-ebay-1.2.xml');
-			//Load eBay policyfile and assume you have .xml file in inlcudes folder (best one)
-			instance.PolicyFileStruct['myspace']	 = expandPath('/coldbox/system/extras/AntiSamy/antisamy-myspace-1.2.xml');
-			//Load eBay policyfile and assume you have .xml file in inlcudes folder
+			// AntiSamy policyfile
+			instance.PolicyFileStruct['antisamy'] = expandPath('/coldbox/system/extras/AntiSamy/antisamy-1.2.xml');
+			//Load eBay policyfile
+			instance.PolicyFileStruct['ebay']	  = expandPath('/coldbox/system/extras/AntiSamy/antisamy-ebay-1.2.xml');
+			//Load myspacwe policyfile
+			instance.PolicyFileStruct['myspace']  = expandPath('/coldbox/system/extras/AntiSamy/antisamy-myspace-1.2.xml');
+			//Load salshdot policyfile
 			instance.PolicyFileStruct['slashdot'] = expandPath('/coldbox/system/extras/AntiSamy/antisamy-slashdot-1.2.xml');
-			
 			
 			return this;
 		</cfscript>
@@ -57,10 +58,10 @@ Description:
 <!------------------------------------------- PUBLIC ------------------------------------------->
 	
 	<!--- HTML Sanitizer --->
-	<cffunction name="HtmlSanitizer" returntype="Any" output="false" hint="clean HTML from XSS scripts using the AntiSamy project. The available policies are ebay,myspace or slashdot">
+	<cffunction name="HtmlSanitizer" returntype="Any" output="false" hint="clean HTML from XSS scripts using the AntiSamy project. The available policies are antisamy, ebay,myspace or slashdot">
 		<!--- ************************************************************* --->
 		<cfargument name="HtmlData"		type="string" required="true" hint="The html text to sanitize">
-		<cfargument name="PolicyFile"	type="string" required="false" default="myspace" hint="Provide policy file to scan html. Available options are: 'ebay, myspace, slashdot'">
+		<cfargument name="PolicyFile"	type="string" required="false" default="myspace" hint="Provide policy file to scan html. Available options are: 'antisamy, ebay, myspace, slashdot'">
 		<!--- ************************************************************* --->
 		<cfscript>
 			// you can use any xml, our your own customised policy xml
