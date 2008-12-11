@@ -55,7 +55,7 @@
 		<!--Full path from the application's root to your custom error page, else leave blank. -->
 		<Setting name="CustomErrorTemplate"			value="" />
 		<!--The Email address from which all outgoing framework emails will be sent. -->
-		<Setting name="OwnerEmail" 					value="myemail@gmail.com" />
+		<Setting name="OwnerEmail" 					value="" />
 		<!-- Enable Bug Reports to be emailed out, set to true by default if left blank
 			A sample template has been provided to you in includes/generic_error.cfm
 		 -->

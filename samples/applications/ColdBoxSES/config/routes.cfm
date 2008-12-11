@@ -134,4 +134,4 @@ NOTE: The interceptor will create a new setting called: sesBaseURL with this val
 					action="testcase2" )>
 
 <!--- STANDARD COLDBOX COURSES, DO NOT MODIFY UNLESS YOU DON'T LIKE THEM --->
-<cfset addCourse(":handler/:action?/:id?")>
+<cfset addCourse(":handler/:action?")>

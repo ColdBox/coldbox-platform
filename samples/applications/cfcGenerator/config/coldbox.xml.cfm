@@ -10,15 +10,15 @@
 		<Setting name="EnableColdfusionLogging" 	value="false" />
 		<Setting name="EnableColdboxLogging"		value="true" />
 		<Setting name="ColdboxLogsLocation"			value="logs" />
-		<Setting name="DefaultEvent" 				value="ehGeneral.dspHome"/>
-		<Setting name="RequestStartHandler" 		value="main.onRequestStart"/>
+		<Setting name="DefaultEvent" 				value="generator.dspHome"/>
+		<Setting name="RequestStartHandler" 		value=""/>
 		<Setting name="RequestEndHandler" 			value=""/>
-		<Setting name="ApplicationStartHandler" 	value="main.onAppInit"/>
-		<Setting name="OwnerEmail" 					value="myemail@email.com" />
+		<Setting name="ApplicationStartHandler" 	value=""/>
+		<Setting name="OwnerEmail" 					value="" />
 		<Setting name="EnableBugReports" 			value="false"/>
 		<Setting name="UDFLibraryFile" 				value="" />
 		<Setting name="ExceptionHandler"			value="" />
-		<Setting name="CustomErrorTemplate"			value="views/vwException.cfm" />
+		<Setting name="CustomErrorTemplate"			value="" />
 		<Setting name="MessageboxStyleOverride"		value="" />
 		<Setting name="HandlersIndexAutoReload"   	value="false" />
 		<Setting name="ConfigAutoReload"          	value="false" />
@@ -28,26 +28,17 @@
 
 	<YourSettings>
 		<Setting name="adminPass" 	value="coldfusion"/>
-		<Setting name="xslBasePath" value="./xsl/" />
+		<Setting name="xslBasePath" value="./model/xsl/" />
 	</YourSettings>
 
 	<!--Optional,if blank it will use the CFMX administrator settings.-->
-	<MailServerSettings>
-		<MailServer></MailServer>
-		<MailUsername></MailUsername>
-		<MailPassword></MailPassword>
-	</MailServerSettings>
+	<MailServerSettings />
 
 	<!--Emails to Send bug reports, you can create as many as you like-->
-	<BugTracerReports>
-		<!--<BugEmail>myemail@gmail.com</BugEmail>-->
-	</BugTracerReports>
+	<BugTracerReports />
 
 	<!--List url dev environments, this determines your dev/pro environment for the framework-->
-	<DevEnvironments>
-		<url>dev</url>
-		<url>lmajano</url>
-	</DevEnvironments>
+	<DevEnvironments />
 
 	<WebServices />
 	
