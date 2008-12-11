@@ -257,6 +257,17 @@ Description :
 		<cfreturn getController().getPlugin("ioc").getBean(arguments.beanName)>
 	</cffunction>
 	
+	<!--- Get Model --->
+	<cffunction name="getModel" access="private" returntype="any" hint="Create or retrieve model objects by convention" output="false" >
+		<!--- ************************************************************* --->
+		<cfargument name="name" 				required="true"  type="string" hint="The name of the model to retrieve">
+		<cfargument name="useSetterInjection" 	required="false" type="boolean" default="false"	hint="Whether to use setter injection alongside the annotations property injection. cfproperty injection takes precedence.">
+		<cfargument name="onDICompleteUDF" 		required="false" type="string"	default="onDIComplete" hint="After Dependencies are injected, this method will look for this UDF and call it if it exists. The default value is onDIComplete">
+		<cfargument name="debugMode" 			required="false" type="boolean" default="false" hint="Debugging Mode or not">
+		<!--- ************************************************************* --->
+		<cfreturn getController().getPlugin("beanFactory").getModel(argumentCollection=arguments)>
+	</cffunction>
+	
 	<!--- Facade: Get COldBox OCM --->
 	<cffunction name="getColdboxOCM" access="private" output="false" returntype="any" hint="Get ColdboxOCM: coldbox.system.cache.CacheManager">
 		<cfreturn getController().getColdboxOCM()/>

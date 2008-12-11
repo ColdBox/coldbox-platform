@@ -2,6 +2,6 @@
 <snippet filetemplate="false" extension="cfm">
 <name>WebService</name>
 <help>A new Web Service Element</help>
-<starttext><![CDATA[<WebService name="$${Name}" URL="$${URL}" DevURL="$${Development URL}" />]]></starttext>
+<starttext><![CDATA[<WebService name="$${Name}" URL="$${URL}" />]]></starttext>
 <endtext><![CDATA[]]></endtext>
 </snippet>

@@ -86,6 +86,23 @@ Description :
 			</parameter>
 		</function>		
 		
+		<!-- Model Mappings -->
+		<function creator="8" name="addModelMapping" returns="void">
+			<help><![CDATA[
+				Add a new model mapping to the bean factory
+			]]></help>
+			<parameter name="alias" type="string" required="false">
+				<help><![CDATA[
+					The alias name to give to your model object, if left blank, the last item in the path of the path element will be used.
+				]]></help>
+			</parameter>
+			<parameter name="path" type="string" required="true">
+				<help><![CDATA[
+					The path to your model object from the model folder down.
+				]]></help>
+			</parameter>
+		</function>
+		
 		<!--Framework Super Type Declarations -->
 		<function creator="8" name="abort" returns="void">
 			<help><![CDATA[
@@ -698,9 +715,14 @@ Description :
 	<scopes>
 		<!-- <scope value="my.thing"></scope> -->
 		
-		<scope value="event.buildLink('event or route')" type="Void">
+		<scope value="event.buildLink('')" type="Void">
 			<help><![CDATA[ 
-			Clears the entire collection.
+			Helps you build links
+		]]></help>
+		</scope>
+		<scope value="event.buildLink(linkto='',translate='false',ssl='false',baseURL='')" type="Void">
+			<help><![CDATA[ 
+			Build Links with options
 		]]></help>
 		</scope>
 		

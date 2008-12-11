@@ -77,11 +77,16 @@ Description: This is the framework's simple bean factory.
 	<!--- Add Model Mapping --->
 	<cffunction name="addModelMapping" access="public" returntype="void" hint="Add a new model mapping. Ex: addModelMapping('myBean','security.test.FormBean')" output="false" >
 		<!--- ************************************************************* --->
-		<cfargument name="alias" required="true" type="string" hint="The model alias">
+		<cfargument name="alias" required="false" type="string" hint="The model alias">
 		<cfargument name="path"  required="true" type="string" hint="The model class path (From the model conventions downward)">
 		<!--- ************************************************************* --->
-		<cfset var mappings = getModelMappings()>
-		<cfset mappings[arguments.alias] = arguments.path>
+		<cfscript>
+			var mappings = getModelMappings();
+			if(not structKeyExists(arguments,"alias") ){
+				arguments.alias = listlast(arguments.path,".");
+			}
+			mappings[arguments.alias] = arguments.path;
+		</cfscript> 
 	</cffunction>
 	
 	<!--- Just create and call init, simple --->

@@ -11,26 +11,29 @@
 		<Setting name="DebugMode" 					value="$${Debug Mode:true|false}" />
 		<Setting name="DebugPassword" 				value=""/>
 		<Setting name="ReinitPassword" 				value=""/>
-		<Setting name="EventName" 					value="$${Event Name:event|do|go}"/>
-		<Setting name="EnableDumpVar"				value="true" />
+		<Setting name="EventName" 					value="event"/>
+		<Setting name="EnableDumpVar"				value="false" />
 		<Setting name="EnableColdfusionLogging" 	value="$${Enable Coldfusion Logging:true|false}" />
 		<Setting name="EnableColdboxLogging" 		value="$${Enable Coldbox Logging:true|false}" />
-		<Setting name="ColdboxLogsLocation"			value="$${Coldbox Logs Location (Blank if not used):logs}" />
+		<Setting name="ColdboxLogsLocation"			value="logs" />
 		<Setting name="DefaultEvent" 				value="$${Default Event Handler}"/>
 		<Setting name="RequestStartHandler" 		value=""/>
 		<Setting name="RequestEndHandler" 			value=""/>
 		<Setting name="ApplicationStartHandler"  	value="" />
 		<Setting name="SessionStartHandler"  		value="" />
 		<Setting name="SessionEndHandler"  			value="" />
-		<Setting name="OwnerEmail"					value="$${Owner Email (Outgoing Account)}" />
+		<Setting name="ExceptionHandler" 			value=""/>
+		<Setting name="onInvalidEvent" 				value=""/>
+		<Setting name="OwnerEmail"					value="" />
 		<Setting name="EnableBugReports" 			value="$${Enable Bug Reports:true|false}"/>
 		<Setting name="UDFLibraryFile" 				value="" />
 		<Setting name="CustomErrorTemplate" 		value=""/>
-		<Setting name="ExceptionHandler" 			value=""/>
-		<Setting name="onInvalidEvent" 				value=""/>
-		<Setting name="MessageboxStyleOverride" 		value="$${Override css:false|true}"/>
+		<Setting name="MessageboxStyleOverride" 	value="false"/>
 		<Setting name="ConfigAutoReload" 			value="$${Config Auto Reload:true|false}"/>
 		<Setting name="HandlersIndexAutoReload" 	value="false"/>
+		<Setting name="ViewsExternalLocation" 		value=""/>
+		<Setting name="HandlersExternalLocation"   	value="" />
+		<Setting name="ModelsExternalLocation"   	value="" />
 		<Setting name="HandlerCaching" 				value="$${Handler Caching:false|true}"/>
 		<Setting name="EventCaching" 				value="$${Event Caching:false|true}"/>
 		<Setting name="MyPluginsLocation"			value="$${Custom Plugins Invocation Path}" />
@@ -39,6 +42,7 @@
 		<Setting name="IOCObjectCaching"			value="$${IOC Object Caching:false|true}" />
 		<Setting name="RequestContextDecorator"		value="" />
 		<Setting name="ProxyReturnCollection"		value="false" />
+		<Setting name="FlashURLPersistScope" 		value="session"/>
 	</Settings>
 
 	<YourSettings>
@@ -52,8 +56,20 @@
 		<layoutsLocation></layoutsLocation>
 		<viewsLocation></viewsLocation>
 		<eventAction></eventAction>		
+		<modelsLocation></modelsLocation>
 	</Conventions>	
 	-->
+
+	<DebuggerSettings>
+		<PersistentRequestProfiler>true</PersistentRequestProfiler>
+		<maxPersistentRequestProfilers>10</maxPersistentRequestProfilers>
+		<maxRCPanelQueryRows>50</maxRCPanelQueryRows>
+		
+		<TracerPanel 	show="true" expanded="true" />
+		<InfoPanel 		show="true" expanded="true" />
+		<CachePanel 	show="true" expanded="false" />
+		<RCPanel		show="true" expanded="false" />
+	</DebuggerSettings>	
 	
 	<!--Optional,if blank it will use the CFMX administrator settings.-->
 	<MailServerSettings>
@@ -63,10 +79,6 @@
 	<BugTracerReports>
 		
 	</BugTracerReports>
-
-	<DevEnvironments>
-		
-	</DevEnvironments>
 
 	<WebServices>
 
@@ -85,17 +97,16 @@
 
 	</Datasources>
 	
-	<!--ColdBox Object Caching Settings Overrides the Framework-wide settings 
+	<!--ColdBox Object Caching Settings Overrides the Framework-wide settings --> 
 	<Cache>
-		<ObjectDefaultTimeout>45</ObjectDefaultTimeout>
-		<ObjectDefaultLastAccessTimeout>15</ObjectDefaultLastAccessTimeout>
+		<ObjectDefaultTimeout>60</ObjectDefaultTimeout>
+		<ObjectDefaultLastAccessTimeout>30</ObjectDefaultLastAccessTimeout>
 		<UseLastAccessTimeouts>true</UseLastAccessTimeouts>
 		<ReapFrequency>1</ReapFrequency>
 		<MaxObjects>100</MaxObjects>
-		<FreeMemoryPercentageThreshold>1</FreeMemoryPercentageThreshold>
+		<FreeMemoryPercentageThreshold>0</FreeMemoryPercentageThreshold>
 		<EvictionPolicy>LRU</EvictionPolicy>
 	</Cache>
-	-->
 	
 	<!-- Interceptor Declarations 
 	<Interceptors throwOnInvalidStates="true">
