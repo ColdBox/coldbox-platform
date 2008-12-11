@@ -6,7 +6,7 @@
         <Setting name="AuthorEmail" value="info@coldboxframework.com"/>
         <Setting name="AuthorWebsite" value="http://www.coldboxframework.com"/>
         <Setting name="Suffix" value="FAITH"/>
-        <Setting name="Version" value="2.6.2 RC"/>
+        <Setting name="Version" value="2.6.2"/>
         <Setting name="Description" value="This is the ColdBox ColdFusion Framework for web applications."/>
         <Setting name="ModifyLogLocation" value="readme.txt"/>
         <Setting name="FrameworkBlog" value="http://www.coldboxframework.com/index.cfm/about/news"/>
