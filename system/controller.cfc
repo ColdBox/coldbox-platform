@@ -337,7 +337,7 @@ Description		: This is the main ColdBox front Controller.
 		<cfargument name="addToken"		required="false" type="boolean" default="false"	hint="Wether to add the tokens or not. Default is false">
 		<cfargument name="ssl"			required="false" type="boolean" default="false"	hint="Whether to relocate in SSL or not">
 		<!--- ************************************************************* --->
-		<Cfset var routeLocation = getSetting("sesBaseURL")>
+		<cfset var routeLocation = getSetting("sesBaseURL")>
 		
 		<!--- SSL --->
 		<cfif arguments.ssl>
