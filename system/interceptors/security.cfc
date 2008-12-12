@@ -38,9 +38,9 @@ For the latest usage, please visit the wiki.
 			if( not propertyExists('rulesSource') ){
 				throw(message="The rulesSource property has not been set.",type="interceptors.security.settingUndefinedException");
 			}
-			if( not reFindnocase("^(xml|db|ioc|ocm)$",getProperty('rulesSource')) ){
+			if( not reFindnocase("^(xml|db|ioc|ocm|model)$",getProperty('rulesSource')) ){
 				throw(message="The rules source you set is invalid: #getProperty('rulesSource')#.",
-					  detail="The valid sources are xml,db,ioc, and ocm.",
+					  detail="The valid sources are xml,db,ioc, model and ocm.",
 					  type="interceptors.security.settingUndefinedException");
 			}
 			/* Query Checks */
@@ -86,6 +86,10 @@ For the latest usage, please visit the wiki.
 					loadIOCRules(); 
 					break; 
 				}		
+				case "model" : {
+					loadModelRules();
+					break;
+				}
 			}//end of switch
 			
 			/* See if using validator */
@@ -105,15 +109,24 @@ For the latest usage, please visit the wiki.
 					throw("Error creating validator",e.message & e.detail, "interceptors.security.validatorCreationException");
 				}
 			}
-			
 			/* See if using validator from ioc */
-			if( propertyExists('validatorIOC') ){
+			else if( propertyExists('validatorIOC') ){
 				/* Try to create Validator */
 				try{
 					setValidator( getPlugin("ioc").getBean(getProperty('validatorIOC')) );
 				}
 				catch(Any e){
-					throw("Error creating validator",e.message & e.detail, "interceptors.security.validatorCreationException");
+					throw("Error creating validatorIOC",e.message & e.detail, "interceptors.security.validatorCreationException");
+				}
+			}
+			/* See if using validator from model */
+			else if( propertyExists('validatorModel') ){
+				/* Try to create Validator */
+				try{
+					setValidator( getModel(getProperty('validatorModel') );
+				}
+				catch(Any e){
+					throw("Error creating validatorModel",e.message & e.detail, "interceptors.security.validatorCreationException");
 				}
 			}
 		</cfscript>
@@ -338,7 +351,7 @@ For the latest usage, please visit the wiki.
 		<cfset setProperty('rulesLoaded',true)>
 	</cffunction>
 	
-	<!--- Load XML Rules --->
+	<!--- Load IOC Rules --->
 	<cffunction name="loadIOCRules" access="private" returntype="void" output="false" hint="Load rules from an IOC bean">
 		<cfset var qRules = "">
 		<cfset var bean = "">
@@ -351,6 +364,29 @@ For the latest usage, please visit the wiki.
 		<cfelse>
 			<!--- Now call method on it --->
 			<cfinvoke component="#bean#" method="#getProperty('rulesBeanMethod')#" returnvariable="qRules" />
+		</cfif>
+		
+		<!--- validate query --->
+		<cfset validateRulesQuery(qRules)>
+		
+		<!--- let's setup the array of struct Rules now --->
+		<cfset setProperty('rules', queryToArray(qRules))>
+		<cfset setProperty('rulesLoaded',true)>
+	</cffunction>
+	
+	<!--- Load Model Rules --->
+	<cffunction name="loadModelRules" access="private" returntype="void" output="false" hint="Load rules from a model object">
+		<cfset var qRules = "">
+		<cfset var oModel = "">
+		
+		<!--- Get rules from a Model Object --->
+		<cfset oModel = getModel(getproperty('rulesModel'))>
+		
+		<cfif propertyExists('rulesModelArgs') and len(getProperty('rulesModelArgs'))>
+			<cfset qRules = evaluate("oModel.#getproperty('rulesModelMethod')#( #getProperty('rulesModelArgs')# )")>
+		<cfelse>
+			<!--- Now call method on it --->
+			<cfinvoke component="#oModel#" method="#getProperty('rulesModelMethod')#" returnvariable="qRules" />
 		</cfif>
 		
 		<!--- validate query --->
@@ -465,6 +501,19 @@ For the latest usage, please visit the wiki.
 					}
 					if( not propertyExists('rulesBeanMethod') ){
 						throw(message="Missing setting for ioc source: rulesBeanMethod ",type="interceptors.security.settingUndefinedException");
+					}
+					
+					break;
+				}//end of ioc check
+				
+				case "model" :
+				{
+					/* Check for bean */
+					if( not propertyExists('rulesModel') ){
+						throw(message="Missing setting for model source: rulesModel ",type="interceptors.security.settingUndefinedException");
+					}
+					if( not propertyExists('rulesModelMethod') ){
+						throw(message="Missing setting for model source: rulesModelMethod ",type="interceptors.security.settingUndefinedException");
 					}
 					
 					break;

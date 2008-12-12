@@ -84,10 +84,6 @@ Modification History:
 				pluginKey = this.CUSTOMPLUGIN_CACHEKEY_PREFIX & arguments.plugin;
 			}
 			
-			/* MT chceks */
-			if ( not arguments.custom )
-				arguments.plugin = isMT(arguments.plugin);
-			
 			/* Lookup plugin in Cache */
 			oPlugin = controller.getColdboxOCM().get(pluginKey);
 			
@@ -211,17 +207,5 @@ Modification History:
 			return pluginPath;
 		</cfscript>
 	</cffunction>
-	
-	<cffunction name="isMT" access="private" returntype="string" hint="Checks if its a logger plugin and if cf8 is used." output="false" >
-		<cfargument name="plugin" required="true" type="string" hint="The plugin to validate the path on.">
-		<cfscript>
-		//MT CFML Engine switch for MT Logger
-		if ( arguments.plugin eq "logger" and controller.oCFMLENGINE.isMT() ){
-			return "MTlogger";
-		}
-		return arguments.plugin;
-		</cfscript>
-	</cffunction>
-
 
 </cfcomponent>

@@ -24,7 +24,7 @@
 		<Setting name="CustomErrorTemplate"			value="" />
 		<Setting name="CustomEmailBugReport"		value="includes/EmailBugReport.cfm" />
 		<Setting name="MessageboxStyleOverride"		value="false" />
-		<Setting name="HandlersIndexAutoReload"   	value="true" />
+		<Setting name="HandlersIndexAutoReload"   	value="false" />
 		<Setting name="ConfigAutoReload"			value="false" />
 		<Setting name="ExceptionHandler"     		value="" />
 		<Setting name="onInvalidEvent" 				value="" />
@@ -140,22 +140,14 @@
 			<Property name="deployCommandObject">coldbox.testharness.model.DeployCleanup</Property>
 		</Interceptor>
 		<Interceptor class="coldbox.system.interceptors.autowire">
-			<Property name="debugMode">true</Property>
+			<Property name="debugMode">false</Property>
 			<Property name="enableSetterInjection">false</Property>
 		</Interceptor>
-		<!-- 
-		<Interceptor class="coldbox.testharness.interceptors.executionTracer">
-			<Property name="Simple">Luis</Property>
-			<Property name="Complex">[1,2,3,4,5]</Property>
-		</Interceptor>
-			-->	
 		<Interceptor class="coldbox.system.interceptors.ses">
 			<Property name="configFile">/config/routes.cfm</Property>
 		</Interceptor>
-		
 		<Interceptor class="${AppMapping}.interceptors.errorObserver" />
 		<Interceptor class="${AppMapping}.interceptors.iocObserver" />
-		
 		<Interceptor class="coldbox.system.interceptors.security">
 	        <Property name="rulesSource">xml</Property>
 	        <Property name="rulesFile">config/security.xml.cfm</Property>

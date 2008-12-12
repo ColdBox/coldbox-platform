@@ -102,6 +102,7 @@ Description :
 		<cfset var ExceptionBean = "">
 		<cfset var renderedContent = "">
 		<cfset var eventCacheEntry = "">
+		<cfset var interceptorData = structnew()>
 		
 		<!--- Start Application Requests --->
 		<cflock type="readonly" name="#getAppHash()#" timeout="#getLockTimeout()#" throwontimeout="true">
@@ -152,9 +153,6 @@ Description :
 					
 					<!--- No Render Test --->
 					<cfif not event.isNoRender()>
-						<!--- Execute preRender Interception --->
-						<cfset cbController.getInterceptorService().processState("preRender")>
-						
 						<!--- Check for Marshalling and data render --->
 						<cfif isStruct(event.getRenderData()) and not structisEmpty(event.getRenderData())>
 							<cfset renderedContent = cbController.getPlugin("Utilities").marshallData(argumentCollection=event.getRenderData())>
@@ -162,6 +160,11 @@ Description :
 							<!--- Render Layout/View pair via set variable to eliminate whitespace--->
 							<cfset renderedContent = cbController.getPlugin("renderer").renderLayout()>
 						</cfif>
+						
+						<!--- PreRender Data:--->
+						<cfset interceptorData.renderedContent = renderedContent>
+						<!--- Execute preRender Interception --->
+						<cfset cbController.getInterceptorService().processState("preRender",interceptorData)>
 						
 						<!--- Check if caching the content --->
 						<cfif event.isEventCacheable()>

@@ -18,10 +18,12 @@ Description :
 	<!--- process a remote call --->
 	<cffunction name="process" output="false" access="remote" returntype="any" hint="Process a remote call into ColdBox's event model and return data/objects back. If no results where found, this method returns null/void">
 		<!--- There are no arguments defined as they come in as a collection of arguments. --->
+		<cfset var cbController = "">
+		<cfset var event = "">
+		<cfset var refLocal = structnew()>
+		<cfsetting showdebugoutput="false">
+		<cfsetting enablecfoutputonly="true">
 		<cfscript>
-			var cbController = "";
-			var event = "";
-			var refLocal = structnew();
 			
 			/* Get ColdBox Controller */
 			cbController = getController();
