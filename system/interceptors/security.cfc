@@ -123,7 +123,7 @@ For the latest usage, please visit the wiki.
 			else if( propertyExists('validatorModel') ){
 				/* Try to create Validator */
 				try{
-					setValidator( getModel(getProperty('validatorModel') );
+					setValidator( getModel(getProperty('validatorModel') ) );
 				}
 				catch(Any e){
 					throw("Error creating validatorModel",e.message & e.detail, "interceptors.security.validatorCreationException");
