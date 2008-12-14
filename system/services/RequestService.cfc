@@ -94,6 +94,7 @@ Modification History:
 	<cffunction name="EventCachingTest" access="public" output="false" returntype="void" hint="Tests if the incoming context is an event cache">
 		<!--- ************************************************************* --->
 		<cfargument name="context" 			required="true"  type="any" hint="The request context to test for event caching.">
+		<cfargument name="overrideCheck"	required="false" type="boolean" hint="To override the request flag check">
 		<!--- ************************************************************* --->
 		<cfscript>
 			var eventCacheKey = "";
@@ -102,7 +103,7 @@ Modification History:
 			var oOCM = controller.getColdboxOCM();
 			
 			/* Cache Test */
-			if( structKeyExists(request,"cb_eventcacheTested") and arguments.context.isSES() eq false){
+			if( structKeyExists(request,"cb_eventcacheTested") and arguments.overrideCheck eq false){
 				return;
 			}
 			/* Are we using event caching? */

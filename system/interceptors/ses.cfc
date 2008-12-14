@@ -112,11 +112,10 @@ Description :
 			event.setIsSES(true);
 			
 			/* Execute Cache Test now that routing has been done. We override, because events are determined until now. */
-			getController().getRequestService().EventCachingTest(context=arguments.event);
+			getController().getRequestService().EventCachingTest(context=arguments.event,overrideCheck=true);
 		</cfscript>
 	</cffunction>
 	
-
 <!------------------------------------------- PRIVATE ------------------------------------------->
 	
 	<!--- Route to destination --->
