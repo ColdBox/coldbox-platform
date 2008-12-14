@@ -108,12 +108,11 @@ Description :
 			
 			/* Route to destination */
 			routeToDestination(acourse,arguments.event);
-			
-			/* Execute Cache Test now that routing has been done */
-			getController().getRequestService().EventCachingTest(arguments.event);
-			
 			/* Verify we are in ses mode */
 			event.setIsSES(true);
+			
+			/* Execute Cache Test now that routing has been done. We override, because events are determined until now. */
+			getController().getRequestService().EventCachingTest(context=arguments.event);
 		</cfscript>
 	</cffunction>
 	

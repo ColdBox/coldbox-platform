@@ -93,7 +93,7 @@ Modification History:
 	<!--- Event caching test --->
 	<cffunction name="EventCachingTest" access="public" output="false" returntype="void" hint="Tests if the incoming context is an event cache">
 		<!--- ************************************************************* --->
-		<cfargument name="context" 			required="true" type="any" hint="The request context to test for event caching.">
+		<cfargument name="context" 			required="true"  type="any" hint="The request context to test for event caching.">
 		<!--- ************************************************************* --->
 		<cfscript>
 			var eventCacheKey = "";
@@ -102,7 +102,7 @@ Modification History:
 			var oOCM = controller.getColdboxOCM();
 			
 			/* Cache Test */
-			if( structKeyExists(request,"cb_eventcacheTested") ){
+			if( structKeyExists(request,"cb_eventcacheTested") and arguments.context.isSES() eq false){
 				return;
 			}
 			/* Are we using event caching? */
@@ -110,11 +110,14 @@ Modification History:
 				/* Get Entry */
 				EventDictionary = getController().getHandlerService().getEventMetaDataEntry(Context.getCurrentEvent());	
 				
+				/* debug("eventmd: " & controller.getHandlerService().getEventCacheDictionary().getDictionary().toString()); */
+				
 				/* Verify that it is cacheable, else quit, no need for testing anymore. */
 				if( not EventDictionary.cacheable ){
+					/* Cleanup the cache key, just in case, maybe ses interceptor has been used. */
+					Context.removeEventCacheableEntry();
 					return;	
 				}
-				
 				/* setup the cache key. */
 				eventCacheKey = oEventURLFacade.buildEventKey(EventDictionary.prefix,
 															  EventDictionary.suffix,

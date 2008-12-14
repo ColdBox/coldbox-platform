@@ -73,65 +73,33 @@ Description :
 			/* Cache Util */
 			var oEventURLFacade = getController().getColdboxOCM().getEventURLFacade();
 			/* Metadata entry structures */
-			var MetaData = "";
-			var mdEntry = "";
 			var handlerDictionaryEntry = "";
 			var eventDictionaryEntry = "";
 			
 			/* ::::::::::::::::::::::::::::::::::::::::: HANDLERS CACHING :::::::::::::::::::::::::::::::::::::::::::: */
-		
 			/* Are we caching handlers? */
 			if ( controller.getSetting("HandlerCaching") ){
-				
-				/* Lookup in Cache */
+				/* Lookup handler in Cache */
 				oEventHandler = controller.getColdboxOCM().get(cacheKey);
-				
-				/* Verify it. */
+				/* Verify if not found, then create it and cache it */
 				if( not isObject(oEventHandler) ){
 					/* Create a new handler */
 					oEventHandler = newHandler(oEventHandlerBean.getRunnable());
-					
-					/* Determine if we have md and cacheable, else set it  */
-					if ( not getHandlerCacheDictionary().keyExists(cacheKey) ){
-						/* Get Object MetaData */
-						MetaData = getMetaData(oEventHandler);
-						/* Get Default MD Entry */
-						mdEntry = getNewMDEntry();
-												
-						/* By Default, handlers with no cache flag are set to true */
-						if ( not structKeyExists(MetaData,"cache") or not isBoolean(MetaData["cache"]) ){
-							MetaData.cache = true;
-						}
-						/* Cache Entries for timeout and last access timeout */
-						if ( MetaData["cache"] ){
-							mdEntry.cacheable = true;
-							if ( structKeyExists(MetaData,"cachetimeout") ){
-								mdEntry.timeout = MetaData["cachetimeout"];
-							}
-							if ( structKeyExists(MetaData, "cacheLastAccessTimeout") ){
-								mdEntry.lastAccessTimeout = MetaData["cacheLastAccessTimeout"];
-							}
-						} // end we cached.
-						else{
-							mdEntry.cacheable = false;
-						}
-						
-						/* Set Entry in dictionary */
-						getHandlerCacheDictionary().setKey(cacheKey,mdEntry);	
-					}//end of md cache dictionary.
-					
-					/* Set dictionary entry for operations, it is now guaranteed. */
+					/* Save its Metadata For event Caching and Aspects */
+					saveHandlerMetaData(oEventHandler,cacheKey);					
+					/* Get dictionary entry for operations, it is now guaranteed. */
 					handlerDictionaryEntry = getHandlerCacheDictionary().getKey(cacheKey);
-					/* Do we Cache */
+					/* Do we Cache this handler's event output? */
 					if ( handlerDictionaryEntry.cacheable ){
 						controller.getColdboxOCM().set(cacheKey,oEventHandler,handlerDictionaryEntry.timeout,handlerDictionaryEntry.lastAccessTimeout);
 					}
-				}//end of caching strategy
-				
-			}//end of if not caching handlers
+				}//end of caching strategy				
+			}
 			else{
 				/* Create Runnable Object */
 				oEventHandler = newHandler(oEventHandlerBean.getRunnable());
+				/* Save its Metadata For event Caching and Aspects */
+				saveHandlerMetaData(oEventHandler,cacheKey);					
 			}
 			
 			/* ::::::::::::::::::::::::::::::::::::::::: EVENT METHOD TESTING :::::::::::::::::::::::::::::::::::::::::::: */
@@ -180,45 +148,15 @@ Description :
 			/* Event Caching Routines, if using caching and we are executing the main event */
 			if ( controller.getSetting("EventCaching") and oEventHandlerBean.getFullEvent() eq oRequestContext.getCurrentEvent() ){
 				
-				/* Determine if we have md for the event to execute in the md dictionary, else set it  */
-				if ( not getEventCacheDictionary().keyExists(oEventHandlerBean.getFullEvent()) ){
-					/* Get Method MetaData */
-					MetaData = getMetaData(oEventHandler[oEventHandlerBean.getMethod()]);
-					/* Get New Default MD Entry */
-					mdEntry = getNewMDEntry();
-					/* By Default, events with no cache flag are set to FALSE */
-					if ( not structKeyExists(MetaData,"cache") or not isBoolean(MetaData["cache"]) ){
-						MetaData.cache = false;
-					}
-					/* Cache Entries for timeout and last access timeout */
-					if ( MetaData["cache"] ){
-						mdEntry.cacheable = true;
-						/* Event Timeout */
-						if ( structKeyExists(MetaData,"cachetimeout") and MetaData.cachetimeout neq 0 ){
-							mdEntry.timeout = MetaData["cachetimeout"];
-						}
-						/* Last Access Timeout */
-						if ( structKeyExists(MetaData, "cacheLastAccessTimeout") ){
-							mdEntry.lastAccessTimeout = MetaData["cacheLastAccessTimeout"];
-						}
-					} //end cache metadata is true
-					else{
-						mdEntry.cacheable = false;
-					}
-					/* Handler Evetn Cache Key Suffix */
-					mdEntry.suffix = oEventHandler.EVENT_CACHE_SUFFIX;
-					/* Handler Events Prefix */
-					mdEntry.prefix = this.EVENT_CACHEKEY_PREFIX;
-					/* Set md Entry in dictionary */
-					getEventCacheDictionary().setKey(oEventHandlerBean.getFullEvent(),mdEntry);
-				}//end of md cache dictionary.
-				
+				/* Save Event Caching Metadata */
+				saveEventCachingMetaData(eventUDF=oEventHandler[oEventHandlerBean.getMethod()],
+										 cacheKey=oEventHandlerBean.getFullEvent(),
+										 cacheKeySuffix=oEventHandler.EVENT_CACHE_SUFFIX);
 				/* get dictionary entry for operations, it is now guaranteed. */
 				eventDictionaryEntry = getEventCacheDictionary().getKey(oEventHandlerBean.getFullEvent());
-				
 				/* Do we need to cache this event?? */
 				if ( eventDictionaryEntry.cacheable ){
-					/* Save the cache key in md Entry */
+					/* Create the Cache Key to save */
 					eventDictionaryEntry.cacheKey = oEventURLFacade.buildEventKey(eventDictionaryEntry.prefix,
 																				  eventDictionaryEntry.suffix,
 																				  oEventHandlerBean.getFullEvent(),
@@ -341,9 +279,6 @@ Description :
 		var HandlerArray = Arraynew(1);
 		var HandlersExternalArray = ArrayNew(1);
 
-		/* Cleanup Just in Case */
-		clearDictionaries();
-		
 		/* ::::::::::::::::::::::::::::::::::::::::: HANDLERS BY CONVENTION :::::::::::::::::::::::::::::::::::::::::::: */
 		
 		//Check for Handlers Directory Location
@@ -434,6 +369,99 @@ Description :
 			
 			return mdEntry;
 		</cfscript>
+	</cffunction>
+	
+	<!--- Save Event Caching Metadata --->
+	<cffunction name="saveEventCachingMetaData" access="private" returntype="void" hint="Save a handler's event caching metadata in the dictionary">
+		<!--- ************************************************************* --->
+		<cfargument name="eventUDF" 		type="any" required="true" hint="The handler event UDF to inspect" />
+		<cfargument name="cacheKey"     	type="any" required="true" hint="The event cache key" />
+		<cfargument name="cacheKeySuffix"   type="any" required="true" hint="The event cache key suffix" />
+		<!--- ************************************************************* --->
+		<cfset var Metadata = 0>
+		<cfset var mdEntry = 0>
+		
+		<cfif not getEventCacheDictionary().keyExists(arguments.cacheKey)>
+			<cflock name="handlerservice.eventcachingmd.#arguments.cacheKey#" type="exclusive" throwontimeout="true" timeout="10">
+			<cfscript>
+			/* Determine if we have md for the event to execute in the md dictionary, else set it  */
+			if ( not getEventCacheDictionary().keyExists(arguments.cacheKey) ){
+				/* Get Method MetaData */
+				MetaData = getMetaData(arguments.eventUDF);
+				/* Get New Default MD Entry */
+				mdEntry = getNewMDEntry();
+				/* By Default, events with no cache flag are set to FALSE */
+				if ( not structKeyExists(MetaData,"cache") or not isBoolean(MetaData["cache"]) ){
+					MetaData.cache = false;
+				}
+				/* Cache Entries for timeout and last access timeout */
+				if ( MetaData["cache"] ){
+					mdEntry.cacheable = true;
+					/* Event Timeout */
+					if ( structKeyExists(MetaData,"cachetimeout") and MetaData.cachetimeout neq 0 ){
+						mdEntry.timeout = MetaData["cachetimeout"];
+					}
+					/* Last Access Timeout */
+					if ( structKeyExists(MetaData, "cacheLastAccessTimeout") ){
+						mdEntry.lastAccessTimeout = MetaData["cacheLastAccessTimeout"];
+					}
+				} //end cache metadata is true
+				else{
+					mdEntry.cacheable = false;
+				}
+				/* Handler Evetn Cache Key Suffix */
+				mdEntry.suffix = arguments.cacheKeySuffix;
+				/* Handler Events Prefix */
+				mdEntry.prefix = this.EVENT_CACHEKEY_PREFIX;
+				/* Set md Entry in dictionary */
+				getEventCacheDictionary().setKey(cacheKey,mdEntry);
+			}//end of md cache dictionary.
+			</cfscript>
+			</cflock>
+		</cfif>
+	</cffunction>
+	
+	<!--- Save Handler Metadata --->
+	<cffunction name="saveHandlerMetaData" access="private" returntype="void" hint="Save a handler's metadata in the dictionary">
+		<!--- ************************************************************* --->
+		<cfargument name="targetHandler" type="any" required="true" hint="The handler target" />
+		<cfargument name="cacheKey"      type="any" required="true" hint="The handler cache key" />
+		<!--- ************************************************************* --->
+		<cfset var Metadata = 0>
+		<cfset var mdEntry = 0>
+		
+		<cfif not getHandlerCacheDictionary().keyExists(arguments.cacheKey)>
+			<cfset MetaData = getMetadata(arguments.targetHandler)>
+			<cflock name="handlerservice.handlermd.#metadata.name#" type="exclusive" throwontimeout="true" timeout="10">
+			<cfscript>
+			/* Determine if we have md and cacheable, else set it  */
+			if ( not getHandlerCacheDictionary().keyExists(arguments.cacheKey) ){
+				/* Get Default MD Entry */
+				mdEntry = getNewMDEntry();
+				/* By Default, handlers with no cache flag are set to true */
+				if ( not structKeyExists(MetaData,"cache") or not isBoolean(MetaData["cache"]) ){
+					MetaData.cache = true;
+				}
+				/* Cache Entries for timeout and last access timeout */
+				if ( MetaData["cache"] ){
+					mdEntry.cacheable = true;
+					if ( structKeyExists(MetaData,"cachetimeout") ){
+						mdEntry.timeout = MetaData["cachetimeout"];
+					}
+					if ( structKeyExists(MetaData, "cacheLastAccessTimeout") ){
+						mdEntry.lastAccessTimeout = MetaData["cacheLastAccessTimeout"];
+					}
+				} // end we cached.
+				else{
+					mdEntry.cacheable = false;
+				}
+				
+				/* Set Entry in dictionary */
+				getHandlerCacheDictionary().setKey(arguments.cacheKey,mdEntry);
+			}
+			</cfscript>
+			</cflock>
+		</cfif>
 	</cffunction>
 	
 	<!--- Recursive Registration of Handler Directories --->
