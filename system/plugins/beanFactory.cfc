@@ -649,6 +649,7 @@ Description: This is the framework's simple bean factory.
 		<!--- ************************************************************* --->
 		<cfscript>
 			var oIOC = getPlugin("ioc");
+			dump(arguments.definition);abort();
 			/* Verify that bean exists in the IOC container. */
 			if( oIOC.getIOCFactory().containsBean(arguments.Definition.name) ){
 				return oIOC.getBean(arguments.Definition.name);
@@ -700,7 +701,6 @@ Description: This is the framework's simple bean factory.
 			if( structKeyExists(md,"autowire_setterinjection") and isBoolean(md["autowire_setterinjection"]) ){
 				arguments.useSetterInjection = md["autowire_setterinjection"];
 			}
-			
 			/* Look For cfProperties */
 			if( structKeyExists(md,"properties") and ArrayLen(md.properties) gt 0){
 				for(x=1; x lte ArrayLen(md.properties); x=x+1 ){
@@ -743,12 +743,17 @@ Description: This is the framework's simple bean factory.
 						entry.name = Right(md.functions[x].name, Len(md.functions[x].name)-3);
 						entry.scope = "";
 						
-						/* Check Marker or use IOC as default type */
+						/* Check Marker and IOC Framework*/
 						if( structKeyExists(md.functions[x],instance.dslMarker) ){
 							entry.type = md.functions[x][instance.dslMarker];
 						}
-						else{
+						/* If IOC Framework defined, let setter be defaulted to IOC */
+						else if(getSetting("IOCFramework") neq ""){
 							entry.type = "ioc";
+						}
+						/* Else default to model integration */
+						else{
+							entry.type = "model";
 						}
 						
 						/* Add if not already in properties */
@@ -775,7 +780,7 @@ Description: This is the framework's simple bean factory.
 				  )
 			){
 				/* Recursive lookup */
-				arguments.dependencies = parseMetadata(md.extends,dependencies,arguments.useSetterInjection,arguments.stopRecursion);
+				arguments.dependencies = parseMetadata(md.extends,arguments.dependencies,arguments.useSetterInjection,arguments.stopRecursion);
 			}
 			
 			/* return the dependencies found */

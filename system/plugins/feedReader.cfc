@@ -287,7 +287,6 @@ What gets returned on the FeedStructure:
 		<cfset var cacheFile = "">
 		<cfset var fileIn = "">
 		<cfset var objectIn = "">
-		
 		<cfif getCacheType() eq "ram">
 			<cfset results = getColdboxOCM().get(URLToCacheKey(arguments.feedURL))>
 		<cfelse>
@@ -295,10 +294,14 @@ What gets returned on the FeedStructure:
 			<!--- Secure Cache Read. --->
 			<cflock name="#getLockName()#" type="exclusive" timeout="30" throwontimeout="true">
 				<cfif isFeedCached(arguments.feedURL)>
-					<cfset fileIn = CreateObject("java","java.io.FileInputStream").init('#cacheFile#.xml')>
-					<cfset objectIn = CreateObject("java","java.io.ObjectInputStream").init(fileIn)>
-					<cfset results = objectIn.readObject()>
-					<cfset objectIn.close()>
+					<cfif structKeyExists(server,"railo")>
+						<cfset results = evaluate(fileRead('#cacheFile#.xml'))>
+					<cfelse>
+						<cfset fileIn = CreateObject("java","java.io.FileInputStream").init('#cacheFile#.xml')>
+						<cfset objectIn = CreateObject("java","java.io.ObjectInputStream").init(fileIn)>
+						<cfset results = objectIn.readObject()>
+						<cfset objectIn.close()>
+					</cfif>	
 				</cfif>
 			</cflock>
 		</cfif>
@@ -323,10 +326,14 @@ What gets returned on the FeedStructure:
 			<cfset cacheFile = getCacheLocation() & getSetting("OSFileSeparator",true) & cacheKey>
 			<!--- Secure Cache Write. --->
 			<cflock name="#getLockName()#" type="exclusive" timeout="30" throwontimeout="true">
-				<cfset fileOut = CreateObject("java","java.io.FileOutputStream").init('#cacheFile#.xml')>
-				<cfset objectOut = CreateObject("java","java.io.ObjectOutputStream").init(fileOut)>
-				<cfset objectOut.writeObject(arguments.feedStruct)>
-				<cfset objectOut.close()>
+				<cfif structKeyExists(server,"railo")>
+					<cfset fileWrite('#cacheFile#.xml', serialize(arguments.feedStruct))>
+				<cfelse>
+					<cfset fileOut = CreateObject("java","java.io.FileOutputStream").init('#cacheFile#.xml')>
+					<cfset objectOut = CreateObject("java","java.io.ObjectOutputStream").init(fileOut)>
+					<cfset objectOut.writeObject(arguments.feedStruct)>
+					<cfset objectOut.close()>
+				</cfif>
 			</cflock>
 		</cfif>
 	</cffunction>
@@ -352,7 +359,6 @@ What gets returned on the FeedStructure:
 			
 			/* Try to expire a feed, custom reap*/
 			expireCachedFeed(arguments.feedURL);
-			
 			/* Check if its still cached */
 			if( isFeedCached(arguments.feedURL) ){
 				FeedStruct = getCachedFeed(arguments.feedURL);
