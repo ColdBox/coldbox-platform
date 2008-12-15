@@ -117,38 +117,36 @@ Modification History:
 			<cfset oBean = getColdBoxOCM().get(beanKey)>
 		<cfelse>
 			<!--- Get Bean from IOC Framework --->
-			<cfif lcase(getIOCFramework()) eq "coldspring">
-				<cfset oBean = getIoCFactory().getBean(arguments.beanName)>
-			<cfelseif lcase(instance.IOCFramework) eq "lightwire">
-				<cfset oBean = getIoCFactory().getBean(arguments.beanName)>
-			</cfif>
+			<cfset oBean = getIoCFactory().getBean(arguments.beanName)>
+			<!--- Get Object's MetaData --->
+			<cfset MetaData = getMetaData(oBean)>
 			
-			<!--- Autowire Support For Model Objects --->
-			<cfset getPlugin("beanFactory").autowire(target=oBean,annotationCheck=true)>
-			
-			<!--- If Caching on, then set object in cache --->
-			<cfif objCaching>
-				<!--- Get Object's MetaData, For Caching --->
-				<cfset MetaData = getMetaData(oBean)>
-				<!--- By Default, services with no cache flag are set to false --->
-				<cfif not structKeyExists(MetaData,"cache") or not isBoolean(MetaData.cache)>
-					<cfset MetaData.cache = false>
-				</cfif>
-				<!--- Test for caching parameters --->
-				<cfif MetaData["cache"]>
-					<!--- Cache Metadata --->
-					<cfif not structKeyExists(MetaData,"cachetimeout") or not isNumeric(metadata.cacheTimeout) >
-						<cfset MetaData.cacheTimeout = "">
+			<!--- Caching & Autowire only for CFC's Not Java objects --->
+			<cfif isStruct(MetaData)>
+				<!--- Autowire Support For IoC Objects --->
+				<cfset getPlugin("beanFactory").autowire(target=oBean,annotationCheck=true)>
+				<!--- If Caching on, then set object in cache --->
+				<cfif objCaching>
+					<!--- By Default, services with no cache flag are set to false --->
+					<cfif not structKeyExists(MetaData,"cache") or not isBoolean(MetaData.cache)>
+						<cfset MetaData.cache = false>
 					</cfif>
-					<cfif not structKeyExists(MetaData,"cacheLastAccessTimeout") or not isNumeric(metadata.cacheLastAccessTimeout) >
-						<cfset MetaData.cacheLastAccessTimeout = "">
+					<!--- Test for caching parameters --->
+					<cfif MetaData["cache"]>
+						<!--- Cache Metadata --->
+						<cfif not structKeyExists(MetaData,"cachetimeout") or not isNumeric(metadata.cacheTimeout) >
+							<cfset MetaData.cacheTimeout = "">
+						</cfif>
+						<cfif not structKeyExists(MetaData,"cacheLastAccessTimeout") or not isNumeric(metadata.cacheLastAccessTimeout) >
+							<cfset MetaData.cacheLastAccessTimeout = "">
+						</cfif>
+						<!--- Cache the object --->
+						<cflock name="ioc.objectCaching.#arguments.beanName#" type="exclusive" timeout="30" throwontimeout="true">
+							<cfset getColdboxOCM().set(beanKey,oBean,metadata.cacheTimeout,metadata.cacheLastAccessTimeout)>
+						</cflock>
 					</cfif>
-					<!--- Cache the object --->
-					<cflock name="ioc.objectCaching.#arguments.beanName#" type="exclusive" timeout="30" throwontimeout="true">
-						<cfset getColdboxOCM().set(beanKey,oBean,metadata.cacheTimeout,metadata.cacheLastAccessTimeout)>
-					</cflock>
-				</cfif>
-			</cfif>			
+				</cfif>	
+			</cfif>						
 		</cfif>
 		
 		<!--- Return Bean --->
