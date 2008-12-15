@@ -649,7 +649,7 @@ Description: This is the framework's simple bean factory.
 		<!--- ************************************************************* --->
 		<cfscript>
 			var oIOC = getPlugin("ioc");
-			dump(arguments.definition);abort();
+			//dump(arguments.definition);abort();
 			/* Verify that bean exists in the IOC container. */
 			if( oIOC.getIOCFactory().containsBean(arguments.Definition.name) ){
 				return oIOC.getBean(arguments.Definition.name);
