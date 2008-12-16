@@ -24,7 +24,9 @@
 			variables.aliasStruct = ConfigBean.getAliasStruct();
 			/* Hierarchy Factory */
 			variables.parentFactory = arguments.parentFactory;
-				
+			/* Utility Object */
+			variables.oUtil = createObject("component","coldbox.system.extras.lightwire.util.Utility");
+			
 			/* Are we lazy loading? */
 			if (NOT ConfigBean.getLazyLoad()){
 	   			/* Construct All Singletons from Config */
@@ -85,7 +87,7 @@
 				ReturnObject = Parent.getBean(arguments.objectName);
 			}		
 			else{
-				throwit("Bean definition not found","The bean #arguments.objectName# has not bean defined","Lightwire.BeanNotFoundException");
+				getUtil().throwit("Bean definition not found","The bean #arguments.objectName# has not bean defined","Lightwire.BeanNotFoundException");
 			}				
 			
 			/* Return object */
@@ -463,31 +465,15 @@
 		<cfscript>
 			/* Verify Bean is defined or throw error */
 			if( not containsBean(arguments.ObjectName) ){
-				throwit("Bean definition not found","The bean #arguments.objectName# has not bean defined","Lightwire.BeanNotFoundException");
+				getUtil().throwit("Bean definition not found","The bean #arguments.objectName# has not bean defined","Lightwire.BeanNotFoundException");
 			}
 		</cfscript>
 	</cffunction>
 	
-	<!--- Dump it Facade --->
-	<cffunction name="dumpit" access="private" hint="Facade for cfmx dump" returntype="void">
-		<!--- ************************************************************* --->
-		<cfargument name="var" required="yes" type="any">
-		<cfargument name="abort" type="boolean" required="false" default="false"/>
-		<!--- ************************************************************* --->
-		<cfdump var="#var#"><cfif abort><cfabort></cfif>
+	<!--- getUtil --->
+	<cffunction name="getUtil" output="false" access="private" returntype="any" hint="Get the LightWire utility object: coldbox.system.extras.lightwire.util.Utility">
+		<cfreturn variables.oUtil>
 	</cffunction>
-	<!--- Abort Facade --->
-	<cffunction name="abortit" access="private" hint="Facade for cfabort" returntype="void" output="false">
-		<cfabort>
-	</cffunction>
-	<!--- Throw Facade --->
-	<cffunction name="throwit" access="private" hint="Facade for cfthrow" output="false">
-		<!--- ************************************************************* --->
-		<cfargument name="message" 	type="string" 	required="yes">
-		<cfargument name="detail" 	type="string" 	required="no" default="">
-		<cfargument name="type"  	type="string" 	required="no" default="Framework">
-		<!--- ************************************************************* --->
-		<cfthrow type="#arguments.type#" message="#arguments.message#"  detail="#arguments.detail#">
-	</cffunction>
+
 
 </cfcomponent>

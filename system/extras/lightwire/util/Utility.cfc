@@ -3,35 +3,60 @@
 Copyright 2005-2008 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 www.coldboxframework.com | www.luismajano.com | www.ortussolutions.com
 ********************************************************************************
-Serialize and deserialize JSON data into native ColdFusion objects
-http://www.epiphantastic.com/cfjson/
 
-Authors: Jehiah Czebotar (jehiah@gmail.com)
-         Thomas Messier  (thomas@epiphantastic.com)
-Version: 1.9 February 20, 2008
-
-Modifications:
-	- Contributed by Ernst van der Linden (evdlinden@gmail.com) ]
-	- Sana Ullah (adjusted the compatibility with coldbox plugins).
-	- Luis Majano (adaptations & best practices)
+Author     :	Luis Majano
+Date        :	10/31/2007
+Description :
+	This is a base lightwire utility object.
 ----------------------------------------------------------------------->
-<cfcomponent name="json"
-			 hint="JSON Utility is used to serialize and deserialize JSON data to/from native ColdFusion objects."
-			 output="false">
+<cfcomponent name="Utility" output="False" hint="A basic utility object for LightWire">
 
-<!------------------------------------------- CONSTRUCTOR ------------------------------------------->
-
-	<cffunction name="init" access="public" returntype="json" output="false" hint="constructor">
+	<!--- PlaceHolder Replacer --->
+	<cffunction name="placeHolderReplacer" access="public" returntype="any" hint="PlaceHolder Replacer for strings containing ${} patterns" output="false" >
+		<!---************************************************************************************************ --->
+		<cfargument name="str" 		required="true" type="any" hint="The string variable to look for replacements">
+		<cfargument name="settings" required="true" type="any" hint="The structure of settings to use in replacing">
+		<!---************************************************************************************************ --->
 		<cfscript>
-			/* Return Instance */
-			return this;
+			var returnString = arguments.str;
+			var regex = "\$\{([0-9a-z\-\.\_]+)\}";
+			var lookup = 0;
+			var varName = 0;
+			var varValue = 0;
+			/* Loop and Replace */
+			while(true){
+				/* Search For Pattern */
+				lookup = reFindNocase(regex,returnString,1,true);	
+				/* Found? */
+				if( lookup.pos[1] ){
+					/* Get Variable Name From Pattern */
+					varName = mid(returnString,lookup.pos[2],lookup.len[2]);
+					/* Lookup Value */
+					if( structKeyExists(arguments.settings,varname) ){
+						varValue = arguments.settings[varname];
+					}
+					else if( isDefined("arguments.settings.#varName#") ){
+						varValue = Evaluate("arguments.settings.#varName#");
+					}
+					else{
+						varValue = "VAR_NOT_FOUND";
+					}
+					/* Remove PlaceHolder Entirely */
+					returnString = removeChars(returnString, lookup.pos[1], lookup.len[1]);
+					/* Insert Var Value */
+					returnString = insert(varValue, returnString, lookup.pos[1]-1);
+				}
+				else{
+					break;
+				}	
+			}
+			/* Return Parsed String. */
+			return returnString;
 		</cfscript>
 	</cffunction>
-
-<!------------------------------------------- PUBLIC ------------------------------------------->
 	
 	<!--- Decode from JSON to CF --->
-	<cffunction name="decode" access="public" returntype="any" output="no" hint="Converts data from JSON to CF format">
+	<cffunction name="decodeJSON" access="public" returntype="any" output="no" hint="Converts data from JSON to CF format">
 		<!--- ************************************************************* --->
 		<cfargument name="data" type="string" required="Yes" hint="JSON Packet" />
 		<!--- ************************************************************* --->
@@ -233,6 +258,42 @@ Modifications:
 		</cfif>
 	</cffunction>
 	
-<!------------------------------------------- PRIVATE ------------------------------------------->
+	<!--- Read File --->
+	<cffunction name="readFile" access="public" hint="Facade to Read a file's content" returntype="Any" output="false">
+		<!--- ************************************************************* --->
+		<cfargument name="FileToRead"	 		type="String"  required="yes" 	 hint="The absolute path to the file.">
+		<!--- ************************************************************* --->
+		<cfset var FileContents = "">
+		<cffile action="read" file="#arguments.FileToRead#" variable="FileContents">
+		<cfreturn FileContents>
+	</cffunction>
+	
+	<!--- Dump it Facade --->
+	<cffunction name="dumpit" access="public" hint="Facade for cfmx dump" returntype="void">
+		<cfargument name="var" required="yes" type="any">
+		<cfargument name="abort" type="boolean" required="false" default="false"/>
+		<cfdump var="#var#"><cfif abort><cfabort></cfif>
+	</cffunction>
+	
+	<!--- Abort Facade --->
+	<cffunction name="abortit" access="public" hint="Facade for cfabort" returntype="void" output="false">
+		<cfabort>
+	</cffunction>
+	
+	<!--- Rethrow Facade --->
+	<cffunction name="rethrowit" access="public" returntype="void" hint="Rethrow facade" output="false" >
+		<cfargument name="throwObject" required="true" type="any" hint="The cfcatch object">
+		<cfthrow object="#arguments.throwObject#">
+	</cffunction>
+	
+	<!--- Throw Facade --->
+	<cffunction name="throwit" access="public" hint="Facade for cfthrow" output="false">
+		<!--- ************************************************************* --->
+		<cfargument name="message" 	type="string" 	required="yes">
+		<cfargument name="detail" 	type="string" 	required="no" default="">
+		<cfargument name="type"  	type="string" 	required="no" default="Framework">
+		<!--- ************************************************************* --->
+		<cfthrow type="#arguments.type#" message="#arguments.message#"  detail="#arguments.detail#">
+	</cffunction>
 
 </cfcomponent>
