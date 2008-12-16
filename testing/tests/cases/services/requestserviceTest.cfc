@@ -85,6 +85,8 @@ Description :
 		AssertFalse(getcontroller().getDebuggerService().getDebugMode(), "Debug Mode test invalid password");
 		
 		/* Now test with right password. */
+		structClear(url);
+		structClear(request);
 		url.debugmode = true;
 		url.debugpass = "coldbox";
 		getController().setSetting('debugPassword',"coldbox");

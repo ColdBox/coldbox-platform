@@ -19,10 +19,8 @@ Description :
 	
 	<!--- init --->
 	<cffunction name="init" output="false" access="public" returntype="RequestBuffer" hint="Constructor">
-		<cfargument name="JDKVersion" type="string" required="true" hint="The JDK Version"/>
 		<cfscript>
 			/* Setup properties */
-			instance.JDKVersion = arguments.JDKVersion;
 			instance.bufferKey = "_cbox_request_buffer";
 			
 			return this;
@@ -35,13 +33,7 @@ Description :
 	<cffunction name="clear" output="false" access="public" returntype="void" hint="Clear the buffer">
 		<cfscript>
 			var oBuffer = getBufferObject();
-			/* Jdk Version bug for CF */
-			if( instance.JDKVersion gte 1.6 ){
-				oBuffer.delete(0,oBuffer.toString().length());
-			}
-			else{
-				oBuffer.delete(0,oBuffer.length());
-			}
+			oBuffer.delete(0,oBuffer.length());
 		</cfscript>
 	</cffunction>
 	
@@ -53,15 +45,7 @@ Description :
 
 	<!--- length --->
 	<cffunction name="length" output="false" access="public" returntype="numeric" hint="Returns the length (character count)">
-		<cfscript>
-			/* Jdk Version bug for CF */
-			if( instance.JDKVersion gte 1.6 ){
-				getBufferObject().toString().length();
-			}
-			else{
-				getBufferObject().length();
-			}
-		</cfscript>
+		<cfreturn getBufferObject().length()>
 	</cffunction>
 	
 	<!--- getString --->
@@ -83,11 +67,7 @@ Description :
 			<cflock name="#instance.bufferkey#" type="exclusive" timeout="10" throwontimeout="true">
 				<cfif not isBufferInScope()>
 					<!--- Create Buffer --->
-					<cfif instance.JDKVersion gte 1.5>
-						<cfset oBuffer = createObject("java","java.lang.StringBuilder").init('')>
-					<cfelse>
-						<cfset oBuffer = createObject("java","java.lang.StringBuffer").init('')>
-					</cfif>
+					<cfset oBuffer = createObject("java","java.lang.StringBuffer").init('')>
 					<!--- Place in Scope --->
 					<cfset request[instance.bufferKey] = oBuffer>
 				</cfif>

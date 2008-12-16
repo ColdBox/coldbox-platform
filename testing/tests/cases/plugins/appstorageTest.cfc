@@ -25,8 +25,7 @@ Description :
 		<!--- Now test some events --->
 		<cfscript>
 			var plugin = getController().getPlugin("applicationstorage");
-			
-			assertTrue( isStruct(application.cbStorage), "Application storage check");
+			assertTrue( isStruct(plugin.getStorage()), "Application storage check");
 			
 		</cfscript>
 	</cffunction>	

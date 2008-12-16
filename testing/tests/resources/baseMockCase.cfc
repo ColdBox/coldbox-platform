@@ -28,7 +28,7 @@ Description :
 	</cffunction>
 	
 	<!--- Dump facade --->
-	<cffunction name="dump" access="private" hint="Facade for cfmx dump" returntype="void">
+	<cffunction name="dumpit" access="private" hint="Facade for cfmx dump" returntype="void">
 		<cfargument name="var" required="yes" type="any">
 		<cfargument name="isAbort" type="boolean" default="false" required="false" hint="Abort also"/>
 		<cfdump var="#var#">

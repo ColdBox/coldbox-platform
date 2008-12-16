@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<Config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:noNamespaceSchemaLocation="http://www.coldboxframework.com/schema/config_2.6.0.xsd">
 	<Settings>
 		<Setting name="AppName" 					value="coldbox tester"/>
 		<Setting name="AppMapping"					value="/coldbox" />
@@ -9,7 +10,7 @@
 		<Setting name="EventName" 					value="event"/>
 		<Setting name="EnableDumpVar" 				value="false"/>
 		<Setting name="EnableColdfusionLogging" 	value="false"/>
-		<Setting name="EnableColdboxLogging" 		value="true"/>
+		<Setting name="EnableColdboxLogging" 		value="false"/>
 		<Setting name="ColdboxLogsLocation" 		value="/applications/coldbox/testing/tests/cases/interceptors"/>
 		<Setting name="DefaultEvent" 				value="ehGeneral.dspHello"/>
 		<Setting name="RequestStartHandler" 		value=""/>

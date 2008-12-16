@@ -126,8 +126,8 @@ Description: This is the framework's simple bean factory.
 			var oModel = 0;
 			var ModelsPath = getSetting("ModelsPath");
 			var ModelsInvocationPath = getSetting("ModelsInvocationPath");
-			var ModelsExternalPath = getSetting("HandlersExternalLocationPath");
-			var ModelsExternalInvocationPath = getSetting("HandlersExternalLocation");
+			var ModelsExternalPath = getSetting("ModelsExternalLocationPath");
+			var ModelsExternalInvocationPath = getSetting("ModelsExternalLocation");
 			var checkPath = 0;
 			var checkExternalPath = 0;
 			var modelClassPath = 0;

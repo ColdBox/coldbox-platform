@@ -53,7 +53,9 @@ Description :
 		<cfscript>
 			var plugin = getController().getPlugin("webservices");
 			
-			plugin.refreshWS('AnotherTestWS');			
+			if(not structKeyExists(server,"railo") ){
+				plugin.refreshWS('AnotherTestWS');		
+			}	
 		</cfscript>
 	</cffunction>
 	

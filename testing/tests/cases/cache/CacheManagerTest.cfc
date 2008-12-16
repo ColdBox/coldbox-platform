@@ -117,15 +117,18 @@ Description :
 			mockController.mockMethod('getInterceptorService').returns(mockService,mockService,mockService);
 			
 			/* testList */
-			mapping.MyTest = now();
-			mapping.Myname = "Luis Majano";
-			mapping.MyEmail = "whatever@gmail.com";
+			mapping["MyTest"] = now();
+			mapping["Myname"] = "Luis Majano";
+			mapping["MyEmail"] = "whatever@gmail.com";
 			
 			cm.setMulti(mapping=mapping);
 			
-			AssertTrue(cm.lookup('MyTest'));
-			AssertTrue(cm.lookup('Myname'));
-			AssertTrue(cm.lookup('MyEmail'));
+			debug(cm.getObjectPool().getPool());
+			debug(cm.getpool_metadata());
+			
+			AssertTrue(cm.lookup('MyTest'),'MyTest failed');
+			AssertTrue(cm.lookup('Myname'),'Myname failed');
+			AssertTrue(cm.lookup('MyEmail'),'MyEmail failed');
 		</cfscript>
 	</cffunction>
 	

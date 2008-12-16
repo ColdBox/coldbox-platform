@@ -110,8 +110,6 @@ Description :
 		<cfreturn>
 	</cffunction>
 	
-	
-	
 	<cffunction name="testDBLoad" access="public" returntype="void" output="false">
 		<cfscript>
 		var mypath = getDirectoryFromPath(getMetaData(this).path);
@@ -124,6 +122,21 @@ Description :
 		//resetup
 		getController().getLoaderService().setupCalls(getConfigMapping(),getAppMapping());
 	
+		</cfscript>
+	</cffunction>
+	
+	<cffunction name="testModelLoad" access="public" returntype="void" output="false">
+		<cfscript>
+		var mypath = getDirectoryFromPath(getMetaData(this).path);
+		
+		
+		//Setup ColdBox Mappings For this Test
+		setAppMapping("/coldbox/testharness");
+		setConfigMapping("#mypath#../../resources/interceptor_configs/security_cbox_model.xml");
+		
+		//resetup
+		getController().getLoaderService().setupCalls(getConfigMapping(),getAppMapping());
+				
 		</cfscript>
 	</cffunction>
 	

@@ -18,8 +18,6 @@ Description :
 		setConfigMapping(ExpandPath(instance.AppMapping & "/config/coldbox.xml.cfm"));
 		//Call the super setup method to setup the app.
 		super.setup();
-		//place controller in app scope for this.
-		application.cbController = getController();
 		</cfscript>
 	</cffunction>
 	
@@ -91,7 +89,6 @@ Description :
 		
 		/* Get Method Injector */
 		getController().getPlugin("methodInjector").start(proxy);
-		
 		/* Verify Test */
 		proxy.invokerMixin("verifyColdBox");
 		/* GetPlugin */
@@ -110,12 +107,28 @@ Description :
 		local.obj = proxy.invokerMixin(method='getColdBoxOCM');
 		AssertTrue( isObject(local.obj) );
 		
+		/* Get Model Object */
+		local.obj = proxy.invokerMixin(method="getModel",argList="name=testModel");
+		AssertTrue( isObject(local.obj) );
+		
+		/* Stop Injection */
+		getController().getPlugin("methodInjector").stop(proxy);
+		</cfscript>
+	</cffunction>
+	
+	<cffunction name="testProxyApplicationLoading" access="public" returntype="void" output="false">
+		<cfscript>
+		var proxy = CreateObject("component","coldbox.testharness.coldboxproxy");
+		var local = structnew();
+		
+		/* Get Method Injector */
+		getController().getPlugin("methodInjector").start(proxy);
+		
 		/* Load ColdBox */
 		local.load = structnew();
 		local.load.appRootPath = ExpandPath("/coldbox/testharness");
 		local.load.configLocation = local.load.appRootPath & "/config/coldbox.xml.cfm";
 		local.load.reloadApp = true;
-		
 		proxy.invokerMixin(method='loadColdbox',argCollection=local.load);
 		
 		local.load = structnew();
@@ -127,13 +140,6 @@ Description :
 		
 		/* Stop Injection */
 		getController().getPlugin("methodInjector").stop(proxy);
-		</cfscript>
-	</cffunction>
-	
-	<!--- tearDown --->
-	<cffunction name="tearDown" output="false" access="public" returntype="void" hint="">
-		<cfscript>
-		structDelete(application,"cbController");
 		</cfscript>
 	</cffunction>
 	

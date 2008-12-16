@@ -39,10 +39,10 @@ Description :
 		//Initialize ColdBox
 		instance.controller = CreateObject("component", "coldbox.system.testcontroller").init( expandPath(instance.AppMapping) );
 		/* Verify Persistence */
-		if( this.PERSIST_FRAMEWORK ){
-			structDelete(application,"cbController");
+		if( this.PERSIST_FRAMEWORK and not structKeyExists(application,"cbController") ){
 			application.cbController = instance.controller;
 		}
+		
 		/* Setup */
 		instance.controller.getLoaderService().setupCalls(instance.ConfigMapping,instance.AppMapping);
 		

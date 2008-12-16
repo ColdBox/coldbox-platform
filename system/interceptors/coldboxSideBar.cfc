@@ -243,7 +243,7 @@ Modification History:
 	<cffunction name="setPropertyDefault" access="private" returntype="void" output="false" hint="Insert a property">
 		<cfargument name="propertyName"  required="true" type="string">
 		<cfargument name="propertyValue" required="true" type="any">
-		<cfset StructInsert(getSideBarDefaults(), arguments.propertyName, arguments.propertyValue)>       
+		<cfset StructInsert(getSideBarDefaults(), arguments.propertyName, arguments.propertyValue, true)>       
 	</cffunction>
 
 	<!--- getPropertyDefault --->

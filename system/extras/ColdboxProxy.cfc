@@ -296,9 +296,10 @@ Description :
 					}
 					/* Load it Up baby!! */
 					cbController = CreateObject("component", "coldbox.system.controller").init( appRootPath );
-					cbController.getLoaderService().setupCalls(arguments.configLocation);
 					/* Put in Scope */
 					application.cbController = cbController;
+					/* Setup Calls */
+					cbController.getLoaderService().setupCalls(arguments.configLocation);					
 				}				
 				</cfscript>
 			</cflock>

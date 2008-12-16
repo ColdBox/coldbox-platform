@@ -108,11 +108,12 @@ Description :
 			
 			assertTrue(plugin.removeFile(direactoryPath & '\serialized.txt'));
 			// serialise component, its CF8
-			plugin._serializeToFile( sObject , direactoryPath & '\serializedCFC.txt');
+			if(not structKeyExists(server,"railo") ){
+				plugin._serializeToFile( sObject , direactoryPath & '\serializedCFC.txt');
 			
-			assertTrue(IsObject(plugin._deserializeFromFile(direactoryPath & '\serializedCFC.txt')));
-			
-			assertTrue(plugin.removeFile(direactoryPath & '\serializedCFC.txt'));
+				assertTrue(IsObject(plugin._deserializeFromFile(direactoryPath & '\serializedCFC.txt')));
+				assertTrue(plugin.removeFile(direactoryPath & '\serializedCFC.txt'));
+			}
 		</cfscript>
 		
 	</cffunction>

@@ -31,7 +31,7 @@ Description :
 			this.INTERCEPTOR_CACHEKEY_PREFIX = "cboxinterceptor_interceptor-";
 			
 			/* Init the Request Buffer */
-			instance.requestBuffer = CreateObject("component","coldbox.system.util.RequestBuffer").init(arguments.controller.oCFMLENGINE.JDK_VERSION);
+			instance.requestBuffer = CreateObject("component","coldbox.system.util.RequestBuffer").init();
 			
 			/* Return Service */			
 			return this;
