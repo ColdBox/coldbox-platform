@@ -31,7 +31,7 @@
 		<cfif renderType eq "main">
 		<div>
 		  <input type="button" value="Open Cache Monitor" name="cachemonitor" style="font-size:10px" title="Open the cache monitor in a new window." onClick="window.open('index.cfm?debugpanel=cache','cachemonitor','status=1,toolbar=0,location=0,resizable=1,scrollbars=1,height=750,width=800')">
-		  <br><br>
+		  <br>
 		</div>
 		<cfelse>
 		<div>
@@ -58,10 +58,13 @@
 		</div>
 
 		<div class="fw_debugTitleCell">
-		  Free Memory
+		  JVM Memory Stats
 		</div>
 		<div class="fw_debugContentCell">
-		 <em>#NumberFormat((JVMFreeMemory/JVMTotalMemory)*100,"99.99")# % Free  : Threshold=#controller.getColdboxOCM().getCacheConfigBean().getCacheFreeMemoryPercentageThreshold()#% (0=Unlimited)</em>
+		 <em>#NumberFormat((JVMFreeMemory/JVMMaxMemory)*100,"99.99")# % Free </em> |
+		 <em>JVM Threshold</em>:#controller.getColdboxOCM().getCacheConfigBean().getCacheFreeMemoryPercentageThreshold()#% (0=Unlimited) |
+		 <em>Total Assigned Memory: </em> #NumberFormat(JVMTotalMemory)# KB |
+		 <em>Max JVM Memory: </em> #NumberFormat(JVMMaxMemory)# KB		 
 		</div>
 
 		<div class="fw_debugTitleCell">
@@ -134,9 +137,28 @@
 			<br>
 		</cfif>
 
+		<!--- Content Report --->
+		<br />
 		<h3>Cache Content Report (Time: #timeformat(now(),"hh:mm:ss tt")#)</h3>
-		<div class="fw_cachetable">
+		<!--- Cache Commands --->
+		<input type="button" value="Expire All Keys" 
+			   name="cboxbutton_expirekeys"
+			   style="font-size:10px" 
+			   title="Expire all the keys in the cache" 
+			   onClick="location.href='index.cfm?cbox_command=expirecache&debugpanel=#event.getValue('debugPanel','')#'" />
+		<input type="button" value="Clear All Events" 
+			   name="cboxbutton_clearallevents"
+			   style="font-size:10px" 
+			   title="Remove all the events in the cache" 
+			   onClick="location.href='index.cfm?cbox_command=clearallevents&debugpanel=#event.getValue('debugPanel','')#'" />
+		<input type="button" value="Clear All Views" 
+			   name="cboxbutton_clearallviews"
+			   style="font-size:10px" 
+			   title="Remove all the views in the cache" 
+			   onClick="location.href='index.cfm?cbox_command=clearallviews&debugpanel=#event.getValue('debugPanel','')#'" />
+		
 		<!--- Object Charts --->
+		<div class="fw_cachetable">
 		<table border="0" align="center" cellpadding="0" cellspacing="1" class="fw_debugTables">
 		  <tr >
 		  	<th >Object</th>
@@ -145,6 +167,7 @@
 			<th align="center" width="10%" >Created</th>
 			<th align="center" width="10%" >Last Accessed</th>
 			<th align="center" width="10%" >Expires On</th>
+			<th align="center" width="5%" >CMDS</th>
 		  </tr>
 		  <cfset cacheKeyIndex = 1>
 		  <cfset cacheMetaData = controller.getColdboxOCM().getpool_metadata()>
@@ -159,6 +182,13 @@
 				<td align="center" >#dateformat(cacheMetadata[key].Created,"mmm-dd")# <Br/> #timeformat(cacheMetadata[key].Created,"hh:mm:ss tt")#</td>
 				<td align="center">#dateformat(cacheMetadata[key].lastaccesed,"mmm-dd")# <br/> #timeformat(cacheMetadata[key].lastaccesed,"hh:mm:ss tt")#</td>
 			 	<td align="center" class="fw_redText" ><cfif cacheMetadata[key].timeout eq 0>---<cfelse>#dateFormat(expDate,"mmm-dd")# <br /> #timeformat(expDate,"hh:mm:ss tt")#</cfif></td>
+			 	<td align="center">
+					<input type="button" value="DEL" 
+						   name="cboxbutton_removeentry"
+					  	   style="font-size:10px" 
+						   title="Remove this entry from the cache." 
+					   	   onClick="location.href='index.cfm?cbox_command=delcacheentry&cbox_cacheentry=#urlEncodedFormat(key)#&debugpanel=#event.getValue('debugPanel','')#'">
+				</td>
 			  </tr>
 			  <cfset cacheKeyIndex = cacheKeyIndex + 1>
 		  </cfloop>

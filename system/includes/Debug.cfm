@@ -198,10 +198,10 @@ Modification History:
 		<div class="fw_debugContent" id="fw_dumpvar">
 			<cfloop list="#dumplist#" index="i">
 				<cfif isDefined("#i#")>
-					<cfdump var="#evaluate(i)#" label="#i#">
+					<cfdump var="#evaluate(i)#" label="#i#" expand="false">
 				<cfelseif event.valueExists(i)>
 					<cfset _tmpvar = event.getValue(i)>
-					<cfdump var="#_tmpvar#" label="#i#">
+					<cfdump var="#_tmpvar#" label="#i#" expand="false">
 				</cfif>
 			</cfloop>
 		</div>
@@ -236,9 +236,9 @@ Modification History:
 					<cfquery name="varVal" dbType="query" maxrows="#getDebuggerConfigBean().getmaxRCPanelQueryRows()#">
 						select * from varVal
 					</cfquery>
-					<cfdump var="#varVal#" label="Query Truncated to #getDebuggerConfigBean().getmaxRCPanelQueryRows()# records">
+					<cfdump var="#varVal#" label="Query Truncated to #getDebuggerConfigBean().getmaxRCPanelQueryRows()# records" expand="false">
 				<cfelse>
-					<cfdump var="#Event.getValue(vars)#">
+					<cfdump var="#Event.getValue(vars)#" expand="false">
 				</cfif>				
 			</cfif>
 			</td>

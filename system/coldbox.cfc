@@ -96,12 +96,12 @@ Description :
 	
 	<!--- Process A ColdBox Request --->
 	<cffunction name="processColdBoxRequest" access="public" returntype="void" hint="Process a Coldbox Request" output="true" >
-		<cfset var cbController = "">
-		<cfset var Event = "">
-		<cfset var ExceptionService = "">
-		<cfset var ExceptionBean = "">
+		<cfset var cbController = 0>
+		<cfset var Event = 0>
+		<cfset var ExceptionService = 0>
+		<cfset var ExceptionBean = 0>
 		<cfset var renderedContent = "">
-		<cfset var eventCacheEntry = "">
+		<cfset var eventCacheEntry = 0>
 		<cfset var interceptorData = structnew()>
 		
 		<!--- Start Application Requests --->
@@ -113,8 +113,11 @@ Description :
 				<cfset cbController = application.cbController>
 				<!--- Create Request Context & Capture Request --->
 				<cfset Event = cbController.getRequestService().requestCapture()>
-				<!--- Debugging Monitors Check --->
+				
+				<!--- Debugging Monitors & Commands Check --->
 				<cfif cbController.getDebuggerService().getDebugMode()>
+					<!--- Commands Check --->
+					<cfset coldboxCommands(cbController,event)>
 					<!--- Which panel to render --->
 					<cfif event.getValue("debugPanel","") eq "cache">
 						<cfoutput>#cbController.getDebuggerService().renderCachePanel()#</cfoutput>
@@ -125,7 +128,7 @@ Description :
 					<cfelseif event.getValue("debugPanel","") eq "profiler">
 						<cfoutput>#cbController.getDebuggerService().renderProfiler()#</cfoutput>
 						<cfabort>
-					</cfif>
+					</cfif>					
 				</cfif>
 			
 				<!--- Application Start Handler --->
@@ -352,6 +355,31 @@ Description :
 	</cffunction>
 	
 <!------------------------------------------- PRIVATE ------------------------------------------->	
+	
+	<!--- coldboxCommands --->
+	<cffunction name="coldboxCommands" output="false" access="private" returntype="void" hint="Execute some coldbox commands">
+		<cfargument name="cbController" type="any" required="true" default="" hint="The cb Controller"/>
+		<cfargument name="event" 		type="any" required="true" hint="An event context object"/>
+		<cfset var command = event.getTrimValue("cbox_command","")>
+		<cfscript>
+			/* Verify it */
+			if( len(command) eq 0 ){ return; }
+			/* Commands */
+			switch(command){
+				case "expirecache" : {cbController.getColdboxOCM().expireAll();break;}
+				case "delcacheentry" : {cbController.getColdboxOCM().clearKey(event.getValue('cbox_cacheentry',""));break;}
+				case "clearallevents" : {cbController.getColdboxOCM().clearAllEvents();break;}
+				case "clearallviews" : {cbController.getColdboxOCM().clearAllViews();break;}
+				default: break;
+			}
+		</cfscript>
+		<!--- Relocate --->
+		<cfif event.getValue("debugPanel","") eq "">
+			<cflocation url="index.cfm" addtoken="false">
+		<cfelse>
+			<cflocation url="index.cfm?debugpanel=#event.getValue('debugPanel','')#" addtoken="false">
+		</cfif>
+	</cffunction>
 	
 	<!--- Getter setter lock timeout --->
 	<cffunction name="getLockTimeout" access="private" output="false" returntype="numeric" hint="Get LockTimeout">

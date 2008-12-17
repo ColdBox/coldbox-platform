@@ -72,6 +72,7 @@ Modification History:
 		<cfset var JVMRuntime = controller.getColdboxOCM().getJavaRuntime().getRuntime()>
 		<cfset var JVMFreeMemory = JVMRuntime.freeMemory()/1024>
 		<cfset var JVMTotalMemory = JVMRuntime.totalMemory()/1024>
+		<cfset var JVMMaxMemory = JVMRuntime.maxMemory()/1024>
 
 		<!--- Render debuglog --->
 		<cfsavecontent variable="RenderedDebugging"><cfinclude template="../includes/Debug.cfm"></cfsavecontent>
@@ -96,6 +97,7 @@ Modification History:
 		<cfset var JVMRuntime = controller.getColdboxOCM().getJavaRuntime().getRuntime()>
 		<cfset var JVMFreeMemory = JVMRuntime.freeMemory()/1024>
 		<cfset var JVMTotalMemory = JVMRuntime.totalMemory()/1024>
+		<cfset var JVMMaxMemory = JVMRuntime.maxMemory()/1024>
 
 		<!--- Debug Rendering Type --->
 		<cfset var renderType = "CachePanel">

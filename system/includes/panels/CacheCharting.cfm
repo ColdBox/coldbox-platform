@@ -1,17 +1,27 @@
+<cfscript>
+	if( structKeyExists(server,"railo") ){
+		show3d = false;	
+	}
+	else{
+		show3d = true;
+	}
+</cfscript>
 <div>
 <table align="center" width="100%" border="1" cellpadding="0" cellspacing="0" style="background:white">
 	<tr>
 		<td align="center">
-		<cfchart format="png" show3d="true" backgroundcolor="##ffffff" gridlines="true" chartwidth="275">
-			<cfchartseries type="pie" colorlist="85ca0a,1e3aca" >
+		<cfchart format="png" show3d="false" backgroundcolor="##ffffff" gridlines="true" 
+				 chartwidth="275" >
+			<cfchartseries type="pie" colorlist="85ca0F,172A7F" >
 				<cfchartdata item="Free Memory (KB)"  value="#JVMFreeMemory#">
-				<cfchartdata item="Used Memory (KB)" value="#JVMTotalMemory-JVMFreeMemory#">
+				<cfchartdata item="Used Memory (KB)" value="#JVMMaxMemory-JVMFreeMemory#">
 			</cfchartseries>
 		</cfchart>
 		</td>
 		<td align="center">
-		<cfchart format="png" show3d="true" backgroundcolor="##ffffff" chartwidth="200" chartheight="300" showlegend="true">
-			<cfchartseries type="bar" colorlist="93C2FF,ED2939,FF6F9D">
+		<cfchart format="png" show3d="#show3d#" backgroundcolor="##ffffff" 
+				 chartwidth="200" chartheight="300" showlegend="true">
+			<cfchartseries type="bar" colorlist="93C2DD,ED2939,FF6F9D" >
 				<cfchartdata item="Hits" value="#controller.getColdboxOCM().getCacheStats().getHits()#">
 				<cfchartdata item="Misses" value="#controller.getColdboxOCM().getCacheStats().getMisses()#">
 				<cfchartdata item="Garbage Collections" value="#controller.getColdboxOCM().getCacheStats().getGarbageCollections()#">
@@ -20,8 +30,8 @@
 		</cfchart>
 		</td>
 		<td align="center">
-		<cfchart format="png" show3d="true" backgroundcolor="##ffffff" gridlines="true" chartwidth="275">
-			<cfchartseries type="pie" colorlist="800010" >
+		<cfchart format="png" show3d="#show3d#" backgroundcolor="##ffffff" gridlines="true" chartwidth="275">
+			<cfchartseries type="pie" colorlist="AA0000" >
 				<cfchartdata item="Plugins" value="#itemTypes.plugins#">
 				<cfchartdata item="Handlers" value="#itemTypes.handlers#">
 				<cfchartdata item="Events" value="#itemTypes.events#">

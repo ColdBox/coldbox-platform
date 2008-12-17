@@ -225,7 +225,7 @@ Modification History:
 	    <cfif isSimpleValue(Exception.getExtraInfo())>
 	   		<cfif Exception.getExtraInfo() eq "">[N/A]<cfelse>#Exception.getExtraInfo()#</cfif>
 	   	<cfelse>
-	   		<cfdump var="#Exception.getExtraInfo()#">
+	   		<cfdump var="#Exception.getExtraInfo()#" expand="false">
 		</cfif>
 	    </td>
 	 </tr>
