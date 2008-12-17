@@ -2,7 +2,7 @@
 <Config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
  xsi:noNamespaceSchemaLocation="../system/config/config.xsd">
 	<Settings>
-		<Setting name="AppName" 					value="coldbox testharness"/>
+		<Setting name="AppName" 					value="ColdBox TestHarness"/>
 		<Setting name="AppMapping"					value="/coldbox/testharness" />
 		<Setting name="DebugMode" 					value="false"/>
 		<Setting name="DebugPassword" 				value="coldbox"/>
@@ -131,6 +131,7 @@
 	
 	<Interceptors throwOnInvalidStates="true">
 		<CustomInterceptionPoints>onLog</CustomInterceptionPoints>
+		
 		<Interceptor class="coldbox.system.interceptors.environmentControl">
 			<Property name="configFile">config/environments.xml.cfm</Property>
 			<Property name="fireOnInit">true</Property>
@@ -146,48 +147,18 @@
 		<Interceptor class="coldbox.system.interceptors.ses">
 			<Property name="configFile">/config/routes.cfm</Property>
 		</Interceptor>
+		
 		<Interceptor class="${AppMapping}.interceptors.errorObserver" />
 		<Interceptor class="${AppMapping}.interceptors.iocObserver" />
+		
 		<Interceptor class="coldbox.system.interceptors.security">
 	        <Property name="rulesSource">xml</Property>
 	        <Property name="rulesFile">config/security.xml.cfm</Property>
 	        <Property name="debugMode">true</Property>
 	        <Property name="preEventSecurity">true</Property>
 		</Interceptor>	
-		
 		<!-- Developer's ColdBox Sidebar -->
-		<Interceptor class="coldbox.system.interceptors.coldboxSideBar">
-			<!-- Y offset: number, else leave blank -->
-			<Property name="yOffset"></Property>
-			<!-- Scroll: true/false, else leave blank -->
-			<Property name="isScroll"></Property>
-			<!-- Slide Speed: number, else leave blank -->
-			<Property name="slideSpeed"></Property>
-			<!-- Wait time before closing: number, else leave blank -->
-			<Property name="waitTimeBeforeClose"></Property>
-			<!-- Links (JSON array of objects), else leave blank
-			e.g. 
-				[
-				{"desc":"ColdBox API","href":"http:\/\/www.coldboxframework.com\/api\/"}
-				,{"desc":"ColdBox Credits","href":"http:\/\/ortus.svnrepository.com\/coldbox\/trac.cgi\/wiki\/cbCredits"}
-				,{"desc":"ColdBox SideBar Help","href":"http:\/\/ortus.svnrepository.com\/coldbox\/trac.cgi\/wiki\/cbSideBar"}
-				,{"desc":"Transfer Docs","href":"http:\/\/docs.transfer-orm.com\/"}
-				,{"desc":"My API","href":"http:\/\/localhost\/myApi/"}
-				,{"desc":"My Database Schema","href":"http:\/\/localhost\/myDatabaseSchema.pdf"}
-				]			
-			 -->
- 			<Property name="links"></Property>
-			<!-- Width of the sidebar including visible width, else leave blank -->
-			<Property name="width"></Property>
-			<!-- Visible width, else leave blank  -->
-			<Property name="visibleWidth"></Property>
-			<!--Full path from the application's root, else leave blank. -->
-			<Property name="imagePath"></Property>
-			<!-- Vertical alignment of the image: top,middle or bottom, else leave blank  -->
-			<Property name="imageVAlign"></Property>
-			<!--Full path from the application's root, else leave blank -->
-			<Property name="cssPath"></Property>
-		</Interceptor>	
+		<Interceptor class="coldbox.system.interceptors.coldboxSideBar" />
 	</Interceptors>
 
 </Config>
