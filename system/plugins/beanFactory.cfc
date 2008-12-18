@@ -75,17 +75,22 @@ Description: This is the framework's simple bean factory.
 	</cffunction>
 	
 	<!--- Add Model Mapping --->
-	<cffunction name="addModelMapping" access="public" returntype="void" hint="Add a new model mapping. Ex: addModelMapping('myBean','security.test.FormBean')" output="false" >
+	<cffunction name="addModelMapping" access="public" returntype="void" hint="Add a new model mapping. Ex: addModelMapping('myBean','security.test.FormBean'). The alias can be a single item or a comma delimmitted list" output="false" >
 		<!--- ************************************************************* --->
-		<cfargument name="alias" required="false" type="string" hint="The model alias">
+		<cfargument name="alias" required="false" type="string" hint="The model alias to use, this can also be a list of aliases. Ex: SecurityService,Security">
 		<cfargument name="path"  required="true" type="string" hint="The model class path (From the model conventions downward)">
 		<!--- ************************************************************* --->
 		<cfscript>
 			var mappings = getModelMappings();
+			var x = 1;
+			/* Default Alias is from the path. */
 			if(not structKeyExists(arguments,"alias") ){
 				arguments.alias = listlast(arguments.path,".");
 			}
-			mappings[arguments.alias] = arguments.path;
+			/* Loop */
+			for(x=1;x lte listlen(arguments.alias); x=x+1){
+				mappings[listgetAt(arguments.alias,x)] = arguments.path;
+			}
 		</cfscript> 
 	</cffunction>
 	
