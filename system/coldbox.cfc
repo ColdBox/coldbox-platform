@@ -290,7 +290,9 @@ Description :
 					//Place app reference on event object
 					event.setValue("applicationReference", arguments.appScope);
 					//Execute the Handler
-					cbController.runEvent(cbController.getSetting("SessionEndHandler"),true);
+					cbController.runEvent(event=cbController.getSetting("SessionEndHandler"),
+										  prepostExempt=true,
+										  default=true);
 				}
 			}
 		</cfscript>
