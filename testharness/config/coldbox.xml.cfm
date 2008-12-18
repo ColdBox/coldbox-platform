@@ -5,7 +5,7 @@
 		<Setting name="AppName" 					value="ColdBox TestHarness"/>
 		<Setting name="AppMapping"					value="/coldbox/testharness" />
 		<Setting name="DebugMode" 					value="false"/>
-		<Setting name="DebugPassword" 				value="coldbox"/>
+		<Setting name="DebugPassword" 				value=""/>
 		<Setting name="ReinitPassword" 				value=""/>
 		<Setting name="EventName" 					value="event"/>
 		<Setting name="EnableDumpVar" 				value="true"/>
@@ -17,7 +17,7 @@
 		<Setting name="RequestEndHandler" 			value=""/>
 		<Setting name="ApplicationStartHandler"		value="ehGeneral.onApplicationStart" />
 		<Setting name="SessionStartHandler"		    value="ehGeneral.onSessionStart" />
-		<Setting name="SessionEndHandler"		    value="ehGeneral.onSessionEnd" />
+		<Setting name="SessionEndHandler"		    value="" />
 		<Setting name="OwnerEmail" 					value="info@coldboxframework.com"/>
 		<Setting name="EnableBugReports" 			value="false"/>
 		<Setting name="UDFLibraryFile" 				value="includes/udf.cfm" />
