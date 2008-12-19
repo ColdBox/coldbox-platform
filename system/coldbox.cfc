@@ -212,9 +212,9 @@ Description :
 					<cfset ExceptionService = cbController.getExceptionService()>
 					
 					<!--- Intercept The Exception --->
-					<cfset interceptData = structnew()>
-					<cfset interceptData.exception = cfcatch>
-					<cfset cbController.getInterceptorService().processState("onException",interceptData)>
+					<cfset interceptorData = structnew()>
+					<cfset interceptorData.exception = cfcatch>
+					<cfset cbController.getInterceptorService().processState("onException",interceptorData)>
 					
 					<!--- Handle The Exception --->
 					<cfset ExceptionBean = ExceptionService.ExceptionHandler(cfcatch,"application","Application Execution Exception")>
