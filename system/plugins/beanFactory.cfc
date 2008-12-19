@@ -487,23 +487,24 @@ Description: This is the framework's simple bean factory.
 		<!--- ************************************************************* --->
 		<cfscript>
 			var dependency = instance.NOT_FOUND;
+			var thisType = listFirst(arguments.Definition.type,":");
 			
 			/* Determine Type of Injection according to Type */
-			if( arguments.Definition.type eq "ioc" ){
+			if( thisType eq "ioc" ){
 				dependency = getIOCDependency(arguments.Definition);
 			}
-			else if (arguments.Definition.type eq "ocm"){
+			else if (thisType eq "ocm"){
 				dependency = getOCMDependency(arguments.Definition);
 			}
-			else if ( listFirst(arguments.Definition.type,":") eq "coldbox" ){
+			else if ( thisType eq "coldbox" ){
 				/* Try to inject coldbox dependencies */
 				dependency = getColdboxDSL(arguments.Definition);
 			}
-			else if ( listFirst(arguments.Definition.type,":") eq "model" ){
+			else if ( thisType eq "model" ){
 				/* Try to inject model dependencies */
 				dependency = getModelDSL(arguments.Definition);
 			}	
-			else if ( listFirst(arguments.Definition.type,":") eq "webservice" ){
+			else if ( thisType eq "webservice" ){
 				/* Try to inject webservice dependencies */
 				dependency = getWebserviceDSL(arguments.Definition);
 			}
@@ -654,14 +655,29 @@ Description: This is the framework's simple bean factory.
 		<!--- ************************************************************* --->
 		<cfscript>
 			var oIOC = getPlugin("ioc");
+			var thisDependency = arguments.Definition;
+			var thisType = thisDependency.type;
+			var thisTypeLen = listLen(thisType,":");
+			var thisLocationType = "";
+			var thisLocationKey = "";
+			var locatedDependency = instance.NOT_FOUND;
+			
 			//dump(arguments.definition);abort();
-			/* Verify that bean exists in the IOC container. */
-			if( oIOC.getIOCFactory().containsBean(arguments.Definition.name) ){
-				return oIOC.getBean(arguments.Definition.name);
+			/* 1 stage dependency: ioc only*/
+			if( thisTypeLen eq 1 ){
+				if( oIOC.getIOCFactory().containsBean(arguments.Definition.name) ){
+					locatedDependency = oIOC.getBean(arguments.Definition.name);
+				}
 			}
-			else{
-				return instance.NOT_FOUND;
+			/* 2 stage dependencies. ioc:beanName */
+			else if(thisTypeLen eq 2){
+				thisLocationKey = getToken(thisType,2,":");
+				if( oIOC.getIOCFactory().containsBean(thisLocationKey) ){
+					locatedDependency = oIOC.getBean(thisLocationKey);
+				}
 			}
+			
+			return locatedDependency;
 		</cfscript>
 	</cffunction>
 	
@@ -673,13 +689,29 @@ Description: This is the framework's simple bean factory.
 		<cfscript>
 			var oOCM = getColdboxOCM();
 			var thisDependency = arguments.Definition;
-			/* Verify that bean exists in the Cache container. */
-			if( oOCM.lookup(thisDependency.name) ){
-				return oOCM.get(thisDependency.name);
+			var thisType = thisDependency.type;
+			var thisTypeLen = listLen(thisType,":");
+			var thisLocationType = "";
+			var thisLocationKey = "";
+			var locatedDependency = instance.NOT_FOUND;
+			
+			/* 1 stage dependency: ocm only */
+			if( thisTypeLen eq 1 ){
+				/* Verify that dependency exists in the Cache container. */
+				if( oOCM.lookup(thisDependency.name) ){
+					locatedDependency = oOCM.get(thisDependency.name);
+				}
 			}
-			else{
-				return instance.NOT_FOUND;
-			}
+			/* 2 stage dependencies. ocm:ObjectKey */
+			else if(thisTypeLen eq 2){
+				thisLocationKey = getToken(thisType,2,":");
+				/* Verify that dependency exists in the Cache container. */
+				if( oOCM.lookup(thisLocationKey) ){
+					locatedDependency = oOCM.get(thisLocationKey);
+				}			
+			}			
+			
+			return locatedDependency;
 		</cfscript>
 	</cffunction>
 	
@@ -697,7 +729,6 @@ Description: This is the framework's simple bean factory.
 			var entry = structnew();
 			var cbox_reserved_functions = "setSetting,setDebugMode,setNextEvent,setNextRoute,setController,settingExists,setPluginName,setPluginVersion,setPluginDescription,setProperty,setproperties";
 			var foundDependencies = "";
-			var DSLNamespaces = "coldbox,ioc,ocm";
 			
 			/* Look for Object's attributes, and override if found. */
 			if( structKeyExists(md,"autowire_stoprecursion") ){
@@ -711,9 +742,11 @@ Description: This is the framework's simple bean factory.
 				for(x=1; x lte ArrayLen(md.properties); x=x+1 ){
 					/* Check types are valid for autowiring. */
 					if( structKeyExists(md.properties[x],"type") AND 
-						( listFindNoCase(DSLNamespaces,md.properties[x].type) OR
+						( findnocase("webservice",md.properties[x].type) OR
 						  findnocase("model",md.properties[x].type) OR
-						  findnocase("coldbox",md.properties[x].type) )  	
+						  findnocase("coldbox",md.properties[x].type) OR
+						  findnocase("ioc",md.properties[x].type) OR
+						  findnocase("ocm",md.properties[x].type) )  	
 					){
 						/* New MD Entry */
 						entry = structnew();
