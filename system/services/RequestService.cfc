@@ -60,10 +60,10 @@ Modification History:
 				/* Remove Flash persistance */
 				oFlashStorage.deleteVar('_coldbox_persistStruct');
 			}	
-			
+					
 			/* Object Caching Garbage Collector */
 			controller.getColdboxOCM().reap();
-			
+				
 			/* Debug Mode Checks */
 			if ( Context.valueExists("debugMode") and isBoolean(Context.getValue("debugMode")) ){
 				if ( DebugPassword eq "")
@@ -94,7 +94,6 @@ Modification History:
 	<cffunction name="EventCachingTest" access="public" output="false" returntype="void" hint="Tests if the incoming context is an event cache">
 		<!--- ************************************************************* --->
 		<cfargument name="context" 			required="true"  type="any" hint="The request context to test for event caching.">
-		<cfargument name="overrideCheck"	required="false" type="boolean" hint="To override the request flag check">
 		<!--- ************************************************************* --->
 		<cfscript>
 			var eventCacheKey = "";
@@ -102,12 +101,11 @@ Modification History:
 			var EventDictionary = 0;
 			var oOCM = controller.getColdboxOCM();
 			
-			/* Cache Test */
-			if( structKeyExists(request,"cb_eventcacheTested") and arguments.overrideCheck eq false){
-				return;
-			}
 			/* Are we using event caching? */
 			if ( controller.getSetting("EventCaching") ){
+				/* Cleanup the cache key, just in case, maybe ses interceptor has been used. */
+				Context.removeEventCacheableEntry();
+					
 				/* Get Entry */
 				EventDictionary = getController().getHandlerService().getEventMetaDataEntry(Context.getCurrentEvent());	
 				
@@ -115,10 +113,9 @@ Modification History:
 				
 				/* Verify that it is cacheable, else quit, no need for testing anymore. */
 				if( not EventDictionary.cacheable ){
-					/* Cleanup the cache key, just in case, maybe ses interceptor has been used. */
-					Context.removeEventCacheableEntry();
 					return;	
 				}
+				
 				/* setup the cache key. */
 				eventCacheKey = oEventURLFacade.buildEventKey(EventDictionary.prefix,
 															  EventDictionary.suffix,
@@ -131,14 +128,10 @@ Modification History:
 				}
 				/* Determine if this event has been cached */
 				else if ( oOCM.lookup(eventCacheKey) ){
-					/* Cleanup the cache key, just in case. */
-					Context.removeEventCacheableEntry();
 					/* Event has been found, flag it so we can render it */
 					Context.setEventCacheableEntry(eventCacheKey);
 				}//end else no purging
 				
-				/* Marker Test */
-				request.cb_eventcacheTested = true;
 			}//If using event caching.
 		</cfscript>
 	</cffunction>
