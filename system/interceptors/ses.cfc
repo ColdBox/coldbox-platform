@@ -318,7 +318,7 @@ Description :
 		</cfloop>
 		
 		<!--- Convention String, where it will translate the remaining name-value pairs into vars --->
-		<cfset leftOverLen = len(requestString)-(match.pos[arraylen(match.pos)]+match.len[arrayLen(match.len)])>
+		<cfset leftOverLen = len(requestString)-(match.pos[arraylen(match.pos)]+match.len[arrayLen(match.len)]-1)>
 		<cfif leftOverLen gt 0>
 			<cfset conventionString		= right(requestString,leftOverLen)>
 			<cfset conventionStringLen 	= listLen(conventionString,'/')>
