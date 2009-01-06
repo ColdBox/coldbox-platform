@@ -98,24 +98,19 @@ Modification History:
 			/* Configure the Debugger with framework wide settings.*/
 			controller.getDebuggerService().setDebuggerConfigBean(DebuggerConfigBean);
 			
-			//Initialize Logging if requested.
-			if ( controller.getSetting("EnableColdboxLogging") ){
-				controller.getPlugin("logger").initLogLocation();
-			}
-			
-			//Register The Interceptors
+			/* Register The Interceptors */
 			controller.getInterceptorService().registerInterceptors();
 			
-			// Flag the initiation, Framework is ready to serve requests. Praise be to GOD.
+			/* Flag the initiation, Framework is ready to serve requests. Praise be to GOD. */
 			controller.setColdboxInitiated(true);
 			
-			//Execute afterConfigurationLoad
+			/* Execute afterConfigurationLoad */
 			controller.getInterceptorService().processState("afterConfigurationLoad");
 			
-			//Register Aspects
+			/* Register Aspects */
 			registerAspects();
 			
-			//Execute afterAspectsLoad
+			/* Execute afterAspectsLoad */
 			controller.getInterceptorService().processState("afterAspectsLoad");			
 		</cfscript>
 	</cffunction>
@@ -123,13 +118,18 @@ Modification History:
 	<!--- Register the Aspects --->
 	<cffunction name="registerAspects" access="public" returntype="void" hint="I Register the current Application's Aspects" output="false" >
 		<cfscript>
-		//IoC Plugin Manager Configuration
+		/* Initialize Logging if requested. */
+		if ( controller.getSetting("EnableColdboxLogging") ){
+			controller.getPlugin("logger").initLogLocation();
+		}
+		
+		/* IoC Plugin Manager Configuration */
 		if ( controller.getSetting("IOCFramework") neq "" ){
 			//Create IoC Factory and configure it.
 			controller.getPlugin("ioc").configure();
 		}
 
-		//Load i18N if application is using it.
+		/* Load i18N if application is using it. */
 		if ( controller.getSetting("using_i18N") ){
 			//Create i18n Plugin and configure it.
 			controller.getPlugin("i18n").init_i18N(controller.getSetting("DefaultResourceBundle"),controller.getSetting("DefaultLocale"));
@@ -137,10 +137,10 @@ Modification History:
 		
 		//JavaLoader Setup will go here.
 
-		//Set Debugging Mode according to configuration File
+		/* Set Debugging Mode according to configuration File */
 		controller.getDebuggerService().setDebugMode(controller.getSetting("DebugMode"));
 		
-		// Flag the aspects inited.
+		/* Flag the aspects inited. */
 		controller.setAspectsInitiated(true);
 		</cfscript>
 	</cffunction>
