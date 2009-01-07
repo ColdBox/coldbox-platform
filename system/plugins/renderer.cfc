@@ -185,7 +185,7 @@ Description :
 						<cfthrow type="plugins.renderer.RenderExternalViewNotFoundException" message="The external view: #arguments.view# cannot be found. Please check your paths." >
 					</cfcatch>
 					<cfcatch type="any">
-						<cfthrow type="plugins.renderer.RenderExternalViewInvalidException" message="The external view: #arguments.view# threw an invalid exception when redering." >
+						<cfrethrow />
 					</cfcatch>
 				</cftry>
 			</cfmodule>
