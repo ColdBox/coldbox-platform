@@ -21,6 +21,12 @@
         </constructor-arg>
     </bean>
     
+    <bean id="testService" class="coldbox.testharness.model.testService" singleton="true" >
+        <property name="testGateway">
+            <bean class="coldbox.testharness.model.testGateway" />
+        </property>
+    </bean>
+    
     <bean id="testModel" class="coldbox.testharness.model.testModel" singleton="true">
         <constructor-arg name="UpdateWS"><ref bean="UpdateWS" /></constructor-arg>
         <constructor-arg name="Test"><value>Test</value></constructor-arg>
