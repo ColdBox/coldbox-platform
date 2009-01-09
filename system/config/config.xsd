@@ -73,7 +73,8 @@
 									<xs:enumeration value="SessionEndHandler"/>						
 									<xs:enumeration value="UDFLibraryFile"/>		
 									<xs:enumeration value="ViewsExternalLocation" />
-									<xs:enumeration value="ModelsExternalLocation" />																		
+									<xs:enumeration value="ModelsExternalLocation" />
+									<xs:enumeration value="ModelsObjectCaching" />																		
 								</xs:restriction>
 							</xs:simpleType>
 						</xs:attribute>

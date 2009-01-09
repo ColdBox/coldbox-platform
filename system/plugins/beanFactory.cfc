@@ -170,23 +170,26 @@ Description: This is the framework's simple bean factory.
 					if( structKeyExists(oModel,"init") ){
 						oModel.init(argumentCollection=getConstructorArguments(oModel));
 					}
-					/* Caching Metadata */
-					md = getMetadata(oModel);
-					if( not structKeyExists(md,"cache") or not isBoolean(md.cache) ){
-						md.cache = false;
-					}
-					/* Are we Caching? */
-					if( md.cache ){
-						/* Prepare Timeouts and info. */
-						if( not structKeyExists(md,"cachetimeout") or not isNumeric(md.cacheTimeout) ){
-							md.cacheTimeout = "";
+					/* Caching Enabled */
+					if( getSetting("ModelsObjectCaching") ){
+						/* Caching Metadata */
+						md = getMetadata(oModel);
+						if( not structKeyExists(md,"cache") or not isBoolean(md.cache) ){
+							md.cache = false;
 						}
-						if( not structKeyExists(md,"cacheLastAccessTimeout") or not isNumeric(md.cacheLastAccessTimeout) ){
-							md.cacheLastAccessTimeout = "";
+						/* Are we Caching? */
+						if( md.cache ){
+							/* Prepare Timeouts and info. */
+							if( not structKeyExists(md,"cachetimeout") or not isNumeric(md.cacheTimeout) ){
+								md.cacheTimeout = "";
+							}
+							if( not structKeyExists(md,"cacheLastAccessTimeout") or not isNumeric(md.cacheLastAccessTimeout) ){
+								md.cacheLastAccessTimeout = "";
+							}
+							/* Cache This Puppy. */
+							getColdBoxOCM().set(arguments.name,oModel,md.cacheTimeout,md.CacheLastAccessTimeout);
 						}
-						/* Cache This Puppy. */
-						getColdBoxOCM().set(arguments.name,oModel,md.cacheTimeout,md.CacheLastAccessTimeout);
-					}
+					}//end if caching enabled via settings.
 					
 					/* Autowire Dependencies */
 					autowire(target=oModel,

@@ -489,6 +489,10 @@ Modification History:
 			//Check for Models External Location
 			if ( not structKeyExists(ConfigStruct, "ModelsExternalLocation") or len(ConfigStruct["ModelsExternalLocation"]) eq 0 )
 				ConfigStruct["ModelsExternalLocation"] = "";
+			
+			//Check for Models ObjectCaching
+			if ( not structKeyExists(ConfigStruct, "ModelsObjectCaching") or not isBoolean(ConfigStruct["ModelsObjectCaching"]) )
+				ConfigStruct["ModelsObjectCaching"] = true;
 				
 			/* Flash URL Persist Scope Override */
 			if( structKeyExists(ConfigStruct,"FlashURLPersistScope") and reFindnocase("^(session|client)$",ConfigStruct["FlashURLPersistScope"]) ){
