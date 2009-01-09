@@ -314,7 +314,7 @@ Description: This is the framework's simple bean factory.
 					beanInstance = arguments.formBean;
 				}
 				
-				/* Determine Method of popuation */
+				/* Determine Method of population */
 				if( structKeyExists(arguments,"scope") and len(trim(arguments.scope)) neq 0 ){
 					/* Mix the Bean */
 					getPlugin("methodInjector").start(beanInstance);
@@ -340,7 +340,15 @@ Description: This is the framework's simple bean factory.
 				return beanInstance;
 			}
 			catch(Any e){
-				throw(type="ColdBox.plugins.beanFactory.PopulateBeanException",message="Error populating bean.",detail="#e.Detail#<br>#e.message#");
+				if (isObject(arguments.memento[key]) OR isCustomFunction(arguments.memento[key])){
+					arguments.keyTypeAsString = getMetaData(arguments.memento[key]).name;
+				} 
+				else{
+		        	arguments.keyTypeAsString = arguments.memento[key].getClass().getCanonicalName();
+				}
+				throw(type="ColdBox.plugins.beanFactory.PopulateBeanException",
+					  message="Error populating bean #getMetaData(beanInstance).name# with argument #key# of type #arguments.keyTypeAsString#.",
+					  detail="#e.Detail#<br>#e.message#");
 			}
 		</cfscript>
 	</cffunction>
