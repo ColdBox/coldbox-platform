@@ -1,4 +1,4 @@
-﻿/*
+/*
  * jQuery Form Validation plug-in version 1.1.5
  * Last Update : July 13, 2008
  * New features:
@@ -92,7 +92,7 @@ if (!window.jQuery) {
 	
 		settings = jQuery.extend({
 			version				: '1.1.2',
-			email					:	/^([\w.])+\@(([\w])+\.)[a-zA-Z0-9]{2,}/,
+			email					:	/^([\w.])+\@(([\w-])+\.)[a-zA-Z0-9]{2,}/,
 			domain				:	/^(http:\/\/)([\w]+\.){1,}[A-Z]{2,4}\b/gi,
 			phone					:	/^\+[0-9]{1,3}\.[1-9]{1,2}\.[0-9]{6,}$/gi,
 			zip						:	/^[0-9]{4,}$/gi,
