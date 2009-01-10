@@ -46,6 +46,9 @@
 		<Setting name="MyArray"  value="[1,2,3,4,5,6]"/>
 		<Setting name="MyBaseURL"  value="apps.jfetmac" />
 		
+		<!-- Log Level -->
+		<Setting name="logger_loglevel"  value="2"/>
+		
 		<!-- RSS REader -->
 		<Setting name="feedReader_useCache"  value="true" />
 		<Setting name="feedReader_cacheType"  value="ram" />
