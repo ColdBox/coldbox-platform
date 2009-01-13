@@ -96,6 +96,8 @@ Description :
 			var oXML = "";
 			var configSettings = getController().getConfigSettings();
 			var thisValue = "";
+			var oUtilities = getPlugin("Utilities");
+			var oJSON = getPlugin("json");
 		
 			//Parse it
 			oXML = XMLParse(getConfigFile());
@@ -117,10 +119,12 @@ Description :
 				//Loop And set
 				for ( i=1; i lte settingsLength; i=i+1){
 					thisValue = trim(SettingsArray[i].xmlAttributes.value);
+					/* Replace ${setting} */
+					thisValue = oUtilities.placeHolderReplacer(trim(thisValue),configSettings);
 					/* json decoding */
 					if ( (left(thisValue,1) eq "[" AND right(thisValue,1) eq "]") OR
 					     (left(thisValue,1) eq "{" AND right(thisValue,1) eq "}") ){
-					     	thisValue = getPlugin("json").decode(replace(thisValue,"'","""","all"));
+					     	thisValue = oJSON.decode(replace(thisValue,"'","""","all"));
 					}
 					
 					/* Check if overriding a set setting */
