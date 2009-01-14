@@ -501,16 +501,11 @@ Modification History:
 				poolKeys = listToArray(structKeyList(poolStruct));
 				poolKeysLength = ArrayLen(poolKeys);
 				
-				//Reaping about to start, set new reaping date.
-				getCacheStats().setlastReapDatetime( now() );
-				
 				//Loop Through Metadata
 				for (keyIndex=1; keyIndex lte poolKeysLength; keyIndex=keyIndex+1){
-					
-					//This Key
+					//This Key to check
 					thisKey = poolKeys[keyIndex];
-					
-					//Override Timeout Check
+					//Reap only non-eternal objects that have timeous gt 0
 					if ( poolStruct[thisKey].Timeout gt 0 ){
 						//Check for creation timeouts and clear
 						if ( dateDiff("n", poolStruct[thisKey].created, now() ) gte poolStruct[thisKey].Timeout ){
@@ -522,7 +517,7 @@ Modification History:
 						}
 						//Check for last accessed timeouts. If object has not been accessed in the default span
 						if ( ccBean.getCacheUseLastAccessTimeouts() and 
-						     dateDiff("n", poolStruct[thisKey].lastAccesed, now() ) gte ccBean.getCacheObjectDefaultLastAccessTimeout() ){
+						     dateDiff("n", poolStruct[thisKey].lastAccesed, now() ) gte poolStruct[thisKey].LastAccessTimeout ){
 							/* Clear the Key */
 							clearKey(thisKey);
 							/* Announce Expiration */
@@ -530,8 +525,11 @@ Modification History:
 							continue;
 						}
 					}//end timeout gt 0
-					
-				}//end looping over keys				
+				}//end looping over keys
+				
+				//Reaping about to start, set new reaping date.
+				getCacheStats().setlastReapDatetime( now() );
+								
 			}// end reaping frequency check			
 		</cfscript>
 	</cffunction>
