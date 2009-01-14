@@ -34,10 +34,14 @@ Modification History:
 	<!--- Get the debug mode flag --->
 	<cffunction name="getDebugMode" access="public" hint="I Get the current user's debugmode" returntype="boolean"  output="false">
 		<cfif structKeyExists(cookie,getCookieName())>
-			<cfreturn cookie[getCookieName()]>
-		<cfelse>
-			<cfreturn false>
+			<cfif isBoolean(cookie[getCookieName()])>
+				<cfreturn cookie[getCookieName()]>
+			<cfelse>
+				<cfset structDelete(cookie, getCookieName())>
+			</cfif>
 		</cfif>
+		<!--- Return default of false. --->
+		<cfreturn false>
 	</cffunction>
 
 	<!--- Set the debug mode flag --->
