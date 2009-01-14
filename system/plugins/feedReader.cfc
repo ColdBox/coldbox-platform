@@ -606,6 +606,13 @@ What gets returned on the FeedStructure:
 				/* Date and Updated Dates */
 				node.Date = oUtilities.parseISO8601(findCreatedDate(items[x]));
 				node.DateUpdated = oUtilities.parseISO8601(findUpdatedDate(items[x]));
+				/* Verify Dates and make sure both dates are filled up. */
+				if( len(node.Date) neq 0 and len(node.DateUpdated) eq 0){
+					node.DateUpdated = node.Date;
+				}
+				else if( len(node.DateUpdated) neq 0 and len(node.Date) eq 0){
+					node.Date = node.DateUpdated;
+				}
 				
 				if( arguments.itemsType eq "array" ){
 					/* Append to Array */
@@ -681,12 +688,26 @@ What gets returned on the FeedStructure:
 				}
 				/* Date and Updated Dates */
 				node.Date = findCreatedDate(items[x]);
-				if( isDateISO8601(node.Date) ) node.Date = oUtilities.parseISO8601(node.Date);
-				else node.Date = oUtilities.parseRFC822(node.Date);
+				if( isDateISO8601(node.Date) ){ 
+					node.Date = oUtilities.parseISO8601(node.Date);
+				}
+				else{ 
+					node.Date = oUtilities.parseRFC822(node.Date);
+				}
 				node.DateUpdated = findUpdatedDate(items[x]);
-				if( isDateISO8601(node.DateUpdated) ) node.DateUpdated = oUtilities.parseISO8601(node.DateUpdated);
-				else node.DateUpdated = oUtilities.parseRFC822(node.DateUpdated);
-				
+				if( isDateISO8601(node.DateUpdated) ){
+					node.DateUpdated = oUtilities.parseISO8601(node.DateUpdated);
+				}
+				else{
+					node.DateUpdated = oUtilities.parseRFC822(node.DateUpdated);
+				}
+				/* Verify Dates and make sure both dates are filled up. */
+				if( len(node.Date) neq 0 and len(node.DateUpdated) eq 0){
+					node.DateUpdated = node.Date;
+				}
+				else if( len(node.DateUpdated) neq 0 and len(node.Date) eq 0){
+					node.Date = node.DateUpdated;
+				}				
 				
 				/* Enclosure */
 				if( structKeyExists(items[x],"enclosure") and structKeyExists(items[x].enclosure.XmlAttributes,"url") ){
