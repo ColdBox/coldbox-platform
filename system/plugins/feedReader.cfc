@@ -561,7 +561,7 @@ What gets returned on the FeedStructure:
 			var oUtilities = getPlugin("Utilities");
 			
 			/* Items Length */
-			if( arguments.maxItems neq 0 ){
+			if( arguments.maxItems neq 0 and arguments.maxItems lt itemLength ){
 				itemLength = arguments.maxItems;
 			}
 			
@@ -642,7 +642,7 @@ What gets returned on the FeedStructure:
 			var oUtilities = getPlugin("Utilities");
 			
 			/* Items Length */
-			if( arguments.maxItems neq 0 ){
+			if( arguments.maxItems neq 0 and arguments.maxItems lt itemLength ){
 				itemLength = arguments.maxItems;
 			}
 			
