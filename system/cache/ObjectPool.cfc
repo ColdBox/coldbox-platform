@@ -59,11 +59,16 @@ Modification History:
 	</cffunction>
 	
 	<!--- Get the ref key --->
-	<cffunction name="getSoftRefKey" access="public" returntype="any" hint="Get the soft reference's key" output="false" >
+	<cffunction name="getSoftRefKey" access="public" returntype="any" hint="Get the soft reference's key from the soft reference lookback map" output="false" >
 		<cfargument name="softRef" required="true" type="any" hint="The soft reference to check">
 		<cfscript>
 			var keyMap = getSoftRefKeyMap();
-			return keyMap[arguments.softRef];
+			if( structKeyExists(keyMap,arguments.softRef) ){
+				return keyMap[arguments.softRef];
+			}
+			else{
+				return "NOT_FOUND";
+			}
 		</cfscript>
 	</cffunction>
 	
