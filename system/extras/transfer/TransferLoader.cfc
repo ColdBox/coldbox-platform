@@ -96,7 +96,7 @@ Description :
 				TDOArgs.transfer = Transfer;
 				TDOArgs.ColdBoxBeanFactory = getPlugin("beanFactory");
 				/* Create TDO */
-				TDO = CreateObject("component","coldbox.system.extras.TDOBeanInjectorObserver").init(argumentCollection=TDOArgs);
+				TDO = CreateObject("component","coldbox.system.extras.transfer.TDOBeanInjectorObserver").init(argumentCollection=TDOArgs);
 			}
 			
 			/* Transfer is loaded, now cache it */
