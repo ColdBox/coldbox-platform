@@ -20,6 +20,11 @@ Description :
 	
 	<cffunction name="Configure" access="public" returntype="void" hint="This is the configuration method for your interceptors" output="false" >
 		<cfscript>
+			var beanInjectorProperties = structnew();
+			/* Default BeanInjector Properties */
+			beanInjectorProperties.useSetterInjection = true;
+			beanInjectorProperties.debugMode = false;
+			
 			/* Property Checks */
 			if( not propertyExists('datasourceAlias') ){
 				throw("No datasource name passed","Please pass in the name of the datasource to use");
@@ -46,7 +51,19 @@ Description :
 			}
 			if( not propertyExists('TransferConfigurationClassPath') ){
 				setProperty('TransferConfigurationClassPath',"transfer.com.config.Configuration");
-			}			
+			}		
+			/* TDO */
+			if( not propertyExists('LoadBeanInjector') or not isBoolean(getProperty("LoadBeanInjector")) ){
+				setProperty("LoadBeanInjector",false);
+			}	
+			if( not propertyExists('BeanInjectorProperties') ){
+				setProperty("BeanInjectorProperties",structnew());
+			}	
+			/* Setup Bean Injector Properties From JSON Packet */
+			if( isStruct(getProperty("BeanInjectorProperties")) ){
+				structAppend(beanInjectorProperties,getProperty("BeanInjectorProperties"));
+				setProperty("BeanInjectorProperties",BeanInjectorProperties);
+			}
 		</cfscript>
 	</cffunction>
 
@@ -68,10 +85,23 @@ Description :
 																configClassPath=getProperty('TransferConfigurationClassPath'));
 																
 			var TransferFactory = createObject("component",getProperty('TransferFactoryClassPath')).init(configuration=configuration);
+			var BeanInjectorProperties = getProperty("BeanInjectorProperties");
+			var TDO = 0;
+			var Transfer = TransferFactory.getTransfer();
+			var TDOArgs = getProperty("BeanInjectorProperties");
+			
+			/* TDO Observer */
+			if( getProperty("LoadBeanInjector") ){
+				/* Setup Arguments */
+				TDOArgs.transfer = Transfer;
+				TDOArgs.ColdBoxBeanFactory = getPlugin("beanFactory");
+				/* Create TDO */
+				TDO = CreateObject("component","coldbox.system.extras.TDOBeanInjectorObserver").init(argumentCollection=TDOArgs);
+			}
 			
 			/* Transfer is loaded, now cache it */
 			getColdboxOCM().set(getProperty('TransferFactoryCacheKey'),TransferFactory,0);
-			getColdboxOCM().set(getProperty('TransferCacheKey'), TransferFactory.getTransfer(),0);
+			getColdboxOCM().set(getProperty('TransferCacheKey'), Transfer,0);
 			getColdboxOCM().set(getProperty('TransactionCacheKey'), TransferFactory.getTransaction(),0);
 						
 		</cfscript>
