@@ -336,7 +336,7 @@ $Build ID:	@@build_id@@
 			if ( ArrayLen(mdDictionary.ManyToOneArray) ){
 				//Loop Through relations
 				for ( i=1;i lte ArrayLen(mdDictionary.ManyToOneArray); i=i+1 ){
-					tmpFKTO = getLookupService().getLookupObject(mdDictionary.ManyToOneArray[i].className,rc["fk_"&mdDictionary.ManyToOneArray[1].alias]);
+					tmpFKTO = getLookupService().getLookupObject(mdDictionary.ManyToOneArray[i].className,rc["fk_"&mdDictionary.ManyToOneArray[i].alias]);
 					//add the tmpTO to current oLookup before saving.
 					evaluate("oLookup.set#mdDictionary.ManyToOneArray[1].alias#(tmpFKTO)");
 				}
