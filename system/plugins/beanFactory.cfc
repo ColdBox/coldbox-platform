@@ -125,7 +125,7 @@ Description: This is the framework's simple bean factory.
 		<cfargument name="name" 				required="true"  type="string" hint="The name of the model to retrieve">
 		<cfargument name="useSetterInjection" 	required="false" type="boolean" default="false"	hint="Whether to use setter injection alongside the annotations property injection. cfproperty injection takes precedence.">
 		<cfargument name="onDICompleteUDF" 		required="false" type="string"	default="onDIComplete" hint="After Dependencies are injected, this method will look for this UDF and call it if it exists. The default value is onDIComplete">
-		<cfargument name="debugMode" 			required="false" type="boolean" default="true" hint="Debugging Mode or not">
+		<cfargument name="debugMode" 			required="false" type="boolean" default="false" hint="Debugging Mode or not">
 		<!--- ************************************************************* --->
 		<cfscript>
 			var oModel = 0;
@@ -430,7 +430,7 @@ Description: This is the framework's simple bean factory.
 			/* Loop over dependencies and inject. */
 			for(x=1; x lte dependenciesLength; x=x+1){
 				/* Get Dependency */
-				thisDependency = getDSLDependency(targetDIEntry.dependencies[x]);
+				thisDependency = getDSLDependency(targetDIEntry.dependencies[x],arguments.debugmode);
 				/* Validate it */
 				if( isSimpleValue(thisDependency) and thisDependency eq instance.NOT_FOUND ){
 					/* Only log if debugmode, else no injection */
@@ -465,7 +465,10 @@ Description: This is the framework's simple bean factory.
 	<!--- getConstructorArguments --->
 	<cffunction name="getConstructorArguments" output="false" access="private" returntype="struct" hint="The constructor argument collection for a model object">
 		<!--- ************************************************************* --->
-		<cfargument name="model" type="any" required="true" default="" hint="The model object"/>
+		<cfargument name="model" 				required="true" 	type="any"		default="" hint="The model object"/>
+		<cfargument name="useSetterInjection" 	required="false" 	type="boolean" 	default="true"	hint="Whether to use setter injection alongside the annotations property injection. cfproperty injection takes precedence.">
+		<cfargument name="onDICompleteUDF" 		required="false" 	type="string"	default="onDIComplete" hint="After Dependencies are injected, this method will look for this UDF and call it if it exists. The default value is onDIComplete">
+		<cfargument name="debugMode" 			required="false" 	type="boolean"  default="false" hint="Whether to log debug messages. Default is false">
 		<!--- ************************************************************* --->
 		<cfscript>
 			var md = getMetadata(model.init);
@@ -483,7 +486,10 @@ Description: This is the framework's simple bean factory.
 					definition.name = params[x].name;
 					definition.scope="";
 					/* Get Dependency */
-					args[definition.name] = getDSLDependency(definition);
+					args[definition.name] = getDSLDependency(Definition=definition,
+														     useSetterInjection=arguments.useSetterINjection,
+														     onDICompleteUDF=arguments.onDICompleteUDF,
+														     debugMode=arguments.debugMode);
 				}
 			}
 			
@@ -494,7 +500,10 @@ Description: This is the framework's simple bean factory.
 	<!--- getDSLDependency --->
 	<cffunction name="getDSLDependency" output="false" access="private" returntype="any" hint="get a dsl dependency">
 		<!--- ************************************************************* --->
-		<cfargument name="Definition" 	required="true" type="any" hint="The dependency definition structure">
+		<cfargument name="Definition" 			required="true" 	type="any" hint="The dependency definition structure">
+		<cfargument name="useSetterInjection" 	required="false" 	type="boolean" 	default="true"	hint="Whether to use setter injection alongside the annotations property injection. cfproperty injection takes precedence.">
+		<cfargument name="onDICompleteUDF" 		required="false" 	type="string"	default="onDIComplete" hint="After Dependencies are injected, this method will look for this UDF and call it if it exists. The default value is onDIComplete">
+		<cfargument name="debugMode" 			required="false" 	type="boolean"  default="false" hint="Whether to log debug messages. Default is false">
 		<!--- ************************************************************* --->
 		<cfscript>
 			var dependency = instance.NOT_FOUND;
@@ -513,7 +522,10 @@ Description: This is the framework's simple bean factory.
 			}
 			else if ( thisType eq "model" ){
 				/* Try to inject model dependencies */
-				dependency = getModelDSL(arguments.Definition);
+				dependency = getModelDSL(Definition=arguments.Definition,
+									   	 useSetterInjection=arguments.useSetterInjection,
+									   	 onDICompleteUDF=arguments.onDICompleteUDF,
+									   	 debugMode=arguments.debugMode);
 			}	
 			else if ( thisType eq "webservice" ){
 				/* Try to inject webservice dependencies */
@@ -577,7 +589,10 @@ Description: This is the framework's simple bean factory.
 	<!--- getModelDSL --->
 	<cffunction name="getModelDSL" access="private" returntype="any" hint="Get dependencies using the model dependency DSL" output="false" >
 		<!--- ************************************************************* --->
-		<cfargument name="Definition" 	required="true" type="any" hint="The dependency definition structure">
+		<cfargument name="Definition" 			required="true" 	type="any" hint="The dependency definition structure">
+		<cfargument name="useSetterInjection" 	required="false" 	type="boolean" 	default="true"	hint="Whether to use setter injection alongside the annotations property injection. cfproperty injection takes precedence.">
+		<cfargument name="onDICompleteUDF" 		required="false" 	type="string"	default="onDIComplete" hint="After Dependencies are injected, this method will look for this UDF and call it if it exists. The default value is onDIComplete">
+		<cfargument name="debugMode" 			required="false" 	type="boolean"  default="false" hint="Whether to log debug messages. Default is false">
 		<!--- ************************************************************* --->
 		<cfscript>
 			var thisDependency = arguments.Definition;
@@ -586,24 +601,33 @@ Description: This is the framework's simple bean factory.
 			var thisLocationType = "";
 			var thisLocationKey = "";
 			var locatedDependency = instance.NOT_FOUND;
+			var args = structnew();
+			
+			/* Prepare Arguments */
+			args.useSetterInjection = arguments.useSetterInjection;
+			args.onDICompleteUDF = arguments.onDICompleteUDF;
+			args.debugmode = arguments.debugMode;
 			
 			/* 1 stage dependency dsl : Get Model */
 			if(thisTypeLen eq 1){
+				args.name = arguments.Definition.name;
 				/* Get Model according to Property Name */
-				locatedDependency = getModel(arguments.Definition.name);
+				locatedDependency = getModel(argumentCollection=args);
 			}
 			/* 2 stage dependency dsl : Get Model */
 			else if(thisTypeLen eq 2){
 				thisLocationType = getToken(thisType,2,":");
+				args.name = thisLocationType;
 				/* Get model object*/
-				locatedDependency = getModel(thisLocationType);
+				locatedDependency = getModel(argumentCollection=args);
 			}
 			/* 3 stage dependency dsl : Model Factories*/
 			else if(thisTypeLen eq 3){
 				thisLocationType = getToken(thisType,2,":");
 				thisLocationKey = getToken(thisType,3,":");
+				args.name = thisLocationType;
 				/* Call model method to get dependency */
-				locatedDependency = evaluate("getModel(thisLocationType).#thisLocationKey#()");
+				locatedDependency = evaluate("getModel(argumentCollection=args).#thisLocationKey#()");
 			}//end 3 stage DSL
 			
 			return locatedDependency;
