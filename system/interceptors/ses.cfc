@@ -326,11 +326,15 @@ Description :
 			<cfif conventionStringLen gt 1>
 				<cfloop from="1" to="#conventionStringLen#" index="i">
 					<cfif i mod 2 eq 0>
-						<!--- Even --->
+						<!--- Even: Means Variable Value --->
 						<cfset params[tmpVar] = listGetAt(conventionString,i,'/')>
 					<cfelse>
-						<!--- Odd --->
-						<cfset tmpVar = listGetAt(conventionString,i,'/')>
+						<!--- Odd: Means Variable Name --->
+						<cfset tmpVar = trim(listGetAt(conventionString,i,'/'))>
+						<!--- Verify the var name --->
+						<cfif not isValid("variableName",tmpVar)>
+							<cfset tmpVar = "_INVALID_VARIABLE_NAME_POS_#i#_">
+						</cfif>
 					</cfif>
 				</cfloop>
 			</cfif>
