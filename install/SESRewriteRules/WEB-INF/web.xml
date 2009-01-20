@@ -1,0 +1,11 @@
+<web-app xmlns="http://caucho.com/ns/resin">
+
+<rewrite-dispatch>
+  <dispatch regexp="\.(jsp|cfm|cfc|php|gif|css|jpg|png)"/>
+  <dispatch regexp="^/resin-admin/"/>
+  <dispatch regexp="^/resin-doc/"/>
+  <dispatch regexp="^/railo-admin/"/>
+  <forward regexp="^(.*)$" target="/index.cfm/$1"/>
+</rewrite-dispatch>
+
+</web-app>
