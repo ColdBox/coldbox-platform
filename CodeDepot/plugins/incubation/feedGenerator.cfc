@@ -6,7 +6,7 @@ www.coldboxframework.com | www.luismajano.com | www.ortussolutions.com
 
 Author      :	Ben Garrett and Luis Majano
 Date        :	26/12/2008
-Version     :	2 (beta 26Dec08)
+Version     :	2 (beta 21Jan09)
 License		: 	Apache 2 License
 Description :
 	This is a feed generator. It is able to output RSS 2.0 feeds.	
@@ -196,12 +196,12 @@ see a list of the default mappings use the getDefaultPropertyMap() method.
 			
 			/* Plug-in Properties */
 			setpluginName("ColdBox RSS 2.0.10 Feed Generator");
-			setpluginVersion("2.0 261208 BETA");
+			setpluginVersion("2.0 21Jan09 BETA");
 			setpluginDescription("I create Really Simple Syndication (RSS revision 2.0.10) feeds that also allow a variety of popular RSS extensions.");
 			
 			/* Localised variables */
-			/* Dublin Core Metadata Initiative (DCMI) Terms Collection */
-			instance.DCMITerms = "abstract,accessRights,accrualMethod,accrualPeriodicity,accrualPolicy,alternative,audience,available,bibliographicCitation,conformsTo,contributor,coverage,created,creator,date,dateAccepted,dateCopyrighted,dateSubmitted,description,educationLevel,extent,format,hasFormat,hasPart,hasVersion,identifier,instructionalMethod,isFormatOf,isPartOf,isReferencedBy,isReplacedBy,isRequiredBy,issued,isVersionOf,language,license,mediator,medium,modified,provenance,publisher,references,relation,replaces,requires,rights,rightsHolder,source,spatial,subject,tableOfContents,temporal,title,type,valid";
+			/* Dublin Core Metadata Element Set, Version 1.1 */
+			instance.DCMITerms = "contributor,coverage,creator,date,description,format,identifier,language,publisher,relation,rights,source,subject,title,type";
 			
 			/* Apple iTunes Categories Collection */
 			instance.ItunesCategories = structNew();
@@ -1251,7 +1251,7 @@ see a list of the default mappings use the getDefaultPropertyMap() method.
 			}
 			/* DCMI Metadata Terms namespace */
 			if( listContainsNoCase(keys,'dcmiterm') ) {
-				nameSpace = nameSpace & ' xmlns:dc="http://purl.org/dc/terms/"';
+				nameSpace = nameSpace & ' xmlns:dc="http://purl.org/dc/elements/1.1/"';
 			}
 			/* iTunes namespace */
 			if( listContainsNoCase(keys,'itunes') ) {
