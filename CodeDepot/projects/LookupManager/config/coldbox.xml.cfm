@@ -1,3 +1,10 @@
+<!-- Please copy the following settings into your coldbox.xml.cfm
+     and tweak the parameters as needed.
+     The lookups_tables setting is a JSON structure of alias -> Transfer object mapping.
+     
+     'alias':'transferobject'
+     
+      -->
 <YourSettings>
 	<!-- Lookups Settings -->
 	<Setting name="lookups_tables"				value="{'Permissions':'security.Permission', 
