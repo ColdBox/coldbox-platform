@@ -7,7 +7,7 @@ www.coldboxframework.com | www.luismajano.com | www.ortussolutions.com
 Author      :	Luis Majano and Ben Garrett
 Date        :	02/22/2008
 License     :	Apache 2 License
-Version     :	2 (Alpha-21Jan09)
+Version     :	2 (Beta-27Jan09)
 Description :
 	A rss reader plugin with file caching capabilities. This reader supports RSS 1.0, 2.0 and Atom 1.0 only.
 	All RSS dates are converted to usable ColdFusion dates, this means that all ISO8601 and RFC822 dates are
@@ -416,13 +416,13 @@ What gets returned on the FeedStructure:
 		</cfhttp>
 		
 		<cftry>
-			<!--- Try to xml parse the document --->
-			<cfset xmlDoc = XMLParse(trim(feedResult.FileContent))>
+			<!--- Try to xml parse the document and remove Byte-Order-Mark (BOM) which is not compatible with XMLParse() --->
+			<cfset xmlDoc = XMLParse(REReplace(trim(feedResult.FileContent), "^[^<]*", "", "all"))>
 			
 			<cfcatch type="any">
 				<cfthrow type="plugins.feedReader.FeedParsingException"
 						 message="Error parsing the feed into an XML document. Please verify that the feed is correct and valid"
-						 detail="The returned cfhttp content is: #feedResult.fileContent.toString()#">
+						 detail="The returned cfhttp content is: #XMLFormat(feedResult.fileContent.toString())#">
 			</cfcatch>
 		</cftry>
 		
@@ -465,9 +465,7 @@ What gets returned on the FeedStructure:
 		<cfset var oUtilities = getPlugin("Utilities")>
 
 		<cfscript>
-			feed.a0 = xmlDoc;
-			
-			// get feed type structure		
+			// set feed type structure		
 			feed.specs = StructNew();
 			feed.specs.extensions = "";
 			feed.specs.generator = "";
@@ -577,8 +575,14 @@ What gets returned on the FeedStructure:
 			// get rss/rdf 1 & rss 2
 			if(feed.specs.type is "RDF" or feed.specs.type is "RSS") {
 				/* Parse Items */
-				if(feed.specs.type is "RDF") feed.items = parseRSSItems(xmlDoc.xmlRoot.item,arguments.itemsType,arguments.maxItems);
-				if(feed.specs.type is "RSS") feed.items = parseRSSItems(xmlDoc.xmlRoot.channel.item,arguments.itemsType,arguments.maxItems);
+				if(feed.specs.type is "RDF") {
+					if( not getcompatibility() ) feed.items = parseRSSItems(xmlDoc.xmlRoot.item,arguments.itemsType,arguments.maxItems);
+					else feed.items = parseRSSItemsVer1(xmlDoc.xmlRoot.item,arguments.itemsType,arguments.maxItems);
+				}
+				if(feed.specs.type is "RSS") {
+					if( not getcompatibility() ) feed.items = parseRSSItems(xmlDoc.xmlRoot.channel.item,arguments.itemsType,arguments.maxItems);
+					else parseRSSItemsVer1(xmlDoc.xmlRoot.channel.item,arguments.itemsType,arguments.maxItems);
+				}
 				/* Author Info */
 				if(StructKeyExists(xmlDoc.xmlRoot.channel,"managingEditor"))
 					feed.author.name = xmlDoc.xmlRoot.channel.managingEditor.xmlText;
@@ -588,10 +592,17 @@ What gets returned on the FeedStructure:
 				if( find("@",feed.author.name) ) {
 					feed.author.email = ListGetAt(feed.author.name,1,' ');
 					// regexpression matching only works in CFML8 compatible engines
-					if( GetFunctionList() contains 'REMatchNoCase' and ArrayLen(REMatchNoCase('( \(.*\))?$', feed.author.name)) ) {
+					if( ListFindNoCase(StructKeyList(GetFunctionList()),'REMatchNoCase') and ArrayLen(REMatchNoCase('( \(.*\))?$', feed.author.name)) ) {
 						feed.author.name = REMatchNoCase('( \(.*\))?$', feed.author.name);
 						feed.author.name = ReReplace(feed.author.name[1],'\(|\)','','all');
 					}
+				}
+				// Apple iTunes author
+				if( StructKeyExists(xmlDoc.xmlRoot.channel,"itunes:author") ) feed.author.name = xmlDoc.xmlRoot.channel["itunes:author"].xmlText;
+				// Dublin Core creator as author
+				if( StructKeyExists(xmlDoc.xmlRoot.channel,"dc:creator") ) {
+					if( not len(feed.author.name) and not find("@",xmlDoc.xmlRoot.channel["dc:creator"].xmlText) ) feed.author.name = xmlDoc.xmlRoot.channel["dc:creator"].xmlText;
+					else if( not len(feed.author.email) and StructKeyExists(xmlDoc.xmlRoot.channel,"dc:creator") and find("@",xmlDoc.xmlRoot.channel["dc:creator"].xmlText) ) feed.author.email = xmlDoc.xmlRoot.channel["dc:creator"].xmlText;
 				}
 				/* Category */
 				if(StructKeyExists(xmlDoc.xmlRoot.channel,"category")){
@@ -604,8 +615,36 @@ What gets returned on the FeedStructure:
 						}
 					}
 				}
+				// Dublin Core subject as category
+				if( StructKeyExists(xmlDoc.xmlRoot.channel,"dc:subject") and not arrayLen(feed.category) ) {
+					loop = xmlDoc.xmlRoot.channel["dc:subject"].xmlText;
+					for(x=1; x lte listLen(loop); x=x+1){
+						feed.category[x] = StructNew();
+						feed.category[x].tag = listGetAt(loop,x);
+					}					
+				}
+				// Apple iTunes category
+				if(StructKeyExists(xmlDoc.xmlRoot.channel,"itunes:category")){
+					for(x=1; x lte arrayLen(xmlDoc.xmlRoot.channel["itunes:category"]); x=x+1){
+						loop = xmlDoc.xmlRoot.channel["itunes:category"][x];
+						if( len(loop.xmlAttributes.text) ) { 
+							feed.category[x] = StructNew();
+							feed.category[x].tag = loop.XMLAttributes.text;
+							feed.category[x].domain = "itunes category";
+						}
+					}
+				}
+				// Apple iTunes keywords as category
+				if( StructKeyExists(xmlDoc.xmlRoot.channel,"itunes:keywords") ) {
+					arrayAppend(feed.category, StructNew());
+					x = arrayLen(feed.category);
+					feed.category[x].tag = xmlDoc.xmlRoot.channel["itunes:keywords"].xmlText;
+					feed.category[x].domain = "itunes keywords";
+				}
 				/* Copyright */
-				if(StructKeyExists(xmlDoc.xmlRoot.channel,"copyright")) feed.rights.copyright = xmlDoc.xmlRoot.channel.copyright.xmlText;
+				if( StructKeyExists(xmlDoc.xmlRoot.channel,"copyright") ) feed.rights.copyright = xmlDoc.xmlRoot.channel.copyright.xmlText;
+				else if( StructKeyExists(xmlDoc.xmlRoot.channel,"dc:rights") ) feed.rights.copyright = xmlDoc.xmlRoot.channel["dc:rights"].xmlText;
+				if( StructKeyExists(xmlDoc.xmlRoot.channel,"creativeCommons:license") ) feed.rights.creativecommons = xmlDoc.xmlRoot.channel["creativeCommons:license"].xmlText;
 				/* Date built & Date updated */
 				feed.DateBuilt = findCreatedDate(xmlDoc.xmlRoot.channel);
 				if( isDateISO8601(feed.DateBuilt) ) feed.DateBuilt = oUtilities.parseISO8601(feed.DateBuilt);
@@ -613,8 +652,16 @@ What gets returned on the FeedStructure:
 				feed.DateUpdated = findUpdatedDate(xmlDoc.xmlRoot.channel);
 				if( isDateISO8601(feed.DateUpdated) ) feed.DateUpdated = oUtilities.parseISO8601(feed.DateUpdated);
 				else feed.DateUpdated = oUtilities.parseRFC822(feed.DateUpdated);
+				// Dubline Core date as dateupdated
+				if( StructKeyExists(xmlDoc.xmlRoot.channel,"dc:date") and not len(feed.dateupdated) ) { 
+					if( isDateISO8601(feed.dateupdated) ) { feed.dateupdated = oUtilities.parseISO8601(xmlDoc.xmlRoot.channel["dc:date"].xmlText); }
+					else { feed.dateupdated = oUtilities.parseRFC822(xmlDoc.xmlRoot.channel["dc:date"].xmlText); }
+				}
 				/* Description */
 				if(StructKeyExists(xmlDoc.xmlRoot.channel,"description")) feed.Description = xmlDoc.xmlRoot.channel.description.xmlText;
+				else if( StructKeyExists(xmlDoc.xmlRoot.channel,"dc:description") ) feed.description = xmlDoc.xmlRoot.channel["dc:description"].xmlText;
+				else if( StructKeyExists(xmlDoc.xmlRoot.channel,"itunes:subtitle") ) feed.description = xmlDoc.xmlRoot.channel["itunes:subtitle"].xmlText;
+				else if( StructKeyExists(xmlDoc.xmlRoot.channel,"itunes:summary") ) feed.description = xmlDoc.xmlRoot.channel["itunes:summary"].xmlText;
 				/* Image */
 				if(StructKeyExists(xmlDoc.xmlRoot,"image") and feed.specs.type is "RDF") {
 					if(StructKeyExists(xmlDoc.xmlRoot.image,"link")) feed.Image.Link = xmlDoc.xmlRoot.image.link.xmlText;
@@ -629,71 +676,23 @@ What gets returned on the FeedStructure:
 					if(StructKeyExists(xmlDoc.xmlRoot.channel.image,"url")) feed.Image.Url = xmlDoc.xmlRoot.channel.image.url.xmlText;
 					if(StructKeyExists(xmlDoc.xmlRoot.channel.image,"width")) feed.Image.Width = xmlDoc.xmlRoot.channel.image.width.xmlText;				
 				}
+				// Apple iTunes image
+				try {	if( not len(feed.image.url) and StructKeyExists(xmlDoc.xmlRoot.channel["itunes:image"].xmlAttributes,'href') ) feed.image.url = xmlDoc.xmlRoot.channel["itunes:image"].xmlAttributes.href;	} catch(Any ex) {}
 				/* Language */
 				if(StructKeyExists(xmlDoc.xmlRoot.channel,"language")) feed.language = xmlDoc.xmlRoot.channel.language.xmlText;
+				else if( StructKeyExists(xmlDoc.xmlRoot.channel,"dc:language") ) feed.language = xmlDoc.xmlRoot.channel["dc:language"].xmlText;
 				/* Link */
-				if(StructKeyExists(xmlDoc.xmlRoot.channel,"link")) feed.websiteurl = xmlDoc.xmlRoot.channel.link.xmlText;
+				if(StructKeyExists(xmlDoc.xmlRoot.channel,"link") ) feed.websiteurl = xmlDoc.xmlRoot.channel["link"].xmlText;
 				/* Rating */
 				if(StructKeyExists(xmlDoc.xmlRoot.channel,"rating")) feed.rating = xmlDoc.xmlRoot.channel.rating.xmlText;
+				else if( StructKeyExists(xmlDoc.xmlRoot.channel,"itunes:explicit") ) feed.rating = "explicit - #xmlDoc.xmlRoot.channel["itunes:explicit"].xmlText#";
 				/* Title */
 				if(StructKeyExists(xmlDoc.xmlRoot.channel,"title")) feed.Title = xmlDoc.xmlRoot.channel.title.xmlText;
-				/* Dublin Core Metadata extension */
-				if( StructKeyExists(xmlDoc.xmlRoot.channel,"dc:creator") ) {
-					if( not len(feed.author.name) and not find("@",xmlDoc.xmlRoot.channel["dc:creator"].xmlText) ) feed.author.name = xmlDoc.xmlRoot.channel["dc:creator"].xmlText;
-					else if( not len(feed.author.email) and StructKeyExists(xmlDoc.xmlRoot.channel,"dc:creator") and find("@",xmlDoc.xmlRoot.channel["dc:creator"].xmlText) ) feed.author.email = xmlDoc.xmlRoot.channel["dc:creator"].xmlText;
-				}
-				if( StructKeyExists(xmlDoc.xmlRoot.channel,"dc:date") and not len(feed.dateupdated) ) { 
-					if( isDateISO8601(feed.dateupdated) ) { feed.dateupdated = oUtilities.parseISO8601(xmlDoc.xmlRoot.channel["dc:date"].xmlText); }
-					else { feed.dateupdated = oUtilities.parseRFC822(xmlDoc.xmlRoot.channel["dc:date"].xmlText); }
-				}
-				if( StructKeyExists(xmlDoc.xmlRoot.channel,"dc:description") and not len(feed.description) ) feed.description = xmlDoc.xmlRoot.channel["dc:description"].xmlText;
-				if( StructKeyExists(xmlDoc.xmlRoot.channel,"dc:language") and not len(feed.language) ) feed.language = xmlDoc.xmlRoot.channel["dc:language"].xmlText;
-				if( StructKeyExists(xmlDoc.xmlRoot.channel,"dc:rights") and not len(feed.rights.copyright) ) feed.rights.copyright = xmlDoc.xmlRoot.channel["dc:rights"].xmlText;
-				if( StructKeyExists(xmlDoc.xmlRoot.channel,"dc:subject") and not arrayLen(feed.category) ) {
-					loop = xmlDoc.xmlRoot.channel["dc:subject"].xmlText;
-					for(x=1; x lte listLen(loop); x=x+1){
-						feed.category[x] = StructNew();
-						feed.category[x].tag = listGetAt(loop,x);
-					}					
-				}
-				if( StructKeyExists(xmlDoc.xmlRoot.channel,"dc:title") and not len(feed.title) ) feed.title = xmlDoc.xmlRoot.channel["dc:title"].xmlText;
-				/* Apple iTunes extension */
-				if( ArrayLen(StructFindKey(feed.specs.namespace,'xmlns:itunes')) ) {
-					// author
-					if( StructKeyExists(xmlDoc.xmlRoot.channel,"itunes:author") ) feed.author.name = xmlDoc.xmlRoot.channel["itunes:author"].xmlText;
-					// category
-					if(StructKeyExists(xmlDoc.xmlRoot.channel,"itunes:category")){
-						for(x=1; x lte arrayLen(xmlDoc.xmlRoot.channel["itunes:category"]); x=x+1){
-							loop = xmlDoc.xmlRoot.channel["itunes:category"][x];
-							if( len(loop.xmlAttributes.text) ) { 
-								feed.category[x] = StructNew();
-								feed.category[x].tag = loop.XMLAttributes.text;
-								feed.category[x].domain = "itunes category";
-							}
-						}
-					}
-					// explicit
-					if( StructKeyExists(xmlDoc.xmlRoot.channel,"itunes:explicit") ) feed.rating = "explicit - #xmlDoc.xmlRoot.channel["itunes:explicit"].xmlText#";
-					// image
-					try {
-					if( not len(feed.image.url) and StructKeyExists(xmlDoc.xmlRoot.channel["itunes:image"].xmlAttributes,'href') ) feed.image.url = xmlDoc.xmlRoot.channel["itunes:image"].xmlAttributes.href;
-					} catch(Any ex) {}
-					// keywords
-					if( StructKeyExists(xmlDoc.xmlRoot.channel,"itunes:keywords") ) {
-						arrayAppend(feed.category, StructNew());
-						x = arrayLen(feed.category);
-						feed.category[x].tag = xmlDoc.xmlRoot.channel["itunes:keywords"].xmlText;
-						feed.category[x].domain = "itunes keywords";
-					}
-					if( not len(feed.description) ) {
-						if( StructKeyExists(xmlDoc.xmlRoot.channel,"itunes:subtitle") ) feed.description = xmlDoc.xmlRoot.channel["itunes:subtitle"].xmlText;
-						if( StructKeyExists(xmlDoc.xmlRoot.channel,"itunes:summary") ) feed.description = xmlDoc.xmlRoot.channel["itunes:summary"].xmlText;
-					}
-				}
+				else if( StructKeyExists(xmlDoc.xmlRoot.channel,"dc:title") ) feed.title = xmlDoc.xmlRoot.channel["dc:title"].xmlText;
 				/* Atom as an RSS extension */
 				if( ArrayLen(StructFindKey(feed.specs.namespace,'xmlns:atom')) and StructKeyExists(xmlDoc.xmlRoot.channel,"atom:link") ) {
-					for(x=1; x lte arrayLen(xmlDoc.xmlRoot.channel["atom:link"]); x=x+1){
-						loop = xmlDoc.xmlRoot.channel["atom:link"][x];
+					for(x=1; x lte arrayLen(xmlDoc.xmlRoot.channel["link"]); x=x+1){
+						loop = xmlDoc.xmlRoot.channel["link"][x];
 						if( StructKeyExists(loop,'xmlAttributes') and StructKeyExists(loop.xmlAttributes,'rel') and len(loop.xmlAttributes.rel) ) {
 							// OpenSearch Autodiscovery
 							if(
@@ -708,25 +707,26 @@ What gets returned on the FeedStructure:
 								}
 							// RSS self identifier
 							if(
-								 loop.xmlAttributes.rel is "search"
-								 and StructKeyExists(loop.xmlAttributes,'self')
+								 loop.xmlAttributes.rel is "self"
 								 and loop.xmlAttributes.type is "application/rss+xml"
 								 and StructKeyExists(loop.xmlAttributes,'href')
 								 ) {
 									feed.specs.url = loop.xmlAttributes.href;
 							}
 						}
+						else if( not len(feed.websiteurl) and len(loop.xmlText) ) feed.websiteurl = loop.xmlText;
 					}
-				}				
+				}
 			}//end if rss 1 or 2
 			else if(feed.specs.type is "Atom") {
 				/* Parse Items */
-				feed.items = parseAtomItems(xmlDoc.xmlRoot.entry,arguments.itemsType,arguments.maxItems);
+				if( not getcompatibility() ) feed.items = parseAtomItems(xmlDoc.xmlRoot.entry,arguments.itemsType,arguments.maxItems);
+				else feed.items = parseAtomItemsVer1(xmlDoc.xmlRoot.entry,arguments.itemsType,arguments.maxItems);
 				/* Author Information */
 				if(structKeyExists(xmlDoc.xmlRoot,"author")){
-					if( structKeyExists(xmlDoc.xmlRoot.author,"name") ) feed.author.name = xmlDoc.xmlRoot.author.name.xmlText;
-					if( structKeyExists(xmlDoc.xmlRoot.author,"uri") ) feed.author.url = xmlDoc.xmlRoot.author.uri.xmlText;
-					if( structKeyExists(xmlDoc.xmlRoot.author,"email") ) feed.author.email = xmlDoc.xmlRoot.author.email.xmlText;
+					if( structKeyExists(xmlDoc.xmlRoot.author,"name") ) feed.author.name = normalizeAtomTextConstruct(xmlDoc.xmlRoot.author.name);
+					if( structKeyExists(xmlDoc.xmlRoot.author,"uri") ) feed.author.url = normalizeAtomTextConstruct(xmlDoc.xmlRoot.author.uri);
+					if( structKeyExists(xmlDoc.xmlRoot.author,"email") ) feed.author.email = normalizeAtomTextConstruct(xmlDoc.xmlRoot.author.email);
 				}	
 				/* Category */
 				if(StructKeyExists(xmlDoc.xmlRoot,"category")){
@@ -750,8 +750,8 @@ What gets returned on the FeedStructure:
 				else if(StructKeyExists(xmlDoc.xmlRoot,"tagline")) 
 					feed.Description = normalizeAtomTextConstruct(xmlDoc.xmlRoot.tagline);
 				/* Image */
-				if(StructKeyExists(xmlDoc.xmlRoot,"icon")) feed.image.icon = xmlDoc.xmlRoot.icon.xmlText;
-				if(StructKeyExists(xmlDoc.xmlRoot,"logo")) feed.image.url = xmlDoc.xmlRoot.logo.xmlText;
+				if(StructKeyExists(xmlDoc.xmlRoot,"icon")) feed.image.icon = normalizeAtomTextConstruct(xmlDoc.xmlRoot.icon);
+				if(StructKeyExists(xmlDoc.xmlRoot,"logo")) feed.image.url = normalizeAtomTextConstruct(xmlDoc.xmlRoot.logo);
 				/* Links */
 				if(StructKeyExists(xmlDoc.xmlRoot,"link")){
 					for(x=1; x lte arrayLen(xmlDoc.xmlRoot.link); x=x+1){
@@ -767,12 +767,13 @@ What gets returned on the FeedStructure:
 					}
 				}
 				/* Rights */
-				if(StructKeyExists(xmlDoc.xmlRoot,"rights")) feed.rights.copyright = xmlDoc.xmlRoot.rights.xmlText;
+				if(StructKeyExists(xmlDoc.xmlRoot,"rights")) feed.rights.copyright = normalizeAtomTextConstruct(xmlDoc.xmlRoot.rights);
 				/* Title */
 				if(StructKeyExists(xmlDoc.xmlRoot,"title"))	feed.title = normalizeAtomTextConstruct(xmlDoc.xmlRoot.title);
 			}
+			//end if atom
 			// shared extensions
-			/* OpenSearch 1.0 & 1.1 extensions */
+			/* OpenSearch 1.0 & 1.1 */
 			if( not ArrayLen(StructFindKey(feed.specs.namespace,'xmlns:opensearch')) ) feed.opensearch = StructNew();	
 			else {
 				if(feed.specs.type is "Atom") xmlrootkey = 'xmlDoc.xmlRoot';
@@ -800,7 +801,8 @@ What gets returned on the FeedStructure:
 					}
 				}
 			}
-			/* rdf/rss/atom tags feedReader version 1  backwards compatibility */
+			// end shared extensions
+			// rdf/rss/atom tags feedReader version 1  backwards compatibility
 			if( getcompatibility() ) {
 				if( not len(feed.image.link) ) feed.image.link = "##";
 				feed.authoremail = feed.author.email;
@@ -811,7 +813,7 @@ What gets returned on the FeedStructure:
 				StructDelete(feed, "dateupdated");
 				StructDelete(feed, "websiteurl");
 			}
-			/* Return the feed struct */
+			// return the feed struct
 			return feed;
 		</cfscript>
 	</cffunction>
@@ -829,21 +831,134 @@ What gets returned on the FeedStructure:
 			var x = 1;
 			var y = 1;
 			var itemLength = arrayLen(arguments.items);
+			var itemStruct = StructNew();
 			var rtnItems = "";
 			var node = "";
+			var loop = "";
 			var oUtilities = getPlugin("Utilities");
-			
+
+			//arguments.maxItems = 2;
 			/* Items Length */
 			if( arguments.maxItems neq 0 and arguments.maxItems lt itemLength ){
 				itemLength = arguments.maxItems;
 			}
-			
+
+			/* Correct Return Items Type*/
+			if( arguments.itemsType eq "array")
+				rtnItems = ArrayNew(1);
+			else
+				rtnItems = QueryNew("attachment,author,category,comments,body,datepublished,dateupdated,id,rights,title,url");
+			/* Loop and add to array */
+			for(x=1; x lte itemLength; x=x + 1){
+				/* new node */
+				node = structnew();
+				/* Basic Node */
+				node.attachment = ArrayNew(1);	
+				node.author = "";
+				node.category = ArrayNew(1);	
+				node.comments = StructNew();
+				node.comments.count = "";
+				node.comments.hit_parade = "";
+				node.comments.url = "";
+				node.body = "";	
+				node.datepublished = "";
+				node.dateupdated = "";
+				node.id = "";
+				node.rights = "";	
+				node.title = "";	
+				node.url = "";
+	
+				/* Author */
+				if( structKeyExists(items[x],"author") and structKeyExists(items[x].author,"name") ) node.author = normalizeAtomTextConstruct(items[x].author.name);
+				/* Category */
+				if(StructKeyExists(items[x],"category")){
+					for(y=1; y lte arrayLen(items[x].category); y=y+1){
+						loop = items[x].category[y];
+						if( StructKeyExists(loop.xmlAttributes,'term') and len(loop.xmlAttributes.term) ) { 
+							node.category[y] = StructNew();
+							node.category[y].tag = loop.XMLAttributes.term;
+							if(StructKeyExists(loop.xmlAttributes,'scheme')) node.category[y].domain = loop.xmlAttributes.scheme;
+						}
+					}
+				}
+				/* Content */
+				if( structKeyExists(items[x],"content") ) node.body = normalizeAtomTextConstruct(items[x].content);
+				else if( structKeyExists(items[x],"summary") ) node.body = normalizeAtomTextConstruct(items[x].summary);
+				/* Date and Updated Dates */
+				node.datepublished = oUtilities.parseISO8601(findCreatedDate(items[x]));
+				node.dateupdated = oUtilities.parseISO8601(findUpdatedDate(items[x]));
+				/* Id */
+				if( structKeyExists(items[x],"id") ) node.id = normalizeAtomTextConstruct(items[x].id);
+				/* Links & Attachments */	
+				if( structKeyExists(items[x],"link") ){
+					for(y=1; y lte arrayLen(items[x].link);y=y+1){
+						if ( items[x].link[y].xmlAttributes.rel is "alternate" and StructKeyExists(items[x].link[y].xmlAttributes,'href') ){
+							node.url = items[x].link[y].xmlAttributes.href;
+						}
+						else if ( items[x].link[y].xmlAttributes.rel is "enclosure" and StructKeyExists(items[x].link[y].xmlAttributes,'href')){
+							itemStruct = StructNew();
+							itemStruct.url = items[x].link[y].xmlAttributes.href;
+							if ( StructKeyExists(items[x].link[y].xmlAttributes,'length') ) itemStruct.size = items[x].link[y].xmlAttributes.length;
+							if ( StructKeyExists(items[x].link[y].xmlAttributes,'type') ) itemStruct.type = items[x].link[y].xmlAttributes.type;
+							ArrayAppend(node.attachment,itemStruct);
+						}
+					}
+				}
+				/* Rights */
+				if( structKeyExists(items[x],"rights") ) node.rights = normalizeAtomTextConstruct(items[x].rights);
+				/* Title */
+				if( structKeyExists(items[x],"title") ) node.title = normalizeAtomTextConstruct(items[x].title);
+				
+				if( arguments.itemsType eq "array" ){
+					// Append to Array
+					ArrayAppend(rtnItems,node);
+				}
+				else{
+					QueryAddRow(rtnItems,1);
+					QuerySetCell(rtnItems, "attachment", node.attachment);
+					QuerySetCell(rtnItems, "author", node.author);
+					QuerySetCell(rtnItems, "category", node.category);
+					QuerySetCell(rtnItems, "comments", node.comments);
+					QuerySetCell(rtnItems, "body", node.body);
+					QuerySetCell(rtnItems, "datepublished", node.datepublished);
+					QuerySetCell(rtnItems, "dateupdated", node.dateupdated);
+					QuerySetCell(rtnItems, "id", node.id);
+					QuerySetCell(rtnItems, "rights", node.rights);
+					QuerySetCell(rtnItems, "title", node.title);
+					QuerySetCell(rtnItems, "url", node.url);
+				}	
+			}
+			/* Return items */
+			return rtnItems;
+		</cfscript>
+	</cffunction>
+  
+	<!--- Parse Atom Items (feedReader version 1) --->
+	<cffunction name="parseAtomItemsVer1" access="private" returntype="any" hint="Parse the items an return an array of structures" output="false" >
+		<!--- ******************************************************************************** --->
+		<cfargument name="items" 		type="any" 		required="true" hint="The xml of items">
+		<cfargument name="itemsType" 	type="string" 	required="false" default="query" hint="The type of the items either query or Array. Query is by default."/>
+		<cfargument name="maxItems" 	type="numeric" 	required="false" default="0" hint="The max number of entries to retrieve, default is all"/>
+		<!--- ******************************************************************************** --->
+		<cfscript>
+			var x = 1;
+			var y = 1;
+			var itemLength = arrayLen(arguments.items);
+			var rtnItems = "";
+			var node = "";
+			var oUtilities = getPlugin("Utilities");
+			arguments.maxItems = 2;
+			/* Items Length */
+			if( arguments.maxItems neq 0 and arguments.maxItems lt itemLength ){
+				itemLength = arguments.maxItems;
+			}
+
 			/* Correct Return Items Type*/
 			if( arguments.itemsType eq "array")
 				rtnItems = ArrayNew(1);
 			else
 				rtnItems = QueryNew("Title,Description,Link,Date,DateUpdated,Enclosure");
-			
+				
 			/* Loop and add to array */
 			for(x=1; x lte itemLength; x=x + 1){
 				/* new node */
@@ -901,14 +1016,216 @@ What gets returned on the FeedStructure:
 					QuerySetCell(rtnItems, "Enclosure", node.Enclosure);
 				}
 			}//end of for loop 
-		
+			/* Return items */
+			return rtnItems;
+		</cfscript>
+	</cffunction>
+  
+  <!--- Parse rss items --->
+	<cffunction name="parseRSSItems" access="private" returntype="any" hint="Parse the items an return an array of structures" output="false" >
+		<!--- ******************************************************************************** --->
+		<cfargument name="items" 		type="any" 		required="true" hint="The xml of items">
+		<cfargument name="itemsType" 	type="string" 	required="false" default="query" hint="The type of the items either query or Array. Query is by default."/>
+		<cfargument name="maxItems" 	type="numeric" 	required="false" default="0" hint="The max number of entries to retrieve, default is all"/>
+		<!--- ******************************************************************************** --->
+		<cfscript>
+			var x = 1;
+			var itemLength = arrayLen(arguments.items);
+			var rtnItems = "";
+			var node = "";
+			var loop = "";
+			var merge = "";
+			var oUtilities = getPlugin("Utilities");
+			
+			/* Items Length */
+			if( arguments.maxItems neq 0 and arguments.maxItems lt itemLength ){
+				itemLength = arguments.maxItems;
+			}
+			
+			/* Correct Return Items Type */
+			if( arguments.itemsType eq "array")
+				rtnItems = ArrayNew(1);
+			else
+				rtnItems = QueryNew("attachment,author,category,comments,body,datepublished,dateupdated,id,rights,title,url");
+				
+			/* Loop and add to array */
+			for(x=1; x lte itemLength; x=x + 1){
+				/* new node */
+				node = structnew();
+				
+				/* Basic Node */
+				node.attachment = ArrayNew(1);	
+				node.author = "";
+				node.category = ArrayNew(1);	
+				node.comments = StructNew();
+				node.comments.count = "";
+				node.comments.hit_parade = "";
+				node.comments.url = "";
+				node.body = "";	
+				node.datepublished = "";
+				node.dateupdated = "";
+				node.id = "";
+				node.rights = "";	
+				node.title = "";	
+				node.url = "";
+				
+				/* Author */
+				if( structKeyExists(items[x],"author") ) node.author = items[x].author.xmlText;
+				else if( structKeyExists(items[x],"dc:creator") ) node.author = items[x]["dc:creator"].xmlText;
+				else if( StructKeyExists(items[x],"itunes:author") ) node.author = items[x]["itunes:author"].xmlText;
+				else if( structKeyExists(items[x],"dc:contributor") ) node.author = items[x]["dc:contributor"].xmlText;
+				else if( structKeyExists(items[x],"dc:publisher") ) node.author = items[x]["dc:publisher"].xmlText;
+				/* Category */
+				if(StructKeyExists(items[x],"category")){
+					for(y=1; y lte arrayLen(items[x].category); y=y+1){
+						loop = items[x].category[y];
+						if( len(loop.xmlText) ) { 
+							node.category[y] = StructNew();
+							node.category[y].tag = loop.xmlText;
+							if(StructKeyExists(loop.xmlAttributes,'domain')) node.category[y].domain = loop.xmlAttributes.domain;
+						}
+					}
+				}
+				// Dublin Core subject being used as a category
+				else if(StructKeyExists(items[x],"dc:subject")){
+					for(y=1; y lte arrayLen(items[x]["dc:subject"]); y=y+1){
+						loop = items[x]["dc:subject"][y];
+						if( len(loop.xmlText) ) { 
+							node.category[y] = StructNew();
+							node.category[y].tag = loop.xmlText;
+						}
+					}
+				}
+				// Apple iTune categories
+				if(StructKeyExists(items[x],"itunes:category")){
+					for(y=1; y lte arrayLen(items[x]["itunes:category"]); y=y+1){
+						loop = items[x]["itunes:category"][y];
+						merge = arrayLen(node.category) + y;
+						if( len(loop.xmlText) ) { 
+							node.category[merge] = StructNew();
+							node.category[merge].tag = loop.xmlText;
+							node.category[merge].domain = "itunes category";
+						}
+					}
+					ArrayAppend(items[x].category,merge);
+				}
+				// Apple iTunes keywords as category
+				if( StructKeyExists(items[x],"itunes:keywords") ) {
+					if( StructKeyExists(node,'category') ) {
+						arrayAppend(node.category, StructNew());
+						y = arrayLen(node.category);
+					}
+					else {
+						y = 1;
+						node.category[y] = StructNew();
+					}
+					node.category[y].tag = items[x]["itunes:keywords"].xmlText;
+					node.category[y].domain = "itunes keywords";
+				}
+				/* Comments */
+				if( structKeyExists(items[x],"comments") ) {
+					for(y=1; y lte arrayLen(items[x]["comments"]); y=y+1){
+						if( structKeyExists(items[x],"slash:comments") and isNumeric(items[x]["slash:comments"][y].xmlText) ) node.comments.count = items[x]["comments"][y].xmlText;
+						else node.comments.url = items[x]["comments"][y].xmlText;
+					}
+				}
+				if( structKeyExists(items[x],"slash:comments") ) node.comments.count = items[x]["slash:comments"].xmlText;
+				if( structKeyExists(items[x],"slash:hit_parade") ) node.comments.hit_parade = items[x]["slash:hit_parade"].xmlText;
+				/* Dates */
+				node.datepublished = findCreatedDate(items[x]);
+				if( isDateISO8601(node.datepublished) ){ 
+					node.datepublished = oUtilities.parseISO8601(node.datepublished);
+				}
+				else{ 
+					node.datepublished = oUtilities.parseRFC822(node.datepublished);
+				}
+				node.dateupdated = findUpdatedDate(items[x]);
+				if( isDateISO8601(node.dateupdated) ){
+					node.dateupdated = oUtilities.parseISO8601(node.dateupdated);
+				}
+				else{
+					node.dateupdated = oUtilities.parseRFC822(node.dateupdated);
+				}
+				// verify dates
+				if( len(node.datepublished) neq 0 and len(node.dateupdated) eq 0){
+					node.dateupdated = node.datepublished;
+				}
+				else if( len(node.dateupdated) neq 0 and len(node.datepublished) eq 0){
+					node.datepublished = node.dateupdated;
+				}	
+				/* Body aka Description */
+				if( structKeyExists(items[x],"content:encoded") ) node.body = items[x]["content:encoded"].xmlText;
+				else if( structKeyExists(items[x],"description") ) node.body = items[x].description.xmlText;
+				else if( structKeyExists(items[x],"dc:description") ) node.body = items[x]["dc:description"].xmlText;
+				else if( StructKeyExists(items[x],"itunes:subtitle") ) node.body = items[x]["itunes:subtitle"].xmlText;
+				else if( StructKeyExists(items[x],"itunes:summary") ) node.body = items[x]["itunes:summary"].xmlText;
+				/* Attachment aka Enclosure */
+				if( structKeyExists(items[x],"enclosure") and structKeyExists(items[x].enclosure.xmlAttributes,"url") ){
+					for(y=1; y lte arrayLen(items[x].enclosure);y=y+1){
+						if ( StructKeyExists(items[x].enclosure[y].xmlAttributes,'url')){
+							itemStruct = StructNew();
+							itemStruct.url = items[x].enclosure[y].xmlAttributes.url;
+							itemStruct.duration = "";
+							itemStruct.rating = "";
+							itemStruct.size = "";
+							itemStruct.type = "";
+							if ( StructKeyExists(items[x],"itunes:duration") ) itemStruct.duration = items[x]["itunes:duration"].xmlText;
+							if ( StructKeyExists(items[x].enclosure[y].xmlAttributes,'length') ) itemStruct.size = items[x].enclosure[y].xmlAttributes.length;
+							if ( StructKeyExists(items[x],"itunes:explicit") ) itemStruct.rating = "explicit - #items[x]["itunes:explicit"].xmlText#";
+							if ( StructKeyExists(items[x].enclosure[y].xmlAttributes,'type') ) itemStruct.type = items[x].enclosure[y].xmlAttributes.type;
+							ArrayAppend(node.attachment,itemStruct);
+						}
+					}
+				}
+				/* Id */
+				if( structKeyExists(items[x],"guid") ) node.id = items[x].guid.xmlText;
+				else if( structKeyExists(items[x],"dc:identifier") ) node.id = items[x]["dc:identifier"].xmlText;
+				else if( structKeyExists(items[x],"link") ) node.id = items[x].link.xmlText;
+				/* Link */
+				if ( structKeyExists(items[x],"link") ){
+					node.url = items[x].link.XmlText;
+				}
+				else if ( structKeyExists(items[x],"guid") and (not structKeyExists(items[x].guid.xmlAttributes, "isPermaLink") or items[x].guid.xmlAttributes.isPermaLink) ){
+					node.url = items[x].guid.XmlText;
+				}
+				else if ( structKeyExists(items[x],"source") and structKeyExists(items[x].source.xmlAttributes,"url") ){
+					node.url = items[x].source.xmlAttributes.url;
+				}
+				/* Rights (uses Creative Commons license or DC extensions) */
+				if( structKeyExists(items[x],"creativeCommons:license") and not len(node.rights) ) node.rights = items[x]["creativeCommons:license"].xmlText;
+				else if( structKeyExists(items[x],"dc:rights") ) node.rights = items[x]["dc:rights"].xmlText;
+				/* Title */
+				if( structKeyExists(items[x],"title") ) node.title = items[x].title.xmlText;
+				else if( structKeyExists(items[x],"dc:title") ) node.title = items[x]["dc:title"].xmlText;
+
+				if( arguments.itemsType eq "array" ){
+					/* Append to Array */
+					ArrayAppend(rtnItems,node);
+				}
+				
+				else{
+					QueryAddRow(rtnItems,1);
+					QuerySetCell(rtnItems, "attachment", node.attachment);
+					QuerySetCell(rtnItems, "author", node.author);
+					QuerySetCell(rtnItems, "category", node.category);
+					QuerySetCell(rtnItems, "comments", node.comments);
+					QuerySetCell(rtnItems, "body", node.body);
+					QuerySetCell(rtnItems, "datepublished", node.datepublished);
+					QuerySetCell(rtnItems, "dateupdated", node.dateupdated);
+					QuerySetCell(rtnItems, "id", node.id);
+					QuerySetCell(rtnItems, "rights", node.rights);
+					QuerySetCell(rtnItems, "title", node.title);
+					QuerySetCell(rtnItems, "url", node.url);
+				}
+						
+			}//end of for loop 	
 		/* Return items */
 		return rtnItems;
 		</cfscript>
 	</cffunction>
-	
-	<!--- Parse rss items --->
-	<cffunction name="parseRSSItems" access="private" returntype="any" hint="Parse the items an return an array of structures" output="false" >
+  
+  <!--- Parse rss items (feedReader version 1) --->
+	<cffunction name="parseRSSItemsVer1" access="private" returntype="any" hint="Parse the items an return an array of structures" output="false" >
 		<!--- ******************************************************************************** --->
 		<cfargument name="items" 		type="any" 		required="true" hint="The xml of items">
 		<cfargument name="itemsType" 	type="string" 	required="false" default="query" hint="The type of the items either query or Array. Query is by default."/>
