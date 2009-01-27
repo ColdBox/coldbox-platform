@@ -89,6 +89,8 @@ Description :
 			
 			/* Clean up the path_info from index.cfm and nested pathing */
 			cleanedPathInfo = trim(reReplacenocase(getCGIElement('path_info'),"[/\\]index\.cfm",""));
+			/* Clean up empty placeholders */
+			cleanedPathInfo = replace(cleanedPathInfo,"//","/","all");
 			if( len(cleanedScriptName) gt 0)
 				cleanedPathInfo = replaceNocase(cleanedPathInfo,cleanedScriptName,'');
 			
