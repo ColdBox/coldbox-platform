@@ -70,17 +70,25 @@ Description :
 			</cflock>
 		<cfelse>
 			<cftry>
-				
 				<!--- AutoReload Tests --->
 				<cfif application.cbController.getSetting("ConfigAutoReload")>
 					<cflock type="exclusive" name="#getAppHash()#" timeout="#getLockTimeout()#" throwontimeout="true">
 						<cfset application.cbController.setAppStartHandlerFired(false)>
 						<cfset application.cbController.getLoaderService().setupCalls(COLDBOX_CONFIG_FILE)>
 					</cflock>
-				<cfelseif application.cbController.getSetting("HandlersIndexAutoReload")>
-					<cflock type="exclusive" name="#getAppHash()#" timeout="#getLockTimeout()#" throwontimeout="true">
-						<cfset application.cbController.getHandlerService().registerHandlers()>
-					</cflock>
+				<cfelse>
+					<!--- Handler's Index Auto Reload --->
+					<cfif application.cbController.getSetting("HandlersIndexAutoReload")>
+						<cflock type="exclusive" name="#getAppHash()#" timeout="#getLockTimeout()#" throwontimeout="true">
+							<cfset application.cbController.getHandlerService().registerHandlers()>
+						</cflock>
+					</cfif>
+					<!--- IOC Framework Reload --->
+					<cfif application.cbController.getSetting("IOCFrameworkReload")>
+						<cflock type="exclusive" name="#getAppHash()#" timeout="#getLockTimeout()#" throwontimeout="true">
+							<cfset application.cbController.getPlugin("ioc").configure()>
+						</cflock>
+					</cfif>
 				</cfif>
 				
 				<!--- Trap Framework Errors --->

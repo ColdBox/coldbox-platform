@@ -465,12 +465,14 @@ Modification History:
 			if ( not structKeyExists(ConfigStruct, "EventCaching") or not isBoolean(ConfigStruct.EventCaching) )
 				ConfigStruct["EventCaching"] = true;
 
-			//Check for IOC Framework
+			//Check for IOC Framework & Settings
 			if ( not structKeyExists(ConfigStruct, "IOCFramework") )
 				ConfigStruct["IOCFramework"] = "";
+			if ( not structKeyExists(ConfigStruct, "IOCFrameworkReload") or not isBoolean(ConfigStruct.IOCFrameworkReload) )
+				ConfigStruct["IOCFrameworkReload"] = false;
 			if ( not structKeyExists(ConfigStruct, "IOCDefinitionFile") )
 				ConfigStruct["IOCDefinitionFile"] = "";
-			if ( not structKeyExists(ConfigStruct, "IOCObjectCaching") )
+			if ( not structKeyExists(ConfigStruct, "IOCObjectCaching") or not isBoolean(ConfigStruct.IOCObjectCaching) )
 				ConfigStruct["IOCObjectCaching"] = false;
 				
 			//RequestContextDecorator

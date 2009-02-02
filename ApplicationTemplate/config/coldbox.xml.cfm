@@ -83,6 +83,8 @@
 		<Setting name="EventCaching" 				value="false"/>
 		<!--IOC Framework if Used, else leave blank-->
 		<Setting name="IOCFramework"				value="" />
+		<!-- Reload IOC Framework on every request, usually for development or debugging -->
+		<Setting name="IOCFrameworkReload"			value="false" />
 		<!--IOC Definition File Path, relative or absolute -->
 		<Setting name="IOCDefinitionFile"			value="" />
 		<!--IOC Object Caching, true/false. For ColdBox to cache your IoC beans-->

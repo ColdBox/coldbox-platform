@@ -35,6 +35,7 @@
 		<Setting name="EventCaching" 				value="$${Event Caching:false|true}"/>
 		<Setting name="MyPluginsLocation"			value="$${Custom Plugins Invocation Path}" />
 		<Setting name="IOCFramework"				value="$${IOC Framework (Blank If not Used):|coldspring|lightwire}" />
+		<Setting name="IOCFrameworkReload"			value="false" />
 		<Setting name="IOCDefinitionFile"			value="$${IOC Service Definition File (Relative or Absolute if used)}" />
 		<Setting name="IOCObjectCaching"			value="$${IOC Object Caching:false|true}" />
 		<Setting name="RequestContextDecorator"		value="" />
