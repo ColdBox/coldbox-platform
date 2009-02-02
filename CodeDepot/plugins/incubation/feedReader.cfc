@@ -7,13 +7,24 @@ www.coldboxframework.com | www.luismajano.com | www.ortussolutions.com
 Author      :	Luis Majano and Ben Garrett
 Date        :	02/22/2008
 License     :	Apache 2 License
-Version     :	2 (Beta-27Jan09)
+Version     :	2 (Beta-2Feb09)
 Description :
-	A rss reader plugin with file caching capabilities. This reader supports RSS 1.0, 2.0 and Atom 1.0 only.
-	All RSS dates are converted to usable ColdFusion dates, this means that all ISO8601 and RFC822 dates are
-	converted to standard coldfusion dates. So you don't have to parse anything more. Just format them
+	A feed reader plug-in with file caching capabilities. This reader supports and has been tested with all major revisions of RDF, RSS and
+	Atom feeds.
 	
-	You need to set the following settings in your application (coldbox.xml.cfm)
+	Feed dates such as those in ISO8601 and RFC882 formats are converted to usable ColdFusion dates. So you don't have to parse anything
+	more, just format them.
+	
+	To use this plug-in you should set the following settings in your application (coldbox.xml.cfm), unless you are happy with the defaults.
+	
+Quick and Dirty Feed Dump:
+	This is not a recommended ColdBox design practise but it will give you a quick result while learning to use this plug-in. In an
+	eventhandler file create a new event, maybe call it 'feeddump'. Then add the code, change the URL and run the event.
+	
+	<cfset var rc = event.getCollection()>
+	<cfset rc.webfeed = getPlugin("feedReader").retrieveFeed("http://www.example.com/feeds/rss")>
+	<cfdump var="#rc.webfeed#">
+	<cfabort>
 	
 Application Settings:
 	- feedReader_useCache 		: boolean [default=true] (Use the file cache or not)
@@ -21,14 +32,14 @@ Application Settings:
 	- feedReader_cacheLocation 	: string (Where to store the file caching, relative to the app or absolute)
 	- feedReader_cacheTimeout 	: numeric [default=30] (In minutes, the timeout of the file cache)
 	- feedReader_httpTimeout 	: numeric [default=30] (In seconds, the timeout of the cfhttp call)
-	- feedReader_compatibility	: boolean [default=false] (FeedStructure uses version 1 naming conventions)
+	- feedReader_compatibility	: boolean [default=false] (Output uses version 1 naming conventions)
 	
-RSS Retrieval Methods:
+Feed Retrieval Methods:
 	- readFeed( feedURL, itemsType[default=query] ) : Retrieve a feed from cfhttp, parse, cache, and return results in query or array format.
 	- retrieveFeed( feedURL, itemsType[default=query] ) : Retrieve a feed from cfhttp, parse, and return results in query or array format.
 	- parseFeed( xmlDoc, itemsType[default=query] ) : Parse a feed xml document into the normalized struct.
 	
-RSS File Caching Methods:
+Feed File Caching Methods:
 	- flushCache() : Flush/Remove the entire cache
 	- getCacheSize() : numeric : How many feeds do we have in the cache.
 	- isFeedCached( feedURL ) : boolean : Is this feed cached or not
@@ -39,32 +50,88 @@ RSS File Caching Methods:
 	- setCachedFeed( feedURL, feedStruct ) : Cache the feed	
 	
 What gets returned on the FeedStructure:
-****INCOMPLETE LIST*****
-[AUTHOR] - Feed Author
-[AUTHOREMAIL] - Author Email
-[AUTHORURL] - Author URL
-[DATE] - Feed Created Date
-[DATEUPDATED] - Feed Updated Date (Normalized ColdFusion Dates)
-[DESCRIPTION] - Feed Description (Normalized ColdFusion Dates)
-[TITLE] - Feed Title
-[IMAGE] - Image Structure
-	[LINK] - Image Link
-	[TITLE] - Image Title
-	[URL] - Image URL
-[LINK] - Feed Link
-[ITEMS] - Items Array or Query, both contain the following
-	[DATE] - Feed Created Date (Normalized ColdFusion Dates)
-	[DATEUPDATED] - Feed Updated Date (Normalized ColdFusion Dates)
-	[DESCRIPTION] - The content
-	[ENCLOSURE] - The enclosure
-	[LINK] - The link to the item
-	[TITLE] - The title to the item
+* Starred structures/arrays will return an empty state if the result is empty. So if there are no categories, the [Category] array will
+	return an empty array. Rather than returning a single array with empty [Domain] and [Tag] structures values.
+
+[Author] - structure
+	[Email] - E-mail address of the primary author
+	[Name] - Name of the primary author
+	[Url] - URL link to the primary author
+[Category]* - array
+	[Domain] - URL to or name of the convention used by this category
+	[Tag] - Category item
+[Datebuilt] - When feed was last compiled
+[Dateupdated] - When feed data was last updated
+[Description] - Text about this feed
+[Image] - structure
+ [Description] - Text about this logo
+ [Height] - Logo height in pixels
+ [Icon] - URL to a tiny version of this logo
+ [Link] - URL of a website to link to when logo is clicked
+ [Title] - Title for logo
+ [Url] - URL of where logo is stored
+ [Width] - Logo width in pixels
+[Language] - Primary feed language, usually a HTML language code
+[Opensearch]* - structure
+	[Autodiscovery] - structure
+		[Title] - Title for the OpenSearch description document
+		[Url] - URL to the OpenSearch description document
+	[Itemsperpage] - Total number of results from the OpenSearch request contained in this feed
+	[Startindex] - Current page of the OpenSearch request
+	[Totalresults] - Total number of results from the OpenSearch request
+	[Query] - array
+		[Role] - Identify what this OpenSearch query is used for
+		[Totalresults] - Expected number of results
+		[Searchterms] - Search terms requested
+		[Count] - Search results per page
+		[Startindex] - Search index number of the first search request
+		[Startpage] - Search page number of the first search request
+		[Language] - Search results language
+		[Inputencoding] - Search request character encoding
+		[Outputencoding] - Search results character encoding
+[Rating] - Content notifications and warnings such as offensive language
+[Rights] - structure
+	[Copyright] - Copyright notice
+	[Creativecommons] - URL pointing to the feed's Creative Commons license
+[Title] - Title of the feed
+[Websiteurl] - URL of the website this feed is associated with
+
+[Items] - array or query
+	[Attachment]* - array
+		[Duration] - Running time for the attached media file
+		[Rating] - Content notifications and warnings such as offensive language
+		[Size] - Size (usually in bytes) of the attached file
+		[Type] - Mime type of the attached file
+		[Url] - URL of where the file is located so it can be directly downloaded
+	[Author] - Author of the item or file attachment
+	[Body] - Text describing this feed, the attachment or a text summary of a longer article
+	[Category]* - array
+		[Domain] - URL to or name of the convention used by this category
+		[Tag] - Category item
+	[Comments]
+		[Count] - Number of comments for this item
+		[Hit_parade] - A list of the history for the comment count
+		[Url] - A URL to a webpage where you can leave comments in regards to this item
+	[Datepublished] - When item was first published
+	[Dateupdated] - When item was last updated
+	[Id] - (Should be) a unique Id for this item
+	[Title] - Title for this item
+	[Url] - URL to the HTML or complete edition of this item
+	
+[Specs] - structure
+	[Extensions] - List of recognised extensions contained within this feed
+	[Generator] - Name (and maybe version, url) of the program used to create this feed
+	[Namespace] - structure
+		Namespace structure contains a collection of URLs returned by the feed's namespace tag
+	[Type] - Type of feed, either RSS, RDF, Atom
+	[Url] - Self URL for this feed (this is supplied by the feed, not generated by ColdBox)
+	[Version] - Numeric revision value for the feed, best used in combination with [Type]
 	
 
 ----------------------------------------------------------------------->
 <cfcomponent name="feedReader" 
 			 extends="coldbox.system.plugin"
-			 hint="A rss reader plugin. We recommend that when you call the readFeed method, that you use url's as settings. ex: readFeed(getSetting('myFeedURL')).  The settings this plugin uses are the following: feedReader_useCache:boolean [default=true], feedReader_cacheLocation:string, feedReader_cacheTimeout:numeric [default=30 min], feedReader_httpTimeout:numeric [default=30 sec]. If the cacheLocation directory does not exits, the plugin will throw an error. So please remember to create the directory."
+			 hint="A feed reader plugin. We recommend that when you call the readFeed method, that you use url's as settings. ex: readFeed(getSetting('myFeedURL')).  The settings this plugin uses are the following: feedReader_useCache:boolean [default=true], feedReader_cacheLocation:string, feedReader_cacheTimeout:numeric [default=30 min], feedReader_httpTimeout:numeric [default=30 sec]. If the cacheLocation directory does not exits, the plugin will throw an error. So please remember to create the directory."
 			 cache="true">
 
 <!---------------------------------------- CONSTRUCTOR --------------------------------------------------->
@@ -81,7 +148,7 @@ What gets returned on the FeedStructure:
 			/* Plugin Properties */
 			setpluginName("feedReader");
 			setpluginVersion("1.0");
-			setpluginDescription("I am a rss feed reader for rss and atom feeds.");
+			setpluginDescription("I am a feed reader for rdf, rss and atom feeds.");
 			
 			/* Check if using Cache and set useCache setting */
 			if( not settingExists('feedReader_useCache') or not isBoolean(getSetting('feedReader_useCache')) ){
@@ -347,7 +414,7 @@ What gets returned on the FeedStructure:
 		</cfif>
 	</cffunction>
 	
-<!---------------------------------------- PUBLIC RSS METHODS --------------------------------------------------->
+<!---------------------------------------- PUBLIC FEED METHODS --------------------------------------------------->
 	
 	<cffunction name="readFeed" access="public" returntype="struct" hint="Read a feed from http if new or from local cache. Return a universal structure representation of the feed.">
 		<!--- ******************************************************************************** --->
@@ -426,10 +493,10 @@ What gets returned on the FeedStructure:
 			</cfcatch>
 		</cftry>
 		
-		<!--- Validate If its an Atom or RSS feed --->
+		<!--- Validate If its an Atom or RSS/RDF feed --->
 		<cfif not structKeyExists(xmlDoc,"rss") and not structKeyExists(xmlDoc,"feed") and not structKeyExists(xmlDoc,"rdf:RDF")>
 			<cfthrow type="plugins.feedReader.FeedParsingException"
-					 message="Cannot continue parsing the feed since it does not seem to be a valid RSS or ATOM feed. Please verify that the feed is correct and valid"
+					 message="Cannot continue parsing the feed since it does not seem to be a valid RSS, RDF or ATOM feed. Please verify that the feed is correct and valid"
 					 detail="The xmldocument is: #htmlEditFormat(toString(xmlDoc))#">
 		</cfif>
 		
@@ -581,7 +648,7 @@ What gets returned on the FeedStructure:
 				}
 				if(feed.specs.type is "RSS") {
 					if( not getcompatibility() ) feed.items = parseRSSItems(xmlDoc.xmlRoot.channel.item,arguments.itemsType,arguments.maxItems);
-					else parseRSSItemsVer1(xmlDoc.xmlRoot.channel.item,arguments.itemsType,arguments.maxItems);
+					else feed.items = parseRSSItemsVer1(xmlDoc.xmlRoot.channel.item,arguments.itemsType,arguments.maxItems);
 				}
 				/* Author Info */
 				if(StructKeyExists(xmlDoc.xmlRoot.channel,"managingEditor"))
@@ -1021,7 +1088,7 @@ What gets returned on the FeedStructure:
 		</cfscript>
 	</cffunction>
   
-  <!--- Parse rss items --->
+  <!--- Parse rss/rdf items --->
 	<cffunction name="parseRSSItems" access="private" returntype="any" hint="Parse the items an return an array of structures" output="false" >
 		<!--- ******************************************************************************** --->
 		<cfargument name="items" 		type="any" 		required="true" hint="The xml of items">
@@ -1224,7 +1291,7 @@ What gets returned on the FeedStructure:
 		</cfscript>
 	</cffunction>
   
-  <!--- Parse rss items (feedReader version 1) --->
+  <!--- Parse rss/rdf items (feedReader version 1) --->
 	<cffunction name="parseRSSItemsVer1" access="private" returntype="any" hint="Parse the items an return an array of structures" output="false" >
 		<!--- ******************************************************************************** --->
 		<cfargument name="items" 		type="any" 		required="true" hint="The xml of items">
