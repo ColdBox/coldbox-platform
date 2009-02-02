@@ -5,9 +5,9 @@ www.coldboxframework.com | www.luismajano.com | www.ortussolutions.com
 ********************************************************************************
 
 Author      :	Luis Majano and Ben Garrett
-Date        :	02/22/2008
+Date        :	Feb/03/2009
 License     :	Apache 2 License
-Version     :	2 (Beta-2Feb09)
+Version     :	2 (Beta-3Feb09)
 Description :
 	A feed reader plug-in with file caching capabilities. This reader supports and has been tested with all major revisions of RDF, RSS and
 	Atom feeds.
@@ -532,6 +532,10 @@ What gets returned on the FeedStructure:
 		<cfset var oUtilities = getPlugin("Utilities")>
 
 		<cfscript>
+		  // check to make sure arguments.xmlDoc is an XML document, not just a URL or path pointing to a feed
+			if( not IsXML(arguments.xmlDoc) ) {
+				throw('There is a problem with the xmlDoc provided with the parseFeed method, it is not a variable containing a valid xml document','The xmlDoc contains: #htmlEditFormat(toString(arguments.xmlDoc))#','plugins.feedReader.FeedParsingException');
+			}
 			// set feed type structure		
 			feed.specs = StructNew();
 			feed.specs.extensions = "";
