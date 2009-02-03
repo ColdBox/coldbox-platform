@@ -847,17 +847,9 @@ Description: This is the framework's simple bean factory.
 			}//end if functions found
 			
 			/* Start Registering inheritances */
-			if ( structKeyExists(md, "extends") AND 
-				 ( md.extends.name NEQ "coldbox.system.plugin" AND
-				   md.extends.name NEQ "coldbox.system.eventhandler" AND
-				   md.extends.name NEQ "coldbox.system.interceptor" AND
-				   (
-				   	(len(arguments.stopRecursion) and md.extends.name NEQ arguments.stopRecursion ) 
-				   	 OR
-				   	( len(arguments.stopRecursion) eq 0 )
-				   ) 
-				  )
-			){
+			if ( structKeyExists(md, "extends") 
+				 AND 
+				 stopClassRecursion(classname=md.extends.name,stopRecursion=arguments.stopRecursion) EQ FALSE){
 				/* Recursive lookup */
 				arguments.dependencies = parseMetadata(md.extends,arguments.dependencies,arguments.useSetterInjection,arguments.stopRecursion);
 			}
@@ -865,6 +857,30 @@ Description: This is the framework's simple bean factory.
 			/* return the dependencies found */
 			return arguments.dependencies;
 		</cfscript>	
+	</cffunction>
+	
+	<!--- Stop Recursion --->
+	<cffunction name="stopClassRecursion" access="private" returntype="boolean" hint="Should we stop recursion or not due to class name found" output="false" >
+		<!--- ************************************************************* --->
+		<cfargument name="classname" 		required="true" type="string" hint="The class name to check">
+		<cfargument name="stopRecursion" 	required="true" type="string" hint="The comma delimmitted list of stoprecursion classes">
+		<!--- ************************************************************* --->
+		<cfscript>
+			var coldboxReservedClasses = "coldbox.system.plugin,coldbox.system.eventhandler,coldbox.system.interceptor";
+			var x = 1;
+			
+			/* Append Coldbox Classes */
+			arguments.stopRecursion = listAppend(arguments.stopRecursion,coldboxReservedClasses);
+			
+			/* Try to find a match */
+			for(x=1;x lte listLen(arguments.stopRecursion); x=x+1){
+				if( CompareNoCase(listGetAt(arguments.stopRecursion,x),arguments.classname) eq 0){
+					return true;
+				}
+			}
+			
+			return false;
+		</cfscript>
 	</cffunction>
 	
 	<!--- Inject Bean --->
