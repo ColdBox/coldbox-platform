@@ -302,6 +302,11 @@ Description :
 			</cfif>			
 		</cfloop>
 		
+		<!--- If FoundRoute is empty, just return, no more processing needed, routes not found. --->
+		<cfif structIsEmpty(foundRoute)>
+			<cfreturn params>
+		</cfif>
+		
 		<!--- Package Resolver --->
 		<cfif thisRoute.packageResolverExempt eq false>
 			<!--- Resolve packages for handler placeholder --->
@@ -344,8 +349,13 @@ Description :
 		
 		<!--- Now set the rest of the variables in the route: handler & action --->
 		<cfloop collection="#foundRoute#" item="key">
-			<cfif key IS NOT "pattern">
+			<cfif not listfindnocase("pattern,matchVariables",key)>
 				<cfset params[key] = foundRoute[key] />
+			<cfelseif key eq "matchVariables">
+				<!--- Add MatchVariables to Params for further routing --->
+				<cfloop list="#foundRoute.matchVariables#" index="i">
+					<cfset params[listFirst(i,"=")] = listLast(i,"=")>
+				</cfloop>
 			</cfif>
 		</cfloop>
 		
@@ -355,10 +365,11 @@ Description :
 	<!--- Add a new Course --->
 	<cffunction name="addCourse" access="public" hint="Adds a route to dispatch" output="false">
 		<!--- ************************************************************* --->
-		<cfargument name="pattern" type="string" required="true"  hint="The pattern to match against the URL." />
-		<cfargument name="handler" type="string" required="false" hint="The handler to path to execute if passed.">
-		<cfargument name="action"  type="string" required="false" hint="The action to assign if passed.">
+		<cfargument name="pattern" 				 type="string" 	required="true"  hint="The pattern to match against the URL." />
+		<cfargument name="handler" 				 type="string" 	required="false" hint="The handler to path to execute if passed.">
+		<cfargument name="action"  				 type="string" 	required="false" hint="The action to assign if passed.">
 		<cfargument name="packageResolverExempt" type="boolean" required="false" default="false" hint="If this is set to true, then the interceptor will not try to do handler package resolving. Else a package will always be resolved.">
+		<cfargument name="matchVariables" 		 type="string" 	required="false" hint="A string of name-value pair variables to add to the request collection when this pattern matches. This is a comma delimmitted list. Ex: spaceFound=true,missingAction=onTest">
 		<!--- ************************************************************* --->
 		<cfscript>
 		var thisCourse = structNew();
