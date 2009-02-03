@@ -10,7 +10,7 @@ Description: This is the framework's simple bean factory.
 
 ----------------------------------------------------------------------->
 <cfcomponent name="beanFactory"
-			 hint="I am a simple bean factory and you can use me if you want."
+			 hint="I am the ColdBox beanFactory plugin that takes care of autowiring and dependency injection"
 			 extends="coldbox.system.plugin"
 			 output="false"
 			 cache="true"
@@ -37,7 +37,7 @@ Description: This is the framework's simple bean factory.
 			setDICacheDictionary(CreateObject("component","coldbox.system.util.BaseDictionary").init('DIMetadata'));
 			/* Model Mappings */
 			instance.modelMappings = structnew();
-			/* Run Model Mappings */
+			/* Run Model Mappings template */
 			if( fileExists(getSetting("ApplicationPath") & "config/modelMappings.cfm") ){
 				try{
 					/* If AppMapping is not Blank check */
@@ -53,12 +53,13 @@ Description: This is the framework's simple bean factory.
 				}
 			}
 			
-			/* Constructor Argument Marker */
+			/* Default Constructor Argument Marker */
 			instance.dslMarker = "_wireme";
 			/* Check setting For Argument Marker Override */
 			if( settingExists("beanFactory_dslMarker") ){
 				instance.dslMarker = getSetting("beanFactory_dslMarker");
 			}
+			
 			/* Not Found Marker Constant */
 			instance.NOT_FOUND = "_NOT_FOUND_";
 			
@@ -123,9 +124,10 @@ Description: This is the framework's simple bean factory.
 	<cffunction name="getModel" access="public" returntype="any" hint="Create or retrieve model objects by convention" output="false" >
 		<!--- ************************************************************* --->
 		<cfargument name="name" 				required="true"  type="string" hint="The name of the model to retrieve">
-		<cfargument name="useSetterInjection" 	required="false" type="boolean" default="false"	hint="Whether to use setter injection alongside the annotations property injection. cfproperty injection takes precedence.">
-		<cfargument name="onDICompleteUDF" 		required="false" type="string"	default="onDIComplete" hint="After Dependencies are injected, this method will look for this UDF and call it if it exists. The default value is onDIComplete">
-		<cfargument name="debugMode" 			required="false" type="boolean" default="false" hint="Debugging Mode or not">
+		<cfargument name="useSetterInjection" 	required="false" type="boolean" hint="Whether to use setter injection alongside the annotations property injection. cfproperty injection takes precedence.">
+		<cfargument name="onDICompleteUDF" 		required="false" type="string"	hint="After Dependencies are injected, this method will look for this UDF and call it if it exists. The default value is onDIComplete">
+		<cfargument name="debugMode" 			required="false" type="boolean" hint="Debugging Mode or not">
+		<cfargument name="stopRecursion"		required="false" type="string"  hint="A comma-delimmited list of stoprecursion classpaths.">
 		<!--- ************************************************************* --->
 		<cfscript>
 			var oModel = 0;
@@ -138,6 +140,20 @@ Description: This is the framework's simple bean factory.
 			var modelClassPath = 0;
 			var md = 0;
 			var modelMappings = getModelMappings();
+			
+			/* Setting Overrides, else grab from setting */
+			if( not structKeyExists(arguments,"useSetterInjection") ){
+				arguments.useSetterInjection = getSetting("ModelsSetterInjection");
+			}
+			if( not structKeyExists(arguments,"onDICompleteUDF") ){
+				arguments.onDICompleteUDF = getSetting("ModelsDICompleteUDF");
+			}
+			if( not structKeyExists(arguments,"debugMode") ){
+				arguments.debugMode = getSetting("ModelsDebugMode");
+			}
+			if( not structKeyExists(arguments,"stopRecursion") ){
+				arguments.stopRecursion = getSetting("ModelsStopRecursion");
+			}
 			
 			/* Resolve name in Alias Checks */
 			if( structKeyExists(modelMappings,arguments.name) ){
@@ -196,7 +212,8 @@ Description: This is the framework's simple bean factory.
 							 useSetterInjection=arguments.useSetterInjection,
 							 annotationCheck=false,
 							 onDICompleteUDF=arguments.onDICompleteUDF,
-							 debugMode=arguments.debugmode);
+							 debugMode=arguments.debugmode,
+							 stopRecursion=arguments.stopRecursion);
 				}
 				</cfscript>
 			</cflock>
@@ -354,7 +371,7 @@ Description: This is the framework's simple bean factory.
 	</cffunction>
 
 	<!--- Autowire --->
-	<cffunction name="autowire" access="public" returntype="void" output="false" hint="Autowire an object using the IoC plugin.">
+	<cffunction name="autowire" access="public" returntype="void" output="false" hint="Autowire an object using the ColdBox DSL">
 		<!--- ************************************************************* --->
 		<cfargument name="target" 				required="true" 	type="any" 		hint="The object to autowire">
 		<cfargument name="useSetterInjection" 	required="false" 	type="boolean" 	default="true"	hint="Whether to use setter injection alongside the annotations property injection. cfproperty injection takes precedence.">
@@ -430,7 +447,8 @@ Description: This is the framework's simple bean factory.
 			/* Loop over dependencies and inject. */
 			for(x=1; x lte dependenciesLength; x=x+1){
 				/* Get Dependency */
-				thisDependency = getDSLDependency(targetDIEntry.dependencies[x],arguments.debugmode);
+				thisDependency = getDSLDependency(definition=targetDIEntry.dependencies[x],
+												  debugMode=arguments.debugmode);
 				/* Validate it */
 				if( isSimpleValue(thisDependency) and thisDependency eq instance.NOT_FOUND ){
 					/* Only log if debugmode, else no injection */
@@ -466,8 +484,6 @@ Description: This is the framework's simple bean factory.
 	<cffunction name="getConstructorArguments" output="false" access="private" returntype="struct" hint="The constructor argument collection for a model object">
 		<!--- ************************************************************* --->
 		<cfargument name="model" 				required="true" 	type="any"		default="" hint="The model object"/>
-		<cfargument name="useSetterInjection" 	required="false" 	type="boolean" 	default="true"	hint="Whether to use setter injection alongside the annotations property injection. cfproperty injection takes precedence.">
-		<cfargument name="onDICompleteUDF" 		required="false" 	type="string"	default="onDIComplete" hint="After Dependencies are injected, this method will look for this UDF and call it if it exists. The default value is onDIComplete">
 		<cfargument name="debugMode" 			required="false" 	type="boolean"  default="false" hint="Whether to log debug messages. Default is false">
 		<!--- ************************************************************* --->
 		<cfscript>
@@ -486,9 +502,7 @@ Description: This is the framework's simple bean factory.
 					definition.name = params[x].name;
 					definition.scope="";
 					/* Get Dependency */
-					args[definition.name] = getDSLDependency(Definition=definition,
-														     useSetterInjection=arguments.useSetterINjection,
-														     onDICompleteUDF=arguments.onDICompleteUDF,
+					args[definition.name] = getDSLDependency(definition=definition,
 														     debugMode=arguments.debugMode);
 				}
 			}
@@ -500,9 +514,7 @@ Description: This is the framework's simple bean factory.
 	<!--- getDSLDependency --->
 	<cffunction name="getDSLDependency" output="false" access="private" returntype="any" hint="get a dsl dependency">
 		<!--- ************************************************************* --->
-		<cfargument name="Definition" 			required="true" 	type="any" hint="The dependency definition structure">
-		<cfargument name="useSetterInjection" 	required="false" 	type="boolean" 	default="true"	hint="Whether to use setter injection alongside the annotations property injection. cfproperty injection takes precedence.">
-		<cfargument name="onDICompleteUDF" 		required="false" 	type="string"	default="onDIComplete" hint="After Dependencies are injected, this method will look for this UDF and call it if it exists. The default value is onDIComplete">
+		<cfargument name="definition" 			required="true" 	type="any" hint="The dependency definition structure">
 		<cfargument name="debugMode" 			required="false" 	type="boolean"  default="false" hint="Whether to log debug messages. Default is false">
 		<!--- ************************************************************* --->
 		<cfscript>
@@ -522,9 +534,7 @@ Description: This is the framework's simple bean factory.
 			}
 			else if ( thisType eq "model" ){
 				/* Try to inject model dependencies */
-				dependency = getModelDSL(Definition=arguments.Definition,
-									   	 useSetterInjection=arguments.useSetterInjection,
-									   	 onDICompleteUDF=arguments.onDICompleteUDF,
+				dependency = getModelDSL(definition=arguments.Definition,
 									   	 debugMode=arguments.debugMode);
 			}	
 			else if ( thisType eq "webservice" ){
@@ -589,9 +599,7 @@ Description: This is the framework's simple bean factory.
 	<!--- getModelDSL --->
 	<cffunction name="getModelDSL" access="private" returntype="any" hint="Get dependencies using the model dependency DSL" output="false" >
 		<!--- ************************************************************* --->
-		<cfargument name="Definition" 			required="true" 	type="any" hint="The dependency definition structure">
-		<cfargument name="useSetterInjection" 	required="false" 	type="boolean" 	default="true"	hint="Whether to use setter injection alongside the annotations property injection. cfproperty injection takes precedence.">
-		<cfargument name="onDICompleteUDF" 		required="false" 	type="string"	default="onDIComplete" hint="After Dependencies are injected, this method will look for this UDF and call it if it exists. The default value is onDIComplete">
+		<cfargument name="definition" 			required="true" 	type="any" hint="The dependency definition structure">
 		<cfargument name="debugMode" 			required="false" 	type="boolean"  default="false" hint="Whether to log debug messages. Default is false">
 		<!--- ************************************************************* --->
 		<cfscript>
@@ -604,8 +612,6 @@ Description: This is the framework's simple bean factory.
 			var args = structnew();
 			
 			/* Prepare Arguments */
-			args.useSetterInjection = arguments.useSetterInjection;
-			args.onDICompleteUDF = arguments.onDICompleteUDF;
 			args.debugmode = arguments.debugMode;
 			
 			/* 1 stage dependency dsl : Get Model */
@@ -637,7 +643,7 @@ Description: This is the framework's simple bean factory.
 	<!--- getColdboxDSL --->
 	<cffunction name="getColdboxDSL" access="private" returntype="any" hint="Get dependencies using the coldbox dependency DSL" output="false" >
 		<!--- ************************************************************* --->
-		<cfargument name="Definition" 	required="true" type="any" hint="The dependency definition structure">
+		<cfargument name="definition" 	required="true" type="any" hint="The dependency definition structure">
 		<!--- ************************************************************* --->
 		<cfscript>
 			var thisDependency = arguments.Definition;
@@ -686,7 +692,7 @@ Description: This is the framework's simple bean factory.
 	<!--- getIOCDependency --->
 	<cffunction name="getIOCDependency" access="private" returntype="any" hint="Get an IOC dependency" output="false" >
 		<!--- ************************************************************* --->
-		<cfargument name="Definition" 	required="true" type="any" hint="The dependency definition structure">
+		<cfargument name="definition" 	required="true" type="any" hint="The dependency definition structure">
 		<!--- ************************************************************* --->
 		<cfscript>
 			var oIOC = getPlugin("ioc");
@@ -719,7 +725,7 @@ Description: This is the framework's simple bean factory.
 	<!--- getOCMDependency --->
 	<cffunction name="getOCMDependency" access="private" returntype="any" hint="Get OCM dependencies" output="false" >
 		<!--- ************************************************************* --->
-		<cfargument name="Definition" 	required="true" type="any" hint="The dependency definition structure">
+		<cfargument name="definition" 	required="true" type="any" hint="The dependency definition structure">
 		<!--- ************************************************************* --->
 		<cfscript>
 			var oOCM = getColdboxOCM();

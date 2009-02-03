@@ -75,7 +75,11 @@
 									<xs:enumeration value="UDFLibraryFile"/>		
 									<xs:enumeration value="ViewsExternalLocation" />
 									<xs:enumeration value="ModelsExternalLocation" />
-									<xs:enumeration value="ModelsObjectCaching" />																		
+									<xs:enumeration value="ModelsObjectCaching" />		
+									<xs:enumeration value="ModelsSetterInjection" />
+									<xs:enumeration value="ModelsDebugMode" />
+									<xs:enumeration value="ModelsStopRecursion" />
+									<xs:enumeration value="ModelsDICompleteUDF" />												
 								</xs:restriction>
 							</xs:simpleType>
 						</xs:attribute>

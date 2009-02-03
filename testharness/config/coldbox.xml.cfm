@@ -35,6 +35,7 @@
 		<Setting name="HandlerCaching" 				value="false"/>
 		<Setting name="EventCaching" 				value="true"/>
 		<Setting name="IOCFramework" 				value="lightwire"/>
+		<Setting name="IOCFrameworkReload" 			value="true"/>
 		<Setting name="IOCDefinitionFile"		 	value="config/coldspring.xml.cfm"/>
 		<Setting name="IOCObjectCaching"			value="false"/>
 		<Setting name="RequestContextDecorator"		value="coldbox.testharness.model.myRequestContextDecorator" />

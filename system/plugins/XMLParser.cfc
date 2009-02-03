@@ -491,11 +491,22 @@ Modification History:
 			//Check for Models External Location
 			if ( not structKeyExists(ConfigStruct, "ModelsExternalLocation") or len(ConfigStruct["ModelsExternalLocation"]) eq 0 )
 				ConfigStruct["ModelsExternalLocation"] = "";
-			
 			//Check for Models ObjectCaching
 			if ( not structKeyExists(ConfigStruct, "ModelsObjectCaching") or not isBoolean(ConfigStruct["ModelsObjectCaching"]) )
 				ConfigStruct["ModelsObjectCaching"] = true;
-				
+			//Check for ModelsDebugMode
+			if ( not structKeyExists(ConfigStruct, "ModelsDebugMode") or not isBoolean(ConfigStruct["ModelsDebugMode"]) )
+				ConfigStruct["ModelsDebugMode"] = fwSettingsStruct["ModelsDebugMode"];
+			//Check for ModelsSetterInjection
+			if ( not structKeyExists(ConfigStruct, "ModelsSetterInjection") or not isBoolean(ConfigStruct["ModelsSetterInjection"]) )
+				ConfigStruct["ModelsSetterInjection"] = fwSettingsStruct["ModelsSetterInjection"];
+			//Check for ModelsDICompleteUDF
+			if ( not structKeyExists(ConfigStruct, "ModelsDICompleteUDF") or len(ConfigStruct["ModelsDICompleteUDF"]) eq 0 )
+				ConfigStruct["ModelsDICompleteUDF"] = fwSettingsStruct["ModelsDICompleteUDF"];
+			//Check for ModelsStopRecursion
+			if ( not structKeyExists(ConfigStruct, "ModelsStopRecursion") or len(ConfigStruct["ModelsStopRecursion"]) eq 0 )
+				ConfigStruct["ModelsStopRecursion"] = fwSettingsStruct["ModelsStopRecursion"];
+			
 			/* Flash URL Persist Scope Override */
 			if( structKeyExists(ConfigStruct,"FlashURLPersistScope") and reFindnocase("^(session|client)$",ConfigStruct["FlashURLPersistScope"]) ){
 				fwSettingsStruct["FlashURLPersistScope"] = ConfigStruct["FlashURLPersistScope"];

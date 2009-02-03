@@ -135,8 +135,6 @@ Modification History:
 			controller.getPlugin("i18n").init_i18N(controller.getSetting("DefaultResourceBundle"),controller.getSetting("DefaultLocale"));
 		}		
 		
-		//JavaLoader Setup will go here.
-
 		/* Set Debugging Mode according to configuration File */
 		controller.getDebuggerService().setDebugMode(controller.getSetting("DebugMode"));
 		

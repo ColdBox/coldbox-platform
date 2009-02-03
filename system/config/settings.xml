@@ -59,7 +59,13 @@
         <Setting name="showCachePanel" value="true"/>
         <Setting name="expandedCachePanel" value="false"/>
         <Setting name="showRCPanel" value="true"/>
-        <Setting name="expandedRCPanel" value="false"/>         
+        <Setting name="expandedRCPanel" value="false"/>  
+        <!-- Model Integration -->
+        <Setting name="ModelsObjectCaching"  value="true" />
+        <Setting name="ModelsSetterInjection"  value="false" />
+        <Setting name="ModelsDebugMode"  value="false" />
+        <Setting name="ModelsStopRecursion"  value="" />
+        <Setting name="ModelsDICompleteUDF"  value="onDIComplete" />
     </Settings>
     
     <!-- Conventions -->
