@@ -226,6 +226,11 @@ Description :
 					<value option="&quot;false&quot;"/>
 				</values>
 			</parameter>
+			<parameter name="stopRecursion" type="string" required="false">
+				<help><![CDATA[
+					A comma-delimmitted list of classnames to stop recursion for a model object.
+				]]></help>
+			</parameter>
 		</function>
 		
 		<function creator="8" name="getMailSettings" returns="coldbox.system.beans.mailsettingsBean">
@@ -263,6 +268,7 @@ Description :
 					The name of the core plugin or custom plugin to create or get from cache. You can use dot notation for packaged plugins. ie (security.logger, logger)
 				]]></help>
 				<values default="">
+					<value option="&quot;AntiSamy&quot;"/>
 					<value option="&quot;applicationstorage&quot;"/>
 					<value option="&quot;beanFactory&quot;"/>
 					<value option="&quot;cfcViewer&quot;"/>
@@ -368,6 +374,7 @@ Description :
 					<value option="&quot;HandlersPath&quot;"/>
 					<value option="&quot;IOCDefintionFile&quot;"/>
 					<value option="&quot;IOCFramework&quot;"/>
+					<value option="&quot;IOCFrameworkReload&quot;"/>
 					<value option="&quot;IOCObjectCaching&quot;"/>
 					<value option="&quot;InterceptorConfig&quot;"/>
 					<value option="&quot;LocaleStorage&quot;"/>
@@ -376,6 +383,13 @@ Description :
 					<value option="&quot;MailServer&quot;"/>
 					<value option="&quot;MailUsername&quot;"/>
 					<value option="&quot;MessageboxStyleOverride&quot;"/>
+					
+					<value option="&quot;ModelsObjectCaching&quot;"/>
+					<value option="&quot;ModelsSetterInjection&quot;"/>
+					<value option="&quot;ModelsDICompleteUDF&quot;"/>
+					<value option="&quot;ModelsDebugMode&quot;"/>
+					<value option="&quot;ModelsStopRecursion&quot;"/>
+					
 					<value option="&quot;MyPluginsInvocationPath&quot;"/>
 					<value option="&quot;MyPluginsLocation&quot;"/>
 					<value option="&quot;MyPluginsPath&quot;"/>
