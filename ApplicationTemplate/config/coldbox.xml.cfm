@@ -75,6 +75,16 @@
 		<Setting name="HandlersExternalLocation"   	value="" />
 		<!-- Declare the external models base invocation path, if used. You have to use dot notation.Example: mymapping.mymodels	-->
 		<Setting name="ModelsExternalLocation"   	value="" />
+		
+		<!-- Uncomment More Model Integration Settings:
+			<Setting name="ModelsSetterInjection"   	value="false" />
+			<Setting name="ModelsDICompleteUDF"   		value="onDIComplete" />
+			<Setting name="ModelsStopRecursion"   		value="" />
+			<Setting name="ModelsDebugMode"   			value="true" />
+		-->
+		
+		<!-- Caching of model objects via model integration  -->
+		<Setting name="ModelsObjectCaching"   		value="true" />
 		<!-- Caching of model objects via model integration  -->
 		<Setting name="ModelsObjectCaching"   		value="true" />
 		<!--Flag to cache handlers. Default if left blank is true. -->
