@@ -85,11 +85,13 @@ Description :
 				return;
 			
 			/* Clean J2EE Context Roots */
-			if( len(getContextRoot()) )
+			if( len(getContextRoot()) ){
 				cleanedPathInfo = replacenocase(cleanedPathInfo,getContextRoot(),"");
+				cleanedScriptName = replacenocase(cleanedScriptName,getContextRoot(),"");
+			}
 			
 			/* Check for invalid URL */
-			checkForInvalidURL( cleanedPathInfo , getCGIElement('script_name'), arguments.event );
+			checkForInvalidURL( cleanedPathInfo , cleanedScriptName, arguments.event );
 			
 			/* Clean up the path_info from index.cfm and nested pathing */
 			cleanedPathInfo = trim(reReplacenocase(cleanedPathInfo,"[/\\]index\.cfm",""));
