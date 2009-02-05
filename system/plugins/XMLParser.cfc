@@ -329,8 +329,11 @@ Modification History:
 					else
 						ConfigStruct.AppMapping = "";
 				}
+				
+				//Clean j2ee context
+				ConfigStruct.AppMapping = replacenocase(ConfigStruct.AppMapping,getContextRoot(),"");
 			}
-
+			
 			/* ::::::::::::::::::::::::::::::::::::::::: GET SETTINGS  :::::::::::::::::::::::::::::::::::::::::::: */
 			
 			//Get SettingNodes
