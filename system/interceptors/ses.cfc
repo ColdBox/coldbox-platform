@@ -83,12 +83,15 @@ Description :
 			/* Check if active or in proxy mode */
 			if ( not getEnabled() or arguments.event.isProxyRequest() )
 				return;
-	
+			
+			/* Clean J2EE Context Roots */
+			cleanedPathInfo = replacenocase(cleanedPathInfo,getContextRoot(),"");
+			
 			/* Check for invalid URL */
-			checkForInvalidURL( getCGIElement('path_info') , getCGIElement('script_name'), arguments.event );
+			checkForInvalidURL( cleanedPathInfo , getCGIElement('script_name'), arguments.event );
 			
 			/* Clean up the path_info from index.cfm and nested pathing */
-			cleanedPathInfo = trim(reReplacenocase(getCGIElement('path_info'),"[/\\]index\.cfm",""));
+			cleanedPathInfo = trim(reReplacenocase(cleanedPathInfo,"[/\\]index\.cfm",""));
 			/* Clean up empty placeholders */
 			cleanedPathInfo = replace(cleanedPathInfo,"//","/","all");
 			if( len(cleanedScriptName) gt 0)
