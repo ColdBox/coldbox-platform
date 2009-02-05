@@ -331,7 +331,8 @@ Modification History:
 				}
 				
 				//Clean j2ee context
-				ConfigStruct.AppMapping = replacenocase(ConfigStruct.AppMapping,getContextRoot(),"");
+				if( len(getContextRoot()) )
+					ConfigStruct.AppMapping = replacenocase(ConfigStruct.AppMapping,getContextRoot(),"");
 			}
 			
 			/* ::::::::::::::::::::::::::::::::::::::::: GET SETTINGS  :::::::::::::::::::::::::::::::::::::::::::: */

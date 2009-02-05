@@ -85,7 +85,8 @@ Description :
 				return;
 			
 			/* Clean J2EE Context Roots */
-			cleanedPathInfo = replacenocase(cleanedPathInfo,getContextRoot(),"");
+			if( len(getContextRoot()) )
+				cleanedPathInfo = replacenocase(cleanedPathInfo,getContextRoot(),"");
 			
 			/* Check for invalid URL */
 			checkForInvalidURL( cleanedPathInfo , getCGIElement('script_name'), arguments.event );
