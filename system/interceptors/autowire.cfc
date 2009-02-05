@@ -50,7 +50,7 @@ Description :
 		<!--- ************************************************************* --->
 		<cfscript>
 			var interceptorConfig = getController().getSetting("InterceptorConfig");
-			var INTERCEPTOR_CACHEKEY_PREFIX = getController().getInterceptorService().INTERCEPTOR_CACHEKEY_PREFIX;
+			var INTERCEPTOR_CACHEKEY_PREFIX = getColdboxOCM().INTERCEPTOR_CACHEKEY_PREFIX;
 			var x = 1;
 			
 			/* Setup the targettype */

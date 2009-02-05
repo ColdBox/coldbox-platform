@@ -14,8 +14,9 @@ Description :
 	<cffunction name="setUp" returntype="void" access="public" output="false">
 		<cfscript>
 		super.setup();
-		controller = mockFactory.createMock('coldbox.system.controller');
-		facade = CreateObject("component","coldbox.system.cache.util.eventURLFacade").init(controller);
+		cacheManager = mockFactory.createMock('coldbox.system.cache.CacheManager');
+		cacheManager.EVENT_CACHEKEY_PREFIX = "UNITEVENTTEST";
+		facade = CreateObject("component","coldbox.system.cache.util.eventURLFacade").init(cacheManager);
 		</cfscript>
 	</cffunction>
 	
@@ -27,7 +28,7 @@ Description :
 			context = mockFactory.createMock('coldbox.system.beans.requestContext');
 			context.mockMethod('getRoutedStruct').returns(routedStruct);
 			context.mockMethod('getCurrentEvent').returns('main.index');
-			controller.mockMethod('getSetting').returns('event');
+			context.mockMethod('getEventName').returns('event');
 			
 			/* setup url vars */
 			url.event = 'main.index';
@@ -44,14 +45,47 @@ Description :
 		<cfscript>
 			event = "main.index";
 			args = "id=1";
-			myStruct["event"] = event;
 			myStruct["id"] = 1;
 			
-			controller.mockMethod('getSetting').returns('event');
-			
-			testHash = facade.buildHash(event,args);
+			testHash = facade.buildHash(args);
 			
 			AssertEquals( testHash, hash(myStruct.toString()) );
+		</cfscript>
+	</cffunction>
+	
+	<cffunction name="testbuildEventKey" access="public" returntype="void" hint="" output="false" >
+		<cfscript>
+			routedStruct.name = "majano";
+			
+			/* Mocks */
+			context = mockFactory.createMock('coldbox.system.beans.requestContext');
+			context.mockMethod('getRoutedStruct').returns(routedStruct,routedStruct);
+			context.mockMethod('getCurrentEvent').returns('main.index');
+			context.mockMethod('getEventName').returns('event','event');
+			
+			/* setup url vars */
+			url.event = 'main.index';
+			url.id = "123";
+			url.fwCache="True";
+			
+			testCacheKey = facade.buildEventKey("unittest","main.index",context);
+			uniqueHash = facade.getUniqueHash(context);
+			targetKey = cacheManager.EVENT_CACHEKEY_PREFIX & "main.index-unittest-" & uniqueHash;
+			
+			AssertEquals( testCacheKey, targetKey );
+		</cfscript>
+	</cffunction>
+	
+	<cffunction name="testbuildEventKeyNoContext" access="public" returntype="void" hint="" output="false" >
+		<cfscript>
+			event = "main.index";
+			args = "id=1";
+			myStruct["id"] = 1;
+			
+			testCacheKey = facade.buildEventKeyNoContext("unittest","main.index",args);
+			targetKey = cacheManager.EVENT_CACHEKEY_PREFIX & "main.index-unittest-" & hash(myStruct.toString());
+			
+			AssertEquals( testCacheKey, targetKey  );
 		</cfscript>
 	</cffunction>
 	

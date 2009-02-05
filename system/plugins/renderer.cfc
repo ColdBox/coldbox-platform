@@ -39,9 +39,6 @@ Description :
 		instance.appMapping = controller.getSetting("AppMapping");
 		instance.viewsExternalLocation = controller.getSetting('ViewsExternalLocation');
 		
-		/* PUBLIC CacheKey Prefix */
-		this.VIEW_CACHEKEY_PREFIX = "cboxview_view-";
-		
 		/* Inject UDF For Views/Layouts */
 		if(Len(Trim(controller.getSetting("UDFLibraryFile")))){
 			includeUDF(controller.getSetting("UDFLibraryFile"));
@@ -60,9 +57,8 @@ Description :
 		<cfargument name="view" required="true" type="string" hint="The view to purge from the cache">
 		<!--- ************************************************************* --->
 		<cfscript>
-			var cacheKey = this.VIEW_CACHEKEY_PREFIX & arguments.view;
 			/* Clear the view */
-			getColdBoxOCM().clearKey(cacheKey);
+			getColdBoxOCM().clearView(arguments.view);
 		</cfscript>
 	</cffunction>
 
@@ -98,7 +94,7 @@ Description :
 		</cfif>
 		
 		<!--- Setup the cache key --->
-		<cfset cbox_cacheKey = this.VIEW_CACHEKEY_PREFIX & arguments.view>
+		<cfset cbox_cacheKey = getColdboxOCM().VIEW_CACHEKEY_PREFIX & arguments.view>
 		
 		<!--- Do we have a cached view?? --->
 		<cfif getColdboxOCM().lookup(cbox_cacheKey)>
@@ -139,7 +135,7 @@ Description :
 			<cfif event.isViewCacheable() and (arguments.view eq event.getViewCacheableEntry().view)>
 				<!--- Cache it baby!! --->
 				<cfset cbox_cacheEntry = event.getViewCacheableEntry()>
-				<cfset getColdboxOCM().set(this.VIEW_CACHEKEY_PREFIX & cbox_cacheEntry.view,cbox_RenderedView,cbox_cacheEntry.timeout,cbox_cacheEntry.lastAccessTimeout)>
+				<cfset getColdboxOCM().set(getColdboxOCM().VIEW_CACHEKEY_PREFIX & cbox_cacheEntry.view,cbox_RenderedView,cbox_cacheEntry.timeout,cbox_cacheEntry.lastAccessTimeout)>
 			<!--- Are we caching explicitly --->
 			<cfelseif arguments.cache>
 				<cfset getColdboxOCM().set(cbox_cacheKey,cbox_RenderedView,arguments.cacheTimeout,arguments.cacheLastAccessTimeout)>
@@ -167,7 +163,7 @@ Description :
 		<cfset var cbox_cacheEntry = "">
 		
 		<!--- Setup the cache key --->
-		<cfset cbox_cacheKey = this.VIEW_CACHEKEY_PREFIX & "external-" & arguments.view>
+		<cfset cbox_cacheKey = getColdboxOCM().VIEW_CACHEKEY_PREFIX & "external-" & arguments.view>
 		
 		<!--- Do we have a cached view?? --->
 		<cfif getColdboxOCM().lookup(cbox_cacheKey)>

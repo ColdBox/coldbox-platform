@@ -25,10 +25,6 @@ Description :
 			/* Setup the Event Cache Dictionary */
 			setEventCacheDictionary(CreateObject("component","coldbox.system.util.BaseDictionary").init('EventCache'));
 			
-			/* Setup the public event cache key prefix */
-			this.EVENT_CACHEKEY_PREFIX = "cboxevent_event-";
-			this.HANDLER_CACHEKEY_PREFIX = "cboxhandler_handler-";
-			
 			/* Return Service */			
 			return this;
 		</cfscript>
@@ -68,7 +64,7 @@ Description :
 			/* Request context to check */
 			var oRequestContext = arguments.RequestContext;
 			/* Cache Keys */
-			var cacheKey = this.HANDLER_CACHEKEY_PREFIX & oEventHandlerBean.getRunnable();
+			var cacheKey = getColdboxOCM().HANDLER_CACHEKEY_PREFIX & oEventHandlerBean.getRunnable();
 			var eventCacheKey = "";
 			/* Cache Util */
 			var oEventURLFacade = getController().getColdboxOCM().getEventURLFacade();
@@ -80,7 +76,7 @@ Description :
 			/* Are we caching handlers? */
 			if ( controller.getSetting("HandlerCaching") ){
 				/* Lookup handler in Cache */
-				oEventHandler = controller.getColdboxOCM().get(cacheKey);
+				oEventHandler = getColdboxOCM().get(cacheKey);
 				/* Verify if not found, then create it and cache it */
 				if( not isObject(oEventHandler) ){
 					/* Create a new handler */
@@ -89,9 +85,9 @@ Description :
 					saveHandlerMetaData(oEventHandler,cacheKey);					
 					/* Get dictionary entry for operations, it is now guaranteed. */
 					handlerDictionaryEntry = getHandlerCacheDictionary().getKey(cacheKey);
-					/* Do we Cache this handler's event output? */
+					/* Do we Cache this handler */
 					if ( handlerDictionaryEntry.cacheable ){
-						controller.getColdboxOCM().set(cacheKey,oEventHandler,handlerDictionaryEntry.timeout,handlerDictionaryEntry.lastAccessTimeout);
+						getColdboxOCM().set(cacheKey,oEventHandler,handlerDictionaryEntry.timeout,handlerDictionaryEntry.lastAccessTimeout);
 					}
 				}//end of caching strategy				
 			}
@@ -154,13 +150,12 @@ Description :
 										 cacheKeySuffix=oEventHandler.EVENT_CACHE_SUFFIX);
 				/* get dictionary entry for operations, it is now guaranteed. */
 				eventDictionaryEntry = getEventCacheDictionary().getKey(oEventHandlerBean.getFullEvent());
-				/* Do we need to cache this event?? */
+				/* Do we need to cache this event's output after it executes?? */
 				if ( eventDictionaryEntry.cacheable ){
 					/* Create the Cache Key to save */
-					eventDictionaryEntry.cacheKey = oEventURLFacade.buildEventKey(eventDictionaryEntry.prefix,
-																				  eventDictionaryEntry.suffix,
-																				  oEventHandlerBean.getFullEvent(),
-																				  oRequestContext);
+					eventDictionaryEntry.cacheKey = oEventURLFacade.buildEventKey(keySuffix=eventDictionaryEntry.suffix,
+																				  targetEvent=oEventHandlerBean.getFullEvent(),
+																				  targetContext=oRequestContext);
 					/* Event is cacheable and we need to flag it so the renderer caches it. */
 					oRequestContext.setEventCacheableEntry(eventDictionaryEntry);
 				}//end if md says that this event is cacheable
@@ -365,7 +360,6 @@ Description :
 			mdEntry.lastAccessTimeout = "";
 			mdEntry.cacheKey = "";
 			mdEntry.suffix = "";
-			mdEntry.prefix = "";
 			
 			return mdEntry;
 		</cfscript>
@@ -409,10 +403,8 @@ Description :
 				else{
 					mdEntry.cacheable = false;
 				}
-				/* Handler Evetn Cache Key Suffix */
+				/* Handler Event Cache Key Suffix */
 				mdEntry.suffix = arguments.cacheKeySuffix;
-				/* Handler Events Prefix */
-				mdEntry.prefix = this.EVENT_CACHEKEY_PREFIX;
 				/* Set md Entry in dictionary */
 				getEventCacheDictionary().setKey(cacheKey,mdEntry);
 			}//end of md cache dictionary.

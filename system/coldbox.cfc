@@ -180,7 +180,7 @@ Description :
 						<!--- Check if caching the content --->
 						<cfif event.isEventCacheable()>
 							<cfset eventCacheEntry = Event.getEventCacheableEntry()>
-							<!--- Cache the content --->
+							<!--- Cache the content of the event --->
 							<cfset cbController.getColdboxOCM().set(eventCacheEntry.cacheKey,
 																	renderedContent,
 																	eventCacheEntry.timeout,

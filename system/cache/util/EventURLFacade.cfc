@@ -22,9 +22,9 @@ Modification History:
 	</cfscript>
 
 	<cffunction name="init" access="public" output="false" returntype="EventURLFacade" hint="Constructor">
-		<cfargument name="controller" type="any" required="true">
+		<cfargument name="cacheManager" type="coldbox.system.cache.CacheManager" 	required="true" hint="The cache manager"/>
 		<cfscript>
-			instance.controller = arguments.controller;
+			instance.cacheManager = arguments.cacheManager;
 			return this;
 		</cfscript>
 	</cffunction>
@@ -38,8 +38,9 @@ Modification History:
 		<!--- **************************************************************************** --->
 		<cfscript>
 			var urlCopy = duplicate(URL);
-			var eventName = instance.controller.getSetting('eventName');
+			var eventName = arguments.event.getEventName();
 			var urlActionsList = "fwReinit,fwCache,debugMode,debugpass,dumpvar,debugpanel";
+			var urlColdboxExempt = "currentview,currentlayout,cbox_eventcacheableentry";
 			var x = 1;
 			var routedStruct = arguments.event.getRoutedStruct();
 			
@@ -55,8 +56,8 @@ Modification History:
 				}
 			}
 			
-			/* Add incoming event to hash */
-			urlCopy[eventName] = arguments.event.getCurrentEvent();
+			/* Add incoming event to hash: DEPRECATED */
+			//urlCopy[eventName] = arguments.event.getCurrentEvent();
 			
 			/* Incorporate Routed Structs */
 			for( key in routedStruct ){
@@ -71,15 +72,14 @@ Modification History:
 	<!--- Build Hash --->
 	<cffunction name="buildHash" output="false" access="public" returntype="string" hint="build a unique hash according to event and args">
 		<!--- **************************************************************************** --->
-		<cfargument name="event" type="string" required="true" hint="The event to incorporate into the hash"/>
 		<cfargument name="args"  type="string" required="true" hint="The string of args to incorporate into the hash"/>
 		<!--- **************************************************************************** --->
 		<cfscript>
 			var mySruct = structnew();
 			var x =1;
 			
-			//add event to structure
-			myStruct[instance.controller.getSetting('eventName')] = arguments.event;
+			//add event to structure: DEPRECATED
+			//myStruct[instance.eventName] = arguments.event;
 			
 			//Build structure from arg list
 			for(x=1;x lte listlen(arguments.args,"&"); x=x+1){
@@ -94,7 +94,6 @@ Modification History:
 	<!--- Build Event Key --->
 	<cffunction name="buildEventKey" access="public" returntype="any" hint="Build an event key according to passed in params" output="false" >
 		<!--- **************************************************************************** --->
-		<cfargument name="keyPrefix" 	 required="true" type="any" hint="The handler service cache key prefix">
 		<cfargument name="keySuffix" 	 required="true" type="any" hint="A handler key suffix if used.">
 		<cfargument name="targetEvent" 	 required="true" type="any" hint="The target event string">
 		<cfargument name="targetContext" required="true" type="any" hint="The target event context to test.">
@@ -102,10 +101,45 @@ Modification History:
 		<cfscript>
 			var key = "";
 			
-			key = arguments.keyPrefix & arguments.targetEvent & "-" & arguments.keySuffix & "-" & getUniqueHash(arguments.targetContext);
+			key = buildBasicCacheKey(argumentCollection=arguments) & getUniqueHash(arguments.targetContext);
 			
 			return key;
 		</cfscript>		
 	</cffunction>
+	
+	<!--- Build Event Key --->
+	<cffunction name="buildEventKeyNoContext" access="public" returntype="any" hint="Build an event key according to passed in params and no Context" output="false" >
+		<!--- **************************************************************************** --->
+		<cfargument name="keySuffix" 	 required="true" type="any" 	hint="A handler key suffix if used.">
+		<cfargument name="targetEvent" 	 required="true" type="any" 	hint="The target event string">
+		<cfargument name="targetArgs"  	 required="true" type="string" 	hint="The string of args to incorporate into the hash"/>
+		<!--- **************************************************************************** --->
+		<cfscript>
+			var key = "";
+			
+			key = buildBasicCacheKey(argumentCollection=arguments) & buildHash(arguments.args);
+			
+			return key;
+		</cfscript>		
+	</cffunction>
+	
+	<!--- Build Event Key --->
+	<cffunction name="buildBasicCacheKey" access="public" returntype="any" hint="Builds a basic cache key" output="false" >
+		<!--- **************************************************************************** --->
+		<cfargument name="keySuffix" 	 required="true" type="any" hint="A handler key suffix if used.">
+		<cfargument name="targetEvent" 	 required="true" type="any" hint="The target event string">
+		<!--- **************************************************************************** --->
+		<cfscript>
+			var key = "";
+			
+			key = instance.cacheManager.EVENT_CACHEKEY_PREFIX & arguments.targetEvent & "-" & arguments.keySuffix & "-";
+			
+			return key;
+		</cfscript>		
+	</cffunction>
+
+<!------------------------------------------- PRIVATE ------------------------------------------->
+	
+	
 
 </cfcomponent>

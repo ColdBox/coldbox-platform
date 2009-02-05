@@ -327,7 +327,7 @@ Description :
 		<!--- Populate the params structure with the proper parts of the URL --->
 		<cfset routeParamsLength = arrayLen(routeParams)>
 		<cfloop from="1" to="#routeParamsLength#" index="i">
-			<cfset "params.#routeParams[i]#" = mid(requestString,match.pos[i+1],match.len[i+1]) />
+			<cfset params[routeParams[i]] = mid(requestString,match.pos[i+1],match.len[i+1]) />
 		</cfloop>
 		
 		<!--- Convention String, where it will translate the remaining name-value pairs into vars --->
@@ -355,7 +355,7 @@ Description :
 		
 		<!--- Now set the rest of the variables in the route: handler & action --->
 		<cfloop collection="#foundRoute#" item="key">
-			<cfif not listfindnocase("pattern,matchVariables",key)>
+			<cfif not listfindnocase("pattern,matchVariables,packageresolverexempt",key)>
 				<cfset params[key] = foundRoute[key] />
 			<cfelseif key eq "matchVariables">
 				<!--- Add MatchVariables to Params for further routing --->

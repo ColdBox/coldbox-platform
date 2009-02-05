@@ -20,19 +20,12 @@ Description :
 		<cfscript>
 			/* Setup The Controller. */
 			setController(arguments.controller);
-			
 			/* Register the interception points ENUM */
 			instance.InterceptionPoints = 'afterConfigurationLoad,afterAspectsLoad,afterHandlerCreation,afterPluginCreation,sessionStart,sessionEnd,preProcess,preEvent,postEvent,preRender,postRender,postProcess,afterCacheElementInsert,afterCacheElementRemoved,onException,afterCacheElementExpired';
-			
 			/* Init Container */
 			instance.interceptionStates = structnew();
-			
-			/* Set public cache key */
-			this.INTERCEPTOR_CACHEKEY_PREFIX = "cboxinterceptor_interceptor-";
-			
 			/* Init the Request Buffer */
 			instance.requestBuffer = CreateObject("component","coldbox.system.util.RequestBuffer").init();
-			
 			/* Return Service */			
 			return this;
 		</cfscript>
@@ -115,7 +108,7 @@ Description :
 			<cfset interceptorName = arguments.interceptorClass>
 		<cfelseif structKeyExists(arguments,"interceptorObject")>
 			<cfset interceptorName = getMetaData(arguments.interceptorObject).name>
-			<cfset interceptorKey = this.INTERCEPTOR_CACHEKEY_PREFIX & interceptorName>
+			<cfset interceptorKey = getColdboxOCM().INTERCEPTOR_CACHEKEY_PREFIX & interceptorName>
 			<cfset oInterceptor = arguments.interceptorObject>			
 		<cfelse>
 			<cfthrow message="Invalid registration" detail="You did not send in an interceptorClass or interceptorObject for registration" type="Framework.InterceptorService.InvalidRegistration">
@@ -127,7 +120,7 @@ Description :
 				/* Did we send in a class to instantiate */
 				if( structKeyExists(arguments,"interceptorClass") ){
 					/* Cache Key */
-					interceptorKey = this.INTERCEPTOR_CACHEKEY_PREFIX & arguments.interceptorClass;
+					interceptorKey = getColdboxOCM().INTERCEPTOR_CACHEKEY_PREFIX & arguments.interceptorClass;
 					/* Create the Interceptor Class */
 					try{
 						oInterceptor = CreateObject("component", arguments.interceptorClass ).init(getController(),interceptorProperties);
@@ -169,7 +162,7 @@ Description :
 		<cfargument name="interceptorClass" required="true" type="string" hint="The qualified class of the interceptor to retrieve">
 		<!--- ************************************************************* --->
 		<cfscript>
-			var interceptorKey = this.INTERCEPTOR_CACHEKEY_PREFIX & arguments.interceptorClass;
+			var interceptorKey = getColdboxOCM().INTERCEPTOR_CACHEKEY_PREFIX & arguments.interceptorClass;
 			
 			/* Verify it exists else throw error */
 			if( not getController().getColdboxOCM().lookup(interceptorKey) ){
@@ -243,7 +236,7 @@ Description :
 		<cfscript>
 			/* Verify the state */
 			var foundState = getStateContainer(arguments.state);
-			var interceptorKey = this.INTERCEPTOR_CACHEKEY_PREFIX & arguments.interceptorClass;
+			var interceptorKey = getColdboxOCM().INTERCEPTOR_CACHEKEY_PREFIX & arguments.interceptorClass;
 			
 			/* State Exists */
 			if( isObject(foundState) ){

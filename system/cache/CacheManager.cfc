@@ -9,6 +9,11 @@ Date        :	January 18, 2007
 Description :
 	This is a cfc that handles caching of event handlers.
 
+Dependencies :
+ - Controller to get to dependencies
+ - Interceptor Service for event model
+ - Handler Service for event caching
+
 Modification History:
 01/18/2007 - Created
 
@@ -21,6 +26,14 @@ Modification History:
 	
 	<cfscript>
 		instance = structnew();
+		
+		/* Cache Key prefixes. These are used by ColdBox For specific type saving */
+		this.VIEW_CACHEKEY_PREFIX = "cboxview_view-";
+		this.EVENT_CACHEKEY_PREFIX = "cboxevent_event-";
+		this.HANDLER_CACHEKEY_PREFIX = "cboxhandler_handler-";
+		this.INTERCEPTOR_CACHEKEY_PREFIX = "cboxinterceptor_interceptor-";
+		this.PLUGIN_CACHEKEY_PREFIX = "cboxplugin_plugin-";
+		this.CUSTOMPLUGIN_CACHEKEY_PREFIX = "cboxplugin_customplugin-";
 	</cfscript>
 
 	<cffunction name="init" access="public" output="false" returntype="CacheManager" hint="Constructor">
@@ -33,7 +46,7 @@ Modification History:
 			/* Locking Timeout */
 			instance.lockTimeout = "15";
 			/* Event URL Facade Setup */
-			instance.eventURLFacade = CreateObject("component","coldbox.system.cache.util.EventURLFacade").init(arguments.controller);
+			instance.eventURLFacade = CreateObject("component","coldbox.system.cache.util.EventURLFacade").init(this);
 			/* Cache Stats */
 			instance.cacheStats = CreateObject("component","coldbox.system.cache.util.CacheStats").init(this);
 			/* Set the NOTFOUND public constant */
@@ -394,22 +407,23 @@ Modification History:
 	</cffunction>
 	
 	<!--- Clear an event --->
-	<cffunction name="clearEvent" access="public" output="false" returntype="void" hint="Clears all the event permutations from the cache.">
+	<cffunction name="clearEvent" access="public" output="false" returntype="void" hint="Clears all the event permutations from the cache according to snippet and querystring. Be careful when using incomplete event name with query strings as partial event names are not guaranteed to match with query string permutations">
 		<!--- ************************************************************* --->
 		<cfargument name="eventsnippet" type="string" 	required="true" hint="The event snippet to clear on. Can be partial or full">
 		<cfargument name="queryString" 	type="string" 	required="false" default="" hint="If passed in, it will create a unique hash out of it. For purging purposes"/>
 		<cfargument name="async" 		type="boolean"  required="false" default="true" hint="Run asynchronously or not"/>
 		<!--- ************************************************************* --->
 		<cfscript>
-			var cacheKey = instance.controller.getHandlerService().EVENT_CACHEKEY_PREFIX & arguments.eventsnippet;
-			
+			//.*- = the cache suffix and appendages for regex to match
+			var cacheKey = this.EVENT_CACHEKEY_PREFIX & replace(arguments.eventsnippet,".","\.","all") & ".*";
+														  
 			//Check if we are purging with query string
 			if( len(arguments.queryString) neq 0 ){
-				cacheKey = cacheKey & "-" & getEventURLFacade().buildHash(arguments.eventsnippet,arguments.queryString);
+				cacheKey = cacheKey & "-" & getEventURLFacade().buildHash(arguments.queryString);
 			}
 			
 			/* Clear All Events by Criteria */
-			clearByKeySnippet(keySnippet=cacheKey,regex=false,async=false);
+			clearByKeySnippet(keySnippet=cacheKey,regex=true,async=false);
 		</cfscript>
 	</cffunction>
 	
@@ -419,7 +433,7 @@ Modification History:
 		<cfargument name="async" 		type="boolean"  required="false" default="true" hint="Run asynchronously or not"/>
 		<!--- ************************************************************* --->
 		<cfscript>
-			var cacheKey = instance.controller.getHandlerService().EVENT_CACHEKEY_PREFIX;
+			var cacheKey = this.EVENT_CACHEKEY_PREFIX;
 			
 			/* Clear All Events */
 			clearByKeySnippet(keySnippet=cacheKey,regex=false,async=false);
@@ -433,7 +447,7 @@ Modification History:
 		<cfargument name="async" 		type="boolean"  required="false" default="true" hint="Run asynchronously or not"/>
 		<!--- ************************************************************* --->
 		<cfscript>
-			var cacheKey = instance.controller.getPlugin("renderer").VIEW_CACHEKEY_PREFIX & arguments.viewSnippet;
+			var cacheKey = this.VIEW_CACHEKEY_PREFIX & arguments.viewSnippet;
 			
 			/* Clear All View snippets */
 			clearByKeySnippet(keySnippet=cacheKey,regex=false,async=false);
@@ -446,7 +460,7 @@ Modification History:
 		<cfargument name="async" 		type="boolean"  required="false" default="true" hint="Run asynchronously or not"/>
 		<!--- ************************************************************* --->
 		<cfscript>
-			var cacheKey = instance.controller.getPlugin("renderer").VIEW_CACHEKEY_PREFIX;
+			var cacheKey = this.VIEW_CACHEKEY_PREFIX;
 			
 			/* Clear All the views */
 			clearByKeySnippet(keySnippet=cacheKey,regex=false,async=false);

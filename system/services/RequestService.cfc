@@ -97,7 +97,7 @@ Modification History:
 		<!--- ************************************************************* --->
 		<cfscript>
 			var eventCacheKey = "";
-			var oEventURLFacade = getController().getColdboxOCM().getEventURLFacade();
+			var oEventURLFacade = controller.getColdboxOCM().getEventURLFacade();
 			var EventDictionary = 0;
 			var oOCM = controller.getColdboxOCM();
 			
@@ -107,7 +107,7 @@ Modification History:
 				Context.removeEventCacheableEntry();
 					
 				/* Get Entry */
-				EventDictionary = getController().getHandlerService().getEventMetaDataEntry(Context.getCurrentEvent());	
+				EventDictionary = controller.getHandlerService().getEventMetaDataEntry(Context.getCurrentEvent());	
 				
 				/* debug("eventmd: " & controller.getHandlerService().getEventCacheDictionary().getDictionary().toString()); */
 				
@@ -117,10 +117,9 @@ Modification History:
 				}
 				
 				/* setup the cache key. */
-				eventCacheKey = oEventURLFacade.buildEventKey(EventDictionary.prefix,
-															  EventDictionary.suffix,
-															  Context.getCurrentEvent(),
-															  Context);
+				eventCacheKey = oEventURLFacade.buildEventKey(keySuffix=EventDictionary.suffix,
+															  targetEvent=Context.getCurrentEvent(),
+															  targetContext=Context);
 				/* Check for Event Cache Purge */
 				if ( Context.valueExists("fwCache") ){
 					/* Clear the key from the cache */

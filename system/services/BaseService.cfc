@@ -32,17 +32,21 @@ Modification History:
 	<cffunction name="setcontroller" access="package" output="false" returntype="void" hint="Set controller">
 		<cfargument name="controller" type="any" required="true"/>
 		<cfset variables.controller = arguments.controller/>
+	</cffunction>
+	
+	<cffunction name="getColdboxOCM" access="package" output="false" returntype="any" hint="Get the Coldbox Cache Manager">
+		<cfreturn controller.getColdboxOCM()/>
 	</cffunction>	
 	
 <!------------------------------------------- PRIVATE ------------------------------------------->
 
 	<cffunction name="getUtil" access="private" output="false" returntype="coldbox.system.util.Util" hint="Create and return a util object">
-		<cfreturn variables.util/>
+		<cfreturn util/>
 	</cffunction>
 	
 	<cffunction name="debug" access="private" returntype="void" hint="Send debug to log file" output="false" >
 		<cfargument name="content" required="true" type="any" hint="">
-		<cfset variables.controller.getPlugin("logger").logEntry("debug",content)>
+		<cfset controller.getPlugin("logger").logEntry("debug",content)>
 	</cffunction>
 	
 </cfcomponent>
