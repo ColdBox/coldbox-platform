@@ -35,6 +35,13 @@
 		<Setting name="EnableColdboxLogging"		value="true" />
 		<!--The absolute or relative path to where you want to store your log files for this application-->
 		<Setting name="ColdboxLogsLocation"			value="logs" />
+		
+		<!--  
+		The default logging level to use. Defaults to all = 4 valid numbers are 0-4
+		0-fatal,1-error,2-warning,3-information,4-debug 
+		<Setting name="DefaultLogLevel"				value="4" />
+		-->
+		
 		<!--Default Event to run if no event is set or passed. Usually the event to be fired first (NOTE: use event handler syntax)-->
 		<Setting name="DefaultEvent" 				value="general.index"/>
 		<!--Event Handler to run on the start of a request, leave blank if not used. Emulates the Application.cfc onRequestStart method	-->
@@ -75,6 +82,8 @@
 		<Setting name="HandlersExternalLocation"   	value="" />
 		<!-- Declare the external models base invocation path, if used. You have to use dot notation.Example: mymapping.mymodels	-->
 		<Setting name="ModelsExternalLocation"   	value="" />
+		<!-- Caching of model objects via model integration  -->
+		<Setting name="ModelsObjectCaching"   		value="true" />
 		
 		<!-- Uncomment More Model Integration Settings:
 			<Setting name="ModelsSetterInjection"   	value="false" />
@@ -83,10 +92,6 @@
 			<Setting name="ModelsDebugMode"   			value="true" />
 		-->
 		
-		<!-- Caching of model objects via model integration  -->
-		<Setting name="ModelsObjectCaching"   		value="true" />
-		<!-- Caching of model objects via model integration  -->
-		<Setting name="ModelsObjectCaching"   		value="true" />
 		<!--Flag to cache handlers. Default if left blank is true. -->
 		<Setting name="HandlerCaching" 				value="false"/>
 		<!--Flag to cache events if metadata declared. Default is true -->

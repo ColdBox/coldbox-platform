@@ -45,7 +45,8 @@
 									<xs:enumeration value="ConfigAutoReload" />
 									<xs:enumeration value="DebugMode"/>		
 									<xs:enumeration value="DebugPassword"/>
-									<xs:enumeration value="DefaultEvent"/>									
+									<xs:enumeration value="DefaultEvent"/>	
+									<xs:enumeration value="DefaultLogLevel"/>
 									<xs:enumeration value="EventName"/>
 									<xs:enumeration value="ExceptionHandler" />
 									<xs:enumeration value="EnableBugReports"/>
@@ -62,6 +63,12 @@
 									<xs:enumeration value="IOCDefinitionFile" />
 									<xs:enumeration value="IOCObjectCaching" />
 									<xs:enumeration value="MessageboxStyleOverride" />
+									<xs:enumeration value="ModelsExternalLocation" />
+									<xs:enumeration value="ModelsObjectCaching" />		
+									<xs:enumeration value="ModelsSetterInjection" />
+									<xs:enumeration value="ModelsDebugMode" />
+									<xs:enumeration value="ModelsStopRecursion" />
+									<xs:enumeration value="ModelsDICompleteUDF" />
 									<xs:enumeration value="MyPluginsLocation" />
 									<xs:enumeration value="onInvalidEvent"/>	
 									<xs:enumeration value="OwnerEmail"/>
@@ -73,13 +80,7 @@
 									<xs:enumeration value="SessionStartHandler"/>
 									<xs:enumeration value="SessionEndHandler"/>						
 									<xs:enumeration value="UDFLibraryFile"/>		
-									<xs:enumeration value="ViewsExternalLocation" />
-									<xs:enumeration value="ModelsExternalLocation" />
-									<xs:enumeration value="ModelsObjectCaching" />		
-									<xs:enumeration value="ModelsSetterInjection" />
-									<xs:enumeration value="ModelsDebugMode" />
-									<xs:enumeration value="ModelsStopRecursion" />
-									<xs:enumeration value="ModelsDICompleteUDF" />												
+									<xs:enumeration value="ViewsExternalLocation" />												
 								</xs:restriction>
 							</xs:simpleType>
 						</xs:attribute>

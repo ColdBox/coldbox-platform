@@ -412,7 +412,11 @@ Modification History:
 				ConfigStruct["ColdboxLogsLocation"] = "";
 			//Setup the ExpandedColdboxLogsLocation setting
 			ConfigStruct["ExpandedColdboxLogsLocation"] = "";
-
+			
+			//Default Log Level
+			if ( NOT structKeyExists(ConfigStruct, "DefaultLogLevel") OR NOT isNumeric(ConfigStruct["DefaultLogLevel"]))
+				ConfigStruct["DefaultLogLevel"] = fwSettingsStruct["DefaultLogLevel"];
+			
 			//Check For Owner Email or Throw
 			if ( not StructKeyExists(ConfigStruct, "OwnerEmail") )
 				ConfigStruct["OwnerEmail"] = "";
