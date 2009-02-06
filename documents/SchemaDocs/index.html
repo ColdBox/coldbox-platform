@@ -1,9 +1,8 @@
-
 <!DOCTYPE html
   PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
    <head>
-      <title>Documentation for ColdBox 2.6.2 Config - config.xsd</title>
+      <title>Documentation for ColdBox 2.6.3 Configuration File - config.xsd</title>
       <meta http-equiv="Content-Type" content="text/xml; charset=UTF-8"/>
       <style type="text/css">
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
@@ -725,7 +724,7 @@ function viewDocumentation(compDesc, compName, docTextArray) {
    </head>
    <body>
       <h1>
-         <a name="top">Documentation for ColdBox 2.6.2 Config</a>
+         <a name="top">Documentation for ColdBox 2.6.3 Configuration File</a>
       </h1>
       <div style="float: right;">
          <div id="printerControls" style="display:none;">
@@ -3622,7 +3621,7 @@ if (gc != null) {
                <div style="margin-left: 1.5em">&lt;Setting<br/>
                   <span style="margin-left: 0.5em"> name="<span class="constraint">
                         <span class="type">
-                           <a href="#ns_xs" title="Find out namespace of 'xs' prefix">xs</a>:string</span> (<em>value</em> comes from list: {'AppMapping'|'AppName'|'ApplicationStartHandler'|'CustomErrorTemplate'|'CustomEmailBugReport'|'ColdboxLogsLocation'|'ConfigAutoReload'|'DebugMode'|'DebugPassword'|'DefaultEvent'|'EventName'|'ExceptionHandler'|'EnableBugReports'|'EnableColdfusionLogging'|'EnableDumpVar'|'EnableColdboxLogging'|'EventCaching'|'FlashURLPersistScope'|'HandlersIndexAutoReload'|'HandlersExternalLocation'|'HandlerCaching'|'IOCFramework'|'IOCDefinitionFile'|'IOCObjectCaching'|'MessageboxStyleOverride'|'MyPluginsLocation'|'onInvalidEvent'|'OwnerEmail'|'ProxyReturnCollection'|'RequestEndHandler'|'RequestStartHandler'|'RequestContextDecorator'|'ReinitPassword'|'SessionStartHandler'|'SessionEndHandler'|'UDFLibraryFile'|'ViewsExternalLocation'})</span> 
+                           <a href="#ns_xs" title="Find out namespace of 'xs' prefix">xs</a>:string</span> (<em>value</em> comes from list: {'AppMapping'|'AppName'|'ApplicationStartHandler'|'CustomErrorTemplate'|'CustomEmailBugReport'|'ColdboxLogsLocation'|'ConfigAutoReload'|'DebugMode'|'DebugPassword'|'DefaultEvent'|'DefaultLogLevel'|'EventName'|'ExceptionHandler'|'EnableBugReports'|'EnableColdfusionLogging'|'EnableDumpVar'|'EnableColdboxLogging'|'EventCaching'|'FlashURLPersistScope'|'HandlersIndexAutoReload'|'HandlersExternalLocation'|'HandlerCaching'|'IOCFramework'|'IOCFrameworkReload'|'IOCDefinitionFile'|'IOCObjectCaching'|'MessageboxStyleOverride'|'ModelsExternalLocation'|'ModelsObjectCaching'|'ModelsSetterInjection'|'ModelsDebugMode'|'ModelsStopRecursion'|'ModelsDICompleteUDF'|'MyPluginsLocation'|'onInvalidEvent'|'OwnerEmail'|'ProxyReturnCollection'|'RequestEndHandler'|'RequestStartHandler'|'RequestContextDecorator'|'ReinitPassword'|'SessionStartHandler'|'SessionEndHandler'|'UDFLibraryFile'|'ViewsExternalLocation'})</span> 
                      <span class="occurs">[1]</span> 
                      <p class="documentation">'The name of the framework\'s settings.'</p>"</span>
                   <br/>
@@ -3693,6 +3692,8 @@ if (gc != null) {
                                     <div style="margin-left: 1.5em">&lt;<span class="scTag">xs:enumeration</span> 
                                        <span class="scTag">value</span>="<span class="scContent">DefaultEvent</span>"/&gt;</div>
                                     <div style="margin-left: 1.5em">&lt;<span class="scTag">xs:enumeration</span> 
+                                       <span class="scTag">value</span>="<span class="scContent">DefaultLogLevel</span>"/&gt;</div>
+                                    <div style="margin-left: 1.5em">&lt;<span class="scTag">xs:enumeration</span> 
                                        <span class="scTag">value</span>="<span class="scContent">EventName</span>"/&gt;</div>
                                     <div style="margin-left: 1.5em">&lt;<span class="scTag">xs:enumeration</span> 
                                        <span class="scTag">value</span>="<span class="scContent">ExceptionHandler</span>"/&gt;</div>
@@ -3717,11 +3718,25 @@ if (gc != null) {
                                     <div style="margin-left: 1.5em">&lt;<span class="scTag">xs:enumeration</span> 
                                        <span class="scTag">value</span>="<span class="scContent">IOCFramework</span>"/&gt;</div>
                                     <div style="margin-left: 1.5em">&lt;<span class="scTag">xs:enumeration</span> 
+                                       <span class="scTag">value</span>="<span class="scContent">IOCFrameworkReload</span>"/&gt;</div>
+                                    <div style="margin-left: 1.5em">&lt;<span class="scTag">xs:enumeration</span> 
                                        <span class="scTag">value</span>="<span class="scContent">IOCDefinitionFile</span>"/&gt;</div>
                                     <div style="margin-left: 1.5em">&lt;<span class="scTag">xs:enumeration</span> 
                                        <span class="scTag">value</span>="<span class="scContent">IOCObjectCaching</span>"/&gt;</div>
                                     <div style="margin-left: 1.5em">&lt;<span class="scTag">xs:enumeration</span> 
                                        <span class="scTag">value</span>="<span class="scContent">MessageboxStyleOverride</span>"/&gt;</div>
+                                    <div style="margin-left: 1.5em">&lt;<span class="scTag">xs:enumeration</span> 
+                                       <span class="scTag">value</span>="<span class="scContent">ModelsExternalLocation</span>"/&gt;</div>
+                                    <div style="margin-left: 1.5em">&lt;<span class="scTag">xs:enumeration</span> 
+                                       <span class="scTag">value</span>="<span class="scContent">ModelsObjectCaching</span>"/&gt;</div>
+                                    <div style="margin-left: 1.5em">&lt;<span class="scTag">xs:enumeration</span> 
+                                       <span class="scTag">value</span>="<span class="scContent">ModelsSetterInjection</span>"/&gt;</div>
+                                    <div style="margin-left: 1.5em">&lt;<span class="scTag">xs:enumeration</span> 
+                                       <span class="scTag">value</span>="<span class="scContent">ModelsDebugMode</span>"/&gt;</div>
+                                    <div style="margin-left: 1.5em">&lt;<span class="scTag">xs:enumeration</span> 
+                                       <span class="scTag">value</span>="<span class="scContent">ModelsStopRecursion</span>"/&gt;</div>
+                                    <div style="margin-left: 1.5em">&lt;<span class="scTag">xs:enumeration</span> 
+                                       <span class="scTag">value</span>="<span class="scContent">ModelsDICompleteUDF</span>"/&gt;</div>
                                     <div style="margin-left: 1.5em">&lt;<span class="scTag">xs:enumeration</span> 
                                        <span class="scTag">value</span>="<span class="scContent">MyPluginsLocation</span>"/&gt;</div>
                                     <div style="margin-left: 1.5em">&lt;<span class="scTag">xs:enumeration</span> 
