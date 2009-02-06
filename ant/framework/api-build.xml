@@ -15,6 +15,7 @@
 	<!-- FTP -->
 	<property name="ftp.server"  		value="ftp.coldboxframework.com" />
 	<property name="ftp.remotedir" 		value="/httpdocs/builds/" />
+	<property name="site.api" value="/Users/lmajano/Documents/MyDevelopment/applications/coldboxframework_com/builds" />
 	
 	<!-- Init -->
 	<target name="init" description="Init">
@@ -24,10 +25,16 @@
 		<mkdir  dir="${build.dir}" />
 	</target>
 	
-	<!--BUild-->
+	<!--Build-->
 	<target name="build" description="Build a new coldbox distribution" depends="init">
-      	<!-- Copy src -->	
+      	<!-- Copy SRC -->	
       	<copy todir="${build.dir}/coldbox_${coldbox.version}/coldbox/system">
+        	<fileset dir="${src.dir}">
+        		<include name="**/*.cfc" />
+        	</fileset>
+        </copy>
+		<!-- Copy to website -->
+		<copy todir="${site.api}/coldbox_${coldbox.version}/coldbox/system">
         	<fileset dir="${src.dir}">
         		<include name="**/*.cfc" />
         	</fileset>
