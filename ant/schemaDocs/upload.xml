@@ -25,6 +25,14 @@
         </copy>
 	</target>
 	
+	<target name="copy.to.plugin">
+			<!-- Copy src -->	
+		<copy todir="/Users/lmajano/Documents/MyDocs/My Programs/Eclipse/org.coldboxframework.apidocs/html/SchemaDocs/schemaDiagrams">
+        	<fileset dir="documents/SchemaDocs/schemaDiagrams" />
+        </copy>	
+	</target>
+	
+	
 	<target name="ftp.deploy" depends="copy.to.coldboxframework_com">
        	<input message="Please enter ftp server username:" addproperty="ftp.username" />
        	<input message="Please enter fpt server password:" addproperty="ftp.password" />
