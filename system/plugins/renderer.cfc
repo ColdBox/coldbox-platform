@@ -7,11 +7,7 @@ www.coldboxframework.com | www.luismajano.com | www.ortussolutions.com
 Author 	 :	Luis Majano
 Date     :	September 23, 2005
 Description :
-	This is ColdBox's renderer plugin. In high traffic sites if using
-	cfsavecontent for the generated view or layout, java.lang.illegalStateExceptions
-	will be produced sporadically.  This has been logged with Adobe as a bug
-	on the cfmodule tag.  Thus, it uses a output=true and a simple
-	cfinclude.
+	This is ColdBox's renderer plugin.
 ----------------------------------------------------------------------->
 <cfcomponent name="renderer"
 			 hint="This service renders layouts, views, framework includes, etc."
@@ -80,6 +76,7 @@ Description :
 		<!--- Cache Entries --->
 		<cfset var cbox_cacheKey = "">
 		<cfset var cbox_cacheEntry = "">
+		<cfset var timerHash = 0>
 		
 		<!--- Test Default View --->
 		<cfif len(trim(arguments.view)) eq 0>
@@ -99,9 +96,9 @@ Description :
 		<!--- Do we have a cached view?? --->
 		<cfif getColdboxOCM().lookup(cbox_cacheKey)>
 			<!--- Render The View --->
-			<cfmodule template="../includes/Timer.cfm" timertag="rendering Cached View [#arguments.view#.cfm]" controller="#controller#">
+			<cfset timerHash = controller.getDebuggerService().timerStart("rendering Cached View [#arguments.view#.cfm]")>
 				<cfset cbox_RenderedView = controller.getColdBoxOCM().get(cbox_cacheKey)>
-			</cfmodule>
+			<cfset controller.getDebuggerService().timerEnd(timerHash)>
 		<cfelse>
 			<!--- The View Path is by convention or external?? --->
 			<cfset cbox_viewpath = "/#instance.appMapping#/#instance.viewsConvention#/#arguments.view#.cfm">
@@ -127,9 +124,9 @@ Description :
 			</cfif>
 			
 			<!--- Render The View & Its Helper --->
-			<cfmodule template="../includes/Timer.cfm" timertag="rendering View [#arguments.view#.cfm]" controller="#controller#">
+			<cfset timerHash = controller.getDebuggerService().timerStart("rendering View [#arguments.view#.cfm]")>
 				<cfsavecontent variable="cbox_RenderedView"><cfif len(cbox_viewHelperPath)><cfoutput><cfinclude template="#cbox_viewHelperPath#"></cfoutput></cfif><cfoutput><cfinclude template="#cbox_viewpath#"></cfoutput></cfsavecontent>
-			</cfmodule>
+			<cfset controller.getDebuggerService().timerEnd(timerHash)>
 			
 			<!--- Is this view cacheable by setting, and if its the view we need to cache. --->
 			<cfif event.isViewCacheable() and (arguments.view eq event.getViewCacheableEntry().view)>
@@ -168,11 +165,11 @@ Description :
 		<!--- Do we have a cached view?? --->
 		<cfif getColdboxOCM().lookup(cbox_cacheKey)>
 			<!--- Render The View --->
-			<cfmodule template="../includes/Timer.cfm" timertag="rendering Cached External View [#arguments.view#.cfm]" controller="#controller#">
+			<cfset timerHash = controller.getDebuggerService().timerStart("rendering Cached External View [#arguments.view#.cfm]")>
 				<cfset cbox_RenderedView = getColdBoxOCM().get(cbox_cacheKey)>
-			</cfmodule>
+			<cfset controller.getDebuggerService().timerEnd(timerHash)>
 		<cfelse>
-			<cfmodule template="../includes/Timer.cfm" timertag="rendering External View [#arguments.view#.cfm]" controller="#controller#">
+			<cfset timerHash = controller.getDebuggerService().timerStart("rendering External View [#arguments.view#.cfm]")>
 				<cftry>
 					<!--- Render the View --->
 					<cfsavecontent variable="cbox_RenderedView"><cfoutput><cfinclude template="#arguments.view#.cfm"></cfoutput></cfsavecontent>
@@ -184,7 +181,8 @@ Description :
 						<cfrethrow />
 					</cfcatch>
 				</cftry>
-			</cfmodule>
+			<cfset controller.getDebuggerService().timerEnd(timerHash)>
+			
 			<!--- Are we caching explicitly --->
 			<cfif arguments.cache>
 				<cfset getColdboxOCM().set(cbox_cacheKey,cbox_RenderedView,arguments.cacheTimeout,arguments.cacheLastAccessTimeout)>
@@ -215,13 +213,13 @@ Description :
 		</cfif>
 		
 		<!--- Render --->
-		<cfmodule template="../includes/Timer.cfm" timertag="rendering Layout [#cbox_CurrentLayout#]" controller="#controller#">
+		<cfset timerHash = controller.getDebuggerService().timerStart("rendering Layout [#cbox_CurrentLayout#]")>
 			<cfif cbox_CurrentLayout eq "">
 				<cfset cbox_RederedLayout = renderView()>
 			<cfelse>
 				<cfsavecontent variable="cbox_RederedLayout"><cfoutput><cfinclude template="/#instance.appMapping#/#instance.layoutsConvention#/#cbox_CurrentLayout#"></cfoutput></cfsavecontent>
 			</cfif>
-		</cfmodule>
+		<cfset controller.getDebuggerService().timerEnd(timerHash)>
 		
 		<!--- Return Layout --->
 		<cfreturn cbox_RederedLayout>

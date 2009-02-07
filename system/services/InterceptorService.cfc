@@ -61,28 +61,28 @@ Description :
 		<cfargument name="state" 		 required="true" 	type="string" hint="An interception state to process">
 		<cfargument name="interceptData" required="false" 	type="struct" default="#structNew()#" hint="A data structure used to pass intercepted information.">
 		<!--- ************************************************************* --->
-		<cfset var event = 0><cfsetting enablecfoutputonly="true"><cfsilent>
+		<cfset var timerHash = 0><cfsetting enablecfoutputonly="true"><cfsilent>
+		<cfscript>
+		/* Is ColdBox Inited and ready to serve requests? */
+		if ( not controller.getColdboxInitiated() ){ 
+			return;
+		}
 		
-		<!--- Is ColdBox Inited? --->
-		<cfif not getController().getColdboxInitiated()>
-			<cfreturn>
-		</cfif>
+		/* Validate Incoming State */
+		if ( controller.getSetting("InterceptorConfig").throwOnInvalidStates AND NOT listfindnocase(getInterceptionPoints(),arguments.state) ){
+			getUtil().throwit("The interception state sent in to process is not valid: #arguments.state#","","Framework.InterceptorService.InvalidInterceptionState");
+		}
 		
-		<!--- Validate Incoming State --->
-		<cfif getController().getSetting("InterceptorConfig").throwOnInvalidStates and not listfindnocase(getInterceptionPoints(),arguments.state)>
-			<cfset getUtil().throwit("The interception state sent in to process is not valid: #arguments.state#","","Framework.InterceptorService.InvalidInterceptionState")>
-		</cfif>
+		/* Process The State if it exists, else just exit out */
+		if( structKeyExists(getinterceptionStates(), arguments.state) ){
+			/* Execute Interception */
+			timerHash = controller.getDebuggerService().timerStart("interception [#arguments.state#]");
+				structFind( getinterceptionStates(), arguments.state).process(controller.getRequestService().getContext(),arguments.interceptData);
+			controller.getDebuggerService().timerEnd(timerHash);
+		}
 		
-		<!--- Process The State if it exists, else just exit out. --->
-		<cfif structKeyExists(getinterceptionStates(), arguments.state) >
-			<!--- Setup Event --->
-			<cfset event = getController().getRequestService().getContext()>
-			<cfmodule template="../includes/Timer.cfm" timertag="interception [#arguments.state#]" controller="#getController()#">
-				<cfset structFind( getinterceptionStates(), arguments.state).process(event,arguments.interceptData)>
-			</cfmodule>				
-		</cfif>
-		
-		<!--- Process Output Buffer: looks weird, but we are outputting stuff. --->
+		/* Process Output Buffer: looks weird, but we are outputting stuff */
+		</cfscript>
 		</cfsilent><cfif getRequestBuffer().isBufferInScope()><cfset writeOutput(getRequestBuffer().getString())><cfset getRequestBuffer().clear()></cfif><cfsetting enablecfoutputonly="false">
 	</cffunction>
 	

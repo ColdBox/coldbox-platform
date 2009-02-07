@@ -375,6 +375,7 @@ Description		: This is the main ColdBox front Controller.
 		<cfset var interceptMetadata = structnew()>
 		<cfset var refLocal = structnew()>
 		<cfset var privateArgCollection = structnew()>
+		<cfset var timerHash = 0>
 		
 		<!--- Default Event Check --->
 		<cfif len(trim(arguments.event)) eq 0>
@@ -401,9 +402,9 @@ Description		: This is the main ColdBox front Controller.
 				    (len(oEventHandler.PREHANDLER_ONLY) EQ 0) )
 				  AND
 				  ( listFindNoCase(oEventHandler.PREHANDLER_EXCEPT,oEventHandlerBean.getMethod()) EQ 0 )>
-				<cfmodule template="includes/Timer.cfm" timertag="invoking runEvent [preHandler] for #arguments.event#" controller="#this#">
+				<cfset timerHash = getDebuggerService().timerStart("invoking runEvent [preHandler] for #arguments.event#")>
 					<cfset oEventHandler.preHandler(oRequestContext)>
-				</cfmodule>
+				<cfset getDebuggerService().timerEnd(timerHash)>
 			</cfif>
 		</cfif>
 		
@@ -412,24 +413,26 @@ Description		: This is the main ColdBox front Controller.
 			<!--- Validate the overriden event --->
 			<cfset oEventHandlerBean = getHandlerService().getRegisteredHandler(oRequestContext.getCurrentEvent())>
 			<!--- Get the new event handler to execute --->
-			<cfset oEventHandler = getHandlerService().getHandler(oEventHandlerBean)>
+			<cfset oEventHandler = getHandlerService().getHandler(oEventHandlerBean,oRequestContext)>
 		</cfif>
 
 		<!--- Private or Public Event Execution --->
 		<cfif arguments.private>
 			<!--- Private Arg Collection --->
 			<cfset privateArgCollection["event"] = oRequestContext>
+			
 			<!--- Start Timer --->
-			<cfmodule template="includes/Timer.cfm" timertag="invoking PRIVATE runEvent [#arguments.event#]" controller="#this#">
+			<cfset timerHash = getDebuggerService().timerStart("invoking PRIVATE runEvent [#arguments.event#]")>
 				<!--- Call Private Event --->
 				<cfinvoke component="#oEventHandler#" method="_privateInvoker" returnvariable="refLocal.results">
 					<cfinvokeargument name="method" value="#oEventHandlerBean.getMethod()#">
 					<cfinvokeargument name="argCollection" value="#privateArgCollection#">
 				</cfinvoke>
-			</cfmodule>
+			<cfset getDebuggerService().timerEnd(timerHash)>
+			
 		<cfelse>
 			<!--- Start Timer --->
-			<cfmodule template="includes/Timer.cfm" timertag="invoking runEvent [#arguments.event#]" controller="#this#">
+			<cfset timerHash = getDebuggerService().timerStart("invoking runEvent [#arguments.event#]")>
 				<cfif oEventHandlerBean.getisMissingAction()>
 					<!--- Execute OnMissingACtion() --->
 					<cfinvoke component="#oEventHandler#" method="onMissingAction" returnvariable="refLocal.results">
@@ -442,7 +445,7 @@ Description		: This is the main ColdBox front Controller.
 						<cfinvokeargument name="event" value="#oRequestContext#">
 					</cfinvoke>
 				</cfif>
-			</cfmodule>
+			<cfset getDebuggerService().timerEnd(timerHash)>
 		</cfif>	
 
 		<!--- PostHandler Execution --->
@@ -452,9 +455,9 @@ Description		: This is the main ColdBox front Controller.
 				    (len(oEventHandler.POSTHANDLER_ONLY) EQ 0) )
 				  AND
 				  ( listFindNoCase(oEventHandler.POSTHANDLER_EXCEPT,oEventHandlerBean.getMethod()) EQ 0 )>
-			<cfmodule template="includes/Timer.cfm" timertag="invoking runEvent [postHandler] for #arguments.event#" controller="#this#">
-				<cfset oEventHandler.postHandler(oRequestContext)>
-			</cfmodule>
+				<cfset timerHash = getDebuggerService().timerStart("invoking runEvent [postHandler] for #arguments.event#")>
+					<cfset oEventHandler.postHandler(oRequestContext)>
+				<cfset getDebuggerService().timerEnd(timerHash)>
 			</cfif>
 		</cfif>
 		

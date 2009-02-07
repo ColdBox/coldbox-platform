@@ -60,5 +60,27 @@ Modification History:
 		</cfscript>
 	</cffunction>
 	
+	<cffunction name="testTimers" access="public" returntype="void" output="false">
+		<cfscript>
+		var service = getController().getDebuggerService();
+		
+		structClear(request);
+		service.timerStart('UnitTest');
+		
+		AssertTrue( isDefined("request.DebugTimers") );
+		AssertTrue( isDefined("request.#hash('UnitTest')#") );
+		
+		service.timerEnd('UnitTest');
+		
+		AssertTrue( isDefined("request.DebugTimers") );
+		AssertFalse( structKeyExists(request,hash('UnitTest')) );
+		AssertTrue( isQuery(request.debugTimers) );
+		AssertTrue( request.debugTimers.recordCount eq 1 );
+		
+		debug(request.debugTimers);
+		
+		</cfscript>
+	</cffunction>
+	
 	
 </cfcomponent>
