@@ -51,7 +51,6 @@ Modification History:
 		<cfelse>
 			<cfset addRow("#arguments.label# invalid",0)>
 		</cfif>
-
 	</cffunction>
 
 	<cffunction name="logTime" access="public" returntype="void" output="false" hint="Use this method to add a new timer entry to the timers.">
@@ -59,7 +58,6 @@ Modification History:
 		<cfargument name="Tickcount" required="true" type="string" hint="The tickcounts of the time.">
 		<cfset addRow(arguments.label,arguments.tickcount)>
 	</cffunction>
-
 
 	<cffunction name="getTimerScope" access="public" returntype="query" output="false" hint="Returns the entire timer query from the request scope.">
 		<!---Get the timer scope if it exists, else create it --->
