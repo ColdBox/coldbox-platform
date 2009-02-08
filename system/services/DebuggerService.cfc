@@ -60,11 +60,11 @@ Modification History:
 				/* Save timer */
 				QueryAddRow(request.DebugTimers,1);
 				QuerySetCell(request.DebugTimers, "Id", createUUID());
-				QuerySetCell(request.DebugTimers, "Method", arguments.label);
+				QuerySetCell(request.DebugTimers, "Method", arguments.labelHash);
 				QuerySetCell(request.DebugTimers, "Time", getTickCount() - request[arguments.labelHash]);
 				QuerySetCell(request.DebugTimers, "Timestamp", now());
 				/* Request Context SnapShot */
-				if ( not findnocase("rendering",arguments.label) ){
+				if ( not findnocase("rendering",arguments.labelHash) ){
 					/* Save Collection */
 					QuerySetCell(request.DebugTimers, "RC", htmlEditFormat(controller.getRequestService().getContext().getCollection().toString()) );
 				}
