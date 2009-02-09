@@ -33,18 +33,24 @@ Modification History:
 	
 	<!--- timerStart --->
 	<cffunction name="timerStart" output="false" access="public" returntype="string" hint="Start an internal code timer and get a hash of the timer storage">
-		<cfargument name="label" type="string" required="true" hint="The timer label"/>
+		<cfargument name="label" type="string" required="true" hint="The timer label to record"/>
 		<cfscript>
-			var labelHash = "";
+			var labelHash = 0;
+			var timerInfo = 0;
 			/* Verify Debug Mode */
 			if( getDebugMode() ){
 				/* Check if DebugTimers Query is set, else create it for this request */
 				if ( not structKeyExists(request,"DebugTimers") ){
 					request.DebugTimers = QueryNew("Id,Method,Time,Timestamp,RC");
 				}
-				/* persist it */
+				/* Create Timer Hash */
 				labelHash = hash(arguments.label);
-				request[labelHash] = getTickCount();
+				/* Create timer Info */
+				timerInfo = structnew();
+				timerInfo.stime = getTickCount();
+				timerInfo.label = arguments.label;
+				/* Persist in request */
+				request[labelHash] = timerInfo;
 			}
 			return labelHash;
 		</cfscript>
@@ -54,17 +60,19 @@ Modification History:
 	<cffunction name="timerEnd" output="false" access="public" returntype="void" hint="End an internal code timer">
 		<cfargument name="labelHash" type="string" required="true" default="" hint="The timer label hash to stop"/>
 		<cfscript>
-			
+			var timerInfo = 0;
 			/* Verify Debug Mode and timer label exists, else do nothing. */
 			if( getDebugMode() and structKeyExists(request,arguments.labelHash) ){
+				/* Get Timer Info */
+				timerInfo = request[arguments.labelHash];
 				/* Save timer */
 				QueryAddRow(request.DebugTimers,1);
 				QuerySetCell(request.DebugTimers, "Id", createUUID());
-				QuerySetCell(request.DebugTimers, "Method", arguments.labelHash);
-				QuerySetCell(request.DebugTimers, "Time", getTickCount() - request[arguments.labelHash]);
+				QuerySetCell(request.DebugTimers, "Method", timerInfo.label);
+				QuerySetCell(request.DebugTimers, "Time", getTickCount() - timerInfo.stime);
 				QuerySetCell(request.DebugTimers, "Timestamp", now());
 				/* Request Context SnapShot */
-				if ( not findnocase("rendering",arguments.labelHash) ){
+				if ( not findnocase("rendering",timerInfo.label) ){
 					/* Save Collection */
 					QuerySetCell(request.DebugTimers, "RC", htmlEditFormat(controller.getRequestService().getContext().getCollection().toString()) );
 				}
