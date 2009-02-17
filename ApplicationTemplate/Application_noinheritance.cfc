@@ -14,7 +14,7 @@ Description :
 	So if you have refactored your framework, make sure it extends coldbox.
 ----------------------------------------------------------------------->
 <cfcomponent output="false">
-
+	<cfsetting enablecfoutputonly="yes">
 	<!--- APPLICATION CFC PROPERTIES --->
 	<cfset this.name = hash(getCurrentTemplatePath())> 
 	<cfset this.sessionManagement = true>
@@ -42,8 +42,6 @@ Description :
 		<!--- ************************************************************* --->
 		<cfargument name="targetPage" type="string" required="true" />
 		<!--- ************************************************************* --->
-		<cfsetting enablecfoutputonly="yes">
-
 		<!--- BootStrap Reinit Check --->
 		<cfif not structKeyExists(application,"cbBootstrap") or application.cbBootStrap.isfwReinit()>
 			<cflock name="coldbox.bootstrap_#hash(getCurrentTemplatePath())#" type="exclusive" timeout="5" throwontimeout="true">
@@ -60,7 +58,6 @@ Description :
 		</cfif>
 			
 		<!--- WHATEVER YOU WANT BELOW --->
-		<cfsetting enablecfoutputonly="no">
 		<cfreturn true>
 	</cffunction>
 	

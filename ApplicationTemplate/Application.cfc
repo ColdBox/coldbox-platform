@@ -14,7 +14,7 @@ Description :
 	So if you have refactored your framework, make sure it extends coldbox.
 ----------------------------------------------------------------------->
 <cfcomponent extends="coldbox.system.coldbox" output="false">
-
+	<cfsetting enablecfoutputonly="yes">
 	<!--- APPLICATION CFC PROPERTIES --->
 	<cfset this.name = hash(getCurrentTemplatePath())> 
 	<cfset this.sessionManagement = true>
@@ -38,7 +38,9 @@ Description :
 	
 	<!--- on Request Start --->
 	<cffunction name="onRequestStart" returnType="boolean" output="true">
-		<cfargument name="targetPage" type="string" required="true" /><cfsetting enablecfoutputonly="yes">
+		<!--- ************************************************************* --->
+		<cfargument name="targetPage" type="string" required="true" />
+		<!--- ************************************************************* --->
 		<!--- Reload Checks --->
 		<cfset reloadChecks()>
 		
@@ -48,7 +50,6 @@ Description :
 		</cfif>
 			
 		<!--- WHATEVER YOU WANT BELOW --->
-		<cfsetting enablecfoutputonly="no">
 		<cfreturn true>
 	</cffunction>
 	
