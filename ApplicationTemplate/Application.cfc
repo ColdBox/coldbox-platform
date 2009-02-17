@@ -38,11 +38,7 @@ Description :
 	
 	<!--- on Request Start --->
 	<cffunction name="onRequestStart" returnType="boolean" output="true">
-		<!--- ************************************************************* --->
-		<cfargument name="targetPage" type="string" required="true" />
-		<!--- ************************************************************* --->
-		<cfsetting enablecfoutputonly="yes">
-
+		<cfargument name="targetPage" type="string" required="true" /><cfsetting enablecfoutputonly="yes">
 		<!--- Reload Checks --->
 		<cfset reloadChecks()>
 		
