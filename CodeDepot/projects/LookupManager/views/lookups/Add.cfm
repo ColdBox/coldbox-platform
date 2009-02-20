@@ -167,14 +167,18 @@
 
 <!--- Create / Cancel --->
 <div id="_buttonbar">
-	<img src="#rc.imgPath#/cancel.png" border="0" align="absmiddle">
 	<a href="#event.buildLink(rc.xehLookupList,0)#/lookupclass/#rc.lookupclass#.cfm" class="buttonLinks">
-		Cancel
+		<span>
+			<img src="#rc.imgPath#/cancel.png" border="0" align="absmiddle" alt="Cancel" />
+			Cancel
+		</span>
 	</a>
 	&nbsp;
-	<img src="#rc.imgPath#/add.png" border="0" align="absmiddle">
 	<a href="javascript:submitForm()" class="buttonLinks">
-		Create Record
+		<span>
+			<img src="#rc.imgPath#/add.png" border="0" align="absmiddle" alt="Add" />
+			Create Record
+		</span>
 	</a>
 </div>
 <br />

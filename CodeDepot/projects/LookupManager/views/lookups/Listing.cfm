@@ -60,11 +60,18 @@
 		</select>		
 		<!--- Utility Buttons --->
 		&nbsp;
-		<img src="#rc.imgPath#/arrow_refresh.png" border="0" align="absmiddle">
-		<a href="#event.buildLink(rc.xehLookupList,0)#/lookupclass/#rc.lookupclass#.cfm" class="buttonLinks">Reload Listing</a>
+		<a href="#event.buildLink(rc.xehLookupList,0)#/lookupclass/#rc.lookupclass#.cfm" class="buttonLinks">
+			<span>
+				<img src="#rc.imgPath#/arrow_refresh.png" border="0" align="absmiddle" alt="refresh" />
+				Reload Listing
+			</span>
+		</a>
 		&nbsp;
-		<img src="#rc.imgPath#/book_open.png" border="0" align="absmiddle">
-		<a href="#event.buildLink(rc.xehLookupClean,0)#.cfm" class="buttonLinks">Reload Dictionary</span>
+		<a href="#event.buildLink(rc.xehLookupClean,0)#.cfm" class="buttonLinks">
+			<span>
+				<img src="#rc.imgPath#/book_open.png" border="0" align="absmiddle" alt="Reload" />
+				Reload Dictionary
+			</span>
 		</a>
 	</p>
 </form>
@@ -77,14 +84,18 @@
 
 	<!--- Add / Delete Button Bar --->
 	<div id="listButtonBar">
-		<img src="#rc.imgPath#/add.png" border="0" align="absmiddle">
 		<a href="#event.buildLink(rc.xehLookupCreate,0)#/lookupClass/#rc.lookupClass#.cfm" class="buttonLinks">
-			Add Record
+			<span>
+				<img src="#rc.imgPath#/add.png" border="0" align="absmiddle" alt="Add" />
+				Add Record
+			</span>
 		</a>
 		&nbsp;
-		<img src="#rc.imgPath#/stop.png" border="0" align="absmiddle">
 		<a href="javascript:confirmDelete()" class="buttonLinks">
-			Delete Record(s)
+			<span>
+				<img src="#rc.imgPath#/stop.png" border="0" align="absmiddle" alt="Delete" />
+				Delete Record(s)
+			</span>
 		</a>
 	</div>
 	
