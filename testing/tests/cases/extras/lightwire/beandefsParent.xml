@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans default-lazy-init="false">
+	
+	<bean id="formBean" class="coldbox.testing.testmodel.formBean" singleton="false" />
+	
+</beans>
