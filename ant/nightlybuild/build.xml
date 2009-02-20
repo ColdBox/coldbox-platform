@@ -56,9 +56,8 @@
 	<target name="export-app" depends="clean,init" description="Clean export of entire application">
 	   	<svn username="${svn.user}" password="${svn.password}" javasvn="true" javahl="false">
 			<export srcUrl= "${svn.url}/${svn.appTemplate}" destPath="${src.dir}/${svn.appTemplate}" force="true"/>
-	   		<export srcUrl= "${svn.url}/${svn.documents}" destPath="${src.dir}/${svn.documents}" force="true"/>
 	   		<export srcUrl= "${svn.url}/${svn.install}" destPath="${src.dir}/${svn.install}" force="true"/>
-	   		<export srcUrl= "${svn.url}/${svn.samples}" destPath="${src.dir}/${svn.samples}" force="true"/>
+	   		<export srcUrl= "${svn.samplesurl}/" destPath="${src.dir}/${svn.samples}" force="true"/>
 	   		<export srcUrl= "${svn.url}/${svn.source}" destPath="${src.dir}/${svn.source}" force="true"/>
 		</svn>
 	</target>
@@ -84,11 +83,7 @@
 			<fileset file="${src.dir}/system/config/license.txt" />
 			<fileset file="${src.dir}/system/config/readme.txt" />						
 		</copy>		
-		<!--Copy Documents-->
-		<copy todir="${build.dir}/coldbox/install/SchemaDocs">
-			<fileset dir="${src.dir}/documents/SchemaDocs"/>
-		</copy>
-		
+
 		<delete dir="${src.dir}"/>
 			
 		<concat destfile="${build.dir}\${build.label}">Built on ${start.TODAY}</concat>
