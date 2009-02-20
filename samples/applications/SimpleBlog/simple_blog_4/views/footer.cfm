@@ -1,1 +1,0 @@
-<div class="copyright">&copy; Henrik Joreteg & Luis Majano <cfoutput>#year(now())#</cfoutput></div>

@@ -1,1 +1,0 @@
-<cfoutput>#rc.feed#</cfoutput>
