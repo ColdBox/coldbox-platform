@@ -253,7 +253,13 @@
 				ReturnObject = CreateObject(CreateType,ObjectPath);
 				/* LuisMajano: Initialize if available. It might not have an init constructor */
 				if( structKeyExists(ReturnObject,"init") ){
-					ReturnObject = ReturnObject.init(ArgumentCollection=InitStruct);
+					try{
+						ReturnObject = ReturnObject.init(ArgumentCollection=InitStruct);
+					}catch(any e){
+						if (findNoCase('The value returned from the init function is not of type',e.message)){
+							getUtil().throwit(message = ObjectPath & ':' & e.message, type = e.type, detail = e.detail);
+						}
+					}
 				}
 			}
 			else{
