@@ -258,6 +258,8 @@
 					}catch(any e){
 						if (findNoCase('The value returned from the init function is not of type',e.message)){
 							getUtil().throwit(message = ObjectPath & ':' & e.message, type = e.type, detail = e.detail);
+						}else{
+							getUtil().rethrowIt(e);
 						}
 					}
 				}
