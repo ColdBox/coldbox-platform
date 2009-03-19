@@ -11,7 +11,7 @@ Description: This is the framework's simple bean factory.
 ----------------------------------------------------------------------->
 <cfcomponent name="beanFactory"
 			 hint="I am the ColdBox beanFactory plugin that takes care of autowiring and dependency injection"
-			 extends="coldbox.system.plugin"
+			 extends="coldbox.system.Plugin"
 			 output="false"
 			 cache="true"
 			 cacheTimeout="0">
@@ -20,7 +20,7 @@ Description: This is the framework's simple bean factory.
 
 	<cffunction name="init" access="public" returntype="beanFactory" output="false" hint="constructor">
 		<!--- ************************************************************* --->
-		<cfargument name="controller" type="any" required="true" hint="coldbox.system.controller">
+		<cfargument name="controller" type="any" required="true" hint="coldbox.system.Controller">
 		<!--- ************************************************************* --->
 		<cfscript>
 			var modelMappingsFile = "/";
@@ -98,7 +98,7 @@ Description: This is the framework's simple bean factory.
 	<!--- Just create and call init, simple --->
 	<cffunction name="create" hint="Create a named bean, simple as that. If the bean has an init() method, it will be called." access="public" output="false" returntype="Any">
 		<!--- ************************************************************* --->
-		<cfargument name="bean" 		required="true"  type="string" hint="The type of bean to create and return. Uses full cfc path mapping.Ex: coldbox.beans.exceptionBean">
+		<cfargument name="bean" 		required="true"  type="string" hint="The type of bean to create and return. Uses full cfc path mapping.Ex: coldbox.beans.ExceptionBean">
 		<!--- ************************************************************* --->
 		<cfscript>
 			var beanInstance = "";
@@ -866,7 +866,7 @@ Description: This is the framework's simple bean factory.
 		<cfargument name="stopRecursion" 	required="true" type="string" hint="The comma delimmitted list of stoprecursion classes">
 		<!--- ************************************************************* --->
 		<cfscript>
-			var coldboxReservedClasses = "coldbox.system.plugin,coldbox.system.eventhandler,coldbox.system.interceptor";
+			var coldboxReservedClasses = "coldbox.system.Plugin,coldbox.system.EventHandler,coldbox.system.Interceptor";
 			var x = 1;
 			
 			/* Append Coldbox Classes */

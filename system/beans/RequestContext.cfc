@@ -12,7 +12,7 @@ Description :
 Modification History:
 
 ----------------------------------------------------------------------->
-<cfcomponent name="requestContext"
+<cfcomponent name="RequestContext"
 			 hint="I am a coldbox request"
 			 output="false">
 
@@ -30,7 +30,7 @@ Modification History:
 		instance.routedStruct = structnew();
 	</cfscript>
 
-	<cffunction name="init" access="public" output="false" hint="constructor" returntype="coldbox.system.beans.requestContext">
+	<cffunction name="init" access="public" output="false" hint="constructor" returntype="RequestContext">
 		<!--- ************************************************************* --->
 		<cfargument name="struct1" 		 	type="any"	required="true" hint="Usually the FORM scope">
 		<cfargument name="struct2" 		 	type="any"	required="true" hint="Usually the URL scope">

@@ -1,8 +1,8 @@
-<cfcomponent name="requestcontextTest" extends="coldbox.system.extras.testing.baseMXUnitTest" output="false">
+<cfcomponent name="requestcontextTest" extends="coldbox.system.testing.BaseMXUnitTest" output="false">
 
 	<cffunction name="setUp" returntype="void" access="public" output="false">
 		<cfscript>
-			oRC = createObject("component","coldbox.system.beans.requestContext");	
+			oRC = createObject("component","coldbox.system.beans.RequestContext");	
 			
 			/* Properties */
 			props.DefaultLayout = "Main.cfm";

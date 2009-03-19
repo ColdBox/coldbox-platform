@@ -25,7 +25,7 @@ Description :
 			routedStruct.name = "luis";
 			
 			/* Mocks */
-			context = mockFactory.createMock('coldbox.system.beans.requestContext');
+			context = mockFactory.createMock('coldbox.system.beans.RequestContext');
 			context.mockMethod('getRoutedStruct').returns(routedStruct);
 			context.mockMethod('getCurrentEvent').returns('main.index');
 			context.mockMethod('getEventName').returns('event');
@@ -58,7 +58,7 @@ Description :
 			routedStruct.name = "majano";
 			
 			/* Mocks */
-			context = mockFactory.createMock('coldbox.system.beans.requestContext');
+			context = mockFactory.createMock('coldbox.system.beans.RequestContext');
 			context.mockMethod('getRoutedStruct').returns(routedStruct,routedStruct);
 			context.mockMethod('getCurrentEvent').returns('main.index');
 			context.mockMethod('getEventName').returns('event','event');

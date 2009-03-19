@@ -4,7 +4,7 @@
 	
 	<cffunction name="setUp" returntype="void" access="public">
 		<cfscript>
-			this.debug = createObject("component","coldbox.system.beans.debuggerConfigBean");	
+			this.debug = createObject("component","coldbox.system.beans.DebuggerConfigBean");	
 			
 			this.debug.init();
 			

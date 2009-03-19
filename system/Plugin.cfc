@@ -13,13 +13,13 @@ Modification History:
 ----------------------------------------------------------------------->
 <cfcomponent name="plugin"
 			 hint="This is the plugin base cfc."
-			 extends="frameworkSupertype"
+			 extends="coldbox.system.FrameworkSupertype"
 			 output="false">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
 	<cffunction name="init" access="public" returntype="any" output="false" hint="The plugin constructor.">
-		<cfargument name="controller" type="any" required="true" hint="coldbox.system.controller">
+		<cfargument name="controller" type="any" required="true" hint="coldbox.system.Controller">
 		<cfscript>
 			/* Register Controller */
 			setController(arguments.controller);

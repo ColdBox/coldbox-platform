@@ -9,7 +9,7 @@ Date        :	10/16/2007
 Description :
 	This is the Application.cfc for usage withing the ColdBox Framework.
 	Make sure that it extends the coldbox object:
-	coldbox.system.coldbox
+	coldbox.system.Coldbox
 	
 	So if you have refactored your framework, make sure it extends coldbox.
 ----------------------------------------------------------------------->

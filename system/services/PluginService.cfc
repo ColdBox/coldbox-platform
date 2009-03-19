@@ -25,7 +25,7 @@ Modification History:
 			setController(arguments.controller);
 			
 			/* Set Service Properties */
-			setColdBoxPluginsPath('coldbox.system.plugins');
+			setColdBoxPluginsPath('coldbox.system.Plugins');
 			setCacheDictionary(CreateObject("component","coldbox.system.util.BaseDictionary").init('PluginMetadata'));
 			
 			/* Return instance */

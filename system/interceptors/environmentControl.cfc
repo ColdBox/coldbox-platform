@@ -21,7 +21,7 @@ Description :
 
 ----------------------------------------------------------------------->
 <cfcomponent hint="ENVIRONMENT settings interceptor"
-			 extends="coldbox.system.interceptor"
+			 extends="coldbox.system.Interceptor"
 			 output="false">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
@@ -63,7 +63,7 @@ Description :
 
 	<cffunction name="afterConfigurationLoad" output="false" access="public" returntype="void" hint="ENVIRONMENT control the settings">
 		<!--- *********************************************************************** --->
-		<cfargument name="event" 	required="true" type="coldbox.system.beans.requestContext" hint="The event object.">
+		<cfargument name="event" 	required="true" type="coldbox.system.beans.RequestContext" hint="The event object.">
 		<cfargument name="interceptData" required="true" type="struct" hint="A structure containing intercepted information. NONE BY DEFAULT HERE">
 		<!--- *********************************************************************** --->
 		<cfscript>

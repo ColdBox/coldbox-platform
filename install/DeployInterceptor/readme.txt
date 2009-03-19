@@ -20,7 +20,7 @@ Instructions:
 - Place the _deploy.tag and deploy.xml ANT task in your /config directory of your application.
 - Add the Deploy interceptor declaration
 
-<Interceptor class="coldbox.system.interceptors.deploy">
+<Interceptor class="coldbox.system.Interceptors.deploy">
 	<Property name="tagFile">config/_deploy.tag</Property>
 	<Property name="deployCommandObject">model.deployCommand</Property>
 </Interceptor>
@@ -36,7 +36,7 @@ any kind of cleanup code or anything you like:
 
 <cfcomponent name="DeployCommand" output="false">
 	<cffunction name="init" access="public" returntype="any" hint="Constructor" output="false" >
-		<cfargument name="controller" required="true" type="coldbox.system.controller" hint="The coldbox controller">
+		<cfargument name="controller" required="true" type="coldbox.system.Controller" hint="The coldbox controller">
 		<cfset instance = structnew()>
 		<cfset instance.controller = arguments.controller>
 	</cffunction>

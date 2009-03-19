@@ -4,7 +4,7 @@
 		<cfscript>
 			super.setup();
 		
-			controller = createObject("component","coldbox.system.controller").init(ExpandPath('/coldbox/testharness'));
+			controller = createObject("component","coldbox.system.Controller").init(ExpandPath('/coldbox/testharness'));
 		
 		</cfscript>
 	</cffunction>
@@ -130,9 +130,9 @@
 			mockCollection = {test='luis', today=now(), lastname="majano"};
 			varStruct = {test="Jose", myVar="nothing"};
 			
-			mocksession = createObject("component","coldbox.system.plugins.sessionstorage").init(controller);
+			mocksession = createObject("component","coldbox.system.Plugins.sessionstorage").init(controller);
 			
-			context = mockFactory.createMock('coldbox.system.beans.requestContext');
+			context = mockFactory.createMock('coldbox.system.beans.RequestContext');
 			context.mockMethod('getCollection').returns(mockCollection,mockCollection);
 			
 			pluginService = mockfactory.createMock('coldbox.system.services.pluginService');
@@ -162,9 +162,9 @@
 			mockCollection = {test='luis', today=now(), lastname="majano"};
 			varStruct = {test="Jose", myVar="nothing"};
 			
-			mocksession = createObject("component","coldbox.system.plugins.clientstorage").init(controller);
+			mocksession = createObject("component","coldbox.system.Plugins.clientstorage").init(controller);
 			
-			context = mockFactory.createMock('coldbox.system.beans.requestContext');
+			context = mockFactory.createMock('coldbox.system.beans.RequestContext');
 			context.mockMethod('getCollection').returns(mockCollection,mockCollection);
 			
 			pluginService = mockfactory.createMock('coldbox.system.services.pluginService');

@@ -55,7 +55,7 @@ Description :
 	<!--- Get a validated handler instance, using a handlerBean --->
 	<cffunction name="getHandler" output="false" access="public" returntype="any" hint="Returns a valid event handler object ready for execution">
 		<!--- ************************************************************* --->
-		<cfargument name="oEventHandlerBean" type="coldbox.system.beans.eventhandlerBean" required="true" hint="The event handler bean to use"/>
+		<cfargument name="oEventHandlerBean" type="coldbox.system.beans.EventHandlerBean" required="true" hint="The event handler bean to use"/>
 		<cfargument name="RequestContext"    type="any" required="true" hint="The request Context"/>
 		<!--- ************************************************************* --->
 		<cfscript>
@@ -202,7 +202,7 @@ Description :
 	</cffunction>
 	
 	<!--- Get a Registered Handler Bean --->
-	<cffunction name="getRegisteredHandler" access="public" hint="I get a registered handler and method according to passed event from the registeredHandlers setting." returntype="coldbox.system.beans.eventhandlerBean"  output="false">
+	<cffunction name="getRegisteredHandler" access="public" hint="I get a registered handler and method according to passed event from the registeredHandlers setting." returntype="coldbox.system.beans.EventHandlerBean"  output="false">
 		<!--- ************************************************************* --->
 		<cfargument name="event"   type="any"  		required="true"  hint="The full event string to check and get." >
 		<cfargument name="noThrow" type="any" 		required="false" default="false" hint="No error throwing, used by request service."/>
@@ -215,7 +215,7 @@ Description :
 		var handlersList = controller.getSetting("RegisteredHandlers");
 		var handlersExternalList = controller.getSetting("RegisteredExternalHandlers");
 		var onInvalidEvent = controller.getSetting("onInvalidEvent");
-		var HandlerBean = CreateObject("component","coldbox.system.beans.eventhandlerBean").init(controller.getSetting("HandlersInvocationPath"));
+		var HandlerBean = CreateObject("component","coldbox.system.beans.EventHandlerBean").init(controller.getSetting("HandlersInvocationPath"));
 	
 		/* Rip the handler and method. */
 		HandlerReceived = reReplace(event,"\.[^.]*$","");

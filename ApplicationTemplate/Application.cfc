@@ -9,11 +9,11 @@ Date        :	10/16/2007
 Description :
 	This is the Application.cfc for usage withing the ColdBox Framework.
 	Make sure that it extends the coldbox object:
-	coldbox.system.coldbox
+	coldbox.system.Coldbox
 	
 	So if you have refactored your framework, make sure it extends coldbox.
 ----------------------------------------------------------------------->
-<cfcomponent extends="coldbox.system.coldbox" output="false">
+<cfcomponent extends="coldbox.system.Coldbox" output="false">
 	<cfsetting enablecfoutputonly="yes">
 	<!--- APPLICATION CFC PROPERTIES --->
 	<cfset this.name = hash(getCurrentTemplatePath())> 

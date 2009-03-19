@@ -8,7 +8,7 @@ Description :
 Modification History:
 	
 ----------------------------------------------------------------------->
-<cfcomponent name="myclientstorage" hint="Client Storage plugin. It provides the user with a mechanism for permanent data storage using the client scope and WDDX." extends="coldbox.system.plugin">
+<cfcomponent name="myclientstorage" hint="Client Storage plugin. It provides the user with a mechanism for permanent data storage using the client scope and WDDX." extends="coldbox.system.Plugin">
 
 	<!--- ************************************************************* --->
 	<cffunction name="init" access="public" returntype="any" output="false">

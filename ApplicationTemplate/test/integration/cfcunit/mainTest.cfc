@@ -6,7 +6,7 @@ Description :
 	Unit test for the ehMain Handler.
 
 ----------------------------------------------------------------------->
-<cfcomponent name="mainTest" extends="coldbox.system.extras.testing.baseTest" output="false">
+<cfcomponent name="mainTest" extends="coldbox.system.testing.BaseTest" output="false">
 
 	<cfscript>
 		//Uncomment the following if you dont' need the controller in application scope for testing.
@@ -100,7 +100,7 @@ Description :
 	<cffunction name="testonException" access="public" returntype="void" output="false">
 		<cfscript>
 		//You need to create an exception bean first and place it on the request context FIRST as a setup.
-		var exceptionBean = CreateObject("component","coldbox.system.beans.exceptionBean");
+		var exceptionBean = CreateObject("component","coldbox.system.beans.ExceptionBean");
 		var event = "";
 		
 		//Initialize an exception

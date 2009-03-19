@@ -1,5 +1,5 @@
 	<%cffunction name="dspEditor" access="public" returntype="void" output="false"%>
-		<%cfargument name="event" type="coldbox.system.beans.requestContext" required="yes"%>
+		<%cfargument name="event" type="coldbox.system.beans.RequestContext" required="yes"%>
 		<%cfscript%>
 		//References
 		var rc = event.getCollection();

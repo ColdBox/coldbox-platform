@@ -15,7 +15,7 @@ Modification History:
 ----------------------------------------------------------------------->
 <cfcomponent name="ioc"
 			 hint="An Inversion Of Control plugin."
-			 extends="coldbox.system.plugin"
+			 extends="coldbox.system.Plugin"
 			 output="false"
 			 cache="true"
 			 cachetimeout="0">
@@ -24,7 +24,7 @@ Modification History:
 
 	<cffunction name="init" access="public" returntype="ioc" output="false" hint="The ioc constructor">
 		<!--- ************************************************************* --->
-		<cfargument name="controller" type="any" required="true" hint="coldbox.system.controller">
+		<cfargument name="controller" type="any" required="true" hint="coldbox.system.Controller">
 		<!--- ************************************************************* --->
 		<cfscript>
 			super.Init(arguments.controller);

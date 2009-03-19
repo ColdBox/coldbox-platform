@@ -9,7 +9,7 @@ Modification History:
 ----------------------------------------------------------------------->
 <cfcomponent name="default" 
 			 hint="a default handler" 
-			 extends="coldbox.system.eventhandler" 
+			 extends="coldbox.system.EventHandler" 
 			 output="false"
 			 autowire="false">
 
@@ -17,7 +17,7 @@ Modification History:
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->	 	
 
 	<cffunction name="init" access="public" returntype="default" output="false" hint="Optional Constructor">
-		<cfargument name="controller" type="coldbox.system.controller">
+		<cfargument name="controller" type="coldbox.system.Controller">
 		
 		<!--- Mandatory Super call --->
 		<cfset super.init(arguments.controller)>
@@ -31,7 +31,7 @@ Modification History:
 
 	<!--- do something --->
 	<cffunction name="index" access="public" returntype="Void" output="false">
-		<cfargument name="Event" type="coldbox.system.beans.requestContext" required="yes">
+		<cfargument name="Event" type="coldbox.system.beans.RequestContext" required="yes">
 		<cfset var rc = event.getCollection()>
 		 
 		<cfset event.setView('vwQuote')>

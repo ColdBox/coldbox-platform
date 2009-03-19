@@ -4,7 +4,7 @@
 <%beans%>
 
 	<!--ColdBox Factory, if needed -->
-	<%bean id="coldboxFactory" class="coldbox.system.extras.ColdboxFactory" /%>
+	<%bean id="coldboxFactory" class="coldbox.system.ioc.ColdboxFactory" /%>
 
 	<%bean id="#root.bean.xmlAttributes.name#DAO" class="#root.bean.xmlAttributes.path#DAO"%>
 		<%constructor-arg name="dsn"%><%value%>${datasources.YOUR_ALIAS_HERE.name}<%/value%><%/constructor-arg%>

@@ -14,7 +14,7 @@ Description :
 <cfcomponent name="TransferLoader"
 			 hint="Creates Transfer and caches it within ColdBox" 
 			 output="false"
-			 extends="coldbox.system.interceptor">
+			 extends="coldbox.system.Interceptor">
 
 <!---------------------------------------- CONSTRUCTOR --------------------------------------------------->
 	
@@ -72,7 +72,7 @@ Description :
 	
 	<cffunction name="afterConfigurationLoad" output="false" access="public" returntype="void" hint="Load Transfer after configuration has loaded">
 		<!--- *********************************************************************** --->
-		<cfargument name="event" 	required="true" type="coldbox.system.beans.requestContext" hint="The event object.">
+		<cfargument name="event" 	required="true" type="coldbox.system.beans.RequestContext" hint="The event object.">
 		<cfargument name="interceptData" required="true" type="struct" hint="A structure containing intercepted information. NONE BY DEFAULT HERE">
 		<!--- *********************************************************************** --->
 		<cfscript>

@@ -54,7 +54,7 @@ Modification History:
 --->
 <cfcomponent name="zip"
              hint = "A collections of functions that supports the Zip and GZip functionality by using the Java Zip file API."
-             extends="coldbox.system.plugin"
+             extends="coldbox.system.Plugin"
 			 output="false"
 			 cache="false">
 

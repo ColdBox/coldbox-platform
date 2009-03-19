@@ -13,7 +13,7 @@ Modification History:
 ----------------------------------------------------------------------->
 <cfcomponent name="$${Interceptor Name}" 
 			 hint="$${Hint}" 
-			 extends="coldbox.system.interceptor" 
+			 extends="coldbox.system.Interceptor" 
 			 output="false"
 			 autowire="$${Autowire:false|true}">
   

@@ -3,8 +3,8 @@
 	
 	<cffunction name="setUp" returntype="void" access="public">
 		<cfscript>
-			this.state = createObject("component","coldbox.system.beans.interceptorState");		
-			this.event = createobject("component","coldbox.system.beans.requestContext");
+			this.state = createObject("component","coldbox.system.beans.InterceptorState");		
+			this.event = createobject("component","coldbox.system.beans.RequestContext");
 			this.mock = createObject("component","coldbox.testing.testinterceptors.mock");
 			
 			this.key = "cbox_interceptor_" & "mock";

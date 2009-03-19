@@ -3,7 +3,7 @@
 	
 	<cffunction name="setUp" returntype="void" access="public">
 		<cfscript>
-			this.dsn = createObject("component","coldbox.system.beans.datasourceBean");		
+			this.dsn = createObject("component","coldbox.system.beans.DatasourceBean");		
 			
 			this.memento = structnew();
 			this.memento.name = "mydsn";

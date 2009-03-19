@@ -73,7 +73,7 @@
 	</Cache>
 	
 	<Interceptors throwOnInvalidStates="true">
-		<Interceptor class="coldbox.system.interceptors.security">
+		<Interceptor class="coldbox.system.Interceptors.security">
 			<Property name="rulesSource">ioc</Property>
 			<Property name="rulesBean">security</Property>
 			<Property name="rulesBeanMethod">getRules</Property>

@@ -4,7 +4,7 @@
 	
 	<cffunction name="setUp" returntype="void" access="public">
 		<cfscript>
-			this.ehbean = createObject("component","coldbox.system.beans.eventhandlerBean");	
+			this.ehbean = createObject("component","coldbox.system.beans.EventHandlerBean");	
 			
 			this.instance.invocationPath = "coldbox.testharness";
 			this.instance.handler = "general";

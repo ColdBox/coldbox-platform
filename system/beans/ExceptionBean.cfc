@@ -11,7 +11,7 @@ Description :
 Modification History:
 08/07/2006 - new method, getTagContextAsString(). Updated the return types.
 ----------------------------------------------------------------------->
-<cfcomponent name="exceptionBean"
+<cfcomponent name="ExceptionBean"
 			 hint="I model a Coldfusion/Coldbox Exception"
 			 output="false">
 
@@ -32,7 +32,7 @@ Modification History:
 	</cfscript>
 
 	<!--- ************************************************************* --->
-	<cffunction name="init" access="public" returntype="coldbox.system.beans.exceptionBean" output="false">
+	<cffunction name="init" access="public" returntype="ExceptionBean" output="false">
 		<!--- ************************************************************* --->
 		<cfargument name="errorStruct" 		type="any" 		required="false" hint="The CF error Structure" 		default="#structnew()#" />
 		<cfargument name="extramessage" 	type="string" 	required="false" hint="The custom error message" 	default="" />

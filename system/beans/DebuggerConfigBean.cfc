@@ -11,7 +11,7 @@ Description :
 Modification History:
 
 ----------------------------------------------------------------------->
-<cfcomponent name="debuggerConfigBean"
+<cfcomponent name="DebuggerConfigBean"
 			 hint="I hold a coldbox debugger configuration data."
 			 output="false">
 
@@ -20,7 +20,7 @@ Modification History:
 		variables.instance = structnew();
 	</cfscript>
 
-	<cffunction name="init" access="public" output="false" hint="constructor" returntype="debuggerConfigBean">
+	<cffunction name="init" access="public" output="false" hint="constructor" returntype="DebuggerConfigBean">
 	    <cfscript>
 		    return this;
 		</cfscript>

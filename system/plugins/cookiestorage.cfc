@@ -16,7 +16,7 @@ Modification History: March 23,2008 Added new feature to encrypt/decrypt cookie 
 ----------------------------------------------------------------------->
 <cfcomponent name="cookiestorage"
 			 hint="Cookie Storage plugin. It provides the user with a mechanism for permanent data storage using the cookie scope."
-			 extends="coldbox.system.plugin"
+			 extends="coldbox.system.Plugin"
 			 output="false"
 			 cache="true">
 
@@ -24,7 +24,7 @@ Modification History: March 23,2008 Added new feature to encrypt/decrypt cookie 
 
 	<cffunction name="init" access="public" returntype="cookiestorage" output="false" hint="Constructor.">
 		<!--- ************************************************************* --->
-		<cfargument name="controller" type="any" required="true" hint="coldbox.system.controller">
+		<cfargument name="controller" type="any" required="true" hint="coldbox.system.Controller">
 		<!--- ************************************************************* --->
 		<cfscript>	
 			super.Init(arguments.controller);

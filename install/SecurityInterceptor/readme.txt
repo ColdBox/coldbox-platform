@@ -33,7 +33,7 @@ instantiation path. The interceptor will create it and try to execute it.
 This must be called from the application start handler or other interceptors as long as it 
 executes before any preProcess execution occurs:
 
-<cfset getInterceptor('coldbox.system.interceptors.security').registerValidator(myValidator)>
+<cfset getInterceptor('coldbox.system.Interceptors.security').registerValidator(myValidator)>
 
 That validator object can from anywhere you want using the mentioned technique above.
 

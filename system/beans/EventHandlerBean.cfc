@@ -11,7 +11,7 @@ Description :
 Modification History:
 
 ----------------------------------------------------------------------->
-<cfcomponent name="eventhandlerBean"
+<cfcomponent name="EventHandlerBean"
 			 hint="I model a ColdBox event handler"
 			 output="false">
 
@@ -27,7 +27,7 @@ Modification History:
 		instance.MissingAction = "";
 	</cfscript>
 
-	<cffunction name="init" access="public" returntype="coldbox.system.beans.eventhandlerBean" output="false">
+	<cffunction name="init" access="public" returntype="EventHandlerBean" output="false">
 		<cfargument name="invocationPath" type="string" required="false" default="" hint="The default invocation path" />
 		<cfset setInvocationPath(arguments.invocationPath)>
 		<cfreturn this >

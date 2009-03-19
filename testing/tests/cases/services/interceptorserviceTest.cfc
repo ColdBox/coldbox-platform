@@ -12,7 +12,7 @@ Description :
 Modification History:
 01/18/2007 - Created
 ----------------------------------------------------------------------->
-<cfcomponent name="interceptorserviceTest" extends="coldbox.system.extras.testing.baseMXUnitTest" output="false">
+<cfcomponent name="interceptorserviceTest" extends="coldbox.system.testing.BaseMXUnitTest" output="false">
 
 	<cffunction name="setUp" returntype="void" access="public" output="false">
 		<cfscript>
@@ -60,9 +60,9 @@ Modification History:
 		
 		state = this.iservice.getStateContainer('preProcess');
 		
-		this.iservice.unregister('coldbox.system.interceptors.ses','preProcess');
+		this.iservice.unregister('coldbox.system.Interceptors.ses','preProcess');
 		
-		interceptor = state.getInterceptor(this.iservice.INTERCEPTOR_CACHEKEY_PREFIX & 'coldbox.system.interceptors.ses');
+		interceptor = state.getInterceptor(this.iservice.INTERCEPTOR_CACHEKEY_PREFIX & 'coldbox.system.Interceptors.ses');
 		
 		AssertFalse( isObject(interceptor) );	
 		

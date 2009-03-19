@@ -4,9 +4,9 @@
 	
 	<cffunction name="setUp" returntype="void" access="public">
 		<cfscript>
-			this.decorator = createObject("component","coldbox.system.beans.requestContextDecorator");		
-			this.rc = createObject("component","coldbox.system.beans.requestContext");		
-			this.controller = createObject("component","coldbox.system.controller");
+			this.decorator = createObject("component","coldbox.system.beans.RequestContextDecorator");		
+			this.rc = createObject("component","coldbox.system.beans.RequestContext");		
+			this.controller = createObject("component","coldbox.system.Controller");
 			
 			this.decorator.init(this.rc,this.controller);
 		</cfscript>

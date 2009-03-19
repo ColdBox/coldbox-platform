@@ -16,7 +16,7 @@ Modification History:
 					   isScroll property implemented. Changed xml location (SideBar=ColdBoxSideBar)
 10/13/2008 evdlinden : added waitTimeBeforeOpen property					   
 ----------------------------------------------------------------------->
-<cfcomponent name="coldboxSideBar" output="false" extends="coldbox.system.interceptor" hint="The ColdBox Developer Side Bar">
+<cfcomponent name="coldboxSideBar" output="false" extends="coldbox.system.Interceptor" hint="The ColdBox Developer Side Bar">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 	
@@ -92,7 +92,7 @@ Modification History:
 
 	<!--- afterAspectsLoad --->
 	<cffunction name="afterAspectsLoad" access="public" returntype="void" output="false">
-		<cfargument name="event" required="true" type="coldbox.system.beans.requestContext">
+		<cfargument name="event" required="true" type="coldbox.system.beans.RequestContext">
 		
 		<!--- Set isEnabled property after environmentControl interception --->
 		<cfif not settingExists('ColdBoxSideBar') or not isBoolean( getSetting('ColdBoxSideBar') )>
@@ -105,7 +105,7 @@ Modification History:
 	
 	<!--- preProcess --->
 	<cffunction name="preProcess" access="public" returntype="void" output="false">
-		<cfargument name="event" required="true" type="coldbox.system.beans.requestContext">
+		<cfargument name="event" required="true" type="coldbox.system.beans.RequestContext">
 		
 		<cfset var rc = event.getCollection()>
 		<cfset var contentType = ''>
@@ -165,7 +165,7 @@ Modification History:
 
 	<!--- postRender --->
 	<cffunction name="postRender" access="public" returntype="void" output="false">
-		<cfargument name="event" required="true" type="coldbox.system.beans.requestContext">
+		<cfargument name="event" required="true" type="coldbox.system.beans.RequestContext">
 		<!--- Render SideBar? --->
 		<cfif isStruct(event.getRenderData()) and structisEmpty(event.getRenderData())>
 			<!--- Render SideBar? --->
@@ -178,7 +178,7 @@ Modification History:
 
 	<!--- onException --->
 	<cffunction name="onException" access="public" returntype="void" output="false">
-		<cfargument name="event" required="true" type="coldbox.system.beans.requestContext">
+		<cfargument name="event" required="true" type="coldbox.system.beans.RequestContext">
 		<!--- Render SideBar? --->
 		<cfif getIsRender(arguments.event) >
 			<!--- Append rendered sideBar to buffer --->
@@ -190,7 +190,7 @@ Modification History:
 	
 	<!--- getRenderedSideBar --->
 	<cffunction name="getRenderedSideBar" access="public" output="false" returntype="string" hint="Render our beautiful sidebar">
-		<cfargument name="event" required="true" type="coldbox.system.beans.requestContext">
+		<cfargument name="event" required="true" type="coldbox.system.beans.RequestContext">
 		
 		<cfset var renderedSideBar = ''>
 		<cfset var i =0>
@@ -235,7 +235,7 @@ Modification History:
 	
 	<!--- Get is render --->
 	<cffunction name="getIsRender" access="private" returntype="boolean" output="false" hint="Checks if we can render the sidebar">
-		<cfargument name="event" required="true" type="coldbox.system.beans.requestContext">
+		<cfargument name="event" required="true" type="coldbox.system.beans.RequestContext">
         <cfreturn ( getproperty('isEnabled') AND NOT arguments.event.isProxyRequest() )>
 	</cffunction>
 	

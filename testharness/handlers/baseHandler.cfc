@@ -7,18 +7,18 @@ Description :
 
 	example:
 		Mapping: fwsample
-		Argument Type: fwsample.system.eventhandler
+		Argument Type: fwsample.system.EventHandler
 Modification History:
 Sep/25/2005 - Luis Majano
 	-Created the template.
 ----------------------------------------------------------------------->
-<cfcomponent name="baseHandler" extends="coldbox.system.eventhandler" output="false">
+<cfcomponent name="baseHandler" extends="coldbox.system.EventHandler" output="false">
 
 <!--- Autowire --->
 <cfproperty name="badService" type="ioc" scope="instance">
 
 	<cffunction name="doColdboxFactoryTests" access="public" returntype="any" hint="" output="false" >
-		<cfargument name="Event" type="coldbox.system.beans.requestContext">
+		<cfargument name="Event" type="coldbox.system.beans.RequestContext">
 		<cfscript>
 		var rc = event.getCollection();
 		

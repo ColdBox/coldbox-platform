@@ -61,7 +61,7 @@ What gets returned on the FeedStructure:
 
 ----------------------------------------------------------------------->
 <cfcomponent name="feedReader" 
-			 extends="coldbox.system.plugin"
+			 extends="coldbox.system.Plugin"
 			 hint="A rss reader plugin. We recommend that when you call the readFeed method, that you use url's as settings. ex: readFeed(getSetting('myFeedURL')).  The settings this plugin uses are the following: feedReader_useCache:boolean [default=true], feedReader_cacheLocation:string, feedReader_cacheTimeout:numeric [default=30 min], feedReader_httpTimeout:numeric [default=30 sec]. If the cacheLocation directory does not exits, the plugin will throw an error. So please remember to create the directory."
 			 cache="true">
 

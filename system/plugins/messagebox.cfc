@@ -21,7 +21,7 @@ Modification History:
 ----------------------------------------------------------------------->
 <cfcomponent name="messagebox"
 			 hint="This is the messagebox plugin. It uses the session/client scope to save messages."
-			 extends="coldbox.system.plugin"
+			 extends="coldbox.system.Plugin"
 			 output="false"
 			 cache="true">
 
@@ -29,7 +29,7 @@ Modification History:
 
 	<cffunction name="init" access="public" returntype="messagebox" output="false" hint="Constructor">
 		<!--- ************************************************************* --->
-		<cfargument name="controller" type="any" required="true" hint="coldbox.system.controller">
+		<cfargument name="controller" type="any" required="true" hint="coldbox.system.Controller">
 		<!--- ************************************************************* --->
 		<cfscript>	
 			super.Init(arguments.controller);

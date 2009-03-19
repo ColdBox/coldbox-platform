@@ -1,5 +1,5 @@
 <cfoutput>
-<%cfcomponent name="#root.bean.xmlAttributes.name#Test" extends="coldbox.system.extras.testing.baseTest" output="false"%>
+<%cfcomponent name="#root.bean.xmlAttributes.name#Test" extends="coldbox.system.testing.BaseTest" output="false"%>
 
 	<%cffunction name="setUp" returntype="void" access="private" output="false" %>
 		<%cfscript%>

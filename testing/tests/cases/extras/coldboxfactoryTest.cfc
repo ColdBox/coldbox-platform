@@ -9,7 +9,7 @@ Date        :	9/3/2007
 Description :
 	Request service Test
 ----------------------------------------------------------------------->
-<cfcomponent name="requestserviceTest" extends="coldbox.system.extras.testing.baseMXUnitTest" output="false">
+<cfcomponent name="requestserviceTest" extends="coldbox.system.testing.BaseMXUnitTest" output="false">
 
 	<cffunction name="setUp" returntype="void" access="public" output="false">
 		<cfscript>
@@ -25,7 +25,7 @@ Description :
 	
 	<cffunction name="testFactoryCreations" access="public" returntype="void" output="false">
 		<cfscript>
-		var factory = CreateObject("component","coldbox.system.extras.ColdboxFactory");
+		var factory = CreateObject("component","coldbox.system.ioc.ColdboxFactory");
 		var obj = "";
 		
 		//Create objects
@@ -41,7 +41,7 @@ Description :
 		obj = factory.getPlugin("logger");
 		AssertEquals(getController().getPlugin("logger"), obj, "Logger Plugin");
 		
-		AssertTrue( isObject(factory.getInterceptor("coldbox.system.interceptors.ses")), "Interceptor");
+		AssertTrue( isObject(factory.getInterceptor("coldbox.system.Interceptors.ses")), "Interceptor");
 		
 		obj = factory.getPlugin("date",true);
 		AssertTrue(structKeyExists(obj,"getToday"), "Date Plugin");

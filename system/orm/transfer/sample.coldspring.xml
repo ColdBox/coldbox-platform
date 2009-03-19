@@ -2,7 +2,7 @@
 <beans>
 
 	<!-- coldbox -->
-	<bean id="ColdboxFactory" class="coldbox.system.extras.ColdboxFactory" singleton="true"/>
+	<bean id="ColdboxFactory" class="coldbox.system.ioc.ColdboxFactory" singleton="true"/>
 	<!-- coldbox bean factory -->
 	<bean id="ColdBoxBeanFactory" factory-bean="ColdBoxFactory" factory-method="getPlugin" singleton="true">
    		<constructor-arg name="plugin">

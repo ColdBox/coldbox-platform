@@ -9,13 +9,13 @@ Date        :	10/2/2007
 Description :
 	This is the base request context decorator object
 ----------------------------------------------------------------------->
-<cfcomponent name="requestContextDecorator" hint="This is the base request context decorator" output="false" extends="coldbox.system.beans.requestContext">
+<cfcomponent name="RequestContextDecorator" hint="This is the base request context decorator" output="false" extends="coldbox.system.beans.RequestContext">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 		
-	<cffunction name="init" access="public" output="false" hint="constructor" returntype="requestContextDecorator">
+	<cffunction name="init" access="public" output="false" hint="constructor" returntype="RequestContextDecorator">
 		<!--- ************************************************************* --->
-		<cfargument name="oContext" 	type="any" 	required="true" hint="The original context we are decorating. coldbox.system.beans.requestContext">
+		<cfargument name="oContext" 	type="any" 	required="true" hint="The original context we are decorating. coldbox.system.beans.RequestContext">
 		<cfargument name="controller" 	type="any" 	required="true"	hint="The coldbox controller">
 		<!--- ************************************************************* --->
 		<cfscript>
@@ -42,7 +42,7 @@ Description :
 	</cffunction>
 	
 	<!--- Get the original context --->
-	<cffunction name="getrequestContext" access="public" output="false" returntype="any" hint="Get the original request context. coldbox.system.beans.requestContext">
+	<cffunction name="getrequestContext" access="public" output="false" returntype="any" hint="Get the original request context. coldbox.system.beans.RequestContext">
 		<cfreturn instance.requestContext/>
 	</cffunction>
 	
@@ -55,7 +55,7 @@ Description :
 <!------------------------------------------- PRIVATE ------------------------------------------->
 
 	<!--- Get Set Controller --->
-	<cffunction name="getcontroller" access="private" output="false" returntype="any" hint="Get controller: coldbox.system.controller">
+	<cffunction name="getcontroller" access="private" output="false" returntype="any" hint="Get controller: coldbox.system.Controller">
 		<cfreturn instance.controller/>
 	</cffunction>	
 

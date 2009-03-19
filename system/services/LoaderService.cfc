@@ -49,7 +49,7 @@ Modification History:
 		<cfscript>
 			var XMLParser = "";
 			var CacheConfigBean = CreateObject("Component","coldbox.system.cache.config.CacheConfigBean");
-			var DebuggerConfigBean = CreateObject("Component","coldbox.system.beans.debuggerConfigBean");
+			var DebuggerConfigBean = CreateObject("Component","coldbox.system.beans.DebuggerConfigBean");
 			var FrameworkSettings = structNew();
 			var ConfigSettings = structNew();
 			

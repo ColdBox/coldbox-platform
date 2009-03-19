@@ -10,7 +10,7 @@ Description :
 	This proxy is an inherited coldbox remote proxy used for enabling
 	coldbox as a model framework.
 ----------------------------------------------------------------------->
-<cfcomponent name="coldboxproxy" output="false" extends="coldbox.system.extras.ColdboxProxy">
+<cfcomponent name="coldboxproxy" output="false" extends="coldbox.system.remote.ColdboxProxy">
 
 	<!--- You can override this method if you want to intercept before and after. --->
 	<cffunction name="process" output="false" access="remote" returntype="any" hint="Process a remote call and return data/objects back.">

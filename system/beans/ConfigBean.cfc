@@ -11,13 +11,13 @@ Description :
 Modification History:
 
 ----------------------------------------------------------------------->
-<cfcomponent name="configBean"
+<cfcomponent name="ConfigBean"
 			 hint="I hold a coldbox configuration file data."
 			 output="false">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
-	<cffunction name="init" access="public" output="false" hint="constructor" returntype="configBean">
+	<cffunction name="init" access="public" output="false" hint="constructor" returntype="ConfigBean">
 	    <!--- ************************************************************* --->
 	    <cfargument name="configStruct" type="struct" required="false" default="#structnew()#" hint="A memento of name-value pairs to init">
 	    <!--- ************************************************************* --->

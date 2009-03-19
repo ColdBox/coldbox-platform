@@ -295,7 +295,7 @@ Description :
 						structDelete(application,"cbController");
 					}
 					/* Load it Up baby!! */
-					cbController = CreateObject("component", "coldbox.system.controller").init( appRootPath );
+					cbController = CreateObject("component", "coldbox.system.Controller").init( appRootPath );
 					/* Put in Scope */
 					application.cbController = cbController;
 					/* Setup Calls */

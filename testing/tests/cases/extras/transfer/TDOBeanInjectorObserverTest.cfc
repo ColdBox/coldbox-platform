@@ -21,7 +21,7 @@ Description :
 		transferObject = mockFactory.createMock('transfer.com.TransferObject');
 		transferEvent.mockMethod('getTransferObject').returns(transferObject);
 		
-		beanFactory = mockFactory.createMock('coldbox.system.plugins.beanFactory');
+		beanFactory = mockFactory.createMock('coldbox.system.Plugins.beanFactory');
 		beanFactory.mockMethod('autowire');
 		
 		beanFactory.autowire(this);

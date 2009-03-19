@@ -17,7 +17,7 @@ Modification History:
 	</cfscript>
 
 	<cffunction name="init" returntype="Deploycleanup" output="false" hint="Constructor">
-		<cfargument name="controller" required="true" type="coldbox.system.controller" hint="The coldbox controller">
+		<cfargument name="controller" required="true" type="coldbox.system.Controller" hint="The coldbox controller">
 		<cfscript>
 			/* Setup the controller */
 			instance.controller = arguments.controller;

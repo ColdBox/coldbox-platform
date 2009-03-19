@@ -16,7 +16,7 @@ Description		: This is the main ColdBox front Controller.
 		variables.instance = structnew();
 	</cfscript>
 
-	<cffunction name="init" returntype="coldbox.system.controller" access="Public" hint="I am the constructor" output="false">
+	<cffunction name="init" returntype="coldbox.system.Controller" access="Public" hint="I am the constructor" output="false">
 		<cfargument name="AppRootPath" type="string" required="true" hint="The app Root Path"/>
 		<cfscript>
 			//Public Variable.

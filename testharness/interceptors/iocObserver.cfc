@@ -12,7 +12,7 @@ Description :
 <cfcomponent name="errorObserver"
 			 hint="This is a simple error observer"
 			 output="false"
-			 extends="coldbox.system.interceptor">
+			 extends="coldbox.system.Interceptor">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
@@ -25,7 +25,7 @@ Description :
 
 	<cffunction name="afterAspectsLoad" access="public" returntype="void" hint="My very own custom interception point. " output="true" >
 		<!--- ************************************************************* --->
-		<cfargument name="event" required="true" type="coldbox.system.beans.requestContext" hint="The event object.">
+		<cfargument name="event" required="true" type="coldbox.system.beans.RequestContext" hint="The event object.">
 		<cfargument name="interceptData" required="true" type="struct" hint="Metadata of intercepted info.">
 		<!--- ************************************************************* --->
 		<cfscript>

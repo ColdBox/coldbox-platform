@@ -9,7 +9,7 @@ Date        :	June 01 2008
 Description :
 	feedReaderTest plugin test
 ----------------------------------------------------------------------->
-<cfcomponent name="feedReaderTest" extends="coldbox.system.extras.testing.baseMXUnitTest" output="false">
+<cfcomponent name="feedReaderTest" extends="coldbox.system.testing.BaseMXUnitTest" output="false">
 
 	<cffunction name="setUp" returntype="void" access="public" output="false">
 		<cfscript>

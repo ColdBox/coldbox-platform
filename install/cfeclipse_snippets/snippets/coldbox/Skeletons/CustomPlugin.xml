@@ -13,7 +13,7 @@ Modification History:
 ----------------------------------------------------------------------->
 <cfcomponent name="$${Plugin Name}" 
 			 hint="$${Hint}" 
-			 extends="coldbox.system.plugin" 
+			 extends="coldbox.system.Plugin" 
 			 output="false" 
 			 autowire="$${Autowire:false|true}"
 			 cache="$${Cache:true|false}"

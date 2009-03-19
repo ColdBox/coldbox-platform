@@ -15,7 +15,7 @@ Modification History:
 ----------------------------------------------------------------------->
 <cfcomponent name="clientstorage"
 			 hint="Client Storage plugin. It provides the user with a mechanism for permanent data storage using the client scope and WDDX."
-			 extends="coldbox.system.plugin"
+			 extends="coldbox.system.Plugin"
 			 output="false"
 			 cache="true">
 
@@ -23,7 +23,7 @@ Modification History:
 
 	<cffunction name="init" access="public" returntype="clientstorage" output="false" hint="Constructor.">
 		<!--- ************************************************************* --->
-		<cfargument name="controller" type="any" required="true" hint="coldbox.system.controller">
+		<cfargument name="controller" type="any" required="true" hint="coldbox.system.Controller">
 		<!--- ************************************************************* --->
 		<cfscript>
 			super.Init(arguments.controller);

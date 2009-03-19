@@ -51,7 +51,7 @@ Description :
 			<cfset structDelete(application,"cbController")>
 		</cfif>
 		<!--- Create Brand New Controller --->
-		<cfset application.cbController = CreateObject("component","coldbox.system.controller").init(COLDBOX_APP_ROOT_PATH)>
+		<cfset application.cbController = CreateObject("component","coldbox.system.Controller").init(COLDBOX_APP_ROOT_PATH)>
 		<!--- Setup the Framework And Application --->
 		<cfset application.cbController.getLoaderService().setupCalls(COLDBOX_CONFIG_FILE)>
 	</cffunction>

@@ -5,7 +5,7 @@ Description :
 	Unit Tests integration for the ehGeneral Handler.
 
 ----------------------------------------------------------------------->
-<cfcomponent name="generalTest" extends="coldbox.system.extras.testing.baseMXUnitTest" output="false">
+<cfcomponent name="generalTest" extends="coldbox.system.testing.BaseMXUnitTest" output="false">
 	
 	<cfscript>
 		//Uncomment the following if you dont' need the controller in application scope for testing.

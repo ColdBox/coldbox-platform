@@ -13,7 +13,7 @@ Description :
 Modification History:
 
 ----------------------------------------------------------------------->
-<cfcomponent name="mailsettingsBean"
+<cfcomponent name="MailSettingsBean"
 			 hint="I model mail server settings"
 			 output="false">
 
@@ -29,7 +29,7 @@ Modification History:
 
 	<!--- ************************************************************* --->
 
-	<cffunction name="init" access="public" output="false" hint="I return a mail setting bean." returntype="coldbox.system.beans.mailsettingsBean">
+	<cffunction name="init" access="public" output="false" hint="I return a mail setting bean." returntype="MailSettingsBean">
 		<!--- ************************************************************* --->
 		<cfargument name="server"	required="false" type="string" default="">
 		<cfargument name="username"	required="false" type="string" default="">

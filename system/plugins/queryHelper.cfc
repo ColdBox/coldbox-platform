@@ -56,7 +56,7 @@ queryPlugin.doLeftOuterJoin(q1,q3,"idt","idt")
 
 <cfcomponent name="queryHelper"
 			 hint="A query helper plugin."
-			 extends="coldbox.system.plugin"
+			 extends="coldbox.system.Plugin"
 			 output="false"
 			 cache="true">
 

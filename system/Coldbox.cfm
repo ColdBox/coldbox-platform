@@ -21,7 +21,7 @@ Description :
 	<cflock name="coldbox.bootstrap_#hash(getBaseTemplatePath())#" type="exclusive" timeout="5" throwontimeout="true">
 	<cfif not structKeyExists(application,"cbBootstrap") or application.cbBootstrap.isfwReinit()>
 		<cfset structDelete(application,"cbBootStrap")>
-		<cfset application.cbBootStrap = CreateObject("component","coldbox")>
+		<cfset application.cbBootStrap = CreateObject("component","coldbox.system.Coldbox")>
 	</cfif>
 	</cflock>
 </cfif>

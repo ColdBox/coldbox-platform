@@ -35,7 +35,7 @@ Modification History:
 		<!--- ************************************************************* --->
 		<cfscript>
 		var BugReport = "";
-		var ExceptionBean = CreateObject("component","coldbox.system.beans.exceptionBean").init(errorStruct=arguments.Exception,extramessage=arguments.extraMessage,errorType=arguments.ErrorType);
+		var ExceptionBean = CreateObject("component","coldbox.system.beans.ExceptionBean").init(errorStruct=arguments.Exception,extramessage=arguments.extraMessage,errorType=arguments.ErrorType);
 		var requestContext = controller.getRequestService().getContext();
 		
 		/* Test Error Type */
@@ -52,7 +52,7 @@ Modification History:
 					controller.runEvent(controller.getSetting("Exceptionhandler"));
 				}
 				catch(Any e){
-					ExceptionBean = CreateObject("component","coldbox.system.beans.exceptionBean").init(errorStruct=e,extramessage="Error Running Custom Exception handler",errorType="application");
+					ExceptionBean = CreateObject("component","coldbox.system.beans.ExceptionBean").init(errorStruct=e,extramessage="Error Running Custom Exception handler",errorType="application");
 					controller.getPlugin("logger").logErrorWithBean(ExceptionBean);
 				}
 			}

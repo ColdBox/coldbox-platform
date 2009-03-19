@@ -12,7 +12,7 @@ Description :
 <cfcomponent name="executionTracer"
 			 hint="This is a simple tracer"
 			 output="false"
-			 extends="coldbox.system.interceptors.executionTracer">
+			 extends="coldbox.system.Interceptors.executionTracer">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
@@ -25,7 +25,7 @@ Description :
 
 	<cffunction name="preProcess" access="public" returntype="void" hint="My very own custom interception point. " output="false" >
 		<!--- ************************************************************* --->
-		<cfargument name="event" required="true" type="coldbox.system.beans.requestContext" hint="The event object.">
+		<cfargument name="event" required="true" type="coldbox.system.beans.RequestContext" hint="The event object.">
 		<cfargument name="interceptData" required="true" type="struct" hint="Metadata of intercepted info.">
 		<!--- ************************************************************* --->
 		 <cfset appendToBuffer('<h2>I love my buffer</h2>')>
@@ -34,7 +34,7 @@ Description :
 	<!--- Custom Interception Point --->
 	<cffunction name="onLog" access="public" returntype="void" hint="My very own custom interception point. " output="false" >
 		<!--- ************************************************************* --->
-		<cfargument name="event" required="true" type="coldbox.system.beans.requestContext" hint="The event object.">
+		<cfargument name="event" required="true" type="coldbox.system.beans.RequestContext" hint="The event object.">
 		<cfargument name="interceptData" required="true" type="struct" hint="Metadata of intercepted info.">
 		<!--- ************************************************************* --->
 		<cfset getPlugin("logger").logEntry("warning","I just executed a custom interception point. #arguments.interceptData.toString()#")>

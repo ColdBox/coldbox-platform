@@ -9,7 +9,7 @@ Date        :	9/28/2007
 Description :
 	This object models an interception state
 ----------------------------------------------------------------------->
-<cfcomponent name="interceptorState"
+<cfcomponent name="InterceptorState"
 			 hint="I model an interception state."
 			 output="false">
 
@@ -18,7 +18,7 @@ Description :
 		variables.instance = structnew();
 	</cfscript>
 	
-	<cffunction name="init" access="public" output="false" hint="constructor" returntype="coldbox.system.beans.interceptorState">
+	<cffunction name="init" access="public" output="false" hint="constructor" returntype="InterceptorState">
 	    <!--- ************************************************************* --->
 	    <cfargument name="state" 		type="string" 	required="true" hint="The interception state I model">
 	    <!--- ************************************************************* --->

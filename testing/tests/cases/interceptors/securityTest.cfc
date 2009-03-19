@@ -9,7 +9,7 @@ Date        :	9/3/2007
 Description :
 	securityTest
 ----------------------------------------------------------------------->
-<cfcomponent name="securityTest" extends="coldbox.system.extras.testing.baseMXUnitTest" output="false">
+<cfcomponent name="securityTest" extends="coldbox.system.testing.BaseMXUnitTest" output="false">
 
 	<cffunction name="setUp" returntype="void" access="public" output="false">
 		<cfscript>
@@ -183,11 +183,11 @@ Description :
 		AssertTrue(isObject(validator));
 		
 		/* Register */
-		getInterceptor('coldbox.system.interceptors.security').registerValidator(validator);
+		getInterceptor('coldbox.system.Interceptors.security').registerValidator(validator);
 		
 		/* Test */
 		event.setValue('event','admin.list');
-		getInterceptor('coldbox.system.interceptors.security').preProcess(event,structnew());
+		getInterceptor('coldbox.system.Interceptors.security').preProcess(event,structnew());
 				
 		</cfscript>
 	</cffunction>
@@ -207,7 +207,7 @@ Description :
 		
 		/* Test */
 		event.setValue('event','admin.list');
-		getInterceptor('coldbox.system.interceptors.security').preProcess(event,structnew());
+		getInterceptor('coldbox.system.Interceptors.security').preProcess(event,structnew());
 		</cfscript>
 	</cffunction>
 	

@@ -136,33 +136,33 @@
 	<Interceptors throwOnInvalidStates="true">
 		<CustomInterceptionPoints>onLog</CustomInterceptionPoints>
 		
-		<Interceptor class="coldbox.system.interceptors.environmentControl">
+		<Interceptor class="coldbox.system.Interceptors.environmentControl">
 			<Property name="configFile">config/environments.xml.cfm</Property>
 			<Property name="fireOnInit">true</Property>
 		</Interceptor>
-		<Interceptor class="coldbox.system.interceptors.deploy">
+		<Interceptor class="coldbox.system.Interceptors.deploy">
 			<Property name="tagFile">config/_deploy.tag</Property>
 			<Property name="deployCommandObject">coldbox.testharness.model.DeployCleanup</Property>
 		</Interceptor>
-		<Interceptor class="coldbox.system.interceptors.autowire">
+		<Interceptor class="coldbox.system.Interceptors.autowire">
 			<Property name="debugMode">false</Property>
 			<Property name="enableSetterInjection">false</Property>
 		</Interceptor>
-		<Interceptor class="coldbox.system.interceptors.ses">
+		<Interceptor class="coldbox.system.Interceptors.ses">
 			<Property name="configFile">/config/routes.cfm</Property>
 		</Interceptor>
 		
 		<Interceptor class="${AppMapping}.interceptors.errorObserver" />
 		<Interceptor class="${AppMapping}.interceptors.iocObserver" />
 		
-		<Interceptor class="coldbox.system.interceptors.security">
+		<Interceptor class="coldbox.system.Interceptors.security">
 	        <Property name="rulesSource">xml</Property>
 	        <Property name="rulesFile">config/security.xml.cfm</Property>
 	        <Property name="debugMode">true</Property>
 	        <Property name="preEventSecurity">true</Property>
 		</Interceptor>	
 		<!-- Developer's ColdBox Sidebar -->
-		<Interceptor class="coldbox.system.interceptors.coldboxSideBar" />
+		<Interceptor class="coldbox.system.Interceptors.coldboxSideBar" />
 	</Interceptors>
 
 </Config>

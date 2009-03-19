@@ -11,7 +11,7 @@ Description :
 Modification History:
 01/28/2007 - Added the alias property and solved the java contract with correct arg.
 ----------------------------------------------------------------------->
-<cfcomponent name="datasourceBean"
+<cfcomponent name="DatasourceBean"
 			 hint="I model a datasource connection setting."
 			 output="false">
 
@@ -29,7 +29,7 @@ Modification History:
 
 	<!--- ************************************************************* --->
 
-	<cffunction name="init" access="public" output="false" hint="I build a new datasource bean." returntype="coldbox.system.beans.datasourceBean">
+	<cffunction name="init" access="public" output="false" hint="I build a new datasource bean." returntype="DatasourceBean">
 	    <!--- ************************************************************* --->
 	    <cfargument name="datasourceStruct" 	type="struct" required="false" default="#structnew()#" hint="The structure holding the name,dbtype,username,and password variables." >
 	    <!--- ************************************************************* --->

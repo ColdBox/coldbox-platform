@@ -20,7 +20,7 @@ Luis Majano		07/11/2006		Updated it to work with ColdBox. look at license in the
 ------------------------------------------------------------------------------->
 <cfcomponent name="JavaLoader"
 			 hint="Loads External Java Classes, while providing access to ColdFusion classes"
-			 extends="coldbox.system.plugin"
+			 extends="coldbox.system.Plugin"
 			 output="false"
 			 cache="true" 
 			 cachetimeout="0">
@@ -29,7 +29,7 @@ Luis Majano		07/11/2006		Updated it to work with ColdBox. look at license in the
 
 	<cffunction name="init" access="public" returntype="JavaLoader" output="false" hint="Constructor">
 		<!--- ************************************************************* --->
-		<cfargument name="controller" type="any" required="true" hint="coldbox.system.controller">
+		<cfargument name="controller" type="any" required="true" hint="coldbox.system.Controller">
 		<!--- ************************************************************* --->
 		<cfscript>
 			super.Init(arguments.controller);

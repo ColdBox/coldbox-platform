@@ -14,7 +14,7 @@ Description :
 	<cffunction name="setUp" returntype="void" access="public" output="false">
 		<cfscript>
 		super.setup();
-		mockController = mockfactory.createMock('coldbox.system.controller');
+		mockController = mockfactory.createMock('coldbox.system.Controller');
 		mockService = mockFactory.createMock('coldbox.system.services.interceptorService');
 		
 		mockController.mockMethod('getInterceptorService').returns(mockService);

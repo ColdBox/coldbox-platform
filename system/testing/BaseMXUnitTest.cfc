@@ -42,7 +42,7 @@ Description :
 		}
 		else{
 			//Initialize ColdBox
-			instance.controller = CreateObject("component", "coldbox.system.testcontroller").init( expandPath(instance.AppMapping) );
+			instance.controller = CreateObject("component", "coldbox.system.testing.TestController").init( expandPath(instance.AppMapping) );
 			/* Verify Persistence */
 			if( this.PERSIST_FRAMEWORK ){
 				application.cbController = instance.controller;

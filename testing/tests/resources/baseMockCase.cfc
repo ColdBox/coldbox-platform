@@ -35,6 +35,11 @@ Description :
 		<cfif arguments.isAbort><cfabort></cfif>
 	</cffunction>
 	
+	<!--- abortit --->
+	<cffunction name="abortit" output="false" access="private" returntype="void" hint="">
+		<cfabort>
+	</cffunction>
+	
 	<!--- Rethrow Facade --->
 	<cffunction name="rethrow" access="private" returntype="void" hint="Rethrow facade" output="false" >
 		<cfargument name="throwObject" required="true" type="any" hint="The cfcatch object">

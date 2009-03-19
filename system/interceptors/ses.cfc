@@ -14,7 +14,7 @@ Description :
 <cfcomponent name="ses"
 			 hint="This is a ses support internceptor"
 			 output="false"
-			 extends="coldbox.system.interceptor">
+			 extends="coldbox.system.Interceptor">
 				 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 

@@ -17,14 +17,14 @@ Modifications:
 ----------------------------------------------------------------------->
 <cfcomponent name="json"
 			 hint="JSON Plugin is used to serialize and deserialize JSON data to/from native ColdFusion objects."
-			 extends="coldbox.system.plugin"
+			 extends="coldbox.system.Plugin"
 			 output="false"
 			 cache="true">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
 	<cffunction name="init" access="public" returntype="json" output="false">
-		<cfargument name="controller" type="any" required="true" hint="coldbox.system.controller">
+		<cfargument name="controller" type="any" required="true" hint="coldbox.system.Controller">
 		<cfscript>
 			super.Init(arguments.controller);
 			

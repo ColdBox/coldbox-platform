@@ -4,7 +4,7 @@
 	
 	<cffunction name="setUp" returntype="void" access="public">
 		<cfscript>
-			this.e = createObject("component","coldbox.system.beans.exceptionBean");
+			this.e = createObject("component","coldbox.system.beans.ExceptionBean");
 			
 			this.instance.exceptionstruct = structnew();
 			this.instance.exceptionstruct.type = "error";

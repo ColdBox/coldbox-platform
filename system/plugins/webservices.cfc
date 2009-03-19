@@ -19,7 +19,7 @@ Modification History:
 ----------------------------------------------------------------------->
 <cfcomponent name="webservices"
 			 hint="The webservices framework plugin."
-			 extends="coldbox.system.plugin"
+			 extends="coldbox.system.Plugin"
 			 output="false"
 			 cache="true">
 

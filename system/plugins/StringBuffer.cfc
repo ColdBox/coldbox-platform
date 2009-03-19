@@ -48,7 +48,7 @@ Modification History:
 --->
 <cfcomponent name="StringBuffer"
 			 hint="This CFC greatly increases the speed of string concatenation. CF strings are immutable. When you append a string to another string, a whole new string is created. This is fine for a small number of iterations but painfully slow and memory intensive for a large number of concatenation operations. This plugin switches between StringBuilder and StringBuffer if running under cf8"
-			 extends="coldbox.system.plugin"
+			 extends="coldbox.system.Plugin"
 			 output="false"
 			 cache="false">
 
@@ -73,7 +73,7 @@ Modification History:
 	</cffunction>
 
 	<!--- Setup Constructor --->
-	<cffunction name="setup" access="public" returntype="coldbox.system.plugin" output="false" hint="initializes the StringBuffer CF/java object">
+	<cffunction name="setup" access="public" returntype="coldbox.system.Plugin" output="false" hint="initializes the StringBuffer CF/java object">
 		<!--- ************************************************************* --->
 		<cfargument name="strIn" 			type="string" 	required="No" default=""   hint="A string to initialize the buffer with. The bufferLength will be the number of characters + 16. This argument is mutually exclusive to BufferLength" />
 		<cfargument name="BufferLength" 	type="numeric" 	required="no" default="16" hint="The length to start the buffer at. The default is 16 characters. This argument is mutually exclusive to strIn ">

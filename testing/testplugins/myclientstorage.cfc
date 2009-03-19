@@ -8,11 +8,11 @@ Description :
 Modification History:
 	
 ----------------------------------------------------------------------->
-<cfcomponent name="myclientstorage" extends="coldbox.system.plugin">
+<cfcomponent name="myclientstorage" extends="coldbox.system.Plugin">
 
 	<!--- ************************************************************* --->
 	<cffunction name="init" access="public" returntype="any" output="false">
-		<cfargument name="controller" type="coldbox.system.controller">
+		<cfargument name="controller" type="coldbox.system.Controller">
 		<cfset super.Init(arguments.controller) />
 		<cfreturn this>
 	</cffunction>

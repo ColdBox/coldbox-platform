@@ -11,7 +11,7 @@ Description :
 ----------------------------------------------------------------------->
 <cfcomponent name="methodInjector"
 			 hint="Method Injector plugin. It provides a nice way to mixin and remove methods from cfc's"
-			 extends="coldbox.system.plugin"
+			 extends="coldbox.system.Plugin"
 			 output="false"
 			 cache="true">
 
@@ -85,11 +85,11 @@ Description :
 	</cffunction>
 	
 	<!--- ColdBox Controller Accessor/Mutators used to mixing --->
-	<cffunction name="getcontroller" access="public" output="false" returntype="any" hint="Get controller: coldbox.system.controller">
+	<cffunction name="getcontroller" access="public" output="false" returntype="any" hint="Get controller: coldbox.system.Controller">
 		<cfreturn variables.controller/>
 	</cffunction>
 	<cffunction name="setcontroller" access="public" output="false" returntype="void" hint="Set controller">
-		<cfargument name="controller" type="any" required="true" hint="coldbox.system.controller"/>
+		<cfargument name="controller" type="any" required="true" hint="coldbox.system.Controller"/>
 		<cfset variables.controller = arguments.controller/>
 	</cffunction>
 

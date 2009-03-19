@@ -34,7 +34,7 @@ coldbox:cacheManager	 get the cache manager
 ----------------------------------------------------------------------->
 <cfcomponent name="$${Handler Name}" 
 			 hint="$${Hint}" 
-			 extends="coldbox.system.eventhandler" 
+			 extends="coldbox.system.EventHandler" 
 			 output="false"
 			 autowire="$${Autowire:false|true}">
 

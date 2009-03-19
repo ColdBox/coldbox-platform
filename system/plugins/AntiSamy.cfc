@@ -12,7 +12,7 @@ Description:
 ----------------------------------------------------------------------->
 <cfcomponent name="AntiSamy"
 			 hint="OWASP AntiSamy Project."
-			 extends="coldbox.system.plugin"
+			 extends="coldbox.system.Plugin"
 			 output="false"
 			 cache="true">
 

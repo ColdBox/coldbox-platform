@@ -9,7 +9,7 @@ Date        :	10/16/2007
 Description :
 	This is the Application.cfc for usage withing the ColdBox Framework.
 	Make sure that it extends the coldbox object:
-	coldbox.system.coldbox
+	coldbox.system.Coldbox
 	
 	So if you have refactored your framework, make sure it extends coldbox.
 ----------------------------------------------------------------------->
@@ -31,7 +31,7 @@ Description :
 	<cffunction name="onApplicationStart" returnType="boolean" output="false">
 		<cfscript>
 			//Load ColdBox
-			application.cbBootstrap = CreateObject("component","coldbox.system.coldbox").init(COLDBOX_CONFIG_FILE,COLDBOX_APP_ROOT_PATH);
+			application.cbBootstrap = CreateObject("component","coldbox.system.Coldbox").init(COLDBOX_CONFIG_FILE,COLDBOX_APP_ROOT_PATH);
 			application.cbBootstrap.loadColdbox();
 			return true;
 		</cfscript>
@@ -46,7 +46,7 @@ Description :
 		<cfif not structKeyExists(application,"cbBootstrap") or application.cbBootStrap.isfwReinit()>
 			<cflock name="coldbox.bootstrap_#hash(getCurrentTemplatePath())#" type="exclusive" timeout="5" throwontimeout="true">
 				<cfset structDelete(application,"cbBootStrap")>
-				<cfset application.cbBootstrap = CreateObject("component","coldbox.system.coldbox").init(COLDBOX_CONFIG_FILE,COLDBOX_APP_ROOT_PATH)>
+				<cfset application.cbBootstrap = CreateObject("component","coldbox.system.Coldbox").init(COLDBOX_CONFIG_FILE,COLDBOX_APP_ROOT_PATH)>
 			</cflock>
 		</cfif>
 		<!--- Reload Checks --->

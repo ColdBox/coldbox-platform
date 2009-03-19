@@ -143,7 +143,7 @@ Description :
 			]]></help>
 		</function>
 		
-		<function creator="8" name="getController" returns="coldbox.system.controller">
+		<function creator="8" name="getController" returns="coldbox.system.Controller">
 			<help><![CDATA[
 				Get a reference to the ColdBox Controller
 			]]></help>
@@ -233,7 +233,7 @@ Description :
 			</parameter>
 		</function>
 		
-		<function creator="8" name="getMailSettings" returns="coldbox.system.beans.mailsettingsBean">
+		<function creator="8" name="getMailSettings" returns="coldbox.system.beans.MailSettingsBean">
 			<help><![CDATA[
 				   I will return to you a mailsettingsBean modeled after your mail settings in your config.xml
 			]]></help>
@@ -426,7 +426,7 @@ Description :
 			</parameter>
 		</function>
 		
-		<function creator="8" name="getSettingsBean" returns="coldbox.system.beans.configBean">
+		<function creator="8" name="getSettingsBean" returns="coldbox.system.beans.ConfigBean">
 			<help><![CDATA[
 				Returns a configBean configured with the application's configuration structure.
 			]]></help>

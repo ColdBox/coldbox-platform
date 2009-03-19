@@ -204,11 +204,11 @@ Modification History:
 	</cffunction>
 	
 	<!--- Configuration Bean --->
-	<cffunction name="getdebuggerConfigBean" access="public" output="false" returntype="coldbox.system.beans.debuggerConfigBean" hint="Get debuggerConfigBean">
+	<cffunction name="getdebuggerConfigBean" access="public" output="false" returntype="coldbox.system.beans.DebuggerConfigBean" hint="Get debuggerConfigBean">
 		<cfreturn instance.debuggerConfigBean/>
 	</cffunction>	
 	<cffunction name="setdebuggerConfigBean" access="public" output="false" returntype="void" hint="Set debuggerConfigBean">
-		<cfargument name="debuggerConfigBean" type="coldbox.system.beans.debuggerConfigBean" required="true"/>
+		<cfargument name="debuggerConfigBean" type="coldbox.system.beans.DebuggerConfigBean" required="true"/>
 		<cfset instance.debuggerConfigBean = arguments.debuggerConfigBean/>
 	</cffunction>
 	

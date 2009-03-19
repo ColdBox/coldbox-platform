@@ -42,7 +42,7 @@ Usage:
 	Usage of the Observer is fairly straightforward. The ColdSpring XML file might look like this:
 		
 		<!-- coldbox -->
-		<bean id="ColdboxFactory" class="coldbox.system.extras.ColdboxFactory" />
+		<bean id="ColdboxFactory" class="coldbox.system.ioc.ColdboxFactory" />
 		<bean id="Coldbox" factory-bean="ColdBoxFactory" factory-method="getColdbox" singleton="true" />
 	   	<bean id="ColdBoxBeanFactory" factory-bean="ColdBoxFactory" factory-method="getPlugin" singleton="true">
 	   		<constructor-arg name="plugin">

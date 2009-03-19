@@ -1,4 +1,4 @@
-<cfcomponent name="myRequestContextDecorator" output="false" extends="coldbox.system.beans.requestContextDecorator">
+<cfcomponent name="myRequestContextDecorator" output="false" extends="coldbox.system.beans.RequestContextDecorator">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 	

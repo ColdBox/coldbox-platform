@@ -16,7 +16,7 @@ Description :
 <cfcomponent name="autowire"
 			 hint="This is an autowire interceptor"
 			 output="false"
-			 extends="coldbox.system.interceptor">
+			 extends="coldbox.system.Interceptor">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
@@ -45,7 +45,7 @@ Description :
 	<!--- After Aspects Load --->
 	<cffunction name="afterAspectsLoad" access="public" returntype="void" output="false" >
 		<!--- ************************************************************* --->
-		<cfargument name="event" 		 required="true" type="coldbox.system.beans.requestContext" hint="The event object.">
+		<cfargument name="event" 		 required="true" type="coldbox.system.beans.RequestContext" hint="The event object.">
 		<cfargument name="interceptData" required="true" type="struct" hint="interceptData of intercepted info.">
 		<!--- ************************************************************* --->
 		<cfscript>
@@ -63,7 +63,7 @@ Description :
 				arguments.interceptData.interceptorPath = INTERCEPTOR_CACHEKEY_PREFIX & interceptorConfig.interceptors[x].class;
 				
 				/* Exclude yourself */
-				if( not findnocase("coldbox.system.interceptors.autowire",interceptorConfig.interceptors[x].class) ){
+				if( not findnocase("coldbox.system.Interceptors.autowire",interceptorConfig.interceptors[x].class) ){
 					
 					/* No locking necessary here, since the after aspects load is executed in thread safe conditions */
 					
@@ -80,7 +80,7 @@ Description :
 	<!--- After Handler Creation --->
 	<cffunction name="afterHandlerCreation" access="public" returntype="void" output="false" >
 		<!--- ************************************************************* --->
-		<cfargument name="event" 		 required="true" type="coldbox.system.beans.requestContext" hint="The event object.">
+		<cfargument name="event" 		 required="true" type="coldbox.system.beans.RequestContext" hint="The event object.">
 		<cfargument name="interceptData" required="true" type="struct" hint="A structure containing intercepted data = [handlerPath (The path of the handler), oHandler (The actual handler object)]">
 		<!--- ************************************************************* --->
 		<cfset arguments.targetType = "handler">
@@ -93,7 +93,7 @@ Description :
 	<!--- After Plugin Creation --->
 	<cffunction name="afterPluginCreation" access="public" returntype="void" output="false" >
 		<!--- ************************************************************* --->
-		<cfargument name="event" 		 required="true" type="coldbox.system.beans.requestContext" hint="The event object.">
+		<cfargument name="event" 		 required="true" type="coldbox.system.beans.RequestContext" hint="The event object.">
 		<cfargument name="interceptData" required="true" type="struct" hint="A structure containing intercepted data = [pluginPath (The path of the plugin), custom (Flag if the plugin is custom or not), oPlugin (The actual plugin object)]">
 		<!--- ************************************************************* --->
 		<cfset arguments.targetType = "plugin">
@@ -106,7 +106,7 @@ Description :
 	<!--- After Plugin Creation --->
 	<cffunction name="processAutowire" access="public" returntype="void" output="false" hint="Process autowiring using a targetype and data.">
 		<!--- ************************************************************* --->
-		<cfargument name="event" 		 required="true" type="coldbox.system.beans.requestContext" hint="The event object.">
+		<cfargument name="event" 		 required="true" type="coldbox.system.beans.RequestContext" hint="The event object.">
 		<cfargument name="interceptData" required="true" type="struct" hint="A structure containing intercepted data = [pluginPath (The path of the plugin), custom (Flag if the plugin is custom or not), oPlugin (The actual plugin object)]">
 		<cfargument name="targetType" 	 required="true" type="string" hint="Either plugin or handler or interceptor">
 		<!--- ************************************************************* --->
@@ -130,7 +130,7 @@ Description :
 			}
 			
 			/* Exclude the core plugins from autowires */
-			if( not findnocase("coldbox.system.plugins",targetPath) ){
+			if( not findnocase("coldbox.system.Plugins",targetPath) ){
 				/* Process Autowire */
 				instance.beanFactory.autowire(target=targetObject,
 											  useSetterInjection=getProperty('enableSetterInjection'),

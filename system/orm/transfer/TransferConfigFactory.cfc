@@ -31,7 +31,7 @@ Description :
 		<cfargument name="datasourcePath"     type="string"   required="false"  default="" hint="The transfer datasource file path, in our case, not needed."/>
 		<cfargument name="configPath"         type="string"   required="false"  default="" hint="The transfer configuration file path"/>
 		<cfargument name="definitionPath"     type="string"   required="false"  default="" hint="The transfer definition path"/>
-		<cfargument name="dsnBean"            type="coldbox.system.beans.datasourceBean" required="true" hint="The coldbox datasource bean" />
+		<cfargument name="dsnBean"            type="coldbox.system.beans.DatasourceBean" required="true" hint="The coldbox datasource bean" />
 		<cfargument name="configClassPath" 	  type="string"   required="false"	default="transfer.com.config.Configuration" hint="The default transfer configuration object. Alter at will."/>
 		<!--- ************************************************************* --->
 		<cfscript>

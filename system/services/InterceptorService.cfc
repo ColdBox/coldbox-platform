@@ -275,9 +275,9 @@ Description :
 			
 			/* Start Registering inheritances */
 			if ( structKeyExists(arguments.metadata, "extends") and 
-				 (arguments.metadata.extends.name neq "coldbox.system.interceptor" and
-				  arguments.metadata.extends.name neq "coldbox.system.plugin" and
-				  arguments.metadata.extends.name neq "coldbox.system.eventhandler" )
+				 (arguments.metadata.extends.name neq "coldbox.system.Interceptor" and
+				  arguments.metadata.extends.name neq "coldbox.system.Plugin" and
+				  arguments.metadata.extends.name neq "coldbox.system.EventHandler" )
 			){
 				/* Recursive lookup */
 				parseMetadata(arguments.metadata.extends,pointsFound);
@@ -299,7 +299,7 @@ Description :
 			
 			/* Verify if state doesn't exist, create it */
 			if ( not structKeyExists(getInterceptionStates(), arguments.state) ){
-				oInterceptorState = CreateObject("component","coldbox.system.beans.interceptorState").init(arguments.state);
+				oInterceptorState = CreateObject("component","coldbox.system.beans.InterceptorState").init(arguments.state);
 				structInsert(getInterceptionStates(), arguments.state, oInterceptorState );
 			}
 			else{
