@@ -36,15 +36,20 @@ Description :
 
 	<cffunction name="setup" returntype="void" access="public">
 		<cfscript>
-		//Initialize ColdBox
-		instance.controller = CreateObject("component", "coldbox.system.testcontroller").init( expandPath(instance.AppMapping) );
-		/* Verify Persistence */
-		if( this.PERSIST_FRAMEWORK and not structKeyExists(application,"cbController") ){
-			application.cbController = instance.controller;
+		/* Check on Scope Firsty */
+		if( structKeyExists(application,"cbController") ){
+			instance.controller = application.cbController;
 		}
-		
-		/* Setup */
-		instance.controller.getLoaderService().setupCalls(instance.ConfigMapping,instance.AppMapping);
+		else{
+			//Initialize ColdBox
+			instance.controller = CreateObject("component", "coldbox.system.testcontroller").init( expandPath(instance.AppMapping) );
+			/* Verify Persistence */
+			if( this.PERSIST_FRAMEWORK ){
+				application.cbController = instance.controller;
+			}
+			/* Setup */
+			instance.controller.getLoaderService().setupCalls(instance.ConfigMapping,instance.AppMapping);
+		}
 		
 		//Create Initial Event Context
 		setupRequest();
@@ -56,13 +61,16 @@ Description :
 	
 	<cffunction name="tearDown" access="public" returntype="void" hint="The teardown" output="false" >
 		<cfscript>
-			if( this.PERSIST_FRAMEWORK ){
-				structDelete(application,"cbController");
-			}
+			
 		</cfscript>
 	</cffunction>
 
 <!------------------------------------------- HELPERS ------------------------------------------->
+
+	<!--- Reset the persistence --->
+	<cffunction name="reset" access="private" returntype="void" hint="Reset the persistence of the unit test coldbox app" output="false" >
+		<cfset structDelete(application,"cbController")>
+	</cffunction>
 
 	<!--- getter for AppMapping --->
 	<cffunction name="getAppMapping" access="private" returntype="string" output="false" hint="Get the AppMapping">
