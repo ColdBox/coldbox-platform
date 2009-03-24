@@ -72,12 +72,12 @@ Description :
 	
 	<cffunction name="afterConfigurationLoad" output="false" access="public" returntype="void" hint="Load Transfer after configuration has loaded">
 		<!--- *********************************************************************** --->
-		<cfargument name="event" 	required="true" type="coldbox.system.beans.RequestContext" hint="The event object.">
-		<cfargument name="interceptData" required="true" type="struct" hint="A structure containing intercepted information. NONE BY DEFAULT HERE">
+		<cfargument name="event" 			required="true" type="any" hint="The event object: coldbox.system.beans.RequestContext">
+		<cfargument name="interceptData" 	required="true" type="struct" hint="A structure containing intercepted information. NONE BY DEFAULT HERE">
 		<!--- *********************************************************************** --->
 		<cfscript>
 			/* Create Transfer Factory */
-			var configFactory = createObject("component","coldbox.system.extras.transfer.TransferConfigFactory").init();
+			var configFactory = createObject("component","coldbox.system.orm.transfer.TransferConfigFactory").init();
 			/* Create Configuration Object */
 			var configuration = configFactory.getTransferConfig(configPath=getProperty('configPath'),
 																definitionPath=getProperty('definitionPath'),
@@ -96,7 +96,7 @@ Description :
 				TDOArgs.transfer = Transfer;
 				TDOArgs.ColdBoxBeanFactory = getPlugin("beanFactory");
 				/* Create TDO */
-				TDO = CreateObject("component","coldbox.system.extras.transfer.TDOBeanInjectorObserver").init(argumentCollection=TDOArgs);
+				TDO = CreateObject("component","coldbox.system.orm.transfer.TDOBeanInjectorObserver").init(argumentCollection=TDOArgs);
 			}
 			
 			/* Transfer is loaded, now cache it */

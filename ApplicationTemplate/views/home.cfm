@@ -1,5 +1,5 @@
 <cfoutput>
-<h2><img src="includes/images/coldbox.png" align="absmiddle" style="padding-right:10px"> #Event.getValue("welcomeMessage")#</h2>
+<h2><img src="includes/images/coldbox.png" class="middle" style="padding-right:10px" alt="ColdBox" /> #rc.welcomeMessage#</h2>
 
 <div id="infobox">
 <p>
@@ -9,24 +9,30 @@
 </p>
 </div>
 
-<table cellpadding="10" width="98%" align="center">
+<table cellpadding="5" width="98%" align="center">
     <tr>
         <td valign="top">
-            <h3>Getting Started</h3>
+            <h3>Registered Event Handlers</h3>
+			<p>You can click on the following event handlers to execute their default action.</p>
+			<ul>
+				<cfloop list="#getSetting("RegisteredHandlers")#" index="handler">
+				<li><a href="#event.buildLink(handler)#">#handler#</a></li>
+				</cfloop>
+			</ul>
+            
+			<h3>Getting Started</h3>
             <p>
                 You have just auto-generated your application and are ready to customize your application.  Several directories and
 				files have been created for you.  Please familiarize yourself with your application layout before customizing your
 				application.
                   </p>
           <h4>Good Starting Links</h4>
-            <p>
                 <ol>
                     <li>
                         <a href="http://ortus.svnrepository.com/coldbox/trac.cgi/wiki/cbDirectoryStructure">Directory Structure & Conventions</a>
                     </li>
                     <li>
                         <a href="http://ortus.svnrepository.com/coldbox/trac.cgi/wiki/cbConfigGuide">Coldbox.xml Guide</a>
-</pre>
                     </li>
                     <li>
                         <a href="http://ortus.svnrepository.com/coldbox/trac.cgi/wiki/cbEventHandlersGuide">Event Handler's Guide</a>
@@ -42,10 +48,8 @@
 					</li>
             </ol>
 			<sub>* <a href="http://ortus.svnrepository.com/coldbox/trac.cgi">Wiki Docs</a></sub>
-            </p>
-			<h4>ColdBox URL Actions</h4>
+            <h4>ColdBox URL Actions</h4>
 			<p>ColdBox can use some very important URL actions to interact with your application. You can try them out below:</p>
-			<p>
 				<ol>
                     <li>
 						<a href="index.cfm?fwreinit=true">Reinitialize the framework</a> (fwreinit=1)
@@ -58,11 +62,11 @@
 					</li>
 				</ol>
 				<sub>* <a href="http://ortus.svnrepository.com/coldbox/trac.cgi/wiki/cbURLActions">URL Actions Guide</a></sub>
-			</p>
-            <h4>Customizing your Application</h4>
+			<h4>Customizing your Application</h4>
             <p>
                 You can now start editing your application and building great ColdBox enabled apps. Important files & locations:
-                <ol>
+            </p>   
+			 <ol>
                     <li>
                         <b>/config/coldbox.xml.cfm</b>: Your application configuration file
                     </li>
@@ -100,67 +104,63 @@
                         <b>/views</b>: Where you create all your views and viewlets
                     </li>
                 </ol>
-            </p>
         </td>
-		
-		
-		
-        <td valign="top" id="sidebar">
+		<td valign="top" id="sidebar">
         <h3>Docs Search</h3>
-		<p>Search all of the docs</p>
-        <li>
-			<form id="search" method="get" action="http://ortus.svnrepository.com/coldbox/trac.cgi/search">
-				<div>
-				<input id="proj-search" type="text" value="" accesskey="f" size="15" name="q"/>
-				<input type="submit" value="Search"/>
-				<input type="hidden" value="on" name="wiki"/>
-				<input type="hidden" value="off" name="changeset"/>
-				<input type="hidden" value="on" name="ticket"/>
-				</div>
-			</form>
-        </li>
-        <li>
-            <h3>ColdBox Community Links</h3>
-            <ul class="links">
-                <li>
-                    <a href="http://www.coldboxframework.com">ColdBox Site</a>
-                </li>
-                <li>
-                    <a href="http://blog.coldboxframework.com">Blog</a>
-                </li>
-                <li>
-                    <a href="http://forums.coldboxframework.com/">Forums</a>
-                </li>
-                <li>
-                    <a href="http://ortus.svnrepository.com/coldbox/">Bug Tracker/Wiki</a>
-                </li>
-				<li>
-                    <a href="http://groups.google.com/group/coldbox">Mailing List</a>
-                </li>
-				<li>
-					<a href="http://www.coldboxframework.com/index.cfm/download/main">Downloads</a>
-				</li>
-				<li>
-					<a href="http://www.coldboxframework.com/api/">ColdBox API</a>
-				</li>
-				<li>
-					<a href="http://ortus.svnrepository.com/coldbox/trac.cgi/wiki/cbCodeDepot">Code Depot</a>
-				</li>
-				<li>
-					<a href="http://www.coldboxframework.com/index.cfm/download/videos">ColdBox Videos</a>
-				</li>
-				<li>
-					<a href="http://www.coldboxframework.com/index.cfm/support/overview">Community Support</a>
-				</li>
-				<li>
-					<a href="http://www.coldboxframework.com/index.cfm/support/training">Training & Courses</a>
-				</li>
-            </ul>
-        </li>
+	    <ul class="links">
+			<li>
+				<form id="search" method="get" action="http://ortus.svnrepository.com/coldbox/trac.cgi/search">
+					<div>
+					<input id="proj-search" type="text" value="" accesskey="f" size="15" name="q"/>
+					<input type="submit" value="Search"/>
+					<input type="hidden" value="on" name="wiki"/>
+					<input type="hidden" value="off" name="changeset"/>
+					<input type="hidden" value="on" name="ticket"/>
+					</div>
+				</form>
+	        </li>
+	        <li>
+	            <h3>Community Links</h3>
+	            <ul class="links">
+	                <li>
+	                    <a href="http://www.coldboxframework.com">ColdBox Site</a>
+	                </li>
+	                <li>
+	                    <a href="http://blog.coldboxframework.com">Blog</a>
+	                </li>
+	                <li>
+	                    <a href="http://forums.coldboxframework.com/">Forums</a>
+	                </li>
+	                <li>
+	                    <a href="http://ortus.svnrepository.com/coldbox/">Bug Tracker/Wiki</a>
+	                </li>
+					<li>
+	                    <a href="http://groups.google.com/group/coldbox">Mailing List</a>
+	                </li>
+					<li>
+						<a href="http://www.coldboxframework.com/index.cfm/download/main">Downloads</a>
+					</li>
+					<li>
+						<a href="http://www.coldboxframework.com/api/">ColdBox API</a>
+					</li>
+					<li>
+						<a href="http://ortus.svnrepository.com/coldbox/trac.cgi/wiki/cbCodeDepot">Code Depot</a>
+					</li>
+					<li>
+						<a href="http://www.coldboxframework.com/index.cfm/download/videos">ColdBox Videos</a>
+					</li>
+					<li>
+						<a href="http://www.coldboxframework.com/index.cfm/support/overview">Community Support</a>
+					</li>
+					<li>
+						<a href="http://www.coldboxframework.com/index.cfm/support/training">Training & Courses</a>
+					</li>
+	            </ul>
+	        </li>
+			</ul>
 		
-		<p>&nbsp;</p>
 		<div style="margin:auto;text-align:center">
-		<img src="http://www.coldboxframework.com/includes/images/logos/poweredby.gif">
+			<img src="http://www.coldboxframework.com/includes/images/logos/poweredby.gif" alt="ColdBox" />
 		</div>
     </td>
     </tr>

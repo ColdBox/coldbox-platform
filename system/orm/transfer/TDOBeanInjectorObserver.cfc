@@ -202,10 +202,10 @@ Usage:
 		<cfset instance.onDICompleteUDF = arguments.onDICompleteUDF>
 	</cffunction>
 	<!--- Stop Recursion String --->
-	<cffunction name="getstopRecursion" access="public" output="false" returntype="string" hint="Get stopRecursion">
+	<cffunction name="getstopRecursion" access="private" output="false" returntype="string" hint="Get stopRecursion">
 		<cfreturn instance.stopRecursion/>
 	</cffunction>	
-	<cffunction name="setstopRecursion" access="public" output="false" returntype="void" hint="Set stopRecursion">
+	<cffunction name="setstopRecursion" access="private" output="false" returntype="void" hint="Set stopRecursion">
 		<cfargument name="stopRecursion" type="string" required="true"/>
 		<cfset instance.stopRecursion = arguments.stopRecursion/>
 	</cffunction>
