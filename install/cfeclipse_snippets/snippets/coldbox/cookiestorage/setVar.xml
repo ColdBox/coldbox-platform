@@ -2,6 +2,6 @@
 <snippet filetemplate="false" extension="cfm">
 <name>setVar</name>
 <help>Set Variable for ApplicationStorage</help>
-<starttext><![CDATA[getPlugin("cookiestorage").setVar("$${Variable Name}", $${Value}, $${Expires(days)})]]></starttext>
+<starttext><![CDATA[getPlugin("CookieStorage").setVar("$${Variable Name}", $${Value}, $${Expires(days)})]]></starttext>
 <endtext><![CDATA[]]></endtext>
 </snippet>

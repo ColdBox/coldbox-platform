@@ -156,7 +156,7 @@ Modification History:
 	
 			<!--- Clear Log? --->
 			<cfif isBoolean( event.getValue('sbIsClearLog','') ) AND event.getValue('sbIsClearLog',false)>
-				<cfset getPlugin("logger").removeLogFile()>
+				<cfset getPlugin("Logger").removeLogFile()>
 			</cfif>
 		
 		</cfif>		
@@ -283,7 +283,7 @@ Modification History:
 				 <!--- Property has properties? --->
 				 <cfif properties[i].xmlAttributes['name'] EQ "links">
 					<!--- Decode JSON --->
-					<cfset property.value = getPlugin('json').decode( properties[i].xmlText )>
+					<cfset property.value = getPlugin('JSON').decode( properties[i].xmlText )>
 				<cfelse>
 					<cfset property.value = properties[i].xmlText>
 				</cfif>

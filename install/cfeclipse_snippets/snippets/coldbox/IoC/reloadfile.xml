@@ -2,6 +2,6 @@
 <snippet filetemplate="false" extension="cfm">
 <name>reloadfile</name>
 <help></help>
-<starttext><![CDATA[getPlugin("ioc").reloadDefinitionFile()]]></starttext>
+<starttext><![CDATA[getPlugin("IOC").reloadDefinitionFile()]]></starttext>
 <endtext><![CDATA[]]></endtext>
 </snippet>

@@ -5,9 +5,9 @@
     
 	<bean id="ConfigBean" factory-bean="ColdboxFactory" factory-method="getConfigBean" />
 	
-	<bean id="loggerPlugin" factory-bean="ColdboxFactory" factory-method="getPlugin">
+	<bean id="LoggerPlugin" factory-bean="ColdboxFactory" factory-method="getPlugin">
 	    <constructor-arg name="plugin">
-	        <value>logger</value>
+	        <value>Logger</value>
 	    </constructor-arg>
 	</bean>
 	

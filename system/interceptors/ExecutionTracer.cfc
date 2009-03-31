@@ -39,7 +39,7 @@ Description :
 		<cfargument name="event" required="true" type="coldbox.system.beans.RequestContext" hint="The event object.">
 		<cfargument name="interceptData" required="true" type="struct" hint="interceptData of intercepted info.">
 		<!--- ************************************************************* --->
-		<cfset getPlugin("logger").logEntry("information","I am in the after after aspects load.")>
+		<cfset getPlugin("Logger").logEntry("information","I am in the after after aspects load.")>
 	</cffunction>
 	
 	<!--- session start process --->
@@ -66,7 +66,7 @@ Description :
 		<cfargument name="event" required="true" type="coldbox.system.beans.RequestContext" hint="The event object.">
 		<cfargument name="interceptData" required="true" type="struct" hint="interceptData of intercepted info.">
 		<!--- ************************************************************* --->
-		<cfset getPlugin("logger").logEntry("information","I am in the pre process method.")>
+		<cfset getPlugin("Logger").logEntry("information","I am in the pre process method.")>
 	</cffunction>
 	
 	<!--- Pre Event execution --->
@@ -75,7 +75,7 @@ Description :
 		<cfargument name="event" 			required="true" type="coldbox.system.beans.RequestContext" hint="The event object.">
 		<cfargument name="interceptData" required="true" type="struct" hint="interceptData of intercepted info.">
 		<!--- ************************************************************* --->
-		<cfset getPlugin("logger").logEntry("information","I am in the pre event method. interceptData: #arguments.interceptData.toString()#")>
+		<cfset getPlugin("Logger").logEntry("information","I am in the pre event method. interceptData: #arguments.interceptData.toString()#")>
 	</cffunction>
 	
 	<!--- Post Event Execution --->
@@ -84,7 +84,7 @@ Description :
 		<cfargument name="event" required="true" type="coldbox.system.beans.RequestContext" hint="The event object.">
 		<cfargument name="interceptData" required="true" type="struct" hint="interceptData of intercepted info.">
 		<!--- ************************************************************* --->
-		<cfset getPlugin("logger").logEntry("information","I am in the post event method. interceptData: #arguments.interceptData.toString()#")>
+		<cfset getPlugin("Logger").logEntry("information","I am in the post event method. interceptData: #arguments.interceptData.toString()#")>
 	</cffunction>
 	
 	<!--- Pre Render Execution --->
@@ -93,7 +93,7 @@ Description :
 		<cfargument name="event" required="true" type="coldbox.system.beans.RequestContext" hint="The event object.">
 		<cfargument name="interceptData" required="true" type="struct" hint="interceptData of intercepted info.">
 		<!--- ************************************************************* --->
-		<cfset getPlugin("logger").logEntry("information","I am in the pre render point.")>
+		<cfset getPlugin("Logger").logEntry("information","I am in the pre render point.")>
 	</cffunction>
 	
 	<!--- Post Rendering Cycle --->
@@ -102,7 +102,7 @@ Description :
 		<cfargument name="event" required="true" type="coldbox.system.beans.RequestContext" hint="The event object.">
 		<cfargument name="interceptData" required="true" type="struct" hint="interceptData of intercepted info.">
 		<!--- ************************************************************* --->
-		<cfset getPlugin("logger").logEntry("information","I am in the post render point.")>
+		<cfset getPlugin("Logger").logEntry("information","I am in the post render point.")>
 	</cffunction>
 	
 	<!--- Post Process --->
@@ -111,7 +111,7 @@ Description :
 		<cfargument name="event" required="true" type="coldbox.system.beans.RequestContext" hint="The event object.">
 		<cfargument name="interceptData" required="true" type="struct" hint="interceptData of intercepted info.">
 		<!--- ************************************************************* --->
-		<cfset getPlugin("logger").logEntry("information","I am in the post process point.")>
+		<cfset getPlugin("Logger").logEntry("information","I am in the post process point.")>
 	</cffunction>
 	
 	<!--- After an Elemente is inserted in the cache --->
@@ -120,7 +120,7 @@ Description :
 		<cfargument name="event" 			required="true" type="coldbox.system.beans.RequestContext" hint="The event object.">
 		<cfargument name="interceptData" required="true" type="struct" hint="interceptData of intercepted info.">
 		<!--- ************************************************************* --->
-		<cfset getPlugin("logger").logEntry("information","Cache element inserted. interceptData: #arguments.interceptData.toString()#")>
+		<cfset getPlugin("Logger").logEntry("information","Cache element inserted. interceptData: #arguments.interceptData.toString()#")>
 	</cffunction>
 	
 	<!--- After an Element is removed from the cache --->
@@ -129,7 +129,7 @@ Description :
 		<cfargument name="event" 			required="true" type="coldbox.system.beans.RequestContext" hint="The event object.">
 		<cfargument name="interceptData" required="true" type="struct" hint="interceptData of intercepted info.">
 		<!--- ************************************************************* --->
-		<cfset getPlugin("logger").logEntry("information","Cache element removed. interceptData: #arguments.interceptData.toString()#")>
+		<cfset getPlugin("Logger").logEntry("information","Cache element removed. interceptData: #arguments.interceptData.toString()#")>
 	</cffunction>
 
 </cfcomponent>

@@ -2,6 +2,6 @@
 <snippet filetemplate="false" extension="cfm">
 <name>getBean</name>
 <help></help>
-<starttext><![CDATA[getPlugin("ioc").getBean("$${Bean Name}")]]></starttext>
+<starttext><![CDATA[getPlugin("IOC").getBean("$${Bean Name}")]]></starttext>
 <endtext><![CDATA[]]></endtext>
 </snippet>

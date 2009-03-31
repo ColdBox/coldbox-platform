@@ -53,11 +53,11 @@ Modification History:
 				}
 				catch(Any e){
 					ExceptionBean = CreateObject("component","coldbox.system.beans.ExceptionBean").init(errorStruct=e,extramessage="Error Running Custom Exception handler",errorType="application");
-					controller.getPlugin("logger").logErrorWithBean(ExceptionBean);
+					controller.getPlugin("Logger").logErrorWithBean(ExceptionBean);
 				}
 			}
 			else{
-				controller.getPlugin("logger").logErrorWithBean(ExceptionBean);
+				controller.getPlugin("Logger").logErrorWithBean(ExceptionBean);
 			}
 		}		
 		

@@ -1,3 +1,3 @@
 <cfoutput>
-#getPlugin("messagebox").renderit()#
+#getPlugin("MessageBox").renderit()#
 </cfoutput>

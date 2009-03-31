@@ -24,7 +24,7 @@ Description :
 	<cffunction name="testPlugin" access="public" returntype="void" output="false">
 		<!--- Now test some events --->
 		<cfscript>
-			var plugin = getController().getPlugin("messagebox");
+			var plugin = getController().getPlugin("MessageBox");
 			
 			AssertTrue( isObject(plugin) );
 					
@@ -38,9 +38,9 @@ Description :
 			var messages = "";
 			
 			/* setting */
-			getController().setSetting("messagebox_storage_scope","session");
+			getController().setSetting("MessageBox_storage_scope","session");
 			/* get Plugin */
-			plugin = getController().getPlugin("messagebox");
+			plugin = getController().getPlugin("MessageBox");
 			AssertEquals( plugin.getStorageScope(), "session", "Custom Storage");
 			
 			/* Set Message */

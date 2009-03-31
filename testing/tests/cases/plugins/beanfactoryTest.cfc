@@ -112,7 +112,7 @@ Description :
 			local.myStruct.email = "test@coldboxframework.com";
 			local.myStruct.initDate = now();
 			/* JSON Packet */
-			local.myJSON = getController().getPlugin("json").encode(local.myStruct);
+			local.myJSON = getController().getPlugin("JSON").encode(local.myStruct);
 			
 			/* Populate From JSON */
 			local.obj = plugin.populateFromJSON(local.obj,local.myJSON);

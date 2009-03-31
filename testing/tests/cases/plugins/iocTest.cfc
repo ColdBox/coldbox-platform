@@ -24,7 +24,7 @@ Description :
 	<cffunction name="testPlugin" access="public" returntype="void" output="false">
 		<!--- Now test is returned value is object --->
 		<cfscript>
-			var plugin = getController().getPlugin("ioc");
+			var plugin = getController().getPlugin("IOC");
 
 			AssertTrue( isObject(plugin) );
 			AssertTrue( isObject(plugin.getIOCFactory()) );
@@ -36,7 +36,7 @@ Description :
 	<cffunction name="testReloadDefinitionFile" access="public" returntype="void" output="false">
 		<!--- Now test is returned value is object --->
 		<cfscript>
-			var plugin = getController().getPlugin("ioc");
+			var plugin = getController().getPlugin("IOC");
 
 			plugin.ReloadDefinitionFile();
 		</cfscript>
@@ -45,7 +45,7 @@ Description :
 	<cffunction name="testIOCProperties" access="public" returntype="void" output="false">
 		<!--- Now test is returned value is object --->
 		<cfscript>
-			var plugin = getController().getPlugin("ioc");
+			var plugin = getController().getPlugin("IOC");
 
 			plugin.setIOCFramework('lightwire');
 			AssertEquals( plugin.getIOCFramework(), "lightwire");
@@ -64,7 +64,7 @@ Description :
 	<cffunction name="testLightWireFactorySettings" access="public" returntype="void" output="false">
 		<!--- Now test is returned value is object --->
 		<cfscript>
-			var plugin = getController().getPlugin("ioc");
+			var plugin = getController().getPlugin("IOC");
 			var obj = "";
 			
 			obj = createObject("component",plugin.getLIGHTWIRE_FACTORY() );
@@ -84,7 +84,7 @@ Description :
 	<cffunction name="testColdspringFactorySettings" access="public" returntype="void" output="false">
 		<!--- Now test is returned value is object --->
 		<cfscript>
-			var plugin = getController().getPlugin("ioc");
+			var plugin = getController().getPlugin("IOC");
 			var obj = "";
 			
 			obj = createObject("component",plugin.getCOLDSPRING_FACTORY() );
@@ -104,7 +104,7 @@ Description :
 	<cffunction name="testValidateDefinitionFile" access="public" returntype="void" output="false">
 		<!--- Now test is returned value is object --->
 		<cfscript>
-			var plugin = getController().getPlugin("ioc");
+			var plugin = getController().getPlugin("IOC");
 			var newfile = Expandpath('/coldbox/testing/tests/resources/coldspring.xml.cfm');
 			
 			plugin.setIOCDefinitionFile(newFile);
@@ -119,7 +119,7 @@ Description :
 	<cffunction name="testCreateColdspring" access="public" returntype="void" output="false">
 		<!--- Now test is returned value is object --->
 		<cfscript>
-			var plugin = getController().getPlugin("ioc");
+			var plugin = getController().getPlugin("IOC");
 			var cs = getController().getSetting('ColdspringBeanFactory',1);
 			var newfile = Expandpath('/coldbox/testing/tests/resources/coldspring.xml.cfm');
 			
@@ -140,7 +140,7 @@ Description :
 	<cffunction name="testCreateLightWire" access="public" returntype="void" output="false">
 		<!--- Now test is returned value is object --->
 		<cfscript>
-			var plugin = getController().getPlugin("ioc");
+			var plugin = getController().getPlugin("IOC");
 			var lw = getController().getSetting('LightWireBeanFactory',1);
 			var newfile = Expandpath('/coldbox/testing/tests/resources/coldspring.xml.cfm');
 			
@@ -160,7 +160,7 @@ Description :
 	<cffunction name="testGetBean" access="public" returntype="void" output="false">
 		<!--- Now test is returned value is object --->
 		<cfscript>
-			var plugin = getController().getPlugin("ioc");
+			var plugin = getController().getPlugin("IOC");
 			var newfile = '/coldbox/testing/tests/resources/coldspring.xml.cfm';
 			var security = 0;
 			

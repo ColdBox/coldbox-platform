@@ -14,7 +14,7 @@
 		myArray[4] = "Ciao";
 		
 		//Log my call
-		getPlugin("logger").logEntry("information","My intro arrays called from flex.");
+		getPlugin("Logger").logEntry("information","My intro arrays called from flex.");
 		
 		return myArray;
 		</cfscript>
@@ -33,7 +33,7 @@
 		myArray[4] = "Ciao";
 		
 		//Log my call
-		getPlugin("logger").logEntry("information","My intro arrays called from flex.");
+		getPlugin("Logger").logEntry("information","My intro arrays called from flex.");
 
 		//Place in collection to return
 		rc.myArray = myArray;
@@ -51,7 +51,7 @@
 		introStruct.spanish = "Hola";
 		introStruct.italian = "Ciao";
 		
-		getPlugin("logger").logEntry("information","My intro structures called from flex.");
+		getPlugin("Logger").logEntry("information","My intro structures called from flex.");
 		
 		return introStruct;
 		</cfscript>

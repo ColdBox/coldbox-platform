@@ -275,7 +275,7 @@ Description: This is the framework's simple bean factory.
 			var inflatedStruct = "";
 			
 			/* Inflate JSON */
-			inflatedStruct = getPlugin("json").decode(arguments.JSONString);
+			inflatedStruct = getPlugin("JSON").decode(arguments.JSONString);
 			
 			/* populate and return */
 			return populateFromStruct(arguments.formBean,inflatedStruct,arguments.scope,arguments.trustedSetter);
@@ -453,7 +453,7 @@ Description: This is the framework's simple bean factory.
 				if( isSimpleValue(thisDependency) and thisDependency eq instance.NOT_FOUND ){
 					/* Only log if debugmode, else no injection */
 					if( arguments.debugMode ){
-						getPlugin("logger").logEntry("warning","Dependency: #targetDIEntry.dependencies[x].toString()# Not Found");
+						getPlugin("Logger").logEntry("warning","Dependency: #targetDIEntry.dependencies[x].toString()# Not Found");
 					}
 				}
 				else{
@@ -464,7 +464,7 @@ Description: This is the framework's simple bean factory.
 							   scope=targetDIEntry.dependencies[x].scope);
 					/* Debug Mode Check */
 					if( arguments.debugMode ){
-						getPlugin("logger").logEntry("information","Dependency: #targetDIEntry.dependencies[x].toString()# --> injected into #getMetadata(targetObject).name#.");
+						getPlugin("Logger").logEntry("information","Dependency: #targetDIEntry.dependencies[x].toString()# --> injected into #getMetadata(targetObject).name#.");
 					}
 				}
 			}//end for loop of dependencies.
@@ -695,7 +695,7 @@ Description: This is the framework's simple bean factory.
 		<cfargument name="definition" 	required="true" type="any" hint="The dependency definition structure">
 		<!--- ************************************************************* --->
 		<cfscript>
-			var oIOC = getPlugin("ioc");
+			var oIOC = getPlugin("IOC");
 			var thisDependency = arguments.Definition;
 			var thisType = thisDependency.type;
 			var thisTypeLen = listLen(thisType,":");

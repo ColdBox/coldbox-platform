@@ -31,7 +31,7 @@ Modification History:
 
 	<cffunction name="execute" access="public" returntype="void" hint="The cleanup execution" output="false" >
 		<cfscript>
-			instance.controller.getplugin("logger").logEntry('debug',"Cleanup command executed nice!!");
+			instance.controller.getplugin("Logger").logEntry('debug',"Cleanup command executed nice!!");
 		</cfscript>
 	</cffunction>
 

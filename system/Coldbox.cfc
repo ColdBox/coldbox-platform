@@ -86,7 +86,7 @@ Description :
 					<!--- IOC Framework Reload --->
 					<cfif application.cbController.getSetting("IOCFrameworkReload")>
 						<cflock type="exclusive" name="#getAppHash()#" timeout="#getLockTimeout()#" throwontimeout="true">
-							<cfset application.cbController.getPlugin("ioc").configure()>
+							<cfset application.cbController.getPlugin("IOC").configure()>
 						</cflock>
 					</cfif>
 				</cfif>

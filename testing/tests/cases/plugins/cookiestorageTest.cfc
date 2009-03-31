@@ -24,7 +24,7 @@ Description :
 	<cffunction name="testPlugin" access="public" returntype="void" output="false">
 		<!--- Now test some events --->
 		<cfscript>
-			var plugin = getController().getPlugin("cookiestorage");
+			var plugin = getController().getPlugin("CookieStorage");
 			
 			AssertTrue( isObject(plugin) );
 			
@@ -34,7 +34,7 @@ Description :
 	<cffunction name="testMethods" access="public" returntype="void" output="false">
 		<!--- Now test some events --->
 		<cfscript>
-			var plugin = getController().getPlugin("cookiestorage");
+			var plugin = getController().getPlugin("CookieStorage");
 			var complex = structnew();
 			
 			complex.date = now();
@@ -61,7 +61,7 @@ Description :
 	<cffunction name="testWithEncryption" access="public" returntype="void" output="false">
 		<!--- Now test some events --->
 		<cfscript>
-			var plugin = getController().getPlugin("cookiestorage");
+			var plugin = getController().getPlugin("CookieStorage");
 			var complex = structnew();
 			
 			complex.date = now();

@@ -7,7 +7,7 @@
 [<a href="%getSetting('sesBaseURL')%/%rc.xehEditor%">Add New #root.bean.xmlAttributes.name#</a>]
 </div>
 <br/><br/>
-%getPlugin("messagebox").renderit()%
+%getPlugin("MessageBox").renderit()%
 <%/cfoutput%>
 
 <table border="1" cellpadding="5" cellspacing="0" class="tablelisting">

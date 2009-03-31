@@ -37,7 +37,7 @@ Description :
 		<cfargument name="event" required="true" type="coldbox.system.beans.RequestContext" hint="The event object.">
 		<cfargument name="interceptData" required="true" type="struct" hint="Metadata of intercepted info.">
 		<!--- ************************************************************* --->
-		<cfset getPlugin("logger").logEntry("warning","I just executed a custom interception point. #arguments.interceptData.toString()#")>
+		<cfset getPlugin("Logger").logEntry("warning","I just executed a custom interception point. #arguments.interceptData.toString()#")>
 	</cffunction>
 
 </cfcomponent>

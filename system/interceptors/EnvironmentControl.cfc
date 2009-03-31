@@ -98,7 +98,7 @@ Description :
 			var configSettings = getController().getConfigSettings();
 			var thisValue = "";
 			var oUtilities = getPlugin("Utilities");
-			var oJSON = getPlugin("json");
+			var oJSON = getPlugin("JSON");
 		
 			//Parse it
 			oXML = XMLParse(getConfigFile());

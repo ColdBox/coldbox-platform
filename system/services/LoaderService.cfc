@@ -120,13 +120,13 @@ Modification History:
 		<cfscript>
 		/* Initialize Logging if requested. */
 		if ( controller.getSetting("EnableColdboxLogging") ){
-			controller.getPlugin("logger").initLogLocation();
+			controller.getPlugin("Logger").initLogLocation();
 		}
 		
 		/* IoC Plugin Manager Configuration */
 		if ( controller.getSetting("IOCFramework") neq "" ){
 			//Create IoC Factory and configure it.
-			controller.getPlugin("ioc").configure();
+			controller.getPlugin("IOC").configure();
 		}
 
 		/* Load i18N if application is using it. */

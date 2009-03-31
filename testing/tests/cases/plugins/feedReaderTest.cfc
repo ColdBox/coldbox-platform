@@ -7,9 +7,9 @@ www.coldboxframework.com | www.luismajano.com | www.ortussolutions.com
 Author      :	Sana Ullah
 Date        :	June 01 2008
 Description :
-	feedReaderTest plugin test
+	FeedReaderTest plugin test
 ----------------------------------------------------------------------->
-<cfcomponent name="feedReaderTest" extends="coldbox.system.testing.BaseMXUnitTest" output="false">
+<cfcomponent name="FeedReaderTest" extends="coldbox.system.testing.BaseMXUnitTest" output="false">
 
 	<cffunction name="setUp" returntype="void" access="public" output="false">
 		<cfscript>
@@ -25,7 +25,7 @@ Description :
 	<cffunction name="testPlugin" access="public" returntype="void" output="false">
 		<!--- Now test some events --->
 		<cfscript>
-			var plugin = getController().getPlugin("feedReader");
+			var plugin = getController().getPlugin("FeedReader");
 			
 			AssertTrue( isObject(plugin) );
 		</cfscript>
@@ -34,7 +34,7 @@ Description :
 	<cffunction name="testReadFeed" access="public" returntype="void" output="false">
 		<!--- Now test some events --->
 		<cfscript>
-			var plugin = getController().getPlugin("feedReader");
+			var plugin = getController().getPlugin("FeedReader");
 			var tStruct = plugin.readFeed(variables.feedlink);
 		
 			assertTrue(isStruct(tStruct), "Returned value is not valid struct");
@@ -44,7 +44,7 @@ Description :
 	<cffunction name="testRetrieveFeed" access="public" returntype="void" output="false">
 		<!--- Now test some events --->
 		<cfscript>
-			var plugin = getController().getPlugin("feedReader");
+			var plugin = getController().getPlugin("FeedReader");
 			var tStruct = plugin.retrieveFeed(variables.feedlink);
 			
 			assertTrue(isStruct(tStruct), "Returned value is not valid struct");

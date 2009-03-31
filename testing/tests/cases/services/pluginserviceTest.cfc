@@ -26,14 +26,14 @@ Modification History:
 	
 	<cffunction name="testNewInstanceViaController" access="public" returntype="void" output="false">
 		<cfscript>
-		var plugin = getController().getPlugin("logger",false,true);
+		var plugin = getController().getPlugin("Logger",false,true);
 		AssertTrue( isObject(plugin));
 		</cfscript>
 	</cffunction>
 	
 	<cffunction name="testNormalPluginViaController" access="public" returntype="void" output="false">
 		<cfscript>
-		var plugin = getController().getPlugin("logger",false);
+		var plugin = getController().getPlugin("Logger",false);
 		AssertTrue( isObject(plugin));
 		</cfscript>
 	</cffunction>

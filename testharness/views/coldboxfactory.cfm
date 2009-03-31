@@ -36,7 +36,7 @@
 	
 	<tr>
 		<td><strong>Controller:</strong></td>
-		<td>#getPlugin("logger").getHash()#</td>
+		<td>#getPlugin("Logger").getHash()#</td>
 	</tr>
 	
 	<tr>

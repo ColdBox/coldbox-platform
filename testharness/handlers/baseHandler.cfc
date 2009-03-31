@@ -22,7 +22,7 @@ Sep/25/2005 - Luis Majano
 		<cfscript>
 		var rc = event.getCollection();
 		
-		rc.testModel = getPlugin("ioc").getBean("testModel");
+		rc.testModel = getPlugin("IOC").getBean("testModel");
 		
 		event.setView("coldboxfactory");
 		</cfscript>

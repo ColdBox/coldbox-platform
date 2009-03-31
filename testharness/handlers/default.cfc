@@ -47,7 +47,7 @@ Modification History:
 		<cfargument name="Event" type="coldbox.system.beans.RequestContext" required="yes">
 	    <cfset var rc = event.getCollection()>
 	    
-	    <cfset getPlugin("messagebox").setMessage(type="error", message="Override did not work")>    
+	    <cfset getPlugin("MessageBox").setMessage(type="error", message="Override did not work")>    
 	    <cfset event.setView('default/protect')>
 	</cffunction>
 	<!--- override --->
@@ -55,7 +55,7 @@ Modification History:
 		<cfargument name="Event" type="coldbox.system.beans.RequestContext" required="yes">
 	    <cfset var rc = event.getCollection()>
 	    
-	    <cfset getPlugin("messagebox").setMessage(type="info", message="Override Worked")>
+	    <cfset getPlugin("MessageBox").setMessage(type="info", message="Override Worked")>
 	    <cfset event.setView('default/protect')>
 	</cffunction>
 	
@@ -74,7 +74,7 @@ Modification History:
 	    <cfset var rc = event.getCollection()>
 	    <cfscript>
 			//get rss feed
-			rc.feed = getPlugin("feedReader").readFeed(feedURL="http://news.google.com/nwshp?hl=en&tab=wn&output=rss");
+			rc.feed = getPlugin("FeedReader").readFeed(feedURL="http://news.google.com/nwshp?hl=en&tab=wn&output=rss");
 		</cfscript>	     
 	</cffunction>
 	
@@ -94,7 +94,7 @@ Modification History:
 		<cfargument name="Event" type="coldbox.system.beans.RequestContext" required="yes">
 	    <cfset var rc = event.getCollection()>
 	    
-	    <cfset getPlugin("messagebox").setMessage("warning","I am relocating from <strong>default.testRoute</strong>")>
+	    <cfset getPlugin("MessageBox").setMessage("warning","I am relocating from <strong>default.testRoute</strong>")>
 	    
 	    <cfset setNextEvent('default.index',"page=2&issues=1")>
 	</cffunction>

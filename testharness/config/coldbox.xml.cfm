@@ -48,12 +48,12 @@
 		<Setting name="MyBaseURL"  value="apps.jfetmac" />
 		
 		<!-- Log Level -->
-		<Setting name="logger_loglevel"  value="2"/>
+		<Setting name="Logger_loglevel"  value="2"/>
 		
 		<!-- RSS REader -->
-		<Setting name="feedReader_useCache"  value="true" />
-		<Setting name="feedReader_cacheType"  value="ram" />
-		<Setting name="feedReader_cacheTimeout"  value="10" />
+		<Setting name="FeedReader_useCache"  value="true" />
+		<Setting name="FeedReader_cacheType"  value="ram" />
+		<Setting name="FeedReader_cacheTimeout"  value="10" />
 		
 		<!-- Show SideBar? true/false, else leave blank. -->
 		<Setting name="ColdBoxSideBar" value="true" />

@@ -185,7 +185,7 @@ Description :
 			var cbController = getController();
 			
 			if( cbController.getDebuggerService().getDebugMode() ){
-				cbController.getPlugin("logger").tracer(argumentCollection=arguments);
+				cbController.getPlugin("Logger").tracer(argumentCollection=arguments);
 			}
 		</cfscript>
 	</cffunction>
@@ -250,13 +250,13 @@ Description :
 	
 	<!--- Facade: Get the IOC Plugin. --->
 	<cffunction name="getIoCFactory" output="false" access="private" returntype="any" hint="Gets the IOC Factory in usage: coldspring or lightwire">
-		<cfreturn getController().getPlugin("ioc").getIoCFactory()>
+		<cfreturn getController().getPlugin("IOC").getIoCFactory()>
 	</cffunction>
 	
 	<!--- Facade: Get the an ioc bean --->
 	<cffunction name="getBean" output="false" access="private" returntype="any" hint="Get a bean from the ioc plugin.">
 		<cfargument name="beanName" type="string" required="true" hint="The bean name to get."/>
-		<cfreturn getController().getPlugin("ioc").getBean(arguments.beanName)>
+		<cfreturn getController().getPlugin("IOC").getBean(arguments.beanName)>
 	</cffunction>
 	
 	<!--- Get Model --->

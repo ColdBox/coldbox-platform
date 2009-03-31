@@ -2,6 +2,6 @@
 <snippet filetemplate="false" extension="cfm">
 <name>appendMessage</name>
 <help></help>
-<starttext><![CDATA[getPlugin("messagebox").append("$${message}")]]></starttext>
+<starttext><![CDATA[getPlugin("MessageBox").append("$${message}")]]></starttext>
 <endtext><![CDATA[]]></endtext>
 </snippet>

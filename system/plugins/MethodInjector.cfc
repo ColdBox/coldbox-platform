@@ -9,7 +9,7 @@ Date        :	10/31/2007
 Description :
 	This is a method injector based on the work by Mark Mandel.
 ----------------------------------------------------------------------->
-<cfcomponent name="methodInjector"
+<cfcomponent name="MethodInjector"
 			 hint="Method Injector plugin. It provides a nice way to mixin and remove methods from cfc's"
 			 extends="coldbox.system.Plugin"
 			 output="false"
@@ -17,7 +17,7 @@ Description :
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
-	<cffunction name="init" access="public" returntype="methodInjector" output="false" hint="Constructor">
+	<cffunction name="init" access="public" returntype="MethodInjector" output="false" hint="Constructor">
 		<!--- ************************************************************* --->
 		<cfargument name="controller" type="any" required="true">
 		<!--- ************************************************************* --->
@@ -56,7 +56,7 @@ Description :
 		<!--- ************************************************************* --->
 		<cfset var udf = 0>
 		
-		<cflock name="plugin.methodInjector.#getmetadata(arguments.cfc).name#" type="exclusive" timeout="5" throwontimeout="true">
+		<cflock name="plugin.MethodInjector.#getmetadata(arguments.cfc).name#" type="exclusive" timeout="5" throwontimeout="true">
 			<cfscript>
 				/* Inject Mixins methods */
 				for( udf in instance.mixins ){
@@ -73,7 +73,7 @@ Description :
 		<!--- ************************************************************* --->
 		<cfset var udf = 0>
 		
-		<cflock name="plugin.methodInjector.#getmetadata(arguments.cfc).name#" type="exclusive" timeout="5" throwontimeout="true">
+		<cflock name="plugin.MethodInjector.#getmetadata(arguments.cfc).name#" type="exclusive" timeout="5" throwontimeout="true">
 			<cfscript>
 				/* Remove Mixin Methods */
 				for( udf in instance.mixins ){

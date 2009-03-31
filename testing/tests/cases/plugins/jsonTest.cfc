@@ -24,7 +24,7 @@ Description :
 	<cffunction name="testPlugin" access="public" returntype="void" output="false">
 		<!--- Now test some events --->
 		<cfscript>
-			var plugin = getController().getPlugin("json");
+			var plugin = getController().getPlugin("JSON");
 			
 			AssertTrue( isObject(plugin) );
 		</cfscript>
@@ -33,7 +33,7 @@ Description :
 	<cffunction name="testMethods" access="public" returntype="void" output="false">
 		<!--- Now test some events --->
 		<cfscript>
-			var plugin = getController().getPlugin("json");
+			var plugin = getController().getPlugin("JSON");
 			var jsonText = "{name:'luis',number:'23423'}";
 			var local = structnew();
 			

@@ -113,7 +113,7 @@ For the latest usage, please visit the wiki.
 			else if( propertyExists('validatorIOC') ){
 				/* Try to create Validator */
 				try{
-					setValidator( getPlugin("ioc").getBean(getProperty('validatorIOC')) );
+					setValidator( getPlugin("IOC").getBean(getProperty('validatorIOC')) );
 				}
 				catch(Any e){
 					throw("Error creating validatorIOC",e.message & e.detail, "interceptors.Security.validatorCreationException");
@@ -182,7 +182,7 @@ For the latest usage, please visit the wiki.
 				/* is current event in this whitelist pattern? then continue to next rule */
 				if( isEventInPattern(currentEvent,rules[x].whitelist) ){
 					if( getProperty('debugMode') ){
-						getPlugin("logger").logEntry("information","#currentEvent# found in whitelist: #rules[x].whitelist#");
+						getPlugin("Logger").logEntry("information","#currentEvent# found in whitelist: #rules[x].whitelist#");
 					}
 					continue;
 				}
@@ -192,7 +192,7 @@ For the latest usage, please visit the wiki.
 					if( _isUserInValidState(rules[x]) eq false ){
 						/* Log if Necessary */
 						if( getProperty('debugMode') ){
-							getPlugin("logger").logEntry("warning","User not in appropriate roles #rules[x].roles# for event=#currentEvent#");
+							getPlugin("Logger").logEntry("warning","User not in appropriate roles #rules[x].roles# for event=#currentEvent#");
 						}
 						/* Redirect */
 						if( getProperty('useRoutes') ){
@@ -218,14 +218,14 @@ For the latest usage, please visit the wiki.
 					else{
 						if( getProperty('debugMode') ){
 							//User is in role. continue.
-							getPlugin("logger").logEntry("information","Secure event=#currentEvent# matched and user is in roles=#rules[x].roles#. Proceeding");
+							getPlugin("Logger").logEntry("information","Secure event=#currentEvent# matched and user is in roles=#rules[x].roles#. Proceeding");
 						}
 						break;
 					}
 				}//end if current event did not match a secure event.
 				else{
 					if( getProperty('debugMode') ){
-						getPlugin("logger").logEntry("information","#currentEvent# Did not match this rule: #rules[x].toString()#");
+						getPlugin("Logger").logEntry("information","#currentEvent# Did not match this rule: #rules[x].toString()#");
 					}
 				}							
 			}//end of rules checks
@@ -258,7 +258,7 @@ For the latest usage, please visit the wiki.
 		<!--- Verify if using validator --->
 		<cfif isValidatorUsed()>
 			<!--- Validate via Validator --->
-			<cfreturn getValidator().userValidator(arguments.rule,getPlugin("messagebox"),controller)>
+			<cfreturn getValidator().userValidator(arguments.rule,getPlugin("MessageBox"),controller)>
 		<cfelse>
 			<!--- Loop Over Roles --->
 			<cfloop list="#arguments.rule.roles#" index="thisRole">
@@ -357,7 +357,7 @@ For the latest usage, please visit the wiki.
 		<cfset var bean = "">
 		
 		<!--- Get rules from IOC Container --->
-		<cfset bean = getPlugin("ioc").getBean(getproperty('rulesBean'))>
+		<cfset bean = getPlugin("IOC").getBean(getproperty('rulesBean'))>
 		
 		<cfif propertyExists('rulesBeanArgs') and len(getProperty('rulesBeanArgs'))>
 			<cfset qRules = evaluate("bean.#getproperty('rulesBeanMethod')#( #getProperty('rulesBeanArgs')# )")>

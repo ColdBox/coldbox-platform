@@ -2,6 +2,6 @@
 <snippet filetemplate="false" extension="cfm">
 <name>logError</name>
 <help>Log Error</help>
-<starttext><![CDATA[getPlugin("logger").logError("$${Message}", $${Exception Struct}, $${Extra Information (Simple or Complex)})]]></starttext>
+<starttext><![CDATA[getPlugin("Logger").logError("$${Message}", $${Exception Struct}, $${Extra Information (Simple or Complex)})]]></starttext>
 <endtext><![CDATA[]]></endtext>
 </snippet>

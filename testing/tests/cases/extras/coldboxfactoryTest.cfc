@@ -38,8 +38,8 @@ Description :
 		obj = factory.getColdboxOCM();
 		AssertEquals(getController().getColdBoxOCM(), obj, "OCM");
 		
-		obj = factory.getPlugin("logger");
-		AssertEquals(getController().getPlugin("logger"), obj, "Logger Plugin");
+		obj = factory.getPlugin("Logger");
+		AssertEquals(getController().getPlugin("Logger"), obj, "Logger Plugin");
 		
 		AssertTrue( isObject(factory.getInterceptor("coldbox.system.interceptors.SES")), "Interceptor");
 		

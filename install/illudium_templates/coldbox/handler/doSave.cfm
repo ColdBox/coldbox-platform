@@ -3,7 +3,7 @@
 		<%cfscript%>
 		//References
 		var rc = event.getCollection();
-		var oService = getPlugin("ioc").getBean("#root.bean.xmlAttributes.name#Service");
+		var oService = getPlugin("IOC").getBean("#root.bean.xmlAttributes.name#Service");
 		var o#root.bean.xmlAttributes.name#Bean = "";
 		
 		//get a new #root.bean.xmlAttributes.name# bean

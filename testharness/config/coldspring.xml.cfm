@@ -7,10 +7,10 @@
     
     <bean id="ConfigBean" factory-bean="ColdboxFactory" factory-method="getConfigBean" />
     
-    <alias name="loggerPlugin" alias="logger" />
-    <bean id="loggerPlugin" factory-bean="ColdboxFactory" factory-method="getPlugin">
+    <alias name="LoggerPlugin" alias="Logger" />
+    <bean id="LoggerPlugin" factory-bean="ColdboxFactory" factory-method="getPlugin">
         <constructor-arg name="plugin">
-            <value>logger</value>
+            <value>Logger</value>
         </constructor-arg>
     </bean>
     
@@ -37,8 +37,8 @@
         <property name="ConfigBean">
             <ref bean="ConfigBean" />
         </property>
-        <property name="logger">
-            <ref bean="loggerPlugin" />
+        <property name="Logger">
+            <ref bean="LoggerPlugin" />
         </property>
         <property name="cacheManager">
             <bean id="cacheManager" factory-bean="ColdboxFactory" factory-method="getColdboxOCM" />

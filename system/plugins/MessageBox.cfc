@@ -15,19 +15,19 @@ Description :
 
 Modification History:
 06/09/2006 - Updated for coldbox.
-07/29/2006 - Flag to leave contents in the messagebox or delete them once rendered.
+07/29/2006 - Flag to leave contents in the MessageBox or delete them once rendered.
 10/10/2006 - Added the renderit method for usage under Blue Dragon, removed the render.
 01/28/2007 - Prepared for 1.2.0, using new storage centers.
 ----------------------------------------------------------------------->
-<cfcomponent name="messagebox"
-			 hint="This is the messagebox plugin. It uses the session/client scope to save messages."
+<cfcomponent name="MessageBox"
+			 hint="This is the MessageBox plugin. It uses the session/client scope to save messages."
 			 extends="coldbox.system.Plugin"
 			 output="false"
 			 cache="true">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
-	<cffunction name="init" access="public" returntype="messagebox" output="false" hint="Constructor">
+	<cffunction name="init" access="public" returntype="MessageBox" output="false" hint="Constructor">
 		<!--- ************************************************************* --->
 		<cfargument name="controller" type="any" required="true" hint="coldbox.system.Controller">
 		<!--- ************************************************************* --->
@@ -40,8 +40,8 @@ Modification History:
 			setpluginDescription("This is a visual plugin that creates message boxes.");
 			
 			/* Setup The initial storage scope. */
-			if( settingExists("messagebox_storage_scope") ){
-				setStorageScope( getSetting("messagebox_storage_scope") );
+			if( settingExists("MessageBox_storage_scope") ){
+				setStorageScope( getSetting("MessageBox_storage_scope") );
 			}
 			else{
 				/* Set framework storage scope */
@@ -76,7 +76,7 @@ Modification History:
 	</cffunction>
 
 	<!--- Set a message --->
-	<cffunction name="setMessage" access="public" hint="Create a new messagebox. Look at types." output="false" returntype="void">
+	<cffunction name="setMessage" access="public" hint="Create a new MessageBox. Look at types." output="false" returntype="void">
 		<!--- ************************************************************* --->
 		<cfargument name="type"     	required="true"   type="string" hint="The message type.Available types [error][warning][info]">
 		<cfargument name="message"  	required="false"  type="string" default="" hint="The message to show.">
@@ -102,14 +102,14 @@ Modification History:
 			</cfif>
 			
 			<!--- Flatten it --->
-			<cfwddx action="cfml2wddx" input="#msgStruct#" output="#getstorageScope()#.ColdBox_fw_messagebox">
+			<cfwddx action="cfml2wddx" input="#msgStruct#" output="#getstorageScope()#.ColdBox_fw_MessageBox">
 		<cfelse>
-			<cfthrow type="ColdBox.plugins.messagebox.InvalidMessageTypeException" message="The message type sent in: #arguments.type# is invalid. Available types: error,warning,info">
+			<cfthrow type="ColdBox.plugins.MessageBox.InvalidMessageTypeException" message="The message type sent in: #arguments.type# is invalid. Available types: error,warning,info">
 		</cfif>
 	</cffunction>
 	
 	<!--- Append A message --->			
-	<cffunction name="append" access="public" returntype="void" hint="Append a message to the messagebox. If there is no message, then it sets the type to information." output="false" >
+	<cffunction name="append" access="public" returntype="void" hint="Append a message to the MessageBox. If there is no message, then it sets the type to information." output="false" >
 		<!--- ************************************************************* --->
 		<cfargument name="message"  	required="true"  type="string" default="" hint="The message to append, it does not include any breaks or delimiters. You must send that.">
 		<!--- ************************************************************* --->
@@ -134,7 +134,7 @@ Modification History:
 	</cffunction>
 	
 	<!--- Append A message --->			
-	<cffunction name="appendArray" access="public" returntype="void" hint="Append an array of messages to the messagebox. If there is no message, then it sets the type to information." output="false" >
+	<cffunction name="appendArray" access="public" returntype="void" hint="Append an array of messages to the MessageBox. If there is no message, then it sets the type to information." output="false" >
 		<!--- ************************************************************* --->
 		<cfargument name="messageArray"  	required="true"  type="Array" default="" hint="The array of messages to append. You must send that.">
 		<!--- ************************************************************* --->
@@ -164,10 +164,10 @@ Modification History:
 		<cfset var rtnStruct = structnew()>
 		<cfset var storageScope = evaluate(getstorageScope())>
 		
-		<!--- Verify if messagebox exists --->
-		<cfif structKeyExists(storageScope,"ColdBox_fw_messagebox")>
+		<!--- Verify if MessageBox exists --->
+		<cfif structKeyExists(storageScope,"ColdBox_fw_MessageBox")>
 			<cfwddx action="wddx2cfml" 
-					input="#StructFind( storageScope,'ColdBox_fw_messagebox')#" 
+					input="#StructFind( storageScope,'ColdBox_fw_MessageBox')#" 
 					output="rtnStruct">
 		<cfelse>
 			<cfset rtnStruct.type = "">
@@ -181,12 +181,12 @@ Modification History:
 	<cffunction name="clearMessage" access="public" hint="Clears the message structure by deleting it from the session scope." output="false" returntype="void">
 		<cfscript>
 			var storageScope = evaluate(getstorageScope());
-			structDelete(storageScope, "ColdBox_fw_messagebox");
+			structDelete(storageScope, "ColdBox_fw_MessageBox");
 		</cfscript>
 	</cffunction>
 
 	<!--- Is Empty --->
-	<cffunction name="isEmpty" access="public" hint="Checks wether the messagebox is empty or not." returntype="boolean" output="false">
+	<cffunction name="isEmpty" access="public" hint="Checks wether the MessageBox is empty or not." returntype="boolean" output="false">
 		<cfscript>
 			var msgStruct = getMessage();
 			

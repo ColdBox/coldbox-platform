@@ -1,5 +1,5 @@
 <!-----------------------------------------------------------------------
-Template : messagebox.cfc
+Template : MessageBox.cfc
 Author 	 : Luis Majano
 Date     : 3/13/2007 8:28:31 AM
 Description :

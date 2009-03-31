@@ -15,11 +15,11 @@ Description :
 	You need to set the following settings in your application (coldbox.xml.cfm)
 	
 Application Settings:
-	- feedReader_useCache 		: boolean [default=true] (Use the file cache or not)
-	- feedReader_cacheType		: string (ram,file) (Default is ram)
-	- feedReader_cacheLocation 	: string (Where to store the file caching, relative to the app or absolute)
-	- feedReader_cacheTimeout 	: numeric [default=30] (In minutes, the timeout of the file cache)
-	- feedReader_httpTimeout 	: numeric [default=30] (In seconds, the timeout of the cfhttp call)
+	- FeedReader_useCache 		: boolean [default=true] (Use the file cache or not)
+	- FeedReader_cacheType		: string (ram,file) (Default is ram)
+	- FeedReader_cacheLocation 	: string (Where to store the file caching, relative to the app or absolute)
+	- FeedReader_cacheTimeout 	: numeric [default=30] (In minutes, the timeout of the file cache)
+	- FeedReader_httpTimeout 	: numeric [default=30] (In seconds, the timeout of the cfhttp call)
 	
 RSS Retrieval Methods:
 	- readFeed( feedURL, itemsType[default=query] ) : Retrieve a feed from cfhttp, parse, cache, and return results in query or array format.
@@ -60,14 +60,14 @@ What gets returned on the FeedStructure:
 	
 
 ----------------------------------------------------------------------->
-<cfcomponent name="feedReader" 
+<cfcomponent name="FeedReader" 
 			 extends="coldbox.system.Plugin"
-			 hint="A rss reader plugin. We recommend that when you call the readFeed method, that you use url's as settings. ex: readFeed(getSetting('myFeedURL')).  The settings this plugin uses are the following: feedReader_useCache:boolean [default=true], feedReader_cacheLocation:string, feedReader_cacheTimeout:numeric [default=30 min], feedReader_httpTimeout:numeric [default=30 sec]. If the cacheLocation directory does not exits, the plugin will throw an error. So please remember to create the directory."
+			 hint="A rss reader plugin. We recommend that when you call the readFeed method, that you use url's as settings. ex: readFeed(getSetting('myFeedURL')).  The settings this plugin uses are the following: FeedReader_useCache:boolean [default=true], FeedReader_cacheLocation:string, FeedReader_cacheTimeout:numeric [default=30 min], FeedReader_httpTimeout:numeric [default=30 sec]. If the cacheLocation directory does not exits, the plugin will throw an error. So please remember to create the directory."
 			 cache="true">
 
 <!---------------------------------------- CONSTRUCTOR --------------------------------------------------->
 
-	<cffunction name="init" access="public" returntype="feedReader" output="false" hint="Plugin Constructor.">
+	<cffunction name="init" access="public" returntype="FeedReader" output="false" hint="Plugin Constructor.">
 		<cfargument name="controller" type="any" required="true">
 		<cfscript>
 			var cacheLocation = "";
@@ -77,26 +77,26 @@ What gets returned on the FeedStructure:
 			super.Init(arguments.controller);
 			
 			/* Plugin Properties */
-			setpluginName("feedReader");
+			setpluginName("FeedReader");
 			setpluginVersion("1.0");
 			setpluginDescription("I am a rss feed reader for rss and atom feeds.");
 			
 			/* Check if using Cache and set useCache setting */
-			if( not settingExists('feedReader_useCache') or not isBoolean(getSetting('feedReader_useCache')) ){
+			if( not settingExists('FeedReader_useCache') or not isBoolean(getSetting('FeedReader_useCache')) ){
 				setUseCache(true);
 			}else{
-				setUseCache(getSetting('feedReader_useCache'));
+				setUseCache(getSetting('FeedReader_useCache'));
 			}
 			
 			/* Setup Caching variables if using it */
 			if( getUseCache() ){	
 				
 				/* ram caching? used by default */
-				if( not settingExists('feedReader_cacheType') or not reFindNoCase("^(ram|file)$",getSetting('feedReader_cacheType')) ){
+				if( not settingExists('FeedReader_cacheType') or not reFindNoCase("^(ram|file)$",getSetting('FeedReader_cacheType')) ){
 					setCacheType('ram');
 				}
 				else{
-					setCacheType(getSetting('feedReader_cacheType'));
+					setCacheType(getSetting('FeedReader_cacheType'));
 				}
 				
 				/* file caching? */
@@ -106,15 +106,15 @@ What gets returned on the FeedStructure:
 					/* File Separator */
 					slash = getSetting("OSFileSeparator",true);
 					/* Cache Location */
-					if( not settingExists('feedReader_cacheLocation') ){
-						throw(message="The Setting feedReader_cacheLocation is missing. Please create it.",type='plugins.feedReader.InvalidSettingException');
+					if( not settingExists('FeedReader_cacheLocation') ){
+						throw(message="The Setting FeedReader_cacheLocation is missing. Please create it.",type='plugins.FeedReader.InvalidSettingException');
 					}
 					/* Tests if the directory exists: Full Path */
 					/* Try to locate the path */
-					cacheLocation = locateDirectoryPath(getSetting('feedReader_cacheLocation'));
+					cacheLocation = locateDirectoryPath(getSetting('FeedReader_cacheLocation'));
 					/* Validate it */
 					if( len(cacheLocation) eq 0 ){
-						throw('The cache location directory could not be found. Please check again. #getSetting('feedReader_cacheLocation')#','','plugins.feedReader.InvalidCacheLocationException');
+						throw('The cache location directory could not be found. Please check again. #getSetting('FeedReader_cacheLocation')#','','plugins.FeedReader.InvalidCacheLocationException');
 					}
 					/* Set the location */
 					setCacheLocation(cacheLocation);
@@ -125,24 +125,24 @@ What gets returned on the FeedStructure:
 				}		
 				
 				/* Cache Timeout */
-				if( not settingExists('feedReader_cacheTimeout') ){
+				if( not settingExists('FeedReader_cacheTimeout') ){
 					setCacheTimeout(30);
 				}
 				else{
-					setCacheTimeout(getSetting('feedReader_cacheTimeout'));
+					setCacheTimeout(getSetting('FeedReader_cacheTimeout'));
 				}
 			}//end else using cache
 			
 			/* HTTP Timeout */
-			if( not settingExists('feedReader_httpTimeout') ){
+			if( not settingExists('FeedReader_httpTimeout') ){
 				sethttpTimeout(30);
 			}
 			else{
-				sethttpTimeout(getSetting('feedReader_httpTimeout'));
+				sethttpTimeout(getSetting('FeedReader_httpTimeout'));
 			}
 			
 			/* Set The lock Name */
-			setLockName('feedReaderCacheOperation');
+			setLockName('FeedReaderCacheOperation');
 			
 			/* Return instance */
 			return this;
@@ -220,7 +220,7 @@ What gets returned on the FeedStructure:
 			</cflock>
 			<!--- Exists Check --->
 			<cfif qFile.recordcount eq 0>
-				<cfthrow message="The feed does not exist in the cache." type="customPlugins.plugins.feedReader">
+				<cfthrow message="The feed does not exist in the cache." type="customPlugins.plugins.FeedReader">
 			</cfif>
 			<!--- Timeout Check --->
 			<cfif DateDiff("n", qFile.dateLastModified, now()) gt getCacheTimeout()>
@@ -350,7 +350,7 @@ What gets returned on the FeedStructure:
 			var FeedStruct = structnew();
 			/* Check if using cache */
 			if( not getUseCache() ){
-				throw("You are tying to use a method that needs caching enabled.","Please look at the plugin's settings or just use the 'retrieveFeed' method.","plugins.feedReader.InvalidSettingException");
+				throw("You are tying to use a method that needs caching enabled.","Please look at the plugin's settings or just use the 'retrieveFeed' method.","plugins.FeedReader.InvalidSettingException");
 			}
 			/* Check for itemsType */
 			if( not reFindnocase("^(query|array)$",arguments.itemsType) ){
@@ -411,7 +411,7 @@ What gets returned on the FeedStructure:
 			<cfset xmlDoc = XMLParse(trim(feedResult.FileContent))>
 			
 			<cfcatch type="any">
-				<cfthrow type="plugins.feedReader.FeedParsingException"
+				<cfthrow type="plugins.FeedReader.FeedParsingException"
 						 message="Error parsing the feed into an XML document. Please verify that the feed is correct and valid"
 						 detail="The returned cfhttp content is: #feedResult.fileContent.toString()#">
 			</cfcatch>
@@ -419,7 +419,7 @@ What gets returned on the FeedStructure:
 		
 		<!--- Validate If its an Atom or RSS feed --->
 		<cfif not structKeyExists(xmlDoc,"rss") and not structKeyExists(xmlDoc,"feed") and not structKeyExists(xmlDoc,"rdf:RDF")>
-			<cfthrow type="plugins.feedReader.FeedParsingException"
+			<cfthrow type="plugins.FeedReader.FeedParsingException"
 					 message="Cannot continue parsing the feed since it does not seem to be a valid RSS or ATOM feed. Please verify that the feed is correct and valid"
 					 detail="The xmldocument is: #htmlEditFormat(toString(xmlDoc))#">
 		</cfif>
@@ -770,7 +770,7 @@ What gets returned on the FeedStructure:
 			if( structKeyExists(arguments.entity.xmlAttributes,"type") ){
 				if( arguments.entity.xmlAttributes.type is "xhtml" ){
 					if( not structKeyExists(arguments.entity,"div") ){
-						throw("Invalid Atom: XHTML Text construct does not contain a child div.",'','plugins.feedReader.InvalidAtomConstruct');	
+						throw("Invalid Atom: XHTML Text construct does not contain a child div.",'','plugins.FeedReader.InvalidAtomConstruct');	
 					}
 					for(x=1;x lte ArrayLen(arguments.entity.xmlChildren);x=x+1){
 						results = results & arguments.entity.xmlChildren[x].toString();

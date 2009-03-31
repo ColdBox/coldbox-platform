@@ -65,10 +65,10 @@ Description :
 						<cfset oFileUtilities.createFile(getLogFullPath())>
 						<!--- Check if we can write to the file --->
 						<cfif not oFileUtilities.FileCanWrite(getLogFullPath())>
-							<cfthrow type="ColdBox.plugins.logger.LogFileNotWritableException" message="The log file: #getLogFullPath()# is not a writable file. Please check your operating system's permissions.">
+							<cfthrow type="ColdBox.plugins.Logger.LogFileNotWritableException" message="The log file: #getLogFullPath()# is not a writable file. Please check your operating system's permissions.">
 						</cfif>
 						<cfcatch type="any">
-							<cfthrow type="ColdBox.plugins.logger.CreatingLogFileException" message="An error occurred creating the log file at #getLogFullPath()#." detail="#cfcatch.Detail#<br>#cfcatch.message#">
+							<cfthrow type="ColdBox.plugins.Logger.CreatingLogFileException" message="An error occurred creating the log file at #getLogFullPath()#." detail="#cfcatch.Detail#<br>#cfcatch.message#">
 						</cfcatch>
 					</cftry>
 	
@@ -86,7 +86,7 @@ Description :
 								charset="#getSetting("LogFileEncoding",1)#">
 								
 						<cfcatch type="any">
-							<cfthrow type="ColdBox.plugins.logger.WritingFirstEntryException" message="An error occurred writing the first entry to the log file." detail="#cfcatch.Detail#<br>#cfcatch.message#">
+							<cfthrow type="ColdBox.plugins.Logger.WritingFirstEntryException" message="An error occurred writing the first entry to the log file." detail="#cfcatch.Detail#<br>#cfcatch.message#">
 						</cfcatch>
 					</cftry>
 	

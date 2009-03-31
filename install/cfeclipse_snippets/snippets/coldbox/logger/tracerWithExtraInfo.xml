@@ -2,6 +2,6 @@
 <snippet filetemplate="false" extension="cfm">
 <name>tracerWithExtraInfo</name>
 <help></help>
-<starttext><![CDATA[getPlugin("logger").tracer("$${Message}", $${ExtraInfo} )]]></starttext>
+<starttext><![CDATA[getPlugin("Logger").tracer("$${Message}", $${ExtraInfo} )]]></starttext>
 <endtext><![CDATA[]]></endtext>
 </snippet>

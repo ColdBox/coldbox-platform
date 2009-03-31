@@ -15,7 +15,7 @@ Modifications:
 	- Sana Ullah (adjusted the compatibility with coldbox plugins).
 	- Luis Majano (adaptations & best practices)
 ----------------------------------------------------------------------->
-<cfcomponent name="json"
+<cfcomponent name="JSON"
 			 hint="JSON Plugin is used to serialize and deserialize JSON data to/from native ColdFusion objects."
 			 extends="coldbox.system.Plugin"
 			 output="false"
@@ -23,7 +23,7 @@ Modifications:
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
-	<cffunction name="init" access="public" returntype="json" output="false">
+	<cffunction name="init" access="public" returntype="JSON" output="false">
 		<cfargument name="controller" type="any" required="true" hint="coldbox.system.Controller">
 		<cfscript>
 			super.Init(arguments.controller);
@@ -256,7 +256,7 @@ Modifications:
 		<!--- ************************************************************* --->
 		
 		<!--- VARIABLE DECLARATION --->
-		<cfset var jsonString = "" />
+		<cfset var JSONString = "" />
 		<cfset var tempVal = "" />
 		<cfset var arKeys = "" />
 		<cfset var arKey = "" />
@@ -425,7 +425,7 @@ Modifications:
 		<!--- ************************************************************* --->
 		<cfargument name="doc" 			type="string" 	required="No" />
 		<cfargument name="schema"	 	type="string" 	required="No" />
-		<cfargument name="errorVar" 	type="string" 	required="No" default="jsonSchemaErrors" />
+		<cfargument name="errorVar" 	type="string" 	required="No" default="JSONSchemaErrors" />
 		<cfargument name="stopOnError" 	type="boolean" 	required="No" default=true />
 		<!--- These arguments are for internal use only --->
 		<cfargument name="_doc" 		type="any" 		required="No" />
@@ -434,7 +434,7 @@ Modifications:
     	<!--- ************************************************************* --->
 		
 		<cfset var schemaRules = "" />
-		<cfset var jsonDoc = "" />
+		<cfset var JSONDoc = "" />
 		<cfset var i = 0 />
 		<cfset var key = "" />
 		<cfset var isValid = true />
@@ -449,18 +449,18 @@ Modifications:
 				<cffile action="READ" file="#arguments.schema#" variable="arguments.schema" />
 			</cfif>
 			
-			<cfset jsonDoc = decode(arguments.doc) />
+			<cfset JSONDoc = decode(arguments.doc) />
 			<cfset schemaRules = decode(arguments.schema) />
 		
 			<cfset request[arguments.errorVar] = ArrayNew(1) />
 		<cfelseif StructKeyExists(arguments, "_doc")>
-			<cfset jsonDoc = arguments._doc />
+			<cfset JSONDoc = arguments._doc />
 			<cfset schemaRules = arguments._schema />
 		</cfif>
 		
 		<!--- See if the document matches the rules from the schema --->
 		<cfif schemaRules.type EQ "struct">
-			<cfif NOT IsStruct(jsonDoc)>
+			<cfif NOT IsStruct(JSONDoc)>
 				<cfset ArrayPrepend(request[arguments.errorVar], "#arguments._item# should be a struct") />
 				<cfif arguments.stopOnError>
 					<cfreturn false />
@@ -469,7 +469,7 @@ Modifications:
 				<!--- If specific keys are set to be required, check if they exist --->
 				<cfif StructKeyExists(schemaRules, "keys")>
 					<cfloop from="1" to="#ArrayLen(schemaRules.keys)#" index="i">
-						<cfif NOT StructKeyExists(jsonDoc, schemaRules.keys[i])>
+						<cfif NOT StructKeyExists(JSONDoc, schemaRules.keys[i])>
 							<cfset ArrayPrepend(request[arguments.errorVar], "#arguments._item# should have a key named #schemaRules.keys[i]#") />
 							<cfif arguments.stopOnError>
 								<cfreturn false />
@@ -480,9 +480,9 @@ Modifications:
 				
 				<!--- Loop over all the keys for the structure and see if they are valid (if items key is specified) by recursing the validate function --->
 				<cfif StructKeyExists(schemaRules, "items")>
-					<cfloop collection="#jsonDoc#" item="key">
+					<cfloop collection="#JSONDoc#" item="key">
 						<cfif StructKeyExists(schemaRules.items, key)>
-							<cfset isValid = validate(_doc=jsonDoc[key], _schema=schemaRules.items[key], _item="#arguments._item#['#key#']", errorVar=arguments.errorVar, stopOnError=arguments.stopOnError) />
+							<cfset isValid = validate(_doc=JSONDoc[key], _schema=schemaRules.items[key], _item="#arguments._item#['#key#']", errorVar=arguments.errorVar, stopOnError=arguments.stopOnError) />
 							<cfif arguments.stopOnError AND NOT isValid>
 								<cfreturn false />
 							</cfif>
@@ -491,7 +491,7 @@ Modifications:
 				</cfif>
 			</cfif>
 		<cfelseif schemaRules.type EQ "array">
-			<cfif NOT IsArray(jsonDoc)>
+			<cfif NOT IsArray(JSONDoc)>
 				<cfset ArrayPrepend(request[arguments.errorVar], "#arguments._item# should be an array") />
 				<cfif arguments.stopOnError>
 					<cfreturn false />
@@ -501,12 +501,12 @@ Modifications:
 				<cfparam name="schemaRules.maxlength" default="9999999999" />
 				
 				<!--- If there are length requirements for the array make sure they are valid --->
-				<cfif ArrayLen(jsonDoc) LT schemaRules.minlength>
+				<cfif ArrayLen(JSONDoc) LT schemaRules.minlength>
 					<cfset ArrayPrepend(request[arguments.errorVar], "#arguments._item# is an array that should have at least #schemaRules.minlength# elements") />
 					<cfif arguments.stopOnError>
 						<cfreturn false />
 					</cfif>
-				<cfelseif ArrayLen(jsonDoc) GT schemaRules.maxlength>
+				<cfelseif ArrayLen(JSONDoc) GT schemaRules.maxlength>
 					<cfset ArrayPrepend(request[arguments.errorVar], "#arguments._item# is an array that should have at the most #schemaRules.maxlength# elements") />
 					<cfif arguments.stopOnError>
 						<cfreturn false />
@@ -515,8 +515,8 @@ Modifications:
 				
 				<!--- Loop over the array elements and if there are rules for the array items recurse to enforce them --->
 				<cfif StructKeyExists(schemaRules, "items")>
-					<cfloop from="1" to="#ArrayLen(jsonDoc)#" index="i">
-						<cfset isValid = validate(_doc=jsonDoc[i], _schema=schemaRules.items, _item="#arguments._item#[#i#]", errorVar=arguments.errorVar, stopOnError=arguments.stopOnError) />
+					<cfloop from="1" to="#ArrayLen(JSONDoc)#" index="i">
+						<cfset isValid = validate(_doc=JSONDoc[i], _schema=schemaRules.items, _item="#arguments._item#[#i#]", errorVar=arguments.errorVar, stopOnError=arguments.stopOnError) />
 						<cfif arguments.stopOnError AND NOT isValid>
 							<cfreturn false />
 						</cfif>
@@ -524,30 +524,30 @@ Modifications:
 				</cfif>
 			</cfif>
 		<cfelseif schemaRules.type EQ "number">
-			<cfif NOT IsNumeric(jsonDoc)>
+			<cfif NOT IsNumeric(JSONDoc)>
 				<cfset ArrayPrepend(request[arguments.errorVar], "#arguments._item# should be numeric") />
 				<cfif arguments.stopOnError>
 					<cfreturn false />
 				</cfif>
-			<cfelseif StructKeyExists(schemaRules, "min") AND jsonDoc LT schemaRules.min>
+			<cfelseif StructKeyExists(schemaRules, "min") AND JSONDoc LT schemaRules.min>
 				<cfset ArrayPrepend(request[arguments.errorVar], "#arguments._item# cannot be a number less than #schemaRules.min#") />
 				<cfif arguments.stopOnError>
 					<cfreturn false />
 				</cfif>
-			<cfelseif StructKeyExists(schemaRules, "max") AND jsonDoc GT schemaRules.max>
+			<cfelseif StructKeyExists(schemaRules, "max") AND JSONDoc GT schemaRules.max>
 				<cfset ArrayPrepend(request[arguments.errorVar], "#arguments._item# cannot be a number greater than #schemaRules.max#") />
 				<cfif arguments.stopOnError>
 					<cfreturn false />
 				</cfif>
 			</cfif>
-		<cfelseif schemaRules.type EQ "boolean" AND ( NOT IsBoolean(jsonDoc) OR ListFindNoCase("Yes,No", jsonDoc) OR IsNumeric(jsonDoc) )>
+		<cfelseif schemaRules.type EQ "boolean" AND ( NOT IsBoolean(JSONDoc) OR ListFindNoCase("Yes,No", JSONDoc) OR IsNumeric(JSONDoc) )>
 			<cfset ArrayPrepend(request[arguments.errorVar], "#arguments._item# should be a boolean") />
 			<cfif arguments.stopOnError>
 				<cfreturn false />
 			</cfif>
 		<cfelseif schemaRules.type EQ "date">
-			<cfif NOT IsSimpleValue(jsonDoc) OR NOT IsDate(jsonDoc)
-					OR ( StructKeyExists(schemaRules, "mask") AND CompareNoCase( jsonDoc, DateFormat(jsonDoc, schemaRules.mask) ) NEQ 0 )>
+			<cfif NOT IsSimpleValue(JSONDoc) OR NOT IsDate(JSONDoc)
+					OR ( StructKeyExists(schemaRules, "mask") AND CompareNoCase( JSONDoc, DateFormat(JSONDoc, schemaRules.mask) ) NEQ 0 )>
 				<cfif StructKeyExists(schemaRules, "mask")>
 					<cfset msg = " in #schemaRules.mask# format" />
 				</cfif>
@@ -557,17 +557,17 @@ Modifications:
 				</cfif>
 			</cfif>
 		<cfelseif schemaRules.type EQ "string">
-			<cfif NOT IsSimpleValue(jsonDoc)>
+			<cfif NOT IsSimpleValue(JSONDoc)>
 				<cfset ArrayPrepend(request[arguments.errorVar], "#arguments._item# should be a string") />
 				<cfif arguments.stopOnError>
 					<cfreturn false />
 				</cfif>
-			<cfelseif StructKeyExists(schemaRules, "minlength") AND Len(jsonDoc) LT schemaRules.minlength>
+			<cfelseif StructKeyExists(schemaRules, "minlength") AND Len(JSONDoc) LT schemaRules.minlength>
 				<cfset ArrayPrepend(request[arguments.errorVar], "#arguments._item# should have a minimum length of #schemaRules.minlength#") />
 				<cfif arguments.stopOnError>
 					<cfreturn false />
 				</cfif>
-			<cfelseif StructKeyExists(schemaRules, "maxlength") AND Len(jsonDoc) GT schemaRules.maxlength>
+			<cfelseif StructKeyExists(schemaRules, "maxlength") AND Len(JSONDoc) GT schemaRules.maxlength>
 				<cfset ArrayPrepend(request[arguments.errorVar], "#arguments._item# should have a maximum length of #schemaRules.maxlength#") />
 				<cfif arguments.stopOnError>
 					<cfreturn false />

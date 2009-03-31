@@ -2,6 +2,6 @@
 <snippet filetemplate="false" extension="cfm">
 <name>getIOCFactory</name>
 <help></help>
-<starttext><![CDATA[getPlugin("ioc").getIoCFactory()]]></starttext>
+<starttext><![CDATA[getPlugin("IOC").getIoCFactory()]]></starttext>
 <endtext><![CDATA[]]></endtext>
 </snippet>

@@ -7,9 +7,9 @@ www.coldboxframework.com | www.luismajano.com | www.ortussolutions.com
 Author      :	Sana Ullah
 Date        :	June 01 2008
 Description :
-	feedGeneratorTest plugin test
+	FeedGeneratorTest plugin test
 ----------------------------------------------------------------------->
-<cfcomponent name="feedGeneratorTest" extends="coldbox.system.testing.BaseMXUnitTest" output="false">
+<cfcomponent name="FeedGeneratorTest" extends="coldbox.system.testing.BaseMXUnitTest" output="false">
 
 	<cffunction name="setUp" returntype="void" access="public" output="false">
 		<cfscript>
@@ -44,7 +44,7 @@ Description :
 	<cffunction name="testPlugin" access="public" returntype="void" output="false">
 		<!--- Now test some events --->
 		<cfscript>
-			var plugin = getController().getPlugin("feedGenerator");
+			var plugin = getController().getPlugin("FeedGenerator");
 			
 			AssertTrue( isObject(plugin) );
 		</cfscript>
@@ -53,7 +53,7 @@ Description :
 	<cffunction name="testCreateFeed" access="public" returntype="void" output="false">
 		<!--- Now test some events --->
 		<cfscript>
-			var plugin = getController().getPlugin("feedGenerator");
+			var plugin = getController().getPlugin("FeedGenerator");
 			var direactoryPath = ExpandPath('/coldbox/testing/tests/tmp/') & 'testrss.xml';
 			var xmlDoc = plugin.createFeed(feedStruct = variables.feedStruct, OutputFile = direactoryPath);
 		

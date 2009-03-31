@@ -265,7 +265,7 @@ Description :
 			]]></help>
 			<parameter name="plugin" type="string" required="true">
 				<help><![CDATA[
-					The name of the core plugin or custom plugin to create or get from cache. You can use dot notation for packaged plugins. ie (security.logger, logger)
+					The name of the core plugin or custom plugin to create or get from cache. You can use dot notation for packaged plugins. ie (security.Logger, Logger)
 				]]></help>
 				<values default="">
 					<value option="&quot;AntiSamy&quot;"/>
@@ -273,17 +273,16 @@ Description :
 					<value option="&quot;BeanFactory&quot;"/>
 					<value option="&quot;CFCViewer&quot;"/>
 					<value option="&quot;ClientStorage&quot;"/>
-					<value option="&quot;cookiestorage&quot;"/>
-					<value option="&quot;feedGenerator&quot;"/>
-					<value option="&quot;feedReader&quot;"/>
+					<value option="&quot;CookieStorage&quot;"/>
+					<value option="&quot;FeedGenerator&quot;"/>
+					<value option="&quot;FeedReader&quot;"/>
 					<value option="&quot;i18n&quot;"/>
-					<value option="&quot;ioc&quot;"/>
+					<value option="&quot;IOC&quot;"/>
 					<value option="&quot;JavaLoader&quot;"/>
-					<value option="&quot;json&quot;"/>
-					<value option="&quot;logger&quot;"/>
-					<value option="&quot;messagebox&quot;"/>
+					<value option="&quot;JSON&quot;"/>
+					<value option="&quot;Logger&quot;"/>
+					<value option="&quot;MessageBox&quot;"/>
 					<value option="&quot;methodInjector&quot;"/>
-					<value option="&quot;MTlogger&quot;"/>
 					<value option="&quot;queryHelper&quot;"/>
 					<value option="&quot;renderer&quot;"/>
 					<value option="&quot;resourceBundle&quot;"/>

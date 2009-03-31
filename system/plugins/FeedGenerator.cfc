@@ -89,14 +89,14 @@ Therefore, you must use the columnmap attribute to map the input query column na
 <cfset columnMapStruct.link = "ORDERID">
 
 ----------------------------------------------------------------------->
-<cfcomponent name="feedGenerator" 
+<cfcomponent name="FeedGenerator" 
 			 extends="coldbox.system.Plugin"
 			 hint="A feed generator plugin. This plugin only generates RSS 2.0 feeds."
 			 cache="true">
 
 <!---------------------------------------- CONSTRUCTOR --------------------------------------------------->
 
-	<cffunction name="init" access="public" returntype="feedGenerator" output="false" hint="Plugin Constructor.">
+	<cffunction name="init" access="public" returntype="FeedGenerator" output="false" hint="Plugin Constructor.">
 		<cfargument name="controller" type="any" required="true">
 		<cfscript>
 			/* Super */
@@ -266,7 +266,7 @@ Therefore, you must use the columnmap attribute to map the input query column na
 				if( not listfindnocase( fsKeys, listGetAt(mandatoryItems,x) ) ){
 					throw("Invalid feed structure found.",
 						  "The mandatory key: #listGetAt(mandatoryItems,x)# was not found in the structure",
-						  "ColdBox.plugins.feedGenerator.InvalidFeedStructure");
+						  "ColdBox.plugins.FeedGenerator.InvalidFeedStructure");
 				}
 			}
 			
@@ -289,7 +289,7 @@ Therefore, you must use the columnmap attribute to map the input query column na
 			/* Image Element Validation */
 			if( structKeyExists(arguments.feedStruct, "image") ){
 				if( not isStruct(arguments.feedStruct.image) ){
-					throw("Invalid image element.","The image element must be a structure containing the elements: url,title and link","ColdBox.feedGenerator.InvalidFeedStructure");
+					throw("Invalid image element.","The image element must be a structure containing the elements: url,title and link","ColdBox.FeedGenerator.InvalidFeedStructure");
 				}
 				if( not structKeyExists(arguments.feedStruct.image,"url") ){
 					arguments.feedStruct.image["url"] = "";
@@ -303,7 +303,7 @@ Therefore, you must use the columnmap attribute to map the input query column na
 			}
 			/* Query validation */
 			if( not isQuery(arguments.feedStruct.items) ){
-				throw("Invalid items query","The items element must be a valid query.","ColdBox.feedGenerator.InvalidFeedStructure");
+				throw("Invalid items query","The items element must be a valid query.","ColdBox.FeedGenerator.InvalidFeedStructure");
 			}			
 		</cfscript>
 	</cffunction>
@@ -366,7 +366,7 @@ Therefore, you must use the columnmap attribute to map the input query column na
 			var GMTTm = "";
 			/* Validate we have a real date to work with */
 			if( not isDate(arguments.targetDate) ){
-				throw("The date sent in for parsing is not valid","TargetDate: #arguments.targetDate#","ColdBox.feedGenerator.InvalidDate");
+				throw("The date sent in for parsing is not valid","TargetDate: #arguments.targetDate#","ColdBox.FeedGenerator.InvalidDate");
 			}
 			/* Calculate with offset the GMT DateTime Object */
 			GDT = dateAdd('s',TZ.utcTotalOffset,arguments.targetDate);

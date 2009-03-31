@@ -28,7 +28,7 @@ Description :
 		<cfargument name="event" required="true" type="coldbox.system.beans.RequestContext" hint="The event object.">
 		<cfargument name="interceptData" required="true" type="struct" hint="Metadata of intercepted info.">
 		<!--- ************************************************************* --->
-		<cfset getPlugin("logger").logEntry("information","an error ocurred")>
+		<cfset getPlugin("Logger").logEntry("information","an error ocurred")>
 		<cfscript>
 			appendToBuffer('<h1>This is a Test</h1>');
 		</cfscript>

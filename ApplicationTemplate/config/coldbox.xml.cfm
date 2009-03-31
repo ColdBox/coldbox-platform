@@ -126,7 +126,7 @@
 			<Setting name="cookiestorage_encryption_algorithm" value="CFMX_COMPAT or BD_DEFAULT"/>
 			
 			Messagebox Plugin (You can now override the storage scope without affecting all framework applications)
-			<Setting name="messagebox_storage_scope" value="session or client" />
+			<Setting name="MessageBox_storage_scope" value="session or client" />
 			
 			Complex Settings follow JSON Syntax. www.json.org.  
 			*IMPORTANT: use single quotes in this xml file for JSON notation, ColdBox will translate it to double quotes.

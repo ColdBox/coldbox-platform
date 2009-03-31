@@ -112,7 +112,7 @@ Description :
 				}
 				
 				/* Invalid Event Detected, log it */
-				controller.getPlugin("logger").logEntry("error","Invalid Event detected: #oEventHandlerBean.getRunnable()#");
+				controller.getPlugin("Logger").logEntry("error","Invalid Event detected: #oEventHandlerBean.getRunnable()#");
 				
 				/* If onInvalidEvent is registered, use it */
 				if ( controller.getSetting("onInvalidEvent") neq "" ){
@@ -248,7 +248,7 @@ Description :
 					}
 					else{
 						/* Log Invalid Event */
-						controller.getPlugin("logger").logEntry("error","Invalid Event detected: #HandlerReceived#.#MethodReceived#");
+						controller.getPlugin("Logger").logEntry("error","Invalid Event detected: #HandlerReceived#.#MethodReceived#");
 						/* Override Event */
 						HandlerBean.setHandler(reReplace(onInvalidEvent,"\.[^.]*$",""));
 						HandlerBean.setMethod(listLast(onInvalidEvent,"."));

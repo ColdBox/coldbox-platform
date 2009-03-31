@@ -13,7 +13,7 @@ Modification History:
 07/24/2007 - LightWire integration added by Aaron Roberson
 02/15/2007 - Created
 ----------------------------------------------------------------------->
-<cfcomponent name="ioc"
+<cfcomponent name="IOC"
 			 hint="An Inversion Of Control plugin."
 			 extends="coldbox.system.Plugin"
 			 output="false"
@@ -22,7 +22,7 @@ Modification History:
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
-	<cffunction name="init" access="public" returntype="ioc" output="false" hint="The ioc constructor">
+	<cffunction name="init" access="public" returntype="IOC" output="false" hint="The IOC constructor">
 		<!--- ************************************************************* --->
 		<cfargument name="controller" type="any" required="true" hint="coldbox.system.Controller">
 		<!--- ************************************************************* --->
@@ -30,13 +30,13 @@ Modification History:
 			super.Init(arguments.controller);
 			
 			/* Plugin Properties */
-			setpluginName("IoC");
+			setpluginName("IOC");
 			setpluginVersion("2.1");
 			setpluginDescription("This is an inversion of control plugin.");
 			
 			/* Setup the framework chosen in the config */
 			setIOCFramework( getSetting("IOCFramework") );
-			/* Setup the ioc definition file or cfc from the config */
+			/* Setup the IOC definition file or cfc from the config */
 			setIOCDefinitionFile( getSetting("IOCDefinitionFile") );
 			/* Setup the initial expanded file */
 			setExpandedIOCDefinitionFile("");
@@ -66,7 +66,7 @@ Modification History:
 
 	<!--- Configure the plugin --->
 	<cffunction name="configure" access="public" returntype="void" hint="Configure the IoC Plugin. Loads the IoC Factory and configures it." output="false">
-		<!--- Load the appropriate ioc Framework Bean Factory --->
+		<!--- Load the appropriate IOC Framework Bean Factory --->
 		<cfswitch expression="#lcase(getIOCFramework())#">
 
 			<cfcase value="coldspring">
@@ -80,7 +80,7 @@ Modification History:
 			</cfcase>
 
 			<cfdefaultcase>
-				<cfthrow type="ColdBox.plugins.ioc.InvalidIoCFramework" message="The only available IoC supported frameworks are coldspring and lightwire. You chose: #getIOCFramework()#">
+				<cfthrow type="plugins.IOC.InvalidIoCFramework" message="The only available IoC supported frameworks are coldspring and lightwire. You chose: #getIOCFramework()#">
 			</cfdefaultcase>
 		</cfswitch>
 
@@ -141,7 +141,7 @@ Modification History:
 							<cfset MetaData.cacheLastAccessTimeout = "">
 						</cfif>
 						<!--- Cache the object --->
-						<cflock name="ioc.objectCaching.#arguments.beanName#" type="exclusive" timeout="30" throwontimeout="true">
+						<cflock name="IOC.objectCaching.#arguments.beanName#" type="exclusive" timeout="30" throwontimeout="true">
 							<cfset getColdboxOCM().set(beanKey,oBean,metadata.cacheTimeout,metadata.cacheLastAccessTimeout)>
 						</cflock>
 					</cfif>
@@ -221,7 +221,7 @@ Modification History:
 			foundFilePath = locateFilePath(getIOCDefinitionFile());
 			/* Validate it */
 			if( len(foundFilePath) eq 0 ){
-				throw("The definition file: #getIOCDefinitionFile()# does not exist. Please check your path","","ColdBox.plugins.ioc.InvalidDefitinionFile");
+				throw("The definition file: #getIOCDefinitionFile()# does not exist. Please check your path","","plugins.IOC.InvalidDefitinionFile");
 			}
 			/* Save the found location path */
 			setExpandedIOCDefinitionFile( foundFilePath );

@@ -532,7 +532,7 @@ Modification History:
 					tester = oUtilities.placeHolderReplacer(trim(YourSettingNodes[i].XMLAttributes["value"]),ConfigStruct);
 					//Test for JSON
 					if( reFindNocase(instance.jsonRegex,tester) ){
-						StructInsert(ConfigStruct, YourSettingNodes[i].XMLAttributes["name"], getPlugin("json").decode(replace(tester,"'","""","all")) );
+						StructInsert(ConfigStruct, YourSettingNodes[i].XMLAttributes["name"], getPlugin("JSON").decode(replace(tester,"'","""","all")) );
 					}
 					else
 						StructInsert( ConfigStruct, YourSettingNodes[i].XMLAttributes["name"], tester);
@@ -1020,7 +1020,7 @@ Modification History:
 						tempProperty = oUtilities.placeHolderReplacer(Trim( InterceptorNodes[i].XMLChildren[j].XMLText ),ConfigStruct);
 						//Check for Complex Setup
 						if( reFindNocase(instance.jsonRegex,tempProperty) ){
-							StructInsert( InterceptorStruct.properties, Trim(InterceptorNodes[i].XMLChildren[j].XMLAttributes["name"]), getPlugin('json').decode(replace(tempProperty,"'","""","all")) );
+							StructInsert( InterceptorStruct.properties, Trim(InterceptorNodes[i].XMLChildren[j].XMLAttributes["name"]), getPlugin('JSON').decode(replace(tempProperty,"'","""","all")) );
 						}
 						else{
 							StructInsert( InterceptorStruct.properties, Trim(InterceptorNodes[i].XMLChildren[j].XMLAttributes["name"]), tempProperty );

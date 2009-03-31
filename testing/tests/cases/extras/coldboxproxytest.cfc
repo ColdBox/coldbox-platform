@@ -92,7 +92,7 @@ Description :
 		/* Verify Test */
 		proxy.invokerMixin("verifyColdBox");
 		/* GetPlugin */
-		local.plugin = proxy.invokerMixin(method='getPlugin',argList="plugin=logger");
+		local.plugin = proxy.invokerMixin(method='getPlugin',argList="plugin=Logger");
 		AssertTrue( isObject(local.plugin) );
 		
 		/* Get IOCFactory */

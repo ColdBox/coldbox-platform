@@ -23,7 +23,7 @@ Description :   Logger Plugin Test
 	<cffunction name="testAPlugin" access="public" returntype="void" output="false">
 		<!--- Now test some events --->
 		<cfscript>
-			var plugin = getController().getPlugin("logger");
+			var plugin = getController().getPlugin("Logger");
 			
 			AssertTrue( isObject(plugin) );
 			
@@ -33,7 +33,7 @@ Description :   Logger Plugin Test
 	<cffunction name="testMethods" access="public" returntype="void" output="false">
 		<!--- Now test some events --->
 		<cfscript>
-			var plugin = getController().getPlugin("logger");
+			var plugin = getController().getPlugin("Logger");
 			
 			AssertEquals(2, plugin.getlogLevel("tester"), "Log level --- Test");
 			plugin.setlogLevel(4);

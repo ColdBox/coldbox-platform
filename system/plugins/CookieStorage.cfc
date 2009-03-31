@@ -9,12 +9,12 @@ Date     :	October 15, 2007
 Description :
 	This is a plugin that enables the setting/getting of permanent variables in	the cookie scope.
 	Usage: 
-	set		controller.getPlugin("cookiestorage").setVar(name="name1",value="hello1",expires="11")
-	get		controller.getPlugin("cookiestorage").getVar(name="name1")
+	set		controller.getPlugin("CookieStorage").setVar(name="name1",value="hello1",expires="11")
+	get		controller.getPlugin("CookieStorage").getVar(name="name1")
 Modification History: March 23,2008 Added new feature to encrypt/decrypt cookie value
 
 ----------------------------------------------------------------------->
-<cfcomponent name="cookiestorage"
+<cfcomponent name="CookieStorage"
 			 hint="Cookie Storage plugin. It provides the user with a mechanism for permanent data storage using the cookie scope."
 			 extends="coldbox.system.Plugin"
 			 output="false"
@@ -22,7 +22,7 @@ Modification History: March 23,2008 Added new feature to encrypt/decrypt cookie 
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
-	<cffunction name="init" access="public" returntype="cookiestorage" output="false" hint="Constructor.">
+	<cffunction name="init" access="public" returntype="CookieStorage" output="false" hint="Constructor.">
 		<!--- ************************************************************* --->
 		<cfargument name="controller" type="any" required="true" hint="coldbox.system.Controller">
 		<!--- ************************************************************* --->
@@ -46,16 +46,16 @@ Modification History: March 23,2008 Added new feature to encrypt/decrypt cookie 
 			}
 			
 			/* Do we Encrypt. */
-			if(settingExists('cookiestorage_encryption') and isBoolean(getSetting('cookiestorage_encryption'))){
-				setEncryption(getSetting('cookiestorage_encryption'));
+			if(settingExists('CookieStorage_encryption') and isBoolean(getSetting('CookieStorage_encryption'))){
+				setEncryption(getSetting('CookieStorage_encryption'));
 			}
 			/* Override the Seed if sent in. */
-			if(settingExists('cookiestorage_encryption_seed') and len(getSetting('cookiestorage_encryption_seed'))){
-				setEncryptionKey(getSetting('cookiestorage_encryption_seed'));
+			if(settingExists('CookieStorage_encryption_seed') and len(getSetting('CookieStorage_encryption_seed'))){
+				setEncryptionKey(getSetting('CookieStorage_encryption_seed'));
 			}
 			/* Override the Algorithm if used. */
-			if(settingExists('cookiestorage_encryption_algorithm') and len(getSetting('cookiestorage_encryption_algorithm'))){
-				setEncryptionAlgorithm(getSetting('cookiestorage_encryption_algorithm'));
+			if(settingExists('CookieStorage_encryption_algorithm') and len(getSetting('CookieStorage_encryption_algorithm'))){
+				setEncryptionAlgorithm(getSetting('CookieStorage_encryption_algorithm'));
 			}
 			
 			/* Return Instance. */
