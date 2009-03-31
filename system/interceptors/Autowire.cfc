@@ -13,7 +13,7 @@ Description :
 	application aspects to be in place.
 	
 ----------------------------------------------------------------------->
-<cfcomponent name="autowire"
+<cfcomponent name="Autowire"
 			 hint="This is an autowire interceptor"
 			 output="false"
 			 extends="coldbox.system.Interceptor">
@@ -35,8 +35,8 @@ Description :
 				setProperty("enableSetterInjection",'true');
 			}		
 			
-			/* Create our beanFactory plugin, we do this here, because we need it not to execute an endless loop */
-			instance.beanFactory = getPlugin("beanFactory");	
+			/* Create our BeanFactory plugin, we do this here, because we need it not to execute an endless loop */
+			instance.beanFactory = getPlugin("BeanFactory");	
 		</cfscript>
 	</cffunction>
 
@@ -63,7 +63,7 @@ Description :
 				arguments.interceptData.interceptorPath = INTERCEPTOR_CACHEKEY_PREFIX & interceptorConfig.interceptors[x].class;
 				
 				/* Exclude yourself */
-				if( not findnocase("coldbox.system.Interceptors.autowire",interceptorConfig.interceptors[x].class) ){
+				if( not findnocase("coldbox.system.interceptors.Autowire",interceptorConfig.interceptors[x].class) ){
 					
 					/* No locking necessary here, since the after aspects load is executed in thread safe conditions */
 					
@@ -130,7 +130,7 @@ Description :
 			}
 			
 			/* Exclude the core plugins from autowires */
-			if( not findnocase("coldbox.system.Plugins",targetPath) ){
+			if( not findnocase("coldbox.system.plugins",targetPath) ){
 				/* Process Autowire */
 				instance.beanFactory.autowire(target=targetObject,
 											  useSetterInjection=getProperty('enableSetterInjection'),

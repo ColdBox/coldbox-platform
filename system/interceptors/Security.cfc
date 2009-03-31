@@ -15,7 +15,7 @@ and the user's credentials on roles and/or permissions.
 	
 For the latest usage, please visit the wiki.
 ----------------------------------------------------------------------->
-<cfcomponent name="security"
+<cfcomponent name="Security"
 			 hint="This is a security interceptor"
 			 output="false"
 			 extends="coldbox.system.Interceptor">
@@ -36,12 +36,12 @@ For the latest usage, please visit the wiki.
 			}
 			/* Source Checks */
 			if( not propertyExists('rulesSource') ){
-				throw(message="The rulesSource property has not been set.",type="interceptors.security.settingUndefinedException");
+				throw(message="The rulesSource property has not been set.",type="interceptors.Security.settingUndefinedException");
 			}
 			if( not reFindnocase("^(xml|db|ioc|ocm|model)$",getProperty('rulesSource')) ){
 				throw(message="The rules source you set is invalid: #getProperty('rulesSource')#.",
 					  detail="The valid sources are xml,db,ioc, model and ocm.",
-					  type="interceptors.security.settingUndefinedException");
+					  type="interceptors.Security.settingUndefinedException");
 			}
 			/* Query Checks */
 			if( not propertyExists("queryChecks") or not isBoolean(getProperty("queryChecks")) ){
@@ -106,7 +106,7 @@ For the latest usage, please visit the wiki.
 					setValidator(oValidator);
 				}
 				catch(Any e){
-					throw("Error creating validator",e.message & e.detail, "interceptors.security.validatorCreationException");
+					throw("Error creating validator",e.message & e.detail, "interceptors.Security.validatorCreationException");
 				}
 			}
 			/* See if using validator from ioc */
@@ -116,7 +116,7 @@ For the latest usage, please visit the wiki.
 					setValidator( getPlugin("ioc").getBean(getProperty('validatorIOC')) );
 				}
 				catch(Any e){
-					throw("Error creating validatorIOC",e.message & e.detail, "interceptors.security.validatorCreationException");
+					throw("Error creating validatorIOC",e.message & e.detail, "interceptors.Security.validatorCreationException");
 				}
 			}
 			/* See if using validator from model */
@@ -126,7 +126,7 @@ For the latest usage, please visit the wiki.
 					setValidator( getModel(getProperty('validatorModel') ) );
 				}
 				catch(Any e){
-					throw("Error creating validatorModel",e.message & e.detail, "interceptors.security.validatorCreationException");
+					throw("Error creating validatorModel",e.message & e.detail, "interceptors.Security.validatorCreationException");
 				}
 			}
 		</cfscript>
@@ -241,7 +241,7 @@ For the latest usage, please visit the wiki.
 				setValidator(arguments.validatorObject);
 			}
 			else{
-				throw(message="Validator object does not have a 'userValidator' method ",type="interceptors.security.validatorException");
+				throw(message="Validator object does not have a 'userValidator' method ",type="interceptors.Security.validatorException");
 			}
 		</cfscript>
 	</cffunction>	
@@ -304,7 +304,7 @@ For the latest usage, please visit the wiki.
 			rulesFile = locateFilePath(getProperty('rulesFile'));
 			/* Validate Location */
 			if( len(rulesFile) eq 0 ){
-				throw('Security Rules File could not be located: #getProperty('rulesFile')#. Please check again.','','interceptors.security.rulesFileNotFound');
+				throw('Security Rules File could not be located: #getProperty('rulesFile')#. Please check again.','','interceptors.Security.rulesFileNotFound');
 			}
 			
 			/* Set the correct expanded path now */
@@ -403,7 +403,7 @@ For the latest usage, please visit the wiki.
 		
 		<!--- Get Rules From OCM --->
 		<cfif not getColdboxOCM().lookup(getProperty('rulesOCMkey'))>
-			<cfthrow message="No key #getProperty('rulesOCMKey')# in the OCM." type="interceptors.security.invalidOCMKey">
+			<cfthrow message="No key #getProperty('rulesOCMKey')# in the OCM." type="interceptors.Security.invalidOCMKey">
 		<cfelse>
 			<cfset qRules = getColdboxOCM().get(getProperty('rulesOCMKey'))>
 		</cfif>
@@ -429,7 +429,7 @@ For the latest usage, please visit the wiki.
 			<!--- Validate Query --->
 			<cfloop list="#validColumns#" index="col">
 				<cfif not listfindnocase(arguments.qRules.columnlist,col)>
-					<cfthrow message="The required column: #col# was not found in the rules query" type="interceptors.security.invalidRuleQuery">
+					<cfthrow message="The required column: #col# was not found in the rules query" type="interceptors.Security.invalidRuleQuery">
 				</cfif>
 			</cfloop>
 		</cfif>
@@ -474,7 +474,7 @@ For the latest usage, please visit the wiki.
 				{
 					/* Check if file property exists */
 					if( not propertyExists('rulesFile') ){
-						throw(message="Missing setting for XML source: rulesFile ",type="interceptors.security.settingUndefinedException");
+						throw(message="Missing setting for XML source: rulesFile ",type="interceptors.Security.settingUndefinedException");
 					}
 					break;
 				}//end of xml check
@@ -483,11 +483,11 @@ For the latest usage, please visit the wiki.
 				{
 					/* Check for DSN */
 					if( not propertyExists('rulesDSN') ){
-						throw(message="Missing setting for DB source: rulesDSN ",type="interceptors.security.settingUndefinedException");
+						throw(message="Missing setting for DB source: rulesDSN ",type="interceptors.Security.settingUndefinedException");
 					}
 					/* Check for table */
 					if( not propertyExists('rulesTable') ){
-						throw(message="Missing setting for DB source: rulesTable ",type="interceptors.security.settingUndefinedException");
+						throw(message="Missing setting for DB source: rulesTable ",type="interceptors.Security.settingUndefinedException");
 					}
 					/* Optional DB settings are checked when loading rules. */
 					break;
@@ -497,10 +497,10 @@ For the latest usage, please visit the wiki.
 				{
 					/* Check for bean */
 					if( not propertyExists('rulesBean') ){
-						throw(message="Missing setting for ioc source: rulesBean ",type="interceptors.security.settingUndefinedException");
+						throw(message="Missing setting for ioc source: rulesBean ",type="interceptors.Security.settingUndefinedException");
 					}
 					if( not propertyExists('rulesBeanMethod') ){
-						throw(message="Missing setting for ioc source: rulesBeanMethod ",type="interceptors.security.settingUndefinedException");
+						throw(message="Missing setting for ioc source: rulesBeanMethod ",type="interceptors.Security.settingUndefinedException");
 					}
 					
 					break;
@@ -510,10 +510,10 @@ For the latest usage, please visit the wiki.
 				{
 					/* Check for bean */
 					if( not propertyExists('rulesModel') ){
-						throw(message="Missing setting for model source: rulesModel ",type="interceptors.security.settingUndefinedException");
+						throw(message="Missing setting for model source: rulesModel ",type="interceptors.Security.settingUndefinedException");
 					}
 					if( not propertyExists('rulesModelMethod') ){
-						throw(message="Missing setting for model source: rulesModelMethod ",type="interceptors.security.settingUndefinedException");
+						throw(message="Missing setting for model source: rulesModelMethod ",type="interceptors.Security.settingUndefinedException");
 					}
 					
 					break;
@@ -523,7 +523,7 @@ For the latest usage, please visit the wiki.
 				{
 					/* Check for bean */
 					if( not propertyExists('rulesOCMkey') ){
-						throw(message="Missing setting for ioc source: rulesOCMkey ",type="interceptors.security.settingUndefinedException");
+						throw(message="Missing setting for ioc source: rulesOCMkey ",type="interceptors.Security.settingUndefinedException");
 					}
 					break;
 				}//end of OCM check			

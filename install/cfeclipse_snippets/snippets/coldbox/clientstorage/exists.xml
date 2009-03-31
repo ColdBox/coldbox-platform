@@ -2,6 +2,6 @@
 <snippet filetemplate="false" extension="cfm">
 <name>exists</name>
 <help>Client Storage exists</help>
-<starttext><![CDATA[getPlugin("clientstorage").exists("$${Variable Name}")]]></starttext>
+<starttext><![CDATA[getPlugin("ClientStorage").exists("$${Variable Name}")]]></starttext>
 <endtext><![CDATA[]]></endtext>
 </snippet>

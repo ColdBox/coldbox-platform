@@ -41,7 +41,7 @@ Description :
 		obj = factory.getPlugin("logger");
 		AssertEquals(getController().getPlugin("logger"), obj, "Logger Plugin");
 		
-		AssertTrue( isObject(factory.getInterceptor("coldbox.system.Interceptors.ses")), "Interceptor");
+		AssertTrue( isObject(factory.getInterceptor("coldbox.system.interceptors.SES")), "Interceptor");
 		
 		obj = factory.getPlugin("date",true);
 		AssertTrue(structKeyExists(obj,"getToday"), "Date Plugin");

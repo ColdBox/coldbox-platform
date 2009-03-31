@@ -10,7 +10,7 @@
 		o#root.bean.xmlAttributes.name#Bean = oService.get#root.bean.xmlAttributes.name#(0);
 		
 		//Populate the bean
-		getPlugin("beanFactory").populateBean(o#root.bean.xmlAttributes.name#Bean);
+		getPlugin("BeanFactory").populateBean(o#root.bean.xmlAttributes.name#Bean);
 				
 		//Send to service for saving
 		oService.save#root.bean.xmlAttributes.name#(o#root.bean.xmlAttributes.name#Bean);

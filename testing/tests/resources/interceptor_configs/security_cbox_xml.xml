@@ -74,7 +74,7 @@
 	</Cache>
 	
 	<Interceptors throwOnInvalidStates="true">
-		<Interceptor class="coldbox.system.Interceptors.security">
+		<Interceptor class="coldbox.system.interceptors.Security">
 			<Property name="rulesSource">xml</Property>
 			<Property name="rulesFile">/applications/coldbox/testing/tests/resources/security.xml.cfm</Property>
 			<Property name="debugMode">true</Property>

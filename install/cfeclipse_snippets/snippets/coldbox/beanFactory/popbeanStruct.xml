@@ -2,6 +2,6 @@
 <snippet filetemplate="false" extension="cfm">
 <name>popbeanStruct</name>
 <help></help>
-<starttext><![CDATA[getPlugin("beanFactory").populateFromStruct($${Bean Instance}, $${struct})]]></starttext>
+<starttext><![CDATA[getPlugin("BeanFactory").populateFromStruct($${Bean Instance}, $${struct})]]></starttext>
 <endtext><![CDATA[]]></endtext>
 </snippet>

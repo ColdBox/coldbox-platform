@@ -13,7 +13,7 @@ Description :
 Modification History:
 
 ----------------------------------------------------------------------->
-<cfcomponent name="applicationstorage"
+<cfcomponent name="ApplicationStorage"
 			 hint="Application Storage plugin. It provides the user with a mechanism for permanent data storage using the application scope."
 			 extends="coldbox.system.Plugin"
 			 output="false"
@@ -21,7 +21,7 @@ Modification History:
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
-	<cffunction name="init" access="public" returntype="applicationstorage" output="false">
+	<cffunction name="init" access="public" returntype="ApplicationStorage" output="false">
 		<!--- ************************************************************* --->
 		<cfargument name="controller" type="any" required="true" hint="coldbox.system.Controller">
 		<!--- ************************************************************* --->

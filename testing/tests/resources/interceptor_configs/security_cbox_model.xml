@@ -74,7 +74,7 @@ xsi:noNamespaceSchemaLocation="http://www.coldboxframework.com/schema/config_2.6
 	</Cache>
 	
 	<Interceptors throwOnInvalidStates="true">
-		<Interceptor class="coldbox.system.Interceptors.security">
+		<Interceptor class="coldbox.system.interceptors.Security">
 			<Property name="rulesSource">model</Property>
 			<Property name="rulesModel">security</Property>
 			<Property name="rulesModelMethod">getRules</Property>

@@ -130,7 +130,7 @@
 			mockCollection = {test='luis', today=now(), lastname="majano"};
 			varStruct = {test="Jose", myVar="nothing"};
 			
-			mocksession = createObject("component","coldbox.system.Plugins.sessionstorage").init(controller);
+			mocksession = createObject("component","coldbox.system.plugins.sessionstorage").init(controller);
 			
 			context = mockFactory.createMock('coldbox.system.beans.RequestContext');
 			context.mockMethod('getCollection').returns(mockCollection,mockCollection);
@@ -162,7 +162,7 @@
 			mockCollection = {test='luis', today=now(), lastname="majano"};
 			varStruct = {test="Jose", myVar="nothing"};
 			
-			mocksession = createObject("component","coldbox.system.Plugins.clientstorage").init(controller);
+			mocksession = createObject("component","coldbox.system.plugins.ClientStorage").init(controller);
 			
 			context = mockFactory.createMock('coldbox.system.beans.RequestContext');
 			context.mockMethod('getCollection').returns(mockCollection,mockCollection);

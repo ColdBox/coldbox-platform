@@ -20,7 +20,8 @@ Description :
 
 
 ----------------------------------------------------------------------->
-<cfcomponent hint="ENVIRONMENT settings interceptor"
+<cfcomponent name="EnvironmentControl"
+			 hint="ENVIRONMENT settings interceptor"
 			 extends="coldbox.system.Interceptor"
 			 output="false">
 
@@ -32,13 +33,13 @@ Description :
 			
 			/* Verify that the configFile propety is set */
 			if( not propertyExists('configFile') ){
-				throw("Config File property does not exist. Please declare it.",'','interceptors.environmentControl.configFilePropertyNotDefined');
+				throw("Config File property does not exist. Please declare it.",'','interceptors.EnvironmentControl.configFilePropertyNotDefined');
 			}
 			/* Try to locate the path */
 			configFile = locateFilePath(getProperty('configFile'));
 			/* Validate it */
 			if( len(configFile) eq 0 ){
-				throw('Config File could not be located: #getProperty('configFile')#. Please check again.','','interceptors.environmentControl.configFileNotFound');
+				throw('Config File could not be located: #getProperty('configFile')#. Please check again.','','interceptors.EnvironmentControl.configFileNotFound');
 			}
 			
 			/* execute check */
@@ -106,7 +107,7 @@ Description :
 			environmentsArray = xmlSearch(oXML, '/environmentcontrol/environment');
 			
 			if( arrayLen(environmentsArray) eq 0){
-				throw("No environment elements found.","Please check your environment file again","interceptors.environmentControl.elementException");
+				throw("No environment elements found.","Please check your environment file again","interceptors.EnvironmentControl.elementException");
 			}
 			/* Detect the environment */
 			ENVIRONMENT = detectEnvironment(environmentsArray);

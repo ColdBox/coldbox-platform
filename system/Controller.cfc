@@ -500,7 +500,7 @@ Description		: This is the main ColdBox front Controller.
 		<cfif getSetting("FlashURLPersistScope",1) eq "session">
 			<cfset oStorage = getPlugin("sessionstorage")>
 		<cfelse>
-			<cfset oStorage = getPlugin("clientstorage")>
+			<cfset oStorage = getPlugin("ClientStorage")>
 		</cfif>
 		
 		<!--- Check for Existance --->

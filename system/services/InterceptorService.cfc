@@ -150,7 +150,7 @@ Description :
 				
 				/* Autowire this interceptor only if called after aspect registration */
 				if( getController().getAspectsInitiated() ){
-					getController().getPlugin("beanFactory").autowire(target=oInterceptor,annotationCheck=true);
+					getController().getPlugin("BeanFactory").autowire(target=oInterceptor,annotationCheck=true);
 				}			
 			</cfscript>
 		</cflock>

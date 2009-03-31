@@ -24,7 +24,7 @@ Description :
 	<cffunction name="testPlugin" access="public" returntype="void" output="false">
 		<!--- Now test some events --->
 		<cfscript>
-			var plugin = getController().getPlugin("clientstorage");
+			var plugin = getController().getPlugin("ClientStorage");
 			
 			AssertTrue( isObject(plugin) );
 			
@@ -34,7 +34,7 @@ Description :
 	<cffunction name="testMethods" access="public" returntype="void" output="false">
 		<!--- Now test some events --->
 		<cfscript>
-			var plugin = getController().getPlugin("clientstorage");
+			var plugin = getController().getPlugin("ClientStorage");
 			var complex = structnew();
 			
 			complex.date = now();

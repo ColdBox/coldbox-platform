@@ -2,6 +2,6 @@
 <snippet filetemplate="false" extension="cfm">
 <name>popBeanInstance</name>
 <help>Populates a bean with an already created instance.</help>
-<starttext><![CDATA[getPlugin("beanFactory").populateBean($${Bean Instance})]]></starttext>
+<starttext><![CDATA[getPlugin("BeanFactory").populateBean($${Bean Instance})]]></starttext>
 <endtext><![CDATA[]]></endtext>
 </snippet>

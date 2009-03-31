@@ -2,6 +2,6 @@
 <snippet filetemplate="false" extension="cfm">
 <name>popbeanJSON</name>
 <help>Populate a bean with a json object</help>
-<starttext><![CDATA[getPlugin("beanFactory").populateFromJSON($${Bean Instance}, $${JSON})]]></starttext>
+<starttext><![CDATA[getPlugin("BeanFactory").populateFromJSON($${Bean Instance}, $${JSON})]]></starttext>
 <endtext><![CDATA[]]></endtext>
 </snippet>

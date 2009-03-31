@@ -60,9 +60,9 @@ Modification History:
 		
 		state = this.iservice.getStateContainer('preProcess');
 		
-		this.iservice.unregister('coldbox.system.Interceptors.ses','preProcess');
+		this.iservice.unregister('coldbox.system.interceptors.SES','preProcess');
 		
-		interceptor = state.getInterceptor(this.iservice.INTERCEPTOR_CACHEKEY_PREFIX & 'coldbox.system.Interceptors.ses');
+		interceptor = state.getInterceptor(this.iservice.INTERCEPTOR_CACHEKEY_PREFIX & 'coldbox.system.interceptors.SES');
 		
 		AssertFalse( isObject(interceptor) );	
 		

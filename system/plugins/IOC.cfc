@@ -124,7 +124,7 @@ Modification History:
 			<!--- Caching & Autowire only for CFC's Not Java objects --->
 			<cfif isStruct(MetaData)>
 				<!--- Autowire Support For IoC Objects --->
-				<cfset getPlugin("beanFactory").autowire(target=oBean,annotationCheck=true)>
+				<cfset getPlugin("BeanFactory").autowire(target=oBean,annotationCheck=true)>
 				<!--- If Caching on, then set object in cache --->
 				<cfif objCaching>
 					<!--- By Default, services with no cache flag are set to false --->

@@ -94,7 +94,7 @@ Description :
 			if( getProperty("LoadBeanInjector") ){
 				/* Setup Arguments */
 				TDOArgs.transfer = Transfer;
-				TDOArgs.ColdBoxBeanFactory = getPlugin("beanFactory");
+				TDOArgs.ColdBoxBeanFactory = getPlugin("BeanFactory");
 				/* Create TDO */
 				TDO = CreateObject("component","coldbox.system.orm.transfer.TDOBeanInjectorObserver").init(argumentCollection=TDOArgs);
 			}

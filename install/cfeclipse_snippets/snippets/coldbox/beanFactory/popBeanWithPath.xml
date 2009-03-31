@@ -2,6 +2,6 @@
 <snippet filetemplate="false" extension="cfm">
 <name>popBeanWithPath</name>
 <help>Populates a bean, but the path to the bean is passed. The factory creates and populates.</help>
-<starttext><![CDATA[getPlugin("beanFactory").populateBean("$${Bean instantiation path}")]]></starttext>
+<starttext><![CDATA[getPlugin("BeanFactory").populateBean("$${Bean instantiation path}")]]></starttext>
 <endtext><![CDATA[]]></endtext>
 </snippet>

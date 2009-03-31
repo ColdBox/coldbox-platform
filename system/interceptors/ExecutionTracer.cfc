@@ -9,7 +9,7 @@ Date        :	9/28/2007
 Description :
 	This methods just traces what plugin points it intercepted.
 ----------------------------------------------------------------------->
-<cfcomponent name="executionTracer"
+<cfcomponent name="ExecutionTracer"
 			 hint="This is a simple tracer"
 			 output="false"
 			 extends="coldbox.system.Interceptor">

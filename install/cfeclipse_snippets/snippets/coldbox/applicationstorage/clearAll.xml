@@ -2,6 +2,6 @@
 <snippet filetemplate="false" extension="cfm">
 <name>clearAll</name>
 <help>Clear All</help>
-<starttext><![CDATA[ getPlugin("applicationstorage").clearAll()]]></starttext>
+<starttext><![CDATA[ getPlugin("ApplicationStorage").clearAll()]]></starttext>
 <endtext><![CDATA[]]></endtext>
 </snippet>

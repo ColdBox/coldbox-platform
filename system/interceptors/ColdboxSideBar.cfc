@@ -16,7 +16,7 @@ Modification History:
 					   isScroll property implemented. Changed xml location (SideBar=ColdBoxSideBar)
 10/13/2008 evdlinden : added waitTimeBeforeOpen property					   
 ----------------------------------------------------------------------->
-<cfcomponent name="coldboxSideBar" output="false" extends="coldbox.system.Interceptor" hint="The ColdBox Developer Side Bar">
+<cfcomponent name="ColdboxSideBar" output="false" extends="coldbox.system.Interceptor" hint="The ColdBox Developer Side Bar">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 	

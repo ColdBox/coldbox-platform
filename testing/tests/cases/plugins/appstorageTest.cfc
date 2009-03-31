@@ -24,7 +24,7 @@ Description :
 	<cffunction name="testPlugin" access="public" returntype="void" output="false">
 		<!--- Now test some events --->
 		<cfscript>
-			var plugin = getController().getPlugin("applicationstorage");
+			var plugin = getController().getPlugin("ApplicationStorage");
 			assertTrue( isStruct(plugin.getStorage()), "Application storage check");
 			
 		</cfscript>
@@ -33,7 +33,7 @@ Description :
 	<cffunction name="testMethods" access="public" returntype="void" output="false">
 		<!--- Now test some events --->
 		<cfscript>
-			var plugin = getController().getPlugin("applicationstorage");
+			var plugin = getController().getPlugin("ApplicationStorage");
 			
 			plugin.setVar("tester", 1);
 			

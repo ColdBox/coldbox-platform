@@ -12,7 +12,7 @@ Description :
 <cfcomponent name="executionTracer"
 			 hint="This is a simple tracer"
 			 output="false"
-			 extends="coldbox.system.Interceptors.executionTracer">
+			 extends="coldbox.system.interceptors.ExecutionTracer">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 

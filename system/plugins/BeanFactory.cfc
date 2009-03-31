@@ -9,8 +9,8 @@ Date:   July 28, 2006
 Description: This is the framework's simple bean factory.
 
 ----------------------------------------------------------------------->
-<cfcomponent name="beanFactory"
-			 hint="I am the ColdBox beanFactory plugin that takes care of autowiring and dependency injection"
+<cfcomponent name="BeanFactory"
+			 hint="I am the ColdBox BeanFactory plugin that takes care of autowiring and dependency injection"
 			 extends="coldbox.system.Plugin"
 			 output="false"
 			 cache="true"
@@ -18,7 +18,7 @@ Description: This is the framework's simple bean factory.
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
-	<cffunction name="init" access="public" returntype="beanFactory" output="false" hint="constructor">
+	<cffunction name="init" access="public" returntype="BeanFactory" output="false" hint="constructor">
 		<!--- ************************************************************* --->
 		<cfargument name="controller" type="any" required="true" hint="coldbox.system.Controller">
 		<!--- ************************************************************* --->
@@ -49,15 +49,15 @@ Description: This is the framework's simple bean factory.
 					include(modelMappingsFile);
 				}
 				catch(Any e){
-					throw("Error including model mappings file: #e.message#",e.detail,"plugin.beanFactory.ModelMappingsIncludeException");
+					throw("Error including model mappings file: #e.message#",e.detail,"plugin.BeanFactory.ModelMappingsIncludeException");
 				}
 			}
 			
 			/* Default Constructor Argument Marker */
 			instance.dslMarker = "_wireme";
 			/* Check setting For Argument Marker Override */
-			if( settingExists("beanFactory_dslMarker") ){
-				instance.dslMarker = getSetting("beanFactory_dslMarker");
+			if( settingExists("BeanFactory_dslMarker") ){
+				instance.dslMarker = getSetting("BeanFactory_dslMarker");
 			}
 			
 			/* Not Found Marker Constant */
@@ -115,7 +115,7 @@ Description: This is the framework's simple bean factory.
 				return beanInstance;
 			}
 			Catch(Any e){
-				throw("Error creating bean: #arguments.bean#","#e.Detail#<br>#e.message#","ColdBox.plugins.beanFactory.BeanCreationException");
+				throw("Error creating bean: #arguments.bean#","#e.Detail#<br>#e.message#","ColdBox.plugins.BeanFactory.BeanCreationException");
 			}
 		</cfscript>
 	</cffunction>
@@ -218,7 +218,7 @@ Description: This is the framework's simple bean factory.
 				</cfscript>
 			</cflock>
 		<cfelse>
-			<cfset throw("Model #arguments.name# was not found","The model path is not valid: #checkPath# or external path: #checkExternalPath#","plugin.beanFactory.modelNotFoundException")>
+			<cfset throw("Model #arguments.name# was not found","The model path is not valid: #checkPath# or external path: #checkExternalPath#","plugin.BeanFactory.modelNotFoundException")>
 		</cfif>
 		
 		<cfreturn oModel>
@@ -363,7 +363,7 @@ Description: This is the framework's simple bean factory.
 				else{
 		        	arguments.keyTypeAsString = arguments.memento[key].getClass().getCanonicalName();
 				}
-				throw(type="ColdBox.plugins.beanFactory.PopulateBeanException",
+				throw(type="ColdBox.plugins.BeanFactory.PopulateBeanException",
 					  message="Error populating bean #getMetaData(beanInstance).name# with argument #key# of type #arguments.keyTypeAsString#.",
 					  detail="#e.Detail#<br>#e.message#");
 			}

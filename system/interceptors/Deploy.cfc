@@ -21,7 +21,7 @@ Instructions:
 - Place the _deploy.tag and deploy.xml ANT task in your /config directory of your application.
 - Add the Deploy interceptor declaration
 
-<Interceptor class="coldbox.system.Interceptors.deploy">
+<Interceptor class="coldbox.system.interceptors.Deploy">
 	<Property name="tagFile">config/_deploy.tag</Property>
 	<Property name="deployCommandObject">model.deployCommand</Property>
 </Interceptor>
@@ -50,7 +50,8 @@ any kind of cleanup code or anything you like:
 </cfcomponent>
 	
 ----------------------------------------------------------------------->
-<cfcomponent hint="Deployment Control Interceptor"
+<cfcomponent name="Deploy"
+			 hint="Deployment Control Interceptor"
 			 extends="coldbox.system.Interceptor"
 			 output="false">
 	
@@ -73,7 +74,7 @@ any kind of cleanup code or anything you like:
 			
 			/* Validate it */
 			if( len(instance.tagFilepath) eq 0 ){
-				throw('Tag file not found: #getProperty('tagFile')#. Please check again.','','interceptors.deploy.tagFileNotFound');
+				throw('Tag file not found: #getProperty('tagFile')#. Please check again.','','interceptors.Deploy.tagFileNotFound');
 			}
 			
 			/* Save TimeStamp */

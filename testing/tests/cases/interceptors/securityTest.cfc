@@ -183,11 +183,11 @@ Description :
 		AssertTrue(isObject(validator));
 		
 		/* Register */
-		getInterceptor('coldbox.system.Interceptors.security').registerValidator(validator);
+		getInterceptor('coldbox.system.interceptors.Security').registerValidator(validator);
 		
 		/* Test */
 		event.setValue('event','admin.list');
-		getInterceptor('coldbox.system.Interceptors.security').preProcess(event,structnew());
+		getInterceptor('coldbox.system.interceptors.Security').preProcess(event,structnew());
 				
 		</cfscript>
 	</cffunction>
@@ -207,7 +207,7 @@ Description :
 		
 		/* Test */
 		event.setValue('event','admin.list');
-		getInterceptor('coldbox.system.Interceptors.security').preProcess(event,structnew());
+		getInterceptor('coldbox.system.interceptors.Security').preProcess(event,structnew());
 		</cfscript>
 	</cffunction>
 	

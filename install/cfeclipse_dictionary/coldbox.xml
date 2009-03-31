@@ -269,10 +269,10 @@ Description :
 				]]></help>
 				<values default="">
 					<value option="&quot;AntiSamy&quot;"/>
-					<value option="&quot;applicationstorage&quot;"/>
-					<value option="&quot;beanFactory&quot;"/>
-					<value option="&quot;cfcViewer&quot;"/>
-					<value option="&quot;clientstorage&quot;"/>
+					<value option="&quot;ApplicationStorage&quot;"/>
+					<value option="&quot;BeanFactory&quot;"/>
+					<value option="&quot;CFCViewer&quot;"/>
+					<value option="&quot;ClientStorage&quot;"/>
 					<value option="&quot;cookiestorage&quot;"/>
 					<value option="&quot;feedGenerator&quot;"/>
 					<value option="&quot;feedReader&quot;"/>

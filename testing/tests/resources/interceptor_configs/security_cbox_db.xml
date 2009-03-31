@@ -73,7 +73,7 @@
 	</Cache>
 	
 	<Interceptors throwOnInvalidStates="true">
-		<Interceptor class="coldbox.system.Interceptors.security">
+		<Interceptor class="coldbox.system.interceptors.Security">
 			<Property name="rulesSource">db</Property>
 			<Property name="rulesDSN">coldboxunittests</Property>
 			<Property name="rulesTable">securityrules</Property>

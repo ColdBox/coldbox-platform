@@ -50,7 +50,7 @@ Modification History:
 			}
 			else{
 				/* Get Client Storage */
-				oFlashStorage = controller.getPlugin("clientstorage");				
+				oFlashStorage = controller.getPlugin("ClientStorage");				
 			}
 			
 			/* Flash Persistance Contruction */	

@@ -2,6 +2,6 @@
 <snippet filetemplate="false" extension="cfm">
 <name>getVar</name>
 <help>get variable</help>
-<starttext><![CDATA[getPlugin("applicationstorage").getVar("$${Variable Name}", $${Default value})]]></starttext>
+<starttext><![CDATA[getPlugin("ApplicationStorage").getVar("$${Variable Name}", $${Default value})]]></starttext>
 <endtext><![CDATA[]]></endtext>
 </snippet>

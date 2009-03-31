@@ -11,7 +11,7 @@ Description :
 	Adam Fortuna's ColdCourse cfc, which is an AMAZING SES component
 	All credits go to him: http://coldcourse.riaforge.com
 ----------------------------------------------------------------------->
-<cfcomponent name="ses"
+<cfcomponent name="SES"
 			 hint="This is a ses support internceptor"
 			 output="false"
 			 extends="coldbox.system.Interceptor">
@@ -33,7 +33,7 @@ Description :
 			
 			/* Verify the properties */
 			if( not propertyExists('configFile') ){
-				throw('The configFile property has not been defined. Please define it.','','interceptors.ses.configFilePropertyNotDefined');
+				throw('The configFile property has not been defined. Please define it.','','interceptors.SES.configFilePropertyNotDefined');
 			}
 			
 			/* Setup the config Path */
@@ -44,7 +44,7 @@ Description :
 				include(configFilePath);
 			}
 			catch(Any e){
-				throw("Error including config file: #e.message#",e.detail,"interceptors.ses.executingConfigException");
+				throw("Error including config file: #e.message#",e.detail,"interceptors.SES.executingConfigException");
 			}
 			
 			/* Loose Matching Property: default = false */
@@ -54,7 +54,7 @@ Description :
 			
 			/* Validate the base URL */
 			if ( len(getBaseURL()) eq 0 ){
-				throw('The baseURL property has not been defined. Please define it using the setBaseURL() method.','','interceptors.ses.invalidPropertyException');
+				throw('The baseURL property has not been defined. Please define it using the setBaseURL() method.','','interceptors.SES.invalidPropertyException');
 			}
 			/* Save the base URL in the application settings */
 			setSetting('sesBaseURL', getBaseURL() );

@@ -20,7 +20,7 @@ Instructions:
 - Place the _deploy.tag and deploy.xml ANT task in your /config directory of your application.
 - Add the Deploy interceptor declaration
 
-<Interceptor class="coldbox.system.Interceptors.deploy">
+<Interceptor class="coldbox.system.interceptors.Deploy">
 	<Property name="tagFile">config/_deploy.tag</Property>
 	<Property name="deployCommandObject">model.deployCommand</Property>
 </Interceptor>

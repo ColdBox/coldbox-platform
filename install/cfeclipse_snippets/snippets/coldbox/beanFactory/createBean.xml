@@ -2,6 +2,6 @@
 <snippet filetemplate="false" extension="cfm">
 <name>createBean</name>
 <help></help>
-<starttext><![CDATA[getPlugin("beanFactory").create("$${bean type}", $${Call Init:false|true})]]></starttext>
+<starttext><![CDATA[getPlugin("BeanFactory").create("$${bean type}", $${Call Init:false|true})]]></starttext>
 <endtext><![CDATA[]]></endtext>
 </snippet>

@@ -267,7 +267,7 @@ Description :
 		<cfargument name="onDICompleteUDF" 		required="false" type="string"	default="onDIComplete" hint="After Dependencies are injected, this method will look for this UDF and call it if it exists. The default value is onDIComplete">
 		<cfargument name="debugMode" 			required="false" type="boolean" default="false" hint="Debugging Mode or not">
 		<!--- ************************************************************* --->
-		<cfreturn getController().getPlugin("beanFactory").getModel(argumentCollection=arguments)>
+		<cfreturn getController().getPlugin("BeanFactory").getModel(argumentCollection=arguments)>
 	</cffunction>
 	
 	<!--- Facade: Get COldBox OCM --->

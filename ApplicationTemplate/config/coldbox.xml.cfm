@@ -244,15 +244,15 @@
 	
 	<Interceptors>
 		<!-- USE ENVIRONMENT CONTROL -->
-		<Interceptor class="coldbox.system.Interceptors.environmentControl">
+		<Interceptor class="coldbox.system.interceptors.EnvironmentControl">
 			<Property name='configFile'>config/environments.xml.cfm</Property>
 		</Interceptor>
 		<!-- USE AUTOWIRING -->
-		<Interceptor class="coldbox.system.Interceptors.autowire">
+		<Interceptor class="coldbox.system.interceptors.Autowire">
 			<Property name='enableSetterInjection'>true</Property>
 		</Interceptor>
 		<!-- USE SES -->
-		<Interceptor class="coldbox.system.Interceptors.ses">
+		<Interceptor class="coldbox.system.interceptors.SES">
 			<Property name="configFile">config/routes.cfm</Property>
 		</Interceptor>		
 		<!-- @SIDEBAR@ -->

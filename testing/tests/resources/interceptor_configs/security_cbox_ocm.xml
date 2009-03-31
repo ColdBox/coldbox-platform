@@ -73,7 +73,7 @@
 	</Cache>
 	
 	<Interceptors throwOnInvalidStates="true">
-		<Interceptor class="coldbox.system.Interceptors.security">
+		<Interceptor class="coldbox.system.interceptors.Security">
 			<Property name="rulesSource">ocm</Property>
 			<Property name="rulesOCMkey">qSecurityRules</Property>
 		</Interceptor>		

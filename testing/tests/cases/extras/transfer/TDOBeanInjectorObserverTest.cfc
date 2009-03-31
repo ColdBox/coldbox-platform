@@ -21,13 +21,13 @@ Description :
 		transferObject = mockFactory.createMock('transfer.com.TransferObject');
 		transferEvent.mockMethod('getTransferObject').returns(transferObject);
 		
-		beanFactory = mockFactory.createMock('coldbox.system.Plugins.beanFactory');
-		beanFactory.mockMethod('autowire');
+		BeanFactory = mockFactory.createMock('coldbox.system.plugins.BeanFactory');
+		BeanFactory.mockMethod('autowire');
 		
-		beanFactory.autowire(this);
+		BeanFactory.autowire(this);
 		
 		observer = createObject("component","coldbox.system.extras.transfer.TDOBeanInjectorObserver");
-		observer.init(transfer=transfer,ColdBoxBeanFactory=beanFactory,useSetterInjection=true,onDICompleteUDF='onComplete',debugMode=true);
+		observer.init(transfer=transfer,ColdBoxBeanFactory=BeanFactory,useSetterInjection=true,onDICompleteUDF='onComplete',debugMode=true);
 		
 		</cfscript>
 	</cffunction>

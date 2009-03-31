@@ -7,7 +7,7 @@ www.coldboxframework.com | www.luismajano.com | www.ortussolutions.com
 Author     :	Luis Majano
 Date        :	9/3/2007
 Description :
-	beanFactoryTest
+	BeanFactoryTest
 ----------------------------------------------------------------------->
 <cfcomponent name="beanfactoryTest" extends="coldbox.system.testing.BaseMXUnitTest" output="false">
 
@@ -24,7 +24,7 @@ Description :
 	<cffunction name="testPlugin" access="public" returntype="void" output="false">
 		<!--- Now test some events --->
 		<cfscript>
-			var plugin = getController().getPlugin("beanFactory");
+			var plugin = getController().getPlugin("BeanFactory");
 			
 			assertTrue( isObject(plugin) );			
 		</cfscript>
@@ -33,7 +33,7 @@ Description :
 	<cffunction name="testCreate" access="public" returntype="void" output="false">
 		<!--- Now test some events --->
 		<cfscript>
-			var plugin = getController().getPlugin("beanFactory");
+			var plugin = getController().getPlugin("BeanFactory");
 			var local = structnew();
 			
 			/* test create */
@@ -45,7 +45,7 @@ Description :
 	<cffunction name="testPopulateFromStruct" access="public" returntype="void" output="false">
 		<!--- Now test some events --->
 		<cfscript>
-			var plugin = getController().getPlugin("beanFactory");
+			var plugin = getController().getPlugin("BeanFactory");
 			var local = structnew();
 			var event = getRequestContext();
 			
@@ -100,7 +100,7 @@ Description :
 	<!--- testpopulateFromJSON --->
 	<cffunction name="testpopulateFromJSON" output="false" access="public" returntype="any" hint="">
 		<cfscript>
-			var plugin = getController().getPlugin("beanFactory");
+			var plugin = getController().getPlugin("BeanFactory");
 			var local = structnew();
 			/* We are using the formBean object: fname,lname,email,initDate */
 			local.obj = plugin.create('coldbox.testing.testmodel.formBean');
@@ -127,7 +127,7 @@ Description :
 	<cffunction name="testpopulateFromQuery" access="public" returntype="void" output="false">
 		<!--- Now test some events --->
 		<cfscript>
-			var plugin = getController().getPlugin("beanFactory");
+			var plugin = getController().getPlugin("BeanFactory");
 			var local = structnew();
 			
 			// We are using the formBean object: fname,lname,email,initDate 

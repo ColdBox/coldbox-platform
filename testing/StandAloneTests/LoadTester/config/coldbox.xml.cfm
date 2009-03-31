@@ -225,7 +225,7 @@
 	
 	<Interceptors>
 		<!-- USE SES -->
-		<Interceptor class="coldbox.system.Interceptors.ses">
+		<Interceptor class="coldbox.system.interceptors.SES">
 			<Property name="configFile">config/routes.cfm</Property>
 		</Interceptor>				
 	</Interceptors>
