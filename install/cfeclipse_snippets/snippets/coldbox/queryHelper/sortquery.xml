@@ -2,6 +2,6 @@
 <snippet filetemplate="false" extension="cfm">
 <name>sortquery</name>
 <help></help>
-<starttext><![CDATA[getPlugin("queryHelper").sortQuery($${QUERY}, "$${Sort By}", "$${Sort Order:asc|desc}")]]></starttext>
+<starttext><![CDATA[getPlugin("QueryHelper").sortQuery($${QUERY}, "$${Sort By}", "$${Sort Order:asc|desc}")]]></starttext>
 <endtext><![CDATA[]]></endtext>
 </snippet>

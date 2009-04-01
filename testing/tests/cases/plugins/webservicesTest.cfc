@@ -24,7 +24,7 @@ Description :
 	<cffunction name="testPlugin" access="public" returntype="void" output="false">
 		<!--- Now test some events --->
 		<cfscript>
-			var plugin = getController().getPlugin("webservices");
+			var plugin = getController().getPlugin("Webservices");
 
 			AssertTrue( isObject(plugin) );
 		</cfscript>
@@ -33,7 +33,7 @@ Description :
 	<cffunction name="testgetWS" access="public" returntype="void" output="false">
 		<!--- Now test getWS method --->
 		<cfscript>
-			var plugin = getController().getPlugin("webservices");
+			var plugin = getController().getPlugin("Webservices");
 			
 			AssertEquals(plugin.getWS('AnotherTestWS'),'http://www.coldboxframework.com/distribution/updatews.cfc?wsdl','Returned url is different');			
 		</cfscript>
@@ -42,7 +42,7 @@ Description :
 	<cffunction name="testgetWSobj" access="public" returntype="void" output="false">
 		<!--- Now test getWSobj method --->
 		<cfscript>
-			var plugin = getController().getPlugin("webservices");
+			var plugin = getController().getPlugin("Webservices");
 			
 			assertTrue(IsObject(plugin.getWSobj('AnotherTestWS')),'Returned values is not a object');			
 		</cfscript>
@@ -51,7 +51,7 @@ Description :
 	<cffunction name="testgetrefreshWS" access="public" returntype="void" output="false">
 		<!--- Now test refreshWS method --->
 		<cfscript>
-			var plugin = getController().getPlugin("webservices");
+			var plugin = getController().getPlugin("Webservices");
 			
 			if(not structKeyExists(server,"railo") ){
 				plugin.refreshWS('AnotherTestWS');		

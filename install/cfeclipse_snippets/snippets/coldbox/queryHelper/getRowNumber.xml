@@ -2,6 +2,6 @@
 <snippet filetemplate="false" extension="cfm">
 <name>getRowNumber</name>
 <help></help>
-<starttext><![CDATA[getPlugin("queryHelper").getRowNumber($${query}, "$${Column Value}", "$${Column Name}")]]></starttext>
+<starttext><![CDATA[getPlugin("QueryHelper").getRowNumber($${query}, "$${Column Value}", "$${Column Name}")]]></starttext>
 <endtext><![CDATA[]]></endtext>
 </snippet>

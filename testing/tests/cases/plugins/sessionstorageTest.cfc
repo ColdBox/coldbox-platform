@@ -9,7 +9,7 @@ Date        :	9/3/2007
 Description :
 	securityTest
 ----------------------------------------------------------------------->
-<cfcomponent name="sessionstoragetest" extends="coldbox.system.testing.BaseMXUnitTest" output="false">
+<cfcomponent name="SessionStoragetest" extends="coldbox.system.testing.BaseMXUnitTest" output="false">
 
 	<cffunction name="setUp" returntype="void" access="public" output="false">
 		<cfscript>
@@ -24,7 +24,7 @@ Description :
 	<cffunction name="testPlugin" access="public" returntype="void" output="false">
 		<!--- Now test some events --->
 		<cfscript>
-			var plugin = getController().getPlugin("sessionstorage");
+			var plugin = getController().getPlugin("SessionStorage");
 			
 			AssertTrue( isObject(plugin) );
 			
@@ -34,7 +34,7 @@ Description :
 	<cffunction name="testMethods" access="public" returntype="void" output="false">
 		<!--- Now test some events --->
 		<cfscript>
-			var plugin = getController().getPlugin("sessionstorage");
+			var plugin = getController().getPlugin("SessionStorage");
 			
 			plugin.setVar("tester", 1);
 			

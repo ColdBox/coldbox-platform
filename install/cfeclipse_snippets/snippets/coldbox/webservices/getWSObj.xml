@@ -2,6 +2,6 @@
 <snippet filetemplate="false" extension="cfm">
 <name>getWSObj</name>
 <help>Get a ws object</help>
-<starttext><![CDATA[getPlugin("webservices").getWSObj("$${Web Service Name}")]]></starttext>
+<starttext><![CDATA[getPlugin("Webservices").getWSObj("$${Web Service Name}")]]></starttext>
 <endtext><![CDATA[]]></endtext>
 </snippet>

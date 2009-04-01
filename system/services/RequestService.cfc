@@ -46,7 +46,7 @@ Modification History:
 					
 			/* Get Flash Persistance Storage */
 			if( controller.getSetting("FlashURLPersistScope",1) eq "session" ){
-				oFlashStorage = controller.getPlugin("sessionstorage");
+				oFlashStorage = controller.getPlugin("SessionStorage");
 			}
 			else{
 				/* Get Client Storage */

@@ -17,15 +17,15 @@ Modification History:
 06/08/2006 - Updated for coldbox
 07/29/2006 - Exception is thrown if web service is not found in the configuration structure.
 ----------------------------------------------------------------------->
-<cfcomponent name="webservices"
-			 hint="The webservices framework plugin."
+<cfcomponent name="Webservices"
+			 hint="The Webservices framework plugin."
 			 extends="coldbox.system.Plugin"
 			 output="false"
 			 cache="true">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
-	<cffunction name="init" access="public" returntype="webservices" output="false">
+	<cffunction name="init" access="public" returntype="Webservices" output="false">
 		<cfargument name="controller" type="any" required="true">
 		<cfset super.Init(arguments.controller) />
 		<cfset setpluginName("Web Services")>
@@ -41,15 +41,15 @@ Modification History:
 		<cfargument name="name" hint="The name of the web service. If the web service is not found an exception is thrown." type="string" required="Yes">
 	<!--- ************************************************************* --->
 		<cfif getController().getSetting("Environment") eq "DEVELOPMENT">
-			<cfif structKeyExists(getController().getSetting("WebServices").DEV , arguments.name)>
-				<cfreturn getController().getSetting("WebServices").DEV[arguments.name]>
+			<cfif structKeyExists(getController().getSetting("Webservices").DEV , arguments.name)>
+				<cfreturn getController().getSetting("Webservices").DEV[arguments.name]>
 			</cfif>
 		<cfelse>
-			<cfif structKeyExists(getController().getSetting("WebServices").PRO , arguments.name)>
-				<cfreturn getController().getSetting("WebServices").PRO[arguments.name]>
+			<cfif structKeyExists(getController().getSetting("Webservices").PRO , arguments.name)>
+				<cfreturn getController().getSetting("Webservices").PRO[arguments.name]>
 			</cfif>
 		</cfif>
-		<cfthrow type="ColdBox.plugins.webservices.WebServiceNotFoundException" message="The webservice #arguments.name# was not found in the configuration structure.">
+		<cfthrow type="ColdBox.plugins.Webservices.WebServiceNotFoundException" message="The webservice #arguments.name# was not found in the configuration structure.">
 	</cffunction>
 
 	<!--- ************************************************************* --->
@@ -59,15 +59,15 @@ Modification History:
 		<cfargument name="name" hint="The name of the web service. If the web service is not found an exception is thrown" type="string" required="Yes">
 	<!--- ************************************************************* --->
 		<cfif getController().getSetting("Environment") eq "DEVELOPMENT">
-			<cfif structKeyExists(getController().getSetting("WebServices").DEV , arguments.name)>
-				<cfreturn CreateObject("webservice", getController().getSetting("WebServices").DEV[arguments.name] )>
+			<cfif structKeyExists(getController().getSetting("Webservices").DEV , arguments.name)>
+				<cfreturn CreateObject("webservice", getController().getSetting("Webservices").DEV[arguments.name] )>
 			</cfif>
 		<cfelse>
-			<cfif structKeyExists(getController().getSetting("WebServices").PRO , arguments.name)>
-				<cfreturn CreateObject("webservice", getController().getSetting("WebServices").PRO[arguments.name] )>
+			<cfif structKeyExists(getController().getSetting("Webservices").PRO , arguments.name)>
+				<cfreturn CreateObject("webservice", getController().getSetting("Webservices").PRO[arguments.name] )>
 			</cfif>
 		</cfif>
-		<cfthrow type="ColdBox.plugins.webservices.WebServiceNotFoundException" message="The webservice #arguments.name# was not found in the configuration structure.">
+		<cfthrow type="ColdBox.plugins.Webservices.WebServiceNotFoundException" message="The webservice #arguments.name# was not found in the configuration structure.">
 	</cffunction>
 
 	<!--- ************************************************************* --->

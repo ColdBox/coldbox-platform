@@ -3,13 +3,13 @@ Template : MessageBox.cfc
 Author 	 : Luis Majano
 Date     : 3/13/2007 8:28:31 AM
 Description :
-	This is a timer plugin
+	This is a Timer plugin
 
 Modification History:
 3/13/2007 - Created Template
 ---------------------------------------------------------------------->
-<cfcomponent name="timer"
-			 hint="This is the timer plugin. It is used to time executions. Facade for request variable"
+<cfcomponent name="Timer"
+			 hint="This is the Timer plugin. It is used to time executions. Facade for request variable"
 			 extends="coldbox.system.Plugin"
 			 output="false"
 			 cache="true"
@@ -17,20 +17,20 @@ Modification History:
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
-	<cffunction name="init" access="public" returntype="timer" output="false" hint="Constructor">
+	<cffunction name="init" access="public" returntype="Timer" output="false" hint="Constructor">
 		<cfargument name="controller" type="any" required="true">
 		<cfset super.Init(arguments.controller) />
-		<cfset setpluginName("Timer Plugin")>
+		<cfset setpluginName("Timer")>
 		<cfset setpluginVersion("1.0")>
-		<cfset setpluginDescription("A useful code timer plugin.")>
+		<cfset setpluginDescription("A useful code Timer plugin.")>
 		<cfreturn this>
 	</cffunction>
 
 <!------------------------------------------- PUBLIC ------------------------------------------->
 
-	<cffunction name="start" access="public" returntype="void" output="false" hint="Start the timer with label.">
+	<cffunction name="start" access="public" returntype="void" output="false" hint="Start the Timer with label.">
 		<cfargument name="Label" 	 required="true" type="string">
-		<!--- Create request timer --->
+		<!--- Create request Timer --->
 		<cfset var timerStruct = structnew()>
 		<cfset timerStruct.stime = getTickcount()>
 		<cfset timerStruct.label = arguments.label>

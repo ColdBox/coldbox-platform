@@ -8,53 +8,8 @@ Author 	    :	Luis Majano
 Date        :	August 21, 2006
 Description :
 	This is a query helper plugin.
-
-Modification History:
-01/30/2007 - Created
-
-qry1, qry2 joined on column name ('fname')
-var InnerJoined = getPlugin("queryHelper","false").doInnerJoin(qry1,qry2,"fname","fname");
 ----------------------------------------------------------------------->
-<!--- example test cases 
-<cfscript>
-	variables.q1 = queryNew('idt,fname,lname,phone,location');
-	variables.q2 = queryNew('idt,fname,lname,phone,location');
-	variables.q3 = queryNew('idt,fname,lname,telephone,city');
-</cfscript>
-
-<cfloop from="1" to="10" index="i">
-	<cfset queryAddRow(q1,1) />
-	<cfset querySetCell(q1, 'idt', '#i#')>
-	<cfset querySetCell(q1, 'fname', 'fname-q1-#chr(65 + i)#')>
-	<cfset querySetCell(q1, 'lname', 'lname-q1-#chr(65 + i)#')>
-	<cfset querySetCell(q1, 'phone', 'phone-q1-954-555-5555-#i#')>
-	<cfset querySetCell(q1, 'location', 'location-q1-#chr(65 + i)#')>
-</cfloop>
-
-<cfloop from="11" to="20" index="i">
-	<cfset queryAddRow(q2,1) />
-	<cfset querySetCell(q2, 'idt', '#i#')>
-	<cfset querySetCell(q2, 'fname', 'fname-q2-#chr(75 + i)#')>
-	<cfset querySetCell(q2, 'lname', 'lname-q2-#chr(75 + i)#')>
-	<cfset querySetCell(q2, 'phone', 'phone-q2-954-555-5555-#i#')>
-	<cfset querySetCell(q2, 'location', 'location-q2-#chr(75 + i)#')>
-</cfloop>
-
-<cfloop from="6" to="15" index="i">
-	<cfset queryAddRow(q3,1) />
-	<cfset querySetCell(q3, 'idt', '#i#')>
-	<cfset querySetCell(q3, 'fname', 'fname-q3-#chr(65 + i)#')>
-	<cfset querySetCell(q3, 'lname', 'lname-q3-#chr(65 + i)#')>
-	<cfset querySetCell(q3, 'telephone', 'phone-q3-954-555-5555-#i#')>
-	<cfset querySetCell(q3, 'city', 'location-q3-#chr(65 + i)#')>
-</cfloop>
-
-queryPlugin = getPlugin("queryHelper",false)
-queryPlugin.doInnerJoin(q1,q3,"idt","idt")
-queryPlugin.doLeftOuterJoin(q1,q3,"idt","idt")
---->
-
-<cfcomponent name="queryHelper"
+<cfcomponent name="QueryHelper"
 			 hint="A query helper plugin."
 			 extends="coldbox.system.Plugin"
 			 output="false"
@@ -62,7 +17,7 @@ queryPlugin.doLeftOuterJoin(q1,q3,"idt","idt")
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
-	<cffunction name="init" access="public" returntype="queryHelper" output="false">
+	<cffunction name="init" access="public" returntype="QueryHelper" output="false">
 		<cfargument name="controller" type="any" required="true">
 		<cfset super.Init(arguments.controller) />
 		<cfset setpluginName("Query Helper")>
@@ -105,7 +60,7 @@ queryPlugin.doLeftOuterJoin(q1,q3,"idt","idt")
 		<cfset var qryNew = QueryNew("")>
 		<!--- Validate sortOrder --->
 		<cfif not reFindnocase("(asc|desc)", arguments.sortOrder)>
-			<cfthrow type="Framework.plugin.queryHelper.InvalidSortOrderException" message="The sortOrder you sent in: #arguments.sortOrder# is not valid. Valid sort orders are ASC|DESC">
+			<cfthrow type="Framework.plugin.QueryHelper.InvalidSortOrderException" message="The sortOrder you sent in: #arguments.sortOrder# is not valid. Valid sort orders are ASC|DESC">
 		</cfif>
 		<cfquery name="qryNew" dbtype="query">
 			SELECT *
@@ -254,7 +209,7 @@ queryPlugin.doLeftOuterJoin(q1,q3,"idt","idt")
 		    }
 		    
 		 }catch(Any e){
-			throw("Error in doInnerJoin():","#e.Detail#<br>#e.message#","ColdBox.plugins.queryHelper.InvalidInnerJoinException");
+			throw("Error in doInnerJoin():","#e.Detail#<br>#e.message#","ColdBox.plugins.QueryHelper.InvalidInnerJoinException");
 		 }
 		</cfscript>
 		
@@ -350,7 +305,7 @@ queryPlugin.doLeftOuterJoin(q1,q3,"idt","idt")
 		    }
 		    
 		 }catch(Any e){
-			throw("Error in doLeftOuterJoin():","#e.Detail#<br>#e.message#","ColdBox.plugins.queryHelper.InvalidInnerJoinException");
+			throw("Error in doLeftOuterJoin():","#e.Detail#<br>#e.message#","ColdBox.plugins.QueryHelper.InvalidInnerJoinException");
 		 }
 		</cfscript>
 		
@@ -380,7 +335,7 @@ queryPlugin.doLeftOuterJoin(q1,q3,"idt","idt")
 	                                    );
             }
         }Catch(Any e){
-        	throw("Error in doQueryAppend():","#e.Detail#<br>#e.message#","ColdBox.plugins.queryHelper.InvalidQueryAppendException");
+        	throw("Error in doQueryAppend():","#e.Detail#<br>#e.message#","ColdBox.plugins.QueryHelper.InvalidQueryAppendException");
         }    
            return QryReturn;
         </cfscript>
@@ -427,7 +382,7 @@ queryPlugin.doLeftOuterJoin(q1,q3,"idt","idt")
             return sReturn;
             
          }Catch(Any e){
-			throw("Error in getUnMatchedElements():","#e.Detail#<br>#e.message#","ColdBox.plugins.queryHelper.InvalidElementLoopException");
+			throw("Error in getUnMatchedElements():","#e.Detail#<br>#e.message#","ColdBox.plugins.QueryHelper.InvalidElementLoopException");
 		 }
         </cfscript>
 		
@@ -457,7 +412,7 @@ queryPlugin.doLeftOuterJoin(q1,q3,"idt","idt")
             return sReturn;
             
          }Catch(Any e){
-			throw("Error in getUniqueElements():","#e.Detail#<br>#e.message#","ColdBox.plugins.queryHelper.InvalidElementLoopException");
+			throw("Error in getUniqueElements():","#e.Detail#<br>#e.message#","ColdBox.plugins.QueryHelper.InvalidElementLoopException");
 		 }
         </cfscript>
 		
@@ -494,7 +449,7 @@ queryPlugin.doLeftOuterJoin(q1,q3,"idt","idt")
             return QryReturn;
             
           }Catch(Any e){
-			throw("Error in QrySetCell():","#e.Detail#<br>#e.message#","ColdBox.plugins.queryHelper.InvalidQrySetCellException");
+			throw("Error in QrySetCell():","#e.Detail#<br>#e.message#","ColdBox.plugins.QueryHelper.InvalidQrySetCellException");
 		 }
         </cfscript>
 		 

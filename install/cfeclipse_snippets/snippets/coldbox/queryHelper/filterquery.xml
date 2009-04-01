@@ -2,6 +2,6 @@
 <snippet filetemplate="false" extension="cfm">
 <name>filterquery</name>
 <help></help>
-<starttext><![CDATA[getPlugin("queryHelper").filterQuery($${Query}, "$${Field to filter On}", "$${Value to filter}", "$${CF_SQL_TYPE}")]]></starttext>
+<starttext><![CDATA[getPlugin("QueryHelper").filterQuery($${Query}, "$${Field to filter On}", "$${Value to filter}", "$${CF_SQL_TYPE}")]]></starttext>
 <endtext><![CDATA[]]></endtext>
 </snippet>

@@ -38,11 +38,11 @@ Description :
 		var context = "";
 		var persistStruct = structnew();
 		var today = now();
-		var sessionstorage = getController().getPlugin("sessionstorage");
+		var SessionStorage = getController().getPlugin("SessionStorage");
 		
 		/* Fill up the flash storage */
-		sessionstorage.setVar('_coldbox_persistStruct', structnew());
-		persistStruct = sessionstorage.getVar('_coldbox_persistStruct');
+		SessionStorage.setVar('_coldbox_persistStruct', structnew());
+		persistStruct = SessionStorage.getVar('_coldbox_persistStruct');
 		persistStruct.flashvariable = today;
 		
 		/* Setup test variables */

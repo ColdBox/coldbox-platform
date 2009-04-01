@@ -268,7 +268,7 @@ Modification History:
 			var lightwireBeanConfig = "";
 			var isUsingXML = listLast(getIOCDefinitionFile(),".") eq "xml" or listLast(getIOCDefinitionFile(),".") eq "cfm";
 			var settingsStruct = StructNew();
-			var oMethodInjector = getPlugin("methodInjector");
+			var oMethodInjector = getPlugin("MethodInjector");
 			
 			/* Create the lightwire Config Bean. */
 			if( not isUsingXML ){

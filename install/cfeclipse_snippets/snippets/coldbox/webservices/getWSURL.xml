@@ -2,6 +2,6 @@
 <snippet filetemplate="false" extension="cfm">
 <name>getWSURL</name>
 <help>Get the url of a named webservice</help>
-<starttext><![CDATA[getPlugin("webservices").getWS("$${Web Service Name}")]]></starttext>
+<starttext><![CDATA[getPlugin("Webservices").getWS("$${Web Service Name}")]]></starttext>
 <endtext><![CDATA[]]></endtext>
 </snippet>

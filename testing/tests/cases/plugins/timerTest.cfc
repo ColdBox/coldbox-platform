@@ -24,7 +24,7 @@ Description :
 	<cffunction name="testPlugin" access="public" returntype="void" output="false">
 		<!--- Now test is returned value is object --->
 		<cfscript>
-			var plugin = getController().getPlugin("timer");
+			var plugin = getController().getPlugin("Timer");
 
 			AssertTrue( isObject(plugin) );
 		</cfscript>
@@ -33,7 +33,7 @@ Description :
 	<cffunction name="testMethods" access="public" returntype="void" output="false">
 		<!--- test methods --->
 		<cfscript>
-			var plugin    = getController().getPlugin("timer");
+			var plugin    = getController().getPlugin("Timer");
 			var Utilities = getController().getPlugin("Utilities");
 			plugin.start('t1'); 
 			

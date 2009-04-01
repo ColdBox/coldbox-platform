@@ -52,7 +52,7 @@ Description :
 Modification History:
 08/01/2006 - Updated the cfc to work for ColdBox.
 --->
-<cfcomponent name="zip"
+<cfcomponent name="Zip"
              hint = "A collections of functions that supports the Zip and GZip functionality by using the Java Zip file API."
              extends="coldbox.system.Plugin"
 			 output="false"
@@ -60,12 +60,12 @@ Modification History:
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
-	<cffunction name="init" access="public" returntype="zip" output="false">
+	<cffunction name="init" access="public" returntype="Zip" output="false">
 		<cfargument name="controller" type="any" required="true">
 		<cfset super.Init(arguments.controller) />
 		<cfscript>
 		//Local Plugin Definition
-		setpluginName("Zip Plugin");
+		setpluginName("Zip");
 		setpluginVersion("1.0");
 		setpluginDescription("This is a zip utility for the framework.");
 		//This plugin's properties

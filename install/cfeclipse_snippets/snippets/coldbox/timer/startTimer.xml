@@ -2,6 +2,6 @@
 <snippet filetemplate="false" extension="cfm">
 <name>startTimer</name>
 <help></help>
-<starttext><![CDATA[getPlugin("timer").start("$${Label}")]]></starttext>
+<starttext><![CDATA[getPlugin("Timer").start("$${Label}")]]></starttext>
 <endtext><![CDATA[]]></endtext>
 </snippet>

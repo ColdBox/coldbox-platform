@@ -156,7 +156,7 @@ Description :
 					eventDictionaryEntry.cacheKey = oEventURLFacade.buildEventKey(keySuffix=eventDictionaryEntry.suffix,
 																				  targetEvent=oEventHandlerBean.getFullEvent(),
 																				  targetContext=oRequestContext);
-					/* Event is cacheable and we need to flag it so the renderer caches it. */
+					/* Event is cacheable and we need to flag it so the Renderer caches it. */
 					oRequestContext.setEventCacheableEntry(eventDictionaryEntry);
 				}//end if md says that this event is cacheable
 				

@@ -282,17 +282,17 @@ Description :
 					<value option="&quot;JSON&quot;"/>
 					<value option="&quot;Logger&quot;"/>
 					<value option="&quot;MessageBox&quot;"/>
-					<value option="&quot;methodInjector&quot;"/>
-					<value option="&quot;queryHelper&quot;"/>
-					<value option="&quot;renderer&quot;"/>
-					<value option="&quot;resourceBundle&quot;"/>
-					<value option="&quot;sessionstorage&quot;"/>
+					<value option="&quot;MethodInjector&quot;"/>
+					<value option="&quot;QueryHelper&quot;"/>
+					<value option="&quot;Renderer&quot;"/>
+					<value option="&quot;ResourceBundle&quot;"/>
+					<value option="&quot;SessionStorage&quot;"/>
 					<value option="&quot;StringBuffer&quot;"/>
-					<value option="&quot;timer&quot;"/>
+					<value option="&quot;Timer&quot;"/>
 					<value option="&quot;Utilities&quot;"/>
-					<value option="&quot;webservices&quot;"/>
+					<value option="&quot;Webservices&quot;"/>
 					<value option="&quot;XMLParser&quot;"/>
-					<value option="&quot;zip&quot;"/>
+					<value option="&quot;Zip&quot;"/>
 				</values>
 			</parameter>
 			<parameter name="customPlugin" type="Boolean" required="false">

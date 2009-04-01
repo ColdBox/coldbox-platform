@@ -7,9 +7,9 @@ www.coldboxframework.com | www.luismajano.com | www.ortussolutions.com
 Author 	 :	Luis Majano
 Date     :	September 23, 2005
 Description :
-	This is ColdBox's renderer plugin.
+	This is ColdBox's Renderer plugin.
 ----------------------------------------------------------------------->
-<cfcomponent name="renderer"
+<cfcomponent name="Renderer"
 			 hint="This service renders layouts, views, framework includes, etc."
 			 extends="coldbox.system.Plugin"
 			 output="false"
@@ -17,7 +17,7 @@ Description :
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
-	<cffunction name="init" access="public" returntype="renderer" output="false" hint="Constructor">
+	<cffunction name="init" access="public" returntype="Renderer" output="false" hint="Constructor">
 		<!--- ************************************************************* --->
 		<cfargument name="controller" type="any" required="true">
 		<!--- ************************************************************* --->
@@ -40,7 +40,7 @@ Description :
 			includeUDF(controller.getSetting("UDFLibraryFile"));
 		}
 		
-		/* Return renderer */
+		/* Return Renderer */
 		return this;
 		</cfscript>
 	</cffunction>
@@ -85,7 +85,7 @@ Description :
 		
 		<!--- Test if we have a view to render --->
 		<cfif len(trim(arguments.view)) eq 0>
-			<cfthrow type="plugins.renderer.ViewNotSetException" 
+			<cfthrow type="plugins.Renderer.ViewNotSetException" 
 				     message="The ""currentview"" variable has not been set, therefore there is no view to render." 
 					 detail="Please remember to use the 'setView()' method in your handler.">
 		</cfif>
@@ -110,7 +110,7 @@ Description :
 				<cfif not fileExists(expandPath(cbox_viewpath))>
 					<cfthrow message="View not located" 
 							 detail="The view: #arguments.view#.cfm could not be located in the conventions folder or in the external location. Please verify the view name" 
-							 type="plugins.renderer.ViewNotFound">
+							 type="plugins.Renderer.ViewNotFound">
 				</cfif>
 				<!--- Helper? --->
 				<cfif fileExists(expandPath("#instance.viewsExternalLocation#/#arguments.view#Helper.cfm"))>
@@ -175,7 +175,7 @@ Description :
 					<cfsavecontent variable="cbox_RenderedView"><cfoutput><cfinclude template="#arguments.view#.cfm"></cfoutput></cfsavecontent>
 					<!--- Catches --->
 					<cfcatch type="missinginclude">
-						<cfthrow type="plugins.renderer.RenderExternalViewNotFoundException" message="The external view: #arguments.view# cannot be found. Please check your paths." >
+						<cfthrow type="plugins.Renderer.RenderExternalViewNotFoundException" message="The external view: #arguments.view# cannot be found. Please check your paths." >
 					</cfcatch>
 					<cfcatch type="any">
 						<cfrethrow />

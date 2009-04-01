@@ -25,7 +25,7 @@
 		}
 		if ( event.getValue("sortBy","") neq "" ){
 			//Sort via Query Helper.
-			rc.q#root.bean.xmlAttributes.name# = getPlugin("queryHelper").sortQuery(rc.q#root.bean.xmlAttributes.name#,rc.sortBy, rc.sortOrder);
+			rc.q#root.bean.xmlAttributes.name# = getPlugin("QueryHelper").sortQuery(rc.q#root.bean.xmlAttributes.name#,rc.sortBy, rc.sortOrder);
 		}
 		else{
 			rc.sortBy = "";

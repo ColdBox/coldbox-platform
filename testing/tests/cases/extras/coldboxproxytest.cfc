@@ -88,7 +88,7 @@ Description :
 		var local = structnew();
 		
 		/* Get Method Injector */
-		getController().getPlugin("methodInjector").start(proxy);
+		getController().getPlugin("MethodInjector").start(proxy);
 		/* Verify Test */
 		proxy.invokerMixin("verifyColdBox");
 		/* GetPlugin */
@@ -112,7 +112,7 @@ Description :
 		AssertTrue( isObject(local.obj) );
 		
 		/* Stop Injection */
-		getController().getPlugin("methodInjector").stop(proxy);
+		getController().getPlugin("MethodInjector").stop(proxy);
 		</cfscript>
 	</cffunction>
 	
@@ -122,7 +122,7 @@ Description :
 		var local = structnew();
 		
 		/* Get Method Injector */
-		getController().getPlugin("methodInjector").start(proxy);
+		getController().getPlugin("MethodInjector").start(proxy);
 		
 		/* Load ColdBox */
 		local.load = structnew();
@@ -139,7 +139,7 @@ Description :
 		
 		
 		/* Stop Injection */
-		getController().getPlugin("methodInjector").stop(proxy);
+		getController().getPlugin("MethodInjector").stop(proxy);
 		</cfscript>
 	</cffunction>
 	

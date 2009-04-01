@@ -27,7 +27,7 @@ Description :
 	<cffunction name="testPlugin" access="public" returntype="void" output="false">
 		<!--- Now test some events --->
 		<cfscript>
-			var plugin = getController().getPlugin("zip");
+			var plugin = getController().getPlugin("Zip");
 
 			AssertTrue( isObject(plugin) );
 		</cfscript>
@@ -36,7 +36,7 @@ Description :
 	<cffunction name="testMethods" access="public" returntype="void" output="false">
 		<!--- test methods --->
 		<cfscript>
-			var plugin		    = getController().getPlugin("zip");
+			var plugin		    = getController().getPlugin("Zip");
 			
 			assertTrue(plugin.AddFiles(zipFilePath = this.directoryPath  & 'Test1.zip', directory = this.directoryPath, savePaths = true),'AddFiles() something gone wrong');
 			

@@ -2,6 +2,6 @@
 <snippet filetemplate="false" extension="cfm">
 <name>setVar</name>
 <help></help>
-<starttext><![CDATA[getPlugin("sessionstorage").setVar("$${Variable Name}", $${Value})]]></starttext>
+<starttext><![CDATA[getPlugin("SessionStorage").setVar("$${Variable Name}", $${Value})]]></starttext>
 <endtext><![CDATA[]]></endtext>
 </snippet>

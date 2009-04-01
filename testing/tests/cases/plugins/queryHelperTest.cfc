@@ -7,9 +7,9 @@ www.coldboxframework.com | www.luismajano.com | www.ortussolutions.com
 Author      :	Sana Ullah
 Date        :	March 30 2008
 Description :
-	queryHelper plugin test
+	QueryHelper plugin test
 ----------------------------------------------------------------------->
-<cfcomponent name="queryHelperTest" extends="coldbox.system.testing.BaseMXUnitTest" output="false">
+<cfcomponent name="QueryHelperTest" extends="coldbox.system.testing.BaseMXUnitTest" output="false">
 
 	<cffunction name="setUp" returntype="void" access="public" output="false">
 		<cfscript>
@@ -57,7 +57,7 @@ Description :
 	<cffunction name="testPlugin" access="public" returntype="void" output="false">
 		<!--- Now test some events --->
 		<cfscript>
-			var plugin = getController().getPlugin("queryHelper");
+			var plugin = getController().getPlugin("QueryHelper");
 			
 			AssertTrue( isObject(plugin) );
 		</cfscript>
@@ -66,7 +66,7 @@ Description :
 	<cffunction name="testMethods" access="public" returntype="void" output="false">
 		<!--- Now test some events --->
 		<cfscript>
-			var plugin = getController().getPlugin("queryHelper");
+			var plugin = getController().getPlugin("QueryHelper");
 			var jsonText = "{name:'luis',number:'23423'}";
 			var local = structnew();
 			

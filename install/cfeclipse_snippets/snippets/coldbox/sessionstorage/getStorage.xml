@@ -2,6 +2,6 @@
 <snippet filetemplate="false" extension="cfm">
 <name>getStorage</name>
 <help>Get the Storage</help>
-    <starttext><![CDATA[getPlugin("sessionstorage").getStorage()]]></starttext>
+    <starttext><![CDATA[getPlugin("SessionStorage").getStorage()]]></starttext>
 <endtext><![CDATA[]]></endtext>
 </snippet>

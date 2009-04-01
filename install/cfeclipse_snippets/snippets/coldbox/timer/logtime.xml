@@ -2,6 +2,6 @@
 <snippet filetemplate="false" extension="cfm">
 <name>logtime</name>
 <help></help>
-<starttext><![CDATA[getPlugin("timer").logTime("$${Label}", $${Tickcount})]]></starttext>
+<starttext><![CDATA[getPlugin("Timer").logTime("$${Label}", $${Tickcount})]]></starttext>
 <endtext><![CDATA[]]></endtext>
 </snippet>

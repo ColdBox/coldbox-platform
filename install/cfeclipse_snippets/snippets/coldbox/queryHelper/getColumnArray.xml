@@ -2,6 +2,6 @@
 <snippet filetemplate="false" extension="cfm">
 <name>getColumnArray</name>
 <help></help>
-<starttext><![CDATA[getPlugin("queryHelper").getColumnArray($${query}, "$${Column Name}")]]></starttext>
+<starttext><![CDATA[getPlugin("QueryHelper").getColumnArray($${query}, "$${Column Name}")]]></starttext>
 <endtext><![CDATA[]]></endtext>
 </snippet>

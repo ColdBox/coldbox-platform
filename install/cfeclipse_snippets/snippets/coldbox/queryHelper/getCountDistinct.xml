@@ -2,6 +2,6 @@
 <snippet filetemplate="false" extension="cfm">
 <name>getCountDistinct</name>
 <help></help>
-<starttext><![CDATA[getPlugin("queryHelper").getCountDistinct($${query}, "$${Column Name}")]]></starttext>
+<starttext><![CDATA[getPlugin("QueryHelper").getCountDistinct($${query}, "$${Column Name}")]]></starttext>
 <endtext><![CDATA[]]></endtext>
 </snippet>

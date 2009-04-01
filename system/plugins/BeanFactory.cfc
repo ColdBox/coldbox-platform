@@ -334,13 +334,13 @@ Description: This is the framework's simple bean factory.
 				/* Determine Method of population */
 				if( structKeyExists(arguments,"scope") and len(trim(arguments.scope)) neq 0 ){
 					/* Mix the Bean */
-					getPlugin("methodInjector").start(beanInstance);
+					getPlugin("MethodInjector").start(beanInstance);
 					/* Populate Bean */
 					for(key in arguments.memento){
 						beanInstance.populatePropertyMixin(propertyName=key,propertyValue=arguments.memento[key],scope=arguments.scope);
 					}
 					/* Un-Mix It */
-					getPlugin("methodInjector").stop(beanInstance);
+					getPlugin("MethodInjector").stop(beanInstance);
 				}
 				//Setter Population
 				else{
@@ -441,7 +441,7 @@ Description: This is the framework's simple bean factory.
 			/* Dependencies Length */
 			dependenciesLength = arrayLen(targetDIEntry.dependencies);
 			/* References */
-			oMethodInjector = getPlugin("methodInjector");
+			oMethodInjector = getPlugin("MethodInjector");
 			/* Let's inject our mixins */
 			oMethodInjector.start(targetObject);
 			/* Loop over dependencies and inject. */
@@ -472,7 +472,7 @@ Description: This is the framework's simple bean factory.
 			/* Process After ID Complete */
 			processAfterCompleteDI(targetObject,onDICompleteUDF);
 			/* Let's cleanup our mixins */
-			getPlugin("methodInjector").stop(targetObject);
+			getPlugin("MethodInjector").stop(targetObject);
 			
 		}//if autowiring			
 	</cfscript>
@@ -552,7 +552,7 @@ Description: This is the framework's simple bean factory.
 		<cfargument name="Definition" 	required="true" type="any" hint="The dependency definition structure">
 		<!--- ************************************************************* --->
 		<cfscript>
-			var oWebservices = getPlugin("webservices");
+			var oWebservices = getPlugin("Webservices");
 			var thisDependency = arguments.Definition;
 			var webserviceName = listLast(thisDependency.type);
 			/* Get Dependency */

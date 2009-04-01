@@ -2,6 +2,6 @@
 <snippet filetemplate="false" extension="cfm">
 <name>refreshWS</name>
 <help>Refresh the webservice's stub</help>
-<starttext><![CDATA[getPlugin("webservices").refreshWS("$${Web Service Name}")]]></starttext>
+<starttext><![CDATA[getPlugin("Webservices").refreshWS("$${Web Service Name}")]]></starttext>
 <endtext><![CDATA[]]></endtext>
 </snippet>

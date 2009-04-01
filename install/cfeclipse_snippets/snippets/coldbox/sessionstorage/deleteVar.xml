@@ -2,6 +2,6 @@
 <snippet filetemplate="false" extension="cfm">
 <name>deleteVar</name>
 <help></help>
-<starttext><![CDATA[getPlugin("sessionstorage").deleteVar("$${Variable Name}")]]></starttext>
+<starttext><![CDATA[getPlugin("SessionStorage").deleteVar("$${Variable Name}")]]></starttext>
 <endtext><![CDATA[]]></endtext>
 </snippet>
