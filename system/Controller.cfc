@@ -391,7 +391,9 @@ Description		: This is the main ColdBox front Controller.
 		
 		<!--- InterceptMetadata --->
 		<cfset interceptMetadata.processedEvent = arguments.event>
-			
+		<!--- Execute preEvent Interception --->
+		<cfset getInterceptorService().processState("preEvent",interceptMetadata)>
+					
 		<!--- PreHandler Execution --->
 		<cfif not arguments.prepostExempt and structKeyExists(oEventHandler,"preHandler")>
 			<!--- Validate ONLY & EXCEPT lists --->
@@ -401,8 +403,6 @@ Description		: This is the main ColdBox front Controller.
 				  AND
 				  ( listFindNoCase(oEventHandler.PREHANDLER_EXCEPT,oEventHandlerBean.getMethod()) EQ 0 )>
 				<cfset timerHash = getDebuggerService().timerStart("invoking runEvent [preHandler] for #arguments.event#")>
-					<!--- Execute preEvent Interception --->
-					<cfset getInterceptorService().processState("preEvent",interceptMetadata)>
 					<!--- Execute the preHandler() action --->
 					<cfset oEventHandler.preHandler(oRequestContext,oEventHandlerBean.getMethod())>
 				<cfset getDebuggerService().timerEnd(timerHash)>
@@ -459,11 +459,12 @@ Description		: This is the main ColdBox front Controller.
 				<cfset timerHash = getDebuggerService().timerStart("invoking runEvent [postHandler] for #arguments.event#")>
 					<!--- Execute the postHandler() action --->
 					<cfset oEventHandler.postHandler(oRequestContext,oEventHandlerBean.getMethod())>
-					<!--- Execute postEvent Interception --->
-					<cfset getInterceptorService().processState("postEvent",interceptMetadata)>
 				<cfset getDebuggerService().timerEnd(timerHash)>
 			</cfif>
 		</cfif>
+		
+		<!--- Execute postEvent Interception --->
+		<cfset getInterceptorService().processState("postEvent",interceptMetadata)>
 		
 		<!--- Return Results for proxy if needed. --->
 		<cfif structKeyExists(refLocal,"results")>
