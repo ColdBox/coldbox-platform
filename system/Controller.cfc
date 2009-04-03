@@ -392,8 +392,9 @@ Description		: This is the main ColdBox front Controller.
 		<!--- InterceptMetadata --->
 		<cfset interceptMetadata.processedEvent = arguments.event>
 		<!--- Execute preEvent Interception --->
-		<cfset getInterceptorService().processState("preEvent",interceptMetadata)>
-					
+		<cfif not arguments.prepostExempt>
+			<cfset getInterceptorService().processState("preEvent",interceptMetadata)>
+		</cfif>		
 		<!--- PreHandler Execution --->
 		<cfif not arguments.prepostExempt and structKeyExists(oEventHandler,"preHandler")>
 			<!--- Validate ONLY & EXCEPT lists --->
@@ -464,7 +465,9 @@ Description		: This is the main ColdBox front Controller.
 		</cfif>
 		
 		<!--- Execute postEvent Interception --->
-		<cfset getInterceptorService().processState("postEvent",interceptMetadata)>
+		<cfif not arguments.prepostExempt>
+			<cfset getInterceptorService().processState("postEvent",interceptMetadata)>
+		</cfif>
 		
 		<!--- Return Results for proxy if needed. --->
 		<cfif structKeyExists(refLocal,"results")>
