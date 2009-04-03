@@ -13,7 +13,7 @@ Description :
 		//this.PERSIST_FRAMEWORK = false;
 	</cfscript>
 	
-	<cffunction name="setup" returntype="void" access="public" output="false">
+	<cffunction name="setup" returntype="void" output="false">
 		<cfscript>
 		//Setup ColdBox Mappings For this Test
 		setAppMapping("/coldbox/ApplicationTemplate");
@@ -30,7 +30,7 @@ Description :
 		</cfscript>
 	</cffunction>
 	
-	<cffunction name="testonAppInit" access="public" returntype="void" output="false">
+	<cffunction name="testonAppInit" returntype="void" output="false">
 		<cfscript>
 		var event = "";
 		
@@ -43,7 +43,7 @@ Description :
 		</cfscript>
 	</cffunction>
 
-	<cffunction name="testonRequestStart" access="public" returntype="void" output="false">
+	<cffunction name="testonRequestStart" returntype="void" output="false">
 		<cfscript>
 		var event = "";
 		
@@ -56,7 +56,7 @@ Description :
 		</cfscript>
 	</cffunction>
 
-	<cffunction name="testonRequestEnd" access="public" returntype="void" output="false">
+	<cffunction name="testonRequestEnd" returntype="void" output="false">
 		<cfscript>
 		var event = "";
 		
@@ -69,7 +69,7 @@ Description :
 		</cfscript>
 	</cffunction>
 	
-	<cffunction name="testSessionStart" access="public" returntype="void" output="false">
+	<cffunction name="testSessionStart" returntype="void" output="false">
 		<cfscript>
 		var event = "";
 		
@@ -82,7 +82,7 @@ Description :
 		</cfscript>
 	</cffunction>
 	
-	<cffunction name="testSessionEnd" access="public" returntype="void" output="false">
+	<cffunction name="testSessionEnd" returntype="void" output="false">
 		<cfscript>
 		var event = "";
 		var sessionReference = "";
@@ -98,7 +98,7 @@ Description :
 		</cfscript>
 	</cffunction>
 
-	<cffunction name="testonException" access="public" returntype="void" output="false">
+	<cffunction name="testonException" returntype="void" output="false">
 		<cfscript>
 		//You need to create an exception bean first and place it on the request context FIRST as a setup.
 		var exceptionBean = CreateObject("component","coldbox.system.beans.ExceptionBean");

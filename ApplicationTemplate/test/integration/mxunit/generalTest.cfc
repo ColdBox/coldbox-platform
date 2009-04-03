@@ -12,7 +12,7 @@ Description :
 		//this.PERSIST_FRAMEWORK = false;
 	</cfscript>
 	
-	<cffunction name="setUp" returntype="void" access="public" output="false">
+	<cffunction name="setUp" returntype="void" output="false">
 		<cfscript>
 		//Setup ColdBox Mappings For this Test
 		setAppMapping("/coldbox/ApplicationTemplate");
@@ -29,7 +29,7 @@ Description :
 		</cfscript>
 	</cffunction>
 	
-	<cffunction name="testindex" access="public" returntype="void" output="false">
+	<cffunction name="testindex" returntype="void" output="false">
 		<cfscript>
 		var event = "";
 		
@@ -45,7 +45,7 @@ Description :
 		</cfscript>
 	</cffunction>
 	
-	<cffunction name="testdoSomething" access="public" returntype="void" output="false">
+	<cffunction name="testdoSomething" returntype="void" output="false">
 		<cfscript>
 		var event = "";
 		
