@@ -481,10 +481,7 @@ Description :
 	<cffunction name="getCGIElement" access="private" returntype="string" hint="The cgi element facade method" output="false" >
 		<cfargument name="cgielement" required="true" type="string" hint="">
 		<cfscript>
-			if ( structKeyExists(cgi, arguments.cgielement) )
-				return cgi[arguments.cgielement];
-			else
-				return "";
+			return cgi[arguments.cgielement];
 		</cfscript>
 	</cffunction>
 	
