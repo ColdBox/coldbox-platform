@@ -9,7 +9,7 @@ Date        :	9/3/2007
 Description :
 	securityTest
 ----------------------------------------------------------------------->
-<cfcomponent name="SessionStoragetest" extends="coldbox.system.testing.BaseMXUnitTest" output="false">
+<cfcomponent name="SessionStoragetest" extends="coldbox.system.testing.BaseTestCase" output="false">
 
 	<cffunction name="setUp" returntype="void" access="public" output="false">
 		<cfscript>

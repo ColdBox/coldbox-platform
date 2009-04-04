@@ -9,7 +9,7 @@ Date        :	November 10, 2008
 Description :
 	securityTest
 ----------------------------------------------------------------------->
-<cfcomponent name="AntiSamyTest" extends="coldbox.system.testing.BaseMXUnitTest" output="false">
+<cfcomponent name="AntiSamyTest" extends="coldbox.system.testing.BaseTestCase" output="false">
 
 	<cffunction name="setUp" returntype="void" access="public" output="false">
 		<cfscript>

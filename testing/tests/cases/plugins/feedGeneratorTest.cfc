@@ -9,7 +9,7 @@ Date        :	June 01 2008
 Description :
 	FeedGeneratorTest plugin test
 ----------------------------------------------------------------------->
-<cfcomponent name="FeedGeneratorTest" extends="coldbox.system.testing.BaseMXUnitTest" output="false">
+<cfcomponent name="FeedGeneratorTest" extends="coldbox.system.testing.BaseTestCase" output="false">
 
 	<cffunction name="setUp" returntype="void" access="public" output="false">
 		<cfscript>

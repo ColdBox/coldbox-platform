@@ -18,19 +18,23 @@ Description :
 	
 	<!--- Constructor --->
 	<cffunction name="init" access="public" returntype="SimpleLogger" hint="Constructor" output="false">
-		<cfargument name="name"  type="string" required="true" hint="The logger identification name">
+		<!--- ************************************************************* --->
+		<cfargument name="name"  		type="string" required="true"  hint="The logger identification name">
+		<cfargument name="properties" 	type="struct" required="false" default="#structnew()#" hint="A map of configuration properties for the logger"/>
+		<!--- ************************************************************* --->
 		<cfscript>
 			/* Super init it */
 			super.init(argumentCollection=arguments);
 			
 			/* Available valid severities For Simple Logger */
-			instance.validSeverities = "information|fatal|warning|error|debug";
+			instance.validSeverities = "trace|debug|information|info|warning|error|fatal";
 			
 			/* Log Levels For This Implementation */
 			instance.logLevels = structnew();
 			instance.logLevels["trace"] 		= 5;
 			instance.logLevels["debug"] 		= 4;
 			instance.logLevels["information"] 	= 3;
+			instance.logLevels["info"] 			= 3;
 			instance.logLevels["warning"] 		= 2;
 			instance.logLevels["error"] 		= 1;
 			instance.logLevels["fatal"] 		= 0;

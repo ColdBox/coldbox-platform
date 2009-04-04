@@ -15,25 +15,31 @@ Description :
 
 	<cfscript>
 		instance = structnew();
+		/* Logger Name */
+		instance.name = "";
+		/* Logger Unique ID */
+		instance._hash = "";
+		/* Flag denoting if the logger is inited or not */
+		instance.isLoggerInitialized = false;
+		/* The log levels map */
+		instance.logLevels = structnew();
+		/* The current set logging level */
+		instance.logLevel = 0;		
+		/* Logger Configuration Properties */
+		instance.properties = structnew();			
 	</cfscript>
 	
 	<!--- Init --->
 	<cffunction name="init" access="public" returntype="AbstractLogger" hint="Constructor" output="false" >
-		<cfargument name="name"  type="string" required="true" hint="The logger identification name">
+		<!--- ************************************************************* --->
+		<cfargument name="name"  		type="string" required="true"  hint="The logger identification name">
+		<cfargument name="properties" 	type="struct" required="false" default="#structnew()#" hint="A map of configuration properties for the logger"/>
+		<!--- ************************************************************* --->
 		<cfscript>
-			/* Create the identification name */
+			/* Prepare Instance */
 			instance.name = arguments.name;
-			/* Unique Instance ID for the object. */
-			instance._hash = hash(createUUID()&instance.name);
-			/* Flag denoting if the logger is inited or not */
-			instance.isLoggerInitialized = false;
-			/* The log levels map */
-			instance.logLevels = structnew();
-			/* The current set logging level */
-			instance.logLevel = 0;		
-			/* Logger Configuration Properties */
-			instance.properties = structnew();
-			
+			instance._hash = hash(createUUID()&instance.name);	
+			instance.properties = arguments.properties;		
 			return this;
 		</cfscript>
 	</cffunction>
@@ -45,10 +51,10 @@ Description :
 <!------------------------------------------- PUBLIC ------------------------------------------->
 
 	<!--- Get/Set Logger Name --->
-	<cffunction name="getname" access="public" output="false" returntype="string" hint="Get name">
+	<cffunction name="getname" access="public" output="false" returntype="string" hint="Get the logger's name">
 		<cfreturn instance.name/>
 	</cffunction>
-	<cffunction name="setname" access="public" output="false" returntype="void" hint="Set name">
+	<cffunction name="setname" access="public" output="false" returntype="void" hint="Set/Override the logger's name">
 		<cfargument name="name" type="string" required="true"/>
 		<cfset instance.name = arguments.name/>
 	</cffunction>
@@ -125,7 +131,7 @@ Description :
 	</cffunction>
 	
 	<!--- Log An Entry --->
-	<cffunction name="logEntry" access="public" hint="Log a message" output="false" returntype="void">
+	<cffunction name="logEntry" access="public" output="false" returntype="void" hint="Log a message">
 		<!--- ************************************************************* --->
 		<cfargument name="Severity" 		type="string" 	required="yes" hint="The severity level to log">
 		<cfargument name="Message" 			type="string"  	required="yes" hint="The message to log.">

@@ -9,7 +9,7 @@ Date        :	9/3/2007
 Description :
 	BeanFactoryTest
 ----------------------------------------------------------------------->
-<cfcomponent name="beanfactoryTest" extends="coldbox.system.testing.BaseMXUnitTest" output="false">
+<cfcomponent name="beanfactoryTest" extends="coldbox.system.testing.BaseTestCase" output="false">
 
 	<cffunction name="setUp" returntype="void" access="public" output="false">
 		<cfscript>

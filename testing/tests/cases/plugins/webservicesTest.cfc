@@ -9,7 +9,7 @@ Date        :	April 03, 2008
 Description :
 	webservicesTest
 ----------------------------------------------------------------------->
-<cfcomponent name="webservicesTest" extends="coldbox.system.testing.BaseMXUnitTest" output="false">
+<cfcomponent name="webservicesTest" extends="coldbox.system.testing.BaseTestCase" output="false">
 
 	<cffunction name="setUp" returntype="void" access="public" output="false">
 		<cfscript>

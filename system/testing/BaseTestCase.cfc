@@ -21,7 +21,10 @@ Description :
 	   of the Application Start Handler to be executed.
 
 ---------------------------------------------------------------------->
-<cfcomponent name="baseMXUnitTest" extends="mxunit.framework.TestCase" output="false" hint="A base unit test case for MXUnit">
+<cfcomponent name="BaseTestCase" 
+			 extends="mxunit.framework.TestCase" 
+			 output="false" 
+			 hint="A base unit test case for MXUnit">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 

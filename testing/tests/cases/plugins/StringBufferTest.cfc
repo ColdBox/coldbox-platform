@@ -9,7 +9,7 @@ Date        :	April 04, 2008
 Description :
 	StringBufferTest
 ----------------------------------------------------------------------->
-<cfcomponent name="StringBufferTest" extends="coldbox.system.testing.BaseMXUnitTest" output="false">
+<cfcomponent name="StringBufferTest" extends="coldbox.system.testing.BaseTestCase" output="false">
 
 	<cffunction name="setUp" returntype="void" access="public" output="false">
 		<cfscript>

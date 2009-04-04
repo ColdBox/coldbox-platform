@@ -6,7 +6,7 @@ Description :
 	Unit test for the ehMain Handler.
 
 ----------------------------------------------------------------------->
-<cfcomponent name="mainTest" extends="coldbox.system.testing.BaseMXUnitTest" output="false">
+<cfcomponent name="mainTest" extends="coldbox.system.testing.BaseTestCase" output="false">
 	
 	<cfscript>
 		//Uncomment the following if you dont' need the controller in application scope for testing.

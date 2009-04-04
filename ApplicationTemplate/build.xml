@@ -23,8 +23,8 @@
 	<!-- Define Tasks -->
 	<taskdef resource="net/sf/antcontrib/antlib.xml" classpathref="cp" />
 	
-	<!-- init -->
-	<target name="init" description="Init the generator">
+	<!-- run -->
+	<target name="run" description="Run the generator">
 		<!--Init TimeStamp-->
 		<tstamp />
 		<echoproperties regex="gen" />
@@ -33,22 +33,19 @@
 		   	   addproperty="wizardType"
 		 	   validargs="SwingGUI,AntInput"
 			   defaultvalue="SwingGUI" />
-		<condition property="guiwizard.yes">
-			<equals arg1="${wizardType}" arg2="SwingGUI" />
-		</condition>
-		<condition property="guiwizard.no">
-			<equals arg1="${wizardType}" arg2="AntInput" />
-		</condition>	
-		<condition property="guiwizard.no">
-			<equals arg1="${wizardType}" arg2="" />
-		</condition>
+		<if>
+			<equals arg1="${wizardType}" arg2="SwingGUI" casesensitive="false" />
+			<then>
+				<antcall target="wizardGUI" inheritrefs="true" />
+			</then>
+			<else>
+				<antcall target="wizard" inheritrefs="true" />
+			</else>
+		</if>
 	</target>
-	
-	<!-- Run this Wizard -->
-	<target name="run" description="run the wizard" depends="init,wizard,wizardGUI" />
 
 	<!-- Old School Wizard -->
-	<target name="wizard" description="Question Wizard" if="guiwizard.no">
+	<target name="wizard" description="Question Wizard">
 		<!--Ask for user input to create application-->
 		<input message="What is the name of your application: (Ex:blog,forum)?"
 		       addproperty="app.name"/>
@@ -70,10 +67,6 @@
 		<input message="Configure your SES Rewrite Engine (If none, /index.cfm/ will be used)?"
 			   validargs="none,mod_rewrite,isapi" defaultvalue="mod_rewrite"
 		       addproperty="app.rewrite" />
-		<!-- Unit Tests -->
-		<input message="Choose your Unit Testing Engine?"
-					   validargs="mxunit,cfcunit" defaultvalue="mxunit"
-				       addproperty="app.unittest" />	
 		<!-- Side Bar -->
 		<input message="Would you like to configure this application to use the ColdBox SideBar?"
 			   validargs="true,false" defaultvalue="false"
@@ -84,8 +77,7 @@
 	
 	<!-- Wizard GUI -->
 	<target name="wizardGUI" 
-			description="Create the input forms using AntForm GUI. Quirky in Mac OSX from within Eclipse. Run from the command line."
-			if="guiwizard.yes">
+			description="Create the input forms using AntForm GUI. Quirky in Mac OSX from within Eclipse. Run from the command line.">
 		
 			<taskdef name="antform" classname="com.sardak.antform.AntForm"	classpathref="cp"/>
 			<antform title="ColdBox Application Generator"
@@ -142,14 +134,8 @@
 			<label>Choose your URL rewrite engine if any. This will create an appropriate .htaccess or isapirewrite.ini file or none and configure your routes.</label>
 			<selectionProperty label="URL Rewrite Engine?"
 							   property="app.rewrite"
-							   values="mod_rewrite,Isapi,none"
+							   values="mod_rewrite,isapi,none"
 							   tooltip="Choose your URL rewrite engine." />
-			<!-- Unit Testing -->
-			<selectionProperty label="Unit Testing Engine?"
-							   property="app.unittest"
-							   values="mxunit,cfcunit"
-							   tooltip="Choose your Unit Testing Engine." />	
-			
 		</antform>		
 	</target>
 
@@ -235,24 +221,6 @@
 				<copy file="${base.isapi}" todir="${app.destination}/${app.name}/" />	
 				<antcall target="replaceRewrite" />
 			</then>
-		</if>
-		<!-- Unit Testing -->
-		<if>
-			<equals arg1="${app.unittest}" arg2="mxunit" />
-			<then>
-				<delete dir="${app.destination}/${app.name}/test/integration/cfcunit" />
-				<move todir="${app.destination}/${app.name}/test/integration">
-					<fileset dir="${app.destination}/${app.name}/test/integration/mxunit" includes="**/*.cfc" />
-				</move>
-				<delete dir="${app.destination}/${app.name}/test/integration/mxunit" />								
-			</then>
-			<else>
-				<delete dir="${app.destination}/${app.name}/test/integration/mxunit" />
-				<move todir="${app.destination}/${app.name}/test/integration">
-					<fileset dir="${app.destination}/${app.name}/test/integration/cfcunit" includes="**/*.cfc" />
-				</move>
-				<delete dir="${app.destination}/${app.name}/test/integration/cfcunit" />
-			</else>
 		</if>
 		<!-- Side Bar-->
 		<if>

@@ -1,12 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <snippet filetemplate="true" extension="cfc">
-<name>cfcUnit Test Case</name>
+<name>Base Test Case</name>
 <help></help>
-<starttext><![CDATA[<cfcomponent name="$${test Name}" extends="coldbox.system.testing.BaseTest" output="false">
-	<cfscript>
-		//Uncomment the following if you dont' need the controller in application scope for testing.
-		//this.PERSIST_FRAMEWORK = false;
-	</cfscript>
+<starttext><![CDATA[<cfcomponent name="$${test Name}" extends="coldbox.system.testing.BaseTestCase" output="false">
 
 	<cffunction name="setUp" returntype="void" access="private" output="false">
 		<cfscript>
@@ -22,22 +18,6 @@
 
 		//EXECUTE THE ON REQUEST START HANDLER: UNCOMMENT IF NEEDED AND FILL IT OUT
 		//getController().runEvent("main.onRequestStart");
-		</cfscript>
-	</cffunction>
-
-	<cffunction name="testindex" access="public" returntype="void" output="false">
-		<cfscript>
-		var event = "";
-		
-		//Place any variables on the form or URL scope to test the handler.
-		//FORM.name = "luis"
-		event = execute("general.index");
-		
-		debug(event.getCollection());
-		
-		//Do your asserts below
-		assertEquals("Welcome to ColdBox!", event.getValue("welcomeMessage",""), "Failed to assert welcome message");
-			
 		</cfscript>
 	</cffunction>
 	

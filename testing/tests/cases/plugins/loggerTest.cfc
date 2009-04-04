@@ -8,7 +8,7 @@ Author      :	Sana Ullah
 Date        :	Jan 13, 2009
 Description :   Logger Plugin Test
 ----------------------------------------------------------------------->
-<cfcomponent name="loggertest" extends="coldbox.system.testing.BaseMXUnitTest" output="false">
+<cfcomponent name="loggertest" extends="coldbox.system.testing.BaseTestCase" output="false">
 
 	<cffunction name="setUp" returntype="void" access="public" output="false">
 		<cfscript>

@@ -9,7 +9,7 @@ Date        :	April 03, 2008
 Description :
 	zipTest
 ----------------------------------------------------------------------->
-<cfcomponent name="zipTest" extends="coldbox.system.testing.BaseMXUnitTest" output="false">
+<cfcomponent name="zipTest" extends="coldbox.system.testing.BaseTestCase" output="false">
 
 	<cffunction name="setUp" returntype="void" access="public" output="false">
 		<cfscript>

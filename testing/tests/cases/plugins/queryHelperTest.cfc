@@ -9,7 +9,7 @@ Date        :	March 30 2008
 Description :
 	QueryHelper plugin test
 ----------------------------------------------------------------------->
-<cfcomponent name="QueryHelperTest" extends="coldbox.system.testing.BaseMXUnitTest" output="false">
+<cfcomponent name="QueryHelperTest" extends="coldbox.system.testing.BaseTestCase" output="false">
 
 	<cffunction name="setUp" returntype="void" access="public" output="false">
 		<cfscript>
