@@ -28,7 +28,8 @@ Description:
 			setpluginName("OWASP AntiSamy Project");
 			setpluginVersion("1.0");
 			setpluginDescription("AntiSamy to protect from XSS hacks.");
-			
+			setpluginAuthor("Sana Ullah");
+			setpluginAuthorURL("http://www.coldbox.org");
 			/* Create Policy Structure */			
 			instance.PolicyFileStruct = StructNew();
 			

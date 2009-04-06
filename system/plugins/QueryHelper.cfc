@@ -18,12 +18,21 @@ Description :
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
 	<cffunction name="init" access="public" returntype="QueryHelper" output="false">
+		<!--- ************************************************************* --->
 		<cfargument name="controller" type="any" required="true">
-		<cfset super.Init(arguments.controller) />
-		<cfset setpluginName("Query Helper")>
-		<cfset setpluginVersion("1.5")>
-		<cfset setpluginDescription("This is a query helper plugin.")>
-		<cfreturn this>
+		<!--- ************************************************************* --->
+		<cfscript>
+			super.Init(arguments.controller);
+			
+			/* Plugin Properties */
+			setpluginName("Query Helper");
+			setpluginVersion("1.5");
+			setpluginDescription("This is a query helper plugin");
+			setpluginAuthor("Sana Ullah");
+			setpluginAuthorURL("http://www.coldbox.org");
+
+			return this;
+		</cfscript>
 	</cffunction>
 
 <!------------------------------------------- PUBLIC ------------------------------------------->

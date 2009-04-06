@@ -17,7 +17,6 @@ clearAll():void
 getStorage():struct
 clearStorage():void
 
-
 Blog Etnry (help/doc): http://www.railo.ch/blog/index.cfm/2008/7/6/Cluster-Scope
 
 ----------------------------------------------------------------------->
@@ -40,7 +39,7 @@ Blog Etnry (help/doc): http://www.railo.ch/blog/index.cfm/2008/7/6/Cluster-Scope
 			setpluginName("Cluster Storage");
 			setpluginVersion("1.0");
 			setpluginDescription("A permanent data storage plugin using the Cluster scope. Only supported by Railo");
-			setpluginAuthor("Luis Majano");
+			setpluginAuthor("Sana Ullah");
 			setpluginAuthorURL("http://www.coldbox.org");
 			
 			/* Lock Name */

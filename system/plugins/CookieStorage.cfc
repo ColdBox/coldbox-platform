@@ -33,6 +33,8 @@ Modification History: March 23,2008 Added new feature to encrypt/decrypt cookie 
 			setpluginName("Cookie Storage");
 			setpluginVersion("1.0");
 			setpluginDescription("A permanent data storage plugin.");
+			setpluginAuthor("Sana Ullah");
+			setpluginAuthorURL("http://www.coldbox.org");
 			
 			/* set CFML engine encryption CF, BD, Railo*/
 			setEncryptionAlgorithm("CFMX_COMPAT");
