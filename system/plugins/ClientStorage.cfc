@@ -10,7 +10,15 @@ Description :
 	This is a plugin that enables the setting/getting of permanent variables in
 	the client scope using the wddx features if needed.
 
-Modification History:
+A ColdBox Storage Plugin implements the following methods:
+
+getVar(name,default):any
+setVar(name,value):void
+deleteVar(name):boolean
+exists(name):boolean
+clearAll():void
+getStorage():struct
+clearStorage():void
 
 ----------------------------------------------------------------------->
 <cfcomponent name="ClientStorage"
@@ -32,6 +40,8 @@ Modification History:
 			setpluginName("Client Storage");
 			setpluginVersion("1.0");
 			setpluginDescription("A permanent data storage plugin.");
+			setpluginAuthor("Luis Majano");
+			setpluginAuthorURL("http://www.coldbox.org");
 			
 			/* Return Instance */
 			return this;
@@ -68,19 +78,16 @@ Modification History:
 		<cfset var rtnVar = "">
 		
 		<cfif exists(arguments.name)>
-			<!--- Get Value --->
 			<cfset rtnVar = client[arguments.name]>
 			<cfif isWDDX(rtnVar)>
 				<!--- Unwddx packet --->
 				<cfwddx action="wddx2cfml" input="#rtnVar#" output="wddxVar">
 				<cfset rtnVar = wddxVar>
 			</cfif>
+			<cfreturn rtnVar>
 		<cfelse>
-			<cfset rtnVar = arguments.default>
+			<cfreturn arguments.default>
 		</cfif>
-		
-		<!--- Return Var --->
-		<cfreturn rtnVar>
 	</cffunction>
 
 	<!--- Exists Check --->
@@ -98,6 +105,15 @@ Modification History:
 		<!--- ************************************************************* --->
 		<cfreturn structdelete(client, arguments.name, true)>
 	</cffunction>
-
+	
+	<!--- Clear All From Storage --->
+	<cffunction name="clearAll" access="public" returntype="void" hint="Clear the entire coldbox client storage" output="false">
+		<cfset structClear(client)>
+	</cffunction>
+	
+	<!--- Get Storage --->
+	<cffunction name="getStorage" access="public" returntype="struct" hint="Get the entire storage scope structure" output="false" >
+		<cfreturn client>
+	</cffunction>
 
 </cfcomponent>
