@@ -28,6 +28,8 @@ Modification History:
 			instance.pluginName = "";
 			instance.pluginVersion = "";
 			instance.pluginDescription = "";
+			instance.pluginAuthor = "";
+			instance.pluginAuthorURL = "";
 			instance.pluginPath = getMetadata(this).path;
 			
 			/* Return instance */
@@ -36,6 +38,24 @@ Modification History:
 	</cffunction>
 
 <!------------------------------------------- INSTANCE MUTATORS AND ACCESSORS ------------------------------------------->
+
+	<!--- Plugin Author URL --->
+	<cffunction name="getpluginAuthorURL" access="public" output="false" returntype="string" hint="Get the instance's pluginAuthorURL">
+		<cfreturn instance.pluginAuthorURL/>
+	</cffunction>
+	<cffunction name="setpluginAuthorURL" access="public" output="false" returntype="void" hint="Set the instance's pluginAuthorURL">
+		<cfargument name="pluginAuthorURL" type="string" required="true"/>
+		<cfset instance.pluginAuthorURL = arguments.pluginAuthorURL/>
+	</cffunction>
+	
+	<!--- Plugin Author --->
+	<cffunction name="getpluginAuthor" access="public" output="false" returntype="string" hint="Get the instance's pluginAuthor">
+		<cfreturn instance.pluginAuthor/>
+	</cffunction>
+	<cffunction name="setpluginAuthor" access="public" output="false" returntype="void" hint="Set the instance's pluginAuthor">
+		<cfargument name="pluginAuthor" type="string" required="true"/>
+		<cfset instance.pluginAuthor = arguments.pluginAuthor/>
+	</cffunction>
 
 	<!--- Get/set Plugin Name --->
 	<cffunction name="getPluginName" access="public" hint="Get the instance's pluginName" returntype="string" output="false">
@@ -46,8 +66,6 @@ Modification History:
 		<cfset instance.pluginName = arguments.pluginName>
 	</cffunction>
 
-	<!--- ************************************************************* --->
-
 	<!--- Get/Set Plugin Version --->
 	<cffunction name="getPluginVersion" access="public" hint="Get the instance's pluginVersion" returntype="string" output="false">
 		<cfreturn instance.pluginVersion>
@@ -56,8 +74,6 @@ Modification History:
 		<cfargument name="pluginVersion" required="true" type="string">
 		<cfset instance.pluginVersion = arguments.pluginVersion>
 	</cffunction>
-
-	<!--- ************************************************************* --->
 
 	<!--- Get/Set Plugin Description --->
 	<cffunction name="getPluginDescription" access="public" hint="Get the instance's pluginDescription" returntype="string" output="false">
@@ -68,13 +84,9 @@ Modification History:
 		<cfset instance.pluginDescription = arguments.pluginDescription>
 	</cffunction>
 
-	<!--- ************************************************************* --->
-
 	<!--- Get Plugin Path --->
 	<cffunction name="getpluginPath" access="public" hint="Get the instance's pluginPath" returntype="string" output="false">
 		<cfreturn instance.pluginPath>
 	</cffunction>
-
-	<!--- ************************************************************* --->
 
 </cfcomponent>
