@@ -46,14 +46,16 @@ Description :
 
 	<!--- Load ColdBox --->
 	<cffunction name="loadColdbox" access="public" returntype="void" hint="Load the framework" output="false" >
-		<!--- Clean up If Necessary --->
-		<cfif structkeyExists(application,"cbController")>
-			<cfset structDelete(application,"cbController")>
-		</cfif>
-		<!--- Create Brand New Controller --->
-		<cfset application.cbController = CreateObject("component","coldbox.system.Controller").init(COLDBOX_APP_ROOT_PATH)>
-		<!--- Setup the Framework And Application --->
-		<cfset application.cbController.getLoaderService().setupCalls(COLDBOX_CONFIG_FILE)>
+		<cfscript>
+			/* Cleanup */
+			if( structkeyExists(application,"cbController") ){
+				structDelete(application,"cbController");
+			}
+			/* Create Brand New Controller */
+			application.cbController = CreateObject("component","coldbox.system.Controller").init(COLDBOX_APP_ROOT_PATH);
+			/* Setup the Framework And Application */
+			application.cbController.getLoaderService().setupCalls(COLDBOX_CONFIG_FILE);			
+		</cfscript>
 	</cffunction>
 	
 	<!--- Reload Checks --->
@@ -114,152 +116,149 @@ Description :
 		
 		<!--- Start Application Requests --->
 		<cflock type="readonly" name="#getAppHash()#" timeout="#getLockTimeout()#" throwontimeout="true">
-			<cftry>
-				<!--- set request time --->
-				<cfset request.fwExecTime = getTickCount()>
-				<!--- Local Reference --->
-				<cfset cbController = application.cbController>
-				<!--- Create Request Context & Capture Request --->
-				<cfset Event = cbController.getRequestService().requestCapture()>
-				
-				<!--- Debugging Monitors & Commands Check --->
-				<cfif cbController.getDebuggerService().getDebugMode()>
-					<!--- Commands Check --->
-					<cfset coldboxCommands(cbController,event)>
-					<!--- Which panel to render --->
-					<cfif event.getValue("debugPanel","") eq "cache">
-						<cfoutput>#cbController.getDebuggerService().renderCachePanel()#</cfoutput>
-						<cfabort>
-					<cfelseif event.getValue("debugPanel","") eq "cacheviewer">
-						<cfoutput>#cbController.getDebuggerService().renderCacheDumper()#</cfoutput>
-						<cfabort>
-					<cfelseif event.getValue("debugPanel","") eq "profiler">
-						<cfoutput>#cbController.getDebuggerService().renderProfiler()#</cfoutput>
-						<cfabort>
-					</cfif>					
-				</cfif>
-			
-				<!--- Application Start Handler --->
-				<cfif cbController.getSetting("ApplicationStartHandler") neq "" and (not cbController.getAppStartHandlerFired())>
-					<cfset cbController.runEvent(cbController.getSetting("ApplicationStartHandler"),true)>
-					<cfset cbController.setAppStartHandlerFired(true)>
-				</cfif>
-				
-				<!--- Execute preProcess Interception --->
-				<cfset cbController.getInterceptorService().processState("preProcess")>
-				
-				<!--- IF Found in config, run onRequestStart Handler --->
-				<cfif cbController.getSetting("RequestStartHandler") neq "">
-					<cfset cbController.runEvent(cbController.getSetting("RequestStartHandler"),true)>
-				</cfif>
-				
-				<!--- Before Any Execution, do we have cached content to deliver --->
-				<cfif Event.isEventCacheable() and cbController.getColdboxOCM().lookup(Event.getEventCacheableEntry())>
-					<cfset renderedContent = cbController.getColdboxOCM().get(Event.getEventCacheableEntry())>
-					<cfoutput>#renderedContent#</cfoutput>
-				<cfelse>
-				
-					<!--- Run Default/Set Event --->
-					<cfset cbController.runEvent(default=true)>
-					
-					<!--- No Render Test --->
-					<cfif not event.isNoRender()>
-						<!--- Check for Marshalling and data render --->
-						<cfif isStruct(event.getRenderData()) and not structisEmpty(event.getRenderData())>
-							<cfset renderedContent = cbController.getPlugin("Utilities").marshallData(argumentCollection=event.getRenderData())>
-						<cfelse>
-							<!--- Render Layout/View pair via set variable to eliminate whitespace--->
-							<cfset renderedContent = cbController.getPlugin("Renderer").renderLayout()>
-						</cfif>
-						
-						<!--- PreRender Data:--->
-						<cfset interceptorData.renderedContent = renderedContent>
-						<!--- Execute preRender Interception --->
-						<cfset cbController.getInterceptorService().processState("preRender",interceptorData)>
-						
-						<!--- Check if caching the content --->
-						<cfif event.isEventCacheable()>
-							<cfset eventCacheEntry = Event.getEventCacheableEntry()>
-							<!--- Cache the content of the event --->
-							<cfset cbController.getColdboxOCM().set(eventCacheEntry.cacheKey,
-																	renderedContent,
-																	eventCacheEntry.timeout,
-																	eventCacheEntry.lastAccessTimeout)>
-						</cfif>
-						
-						<!--- Render Content Type if using Render Data --->
-						<cfif isStruct(event.getRenderData()) and not structisEmpty(event.getRenderData())>
-							<!--- Render the Data Content Type --->
-							<cfcontent type="#event.getRenderData().contentType#" reset="true">
-							<!--- Remove panels --->
-							<cfsetting showdebugoutput="false">
-							<cfset event.showDebugPanel(false)>
-						</cfif>
-						
-						<!--- Render the Content --->
-						<cfoutput>#renderedContent#</cfoutput>
-							
-						<!--- Execute postRender Interception --->
-						<cfset cbController.getInterceptorService().processState("postRender")>
-					</cfif>
-					
-					<!--- If Found in config, run onRequestEnd Handler --->
-					<cfif cbController.getSetting("RequestEndHandler") neq "">
-						<cfset cbController.runEvent(cbController.getSetting("RequestEndHandler"),true)>
-					</cfif>
-					
-					<!--- Execute postProcess Interception --->
-					<cfset cbController.getInterceptorService().processState("postProcess")>
-				
-				<!--- End else if not cached event --->
-				</cfif>
-				
-				<!--- Trap Application Errors --->
-				<cfcatch type="any">
-					<!--- Get Exception Service --->
-					<cfset ExceptionService = cbController.getExceptionService()>
-					
-					<!--- Intercept The Exception --->
-					<cfset interceptorData = structnew()>
-					<cfset interceptorData.exception = cfcatch>
-					<cfset cbController.getInterceptorService().processState("onException",interceptorData)>
-					
-					<!--- Handle The Exception --->
-					<cfset ExceptionBean = ExceptionService.ExceptionHandler(cfcatch,"application","Application Execution Exception")>
-					
-					<!--- Render The Exception --->
-					<cfoutput>#ExceptionService.renderBugReport(ExceptionBean)#</cfoutput>
-				</cfcatch>
-			</cftry>
-			
-			<!--- DebugMode Routines --->
-			<cfif cbController.getDebuggerService().getDebugMode()>
-				<!--- Request Profilers --->
-				<cfif cbController.getDebuggerService().getDebuggerConfigBean().getPersistentRequestProfiler() and
-					  structKeyExists(request,"debugTimers")>
-					<cfset cbController.getDebuggerService().pushProfiler(request.DebugTimers)>
-				</cfif>
-				<!--- Render DebugPanel --->
-				<cfif Event.getdebugpanelFlag()>
-					<!--- Time the request --->
-					<cfset request.fwExecTime = GetTickCount() - request.fwExecTime>
-					<!--- Render Debug Log --->
-					<cfoutput>#cbController.getDebuggerService().renderDebugLog()#</cfoutput>
-				</cfif>
-			</cfif>
+			<cfset cbController = application.cbController>
 		</cflock>
+			
+		<cftry>
+			<!--- set request time --->
+			<cfset request.fwExecTime = getTickCount()>
+			<!--- Create Request Context & Capture Request --->
+			<cfset Event = cbController.getRequestService().requestCapture()>
+			
+			<!--- Debugging Monitors & Commands Check --->
+			<cfif cbController.getDebuggerService().getDebugMode()>
+				<!--- Commands Check --->
+				<cfset coldboxCommands(cbController,event)>
+				<!--- Which panel to render --->
+				<cfif event.getValue("debugPanel","") eq "cache">
+					<cfoutput>#cbController.getDebuggerService().renderCachePanel()#</cfoutput>
+					<cfabort>
+				<cfelseif event.getValue("debugPanel","") eq "cacheviewer">
+					<cfoutput>#cbController.getDebuggerService().renderCacheDumper()#</cfoutput>
+					<cfabort>
+				<cfelseif event.getValue("debugPanel","") eq "profiler">
+					<cfoutput>#cbController.getDebuggerService().renderProfiler()#</cfoutput>
+					<cfabort>
+				</cfif>					
+			</cfif>
 		
+			<!--- Application Start Handler --->
+			<cfif cbController.getSetting("ApplicationStartHandler") neq "" and (not cbController.getAppStartHandlerFired())>
+				<cfset cbController.runEvent(cbController.getSetting("ApplicationStartHandler"),true)>
+				<cfset cbController.setAppStartHandlerFired(true)>
+			</cfif>
+			
+			<!--- Execute preProcess Interception --->
+			<cfset cbController.getInterceptorService().processState("preProcess")>
+			
+			<!--- IF Found in config, run onRequestStart Handler --->
+			<cfif cbController.getSetting("RequestStartHandler") neq "">
+				<cfset cbController.runEvent(cbController.getSetting("RequestStartHandler"),true)>
+			</cfif>
+			
+			<!--- Before Any Execution, do we have cached content to deliver --->
+			<cfif Event.isEventCacheable() and cbController.getColdboxOCM().lookup(Event.getEventCacheableEntry())>
+				<cfset renderedContent = cbController.getColdboxOCM().get(Event.getEventCacheableEntry())>
+				<cfoutput>#renderedContent#</cfoutput>
+			<cfelse>
+			
+				<!--- Run Default/Set Event --->
+				<cfset cbController.runEvent(default=true)>
+				
+				<!--- No Render Test --->
+				<cfif not event.isNoRender()>
+					<!--- Check for Marshalling and data render --->
+					<cfif isStruct(event.getRenderData()) and not structisEmpty(event.getRenderData())>
+						<cfset renderedContent = cbController.getPlugin("Utilities").marshallData(argumentCollection=event.getRenderData())>
+					<cfelse>
+						<!--- Render Layout/View pair via set variable to eliminate whitespace--->
+						<cfset renderedContent = cbController.getPlugin("Renderer").renderLayout()>
+					</cfif>
+					
+					<!--- PreRender Data:--->
+					<cfset interceptorData.renderedContent = renderedContent>
+					<!--- Execute preRender Interception --->
+					<cfset cbController.getInterceptorService().processState("preRender",interceptorData)>
+					
+					<!--- Check if caching the content --->
+					<cfif event.isEventCacheable()>
+						<cfset eventCacheEntry = Event.getEventCacheableEntry()>
+						<!--- Cache the content of the event --->
+						<cfset cbController.getColdboxOCM().set(eventCacheEntry.cacheKey,
+																renderedContent,
+																eventCacheEntry.timeout,
+																eventCacheEntry.lastAccessTimeout)>
+					</cfif>
+					
+					<!--- Render Content Type if using Render Data --->
+					<cfif isStruct(event.getRenderData()) and not structisEmpty(event.getRenderData())>
+						<!--- Render the Data Content Type --->
+						<cfcontent type="#event.getRenderData().contentType#" reset="true">
+						<!--- Remove panels --->
+						<cfsetting showdebugoutput="false">
+						<cfset event.showDebugPanel(false)>
+					</cfif>
+					
+					<!--- Render the Content --->
+					<cfoutput>#renderedContent#</cfoutput>
+						
+					<!--- Execute postRender Interception --->
+					<cfset cbController.getInterceptorService().processState("postRender")>
+				</cfif>
+				
+				<!--- If Found in config, run onRequestEnd Handler --->
+				<cfif cbController.getSetting("RequestEndHandler") neq "">
+					<cfset cbController.runEvent(cbController.getSetting("RequestEndHandler"),true)>
+				</cfif>
+				
+				<!--- Execute postProcess Interception --->
+				<cfset cbController.getInterceptorService().processState("postProcess")>
+			
+			<!--- End else if not cached event --->
+			</cfif>
+			
+			<!--- Trap Application Errors --->
+			<cfcatch type="any">
+				<!--- Get Exception Service --->
+				<cfset ExceptionService = cbController.getExceptionService()>
+				
+				<!--- Intercept The Exception --->
+				<cfset interceptorData = structnew()>
+				<cfset interceptorData.exception = cfcatch>
+				<cfset cbController.getInterceptorService().processState("onException",interceptorData)>
+				
+				<!--- Handle The Exception --->
+				<cfset ExceptionBean = ExceptionService.ExceptionHandler(cfcatch,"application","Application Execution Exception")>
+				
+				<!--- Render The Exception --->
+				<cfoutput>#ExceptionService.renderBugReport(ExceptionBean)#</cfoutput>
+			</cfcatch>
+		</cftry>
+		
+		<!--- DebugMode Routines --->
+		<cfif cbController.getDebuggerService().getDebugMode()>
+			<!--- Request Profilers --->
+			<cfif cbController.getDebuggerService().getDebuggerConfigBean().getPersistentRequestProfiler() and
+				  structKeyExists(request,"debugTimers")>
+				<cfset cbController.getDebuggerService().pushProfiler(request.DebugTimers)>
+			</cfif>
+			<!--- Render DebugPanel --->
+			<cfif Event.getdebugpanelFlag()>
+				<!--- Time the request --->
+				<cfset request.fwExecTime = GetTickCount() - request.fwExecTime>
+				<!--- Render Debug Log --->
+				<cfoutput>#cbController.getDebuggerService().renderDebugLog()#</cfoutput>
+			</cfif>
+		</cfif>		
 	</cffunction>
 	
 	<!--- Session Start --->
 	<cffunction name="onSessionStart" returnType="void" output="false" hint="An onSessionStart method to use or call from your Application.cfc">
 		<cfset var cbController = "">
-		
 		<cflock type="readonly" name="#getAppHash()#" timeout="#getLockTimeout()#" throwontimeout="true">
+			<cfset cbController = application.cbController>
+		</cflock>
 		<cfscript>
-			//Setup the local controller 
-			cbController = application.cbController;
-			
 			//Execute Session Start interceptors
 			cbController.getInterceptorService().processState("sessionStart",session);
 			
@@ -268,7 +267,6 @@ Description :
 				cbController.runEvent(cbController.getSetting("SessionStartHandler"),true);
 			}
 		</cfscript>
-		</cflock>
 	</cffunction>
 	
 	<!--- Session End --->
@@ -281,13 +279,20 @@ Description :
 		<cfset var event = "">
 		
 		<cflock type="readonly" name="#getAppHash()#" timeout="#getLockTimeout()#" throwontimeout="true">
+			<cfscript>
+				//Check for cb Controller
+				if ( structKeyExists(arguments.appScope,"cbController") ){
+					cbController = arguments.appScope.cbController;
+					
+				}
+			</cfscript>
+		</cflock>
+		
 		<cfscript>
-			//Check for cb Controller
-			if ( structKeyExists(arguments.appScope,"cbController") ){
-				//setup the controller
-				cbController = arguments.appScope.cbController;
+			if ( not isSimpleValue(cbController) ){
+				/* Get Context */
 				event = cbController.getRequestService().getContext();
-				
+					
 				//Execute Session End interceptors
 				cbController.getInterceptorService().processState("sessionEnd",arguments.sessionScope);
 				
@@ -304,7 +309,6 @@ Description :
 				}
 			}
 		</cfscript>
-		</cflock>
 	</cffunction>
 
 	<!--- setter COLDBOX CONFIG FILE --->
