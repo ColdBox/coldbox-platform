@@ -16,6 +16,7 @@ Description :
 	<!--- Constructor --->
 	<cfparam name="variables.COLDBOX_CONFIG_FILE" 	default="" type="string">
 	<cfparam name="variables.COLDBOX_APP_ROOT_PATH" default="#getDirectoryFromPath(getbaseTemplatePath())#" type="string">
+	<cfparam name="variables.COLDBOX_APP_KEY" default="cbController" type="string">
 	
 	<cfscript>
 		instance = structnew();
@@ -28,6 +29,8 @@ Description :
 		setCOLDBOX_CONFIG_FILE(COLDBOX_CONFIG_FILE);
 		//Set the Root
 		setCOLDBOX_APP_ROOT_PATH(COLDBOX_APP_ROOT_PATH);
+		//Set the App Key
+		setCOLDBOX_APP_KEY(COLDBOX_APP_KEY);
 	</cfscript>
 
 <!------------------------------------------- PUBLIC ------------------------------------------->
@@ -36,10 +39,15 @@ Description :
 	<cffunction name="init" access="public" returntype="coldbox" hint="Used when not using inheritance" output="false" >
 		<cfargument name="COLDBOX_CONFIG_FILE" 	 required="true" type="string" hint="The coldbox config file from the application.cfc">
 		<cfargument name="COLDBOX_APP_ROOT_PATH" required="true" type="string" hint="The coldbox app root path from the application.cfc">
+		<cfargument name="COLDBOX_APP_KEY" 		 required="false" type="string" hint="The coldbox app root path from the application.cfc">
 		<cfscript>
 			/* Set vars for two main locations */
 			setCOLDBOX_CONFIG_FILE(arguments.COLDBOX_CONFIG_FILE);
 			setCOLDBOX_APP_ROOT_PATH(arguments.COLDBOX_APP_ROOT_PATH);
+			/* App Key Check */
+			if( structKeyExists(arguments,"COLDBOX_APP_KEY") ){
+				setCOLDBOX_APP_KEY(arguments.COLDBOX_APP_KEY);
+			}
 			return this;
 		</cfscript>
 	</cffunction>
@@ -48,13 +56,13 @@ Description :
 	<cffunction name="loadColdbox" access="public" returntype="void" hint="Load the framework" output="false" >
 		<cfscript>
 			/* Cleanup */
-			if( structkeyExists(application,"cbController") ){
-				structDelete(application,"cbController");
+			if( structkeyExists(application,COLDBOX_APP_KEY) ){
+				structDelete(application,COLDBOX_APP_KEY);
 			}
 			/* Create Brand New Controller */
-			application.cbController = CreateObject("component","coldbox.system.Controller").init(COLDBOX_APP_ROOT_PATH);
+			application[COLDBOX_APP_KEY] = CreateObject("component","coldbox.system.Controller").init(COLDBOX_APP_ROOT_PATH);
 			/* Setup the Framework And Application */
-			application.cbController.getLoaderService().setupCalls(COLDBOX_CONFIG_FILE);			
+			application[COLDBOX_APP_KEY].getLoaderService().setupCalls(COLDBOX_CONFIG_FILE);			
 		</cfscript>
 	</cffunction>
 	
@@ -64,38 +72,38 @@ Description :
 		<cfset var ExceptionBean = "">
 		
 		<!--- Initialize the Controller If Needed--->
-		<cfif not structkeyExists(application,"cbController") or not application.cbController.getColdboxInitiated() or isfwReinit()>
+		<cfif NOT structkeyExists(application,COLDBOX_APP_KEY) OR NOT application[COLDBOX_APP_KEY].getColdboxInitiated() OR isfwReinit()>
 			<cflock type="exclusive" name="#getAppHash()#" timeout="#getLockTimeout()#" throwontimeout="true">
-				<cfif not structkeyExists(application,"cbController") or not application.cbController.getColdboxInitiated() or isfwReinit()>
+				<cfif NOT structkeyExists(application,"cbController") OR NOT application[COLDBOX_APP_KEY].getColdboxInitiated() OR isfwReinit()>
 					<cfset loadColdBox()>
 				</cfif>
 			</cflock>
 		<cfelse>
 			<cftry>
 				<!--- AutoReload Tests --->
-				<cfif application.cbController.getSetting("ConfigAutoReload")>
+				<cfif application[COLDBOX_APP_KEY].getSetting("ConfigAutoReload")>
 					<cflock type="exclusive" name="#getAppHash()#" timeout="#getLockTimeout()#" throwontimeout="true">
-						<cfset application.cbController.setAppStartHandlerFired(false)>
-						<cfset application.cbController.getLoaderService().setupCalls(COLDBOX_CONFIG_FILE)>
+						<cfset application[COLDBOX_APP_KEY].setAppStartHandlerFired(false)>
+						<cfset application[COLDBOX_APP_KEY].getLoaderService().setupCalls(COLDBOX_CONFIG_FILE)>
 					</cflock>
 				<cfelse>
 					<!--- Handler's Index Auto Reload --->
-					<cfif application.cbController.getSetting("HandlersIndexAutoReload")>
+					<cfif application[COLDBOX_APP_KEY].getSetting("HandlersIndexAutoReload")>
 						<cflock type="exclusive" name="#getAppHash()#" timeout="#getLockTimeout()#" throwontimeout="true">
-							<cfset application.cbController.getHandlerService().registerHandlers()>
+							<cfset application[COLDBOX_APP_KEY].getHandlerService().registerHandlers()>
 						</cflock>
 					</cfif>
 					<!--- IOC Framework Reload --->
-					<cfif application.cbController.getSetting("IOCFrameworkReload")>
+					<cfif application[COLDBOX_APP_KEY].getSetting("IOCFrameworkReload")>
 						<cflock type="exclusive" name="#getAppHash()#" timeout="#getLockTimeout()#" throwontimeout="true">
-							<cfset application.cbController.getPlugin("IOC").configure()>
+							<cfset application[COLDBOX_APP_KEY].getPlugin("IOC").configure()>
 						</cflock>
 					</cfif>
 				</cfif>
 				
 				<!--- Trap Framework Errors --->
 				<cfcatch type="any">
-					<cfset ExceptionService = application.cbController.getExceptionService()>
+					<cfset ExceptionService = application[COLDBOX_APP_KEY].getExceptionService()>
 					<cfset ExceptionBean = ExceptionService.ExceptionHandler(cfcatch,"framework","Framework Initialization/Configuration Exception")>
 					<cfoutput>#ExceptionService.renderBugReport(ExceptionBean)#</cfoutput>
 					<cfabort>
@@ -116,12 +124,13 @@ Description :
 		
 		<!--- Start Application Requests --->
 		<cflock type="readonly" name="#getAppHash()#" timeout="#getLockTimeout()#" throwontimeout="true">
-			<cfset cbController = application.cbController>
+			<cfset cbController = application[COLDBOX_APP_KEY]>
 		</cflock>
 			
 		<cftry>
 			<!--- set request time --->
 			<cfset request.fwExecTime = getTickCount()>
+			
 			<!--- Create Request Context & Capture Request --->
 			<cfset Event = cbController.getRequestService().requestCapture()>
 			
@@ -256,7 +265,7 @@ Description :
 	<cffunction name="onSessionStart" returnType="void" output="false" hint="An onSessionStart method to use or call from your Application.cfc">
 		<cfset var cbController = "">
 		<cflock type="readonly" name="#getAppHash()#" timeout="#getLockTimeout()#" throwontimeout="true">
-			<cfset cbController = application.cbController>
+			<cfset cbController = application[COLDBOX_APP_KEY]>
 		</cflock>
 		<cfscript>
 			//Execute Session Start interceptors
@@ -281,7 +290,7 @@ Description :
 		<cflock type="readonly" name="#getAppHash()#" timeout="#getLockTimeout()#" throwontimeout="true">
 			<cfscript>
 				//Check for cb Controller
-				if ( structKeyExists(arguments.appScope,"cbController") ){
+				if ( structKeyExists(arguments.appScope,COLDBOX_APP_KEY) ){
 					cbController = arguments.appScope.cbController;
 					
 				}
@@ -323,6 +332,18 @@ Description :
 		<cfset variables.COLDBOX_APP_ROOT_PATH = arguments.COLDBOX_APP_ROOT_PATH/>
 	</cffunction>
 	
+	<!--- setter COLDBOX_APP_KEY --->
+	<cffunction name="setCOLDBOX_APP_KEY" access="public" output="false" returntype="void" hint="Set COLDBOX_APP_KEY">
+		<cfargument name="COLDBOX_APP_KEY" type="string" required="true"/>
+		<cfset variables.COLDBOX_APP_KEY = arguments.COLDBOX_APP_KEY/>
+	</cffunction>
+	
+	<!--- Getter setter lock timeout --->
+	<cffunction name="setLockTimeout" access="private" output="false" returntype="void" hint="Set LockTimeout">
+		<cfargument name="LockTimeout" type="numeric" required="true"/>
+		<cfset instance.LockTimeout = arguments.LockTimeout/>
+	</cffunction>
+	
 	<!--- FW needs reinit --->
 	<cffunction name="isfwReinit" access="public" returntype="boolean" hint="Verify if we need to reboot the framework" output="false" >
 		<cfset var reinitPass = "">
@@ -334,8 +355,8 @@ Description :
 		
 		<cfscript>
 			/* Check if we have a reinit password at hand. */
-			if ( application.cbController.settingExists("ReinitPassword") ){
-				reinitPass = application.cbController.getSetting("ReinitPassword");
+			if ( application[COLDBOX_APP_KEY].settingExists("ReinitPassword") ){
+				reinitPass = application[COLDBOX_APP_KEY].getSetting("ReinitPassword");
 			}			
 			/* Verify the reinit key is passed */
 			if ( structKeyExists(url,"fwreinit") or structKeyExists(form,"fwreinit") ){
@@ -395,13 +416,9 @@ Description :
 		</cfif>
 	</cffunction>
 	
-	<!--- Getter setter lock timeout --->
+	<!--- Get Lock Timeout --->
 	<cffunction name="getLockTimeout" access="private" output="false" returntype="numeric" hint="Get LockTimeout">
 		<cfreturn instance.LockTimeout/>
-	</cffunction>
-	<cffunction name="setLockTimeout" access="private" output="false" returntype="void" hint="Set LockTimeout">
-		<cfargument name="LockTimeout" type="numeric" required="true"/>
-		<cfset instance.LockTimeout = arguments.LockTimeout/>
 	</cffunction>
 	
 	<!--- AppHash --->
@@ -412,5 +429,5 @@ Description :
 		<cfargument name="AppHash" type="string" required="true"/>
 		<cfset instance.AppHash = arguments.AppHash/>
 	</cffunction>
-
+	
 </cfcomponent>

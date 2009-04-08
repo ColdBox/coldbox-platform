@@ -13,26 +13,30 @@ Description :
 
 	Please view the quickstart guide if you have more questions.
 ---------------------------------------------------------------------->
-<cfparam name="COLDBOX_CONFIG_FILE" default="" type="string">
-<cfparam name="COLDBOX_APP_ROOT_PATH" default="#getDirectoryFromPath(getbaseTemplatePath())#" type="string">
-	
+<cfparam name="COLDBOX_CONFIG_FILE" 		default="" type="string">
+<cfparam name="COLDBOX_APP_ROOT_PATH" 		default="#getDirectoryFromPath(getbaseTemplatePath())#" type="string">
+<cfparam name="COLDBOX_APP_KEY" 			default="" type="string">
+<cfparam name="COLDBOX_BOOTSTRAPPER_KEY"	default="cbBootstrap" type="string">
+
+
 <!--- Create the BootStrapper --->
-<cfif not structKeyExists(application,"cbBootstrap") or application.cbBootstrap.isfwReinit()>
+<cfif NOT structKeyExists(application,COLDBOX_BOOTSTRAPPER_KEY) OR 
+	  application[COLDBOX_BOOTSTRAPPER_KEY].isfwReinit()>
+	
 	<cflock name="coldbox.bootstrap_#hash(getBaseTemplatePath())#" type="exclusive" timeout="5" throwontimeout="true">
-	<cfif not structKeyExists(application,"cbBootstrap") or application.cbBootstrap.isfwReinit()>
-		<cfset structDelete(application,"cbBootStrap")>
-		<cfset application.cbBootStrap = CreateObject("component","coldbox.system.Coldbox")>
-	</cfif>
+		<cfif NOT structKeyExists(application,COLDBOX_BOOTSTRAPPER_KEY) OR
+			  application[COLDBOX_BOOTSTRAPPER_KEY].isfwReinit()>
+				  
+			<cfset structDelete(application,COLDBOX_BOOTSTRAPPER_KEY)>
+			<cfset application[COLDBOX_BOOTSTRAPPER_KEY] = CreateObject("component","coldbox.system.coldbox").init(COLDBOX_CONFIG_FILE,COLDBOX_APP_ROOT_PATH,COLDBOX_APP_KEY)>
+			
+		</cfif>
 	</cflock>
+	
 </cfif>
 
 <!--- Reference --->
-<Cfset coldbox = application.cbBootStrap>
-
-<!--- Set the ColdBox App Root --->
-<cfset coldbox.setCOLDBOX_APP_ROOT_PATH(COLDBOX_APP_ROOT_PATH)>
-<!--- Set the Coldbox Config File --->
-<cfset coldbox.setCOLDBOX_CONFIG_FILE(COLDBOX_CONFIG_FILE)>
+<Cfset coldbox = application[COLDBOX_BOOTSTRAPPER_KEY]>
 
 <!--- Reload Checks --->
 <cfset coldbox.reloadChecks()>

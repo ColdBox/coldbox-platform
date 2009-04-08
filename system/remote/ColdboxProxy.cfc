@@ -14,7 +14,11 @@ Description :
 <cfcomponent name="ColdboxProxy" output="false" hint="This component is the coldbox remote proxy used for model operation." >
 	
 <!------------------------------------------- PUBLIC ------------------------------------------->	
-
+	<cfscript>
+		/* Setup Namespace Key */
+		setCOLDBOX_APP_KEY("cbController");
+	</cfscript>
+	
 	<!--- process a remote call --->
 	<cffunction name="process" output="false" access="remote" returntype="any" hint="Process a remote call into ColdBox's event model and return data/objects back. If no results where found, this method returns null/void">
 		<!--- There are no arguments defined as they come in as a collection of arguments. --->
@@ -226,7 +230,7 @@ Description :
 			/* Verify ColdBox */
 			verifyColdBox();
 			/* Return it. */
-			return application.cbController;
+			return application[COLDBOX_APP_KEY];
 		</cfscript>
 	</cffunction>
 	
@@ -286,18 +290,20 @@ Description :
 		<cfset var appHash = hash(getBaseTemplatePath())>
 		
 		<!--- Reload Checks --->
-		<cfif not structKeyExists(application,"cbController") or not application.cbController.getColdboxInitiated() or arguments.reloadApp>
+		<cfif not structKeyExists(application,COLDBOX_APP_KEY) or not application[COLDBOX_APP_KEY].getColdboxInitiated() or arguments.reloadApp>
 			<cflock type="exclusive" name="#appHash#" timeout="30" throwontimeout="true">
 				<cfscript>
-				if ( not structkeyExists(application,"cbController") or not application.cbController.getColdboxInitiated() or arguments.reloadApp ){
+				if ( not structkeyExists(application,COLDBOX_APP_KEY) OR NOT
+					 application[COLDBOX_APP_KEY].getColdboxInitiated() OR
+					 arguments.reloadApp ){
 					/* Cleanup, Just in Case */
-					if( structKeyExists(application,"cbController") ){
-						structDelete(application,"cbController");
+					if( structKeyExists(application,COLDBOX_APP_KEY) ){
+						structDelete(application,COLDBOX_APP_KEY);
 					}
 					/* Load it Up baby!! */
-					cbController = CreateObject("component", "coldbox.system.Controller").init( appRootPath );
+					cbController = CreateObject("component", "coldbox.system.controller").init( appRootPath );
 					/* Put in Scope */
-					application.cbController = cbController;
+					application[COLDBOX_APP_KEY] = cbController;
 					/* Setup Calls */
 					cbController.getLoaderService().setupCalls(arguments.configLocation);					
 				}				
@@ -312,8 +318,15 @@ Description :
 		</cfif>
 	</cffunction>
 	
+	<!--- Get Simple Util --->
 	<cffunction name="getUtil" access="private" output="false" returntype="coldbox.system.util.Util" hint="Create and return a util object">
 		<cfreturn CreateObject("component","coldbox.system.util.Util")/>
+	</cffunction>
+	
+	<!--- setter COLDBOX_APP_KEY --->
+	<cffunction name="setCOLDBOX_APP_KEY" access="private" returntype="void" output="false" hint="Override the name of the coldbox application key used.">
+		<cfargument name="COLDBOX_APP_KEY" type="string" required="true">
+		<cfset variables.COLDBOX_APP_KEY = arguments.COLDBOX_APP_KEY>
 	</cffunction>
 	
 </cfcomponent>
