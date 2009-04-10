@@ -457,9 +457,9 @@ Modification History:
 			if ( not structkeyExists(ConfigStruct, "ExceptionHandler") )
 				ConfigStruct["ExceptionHandler"] = "";
 
-			//Check for MyPluginsLocation if found
-			if ( not structkeyExists(ConfigStruct, "MyPluginsLocation") )
-				ConfigStruct["MyPluginsLocation"] = "";
+			//Check for PluginsExternalLocation if found
+			if ( not structkeyExists(ConfigStruct, "PluginsExternalLocation") )
+				ConfigStruct["PluginsExternalLocation"] = "";
 
 			//Check for Handler Caching
 			if ( not structKeyExists(ConfigStruct, "HandlerCaching") or not isBoolean(ConfigStruct.HandlerCaching) )

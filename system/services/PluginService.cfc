@@ -193,7 +193,7 @@ Modification History:
 				}
 				else{
 					/* Will search the alternate custom location */
-					pluginPath = "#controller.getSetting('MyPluginsLocation')#.#arguments.plugin#";
+					pluginPath = "#controller.getSetting('PluginsExternalLocation')#.#arguments.plugin#";
 				}
 			}//end if custom plugin
 			else{

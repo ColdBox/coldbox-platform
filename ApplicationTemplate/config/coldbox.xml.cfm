@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-	xsi:noNamespaceSchemaLocation="http://www.coldboxframework.com/schema/config_2.6.0.xsd">
+	xsi:noNamespaceSchemaLocation="http://www.coldboxframework.com/schema/config_3.0.0.xsd">
 	<Settings>
 		
 		<!-- Application Setup-->
@@ -30,7 +30,7 @@
 		
 		<!-- Extension Points -->
 		<Setting name="UDFLibraryFile" 				value="includes/helpers/ApplicationHelper.cfm" />
-		<Setting name="MyPluginsLocation"   		value="" />
+		<Setting name="PluginsExternalLocation"   	value="" />
 		<Setting name="ViewsExternalLocation" 		value=""/>
 		<Setting name="HandlersExternalLocation"   	value="" />
 		<Setting name="RequestContextDecorator" 	value=""/>

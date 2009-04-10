@@ -389,7 +389,7 @@ Description :
 					<value option="&quot;ModelsStopRecursion&quot;"/>
 					
 					<value option="&quot;MyPluginsInvocationPath&quot;"/>
-					<value option="&quot;MyPluginsLocation&quot;"/>
+					<value option="&quot;PluginsExternalLocation&quot;"/>
 					<value option="&quot;MyPluginsPath&quot;"/>
 					<value option="&quot;OwnerEmail&quot;"/>
 					<value option="&quot;ProxyReturnCollection&quot;"/>
