@@ -27,6 +27,9 @@ Description :
 	<!--- COLDBOX PROPERTIES --->
 	<cfset COLDBOX_CONFIG_FILE = "">
 	
+	<!--- COLDBOX APPLICATION KEY OVERRIDE --->
+	<cfset COLDBOX_APP_KEY = "">
+	
 	<!--- on Application Start --->
 	<cffunction name="onApplicationStart" returnType="boolean" output="false">
 		<cfscript>

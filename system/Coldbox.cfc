@@ -16,7 +16,7 @@ Description :
 	<!--- Constructor --->
 	<cfparam name="variables.COLDBOX_CONFIG_FILE" 	default="" type="string">
 	<cfparam name="variables.COLDBOX_APP_ROOT_PATH" default="#getDirectoryFromPath(getbaseTemplatePath())#" type="string">
-	<cfparam name="variables.COLDBOX_APP_KEY" default="cbController" type="string">
+	<cfparam name="variables.COLDBOX_APP_KEY" 		default="cbController" type="string">
 	
 	<cfscript>
 		instance = structnew();
@@ -339,7 +339,7 @@ Description :
 	</cffunction>
 	
 	<!--- Getter setter lock timeout --->
-	<cffunction name="setLockTimeout" access="private" output="false" returntype="void" hint="Set LockTimeout">
+	<cffunction name="setLockTimeout" access="public" output="false" returntype="void" hint="Set LockTimeout">
 		<cfargument name="LockTimeout" type="numeric" required="true"/>
 		<cfset instance.LockTimeout = arguments.LockTimeout/>
 	</cffunction>
@@ -354,6 +354,10 @@ Description :
 		<cfparam name="URL"	 default="#StructNew()#">
 		
 		<cfscript>
+			/* Check if app exists */
+			if(not structKeyExists(application,COLDBOX_APP_KEY) ){
+				return true;
+			}
 			/* Check if we have a reinit password at hand. */
 			if ( application[COLDBOX_APP_KEY].settingExists("ReinitPassword") ){
 				reinitPass = application[COLDBOX_APP_KEY].getSetting("ReinitPassword");

@@ -48,8 +48,6 @@
 		<BugEmail>info@coldboxframework.com</BugEmail>
 	</BugTracerReports>
 
-	<DevEnvironments></DevEnvironments>
-
 	<WebServices></WebServices>
 
 	<Layouts>

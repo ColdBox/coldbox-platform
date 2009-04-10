@@ -56,7 +56,6 @@ Modification History:
 			instance.searchSettings = "//Settings/Setting";
 			instance.searchYourSettings = "//YourSettings/Setting";
 			instance.searchBugTracer = "//BugTracerReports/BugEmail";
-			instance.searchDevURLS = "//DevEnvironments/url";
 			instance.searchWS = "//WebServices/WebService";
 			instance.searchLayouts = "//Layouts/Layout";
 			instance.searchDefaultLayout = "//Layouts/DefaultLayout";
@@ -246,9 +245,6 @@ Modification History:
 		var DefaultLayout = "";
 		var	LayoutViewStruct = Collections.synchronizedMap(CreateObject("java","java.util.LinkedHashMap").init());
 		var	LayoutFolderStruct = Collections.synchronizedMap(CreateObject("java","java.util.LinkedHashMap").init());
-		//DevEnvironments
-		var DevEnvironmentNodes = "";
-		var DevEnvironmentArray = ArrayNew(1);
 		//Datasources.
 		var DatasourcesNodes = "";
 		var DSNStruct = StructNew();
@@ -734,27 +730,9 @@ Modification History:
 			//Insert Into Config
 			StructInsert(ConfigStruct, "BugEmails", BugEmails);
 
-			/* ::::::::::::::::::::::::::::::::::::::::: DEV ENV SETTINGS :::::::::::::::::::::::::::::::::::::::::::: */
+			/* ::::::::::::::::::::::::::::::::::::::::: ENVIRONMENT SETTING :::::::::::::::::::::::::::::::::::::::::::: */
 			
-			//Get Dev Environments
-			DevEnvironmentNodes = XMLSearch(configXML, instance.searchDevURLS);
-			//Insert DevEnvironments
-			for (i=1; i lte ArrayLen(DevEnvironmentNodes); i=i+1){
-				DevEnvironmentArray[i] = Trim(DevEnvironmentNodes[i].XMLText);
-			}
-			StructInsert(ConfigStruct,"DevEnvironments",DevEnvironmentArray);
-
-			// Set Development or Production Environment\
-			if (ArrayLen(ConfigStruct.DevEnvironments) gt 0){
-				StructInsert(ConfigStruct,"Environment","PRODUCTION");
-				for(i=1; i lte ArrayLen(ConfigStruct.DevEnvironments); i=i+1)
-					if ( findnocase(ConfigStruct.DevEnvironments[i], CGI.HTTP_HOST) ){
-						ConfigStruct.Environment = "DEVELOPMENT";
-						break;
-					}
-			}
-			else
-				StructInsert(ConfigStruct,"Environment","PRODUCTION");
+			StructInsert(ConfigStruct,"Environment","PRODUCTION");
 			
 			/* ::::::::::::::::::::::::::::::::::::::::: WS SETTINGS :::::::::::::::::::::::::::::::::::::::::::: */
 			

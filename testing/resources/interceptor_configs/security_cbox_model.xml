@@ -49,8 +49,6 @@ xsi:noNamespaceSchemaLocation="http://www.coldboxframework.com/schema/config_2.6
 		<BugEmail>info@coldboxframework.com</BugEmail>
 	</BugTracerReports>
 
-	<DevEnvironments></DevEnvironments>
-
 	<WebServices></WebServices>
 
 	<Layouts>

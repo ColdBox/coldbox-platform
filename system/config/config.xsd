@@ -11,7 +11,6 @@
 				<xs:element maxOccurs="1" minOccurs="0" ref="DebuggerSettings"/>
 				<xs:element maxOccurs="1" minOccurs="0" ref="MailServerSettings"/>
 				<xs:element maxOccurs="1" minOccurs="0" ref="BugTracerReports"/>
-				<xs:element maxOccurs="1" minOccurs="0" ref="DevEnvironments"/>
 				<xs:element maxOccurs="1" minOccurs="0" ref="WebServices"/>
 				<xs:element maxOccurs="1" minOccurs="1" ref="Layouts"/>
 				<xs:element maxOccurs="1" minOccurs="0" ref="i18N" />
@@ -159,26 +158,6 @@
 	<xs:element name="BugEmail">
 		<xs:annotation>
 			<xs:documentation>The email address to send reports.</xs:documentation>
-		</xs:annotation>
-		<xs:simpleType>
-			<xs:restriction base="xs:string">
-				<xs:minLength value="1"/>
-			</xs:restriction>
-		</xs:simpleType>
-	</xs:element>
-	<xs:element name="DevEnvironments">
-		<xs:annotation>
-			<xs:documentation>You can define one or more development urls that the framework will decide wether its on development or production mode.</xs:documentation>
-		</xs:annotation>
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element maxOccurs="unbounded" minOccurs="0" ref="url"/>
-			</xs:sequence>
-		</xs:complexType>
-	</xs:element>
-	<xs:element name="url">
-		<xs:annotation>
-			<xs:documentation>The complete or partial url to check.</xs:documentation>
 		</xs:annotation>
 		<xs:simpleType>
 			<xs:restriction base="xs:string">

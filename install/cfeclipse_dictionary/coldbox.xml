@@ -354,7 +354,6 @@ Description :
 					<value option="&quot;DefaultLocale&quot;"/>
 					<value option="&quot;DefaultResourceBundle&quot;"/>
 					<value option="&quot;DefaultView&quot;"/>
-					<value option="&quot;DevEnvironments&quot;"/>
 					<value option="&quot;EnableBugReports&quot;"/>
 					<value option="&quot;EnableColdboxLogging&quot;"/>
 					<value option="&quot;EnableColdfusionLogging&quot;"/>
