@@ -3,7 +3,7 @@
 		<cfargument name="Event" type="coldbox.system.beans.RequestContext" required="yes">
 	    
 	    <cfset event.setView('externalview')>	     
-	</cffunction>		<!--- display login form (testing security interceptor) --->	<cffunction name="dspLogin" access="public" returntype="Void" output="false">		<cfargument name="Event" type="coldbox.system.beans.RequestContext" required="yes">		<cfset var rc = event.getCollection()>		 <!--- testing secure handlers/methods --->		<cfset event.setView('vwLoginForm')>	</cffunction>	<!------------------------------------------- PRIVATE METHDOS ------------------------------------------->		<cffunction name="getmyMailSettings" access="public" output="false" returntype="any" hint="Get myMailSettings">
+	</cffunction>		<!--- display login form (testing security interceptor) --->	<cffunction name="dspLogin" access="public" returntype="Void" output="false">		<cfargument name="Event" type="coldbox.system.beans.RequestContext" required="yes">		<cfset var rc = event.getCollection()>		 <!--- testing secure handlers/methods --->		<cfset event.setView('vwLoginForm')>	</cffunction>		<!--- dumpsettings --->	<cffunction name="dumpsettings" access="public" returntype="void" output="false" hint="">		<cfargument name="Event" type="any" required="yes">	</cffunction>	<!------------------------------------------- PRIVATE METHDOS ------------------------------------------->		<cffunction name="getmyMailSettings" access="public" output="false" returntype="any" hint="Get myMailSettings">
 		<cfreturn instance.myMailSettings/>
 	</cffunction>	
 	<cffunction name="setmyMailSettings" access="public" output="false" returntype="void" hint="Set myMailSettings">

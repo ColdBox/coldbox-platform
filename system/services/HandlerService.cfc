@@ -277,22 +277,30 @@ Description :
 		/* ::::::::::::::::::::::::::::::::::::::::: HANDLERS BY CONVENTION :::::::::::::::::::::::::::::::::::::::::::: */
 		
 		//Check for Handlers Directory Location
-		if ( not directoryExists(HandlersPath) )
+		if ( not directoryExists(HandlersPath) ){
 			getUtil().throwit("The handlers directory: #handlerspath# does not exist please check your application structure or your Application Mapping.","","Framework.loaderService.HandlersDirectoryNotFoundException");
+		}
+		
 		//Get recursive Array listing
 		HandlerArray = recurseListing(HandlerArray, HandlersPath, HandlersPath);
+		
 		//Verify it
-		if ( ArrayLen(HandlerArray) eq 0 )
+		if ( ArrayLen(HandlerArray) eq 0 ){
 			getUtil().throwit("No handlers were found in: #HandlersPath#. So I have no clue how you are going to run this application.","","Framework.loaderService.NoHandlersFoundException");
+		}
+		
 		//Set registered Handlers
 		controller.setSetting("RegisteredHandlers",arrayToList(HandlerArray));
 		
 		/* ::::::::::::::::::::::::::::::::::::::::: EXTERNAL HANDLERS :::::::::::::::::::::::::::::::::::::::::::: */
 		
 		if( HandlersExternalLocationPath neq ""){
+			
 			//Check for Handlers Directory Location
-			if ( not directoryExists(HandlersExternalLocationPath) )
+			if ( not directoryExists(HandlersExternalLocationPath) ){
 				getUtil().throwit("The external handlers directory: #HandlersExternalLocationPath# does not exist please check your application structure.","","Framework.loaderService.HandlersDirectoryNotFoundException");
+			}
+			
 			//Get recursive Array listing
 			HandlersExternalArray = recurseListing(HandlersExternalArray, HandlersExternalLocationPath, HandlersExternalLocationPath);
 			
@@ -469,29 +477,36 @@ Description :
 		var i = 1;
 		var tempfile = "";
 		var cleanHandler = "";
-
+		var thisAbsolutePath = "";
+		
+		/* Clean Handler Path for Windows based systems */
+		arguments.handlersPath = replace(arguments.handlersPath,"\","/","all");
+		
 		//Loop Through listing if any files found.
 		for (; i lte arrayLen(Files); i=i+1 ){
+			
 			//get first reference as File Object
 			tempFile = CreateObject("java","java.io.File").init(oDirectory,Files[i]);
+			
 			//Directory Check for recursion
 			if ( tempFile.isDirectory() ){
-				//recurse, directory found.
 				arguments.fileArray = recurseListing(arguments.fileArray,tempFile.getPath(), arguments.HandlersPath);
 			}
 			else{
 				//Filter only cfc's
 				if ( listlast(tempFile.getName(),".") neq "cfc" )
 					continue;
-				//Clean entry by using Handler Path
-				cleanHandler = replacenocase(tempFile.getAbsolutePath(),arguments.handlersPath,"","all");
-				//Clean OS separators
-				if ( controller.getSetting("OSFileSeparator",1) eq "/")
-					cleanHandler = removeChars(replacenocase(cleanHandler,"/",".","all"),1,1);
-				else
-					cleanHandler = removeChars(replacenocase(cleanHandler,"\",".","all"),1,1);
+				
+				/* Clean base path */
+				thisAbsolutePath = replace(tempFile.getAbsolutePath(),"\","/","all");
+				cleanHandler = replacenocase(thisAbsolutePath,arguments.handlersPath,"","all");
+				
+				/* Clean OS separators */
+				cleanHandler = removeChars(replacenocase(cleanHandler,"/",".","all"),1,1);
+		
 				//Clean Extension
 				cleanHandler = getUtil().ripExtension(cleanhandler);
+				
 				//Add data to array
 				ArrayAppend(arguments.fileArray,cleanHandler);
 			}

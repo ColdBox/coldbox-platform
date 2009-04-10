@@ -1,5 +1,8 @@
 <cfoutput>
 <p><a href="#getSetting("sesbaseURL")#">#getresource("homebutton")#</a></p>
+
+<p><a href="#event.buildLink('ehGeneral.dumpsettings')#" target="_blank">Dump Settings</a></p>
+
 <p><a href="#getSetting("sesbaseURL")#?#getController().getSetting("eventName")#=log.ehTest.dspApi">Call Package Event</a></p>
 <p><a href="#getSetting("sesbaseURL")#?fwreinit=1">RELOAD</a></p>
 <p><a href="#getSetting("sesbaseURL")#?#getController().getSetting("eventName")#=testing">Error</a></p>

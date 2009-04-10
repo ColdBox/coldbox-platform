@@ -99,6 +99,8 @@ Modification History:
 	    <cfset setNextEvent('default.index',"page=2&issues=1")>
 	</cffunction>
 	
+	
+	
 <!------------------------------------------- PRIVATE ------------------------------------------->	 	
 
 	
