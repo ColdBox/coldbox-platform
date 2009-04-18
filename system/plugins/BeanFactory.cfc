@@ -193,6 +193,11 @@ Description: This is the framework's simple bean factory.
 						if( not structKeyExists(md,"cache") or not isBoolean(md.cache) ){
 							md.cache = false;
 						}
+						/* Singleton Support */
+						if( structKeyExists(md,"singleton") AND isBoolean(md.singleton) ){
+							md.cache = md.singleton;
+							md.cacheTimeout = 0;
+						}
 						/* Are we Caching? */
 						if( md.cache ){
 							/* Prepare Timeouts and info. */
