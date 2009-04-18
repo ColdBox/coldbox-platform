@@ -21,7 +21,7 @@ Description :
 			/* Setup The Controller. */
 			setController(arguments.controller);
 			/* Register the interception points ENUM */
-			instance.InterceptionPoints = 'afterConfigurationLoad,afterAspectsLoad,afterHandlerCreation,afterPluginCreation,sessionStart,sessionEnd,preProcess,preEvent,postEvent,preRender,postRender,postProcess,afterCacheElementInsert,afterCacheElementRemoved,onException,afterCacheElementExpired';
+			instance.InterceptionPoints = 'afterConfigurationLoad,afterAspectsLoad,afterHandlerCreation,afterModelCreation,afterPluginCreation,sessionStart,sessionEnd,preProcess,preEvent,postEvent,preRender,postRender,postProcess,afterCacheElementInsert,afterCacheElementRemoved,onException,afterCacheElementExpired';
 			/* Init Container */
 			instance.interceptionStates = structnew();
 			/* Init the Request Buffer */

@@ -140,6 +140,7 @@ Description: This is the framework's simple bean factory.
 			var modelClassPath = 0;
 			var md = 0;
 			var modelMappings = getModelMappings();
+			var announceData = structnew();
 			
 			/* Setting Overrides, else grab from setting */
 			if( not structKeyExists(arguments,"useSetterInjection") ){
@@ -219,6 +220,11 @@ Description: This is the framework's simple bean factory.
 							 onDICompleteUDF=arguments.onDICompleteUDF,
 							 debugMode=arguments.debugmode,
 							 stopRecursion=arguments.stopRecursion);
+					
+					/* Announce Model Creation */
+					announceData.oModel = oModel;
+					announceData.modelName = arguments.name;
+					announceInterception("afterModelCreation",announceData);
 				}
 				</cfscript>
 			</cflock>
