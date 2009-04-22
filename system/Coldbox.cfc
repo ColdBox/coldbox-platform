@@ -347,6 +347,10 @@ Description :
 		<cfargument name="LockTimeout" type="numeric" required="true"/>
 		<cfset instance.LockTimeout = arguments.LockTimeout/>
 	</cffunction>
+	<!--- Get Lock Timeout --->
+	<cffunction name="getLockTimeout" access="public" output="false" returntype="numeric" hint="Get LockTimeout">
+		<cfreturn instance.LockTimeout/>
+	</cffunction>
 	
 	<!--- FW needs reinit --->
 	<cffunction name="isfwReinit" access="public" returntype="boolean" hint="Verify if we need to reboot the framework" output="false" >
@@ -422,11 +426,6 @@ Description :
 		<cfelse>
 			<cflocation url="index.cfm?debugpanel=#event.getValue('debugPanel','')#" addtoken="false">
 		</cfif>
-	</cffunction>
-	
-	<!--- Get Lock Timeout --->
-	<cffunction name="getLockTimeout" access="private" output="false" returntype="numeric" hint="Get LockTimeout">
-		<cfreturn instance.LockTimeout/>
 	</cffunction>
 	
 	<!--- AppHash --->
