@@ -128,4 +128,4 @@ NOTE: The interceptor will create a new setting called: sesBaseURL with this val
 
 
 <!--- STANDARD COLDBOX COURSES, DO NOT MODIFY UNLESS YOU DON'T LIKE THEM --->
-<cfset addRoute(":handler/:action?/:id?")>
+<cfset addRoute(":handler/:action?")>
