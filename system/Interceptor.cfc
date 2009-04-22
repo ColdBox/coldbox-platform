@@ -177,14 +177,21 @@ Description :
 	</cffunction>
 	
 	<!--- Pre Render Execution --->
-	<cffunction name="preRender" access="public" returntype="boolean" hint="Executes before the framework starts the rendering cycle." output="false" >
+	<cffunction name="preRender" access="public" returntype="boolean" hint="Executes after content is rendered to a buffer but before rendered to the screen." output="false" >
+		<cfargument name="event" required="true" type="any" hint="The event object : coldbox.system.beans.RequestContext">
+		<cfargument name="interceptData" 	required="true" type="struct" hint="A structure containing intercepted information. NONE BY DEFAULT HERE">
+		<!--- IMPLEMENTED BY INTERCEPTOR --->
+	</cffunction>
+	
+	<!--- Pre Layout Execution --->
+	<cffunction name="preLayout" access="public" returntype="boolean" hint="Executes before the framework starts the rendering cycle." output="false" >
 		<cfargument name="event" required="true" type="any" hint="The event object : coldbox.system.beans.RequestContext">
 		<cfargument name="interceptData" 	required="true" type="struct" hint="A structure containing intercepted information. NONE BY DEFAULT HERE">
 		<!--- IMPLEMENTED BY INTERCEPTOR --->
 	</cffunction>
 	
 	<!--- Post Rendering Cycle --->
-	<cffunction name="postRender" access="public" returntype="boolean" hint="Executes after the rendering cycle." output="false" >
+	<cffunction name="postRender" access="public" returntype="boolean" hint="Executes after the rendering cycle and content has been outputted to screen." output="false" >
 		<cfargument name="event" 	required="true" type="any" hint="The event object : coldbox.system.beans.RequestContext">
 		<cfargument name="interceptData" required="true" type="struct" hint="A structure containing intercepted information. NONE BY DEFAULT HERE">
 		<!--- IMPLEMENTED BY INTERCEPTOR --->

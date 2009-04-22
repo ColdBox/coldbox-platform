@@ -21,12 +21,18 @@ Description :
 			/* Setup The Controller. */
 			setController(arguments.controller);
 			/* Register the interception points ENUM */
-			instance.InterceptionPoints = 'afterConfigurationLoad,afterAspectsLoad,afterHandlerCreation,afterModelCreation,afterPluginCreation,sessionStart,sessionEnd,preProcess,preEvent,postEvent,preRender,postRender,postProcess,afterCacheElementInsert,afterCacheElementRemoved,onException,afterCacheElementExpired';
+			instance.InterceptionPoints = "afterConfigurationLoad,afterAspectsLoad,onException," &
+										  "afterHandlerCreation,afterModelCreation,afterPluginCreation," &
+										  "sessionStart,sessionEnd," &
+										  "preProcess,preEvent,postEvent,postProcess," &
+										  "preLayout,preRender,postRender," &
+										  "afterCacheElementInsert,afterCacheElementRemoved,afterCacheElementExpired";
 			/* Init Container */
 			instance.interceptionStates = structnew();
+			
 			/* Init the Request Buffer */
 			instance.requestBuffer = CreateObject("component","coldbox.system.util.RequestBuffer").init();
-			/* Return Service */			
+			
 			return this;
 		</cfscript>
 	</cffunction>

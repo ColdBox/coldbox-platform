@@ -176,6 +176,10 @@ Description :
 				
 				<!--- No Render Test --->
 				<cfif not event.isNoRender()>
+					
+					<!--- Execute preLayout Interception --->
+					<cfset cbController.getInterceptorService().processState("preLayout")>
+					
 					<!--- Check for Marshalling and data render --->
 					<cfif isStruct(event.getRenderData()) and not structisEmpty(event.getRenderData())>
 						<cfset renderedContent = cbController.getPlugin("Utilities").marshallData(argumentCollection=event.getRenderData())>
