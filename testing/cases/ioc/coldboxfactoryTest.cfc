@@ -35,6 +35,13 @@ Description :
 		obj = factory.getColdbox();
 		AssertEquals(getController(), obj, "Controller");
 		
+		obj = factory.getRequestContext();
+		AssertEquals(getController().getREquestService().getContext(), obj, "Request Context");
+		
+		obj = factory.getRequestCollection();
+		AssertEquals(getController().getREquestService().getContext().getCollection(), obj, "Request Collection");
+		
+		
 		obj = factory.getColdboxOCM();
 		AssertEquals(getController().getColdBoxOCM(), obj, "OCM");
 		

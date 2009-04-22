@@ -278,13 +278,13 @@ Description		: This is the main ColdBox front Controller.
 	<!--- Set Next Event --->
 	<cffunction name="setNextEvent" access="Public" returntype="void" hint="I Set the next event to run and relocate the browser to that event. If you are in SES mode, this method will use routing instead"  output="false">
 		<!--- ************************************************************* --->
-		<cfargument name="event"  			type="string"  required="false" default="#getSetting("DefaultEvent")#" hint="The name of the event to run.">
-		<cfargument name="queryString"  	type="string"  required="false" default="" hint="The query string to append, if needed.">
-		<cfargument name="addToken"		 	type="boolean" required="false" default="false"	hint="Whether to add the tokens or not. Default is false">
-		<cfargument name="persist" 			type="string"  required="false" default="" hint="What request collection keys to persist in the relocation">
-		<cfargument name="varStruct" 		type="struct"  required="false" default="#structNew()#" hint="A structure key-value pairs to persist.">
-		<cfargument name="ssl"				type="boolean" required="false" default="false"	hint="Whether to relocate in SSL or not, only used when in SES mode.">
-		<cfargument name="baseURL" 			type="string"  required="false" default="" hint="Use this baseURL instead of the index.cfm that is used by default. You can use this for ssl or any full base url you would like to use. Ex: https://mysite.com/index.cfm"/>
+		<cfargument name="event"  			required="false" type="string" default="#getSetting("DefaultEvent")#" hint="The name of the event to run.">
+		<cfargument name="queryString"  	required="false" type="string"  default="" hint="The query string to append, if needed.">
+		<cfargument name="addToken"			required="false" type="boolean" default="false"	hint="Wether to add the tokens or not. Default is false">
+		<cfargument name="persist" 			required="false" type="string" default="" hint="What request collection keys to persist in flash ram">
+		<cfargument name="varStruct" 		required="false" type="struct" hint="A structure key-value pairs to persist in flash ram.">
+		<cfargument name="ssl"				required="false" type="boolean" default="false"	hint="Whether to relocate in SSL or not">
+		<cfargument name="baseURL" 			required="false" type="string" default="" hint="Use this baseURL instead of the index.cfm that is used by default. You can use this for ssl or any full base url you would like to use. Ex: https://mysite.com/index.cfm"/>
 		<cfargument name="postProcessExempt"  type="boolean" required="false" default="false" hint="Do not fire the postProcess interceptors">
 		<!--- ************************************************************* --->
 		<cfset var EventName = getSetting("EventName")>
@@ -339,8 +339,8 @@ Description		: This is the main ColdBox front Controller.
 	<cffunction name="setNextRoute" access="Public" returntype="void" hint="I Set the next ses route to relocate to. This method pre-pends the baseURL"  output="false">
 		<!--- ************************************************************* --->
 		<cfargument name="route"  		required="true"	 type="string" hint="The route to relocate to, do not prepend the baseURL or /.">
-		<cfargument name="persist" 		required="false" type="string" default="" hint="What request collection keys to persist in the relocation">
-		<cfargument name="varStruct" 	required="false" type="struct" hint="A structure key-value pairs to persist.">
+		<cfargument name="persist" 		required="false" type="string" default="" hint="What request collection keys to persist in flash ram">
+		<cfargument name="varStruct" 	required="false" type="struct" hint="A structure key-value pairs to persist in flash ram.">
 		<cfargument name="addToken"		required="false" type="boolean" default="false"	hint="Wether to add the tokens or not. Default is false">
 		<cfargument name="ssl"			required="false" type="boolean" default="false"	hint="Whether to relocate in SSL or not">
 		<cfargument name="queryString"  required="false" type="string"  default="" hint="The query string to append, if needed.">

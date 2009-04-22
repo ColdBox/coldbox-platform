@@ -66,6 +66,17 @@ Modification History:
 		<cfreturn application[coldboxAppKey]>
 	</cffunction>
 	
+	<!--- Get Context Facade --->
+	<cffunction name="getRequestContext" access="public" returntype="coldbox.system.beans.RequestContext" hint="Tries to retrieve the request context object" output="false" >
+		<cfreturn getColdbox().getRequestService().getContext()>
+	</cffunction>
+	
+	<!--- Get the Collection --->
+	<cffunction name="getRequestCollection" access="public" returntype="struct" hint="Tries to retrieve the request collection" output="false" >
+		<cfreturn getRequestContext().getCollection()>
+	</cffunction>
+	
+	
 	<!--- Get the cache manager --->
 	<cffunction name="getColdboxOCM" output="false" access="public" returntype="any" hint="Get the coldbox cache manager reference: coldbox.system.cache.CacheManager">
 		<cfscript>
