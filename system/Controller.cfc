@@ -336,6 +336,7 @@ Description		: This is the main ColdBox front Controller.
 		<cfargument name="varStruct" 	required="false" type="struct" hint="A structure key-value pairs to persist.">
 		<cfargument name="addToken"		required="false" type="boolean" default="false"	hint="Wether to add the tokens or not. Default is false">
 		<cfargument name="ssl"			required="false" type="boolean" default="false"	hint="Whether to relocate in SSL or not">
+		<cfargument name="queryString"  required="false" type="string"  default="" hint="The query string to append, if needed.">
 		<!--- ************************************************************* --->
 		<cfset var routeLocation = getSetting("sesBaseURL")>
 		
@@ -352,6 +353,12 @@ Description		: This is the main ColdBox front Controller.
 			<cfset routeLocation = routeLocation & arguments.route>
 		<cfelse>
 			<cfset routeLocation = routeLocation & "/" & arguments.route>
+		</cfif>
+		
+		<!--- Query String --->
+		<cfif len(trim(arguments.queryString))>
+			<cfset routeLocation = routeLocation & "/" & replace(arguments.queryString,"&","/","all")>
+			<cfset routeLocation = replace(routeLocation,"=","/","all")>
 		</cfif>
 		
 		<!--- Push Timers --->
