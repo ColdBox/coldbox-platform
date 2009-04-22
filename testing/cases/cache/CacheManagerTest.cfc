@@ -112,6 +112,24 @@ Description :
 		</cfscript>
 	</cffunction>
 	
+	<cffunction name="testLookupMulti" output="false">
+		<cfscript>
+			mockController.mockMethod('getInterceptorService').returns(mockService,mockService);
+			
+			/* testList */
+			list = 'MyTest,Luis,Whatever';
+			
+			cm.set('MyTest',now());
+			cm.set('Luis',now());
+			
+			retrieved = cm.lookupMulti(list);
+			
+			AssertTrue(retrieved["Luis"]);
+			AssertTrue(retrieved["MyTest"]);
+			AssertFalse(retrieved["Whatever"]);
+		</cfscript>
+	</cffunction>
+	
 	<cffunction name="testSetMulti" output="false">
 		<cfscript>
 			mockController.mockMethod('getInterceptorService').returns(mockService,mockService,mockService);

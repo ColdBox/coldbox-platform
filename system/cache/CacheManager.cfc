@@ -85,6 +85,30 @@ Modification History:
 
 <!------------------------------------------- PUBLIC ------------------------------------------->
 
+	<!--- Lookup Multiple Keys --->
+	<cffunction name="lookupMulti" access="public" output="false" returntype="struct" hint="The returned value is a structure of name-value pairs of all the keys that where found or not.">
+		<!--- ************************************************************* --->
+		<cfargument name="keys" 			type="string" required="true" hint="The comma delimited list of keys to lookup in the cache.">
+		<cfargument name="prefix" 			type="string" required="false" default="" hint="A prefix to prepend to the keys">
+		<!--- ************************************************************* --->
+		<cfscript>
+			var returnStruct = structnew();
+			var x = 1;
+			var thisKey = "";
+			/* Clear Prefix */
+			arguments.prefix = trim(arguments.prefix);
+			
+			/* Loop on Keys */
+			for(x=1;x lte listLen(arguments.keys);x=x+1){
+				thisKey = arguments.prefix & listGetAt(arguments.keys,x);
+				returnStruct[thiskey] = lookup(thisKey);
+			}
+			
+			/* Return Struct */
+			return returnStruct;
+		</cfscript>
+	</cffunction>
+	
 	<!--- Simple cache Lookup --->
 	<cffunction name="lookup" access="public" output="false" returntype="boolean" hint="Check if an object is in cache, if not found it records a miss.">
 		<!--- ************************************************************* --->
