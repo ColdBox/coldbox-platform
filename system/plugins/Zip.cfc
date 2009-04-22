@@ -62,34 +62,37 @@ Modification History:
 
 	<cffunction name="init" access="public" returntype="Zip" output="false">
 		<cfargument name="controller" type="any" required="true">
-		<cfset super.Init(arguments.controller) />
 		<cfscript>
-		//Local Plugin Definition
-		setpluginName("Zip");
-		setpluginVersion("1.0");
-		setpluginDescription("This is a zip utility for the framework.");
-		//This plugin's properties
-		instance.ioFile      = CreateObject("java","java.io.File");
-		instance.ioInput     = CreateObject("java","java.io.FileInputStream");
-		instance.ioOutput    = CreateObject("java","java.io.FileOutputStream");
-		instance.ioBufOutput = CreateObject("java","java.io.BufferedOutputStream");
-		instance.zipFile     = CreateObject("java","java.util.zip.ZipFile");
-		instance.zipEntry    = CreateObject("java","java.util.zip.ZipEntry");
-		instance.zipInput    = CreateObject("java","java.util.zip.ZipInputStream");
-		instance.zipOutput   = CreateObject("java","java.util.zip.ZipOutputStream");
-		instance.gzInput     = CreateObject("java","java.util.zip.GZIPInputStream");
-		instance.gzOutput    = CreateObject("java","java.util.zip.GZIPOutputStream");
-		instance.objDate     = CreateObject("java","java.util.Date");
-
-		/* Set Localized Variables */
-		instance.os = Server.OS.Name;
-		instance.slash = createObject("java","java.lang.System").getProperty("file.separator");
-
-		//LM. To fix Overflow.
-		instance.filename = "";
-
-		//Return instance
-		return this;
+			super.Init(arguments.controller);
+			//Local Plugin Definition
+			setpluginName("Zip");
+			setpluginVersion("1.0");
+			setpluginDescription("This is a zip utility for the framework.");
+			setpluginAuthor("Luis Majano, Sana Ullah");
+			setpluginAuthorURL("http://www.coldbox.org");
+			
+			//This plugin's properties
+			instance.ioFile      = CreateObject("java","java.io.File");
+			instance.ioInput     = CreateObject("java","java.io.FileInputStream");
+			instance.ioOutput    = CreateObject("java","java.io.FileOutputStream");
+			instance.ioBufOutput = CreateObject("java","java.io.BufferedOutputStream");
+			instance.zipFile     = CreateObject("java","java.util.zip.ZipFile");
+			instance.zipEntry    = CreateObject("java","java.util.zip.ZipEntry");
+			instance.zipInput    = CreateObject("java","java.util.zip.ZipInputStream");
+			instance.zipOutput   = CreateObject("java","java.util.zip.ZipOutputStream");
+			instance.gzInput     = CreateObject("java","java.util.zip.GZIPInputStream");
+			instance.gzOutput    = CreateObject("java","java.util.zip.GZIPOutputStream");
+			instance.objDate     = CreateObject("java","java.util.Date");
+	
+			/* Set Localized Variables */
+			instance.os = Server.OS.Name;
+			instance.slash = createObject("java","java.lang.System").getProperty("file.separator");
+	
+			//LM. To fix Overflow.
+			instance.filename = "";
+	
+			//Return instance
+			return this;
 		</cfscript>
 	</cffunction>
 

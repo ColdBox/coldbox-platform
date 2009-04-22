@@ -33,6 +33,8 @@ Modification History:
 			setpluginName("IOC");
 			setpluginVersion("2.1");
 			setpluginDescription("This is an inversion of control plugin.");
+			setpluginAuthor("Luis Majano");
+			setpluginAuthorURL("http://www.coldbox.org");
 			
 			/* Setup the framework chosen in the config */
 			setIOCFramework( getSetting("IOCFramework") );

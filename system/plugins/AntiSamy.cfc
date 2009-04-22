@@ -14,7 +14,8 @@ Description:
 			 hint="OWASP AntiSamy Project."
 			 extends="coldbox.system.Plugin"
 			 output="false"
-			 cache="true">
+			 cache="true"
+			 cacheTimeout="0">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 	
@@ -23,6 +24,7 @@ Description:
 
 		<cfscript>
 			var AntiSamyJarPath = ArrayNew(1);
+			
 			/* Properties */
 			super.Init(arguments.controller);
 			setpluginName("OWASP AntiSamy Project");
@@ -30,17 +32,18 @@ Description:
 			setpluginDescription("AntiSamy to protect from XSS hacks.");
 			setpluginAuthor("Sana Ullah");
 			setpluginAuthorURL("http://www.coldbox.org");
+			
 			/* Create Policy Structure */			
 			instance.PolicyFileStruct = StructNew();
 			
-			// load AntiSamy .jar file
+			/* load AntiSamy .jar file */
 			ArrayAppend(AntiSamyJarPath, ExpandPath("/coldbox/system/extras/AntiSamy/antisamy-bin.1.2.jar"));
 			ArrayAppend(AntiSamyJarPath, ExpandPath("/coldbox/system/extras/AntiSamy/nekohtml.jar"));
 			ArrayAppend(AntiSamyJarPath, ExpandPath("/coldbox/system/extras/AntiSamy/batik-util.jar"));
 			ArrayAppend(AntiSamyJarPath, ExpandPath("/coldbox/system/extras/AntiSamy/batik-css.jar"));
 			ArrayAppend(AntiSamyJarPath, ExpandPath("/coldbox/system/extras/AntiSamy/xml-apis-ext.jar"));
 			
-			//Load .jar files
+			/* Load .jar files */
 			getPlugin("JavaLoader").setup(loadPaths=AntiSamyJarPath,loadColdFusionClassPath = true);
 			
 			// AntiSamy policyfile

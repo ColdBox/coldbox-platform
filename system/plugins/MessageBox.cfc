@@ -38,6 +38,8 @@ Modification History:
 			setpluginName("Messagebox");
 			setpluginVersion("2.0");
 			setpluginDescription("This is a visual plugin that creates message boxes.");
+			setpluginAuthor("Luis Majano");
+			setpluginAuthorURL("http://www.coldbox.org");
 			
 			/* Setup The initial storage scope. */
 			if( settingExists("MessageBox_storage_scope") ){

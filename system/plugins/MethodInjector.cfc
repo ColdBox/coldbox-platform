@@ -28,6 +28,8 @@ Description :
 			setPluginName("Method Injector");
 			setPluginVersion("1.0");
 			setPluginDescription("A way to inject and remove methods from cfc's");
+			setpluginAuthor("Luis Majano");
+			setpluginAuthorURL("http://www.coldbox.org");
 			
 			/* Our mixins Struct */
 			instance.mixins = StructNew();

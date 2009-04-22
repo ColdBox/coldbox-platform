@@ -63,7 +63,9 @@ Modification History:
 			setpluginName("StringBuffer");
 			setpluginVersion("1.0");
 			setpluginDescription("This is a facade to the java StringBuffer class.");
-		
+			setpluginAuthor("Luis Majano");
+			setpluginAuthorURL("http://www.coldbox.org");
+			
 			/* Init the String Buffer */
 			instance.joStringBuffer = createObject("java","java.lang.StringBuffer");
 			

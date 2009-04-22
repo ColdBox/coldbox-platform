@@ -19,11 +19,16 @@ Modification History:
 
 	<cffunction name="init" access="public" returntype="Timer" output="false" hint="Constructor">
 		<cfargument name="controller" type="any" required="true">
-		<cfset super.Init(arguments.controller) />
-		<cfset setpluginName("Timer")>
-		<cfset setpluginVersion("1.0")>
-		<cfset setpluginDescription("A useful code Timer plugin.")>
-		<cfreturn this>
+		<cfscript>
+			super.Init(arguments.controller);
+			setpluginName("Timer");
+			setpluginVersion("1.0");
+			setpluginDescription("A useful code Timer plugin.");
+			setpluginAuthor("Luis Majano");
+			setpluginAuthorURL("http://www.coldbox.org");
+			
+			return this;
+		</cfscript>
 	</cffunction>
 
 <!------------------------------------------- PUBLIC ------------------------------------------->

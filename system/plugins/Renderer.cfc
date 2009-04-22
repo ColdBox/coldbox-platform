@@ -22,26 +22,28 @@ Description :
 		<cfargument name="controller" type="any" required="true">
 		<!--- ************************************************************* --->
 		<cfscript>
-		super.Init(arguments.controller);
-		
-		/* Plugin Properties */
-		setpluginName("Renderer");
-		setpluginVersion("2.1");
-		setpluginDescription("This is the rendering service for ColdBox.");
-		
-		/* Set Conventions */
-		instance.layoutsConvention = controller.getSetting("layoutsConvention",true);
-		instance.viewsConvention = controller.getSetting("viewsConvention",true);
-		instance.appMapping = controller.getSetting("AppMapping");
-		instance.viewsExternalLocation = controller.getSetting('ViewsExternalLocation');
-		
-		/* Inject UDF For Views/Layouts */
-		if(Len(Trim(controller.getSetting("UDFLibraryFile")))){
-			includeUDF(controller.getSetting("UDFLibraryFile"));
-		}
-		
-		/* Return Renderer */
-		return this;
+			super.Init(arguments.controller);
+			
+			/* Plugin Properties */
+			setpluginName("Renderer");
+			setpluginVersion("2.1");
+			setpluginDescription("This is the rendering service for ColdBox.");
+			setpluginAuthor("Luis Majano");
+			setpluginAuthorURL("http://www.coldbox.org");
+				
+			/* Set Conventions */
+			instance.layoutsConvention = controller.getSetting("layoutsConvention",true);
+			instance.viewsConvention = controller.getSetting("viewsConvention",true);
+			instance.appMapping = controller.getSetting("AppMapping");
+			instance.viewsExternalLocation = controller.getSetting('ViewsExternalLocation');
+			
+			/* Inject UDF For Views/Layouts */
+			if(Len(Trim(controller.getSetting("UDFLibraryFile")))){
+				includeUDF(controller.getSetting("UDFLibraryFile"));
+			}
+			
+			/* Return Renderer */
+			return this;
 		</cfscript>
 	</cffunction>
 

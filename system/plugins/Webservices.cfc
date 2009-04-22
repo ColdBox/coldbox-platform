@@ -27,11 +27,16 @@ Modification History:
 
 	<cffunction name="init" access="public" returntype="Webservices" output="false">
 		<cfargument name="controller" type="any" required="true">
-		<cfset super.Init(arguments.controller) />
-		<cfset setpluginName("Web Services")>
-		<cfset setpluginVersion("1.0")>
-		<cfset setpluginDescription("This is a very useful web services utility plugin.")>
-		<cfreturn this>
+		<cfscript>
+			super.Init(arguments.controller);
+			setpluginName("Web Services");
+			setpluginVersion("1.0");
+			setpluginDescription("This is a very useful web services utility plugin.");
+			setpluginAuthor("Luis Majano, Sana Ullah");
+			setpluginAuthorURL("http://www.coldbox.org");
+			
+			return this;
+		</cfscript>
 	</cffunction>
 
 <!------------------------------------------- PUBLIC ------------------------------------------->
@@ -52,8 +57,6 @@ Modification History:
 		<cfthrow type="ColdBox.plugins.Webservices.WebServiceNotFoundException" message="The webservice #arguments.name# was not found in the configuration structure.">
 	</cffunction>
 
-	<!--- ************************************************************* --->
-
 	<cffunction name="getWSobj" access="Public"	hint="Get a reference to a webservice obj according to which environment you are on." output="false" returntype="any">
 	<!--- ************************************************************* --->
 		<cfargument name="name" hint="The name of the web service. If the web service is not found an exception is thrown" type="string" required="Yes">
@@ -69,8 +72,6 @@ Modification History:
 		</cfif>
 		<cfthrow type="ColdBox.plugins.Webservices.WebServiceNotFoundException" message="The webservice #arguments.name# was not found in the configuration structure.">
 	</cffunction>
-
-	<!--- ************************************************************* --->
 
 	<cffunction name="refreshWS" access="Public" hint="Refresh a web service stub object" output="false" returntype="void">
 	<!--- ************************************************************* --->
@@ -91,7 +92,5 @@ Modification History:
 			<cfset rpcService.refreshWebService(arguments.webservice)>
 		</cfif>
 	</cffunction>
-
-	<!--- ************************************************************* --->
 
 </cfcomponent>

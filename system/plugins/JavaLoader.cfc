@@ -38,6 +38,8 @@ Luis Majano		07/11/2006		Updated it to work with ColdBox. look at license in the
 			setpluginName("Java Loader");
 			setpluginVersion("1.0");
 			setpluginDescription("Java Loader plugin, based on Mark Mandel's brain.");
+			setpluginAuthor("Luis Majano");
+			setpluginAuthorURL("http://www.coldbox.org");
 			
 			/* Set a static ID for the loader */
 			setstaticIDKey("cbox-javaloader-#getController().getAppHash()#");

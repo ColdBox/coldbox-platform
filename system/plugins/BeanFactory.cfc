@@ -32,6 +32,8 @@ Description: This is the framework's simple bean factory.
 			setpluginName("Bean Factory");
 			setpluginVersion("3.0");
 			setpluginDescription("I am an awesome conventions,IoC and DI bean factory");
+			setpluginAuthor("Luis Majano, Sana Ullah");
+			setpluginAuthorURL("http://www.coldbox.org");
 			
 			/* Setup the Autowire DI Dictionary */
 			setDICacheDictionary(CreateObject("component","coldbox.system.util.collections.BaseDictionary").init('DIMetadata'));

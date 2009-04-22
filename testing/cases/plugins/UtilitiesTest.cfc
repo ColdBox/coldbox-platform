@@ -50,10 +50,6 @@ Description :
 			
 			plugin.sleeper(500);
 			
-			assertTrue(IsArray(plugin.createArray('[a,b,c,d,e]')),'The value is not valid Array');
-			
-			assertTrue(IsStruct(plugin.createStruct('{"key": "value" , "key2": "value"}')),'The value is not valid Structure');
-			
 			plugin.getOSFileSeparator();
 			
 			plugin.getOSName();

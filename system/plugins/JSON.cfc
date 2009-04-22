@@ -32,6 +32,8 @@ Modifications:
 			setpluginName("JSON");
 			setpluginVersion("1.9");
 			setpluginDescription("JSON Plugin is used to serialize and deserialize JSON data to/from native ColdFusion objects");
+			setpluginAuthor("Luis Majano");
+			setpluginAuthorURL("http://www.coldbox.org");
 			
 			/* Return Instance */
 			return this;
