@@ -2,7 +2,7 @@
 
 	<cffunction name="setUp" returntype="void" access="public" output="false">
 		<cfscript>
-			oRC = createObject("component","coldbox.system.beans.RequestContext");	
+			oRC = createObject("component","coldbox.system.beans.RequestContext");
 			
 			/* Properties */
 			props.DefaultLayout = "Main.cfm";
@@ -17,6 +17,7 @@
 			oRC.init(structnew(),structnew(),props);
 		</cfscript>
 	</cffunction>
+	
 	<cffunction name="getRequestContext" access="private" returntype="any" hint="" output="false" >
 		<cfreturn oRC>
 	</cffunction>
@@ -410,19 +411,44 @@
 			base = "http://www.luismajano.com/index.cfm";
 			basessl = "https://www.luismajano.com/index.cfm";
 			
+			/* simple setup */
 			event.setisSES(false);
 			testurl = event.buildLink('general.index');
 			AssertEquals(testurl, "index.cfm?event=general.index" );
 			
+			/* simple qs */
+			event.setisSES(false);
+			testurl = event.buildLink(linkTo='general.index',queryString="page=2");
+			AssertEquals(testurl, "index.cfm?event=general.index&page=2" );
+			
+			/* empty qs */
+			event.setisSES(false);
+			testurl = event.buildLink(linkTo='general.index',queryString="");
+			AssertEquals(testurl, "index.cfm?event=general.index" );
+			
+			/* ses test */
 			event.setisSES(true);
 			event.setsesBaseURL(base);
 			testurl = event.buildLink('general/index');
 			AssertEquals(testurl, base & "/general/index" );
 			
+			/* query string transformation */
+			event.setisSES(true);
+			event.setsesBaseURL(base);
+			testurl = event.buildLink(linkTo='general/index',queryString="page=2&test=4");
+			AssertEquals(testurl, base & "/general/index/page/2/test/4" );
+			
+			/* ssl test */
 			event.setisSES(true);
 			event.setsesBaseURL(base);
 			testurl = event.buildLink(linkto='general/index',ssl=true);
-			AssertEquals(testurl, basessl & "/general/index" );
+			AssertEquals(testurl, basessl & "/general/index" );	
+			
+			/* translate */
+			event.setisSES(true);
+			event.setsesBaseURL(base);
+			testurl = event.buildLink(linkto='general.index',translate=false);
+			AssertEquals(testurl, base & "/general.index" );	
 			
 		</cfscript>
 	</cffunction>

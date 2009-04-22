@@ -369,7 +369,8 @@ Modification History:
 	    <cfargument name="translate"  	required="false" 	type="boolean" default="true" hint="Translate between . and / depending on the ses mode. So you can just use dot notation."/>
 	    <cfargument name="ssl" 			required="false"    type="boolean" default="false" hint="If true, it will change http to https if found in the ses base url."/>
 	    <cfargument name="baseURL" 		required="false" 	type="string"  default="" hint="If not using SES, you can use this argument to create your own base url apart from the default of index.cfm. Example: https://mysample.com/index.cfm"/>
-	    <!--- ************************************************************* --->
+	    <cfargument name="queryString"  required="false" 	type="string"  default="" hint="The query string to append, if needed.">
+		<!--- ************************************************************* --->
 		<cfscript>
 		var sesBaseURL = getSESbaseURL();
 		var frontController = "index.cfm";
@@ -388,6 +389,11 @@ Modification History:
 			if( arguments.translate ){
 				arguments.linkto = replace(arguments.linkto,".","/","all");
 			}
+			/* Query String Append */
+			if ( len(trim(arguments.queryString)) ){
+				arguments.linkto = arguments.linkto & "/" & replace(arguments.queryString,"&","/","all");
+				arguments.linkto = replace(arguments.linkto,"=","/","all");
+			}
 			/* Prepare link */
 			if( right(sesBaseURL,1) eq  "/"){
 				return sesBaseURL & arguments.linkto;
@@ -397,7 +403,13 @@ Modification History:
 			}
 		}
 		else{
-			return "#frontController#?#getEventName()#=#arguments.linkto#";
+			/* Check if sending in QUery String */
+			if( len(trim(arguments.queryString)) eq 0 ){
+				return "#frontController#?#getEventName()#=#arguments.linkto#";
+			}
+			else{
+				return "#frontController#?#getEventName()#=#arguments.linkto#&#arguments.queryString#";
+			}
 		}		
 		</cfscript>
 	</cffunction>
