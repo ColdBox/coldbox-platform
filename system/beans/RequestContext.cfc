@@ -557,7 +557,7 @@ Modification History:
 			
 			/* Validate */
 			if( not reFindnocase("^(JSON|WDDX|PLAIN)$",arguments.type) ){
-				throw("Invalid type","The type you sent #arguments.type# is not a valid type. Valid types are JSON,WDDX and PLAIN","Framework.InvalidRenderTypeException");
+				throwit("Invalid type","The type you sent #arguments.type# is not a valid type. Valid types are JSON,WDDX and PLAIN","Framework.InvalidRenderTypeException");
 			}
 			/* Populate */
 			rd.type = arguments.type;
