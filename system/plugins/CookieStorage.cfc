@@ -72,7 +72,7 @@ Modification History: March 23,2008 Added new feature to encrypt/decrypt cookie 
 		<!--- ************************************************************* --->
 		<cfargument name="name"  	type="string" 	required="true"  hint="The name of the variable.">
 		<cfargument name="value" 	type="any"    	required="true"  hint="The value to set in the variable, simple, array, query or structure.">
-		<cfargument name="expires"	type="numeric"	required="no"	default="1"	hint="Cookie Expire in number of days. [default cookie is session only]">
+		<cfargument name="expires"	type="numeric"	required="false"	default="0"	hint="Cookie Expire in number of days. [default cookie is session only = 0 days]">
 		<!--- ************************************************************* --->
 		<cfset var tmpVar = "">
 		
@@ -90,7 +90,7 @@ Modification History: March 23,2008 Added new feature to encrypt/decrypt cookie 
 		</cfif>
 		
 		<!--- Store cookie with expiration info --->
-		<cfif arguments.expires EQ 1>
+		<cfif arguments.expires EQ 0>
 			<cfcookie name="#uCase(arguments.name)#" value="#tmpVar#" />
 		<cfelse>
 			<cfcookie name="#uCase(arguments.name)#" value="#tmpVar#" expires="#arguments.expires#" />
