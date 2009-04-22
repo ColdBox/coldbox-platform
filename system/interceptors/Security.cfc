@@ -28,9 +28,6 @@ For the latest usage, please visit the wiki.
 			if( not propertyExists('useRegex') or not isBoolean(getproperty('useRegex')) ){
 				setProperty('useRegex',true);
 			}
-			if( not propertyExists('useRoutes') or not isBoolean(getproperty('useRoutes')) ){
-				setProperty('useRoutes',false);
-			}
 			if( not propertyExists('debugMode') or not isBoolean(getproperty('debugMode')) ){
 				setProperty('debugMode',false);
 			}
@@ -195,29 +192,25 @@ For the latest usage, please visit the wiki.
 							getPlugin("Logger").logEntry("warning","User not in appropriate roles #rules[x].roles# for event=#currentEvent#");
 						}
 						/* Redirect */
-						if( getProperty('useRoutes') ){
+						if( arguments.event.isSES() ){
 							/* Save the secured URL */
 							rc._securedURL = "#cgi.script_name##cgi.path_info#";
-							if( cgi.query_string neq ""){
-								rc._securedURL = rc._securedURL & "?#cgi.query_string#";
-							}
-							/* Route to safe event */
-							setNextRoute(route=rules[x].redirect,persist="_securedURL");
 						}
 						else{ 
 							/* Save the secured URL */
-							rc._securedURL = "#cgi.script_name#";
-							if( cgi.query_string neq ""){
-								rc._securedURL = rc._securedURL & "?#cgi.query_string#";
-							}
-							/* Route to safe event */
-							setNextEvent(event=rules[x].redirect,persist="_securedURL");
+							rc._securedURL = "#cgi.script_name#";							
 						}
+						/* Check query string for secure URL */
+						if( cgi.query_string neq ""){
+							rc._securedURL = rc._securedURL & "?#cgi.query_string#";
+						}
+						/* Route to safe event */
+						setNextEvent(event=rules[x].redirect,persist="_securedURL");
+						/* Break Just in Case */
 						break;
 					}//end user in roles
 					else{
 						if( getProperty('debugMode') ){
-							//User is in role. continue.
 							getPlugin("Logger").logEntry("information","Secure event=#currentEvent# matched and user is in roles=#rules[x].roles#. Proceeding");
 						}
 						break;
