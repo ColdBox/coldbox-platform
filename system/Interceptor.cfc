@@ -122,19 +122,22 @@ Description :
 	
 	<!--- After Handler Creation --->
 	<cffunction name="afterHandlerCreation" access="public" returntype="boolean" output="false" hint="Executes after any handler gets created." >
-		<!--- ************************************************************* --->
 		<cfargument name="event" 		 required="true" type="any" hint="The event object : coldbox.system.beans.RequestContext">
 		<cfargument name="interceptData" required="true" type="struct" hint="A structure containing intercepted data = [handlerPath (The path of the handler), oHandler (The actual handler object)]">
-		<!--- ************************************************************* --->
 		<!--- IMPLEMENTED BY INTERCEPTOR --->
 	</cffunction>
 		
 	<!--- After Plugin Creation --->
 	<cffunction name="afterPluginCreation" access="public" returntype="boolean" output="false" hint="Executes after any plugin gets created." >
-		<!--- ************************************************************* --->
 		<cfargument name="event" 		 required="true" type="any" hint="The event object : coldbox.system.beans.RequestContext">
 		<cfargument name="interceptData" required="true" type="struct" hint="A structure containing intercepted data = [pluginPath (The path of the plugin), custom (Flag if the plugin is custom or not), oPlugin (The actual plugin object)]">
-		<!--- ************************************************************* --->
+		<!--- IMPLEMENTED BY INTERCEPTOR --->
+	</cffunction>
+	
+	<!--- After Model Creation --->
+	<cffunction name="afterModelCreation" access="public" returntype="boolean" output="false" hint="Executes after any model object gets created." >
+		<cfargument name="event" 		 required="true" type="any" hint="The event object : coldbox.system.beans.RequestContext">
+		<cfargument name="interceptData" required="true" type="struct" hint="A structure containing intercepted data = [modelName (The name of the model created), oModel (The actual model object created)]">
 		<!--- IMPLEMENTED BY INTERCEPTOR --->
 	</cffunction>
 	
@@ -194,7 +197,7 @@ Description :
 		<!--- IMPLEMENTED BY INTERCEPTOR --->
 	</cffunction>
 	
-	<!--- After an Elemente is inserted in the cache --->
+	<!--- After an Element is inserted in the cache --->
 	<cffunction name="afterCacheElementInsert" access="public" returntype="boolean" hint="Executes after an object is inserted into the cache." output="false" >
 		<cfargument name="event" 	required="true" type="any" hint="The event object : coldbox.system.beans.RequestContext">
 		<cfargument name="interceptData" required="true" type="struct" hint="A structure containing intercepted information = [cacheObjectKey,cacheObjectTimeout]">
@@ -203,6 +206,13 @@ Description :
 	
 	<!--- After an Element is removed from the cache --->
 	<cffunction name="afterCacheElementRemoved" access="public" returntype="boolean" hint="Executes after an object is removed from the cache." output="false" >
+		<cfargument name="event" 	required="true" type="any" hint="The event object : coldbox.system.beans.RequestContext">
+		<cfargument name="interceptData" required="true" type="struct" hint="A structure containing intercepted information = [cacheObjectKey]">
+		<!--- IMPLEMENTED BY INTERCEPTOR --->
+	</cffunction>
+	
+	<!--- After an Element is expired from the cache --->
+	<cffunction name="afterCacheElementExpired" access="public" returntype="boolean" hint="Executes after an object is expired from the cache." output="false" >
 		<cfargument name="event" 	required="true" type="any" hint="The event object : coldbox.system.beans.RequestContext">
 		<cfargument name="interceptData" required="true" type="struct" hint="A structure containing intercepted information = [cacheObjectKey]">
 		<!--- IMPLEMENTED BY INTERCEPTOR --->
