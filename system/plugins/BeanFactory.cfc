@@ -319,7 +319,7 @@ Description: This is the framework's simple bean factory.
 			}		
 			
 			//populate bean and return
-			return populateFromStruct(arguments.formBean,stReturn,scope);
+			return populateFromStruct(arguments.formBean,stReturn,arguments.scope,arguments.trustedSetter);
 		</cfscript>
 	</cffunction>
 
