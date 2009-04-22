@@ -21,12 +21,13 @@ Description :
 	<cffunction name="Configure" access="public" returntype="void" hint="This is where the ses plugin configures itself." output="false" >
 		<cfscript>
 			var configFilePath = "/";
+			var controller = getController();
 			
 			/* If AppMapping is not Blank check */
-			if( getController().getSetting('AppMapping') neq "" ){
-				configFilePath = configFilePath & getController().getSetting('AppMapping') & "/";
+			if( controller.getSetting('AppMapping') neq "" ){
+				configFilePath = configFilePath & controller.getSetting('AppMapping') & "/";
 			}
-			/* Setup the default properties */
+			/* Setup the default interceptor properties */
 			set_courses( ArrayNew(1) );
 			setUniqueURLs(true);
 			setEnabled(true);
@@ -124,7 +125,196 @@ Description :
 		</cfscript>
 	</cffunction>
 	
+<!------------------------------------------- PUBLIC ------------------------------------------->
+	
+	<!--- AddCourse --->
+	<cffunction name="addCourse" access="public" hint="@Deprecated, please use addRoute as this method will be removed eventually." output="false">
+		<cfargument name="pattern" 				 type="string" 	required="true"  hint="The pattern to match against the URL." />
+		<cfargument name="handler" 				 type="string" 	required="false" hint="The handler to path to execute if passed.">
+		<cfargument name="action"  				 type="string" 	required="false" hint="The action to assign if passed.">
+		<cfargument name="packageResolverExempt" type="boolean" required="false" default="false" hint="If this is set to true, then the interceptor will not try to do handler package resolving. Else a package will always be resolved.">
+		<cfargument name="matchVariables" 		 type="string" 	required="false" hint="A string of name-value pair variables to add to the request collection when this pattern matches. This is a comma delimmitted list. Ex: spaceFound=true,missingAction=onTest">
+		<cfset addRoute(argumentCollection=arguments)>
+	</cffunction>
+		
+	<!--- Add a new Route --->
+	<cffunction name="addRoute" access="public" hint="Adds a route to dispatch" output="false">
+		<!--- ************************************************************* --->
+		<cfargument name="pattern" 				 type="string" 	required="true"  hint="The pattern to match against the URL." />
+		<cfargument name="handler" 				 type="string" 	required="false" hint="The handler to path to execute if passed.">
+		<cfargument name="action"  				 type="string" 	required="false" hint="The action to assign if passed.">
+		<cfargument name="packageResolverExempt" type="boolean" required="false" default="false" hint="If this is set to true, then the interceptor will not try to do handler package resolving. Else a package will always be resolved.">
+		<cfargument name="matchVariables" 		 type="string" 	required="false" hint="A string of name-value pair variables to add to the request collection when this pattern matches. This is a comma delimmitted list. Ex: spaceFound=true,missingAction=onTest">
+		<!--- ************************************************************* --->
+		<cfscript>
+		var thisCourse = structNew();
+		var thisPattern = "";
+		var arg = "";
+		var x =1;
+		var base = "";
+		var optionals = "";
+		var courseList = "";
+		var tempCourse = structnew();
+		
+		/* Create our our course struct */
+		for(arg in arguments){
+			if( structKeyExists(arguments,arg) )
+				thisCourse[arg] = arguments[arg];
+		}
+		/* Add trailing / to make it easier to parse */
+		if( right(thisCourse.pattern,1) IS NOT "/" ){
+			thisCourse.pattern = thisCourse.pattern & "/";
+		}		
+		/* Cleanup initial / */
+		if( left(thisCourse.pattern,1) IS "/" ){
+			thisCourse.pattern = right(thisCourse.pattern,len(thisCourse.pattern)-1);
+		}
+		/* Check if we have optional args by looking for a ? */
+		if( findnocase("?",thisCourse.pattern) ){
+			/* Parse our base & optionals */
+			for(x=1; x lte listLen(thisCourse.pattern,"/"); x=x+1){
+				thisPattern = listgetAt(thisCourse.pattern,x,"/");
+				/* Check for ? */
+				if( not findnocase("?",thisPattern) ){ 
+					base = base & thisPattern & "/"; 
+				}
+				else{ 
+					optionals = optionals & replacenocase(thisPattern,"?","","all") & "/";
+				}
+			}
+			/* Register our courseList */
+			courseList = base & optionals;
+			/* Recurse and register in reverse order */
+			for(x=1; x lte listLen(optionals,"/"); x=x+1){
+				/* Create new Course */
+				thisCourse.pattern = courseList;
+				/* Register Course */
+				addRoute(argumentCollection=thisCourse);	
+				/* Remove last bit */
+				courseList = listDeleteat(courseList,listlen(courseList,"/"),"/");		
+			}
+			thisCourse.pattern = base;
+			addRoute(argumentCollection=thisCourse);
+		}
+		else{
+			/* Append to our courses a basic course */
+			ArrayAppend(get_courses(), thisCourse);
+		}
+		</cfscript>
+	</cffunction>
+	
+	<!--- Getter/Setter for uniqueURLs --->
+	<cffunction name="setUniqueURLs" access="public" output="false" returntype="void" hint="Set the uniqueURLs property">
+		<cfargument name="uniqueURLs" type="boolean" required="true" />
+		<cfset instance.uniqueURLs = arguments.uniqueURLs />
+	</cffunction>
+	<cffunction name="getUniqueURLs" access="public" output="false" returntype="boolean" hint="Get uniqueURLs">
+		<cfreturn instance.uniqueURLs/>
+	</cffunction>
+	
+	<!--- Setter/Getter for Base URL --->
+	<cffunction name="setBaseURL" access="public" output="false" returntype="void" hint="Set the base URL for the application.">
+		<cfargument name="baseURL" type="string" required="true" />
+		<cfset instance.baseURL = arguments.baseURL />
+	</cffunction>
+	<cffunction name="getBaseURL" access="public" output="false" returntype="string" hint="Get BaseURL">
+		<cfreturn instance.BaseURL/>
+	</cffunction>
+	
+	<!--- Getter/Setter Enabled --->
+	<cffunction name="setEnabled" access="public" output="false" returntype="void" hint="Set whether the interceptor is enabled or not.">
+		<cfargument name="enabled" type="boolean" required="true" />
+		<cfset instance.enabled = arguments.enabled />
+	</cffunction>
+	<cffunction name="getenabled" access="public" output="false" returntype="boolean" hint="Get enabled">
+		<cfreturn instance.enabled/>
+	</cffunction>
+	
+	<!--- Getter/Setter courses --->
+	<cffunction name="get_courses" access="public" output="false" returntype="Array" hint="Get the array containing all the courses">
+		<cfreturn instance._courses/>
+	</cffunction>	
+	<cffunction name="set_courses" access="private" output="false" returntype="void" hint="Internal override of the courses array">
+		<cfargument name="_courses" type="Array" required="true"/>
+		<cfset instance._courses = arguments._courses/>
+	</cffunction>
+
 <!------------------------------------------- PRIVATE ------------------------------------------->
+	
+	<!--- Get Default Framework Action --->
+	<cffunction name="getDefaultFrameworkAction" access="private" returntype="string" hint="Get the default framework action" output="false" >
+		<cfreturn getController().getSetting("eventAction",1)>
+	</cffunction>
+	
+	<!--- CGI Element Facade. --->
+	<cffunction name="getCGIElement" access="private" returntype="string" hint="The cgi element facade method" output="false" >
+		<cfargument name="cgielement" required="true" type="string" hint="The cgi element to retrieve">
+		<cfscript>
+			return cgi[arguments.cgielement];
+		</cfscript>
+	</cffunction>
+	
+	<!--- Package Resolver --->
+	<cffunction name="packageResolver" access="private" returntype="any" hint="Resolve handler packages" output="false" >
+		<!--- ************************************************************* --->
+		<cfargument name="routingString" 	required="true" type="any" hint="The routing string">
+		<cfargument name="routeParams" 		required="true" type="any" hint="The route params array">
+		<!--- ************************************************************* --->
+		<cfscript>
+			var root = getSetting("HandlersPath");
+			var extRoot = getSetting("HandlersExternalLocationPath");
+			var x = 1;
+			var newEvent = "";
+			var thisFolder = "";
+			var foundPaths = "";
+			var rString = arguments.routingString;
+			var routeParamsLen = ArrayLen(routeParams);
+			var returnString = arguments.routingString;
+			
+			/* Verify if we have a handler on the route params */
+			if( findnocase("handler", arrayToList(arguments.routeParams)) ){
+				/* Cleanup routing string to position of :handler */
+				for(x=1; x lte routeParamsLen; x=x+1){
+					if( routeParams[x] neq "handler" ){
+						rString = replace(rString,listFirst(rString,"/") & "/","");
+					}
+					else{
+						break;
+					}
+				}	
+				/* Now Find Packaging in our stripped rString */
+				for(x=1; x lte listLen(rString,"/"); x=x+1){
+					/* Get Folder */
+					thisFolder = listgetAt(rString,x,"/");
+					/* Check if package exists in convention OR external location */
+					if( directoryExists(root & "/" & foundPaths & thisFolder) 
+						OR
+					    ( len(extRoot) AND directoryExists(extRoot & "/" & foundPaths & thisFolder) ) 
+					    ){
+						/* Save Found Paths */
+						foundPaths = foundPaths & thisFolder & "/";
+						/* Save new Event */
+						if(len(newEvent) eq 0){
+							newEvent = thisFolder & ".";
+						}
+						else{
+							newEvent = newEvent & thisFolder & ".";
+						}						
+					}//end if folder found
+					else{
+						//newEvent = newEvent & "." & thisFolder;
+						break;
+					}//end not a folder.
+				}//end for loop
+				/* Replace Return String */
+				if( len(newEvent) ){
+					returnString = replacenocase(returnString,replace(newEvent,".","/","all"),newEvent);
+				}					
+			}//end if handler found	
+			
+			return returnString;
+		</cfscript>
+	</cffunction>
 	
 	<!--- Route to destination --->
 	<cffunction name="routeToDestination" access="private" output="false" hint="Route to destination">
@@ -143,6 +333,24 @@ Description :
 		<!--- Remove what we set.. like a ninja --->
 		<cfset StructDelete(rc, "handler") />
 		<cfset StructDelete(rc, "action") />
+	</cffunction>
+	
+	<!--- Serialize a URL --->
+	<cffunction name="serializeURL" access="private" output="false" returntype="string" hint="Serialize a URL">
+		<!--- ************************************************************* --->
+		<cfargument name="formVars" required="false" default="" type="string">
+		<cfargument name="event" 	required="true" type="any" hint="The event object.">
+		<!--- ************************************************************* --->
+		<cfset var vars = arguments.formVars>
+		<cfset var key = "">
+		<cfset var rc = event.getCollection()>
+		<cfloop collection="#rc#" item="key">
+			<cfif NOT ListFindNoCase("course,handler,action,#getSetting('eventName')#",key)>
+				<cfset vars = ListAppend(vars, "#lcase(key)#=#rc[key]#", "&")>
+			</cfif>
+		</cfloop>
+		<cfif len(vars) EQ 0><cfreturn ""></cfif>
+		<cfreturn "?" & vars>
 	</cffunction>
 	
 	<!--- Check for Invalid URL --->
@@ -206,24 +414,6 @@ Description :
 			<cfheader name="Location" value="#getBaseURL()##newpath##serializeURL(httpRequestData.content,event)#" />
 			<cfabort />			
 		</cfif>
-	</cffunction>
-	
-	<!--- Serialize a URL --->
-	<cffunction name="serializeURL" access="private" output="false" returntype="string" hint="Serialize a URL">
-		<!--- ************************************************************* --->
-		<cfargument name="formVars" required="false" default="" type="string">
-		<cfargument name="event" 	required="true" type="any" hint="The event object.">
-		<!--- ************************************************************* --->
-		<cfset var vars = arguments.formVars>
-		<cfset var key = "">
-		<cfset var rc = event.getCollection()>
-		<cfloop collection="#rc#" item="key">
-			<cfif NOT ListFindNoCase("course,handler,action,#getSetting('eventName')#",key)>
-				<cfset vars = ListAppend(vars, "#lcase(key)#=#rc[key]#", "&")>
-			</cfif>
-		</cfloop>
-		<cfif len(vars) EQ 0><cfreturn ""></cfif>
-		<cfreturn "?" & vars>
 	</cffunction>
 	
 	<!--- Find a Course --->
@@ -366,185 +556,6 @@ Description :
 		</cfloop>
 		
 		<cfreturn params />
-	</cffunction>
-	
-	<!--- Add a new Course --->
-	<cffunction name="addCourse" access="public" hint="Adds a route to dispatch" output="false">
-		<!--- ************************************************************* --->
-		<cfargument name="pattern" 				 type="string" 	required="true"  hint="The pattern to match against the URL." />
-		<cfargument name="handler" 				 type="string" 	required="false" hint="The handler to path to execute if passed.">
-		<cfargument name="action"  				 type="string" 	required="false" hint="The action to assign if passed.">
-		<cfargument name="packageResolverExempt" type="boolean" required="false" default="false" hint="If this is set to true, then the interceptor will not try to do handler package resolving. Else a package will always be resolved.">
-		<cfargument name="matchVariables" 		 type="string" 	required="false" hint="A string of name-value pair variables to add to the request collection when this pattern matches. This is a comma delimmitted list. Ex: spaceFound=true,missingAction=onTest">
-		<!--- ************************************************************* --->
-		<cfscript>
-		var thisCourse = structNew();
-		var thisPattern = "";
-		var arg = "";
-		var x =1;
-		var base = "";
-		var optionals = "";
-		var courseList = "";
-		var tempCourse = structnew();
-		
-		/* Create our our course struct */
-		for(arg in arguments){
-			if( structKeyExists(arguments,arg) )
-				thisCourse[arg] = arguments[arg];
-		}
-		/* Add trailing / to make it easier to parse */
-		if( right(thisCourse.pattern,1) IS NOT "/" ){
-			thisCourse.pattern = thisCourse.pattern & "/";
-		}		
-		/* Check if we have optional args by looking for a ? */
-		if( findnocase("?",thisCourse.pattern) ){
-			/* Parse our base & optionals */
-			for(x=1; x lte listLen(thisCourse.pattern,"/"); x=x+1){
-				thisPattern = listgetAt(thisCourse.pattern,x,"/");
-				/* Check for ? */
-				if( not findnocase("?",thisPattern) ){ 
-					base = base & thisPattern & "/"; 
-				}
-				else{ 
-					optionals = optionals & replacenocase(thisPattern,"?","","all") & "/";
-				}
-			}
-			/* Register our courseList */
-			courseList = base & optionals;
-			/* Recurse and register in reverse order */
-			for(x=1; x lte listLen(optionals,"/"); x=x+1){
-				/* Create new Course */
-				thisCourse.pattern = courseList;
-				/* Register Course */
-				addCourse(argumentCollection=thisCourse);	
-				/* Remove last bit */
-				courseList = listDeleteat(courseList,listlen(courseList,"/"),"/");		
-			}
-			thisCourse.pattern = base;
-			addCourse(argumentCollection=thisCourse);
-		}
-		else{
-			/* Append to our courses a basic course */
-			ArrayAppend(get_courses(), thisCourse);
-		}
-		</cfscript>
-	</cffunction>
-	
-	<!--- Getter/Setter for uniqueURLs --->
-	<cffunction name="setUniqueURLs" access="public" output="false" returntype="void" hint="Set the uniqueURLs property">
-		<!--- ************************************************************* --->
-		<cfargument name="uniqueURLs" type="boolean" required="true" />
-		<!--- ************************************************************* --->
-		<cfset instance.uniqueURLs = arguments.uniqueURLs />
-	</cffunction>
-	<cffunction name="getUniqueURLs" access="public" output="false" returntype="boolean" hint="Get uniqueURLs">
-		<cfreturn instance.uniqueURLs/>
-	</cffunction>
-	
-	<!--- Setter/Getter for Base URL --->
-	<cffunction name="setBaseURL" access="public" output="false" returntype="void" hint="Set the base URL for the application.">
-		<!--- ************************************************************* --->
-		<cfargument name="baseURL" type="string" required="true" />
-		<!--- ************************************************************* --->
-		<cfset instance.baseURL = arguments.baseURL />
-	</cffunction>
-	<cffunction name="getBaseURL" access="public" output="false" returntype="string" hint="Get BaseURL">
-		<cfreturn instance.BaseURL/>
-	</cffunction>
-	
-	<!--- Getter/Setter Enabled --->
-	<cffunction name="setEnabled" access="public" output="false" returntype="void" hint="Set whether the interceptor is enabled or not.">
-		<!--- ************************************************************* --->
-		<cfargument name="enabled" type="boolean" required="true" />
-		<!--- ************************************************************* --->
-		<cfset instance.enabled = arguments.enabled />
-	</cffunction>
-	<cffunction name="getenabled" access="public" output="false" returntype="boolean" hint="Get enabled">
-		<cfreturn instance.enabled/>
-	</cffunction>
-	
-	<!--- Getter/Setter courses --->
-	<cffunction name="get_courses" access="public" output="false" returntype="Array" hint="Get _courses">
-		<cfreturn instance._courses/>
-	</cffunction>	
-	<cffunction name="set_courses" access="public" output="false" returntype="void" hint="Set _courses">
-		<cfargument name="_courses" type="Array" required="true"/>
-		<cfset instance._courses = arguments._courses/>
-	</cffunction>
-	
-	<!--- Get Default Framework Action --->
-	<cffunction name="getDefaultFrameworkAction" access="private" returntype="string" hint="Get the default framework action" output="false" >
-		<cfreturn getController().getSetting("eventAction",1)>
-	</cffunction>
-	
-	<!--- CGI Element Facade. --->
-	<cffunction name="getCGIElement" access="private" returntype="string" hint="The cgi element facade method" output="false" >
-		<cfargument name="cgielement" required="true" type="string" hint="">
-		<cfscript>
-			return cgi[arguments.cgielement];
-		</cfscript>
-	</cffunction>
-	
-	<!--- Package Resolver --->
-	<cffunction name="packageResolver" access="private" returntype="any" hint="Resolve handler packages" output="false" >
-		<!--- ************************************************************* --->
-		<cfargument name="routingString" 	required="true" type="any" hint="The routing string">
-		<cfargument name="routeParams" 		required="true" type="any" hint="The route params array">
-		<!--- ************************************************************* --->
-		<cfscript>
-			var root = getSetting("HandlersPath");
-			var extRoot = getSetting("HandlersExternalLocationPath");
-			var x = 1;
-			var newEvent = "";
-			var thisFolder = "";
-			var foundPaths = "";
-			var rString = arguments.routingString;
-			var routeParamsLen = ArrayLen(routeParams);
-			var returnString = arguments.routingString;
-			
-			/* Verify if we have a handler on the route params */
-			if( findnocase("handler", arrayToList(arguments.routeParams)) ){
-				/* Cleanup routing string to position of :handler */
-				for(x=1; x lte routeParamsLen; x=x+1){
-					if( routeParams[x] neq "handler" ){
-						rString = replace(rString,listFirst(rString,"/") & "/","");
-					}
-					else{
-						break;
-					}
-				}	
-				/* Now Find Packaging in our stripped rString */
-				for(x=1; x lte listLen(rString,"/"); x=x+1){
-					/* Get Folder */
-					thisFolder = listgetAt(rString,x,"/");
-					/* Check if package exists in convention OR external location */
-					if( directoryExists(root & "/" & foundPaths & thisFolder) 
-						OR
-					    ( len(extRoot) AND directoryExists(extRoot & "/" & foundPaths & thisFolder) ) 
-					    ){
-						/* Save Found Paths */
-						foundPaths = foundPaths & thisFolder & "/";
-						/* Save new Event */
-						if(len(newEvent) eq 0){
-							newEvent = thisFolder & ".";
-						}
-						else{
-							newEvent = newEvent & thisFolder & ".";
-						}						
-					}//end if folder found
-					else{
-						//newEvent = newEvent & "." & thisFolder;
-						break;
-					}//end not a folder.
-				}//end for loop
-				/* Replace Return String */
-				if( len(newEvent) ){
-					returnString = replacenocase(returnString,replace(newEvent,".","/","all"),newEvent);
-				}					
-			}//end if handler found	
-			
-			return returnString;
-		</cfscript>
 	</cffunction>
 
 </cfcomponent>

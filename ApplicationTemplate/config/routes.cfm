@@ -87,7 +87,7 @@ NOTE: The interceptor will create a new setting called: sesBaseURL with this val
 	How cool is that. Just remember that there cannot be required variable placeholders after optional ones.
 	
 	Here's the general setup:
-	<cfset addCourse(	pattern="handler/action/:id",	# Set the pattern
+	<cfset addRoute(	pattern="handler/action/:id",	# Set the pattern
 						handler="handler_name",			# Set the handler
 						action="action_name" )>			# Set the action
 						
@@ -112,20 +112,20 @@ NOTE: The interceptor will create a new setting called: sesBaseURL with this val
 	to put quotes and stuff
 	
 	Examples:
-	<cfset addCourse(	pattern="entry/:year-numeric/:month-numeric/:day-numeric",
+	<cfset addRoute(	pattern="entry/:year-numeric/:month-numeric/:day-numeric",
 						handler="blog",
 						action="entry" )>
-	<cfset addCourse(	pattern="entry/:year-numeric/:month/:day-numeric",
+	<cfset addRoute(	pattern="entry/:year-numeric/:month/:day-numeric",
 						handler="blog",
 						action="entry" )>
-	<cfset addCourse(	pattern="profile/view/:username",
+	<cfset addRoute(	pattern="profile/view/:username",
 						handler="profile",
 						action="view" )>	
-	<cfset addCourse(":handler/:action?/:id?")>		
+	<cfset addRoute(":handler/:action?/:id?")>		
 -------------------------------------------- --->
 					
 <!--- CUSTOM COURSES GO HERE (they will be checked in order) --->
 
 
 <!--- STANDARD COLDBOX COURSES, DO NOT MODIFY UNLESS YOU DON'T LIKE THEM --->
-<cfset addCourse(":handler/:action?/:id?")>
+<cfset addRoute(":handler/:action?/:id?")>

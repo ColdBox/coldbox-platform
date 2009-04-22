@@ -63,7 +63,7 @@ Description :
 			</parameter>
 		</function>
 		
-		<function creator="8" name="addCourse" returns="void">
+		<function creator="8" name="addRoute" returns="void">
 			<help><![CDATA[
 				Add a new course to the ses routing tables.
 			]]></help>
