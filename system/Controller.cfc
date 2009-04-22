@@ -285,6 +285,7 @@ Description		: This is the main ColdBox front Controller.
 		<cfargument name="varStruct" 		type="struct"  required="false" default="#structNew()#" hint="A structure key-value pairs to persist.">
 		<cfargument name="ssl"				type="boolean" required="false" default="false"	hint="Whether to relocate in SSL or not, only used when in SES mode.">
 		<cfargument name="baseURL" 			type="string"  required="false" default="" hint="Use this baseURL instead of the index.cfm that is used by default. You can use this for ssl or any full base url you would like to use. Ex: https://mysite.com/index.cfm"/>
+		<cfargument name="postProcessExempt"  type="boolean" required="false" default="false" hint="Do not fire the postProcess interceptors">
 		<!--- ************************************************************* --->
 		<cfset var EventName = getSetting("EventName")>
 		<cfset var frontController = listlast(cgi.script_name,"/")>
@@ -319,6 +320,12 @@ Description		: This is the main ColdBox front Controller.
 			<cfset persistVariables(argumentCollection=arguments)>
 			<!--- Push Timers --->
 			<cfset pushTimers()>
+			
+			<!--- Post Process --->
+			<cfif arguments.postProcessExempt>
+				<cfset getInterceptorService().processState("postProcess")>
+			</cfif>
+			
 			<!--- Check if query String needs appending --->
 			<cfif len(trim(arguments.queryString)) eq 0>
 				<cflocation url="#frontController#?#EventName#=#arguments.event#" addtoken="#arguments.addToken#">
@@ -337,6 +344,7 @@ Description		: This is the main ColdBox front Controller.
 		<cfargument name="addToken"		required="false" type="boolean" default="false"	hint="Wether to add the tokens or not. Default is false">
 		<cfargument name="ssl"			required="false" type="boolean" default="false"	hint="Whether to relocate in SSL or not">
 		<cfargument name="queryString"  required="false" type="string"  default="" hint="The query string to append, if needed.">
+		<cfargument name="postProcessExempt"  type="boolean" required="false" default="false" hint="Do not fire the postProcess interceptors">
 		<!--- ************************************************************* --->
 		<cfset var routeLocation = getSetting("sesBaseURL")>
 		
@@ -364,6 +372,11 @@ Description		: This is the main ColdBox front Controller.
 		<!--- Push Timers --->
 		<cfset pushTimers()>
 		
+		<!--- Post PRocess --->
+		<cfif arguments.postProcessExempt>
+			<cfset getInterceptorService().processState("postProcess")>
+		</cfif>
+			
 		<!--- Reroute --->
 		<cflocation url="#routeLocation#" addtoken="#arguments.addToken#">
 	</cffunction>
