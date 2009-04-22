@@ -92,12 +92,12 @@ Modification History:
 <!------------------------------------------- PRIVATE METHODS ------------------------------------------->
 
 	<!--- Get Context --->
-	<cffunction name="getContext" access="private" returntype="coldbox.system.beans.RequestContext" hint="Retrieve the request context object" output="false" >
+	<cffunction name="getRequestContext" access="private" returntype="coldbox.system.beans.RequestContext" hint="Retrieve the request context object" output="false" >
 		<cfreturn controller.getRequestService().getContext()>
 	</cffunction>
 	
 	<!--- Get RC --->
-	<cffunction name="getRC" access="private" returntype="struct" hint="Get a reference to the request collection" output="false" >
+	<cffunction name="getRequestCollection" access="private" returntype="struct" hint="Get a reference to the request collection" output="false" >
 		<cfreturn getContext().getCollection()>
 	</cffunction>
 
