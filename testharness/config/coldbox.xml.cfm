@@ -155,7 +155,7 @@
 	        <Property name="rulesSource">xml</Property>
 	        <Property name="rulesFile">config/security.xml.cfm</Property>
 	        <Property name="debugMode">true</Property>
-	        <Property name="preEventSecurity">true</Property>
+	        <Property name="preEventSecurity">false</Property>
 		</Interceptor>	
 		<!-- Developer's ColdBox Sidebar -->
 		<Interceptor class="coldbox.system.interceptors.ColdboxSideBar" />

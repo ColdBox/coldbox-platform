@@ -48,7 +48,7 @@ For the latest usage, please visit the wiki.
 			if( not propertyExists("preEventSecurity") or not isBoolean(getProperty("preEventSecurity")) ){
 				setProperty("preEventSecurity",false);
 			}
-			
+						
 			/* Now Call sourcesCheck */
 			RulesSourceChecks();
 			
@@ -154,10 +154,9 @@ For the latest usage, please visit the wiki.
 		<cfargument name="interceptData" required="true" type="struct" hint="interceptData of intercepted info.">
 		<!--- ************************************************************* --->
 		<cfscript>
-			
-			/* Execute Rule processing */
-			processRules(arguments.event,arguments.interceptData,arguments.interceptData.processedEvent);
-			
+			if( getProperty("preEventSecurity") ){
+				processRules(arguments.event,arguments.interceptData,arguments.interceptData.processedEvent);
+			}
 		</cfscript>
 	</cffunction>
 	
