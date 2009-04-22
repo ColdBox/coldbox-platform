@@ -62,7 +62,7 @@ Description :
 			/* Create Brand New Controller */
 			application[COLDBOX_APP_KEY] = CreateObject("component","coldbox.system.Controller").init(COLDBOX_APP_ROOT_PATH);
 			/* Setup the Framework And Application */
-			application[COLDBOX_APP_KEY].getLoaderService().setupCalls(COLDBOX_CONFIG_FILE);			
+			application[COLDBOX_APP_KEY].getLoaderService().configLoader(COLDBOX_CONFIG_FILE);			
 		</cfscript>
 	</cffunction>
 	
@@ -84,7 +84,7 @@ Description :
 				<cfif application[COLDBOX_APP_KEY].getSetting("ConfigAutoReload")>
 					<cflock type="exclusive" name="#getAppHash()#" timeout="#getLockTimeout()#" throwontimeout="true">
 						<cfset application[COLDBOX_APP_KEY].setAppStartHandlerFired(false)>
-						<cfset application[COLDBOX_APP_KEY].getLoaderService().setupCalls(COLDBOX_CONFIG_FILE)>
+						<cfset application[COLDBOX_APP_KEY].getLoaderService().configLoader(COLDBOX_CONFIG_FILE)>
 					</cflock>
 				<cfelse>
 					<!--- Handler's Index Auto Reload --->

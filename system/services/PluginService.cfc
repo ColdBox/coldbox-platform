@@ -26,7 +26,7 @@ Modification History:
 			
 			/* Set Service Properties */
 			setColdBoxPluginsPath('coldbox.system.plugins');
-			setCacheDictionary(CreateObject("component","coldbox.system.util.BaseDictionary").init('PluginMetadata'));
+			setCacheDictionary(CreateObject("component","coldbox.system.util.collections.BaseDictionary").init('PluginMetadata'));
 			
 			/* Return instance */
 			return this;
@@ -166,7 +166,7 @@ Modification History:
 	<!--- Set the internal plugin cache dictionary. --->
 	<cffunction name="setcacheDictionary" access="private" output="false" returntype="void" hint="Set the plugin cache dictionary. NOT EXPOSED to avoid screwups">
 		<!--- ************************************************************* --->
-		<cfargument name="cacheDictionary" type="coldbox.system.util.BaseDictionary" required="true"/>
+		<cfargument name="cacheDictionary" type="coldbox.system.util.collections.BaseDictionary" required="true"/>
 		<!--- ************************************************************* --->
 		<cfset instance.cacheDictionary = arguments.cacheDictionary/>
 	</cffunction>

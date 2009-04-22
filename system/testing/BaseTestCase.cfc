@@ -51,7 +51,7 @@ Description :
 				application.cbController = instance.controller;
 			}
 			/* Setup */
-			instance.controller.getLoaderService().setupCalls(instance.ConfigMapping,instance.AppMapping);
+			instance.controller.getLoaderService().configLoader(instance.ConfigMapping,instance.AppMapping);
 		}
 		
 		//Create Initial Event Context

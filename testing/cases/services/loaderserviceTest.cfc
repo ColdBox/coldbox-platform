@@ -21,14 +21,14 @@ Description :
 		</cfscript>
 	</cffunction>
 	
-	<cffunction name="testSetupCalls" access="public" returntype="void" output="false">
+	<cffunction name="testconfigLoader" access="public" returntype="void" output="false">
 		<cfscript>
 		var service = getController().getservice("loader");
 		var context = "";
 		
 		getController().setSetting("dummyVar", true);
 		
-		service.setupCalls(getConfigMapping(),getAppMapping());
+		service.configLoader(getConfigMapping(),getAppMapping());
 		
 		AssertFalse( getController().settingExists("dummyVar") );		
 		

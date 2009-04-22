@@ -26,25 +26,11 @@ Modification History:
 
 <!------------------------------------------- PUBLIC ------------------------------------------->
 
-	<!--- Setup Calls --->
-	<cffunction name="setupCalls" returntype="void" access="public" hint="I execute the framework and application loading scripts" output="false">
-		<!--- ************************************************************* --->
-		<cfargument name="overrideConfigFile" type="string" required="false" default="" hint="Only used for unit testing or reparsing of a specific coldbox config file.">
-		<cfargument name="overrideAppMapping" type="string" required="false" default="" hint="Only used for unit testing or reparsing of a specific coldbox config file."/>
-		<!--- ************************************************************* --->
-		<cfscript>
-			//execute the configLoader
-			configLoader(argumentCollection=arguments);
-			//execute the handler registrations after configurations loaded
-			getController().getHandlerService().registerHandlers();
-		</cfscript>
-	</cffunction>
-
 	<!--- Config Loader Method --->
 	<cffunction name="configLoader" returntype="void" access="Public" hint="I Load the configurations only, init the framework variables and more." output="false">
 		<!--- ************************************************************* --->
 		<cfargument name="overrideConfigFile" required="false" type="string" default="" hint="Only used for unit testing or reparsing of a specific coldbox config file.">
-		<cfargument name="overrideAppMapping" type="string" required="false" default="" hint="Only used for unit testing or reparsing of a specific coldbox config file."/>
+		<cfargument name="overrideAppMapping" required="false" type="string" default="" hint="Only used for unit testing or reparsing of a specific coldbox config file."/>
 		<!--- ************************************************************* --->
 		<cfscript>
 			var XMLParser = "";
@@ -57,23 +43,23 @@ Modification History:
 			controller.getPluginService().clearDictionary();
 			controller.getHandlerService().clearDictionaries();
 			
-			//Prepare Parser
+			/* Prepare Parser */
 			XMLParser = controller.getPlugin("XMLParser");
 			
-			//Load Coldbox Config Settings Structure
+			/* Load Coldbox Config Settings Structure */
 			FrameworkSettings = XMLParser.loadFramework(arguments.overrideConfigFile);
 			controller.setColdboxSettings(FrameworkSettings);
 			
-			//Create the Cache Config Bean with data from the framework's settings.xml
+			/* Create the Cache Config Bean with data from the framework's settings.xml */
 			CacheConfigBean.populate(FrameworkSettings);
-			//Configure the Object Cache for first usage.
+			/* Configure the Object Cache for first usage. */
 			controller.getColdboxOCM().configure(CacheConfigBean);
 			
-			//Load Application Config Settings Now that framework has been loaded.
+			/* Load Application Config Settings Now that framework has been loaded. */
 			ConfigSettings = XMLParser.parseConfig(arguments.overrideAppMapping);
 			controller.setConfigSettings(ConfigSettings);
 			
-			//Check for Cache OVerride Settings in Config
+			/* Check for Cache OVerride Settings in Config */
 			if ( ConfigSettings.CacheSettings.OVERRIDE ){
 				//Recreate the Config Bean
 				CacheConfigBean = CacheConfigBean.init(ConfigSettings.CacheSettings.ObjectDefaultTimeout,
@@ -87,16 +73,20 @@ Modification History:
 				controller.getColdboxOCM().configure(CacheConfigBean);
 			}
 			
-			/* Populate Debugger with settings from the framework */
-			DebuggerConfigBean.populate(FrameworkSettings);
-			
 			/* Check for Debugger Override, if true, then overpopulate with configuration settings overriding framework settings. */
 			if( ConfigSettings.DebuggerSettings.OVERRIDE ){
 				DebuggerConfigBean.populate(ConfigSettings.DebuggerSettings);
 			}
+			else{
+				/* Populate Debugger with settings from the framework */
+				DebuggerConfigBean.populate(FrameworkSettings);
+			}
 			
-			/* Configure the Debugger with framework wide settings.*/
+			/* Configure the Debugger For Usage*/
 			controller.getDebuggerService().setDebuggerConfigBean(DebuggerConfigBean);
+			
+			/* execute the handler registrations after configurations loaded */
+			controller.getHandlerService().registerHandlers();
 			
 			/* Register The Interceptors */
 			controller.getInterceptorService().registerInterceptors();

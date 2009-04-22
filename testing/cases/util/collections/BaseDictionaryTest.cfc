@@ -3,7 +3,7 @@
 	<!--- setup --->
 	<cffunction name="setup" output="false" access="public" returntype="any" hint="">
 		<cfscript>
-			dictionary = CreateObject("component","coldbox.system.util.baseDictionary").init('MyTest');
+			dictionary = CreateObject("component","coldbox.system.util.collections.BaseDictionary").init('MyTest');
 		</cfscript>
 	</cffunction>
 	

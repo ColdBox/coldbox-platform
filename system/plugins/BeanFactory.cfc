@@ -34,7 +34,7 @@ Description: This is the framework's simple bean factory.
 			setpluginDescription("I am an awesome conventions,IoC and DI bean factory");
 			
 			/* Setup the Autowire DI Dictionary */
-			setDICacheDictionary(CreateObject("component","coldbox.system.util.BaseDictionary").init('DIMetadata'));
+			setDICacheDictionary(CreateObject("component","coldbox.system.util.collections.BaseDictionary").init('DIMetadata'));
 			/* Model Mappings */
 			instance.modelMappings = structnew();
 			/* Run Model Mappings template */
@@ -951,11 +951,11 @@ Description: This is the framework's simple bean factory.
 	</cffunction>
 
 	<!--- Get Set DI CACHE Dictionary --->
-	<cffunction name="getDICacheDictionary" access="private" output="false" returntype="coldbox.system.util.BaseDictionary" hint="Get DICacheDictionary">
+	<cffunction name="getDICacheDictionary" access="private" output="false" returntype="coldbox.system.util.collections.BaseDictionary" hint="Get DICacheDictionary">
 		<cfreturn instance.DICacheDictionary/>
 	</cffunction>
 	<cffunction name="setDICacheDictionary" access="private" output="false" returntype="void" hint="Set DICacheDictionary">
-		<cfargument name="DICacheDictionary" type="coldbox.system.util.BaseDictionary" required="true"/>
+		<cfargument name="DICacheDictionary" type="coldbox.system.util.collections.BaseDictionary" required="true"/>
 		<cfset instance.DICacheDictionary = arguments.DICacheDictionary/>
 	</cffunction>
 	

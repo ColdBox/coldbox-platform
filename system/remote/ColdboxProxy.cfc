@@ -305,7 +305,7 @@ Description :
 					/* Put in Scope */
 					application[COLDBOX_APP_KEY] = cbController;
 					/* Setup Calls */
-					cbController.getLoaderService().setupCalls(arguments.configLocation);					
+					cbController.getLoaderService().configLoader(arguments.configLocation);					
 				}				
 				</cfscript>
 			</cflock>
