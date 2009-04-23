@@ -507,17 +507,26 @@ Description: This is the framework's simple bean factory.
 			var args = structnew();
 			var definition = structnew();
 			
+			/* Loop Over Arguments */
 			for(x=1;x lte paramLen; x=x+1){
-				/* Check Marker */
+				/* Check Marker and IOC Framework*/
 				if( structKeyExists(params[x],instance.dslMarker) ){
-					/* Definition */
 					definition.type = params[x][instance.dslMarker];
-					definition.name = params[x].name;
-					definition.scope="";
-					/* Get Dependency */
-					args[definition.name] = getDSLDependency(definition=definition,
-														     debugMode=arguments.debugMode);
 				}
+				/* If IOC Framework defined, let setter be defaulted to IOC */
+				else if(getSetting("IOCFramework") neq ""){
+					definition.type = "ioc";
+				}
+				/* Else default to model integration */
+				else{
+					definition.type = "model";
+				}
+				/* Other Defaults */
+				definition.name = params[x].name;
+				definition.scope="";
+				
+				/* Get Dependency */
+				args[definition.name] = getDSLDependency(definition=definition,debugMode=arguments.debugMode);
 			}
 			
 			return args;			
