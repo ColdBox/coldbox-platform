@@ -471,5 +471,14 @@
 		</cfscript>
 	</cffunction>
 	
+	<cffunction name="testgetHTTPMethod">
+		<cfscript>
+			var event = getRequestContext();
+			
+			assertEquals( event.getHTTPMethod(), "POST");
+		
+		</cfscript>
+	</cffunction>
+	
 
 </cfcomponent>

@@ -583,6 +583,10 @@ Modification History:
 		<cfreturn getValue("cbox_renderdata", structnew() )/>
 	</cffunction>
 
+	<cffunction name="getHTTPMethod" access="public" returntype="string" hint="Get the HTTP Request Method Type" output="false" >
+		<cfreturn cgi.REQUEST_METHOD>
+	</cffunction>
+
 <!------------------------------------------- PRIVATE ------------------------------------------->
 
 	<cffunction name="throwit" access="private" hint="Facade for cfthrow" output="false">
