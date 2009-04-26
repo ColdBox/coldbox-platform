@@ -1,0 +1,164 @@
+<?xml version="1.0"?>
+<!-- ====================================================================== 
+     Luis Majano
+     Mar 16, 2007 5:13:17 PM                                                        
+
+     coldbox.newapplication    
+     This task creates a new coldbox application template with your 
+     application name already configured.
+                
+     The task will generate a new application template for you in a 
+     directory of your choice, full path.
+     ====================================================================== -->
+<project name="coldbox.newapplication" default="run" basedir=".">	
+	<!-- Properties -->
+	<property file="build.properties"/>
+	
+	<!-- Load Contrib Tasks -->
+	<path id="cp">
+		<fileset dir="../install/antlib">
+			<include name="**/*.jar" />
+		</fileset>
+	</path>
+	<!-- Define Tasks -->
+	<taskdef resource="net/sf/antcontrib/antlib.xml" classpathref="cp" />
+	
+	<!-- run -->
+	<target name="run" description="Run the generator">
+		<!--Init TimeStamp-->
+		<tstamp />
+		<echoproperties regex="gen" />
+		<!-- Input -->
+		<input message="Open the SwingGUI Generator or the AntInput Generator. (If you are running this build in Mac OSX from within Eclipse please use AntInput unless running from the command line)"
+		   	   addproperty="wizardType"
+		 	   validargs="SwingGUI,AntInput"
+			   defaultvalue="SwingGUI" />
+		<if>
+			<equals arg1="${wizardType}" arg2="SwingGUI" casesensitive="false" />
+			<then>
+				<antcall target="wizardGUI" inheritrefs="true" />
+			</then>
+			<else>
+				<antcall target="wizard" inheritrefs="true" />
+			</else>
+		</if>
+	</target>
+
+	<!-- Old School Wizard -->
+	<target name="wizard" description="Question Wizard">
+		<!--Ask for user input to create application-->
+		<input message="What is the name of your remote application: (Ex:blog,forum)?"
+		       addproperty="app.name"/>
+		<!-- Destination -->
+		<input message="What is the destination directory: (Ex:/data/webroot)?" 
+		       addproperty="app.destination" />
+		<!-- App Mapping -->
+		<input message="What will be the application's AppMapping or location in your webroot. (Ex: http:/mysite.com/apps/MyApp = /apps/MyApp). If the app is the root then leave blank."
+		       addproperty="app.appMapping" />
+		<!-- Use Inheritance -->
+		<input message="Use Application.cfc with Inheritance?" validargs="true,false" defaultvalue="true"  
+		       addproperty="app.useInheritance" />
+		<!-- Run Generation -->
+		<antcall target="generate" inheritall="true" inheritrefs="true" />
+	</target>
+	
+	<!-- Wizard GUI -->
+	<target name="wizardGUI" 
+			description="Create the input forms using AntForm GUI. Quirky in Mac OSX from within Eclipse. Run from the command line.">
+		
+			<taskdef name="antform" classname="com.sardak.antform.AntForm"	classpathref="cp"/>
+			<antform title="ColdBox Remote Application Generator"
+				 image="../install/Logos-Images-Icons/chat_icon.png"
+				 width="650"
+				 height="400"
+				 lookandfeel="javax.swing.plaf.metal.MetalLookAndFeel"
+				 icon="../install/Logos-Images-Icons/chat_icon.png">
+			<Controlbar>
+				<Button label="Cancel" type="cancel" />
+				<Button label="Reset" type="reset" />
+				<Button label="Generate" type="ok" target="generate" newproject="false" />				
+			</Controlbar>
+				
+			<!--Ask for user input to create application-->
+			<textProperty label="Application Name"
+					      property="app.name"
+						  columns="25"
+						  Required="true"
+						  tooltip="The name of the application to generate"
+						  focus="true"/>
+			<!-- Destination -->
+			<fileselectionproperty label="Destination Directory"
+								   property="app.destination"
+								   directoryChooser="true"
+								   Required="true"
+								   columns="25"
+								   tooltip="Destination Directory (ex: /data/webroot)"/>
+			<!--App Mapping -->
+			<textProperty label="App Mapping"
+								      property="app.appMapping"
+									  columns="25"
+									  Required="true"
+									  tooltip="What will be the application's AppMapping or location in your webroot. (Ex: http:/mysite.com/apps/MyApp = /apps/MyApp). If the app is the root then leave blank."
+									  focus="true"/>
+			<!-- Inheritance -->
+			<label>Application.cfc with inheritance is the default. If not chosen, then I will build a composition Application.cfc (Inheritance is recommended)</label>
+			<radioSelectionProperty label="Application.cfc Inheritance?"
+							   property="app.useInheritance"
+							   values="true,false"
+							   tooltip="Create the application.cfc using inheritance" />
+		</antform>		
+	</target>
+
+	<!--Generate-->
+	<target name="generate" description="Generate the new skeleton">
+		<echo>Generating new Application: ${app.name}</echo>
+		<echo>Destination Directory: ${basedir}/${app.destination}</echo>
+		<echo>Generation Date: ${TODAY}</echo>
+		
+		<!--Generate-->
+		<copy todir="${app.destination}/${app.name}">
+			<fileset dir="${src.dir}">
+				<exclude name="${app.destination}" />
+				<exclude name="header.txt" />
+				<exclude name="build.xml" />
+				<exclude name="**/*.xml.cfm" />
+			</fileset>
+		</copy>
+		<copy todir="${app.destination}/${app.name}">
+			<fileset dir="${src.dir}">
+				<exclude name="${app.destination}" />
+				<exclude name="header.txt" />
+				<exclude name="build.xml" />
+				<include name="**/*.xml.cfm" />
+			</fileset>
+		</copy>
+		<!--Replace AppName in Config -->
+		<replace file="${app.destination}/${app.name}/${base.config}" value="${app.name}" summary="yes">
+			<replacetoken>Your App Name here</replacetoken>
+		</replace>
+		<!--Replace appmapping -->
+		<replace file="${app.destination}/${app.name}/${base.config}" value="${app.appMapping}" summary="yes">
+			<replacetoken>/coldbox/ApplicationTemplateRemote</replacetoken>
+		</replace>
+		<!--Replace AppName in eclipse project -->
+		<replace file="${app.destination}/${app.name}/.project" value="${app.name}" summary="yes">
+			<replacetoken>@appname@</replacetoken>
+		</replace>
+		<!--Delete Header Files-->
+		<delete file="${app.destination}/${app.name}/build.xml" />
+		<delete file="${app.destination}/${app.name}/build.properties" />
+		<!-- Inheritance If -->
+		<if>
+			<equals arg1="${app.useInheritance}" arg2="true" casesensitive="false" />
+			<then>
+				<delete file="${app.destination}/${app.name}/Application_noinheritance.cfc" />
+			</then>
+			<else>
+				<delete file="${app.destination}/${app.name}/Application.cfc" />
+				<move file="${app.destination}/${app.name}/Application_noinheritance.cfc"
+				      tofile="${app.destination}/${app.name}/Application.cfc" />
+			</else>
+		</if>	
+	</target>
+	
+</project>

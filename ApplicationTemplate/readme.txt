@@ -14,15 +14,16 @@ the ColdBox Dashboard or the settings.xml
 Sample Directory Structure For Your Application
 ******************************************************************************
 -ApplicationFolder
-	-config (Your config folder, where your config.xml.cfm resides) REQUIRED
-	-handlers (Your ColdBox event handlers, can be orgainzed into folders) REQUIRED
-	-layouts  (Your layouts) REQUIRED
-	-views (Your views, can be orgainzed into folders) REQUIRED
-	-plugins (Your custom plugins by convention, can be organized into folders) OPTIONAL
-	-interceptors (Where you can put your interceptors) OPTIONAL
-	-includes (Your include files if used.) OPTIONAL-includes a generic custom error template
-	-logs (For ColdBox Logging) OPTIONAL
-	-{Any other folder(s) you want} OPTIONAL
+	- config (Your config folder)
+	- handlers (Your event handlers)
+	- includes (Your include files if used)
+	- interceptors (Where you can put your interceptors) 
+	- layouts  (Your layouts) 
+	- logs (Where your log files go, you can change this)
+	- model (Where your model objects go) 
+	- plugins (Your custom plugins by convention) 
+	- test (Where your unit testing goes)
+	- views (Your views)
 	
 ******************************************************************************
 QUICK START

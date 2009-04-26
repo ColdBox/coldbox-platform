@@ -3,7 +3,7 @@ Copyright 2005-2007 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 www.coldboxframework.com | www.luismajano.com | www.ortussolutions.com
 ********************************************************************************
 
-Unit Testing for Event Handlers
+ColdBox Unit Testing
 
 The following test cases have been created for testing of event handlers, please
 note that the controller created is the ColdBox's testcontroller.
@@ -36,10 +36,8 @@ Then create a setup method that follows the following pattern:
 
 Structure:
 -integration
-	- cfcunit - cfcunit enabled tests
-	- mxunit - mxunit enabled tests
- 		- GeneralTest.cfc - The test case for the General.cfc handler
- 		- MaintTest.cfc - The test case for the Main.cfc handler
+	- GeneralTest.cfc - The test case for the General.cfc handler
+ 	- MaintTest.cfc - The test case for the Main.cfc handler
  -unit
  	- For all your unit test cases.
  -mocks
