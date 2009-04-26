@@ -2,7 +2,7 @@
 <snippet filetemplate="false" extension="cfm">
 <name>Test Method</name>
 <help></help>
-<starttext><![CDATA[<cffunction name="$${test name}" access="public" returntype="void" output="false">
+<starttext><![CDATA[<cffunction name="test$${test name}">
 		<cfscript>
 		var event = "";
 		

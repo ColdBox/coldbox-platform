@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <snippet filetemplate="true" extension="cfc">
-<name>MXUnit Test Case</name>
+<name>ColdBox Test Case</name>
 <help></help>
 <starttext><![CDATA[<cfcomponent name="$${test Name}" extends="coldbox.system.testing.BaseTestCase" output="false">
 	<cfscript>
 		//Uncomment the following if you dont' need the controller in application scope for testing.
 		//this.PERSIST_FRAMEWORK = false;
 	</cfscript>
-	<cffunction name="setUp" returntype="void" access="private" output="false">
+	
+	<cffunction name="setUp">
 		<cfscript>
 		//Setup ColdBox Mappings For this Test
 		setAppMapping("$${App Mapping}");
@@ -24,7 +25,11 @@
 		</cfscript>
 	</cffunction>
 	
-	<cffunction name="testindex" access="public" returntype="void" output="false">
+	<cffunction name="teardown">
+		<cfset super.teardown()>
+	</cffunction>
+	
+	<cffunction name="testindex">
 		<cfscript>
 		var event = "";
 		

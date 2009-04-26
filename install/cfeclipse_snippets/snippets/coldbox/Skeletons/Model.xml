@@ -8,8 +8,6 @@ Date     :	$${DATE}
 Description : 			
  $${Description}
 		
-Modification History:
-
 AUTOWIRE DSL:
 ioc	 Get the named ioc bean and inject it. Name comes from the cfproperty name or argument name
 ocm	 Get the name key from the Coldbox cache and inject it. Name comes from the cfproperty name or argument name
@@ -31,10 +29,18 @@ coldbox:pluginService	 get the plugin service
 coldbox:handlerService	 get the handler service
 coldbox:interceptorService	 get the interceptor service
 coldbox:cacheManager	 get the cache manager
+
+CACHING ATTRIBUTES:
+Add the following attributes to the cfcomponent tag
+ - singleton = boolean (equivalent to cache=true cacheTimeout=0)
+ - cache = boolean
+ - cacheTimeout = minutes
+ - cacheLastAccessTimeout = minutes
 ----------------------------------------------------------------------->
 <cfcomponent name="$${Model Name}" 
 			 hint="$${Hint}"
-			 output="false">
+			 output="false"
+			 singleton="false">
 
 	<!--- Dependencies Here: Ex <cfproperty name="dsn" type="coldbox:datasource:dsn" /> --->	
 

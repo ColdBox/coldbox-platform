@@ -4,7 +4,12 @@
 <help></help>
 <starttext><![CDATA[<cfcomponent name="$${test Name}" extends="coldbox.system.testing.BaseTestCase" output="false">
 
-	<cffunction name="setUp" returntype="void" access="private" output="false">
+	<cfscript>
+		//Uncomment the following if you dont' need the controller in application scope for testing.
+		//this.PERSIST_FRAMEWORK = false;
+	</cfscript>
+	
+	<cffunction name="setUp">
 		<cfscript>
 		//Setup ColdBox Mappings For this Test
 		setAppMapping("$${App Mapping}");
@@ -21,6 +26,25 @@
 		</cfscript>
 	</cffunction>
 	
+	<cffunction name="teardown">
+		<cfset super.teardown()>
+	</cffunction>
+	
+	<cffunction name="testindex">
+		<cfscript>
+		var event = "";
+		
+		//Place any variables on the form or URL scope to test the handler.
+		//FORM.name = "luis"
+		event = execute("general.index");
+		
+		debug(event.getCollection());
+		
+		//Do your asserts below
+		assertEquals("Welcome to ColdBox!", event.getValue("welcomeMessage",""), "Failed to assert welcome message");
+			
+		</cfscript>
+	</cffunction>	
 
 </cfcomponent>]]></starttext>
 <endtext><![CDATA[]]></endtext>

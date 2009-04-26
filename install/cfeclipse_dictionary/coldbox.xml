@@ -390,7 +390,7 @@ Description :
 					
 					<value option="&quot;MyPluginsInvocationPath&quot;"/>
 					<value option="&quot;PluginsExternalLocation&quot;"/>
-					<value option="&quot;MyPluginsPath&quot;"/>
+					<value option="&quot;PluginsExternalPath&quot;"/>
 					<value option="&quot;OwnerEmail&quot;"/>
 					<value option="&quot;ProxyReturnCollection&quot;"/>
 					<value option="&quot;RBundles&quot;"/>
@@ -807,6 +807,12 @@ Description :
 		<scope value="event.getDefaultView()" type="String">
 			<help><![CDATA[ 
 			Gets the default view
+		]]></help>
+		</scope>
+		
+		<scope value="event.getHTTPMethod()" type="String">
+			<help><![CDATA[ 
+			Gets the HTTP method used in the request, taken from cgi.request_method.
 		]]></help>
 		</scope>
 		

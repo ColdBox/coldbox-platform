@@ -8,8 +8,6 @@ Date     :	$${DATE}
 Description : 			
  $${Description}
 		
-Modification History:
-
 AUTOWIRE DSL:
 ioc	 Get the named ioc bean and inject it. Name comes from the cfproperty name or argument name
 ocm	 Get the name key from the Coldbox cache and inject it. Name comes from the cfproperty name or argument name
@@ -38,29 +36,16 @@ coldbox:cacheManager	 get the cache manager
 			 output="false"
 			 autowire="$${Autowire:false|true}">
 
-	<!--- Event Caching Suffix: It will be appended to every event cached key. This can be a locale, dynamic, etc. --->
-	<cfset this.EVENT_CACHE_SUFFIX = "">
-	<!--- Pre Handler Execute only if action in this list --->
-	<cfset this.PREHANDLER_ONLY = "">
-	<!--- Pre Handler Do not execute if action in this except list --->
-	<cfset this.PREHANDLER_EXCEPT = "">
-	<!--- Post Handler Execute only if action in this list --->
-	<cfset this.POSTHANDLER_ONLY = "">
-	<!--- Post Handler Do not execute if action in this except list --->
-	<cfset this.POSTHANDLER_EXCEPT = "">
-			 
-<!------------------------------------------- CONSTRUCTOR ------------------------------------------->	 	
-
-	<cffunction name="init" access="public" returntype="$${Handler Name}" output="false" hint="Optional Constructor">
-		<cfargument name="controller" type="any">
-		
-		<!--- Mandatory Super call --->
-		<cfset super.init(arguments.controller)>
-		
-		<!--- Any custom constructor code here --->
-		
-		<cfreturn this>
-	</cffunction>
+	<cfscript>
+		this.event_cache_suffix = "";
+		this.prehandler_only 	= "";
+		this.prehandler_except 	= "";
+		this.posthandler_only 	= "";
+		this.posthandler_except = "";
+		/* HTTP Methods Allowed for actions. */
+		/* Ex: this.allowedMethods = {delete='POST,DELETE',index='GET'} */
+		this.allowedMethods = structnew();
+	</cfscript>
 
 <!----------------------------------------- IMPLICIT EVENTS ------------------------------------------>
 
@@ -98,8 +83,7 @@ coldbox:cacheManager	 get the cache manager
 			 
 <!------------------------------------------- PUBLIC EVENTS ------------------------------------------->	 	
 
-	<!--- do something --->
-	<cffunction name="doSomething" access="public" returntype="Void" output="false">
+	<cffunction name="index" returntype="Void" output="false">
 		<cfargument name="Event" type="any" required="yes">
 		<cfset var rc = event.getCollection()>
 		 

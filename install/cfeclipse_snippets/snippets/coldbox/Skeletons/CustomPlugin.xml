@@ -8,8 +8,6 @@ Date     :	$${DATE}
 Description : 			
  $${Plugin Description}
 		
-Modification History:
-
 ----------------------------------------------------------------------->
 <cfcomponent name="$${Plugin Name}" 
 			 hint="$${Hint}" 
@@ -28,6 +26,8 @@ Modification History:
   		setpluginName("$${Plugin Name}");
   		setpluginVersion("$${Plugin Version}");
   		setpluginDescription("$${Plugin Description}");
+  		setPluginAuthor("$${Author}");
+  		setPluginAuthorURL("");
   		//My own Constructor code here
   		
   		//Return instance

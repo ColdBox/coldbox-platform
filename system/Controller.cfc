@@ -409,6 +409,16 @@ Description		: This is the main ColdBox front Controller.
 		<!--- Get the event handler to execute --->
 		<cfset oEventHandler = getHandlerService().getHandler(oEventHandlerBean,oRequestContext)>
 		
+		<!--- Determine if it is an Allowed HTTP Method to Execute the requested action --->
+		<cfif NOT structIsEmpty(oEventHandler.allowedMethods) AND
+			  structKeyExists(oEventHandler.allowedMethods,oEventHandlerBean.getMethod()) AND
+			  NOT listFindNoCase(oEventHandler.allowedMethods[oEventHandlerBean.getMethod()],oRequestContext.getHTTPMethod())>
+			<cfthrow type="Framework.403" 
+				     errorcode="403"
+				     message="403 Invalid HTTP Method Exception"
+					 detail="The requested event: #event# cannot be executed using the incoming HTTP request method '#oRequestContext.getHTTPMethod()#'.">
+		</cfif>
+		
 		<!--- InterceptMetadata --->
 		<cfset interceptMetadata.processedEvent = arguments.event>
 		<!--- Execute preEvent Interception --->

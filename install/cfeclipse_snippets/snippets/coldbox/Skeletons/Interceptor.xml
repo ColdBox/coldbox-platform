@@ -8,8 +8,6 @@ Date     :	$${DATE}
 Description : 			
  $${Interceptor Description}
 		
-Modification History:
-
 ----------------------------------------------------------------------->
 <cfcomponent name="$${Interceptor Name}" 
 			 hint="$${Hint}" 
