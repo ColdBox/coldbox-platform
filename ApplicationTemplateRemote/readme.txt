@@ -5,8 +5,11 @@ www.coldboxframework.com | www.luismajano.com | www.ortussolutions.com
 Welcome to the ColdBox Application Template For Remote Applications
 
 This is a skeleton for what we think can be a great template for building
-enhanced remote applications.  This template gives you a separate folder for the 
+enhanced remote monitor applications.  This template gives you a separate folder for the 
 actual coldbox monitor so you can monitor your remote calls and application.
+
+If you are building a hybrid of MVC with remote GUI's, we recommend using the 
+normal Application Template.
 
 ******************************************************************************
 Sample Directory Structure For Your Application
