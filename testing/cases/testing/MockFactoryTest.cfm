@@ -28,4 +28,14 @@ Normal Test.getFullName() = #test.getFullName()#<br />
 <cfset test.mockMethod("getName","My Mock Name")>
 Mocked Test.getFullName() = #test.getFullName()#<br />
 
+
+<hr />
+<h1>Mocking Recycling of Results</h1>
+<p>Three results will be mocked, and they will be called 11 times. The results should recycle every 3 calls</p>
+<cfset test.mockMethod("getSetting").mockResults("S1","S2","S3")>
+
+<cfloop from="1" to="11" index="callCounter">
+	Call ###callCounter# -> #test.getSetting('XX')# <br />
+</cfloop>
+
 </cfoutput>

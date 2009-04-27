@@ -71,7 +71,7 @@ Description		:
 					obj = createObject("component",arguments.classNameToMock);
 				}
 				catch(Any e){	
-					getUtil().throwit(type="mock.invalidCFC",message="The specified CFC #arguments.classNameToMock# could not be created. Verify the CFC name and path being specified.");
+					throw(type="mock.invalidCFC",message="The specified CFC #arguments.classNameToMock# could not be created. Verify the CFC name and path being specified.");
 				}
 			}
 			else if ( structKeyExists(arguments, "objectToMock") ){
@@ -79,7 +79,7 @@ Description		:
 				obj = arguments.objectToMock;
 			}
 			else{
-				getUtil().throwit()(type="mock.invalidArguments",message="You need a classNameToMock or a objectToMock argument.");
+				throw(type="mock.invalidArguments",message="You need a classNameToMock or a objectToMock argument.");
 			}		
 			
 			/* Clear up Mock object? */
@@ -93,10 +93,13 @@ Description		:
 			obj._mockGenerationPath = getgenerationPath();
 			/* Original Metadata */
 			obj._mockOriginalMD = getMetadata(obj);
+			/* Incoming Method Name */
+			obj._mockCurrentMethodName = "";
 			/* Utility Method Injections */
 			obj.mockMethod = variables.mockMethod;
 			obj.mockProperty = variables.mockProperty;
 			obj.mockMethodCallCount = variables.mockMethodCallCount;
+			obj.mockResults = variables.mockResults;
 			
 			/* Return mock obj */
 			return obj;			
@@ -126,6 +129,20 @@ Description		:
 				return -1;
 			}
 		</cfscript>
+	</cffunction>
+	
+	<!--- mockResults --->
+	<cffunction name="mockResults" output="false" access="public" returntype="void" hint="Use this method to mock more than 1 result as passed in arguments.  Can only be called when chained to a mockMethod() call.  Results will be recycled on a multiple of their lengths according to how many times they are called.">
+		<cfif len(this._mockCurrentMethodName)>
+			<!--- Save incoming arguments as results --->
+			<cfset this._mockMethodResults[this._mockCurrentMethodName] = arguments>
+			<!--- Cleanup the incoming call --->
+			<cfset this._mockCurrentMethodName = "">
+		<cfelse>
+			<cfthrow type="MockFactory.IllegalStateException"
+					 message="No current method name set"
+					 detail="This method was probably called without chaining it to a mockMethod() call. Ex: obj.mockMethod().mockResults()">
+		</cfif>
 	</cffunction>
 	
 	<!--- mockMethod --->
@@ -186,14 +203,26 @@ Description		:
 			/* Start Method */
 			udfOut.append('<cffunction name="#arguments.method#" access="#fncMD.access#" output="#fncMD.output#" returntype="#fncMD.returntype#">#lb#');
 			/* Method Call Counters */
+			udfOut.append('<cfset var resultsCounter = 0>#lb#');	
+			udfOut.append('<cfset var internalCounter = 0>#lb#');	
+			udfOut.append('<cfset var resultsLen = arrayLen(this._mockMethodResults["#arguments.method#"])>#lb#');	
+			/* Increase Counter */
 			udfOut.append('<cfset this._mockMethodCallCounters["#arguments.method#"] = this._mockMethodCallCounters["#arguments.method#"] + 1>#lb#');
+			/* Set Local Reference */
+			udfOut.append('<cfset internalCounter = this._mockMethodCallCounters["#arguments.method#"]>#lb#');
 			/* Exceptions? To Throw */
 			if( arguments.throwException ){
 				udfOut.append('<cfthrow type="#arguments.throwType#" message="#arguments.throwMessage#" detail="#arguments.throwDetail#" />#lb#');
 			}			
 			/* Returns Something? */
-			if ( structKeyExists(arguments,"returns") ){
-				udfOut.append('	<cfreturn this._mockMethodResults["#arguments.method#"]>#lb#');
+			if ( fncMD["returntype"] neq "void" ){
+				/* Results Recyling Code, basically, the results recylce depending on the multiple of results and coutner calls */
+				udfOut.append('<cfif internalCounter gt resultsLen>#lb#');
+				udfOut.append('<cfset resultsCounter = internalCounter - ( resultsLen*fix( (internalCounter-1)/resultsLen ) )>#lb#');
+				udfOut.append('<cfreturn this._mockMethodResults["#arguments.method#"][resultsCounter]>#lb#');
+				udfOut.append('<cfelse>#lb#');
+				udfOut.append('<cfreturn this._mockMethodResults["#arguments.method#"][internalCounter]>#lb#');
+				udfOut.append('</cfif>#lb#');				
 			}
 			udfOut.append('</cffunction>');
 		</cfscript>
@@ -216,11 +245,15 @@ Description		:
 
 		<!--- Save Returns --->
 		<cfif structKeyExists(arguments,"returns")>
-			<cfset this._mockMethodResults[arguments.method] = arguments.returns>
+			<cfset this._mockMethodResults[arguments.method] = ArrayNew(1)>
+			<cfset this._mockMethodResults[arguments.method][1] = arguments.returns>
 		<cfelse>
-			<cfset this._mockMethodResults[arguments.method] = "VOID">
+			<cfset this._mockMethodResults[arguments.method] = ArrayNew(1)>
 		</cfif>
-			
+		
+		<!--- Incoming Method Name --->
+		<cfset this._mockCurrentMethodName = arguments.method>
+		
 		<cfreturn this>
 	</cffunction>	
 
