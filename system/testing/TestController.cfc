@@ -23,19 +23,19 @@ Description		: This is a unit test controller that basically overrides the setNe
 		<cfargument name="varStruct" 		type="struct" 	required="false" default="#structNew()#" hint="A structure key-value pairs to persist.">
 		<cfargument name="ssl"				type="boolean" required="false" default="false"	hint="Whether to relocate in SSL or not, only used when in SES mode.">
 		<cfargument name="baseURL" 			type="string"  required="false" default="" hint="Use this baseURL instead of the index.cfm that is used by default. You can use this for ssl or any full base url you would like to use. Ex: https://mysite.com/index.cfm"/>
+		<cfargument name="postProcessExempt"  type="boolean" required="false" default="false" hint="Do not fire the postProcess interceptors">
 		<!--- ************************************************************* --->
-		<!--- Nothing In here to validate Unit Tests --->
-		<cfif len(trim(arguments.queryString)) eq 0>
-			<cfset getRequestService().getContext().setValue("setnextevent","#arguments.event#")>
-		<cfelse>
-			<cfset getRequestService().getContext().setValue("setnextevent","#arguments.event#&#arguments.queryString#")>
-		</cfif>
+		<cfset var context = getRequestService().getContext()>
+		
+		<cfset context.setValue("setNextEvent","#arguments.event#")>
 		<!--- Save also the persist collection keys --->
-		<cfset getRequestService().getContext().setValue("persistKeys","#arguments.persist#")>
+		<cfset context.setValue("persistKeys","#arguments.persist#")>
 		<!--- Save also the persist collection keys --->
-		<cfset getRequestService().getContext().setValue("persistVarStruct","#arguments.varStruct#")>
-		<cfset getRequestService().getContext().setValue("ssl","#arguments.ssl#")>
-		<cfset getRequestService().getContext().setValue("baseURL","#arguments.baseURL#")>
+		<cfset context.setValue("persistVarStruct","#arguments.varStruct#")>
+		<cfset context.setValue("ssl","#arguments.ssl#")>
+		<cfset context.setValue("baseURL","#arguments.baseURL#")>
+		<cfset context.setValue("queryString","#arguments.queryString#")>
+		<cfset context.setValue("addToken","#arguments.addToken#")>
 	</cffunction>
 	
 	<!--- Event Context Methods --->
@@ -47,15 +47,20 @@ Description		: This is a unit test controller that basically overrides the setNe
 		<cfargument name="varStruct" 	required="false" type="struct"  default="#structnew()#" hint="A structure key-value pairs to persist.">
 		<cfargument name="addToken"		required="false" type="boolean" default="false"	hint="Wether to add the tokens or not. Default is false">
 		<cfargument name="ssl"			required="false" type="boolean" default="false"	hint="Whether to relocate in SSL or not">
+		<cfargument name="queryString"  required="false" type="string"  default="" hint="The query string to append, if needed.">
+		<cfargument name="postProcessExempt"  type="boolean" required="false" default="false" hint="Do not fire the postProcess interceptors">
 		<!--- ************************************************************* --->
+		<cfset var context = getRequestService().getContext()>
+		
 		<!--- Save the route --->
-		<cfset getRequestService().getContext().setValue("setNextRoute","#arguments.route#")>
-
+		<cfset context.setValue("setNextRoute","#arguments.route#")>
 		<!--- Save also the persist collection keys --->
-		<cfset getRequestService().getContext().setValue("persistKeys","#arguments.persist#")>
+		<cfset context.setValue("persistKeys","#arguments.persist#")>
 		<!--- Save also the persist collection keys --->
-		<cfset getRequestService().getContext().setValue("persistVarStruct","#arguments.varStruct#")>
-		<cfset getRequestService().getContext().setValue("ssl","#arguments.ssl#")>
+		<cfset context.setValue("persistVarStruct","#arguments.varStruct#")>
+		<cfset context.setValue("ssl","#arguments.ssl#")>
+		<cfset context.setValue("queryString","#arguments.queryString#")>
+		<cfset context.setValue("addToken","#arguments.addToken#")>
 	</cffunction>
 
 </cfcomponent>

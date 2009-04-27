@@ -1,5 +1,8 @@
 <!-----------------------------------------------------------------------
-Template : baseTest.cfc
+********************************************************************************
+Copyright 2005-2008 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+www.coldboxframework.com | www.luismajano.com | www.ortussolutions.com
+********************************************************************************
 Author 	  : Luis Majano
 Date        : 5/25/2007
 Description :
@@ -30,45 +33,59 @@ Description :
 
 	<cfscript>
 		variables.instance = structnew();
-		instance.AppMapping = "";
-		instance.ConfigMapping = "";
-		instance.controller = "";
-		/* Public Persistence Properties */
-		this.PERSIST_FRAMEWORK = true;
+		
+		/* Internal Properties */
+		instance.appMapping = "";
+		instance.configMapping = "";
+		instance.controller = 0;
+		
+		/* Public Properties */
+		this.persist_framework = true;
+		this.loadColdbox = true;
 	</cfscript>
 
-	<cffunction name="setup" returntype="void" access="public">
+	<cffunction name="setup" hint="The setup method">
 		<cfscript>
-		/* Check on Scope Firsty */
-		if( structKeyExists(application,"cbController") ){
-			instance.controller = application.cbController;
-		}
-		else{
-			//Initialize ColdBox
-			instance.controller = CreateObject("component", "coldbox.system.testing.TestController").init( expandPath(instance.AppMapping) );
-			/* Verify Persistence */
-			if( this.PERSIST_FRAMEWORK ){
-				application.cbController = instance.controller;
+		/* Prepare Mocking Factory */
+		instance.mockFactory = createObject("component","coldbox.system.testing.MockFactory").init();
+		/* Load ColdBox? */
+		if( this.loadColdbox ){
+			/* Check on Scope Firsty */
+			if( structKeyExists(application,"cbController") ){
+				instance.controller = application.cbController;
 			}
-			/* Setup */
-			instance.controller.getLoaderService().configLoader(instance.ConfigMapping,instance.AppMapping);
+			else{
+				//Initialize ColdBox
+				instance.controller = CreateObject("component", "coldbox.system.testing.TestController").init( expandPath(instance.AppMapping) );
+				/* Verify Persistence */
+				if( this.persist_framework ){
+					application.cbController = instance.controller;
+				}
+				/* Setup */
+				instance.controller.getLoaderService().configLoader(instance.ConfigMapping,instance.AppMapping);
+			}
+			
+			//Create Initial Event Context
+			setupRequest();
+			
+			//Clean up Initial Event Context
+			getRequestContext().clearCollection();
 		}
-		
-		//Create Initial Event Context
-		setupRequest();
-		
-		//Clean up Initial Event Context
-		getRequestContext().clearCollection();
 		</cfscript>
 	</cffunction>
 	
-	<cffunction name="tearDown" access="public" returntype="void" hint="The teardown" output="false" >
+	<cffunction name="tearDown" hint="The teardown" >
 		<cfscript>
 			
 		</cfscript>
 	</cffunction>
 
 <!------------------------------------------- HELPERS ------------------------------------------->
+
+	<!--- getMockFactory --->
+	<cffunction name="getMockFactory" output="false" access="private" returntype="coldbox.system.testing.MockFactory" hint="Get the mocking factory">
+		<cfreturn instance.mockFactory>
+	</cffunction>
 
 	<!--- Reset the persistence --->
 	<cffunction name="reset" access="private" returntype="void" hint="Reset the persistence of the unit test coldbox app" output="false" >
@@ -99,7 +116,7 @@ Description :
 
 	<!--- getter for controller --->
 	<cffunction name="getcontroller" access="private" returntype="any" output="false" hint="Get a reference to the ColdBox controller">
-		<cfif this.PERSIST_FRAMEWORK>
+		<cfif this.persist_framework>
 			<cfset instance.controller = application.cbController>
 		</cfif>
 		<cfreturn instance.controller>
