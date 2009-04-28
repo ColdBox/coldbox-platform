@@ -17,9 +17,10 @@ Sample Directory Structure For Your Application
 -ApplicationFolder
 	- config (Your config folder, where your config.xml.cfm resides) REQUIRED
 	- interceptors (Where you can put your interceptors) OPTIONAL
-	- model (Your domain model objects, including remote objects)
+	- model (Your domain model objects)
 	- monitor (Your Remote Monitor)
 	- plugins (Your custom plugins by convention, can be organized into folders) OPTIONAL
+	- remote (Where all your remote proxies go)
 	- test (Your unit testing folder)
 	
 ******************************************************************************
