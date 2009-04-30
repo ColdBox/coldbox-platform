@@ -31,8 +31,9 @@ Description :
 				setProperty("completeDIMethodName",'onDIComplete');
 			}
 			/* enableSetterInjection */
-			if(not propertyExists("enableSetterInjection")){
-				setProperty("enableSetterInjection",'true');
+			if(NOT propertyExists("enableSetterInjection") OR
+			   NOT isBoolean(getProperty('enableSetterInjection')) ){
+				setProperty("enableSetterInjection",'false');
 			}		
 			
 			/* Create our BeanFactory plugin, we do this here, because we need it not to execute an endless loop */
