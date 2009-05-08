@@ -480,5 +480,25 @@
 		</cfscript>
 	</cffunction>
 	
+	<cffunction name="testViewDispatched">
+		<cfscript>
+			var event = getRequestContext();
+			
+			assertFalse( event.isViewDispatched() );
+			
+			event.setViewDispatched("simple",false);
+			
+			assertTrue( event.isViewDispatched() );
+			assertEquals( event.getCurrentView(), "simple");
+			assertTrue( len(event.getCurrentLayout()) );
+			
+			event.setViewDispatched("simple",true);
+			assertTrue( event.isViewDispatched() );
+			assertEquals( event.getCurrentView(), "simple");
+			assertFalse( len(event.getCurrentLayout()) );
+			
+		</cfscript>
+	</cffunction>
+	
 
 </cfcomponent>

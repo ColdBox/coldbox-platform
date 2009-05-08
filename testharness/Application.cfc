@@ -50,6 +50,7 @@ Description :
 		<!--- ************************************************************* --->
 		<cfset var start = getTickCount()>
 		<cfsetting enablecfoutputonly="yes">
+		<cfsetting showdebugoutput="false">
 		
 		<!--- BootStrap Reinit Check --->
 		<cfif not structKeyExists(application,"cbBootstrap") or application.cbBootStrap.isfwReinit()>
