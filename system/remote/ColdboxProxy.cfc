@@ -11,16 +11,15 @@ Description :
 	This will convert the framework into a model framework rather than a 
 	HTML MVC framework.	
 ----------------------------------------------------------------------->
-<cfcomponent name="ColdboxProxy" output="false" hint="This component is the coldbox remote proxy used for model operation." >
+<cfcomponent name="ColdboxProxy" output="false" hint="This component is the coldbox remote proxy used for remote operations." >
 	
-<!------------------------------------------- PUBLIC ------------------------------------------->	
 	<cfscript>
 		/* Setup Namespace Key */
 		setCOLDBOX_APP_KEY("cbController");
 	</cfscript>
 	
 	<!--- process a remote call --->
-	<cffunction name="process" output="false" access="remote" returntype="any" hint="Process a remote call into ColdBox's event model and return data/objects back. If no results where found, this method returns null/void">
+	<cffunction name="process" output="false" access="private" returntype="any" hint="Process a remote call into ColdBox's event model and return data/objects back. If no results where found, this method returns null/void">
 		<!--- There are no arguments defined as they come in as a collection of arguments. --->
 		<cfset var cbController = "">
 		<cfset var event = "">
@@ -117,7 +116,7 @@ Description :
 	</cffunction>
 	
 	<!--- process an interception --->
-	<cffunction name="announceInterception" output="false" access="remote" returntype="boolean" hint="Process a remote interception.">
+	<cffunction name="announceInterception" output="false" access="private" returntype="boolean" hint="Process a remote interception">
 		<!--- ************************************************************* --->
 		<cfargument name="state" 			type="string" 	required="true" hint="The intercept state"/>
 		<cfargument name="interceptData"    type="any" 	    required="false" default="" hint="This method will take the contents and embedded into a structure"/>
@@ -154,8 +153,6 @@ Description :
 		</cfscript>
 	</cffunction>
 		
-<!------------------------------------------- PRIVATE ------------------------------------------->	
-	
 	<!--- handleException --->
 	<cffunction name="handleException" output="false" access="private" returntype="void" hint="Handle a ColdBox request Exception">
 		<cfargument name="exceptionObject" type="any" required="true" hint="The exception object"/>
