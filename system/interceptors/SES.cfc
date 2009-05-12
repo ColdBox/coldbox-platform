@@ -21,7 +21,7 @@ Description :
 	<cfscript>
 		/* Reserved Keys as needed for cleanups */
 		instance.RESERVED_KEYS = "handler,action,view,viewNoLayout";
-		instance.RESERVED_ROUTE_ARGUMENTS = "pattern,regexpattern,matchVariables,packageresolverexempt,patternParams";
+		instance.RESERVED_ROUTE_ARGUMENTS = "pattern,regexpattern,matchVariables,packageresolverexempt,patternParams,valuePairTranslation";
 	</cfscript>
 
 	<cffunction name="configure" access="public" returntype="void" hint="This is where the ses plugin configures itself." output="false" >
@@ -157,7 +157,8 @@ Description :
 		<cfargument name="packageResolverExempt" type="boolean" required="false" default="false" hint="If this is set to true, then the interceptor will not try to do handler package resolving. Else a package will always be resolved.">
 		<cfargument name="matchVariables" 		 type="string" 	required="false" hint="A string of name-value pair variables to add to the request collection when this pattern matches. This is a comma delimmitted list. Ex: spaceFound=true,missingAction=onTest">
 		<cfargument name="view"  				 type="string"  required="false" hint="The view to dispatch.  No event will be fired, so handler,action will be ignored.">
-		<cfargument name="viewNoLayout"  		 type="boolean"  required="false" default="false" hint="If view is choosen, then you can choose to override and not display a layout with the view. Else the view renders in the assigned layout.">
+		<cfargument name="viewNoLayout"  		 type="boolean" required="false" default="false" hint="If view is choosen, then you can choose to override and not display a layout with the view. Else the view renders in the assigned layout.">
+		<cfargument name="valuePairTranslation"  type="boolean" required="false" default="true"  hint="Activate convention name value pair translations">
 		<!--- ************************************************************* --->
 		<cfscript>
 		var thisRoute = structNew();
@@ -541,7 +542,9 @@ Description :
 			}
 			
 			/* Process Convention Name-Value Pairs */
-			findConventionNameValuePairs(requestString,match,params);
+			if( foundRoute.valuePairTranslation ){
+				findConventionNameValuePairs(requestString,match,params);
+			}
 			
 			/* Now setup all found variables in the param struct, so we can return */
 			for(key in foundRoute){
