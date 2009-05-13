@@ -35,11 +35,22 @@ Description: This is the framework's simple bean factory.
 			setpluginAuthor("Luis Majano, Sana Ullah");
 			setpluginAuthorURL("http://www.coldbox.org");
 			
+			instance.ModelsPath = getSetting("ModelsPath");
+			instance.ModelsInvocationPath = getSetting("ModelsInvocationPath");
+			instance.ModelsExternalPath = getSetting("ModelsExternalLocationPath");
+			instance.ModelsExternalInvocationPath = getSetting("ModelsExternalLocation");
+			
+			instance.modelMappings = structnew();
+			instance.NOT_FOUND = "_NOT_FOUND_";
+			instance.dslMarker = "_wireme";
+			if( settingExists("BeanFactory_dslMarker") ){
+				instance.dslMarker = getSetting("BeanFactory_dslMarker");
+			}
+			
 			/* Setup the Autowire DI Dictionary */
 			setDICacheDictionary(CreateObject("component","coldbox.system.util.collections.BaseDictionary").init('DIMetadata'));
-			/* Model Mappings */
-			instance.modelMappings = structnew();
-			/* Run Model Mappings template */
+			
+			/* Run The Model Mappings template */
 			if( fileExists(getSetting("ApplicationPath") & "config/modelMappings.cfm") ){
 				try{
 					/* If AppMapping is not Blank check */
@@ -54,16 +65,6 @@ Description: This is the framework's simple bean factory.
 					throw("Error including model mappings file: #e.message#",e.detail,"plugin.BeanFactory.ModelMappingsIncludeException");
 				}
 			}
-			
-			/* Default Constructor Argument Marker */
-			instance.dslMarker = "_wireme";
-			/* Check setting For Argument Marker Override */
-			if( settingExists("BeanFactory_dslMarker") ){
-				instance.dslMarker = getSetting("BeanFactory_dslMarker");
-			}
-			
-			/* Not Found Marker Constant */
-			instance.NOT_FOUND = "_NOT_FOUND_";
 			
 			/* Return instance */
 			return this;
@@ -133,18 +134,13 @@ Description: This is the framework's simple bean factory.
 		<!--- ************************************************************* --->
 		<cfscript>
 			var oModel = 0;
-			var ModelsPath = getSetting("ModelsPath");
-			var ModelsInvocationPath = getSetting("ModelsInvocationPath");
-			var ModelsExternalPath = getSetting("ModelsExternalLocationPath");
-			var ModelsExternalInvocationPath = getSetting("ModelsExternalLocation");
-			var checkPath = 0;
-			var checkExternalPath = 0;
 			var modelClassPath = 0;
 			var md = 0;
 			var modelMappings = getModelMappings();
 			var announceData = structnew();
+			var isModelFinalized = false;
 			
-			/* Setting Overrides, else grab from setting */
+			/* Argument Overrides, else grab from existing settings */
 			if( not structKeyExists(arguments,"useSetterInjection") ){
 				arguments.useSetterInjection = getSetting("ModelsSetterInjection");
 			}
@@ -159,37 +155,29 @@ Description: This is the framework's simple bean factory.
 			}
 			
 			/* Resolve name in Alias Checks */
-			if( structKeyExists(modelMappings,arguments.name) ){
-				arguments.name = modelMappings[arguments.name];
-			}
+			arguments.name = resolveModelAlias(arguments.name);
+			
 			/* Check if Model in Cache, if it is, return it and exit. */
 			if ( getColdboxOCM().lookup(arguments.name) ){
 				return getColdBoxOCM().get(arguments.name);
 			}
-			/* Setup Location Paths */
-			checkPath = ModelsPath & "/" & replace(arguments.name,".","/","all") & ".cfc";
-			checkExternalPath = ModelsExternalPath & "/" & replace(arguments.name,".","/","all") & ".cfc";
-			/* Class Path Determination */
-			if( fileExists(checkPath) ){
-				modelClassPath = ModelsInvocationPath & "." & arguments.name;
-			}
-			else if( fileExists(checkExternalPath) ){
-				modelClassPath = ModelsExternalInvocationPath & "." & arguments.name;
-			}
+			
+			/* Locate the model Class Path */
+			modelClassPath = locateModel(arguments.name);
 		</cfscript>
 		
 		<!--- Create It if it exists --->
-		<cfif ( modelClassPath neq 0 )>
+		<cfif NOT isModelFinalized>
 			<cflock name="beanfactory.createmodel.#arguments.name#" type="exclusive" timeout="20" throwontimeout="true">
 				<cfscript>
-				if( modelClassPath neq 0 ){
+				if( NOT isModelFinalized ){
 					/* Create the model object */
 					oModel = createObject("component", modelClassPath);
-					/* Verify Init() and execute */
+					/* Verify Constructor: Init() and execute */
 					if( structKeyExists(oModel,"init") ){
 						oModel.init(argumentCollection=getConstructorArguments(oModel));
 					}
-					/* Caching Enabled */
+					/* Persistence Checks */
 					if( getSetting("ModelsObjectCaching") ){
 						/* Caching Metadata */
 						md = getMetadata(oModel);
@@ -227,15 +215,81 @@ Description: This is the framework's simple bean factory.
 					announceData.oModel = oModel;
 					announceData.modelName = arguments.name;
 					announceInterception("afterModelCreation",announceData);
+					/* Model Creation Finalized */
+					isModelFinalized = true; 
 				}
 				</cfscript>
 			</cflock>
 		<cfelse>
-			<cfset throw("Model #arguments.name# was not found","The model path is not valid: #checkPath# or external path: #checkExternalPath#","plugin.BeanFactory.modelNotFoundException")>
+			<cfthrow message="Model #arguments.name# could not be located."
+					 type="plugin.BeanFactory.modelNotFoundException"
+					 detail="The model object #arguments.name# cannot be located in the following locations: #instance.ModelsPath# OR #instance.ModelsExternalPath#">
 		</cfif>
 		
 		<cfreturn oModel>
 	</cffunction>
+	
+	<!--- Resolve Model Alias --->
+	<cffunction name="resolveModelAlias" access="public" returntype="string" hint="Resolve the real name of any incoming argument model name or alias" output="false" >
+		<cfargument name="name" required="true"  type="string" hint="The model alias or name to resolve">
+		<cfscript>
+		var mappings = getModelMappings();
+		/* Resolve name in Aliases */
+		if( structKeyExists(mappings,arguments.name) ){
+			return mappings[arguments.name];
+		}
+		else{ 
+			return arguments.name; 
+		}
+		</cfscript>
+	</cffunction>
+	
+	<!--- Locate a Model Object --->
+	<cffunction name="locateModel" access="public" returntype="string" hint="Get the location instantiation path for a model object. If the model location is not found, this method returns an empty string." output="false" >
+		<cfargument name="name" required="true"  type="string" hint="The model to locate">
+		<cfargument name="resolveAlias"  type="boolean" required="false" default="false" hint="Resolve model aliases">
+		<cfscript>
+			var checkPath = 0;
+			var checkExternalPath = 0;
+			
+			/* Resolve Alias? */
+			if( arguments.resolveAlias ){
+				arguments.name = resolveModelAlias(arguments.name);
+			}
+			
+			/* Setup Location Paths */
+			checkPath = instance.ModelsPath & "/" & replace(arguments.name,".","/","all") & ".cfc";
+			checkExternalPath = instance.ModelsExternalPath & "/" & replace(arguments.name,".","/","all") & ".cfc";
+			
+			/* Class Path Determination */
+			if( fileExists(checkPath) ){
+				return instance.ModelsInvocationPath & "." & arguments.name;
+			}
+			else if( fileExists(checkExternalPath) ){
+				return instance.ModelsExternalInvocationPath & "." & arguments.name;
+			}
+			
+			return "";
+		</cfscript>
+	</cffunction>
+	
+	<!--- Check if the model exists in a path --->
+	<cffunction name="containsModel" access="public" returntype="boolean" hint="Checks if the factory has a model object definition found" output="false" >
+		<cfargument name="name" required="true"  type="string" hint="The name of the model to check">
+		<cfargument name="resolveAlias"  type="boolean" required="false" default="false" hint="Resolve model aliases">
+		<cfscript>
+			/* Resolve Alias? */
+			if( arguments.resolveAlias ){ arguments.name = resolveModelAlias(argumens.name); }
+			/* Try to Locate */
+			if( len(locateModel(arguments.name)) ){
+				return true;
+			}
+			else{
+				return false;
+			}
+		</cfscript>
+	</cffunction>
+	
 	
 	<!--- Populate a model object from the request Collection --->
 	<cffunction name="populateModel" access="public" output="false" returntype="Any" hint="Populate a named or instantiated model (java/cfc) from the request collection items">

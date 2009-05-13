@@ -42,12 +42,19 @@ Description :
 		/* Public Properties */
 		this.persist_framework = true;
 		this.loadColdbox = true;
+		
+		/* Prepare Mocking Factory */
+		instance.mockFactory = createObject("component","coldbox.system.testing.MockFactory").init();
 	</cfscript>
 
 	<cffunction name="setup" hint="The setup method">
 		<cfscript>
-		/* Prepare Mocking Factory */
-		instance.mockFactory = createObject("component","coldbox.system.testing.MockFactory").init();
+		var appRootPath = expandPath(instance.AppMapping);
+		
+		/* Verify App Root Path */
+		if( right(appRootPath,1) neq "/" ){
+			appRootPath = appRootPath & "/";
+		}
 		/* Load ColdBox? */
 		if( this.loadColdbox ){
 			/* Check on Scope Firsty */
@@ -56,7 +63,7 @@ Description :
 			}
 			else{
 				//Initialize ColdBox
-				instance.controller = CreateObject("component", "coldbox.system.testing.TestController").init( expandPath(instance.AppMapping) );
+				instance.controller = CreateObject("component", "coldbox.system.testing.TestController").init( appRootPath );
 				/* Verify Persistence */
 				if( this.persist_framework ){
 					application.cbController = instance.controller;
@@ -76,7 +83,7 @@ Description :
 	
 	<cffunction name="tearDown" hint="The teardown" >
 		<cfscript>
-			
+			structDelete(application,"cbController");
 		</cfscript>
 	</cffunction>
 

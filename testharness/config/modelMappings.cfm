@@ -24,6 +24,6 @@ Description :
 <cfscript>
 	/* Add all the model mappings you want */
 	/* addModelMapping(alias="",path="") */
-	addModelMapping('MyFormBean','formBean');
+	addModelMapping(alias='MyFormBean',path='formBean');
 		
 </cfscript>

@@ -15,7 +15,8 @@ Description :
 		<cfscript>
 			//Setup ColdBox Mappings For this Test
 			setAppMapping("/coldbox/testharness");
-			setConfigMapping(ExpandPath(instance.AppMapping & "/config/coldbox.xml.cfm"));
+			setConfigMapping(ExpandPath("/coldbox/testing/resources/coldbox.test.xml.cfm"));
+			//reset();
 			//Call the super setup method to setup the app.
 			super.setup();
 		</cfscript>
@@ -149,5 +150,48 @@ Description :
 			AssertEquals(local.myQuery["email"][1],local.obj.getemail());
 		</cfscript>
 	</cffunction>
+	
+	<cffunction name="testLocateModel" access="public" returntype="void" output="false">
+		<cfscript>
+			bf = getController().getPlugin("BeanFactory");
+			
+			assertTrue( bf.locateModel('testService').length() );
+			
+			assertFalse( bf.locateModel('whatever').length() );
+		</cfscript>
+	</cffunction>	
+	
+	<cffunction name="testContainsModel" access="public" returntype="void" output="false">
+		<cfscript>
+		bf = getController().getPlugin("BeanFactory");
+		
+		assertFalse( bf.containsModel('Nothing') );
+		
+		assertTrue( bf.containsModel('testService') );	
+		</cfscript>
+	</cffunction>	
+	
+	<cffunction name="testResolveModelAlias" access="public" returntype="void" output="false">
+		<cfscript>
+		bf = getController().getPlugin("BeanFactory");
+		
+		assertEquals( bf.resolveModelAlias('MyFormBean'), "formBean" );
+		
+		assertEquals( bf.resolveModelAlias('HELLO'), "HELLO" );
+		
+		bf.addModelMapping(path='mypath.whateverman');
+		assertEquals( bf.resolveModelAlias('whateverman'), "mypath.whateverman" );
+		</cfscript>
+	</cffunction>
+	
+	<cffunction name="testgetModelMappings" access="public" returntype="void" output="false">
+		<cfscript>
+		bf = getController().getPlugin("BeanFactory");
+		
+		assertTrue( isStruct(bf.getModelMappings()) );
+		
+		</cfscript>
+	</cffunction>	
+	
 	
 </cfcomponent>

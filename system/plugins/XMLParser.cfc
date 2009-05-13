@@ -301,6 +301,9 @@ Modification History:
 			//Setup the Application Path
 			if( arguments.overrideAppMapping neq "" ){
 				StructInsert(ConfigStruct, "ApplicationPath", ExpandPath(arguments.overrideAppMapping));
+				if( right(ConfigStruct.ApplicationPath,1) neq "/"){
+					ConfigStruct.ApplicationPath = ConfigStruct.ApplicationPath & "/";
+				}
 			}
 			else{
 				StructInsert(ConfigStruct, "ApplicationPath", controller.getAppRootPath());

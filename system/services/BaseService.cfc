@@ -49,4 +49,8 @@ Modification History:
 		<cfset controller.getPlugin("Logger").logEntry("debug",content)>
 	</cffunction>
 	
+	<cffunction name="getLogger" access="private" returntype="coldbox.system.plugins.Logger" hint="Get a logger plugin" output="false" >
+		<cfreturn controller.getPlugin("Logger")>
+	</cffunction>
+	
 </cfcomponent>
