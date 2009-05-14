@@ -86,6 +86,7 @@ Description :
 			var key = "";
 			var cleanedPaths = getCleanedPaths();
 			var routedStruct = structnew();
+			var rc = event.getCollection();
 			
 			/* Check if active or in proxy mode */
 			if ( NOT getEnabled() OR arguments.event.isProxyRequest() )
@@ -107,7 +108,7 @@ Description :
 				/* Reserved Keys Check */
 				if( not listFindNoCase(instance.RESERVED_KEYS,key) ){
 					/* Save in RC and Routed Struct */
-					arguments.event.setValue( key, aRoute[key] );
+					rc[key] = aRoute[key];
 					routedStruct[key] = aRoute[key];
 				}
 			}
