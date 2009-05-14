@@ -13,8 +13,9 @@
         </description>
         
         <!-- set global properties for this build -->
+        <property name="dir.userlocation"	value="/Users/lmajano/Documents" />
+        <property name="dir.samples"		value="${dir.userlocation}/MyDevelopment/cboxdev/samples/coldbox/samples"/>
         <property name="src.system"						location="system" />
-        <property name="samples"                        location="samples" />
         <property name="build" 							location="tmpbuild"/>
     	<property name="dist"							location="dist" />
         
@@ -75,7 +76,7 @@
             <mkdir dir="${build}"/>
             <!-- Copy the source to build directory -->
             <copy todir="${build}">
-            	<fileset dir="${samples}">
+            	<fileset dir="${dir.samples}">
 					<exclude name="**/*.xml.cfm"/>
 				</fileset>                
             </copy>

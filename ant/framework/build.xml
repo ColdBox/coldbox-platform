@@ -13,7 +13,8 @@
 	<property name="dir.userlocation"	value="/Users/lmajano/Documents" />
 	<property name="dir.exports"		value="${dir.userlocation}/MyDocs/My Programs/exports" />
 	<property name="dir.build" 			value="${dir.exports}/coldbox" />
-	<property name="dir.dashboard"	    value="${dir.userlocation}/MyDevelopment/applications/dashboard" />
+	<property name="dir.dashboard"	    value="${dir.userlocation}/MyDevelopment/cboxdev/core/dashboard" />
+	<property name="dir.samples"		value="${dir.userlocation}/MyDevelopment/cboxdev/samples/coldbox/samples"/>
 	<property name="dir.wallpapers"		value="${dir.userlocation}/MyDocs/My Programs/OrtusSolutions/ColdBox/workbench/wallpapers/" />
 	
 	<!--External Ant Tasks-->
@@ -65,7 +66,7 @@
 		
 		<!-- Samples -->
 		<copy todir="${dir.build}/samples">
-        	<fileset dir="samples">
+			<fileset dir="${dir.samples}">
         	</fileset>
         </copy>
 		
@@ -83,11 +84,6 @@
 		<copy todir="${dir.build}/install">
 			<fileset file="system/config/license.txt" />
 			<fileset file="system/config/readme.txt" />						
-		</copy>
-		
-		<!--Copy Documents-->
-		<copy todir="${dir.build}/install/SchemaDocs">
-			<fileset dir="documents/SchemaDocs"/>
 		</copy>
 		
 		<!--Copy Wallpapers-->
