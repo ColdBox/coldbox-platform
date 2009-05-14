@@ -208,7 +208,7 @@ Description :
 				/* Alpha-Numeric */
 				else{
 					if( find(":",thisPattern) ){
-						thisRegex = "(" & REReplace(thisPattern,":(.[^-])*","[^/]");
+						thisRegex = "(" & REReplace(thisPattern,":(.[^-]*)","[^/]");
 						/* Check Digits */
 						if( find("{",thisPattern) ){
 							thisRegex = listFirst(thisRegex,"{") & "{#listLast(thisPattern,"{")#)";
