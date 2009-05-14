@@ -58,28 +58,28 @@ Description		:
 	<!--- createMock --->
 	<cffunction name="createMock" output="false" access="public" returntype="any" hint="Create a mock object or prepares an object to act as a mock">
 		<!--- ************************************************************* --->
-		<cfargument name="classNameToMock"	type="string" 	required="false" hint="The class name of the object to mock. The mock factory will instantiate it for you"/>
-		<cfargument name="objectToMock" 	type="any" 		required="false" hint="The object to mock, already instantiated"/>
+		<cfargument name="className"		type="string" 	required="false" hint="The class name of the object to mock. The mock factory will instantiate it for you"/>
+		<cfargument name="object" 			type="any" 		required="false" hint="The object to mock, already instantiated"/>
 		<cfargument name="clearMethods" 	type="boolean"  required="false" default="false" hint="If true, all methods in the target mock object will be removed. You can then mock only the methods that you want to mock"/>
 		<!--- ************************************************************* --->
 		<cfscript>
 			var obj = 0;
 			
 			/* class to mock */
-			if ( structKeyExists(arguments, "classNameToMock") ){
+			if ( structKeyExists(arguments, "className") ){
 				try{
-					obj = createObject("component",arguments.classNameToMock);
+					obj = createObject("component",arguments.className);
 				}
 				catch(Any e){	
-					throw(type="mock.invalidCFC",message="The specified CFC #arguments.classNameToMock# could not be created. Verify the CFC name and path being specified.");
+					throw(type="mock.invalidCFC",message="The specified CFC #arguments.className# could not be created. Verify the CFC name and path being specified.");
 				}
 			}
-			else if ( structKeyExists(arguments, "objectToMock") ){
+			else if ( structKeyExists(arguments, "object") ){
 				/* Object to Mock */
-				obj = arguments.objectToMock;
+				obj = arguments.object;
 			}
 			else{
-				throw(type="mock.invalidArguments",message="You need a classNameToMock or a objectToMock argument.");
+				throw(type="mock.invalidArguments",message="You need a className or an object argument.");
 			}		
 			
 			/* Clear up Mock object? */
@@ -115,6 +115,7 @@ Description		:
 		<!--- ************************************************************* --->
 		<cfscript>
 			"#arguments.propertyScope#.#arguments.propertyName#" = arguments.mockObject;
+			return this;
 		</cfscript>	
 	</cffunction>	
 	
@@ -143,6 +144,7 @@ Description		:
 					 message="No current method name set"
 					 detail="This method was probably called without chaining it to a mockMethod() call. Ex: obj.mockMethod().mockResults()">
 		</cfif>
+		<cfreturn this>
 	</cffunction>
 	
 	<!--- mockMethod --->

@@ -48,7 +48,7 @@ Modification History:
 	
 	<cffunction name="testSend">
 		<cfscript>
-			getMockFactory().createMock(objectToMock=ms);
+			getMockFactory().createMock(object=ms);
 			mockLogger = getMockFactory().createMock("coldbox.system.plugins.Logger");
 			ms.mockMethod("getLogger",mockLogger);
 			mockLogger.mockMethod("logError");
