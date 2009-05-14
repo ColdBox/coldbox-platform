@@ -28,10 +28,12 @@ Modification History:
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
 	<!--- The beans paths --->
-	<cfset variables.configBeanPath = "coldbox.system.beans.ConfigBean">
-	<cfset variables.datasourceBeanPath = "coldbox.system.beans.DatasourceBean">
-	<cfset variables.mailsettingsBeanPath = "coldbox.system.beans.MailSettingsBean">
-	<cfset variables.coldboxAppKey = "cbController">
+	<cfscript>
+		variables.configBeanPath 		= "coldbox.system.beans.ConfigBean";
+		variables.datasourceBeanPath 	= "coldbox.system.beans.DatasourceBean";
+		variables.mailsettingsBeanPath 	= "coldbox.system.beans.MailSettingsBean";
+		variables.coldboxAppKey 		= "cbController";
+	</cfscript>
 	
 	<!--- init --->
 	<cffunction name="init" output="false" access="public" returntype="ColdboxFactory">
