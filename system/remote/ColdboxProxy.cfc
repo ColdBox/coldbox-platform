@@ -212,7 +212,7 @@ Description :
 	<cffunction name="verifyColdBox" output="false" access="private" returntype="boolean" hint="Verify the coldbox app">
 		<cfscript>
 			//Verify the coldbox app is ok, else throw
-			if ( not structKeyExists(application,"cbController") ){
+			if ( not structKeyExists(application,COLDBOX_APP_KEY) ){
 				getUtil().throwit("ColdBox Controller Not Found", "The coldbox main controller has not been initialized");
 			}
 			else{
