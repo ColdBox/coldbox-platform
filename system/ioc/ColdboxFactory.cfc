@@ -39,7 +39,8 @@ Modification History:
 	<cffunction name="init" output="false" access="public" returntype="ColdboxFactory">
 		<cfargument name="COLDBOX_APP_KEY" type="string" required="false" hint="The application key to use"/>
 		
-		<cfif structKeyExists(arguments,"COLDBOX_APP_KEY")>
+		<cfif structKeyExists(arguments,"COLDBOX_APP_KEY") AND
+			  len(trim(arguments.COLDBOX_APP_KEY)) NEQ 0>
 			<!--- Setup the coldbox app Key --->
 			<cfset coldboxAppKey = arugments.COLDBOX_APP_KEY>
 		</cfif>
@@ -58,7 +59,7 @@ Modification History:
 	<cffunction name="getConfigBean" output="false" access="public" returntype="coldbox.system.beans.ConfigBean" hint="Returns an application's config bean: coldbox.system.beans.ConfigBean">
 		<cfscript>
 			var ConfigBean = CreateObject("component",configBeanPath);
-			ConfigBean.setConfigStruct(application.cbController.getSettingStructure(false,true));
+			ConfigBean.setConfigStruct(getColdbox().getSettingStructure(false,true));
 			return ConfigBean;
 		</cfscript>
 	</cffunction>
