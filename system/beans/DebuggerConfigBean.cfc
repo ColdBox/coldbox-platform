@@ -36,7 +36,16 @@ Modification History:
 		<cfargument name="memento" type="struct" required="true"/>
 		<cfset instance = arguments.memento/>
 	</cffunction>
-
+	
+	<!--- persistent tracers --->
+	<cffunction name="getPersistentTracers" access="public" output="false" returntype="boolean" hint="Get PersistentTracers">
+		<cfreturn instance.PersistentTracers/>
+	</cffunction>
+	<cffunction name="setPersistentTracers" access="public" output="false" returntype="void" hint="Set PersistentTracers">
+		<cfargument name="PersistentTracers" type="boolean" required="true"/>
+		<cfset instance.PersistentTracers = arguments.PersistentTracers/>
+	</cffunction>
+	
 	<!--- Request Profiler --->
 	<cffunction name="getPersistentRequestProfiler" access="public" output="false" returntype="boolean" hint="Get PersistentRequestProfiler">
 		<cfreturn instance.PersistentRequestProfiler/>

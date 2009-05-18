@@ -19,12 +19,14 @@ Modification History:
 	<cffunction name="init" access="public" output="false" returntype="DebuggerService" hint="Constructor">
 		<cfargument name="controller" type="any" required="true">
 		<cfscript>
-			/* Set Controller */
 			setController(arguments.controller);
 			/* set the unique cookie name */
 			setCookieName("coldbox_debugmode_#controller.getAppHash()#");
 			/* Create persistent profilers */
 			setProfilers(arrayNew(1));
+			/* Create persistent tracers */
+			setTracers(arrayNew(1));
+			
 			return this;
 		</cfscript>
 	</cffunction>
@@ -87,15 +89,22 @@ Modification History:
 	
 	<!--- Get the debug mode flag --->
 	<cffunction name="getDebugMode" access="public" hint="I Get the current user's debugmode" returntype="boolean"  output="false">
-		<cfif structKeyExists(cookie,getCookieName())>
-			<cfif isBoolean(cookie[getCookieName()])>
-				<cfreturn cookie[getCookieName()]>
-			<cfelse>
-				<cfset structDelete(cookie, getCookieName())>
-			</cfif>
-		</cfif>
-		<!--- Return default of false. --->
-		<cfreturn false>
+		<cfscript>
+			/* Check global debug Mode */
+			if( controller.getSetting('debugMode') ){
+				return true;
+			}
+			/* Check vapor cookie */
+			if( structKeyExists(cookie,getCookieName()) ){
+				if( isBoolean(cookie[getCookieName()]) ){
+					return cookie[getCookieName()];
+				}
+				else{
+					structDelete(cookie, getCookieName());
+				}
+			}
+			return false;
+		</cfscript>
 	</cffunction>
 
 	<!--- Set the debug mode flag --->
@@ -227,10 +236,14 @@ Modification History:
 		<cfscript>
 			var newRecord = structnew();
 			
+			/* Activate Check */
+			if( NOT getDebuggerConfigBean().getPersistentRequestProfiler() ){ return; }
+			
 			/* Size Check */
 			if( ArrayLen(getProfilers()) gte getDebuggerConfigBean().getmaxPersistentRequestProfilers() ){
 				popProfiler();
 			}
+			
 			/* Append the new profiler */
 			newRecord.datetime = now();
 			newRecord.ip = cgi.REMOTE_ADDR;
@@ -249,7 +262,34 @@ Modification History:
 		</cfscript>
 	</cffunction>
 	
+	<!--- Get Set Tracers --->
+	<cffunction name="getTracers" access="public" output="false" returntype="array" hint="Get Tracers">
+		<cfreturn instance.Tracers/>
+	</cffunction>
+	<cffunction name="setTracers" access="public" output="false" returntype="void" hint="Set Tracers">
+		<cfargument name="Tracers" type="array" required="true"/>
+		<cfset instance.Tracers = arguments.Tracers/>
+	</cffunction>
+	
+	<!--- Push a tracer --->
+	<cffunction name="pushTracer" access="public" returntype="void" hint="Push a new tracer" output="false" >
+		<cfargument name="message"    required="true" 	type="string" hint="Message to Send" >
+		<cfargument name="extraInfo"  required="false"  type="any" default="" hint="Extra Information to dump on the trace">
+		<cfscript>
+			var tracerEntry = StructNew();
+			
+			/* Activate Check */
+			if( NOT getDebuggerConfigBean().getPersistentTracers() ){ return; }
+			
+			/* Insert Message & Info to entry */
+			tracerEntry["message"] = arguments.message;
+			tracerEntry["ExtraInfo"] = arguments.extraInfo;
+			
+			/* Append Entry to Array */
+			ArrayAppend(getTracers(),tracerEntry);
+		</cfscript>
+	</cffunction>
+	
 <!------------------------------------------- PRIVATE ------------------------------------------->
-
 
 </cfcomponent>
