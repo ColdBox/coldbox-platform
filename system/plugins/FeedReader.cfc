@@ -5,21 +5,25 @@ www.coldboxframework.com | www.luismajano.com | www.ortussolutions.com
 ********************************************************************************
 
 Author      :	Luis Majano and Ben Garrett
-Date        :	Mar/18/2009
+Date        :	May/18/2009
 License     :	Apache 2 License
-Version     :	2 (Beta-18Mar09)
+Version     :	2
 Description :
-	A feed reader plug-in with file caching capabilities. This reader supports and has been tested with all major revisions of RDF, RSS and
-	Atom feeds.
+	A feed reader plug-in with file caching capabilities. This reader supports
+	and has been tested with all major revisions of RDF, RSS and Atom feeds.
 	
-	Feed dates such as those in ISO8601 and RFC882 formats are converted to usable ColdFusion dates. So you don't have to parse anything
-	more, just format them.
+	Feed dates such as those in ISO8601 and RFC882 formats are converted to
+	usable ColdFusion dates. So you don't have to parse anything more, just
+	format them.
 	
-	To use this plug-in you should set the following settings in your application (coldbox.xml.cfm), unless you are happy with the defaults.
+	To use this plug-in you should set the following settings in your application
+	(coldbox.xml.cfm), unless you are happy with the defaults.
 	
 Quick and Dirty Feed Dump:
-	This is not a recommended ColdBox design practise but it will give you a quick result while learning how to use this plug-in. In an
-	eventhandler file create a new event, maybe call it 'feeddump'. Then add the code, change the URL and run the event.
+	This is not a recommended ColdBox design practise but it will give you a
+	quick result while learning how to use this plug-in. In an eventhandler file
+	create a new event, maybe call it 'feeddump'. Then add the code, change the
+	URL and run the event.
 	
 	<cfset var rc = event.getCollection()>
 	<cfset rc.webfeed = getPlugin("feedReader").retrieveFeed("http://www.example.com/feeds/rss")>
@@ -27,6 +31,7 @@ Quick and Dirty Feed Dump:
 	<cfabort>
 
 ----------------------------------------------------------------------->
+
 <cfcomponent name="FeedReader" 
 			 extends="coldbox.system.plugin"
 			 hint="A feed reader plug-in. We recommend that when you call the readFeed method, that you use url's as settings. ex: readFeed(getSetting('myFeedURL')). The settings this plug-in uses are the following: FeedReader_useCache:boolean [default=true], FeedReader_cacheLocation:string, FeedReader_cacheTimeout:numeric [default=30 min], FeedReader_httpTimeout:numeric [default=30 sec]. If the cacheLocation directory does not exist, the plug-in will throw an error. So please remember to create the directory."
@@ -39,25 +44,27 @@ Quick and Dirty Feed Dump:
 		<cfscript>
 			var cacheLocation = "";
 			var slash = "";
-			
+
 			/* Super */
 			super.Init(arguments.controller);
-			
+
 			/* Plug-in Properties */
 			setpluginName("FeedReader");
 			setpluginVersion("2.0");
 			setpluginDescription("I am a feed reader for rdf, rss and atom feeds.");
-			
+			setpluginAuthor("Ben Garrett");
+			setpluginAuthorURL("http://www.coldbox.org");
+
 			/* Check if using cache and set useCache setting */
 			if( not settingExists('FeedReader_useCache') or not isBoolean(getSetting('FeedReader_useCache')) ){
 				setUseCache(true);
 			}else{
 				setUseCache(getSetting('FeedReader_useCache'));
 			}
-			
+
 			/* Setup caching variables if enabled */
 			if( getUseCache() ){	
-				
+
 				/* RAM caching used by default */
 				if( not settingExists('FeedReader_cacheType') or not reFindNoCase("^(ram|file)$",getSetting('FeedReader_cacheType')) ){
 					setCacheType('ram');
@@ -65,7 +72,7 @@ Quick and Dirty Feed Dump:
 				else{
 					setCacheType(getSetting('FeedReader_cacheType'));
 				}
-				
+
 				/* File caching */
 				if( getCacheType() eq "file" ){
 					/* Cache prefix */
@@ -89,7 +96,7 @@ Quick and Dirty Feed Dump:
 				else{
 					/* RAM cache */
 					setCachePrefix('rssreader-');
-				}		
+				}
 				
 				/* Cache timeout */
 				if( not settingExists('FeedReader_cacheTimeout') ){
@@ -99,7 +106,7 @@ Quick and Dirty Feed Dump:
 					setCacheTimeout(getSetting('FeedReader_cacheTimeout'));
 				}
 			}//end else using cache
-			
+
 			/* HTTP timeout */
 			if( not settingExists('FeedReader_httpTimeout') ){
 				sethttpTimeout(30);
@@ -107,22 +114,22 @@ Quick and Dirty Feed Dump:
 			else{
 				sethttpTimeout(getSetting('FeedReader_httpTimeout'));
 			}
-			
+
 			/* Set the lock name */
 			setLockName('FeedReaderCacheOperation');
-			
+
 			/* Return instance */
 			return this;
 		</cfscript>
 	</cffunction>
 
 <!---------------------------------------- INTERNAL CACHE OPERATIONS --------------------------------------------------->
-	
+
 	<!--- flushCache --->
 	<cffunction name="flushCache" output="false" access="public" returntype="void" hint="Flushes the entire file cache by removing all the entries">
 		<cfset var qFiles = "">
 		<cfset var slash = getSetting("OSFileSeparator",true)>
-		
+
 		<cfif getCacheType() eq "ram">
 			<cfset getColdboxOCM().clearByKeySnippet(getCachePrefix)>
 		<cfelse>
@@ -137,7 +144,7 @@ Quick and Dirty Feed Dump:
 			</cflock>
 		</cfif>
 	</cffunction>
-	
+
 	<!--- How many elements in cache --->
 	<cffunction name="getCacheSize" output="false" access="public" returntype="numeric" hint="Returns the number of elements in the cache directory (only used for file caching)">
 		<cfset var size = 0>
@@ -146,7 +153,7 @@ Quick and Dirty Feed Dump:
 		</cflock>
 		<cfreturn size>
 	</cffunction>
-			
+
 	<!--- Lookup cache element, also timeout if needed --->
 	<cffunction name="isFeedCached" output="false" access="public" returntype="boolean" hint="Checks if a feed is cached or not">
 		<!--- ******************************************************************************** --->
@@ -168,7 +175,7 @@ Quick and Dirty Feed Dump:
 		
 		<cfreturn results>
 	</cffunction>
-	
+
 	<!--- Checks if the feed has expired or not --->
 	<cffunction name="isFeedExpired" output="false" access="public" returntype="boolean" hint="Checks if a feed has expired or not. If the feed does not exist an error will be thrown.">
 		<!--- ******************************************************************************** --->
@@ -176,7 +183,7 @@ Quick and Dirty Feed Dump:
 		<!--- ******************************************************************************** --->
 		<cfset var results = false>
 		<cfset var qFile = "">
-		
+
 		<cfif getCacheType() eq "ram">
 			<cfreturn getColdboxOCM().lookup(URLToCacheKey(arguments.feedURL))>
 		<cfelse>
@@ -194,10 +201,10 @@ Quick and Dirty Feed Dump:
 				<cfset results = true>					
 			</cfif>	
 		</cfif>
-		
+
 		<cfreturn results>
 	</cffunction>
-	
+
 	<!--- Checks if the feed has expired or not --->
 	<cffunction name="expireCachedFeed" output="false" access="public" returntype="void" hint="If the feed exists and it has expired, it removes it other it does nothing">
 		<!--- ******************************************************************************** --->
@@ -206,7 +213,7 @@ Quick and Dirty Feed Dump:
 		<cfscript>
 			var results = false;
 			var qFile = "";
-			
+
 			/* only expire if using file cache, ram is done by CB */
 			if( getCacheType() eq "file"){
 				qFile = readCacheDir(filter=URLToCacheKey(arguments.feedURL));
@@ -217,7 +224,7 @@ Quick and Dirty Feed Dump:
 			}
 		</cfscript>
 	</cffunction>
-	
+
 	<!--- flushCache --->
 	<cffunction name="removeCachedFeed" output="false" access="public" returntype="boolean" hint="Purges a feed from the cache, returns false if feed is not found">
 		<!--- ******************************************************************************** --->
@@ -225,7 +232,7 @@ Quick and Dirty Feed Dump:
 		<!--- ******************************************************************************** --->
 		<cfset var results = false>
 		<cfset var cacheFile = "">
-		
+
 		<cfif getCacheType() eq "ram">
 			<cfreturn getColdboxOCM().clearKey(URLToCacheKey(arguments.feedURL))>
 		<cfelse>
@@ -241,10 +248,10 @@ Quick and Dirty Feed Dump:
 				</cfif>
 			</cflock>
 		</cfif>
-		
+
 		<cfreturn results>
 	</cffunction>
-	
+
 	<!--- Get Feed From Cache --->
 	<cffunction name="getCachedFeed" output="false" access="public" returntype="any" hint="Get the feed content from the cache, if missing a blank structure is returned. This method does NOT timeout or expire the feeds that is only done by the readFeed method.">
 		<!--- ******************************************************************************** --->
@@ -272,10 +279,10 @@ Quick and Dirty Feed Dump:
 				</cfif>
 			</cflock>
 		</cfif>
-		
+
 		<cfreturn results>
 	</cffunction>
-	
+
 	<!--- Copy feed to the cache --->
 	<cffunction name="setCachedFeed" output="false" access="public" returntype="void" hint="Copy feed content into the cache">
 		<!--- ******************************************************************************** --->
@@ -286,7 +293,7 @@ Quick and Dirty Feed Dump:
 		<cfset var cacheFile = "">
 		<cfset var fileOut = "">
 		<cfset var objectOut = "">
-		
+
 		<cfif getCacheType() eq "ram">
 			<cfset getColdboxOCM().set(cacheKey, feedStruct, getCacheTimeout())>
 		<cfelse>
@@ -304,9 +311,9 @@ Quick and Dirty Feed Dump:
 			</cflock>
 		</cfif>
 	</cffunction>
-	
+
 <!---------------------------------------- PUBLIC FEED METHODS --------------------------------------------------->
-	
+
 	<cffunction name="readFeed" access="public" returntype="struct" hint="Read a feed sourced from HTTP or from cache. Return a universal structure representation of the feed.">
 		<!--- ******************************************************************************** --->
 		<cfargument name="feedURL" 		type="string"  required="yes" hint="The feed url to parse or retrieve from cache">
@@ -323,7 +330,7 @@ Quick and Dirty Feed Dump:
 			if( not reFindnocase("^(query|array)$",arguments.itemsType) ){
 				arguments.itemsType = "array";
 			}
-			
+
 			/* Try to expire a feed, custom reap */
 			expireCachedFeed(arguments.feedURL);
 			/* Check if its still cached */
@@ -336,7 +343,7 @@ Quick and Dirty Feed Dump:
 				/* Set in cache */
 				setCachedFeed(arguments.feedURL,FeedStruct);
 			}
-			
+
 			/* Return feed */
 			return FeedStruct;
 		</cfscript>
@@ -352,18 +359,18 @@ Quick and Dirty Feed Dump:
 		<!--- ******************************************************************************** --->
 		<cfset var xmlDoc = "">
 		<cfset var feedResult = structnew()>
-		
+
 		<!--- Check for return type --->
 		<cfif not reFindnocase("^(query|array)$",arguments.itemsType)>
 			<cfset arguments.itemsType = "query">
 		</cfif>
-			
+
 		<!--- Replace protocols --->
 		<cfset arguments.feedURL = ReplaceNoCase(arguments.feedURL,"feed://","http://")>
 
 		<!--- Retrieve feed --->
 		<cfhttp method="get" url="#arguments.feedURL#" 
-    		charset="utf-8"
+			charset="utf-8"
 				resolveurl="yes" 
 				redirect="yes" 
 				timeout="#gethttpTimeout()#" 
@@ -383,14 +390,14 @@ Quick and Dirty Feed Dump:
 						 detail="The returned cfhttp content is: <pre>#XMLFormat(feedResult.fileContent.toString())#</pre>">
 			</cfcatch>
 		</cftry>
-		
+
 		<!--- Validate to see if it is a Atom or RSS/RDF feed --->
 		<cfif not structKeyExists(xmlDoc,"rss") and not structKeyExists(xmlDoc,"feed") and not structKeyExists(xmlDoc,"rdf:RDF")>
 			<cfthrow type="plugins.FeedReader.FeedParsingException"
 					 message="Cannot continue parsing the feed since it does not seem to be a valid RSS, RDF or Atom feed. Please verify that the feed is correct and valid"
 					 detail="The XML document is: #htmlEditFormat(toString(xmlDoc))#">
 		</cfif>
-		
+
 		<!--- Return a universal parsed structure --->
 		<cfreturn parseFeed(xmlDoc,arguments.itemsType,arguments.maxItems)>
 	</cffunction>
@@ -406,7 +413,7 @@ Quick and Dirty Feed Dump:
 				return false;
 		</cfscript>
 	</cffunction>
-	
+
 	<!--- ******************************************************************************** --->
 
 	<cffunction name="parseFeed" access="public" returntype="struct" hint="This parses a feed as a XML document and returns the results as a structure of elements">
@@ -417,17 +424,17 @@ Quick and Dirty Feed Dump:
 		<!--- ******************************************************************************** --->
 		<cfset var feed = StructNew()>
 		<cfset var x = 1>
-    <cfset var loop = "">
-    <cfset var merge = "">
-    <cfset var xmlrootkey = "">
+		<cfset var loop = "">
+		<cfset var merge = "">
+		<cfset var xmlrootkey = "">
 		<cfset var oUtilities = getPlugin("Utilities")>
 
 		<cfscript>
-		  // check to make sure arguments.xmlDoc is a XML document, not just a URL or path pointing to a feed
+			// check to make sure arguments.xmlDoc is a XML document, not just a URL or path pointing to a feed
 			if( not IsXML(arguments.xmlDoc) ) {
 				throw('There is a problem with the xmlDoc provided with the parseFeed method, it is not a variable containing a valid xml document','The xmlDoc contains: #htmlEditFormat(toString(arguments.xmlDoc))#','plugins.FeedReader.FeedParsingException');
 			}
-			// set feed type structure		
+			// set feed type structure
 			feed.specs = StructNew();
 			feed.specs.extensions = "";
 			feed.specs.generator = "";
@@ -593,7 +600,7 @@ Quick and Dirty Feed Dump:
 					for(x=1; x lte listLen(loop); x=x+1){
 						feed.category[x] = StructNew();
 						feed.category[x].tag = listGetAt(loop,x);
-					}					
+					}
 				}
 				// Apple iTunes category
 				if(StructKeyExists(xmlDoc.xmlRoot.channel,"itunes:category")){
@@ -778,9 +785,9 @@ Quick and Dirty Feed Dump:
 			return feed;
 		</cfscript>
 	</cffunction>
-	
+
 <!---------------------------------------- PRIVATE --------------------------------------------------->
-	
+
 	<!--- Parse Atom Items --->
 	<cffunction name="parseAtomItems" access="private" returntype="any" hint="Parse the items an return an array of structures" output="false" >
 		<!--- ******************************************************************************** --->
@@ -816,7 +823,7 @@ Quick and Dirty Feed Dump:
 				node.attachment = ArrayNew(1);	
 				node.author = "";
 				node.body = "";
-				node.category = ArrayNew(1);	
+				node.category = ArrayNew(1);
 				node.comments = StructNew();
 				node.comments.count = "";
 				node.comments.hit_parade = "";
@@ -824,8 +831,8 @@ Quick and Dirty Feed Dump:
 				node.datepublished = "";
 				node.dateupdated = "";
 				node.id = "";
-				node.rights = "";	
-				node.title = "";	
+				node.rights = "";
+				node.title = "";
 				node.url = "";
 				/* Author */
 				node.author = findAuthor(items[x]);
@@ -895,14 +902,14 @@ Quick and Dirty Feed Dump:
 					QuerySetCell(rtnItems, "rights", node.rights);
 					QuerySetCell(rtnItems, "title", node.title);
 					QuerySetCell(rtnItems, "url", node.url);
-				}	
+				}
 			}
 			/* Return items */
 			return rtnItems;
 		</cfscript>
 	</cffunction>
-  
-  <!--- Parse rss/rdf items --->
+
+	<!--- Parse rss/rdf items --->
 	<cffunction name="parseRSSItems" access="private" returntype="any" hint="Parse the items an return an array of structures" output="false" >
 		<!--- ******************************************************************************** --->
 		<cfargument name="items" 		type="any" 		required="true" hint="The xml of items">
@@ -917,18 +924,18 @@ Quick and Dirty Feed Dump:
 			var loop = "";
 			var merge = "";
 			var oUtilities = getPlugin("Utilities");
-			
+
 			/* Itemslength */
 			if( arguments.maxItems neq 0 and arguments.maxItems lt itemLength ){
 				itemLength = arguments.maxItems;
 			}
-			
+
 			/* Correct return items type */
 			if( arguments.itemsType eq "array")
 				rtnItems = ArrayNew(1);
 			else
 				rtnItems = QueryNew("attachment,author,category,comments,body,datepublished,dateupdated,id,rights,title,url");
-				
+
 			/* Loop and add to array */
 			for(x=1; x lte itemLength; x=x + 1){
 				/* new node */
@@ -949,7 +956,7 @@ Quick and Dirty Feed Dump:
 				node.rights = "";	
 				node.title = "";	
 				node.url = "";
-				
+
 				/* Attachments (MediaRSS media content) */
 				node.attachment = findMediaContent(items[x],node.attachment);
 				/* Attachments aka enclosures */
@@ -1047,7 +1054,7 @@ Quick and Dirty Feed Dump:
 					/* Append to array */
 					ArrayAppend(rtnItems,node);
 				}
-				
+
 				else{
 					QueryAddRow(rtnItems,1);
 					if( arrayLen(node.attachment) ) QuerySetCell(rtnItems, "attachment", node.attachment[1].url);
@@ -1064,13 +1071,13 @@ Quick and Dirty Feed Dump:
 					QuerySetCell(rtnItems, "title", node.title);
 					QuerySetCell(rtnItems, "url", node.url);
 				}
-						
+
 			}//end of for loop 	
 		/* Return items */
 		return rtnItems;
 		</cfscript>
 	</cffunction>
-	
+
 	<!--- readCacheDir --->
 	<cffunction name="readCacheDir" output="false" access="private" returntype="query" hint="Read the cahe directory using a filter">
 		<!--- ******************************************************************************** --->
@@ -1081,7 +1088,7 @@ Quick and Dirty Feed Dump:
 		<cfdirectory directory="#getCacheLocation()#" action="list" name="qFiles" filter="#arguments.filter#.xml">
 		<cfreturn qFiles>
 	</cffunction>
-	
+
 	<!--- URL to cache key --->
 	<cffunction name="URLToCacheKey" output="false" access="private" returntype="string" hint="Convert a url to a cache key representation">
 		<!--- ******************************************************************************** --->
@@ -1096,10 +1103,10 @@ Quick and Dirty Feed Dump:
 			}
 		</cfscript>
 	</cffunction>
-	
+
 	<!--- Normalize an Atom text construct --->
 	<cffunction name="normalizeAtomTextConstruct" access="private" output="false" returntype="string" hint="Send an element and it will return the appropriate text construct">
-  		<cfargument name="entity" required="true" hint="The XML construct" />
+		<cfargument name="entity" required="true" hint="The XML construct" />
 		<cfscript>
 			var results = "";
 			var x = 1;
@@ -1125,16 +1132,16 @@ Quick and Dirty Feed Dump:
 			return results;
 		</cfscript>
 	</cffunction>
-  
-  <!--- Create User-Agent --->
-  <cffunction name="createUserAgent" access="private" output="false" returntype="string" hint="Creates a ColdBox user agent used in HTTP requests">
-  	<cfscript>
+
+	<!--- Create User-Agent --->
+	<cffunction name="createUserAgent" access="private" output="false" returntype="string" hint="Creates a ColdBox user agent used in HTTP requests">
+		<cfscript>
 			var ua = "ColdBox/";
 			ua = ua & getSetting("version",1); // ColdBox version
 			ua = ua & ' (#server.coldfusion.productname# #server.coldfusion.productversion#;#getPlugin('utilities').getOSName()#)'; // CFML engine and operating system
 			return ua;
 		</cfscript>
-  </cffunction>
+	</cffunction>
 	
 	<!--- Get Author --->
 	<cffunction name="findAuthor" access="private" output="false" returntype="string" hint="Parse an item and find an author">
@@ -1166,7 +1173,7 @@ Quick and Dirty Feed Dump:
 	<cffunction name="findCategory" access="private" output="false" returntype="array" hint="Parse an item and find a categories">
 		<!--- ******************************************************************************** --->
 		<cfargument name="itemRoot" type="xml" required="true" hint="The item to look in"/>
-    <cfargument name="categorynode" type="array" required="true" hint="Existing category to merge with categories"/>
+		<cfargument name="categorynode" type="array" required="true" hint="Existing category to merge with categories"/>
 		<!--- ******************************************************************************** --->
 		<cfscript>
 			var item = arguments.itemRoot;
@@ -1253,15 +1260,15 @@ Quick and Dirty Feed Dump:
 				}
 			}
 			path = "";
-			return categoryCol;			
+			return categoryCol;
 		</cfscript>
 	</cffunction> 
-  
+
 	<!--- Get Comments --->
 	<cffunction name="findComments" access="private" output="false" returntype="struct" hint="Parse an item and find comments">
 		<!--- ******************************************************************************** --->
 		<cfargument name="itemRoot" type="xml" required="true" hint="The item to look in"/>
-    <cfargument name="commentsnode" type="struct" required="true" hint="Existing comments structure to be updated"/>
+		<cfargument name="commentsnode" type="struct" required="true" hint="Existing comments structure to be updated"/>
 		<!--- ******************************************************************************** --->
 		<cfscript>
 			var item = arguments.itemRoot;
@@ -1282,7 +1289,7 @@ Quick and Dirty Feed Dump:
 	<cffunction name="findMediaContent" access="private" output="false" returntype="array" hint="Parse an item and find media content">
 		<!--- ******************************************************************************** --->
 		<cfargument name="itemRoot" type="xml" required="true" hint="The item to look in"/>
-    <cfargument name="attachmentnode" type="array" required="true" hint="Existing attachments to merge with media content"/>
+		<cfargument name="attachmentnode" type="array" required="true" hint="Existing attachments to merge with media content"/>
 		<!--- ******************************************************************************** --->
 		<cfscript>
 			var item = arguments.itemRoot;
@@ -1318,7 +1325,7 @@ Quick and Dirty Feed Dump:
 			return attachmentCol;
 		</cfscript>
 	</cffunction> 
-  
+
 	<!--- Get Created Date --->
 	<cffunction name="findCreatedDate" access="private" output="false" returntype="string" hint="Parse the document to find a created date">
 		<!--- ******************************************************************************** --->
@@ -1335,13 +1342,13 @@ Quick and Dirty Feed Dump:
 			return createdDate;
 		</cfscript>
 	</cffunction>
-  
-  <!--- Get Keywords --->
+
+	<!--- Get Keywords --->
 	<cffunction name="findKeywords" access="private" returntype="string" output="false" hint="Parse an item's category array and find keywords">
 		<!--- ******************************************************************************** --->
 		<cfargument name="categoryRoot" type="array" required="true" hint="The category root to look in"/>
 		<!--- ******************************************************************************** --->
-    <cfscript>
+		<cfscript>
 			var catList = "";
 			var elem = "";
 			var i = "";
@@ -1357,21 +1364,21 @@ Quick and Dirty Feed Dump:
 			}
 		</cfscript>
 		<!--- Remove duplicate items --->
-    <cfloop list="#catList#" index="elem">
-      <cfset set[elem] = "">
-    </cfloop>
+		<cfloop list="#catList#" index="elem">
+			<cfset set[elem] = "">
+		</cfloop>
 		<!--- Convert the set back to a list --->
-    <cfset catList = StructKeyList(set)>
-    <cfset catList = ListSort(catList, 'textnocase')/>
-    <!--- Return value --->
-    <cfreturn catList>
-  </cffunction>
-	
+		<cfset catList = StructKeyList(set)>
+		<cfset catList = ListSort(catList, 'textnocase')/>
+		<!--- Return value --->
+		<cfreturn catList>
+	</cffunction>
+
 	<!--- Get Thumbnail --->
 	<cffunction name="findThumbnails" access="private" output="false" returntype="array" hint="Parse an item and find thumbnails">
 		<!--- ******************************************************************************** --->
 		<cfargument name="itemRoot" type="xml" required="true" hint="The item to look in"/>
-    <cfargument name="attachmentnode" type="array" required="true" hint="Existing attachments to merge with thumbnails"/>
+		<cfargument name="attachmentnode" type="array" required="true" hint="Existing attachments to merge with thumbnails"/>
 		<!--- ******************************************************************************** --->
 		<cfscript>
 			var item = arguments.itemRoot;
@@ -1395,7 +1402,7 @@ Quick and Dirty Feed Dump:
 			return attachmentCol;
 		</cfscript>
 	</cffunction>
-  
+
 	<!--- Get Updated Date --->
 	<cffunction name="findUpdatedDate" access="private" output="false" returntype="string" hint="Parse the document and find a updated date">
 		<!--- ******************************************************************************** --->
@@ -1411,13 +1418,13 @@ Quick and Dirty Feed Dump:
 				updatedDate = arguments.xmlRoot["dc:date"].xmlText;
 			// atom 1
 			else if(StructKeyExists(arguments.xmlRoot,"published"))
-				updatedDate = arguments.xmlRoot.published.xmlText;	
+				updatedDate = arguments.xmlRoot.published.xmlText;
 			else if(StructKeyExists(arguments.xmlRoot,"updated"))
-				updatedDate = arguments.xmlRoot.updated.xmlText;	
+				updatedDate = arguments.xmlRoot.updated.xmlText;
 			return updatedDate;
 		</cfscript>
 	</cffunction>
-	
+
 	<!--- GET/SET Lock Name --->
 	<cffunction name="getlockName" access="private" returntype="string" output="false" >
 		<cfreturn instance.lockName>
@@ -1464,7 +1471,7 @@ Quick and Dirty Feed Dump:
 		<cfargument name="useCache" type="boolean" required="true">
 		<cfset instance.useCache = arguments.useCache>
 	</cffunction>
-	
+
 	<!--- Get/Set cache Type --->
 	<cffunction name="getcacheType" access="public" returntype="string" output="false">
 		<cfreturn instance.cacheType>
@@ -1473,7 +1480,7 @@ Quick and Dirty Feed Dump:
 		<cfargument name="cacheType" type="string" required="true">
 		<cfset instance.cacheType = arguments.cacheType>
 	</cffunction>
-	
+
 	<!--- Get/set cache prefix. --->
 	<cffunction name="getcachePrefix" access="public" returntype="string" output="false">
 		<cfreturn instance.cachePrefix>
@@ -1482,5 +1489,5 @@ Quick and Dirty Feed Dump:
 		<cfargument name="cachePrefix" type="string" required="true">
 		<cfset instance.cachePrefix = arguments.cachePrefix>
 	</cffunction>
-		
+
 </cfcomponent>
