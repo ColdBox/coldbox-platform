@@ -5,8 +5,8 @@ www.coldboxframework.com | www.luismajano.com | www.ortussolutions.com
 ********************************************************************************
 
 Author      :	Ben Garrett and Luis Majano
-Date        :	18/03/2009
-Version     :	2 (beta 18Mar09)
+Date        :	18/05/2009
+Version     :	2 (beta 18May09)
 License		: 	Apache 2 License
 Description :
 	This is a feed generator. It is able to output RSS 2.0 feeds
@@ -44,18 +44,17 @@ METHODS:
 		<cfscript>
 			/* Super */
 			super.Init(arguments.controller);
-			
+
 			/* Plug-in properties */
 			setpluginName("ColdBox RSS 2.0.10 Feed Generator");
-			setpluginVersion("2.0 18Mar09 BETA");
+			setpluginVersion("2.0");
 			setpluginDescription("I create Really Simple Syndication (RSS revision 2.0.10) feeds that also allow a variety of popular RSS extensions.");
-						
 			/* Validation values */
 			instance.dublinCoreTerms 	= "contributor,coverage,creator,date,description,format,identifier,language,publisher,relation,rights,source,subject,title,type"; // dublin core metadata element set, version 1.1
 			instance.cloudProtocols 	= 'xml-rpc,soap'; // allowed rss cloud protocols
 			instance.imageExtensions 	= "png,gif,jpg,jpeg,jpe,jif,jfif,jfi"; // valid image file extensions for rss image
-			instance.imageHeight 			= 400; // maximum image height for rss image
-			instance.imageWidth 			= 144; // maximum image width for rss image
+			instance.imageHeight 		= 400; // maximum image height for rss image
+			instance.imageWidth 		= 144; // maximum image width for rss image
 			instance.itunesCategory 	= structNew(); // apple itunes categories collection
 			instance.itunesCategory["Arts"] = "Design,Fashion & Beauty,Food,Literature,Performing Arts,Visual Arts";
 			instance.itunesCategory["Business"] = "Business News,Careers,Investing,Management & Marketing,Shopping";
@@ -74,21 +73,20 @@ METHODS:
 			instance.itunesCategory["Technology"] = "Gadgets,Tech News,Podcasting,Software How-To";
 			instance.itunesCategory["TV & Film"] = "";
 			instance.itunesExplicit		= "yes,no,clean"; // allowed values for itunes explicit
-			instance.itunesImage 			= "png,jpg"; // allowed image file extensions for itunes image
+			instance.itunesImage 		= "png,jpg"; // allowed image file extensions for itunes image
 			instance.itunesKeywords 	= 12; // maximum list of items for itunes keywords
 			instance.itunesSummary 		= 4000; // maximum characters allowed in itunes summary
-			instance.opensearchRole		=	"request,example,related,correction,subset,superset"; // allowed opensearch query roles
-			instance.opensearchTitle	=	256; // maxium characters allowed in opensearch query title
+			instance.opensearchRole		= "request,example,related,correction,subset,superset"; // allowed opensearch query roles
+			instance.opensearchTitle	= 256; // maxium characters allowed in opensearch query title
 			instance.requiredItems		= "title,link,description"; // required rss elements
-			instance.skipDays					=	"Monday,Tuesday,Wednesday,Thursday,Friday,Saturday,Sunday"; // valid days allowed for rss skipDays
+			instance.skipDays			= "Monday,Tuesday,Wednesday,Thursday,Friday,Saturday,Sunday"; // valid days allowed for rss skipDays
 			instance.topLevelDomains	= "AC,AD,AEAERO,AF,AG,AI,AL,AM,AN,AO,AQ,AR,ARPA,AS,ASIA,AT,AU,AW,AX,AZ,BA,BB,BD,BE,BF,BG,BH,BI,BIZ,BJ,BM,BN,BO,BR,BS,BT,BV,BW,BY,BZ,CA,CAT,CC,CD,CF,CG,CH,CI,CK,CL,CM,CN,CO,COM,COOP,CR,CU,CV,CX,CY,CZ,DE,DJ,DK,DM,DO,DZ,EC,EDU,EE,EG,ER,ES,ET,EU,FI,FJ,FK,FM,FO,FR,GA,GB,GD,GE,GF,GG,GH,GI,GL,GM,GN,GOV,GP,GQ,GR,GS,GT,GU,GW,GY,HK,HM,HN,HR,HT,HU,ID,IE,IL,IM,IN,INFO,INT,IO,IQ,IR,IS,IT,JE,JM,JO,JOBS,JP,KE,KG,KH,KI,KM,KN,KP,KR,KW,KY,KZ,LA,LB,LC,LI,LK,LR,LS,LT,LU,LV,LY,MA,MC,MD,ME,MG,MH,MIL,MK,ML,MM,MN,MO,MOBI,MP,MQ,MR,MS,MT,MU,MUSEUM,MV,MW,MX,MY,MZ,NA,NAME,NC,NE,NET,NF,NG,NI,NL,NO,NP,NR,NU,NZ,OM,ORG,PA,PE,PF,PG,PH,PK,PL,PM,PN,PR,PRO,PS,PT,PW,PY,QA,RE,RO,RS,RU,RW,SA,SB,SC,SD,SE,SG,SH,SI,SJ,SK,SL,SM,SN,SO,SR,ST,SU,SV,SY,SZ,TC,TD,TEL,TF,TG,TH,TJ,TK,TL,TM,TN,TO,TP,TR,TRAVEL,TT,TV,TW,TZ,UA,UG,UK,US,UY,UZ,VA,VC,VE,VG,VI,VN,VU,WF,WS,XN--0ZWM56D,XN--11B5BS3A9AJ6G,XN--80AKHBYKNJ4F,XN--9T4B11YI5A,XN--DEBA0AD,XN--G6W251D,XN--HGBK6AJ7F53BBA,XN--HLCJ6AYA9ESC7A,XN--JXALPDLP,XN--KGBECHTV,XN--ZCKZAH,YE,YT,YU,ZA,ZM,ZW"; // List of top level domains (used for URL validation)
-			
 			/* Specification references */
 			instance.SpecApple 	= "http://www.apple.com/itunes/whatson/podcasts/specs.html##";
-			instance.SpecCFML		= "http://cfquickdocs.com/";
-			instance.SpecDcmi		= "http://dublincore.org/documents/dcmi-terms/";
-			instance.SpecOS 		= "http://www.opensearch.org/Specifications/OpenSearch/1.1##";
-			instance.SpecRss 		= "http://www.rssboard.org/rss-specification";
+			instance.SpecCFML	= "http://cfquickdocs.com/";
+			instance.SpecDcmi	= "http://dublincore.org/documents/dcmi-terms/";
+			instance.SpecOS 	= "http://www.opensearch.org/Specifications/OpenSearch/1.1##";
+			instance.SpecRss 	= "http://www.rssboard.org/rss-specification";
 			instance.SpecRssEC 	= "http://www.rssboard.org/rss-profile##element-channel-";
 			instance.SpecRssNS 	= "http://www.rssboard.org/rss-profile##namespace-elements-";
 			instance.SpecSlash	= "http://web.resource.org/rss/1.0/modules/slash/";
@@ -105,7 +103,7 @@ METHODS:
 		<cfargument name="feedStruct" 	type="struct" required="yes" hint="The structure used to build a feed">
 		<cfargument name="ColumnMap" 	type="struct" default="#structNew()#" hint="The column mapper to wire items to queries"/>
 		<cfargument name="OutputFile" 	type="string" required="false" hint="The file destination of where to store the generated XML"/>
-    	<cfargument name="OutputXML"	type="boolean" default="false" hint="Toggle to display the XML output on-screen"/>
+		<cfargument name="OutputXML"	type="boolean" default="false" hint="Toggle to display the XML output on-screen"/>
 		<!--- ******************************************************************************** --->
 		<cfscript>
 			var fs = arguments.feedStruct;
@@ -115,220 +113,213 @@ METHODS:
 			var i = 0;
 			var j = 0;
 			var container = "";
-		
 			/* Verify our structure */
 			verifyFeed(fs,cm);
-			
 		</cfscript>   
 
 		<!--- Create our Metadata XML --->   
 		<cfxml variable="xmlContent">
 		<cfoutput><?xml version="1.0" encoding="utf-8"?>
 		<rss #generateNameSpace(cm,fs)#>
-			<channel>
-   			 	<!--- Optional Atom link --->
-    			<cfif structKeyExists(fs,"atomSelfLink")><atom:link href="#URLFormat(fs['atomSelfLink'])#" rel="self" type="application/rss+xml"/></cfif>
-       		<!--- Required RSS tags, description, link, title --->
-			    <description>#RSSFormat(fs["description"],true)#</description>
-			    <link>#URLFormat(fs["link"])#</link>
-			    <title>#RSSFormat(fs["title"])#</title>
-          <cfif structKeyExists(fs,"opensearch")>
-						<!--- Optional OpenSearch 1.1 (draft 3) total results --->
-            <cfif structKeyExists(fs.opensearch,"totalresults")><opensearch:totalResults>#RSSFormat(fs.opensearch["totalresults"])#</opensearch:totalResults></cfif>
-            <!--- Optional OpenSearch 1.1 (draft 3) start index --->
-            <cfif structKeyExists(fs.opensearch,"startindex")><opensearch:startIndex>#RSSFormat(fs.opensearch["startindex"])#</opensearch:startIndex></cfif>
-            <!--- Optional OpenSearch 1.1 (draft 3) items per page --->
-            <cfif structKeyExists(fs.opensearch,"itemsperpage")><opensearch:itemsPerPage>#RSSFormat(fs.opensearch["itemsperpage"])#</opensearch:itemsPerPage></cfif>
-            <!--- Optional OpenSearch 1.1 (draft 3) Atom search link --->
-            <cfif structKeyExists(fs.opensearch,"autodiscovery")><atom:link href="#URLFormat(fs.opensearch['autodiscovery'])#" rel="search" type="application/opensearchdescription+xml" title="Content Search"/></cfif>
-            <!--- Optional OpenSearch 1.1 (draft 3) query --->
-            <cfif structKeyExists(fs,"opensearchQuery") and isArray(fs.opensearchQuery)>
-            <cfloop from="1" to="#arrayLen(fs.opensearchQuery)#" index="i">
-            <opensearch:Query 
-            role="#RSSFormat(fs.opensearchQuery[i]["role"])#"
-            <cfif structKeyExists(fs.opensearchQuery[i],"title")> title="#RSSFormat(fs.opensearchQuery[i]['title'])#"</cfif>
-            <cfif structKeyExists(fs.opensearchQuery[i],"totalResults ")> totalResults="#RSSFormat(fs.opensearchQuery[i]['totalResults '])#"</cfif>
-            <cfif structKeyExists(fs.opensearchQuery[i],"searchTerms")> searchTerms="#URLFormat(fs.opensearchQuery[i]['searchTerms'])#"</cfif>
-            <cfif structKeyExists(fs.opensearchQuery[i],"count")> count="#RSSFormat(fs.opensearchQuery[i]['count'])#"</cfif>
-            <cfif structKeyExists(fs.opensearchQuery[i],"startIndex")> startIndex="#RSSFormat(fs.opensearchQuery[i]['startIndex'])#"</cfif>
-            <cfif structKeyExists(fs.opensearchQuery[i],"startPage")> startPage="#RSSFormat(fs.opensearchQuery[i]['startPage'])#"</cfif>
-            <cfif structKeyExists(fs.opensearchQuery[i],"language")> language="#RSSFormat(fs.opensearchQuery[i]['language'])#"</cfif>
-            <cfif structKeyExists(fs.opensearchQuery[i],"inputEncoding")> inputEncoding="#RSSFormat(fs.opensearchQuery[i]['inputEncoding'])#"</cfif>
-            <cfif structKeyExists(fs.opensearchQuery[i],"outputEncoding")> outputEncoding="#RSSFormat(fs.opensearchQuery[i]['outputEncoding'])#"</cfif>
-            />
-            </cfloop>
-            </cfif>
-          </cfif>
-          <!--- Optional category --->
-          <cfif structKeyExists(fs,"category") and isArray(fs.category)>
-						<cfloop from="1" to="#arrayLen(fs.category)#" index="i">
-            	<cfif structKeyExists(fs.category[i],"domain") and structKeyExists(fs.category[i],"tag")>
-              	<category domain="#fs.category[i].domain#">#fs.category[i].tag#</category>
-              <cfelseif structKeyExists(fs.category[i],"tag")>
+		<channel>
+   		<!--- Optional Atom link --->
+    	<cfif structKeyExists(fs,"atomSelfLink")><atom:link href="#URLFormat(fs['atomSelfLink'])#" rel="self" type="application/rss+xml"/></cfif>
+		<!--- Required RSS tags, description, link, title --->
+		<description>#RSSFormat(fs["description"],true)#</description>
+		<link>#URLFormat(fs["link"])#</link>
+		<title>#RSSFormat(fs["title"])#</title>
+		<cfif structKeyExists(fs,"opensearch")>
+			<!--- Optional OpenSearch 1.1 (draft 3) total results --->
+			<cfif structKeyExists(fs.opensearch,"totalresults")><opensearch:totalResults>#RSSFormat(fs.opensearch["totalresults"])#</opensearch:totalResults></cfif>
+			<!--- Optional OpenSearch 1.1 (draft 3) start index --->
+			<cfif structKeyExists(fs.opensearch,"startindex")><opensearch:startIndex>#RSSFormat(fs.opensearch["startindex"])#</opensearch:startIndex></cfif>
+			<!--- Optional OpenSearch 1.1 (draft 3) items per page --->
+			<cfif structKeyExists(fs.opensearch,"itemsperpage")><opensearch:itemsPerPage>#RSSFormat(fs.opensearch["itemsperpage"])#</opensearch:itemsPerPage></cfif>
+			<!--- Optional OpenSearch 1.1 (draft 3) Atom search link --->
+			<cfif structKeyExists(fs.opensearch,"autodiscovery")><atom:link href="#URLFormat(fs.opensearch['autodiscovery'])#" rel="search" type="application/opensearchdescription+xml" title="Content Search"/></cfif>
+			<!--- Optional OpenSearch 1.1 (draft 3) query --->
+			<cfif structKeyExists(fs,"opensearchQuery") and isArray(fs.opensearchQuery)>
+				<cfloop from="1" to="#arrayLen(fs.opensearchQuery)#" index="i">
+				<opensearch:Query 
+				role="#RSSFormat(fs.opensearchQuery[i]["role"])#"
+				<cfif structKeyExists(fs.opensearchQuery[i],"title")> title="#RSSFormat(fs.opensearchQuery[i]['title'])#"</cfif>
+				<cfif structKeyExists(fs.opensearchQuery[i],"totalResults ")> totalResults="#RSSFormat(fs.opensearchQuery[i]['totalResults '])#"</cfif>
+				<cfif structKeyExists(fs.opensearchQuery[i],"searchTerms")> searchTerms="#URLFormat(fs.opensearchQuery[i]['searchTerms'])#"</cfif>
+				<cfif structKeyExists(fs.opensearchQuery[i],"count")> count="#RSSFormat(fs.opensearchQuery[i]['count'])#"</cfif>
+				<cfif structKeyExists(fs.opensearchQuery[i],"startIndex")> startIndex="#RSSFormat(fs.opensearchQuery[i]['startIndex'])#"</cfif>
+				<cfif structKeyExists(fs.opensearchQuery[i],"startPage")> startPage="#RSSFormat(fs.opensearchQuery[i]['startPage'])#"</cfif>
+				<cfif structKeyExists(fs.opensearchQuery[i],"language")> language="#RSSFormat(fs.opensearchQuery[i]['language'])#"</cfif>
+				<cfif structKeyExists(fs.opensearchQuery[i],"inputEncoding")> inputEncoding="#RSSFormat(fs.opensearchQuery[i]['inputEncoding'])#"</cfif>
+				<cfif structKeyExists(fs.opensearchQuery[i],"outputEncoding")> outputEncoding="#RSSFormat(fs.opensearchQuery[i]['outputEncoding'])#"</cfif>
+				/>
+				</cfloop>
+			</cfif>
+		</cfif>
+		<!--- Optional category --->
+		<cfif structKeyExists(fs,"category") and isArray(fs.category)>
+			<cfloop from="1" to="#arrayLen(fs.category)#" index="i">
+			<cfif structKeyExists(fs.category[i],"domain") and structKeyExists(fs.category[i],"tag")>
+				<category domain="#fs.category[i].domain#">#fs.category[i].tag#</category>
+			<cfelseif structKeyExists(fs.category[i],"tag")>
               	<category>#fs.category[i].tag#</category>
-              </cfif>
-            </cfloop>
-            <cfset i = 0>
-          </cfif>
-          <!--- Optional cloud --->
-          <cfif structKeyExists(fs,"cloud")>
-					<cloud
-          	domain="#URLFormat(fs.cloud["domain"])#"
-            path="#URLFormat(fs.cloud["path"])#"
-            port="#URLFormat(fs.cloud["port"])#"
-            protocol="#URLFormat(fs.cloud["protocol"])#"
-            registerProcedure="#URLFormat(fs.cloud["registerProcedure"])#"
-          />
+			</cfif>
+			</cfloop>
+			<cfset i = 0/>
+		</cfif>
+		<!--- Optional cloud --->
+		<cfif structKeyExists(fs,"cloud")>
+			<cloud 
+			domain="#URLFormat(fs.cloud["domain"])#"
+			path="#URLFormat(fs.cloud["path"])#"
+			port="#URLFormat(fs.cloud["port"])#"
+			protocol="#URLFormat(fs.cloud["protocol"])#"
+			registerProcedure="#URLFormat(fs.cloud["registerProcedure"])#" />
+		</cfif>
+		<!--- Optional Creative Commons license extension --->
+		<cfif structKeyExists(fs,"commonslicense")>
+			<cfloop from="1" to="#listLen(fs['commonslicense'])#" index="i">
+				<creativeCommons:license>#RSSFormat(listGetAt(fs["commonslicense"],i))#</creativeCommons:license>
+			</cfloop>
+		</cfif>
+		<!--- Optional copyright --->
+		<cfif structKeyExists(fs,"copyright")><copyright>#RSSFormat(fs["copyright"])#</copyright></cfif>
+		<!--- Auto-generated docs, generator --->
+		<docs>#URLFormat(fs["docs"])#</docs>
+		<generator>#RSSFormat(fs["generator"])#</generator>
+		<!--- Optional image --->
+		<cfif structKeyExists(fs,"image")>
+			<image>
+				<url>#URLFormat(fs.image["url"])#</url>
+				<title>#RSSFormat(fs.image["title"])#</title>
+				<link>#URLFormat(fs.image["link"])#</link>
+				<cfif structKeyExists(fs.image,"width")><width>#RSSFormat(fs.image["width"])#</width></cfif>
+				<cfif structKeyExists(fs.image,"height")><height>#RSSFormat(fs.image["height"])#</height></cfif>
+				<cfif structKeyExists(fs.image,"description")><description>#RSSFormat(fs.image["description"])#</description></cfif>
+			</image>
+		</cfif>
+		<!--- Optional language --->
+		<cfif structKeyExists(fs,"language")><language>#RSSFormat(fs["language"])#</language></cfif>
+		<!--- Optional lastBuildDate --->
+		<cfif structKeyExists(fs,"lastBuildDate")><lastBuildDate>#RSSFormat(fs["lastBuildDate"])#</lastBuildDate></cfif>
+		<!--- Optional managingEditor --->
+		<cfif structKeyExists(fs,"managingEditor")><managingEditor>#RSSFormat(fs["managingEditor"])#</managingEditor></cfif>
+		<!--- Optional pubDate --->
+		<cfif structKeyExists(fs,"pubDate")><pubDate>#RSSFormat(fs["pubDate"])#</pubDate></cfif>
+		<!--- Optional rating --->
+		<cfif structKeyExists(fs,"rating")><rating>#RSSFormat(fs["rating"])#</rating></cfif>
+		<!--- Optional skipDays --->
+		<cfif structKeyExists(fs,"skipDays")>
+			<skipDays>
+			<cfloop from="1" to="#listLen(fs['skipDays'])#" index="i">
+				<cfset container = listGetAt(fs['skipDays'],i)/>
+				<day>#RSSFormat("#uCase(left(container,1))##lCase(Right(container,Len(container)-1))#")#</day>
+			</cfloop>
+			</skipDays>
+		</cfif>
+		<!--- Optional skipHours --->
+		<cfif structKeyExists(fs,"skipHours")>
+			<skipHours>
+			<cfloop from="1" to="#listLen(fs['skipHours'])#" index="i">
+				<hour>#RSSFormat(listGetAt(fs['skipHours'],i))#</hour>
+			</cfloop>
+			</skipHours>
+		</cfif>
+		<!--- Optional textInput --->
+		<cfif structKeyExists(fs,"textInput")>
+			<textInput>
+				<description>#RSSFormat(fs.textInput["description"])#</description>
+				<link>#URLFormat(fs.textInput["link"])#</link>
+				<name>#RSSFormat(fs.textInput["name"])#</name>
+	            <title>#RSSFormat(fs.textInput["title"])#</title>
+			</textInput>
+		</cfif>
+		<!--- Optional ttl (time to live) --->
+		<cfif structKeyExists(fs,"ttl")><ttl>#RSSFormat(fs["ttl"])#</ttl></cfif>
+		<!--- Optional webMaster --->
+		<cfif structKeyExists(fs,"webMaster")><webMaster>#RSSFormat(fs["webMaster"])#</webMaster></cfif>
+		<cfif structKeyExists(fs,"itunes")>
+			<!--- Optional iTunes author --->
+			<cfif structKeyExists(fs.itunes,"author")><itunes:author>#RSSFormat(fs.itunes["author"])#</itunes:author></cfif>
+			<!--- Optional iTunes block --->
+			<cfif structKeyExists(fs.itunes,"block")><itunes:block>#RSSFormat(fs.itunes["block"])#</itunes:block></cfif>
+			<!--- Optional iTunes category --->
+			<cfif structKeyExists(fs.itunes,"category") and isStruct(fs.itunes.category)>
+				<cfloop from="1" to="#structCount(fs.itunes.category)#" index="i">
+					<cfset container = listGetAt(structKeyList(fs.itunes.category),i)>
+					<cfif listFindNoCase(structKeyList(instance.itunesCategory),container) and not len(fs.itunes.category[container])>
+						<itunes:category text="#RSSFormat(container)#"/>
+					<cfelseif listFindNoCase(structKeyList(instance.itunesCategory),container) and len(fs.itunes.category[container])>
+						<cfloop from="1" to="#listLen(fs.itunes.category[container])#" index="j">
+							<cfif listFindNoCase(instance.itunesCategory[container],listGetAt(fs.itunes.category[container],j))> 
+								<itunes:category text="#RSSFormat(container)#">
+								<itunes:category text="#RSSFormat(listGetAt(fs.itunes.category[container],j))#"/>
+								</itunes:category>
+							</cfif>
+						</cfloop>
 					</cfif>
-       		<!--- Optional Creative Commons license extension --->
-          <cfif structKeyExists(fs,"commonslicense")>
-          	<cfloop from="1" to="#listLen(fs['commonslicense'])#" index="i">
-            <creativeCommons:license>#RSSFormat(listGetAt(fs["commonslicense"],i))#</creativeCommons:license>
+				</cfloop>
+			</cfif>       
+			<!--- Optional iTunes image --->   
+			<cfif structKeyExists(fs.itunes,"image")><itunes:image href="#URLFormat(fs.itunes['image'])#"/></cfif>
+			<!--- Optional iTunes explicit --->
+			<cfif structKeyExists(fs.itunes,"explicit")><itunes:explicit>#RSSFormat(fs.itunes["explicit"])#</itunes:explicit></cfif>
+			<!--- Optional iTunes keywords --->
+			<cfif structKeyExists(fs.itunes,"keywords")><itunes:keywords>#RSSFormat(fs.itunes["keywords"])#</itunes:keywords></cfif>
+			<!--- Optional iTunes new-feed-url --->
+			<cfif structKeyExists(fs.itunes,"new_feel_url")><itunes:new_feel_url>#URLFormat(fs.itunes["new_feel_url"])#</itunes:new_feel_url></cfif>
+			<!--- Optional iTunes owner --->
+			<cfif structKeyExists(fs.itunes,"owner")>
+				<itunes:owner>
+					<itunes:email>#URLFormat(fs.itunes.owner["email"])#</itunes:email>
+					<itunes:name>#URLFormat(fs.itunes.owner["name"])#</itunes:name>
+				</itunes:owner>
+			</cfif>
+			<!--- Optional iTunes subtitle --->
+			<cfif structKeyExists(fs.itunes,"subtitle")><itunes:subtitle>#RSSFormat(fs.itunes["subtitle"])#</itunes:subtitle></cfif>
+			<!--- Optional iTunes summary --->
+			<cfif structKeyExists(fs.itunes,"summary")><itunes:summary>#RSSFormat(fs.itunes["summary"])#</itunes:summary></cfif>
+		</cfif>
+		<!--- Optional DCMI Metadata terms --->
+		<cfif structKeyExists(fs,"dcmiterm") and isStruct(fs.dcmiterm)>
+			<cfloop from="1" to="#structCount(fs.dcmiterm)#" index="i">
+				<cfset container = listGetAt(structKeyList(fs.dcmiterm),i)>
+				<cfif listFindNoCase(instance.dublinCoreTerms,container)><dc:#container#>#RSSFormat(fs.dcmiterm[container])#</dc:#container#></cfif>
             </cfloop>
-          </cfif>
-          <!--- Optional copyright --->
-          <cfif structKeyExists(fs,"copyright")><copyright>#RSSFormat(fs["copyright"])#</copyright></cfif>
-          <!--- Auto-generated docs, generator --->
-          <docs>#URLFormat(fs["docs"])#</docs>
-          <generator>#RSSFormat(fs["generator"])#</generator>
-          <!--- Optional image --->
-			    <cfif structKeyExists(fs,"image")>
-			    <image>
-			    	<url>#URLFormat(fs.image["url"])#</url>
-			    	<title>#RSSFormat(fs.image["title"])#</title>
-			    	<link>#URLFormat(fs.image["link"])#</link>
-			    	<cfif structKeyExists(fs.image,"width")><width>#RSSFormat(fs.image["width"])#</width></cfif>
-			    	<cfif structKeyExists(fs.image,"height")><height>#RSSFormat(fs.image["height"])#</height></cfif>
-			    	<cfif structKeyExists(fs.image,"description")><description>#RSSFormat(fs.image["description"])#</description></cfif>
-			    </image>
-			    </cfif>
-          <!--- Optional language --->
-          <cfif structKeyExists(fs,"language")><language>#RSSFormat(fs["language"])#</language></cfif>
-          <!--- Optional lastBuildDate --->
-					<cfif structKeyExists(fs,"lastBuildDate")><lastBuildDate>#RSSFormat(fs["lastBuildDate"])#</lastBuildDate></cfif>
-          <!--- Optional managingEditor --->
-					<cfif structKeyExists(fs,"managingEditor")><managingEditor>#RSSFormat(fs["managingEditor"])#</managingEditor></cfif>
-          <!--- Optional pubDate --->
-					<cfif structKeyExists(fs,"pubDate")><pubDate>#RSSFormat(fs["pubDate"])#</pubDate></cfif>
-          <!--- Optional rating --->
-			    <cfif structKeyExists(fs,"rating")><rating>#RSSFormat(fs["rating"])#</rating></cfif>
-          <!--- Optional skipDays --->
-          <cfif structKeyExists(fs,"skipDays")>
-          <skipDays>
-          <cfloop from="1" to="#listLen(fs['skipDays'])#" index="i">
-          	<cfset container = listGetAt(fs['skipDays'],i)>
-          	<day>#RSSFormat("#uCase(left(container,1))##lCase(Right(container,Len(container)-1))#")#</day>
-          </cfloop>
-          </skipDays>
-					</cfif>
-          <!--- Optional skipHours --->
-          <cfif structKeyExists(fs,"skipHours")>
-          <skipHours>
-          <cfloop from="1" to="#listLen(fs['skipHours'])#" index="i">
-          	<hour>#RSSFormat(listGetAt(fs['skipHours'],i))#</hour>
-          </cfloop>
-          </skipHours>
-					</cfif>
-          <!--- Optional textInput --->
-			    <cfif structKeyExists(fs,"textInput")>
-			    <textInput>
-			    	<description>#RSSFormat(fs.textInput["description"])#</description>
-			    	<link>#URLFormat(fs.textInput["link"])#</link>
-			    	<name>#RSSFormat(fs.textInput["name"])#</name>
-            <title>#RSSFormat(fs.textInput["title"])#</title>
-			    </textInput>
-			    </cfif>
-          <!--- Optional ttl (time to live) --->
-          <cfif structKeyExists(fs,"ttl")><ttl>#RSSFormat(fs["ttl"])#</ttl></cfif>
-          <!--- Optional webMaster --->
-			    <cfif structKeyExists(fs,"webMaster")><webMaster>#RSSFormat(fs["webMaster"])#</webMaster></cfif>
-          <cfif structKeyExists(fs,"itunes")>
-						<!--- Optional iTunes author --->
-            <cfif structKeyExists(fs.itunes,"author")><itunes:author>#RSSFormat(fs.itunes["author"])#</itunes:author></cfif>
-            <!--- Optional iTunes block --->
-            <cfif structKeyExists(fs.itunes,"block")><itunes:block>#RSSFormat(fs.itunes["block"])#</itunes:block></cfif>
-            <!--- Optional iTunes category --->
-            <cfif structKeyExists(fs.itunes,"category") and isStruct(fs.itunes.category)>
-              <cfloop from="1" to="#structCount(fs.itunes.category)#" index="i">
-                <cfset container = listGetAt(structKeyList(fs.itunes.category),i)>
-                <cfif listFindNoCase(structKeyList(instance.itunesCategory),container) and not len(fs.itunes.category[container])>
-                  <itunes:category text="#RSSFormat(container)#"/>
-                <cfelseif listFindNoCase(structKeyList(instance.itunesCategory),container) and len(fs.itunes.category[container])>
-                  <cfloop from="1" to="#listLen(fs.itunes.category[container])#" index="j">
-                    <cfif listFindNoCase(instance.itunesCategory[container],listGetAt(fs.itunes.category[container],j))> 
-                    <itunes:category text="#RSSFormat(container)#">
-                      <itunes:category text="#RSSFormat(listGetAt(fs.itunes.category[container],j))#"/>
-                    </itunes:category>
-                    </cfif>
-                  </cfloop>
-                </cfif>
-              </cfloop>
-            </cfif>       
-            <!--- Optional iTunes image --->   
-            <cfif structKeyExists(fs.itunes,"image")><itunes:image href="#URLFormat(fs.itunes['image'])#"/></cfif>
-            <!--- Optional iTunes explicit --->
-            <cfif structKeyExists(fs.itunes,"explicit")><itunes:explicit>#RSSFormat(fs.itunes["explicit"])#</itunes:explicit></cfif>
-            <!--- Optional iTunes keywords --->
-            <cfif structKeyExists(fs.itunes,"keywords")><itunes:keywords>#RSSFormat(fs.itunes["keywords"])#</itunes:keywords></cfif>
-            <!--- Optional iTunes new-feed-url --->
-            <cfif structKeyExists(fs.itunes,"new_feel_url")><itunes:new_feel_url>#URLFormat(fs.itunes["new_feel_url"])#</itunes:new_feel_url></cfif>
-            <!--- Optional iTunes owner --->
-            <cfif structKeyExists(fs.itunes,"owner")>
-            <itunes:owner>
-              <itunes:email>#URLFormat(fs.itunes.owner["email"])#</itunes:email>
-              <itunes:name>#URLFormat(fs.itunes.owner["name"])#</itunes:name>
-            </itunes:owner>
-            </cfif>
-            <!--- Optional iTunes subtitle --->
-            <cfif structKeyExists(fs.itunes,"subtitle")><itunes:subtitle>#RSSFormat(fs.itunes["subtitle"])#</itunes:subtitle></cfif>
-            <!--- Optional iTunes summary --->
-            <cfif structKeyExists(fs.itunes,"summary")><itunes:summary>#RSSFormat(fs.itunes["summary"])#</itunes:summary></cfif>
-          </cfif>
-          <!--- Optional DCMI Metadata terms --->
-          <cfif structKeyExists(fs,"dcmiterm") and isStruct(fs.dcmiterm)>
-            <cfloop from="1" to="#structCount(fs.dcmiterm)#" index="i">
-							<cfset container = listGetAt(structKeyList(fs.dcmiterm),i)>
-							<cfif listFindNoCase(instance.dublinCoreTerms,container)>
-              	<dc:#container#>#RSSFormat(fs.dcmiterm[container])#</dc:#container#>
-              </cfif>
-            </cfloop>
-          </cfif>          
-			    <!--- Optional RSS Items --->
-			   	#generateItems(argumentCollection=arguments)#
-			</channel>
-	  </rss>
-		</cfoutput>
-		</cfxml>
-		
-    <!--- Apply XSL formating to messy XML code --->
-    <cfset xmlCleaned = XMLTransform(xmlContent,XSLFormat())/>
+		</cfif>          
+		<!--- Optional RSS Items --->
+		#generateItems(argumentCollection=arguments)#
+		</channel>
+		</rss></cfoutput></cfxml>
 
-		<!--- Check for file output --->
+		<!--- Apply XSL formating to messy XML code --->
+		<cfset xmlCleaned = XMLTransform(xmlContent,XSLFormat())/>
+
+		<!--- Check for and generate file output --->
 		<cfif structKeyExists(arguments,"OutputFile")>
 			<cffile action="write" file="#arguments.OutputFile#" output="#xmlCleaned#" charset="utf-8"/>
-		</cfif>	
-    
-    <!--- Check for on-screen output --->
-    <cfif arguments.OutputXML>
-    	<cfcontent variable="#ToBinary(ToBase64(xmlCleaned))#" type="text/xml"/>
-    <cfelse>
-    	<cfreturn true/>
-    </cfif>
+		</cfif>
+
+		<!--- Check for and generate on-screen output --->
+		<cfif arguments.OutputXML>
+			<cfcontent variable="#ToBinary(ToBase64(xmlCleaned))#" type="text/xml"/>
+		<cfelse>
+			<cfreturn true/>
+		</cfif>
 
 	</cffunction>
 
 	<!--- ******************************************************************************** --->
 
-	
+
 <!---------------------------------------- PRIVATE --------------------------------------------------->
-	
+
 	<!--- generateItems --->
 	<cffunction name="generateItems" output="false" access="private" returntype="string" hint="Generate the items XML">
 		<!--- ******************************************************************************** --->
 		<cfargument name="feedStruct" 	type="struct" required="yes" 	hint="The structure used to build a feed">
 		<cfargument name="ColumnMap" 	type="struct" required="false"  hint="The column mapper to map items to queries"/>
 		<!--- ******************************************************************************** --->
-    <cfscript>
+		<cfscript>
 			var i = 0;
 			var items = "";
 			var itemsXML = "";
@@ -337,18 +328,18 @@ METHODS:
 			var term = "";
 		</cfscript>
 
-    <!--- Check that the feed items exist otherwise no items will be displayed --->
-    <cfif not structKeyExists(arguments.feedStruct, "items")>
-    	<cfreturn "">
-    <cfelse>
-    	<cfset items = arguments.feedStruct.items>
-    </cfif>
+		<!--- Check that the feed items exist otherwise no items will be displayed --->
+		<cfif not structKeyExists(arguments.feedStruct, "items")>
+			<cfreturn "">
+		<cfelse>
+			<cfset items = arguments.feedStruct.items>
+		</cfif>
 
 		<!--- Do we have to override our map? --->
 		<cfif structKeyExists(arguments, "ColumnMap")>
 			<cfset map = parseColumnMap(arguments.ColumnMap)>
 		</cfif>
-    
+
 		<!--- Generate XML --->
 		<cfsavecontent variable="itemsXML">
 		<cfoutput query="items">
@@ -384,138 +375,138 @@ METHODS:
 				if( structKeyExists(items, "#map.enclosure_type#") ){
 					local.enclosure.type = RSSFormat(items[map.enclosure_type][currentrow]);
 				}
-				else{ local.enclosure.type = ""; }				
+				else{ local.enclosure.type = ""; }
 			} //end of enclosure setup.
 		</cfscript>
 		<item>
-    	<!--- Required title (if no description) --->
-			<cfif structKeyExists(items,"#map.title#") and len(items[map.title][currentrow]) and len(items[map.title][currentrow])>
-      <title>#RSSFormat(items[map.title][currentrow])#</title>
-      </cfif>
-      <!--- Required description (if no title) --->
-			<cfif structKeyExists(items,"#map.description#") and len(items[map.description][currentrow]) and len(items[map.description][currentrow])>
-      <description>#RSSFormat(items[map.description][currentrow])#</description>
-      </cfif>
-      <!--- Optional content encoding extension (needs to go before description) --->    
-			<cfif structKeyExists(items,"#map.content_encoded#") and len(items[map.content_encoded][currentrow])>
+		<!--- Required title (if no description) --->
+		<cfif structKeyExists(items,"#map.title#") and len(items[map.title][currentrow]) and len(items[map.title][currentrow])>
+			<title>#RSSFormat(items[map.title][currentrow])#</title>
+		</cfif>
+		<!--- Required description (if no title) --->
+		<cfif structKeyExists(items,"#map.description#") and len(items[map.description][currentrow]) and len(items[map.description][currentrow])>
+			<description>#RSSFormat(items[map.description][currentrow])#</description>
+		</cfif>
+		<!--- Optional content encoding extension (needs to go before description) --->    
+		<cfif structKeyExists(items,"#map.content_encoded#") and len(items[map.content_encoded][currentrow])>
 			<content:encoded>#RSSFormat(items[map.content_encoded][currentrow])#</content:encoded>
-			</cfif>
-      <!--- Optional link --->
-      <cfif structKeyExists(items,"#map.link#") and len(items[map.link][currentrow])>
+		</cfif>
+		<!--- Optional link --->
+		<cfif structKeyExists(items,"#map.link#") and len(items[map.link][currentrow])>
 			<link>#URLFormat(items[map.link][currentrow])#</link>
-      </cfif>
-      <!--- Optional atom link --->
-    	<cfif structKeyExists(items,"#map.atomselfLink#") and len(items[map.atomselfLink][currentrow])>
-      <atom:link href="#URLFormat(items[map.atomSelfLink][currentrow])#" rel="self" type="application/rss+xml"/>
-      </cfif>
-      <!--- Optional pubDate --->
-      <cfif structKeyExists(local,"pubDate") and len(local.pubDate)>
+		</cfif>
+		<!--- Optional atom link --->
+		<cfif structKeyExists(items,"#map.atomselfLink#") and len(items[map.atomselfLink][currentrow])>
+			<atom:link href="#URLFormat(items[map.atomSelfLink][currentrow])#" rel="self" type="application/rss+xml"/>
+		</cfif>
+		<!--- Optional pubDate --->
+		<cfif structKeyExists(local,"pubDate") and len(local.pubDate)>
 			<pubDate>#local.pubDate#</pubDate>
-      </cfif>
-			<!--- Optional author --->
-			<cfif structKeyExists(items,"#map.author#") and len(items[map.author][currentrow])>
+		</cfif>
+		<!--- Optional author --->
+		<cfif structKeyExists(items,"#map.author#") and len(items[map.author][currentrow])>
 			<author>#RSSFormat(items[map.author][currentrow])#</author>
-			</cfif>
-			<!--- Optional comments --->
-			<cfif structKeyExists(items,"#map.comments#") and len(items[map.comments][currentrow])>
+		</cfif>
+		<!--- Optional comments --->
+		<cfif structKeyExists(items,"#map.comments#") and len(items[map.comments][currentrow])>
 			<comments>#URLFormat(items[map.comments][currentrow])#</comments>
-			</cfif>
-      <!--- Optional slash section extension --->
-			<cfif structKeyExists(items,"#map.slash_section#") and len(items[map.slash_section][currentrow])>
+		</cfif>
+		<!--- Optional slash section extension --->
+		<cfif structKeyExists(items,"#map.slash_section#") and len(items[map.slash_section][currentrow])>
 			<slash:section>#RSSFormat(items[map.slash_section][currentrow])#</slash:section>
-			</cfif>
-      <!--- Optional slash department extension --->
-			<cfif structKeyExists(items,"#map.slash_department#") and len(items[map.slash_department][currentrow])>
+		</cfif>
+		<!--- Optional slash department extension --->
+		<cfif structKeyExists(items,"#map.slash_department#") and len(items[map.slash_department][currentrow])>
 			<slash:department>#RSSFormat(items[map.slash_department][currentrow])#</slash:department>
-			</cfif>
-      <!--- Optional slash comments extension --->
-			<cfif structKeyExists(items,"#map.slash_comments#") and len(items[map.slash_comments][currentrow])>
+		</cfif>
+		<!--- Optional slash comments extension --->
+		<cfif structKeyExists(items,"#map.slash_comments#") and len(items[map.slash_comments][currentrow])>
 			<slash:comments>#RSSFormat(items[map.slash_comments][currentrow])#</slash:comments>
-			</cfif>
-      <!--- Optional slash hit parade extension --->
-			<cfif structKeyExists(items,"#map.slash_hit_parade#") and len(items[map.slash_hit_parade][currentrow])>
+		</cfif>
+		<!--- Optional slash hit parade extension --->
+		<cfif structKeyExists(items,"#map.slash_hit_parade#") and len(items[map.slash_hit_parade][currentrow])>
 			<slash:hit_parade>#RSSFormat(items[map.slash_hit_parade][currentrow])#</slash:hit_parade>
+		</cfif>
+		<!--- Optional source --->
+		<cfif structKeyExists(items,"#map.source_url#") and len(items[map.source_url][currentrow])>
+			<cfif structKeyExists(items,"#map.source_title#")>
+				<source url="#URLFormat(items[map.source_url][currentrow])#">#RSSFormat(items[map.source_title][currentrow])#</source>
+			<cfelse>
+				<source url="#URLFormat(items[map.source_url][currentrow])#"/>
 			</cfif>
-			<!--- Optional source --->
-			<cfif structKeyExists(items,"#map.source_url#") and len(items[map.source_url][currentrow])>     
-      	<cfif structKeyExists(items,"#map.source_title#")>
-        <source url="#URLFormat(items[map.source_url][currentrow])#">#RSSFormat(items[map.source_title][currentrow])#</source>
-        <cfelse>
-      	<source url="#URLFormat(items[map.source_url][currentrow])#"/>
-      	</cfif>
-			</cfif>
-      <!--- Optional category --->
-      <cfif structKeyExists(items,"#map.category_tag#") and len(items[map.category_tag][currentrow])>     
-        <cfloop from="1" to="#listLen(items[map.category_tag][currentrow])#" index="i">
-        	<cftry>
-          	<cfif listGetAt(items[map.category_domain][currentrow],i) neq "-">
-            <category domain="#RSSFormat(listGetAt(items[map.category_domain][currentrow],i))#">#RSSFormat(listGetAt(items[map.category_tag][currentrow],i))#</category>
-            <cfelse>
-            <category>#RSSFormat(listGetAt(items[map.category_tag][currentrow],i))#</category>
-            </cfif>
-          <cfcatch>
-          <category>#RSSFormat(listGetAt(items[map.category_tag][currentrow],i))#</category>
-          </cfcatch>
-          </cftry>
-        </cfloop>
-      </cfif>
-			<!--- Optional guid --->
-			<cfif structKeyExists(items,"#map.guid_string#") and len(items[map.guid_string][currentrow])>
+		</cfif>
+		<!--- Optional category --->
+		<cfif structKeyExists(items,"#map.category_tag#") and len(items[map.category_tag][currentrow])>
+			<cfloop from="1" to="#listLen(items[map.category_tag][currentrow])#" index="i">
+				<cftry>
+					<cfif listGetAt(items[map.category_domain][currentrow],i) neq "-">
+						<category domain="#RSSFormat(listGetAt(items[map.category_domain][currentrow],i))#">#RSSFormat(listGetAt(items[map.category_tag][currentrow],i))#</category>
+					<cfelse>
+						<category>#RSSFormat(listGetAt(items[map.category_tag][currentrow],i))#</category>
+					</cfif>
+				<cfcatch>
+					<category>#RSSFormat(listGetAt(items[map.category_tag][currentrow],i))#</category>
+				</cfcatch>
+				</cftry>
+			</cfloop>
+		</cfif>
+		<!--- Optional guid --->
+		<cfif structKeyExists(items,"#map.guid_string#") and len(items[map.guid_string][currentrow])>
 			<guid isPermaLink="#RSSFormat(local.guid_permaLink)#">#RSSFormat(items[map.guid_string][currentrow])#</guid>
-			</cfif>
-      <!--- Optional DCMI Metadata terms --->
-      <cfif listContainsNoCase(items.columnList,'dcmiterm_')>
-      	<cfloop from="1" to="#listLen(items.columnList)#" index="i">
-        	<cfset term = replaceNocase(listGetAt(items.columnList,i),'dcmiterm_','')>
-        	<cfif listFindNoCase(instance.dublinCoreTerms,term) and listFindNoCase(items.columnList,'dcmiterm_#term#') and len(items["dcmiterm_#term#"][currentrow]) >
-          	<cfset term = listGetAt(instance.dublinCoreTerms,listFindNocase(instance.dublinCoreTerms,term))>
-          	<dc:#term#>#RSSFormat(items["dcmiterm_#term#"][currentrow])#</dc:#term#>
-          </cfif>
-        </cfloop>
-      </cfif>
-      <!--- Apple iTunes extension --->
-      <!--- Optional author --->
-			<cfif structKeyExists(items,"#map.itunes_author#") and len(items[map.itunes_author][currentrow])>
+		</cfif>
+		<!--- Optional DCMI Metadata terms --->
+		<cfif listContainsNoCase(items.columnList,'dcmiterm_')>
+			<cfloop from="1" to="#listLen(items.columnList)#" index="i">
+				<cfset term = replaceNocase(listGetAt(items.columnList,i),'dcmiterm_','')>
+				<cfif listFindNoCase(instance.dublinCoreTerms,term) and listFindNoCase(items.columnList,'dcmiterm_#term#') and len(items["dcmiterm_#term#"][currentrow]) >
+					<cfset term = listGetAt(instance.dublinCoreTerms,listFindNocase(instance.dublinCoreTerms,term))>
+					<dc:#term#>#RSSFormat(items["dcmiterm_#term#"][currentrow])#</dc:#term#>
+				</cfif>
+			</cfloop>
+		</cfif>
+		<!--- Apple iTunes extension --->
+		<!--- Optional author --->
+		<cfif structKeyExists(items,"#map.itunes_author#") and len(items[map.itunes_author][currentrow])>
 			<itunes:author>#RSSFormat(items[map.itunes_author][currentrow])#</itunes:author>
-			</cfif>
-      <!--- Optional block --->
-			<cfif structKeyExists(items,"#map.itunes_block#") and len(items[map.itunes_block][currentrow])>
+		</cfif>
+		<!--- Optional block --->
+		<cfif structKeyExists(items,"#map.itunes_block#") and len(items[map.itunes_block][currentrow])>
 			<itunes:block>#RSSFormat(items[map.itunes_block][currentrow])#</itunes:block>
-			</cfif>
-      <!--- Optional duration --->
-			<cfif structKeyExists(items,"#map.itunes_duration#") and len(items[map.itunes_duration][currentrow])>
+		</cfif>
+		<!--- Optional duration --->
+		<cfif structKeyExists(items,"#map.itunes_duration#") and len(items[map.itunes_duration][currentrow])>
 			<itunes:duration>#RSSFormat(items[map.itunes_duration][currentrow])#</itunes:duration>
-			</cfif>
-      <!--- Optional explicit --->
-			<cfif structKeyExists(items,"#map.itunes_explicit#") and len(items[map.itunes_explicit][currentrow])>
+		</cfif>
+		<!--- Optional explicit --->
+		<cfif structKeyExists(items,"#map.itunes_explicit#") and len(items[map.itunes_explicit][currentrow])>
 			<itunes:explicit>#RSSFormat(items[map.itunes_explicit][currentrow])#</itunes:explicit>
-			</cfif>
-      <!--- Optional keywords --->
-			<cfif structKeyExists(items,"#map.itunes_keywords#") and len(items[map.itunes_keywords][currentrow])>
+		</cfif>
+		<!--- Optional keywords --->
+		<cfif structKeyExists(items,"#map.itunes_keywords#") and len(items[map.itunes_keywords][currentrow])>
 			<itunes:keywords>#RSSFormat(items[map.itunes_keywords][currentrow])#</itunes:keywords>
-			</cfif>
-      <!--- Optional subtitle --->
-			<cfif structKeyExists(items,"#map.itunes_subtitle#") and len(items[map.itunes_subtitle][currentrow])>
+		</cfif>
+		<!--- Optional subtitle --->
+		<cfif structKeyExists(items,"#map.itunes_subtitle#") and len(items[map.itunes_subtitle][currentrow])>
 			<itunes:subtitle>#RSSFormat(items[map.itunes_subtitle][currentrow])#</itunes:subtitle>
-			</cfif>
-      <!--- Optional summary --->
-			<cfif structKeyExists(items,"#map.itunes_summary#") and len(items[map.itunes_summary][currentrow])>
+		</cfif>
+		<!--- Optional summary --->
+		<cfif structKeyExists(items,"#map.itunes_summary#") and len(items[map.itunes_summary][currentrow])>
 			<itunes:summary>#RSSFormat(items[map.itunes_summary][currentrow])#</itunes:summary>
-			</cfif>
-      <!--- Optional creative commons license extension --->
-      <cfif structKeyExists(items,"#map.commonslicense#") and len(items[map.commonslicense][currentrow])>
-        <cfloop from="1" to="#listLen(items[map.commonslicense][currentrow])#" index="i">
-        <creativeCommons:license>#URLFormat(listGetAt(items[map.commonslicense][currentrow],i))#</creativeCommons:license>
-        </cfloop>
-      </cfif>
-			<!--- Optional enclosure --->
-			<cfif structKeyExists(local,"enclosure") and Len(local.enclosure.url)>
-      	<cfloop from="1" to="#listLen(local.enclosure.url)#" index="i">
-        <cfif i lte listLen(local.enclosure.length) and i lte listLen(local.enclosure.type)>
-				<enclosure url="#URLFormat(listGetAt(local.enclosure.url,i))#" length="#RSSFormat(listGetAt(local.enclosure.length,i))#" type="#RSSFormat(listGetAt(local.enclosure.type,i))#"/>
-        </cfif>
-      	</cfloop>
-			</cfif>
+		</cfif>
+		<!--- Optional creative commons license extension --->
+		<cfif structKeyExists(items,"#map.commonslicense#") and len(items[map.commonslicense][currentrow])>
+			<cfloop from="1" to="#listLen(items[map.commonslicense][currentrow])#" index="i">
+				<creativeCommons:license>#URLFormat(listGetAt(items[map.commonslicense][currentrow],i))#</creativeCommons:license>
+			</cfloop>
+		</cfif>
+		<!--- Optional enclosure --->
+		<cfif structKeyExists(local,"enclosure") and Len(local.enclosure.url)>
+			<cfloop from="1" to="#listLen(local.enclosure.url)#" index="i">
+				<cfif i lte listLen(local.enclosure.length) and i lte listLen(local.enclosure.type)>
+					<enclosure url="#URLFormat(listGetAt(local.enclosure.url,i))#" length="#RSSFormat(listGetAt(local.enclosure.length,i))#" type="#RSSFormat(listGetAt(local.enclosure.type,i))#"/>
+				</cfif>
+			</cfloop>
+		</cfif>
 		</item>
 		</cfoutput>
 		</cfsavecontent>
@@ -541,8 +532,8 @@ METHODS:
 			var invalidList = "";
 			var j = 1;
 			var validStruct = structNew();
-			
-			/* Verify mandatory properties */	
+
+			/* Verify mandatory properties */
 			for( i=1; i lte listLen(instance.requiredItems); i=i+1 ){
 				if( not listFindNoCase( fsKeys, listGetAt(instance.requiredItems,i) ) ){
 					invalidItems = listAppend(invalidItems,listGetAt(instance.requiredItems,i));
@@ -577,7 +568,7 @@ METHODS:
 					if ( not validatecommonslicense(listGetAt(fs.commonslicense,i)) ) {
 						invalidList = invalidList & "| The #generateNumSuffix(i)# commonslicense element '#listGetAt(fs.commonslicense,i)#' : Is not an valid URL pointing to a Creative Commons license (See <a href='http://creativecommons.org/about/licenses/meet-the-licenses'>http://creativecommons.org/about/licenses/meet-the-licenses</a>)";
 					}
-				}									 						 
+				}
 			}
 			/* cloud */
 			if( structKeyExists(fs, "cloud") and ( not isStruct(fs.cloud) or not structKeyExists(fs.cloud,'domain') or not structKeyExists(fs.cloud,'path') or not structKeyExists(fs.cloud,'port') or not structKeyExists(fs.cloud,'protocol') or not structKeyExists(fs.cloud,'registerProcedure')) ){
@@ -794,7 +785,7 @@ METHODS:
 				invalidList = invalidList & "| The webMaster element '#fs.webMaster#' : Is not a valid RSS person (See <a href='#instance.SpecRssEC#webmaster'>#instance.SpecRssEC#webmaster</a>)";
 			}
 			}// completed debugging and validating
-			
+
 			/* Conversions */
 			/* lastBuildDate */
 			if( structKeyExists(fs,"lastBuildDate") ) {
@@ -832,7 +823,7 @@ METHODS:
 					invalidList = verifyItems(fs.items,cs,invalidList);
 				}
 			}
-			
+
 			/* Display all debug/validation errors */
 			if(len(invalidList)) {
 				invalidFeedLL = listLen(invalidList,'|');
@@ -846,30 +837,30 @@ METHODS:
 			}
 		</cfscript>
 	</cffunction>
-  
+
 	<!--- verifyItems --->
 	<cffunction name="verifyItems" output="false" access="private" returntype="string" hint="Verify the feed item data and structure">
 		<!--- ******************************************************************************** --->
 		<cfargument name="feedItems" type="query" required="true" hint="The feed items"/>
-    <cfargument name="ColumnMap" 	type="struct" default="#structNew()#"  hint="The column mapper to map items to queries"/>
-    <cfargument name="invalidList" type="string" required="true" hint="Existing collection of debug/validation errors"/>
+		<cfargument name="ColumnMap" 	type="struct" default="#structNew()#"  hint="The column mapper to map items to queries"/>
+		<cfargument name="invalidList" type="string" required="true" hint="Existing collection of debug/validation errors"/>
 		<!--- ******************************************************************************** --->
-    <cfscript>
-				var caught = "";
-				var cs = arguments.ColumnMap;
-				var fi = arguments.feedItems;
-				var i = 0;
-				var map = getDefaultPropertyMap();
-				invalidList = arguments.invalidList;
-				
-				/* Map columns to data */
-				if( structKeyExists(arguments, "ColumnMap") ) {
-					map = parseColumnMap(arguments.ColumnMap);
-				}
+		<cfscript>
+			var caught = "";
+			var cs = arguments.ColumnMap;
+			var fi = arguments.feedItems;
+			var i = 0;
+			var map = getDefaultPropertyMap();
+			invalidList = arguments.invalidList;
 
-				/* Varify Structures */
-				/* category */
-				if( listContainsNoCase(fi.columnList,'enclosure_') ) {
+			/* Map columns to data */
+			if( structKeyExists(arguments, "ColumnMap") ) {
+				map = parseColumnMap(arguments.ColumnMap);
+			}
+
+			/* Varify Structures */
+			/* category */
+			if( listContainsNoCase(fi.columnList,'enclosure_') ) {
 				try {	len(fi.enclosure_length);	} catch(any excpt) { caught = listAppend(caught,"length"); }
 				try {	len(fi.enclosure_type);	} catch(any excpt) { caught = listAppend(caught,"type"); }
 				try {	len(fi.enclosure_url);	} catch(any excpt) { caught = listAppend(caught,"url"); }
@@ -878,9 +869,9 @@ METHODS:
 					invalidList = invalidList & "| Items : The enclosure element : Requires all three attributes be used length,type,url. You're missing '#caught#' (See <a href='#instance.SpecRssEC#item-enclosure'>#instance.SpecRssEC#item-enclosure</a>)";
 				}
 				caught = "";
-				}
+			}
 		</cfscript>
-    <cfloop query="fi">
+		<cfloop query="fi">
 			<cfscript>
 				/* requirement for description or title */
 				if( ( not structKeyExists(fi,"#map.title#") and not structKeyExists(fi,"#map.description#") ) or ( structKeyExists(fi,"#map.title#") and structKeyExists(fi,"#map.description#") and not len(fi[map.title][currentrow]) and not len(fi[map.description][currentrow]) ) ){
@@ -965,8 +956,8 @@ METHODS:
 				/* pubDate */
 				if( structKeyExists(fi,"#map.pubDate#") and len(fi[map.pubDate][currentrow]) ) {
 					try {
-     				ParseDateTime(fi[map.pubDate][currentrow]);
-     			} catch(any excpt) {
+					ParseDateTime(fi[map.pubDate][currentrow]);
+				} catch(any excpt) {
 						invalidList = invalidList & "| Item #fi.currentrow# : The pubDate element '#fi[map.pubDate][currentrow]#' : Cannot be converted into a date (See <a href='#instance.SpecCFML#ParseDateTime'>#instance.SpecCFML#ParseDateTime</a>)";
 					}
 				}
@@ -990,16 +981,16 @@ METHODS:
 				else if( structKeyExists(fi,"#map.source_url#") and len(fi[map.source_url][currentrow]) and not validateURL(fi[map.source_url][currentrow]) ){
 					invalidList = invalidList & "| Item #fi.currentrow# : The URL (source_url) attribute '#fi[map.source_url][currentrow]#' in the source element : Is not a valid URL (See <a href='#instance.SpecRssEC#item-source'>#instance.SpecRssEC#item-source</a>)";
 				}
-      </cfscript>
-    </cfloop>
+		</cfscript>
+	</cfloop>
 
-    <cfreturn arguments.invalidList>
+	<cfreturn arguments.invalidList>
 
-  </cffunction>
-	
+	</cffunction>
+
 
 <!---------------------------------------- ACCESSOR/MUTATORS --------------------------------------------------->
-	
+
 	<!--- parseColumnMap --->
 	<cffunction name="parseColumnMap" output="false" access="public" returntype="struct" hint="Parse and validate a column mapper">
 		<!--- ******************************************************************************** --->
@@ -1009,18 +1000,18 @@ METHODS:
 			var map = getDefaultPropertyMap();
 			var cmap = arguments.columnMap;
 			var key = "";
-			
+
 			/* start parsing */
 			for(key in map){
 				if( structKeyExists(cmap,key) ){
 					map[key] = cmap[key];
 				}	
-			}			
-			
+			}
+
 			return map;
 		</cfscript>
 	</cffunction>
-	
+
 	<!--- getDefaultPropertyMap --->
 	<cffunction name="getDefaultPropertyMap" output="false" access="public" returntype="struct" hint="Get the default property map">
 		<cfscript>
@@ -1066,11 +1057,11 @@ METHODS:
 
 <!---------------------------------------- PRIVATE --------------------------------------------------->
 
-  <!--- generateNameSpace --->
+	<!--- generateNameSpace --->
 	<cffunction name="generateNameSpace" output="false" access="private" returntype="string" hint="Generates the tag namespaces depending on the tags in use">
-  	<cfargument name="columnMap" type="struct" required="true" hint="The column map structure"/>
-    <cfargument name="feedStruct" type="struct" required="true" hint="The feed structure"/>
-    <cfscript>
+		<cfargument name="columnMap" type="struct" required="true" hint="The column map structure"/>
+		<cfargument name="feedStruct" type="struct" required="true" hint="The feed structure"/>
+		<cfscript>
 			var keys = structKeyList(arguments.feedStruct);
 			var nameSpace = 'version="2.0"'; // rss version
 			// Merge columnMap keys with feedStruct keys
@@ -1109,57 +1100,57 @@ METHODS:
 			}
 			return nameSpace;
 		</cfscript>
-  </cffunction>
-  
-  <!--- generateNumSuffix --->
-  <cffunction name="generateNumSuffix" output="false" access="private" returntype="string" hint="Attaches an English oral suffix (st,nd,rd,th) to a number">
-    <cfargument name="number" required="yes" type="numeric" hint="Integer">
-    <cfargument name="seperator" default="," type="string" hint="Seperator character">
-    <cfscript>
-      var suffix = '';
-      var value = '';
-      /* convert number to use an oral suffix */
-      value = Right(arguments.number,1);
-      if((value gte 4 and value lte 9) or value eq 0 or (arguments.number gte 11 and arguments.number lte 13)) {
-        suffix = 'th'; // numbers ending with 4,5,6,7,8,9 and numbers that equal to 11,12,13
-      }
-      else if(value eq 1) {
-        suffix = 'st'; // numbers ending with 1 except number 11
-      }
-      else if(value eq 2) {
-        suffix = 'nd'; // numbers ending with 2 except number 12
-      }
-      else if(value eq 3) {
-        suffix = 'rd'; // numbers ending with 3 except number 13
-      }
-      return generateNum1kSeparator(arguments.number,arguments.seperator) & suffix;
-    </cfscript>
-  </cffunction>
-  
-  <!--- generateNum1kSeparator --->
-  <cffunction name="generateNum1kSeparator" output="false" access="private" returntype="string" hint="Inserts thousand-seperators into a number">
-    <cfargument name="number" required="yes" type="numeric" hint="Integer">
-    <cfargument name="seperator" default="," type="string" hint="Seperator character">
-    <cfscript>
-      var decimal = '';
-      var integer = '';
-      var returnString = '';
-      /* convert number to insert commas */
-      decimal = listLast(arguments.number,'.');
-      integer = listFirst(arguments.number,'.');
-      if(decimal eq integer) { decimal = 0; }
-      integer = reReplace(Reverse(integer), "([0-9][0-9][0-9])", "\1#arguments.seperator#");
-      integer = reReplace(integer, "#arguments.seperator#$", "");
-      integer = reReplace(integer, "#arguments.seperator#([^0-9]+)", "\1");
-      if(len(decimal) and decimal neq 0) {
+	</cffunction>
+
+	<!--- generateNumSuffix --->
+	<cffunction name="generateNumSuffix" output="false" access="private" returntype="string" hint="Attaches an English oral suffix (st,nd,rd,th) to a number">
+		<cfargument name="number" required="yes" type="numeric" hint="Integer">
+		<cfargument name="seperator" default="," type="string" hint="Seperator character">
+		<cfscript>
+			var suffix = '';
+			var value = '';
+			/* convert number to use an oral suffix */
+			value = Right(arguments.number,1);
+			if((value gte 4 and value lte 9) or value eq 0 or (arguments.number gte 11 and arguments.number lte 13)) {
+				suffix = 'th'; // numbers ending with 4,5,6,7,8,9 and numbers that equal to 11,12,13
+			}
+			else if(value eq 1) {
+				suffix = 'st'; // numbers ending with 1 except number 11
+			}
+			else if(value eq 2) {
+				suffix = 'nd'; // numbers ending with 2 except number 12
+			}
+			else if(value eq 3) {
+				suffix = 'rd'; // numbers ending with 3 except number 13
+			}
+			return generateNum1kSeparator(arguments.number,arguments.seperator) & suffix;
+		</cfscript>
+	</cffunction>
+
+	<!--- generateNum1kSeparator --->
+	<cffunction name="generateNum1kSeparator" output="false" access="private" returntype="string" hint="Inserts thousand-seperators into a number">
+		<cfargument name="number" required="yes" type="numeric" hint="Integer">
+		<cfargument name="seperator" default="," type="string" hint="Seperator character">
+		<cfscript>
+			var decimal = '';
+			var integer = '';
+			var returnString = '';
+			/* convert number to insert commas */
+			decimal = listLast(arguments.number,'.');
+			integer = listFirst(arguments.number,'.');
+			if(decimal eq integer) { decimal = 0; }
+			integer = reReplace(Reverse(integer), "([0-9][0-9][0-9])", "\1#arguments.seperator#");
+			integer = reReplace(integer, "#arguments.seperator#$", "");
+			integer = reReplace(integer, "#arguments.seperator#([^0-9]+)", "\1");
+			if(len(decimal) and decimal neq 0) {
 				returnString = Reverse(integer) & '.' & decimal;
-      }
-      else {
-        returnString = Reverse(integer);
-      }
-      return returnString;
-    </cfscript>
-  </cffunction>
+			}
+			else {
+				returnString = Reverse(integer);
+			}
+			return returnString;
+		</cfscript>
+	</cffunction>
 
 	<!--- generateRFC822Date --->
 	<cffunction name="generateRFC822Date" output="false" access="private" returntype="string" hint="Generate an RFC8222 Date from a date object that conforms to GMT">
@@ -1182,22 +1173,22 @@ METHODS:
 			
 			/* Return with GMT */
 			return "#GMTDt# #GMTTm# GMT";
-		</cfscript>		
+		</cfscript>	
 	</cffunction>
-  
-  <!--- Element Validation --->
-  
+
+	<!--- Element Validation --->
+
 	<cffunction name="validatecommonslicense" output="false" access="private" returntype="boolean" hint="Validate targetString object as a URL pointing to the Creative Commons website">
 		<cfargument name="targetString" type="string" required="true" hint="The target string"/>
-    <cfscript>
+		<cfscript>
 			var result = yesNoFormat(reFindNoCase('^http://(www\.)?creativecommons.org/licenses/[\w]+',arguments.targetString));
 			return result;
 		</cfscript>
 	</cffunction>
-  
-  <cffunction name="validateDaysList" output="false" access="private" returntype="struct" hint="Validate list object against the RSS skipDays element requirements">
+
+	<cffunction name="validateDaysList" output="false" access="private" returntype="struct" hint="Validate list object against the RSS skipDays element requirements">
 		<cfargument name="targetList" type="string" required="true" hint="The target list"/>
-    <cfscript>
+		<cfscript>
 			var daysAllowed = instance.skipDays;
 			var i = 1;
 			var iStr = "";
@@ -1224,10 +1215,10 @@ METHODS:
 			return result;
 		</cfscript>
 	</cffunction>
-  
-  <cffunction name="validateHoursList" output="false" access="private" returntype="struct" hint="Validate list object against the RSS skipHours element requirements">
+
+	<cffunction name="validateHoursList" output="false" access="private" returntype="struct" hint="Validate list object against the RSS skipHours element requirements">
 		<cfargument name="targetList" type="string" required="true" hint="The target list"/>
-    <cfscript>
+		<cfscript>
 			var result = structNew();
 			var sHours = arguments.targetList;
 			var i = 1;
@@ -1253,39 +1244,39 @@ METHODS:
 			return result;
 		</cfscript>
 	</cffunction>
-  
+
 	<cffunction name="validateItunesDuration" output="false" access="private" returntype="boolean" hint="Force iTunes duration formatting">
 		<cfargument name="targetTime" type="string" required="true" hint="The target duration time"/>
-    <cfscript>
+		<cfscript>
 			var result = yesNoFormat(reFind('^\d?\d?:?\d?\d:\d\d$',arguments.targetTime));
 			return result;
 		</cfscript>
 	</cffunction>
-  
-  <cffunction name="validatePerson" output="false" access="private" returntype="boolean" hint="Validate string object against the RSS person scheme containing an e-mail and an optional name">
+
+	<cffunction name="validatePerson" output="false" access="private" returntype="boolean" hint="Validate string object against the RSS person scheme containing an e-mail and an optional name">
 		<cfargument name="targetString" type="string" required="true" hint="The target string"/>
-    <cfscript>
+		<cfscript>
 			var result = yesNoFormat(reFind('^(\w+\.)*\w+@((((\d{1,2})|(1\d{2})|(2[0-4]\d)|(25[0-5]))\.){3}((\d{1,2})|(1\d{2})|(2[0-4]\d)|(25[0-5]))|(\w+\.)+[A-Za-z]+)( \(.*\))?$', arguments.targetString));
 			return result;
 		</cfscript>
 	</cffunction>
 
-  <cffunction name="validateNNInteger" output="false" access="private" returntype="boolean" hint="Validate number object as a non-negative integer (0,1,2,3..)">
+	<cffunction name="validateNNInteger" output="false" access="private" returntype="boolean" hint="Validate number object as a non-negative integer (0,1,2,3..)">
 		<cfargument name="targetInt" type="string" required="true" hint="The target integer"/>
-    <cfscript>
+		<cfscript>
 			var result = yesNoFormat(reFind('^\d+$',arguments.targetInt));
 			return result;
 		</cfscript>
 	</cffunction>
-  
-  <cffunction name="validateRFC822Date" output="false" access="private" returntype="boolean" hint="Validate date object against RFC822 'Date and Time Specification'">
-  	<cfargument name="targetDate" type="string" required="true" hint="The target date."/>
+
+	<cffunction name="validateRFC822Date" output="false" access="private" returntype="boolean" hint="Validate date object against RFC822 'Date and Time Specification'">\
+		<cfargument name="targetDate" type="string" required="true" hint="The target date."/>
 		<cfscript>
 			var result = yesNoFormat(reFindNoCase('^(Sun|Mon|Tue|Wed|Thu|Fri|Sat)\, [0-3]\d (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) ([1-2][9|0])?\d\d [0-2]\d:[0-5]\d:[0-5]\d (GMT|UT)', arguments.targetDate));
 			return result;
 		</cfscript>
 	</cffunction>
-  
+
 	<cffunction name="validateRFC1766" output="false" access="private" returntype="boolean" hint="Validate string object against RFC1766 'Tags for the Identification of Languages'">
 		<cfargument name="targetString" type="string" required="true" hint="The target string."/>
 		<cfscript>
@@ -1293,15 +1284,15 @@ METHODS:
 			return result;
 		</cfscript>
 	</cffunction>
-  
+
 	<cffunction name="validateRFC3066" output="false" access="private" returntype="boolean" hint="RFC3066 'Tags for the Identification of Languages'">
 		<cfargument name="targetString" type="string" required="true" hint="The target string"/>
-    <cfscript>
+		<cfscript>
 			var result = yesNoFormat(REFindNoCase('^([a-z]{2}([a-z]{1,6})?|i|x)(-[:alnum:]{1,8})?', arguments.targetString));
 			return result;
 		</cfscript>
 	</cffunction>
-  
+
 	<cffunction name="validateURI" output="false" access="private" returntype="boolean" hint="Validate string object against a HTTP or HTTPS, FTP, news, mailto URI">
 		<cfargument name="targetString" type="string" required="true" hint="The target string"/>
 		<cfscript>
@@ -1312,7 +1303,7 @@ METHODS:
 			return result;
 		</cfscript>
 	</cffunction>
-  
+
 	<cffunction name="validateURL" output="false" access="private" returntype="boolean" hint="Validate string object against a URL">
 		<cfargument name="targetString" type="string" required="true" hint="The target string"/>
 		<cfscript>
@@ -1333,12 +1324,12 @@ METHODS:
 			return result;
 		</cfscript>
 	</cffunction>
-  
-  <!--- Element Formatting --->
-  
-  <cffunction name="RSSFormat" output="false" access="private" returntype="string" hint="A CFML XMLFormat replacement that converts high characters to XML safe Unicode">
-  	<cfargument name="string" type="string" required="true" hint="The target string"/>
-    <cfscript>
+
+	<!--- Element Formatting --->
+
+	<cffunction name="RSSFormat" output="false" access="private" returntype="string" hint="A CFML XMLFormat replacement that converts high characters to XML safe Unicode">
+		<cfargument name="string" type="string" required="true" hint="The target string"/>
+		<cfscript>
 			var CDRegEx = "\<!\[CDATA\[.*?\]\]\>$"; // Regular expression to discover XML CDATA
 			var fmtStr = arguments.string;
 			var tmpStr = "";
@@ -1363,11 +1354,11 @@ METHODS:
 			/* return Unicoded string */
 			return fmtStr;
 		</cfscript>
-  </cffunction>
-	
-  <cffunction name="URLFormat" output="false" access="private" returntype="string" hint="A CFML XMLFormat() tag replacement that converts URL strings into XML safe, escaped mark-up">
-  	<cfargument name="string" type="string" required="true" hint="The target string"/>
-    <cfscript>
+	</cffunction>
+
+	<cffunction name="URLFormat" output="false" access="private" returntype="string" hint="A CFML XMLFormat() tag replacement that converts URL strings into XML safe, escaped mark-up">
+		<cfargument name="string" type="string" required="true" hint="The target string"/>
+		<cfscript>
 			var fmtStr = arguments.string;
 			var tmpStr = "";
 			var i = 0;
@@ -1378,21 +1369,21 @@ METHODS:
 			return fmtStr;
 		</cfscript>
   </cffunction>
-  
-  <cffunction name="XSLFormat" output="no" access="private" returntype="string" hint="An Extensible Stylesheet (XSL) used to cleanup whitespace within our generated XML code">
-  	<cfset var xsl = "">
-    <cfsavecontent variable="xsl">
-    <cfoutput><xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
-      <xsl:output method="xml" omit-xml-declaration="no" indent="yes" encoding="UTF-8" version="1.0" media-type="text/xml"/>
-      <xsl:strip-space elements="*"/>
-      <xsl:template match="@*|node()">
-        <xsl:copy>
-          <xsl:apply-templates select="@*|node()"/>
-        </xsl:copy>
-      </xsl:template>
-    </xsl:stylesheet></cfoutput>
-    </cfsavecontent>
-  	<cfreturn xsl>
-  </cffunction>
-  
+
+	<cffunction name="XSLFormat" output="no" access="private" returntype="string" hint="An Extensible Stylesheet (XSL) used to cleanup whitespace within our generated XML code">
+		<cfset var xsl = "">
+		<cfsavecontent variable="xsl">
+		<cfoutput><xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
+		<xsl:output method="xml" omit-xml-declaration="no" indent="yes" encoding="UTF-8" version="1.0" media-type="text/xml"/>
+		<xsl:strip-space elements="*"/>
+		<xsl:template match="@*|node()">
+		<xsl:copy>
+		<xsl:apply-templates select="@*|node()"/>
+		</xsl:copy>
+		</xsl:template>
+		</xsl:stylesheet></cfoutput>
+		</cfsavecontent>
+		<cfreturn xsl>
+	</cffunction>
+
 </cfcomponent>
