@@ -88,19 +88,22 @@
 	
 	
 	<!--
-	PersistentRequestProfiler : Activate the event profiler across multiple requests
-	maxPersistentRequestProfilers : Max records to keep in the profiler. Don't get gready.
-	maxRCPanelQueryRows : If a query is dumped in the RC panel, it will be truncated to this many rows.
+		PersistentTracers : Activate tracers in your application for development
+		PersistentRequestProfiler : Activate the event profiler across multiple requests
+		maxPersistentRequestProfilers : Max records to keep in the profiler. Don't get gready.
+		maxRCPanelQueryRows : If a query is dumped in the RC panel, it will be truncated to this many rows.
 	-->
 	<DebuggerSettings>
+		<PersistentTracers>true</PersistentTracers>
 		<PersistentRequestProfiler>true</PersistentRequestProfiler>
 		<maxPersistentRequestProfilers>10</maxPersistentRequestProfilers>
 		<maxRCPanelQueryRows>50</maxRCPanelQueryRows>
+		
 		<TracerPanel 	show="true" expanded="true" />
 		<InfoPanel 		show="true" expanded="true" />
-		<CachePanel 	show="true" expanded="true" />
+		<CachePanel 	show="true" expanded="false" />
 		<RCPanel		show="true" expanded="false" />
-	</DebuggerSettings>	
+	</DebuggerSettings>		
 	
 	<!--Optional,if blank it will use the CFMX administrator settings.-->
 	<MailServerSettings />
