@@ -12,16 +12,14 @@ Description :
 ----------------------------------------------------------------------->
 <cfcomponent name="ColdboxProxy" output="false" extends="coldbox.system.remote.ColdboxProxy">
 
-	<!--- You can override this method if you want to intercept before and after. --->
-	<cffunction name="process" output="false" access="remote" returntype="any" hint="Process a remote call and return data/objects back.">
+	<cffunction name="yourRemoteCall" output="false" access="remote" returntype="YourType" hint="Your Hint">
 		<cfset var results = "">
 		
-		<!--- Anything before --->
+		<!--- Set the event to execute --->
+		<cfset arguments.event = "">
 		
-		<!--- Call the actual proxy --->
+		<!--- Call to process an event --->
 		<cfset results = super.process(argumentCollection=arguments)>
-		
-		<!--- Anything after --->
 		
 		<cfreturn results>
 	</cffunction>
