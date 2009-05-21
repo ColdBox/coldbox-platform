@@ -1,44 +1,40 @@
-<cfcomponent name="debuggerConfigBeanTest" extends="coldbox.testing.resources.baseMockCase">
-	
-	<!--- setup and teardown --->
+<cfcomponent name="debuggerConfigBeanTest" extends="coldbox.system.testing.BaseTestCase">
 	
 	<cffunction name="setUp" returntype="void" access="public">
 		<cfscript>
-			this.debug = createObject("component","coldbox.system.beans.DebuggerConfigBean");	
+			debug = createObject("component","coldbox.system.beans.DebuggerConfigBean");	
 			
-			this.debug.init();
+			debug.init();
 			
-			this.memento.PersistentRequestProfiler = true;
-			this.memento.maxPersistentRequestProfilers = 10;
-			this.memento.maxRCPanelQueryRows = 10;
-			this.memento.showTracerPanel = true;
-			this.memento.expandedTracerPanel =true;
-			this.memento.showInfoPanel = true;
-			this.memento.expandedInfoPanel = true;
-			this.memento.showCachePanel = true;
-			this.memento.expandedCachePanel = true;
-			this.memento.showRCPanel = true;
-			this.memento.expandedRCPanel = true;
+			memento.PersistentRequestProfiler = true;
+			memento.PersistentTracers = true;
+			memento.maxPersistentRequestProfilers = 10;
+			memento.maxRCPanelQueryRows = 10;
+			memento.showTracerPanel = true;
+			memento.expandedTracerPanel =true;
+			memento.showInfoPanel = true;
+			memento.expandedInfoPanel = true;
+			memento.showCachePanel = true;
+			memento.expandedCachePanel = true;
+			memento.showRCPanel = true;
+			memento.expandedRCPanel = true;
 			
-			this.debug.populate(this.debug);	
+			debug.populate(debug);	
 		</cfscript>
 	</cffunction>
 
-	<cffunction name="tearDown" returntype="void" access="public">
-		<!--- Any code needed to return your environment to normal goes here --->
+	<cffunction name="tearDown">
+		
 	</cffunction>
-
-	
-	<!--- Begin specific tests --->
 	
 	<cffunction name="testGetterSetters" access="public" returnType="void">
 		<cfscript>
-			for(key in this.memento){
-				evaluate("this.debug.set#key#( this.memento[key] )");
+			for(key in memento){
+				evaluate("debug.set#key#( memento[key] )");
 			}
 			
-			for(key in this.memento){
-				AssertEquals( this.memento[key] , evaluate("this.debug.get#key#( key )" ) );
+			for(key in memento){
+				AssertEquals( memento[key] , evaluate("debug.get#key#( key )" ) );
 			}
 						
 		</cfscript>
@@ -46,21 +42,21 @@
 	
 	<cffunction name="testgetmemento" access="public" returnType="void">
 		<cfscript>
-			this.debug.setMemento(this.memento);
-			assertEquals( this.debug.getMemento(), this.memento);
+			debug.setMemento(memento);
+			assertEquals( debug.getMemento(), memento);
 		</cfscript>
 	</cffunction>		
 	
 	<cffunction name="testpopulate" access="public" returnType="void">
 		<cfscript>
-			this.debug.populate(this.debug);	
+			debug.populate(debug);	
 		</cfscript>
 	</cffunction>		
 	
 	<cffunction name="testsetmemento" access="public" returnType="void">
 		<cfscript>
-			this.debug.setMemento(this.memento);
-			assertEquals( this.debug.getMemento(), this.memento);
+			debug.setMemento(memento);
+			assertEquals( debug.getMemento(), memento);
 		</cfscript>
 	</cffunction>		
 	

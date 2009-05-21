@@ -63,22 +63,69 @@ Modification History:
 	<cffunction name="testTimers" access="public" returntype="void" output="false">
 		<cfscript>
 		var service = getController().getDebuggerService();
-		
 		structClear(request);
-		service.timerStart('UnitTest');
+		getMockFactory().createMock(object=service);
+		service.mockmethod("getDebugMode",true);
+		hashCode = service.timerStart('UnitTest');
+		
+		//debug(request);
+		
+		AssertTrue( isDefined("request.DebugTimers"), "debug timers" );
+		//debug(hash('UnitTest'));
+		AssertTrue( structKeyExists(request,hashcode), "unit test timer" );
+		
+		service.timerEnd(hashCode);
 		
 		AssertTrue( isDefined("request.DebugTimers") );
-		AssertTrue( isDefined("request.#hash('UnitTest')#") );
-		
-		service.timerEnd('UnitTest');
-		
-		AssertTrue( isDefined("request.DebugTimers") );
-		AssertFalse( structKeyExists(request,hash('UnitTest')) );
+		AssertFalse( structKeyExists(request,hashCode) );
 		AssertTrue( isQuery(request.debugTimers) );
 		AssertTrue( request.debugTimers.recordCount eq 1 );
-		
-		debug(request.debugTimers);
-		
+		</cfscript>
+	</cffunction>
+	
+	<cffunction name="testProfilerPush">
+		<cfscript>
+			service = getController().getDebuggerService();
+			mockConfig = getMockFactory().createMock('coldbox.system.beans.DebuggerConfigBean');
+			
+			/* Test Activate Check */
+			mockConfig.mockMethod("getPersistentRequestProfiler",false);
+			service.setDebuggerConfigBean(mockConfig);
+			service.setProfilers(arrayNew(1));
+			service.pushProfiler(queryNew(""));
+			assertEquals( arrayLen(service.getProfilers()), 0);
+			//debug( service.getProfilers() );
+			
+			/* Entry Check */
+			mockConfig.mockMethod("getPersistentRequestProfiler",true);
+			mockConfig.mockMethod("getmaxPersistentRequestProfilers",10);
+			service.pushProfiler(queryNew(""));
+			assertEquals( arrayLen(service.getProfilers()), 1);
+			
+			/* Max Profilers Check, check Pop */
+			mockConfig.mockMethod("getmaxPersistentRequestProfilers",1);
+			service.pushProfiler(queryNew(""));
+			assertEquals( arrayLen(service.getProfilers()), 1);
+		</cfscript>
+	</cffunction>
+	
+	<cffunction name="testTracerPush">
+		<cfscript>
+			service = getController().getDebuggerService();
+			mockConfig = getMockFactory().createMock('coldbox.system.beans.DebuggerConfigBean');
+			
+			/* Test Activate Check */
+			mockConfig.mockMethod("getPersistentTracers",false);
+			service.setDebuggerConfigBean(mockConfig);
+			service.setTracers(arrayNew(1));
+			service.pushTracer("Test");
+			assertEquals( arrayLen(service.getTracers()), 0);
+			//debug( service.getProfilers() );
+			
+			/* Entry Check */
+			mockConfig.mockMethod("getPersistentTracers",true);
+			service.pushTracer("Test");
+			assertEquals( arrayLen(service.getTracers()), 1);
 		</cfscript>
 	</cffunction>
 	
