@@ -34,7 +34,7 @@ Virtual Method called #test.mockMethodCallCount("virtualReturn")# times
 <!--- MOCKING PROPERTIES --->
 <h1>Mocking Properties</h1>
 Original Reload property value: #test.getReload()#<br />
-<cfset test.mockProperty(propertyName="reload",mockObject=true)>
+<cfset test.$property(propertyName="reload",mock=true,scope="variables")>
 Mocked Reload Property value:  #test.getReload()#<br />
 
 <hr />
@@ -62,16 +62,15 @@ Mocked Test.getFullName() = #test.getFullName()#<br />
 <cfset stub.mockMethod("getName","Luis Majano")>
 <p>Stub Fake Get Name: #stub.getName()#</p>
 
-<!--- PREPARE A MOCK --->
+<!--- PREPARE A MOCK FOR SPYING --->
 <cfset Test = createObject("component","coldbox.testing.cases.testing.Test")>
 <cfset mockBox.prepareMock(test)>
 <h1>Mocking Spy Methods</h1>
 UnMocked Spy -> Test.getData() = #test.getData()#<br />
 UnMocked Spy Call -> Test.spyTest() = #test.spyTest()# <br />
-<cfset test.$("getData",1000)>
+<cfset test.$("getData").$results(1000)>
 Mocked Spy Test.getData() = #test.getData()#<br />
 Mocked Spy Call -> Test.spyTest() = #test.spyTest()# <br />
-
 
 <hr />
 <!--- MOCKING WITH ARGUMENTS --->
@@ -82,12 +81,27 @@ Mocked Spy Call -> Test.spyTest() = #test.spyTest()# <br />
 	AppMapping = #test.getSetting("AppMapping")#<br />
 	DebugMode = #test.getSetting("DebugMode")#<br />
 </p>
-<cfset test.$('getSetting').mockArgs("AppMapping").mockResults("mockbox.testing")>
-<cfset test.$('getSetting').mockArgs("DebugMode").mockResults("true")>
+<cfset test.$('getSetting').$args("AppMapping").$results("mockbox.testing")>
+<cfset test.$('getSetting').$args("DebugMode").$results("true")>
 <p>
 	Mocking the <strong>getSetting() method</strong>:<br />
 	AppMapping = #test.getSetting("AppMapping")# = mockbox.testing<br />
 	DebugMode = #test.getSetting("DebugMode")# = true<br />
 	Call Counts = #test.$count('getSetting')#
 </p>
+
+
+<!--- MOCKING A COLLABORATOR --->
+<cfset Test = createObject("component","coldbox.testing.cases.testing.Test")>
+<cfset mockCollaborator = MockBox.createMock(className="coldbox.testing.cases.testing.Collaborator")>
+<cfset mockCollaborator.$("getDataFromDB").$results(queryNew(""))>
+<cfset Test.setCollaborator(mockCollaborator)>
+<cfdump var="#test.displayData()#">
+
+<!--- PREPARE TEST FOR MOCCKING --->
+<cfset Test.setCollaborator(structnew())>
+<cfset mockBox.prepareMock(Test)>
+<cfset Test.$property(propertyName="collaborator",mock=mockCollaborator)>
+<cfdump var="#test.displayData()#">
+
 </cfoutput>

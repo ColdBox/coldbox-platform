@@ -5,8 +5,23 @@
 		variables.name = "Luis";
 		variables.settings = structnew();
 		variables.settings["appname"] = "mockFactory";
-		variables.settings["appmapping"] = "/mockFactory";		
+		variables.settings["appmapping"] = "/mockFactory";
+		
+		variables.collaborator = createObject("component","coldbox.testing.cases.testing.Collaborator");		
 	</cfscript>
+
+	<cffunction name="displayData" access="public" returntype="query" hint="get data and send it back" output="false" >
+		<cfreturn variables.collaborator.getDataFromDB()>
+	</cffunction>
+	
+	<!--- Collaborator --->
+	<cffunction name="getcollaborator" access="public" output="false" returntype="any" hint="Get collaborator">
+		<cfreturn variables.collaborator/>
+	</cffunction>
+	<cffunction name="setcollaborator" access="public" output="false" returntype="void" hint="Set collaborator">
+		<cfargument name="collaborator" type="any" required="true"/>
+		<cfset variables.collaborator = arguments.collaborator/>
+	</cffunction>
 
 	<!--- getData --->
 	<cffunction name="getData" output="false" access="public" returntype="any" hint="">

@@ -128,10 +128,10 @@ Description		:
 		<!--- ************************************************************* --->
 		<cfargument name="propertyName" 	type="string" 	required="true" hint="The name of the property to mock"/>
 		<cfargument name="propertyScope" 	type="string" 	required="false" default="variables" hint="The scope where the property lives in. By default we will use the variables scope."/>
-		<cfargument name="mockObject" 		type="any" 		required="true" hint="The object or data to inject"/>
+		<cfargument name="mock" 			type="any" 		required="true" hint="The object or data to inject"/>
 		<!--- ************************************************************* --->
 		<cfscript>
-			"#arguments.propertyScope#.#arguments.propertyName#" = arguments.mockObject;
+			"#arguments.propertyScope#.#arguments.propertyName#" = arguments.mock;
 			return this;
 		</cfscript>	
 	</cffunction>	
