@@ -15,9 +15,9 @@
 		<Setting name="DefaultEvent" 				value="ehGeneral.dspHello"/>
 		<Setting name="RequestStartHandler" 		value=""/>
 		<Setting name="RequestEndHandler" 			value=""/>
-		<Setting name="ApplicationStartHandler"		value="ehGeneral.onApplicationStart" />
-		<Setting name="SessionStartHandler"		    value="ehGeneral.onSessionStart" />
-		<Setting name="SessionEndHandler"		    value="" />
+		<Setting name="ApplicationStartHandler"		value="main.onApplicationStart" />
+		<Setting name="SessionStartHandler"		    value="main.onSessionStart" />
+		<Setting name="SessionEndHandler"		    value="main.onSessionEnd" />
 		<Setting name="OwnerEmail" 					value="info@coldboxframework.com"/>
 		<Setting name="EnableBugReports" 			value="false"/>
 		<Setting name="UDFLibraryFile" 				value="includes/udf.cfm" />
@@ -32,6 +32,8 @@
 		<Setting name="ViewsExternalLocation"		value="/coldbox/testing/testviews" />
 		<Setting name="HandlersExternalLocation" 	value="coldbox.testing.testhandlers"/>
 		<Setting name="ModelsExternalLocation"   	value="coldbox.testing.testmodel" />
+		<Setting name="ModelsDebugMode"				value="true" />
+		
 		<Setting name="HandlerCaching" 				value="false"/>
 		<Setting name="EventCaching" 				value="true"/>
 		<Setting name="IOCFramework" 				value="lightwire"/>
@@ -141,7 +143,7 @@
 			<Property name="deployCommandObject">coldbox.testharness.model.DeployCleanup</Property>
 		</Interceptor>
 		<Interceptor class="coldbox.system.interceptors.Autowire">
-			<Property name="debugMode">false</Property>
+			<Property name="debugMode">true</Property>
 			<Property name="enableSetterInjection">false</Property>
 		</Interceptor>
 		<Interceptor class="coldbox.system.interceptors.SES">
