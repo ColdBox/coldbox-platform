@@ -1,4 +1,4 @@
-<cfcomponent name="requestContextDecoratorTest" extends="coldbox.testing.resources.baseMockCase">
+<cfcomponent name="requestContextDecoratorTest" extends="coldbox.system.testing.BaseTestCase">
 	
 	<!--- setup and teardown --->
 	

@@ -469,7 +469,7 @@ Modification History:
 		<!--- ************************************************************* --->
 		<cfargument name="type" 		required="true" type="string" default="PLAIN" hint="The type of data to render. Valid types are JSON, WDDX, PLAIN. THe deafult is PLAIN. IF an invalid type is sent in, this method will throw an error">
 		<cfargument name="data" 		required="true" type="any" 	 hint="The data you would like to marshall and return by the framework">
-		<cfargument name="contenttype"  required="true" type="string" default="text/html" hint="The content type of the data. This will be used in the cfcontent tag: text/html, text/plain, text/xml, text/json, etc. The default value is text/html. However, if you choose JSON this method will choose text/plain, if you choose WDDX this method will choose text/xml for you. The default encoding is utf-8"/>
+		<cfargument name="contentType"  required="true" type="string" default="" hint="The content type of the data. This will be used in the cfcontent tag: text/html, text/plain, text/xml, text/json, etc. The default value is text/html. However, if you choose JSON this method will choose text/plain, if you choose WDDX this method will choose text/xml for you. The default encoding is utf-8"/>
 		<!--- ************************************************************* --->
 		<cfscript>
 			var rd = structnew();
@@ -490,7 +490,13 @@ Modification History:
 				rd.contenttype = 'text/xml';
 			}
 			else{
-				rd.contenttype = arguments.contenttype;
+				/* If contenttype passed? */
+				if( len(trim(arguments.contentType)) ){
+					rd.contentType = arguments.contentType;
+				}
+				else{
+					rd.contentType = "text/html";
+				}
 			}
 			
 			/* Save */

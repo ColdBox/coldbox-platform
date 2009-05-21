@@ -1,4 +1,4 @@
-<cfcomponent name="interceptorStateTest" extends="coldbox.testing.resources.baseMockCase">
+<cfcomponent name="interceptorStateTest" extends="coldbox.system.testing.BaseTestCase">
 	<!--- setup and teardown --->
 	
 	<cffunction name="setUp" returntype="void" access="public">
@@ -6,6 +6,7 @@
 			this.state = createObject("component","coldbox.system.beans.InterceptorState");		
 			this.event = createobject("component","coldbox.system.beans.RequestContext");
 			this.mock = createObject("component","coldbox.testing.testinterceptors.mock");
+			this.mock2 = createObject("component","coldbox.testing.testinterceptors.mock");
 			
 			this.key = "cbox_interceptor_" & "mock";
 			

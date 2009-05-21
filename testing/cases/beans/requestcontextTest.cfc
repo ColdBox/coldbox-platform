@@ -468,7 +468,36 @@
 			
 			AssertEquals( event.getRenderData(), test);
 			
+			/* Wipe it */
+			event.setValue("cbox_renderdata",structnew());
+			
+			/* Test WDDX */
+			event.renderData("WDDX",ArrayNew(1));
+			test.data = ArrayNew(1);
+			test.type = "WDDX";
+			test.contenttype="text/xml";
+			
+			AssertEquals( event.getRenderData(), test);			
+			
+			/* Test PLAIN */
+			event.renderData(data="Hello");
+			test.data = "Hello";
+			test.type = "plain";
+			test.contenttype="text/html";
+			
+			AssertEquals( event.getRenderData(), test);	
+			
+			/* Test contenttype */
+			event.renderData(data="Hello",contentType="application/ms-excel");
+			test.data = "Hello";
+			test.type = "plain";
+			test.contenttype="application/ms-excel";
+			
+			AssertEquals( event.getRenderData(), test);	
+			
+					
 		</cfscript>
+		
 	</cffunction>
 	
 	<cffunction name="testgetHTTPMethod">

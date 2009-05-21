@@ -1,4 +1,4 @@
-<cfcomponent name="exceptionBeanTest" extends="coldbox.testing.resources.baseMockCase">
+<cfcomponent name="exceptionBeanTest" extends="coldbox.system.testing.BaseTestCase">
 	
 	<!--- setup and teardown --->
 	
