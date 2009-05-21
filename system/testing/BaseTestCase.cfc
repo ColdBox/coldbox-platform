@@ -255,19 +255,20 @@ id , name , mail
 		<cfabort>
 	</cffunction>
 	
-	<cfscript>
-	/**
-	* Accepts a specifically formatted chunk of text, and returns it as a query object.
-	* v2 rewrite by Jamie Jackson
-	*
-	* @param queryData      Specifically format chunk of text to convert to a query. (Required)
-	* @return Returns a query object.
-	* @author Bert Dawson (bert@redbanner.com)
-	* @version 2, December 18, 2007
-	* 
-	*/
-	function querySim(queryData) {
-	    var fieldsDelimiter="|";
+	<cffunction name="querySim" access="private" returntype="query" hint="Query Simulator" output="false" >
+		<cfargument name="queryData"  type="string" required="true" hint="The data to create queries">
+		<cfscript>
+		/**
+		* Accepts a specifically formatted chunk of text, and returns it as a query object.
+		* v2 rewrite by Jamie Jackson
+		*
+		* @param queryData      Specifically format chunk of text to convert to a query. (Required)
+		* @return Returns a query object.
+		* @author Bert Dawson (bert@redbanner.com)
+		* @version 2, December 18, 2007
+		* 
+		*/
+		var fieldsDelimiter="|";
 	    var colnamesDelimiter=",";
 	    var listOfColumns="";
 	    var tmpQuery="";
@@ -303,8 +304,7 @@ id , name , mail
 	    }
 	    
 	    return( tmpQuery );
-	    
-	}
-	</cfscript>
+		</cfscript>
+	</cffunction>
 
 </cfcomponent>
