@@ -295,9 +295,9 @@ Description		:
 			</cfcatch>
 		</cftry>
 		
-		<!--- Remove it 
+		<!--- Remove it --->
 		<cffile action="delete" file="#genPath##tmpFile#">
-		--->
+		
 		<cfscript>
 			/* Results Setup For No Argument Definitions or base results */
 			if( structKeyExists(arguments, "returns") ){
