@@ -38,7 +38,7 @@ Description		:
 			/* version */
 			instance.version = "1.0 Beta";
 			/* Generator */
-			instance.generator = createObject("component","coldbox.system.testing.mocks.MockGenerator").init(this);
+			instance.mockGenerator = createObject("component","coldbox.system.testing.mocks.MockGenerator").init(this);
 			
 			/* Return Instance */
 			return this;
@@ -46,6 +46,11 @@ Description		:
 	</cffunction>
 	
 <!------------------------------------------- PUBLIC ------------------------------------------>
+	
+	<!--- Get Generator --->
+	<cffunction name="getmockGenerator" access="public" returntype="coldbox.system.testing.mocks.MockGenerator" output="false">
+		<cfreturn instance.mockGenerator>
+	</cffunction>
 	
 	<!--- Get/Set generation path --->
 	<cffunction name="getgenerationPath" access="public" returntype="string" output="false" hint="Get the current generation path">
@@ -200,11 +205,9 @@ Description		:
 		<cfargument name="throwMessage"	  type="string" required="false" default="" hint="The message of the exception to throw"/>
 		<!--- ************************************************************* --->
 		<cfscript>
-			var udfOut = CreateObject("java","java.lang.StringBuffer").init('');
-			var genPath = ExpandPath(this._mockGenerationPath);
-			var tmpFile = createUUID() & ".cfm";
-			var lb = "#chr(13)##chr(10)#";
 			var fncMD = structnew();
+			var genFile = "";
+			var oMockGenerator = this.MockBox.getmockGenerator();
 			
 			/* Check if the method is existent in public scope */
 			if ( structKeyExists(this,arguments.method) ){
@@ -234,71 +237,11 @@ Description		:
 			structDelete(this,arguments.method);
 			structDelete(variables,arguments.method);
 			
-			/* Create Method On Appropriate Scope */
-			if ( fncMD["access"] eq "public" ){
-				udfOut.append('<cfset this["#arguments.method#"] = #arguments.method#>#lb#');
-			}
-			udfOut.append('
-			<cfset variables["#arguments.method#"] = #arguments.method#>
-			<cffunction name="#arguments.method#" access="#fncMD.access#" output="#fncMD.output#" returntype="#fncMD.returntype#">
+			/* Generate Mock Method */
+			arguments.metadata = fncMD;
+			arguments.targetObject = this;
+			oMockGenerator.generate(argumentCollection=arguments);
 			
-			<cfset var results = this._mockResults>
-			<cfset var resultsKey = "#arguments.method#">
-			<cfset var resultsCounter = 0>
-			<cfset var internalCounter = 0>
-			<cfset var resultsLen = 0>
-			<cfset var argsHashKey = resultsKey & "|" & hash(arguments.toString())>
-			
-			<!--- If Method & argument Hash Results, switch the results struct --->
-			<cfif structKeyExists(this._mockArgResults,argsHashKey)>
-				<cfset results = this._mockArgResults>
-				<cfset resultsKey = argsHashKey>
-			</cfif>
-			
-			<!--- Get the statemachine counter --->
-			<cfset resultsLen = arrayLen(results[resultsKey])>
-			<!--- Log the Method Call --->
-			<cfset this._mockMethodCallCounters[listFirst(resultsKey,"|")] = this._mockMethodCallCounters[listFirst(resultsKey,"|")] + 1>
-			<!--- Get the CallCounter Reference --->
-			<cfset internalCounter = this._mockMethodCallCounters[listFirst(resultsKey,"|")]>
-			');
-			
-			/* Exceptions? To Throw */
-			if( arguments.throwException ){
-				udfOut.append('<cfthrow type="#arguments.throwType#" message="#arguments.throwMessage#" detail="#arguments.throwDetail#" />#lb#');
-			}			
-			/* Returns Something according to metadata? */
-			if ( fncMD["returntype"] neq "void" ){
-				/* Results Recyling Code, basically, state machine code */
-				udfOut.append('
-				<cfif internalCounter gt resultsLen>
-					<cfset resultsCounter = internalCounter - ( resultsLen*fix( (internalCounter-1)/resultsLen ) )>
-					<cfreturn results[resultsKey][resultsCounter]>
-				<cfelse>
-					<cfreturn results[resultsKey][internalCounter]>
-				</cfif>
-				');			
-			}
-			udfOut.append('</cffunction>');
-		</cfscript>
-		
-		<!--- Write UDF --->
-		<cffile action="write" file="#genPath##tmpFile#" output="#udfOut.toString()#">
-		
-		<cftry>
-			<!--- Include it --->
-			<cfinclude template="#this._mockGenerationPath##tmpFile#">
-			<cfcatch type="Any">
-				<!--- Remove it --->
-				<cffile action="delete" file="#genPath##tmpFile#">
-				<cfrethrow />
-			</cfcatch>
-		</cftry>
-		
-		<!--- Remove it --->
-		<cffile action="delete" file="#genPath##tmpFile#">
-		
-		<cfscript>
 			/* Results Setup For No Argument Definitions or base results */
 			if( structKeyExists(arguments, "returns") ){
 				this._mockResults[arguments.method] = ArrayNew(1);
@@ -317,6 +260,12 @@ Description		:
 			return this;
 		</cfscript>
 	</cffunction>	
+	
+	<!--- $include --->
+	<cffunction name="$include" output="false" access="public" returntype="void" hint="Mix in a template">
+		<cfargument name="templatePath" type="string" required="true"/>
+		<cfinclude template="#arguments.templatePath#">
+	</cffunction>
 
 <!------------------------------------------- PRIVATE ------------------------------------------>
 
@@ -351,8 +300,12 @@ Description		:
 			obj.mockMethodCallCount = variables.mockMethodCallCount;
 			/* Mock Results */
 			obj.mockResults 		= variables.mockResults;
+			obj.$results			= obj.mockResults;
 			/* Mock Arguments */
 			obj.mockArgs			= variables.mockArgs;
+			obj.$args				= obj.mockArgs;
+			/* Mock Helpers */
+			obj.$include			= variables.$include;
 			/* Mock Box */
 			obj.mockBox 			= this;			
 		</cfscript>
