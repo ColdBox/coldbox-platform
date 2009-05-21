@@ -1,0 +1,31 @@
+<cfset this["getSetting"] = getSetting>
+
+			<cfset variables["getSetting"] = getSetting>
+			<cffunction name="getSetting" access="public" output="false" returntype="string">
+			
+			<cfset var results = this._mockResults>
+			<cfset var resultsKey = "getSetting">
+			<cfset var resultsCounter = 0>
+			<cfset var internalCounter = 0>
+			<cfset var resultsLen = 0>
+			
+			<!--- If Method & argument Hash Results, switch the results struct --->
+			<cfif structKeyExists(this._mockArgResults,resultsKey & hash(arguments.toString()))>
+				<cfset results = this._mockArgResults>
+				<cfset resultsKey = resultsKey & hash(arguments.toString())>
+			</cfif>
+			
+			<!--- Get the statemachine counter --->
+			<cfset resultsLen = arrayLen(results[resultsKey])>
+			<!--- Log the Method Call --->
+			<cfset this._mockMethodCallCounters[resultsKey] = this._mockMethodCallCounters[resultsKey] + 1>
+			<!--- Get the CallCounter Reference --->
+			<cfset internalCounter = this._mockMethodCallCounters[resultsKey]>
+			
+				<cfif internalCounter gt resultsLen>
+					<cfset resultsCounter = internalCounter - ( resultsLen*fix( (internalCounter-1)/resultsLen ) )>
+					<cfreturn results[resultsKey][resultsCounter]>
+				<cfelse>
+					<cfreturn results[resultsKey][internalCounter]>
+				</cfif>
+				</cffunction>

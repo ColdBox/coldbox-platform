@@ -25,6 +25,20 @@
 		<cfreturn variables.name>
 	</cffunction>
 	
+	<!--- Spy Test --->
+	<!--- spyTest --->
+	<cffunction name="spyTest" output="false" access="public" returntype="any" hint="Spy test">
+		<cfscript>
+			/* I do a spy test call */
+			if( getData() gt 100 ){
+				return 0;
+			}
+			else{
+				return getData();
+			}
+		</cfscript>
+	</cffunction>
+	
 	<!--- getSetting --->
 	<cffunction name="getSetting" output="false" access="public" returntype="string" hint="Get a setting">
 		<cfargument name="name" type="string" required="true" default="" hint="Name of setting"/>
