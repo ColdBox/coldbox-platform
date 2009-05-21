@@ -513,6 +513,9 @@ Modification History:
 			//Check for ModelsStopRecursion
 			if ( not structKeyExists(ConfigStruct, "ModelsStopRecursion") or len(ConfigStruct["ModelsStopRecursion"]) eq 0 )
 				ConfigStruct["ModelsStopRecursion"] = fwSettingsStruct["ModelsStopRecursion"];
+			//Check for ModelsDefinitionFile
+			if ( not structKeyExists(ConfigStruct, "ModelsDefinitionFile") or len(ConfigStruct["ModelsDefinitionFile"]) eq 0 )
+				ConfigStruct["ModelsDefinitionFile"] = fwSettingsStruct["ModelsDefinitionFile"];
 			
 			/* Flash URL Persist Scope Override */
 			if( structKeyExists(ConfigStruct,"FlashURLPersistScope") and reFindnocase("^(session|client)$",ConfigStruct["FlashURLPersistScope"]) ){

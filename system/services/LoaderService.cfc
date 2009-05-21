@@ -113,6 +113,9 @@ Modification History:
 			controller.getPlugin("Logger").initLogLocation();
 		}
 		
+		/* Init Model Integration */
+		controller.getPlugin("BeanFactory").configure();
+		
 		/* IoC Plugin Manager Configuration */
 		if ( controller.getSetting("IOCFramework") neq "" ){
 			//Create IoC Factory and configure it.

@@ -40,6 +40,7 @@
 		<Setting name="LightWireBeanFactory" value="coldbox.system.extras.lightwire.LightWire"/>
         <!--MessageBox Plugin Storage Scope (session|client)-->
         <Setting name="MessageBoxStorage" value="session"/>
+        
         <!--ColdBox Cache Parameter: Default Object Timeout in Minutes -->
         <Setting name="CacheObjectDefaultTimeout" value="60"/>
         <!--ColdBox Cache Parameter: Default Object Last Accessed Timeout in Minutes -->
@@ -54,6 +55,7 @@
         <Setting name="CacheUseLastAccessTimeouts" value="true"/> 
         <!--ColdBox Cache Parameter: The default eviction policy (LFU or LRU or FIFO) -->
         <Setting name="CacheEvictionPolicy" value="LRU"/> 
+        
         <!-- Debugger settings -->
         <Setting name="PersistentRequestProfiler" value="true"/>
         <Setting name="maxPersistentRequestProfilers" value="10"/>
@@ -67,12 +69,14 @@
         <Setting name="expandedCachePanel" value="false"/>
         <Setting name="showRCPanel" value="true"/>
         <Setting name="expandedRCPanel" value="false"/>  
+       
         <!-- Model Integration -->
         <Setting name="ModelsObjectCaching"  value="true" />
         <Setting name="ModelsSetterInjection"  value="false" />
         <Setting name="ModelsDebugMode"  value="false" />
         <Setting name="ModelsStopRecursion"  value="" />
         <Setting name="ModelsDICompleteUDF"  value="onDIComplete" />
+        <Setting name="ModelsDefinitionFile"  value="config/ModelMappings.cfm" />
     </Settings>
     
     <!-- Conventions -->

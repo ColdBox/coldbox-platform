@@ -58,6 +58,7 @@
 		<!--Model Integration -->
 		<Setting name="ModelsExternalLocation"   	value="" />
 		<Setting name="ModelsObjectCaching"   		value="true" />
+		<Setting name="ModelsDefinitionFile" 		value="config/ModelMappings.cfm"/>
 		<!-- Uncomment More Model Integration Settings:
 			<Setting name="ModelsSetterInjection"   	value="false" />
 			<Setting name="ModelsDICompleteUDF"   		value="onDIComplete" />

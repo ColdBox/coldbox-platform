@@ -36,7 +36,7 @@ id , name , mail
 <cfcomponent name="BaseTestCase" 
 			 extends="mxunit.framework.TestCase" 
 			 output="false" 
-			 hint="A base unit test case for doing ColdBox Testing">
+			 hint="A base test case for doing ColdBox Testing">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
@@ -49,15 +49,15 @@ id , name , mail
 		instance.controller = 0;
 		instance.coldboxAppKey = "cbController";
 		
-		/* Public Properties */
+		/* Public Switch Properties */
 		this.persist_framework = true;
 		this.loadColdbox = true;
 		
-		/* Prepare Mocking Factory */
-		instance.mockFactory = createObject("component","coldbox.system.testing.MockFactory").init();
+		/* Prepare MockBox */
+		instance.mockBox = createObject("component","coldbox.system.testing.MockBox").init();
 	</cfscript>
 
-	<cffunction name="setup" hint="The setup method">
+	<cffunction name="setup" hint="The main setup method">
 		<cfscript>
 		var appRootPath = expandPath(instance.AppMapping);
 		
@@ -74,10 +74,12 @@ id , name , mail
 			else{
 				//Initialize ColdBox
 				instance.controller = CreateObject("component", "coldbox.system.testing.TestController").init( appRootPath );
+				
 				/* Verify Persistence */
 				if( this.persist_framework ){
 					application[getColdboxAppKey()] = instance.controller;
 				}
+				
 				/* Setup */
 				instance.controller.getLoaderService().configLoader(instance.ConfigMapping,instance.AppMapping);
 			}
@@ -91,77 +93,92 @@ id , name , mail
 		</cfscript>
 	</cffunction>
 	
-	<cffunction name="tearDown" hint="The teardown" >
+	<cffunction name="tearDown" hint="The main teardown" >
 		<cfscript>
-			structDelete(application,"cbController");
+			structDelete(application,getColdboxAppKey());
 		</cfscript>
 	</cffunction>
 
 <!------------------------------------------- HELPERS ------------------------------------------->
 
-	<!--- getMockFactory --->
-	<cffunction name="getMockFactory" output="false" access="private" returntype="coldbox.system.testing.MockFactory" hint="Get the mocking factory">
-		<cfreturn instance.mockFactory>
+	<!--- getmockBox --->
+	<cffunction name="getmockBox" output="false" access="private" returntype="coldbox.system.testing.MockBox" hint="Get a reference to the MockBox framework">
+		<cfreturn instance.mockBox>
+	</cffunction>
+	<!--- Get a Mock Model --->
+	<cffunction name="mockModel" access="private" returntype="any" hint="Get a mock model object by convention. The object is created but not initiated, that would be your job." output="false" >
+		<cfargument name="name" 			type="string"   required="true" hint="The name of the model to mock">
+		<cfargument name="clearMethods" 	type="boolean"  required="false" default="false" hint="If true, all methods in the target mock object will be removed. You can then mock only the methods that you want to mock"/>
+		<cfscript>
+			var mockLocation = getController().getPlugin("BeanFactory").locateModel(arguments.name,true);
+			
+			if( len(mockLocation) ){
+				return getMockBox().createMock(className=mockLocation,clearMethods=arguments.clearMethods);
+			}
+			else{
+				throwit(message="Model object #arguments.name# could not be located.",type="ModelNotFoundException");
+			}
+		</cfscript>
 	</cffunction>
 
 	<!--- Reset the persistence --->
-	<cffunction name="reset" access="private" returntype="void" hint="Reset the persistence of the unit test coldbox app" output="false" >
-		<cfset structDelete(application,"cbController")>
+	<cffunction name="reset" access="private" returntype="void" hint="Reset the persistence of the unit test coldbox app, basically removes the controller from application scope" output="false" >
+		<cfset structDelete(application,getColdboxAppKey())>
 	</cffunction>
 	
 	<!--- get/Set Coldbox App Key --->
-	<cffunction name="getcoldboxAppKey" access="public" output="false" returntype="string" hint="Get the coldboxAppKey">
+	<cffunction name="getcoldboxAppKey" access="private" output="false" returntype="string" hint="Get the coldboxAppKey used to store the coldbox controller in application scope.">
 		<cfreturn instance.coldboxAppKey/>
 	</cffunction>
-	<cffunction name="setcoldboxAppKey" access="public" output="false" returntype="void" hint="Override the coldboxAppKey">
+	<cffunction name="setcoldboxAppKey" access="private" output="false" returntype="void" hint="Override the coldboxAppKey, used to store the coldbox controller in application scope.">
 		<cfargument name="coldboxAppKey" type="string" required="true"/>
 		<cfset instance.coldboxAppKey = arguments.coldboxAppKey/>
 	</cffunction>
 	
 	<!--- getter for AppMapping --->
-	<cffunction name="getAppMapping" access="private" returntype="string" output="false" hint="Get the AppMapping">
+	<cffunction name="getAppMapping" access="private" returntype="string" output="false" hint="Get the AppMapping used for this test case">
 		<cfreturn instance.AppMapping>
 	</cffunction>
 	
 	<!--- setter for AppMapping --->
-	<cffunction name="setAppMapping" access="private" output="false" returntype="void" hint="Set the AppMapping">
+	<cffunction name="setAppMapping" access="private" output="false" returntype="void" hint="Set the AppMapping for this test case">
 		<cfargument name="AppMapping" type="string" required="true"/>
 		<cfset instance.AppMapping = arguments.AppMapping/>
 	</cffunction>
 
 	<!--- getter for ConfigMapping --->
-	<cffunction name="getConfigMapping" access="private" returntype="string" output="false" hint="Get the ConfigMapping">
+	<cffunction name="getConfigMapping" access="private" returntype="string" output="false" hint="Get the ConfigMapping for this test case">
 		<cfreturn instance.ConfigMapping>
 	</cffunction>
 	
 	<!--- setter for ConfigMapping --->
-	<cffunction name="setConfigMapping" access="private" output="false" returntype="void" hint="Set the ConfigMapping">
+	<cffunction name="setConfigMapping" access="private" output="false" returntype="void" hint="Set the ConfigMapping for this test case">
 		<cfargument name="ConfigMapping" type="string" required="true"/>
 		<cfset instance.ConfigMapping = arguments.ConfigMapping/>
 	</cffunction>
 
 	<!--- getter for controller --->
-	<cffunction name="getcontroller" access="private" returntype="any" output="false" hint="Get a reference to the ColdBox controller">
+	<cffunction name="getcontroller" access="private" returntype="any" output="false" hint="Get a reference to the ColdBox mock controller">
 		<cfif this.persist_framework>
-			<cfset instance.controller = application.cbController>
+			<cfset instance.controller = application[getColdboxAppKey()]>
 		</cfif>
 		<cfreturn instance.controller>
 	</cffunction>
 
 	<!--- Get current request context --->
-	<cffunction name="getRequestContext" access="private" output="false" returntype="any" hint="Get the event object">
+	<cffunction name="getRequestContext" access="private" output="false" returntype="any" hint="Get a reference to the mock request context">
 		<cfreturn getController().getRequestService().getContext() >
 	</cffunction>
 
 	<!--- Setup a request context --->
-	<cffunction name="setupRequest" access="private" output="false" returntype="void" hint="Setup a request with FORM/URL data">
+	<cffunction name="setupRequest" access="private" output="false" returntype="void" hint="Setup an initial request capture.  I basically look at the FORM/URL scopes and create the request collection out of them.">
 		<cfset getController().getRequestService().requestCapture() >
 	</cffunction>
 
 	<!--- prepare request, execute request and retrieve request --->
-	<cffunction name="execute" access="private" output="false" returntype="any" hint="Executes a framework lifecycle">
-		<cfargument name="eventhandler" required="true" type="string" hint="The event to execute">
-		<cfargument name="private" required="false" type="boolean" default="false" hint="Call a private event or not">
+	<cffunction name="execute" access="private" output="false" returntype="any" hint="Executes a framework lifecycle by executing an event.  This method returns a request context object that can be used for assertions">
+		<cfargument name="eventhandler" required="true"  type="string" hint="The event to execute">
+		<cfargument name="private" 		required="false" type="boolean" default="false" hint="Call a private event or not">
 		<cfscript>
 			var handlerResults = "";
 			var requestContext = "";
@@ -175,7 +192,7 @@ id , name , mail
 			//Return the correct event context.
 			requestContext = getRequestContext();
 			
-			//If we have results save
+			//If we have results save them in our context for assertions
 			if ( isDefined("handlerResults") ){
 				requestContext.setValue("cbox_handler_results", handlerResults);
 			}
@@ -185,7 +202,7 @@ id , name , mail
 	</cffunction>
 	
 	<!--- Announce Interception --->
-	<cffunction name="announceInterception" access="private" returntype="void" hint="Announce an interception to the system." output="false" >
+	<cffunction name="announceInterception" access="private" returntype="void" hint="Announce an interception in the system." output="false" >
 		<cfargument name="state" 			required="true"  type="string" hint="The interception state to execute">
 		<cfargument name="interceptData" 	required="false" type="struct" default="#structNew()#" hint="A data structure used to pass intercepted information.">
 		<cfset getController().getInterceptorService().processState(argumentCollection=arguments)>
@@ -211,13 +228,22 @@ id , name , mail
 		<!--- ************************************************************* --->
 		<cfreturn getController().getPlugin("BeanFactory").getModel(argumentCollection=arguments)>
 	</cffunction>
-
+	
 	<!--- Dump facade --->
 	<cffunction name="dumpit" access="private" hint="Facade for cfmx dump" returntype="void">
 		<cfargument name="var" required="yes" type="any">
 		<cfargument name="isAbort" type="boolean" default="false" required="false" hint="Abort also"/>
 		<cfdump var="#var#">
 		<cfif arguments.isAbort><cfabort></cfif>
+	</cffunction>
+	<!--- Throwit facade --->
+	<cffunction name="throwit" access="private" hint="Facade for cfthrow" output="false">
+		<!--- ************************************************************* --->
+		<cfargument name="message" 	type="string" 	required="yes">
+		<cfargument name="detail" 	type="string" 	required="no" default="">
+		<cfargument name="type"  	type="string" 	required="no" default="Framework">
+		<!--- ************************************************************* --->
+		<cfthrow type="#arguments.type#" message="#arguments.message#"  detail="#arguments.detail#">
 	</cffunction>
 	<!--- Rethrow Facade --->
 	<cffunction name="rethrowit" access="private" returntype="void" hint="Rethrow facade" output="false" >

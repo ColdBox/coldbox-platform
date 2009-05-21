@@ -68,6 +68,7 @@
 									<xs:enumeration value="ModelsDebugMode" />
 									<xs:enumeration value="ModelsStopRecursion" />
 									<xs:enumeration value="ModelsDICompleteUDF" />
+									<xs:enumeration value="ModelsDefinitionFile" />
 									<xs:enumeration value="PluginsExternalLocation" />
 									<xs:enumeration value="onInvalidEvent"/>	
 									<xs:enumeration value="OwnerEmail"/>

@@ -16,6 +16,7 @@ Description :
 			//Setup ColdBox Mappings For this Test
 			setAppMapping("/coldbox/testharness");
 			setConfigMapping(ExpandPath("/coldbox/testing/resources/coldbox.test.xml.cfm"));
+			
 			//reset();
 			//Call the super setup method to setup the app.
 			super.setup();
