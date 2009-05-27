@@ -16,7 +16,6 @@ Description :
 <cfcomponent name="FeedReader"
 			 hint="Feed reader plug-in additional methods"
 			 output="false">
-
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
 	<cffunction name="init" access="public" returntype="FeedReader" output="false">
@@ -38,7 +37,7 @@ Description :
 			var y = 1;
 			if( structKeyExists(item,"media:group") and structKeyExists(item["media:group"],"media:credit") ) path = item["media:group"]["media:credit"];
 			else if (structKeyExists(item,"media:credit") ) path = item["media:credit"];
-			if( len(path) ){
+			if( not IsSimpleValue(path) and arrayLen(path) ){
 				for(y=1; y lte arrayLen(path);y=y+1){
 					if( isStruct(path[y]) and structKeyExists(path[y],'role') and path[y].role is "author" ) return path[y].xmlText;
 					else if( not isStruct(path[y]) and not structKeyExists(path[y],'role') ) return path[y].xmlText;
@@ -67,7 +66,7 @@ Description :
 			// MediaRSS categories
 			if( structKeyExists(item,"media:group") and structKeyExists(item["media:group"],"media:category") ) path = item["media:group"]["media:category"];
 			else if (structKeyExists(item,"media:category") ) path = item["media:category"];
-			if( len(path) ){
+			if( not IsSimpleValue(path) and arrayLen(path) ){
 				for(y=1; y lte arrayLen(path);y=y+1){
 					itemStruct = StructNew();
 					itemStruct.tag = path[y].xmlText;
@@ -78,9 +77,9 @@ Description :
 			}
 			path = "";
 			// mediarss keywords
-			if( structKeyExists(item,"media:group") and structKeyExists(item["media:group"],"media:keywords") ) path = item["media:group"]["media:keywords"];
+			if( isArray(path) and structKeyExists(item,"media:group") and structKeyExists(item["media:group"],"media:keywords") ) path = item["media:group"]["media:keywords"];
 			else if (structKeyExists(item,"media:keywords") ) path = item["media:keywords"];
-			if( len(path) ) {
+			if( not IsSimpleValue(path) and arrayLen(path) ) {
 				for(y=1; y lte arrayLen(path);y=y+1){
 					itemStruct = StructNew();
 					itemStruct.tag = path[y].xmlText;
@@ -91,7 +90,7 @@ Description :
 			path = "";
 			// atom and rss categories
 			if(StructKeyExists(item,"category")) path = item.category;
-			if( len(path) ){
+			if( not IsSimpleValue(path) and arrayLen(path) ){
 				for(y=1; y lte arrayLen(path); y=y+1){
 					// atom
 					if( StructKeyExists(path[y].xmlAttributes,'term') and len(path[y].xmlAttributes.term) ) { 
@@ -113,7 +112,7 @@ Description :
 			path = "";
 			// Dublin Core subject being used as a category
 			if( structKeyExists(item,"dc:subject") ) path = item["dc:subject"];
-			if( len(path) ) {
+			if( not IsSimpleValue(path) and arrayLen(path) ) {
 				for(y=1; y lte arrayLen(path);y=y+1){
 					itemStruct = StructNew();
 					itemStruct.tag = path[y].xmlText;
@@ -124,7 +123,7 @@ Description :
 			path = "";
 			// iTunes Category
 			if( structKeyExists(item,"itunes:category") ) path = item["itunes:category"];
-			if( len(path) ) {
+			if( not IsSimpleValue(path) and arrayLen(path) ) {
 				for(y=1; y lte arrayLen(path);y=y+1){
 					itemStruct = StructNew();
 					itemStruct.tag = path[y].xmlText;
@@ -135,7 +134,7 @@ Description :
 			path = "";
 			// iTunes Keywords
 			if( structKeyExists(item,"itunes:keywords") ) path = item["itunes:keywords"];
-			if( len(path) ) {
+			if( not IsSimpleValue(path) and arrayLen(path) ) {
 				for(y=1; y lte arrayLen(path);y=y+1){
 					itemStruct = StructNew();
 					itemStruct.tag = path[y].xmlText;
@@ -183,7 +182,7 @@ Description :
 			var y = 1;
 			if( structKeyExists(item,"media:group") and structKeyExists(item["media:group"],"media:content") ) path = item["media:group"]["media:content"];
 			else if (structKeyExists(item,"media:content") ) path = item["media:content"];
-			if( len(path) ){
+			if( not IsSimpleValue(path) and arrayLen(path) ){
 				for(y=1; y lte arrayLen(path);y=y+1){
 					itemStruct = StructNew();
 					itemStruct.type = "media";
@@ -272,8 +271,9 @@ Description :
 			var y = 1;
 			if( structKeyExists(item,"media:group") and structKeyExists(item["media:group"],"media:thumbnail") ) path = item["media:group"]["media:thumbnail"];
 			else if (structKeyExists(item,"media:thumbnail") ) path = item["media:thumbnail"];
-			if( len(path) ) {
+			if( not IsSimpleValue(path) and arrayLen(path) ) {
 				for(y=1; y lte arrayLen(path);y=y+1){
+					writeoutput(y);
 					itemStruct = StructNew();
 					if ( StructKeyExists(path[y].xmlAttributes,'height') ) itemStruct.height = path[y].xmlAttributes.height;
 					if ( StructKeyExists(path[y].xmlAttributes,'width') ) itemStruct.width = path[y].xmlAttributes.width;
@@ -402,7 +402,7 @@ Description :
 				/* Category */
 				node.category = findCategory(items[x],node.category);
 				/* Body (MediaRSS description or Atom content/summary) */
-				if( structKeyExists(items,"media:group") and structKeyExists(items[x]["media:group"],"media:description") and len(items[x]["media:group"]["media:description"].xmlText) ) node.body = normalizeAtomTextConstruct(items[x]["media:group"]["media:description"]);
+				if( structKeyExists(items[x],"media:group") and structKeyExists(items[x]["media:group"],"media:description") and len(items[x]["media:group"]["media:description"].xmlText) ) node.body = normalizeAtomTextConstruct(items[x]["media:group"]["media:description"]);
 				else if( structKeyExists(items[x],"media:description") and len(items[x]["media:description"].xmlText) ) node.body = normalizeAtomTextConstruct(items[x]["media:description"]);
 				else if( structKeyExists(items[x],"content") and len(items[x]["content"].xmlText) ) node.body = normalizeAtomTextConstruct(items[x].content);
 				else if( structKeyExists(items[x],"summary") and len(items[x]["summary"].xmlText) ) node.body = normalizeAtomTextConstruct(items[x].summary);
@@ -435,13 +435,13 @@ Description :
 				/* Keywords */
 				node.keywords = findKeywords(node.category);
 				/* Rights */
-				if( structKeyExists(items,"media:group") and structKeyExists(items[x]["media:group"],"media:copyright") ) node.rights = normalizeAtomTextConstruct(items[x]["media:group"]["media:copyright"]);
+				if( structKeyExists(items[x],"media:group") and structKeyExists(items[x]["media:group"],"media:copyright") ) node.rights = normalizeAtomTextConstruct(items[x]["media:group"]["media:copyright"]);
 				else if( structKeyExists(items[x],"media:copyright") ) node.rights = normalizeAtomTextConstruct(items[x]["media:copyright"]);
 				else if( structKeyExists(items[x],"rights") ) node.rights = normalizeAtomTextConstruct(items[x].rights);
 				/* Thumbnail previews */
 				node.attachment = findThumbnails(items[x],node.attachment);
 				/* Title */
-				if( structKeyExists(items,"media:group") and structKeyExists(items[x]["media:group"],"media:title") ) node.title = normalizeAtomTextConstruct(items[x]["media:group"]["media:title"]);
+				if( structKeyExists(items[x],"media:group") and structKeyExists(items[x]["media:group"],"media:title") ) node.title = normalizeAtomTextConstruct(items[x]["media:group"]["media:title"]);
 				else if( structKeyExists(items[x],"media:title") ) node.title = normalizeAtomTextConstruct(items[x]["media:title"]);
 				else if( structKeyExists(items[x],"title") ) node.title = normalizeAtomTextConstruct(items[x].title);
 
@@ -513,9 +513,9 @@ Description :
 				node.datepublished = "";
 				node.dateupdated = "";
 				node.id = "";
-				node.keywords = "";	
-				node.rights = "";	
-				node.title = "";	
+				node.keywords = "";
+				node.rights = "";
+				node.title = "";
 				node.url = "";
 
 				/* Attachments (MediaRSS media content) */
@@ -540,7 +540,7 @@ Description :
 				/* Author */
 				node.author = findAuthor(items[x]);
 				/* Body aka description */
-				if( structKeyExists(items,"media:group") and structKeyExists(items[x]["media:group"],"media:description") and len(items[x]["media:group"]["media:description"].xmlText) ) node.body = normalizeAtomTextConstruct(items[x]["media:group"]["media:description"]);
+				if( structKeyExists(items[x],"media:group") and structKeyExists(items[x]["media:group"],"media:description") and len(items[x]["media:group"]["media:description"].xmlText) ) node.body = normalizeAtomTextConstruct(items[x]["media:group"]["media:description"]);
 				else if( structKeyExists(items[x],"media:description") and len(items[x]["media:description"].xmlText) ) node.body = normalizeAtomTextConstruct(items[x]["media:description"]);
 				else if( structKeyExists(items[x],"content:encoded") ) node.body = items[x]["content:encoded"].xmlText;
 				else if( structKeyExists(items[x],"description") ) node.body = items[x].description.xmlText;
@@ -600,13 +600,13 @@ Description :
 				}
 				/* Rights (uses Creative Commons, MRSS or DC extensions) */
 				if( structKeyExists(items[x],"creativeCommons:license") and not len(node.rights) ) node.rights = items[x]["creativeCommons:license"].xmlText;
-				else if( structKeyExists(items,"media:group") and structKeyExists(items[x]["media:group"],"media:copyright") ) node.rights = normalizeAtomTextConstruct(items[x]["media:group"]["media:copyright"]);
+				else if( structKeyExists(items[x],"media:group") and structKeyExists(items[x]["media:group"],"media:copyright") ) node.rights = normalizeAtomTextConstruct(items[x]["media:group"]["media:copyright"]);
 				else if( structKeyExists(items[x],"media:copyright") ) node.rights = normalizeAtomTextConstruct(items[x]["media:copyright"]);
 				else if( structKeyExists(items[x],"dc:rights") ) node.rights = items[x]["dc:rights"].xmlText;
 				/* Thumbnail previews */
 				node.attachment = findThumbnails(items[x],node.attachment);
 				/* Title */
-				if( structKeyExists(items,"media:group") and structKeyExists(items[x]["media:group"],"media:title") ) node.title = normalizeAtomTextConstruct(items[x]["media:group"]["media:title"]);
+				if( structKeyExists(items[x],"media:group") and structKeyExists(items[x]["media:group"],"media:title") ) node.title = normalizeAtomTextConstruct(items[x]["media:group"]["media:title"]);
 				else if( structKeyExists(items[x],"media:title") ) node.title = normalizeAtomTextConstruct(items[x]["media:title"]);
 				else if( structKeyExists(items[x],"title") ) node.title = items[x].title.xmlText;
 				else if( structKeyExists(items[x],"dc:title") ) node.title = items[x]["dc:title"].xmlText;
