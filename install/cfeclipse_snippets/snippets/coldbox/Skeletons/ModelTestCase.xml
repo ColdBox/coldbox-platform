@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<snippet filetemplate="true" extension="cfc">
+    <name>Model Test Case</name>
+    <help></help>
+    <starttext><![CDATA[<cfcomponent name="$${Test Name}" extends="coldbox.system.testing.BaseTestCase" output="false">
+	
+	<cffunction name="setUp">
+		<cfscript>
+		    $${ModelName} = mockModel(name='$${ModelName}',clearMethods=false);
+		</cfscript>
+	</cffunction>
+	
+	<cffunction name="teardown">
+		
+	</cffunction>
+
+</cfcomponent>]]></starttext>
+    <endtext><![CDATA[]]></endtext>
+</snippet>
