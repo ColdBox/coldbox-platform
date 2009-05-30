@@ -35,9 +35,8 @@ Description: This is the framework's simple bean factory.
 			
 			instance.ModelsPath = getSetting("ModelsPath");
 			instance.ModelsInvocationPath = getSetting("ModelsInvocationPath");
-			instance.ModelsExternalPath = getSetting("ModelsExternalLocationPath");
 			instance.ModelsObjectCaching = getSetting("ModelsObjectCaching");
-			instance.ModelsExternalInvocationPath = getSetting("ModelsExternalLocation");
+			instance.ModelsExternalLocation = getSetting("ModelsExternalLocation");
 			instance.ModelsDefinitionFile = getSetting("ModelsDefinitionFile");
 			
 			instance.modelMappings = structnew();
@@ -266,22 +265,35 @@ Description: This is the framework's simple bean factory.
 		<cfscript>
 			var checkPath = 0;
 			var checkExternalPath = 0;
+			var extPaths = instance.ModelsExternalLocation;
+			var thisExtPath = "";
+			var x=1;
 			
 			/* Resolve Alias? */
 			if( arguments.resolveAlias ){
 				arguments.name = resolveModelAlias(arguments.name);
 			}
 			
-			/* Setup Location Paths */
+			/* TODO: Create a RefLocationMap, so location routines are only done once. */
+			
+			/* Conventions Check First */
 			checkPath = instance.ModelsPath & "/" & replace(arguments.name,".","/","all") & ".cfc";
-			checkExternalPath = instance.ModelsExternalPath & "/" & replace(arguments.name,".","/","all") & ".cfc";
 			
 			/* Class Path Determination */
 			if( fileExists(checkPath) ){
 				return instance.ModelsInvocationPath & "." & arguments.name;
 			}
-			else if( fileExists(checkExternalPath) ){
-				return instance.ModelsExternalInvocationPath & "." & arguments.name;
+			else{
+				/* Check External Locations in declared Order */
+				for(x=1; x lte listLen(extPaths);x=x+1){
+					/* Compose Object Location */
+					thisExtPath = listGetAt(extPaths,x);
+					checkExternalPath = thisExtPath  & "/" & replace(arguments.name,".","/","all") & ".cfc";
+					/* Check if located */
+					if( fileExists(expandPath(checkExternalPath)) ){
+						return  thisExtPath & "." & arguments.name;
+					}
+				}
 			}
 			
 			return "";

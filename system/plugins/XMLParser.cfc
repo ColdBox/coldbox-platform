@@ -564,14 +564,6 @@ Modification History:
 			else{
 				configStruct["HandlersExternalLocationPath"] = "";
 			}
-			//Set the Models External Configuration Paths
-			if( configStruct["ModelsExternalLocation"] neq "" ){
-				//Expand the external location to get a registration path
-				configStruct["ModelsExternalLocationPath"] = ExpandPath("/" & replace(ConfigStruct["ModelsExternalLocation"],".","/","all"));
-			}
-			else{
-				configStruct["ModelsExternalLocationPath"] = "";
-			}
 			
 			//Set the Handlers,Models, & Custom Plugin Invocation & Physical Path for this Application
 			if( ConfigStruct["AppMapping"] neq ""){

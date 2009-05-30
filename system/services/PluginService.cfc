@@ -26,6 +26,7 @@ Modification History:
 			
 			/* Set Service Properties */
 			setColdBoxPluginsPath('coldbox.system.plugins');
+			setColdBoxExtensionsPluginsPath('coldbox.system.extensions.plugins');
 			setCacheDictionary(CreateObject("component","coldbox.system.util.collections.BaseDictionary").init('PluginMetadata'));
 			
 			/* Return instance */
@@ -130,6 +131,11 @@ Modification History:
 		<cfreturn instance.ColdBoxPluginsPath/>
 	</cffunction>
 	
+	<!--- ColdBox Extensions Plugins Path --->
+	<cffunction name="getColdBoxExtensionsPluginsPath" access="public" output="false" returntype="string" hint="Get ColdBoxExtensionsPluginsPath">
+		<cfreturn instance.ColdBoxExtensionsPluginsPath/>
+	</cffunction>
+	
 	<!--- Plugin Cache Metadata Dictionary --->
 	<cffunction name="getcacheDictionary" access="public" output="false" returntype="struct" hint="Get the plugin cache dictionary">
 		<cfreturn instance.cacheDictionary/>
@@ -163,6 +169,14 @@ Modification History:
 		<cfset instance.ColdBoxPluginsPath = arguments.ColdBoxPluginsPath/>
 	</cffunction>
 	
+	<!--- Set the coldbox plugins Path --->
+	<cffunction name="setColdBoxExtensionsPluginsPath" access="private" output="false" returntype="void" hint="Set ColdBoxExtensionsPluginsPath">
+		<!--- ************************************************************* --->
+		<cfargument name="ColdBoxExtensionsPluginsPath" type="string" required="true"/>
+		<!--- ************************************************************* --->
+		<cfset instance.ColdBoxExtensionsPluginsPath = arguments.ColdBoxExtensionsPluginsPath/>
+	</cffunction>
+	
 	<!--- Set the internal plugin cache dictionary. --->
 	<cffunction name="setcacheDictionary" access="private" output="false" returntype="void" hint="Set the plugin cache dictionary. NOT EXPOSED to avoid screwups">
 		<!--- ************************************************************* --->
@@ -185,10 +199,10 @@ Modification History:
 			if ( arguments.custom ){
 				
 				/* Set plugin key and file path check */
-				pluginFilePath = replace(arguments.plugin,".",controller.getSetting("OSFileSeparator",true),"all") & ".cfc";
+				pluginFilePath = replace(arguments.plugin,".","/","all") & ".cfc";
 							
 				/* Check for Convention First, MyPluginsPath was already setup with conventions on XMLParser */
-				if ( fileExists(controller.getSetting("MyPluginsPath") & controller.getSetting("OSFileSeparator",true) & pluginFilePath ) ){
+				if ( fileExists(controller.getSetting("MyPluginsPath") & "/" & pluginFilePath ) ){
 					pluginPath = "#controller.getSetting('MyPluginsInvocationPath')#.#arguments.plugin#";
 				}
 				else{
