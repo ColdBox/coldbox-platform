@@ -328,66 +328,67 @@ Description: This is the framework's simple bean factory.
 		<cfargument name="exclude"  		required="false" type="string"  default="" hint="A list of keys to exclude in the population">
 		<!--- ************************************************************* --->
 		<cfscript>
-			var rc = controller.getRequestService().getContext().getCollection();
-			var oModel = 0;
+			arguments.memento = controller.getRequestService().getContext().getCollection();
 			
 			/* Do we have a model or name */
 			if( isSimpleValue(arguments.model) ){
-				oModel = getModel(model);
+				arguments.target = getModel(model);
 			}
 			else{
-				oModel = arguments.model;
+				arguments.target = arguments.model;
 			}
 			
 			/* Inflate from Request Collection */
-			return populateFromStruct(oModel,rc,arguments.scope,arguments.trustedSetter);			
+			return populateFromStruct(argumentCollection=arguments);			
 		</cfscript>
 	</cffunction>
 
 	<!--- Populate a bean from the request Collection --->
 	<cffunction name="populateBean" access="public" output="false" returntype="Any" hint="Populate a named or instantiated bean (java/cfc) from the request collection items">
 		<!--- ************************************************************* --->
-		<cfargument name="formBean" 		required="true" 	type="any" 	hint="This can be an instantiated bean object or a bean instantitation path as a string.  This method follows the bean contract (set{property_name}). Example: setUsername(), setfname()">
+		<cfargument name="target" 			required="true" 	type="any" 	hint="This can be an instantiated bean object or a bean instantitation path as a string.  This method follows the bean contract (set{property_name}). Example: setUsername(), setfname()">
 		<cfargument name="scope" 			required="false" 	type="string"   default=""   hint="Use scope injection instead of setters population. Ex: scope=variables.instance."/>
 		<cfargument name="trustedSetter"  	required="false" type="boolean" default="false" hint="If set to true, the setter method will be called even if it does not exist in the bean"/>
 		<cfargument name="include"  		required="false" type="string"  default="" hint="A list of keys to include in the population">
 		<cfargument name="exclude"  		required="false" type="string"  default="" hint="A list of keys to exclude in the population">
 		<!--- ************************************************************* --->
 		<cfscript>
-			var rc = controller.getRequestService().getContext().getCollection();
+			arguments.memento = controller.getRequestService().getContext().getCollection();
 			
 			/* Inflate from Request Collection */
-			return populateFromStruct(arguments.formBean,rc,arguments.scope,arguments.trustedSetter);			
+			return populateFromStruct(argumentCollection=arguments);			
 		</cfscript>
 	</cffunction>
 	
 	<!--- Populate a bean from a structure --->
 	<cffunction name="populateFromJSON" access="public" returntype="any" hint="Populate a named or instantiated bean from a json string" output="false" >
 		<!--- ************************************************************* --->
-		<cfargument name="formBean" 		required="true" 	type="any" 		hint="This can be an instantiated bean object or a bean instantitation path as a string. If you pass an instantiation path and the bean has an 'init' method. It will be executed. This method follows the bean contract (set{property_name}). Example: setUsername(), setfname()">
+		<cfargument name="target" 			required="true" 	type="any" 		hint="This can be an instantiated bean object or a bean instantitation path as a string. If you pass an instantiation path and the bean has an 'init' method. It will be executed. This method follows the bean contract (set{property_name}). Example: setUsername(), setfname()">
 		<cfargument name="JSONString"   	required="true" 	type="string" 	hint="The JSON string to populate the object with. It has to be valid JSON and also a structure with name-key value pairs. ">
 		<cfargument name="scope" 			required="false" 	type="string"   default=""   hint="Use scope injection instead of setters population. Ex: scope=variables.instance."/>
 		<cfargument name="trustedSetter"  	required="false" type="boolean" default="false" hint="If set to true, the setter method will be called even if it does not exist in the bean"/>
+		<cfargument name="include"  		required="false" type="string"  default="" hint="A list of keys to include in the population">
+		<cfargument name="exclude"  		required="false" type="string"  default="" hint="A list of keys to exclude in the population">
 		<!--- ************************************************************* --->
 		<cfscript>
-			var inflatedStruct = "";
-			
 			/* Inflate JSON */
-			inflatedStruct = getPlugin("JSON").decode(arguments.JSONString);
+			arguments.memento = getPlugin("JSON").decode(arguments.JSONString);
 			
 			/* populate and return */
-			return populateFromStruct(arguments.formBean,inflatedStruct,arguments.scope,arguments.trustedSetter);
+			return populateFromStruct(argumentCollection=arguments);
 		</cfscript>
 	</cffunction>
 	
 	<!--- Populate from Query --->
 	<cffunction name="populateFromQuery" access="public" returntype="Any" hint="Populate a named or instantiated bean from query" output="false">
 		<!--- ************************************************************* --->
-		<cfargument name="formBean"  		required="true"  type="any" 	 hint="This can be an instantiated bean object or a bean instantitation path as a string. If you pass an instantiation path and the bean has an 'init' method. It will be executed. This method follows the bean contract (set{property_name}). Example: setUsername(), setfname()">
+		<cfargument name="target"  			required="true"  type="any" 	 hint="This can be an instantiated bean object or a bean instantitation path as a string. If you pass an instantiation path and the bean has an 'init' method. It will be executed. This method follows the bean contract (set{property_name}). Example: setUsername(), setfname()">
 		<cfargument name="qry"       		required="true"  type="query"   hint="The query to popluate the bean object with">
 		<cfargument name="RowNumber" 		required="false" type="Numeric" hint="The query row number to use for population" default="1">
 		<cfargument name="scope" 			required="false" type="string"   default=""   hint="Use scope injection instead of setters population. Ex: scope=variables.instance."/>
 		<cfargument name="trustedSetter"  	required="false" type="boolean" default="false" hint="If set to true, the setter method will be called even if it does not exist in the bean"/>
+		<cfargument name="include"  		required="false" type="string"  default="" hint="A list of keys to include in the population">
+		<cfargument name="exclude"  		required="false" type="string"  default="" hint="A list of keys to exclude in the population">
 		<!--- ************************************************************* --->
 		<cfscript>
 			//by default to take values from first row of the query
@@ -395,23 +396,23 @@ Description: This is the framework's simple bean factory.
 			//columns array
 			var cols = listToArray(arguments.qry.columnList);
 			//new struct to hold query colum name and value
-			var stReturn = structnew();
 			var i   = 1;
+			arguments.memento = structnew();
 			
 			//build the struct from the query row
 			for(i = 1; i lte arraylen(cols); i = i + 1){
-				stReturn[cols[i]] = arguments.qry[cols[i]][row];
+				arguments.memento[cols[i]] = arguments.qry[cols[i]][row];
 			}		
 			
 			//populate bean and return
-			return populateFromStruct(arguments.formBean,stReturn,arguments.scope,arguments.trustedSetter);
+			return populateFromStruct(argumentCollection=arguments);
 		</cfscript>
 	</cffunction>
 
 	<!--- Populate a bean from a structure --->
 	<cffunction name="populateFromStruct" access="public" returntype="any" hint="Populate a named or instantiated bean from a structure" output="false" >
 		<!--- ************************************************************* --->
-		<cfargument name="formBean" 		required="true"  type="any" 	hint="This can be an instantiated bean object or a bean instantitation path as a string. If you pass an instantiation path and the bean has an 'init' method. It will be executed. This method follows the bean contract (set{property_name}). Example: setUsername(), setfname()">
+		<cfargument name="target" 			required="true"  type="any" 	hint="This can be an instantiated bean object or a bean instantitation path as a string. If you pass an instantiation path and the bean has an 'init' method. It will be executed. This method follows the bean contract (set{property_name}). Example: setUsername(), setfname()">
 		<cfargument name="memento"  		required="true"  type="struct" 	hint="The structure to populate the object with.">
 		<cfargument name="scope" 			required="false" type="string"  hint="Use scope injection instead of setters population."/>
 		<cfargument name="trustedSetter"  	required="false" type="boolean" default="false" hint="If set to true, the setter method will be called even if it does not exist in the bean"/>
@@ -419,41 +420,60 @@ Description: This is the framework's simple bean factory.
 		<cfargument name="exclude"  		required="false" type="string"  default="" hint="A list of keys to exclude in the population">
 		<!--- ************************************************************* --->
 		<cfscript>
-			var beanInstance = "";
+			var beanInstance = 0;
 			var key = "";
+			var pop = false;
+			var scopeInjection = false;
 			
 			try{
-				/* Create or just use form bean */
-				if( isSimpleValue(arguments.formBean) ){
-					beanInstance = create(arguments.formBean);
+				/* Local Ref to bean instance */
+				if( isSimpleValue(arguments.target) ){
+					beanInstance = create(arguments.target);
 				}
 				else{
-					beanInstance = arguments.formBean;
+					beanInstance = arguments.target;
 				}
 				
 				/* Determine Method of population */
 				if( structKeyExists(arguments,"scope") and len(trim(arguments.scope)) neq 0 ){
-					/* Mix the Bean */
+					scopeInjection = true;
 					getPlugin("MethodInjector").start(beanInstance);
-					/* Populate Bean */
-					for(key in arguments.memento){
-						beanInstance.populatePropertyMixin(propertyName=key,propertyValue=arguments.memento[key],scope=arguments.scope);
-					}
-					/* Un-Mix It */
-					getPlugin("MethodInjector").stop(beanInstance);
 				}
-				//Setter Population
-				else{
-					/* Populate Bean */
-					for(key in arguments.memento){
-						/* Check if setter exists */
-						if( structKeyExists(beanInstance,"set" & key) or arguments.trustedSetter ){
+				
+				/* Populate Bean */
+				for(key in arguments.memento){
+					pop = false;
+					/* Include List? */
+					if( len(arguments.include) AND listFindNoCase(arguments.include,key) ){
+						pop = true;
+					}
+					/* Exclude List? */
+					else if( len(arguments.exclude) AND NOT listFindNoCase(arguments.exclude,key) ){
+						pop = true;
+					}
+					else{
+						pop = true;
+					}
+					
+					/* Pop? */
+					if( pop ){
+						/* Scope Injection? */
+						if( scopeInjection ){
+							beanInstance.populatePropertyMixin(propertyName=key,propertyValue=arguments.memento[key],scope=arguments.scope);
+						}
+						/* Check if setter exists, evaluate is used, so it can call on java/groovy objects */
+						else if( structKeyExists(beanInstance,"set" & key) or arguments.trustedSetter ){
 							evaluate("beanInstance.set#key#(arguments.memento[key])");
 						}
 					}
+					
+				}//end for loop
+				
+				/* Stop The Mixins*/
+				if( scopeInjection ){
+					getPlugin("MethodInjector").stop(beanInstance);
 				}
 				
-				/* Return if created */
 				return beanInstance;
 			}
 			catch(Any e){
