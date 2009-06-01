@@ -481,7 +481,7 @@ Description: This is the framework's simple bean factory.
 					arguments.keyTypeAsString = getMetaData(arguments.memento[key]).name;
 				} 
 				else{
-		        	arguments.keyTypeAsString = arguments.memento[key].getClass().getCanonicalName();
+		        	arguments.keyTypeAsString = arguments.memento[key].getClass().toString();
 				}
 				throw(type="ColdBox.plugins.BeanFactory.PopulateBeanException",
 					  message="Error populating bean #getMetaData(beanInstance).name# with argument #key# of type #arguments.keyTypeAsString#.",
