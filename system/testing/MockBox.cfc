@@ -160,7 +160,7 @@ Description		:
 				}
 				else{
 					/* Save incoming results array */
-					this._mockResults[this._mockCurrentMethod] = arguments
+					this._mockResults[this._mockCurrentMethod] = arguments;
 				}
 				/* Cleanup */
 				this._mockCurrentMethod = "";
