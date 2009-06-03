@@ -50,9 +50,11 @@ METHODS:
 
 			/* Plug-in properties */
 			setpluginName("ColdBox Feed Generator");
-			setpluginVersion("2.0");
+			setpluginVersion("2.1");
 			setpluginDescription("I create Really Simple Syndication (RSS revision 2.0.10) feeds that also allow a variety of popular RSS extensions.");
-
+			setPluginAuthor("Luis Majano & Ben Garrett");
+			setPluginAuthorURL("http://www.coldbox.org");
+			
 			/* Return instance */
 			return this;
 		</cfscript>
@@ -61,12 +63,12 @@ METHODS:
 <!---------------------------------------- PUBLIC METHODS ------------------------------------------------>
 
 	<!--- Create feed --->
-	<cffunction name="createFeed" access="public" returntype="any" hint="Create a web feed" output="false">
+	<cffunction name="createFeed" access="public" returntype="any" hint="Create a web feed, by default it returns the xml string." output="false">
 		<!--- ******************************************************************************** --->
-		<cfargument name="feedStruct" 	type="struct" required="yes" hint="The structure used to build a feed"/>
-		<cfargument name="ColumnMap" 	type="struct" default="#structNew()#" hint="The column mapper to wire items to queries"/>
-		<cfargument name="OutputFile" 	type="string" required="false" hint="The file destination of where to store the generated XML"/>
-		<cfargument name="OutputXML"	type="boolean" default="false" hint="Toggle to display the XML output on-screen"/>
+		<cfargument name="feedStruct" 	type="struct"  required="yes" hint="The structure used to build a feed"/>
+		<cfargument name="ColumnMap" 	type="struct"  default="#structNew()#" hint="The column mapper to wire items to queries"/>
+		<cfargument name="OutputFile" 	type="string"  required="false" hint="The file destination of where to store the generated XML (optional)"/>
+		<cfargument name="OutputXML"	type="boolean" required="false" hint="Toggle to display the XML output on-screen delivered by cfcontent (optional)"/>
 		<!--- ******************************************************************************** --->
 		<cfscript>
 			var fs = arguments.feedStruct;
@@ -98,14 +100,14 @@ METHODS:
 		<cfif structKeyExists(arguments,"OutputFile")>
 			<cffile action="write" file="#arguments.OutputFile#" output="#xmlCleaned#" charset="utf-8"/>
 		</cfif>
-
+		
 		<!--- Check for and generate on-screen output --->
-		<cfif arguments.OutputXML>
+		<cfif structKeyExists(arguments, "OutputXML")>
 			<cfcontent variable="#ToBinary(ToBase64(xmlCleaned))#" type="text/xml"/>
-		<cfelse>
-			<cfreturn true/>
 		</cfif>
-
+		
+		<!--- Always return xml --->
+		<cfreturn xmlCleaned/>
 	</cffunction>
 
 <!---------------------------------------- ACCESSOR/MUTATORS --------------------------------------------->
