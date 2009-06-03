@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-	xsi:noNamespaceSchemaLocation="http://www.coldboxframework.com/schema/config_3.0.0.xsd">
+	xsi:noNamespaceSchemaLocation="http://www.coldbox.org/schema/config_3.0.0.xsd">
 	<Settings>
 		
 		<!-- Application Setup-->
@@ -21,10 +21,10 @@
 		<Setting name="ConfigAutoReload" 			value="false"/>
 		
 		<!-- Implicit Events -->
-		<Setting name="DefaultEvent" 				value="general.index"/>
-		<Setting name="RequestStartHandler" 		value="main.onRequestStart"/>
+		<Setting name="DefaultEvent" 				value="General.index"/>
+		<Setting name="RequestStartHandler" 		value="Main.onRequestStart"/>
 		<Setting name="RequestEndHandler" 			value=""/>
-		<Setting name="ApplicationStartHandler" 	value="main.onAppInit"/>
+		<Setting name="ApplicationStartHandler" 	value="Main.onAppInit"/>
 		<Setting name="SessionStartHandler" 		value=""/>
 		<Setting name="SessionEndHandler" 			value=""/>
 		
