@@ -413,6 +413,7 @@ Description		: This is the main ColdBox front Controller.
 		<cfif NOT structIsEmpty(oEventHandler.allowedMethods) AND
 			  structKeyExists(oEventHandler.allowedMethods,oEventHandlerBean.getMethod()) AND
 			  NOT listFindNoCase(oEventHandler.allowedMethods[oEventHandlerBean.getMethod()],oRequestContext.getHTTPMethod())>
+			<cfheader statuscode="403" statustext="403 Invalid HTTP Method Exception" >
 			<cfthrow type="Framework.403" 
 				     errorcode="403"
 				     message="403 Invalid HTTP Method Exception"
