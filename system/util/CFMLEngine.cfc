@@ -57,7 +57,8 @@ Description :
 			var engine = getEngine();
 			
 			if ( (engine eq this.ADOBE and version gte 8) or
-				 (engine eq this.BLUEDRAGON and version gte 7) ){
+				 (engine eq this.BLUEDRAGON and version gte 7) or
+				 (engine eq this.RAILO) ){
 				return true;	 
 			}
 			else{
