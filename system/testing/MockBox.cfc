@@ -265,8 +265,8 @@ Description		:
 		</cfscript>
 	</cffunction>	
 	
-	<!--- $log --->
-	<cffunction name="$callLog" output="false" access="private" returntype="struct" hint="Retrieve the method call logger structure">
+	<!--- mockCallLog --->
+	<cffunction name="mockCallLog" output="false" access="private" returntype="struct" hint="Retrieve the method call logger structure. Method Alias: $callLog()">
 		<cfreturn this._mockCallLoggers>
 	</cffunction>
 
@@ -313,7 +313,8 @@ Description		:
 			obj.mockArgs			= variables.mockArgs;
 			obj.$args				= obj.mockArgs;
 			/* CallLog */
-			obj.$callLog			= variables.$callLog;
+			obj.mockCallLog			= variables.mockCallLog;
+			obj.$callLog			= obj.mockCallLog;
 			/* Mock Box */
 			obj.mockBox 			= this;			
 		</cfscript>
