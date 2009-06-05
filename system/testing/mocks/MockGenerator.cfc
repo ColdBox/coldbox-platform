@@ -34,6 +34,7 @@ Description		:
 		<cfargument name="throwMessage"	  type="string" 	required="false" default="" hint="The message of the exception to throw"/>
 		<cfargument name="metadata" 	  type="any" 		required="true" default="" hint="The function metadata"/>
 		<cfargument name="targetObject"	  type="any" 		required="true" hint="The target object to mix in"/>
+		<cfargument name="callLogging" 	  type="boolean" 	required="false" default="false" hint="Will add the machinery to also log the incoming arguments to each subsequent calls to this method"/>
 		<!--- ************************************************************* --->
 		<cfscript>
 			var udfOut = CreateObject("java","java.lang.StringBuffer").init('');
@@ -57,6 +58,7 @@ Description		:
 			<cfset var resultsLen = 0>
 			<cfset var argsHashKey = resultsKey & "|" & hash(arguments.toString())>
 			
+			
 			<!--- If Method & argument Hash Results, switch the results struct --->
 			<cfif structKeyExists(this._mockArgResults,argsHashKey)>
 				<cfset results = this._mockArgResults>
@@ -71,6 +73,11 @@ Description		:
 			<cfset internalCounter = this._mockMethodCallCounters[listFirst(resultsKey,"|")]>
 			');
 			
+			/* Call Logging argument or Global Flag */
+			if( arguments.callLogging OR arguments.targetObject._mockCallLoggingActive  ){
+				udfOut.append('<cfset arrayAppend(this._mockCallLoggers["#arguments.method#"], arguments)>#lb#');
+			}
+			
 			/* Exceptions? To Throw */
 			if( arguments.throwException ){
 				udfOut.append('<cfthrow type="#arguments.throwType#" message="#arguments.throwMessage#" detail="#arguments.throwDetail#" />#lb#');
@@ -79,11 +86,13 @@ Description		:
 			if ( fncMD["returntype"] neq "void" ){
 				/* Results Recyling Code, basically, state machine code */
 				udfOut.append('
-				<cfif internalCounter gt resultsLen>
-					<cfset resultsCounter = internalCounter - ( resultsLen*fix( (internalCounter-1)/resultsLen ) )>
-					<cfreturn results[resultsKey][resultsCounter]>
-				<cfelse>
-					<cfreturn results[resultsKey][internalCounter]>
+				<cfif resultsLen neq 0>
+					<cfif internalCounter gt resultsLen>
+						<cfset resultsCounter = internalCounter - ( resultsLen*fix( (internalCounter-1)/resultsLen ) )>
+						<cfreturn results[resultsKey][resultsCounter]>
+					<cfelse>
+						<cfreturn results[resultsKey][internalCounter]>
+					</cfif>
 				</cfif>
 				');			
 			}
@@ -94,7 +103,9 @@ Description		:
 		
 			/* Mix In Stub */
 			try{
+				arguments.targetObject.$include = variables.$include;
 				arguments.targetObject.$include(getMockBox().getGenerationPath() & tmpFile);
+				structDelete(arguments.targetObject,"$include");
 				/* Remove Stub */	
 				removeStub(genPath & tmpFile);				
 			}
@@ -128,6 +139,11 @@ Description		:
 
 <!------------------------------------------- PRIVATE ------------------------------------------>
 	
+	<!--- $include --->
+	<cffunction name="$include" output="false" access="private" returntype="void" hint="Mix in a template">
+		<cfargument name="templatePath" type="string" required="true"/>
+		<cfinclude template="#arguments.templatePath#">
+	</cffunction>
 	
 	<!--- Get Mock Box --->
 	<cffunction name="getmockBox" access="private" returntype="coldbox.system.testing.MockBox" output="false">

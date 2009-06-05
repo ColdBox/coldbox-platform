@@ -72,7 +72,7 @@ Description		:
 		<cfargument name="className"		type="string" 	required="false" hint="The class name of the object to mock. The mock factory will instantiate it for you"/>
 		<cfargument name="object" 			type="any" 		required="false" hint="The object to mock, already instantiated"/>
 		<cfargument name="clearMethods" 	type="boolean"  required="false" default="false" hint="If true, all methods in the target mock object will be removed. You can then mock only the methods that you want to mock"/>
-		<cfargument name="addCallLogger"   type="boolean"  required="false" default="false" hint="Add a $log method so you can do call logging on methods by just setting the method you want to log with $log. obj.methodToLog = obj.$log"/>
+		<cfargument name="callLogging" 		type="boolean" required="false" default="false" hint="Add method call logging for all mocked methods"/>
 		<!--- ************************************************************* --->
 		<cfscript>
 			var obj = 0;
@@ -99,9 +99,10 @@ Description		:
 			}
 			/* Decorate Mock */
 			decorateMock(obj);
-			/* Call Logging Decorations */
-			if( arguments.addCallLogging ){ addCallLogging(obj); }
-	
+			
+			/* Call Logging Global Flag */
+			if( arguments.callLogging ){ obj._mockCallLoggingActive = true; }
+			
 			/* Return mock obj */
 			return obj;			
 		</cfscript>
@@ -110,7 +111,8 @@ Description		:
 	<!--- prepareMock --->
 	<cffunction name="prepareMock" output="false" access="public" returntype="any" hint="Prepares an object to act as a mock for spying.">
 		<!--- ************************************************************* --->
-		<cfargument name="object" 	type="any" 	required="false" hint="The already instantiated object to prepare for mocking"/>
+		<cfargument name="object" 		type="any" 		required="false" hint="The already instantiated object to prepare for mocking"/>
+		<cfargument name="callLogging" 	type="boolean" 	required="false" default="false" hint="Add method call logging for all mocked methods"/>
 		<!--- ************************************************************* --->
 		<cfscript>
 			return createMock(object=arguments.object);
@@ -119,15 +121,16 @@ Description		:
 	
 	<!--- createStub --->
 	<cffunction name="createStub" output="false" access="public" returntype="any" hint="Create an empty stub object that you can use for mocking.">
+		<cfargument name="callLogging" 	type="boolean" required="false" default="false" hint="Add method call logging for all mocked methods"/>
 		<cfscript>
-			return createMock(className="coldbox.system.testing.mocks.Stub");
+			return createMock(className="coldbox.system.testing.mocks.Stub",callLogging=arguments.callLogging);
 		</cfscript>
 	</cffunction>	
 
 <!------------------------------------------- DECORATION INJECTED METHODS ON MOCK OBJECTS ------------------------------------------>
 
 	<!--- mockProperty --->
-	<cffunction name="mockProperty" output="false" access="public" returntype="any" hint="Mock a property inside of an object in any scope.">
+	<cffunction name="mockProperty" output="false" access="public" returntype="any" hint="Mock a property inside of an object in any scope. Methods Alias = $property()">
 		<!--- ************************************************************* --->
 		<cfargument name="propertyName" 	type="string" 	required="true" hint="The name of the property to mock"/>
 		<cfargument name="propertyScope" 	type="string" 	required="false" default="variables" hint="The scope where the property lives in. By default we will use the variables scope."/>
@@ -140,7 +143,7 @@ Description		:
 	</cffunction>	
 	
 	<!--- Tell how many times a method has been called. --->
-	<cffunction name="mockMethodCallCount" output="false" returntype="numeric" hint="I return the number of times the specified mock method has been called.  If the mock method has not been defined the results is a -1">
+	<cffunction name="mockMethodCallCount" output="false" returntype="numeric" hint="I return the number of times the specified mock method has been called.  If the mock method has not been defined the results is a -1. Method Alias = $count()">
 		<cfargument name="methodName" type="string" hint="Name of the method to get calls from" />
 		<cfscript>
 			if( structKeyExists(this._mockMethodCallCounters, arguments.methodName) ){
@@ -153,7 +156,7 @@ Description		:
 	</cffunction>
 	
 	<!--- mockResults --->
-	<cffunction name="mockResults" output="false" access="public" returntype="any" hint="Use this method to mock more than 1 result as passed in arguments.  Can only be called when chained to a mockMethod(),$() or $().mockArgs() call.  Results will be recycled on a multiple of their lengths according to how many times they are called, simulating a state-machine algorithm.">
+	<cffunction name="mockResults" output="false" access="public" returntype="any" hint="Use this method to mock more than 1 result as passed in arguments.  Can only be called when chained to a mockMethod(),$() or $().mockArgs() call.  Results will be recycled on a multiple of their lengths according to how many times they are called, simulating a state-machine algorithm. Method Alias: $results()">
 		<!--- Check if current method set? --->
 		<cfif len(this._mockCurrentMethod)>
 			<cfscript>
@@ -178,7 +181,7 @@ Description		:
 	</cffunction>
 	
 	<!--- mockArgs --->
-	<cffunction name="mockArgs" output="false" access="public" returntype="any" hint="Use this method to mock specific arguments when calling a mocked method.  Can only be called when chained to a mockMethod() call.  If a method is called with arguments and no match, it defaults to the base results defined.">
+	<cffunction name="mockArgs" output="false" access="public" returntype="any" hint="Use this method to mock specific arguments when calling a mocked method.  Can only be called when chained to a mockMethod() call.  If a method is called with arguments and no match, it defaults to the base results defined. Method Alias: $args()">
 		<cfif len(this._mockCurrentMethod)>
 			<!--- Save incoming arguments as results --->
 			<cfset this._mockCurrentArgsHash = this._mockCurrentMethod & "|" & hash(arguments.toString())>
@@ -190,22 +193,17 @@ Description		:
 		<cfreturn this>
 	</cffunction>
 	
-	<!--- mockThrows --->
-	<cffunction name="mockThrows" output="false" access="public" returntype="any" hint="">
-		
-		<cfreturn this>
-	</cffunction>
-	
 	<!--- mockMethod --->
-	<cffunction name="mockMethod" output="false" access="public" returntype="any" hint="Mock a Method, very simply, no fancy stuff">
+	<cffunction name="mockMethod" output="false" access="public" returntype="any" hint="Mock a Method, very simply, no fancy stuff. Method Alias: $()">
 		<!--- ************************************************************* --->
 		<cfargument name="method" 	type="string" 	required="true" hint="The method you want to mock or spy on"/>
 		<cfargument name="returns" 	type="any" 		required="false" hint="The results it must return, if not passed it returns void or you will have to do the mockResults() chain"/>
 		<cfargument name="preserveReturnType" type="boolean" required="true" default="true" hint="If false, the mock will make the returntype of the method equal to ANY"/>
 		<cfargument name="throwException" type="boolean" required="false" default="false" hint="If you want the method call to throw an exception"/>
-		<cfargument name="throwType" 	  type="string" required="false" default="" hint="The type of the exception to throw"/>
-		<cfargument name="throwDetail" 	  type="string" required="false" default="" hint="The detail of the exception to throw"/>
-		<cfargument name="throwMessage"	  type="string" required="false" default="" hint="The message of the exception to throw"/>
+		<cfargument name="throwType" 	  type="string"  required="false" default="" hint="The type of the exception to throw"/>
+		<cfargument name="throwDetail" 	  type="string"  required="false" default="" hint="The detail of the exception to throw"/>
+		<cfargument name="throwMessage"	  type="string"  required="false" default="" hint="The message of the exception to throw"/>
+		<cfargument name="callLogging" 	  type="boolean" required="false" default="false" hint="Will add the machinery to also log the incoming arguments to each subsequent calls to this method"/>
 		<!--- ************************************************************* --->
 		<cfscript>
 			var fncMD = structnew();
@@ -260,37 +258,21 @@ Description		:
 			this._mockCurrentMethod = arguments.method;
 			this._mockCurrentArgsHash = "";
 			
+			/* Create Call Loggers, just in case */
+			this._mockCallLoggers[arguments.method] = arrayNew(1);
+			
 			return this;
 		</cfscript>
 	</cffunction>	
 	
-	<!--- $include --->
-	<cffunction name="$include" output="false" access="public" returntype="void" hint="Mix in a template">
-		<cfargument name="templatePath" type="string" required="true"/>
-		<cfinclude template="#arguments.templatePath#">
-	</cffunction>
-	
-	<!--- addCallLogging --->
-	<cffunction name="addCallLogging" output="false" access="public" returntype="void" hint="Decorate an object with logging capabilities for methods calls">
-		<cfargument name="target" type="any" required="true" hint="The target object to decorate"/>
-		<cfscript>
-			arguments.target._logger = arrayNew(1);
-			arguments.target.$log = $log;
-			arguments.target.$getLog = $getLog;
-		</cfscript>
-	</cffunction>
-	
 	<!--- $log --->
-	<cffunction name="$log" output="false" access="public" returntype="any" hint="Called to log method calls ">
-		<cfset arrayAppend(this._logger,arguments)>
-	</cffunction>	
-	<!--- $getLog --->
-	<cffunction name="$getLog" output="false" access="public" returntype="any" hint="Get the logged calls ">
-		<cfreturn this._logger>
+	<cffunction name="$callLog" output="false" access="private" returntype="struct" hint="Retrieve the method call logger structure">
+		<cfreturn this._mockCallLoggers>
 	</cffunction>
 
 <!------------------------------------------- PRIVATE ------------------------------------------>
-
+	
+	<!--- Decorate Mock --->
 	<cffunction name="decorateMock" access="private" returntype="void" hint="Decorate a mock object" output="false" >
 		<cfargument name="target"  type="any" required="true" hint="The target object">
 		<cfscript>
@@ -300,6 +282,10 @@ Description		:
 			obj._mockResults = structnew();
 			obj._mockArgResults = structnew();
 			obj._mockMethodCallCounters = structnew();
+			obj._mockCallLoggingActive = false;
+			
+			/* Mock Method Call Logger */
+			obj._mockCallLoggers = structnew();
 			
 			/* Mock Generation Path */
 			obj._mockGenerationPath = getGenerationPath();
@@ -326,13 +312,14 @@ Description		:
 			/* Mock Arguments */
 			obj.mockArgs			= variables.mockArgs;
 			obj.$args				= obj.mockArgs;
-			/* Mock Helpers */
-			obj.$include			= variables.$include;
+			/* CallLog */
+			obj.$callLog			= variables.$callLog;
 			/* Mock Box */
 			obj.mockBox 			= this;			
 		</cfscript>
 	</cffunction>
 	
+	<!--- Get ColdBox Util --->
 	<cffunction name="getUtil" access="private" output="false" returntype="coldbox.system.util.Util" hint="Create and return a util object">
 		<cfreturn createObject("component","coldbox.system.util.Util")/>
 	</cffunction>

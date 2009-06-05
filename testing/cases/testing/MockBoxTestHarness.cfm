@@ -8,11 +8,13 @@
 <h1>Mocking Methods</h1>
 Normal Test.getData() = #test.getData()#<br />
 NOT MOCKED: Method called #test.$count("getData")# times<br />
-<cfset test.mockMethod("getData",1000)>
+<cfset test.mockMethod(method="getData",returns=1000,callLogging=true)>
 Mock Method called #test.mockMethodCallCount("getData")# times<br />
 Mocked Test.getData() = #test.getData()#<br />
 Mocked Test.getData() = #test.getData()#<br />
 Mock Method called #test.mockMethodCallCount("getData")# times
+
+Mock Call Logger Dump: <cfdump var="#test.$callLog()#">
 
 <!--- Mock Real Methods with Concatenation --->
 <cfset test.$("getData").mockResults(1000)>
@@ -20,6 +22,7 @@ Mock Method called #test.mockMethodCallCount("getData")# times<br />
 Mocked Test.getData() = #test.getData()#<br />
 Mocked Test.getData() = #test.getData()#<br />
 Mock Method called #test.mockMethodCallCount("getData")# times
+Mock Call Logger Dump: <cfdump var="#test.$callLog()#">
 
 <hr />
 <!--- MOCKING VIRUTAL METHODS --->
@@ -29,6 +32,7 @@ We will add a virtual method called <strong>virtualReturn</strong>
 Virtual Method called #test.mockMethodCallCount("virtualReturn")# times<br />
 Virtual Test.virtualReturn() = #test.virtualReturn()#<br />
 Virtual Method called #test.mockMethodCallCount("virtualReturn")# times
+Mock Call Logger Dump: <cfdump var="#test.$callLog()#">
 
 <hr />
 <!--- MOCKING PROPERTIES --->
@@ -81,21 +85,23 @@ Mocked Spy Call -> Test.spyTest() = #test.spyTest()# <br />
 	AppMapping = #test.getSetting("AppMapping")#<br />
 	DebugMode = #test.getSetting("DebugMode")#<br />
 </p>
-<cfset test.$('getSetting').$args("AppMapping").$results("mockbox.testing")>
-<cfset test.$('getSetting').$args("DebugMode").$results("true")>
+<cfset test.$(method='getSetting',callLogging=true).$args("AppMapping").$results("mockbox.testing")>
+<cfset test.$(method='getSetting',callLogging=true).$args("DebugMode").$results("true")>
 <p>
 	Mocking the <strong>getSetting() method</strong>:<br />
 	AppMapping = #test.getSetting("AppMapping")# = mockbox.testing<br />
 	DebugMode = #test.getSetting("DebugMode")# = true<br />
 	Call Counts = #test.$count('getSetting')#
+	Mock Call Logger Dump: <cfdump var="#test.$callLog()#">
 </p>
-
 
 <!--- MOCKING A COLLABORATOR --->
 <cfset Test = createObject("component","coldbox.testing.cases.testing.Test")>
-<cfset mockCollaborator = MockBox.createMock(className="coldbox.testing.cases.testing.Collaborator")>
+<cfset mockCollaborator = MockBox.createMock(className="coldbox.testing.cases.testing.Collaborator",callLogging=true)>
 <cfset mockCollaborator.$("getDataFromDB").$results(queryNew(""))>
 <cfset Test.setCollaborator(mockCollaborator)>
+Mock Call Logger Dump on Collaborator: <cfdump var="#mockCollaborator.$callLog()#">
+Data Dump:
 <cfdump var="#test.displayData()#">
 
 <!--- PREPARE TEST FOR MOCCKING --->
