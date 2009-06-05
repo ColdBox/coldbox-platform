@@ -72,6 +72,7 @@ Description		:
 		<cfargument name="className"		type="string" 	required="false" hint="The class name of the object to mock. The mock factory will instantiate it for you"/>
 		<cfargument name="object" 			type="any" 		required="false" hint="The object to mock, already instantiated"/>
 		<cfargument name="clearMethods" 	type="boolean"  required="false" default="false" hint="If true, all methods in the target mock object will be removed. You can then mock only the methods that you want to mock"/>
+		<cfargument name="addCallLogger"   type="boolean"  required="false" default="false" hint="Add a $log method so you can do call logging on methods by just setting the method you want to log with $log. obj.methodToLog = obj.$log"/>
 		<!--- ************************************************************* --->
 		<cfscript>
 			var obj = 0;
@@ -98,6 +99,8 @@ Description		:
 			}
 			/* Decorate Mock */
 			decorateMock(obj);
+			/* Call Logging Decorations */
+			if( arguments.addCallLogging ){ addCallLogging(obj); }
 	
 			/* Return mock obj */
 			return obj;			
@@ -265,6 +268,25 @@ Description		:
 	<cffunction name="$include" output="false" access="public" returntype="void" hint="Mix in a template">
 		<cfargument name="templatePath" type="string" required="true"/>
 		<cfinclude template="#arguments.templatePath#">
+	</cffunction>
+	
+	<!--- addCallLogging --->
+	<cffunction name="addCallLogging" output="false" access="public" returntype="void" hint="Decorate an object with logging capabilities for methods calls">
+		<cfargument name="target" type="any" required="true" hint="The target object to decorate"/>
+		<cfscript>
+			arguments.target._logger = arrayNew(1);
+			arguments.target.$log = $log;
+			arguments.target.$getLog = $getLog;
+		</cfscript>
+	</cffunction>
+	
+	<!--- $log --->
+	<cffunction name="$log" output="false" access="public" returntype="any" hint="Called to log method calls ">
+		<cfset arrayAppend(this._logger,arguments)>
+	</cffunction>	
+	<!--- $getLog --->
+	<cffunction name="$getLog" output="false" access="public" returntype="any" hint="Get the logged calls ">
+		<cfreturn this._logger>
 	</cffunction>
 
 <!------------------------------------------- PRIVATE ------------------------------------------>
