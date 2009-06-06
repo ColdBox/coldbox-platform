@@ -290,13 +290,15 @@ For the latest usage, please visit the wiki.
 			var rulesFile = "";
 			var xmlRules = "";
 			var x=1;
+			var y=1;
 			var node = "";
+			var thisElement = "";
 			
 			/* Try to locate the file path */
 			rulesFile = locateFilePath(getProperty('rulesFile'));
 			/* Validate Location */
 			if( len(rulesFile) eq 0 ){
-				throw('Security Rules File could not be located: #getProperty('rulesFile')#. Please check again.','','interceptors.Security.rulesFileNotFound');
+				throw('Security Rules File could not be located: #getProperty('rulesFile')#. Please check again.','','interceptors.security.rulesFileNotFound');
 			}
 			
 			/* Set the correct expanded path now */
@@ -306,11 +308,11 @@ For the latest usage, please visit the wiki.
 			/* Loop And create Rules */
 			for(x=1; x lte Arraylen(xmlRules); x=x+1){
 				node = structnew();
-				node.whitelist = trim(xmlRules[x].whitelist.xmlText);
-				node.securelist = trim(xmlRules[x].securelist.xmlText);
-				node.roles = trim(xmlRules[x].roles.xmlText);
-				node.permissions = trim(xmlRules[x].permissions.xmlText);
-				node.redirect = trim(xmlRules[x].redirect.xmlText);
+				/* Loop over elements found and create Rule Node */
+				for(y=1; y lte ArrayLen(xmlRules[x].xmlChildren);y=y+1){
+					thisElement = xmlRules[x].xmlChildren[y];
+					node[thisElement.xmlName] = trim(thisElement.xmlText);
+				}
 				ArrayAppend(getProperty('rules'),node);
 			}
 			/* finalize */
