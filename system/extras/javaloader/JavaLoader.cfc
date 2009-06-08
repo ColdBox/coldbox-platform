@@ -74,7 +74,7 @@ Mark Mandel		22/06/2006		Added verification that the path exists
 			file = createObject("java", "java.io.File").init(iterator.next());
 			if(NOT file.exists())
 			{
-				throw("PathNotFoundException", "The path you have specified could not be found", file.getAbsolutePath() & " does not exist");
+				throwException("PathNotFoundException", "The path you have specified could not be found", file.getAbsolutePath() & " does not exist");
 			}
 
 			classLoader.addUrl(file.toURL());
@@ -213,7 +213,7 @@ Mark Mandel		22/06/2006		Added verification that the path exists
 	<cfset instance.UseJavaProxyCFC = arguments.UseJavaProxyCFC />
 </cffunction>
 
-<cffunction name="throw" access="private" hint="Throws an Exception" output="false">
+<cffunction name="throwException" access="private" hint="Throws an Exception" output="false">
 	<cfargument name="type" hint="The type of exception" type="string" required="Yes">
 	<cfargument name="message" hint="The message to accompany the exception" type="string" required="Yes">
 	<cfargument name="detail" type="string" hint="The detail message for the exception" required="No" default="">

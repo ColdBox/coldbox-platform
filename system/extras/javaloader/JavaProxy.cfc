@@ -159,7 +159,7 @@ Mark Mandel		27/08/2007		Created
 			}
 		}
 
-		throw("JavaProxy.MethodNotFoundException", "Could not find the designated method", "Could not find the method '#arguments.methodName#' in the class #_getClass().getName()#");
+		throwException("JavaProxy.MethodNotFoundException", "Could not find the designated method", "Could not find the method '#arguments.methodName#' in the class #_getClass().getName()#");
 	</cfscript>
 </cffunction>
 
@@ -250,7 +250,7 @@ Mark Mandel		27/08/2007		Created
 			}
 		}
 
-		throw("JavaProxy.MethodNotFoundException", "Could not find the designated method", "Could not find the method '#arguments.methodName#' in the class #_getClass().getName()#");
+		throwException("JavaProxy.MethodNotFoundException", "Could not find the designated method", "Could not find the method '#arguments.methodName#' in the class #_getClass().getName()#");
 	</cfscript>
 </cffunction>
 
@@ -344,7 +344,7 @@ Mark Mandel		27/08/2007		Created
 	<cfset instance.Modifier = arguments.Modifier />
 </cffunction>
 
-<cffunction name="throw" access="private" hint="Throws an Exception" output="false">
+<cffunction name="throwException" access="private" hint="Throws an Exception" output="false">
 	<cfargument name="type" hint="The type of exception" type="string" required="Yes">
 	<cfargument name="message" hint="The message to accompany the exception" type="string" required="Yes">
 	<cfargument name="detail" type="string" hint="The detail message for the exception" required="No" default="">
