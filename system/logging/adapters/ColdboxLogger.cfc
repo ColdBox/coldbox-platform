@@ -9,7 +9,7 @@ Date        :	04/12/2009
 Description :
 	This the main coldbox logger adapter
 ----------------------------------------------------------------------->
-<cfcomponent name="ColdboxLogger" output="false" extends="coldbox.system.logging.AbstractLoggingAdapter" hint="The main Coldbox logging adapter" >
+<cfcomponent name="ColdboxLogger" output="false" extends="coldbox.system.logging.AbstractLogger" hint="The main Coldbox logging adapter" >
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 	
