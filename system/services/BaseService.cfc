@@ -38,6 +38,16 @@ Modification History:
 		<cfreturn controller.getColdboxOCM()/>
 	</cffunction>	
 	
+	<!--- afterConfigurationLoad --->
+    <cffunction name="afterConfigurationLoad" output="false" access="public" returntype="void" hint="Called by loader service when configuration file loads">
+    	<!--- Implemented by Concrete Services --->
+    </cffunction>
+	
+	<!--- afterAspectsLoad --->
+    <cffunction name="afterAspectsLoad" output="false" access="public" returntype="void" hint="Called by loader service after aspects load">
+    	<!--- Implemented by Concrete Services --->
+    </cffunction>
+	
 <!------------------------------------------- PRIVATE ------------------------------------------->
 
 	<cffunction name="getUtil" access="private" output="false" returntype="coldbox.system.util.Util" hint="Create and return a util object">

@@ -17,9 +17,7 @@ Modification History:
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
 	<cffunction name="init" access="public" output="false" returntype="PluginService" hint="Constructor">
-		<!--- ************************************************************* --->
 		<cfargument name="controller" type="any" required="true">
-		<!--- ************************************************************* --->
 		<cfscript>
 			/* Set Controller */
 			setController(arguments.controller);
@@ -37,24 +35,32 @@ Modification History:
 <!------------------------------------------- PUBLIC ------------------------------------------->
 	
 	<!--- Get a new plugin Instance --->
-	<cffunction name="new" access="public" returntype="any" hint="Create a New Plugin Instance wether its core or custom" output="false" >
+	<cffunction name="new" access="public" returntype="any" hint="Create a New Plugin Instance whether it is core or custom" output="false" >
 		<!--- ************************************************************* --->
-		<cfargument name="plugin" required="true" type="string"  hint="The named plugin to create">
+		<cfargument name="plugin" required="true" type="string"  hint="The name (classpath) of the plugin to create">
 		<cfargument name="custom" required="true" type="boolean" hint="Custom plugin or coldbox plugin">
 		<!--- ************************************************************* --->
 		<cfscript>
-			var oPlugin = CreateObject("component", locatePluginPath(arguments.plugin,arguments.custom) ).init( controller );
+			var oPlugin = 0;
 			var interceptMetadata = structnew();
 			
+			/* Create Plugin */
+			oPlugin = createObject("component",locatePluginPath(argumentCollection=arguments));
+			
+			/* Init It if it exists, more flexible now. */
+			if( structKeyExists(oPlugin,"init") ){
+				oPlugin.init( controller );
+			}						
+			
 			//Interception if application is up and running. We need the interceptors.
-			if ( getController().getColdboxInitiated() ){
+			if ( controller.getColdboxInitiated() ){
 				//Fill-up Intercepted MetaData
 				interceptMetadata.pluginPath = arguments.plugin;
 				interceptMetadata.custom = arguments.custom;			
 				interceptMetadata.oPlugin = oPlugin;
 				
 				//Fire Interception
-				getController().getInterceptorService().processState("afterPluginCreation",interceptMetadata);
+				controller.getInterceptorService().processState("afterPluginCreation",interceptMetadata);
 			}
 			
 			//Return plugin
@@ -65,17 +71,14 @@ Modification History:
 	<!--- Get a new or cached plugin instance --->
 	<cffunction name="get" access="public" returntype="any" hint="Get a new/cached plugin instance" output="false" >
 		<!--- ************************************************************* --->
-		<cfargument name="plugin" required="true" type="string"  hint="The named plugin to create">
+		<cfargument name="plugin" required="true" type="string"  hint="The name (classpath) of the plugin to create. We will search for it.">
 		<cfargument name="custom" required="true" type="boolean" hint="Custom plugin or coldbox plugin">
 		<!--- ************************************************************* --->
 		<cfscript>
 			/* Used for caching. */
 			var pluginKey = getColdboxOCM().PLUGIN_CACHEKEY_PREFIX & arguments.plugin;
-			var oPlugin = structnew();
-			var MetaData = "";
-			var mdEntry = structnew();
+			var oPlugin = 0;
 			var pluginDictionaryEntry = "";
-			var tester = "";
 			
 			/* Differentiate a Custom PluginKey */
 			if ( arguments.custom ){
@@ -92,28 +95,12 @@ Modification History:
 				
 				/* Determine if we have md and cacheable, else set it  */
 				if ( not getcacheDictionary().keyExists(pluginKey) ){
-					/* Get Plugins MetaData and cache */
-					MetaData = getMetaData(oPlugin);
-					
-					/* Get Default MD Entry */
-					mdEntry = getNewMDEntry(); 
-					
-					/* Test for caching parameters */
-					if ( structKeyExists(MetaData, "cache") and isBoolean(MetaData["cache"]) and MetaData["cache"] ){
-						/* Plugins are NOT cached by default. */
-						mdEntry.cacheable = true;
-						if ( structKeyExists(MetaData,"cachetimeout") ){
-							mdEntry.timeout = MetaData["cachetimeout"];
-						}
-						if ( structKeyExists(MetaData,"cachelastaccesstimeout") ){
-							mdEntry.lastAccessTimeout = MetaData["cachelastaccesstimeout"];
-						}			
-					}
-					/* Set Entry in dictionary */
-					getcacheDictionary().setKey(pluginKey,mdEntry);	
+					storeMetadata(pluginKey,getMetadata(oPlugin));
 				}
-				/* Set dictionary entry for operations, it is now guaranteed. */
+				
+				/* Get Cache Entries */
 				pluginDictionaryEntry = getcacheDictionary().getKey(pluginKey);
+				
 				/* Do we Cache */
 				if ( pluginDictionaryEntry.cacheable ){
 					controller.getColdboxOCM().set(pluginKey,oPlugin,pluginDictionaryEntry.timeout,pluginDictionaryEntry.lastAccessTimeout);
@@ -148,6 +135,35 @@ Modification History:
 
 <!------------------------------------------- PRIVATE ------------------------------------------->
 	
+	<!--- storeMetadata --->
+    <cffunction name="storeMetadata" output="false" access="private" returntype="void" hint="Store a plugin's metadata introspection">
+    	<cfargument name="pluginKey" type="string" 	required="true" default="" hint="The plugin cache key"/>
+    	<cfargument name="pluginMD"  type="any" 	required="true" hint="The plugin target"/>
+    	<cfscript>
+    		var metadata = arguments.pluginMD;
+			var mdEntry = getNewMDEntry(); 
+			
+			/* Test for caching parameters */
+			if ( structKeyExists(metadata, "cache") and isBoolean(metadata["cache"]) and metadata["cache"] ){
+				/* Plugins are NOT cached by default. */
+				mdEntry.cacheable = true;
+				if ( structKeyExists(metadata,"cachetimeout") ){
+					mdEntry.timeout = metadata["cachetimeout"];
+				}
+				if ( structKeyExists(metadata,"cachelastaccesstimeout") ){
+					mdEntry.lastAccessTimeout = metadata["cachelastaccesstimeout"];
+				}			
+			}
+			/* Test for singleton parameters */
+			if( structKeyExists(metadata,"singleton") and isBoolean(metadata.singleton) and metadata.singleton){
+				mdEntry.cacheable = true;
+				mdEntry.timeout = 0;
+			}
+			/* Set Entry in dictionary */
+			getcacheDictionary().setKey(arguments.pluginKey,mdEntry);		
+    	</cfscript>
+    </cffunction>
+	
 	<!--- Get a new MD cache entry structure --->
 	<cffunction name="getNewMDEntry" access="public" returntype="struct" hint="Get a new metadata entry structure" output="false" >
 		<cfscript>
@@ -163,25 +179,19 @@ Modification History:
 	
 	<!--- Set the coldbox plugins Path --->
 	<cffunction name="setColdBoxPluginsPath" access="private" output="false" returntype="void" hint="Set ColdBoxPluginsPath">
-		<!--- ************************************************************* --->
 		<cfargument name="ColdBoxPluginsPath" type="string" required="true"/>
-		<!--- ************************************************************* --->
 		<cfset instance.ColdBoxPluginsPath = arguments.ColdBoxPluginsPath/>
 	</cffunction>
 	
 	<!--- Set the coldbox plugins Path --->
 	<cffunction name="setColdBoxExtensionsPluginsPath" access="private" output="false" returntype="void" hint="Set ColdBoxExtensionsPluginsPath">
-		<!--- ************************************************************* --->
 		<cfargument name="ColdBoxExtensionsPluginsPath" type="string" required="true"/>
-		<!--- ************************************************************* --->
 		<cfset instance.ColdBoxExtensionsPluginsPath = arguments.ColdBoxExtensionsPluginsPath/>
 	</cffunction>
 	
 	<!--- Set the internal plugin cache dictionary. --->
 	<cffunction name="setcacheDictionary" access="private" output="false" returntype="void" hint="Set the plugin cache dictionary. NOT EXPOSED to avoid screwups">
-		<!--- ************************************************************* --->
 		<cfargument name="cacheDictionary" type="coldbox.system.util.collections.BaseDictionary" required="true"/>
-		<!--- ************************************************************* --->
 		<cfset instance.cacheDictionary = arguments.cacheDictionary/>
 	</cffunction>
 	
