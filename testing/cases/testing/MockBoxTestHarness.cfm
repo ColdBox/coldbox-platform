@@ -109,5 +109,6 @@ Data Dump:
 <cfset mockBox.prepareMock(Test)>
 <cfset Test.$property(propertyName="collaborator",mock=mockCollaborator)>
 <cfdump var="#test.displayData()#">
+<cfdump var="#test.$debug()#">
 
 </cfoutput>
