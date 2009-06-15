@@ -57,6 +57,7 @@
 	<!--- getSetting --->
 	<cffunction name="getSetting" output="false" access="public" returntype="string" hint="Get a setting">
 		<cfargument name="name" type="string" required="true" default="" hint="Name of setting"/>
+		<cfargument name="testArg" type="string" required="false" hint=""/>
 		<cfif structKeyExists(variables.settings,arguments.name)>
 			<cfreturn variables.settings[arguments.name]>
 		<cfelse>

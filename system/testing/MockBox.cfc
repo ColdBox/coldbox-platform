@@ -199,6 +199,7 @@ Description		:
 		<cfargument name="method" 	type="string" 	required="true" hint="The method you want to mock or spy on"/>
 		<cfargument name="returns" 	type="any" 		required="false" hint="The results it must return, if not passed it returns void or you will have to do the mockResults() chain"/>
 		<cfargument name="preserveReturnType" type="boolean" required="true" default="true" hint="If false, the mock will make the returntype of the method equal to ANY"/>
+		<cfargument name="preserveArguments"  type="boolean" required="true" default="true" hint="If false, the mock will wipe out argument signatures and handle them as unknown arguments."/>
 		<cfargument name="throwException" type="boolean" required="false" default="false" hint="If you want the method call to throw an exception"/>
 		<cfargument name="throwType" 	  type="string"  required="false" default="" hint="The type of the exception to throw"/>
 		<cfargument name="throwDetail" 	  type="string"  required="false" default="" hint="The detail of the exception to throw"/>

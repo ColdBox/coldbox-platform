@@ -28,6 +28,7 @@ Description		:
 		<cfargument name="method" 			type="string" 	required="true" hint="The method you want to mock or spy on"/>
 		<cfargument name="returns" 			type="any" 		required="false" hint="The results it must return, if not passed it returns void or you will have to do the mockResults() chain"/>
 		<cfargument name="preserveReturnType" type="boolean" required="true" default="true" hint="If false, the mock will make the returntype of the method equal to ANY"/>
+		<cfargument name="preserveArguments"  type="boolean" required="true" default="true" hint="If false, the mock will wipe out argument signatures and handle them as unknown arguments."/>
 		<cfargument name="throwException" type="boolean" 	required="false" default="false" hint="If you want the method call to throw an exception"/>
 		<cfargument name="throwType" 	  type="string" 	required="false" default="" hint="The type of the exception to throw"/>
 		<cfargument name="throwDetail" 	  type="string" 	required="false" default="" hint="The detail of the exception to throw"/>
@@ -47,17 +48,40 @@ Description		:
 			if ( fncMD["access"] eq "public" ){
 				udfOut.append('<cfset this["#arguments.method#"] = #arguments.method#>#lb#');
 			}
+			/* Create Method Signature */
 			udfOut.append('
 			<cfset variables["#arguments.method#"] = #arguments.method#>
 			<cffunction name="#arguments.method#" access="#fncMD.access#" output="#fncMD.output#" returntype="#fncMD.returntype#">
+			');
 			
+			/* Create Arguments Signature */
+			if( structKeyExists(fncMD,"parameters") AND 
+				isArray(fncMD.parameters) AND
+				arguments.preserveArguments )
+			{
+				for(x=1; x lte ArrayLen(fncMD.parameters);x=x+1){
+					argMD = fncMD.parameters[x];
+					if( NOT structKeyExists(argMD,"required") ){ argMD.required=false; }
+					if( NOT structKeyExists(argMD,"type") ){ argMD.type="any"; }
+					/* With Default */
+					if( structKeyExists(argMD,"default") ){
+						udfOut.append('<cfargument name="#argMD.name#" type="#argMD.type#" required="#argMD.required#" default="#argMD.default#" />#lb#');
+					}
+					else{
+						/* WithoutDefault */
+						udfOut.append('<cfargument name="#argMD.name#" type="#argMD.type#" required="#argMD.required#" />#lb#');
+					}
+				}
+			}
+			
+			/* Create Function Content */
+			udfOut.append('			
 			<cfset var results = this._mockResults>
 			<cfset var resultsKey = "#arguments.method#">
 			<cfset var resultsCounter = 0>
 			<cfset var internalCounter = 0>
 			<cfset var resultsLen = 0>
 			<cfset var argsHashKey = resultsKey & "|" & hash(arguments.toString())>
-			
 			
 			<!--- If Method & argument Hash Results, switch the results struct --->
 			<cfif structKeyExists(this._mockArgResults,argsHashKey)>
