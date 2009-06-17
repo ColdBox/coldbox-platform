@@ -120,6 +120,7 @@ Modification History:
 		<cfset refLocal.needCleanup = false>
 		<cfset refLocal.ObjectFound = false>
 		<cfset refLocal.tmpObj = 0>
+		<cfset arguments.objectKey = trim(arguments.objectKey)>
 		
 		<cflock type="readonly" name="coldbox.cacheManager.#arguments.objectKey#" timeout="#instance.lockTimeout#" throwontimeout="true">
 			<cfscript>
@@ -163,7 +164,8 @@ Modification History:
 		<cfset refLocal.needCleanup = false>
 		<cfset refLocal.tmpObj = 0>
 		<cfset refLocal.targetObject = this.NOT_FOUND>
-	
+		<cfset arguments.objectKey = trim(arguments.objectKey)>
+		
 		<cflock type="exclusive" name="coldbox.cacheManager.#arguments.objectKey#" timeout="#instance.lockTimeout#" throwontimeout="true">
 			<cfscript>
 				/* Check if in pool first */
@@ -228,6 +230,7 @@ Modification History:
 		<cfargument name="objectKey" type="any" required="true" hint="The key of the object to lookup its metadata">
 		<!--- ************************************************************* --->
 		<cfscript>
+			arguments.objectKey = trim(arguments.objectKey);
 			/* Check if in the pool first */
 			if( getObjectPool().lookup(arguments.objectKey) ){
 				return getObjectPool().getObjectMetadata(arguments.objectKey);
@@ -355,6 +358,7 @@ Modification History:
 		<!--- ************************************************************* --->
 		<cfset var ClearCheck = false>
 		<cfset var interceptMetadata = structnew()>
+		<cfset arguments.objectKey = trim(arguments.objectKey)>
 		
 		<!--- Remove Object --->
 		<cflock type="exclusive" name="coldbox.cacheManager.#arguments.objectKey#" timeout="#instance.lockTimeout#" throwontimeout="true">
