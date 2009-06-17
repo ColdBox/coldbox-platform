@@ -63,8 +63,10 @@ Description		:
 			
 			<!--- Get the statemachine counter --->
 			<cfset resultsLen = arrayLen(results[resultsKey])>
+			
 			<!--- Log the Method Call --->
 			<cfset this._mockMethodCallCounters[listFirst(resultsKey,"|")] = this._mockMethodCallCounters[listFirst(resultsKey,"|")] + 1>
+			
 			<!--- Get the CallCounter Reference --->
 			<cfset internalCounter = this._mockMethodCallCounters[listFirst(resultsKey,"|")]>
 			');
