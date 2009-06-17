@@ -21,7 +21,8 @@ Sample Directory Structure For Your Application
 	- layouts  (Your layouts) 
 	- logs (Where your log files go, you can change this)
 	- model (Where your model objects go) 
-	- plugins (Your custom plugins by convention) 
+	- plugins (Your custom plugins by convention)
+	- remote (Where your remote proxies go) 
 	- test (Where your unit testing goes)
 	- views (Your views)
 	

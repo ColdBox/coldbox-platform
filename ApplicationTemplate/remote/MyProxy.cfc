@@ -10,7 +10,7 @@ Description :
 	This proxy is an inherited coldbox remote proxy used for enabling
 	coldbox as a model framework.
 ----------------------------------------------------------------------->
-<cfcomponent name="ColdboxProxy" output="false" extends="coldbox.system.remote.ColdboxProxy">
+<cfcomponent name="MyProxy" output="false" extends="coldbox.system.remote.ColdboxProxy">
 
 	<cffunction name="yourRemoteCall" output="false" access="remote" returntype="YourType" hint="Your Hint">
 		<cfset var results = "">
@@ -18,7 +18,7 @@ Description :
 		<!--- Set the event to execute --->
 		<cfset arguments.event = "">
 		
-		<!--- Call to process an event --->
+		<!--- Call to process a coldbox event cycle, always check the results as they might not exist. --->
 		<cfset results = super.process(argumentCollection=arguments)>
 		
 		<cfreturn results>
