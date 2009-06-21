@@ -71,8 +71,8 @@ Description		:
 		<!--- ************************************************************* --->
 		<cfargument name="className"		type="string" 	required="false" hint="The class name of the object to mock. The mock factory will instantiate it for you"/>
 		<cfargument name="object" 			type="any" 		required="false" hint="The object to mock, already instantiated"/>
-		<cfargument name="clearMethods" 	type="boolean"  required="false" default="false" hint="If true, all methods in the target mock object will be removed. You can then mock only the methods that you want to mock"/>
-		<cfargument name="callLogging" 		type="boolean" required="false" default="false" hint="Add method call logging for all mocked methods"/>
+		<cfargument name="clearMethods" 	type="boolean"  required="false" default="false" hint="If true, all methods in the target mock object will be removed. You can then mock only the methods that you want to mock. Defaults to false"/>
+		<cfargument name="callLogging" 		type="boolean"  required="false" default="true" hint="Add method call logging for all mocked methods. Defaults to true"/>
 		<!--- ************************************************************* --->
 		<cfscript>
 			var obj = 0;
