@@ -28,6 +28,7 @@ Modifications
 --->
 <cfcomponent name="XMLConverter"
 			 hint="A utility tool that can marshall data to XML"
+			 extends="coldbox.system.Plugin"
 			 output="false"
 			 cache="true">
 
