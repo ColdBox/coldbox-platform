@@ -37,23 +37,28 @@ Description:
 			instance.PolicyFileStruct = StructNew();
 			
 			/* load AntiSamy .jar file */
-			ArrayAppend(AntiSamyJarPath, ExpandPath("/coldbox/system/extras/AntiSamy/antisamy-bin.1.2.jar"));
+			ArrayAppend(AntiSamyJarPath, ExpandPath("/coldbox/system/extras/AntiSamy/antisamy-bin.1.3.jar"));
+			ArrayAppend(AntiSamyJarPath, ExpandPath("/coldbox/system/extras/AntiSamy/commons-httpclient-3.1.jar"));
+
+			ArrayAppend(AntiSamyJarPath, ExpandPath("/coldbox/system/extras/AntiSamy/xercesImpl.jar"));
 			ArrayAppend(AntiSamyJarPath, ExpandPath("/coldbox/system/extras/AntiSamy/nekohtml.jar"));
 			ArrayAppend(AntiSamyJarPath, ExpandPath("/coldbox/system/extras/AntiSamy/batik-util.jar"));
 			ArrayAppend(AntiSamyJarPath, ExpandPath("/coldbox/system/extras/AntiSamy/batik-css.jar"));
+			// if this lib deos not exists then enable
+			//ArrayAppend(AntiSamyJarPath, ExpandPath("/coldbox/system/extras/AntiSamy/xml-apis.jar"));
 			ArrayAppend(AntiSamyJarPath, ExpandPath("/coldbox/system/extras/AntiSamy/xml-apis-ext.jar"));
 			
 			/* Load .jar files */
-			getPlugin("JavaLoader").setup(loadPaths=AntiSamyJarPath,loadColdFusionClassPath = true);
+			getPlugin("JavaLoader").setup(loadPaths=AntiSamyJarPath);
 			
 			// AntiSamy policyfile
-			instance.PolicyFileStruct['antisamy'] = expandPath('/coldbox/system/extras/AntiSamy/antisamy-1.2.xml');
+			instance.PolicyFileStruct['antisamy'] = expandPath('/coldbox/system/extras/AntiSamy/antisamy-1.3.xml');
 			//Load eBay policyfile
-			instance.PolicyFileStruct['ebay']	  = expandPath('/coldbox/system/extras/AntiSamy/antisamy-ebay-1.2.xml');
+			instance.PolicyFileStruct['ebay']	  = expandPath('/coldbox/system/extras/AntiSamy/antisamy-ebay-1.3.xml');
 			//Load myspacwe policyfile
-			instance.PolicyFileStruct['myspace']  = expandPath('/coldbox/system/extras/AntiSamy/antisamy-myspace-1.2.xml');
+			instance.PolicyFileStruct['myspace']  = expandPath('/coldbox/system/extras/AntiSamy/antisamy-myspace-1.3.xml');
 			//Load salshdot policyfile
-			instance.PolicyFileStruct['slashdot'] = expandPath('/coldbox/system/extras/AntiSamy/antisamy-slashdot-1.2.xml');
+			instance.PolicyFileStruct['slashdot'] = expandPath('/coldbox/system/extras/AntiSamy/antisamy-slashdot-1.3.xml');
 			
 			return this;
 		</cfscript>
