@@ -9,7 +9,7 @@ Date        :	06/18/2009
 Description :
 	An incredible validator for all the following:
 	
-Validations (Can be a list):
+Validations:
 - boolean
 - date
 - email
@@ -26,7 +26,6 @@ Validations (Can be a list):
 - ssn
 - string
 - telephone
-- udf-{UDF Method}
 - URL
 - uuid
 - USdate: a U.S. date of the format mm/dd/yy, with 1-2 digit days and months, 1-4 digit years. 
@@ -106,11 +105,6 @@ Validations (Can be a list):
 		function checkString(str){ return isValid("string",arguments.str); }
 		
 		function checkTelephone(str){ return isValid("telephone",arguments.str); }
-		
-		function checkWithUDF(str,udf){
-			var udfCall = arguments.udf;
-			return udfCall(arguments.str);
-		}
 		
 		function checkURL(str){ return isValid("URL",arguments.str); }
 		

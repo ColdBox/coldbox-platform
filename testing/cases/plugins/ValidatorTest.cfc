@@ -7,31 +7,7 @@ www.coldboxframework.com | www.luismajano.com | www.ortussolutions.com
 Author     :	Luis Majano & Henrik Joreteg
 Date        :	06/18/2009
 Description :
-	An incredible validatoridator for all the following:
-	
-validatoridations (Can be a list):
-- boolean
-- date
-- email
-- eurodate
-- exactLen-X
-- numeric or float
-- guid
-- integer
-- maxLen-X
-- minLen-X
-- range-1..4
-- regex-{regexhere}
-- sameAs-{fieldname}
-- ssn
-- string
-- telephone
-- udf-{UDF Method}
-- URL
-- uuid
-- USdate: a U.S. date of the format mm/dd/yy, with 1-2 digit days and months, 1-4 digit years. 
-- zipcode 5 or 9 digit format zip codes
-
+Test
 ----------------------------------------------------------------------->
 <cfcomponent extends="coldbox.system.testing.BaseTestCase">
 <cfscript>
@@ -134,11 +110,6 @@ validatoridations (Can be a list):
 		assertFalse(validator.checkTelephone('123') );
 	}
 	
-	function testcheckWithUDF(){
-		assertTrue( validator.checkWithUDF(true,variables.myUDF) );
-		assertFalse(validator.checkWithUDF('2342-asb',variables.myUDF) );
-	}
-	
 	function testcheckURL(){
 		assertTrue( validator.checkURL('http://www.coldbox.org') );
 		assertFalse(validator.checkURL('234-asdf-') );
@@ -164,9 +135,4 @@ validatoridations (Can be a list):
 		assertFalse(validator.checkIPAddress('123') );
 	}	
 </cfscript>
-
-<cffunction name="myUDF" access="private" returntype="boolean">
-	<cfargument name="str" type="string" required="true" default="" hint=""/>
-	<cfreturn isBoolean(arguments.str)>
-</cffunction>
 </cfcomponent>
