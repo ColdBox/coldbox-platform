@@ -99,7 +99,7 @@ Modification History:
 				return Evaluate("instance.context.#arguments.name#");
 			}
 			else if ( isSimpleValue(arguments.defaultValue) and arguments.defaultValue eq "NONE" )
-				throwit("The variable: #arguments.name# is undefined in the request collection.","","Framework.ValueNotInRequestCollectionException");
+				throwit("The variable: #arguments.name# is undefined in the request collection.","","RequestContextValueNotInRequestCollectionException");
 			else if ( isSimpleValue(arguments.defaultValue) ){
 				if ( refind("\[[A-Za-z]*\]", arguments.defaultValue) ){
 					if ( findnocase("array", arguments.defaultvalue) )
@@ -467,27 +467,46 @@ Modification History:
 	
 	<cffunction name="renderData" access="public" returntype="void" hint="Use this method to tell the framework to render data for you. The framework will take care of marshalling the data for you" output="false" >
 		<!--- ************************************************************* --->
-		<cfargument name="type" 		required="true" type="string" default="PLAIN" hint="The type of data to render. Valid types are JSON, WDDX, PLAIN. THe deafult is PLAIN. IF an invalid type is sent in, this method will throw an error">
-		<cfargument name="data" 		required="true" type="any" 	 hint="The data you would like to marshall and return by the framework">
-		<cfargument name="contentType"  required="true" type="string" default="" hint="The content type of the data. This will be used in the cfcontent tag: text/html, text/plain, text/xml, text/json, etc. The default value is text/html. However, if you choose JSON this method will choose text/plain, if you choose WDDX this method will choose text/xml for you. The default encoding is utf-8"/>
+		<cfargument name="type" 		required="true"  type="string" default="PLAIN" hint="The type of data to render. Valid types are JSON, XML, WDDX, PLAIN. THe deafult is PLAIN. If an invalid type is sent in, this method will throw an error">
+		<cfargument name="data" 		required="true"  type="any"    hint="The data you would like to marshall and return by the framework">
+		<cfargument name="contentType"  required="true"  type="string" default="" hint="The content type of the data. This will be used in the cfcontent tag: text/html, text/plain, text/xml, text/json, etc. The default value is text/html. However, if you choose JSON this method will choose application/json, if you choose WDDX or XML this method will choose text/xml for you. The default encoding is utf-8"/>
+		<cfargument name="encoding" 	required="false" type="string" default="utf-8" hint="The default character encoding to use"/>
+		<!--- ************************************************************* --->
+		<cfargument name="jsonCase" 		type="string" required="false" default="lower" hint="JSON Only: Whether to use lower or upper case translations in the JSON transformation. Lower is default"/>
+		<cfargument name="jsonQueryFormat" 	type="string" required="false" default="query" hint="JSON Only: query or array" />
+		<cfargument name="jsonAsText" 		type="boolean" required="false" default="false" hint="If set to false, defaults to application/json, else will change encoding to plain/text"/>
+		<!--- ************************************************************* --->
+		<cfargument name="xmlItem"  		type="string"   required="false" default="" hint="XML Only: The name of the element representing a new element in an array or query translation. Defaults to 'item' or 'row'">
+		<cfargument name="xmlColumnList"    type="string"   required="false" default="" hint="XML Only: Choose which columns to inspect, by default it uses all the columns in the query, if using a query">
+		<cfargument name="xmlUseCDATA"  	type="boolean"  required="false" default="false" hint="XML Only: Use CDATA content for ALL values. The default is false">
 		<!--- ************************************************************* --->
 		<cfscript>
 			var rd = structnew();
-			
 			/* Validate */
-			if( not reFindnocase("^(JSON|WDDX|PLAIN)$",arguments.type) ){
-				throwit("Invalid type","The type you sent #arguments.type# is not a valid type. Valid types are JSON,WDDX and PLAIN","Framework.InvalidRenderTypeException");
+			if( not reFindnocase("^(JSON|WDDX|XML|PLAIN)$",arguments.type) ){
+				throwit("Invalid rendering type","The type you sent #arguments.type# is not a valid rendering type. Valid types are JSON,XML,WDDX and PLAIN","RequestContext.InvalidRenderTypeException");
 			}
 			/* Populate */
 			rd.type = arguments.type;
 			rd.data = arguments.data;
+			rd.encoding = arguments.encoding;
 			
-			/* Some smart selects */
+			/* XML Properties */
+			rd.xmlItem= arguments.xmlItem;
+			rd.xmlColumnList = arguments.xmlColumnList;
+			rd.xmluseCDATA = arguments.xmlUseCDATA;
+			
+			/* JSON Properties */
+			rd.jsonCase = arguments.jsonCase;	
+			rd.jsonQueryFormat = arguments.jsonQueryFormat;		
+			
+			/* contenttype selections */
 			if( rd.type eq "JSON" ){
-				rd.contenttype = 'text/plain';
+				rd.contenttype = 'application/json';
+				if( arguments.jsonAsText ){ rd.contentType = "text/plain"; }
 			}
-			else if( rd.type eq "WDDX" ){
-				rd.contenttype = 'text/xml';
+			else if( rd.type eq "WDDX" OR rd.type eq "XML"){
+				rd.contentType = 'text/xml';
 			}
 			else{
 				/* If contenttype passed? */

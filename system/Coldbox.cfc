@@ -218,7 +218,7 @@ Description :
 					<!--- Render Content Type if using Render Data --->
 					<cfif isStruct(event.getRenderData()) and not structisEmpty(event.getRenderData())>
 						<!--- Render the Data Content Type --->
-						<cfcontent type="#event.getRenderData().contentType#" reset="true">
+						<cfcontent type="#event.getRenderData().contentType#; charset=#event.getRenderData().encoding#" reset="true">
 						<!--- Remove panels --->
 						<cfsetting showdebugoutput="false">
 						<cfset event.showDebugPanel(false)>
