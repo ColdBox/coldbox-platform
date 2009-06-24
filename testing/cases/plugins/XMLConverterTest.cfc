@@ -1,72 +1,98 @@
-<!-----------------------------------------------------------------------
-********************************************************************************
-Copyright 2005-2007 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
-www.coldboxframework.com | www.luismajano.com | www.ortussolutions.com
-********************************************************************************
+<cfcomponent extends="coldbox.system.testing.BaseTestCase">
+<cfscript>
 
-Author      :	Sana Ullah
-Date        :	June 23, 2009
-Description :
-	XMLConverter
------------------------------------------------------------------------>
-<cfcomponent name="XMLConverter" extends="coldbox.system.testing.BaseTestCase" output="false">
-
-	<cffunction name="setUp" returntype="void" access="public" output="false">
-		<cfscript>
-		//Setup ColdBox Mappings For this Test
-		setAppMapping("/coldbox/testharness");
-		setConfigMapping(ExpandPath(instance.AppMapping & "/config/coldbox.xml.cfm"));
-		//Call the super setup method to setup the app.
-		super.setup();
+	function setup(){
+		mockController = getMockBox().createMock(className="coldbox.system.Controller",clearMethods=true);
+		xml = getMockBox().createMock(className="coldbox.system.plugins.XMLConverter").init(mockController);
+	}
+	
+	function testArrayToXML(){
+		//1: No nesting
+		test = [1,2,3,4];
+		results = xml.arrayToXML(data=test,rootElement="TestArray");
+		assertTrue( isXML(results) );
 		
-		variables.q1 = queryNew('idt,fname,lname,phone,location');
-		variables.ArData = Arraynew(1);
-		variables.StData = StructNew();
-		</cfscript>
-
-		<cfloop from="1" to="10" index="i">
-			<cfset queryAddRow(q1,1) />
-			<cfset querySetCell(q1, 'idt', '#i#')>
-			<cfset querySetCell(q1, 'fname', 'fname-q1-#chr(65 + i)#')>
-			<cfset querySetCell(q1, 'lname', 'lname-q1-#chr(65 + i)#')>
-			<cfset querySetCell(q1, 'phone', 'phone-q1-954-555-5555-#i#')>
-			<cfset querySetCell(q1, 'location', 'location-q1-#chr(65 + i)#')>
-			
-			<cfset variables.ArData[i] = "fname-q1-#chr(65 + i)#" />
-			
-			<cfset variables.StData[i] = "fname-q1-#chr(65 + i)#" />
-		</cfloop>
+		//nesting
+		test = [1,2,3,{key="test"}];
+		xml.$("translateValue","mock value");
+		results = xml.arrayToXML(data=test,rootElement="TestArray");
+		assertTrue( isXML(results) );
+		debug(results);
+	}
+	
+	function testListToXML(){
+		//1: No nesting
+		test = "1,2,3";
+		xml.$("arrayToXML","xml");
+		results = xml.listTOXML(data=test);
+		assertEquals( xml.$callLog().arrayToXML[1].data , listToArray(test) );
+	}
+	
+	function testqueryToXML(){
+		qTest = querySim("id, name
+						  1 | luis
+						  2 | sana
+						  3 | tom");
+		results = xml.queryToXML(data=qTest);
+		assertTrue( isXML(results) );
+		debug(results);
 		
-	</cffunction>
+		results = xml.queryToXML(data=qTest,columnList="id");
+		assertTrue( isXML(results) );
+		debug(results);
+	}
 	
-	<cffunction name="testA" access="public" returntype="void" output="false">
-		<!--- Now test some events --->
-		<cfscript>
-			var plugin = getController().getPlugin("XMLConverter");
-			
-			assertTrue( IsObject(plugin), "XMLConverter plugin is not a object");
-		</cfscript>
-	</cffunction>	
+	function testStructToXML(){
+		test = {name="luis",age="11"};		
+		
+		results = xml.structToXML(test);
+		assertTrue( isXML(results) );
+		debug(results);
+		
+		results = xml.structToXML(data=test,rootElement="People");
+		assertTrue( isXML(results) );
+		debug(results);
 	
-	<cffunction name="testArray" access="public" returntype="void" output="false">
-		<!--- Now test some data to convert into XML format --->
-		<cfset var plugin = getController().getPlugin("XMLConverter") />
-
-		<cfset assertTrue(IsXML(plugin.toXML(data=variables.ArData,addHeader=true)),'Returned values is not valid XML') />
-	</cffunction>
+	}
 	
-	<cffunction name="testStructure" access="public" returntype="void" output="false">
-		<!--- Now test some data to convert into XML format --->
-		<cfset var plugin = getController().getPlugin("XMLConverter") />
-
-		<cfset assertTrue(IsXML(plugin.toXML(data=variables.StData,addHeader=true)),'Returned values is not valid XML') />
-	</cffunction>
+	function testToXML(){
+		//1: Simple Values
+		results = xml.toXML(data="luis");
+		debug(results);
+		assertTrue( isXML(results) );
 	
-	<cffunction name="testQuery" access="public" returntype="void" output="false">
-		<!--- Now test some data to convert into XML format --->
-		<cfset var plugin = getController().getPlugin("XMLConverter") />
-
-		<cfset assertTrue(IsXML(plugin.toXML(data=variables.q1,addHeader=true)),'Returned values is not valid XML') />
-	</cffunction>
-	
+		//2: Simple Array
+		ar = [1,2,3];
+		results = xml.toXML(data=ar);
+		debug(results);
+		assertTrue( isXML(results) );
+		
+		//3: Simple Struct
+		struct = {name="luis",age="11"};
+		results = xml.toXML(data=struct);
+		debug(results);
+		assertTrue( isXML(results) );
+		
+		//4: Query
+		qTest = querySim("id, name
+						  1 | luis
+						  2 | sana
+						  3 | tom");
+		results = xml.toXML(data=qTest);
+		debug(results);
+		assertTrue( isXML(results) );
+		
+		//5: Nestings
+		nested = [1,2,3,{name="luis",age="11"},5,{name="majano",age="33"}];
+		results = xml.toXML(data=nested);
+		debug(results);
+		assertTrue( isXML(results) );
+		
+		nested = {name="luis",age="21",nicknames=["pio","lui","lois"]};
+		results = xml.toXML(data=nested);
+		debug(results);
+		assertTrue( isXML(results) );
+		
+	}
+</cfscript>
 </cfcomponent>
