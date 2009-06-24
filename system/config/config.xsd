@@ -61,6 +61,7 @@
 									<xs:enumeration value="IOCFrameworkReload" />
 									<xs:enumeration value="IOCDefinitionFile" />
 									<xs:enumeration value="IOCObjectCaching" />
+									<xs:enumeration value="LayoutsExternalLocation" />	
 									<xs:enumeration value="MessageboxStyleOverride" />
 									<xs:enumeration value="ModelsExternalLocation" />
 									<xs:enumeration value="ModelsObjectCaching" />		

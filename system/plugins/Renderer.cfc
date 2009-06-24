@@ -36,6 +36,7 @@ Description :
 			instance.viewsConvention = controller.getSetting("viewsConvention",true);
 			instance.appMapping = controller.getSetting("AppMapping");
 			instance.viewsExternalLocation = controller.getSetting('ViewsExternalLocation');
+			instance.layoutsExternalLocation = controller.getSetting('LayoutsExternalLocation');
 			
 			/* Inject UDF For Views/Layouts */
 			if(Len(Trim(controller.getSetting("UDFLibraryFile")))){
@@ -196,10 +197,11 @@ Description :
 
 	<!--- Render the layout --->
 	<cffunction name="renderLayout" access="Public" hint="Renders the current layout + view Combinations if declared." output="false" returntype="any">
-		<cfset var cbox_RederedLayout = "">
 		<cfset var Event = controller.getRequestService().getContext()>
 		<cfset var rc = event.getCollection()>
 		<cfset var cbox_CurrentLayout = Event.getcurrentLayout()>
+		<cfset var cbox_layoutPath = "">
+		<cfset var cbox_RederedLayout = "">
 		
 		<!--- Check if no view has been set. --->
 		<cfif event.getCurrentView() eq "">
@@ -218,8 +220,22 @@ Description :
 		<cfset timerHash = controller.getDebuggerService().timerStart("rendering Layout [#cbox_CurrentLayout#]")>
 			<cfif cbox_CurrentLayout eq "">
 				<cfset cbox_RederedLayout = renderView()>
-			<cfelse>
-				<cfsavecontent variable="cbox_RederedLayout"><cfoutput><cfinclude template="/#instance.appMapping#/#instance.layoutsConvention#/#cbox_CurrentLayout#"></cfoutput></cfsavecontent>
+			<cfelse>			
+				<!--- The Layout Path is by convention or external?? --->
+				<cfset cbox_layoutPath = "/#instance.appMapping#/#instance.layoutsConvention#/#cbox_CurrentLayout#">
+				<!--- Check if View does not exists in Conventions --->
+				<cfif not fileExists(expandPath(cbox_layoutPath))>
+					<!--- Set the Path to be the External Location --->
+					<cfset cbox_layoutPath = "#instance.layoutsExternalLocation#/#cbox_CurrentLayout#">
+					<!--- Verify the External Location now --->
+					<cfif not fileExists(expandPath(cbox_layoutPath))>
+						<cfthrow message="Layout not located" 
+								 detail="The layout: #cbox_layoutPath# could not be located in the conventions folder or in the external location. Please verify the layout name" 
+								 type="Renderer.LayoutNotFoundException">
+					</cfif>
+				</cfif>
+				<!--- RenderLayout --->
+				<cfsavecontent variable="cbox_RederedLayout"><cfoutput><cfinclude template="#cbox_layoutPath#"></cfoutput></cfsavecontent>
 			</cfif>
 		<cfset controller.getDebuggerService().timerEnd(timerHash)>
 		

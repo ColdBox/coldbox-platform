@@ -42,6 +42,8 @@
 		<Setting name="IOCObjectCaching"			value="false"/>
 		<Setting name="RequestContextDecorator"		value="coldbox.testharness.model.myRequestContextDecorator" />
 		<Setting name="ProxyReturnCollection" 		value="false"/>
+		
+		<Setting name="LayoutsExternalLocation"     value="extlayouts" />
 	</Settings>
 
 	<YourSettings>

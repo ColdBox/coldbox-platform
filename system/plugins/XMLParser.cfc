@@ -204,7 +204,7 @@ Modification History:
 			
 			//return settings
 			return settingsStruct;
-		}//end of try
+		}
 		catch( Any Exception ){
 			throw("Error Loading Framework Configuration.","#Exception.Message# #Exception.Detail#","ColdBox.plugins.XMLParser.ColdboxSettingsParsingException");
 		}
@@ -630,6 +630,25 @@ Modification History:
 				}
 			}else{
 				configStruct["ViewsExternalLocation"] = "";
+			}
+			
+			/* ::::::::::::::::::::::::::::::::::::::::: EXTERNAL LAYOUTS LOCATION :::::::::::::::::::::::::::::::::::::::::::: */
+			
+			/* check for LayoutsExternalLocation */
+			if( structKeyExists(configStruct,"LayoutsExternalLocation") and configStruct["LayoutsExternalLocation"] neq "" ){
+				/* Verify the locations, do relative to the app mapping first */
+				if( directoryExists(controller.getAppRootPath() & configStruct["LayoutsExternalLocation"]) ){
+					configStruct["LayoutsExternalLocation"] = "/" & ConfigStruct["AppMapping"] & "/" & configStruct["LayoutsExternalLocation"];
+				}
+				else if( not directoryExists(expandPath(configStruct["LayoutsExternalLocation"])) ){
+					throw("LayoutsExternalLocation could not be found.","The directories tested was relative and expanded using #configStruct['LayoutsExternalLocation']#. Please verify your setting.","XMLParser.ConfigXMLParsingException");
+				}
+				/* Cleanup */
+				if ( right(configStruct["LayoutsExternalLocation"],1) eq "/" ){
+					 configStruct["LayoutsExternalLocation"] = left(configStruct["LayoutsExternalLocation"],len(configStruct["LayoutsExternalLocation"])-1);
+				}
+			}else{
+				configStruct["LayoutsExternalLocation"] = "";
 			}
 			
 			/* ::::::::::::::::::::::::::::::::::::::::: MAIL SETTINGS :::::::::::::::::::::::::::::::::::::::::::: */
