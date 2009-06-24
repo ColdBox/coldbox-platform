@@ -512,6 +512,16 @@ Modification History:
 		<cfreturn cgi.REQUEST_METHOD>
 	</cffunction>
 	
+	<cffunction name="isSSL" access="public" returntype="boolean" hint="Returns boolean result whether current request is in ssl or not" output="false">
+	    <cfscript>
+			var isSSLRequest = false;
+			if (isBoolean(cgi.server_port_secure) && cgi.server_port_secure) {
+				isSSLRequest = true;
+			}
+			return isSSLRequest;
+		</cfscript>
+	</cffunction>
+	
 	<cffunction name="isViewDispatched" access="public" returntype="boolean" hint="Determine if we need to dispatch a view" output="false" >
 		<cfreturn instance.isViewDispatched>
 	</cffunction>
