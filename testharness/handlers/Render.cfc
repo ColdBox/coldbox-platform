@@ -14,7 +14,15 @@
 	}
 	
 	function xml(){
-		event.renderdata(type="xml",data=server,xmlRoot="ServerScope");
+		q = queryNew("ID,NAME");
+		queryAddRow(q,1);
+		querySetCell(q,"ID", createUUID(),1);
+		querySetCell(q,"name", 'luis',1);
+		queryAddRow(q,1);
+		querySetCell(q,"ID", createUUID(),2);
+		querySetCell(q,"name", 'henrik',2);
+		
+		event.renderdata(type="xml",data=q);
 	}
 	
 

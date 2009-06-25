@@ -12,122 +12,179 @@ Description :
 Modification History:
 01/18/2007 - Created
 ----------------------------------------------------------------------->
-<cfcomponent name="debuggerserviceTest" extends="coldbox.system.testing.BaseTestCase" output="false">
-
-	<cffunction name="setUp" returntype="void" access="public" output="false">
-		<cfscript>
+<cfcomponent extends="coldbox.system.testing.BaseTestCase">
+<cfscript>
+	function setup(){
 		//Setup ColdBox Mappings For this Test
 		setAppMapping("/coldbox/testharness");
 		setConfigMapping(ExpandPath(instance.AppMapping & "/config/coldbox.xml.cfm"));
-		//Call the super setup method to setup the app.
 		super.setup();
-		</cfscript>
-	</cffunction>
+		
+		/* Service To Test */
+		debugger = getController().getDebuggerService();
+		getMockBox().prepareMock(debugger);
+		getMockBox().prepareMock(getController());
+	}
+	function testTimersExist(){
+		assertFalse( debugger.timersExist() );
+		request.debugTimers = "";
+		assertTrue( debugger.timersExist() );
+		structclear(request);
+	}
+	function testGetTimers(){
+		assertEquals( debugger.getTimers(), QueryNew("Id,Method,Time,Timestamp,RC") );
+		request.debugTimers = querySim("id, method
+										123 | hello");
+		assertEquals( debugger.getTimers(), request.debugTimers);
+	}
+	function testTimerStart(){
+		/* Mocks */
+		debugger.$("getTimers",queryNew(""));
+		//1: No Debug Mode
+		debugger.$("getDebugMode",false);
+		assertEquals( debugger.timerStart('TEST'), 0 );
+		//2: Debug Mode
+		debugger.$("getDebugMode",true);
+		labelHash = debugger.timerStart('TEST');
+		assertTrue( structKeyExists(request, labelHash) );
+		assertEquals( labelHash, hash('TEST') );		
+	}
+	function testTimerEnd(){
+		/* Mocks */
+		debugger.$("getDebugMode",true);
+		labelHash = hash('TEST');
+		qTimers = QueryNew("Id,Method,Time,Timestamp,RC");
+		debugger.$("getTimers",qTimers);
+		
+		//1: With RC
+		request[labelHash] = {label="TEST",stime=getTickCount()};
+		debugger.timerEnd(labelHash);
+		assertFalse( structKeyExists(request, labelHash) );
+		assertTrue( qTimers.recordCount );
+		
+		//2: Without RC
+		request[labelHash] = {label="Rendering Page",stime=getTickCount()};
+		debugger.timerEnd(labelHash);
+		assertFalse( structKeyExists(request, labelHash) );
+		assertTrue( qTimers.recordCount );
+	}
+	function testGetDebugMode(){
+		/* Mocks */
+		debugger.$("getCookieName","unittest");
+		//global debug mode on
+		getController().$("getSetting").$args("debugMode").$results(true);
+		assertTrue( debugger.getDebugMode() );
+		//global debug mode off
+		getController().$("getSetting").$args("debugMode").$results(false);
+		//cookie off
+		assertFalse( debugger.getDebugMode() );
+		//Cookie found but not boolean
+		cookie["unittest"] = "hello-123";
+		assertFalse( debugger.getDebugMode() );
+		//cooki with boolean
+		cookie["unittest"] = true;
+		assertTrue( debugger.getDebugMode() );
+		cookie["unittest"] = false;
+		assertFalse( debugger.getDebugMode() );
+	}
+	function testSetDebugMode(){
+		debugger.$("getCookieName","unittest");
+		cookie["unittest"] = "hello";
+		debugger.setDebugMode(false);
+		assertEquals( cookie["unittest"], "false" );
+		debugger.setDebugMode(true);
+		assertEquals( cookie["unittest"], "true" );
+	}
+	function testRenderDebugLog(){
+		debugLog = debugger.renderDebugLog();
+		assertTrue( len(debugLog) );		
+		debug(debugLog);
+	}
+	function testRenderCachePanel(){
+		panel = debugger.renderCachePanel();
+		assertTrue( len(panel) );		
+		debug(panel);
+	}
+	function testRenderCacheDumper(){
+		dumper = debugger.renderCacheDumper();
+		assertTrue( len(dumper) );		
+		debug(dumper);
+	}
+	function testRenderProfiler(){
+		profilers = debugger.renderProfiler();
+		assertTrue( len(profilers) );		
+		debug(profilers);
+	}
+	function testRecordProfiler(){
+		debugger.$("getDebugMode",false);
+		debugger.$("timersExist",false);
+		debugger.$("pushProfiler");
+		debugger.$("getTimers",queryNew(""));
+		
+		debugger.recordProfiler();
+		assertEquals(debugger.$count("pushProfiler"),0);
+		
+		debugger.$("timersExist",true);
+		debugger.$("getDebugMode",true);		
+		debugger.recordProfiler();
+		assertEquals(debugger.$count("pushProfiler"),1);		
+	}
 	
-	<cffunction name="testDebugModes" access="public" returntype="void" output="false">
-		<cfscript>
-		var service = getController().getDebuggerService();
-		var cookieName = "coldbox_debugmode_#getController().getApphash()#";
+	function testPushProfiler(){
+		/* Mocks */
+		mockConfig = getMockBox().createMock(className='coldbox.system.beans.DebuggerConfigBean',clearMethods=true);
+		debugger.setProfilers(arrayNew(1));
+		debugger.$("getDebuggerConfigBean",mockConfig);
+		debugger.$("popProfiler");
 		
-		//set test
-		service.setDebugMode(true);
-		AssertTrue( cookie[cookieName] , "Set Tests");
-		//get test for true
-		AssertTrue( service.getDebugMode(), "Get Test to true" );
+		/* Test Activate Check */
+		mockConfig.$("getPersistentRequestProfiler",false);
+		debugger.pushProfiler(queryNew(""));
+		assertEquals( arrayLen(debugger.getProfilers()), 0);
 		
-		//set to false
-		service.setDebugMode(false);
-		AssertFalse( service.getDebugMode(), "Test after set to false");
+		/* Less than Max, so push record */
+		mockConfig.$("getPersistentRequestProfiler",true);
+		mockConfig.$("getmaxPersistentRequestProfilers",10);
+		debugger.pushProfiler(queryNew(""));
+		assertEquals( arrayLen(debugger.getProfilers()), 1);
 		
-		</cfscript>
-	</cffunction>
-	
-	<cffunction name="testRenderDebugLog" access="public" returntype="void" output="false">
-		<cfscript>
-		var service = getController().getDebuggerService();
-		var debugLog = service.renderDebugLog();
+		/* Max Profilers Check, check Pop */
+		mockConfig.$("getmaxPersistentRequestProfilers",1);
+		debugger.pushProfiler(queryNew(""));
+		assertEquals( debugger.$count("popProfiler"), 1);		
+	}
+	function testPopProfiler(){
+		props = [1,2,3,4];
+		debugger.setProfilers(props);
+		debugger.popProfiler();
+		assertEquals( arrayLen(debugger.getProfilers()), 3);
+	}
+	function testPushTracer(){
+		mockConfig = getMockBox().createMock(className='coldbox.system.beans.DebuggerConfigBean',clearMethods=true);
+		debugger.setTracers(arrayNew(1));
+		debugger.$("getDebuggerConfigBean",mockConfig);
 		
-		assertTrue( isSimpleValue(debugLog));		
-		</cfscript>
-	</cffunction>
-	
-	<cffunction name="testRenderCachePanel" access="public" returntype="void" output="false">
-		<cfscript>
-		var service = getController().getDebuggerService();
-		var cachePanel = service.renderCachePanel();
+		/* Test Activate Check */
+		mockConfig.$("getPersistentTracers",false);
+		debugger.pushTracer("Test");
+		assertEquals( arrayLen(debugger.getTracers()), 0);
+		//debug( service.getProfilers() );
 		
-		assertTrue(isSimpleValue(cachePanel));		
-		</cfscript>
-	</cffunction>
-	
-	<cffunction name="testTimers" access="public" returntype="void" output="false">
-		<cfscript>
-		var service = getController().getDebuggerService();
-		structClear(request);
-		getMockFactory().createMock(object=service);
-		service.mockmethod("getDebugMode",true);
-		hashCode = service.timerStart('UnitTest');
+		/* Entry Check */
+		mockConfig.$("getPersistentTracers",true);
+		debugger.pushTracer("Test");
+		assertEquals( arrayLen(debugger.getTracers()), 1);
+		tracers = debugger.getTracers();
+		assertEquals( tracers[1].message , "Test");
+		assertEquals( tracers[1].extraInfo , "");
+	}
+	function testResetTracers(){
+		tracers = [1,2,3];
+		debugger.setTracers(tracers);
 		
-		//debug(request);
+		debugger.resetTracers();
 		
-		AssertTrue( isDefined("request.DebugTimers"), "debug timers" );
-		//debug(hash('UnitTest'));
-		AssertTrue( structKeyExists(request,hashcode), "unit test timer" );
-		
-		service.timerEnd(hashCode);
-		
-		AssertTrue( isDefined("request.DebugTimers") );
-		AssertFalse( structKeyExists(request,hashCode) );
-		AssertTrue( isQuery(request.debugTimers) );
-		AssertTrue( request.debugTimers.recordCount eq 1 );
-		</cfscript>
-	</cffunction>
-	
-	<cffunction name="testProfilerPush">
-		<cfscript>
-			service = getController().getDebuggerService();
-			mockConfig = getMockFactory().createMock('coldbox.system.beans.DebuggerConfigBean');
-			
-			/* Test Activate Check */
-			mockConfig.mockMethod("getPersistentRequestProfiler",false);
-			service.setDebuggerConfigBean(mockConfig);
-			service.setProfilers(arrayNew(1));
-			service.pushProfiler(queryNew(""));
-			assertEquals( arrayLen(service.getProfilers()), 0);
-			//debug( service.getProfilers() );
-			
-			/* Entry Check */
-			mockConfig.mockMethod("getPersistentRequestProfiler",true);
-			mockConfig.mockMethod("getmaxPersistentRequestProfilers",10);
-			service.pushProfiler(queryNew(""));
-			assertEquals( arrayLen(service.getProfilers()), 1);
-			
-			/* Max Profilers Check, check Pop */
-			mockConfig.mockMethod("getmaxPersistentRequestProfilers",1);
-			service.pushProfiler(queryNew(""));
-			assertEquals( arrayLen(service.getProfilers()), 1);
-		</cfscript>
-	</cffunction>
-	
-	<cffunction name="testTracerPush">
-		<cfscript>
-			service = getController().getDebuggerService();
-			mockConfig = getMockFactory().createMock('coldbox.system.beans.DebuggerConfigBean');
-			
-			/* Test Activate Check */
-			mockConfig.mockMethod("getPersistentTracers",false);
-			service.setDebuggerConfigBean(mockConfig);
-			service.setTracers(arrayNew(1));
-			service.pushTracer("Test");
-			assertEquals( arrayLen(service.getTracers()), 0);
-			//debug( service.getProfilers() );
-			
-			/* Entry Check */
-			mockConfig.mockMethod("getPersistentTracers",true);
-			service.pushTracer("Test");
-			assertEquals( arrayLen(service.getTracers()), 1);
-		</cfscript>
-	</cffunction>
-	
-	
+		assertEquals( arrayLen(debugger.getTracers()), 0);
+	}
+</cfscript>
 </cfcomponent>

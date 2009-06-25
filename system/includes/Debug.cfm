@@ -126,31 +126,32 @@ Modification History:
 			<th >Framework Method</th>
 			<th width="75" align="center" >RC Snapshot</th>
 		  </tr>
-		  <cfif structKeyExists(request,"DebugTimers")>
-			  <cfloop query="request.DebugTimers">
-				  <cfif findnocase("rendering", method)>
+		 
+		  <cfif debugTimers.recordCount>
+			  <cfloop query="debugTimers">
+				  <cfif findnocase("rendering", debugTimers.method)>
 				  	<cfset color = "fw_redText">
-				  <cfelseif findnocase("interception",method)>
+				  <cfelseif findnocase("interception",debugTimers.method)>
 				  	<cfset color = "fw_blackText">
-				  <cfelseif findnocase("runEvent", method)>
+				  <cfelseif findnocase("runEvent", debugTimers.method)>
 				  	<cfset color = "fw_blueText">
-				  <cfelseif findnocase("pre",method) or findnocase("post",method)>
+				  <cfelseif findnocase("pre",debugTimers.method) or findnocase("post",debugTimers.method)>
 				  	<cfset color = "fw_purpleText">
 				  <cfelse>
 				  	<cfset color = "fw_greenText">
 				  </cfif>
 				  <tr <cfif currentrow mod 2 eq 0>class="even"</cfif>>
-				  	<td align="center" >#TimeFormat(timestamp,"hh:MM:SS.l tt")#</td>
-					<td align="center" >#Time# ms</td>
-					<td ><span class="#color#">#Method#</span></td>
+				  	<td align="center" >#TimeFormat(debugTimers.timestamp,"hh:MM:SS.l tt")#</td>
+					<td align="center" >#debugTimers.Time# ms</td>
+					<td ><span class="#color#">#debugTimers.Method#</span></td>
 					<td align="center" >
-						<cfif rc neq ''><a href="javascript:fw_poprc('fw_poprc_#id#')">View</a><cfelse>...</cfif>
+						<cfif debugTimers.rc neq ''><a href="javascript:fw_poprc('fw_poprc_#debugTimers.id#')">View</a><cfelse>...</cfif>
 					</td>
 				  </tr>
-				 <tr id="fw_poprc_#id#" class="hideRC">
+				 <tr id="fw_poprc_#debugTimers.id#" class="hideRC">
 				  	<td colspan="4" style="padding:5px;" wrap="true">
 					  	<div style="overflow:auto;width:98%; height:150px;padding:5px">
-						  #replacenocase(rc,",",chr(10) & chr(13),"all")#
+						  #replacenocase(debugTimers.rc,",",chr(10) & chr(13),"all")#
 						</div>
 					</td>
 		  		  </tr>
@@ -160,6 +161,7 @@ Modification History:
 			  	<td colspan="4">No Timers Found...</td>			
 			</tr>
 		  </cfif>
+		  
 		  <cfif structKeyExists(request,"fwExecTime")>
 		  <tr>
 			<th colspan="4">Total Framework Request Execution Time: #request.fwExecTime# ms</th>

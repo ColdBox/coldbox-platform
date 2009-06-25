@@ -33,25 +33,39 @@ Modification History:
 
 <!------------------------------------------- PUBLIC ------------------------------------------->
 	
+	<!--- timersExist --->
+    <cffunction name="timersExist" output="false" access="public" returntype="boolean" hint="Do we have any request timers">
+    	<cfreturn structKeyExists(request, "DebugTimers")>
+    </cffunction>
+	
+	<!--- getTimers --->
+    <cffunction name="getTimers" output="false" access="public" returntype="query" hint="Get the timers query from the request. Empty query if it does not exist.">
+    	<cfscript>
+    		if( NOT timersExist() ){
+				request.debugTimers = QueryNew("Id,Method,Time,Timestamp,RC");
+			}
+			return request.debugTimers;
+    	</cfscript>
+    </cffunction>
+	
 	<!--- timerStart --->
 	<cffunction name="timerStart" output="false" access="public" returntype="string" hint="Start an internal code timer and get a hash of the timer storage">
 		<cfargument name="label" type="string" required="true" hint="The timer label to record"/>
 		<cfscript>
 			var labelHash = 0;
 			var timerInfo = 0;
+			
 			/* Verify Debug Mode */
 			if( getDebugMode() ){
 				/* Check if DebugTimers Query is set, else create it for this request */
-				if ( not structKeyExists(request,"DebugTimers") ){
-					request.DebugTimers = QueryNew("Id,Method,Time,Timestamp,RC");
-				}
+				getTimers();
 				/* Create Timer Hash */
 				labelHash = hash(arguments.label);
 				/* Create timer Info */
 				timerInfo = structnew();
 				timerInfo.stime = getTickCount();
 				timerInfo.label = arguments.label;
-				/* Persist in request */
+				/* Persist in request for timing */
 				request[labelHash] = timerInfo;
 			}
 			return labelHash;
@@ -63,23 +77,26 @@ Modification History:
 		<cfargument name="labelHash" type="string" required="true" default="" hint="The timer label hash to stop"/>
 		<cfscript>
 			var timerInfo = 0;
+			var qTimers = "";
+			
 			/* Verify Debug Mode and timer label exists, else do nothing. */
 			if( getDebugMode() and structKeyExists(request,arguments.labelHash) ){
 				/* Get Timer Info */
 				timerInfo = request[arguments.labelHash];
+				qTimers = getTimers();
 				/* Save timer */
-				QueryAddRow(request.DebugTimers,1);
-				QuerySetCell(request.DebugTimers, "Id", createUUID());
-				QuerySetCell(request.DebugTimers, "Method", timerInfo.label);
-				QuerySetCell(request.DebugTimers, "Time", getTickCount() - timerInfo.stime);
-				QuerySetCell(request.DebugTimers, "Timestamp", now());
+				QueryAddRow(qTimers,1);
+				QuerySetCell(qTimers, "Id", createUUID());
+				QuerySetCell(qTimers, "Method", timerInfo.label);
+				QuerySetCell(qTimers, "Time", getTickCount() - timerInfo.stime);
+				QuerySetCell(qTimers, "Timestamp", now());
 				/* Request Context SnapShot */
 				if ( not findnocase("rendering",timerInfo.label) ){
 					/* Save Collection */
-					QuerySetCell(request.DebugTimers, "RC", htmlEditFormat(controller.getRequestService().getContext().getCollection().toString()) );
+					QuerySetCell(qTimers, "RC", htmlEditFormat(controller.getRequestService().getContext().getCollection().toString()) );
 				}
 				else{
-					QuerySetCell(request.DebugTimers, "RC", '');
+					QuerySetCell(qTimers, "RC", '');
 				}
 				/* Cleanup */
 				structDelete(request,arguments.labelHash);
@@ -131,6 +148,7 @@ Modification History:
 		<!--- Setup Local Variables --->
 		<cfset var debugStartTime = GetTickCount()>
 		<cfset var RequestCollection = Event.getCollection()>
+		<cfset var debugTimers = getTimers()>
 
 		<!--- Debug Rendering Type --->
 		<cfset var renderType = "main">
@@ -230,6 +248,15 @@ Modification History:
 		<cfset instance.Profilers = arguments.Profilers/>
 	</cffunction>
 	
+	<!--- recordProfiler --->
+    <cffunction name="recordProfiler" output="false" access="public" returntype="void" hint="This method will try to push a profiler record">
+    	<cfscript>
+    		if( getDebugMode() AND timersExist() ){
+				pushProfiler(getTimers());
+			}		
+		</cfscript>
+    </cffunction>
+	
 	<!--- Push a profiler --->
 	<cffunction name="pushProfiler" access="public" returntype="void" hint="Push a profiler record" output="false" >
 		<cfargument name="profilerRecord" required="true" type="query" hint="The profiler query for this request">
@@ -250,8 +277,7 @@ Modification History:
 			newRecord.timers = arguments.profilerRecord;
 			
 			ArrayAppend(getProfilers(),newRecord);
-		</cfscript>
-		
+		</cfscript>		
 	</cffunction>
 	
 	<!--- Pop a profiler --->
@@ -289,6 +315,11 @@ Modification History:
 			ArrayAppend(getTracers(),tracerEntry);
 		</cfscript>
 	</cffunction>
+	
+	<!--- removeTracers --->
+    <cffunction name="resetTracers" output="false" access="public" returntype="void" hint="Reset all Tracers">
+    	<cfset setTracers(arrayNew(1))>
+    </cffunction>
 	
 <!------------------------------------------- PRIVATE ------------------------------------------->
 

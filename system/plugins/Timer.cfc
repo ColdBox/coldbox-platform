@@ -65,11 +65,7 @@ Modification History:
 	</cffunction>
 
 	<cffunction name="getTimerScope" access="public" returntype="query" output="false" hint="Returns the entire timer query from the request scope.">
-		<!---Get the timer scope if it exists, else create it --->
-		<cfif not structKeyExists(request,"DebugTimers")>
-			<cfset request.DebugTimers = QueryNew("Id,Method,Time,Timestamp,RC")>
-		</cfif>
-		<cfreturn request.DebugTimers>
+		<cfreturn controller.getDebuggerService().getTimers()>
 	</cffunction>
 
 <!------------------------------------------- PRIVATE ------------------------------------------->
@@ -78,13 +74,13 @@ Modification History:
 		<cfargument name="Label" 	 required="true" type="string" hint="The lable of the timer.">
 		<cfargument name="Tickcount" required="true" type="string" hint="The tickcounts of the time.">
 		<cfscript>
-		var qTimer = getTimerScope();
-		QueryAddRow(qTimer,1);
-		QuerySetCell(qTimer, "Id", createUUID());
-		QuerySetCell(qTimer, "Method", arguments.Label);
-		QuerySetCell(qTimer, "Time", arguments.Tickcount);
-		QuerySetCell(qTimer, "Timestamp", now());
-		QuerySetCell(qTimer, "RC", '');
+		var qTimers = getTimerScope();
+		QueryAddRow(qTimers,1);
+		QuerySetCell(qTimers, "Id", createUUID());
+		QuerySetCell(qTimers, "Method", arguments.Label);
+		QuerySetCell(qTimers, "Time", arguments.Tickcount);
+		QuerySetCell(qTimers, "Timestamp", now());
+		QuerySetCell(qTimers, "RC", '');
 		</cfscript>
 	</cffunction>
 

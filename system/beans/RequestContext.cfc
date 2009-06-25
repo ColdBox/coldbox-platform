@@ -476,9 +476,9 @@ Modification History:
 		<cfargument name="jsonQueryFormat" 	type="string" required="false" default="query" hint="JSON Only: query or array" />
 		<cfargument name="jsonAsText" 		type="boolean" required="false" default="false" hint="If set to false, defaults to application/json, else will change encoding to plain/text"/>
 		<!--- ************************************************************* --->
-		<cfargument name="xmlItem"  		type="string"   required="false" default="" hint="XML Only: The name of the element representing a new element in an array or query translation. Defaults to 'item' or 'row'">
 		<cfargument name="xmlColumnList"    type="string"   required="false" default="" hint="XML Only: Choose which columns to inspect, by default it uses all the columns in the query, if using a query">
 		<cfargument name="xmlUseCDATA"  	type="boolean"  required="false" default="false" hint="XML Only: Use CDATA content for ALL values. The default is false">
+		<cfargument name="xmlListDelimiter" type="string"   required="false" default="," hint="XML Only: The delimiter in the list. Comma by default">
 		<!--- ************************************************************* --->
 		<cfscript>
 			var rd = structnew();
@@ -492,9 +492,9 @@ Modification History:
 			rd.encoding = arguments.encoding;
 			
 			/* XML Properties */
-			rd.xmlItem= arguments.xmlItem;
 			rd.xmlColumnList = arguments.xmlColumnList;
 			rd.xmluseCDATA = arguments.xmlUseCDATA;
+			rd.xmlListDelimiter = arguments.xmlListDelimiter;
 			
 			/* JSON Properties */
 			rd.jsonCase = arguments.jsonCase;	

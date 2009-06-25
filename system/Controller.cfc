@@ -556,14 +556,7 @@ Description		: This is the main ColdBox front Controller.
 	
 	<!--- Push Timers --->
 	<cffunction name="pushTimers" access="private" returntype="void" hint="Push timers into stack" output="false" >
-		<cfscript>
-			/* Request Profilers */
-			if ( getDebuggerService().getDebuggerConfigBean().getPersistentRequestProfiler() and
-				 structKeyExists(request,"debugTimers") ){
-				/* Push timers */
-				getDebuggerService().pushProfiler(request.DebugTimers);
-			}
-		</cfscript>
+		<cfset getDebuggerService().recordProfiler()>
 	</cffunction>
 	
 </cfcomponent>

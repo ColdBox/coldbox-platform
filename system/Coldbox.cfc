@@ -263,10 +263,7 @@ Description :
 		<!--- DebugMode Routines --->
 		<cfif cbController.getDebuggerService().getDebugMode()>
 			<!--- Request Profilers --->
-			<cfif cbController.getDebuggerService().getDebuggerConfigBean().getPersistentRequestProfiler() and
-				  structKeyExists(request,"debugTimers")>
-				<cfset cbController.getDebuggerService().pushProfiler(request.DebugTimers)>
-			</cfif>
+			<cfset cbController.getDebuggerService().recordProfiler()>
 			<!--- Render DebugPanel --->
 			<cfif Event.getdebugpanelFlag()>
 				<!--- Time the request --->

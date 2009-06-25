@@ -194,17 +194,8 @@ Description :
 	<!--- Push Timers --->
 	<cffunction name="pushTimers" access="private" returntype="void" hint="Push timers into debugging stack" output="false" >
 		<cfscript>
-			var cbController = getController();
-			var dService = cbController.getDebuggerService();
-			
-			/* Only push if in debug mode. */
-			if( cbController.getDebuggerService().getDebugMode() ){
-				/* Request Profilers */
-				if ( dService.getDebuggerConfigBean().getPersistentRequestProfiler() and structKeyExists(request,"debugTimers") ){
-					/* Push timers */
-					dService.pushProfiler(request.DebugTimers);
-				}
-			}
+			/* Request Profilers */
+			getController().getDebuggerService().recordProfiler();
 		</cfscript>
 	</cffunction>
 	

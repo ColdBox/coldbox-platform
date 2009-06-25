@@ -54,12 +54,11 @@ Modifications
 	
 	<cffunction name="toXML" access="public" returntype="string" hint="Convert any type of data to XML. This method will auto-discover the type. Valid types are array,query,struct" output="false" >
 		<cfargument name="data" 		type="any"  	required="true" hint="The data to convert to xml">
-		<cfargument name="rootelement" 	type="string"   required="false" default="data" hint="The root item element. If not passed the value 'data' will be used">
-		<cfargument name="itemElement"  type="string"   required="false" hint="The name of the element representing a new element in an array or query translation.">
 		<cfargument name="columnlist"   type="string"   required="false" hint="Choose which columns to inspect, by default it uses all the columns in the query, if using a query">
 		<cfargument name="useCDATA"  	type="boolean"  required="false" default="false" hint="Use CDATA content for ALL values. The default is false">
 		<cfargument name="addHeader"  	type="boolean"  required="false" default="true" hint="Add an xml header to the packet returned.">
 		<cfargument name="encoding" 	type="string" 	required="true"  default="UTF-8" hint="The character encoding of the header. UTF-8 is the default"/>
+		<cfargument name="delimiter" 	type="string" 	required="false" default="," hint="The delimiter in the list. Comma by default">
 		<cfscript>
 			var buffer = createObject("java","java.lang.StringBuffer").init('');
 			/* Header */
@@ -80,33 +79,34 @@ Modifications
 			}
 			/* Simple Value Check, treated as a simple array list? */
 			else if( isSimpleValue(arguments.data) ){
-				arguments.data = listToArray(arguments.data);
-				buffer.append( arrayToXML(argumentCollection=arguments) );
+				buffer.append( listToXML(argumentCollection=arguments) );
 			}
+			
 			return buffer.toString();
 		</cfscript>
 	</cffunction>
 	
 	<cffunction name="arrayToXML" returnType="string" access="public" output="false" hint="Converts an array into XML with no headers.">
 		<cfargument name="data" 		type="array"    required="true" hint="The array to convert">
-		<cfargument name="rootelement" 	type="string"   required="false" default="data" hint="The root item element. If not passed the value 'data' will be used">
-		<cfargument name="itemElement"  type="string"   required="false" default="item" hint="The name of the element representing a new element in the array. If not used the value 'item' will be used">
 		<cfargument name="useCDATA"  	type="boolean"  required="false" default="false" hint="Use CDATA content for ALL values. False by default">
+		<cfargument name="isList" 		type="boolean"  required="false" default="false" hint="If the conversion is from a list or not. Defaults to false. If true, the root element is called 'list'">
+		
 		<cfscript>
 		var buffer = createObject('java','java.lang.StringBuffer').init('');
 		var target = arguments.data;		
 		var x = 1;
 		var dataLen = arrayLen(target);
 		var thisValue = "";
+		var rootElement = "array";
+		var itemElement = "item";
 		
-		/* Cleanup */
-		arguments.rootElement = safeText(arguments.rootElement);
-		arguments.itemElement = safeText(arguments.itemElement);
+		//isList?
+		if( arguments.isList ){ rootElement = "list"; }
 		
-		/* Create Root */
-		buffer.append("<#arguments.rootElement#>");
+		//Create Root
+		buffer.append("<#rootElement#>");
 		
-		/* Data */
+		//Data
 		for(;x lte dataLen; x=x+1){
 			thisValue = target[x];
 			if( NOT isSimpleValue(thisValue) ){
@@ -115,11 +115,11 @@ Modifications
 			else{
 				thisValue = safeText(thisValue,arguments.useCDATA);
 			}
-			buffer.append("<#arguments.itemElement#>#thisValue#</#arguments.itemElement#>");
+			buffer.append("<#itemElement#>#thisValue#</#itemElement#>");
 		}
 		
-		/* End Root */
-		buffer.append("</#arguments.rootElement#>");
+		//End Root
+		buffer.append("</#rootElement#>");
 		
 		return buffer.toString();
 		</cfscript>
@@ -127,36 +127,33 @@ Modifications
 
 	<cffunction name="listToXML" returnType="string" access="public" output="false" hint="Converts a list into XML with no headers.">
 		<cfargument name="data" 		type="string" 	required="true" hint="The list to convert">
-		<cfargument name="rootelement" 	type="string"   required="false" default="data" hint="The root item element. If not passed the value 'data' will be used">
-		<cfargument name="itemElement"  type="string"   required="false" default="item" hint="The name of the element representing a new element in the array. If not used the value 'item' will be used">
 		<cfargument name="delimiter" 	type="string" 	required="false" default="," hint="The delimiter in the list. Comma by default">
 		<cfargument name="useCDATA"  	type="boolean"  required="false" default="false" hint="Use CDATA content for ALL values">
-		<cfset arguments.data = listToArray(arguments.data,arguments.delimiter)>
-		<cfreturn arrayToXML(argumentCollection=arguments)>
+		<cfscript>
+			arguments.isList = true;
+			arguments.data = listToArray(arguments.data,arguments.delimiter);
+			return arrayToXML(argumentCollection=arguments);
+		</cfscript>
 	</cffunction>
 	
 	<cffunction name="queryToXML" returnType="string" access="public" output="false" hint="Converts a query to XML with no headers.">
 		<cfargument name="data" 		type="query"  required="true" hint="The query to convert">
-		<cfargument name="rootelement" 	type="string" required="false" default="data"   hint="The root item element. If not passed the value 'data' will be used">
-		<cfargument name="itemElement"  type="string" required="false" default="row" 	hint="The name of each xml item that represents a row">
 		<cfargument name="CDATAColumns" type="string" required="false" default="" 		hint="Which columns to wrap in cdata tags">
 		<cfargument name="columnlist"   type="string" required="false" default="#arguments.data.columnlist#" hint="Choose which columns to include in the translation, by default it uses all the columns in the query">
 		<cfargument name="useCDATA"  	type="boolean" required="false" default="false" hint="Use CDATA content for ALL values">
+		
 		<cfset var buffer = createObject('java','java.lang.StringBuffer').init('')>
 		<cfset var col = "">
 		<cfset var columns = arguments.columnlist>
 		<cfset var value = "">
-	
-		<!--- Cleanup --->
-		<cfset arguments.rootElement = safeText(arguments.rootElement)>
-		<cfset arguments.itemElement = safeText(arguments.itemElement)>
+		<cfset var rootElement = "query">
+		<cfset var itemElement = "row">
 		
 		<!--- Create Root --->
-		<cfset buffer.append("<#arguments.rootelement#>")>
-		
+		<cfset buffer.append('<#rootelement#>')>
 		<!--- Data --->
 		<cfloop query="arguments.data">
-			<cfset buffer.append("<#arguments.itemElement#>")>
+			<cfset buffer.append("<#itemElement#>")>
 			<cfloop index="col" list="#columns#">
 				<!--- Get Value --->
 				<cfset value = arguments.data[col][currentRow]>
@@ -170,20 +167,19 @@ Modifications
 				<cfif arguments.useCDATA OR listFindNoCase(arguments.cDataColumns, col)>
 					<cfset value = "<![CDATA[" & value & "]]" & ">">
 				</cfif>
-				<cfset buffer.append("<#col#>#value#</#col#>")>
+				<cfset buffer.append("<#lcase(col)#>#value#</#lcase(col)#>")>
 			</cfloop>
-			<cfset buffer.append("</#arguments.itemElement#>")>	
+			<cfset buffer.append("</#itemElement#>")>	
 		</cfloop>
 		
 		<!--- End Root --->
-		<cfset buffer.append("</#arguments.rootelement#>")>
+		<cfset buffer.append("</#rootelement#>")>
 		
 		<cfreturn buffer.toString()>
 	</cffunction>
 
 	<cffunction name="structToXML" returnType="string" access="public" output="false" hint="Converts a struct into XML with no headers.">
-		<cfargument name="data" 		type="struct" 	required="true" hint="The structure to convert.">
-		<cfargument name="rootelement" 	type="string"   required="false"  default="data" hint="The root item element. If not passed the value 'data' will be used">
+		<cfargument name="data" 		type="any" 		required="true" hint="The structure, object, any to convert.">
 		<cfargument name="useCDATA"  	type="boolean"  required="false"  default="false" hint="Use CDATA content for ALL values">
 		<cfscript>
 		var target = arguments.data;
@@ -191,26 +187,32 @@ Modifications
 		var key = 0;
 		var thisValue = "";
 		var args = structnew();
+		var rootElement = "struct";
+		var objectType = "";
+					
+		// Declare Root
+		if( isObject(arguments.data) ){
+			rootElement = "object";
+			buffer.append('<#rootElement# type="#getMetadata(arguments.data).name#">');
+		}
+		else{
+			buffer.append("<#rootElement#>");
+		}
 		
-		/* Cleanup */
-		arguments.rootElement = safeText(arguments.rootElement);
-		
-		/* Root */
-		buffer.append("<#arguments.rootElement#>");
-		
-		/* Content */
+		// Content
 		for(key in target){
-			/* translate value */
+			// Translate Value
 			if( NOT isSimpleValue(target[key]) ){
 				thisValue = translateValue(arguments,target[key]);
 			}
 			else{
 				thisValue = safeText(target[key],arguments.useCDATA);
 			}
-			buffer.append("<#key#>#thisValue#</#key#>");
+			buffer.append("<#lcase(key)#>#thisValue#</#lcase(key)#>");
 		}
-		/* End Root */
-		buffer.append("</#arguments.rootElement#>");
+		
+		// End Root
+		buffer.append("</#rootElement#>");
 		
 		return buffer.toString();
 		</cfscript>
