@@ -107,11 +107,11 @@ Modification History:
 	<!--- Get the debug mode flag --->
 	<cffunction name="getDebugMode" access="public" hint="I Get the current user's debugmode" returntype="boolean"  output="false">
 		<cfscript>
-			/* Check global debug Mode */
-			if( controller.getSetting('debugMode') ){
-				return true;
+			// Check global debug Mode and cookie setup, else init their debug cookie
+			if( controller.getSetting('debugMode') AND NOT isDebugCookieValid() ){
+				setDebugmode(true);
 			}
-			/* Check vapor cookie */
+			// Check vapor cookie
 			if( structKeyExists(cookie,getCookieName()) ){
 				if( isBoolean(cookie[getCookieName()]) ){
 					return cookie[getCookieName()];
@@ -123,13 +123,30 @@ Modification History:
 			return false;
 		</cfscript>
 	</cffunction>
+	
+	<!--- isDebugCookieValid --->
+    <cffunction name="isDebugCookieValid" output="false" access="public" returntype="boolean" hint="Checks if the debug cookie is a valid cookie">
+	    <cfscript>
+	    	if( structKeyExists(cookie, getCookieName() ) AND isBoolean(cookie[getCookieName()]) ){ 
+				return true;
+			}
+			else{
+				return false;
+			}
+	    </cfscript>
+    </cffunction>
 
 	<!--- Set the debug mode flag --->
 	<cffunction name="setDebugMode" access="public" hint="I set the current user's debugmode" returntype="void"  output="false">
 		<cfargument name="mode" type="boolean" required="true" >
+		<!--- True --->
 		<cfif arguments.mode>
 			<cfcookie name="#getCookieName()#" value="true">
-		<cfelseif structKeyExists(cookie,getCookieName())>
+		<!--- False with global True --->
+		<cfelseif structKeyExists(cookie,getCookieName()) AND controller.getSetting('debugMode')>
+			<cfcookie name="#getCookieName()#" value="false">
+		<!--- Flase with global False --->
+		<cfelse>
 			<cfcookie name="#getCookieName()#" value="false" expires="#now()#">
 		</cfif>
 	</cffunction>

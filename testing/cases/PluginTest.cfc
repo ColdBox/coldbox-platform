@@ -1,16 +1,12 @@
 <cfcomponent extends="coldbox.system.testing.BaseTestCase" output="false">
-
-	<cffunction name="setUp" returntype="void" access="public" output="false">
-		<cfscript>
-			plugin = createObject("component","coldbox.system.Plugin");
-			mockController = getMockBox().createMock("coldbox.system.Controller");
-			
-			plugin.init(mockController);
-		</cfscript>
-	</cffunction>
-	
-	<cffunction name="testGetSets">
-		<cfscript>
+<cfscript>
+	function setup(){
+		plugin = getMockBox().createMock("coldbox.system.Plugin");
+		mockController = getMockBox().createMock(className="coldbox.system.Controller");
+		
+		plugin.init(mockController);
+	}	
+	function tests(){
 			s = {};
 			s.pluginName = "test";
 			s.pluginVersion = "1.0";
@@ -26,10 +22,7 @@
 				assertEquals(s[key], evaluate("plugin.get#key#()"));
 			}
 			
-			assertEquals(plugin.getPluginPath(),expandPath("/coldbox/system/Plugin.cfc"))
-		</cfscript>
-	</cffunction>
-	
-	
-	
+			assertEquals(plugin.getPluginPath(),expandPath("/coldbox/system/Plugin.cfc"));
+	}
+</cfscript>
 </cfcomponent>

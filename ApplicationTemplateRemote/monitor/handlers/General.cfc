@@ -13,5 +13,5 @@
 		<cfargument name="event" 		 required="true">		<cfargument name="MissingAction" required="true" hint="The requested action string"/>
 		<cfscript>				var rc = event.getCollection();		</cfscript>
 	</cffunction>		---><!------------------------------------------- PUBLIC EVENTS ------------------------------------------>
-	<!--- Default Action --->	<cffunction name="index" returntype="void" output="false" hint="My main event">		<cfargument name="event" required="true">		<cfset var rc = event.getCollection()>				<cfset Event.setValue("welcomeMessage","Welcome to my ColdBox Remote Monitor!")>					<cfset Event.setView("home")>	</cffunction><!------------------------------------------- PRIVATE EVENTS ------------------------------------------>
+	<!--- Default Action --->	<cffunction name="index" returntype="void" output="false" hint="My main event">		<cfargument name="event" required="true">		<cfset var rc = event.getCollection()>				<cfset Event.setValue("welcomeMessage","Welcome to my ColdBox Remote Monitor!")>					<cfset Event.setView("monitor")>	</cffunction><!------------------------------------------- PRIVATE EVENTS ------------------------------------------>
 	</cfcomponent>

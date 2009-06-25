@@ -71,10 +71,15 @@ Modification History:
 	function testGetDebugMode(){
 		/* Mocks */
 		debugger.$("getCookieName","unittest");
-		//global debug mode on
+		//global debug mode on with no COOKIE
 		getController().$("getSetting").$args("debugMode").$results(true);
 		assertTrue( debugger.getDebugMode() );
+		// global debug mode on with Cookie false
+		cookie["unittest"] = false;
+		assertFalse( debugger.getDebugMode() );
+		
 		//global debug mode off
+		cookie["unittest"] = "";
 		getController().$("getSetting").$args("debugMode").$results(false);
 		//cookie off
 		assertFalse( debugger.getDebugMode() );
@@ -88,10 +93,12 @@ Modification History:
 		assertFalse( debugger.getDebugMode() );
 	}
 	function testSetDebugMode(){
+		// Should remove cookie 
 		debugger.$("getCookieName","unittest");
 		cookie["unittest"] = "hello";
 		debugger.setDebugMode(false);
 		assertEquals( cookie["unittest"], "false" );
+		
 		debugger.setDebugMode(true);
 		assertEquals( cookie["unittest"], "true" );
 	}
