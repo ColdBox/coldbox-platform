@@ -36,12 +36,12 @@ id , name , mail
 <cfcomponent name="BaseTestCase" 
 			 extends="mxunit.framework.TestCase" 
 			 output="false" 
-			 hint="A base test case for doing ColdBox Testing">
+			 hint="A base test case for doing ColdBox Testing based on the MXUnit Framework">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
 	<cfscript>
-		variables.instance = structnew();
+		instance = structnew();
 		
 		/* Internal Properties */
 		instance.appMapping = "";
@@ -105,6 +105,7 @@ id , name , mail
 	<cffunction name="getmockBox" output="false" access="private" returntype="coldbox.system.testing.MockBox" hint="Get a reference to the MockBox framework">
 		<cfreturn instance.mockBox>
 	</cffunction>
+	
 	<!--- Get a Mock Model --->
 	<cffunction name="mockModel" access="private" returntype="any" hint="Get a mock model object by convention. The object is created but not initiated, that would be your job." output="false" >
 		<cfargument name="name" 			type="string"   required="true" hint="The name of the model to mock">

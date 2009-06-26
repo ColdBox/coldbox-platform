@@ -14,7 +14,7 @@ Description :
 <cfcomponent name="MailService" 
 			 output="false" 
 			 hint="The ColdBox Mail Service used to send emails in an oo fashion"
-			 extends="coldbox.system.services.BaseService">
+			 extends="coldbox.system.Plugin">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
@@ -24,7 +24,14 @@ Description :
 		<!--- ************************************************************* --->
 		<cfscript>
 			/* Set Controller */
-			setController(arguments.controller);
+			super.init(argumentCollection=arguments);
+			
+			/* Plugin Properties */
+			setPluginName("MailService");
+			setPluginDescription("This is a mail service used to send mails in an OO fashion");
+			setPluginVersion("1.0");
+			setPluginAuthor("Luis Majano");
+			setPluginAuthorURL("http://www.coldbox.org");
 			
 			/* Return instance */
 			return this;
@@ -97,7 +104,14 @@ Description :
 		<cfsetting enablecfoutputonly="true">
 		
 		<!--- I HATE FREAKING CF WHITESPACE, LOOK HOW UGLY THIS IS --->
-		<cfmail attributeCollection="#payload.getMemento()#"><cfif ArrayLen(payload.getMailParams())><cfloop array="#payload.getMailParams()#" index="mailparam"><cfif structKeyExists(mailParam,"name")><cfmailparam name="#mailparam.name#" attributeCollection="#mailParam#"><cfelseif structKeyExists(mailparam,"file")><cfmailparam file="#mailparam.file#" attributeCollection="#mailParam#"></cfif></cfloop></cfif><cfif ArrayLen(payload.getMailParts())><cfloop array="#payload.getMailParts()#" index="mailPart"><cfmailpart attributeCollection="#mailpart#"><cfoutput>#mailpart.body#</cfoutput></cfmailpart></cfloop></cfif><cfoutput>#payload.getBody()#</cfoutput></cfmail>
+		<cfmail attributeCollection="#payload.getMemento()#"><cfoutput>#payload.getBody()#</cfoutput><cfsilent>
+			<cfloop array="#payload.getMailParams()#" index="mailparam">
+				<cfif structKeyExists(mailParam,"name")>
+					<cfmailparam name="#mailparam.name#" attributeCollection="#mailParam#">
+				<cfelseif structKeyExists(mailparam,"file")>
+					<cfmailparam file="#mailparam.file#" attributeCollection="#mailParam#">
+				</cfif>
+			</cfloop></cfsilent></cfmail>
 		
 		<cfsetting enablecfoutputonly="false">
 	</cffunction>
@@ -122,7 +136,7 @@ Description :
 		</cfloop>
 		<!--- Mail Parts --->
 		<cfloop array="#payload.getMailParts()#" index="mailPart">
-		<cfmailpart attributeCollection="#mailpart#"><cfoutput>#mailpart.body#</cfoutput></cfmailpart>
+			<cfmailpart attributeCollection="#mailpart#"><cfoutput>#mailpart.body#</cfoutput></cfmailpart>
 		</cfloop>
 		</cfmail>
 
