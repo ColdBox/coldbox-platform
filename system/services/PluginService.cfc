@@ -165,7 +165,7 @@ Modification History:
     </cffunction>
 	
 	<!--- Get a new MD cache entry structure --->
-	<cffunction name="getNewMDEntry" access="public" returntype="struct" hint="Get a new metadata entry structure" output="false" >
+	<cffunction name="getNewMDEntry" access="private" returntype="struct" hint="Get a new metadata entry structure" output="false" >
 		<cfscript>
 			var mdEntry = structNew();
 			
