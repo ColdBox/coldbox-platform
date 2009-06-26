@@ -35,7 +35,7 @@ Description :
 
 	<cffunction name="newMail" access="public" returntype="coldbox.system.beans.Mail" output="false" hint="Get a new Mail payload object, just use config() on it to prepare it.">
 		<cfscript>
-			return createObject("component","coldbox.system.beans.mail").init();
+			return createObject("component","coldbox.system.beans.Mail").init();
 		</cfscript>
 	</cffunction>
 	
@@ -75,32 +75,74 @@ Description :
 	
 <!------------------------------------------- PRIVATE ------------------------------------------->
 	
-<cffunction name="mailIt" output="false" access="private" returntype="void" hint="Mail a payload">
-<cfargument name="Mail" required="true" type="coldbox.system.beans.Mail" hint="The mail payload" />
-<cfset var payload = arguments.mail>
-<cfset var mailParam = 0>
-<cfset var mailPart = 0>
+	<cffunction name="mailIt" output="false" access="private" returntype="void" hint="Mail a payload">
+		<cfargument name="mail" required="true" type="coldbox.system.beans.Mail" hint="The mail payload" />
+		<cfscript>
+			// Determine Mail Type?
+			if( arrayLen(arguments.mail.getMailParts()) ){
+				mailMultiPart(arguments.mail);
+			}
+			else{
+				mailNormal(arguments.mail);
+			}		
+		</cfscript>
+	</cffunction>
 
-<cfsetting enablecfoutputonly="true">
-<!--- I HATE FREAKING CF WHITESPACE, LOOK HOW UGLY THIS IS --->
-<cfmail attributeCollection="#payload.getMemento()#"><cfif ArrayLen(payload.getMailParams())><cfloop array="#payload.getMailParams()#" index="mailparam"><cfif structKeyExists(mailParam,"name")><cfmailparam name="#mailparam.name#" attributeCollection="#mailParam#"><cfelseif structKeyExists(mailparam,"file")><cfmailparam file="#mailparam.file#" attributeCollection="#mailParam#"></cfif></cfloop></cfif><cfif ArrayLen(payload.getMailParts())><cfloop array="#payload.getMailParts()#" index="mailPart"><cfmailpart attributeCollection="#mailpart#"><cfoutput>#mailpart.body#</cfoutput></cfmailpart></cfloop></cfif><cfoutput>#payload.getBody()#</cfoutput>	
-</cfmail>
-<cfsetting enablecfoutputonly="false">
-</cffunction>
+
+	<cffunction name="mailNormal" output="false" access="private" returntype="void" hint="Mail a payload">
+		<cfargument name="mail" required="true" type="coldbox.system.beans.Mail" hint="The mail payload" />
+		<cfset var payload = arguments.mail>
+		<cfset var mailParam = 0>
+		
+		<cfsetting enablecfoutputonly="true">
+		
+		<!--- I HATE FREAKING CF WHITESPACE, LOOK HOW UGLY THIS IS --->
+		<cfmail attributeCollection="#payload.getMemento()#"><cfif ArrayLen(payload.getMailParams())><cfloop array="#payload.getMailParams()#" index="mailparam"><cfif structKeyExists(mailParam,"name")><cfmailparam name="#mailparam.name#" attributeCollection="#mailParam#"><cfelseif structKeyExists(mailparam,"file")><cfmailparam file="#mailparam.file#" attributeCollection="#mailParam#"></cfif></cfloop></cfif><cfif ArrayLen(payload.getMailParts())><cfloop array="#payload.getMailParts()#" index="mailPart"><cfmailpart attributeCollection="#mailpart#"><cfoutput>#mailpart.body#</cfoutput></cfmailpart></cfloop></cfif><cfoutput>#payload.getBody()#</cfoutput></cfmail>
+		
+		<cfsetting enablecfoutputonly="false">
+	</cffunction>
+
+	<cffunction name="mailMultiPart" output="false" access="private" returntype="any" hint="Mail a payload using multi part objects">
+		<cfargument name="mail" required="true" type="coldbox.system.beans.Mail" hint="The mail payload" />
+		<cfset var payload = arguments.mail>
+		<cfset var mailParam = 0>
+		<cfset var mailPart = 0>
+		
+		<cfsetting enablecfoutputonly="true">
+
+		<!--- I HATE FREAKING CF WHITESPACE, LOOK HOW UGLY THIS IS --->
+		<cfmail attributeCollection="#payload.getMemento()#">
+		<!--- Mail Params --->
+		<cfloop array="#payload.getMailParams()#" index="mailparam">
+			<cfif structKeyExists(mailParam,"name")>
+				<cfmailparam name="#mailparam.name#" attributeCollection="#mailParam#">
+			<cfelseif structKeyExists(mailparam,"file")>
+				<cfmailparam file="#mailparam.file#" attributeCollection="#mailParam#">
+			</cfif>
+		</cfloop>
+		<!--- Mail Parts --->
+		<cfloop array="#payload.getMailParts()#" index="mailPart">
+		<cfmailpart attributeCollection="#mailpart#"><cfoutput>#mailpart.body#</cfoutput></cfmailpart>
+		</cfloop>
+		</cfmail>
+
+		<cfsetting enablecfoutputonly="false">
 	
-<cffunction name="parseTokens" access="private" returntype="void" output="false" hint="Parse the tokens and do body replacements.">
-	<cfargument name="Mail" required="true" type="coldbox.system.beans.Mail" hint="The mail payload" />
-	<cfscript>
-		var tokens = arguments.Mail.getBodyTokens();
-		var body = arguments.Mail.getBody();
-		var key = 0;
-		
-		for(key in tokens){
-			body = replaceNoCase(body,"@#key#@", tokens[key],"all");
-		}
-		
-		arguments.Mail.setBody(body);
-	</cfscript>
-</cffunction>
+	</cffunction>
+	
+	<cffunction name="parseTokens" access="private" returntype="void" output="false" hint="Parse the tokens and do body replacements.">
+		<cfargument name="Mail" required="true" type="coldbox.system.beans.Mail" hint="The mail payload" />
+		<cfscript>
+			var tokens = arguments.Mail.getBodyTokens();
+			var body = arguments.Mail.getBody();
+			var key = 0;
+			
+			for(key in tokens){
+				body = replaceNoCase(body,"@#key#@", tokens[key],"all");
+			}
+			
+			arguments.Mail.setBody(body);
+		</cfscript>
+	</cffunction>
 
 </cfcomponent>

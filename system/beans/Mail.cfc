@@ -346,8 +346,10 @@ Description :
 		<cfscript>
 			if( getFrom().length() eq 0 OR
 				getTO().length() eq 0 OR
-				getBody().length() eq 0 OR
-				getSubject().length() eq 0){
+				getSubject().length() eq 0 OR
+				( getBody().length() eq 0 AND arrayLen(getMailParts()) EQ 0 )
+				
+			){
 				return false;	
 			}
 			else{
