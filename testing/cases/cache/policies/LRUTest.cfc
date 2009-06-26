@@ -9,68 +9,38 @@ Date        :	9/3/2007
 Description :
 	Request service Test
 ----------------------------------------------------------------------->
-<cfcomponent name="LRUTest" extends="coldbox.testing.resources.baseMockCase" output="false">
+<cfcomponent name="LRUTest" extends="AbstractPolicyTest" output="false">
 
 	<cffunction name="setUp" returntype="void" access="public" output="false">
 		<cfscript>
 		super.setup();
-		cm = mockFactory.createMock('coldbox.system.cache.cacheManager');
-		pool = mockFactory.createMock('coldbox.system.cache.objectPool');
-		stats = mockFactory.createMock('coldbox.system.cache.util.cacheStats');
 		
-		
-		/* Mock */
-		cm.mockMethod('getObjectPool').returns(pool);
-		cm.mockMethod('getCacheStats').returns(stats);
-		stats.mockMethod('evictionHit');
-		
-		/* Mock Injections expire to get data locally */
-		cm.expireKey = variables.expireKey;
-		cm.logExpire = variables.logExpire;
-		
-		lru = createObject("component","coldbox.system.cache.policies.LRU").init(cm);		
+		lru = createObject("component","coldbox.system.cache.policies.LRU").init(mockCM);		
 		</cfscript>
 	</cffunction>
 	
 	<cffunction name="testPolicy" access="public" returntype="void" hint="" output="false" >
 		<cfscript>
-			mockPool['obj1'] = structnew();
-			mockPool['obj2'] = structnew();
-			mockPool['obj3'] = structnew();
+			pool['obj1'] = structnew();
+			pool['obj2'] = structnew();
+			pool['obj3'] = structnew();
 			
-			mockPool['obj1'].LastAccessTimeout = now();
-			mockPool['obj1'].Timeout = 5;
-			mockPool['obj2'].LastAccessTimeout = dateAdd("n",-7,now());
-			mockPool['obj2'].Timeout = 10;
-			mockPool['obj3'].LastAccessTimeout = dateAdd("n",-6,now());
-			mockPool['obj3'].Timeout = 10;
+			pool['obj1'].LastAccessTimeout = now();
+			pool['obj1'].Timeout = 5;
+			pool['obj2'].LastAccessTimeout = dateAdd("n",-7,now());
+			pool['obj2'].Timeout = 10;
+			pool['obj3'].LastAccessTimeout = dateAdd("n",-6,now());
+			pool['obj3'].Timeout = 10;
 			
 			/* Mock Pool */
-			pool.mockMethod('getpool_metadata').returns(mockpool);
+			mockPool.$('getpool_metadata',pool);
 			
 			lru.execute();	
 			
 			//debug(cm._logTest);
 				
-			AssertTrue( arrayLen(cm._logTest) eq 1);
-			AssertEquals( cm._logTest[1] , "obj2" );		
-		</cfscript>
-	</cffunction>
-	
-	<!--- expireKey --->
-	<cffunction name="expireKey" output="false" access="private" returntype="void" hint="">
-		<cfargument name="key" type="string" required="true" hint=""/>
-		<cfscript>
-			this.logExpire('#arguments.key#');
-		</cfscript>
-	</cffunction>
-	<cffunction name="logExpire" output="false" access="private" returntype="void" hint="">
-		<cfargument name="msg" type="string" required="true" hint=""/>
-		<cfscript>
-			if( not structKeyExists(this,"_logTest") ){
-				this._logTest = ArrayNew(1); 
-			}
-			ArrayAppend(this._logTest,arguments.msg);
+			AssertTrue( arrayLen(mockCM._logTest) eq 1);
+			AssertEquals( mockCM._logTest[1] , "obj2" );		
 		</cfscript>
 	</cffunction>
 	

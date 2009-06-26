@@ -1,11 +1,10 @@
-<cfcomponent name="cacheStatsTest" extends="coldbox.testing.resources.baseMockCase">
+<cfcomponent name="cacheStatsTest" extends="coldbox.system.testing.BaseTestCase">
 	<!--- setup and teardown --->
 	
 	<cffunction name="setUp" returntype="void" access="public">
 		<cfscript>
-			super.setup();
-			cm = mockFactory.createMock('coldbox.system.cache.cacheManager');
-			stats = createObject("component","coldbox.system.cache.util.cacheStats").init(cm);		
+			cm = getMockBox().createMock(className='coldbox.system.cache.CacheManager',clearMethods=true);
+			stats = createObject("component","coldbox.system.cache.util.CacheStats").init(cm);		
 		</cfscript>
 	</cffunction>
 
@@ -90,7 +89,7 @@
 	
 	<cffunction name="testgetObjectCount" access="public" returnType="void">
 		<cfscript>
-			cm.mockMethod('getSize').returns(100);
+			cm.$('getSize',100);
 			AssertEquals( stats.getObjectCount(),100);
 		</cfscript>
 	</cffunction>		

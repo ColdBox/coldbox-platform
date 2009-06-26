@@ -9,16 +9,20 @@ Date        :	9/3/2007
 Description :
 	Request service Test
 ----------------------------------------------------------------------->
-<cfcomponent name="cacheTest" extends="coldbox.testing.resources.baseMockCase" output="false">
+<cfcomponent name="cacheTest" extends="coldbox.system.testing.BaseTestCase" output="false">
 
 	<cffunction name="setUp" returntype="void" access="public" output="false">
 		<cfscript>
-		super.setup();
-		mockController = mockfactory.createMock('coldbox.system.Controller');
-		mockService = mockFactory.createMock('coldbox.system.services.interceptorService');
+		this.loadColdbox = false;
 		
-		mockController.mockMethod('getInterceptorService').returns(mockService);
-		mockController.mockMethod('getAppHash').returns(hash(createUUID()) );
+		//super.setup();
+		
+		mockController = getMockBox().createMock(className='coldbox.system.Controller',clearMethods=true,callLogging=true);
+		mockService = getMockBox().createMock(className='coldbox.system.services.interceptorService',clearMethods=true,callLogging=true);
+		mockService.$("processState");
+		
+		mockController.$('getInterceptorService',mockService);
+		mockController.$('getAppHash', hash(createUUID()) );
 		
 		ccbean = createObject("component","coldbox.system.cache.config.CacheConfigBean");
 		memento = structnew();
@@ -31,7 +35,7 @@ Description :
 		memento.CacheEvictionPolicy = "FIFO";
 		ccbean.init(argumentCollection=memento);
 		
-		cm = createObject("component","coldbox.system.cache.cacheManager").init(mockController);
+		cm = createObject("component","coldbox.system.cache.CacheManager").init(mockController);
 		cm.configure(ccbean);
 		</cfscript>
 	</cffunction>
@@ -46,12 +50,12 @@ Description :
 		<cfscript>
 			makePublic(cm,"announceExpiration","_announceExpiration");
 			cm._announceExpiration('test');
+			debug(mockService.$debug());
 		</cfscript>
 	</cffunction>
 	
 	<cffunction name="testClearMulti" output="false">
 		<cfscript>
-			mockController.mockMethod('getInterceptorService').returns(mockService,mockService);
 			/* testList */
 			list = 'luis,test,whatever,MyTest';
 			
@@ -66,7 +70,6 @@ Description :
 	
 	<cffunction name="testgetCachedObjectMetadataMulti" output="false">
 		<cfscript>
-			mockController.mockMethod('getInterceptorService').returns(mockService,mockService);
 			
 			/* testList */
 			list = 'MyTest,Luis,Whatever';
@@ -84,7 +87,6 @@ Description :
 	
 	<cffunction name="testgetCachedObjectMetadata" output="false">
 		<cfscript>
-			mockController.mockMethod('getInterceptorService').returns(mockService,mockService);
 			
 			cm.set('MyTest',now());
 			
@@ -96,7 +98,6 @@ Description :
 	
 	<cffunction name="testGetMulti" output="false">
 		<cfscript>
-			mockController.mockMethod('getInterceptorService').returns(mockService,mockService);
 			
 			/* testList */
 			list = 'MyTest,Luis,Whatever';
@@ -114,7 +115,6 @@ Description :
 	
 	<cffunction name="testLookupMulti" output="false">
 		<cfscript>
-			mockController.mockMethod('getInterceptorService').returns(mockService,mockService);
 			
 			/* testList */
 			list = 'MyTest,Luis,Whatever';
@@ -132,7 +132,6 @@ Description :
 	
 	<cffunction name="testSetMulti" output="false">
 		<cfscript>
-			mockController.mockMethod('getInterceptorService').returns(mockService,mockService,mockService);
 			
 			/* testList */
 			mapping["MyTest"] = now();

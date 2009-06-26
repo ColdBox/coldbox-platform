@@ -1,4 +1,4 @@
-<cfcomponent name="cacheConfigBeanTest" extends="mxunit.framework.TestCase">
+<cfcomponent name="cacheConfigBeanTest" extends="coldbox.system.testing.BaseTestCase">
 	
 	<!--- setup and teardown --->
 	
