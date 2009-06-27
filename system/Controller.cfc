@@ -413,11 +413,9 @@ Description		: This is the main ColdBox front Controller.
 		<cfif NOT structIsEmpty(oEventHandler.allowedMethods) AND
 			  structKeyExists(oEventHandler.allowedMethods,oEventHandlerBean.getMethod()) AND
 			  NOT listFindNoCase(oEventHandler.allowedMethods[oEventHandlerBean.getMethod()],oRequestContext.getHTTPMethod())>
-			<cfheader statuscode="403" statustext="403 Invalid HTTP Method Exception" >
-			<cfthrow type="Framework.403" 
-				     errorcode="403"
-				     message="403 Invalid HTTP Method Exception"
-					 detail="The requested event: #event# cannot be executed using the incoming HTTP request method '#oRequestContext.getHTTPMethod()#'.">
+			
+			<cfset throwInvalidHTTP("The requested event: #event# cannot be executed using the incoming HTTP request method '#oRequestContext.getHTTPMethod()#'.")>
+		
 		</cfif>
 		
 		<!--- InterceptMetadata --->
@@ -558,5 +556,15 @@ Description		: This is the main ColdBox front Controller.
 	<cffunction name="pushTimers" access="private" returntype="void" hint="Push timers into stack" output="false" >
 		<cfset getDebuggerService().recordProfiler()>
 	</cffunction>
+	
+	<!--- throwInvalidHTTP --->
+    <cffunction name="throwInvalidHTTP" output="false" access="private" returntype="void" hint="Throw an invalid HTTP exception">
+    	<cfargument name="description" type="string" required="true" hint="The exception description"/>
+		<cfheader statuscode="403" statustext="403 Invalid HTTP Method Exception">
+		<cfthrow type="SES.403" 
+			     errorcode="403"
+			     message="403 Invalid HTTP Method Exception"
+				 detail="#arguments.description#">
+    </cffunction>
 	
 </cfcomponent>

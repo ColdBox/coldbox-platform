@@ -12,7 +12,7 @@ Description :
 	All credits go to him: http://coldcourse.riaforge.com
 ----------------------------------------------------------------------->
 <cfcomponent name="SES"
-			 hint="This is a ses support internceptor"
+			 hint="This interceptor provides complete SES and URL mappings support to ColdBox Applications"
 			 output="false"
 			 extends="coldbox.system.Interceptor">
 				 
@@ -88,51 +88,63 @@ Description :
 			var routedStruct = structnew();
 			var rc = event.getCollection();
 			
-			/* Check if active or in proxy mode */
+			// Check if active or in proxy mode
 			if ( NOT getEnabled() OR arguments.event.isProxyRequest() )
 				return;
 			
-			/* Set tha we are in ses mode */
+			// Set that we are in ses mode
 			arguments.event.setIsSES(true);
 			
-			/* Check for invalid URLs if in strict mode */
+			// Check for invalid URLs if in strict mode
 			if( getUniqueURLs() ){
 				checkForInvalidURL( cleanedPaths["pathInfo"] , cleanedPaths["scriptName"], arguments.event );
 			}
 						
-			/* Find a route to dispatch */
+			// Find a route to dispatch
 			aRoute = findRoute( cleanedPaths["pathInfo"], arguments.event );
 			
-			/* Now route should have all the key/pairs from the URL we need to pass to our event object */
+			// Now route should have all the key/pairs from the URL we need to pass to our event object
 			for( key in aRoute ){
-				/* Reserved Keys Check */
+				// Reserved Keys Check, only translate NON reserved keys
 				if( not listFindNoCase(instance.RESERVED_KEYS,key) ){
-					/* Save in RC and Routed Struct */
 					rc[key] = aRoute[key];
 					routedStruct[key] = aRoute[key];
 				}
 			}
 			
-			/* Create Event To Dispatch */
+			// Create Event To Dispatch if handler key exists
 			if( structKeyExists(aRoute,"handler") ){
-				/* If no action found, default to the convention */
+				// If no action found, default to the convention of the framework, must likely 'index'
 				if( NOT structKeyExists(aRoute,"action") ){
 					aRoute.action = getDefaultFrameworkAction();
 				}
-				/* Create event */
+				// else check if using HTTP method actions via struct
+				else if( isStruct(aRoute.action) ){
+					// Verify HTTP method used is valid, else throw exception and 403 error
+					if( structKeyExists(aRoute.action,event.getHTTPMethod()) ){
+						aRoute.action = aRoute.action[event.getHTTPMethod()];
+						if( getDebugMode() ){
+							getPlugin("Logger").debug("SES. Matched HTTP Method (#event.getHTTPMethod()#) to Action: #aRoute.action#");					
+						}
+					}
+					else{ 
+						throwInvalidHTTP("The HTTP method used: #event.getHTTPMethod()# is not valid for the current executing event.");
+					}
+				}
+				// Create event
 				rc[getSetting('EventName')] = aRoute.handler & "." & aRoute.action;
 			}
 			
-			/* See if View is Dispatched */
+			// See if View is Dispatched
 			if( structKeyExists(aRoute,"view") ){
-				/* Dispatch the View */
+				// Dispatch the View
 				arguments.event.setViewDispatched(aRoute.view,aRoute.viewNoLayout);
 			}
 			
-			/* Save the Routed Variables */
+			// Save the Routed Variables so event caching can verify them
 			arguments.event.setRoutedStruct(routedStruct);
 			
-			/* Execute Cache Test now that routing has been done. We override, because events are determined until now. */
+			// Execute Cache Test now that routing has been done. We override, because events are determined until now.
 			getController().getRequestService().EventCachingTest(context=arguments.event);
 		</cfscript>
 	</cffunction>
@@ -140,26 +152,29 @@ Description :
 <!------------------------------------------- PUBLIC ------------------------------------------->
 	
 	<!--- AddCourse --->
-	<cffunction name="addCourse" access="public" hint="@Deprecated, please use addRoute as this method will be removed eventually." output="false">
+	<cffunction name="addCourse" returntype="void" access="public" hint="@Deprecated, please use addRoute as this method will be removed eventually." output="false">
 		<cfargument name="pattern" 				 type="string" 	required="true"  hint="The pattern to match against the URL." />
-		<cfargument name="handler" 				 type="string" 	required="false" hint="The handler to path to execute if passed.">
-		<cfargument name="action"  				 type="string" 	required="false" hint="The action to assign if passed.">
-		<cfargument name="packageResolverExempt" type="boolean" required="false" default="false" hint="If this is set to true, then the interceptor will not try to do handler package resolving. Else a package will always be resolved.">
+		<cfargument name="handler" 				 type="string" 	required="false" hint="The handler to execute if pattern matched.">
+		<cfargument name="action"  				 type="string" 	required="false" hint="The action in a handler to execute if a pattern is matched.">
+		<cfargument name="packageResolverExempt" type="boolean" required="false" default="false" hint="If this is set to true, then the interceptor will not try to do handler package resolving. Else a package will always be resolved. Only works if :handler is in a pattern">
 		<cfargument name="matchVariables" 		 type="string" 	required="false" hint="A string of name-value pair variables to add to the request collection when this pattern matches. This is a comma delimmitted list. Ex: spaceFound=true,missingAction=onTest">
+		<cfargument name="view"  				 type="string"  required="false" hint="The view to dispatch if pattern matches.  No event will be fired, so handler,action will be ignored.">
+		<cfargument name="viewNoLayout"  		 type="boolean" required="false" default="false" hint="If view is choosen, then you can choose to override and not display a layout with the view. Else the view renders in the assigned layout.">
+		<cfargument name="valuePairTranslation"  type="boolean" required="false" default="true"  hint="Activate convention name value pair translations or not. Turned on by default">
 		<cfset addRoute(argumentCollection=arguments)>
 	</cffunction>
 	
 	<!--- Add a new Route --->
-	<cffunction name="addRoute" access="public" hint="Adds a route to dispatch" output="false">
+	<cffunction name="addRoute" access="public" returntype="void" hint="Adds a route to dispatch" output="false">
 		<!--- ************************************************************* --->
 		<cfargument name="pattern" 				 type="string" 	required="true"  hint="The pattern to match against the URL." />
-		<cfargument name="handler" 				 type="string" 	required="false" hint="The handler to path to execute if passed.">
-		<cfargument name="action"  				 type="string" 	required="false" hint="The action to assign if passed.">
-		<cfargument name="packageResolverExempt" type="boolean" required="false" default="false" hint="If this is set to true, then the interceptor will not try to do handler package resolving. Else a package will always be resolved.">
+		<cfargument name="handler" 				 type="string" 	required="false" hint="The handler to execute if pattern matched.">
+		<cfargument name="action"  				 type="string" 	required="false" hint="The action in a handler to execute if a pattern is matched.  This can also be a json structure based on the HTTP method(GET,POST,PUT,DELETE). ex: {GET:'show', PUT:'update', DELETE:'delete', POST:'save'}">
+		<cfargument name="packageResolverExempt" type="boolean" required="false" default="false" hint="If this is set to true, then the interceptor will not try to do handler package resolving. Else a package will always be resolved. Only works if :handler is in a pattern">
 		<cfargument name="matchVariables" 		 type="string" 	required="false" hint="A string of name-value pair variables to add to the request collection when this pattern matches. This is a comma delimmitted list. Ex: spaceFound=true,missingAction=onTest">
-		<cfargument name="view"  				 type="string"  required="false" hint="The view to dispatch.  No event will be fired, so handler,action will be ignored.">
+		<cfargument name="view"  				 type="string"  required="false" hint="The view to dispatch if pattern matches.  No event will be fired, so handler,action will be ignored.">
 		<cfargument name="viewNoLayout"  		 type="boolean" required="false" default="false" hint="If view is choosen, then you can choose to override and not display a layout with the view. Else the view renders in the assigned layout.">
-		<cfargument name="valuePairTranslation"  type="boolean" required="false" default="true"  hint="Activate convention name value pair translations">
+		<cfargument name="valuePairTranslation"  type="boolean" required="false" default="true"  hint="Activate convention name value pair translations or not. Turned on by default">
 		<!--- ************************************************************* --->
 		<cfscript>
 		var thisRoute = structNew();
@@ -167,50 +182,64 @@ Description :
 		var arg = 0;
 		var x =1;
 		var thisRegex = 0;
-	
-		/* Process all incoming arguments */
+		var oJSON = getPlugin("JSON");
+		var jsonRegex = "^(\{|\[)(.)+(\}|\])$";
+			
+		// Process all incoming arguments
 		for(arg in arguments){
 			if( structKeyExists(arguments,arg) ){ thisRoute[arg] = arguments[arg]; }
 		}
-		/* Add trailing / to make it easier to parse */
+		
+		// Process json action?
+		if( structKeyExists(arguments,"action") AND reFindnocase(jsonRegex,arguments.action) ){
+			try{
+				// Inflate action to structure
+				thisRoute.action = oJSON.decode(arguments.action);
+			}
+			catch(Any e){
+				throw("Invalid JSON action","The action #arguments.action# is not valid JSON","SES.InvalidJSONAction");
+			}
+		}
+		
+		// Add trailing / to make it easier to parse
 		if( right(thisRoute.pattern,1) IS NOT "/" ){
 			thisRoute.pattern = thisRoute.pattern & "/";
 		}		
-		/* Cleanup initial / */
+		// Cleanup initial /
 		if( left(thisRoute.pattern,1) IS "/" ){
 			thisRoute.pattern = right(thisRoute.pattern,len(thisRoute.pattern)-1);
 		}
 		
-		/* Check if we have optional args by looking for a ? */
+		// Check if we have optional args by looking for a ?
 		if( findnocase("?",thisRoute.pattern) ){
 			processRouteOptionals(thisRoute);
 		}
 		else{
-			/* Init the regexpattern */
+			// Init the regexpattern
 			thisRoute.regexPattern = "";
 			thisRoute.patternParams = arrayNew(1);
-			/* Process the route as a regex pattern */
+			// Process the route as a regex pattern
 			for(x=1; x lte listLen(thisRoute.pattern,"/");x=x+1){
 				thisPattern = listGetAt(thisRoute.pattern,x,"/");
-				/* Find Numeric PlaceHolder */
+				// Find Numeric PlaceHolder
 				if( findnoCase("-numeric",thisPattern) ){
-					/* Convert to Regex Pattern */
+					// Convert to Regex Pattern
 					thisRegex = "(" & REReplace(thisPattern, ":.*?-numeric", "[0-9]");
-					/* Check Digits */
+					// Check Digits
 					if( find("{",thisPattern) ){
 						thisRegex = listFirst(thisRegex,"{") & "{#listLast(thisPattern,"{")#)";
 					}
 					else{
 						thisRegex = thisRegex & "+?)";
 					}
-					/* Add Route Param */
+					// Add Route Param
 					arrayAppend(thisRoute.patternParams,replace(listFirst(thisPattern,"-"),":",""));
 				}
-				/* Alpha-Numeric */
+				// Alpha-Numeric
 				else{
 					if( find(":",thisPattern) ){
 						thisRegex = "(" & REReplace(thisPattern,":(.[^-]*)","[^/]");
-						/* Check Digits */
+						// Check Digits
 						if( find("{",thisPattern) ){
 							thisRegex = listFirst(thisRegex,"{") & "{#listLast(thisPattern,"{")#)";
 							arrayAppend(thisRoute.patternParams,replace(listFirst(thisPattern,"{"),":",""));
@@ -222,10 +251,10 @@ Description :
 					}
 					else{ thisRegex = thisPattern; }
 				}
-				/* Add it to Pattern */
+				// Add it to Pattern
 				thisRoute.regexPattern = thisRoute.regexPattern & thisRegex & "/";
 			}
-			/* Finally add it to the routing table. */
+			// Finally add it to the routing table
 			ArrayAppend(getRoutes(), thisRoute);
 		}
 		</cfscript>
@@ -274,6 +303,18 @@ Description :
 
 <!------------------------------------------- PRIVATE ------------------------------------------->
 	
+	<!--- throwInvalidHTTP --->
+    <cffunction name="throwInvalidHTTP" output="false" access="private" returntype="void" hint="Throw an invalid HTTP exception">
+    	<cfargument name="description" type="string" required="true" hint="The throw description"/>
+		
+		<cfheader statuscode="403" statustext="403 Invalid HTTP Method Exception">
+		<cfthrow type="SES.403" 
+			     errorcode="403"
+			     message="403 Invalid HTTP Method Exception"
+				 detail="#arguments.description#">
+				 
+    </cffunction>
+    
 	<!--- Set Routes --->
 	<cffunction name="setRoutes" access="private" output="false" returntype="void" hint="Internal override of the routes array">
 		<cfargument name="Routes" type="Array" required="true"/>
