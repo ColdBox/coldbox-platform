@@ -197,53 +197,85 @@ Description :
 
 	<!--- Render the layout --->
 	<cffunction name="renderLayout" access="Public" hint="Renders the current layout + view Combinations if declared." output="false" returntype="any">
-		<cfset var Event = controller.getRequestService().getContext()>
-		<cfset var rc = event.getCollection()>
-		<cfset var cbox_CurrentLayout = Event.getcurrentLayout()>
-		<cfset var cbox_layoutPath = "">
-		<cfset var cbox_RederedLayout = "">
+		<cfargument name="layout" type="any" required="false" hint="The explicit layout to use in rendering."/>
 		
-		<!--- Check if no view has been set. --->
-		<cfif event.getCurrentView() eq "">
-			<!--- Implicit Views according to event --->
-			<cfset event.setView(replace(event.getCurrentEvent(),".","/","all"))>
-			<!--- Check if default view set, if yes, then set it. --->
-			<cfif event.getDefaultView() neq "">
-				<!--- Set the Default View --->
-				<cfset event.setView(event.getDefaultView())>
-			</cfif>
-			<!--- Reset the layout --->
-			<cfset cbox_CurrentLayout = Event.getcurrentLayout()>
+		<!--- Implicit set Scopes --->
+		<cfset var event = controller.getRequestService().getContext()>
+		<cfset var rc = event.getCollection()>
+		<!--- Get Current Set Layout From Request Collection --->
+		<cfset var cbox_currentLayout = event.getcurrentLayout()>
+		<!--- Content Variables --->
+		<cfset var cbox_RederedLayout = "">
+		<cfset var cbox_timerhash = "">
+		
+		<!--- Check if no view has been set in the Request Collection --->
+		<cfif structKeyExists(arguments,"layout")>
+			<cfset cbox_currentLayout = arguments.layout & ".cfm">
+		<cfelse>
+			<cfset cbox_currentLayout = implicitViewChecks(event)>
 		</cfif>
 		
-		<!--- Render --->
-		<cfset timerHash = controller.getDebuggerService().timerStart("rendering Layout [#cbox_CurrentLayout#]")>
-			<cfif cbox_CurrentLayout eq "">
-				<cfset cbox_RederedLayout = renderView()>
-			<cfelse>			
-				<!--- The Layout Path is by convention or external?? --->
-				<cfset cbox_layoutPath = "/#instance.appMapping#/#instance.layoutsConvention#/#cbox_CurrentLayout#">
-				<!--- Check if View does not exists in Conventions --->
-				<cfif not fileExists(expandPath(cbox_layoutPath))>
-					<!--- Set the Path to be the External Location --->
-					<cfset cbox_layoutPath = "#instance.layoutsExternalLocation#/#cbox_CurrentLayout#">
-					<!--- Verify the External Location now --->
-					<cfif not fileExists(expandPath(cbox_layoutPath))>
-						<cfthrow message="Layout not located" 
-								 detail="The layout: #cbox_layoutPath# could not be located in the conventions folder or in the external location. Please verify the layout name" 
-								 type="Renderer.LayoutNotFoundException">
-					</cfif>
-				</cfif>
-				<!--- RenderLayout --->
-				<cfsavecontent variable="cbox_RederedLayout"><cfoutput><cfinclude template="#cbox_layoutPath#"></cfoutput></cfsavecontent>
-			</cfif>
-		<cfset controller.getDebuggerService().timerEnd(timerHash)>
+		<!--- Start Timer --->
+		<cfset cbox_timerhash = controller.getDebuggerService().timerStart("rendering Layout [#cbox_currentLayout#]")>
+			
+		<!--- If Layout is blank, then just delegate to the view --->
+		<cfif cbox_currentLayout eq "">
+			<cfset cbox_RederedLayout = renderView()>
+		<cfelse>			
+			<!--- RenderLayout --->
+			<cfsavecontent variable="cbox_RederedLayout"><cfoutput><cfinclude template="#locateLayout(cbox_currentLayout)#"></cfoutput></cfsavecontent>
+		</cfif>
 		
-		<!--- Return Layout --->
+		<!--- Stop Timer --->
+		<cfset controller.getDebuggerService().timerEnd(cbox_timerhash)>
+		
+		<!--- Return Rendered Layout --->
 		<cfreturn cbox_RederedLayout>
 	</cffunction>
 	
 <!------------------------------------------- PRIVATE ------------------------------------------->
+
+	<!--- implicitViewChecks --->
+	<cffunction name="implicitViewChecks" output="false" access="private" returntype="any" hint="Does implicit view rendering checks">
+		<cfargument name="event" type="any" required="true" hint="The request context"/>
+		<cfset var cbox_currentLayout = arguments.event.getcurrentLayout()>
+		
+		<!--- Check if no view has been set in the Request Collection --->
+		<cfif arguments.event.getCurrentView() eq "">
+			<!--- Implicit Views according to event --->
+			<cfset arguments.event.setView(replace(arguments.event.getCurrentEvent(),".","/","all"))>
+			<!--- Check if default view set, if yes, then set it. --->
+			<cfif arguments.event.getDefaultView() neq "">
+				<!--- Set the Default View --->
+				<cfset arguments.event.setView(arguments.event.getDefaultView())>
+			</cfif>
+			<!--- Reset the layout again, as we set views for rendering implicitly --->
+			<cfset cbox_CurrentLayout = arguments.event.getcurrentLayout()>
+		</cfif>
+		
+		<cfreturn cbox_currentLayout>
+	</cffunction>
+
+	<!--- locateLayout --->
+	<cffunction name="locateLayout" output="false" access="private" returntype="any" hint="Locate the layout to render">
+		<cfargument name="layout" type="any" required="true" hint="The layout name"/>
+		<cfset var cbox_layoutPath = "/#instance.appMapping#/#instance.layoutsConvention#/#arguments.layout#">
+		
+		<!--- Check if layout does not exists in Conventions --->
+		<cfif not fileExists(expandPath(cbox_layoutPath))>
+			<!--- Set the Path to be the External Location --->
+			<cfset cbox_layoutPath = "#instance.layoutsExternalLocation#/#arguments.layout#">
+			
+			<!--- Verify the External Location now --->
+			<cfif not fileExists(expandPath(cbox_layoutPath))>
+				<cfthrow message="Layout not located" 
+						 detail="The layout: #arguments.layout# could not be located in the conventions folder or in the external location. Please verify the layout name" 
+						 type="Renderer.LayoutNotFoundException">
+			</cfif>
+		</cfif>
+		
+		<cfreturn cbox_layoutPath>
+	</cffunction>
 
 	<!--- Get Layouts Convention --->
 	<cffunction name="getlayoutsConvention" access="private" output="false" returntype="string" hint="Get layoutsConvention">

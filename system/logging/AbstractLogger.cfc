@@ -9,134 +9,121 @@ Date        :	04/12/2009
 Description :
 	This component is used as a base or interface for creating ColdBox Loggers
 ----------------------------------------------------------------------->
-<cfcomponent name="AbstractLogger" hint="This is the abstract interface component for Loggers" output="false">
+<cfcomponent name="AbstractLogger" hint="This is the abstract interface component for all LogBox Loggers" output="false">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
 	<cfscript>
+		// The log levels enum as a public property
+		this.logLevels = createObject("component","coldbox.system.logging.LogLevels");
+		
+		// private instance scope
 		instance = structnew();
-		/* Logger Name */
+		// Logger Unique ID */
+		instance._hash = hash(createUUID());
+		// Logger Unique Name
 		instance.name = "";
-		/* Logger Unique ID */
-		instance._hash = "";
-		/* Flag denoting if the logger is inited or not */
-		instance.isLoggerInitialized = false;
-		/* The log levels map */
-		instance.logLevels = structnew();
-		/* The current set logging level */
-		instance.logLevel = 0;		
-		/* Logger Configuration Properties */
+		// Flag denoting if the logger is inited or not. This will be set by LogBox upon succesful creation and registration.
+		instance.initialized = false;
+		// The current set logging level. By default we go with the highest possible
+		instance.logLevel = this.logLevels.TRACE;		
+		// Logger Configuration Properties
 		instance.properties = structnew();			
 	</cfscript>
 	
 	<!--- Init --->
-	<cffunction name="init" access="public" returntype="AbstractLogger" hint="Constructor" output="false" >
+	<cffunction name="init" access="public" returntype="AbstractLogger" hint="Constructor called by a Concrete Logger" output="false" >
 		<!--- ************************************************************* --->
-		<cfargument name="name"  		type="string" required="true"  hint="The logger identification name">
-		<cfargument name="properties" 	type="struct" required="false" default="#structnew()#" hint="A map of configuration properties for the logger"/>
+		<cfargument name="name" 		type="string"  required="true" hint="The unique name for this logger."/>
+		<cfargument name="level" 		type="numeric" required="false" default="-1" hint="The default log level for this logger. If not passed, then it will use the highest logging level available."/>
+		<cfargument name="properties" 	type="struct"  required="false" default="#structnew()#" hint="A map of configuration properties for the logger"/>
 		<!--- ************************************************************* --->
 		<cfscript>
-			/* Prepare Instance */
-			instance.name = arguments.name;
-			instance._hash = hash(createUUID()&instance.name);	
-			instance.properties = arguments.properties;		
+			// Logger's Name
+			instance.name = REreplacenocase(arguments.name, "[^0-9a-z]","","ALL");
+			
+			// Set internal properties	
+			instance.properties = arguments.properties;
+			
+			// Setup the default log level
+			if( arguments.level gt -1 ){ 
+				setLogLevel(arguments.level);
+			}
+					
 			return this;
 		</cfscript>
 	</cffunction>
 	
-	<!--- Init Log Location --->
-	<cffunction name="initLogLocation" access="public" hint="Initialize the logger, runs after init()" output="false" returntype="void">
+<!------------------------------------------- INTERNAL OBSERVERS ------------------------------------------>
+
+	
+	<cffunction name="onRegistration" access="public" hint="Runs after the logger has been created and registered. Implemented by Concrete Logger" output="false" returntype="void">
+	</cffunction>
+
+	<cffunction name="onUnRegistration" access="public" hint="Runs before the logger is unregistered from LogBox. Implemented by Concrete Logger" output="false" returntype="void">
 	</cffunction>
 
 <!------------------------------------------- PUBLIC ------------------------------------------->
-
-	<!--- Get/Set Logger Name --->
-	<cffunction name="getname" access="public" output="false" returntype="string" hint="Get the logger's name">
-		<cfreturn instance.name/>
+	
+	<!--- getHash --->
+	<cffunction name="getHash" output="false" access="public" returntype="string" hint="Get this logger's unique ID">
+		<cfreturn instance._hash>
 	</cffunction>
-	<cffunction name="setname" access="public" output="false" returntype="void" hint="Set/Override the logger's name">
-		<cfargument name="name" type="string" required="true"/>
-		<cfset instance.name = arguments.name/>
+	
+	<!--- Get the name --->
+	<cffunction name="getname" access="public" returntype="string" output="false" hint="Get this logger's name">
+		<cfreturn instance.name>
 	</cffunction>
 	
 	<!--- Initied flag --->
 	<cffunction name="isLoggerInitialized" access="public" returntype="boolean" output="false" hint="Checks if the logger's internal variables are initialized.">
-		<cfreturn instance.isLoggerInitialized>
+		<cfreturn instance.initialized>
 	</cffunction>
-	<cffunction name="setisLoggerInitialized" access="public" returntype="void" output="false" hint="Set's the logger's internal variables flag to initalized.">
-		<cfargument name="isLoggerInitialized" type="boolean" required="true">
-		<cfset instance.isLoggerInitialized = arguments.isLoggerInitialized>
-	</cffunction>
-	
-	<!--- Get Log Levels --->
-	<cffunction name="getlogLevels" access="public" output="false" returntype="struct" hint="Get the logLevels as a structure map. Keys = Log Level Names, Values = Numerical Representation of Log Level">
-		<cfreturn instance.logLevels/>
+	<cffunction name="setInitialized" access="public" returntype="void" output="false" hint="Set's the logger's internal variables flag to initalized.">
+		<cfargument name="initialized" type="boolean" required="true">
+		<cfset instance.initialized = arguments.initialized>
 	</cffunction>
 	
 	<!--- Get/Set the Log Level --->
-	<cffunction name="getlogLevel" access="public" output="false" returntype="numeric" hint="Get the current logLevel">
+	<cffunction name="getlogLevel" access="public" output="false" returntype="numeric" hint="Get the current default logLevel">
 		<cfreturn instance.logLevel/>
 	</cffunction>
-	<cffunction name="setlogLevel" access="public" output="false" returntype="void" hint="Set the logger's logLevel">
+	<cffunction name="setlogLevel" access="public" output="false" returntype="void" hint="Set the logger's default logLevel">
 		<cfargument name="logLevel" type="numeric" required="true"/>
-		<cfset instance.logLevel = arguments.logLevel/>
+		<cfscript>
+			// Verify level
+			if( arguments.logLevel gte this.logLevels.minLevel OR arguments.logLevel lte this.logLevels.maxLevel ){
+				instance.logLevel = arguments.logLevel;
+			}
+			else{
+				$throw("Invalid Log Level","The log level #arguments.logLevel# is invalid. Valid log levels are from 0 to 5","AbstractLogger.InvalidLogLevelException");
+			}
+		</cfscript>
+	</cffunction>
+
+	<!--- writeDelegate --->
+	<cffunction name="writeDelegate" output="false" access="public" returntype="void" hint="Delegate a write call if the log level permits it. DO NOT OVERRIDE THIS METHOD IF POSSIBLE">
+		<cfargument name="message" 	 type="string"  required="true"   hint="The message to log.">
+		<cfargument name="severity"  type="numeric" required="true"   hint="The severity level to log.">
+		<cfargument name="extraInfo" type="any"    required="no" default="" hint="Extra information to send to the loggers.">
+		<cfscript>
+			// Check log levels?
+			if ( arguments.severity LTE getLogLevel() ){
+				// Delegate to writeEntry method of concrete logger.
+				logMessage(argumentCollection=arguments);
+			}
+		</cfscript>
 	</cffunction>
 	
-	<!--- Debug --->
-	<cffunction name="debug" access="public" output="false" returntype="void" hint="I log a debug message.">
+	<!--- logMessage --->
+	<cffunction name="logMessage" access="public" output="false" returntype="void" hint="Write an entry into the logger. You must implement this method yourself.">
 		<!--- ************************************************************* --->
-		<cfargument name="Message" type="string" required="yes" hint="The message to log.">
-		<cfargument name="ExtraInfo" type="string" required="no" default="" hint="Extra information to append.">
+		<cfargument name="message" 	 type="string"   required="true"   hint="The message to log.">
+		<cfargument name="severity"  type="numeric"  required="true"   hint="The severity level to log.">
+		<cfargument name="extraInfo" type="any"      required="no" default="" hint="Extra information to send to the loggers.">
 		<!--- ************************************************************* --->
-	</cffunction>
-	
-	<!--- Info --->
-	<cffunction name="info" access="public" output="false" returntype="void" hint="I log an information message.">
-		<!--- ************************************************************* --->
-		<cfargument name="Message" type="string" required="yes" hint="The message to log.">
-		<cfargument name="ExtraInfo" type="string" required="no" default="" hint="Extra information to append.">
-		<!--- ************************************************************* --->
-	</cffunction>
-	
-	<!--- Trace --->
-	<cffunction name="trace" access="public" output="false" returntype="void" hint="I log a trace message.">
-		<!--- ************************************************************* --->
-		<cfargument name="Message" type="string" required="yes" hint="The message to trace.">
-		<cfargument name="ExtraInfo" type="string" required="no" default="" hint="Extra information to append.">
-		<!--- ************************************************************* --->
-	</cffunction>
-	
-	<!--- warn --->
-	<cffunction name="warn" access="public" output="false" returntype="void" hint="I log a warning message.">
-		<!--- ************************************************************* --->
-		<cfargument name="Message" type="string" required="yes" hint="The message to log.">
-		<cfargument name="ExtraInfo" type="string" required="no" default="" hint="Extra information to append.">
-		<!--- ************************************************************* --->
-	</cffunction>
-	
-	<!--- Error --->
-	<cffunction name="error" access="public" output="false" returntype="void" hint="I log an error message.">
-		<!--- ************************************************************* --->
-		<cfargument name="Message" type="string" required="yes" hint="The message to log.">
-		<cfargument name="ExtraInfo" type="string" required="no" default="" hint="Extra information to append.">
-		<!--- ************************************************************* --->
-	</cffunction>
-	
-	<!--- Fatal --->
-	<cffunction name="fatal" access="public" output="false" returntype="void" hint="I log a fatal message.">
-		<!--- ************************************************************* --->
-		<cfargument name="Message" type="string" required="yes" hint="The message to log.">
-		<cfargument name="ExtraInfo" type="string" required="no" default="" hint="Extra information to append.">
-		<!--- ************************************************************* --->
-	</cffunction>
-	
-	<!--- Log An Entry --->
-	<cffunction name="logEntry" access="public" output="false" returntype="void" hint="Log a message">
-		<!--- ************************************************************* --->
-		<cfargument name="Severity" 		type="string" 	required="yes" hint="The severity level to log">
-		<cfargument name="Message" 			type="string"  	required="yes" hint="The message to log.">
-		<cfargument name="ExtraInfo"		type="string"   required="no"  default="" hint="Extra information to append.">
-		<!--- ************************************************************* --->
+		<cfthrow message="This logger '#getMetadata(this).name#' must implement the 'logMessage()' method."
+				 type="AbstractLogger.NotImplementedException">
 	</cffunction>
 
 <!------------------------------------------- PROPERTY METHODS ------------------------------------------->
@@ -173,6 +160,33 @@ Description :
 	
 <!------------------------------------------- PRIVATE ------------------------------------------->
 
+	<!--- Throw Facade --->
+	<cffunction name="$throw" access="private" hint="Facade for cfthrow" output="false">
+		<!--- ************************************************************* --->
+		<cfargument name="message" 	type="string" 	required="yes">
+		<cfargument name="detail" 	type="string" 	required="no" default="">
+		<cfargument name="type"  	type="string" 	required="no" default="Framework">
+		<!--- ************************************************************* --->
+		<cfthrow type="#arguments.type#" message="#arguments.message#"  detail="#arguments.detail#">
+	</cffunction>
 	
+	<!--- Dump facade --->
+	<cffunction name="$dump" access="private" hint="Facade for cfmx dump" returntype="void">
+		<cfargument name="var" required="yes" type="any">
+		<cfargument name="isAbort" type="boolean" default="false" required="false" hint="Abort also"/>
+		<cfdump var="#var#">
+		<cfif arguments.isAbort><cfabort></cfif>
+	</cffunction>
+	
+	<!--- Rethrow Facade --->
+	<cffunction name="$rethrowit" access="private" returntype="void" hint="Rethrow facade" output="false" >
+		<cfargument name="throwObject" required="true" type="any" hint="The cfcatch object">
+		<cfthrow object="#arguments.throwObject#">
+	</cffunction>
+	
+	<!--- Abort Facade --->
+	<cffunction name="$abort" access="private" hint="Facade for cfabort" returntype="void" output="false">
+		<cfabort>
+	</cffunction>
 
 </cfcomponent>

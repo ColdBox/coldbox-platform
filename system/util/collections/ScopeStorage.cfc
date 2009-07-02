@@ -14,7 +14,7 @@ Description :
 <cffunction name="init" access="public" returntype="ScopeStorage" hint="Constructor" output="false" >
 	<cfscript>
 		instance = structnew();
-		instance.scopes = "application|client|cookie|session|server|cluster";
+		instance.scopes = "application|client|cookie|session|server|cluster|request";
 		
 		return this;
 	</cfscript>
@@ -83,6 +83,7 @@ Description :
 			case "client" : return client;
 			case "cookie" : return cookie;
 			case "cluster" : return cluster;
+			case "request" : return request;
  		}
 	</cfscript>	
 </cffunction>
@@ -106,10 +107,7 @@ Description :
 	<cfreturn getScope("cluster")>
 </cffunction>
 
-
-<!----------------------------------------- PRIVATE ------------------------------------->	
-
-<cffunction name="scopeCheck" access="private" returntype="void" hint="Check if a scope is valid, else throw exception" output="false" >
+<cffunction name="scopeCheck" access="public" returntype="void" hint="Check if a scope is valid, else throw exception" output="false" >
 	<cfargument name="scope"  type="string" required="true" hint="The CF scope to check">
 	<cfif NOT reFindNoCase("^(#instance.scopes#)$", arguments.scope)>
 		<cfthrow message="Invalid CF Scope"
@@ -117,5 +115,10 @@ Description :
 				 type="ScopeStorage.InvalidScopeException">
 	</cfif>
 </cffunction>
+
+
+<!----------------------------------------- PRIVATE ------------------------------------->	
+
+
 
 </cfcomponent>

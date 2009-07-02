@@ -459,45 +459,45 @@
 			
 			AssertEquals( event.getRenderData(), structnew());
 			
-			event.renderData('JSON',"[1,2,3,4]");
+			// Test JSON
+			event.renderData(type='JSON',data="[1,2,3,4]");		
+			rd = event.getRenderData();
+			assertEquals( rd.contenttype, "application/json");
+			assertEquals( rd.type, "json");
+			assertEquals( rd.jsonQueryFormat, "query");
+			assertEquals( rd.jsonCase, "lower");
 			
-			test = structnew();
-			test.type = "JSON";
-			test.data = "[1,2,3,4]";
-			test.contenttype="text/plain";
+			event.renderData(type='JSON',data="[1,2,3,4]",jsonQueryFormat="array",jsonCase="upper");		
+			rd = event.getRenderData();
+			assertEquals( rd.jsonQueryFormat, "array");
+			assertEquals( rd.jsonCase, "upper");
 			
-			AssertEquals( event.getRenderData(), test);
+			// Test WDDX 
+			event.renderData(type="WDDX",data=arrayNew(1));
+			rd = event.getRenderData();
+			assertEquals( rd.contenttype, "text/xml");
+			assertEquals( rd.type, "wddx");
 			
-			/* Wipe it */
-			event.setValue("cbox_renderdata",structnew());
-			
-			/* Test WDDX */
-			event.renderData("WDDX",ArrayNew(1));
-			test.data = ArrayNew(1);
-			test.type = "WDDX";
-			test.contenttype="text/xml";
-			
-			AssertEquals( event.getRenderData(), test);			
-			
-			/* Test PLAIN */
+			// Test PLAIN
 			event.renderData(data="Hello");
-			test.data = "Hello";
-			test.type = "plain";
-			test.contenttype="text/html";
+			rd = event.getRenderData();
+			assertEquals( rd.type, "plain");
+			assertEquals( rd.contenttype, "text/html");
 			
-			AssertEquals( event.getRenderData(), test);	
+			// Test XML
+			event.renderData(data=structnew(),type="xml");
+			rd = event.getRenderData();
+			assertEquals( rd.type, "xml");
+			assertEquals( rd.contenttype, "text/xml");
+			assertEquals( rd.xmlListDelimiter, ",");
+			assertEquals( rd.xmlColumnList, "");
 			
-			/* Test contenttype */
+			// Test contenttype
 			event.renderData(data="Hello",contentType="application/ms-excel");
-			test.data = "Hello";
-			test.type = "plain";
-			test.contenttype="application/ms-excel";
-			
-			AssertEquals( event.getRenderData(), test);	
-			
-					
+			rd = event.getRenderData();
+			assertEquals( rd.type, "plain");
+			assertEquals( rd.contenttype, "application/ms-excel");
 		</cfscript>
-		
 	</cffunction>
 	
 	<cffunction name="testgetHTTPMethod">

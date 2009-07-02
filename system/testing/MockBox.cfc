@@ -82,7 +82,9 @@ Description		:
 					obj = createObject("component",arguments.className);
 				}
 				catch(Any e){	
-					throw(type="mock.invalidCFC",message="The specified CFC #arguments.className# could not be created. Verify the CFC name and path being specified.");
+					getUtil().throwit(type="mock.invalidCFC",
+						  message="The specified CFC #arguments.className# could not be created. Verify the CFC name and path being specified.",
+						  detail=e.message & e.detail & e.tagContext.toString());
 				}
 			}
 			else if ( structKeyExists(arguments, "object") ){
@@ -90,7 +92,7 @@ Description		:
 				obj = arguments.object;
 			}
 			else{
-				throw(type="mock.invalidArguments",message="You need a className or an object argument.");
+				getUtil().throwit(type="mock.invalidArguments",message="You need a className or an object argument.");
 			}		
 			
 			/* Clear up Mock object? */
