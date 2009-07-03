@@ -78,14 +78,7 @@ Description		:
 			var obj = 0;
 			/* class to mock */
 			if ( structKeyExists(arguments, "className") ){
-				try{
-					obj = createObject("component",arguments.className);
-				}
-				catch(Any e){	
-					getUtil().throwit(type="mock.invalidCFC",
-						  message="The specified CFC #arguments.className# could not be created. Verify the CFC name and path being specified.",
-						  detail=e.message & e.detail & e.tagContext.toString());
-				}
+				obj = createObject("component",arguments.className);
 			}
 			else if ( structKeyExists(arguments, "object") ){
 				/* Object to Mock */

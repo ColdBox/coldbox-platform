@@ -8,14 +8,17 @@ Author     :	Luis Majano
 Date        :	04/12/2009
 Description :
 	A simple Scope Logger that logs to a specified scope.
-	
+
+Inspiration from Tim Blair <tim@bla.ir> by the cflogger project
+
 Properties:
-- scope : the scope to persist to, defaults to request
-- key   : the key to use in the scope, it defaults to the name of the logger
-- limit : a limit to the amount of logs to rotate. Defaults to 0, unlimited
+- scope : the scope to persist to, defaults to request (optional)
+- key   : the key to use in the scope, it defaults to the name of the logger (optional)
+- limit : a limit to the amount of logs to rotate. Defaults to 0, unlimited (optional)
+
 ----------------------------------------------------------------------->
 <cfcomponent name="ScopeLogger" 
-			 extends="coldbox.system.logging.AbstractLogger" 
+			 extends="coldbox.system.logging.AbstractAppender" 
 			 output="false"
 			 hint="A simple CF Logger">
 	
@@ -23,7 +26,8 @@ Properties:
 	<cffunction name="init" access="public" returntype="ScopeLogger" hint="Constructor" output="false" >
 		<!--- ************************************************************* --->
 		<cfargument name="name" 		type="string"  required="true" hint="The unique name for this logger."/>
-		<cfargument name="level" 		type="numeric" required="false" default="-1" hint="The default log level for this logger. If not passed, then it will use the highest logging level available."/>
+		<cfargument name="levelMin" 	type="numeric" required="false" default="0" hint="The default log level for this logger, by default it is 0. Optional. ex: LogBox.logLevels.WARNING"/>
+		<cfargument name="levelMax" 	type="numeric" required="false" default="5" hint="The default log level for this logger, by default it is 5. Optional. ex: LogBox.logLevels.WARNING"/>
 		<cfargument name="properties" 	type="struct"  required="false" default="#structnew()#" hint="A map of configuration properties for the logger"/>
 		<!--- ************************************************************* --->
 		<cfscript>

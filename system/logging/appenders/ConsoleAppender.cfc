@@ -7,36 +7,29 @@ www.coldboxframework.com | www.luismajano.com | www.ortussolutions.com
 Author     :	Luis Majano
 Date        :	04/12/2009
 Description :
-	A simple CF Logger
+	A simple ConsoleLogger
+	
+Properties:
+- none
 ----------------------------------------------------------------------->
-<cfcomponent name="CFLogger" 
-			 extends="coldbox.system.logging.AbstractLogger" 
+<cfcomponent name="ConsoleLogger" 
+			 extends="coldbox.system.logging.AbstractAppender" 
 			 output="false"
-			 hint="A simple CF Logger">
+			 hint="A simple Console Logger">
 	
 	<!--- Init --->
 	<cffunction name="init" access="public" returntype="CFLogger" hint="Constructor called by a Concrete Logger" output="false" >
 		<!--- ************************************************************* --->
 		<cfargument name="name" 		type="string"  required="true" hint="The unique name for this logger."/>
-		<cfargument name="level" 		type="numeric" required="false" default="-1" hint="The default log level for this logger. If not passed, then it will use the highest logging level available."/>
+		<cfargument name="levelMin" 	type="numeric" required="false" default="0" hint="The default log level for this logger, by default it is 0. Optional. ex: LogBox.logLevels.WARNING"/>
+		<cfargument name="levelMax" 	type="numeric" required="false" default="5" hint="The default log level for this logger, by default it is 5. Optional. ex: LogBox.logLevels.WARNING"/>
 		<cfargument name="properties" 	type="struct"  required="false" default="#structnew()#" hint="A map of configuration properties for the logger"/>
 		<!--- ************************************************************* --->
 		<cfscript>
 			// Init supertype
 			super.init(argumentCollection=arguments);
 			
-			// Verify properties
-			if( NOT propertyExists('logType') ){
-				setProperty("logType","file");
-			}
-			else{
-				// Check types
-				if( NOT reFindNoCase("^(file|application)$", getProperty("logType")) ){
-					$throw(message="Invalid logtype choosen #getProperty("logType")#",
-						   detail="Valid types are file or application",
-						   type="CFLogger.InvalidLogTypeException");
-				}
-			}
+			instance.out = createObject("java","java.lang.System").out;
 						
 			return this;
 		</cfscript>
@@ -49,17 +42,16 @@ Description :
 		<cfargument name="severity"  type="numeric"  required="true"   hint="The severity level to log.">
 		<cfargument name="extraInfo" type="any"      required="no" default="" hint="Extra information to send to the loggers.">
 		<!--- ************************************************************* --->
-		
-		<cfif getProperty("logType") eq "file">
-			<cflog file="#getName()#" 
-			  	   type="#this.logLevels.lookup(arguments.severity)#"
-			  	   text="#arguments.message#">
-		<cfelse>
-			<cflog log="Application"
-				   type="#this.logLevels.lookup(arguments.severity)#"
-			  	   text="#arguments.message#">
-		</cfif>
-			   
+		<cfscript>
+			var extra = "";
+			try{
+				extra = arguments.extraInfo.toString();
+			}
+			catch(Any e){
+				$log("ERROR","Extrainfo toString() failed on #getName()# logger. #e.message# #e.detail#");
+			}
+			instance.out.println(" #this.logLevels.lookup(arguments.severity)# #arguments.message# #chr(13)# #extra#");
+		</cfscript>			   
 	</cffunction>
 	
 <!------------------------------------------- PRIVATE ------------------------------------------>

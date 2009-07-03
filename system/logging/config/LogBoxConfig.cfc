@@ -18,7 +18,7 @@ Description :
 		
 		// Instance private scope
 		instance = structnew();
-		instance.loggers = arraynew(1);
+		instance.appenders = arraynew(1);
 	</cfscript>
 
 	<!--- init --->
@@ -27,18 +27,18 @@ Description :
 	</cffunction>
 
 	<!--- addLogger --->
-	<cffunction name="add" output="false" access="public" returntype="void" hint="Add a logger configuration">
-		<cfargument name="name" 		type="string"  required="true"  hint="A unique name for the logger to register. Only unique names can be registered per instance."/>
-		<cfargument name="class" 		type="string"  required="true"  hint="The logger's class to register. We will create, init it and register it for you."/>
-		<cfargument name="level" 		type="numeric" required="false" default="-1" hint="The default log level for this logger. Optional. ex: LogBox.logLevels.WARNING"/>
-		<cfargument name="category" 	type="string"  required="false" default=""   hint="The default category to use for logging. Optional"/>
-		<cfargument name="properties" 	type="struct"  required="false" default="#structnew()#" hint="The structure of properties to configure this logger with."/>
-		<cfset arrayAppend(getLoggers(),arguments)>
+	<cffunction name="add" output="false" access="public" returntype="void" hint="Add an appender configuration">
+		<cfargument name="name" 		type="string"  required="true"  hint="A unique name for the appender to register. Only unique names can be registered per instance."/>
+		<cfargument name="class" 		type="string"  required="true"  hint="The appender's class to register. We will create, init it and register it for you."/>
+		<cfargument name="levelMin" 	type="numeric" required="false" default="0" hint="The default log level for this appender, by default it is 0. Optional. ex: LogBox.logLevels.WARNING"/>
+		<cfargument name="levelMax" 	type="numeric" required="false" default="5" hint="The default log level for this appender, by default it is 5. Optional. ex: LogBox.logLevels.WARNING"/>
+		<cfargument name="properties" 	type="struct"  required="false" default="#structnew()#" hint="The structure of properties to configure this appender with."/>
+		<cfset arrayAppend(getAppenders(),arguments)>
 	</cffunction>
 	
-	<!--- getLoggers --->
-	<cffunction name="getLoggers" output="false" access="public" returntype="array" hint="Get all the loggers defined">
-		<cfreturn instance.loggers>
+	<!--- getappenders --->
+	<cffunction name="getAppenders" output="false" access="public" returntype="array" hint="Get all the appenders defined">
+		<cfreturn instance.appenders>
 	</cffunction>
 
 </cfcomponent>

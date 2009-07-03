@@ -6,39 +6,38 @@
 	
 	function testProperties(){
 		assertTrue( len(logbox.getHash()) );
-		assertTrue( structIsEmpty( logbox.getLoggers() ));
-		assertFalse( logBox.hasLoggers() );
+		assertFalse( logBox.hasAppenders() );
 	}
 	function testRegister(){
-		logger = createObject("component","coldbox.system.logging.AbstractLogger").init(name="Luis");
-		logBox.register(logger);
-		logBox.register(logger);
+		appender = createObject("component","coldbox.system.logging.AbstractAppender").init(name="Luis");
+		logBox.register(appender);
+		logBox.register(appender);
 		
-		logger = createObject("component","coldbox.system.logging.AbstractLogger");
+		appender = createObject("component","coldbox.system.logging.AbstractAppender");
 		try{
-			logBox.register(logger);
+			logBox.register(appender);
 			fail("this should have failed, no name.");
 		}
-		catch("LogBox.InvalidLoggerNameException" e){}
+		catch("LogBox.InvalidAppenderNameException" e){}
 		catch(Any e){ fail(e.message & e.detail); }		
 	}
 	function testcreateAndRegister(){
 		// Mock call, already tested
 		logBox.$("register");
 		//1: Basics
-		logger = logBox.registerNew(name='unitTest',class="coldbox.system.logging.AbstractLogger");
-		assertEquals( logger.getLogLevel(), logger.logLevels.TRACE);
+		appender = logBox.registerNew(name='unitTest',class="coldbox.system.logging.AbstractAppender");
+		assertEquals( appender.getLevelMax(), appender.logLevels.TRACE);
 		
 		//2: with defaults
-		logger = logBox.registerNew(name='unitTest',class="coldbox.system.logging.AbstractLogger",level=logbox.logLevels.WARNING,category="Luis");
-		assertEquals( logger.getLogLevel(), logger.logLevels.WARNING);
+		appender = logBox.registerNew(name='unitTest',class="coldbox.system.logging.AbstractAppender",levelMax=logbox.logLevels.WARNING,category="Luis");
+		assertEquals( appender.getLevelMax(), appender.logLevels.WARNING);
 		
 		//3: with properties
 		propMap = {file="#expandPath('.')#unitTest.txt",charset='utf-8'};
-		logger = logBox.registerNew(name='unitTest',class="coldbox.system.logging.AbstractLogger",properties=propMap);
-		assertEquals( logger.getLogLevel(), logger.logLevels.TRACE);
-		assertEquals( logger.getProperties(), propmap);
-		assertEquals( logger.getProperty('file'), propmap.file);
+		appender = logBox.registerNew(name='unitTest',class="coldbox.system.logging.AbstractAppender",properties=propMap);
+		assertEquals( appender.getLevelMax(), appender.logLevels.TRACE);
+		assertEquals( appender.getProperties(), propmap);
+		assertEquals( appender.getProperty('file'), propmap.file);
 	}
 	function testLogMessage(){
 		makePublic(logBox,"logMessage");
@@ -47,9 +46,13 @@
 	}
 	function testregisterWithConfig(){
 		config = createObject("component","coldbox.system.logging.config.LogBoxConfig").init();
-		config.add("luis","coldbox.system.logging.AbstractLogger");
-		config.add("luis2","coldbox.system.logging.AbstractLogger");
+		config.add("luis","coldbox.system.logging.AbstractAppender");
+		config.add("luis2","coldbox.system.logging.AbstractAppender");
 		logBox.registerConfig(config);
+	}
+	
+	function testgetLogger(){
+		logger = logBox.getLogger('MyCat');	
 	}
 </cfscript>
 </cfcomponent>

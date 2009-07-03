@@ -7,14 +7,18 @@ www.coldboxframework.com | www.luismajano.com | www.ortussolutions.com
 Author     :	Luis Majano
 Date        :	04/12/2009
 Description :
-	A simple DB logger that needs the following config properties:
+ A simple DB logger for MySQL, MSSQL, Oracle, PostgreSQL
+
+Inspiration from Tim Blair <tim@bla.ir> cflogger project.
+
+Properties:
+ - dsn : the dsn to use for logging
+ - table : the table to store the logs in
+ - columnMap : A column map for aliasing columns. (Optional)
+ - autocreate : if true, then we will create the table. Defaults to false (Optional)
 	
-	- dsn : the dsn to use for logging
-	- table : the table to store the logs in
-	- columnMap : A column map for aliasing columns.
-	- autocreate : if true, then we will create the table. Defaults to false
-	
-The columns used are:
+The columns needed in the table are
+
  - id : UUID
  - severity : string
  - category : string
@@ -26,7 +30,7 @@ If you are building a mapper, the map must have the above keys in it.
 
 ----------------------------------------------------------------------->
 <cfcomponent name="DBLogger" 
-			 extends="coldbox.system.logging.AbstractLogger" 
+			 extends="coldbox.system.logging.AbstractAppender" 
 			 output="false"
 			 hint="This is a simple implementation of a logger that is db based.">
 	
@@ -34,7 +38,8 @@ If you are building a mapper, the map must have the above keys in it.
 	<cffunction name="init" access="public" returntype="DBLogger" hint="Constructor called by a Concrete Logger" output="false" >
 		<!--- ************************************************************* --->
 		<cfargument name="name" 		type="string"  required="true" hint="The unique name for this logger."/>
-		<cfargument name="level" 		type="numeric" required="false" default="-1" hint="The default log level for this logger. If not passed, then it will use the highest logging level available."/>
+		<cfargument name="levelMin" 	type="numeric" required="false" default="0" hint="The default log level for this logger, by default it is 0. Optional. ex: LogBox.logLevels.WARNING"/>
+		<cfargument name="levelMax" 	type="numeric" required="false" default="5" hint="The default log level for this logger, by default it is 5. Optional. ex: LogBox.logLevels.WARNING"/>
 		<cfargument name="properties" 	type="struct"  required="false" default="#structnew()#" hint="A map of configuration properties for the logger"/>
 		<!--- ************************************************************* --->
 		<cfscript>
@@ -129,7 +134,7 @@ If you are building a mapper, the map must have the above keys in it.
 	</cffunction>
 	
 	<!--- ensureTable --->
-	<cffunction name="ensureTable" output="false" access="public" returntype="void" hint="Verify or create the logging table">
+	<cffunction name="ensureTable" output="false" access="private" returntype="void" hint="Verify or create the logging table">
 		<cfset var dsn = getProperty("dsn")>
 		<cfset var qTables = 0>
 		<cfset var tableFound = false>

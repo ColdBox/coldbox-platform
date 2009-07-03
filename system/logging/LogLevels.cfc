@@ -36,6 +36,10 @@ Description :
 			case 5: return "TRACE";			
 		}
 	}
+	
+	function isLevelValid(level){
+		return ( arguments.level gte this.MINLEVEL OR arguments.level lte this.MAXLEVEL );
+	}
 
 </cfscript>
 </cfcomponent>

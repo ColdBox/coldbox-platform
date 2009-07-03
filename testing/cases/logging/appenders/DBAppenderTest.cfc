@@ -2,8 +2,8 @@
 <cfscript>
 	function setup(){
 		props = {dsn='testmssql',table='logs',autocreate='true'};
-		db = getMockBox().createMock(className="coldbox.system.logging.loggers.DBLogger");
-		db.init('UnitTest',5,props);
+		db = getMockBox().createMock(className="coldbox.system.logging.appenders.DBAppender");
+		db.init('UnitTest',0,5,props);
 	}
 	
 	function testensureDSN(){
@@ -12,7 +12,7 @@
 		
 		// invalid
 		props.dsn = 'invalid';
-		db.init('UnitTest',5,props);
+		db.init('UnitTest',0,5,props);
 		try{
 			db.ensureDSN();
 			fail('invalid dsn');
@@ -41,7 +41,7 @@
 		};
 		
 		try{
-			db.init('UnitTest',5,props);
+			db.init('UnitTest',0,5,props);
 			fail('map should have failed');
 		}
 		catch("DBLogger.InvalidColumnMapException" e){}
@@ -57,7 +57,7 @@
 			message = "message"
 		};
 		
-		db.init('UnitTest',5,props);
+		db.init('UnitTest',0,5,props);
 			
 		db.logMessage(message="My First Test",severity=1);
 	}

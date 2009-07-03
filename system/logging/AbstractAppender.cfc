@@ -7,9 +7,9 @@ www.coldboxframework.com | www.luismajano.com | www.ortussolutions.com
 Author     :	Luis Majano
 Date        :	04/12/2009
 Description :
-	This component is used as a base or interface for creating ColdBox Loggers
+	This component is used as a base or interface for creating LogBox appenders
 ----------------------------------------------------------------------->
-<cfcomponent name="AbstractLogger" hint="This is the abstract interface component for all LogBox Loggers" output="false">
+<cfcomponent name="AbstractAppender" hint="This is the abstract interface component for all LogBox Appenders" output="false">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
@@ -19,36 +19,37 @@ Description :
 		
 		// private instance scope
 		instance = structnew();
-		// Logger Unique ID */
+		// Appender Unique ID */
 		instance._hash = hash(createUUID());
-		// Logger Unique Name
+		// Appender Unique Name
 		instance.name = "";
-		// Flag denoting if the logger is inited or not. This will be set by LogBox upon succesful creation and registration.
+		// Flag denoting if the appender is inited or not. This will be set by LogBox upon succesful creation and registration.
 		instance.initialized = false;
-		// The current set logging level. By default we go with the highest possible
-		instance.logLevel = this.logLevels.TRACE;		
-		// Logger Configuration Properties
-		instance.properties = structnew();			
+		// Appender Configuration Properties
+		instance.properties = structnew();
+		// Log levels Setup
+		instance.levelMin = this.logLevels.FATAL;
+		instance.levelMax = this.logLevels.TRACE;
 	</cfscript>
 	
 	<!--- Init --->
-	<cffunction name="init" access="public" returntype="AbstractLogger" hint="Constructor called by a Concrete Logger" output="false" >
+	<cffunction name="init" access="public" returntype="AbstractAppender" hint="Constructor called by a Concrete Appender" output="false" >
 		<!--- ************************************************************* --->
-		<cfargument name="name" 		type="string"  required="true" hint="The unique name for this logger."/>
-		<cfargument name="level" 		type="numeric" required="false" default="-1" hint="The default log level for this logger. If not passed, then it will use the highest logging level available."/>
-		<cfargument name="properties" 	type="struct"  required="false" default="#structnew()#" hint="A map of configuration properties for the logger"/>
+		<cfargument name="name" 		type="string"  required="true" hint="The unique name for this appender."/>
+		<cfargument name="levelMin" 	type="numeric" required="false" default="0" hint="The default log level for this appender, by default it is 0. Optional. ex: LogBox.logLevels.WARNING"/>
+		<cfargument name="levelMax" 	type="numeric" required="false" default="5" hint="The default log level for this appender, by default it is 5. Optional. ex: LogBox.logLevels.WARNING"/>
+		<cfargument name="properties" 	type="struct"  required="false" default="#structnew()#" hint="A map of configuration properties for the appender"/>
 		<!--- ************************************************************* --->
 		<cfscript>
-			// Logger's Name
+			// Appender's Name
 			instance.name = REreplacenocase(arguments.name, "[^0-9a-z]","","ALL");
 			
 			// Set internal properties	
 			instance.properties = arguments.properties;
 			
-			// Setup the default log level
-			if( arguments.level gt -1 ){ 
-				setLogLevel(arguments.level);
-			}
+			// Setup the loggin levels for this appender.
+			setLevelMin(arguments.levelMin);
+			setLevelMax(arguments.levelMax);
 					
 			return this;
 		</cfscript>
@@ -57,73 +58,84 @@ Description :
 <!------------------------------------------- INTERNAL OBSERVERS ------------------------------------------>
 
 	
-	<cffunction name="onRegistration" access="public" hint="Runs after the logger has been created and registered. Implemented by Concrete Logger" output="false" returntype="void">
+	<cffunction name="onRegistration" access="public" hint="Runs after the appender has been created and registered. Implemented by Concrete appender" output="false" returntype="void">
 	</cffunction>
 
-	<cffunction name="onUnRegistration" access="public" hint="Runs before the logger is unregistered from LogBox. Implemented by Concrete Logger" output="false" returntype="void">
+	<cffunction name="onUnRegistration" access="public" hint="Runs before the appender is unregistered from LogBox. Implemented by Concrete appender" output="false" returntype="void">
 	</cffunction>
 
 <!------------------------------------------- PUBLIC ------------------------------------------->
 	
 	<!--- getHash --->
-	<cffunction name="getHash" output="false" access="public" returntype="string" hint="Get this logger's unique ID">
+	<cffunction name="getHash" output="false" access="public" returntype="string" hint="Get this appender's unique ID">
 		<cfreturn instance._hash>
 	</cffunction>
 	
 	<!--- Get the name --->
-	<cffunction name="getname" access="public" returntype="string" output="false" hint="Get this logger's name">
+	<cffunction name="getName" access="public" returntype="string" output="false" hint="Get this appender's name">
 		<cfreturn instance.name>
 	</cffunction>
 	
 	<!--- Initied flag --->
-	<cffunction name="isLoggerInitialized" access="public" returntype="boolean" output="false" hint="Checks if the logger's internal variables are initialized.">
+	<cffunction name="isInitialized" access="public" returntype="boolean" output="false" hint="Checks if the appender's internal variables are initialized.">
 		<cfreturn instance.initialized>
 	</cffunction>
-	<cffunction name="setInitialized" access="public" returntype="void" output="false" hint="Set's the logger's internal variables flag to initalized.">
+	<cffunction name="setInitialized" access="public" returntype="void" output="false" hint="Set's the appender's internal variables flag to initalized.">
 		<cfargument name="initialized" type="boolean" required="true">
 		<cfset instance.initialized = arguments.initialized>
 	</cffunction>
 	
 	<!--- Get/Set the Log Level --->
-	<cffunction name="getlogLevel" access="public" output="false" returntype="numeric" hint="Get the current default logLevel">
-		<cfreturn instance.logLevel/>
+	<cffunction name="getLevelMin" access="public" output="false" returntype="numeric" hint="Get the current default levelMin">
+		<cfreturn instance.levelMin/>
 	</cffunction>
-	<cffunction name="setlogLevel" access="public" output="false" returntype="void" hint="Set the logger's default logLevel">
-		<cfargument name="logLevel" type="numeric" required="true"/>
+	<cffunction name="setLevelMin" access="public" output="false" returntype="void" hint="Set the appender's default levelMin">
+		<cfargument name="levelMin" type="numeric" required="true"/>
 		<cfscript>
 			// Verify level
-			if( arguments.logLevel gte this.logLevels.minLevel OR arguments.logLevel lte this.logLevels.maxLevel ){
-				instance.logLevel = arguments.logLevel;
+			if( this.logLevels.isLevelValid(arguments.levelMin) AND
+			    arguments.levelMin lte getLevelMax() ){
+				instance.levelMin = arguments.levelMin;
 			}
 			else{
-				$throw("Invalid Log Level","The log level #arguments.logLevel# is invalid. Valid log levels are from 0 to 5","AbstractLogger.InvalidLogLevelException");
-			}
-		</cfscript>
-	</cffunction>
-
-	<!--- writeDelegate --->
-	<cffunction name="writeDelegate" output="false" access="public" returntype="void" hint="Delegate a write call if the log level permits it. DO NOT OVERRIDE THIS METHOD IF POSSIBLE">
-		<cfargument name="message" 	 type="string"  required="true"   hint="The message to log.">
-		<cfargument name="severity"  type="numeric" required="true"   hint="The severity level to log.">
-		<cfargument name="extraInfo" type="any"    required="no" default="" hint="Extra information to send to the loggers.">
-		<cfscript>
-			// Check log levels?
-			if ( arguments.severity LTE getLogLevel() ){
-				// Delegate to writeEntry method of concrete logger.
-				logMessage(argumentCollection=arguments);
+				$throw("Invalid Log Level","The log level #arguments.levelMin# is invalid or greater than the levelMax (#getLevelMax()#). Valid log levels are from 0 to 5","AbstractAppender.InvalidLogLevelException");
 			}
 		</cfscript>
 	</cffunction>
 	
+	<!--- Get/Set the Log Level --->
+	<cffunction name="getLevelMax" access="public" output="false" returntype="numeric" hint="Get the current default levelMax">
+		<cfreturn instance.levelMax />
+	</cffunction>
+	<cffunction name="setLevelMax" access="public" output="false" returntype="void" hint="Set the appender's default levelMax">
+		<cfargument name="levelMax" type="numeric" required="true"/>
+		<cfscript>
+			// Verify level
+			if( this.logLevels.isLevelValid(arguments.levelMax) AND
+			    arguments.levelMax gte getLevelMin() ){
+				instance.levelMax = arguments.levelMax;
+			}
+			else{
+				$throw("Invalid Log Level","The log level #arguments.levelMax# is invalid or less than the levelMin (#getLevelMin()#). Valid log levels are from 0 to 5","AbstractAppender.InvalidLogLevelException");
+			}
+		</cfscript>
+	</cffunction>
+	
+	<!--- canLog --->
+	<cffunction name="canLog" output="false" access="public" returntype="boolean" hint="Checks wether a log can be made on this appender using a passed in level">
+		<cfargument name="level" type="numeric" required="true" default="" hint="The level to check"/>
+		<cfscript>
+			return (arguments.level GTE getLevelMin() AND arguments.level LTE getLevelMax() );
+		</cfscript>
+	</cffunction>
+	
 	<!--- logMessage --->
-	<cffunction name="logMessage" access="public" output="false" returntype="void" hint="Write an entry into the logger. You must implement this method yourself.">
+	<cffunction name="logMessage" access="public" output="false" returntype="void" hint="Write an entry into the appender. You must implement this method yourself.">
 		<!--- ************************************************************* --->
-		<cfargument name="message" 	 type="string"   required="true"   hint="The message to log.">
-		<cfargument name="severity"  type="numeric"  required="true"   hint="The severity level to log.">
-		<cfargument name="extraInfo" type="any"      required="no" default="" hint="Extra information to send to the loggers.">
+		<cfargument name="logEvent" type="coldbox.system.logging.LogEvent"   required="true"   hint="The logging event to log.">
 		<!--- ************************************************************* --->
-		<cfthrow message="This logger '#getMetadata(this).name#' must implement the 'logMessage()' method."
-				 type="AbstractLogger.NotImplementedException">
+		<cfthrow message="This appender '#getMetadata(this).name#' must implement the 'logMessage()' method."
+				 type="AbstractAppender.NotImplementedException">
 	</cffunction>
 
 <!------------------------------------------- PROPERTY METHODS ------------------------------------------->
@@ -159,6 +171,13 @@ Description :
 	</cffunction>
 	
 <!------------------------------------------- PRIVATE ------------------------------------------->
+	
+	<!--- $log --->
+	<cffunction name="$log" output="false" access="private" returntype="void" hint="Log an internal message to the ColdFusion facilities.  Used when errors ocurrs or diagnostics">
+		<cfargument name="severity" type="string" required="true" default="INFO" hint="The severity to use."/>
+		<cfargument name="message" type="string" required="true" default="" hint="The message to log"/>
+		<cflog type="#arguments.severity#" file="LogBox" text="#arguments.message#">
+	</cffunction>
 
 	<!--- Throw Facade --->
 	<cffunction name="$throw" access="private" hint="Facade for cfthrow" output="false">
