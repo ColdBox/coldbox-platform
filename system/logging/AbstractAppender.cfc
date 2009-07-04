@@ -57,7 +57,6 @@ Description :
 	
 <!------------------------------------------- INTERNAL OBSERVERS ------------------------------------------>
 
-	
 	<cffunction name="onRegistration" access="public" hint="Runs after the appender has been created and registered. Implemented by Concrete appender" output="false" returntype="void">
 	</cffunction>
 
@@ -65,6 +64,12 @@ Description :
 	</cffunction>
 
 <!------------------------------------------- PUBLIC ------------------------------------------->
+	
+	<!--- severityToString --->
+	<cffunction name="severityToString" output="false" access="public" returntype="string" hint="convert a severity to a string">
+		<cfargument name="severity" type="numeric" required="true" hint="The severity to convert"/>
+		<cfreturn this.logLevels.lookup(arguments.severity)>
+	</cffunction>
 	
 	<!--- getHash --->
 	<cffunction name="getHash" output="false" access="public" returntype="string" hint="Get this appender's unique ID">

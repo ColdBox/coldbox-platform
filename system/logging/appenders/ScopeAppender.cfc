@@ -7,28 +7,28 @@ www.coldboxframework.com | www.luismajano.com | www.ortussolutions.com
 Author     :	Luis Majano
 Date        :	04/12/2009
 Description :
-	A simple Scope Logger that logs to a specified scope.
+	A simple Scope Appender that logs to a specified scope.
 
 Inspiration from Tim Blair <tim@bla.ir> by the cflogger project
 
 Properties:
 - scope : the scope to persist to, defaults to request (optional)
-- key   : the key to use in the scope, it defaults to the name of the logger (optional)
+- key   : the key to use in the scope, it defaults to the name of the Appender (optional)
 - limit : a limit to the amount of logs to rotate. Defaults to 0, unlimited (optional)
 
 ----------------------------------------------------------------------->
-<cfcomponent name="ScopeLogger" 
+<cfcomponent name="ScopeAppender" 
 			 extends="coldbox.system.logging.AbstractAppender" 
 			 output="false"
-			 hint="A simple CF Logger">
+			 hint="A scope appender">
 	
 	<!--- Init --->
-	<cffunction name="init" access="public" returntype="ScopeLogger" hint="Constructor" output="false" >
+	<cffunction name="init" access="public" returntype="ScopeAppender" hint="Constructor" output="false" >
 		<!--- ************************************************************* --->
-		<cfargument name="name" 		type="string"  required="true" hint="The unique name for this logger."/>
-		<cfargument name="levelMin" 	type="numeric" required="false" default="0" hint="The default log level for this logger, by default it is 0. Optional. ex: LogBox.logLevels.WARNING"/>
-		<cfargument name="levelMax" 	type="numeric" required="false" default="5" hint="The default log level for this logger, by default it is 5. Optional. ex: LogBox.logLevels.WARNING"/>
-		<cfargument name="properties" 	type="struct"  required="false" default="#structnew()#" hint="A map of configuration properties for the logger"/>
+		<cfargument name="name" 		type="string"  required="true" hint="The unique name for this appender."/>
+		<cfargument name="levelMin" 	type="numeric" required="false" default="0" hint="The default log level for this appender, by default it is 0. Optional. ex: LogBox.logLevels.WARNING"/>
+		<cfargument name="levelMax" 	type="numeric" required="false" default="5" hint="The default log level for this appender, by default it is 5. Optional. ex: LogBox.logLevels.WARNING"/>
+		<cfargument name="properties" 	type="struct"  required="false" default="#structnew()#" hint="A map of configuration properties for the appender"/>
 		<!--- ************************************************************* --->
 		<cfscript>
 			// Init supertype
@@ -55,16 +55,15 @@ Properties:
 	</cffunction>	
 	
 	<!--- Log Message --->
-	<cffunction name="logMessage" access="public" output="true" returntype="void" hint="Write an entry into the logger.">
+	<cffunction name="logMessage" access="public" output="true" returntype="void" hint="Write an entry into the appender.">
 		<!--- ************************************************************* --->
-		<cfargument name="message" 	 type="string"   required="true"   hint="The message to log.">
-		<cfargument name="severity"  type="numeric"  required="true"   hint="The severity level to log.">
-		<cfargument name="extraInfo" type="any"      required="no" default="" hint="Extra information to send to the loggers.">
+		<cfargument name="logEvent" type="coldbox.system.logging.LogEvent" required="true" hint="The logging event"/>
 		<!--- ************************************************************* --->
 		<cfscript>
 			var logStack = "";
 			var entry = structnew();
 			var limit = getProperty('limit');
+			var loge = arguments.logEvent;
 			
 			// Verify storage
 			ensureStorage();
@@ -79,11 +78,12 @@ Properties:
 			
 			// Log Away
 			entry.id = createUUID();
-			entry.logDate = now();
-			entry.loggerName = getName();
-			entry.severity = this.logLevels.lookup(arguments.severity);
-			entry.message = arguments.message;
-			entry.extraInfo = arguments.extraInfo.toString();
+			entry.logDate = loge.getTimeStamp();
+			entry.appenderName = getName();
+			entry.severity = severityToString(loge.getseverity());
+			entry.message = loge.getMessage();
+			entry.extraInfo = loge.getextraInfo().toString();
+			entry.category = loge.getCategory();
 			
 			// Save Storage
 			arrayAppend(logStack, entry);

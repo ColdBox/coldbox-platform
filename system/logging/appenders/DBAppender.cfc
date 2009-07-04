@@ -7,7 +7,7 @@ www.coldboxframework.com | www.luismajano.com | www.ortussolutions.com
 Author     :	Luis Majano
 Date        :	04/12/2009
 Description :
- A simple DB logger for MySQL, MSSQL, Oracle, PostgreSQL
+ A simple DB appender for MySQL, MSSQL, Oracle, PostgreSQL
 
 Inspiration from Tim Blair <tim@bla.ir> cflogger project.
 
@@ -23,24 +23,24 @@ The columns needed in the table are
  - severity : string
  - category : string
  - logdate : timestamp
- - loggername : string
+ - appendername : string
  - message : string
 
 If you are building a mapper, the map must have the above keys in it.
 
 ----------------------------------------------------------------------->
-<cfcomponent name="DBLogger" 
+<cfcomponent name="DBAppender" 
 			 extends="coldbox.system.logging.AbstractAppender" 
 			 output="false"
-			 hint="This is a simple implementation of a logger that is db based.">
+			 hint="This is a simple implementation of a appender that is db based.">
 	
 	<!--- Init --->
-	<cffunction name="init" access="public" returntype="DBLogger" hint="Constructor called by a Concrete Logger" output="false" >
+	<cffunction name="init" access="public" returntype="DBAppender" hint="Constructor" output="false" >
 		<!--- ************************************************************* --->
-		<cfargument name="name" 		type="string"  required="true" hint="The unique name for this logger."/>
-		<cfargument name="levelMin" 	type="numeric" required="false" default="0" hint="The default log level for this logger, by default it is 0. Optional. ex: LogBox.logLevels.WARNING"/>
-		<cfargument name="levelMax" 	type="numeric" required="false" default="5" hint="The default log level for this logger, by default it is 5. Optional. ex: LogBox.logLevels.WARNING"/>
-		<cfargument name="properties" 	type="struct"  required="false" default="#structnew()#" hint="A map of configuration properties for the logger"/>
+		<cfargument name="name" 		type="string"  required="true" hint="The unique name for this appender."/>
+		<cfargument name="levelMin" 	type="numeric" required="false" default="0" hint="The default log level for this appender, by default it is 0. Optional. ex: LogBox.logLevels.WARNING"/>
+		<cfargument name="levelMax" 	type="numeric" required="false" default="5" hint="The default log level for this appender, by default it is 5. Optional. ex: LogBox.logLevels.WARNING"/>
+		<cfargument name="properties" 	type="struct"  required="false" default="#structnew()#" hint="A map of configuration properties for the appender"/>
 		<!--- ************************************************************* --->
 		<cfscript>
 			// Init supertype
@@ -48,10 +48,10 @@ If you are building a mapper, the map must have the above keys in it.
 			
 			// Verify properties
 			if( NOT propertyExists('dsn') ){ 
-				$throw(message="No dsn property defined",type="DBLogger.InvalidProperty"); 
+				$throw(message="No dsn property defined",type="DBAppender.InvalidProperty"); 
 			}
 			if( NOT propertyExists('table') ){ 
-				$throw(message="No table property defined",type="DBLogger.InvalidProperty"); 
+				$throw(message="No table property defined",type="DBAppender.InvalidProperty"); 
 			}
 			if( NOT propertyExists('autoCreate') OR NOT isBoolean(getProperty('autoCreate')) ){ 
 				setProperty('autoCreate',false); 
@@ -64,7 +64,7 @@ If you are building a mapper, the map must have the above keys in it.
 			}
 			
 			// columns
-			instance.columns = "id,severity,category,logdate,loggername,message";
+			instance.columns = "id,severity,category,logdate,appendername,message";
 						
 			return this;
 		</cfscript>
@@ -81,26 +81,26 @@ If you are building a mapper, the map must have the above keys in it.
 	</cffunction>
 	
 	<!--- Log Message --->
-	<cffunction name="logMessage" access="public" output="false" returntype="void" hint="Write an entry into the logger.">
+	<cffunction name="logMessage" access="public" output="false" returntype="void" hint="Write an entry into the appender.">
 		<!--- ************************************************************* --->
-		<cfargument name="message" 	 type="string"   required="true"   hint="The message to log.">
-		<cfargument name="severity"  type="numeric"  required="true"   hint="The severity level to log.">
-		<cfargument name="extraInfo" type="any"      required="no" default="" hint="Extra information to send to the loggers.">
+		<cfargument name="logEvent" type="coldbox.system.logging.LogEvent" required="true" hint="The logging event"/>
 		<!--- ************************************************************* --->
 		<cfscript>
 			var type = "cf_sql_tinyint";
 			var category = getProperty("defaultCategory");
 			var cmap = "";
 			var cols = "";
+			var loge = arguments.logEvent;
 			
 			// Check Category Sent?
-			if ( isStruct(arguments.extraInfo) and structKeyExists(arguments.extraInfo,"Category") ){
-				category = arguments.extraInfo.category;
+			if( NOT loge.getCategory() eq "" ){
+				category = loge.getCategory();
 			}
+			
 			// Column Maps
 			if( propertyExists('columnMap') ){
 				cmap = getProperty('columnMap');
-				cols = "#cmap.id#,#cmap.severity#,#cmap.category#,#cmap.logdate#,#cmap.loggername#,#cmap.message#";
+				cols = "#cmap.id#,#cmap.severity#,#cmap.category#,#cmap.logdate#,#cmap.appendername#,#cmap.message#";
 			}
 			else{
 				cols = instance.columns;
@@ -111,11 +111,11 @@ If you are building a mapper, the map must have the above keys in it.
 		<cfquery datasource="#getProperty("dsn")#">
 			INSERT INTO #getProperty('table')# (#cols#) VALUES (
 				<cfqueryparam cfsqltype="cf_sql_varchar" value="#createUUID()#">,
-				<cfqueryparam cfsqltype="cf_sql_varchar" value="#this.logLevels.lookup(arguments.severity)#">,
+				<cfqueryparam cfsqltype="cf_sql_varchar" value="#severityToString(loge.getseverity())#">,
 				<cfqueryparam cfsqltype="cf_sql_varchar" value="#category#">,
-				<cfqueryparam cfsqltype="cf_sql_timestamp" value="#now()#">,
+				<cfqueryparam cfsqltype="cf_sql_timestamp" value="#loge.getTimestamp()#">,
 				<cfqueryparam cfsqltype="cf_sql_varchar" value="#left(getName(),100)#">,
-				<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.message#">
+				<cfqueryparam cfsqltype="cf_sql_varchar" value="#loge.getmessage()#">
 			)
 		</cfquery>
 	</cffunction>
@@ -128,7 +128,7 @@ If you are building a mapper, the map must have the above keys in it.
 			var datasources = CreateObject("java", "coldfusion.server.ServiceFactory").datasourceservice.getDatasources();
 			
 			if( NOT structKeyExists(datasources, getProperty('dsn')) ){
-				$throw(message="The dsn #getProperty("dsn")# does not exist. Please create it before using this DBLogger",type="DBLogger.DSNException");
+				$throw(message="The dsn #getProperty("dsn")# does not exist. Please create it before using this DBAppender",type="DBAppender.DSNException");
 			}			
 		</cfscript>
 	</cffunction>
@@ -169,8 +169,8 @@ If you are building a mapper, the map must have the above keys in it.
 		<cfelseif NOT tableFound and NOT getProperty('autoCreate')>
 			<!--- Throw Error --->
 			<cfthrow message="Table #getProperty('table')# was not found in the defined datasource: #dsn#. Please create the appropriate logging table."
-					 detail="The autocreate property for this logger is set to false."
-					 type="DBLogger.TableNotFoundException">
+					 detail="The autocreate property for this appender is set to false."
+					 type="DBAppender.TableNotFoundException">
 		</cfif>
 	</cffunction>
 	
@@ -181,7 +181,7 @@ If you are building a mapper, the map must have the above keys in it.
 			
 			for(key in map){
 				if( NOT listFindNoCase(instance.columns,key) ){
-					$throw(message="Invalid column map key: #key#",detail="The available keys are #instance.columns#",type="DBLogger.InvalidColumnMapException");
+					$throw(message="Invalid column map key: #key#",detail="The available keys are #instance.columns#",type="DBAppender.InvalidColumnMapException");
 				}
 			}
 		</cfscript>

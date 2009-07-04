@@ -54,5 +54,6 @@
 	function testgetLogger(){
 		logger = logBox.getLogger('MyCat');	
 	}
+	
 </cfscript>
 </cfcomponent>

@@ -1,9 +1,12 @@
 <cfcomponent extends="coldbox.system.testing.BaseTestCase">
 <cfscript>
 	function setup(){
-		props = {dsn='testmssql',table='logs',autocreate='true'};
+		props = {dsn='test',table='logs',autocreate='true'};
 		db = getMockBox().createMock(className="coldbox.system.logging.appenders.DBAppender");
 		db.init('UnitTest',0,5,props);
+		
+		loge = getMockBox().createMock(className="coldbox.system.logging.LogEvent");
+		loge.init("Unit Test Sample",0,structnew(),"UnitTest");
 	}
 	
 	function testensureDSN(){
@@ -17,7 +20,7 @@
 			db.ensureDSN();
 			fail('invalid dsn');
 		}
-		catch("DBLogger.DSNException" e){}
+		catch("DBAppender.DSNException" e){}
 		catch(Any e){ fail(e.message & e.detail);}
 	}
 	
@@ -27,7 +30,7 @@
 	}
 	
 	function testLogMessage(){
-		db.logMessage("My First Test",1);
+		db.logMessage(loge);
 	}
 	function testLogMessageWithColumnMap(){
 		//invalid map
@@ -36,7 +39,7 @@
 			severity = "severity",
 			category = "category",
 			logdate = "logdate",
-			loggername = "loggername",
+			appendername = "appendername",
 			messsage = "message"
 		};
 		
@@ -44,7 +47,7 @@
 			db.init('UnitTest',0,5,props);
 			fail('map should have failed');
 		}
-		catch("DBLogger.InvalidColumnMapException" e){}
+		catch("DBAppender.InvalidColumnMapException" e){}
 		catch(any e ){fail(e.message & e.detail);}
 		
 		//valid map
@@ -53,13 +56,13 @@
 			severity = "severity",
 			category = "category",
 			logdate = "logdate",
-			loggername = "loggername",
+			appendername = "appendername",
 			message = "message"
 		};
 		
 		db.init('UnitTest',0,5,props);
 			
-		db.logMessage(message="My First Test",severity=1);
+		db.logMessage(loge);
 	}
 </cfscript>
 </cfcomponent>

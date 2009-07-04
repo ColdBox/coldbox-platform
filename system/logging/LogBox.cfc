@@ -26,27 +26,33 @@ Description :
 		instance = structnew();
 		// LogBox Unique ID */
 		instance._hash = hash(createUUID());	
-		// LoggersList
-		instance.appenderRegistry = "";	
+		// Appenders
+		instance.appenderRegistry = "";
+		// Category Appenders
+		instance.categoryAppenders = "";	
 		// Version
-		instance.version = "1.0";	 	
+		instance.version = "1.0";	 
+		// Configuration object
+		instance.config = "";	
 	</cfscript>
 	
 	<!--- Init --->
 	<cffunction name="init" access="public" returntype="LogBox" hint="Constructor" output="false" >
-		<cfargument name="logBoxConfig" type="coldbox.system.logging.config.LogBoxConfig" required="false" hint="If passed, this LogBox instance will be configured with this configuration object."/>
+		<cfargument name="logBoxConfig" type="coldbox.system.logging.config.LogBoxConfig" required="true" hint="The LogBoxConfig object to use to configure this instance of LogBox"/>
 		<cfscript>
 			var Collections = createObject("java", "java.util.Collections");
 			
-			// Prepare Logger Object Registry
+			// Prepare Appender Object Registries
 			instance.appenderRegistry = Collections.synchronizedMap(CreateObject("java","java.util.LinkedHashMap").init(3));
+			instance.categoryAppenders = structnew();
 			
-			// Check if using configuration object
-			if( structKeyExists(arguments,"logBoxConfig") ){
-				registerConfig(arguments.logBoxConfig);
-			}
+			// Store config object
+			instance.config = arguments.logBoxConfig;
 			
-			/* Return Factory */
+			// Configure LogBox
+			configure();
+			
+			// Return LogBox
 			return this;
 		</cfscript>
 	</cffunction>
@@ -55,13 +61,13 @@ Description :
 	<cffunction name="getVersion" access="public" returntype="string" output="false" hint="Get the LogBox version string.">
 		<cfreturn instance.Version>
 	</cffunction>
+	
+	<!--- Get the config object --->
+	<cffunction name="getConfig" access="public" returntype="coldbox.system.logging.config.LogBoxConfig" output="false" hint="Get this LogBox's configuration object.">
+		<cfreturn instance.config>
+	</cffunction>
 
 <!------------------------------------------- PUBLIC ------------------------------------------->
-	
-	<!--- getHash --->
-	<cffunction name="getHash" output="false" access="public" returntype="string" hint="Get this Log Box's unique ID">
-		<cfreturn instance._hash>
-	</cffunction>
 		
 	<!--- clearAppenders --->
 	<cffunction name="clearAppenders" output="false" access="public" returntype="void" hint="Clear all appenders registered">
@@ -73,26 +79,33 @@ Description :
 		<cfreturn NOT getAppenders().isEmpty()>
 	</cffunction>
 	
+	<!--- Get the appender Registry --->
+	<cffunction name="getAppenders" access="public" returntype="struct" output="false" hint="Get the map of registered appenders.">
+		<cfreturn instance.appenderRegistry>
+	</cffunction>
+	
+	<!--- Get the category Appenders Registry --->
+	<cffunction name="getCategoryAppenders" access="public" returntype="struct" output="false" hint="Get the map of registered category appenders.">
+		<cfreturn instance.categoryAppenders>
+	</cffunction>
+	
+	<!--- getAppender --->
+	<cffunction name="getAppender" output="false" access="public" returntype="any" hint="Get a named appender">
+		<cfargument name="name" type="string" required="true" hint="The appender's name"/>
+		<cfscript>
+			if( appenderExists(arguments.name) ){
+				return structFind(getAppenders(),arguments.name);
+			}
+			else{
+				getutil().throwit(message="Appender #arguments.name# does not exist.",type="LogBox.AppenderNotFound");
+			}
+		</cfscript>
+	</cffunction>
+	
 	<!--- appenderExists --->
 	<cffunction name="appenderExists" output="false" access="public" returntype="boolean" hint="Checks to see if a specified appender exists by name.">
 		<cfargument name="name" type="string" required="true" hint="The name of the appender to check if it is registered"/>
 		<cfreturn structKeyExists(getAppenders(), arguments.name)>
-	</cffunction>
-
-	<!--- register --->
-	<cffunction name="registerConfig" output="false" access="public" returntype="void" hint="Registers all the appenders in a LogBoxConfig object">
-		<!--- ************************************************************* --->
-		<cfargument name="logBoxConfig" type="coldbox.system.logging.config.LogBoxConfig" required="true"/>
-		<!--- ************************************************************* --->
-		<cfscript>
-			var appendersArray = arguments.logBoxConfig.getAppenders();
-			var x =1;
-			
-			for(x=1; x lte arrayLen(appendersArray); x=x+1){
-				// Register configurations.
-				registerNew(argumentCollection=appendersArray[x]);	
-			}
-		</cfscript>
 	</cffunction>
 	
 	<!--- register --->
@@ -110,7 +123,7 @@ Description :
 		</cfif>
 		<!--- Verify Registration --->
 		<cfif NOT appenderExists(name)>
-			<cflock name="#getHash()#.#name#" type="exclusive" throwontimeout="true" timeout="30">
+			<cflock name="#instance._hash#.#name#" type="exclusive" throwontimeout="true" timeout="30">
 				<cfscript>
 					if( NOT appenderExists(name) ){
 						// Store Logger
@@ -123,7 +136,7 @@ Description :
 				</cfscript>
 			</cflock>
 		<cfelse>
-			<cflog type="warning" file="LogBox" text="LogBoxID: #getHash()# - Cannot register appender #name# as it is already registered. Skipping.">
+			<cflog type="warning" file="LogBox" text="LogBoxID: #instance._hash# - Cannot register appender #name# as it is already registered. Skipping.">
 		</cfif>		
 	</cffunction>
 	
@@ -175,13 +188,29 @@ Description :
 		<cfargument name="category" type="string" required="true" hint="The category name to use this logger with"/>
 		<cfscript>
 			var logger = createObject("component","coldbox.system.logging.Logger");
+			var args = structnew();
+			var config = getConfig();
+			var appenders = getCategoryAppenders();
+			var categoryConfig = "";	
+					
+			// Set category name in config
+			args.category = arguments.category;
+			
+			// Verify if category exists to get appenders and data info.
+			if( config.categoryExists(arguments.category) ){
+				categoryConfig = config.getCategory(arguments.category);
+				args.levelMin = categoryConfig.levelMin;
+				args.levelMax = categoryConfig.levelMax;
+				// Get Appenders from storage map
+				args.appenders = appenders[arguments.category];
+			}
 			
 			// Dependencies
 			logger.logLevels = this.logLevels;
 			logger.logBox = this;
 			
 			// Init it
-			return logger.init(arguments.category);			
+			return logger.init(argumentCollection=args);			
 		</cfscript>
 	</cffunction>
 
@@ -255,9 +284,43 @@ Description :
 		
 <!------------------------------------------- PRIVATE ------------------------------------------>
 	
-	<!--- Get the appender Registry --->
-	<cffunction name="getAppenders" access="private" returntype="struct" output="false" hint="Get the map of registered loggers.">
-		<cfreturn instance.appenderRegistry>
+	<!--- configure --->
+	<cffunction name="configure" output="false" access="private" returntype="void" hint="Configure logbox for operation">
+		<cfscript>
+			var config = getConfig();
+			var appenders = config.getAppenders();
+			var key = "";
+			var categories = config.getCategories();
+			
+			// Register All Appenders configured
+			for( key in appenders ){
+				registerNew(argumentCollection=appenders[key]);
+			}
+			// Clean just in case
+			key = "";
+			// Register All Category Appenders defined in the configuration object.
+			for( key in categories ){
+				instance.categoryAppenders[key] = getAppendersMap(categories[key].appenders);
+			}
+		</cfscript>
+	</cffunction>
+	
+	<!--- getAppendersMap --->
+	<cffunction name="getAppendersMap" output="false" access="private" returntype="struct" hint="Get a map of appenders by list">
+		<cfargument name="appenders" type="string" required="true" hint="The list of appenders to get"/>
+		<cfscript>
+			var x =1;
+			var appenders = getAppenders();
+			var Collections = createObject("java", "java.util.Collections");
+			var map = Collections.synchronizedMap(CreateObject("java","java.util.LinkedHashMap").init(listlen(arguments.appenders)));
+			
+			for(x=1; x lte listlen(arguments.appenders); x=x+1){
+				thisAppender = listGetAt(arguments.appenders,x);
+				map[thisAppender] = appenders[thisAppender];	
+			}
+			
+			return map;
+		</cfscript>
 	</cffunction>
 	
 	<!--- logMessage --->
@@ -273,6 +336,10 @@ Description :
 			var appenders = getAppenders();
 			var key = "";
 			var thisAppender = "";
+			var logEvent = "";
+			
+			// Do we have appenders?
+			if( NOT hasAppenders() ){ return; }
 			
 			// If message empty, just exit
 			arguments.message = trim(arguments.message);
@@ -283,11 +350,11 @@ Description :
 				
 			// Delegate Calls
 			for(key in appenders){
-				// Get logger
+				// Get Appender
 				thisAppender = appenders[key];
 				// Log Check
 				if( thisAppender.canLog(arguments.severity) ){
-					
+					// Log the message in the appender
 					thisAppender.logMessage(logEvent);
 				}
 			}

@@ -7,23 +7,23 @@ www.coldboxframework.com | www.luismajano.com | www.ortussolutions.com
 Author     :	Luis Majano
 Date        :	04/12/2009
 Description :
-	A simple ConsoleLogger
+	A simple ConsoleAppender
 	
 Properties:
 - none
 ----------------------------------------------------------------------->
-<cfcomponent name="ConsoleLogger" 
+<cfcomponent name="ConsoleAppender" 
 			 extends="coldbox.system.logging.AbstractAppender" 
 			 output="false"
-			 hint="A simple Console Logger">
+			 hint="A simple Console Appender">
 	
 	<!--- Init --->
-	<cffunction name="init" access="public" returntype="CFLogger" hint="Constructor called by a Concrete Logger" output="false" >
+	<cffunction name="init" access="public" returntype="ConsoleAppender" hint="Constructor" output="false" >
 		<!--- ************************************************************* --->
-		<cfargument name="name" 		type="string"  required="true" hint="The unique name for this logger."/>
-		<cfargument name="levelMin" 	type="numeric" required="false" default="0" hint="The default log level for this logger, by default it is 0. Optional. ex: LogBox.logLevels.WARNING"/>
-		<cfargument name="levelMax" 	type="numeric" required="false" default="5" hint="The default log level for this logger, by default it is 5. Optional. ex: LogBox.logLevels.WARNING"/>
-		<cfargument name="properties" 	type="struct"  required="false" default="#structnew()#" hint="A map of configuration properties for the logger"/>
+		<cfargument name="name" 		type="string"  required="true" hint="The unique name for this appender."/>
+		<cfargument name="levelMin" 	type="numeric" required="false" default="0" hint="The default log level for this appender, by default it is 0. Optional. ex: LogBox.logLevels.WARNING"/>
+		<cfargument name="levelMax" 	type="numeric" required="false" default="5" hint="The default log level for this appender, by default it is 5. Optional. ex: LogBox.logLevels.WARNING"/>
+		<cfargument name="properties" 	type="struct"  required="false" default="#structnew()#" hint="A map of configuration properties for the appender"/>
 		<!--- ************************************************************* --->
 		<cfscript>
 			// Init supertype
@@ -36,21 +36,23 @@ Properties:
 	</cffunction>	
 	
 	<!--- Log Message --->
-	<cffunction name="logMessage" access="public" output="false" returntype="void" hint="Write an entry into the logger.">
+	<cffunction name="logMessage" access="public" output="false" returntype="void" hint="Write an entry into the appender.">
 		<!--- ************************************************************* --->
-		<cfargument name="message" 	 type="string"   required="true"   hint="The message to log.">
-		<cfargument name="severity"  type="numeric"  required="true"   hint="The severity level to log.">
-		<cfargument name="extraInfo" type="any"      required="no" default="" hint="Extra information to send to the loggers.">
+		<cfargument name="logEvent" type="coldbox.system.logging.LogEvent" required="true" hint="The logging event"/>
 		<!--- ************************************************************* --->
 		<cfscript>
 			var extra = "";
+			var loge = arguments.logEvent;
+			
 			try{
-				extra = arguments.extraInfo.toString();
+				extra = loge.extraInfo.toString();
 			}
 			catch(Any e){
-				$log("ERROR","Extrainfo toString() failed on #getName()# logger. #e.message# #e.detail#");
+				$log("ERROR","Extrainfo toString() failed on #getName()# appender. #e.message# #e.detail#");
 			}
-			instance.out.println(" #this.logLevels.lookup(arguments.severity)# #arguments.message# #chr(13)# #extra#");
+			
+			// Log message
+			instance.out.println("#severityToString(loge.getseverity())# #loge.getCategory()# #loge.getmessage()# #chr(13)# #extra#");
 		</cfscript>			   
 	</cffunction>
 	

@@ -31,6 +31,7 @@ Description :
 			for(key in arguments){
 				instance[key] = arguments[key];
 			}
+			return this;
 		</cfscript>
 	</cffunction>
 	
