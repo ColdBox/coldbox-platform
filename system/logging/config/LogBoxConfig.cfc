@@ -34,7 +34,7 @@ Description :
 		<cfargument name="levelMin" 	type="numeric" required="false" default="0" hint="The default log level for this appender, by default it is 0. Optional. ex: LogBox.logLevels.WARNING"/>
 		<cfargument name="levelMax" 	type="numeric" required="false" default="5" hint="The default log level for this appender, by default it is 5. Optional. ex: LogBox.logLevels.WARNING"/>
 		<cfargument name="properties" 	type="struct"  required="false" default="#structnew()#" hint="The structure of properties to configure this appender with."/>
-		<cfset instance.appenders[arguments.name] = arguments>
+		<cfset instance.appenders[ucase(arguments.name)] = arguments>
 	</cffunction>
 	
 	<!--- addCategory --->
@@ -46,9 +46,14 @@ Description :
 		<cfscript>
 			var x = 1;
 			
+			//Verify appender list
+			if( NOT listLen(arguments.appenders) ){
+				$throw("Invalid Appenders","Please send in at least one appender for a category","LogBoxConfig.InvalidAppenders");
+			}
+			
 			// Verify Appenders first
 			for(x=1; x lte listlen(arguments.appenders); x=x+1){
-				if( NOT structKeyExists(instance.appenders, listGetAt(arguments.appenders,x)) ){
+				if( NOT structKeyExists(instance.appenders, ucase(listGetAt(arguments.appenders,x))) ){
 					$throw(message="Invalid appender",
 						   detail="The appender #listGetAt(arguments.appenders,x)# has not been defined yet. Please define it first.",
 						   type="LogBoxConfig.AppenderNotFound");

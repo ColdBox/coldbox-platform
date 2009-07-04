@@ -78,7 +78,7 @@ Description :
 	
 	<!--- Get the name --->
 	<cffunction name="getName" access="public" returntype="string" output="false" hint="Get this appender's name">
-		<cfreturn instance.name>
+		<cfreturn ucase(instance.name)>
 	</cffunction>
 	
 	<!--- Initied flag --->

@@ -132,12 +132,18 @@ Description :
 			
 			/* Exclude the core plugins from autowires */
 			if( not findnocase("coldbox.system.plugins",targetPath) ){
-				/* Process Autowire */
-				instance.beanFactory.autowire(target=targetObject,
-											  useSetterInjection=getProperty('enableSetterInjection'),
-											  annotationCheck=true,
-											  onDICompleteUDF=getProperty('completeDIMethodName'),
-											  debugMode=getProperty('debugMode'));
+				try{
+					/* Process Autowire */
+					instance.beanFactory.autowire(target=targetObject,
+												  useSetterInjection=getProperty('enableSetterInjection'),
+												  annotationCheck=true,
+												  onDICompleteUDF=getProperty('completeDIMethodName'),
+												  debugMode=getProperty('debugMode'));
+				}
+				catch(Any e){
+					getPlugin("logger").error("Error autowiring handler #getmetadata(targetObject).name#. #e.message# #e.detail#");
+					throw(message="Error autowiring handler #getmetadata(targetObject).name#",detail="#e.stacktrace#",type="Autowire.AutowireException");
+				}
 			}	
 		</cfscript>
 	</cffunction>
