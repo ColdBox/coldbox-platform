@@ -40,7 +40,8 @@
 			category = "category",
 			logdate = "logdate",
 			appendername = "appendername",
-			messsage = "message"
+			messsage = "message",
+			extrainfo = "extrainfo"
 		};
 		
 		try{
@@ -57,7 +58,8 @@
 			category = "category",
 			logdate = "logdate",
 			appendername = "appendername",
-			message = "message"
+			message = "message",
+			extrainfo = "extrainfo"
 		};
 		
 		db.init('UnitTest',0,5,props);

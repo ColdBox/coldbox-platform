@@ -29,12 +29,23 @@ Description :
 		<cfscript>
 			var key = "";
 			for(key in arguments){
+				if( isSimpleValue(arguments[key]) ){
+					arguments[key] = trim(arguments[key]);	
+				}
 				instance[key] = arguments[key];
 			}
 			return this;
 		</cfscript>
 	</cffunction>
 	
+	<cffunction name="getextraInfoAsString" access="public" returntype="string" output="false">
+		<cfset var info = instance.extraInfo>
+		<cfif NOT isSimpleValue(info)>
+			<cfreturn info.toString()>
+		<cfelse>
+			<cfreturn info>
+		</cfif>
+	</cffunction>
 	<cffunction name="getextraInfo" access="public" returntype="any" output="false">
 		<cfreturn instance.extraInfo>
 	</cffunction>

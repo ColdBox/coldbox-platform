@@ -82,7 +82,7 @@ Properties:
 			entry.appenderName = getName();
 			entry.severity = severityToString(loge.getseverity());
 			entry.message = loge.getMessage();
-			entry.extraInfo = loge.getextraInfo().toString();
+			entry.extraInfo = loge.getextraInfo();
 			entry.category = loge.getCategory();
 			
 			// Save Storage

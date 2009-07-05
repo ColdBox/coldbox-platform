@@ -57,11 +57,11 @@ Properties:
 		<cfif getProperty("logType") eq "file">
 			<cflog file="#getName()#" 
 			  	   type="#severityToString(loge.getSeverity())#"
-			  	   text="#loge.getCategory()# #loge.getMessage()#">
+			  	   text="#loge.getCategory()# #loge.getMessage()# ExtraInfo: #loge.getextraInfoAsString()#">
 		<cfelse>
 			<cflog log="Application"
 				   type="#severityToString(loge.getSeverity())#"
-			  	   text="#loge.getCategory()# #loge.getMessage()#">
+			  	   text="#loge.getCategory()# #loge.getMessage()# ExtraInfo: #loge.getextraInfoAsString()#">
 		</cfif>
 			   
 	</cffunction>

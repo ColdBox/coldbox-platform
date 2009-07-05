@@ -64,6 +64,7 @@ Modification History:
 		<cfargument name="controller" type="any" required="true">
 		<cfscript>
 			super.Init(arguments.controller);
+			
 			//Local Plugin Definition
 			setpluginName("Zip");
 			setpluginVersion("1.0");
@@ -71,6 +72,16 @@ Modification History:
 			setpluginAuthor("Luis Majano, Sana Ullah");
 			setpluginAuthorURL("http://www.coldbox.org");
 			
+			configure();
+	
+			//Return instance
+			return this;
+		</cfscript>
+	</cffunction>
+	
+	<!--- configure --->
+	<cffunction name="configure" output="false" access="public" returntype="Zip" hint="Configure for operation">
+		<cfscript>
 			//This plugin's properties
 			instance.ioFile      = CreateObject("java","java.io.File");
 			instance.ioInput     = CreateObject("java","java.io.FileInputStream");
@@ -90,8 +101,7 @@ Modification History:
 	
 			//LM. To fix Overflow.
 			instance.filename = "";
-	
-			//Return instance
+			
 			return this;
 		</cfscript>
 	</cffunction>

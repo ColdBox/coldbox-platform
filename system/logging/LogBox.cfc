@@ -58,7 +58,7 @@ Description :
 	</cffunction>
 	
 	<!--- configure --->
-	<cffunction name="configure" output="false" access="public." returntype="void" hint="Configure logbox for operation. You can also re-configure LogBox programmatically. Basically we register all appenders here and all categories">
+	<cffunction name="configure" output="false" access="public" returntype="void" hint="Configure logbox for operation. You can also re-configure LogBox programmatically. Basically we register all appenders here and all categories">
 		<cfargument name="logBoxConfig" type="coldbox.system.logging.config.LogBoxConfig" required="true" hint="The LogBoxConfig object to use to configure this instance of LogBox"/>
 		<cfscript>
 			var config = arguments.logBoxConfig;
@@ -166,6 +166,10 @@ Description :
 			<cflock name="#instance._hash#.registerappender.#name#" type="exclusive" throwontimeout="true" timeout="30">
 				<cfscript>
 					if( NOT appenderExists(name) ){
+						// Verify LogBox
+						if( NOT structKeyExists(arguments.appender,"logBox") OR NOT isObject(arguments.appender.logBox) ){
+							arguments.appender.logBox = this;
+						}
 						// Store Logger
 						getAppenders().put(name, arguments.appender)
 						// run registration event
@@ -191,8 +195,11 @@ Description :
 		<!--- ************************************************************* --->
 		<cfscript>
 			// Create new appender object
-			var appender = createObject("component",arguments.class).init(argumentCollection=arguments);
-			
+			var appender = createObject("component",arguments.class);
+			// Inject logBox
+			appender.logBox = this;
+			// init it
+			appender.init(argumentCollection=arguments);
 			// Register it
 			register(appender);
 			

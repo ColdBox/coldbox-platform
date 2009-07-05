@@ -25,6 +25,7 @@ The columns needed in the table are
  - logdate : timestamp
  - appendername : string
  - message : string
+ - extrainfo : string
 
 If you are building a mapper, the map must have the above keys in it.
 
@@ -64,7 +65,7 @@ If you are building a mapper, the map must have the above keys in it.
 			}
 			
 			// columns
-			instance.columns = "id,severity,category,logdate,appendername,message";
+			instance.columns = "id,severity,category,logdate,appendername,message,extrainfo";
 						
 			return this;
 		</cfscript>
@@ -91,6 +92,7 @@ If you are building a mapper, the map must have the above keys in it.
 			var cmap = "";
 			var cols = "";
 			var loge = arguments.logEvent;
+			var message = loge.getMessage();
 			
 			// Check Category Sent?
 			if( NOT loge.getCategory() eq "" ){
@@ -100,7 +102,7 @@ If you are building a mapper, the map must have the above keys in it.
 			// Column Maps
 			if( propertyExists('columnMap') ){
 				cmap = getProperty('columnMap');
-				cols = "#cmap.id#,#cmap.severity#,#cmap.category#,#cmap.logdate#,#cmap.appendername#,#cmap.message#";
+				cols = "#cmap.id#,#cmap.severity#,#cmap.category#,#cmap.logdate#,#cmap.appendername#,#cmap.message#,#cmap.extrainfo#";
 			}
 			else{
 				cols = instance.columns;
@@ -115,7 +117,8 @@ If you are building a mapper, the map must have the above keys in it.
 				<cfqueryparam cfsqltype="cf_sql_varchar" value="#category#">,
 				<cfqueryparam cfsqltype="cf_sql_timestamp" value="#loge.getTimestamp()#">,
 				<cfqueryparam cfsqltype="cf_sql_varchar" value="#left(getName(),100)#">,
-				<cfqueryparam cfsqltype="cf_sql_varchar" value="#loge.getmessage()#">
+				<cfqueryparam cfsqltype="cf_sql_varchar" value="#loge.getMessage()#">,
+				<cfqueryparam cfsqltype="cf_sql_varchar" value="#loge.getExtraInfoAsString()#">
 			)
 		</cfquery>
 	</cffunction>
@@ -163,6 +166,7 @@ If you are building a mapper, the map must have the above keys in it.
 					#listgetAt(cols,4)# DATETIME NOT NULL,
 					#listgetAt(cols,5)# VARCHAR(100) NOT NULL,
 					#listgetAt(cols,6)# TEXT,
+					#listgetAt(cols,7)# TEXT,
 					PRIMARY KEY (id)
 				)
 			</cfquery>

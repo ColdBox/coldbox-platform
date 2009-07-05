@@ -16,6 +16,8 @@ Description :
 	<cfscript>
 		// The log levels enum as a public property
 		this.logLevels = createObject("component","coldbox.system.logging.LogLevels");
+		// Populated when appender is created, public by default
+		this.logBox = "";
 		
 		// private instance scope
 		instance = structnew();
@@ -69,6 +71,11 @@ Description :
 	<cffunction name="severityToString" output="false" access="public" returntype="string" hint="convert a severity to a string">
 		<cfargument name="severity" type="numeric" required="true" hint="The severity to convert"/>
 		<cfreturn this.logLevels.lookup(arguments.severity)>
+	</cffunction>
+	
+	<!--- Get a reference to the main log box instance used. --->
+	<cffunction name="getlogBox" access="public" returntype="coldbox.system.logging.LogBox" output="false">
+		<cfreturn this.logBox>
 	</cffunction>
 	
 	<!--- getHash --->
@@ -178,7 +185,7 @@ Description :
 <!------------------------------------------- PRIVATE ------------------------------------------->
 	
 	<!--- $log --->
-	<cffunction name="$log" output="false" access="private" returntype="void" hint="Log an internal message to the ColdFusion facilities.  Used when errors ocurrs or diagnostics">
+	<cffunction name="$log" output="false" access="public" returntype="void" hint="Log an internal message to the ColdFusion facilities.  Used when errors ocurrs or diagnostics">
 		<cfargument name="severity" type="string" required="true" default="INFO" hint="The severity to use."/>
 		<cfargument name="message" type="string" required="true" default="" hint="The message to log"/>
 		<cflog type="#arguments.severity#" file="LogBox" text="#arguments.message#">
