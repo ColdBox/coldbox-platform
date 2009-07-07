@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LogBox>
+
+	<!-- Appender Definitions -->
+	<appender name="myconsole" class="coldbox.system.logging.appenders.ConsoleAppender" />
+	<appender name="MyCF" class="coldbox.system.logging.appenders.CFAppender" />
+	<appender name="FileAppender" class="coldbox.system.logging.appenders.AsyncRollingFileAppender">
+		<property name="filePath">/coldbox/testing/logging/tmp</property>
+		<property name="autoExpand">true</property>
+		<Property name="fileMaxSize">3</Property>
+		<Property name="fileMaxArchives">2</Property>		
+	</appender>
+	
+	<!-- Root Logger -->
+	<root levelMin="0" levelMax="4">
+		<appender-ref ref="myconsole" />
+		<appender-ref ref="MyCF" />
+		<appender-ref ref="FileAppender" />
+	</root>
+	
+	<!-- Very advanced category -->
+	<category name="MySES" levelMin="3" levelMax="5">
+		<appender-ref ref="myconsole" />
+	</category>	
+	
+</LogBox>

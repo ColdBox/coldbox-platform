@@ -28,7 +28,14 @@ Description :
 
 	<!--- init --->
 	<cffunction name="init" output="false" access="public" returntype="LogBoxConfig" hint="Constructor">
-		<cfreturn this>
+		<cfargument name="xmlConfig" type="string" required="false" default="" hint="The xml configuration file to use instead of a programmatic approach"/>
+		<cfscript>
+			if( len(trim(arguments.xmlConfig)) ){
+				parseAndLoad(arguments.xmlConfig);
+			}
+			
+			return this;
+		</cfscript>
 	</cffunction>
 	
 	<!--- validate --->
@@ -221,6 +228,83 @@ Description :
 
 <!------------------------------------------- PRIVATE ------------------------------------------>
 
+	<!--- parseAndLoad --->
+	<cffunction name="parseAndLoad" output="false" access="private" returntype="void" hint="Parse and load a config xml file">
+		<cfargument name="xmlConfig" type="string" required="true" hint="The xml configuration file to use instead of a programmatic approach"/>
+		<cfscript>
+			// Get All Appenders
+			var xml = xmlParse(arguments.xmlConfig);
+			var appendersXML = xmlSearch(xml,"//appender");
+			var rootXML = xmlSearch(xml,"//root");
+			var categoriesXML = xmlSearch(xml,"//category");
+			var args = structnew();
+			var x =1;
+			var y =1;
+			
+			//Register all appenders
+			for(x=1; x lte arrayLen(appendersXML); x=x+1){
+				args = structnew();
+				args.properties = structnew();
+				thisAppender = appendersXML[x];
+				// Error
+				if( NOT structKeyExists(thisAppender.XMLAttributes,"name") OR NOT structKeyExists(thisAppender.XMLAttributes,"class") ){
+					$throw(message="An appender must have a name and class attribute",type="LogBoxConfig.InvalidAppenderDefinition");
+				}
+				// Construct appender Properties
+				args.name = trim(thisAppender.XMLAttributes.name);
+				args.class = trim(thisAppender.XMLAttributes.class);
+				// Check Properties Out
+				for(y=1; y lte arrayLen(thisAppender.xmlChildren); y=y+1 ){
+					args.properties[trim(thisAppender.xmlChildren[y].xmlAttributes.name)] = trim(thisAppender.xmlChildren[y].xmlText);
+				}
+				// Register appender
+				appender(argumentCollection=args);
+			}
+			//Register Root Logger
+			if( NOT arrayLen(rootXML) ){
+				$throw(message="The root element cannot be found and it is mandatory",type="LogBoxConfig.RootLoggerNotFound");
+			}
+			args = structnew();
+			if( structKeyExists(rootXML[1].xmlAttributes,"levelMin") ){
+				args.levelMin = trim(rootXML[1].xmlAttributes.levelMin);
+			}
+			if( structKeyExists(rootXML[1].xmlAttributes,"levelMax") ){
+				args.levelMax = trim(rootXML[1].xmlAttributes.levelMax);
+			}
+			//Root Appenders
+			args.appenders = "";
+			for( x=1; x lte arrayLen(rootXML[1].xmlChildren); x=x+1){
+				if( rootXML[1].xmlChildren[x].XMLName eq "appender-ref" ){
+					args.appenders = listAppend(args.appenders, trim(rootXML[1].xmlChildren[x].XMLAttributes.ref) );
+				}
+			}
+			root(argumentCollection=args);
+			
+			//Categories
+			for( x=1; x lte arrayLen(categoriesXML); x=x+1){
+				args = structnew();
+				if( NOT structKeyExists(categoriesXML[x].XMLAttributes,"name") OR
+				    NOT structKeyExists(categoriesXML[x].XMLAttributes,"levelMin") ){
+					$throw(message="A category definition must have a name and a levelMin attribute",type="LogBoxConfig.InvalidCategoryDefinition");
+				}
+				args.name = trim(categoriesXML[x].XMLAttributes.name);
+				args.levelMin = trim(categoriesXML[x].XMLAttributes.levelMin);
+				if( structKeyExists(categoriesXML[x].XMLAttributes,"levelMax") ){
+					args.levelMax = trim(categoriesXML[x].XMLAttributes.levelMax);
+				}
+				//Category Appenders
+				args.appenders = "";
+				for( y=1; y lte arrayLen(categoriesXML[x].xmlChildren); y=y+1){
+					if( categoriesXML[x].xmlChildren[y].XMLName eq "appender-ref" ){
+						args.appenders = listAppend(args.appenders, trim(categoriesXML[x].xmlChildren[y].XMLAttributes.ref) );
+					}
+				}
+				// Register category
+				category(argumentCollection=args);
+			}
+		</cfscript>
+	</cffunction>
+
 	<!--- levelChecks --->
 	<cffunction name="levelChecks" output="false" access="private" returntype="void" hint="Level checks or throw">
 		<cfargument name="levelMin" 	type="numeric" required="true"/>
@@ -240,6 +324,19 @@ Description :
 		<cfargument name="type"  	type="string" 	required="no" default="Framework">
 		<!--- ************************************************************* --->
 		<cfthrow type="#arguments.type#" message="#arguments.message#"  detail="#arguments.detail#">
+	</cffunction>
+	
+		<!--- Dump facade --->
+	<cffunction name="$dump" access="private" hint="Facade for cfmx dump" returntype="void">
+		<cfargument name="var" required="yes" type="any">
+		<cfargument name="isAbort" type="boolean" default="false" required="false" hint="Abort also"/>
+		<cfdump var="#var#">
+		<cfif arguments.isAbort><cfabort></cfif>
+	</cffunction>
+	
+	<!--- Abort Facade --->
+	<cffunction name="$abort" access="private" hint="Facade for cfabort" returntype="void" output="false">
+		<cfabort>
 	</cffunction>
 	
 </cfcomponent>

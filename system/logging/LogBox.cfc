@@ -162,10 +162,15 @@ Description :
 	</cffunction>
 	
 	<!--- getCurrentLoggers --->
-	<cffunction name="getCurrentLoggers" output="false" access="public" returntype="string" hint="Get the list of currently saved loggers.">
+	<cffunction name="getCurrentLoggers" output="false" access="public" returntype="string" hint="Get the list of currently instantiated loggers.">
 		<cfreturn structKeyList(instance.loggerRegistry)>
 	</cffunction>
-		
+	
+	<!--- getCurrentAppenders --->
+	<cffunction name="getCurrentAppenders" output="false" access="public" returntype="string" hint="Get the list of currently registered appenders.">
+		<cfreturn structKeyList(instance.appenderRegistry)>
+	</cffunction>
+
 <!------------------------------------------- PRIVATE ------------------------------------------>
 	
 	<!--- registerAppender --->
