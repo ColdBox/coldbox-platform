@@ -311,19 +311,19 @@ Description :
 			arguments.message = trim(arguments.message);
 			if( NOT len(arguments.message) ){ return; }
 			
-			// Do we have appenders locally? or go to root Logger
-			if( NOT hasAppenders() ){
-				target = getRootLogger();
-			}
-			
 			//Is Logging Enabled?
-			if( target.getLevelMin() eq this.logLevels.OFF ){ return; }
+			if( getLevelMin() eq this.logLevels.OFF ){ return; }
 			
 			// Can we log on target
-			if( target.canLog(arguments.severity) ){
+			if( canLog(arguments.severity) ){
 				// Create Logging Event
 				arguments.category = target.getCategory();
 				logEvent = createobject("component","coldbox.system.logging.LogEvent").init(argumentCollection=arguments);		
+				
+				// Do we have appenders locally? or go to root Logger
+				if( NOT hasAppenders() ){
+					target = getRootLogger();
+				}				
 				// Get appenders
 				appenders = target.getAppenders();
 				// Delegate Calls to appenders

@@ -39,11 +39,18 @@ Properties:
 		<cfargument name="logEvent" type="coldbox.system.logging.LogEvent" required="true" hint="The logging event"/>
 		<!--- ************************************************************* --->
 		<cfscript>
-			var extra = "";
 			var loge = arguments.logEvent;
+			var entry = "";
+			
+			if( hasCustomLayout() ){
+				entry = getCustomLayout().format(loge);
+			}
+			else{
+				entry = "#severityToString(loge.getseverity())# #loge.getCategory()# #loge.getmessage()# ExtraInfo: #loge.getextraInfoAsString()#";
+			}
 			
 			// Log message
-			instance.out.println("#severityToString(loge.getseverity())# #loge.getCategory()# #loge.getmessage()# ExtraInfo: #loge.getextraInfoAsString()#");
+			instance.out.println(entry);
 		</cfscript>			   
 	</cffunction>
 	

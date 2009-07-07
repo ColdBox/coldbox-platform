@@ -95,21 +95,28 @@ Properties:
 			var loge = arguments.logEvent;
 			var timestamp = loge.getTimestamp();
 			var message = loge.getMessage();
-			var extra = "";
+			var entry = "";
 			
 			// Does file still exist?
 			if( NOT fileExists(getLogFullpath()) ){ initLogLocation(); }
 			
-			// Cleanup main message
-			message = replace(message,'"','""',"all");
-			message = replace(message,"#chr(13)##chr(10)#",'  ',"all");
-			message = replace(message,chr(13),'  ',"all");
-			if( len(loge.getExtraInfoAsString()) ){
-				message = message & " " & loge.getExtraInfoAsString();
+			if( hasCustomLayout() ){
+				entry = getCustomLayout().format(loge);
+			}
+			else{
+				// Cleanup main message
+				message = replace(message,'"','""',"all");
+				message = replace(message,"#chr(13)##chr(10)#",'  ',"all");
+				message = replace(message,chr(13),'  ',"all");
+				if( len(loge.getExtraInfoAsString()) ){
+					message = message & " " & loge.getExtraInfoAsString();
+				}
+				// Entry string
+				entry = '"#severityToString(logEvent.getSeverity())#","#getname()#","#dateformat(timestamp,"MM/DD/YYYY")#","#timeformat(timestamp,"HH:MM:SS")#","#loge.getCategory()#","#message#"';
 			}
 			
 			// Setup the real entry
-			append('"#severityToString(logEvent.getSeverity())#","#getname()#","#dateformat(timestamp,"MM/DD/YYYY")#","#timeformat(timestamp,"HH:MM:SS")#","#loge.getCategory()#","#message#"');		
+			append(entry);		
 		</cfscript>
 	</cffunction>
 	

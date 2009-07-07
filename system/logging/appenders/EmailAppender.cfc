@@ -77,8 +77,26 @@ Properties:
 		<cfscript>
 			var loge = arguments.logEvent;
 			var subject = "#severityToString(loge.getSeverity())#-#loge.getCategory()#-#getProperty("subject")#"
+			var entry = "";
 		</cfscript>
 		<cftry>
+			
+			<!--- Custom Layout --->
+			<cfif hasCustomLayout()>
+				<cfset entry = getCustomLayout().format(loge)>
+			<cfelse>
+				<cfsavecontent variable="entry">
+				<cfoutput>
+				<p>TimeStamp: #loge.getTimeStamp()#</p>
+				<hr/>
+				<p>#loge.getMessage()#</p>
+				<hr/>
+				<p>Extra Info Dump:</p>
+				<cfdump var="#loge.getExtraInfo()#">
+				</cfoutput>
+				</cfsavecontent>
+			</cfif>
+			
 			<!--- Mail the log --->
 			<cfmail to="#getProperty("to")#"
 					from="#getProperty("from")#"
@@ -86,7 +104,7 @@ Properties:
 					bcc="#getProperty("bcc")#"
 					type="text/html"
 					server="#getProperty("mailserver")#" username="#getProperty("mailusername")#" password="#getProperty("mailpassword")#" port="#getProperty("mailport")#"
-					subject="#subject#" ><p>TimeStamp: #loge.getTimeStamp()#</p><hr/><p>#loge.getMessage()#</p><hr/><p>Extra Info Dump:</p><cfdump var="#loge.getExtraInfo()#"></cfmail>
+					subject="#subject#" ><cfoutput>#entry#</cfoutput></cfmail>
 				
 			<cfcatch type="any">
 				<cfset $log("ERROR","Error sending email from appender #getName()#. #cfcatch.message# #cfcatch.detail# #cfcatch.stacktrace#")>

@@ -51,15 +51,22 @@ Properties:
 		<cfargument name="logEvent" type="coldbox.system.logging.LogEvent" required="true" hint="The logging event"/>
 		<!--- ************************************************************* --->
 		<cfset var loge = arguments.logEvent>
+		<cfset var entry = "">
+		
+		<cfif hasCustomLayout()>
+			<cfset entry = getCustomLayout().format(loge)>
+		<cfelse>
+			<cfset entry = "#loge.getCategory()# #loge.getMessage()# ExtraInfo: #loge.getextraInfoAsString()#">
+		</cfif>
 		
 		<cfif getProperty("logType") eq "file">
 			<cflog file="#getName()#" 
-			  	   type="#severityToString(loge.getSeverity())#"
-			  	   text="#loge.getCategory()# #loge.getMessage()# ExtraInfo: #loge.getextraInfoAsString()#">
+			  	   type="#this.logLevels.lookupCF(loge.getSeverity())#"
+			  	   text="#entry#">
 		<cfelse>
 			<cflog log="Application"
-				   type="#severityToString(loge.getSeverity())#"
-			  	   text="#loge.getCategory()# #loge.getMessage()# ExtraInfo: #loge.getextraInfoAsString()#">
+				   type="#this.logLevels.lookupCF(loge.getSeverity())#"
+			  	   text="#entry#">
 		</cfif>
 			   
 	</cffunction>

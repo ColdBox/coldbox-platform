@@ -14,5 +14,17 @@
 			console.logMessage(loge);
 		}
 	}	
+	
+	function testMockLayout(){
+		console = getMockBox().createMock(className="coldbox.system.logging.appenders.ConsoleAppender");
+		console.init(name='MyConsoleAppender',layout="coldbox.testing.cases.logging.MockLayout");
+		
+		for(x=0; x lte 5; x++){
+			loge.setSeverity(x);
+			loge.setCategory("coldbox.system.testing");
+			console.logMessage(loge);
+		}
+		
+	}
 </cfscript>
 </cfcomponent>

@@ -27,6 +27,8 @@ Description :
 		instance.initialized = false;
 		// Appender Configuration Properties
 		instance.properties = structnew();
+		// Custom Renderer For Messages
+		instance.customLayout = "";
 	</cfscript>
 	
 	<!--- Init --->
@@ -34,6 +36,7 @@ Description :
 		<!--- ************************************************************* --->
 		<cfargument name="name" 		type="string"  required="true" hint="The unique name for this appender."/>
 		<cfargument name="properties" 	type="struct"  required="false" default="#structnew()#" hint="A map of configuration properties for the appender"/>
+		<cfargument name="layout" 		type="string"  required="true"  default="" hint="The layout class to use in this appender for custom message rendering."/>
 		<!--- ************************************************************* --->
 		<cfscript>
 			// Appender's Name
@@ -41,6 +44,11 @@ Description :
 			
 			// Set internal properties	
 			instance.properties = arguments.properties;
+			
+			//Custom Layout?
+			if( len(trim(arguments.layout)) ){
+				instance.customLayout = createObject("component",arguments.layout).init(this);
+			}
 					
 			return this;
 		</cfscript>
@@ -55,6 +63,16 @@ Description :
 	</cffunction>
 
 <!------------------------------------------- PUBLIC ------------------------------------------->
+	
+	<!--- getCustomLayout --->
+	<cffunction name="getCustomLayout" output="false" access="public" returntype="any" hint="Get the custom layout object">
+		<cfreturn instance.customLayout>
+	</cffunction>
+	
+	<!--- hasCustomLayout --->
+	<cffunction name="hasCustomLayout" output="false" access="public" returntype="Boolean" hint="Whether a custom layout has been set or not.">
+		<cfreturn isObject(getCustomLayout())>
+	</cffunction>
 	
 	<!--- severityToString --->
 	<cffunction name="severityToString" output="false" access="public" returntype="string" hint="convert a severity to a string">

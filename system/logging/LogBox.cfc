@@ -116,7 +116,8 @@ Description :
 		<cfscript>
 			var args = structnew();
 			var categoryConfig = "";
-			var oLogger = "";	
+			var oLogger = "";
+			var root = getRootLogger();
 			
 			//trim cat, just in case
 			arguments.category = trim(arguments.category);
@@ -136,6 +137,8 @@ Description :
 			}
 			else{
 				args.category = arguments.category;
+				args.levelMin = root.getLevelMin();
+				args.levelMax = root.getLevelMax();
 			}					
 		</cfscript>
 
@@ -146,7 +149,7 @@ Description :
 					// Create logger	
 					oLogger = createObject("component","coldbox.system.logging.Logger").init(argumentCollection=args);
 					// Inject Root Logger
-					oLogger.setRootLogger(instance.loggerRegistry["ROOT"]);
+					oLogger.setRootLogger(root);
 					// Inject Log Levels
 					oLogger.logLevels = this.logLevels;
 					// Store it
@@ -157,6 +160,11 @@ Description :
 		
 		<cfreturn instance.loggerRegistry[arguments.category]>
 	</cffunction>
+	
+	<!--- getCurrentLoggers --->
+	<cffunction name="getCurrentLoggers" output="false" access="public" returntype="string" hint="Get the list of currently saved loggers.">
+		<cfreturn structKeyList(instance.loggerRegistry)>
+	</cffunction>
 		
 <!------------------------------------------- PRIVATE ------------------------------------------>
 	
@@ -166,6 +174,7 @@ Description :
 		<cfargument name="name" 		type="string"  required="true"  hint="A unique name for the appender to register. Only unique names can be registered per instance."/>
 		<cfargument name="class" 		type="string"  required="true"  hint="The appender's class to register. We will create, init it and register it for you."/>
 		<cfargument name="properties" 	type="struct"  required="false" default="#structnew()#" hint="The structure of properties to configure this appender with."/>
+		<cfargument name="layout" 		type="string"  required="true"  default="" hint="The layout class to use in this appender for custom message rendering."/>
 		<!--- ************************************************************* --->
 		<cfset var appenders = instance.appenderRegistry>
 		<cfset var oAppender = "">

@@ -75,6 +75,7 @@ Description :
 		<cfargument name="name" 		type="string"  required="true"  hint="A unique name for the appender to register. Only unique names can be registered per instance."/>
 		<cfargument name="class" 		type="string"  required="true"  hint="The appender's class to register. We will create, init it and register it for you."/>
 		<cfargument name="properties" 	type="struct"  required="false" default="#structnew()#" hint="The structure of properties to configure this appender with."/>
+		<cfargument name="layout" 		type="string"  required="true"  default="" hint="The layout class path to use in this appender for custom message rendering."/>
 		<cfscript>
 			// REgister appender
 			instance.appenders[arguments.name] = arguments;
@@ -110,8 +111,8 @@ Description :
 	<!--- addCategory --->
 	<cffunction name="category" output="false" access="public" returntype="void" hint="Add a new category configuration with appender(s).  Appenders MUST be defined first, else this method will throw an exception">
 		<cfargument name="name" 		type="string"  required="true"  hint="A unique name for the appender to register. Only unique names can be registered per instance."/>
-		<cfargument name="levelMin" 	type="numeric" required="true"  hint="The default log level for this category"/>
-		<cfargument name="levelMax" 	type="numeric" required="false" default="5" hint="The max default log level for this category."/>
+		<cfargument name="levelMin" 	type="numeric" required="true"  hint="The default min log level for this category"/>
+		<cfargument name="levelMax" 	type="numeric" required="false" default="5" hint="The max default log level for this category. If not passed it defaults to the highest level possible"/>
 		<cfargument name="appenders" 	type="string"  required="false" default=""  hint="A list of appender names to configure this category with else it will use all the appenders in the root logger."/>
 		<cfscript>
 			var x = 1;

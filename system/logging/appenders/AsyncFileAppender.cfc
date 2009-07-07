@@ -53,17 +53,24 @@ Properties:
 			// Does file still exist?
 			if( NOT fileExists(getLogFullpath()) ){ initLogLocation(); }
 			
-			// Cleanup main message
-			message = replace(message,'"','""',"all");
-			message = replace(message,"#chr(13)##chr(10)#",'  ',"all");
-			message = replace(message,chr(13),'  ',"all");
-			if( len(loge.getExtraInfoAsString()) ){
-				message &= " ExtraInfo:" & loge.getExtraInfoAsString();
-			}			
+			// Custom Layout?
+			if( hasCustomLayout() ){
+				entry = getCustomLayout().format(loge);
+			}
+			else{
+				// Cleanup main message
+				message = replace(message,'"','""',"all");
+				message = replace(message,"#chr(13)##chr(10)#",'  ',"all");
+				message = replace(message,chr(13),'  ',"all");
+				if( len(loge.getExtraInfoAsString()) ){
+					message &= " ExtraInfo:" & loge.getExtraInfoAsString();
+				}			
+				
+				// Prepare Entry
+				entry = '"#severityToString(logEvent.getSeverity())#","#getname()#","#dateformat(timestamp,"MM/DD/YYYY")#","#timeformat(timestamp,"HH:MM:SS")#","#loge.getCategory()#","#message#"';
+			}
 			
-			// Prepare Entry
-			entry = '"#severityToString(logEvent.getSeverity())#","#getname()#","#dateformat(timestamp,"MM/DD/YYYY")#","#timeformat(timestamp,"HH:MM:SS")#","#loge.getCategory()#","#message#"';
-		</cfscript>
+			</cfscript>
 		
 		<!--- Thread this puppy --->
 		<cfthread name="#threadName#" entry="#entry#"> 
