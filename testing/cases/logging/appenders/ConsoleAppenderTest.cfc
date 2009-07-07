@@ -2,7 +2,7 @@
 <cfscript>
 	function setup(){
 		console = getMockBox().createMock(className="coldbox.system.logging.appenders.ConsoleAppender");
-		console.init('MyConsoleAppender',5);
+		console.init('MyConsoleAppender');
 		
 		loge = getMockBox().createMock(className="coldbox.system.logging.LogEvent");
 		loge.init("Unit Test Sample",0,structnew(),"UnitTest");

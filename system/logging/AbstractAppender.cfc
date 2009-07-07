@@ -16,8 +16,6 @@ Description :
 	<cfscript>
 		// The log levels enum as a public property
 		this.logLevels = createObject("component","coldbox.system.logging.LogLevels");
-		// Populated when appender is created, public by default
-		this.logBox = "";
 		
 		// private instance scope
 		instance = structnew();
@@ -29,17 +27,12 @@ Description :
 		instance.initialized = false;
 		// Appender Configuration Properties
 		instance.properties = structnew();
-		// Log levels Setup
-		instance.levelMin = this.logLevels.FATAL;
-		instance.levelMax = this.logLevels.TRACE;
 	</cfscript>
 	
 	<!--- Init --->
 	<cffunction name="init" access="public" returntype="AbstractAppender" hint="Constructor called by a Concrete Appender" output="false" >
 		<!--- ************************************************************* --->
 		<cfargument name="name" 		type="string"  required="true" hint="The unique name for this appender."/>
-		<cfargument name="levelMin" 	type="numeric" required="false" default="0" hint="The default log level for this appender, by default it is 0. Optional. ex: LogBox.logLevels.WARNING"/>
-		<cfargument name="levelMax" 	type="numeric" required="false" default="5" hint="The default log level for this appender, by default it is 5. Optional. ex: LogBox.logLevels.WARNING"/>
 		<cfargument name="properties" 	type="struct"  required="false" default="#structnew()#" hint="A map of configuration properties for the appender"/>
 		<!--- ************************************************************* --->
 		<cfscript>
@@ -48,10 +41,6 @@ Description :
 			
 			// Set internal properties	
 			instance.properties = arguments.properties;
-			
-			// Setup the loggin levels for this appender.
-			setLevelMin(arguments.levelMin);
-			setLevelMax(arguments.levelMax);
 					
 			return this;
 		</cfscript>
@@ -73,11 +62,6 @@ Description :
 		<cfreturn this.logLevels.lookup(arguments.severity)>
 	</cffunction>
 	
-	<!--- Get a reference to the main log box instance used. --->
-	<cffunction name="getlogBox" access="public" returntype="coldbox.system.logging.LogBox" output="false">
-		<cfreturn this.logBox>
-	</cffunction>
-	
 	<!--- getHash --->
 	<cffunction name="getHash" output="false" access="public" returntype="string" hint="Get this appender's unique ID">
 		<cfreturn instance._hash>
@@ -96,51 +80,7 @@ Description :
 		<cfargument name="initialized" type="boolean" required="true">
 		<cfset instance.initialized = arguments.initialized>
 	</cffunction>
-	
-	<!--- Get/Set the Log Level --->
-	<cffunction name="getLevelMin" access="public" output="false" returntype="numeric" hint="Get the current default levelMin">
-		<cfreturn instance.levelMin/>
-	</cffunction>
-	<cffunction name="setLevelMin" access="public" output="false" returntype="void" hint="Set the appender's default levelMin">
-		<cfargument name="levelMin" type="numeric" required="true"/>
-		<cfscript>
-			// Verify level
-			if( this.logLevels.isLevelValid(arguments.levelMin) AND
-			    arguments.levelMin lte getLevelMax() ){
-				instance.levelMin = arguments.levelMin;
-			}
-			else{
-				$throw("Invalid Log Level","The log level #arguments.levelMin# is invalid or greater than the levelMax (#getLevelMax()#). Valid log levels are from 0 to 5","AbstractAppender.InvalidLogLevelException");
-			}
-		</cfscript>
-	</cffunction>
-	
-	<!--- Get/Set the Log Level --->
-	<cffunction name="getLevelMax" access="public" output="false" returntype="numeric" hint="Get the current default levelMax">
-		<cfreturn instance.levelMax />
-	</cffunction>
-	<cffunction name="setLevelMax" access="public" output="false" returntype="void" hint="Set the appender's default levelMax">
-		<cfargument name="levelMax" type="numeric" required="true"/>
-		<cfscript>
-			// Verify level
-			if( this.logLevels.isLevelValid(arguments.levelMax) AND
-			    arguments.levelMax gte getLevelMin() ){
-				instance.levelMax = arguments.levelMax;
-			}
-			else{
-				$throw("Invalid Log Level","The log level #arguments.levelMax# is invalid or less than the levelMin (#getLevelMin()#). Valid log levels are from 0 to 5","AbstractAppender.InvalidLogLevelException");
-			}
-		</cfscript>
-	</cffunction>
-	
-	<!--- canLog --->
-	<cffunction name="canLog" output="false" access="public" returntype="boolean" hint="Checks wether a log can be made on this appender using a passed in level">
-		<cfargument name="level" type="numeric" required="true" default="" hint="The level to check"/>
-		<cfscript>
-			return (arguments.level GTE getLevelMin() AND arguments.level LTE getLevelMax() );
-		</cfscript>
-	</cffunction>
-	
+		
 	<!--- logMessage --->
 	<cffunction name="logMessage" access="public" output="false" returntype="void" hint="Write an entry into the appender. You must implement this method yourself.">
 		<!--- ************************************************************* --->

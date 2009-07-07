@@ -9,7 +9,7 @@
 		logBox = getMockBox().createMock(classname="coldbox.system.logging.LogBox",clearMethod=true);
 		fileAppender.logBox = logBox;
 		
-		fileappender.init('MyAsyncFileAppender',0,5,props);
+		fileappender.init('MyAsyncFileAppender',props);
 		
 		loge = getMockBox().createMock(className="coldbox.system.logging.LogEvent");
 		loge.init("Unit Test Sample",0,"","UnitTest");

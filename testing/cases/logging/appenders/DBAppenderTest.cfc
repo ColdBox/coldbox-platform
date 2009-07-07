@@ -3,7 +3,7 @@
 	function setup(){
 		props = {dsn='test',table='logs',autocreate='true'};
 		db = getMockBox().createMock(className="coldbox.system.logging.appenders.DBAppender");
-		db.init('UnitTest',0,5,props);
+		db.init('UnitTest',props);
 		
 		loge = getMockBox().createMock(className="coldbox.system.logging.LogEvent");
 		loge.init("Unit Test Sample",0,structnew(),"UnitTest");
@@ -15,7 +15,7 @@
 		
 		// invalid
 		props.dsn = 'invalid';
-		db.init('UnitTest',0,5,props);
+		db.init('UnitTest',props);
 		try{
 			db.ensureDSN();
 			fail('invalid dsn');
@@ -45,7 +45,7 @@
 		};
 		
 		try{
-			db.init('UnitTest',0,5,props);
+			db.init('UnitTest',props);
 			fail('map should have failed');
 		}
 		catch("DBAppender.InvalidColumnMapException" e){}
@@ -62,7 +62,7 @@
 			extrainfo = "extrainfo"
 		};
 		
-		db.init('UnitTest',0,5,props);
+		db.init('UnitTest',props);
 			
 		db.logMessage(loge);
 	}

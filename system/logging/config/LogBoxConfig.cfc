@@ -14,51 +14,111 @@ Description :
 
 	<cfscript>
 		// The log levels enum as a public property
-		this.levels = createObject("component","coldbox.system.logging.LogLevels");
+		this.logLevels = createObject("component","coldbox.system.logging.LogLevels");
 		
 		// Instance private scope
 		instance = structnew();
-		instance.appenders = createObject("java", "java.util.Collections").synchronizedMap(CreateObject("java","java.util.LinkedHashMap").init(3));
+		// Register appenders
+		instance.appenders = structnew();
+		// Register categories
 		instance.categories = structnew();
+		// Register root logger
+		instance.rootLogger = structnew();
 	</cfscript>
 
 	<!--- init --->
 	<cffunction name="init" output="false" access="public" returntype="LogBoxConfig" hint="Constructor">
 		<cfreturn this>
 	</cffunction>
-
-	<!--- addAppender --->
-	<cffunction name="addAppender" output="false" access="public" returntype="void" hint="Add an appender configuration">
-		<cfargument name="name" 		type="string"  required="true"  hint="A unique name for the appender to register. Only unique names can be registered per instance."/>
-		<cfargument name="class" 		type="string"  required="true"  hint="The appender's class to register. We will create, init it and register it for you."/>
-		<cfargument name="levelMin" 	type="numeric" required="false" default="0" hint="The default log level for this appender, by default it is 0. Optional. ex: LogBox.logLevels.WARNING"/>
-		<cfargument name="levelMax" 	type="numeric" required="false" default="5" hint="The default log level for this appender, by default it is 5. Optional. ex: LogBox.logLevels.WARNING"/>
-		<cfargument name="properties" 	type="struct"  required="false" default="#structnew()#" hint="The structure of properties to configure this appender with."/>
-		<cfset instance.appenders[ucase(arguments.name)] = arguments>
-	</cffunction>
 	
-	<!--- addCategory --->
-	<cffunction name="addCategory" output="false" access="public" returntype="void" hint="Add a new category configuration with appender(s).  Appenders MUST be defined first, else this method will throw an exception">
-		<cfargument name="name" 		type="string"  required="true"  hint="A unique name for the appender to register. Only unique names can be registered per instance."/>
-		<cfargument name="levelMin" 	type="numeric" required="false" default="0" hint="The default log level for this appender, by default it is 0. Optional. ex: LogBox.logLevels.WARNING"/>
-		<cfargument name="levelMax" 	type="numeric" required="false" default="5" hint="The default log level for this appender, by default it is 5. Optional. ex: LogBox.logLevels.WARNING"/>
-		<cfargument name="appenders" 	type="string"  required="true"  hint="A list of appender names to configure this category with."/>
+	<!--- validate --->
+	<cffunction name="validate" output="false" access="public" returntype="void" hint="Validates the configuration. If not valid, it will throw an appropriate exception.">
 		<cfscript>
-			var x = 1;
+			var x=1;
+			var key ="";
+			var thisAppenders = "";
 			
-			//Verify appender list
-			if( NOT listLen(arguments.appenders) ){
-				$throw("Invalid Appenders","Please send in at least one appender for a category","LogBoxConfig.InvalidAppenders");
+			// Are appenders defined
+			if( structIsEmpty(instance.appenders) ){
+				$throw(message="Invalid Configuration. No appenders defined.",type="LogBoxConfig.NoAppendersFound");
+			}
+			// Check root logger definition
+			if( structIsEmpty(instance.rootLogger) ){
+				$throw(message="Invalid Configuration. No root logger defined.",type="LogBoxConfig.RootLoggerNotFound");
 			}
 			
-			// Verify Appenders first
-			for(x=1; x lte listlen(arguments.appenders); x=x+1){
-				if( NOT structKeyExists(instance.appenders, ucase(listGetAt(arguments.appenders,x))) ){
-					$throw(message="Invalid appender",
-						   detail="The appender #listGetAt(arguments.appenders,x)# has not been defined yet. Please define it first.",
+			// Check root's appenders
+			for(x=1; x lte listlen(instance.rootLogger.appenders); x=x+1){
+				if( NOT structKeyExists(instance.appenders, listGetAt(instance.rootLogger.appenders,x)) ){
+					$throw(message="Invalid appender in Root Logger",
+						   detail="The appender #listGetAt(instance.rootLogger.appenders,x)# has not been defined yet. Please define it first.",
 						   type="LogBoxConfig.AppenderNotFound");
 				}
 			}
+			
+			// Check all Category Appenders
+			for(key in instance.categories){
+				thisAppenders = instance.categories[key].appenders;
+				for(x=1; x lte listlen(thisAppenders); x=x+1){
+					if( NOT structKeyExists(instance.appenders, listGetAt(thisAppenders,x)) ){
+						$throw(message="Invalid appender in Category: #key#",
+							   detail="The appender #listGetAt(thisAppenders,x)# has not been defined yet. Please define it first.",
+							   type="LogBoxConfig.AppenderNotFound");
+					}
+				}
+			}
+		</cfscript>
+	</cffunction>
+	
+	<!--- addAppender --->
+	<cffunction name="appender" output="false" access="public" returntype="void" hint="Add an appender configuration.">
+		<cfargument name="name" 		type="string"  required="true"  hint="A unique name for the appender to register. Only unique names can be registered per instance."/>
+		<cfargument name="class" 		type="string"  required="true"  hint="The appender's class to register. We will create, init it and register it for you."/>
+		<cfargument name="properties" 	type="struct"  required="false" default="#structnew()#" hint="The structure of properties to configure this appender with."/>
+		<cfscript>
+			// REgister appender
+			instance.appenders[arguments.name] = arguments;
+		</cfscript>
+	</cffunction>
+	
+	<!--- Set the root logger information  --->
+	<cffunction name="root" access="public" returntype="void" output="false" hint="Register the root logger in this configuration.">
+		<cfargument name="levelMin" 	type="numeric" required="false" default="0" hint="The default log level for the root logger, by default it is 0. Optional. ex: config.logLevels.WARN"/>
+		<cfargument name="levelMax" 	type="numeric" required="false" default="5" hint="The default log level for the root logger, by default it is 5. Optional. ex: config.logLevels.WARN"/>
+		<cfargument name="appenders" 	type="string"  required="true"  hint="A list of appenders to configure the root logger with.."/>
+		<cfscript>
+			var x = 1;
+			
+			// Check levels
+			levelChecks(arguments.levelMin, arguments.levelMax);
+			
+			//Verify appender list
+			if( NOT listLen(arguments.appenders) ){
+				$throw("Invalid Appenders","Please send in at least one appender for the root logger","LogBoxConfig.InvalidAppenders");
+			}
+
+			// Add definition
+			instance.rootLogger = arguments;
+		</cfscript>
+	</cffunction>
+	
+	<!--- Get root logger --->
+	<cffunction name="getRoot" access="public" returntype="sruct" output="false" hint="Get the root logger definition.">
+		<cfreturn instance.rootLogger>
+	</cffunction>
+	
+	<!--- addCategory --->
+	<cffunction name="category" output="false" access="public" returntype="void" hint="Add a new category configuration with appender(s).  Appenders MUST be defined first, else this method will throw an exception">
+		<cfargument name="name" 		type="string"  required="true"  hint="A unique name for the appender to register. Only unique names can be registered per instance."/>
+		<cfargument name="levelMin" 	type="numeric" required="true"  hint="The default log level for this category"/>
+		<cfargument name="levelMax" 	type="numeric" required="false" default="5" hint="The max default log level for this category."/>
+		<cfargument name="appenders" 	type="string"  required="false" default=""  hint="A list of appender names to configure this category with else it will use all the appenders in the root logger."/>
+		<cfscript>
+			var x = 1;
+			
+			// Check levels
+			levelChecks(arguments.levelMin, arguments.levelMax);
+
 			// Add category registration
 			instance.categories[arguments.name] = arguments;
 		</cfscript>
@@ -77,17 +137,99 @@ Description :
 	</cffunction>
 	
 	<!--- getCategories --->
-	<cffunction name="getCategories" output="false" access="public" returntype="struct" hint="Get the configured categories">
+	<cffunction name="getAllCategories" output="false" access="public" returntype="struct" hint="Get the configured categories">
 		<cfreturn instance.categories>
 	</cffunction>
 	
 	<!--- getappenders --->
-	<cffunction name="getAppenders" output="false" access="public" returntype="struct" hint="Get all the appenders defined">
+	<cffunction name="getAllAppenders" output="false" access="public" returntype="struct" hint="Get all the configured appenders">
 		<cfreturn instance.appenders>
+	</cffunction>
+	
+<!------------------------------------------- Facade methods for categoreis with levels only ------------------------------------------>
+	
+	<!--- TRACE --->
+	<cffunction name="TRACE" output="false" access="public" returntype="void" hint="Add categories to the TRACE level. Send each category as an argument.">
+		<cfscript>
+			var key = "";
+			for(key in arguments){
+				category(name=arguments[key],levelMin=this.logLevels.TRACE);
+			}
+		</cfscript>
+	</cffunction>
+	
+	<!--- DEBUG --->
+	<cffunction name="DEBUG" output="false" access="public" returntype="void" hint="Add categories to the DEBUG level. Send each category as an argument.">
+		<cfscript>
+			var key = "";
+			for(key in arguments){
+				category(name=arguments[key],levelMin=this.logLevels.DEBUG);
+			}
+		</cfscript>
+	</cffunction>
+	
+	<!--- INFO --->
+	<cffunction name="INFO" output="false" access="public" returntype="void" hint="Add categories to the INFO level. Send each category as an argument.">
+		<cfscript>
+			var key = "";
+			for(key in arguments){
+				category(name=arguments[key],levelMin=this.logLevels.INFO);
+			}
+		</cfscript>
+	</cffunction>
+	
+	<!--- WARN --->
+	<cffunction name="WARN" output="false" access="public" returntype="void" hint="Add categories to the WARN level. Send each category as an argument.">
+		<cfscript>
+			var key = "";
+			for(key in arguments){
+				category(name=arguments[key],levelMin=this.logLevels.WARN);
+			}
+		</cfscript>
+	</cffunction>
+	
+	<!--- ERROR --->
+	<cffunction name="ERROR" output="false" access="public" returntype="void" hint="Add categories to the ERROR level. Send each category as an argument.">
+		<cfscript>
+			var key = "";
+			for(key in arguments){
+				category(name=arguments[key],levelMin=this.logLevels.ERROR);
+			}
+		</cfscript>
+	</cffunction>
+	
+	<!--- FATAL --->
+	<cffunction name="FATAL" output="false" access="public" returntype="void" hint="Add categories to the FATAL level. Send each category as an argument.">
+		<cfscript>
+			var key = "";
+			for(key in arguments){
+				category(name=arguments[key],levelMin=this.logLevels.FATAL);
+			}
+		</cfscript>
+	</cffunction>
+	
+	<!--- OFF --->
+	<cffunction name="OFF" output="false" access="public" returntype="void" hint="Add categories to the OFF level. Send each category as an argument.">
+		<cfscript>
+			var key = "";
+			for(key in arguments){
+				category(name=arguments[key],levelMin=this.logLevels.OFF);
+			}
+		</cfscript>
 	</cffunction>
 
 <!------------------------------------------- PRIVATE ------------------------------------------>
 
+	<!--- levelChecks --->
+	<cffunction name="levelChecks" output="false" access="private" returntype="void" hint="Level checks or throw">
+		<cfargument name="levelMin" 	type="numeric" required="true"/>
+		<cfargument name="levelMax" 	type="numeric" required="true"/>
+		<cfif NOT this.logLevels.isLevelValid(arguments.levelMin)>
+			<cfthrow message="LevelMin #arguments.levelMin# is not a valid level." type="LogBoxConfig.InvalidLevel">
+		<cfelseif NOT this.logLevels.isLevelValid(arguments.levelMax)>
+			<cfthrow message="LevelMin #arguments.levelMax# is not a valid level." type="LogBoxConfig.InvalidLevel">
+		</cfif>
+	</cffunction>
 
 	<!--- Throw Facade --->
 	<cffunction name="$throw" access="private" hint="Facade for cfthrow" output="false">

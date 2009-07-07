@@ -4,24 +4,74 @@
 		config = getMockBox().createMock(className="coldbox.system.logging.config.LogBoxConfig").init();
 	}
 	function testAddAppender(){
-		config.addAppender("luis","coldbox.system.logging.AbstractLogger");
-		config.addAppender("luis2","coldbox.system.logging.AbstractLogger");
+		config.appender("luis","coldbox.system.logging.AbstractLogger");
+		config.appender("luis2","coldbox.system.logging.AbstractLogger");
 		
-		assertEquals( structCount(config.getAppenders()), 2);
+		assertEquals( structCount(config.getAllAppenders()), 2);
+	}
+	function testValidateCategories(){
+		config.category(name="ses",levelMin=0,levelMax=2,appenders="luis,2");
+		try{
+			config.validate();
+			fail("this should have failed.");
+		}
+		catch("LogBoxConfig.NoAppendersFound" e){}
+		catch(Any e){ fail(e.message); }
 	}
 	function testAddCategory(){
+		config.appender("luis","coldbox.system.logging.AbstractLogger");
+		// Invalid appenders for category
+		config.category(name="ses",levelMin=0,levelMax=2,appenders="luis2");
+		config.root(appenders="luis");
+		
 		try{
-			config.addCategory(name="ses",levelMin=0,levelMax=2,appenders="luis,2");
-			fail("This should have failed.");
+			config.validate();
+			fail("this should have failed.");
 		}
 		catch("LogBoxConfig.AppenderNotFound" e){}
-		catch(Any e){
-			fail(e.message & e.detail);
+		catch(Any e){ fail(e.message); }
+	}
+	
+	function testRoot(){
+		try{
+			config.validate();
+			fail("this should have failed.");
 		}
+		catch("LogBoxConfig.NoAppendersFound" e){}
+		catch(Any e){ fail(e.message); }
 		
-		config.addAppender("luis","coldbox.system.logging.AbstractLogger");
-		config.addAppender("luis2","coldbox.system.logging.AbstractLogger");
-		config.addCategory(name="ses",levelMin=0,levelMax=2,appenders="luis,luis2");
+		//add appender, but still fails, no root logger
+		config.appender("luis2","coldbox.system.logging.AbstractLogger");
+		try{
+			config.validate();
+			fail("this should have failed.");
+		}
+		catch("LogBoxConfig.RootLoggerNotFound" e){}
+		catch(Any e){ fail(e.message); }
+		
+		//Add root
+		config.root(appenders="luis2");
+		config.validate();
+	}
+	function testConventionMethods(){
+		config.trace("com.coldbox","com.transfer");
+		assertEquals( structCount(config.getAllCategories()), 2);
+		
+		config.info("com.coldbox","com.transfer");
+		assertEquals( structCount(config.getAllCategories()), 2);
+		
+		config.debug("com.coldbox","com.transfer");
+		assertEquals( structCount(config.getAllCategories()), 2);
+		
+		config.warning("com.coldbox","com.transfer");
+		assertEquals( structCount(config.getAllCategories()),2);
+		
+		config.error("com.coldbox","com.transfer");
+		assertEquals( structCount(config.getAllCategories()), 2);
+		
+		config.fatal("com.coldbox","com.transfer");
+		assertEquals( structCount(config.getAllCategories()), 2);
+		
 	}
 </cfscript>
 </cfcomponent>

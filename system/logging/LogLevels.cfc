@@ -14,26 +14,39 @@ Description :
 	// All Available Logging Levels for LogBox
 	this.TRACE = 5;
 	this.DEBUG = 4;
-	this.INFORMATION = 3;
 	this.INFO = 3;
-	this.WARNING = 2;
+	this.WARN = 2;
 	this.ERROR = 1;
 	this.FATAL = 0;
+	this.OFF = -1;
 	
 	// List of valid levels
-	this.VALIDLEVELS = "trace,debug,information,info,warning,error,fatal";
+	this.VALIDLEVELS = "off,trace,debug,info,warn,error,fatal";
+	
 	// Max
-	this.MINLEVEL = 0;
+	this.MINLEVEL = -1;
 	this.MAXLEVEL = 5;
 	
 	function lookup(level){
 		switch(level){
+			case -1: return "OFF";
 			case 0: return "FATAL";
 			case 1: return "ERROR";
-			case 2: return "WARNING";
+			case 2: return "WARN";
 			case 3: return "INFO";
 			case 4: return "DEBUG";
 			case 5: return "TRACE";			
+		}
+	}
+	function lookupCF(level){
+		switch(level){
+			case -1: return "OFF";
+			case 0: return "Fatal";
+			case 1: return "Error";
+			case 2: return "Warning";
+			case 3: return "Information";
+			case 4: return "Information";
+			case 5: return "Information";			
 		}
 	}
 	
