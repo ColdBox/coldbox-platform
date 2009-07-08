@@ -29,7 +29,7 @@ Description :
 		<cfset var zipFileName = "">
 		<cfset var qArchivedLogs = "">
 		<cfset var ArchiveToDelete = "">
-		<cfset var oZip = createObject("component","coldbox.system.plugins.Zip").configure()>
+		<cfset var oZip = createObject("component","coldbox.system.util.Zip").init()>
 		<cfset var fileName = oAppender.getProperty("fileName")>
 		<cfset var logFullPath = oAppender.getLogFullPath()>
 		

@@ -22,21 +22,25 @@ Description :
 
 	<cffunction name="Configure" access="public" returntype="void" hint="This is the configuration method for your interceptors" output="false" >
 		<cfscript>
-			/* Get set properties */
+			// Get set properties
 			if( not propertyExists("debugMode") or not isBoolean(getProperty("debugMode")) ){
 				setProperty("debugMode",false);
 			}
-			/* DI Complete Method */
+			// DI Complete Method
 			if(not propertyExists("completeDIMethodName")){
 				setProperty("completeDIMethodName",'onDIComplete');
 			}
-			/* enableSetterInjection */
+			// enableSetterInjection
 			if(NOT propertyExists("enableSetterInjection") OR
 			   NOT isBoolean(getProperty('enableSetterInjection')) ){
 				setProperty("enableSetterInjection",'false');
 			}		
+			// Annotation Check
+			if( NOT propertyExists("annotationCheck") or NOT isBoolean(getProperty("annotationCheck")) ){
+				setProperty("annotationCheck",false);
+			}
 			
-			/* Create our BeanFactory plugin, we do this here, because we need it not to execute an endless loop */
+			// Create our BeanFactory plugin, we do this here, because we need it not to execute an endless loop
 			instance.beanFactory = getPlugin("BeanFactory");	
 		</cfscript>
 	</cffunction>
@@ -136,7 +140,7 @@ Description :
 					/* Process Autowire */
 					instance.beanFactory.autowire(target=targetObject,
 												  useSetterInjection=getProperty('enableSetterInjection'),
-												  annotationCheck=true,
+												  annotationCheck=getProperty("annotationCheck"),
 												  onDICompleteUDF=getProperty('completeDIMethodName'),
 												  debugMode=getProperty('debugMode'));
 				}
