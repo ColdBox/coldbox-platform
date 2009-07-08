@@ -560,40 +560,42 @@ Description: This is the framework's simple bean factory.
 		if ( targetDIEntry.autowire ){
 			/* Dependencies Length */
 			dependenciesLength = arrayLen(targetDIEntry.dependencies);
-			/* References */
-			oMethodInjector = getPlugin("MethodInjector");
-			/* Let's inject our mixins */
-			oMethodInjector.start(targetObject);
-			/* Loop over dependencies and inject. */
-			for(x=1; x lte dependenciesLength; x=x+1){
-				/* Get Dependency */
-				thisDependency = getDSLDependency(definition=targetDIEntry.dependencies[x],
-												  debugMode=arguments.debugmode);
-				/* Validate it */
-				if( isSimpleValue(thisDependency) and thisDependency eq instance.NOT_FOUND ){
-					/* Only log if debugmode, else no injection */
-					if( arguments.debugMode ){
-						getPlugin("Logger").warn("Dependency: #targetDIEntry.dependencies[x].toString()# Not Found");
+			if( dependenciesLength gt 0 ){
+				/* References */
+				oMethodInjector = getPlugin("MethodInjector");
+				/* Let's inject our mixins */
+				oMethodInjector.start(targetObject);
+				/* Loop over dependencies and inject. */
+				for(x=1; x lte dependenciesLength; x=x+1){
+					/* Get Dependency */
+					thisDependency = getDSLDependency(definition=targetDIEntry.dependencies[x],
+													  debugMode=arguments.debugmode);
+					/* Validate it */
+					if( isSimpleValue(thisDependency) and thisDependency eq instance.NOT_FOUND ){
+						/* Only log if debugmode, else no injection */
+						if( arguments.debugMode ){
+							getPlugin("Logger").warn("Dependency: #targetDIEntry.dependencies[x].toString()# Not Found");
+						}
 					}
-				}
-				else{
-					/* Inject dependency*/
-					injectBean(targetBean=targetObject,
-							   beanName=targetDIEntry.dependencies[x].name,
-							   beanObject=thisDependency,
-							   scope=targetDIEntry.dependencies[x].scope);
-					/* Debug Mode Check */
-					if( arguments.debugMode ){
-						getPlugin("Logger").info("Dependency: #targetDIEntry.dependencies[x].toString()# --> injected into #getMetadata(targetObject).name#.");
+					else{
+						/* Inject dependency*/
+						injectBean(targetBean=targetObject,
+								   beanName=targetDIEntry.dependencies[x].name,
+								   beanObject=thisDependency,
+								   scope=targetDIEntry.dependencies[x].scope);
+						/* Debug Mode Check */
+						if( arguments.debugMode ){
+							getPlugin("Logger").info("Dependency: #targetDIEntry.dependencies[x].toString()# --> injected into #getMetadata(targetObject).name#.");
+						}
 					}
-				}
-			}//end for loop of dependencies.
-			
-			/* Process After ID Complete */
-			processAfterCompleteDI(targetObject,onDICompleteUDF);
-			/* Let's cleanup our mixins */
-			getPlugin("MethodInjector").stop(targetObject);
-			
+				}//end for loop of dependencies.
+				
+				// Process After ID Complete
+				processAfterCompleteDI(targetObject,onDICompleteUDF);
+				// Let's cleanup our mixins
+				getPlugin("MethodInjector").stop(targetObject);
+				
+			}// if dependencies found.
 		}//if autowiring			
 	</cfscript>
 	</cffunction>
