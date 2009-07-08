@@ -76,7 +76,7 @@ Properties:
 		<!--- ************************************************************* --->
 		<cfscript>
 			var loge = arguments.logEvent;
-			var subject = "#severityToString(loge.getSeverity())#-#loge.getCategory()#-#getProperty("subject")#"
+			var subject = "#severityToString(loge.getSeverity())#-#loge.getCategory()#-#getProperty("subject")#";
 			var entry = "";
 		</cfscript>
 		<cftry>
