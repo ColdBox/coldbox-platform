@@ -124,7 +124,7 @@ Description :
 	<!--- addCategory --->
 	<cffunction name="category" output="false" access="public" returntype="void" hint="Add a new category configuration with appender(s).  Appenders MUST be defined first, else this method will throw an exception">
 		<cfargument name="name" 		type="string"  required="true"  hint="A unique name for the appender to register. Only unique names can be registered per instance."/>
-		<cfargument name="levelMin" 	type="numeric" required="true"  hint="The default min log level for this category"/>
+		<cfargument name="levelMin" 	type="numeric" required="true"  hint="The default min log level for this category."/>
 		<cfargument name="levelMax" 	type="numeric" required="false" default="5" hint="The max default log level for this category. If not passed it defaults to the highest level possible"/>
 		<cfargument name="appenders" 	type="string"  required="false" default=""  hint="A list of appender names to configure this category with else it will use all the appenders in the root logger."/>
 		<cfscript>
@@ -167,7 +167,7 @@ Description :
 		<cfscript>
 			var key = "";
 			for(key in arguments){
-				category(name=arguments[key],levelMin=this.logLevels.TRACE);
+				category(name=arguments[key],levelMin=this.logLevels.TRACE,levelMax=this.logLevels.TRACE);
 			}
 		</cfscript>
 	</cffunction>
@@ -177,7 +177,7 @@ Description :
 		<cfscript>
 			var key = "";
 			for(key in arguments){
-				category(name=arguments[key],levelMin=this.logLevels.DEBUG);
+				category(name=arguments[key],levelMin=this.logLevels.DEBUG,levelMax=this.logLevels.DEBUG);
 			}
 		</cfscript>
 	</cffunction>
@@ -187,7 +187,7 @@ Description :
 		<cfscript>
 			var key = "";
 			for(key in arguments){
-				category(name=arguments[key],levelMin=this.logLevels.INFO);
+				category(name=arguments[key],levelMin=this.logLevels.INFO,levelMax=this.logLevels.INFO);
 			}
 		</cfscript>
 	</cffunction>
@@ -197,7 +197,7 @@ Description :
 		<cfscript>
 			var key = "";
 			for(key in arguments){
-				category(name=arguments[key],levelMin=this.logLevels.WARN);
+				category(name=arguments[key],levelMin=this.logLevels.WARN,levelMax=this.logLevels.WARN);
 			}
 		</cfscript>
 	</cffunction>
@@ -207,7 +207,7 @@ Description :
 		<cfscript>
 			var key = "";
 			for(key in arguments){
-				category(name=arguments[key],levelMin=this.logLevels.ERROR);
+				category(name=arguments[key],levelMin=this.logLevels.ERROR,levelMax=this.logLevels.ERROR);
 			}
 		</cfscript>
 	</cffunction>
@@ -217,7 +217,7 @@ Description :
 		<cfscript>
 			var key = "";
 			for(key in arguments){
-				category(name=arguments[key],levelMin=this.logLevels.FATAL);
+				category(name=arguments[key],levelMin=this.logLevels.FATAL,levelMax=this.logLevels.FATAL);
 			}
 		</cfscript>
 	</cffunction>
@@ -227,7 +227,7 @@ Description :
 		<cfscript>
 			var key = "";
 			for(key in arguments){
-				category(name=arguments[key],levelMin=this.logLevels.OFF);
+				category(name=arguments[key],levelMin=this.logLevels.OFF,levelMax=this.logLevels.OFF);
 			}
 		</cfscript>
 	</cffunction>
