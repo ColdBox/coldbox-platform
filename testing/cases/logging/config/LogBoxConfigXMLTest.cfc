@@ -12,5 +12,14 @@
 		
 		root.debug("Hello man");
 	}
+	
+	function testInlineXML(){
+		config = getMockBox().createMock(className="coldbox.system.logging.config.LogBoxConfig").init();
+		configxml = xmlParse(expandpath('/coldbox/testing/cases/logging/config/cbox.logbox.xml'));
+		logbox = xmlSearch(configxml,"//LogBox");
+		config.parseAndLoad(logBox[1]);
+		
+		config.validate();
+	}
 </cfscript>
 </cfcomponent>

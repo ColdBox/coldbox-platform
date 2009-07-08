@@ -31,12 +31,18 @@ Description :
 		<cfargument name="xmlConfig" type="string" required="false" default="" hint="The xml configuration file to use instead of a programmatic approach"/>
 		<cfscript>
 			if( len(trim(arguments.xmlConfig)) ){
-				parseAndLoad(arguments.xmlConfig);
+				parseAndLoad(xmlParse(arguments.xmlConfig));
 			}
 			
 			return this;
 		</cfscript>
 	</cffunction>
+	
+	<!--- Get Memento --->
+	<cffunction name="getMemento" access="public" returntype="struct" output="false" hint="Get the instance data">
+		<cfreturn instance>
+	</cffunction>
+
 	
 	<!--- validate --->
 	<cffunction name="validate" output="false" access="public" returntype="void" hint="Validates the configuration. If not valid, it will throw an appropriate exception.">
@@ -226,14 +232,12 @@ Description :
 		</cfscript>
 	</cffunction>
 
-<!------------------------------------------- PRIVATE ------------------------------------------>
-
 	<!--- parseAndLoad --->
-	<cffunction name="parseAndLoad" output="false" access="private" returntype="void" hint="Parse and load a config xml file">
-		<cfargument name="xmlConfig" type="string" required="true" hint="The xml configuration file to use instead of a programmatic approach"/>
+	<cffunction name="parseAndLoad" output="false" access="public" returntype="void" hint="Parse and load a config xml object">
+		<cfargument name="xmlDoc" type="any" required="true" hint="The xml document object to use for parsing."/>
 		<cfscript>
 			// Get All Appenders
-			var xml = xmlParse(arguments.xmlConfig);
+			var xml = arguments.xmlDoc;
 			var appendersXML = xmlSearch(xml,"//appender");
 			var rootXML = xmlSearch(xml,"//root");
 			var categoriesXML = xmlSearch(xml,"//category");
@@ -304,6 +308,10 @@ Description :
 			}
 		</cfscript>
 	</cffunction>
+	
+<!------------------------------------------- PRIVATE ------------------------------------------>
+
+	
 
 	<!--- levelChecks --->
 	<cffunction name="levelChecks" output="false" access="private" returntype="void" hint="Level checks or throw">
