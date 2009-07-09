@@ -534,7 +534,7 @@ Modification History:
 	<cffunction name="isSSL" access="public" returntype="boolean" hint="Returns boolean result whether current request is in ssl or not" output="false">
 	    <cfscript>
 			var isSSLRequest = false;
-			if (isBoolean(cgi.server_port_secure) && cgi.server_port_secure) {
+			if (isBoolean(cgi.server_port_secure) AND cgi.server_port_secure) {
 				isSSLRequest = true;
 			}
 			return isSSLRequest;
