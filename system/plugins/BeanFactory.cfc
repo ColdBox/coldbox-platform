@@ -891,7 +891,7 @@ Description: This is the framework's simple bean factory.
 				locatedDependency = oOCM.get(thisLocationKey);
 			}	
 			else if( arguments.debugMode ){
-				getPlugin("Logger").warn("BeanFactory.getOCMDependency - Bean :#thisLocationKey# not found in the Cache. Definition=#thisDependency.toString()#")
+				getPlugin("Logger").warn("BeanFactory.getOCMDependency - Bean :#thisLocationKey# not found in the Cache. Definition=#thisDependency.toString()#");
 			}
 			
 			return locatedDependency;
