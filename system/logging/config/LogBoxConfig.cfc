@@ -60,6 +60,10 @@ Description :
 				$throw(message="Invalid Configuration. No root logger defined.",type="LogBoxConfig.RootLoggerNotFound");
 			}
 			
+			// All root appenders?
+			if( instance.rootLogger.appenders eq "*"){
+				instance.rootLogger.appenders = structKeyList(getAllAppenders());
+			}
 			// Check root's appenders
 			for(x=1; x lte listlen(instance.rootLogger.appenders); x=x+1){
 				if( NOT structKeyExists(instance.appenders, listGetAt(instance.rootLogger.appenders,x)) ){
@@ -99,7 +103,7 @@ Description :
 	<cffunction name="root" access="public" returntype="void" output="false" hint="Register the root logger in this configuration.">
 		<cfargument name="levelMin" 	type="numeric" required="false" default="0" hint="The default log level for the root logger, by default it is 0. Optional. ex: config.logLevels.WARN"/>
 		<cfargument name="levelMax" 	type="numeric" required="false" default="5" hint="The default log level for the root logger, by default it is 5. Optional. ex: config.logLevels.WARN"/>
-		<cfargument name="appenders" 	type="string"  required="true"  hint="A list of appenders to configure the root logger with.."/>
+		<cfargument name="appenders" 	type="string"  required="true"  hint="A list of appenders to configure the root logger with. Send a * to add all appenders"/>
 		<cfscript>
 			var x = 1;
 			
@@ -126,7 +130,7 @@ Description :
 		<cfargument name="name" 		type="string"  required="true"  hint="A unique name for the appender to register. Only unique names can be registered per instance."/>
 		<cfargument name="levelMin" 	type="numeric" required="false" default="0" hint="The default min log level for this category. Defaults to the lowest level 0 or FATAL"/>
 		<cfargument name="levelMax" 	type="numeric" required="false" default="5" hint="The max default log level for this category. If not passed it defaults to the highest level possible"/>
-		<cfargument name="appenders" 	type="string"  required="false" default=""  hint="A list of appender names to configure this category with else it will use all the appenders in the root logger."/>
+		<cfargument name="appenders" 	type="string"  required="false" default=""  hint="A list of appender names to configure this category with."/>
 		<cfscript>
 			var x = 1;
 			
@@ -251,12 +255,18 @@ Description :
 				args.properties = structnew();
 				thisAppender = appendersXML[x];
 				// Error
-				if( NOT structKeyExists(thisAppender.XMLAttributes,"name") OR NOT structKeyExists(thisAppender.XMLAttributes,"class") ){
+				if( NOT structKeyExists(thisAppender.XMLAttributes,"name") OR NOT 
+				        structKeyExists(thisAppender.XMLAttributes,"class") ){
 					$throw(message="An appender must have a name and class attribute",type="LogBoxConfig.InvalidAppenderDefinition");
 				}
 				// Construct appender Properties
 				args.name = trim(thisAppender.XMLAttributes.name);
 				args.class = trim(thisAppender.XMLAttributes.class);
+				
+				//Appender layout
+				if( structKeyExists(thisAppender.XMLAttributes,"layout") ){
+					args.layout = trim(thisAppender.XMLAttributes.layout);
+				}
 				// Check Properties Out
 				for(y=1; y lte arrayLen(thisAppender.xmlChildren); y=y+1 ){
 					args.properties[trim(thisAppender.xmlChildren[y].xmlAttributes.name)] = trim(thisAppender.xmlChildren[y].xmlText);
@@ -275,11 +285,17 @@ Description :
 			if( structKeyExists(rootXML[1].xmlAttributes,"levelMax") ){
 				args.levelMax = trim(rootXML[1].xmlAttributes.levelMax);
 			}
+			
 			//Root Appenders
-			args.appenders = "";
-			for( x=1; x lte arrayLen(rootXML[1].xmlChildren); x=x+1){
-				if( rootXML[1].xmlChildren[x].XMLName eq "appender-ref" ){
-					args.appenders = listAppend(args.appenders, trim(rootXML[1].xmlChildren[x].XMLAttributes.ref) );
+			if( structKeyExists(rootXML[1].xmlAttributes,"appenders") ){
+				args.appenders = trim(rootXML[1].xmlAttributes.appenders);
+			}
+			else{
+				args.appenders = "";
+				for( x=1; x lte arrayLen(rootXML[1].xmlChildren); x=x+1){
+					if( rootXML[1].xmlChildren[x].XMLName eq "appender-ref" ){
+						args.appenders = listAppend(args.appenders, trim(rootXML[1].xmlChildren[x].XMLAttributes.ref) );
+					}
 				}
 			}
 			root(argumentCollection=args);
@@ -297,10 +313,15 @@ Description :
 					args.levelMax = trim(categoriesXML[x].XMLAttributes.levelMax);
 				}
 				//Category Appenders
-				args.appenders = "";
-				for( y=1; y lte arrayLen(categoriesXML[x].xmlChildren); y=y+1){
-					if( categoriesXML[x].xmlChildren[y].XMLName eq "appender-ref" ){
-						args.appenders = listAppend(args.appenders, trim(categoriesXML[x].xmlChildren[y].XMLAttributes.ref) );
+				if( structKeyExists(categoriesXML[x].XMLAttributes,"appenders") ){
+					args.appenders = trim(categoriesXML[x].XMLAttributes.appenders);
+				}
+				else{
+					args.appenders = "";
+					for( y=1; y lte arrayLen(categoriesXML[x].xmlChildren); y=y+1){
+						if( categoriesXML[x].xmlChildren[y].XMLName eq "appender-ref" ){
+							args.appenders = listAppend(args.appenders, trim(categoriesXML[x].xmlChildren[y].XMLAttributes.ref) );
+						}
 					}
 				}
 				// Register category

@@ -4,8 +4,8 @@
 		config = getMockBox().createMock(className="coldbox.system.logging.config.LogBoxConfig").init();
 	}
 	function testAddAppender(){
-		config.appender("luis","coldbox.system.logging.AbstractLogger");
-		config.appender("luis2","coldbox.system.logging.AbstractLogger");
+		config.appender("luis","coldbox.system.logging.AbstractAppender");
+		config.appender("luis2","coldbox.system.logging.AbstractAppender");
 		
 		assertEquals( structCount(config.getAllAppenders()), 2);
 	}
@@ -19,7 +19,7 @@
 		catch(Any e){ fail(e.message); }
 	}
 	function testAddCategory(){
-		config.appender("luis","coldbox.system.logging.AbstractLogger");
+		config.appender("luis","coldbox.system.logging.AbstractAppender");
 		// Invalid appenders for category
 		config.category(name="ses",levelMin=0,levelMax=2,appenders="luis2");
 		config.root(appenders="luis");
@@ -41,7 +41,7 @@
 		catch(Any e){ fail(e.message); }
 		
 		//add appender, but still fails, no root logger
-		config.appender("luis2","coldbox.system.logging.AbstractLogger");
+		config.appender("luis2","coldbox.system.logging.AbstractAppender");
 		try{
 			config.validate();
 			fail("this should have failed.");
@@ -53,6 +53,14 @@
 		config.root(appenders="luis2");
 		config.validate();
 	}
+	function testRootAppenders(){
+		//Add root
+		config.appender("luis2","coldbox.system.logging.AbstractAppender");
+		config.appender("luis3","coldbox.system.logging.AbstractAppender");
+		config.root(appenders="*");
+		config.validate();
+		debug(config.getRoot());
+	}
 	function testConventionMethods(){
 		config.trace("com.coldbox","com.transfer");
 		assertEquals( structCount(config.getAllCategories()), 2);
@@ -63,7 +71,7 @@
 		config.debug("com.coldbox","com.transfer");
 		assertEquals( structCount(config.getAllCategories()), 2);
 		
-		config.warning("com.coldbox","com.transfer");
+		config.warn("com.coldbox","com.transfer");
 		assertEquals( structCount(config.getAllCategories()),2);
 		
 		config.error("com.coldbox","com.transfer");

@@ -12,6 +12,9 @@
 	</appender>
 	
 	<!-- Root Logger -->
+	<!-- Root All Appenders 
+	<root levelMin="0" levelMax="4" appenders="*">
+	-->
 	<root levelMin="0" levelMax="4">
 		<appender-ref ref="myconsole" />
 		<appender-ref ref="MyCF" />
