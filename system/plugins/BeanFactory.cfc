@@ -277,7 +277,7 @@ Description: This is the framework's simple bean factory.
 			/* TODO: Create a RefLocationMap, so location routines are only done once. */
 			
 			/* Conventions Check First */
-			checkPath = instance.ModelsPath & "/" & replace(arguments.name,".","/","all") & ".cfc";
+			checkPath = replace(instance.ModelsPath,".","/","all") & "/" & replace(arguments.name,".","/","all") & ".cfc";
 			
 			/* Class Path Determination */
 			if( fileExists(checkPath) ){
@@ -288,7 +288,7 @@ Description: This is the framework's simple bean factory.
 				for(x=1; x lte listLen(extPaths);x=x+1){
 					/* Compose Object Location */
 					thisExtPath = listGetAt(extPaths,x);
-					checkExternalPath = thisExtPath  & "/" & replace(arguments.name,".","/","all") & ".cfc";
+					checkExternalPath = "/" & replace(thisExtPath,".","/","all")  & "/" & replace(arguments.name,".","/","all") & ".cfc";
 					/* Check if located */
 					if( fileExists(expandPath(checkExternalPath)) ){
 						return  thisExtPath & "." & arguments.name;
