@@ -1,0 +1,54 @@
+<?xml version="1.0"?>
+<!-- ====================================================================== 
+     Mar 18, 2007 1:30:20 AM                                                        
+
+     MockBox Build                                                                
+     ====================================================================== -->
+<project name="mockbox.newbuild" default="build" basedir="../../">
+
+	<!--Build Properties-->
+	<property name="dir.userlocation"	value="/Users/lmajano/Documents" />
+	<property name="dir.exports"		value="${dir.userlocation}/MyDocs/My Programs/exports" />
+	<property name="dir.build" 			value="${dir.exports}/coldbox" />
+	<!-- FTP -->
+	<property name="ftp.server"  		value="ftp.coldboxframework.com" />
+	<property name="ftp.remotedir" 		value="/httpdocs/builds" />
+	
+	<!-- Init -->
+	<target name="init" description="Init">
+		<!-- Version -->
+		<input addproperty="mockbox.version" message="MockBox Version" />
+	</target>
+	
+	<!-- FTP Upload of new build -->
+	<target name="ftp.deploy" depends="build">
+       	<input message="Please enter ftp server username:" addproperty="ftp.username" />
+       	<input message="Please enter fpt server password:" addproperty="ftp.password" />
+      	
+		<ftp action="send" server="${ftp.server}" userid="${ftp.username}" password="${ftp.password}" 
+       		remotedir="${ftp.remotedir}" passive="yes" verbose="yes">
+        	<fileset file="${dir.exports}/mockbox_{mockbox.version}.zip" />
+       	</ftp>		
+	</target>
+	
+	<!--build-->
+	<target name="build" description="Build a new logbox distribution" depends="init">
+      	<!-- Copy src -->	
+      	<copy todir="${dir.build}/system/testing">
+        	<fileset dir="system/testing" />
+        </copy>
+		<copy todir="${dir.build}/system/util">
+        	<fileset dir="system/util" />
+        </copy>
+		
+		<!--Copy text files to root folder-->
+		<copy todir="${dir.build}/">
+			<fileset file="system/config/license.txt" />
+			<fileset file="system/testing/readme.txt" />						
+		</copy>
+				
+		<!-- Zip Bundle -->
+		<zip destfile="${dir.exports}/mockbox_{mockbox.version}.zip" basedir="${dir.build}"></zip>
+		
+    </target>
+</project>

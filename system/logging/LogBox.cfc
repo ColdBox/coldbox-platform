@@ -33,7 +33,7 @@ Description :
 		// Category Appenders
 		instance.categoryAppenders = "";	
 		// Version
-		instance.version = "1.0";	 
+		instance.version = "1.0 Beta";	 
 		// Configuration object
 		instance.config = "";	
 	</cfscript>
