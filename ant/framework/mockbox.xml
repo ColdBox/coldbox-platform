@@ -48,7 +48,7 @@
 		</copy>
 				
 		<!-- Zip Bundle -->
-		<zip destfile="${dir.exports}/mockbox_{mockbox.version}.zip" basedir="${dir.build}"></zip>
+		<zip destfile="${dir.exports}/mockbox_${mockbox.version}.zip" basedir="${dir.build}"></zip>
 		
     </target>
 </project>
