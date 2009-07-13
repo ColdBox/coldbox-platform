@@ -81,14 +81,14 @@ Quick and Dirty Feed Dump:
 					slash = getSetting("OSFileSeparator",true);
 					/* Cache location */
 					if( not settingExists('FeedReader_cacheLocation') ){
-						throw(message="The setting FeedReader_cacheLocation is missing, please create it.",type='plugins.FeedReader.InvalidSettingException');
+						$throw(message="The setting FeedReader_cacheLocation is missing, please create it.",type='plugins.FeedReader.InvalidSettingException');
 					}
 					/* Tests if the directory exists: full path */
 					/* Try to locate the path */
 					cacheLocation = locateDirectoryPath(getSetting('FeedReader_cacheLocation'));
 					/* Validate it */
 					if( len(cacheLocation) eq 0 ){
-						throw('The cache location directory could not be found, please check again. #getSetting('FeedReader_cacheLocation')#','','plugins.FeedReader.InvalidCacheLocationException');
+						$throw('The cache location directory could not be found, please check again. #getSetting('FeedReader_cacheLocation')#','','plugins.FeedReader.InvalidCacheLocationException');
 					}
 					/* Set the location */
 					setCacheLocation(cacheLocation);
@@ -324,7 +324,7 @@ Quick and Dirty Feed Dump:
 			var FeedStruct = structnew();
 			/* Check if using cache */
 			if( not getUseCache() ){
-				throw("You are trying to use a method that needs caching enabled.","Please look at the plug-in settings or just use the 'retrieveFeed' method.","plugins.FeedReader.InvalidSettingException");
+				$throw("You are trying to use a method that needs caching enabled.","Please look at the plug-in settings or just use the 'retrieveFeed' method.","plugins.FeedReader.InvalidSettingException");
 			}
 			/* Check for itemsType */
 			if( not reFindnocase("^(query|array)$",arguments.itemsType) ){
@@ -417,7 +417,7 @@ Quick and Dirty Feed Dump:
 		<cfscript>
 			// check to make sure arguments.xmlDoc is a XML document, not just a URL or path pointing to a feed
 			if( not IsXML(arguments.xmlDoc) ) {
-				throw('There is a problem with the xmlDoc provided with the parseFeed method, it is not a variable containing a valid xml document','The xmlDoc contains: #htmlEditFormat(toString(arguments.xmlDoc))#','plugins.FeedReader.FeedParsingException');
+				$throw('There is a problem with the xmlDoc provided with the parseFeed method, it is not a variable containing a valid xml document','The xmlDoc contains: #htmlEditFormat(toString(arguments.xmlDoc))#','plugins.FeedReader.FeedParsingException');
 			}
 			// set feed type structure
 			feed.specs = StructNew();

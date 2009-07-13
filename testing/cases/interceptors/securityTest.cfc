@@ -223,7 +223,7 @@ Description :
 				return getController().getColdBoxOCM().get(cachekey);
 			}
 			else
-				throw("Invalid interceptor");
+				$throw("Invalid interceptor");
 		</cfscript>
 	</cffunction>
 	

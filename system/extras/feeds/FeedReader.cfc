@@ -330,7 +330,7 @@ Description :
 			if( structKeyExists(arguments.entity.xmlAttributes,"type") ){
 				if( arguments.entity.xmlAttributes.type is "xhtml" ){
 					if( not structKeyExists(arguments.entity,"div") ){
-						throw("Invalid Atom data: XHTML text construct does not contain a child DIV tag.",'','plugins.FeedReader.InvalidAtomConstruct');	
+						$throw("Invalid Atom data: XHTML text construct does not contain a child DIV tag.",'','plugins.FeedReader.InvalidAtomConstruct');	
 					}
 					for(x=1;x lte ArrayLen(arguments.entity.xmlChildren);x=x+1){
 						results = results & arguments.entity.xmlChildren[x].toString();

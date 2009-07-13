@@ -146,7 +146,7 @@ Description :
 				}
 				catch(Any e){
 					getPlugin("logger").error("Error autowiring handler #getmetadata(targetObject).name#. #e.message# #e.detail#");
-					throw(message="Error autowiring handler #getmetadata(targetObject).name#",detail="#e.stacktrace#",type="Autowire.AutowireException");
+					$throw(message="Error autowiring handler #getmetadata(targetObject).name#",detail="#e.stacktrace#",type="Autowire.AutowireException");
 				}
 			}	
 		</cfscript>

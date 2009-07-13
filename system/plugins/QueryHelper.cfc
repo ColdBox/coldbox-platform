@@ -218,7 +218,7 @@ Description :
 		    }
 		    
 		 }catch(Any e){
-			throw("Error in doInnerJoin():","#e.Detail#<br>#e.message#","ColdBox.plugins.QueryHelper.InvalidInnerJoinException");
+			$throw("Error in doInnerJoin():","#e.Detail#<br>#e.message#","ColdBox.plugins.QueryHelper.InvalidInnerJoinException");
 		 }
 		</cfscript>
 		
@@ -314,7 +314,7 @@ Description :
 		    }
 		    
 		 }catch(Any e){
-			throw("Error in doLeftOuterJoin():","#e.Detail#<br>#e.message#","ColdBox.plugins.QueryHelper.InvalidInnerJoinException");
+			$throw("Error in doLeftOuterJoin():","#e.Detail#<br>#e.message#","ColdBox.plugins.QueryHelper.InvalidInnerJoinException");
 		 }
 		</cfscript>
 		
@@ -344,7 +344,7 @@ Description :
 	                                    );
             }
         }Catch(Any e){
-        	throw("Error in doQueryAppend():","#e.Detail#<br>#e.message#","ColdBox.plugins.QueryHelper.InvalidQueryAppendException");
+        	$throw("Error in doQueryAppend():","#e.Detail#<br>#e.message#","ColdBox.plugins.QueryHelper.InvalidQueryAppendException");
         }    
            return QryReturn;
         </cfscript>
@@ -391,7 +391,7 @@ Description :
             return sReturn;
             
          }Catch(Any e){
-			throw("Error in getUnMatchedElements():","#e.Detail#<br>#e.message#","ColdBox.plugins.QueryHelper.InvalidElementLoopException");
+			$throw("Error in getUnMatchedElements():","#e.Detail#<br>#e.message#","ColdBox.plugins.QueryHelper.InvalidElementLoopException");
 		 }
         </cfscript>
 		
@@ -421,7 +421,7 @@ Description :
             return sReturn;
             
          }Catch(Any e){
-			throw("Error in getUniqueElements():","#e.Detail#<br>#e.message#","ColdBox.plugins.QueryHelper.InvalidElementLoopException");
+			$throw("Error in getUniqueElements():","#e.Detail#<br>#e.message#","ColdBox.plugins.QueryHelper.InvalidElementLoopException");
 		 }
         </cfscript>
 		
@@ -458,7 +458,7 @@ Description :
             return QryReturn;
             
           }Catch(Any e){
-			throw("Error in QrySetCell():","#e.Detail#<br>#e.message#","ColdBox.plugins.QueryHelper.InvalidQrySetCellException");
+			$throw("Error in QrySetCell():","#e.Detail#<br>#e.message#","ColdBox.plugins.QueryHelper.InvalidQrySetCellException");
 		 }
         </cfscript>
 		 

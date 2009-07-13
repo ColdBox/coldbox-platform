@@ -27,13 +27,13 @@ Description :
 			
 			/* Property Checks */
 			if( not propertyExists('datasourceAlias') ){
-				throw("No datasource name passed","Please pass in the name of the datasource to use");
+				$throw("No datasource name passed","Please pass in the name of the datasource to use");
 			}
 			if( not propertyExists('configPath') ){
-				throw("No configpath passed","Please pass in the location of the configPath file");
+				$throw("No configpath passed","Please pass in the location of the configPath file");
 			}
 			if( not propertyExists('definitionPath') ){
-				throw("No definitionPath passed","Please pass in the location of the definitionPath");
+				$throw("No definitionPath passed","Please pass in the location of the definitionPath");
 			}
 			/* Optional Cache Key Vars */
 			if( not propertyExists('TransferFactoryCacheKey') ){

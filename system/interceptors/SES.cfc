@@ -42,7 +42,7 @@ Description :
 			
 			/* Verify the properties */
 			if( not propertyExists('configFile') ){
-				throw('The configFile property has not been defined. Please define it.','','interceptors.SES.configFilePropertyNotDefined');
+				$throw('The configFile property has not been defined. Please define it.','','interceptors.SES.configFilePropertyNotDefined');
 			}
 			
 			/* Setup the config Path */
@@ -50,10 +50,10 @@ Description :
 			
 			/* We are ready to roll. Import config to setup the routes. */
 			try{
-				include(configFilePath);
+				$include(configFilePath);
 			}
 			catch(Any e){
-				throw("Error including config file: #e.message#",e.detail,"interceptors.SES.executingConfigException");
+				$throw("Error including config file: #e.message#",e.detail,"interceptors.SES.executingConfigException");
 			}
 			
 			/* Loose Matching Property: default = false */
@@ -63,7 +63,7 @@ Description :
 			
 			/* Validate the base URL */
 			if ( len(getBaseURL()) eq 0 ){
-				throw('The baseURL property has not been defined. Please define it using the setBaseURL() method.','','interceptors.SES.invalidPropertyException');
+				$throw('The baseURL property has not been defined. Please define it using the setBaseURL() method.','','interceptors.SES.invalidPropertyException');
 			}
 			
 			/* Save the base URL in the application settings */
@@ -197,7 +197,7 @@ Description :
 				thisRoute.action = oJSON.decode(arguments.action);
 			}
 			catch(Any e){
-				throw("Invalid JSON action","The action #arguments.action# is not valid JSON","SES.InvalidJSONAction");
+				$throw("Invalid JSON action","The action #arguments.action# is not valid JSON","SES.InvalidJSONAction");
 			}
 		}
 		

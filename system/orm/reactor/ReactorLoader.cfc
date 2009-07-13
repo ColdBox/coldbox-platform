@@ -26,21 +26,21 @@ Description :
 	<cfscript >
 		/* Property Checks */
 		if( not propertyExists('dsnAlias') ){
-			throw("No datasource alias passed",
+			$throw("No datasource alias passed",
 				  "Please pass in the alias of the datasource to use. This is defined in your datasources in your configuration.",
 				  "ReactorLoader.InvalidPropertyException");
 		}
 		if( not propertyExists('pathToConfigXml') ){
-			throw("No pathToConfigXML passed","Please pass in the location of the pathToConfigXml","ReactorLoader.InvalidPropertyException");
+			$throw("No pathToConfigXML passed","Please pass in the location of the pathToConfigXml","ReactorLoader.InvalidPropertyException");
 		}
 		if( not propertyExists('project') ){
-			throw("No project name passed","Please pass in the name of the project to use","ReactorLoader.InvalidPropertyException");
+			$throw("No project name passed","Please pass in the name of the project to use","ReactorLoader.InvalidPropertyException");
 		}
 		if( not propertyExists('mapping') ){
-			throw("No mapping passed","Please pass in the mapping location","ReactorLoader.InvalidPropertyException");
+			$throw("No mapping passed","Please pass in the mapping location","ReactorLoader.InvalidPropertyException");
 		}
 		if( not propertyExists('mode') ){
-			throw("No mode passed","Please pass in the mode to use","ReactorLoader.InvalidPropertyException");
+			$throw("No mode passed","Please pass in the mode to use","ReactorLoader.InvalidPropertyException");
 		}
 		
 		/* Optional Properties */
@@ -69,7 +69,7 @@ Description :
 			
 			/* Check Datasource Alias */
 			if( not structKeyExists(datasources, getProperty('dsnAlias')) ){
-				throw("No datasource alias #getProperty('dsnAlias')# found.",
+				$throw("No datasource alias #getProperty('dsnAlias')# found.",
 					  "Please pass in the alias of the datasource to use that exists in your datasources section of your config file.",
 					  "ReactorLoader.DSNAliasNotFoundException");
 			}

@@ -104,7 +104,7 @@ Description :
 		</function>
 		
 		<!--Framework Super Type Declarations -->
-		<function creator="8" name="abort" returns="void">
+		<function creator="8" name="$abort" returns="void">
 			<help><![CDATA[
 				Facade to cfabort.
 			]]></help>
@@ -126,7 +126,7 @@ Description :
 			</parameter>
 		</function>
 		
-		<function creator="8" name="dump" returns="void">
+		<function creator="8" name="$dump" returns="void">
 			<help><![CDATA[
 				Facade to cfdump
 			]]></help>
@@ -134,6 +134,15 @@ Description :
 				<help><![CDATA[
 					The variable to dump
 				]]></help>
+			</parameter>
+			<parameter name="isAbort" type="boolean" required="false">
+				<help><![CDATA[
+					Abort the request also. Defaults to false.
+				]]></help>
+				<values default="false">
+					<value option="&quot;true&quot;"/>
+					<value option="&quot;false&quot;"/>
+				</values>
 			</parameter>
 		</function>
 		
@@ -454,7 +463,7 @@ Description :
 			</parameter>
 		</function>
 		
-		<function creator="8" name="htmlhead" returns="void">
+		<function creator="8" name="$htmlhead" returns="void">
 			<help><![CDATA[
 				Facade to cfhtmlhead
 			]]></help>
@@ -465,7 +474,7 @@ Description :
 			</parameter>
 		</function>
 		
-		<function creator="8" name="include" returns="void">
+		<function creator="8" name="$include" returns="void">
 			<help><![CDATA[
 				Facade to cfinclude
 			]]></help>
@@ -698,7 +707,7 @@ Description :
 			</parameter>
 		</function>
 		
-		<function creator="8" name="throw" returns="void">
+		<function creator="8" name="$throw" returns="void">
 			<help><![CDATA[
 				 Facade to cfthrow
 			]]></help>
@@ -719,6 +728,17 @@ Description :
 				<values default="">
 					<value option="&quot;framework&quot;"/>
 				</values>
+			</parameter>
+		</function>
+		
+		<function creator="8" name="$rethrow" returns="void">
+			<help><![CDATA[
+				 Facade to rethrow
+			]]></help>
+			<parameter name="throwObject" type="any" required="true">
+				<help><![CDATA[
+					The object to rethrow
+				]]></help>
 			</parameter>
 		</function>
 				

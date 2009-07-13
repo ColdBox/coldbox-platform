@@ -6,7 +6,7 @@
 	</description>
 
 	<!-- ColdBox Functions -->
-	<function pattern="abort()" doctypes="ColdFusion,CFC" />
+	<function pattern="$abort()" doctypes="ColdFusion,CFC" />
 	<function pattern="announceInterception(string:state ,[struct:interceptorData])" doctypes="ColdFusion,CFC" />
 	<function pattern="dump(var)" doctypes="ColdFusion,CFC" />
 	<function pattern="getColdboxOCM()" doctypes="ColdFusion,CFC" />
@@ -23,11 +23,12 @@
 	<function pattern="getSetting(string:name,[boolean:FWSetting])" doctypes="ColdFusion,CFC" />
 	<function pattern="getSettingsBean()" doctypes="ColdFusion,CFC" />
 	<function pattern="getSettingStructure([boolean:FWSetting],[boolean:DeepCopyFlag])" doctypes="ColdFusion,CFC" />
-	<function pattern="htmlhead(content)" doctypes="ColdFusion,CFC" />
-	<function pattern="include(string:template)" doctypes="ColdFusion,CFC" />
+	<function pattern="$htmlhead(content)" doctypes="ColdFusion,CFC" />
+	<function pattern="$include(string:template)" doctypes="ColdFusion,CFC" />
 	<function pattern="includeUDF(string:udflibrary)" doctypes="ColdFusion,CFC" />
 	<function pattern="persistVariables(string:persist)" doctypes="ColdFusion,CFC" />
 	<function pattern="relocate(string:url,[boolean:addtoken])" doctypes="ColdFusion,CFC" />
+	<function pattern="$rethrow(any:throwObject)" doctypes="ColdFusion,CFC" />
 	<function pattern="renderExternalView(string:view)" doctypes="ColdFusion,CFC" />
 	<function pattern="renderView(string:view,[boolean:cache],[numeric:cacheTimeout],[numeric:cacheLastAccessTimeout])" doctypes="ColdFusion,CFC" />
 	<function pattern="runEvent(string:event,[boolean:prepostExempt],[boolean:private])" doctypes="ColdFusion,CFC" />
@@ -35,7 +36,7 @@
 	<function pattern="setNextRoute(string:route,[string:persist])" doctypes="ColdFusion,CFC" />
 	<function pattern="setSetting(string:name,value)" doctypes="ColdFusion,CFC" />
 	<function pattern="settingExists(string:name,[boolean:FWSetting])" doctypes="ColdFusion,CFC" />
-	<function pattern="throw(string:message,[string:detail],[string:type])" doctypes="ColdFusion,CFC" />
+	<function pattern="$throw(string:message,[string:detail],[string:type])" doctypes="ColdFusion,CFC" />
 
 	<!-- ColdBox Menues/Scopes: Event, Controller and Plugins -->
 	<menu pattern="Controller." doctypes="ColdFusion,CFC">

@@ -230,15 +230,8 @@ id , name , mail
 		<cfreturn getController().getPlugin("BeanFactory").getModel(argumentCollection=arguments)>
 	</cffunction>
 	
-	<!--- Dump facade --->
-	<cffunction name="dumpit" access="private" hint="Facade for cfmx dump" returntype="void">
-		<cfargument name="var" required="yes" type="any">
-		<cfargument name="isAbort" type="boolean" default="false" required="false" hint="Abort also"/>
-		<cfdump var="#var#">
-		<cfif arguments.isAbort><cfabort></cfif>
-	</cffunction>
-	<!--- Throwit facade --->
-	<cffunction name="throwit" access="private" hint="Facade for cfthrow" output="false">
+	<!--- Throw Facade --->
+	<cffunction name="$throw" access="private" hint="Facade for cfthrow" output="false">
 		<!--- ************************************************************* --->
 		<cfargument name="message" 	type="string" 	required="yes">
 		<cfargument name="detail" 	type="string" 	required="no" default="">
@@ -246,16 +239,33 @@ id , name , mail
 		<!--- ************************************************************* --->
 		<cfthrow type="#arguments.type#" message="#arguments.message#"  detail="#arguments.detail#">
 	</cffunction>
+	
+	<!--- Dump facade --->
+	<cffunction name="$dump" access="private" hint="Facade for cfmx dump" returntype="void">
+		<cfargument name="var" required="yes" type="any">
+		<cfargument name="isAbort" type="boolean" default="false" required="false" hint="Abort also"/>
+		<cfdump var="#var#">
+		<cfif arguments.isAbort><cfabort></cfif>
+	</cffunction>
+	
 	<!--- Rethrow Facade --->
-	<cffunction name="rethrowit" access="private" returntype="void" hint="Rethrow facade" output="false" >
+	<cffunction name="$rethrow" access="private" returntype="void" hint="Rethrow facade" output="false" >
 		<cfargument name="throwObject" required="true" type="any" hint="The cfcatch object">
 		<cfthrow object="#arguments.throwObject#">
 	</cffunction>
+	
 	<!--- Abort Facade --->
-	<cffunction name="abortit" access="private" hint="Facade for cfabort" returntype="void" output="false">
+	<cffunction name="$abort" access="private" hint="Facade for cfabort" returntype="void" output="false">
 		<cfabort>
 	</cffunction>
 	
+	<!--- Include Facade --->
+	<cffunction name="$include" access="private" hint="Facade for cfinclude" returntype="void" output="false">
+		<cfargument name="template" type="string">
+		<cfinclude template="#template#">
+	</cffunction>
+	
+	<!--- Query Sim --->
 	<cffunction name="querySim" access="private" returntype="query" hint="Query Simulator" output="false" >
 		<cfargument name="queryData"  type="string" required="true" hint="The data to create queries">
 		<cfscript>

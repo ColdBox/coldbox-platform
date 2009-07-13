@@ -69,10 +69,10 @@ Description: This is the framework's simple bean factory.
 			/* Check if File Exists, else skip and log */
 			if( fileExists(expandPath(configFilePath)) ){
 				try{
-					include(configFilePath);
+					$include(configFilePath);
 				}
 				catch(Any e){
-					throw("Error including models definition file #configFilePath#. Error: #e.message#",
+					$throw("Error including models definition file #configFilePath#. Error: #e.message#",
 						   e.detail,
 						   "BeanFactory.ModelsDefinitionFileIncludeException");
 				}
@@ -132,7 +132,7 @@ Description: This is the framework's simple bean factory.
 				return beanInstance;
 			}
 			Catch(Any e){
-				throw("Error creating bean: #arguments.bean#","#e.Detail#<br>#e.message#","ColdBox.plugins.BeanFactory.BeanCreationException");
+				$throw("Error creating bean: #arguments.bean#","#e.Detail#<br>#e.message#","ColdBox.plugins.BeanFactory.BeanCreationException");
 			}
 		</cfscript>
 	</cffunction>
@@ -483,7 +483,7 @@ Description: This is the framework's simple bean factory.
 				else{
 		        	arguments.keyTypeAsString = arguments.memento[key].getClass().toString();
 				}
-				throw(type="ColdBox.plugins.BeanFactory.PopulateBeanException",
+				$throw(type="ColdBox.plugins.BeanFactory.PopulateBeanException",
 					  message="Error populating bean #getMetaData(beanInstance).name# with argument #key# of type #arguments.keyTypeAsString#.",
 					  detail="#e.Detail#<br>#e.message#");
 			}

@@ -223,7 +223,7 @@ Modification History:
 			foundFilePath = locateFilePath(getIOCDefinitionFile());
 			/* Validate it */
 			if( len(foundFilePath) eq 0 ){
-				throw("The definition file: #getIOCDefinitionFile()# does not exist. Please check your path","","plugins.IOC.InvalidDefitinionFile");
+				$throw("The definition file: #getIOCDefinitionFile()# does not exist. Please check your path","","plugins.IOC.InvalidDefitinionFile");
 			}
 			/* Save the found location path */
 			setExpandedIOCDefinitionFile( foundFilePath );

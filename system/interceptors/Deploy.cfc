@@ -66,7 +66,7 @@ any kind of cleanup code or anything you like:
 			
 			/* Verify the properties */
 			if( not propertyExists('tagFile') ){
-				throw('The tagFile property has not been defined. Please define it.','','Deploy.tagFilePropertyNotDefined');
+				$throw('The tagFile property has not been defined. Please define it.','','Deploy.tagFilePropertyNotDefined');
 			}
 			
 			/* Try to locate the path */
@@ -74,7 +74,7 @@ any kind of cleanup code or anything you like:
 			
 			/* Validate it */
 			if( len(instance.tagFilepath) eq 0 ){
-				throw('Tag file not found: #getProperty('tagFile')#. Please check again.','','interceptors.Deploy.tagFileNotFound');
+				$throw('Tag file not found: #getProperty('tagFile')#. Please check again.','','interceptors.Deploy.tagFileNotFound');
 			}
 			
 			/* Save TimeStamp */
