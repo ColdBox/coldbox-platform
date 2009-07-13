@@ -20,8 +20,29 @@ Description :
 			this.BLUEDRAGON = "BLUEDRAGON";
 			this.RAILO = "RAILO";
 			
-			/* JDK Version */
+			// JDK Version
 			this.JDK_VERSION = CreateObject("java", "java.lang.System").getProperty("java.version");
+			
+			// Engine Turn off/on features
+			instance = structnew();
+			
+			instance.adobe 				= structnew();
+			instance.adobe.mt 			= true;
+			instance.adobe.json 		= true;
+			instance.adobe.ramResource	= true;
+			instance.adobe.onmm			= true;
+			
+			instance.railo = structnew();
+			instance.railo.mt   		= true;
+			instance.railo.json 		= true;
+			instance.railo.ramResource 	= true;
+			instance.railo.onmm 	= true;
+			
+			instance.bluedragon 			= structnew();
+			instance.bluedragon.mt 			= true;
+			instance.bluedragon.json 		= true;
+			instance.bluedragon.ramResource = true;
+			instance.bluedragon.onmm 		= true;
 			
 			return this;
 		</cfscript>
@@ -50,6 +71,39 @@ Description :
 		</cfscript>
 	</cffunction>
 	
+	<!--- isRAMResource --->
+	<cffunction name="isRAMResource" output="false" access="public" returntype="boolean" hint="Check if the engine supports RAM writing">
+		<cfscript>
+			var version = getVersion();
+			var engine = getEngine();
+			
+			if ( (engine eq this.ADOBE and version gte 9) or
+				 (engine eq this.RAILO) ){
+				return (true AND featureCheck("ramResource",engine));	 
+			}
+			else{
+				return false;
+			}
+		</cfscript>
+	</cffunction>
+	
+	<!--- Test if we can use onMissingMethod --->
+	<cffunction name="isOnMM" access="public" returntype="boolean" hint="Checks if the engine is onMissingMethod capable." output="false" >
+		<cfscript>
+			var version = getVersion();
+			var engine = getEngine();
+			
+			if ( (engine eq this.ADOBE and version gte 8) or
+				 (engine eq this.BLUEDRAGON and version gte 7) or
+				 (engine eq this.RAILO) ){
+				return (true AND featureCheck("onmm",engine));
+			}
+			else{
+				return false;
+			}
+		</cfscript>
+	</cffunction>
+	
 	<!--- Test if we can use MT --->
 	<cffunction name="isMT" access="public" returntype="boolean" hint="Checks if the engine is MT." output="false" >
 		<cfscript>
@@ -59,7 +113,7 @@ Description :
 			if ( (engine eq this.ADOBE and version gte 8) or
 				 (engine eq this.BLUEDRAGON and version gte 7) or
 				 (engine eq this.RAILO) ){
-				return true;	 
+				return (true AND featureCheck("mt",engine));
 			}
 			else{
 				return false;
@@ -75,7 +129,7 @@ Description :
 			
 			if ( (engine eq this.ADOBE and version gte 8) or
 				 (engine eq this.RAILO and version gte 8) ){
-				return true;	 
+				return (true AND featureCheck("json",engine));	 
 			}
 			else{
 				return false;
@@ -98,8 +152,14 @@ Description :
 			}
 		</cfscript>
 	</cffunction>
-	
 
 <!------------------------------------------- PRIVATE ------------------------------------------->
 
+	<!--- featureCheck --->
+	<cffunction name="featureCheck" output="false" access="private" returntype="boolean" hint="Feature Active Check">
+		<cfargument name="feature" type="string" required="true"/>
+		<cfargument name="engine"  type="string" required="true"/>
+		<cfreturn instance[arguments.engine][arguments.feature]>		
+	</cffunction>
+	
 </cfcomponent>
