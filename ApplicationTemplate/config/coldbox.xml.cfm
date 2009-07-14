@@ -171,9 +171,7 @@
 			<Property name='configFile'>config/environments.xml.cfm</Property>
 		</Interceptor>
 		<!-- USE AUTOWIRING -->
-		<Interceptor class="coldbox.system.interceptors.Autowire">
-			<Property name='enableSetterInjection'>true</Property>
-		</Interceptor>
+		<Interceptor class="coldbox.system.interceptors.Autowire" />
 		<!-- USE SES -->
 		<Interceptor class="coldbox.system.interceptors.SES">
 			<Property name="configFile">config/Routes.cfm</Property>
