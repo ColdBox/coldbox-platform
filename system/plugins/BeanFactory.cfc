@@ -277,7 +277,7 @@ Description: This is the framework's simple bean factory.
 			/* TODO: Create a RefLocationMap, so location routines are only done once. */
 			
 			/* Conventions Check First */
-			checkPath = replace(instance.ModelsPath,".","/","all") & "/" & replace(arguments.name,".","/","all") & ".cfc";
+			checkPath = instance.ModelsPath & "/" & replace(arguments.name,".","/","all") & ".cfc";
 			
 			/* Class Path Determination */
 			if( fileExists(checkPath) ){
