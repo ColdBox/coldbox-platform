@@ -88,47 +88,29 @@ Modification History:
 	</cffunction>
 
 	<cffunction name="getValue" returntype="Any" access="Public" hint="I Get a value from the request collection." output="false">
-		<cfargument name="name" hint="Name of the variable to get from the request collection: String" type="any">
-		<cfargument name="defaultValue"
-					hint="Default value to return if not found.There are no default values for complex structures. You can send [array][struct][query] and the
-						  method will return the empty complex variable.Please remember to include the brackets, syntax sensitive.You can also send complex variables
-						  as the defaultValue argument."
-					type="any" required="No" default="NONE">
+		<cfargument name="name"         type="any" required="true" hint="Name of the variable to get from the request collection">
+		<cfargument name="defaultValue"	type="any" required="false" default="NONE" hint="Default value to return if not found.">
 		<cfscript>
 			if ( isDefined("instance.context.#arguments.name#") ){
-				return Evaluate("instance.context.#arguments.name#");
+				return structFind(instance.context,arguments.name);
 			}
-			else if ( isSimpleValue(arguments.defaultValue) and arguments.defaultValue eq "NONE" )
-				throwit("The variable: #arguments.name# is undefined in the request collection.","","RequestContextValueNotInRequestCollectionException");
-			else if ( isSimpleValue(arguments.defaultValue) ){
-				if ( refind("\[[A-Za-z]*\]", arguments.defaultValue) ){
-					if ( findnocase("array", arguments.defaultvalue) )
-						return ArrayNew(1);
-					else if ( findnocase("struct", arguments.defaultvalue) )
-						return StructNew();
-					else if ( findnocase("query", arguments.defaultvalue) )
-						return QueryNew("");
-				}
-				else
-					return arguments.defaultValue;
+			else if ( isSimpleValue(arguments.defaultValue) and arguments.defaultValue eq "NONE" ){
+				$throw("The variable: #arguments.name# is undefined in the request collection.","","RequestContext.ValueNotFound");
 			}
-			else
+			else{
 				return arguments.defaultValue;
+			}
 		</cfscript>
 	</cffunction>
 	
 	<cffunction name="getTrimValue" returntype="Any" access="Public" hint="I Get a value from the request collection and if simple value, I will trim it." output="false">
-		<cfargument name="name" hint="Name of the variable to get from the request collection: String" type="any">
-		<cfargument name="defaultValue"
-					hint="Default value to return if not found.There are no default values for complex structures. You can send [array][struct][query] and the
-						  method will return the empty complex variable.Please remember to include the brackets, syntax sensitive.You can also send complex variables
-						  as the defaultValue argument."
-					type="any" required="No" default="NONE">
+		<cfargument name="name"         type="any" required="true" hint="Name of the variable to get from the request collection">
+		<cfargument name="defaultValue"	type="any" required="false" default="NONE" hint="Default value to return if not found.">
 		<cfscript>
 			var value = getValue(argumentCollection=arguments);
 			/* Verify if Simple */
-			if( isSimpleValue(value) ){ value = trim(value); }
-			return value;
+			if( isSimpleValue(value) ){ return trim(value); }
+			else{ return value;	}
 		</cfscript>
 	</cffunction>
 
@@ -142,7 +124,7 @@ Modification History:
 		<cfargument name="name"  hint="The name of the variable to remove." type="string" >
 		<cfscript>
 			if( valueExists(arguments.name) ){
-				structDelete(instance.context,"#arguments.name#");
+				structDelete(instance.context,arguments.name);
 			}
 		</cfscript>
 	</cffunction>
@@ -484,7 +466,7 @@ Modification History:
 			var rd = structnew();
 			/* Validate */
 			if( not reFindnocase("^(JSON|WDDX|XML|PLAIN)$",arguments.type) ){
-				throwit("Invalid rendering type","The type you sent #arguments.type# is not a valid rendering type. Valid types are JSON,XML,WDDX and PLAIN","RequestContext.InvalidRenderTypeException");
+				$throw("Invalid rendering type","The type you sent #arguments.type# is not a valid rendering type. Valid types are JSON,XML,WDDX and PLAIN","RequestContext.InvalidRenderTypeException");
 			}
 			/* Populate */
 			rd.type = arguments.type;
@@ -554,7 +536,7 @@ Modification History:
 
 <!------------------------------------------- PRIVATE ------------------------------------------->
 
-	<cffunction name="throwit" access="private" hint="Facade for cfthrow" output="false">
+	<cffunction name="$throw" access="private" hint="Facade for cfthrow" output="false">
 		<cfargument name="message" 	type="string" 	required="yes">
 		<cfargument name="detail" 	type="string" 	required="no" default="">
 		<cfargument name="type"  	type="string" 	required="no" default="Framework">
