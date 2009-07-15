@@ -33,7 +33,7 @@ Description :
 		// Category Appenders
 		instance.categoryAppenders = "";	
 		// Version
-		instance.version = "1.0 Beta";	 
+		instance.version = "1.0 Beta 2";	 
 		// Configuration object
 		instance.config = "";	
 	</cfscript>
@@ -122,22 +122,25 @@ Description :
 			//trim cat, just in case
 			arguments.category = trim(arguments.category);
 			
-			//Is logger created already?
+			//Is logger by category name created already?
 			if( structKeyExists(instance.loggerRegistry,arguments.category) ){
 				return instance.loggerRegistry[arguments.category];
 			}
-			
-			//Do we have a cat definition?
+			//Do we have a category definition, so we can build it?
 			if( getConfig().categoryExists(arguments.category) ){
 				categoryConfig = getConfig().getCategory(arguments.category);
+				// Setup creation arguments
 				args.category = categoryConfig.name;
 				args.levelMin = categoryConfig.levelMin;
 				args.levelMax = categoryConfig.levelMax;
 				args.appenders = getAppendersMap(categoryConfig.appenders);
 			}
 			else{
-				// Do
+				// Setup new category name
 				args.category = arguments.category;
+				// Do Category Inheritance? or else just return the root logger.
+				root = locateCategoryParentLogger(arguments.category);
+				// Setup the category levels according to parent found.
 				args.levelMin = root.getLevelMin();
 				args.levelMax = root.getLevelMax();
 			}					
@@ -173,6 +176,31 @@ Description :
 	</cffunction>
 
 <!------------------------------------------- PRIVATE ------------------------------------------>
+	
+	<!--- locateCategoryParentLogger --->
+	<cffunction name="locateCategoryParentLogger" output="false" access="private" returntype="any" hint="Get a parent logger according to category convention inheritance.  If not found, it returns the root logger.">
+		<cfargument name="category" type="string" required="true" hint="The category name to investigate for parents."/>
+		<cfscript>
+			// Get parent category name shortened by one.
+			var parentCategory = listDeleteAt(arguments.category, listLen(arguments.category,"."), ".");
+			
+			// Check if parent Category is empty
+			if( len(parentCategory) EQ 0 ){
+				// Just return the root logger, nothing found.
+				return getRootLogger();
+			}			
+			// Does it exist already in the instantiated loggers?
+			if( structKeyExists(instance.loggerRegistry,parentCategory) ){
+				return instance.loggerRegistry[parentCategory];
+			}
+			// Do we need to create it, lazy loading?
+			if( getConfig().categoryExists(arguments.category) ){
+				return getLogger(arguments.category);	
+			}
+			// Else, it was not located, recurse
+			return locateCategoryParentLogger(parentCategory);			
+		</cfscript>
+	</cffunction>
 	
 	<!--- registerAppender --->
 	<cffunction name="registerAppender" output="false" access="private" returntype="any" hint="Register a new appender object in the appender registry.">
