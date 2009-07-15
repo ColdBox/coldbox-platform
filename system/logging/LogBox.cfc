@@ -24,7 +24,7 @@ Description :
 	
 		// private instance scope
 		instance = structnew();
-		// LogBox Unique ID */
+		// LogBox Unique ID
 		instance._hash = hash(createUUID());	
 		// Appenders
 		instance.appenderRegistry = structnew();
@@ -136,6 +136,7 @@ Description :
 				args.appenders = getAppendersMap(categoryConfig.appenders);
 			}
 			else{
+				// Do
 				args.category = arguments.category;
 				args.levelMin = root.getLevelMin();
 				args.levelMax = root.getLevelMax();

@@ -121,7 +121,7 @@ Description :
 	</cffunction>
 	
 	<!--- Get root logger --->
-	<cffunction name="getRoot" access="public" returntype="sruct" output="false" hint="Get the root logger definition.">
+	<cffunction name="getRoot" access="public" returntype="struct" output="false" hint="Get the root logger definition.">
 		<cfreturn instance.rootLogger>
 	</cffunction>
 	
