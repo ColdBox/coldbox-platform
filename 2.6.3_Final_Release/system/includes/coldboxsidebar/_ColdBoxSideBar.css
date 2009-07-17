@@ -1,0 +1,96 @@
+/* 
+********************************************************************************
+Copyright 2005-2008 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+www.coldboxframework.com | www.luismajano.com | www.ortussolutions.com
+********************************************************************************
+Author 	 :	Ernst van der Linden ( evdlinden@gmail.com | http://evdlinden.behindthe.net )
+Date     :	7/31/2008
+Description : Default stylesheet of the SideBar. 
+		
+Modification History:
+08/12/2008 evdlinden:
+*/
+#ColdBoxSideBar table{
+	font-family: Verdana, Tahoma, Arial, Helvetica, sans-serif;	
+	font-size: 10px !important;
+}
+ #ColdBoxSideBar h1 {
+	font-size: 11px !important;
+	color: #CC0001 !important;
+	margin:0 !important;
+	text-transform: uppercase;
+}
+
+#ColdBoxSideBar td {
+	background-color: #fff !important;
+	border-top: 1px solid #EBEBEB !important;
+	border-right: 2px solid #EBEBEB !important;
+	padding: 4px !important;
+	padding-left:7px !important;
+}
+
+#ColdBoxSideBar td.ColdBoxSideBarTop {
+	border-top: 2px solid #EBEBEB !important;
+}
+#ColdBoxSideBar td.bottom {
+	border-bottom: 2px solid #EBEBEB !important;
+}
+
+#ColdBoxSideBar td.ColdBoxSideBarImgBar {
+	padding: 0 !important;
+	border: 0 !important;
+	background-color: transparent !important;
+	width:20px !important;
+}
+
+#ColdBoxSideBar form {
+	background-color: transparent !important;
+	margin:0px !important;
+	padding:0px !important;
+	width:auto !important;
+}
+
+#ColdBoxSideBar input.ColdBoxSideBarCheckBox {
+}
+
+#ColdBoxSideBar .ColdBoxSideBarCheckboxlabel {
+	font-weight:bold !important;
+	color: #0087dd !important;
+	display:inline !important;
+	padding-left:3px !important;
+}
+
+#ColdBoxSideBar select {
+	font-size: 10px !important;
+	width: 75px !important;
+}
+
+#ColdBoxSideBar input {
+	font-size: 10px !important;
+}
+#ColdBoxSideBar input.ColdBoxSideBarBtn {
+	width: 50px !important;
+}
+
+#ColdBoxSideBar input.ColdBoxSideBarText {
+	width: 75px !important;
+}
+
+#ColdBoxSideBar .ColdBoxSideBarInputlabel {
+	font-weight:bold !important;
+	color: #0087dd !important;
+	display:block !important;
+	margin-bottom:3px !important;
+}
+#ColdBoxSideBar a {
+	cursor: pointer !important;
+	font-weight:bold !important;
+	color: #0087dd !important;
+	text-decoration: none !important;
+}
+#ColdBoxSideBar a:hover {
+	text-decoration: underline !important;
+}
+#ColdBoxSideBar table tbody tr td {
+	text-align:left !important;
+}

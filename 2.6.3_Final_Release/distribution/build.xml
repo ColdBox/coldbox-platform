@@ -1,0 +1,76 @@
+<?xml version="1.0"?>
+<!-- ====================================================================== 
+     Mar 17, 2007 3:49:48 PM                                                        
+
+     coldbox.distribution    
+     Prepare a new distribution
+                   
+     lmajano                                                                
+     ====================================================================== -->
+<project name="coldbox.distribution" default="ftp.deploy" basedir="../">
+    <description>
+            Prepare a new distribution
+    </description>
+	
+	<!--Properties-->
+	<property name="ftp.server" 	value="ftp.coldboxframework.com" />
+	<property name="ftp.remotedir" 	value="/httpdocs/distribution" />
+	<!--File Properties-->
+	<property name="coldbox_template" 		value="distribution/templates/coldbox.xml" />
+	<property name="coldbox_destination" 	value="distribution/coldbox.xml" />
+	<property name="coldbox_readme"   		value="system/config/readme.txt" />
+	<!--Dashboard Properties-->
+	<property name="dashboard_template" 	value="distribution/templates/dashboard.xml" />
+	<property name="dashboard_destination" 	value="distribution/dashboard.xml" />
+	<property name="dashboard_readme"  		value="/Users/lmajano/Documents/MyDevelopment/applications/dashboard/src/readme.txt" />
+	
+    <target name="init">
+        <tstamp />
+    	<input message="Enter the coldbox version:"  addproperty="coldbox.version" />
+    	<input message="Enter the dashboard version"  addproperty="dashboard.version" />
+    	<delete file="${coldbox_destination}" />
+    	<delete file="${dashboard_destination}" />
+   	</target>
+	
+    <target name="update" depends="init">
+    	<loadfile property="file.coldbox_readme" srcFile="${coldbox_readme}"/>
+    	<copy file="${coldbox_template}" tofile="${coldbox_destination}" />
+		<replace file="${coldbox_destination}" summary="yes">
+			<replacefilter 
+			    token="@@VERSION@@" 
+			    value="${coldbox.version}"/>
+		<replacefilter 
+			    token="@@DATE@@" 
+			    value="${TODAY}"/>
+		<replacefilter 
+			    token="@@README@@" 
+			    value="${file.coldbox_readme}"/>			
+		</replace>    	
+    	
+    	<loadfile property="file.dashboard_readme" srcFile="${dashboard_readme}"/>
+    	<copy file="${dashboard_template}" tofile="${dashboard_destination}" />
+		<replace file="${dashboard_destination}" summary="yes">
+			<replacefilter 
+			    token="@@VERSION@@" 
+			    value="${dashboard.version}"/>
+		<replacefilter 
+			    token="@@DATE@@" 
+			    value="${TODAY}"/>
+		<replacefilter 
+			    token="@@README@@" 
+			    value="${file.dashboard_readme}"/>			
+		</replace>    	
+	</target>
+	
+	<target name="ftp.deploy" depends="update">
+       	<input message="Please enter ftp server username:" addproperty="ftp.username" />
+       	<input message="Please enter fpt server password:" addproperty="ftp.password" />
+      	<ftp action="send" server="${ftp.server}" userid="${ftp.username}" password="${ftp.password}" 
+       		remotedir="${ftp.remotedir}" passive="yes" verbose="yes">
+        	<fileset file="${coldbox_destination}" />
+      		<fileset file="${dashboard_destination}" />      
+      		<fileset file="distribution/updatews.cfc" />
+       	</ftp>
+    </target>
+
+</project>

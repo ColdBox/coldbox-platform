@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<snippet filetemplate="false" extension="cfm">
+<name>persistVariables</name>
+<help></help>
+<starttext><![CDATA[persistVariables(persist='$${RC variable list}',varStruct=structnew())]]></starttext>
+<endtext><![CDATA[]]></endtext>
+</snippet>

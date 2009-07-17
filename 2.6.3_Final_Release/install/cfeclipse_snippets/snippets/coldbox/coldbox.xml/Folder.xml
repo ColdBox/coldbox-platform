@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<snippet filetemplate="false" extension="cfm">
+<name>Folder</name>
+<help></help>
+<starttext><![CDATA[<Folder>$${Folder}</Folder>]]></starttext>
+<endtext><![CDATA[]]></endtext>
+</snippet>

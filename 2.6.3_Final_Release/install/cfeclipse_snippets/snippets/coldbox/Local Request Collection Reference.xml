@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<snippet filetemplate="false" extension="cfm">
+<name>Local Request Collection Reference</name>
+<help></help>
+<starttext><![CDATA[<cfset var rc = event.getCollection()>]]></starttext>
+<endtext><![CDATA[]]></endtext>
+</snippet>

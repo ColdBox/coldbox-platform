@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project name="ColdBox NightlyBuild" default="help" basedir=".">
+
+	<description>ColdBox Nightly Build File</description>
+
+	<!-- common values for build file -->
+	<property file="common.properties"/>
+
+	<!-- set a default target that can be modified -->
+	<property name="target" value="localhost"/>
+	
+	<!-- default property filename for target properties -->
+	<property file="${target}.properties"/>
+
+	<!-- dynamic values for build -->
+	<tstamp prefix="start"/>
+	<property name="build.label" value="${svn.label}-${start.DSTAMP}${start.TSTAMP}"/>
+	
+	<!--  Additional Task Definitions -->
+	
+	<!-- load the svn task from %ANT_HOME%/lib -->
+	<typedef resource="org/tigris/subversion/svnant/svnantlib.xml"/>
+
+	<!-- 	Ant Tasks	-->
+	<target name="help" depends="usage"></target>
+
+	<target name="usage" description="Usage information">
+		<!--<splash/>-->
+		<echo>
+		Used to create a nightly coldbox build
+			 
+		Basic syntax:	ant [task(s)]
+		
+		Common tasks:
+			export-app
+			build
+			archive
+			clean
+		
+		The default ant task is: help
+		</echo>
+	</target>
+
+	<target name="init" description="Initializes a project and all relevant data">
+		<mkdir dir="${src.dir}"/>
+		<mkdir dir="${build.dir}"/>
+		<mkdir dir="${dist.dir}"/>
+	</target>
+
+	<target name="clean" description="Remove all directories">
+		<delete dir="${src.dir}" verbose="true"/> 
+		<delete dir="${build.dir}" verbose="true"/> 
+		<delete dir="${dist.dir}" verbose="true"/> 
+	</target>
+
+	<target name="export-app" depends="clean,init" description="Clean export of entire application">
+	   	<svn username="${svn.user}" password="${svn.password}" javasvn="true" javahl="false">
+			<export srcUrl= "${svn.url}/${svn.appTemplate}" destPath="${src.dir}/${svn.appTemplate}" force="true"/>
+	   		<export srcUrl= "${svn.url}/${svn.documents}" destPath="${src.dir}/${svn.documents}" force="true"/>
+	   		<export srcUrl= "${svn.url}/${svn.install}" destPath="${src.dir}/${svn.install}" force="true"/>
+	   		<export srcUrl= "${svn.url}/${svn.samples}" destPath="${src.dir}/${svn.samples}" force="true"/>
+	   		<export srcUrl= "${svn.url}/${svn.source}" destPath="${src.dir}/${svn.source}" force="true"/>
+		</svn>
+	</target>
+
+	<target name="build" depends="export-app" description="Copies fileset from source to build directory, adding a label file">
+		<!-- Copy Structure -->
+		<copy todir="${build.dir}/coldbox/system">
+        	<fileset dir="${src.dir}/system">
+        	</fileset>
+        </copy>		
+		<copy todir="${build.dir}/coldbox/samples">
+        	<fileset dir="${src.dir}/samples">
+        	</fileset>
+        </copy>		
+		<copy todir="${build.dir}/coldbox/install">
+        	<fileset dir="${src.dir}/install" />
+        </copy>		
+		<copy todir="${build.dir}/coldbox/ApplicationTemplate">
+        	<fileset dir="${src.dir}/ApplicationTemplate" />
+        </copy>		
+		<!--Copy text files to install folder-->
+		<copy todir="${build.dir}/coldbox/install">
+			<fileset file="${src.dir}/system/config/license.txt" />
+			<fileset file="${src.dir}/system/config/readme.txt" />						
+		</copy>		
+		<!--Copy Documents-->
+		<copy todir="${build.dir}/coldbox/install/SchemaDocs">
+			<fileset dir="${src.dir}/documents/SchemaDocs"/>
+		</copy>
+		
+		<delete dir="${src.dir}"/>
+			
+		<concat destfile="${build.dir}\${build.label}">Built on ${start.TODAY}</concat>
+	</target>
+		
+	<target name="archive" depends="build" description="Creates a zip archive of site for (re)distribution">
+		<zip destfile="${dist.dir}/coldboxNB.zip"
+	       basedir="${build.dir}"
+	       update="true"
+	  />
+		<delete dir="${build.dir}"/>
+		<copy todir="${coldboxdownload.dir}">
+			<fileset dir="${dist.dir}"/>
+		</copy>
+		<delete dir="${dist.dir}"/>
+		
+	</target>
+	
+</project>

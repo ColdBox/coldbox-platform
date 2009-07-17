@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Config>
+    <Settings>
+        <Setting name="Codename" value="ColdBox"/>
+        <Setting name="Author" value="Luis Majano"/>
+        <Setting name="AuthorEmail" value="info@coldboxframework.com"/>
+        <Setting name="AuthorWebsite" value="http://www.coldboxframework.com"/>
+        <Setting name="Suffix" value="RENEWED"/>
+        <Setting name="Version" value="2.6.4"/>
+        <Setting name="Description" value="This is the ColdBox ColdFusion Framework for web applications."/>
+        <Setting name="ModifyLogLocation" value="readme.txt"/>
+		
+        <!-- Metadata -->
+		<Setting name="FrameworkBlog" value="http://blog.coldboxframework.com"/>
+        <Setting name="FrameworkForums" value="http://forums.coldboxframework.com"/>
+        <Setting name="FrameworkAPI" value="http://www.coldboxframework.com/api"/>
+        <Setting name="FrameworkTrac" value="http://ortus.svnrepository.com/coldbox/"/>
+        <Setting name="FrameworkEclipseUpdateSite" value="http://www.coldboxframework.com/distribution/eclipse"/>
+        
+		<!--AvailableLogFileEncodings:US-ASCII, ISO-8859-1, UTF-8, UTF-16BE, UTF-16LE,  UTF-16.-->
+        <Setting name="AvailableLogFileEncodings" value="US-ASCII,ISO-8859-1,UTF-8,UTF-16BE,UTF-16LE,UTF-16"/>
+       
+		<!--Available CF Character Sets For File Operations -->
+        <Setting name="AvailableCFCharacterSets" value="utf-8,iso-8859-1,windows-1252,us-ascii,shift_jis,iso-2022-jp,euc-jp,euc-kr,big5,euc-cn,utf-16"/>
+        <Setting name="DefaultFileCharacterSet" value="iso-8859-1"/>
+        
+		<!--Logging Settings-->
+        <Setting name="LogFileEncoding" value="ISO-8859-1"/>
+        <Setting name="DefaultLogDirectory" value="logs"/>
+		<Setting name="DefaultLogLevel" value="4"/>
+		<Setting name="LogFileMaxSize" value="5000"/>
+        <Setting name="LogFileMaxArchives" value="5"/>
+        
+		<!--Default Event Name -->
+		<Setting name="EventName" value="event"/>
+		<!--Default Storage Scope For Flash URL Persist session or client only-->
+		<Setting name="FlashURLPersistScope" value="session"/>
+		<!--IOC Frameworks-->
+        <Setting name="ColdspringBeanFactory" value="coldspring.beans.DefaultXmlBeanFactory"/>
+		<Setting name="LightWireBeanFactory" value="coldbox.system.extras.lightwire.LightWire"/>
+        <!--MessageBox Plugin Storage Scope (session|client)-->
+        <Setting name="MessageBoxStorage" value="session"/>
+        <!--ColdBox Cache Parameter: Default Object Timeout in Minutes -->
+        <Setting name="CacheObjectDefaultTimeout" value="60"/>
+        <!--ColdBox Cache Parameter: Default Object Last Accessed Timeout in Minutes -->
+        <Setting name="CacheObjectDefaultLastAccessTimeout" value="30"/>
+        <!--ColdBox Cache Parameter: Cache Reap Frequency in Minutes -->
+        <Setting name="CacheReapFrequency" value="1"/>
+        <!--ColdBox Cache Parameter: Maximum number of Objects in cache (0=Unlimited)-->
+        <Setting name="CacheMaxObjects" value="100"/>
+        <!--ColdBox Cache Parameter: Free JVM Memory % Threshold (0=not used)-->
+        <Setting name="CacheFreeMemoryPercentageThreshold" value="0"/>
+        <!--ColdBox Cache Parameter: Whether reaping with default last access timeouts -->
+        <Setting name="CacheUseLastAccessTimeouts" value="true"/> 
+        <!--ColdBox Cache Parameter: The default eviction policy (LFU or LRU or FIFO) -->
+        <Setting name="CacheEvictionPolicy" value="LRU"/> 
+        <!-- Debugger settings -->
+        <Setting name="PersistentRequestProfiler" value="true"/>
+        <Setting name="maxPersistentRequestProfilers" value="10"/>
+        <Setting name="maxRCPanelQueryRows" value="50"/>
+        <Setting name="showTracerPanel" value="true"/>
+        <Setting name="expandedTracerPanel" value="true"/>
+        <Setting name="showInfoPanel" value="true"/>
+        <Setting name="expandedInfoPanel" value="true"/>
+        <Setting name="showCachePanel" value="true"/>
+        <Setting name="expandedCachePanel" value="false"/>
+        <Setting name="showRCPanel" value="true"/>
+        <Setting name="expandedRCPanel" value="false"/>  
+        <!-- Model Integration -->
+        <Setting name="ModelsObjectCaching"  value="true" />
+        <Setting name="ModelsSetterInjection"  value="false" />
+        <Setting name="ModelsDebugMode"  value="false" />
+        <Setting name="ModelsStopRecursion"  value="" />
+        <Setting name="ModelsDICompleteUDF"  value="onDIComplete" />
+    </Settings>
+    
+    <!-- Conventions -->
+    <Conventions>
+        <configLocation>config{sep}coldbox.xml.cfm,config{sep}config.xml.cfm</configLocation>
+        <handlerLocation>handlers</handlerLocation>
+        <pluginsLocation>plugins</pluginsLocation>
+        <layoutsLocation>layouts</layoutsLocation>
+        <viewsLocation>views</viewsLocation>
+        <eventAction>index</eventAction>
+        <modelslocation>model</modelslocation>
+    </Conventions>
+    
+</Config>

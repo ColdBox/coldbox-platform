@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+<!-- ====================================================================== 
+     Mar 14, 2007 7:43:26 PM                                                        
+
+     XSD_Upload    
+     This task will export the config.xsd and upload it to the coldboxframework
+     site.
+                   
+     lmajano                                                                
+     ====================================================================== -->
+<project name="coldbox.xsd_upload" default="ftp.deploy" basedir="../../">
+    <description>
+            This task will export the config.xsd and upload it to the coldboxframework site
+    </description>
+	
+	<!-- ftp server to move files to -->
+	<property name="ftp.server" value="www.coldboxframework.com" />
+	<!-- directory in server to move files to (root relative) -->
+	<property name="ftp.remotedir" value="/httpdocs/schema" />
+	<property name="config.file" value="${basedir}/system/config/config.xsd" />
+	<property name="copy.dir" value="${basedir}/ant/xsd"/>
+
+	<target name="ftp.about">
+        <echo message="Using FTP in ANT to upload config.xsd" />
+		<echo message="Base Dir = ${basedir}" />
+		<echo message="Config XSD FIle = ${config.file}" />
+		<echo message="Config copy Dir = ${copy.dir}" />
+    </target>
+	
+	<target name="config.copy">
+		<input message="Enter config version" addproperty="config.version" />
+		<echo message="The version is : ${config.version}" />
+		<copy file="${config.file}" todir="${copy.dir}" />
+		<move file="${copy.dir}/config.xsd" tofile="${copy.dir}/config_${config.version}.xsd"/>
+	</target>
+	
+	<target name="config.cleanup">
+		<echo message="Cleaning up" />
+		<delete file="${copy.dir}/config_${config.version}.xsd" />
+	</target>
+	
+	<target name="ftp.deploy" depends="ftp.about,config.copy">
+       	<input message="Please enter ftp server username:" addproperty="ftp.username" />
+       	<input message="Please enter fpt server password:" addproperty="ftp.password" />
+      	<ftp action="send" server="${ftp.server}" userid="${ftp.username}" password="${ftp.password}" 
+       		remotedir="${ftp.remotedir}" passive="yes" verbose="yes">
+        	<fileset file="${copy.dir}/config_${config.version}.xsd" />
+       	</ftp>
+		<antcall target="config.cleanup"></antcall>
+    </target>
+	
+		
+</project>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<snippet filetemplate="false" extension="cfm">
+<name>timerstop</name>
+<help></help>
+<starttext><![CDATA[getPlugin("timer").stop("$${Label}")]]></starttext>
+<endtext><![CDATA[]]></endtext>
+</snippet>

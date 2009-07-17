@@ -1,0 +1,239 @@
+	body {
+		margin:0;
+		padding:0px;
+		font-family:Arial, Helvetica, sans-serif;
+		font-size:11px;
+		}
+	
+	#leftcontent {
+		position: absolute;
+		left:5px;
+		top: 100px;
+		#top:110px;
+		width:190px;
+		background:#fff;
+		}
+
+	#centercontent {
+		background:#f3f3f3;
+   		margin-left: 199px;
+   		margin-right:199px;
+		margin-bottom: 50px;
+		border:2px outset #dddddd;
+		padding:7px;
+		}
+		
+	#rightcontent {
+		position: absolute;
+		right:5px;
+		top:100px;
+		#top:110px;
+		width:190px;
+		background:#fff;
+		}
+	
+	#banner {
+		background:#F5F5F5;
+		height:85px;
+		border-bottom:1px solid #dddddd;
+		margin-bottom:20px;
+	}
+	
+	#banner h1 {
+		font-size:16px;
+		padding:10px 10px 0px 10px;
+		margin:0px;
+	}
+	
+	#statusbar{
+		background:url(../images/statusbar_bg.png) repeat-x;
+		height: 25px;
+		border-top:1px solid #AAAAAA;
+		border-bottom:1px solid #dddddd;
+		margin-top: 5px;
+		font-size:9px;
+	}
+	
+	.footer, .footer_small{
+		position: fixed;
+		#position: rel;
+		border-top: 1px solid #ddd;
+		border-bottom: 10px solid #f5f5f5;
+		background: #f5f5f5;
+		width: 100%;
+		left: 0px;
+		bottom: 0px;
+		color: #000000;
+		z-index: 10000;
+		padding-top: 10px;
+		opacity: 0.9;
+		filter: alpha(opacity:80);
+		display: block;
+	}
+		
+	.nicebox{
+		border: 1px dashed #eeeeee; 
+		background-color: #FFFFF0; 
+		padding: 8px;
+	}
+
+			
+	/*
+	p,h1,pre {
+		margin:0px 10px 10px 10px;
+	}
+	*/
+		
+	h1 {
+		font-size:16px;
+		padding-top:10px;
+	}
+	
+	ul{
+		margin-left: -5px;
+		#margin-left: 20px;
+		list-style-image: url(../images/dot_blue.gif);
+	}
+	li{
+		margin-left: -5px;
+		#margin-left: 0px;
+		margin-bottom: 5px;
+	}
+	
+	#rightcontent1, #rightcontent2,
+	#leftcontent1 {
+		margin:10px;
+	}
+		
+	#divLogin {
+		margin:20px;
+	}	
+	
+	a:link,a:visited {
+		color:#1A5CBD;
+		text-decoration:none;
+	}
+	a:hover {
+		color:#000000;
+		text-decoration:underline;
+	}
+
+	/**** this is for the tag cloud ***/
+	
+	.smallestTag { font-size: x-small; }
+	.smallTag { font-size: small; }
+	.mediumTag { font-size: medium; }
+	.largeTag { font-size: large; }
+	.largestTag { font-size: x-large; }
+
+	/* FORM ELEMENTS */
+	
+	/* Buttons */
+	input[type=button], input[type=submit], input[type=reset] {
+	 background: #eee;
+	 color: #222;
+	 border: 1px outset #ccc;
+	 padding: .1em .5em;
+	 font-size: 11px;
+	}
+	input[type=button]:hover, input[type=submit]:hover, input[type=reset]:hover {
+	 background: #FFFFF0;
+	 border: 1px inset #ccc;
+	 cursor: hand;
+	}
+	input[type=button][disabled], input[type=submit][disabled],
+	input[type=reset][disabled] {
+	 background: #f6f6f6;
+	 border-style: solid;
+	 color: #999;
+	}
+	
+	/* INputs */
+	input[type=text], input[type=password], input[type=checkbox], textarea { 
+		border: 1px solid #d7d7d7; 
+		font-size:11px 
+	}
+	input[type=text], input[type=password], input[type=checkbox] { 
+		padding: .20em .3em 
+	}
+	input[type=text]:focus, textarea:focus, input[type=checkbox]:focus, input[type=password]:focus {
+	 	border: 1px solid #886;
+	}
+	
+	/* TOP BUTTONS */
+	#topbuttons{
+		float:left;
+		margin-right:30px;
+		margin-top:5px;
+	}
+	#topbuttons a:hover {
+		color: #000000;
+		text-decoration: none;
+	}
+	
+	/* Hide */
+	.hidelayer{
+		display: none;
+	}
+	.showlayer{
+		display: block;
+	}
+
+	/* READER */
+	
+	.reader_toolbar{
+		background: url(../images/grayfade.gif);
+		border-bottom:1px solid #dddddd;
+		height: 30px;
+	}
+	.reader_panel{
+		display:none;
+		border:1px solid #cccccc;
+		background-color:#ffffff;
+		margin-top:5px;
+		margin-left:-15px;
+	}
+	.reader_content{
+		padding: 8px;
+		margin-top:5px;
+		font-size:12px;
+	}
+	.reader_floater{
+		float:right;
+		margin-right:5px;
+		margin-top:8px;
+		font-size:9px;
+	}
+	
+	blockquote {	
+		font-style: italic;
+		border-left:		2px solid #CC6600;
+		background-color:   #ffffcc;
+		padding:			5px;
+		border-right:		1px solid #eaeaea;
+		border-top:			1px solid #eaeaea;
+		border-bottom:		1px solid #eaeaea;
+	}
+
+.cbox_messagebox{
+	font-family: "HelveticaNeue-Light",Helvetica,Arial,sans-serif;
+	font-size: 14px;
+}
+.cbox_messagebox_info{
+	background: #D1E6EF url(../images/messagebox_info.png) no-repeat scroll .5em 50%;
+	border: 1px solid #2580B2;
+	margin: 0.3em;
+	padding: 0pt 1em 0pt 3.5em;
+}
+.cbox_messagebox_warning{
+	background: #FFF2CF url(../images/messagebox_warning.png) no-repeat scroll .5em 50%;
+	border: 1px solid #2580B2;
+	margin: 0.3em;
+	padding: 0pt 1em 0pt 3.5em;
+}
+.cbox_messagebox_error{
+	background: #FFFFE0 url(../images/messagebox_error.png) no-repeat scroll .5em 50%;
+	border: 1px solid #2580B2;
+	margin: 0.3em;
+	padding: 0pt 1em 0pt 3.5em;
+}

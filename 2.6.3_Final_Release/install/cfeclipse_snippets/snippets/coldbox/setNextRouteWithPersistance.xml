@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<snippet filetemplate="false" extension="cfm">
+<name>setNextRouteWithPersistance</name>
+<help></help>
+    <starttext><![CDATA[setNextRoute("$${Route (do not prepend /)}", "$${Persist List}",structNew())]]></starttext>
+<endtext><![CDATA[]]></endtext>
+</snippet>

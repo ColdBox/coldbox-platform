@@ -1,0 +1,165 @@
+/* DEBUG PANEL MAIN */
+.fw_debugPanel{
+    font-family: Arial,Helvetica,sans-serif;
+    font-size: 11px;
+    font-weight: normal;
+    color: #000000;
+    text-align: left;
+}
+.fw_titles{
+    font-size: 13px;
+    font-weight:bold;
+    color: white;
+    border:1px outset #cccccc;
+    background-color: #134A7A;
+    padding:5px 5px 5px 5px;
+    cursor: pointer;
+}
+.fw_titles:hover{
+   background-color: #B9D3FB;
+   color: black;
+   cursor: pointer;
+}
+.fw_tracerMessage{
+    padding:5px 5px 5px 5px;
+    border:1px solid #3366CC;
+    background-color: #ffffff;
+    color: black;
+}
+.fw_debugContent{
+    display:none;
+}
+.fw_debugContentView{
+    color: black;
+    background-color: #eeeeee;
+    border:1px solid #3366CC;
+    padding: 5px 5px 5px 5px;
+    display:block;
+    margin:auto;
+}
+.fw_debugTitleCell{
+    font-weight:bold;
+    float:left;
+    width: 130px;
+    clear:left;
+    height:  20px;
+}
+.fw_debugContentCell{
+    clear:right;
+    height: 20px;
+}
+.fw_renderTime{
+	margin-top: 20px;
+	margin-bottom: 20px;
+	font-weight: bold;
+	font-style: italic;	
+}
+/* END OF DEBUG PANEL MAIN */
+
+/* Types of Text To Render in Spans */
+.fw_redText{
+	font-weight:bold;
+	color:#CC0000;
+}
+.fw_greenText{
+	color: #336600;
+	font-weight:bold;
+}
+.fw_blueText{
+	font-weight:bold;
+	color: #0022AA;
+}
+.fw_blackText{
+	font-weight:bold;
+	color: #000000;
+}
+.fw_purpleText{
+	font-weight:bold;
+	color: #67306A;
+}
+.fw_errorText{
+	font-size: 12px;
+	color: #666666;
+	font-weight:bold;
+}
+/* END OF COLORS */
+
+/* Debugging Tables */
+.fw_debugTables{
+	font-size: 11px;
+	border:1px outset #93C2FF;
+	background-color: #eeeeee;
+	width: 99%;
+}
+.fw_debugTables th{
+	font-size: 11px;
+	background-color: #CFE9FF;
+	font-weight:bold;
+	padding: 5px 5px 5px 5px;
+}
+.fw_debugTables tr{
+	background-color: white;
+}
+.fw_debugTables tr:hover{
+	background-color: #FEFFAF;
+}
+.fw_debugTables tr.even{
+	background-color: #EFF6FF;
+}
+.fw_debugTables tr.even:hover{
+	background-color: #FEFFAF;
+}
+.fw_debugTables td{
+	padding: 5px 5px 5px 5px;
+	font-size: 11px;
+}
+.fw_debugTables textarea{
+	border: 1px solid #eeeeee;
+	background-color: #fffff0;
+	font-size: 11px;
+}
+.fw_debugTables tr.showRC{
+	display: table-row;
+}
+.fw_debugTables tr.hideRC{
+	display: none;
+}
+.fw_cachetable{
+	overflow: auto;
+	height: 375px;
+	border: 2px inset #cccccc;
+	background-color: white;
+}
+/* END OF Debugging Tables */
+
+
+.fw_errorTables{
+	font-size: 12px;
+	font-family: verdana;
+	border:1px outset #000000;
+	background-color: #FFFFFF;
+	width: 99%;
+}
+.fw_errorTables th{
+	background-color: #969491;
+	color:#000000;
+	font-weight: bold;
+	padding:5px 5px 5px 5px;
+}
+.fw_errorTables td{
+	font-size: 10px;
+	background-color: #ffffff;
+	border: 1px dotted #cccccc;
+	padding: 5px 5px 5px 5px;
+}
+.fw_errorTables td.fw_errorTablesTitles{
+	font-size: 10px;
+	font-weight: bold;
+	background-color: #EDEDEA;
+	padding: 5px 5px 5px 5px;
+}
+.fw_overflowScroll{
+	width: 600px;
+	overflow:scroll;
+	height: 300px;
+}

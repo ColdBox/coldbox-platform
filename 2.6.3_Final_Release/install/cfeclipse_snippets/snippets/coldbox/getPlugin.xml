@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<snippet filetemplate="false" extension="cfm">
+<name>getPlugin</name>
+<help>get a plugin</help>
+<starttext><![CDATA[getPlugin("$${Plugin Name:applicationstorage|beanFactory|cfcViewer|clientstorage|cookiestorage|Utilities|ioc|i18n|JavaLoader|logger|messagebox|queryHelper|renderer|resourceBundle|sessionstorage|StringBuffer|timer|webservices|XMLParser|zip}")]]></starttext>
+<endtext><![CDATA[]]></endtext>
+</snippet>

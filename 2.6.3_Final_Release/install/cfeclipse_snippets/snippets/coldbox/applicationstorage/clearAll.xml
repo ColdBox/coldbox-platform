@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<snippet filetemplate="false" extension="cfm">
+<name>clearAll</name>
+<help>Clear All</help>
+<starttext><![CDATA[ getPlugin("applicationstorage").clearAll()]]></starttext>
+<endtext><![CDATA[]]></endtext>
+</snippet>

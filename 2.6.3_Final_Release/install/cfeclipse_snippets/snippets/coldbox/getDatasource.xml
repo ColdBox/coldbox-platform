@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<snippet filetemplate="false" extension="cfm">
+<name>getDatasource</name>
+<help>Get a datasource Bean by alias</help>
+<starttext><![CDATA[getDatasource("$${Datasource Alias}")]]></starttext>
+<endtext><![CDATA[]]></endtext>
+</snippet>

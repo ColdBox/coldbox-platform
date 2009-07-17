@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<snippet filetemplate="false" extension="cfm">
+<name>paramValue</name>
+<help>ColdBox's cfparam for request collection</help>
+<starttext><![CDATA[event.paramValue("$${variable name}", "$${value}")]]></starttext>
+<endtext><![CDATA[]]></endtext>
+</snippet>

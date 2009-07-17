@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<snippet filetemplate="false" extension="cfm">
+<name>WebService</name>
+<help>A new Web Service Element</help>
+<starttext><![CDATA[<WebService name="$${Name}" URL="$${URL}" />]]></starttext>
+<endtext><![CDATA[]]></endtext>
+</snippet>

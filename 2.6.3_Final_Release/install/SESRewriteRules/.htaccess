@@ -1,0 +1,30 @@
+RewriteEngine on
+#RepeatLimit 0
+
+#SQL Injection Protection --Read More www.cybercrime.gov
+#Please uncomment to use these rules if below words does not conflict with your friendly-urls. You may modify accordingly. 
+#RewriteRule ^.*EXEC\(@.*$       /includes/templates/404.html [L,F,NC]
+#RewriteRule ^.*CAST\(.*$        /includes/templates/404.html [L,F,NC] 
+#RewriteRule ^.*DECLARE.*$       /includes/templates/404.html [L,F,NC]  
+#RewriteRule ^.*DECLARE%20.*$    /includes/templates/404.html [L,F,NC]
+#RewriteRule ^.*NVARCHAR.*$      /includes/templates/404.html [L,F,NC]  
+#RewriteRule ^.*sp_password.*$   /includes/templates/404.html [L,F,NC]
+#RewriteRule ^.*%20xp_.*$        /includes/templates/404.html [L,F,NC]
+
+#if this call related to adminstrators or non rewrite folders, you can add more here.
+RewriteCond %{REQUEST_URI} ^/(.*(CFIDE|cfide|CFFormGateway|jrunscripts|railo-context|fckeditor)).*$
+RewriteRule ^(.*)$ - [NC,L]
+
+#dealing with flash / flex communication
+RewriteCond %{REQUEST_URI} ^/(.*(flashservices|flex2gateway|flex-remoting)).*$
+RewriteRule ^(.*)$ - [NC,L]
+
+#Images, css, javascript and docs, add your own extensions if needed.
+RewriteCond %{REQUEST_URI} \.(bmp|gif|jpe?g|png|css|js|txt|pdf|doc|xls|xml)$
+RewriteRule ^(.*)$ - [NC,L]
+
+#The ColdBox index.cfm/{path_info} rules.
+RewriteRule ^$ index.cfm [QSA]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.cfm/%{REQUEST_URI} [QSA,L]

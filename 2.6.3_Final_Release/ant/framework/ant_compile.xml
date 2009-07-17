@@ -1,0 +1,172 @@
+<?xml version="1.0"?>
+<!-- ====================================================================== 
+    Apr 21, 2007 10:11:59 PM                                                        
+    
+    coldbox.compile
+    Compile checks for the framework.
+    
+    lmajano                                                                
+    ====================================================================== -->
+    <project name="coldbox.compile" default="compile.checks" basedir="../../">
+        <description>
+            Compile check the dashboard.
+        </description>
+        
+        <!-- set global properties for this build -->
+        <property name="src.system"						location="system" />
+        <property name="samples"                        location="samples" />
+        <property name="build" 							location="tmpbuild"/>
+    	<property name="dist"							location="dist" />
+        
+        <!--CFcompile Properties -->
+        <property name="webroot"						location="/Users/lmajano/Documents/MyDevelopment/" />
+        <property name="cfcompile.path" 				location="/Applications/JRun4/servers/cfusion/cfusion-ear/cfusion-war/WEB-INF/cfusion/bin"/>
+        <property name="cfcompile.tmpClasses"  			location="/Applications/JRun4/servers/cfusion/cfusion-ear/cfusion-war/WEB-INF/cfclasses/" />
+        <property name="cfuser"		    				value="cfusion" />
+        
+        <!--Compiler Properties-->
+        <property name="jrun.path" 						value="/Applications/JRun4" />
+        <property name="coldfusion.home"				value="${jrun.path}/servers/cfusion/cfusion-ear/cfusion-war/WEB-INF/cfusion" />
+        <property name="coldfusion.instancepath"    	value="${jrun.path}/servers/cfusion/cfusion-ear/cfusion-war/WEB-INF" />
+        
+        <!--Jar Files used for compiling-->
+        <property name="jrun.jar" 					 	value="${jrun.path}/lib/jrun.jar"/>
+        <property name="coldfusion.bootstrap.jar"   	value="${coldfusion.instancepath}/lib/cfmx_bootstrap.jar"/>
+        <property name="coldfusion.cfx.jar"		    	value="${coldfusion.instancepath}/lib/cfx.jar"/>
+        
+        <!--Compiler Arguments-->
+        <property name="coldfusion.compiler.libpath"  	value="${coldfusion.home}/lib"/>
+        <property name="coldfusion.compiler.classpath"  value="${coldfusion.compiler.libpath}/updates,${coldfusion.compiler.libpath}"/>
+        
+    	<target name="compile.checks">
+            <!--init framework first -->
+            <antcall target="init.framework" />
+            <!--compile check it -->
+            <antcall target="compile" />
+            <!--Clean up and do samples-->
+            <antcall target="cleanup" />
+               
+    		<!--init samples -->
+            <antcall target="init.samples" />
+            <!--compile check it -->
+            <antcall target="compile" />
+            <!--Clean up-->
+            <antcall target="cleanup" />
+        </target>
+    	
+        <!-- Init -->
+        <target name="init.framework">		
+            <!-- Create the time stamp -->
+            <tstamp/>            
+            <!-- Create the build directory structure used to compile -->
+            <mkdir dir="${build}"/>
+            <!-- Copy the source to build directory -->
+            <copy todir="${build}">
+            	<fileset dir="${src.system}">
+					<exclude name="**/*.xml.cfm"/>
+				</fileset>	
+            </copy>
+            <echo>Build setup for framework complete.</echo>		
+        </target>        
+        <target name="init.samples">		
+            <!-- Create the time stamp -->
+            <tstamp/>            
+            <!-- Create the build directory structure used to compile -->
+            <mkdir dir="${build}"/>
+            <!-- Copy the source to build directory -->
+            <copy todir="${build}">
+            	<fileset dir="${samples}">
+					<exclude name="**/*.xml.cfm"/>
+				</fileset>                
+            </copy>
+            <echo>Build setup for samples complete.</echo>		
+        </target>
+               
+        <!--CompileCheck-->
+        <target name="compile">
+            <echo>Starting compile check...</echo>
+            <java classname="coldfusion.tools.CommandLineInvoker" failonerror="true" fork="true" resultproperty="java.compilecheck">
+                <classpath>
+                    <pathelement location="${jrun.jar}"/>
+                    <pathelement location="${coldfusion.bootstrap.jar}"/>
+                    <pathelement location="${coldfusion.cfx.jar}"/>
+                </classpath>
+                
+                <sysproperty key=" coldfusion.classPath" value="${coldfusion.compiler.classpath}"/>
+                <sysproperty key=" coldfusion.libPath"   value="${coldfusion.compiler.libpath}"/>
+                
+                <arg line=" Compiler "/>
+                <arg line=" -cfroot ${coldfusion.home} "/>
+                <arg line=" -webinf ${coldfusion.instancepath} "/>
+                <arg line=" -webroot ${webroot} "/>
+                <arg line=" ${build}" />
+            </java>                        
+            <echo>Compile checks for ${build} complete.</echo>
+        </target>
+    	
+    	<!-- Init -->
+        <target name="init.deploy">		
+            <!-- Create the time stamp -->
+            <tstamp/>            
+            <!-- Create the build directory structure used to compile -->
+            <mkdir dir="${build}"/>
+            <!-- Copy the source to build directory -->
+            <copy todir="${build}">
+            	<fileset dir="${src.system}">
+					<exclude name="**/*.xml.cfm"/>
+				</fileset>	
+            </copy>
+            <echo>Build setup for framework complete.</echo>		
+        </target> 
+        
+        <!--Deploy-->
+        <target name="deploy" depends="init.deploy">
+            <echo>Starting to deploy framework</echo>
+            <java classname="coldfusion.tools.CommandLineInvoker" failonerror="true" fork="true">
+                <classpath>
+                    <pathelement location="${jrun.jar}"/>
+                    <pathelement location="${coldfusion.bootstrap.jar}"/>
+                    <pathelement location="${coldfusion.cfx.jar}"/>
+                </classpath>
+                
+                <sysproperty key=" coldfusion.classPath" value="${coldfusion.compiler.classpath}"/>
+                <sysproperty key=" coldfusion.libPath"   value="${coldfusion.compiler.libpath}"/>
+                
+                <arg line=" Compiler "/>
+                <arg line=" -deploy" />
+                <arg line=" -webinf ${coldfusion.instancepath} "/>
+                <arg line=" -webroot ${webroot} "/>
+                <arg line=" -cfroot ${coldfusion.home} "/>
+                <arg line=" -srcdir ${build}" />
+                <arg line=" -deploydir ${dist}" />
+            </java>
+            
+            <!--Move xml Files-->
+            <antcall target="movexmlfiles" />
+            <!--Cleanup-->
+            <echo>Deployment complete. Performing cleanup</echo>
+            <antcall target="cleanup"></antcall>
+        </target>
+        
+        <!--Move XML Files-->
+        <target name="movexmlfiles">
+            <echo>Deploying *.xml.cfm files to distribution.</echo>
+            <copy todir="${dist}" verbose="true">
+                <fileset dir="${src.system}">
+                    <include name="**/*.xml.cfm"/>
+                </fileset>
+            </copy>
+        </target>
+        
+        <!--Cleanup-->
+        <target name="cleanup">
+            <!-- Delete compileclasses destination -->
+            <delete includeemptydirs="true">
+                <fileset dir="${cfcompile.tmpClasses}" includes="**/*"/>
+            </delete>		
+            <delete dir="${build}" />
+            <echo>Cleanup Complete.</echo>
+        </target>
+        
+    </project>
+    

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<snippet filetemplate="false" extension="cfm">
+<name>exists</name>
+<help>exists</help>
+<starttext><![CDATA[getPlugin("cookiestorage").exists("$${Variable Name}")]]></starttext>
+<endtext><![CDATA[]]></endtext>
+</snippet>

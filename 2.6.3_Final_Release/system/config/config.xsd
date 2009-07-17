@@ -1,0 +1,600 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+	<xs:element name="Config">
+		<xs:annotation>
+			<xs:documentation>This is the holder for the frameworks configurations.</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:all>
+				<xs:element maxOccurs="1" minOccurs="1" ref="Settings"/>
+				<xs:element maxOccurs="1" minOccurs="0" ref="YourSettings"/>
+				<xs:element maxOccurs="1" minOccurs="0" ref="DebuggerSettings"/>
+				<xs:element maxOccurs="1" minOccurs="0" ref="MailServerSettings"/>
+				<xs:element maxOccurs="1" minOccurs="0" ref="BugTracerReports"/>
+				<xs:element maxOccurs="1" minOccurs="0" ref="DevEnvironments"/>
+				<xs:element maxOccurs="1" minOccurs="0" ref="WebServices"/>
+				<xs:element maxOccurs="1" minOccurs="1" ref="Layouts"/>
+				<xs:element maxOccurs="1" minOccurs="0" ref="i18N" />
+				<xs:element maxOccurs="1" minOccurs="0" ref="Datasources"/>
+				<xs:element maxOccurs="1" minOccurs="0" ref="Cache"/>
+				<xs:element maxOccurs="1" minOccurs="0" ref="Interceptors"/>
+				<xs:element maxOccurs="1" minOccurs="0" ref="Conventions"/>
+			</xs:all>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="Settings">
+		<xs:annotation>
+			<xs:documentation>These are global framework settings. All of them need to be defined in order for the framework to start.</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element maxOccurs="unbounded" name="Setting">
+					<xs:complexType>
+						<xs:attribute name="name" use="required">
+							<xs:annotation>
+								<xs:documentation>The name of the framework&apos;s settings.</xs:documentation>
+							</xs:annotation>
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:enumeration value="AppMapping"/>
+									<xs:enumeration value="AppName"/>	
+									<xs:enumeration value="ApplicationStartHandler" />
+									<xs:enumeration value="CustomErrorTemplate" />
+									<xs:enumeration value="CustomEmailBugReport" />
+									<xs:enumeration value="ColdboxLogsLocation" />		
+									<xs:enumeration value="ConfigAutoReload" />
+									<xs:enumeration value="DebugMode"/>		
+									<xs:enumeration value="DebugPassword"/>
+									<xs:enumeration value="DefaultEvent"/>	
+									<xs:enumeration value="DefaultLogLevel"/>
+									<xs:enumeration value="EventName"/>
+									<xs:enumeration value="ExceptionHandler" />
+									<xs:enumeration value="EnableBugReports"/>
+									<xs:enumeration value="EnableColdfusionLogging"/>
+									<xs:enumeration value="EnableDumpVar"/>	
+									<xs:enumeration value="EnableColdboxLogging"/>
+									<xs:enumeration value="EventCaching" />
+									<xs:enumeration value="FlashURLPersistScope"/>
+									<xs:enumeration value="HandlersIndexAutoReload" />
+									<xs:enumeration value="HandlersExternalLocation" />
+									<xs:enumeration value="HandlerCaching" />
+									<xs:enumeration value="IOCFramework" />
+									<xs:enumeration value="IOCFrameworkReload" />
+									<xs:enumeration value="IOCDefinitionFile" />
+									<xs:enumeration value="IOCObjectCaching" />
+									<xs:enumeration value="MessageboxStyleOverride" />
+									<xs:enumeration value="ModelsExternalLocation" />
+									<xs:enumeration value="ModelsObjectCaching" />		
+									<xs:enumeration value="ModelsSetterInjection" />
+									<xs:enumeration value="ModelsDebugMode" />
+									<xs:enumeration value="ModelsStopRecursion" />
+									<xs:enumeration value="ModelsDICompleteUDF" />
+									<xs:enumeration value="MyPluginsLocation" />
+									<xs:enumeration value="onInvalidEvent"/>	
+									<xs:enumeration value="OwnerEmail"/>
+									<xs:enumeration value="ProxyReturnCollection" />
+									<xs:enumeration value="RequestEndHandler"/>
+									<xs:enumeration value="RequestStartHandler"/>
+									<xs:enumeration value="RequestContextDecorator" />
+									<xs:enumeration value="ReinitPassword"/>
+									<xs:enumeration value="SessionStartHandler"/>
+									<xs:enumeration value="SessionEndHandler"/>						
+									<xs:enumeration value="UDFLibraryFile"/>		
+									<xs:enumeration value="ViewsExternalLocation" />												
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:attribute>
+						<xs:attribute name="value" type="xs:string" use="required">
+							<xs:annotation>
+								<xs:documentation>The value of the setting.</xs:documentation>
+							</xs:annotation>
+						</xs:attribute>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="YourSettings">
+		<xs:annotation>
+			<xs:documentation>These are your own application settings.</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element maxOccurs="unbounded" minOccurs="0" name="Setting">
+					<xs:complexType>
+						<xs:attribute name="name" type="xs:string" use="required">
+							<xs:annotation>
+								<xs:documentation>The name of Your setting.</xs:documentation>
+							</xs:annotation>
+						</xs:attribute>
+						<xs:attribute name="value" type="xs:string" use="required">
+							<xs:annotation>
+								<xs:documentation>The value of Your setting.</xs:documentation>
+							</xs:annotation>
+						</xs:attribute>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="MailServerSettings">
+		<xs:annotation>
+			<xs:documentation>These are global mail settings</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element maxOccurs="1" minOccurs="0" name="MailServer">
+					<xs:annotation>
+						<xs:documentation>The ip or address of the mail server to declare</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element maxOccurs="1" minOccurs="0" name="MailPort" default="25">
+					<xs:annotation>
+						<xs:documentation>The port of the mail server. Default is 25</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element maxOccurs="1" minOccurs="0" name="MailUsername">
+					<xs:annotation>
+						<xs:documentation>The username of the mail server, if used.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element maxOccurs="1" minOccurs="0" name="MailPassword" >
+					<xs:annotation>
+						<xs:documentation>The password of the mail server, if used.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="BugTracerReports">
+		<xs:annotation>
+			<xs:documentation>This sections is used to declare email addresses for Bug Reports</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element maxOccurs="unbounded" minOccurs="0" ref="BugEmail"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="BugEmail">
+		<xs:annotation>
+			<xs:documentation>The email address to send reports.</xs:documentation>
+		</xs:annotation>
+		<xs:simpleType>
+			<xs:restriction base="xs:string">
+				<xs:minLength value="1"/>
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:element>
+	<xs:element name="DevEnvironments">
+		<xs:annotation>
+			<xs:documentation>You can define one or more development urls that the framework will decide wether its on development or production mode.</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element maxOccurs="unbounded" minOccurs="0" ref="url"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="url">
+		<xs:annotation>
+			<xs:documentation>The complete or partial url to check.</xs:documentation>
+		</xs:annotation>
+		<xs:simpleType>
+			<xs:restriction base="xs:string">
+				<xs:minLength value="1"/>
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:element>
+	<xs:element name="WebServices">
+		<xs:annotation>
+			<xs:documentation>Useful declarations of all web services used in the application.</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element maxOccurs="unbounded" minOccurs="0" ref="WebService"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="WebService">
+		<xs:annotation>
+			<xs:documentation>A webservice declaration.</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:attribute default="" name="DevURL" type="xs:anyURI" use="optional">
+				<xs:annotation>
+					<xs:documentation>The WSDL development URL if available.</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="URL" type="xs:anyURI" use="required">
+				<xs:annotation>
+					<xs:documentation>The WSDL Production or Single URL.</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="name" type="xs:string" use="required">
+				<xs:annotation>
+					<xs:documentation>The web service reference name. This is the name the framework uses to retrieve the WSDL.</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="Layouts">
+		<xs:annotation>
+			<xs:documentation>Template layout definitions.</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="DefaultLayout" minOccurs="1" maxOccurs="1"/>
+				<xs:element ref="DefaultView"   minOccurs="0" maxOccurs="1"/>
+				<xs:element maxOccurs="unbounded" minOccurs="0" ref="Layout"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="DefaultLayout">
+		<xs:annotation>
+			<xs:documentation>The mandatory default layout to use.</xs:documentation>
+		</xs:annotation>
+		<xs:simpleType>
+			<xs:restriction base="xs:string">
+				<xs:minLength value="1"/>
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:element>
+	<xs:element name="DefaultView">
+		<xs:annotation>
+			<xs:documentation>The optional default view to use if no view is set.</xs:documentation>
+		</xs:annotation>
+		<xs:simpleType>
+			<xs:restriction base="xs:string">
+				<xs:minLength value="1"/>
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:element>
+	<xs:element name="Layout">
+		<xs:annotation>
+			<xs:documentation>A layout declaration to be used for the children views declared.</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:choice maxOccurs="unbounded">
+				<xs:element maxOccurs="unbounded" minOccurs="0" ref="View"/>
+				<xs:element maxOccurs="unbounded" minOccurs="0" ref="Folder"/>				
+			</xs:choice>
+			<xs:attribute name="file" type="xs:string" use="required">
+				<xs:annotation>
+					<xs:documentation>The filename of the layout template.</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="name" type="xs:string" use="required">
+				<xs:annotation>
+					<xs:documentation>A reference name to the layout.</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>			
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="View">
+		<xs:annotation>
+			<xs:documentation>The name of the view that will use the parent layout. This is the same name of the file without .cfm</xs:documentation>
+		</xs:annotation>
+		<xs:simpleType>
+			<xs:restriction base="xs:string">
+				<xs:minLength value="1"/>
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:element>
+	<xs:element name="Folder">
+		<xs:annotation>
+			<xs:documentation>The name of the folder that will use the parent layout.</xs:documentation>
+		</xs:annotation>
+		<xs:simpleType>
+			<xs:restriction base="xs:string">
+				<xs:minLength value="1"/>
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:element>
+	
+	<xs:element name="i18N">
+		<xs:annotation>
+			<xs:documentation>Internationalization Section.</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:all>
+				<xs:element maxOccurs="1" minOccurs="0" name="DefaultResourceBundle" type="xs:string" default="">
+					<xs:annotation>
+						<xs:documentation>The path to the resource bundle to load.</xs:documentation>
+					</xs:annotation>
+				</xs:element>				
+				<xs:element maxOccurs="1" minOccurs="0" name="DefaultLocale" type="xs:string">
+					<xs:annotation>
+						<xs:documentation>The default locale in the standard Java locale names</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element maxOccurs="1" minOccurs="0" name="LocaleStorage">
+					<xs:annotation>
+						<xs:documentation>The storage scope of the locale setting. Preferred is session.</xs:documentation>
+					</xs:annotation>
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:enumeration value="client"/>
+							<xs:enumeration value="session"/>
+							<xs:enumeration value="cookie"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+				<xs:element maxOccurs="1" minOccurs="0" name="UknownTranslation" type="xs:string" default="">
+					<xs:annotation>
+						<xs:documentation>The key to use when a translation is not found. default is _UNKNOWNTRANSLATION_</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:all>
+		</xs:complexType>
+	</xs:element>
+	
+	<xs:element name="Datasources">
+		<xs:annotation>
+			<xs:documentation>Useful declarations of all the datasources used by this application.</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element maxOccurs="unbounded" minOccurs="0" ref="Datasource"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	
+	<xs:element name="Datasource">
+		<xs:annotation>
+			<xs:documentation>A datasource declaration.</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:attribute name="alias" type="xs:string" use="required">
+				<xs:annotation>
+					<xs:documentation>The alias of the registered datasource, for use in your application.</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="name" type="xs:string" use="required">
+				<xs:annotation>
+					<xs:documentation>The name of the registered datasource.</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="username" type="xs:string" use="optional" default="">
+				<xs:annotation>
+					<xs:documentation>The username of the datasource.</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="password" type="xs:string" use="optional" default="">
+				<xs:annotation>
+					<xs:documentation>The password of the datasource.</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="dbtype" type="xs:string" use="optional" default="">
+				<xs:annotation>
+					<xs:documentation>The type of database this datasource connects to.</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+		</xs:complexType>
+	</xs:element>
+	
+	<xs:element name="Cache">
+		<xs:annotation>
+			<xs:documentation>These are the application caching settings. It overrides the framework-wide settings.</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:all>
+				<xs:element maxOccurs="1" minOccurs="1" name="ObjectDefaultTimeout" type="xs:integer">
+					<xs:annotation>
+						<xs:documentation>The default object timeout in minutes</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element maxOccurs="1" minOccurs="1" name="ObjectDefaultLastAccessTimeout" type="xs:integer">
+					<xs:annotation>
+						<xs:documentation>The default object last access timeout in minutes</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element maxOccurs="1" minOccurs="1" name="ReapFrequency" type="xs:integer">
+					<xs:annotation>
+						<xs:documentation>The frequency in which the cache is reaped.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element maxOccurs="1" minOccurs="1" name="MaxObjects" type="xs:integer" default="0">
+					<xs:annotation>
+						<xs:documentation>The maximum number of objects to cache.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element maxOccurs="1" minOccurs="1" name="FreeMemoryPercentageThreshold" type="xs:integer" default="0">
+					<xs:annotation>
+						<xs:documentation>The amount of free memory threshold needed to cache. If memory goes below this threshold, objects will no longer be cached.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element maxOccurs="1" minOccurs="0" name="UseLastAccessTimeouts" type="xs:boolean" default="true">
+					<xs:annotation>
+						<xs:documentation>Whether to reap using last access timeouts alongside default object timeouts</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element maxOccurs="1" minOccurs="0" name="EvictionPolicy" default="LFU">
+					<xs:annotation>
+						<xs:documentation>The default eviction policy</xs:documentation>
+					</xs:annotation>
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:enumeration value="LFU"/>
+							<xs:enumeration value="LRU"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+			</xs:all>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="Interceptors">
+		<xs:annotation><xs:documentation>These are the coldbox interceptor declarations</xs:documentation></xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element maxOccurs="1" minOccurs="0" name="CustomInterceptionPoints" type="xs:string" default="">
+					<xs:annotation>
+						<xs:documentation>A comma delimmited list of custom interception points to declare an use.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element minOccurs="0" maxOccurs="unbounded" name="Interceptor">
+					<xs:annotation>
+						<xs:documentation>An interceptor declaration.</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element maxOccurs="unbounded" minOccurs="0" name="Property">
+								<xs:annotation><xs:documentation>A property of the interceptor, can be simple or complex via ColdBox complex properties</xs:documentation></xs:annotation>
+								<xs:complexType>
+									<xs:simpleContent>
+										<xs:extension base="xs:string" >
+											<xs:attribute name="name" use="required" type="xs:string">
+												<xs:annotation><xs:documentation>The name of the property</xs:documentation></xs:annotation>
+											</xs:attribute>
+										</xs:extension>
+									</xs:simpleContent>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+						<xs:attribute name="class" use="required" type="xs:string">
+							<xs:annotation>
+								<xs:documentation>The instantiation class of the interceptor.</xs:documentation>
+							</xs:annotation>
+						</xs:attribute>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+			<xs:attribute name="throwOnInvalidStates" type="xs:boolean" use="optional" default="true">
+				<xs:annotation>
+					<xs:documentation>Flag that determines if the interceptor service throws an error when an invalid state is announced.</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="DebuggerSettings">
+		<xs:annotation>
+			<xs:documentation>These are the settings to configure the coldbox debugger</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:all>
+				<xs:element maxOccurs="1" minOccurs="0" name="PersistentRequestProfiler" type="xs:boolean" default="false">
+					<xs:annotation>
+						<xs:documentation>Whether to activate or not the request profile persisten storage</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element maxOccurs="1" minOccurs="0" name="maxPersistentRequestProfilers" type="xs:integer">
+					<xs:annotation>
+						<xs:documentation>The maximum number of request profilers to keep in the stack.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element maxOccurs="1" minOccurs="0" name="maxRCPanelQueryRows" type="xs:integer">
+					<xs:annotation>
+						<xs:documentation>The maximum number of records to dump on a query in the request collection panel.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element maxOccurs="1" minOccurs="0" name="TracerPanel">
+					<xs:annotation>
+						<xs:documentation>The tracer panel info</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:attribute name="show" type="xs:boolean" use="optional" default="true">
+							<xs:annotation>
+								<xs:documentation>Whether to show or not this panel</xs:documentation>
+							</xs:annotation>
+						</xs:attribute>
+						<xs:attribute name="expanded" type="xs:boolean" use="optional" default="true">
+							<xs:annotation>
+								<xs:documentation>Whether this panel is expanded or not.</xs:documentation>
+							</xs:annotation>
+						</xs:attribute>
+					</xs:complexType>
+				</xs:element>
+				<xs:element maxOccurs="1" minOccurs="0" name="InfoPanel">
+					<xs:annotation>
+						<xs:documentation>The info panel info</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:attribute name="show" type="xs:boolean" use="optional" default="true">
+							<xs:annotation>
+								<xs:documentation>Whether to show or not this panel</xs:documentation>
+							</xs:annotation>
+						</xs:attribute>
+						<xs:attribute name="expanded" type="xs:boolean" use="optional" default="true">
+							<xs:annotation>
+								<xs:documentation>Whether this panel is expanded or not.</xs:documentation>
+							</xs:annotation>
+						</xs:attribute>
+					</xs:complexType>
+				</xs:element>	
+				<xs:element maxOccurs="1" minOccurs="0" name="CachePanel">
+					<xs:annotation>
+						<xs:documentation>The cache panel info</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:attribute name="show" type="xs:boolean" use="optional" default="true">
+							<xs:annotation>
+								<xs:documentation>Whether to show or not this panel</xs:documentation>
+							</xs:annotation>
+						</xs:attribute>
+						<xs:attribute name="expanded" type="xs:boolean" use="optional" default="false">
+							<xs:annotation>
+								<xs:documentation>Whether this panel is expanded or not.</xs:documentation>
+							</xs:annotation>
+						</xs:attribute>
+					</xs:complexType>
+				</xs:element>
+				<xs:element maxOccurs="1" minOccurs="0" name="RCPanel">
+					<xs:annotation>
+						<xs:documentation>The request collection panel info</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:attribute name="show" type="xs:boolean" use="optional" default="true">
+							<xs:annotation>
+								<xs:documentation>Whether to show or not this panel</xs:documentation>
+							</xs:annotation>
+						</xs:attribute>
+						<xs:attribute name="expanded" type="xs:boolean" use="optional" default="false">
+							<xs:annotation>
+								<xs:documentation>Whether this panel is expanded or not.</xs:documentation>
+							</xs:annotation>
+						</xs:attribute>
+					</xs:complexType>
+				</xs:element>	
+			</xs:all>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="Conventions">
+		<xs:annotation>
+			<xs:documentation>These are the custom conventions you can place for your current application.</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:all>
+				<xs:element maxOccurs="1" minOccurs="0" name="handlersLocation" type="xs:string">
+					<xs:annotation>
+						<xs:documentation>The default location of your handlers</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element maxOccurs="1" minOccurs="0" name="pluginsLocation" type="xs:string">
+					<xs:annotation>
+						<xs:documentation>The default location of your plugins</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element maxOccurs="1" minOccurs="0" name="layoutsLocation" type="xs:string">
+					<xs:annotation>
+						<xs:documentation>The default location of your layouts.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element maxOccurs="1" minOccurs="0" name="viewsLocation" type="xs:string">
+					<xs:annotation>
+						<xs:documentation>The default location of your views.</xs:documentation>
+					</xs:annotation>
+				</xs:element>	
+				<xs:element maxOccurs="1" minOccurs="0" name="eventAction" type="xs:string">
+					<xs:annotation>
+						<xs:documentation>The default event action if not specified.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element maxOccurs="1" minOccurs="0" name="modelsLocation" type="xs:string">
+					<xs:annotation>
+						<xs:documentation>The default location of your models.</xs:documentation>
+					</xs:annotation>
+				</xs:element>			
+			</xs:all>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

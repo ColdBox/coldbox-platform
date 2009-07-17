@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<snippet filetemplate="false" extension="cfm">
+<name>getCurrentHandler</name>
+<help></help>
+<starttext><![CDATA[event.getCurrentHandler()]]></starttext>
+<endtext><![CDATA[]]></endtext>
+</snippet>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<snippet filetemplate="false" extension="cfm">
+<name>NewEvent</name>
+<help></help>
+<starttext><![CDATA[<!--- $${Event Name} --->
+<cffunction name="$${Event Name}" access="public" returntype="void" output="false" hint="$${Hint}">
+	<cfargument name="Event" type="any" required="yes">
+	<cfset var rc = event.getCollection()>
+	<cfscript>]]></starttext>
+<endtext><![CDATA[	
+
+	</cfscript>
+</cffunction>]]></endtext>
+</snippet>

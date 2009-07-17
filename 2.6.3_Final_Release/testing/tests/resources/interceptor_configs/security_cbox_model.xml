@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:noNamespaceSchemaLocation="http://www.coldboxframework.com/schema/config_2.6.0.xsd">
+	<Settings>
+		<Setting name="AppName" 					value="coldbox tester"/>
+		<Setting name="AppMapping"					value="/coldbox" />
+		<Setting name="DebugMode" 					value="false"/>
+		<Setting name="DebugPassword" 				value=""/>
+		<Setting name="ReinitPassword" 				value=""/>
+		<Setting name="EventName" 					value="event"/>
+		<Setting name="EnableDumpVar" 				value="false"/>
+		<Setting name="EnableColdfusionLogging" 	value="false"/>
+		<Setting name="EnableColdboxLogging" 		value="false"/>
+		<Setting name="DefaultEvent" 				value="ehGeneral.dspHello"/>
+		<Setting name="RequestStartHandler" 		value=""/>
+		<Setting name="RequestEndHandler" 			value=""/>
+		<Setting name="ApplicationStartHandler"		value="" />
+		<Setting name="SessionStartHandler"		    value="" />
+		<Setting name="SessionEndHandler"		    value="" />
+		<Setting name="OwnerEmail" 					value="info@luismajano.com"/>
+		<Setting name="EnableBugReports" 			value="false"/>
+		<Setting name="UDFLibraryFile" 				value="" />
+		<Setting name="CustomErrorTemplate"			value="" />
+		<Setting name="CustomEmailBugReport"		value="" />
+		<Setting name="MessageboxStyleOverride"		value="false" />
+		<Setting name="HandlersIndexAutoReload"   	value="false" />
+		<Setting name="ConfigAutoReload"			value="false" />
+		<Setting name="ExceptionHandler"     		value="" />
+		<Setting name="onInvalidEvent" 				value="" />
+		<Setting name="MyPluginsLocation" 			value=""/>
+		<Setting name="HandlersExternalLocation" 	value=""/>
+		<Setting name="ModelsExternalLocation" 		value="coldbox.testing.testmodel"/>
+		<Setting name="HandlerCaching" 				value="false"/>
+		<Setting name="EventCaching" 				value="false"/>
+		<Setting name="IOCFramework" 				value="coldspring"/>
+		<Setting name="IOCDefinitionFile"		 	value="/applications/coldbox/testing/tests/resources/coldspring.xml.cfm"/>
+		<Setting name="IOCObjectCaching"			value="false"/>
+		<Setting name="ProxyReturnCollection" 		value="false"/>
+	</Settings>
+
+	<YourSettings>
+		
+	</YourSettings>
+
+	<!--Optional,if blank it will use the CFMX administrator settings.-->
+	<MailServerSettings />
+
+	<BugTracerReports>
+		<BugEmail>info@coldboxframework.com</BugEmail>
+	</BugTracerReports>
+
+	<DevEnvironments></DevEnvironments>
+
+	<WebServices></WebServices>
+
+	<Layouts>
+		<DefaultLayout>Layout.Main.cfm</DefaultLayout>
+	</Layouts>
+
+	<i18N/>
+
+	<Datasources>
+		<Datasource alias="mysite" name="mysite" dbtype="mysql"  username="root" password="pass" />
+		<Datasource alias="blog_dsn" name="myblog" dbtype="oracle" username="root" password="pass" />
+	</Datasources>
+	
+	<Cache>
+		<ObjectDefaultTimeout>15</ObjectDefaultTimeout>
+		<ObjectDefaultLastAccessTimeout>5</ObjectDefaultLastAccessTimeout>
+		<ReapFrequency>1</ReapFrequency>
+		<MaxObjects>100</MaxObjects>
+		<FreeMemoryPercentageThreshold>0</FreeMemoryPercentageThreshold>
+		<UseLastAccessTimeouts>false</UseLastAccessTimeouts>
+	</Cache>
+	
+	<Interceptors throwOnInvalidStates="true">
+		<Interceptor class="coldbox.system.interceptors.security">
+			<Property name="rulesSource">model</Property>
+			<Property name="rulesModel">security</Property>
+			<Property name="rulesModelMethod">getRules</Property>
+			<Property name="validatorModel">security</Property>
+		</Interceptor>		
+	</Interceptors>
+
+</Config>

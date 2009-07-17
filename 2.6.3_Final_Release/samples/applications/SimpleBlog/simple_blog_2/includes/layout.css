@@ -1,0 +1,24 @@
+body {
+	font-family:verdana;
+	font-size:smaller;
+	padding:0px;
+	margin:0px;
+}
+
+.content {
+	padding:0px 15px;
+}
+
+.footer {
+	width:100%;
+	text-align:center;
+	padding-top:50px;
+}
+
+a {
+        color:#0000EE;    
+}
+
+a:visited, a:hover, a:focus {
+        color:#3377FF;
+}

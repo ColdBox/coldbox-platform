@@ -1,0 +1,101 @@
+.cfc_content{
+	font-family: "Lucida Console,Courier New,Courier,monospace";
+	font-size: 13px;
+	margin: 3px;
+}
+.cfc_content a:link, .cfc_content a:visited{
+	color: blue;
+}
+.cfc_content a:hover{
+	color: black;
+	font-weight: bold;
+}
+.cfc_content ul{
+	color: #330066;
+}
+.cfc_content li{
+	margin: 2px;
+}
+.cfc_h1{
+	font-size: 16px;
+	font-weight: bold;
+	padding: 5px;
+	color: #330066;
+	background-color: #ccccff;
+	border: 1px outset #cccccc;
+}
+.cfc_h2{
+	font-size: 14px;
+	font-weight: bold;
+	padding: 5px;
+	color: #330066;
+	background-color: #eeeeff;
+	border: 1px outset #cccccc;
+}
+.cfc_h3{
+	font-size: 12px;
+	font-weight: bold;
+	margin: 5px 0px 5px 0px;
+}
+.cfc_packagecontent{
+	border:1px solid #eaeaea;
+	background: #ffffff;
+}
+.cfc_hint{
+	padding-bottom: 10px;
+	padding-top: 10px;
+}
+
+.cfc_componentlisting{
+	background-color: #f5f5f5;
+	padding: 5px;
+	border-bottom: 1px outset #cccccc;
+	border-left: 1px outset #cccccc;
+	border-right: 1px outset #cccccc;
+	
+}
+.cfc_componentdefinitions{
+	background-color: #f5f5f5;
+	padding: 5px;
+	border: 1px outset #cccccc;	
+}
+.cfc_componentsummary{
+	background-color: #f5f5f5;
+	padding: 5px;
+	border-left: 1px outset #cccccc;
+	border-right: 1px outset #cccccc;
+	font-size: 13px;
+}
+.cfc_componentsummary td{
+	padding: 3px;
+}
+.cfc_component{
+	background-color: #f5f5f5;
+	padding: 2px;
+	border-bottom: 1px outset #cccccc;
+	border-left: 1px outset #cccccc;
+	border-right: 1px outset #cccccc;
+}
+.cfc_methodstable{
+	border:1px solid #cccccc;
+	padding: 5px;
+	font-size: 13px;
+}
+.cfc_methodstitle{
+	background-color: #eaeaea;
+	font-weight: bold;
+	padding: 5px;
+	border: 1px dotted #dddddd;
+	font-size: 13px;
+}
+.cfc_methodcells{
+	padding: 5px;
+	border: 1px dotted #dddddd;
+	font-size: 13px;
+}
+.cfc_methodrows{
+	background-color: #FFFFFF;
+}
+.cfc_methodrowsOn{
+	background-color: #E8F2FE;
+}

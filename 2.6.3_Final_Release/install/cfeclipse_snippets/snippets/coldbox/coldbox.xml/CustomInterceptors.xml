@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<snippet filetemplate="false" extension="cfm">
+<name>CustomInterceptors</name>
+<help></help>
+<starttext><![CDATA[<CustomInterceptionPoints>$${List Of Custom Interception Points}</CustomInterceptionPoints>]]></starttext>
+<endtext><![CDATA[]]></endtext>
+</snippet>

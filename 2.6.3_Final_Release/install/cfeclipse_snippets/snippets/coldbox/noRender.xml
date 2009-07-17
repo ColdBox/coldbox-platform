@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<snippet filetemplate="false" extension="cfm">
+<name>noRender</name>
+<help></help>
+<starttext><![CDATA[event.noRender($${RemoveFlag (Default is false): false|true})]]></starttext>
+<endtext><![CDATA[]]></endtext>
+</snippet>

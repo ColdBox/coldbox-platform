@@ -1,0 +1,64 @@
+<project name="copydictionary" basedir="." default="installDictionary">
+	
+	<!--
+	INSTRUCTIONS:
+	
+	This ant file is designed to help you easily install the coldbox dictionary into 
+	the eclipse dictionary.xml folder.
+	
+	1) Open the file named copy.properties in this directory
+	2) populate it like so: dictionarydir.options=C:/eclipse/plugins/org.cfeclipse.cfml_1.3.1.6/dictionary
+	   
+	   This is the directory that holds the function insight dictionary in the eclipse plugin.
+	   
+	   The paths must be forward slashes!
+	   
+	   note: this can be a comma-separated list, too, just in case you have multiple snippets locations 
+	   (for different eclipse installs, for example)
+	   
+	3) Right click on this copy.xml file and select "Run as Ant Build".
+	      
+	-->
+	
+	<!-- Init  -->
+	<target name="init" description="Init the task">
+		<!-- Load Paths -->
+		<path id="cp">
+			<fileset dir="../antlib" includes="**/*.jar"/>
+		</path>
+		
+		<!-- Task Definitions -->
+		<taskdef resource="net/sf/antcontrib/antlib.xml" classpathref="cp" />
+		<taskdef name="xmltask" classname="com.oopsconsultancy.xmltask.ant.XmlTask" classpathref="cp"/>
+		
+		<!-- Load Properties: dictionary.destinationDir -->
+		<property file="copy.properties" />
+		<!-- Local Properties -->
+		<property name="dictionary.destinationFile"	 	value="${dictionary.destinationDir}/dictionaryconfig.xml" />
+		<property name="dictionary.src"					value="coldbox.xml" />
+		
+		<!--Echo properties -->
+		<echoproperties regex="dictionary" />
+	</target>
+
+	<target name="backup" description="backup the dictionaryconfig.xml file">
+		<!--Backup the file-->
+		<copy file="${dictionary.destinationFile}" tofile="${dictionary.destinationFile}.bak" />			
+	</target>	
+	
+	<!-- Install Dictionary -->
+	<target name="installDictionary" depends="init,backup">
+		<!-- Copy the dictionary over -->
+		<copy file="${dictionary.src}" todir="${dictionary.destinationDir}" />
+		
+		<!-- Install it -->
+		<xmltask source="${dictionary.destinationFile}" dest="${dictionary.destinationFile}" outputter="simple"> 
+	    	<insert path="/dictionary_config/dictionary[1]/version" position="under"> 
+			  <![CDATA[				<grammar location="coldbox.xml" />
+	    				]]> 
+			</insert> 
+	    </xmltask>
+	</target>
+
+
+</project>

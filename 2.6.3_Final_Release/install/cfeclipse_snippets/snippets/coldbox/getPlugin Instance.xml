@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<snippet filetemplate="false" extension="cfm">
+<name>getPlugin Instance</name>
+<help></help>
+<starttext><![CDATA[getPlugin("$${Plugin Name}", $${Custom Plugin:false|true}, true)]]></starttext>
+<endtext><![CDATA[]]></endtext>
+</snippet>

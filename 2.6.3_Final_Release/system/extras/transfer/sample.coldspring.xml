@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE beans SYSTEM "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+
+	<!-- coldbox -->
+	<bean id="ColdboxFactory" class="coldbox.system.extras.ColdboxFactory" singleton="true"/>
+	<!-- coldbox bean factory -->
+	<bean id="ColdBoxBeanFactory" factory-bean="ColdBoxFactory" factory-method="getPlugin" singleton="true">
+   		<constructor-arg name="plugin">
+	       <value>beanFactory</value>
+		</constructor-arg>	
+   	</bean>
+	<!-- MyDatasource -->
+	<bean id="MyDSN" factory-bean="ColdBoxFactory" factory-method="getDatasource">
+       <constructor-arg name="alias">
+          <value>${TransferDSNAlias}</value>
+       </constructor-arg>
+    </bean>
+   	<!-- coldbox-transfer observer -->
+   	<bean id="TDOBeanInjectorObserver" class="coldbox.system.extras.transfer.TDOBeanInjectorObserver" lazy-init="false">
+   		<constructor-arg name="Transfer"><ref bean="Transfer"></ref></constructor-arg>
+   		<constructor-arg name="ColdBoxBeanFactory"><ref bean="ColdBoxBeanFactory"></ref></constructor-arg>
+   		<!-- OPTIONAL ARGUMENTS
+   		<constructor-arg name="useSetterInjection"><value>false</value></constructor-arg>
+   		<constructor-arg name="onDICompleteUDF"><value>onDIComplete</value></constructor-arg>
+   		<constructor-arg name="debugMode"><value>false</value></constructor-arg>
+   		<constructor-arg name="stopRecursion"><value>transfer.com.TransferDecorator</value></constructor-arg>
+   		-->
+   	</bean>
+	
+	<!-- Coldbox-transfer Config Factory -->
+	<bean id="TransferConfigFactory" class="coldbox.system.extras.transfer.TransferConfigFactory" singleton="true" />
+	<!-- Transfer Configuration -->
+	<bean id="TransferConfig" factory-bean="TransferConfigFactory" factory-method="getTransferConfig">
+		<!-- Config Path -->
+		<constructor-arg name="configPath"><value>${TransferConfigPath}</value></constructor-arg>
+		<!-- Definitions Path -->
+		<constructor-arg name="definitionPath"><value>${TransferDefinitionsPath}</value></constructor-arg>
+		<!-- ColdBox Datasource Bean -->
+		<constructor-arg name="dsnBean"><ref bean="MyDSN" /></constructor-arg>
+	</bean>
+	<!-- TransferFactory -->
+	<bean id="TransferFactory" class="transfer.TransferFactory" singleton="true">
+		<constructor-arg name="configuration"><ref bean="TransferConfig"/></constructor-arg>
+	</bean>
+	<!--Transfer Related Beans -->
+	<bean id="Transfer" factory-bean="TransferFactory" factory-method="getTransfer"  />
+	<bean id="Datasource" factory-bean="TransferFactory" factory-method="getDatasource" />
+	<bean id="Transaction" factory-bean="TransferFactory" factory-method="getTransaction" />
+	
+</beans>

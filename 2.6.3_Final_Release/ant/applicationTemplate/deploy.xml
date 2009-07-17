@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<!-- ====================================================================== 
+     Mar 15, 2007 4:11:44 PM                                                        
+	 Luis Majano
+	
+     applicationtemplate.build    
+     This covers zipping the application template, uploading to the downloads
+     section of the codlboxframework.com site.              
+                                                                     
+     ====================================================================== -->
+<project name="coldbox.applicationtemplate.build" default="help" basedir="../../">
+    <description>
+            This covers zipping the application template, uploading to the downloads
+    </description>
+	
+	<property name="ftp.server"  value="ftp.coldboxframework.com" />
+	<property name="ftp.remotedir" value="/httpdocs/downloads" />
+	<property name="src"         value="ApplicationTemplate" />
+	<property name="destination" value="ant/applicationTemplate/temp/ApplicationTemplate/" />
+	<property name="zipsrc"		 value="ant/applicationTemplate/temp" />
+	<property name="archive"	 value="ant/applicationTemplate/ApplicationTemplate.zip" />
+	
+	<target name="help">
+		<echo>Base Dir: ${basedir}</echo>
+		<echo>Src Dir: ${src}</echo>
+		<echo>Des Dir: ${destination}</echo>
+	</target>
+	
+	<target name="do.archive">
+		<copy todir="${destination}" preservelastmodified="true">
+			<fileset dir="${src}" />
+		</copy>
+		<zip destfile="${archive}" basedir="${zipsrc}"></zip>
+	</target>
+	
+	<target name="do.cleanup">
+		<delete dir="${zipsrc}" />
+		<delete file="${archive}" />
+	</target>
+	
+	<target name="ftp.deploy" depends="do.archive" >
+       	<input message="Please enter ftp server username:" addproperty="ftp.username" />
+       	<input message="Please enter fpt server password:" addproperty="ftp.password" />
+      	<ftp action="send" server="${ftp.server}" userid="${ftp.username}" password="${ftp.password}" 
+       		remotedir="${ftp.remotedir}" passive="yes" verbose="yes" newer="true">
+        	<fileset file="${archive}" />
+       	</ftp>
+		<antcall target="do.cleanup"></antcall>
+    </target>
+
+</project>

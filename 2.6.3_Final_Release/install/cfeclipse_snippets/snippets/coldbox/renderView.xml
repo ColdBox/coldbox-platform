@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<snippet filetemplate="false" extension="cfm">
+<name>renderView</name>
+<help>Render a View</help>
+<starttext><![CDATA[renderView(view="$${View name (No Extension)}",cache="$${cache:false|true}",cacheTimeout="$${Timeout (minutes)}",cacheLastAccessTimeout="$${Last Access Timeout (minutes)}")]]></starttext>
+<endtext><![CDATA[]]></endtext>
+</snippet>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<snippet filetemplate="false" extension="cfm">
+<name>i18n</name>
+<help>i18N Element Contents</help>
+<starttext><![CDATA[<DefaultResourceBundle>$${Default Resource Bundle (Blank if not used,Don't include extension or locale)}</DefaultResourceBundle>
+<DefaultLocale>$${Default Locale (Java Style):en_US}</DefaultLocale>
+<LocaleStorage>$${Locale Storage:session|client}</LocaleStorage>]]></starttext>
+<endtext><![CDATA[]]></endtext>
+</snippet>

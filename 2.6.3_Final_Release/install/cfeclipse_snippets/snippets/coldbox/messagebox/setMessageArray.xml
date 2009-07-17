@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<snippet filetemplate="false" extension="cfm">
+<name>setMessageArray</name>
+<help></help>
+<starttext><![CDATA[getPlugin("messagebox").setMessage(type="$${Message Type:info|error|warning}", messageArray="$${Message Array}")]]></starttext>
+<endtext><![CDATA[]]></endtext>
+</snippet>

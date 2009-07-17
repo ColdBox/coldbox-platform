@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<snippet filetemplate="false" extension="cfm">
+<name>appendMessage</name>
+<help></help>
+<starttext><![CDATA[getPlugin("messagebox").append("$${message}")]]></starttext>
+<endtext><![CDATA[]]></endtext>
+</snippet>

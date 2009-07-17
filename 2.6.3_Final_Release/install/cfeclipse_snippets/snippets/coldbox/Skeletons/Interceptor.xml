@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<snippet filetemplate="true" extension="cfc">
+<name>Interceptor</name>
+<help>A new Interceptor</help>
+<starttext><![CDATA[<!-----------------------------------------------------------------------
+Author 	 :	$${Author}
+Date     :	$${DATE}
+Description : 			
+ $${Interceptor Description}
+		
+Modification History:
+
+----------------------------------------------------------------------->
+<cfcomponent name="$${Interceptor Name}" 
+			 hint="$${Hint}" 
+			 extends="coldbox.system.interceptor" 
+			 output="false"
+			 autowire="$${Autowire:false|true}">
+  
+<!------------------------------------------- PUBLIC ------------------------------------------->	 	
+
+   
+    <cffunction name="configure" access="public" returntype="void" output="false" hint="Configure your interceptor">
+		
+	</cffunction>
+    
+
+<!------------------------------------------- PRIVATE ------------------------------------------->	 	
+
+
+</cfcomponent>]]></starttext>
+<endtext><![CDATA[]]></endtext>
+</snippet>

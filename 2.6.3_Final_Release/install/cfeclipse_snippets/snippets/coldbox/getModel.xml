@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<snippet filetemplate="false" extension="cfm">
+<name>getModel</name>
+<help>get a model object</help>
+<starttext><![CDATA[getModel(name="$${Model Name}")]]></starttext>
+<endtext><![CDATA[]]></endtext>
+</snippet>

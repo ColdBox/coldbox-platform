@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<snippet filetemplate="false" extension="cfm">
+<name>runEvent</name>
+<help>RunEvent method</help>
+<starttext><![CDATA[runEvent(event="$${event}",private=$${private:false|true})]]></starttext>
+<endtext><![CDATA[]]></endtext>
+</snippet>

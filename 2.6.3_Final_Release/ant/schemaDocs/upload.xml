@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<!-- ====================================================================== 
+     Mar 14, 2007 7:43:26 PM                                                        
+
+     SchemaDocs    
+     This task will upload the schema docs to the ftp site.
+                   
+     lmajano                                                                
+     ====================================================================== -->
+<project name="coldbox.schemadocs" default="ftp.deploy" basedir="../../">
+    <description>
+    	This task will upload the schema docs to the ftp site.
+    </description>
+	
+	<!-- ftp server to move files to -->
+	<property name="ftp.server" value="www.coldboxframework.com" />
+	<!-- directory in server to move files to (root relative) -->
+	<property name="ftp.remotedir" value="/httpdocs/documents/SchemaDocs" />
+	<property name="copy.dir" value="documents/SchemaDocs"/>
+	
+	<target name="copy.to.coldboxframework_com">
+		<!-- Copy src -->	
+      	<copy todir="/Users/lmajano/Documents/MyDevelopment/applications/coldboxframework_com/documents/SchemaDocs">
+        	<fileset dir="documents/SchemaDocs" />
+        </copy>
+	</target>
+	
+	<target name="copy.to.plugin">
+			<!-- Copy src -->	
+		<copy todir="/Users/lmajano/Documents/MyDocs/My Programs/Eclipse/org.coldboxframework.apidocs/html/SchemaDocs/schemaDiagrams">
+        	<fileset dir="documents/SchemaDocs/schemaDiagrams" />
+        </copy>	
+	</target>
+	
+	
+	<target name="ftp.deploy" depends="copy.to.coldboxframework_com">
+       	<input message="Please enter ftp server username:" addproperty="ftp.username" />
+       	<input message="Please enter fpt server password:" addproperty="ftp.password" />
+      	<ftp action="send" server="${ftp.server}" userid="${ftp.username}" password="${ftp.password}" 
+       		remotedir="${ftp.remotedir}" passive="yes" verbose="yes" newer="true">
+        	<fileset dir="${copy.dir}"/>
+       	</ftp>
+    </target>	
+		
+</project>

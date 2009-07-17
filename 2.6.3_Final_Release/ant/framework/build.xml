@@ -1,0 +1,117 @@
+<?xml version="1.0"?>
+<!-- ====================================================================== 
+     Mar 18, 2007 1:30:20 AM                                                        
+
+     coldbox.deploy    
+     ColdBox Deployment
+                   
+     lmajano                                                                
+     ====================================================================== -->
+<project name="coldbox.newbuild" default="build" basedir="../../">
+
+	<!--Build Properties-->
+	<property name="dir.userlocation"	value="/Users/lmajano/Documents" />
+	<property name="dir.exports"		value="${dir.userlocation}/MyDocs/My Programs/exports" />
+	<property name="dir.build" 			value="${dir.exports}/coldbox" />
+	<property name="dir.dashboard"	    value="${dir.userlocation}/MyDevelopment/applications/dashboard" />
+	<property name="dir.wallpapers"		value="${dir.userlocation}/MyDocs/My Programs/OrtusSolutions/ColdBox/workbench/wallpapers/" />
+	
+	<!--External Ant Tasks-->
+	<property name="ant.compilechecks"  value="ant/framework/ant_compile.xml" />
+	<property name="ant.dashboard"      value="${dir.dashboard}/build.xml" />
+	
+	<!-- FTP -->
+	<property name="ftp.server"  		value="ftp.coldboxframework.com" />
+	<property name="ftp.remotedir" 		value="/httpdocs/builds" />
+	
+	<!-- Init -->
+	<target name="init" description="Init">
+		<!-- Version -->
+		<input addproperty="coldbox.version" message="ColdBox Version" />
+		<input addproperty="doCompile" message="Compile?" defaultvalue="true" validargs="true,false" />
+		
+		<condition property="compile.true">
+			<istrue value="${doCompile}"/>
+		</condition>
+	</target>
+	
+	<!--Framework Compile Checks -->
+	<target name="compilechecks" description="Compile framework checks." depends="init" if="compile.true">
+		<!--Need Compile Checks First -->
+		<ant antfile="${ant.compilechecks}" target="compile.checks" />		
+	</target>
+	
+	<!-- FTP Upload of new build -->
+	<target name="ftp.deploy" depends="build">
+       	<input message="Please enter ftp server username:" addproperty="ftp.username" />
+       	<input message="Please enter fpt server password:" addproperty="ftp.password" />
+      	
+		<ftp action="send" server="${ftp.server}" userid="${ftp.username}" password="${ftp.password}" 
+       		remotedir="${ftp.remotedir}" passive="yes" verbose="yes">
+        	<fileset file="${dir.exports}/coldbox_${coldbox.version}.zip" />
+			<fileset file="${dir.exports}/coldbox_standalone_${coldbox.version}.zip" />
+			<fileset file="${dir.exports}/dashboard_${dashboard.version}.zip" />
+       	</ftp>		
+	</target>
+	
+	<!--BUild-->
+	<target name="build" description="Build a new coldbox distribution" depends="compilechecks">
+      	
+		<!-- Copy src -->	
+      	<copy todir="${dir.build}/system">
+        	<fileset dir="system">
+        	</fileset>
+        </copy>
+		
+		<!-- Samples -->
+		<copy todir="${dir.build}/samples">
+        	<fileset dir="samples">
+        	</fileset>
+        </copy>
+		
+		<!-- Install folder -->
+		<copy todir="${dir.build}/install">
+        	<fileset dir="install" />
+        </copy>
+		
+		<!--AppTemplate-->
+		<copy todir="${dir.build}/ApplicationTemplate">
+        	<fileset dir="ApplicationTemplate" />
+        </copy>
+		
+		<!--Copy text files to install folder-->
+		<copy todir="${dir.build}/install">
+			<fileset file="system/config/license.txt" />
+			<fileset file="system/config/readme.txt" />						
+		</copy>
+		
+		<!--Copy Documents-->
+		<copy todir="${dir.build}/install/SchemaDocs">
+			<fileset dir="documents/SchemaDocs"/>
+		</copy>
+		
+		<!--Copy Wallpapers-->
+		<copy todir="${dir.build}/install/wallpapers">
+			<fileset dir="${dir.wallpapers}"/>
+		</copy>
+				
+		<!--Remove Dist-->
+		<delete dir="dist" />
+		
+		<!--Export Dashboard-->
+		<ant antfile="${ant.dashboard}" target="deploy.to.export" dir="${dir.dashboard}" />
+		
+		<!-- Zip Bundle -->
+		<zip destfile="${dir.exports}/coldbox_${coldbox.version}.zip" basedir="${dir.build}"></zip>
+		
+		<!-- Zip Standalone -->
+		<zip destfile="${dir.exports}/coldbox_standalone_${coldbox.version}.zip" basedir="${dir.build}" excludes="dashboard/**,samples/**">								
+		</zip>	
+		
+    </target>
+	
+	<target name="test">
+		<!--Export Dashboard-->
+		<ant antfile="${ant.dashboard}" target="deploy.to.export" dir="${dir.dashboard}"/>
+	</target>
+</project>

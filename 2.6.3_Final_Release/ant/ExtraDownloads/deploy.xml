@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<!-- ====================================================================== 
+     Mar 15, 2007 4:11:44 PM                                                        
+	 Luis Majano
+	
+     extradownloads              
+                                                                     
+     ====================================================================== -->
+<project name="coldbox.extradownloads" basedir="." default="ftp.deploy">
+    <description>
+    	This covers zipping the samples, uploading to the downloads
+    	     section of the codlboxframework.com site. 
+    </description>
+	
+	<property name="ftp.server"  		value="ftp.coldboxframework.com" />
+	<property name="ftp.remotedir" 		value="/httpdocs/downloads" />
+	
+	<property name="src.dictionary"     value="../../install/cfeclipse_dictionary" />
+	<property name="src.dwdictionary"     value="../../install/dreamweaver_dictionary" />
+	<property name="src.snippets"     	value="../../install/cfeclipse_snippets" />
+	<property name="src.illudium"     	value="../../install/illudium_templates" />
+	<property name="src.cheatsheet"    	value="../../install/ColdboxCheatSheet.pdf" />
+	
+	<property name="build" 				value="build" />
+	
+	<target name="do.cleanup">
+		<delete dir="${build}" />
+	</target>
+	
+	<target name="do.archive">
+		<mkdir dir="${build}"/>
+		<zip destfile="${build}/cfeclipse_dictionary.zip" basedir="${src.dictionary}"></zip>
+		<zip destfile="${build}/dreamweaver_dictionary.zip" basedir="${src.dwdictionary}"></zip>
+		<zip destfile="${build}/cfeclipse_snippets.zip" basedir="${src.snippets}"></zip>
+		<zip destfile="${build}/illudium_templates.zip" basedir="${src.illudium}"></zip>
+		<copy file="${src.cheatsheet}" todir="${build}" />
+	</target>
+	
+	<target name="ftp.deploy" depends="do.archive" >
+       	<input message="Please enter ftp server username:" addproperty="ftp.username" />
+       	<input message="Please enter fpt server password:" addproperty="ftp.password" />
+      	<ftp action="send" server="${ftp.server}" userid="${ftp.username}" password="${ftp.password}" 
+       		remotedir="${ftp.remotedir}" passive="yes" verbose="yes">
+        	<fileset dir="${build}" />
+       	</ftp>
+		<antcall target="do.cleanup"></antcall>
+    </target>
+
+</project>

@@ -1,0 +1,26 @@
+.mainMenu {
+	padding:20px;
+	background:#EEEEEE;
+}
+
+.mainMenu ul {
+	margin:0px;
+	padding:0px;
+	font-size:14px;
+	font-weight:bold;
+}
+
+.mainMenu ul li {
+	list-style:none;
+	display:inline;
+	padding-right:10px;
+}
+
+.mainMenu li a, .mainMenu li a:visited {
+	text-decoration:none;
+	color:#0000EE;
+}
+
+.mainMenu li a:hover {
+	text-decoration:underline;
+}

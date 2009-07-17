@@ -1,0 +1,143 @@
+/*
+Table Listing
+*/
+.tablelisting{
+	border: 1px solid #cccccc;
+}
+.tablelisting tr{
+	background-color: #eaeaea;
+}
+.tablelisting tr.even{
+	background-color: #ffffff;
+}
+.tablelisting tr:hover { background: #d7eafe}
+.tablelisting th {
+	text-align: left;
+	background-color: #999999;
+	color: #ffffff;
+	padding: 5px;
+}
+.tablelisting td{
+	padding: 5px;
+}
+.tablelisting th a {
+	color: #ffffff;
+	background-color: inherit;
+	text-decoration: none;
+	border-bottom: none;
+}
+.tablelisting th a:hover {
+	color: #CC0001; 
+	background-color: inherit;	
+}
+.tablelisting a {
+	text-decoration: none;
+	border-bottom: none;
+}
+.tablelisting a:hover {
+	color: #CC0001; 
+	background-color: inherit;	
+}
+.tablelisting #checkboxHolder{
+	width: 20px;
+}
+.tablelisting #actions{
+	text-align: center;
+	width: 60px;
+}
+/* loader */
+.formloader {
+	margin:3px 5px 0px 0px;
+	display: none;
+	text-align: center;
+	margin: auto;
+}
+
+.formloader p {
+	color: #CC0000;
+	font-weight: bold;
+	margin-bottom: 1em;
+}
+#_listloader{
+	float: right;
+	margin-right: 10px;
+}
+#listButtonBar{
+	float: right;
+	margin-top:12px;
+}
+#recordsfound{
+	margin-top: 12px;
+}
+
+/* Form */
+.fieldLabel{
+	width: 180px;
+}
+.rbLabel{
+	display: inline;
+}
+.relationLabel{
+	display: inline;
+}
+.primaryKeyLabel{
+	display: inline;
+}
+.primaryKey{
+	color: red;
+}
+.helptext{
+	font-weight: normal;
+}
+#formFinalizer{
+	margin-top: 25px;
+}
+.booleanSelect{
+	width: 150px;
+}
+input.invalidLookupInput, textarea.invalidLookupInput, .invalidLookupInput{
+	border: 1px dotted #F00000;
+	background:#FFECE6 url(../images/topfade.gif) repeat-x scroll center top;
+}
+/* button stuff */
+#_buttonbar{
+	margin-top:8px;
+	text-align: center;
+	margin: auto;	
+}
+.backbutton {
+	margin:5px 10px 0 0;
+}
+
+/* RTE */
+.frameBody
+{
+    font-family:sans-serif;
+    font-size:12px;
+    margin:0;
+    width:100%;
+    height:100%;
+}
+
+.rte-zone
+{
+	width:500px;
+	margin:0;
+	padding:10px;
+	height:200px;
+	border:1px #999 solid;
+	background: white;
+    clear:both;
+}
+
+.rte-toolbar{ overflow:hidden; }
+
+.rte-toolbar a, .rte-toolbar a img {
+	border:0;
+}
+
+.rte-toolbar p {
+    float:left;
+    margin:0;
+    padding-right: 8px;
+}

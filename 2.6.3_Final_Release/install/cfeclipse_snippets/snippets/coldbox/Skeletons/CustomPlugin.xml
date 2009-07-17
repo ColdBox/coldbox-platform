@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<snippet filetemplate="true" extension="cfc">
+<name>CustomPlugin</name>
+<help>A new Custom Plugin</help>
+<starttext><![CDATA[<!-----------------------------------------------------------------------
+Author 	 :	$${Author}
+Date     :	$${DATE}
+Description : 			
+ $${Plugin Description}
+		
+Modification History:
+
+----------------------------------------------------------------------->
+<cfcomponent name="$${Plugin Name}" 
+			 hint="$${Hint}" 
+			 extends="coldbox.system.plugin" 
+			 output="false" 
+			 autowire="$${Autowire:false|true}"
+			 cache="$${Cache:true|false}"
+			 cacheTimeout="$${Cache Timeout:0}">
+  
+<!------------------------------------------- CONSTRUCTOR ------------------------------------------->	
+   
+    <cffunction name="init" access="public" returntype="$${Plugin Name}" output="false">
+		<cfargument name="controller" type="any" required="true">
+		<cfscript>
+  		super.Init(arguments.controller);
+  		setpluginName("$${Plugin Name}");
+  		setpluginVersion("$${Plugin Version}");
+  		setpluginDescription("$${Plugin Description}");
+  		//My own Constructor code here
+  		
+  		//Return instance
+  		return this;
+		</cfscript>
+	</cffunction>
+
+<!------------------------------------------- PUBLIC ------------------------------------------->	
+
+    
+<!------------------------------------------- PRIVATE ------------------------------------------->	
+
+	
+</cfcomponent>]]></starttext>
+<endtext><![CDATA[]]></endtext>
+</snippet>

@@ -1,0 +1,128 @@
+<project name="copysnippets" basedir="." default="hereToLocalSnippets">
+	
+	<!--
+	INSTRUCTIONS:
+	
+	This ant file is designed to help you easily copy the coldbox cfeclipse snippets
+	from this distribution into your own snippets directory. In addition, it will
+	also copy the keyboard shortcuts into your own shortcuts file... it will NOT
+	overwrite your other non-mxunit shortcuts! (plus... it makes a backup of your existing
+	shortcuts file, too).
+	
+	1) Create a file named copy.properties in this directory
+	2) populate it like so: snipdir.options=c:/my/path/to/cf/snippets
+	   
+	   The paths must be forward slashes!
+	   
+	   On my computer, the path is:
+	   snipdir.options=C:/Users/Marc/EclipseWorkspaces/MyCFWorkspace/.metadata/.plugins/org.cfeclipse.cfml/snippets
+	   
+	   note: this can be a comma-separated list, too, just in case you have multiple snippets locations 
+	   (for different eclipse installs, for example)
+	   
+	3) Right click on this copy.xml file and select "Run as Ant Build".
+	      
+	-->
+	
+	<available file="copy.properties" property="propsavailable" />
+
+
+	<target name="init" depends="createDefaultPropertiesFile">
+		<path id="cp">
+			<fileset dir="../antlib">
+				<include name="**/*.jar" />
+			</fileset>
+		</path>
+
+		<taskdef resource="net/sf/antcontrib/antlib.xml" classpathref="cp" />
+		<property file="copy.properties" />
+		
+		<property name="snipdirname" value="coldbox"/>
+	</target>
+
+
+	<target name="initSnipCopy" depends="init,createDefaultPropertiesFile">
+
+		<input addproperty="local.snipdir" validargs="${snipdir.options}" message="Where are your local snippets?" />
+		<input addproperty="overwrite" validargs="true,false" message="overwrite existing snippets if they exist?" />
+
+
+		<property name="snip.location" location="snippets" />
+
+		<fail message="snippet directory ${local.snipdir} does not exist">
+			<condition>
+				<not>
+					<available file="${local.snipdir}" />
+				</not>
+			</condition>
+		</fail>
+
+		<echoproperties regex="local|snip" />
+
+	</target>
+
+	<target name="localSnippetsToHere" depends="initSnipCopy">
+
+		<copy todir="${snip.location}" overwrite="${overwrite}" verbose="true">
+			<fileset dir="${local.snipdir}" includes="${snipdirname}/" />
+		</copy>
+
+		<copyKeyCombos from="${local.snipdir}/keyCombos.properties" to="${snip.location}/keyCombos.properties" propValuePattern="/${snipdirname}/" />
+	</target>
+
+	<target name="hereToLocalSnippets" depends="initSnipCopy">
+		<echoproperties regex="local|snip" />
+		<copy todir="${local.snipdir}" overwrite="${overwrite}" verbose="true">
+			<fileset dir="${snip.location}" includes="${snipdirname}/" />
+		</copy>
+		
+		<copyKeyCombos from="${snip.location}/keyCombos.properties" to="${local.snipdir}/keyCombos.properties" propValuePattern="/${snipdirname}/" />
+		
+	</target>
+
+	<target name="createDefaultPropertiesFile" unless="propsavailable">
+		<propertyfile file="copy.properties" comment="This can be a comma-separated list of valid paths to snippet directories">
+			<entry key="snipdir.options" value="C:/add/your/snippet/path/here" />
+		</propertyfile>
+	</target>
+
+	<macrodef name="copyKeyCombos">
+		<attribute name="from" />
+		<attribute name="to" />
+		<attribute name="propValuePattern" default="/${snipdirname}/" />
+		<sequential>
+			<loadfile srcfile="@{from}" property="keycombos" />
+			<copy file="@{to}" tofile="@{to}.bak"/>
+			<for list="${keycombos}" param="thisprop" delimiter="${line.separator}">
+				<sequential>
+					<echo message="looking at keycombo @{thisprop}" />
+					<if>
+						<contains string="@{thisprop}" substring="@{propValuePattern}" casesensitive="false" />
+						<then>
+							<listGetAt list="@{thisprop}" pos="1" delim="=" prop="k" />
+							<listGetAt list="@{thisprop}" pos="2" delim="=" prop="v" />
+							<echo message="matches.... copying" />
+							<propertyfile file="@{to}">
+								<!-- if an entry already exists, it will not overwrite it! -->
+								<entry key="${k}" default="${v}" />
+							</propertyfile>
+						</then>
+					</if>
+				</sequential>
+			</for>
+		</sequential>
+	</macrodef>
+
+	<scriptdef name="listGetAt" language="javascript">
+		<attribute name="list" />
+		<attribute name="pos" />
+		<attribute name="delim" />
+		<attribute name="prop" />		
+			values = attributes.get("list").split(attributes.get("delim"));
+			myint = parseInt(attributes.get("pos"));
+			oneBasedIndex = myint-1; /* so if they pass position "1", we turn that into "0" since javascript is 0-based but we want to work in a 1-based fashion  */
+			project.setProperty(attributes.get("prop"),values[oneBasedIndex]);	         
+	</scriptdef>
+
+
+</project>

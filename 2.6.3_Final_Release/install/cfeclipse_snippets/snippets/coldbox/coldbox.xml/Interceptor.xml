@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<snippet filetemplate="false" extension="cfm">
+<name>Interceptor</name>
+<help></help>
+<starttext><![CDATA[<Interceptor class="$${class}">
+
+</Interceptor>]]></starttext>
+<endtext><![CDATA[]]></endtext>
+</snippet>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<snippet filetemplate="false" extension="cfm">
+<name>populateModle</name>
+<help>Populate a model object.</help>
+<starttext><![CDATA[populateModel(model="$${Model Name}")]]></starttext>
+<endtext><![CDATA[]]></endtext>
+</snippet>

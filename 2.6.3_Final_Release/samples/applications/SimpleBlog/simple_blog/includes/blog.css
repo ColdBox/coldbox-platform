@@ -1,0 +1,44 @@
+.blogPost .title, .blogPost .title a {
+    font-weight:bold;
+    font-size: 18px;
+    padding-bottom:10px;
+    text-decoration:none;
+}
+
+
+.blogPost .title a:hover {
+    text-decoration:underline;
+}
+
+.blogPost {
+    width:600px;
+    margin:40px auto;
+    background:#EEEEEE;
+    padding:15px;
+}
+
+.blogPost .author {
+    color:#777777;
+}
+
+.blogPost .date {
+    color:#777777
+}
+
+.blogPost .postBody {
+    border-top:1px solid #777777;
+    border-bottom:1px solid #777777;
+}
+
+.blogPost .comment {
+    padding:5px 0px;
+}
+
+.blogPost .commentTime {
+    color:#777777;
+}
+
+.blogPost .commentBody {
+    padding:10px 0px;
+    border-bottom:1px solid #BBB;
+}

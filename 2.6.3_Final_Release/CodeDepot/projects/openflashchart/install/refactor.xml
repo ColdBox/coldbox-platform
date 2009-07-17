@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<project name="openflashchart.refactoring" default="do.refactor" basedir="../">
+    <description>
+    	This ant task will refactor the openflashchart cfcs and instantiation
+    </description>
+		
+	<!--Prefix Target-->
+	<target name="do.prefix" description="Choose the new coldbox prefix">
+		<input message="Please enter a refactoring cfc prefix for openflashchart paths, use dot notation: example=ofcplugin.model"
+			   addproperty="openflashchart.cfc_prefix" />
+    </target>
+	
+	<!-- Refactor the OpenFlashChart Code-->
+	<target name="do.refactor" depends="do.prefix" description="refactor the code">
+		<echo>Refactoring for openflashchart instantitation and cfc paths</echo>
+		<replace dir="${basedir}" value="${openflashchart.cfc_prefix}" summary="yes">
+		  	<include name="**/*.cfc" />
+			<include name="**/*.cfm" />
+			<replacetoken>ofcplugin.model</replacetoken>
+		</replace>
+	</target>
+
+</project>

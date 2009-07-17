@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<snippet filetemplate="false" extension="cfm">
+<name>renderdata</name>
+<help></help>
+    <starttext><![CDATA[event.renderData("$${Type:PLAIN|JSON|WDDX}", $${data}, "$${contenttype:text/html|text/xml|text|plain|other}" )]]></starttext>
+<endtext><![CDATA[]]></endtext>
+</snippet>

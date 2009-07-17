@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<!-- ====================================================================== 
+     Mar 15, 2007 4:11:44 PM                                                        
+	 Luis Majano
+	
+     code dpeot              
+                                                                     
+     ====================================================================== -->
+<project name="coldbox.codedepot" basedir="." default="ftp.deploy">
+    <description>
+    	the code depot plugin pack
+    </description>
+	
+	<property name="ftp.server"  		value="ftp.coldboxframework.com" />
+	<property name="ftp.remotedir" 		value="/httpdocs/downloads/depot/plugins" />
+	
+	<property name="src.plugins"     	value="../../CodeDepot/plugins" />
+	<property name="build" 				value="build" />
+	
+	<target name="do.cleanup">
+		<delete dir="${build}" />
+	</target>
+	
+	<target name="do.archive">
+		<delete dir="${build}"/>
+		<mkdir dir="${build}"/>
+		<zip destfile="${build}/pluginpack.zip">
+			<fileset dir="${src.plugins}">
+				<exclude name="public/" />
+			</fileset>
+		</zip>
+	</target>
+	
+	<target name="ftp.deploy" depends="do.archive" >
+       	<input message="Please enter ftp server username:" addproperty="ftp.username" />
+       	<input message="Please enter fpt server password:" addproperty="ftp.password" />
+      	<ftp action="send" server="${ftp.server}" userid="${ftp.username}" password="${ftp.password}" 
+       		remotedir="${ftp.remotedir}" passive="yes" verbose="yes">
+        	<fileset dir="${build}" />
+       	</ftp>
+		<antcall target="do.cleanup"></antcall>
+    </target>
+
+</project>

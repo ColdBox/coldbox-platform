@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<snippet filetemplate="false" extension="cfm">
+<name>removeValue</name>
+<help>Remove value</help>
+<starttext><![CDATA[event.removeValue("$${Variable name}")]]></starttext>
+<endtext><![CDATA[]]></endtext>
+</snippet>

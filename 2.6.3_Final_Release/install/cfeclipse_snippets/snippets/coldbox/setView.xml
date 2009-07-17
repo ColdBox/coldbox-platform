@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<snippet filetemplate="false" extension="cfm">
+<name>setView</name>
+<help>Set a view</help>
+<starttext><![CDATA[event.setView(name="$${View name (No extension)}",nolayout="$${No Layout:false|true}",cache="$${cache:false|true}",cacheTimeout="$${Timeout (minutes)}",cacheLastAccessTimeout="$${Last Access Timeout (minutes)}")]]></starttext>
+<endtext><![CDATA[]]></endtext>
+</snippet>

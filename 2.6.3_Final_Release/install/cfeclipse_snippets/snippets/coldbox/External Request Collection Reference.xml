@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<snippet filetemplate="false" extension="cfm">
+<name>External Request Collection Reference</name>
+<help></help>
+<starttext><![CDATA[<cfset rc = event.getCollection()>]]></starttext>
+<endtext><![CDATA[]]></endtext>
+</snippet>
