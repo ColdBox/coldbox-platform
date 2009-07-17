@@ -121,12 +121,14 @@ Modification History:
 		<!--- ************************************************************* --->
 		<cfscript>
 			var key = "";
+			var udfCall = "";
 			
 			/* Populate Bean */
 			for(key in arguments.memento){
 				/* Check if setter exists */
 				if( structKeyExists(this,"set" & key) ){
-					evaluate("set#key#(arguments.memento[key])");
+					udfCall = this["set#key#"];
+					udfCall(arguments.memento[key]);
 				}
 			}
 		</cfscript>

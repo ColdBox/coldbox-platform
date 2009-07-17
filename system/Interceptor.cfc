@@ -12,7 +12,8 @@ Description :
 <cfcomponent name="interceptor"
 			 hint="This is the base Interceptor class"
 			 output="false"
-			 extends="coldbox.system.FrameworkSupertype">
+			 extends="coldbox.system.FrameworkSupertype"
+			 serializable="false">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 

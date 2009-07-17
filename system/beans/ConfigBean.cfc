@@ -49,7 +49,7 @@ Modification History:
 		<cfargument name="defaultValue" 	type="any" required="false" default="_NONE_" hint="A default value to return"/>
 		<!--- ************************************************************* --->
 		<cfif keyExists(arguments.key)>
-			<cfreturn Evaluate("configStruct.#arguments.key#")>
+			<cfreturn configStruct[arguments.key]>
 		<cfelseif isSimpleValue(arguments.defaultValue) and arguments.defaultValue eq "_NONE_">
 			<cfthrow message="Key not found in configStruct">
 		<cfelse>

@@ -31,10 +31,11 @@ Description :
 				if( lookup.pos[1] ){
 					/* Get Variable Name From Pattern */
 					varName = mid(returnString,lookup.pos[2],lookup.len[2]);
-					/* Lookup Value */
+					// Lookup Single Value
 					if( structKeyExists(arguments.settings,varname) ){
 						varValue = arguments.settings[varname];
 					}
+					// Nested Lookup
 					else if( isDefined("arguments.settings.#varName#") ){
 						varValue = Evaluate("arguments.settings.#varName#");
 					}

@@ -2,9 +2,9 @@
 	
 	<cffunction name="setUp" returntype="void" access="public">
 		<cfscript>
-			debug = createObject("component","coldbox.system.beans.DebuggerConfigBean");	
+			debugconfig = createObject("component","coldbox.system.beans.DebuggerConfigBean");	
 			
-			debug.init();
+			debugconfig.init();
 			
 			memento.PersistentRequestProfiler = true;
 			memento.PersistentTracers = true;
@@ -19,7 +19,7 @@
 			memento.showRCPanel = true;
 			memento.expandedRCPanel = true;
 			
-			debug.populate(debug);	
+			debugconfig.populate(memento);	
 		</cfscript>
 	</cffunction>
 
@@ -30,11 +30,11 @@
 	<cffunction name="testGetterSetters" access="public" returnType="void">
 		<cfscript>
 			for(key in memento){
-				evaluate("debug.set#key#( memento[key] )");
+				evaluate("debugconfig.set#key#( memento[key] )");
 			}
 			
 			for(key in memento){
-				AssertEquals( memento[key] , evaluate("debug.get#key#( key )" ) );
+				AssertEquals( memento[key] , evaluate("debugconfig.get#key#( key )" ) );
 			}
 						
 		</cfscript>
@@ -42,21 +42,23 @@
 	
 	<cffunction name="testgetmemento" access="public" returnType="void">
 		<cfscript>
-			debug.setMemento(memento);
-			assertEquals( debug.getMemento(), memento);
+			debugconfig.setMemento(memento);
+			assertEquals( debugconfig.getMemento(), memento);
 		</cfscript>
 	</cffunction>		
 	
 	<cffunction name="testpopulate" access="public" returnType="void">
 		<cfscript>
-			debug.populate(debug);	
+			debugConfig.setMemento(structnew());
+			debugconfig.populate(memento);	
+			debug(debugconfig.getMemento());
 		</cfscript>
 	</cffunction>		
 	
 	<cffunction name="testsetmemento" access="public" returnType="void">
 		<cfscript>
-			debug.setMemento(memento);
-			assertEquals( debug.getMemento(), memento);
+			debugconfig.setMemento(memento);
+			assertEquals( debugconfig.getMemento(), memento);
 		</cfscript>
 	</cffunction>		
 	

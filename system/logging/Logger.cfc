@@ -48,7 +48,7 @@ Description :
 	</cffunction>
 	
 	<!--- get/set the root logger --->
-	<cffunction name="getRootLogger" access="public" returntype="coldbox.system.logging.AbstractLogger" output="false" hint="Get the root logger">
+	<cffunction name="getRootLogger" access="public" returntype="coldbox.system.logging.Logger" output="false" hint="Get the root logger">
 		<cfreturn instance.RootLogger>
 	</cffunction>
 	<cffunction name="setRootLogger" access="public" returntype="void" output="false" hint="Set the root logger for this named logger.">

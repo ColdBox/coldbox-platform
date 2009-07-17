@@ -14,7 +14,8 @@ Modification History:
 <cfcomponent name="plugin"
 			 hint="This is the plugin base cfc."
 			 extends="coldbox.system.FrameworkSupertype"
-			 output="false">
+			 output="false"
+			 serializable="false">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 

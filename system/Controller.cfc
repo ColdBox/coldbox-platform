@@ -8,7 +8,7 @@ Author 	 		: Luis Majano
 Date     		: September 23, 2005
 Description		: This is the main ColdBox front Controller.
 ----------------------------------------------------------------------->
-<cfcomponent name="controller" hint="This is the ColdBox Front Controller." output="false">
+<cfcomponent name="controller" hint="This is the ColdBox Front Controller." output="false" serializable="false">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 

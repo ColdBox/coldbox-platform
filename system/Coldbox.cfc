@@ -9,7 +9,7 @@ Date        :	10/10/2007
 Description :
 	This is the base component used to provide Application.cfc support.
 ----------------------------------------------------------------------->
-<cfcomponent name="coldbox" hint="This is the base component used to provide Application.cfc support" output="false">
+<cfcomponent name="coldbox" hint="This is the base component used to provide Application.cfc support" output="false" serializable="false">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
