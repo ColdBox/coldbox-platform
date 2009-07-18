@@ -17,6 +17,11 @@ Modification History:
 	function setup(){
 		mockController = getMockBox().createMock(className="coldbox.system.Controller",clearMethod=true);
 		ms = getMockBox().createMock(className="coldbox.system.plugins.MailService").init(mockController);
+		
+		ms.$("getSetting").$args("MailServer").$results("");
+		ms.$("getSetting").$args("MailUsername").$results("");
+		ms.$("getSetting").$args("MailPassword").$results("");
+		ms.$("getSetting").$args("MailPort").$results("25");
 	}
 	function testNewMail(){
 		mail = ms.newMail();

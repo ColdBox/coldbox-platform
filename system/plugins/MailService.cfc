@@ -47,21 +47,26 @@ Description :
 	</cffunction>
 	
 	<cffunction name="send" access="public" returntype="struct" output="false" hint="Send an email payload. Returns a struct: [error:boolean,errorArray:array]">
-		<cfargument name="Mail" required="true" type="coldbox.system.beans.Mail" hint="The mail payload to send." />
+		<cfargument name="mail" required="true" type="coldbox.system.beans.Mail" hint="The mail payload to send." />
 		<cfscript>
 		var rtnStruct = structnew();
 		var payload = arguments.mail;
 		
-		/* The return structure */
+		// The return structure
 		rtnStruct.error = true;
 		rtnStruct.errorArray = ArrayNew(1);
 			
-		/* Validate Basic Mail Fields */
+		// Validate Basic Mail Fields
 		if( NOT payload.validate() ){
 			arrayAppend(rtnStruct.errorArray,"Please check the basic mail fields of To, From and Body as they are empty. To: #payload.getTo()#, From: #payload.getFrom()#, Body Len = #payload.getBody().length()#.");
 		}
+		// Check server info on mail object, if not, populate with settings, eventhough they can be blank also.
+		if( NOT len(arguments.mail.getServer()) ){ mail.setServer(getSetting("MailServer")); }
+		if( NOT len(arguments.mail.getUsername()) ){ mail.setServer(getSetting("MailUsername")); }
+		if( NOT len(arguments.mail.getPassword()) ){ mail.setServer(getSetting("MailPassword")); }
+		if( NOT len(arguments.mail.getPort()) ){ mail.setServer(getSetting("MailPort")); }
 		
-		/* Parse Tokens */
+		// Parse Tokens
 		parseTokens(payload);
 				
 		//Just mail the darned thing!!
@@ -71,7 +76,7 @@ Description :
 		}
 		catch(Any e){
 			ArrayAppend(rtnStruct.errorArray,"Error sending mail. #e.message# : #e.detail# : #e.stackTrace#");
-			/* log it */
+			// log it
 			getLogger().logError("MailService - Error sending mail",e,payload.getMemento());
 		}			
 

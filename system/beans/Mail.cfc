@@ -24,6 +24,10 @@ Description :
 		instance.body = "";
 		instance.from = "";
 		instance.to = "";
+		instance.username = "";
+		instance.password = "";
+		instance.port = "";
+		instance.server = "";
 	</cfscript>
 	
 	<cffunction name="init" access="public" output="false" returntype="Mail" hint="Initialize the Mail object">
