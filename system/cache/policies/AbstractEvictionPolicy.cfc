@@ -35,5 +35,17 @@ Description :
 		<cfargument name="cacheManager" type="coldbox.system.cache.CacheManager" required="true">
 		<cfset instance.cacheManager = arguments.cacheManager>
 	</cffunction>
+	
+	<!--- Get ColdBox Util --->
+	<cffunction name="getUtil" access="private" output="false" returntype="coldbox.system.util.Util" hint="Create and return a util object">
+		<cfreturn createObject("component","coldbox.system.util.Util")/>
+	</cffunction>
 
+	<!--- $log --->
+	<cffunction name="$log" output="false" access="public" returntype="void" hint="Log an internal message to the ColdFusion facilities.  Used when errors ocurrs or diagnostics">
+		<cfargument name="severity" type="string" required="true" default="INFO" hint="The severity to use."/>
+		<cfargument name="message" type="string" required="true" default="" hint="The message to log"/>
+		<cflog type="#arguments.severity#" file="ColdBoxCache-#getCacheManager().CACHE_ID#" text="#arguments.message#">
+	</cffunction>
+	
 </cfcomponent>

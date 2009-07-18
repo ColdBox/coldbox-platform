@@ -34,6 +34,7 @@ Modification History:
 		this.INTERCEPTOR_CACHEKEY_PREFIX = "cboxinterceptor_interceptor-";
 		this.PLUGIN_CACHEKEY_PREFIX = "cboxplugin_plugin-";
 		this.CUSTOMPLUGIN_CACHEKEY_PREFIX = "cboxplugin_customplugin-";
+		this.CACHE_ID = hash(createObject('java','java.lang.System').identityHashCode(this));
 	</cfscript>
 
 	<cffunction name="init" access="public" output="false" returntype="CacheManager" hint="Constructor">
@@ -229,7 +230,8 @@ Modification History:
 		<!--- ************************************************************* --->
 		<cfargument name="objectKey" type="any" required="true" hint="The key of the object to lookup its metadata">
 		<!--- ************************************************************* --->
-		<cfscript>
+		<cflock type="readonly" name="coldbox.cacheManager.#arguments.objectKey#" timeout="#instance.lockTimeout#" throwontimeout="true">
+			<cfscript>
 			arguments.objectKey = trim(arguments.objectKey);
 			/* Check if in the pool first */
 			if( getObjectPool().lookup(arguments.objectKey) ){
@@ -238,7 +240,8 @@ Modification History:
 			else{
 				return structnew();
 			}
-		</cfscript>
+			</cfscript>	
+		</cflock>
 	</cffunction>
 	
 	<!--- getCachedObjectMetadata --->
@@ -309,46 +312,39 @@ Modification History:
 		<cfif ccBean.getCacheFreeMemoryPercentageThreshold() neq 0 and isJVMSafe eq false>
 			<!--- Evict Using Policy --->
 			<cfset instance.evictionPolicy.execute()>
-			<!--- Do another Check, just in case --->
-			<cfset isJVMSafe = ThresholdChecks()>
 		</cfif>
+		
 		<!--- Check for max objects reached --->
-		<cfif ccBean.getCacheMaxObjects() neq 0 and getSize() gte ccBean.getCacheMaxObjects()>
+		<cfif ccBean.getCacheMaxObjects() NEQ 0 and getSize() GTE ccBean.getCacheMaxObjects()>
 			<!--- Evict Using Policy --->
 			<cfset instance.evictionPolicy.execute()>
 		</cfif>
-		
-		<!--- Check if the JVM is safe for caching, if not, don't cache. --->
-		<cfif ccBean.getCacheFreeMemoryPercentageThreshold() eq 0 or isJVMSafe>
 			
-			<!--- Test Timeout Argument, if false, then inherit framework's timeout --->
-			<cfif arguments.Timeout eq "" or not isNumeric(arguments.Timeout) or arguments.Timeout lt 0>
-				<cfset arguments.Timeout = ccBean.getCacheObjectDefaultTimeout()>
-			</cfif>
-			
-			<!--- Test the Last Access Timeout --->
-			<cfif arguments.LastAccessTimeout eq "" or not isNumeric(arguments.LastAccessTimeout) or arguments.LastAccessTimeout lte 0>
-				<cfset arguments.LastAccessTimeout = ccBean.getCacheObjectDefaultLastAccessTimeout()>
-			</cfif>
-			
-			<!--- Set object in Cache --->
-			<cflock type="exclusive" name="coldbox.cacheManager.#arguments.objectKey#" timeout="#instance.lockTimeout#" throwontimeout="true">
-				<cfset getobjectPool().set(arguments.objectKey,arguments.MyObject,arguments.Timeout,arguments.LastAccessTimeout)>
-			</cflock>
-			
-			<!--- InterceptMetadata --->
-			<cfset interceptMetadata.cacheObjectKey = arguments.objectKey>
-			<cfset interceptMetadata.cacheObjectTimeout = arguments.Timeout>
-			<cfset interceptMetadata.cacheObjectLastAccessTimeout = arguments.LastAccessTimeout>
-			
-			<!--- Execute afterCacheElementInsert Interception --->
-			<cfset instance.controller.getInterceptorService().processState("afterCacheElementInsert",interceptMetadata)>				
-			
-			<!--- Return True --->
-			<cfreturn true>
-		<cfelse>
-			<cfreturn false>
+		<!--- Test Timeout Argument, if false, then inherit framework's timeout --->
+		<cfif arguments.Timeout eq "" or not isNumeric(arguments.Timeout) or arguments.Timeout lt 0>
+			<cfset arguments.Timeout = ccBean.getCacheObjectDefaultTimeout()>
 		</cfif>
+		
+		<!--- Test the Last Access Timeout --->
+		<cfif arguments.LastAccessTimeout eq "" or not isNumeric(arguments.LastAccessTimeout) or arguments.LastAccessTimeout lte 0>
+			<cfset arguments.LastAccessTimeout = ccBean.getCacheObjectDefaultLastAccessTimeout()>
+		</cfif>
+		
+		<!--- Set object in Cache --->
+		<cflock type="exclusive" name="coldbox.cacheManager.#arguments.objectKey#" timeout="#instance.lockTimeout#" throwontimeout="true">
+			<cfset getobjectPool().set(arguments.objectKey,arguments.MyObject,arguments.Timeout,arguments.LastAccessTimeout)>
+		</cflock>
+		
+		<!--- InterceptMetadata --->
+		<cfset interceptMetadata.cacheObjectKey = arguments.objectKey>
+		<cfset interceptMetadata.cacheObjectTimeout = arguments.Timeout>
+		<cfset interceptMetadata.cacheObjectLastAccessTimeout = arguments.LastAccessTimeout>
+		
+		<!--- Execute afterCacheElementInsert Interception --->
+		<cfset instance.controller.getInterceptorService().processState("afterCacheElementInsert",interceptMetadata)>				
+		
+		<!--- Return True --->
+		<cfreturn true>
 	</cffunction>
 
 	<!--- Clear an object from the cache --->
@@ -409,7 +405,7 @@ Modification History:
 		<cfargument name="async" 		type="boolean" required="false" default="true" hint="Run asynchronously or not"/>
 		<!--- ************************************************************* --->
 		<cfscript>
-			var poolKeys = listSort(structKeyList(getObjectPool().getpool_metadata()),"textnocase");
+			var poolKeys = listSort(getPoolKeys(),"textnocase");
 			var poolKeysLength = listlen(poolKeys);
 			var x = 1;
 			var tester = 0;
@@ -417,16 +413,17 @@ Modification History:
 			
 			//Find all the event keys.
 			for(x=1; x lte poolKeysLength; x=x+1){
-				/* Get List Value */
+				// Get List Value
 				thisKey = listGetAt(poolKeys,x);
-				/* Using Regex */
+				// Using Regex
 				if( arguments.regex ){
 					tester = refindnocase( arguments.keySnippet, thisKey );
 				}
 				else{
 					tester = findnocase( arguments.keySnippet, thisKey );
 				}
-				/* Test Evaluation */
+				
+				// Test Evaluation
 				if ( tester ){
 					clearKey( thisKey );
 				}
@@ -513,60 +510,76 @@ Modification History:
 	<cffunction name="reap" access="public" output="false" returntype="void" hint="Reap the cache.">
 		<cfscript>
 			var keyIndex = 1;
-			var poolStruct = "";
 			var poolKeys = "";
 			var poolKeysLength = 0;
 			var thisKey = "";
+			var thisMD = "";
 			var ccBean = getCacheConfigBean();
 			var reflocal = structNew();
-			
-			/* Expire and cleanup if in frequency */
-			if ( dateDiff("n", getCacheStats().getlastReapDatetime(), now() ) gte ccBean.getCacheReapFrequency() ){
+		</cfscript>
+		
+		<!--- Lock Reaping, so only one can be ran even if called manually, for concurrency protection --->
+		<cflock type="exclusive" name="coldbox.cacheManager.reaping" timeout="#instance.lockTimeout#" throwontimeout="true">
+		<cfscript>
+			// Expire and cleanup if in frequency
+			if ( TRUE OR dateDiff("n", getCacheStats().getlastReapDatetime(), now() ) gte ccBean.getCacheReapFrequency() ){
 				
-				/* Init Ref Key Vars */
+				// Init Ref Key Vars
 				reflocal.softRef = getObjectPool().getReferenceQueue().poll();
 				
-				/* Let's reap the garbage collected soft references first before expriring */
+				// Let's reap the garbage collected soft references first before expriring
 				while( StructKeyExists(reflocal, "softRef") ){
-					/* Clean if it still exists */
+					// Clean if it still exists
 					if( getObjectPool().softRefLookup(reflocal.softRef) ){
 						clearKey( getObjectPool().getSoftRefKey(refLocal.softRef) );
-						/* GC Collection Hit */
+						// GC Collection Hit
 						getCacheStats().gcHit();
 					}
-					/* Poll Again */
+					// Poll Again
 					reflocal.softRef = getObjectPool().getReferenceQueue().poll();
 				}
 				
-				/* Let's Get our reaping vars ready */
-				poolStruct = getObjectPool().getpool_metadata();
-				poolKeys = listToArray(structKeyList(poolStruct));
+				// Let's Get our reaping vars ready, get a duplicate of the pool metadata so we can work on a good copy
+				poolKeys = listToArray(getPoolKeys());
 				poolKeysLength = ArrayLen(poolKeys);
 				
 				//Loop Through Metadata
 				for (keyIndex=1; keyIndex lte poolKeysLength; keyIndex=keyIndex+1){
-					//This Key to check
+					
+					//The Key to check
 					thisKey = poolKeys[keyIndex];
+					//Get the key's metadata thread safe.
+					thisMD = getCachedObjectMetadata(thisKey);
+					// Check if found, else continue, already reaped.
+					if( structIsEmpty(thisMD) ){ continue; }
+					
 					//Reap only non-eternal objects that have timeous gt 0
-					if ( poolStruct[thisKey].Timeout gt 0 ){
+					if ( thisMD.Timeout gt 0 ){
+						
 						//Check for creation timeouts and clear
-						if ( dateDiff("n", poolStruct[thisKey].created, now() ) gte poolStruct[thisKey].Timeout ){
-							/* Clear The Key */
-							clearKey(thisKey);
-							/* Announce Expiration */
-							announceExpiration(thisKey);
+						if ( dateDiff("n", thisMD.created, now() ) gte thisMD.Timeout ){
+							
+							// Clear The Key
+							if( clearKey(thisKey) ){
+								// Announce Expiration only if removed, else maybe another thread cleaned it
+								announceExpiration(thisKey);
+							}	
 							continue;
 						}
+						
 						//Check for last accessed timeouts. If object has not been accessed in the default span
 						if ( ccBean.getCacheUseLastAccessTimeouts() and 
-						     dateDiff("n", poolStruct[thisKey].lastAccesed, now() ) gte poolStruct[thisKey].LastAccessTimeout ){
-							/* Clear the Key */
-							clearKey(thisKey);
-							/* Announce Expiration */
-							announceExpiration(thisKey);
+						     dateDiff("n", thisMD.lastAccesed, now() ) gte thisMD.LastAccessTimeout ){
+							
+							// Clear The Key
+							if( clearKey(thisKey) ){
+								// Announce Expiration only if removed, else maybe another thread cleaned it
+								announceExpiration(thisKey);
+							}
 							continue;
 						}
 					}//end timeout gt 0
+					
 				}//end looping over keys
 				
 				//Reaping about to start, set new reaping date.
@@ -574,6 +587,7 @@ Modification History:
 								
 			}// end reaping frequency check			
 		</cfscript>
+		</cflock>
 	</cffunction>
 	
 	<!--- Expire All Objects --->
@@ -582,7 +596,7 @@ Modification History:
 		<cfargument name="async" 		type="boolean" required="false" default="true" hint="Run asynchronously or not"/>
 		<!--- ************************************************************* --->
 		<cfscript>
-			/* Expire All Objects */
+			// Expire All Objects
 			expireByKeySnippet(keySnippet=".*",regex=true,async=false);
 		</cfscript>
 	</cffunction>
@@ -594,8 +608,7 @@ Modification History:
 		<cfargument name="async" 	 type="boolean" required="false" default="true" hint="Run asynchronously or not"/>
 		<!--- ************************************************************* --->
 		<cfscript>
-			/* Expire this object */
-			expireByKeySnippet(keySnippet=arguments.objectKey,regex=false,async=false);
+			getObjectPool().expireObject(arguments.objectKey);
 		</cfscript>
 	</cffunction>
 	
@@ -608,13 +621,14 @@ Modification History:
 		<!--- ************************************************************* --->
 		<cfscript>
 			var keyIndex = 1;
-			var poolKeys = listToArray(structKeyList(getObjectPool().getpool_metadata()));
+			var poolKeys = listToArray(getPoolKeys());
 			var poolKeysLength = ArrayLen(poolKeys);
 			var tester = 0;
 			
-			/* Loop Through Metadata */
+			// Loop Through Metadata
 			for (keyIndex=1; keyIndex lte poolKeysLength; keyIndex=keyIndex+1){
-				/* Using Regex? */
+				
+				// Using Regex?
 				if( arguments.regex ){
 					tester = reFindnocase(arguments.keySnippet, poolKeys[keyIndex]);
 				}
@@ -622,10 +636,12 @@ Modification History:
 					tester = findnocase(arguments.keySnippet, poolKeys[keyIndex]);
 				}
 				
-				/* Override for Eternal Objects and we match keys */
-				if ( getObjectPool().getMetadataProperty(poolKeys[keyIndex],"Timeout") gt 0 and tester ){
-					getObjectPool().setMetadataProperty(poolKeys[keyIndex],"Timeout", 1);
-					getObjectPool().setMetadataProperty(poolKeys[keyIndex],"created", dateadd("n",-5,now()) );
+				// Check if object still exists
+				if( lookup(poolKeys[keyIndex]) ){
+					// Override for Eternal Objects and the match keys
+					if ( getObjectPool().getMetadataProperty(poolKeys[keyIndex],"Timeout") gt 0 and tester ){
+						getObjectPool().expireObject(poolKeys[keyIndex]);
+					}
 				}
 			}//end key loops
 		</cfscript>
@@ -698,18 +714,28 @@ Modification History:
 	</cffunction>
 
 	<!--- Get the Pool Metadata --->
-	<cffunction name="getpool_metadata" access="public" returntype="struct" output="false" hint="Get the pool's metadata structure">
-		<cfreturn duplicate(getObjectPool().getpool_metadata())>
+	<cffunction name="getPoolMetadata" access="public" returntype="struct" output="false" hint="Get a copy of the pool's metadata structure">
+		<cfargument name="deepCopy" type="boolean" required="false" default="true" hint="Deep copy of structure or by reference. Default is deep copy"/>
+		<cfif arguments.deepCopy>
+			<cfreturn duplicate(getObjectPool().getPoolMetadata())>
+		<cfelse>
+			<cfreturn getObjectPool().getPoolMetadata()>
+		</cfif>
+	</cffunction>
+	
+	<!--- Get the Pool Keys --->
+	<cffunction name="getPoolKeys" access="public" returntype="string" output="false" hint="Get a listing of all the keys of the objects in the cache pool">
+		<cfreturn getObjectPool().getPoolKeys()>
 	</cffunction>
 
 	<!--- Set The Eviction Policy --->
-	<cffunction name="setevictionPolicy" access="public" returntype="void" output="false" hint="You can now override the set eviction policy by programmatically sending it in.">
+	<cffunction name="setEvictionPolicy" access="public" returntype="void" output="false" hint="You can now override the set eviction policy by programmatically sending it in.">
 		<cfargument name="evictionPolicy" type="coldbox.system.cache.policies.AbstractEvictionPolicy" required="true">
 		<cfset instance.evictionPolicy = arguments.evictionPolicy>
 	</cffunction>
 	
 	<!--- Get the Java Runtime --->
-	<cffunction name="getjavaRuntime" access="public" returntype="any" output="false" hint="Get the java runtime object for reporting purposes.">
+	<cffunction name="getJavaRuntime" access="public" returntype="any" output="false" hint="Get the java runtime object for reporting purposes.">
 		<cfreturn instance.javaRuntime>
 	</cffunction>
 	

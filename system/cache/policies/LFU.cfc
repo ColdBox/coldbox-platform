@@ -30,19 +30,34 @@ Description :
 	<!--- execute --->
 	<cffunction name="execute" output="false" access="public" returntype="void" hint="Execute the policy">
 		<cfscript>
-			var objStruct = getCacheManager().getObjectPool().getpool_metadata();
-			var LFUhitIndex = structSort(objStruct,"numeric", "ASC", "hits");
-			var indexLength = ArrayLen(LFUhitIndex);
+			var poolMD = getCacheManager().getPoolMetadata(deepCopy=false);
+			var LFUIndex = "";
+			var indexLength = 0;
 			var x = 1;
+			var md = "";
 		
+			// Get searchable index
+			try{
+				LFUIndex = structSort(poolMD,"numeric", "ASC", "hits");
+			}
+			catch(Any e){
+				$log("error","Error sorting metadata pool. #e.message# #e.detail#. Serialized Pool: #poolMD.toString()#")
+			}
+			indexLength = ArrayLen(LFUIndex);
+			
 			//Loop Through Metadata
 			for (x=1; x lte indexLength; x=x+1){
+				//get object metadata and verify it
+				md = getCacheManager().getCachedObjectMetadata(LFUIndex[x]);
+				if( structIsEmpty(md) ){ continue; }
+				
 				//Override Eternal Checks
-				if ( objStruct[LFUhitIndex[x]].Timeout gt 0 ){
+				if ( NOT md.isExpired ){
 					//Evict it
-					getCacheManager().expireKey(LFUhitIndex[x]);
+					getCacheManager().expireKey(LFUIndex[x]);
 					//Record Eviction 
 					getCacheManager().getCacheStats().evictionHit();
+					//Object evicted, loop out.
 					break;
 				}//end timeout gt 0
 			}//end for loop			

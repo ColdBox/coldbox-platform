@@ -24,14 +24,16 @@ Description :
 		instance.body = "";
 		instance.from = "";
 		instance.to = "";
-		instance.username = "";
-		instance.password = "";
-		instance.port = "";
-		instance.server = "";
 	</cfscript>
 	
 	<cffunction name="init" access="public" output="false" returntype="Mail" hint="Initialize the Mail object">
 		<cfreturn this>
+	</cffunction>
+	
+	<!--- propertyExists --->
+	<cffunction name="propertyExists" output="false" access="public" returntype="boolean" hint="Checks if a mail property exists">
+		<cfargument name="property" type="string" required="true" hint="The property to check"/>
+		<cfreturn structKeyExists(instance,arguments.property)>
 	</cffunction>
 	
 	<cffunction name="config" access="public" output="false" returntype="Mail" hint="Configure the Mail object">

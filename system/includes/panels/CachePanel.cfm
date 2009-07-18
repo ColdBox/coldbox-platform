@@ -183,7 +183,7 @@
 			<th align="center" width="5%" >CMDS</th>
 		  </tr>
 		  <cfset cacheKeyIndex = 1>
-		  <cfset cacheMetaData = controller.getColdboxOCM().getpool_metadata()>
+		  <cfset cacheMetaData = controller.getColdboxOCM().getPoolMetadata()>
 		  <cfset cacheKeyList = listSort(structKeyList(cacheMetaData),"textnocase")>
 		  <cfloop list="#cacheKeyList#" index="key">
 			  <cfset expDate = dateadd("n",cacheMetaData[key].timeout,cacheMetadata[key].Created)>

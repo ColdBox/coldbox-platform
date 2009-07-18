@@ -30,17 +30,31 @@ Description :
 	<!--- execute --->
 	<cffunction name="execute" output="false" access="public" returntype="void" hint="Execute the policy">
 		<cfscript>
-			var objStruct = getCacheManager().getObjectPool().getpool_metadata();
-			var FIFOHitIndex = structSort(objStruct,"numeric", "ASC", "Created");
-			var indexLength = ArrayLen(FIFOHitIndex);
+			var poolMD = getCacheManager().getPoolMetadata(deepCopy=false);
+			var FIFOIndex = "";
+			var indexLength = 0;
 			var x = 1;
+			var md = "";
 		
+			// Get searchable index
+			try{
+				FIFOIndex = structSort(poolMD,"numeric", "ASC", "Created");
+			}
+			catch(Any e){
+				$log("error","Error sorting metadata pool. #e.message# #e.detail#. Serialized Pool: #poolMD.toString()#")
+			}
+			indexLength = ArrayLen(FIFOIndex);
+			
 			//Loop Through Metadata
 			for (x=1; x lte indexLength; x=x+1){
+				//get object metadata and verify it
+				md = getCacheManager().getCachedObjectMetadata(FIFOIndex[x]);
+				if( structIsEmpty(md) ){ continue; }
+				
 				//Override Eternal Checks
-				if ( objStruct[FIFOHitIndex[x]].Timeout gt 0 ){
+				if ( NOT md.isExpired ){
 					//Evict it
-					getCacheManager().expireKey(FIFOHitIndex[x]);
+					getCacheManager().expireKey(FIFOIndex[x]);
 					//Record Eviction 
 					getCacheManager().getCacheStats().evictionHit();
 					break;

@@ -61,11 +61,26 @@ Description :
 			arrayAppend(rtnStruct.errorArray,"Please check the basic mail fields of To, From and Body as they are empty. To: #payload.getTo()#, From: #payload.getFrom()#, Body Len = #payload.getBody().length()#.");
 		}
 		// Check server info on mail object, if not, populate with settings, eventhough they can be blank also.
-		if( NOT len(arguments.mail.getServer()) ){ mail.setServer(getSetting("MailServer")); }
-		if( NOT len(arguments.mail.getUsername()) ){ mail.setServer(getSetting("MailUsername")); }
-		if( NOT len(arguments.mail.getPassword()) ){ mail.setServer(getSetting("MailPassword")); }
-		if( NOT len(arguments.mail.getPort()) ){ mail.setServer(getSetting("MailPort")); }
-		
+		if( arguments.mail.propertyExists("server") 
+		    AND NOT len(arguments.mail.getServer())
+		    AND NOT len(getSetting("MailServer")) ){ 
+			mail.setServer(getSetting("MailServer")); 
+		}
+		if( arguments.mail.propertyExists("username") 
+		    AND NOT len(arguments.mail.getUsername())
+		    AND NOT len(getSetting("MailUsername")) ){ 
+			mail.setUsername(getSetting("MailUsername")); 
+		}
+		if( arguments.mail.propertyExists("password") 
+		    AND NOT len(arguments.mail.getpassword())
+		    AND NOT len(getSetting("MailPassword")) ){ 
+			mail.setpassword(getSetting("MailPassword")); 
+		}
+		if( arguments.mail.propertyExists("port") 
+		    AND NOT len(arguments.mail.getport())
+		    AND NOT len(getSetting("MailPort")) ){ 
+			mail.setport(getSetting("MailPort")); 
+		}
 		// Parse Tokens
 		parseTokens(payload);
 				
