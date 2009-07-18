@@ -211,7 +211,7 @@ Description		: This is the main ColdBox front Controller.
 		<!--- ************************************************************* --->
 		<cfscript>
 		if ( arguments.FWSetting and settingExists(arguments.name,true) )
-			return Evaluate("instance.ColdboxSettings.#arguments.name#");
+			return instance.ColdboxSettings[arguments.name];
 		else if ( settingExists(arguments.name) )
 			 return instance.ConfigSettings[arguments.name];
 		else
