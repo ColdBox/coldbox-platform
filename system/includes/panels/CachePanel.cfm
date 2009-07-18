@@ -188,7 +188,7 @@
 		  <cfloop list="#cacheKeyList#" index="key">
 			  <cfset expDate = dateadd("n",cacheMetaData[key].timeout,cacheMetadata[key].Created)>
 			  <tr <cfif cacheKeyIndex mod 2 eq 0>class="even"</cfif>>
-			  	<td >
+			  	<td align="left">
 				  	<a href="javascript:fw_openwindow('index.cfm?debugpanel=cacheviewer&key=#urlEncodedFormat(key)#','CacheViewer',650,375,'resizable,scrollbars,status')" title="Dump contents">#listLast(key,"_")#</a></td>
 				<td align="center" >#cacheMetadata[key].hits#</td>
 				<td align="center" >#cacheMetadata[key].Timeout#</td>
