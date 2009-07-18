@@ -44,10 +44,10 @@ Modification History:
 			var oPlugin = 0;
 			var interceptMetadata = structnew();
 			
-			/* Create Plugin */
+			// Create Plugin
 			oPlugin = createObject("component",locatePluginPath(argumentCollection=arguments));
 			
-			/* Init It if it exists, more flexible now. */
+			// Init It if it exists, more flexible now.
 			if( structKeyExists(oPlugin,"init") ){
 				oPlugin.init( controller );
 			}						
@@ -58,7 +58,6 @@ Modification History:
 				interceptMetadata.pluginPath = arguments.plugin;
 				interceptMetadata.custom = arguments.custom;			
 				interceptMetadata.oPlugin = oPlugin;
-				
 				//Fire Interception
 				controller.getInterceptorService().processState("afterPluginCreation",interceptMetadata);
 			}
@@ -75,40 +74,38 @@ Modification History:
 		<cfargument name="custom" required="true" type="boolean" hint="Custom plugin or coldbox plugin">
 		<!--- ************************************************************* --->
 		<cfscript>
-			/* Used for caching. */
 			var pluginKey = getColdboxOCM().PLUGIN_CACHEKEY_PREFIX & arguments.plugin;
 			var oPlugin = 0;
 			var pluginDictionaryEntry = "";
 			
-			/* Differentiate a Custom PluginKey */
+			// Differentiate a Custom PluginKey
 			if ( arguments.custom ){
 				pluginKey = getColdboxOCM().CUSTOMPLUGIN_CACHEKEY_PREFIX & arguments.plugin;
 			}
 			
-			/* Lookup plugin in Cache */
+			// Lookup plugin in Cache
 			oPlugin = controller.getColdboxOCM().get(pluginKey);
 			
-			/* Verify it */
+			// Verify it
 			if( not isObject(oPlugin) ){
-				/* Object not found, proceed to create and verify */
+				// Object not found, proceed to create and verify
 				oPlugin = new(argumentCollection=arguments);
 				
-				/* Determine if we have md and cacheable, else set it  */
+				// Determine if we have md and cacheable, else set it
 				if ( not getcacheDictionary().keyExists(pluginKey) ){
 					storeMetadata(pluginKey,getMetadata(oPlugin));
 				}
 				
-				/* Get Cache Entries */
+				// Get Cache Entries
 				pluginDictionaryEntry = getcacheDictionary().getKey(pluginKey);
 				
-				/* Do we Cache */
+				// Do we Cache the plugin?
 				if ( pluginDictionaryEntry.cacheable ){
 					controller.getColdboxOCM().set(pluginKey,oPlugin,pluginDictionaryEntry.timeout,pluginDictionaryEntry.lastAccessTimeout);
 				}				
 			}
 			//end else if instance not in cache.
 			
-			/* Return new or cached Instance */
 			return oPlugin;
 		</cfscript>
 	</cffunction>
@@ -143,7 +140,7 @@ Modification History:
     		var metadata = arguments.pluginMD;
 			var mdEntry = getNewMDEntry(); 
 			
-			/* Test for caching parameters */
+			// Test for caching parameters
 			if ( structKeyExists(metadata, "cache") and isBoolean(metadata["cache"]) and metadata["cache"] ){
 				/* Plugins are NOT cached by default. */
 				mdEntry.cacheable = true;
@@ -154,12 +151,14 @@ Modification History:
 					mdEntry.lastAccessTimeout = metadata["cachelastaccesstimeout"];
 				}			
 			}
-			/* Test for singleton parameters */
+			
+			// Test for singleton parameters
 			if( structKeyExists(metadata,"singleton") and isBoolean(metadata.singleton) and metadata.singleton){
 				mdEntry.cacheable = true;
 				mdEntry.timeout = 0;
 			}
-			/* Set Entry in dictionary */
+			
+			// Set Entry in dictionary
 			getcacheDictionary().setKey(arguments.pluginKey,mdEntry);		
     	</cfscript>
     </cffunction>
@@ -204,25 +203,34 @@ Modification History:
 		<cfscript>
 			var pluginPath = "";
 			var pluginFilePath = "";
+			var extPluginsPath = expandPath("/" & replace(getColdboxExtensionsPluginsPath(),".","/","all") & "/");
 			
-			/* Check if getting from custom plugins */
+			// Check if getting from custom plugins
 			if ( arguments.custom ){
 				
-				/* Set plugin key and file path check */
+				// Set plugin key and file path check
 				pluginFilePath = replace(arguments.plugin,".","/","all") & ".cfc";
 							
-				/* Check for Convention First, MyPluginsPath was already setup with conventions on XMLParser */
+				// Check for Convention First, MyPluginsPath was already setup with conventions on XMLParser
 				if ( fileExists(controller.getSetting("MyPluginsPath") & "/" & pluginFilePath ) ){
 					pluginPath = "#controller.getSetting('MyPluginsInvocationPath')#.#arguments.plugin#";
 				}
 				else{
-					/* Will search the alternate custom location */
+					// Will search the alternate custom external locations
 					pluginPath = "#controller.getSetting('PluginsExternalLocation')#.#arguments.plugin#";
 				}
 			}//end if custom plugin
 			else{
-				/* Create the plugin instantiation path */
-				pluginPath = getColdboxPluginsPath() & "." & trim(arguments.plugin);
+				// Plugin File Path to check
+				pluginFilePath = extPluginsPath & replace(arguments.plugin,".","/","all") & ".cfc";
+				// Check Extensions locations First
+				if( fileExists(pluginFilePath) ){
+					pluginPath = getColdboxExtensionsPluginsPath() & "." & arguments.plugin;
+				}
+				else{
+					// Create the plugin instantiation path
+					pluginPath = getColdboxPluginsPath() & "." & arguments.plugin;
+				}
 			}
 			
 			return pluginPath;
