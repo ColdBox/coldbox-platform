@@ -219,7 +219,7 @@ Modification History:
 	<div class="fw_debugContent<cfif getDebuggerConfigBean().getExpandedRCPanel()>View</cfif>" id="fw_reqCollection">
 		<table border="0" cellpadding="0" cellspacing="1" class="fw_debugTables" width="100%">
 		  <cfloop collection="#RequestCollection#" item="vars">
-		  <cfset varVal = event.getValue(vars)>
+		  <cfset varVal = requestCollection[vars]>
 		  <tr>
 			<td align="right" width="15%" class="fw_debugTablesTitles">#lcase(vars)#:</td>
 			<td  class="fw_debugTablesCells">
@@ -237,7 +237,7 @@ Modification History:
 					</cfquery>
 					<cfdump var="#varVal#" label="Query Truncated to #getDebuggerConfigBean().getmaxRCPanelQueryRows()# records" expand="false">
 				<cfelse>
-					<cfdump var="#Event.getValue(vars)#" expand="false">
+					<cfdump var="#varVal#" expand="false">
 				</cfif>				
 			</cfif>
 			</td>
