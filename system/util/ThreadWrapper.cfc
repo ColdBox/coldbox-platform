@@ -22,10 +22,14 @@ Description :
 		<cfargument name="target" required="true" type="any" hint="The target to wrap in this thread wrapper">
 		<!--- ************************************************************* --->
 		<cfscript>
-			/* Save Wrapper */
+			// Save Wrapper
 			setTarget(arguments.target);
 			setThread(createObject("java", "java.lang.Thread"));
-			/* return instance. */
+			
+			//uuid
+			instance.uuid = createobject("java", "java.util.UUID");
+			
+			
 			return this;
 		</cfscript>
 	</cffunction>
@@ -38,8 +42,8 @@ Description :
 		<cfargument name="method" 		 type="string"  required="Yes" hint="Name of the method to invoke">
 		<cfargument name="argCollection" type="struct"  required="No"  default="#structnew()#"  hint="Called with an argument collection struct">
 		<!--- ************************************************************* --->
-		<cfset var ThreadName = "coldbox.util.ThreadWrapper_#replace(createUUID(),"-","","all")#">
-		<cfset var ResponseToken = createUUID()>
+		<cfset var ThreadName = "coldbox.util.ThreadWrapper_#replace(instance.uuid.randomUUID(),"-","","all")#">
+		<cfset var ResponseToken = instance.uuid.randomUUID()>
 		
 		<!--- Validate if inside thread --->
 		<cfif isInsideCFThread()>

@@ -78,15 +78,25 @@ Modification History:
 		<cfscript>
 			var timerInfo = 0;
 			var qTimers = "";
+			var id = "";
 			
-			/* Verify Debug Mode and timer label exists, else do nothing. */
+			// Verify Debug Mode and timer label exists, else do nothing.
 			if( getDebugMode() and structKeyExists(request,arguments.labelHash) ){
-				/* Get Timer Info */
+				// Get Timer Info
 				timerInfo = request[arguments.labelHash];
 				qTimers = getTimers();
-				/* Save timer */
+				
+				// ID
+				if( controller.oCFMLEngine.isMT() ){
+					id = createobject("java", "java.util.UUID").randomUUID();
+				}
+				else{
+					id = createUUID();
+				}
+				
+				// Save timer
 				QueryAddRow(qTimers,1);
-				QuerySetCell(qTimers, "Id", createUUID());
+				QuerySetCell(qTimers, "Id", id);
 				QuerySetCell(qTimers, "Method", timerInfo.label);
 				QuerySetCell(qTimers, "Time", getTickCount() - timerInfo.stime);
 				QuerySetCell(qTimers, "Timestamp", now());

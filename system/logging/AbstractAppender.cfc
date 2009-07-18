@@ -20,7 +20,7 @@ Description :
 		// private instance scope
 		instance = structnew();
 		// Appender Unique ID */
-		instance._hash = hash(createUUID());
+		instance._hash = hash(createObject('java','java.lang.System').identityHashCode(this));
 		// Appender Unique Name
 		instance.name = "";
 		// Flag denoting if the appender is inited or not. This will be set by LogBox upon succesful creation and registration.

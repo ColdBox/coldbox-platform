@@ -43,7 +43,8 @@ Properties:
 		<cfargument name="logEvent" type="coldbox.system.logging.LogEvent" required="true" hint="The logging event"/>
 		<!--- ************************************************************* --->
 		<cfscript>
-			var ThreadName = "#getname()#_logMessage_#replace(createUUID(),"-","","all")#";
+			var uuid = createobject("java", "java.util.UUID").randomUUID();
+			var ThreadName = "#getname()#_logMessage_#replace(uuid,"-","","all")#";
 			var loge = arguments.logEvent;
 			var timestamp = loge.getTimestamp();
 			var message = loge.getMessage();

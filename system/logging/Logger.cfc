@@ -19,7 +19,7 @@ Description :
 		
 		// private instance scope
 		instance = structnew();
-		instance._hash = createUUID();
+		instance._hash = hash(createObject('java','java.lang.System').identityHashCode(this));
 		instance.rootLogger = "";
 		instance.category = "";
 		instance.levelMin = "";

@@ -20,9 +20,13 @@ Modification History:
 
 <!------------------------------------------- PUBLIC ------------------------------------------->
 	
+	<cfscript>
+		instance.uuid = createobject("java", "java.util.UUID");
+	</cfscript>
+	
 	<!--- reap the cache --->
 	<cffunction name="reap" access="public" output="false" returntype="void" hint="Reap the cache.">
-		<cfset var ThreadName = "coldbox.cache.reap_#replace(createUUID(),"-","","all")#">
+		<cfset var ThreadName = "coldbox.cache.reap_#replace(instance.uuid.randomUUID(),"-","","all")#">
 		
 		<!--- Reap only if in frequency --->
 		<cfif dateDiff("n", getCacheStats().getlastReapDatetime(), now() ) gte getCacheConfigBean().getCacheReapFrequency() >
@@ -41,7 +45,7 @@ Modification History:
 		<!--- ************************************************************* --->
 		<cfargument name="async" 		type="boolean" required="false" default="true" hint="Run asynchronously or not"/>
 		<!--- ************************************************************* --->
-		<cfset var ThreadName = "coldbox.cache.expireAll_#replace(createUUID(),"-","","all")#">
+		<cfset var ThreadName = "coldbox.cache.expireAll_#replace(instance.uuid.randomUUID(),"-","","all")#">
 		<cfif arguments.async>
 			<cfthread name="#threadName#">  
 				<cfscript>  
@@ -61,7 +65,7 @@ Modification History:
 		<cfargument name="objectKey" type="string" required="true">
 		<cfargument name="async" 	 type="boolean" required="false" default="true" hint="Run asynchronously or not"/>
 		<!--- ************************************************************* --->
-		<cfset var ThreadName = "coldbox.cache.expireKey_#replace(createUUID(),"-","","all")#">
+		<cfset var ThreadName = "coldbox.cache.expireKey_#replace(instance.uuid.randomUUID(),"-","","all")#">
 		<cfif arguments.async>
 			<cfthread name="#threadName#"
 					  objectKey="#arguments.objectKey#">  
@@ -83,7 +87,7 @@ Modification History:
 		<cfargument name="regex" 	  type="boolean" required="false" default="false" hint="Use regex or not">
 		<cfargument name="async" 	 type="boolean" required="false" default="true" hint="Run asynchronously or not"/>
 		<!--- ************************************************************* --->
-		<cfset var ThreadName = "coldbox.cache.expireByKeySnippet_#replace(createUUID(),"-","","all")#">
+		<cfset var ThreadName = "coldbox.cache.expireByKeySnippet_#replace(instance.uuid.randomUUID(),"-","","all")#">
 		<cfif arguments.async>
 			<cfthread name="#threadName#"
 					  keySnippet="#arguments.keySnippet#"
@@ -106,7 +110,7 @@ Modification History:
 		<cfargument name="regex" 		type="boolean"  required="false" default="false" hint="Use regex or not">
 		<cfargument name="async" 		type="boolean"  required="false" default="true" hint="Run asynchronously or not, defaults to true"/>
 		<!--- ************************************************************* --->
-		<cfset var ThreadName = "coldbox.cache.clearByKeySnippet_#replace(createUUID(),"-","","all")#">
+		<cfset var ThreadName = "coldbox.cache.clearByKeySnippet_#replace(instance.uuid.randomUUID(),"-","","all")#">
 		<cfif arguments.async>
 			<cfthread name="#threadName#"
 					  keySnippet="#arguments.keySnippet#"
@@ -129,7 +133,7 @@ Modification History:
 		<cfargument name="queryString" 	type="string" 	required="false" default="" hint="If passed in, it will create a unique hash out of it. For purging purposes"/>
 		<cfargument name="async" 		type="boolean"  required="false" default="true" hint="Run asynchronously or not"/>
 		<!--- ************************************************************* --->
-		<cfset var ThreadName = "coldbox.cache.clearEvent_#replace(createUUID(),"-","","all")#">
+		<cfset var ThreadName = "coldbox.cache.clearEvent_#replace(instance.uuid.randomUUID(),"-","","all")#">
 		<cfif arguments.async>
 			<cfthread name="#threadName#"
 					  eventsnippet="#arguments.eventsnippet#"
@@ -150,7 +154,7 @@ Modification History:
 		<!--- ************************************************************* --->
 		<cfargument name="async" 		type="boolean"  required="false" default="true" hint="Run asynchronously or not"/>
 		<!--- ************************************************************* --->
-		<cfset var ThreadName = "coldbox.cache.clearAllEvents_#replace(createUUID(),"-","","all")#">
+		<cfset var ThreadName = "coldbox.cache.clearAllEvents_#replace(instance.uuid.randomUUID(),"-","","all")#">
 		<cfif arguments.async>
 			<cfthread name="#threadName#">  
 				<cfscript>  
@@ -170,7 +174,7 @@ Modification History:
 		<cfargument name="viewSnippet"  required="true" type="string" hint="The view name snippet to purge from the cache">
 		<cfargument name="async" 		type="boolean"  required="false" default="true" hint="Run asynchronously or not"/>
 		<!--- ************************************************************* --->
-		<cfset var ThreadName = "coldbox.cache.clearView_#replace(createUUID(),"-","","all")#">
+		<cfset var ThreadName = "coldbox.cache.clearView_#replace(instance.uuid.randomUUID(),"-","","all")#">
 		<cfif arguments.async>
 			<cfthread name="#threadName#"
 					  viewSnippet="#arguments.viewSnippet#">  
@@ -190,7 +194,7 @@ Modification History:
 		<!--- ************************************************************* --->
 		<cfargument name="async" 		type="boolean"  required="false" default="true" hint="Run asynchronously or not"/>
 		<!--- ************************************************************* --->
-		<cfset var ThreadName = "coldbox.cache.clearAllViews_#replace(createUUID(),"-","","all")#">
+		<cfset var ThreadName = "coldbox.cache.clearAllViews_#replace(instance.uuid.randomUUID(),"-","","all")#">
 		<cfif arguments.async>
 			<cfthread name="#threadName#">  
 				<cfscript>  

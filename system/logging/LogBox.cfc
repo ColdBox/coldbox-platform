@@ -25,7 +25,7 @@ Description :
 		// private instance scope
 		instance = structnew();
 		// LogBox Unique ID
-		instance._hash = hash(createUUID());	
+		instance._hash = hash(createObject('java','java.lang.System').identityHashCode(this));	
 		// Appenders
 		instance.appenderRegistry = structnew();
 		// Loggers
