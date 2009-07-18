@@ -1,24 +1,55 @@
 /* DEBUG PANEL MAIN */
 .fw_debugPanel{
-    font-family: Arial,Helvetica,sans-serif;
+    font-family: Verdana,Arial,sans-serif;
     font-size: 11px;
     font-weight: normal;
     color: #000000;
     text-align: left;
+    width:98%;
+    margin: auto;
 }
 .fw_titles{
-    font-size: 13px;
-    font-weight:bold;
-    color: white;
-    border:1px outset #cccccc;
-    background-color: #134A7A;
+    font-size: 12px;
+    color: black;
+    border:1px solid #D3D3D3;
+    background-color: #E6E6E6;
     padding:5px 5px 5px 5px;
     cursor: pointer;
+    -moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	-khtml-border-radius: 5px;
 }
 .fw_titles:hover{
-   background-color: #B9D3FB;
-   color: black;
+   background-color: #D1D1D1;
+   border:1px solid #555555;
    cursor: pointer;
+}
+.fw_profilers{
+    font-size: 12px;
+    color: black;
+    border:1px solid #D3D3D3;
+    background-color: #1650a7;
+    padding:5px 5px 5px 5px;
+    cursor: pointer;
+    -moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	-khtml-border-radius: 5px;
+}
+.fw_profilers:hover{
+   background-color: #6988c4;
+   border:1px solid #555555;
+   cursor: pointer;
+}
+.fw_debugContentView{
+    color: black;
+    background-color: #f6f6f6;
+    border:1px solid #D3D3D3;
+    padding: 5px 5px 5px 5px;
+    display:block;
+    margin:auto;
+    -moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	-khtml-border-radius: 5px;
 }
 .fw_tracerMessage{
     padding:5px 5px 5px 5px;
@@ -29,18 +60,11 @@
 .fw_debugContent{
     display:none;
 }
-.fw_debugContentView{
-    color: black;
-    background-color: #eeeeee;
-    border:1px solid #3366CC;
-    padding: 5px 5px 5px 5px;
-    display:block;
-    margin:auto;
-}
+
 .fw_debugTitleCell{
     font-weight:bold;
     float:left;
-    width: 130px;
+    width: 135px;
     clear:left;
     height:  20px;
 }
@@ -90,6 +114,8 @@
 	border:1px outset #93C2FF;
 	background-color: #eeeeee;
 	width: 99%;
+	margin-left:auto;
+    margin-right:auto;
 }
 .fw_debugTables th{
 	font-size: 11px;
@@ -129,6 +155,7 @@
 	height: 375px;
 	border: 2px inset #cccccc;
 	background-color: white;
+	text-align: center;
 }
 /* END OF Debugging Tables */
 

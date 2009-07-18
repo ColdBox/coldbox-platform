@@ -37,18 +37,22 @@ Modification History:
 	<!--- **************************************************************--->
 	<cfif getDebuggerConfigBean().getShowInfoPanel()>
 	<div class="fw_titles" onClick="fw_toggle('fw_info')" >
-		&gt; &nbsp;ColdBox Debugging Information
+		&nbsp;ColdBox Debugging Information
 	</div>
 
 	<div class="fw_debugContent<cfif getDebuggerConfigBean().getExpandedInfoPanel()>View</cfif>" id="fw_info">
 		
 		<div>
-			<form name="fw_reinitcoldbox" id="fw_reinitcoldbox" action="index.cfm" method="POST">
+			<form name="fw_reinitcoldbox" id="fw_reinitcoldbox" action="#cgi.script_name#" method="POST">
 				<input type="hidden" name="fwreinit" id="fwreinit" value="">
-				<input type="button" value="Reinitialize Framework" name="reinitframework" style="font-size:10px" title="Reinitialize the framework." onClick="fw_reinitframework(#iif(controller.getSetting('ReinitPassword').length(),'true','false')#)">
+				<input type="button" value="Reinitialize Framework" name="reinitframework" style="font-size:10px" 
+					   title="Reinitialize the framework." 
+					   onClick="fw_reinitframework(#iif(controller.getSetting('ReinitPassword').length(),'true','false')#)">
 				<cfif getDebuggerConfigBean().getPersistentRequestProfiler()>
 				&nbsp;
-				<input type="button" value="Open Profiler Monitor" name="profilermonitor" style="font-size:10px" title="Open the profiler monitor in a new window." onClick="window.open('index.cfm?debugpanel=profiler','profilermonitor','status=1,toolbar=0,location=0,resizable=1,scrollbars=1,height=750,width=800')">
+				<input type="button" value="Open Profiler Monitor" name="profilermonitor" style="font-size:10px" 
+					   title="Open the profiler monitor in a new window." 
+					   onClick="window.open('index.cfm?debugpanel=profiler','profilermonitor','status=1,toolbar=0,location=0,resizable=1,scrollbars=1,height=750,width=850')">
 				</cfif>
 			</form>
 		  <br>
@@ -188,7 +192,7 @@ Modification History:
 		<cfif dumplist neq 0>
 		<!--- Dump Var --->
 		<div class="fw_titles" onClick="fw_toggle('fw_dumpvar')">
-		&gt; &nbsp;Dumpvar 
+		&nbsp;Dumpvar 
 		</div>
 		<div class="fw_debugContent" id="fw_dumpvar">
 			<cfloop list="#dumplist#" index="i">
@@ -210,7 +214,7 @@ Modification History:
 <!--- **************************************************************--->
 	<cfif getDebuggerConfigBean().getShowRCPanel()>
 	<div class="fw_titles"  onClick="fw_toggle('fw_reqCollection')" >
-	&gt; &nbsp;Request Collection Structure
+	&nbsp;Request Collection Structure
 	</div>
 	<div class="fw_debugContent<cfif getDebuggerConfigBean().getExpandedRCPanel()>View</cfif>" id="fw_reqCollection">
 		<table border="0" cellpadding="0" cellspacing="1" class="fw_debugTables" width="100%">

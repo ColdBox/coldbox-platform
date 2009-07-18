@@ -19,36 +19,8 @@
 				<li><a href="#event.buildLink(handler)#">#handler#</a></li>
 				</cfloop>
 			</ul>
-            
-			<h3>Getting Started</h3>
-            <p>
-                You have just auto-generated your application and are ready to customize your application.  Several directories and
-				files have been created for you.  Please familiarize yourself with your application layout before customizing your
-				application.
-                  </p>
-          <h4>Good Starting Links</h4>
-                <ol>
-                    <li>
-                        <a href="http://ortus.svnrepository.com/coldbox/trac.cgi/wiki/cbDirectoryStructure">Directory Structure & Conventions</a>
-                    </li>
-                    <li>
-                        <a href="http://ortus.svnrepository.com/coldbox/trac.cgi/wiki/cbConfigGuide">Coldbox.xml Guide</a>
-                    </li>
-                    <li>
-                        <a href="http://ortus.svnrepository.com/coldbox/trac.cgi/wiki/cbEventHandlersGuide">Event Handler's Guide</a>
-                    </li>
-					<li>
-                        <a href="http://ortus.svnrepository.com/coldbox/trac.cgi/wiki/cbRequestContext">Request Context's Guide</a>
-                    </li>
-					<li>
-                        <a href="http://ortus.svnrepository.com/coldbox/trac.cgi/wiki/cbLayoutsViewsGuide">Layouts & Views Guide</a>
-                    </li>
-					<li>
-						<a href="http://ortus.svnrepository.com/coldbox/trac.cgi/wiki/cbMyFirstApp">My First ColdBox App</a>
-					</li>
-            </ol>
-			<sub>* <a href="http://ortus.svnrepository.com/coldbox/trac.cgi">Wiki Docs</a></sub>
-            <h4>ColdBox URL Actions</h4>
+            <br />
+           <h4>ColdBox URL Actions</h4>
 			<p>ColdBox can use some very important URL actions to interact with your application. You can try them out below:</p>
 				<ol>
                     <li>

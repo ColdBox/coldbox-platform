@@ -11,24 +11,25 @@ Date     :	September 25, 2005
 Description :
 	Debugging template for the application
 ----------------------------------------------------------------------->
+<!--- Setup the panel --->
+<cfsetting showdebugoutput="false">
+<cfparam name="url.frequency" default="0">
+<!--- Verify Frequency --->
+<cfif not isNumeric(url.Frequency)>
+	<cfset url.frequency = 0>
+</cfif>
 <cfoutput>
-
-	<!--- Setup the panel --->
-	<cfsetting showdebugoutput="false">
-	<cfparam name="url.frequency" default="0">
-	
-	<!--- Verify Frequency --->
-	<cfif not isNumeric(url.Frequency)>
-		<cfset url.frequency = 0>
-	</cfif>
-	
+<html>
+<head>
+	<title>ColdBox Execution Profiler Monitor</title>
 	<cfif url.frequency gt 0>
 	<!--- Meta Tag Refresh --->
 	<meta http-equiv="refresh" content="#url.frequency#">
 	</cfif>
-	
 	<!--- Include Header --->
 	<cfinclude template="/coldbox/system/includes/DebugHeader.cfm">
+</head>	
+<body>
 	
 	<div class="fw_debugPanel">
 	
@@ -38,7 +39,7 @@ Description :
 	<cfinclude template="/coldbox/system/includes/panels/TracersPanel.cfm">
 	
 	<!--- Start Rendering the Execution Profiler panel  --->
-	<div class="fw_titles">&gt;&nbsp; ColdBox Execution Profiler Report</div>
+	<div class="fw_titles">&nbsp;ColdBox Execution Profiler Report</div>
 	<div class="fw_debugContentView" id="fw_executionprofiler">
 	
 		<div>
@@ -63,7 +64,7 @@ Description :
 		<!--- Render Profilers --->
 		<cfloop from="#profilersCount#" to="1" step="-1" index="x">
 			<cfset refLocal.thisProfiler = profilers[x]>
-			<div class="fw_titles" onClick="fw_toggle('fw_executionprofile_#x#')">&gt;&nbsp; #dateformat(refLocal.thisProfiler.datetime,"mm/dd/yyyy")# #timeformat(refLocal.thisProfiler.datetime,"hh:mm:ss.l tt")# (#refLocal.thisProfiler.ip#)</div>
+			<div class="fw_profilers" onClick="fw_toggle('fw_executionprofile_#x#')">&nbsp;#dateformat(refLocal.thisProfiler.datetime,"mm/dd/yyyy")# #timeformat(refLocal.thisProfiler.datetime,"hh:mm:ss.l tt")# (#refLocal.thisProfiler.ip#)</div>
 			<div class="fw_debugContent" id="fw_executionprofile_#x#">
 			<!--- **************************************************************--->
 			<!--- Method Executions --->
@@ -110,9 +111,10 @@ Description :
 	</div>
 	<!--- **************************************************************--->
 
-	</div>
+	</div><!--- End of Debug Panel Div --->
 	
 	<div align="center" style="margin-top:10px"><input type="button" name="close" value="Close Monitor" onClick="window.close()" style="font-size:10px"></div>
-	
+</body>
+</html>
 </cfoutput>
 <cfsetting enablecfoutputonly="false">

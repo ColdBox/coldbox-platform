@@ -1,16 +1,17 @@
-<cfoutput>
+<!--- Setup the panel --->
+<cfsetting showdebugoutput="false">
+<cfparam name="url.frequency" default="0">
 
+<!--- Verify Frequency --->
+<cfif not isNumeric(url.Frequency)>
+	<cfset url.frequency = 0>
+</cfif>
+<cfoutput>
 	<!--- If CachePanel render the polling code --->
 	<cfif renderType eq "CachePanel">
-		<!--- Setup the panel --->
-		<cfsetting showdebugoutput="false">
-		<cfparam name="url.frequency" default="0">
-		
-		<!--- Verify Frequency --->
-		<cfif not isNumeric(url.Frequency)>
-			<cfset url.frequency = 0>
-		</cfif>
-		
+		<html>
+		<head>
+			<title>ColdBox Cache Monitor</title>
 		<cfif url.frequency gt 0>
 		<!--- Meta Tag Refresh --->
 		<meta http-equiv="refresh" content="#url.frequency#">
@@ -18,19 +19,24 @@
 		
 		<!--- Include Header --->
 		<cfinclude template="/coldbox/system/includes/DebugHeader.cfm">
+		</head>
+		<body>
+		<!--- Start of Debug Panel Div --->
 		<div class="fw_debugPanel">
 	</cfif>
 
 	<!--- Start Rendering the Cache panel  --->
-	<div class="fw_titles" onClick="fw_toggle('fw_cache')">&gt;&nbsp; ColdBox Cache</div>
+	<div class="fw_titles" onClick="fw_toggle('fw_cache')">&nbsp;ColdBox Cache</div>
 	<cfif renderType eq "CachePanel">
 		<div class="fw_debugContentView" id="fw_cache">
 	<cfelse>
 		<div class="fw_debugContent<cfif getDebuggerConfigBean().getExpandedCachePanel()>View</cfif>" id="fw_cache">
 	</cfif>
 		<cfif renderType eq "main">
-		<div>
-		  <input type="button" value="Open Cache Monitor" name="cachemonitor" style="font-size:10px" title="Open the cache monitor in a new window." onClick="window.open('index.cfm?debugpanel=cache','cachemonitor','status=1,toolbar=0,location=0,resizable=1,scrollbars=1,height=750,width=800')">
+		<div style="margin-bottom:5px;">
+		  <input type="button" value="Open Cache Monitor" name="cachemonitor" style="font-size:10px" 
+		  		 title="Open the cache monitor in a new window." 
+		  		 onClick="window.open('index.cfm?debugpanel=cache','cachemonitor','status=1,toolbar=0,location=0,resizable=1,scrollbars=1,height=750,width=850')">
 		  <br>
 		</div>
 		<cfelse>
@@ -49,6 +55,7 @@
 		<div class="fw_debugTitleCell">
 		  Cache Performance
 		</div>
+		
 		<div class="fw_debugContentCell">
 		 <em>Hit Ratio:</em> #NumberFormat(controller.getColdboxOCM().getCacheStats().getCachePerformanceRatio(),"999.99")#%  ==>
 		 <em>Hits:</em> #controller.getColdboxOCM().getCacheStats().gethits()# |
@@ -62,11 +69,17 @@
 		</div>
 		<div class="fw_debugContentCell">
 		 <em>#NumberFormat((JVMFreeMemory/JVMMaxMemory)*100,"99.99")# % Free </em> |
-		 <em>JVM Threshold</em>:#controller.getColdboxOCM().getCacheConfigBean().getCacheFreeMemoryPercentageThreshold()#% (0=Unlimited) |
-		 <em>Total Assigned Memory: </em> #NumberFormat(JVMTotalMemory)# KB |
-		 <em>Max JVM Memory: </em> #NumberFormat(JVMMaxMemory)# KB		 
+		 <em>Total Assigned: </em> #NumberFormat(JVMTotalMemory)# KB |
+		 <em>Max: </em> #NumberFormat(JVMMaxMemory)# KB		 
 		</div>
-
+		
+		<div class="fw_debugTitleCell">
+		  JVM Threshold
+		</div>
+		<div class="fw_debugContentCell">
+			#controller.getColdboxOCM().getCacheConfigBean().getCacheFreeMemoryPercentageThreshold()#% (0=Unlimited)
+		</div>
+		
 		<div class="fw_debugTitleCell">
 		  Last Reap
 		</div>
@@ -106,7 +119,7 @@
 		</cfif>
 
 		<div class="fw_debugTitleCell">
-		  Total Objects in Cache
+		  Cache Contents
 		</div>
 		<div class="fw_debugContentCell">
 		 <cfif controller.getColdboxOCM().getSize() gte controller.getColdboxOCM().getCacheConfigBean().getCacheMaxObjects()>
@@ -159,7 +172,7 @@
 		
 		<!--- Object Charts --->
 		<div class="fw_cachetable">
-		<table border="0" align="center" cellpadding="0" cellspacing="1" class="fw_debugTables">
+		<table border="0" cellpadding="0" cellspacing="1" class="fw_debugTables">
 		  <tr >
 		  	<th >Object</th>
 			<th align="center" width="10%" >Hits</th>
@@ -200,7 +213,10 @@
 	<!--- If in CachePanel mode, render the close monitor buttons --->
 	<cfif renderType eq "CachePanel">
 		</div>
+		<!--- End debug Panel --->
 		<div align="center" style="margin-top:10px"><input type="button" name="close" value="Close Monitor" onClick="window.close()" style="font-size:10px"></div>
+		</body>
+		</html>
 	</cfif>
 
 </cfoutput>
