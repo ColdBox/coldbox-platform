@@ -38,7 +38,7 @@ Modification History: March 23,2008 Added new feature to encrypt/decrypt cookie 
 			
 			/* set CFML engine encryption CF, BD, Railo*/
 			setEncryptionAlgorithm("CFMX_COMPAT");
-			setEncryptionKey("ColdBoxToolkit");
+			setEncryptionKey("ColdBoxPlatform");
 			setEncryption(false);
 			setEncryptionEncoding("HEX");
 			
@@ -73,8 +73,12 @@ Modification History: March 23,2008 Added new feature to encrypt/decrypt cookie 
 		<cfargument name="name"  	type="string" 	required="true"  hint="The name of the variable.">
 		<cfargument name="value" 	type="any"    	required="true"  hint="The value to set in the variable, simple, array, query or structure.">
 		<cfargument name="expires"	type="numeric"	required="false"	default="0"	hint="Cookie Expire in number of days. [default cookie is session only = 0 days]">
+		<cfargument name="secure"	type="boolean"	required="false"	default="false"	hint="If browser does not support Secure Sockets Layer (SSL) security, the cookie is not sent. To use the cookie, the page must be accessed using the https protocol.">
+		<cfargument name="path"		type="string"	required="false"	default=""		hint="URL, within a domain, to which the cookie applies; typically a directory. Only pages in this path can use the cookie. By default, all pages on the server that set the cookie can access the cookie.">
+		<cfargument name="domain"	type="string"	required="false"	default=""		hint="Domain in which cookie is valid and to which cookie content can be sent from the user's system.">
 		<!--- ************************************************************* --->
-		<cfset var tmpVar = "">
+		<cfset var tmpVar	= "">
+		<cfset var args		= StructNew()>
 		
 		<!--- Test for simple mode --->
 		<cfif isSimpleValue(arguments.value)>
@@ -90,11 +94,25 @@ Modification History: March 23,2008 Added new feature to encrypt/decrypt cookie 
 		</cfif>
 		
 		<!--- Store cookie with expiration info --->
-		<cfif arguments.expires EQ 0>
-			<cfcookie name="#uCase(arguments.name)#" value="#tmpVar#" />
-		<cfelse>
-			<cfcookie name="#uCase(arguments.name)#" value="#tmpVar#" expires="#arguments.expires#" />
+		<cfset args["name"]		= uCase(arguments.name) />
+		<cfset args["value"]	= tmpVar />
+		<cfset args["secure"]	= arguments.secure />
+		
+		<cfif arguments.expires GT 0>
+			<cfset args["expires"] = arguments.expires />
 		</cfif>	
+		
+		<!--- Store cookie with expiration info --->
+		<cfif len(arguments.path) GT 0 and not len(arguments.domain) GT 0>
+			<cfthrow type="Framework.plugin.cookiestorage.MissingDomainArgument" message="If you specify path, you must also specify domain.">
+		<cfelseif len(arguments.path) GT 0 and len(arguments.domain) GT 0>
+			<cfset args["path"]		= arguments.path />
+			<cfset args["domain"]	= arguments.domain />
+		<cfelseif len(arguments.domain)>
+			<cfset args["domain"]	= arguments.domain />
+		</cfif>
+		
+		<cfcookie attributeCollection="#args#" />
 	</cffunction>
 
 	<!--- Get a Cookie Var --->
