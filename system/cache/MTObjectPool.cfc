@@ -21,23 +21,25 @@ Modification History:
 
 	<cffunction name="init" access="public" output="false" returntype="MTObjectPool" hint="Constructor">
 		<cfscript>
-			/* Since we use JDK 5> we can use the concurrent package. */
+			// Since we use JDK 5> we can use the concurrent package.
 			var Map = CreateObject("java","java.util.concurrent.ConcurrentHashMap").init();
 			var MetadataMap = CreateObject("java","java.util.concurrent.ConcurrentHashMap").init();
 			var SoftRefKeyMap = CreateObject("java","java.util.concurrent.ConcurrentHashMap").init();
 			
-			/* Prepare instance */
+			// Prepare instance
 			variables.instance = structnew();
 			
-			/* set object pools */
+			instance._hash = hash(createObject('java','java.lang.System').identityHashCode(this));
+			
+			// set object pools
 			setPool(Map);
 			setPool_metadata( MetadataMap );
 			setSoftRefKeyMap( SoftRefKeyMap );
 			
-			/* Register the reference queue for our soft references */
+			// Register the reference queue for our soft references
 			setReferenceQueue( CreateObject("java","java.lang.ref.ReferenceQueue").init() );
 			
-			/* Return pool */
+			
 			return this;
 		</cfscript>
 	</cffunction>
