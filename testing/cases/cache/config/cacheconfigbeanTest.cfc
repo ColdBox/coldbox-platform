@@ -1,10 +1,10 @@
-<cfcomponent name="cacheConfigBeanTest" extends="coldbox.system.testing.BaseTestCase">
+<cfcomponent name="CacheConfigTest" extends="coldbox.system.testing.BaseTestCase">
 	
 	<!--- setup and teardown --->
 	
 	<cffunction name="setUp" returntype="void" access="public">
 		<cfscript>
-			this.ccbean = createObject("component","coldbox.system.cache.config.CacheConfigBean");
+			this.ccbean = createObject("component","coldbox.system.cache.config.CacheConfig");
 			this.memento = structnew();
 			
 			this.memento.CacheObjectDefaultTimeout = 20;

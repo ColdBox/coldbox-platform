@@ -29,7 +29,7 @@ Modification History:
 		<cfset var ThreadName = "coldbox.cache.reap_#replace(instance.uuid.randomUUID(),"-","","all")#">
 		
 		<!--- Reap only if in frequency --->
-		<cfif dateDiff("n", getCacheStats().getlastReapDatetime(), now() ) gte getCacheConfigBean().getCacheReapFrequency() >
+		<cfif dateDiff("n", getCacheStats().getlastReapDatetime(), now() ) gte getCacheConfig().getCacheReapFrequency() >
 			
 			<cfthread name="#threadName#">  
 				<cfscript>  

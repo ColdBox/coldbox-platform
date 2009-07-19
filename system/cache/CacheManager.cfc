@@ -62,19 +62,19 @@ Modification History:
 	<!--- Configure the Cache for Operation --->
 	<cffunction name="configure" access="public" output="false" returntype="void" hint="Configures the cache for operation, sets the configuration object, sets and creates the eviction policy and clears the stats. If this method is not called, the cache is useless.">
 		<!--- ************************************************************* --->
-		<cfargument name="cacheConfigBean" type="coldbox.system.cache.config.CacheConfigBean" required="true" hint="The configuration object">
+		<cfargument name="CacheConfig" type="coldbox.system.cache.config.CacheConfig" required="true" hint="The configuration object">
 		<!--- ************************************************************* --->
 		<cfscript>		
 			var oEvictionPolicy = 0;
 				
 			//set the config bean
-			setCacheConfigBean(arguments.cacheConfigBean);
+			setCacheConfig(arguments.CacheConfig);
 			//Reset the statistics.
 			getCacheStats().clearStats();
 			
 			//Setup the eviction Policy to use
 			try{
-				oEvictionPolicy = CreateObject("component","coldbox.system.cache.policies.#getCacheConfigBean().getCacheEvictionPolicy()#").init(this);
+				oEvictionPolicy = CreateObject("component","coldbox.system.cache.policies.#getCacheConfig().getCacheEvictionPolicy()#").init(this);
 			}
 			Catch(Any e){
 				getUtil().throwit('Error creating eviction policy','Error creating the eviction policy object: #e.message# #e.detail#','cacheManager.EvictionPolicyCreationException');	
@@ -125,22 +125,22 @@ Modification History:
 		
 		<cflock type="readonly" name="coldbox.cacheManager.#arguments.objectKey#" timeout="#instance.lockTimeout#" throwontimeout="true">
 			<cfscript>
-				/* Check if in pool first */
+				// Check if in pool first
 				if( getObjectPool().lookup(arguments.objectKey) ){
-					/* Get Object from cache */
+					// Get Object from cache
 					refLocal.tmpObj = getobjectPool().get(arguments.objectKey);
-					/* Validate it */
+					// Validate it
 					if( not structKeyExists(refLocal, "tmpObj") ){
 						refLocal.needCleanup = true;
 						getCacheStats().miss();
 					}
 					else{
-						/* Object Found */
+						// Object Found
 						refLocal.ObjectFound = true;
 					}					
 				}// first lookup test
 				else{
-					/* log miss */
+					// log miss
 					getCacheStats().miss();
 				}
 			</cfscript>
@@ -230,18 +230,16 @@ Modification History:
 		<!--- ************************************************************* --->
 		<cfargument name="objectKey" type="any" required="true" hint="The key of the object to lookup its metadata">
 		<!--- ************************************************************* --->
-		<cflock type="readonly" name="coldbox.cacheManager.#arguments.objectKey#" timeout="#instance.lockTimeout#" throwontimeout="true">
-			<cfscript>
+		<cfscript>
 			arguments.objectKey = trim(arguments.objectKey);
-			/* Check if in the pool first */
-			if( getObjectPool().lookup(arguments.objectKey) ){
+			// Check if in the pool first
+			if( lookup(arguments.objectKey) ){
 				return getObjectPool().getObjectMetadata(arguments.objectKey);
 			}
 			else{
 				return structnew();
 			}
-			</cfscript>	
-		</cflock>
+		</cfscript>
 	</cffunction>
 	
 	<!--- getCachedObjectMetadata --->
@@ -300,7 +298,7 @@ Modification History:
 		<!--- ************************************************************* --->
 		<!---JVM Threshold Checks --->
 		<cfset var isJVMSafe = ThresholdChecks()>
-		<cfset var ccBean = getCacheConfigBean()>
+		<cfset var ccBean = getCacheConfig()>
 		<cfset var interceptMetadata = structnew()>
 		
 		<!--- Clean Arguments --->
@@ -514,7 +512,7 @@ Modification History:
 			var poolKeysLength = 0;
 			var thisKey = "";
 			var thisMD = "";
-			var ccBean = getCacheConfigBean();
+			var ccBean = getCacheConfig();
 			var reflocal = structNew();
 		</cfscript>
 		
@@ -700,12 +698,12 @@ Modification History:
 	</cffunction>
 	
 	<!--- The cache Config Bean --->
-	<cffunction name="setCacheConfigBean" access="public" returntype="void" output="false" hint="Set & Override the cache configuration bean. You can use this to programmatically alter the cache.">
-		<cfargument name="CacheConfigBean" type="coldbox.system.cache.config.CacheConfigBean" required="true">
-		<cfset instance.CacheConfigBean = arguments.CacheConfigBean>
+	<cffunction name="setCacheConfig" access="public" returntype="void" output="false" hint="Set & Override the cache configuration bean. You can use this to programmatically alter the cache.">
+		<cfargument name="CacheConfig" type="coldbox.system.cache.config.CacheConfig" required="true">
+		<cfset instance.CacheConfig = arguments.CacheConfig>
 	</cffunction>
-	<cffunction name="getCacheConfigBean" access="public" returntype="coldbox.system.cache.config.CacheConfigBean" output="false" hint="Get the current cache configuration bean.">
-		<cfreturn instance.CacheConfigBean >
+	<cffunction name="getCacheConfig" access="public" returntype="coldbox.system.cache.config.CacheConfig" output="false" hint="Get the current cache configuration bean.">
+		<cfreturn instance.CacheConfig >
 	</cffunction>
 	
 	<!--- Get the internal object pool --->
@@ -767,9 +765,9 @@ Modification History:
 		
 		<cftry>
 			<!--- Checks --->
-			<cfif getCacheConfigBean().getCacheFreeMemoryPercentageThreshold() neq 0>
+			<cfif getCacheConfig().getCacheFreeMemoryPercentageThreshold() neq 0>
 				<cfset jvmThreshold = ( (instance.javaRuntime.getRuntime().freeMemory() / instance.javaRuntime.getRuntime().maxMemory() ) * 100 )>
-				<cfset check = getCacheConfigBean().getCacheFreeMemoryPercentageThreshold() lt jvmThreshold>				
+				<cfset check = getCacheConfig().getCacheFreeMemoryPercentageThreshold() lt jvmThreshold>				
 			</cfif>
 			<cfcatch type="any">
 				<cfset check = true>

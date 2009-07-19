@@ -11,7 +11,7 @@
 		application.cacheManager = createObject("component","coldbox.system.cache.CacheManager").init(mockController);
 		
 		//Configure cache
-		config = createObject("component","coldbox.system.cache.config.CacheConfigBean").init("10","10","1","75",0,true,"LRU");
+		config = createObject("component","coldbox.system.cache.config.CacheConfig").init("10","10","1","75",0,true,"LRU");
 		
 		application.cacheManager.configure(config);
 	}

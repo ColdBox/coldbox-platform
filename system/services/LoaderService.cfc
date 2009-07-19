@@ -34,7 +34,7 @@ Modification History:
 		<!--- ************************************************************* --->
 		<cfscript>
 			var XMLParser = "";
-			var CacheConfigBean = CreateObject("Component","coldbox.system.cache.config.CacheConfigBean");
+			var CacheConfig = CreateObject("Component","coldbox.system.cache.config.CacheConfig");
 			var DebuggerConfigBean = CreateObject("Component","coldbox.system.beans.DebuggerConfigBean");
 			var FrameworkSettings = structNew();
 			var ConfigSettings = structNew();
@@ -51,9 +51,9 @@ Modification History:
 			controller.setColdboxSettings(FrameworkSettings);
 			
 			/* Create the Cache Config Bean with data from the framework's settings.xml */
-			CacheConfigBean.populate(FrameworkSettings);
+			CacheConfig.populate(FrameworkSettings);
 			/* Configure the Object Cache for first usage. */
-			controller.getColdboxOCM().configure(CacheConfigBean);
+			controller.getColdboxOCM().configure(CacheConfig);
 			
 			/* Load Application Config Settings Now that framework has been loaded. */
 			ConfigSettings = XMLParser.parseConfig(arguments.overrideAppMapping);
@@ -62,15 +62,15 @@ Modification History:
 			/* Check for Cache OVerride Settings in Config */
 			if ( ConfigSettings.CacheSettings.OVERRIDE ){
 				//Recreate the Config Bean
-				CacheConfigBean = CacheConfigBean.init(ConfigSettings.CacheSettings.ObjectDefaultTimeout,
-													   ConfigSettings.CacheSettings.ObjectDefaultLastAccessTimeout,
-													   ConfigSettings.CacheSettings.ReapFrequency,
-													   ConfigSettings.CacheSettings.MaxObjects,
-													   ConfigSettings.CacheSettings.FreeMemoryPercentageThreshold,
-													   ConfigSettings.CacheSettings.UseLastAccessTimeouts,
-													   ConfigSettings.CacheSettings.EvictionPolicy);
+				CacheConfig = CacheConfig.init(ConfigSettings.CacheSettings.ObjectDefaultTimeout,
+											   ConfigSettings.CacheSettings.ObjectDefaultLastAccessTimeout,
+											   ConfigSettings.CacheSettings.ReapFrequency,
+											   ConfigSettings.CacheSettings.MaxObjects,
+											   ConfigSettings.CacheSettings.FreeMemoryPercentageThreshold,
+											   ConfigSettings.CacheSettings.UseLastAccessTimeouts,
+											   ConfigSettings.CacheSettings.EvictionPolicy);
 				//Re-Configure the Object Cache.
-				controller.getColdboxOCM().configure(CacheConfigBean);
+				controller.getColdboxOCM().configure(CacheConfig);
 			}
 			
 			/* Check for Debugger Override, if true, then overpopulate with configuration settings overriding framework settings. */

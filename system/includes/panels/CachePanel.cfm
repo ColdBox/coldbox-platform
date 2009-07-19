@@ -77,7 +77,7 @@
 		  JVM Threshold
 		</div>
 		<div class="fw_debugContentCell">
-			#controller.getColdboxOCM().getCacheConfigBean().getCacheFreeMemoryPercentageThreshold()#% (0=Unlimited)
+			#controller.getColdboxOCM().getCacheConfig().getCacheFreeMemoryPercentageThreshold()#% (0=Unlimited)
 		</div>
 		
 		<div class="fw_debugTitleCell">
@@ -92,29 +92,29 @@
 		  Reap Frequency
 		</div>
 		<div class="fw_debugContentCell">
-		 Every #controller.getColdboxOCM().getCacheConfigBean().getCacheReapFrequency()# Minute(s)
+		 Every #controller.getColdboxOCM().getCacheConfig().getCacheReapFrequency()# Minute(s)
 		</div>
 		
 		<div class="fw_debugTitleCell">
 		  Eviction Policy
 		</div>
 		<div class="fw_debugContentCell">
-		 #controller.getColdboxOCM().getCacheConfigBean().getCacheEvictionPolicy()#
+		 #controller.getColdboxOCM().getCacheConfig().getCacheEvictionPolicy()#
 		</div>
 
 		<div class="fw_debugTitleCell">
 		  Default Timeout
 		</div>
 		<div class="fw_debugContentCell">
-		 #controller.getColdboxOCM().getCacheConfigBean().getCacheObjectDefaultTimeout()# Minutes
+		 #controller.getColdboxOCM().getCacheConfig().getCacheObjectDefaultTimeout()# Minutes
 		</div>
 
-		<cfif controller.getColdboxOCM().getCacheConfigBean().getCacheUseLastAccessTimeouts()>
+		<cfif controller.getColdboxOCM().getCacheConfig().getCacheUseLastAccessTimeouts()>
 		<div class="fw_debugTitleCell">
 		  Last Access Timeout
 		</div>
 		<div class="fw_debugContentCell">
-		 #controller.getColdboxOCM().getCacheConfigBean().getCacheObjectDefaultLastAccessTimeout()# Minutes
+		 #controller.getColdboxOCM().getCacheConfig().getCacheObjectDefaultLastAccessTimeout()# Minutes
 		</div>
 		</cfif>
 
@@ -122,10 +122,10 @@
 		  Cache Contents
 		</div>
 		<div class="fw_debugContentCell">
-		 <cfif controller.getColdboxOCM().getSize() gte controller.getColdboxOCM().getCacheConfigBean().getCacheMaxObjects()>
-		 	<span class="fw_redText">#controller.getColdBoxOCM().getSize()# / #controller.getColdboxOCM().getCacheConfigBean().getCacheMaxObjects()# (0=Unlimited)</span>
+		 <cfif controller.getColdboxOCM().getSize() gte controller.getColdboxOCM().getCacheConfig().getCacheMaxObjects()>
+		 	<span class="fw_redText">#controller.getColdBoxOCM().getSize()# / #controller.getColdboxOCM().getCacheConfig().getCacheMaxObjects()# (0=Unlimited)</span>
 		 <cfelse>
-		 	#controller.getColdBoxOCM().getSize()# / #controller.getColdboxOCM().getCacheConfigBean().getCacheMaxObjects()# (0=Unlimited) 
+		 	#controller.getColdBoxOCM().getSize()# / #controller.getColdboxOCM().getCacheConfig().getCacheMaxObjects()# (0=Unlimited) 
 		</cfif>
 		 
 		</div>

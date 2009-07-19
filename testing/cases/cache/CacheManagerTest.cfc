@@ -24,7 +24,7 @@ Description :
 		mockController.$('getInterceptorService',mockService);
 		mockController.$('getAppHash', hash(createUUID()) );
 		
-		ccbean = createObject("component","coldbox.system.cache.config.CacheConfigBean");
+		ccbean = createObject("component","coldbox.system.cache.config.CacheConfig");
 		memento = structnew();
 		memento.CacheObjectDefaultTimeout = 20;
 		memento.CacheObjectDefaultLastAccessTimeout = 20;
