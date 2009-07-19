@@ -41,7 +41,7 @@ Description :
 				LRUIndex = structSort(poolMD,"numeric", "ASC", "LastAccesed");
 			}
 			catch(Any e){
-				$log("error","Error sorting metadata pool. #e.message# #e.detail#. Serialized Pool: #poolMD.toString()#")
+				$log("error","Error sorting metadata pool. #e.message# #e.detail#. Serialized Pool: #poolMD.toString()#");
 			}
 			indexLength = ArrayLen(LRUIndex);
 			

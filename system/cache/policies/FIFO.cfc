@@ -41,7 +41,7 @@ Description :
 				FIFOIndex = structSort(poolMD,"numeric", "ASC", "Created");
 			}
 			catch(Any e){
-				$log("error","Error sorting metadata pool. #e.message# #e.detail#. Serialized Pool: #poolMD.toString()#")
+				$log("error","Error sorting metadata pool. #e.message# #e.detail#. Serialized Pool: #poolMD.toString()#");
 			}
 			indexLength = ArrayLen(FIFOIndex);
 			
