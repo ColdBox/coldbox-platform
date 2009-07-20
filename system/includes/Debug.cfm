@@ -35,12 +35,12 @@ Modification History:
 	<!--- **************************************************************--->
 	<!--- DEBUGGING PANEL --->
 	<!--- **************************************************************--->
-	<cfif getDebuggerConfigBean().getShowInfoPanel()>
+	<cfif getDebuggerConfig().getShowInfoPanel()>
 	<div class="fw_titles" onClick="fw_toggle('fw_info')" >
 		&nbsp;ColdBox Debugging Information
 	</div>
 
-	<div class="fw_debugContent<cfif getDebuggerConfigBean().getExpandedInfoPanel()>View</cfif>" id="fw_info">
+	<div class="fw_debugContent<cfif getDebuggerConfig().getExpandedInfoPanel()>View</cfif>" id="fw_info">
 		
 		<div>
 			<form name="fw_reinitcoldbox" id="fw_reinitcoldbox" action="#cgi.script_name#" method="POST">
@@ -48,7 +48,7 @@ Modification History:
 				<input type="button" value="Reinitialize Framework" name="reinitframework" style="font-size:10px" 
 					   title="Reinitialize the framework." 
 					   onClick="fw_reinitframework(#iif(controller.getSetting('ReinitPassword').length(),'true','false')#)">
-				<cfif getDebuggerConfigBean().getPersistentRequestProfiler()>
+				<cfif getDebuggerConfig().getPersistentRequestProfiler()>
 				&nbsp;
 				<input type="button" value="Open Profiler Monitor" name="profilermonitor" style="font-size:10px" 
 					   title="Open the profiler monitor in a new window." 
@@ -180,7 +180,7 @@ Modification History:
 <!--- Cache Performance --->
 <!--- **************************************************************--->
 	
-	<cfif getDebuggerConfigBean().getShowCachePanel()>
+	<cfif getDebuggerConfig().getShowCachePanel()>
 		<cfinclude template="panels/CachePanel.cfm">
 	</cfif>
 	
@@ -212,11 +212,11 @@ Modification History:
 <!--- **************************************************************--->
 <!--- Request Collection Debug --->
 <!--- **************************************************************--->
-	<cfif getDebuggerConfigBean().getShowRCPanel()>
+	<cfif getDebuggerConfig().getShowRCPanel()>
 	<div class="fw_titles"  onClick="fw_toggle('fw_reqCollection')" >
 	&nbsp;Request Collection Structure
 	</div>
-	<div class="fw_debugContent<cfif getDebuggerConfigBean().getExpandedRCPanel()>View</cfif>" id="fw_reqCollection">
+	<div class="fw_debugContent<cfif getDebuggerConfig().getExpandedRCPanel()>View</cfif>" id="fw_reqCollection">
 		<table border="0" cellpadding="0" cellspacing="1" class="fw_debugTables" width="100%">
 		  <cfloop collection="#RequestCollection#" item="vars">
 		  <cfset varVal = requestCollection[vars]>
@@ -231,11 +231,11 @@ Modification History:
 				</cfif>
 			<cfelse>
 				<!--- Max Display For Queries  --->
-				<cfif isQuery(varVal) and (varVal.recordCount gt getDebuggerConfigBean().getmaxRCPanelQueryRows())>
-					<cfquery name="varVal" dbType="query" maxrows="#getDebuggerConfigBean().getmaxRCPanelQueryRows()#">
+				<cfif isQuery(varVal) and (varVal.recordCount gt getDebuggerConfig().getmaxRCPanelQueryRows())>
+					<cfquery name="varVal" dbType="query" maxrows="#getDebuggerConfig().getmaxRCPanelQueryRows()#">
 						select * from varVal
 					</cfquery>
-					<cfdump var="#varVal#" label="Query Truncated to #getDebuggerConfigBean().getmaxRCPanelQueryRows()# records" expand="false">
+					<cfdump var="#varVal#" label="Query Truncated to #getDebuggerConfig().getmaxRCPanelQueryRows()# records" expand="false">
 				<cfelse>
 					<cfdump var="#varVal#" expand="false">
 				</cfif>				

@@ -22,10 +22,12 @@ Modification History:
 	<cffunction name="init" access="public" returntype="any" output="false" hint="The plugin constructor.">
 		<cfargument name="controller" type="any" required="true" hint="coldbox.system.Controller">
 		<cfscript>
-			/* Register Controller */
-			setController(arguments.controller);
+			// Register Controller
+			variables.controller = arguments.controller;
+			// Register ColdBox
+			variables.logBox = arguments.controller.getLogBox();
 			
-			/* Prepare a Plugin properties */
+			// Prepare a Plugin properties
 			instance.pluginName = "";
 			instance.pluginVersion = "";
 			instance.pluginDescription = "";
@@ -33,7 +35,6 @@ Modification History:
 			instance.pluginAuthorURL = "";
 			instance.pluginPath = getMetadata(this).path;
 			
-			/* Return instance */
 			return this;
 		</cfscript>
 	</cffunction>

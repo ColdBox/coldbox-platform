@@ -38,6 +38,20 @@ Description :
 			case 5: return "TRACE";			
 		}
 	}
+	function lookupAsInt(level){
+		switch(level){
+			case "OFF": return -1;
+			case "FATAL": return 0;
+			case "ERROR": return 1;
+			case "WARN": return 2;
+			case "WARNING" : return 2;
+			case "INFO": return 3;
+			case "INFORMATION" : return 3;
+			case "DEBUG": return 4;
+			case "TRACE": return 5;		
+			default: return 999;	
+		}
+	}
 	function lookupCF(level){
 		switch(level){
 			case -1: return "OFF";

@@ -13,25 +13,33 @@ Description		: This is the main ColdBox front Controller.
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
 	<cfscript>
-		variables.instance = structnew();
+		instance = structnew();
+		services = structnew();
 	</cfscript>
 
 	<cffunction name="init" returntype="coldbox.system.Controller" access="Public" hint="I am the constructor" output="false">
 		<cfargument name="AppRootPath" type="string" required="true" hint="The app Root Path"/>
 		<cfscript>
-			//Public Variable.
+			var logBoxConfig = "";
+			
+			//Public Available Engine Utility
 			this.oCFMLENGINE = CreateObject("component","coldbox.system.util.CFMLEngine").init();
-			//properties
+			
+			// Set Main ColdBox Properties
 			setColdboxInitiated(false);
 			setAspectsInitiated(false);
+			setAppStartHandlerFired(false);
+			setAppHash( hash(arguments.AppRootPath) );
+			setAppRootPath(arguments.AppRootPath);
+			
+			// Init Configuration structures
 			setConfigSettings(structnew());
 			setColdboxSettings(structnew());
-			setAppStartHandlerFired(false);
 			
-			//Set the Application hash on creation
-			setAppHash( hash(arguments.AppRootPath) );
-			//App Root
-			setAppRootPath(arguments.AppRootPath);
+			// Create LogBox & Initial Logger
+			logBoxConfig = createObject("component","coldbox.system.logging.config.LogBoxConfig").init(expandPath("/coldbox/system/config/LogBox.xml"));
+			setLogBox(createObject("component","coldbox.system.logging.LogBox").init(logBoxConfig));
+			setLogger(getLogBox().getLogger("coldbox.system.Controller"));
 			
 			//Create & init ColdBox Services
 			if ( this.oCFMLENGINE.isMT() ){
@@ -40,7 +48,8 @@ Description		: This is the main ColdBox front Controller.
 			else{
 				setColdboxOCM( CreateObject("component","coldbox.system.cache.CacheManager").init(this) );
 			}
-			//Setup the rest of the services.
+			
+			// Setup the ColdBox Services
 			setLoaderService( CreateObject("component", "coldbox.system.services.LoaderService").init(this) );
 			setRequestService( CreateObject("component","coldbox.system.services.RequestService").init(this) );
 			setDebuggerService( CreateObject("component","coldbox.system.services.DebuggerService").init(this) );
@@ -48,12 +57,38 @@ Description		: This is the main ColdBox front Controller.
 			setInterceptorService( CreateObject("component", "coldbox.system.services.InterceptorService").init(this) );
 			setHandlerService( CreateObject("component", "coldbox.system.services.HandlerService").init(this) );
 			
+			// Log Creation
+			getLogger().debug("ColdBox Application Initialized: #arguments.appRootPath#");
+			
 			//Return instance
 			return this;
 		</cfscript>
 	</cffunction>
 
 <!------------------------------------------- PUBLIC ------------------------------------------->
+	
+	<!--- getLogBox --->
+	<cffunction name="getLogBox" output="false" access="public" returntype="coldbox.system.logging.LogBox" hint="Get the application's LogBox instance">
+		<cfreturn instance.logBox>
+	</cffunction>
+	<cffunction name="setLogBox" output="false" access="public" returntype="void" hint="Set the logBox instance">
+		<cfargument name="logBox" type="coldbox.system.logging.LogBox" required="true" default="" hint="The logBox instance"/>
+		<cfset instance.logBox = arguments.logBox>
+	</cffunction>
+	
+	<!--- This class's logger object --->
+	<cffunction name="getLogger" access="public" returntype="coldbox.system.logging.Logger" output="false" hint="The coldbox controller logger">
+		<cfreturn instance.logger>
+	</cffunction>
+	<cffunction name="setLogger" access="public" returntype="void" output="false" hint="Set the coldbox controller logger">
+		<cfargument name="logger" type="coldbox.system.logging.Logger" required="true">
+		<cfset instance.logger = arguments.logger>
+	</cffunction>
+	
+	<!--- getServices --->
+	<cffunction name="getServices" output="false" access="public" returntype="struct" hint="Get all the registered services">
+		<cfreturn services>
+	</cffunction>
 	
 	<!--- AppRootPath --->
 	<cffunction name="getAppRootPath" access="public" returntype="string" output="false" hint="Get this application's physical path">
@@ -75,11 +110,11 @@ Description		: This is the main ColdBox front Controller.
 	
 	<!--- Loader Service --->
 	<cffunction name="getLoaderService" access="public" output="false" returntype="any" hint="Get LoaderService: coldbox.system.services.LoaderService">
-		<cfreturn instance.LoaderService/>
+		<cfreturn services.LoaderService/>
 	</cffunction>
 	<cffunction name="setLoaderService" access="public" output="false" returntype="void" hint="Set LoaderService">
 		<cfargument name="LoaderService" type="any" required="true"/>
-		<cfset instance.LoaderService = arguments.LoaderService/>
+		<cfset services.LoaderService = arguments.LoaderService/>
 	</cffunction>
 	
 	<!--- Exception Service --->
@@ -89,47 +124,47 @@ Description		: This is the main ColdBox front Controller.
 	
 	<!--- Request Service --->
 	<cffunction name="getRequestService" access="public" output="false" returntype="any" hint="Get RequestService: coldbox.system.services.RequestService">
-		<cfreturn instance.RequestService/>
+		<cfreturn services.RequestService/>
 	</cffunction>
 	<cffunction name="setRequestService" access="public" output="false" returntype="void" hint="Set RequestService">
 		<cfargument name="RequestService" type="any" required="true"/>
-		<cfset instance.RequestService = arguments.RequestService/>
+		<cfset services.RequestService = arguments.RequestService/>
 	</cffunction>
 	
 	<!--- Debugger Service --->
 	<cffunction name="getDebuggerService" access="public" output="false" returntype="any" hint="Get DebuggerService: coldbox.system.services.DebuggerService">
-		<cfreturn instance.DebuggerService/>
+		<cfreturn services.DebuggerService/>
 	</cffunction>
 	<cffunction name="setDebuggerService" access="public" output="false" returntype="void" hint="Set DebuggerService">
 		<cfargument name="DebuggerService" type="any" required="true"/>
-		<cfset instance.DebuggerService = arguments.DebuggerService/>
+		<cfset services.DebuggerService = arguments.DebuggerService/>
 	</cffunction>
 	
 	<!--- Plugin Service --->
 	<cffunction name="getPluginService" access="public" output="false" returntype="any" hint="Get PluginService: coldbox.system.services.PluginService">
-		<cfreturn instance.PluginService/>
+		<cfreturn services.PluginService/>
 	</cffunction>
 	<cffunction name="setPluginService" access="public" output="false" returntype="void" hint="Set PluginService">
 		<cfargument name="PluginService" type="Any" required="true"/>
-		<cfset instance.PluginService = arguments.PluginService/>
+		<cfset services.PluginService = arguments.PluginService/>
 	</cffunction>
 	
 	<!--- Interceptor Service --->
-	<cffunction name="getinterceptorService" access="public" output="false" returntype="any" hint="Get interceptorService: coldbox.system.services.InterceptorService">
-		<cfreturn instance.interceptorService/>
+	<cffunction name="getInterceptorService" access="public" output="false" returntype="any" hint="Get interceptorService: coldbox.system.services.InterceptorService">
+		<cfreturn services.interceptorService/>
 	</cffunction>	
-	<cffunction name="setinterceptorService" access="public" output="false" returntype="void" hint="Set interceptorService">
+	<cffunction name="setInterceptorService" access="public" output="false" returntype="void" hint="Set interceptorService">
 		<cfargument name="interceptorService" type="any" required="true"/>
-		<cfset instance.interceptorService = arguments.interceptorService/>
+		<cfset services.interceptorService = arguments.interceptorService/>
 	</cffunction>
 
 	<!--- Handler Service --->
 	<cffunction name="getHandlerService" access="public" output="false" returntype="any" hint="Get HandlerService: coldbox.system.services.HandlerService">
-		<cfreturn instance.HandlerService/>
+		<cfreturn services.HandlerService/>
 	</cffunction>
 	<cffunction name="setHandlerService" access="public" output="false" returntype="void" hint="Set HandlerService">
 		<cfargument name="HandlerService" type="any" required="true"/>
-		<cfset instance.HandlerService = arguments.HandlerService/>
+		<cfset services.HandlerService = arguments.HandlerService/>
 	</cffunction>
 	
 	<!--- Getter & Setter Internal Configuration Structures --->

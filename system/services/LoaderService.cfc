@@ -20,6 +20,10 @@ Modification History:
 		<cfargument name="controller" type="any" required="true">
 		<cfscript>
 			setController(arguments.controller);
+			
+			// Local logger defined later
+			instance.logger = "";
+			
 			return this;
 		</cfscript>
 	</cffunction>
@@ -35,31 +39,41 @@ Modification History:
 		<cfscript>
 			var XMLParser = "";
 			var CacheConfig = CreateObject("Component","coldbox.system.cache.config.CacheConfig");
-			var DebuggerConfigBean = CreateObject("Component","coldbox.system.beans.DebuggerConfigBean");
+			var DebuggerConfig = CreateObject("Component","coldbox.system.beans.DebuggerConfig");
 			var FrameworkSettings = structNew();
 			var ConfigSettings = structNew();
+			var key = "";
+			var services = controller.getServices();
 			
-			/* Clear the Cache Dictionaries */
+			// Clear the Cache Dictionaries, just to make sure.
 			controller.getPluginService().clearDictionary();
 			controller.getHandlerService().clearDictionaries();
 			
-			/* Prepare Parser */
+			// Prepare Parser
 			XMLParser = controller.getPlugin("XMLParser");
 			
-			/* Load Coldbox Config Settings Structure */
+			// Load Coldbox Config Settings Structure
 			FrameworkSettings = XMLParser.loadFramework(arguments.overrideConfigFile);
 			controller.setColdboxSettings(FrameworkSettings);
 			
-			/* Create the Cache Config Bean with data from the framework's settings.xml */
+			// Create the Cache Config Bean with data from the framework's settings.xml
 			CacheConfig.populate(FrameworkSettings);
-			/* Configure the Object Cache for first usage. */
+			// Configure the Object Cache for first usage.
 			controller.getColdboxOCM().configure(CacheConfig);
 			
-			/* Load Application Config Settings Now that framework has been loaded. */
+			// Load Application Config Settings Now that framework has been loaded.
 			ConfigSettings = XMLParser.parseConfig(arguments.overrideAppMapping);
 			controller.setConfigSettings(ConfigSettings);
 			
-			/* Check for Cache OVerride Settings in Config */
+			// Re-Configure LogBox if defined by application
+			if( NOT structIsEmpty(configSettings["LogBoxConfig"]) ){
+				controller.getLogBox().configure(controller.getLogBox().getConfig());
+				controller.setLogger(controller.getLogBox().getLogger("coldbox.system.Controller"));
+			}
+			//Get Local Logger Now Configured
+			instance.logger = controller.getLogBox().getLogger("coldbox.system.services.LoaderService");
+			
+			// Check for Cache OVerride Settings in Config
 			if ( ConfigSettings.CacheSettings.OVERRIDE ){
 				//Recreate the Config Bean
 				CacheConfig = CacheConfig.init(ConfigSettings.CacheSettings.ObjectDefaultTimeout,
@@ -73,34 +87,44 @@ Modification History:
 				controller.getColdboxOCM().configure(CacheConfig);
 			}
 			
-			/* Check for Debugger Override, if true, then overpopulate with configuration settings overriding framework settings. */
+			// Check for Debugger Override, if true, then overpopulate with configuration settings overriding framework settings.
 			if( ConfigSettings.DebuggerSettings.OVERRIDE ){
-				DebuggerConfigBean.populate(ConfigSettings.DebuggerSettings);
+				DebuggerConfig.populate(ConfigSettings.DebuggerSettings);
 			}
 			else{
-				/* Populate Debugger with settings from the framework */
-				DebuggerConfigBean.populate(FrameworkSettings);
+				// Populate Debugger with settings from the framework
+				DebuggerConfig.populate(FrameworkSettings);
 			}
 			
-			/* Configure the Debugger For Usage*/
-			controller.getDebuggerService().setDebuggerConfigBean(DebuggerConfigBean);
+			// Configure the Debugger For Usage
+			controller.getDebuggerService().setDebuggerConfig(DebuggerConfig);
 			
-			/* execute the handler registrations after configurations loaded */
+			// execute the handler registrations after configurations loaded
 			controller.getHandlerService().registerHandlers();
 			
-			/* Register The Interceptors */
+			// Register The Interceptors
 			controller.getInterceptorService().registerInterceptors();
 			
-			/* Flag the initiation, Framework is ready to serve requests. Praise be to GOD. */
+			// Flag the initiation, Framework is ready to serve requests. Praise be to GOD.
 			controller.setColdboxInitiated(true);
 			
-			/* Execute afterConfigurationLoad */
+			// Execute onConfigurationLoad for services()
+			for(key in services){
+				services[key].onConfigurationLoad();
+			}
+			
+			// Execute afterConfigurationLoad
 			controller.getInterceptorService().processState("afterConfigurationLoad");
 			
-			/* Register Aspects */
+			// Register Aspects
 			registerAspects();
 			
-			/* Execute afterAspectsLoad */
+			// Execute onAspectsLoad on services
+			for(key in services){
+				services[key].onAspectsLoad();
+			}
+			
+			// Execute afterAspectsLoad
 			controller.getInterceptorService().processState("afterAspectsLoad");			
 		</cfscript>
 	</cffunction>
@@ -108,30 +132,26 @@ Modification History:
 	<!--- Register the Aspects --->
 	<cffunction name="registerAspects" access="public" returntype="void" hint="I Register the current Application's Aspects" output="false" >
 		<cfscript>
-		/* Initialize Logging if requested. */
-		if ( controller.getSetting("EnableColdboxLogging") ){
-			controller.getPlugin("Logger").initLogLocation();
-		}
 		
-		/* Init Model Integration */
+		// Init Model Integration
 		controller.getPlugin("BeanFactory").configure();
 		
-		/* IoC Plugin Manager Configuration */
+		// IoC Plugin Manager Configuration
 		if ( controller.getSetting("IOCFramework") neq "" ){
 			//Create IoC Factory and configure it.
 			controller.getPlugin("IOC").configure();
 		}
 
-		/* Load i18N if application is using it. */
+		// Load i18N if application is using it.
 		if ( controller.getSetting("using_i18N") ){
 			//Create i18n Plugin and configure it.
 			controller.getPlugin("i18n").init_i18N(controller.getSetting("DefaultResourceBundle"),controller.getSetting("DefaultLocale"));
 		}		
 		
-		/* Set Debugging Mode according to configuration File */
+		// Set Debugging Mode according to configuration File
 		controller.getDebuggerService().setDebugMode(controller.getSetting("DebugMode"));
 		
-		/* Flag the aspects inited. */
+		// Flag the aspects inited.
 		controller.setAspectsInitiated(true);
 		</cfscript>
 	</cffunction>

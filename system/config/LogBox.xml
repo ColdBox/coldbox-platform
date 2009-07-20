@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+This is the Default ColdBox LogBox Configuration for immediate operation 
+of ColdBox once it loads.  Once the configuration file is read then the
+LogBox instance is reconfigured with the user settings.
+
+It is configured to log EVERYTHING to console and the CF facilities
+-->
+<LogBox>
+
+	<!-- Default Appender Definitions -->
+	<Appender name="Console"    class="coldbox.system.logging.appenders.ConsoleAppender" />
+	<Appender name="CFAppender" class="coldbox.system.logging.appenders.CFAppender" />
+	
+	<!-- Root Logger: Will log anything by default -->
+	<Root levelMin="0" levelMax="5" appenders="*" />
+	
+</LogBox>

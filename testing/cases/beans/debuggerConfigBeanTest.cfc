@@ -1,8 +1,8 @@
-<cfcomponent name="debuggerConfigBeanTest" extends="coldbox.system.testing.BaseTestCase">
+<cfcomponent name="DebuggerConfigTest" extends="coldbox.system.testing.BaseTestCase">
 	
 	<cffunction name="setUp" returntype="void" access="public">
 		<cfscript>
-			debugconfig = createObject("component","coldbox.system.beans.DebuggerConfigBean");	
+			debugconfig = createObject("component","coldbox.system.beans.DebuggerConfig");	
 			
 			debugconfig.init();
 			

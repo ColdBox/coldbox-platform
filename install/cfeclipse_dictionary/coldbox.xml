@@ -156,11 +156,6 @@ Description :
 			<help><![CDATA[
 				Get a reference to the ColdBox Controller
 			]]></help>
-			<parameter name="var" type="Any" required="true">
-				<help><![CDATA[
-					The variable to dump
-				]]></help>
-			</parameter>
 		</function>
 		
 		<function creator="8" name="getDatasource" returns="coldbox.system.beans.DatasourceBean">
@@ -201,6 +196,12 @@ Description :
 					The interceptor full class name.
 				]]></help>
 			</parameter>
+		</function>
+		
+		<function creator="8" name="getLogBox" returns="coldbox.system.logging.LogBox">
+			<help><![CDATA[
+				Get a reference to this application's LogBox
+			]]></help>
 		</function>
 		
 		<function creator="8" name="getModel" returns="Any">
@@ -1060,6 +1061,12 @@ Description :
 		]]></help>
 		</scope>
 		
+		<scope value="controller.getLogBox()" type="Any">
+			<help><![CDATA[ 
+			 Get a reference to this application's logBox
+		]]></help>
+		</scope>
+		
 		<scope value="controller.getInterceptorService()" type="Any">
 			<help><![CDATA[ 
 			 Get a reference to the interceptor service
@@ -1093,6 +1100,12 @@ Description :
 		<scope value="controller.getSettingStructure" type="Struct">
 			<help><![CDATA[ 
 			 Get a reference or deep copy of the configuration or coldbox structures.
+		]]></help>
+		</scope>
+		
+		<scope value="controller.getServices()" type="Any">
+			<help><![CDATA[ 
+			 Get a reference to all of ColdBox's internal services.
 		]]></help>
 		</scope>	
 		

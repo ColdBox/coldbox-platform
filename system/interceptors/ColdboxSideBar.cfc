@@ -45,7 +45,7 @@ Modification History:
 			setProperty( 'jsPath', '#getProperty("baseAppPath")#?sbContent=js' );
 						
 			// URL params which are used by the sideBar
-			setProperty( 'urlParamNameList', "fwreinit,debugmode,dumpVar,sbIsClearCache,sbClearScope,sbIsClearLog,sbIsEnabled");
+			setProperty( 'urlParamNameList', "fwreinit,debugmode,dumpVar,sbIsClearCache,sbClearScope,sbIsEnabled");
 			
 			/* Start processing properties */
 			
@@ -153,11 +153,6 @@ Modification History:
 			<cfif isDefined("rc.sbClearScope") AND ListFindNoCase( "session,client", event.getValue('sbClearScope','') )>
 				<cfset StructClear( evaluate(rc.sbClearScope) )>
 			</cfif>
-	
-			<!--- Clear Log? --->
-			<cfif isBoolean( event.getValue('sbIsClearLog','') ) AND event.getValue('sbIsClearLog',false)>
-				<cfset getPlugin("Logger").removeLogFile()>
-			</cfif>
 		
 		</cfif>		
 		
@@ -209,8 +204,6 @@ Modification History:
 		<cfset refLocal.clearCacheHref = refLocal.currentURL & '&sbIsClearCache=1'>
 		<!--- Clear scope link --->
 		<cfset refLocal.clearScopeHref = "location.href='#refLocal.currentURL#&sbClearScope='+ getElementById('sbClearScope').value;">
-		<!--- Clear log link --->
-		<cfset refLocal.clearLogHref = refLocal.currentURL & '&sbIsClearLog=1'>
 		<!--- Cache panel link --->
 		<cfset refLocal.cachePanelHref = "window.open('index.cfm?debugpanel=cache','cache','status=1,toolbar=0,location=0,resizable=1,scrollbars=1,height=750,width=800')">
 		<!--- Profiler link --->

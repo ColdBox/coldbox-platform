@@ -258,12 +258,12 @@ Modification History:
 	</cffunction>
 	
 	<!--- Configuration Bean --->
-	<cffunction name="getdebuggerConfigBean" access="public" output="false" returntype="coldbox.system.beans.DebuggerConfigBean" hint="Get debuggerConfigBean">
-		<cfreturn instance.debuggerConfigBean/>
+	<cffunction name="getDebuggerConfig" access="public" output="false" returntype="coldbox.system.beans.DebuggerConfig" hint="Get DebuggerConfig">
+		<cfreturn instance.DebuggerConfig/>
 	</cffunction>	
-	<cffunction name="setdebuggerConfigBean" access="public" output="false" returntype="void" hint="Set debuggerConfigBean">
-		<cfargument name="debuggerConfigBean" type="coldbox.system.beans.DebuggerConfigBean" required="true"/>
-		<cfset instance.debuggerConfigBean = arguments.debuggerConfigBean/>
+	<cffunction name="setDebuggerConfig" access="public" output="false" returntype="void" hint="Set DebuggerConfig">
+		<cfargument name="DebuggerConfig" type="coldbox.system.beans.DebuggerConfig" required="true"/>
+		<cfset instance.DebuggerConfig = arguments.DebuggerConfig/>
 	</cffunction>
 	
 	<!--- Persistent Profilers --->
@@ -291,10 +291,10 @@ Modification History:
 			var newRecord = structnew();
 			
 			/* Activate Check */
-			if( NOT getDebuggerConfigBean().getPersistentRequestProfiler() ){ return; }
+			if( NOT getDebuggerConfig().getPersistentRequestProfiler() ){ return; }
 			
 			/* Size Check */
-			if( ArrayLen(getProfilers()) gte getDebuggerConfigBean().getmaxPersistentRequestProfilers() ){
+			if( ArrayLen(getProfilers()) gte getDebuggerConfig().getmaxPersistentRequestProfilers() ){
 				popProfiler();
 			}
 			
@@ -332,7 +332,7 @@ Modification History:
 			var tracerEntry = StructNew();
 			
 			/* Activate Check */
-			if( NOT getDebuggerConfigBean().getPersistentTracers() ){ return; }
+			if( NOT getDebuggerConfig().getPersistentTracers() ){ return; }
 			
 			/* Insert Message & Info to entry */
 			tracerEntry["message"] = arguments.message;

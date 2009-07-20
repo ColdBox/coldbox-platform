@@ -33,7 +33,7 @@ Description :
 		// Category Appenders
 		instance.categoryAppenders = "";	
 		// Version
-		instance.version = "1.0 Beta 2";	 
+		instance.version = "1.0 Beta 3";	 
 		// Configuration object
 		instance.config = "";	
 	</cfscript>
@@ -88,6 +88,7 @@ Description :
 			oRoot.logLevels = this.logLevels;
 			
 			//Save in Registry
+			instance.loggerRegistry = structnew();
 			instance.loggerRegistry["ROOT"] = oRoot;
 		</cfscript>
 		</cflock>

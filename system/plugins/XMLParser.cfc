@@ -402,24 +402,6 @@ Modification History:
 			if ( not structKeyExists(ConfigStruct, "ReinitPassword") )
 				ConfigStruct["ReinitPassword"] = "";
 
-			//Check For Coldfusion Logging
-			if ( not structKeyExists(ConfigStruct, "EnableColdfusionLogging") or not isBoolean(ConfigStruct.EnableColdfusionLogging) )
-				ConfigStruct["EnableColdfusionLogging"] = "false";
-			
-			//Check For Coldbox Logging
-			if ( not structKeyExists(ConfigStruct, "EnableColdboxLogging") or not isBoolean(ConfigStruct.EnableColdboxLogging) )
-				ConfigStruct["EnableColdboxLogging"] = "false";
-			
-			//Check For Coldbox Log Location if it is defined.
-			if ( not structKeyExists(ConfigStruct, "ColdboxLogsLocation") or trim(ConfigStruct["ColdboxLogsLocation"]) eq "")
-				ConfigStruct["ColdboxLogsLocation"] = "";
-			//Setup the ExpandedColdboxLogsLocation setting
-			ConfigStruct["ExpandedColdboxLogsLocation"] = "";
-			
-			//Default Log Level
-			if ( NOT structKeyExists(ConfigStruct, "DefaultLogLevel") OR NOT isNumeric(ConfigStruct["DefaultLogLevel"]))
-				ConfigStruct["DefaultLogLevel"] = fwSettingsStruct["DefaultLogLevel"];
-			
 			//Check For Owner Email or Throw
 			if ( not StructKeyExists(ConfigStruct, "OwnerEmail") )
 				ConfigStruct["OwnerEmail"] = "";
@@ -1028,6 +1010,10 @@ Modification History:
 				
 			}//end interceptor nodes
 			
+			
+			/* ::::::::::::::::::::::::::::::::::::::::: LOGBOX Configuration :::::::::::::::::::::::::::::::::::::::::::: */
+			parseLogBox(configXML,configStruct,oUtilities);
+			
 			/* ::::::::::::::::::::::::::::::::::::::::: CONFIG FILE LAST MODIFIED SETTING :::::::::::::::::::::::::::::::::::::::::::: */
 			StructInsert(ConfigStruct, "ConfigTimeStamp", oUtilities.FileLastModified(ConfigFileLocation));
 			/* ::::::::::::::::::::::::::::::::::::::::: XSD VALIDATION :::::::::::::::::::::::::::::::::::::::::::: */
@@ -1057,6 +1043,46 @@ Modification History:
 	</cffunction>
 
 <!------------------------------------------- PRIVATE ------------------------------------------->
+			
+	<!--- parseLogBox --->
+	<cffunction name="parseLogBox" output="false" access="public" returntype="void" hint="Parse LogBox">
+		<cfargument name="xml" 		type="any" required="true" hint="The xml object"/>
+		<cfargument name="config" 	type="struct" required="true" hint="The config struct"/>
+		<cfargument name="utility"  type="any" required="true" hint="The utility object"/>
+		<cfscript>
+			var logboxXML = xmlSearch(arguments.xml,"//LogBox");
+			var logBoxConfig = "";
+			var memento = "";
+			var prop = "";
+			
+			if( arrayLen(logboxXML) ){
+				// Get config object
+				logBoxConfig = controller.getLogBox().getConfig();
+				// Reset it
+				logBoxConfig.reset();
+				// Parse and load new configuration data
+				logBoxConfig.parseAndLoad(logboxXML[1]);
+				// Get reference to do ${} replacements
+				memento = logBoxConfig.getMemento();
+				
+				// Appender Replacements
+				for( key in memento.appenders ){
+					memento.appenders[key].class = arguments.utility.placeHolderReplacer(memento.appenders[key].class,arguments.config);
+					//Appender properties
+					for(prop in memento.appenders[key].properties){
+						// ${} replacement
+						memento.appenders[key].properties[prop] = arguments.utility.placeHolderReplacer(memento.appenders[key].properties[prop],arguments.config);
+					}
+				}
+				
+				//Store LogBox Configuration on settings
+				arguments.config["LogBoxConfig"] = memento;
+			}
+			else{
+				arguments.config["LogBoxConfig"] = structnew();
+			}
+		</cfscript>
+	</cffunction>		
 					
 	<!--- Debug Panel attribute insert --->
 	<cffunction name="debugPanelAttributeInsert" access="private" returntype="void" hint="Insert a key into a panel attribute" output="false" >

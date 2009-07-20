@@ -2,28 +2,28 @@
 <LogBox>
 
 	<!-- Appender Definitions -->
-	<appender name="myconsole" class="coldbox.system.logging.appenders.ConsoleAppender" />
-	<appender name="MyCF" class="coldbox.system.logging.appenders.CFAppender" />
-	<appender name="FileAppender" class="coldbox.system.logging.appenders.AsyncRollingFileAppender">
-		<property name="filePath">/coldbox/testing/logging/tmp</property>
-		<property name="autoExpand">true</property>
+	<Appender name="myconsole" class="coldbox.system.logging.appenders.ConsoleAppender" />
+	<Appender name="MyCF" class="coldbox.system.logging.appenders.CFAppender" />
+	<Appender name="FileAppender" class="coldbox.system.logging.appenders.AsyncRollingFileAppender">
+		<Property name="filePath">/coldbox/testing/logging/tmp</Property>
+		<Property name="autoExpand">true</Property>
 		<Property name="fileMaxSize">3</Property>
 		<Property name="fileMaxArchives">2</Property>		
-	</appender>
+	</Appender>
 	
 	<!-- Root Logger -->
 	<!-- Root All Appenders 
 	<root levelMin="0" levelMax="4" appenders="*">
 	-->
-	<root levelMin="0" levelMax="4">
-		<appender-ref ref="myconsole" />
-		<appender-ref ref="MyCF" />
-		<appender-ref ref="FileAppender" />
-	</root>
+	<Root levelMin="0" levelMax="4">
+		<Appender-ref ref="myconsole" />
+		<Appender-ref ref="MyCF" />
+		<Appender-ref ref="FileAppender" />
+	</Root>
 	
 	<!-- Very advanced category -->
-	<category name="MySES" levelMin="3" levelMax="5">
-		<appender-ref ref="myconsole" />
-	</category>	
+	<Category name="MySES" levelMin="3" levelMax="5">
+		<Appender-ref ref="myconsole" />
+	</Category>	
 	
 </LogBox>

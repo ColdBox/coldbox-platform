@@ -55,13 +55,13 @@ Description :
 	<cffunction name="loadColdbox" access="public" returntype="void" hint="Load the framework" output="false" >
 		<cfscript>
 			var appKey = locateAppKey();
-			/* Cleanup */
+			// Cleanup of old code
 			if( structkeyExists(application,appKey) ){
 				structDelete(application,appKey);
 			}
-			/* Create Brand New Controller */
+			// Create Brand New Controller
 			application[appKey] = CreateObject("component","coldbox.system.Controller").init(COLDBOX_APP_ROOT_PATH);
-			/* Setup the Framework And Application */
+			// Setup the Framework And Application
 			application[appKey].getLoaderService().configLoader(COLDBOX_CONFIG_FILE);			
 		</cfscript>
 	</cffunction>

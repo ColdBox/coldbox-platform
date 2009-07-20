@@ -222,6 +222,11 @@ Description :
 		</cfscript>
 	</cffunction>
 	
+	<!--- Get the LogBox. --->
+	<cffunction name="getLogBox" output="false" access="private" returntype="any" hint="Get the LogBox reference of this application.">
+		<cfreturn getController().getLogBox()>
+	</cffunction>
+	
 	<!--- Facade: Get a plugin --->
 	<cffunction name="getPlugin" access="private" returntype="any" hint="Plugin factory, returns a new or cached instance of a plugin." output="false">
 		<!--- ************************************************************* --->

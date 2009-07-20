@@ -21,10 +21,13 @@ Description :
 		<cfargument name="controller" type="any" 	required="true"  hint="The ColdBox controller reference: coldbox.system.Controller">
 		<cfargument name="properties" type="struct" required="true"  hint="The Interceptor properties">
 		<cfscript>
-			/* Register Controller */
-			setController(arguments.controller);
-			/* Register properties */
+			// Register Controller
+			variables.controller = arguments.controller;
+			// Register ColdBox
+			variables.logBox = arguments.controller.getLogBox();
+			// Register properties
 			setProperties(arguments.properties);
+			
 			return this;
 		</cfscript>
 	</cffunction>

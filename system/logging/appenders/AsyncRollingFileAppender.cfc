@@ -28,7 +28,7 @@ Properties:
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 	
 	<!--- Constructor --->
-	<cffunction name="init" access="public" returntype="RollingFileAppender" hint="Constructor" output="false">
+	<cffunction name="init" access="public" returntype="AsyncRollingFileAppender" hint="Constructor" output="false">
 		<!--- ************************************************************* --->
 		<cfargument name="name" 		type="string"  required="true" hint="The unique name for this appender."/>
 		<cfargument name="properties" 	type="struct"  required="false" default="#structnew()#" hint="A map of configuration properties for the appender"/>

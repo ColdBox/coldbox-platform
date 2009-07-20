@@ -9,9 +9,6 @@
 		<Setting name="ReinitPassword" 				value=""/>
 		<Setting name="EventName" 					value="event"/>
 		<Setting name="EnableDumpVar" 				value="true"/>
-		<Setting name="EnableColdfusionLogging" 	value="false"/>
-		<Setting name="EnableColdboxLogging" 		value="true"/>
-		<Setting name="ColdboxLogsLocation"			value="logs" />
 		<Setting name="DefaultEvent" 				value="ehGeneral.dspHello"/>
 		<Setting name="RequestStartHandler" 		value=""/>
 		<Setting name="RequestEndHandler" 			value=""/>
@@ -51,9 +48,6 @@
 		<Setting name="MyArray"  value="[1,2,3,4,5,6]"/>
 		<Setting name="MyBaseURL"  value="apps.jfetmac" />
 		
-		<!-- Log Level -->
-		<Setting name="Logger_loglevel"  value="2"/>
-		
 		<!-- RSS REader -->
 		<Setting name="FeedReader_useCache"  value="true" />
 		<Setting name="FeedReader_cacheType"  value="ram" />
@@ -65,6 +59,21 @@
 		<!--Testing Model Path -->
 		<Setting name="TestingModelPath" value="coldbox.testing.testmodel" />
 	</YourSettings>
+	
+	<LogBox>
+		<!-- Appender Definitions -->
+		<Appender name="myconsole" class="coldbox.system.logging.appenders.ConsoleAppender" />
+		<Appender name="MyCF" class="coldbox.system.logging.appenders.CFAppender" />
+		<Appender name="FileAppender" class="coldbox.system.logging.appenders.RollingFileAppender">
+			<Property name="filePath">logs</Property>
+			<Property name="fileName">${AppName}</Property>
+			<Property name="autoExpand">true</Property>
+			<Property name="fileMaxSize">3</Property>
+			<Property name="fileMaxArchives">2</Property>		
+		</Appender>
+		<!-- Root Logger -->
+		<Root levelMin="0" levelMax="4" appenders="*" />
+	</LogBox>
 	
 	<!-- Custom Conventions : You can override the framework wide conventions -->
 	<Conventions>

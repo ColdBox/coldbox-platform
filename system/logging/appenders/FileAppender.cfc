@@ -46,6 +46,8 @@ Properties:
 			if( NOT propertyExists("fileEncoding") ){
 				setProperty("fileEncoding","UTF-8");
 			}
+			// Cleanup File Names
+			setProperty("filename", REreplacenocase(getProperty("filename"), "[^0-9a-z]","","ALL") );
 			
 			// Setup the log file full path
 			instance.logFullpath = getProperty("filePath");

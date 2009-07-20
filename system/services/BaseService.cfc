@@ -38,13 +38,13 @@ Modification History:
 		<cfreturn controller.getColdboxOCM()/>
 	</cffunction>	
 	
-	<!--- afterConfigurationLoad --->
-    <cffunction name="afterConfigurationLoad" output="false" access="public" returntype="void" hint="Called by loader service when configuration file loads">
+	<!--- onConfigurationLoad --->
+    <cffunction name="onConfigurationLoad" output="false" access="public" returntype="void" hint="Called by loader service when configuration file loads">
     	<!--- Implemented by Concrete Services --->
     </cffunction>
 	
-	<!--- afterAspectsLoad --->
-    <cffunction name="afterAspectsLoad" output="false" access="public" returntype="void" hint="Called by loader service after aspects load">
+	<!--- onAspectsLoad --->
+    <cffunction name="onAspectsLoad" output="false" access="public" returntype="void" hint="Called by loader service after aspects load">
     	<!--- Implemented by Concrete Services --->
     </cffunction>
 	

@@ -11,7 +11,7 @@
 		application.cacheManager = createObject("component","coldbox.system.cache.CacheManager").init(mockController);
 		
 		//Configure cache
-		config = createObject("component","coldbox.system.cache.config.CacheConfig").init("10","10","1","75",0,true,"LRU");
+		config = createObject("component","coldbox.system.cache.config.CacheConfig").init("10","10","1","100",0,true,"LRU");
 		
 		application.cacheManager.configure(config);
 	}
@@ -27,7 +27,7 @@
 	obj = createObject("component","coldbox.testing.testmodel.formBean").init();
 		
 	//Enter objects
-	for(x=1; x lte 500; x=x+1){
+	for(x=1; x lte 150; x=x+1){
 		cm.set("obj#x#",obj);
 		writeOutput("inserted object: #x# <br/>");
 	}

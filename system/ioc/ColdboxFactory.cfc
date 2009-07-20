@@ -69,6 +69,11 @@ Modification History:
 		<cfreturn application[coldboxAppKey]>
 	</cffunction>
 	
+	<!--- Get the logbox configured on this app --->
+	<cffunction name="getLogBox" output="false" access="public" returntype="coldbox.system.logging.LogBox" hint="Get the LogBox reference.">
+		<cfreturn getColdbox().getLogBox()>
+	</cffunction>
+	
 	<!--- Get Context Facade --->
 	<cffunction name="getRequestContext" access="public" returntype="coldbox.system.beans.RequestContext" hint="Tries to retrieve the request context object" output="false" >
 		<cfreturn getColdbox().getRequestService().getContext()>

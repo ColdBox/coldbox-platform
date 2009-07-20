@@ -30,7 +30,7 @@
 	<cfif renderType eq "CachePanel">
 		<div class="fw_debugContentView" id="fw_cache">
 	<cfelse>
-		<div class="fw_debugContent<cfif getDebuggerConfigBean().getExpandedCachePanel()>View</cfif>" id="fw_cache">
+		<div class="fw_debugContent<cfif getDebuggerConfig().getExpandedCachePanel()>View</cfif>" id="fw_cache">
 	</cfif>
 		<cfif renderType eq "main">
 		<div style="margin-bottom:5px;">

@@ -11,11 +11,11 @@ Date     :	September 25, 2005
 Description :
 	Debugging template for the application
 ----------------------------------------------------------------------->
-<cfif getDebuggerConfigBean().getShowTracerPanel() and controller.getPlugin("SessionStorage").exists("fw_tracerStack")>
+<cfif getDebuggerConfig().getShowTracerPanel() and controller.getPlugin("SessionStorage").exists("fw_tracerStack")>
 	<cfset TracerArray = controller.getPlugin("SessionStorage").getVar("fw_tracerStack")>
 	<cfoutput>
 	<div class="fw_titles" onClick="fw_toggle('fw_tracer')">&nbsp;Tracer Messages </div>
-	<div class="fw_debugContent<cfif getDebuggerConfigBean().getExpandedTracerPanel()>View</cfif>" id="fw_tracer">
+	<div class="fw_debugContent<cfif getDebuggerConfig().getExpandedTracerPanel()>View</cfif>" id="fw_tracer">
 		<cfloop from="1" to="#arrayLen(TracerArray)#" index="i">
 			<div class="fw_tracerMessage">
 				

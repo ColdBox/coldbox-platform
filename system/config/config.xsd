@@ -18,6 +18,7 @@
 				<xs:element maxOccurs="1" minOccurs="0" ref="Cache"/>
 				<xs:element maxOccurs="1" minOccurs="0" ref="Interceptors"/>
 				<xs:element maxOccurs="1" minOccurs="0" ref="Conventions"/>
+				<xs:element maxOccurs="1" minOccurs="0" ref="LogBox"/>
 			</xs:all>
 		</xs:complexType>
 	</xs:element>
@@ -40,18 +41,14 @@
 									<xs:enumeration value="ApplicationStartHandler" />
 									<xs:enumeration value="CustomErrorTemplate" />
 									<xs:enumeration value="CustomEmailBugReport" />
-									<xs:enumeration value="ColdboxLogsLocation" />		
 									<xs:enumeration value="ConfigAutoReload" />
 									<xs:enumeration value="DebugMode"/>		
 									<xs:enumeration value="DebugPassword"/>
 									<xs:enumeration value="DefaultEvent"/>	
-									<xs:enumeration value="DefaultLogLevel"/>
 									<xs:enumeration value="EventName"/>
 									<xs:enumeration value="ExceptionHandler" />
 									<xs:enumeration value="EnableBugReports"/>
-									<xs:enumeration value="EnableColdfusionLogging"/>
 									<xs:enumeration value="EnableDumpVar"/>	
-									<xs:enumeration value="EnableColdboxLogging"/>
 									<xs:enumeration value="EventCaching" />
 									<xs:enumeration value="FlashURLPersistScope"/>
 									<xs:enumeration value="HandlersIndexAutoReload" />
@@ -581,6 +578,116 @@
 					</xs:annotation>
 				</xs:element>			
 			</xs:all>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="LogBox">
+		<xs:annotation><xs:documentation>This is how you configure the ColdBox Logging Library: LogBox</xs:documentation></xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element minOccurs="1" maxOccurs="unbounded" name="Appender">
+					<xs:annotation>
+						<xs:documentation>An Appender declaration.</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element maxOccurs="unbounded" minOccurs="0" name="Property">
+								<xs:annotation><xs:documentation>A property of the appender, can be simple or complex via ColdBox complex properties</xs:documentation></xs:annotation>
+								<xs:complexType>
+									<xs:simpleContent>
+										<xs:extension base="xs:string" >
+											<xs:attribute name="name" use="required" type="xs:string">
+												<xs:annotation><xs:documentation>The name of the property</xs:documentation></xs:annotation>
+											</xs:attribute>
+										</xs:extension>
+									</xs:simpleContent>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+						<xs:attribute name="name" use="required" type="xs:ID">
+							<xs:annotation>
+								<xs:documentation>The name of the registered appender.</xs:documentation>
+							</xs:annotation>
+						</xs:attribute>
+						<xs:attribute name="class" use="required" type="xs:string">
+							<xs:annotation>
+								<xs:documentation>The instantiation class of the appender.</xs:documentation>
+							</xs:annotation>
+						</xs:attribute>
+					</xs:complexType>
+				</xs:element>
+				<xs:element minOccurs="1" maxOccurs="1" name="Root">
+					<xs:annotation>
+						<xs:documentation>The root logger definition.</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element maxOccurs="unbounded" minOccurs="0" name="Appender-ref">
+								<xs:annotation><xs:documentation>An appender reference for the root logger</xs:documentation></xs:annotation>
+								<xs:complexType>
+									<xs:simpleContent>
+										<xs:extension base="xs:string" >
+											<xs:attribute name="ref" use="required" type="xs:IDREF">
+												<xs:annotation><xs:documentation>The appender reference name</xs:documentation></xs:annotation>
+											</xs:attribute>
+										</xs:extension>
+									</xs:simpleContent>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+						<xs:attribute name="levelMin" use="required" type="xs:integer">
+							<xs:annotation>
+								<xs:documentation>The minimum logging level for this root logger.</xs:documentation>
+							</xs:annotation>
+						</xs:attribute>
+						<xs:attribute name="levelMax" use="required" type="xs:integer">
+							<xs:annotation>
+								<xs:documentation>The maximum logging level for this root logger.</xs:documentation>
+							</xs:annotation>
+						</xs:attribute>
+						<xs:attribute name="appenders" use="optional" type="xs:string">
+							<xs:annotation>
+								<xs:documentation>*=all appender or optional configuration of appenders, else use Appender-ref</xs:documentation>
+							</xs:annotation>
+						</xs:attribute>
+					</xs:complexType>
+				</xs:element>
+				<xs:element minOccurs="0" maxOccurs="unbounded" name="Category">
+					<xs:annotation>
+						<xs:documentation>A category definition.</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element maxOccurs="unbounded" minOccurs="0" name="Appender-ref">
+								<xs:annotation><xs:documentation>An appender reference for thi category</xs:documentation></xs:annotation>
+								<xs:complexType>
+									<xs:simpleContent>
+										<xs:extension base="xs:string" >
+											<xs:attribute name="ref" use="required" type="xs:IDREF">
+												<xs:annotation><xs:documentation>The appender reference name</xs:documentation></xs:annotation>
+											</xs:attribute>
+										</xs:extension>
+									</xs:simpleContent>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+						<xs:attribute name="levelMin" use="optional" type="xs:integer">
+							<xs:annotation>
+								<xs:documentation>The minimum logging level for this root logger.</xs:documentation>
+							</xs:annotation>
+						</xs:attribute>
+						<xs:attribute name="levelMax" use="optional" type="xs:integer">
+							<xs:annotation>
+								<xs:documentation>The maximum logging level for this root logger.</xs:documentation>
+							</xs:annotation>
+						</xs:attribute>
+						<xs:attribute name="appenders" use="optional" type="xs:string">
+							<xs:annotation>
+								<xs:documentation>*=all appender or optional configuration of appenders, else use Appender-ref</xs:documentation>
+							</xs:annotation>
+						</xs:attribute>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
 </xs:schema>

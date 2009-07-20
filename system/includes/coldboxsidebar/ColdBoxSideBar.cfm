@@ -75,11 +75,6 @@ ColdBox SideBar: created on 7/31/2008 by Ernst van der Linden (evdlinden@gmail.c
 				<input type="button" class="ColdBoxSideBarBtn" value="Clear" onclick="#refLocal.clearScopeHref#">
 				</td>
 			</tr>	
-			<cfif getSetting('EnableColdboxLogging')>
-			<tr>
-				<td><a href="#refLocal.clearLogHref#">Clear Log</a></td>
-			</tr>	
-			</cfif>
 			<tr>
 				<td><h1>Search</h1></td>
 			</tr>

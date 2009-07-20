@@ -57,7 +57,7 @@ Description :
 		  Profilers in stack
 		</div>
 		<div class="fw_debugContentCell">
-		  #profilersCount# / #getDebuggerConfigBean().getmaxPersistentRequestProfilers()#
+		  #profilersCount# / #getDebuggerConfig().getmaxPersistentRequestProfilers()#
 		</div>
 		
 		<p>Below you can see the incoming request profilers. Click on the desired profiler to view its execution report.</p>

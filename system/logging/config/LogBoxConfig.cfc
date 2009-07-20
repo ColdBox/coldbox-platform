@@ -18,12 +18,8 @@ Description :
 		
 		// Instance private scope
 		instance = structnew();
-		// Register appenders
-		instance.appenders = structnew();
-		// Register categories
-		instance.categories = structnew();
-		// Register root logger
-		instance.rootLogger = structnew();
+		//Reset Config
+		reset();
 	</cfscript>
 
 	<!--- init --->
@@ -35,6 +31,18 @@ Description :
 			}
 			
 			return this;
+		</cfscript>
+	</cffunction>
+	
+	<!--- reset --->
+	<cffunction name="reset" output="false" access="public" returntype="void" hint="Reset the configuration">
+		<cfscript>
+			// Register appenders
+			instance.appenders = structnew();
+			// Register categories
+			instance.categories = structnew();
+			// Register root logger
+			instance.rootLogger = structnew();
 		</cfscript>
 	</cffunction>
 	
@@ -242,9 +250,9 @@ Description :
 		<cfscript>
 			// Get All Appenders
 			var xml = arguments.xmlDoc;
-			var appendersXML = xmlSearch(xml,"//appender");
-			var rootXML = xmlSearch(xml,"//root");
-			var categoriesXML = xmlSearch(xml,"//category");
+			var appendersXML = xmlSearch(xml,"//Appender");
+			var rootXML = xmlSearch(xml,"//Root");
+			var categoriesXML = xmlSearch(xml,"//Category");
 			var args = structnew();
 			var x =1;
 			var y =1;
@@ -293,7 +301,7 @@ Description :
 			else{
 				args.appenders = "";
 				for( x=1; x lte arrayLen(rootXML[1].xmlChildren); x=x+1){
-					if( rootXML[1].xmlChildren[x].XMLName eq "appender-ref" ){
+					if( rootXML[1].xmlChildren[x].XMLName eq "Appender-ref" ){
 						args.appenders = listAppend(args.appenders, trim(rootXML[1].xmlChildren[x].XMLAttributes.ref) );
 					}
 				}
@@ -319,7 +327,7 @@ Description :
 				else{
 					args.appenders = "";
 					for( y=1; y lte arrayLen(categoriesXML[x].xmlChildren); y=y+1){
-						if( categoriesXML[x].xmlChildren[y].XMLName eq "appender-ref" ){
+						if( categoriesXML[x].xmlChildren[y].XMLName eq "Appender-ref" ){
 							args.appenders = listAppend(args.appenders, trim(categoriesXML[x].xmlChildren[y].XMLAttributes.ref) );
 						}
 					}
