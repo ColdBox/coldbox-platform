@@ -36,9 +36,13 @@ www.coldboxframework.com | www.luismajano.com | www.ortussolutions.com
 		
 	<!--Prefix Target-->
 	<target name="do.prefix" description="Choose the new coldbox prefix">
-		<input message="Please enter a refactoring prefix for the coldbox cfc paths, use dot notation: example=shared.frameworks then it will translate to 'shared.frameworks.coldbox.system' instead of 'coldbox.system')?"
+		<input message="Please enter a refactoring prefix for the coldbox cfc paths, use dot notation: 
+			   example=shared.frameworks.coldbox3 then it will translate to 'shared.frameworks.coldbox3.system' 
+			   instead of 'coldbox.system')?"
 			   addproperty="coldbox.install_prefix" />
-		<input message="Please enter a refactoring prefix for the coldbox absolute path for includes: example=/shared/frameworks then it will translate to '/shared/frameworks/coldbox/system' instead of '/coldbox/system'?"
+		<input message="Please enter a refactoring prefix for the coldbox absolute path for includes: 
+			   example=/shared/frameworks/coldbox3 then it will translate to '/shared/frameworks/coldbox3/system' 
+			   instead of '/coldbox/system'?"
 			   addproperty="coldbox.install_prefix_absolute" />
     </target>
 	
@@ -57,16 +61,18 @@ www.coldboxframework.com | www.luismajano.com | www.ortussolutions.com
 	<!-- Refactor the coldbox Code-->
 	<target name="do.refactor" depends="do.prefix,do.copy" description="refactor the code">
 		<echo>Refactoring for coldbox absolute paths</echo>
-		<replace dir="${coldbox.destination}" value="${coldbox.install_prefix_absolute}/coldbox/system" summary="yes">
+		<replace dir="${coldbox.destination}" value="${coldbox.install_prefix_absolute}/system" summary="yes">
 		  	<include name="**/*.cfc" />
 			<include name="**/*.cfm" />
 			<replacetoken>/coldbox/system</replacetoken>
 		</replace>
 		<echo>Refactoring for coldbox instantitation and cfc paths</echo>
-		<replace dir="${coldbox.destination}" value="${coldbox.install_prefix}.coldbox." summary="yes">
+		<replace dir="${coldbox.destination}" value="${coldbox.install_prefix}.system" summary="yes">
 		  	<include name="**/*.cfc" />
 			<include name="**/*.cfm" />
-			<replacetoken>coldbox.</replacetoken>
+			<include name="config/LogBox.xml" />
+			<include name="config/settings.xml" />
+			<replacetoken>coldbox.system</replacetoken>
 		</replace>
 	</target>
 

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<projectDescription>
+	<name>coldbox-core</name>
+	<comment></comment>
+	<projects>
+	</projects>
+	<buildSpec>
+	</buildSpec>
+	<natures>
+		<nature>com.adobe.ide.coldfusion.projectNature</nature>
+		<nature>org.cfeclipse.cfml.CFENature</nature>
+	</natures>
+</projectDescription>
