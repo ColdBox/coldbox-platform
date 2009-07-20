@@ -165,6 +165,7 @@ Modification History:
 	<cffunction name="renderDebugLog" access="public" hint="Return the debug log." output="false" returntype="Any">
 		<cfset var RenderedDebugging = "">
 		<cfset var Event = controller.getRequestService().getContext()>
+		<cfset var rc = event.getCollection()>
 
 		<!--- Set local Variables --->
 		<cfset var itemTypes = controller.getColdboxOCM().getItemTypes()>
@@ -194,6 +195,7 @@ Modification History:
 	<!--- Render the cache panel --->
 	<cffunction name="renderCachePanel" access="public" hint="Renders the caching panel." output="false" returntype="Any">
 		<cfset var event = controller.getRequestService().getContext()>
+		<cfset var rc = event.getCollection()>
 		<cfset var RenderedDebugging = "">
 
 		<!--- Set local Variables --->
@@ -222,6 +224,7 @@ Modification History:
 	<!--- Render Cache Dumpver --->
 	<cffunction name="renderCacheDumper" access="public" hint="Renders the caching key value dumper." output="false" returntype="Any">
 		<cfset var event = controller.getRequestService().getContext()>
+		<cfset var rc = event.getCollection()>
 		<cfset var cachekey = URLDecode(event.getValue('key',''))>
 		<cfset var cacheValue = controller.getColdboxOCM().get(cachekey)>
 		<cfset var dumperContents = "">

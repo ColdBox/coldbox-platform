@@ -11,11 +11,6 @@ Description :
 	The refresh web service stubs code is thanks to Dave Stanten at
 	Macromedia/Adobe.  dstanten@adobe.com
 
-
-Modification History:
-02/08/2006 - Updated refresws to look for the webservice in the configstruct first.
-06/08/2006 - Updated for coldbox
-07/29/2006 - Exception is thrown if web service is not found in the configuration structure.
 ----------------------------------------------------------------------->
 <cfcomponent name="Webservices"
 			 hint="The Webservices framework plugin."
@@ -29,6 +24,7 @@ Modification History:
 		<cfargument name="controller" type="any" required="true">
 		<cfscript>
 			super.Init(arguments.controller);
+			
 			setpluginName("Web Services");
 			setpluginVersion("1.0");
 			setpluginDescription("This is a very useful web services utility plugin.");
@@ -42,41 +38,25 @@ Modification History:
 <!------------------------------------------- PUBLIC ------------------------------------------->
 
 	<cffunction name="getWS" returntype="any" access="Public" hint="Get a web service's wsdl url from the configStruct according to which environment you are on." output="false">
-	<!--- ************************************************************* --->
 		<cfargument name="name" hint="The name of the web service. If the web service is not found an exception is thrown." type="string" required="Yes">
-	<!--- ************************************************************* --->
-		<cfif getController().getSetting("Environment") eq "DEVELOPMENT">
-			<cfif structKeyExists(getController().getSetting("Webservices").DEV , arguments.name)>
-				<cfreturn getController().getSetting("Webservices").DEV[arguments.name]>
-			</cfif>
-		<cfelse>
-			<cfif structKeyExists(getController().getSetting("Webservices").PRO , arguments.name)>
-				<cfreturn getController().getSetting("Webservices").PRO[arguments.name]>
-			</cfif>
+		<cfset var webservices = getSetting("Webservices")>
+		
+		<cfif structKeyExists(webservices , arguments.name)>
+			<cfreturn webservices[arguments.name]>
 		</cfif>
-		<cfthrow type="ColdBox.plugins.Webservices.WebServiceNotFoundException" message="The webservice #arguments.name# was not found in the configuration structure.">
+		
+		<cfthrow type="Webservices.WebServiceNotFoundException" message="The webservice #arguments.name# was not found in the configuration structure.">
 	</cffunction>
 
 	<cffunction name="getWSobj" access="Public"	hint="Get a reference to a webservice obj according to which environment you are on." output="false" returntype="any">
-	<!--- ************************************************************* --->
 		<cfargument name="name" hint="The name of the web service. If the web service is not found an exception is thrown" type="string" required="Yes">
-	<!--- ************************************************************* --->
-		<cfif getController().getSetting("Environment") eq "DEVELOPMENT">
-			<cfif structKeyExists(getController().getSetting("Webservices").DEV , arguments.name)>
-				<cfreturn CreateObject("webservice", getController().getSetting("Webservices").DEV[arguments.name] )>
-			</cfif>
-		<cfelse>
-			<cfif structKeyExists(getController().getSetting("Webservices").PRO , arguments.name)>
-				<cfreturn CreateObject("webservice", getController().getSetting("Webservices").PRO[arguments.name] )>
-			</cfif>
-		</cfif>
-		<cfthrow type="ColdBox.plugins.Webservices.WebServiceNotFoundException" message="The webservice #arguments.name# was not found in the configuration structure.">
+		
+		<cfreturn createObject("webservice", getWS(arguments.name) )>
+	
 	</cffunction>
 
 	<cffunction name="refreshWS" access="Public" hint="Refresh a web service stub object" output="false" returntype="void">
-	<!--- ************************************************************* --->
 		<cfargument name="webservice" hint="The name or wsdl URL of the web service to refresh" type="string" required="Yes">
-	<!--- ************************************************************* --->
 		<!--- Get the Webservice from the configStruct --->
 		<cfset var ws = getWS(arguments.webservice)>
 		<cfset var rpcService = "">

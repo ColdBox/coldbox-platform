@@ -31,27 +31,30 @@ Description :
 		<cfscript>
 			var configFile = "";
 			
-			/* Verify that the configFile propety is set */
+			// Regex for JSON
+			instance.jsonRegex = "^(\{|\[)(.)*(\}|\])$";
+		
+			// Verify that the configFile propety is set
 			if( not propertyExists('configFile') ){
 				$throw("Config File property does not exist. Please declare it.",'','interceptors.EnvironmentControl.configFilePropertyNotDefined');
 			}
-			/* Try to locate the path */
+			// Try to locate the path
 			configFile = locateFilePath(getProperty('configFile'));
-			/* Validate it */
+			// Validate it
 			if( len(configFile) eq 0 ){
 				$throw('Config File could not be located: #getProperty('configFile')#. Please check again.','','interceptors.EnvironmentControl.configFileNotFound');
 			}
-			
-			/* execute check */
-			setProperty('interceptorCompleted',false);
-			
-			//Verified, set it
+			// Save Config File
 			setConfigFile(configFile);			
+			
+			// Completed Flag
+			setProperty('interceptorCompleted',false);
 			
 			//Verify the fireOnInit flag
 			if( not propertyExists('fireOnInit') or not isBoolean(getProperty('fireOnInit')) ){
 				setProperty('fireOnInit',true);
 			}
+			
 			//Check if we need to fire the interception at configuration
 			if( getProperty('fireOnInit') ){
 				parseAndSet();
@@ -91,53 +94,74 @@ Description :
 		<cfscript>
 			var environmentsArray = ArrayNew(1);
 			var SettingsArray = ArrayNew(1);
-			var settingsLength = 0;
+			var environmentXML = "";
 			var i = 1;
-			var ENVIRONMENT = "";
+			var environment = "";
 			var oXML = "";
 			var configSettings = getController().getConfigSettings();
 			var thisValue = "";
 			var oUtilities = getPlugin("Utilities");
 			var oJSON = getPlugin("JSON");
+			var oXMLParser = getPlugin("XMLParser");
 		
 			//Parse it
 			oXML = XMLParse(getConfigFile());
 			
 			//Search and test for environments
 			environmentsArray = xmlSearch(oXML, '/environmentcontrol/environment');
-			
 			if( arrayLen(environmentsArray) eq 0){
 				$throw("No environment elements found.","Please check your environment file again","interceptors.EnvironmentControl.elementException");
 			}
-			/* Detect the environment */
-			ENVIRONMENT = detectEnvironment(environmentsArray);
+			// Detect the environment
+			environment = detectEnvironment(environmentsArray);
+			// If no overrides found, then just exit out.
+			if( len(trim(environment)) eq 0 ){ return; }
 			
-			//Search for ENVIRONMENT settings.
-			SettingsArray = xmlSearch( oXML , "/environmentcontrol/environment[@name='#ENVIRONMENT#']/Setting");
-			settingsLength = ArrayLen(SettingsArray);
-			//Check if settings for ENVIRONMENT found, else do nothing.
-			if (settingsLength gt 0){
-				//Loop And set
-				for ( i=1; i lte settingsLength; i=i+1){
-					thisValue = trim(SettingsArray[i].xmlAttributes.value);
-					/* Replace ${setting} */
-					thisValue = oUtilities.placeHolderReplacer(trim(thisValue),configSettings);
-					/* json decoding */
-					if ( (left(thisValue,1) eq "[" AND right(thisValue,1) eq "]") OR
-					     (left(thisValue,1) eq "{" AND right(thisValue,1) eq "}") ){
-					     	thisValue = oJSON.decode(replace(thisValue,"'","""","all"));
-					}
-					
-					/* Check if overriding a set setting */
-					if( settingExists(trim(SettingsArray[i].xmlAttributes.name)) ){
-						setSetting( trim(SettingsArray[i].xmlAttributes.name) , thisValue );
-					}
-					else{
-						/* Do a full set */
-						"configSettings.#trim(SettingsArray[i].xmlAttributes.name)#" = thisValue;
-					}					
+			//Parse Settings
+			SettingsArray = xmlSearch( oXML , "/environmentcontrol/environment[@name='#environment#']/Setting");
+			//Insert Your Settings to Config Struct
+			for (i=1; i lte ArrayLen(SettingsArray); i=i+1){
+				// Get Setting value with PlaceHolding replacements
+				thisValue = oUtilities.placeHolderReplacer(trim(SettingsArray[i].XMLAttributes["value"]),configSettings);
+				//Test for JSON
+				if( reFindNocase(instance.jsonRegex,thisValue) ){
+					thisValue = oJSON.decode(replace(thisValue,"'","""","all"));
 				}
-			}	
+				// Check if overriding or new one?
+				if( settingExists(trim(SettingsArray[i].xmlAttributes.name)) ){
+					setSetting( trim(SettingsArray[i].xmlAttributes.name) , thisValue );
+				}
+				else{
+					// Do a full set
+					"configSettings.#trim(SettingsArray[i].xmlAttributes.name)#" = thisValue;
+				}
+			}
+			
+			// Parse Other Sections Available in the environment config.
+			environmentXML = xmlSearch( oXML , "/environmentcontrol/environment[@name='#environment#']");
+			// Mail Settings
+			oXMLParser.parseMailSettings(environmentXML[1],configSettings,oUtilities,true);		
+			// i18N
+			oXMLParser.parseLocalization(environmentXML[1],configSettings,oUtilities,true);
+			// Bug Tracers
+			oXMLParser.parseBugTracers(environmentXML[1],configSettings,oUtilities,true);
+			// Web Services
+			oXMLParser.parseWebservices(environmentXML[1],configSettings,oUtilities,true);
+			// Parse Datasources
+			oXMLParser.parseDatasources(environmentXML[1],configSettings,oUtilities,true);
+			// Parse Debugger Settings
+			oXMLParser.parseDebuggerSettings(environmentXML[1],configSettings,oUtilities,true);
+			// Reload Debugger Configuration
+			controller.getDebuggerService().getDebuggerConfig().populate(configSettings.DebuggerSettings);
+			// Parse Interceptors
+			oXMLParser.parseInterceptors(environmentXML[1],configSettings,oUtilities,true);	
+			// Parse LogBox
+			oXMLParser.parseLogBox(environmentXML[1],configSettings,oUtilities,true);
+			// Reconfigure LogBox
+			if( NOT structIsEmpty(configSettings["LogBoxConfig"]) ){
+				controller.getLogBox().configure(controller.getLogBox().getConfig());
+				controller.setLogger(controller.getLogBox().getLogger("coldbox.system.Controller"));
+			}				
 		</cfscript>
 	</cffunction>
 	

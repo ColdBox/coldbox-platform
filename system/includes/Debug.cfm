@@ -9,17 +9,7 @@ Template :  debug.cfm
 Author 	 :	Luis Majano
 Date     :	September 25, 2005
 Description :
-	Debugging template for the application
-
-Modification History:
-10/13/2005 - Moved reqCollection from session to request.
-12/23/2005 - Eliminated ConfigStruct Dump
-01/06/2006 - Eliminated controller references.
-01/16/2006 - Added support for child applications.
-06/08/2006 - Updated for coldbox.
-06/09/2006 - Changed isDefined to StructkeyExists
-07/12/2006 - Tracer now shows first expanded.
-02/01/2007 - Updated context references
+	The ColdBox debugger
 ----------------------------------------------------------------------->
 <cfoutput>
 <cfinclude template="DebugHeader.cfm">
@@ -120,6 +110,18 @@ Modification History:
 		<cfif Event.getCurrentView() eq ""><span class="fw_redText">N/A</span><cfelse>#Event.getCurrentView()#</cfif>
 		</div>
 		
+		<div class="fw_debugTitleCell">
+		  LogBox Appenders:
+		</div>
+		<div class="fw_debugContentCell">#controller.getLogBox().getCurrentAppenders()#</div>
+		<div class="fw_debugTitleCell">
+		  RootLogger Levels:
+		</div>
+		<div class="fw_debugContentCell">
+			#controller.getLogBox().logLevels.lookup(controller.getLogBox().getRootLogger().getLevelMin())# - 
+			#controller.getLogBox().logLevels.lookup(controller.getLogBox().getRootLogger().getLevelMax())#	
+		</div>
+		
 		<!--- **************************************************************--->
 		<!--- Method Executions --->
 		<!--- **************************************************************--->
@@ -188,19 +190,15 @@ Modification History:
 <!--- DUMP VAR --->
 <!--- **************************************************************--->
 	<cfif controller.getSetting("EnableDumpVar")>
-		<cfset dumpList = Event.getValue("dumpvar",0)>
-		<cfif dumplist neq 0>
+		<cfif structKeyExists(rc,"dumpvar")>
 		<!--- Dump Var --->
-		<div class="fw_titles" onClick="fw_toggle('fw_dumpvar')">
-		&nbsp;Dumpvar 
-		</div>
+		<div class="fw_titles" onClick="fw_toggle('fw_dumpvar')">&nbsp;Dumpvar</div>
 		<div class="fw_debugContent" id="fw_dumpvar">
-			<cfloop list="#dumplist#" index="i">
+			<cfloop list="#rc.dumpvar#" index="i">
 				<cfif isDefined("#i#")>
 					<cfdump var="#evaluate(i)#" label="#i#" expand="false">
 				<cfelseif event.valueExists(i)>
-					<cfset _tmpvar = event.getValue(i)>
-					<cfdump var="#_tmpvar#" label="#i#" expand="false">
+					<cfdump var="#event.getValue(i)#" label="#i#" expand="false">
 				</cfif>
 			</cfloop>
 		</div>
@@ -221,7 +219,7 @@ Modification History:
 		  <cfloop collection="#RequestCollection#" item="vars">
 		  <cfset varVal = requestCollection[vars]>
 		  <tr>
-			<td align="right" width="15%" class="fw_debugTablesTitles">#lcase(vars)#:</td>
+			<td align="right" width="15%" class="fw_debugTablesTitles"><strong>#lcase(vars)#:</strong></td>
 			<td  class="fw_debugTablesCells">
 			<cfif isSimpleValue(varVal) >
 				<cfif varVal eq "">
