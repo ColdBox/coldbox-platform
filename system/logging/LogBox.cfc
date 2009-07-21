@@ -68,6 +68,11 @@ Description :
 			instance.config = arguments.config;
 			// Validate configuration
 			instance.config.validate();
+			
+			// Reset Registries
+			instance.appenderRegistry = structnew();
+			instance.loggerRegistry = structnew();
+			
 			//Get appender definitions
 			appenders = instance.config.getAllAppenders();
 						
