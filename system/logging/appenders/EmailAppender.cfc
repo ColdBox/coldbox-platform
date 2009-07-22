@@ -27,7 +27,7 @@ Properties:
 			 hint="An appender that sends out emails">
 	
 	<!--- Init --->
-	<cffunction name="init" access="public" returntype="CFLogger" hint="Constructor called by a Concrete Logger" output="false" >
+	<cffunction name="init" access="public" returntype="EmailAppender" hint="Constructor" output="false" >
 		<!--- ************************************************************* --->
 		<cfargument name="name" 		type="string"  required="true" hint="The unique name for this logger."/>
 		<cfargument name="properties" 	type="struct"  required="false" default="#structnew()#" hint="A map of configuration properties for the logger"/>
@@ -97,14 +97,27 @@ Properties:
 				</cfsavecontent>
 			</cfif>
 			
-			<!--- Mail the log --->
-			<cfmail to="#getProperty("to")#"
-					from="#getProperty("from")#"
-					cc="#getProperty("cc")#"
-					bcc="#getProperty("bcc")#"
-					type="text/html"
-					server="#getProperty("mailserver")#" username="#getProperty("mailusername")#" password="#getProperty("mailpassword")#" port="#getProperty("mailport")#"
-					subject="#subject#" ><cfoutput>#entry#</cfoutput></cfmail>
+			<!--- If mail server defined then use mail settings --->
+			<cfif len(getProperty("mailserver"))>
+				<!--- Mail the log --->
+				<cfmail to="#getProperty("to")#"
+						from="#getProperty("from")#"
+						cc="#getProperty("cc")#"
+						bcc="#getProperty("bcc")#"
+						type="text/html"
+						server="#getProperty("mailserver")#" port="#getProperty("mailport")#"
+						username="#getProperty("mailusername")#" 
+						password="#getProperty("mailpassword")#" 
+						subject="#subject#" ><cfoutput>#entry#</cfoutput></cfmail>
+			<cfelse>
+				<!--- Mail the log --->
+				<cfmail to="#getProperty("to")#"
+						from="#getProperty("from")#"
+						cc="#getProperty("cc")#"
+						bcc="#getProperty("bcc")#"
+						type="text/html"
+						subject="#subject#"><cfoutput>#entry#</cfoutput></cfmail>
+			</cfif>
 				
 			<cfcatch type="any">
 				<cfset $log("ERROR","Error sending email from appender #getName()#. #cfcatch.message# #cfcatch.detail# #cfcatch.stacktrace#")>
