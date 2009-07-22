@@ -19,7 +19,6 @@ http://ortus.svnrepository.com/coldbox/trac.cgi/wiki/cbConfigGuide
 		<Setting name="DebugPassword" 				value=""/>
 		<Setting name="ReinitPassword" 				value=""/>
 		<Setting name="HandlersIndexAutoReload" 	value="true"/>
-		<Setting name="ConfigAutoReload" 			value="false"/>
 		<Setting name="HandlerCaching" 				value="false"/>
 		<Setting name="EventCaching" 				value="false"/>
 		
@@ -39,7 +38,6 @@ http://ortus.svnrepository.com/coldbox/trac.cgi/wiki/cbConfigGuide
 		<!--Model Integration -->
 		<Setting name="ModelsObjectCaching"   		value="true" />
 		<Setting name="ModelsDefinitionFile" 		value="config/ModelMappings.cfm"/>
-		<Setting name="ModelsExternalLocation"   	value="" />
 		<Setting name="ModelsSetterInjection"   	value="false" />
 		<Setting name="ModelsStopRecursion"   		value="" />
 		<Setting name="ModelsDebugMode"   			value="false" />
@@ -49,7 +47,6 @@ http://ortus.svnrepository.com/coldbox/trac.cgi/wiki/cbConfigGuide
 	</YourSettings>
 	
 	<Layouts>
-		<!--Declare the default layout, MANDATORY-->
 		<DefaultLayout>Layout.Main.cfm</DefaultLayout>
 	</Layouts>
 
