@@ -157,13 +157,18 @@ Modification History:
 		<cfargument name="cache" 		required="false" type="boolean" default="false" hint="True if you want to cache the view.">
 		<cfargument name="cacheTimeout" required="false" type="string" default=""	hint="The cache timeout">
 		<cfargument name="cacheLastAccessTimeout" required="false" type="string" default="" hint="The last access timeout">
+		<cfargument name="layout" 		type="string" required="false" hint="You can override the rendering layout of this setView() call if you want to. Else it defaults to implicit resolution or another override.">
 		<!--- ************************************************************* --->
 	    <cfscript>
 		    var key = "";
 		    var cacheEntry = structnew();
 		    
-			//If we need a layout or we haven't overriden the current layout enter if...
-		    if ( NOT arguments.nolayout AND NOT getValue("layoutoverride",false) ){
+			// Local Override
+			if( structKeyExists(arguments,"layout") ){
+				setLayout(arguments.layout);
+			}
+			// If we need a layout or we haven't overriden the current layout enter if...
+		    else if ( NOT arguments.nolayout AND NOT getValue("layoutoverride",false) ){
 		    		
 		    	//Verify that the view has a layout in the viewLayouts structure.
 			    if ( StructKeyExists(instance.ViewLayouts, lcase(arguments.name)) ){
@@ -185,7 +190,7 @@ Modification History:
 				}					
 			}//end if overridding layout
 			
-			/* Clean layout if true */
+			// No Layout Rendering?
 			if( arguments.nolayout ){
 				removeValue('currentLayout');
 			}
@@ -204,13 +209,12 @@ Modification History:
 					cacheEntry.LastAccessTimeout = "";
 				else
 					cacheEntry.LastAccessTimeout = arguments.cacheLastAccessTimeout;
-					
 				//Save the view cache entry
 				setViewCacheableEntry(cacheEntry);
 			}
 			
 			//Set the current view to render.
-			setValue("currentView",arguments.name);
+			instance.context["currentView"] = arguments.name;
 		</cfscript>
 	</cffunction>
 
@@ -221,8 +225,8 @@ Modification History:
 	<cffunction name="setLayout" access="public" returntype="void" hint="I Set the layout to override and render. Layouts are pre-defined in the config file. However I can override these settings if needed. Do not append a the cfm extension. Request Collection name: currentLayout"  output="false">
 		<cfargument name="name"  hint="The name of the layout file to set." type="string" >
 		<cfscript>
-			setValue("currentLayout",trim(arguments.name) & ".cfm" );
-	  		setValue("layoutoverride",true);
+			instance.context["currentLayout"] = trim(arguments.name) & ".cfm";
+	  		instance.context["layoutoverride"] = true;
 		</cfscript>
 	</cffunction>
 

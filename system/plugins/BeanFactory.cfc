@@ -422,11 +422,13 @@ Description: This is the framework's simple bean factory.
 		<cfscript>
 			var beanInstance = 0;
 			var key = "";
-			var pop = false;
+			var pop = true;
 			var scopeInjection = false;
+			var udfCall = "";
+			var args = "";
 			
 			try{
-				/* Local Ref to bean instance */
+				// Local Ref to bean instance
 				if( isSimpleValue(arguments.target) ){
 					beanInstance = create(arguments.target);
 				}
@@ -434,34 +436,31 @@ Description: This is the framework's simple bean factory.
 					beanInstance = arguments.target;
 				}
 				
-				/* Determine Method of population */
+				// Determine Method of population
 				if( structKeyExists(arguments,"scope") and len(trim(arguments.scope)) neq 0 ){
 					scopeInjection = true;
 					getPlugin("MethodInjector").start(beanInstance);
 				}
 				
-				/* Populate Bean */
+				// Populate Bean
 				for(key in arguments.memento){
-					pop = false;
-					/* Include List? */
-					if( len(arguments.include) AND listFindNoCase(arguments.include,key) ){
-						pop = true;
+					pop = true;
+					// Include List?
+					if( len(arguments.include) AND NOT listFindNoCase(arguments.include,key) ){
+						pop = false;
 					}
-					/* Exclude List? */
-					else if( len(arguments.exclude) AND NOT listFindNoCase(arguments.exclude,key) ){
-						pop = true;
-					}
-					else{
-						pop = true;
+					// Exclude List?
+					if( len(arguments.exclude) AND listFindNoCase(arguments.exclude,key) ){
+						pop = false;
 					}
 					
-					/* Pop? */
+					// Pop?
 					if( pop ){
-						/* Scope Injection? */
+						// Scope Injection?
 						if( scopeInjection ){
 							beanInstance.populatePropertyMixin(propertyName=key,propertyValue=arguments.memento[key],scope=arguments.scope);
 						}
-						/* Check if setter exists, evaluate is used, so it can call on java/groovy objects */
+						// Check if setter exists, evaluate is used, so it can call on java/groovy objects
 						else if( structKeyExists(beanInstance,"set" & key) or arguments.trustedSetter ){
 							evaluate("beanInstance.set#key#(arguments.memento[key])");
 						}
@@ -469,7 +468,7 @@ Description: This is the framework's simple bean factory.
 					
 				}//end for loop
 				
-				/* Stop The Mixins*/
+				// Stop The Mixins
 				if( scopeInjection ){
 					getPlugin("MethodInjector").stop(beanInstance);
 				}
@@ -485,7 +484,7 @@ Description: This is the framework's simple bean factory.
 				}
 				$throw(type="ColdBox.plugins.BeanFactory.PopulateBeanException",
 					  message="Error populating bean #getMetaData(beanInstance).name# with argument #key# of type #arguments.keyTypeAsString#.",
-					  detail="#e.Detail#<br>#e.message#");
+					  detail="#e.Detail#<br>#e.message#<br>#e.tagContext.toString()#");
 			}
 		</cfscript>
 	</cffunction>
