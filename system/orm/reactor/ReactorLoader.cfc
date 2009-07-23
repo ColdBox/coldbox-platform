@@ -79,7 +79,7 @@ Description :
 			/* Configure reactor */
 			reactorConfig.setDsn(dsnBean.getName());
 			reactorConfig.setProject(getProperty("project"));
-			reactorConfig.setType(dsnBean.getType());
+			reactorConfig.setType(dsnBean.getDBType());
 			reactorConfig.setMapping(getProperty("mapping"));
 			reactorConfig.setMode(getProperty("mode"));
 			
