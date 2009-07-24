@@ -71,6 +71,7 @@
         <Setting name="ModelsObjectCaching"  value="true" />
         <Setting name="ModelsSetterInjection"  value="false" />
         <Setting name="ModelsDebugMode"  value="false" />
+		<Setting name="ModelsDebugLevel"  value="TRACE" />
         <Setting name="ModelsStopRecursion"  value="" />
         <Setting name="ModelsDICompleteUDF"  value="onDIComplete" />
         <Setting name="ModelsDefinitionFile"  value="config/ModelMappings.cfm" />

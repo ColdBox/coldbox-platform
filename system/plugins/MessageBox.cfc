@@ -13,11 +13,6 @@ Description :
 	by changing the framework's settings.xml file.
 	The look can be altered by creating a class and setting it in the config file
 
-Modification History:
-06/09/2006 - Updated for coldbox.
-07/29/2006 - Flag to leave contents in the MessageBox or delete them once rendered.
-10/10/2006 - Added the renderit method for usage under Blue Dragon, removed the render.
-01/28/2007 - Prepared for 1.2.0, using new storage centers.
 ----------------------------------------------------------------------->
 <cfcomponent name="MessageBox"
 			 hint="This is the MessageBox plugin. It uses the session/client scope to save messages."
@@ -41,6 +36,8 @@ Modification History:
 			setpluginAuthor("Luis Majano");
 			setpluginAuthorURL("http://www.coldbox.org");
 			
+			instance.scopeStorage = createObject("component","coldbox.system.util.collections.ScopeStorage").init();
+			
 			/* Setup The initial storage scope. */
 			if( settingExists("MessageBox_storage_scope") ){
 				setStorageScope( getSetting("MessageBox_storage_scope") );
@@ -58,12 +55,12 @@ Modification History:
 <!------------------------------------------- PUBLIC ------------------------------------------->
 
 	<!--- Storage Scope --->
-	<cffunction name="getstorageScope" access="public" output="false" returntype="string" hint="Get storageScope">
+	<cffunction name="getStorageScope" access="public" output="false" returntype="string" hint="Get the named scope we are using for persisting messages">
 		<cfreturn instance.storageScope/>
 	</cffunction>
 	
 	<!--- Set The Storage Scope --->
-	<cffunction name="setstorageScope" access="public" output="false" returntype="void" hint="Set storageScope. If not session/client, then it defaults to the framework setting.">
+	<cffunction name="setStorageScope" access="public" output="false" returntype="void" hint="Set storageScope. If not session/client, then it defaults to the framework setting.">
 		<!--- ************************************************************* --->
 		<cfargument name="storageScope" type="string" required="true" hint="The scope you want to have storage for."/>
 		<!--- ************************************************************* --->
@@ -76,6 +73,37 @@ Modification History:
 			}
 		</cfscript>
 	</cffunction>
+	
+	<!--- error --->
+    <cffunction name="error" output="false" access="public" returntype="void" hint="Facade to setmessage with error type">
+   		<!--- ************************************************************* --->
+		<cfargument name="message"  	required="false"  type="string" default="" hint="The message to show.">
+		<cfargument name="messageArray" required="false"  type="Array"  hint="You can also send in an array of messages to render separated by a <br />">
+		<!--- ************************************************************* --->
+		<cfset arguments.type="error">
+		<cfset setMessage(argumentCollection=arguments)>
+	 </cffunction>
+	
+	<!--- error --->
+    <cffunction name="info" output="false" access="public" returntype="void" hint="Facade to setmessage with info type">
+   		<!--- ************************************************************* --->
+		<cfargument name="message"  	required="false"  type="string" default="" hint="The message to show.">
+		<cfargument name="messageArray" required="false"  type="Array"  hint="You can also send in an array of messages to render separated by a <br />">
+		<!--- ************************************************************* --->
+		<cfset arguments.type="information">
+		<cfset setMessage(argumentCollection=arguments)> 
+	</cffunction>
+	
+	<!--- error --->
+    <cffunction name="warn" output="false" access="public" returntype="void" hint="Facade to setmessage with warning type">
+    	<!--- ************************************************************* --->
+		<cfargument name="message"  	required="false"  type="string" default="" hint="The message to show.">
+		<cfargument name="messageArray" required="false"  type="Array"  hint="You can also send in an array of messages to render separated by a <br />">
+		<!--- ************************************************************* --->
+		<cfset arguments.type="warning">
+		<cfset setMessage(argumentCollection=arguments)>
+	</cffunction>
+	
 
 	<!--- Set a message --->
 	<cffunction name="setMessage" access="public" hint="Create a new MessageBox. Look at types." output="false" returntype="void">
@@ -95,12 +123,7 @@ Modification History:
 			
 			<!--- Array Check --->
 			<cfif structKeyExists(arguments, "messageArray")>
-				<cfloop from="1" to="#arrayLen(arguments.messageArray)#" index="i">
-					<cfset msgStruct.message = msgStruct.message & arguments.messageArray[i]>
-					<cfif i neq ArrayLen(arguments.messageArray)>
-						<cfset msgStruct.message = msgStruct.message & "<br/>">	
-					</cfif>
-				</cfloop>
+				<cfset msgStruct.message = flattenMessageArray(arguments.messageArray)>
 			</cfif>
 			
 			<!--- Flatten it --->
@@ -119,17 +142,17 @@ Modification History:
 			var currentMessage = "";
 			var newMessage = "";
 			
-			/* Do we have a message? */
+			// Do we have a message?
 			if( isEmpty() ){
-				/* Set default message */
+				// Set default message
 				setMessage('information',arguments.message);
 			}
 			else{
-				/* Get Current Message */
+				// Get Current Message
 				currentMessage = getMessage();
-				/* Append */
+				// Append
 				newMessage = currentMessage.message & arguments.message;
-				/* Set it back */
+				// Set it back
 				setMessage(currentMessage.type,newMessage);				
 			}
 		</cfscript>
@@ -144,17 +167,17 @@ Modification History:
 			var currentMessage = "";
 			var newMessage = "";
 			
-			/* Do we have a message? */
+			// Do we have a message?
 			if( isEmpty() ){
-				/* Set default message */
+				// Set default message
 				setMessage(type='information',messageArray=arguments.messageArray);
 			}
 			else{
-				/* Get Current Message */
+				// Get Current Message
 				currentMessage = getMessage();
-				/* Append */
+				// Append
 				ArrayPrePend(arguments.messageArray,currentMessage.message);
-				/* Set it back */
+				// Set it back
 				setMessage(type=currentMessage.type,messageArray=arguments.messageArray);				
 			}
 		</cfscript>
@@ -164,7 +187,7 @@ Modification History:
 	<!--- Get a Message --->
 	<cffunction name="getMessage" access="public" hint="Returns a structure of the message if it exists, else a blank structure." returntype="any" output="false">
 		<cfset var rtnStruct = structnew()>
-		<cfset var storageScope = evaluate(getstorageScope())>
+		<cfset var storageScope = instance.scopeStorage.getScope(getstorageScope())>
 		
 		<!--- Verify if MessageBox exists --->
 		<cfif structKeyExists(storageScope,"ColdBox_fw_MessageBox")>
@@ -182,8 +205,7 @@ Modification History:
 	<!--- Clear the message --->
 	<cffunction name="clearMessage" access="public" hint="Clears the message structure by deleting it from the session scope." output="false" returntype="void">
 		<cfscript>
-			var storageScope = evaluate(getstorageScope());
-			structDelete(storageScope, "ColdBox_fw_MessageBox");
+			structDelete(instance.scopeStorage.getScope(getstorageScope()), "ColdBox_fw_MessageBox");
 		</cfscript>
 	</cffunction>
 
@@ -223,5 +245,53 @@ Modification History:
 		<!--- Return Message --->
 		<cfreturn results>
 	</cffunction>
+	
+	<!--- renderMessage --->
+	<cffunction name="renderMessage" access="public" hint="Renders a messagebox immediately for you with the passed in arguments" output="false" returntype="any">
+		<!--- ************************************************************* --->
+		<cfargument name="type"     	required="true"   type="string" hint="The message type.Available types [error][warning][info]">
+		<cfargument name="message"  	required="false"  type="string" default="" hint="The message to show.">
+		<cfargument name="messageArray" required="false"  type="Array"  hint="You can also send in an array of messages to render separated by a <br />">
+		<!--- ************************************************************* --->
+		<cfset var msgStruct = structnew()>
+		<cfset var i = 0>
+		<cfset var results = "">
+		
+		<!--- Verify Message Type --->
+		<cfif refindnocase("(error|warning|info)", trim(arguments.type))>
+			<!--- Populate message struct --->
+			<cfset msgStruct.type = arguments.type>
+			<cfset msgStruct.message = arguments.message>			
+		<cfelse>
+			<cfthrow message="Invalid message type: #arguments.type#" detail="Valid types are info,warning,error" type="Messagebox.InvalidMessageType">
+		</cfif>
+		
+		<!--- Array Check --->
+		<cfif structKeyExists(arguments, "messageArray")>
+			<cfset msgStruct.message = flattenMessageArray(arguments.messageArray)>
+		</cfif>
+			
+		<cfsavecontent variable="results"><cfinclude template="../includes/messagebox/MessageBox.cfm"></cfsavecontent>
+		
+		<cfreturn results>		
+	</cffunction>
+	
+<!------------------------------------------- PRIVATE ------------------------------------------>
+
+	<!--- flattenMessageArray --->
+    <cffunction name="flattenMessageArray" output="false" access="private" returntype="any">
+    	<cfargument name="messageArray" required="true"  type="Array" hint="Array of messages to flatten">
+		<cfset var i = 1>
+		<cfset var message = "">
+		
+		<cfloop from="1" to="#arrayLen(arguments.messageArray)#" index="i">
+			<cfset message = message & arguments.messageArray[i]>
+			<cfif i neq ArrayLen(arguments.messageArray)>
+				<cfset message = message & "<br/>">	
+			</cfif>
+		</cfloop>
+		
+		<cfreturn message>
+    </cffunction>
 
 </cfcomponent>

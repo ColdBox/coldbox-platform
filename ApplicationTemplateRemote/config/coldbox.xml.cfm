@@ -48,17 +48,6 @@
 		<Setting name="ProxyReturnCollection" 		value="false"/>
 		<Setting name="FlashURLPersistScope" 		value="session"/>
 		
-		<!--Model Integration -->
-		<Setting name="ModelsExternalLocation"   	value="" />
-		<Setting name="ModelsObjectCaching"   		value="true" />
-		<Setting name="ModelsDefinitionFile" 		value="config/ModelMappings.cfm"/>
-		<!-- Uncomment More Model Integration Settings:
-			<Setting name="ModelsSetterInjection"   	value="false" />
-			<Setting name="ModelsDICompleteUDF"   		value="onDIComplete" />
-			<Setting name="ModelsStopRecursion"   		value="" />
-			<Setting name="ModelsDebugMode"   			value="true" />
-		-->
-		
 		<!-- IOC Integration -->
 		<Setting name="IOCFramework"				value="" />
 		<Setting name="IOCDefinitionFile"			value="" />
@@ -72,6 +61,19 @@
 	<YourSettings>
 		<!-- @YOURSETTINGS@ -->
 	</YourSettings>
+	
+	<!--Model Integration -->
+	<Models>
+		<ObjectCaching>true</ObjectCaching>
+		<DefinitionFile>config/ModelMappings.cfm</DefinitionFile>
+		<SetterInjection>false</SetterInjection>
+		<!--
+		<ExternalLocation></ExternalLocation>
+		<DICompleteUDF>onDIComplete</DICompleteUDF>
+		<StopRecursion></StopRecursion>		
+		<DebugMode>false</DebugMode>
+		<DebugLevel>TRACE</DebugLevel> -->
+	</Models>
 	
 	<!-- 
 		ColdBox Logging via LogBox
@@ -89,7 +91,7 @@
 			<Property name="fileMaxArchives">2</Property>		
 		</Appender>
 		<!-- Root Logger Definition -->
-		<Root levelMin="0" levelMax="4" appenders="*" />
+		<Root levelMin="FATAL" levelMax="TRACE" appenders="*" />
 		<!-- Category Definitions Below -->
 	</LogBox>
 	

@@ -28,8 +28,6 @@
 		<Setting name="PluginsExternalLocation" 	value="coldbox.testing.testplugins"/>
 		<Setting name="ViewsExternalLocation"		value="/coldbox/testing/testviews" />
 		<Setting name="HandlersExternalLocation" 	value="coldbox.testing.testhandlers"/>
-		<Setting name="ModelsExternalLocation"   	value="coldbox.testing.testmodel" />
-		<Setting name="ModelsDebugMode"				value="true" />
 		
 		<Setting name="HandlerCaching" 				value="false"/>
 		<Setting name="EventCaching" 				value="true"/>
@@ -60,6 +58,15 @@
 		<Setting name="TestingModelPath" value="coldbox.testing.testmodel" />
 	</YourSettings>
 	
+	<!--Model Integration -->
+	<Models>
+		<ObjectCaching>true</ObjectCaching>
+		<DefinitionFile>config/modelMappings.cfm</DefinitionFile>
+		<ExternalLocation>coldbox.testing.testmodel</ExternalLocation>
+		<DebugMode>true</DebugMode>
+		<DebugLevel>TRACE</DebugLevel>
+	</Models>
+	
 	<LogBox>
 		<!-- Appender Definitions -->
 		<Appender name="myconsole" class="coldbox.system.logging.appenders.ConsoleAppender" />
@@ -72,7 +79,7 @@
 			<Property name="fileMaxArchives">2</Property>		
 		</Appender>
 		<!-- Root Logger -->
-		<Root levelMin="0" levelMax="4" appenders="*" />
+		<Root levelMin="FATAL" levelMax="TRACE" appenders="*" />
 	</LogBox>
 	
 	<!-- Custom Conventions : You can override the framework wide conventions -->

@@ -19,6 +19,8 @@
 				<xs:element maxOccurs="1" minOccurs="0" ref="Interceptors"/>
 				<xs:element maxOccurs="1" minOccurs="0" ref="Conventions"/>
 				<xs:element maxOccurs="1" minOccurs="0" ref="LogBox"/>
+				<xs:element maxOccurs="1" minOccurs="0" ref="IOC"/>
+				<xs:element maxOccurs="1" minOccurs="0" ref="Models"/>
 			</xs:all>
 		</xs:complexType>
 	</xs:element>
@@ -60,13 +62,6 @@
 									<xs:enumeration value="IOCObjectCaching" />
 									<xs:enumeration value="LayoutsExternalLocation" />	
 									<xs:enumeration value="MessageboxStyleOverride" />
-									<xs:enumeration value="ModelsExternalLocation" />
-									<xs:enumeration value="ModelsObjectCaching" />		
-									<xs:enumeration value="ModelsSetterInjection" />
-									<xs:enumeration value="ModelsDebugMode" />
-									<xs:enumeration value="ModelsStopRecursion" />
-									<xs:enumeration value="ModelsDICompleteUDF" />
-									<xs:enumeration value="ModelsDefinitionFile" />
 									<xs:enumeration value="PluginsExternalLocation" />
 									<xs:enumeration value="onInvalidEvent"/>	
 									<xs:enumeration value="OwnerEmail"/>
@@ -357,27 +352,27 @@
 		</xs:annotation>
 		<xs:complexType>
 			<xs:all>
-				<xs:element maxOccurs="1" minOccurs="1" name="ObjectDefaultTimeout" type="xs:integer">
+				<xs:element maxOccurs="1" minOccurs="0" name="ObjectDefaultTimeout" type="xs:integer" default="60">
 					<xs:annotation>
 						<xs:documentation>The default object timeout in minutes</xs:documentation>
 					</xs:annotation>
 				</xs:element>
-				<xs:element maxOccurs="1" minOccurs="1" name="ObjectDefaultLastAccessTimeout" type="xs:integer">
+				<xs:element maxOccurs="1" minOccurs="0" name="ObjectDefaultLastAccessTimeout" type="xs:integer" default="15">
 					<xs:annotation>
 						<xs:documentation>The default object last access timeout in minutes</xs:documentation>
 					</xs:annotation>
 				</xs:element>
-				<xs:element maxOccurs="1" minOccurs="1" name="ReapFrequency" type="xs:integer">
+				<xs:element maxOccurs="1" minOccurs="0" name="ReapFrequency" type="xs:integer" default="1">
 					<xs:annotation>
 						<xs:documentation>The frequency in which the cache is reaped.</xs:documentation>
 					</xs:annotation>
 				</xs:element>
-				<xs:element maxOccurs="1" minOccurs="1" name="MaxObjects" type="xs:integer" default="0">
+				<xs:element maxOccurs="1" minOccurs="0" name="MaxObjects" type="xs:integer" default="100">
 					<xs:annotation>
 						<xs:documentation>The maximum number of objects to cache.</xs:documentation>
 					</xs:annotation>
 				</xs:element>
-				<xs:element maxOccurs="1" minOccurs="1" name="FreeMemoryPercentageThreshold" type="xs:integer" default="0">
+				<xs:element maxOccurs="1" minOccurs="0" name="FreeMemoryPercentageThreshold" type="xs:integer" default="0">
 					<xs:annotation>
 						<xs:documentation>The amount of free memory threshold needed to cache. If memory goes below this threshold, objects will no longer be cached.</xs:documentation>
 					</xs:annotation>
@@ -634,15 +629,37 @@
 								</xs:complexType>
 							</xs:element>
 						</xs:sequence>
-						<xs:attribute name="levelMin" use="required" type="xs:integer">
+						<xs:attribute name="levelMin" use="required">
 							<xs:annotation>
 								<xs:documentation>The minimum logging level for this root logger.</xs:documentation>
 							</xs:annotation>
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:enumeration value="OFF"/>
+									<xs:enumeration value="FATAL"/>
+									<xs:enumeration value="ERROR"/>
+									<xs:enumeration value="WARN"/>
+									<xs:enumeration value="INFO"/>
+									<xs:enumeration value="DEBUG"/>
+									<xs:enumeration value="TRACE"/>
+								</xs:restriction>
+							</xs:simpleType>
 						</xs:attribute>
-						<xs:attribute name="levelMax" use="required" type="xs:integer">
+						<xs:attribute name="levelMax" use="required">
 							<xs:annotation>
 								<xs:documentation>The maximum logging level for this root logger.</xs:documentation>
 							</xs:annotation>
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:enumeration value="OFF"/>
+									<xs:enumeration value="FATAL"/>
+									<xs:enumeration value="ERROR"/>
+									<xs:enumeration value="WARN"/>
+									<xs:enumeration value="INFO"/>
+									<xs:enumeration value="DEBUG"/>
+									<xs:enumeration value="TRACE"/>
+								</xs:restriction>
+							</xs:simpleType>
 						</xs:attribute>
 						<xs:attribute name="appenders" use="optional" type="xs:string">
 							<xs:annotation>
@@ -670,15 +687,37 @@
 								</xs:complexType>
 							</xs:element>
 						</xs:sequence>
-						<xs:attribute name="levelMin" use="optional" type="xs:integer">
+						<xs:attribute name="levelMin" use="optional">
 							<xs:annotation>
 								<xs:documentation>The minimum logging level for this root logger.</xs:documentation>
 							</xs:annotation>
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:enumeration value="OFF"/>
+									<xs:enumeration value="FATAL"/>
+									<xs:enumeration value="ERROR"/>
+									<xs:enumeration value="WARN"/>
+									<xs:enumeration value="INFO"/>
+									<xs:enumeration value="DEBUG"/>
+									<xs:enumeration value="TRACE"/>
+								</xs:restriction>
+							</xs:simpleType>
 						</xs:attribute>
-						<xs:attribute name="levelMax" use="optional" type="xs:integer">
+						<xs:attribute name="levelMax" use="optional">
 							<xs:annotation>
 								<xs:documentation>The maximum logging level for this root logger.</xs:documentation>
 							</xs:annotation>
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:enumeration value="OFF"/>
+									<xs:enumeration value="FATAL"/>
+									<xs:enumeration value="ERROR"/>
+									<xs:enumeration value="WARN"/>
+									<xs:enumeration value="INFO"/>
+									<xs:enumeration value="DEBUG"/>
+									<xs:enumeration value="TRACE"/>
+								</xs:restriction>
+							</xs:simpleType>
 						</xs:attribute>
 						<xs:attribute name="appenders" use="optional" type="xs:string">
 							<xs:annotation>
@@ -688,6 +727,149 @@
 					</xs:complexType>
 				</xs:element>
 			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="IOC">
+		<xs:annotation>
+			<xs:documentation>These are the IOC settings for ColdBox.</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:all>
+				<xs:element maxOccurs="1" minOccurs="1" name="Framework">
+					<xs:annotation>
+						<xs:documentation>The IOC framework to use: lightwire or coldspring</xs:documentation>
+					</xs:annotation>
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:enumeration value="coldspring"/>
+							<xs:enumeration value="lightwire"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+				<xs:element maxOccurs="1" minOccurs="1" name="DefinitionFile" type="xs:string">
+					<xs:annotation>
+						<xs:documentation>The IOC Definition file.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element maxOccurs="1" minOccurs="0" name="FrameworkReload" type="xs:boolean" default="false">
+					<xs:annotation>
+						<xs:documentation>Reload the IOC framework on each request for development purposes</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element maxOccurs="1" minOccurs="0" name="ObjectCaching" type="xs:boolean" default="false">
+					<xs:annotation>
+						<xs:documentation>To activate factory object caching or not by the ColdBox IOC plugin.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element maxOccurs="1" minOccurs="0" name="DebugLevel" default="OFF">
+					<xs:annotation>
+						<xs:documentation>The debugging level of the ioc integration package</xs:documentation>
+					</xs:annotation>
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:enumeration value="OFF"/>
+							<xs:enumeration value="FATAL"/>
+							<xs:enumeration value="ERROR"/>
+							<xs:enumeration value="WARN"/>
+							<xs:enumeration value="INFO"/>
+							<xs:enumeration value="DEBUG"/>
+							<xs:enumeration value="TRACE"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+				<xs:element maxOccurs="1" minOccurs="0" name="ParentFactory">
+					<xs:annotation>
+						<xs:documentation>The parent IOC frammework to add to the configured IOC factory</xs:documentation>
+					</xs:annotation>
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:enumeration value="coldspring"/>
+							<xs:enumeration value="lightwire"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+				<xs:element maxOccurs="1" minOccurs="0" name="ParentFactoryDefinitionFile" type="xs:string" default="">
+					<xs:annotation>
+						<xs:documentation>The definition file of the parent bean factory to add.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:all>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="Models">
+		<xs:annotation>
+			<xs:documentation>These are the model integration settings for ColdBox.</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:all>
+				<xs:element maxOccurs="1" minOccurs="0" name="ExternalLocation" type="xs:string" default="">
+					<xs:annotation>
+						<xs:documentation>The external locations for model objects (comma-delimitted).</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element maxOccurs="1" minOccurs="0" name="ObjectCaching" type="xs:boolean" default="false">
+					<xs:annotation>
+						<xs:documentation>Activates persistence for model objects, use false in development mode only.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element maxOccurs="1" minOccurs="0" name="DefinitionFile" type="xs:string" default="config/ModelMappings.cfm">
+					<xs:annotation>
+						<xs:documentation>The file containting the model integration mappings and defnitions.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element maxOccurs="1" minOccurs="0" name="SetterInjection" type="xs:boolean" default="false">
+					<xs:annotation>
+						<xs:documentation>To activate setter injection on model objects or not</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element maxOccurs="1" minOccurs="0" name="DICompleteUDF" type="xs:string" default="onDIComplete">
+					<xs:annotation>
+						<xs:documentation>The method name to use for post processing of a model object when created and configured</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element maxOccurs="1" minOccurs="0" name="StopRecursion" type="xs:string" default="">
+					<xs:annotation>
+						<xs:documentation>The class paths (comma-delimmitted) that the coldbox bean factory will stop recursion on when searching for dependencies.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element maxOccurs="1" minOccurs="0" name="DebugMode" type="xs:boolean" default="false">
+					<xs:annotation>
+						<xs:documentation>To activate debugging on model integration</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element maxOccurs="1" minOccurs="0" name="DebugLevel" default="OFF">
+					<xs:annotation>
+						<xs:documentation>The debugging level of the model integration package</xs:documentation>
+					</xs:annotation>
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:enumeration value="OFF"/>
+							<xs:enumeration value="FATAL"/>
+							<xs:enumeration value="ERROR"/>
+							<xs:enumeration value="WARN"/>
+							<xs:enumeration value="INFO"/>
+							<xs:enumeration value="DEBUG"/>
+							<xs:enumeration value="TRACE"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>				
+				<xs:element maxOccurs="1" minOccurs="0" name="ParentFactory">
+					<xs:annotation>
+						<xs:documentation>The parent IOC frammework to add to the model integration features of ColdBox</xs:documentation>
+					</xs:annotation>
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:enumeration value="coldspring"/>
+							<xs:enumeration value="lightwire"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+				<xs:element maxOccurs="1" minOccurs="0" name="ParentFactoryDefinitionFile" type="xs:string" default="">
+					<xs:annotation>
+						<xs:documentation>The definition file of the parent bean factory to add to model integration.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:all>
 		</xs:complexType>
 	</xs:element>
 </xs:schema>

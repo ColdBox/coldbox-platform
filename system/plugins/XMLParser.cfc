@@ -256,6 +256,9 @@ Description :
 			/* ::::::::::::::::::::::::::::::::::::::::: YOUR CONVENTIONS LOADING :::::::::::::::::::::::::::::::::::::::::::: */
 			parseConventions(configXML,configStruct,oUtilities);
 			
+			/* ::::::::::::::::::::::::::::::::::::::::: MODEL SETTINGS  :::::::::::::::::::::::::::::::::::::::::::: */
+			parseModels(configXML,configStruct,oUtilities);
+			
 			/* ::::::::::::::::::::::::::::::::::::::::: HANDLER-MODELS-PLUGIN INVOCATION PATHS :::::::::::::::::::::::::::::::::::::::::::: */
 			parseInvocationPaths(configXML,configStruct,oUtilities);
 			
@@ -447,29 +450,7 @@ Description :
 			//Check for External Handlers Location
 			if ( not structKeyExists(ConfigStruct, "HandlersExternalLocation") or len(ConfigStruct["HandlersExternalLocation"]) eq 0 )
 				ConfigStruct["HandlersExternalLocation"] = "";
-			//Check for Models External Location
-			if ( not structKeyExists(ConfigStruct, "ModelsExternalLocation") or len(ConfigStruct["ModelsExternalLocation"]) eq 0 )
-				ConfigStruct["ModelsExternalLocation"] = "";
-			//Check for Models ObjectCaching
-			if ( not structKeyExists(ConfigStruct, "ModelsObjectCaching") or not isBoolean(ConfigStruct["ModelsObjectCaching"]) )
-				ConfigStruct["ModelsObjectCaching"] = true;
-			//Check for ModelsDebugMode
-			if ( not structKeyExists(ConfigStruct, "ModelsDebugMode") or not isBoolean(ConfigStruct["ModelsDebugMode"]) )
-				ConfigStruct["ModelsDebugMode"] = fwSettingsStruct["ModelsDebugMode"];
-			//Check for ModelsSetterInjection
-			if ( not structKeyExists(ConfigStruct, "ModelsSetterInjection") or not isBoolean(ConfigStruct["ModelsSetterInjection"]) )
-				ConfigStruct["ModelsSetterInjection"] = fwSettingsStruct["ModelsSetterInjection"];
-			//Check for ModelsDICompleteUDF
-			if ( not structKeyExists(ConfigStruct, "ModelsDICompleteUDF") or len(ConfigStruct["ModelsDICompleteUDF"]) eq 0 )
-				ConfigStruct["ModelsDICompleteUDF"] = fwSettingsStruct["ModelsDICompleteUDF"];
-			//Check for ModelsStopRecursion
-			if ( not structKeyExists(ConfigStruct, "ModelsStopRecursion") or len(ConfigStruct["ModelsStopRecursion"]) eq 0 )
-				ConfigStruct["ModelsStopRecursion"] = fwSettingsStruct["ModelsStopRecursion"];
-			//Check for ModelsDefinitionFile
-			if ( not structKeyExists(ConfigStruct, "ModelsDefinitionFile") or len(ConfigStruct["ModelsDefinitionFile"]) eq 0 )
-				ConfigStruct["ModelsDefinitionFile"] = fwSettingsStruct["ModelsDefinitionFile"];
-			
-			/* Flash URL Persist Scope Override */
+			// Flash URL Persist Scope Override
 			if( structKeyExists(ConfigStruct,"FlashURLPersistScope") and reFindnocase("^(session|client)$",ConfigStruct["FlashURLPersistScope"]) ){
 				fwSettingsStruct["FlashURLPersistScope"] = ConfigStruct["FlashURLPersistScope"];
 			}
@@ -649,42 +630,101 @@ Description :
 			//Mail Settings
 			var MailSettingsNodes = XMLSearch(arguments.xml,"//MailServerSettings");
 			
-			//Check if empty
-			if ( ArrayLen(MailSettingsNodes) gt 0 and ArrayLen(MailSettingsNodes[1].XMLChildren) gt 0){
-				//Checks
-				if ( structKeyExists(MailSettingsNodes[1], "MailServer") )
-					ConfigStruct.MailServer = trim(MailSettingsNodes[1].MailServer.xmlText);
-				else
-					ConfigStruct.MailServer = "";
-
-				//Mail username
-				if ( structKeyExists(MailSettingsNodes[1], "MailUsername") )
-					ConfigStruct.MailUsername = trim(MailSettingsNodes[1].MailUsername.xmlText);
-				else
-					ConfigStruct.MailUsername = "";
-
-				//Mail password
-				if ( structKeyExists(MailSettingsNodes[1], "MailPassword") )
-					ConfigStruct.MailPassword = trim(MailSettingsNodes[1].MailPassword.xmlText);
-				else
-					ConfigStruct.MailPassword = "";
-
-				//Mail Port
-				if ( structKeyExists(MailSettingsNodes[1], "MailPort") ){
-					if (trim(MailSettingsNodes[1].MailPort.xmlText) neq "")
-						ConfigStruct.MailPort = trim(MailSettingsNodes[1].MailPort.xmlText);
-					else
-						ConfigStruct.MailPort = 25;
-				}
-				else
-					ConfigStruct.MailPort = 25;
-			}
-			else if (NOT arguments.isOverride){
+			// Overrides?
+			if (NOT arguments.isOverride){
 				ConfigStruct.MailServer = "";
 				ConfigStruct.MailUsername = "";
 				ConfigStruct.MailPassword = "";
 				ConfigStruct.MailPort = 25;
 			}
+			
+			//Check if empty
+			if ( ArrayLen(MailSettingsNodes) gt 0 and ArrayLen(MailSettingsNodes[1].XMLChildren) gt 0){
+				//Checks
+				if ( structKeyExists(MailSettingsNodes[1], "MailServer") )
+					ConfigStruct.MailServer = trim(MailSettingsNodes[1].MailServer.xmlText);
+				
+				//Mail username
+				if ( structKeyExists(MailSettingsNodes[1], "MailUsername") )
+					ConfigStruct.MailUsername = trim(MailSettingsNodes[1].MailUsername.xmlText);
+				
+				//Mail password
+				if ( structKeyExists(MailSettingsNodes[1], "MailPassword") )
+					ConfigStruct.MailPassword = trim(MailSettingsNodes[1].MailPassword.xmlText);
+				
+				//Mail Port
+				if ( structKeyExists(MailSettingsNodes[1], "MailPort") AND isNumeric(MailSettingsNodes[1].MailPort.xmlText) ){
+					ConfigStruct.MailPort = trim(MailSettingsNodes[1].MailPort.xmlText);
+				}				
+			}
+		</cfscript>
+	</cffunction>
+	
+	<!--- parseModels --->
+	<cffunction name="parseModels" output="false" access="public" returntype="void" hint="Parse Models">
+		<cfargument name="xml" 		type="any" required="true" hint="The xml object"/>
+		<cfargument name="config" 	type="struct" required="true" hint="The config struct"/>
+		<cfargument name="utility"  type="any" required="true" hint="The utility object"/>
+		<cfargument name="isOverride" type="boolean" required="false" default="false" hint="Flag to denote if overriding or first time runner."/>
+		<cfscript>
+			var ConfigStruct = arguments.config;
+			var ModelNodes = XMLSearch(arguments.xml,"//Models");
+			var fwSettingsStruct = controller.getColdBoxSettings();
+			
+			// Defaults
+			if (NOT arguments.isOverride){
+				ConfigStruct.ModelsExternalLocation = "";
+				ConfigStruct.ModelsObjectCaching = fwSettingsStruct["ModelsObjectCaching"];
+				ConfigStruct.ModelsDebugMode = fwSettingsStruct["ModelsDebugMode"];
+				ConfigStruct.ModelsSetterInjection = fwSettingsStruct["ModelsSetterInjection"];
+				ConfigStruct.ModelsDICompleteUDF = fwSettingsStruct["ModelsDICompleteUDF"];
+				ConfigStruct.ModelsStopRecursion = fwSettingsStruct["ModelsStopRecursion"];
+				ConfigStruct.ModelsDefinitionFile = fwSettingsStruct["ModelsDefinitionFile"];
+				ConfigStruct.ModelsDebugLevel = fwSettingsStruct["ModelsDebugLevel"];
+			}
+			
+			//Check if empty
+			if ( ArrayLen(ModelNodes) gt 0 and ArrayLen(ModelNodes[1].XMLChildren) gt 0){
+				//Check for Models External Location
+				if ( structKeyExists(ModelNodes[1], "ExternalLocation") AND len(ModelNodes[1].ExternalLocation.xmltext)){
+					ConfigStruct["ModelsExternalLocation"] = ModelNodes[1].ExternalLocation.xmltext;
+				}		
+							
+				//Check for Models ObjectCaching
+				if ( structKeyExists(ModelNodes[1], "ObjectCaching") AND isBoolean(ModelNodes[1].ObjectCaching.xmltext) ){
+					ConfigStruct["ModelsObjectCaching"] = ModelNodes[1].ObjectCaching.xmltext;
+				}
+				
+				//Check for ModelsDebugMode
+				if ( structKeyExists(ModelNodes[1], "DebugMode") AND isBoolean(ModelNodes[1].DebugMode.xmltext) ){
+					ConfigStruct["ModelsDebugMode"] = ModelNodes[1].DebugMode.xmltext;
+				}
+				
+				//Check for ModelsSetterInjection
+				if ( structKeyExists(ModelNodes[1], "SetterInjection") AND isBoolean(ModelNodes[1].SetterInjection.xmltext) ){
+					ConfigStruct["ModelsSetterInjection"] = ModelNodes[1].SetterInjection.xmltext;
+				}
+				
+				//Check for ModelsDICompleteUDF
+				if ( structKeyExists(ModelNodes[1], "DICompleteUDF") AND len(ModelNodes[1].DICompleteUDF.xmltext) ){
+					ConfigStruct["ModelsDICompleteUDF"] =ModelNodes[1].DICompleteUDF.xmltext;
+				}
+				
+				//Check for ModelsStopRecursion
+				if ( structKeyExists(ModelNodes[1], "StopRecursion") AND len(ModelNodes[1].StopRecursion.xmltext) ){
+					ConfigStruct["ModelsStopRecursion"] = ModelNodes[1].StopRecursion.xmltext;
+				}
+				
+				//Check for ModelsDefinitionFile
+				if ( structKeyExists(ModelNodes[1], "DefinitionFile") AND len(ModelNodes[1].DefinitionFile.xmltext) ){
+					ConfigStruct["ModelsDefinitionFile"] = ModelNodes[1].DefinitionFile.xmltext;
+				}
+				
+				//Check for ModelsDebugLevel
+				if ( structKeyExists(ModelNodes[1], "DebugLevel") AND len(ModelNodes[1].DebugLevel.xmltext) ){
+					ConfigStruct["ModelsDebugLevel"] = ModelNodes[1].DebugLevel.xmltext;
+				}
+			} 
 		</cfscript>
 	</cffunction>
 
@@ -701,41 +741,45 @@ Description :
 			var i=1;
 			var DefaultLocale = "";
 			
-			//Check if empty
-			if ( ArrayLen(i18NSettingNodes) gt 0 and ArrayLen(i18NSettingNodes[1].XMLChildren) gt 0){
-				//Parse i18N Settings
-				for (i=1; i lte ArrayLen(i18NSettingNodes[1].XMLChildren); i=i+1){
-					//Set the Resource Bundle if Using it.
-					if ( i18NSettingNodes[1].XMLChildren[i].XMLName eq "DefaultResourceBundle" and len(trim(i18NSettingNodes[1].XMLChildren[i].XMLText)) neq 0 ){
-						i18NSettingNodes[1].XMLChildren[i].XMLText = trim(i18NSettingNodes[1].XMLChildren[i].XMLText);
-					}
-					//Check if locale is valid.
-					if ( i18NSettingNodes[1].XMLChildren[i].XMLName eq "DefaultLocale" ){
-						DefaultLocale = trim(i18NSettingNodes[1].XMLChildren[i].XMLText);
-				 		//set the right syntax just in case.
-				 		i18NSettingNodes[1].XMLChildren[i].XMLText = lcase(listFirst(DefaultLocale,"_")) & "_" & ucase(listLast(DefaultLocale,"_"));
-					}
-					//Insert to structure.
-					ConfigStruct[trim(i18NSettingNodes[1].XMLChildren[i].XMLName)] = trim(i18NSettingNodes[1].XMLChildren[i].XMLText);
-				}
-				
-				//set i18n
-				ConfigStruct["using_i18N"] = true;
-				
-				// Empty Checks
-				if ( not structKeyExists(ConfigStruct, "DefaultResourceBundle") ){
-					ConfigStruc.DefaultResourceBundle = "";
-				}
-				if ( not structKeyExists(ConfigStruct, "UknownTranslation") ){
-					ConfigStruct.UknownTranslation = "";
-				}
-			}
-			else if (NOT arguments.isOverride){
+			if (NOT arguments.isOverride){
 				ConfigStruct.DefaultResourceBundle = "";
 				ConfigStruct.DefaultLocale = "";
 				ConfigStruct.LocaleStorage = "";
 				ConfigStruct.UknownTranslation = "";
 				ConfigStruct["using_i18N"] = false;
+			}
+			
+			//Check if empty
+			if ( ArrayLen(i18NSettingNodes) gt 0 and ArrayLen(i18NSettingNodes[1].XMLChildren) gt 0){
+				
+				//Check for DefaultResourceBundle
+				if ( structKeyExists(i18NSettingNodes[1], "DefaultResourceBundle") AND len(i18NSettingNodes[1].DefaultResourceBundle.xmltext) ){
+					ConfigStruct["DefaultResourceBundle"] = i18NSettingNodes[1].DefaultResourceBundle.xmltext;
+				}
+				
+				//Check for DefaultResourceBundle
+				if ( structKeyExists(i18NSettingNodes[1], "DefaultLocale") AND len(i18NSettingNodes[1].DefaultLocale.xmltext) ){
+					defaultLocale = i18NSettingNodes[1].DefaultLocale.xmltext;
+					ConfigStruct["DefaultLocale"] = lcase(listFirst(DefaultLocale,"_")) & "_" & ucase(listLast(DefaultLocale,"_"));
+				}
+				
+				//Check for LocaleStorage
+				if ( structKeyExists(i18NSettingNodes[1], "LocaleStorage") AND len(i18NSettingNodes[1].LocaleStorage.xmltext) ){
+					ConfigStruct["LocaleStorage"] = i18NSettingNodes[1].LocaleStorage.xmltext;
+					if( NOT reFindNoCase("^(session|cookie|client)$",configStruct["LocaleStorage"]) ){
+						$throw(message="Invalid local storage scope: #configStruct["localeStorage"]#",
+							   detail="Valid scopes are session,client, cookie",
+							   type="XMLParser.InvalidLocaleStorage");
+					}
+				}
+				
+				//Check for DefaultResourceBundle
+				if ( structKeyExists(i18NSettingNodes[1], "UknownTranslation") AND len(i18NSettingNodes[1].UknownTranslation.xmltext) ){
+					ConfigStruct["UknownTranslation"] = i18NSettingNodes[1].UknownTranslation.xmltext;
+				}
+				
+				//set i18n
+				ConfigStruct["using_i18N"] = true;
 			}
 		</cfscript>
 	</cffunction>
@@ -934,37 +978,46 @@ Description :
 			//Check if empty
 			if ( ArrayLen(CacheSettingNodes) gt 0 and ArrayLen(CacheSettingNodes[1].XMLChildren) gt 0){
 				//Checks For Default Timeout
-				if ( structKeyExists(CacheSettingNodes[1], "ObjectDefaultTimeout") and isNumeric(CacheSettingNodes[1].ObjectDefaultTimeout.xmlText) )
+				if ( structKeyExists(CacheSettingNodes[1], "ObjectDefaultTimeout") and isNumeric(CacheSettingNodes[1].ObjectDefaultTimeout.xmlText) ){
 					ConfigStruct.CacheSettings.ObjectDefaultTimeout = trim(CacheSettingNodes[1].ObjectDefaultTimeout.xmlText);
-				else
-					$throw("Invalid object timeout. Please see schema.","Value=#CacheSettingNodes[1].ObjectDefaultTimeout.xmlText#","XMLParser.InvalidCacheObjectDefaultTimeout");
+				}
+				else{
+					ConfigStruct.CacheSettings.ObjectDefaultTimeout = fwSettingsStruct.CacheObjectDefaultTimeout;
+				}
+							
 
 				//Check ObjectDefaultLastAccessTimeout
-				if ( structKeyExists(CacheSettingNodes[1], "ObjectDefaultLastAccessTimeout") and isNumeric(CacheSettingNodes[1].ObjectDefaultLastAccessTimeout.xmlText))
+				if ( structKeyExists(CacheSettingNodes[1], "ObjectDefaultLastAccessTimeout") and isNumeric(CacheSettingNodes[1].ObjectDefaultLastAccessTimeout.xmlText)){
 					ConfigStruct.CacheSettings.ObjectDefaultLastAccessTimeout = trim(CacheSettingNodes[1].ObjectDefaultLastAccessTimeout.xmlText);
-				else
-					$throw("Invalid object last access timeout. Please see schema.","Value=#CacheSettingNodes[1].ObjectDefaultLastAccessTimeout.xmlText#","XMLParser.InvalidObjectDefaultLastAccessTimeout");
-
+				}
+				else{
+					ConfigStruct.CacheSettings.ObjectDefaultLastAccessTimeout = fwSettingsStruct.CacheObjectDefaultLastAccessTimeout;
+				}
+				
 				//Check ReapFrequency
-				if ( structKeyExists(CacheSettingNodes[1], "ReapFrequency") and isNumeric(CacheSettingNodes[1].ReapFrequency.xmlText))
+				if ( structKeyExists(CacheSettingNodes[1], "ReapFrequency") and isNumeric(CacheSettingNodes[1].ReapFrequency.xmlText)){
 					ConfigStruct.CacheSettings.ReapFrequency = trim(CacheSettingNodes[1].ReapFrequency.xmlText);
-				else
-					$throw("Invalid reaping frequency. Please see schema.","Value=#CacheSettingNodes[1].ReapFrequency.xmlText#","XMLParser.InvalidReapFrequency");
-
+				}
+				else{
+					ConfigStruct.CacheSettings.ReapFrequency = fwSettingsStruct.CacheReapFrequency;
+				}
+				
 				//Check MaxObjects
 				if ( structKeyExists(CacheSettingNodes[1], "MaxObjects") and isNumeric(CacheSettingNodes[1].MaxObjects.xmlText)){
 					ConfigStruct.CacheSettings.MaxObjects = trim(CacheSettingNodes[1].MaxObjects.xmlText);
 				}
-				else
-					$throw("Invalid Max Objects. Please see schema.","Value=#CacheSettingNodes[1].MaxObjects.xmlText#","XMLParser.InvalidMaxObjects");
-
+				else{
+					ConfigStruct.CacheSettings.MaxObjects = fwSettingsStruct.CacheMaxObjects;
+				}
+				
 				//Check FreeMemoryPercentageThreshold
 				if ( structKeyExists(CacheSettingNodes[1], "FreeMemoryPercentageThreshold") and isNumeric(CacheSettingNodes[1].FreeMemoryPercentageThreshold.xmlText)){
 					ConfigStruct.CacheSettings.FreeMemoryPercentageThreshold = trim(CacheSettingNodes[1].FreeMemoryPercentageThreshold.xmlText);
 				}
-				else
-					$throw("Invalid Free Memory Percentage Threshold. Please see schema.","Value=#CacheSettingNodes[1].FreeMemoryPercentageThreshold.xmlText#","XMLParser.InvalidFreeMemoryPercentageThreshold");
-
+				else{
+					ConfigStruct.CacheSettings.FreeMemoryPercentageThreshold = fwSettingsStruct.CacheFreeMemoryPercentageThreshold;
+				}
+				
 				//Check for CacheUseLastAccessTimeouts
 				if ( structKeyExists(CacheSettingNodes[1], "UseLastAccessTimeouts") and isBoolean(CacheSettingNodes[1].UseLastAccessTimeouts.xmlText) ){
 					ConfigStruct.CacheSettings.UseLastAccessTimeouts = trim(CacheSettingNodes[1].UseLastAccessTimeouts.xmlText);

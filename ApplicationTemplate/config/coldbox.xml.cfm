@@ -52,16 +52,6 @@ http://ortus.svnrepository.com/coldbox/trac.cgi/wiki/cbConfigGuide
 		<Setting name="ProxyReturnCollection" 		value="false"/>
 		<Setting name="FlashURLPersistScope" 		value="session"/>
 		
-		<!--Model Integration -->
-		<Setting name="ModelsExternalLocation"   	value="" />
-		<Setting name="ModelsObjectCaching"   		value="true" />
-		<Setting name="ModelsDefinitionFile" 		value="config/ModelMappings.cfm"/>
-		<!-- Uncomment More Model Integration Settings:
-			<Setting name="ModelsSetterInjection"   	value="false" />
-			<Setting name="ModelsDICompleteUDF"   		value="onDIComplete" />
-			<Setting name="ModelsStopRecursion"   		value="" />
-			<Setting name="ModelsDebugMode"   			value="true" />
-		-->
 		
 		<!-- IOC Integration -->
 		<Setting name="IOCFramework"				value="" />
@@ -69,13 +59,26 @@ http://ortus.svnrepository.com/coldbox/trac.cgi/wiki/cbConfigGuide
 		<Setting name="IOCFrameworkReload"			value="false" />
 		<Setting name="IOCObjectCaching"			value="false" />
 	</Settings>
-
+	
 	<!-- Complex Settings follow JSON Syntax. www.json.org.  
 		 *IMPORTANT: use single quotes in this xml file for JSON notation, ColdBox will translate it to double quotes.
 	 -->
 	<YourSettings>
 		<!-- @YOURSETTINGS@ -->
 	</YourSettings>
+	
+	<!--Model Integration -->
+	<Models>
+		<ObjectCaching>true</ObjectCaching>
+		<DefinitionFile>config/ModelMappings.cfm</DefinitionFile>
+		<SetterInjection>false</SetterInjection>
+		<!--
+		<ExternalLocation></ExternalLocation>
+		<DICompleteUDF>onDIComplete</DICompleteUDF>
+		<StopRecursion></StopRecursion>		
+		<DebugMode>false</DebugMode>
+		<DebugLevel>TRACE</DebugLevel> -->
+	</Models>
 	
 	<!-- 
 		ColdBox Logging via LogBox
@@ -93,7 +96,7 @@ http://ortus.svnrepository.com/coldbox/trac.cgi/wiki/cbConfigGuide
 			<Property name="fileMaxArchives">2</Property>		
 		</Appender>
 		<!-- Root Logger Definition -->
-		<Root levelMin="0" levelMax="4" appenders="*" />
+		<Root levelMin="FATAL" levelMax="TRACE" appenders="*" />
 		<!-- Category Definitions Below -->
 	</LogBox>
 	

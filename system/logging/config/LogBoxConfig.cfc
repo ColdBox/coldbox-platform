@@ -289,9 +289,17 @@ Description :
 			args = structnew();
 			if( structKeyExists(rootXML[1].xmlAttributes,"levelMin") ){
 				args.levelMin = trim(rootXML[1].xmlAttributes.levelMin);
+				// Numeric Check
+				if( NOT isNumeric(args.levelMin) ){
+					args.levelMin = this.logLevels.lookupAsInt(args.levelMin);
+				}
 			}
 			if( structKeyExists(rootXML[1].xmlAttributes,"levelMax") ){
 				args.levelMax = trim(rootXML[1].xmlAttributes.levelMax);
+				// Numeric Check
+				if( NOT isNumeric(args.levelMax) ){
+					args.levelMax = this.logLevels.lookupAsInt(args.levelMax);
+				}
 			}
 			
 			//Root Appenders
@@ -317,9 +325,17 @@ Description :
 				}
 				args.name = trim(categoriesXML[x].XMLAttributes.name);
 				args.levelMin = trim(categoriesXML[x].XMLAttributes.levelMin);
+				// Numeric Check
+				if( NOT isNumeric(args.levelMin) ){
+					args.levelMin = this.logLevels.lookupAsInt(args.levelMin);
+				}
 				if( structKeyExists(categoriesXML[x].XMLAttributes,"levelMax") ){
 					args.levelMax = trim(categoriesXML[x].XMLAttributes.levelMax);
+					if( NOT isNumeric(args.levelMax) ){
+						args.levelMax = this.logLevels.lookupAsInt(args.levelMax);
+					}
 				}
+				
 				//Category Appenders
 				if( structKeyExists(categoriesXML[x].XMLAttributes,"appenders") ){
 					args.appenders = trim(categoriesXML[x].XMLAttributes.appenders);
