@@ -6,7 +6,6 @@ http://ortus.svnrepository.com/coldbox/trac.cgi/wiki/cbConfigGuide
 <Config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
 	xsi:noNamespaceSchemaLocation="http://www.coldbox.org/schema/config_3.0.0.xsd">
 	<Settings>
-		
 		<!-- Application Setup-->
 		<Setting name="AppName"						value="Your App Name here"/>
 		<!-- If you are using a coldbox app to power flex/remote apps, you NEED to set the AppMapping also. In Summary,
@@ -34,17 +33,14 @@ http://ortus.svnrepository.com/coldbox/trac.cgi/wiki/cbConfigGuide
 		<Setting name="ExceptionHandler" 			value=""/>
 		<Setting name="onInvalidEvent" 				value=""/>
 		<Setting name="CustomErrorTemplate"			value="" />
-		
-		<!--Model Integration -->
-		<Setting name="ModelsObjectCaching"   		value="true" />
-		<Setting name="ModelsDefinitionFile" 		value="config/ModelMappings.cfm"/>
-		<Setting name="ModelsSetterInjection"   	value="false" />
-		<Setting name="ModelsStopRecursion"   		value="" />
-		<Setting name="ModelsDebugMode"   			value="false" />
 	</Settings>
 
-	<YourSettings>		
-	</YourSettings>
+	<YourSettings />
+	
+	<Models>
+		<ObjectCaching>true</ObjectCaching>
+		<SetterInjection>false</SetterInjection>
+	</Models>
 	
 	<Layouts>
 		<DefaultLayout>Layout.Main.cfm</DefaultLayout>
