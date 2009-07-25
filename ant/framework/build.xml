@@ -79,6 +79,12 @@
 		<copy todir="${dir.build}/ApplicationTemplate">
         	<fileset dir="ApplicationTemplate" />
         </copy>
+		<copy todir="${dir.build}/ApplicationTemplateRemote">
+	       	<fileset dir="ApplicationTemplateRemote" />
+        </copy>
+		<copy todir="${dir.build}/ApplicationTemplateSimple">
+			<fileset dir="ApplicationTemplateSimple" />
+		</copy>
 		
 		<!--Copy text files to install folder-->
 		<copy todir="${dir.build}/install">
