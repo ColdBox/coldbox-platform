@@ -31,13 +31,8 @@
 		
 		<Setting name="HandlerCaching" 				value="false"/>
 		<Setting name="EventCaching" 				value="true"/>
-		<Setting name="IOCFramework" 				value="lightwire"/>
-		<Setting name="IOCFrameworkReload" 			value="true"/>
-		<Setting name="IOCDefinitionFile"		 	value="config/coldspring.xml.cfm"/>
-		<Setting name="IOCObjectCaching"			value="false"/>
 		<Setting name="RequestContextDecorator"		value="coldbox.testharness.model.myRequestContextDecorator" />
 		<Setting name="ProxyReturnCollection" 		value="false"/>
-		
 		<Setting name="LayoutsExternalLocation"     value="extlayouts" />
 	</Settings>
 
@@ -58,13 +53,19 @@
 		<Setting name="TestingModelPath" value="coldbox.testing.testmodel" />
 	</YourSettings>
 	
+	<!-- IOC Integration -->
+	<IOC>
+		<Framework reload="true" type="lightwire">config/coldspring.xml.cfm</Framework>
+		<DebugLevel>TRACE</DebugLevel>
+		<ParentFactory type="coldspring">config/parent.xml.cfm</ParentFactory>
+	</IOC>
+	
 	<!--Model Integration -->
 	<Models>
 		<ObjectCaching>true</ObjectCaching>
 		<DefinitionFile>config/modelMappings.cfm</DefinitionFile>
 		<ExternalLocation>coldbox.testing.testmodel</ExternalLocation>
-		<DebugMode>true</DebugMode>
-		<DebugLevel>TRACE</DebugLevel>
+		<DebugLevel>OFF</DebugLevel>
 	</Models>
 	
 	<LogBox>

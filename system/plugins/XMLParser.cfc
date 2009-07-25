@@ -259,6 +259,9 @@ Description :
 			/* ::::::::::::::::::::::::::::::::::::::::: MODEL SETTINGS  :::::::::::::::::::::::::::::::::::::::::::: */
 			parseModels(configXML,configStruct,oUtilities);
 			
+			/* ::::::::::::::::::::::::::::::::::::::::: IOC SETTINGS  :::::::::::::::::::::::::::::::::::::::::::: */
+			parseIOC(configXML,configStruct,oUtilities);
+			
 			/* ::::::::::::::::::::::::::::::::::::::::: HANDLER-MODELS-PLUGIN INVOCATION PATHS :::::::::::::::::::::::::::::::::::::::::::: */
 			parseInvocationPaths(configXML,configStruct,oUtilities);
 			
@@ -431,15 +434,6 @@ Description :
 			//Check for Event Caching
 			if ( not structKeyExists(ConfigStruct, "EventCaching") or not isBoolean(ConfigStruct.EventCaching) )
 				ConfigStruct["EventCaching"] = true;
-			//Check for IOC Framework & Settings
-			if ( not structKeyExists(ConfigStruct, "IOCFramework") )
-				ConfigStruct["IOCFramework"] = "";
-			if ( not structKeyExists(ConfigStruct, "IOCFrameworkReload") or not isBoolean(ConfigStruct.IOCFrameworkReload) )
-				ConfigStruct["IOCFrameworkReload"] = false;
-			if ( not structKeyExists(ConfigStruct, "IOCDefinitionFile") )
-				ConfigStruct["IOCDefinitionFile"] = "";
-			if ( not structKeyExists(ConfigStruct, "IOCObjectCaching") or not isBoolean(ConfigStruct.IOCObjectCaching) )
-				ConfigStruct["IOCObjectCaching"] = false;
 			//RequestContextDecorator
 			if ( not structKeyExists(ConfigStruct, "RequestContextDecorator") or len(ConfigStruct["RequestContextDecorator"]) eq 0 ){
 				ConfigStruct["RequestContextDecorator"] = "";
@@ -657,6 +651,58 @@ Description :
 					ConfigStruct.MailPort = trim(MailSettingsNodes[1].MailPort.xmlText);
 				}				
 			}
+		</cfscript>
+	</cffunction>
+	
+	<!--- parseIOC --->
+	<cffunction name="parseIOC" output="false" access="public" returntype="void" hint="Parse IOC Integration">
+		<cfargument name="xml" 		type="any" required="true" hint="The xml object"/>
+		<cfargument name="config" 	type="struct" required="true" hint="The config struct"/>
+		<cfargument name="utility"  type="any" required="true" hint="The utility object"/>
+		<cfargument name="isOverride" type="boolean" required="false" default="false" hint="Flag to denote if overriding or first time runner."/>
+		<cfscript>
+			var ConfigStruct = arguments.config;
+			var iocNodes = XMLSearch(arguments.xml,"//IOC");
+			var fwSettingsStruct = controller.getColdBoxSettings();
+			
+			// Defaults
+			if (NOT arguments.isOverride){
+				ConfigStruct.IOCFramework = "";
+				ConfigStruct.IOCFrameworkReload = false;
+				ConfigStruct.IOCDefinitionFile = "";
+				ConfigStruct.IOCDebugLevel = "OFF";
+				ConfigStruct.IOCObjectCaching = false;
+				ConfigStruct.IOCParentFactory = "";
+				ConfigStruct.IOCParentFactoryDefinitionFile = "";
+			}
+			
+			//Check if empty
+			if ( ArrayLen(iocNodes) gt 0 and ArrayLen(iocNodes[1].XMLChildren) gt 0){
+				//Check for IOC Framework
+				if ( structKeyExists(iocNodes[1], "Framework") ){
+					if( structKeyExists(iocNodes[1].Framework.xmlAttributes,"type") ){
+						ConfigStruct["IOCFramework"] = iocNodes[1].Framework.xmlAttributes.type;
+					}
+					if( structKeyExists(iocNodes[1].Framework.xmlAttributes,"reload") ){
+						ConfigStruct["IOCFrameworkReload"] = iocNodes[1].Framework.xmlAttributes.reload;
+					}
+					if( structKeyExists(iocNodes[1].Framework.xmlAttributes,"objectCaching") ){
+						ConfigStruct["IOCObjectCaching"] = iocNodes[1].Framework.xmlAttributes.objectCaching;
+					}
+					ConfigStruct["IOCDefinitionFile"] = iocNodes[1].Framework.xmltext;
+				}
+				//Debug Level
+				if ( structKeyExists(iocNodes[1], "DebugLevel") ){
+					ConfigStruct["IOCDebugLevel"] = iocNodes[1].DebugLevel.xmltext;
+				}	
+				// Parent Factory
+				if ( structKeyExists(iocNodes[1], "ParentFactory") ){
+					ConfigStruct["IOCParentFactoryDefinitionFile"] = iocNodes[1].ParentFactory.xmltext;
+					if( structKeyExists(iocNodes[1].Framework.xmlAttributes,"type") ){
+						ConfigStruct["IOCParentFactory"] = iocNodes[1].Framework.xmlAttributes.type;
+					}
+				}	
+			} 
 		</cfscript>
 	</cffunction>
 	

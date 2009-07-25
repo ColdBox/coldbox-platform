@@ -51,13 +51,6 @@ http://ortus.svnrepository.com/coldbox/trac.cgi/wiki/cbConfigGuide
 		<Setting name="MessageboxStyleOverride"		value="false" />
 		<Setting name="ProxyReturnCollection" 		value="false"/>
 		<Setting name="FlashURLPersistScope" 		value="session"/>
-		
-		
-		<!-- IOC Integration -->
-		<Setting name="IOCFramework"				value="" />
-		<Setting name="IOCDefinitionFile"			value="" />
-		<Setting name="IOCFrameworkReload"			value="false" />
-		<Setting name="IOCObjectCaching"			value="false" />
 	</Settings>
 	
 	<!-- Complex Settings follow JSON Syntax. www.json.org.  
@@ -66,6 +59,14 @@ http://ortus.svnrepository.com/coldbox/trac.cgi/wiki/cbConfigGuide
 	<YourSettings>
 		<!-- @YOURSETTINGS@ -->
 	</YourSettings>
+	
+	<!--IOC Integration
+		<IOC>
+			<Framework type="coldspring or lightwire" reload="true or false" objectCaching="true or false">definition file</Framework>
+			<DebugLevel>OFF</DebugLevel>
+			<ParentFactory type="coldspring or lightwire>definition file</ParentFactory>
+		</IOC>	
+	-->
 	
 	<!--Model Integration -->
 	<Models>
@@ -77,7 +78,9 @@ http://ortus.svnrepository.com/coldbox/trac.cgi/wiki/cbConfigGuide
 		<DICompleteUDF>onDIComplete</DICompleteUDF>
 		<StopRecursion></StopRecursion>		
 		<DebugMode>false</DebugMode>
-		<DebugLevel>TRACE</DebugLevel> -->
+		<DebugLevel>TRACE</DebugLevel> 
+		<ParentFactory type="coldspring or lightwire">definition file</ParentFactory>
+			-->
 	</Models>
 	
 	<!-- 

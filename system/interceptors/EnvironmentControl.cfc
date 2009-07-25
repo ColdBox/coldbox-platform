@@ -141,6 +141,8 @@ Description :
 			environmentXML = xmlSearch( oXML , "/environmentcontrol/environment[@name='#environment#']");
 			// Mail Settings
 			oXMLParser.parseMailSettings(environmentXML[1],configSettings,oUtilities,true);		
+			// IOC
+			oXMLParser.parseIOC(environmentXML[1],configSettings,oUtilities,true);		
 			// Models
 			oXMLParser.parseModels(environmentXML[1],configSettings,oUtilities,true);		
 			// i18N

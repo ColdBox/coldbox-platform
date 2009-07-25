@@ -56,10 +56,6 @@
 									<xs:enumeration value="HandlersIndexAutoReload" />
 									<xs:enumeration value="HandlersExternalLocation" />
 									<xs:enumeration value="HandlerCaching" />
-									<xs:enumeration value="IOCFramework" />
-									<xs:enumeration value="IOCFrameworkReload" />
-									<xs:enumeration value="IOCDefinitionFile" />
-									<xs:enumeration value="IOCObjectCaching" />
 									<xs:enumeration value="LayoutsExternalLocation" />	
 									<xs:enumeration value="MessageboxStyleOverride" />
 									<xs:enumeration value="PluginsExternalLocation" />
@@ -735,31 +731,37 @@
 		</xs:annotation>
 		<xs:complexType>
 			<xs:all>
-				<xs:element maxOccurs="1" minOccurs="1" name="Framework">
+				<xs:element maxOccurs="1" minOccurs="0" name="Framework">
 					<xs:annotation>
-						<xs:documentation>The IOC framework to use: lightwire or coldspring</xs:documentation>
+						<xs:documentation>The IOC frammework to declare. The text contents is the definition file.</xs:documentation>
 					</xs:annotation>
-					<xs:simpleType>
-						<xs:restriction base="xs:string">
-							<xs:enumeration value="coldspring"/>
-							<xs:enumeration value="lightwire"/>
-						</xs:restriction>
-					</xs:simpleType>
-				</xs:element>
-				<xs:element maxOccurs="1" minOccurs="1" name="DefinitionFile" type="xs:string">
-					<xs:annotation>
-						<xs:documentation>The IOC Definition file.</xs:documentation>
-					</xs:annotation>
-				</xs:element>
-				<xs:element maxOccurs="1" minOccurs="0" name="FrameworkReload" type="xs:boolean" default="false">
-					<xs:annotation>
-						<xs:documentation>Reload the IOC framework on each request for development purposes</xs:documentation>
-					</xs:annotation>
-				</xs:element>
-				<xs:element maxOccurs="1" minOccurs="0" name="ObjectCaching" type="xs:boolean" default="false">
-					<xs:annotation>
-						<xs:documentation>To activate factory object caching or not by the ColdBox IOC plugin.</xs:documentation>
-					</xs:annotation>
+					<xs:complexType>
+						<xs:simpleContent>
+							<xs:extension base="xs:string">
+								<xs:attribute name="type" use="required">
+									<xs:annotation>
+										<xs:documentation>The IOC framework type: coldspring or lightwire.</xs:documentation>
+									</xs:annotation>
+									<xs:simpleType>
+										<xs:restriction base="xs:string">
+											<xs:enumeration value="coldspring"/>
+											<xs:enumeration value="lightwire"/>
+										</xs:restriction>
+									</xs:simpleType>
+								</xs:attribute>
+								<xs:attribute name="objectCaching" use="optional" type="xs:boolean" default="false">
+									<xs:annotation>
+										<xs:documentation>The use object caching or not by the IOC plugin</xs:documentation>
+									</xs:annotation>
+								</xs:attribute>
+								<xs:attribute name="reload" use="optional" type="xs:boolean" default="false">
+									<xs:annotation>
+										<xs:documentation>Reload the IOC framework on each request for development purposes</xs:documentation>
+									</xs:annotation>
+								</xs:attribute>
+							</xs:extension>
+						</xs:simpleContent>
+					</xs:complexType>
 				</xs:element>
 				<xs:element maxOccurs="1" minOccurs="0" name="DebugLevel" default="OFF">
 					<xs:annotation>
@@ -779,19 +781,25 @@
 				</xs:element>
 				<xs:element maxOccurs="1" minOccurs="0" name="ParentFactory">
 					<xs:annotation>
-						<xs:documentation>The parent IOC frammework to add to the configured IOC factory</xs:documentation>
+						<xs:documentation>The parent IOC frammework to add to the ioc framework. The text contents is the definition file.</xs:documentation>
 					</xs:annotation>
-					<xs:simpleType>
-						<xs:restriction base="xs:string">
-							<xs:enumeration value="coldspring"/>
-							<xs:enumeration value="lightwire"/>
-						</xs:restriction>
-					</xs:simpleType>
-				</xs:element>
-				<xs:element maxOccurs="1" minOccurs="0" name="ParentFactoryDefinitionFile" type="xs:string" default="">
-					<xs:annotation>
-						<xs:documentation>The definition file of the parent bean factory to add.</xs:documentation>
-					</xs:annotation>
+					<xs:complexType>
+						<xs:simpleContent>
+							<xs:extension base="xs:string">
+								<xs:attribute name="type" use="required">
+									<xs:annotation>
+										<xs:documentation>The IOC framework type: coldspring or lightwire.</xs:documentation>
+									</xs:annotation>
+									<xs:simpleType>
+										<xs:restriction base="xs:string">
+											<xs:enumeration value="coldspring"/>
+											<xs:enumeration value="lightwire"/>
+										</xs:restriction>
+									</xs:simpleType>
+								</xs:attribute>
+							</xs:extension>
+						</xs:simpleContent>
+					</xs:complexType>
 				</xs:element>
 			</xs:all>
 		</xs:complexType>
@@ -832,11 +840,6 @@
 						<xs:documentation>The class paths (comma-delimmitted) that the coldbox bean factory will stop recursion on when searching for dependencies.</xs:documentation>
 					</xs:annotation>
 				</xs:element>
-				<xs:element maxOccurs="1" minOccurs="0" name="DebugMode" type="xs:boolean" default="false">
-					<xs:annotation>
-						<xs:documentation>To activate debugging on model integration</xs:documentation>
-					</xs:annotation>
-				</xs:element>
 				<xs:element maxOccurs="1" minOccurs="0" name="DebugLevel" default="OFF">
 					<xs:annotation>
 						<xs:documentation>The debugging level of the model integration package</xs:documentation>
@@ -855,19 +858,25 @@
 				</xs:element>				
 				<xs:element maxOccurs="1" minOccurs="0" name="ParentFactory">
 					<xs:annotation>
-						<xs:documentation>The parent IOC frammework to add to the model integration features of ColdBox</xs:documentation>
+						<xs:documentation>The parent IOC frammework to add to the model integration features of ColdBox. The text contents is the definition file.</xs:documentation>
 					</xs:annotation>
-					<xs:simpleType>
-						<xs:restriction base="xs:string">
-							<xs:enumeration value="coldspring"/>
-							<xs:enumeration value="lightwire"/>
-						</xs:restriction>
-					</xs:simpleType>
-				</xs:element>
-				<xs:element maxOccurs="1" minOccurs="0" name="ParentFactoryDefinitionFile" type="xs:string" default="">
-					<xs:annotation>
-						<xs:documentation>The definition file of the parent bean factory to add to model integration.</xs:documentation>
-					</xs:annotation>
+					<xs:complexType>
+						<xs:simpleContent>
+							<xs:extension base="xs:string">
+								<xs:attribute name="type" use="required">
+									<xs:annotation>
+										<xs:documentation>The IOC framework type: coldspring or lightwire.</xs:documentation>
+									</xs:annotation>
+									<xs:simpleType>
+										<xs:restriction base="xs:string">
+											<xs:enumeration value="coldspring"/>
+											<xs:enumeration value="lightwire"/>
+										</xs:restriction>
+									</xs:simpleType>
+								</xs:attribute>
+							</xs:extension>
+						</xs:simpleContent>
+					</xs:complexType>
 				</xs:element>
 			</xs:all>
 		</xs:complexType>
