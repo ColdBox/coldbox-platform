@@ -281,6 +281,7 @@ Description :
 		<cflock type="readonly" name="#getAppHash()#" timeout="#getLockTimeout()#" throwontimeout="true">
 			<cfset cbController = application[locateAppKey()]>
 		</cflock>
+		<cftry>
 		
 		<cfscript>
 			//Execute Session Start interceptors
@@ -291,6 +292,11 @@ Description :
 				cbController.runEvent(cbController.getSetting("SessionStartHandler"),true);
 			}
 		</cfscript>
+		<cfcatch type="any">
+			<cfdump var="#cfcatch#">
+			<cfdump var="#cbController.getConfigSettings()#"><cfabort>
+		</cfcatch>
+		</cftry>
 	</cffunction>
 	
 	<!--- Session End --->

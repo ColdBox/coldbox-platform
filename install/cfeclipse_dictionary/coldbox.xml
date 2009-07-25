@@ -367,7 +367,6 @@ Description :
 					<value option="&quot;EnableBugReports&quot;"/>
 					<value option="&quot;EnableColdboxLogging&quot;"/>
 					<value option="&quot;EnableColdfusionLogging&quot;"/>
-					<value option="&quot;EnableDumpVar&quot;"/>
 					<value option="&quot;Environment&quot;"/>
 					<value option="&quot;EventCaching&quot;"/>
 					<value option="&quot;EventName&quot;"/>
@@ -401,7 +400,7 @@ Description :
 					<value option="&quot;MyPluginsInvocationPath&quot;"/>
 					<value option="&quot;PluginsExternalLocation&quot;"/>
 					<value option="&quot;PluginsExternalPath&quot;"/>
-					<value option="&quot;OwnerEmail&quot;"/>
+					<value option="&quot;MailFrom&quot;"/>
 					<value option="&quot;ProxyReturnCollection&quot;"/>
 					<value option="&quot;RBundles&quot;"/>
 					<value option="&quot;RegisteredExternalHandlers&quot;"/>

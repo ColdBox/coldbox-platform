@@ -14,13 +14,11 @@ http://ortus.svnrepository.com/coldbox/trac.cgi/wiki/cbConfigGuide
 			 is not set, then coldbox will try to auto-calculate it for you. Please read the docs.
 		<Setting name="AppMapping"					value="/MyApp"/> -->
 		<Setting name="EventName"					value="event" />
-		<Setting name="OwnerEmail" 					value="" />
 		
 		<!-- Development Settings -->
 		<Setting name="DebugMode" 					value="true"/>
 		<Setting name="DebugPassword" 				value=""/>
 		<Setting name="ReinitPassword" 				value=""/>
-		<Setting name="EnableDumpVar" 				value="true"/>
 		<Setting name="HandlersIndexAutoReload" 	value="true"/>
 		<Setting name="ConfigAutoReload" 			value="false"/>
 		
@@ -36,6 +34,7 @@ http://ortus.svnrepository.com/coldbox/trac.cgi/wiki/cbConfigGuide
 		<Setting name="UDFLibraryFile" 				value="includes/helpers/ApplicationHelper.cfm" />
 		<Setting name="PluginsExternalLocation"   	value="" />
 		<Setting name="ViewsExternalLocation" 		value=""/>
+		<Setting name="LayoutsExternalLocation"   	value="" />
 		<Setting name="HandlersExternalLocation"   	value="" />
 		<Setting name="RequestContextDecorator" 	value=""/>
 		
@@ -47,7 +46,6 @@ http://ortus.svnrepository.com/coldbox/trac.cgi/wiki/cbConfigGuide
 		<!-- Application Aspects -->
 		<Setting name="HandlerCaching" 				value="false"/>
 		<Setting name="EventCaching" 				value="false"/>
-		<Setting name="EnableBugReports" 			value="false"/>
 		<Setting name="MessageboxStyleOverride"		value="false" />
 		<Setting name="ProxyReturnCollection" 		value="false"/>
 		<Setting name="FlashURLPersistScope" 		value="session"/>
@@ -59,14 +57,6 @@ http://ortus.svnrepository.com/coldbox/trac.cgi/wiki/cbConfigGuide
 	<YourSettings>
 		<!-- @YOURSETTINGS@ -->
 	</YourSettings>
-	
-	<!--IOC Integration
-		<IOC>
-			<Framework type="coldspring or lightwire" reload="true or false" objectCaching="true or false">definition file</Framework>
-			<DebugLevel>OFF</DebugLevel>
-			<ParentFactory type="coldspring or lightwire>definition file</ParentFactory>
-		</IOC>	
-	-->
 	
 	<!--Model Integration -->
 	<Models>
@@ -103,34 +93,6 @@ http://ortus.svnrepository.com/coldbox/trac.cgi/wiki/cbConfigGuide
 		<!-- Category Definitions Below -->
 	</LogBox>
 	
-	<DebuggerSettings>
-		<PersistentTracers>true</PersistentTracers>
-		<PersistentRequestProfiler>true</PersistentRequestProfiler>
-		<maxPersistentRequestProfilers>10</maxPersistentRequestProfilers>
-		<maxRCPanelQueryRows>50</maxRCPanelQueryRows>
-		<TracerPanel 	show="true" expanded="true" />
-		<InfoPanel 		show="true" expanded="true" />
-		<CachePanel 	show="true" expanded="false" />
-		<RCPanel		show="true" expanded="false" />
-	</DebuggerSettings>	
-	
-	<!--Optional,if blank it will use the CFMX administrator settings.-->
-	<MailServerSettings>
-		<MailServer></MailServer>
-		<MailPort></MailPort>
-		<MailUsername></MailUsername>
-		<MailPassword></MailPassword>
-	</MailServerSettings>
-
-	<!--Emails to Send bug reports, you can create as many as you like -->
-	<BugTracerReports>
-		<!-- <BugEmail>myemail@gmail.com</BugEmail> -->
-	</BugTracerReports>
-	
-	<WebServices>
-		<!-- <WebService name="TESTWS1" URL="http://www.test.com/test1.cfc?wsdl" /> -->
-	</WebServices>
-
 	<Layouts>
 		<!--Declare the default layout, MANDATORY-->
 		<DefaultLayout>Layout.Main.cfm</DefaultLayout>
@@ -147,20 +109,6 @@ http://ortus.svnrepository.com/coldbox/trac.cgi/wiki/cbConfigGuide
 		-->
 	</Layouts>
 
-	<Datasources>
-		<!-- <Datasource alias="MyDSNAlias" name="real_dsn_name"   dbtype="mysql"  username="" password="" /> -->
-	</Datasources>
-	
-	<Cache>
-		<ObjectDefaultTimeout>60</ObjectDefaultTimeout>
-		<ObjectDefaultLastAccessTimeout>30</ObjectDefaultLastAccessTimeout>
-		<UseLastAccessTimeouts>true</UseLastAccessTimeouts>
-		<ReapFrequency>1</ReapFrequency>
-		<MaxObjects>100</MaxObjects>
-		<FreeMemoryPercentageThreshold>0</FreeMemoryPercentageThreshold>
-		<EvictionPolicy>LRU</EvictionPolicy>
-	</Cache>
-	
 	<Interceptors>
 		<!-- USE ENVIRONMENT CONTROL -->
 		<Interceptor class="coldbox.system.interceptors.EnvironmentControl">
@@ -174,5 +122,70 @@ http://ortus.svnrepository.com/coldbox/trac.cgi/wiki/cbConfigGuide
 		</Interceptor>		
 		<!-- @SIDEBAR@ -->
 	</Interceptors>
+	
+	
+	<!-- Datasource Settings 
+		<Datasources>
+			<Datasource alias="MyDSNAlias" name="real_dsn_name"   dbtype="mysql"  username="" password="" />
+		</Datasources>
+	-->
+	
+	<!--IOC Integration
+		<IOC>
+			<Framework type="coldspring or lightwire" reload="true or false" objectCaching="true or false">definition file</Framework>
+			<DebugLevel>OFF</DebugLevel>
+			<ParentFactory type="coldspring or lightwire>definition file</ParentFactory>
+		</IOC>	
+	-->
+	
+	<!-- Cache Settings 
+	<Cache>
+		<ObjectDefaultTimeout>60</ObjectDefaultTimeout>
+		<ObjectDefaultLastAccessTimeout>30</ObjectDefaultLastAccessTimeout>
+		<UseLastAccessTimeouts>true</UseLastAccessTimeouts>
+		<ReapFrequency>1</ReapFrequency>
+		<MaxObjects>100</MaxObjects>
+		<FreeMemoryPercentageThreshold>0</FreeMemoryPercentageThreshold>
+		<EvictionPolicy>LRU</EvictionPolicy>
+	</Cache>
+	-->
+	
+	<!-- Debugger Settings
+	<DebuggerSettings>
+		<EnableDumpVar>true</EnableDumpVar>
+		<PersistentTracers>true</PersistentTracers>
+		<PersistentRequestProfiler>true</PersistentRequestProfiler>
+		<maxPersistentRequestProfilers>10</maxPersistentRequestProfilers>
+		<maxRCPanelQueryRows>50</maxRCPanelQueryRows>
+		<TracerPanel 	show="true" expanded="true" />
+		<InfoPanel 		show="true" expanded="true" />
+		<CachePanel 	show="true" expanded="false" />
+		<RCPanel		show="true" expanded="false" />
+	</DebuggerSettings>	
+	
+	-->
+	
+	<!-- Mail Server Settings 
+	<MailServerSettings>
+		<MailServer></MailServer>
+		<MailPort></MailPort>
+		<MailUsername></MailUsername>
+		<MailPassword></MailPassword>
+	</MailServerSettings>
+	-->
+
+	<!-- Bug reporting aspect 
+	<BugTracerReports enabled="false">
+		<MailFrom>myemail@gmail.com</MailFrom>
+		<CustomEmailBugReport>a custom bug report template</CustomEmailBugReport>
+		<BugEmail>myemail@gmail.com</BugEmail> 
+	</BugTracerReports>
+	-->
+	
+	<!-- Web Services 
+	<WebServices>
+		<WebService name="TESTWS1" URL="http://www.test.com/test1.cfc?wsdl" />
+	</WebServices>
+	-->
 	
 </Config>

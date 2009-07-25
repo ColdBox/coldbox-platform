@@ -10,13 +10,11 @@
 		-->		
 		<Setting name="AppMapping"					value="/coldbox/ApplicationTemplateRemote"/>
 		<Setting name="EventName"					value="event" />
-		<Setting name="OwnerEmail" 					value="" />
 		
 		<!-- Development Settings -->
 		<Setting name="DebugMode" 					value="true"/>
 		<Setting name="DebugPassword" 				value=""/>
 		<Setting name="ReinitPassword" 				value=""/>
-		<Setting name="EnableDumpVar" 				value="false"/>
 		<Setting name="HandlersIndexAutoReload" 	value="true"/>
 		<Setting name="ConfigAutoReload" 			value="false"/>
 		
@@ -43,7 +41,7 @@
 		<!-- Application Aspects -->
 		<Setting name="HandlerCaching" 				value="false"/>
 		<Setting name="EventCaching" 				value="false"/>
-		<Setting name="EnableBugReports" 			value="false"/>
+		
 		<Setting name="MessageboxStyleOverride"		value="false" />
 		<Setting name="ProxyReturnCollection" 		value="false"/>
 		<Setting name="FlashURLPersistScope" 		value="session"/>
@@ -55,14 +53,6 @@
 	<YourSettings>
 		<!-- @YOURSETTINGS@ -->
 	</YourSettings>
-	
-	<!--IOC Integration
-		<IOC>
-			<Framework type="coldspring or lightwire" reload="true or false" objectCaching="true or false">definition file</Framework>
-			<DebugLevel>OFF</DebugLevel>
-			<ParentFactory type="coldspring or lightwire>definition file</ParentFactory>
-		</IOC>	
-	-->
 	
 	<!--Model Integration -->
 	<Models>
@@ -104,45 +94,11 @@
 		<viewsLocation>monitor/views</viewsLocation>
 	</Conventions>	
 	
-	<DebuggerSettings>
-		<PersistentTracers>true</PersistentTracers>
-		<PersistentRequestProfiler>true</PersistentRequestProfiler>
-		<maxPersistentRequestProfilers>10</maxPersistentRequestProfilers>
-		<maxRCPanelQueryRows>50</maxRCPanelQueryRows>
-		
-		<TracerPanel 	show="true" expanded="true" />
-		<InfoPanel 		show="true" expanded="true" />
-		<CachePanel 	show="true" expanded="false" />
-		<RCPanel		show="true" expanded="false" />
-	</DebuggerSettings>		
-	
-	<!--Optional,if blank it will use the CFMX administrator settings.-->
-	<MailServerSettings />
-	
-	<!--Emails to Send bug reports, you can create as many as you like -->
-	<BugTracerReports />
-	
-	<!-- Web services -->
-	<WebServices />
-	
 	<!-- Layouts -->
 	<Layouts>
 		<DefaultLayout>Layout.Main.cfm</DefaultLayout>
 	</Layouts>
 
-	<!-- Datasources -->
-	<Datasources />
-	
-	<Cache>
-		<ObjectDefaultTimeout>60</ObjectDefaultTimeout>
-		<ObjectDefaultLastAccessTimeout>30</ObjectDefaultLastAccessTimeout>
-		<UseLastAccessTimeouts>true</UseLastAccessTimeouts>
-		<ReapFrequency>1</ReapFrequency>
-		<MaxObjects>100</MaxObjects>
-		<FreeMemoryPercentageThreshold>0</FreeMemoryPercentageThreshold>
-		<EvictionPolicy>LRU</EvictionPolicy>
-	</Cache>
-	
 	<Interceptors>
 		<!-- USE ENVIRONMENT CONTROL -->
 		<Interceptor class="coldbox.system.interceptors.EnvironmentControl">

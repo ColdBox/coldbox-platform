@@ -8,7 +8,6 @@
 		<Setting name="DebugPassword" 				value=""/>
 		<Setting name="ReinitPassword" 				value=""/>
 		<Setting name="EventName" 					value="event"/>
-		<Setting name="EnableDumpVar" 				value="false"/>
 		<Setting name="EnableColdfusionLogging" 	value="false"/>
 		<Setting name="EnableColdboxLogging" 		value="false"/>
 		<Setting name="ColdboxLogsLocation"			value="logs" />
@@ -18,8 +17,7 @@
 		<Setting name="ApplicationStartHandler"		value="ehGeneral.onApplicationStart" />
 		<Setting name="SessionStartHandler"		    value="ehGeneral.onSessionStart" />
 		<Setting name="SessionEndHandler"		    value="" />
-		<Setting name="OwnerEmail" 					value="info@coldboxframework.com"/>
-		<Setting name="EnableBugReports" 			value="false"/>
+		
 		<Setting name="UDFLibraryFile" 				value="" />
 		<Setting name="CustomErrorTemplate"			value="" />
 		<Setting name="CustomEmailBugReport"		value="" />

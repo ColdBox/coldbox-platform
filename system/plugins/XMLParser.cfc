@@ -395,24 +395,12 @@ Description :
 			//Check for ReinitPassword
 			if ( not structKeyExists(ConfigStruct, "ReinitPassword") )
 				ConfigStruct["ReinitPassword"] = "";
-			//Check For Owner Email or Throw
-			if ( not StructKeyExists(ConfigStruct, "OwnerEmail") )
-				ConfigStruct["OwnerEmail"] = "";
-			//Check For EnableDumpvar or set to true
-			if ( not StructKeyExists(ConfigStruct, "EnableDumpVar") or not isBoolean(ConfigStruct.EnableDumpVar))
-				ConfigStruct["EnableDumpVar"] = "true";
-			//Check For EnableBugReports Active or set to true
-			if ( not StructKeyExists(ConfigStruct, "EnableBugReports") or not isBoolean(ConfigStruct.EnableBugReports))
-				ConfigStruct["EnableBugReports"] = "true";
 			//Check For UDFLibraryFile
 			if ( not StructKeyExists(ConfigStruct, "UDFLibraryFile") )
 				ConfigStruct["UDFLibraryFile"] = "";
 			//Check For CustomErrorTemplate
 			if ( not StructKeyExists(ConfigStruct, "CustomErrorTemplate") )
 				ConfigStruct["CustomErrorTemplate"] = "";
-			//Check for CustomEmailBugReport
-			if ( not StructKeyExists(ConfigStruct, "CustomEmailBugReport") )
-				ConfigStruct["CustomEmailBugReport"] = "";	
 			//Check for MessageboxStyleOverride if found, default = false
 			if ( not structkeyExists(ConfigStruct, "MessageboxStyleOverride") or not isBoolean(ConfigStruct.MessageboxStyleOverride) )
 				ConfigStruct["MessageboxStyleOverride"] = "false";
@@ -839,20 +827,40 @@ Description :
 		<cfscript>
 			var ConfigStruct = arguments.config;
 			var BugEmailNodes = XMLSearch(arguments.xml,"//BugTracerReports/BugEmail");
+			var bugNodes = XMLSearch(arguments.xml,"//BugTracerReports");
 			var i=1;
 			var BugEmails = "";
 			
-			if( arrayLen(BugEmailNodes) ){
-				for (i=1; i lte ArrayLen(BugEmailNodes); i=i+1){
-					BugEmails = BugEmails & trim(BugEmailNodes[i].XMLText);
-					if ( i neq ArrayLen(BugEmailNodes) )
-						BugEmails = BugEmails & ",";
-				}
-				//Insert Into Config
-				ConfigStruct.BugEmails = BugEmails;
-			}
-			else if( NOT arguments.isOverride ){
+			if( NOT arguments.isOverride ){
 				ConfigStruct.BugEmails = "";
+				ConfigStruct.EnableBugReports = false;
+				ConfigStruct.MailFrom = "";
+				ConfigStruct.CustomEmailBugReport = "";
+			}
+			
+			if( arrayLen(bugNodes) gt 0 and ArrayLen(bugNodes[1].XMLChildren) gt 0) {
+				// Mail From
+				if( structKeyExists(bugNodes[1],"MailFrom") and len(bugNodes[1].MailFrom.xmlText) ){
+					configStruct.mailFrom = bugNodes[1].mailfrom.xmltext;
+				}
+				// Custom Bug Reports
+				if( structKeyExists(bugNodes[1],"CustomEmailBugReport") and len(bugNodes[1].CustomEmailBugReport.xmlText) ){
+					configStruct.CustomEmailBugReport = bugNodes[1].CustomEmailBugReport.xmltext;
+				}
+				// Enabled Bug Reports
+				if( structKeyExists(bugNodes[1].xmlAttributes,"enabled") ){
+					configStruct["EnableBugReports"] = bugNodes[1].xmlAttributes.enabled;
+				}
+				// Bug Emails
+				if( arrayLen(BugEmailNodes) ){
+					for (i=1; i lte ArrayLen(BugEmailNodes); i=i+1){
+						BugEmails = BugEmails & trim(BugEmailNodes[i].XMLText);
+						if ( i neq ArrayLen(BugEmailNodes) )
+							BugEmails = BugEmails & ",";
+					}
+					//Insert Into Config
+					ConfigStruct.BugEmails = BugEmails;
+				}
 			}
 		</cfscript>
 	</cffunction>
@@ -1097,11 +1105,32 @@ Description :
 		<cfscript>
 			var ConfigStruct = arguments.config;
 			var DebuggerSettingNodes = "";
+			var fwSettings = controller.getColdBoxSettings();
 			
 			DebuggerSettingNodes = XMLSearch(arguments.xml,"//DebuggerSettings");
 			
+			if (NOT arguments.isOverride){
+				ConfigStruct.DebuggerSettings = structnew();
+				ConfigStruct.DebuggerSettings.EnableDumpVar = fwSettings.enableDumpVar;
+				ConfigStruct.DebuggerSettings.PersistentRequestProfiler = fwSettings.PersistentRequestProfiler;
+				ConfigStruct.DebuggerSettings.maxPersistentRequestProfilers = fwSettings.maxPersistentRequestProfilers;
+				ConfigStruct.DebuggerSettings.maxRCPanelQueryRows = fwSettings.maxRCPanelQueryRows;
+				ConfigStruct.DebuggerSettings.showTracerPanel = fwSettings.showTracerPanel;
+				ConfigStruct.DebuggerSettings.expandedTracerPanel = fwSettings.expandedTracerPanel;
+				ConfigStruct.DebuggerSettings.showInfoPanel = fwSettings.showInfoPanel;
+				ConfigStruct.DebuggerSettings.expandedInfoPanel = fwSettings.expandedInfoPanel;
+				ConfigStruct.DebuggerSettings.showCachePanel = fwSettings.showCachePanel;
+				ConfigStruct.DebuggerSettings.expandedCachePanel = fwSettings.expandedCachePanel;
+				ConfigStruct.DebuggerSettings.showRCPanel = fwSettings.showRCPanel;
+				ConfigStruct.DebuggerSettings.expandedRCPanel = fwSettings.expandedRCPanel;
+			}
+			
 			//Check if empty
 			if ( ArrayLen(DebuggerSettingNodes) ){
+				// EnableDumpVar
+				if ( structKeyExists(DebuggerSettingNodes[1], "EnableDumpVar") and isBoolean(DebuggerSettingNodes[1].EnableDumpVar.xmlText) ){
+					ConfigStruct.DebuggerSettings.EnableDumpVar = trim(DebuggerSettingNodes[1].EnableDumpVar.xmlText);
+				}
 				// PersistentRequestProfiler
 				if ( structKeyExists(DebuggerSettingNodes[1], "PersistentRequestProfiler") and isBoolean(DebuggerSettingNodes[1].PersistentRequestProfiler.xmlText) ){
 					ConfigStruct.DebuggerSettings.PersistentRequestProfiler = trim(DebuggerSettingNodes[1].PersistentRequestProfiler.xmlText);
@@ -1129,13 +1158,7 @@ Description :
 				// RCPanel
 				if ( structKeyExists(DebuggerSettingNodes[1], "RCPanel") ){
 					debugPanelAttributeInsert(ConfigStruct.DebuggerSettings,"RCPanel",DebuggerSettingNodes[1].RCPanel.xmlAttributes);
-				}					
-				//Set Override to true.
-				ConfigStruct.DebuggerSettings.Override = true;			
-			}
-			else if (NOT arguments.isOverride){
-				ConfigStruct.DebuggerSettings = structnew();
-				ConfigStruct.DebuggerSettings.Override = false;			
+				}							
 			}
 		</cfscript>
 	</cffunction>		

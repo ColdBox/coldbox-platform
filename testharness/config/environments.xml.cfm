@@ -11,7 +11,7 @@
 		<Setting name="DebugMode"	 			value="true" />
 		<Setting name="DebugPassword" 			value="" />
 		<Setting name="ReinitPassword" 			value="" />
-		<Setting name="EnableDumpVar"			value="false" />
+		
 		<Setting name="EnableColdboxLogging"	value="true" />
 		<Setting name="onInvalidEvent"			value="" />
 		<Setting name="Cachesettings.FreeMemoryPercentageThreshold" value="0" />
@@ -26,7 +26,7 @@
 	<!-- give an environment a name and a comma delimmited list of url snippets to match -->
 	<environment name="qa" urls="qa">
 		<!--ColdBoxSpecific-->
-		<Setting name="EnableDumpVar"			value="true" />
+		
 		<Setting name="EnableColdboxLogging"	value="true" />
 		<Setting name="DebugPassword" 			value="" />
 		<Setting name="ReinitPassword" 			value="" />

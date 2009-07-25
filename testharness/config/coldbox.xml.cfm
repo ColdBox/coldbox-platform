@@ -8,18 +8,14 @@
 		<Setting name="DebugPassword" 				value=""/>
 		<Setting name="ReinitPassword" 				value=""/>
 		<Setting name="EventName" 					value="event"/>
-		<Setting name="EnableDumpVar" 				value="true"/>
 		<Setting name="DefaultEvent" 				value="ehGeneral.dspHello"/>
 		<Setting name="RequestStartHandler" 		value=""/>
 		<Setting name="RequestEndHandler" 			value=""/>
 		<Setting name="ApplicationStartHandler"		value="main.onApplicationStart" />
 		<Setting name="SessionStartHandler"		    value="main.onSessionStart" />
 		<Setting name="SessionEndHandler"		    value="main.onSessionEnd" />
-		<Setting name="OwnerEmail" 					value="info@coldboxframework.com"/>
-		<Setting name="EnableBugReports" 			value="false"/>
 		<Setting name="UDFLibraryFile" 				value="includes/udf.cfm" />
 		<Setting name="CustomErrorTemplate"			value="" />
-		<Setting name="CustomEmailBugReport"		value="includes/EmailBugReport.cfm" />
 		<Setting name="MessageboxStyleOverride"		value="false" />
 		<Setting name="HandlersIndexAutoReload"   	value="false" />
 		<Setting name="ConfigAutoReload"			value="false" />
@@ -107,13 +103,15 @@
 	<!--Optional,if blank it will use the CFMX administrator settings.-->
 	<MailServerSettings />
 
-	<BugTracerReports>
+	<BugTracerReports enabled="true">
+		<MailFrom>info@coldboxframework.com</MailFrom>
+		<CustomEmailBugReport>includes/EmailBugReport.cfm</CustomEmailBugReport>
 		<BugEmail>info@coldboxframework.com</BugEmail>
 	</BugTracerReports>
 
 	<WebServices >
 		<WebService URL="http://www.test.com/test.cfc?wsdl" name="TestWS"/>
-		<WebService URL="http://www.coldboxframework.com/distribution/updatews.cfc?wsdl" name="AnotherTestWS" DevURL="http://www.coldboxframework.com/distribution/updatews.cfc?wsdl"/>
+		<WebService URL="http://www.coldboxframework.com/distribution/updatews.cfc?wsdl" name="AnotherTestWS"/>
 	</WebServices>
 
 	<Layouts>

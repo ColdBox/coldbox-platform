@@ -42,7 +42,7 @@ ColdBox SideBar: created on 7/31/2008 by Ernst van der Linden (evdlinden@gmail.c
 			<!--- DebugMode? --->
 			<cfif getDebugMode()>
 				<!--- Dump var enabled? --->
-				<cfif getSetting("EnableDumpVar")>
+				<cfif getSetting("DebuggerSettings")>
 					<tr>
 						<td><span class="ColdBoxSideBarInputlabel">Dump Variable</span>
 							<input type="text" class="ColdBoxSideBarText" id="sbDumpVar">

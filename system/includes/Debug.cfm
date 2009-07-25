@@ -189,7 +189,7 @@ Description :
 <!--- **************************************************************--->
 <!--- DUMP VAR --->
 <!--- **************************************************************--->
-	<cfif controller.getSetting("EnableDumpVar")>
+	<cfif controller.getSetting("DebuggerSettings").EnableDumpVar>
 		<cfif structKeyExists(rc,"dumpvar")>
 		<!--- Dump Var --->
 		<div class="fw_titles" onClick="fw_toggle('fw_dumpvar')">&nbsp;Dumpvar</div>

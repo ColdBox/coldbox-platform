@@ -42,15 +42,12 @@
 									<xs:enumeration value="AppName"/>	
 									<xs:enumeration value="ApplicationStartHandler" />
 									<xs:enumeration value="CustomErrorTemplate" />
-									<xs:enumeration value="CustomEmailBugReport" />
 									<xs:enumeration value="ConfigAutoReload" />
 									<xs:enumeration value="DebugMode"/>		
 									<xs:enumeration value="DebugPassword"/>
 									<xs:enumeration value="DefaultEvent"/>	
 									<xs:enumeration value="EventName"/>
 									<xs:enumeration value="ExceptionHandler" />
-									<xs:enumeration value="EnableBugReports"/>
-									<xs:enumeration value="EnableDumpVar"/>	
 									<xs:enumeration value="EventCaching" />
 									<xs:enumeration value="FlashURLPersistScope"/>
 									<xs:enumeration value="HandlersIndexAutoReload" />
@@ -60,7 +57,6 @@
 									<xs:enumeration value="MessageboxStyleOverride" />
 									<xs:enumeration value="PluginsExternalLocation" />
 									<xs:enumeration value="onInvalidEvent"/>	
-									<xs:enumeration value="OwnerEmail"/>
 									<xs:enumeration value="ProxyReturnCollection" />
 									<xs:enumeration value="RequestEndHandler"/>
 									<xs:enumeration value="RequestStartHandler"/>
@@ -106,6 +102,7 @@
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
+	
 	<xs:element name="MailServerSettings">
 		<xs:annotation>
 			<xs:documentation>These are global mail settings</xs:documentation>
@@ -135,26 +132,44 @@
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
+	
 	<xs:element name="BugTracerReports">
 		<xs:annotation>
-			<xs:documentation>This sections is used to declare email addresses for Bug Reports</xs:documentation>
+			<xs:documentation>This sections is used to declare the bug tracing reports configuration.</xs:documentation>
 		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element maxOccurs="unbounded" minOccurs="0" ref="BugEmail"/>
+				<xs:element maxOccurs="1" minOccurs="0" name="MailFrom" >
+					<xs:annotation>
+						<xs:documentation>The from email address to send from.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element maxOccurs="1" minOccurs="0" name="CustomEmailBugReport" >
+					<xs:annotation>
+						<xs:documentation>The location of the custom bug report to use.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element maxOccurs="unbounded" minOccurs="0" name="BugEmail">
+					<xs:annotation>
+						<xs:documentation>The email address to send reports.</xs:documentation>
+					</xs:annotation>
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:minLength value="1"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
 			</xs:sequence>
+			<xs:attribute default="false" name="enabled" type="xs:boolean" use="optional">
+				<xs:annotation>
+					<xs:documentation>Use to turn on bugtracer reports.</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name="BugEmail">
-		<xs:annotation>
-			<xs:documentation>The email address to send reports.</xs:documentation>
-		</xs:annotation>
-		<xs:simpleType>
-			<xs:restriction base="xs:string">
-				<xs:minLength value="1"/>
-			</xs:restriction>
-		</xs:simpleType>
-	</xs:element>
+	
+	
+	
 	<xs:element name="WebServices">
 		<xs:annotation>
 			<xs:documentation>Useful declarations of all web services used in the application.</xs:documentation>
@@ -170,14 +185,9 @@
 			<xs:documentation>A webservice declaration.</xs:documentation>
 		</xs:annotation>
 		<xs:complexType>
-			<xs:attribute default="" name="DevURL" type="xs:anyURI" use="optional">
-				<xs:annotation>
-					<xs:documentation>The WSDL development URL if available.</xs:documentation>
-				</xs:annotation>
-			</xs:attribute>
 			<xs:attribute name="URL" type="xs:anyURI" use="required">
 				<xs:annotation>
-					<xs:documentation>The WSDL Production or Single URL.</xs:documentation>
+					<xs:documentation>The WSDL URL for this web service.</xs:documentation>
 				</xs:annotation>
 			</xs:attribute>
 			<xs:attribute name="name" type="xs:string" use="required">
@@ -441,6 +451,11 @@
 		</xs:annotation>
 		<xs:complexType>
 			<xs:all>
+				<xs:element maxOccurs="1" minOccurs="0" name="EnableDumpVar" type="xs:boolean" default="false">
+					<xs:annotation>
+						<xs:documentation>Whether to activate the dumpVar URL action or not.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
 				<xs:element maxOccurs="1" minOccurs="0" name="PersistentTracers" type="xs:boolean" default="false">
 					<xs:annotation>
 						<xs:documentation>Whether to activate or not the persistent tracers.</xs:documentation>

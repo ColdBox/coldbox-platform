@@ -8,7 +8,6 @@
 		<Setting name="DebugPassword" 				value=""/>
 		<Setting name="ReinitPassword" 				value=""/>
 		<Setting name="EventName" 					value="event"/>
-		<Setting name="EnableDumpVar" 				value="false"/>
 		<Setting name="EnableColdfusionLogging" 	value="false"/>
 		<Setting name="EnableColdboxLogging" 		value="false"/>
 		<Setting name="DefaultEvent" 				value="ehGeneral.dspHello"/>
@@ -17,8 +16,7 @@
 		<Setting name="ApplicationStartHandler"		value="" />
 		<Setting name="SessionStartHandler"		    value="" />
 		<Setting name="SessionEndHandler"		    value="" />
-		<Setting name="OwnerEmail" 					value="info@luismajano.com"/>
-		<Setting name="EnableBugReports" 			value="false"/>
+		
 		<Setting name="UDFLibraryFile" 				value="" />
 		<Setting name="CustomErrorTemplate"			value="" />
 		<Setting name="CustomEmailBugReport"		value="" />
@@ -31,9 +29,6 @@
 		<Setting name="HandlersExternalLocation" 	value=""/>
 		<Setting name="HandlerCaching" 				value="false"/>
 		<Setting name="EventCaching" 				value="false"/>
-		<Setting name="IOCFramework" 				value=""/>
-		<Setting name="IOCDefinitionFile"		 	value=""/>
-		<Setting name="IOCObjectCaching"			value="false"/>
 		<Setting name="ProxyReturnCollection" 		value="false"/>
 	</Settings>
 

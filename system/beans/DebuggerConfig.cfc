@@ -37,6 +37,15 @@ Modification History:
 		<cfset instance = arguments.memento/>
 	</cffunction>
 	
+	<!--- enableDumpVar --->
+	<cffunction name="getEnableDumpVar" access="public" output="false" returntype="boolean" hint="Get enableDumpVar">
+		<cfreturn instance.enableDumpVar/>
+	</cffunction>
+	<cffunction name="setEnableDumpVar" access="public" output="false" returntype="void" hint="Set enableDumpVar">
+		<cfargument name="enableDumpVar" type="boolean" required="true"/>
+		<cfset instance.enableDumpVar = arguments.enableDumpVar/>
+	</cffunction>
+	
 	<!--- persistent tracers --->
 	<cffunction name="getPersistentTracers" access="public" output="false" returntype="boolean" hint="Get PersistentTracers">
 		<cfreturn instance.PersistentTracers/>

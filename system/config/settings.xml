@@ -54,6 +54,7 @@
         <Setting name="CacheEvictionPolicy" value="LRU"/> 
         
         <!-- Debugger settings -->
+		<Setting name="EnableDumpVar" value="true"/>
         <Setting name="PersistentRequestProfiler" value="true"/>
         <Setting name="maxPersistentRequestProfilers" value="10"/>
         <Setting name="PersistentTracers" value="true"/>

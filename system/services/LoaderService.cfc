@@ -58,7 +58,6 @@ Modification History:
 			
 			// Create the Cache Config Bean with data from the framework's settings.xml
 			CacheConfig.populate(FrameworkSettings);
-			// Configure the Object Cache for first usage.
 			controller.getColdboxOCM().configure(CacheConfig);
 			
 			// Load Application Config Settings Now that framework has been loaded.
@@ -87,16 +86,8 @@ Modification History:
 				controller.getColdboxOCM().configure(CacheConfig);
 			}
 			
-			// Check for Debugger Override, if true, then overpopulate with configuration settings overriding framework settings.
-			if( ConfigSettings.DebuggerSettings.OVERRIDE ){
-				DebuggerConfig.populate(ConfigSettings.DebuggerSettings);
-			}
-			else{
-				// Populate Debugger with settings from the framework
-				DebuggerConfig.populate(FrameworkSettings);
-			}
-			
 			// Configure the Debugger For Usage
+			DebuggerConfig.populate(ConfigSettings.DebuggerSettings);
 			controller.getDebuggerService().setDebuggerConfig(DebuggerConfig);
 			
 			// execute the handler registrations after configurations loaded

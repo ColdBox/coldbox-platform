@@ -9,13 +9,11 @@
 			 is not set, then coldbox will try to auto-calculate it for you. Please read the docs.
 		<Setting name="AppMapping"					value="/MyApp"/> -->
 		<Setting name="EventName"					value="event" />
-		<Setting name="OwnerEmail" 					value="" />
 		
 		<!-- Development Settings -->
 		<Setting name="DebugMode" 					value="true"/>
 		<Setting name="DebugPassword" 				value=""/>
 		<Setting name="ReinitPassword" 				value=""/>
-		<Setting name="EnableDumpVar" 				value="true"/>
 		<Setting name="HandlersIndexAutoReload" 	value="true"/>
 		<Setting name="ConfigAutoReload" 			value="false"/>
 		
@@ -49,27 +47,11 @@
 		<!-- Application Aspects -->
 		<Setting name="HandlerCaching" 				value="false"/>
 		<Setting name="EventCaching" 				value="false"/>
-		<Setting name="EnableBugReports" 			value="false"/>
+		
 		<Setting name="MessageboxStyleOverride"		value="false" />
 		<Setting name="ProxyReturnCollection" 		value="false"/>
 		<Setting name="FlashURLPersistScope" 		value="session"/>
-		
-		<!--Model Integration -->
-		<Setting name="ModelsExternalLocation"   	value="" />
-		<Setting name="ModelsObjectCaching"   		value="true" />
-		<Setting name="ModelsDefinitionFile" 		value="config/ModelMappings.cfm"/>
-		<!-- Uncomment More Model Integration Settings:
-			<Setting name="ModelsSetterInjection"   	value="false" />
-			<Setting name="ModelsDICompleteUDF"   		value="onDIComplete" />
-			<Setting name="ModelsStopRecursion"   		value="" />
-			<Setting name="ModelsDebugMode"   			value="true" />
-		-->
-		
-		<!-- IOC Integration -->
-		<Setting name="IOCFramework"				value="" />
-		<Setting name="IOCDefinitionFile"			value="" />
-		<Setting name="IOCFrameworkReload"			value="false" />
-		<Setting name="IOCObjectCaching"			value="false" />
+	
 	</Settings>
 
 	<LogBox>
