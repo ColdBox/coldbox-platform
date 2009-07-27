@@ -114,9 +114,9 @@ Description :
 				/* Invalid Event Detected, log it */
 				controller.getPlugin("Logger").logEntry("error","Invalid Event detected: #oEventHandlerBean.getRunnable()#");
 				
-				/* If onInvalidEvent is registered, use it */
-				if ( controller.getSetting("onInvalidEvent") neq "" ){
-					/* Test for invalid Event Error */
+				// If onInvalidEvent is registered, use it
+				if ( len(trim(controller.getSetting("onInvalidEvent"))) ){
+					// Test for invalid Event Error
 					if ( compareNoCase(controller.getSetting("onInvalidEvent"),oRequestContext.getCurrentEvent()) eq 0 ){
 						getUtil().throwit(message="The onInvalid event is invalid",
 										  detail="The onInvalidEvent setting is also invalid: #controller.getSetting('onInvalidEvent')#. Please check your settings",
@@ -124,13 +124,9 @@ Description :
 					}
 					//Place invalid event in request context.
 					oRequestContext.setValue("invalidevent",oEventHandlerBean.getRunnable());
-					/* Relocate to Invalid Event, with collection persistance */
-					if( oRequestContext.isSES() ){
-						controller.setNextRoute(route=controller.getSetting("onInvalidEvent"),persist="invalidevent");
-					}
-					else{
-						controller.setNextEvent(event=controller.getSetting("onInvalidEvent"),persist="invalidevent");
-					}
+					
+					// Relocate to Invalid Event, with collection persistance
+					controller.setNextEvent(event=controller.getSetting("onInvalidEvent"),persist="invalidevent");
 				}
 				else{
 					getUtil().throwit(message="An invalid event has been detected",
