@@ -39,14 +39,28 @@ Description: This is the framework's simple bean factory.
 			instance.ModelsExternalLocation = getSetting("ModelsExternalLocation");
 			instance.ModelsDefinitionFile = getSetting("ModelsDefinitionFile");
 			
+			// Model Mappings Map
 			instance.modelMappings = structnew();
 			instance.NOT_FOUND = "_NOT_FOUND_";
+			
+			// Default DSL marker
 			instance.dslMarker = "_wireme";
 			if( settingExists("BeanFactory_dslMarker") ){
 				instance.dslMarker = getSetting("BeanFactory_dslMarker");
 			}
+			// Default DSL Type, mostly used in setters or constructor arguments.
+			if( len(trim(getSetting("IOCFramework"))) ){
+				instance.dslDefaultType = "ioc";
+			}
+			else{
+				instance.dslDefaultType = "model";
+			}
+			// Default DSL Type override
+			if( settingExists("BeanFactory_dslDefaultType") ){
+				instance.dslDefaultType = getSetting("BeanFactory_dslDefaultType");
+			}
 			
-			/* Setup the Autowire DI Dictionary */
+			// Setup the Autowire DI Dictionary
 			setDICacheDictionary(CreateObject("component","coldbox.system.util.collections.BaseDictionary").init('DIMetadata'));
 			
 			return this;
@@ -567,8 +581,7 @@ Description: This is the framework's simple bean factory.
 				/* Loop over dependencies and inject. */
 				for(x=1; x lte dependenciesLength; x=x+1){
 					/* Get Dependency */
-					thisDependency = getDSLDependency(definition=targetDIEntry.dependencies[x],
-													  debugMode=arguments.debugmode);
+					thisDependency = getDSLDependency(definition=targetDIEntry.dependencies[x],debugMode=arguments.debugmode);
 					/* Validate it */
 					if( isSimpleValue(thisDependency) and thisDependency eq instance.NOT_FOUND ){
 						/* Only log if debugmode, else no injection */
@@ -649,27 +662,16 @@ Description: This is the framework's simple bean factory.
 		<!--- ************************************************************* --->
 		<cfscript>
 			var dependency = instance.NOT_FOUND;
-			var thisType = listFirst(arguments.Definition.type,":");
+			var DSLNamespace = listFirst(arguments.Definition.type,":");
 			
-			/* Determine Type of Injection according to Type */
-			if( thisType eq "ioc" ){
-				dependency = getIOCDependency(arguments.Definition,arguments.debugmode);
-			}
-			else if (thisType eq "ocm"){
-				dependency = getOCMDependency(arguments.Definition,arguments.debugmode);
-			}
-			else if ( thisType eq "coldbox" ){
-				/* Try to inject coldbox dependencies */
-				dependency = getColdboxDSL(arguments.Definition);
-			}
-			else if ( thisType eq "model" ){
-				/* Try to inject model dependencies */
-				dependency = getModelDSL(definition=arguments.Definition,
-									   	 debugMode=arguments.debugMode);
-			}	
-			else if ( thisType eq "webservice" ){
-				/* Try to inject webservice dependencies */
-				dependency = getWebserviceDSL(arguments.Definition);
+			// Determine Type of Injection according to Type
+			switch(DSLNamespace){
+				case "ioc" 			: { dependency = getIOCDependency(arguments.definition,arguments.debugmode); break; }
+				case "ocm" 			: { dependency = getOCMDependency(arguments.definition,arguments.debugmode); break; }
+				case "coldbox" 		: { dependency = getColdboxDSL(arguments.definition); break; }
+				case "model" 		: { dependency = getModelDSL(definition=arguments.definition,debugMode=arguments.debugMode); break; }
+				case "webservice" 	: { dependency = getWebserviceDSL(arguments.definition); break; }
+				case "logbox"		: { dependency = getLogBoxDSL(definition=arguments.definition,debugMode=arguments.debugMode); break;}
 			}
 			
 			return dependency;
@@ -685,46 +687,11 @@ Description: This is the framework's simple bean factory.
 			var oWebservices = getPlugin("Webservices");
 			var thisDependency = arguments.Definition;
 			var webserviceName = listLast(thisDependency.type);
-			/* Get Dependency */
+			
+			// Get Dependency
 			return oWebservices.getWSobj(webserviceName);
 		</cfscript>
 	</cffunction>	
-	
-	<!--- getLibraryDSL --->
-	<cffunction name="getLibraryDSL" access="private" returntype="any" hint="Get dependencies using the library dependency DSL" output="false" >
-		<!--- ************************************************************* --->
-		<cfargument name="Definition" 	required="true" type="any" hint="The dependency definition structure">
-		<!--- ************************************************************* --->
-		<cfscript>
-			var thisDependency = arguments.Definition;
-			var thisType = thisDependency.type;
-			var thisTypeLen = listLen(thisType,":");
-			var thisLocationType = "";
-			var thisLocationKey = "";
-			var locatedDependency = instance.NOT_FOUND;
-			
-			/* 1 stage dependency dsl : Get Library */
-			if(thisTypeLen eq 1){
-				/* Get Library according to Property Name */
-				locatedDependency = getModel(arguments.Definition.name);
-			}
-			/* 2 stage dependency dsl : Get Library */
-			else if(thisTypeLen eq 2){
-				thisLocationType = getToken(thisType,2,":");
-				/* Get model object*/
-				locatedDependency = getModel(thisLocationType);
-			}
-			/* 3 stage dependency dsl : Library Factories*/
-			else if(thisTypeLen eq 3){
-				thisLocationType = getToken(thisType,2,":");
-				thisLocationKey = getToken(thisType,3,":");
-				/* Call model method to get dependency */
-				locatedDependency = evaluate("getModel(thisLocationType).#thisLocationKey#()");
-			}//end 3 stage DSL
-			
-			return locatedDependency;
-		</cfscript>
-	</cffunction>
 	
 	<!--- getModelDSL --->
 	<cffunction name="getModelDSL" access="private" returntype="any" hint="Get dependencies using the model dependency DSL" output="false" >
@@ -741,30 +708,33 @@ Description: This is the framework's simple bean factory.
 			var locatedDependency = instance.NOT_FOUND;
 			var args = structnew();
 			
-			/* Prepare Arguments */
+			// Prepare Arguments
 			args.debugmode = arguments.debugMode;
 			
-			/* 1 stage dependency dsl : Get Model */
-			if(thisTypeLen eq 1){
-				args.name = arguments.Definition.name;
+			// DSL stages
+			switch(thisTypeLen){
+				//model default
+				case 1: { args.name = arguments.Definition.name; break; }
+				//model:{name} stage
+				case 2: { 
+					thisLocationType = getToken(thisType,2,":");
+					args.name = thisLocationType;
+					break;
+				}
+				//model:{name}:{method} stage
+				case 3: { 
+					thisLocationType = getToken(thisType,2,":");
+					thisLocationKey = getToken(thisType,3,":");
+					args.name = thisLocationType;
+					break;
+				}	
 			}
-			/* 2 stage dependency dsl : Get Model */
-			else if(thisTypeLen eq 2){
-				thisLocationType = getToken(thisType,2,":");
-				args.name = thisLocationType;
-			}
-			/* 3 stage dependency dsl : Model Factories*/
-			else if(thisTypeLen eq 3){
-				thisLocationType = getToken(thisType,2,":");
-				thisLocationKey = getToken(thisType,3,":");
-				args.name = thisLocationType;
-			}//end 3 stage DSL
 			
-			/* Check if model Exists */
+			// Check if model Exists
 			if( containsModel(name=args.name,resolveAlias=true) ){
-				/* Get Model */
+				// Get Model
 				locatedDependency = getModel(argumentCollection=args);
-				/* Factories: TODO: Need Encap here */
+				// Factories: TODO: Need Encap here and change evaluation to allso allow arguments.
 				if( thisTypeLen eq 3 ){
 					locatedDependency = evaluate("locatedDependency.#thisLocationKey#()");
 				}
@@ -790,38 +760,82 @@ Description: This is the framework's simple bean factory.
 			var thisLocationKey = "";
 			var locatedDependency = instance.NOT_FOUND;
 			
-			/* 1 stage dependency: ColdBox */
-			if( thisTypeLen eq 1 ){
-				/* Coldbox Reference is the only one available on 1 stage DSL */
-				locatedDependency = getController();
+			// DSL stages
+			switch(thisTypeLen){
+				// coldbox only
+				case 1: { locatedDependency = getController(); break;}
+				// coldbox:{key} stage 2
+				case 2: {
+					thisLocationKey = getToken(thisType,2,":");
+					switch( thisLocationKey ){
+						case "configbean" 			: { locatedDependency = getSettingsBean(); break; }
+						case "mailsettingsbean"		: { locatedDependency = getMailSettings(); break; }
+						case "loaderService"		: { locatedDependency = getController().getLoaderService(); break; }
+						case "requestService"		: { locatedDependency = getController().getrequestService(); break; }
+						case "debuggerService"		: { locatedDependency = getController().getDebuggerService(); break; }
+						case "pluginService"		: { locatedDependency = getController().getPluginService(); break; }
+						case "handlerService"		: { locatedDependency = getController().gethandlerService(); break; }
+						case "interceptorService"	: { locatedDependency = getController().getinterceptorService(); break; }
+						case "cacheManager"			: { locatedDependency = getController().getColdboxOCM(); break; }
+					}//end of services
+					break;
+				}
+				//coldobx:{key}:{target} Usually for named factories
+				case 3: {
+					thisLocationType = getToken(thisType,2,":");
+					thisLocationKey = getToken(thisType,3,":");
+					switch(thisLocationType){
+						case "setting" 				: { locatedDependency = getSetting(thisLocationKey); break; }
+						case "plugin" 				: { locatedDependency = getPlugin(thisLocationKey); break; }
+						case "myplugin" 			: { locatedDependency = getMyPlugin(thisLocationKey); break; }
+						case "datasource" 			: { locatedDependency = getDatasource(thisLocationKey); break; }
+					}//end of services
+					break;
+				}
 			}
-			/* 2 stage dependencies. Coldbox:ConfigBean */
-			else if(thisTypeLen eq 2){
-				thisLocationKey = getToken(thisType,2,":");
-				switch( thisLocationKey ){
-					case "configbean" 			: { locatedDependency = getSettingsBean(); break; }
-					case "mailsettingsbean"		: { locatedDependency = getMailSettings(); break; }
-					case "loaderService"		: { locatedDependency = getController().getLoaderService(); break; }
-					case "requestService"		: { locatedDependency = getController().getrequestService(); break; }
-					case "debuggerService"		: { locatedDependency = getController().getDebuggerService(); break; }
-					case "pluginService"		: { locatedDependency = getController().getPluginService(); break; }
-					case "handlerService"		: { locatedDependency = getController().gethandlerService(); break; }
-					case "interceptorService"	: { locatedDependency = getController().getinterceptorService(); break; }
-					case "cacheManager"			: { locatedDependency = getController().getColdboxOCM(); break; }
-				}//end of services
-			}
-			/* 3 stage dependencies */
-			else if(thisTypeLen eq 3){
-				thisLocationType = getToken(thisType,2,":");
-				thisLocationKey = getToken(thisType,3,":");
-				switch(thisLocationType){
-					case "setting" 				: { locatedDependency = getSetting(thisLocationKey); break; }
-					case "plugin" 				: { locatedDependency = getPlugin(thisLocationKey); break; }
-					case "myplugin" 			: { locatedDependency = getMyPlugin(thisLocationKey); break; }
-					case "datasource" 			: { locatedDependency = getDatasource(thisLocationKey); break; }
-				}//end of services
-			}//end 3 stage DSL
 			
+			return locatedDependency;
+		</cfscript>
+	</cffunction>
+	
+	<!--- getLogBoxDSL --->
+	<cffunction name="getLogBoxDSL" access="private" returntype="any" hint="Get dependencies using the logbox dependency DSL" output="false" >
+		<!--- ************************************************************* --->
+		<cfargument name="definition" 	required="true" type="any" hint="The dependency definition structure">
+		<!--- ************************************************************* --->
+		<cfscript>
+			var thisDependency = arguments.Definition;
+			var thisType = thisDependency.type;
+			var thisTypeLen = listLen(thisType,":");
+			var thisLocationType = "";
+			var thisLocationKey = "";
+			var thisLogBox = getController().getLogBox();
+			var locatedDependency = instance.NOT_FOUND;
+			
+			// DSL stages
+			switch(thisTypeLen){
+				// LogBox
+				case 1 : { locatedDependency = thisLogBox; break;}
+				// Root Logger
+				case 2 : {
+					thisLocationKey = getToken(thisType,2,":");
+					switch( thisLocationKey ){
+						case "root" : { locatedDependency = thisLogBox.getRootLogger(); break; }
+					}				
+				}
+				// Named Loggers
+				case 3 : {
+					thisLocationType = getToken(thisType,2,":");
+					thisLocationKey = getToken(thisType,3,":");
+					// DSL Level 2 Stage Types
+					switch(thisLocationType){
+						// Get a named Logger
+						case "logger" : { locatedDependency = thisLogBox.getLogger(thisLocationKey); break; }
+					}
+					
+				} // end level 3 main DSL
+			}
+		
 			return locatedDependency;
 		</cfscript>
 	</cffunction>
@@ -841,16 +855,17 @@ Description: This is the framework's simple bean factory.
 			var locatedDependency = instance.NOT_FOUND;
 			
 			//dump(arguments.definition);abort();
-			/* 1 stage dependency: ioc only*/
-			if( thisTypeLen eq 1 ){
-				thisLocationKey = thisDependency.name;
-			}
-			/* 2 stage dependencies. ioc:beanName */
-			else if(thisTypeLen eq 2){
-				thisLocationKey = getToken(thisType,2,":");
+			
+			// DSL stages
+			switch(thisTypeLen){
+				// ioc name
+				case 1: { thisLocationKey = thisDependency.name; break;}
+				// ioc:beanName
+				case 2: { thisLocationKey = getToken(thisType,2,":"); break;}
+				
 			}
 			
-			/* Check for Bean */
+			// Check for Bean
 			if( oIOC.getIOCFactory().containsBean(thisLocationKey) ){
 				locatedDependency = oIOC.getBean(thisLocationKey);
 			}
@@ -876,16 +891,15 @@ Description: This is the framework's simple bean factory.
 			var thisLocationKey = "";
 			var locatedDependency = instance.NOT_FOUND;
 			
-			/* 1 stage dependency: ocm only */
-			if( thisTypeLen eq 1 ){
-				thisLocationKey = thisDependency.name;		
+			// DSL stages
+			switch(thisTypeLen){
+				// ocm only
+				case 1: { thisLocationKey = thisDependency.name; break;}
+				// ocm:objectKey
+				case 2: { thisLocationKey = getToken(thisType,2,":"); break;}
 			}
-			/* 2 stage dependencies. ocm:ObjectKey */
-			else if(thisTypeLen eq 2){
-				thisLocationKey = getToken(thisType,2,":");			
-			}		
 			
-			/* Verify that dependency exists in the Cache container. */
+			// Verify that dependency exists in the Cache container
 			if( oOCM.lookup(thisLocationKey) ){
 				locatedDependency = oOCM.get(thisLocationKey);
 			}	
@@ -909,10 +923,10 @@ Description: This is the framework's simple bean factory.
 			var x = 1;
 			var md = arguments.metadata;
 			var entry = structnew();
-			var cbox_reserved_functions = "setSetting,setDebugMode,setNextEvent,setNextRoute,setController,settingExists,setPluginName,setPluginVersion,setPluginDescription,setPluginAuthor,setPluginAuthorURL,setProperty,setproperties";
 			var foundDependencies = "";
+			var DSLNamespaces = "webservice,model,ioc,ocm,coldbox,logbox";
 			
-			/* Look for Object's attributes, and override if found. */
+			// Look for Object's attributes, and override if found.
 			if( structKeyExists(md,"autowire_stoprecursion") ){
 				arguments.stopRecursion = md["autowire_stoprecursion"];
 			}
@@ -920,67 +934,53 @@ Description: This is the framework's simple bean factory.
 				arguments.useSetterInjection = md["autowire_setterinjection"];
 			}
 			
-			/* Look For cfProperties */
+			// Look For cfProperties for annotation injections
 			if( structKeyExists(md,"properties") and ArrayLen(md.properties) gt 0){
 				for(x=1; x lte ArrayLen(md.properties); x=x+1 ){
 					
-					/* Check types are valid for autowiring. */
-					if( structKeyExists(md.properties[x],"type") AND 
-						( findnocase("webservice",md.properties[x].type) OR
-						  findnocase("model",md.properties[x].type) OR
-						  findnocase("coldbox",md.properties[x].type) OR
-						  findnocase("ioc",md.properties[x].type) OR
-						  findnocase("ocm",md.properties[x].type) )  	
-					){
-						/* New MD Entry */
+					// Check types are valid for autowiring.
+					if( structKeyExists(md.properties[x],"type") AND listFindNoCase(DSLNamespaces, listFirst(md.properties[x].type,":")) ){
+						// New MD Entry
 						entry = structnew();
-						/* Scope Check */
+						// Scope Check
 						if( not structKeyExists(md.properties[x],"scope") ){
 							md.properties[x].scope = "variables";
 						}		
-						/* Setup Entry */
+						// Setup Entry
 						entry.name 	= md.properties[x].name;
 						entry.scope = md.properties[x].scope;
 						entry.type 	= md.properties[x].type;
 						
-						/* Add to found list */
+						// Add to found list
 						listAppend(foundDependencies,entry.name);
-						
-						/* Add Property Dependency */
 						ArrayAppend( arguments.dependencies, entry );
 					}
 					
 				}//end for loop		
 			}//end if properties found.
 			
-			/* Look for cfFunctions and if setter injection is enabled. */		
+			// Setter injection if enabled?		
 			if( arguments.useSetterInjection and structKeyExists(md, "functions") ){
 				for(x=1; x lte ArrayLen(md.functions); x=x+1 ){
-					/* Verify we have a setter */
-					if( left(md.functions[x].name,3) eq "set" AND NOT 
-					    listFindNoCase(cbox_reserved_functions,md.functions[x].name) ){
+					// Verify we have a setter
+					if( left(md.functions[x].name,3) eq "set" ){
 						
-						/* New MD Entry */
+						// New MD Entry
 						entry = structnew();
 						entry.name = Right(md.functions[x].name, Len(md.functions[x].name)-3);
 						entry.scope = "";
 						
-						/* Check Marker and IOC Framework*/
+						// Check DSL marker
 						if( structKeyExists(md.functions[x],instance.dslMarker) ){
 							entry.type = md.functions[x][instance.dslMarker];
-						}
-						/* If IOC Framework defined, let setter be defaulted to IOC */
-						else if(getSetting("IOCFramework") neq ""){
-							entry.type = "ioc";
-						}
-						/* Else default to model integration */
+						}		
 						else{
-							entry.type = "model";
-						}
+							entry.type = instance.dslDefaultType;
+						}	
 						
-						/* Add if not already in properties */
+						// Add if not already in properties
 						if( not listFindNoCase(foundDependencies,entry.name) ){
-							/* Found Setter, append property Name */
+							// Found Setter, append property Name
 							listAppend(foundDependencies,entry.name);
 							ArrayAppend(arguments.dependencies, entry);
 						}
@@ -989,11 +989,11 @@ Description: This is the framework's simple bean factory.
 				}//end loop of functions
 			}//end if functions found
 			
-			/* Start Registering inheritances */
+			// Start Registering inheritances
 			if ( structKeyExists(md, "extends") 
 				 AND 
 				 stopClassRecursion(classname=md.extends.name,stopRecursion=arguments.stopRecursion) EQ FALSE){
-				/* Recursive lookup */
+				// Recursive lookup
 				arguments.dependencies = parseMetadata(md.extends,arguments.dependencies,arguments.useSetterInjection,arguments.stopRecursion);
 			}
 			
@@ -1006,16 +1006,16 @@ Description: This is the framework's simple bean factory.
 	<cffunction name="stopClassRecursion" access="private" returntype="boolean" hint="Should we stop recursion or not due to class name found" output="false" >
 		<!--- ************************************************************* --->
 		<cfargument name="classname" 		required="true" type="string" hint="The class name to check">
-		<cfargument name="stopRecursion" 	required="true" type="string" hint="The comma delimmitted list of stoprecursion classes">
+		<cfargument name="stopRecursion" 	required="true" type="string" hint="The comma delimmitted list of stop recurssion classes">
 		<!--- ************************************************************* --->
 		<cfscript>
 			var coldboxReservedClasses = "coldbox.system.Plugin,coldbox.system.EventHandler,coldbox.system.Interceptor";
 			var x = 1;
 			
-			/* Append Coldbox Classes */
+			// Append Coldbox Classes
 			arguments.stopRecursion = listAppend(arguments.stopRecursion,coldboxReservedClasses);
 			
-			/* Try to find a match */
+			// Try to find a match
 			for(x=1;x lte listLen(arguments.stopRecursion); x=x+1){
 				if( CompareNoCase(listGetAt(arguments.stopRecursion,x),arguments.classname) eq 0){
 					return true;

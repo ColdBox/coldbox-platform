@@ -74,6 +74,17 @@ Modification History:
 		<cfreturn getColdbox().getLogBox()>
 	</cffunction>
 	
+	<!--- Get the app's root Logger --->
+	<cffunction name="getRootLogger" output="false" access="public" returntype="coldbox.system.logging.Logger" hint="Get the root logger reference.">
+		<cfreturn getLogBox().getRootLogger()>
+	</cffunction>
+	
+	<!--- Get a logger --->
+	<cffunction name="getLogger" output="false" access="public" returntype="coldbox.system.logging.Logger" hint="Get a named logger reference.">
+		<cfargument name="category" type="string" required="true" hint="The category name to use in this logger."/>
+		<cfreturn getLogBox().getLogger(arguments.category)>
+	</cffunction>
+	
 	<!--- Get Context Facade --->
 	<cffunction name="getRequestContext" access="public" returntype="coldbox.system.beans.RequestContext" hint="Tries to retrieve the request context object" output="false" >
 		<cfreturn getColdbox().getRequestService().getContext()>

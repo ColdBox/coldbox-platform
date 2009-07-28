@@ -4,13 +4,11 @@
 	<Settings>
 		<Setting name="AppName" 					value="ColdBox TestHarness"/>
 		<Setting name="AppMapping"					value="/coldbox/testharness" />
+		
 		<Setting name="DebugMode" 					value="false"/>
 		<Setting name="DebugPassword" 				value=""/>
 		<Setting name="ReinitPassword" 				value=""/>
-		<Setting name="EventName" 					value="event"/>
-		<Setting name="EnableColdfusionLogging" 	value="false"/>
-		<Setting name="EnableColdboxLogging" 		value="false"/>
-		<Setting name="ColdboxLogsLocation"			value="logs" />
+		
 		<Setting name="DefaultEvent" 				value="ehGeneral.dspHello"/>
 		<Setting name="RequestStartHandler" 		value=""/>
 		<Setting name="RequestEndHandler" 			value=""/>
@@ -26,20 +24,23 @@
 		<Setting name="ConfigAutoReload"			value="false" />
 		<Setting name="ExceptionHandler"     		value="" />
 		<Setting name="onInvalidEvent" 				value="" />
+		
 		<Setting name="PluginsExternalLocation" 	value="coldbox.testing.testplugins"/>
 		<Setting name="ViewsExternalLocation"		value="/coldbox/testing/testviews" />
 		<Setting name="HandlersExternalLocation" 	value="coldbox.testing.testhandlers"/>
 		<Setting name="ModelsExternalLocation"   	value="coldbox.testing.testmodel" />
+		
 		<Setting name="HandlerCaching" 				value="false"/>
 		<Setting name="EventCaching" 				value="false"/>
-		<Setting name="IOCFramework" 				value="lightwire"/>
-		<Setting name="IOCFrameworkReload" 			value="false"/>
-		<Setting name="IOCDefinitionFile"		 	value="config/coldspring.xml.cfm"/>
-		<Setting name="IOCObjectCaching"			value="false"/>
+		
 		<Setting name="RequestContextDecorator"		value="coldbox.testharness.model.myRequestContextDecorator" />
 		<Setting name="ProxyReturnCollection" 		value="false"/>
 	</Settings>
 
+	<IOC>
+		<Framework type="lightwire" reload="false">config/coldspring.xml.cfm</Framework>
+	</IOC>
+	
 	<YourSettings>
 		<Setting name="MyStruct" value="{name:'luis majano', email:'info@email.com', active:'true'}"/>
 		<Setting name="MyArray"  value="[1,2,3,4,5,6]"/>
@@ -96,8 +97,6 @@
 			<Property name="debugMode">false</Property>
 			<Property name="enableSetterInjection">false</Property>
 		</Interceptor>
-		
-		
 	</Interceptors>
 
 </Config>

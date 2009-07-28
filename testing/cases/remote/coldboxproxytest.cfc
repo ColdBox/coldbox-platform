@@ -76,6 +76,7 @@ Description :
 		var results = "";
 		
 		//Announce interception
+		makePublic(proxy,"announceInterception");
 		results = proxy.announceInterception(state='onLog',interceptData='');
 		AssertTrue(results,"onLog intercepted");
 		
@@ -87,32 +88,34 @@ Description :
 		var proxy = CreateObject("component","coldbox.testharness.coldboxproxy");
 		var local = structnew();
 		
-		/* Get Method Injector */
-		getController().getPlugin("MethodInjector").start(proxy);
-		/* Verify Test */
-		proxy.invokerMixin("verifyColdBox");
 		/* GetPlugin */
-		local.plugin = proxy.invokerMixin(method='getPlugin',argList="plugin=Logger");
-		AssertTrue( isObject(local.plugin) );
+		makePublic(proxy, "getPlugin");
+		local.plugin = proxy.getPlugin("Logger");
 		
 		/* Get IOCFactory */
-		local.obj = proxy.invokerMixin(method='getIoCFactory');
-		AssertTrue( isObject(local.obj) );
+		makePublic(proxy, "getIoCFactory");
+		local.obj = proxy.getIoCFactory();
 		
 		/* Get Bean */
-		local.obj = proxy.invokerMixin(method='getBean',argList="beanName=testModel");
-		AssertTrue( isObject(local.obj) );
+		makePublic(proxy, "getBean");
+		local.obj = proxy.getBean(beanName="testModel");
 		
 		/* Get ColdBoxOCM */
-		local.obj = proxy.invokerMixin(method='getColdBoxOCM');
-		AssertTrue( isObject(local.obj) );
+		makePublic(proxy, "getColdBoxOCM");
+		local.obj = proxy.getColdBoxOCM();
 		
 		/* Get Model Object */
-		local.obj = proxy.invokerMixin(method="getModel",argList="name=testModel");
-		AssertTrue( isObject(local.obj) );
+		makePublic(proxy, "getModel");
+		local.obj = proxy.getModel(name="testModel");
 		
-		/* Stop Injection */
-		getController().getPlugin("MethodInjector").stop(proxy);
+		makePublic(proxy,"getLogBox");
+		makePublic(proxy,"getRootLogger");
+		makePublic(proxy,"getLogger");
+		
+		assertEquals(getController().getLogBox(), proxy.getLogBox());
+		assertEquals(getController().getLogBox().getRootLogger(), proxy.getRootLogger());
+		assertEquals(getController().getLogBox().getLogger('unittest'), proxy.getLogger('unittest'));
+	
 		</cfscript>
 	</cffunction>
 	

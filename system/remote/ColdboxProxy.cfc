@@ -227,6 +227,17 @@ Description :
 		<cfreturn getController().getLogBox()>
 	</cffunction>
 	
+	<!--- Get the app's root Logger --->
+	<cffunction name="getRootLogger" output="false" access="private" returntype="coldbox.system.logging.Logger" hint="Get the root logger reference.">
+		<cfreturn getLogBox().getRootLogger()>
+	</cffunction>
+	
+	<!--- Get a logger --->
+	<cffunction name="getLogger" output="false" access="private" returntype="coldbox.system.logging.Logger" hint="Get a named logger reference.">
+		<cfargument name="category" type="string" required="true" hint="The category name to use in this logger."/>
+		<cfreturn getLogBox().getLogger(arguments.category)>
+	</cffunction>
+	
 	<!--- Facade: Get a plugin --->
 	<cffunction name="getPlugin" access="private" returntype="any" hint="Plugin factory, returns a new or cached instance of a plugin." output="false">
 		<!--- ************************************************************* --->

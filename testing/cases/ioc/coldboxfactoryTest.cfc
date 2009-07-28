@@ -18,8 +18,6 @@ Description :
 		setConfigMapping(ExpandPath(instance.AppMapping & "/config/coldbox.xml.cfm"));
 		//Call the super setup method to setup the app.
 		super.setup();
-		//place controller in app scope for this.
-		application.cbController = getController();
 		</cfscript>
 	</cffunction>
 	
@@ -41,7 +39,6 @@ Description :
 		obj = factory.getRequestCollection();
 		AssertEquals(getController().getREquestService().getContext().getCollection(), obj, "Request Collection");
 		
-		
 		obj = factory.getColdboxOCM();
 		AssertEquals(getController().getColdBoxOCM(), obj, "OCM");
 		
@@ -58,14 +55,17 @@ Description :
 		
 		obj = factory.getMailSettings();
 		AssertTrue( isStruct(obj.getMemento()), "Mail Settings");
+		
+		obj = factory.getLogBox();
+		assertEquals(obj, getController().getLogBox());
+		
+		obj = factory.getRootLogger();
+		assertEquals(obj, getController().getLogBox().getRootLogger());
+		
+		obj = factory.getLogger('unittest');
+		assertEquals(obj, getController().getLogBox().getLogger('unittest'));
 		</cfscript>
 	</cffunction>
 	
-	<!--- tearDown --->
-	<cffunction name="tearDown" output="false" access="public" returntype="void" hint="">
-		<cfscript>
-		structDelete(application,"cbController");
-		</cfscript>
-	</cffunction>
 	
 </cfcomponent>

@@ -6,9 +6,13 @@ www.coldboxframework.com | www.luismajano.com | www.ortussolutions.com
 
 Author 	 		: Luis Majano
 Date     		: September 23, 2005
-Description		: This is the main ColdBox front Controller.
+Description		: 
+
+This is the ColdBox Front Controller that dispatches events and manages your ColdBox application.  
+Only one instance of a specific ColdBox application exists.
+
 ----------------------------------------------------------------------->
-<cfcomponent name="controller" hint="This is the ColdBox Front Controller." output="false" serializable="false">
+<cfcomponent name="controller" hint="This is the ColdBox Front Controller that dispatches events and manages your ColdBox application." output="false" serializable="false">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
@@ -17,15 +21,14 @@ Description		: This is the main ColdBox front Controller.
 		services = structnew();
 	</cfscript>
 
-	<cffunction name="init" returntype="coldbox.system.Controller" access="Public" hint="I am the constructor" output="false">
+	<cffunction name="init" returntype="coldbox.system.Controller" access="Public" hint="Constructor" output="false">
 		<cfargument name="AppRootPath" type="string" required="true" hint="The app Root Path"/>
 		<cfscript>
-			var logBoxConfig = "";
 			
 			//Public Available Engine Utility
 			this.oCFMLENGINE = CreateObject("component","coldbox.system.util.CFMLEngine").init();
 			
-			// Set Main ColdBox Properties
+			// Set Main Application Properties
 			setColdboxInitiated(false);
 			setAspectsInitiated(false);
 			setAppStartHandlerFired(false);
@@ -35,11 +38,6 @@ Description		: This is the main ColdBox front Controller.
 			// Init Configuration structures
 			setConfigSettings(structnew());
 			setColdboxSettings(structnew());
-			
-			// Create LogBox & Initial Logger
-			logBoxConfig = createObject("component","coldbox.system.logging.config.LogBoxConfig").init(expandPath("/coldbox/system/config/LogBox.xml"));
-			setLogBox(createObject("component","coldbox.system.logging.LogBox").init(logBoxConfig));
-			setLogger(getLogBox().getLogger("coldbox.system.Controller"));
 			
 			//Create & init ColdBox Services
 			if ( this.oCFMLENGINE.isMT() ){
@@ -57,8 +55,12 @@ Description		: This is the main ColdBox front Controller.
 			setInterceptorService( CreateObject("component", "coldbox.system.services.InterceptorService").init(this) );
 			setHandlerService( CreateObject("component", "coldbox.system.services.HandlerService").init(this) );
 			
+			// LogBox Configuration & Creation
+			setLogBox( getLoaderService().createLogBox() );
+			setLogger(getLogBox().getLogger("coldbox.system.Controller"));
+			
 			// Log Creation
-			getLogger().debug("ColdBox Application Initialized: #arguments.appRootPath#");
+			getLogger().debug("ColdBox Application Initialized Successfully at #arguments.appRootPath#");
 			
 			//Return instance
 			return this;

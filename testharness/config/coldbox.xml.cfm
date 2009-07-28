@@ -67,7 +67,10 @@
 	<LogBox>
 		<!-- Appender Definitions -->
 		<Appender name="myconsole" class="coldbox.system.logging.appenders.ConsoleAppender" />
-		<Appender name="MyCF" class="coldbox.system.logging.appenders.CFAppender" />
+		<Appender name="TracerAppender" class="coldbox.system.logging.appenders.TracerAppender" />
+		<Appender name="CFAppender" class="coldbox.system.logging.appenders.CFAppender">
+			<Property name="fileName">${AppName}</Property>
+		</Appender>
 		<Appender name="FileAppender" class="coldbox.system.logging.appenders.RollingFileAppender">
 			<Property name="filePath">logs</Property>
 			<Property name="fileName">${AppName}</Property>

@@ -147,6 +147,17 @@ Modification History:
 		</cfscript>
 	</cffunction>
 	
+	<!--- createLogBox --->
+    <cffunction name="createLogBox" output="false" access="public" returntype="coldbox.system.logging.LogBox" hint="Create a running LogBox instance configured using ColdBox's default config">
+    	<cfscript>
+    		var logBoxConfig = "";
+			
+			logBoxConfig = createObject("component","coldbox.system.logging.config.LogBoxConfig").init(expandPath("/coldbox/system/config/LogBox.xml"));
+			
+			return createObject("component","coldbox.system.logging.LogBox").init(logBoxConfig);
+    	</cfscript>
+    </cffunction>
+	
 <!------------------------------------------- PRIVATE ------------------------------------------->
 
 	
