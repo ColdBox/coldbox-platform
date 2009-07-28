@@ -243,7 +243,7 @@ Description :
 		<!--- Check if no view has been set in the Request Collection --->
 		<cfif arguments.event.getCurrentView() eq "">
 			<!--- Implicit Views according to event --->
-			<cfset arguments.event.setView(replace(arguments.event.getCurrentEvent(),".","/","all"))>
+			<cfset arguments.event.setView(lcase(replace(arguments.event.getCurrentEvent(),".","/","all")))>
 			<!--- Check if default view set, if yes, then set it. --->
 			<cfif arguments.event.getDefaultView() neq "">
 				<!--- Set the Default View --->
