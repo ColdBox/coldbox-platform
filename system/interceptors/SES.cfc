@@ -207,6 +207,9 @@ Description :
 		}		
 		// Cleanup initial /
 		if( left(thisRoute.pattern,1) IS "/" ){
+			if( thisRoute.pattern eq "/" ){ 
+				$throw(message="Pattern is empty, please verify the pattern is valid. Route: #thisRoute.toString()#",type="SES.InvalidRoute");
+			}
 			thisRoute.pattern = right(thisRoute.pattern,len(thisRoute.pattern)-1);
 		}
 		
