@@ -112,7 +112,8 @@ Modification History:
 				return collection[arguments.name];
 			}
 			else if ( isSimpleValue(arguments.defaultValue) and arguments.defaultValue eq "NONE" ){
-				$throw("The variable: #arguments.name# is undefined in the request collection.","","RequestContext.ValueNotFound");
+				$throw("The variable: #arguments.name# is undefined in the request collection.",
+					   "Default: #arguments.defaultValue#, Private:#arguments.private#, Keys #structKeyList(collection)#","RequestContext.ValueNotFound");
 			}
 			else{
 				return arguments.defaultValue;
@@ -299,11 +300,11 @@ Modification History:
 	</cffunction>
 
 	<cffunction name="getDebugPanelFlag" access="public" returntype="boolean" hint="I return the debugpanel flag for this request.">
-		<cfreturn getValue(name="coldbox_debugpanel",value=true,private=true)>
+		<cfreturn getValue(name="coldbox_debugpanel",defaultValue=true,private=true)>
 	</cffunction>
 	
 	<cffunction name="isProxyRequest" access="public" returntype="boolean" hint="Is this a coldbox proxy request">
-		<cfreturn getValue(name="coldbox_proxyrequest",default=false,private=true)>
+		<cfreturn getValue(name="coldbox_proxyrequest",defaultValue=false,private=true)>
 	</cffunction>
 	
 	<cffunction name="setProxyRequest" access="public" returntype="void" hint="Set that this is a proxy request">
@@ -321,7 +322,7 @@ Modification History:
 	</cffunction>
 	
 	<cffunction name="isNoRender" access="public" returntype="boolean" hint="Is this a no render request">
-		<cfreturn getValue(name="coldbox_norender",default=false,private=true)>
+		<cfreturn getValue(name="coldbox_norender",defaultValue=false,private=true)>
 	</cffunction>
 	
 	<cffunction name="getEventName" access="public" returntype="any" output="false" hint="The event name used by the application: String">
@@ -393,7 +394,7 @@ Modification History:
 		<cfset setValue(name="cbox_eventCacheableEntry",value=arguments.mdCacheEntry,private=true)>
 	</cffunction>
 	<cffunction name="getEventCacheableEntry" access="public" returntype="any" hint="Get the event cacheable entry" output="false" >
-		<cfreturn getValue(name="cbox_eventCacheableEntry",default=structnew(),private=true)>
+		<cfreturn getValue(name="cbox_eventCacheableEntry",defaultValue=structnew(),private=true)>
 	</cffunction>
 	<cffunction name="removeEventCacheableEntry" access="public" returntype="void" hint="Remove the cacheable entry" output="false" >
 		<cfset removeValue(name='cbox_eventCacheableEntry',private=true)>
@@ -412,7 +413,7 @@ Modification History:
 		</cfscript>
 	</cffunction>
 	<cffunction name="getViewCacheableEntry" access="public" returntype="any" hint="Get the event cacheable entry" output="false" >
-		<cfreturn getValue(name="cbox_viewCacheableEntry",default=structnew(),private=true)>
+		<cfreturn getValue(name="cbox_viewCacheableEntry",defaultValue=structnew(),private=true)>
 	</cffunction>
 	
 	<cffunction name="isSES" access="public" output="false" returntype="boolean" hint="Determine if you are in SES mode.">
@@ -545,7 +546,7 @@ Modification History:
 	</cffunction>
 	
 	<cffunction name="getrenderData" access="public" output="false" returntype="struct" hint="Get the renderData structure.">
-		<cfreturn getValue(name="cbox_renderdata",default=structnew(),private=true)/>
+		<cfreturn getValue(name="cbox_renderdata",defaultValue=structnew(),private=true)/>
 	</cffunction>
 
 	<cffunction name="getHTTPMethod" access="public" returntype="string" hint="Get the HTTP Request Method Type" output="false" >
