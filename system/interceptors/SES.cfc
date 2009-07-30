@@ -19,7 +19,7 @@ Description :
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
 	<cfscript>
-		/* Reserved Keys as needed for cleanups */
+		// Reserved Keys as needed for cleanups
 		instance.RESERVED_KEYS = "handler,action,view,viewNoLayout";
 		instance.RESERVED_ROUTE_ARGUMENTS = "pattern,regexpattern,matchVariables,packageresolverexempt,patternParams,valuePairTranslation";
 	</cfscript>
@@ -28,27 +28,29 @@ Description :
 		<cfscript>
 			var configFilePath = "/";
 			var controller = getController();
+			var local = structnew();
 			
-			/* If AppMapping is not Blank check */
+			// If AppMapping is not Blank check
 			if( controller.getSetting('AppMapping') neq "" ){
 				configFilePath = configFilePath & controller.getSetting('AppMapping') & "/";
 			}
 			
-			/* Setup the default interceptor properties */
+			// Setup the default interceptor properties
 			setRoutes( ArrayNew(1) );
+			setLooseMatching(false);
 			setUniqueURLs(true);
 			setEnabled(true);
 			setDebugMode(false);
 			
-			/* Verify the properties */
+			// Verify the config file, else set it to our convention.
 			if( not propertyExists('configFile') ){
-				$throw('The configFile property has not been defined. Please define it.','','interceptors.SES.configFilePropertyNotDefined');
+				setProperty('configFile','config/Routes.cfm');
 			}
 			
-			/* Setup the config Path */
+			// Setup the config Path
 			configFilePath = configFilePath & reReplace(getProperty('ConfigFile'),"^/","");
 			
-			/* We are ready to roll. Import config to setup the routes. */
+			// We are ready to roll. Import config to setup the routes.
 			try{
 				$include(configFilePath);
 			}
@@ -56,17 +58,12 @@ Description :
 				$throw("Error including config file: #e.message#",e.detail,"interceptors.SES.executingConfigException");
 			}
 			
-			/* Loose Matching Property: default = false */
-			if( not propertyExists('looseMatching') OR NOT isBoolean(getProperty('looseMatching')) ){
-				setProperty('looseMatching',false);
-			}
-			
-			/* Validate the base URL */
+			// Validate the base URL
 			if ( len(getBaseURL()) eq 0 ){
 				$throw('The baseURL property has not been defined. Please define it using the setBaseURL() method.','','interceptors.SES.invalidPropertyException');
 			}
 			
-			/* Save the base URL in the application settings */
+			// Save the base URL in the application settings
 			setSetting('sesBaseURL', getBaseURL() );
 			setSetting('htmlBaseURL', replacenocase(getBaseURL(),"index.cfm",""));
 		</cfscript>
@@ -289,6 +286,15 @@ Description :
 	<cffunction name="getBaseURL" access="public" output="false" returntype="string" hint="Get BaseURL">
 		<cfreturn instance.BaseURL/>
 	</cffunction>
+	
+	<!--- Get/set Loose Matching --->
+	<cffunction name="getLooseMatching" access="public" returntype="boolean" output="false" hint="Get the current loose matching property">
+    	<cfreturn instance.looseMatching>
+    </cffunction>
+    <cffunction name="setLooseMatching" access="public" returntype="void" output="false" hint="Set the loose matching property of the interceptor">
+    	<cfargument name="looseMatching" type="boolean" required="true">
+    	<cfset instance.looseMatching = arguments.looseMatching>
+    </cffunction>
 	
 	<!--- Getter/Setter Enabled --->
 	<cffunction name="setEnabled" access="public" output="false" returntype="void" hint="Set whether the interceptor is enabled or not.">
@@ -553,8 +559,8 @@ Description :
 			for(i=1; i lte _routesLength; i=i+1){
 				/* Match The route to request String */
 				match = reFindNoCase(_routes[i].regexPattern,requestString,1,true);
-				if( (match.len[1] IS NOT 0 AND getProperty('looseMatching')) OR
-				    (NOT getProperty('looseMatching') AND match.len[1] IS NOT 0 AND match.pos[1] EQ 1) ){
+				if( (match.len[1] IS NOT 0 AND getLooseMatching()) OR
+				    (NOT getLooseMatching() AND match.len[1] IS NOT 0 AND match.pos[1] EQ 1) ){
 					/* Setup the found Route */
 					foundRoute = _routes[i];
 					/* Debug mode? */
