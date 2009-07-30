@@ -81,7 +81,7 @@ Modification History:
 	
 	<!--- Get a logger --->
 	<cffunction name="getLogger" output="false" access="public" returntype="coldbox.system.logging.Logger" hint="Get a named logger reference.">
-		<cfargument name="category" type="string" required="true" hint="The category name to use in this logger."/>
+		<cfargument name="category" type="any" required="true" hint="The category name to use in this logger or pass in the target object will log from and we will inspect the object and use its metadata name."/>
 		<cfreturn getLogBox().getLogger(arguments.category)>
 	</cffunction>
 	

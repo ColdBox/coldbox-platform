@@ -580,26 +580,28 @@ Description: This is the framework's simple bean factory.
 				oMethodInjector.start(targetObject);
 				/* Loop over dependencies and inject. */
 				for(x=1; x lte dependenciesLength; x=x+1){
-					/* Get Dependency */
+					// Get Dependency
 					thisDependency = getDSLDependency(definition=targetDIEntry.dependencies[x],debugMode=arguments.debugmode);
-					/* Validate it */
+					
+					// Was dependency Found?
 					if( isSimpleValue(thisDependency) and thisDependency eq instance.NOT_FOUND ){
-						/* Only log if debugmode, else no injection */
 						if( arguments.debugMode ){
 							getPlugin("Logger").warn("Dependency: #targetDIEntry.dependencies[x].toString()# Not Found");
 						}
+						continue;
 					}
-					else{
-						/* Inject dependency*/
-						injectBean(targetBean=targetObject,
-								   beanName=targetDIEntry.dependencies[x].name,
-								   beanObject=thisDependency,
-								   scope=targetDIEntry.dependencies[x].scope);
-						/* Debug Mode Check */
-						if( arguments.debugMode ){
-							getPlugin("Logger").info("Dependency: #targetDIEntry.dependencies[x].toString()# --> injected into #getMetadata(targetObject).name#.");
-						}
+					
+					// Inject dependency
+					injectBean(targetBean=targetObject,
+							   beanName=targetDIEntry.dependencies[x].name,
+							   beanObject=thisDependency,
+							   scope=targetDIEntry.dependencies[x].scope);
+					
+					// Debug Mode Check
+					if( arguments.debugMode ){
+						getPlugin("Logger").info("Dependency: #targetDIEntry.dependencies[x].toString()# --> injected into #getMetadata(targetObject).name#.");
 					}
+					
 				}//end for loop of dependencies.
 				
 				// Process After ID Complete
@@ -821,7 +823,8 @@ Description: This is the framework's simple bean factory.
 					thisLocationKey = getToken(thisType,2,":");
 					switch( thisLocationKey ){
 						case "root" : { locatedDependency = thisLogBox.getRootLogger(); break; }
-					}				
+					}		
+					break;		
 				}
 				// Named Loggers
 				case 3 : {
@@ -832,7 +835,7 @@ Description: This is the framework's simple bean factory.
 						// Get a named Logger
 						case "logger" : { locatedDependency = thisLogBox.getLogger(thisLocationKey); break; }
 					}
-					
+					break;
 				} // end level 3 main DSL
 			}
 		
