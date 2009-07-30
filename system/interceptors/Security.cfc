@@ -123,7 +123,7 @@ For the latest usage, please visit the wiki.
 					setValidator( getModel(getProperty('validatorModel') ) );
 				}
 				catch(Any e){
-					$throw("Error creating validatorModel",e.message & e.detail, "interceptors.Security.validatorCreationException");
+					$throw("Error creating validatorModel: #getProperty('validatorModel')#",e.message & e.detail & e.tagContext.toString(), "interceptors.Security.validatorCreationException");
 				}
 			}
 		</cfscript>
