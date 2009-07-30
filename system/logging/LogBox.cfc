@@ -118,12 +118,15 @@ Description :
 
 	<!--- getLogger --->
 	<cffunction name="getLogger" output="false" access="public" returntype="coldbox.system.logging.Logger" hint="Get a logger object configured with a category name and appenders. If not configured, then it reverts to the root logger defined for this instance of LogBox">
-		<cfargument name="category" type="string" required="true" hint="The category name to use in this logger."/>
+		<cfargument name="category" type="any" required="true" hint="The category name to use in this logger or pass in the target object will log from and we will inspect the object and use its metadata name."/>
 		<cfscript>
 			var args = structnew();
 			var categoryConfig = "";
 			var oLogger = "";
 			var root = getRootLogger();
+			
+			// is category object?
+			if( isObject(arguments.category) ){ arguments.category = getMetadata(arguments.category).name; }
 			
 			//trim cat, just in case
 			arguments.category = trim(arguments.category);
