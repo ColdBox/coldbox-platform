@@ -12,15 +12,16 @@ Description :
 Modification History:
 
 ----------------------------------------------------------------------->
-<cfcomponent name="RequestContext"
-			 hint="I am a coldbox request"
-			 output="false">
+<cfcomponent hint="I am a coldbox request" output="false">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 	
 	<cfscript>
 		variables.instance = structnew();
+		
+		// Create Properties
 		instance.context = structnew();
+		instance.privateContext = structnew();
 		instance.defaultLayout = "";
 		instance.defaultView = "";
 		instance.ViewLayouts = "";
@@ -38,11 +39,11 @@ Modification History:
 		<cfargument name="properties" 		type="any" 	required="true" hint="The context properties struct">
 		<!--- ************************************************************* --->
 		<cfscript>
-			/* Append Collections */
+			// Append incoming Collections
 			collectionAppend(arguments.struct1);
 			collectionAppend(arguments.struct2);
 			
-			/* Setup context properties as they got sent in */
+			// Setup context properties as they got sent in
 			setDefaultLayout(arguments.properties.DefaultLayout);
 			setDefaultView(arguments.properties.DefaultView);
 			setViewLayouts(arguments.properties.ViewLayouts);
@@ -51,7 +52,6 @@ Modification History:
 			setisSES(arguments.properties.isSES);
 			setsesBaseURL(arguments.properties.sesBaseURL);
 			
-			/* Return Context */
 			return this;
 		</cfscript>		
 	</cffunction>
@@ -60,39 +60,56 @@ Modification History:
 
 	<cffunction name="getCollection" returntype="any" access="Public" hint="I Get a reference or deep copy of the request Collection: Returns a structure" output="false">
 		<cfargument name="DeepCopyFlag" hint="Default is false, gives a reference to the collection. True, creates a deep copy of the collection." type="boolean" required="no" default="false">
+		<cfargument name="private" type="boolean" required="false" default="false" hint="Use public or private request collection"/>
 		<cfscript>
-			if ( arguments.DeepCopyFlag )
-				return duplicate(instance.context);
-			else
-				return instance.context;
+			// Private Collection
+			if( arguments.private ){ 
+				if( arguments.deepCopyFlag ){ return duplicate(instance.privateContext); }
+				return instance.privateContext;
+			}
+			// Public Collection
+			if ( arguments.DeepCopyFlag ){ return duplicate(instance.context); }
+			return instance.context;
 		</cfscript>
 	</cffunction>
 
-	<cffunction name="setCollection" access="public" returntype="void" output="false" hint="Overwrite the collection with another collection">
-		<cfargument name="collection" type="struct" required="true">
-		<cfset instance.context = arguments.collection>
-	</cffunction>
-
 	<cffunction name="clearCollection" access="public" returntype="void" output="false" hint="Clear the entire collection">
-		<cfset structClear(instance.context)>
+		<cfargument name="private" type="boolean" required="false" default="false" hint="Use public or private request collection"/>
+		<cfscript>
+			if( arguments.private ) { structClear(instance.privateContext); }
+			else { structClear(instance.context); }
+		</cfscript>
 	</cffunction>
 
 	<cffunction name="collectionAppend" access="public" returntype="void" output="false" hint="Append a structure to the collection, with overwrite or not. Overwrite = false by default">
 		<cfargument name="collection" type="any"  required="true" hint="A collection to append">
 		<cfargument name="overwrite"  type="boolean" required="false" default="false" hint="If you need to override data in the collection, set this to true.">
-		<cfset structAppend(instance.context,arguments.collection, arguments.overwrite)>
+		<cfargument name="private" type="boolean" required="false" default="false" hint="Use public or private request collection"/>
+		<cfscript>
+			if( arguments.private ) { structAppend(instance.privateContext,arguments.collection, arguments.overwrite); }
+			else { structAppend(instance.context,arguments.collection, arguments.overwrite); }
+		</cfscript>
 	</cffunction>
 
 	<cffunction name="getSize" access="public" returntype="numeric" output="false" hint="The number of elements in the collection">
-		<cfreturn structCount(instance.context)>
+		<cfargument name="private" type="boolean" required="false" default="false" hint="Use public or private request collection"/>
+		<cfscript>
+			if( arguments.private ){ return structCount(instance.privateContext); }
+			return structCount(instance.context);
+		</cfscript>
 	</cffunction>
 
 	<cffunction name="getValue" returntype="Any" access="Public" hint="I Get a value from the request collection." output="false">
 		<cfargument name="name"         type="any" required="true" hint="Name of the variable to get from the request collection">
 		<cfargument name="defaultValue"	type="any" required="false" default="NONE" hint="Default value to return if not found.">
+		<cfargument name="private" 		type="boolean" required="false" default="false" hint="Use public or private request collection"/>
 		<cfscript>
-			if ( isDefined("instance.context.#arguments.name#") ){
-				return structFind(instance.context,arguments.name);
+			var collection = instance.context;
+			
+			if( arguments.private ){ collection = instance.privateContext; }
+			
+			if( structKeyExists(collection, arguments.name) ){
+				return collection[arguments.name];
 			}
 			else if ( isSimpleValue(arguments.defaultValue) and arguments.defaultValue eq "NONE" ){
 				$throw("The variable: #arguments.name# is undefined in the request collection.","","RequestContext.ValueNotFound");
@@ -106,37 +123,56 @@ Modification History:
 	<cffunction name="getTrimValue" returntype="Any" access="Public" hint="I Get a value from the request collection and if simple value, I will trim it." output="false">
 		<cfargument name="name"         type="any" required="true" hint="Name of the variable to get from the request collection">
 		<cfargument name="defaultValue"	type="any" required="false" default="NONE" hint="Default value to return if not found.">
+		<cfargument name="private" 		type="boolean" required="false" default="false" hint="Use public or private request collection"/>
 		<cfscript>
 			var value = getValue(argumentCollection=arguments);
-			/* Verify if Simple */
+			
+			// Verify if Simple
 			if( isSimpleValue(value) ){ return trim(value); }
-			else{ return value;	}
+			
+			return value;
 		</cfscript>
 	</cffunction>
 
 	<cffunction name="setValue" access="Public" hint="I Set a value in the request collection" output="false" returntype="void">
 		<cfargument name="name"  hint="The name of the variable to set. String" type="any" >
 		<cfargument name="value" hint="The value of the variable to set" type="Any" >
-		<cfset "instance.context.#arguments.name#" = arguments.value>
+		<cfargument name="private" 		type="boolean" required="false" default="false" hint="Use public or private request collection"/>
+		<cfscript>
+			var collection = instance.context;
+			if( arguments.private ) { collection = instance.privateContext; }
+		
+			collection[arguments.name] = arguments.value;
+		</cfscript>
 	</cffunction>
 
 	<cffunction name="removeValue" access="Public" hint="I remove a value in the request collection" output="false" returntype="void">
 		<cfargument name="name"  hint="The name of the variable to remove." type="string" >
+		<cfargument name="private" 		type="boolean" required="false" default="false" hint="Use public or private request collection"/>
 		<cfscript>
+			var collection = instance.context;
+			if( arguments.private ){ collection = instance.privateContext; }
+			
 			if( valueExists(arguments.name) ){
-				structDelete(instance.context,arguments.name);
+				structDelete(collection,arguments.name);
 			}
 		</cfscript>
 	</cffunction>
 
 	<cffunction name="valueExists" returntype="boolean" access="Public"	hint="I Check if a value exists in the request collection." output="false">
 		<cfargument name="name" hint="Name of the variable to find in the request collection: String" type="any">
-		<cfreturn isDefined("instance.context.#arguments.name#")>
+		<cfargument name="private" 		type="boolean" required="false" default="false" hint="Use public or private request collection"/>
+		<cfscript>
+			var collection = instance.context;
+			if( arguments.private ){ collection = instance.privateContext; }
+			return structKeyExists(collection, arguments.name);
+		</cfscript>
 	</cffunction>
 
 	<cffunction name="paramValue" returntype="void" access="Public"	hint="Just like cfparam, but for the request collection" output="false">
 		<cfargument name="name" 	hint="Name of the variable to param in the request collection: String" 	type="any">
 		<cfargument name="value" 	hint="The value of the variable to set if not found." 			type="Any" >
+		<cfargument name="private" 		type="boolean" required="false" default="false" hint="Use public or private request collection"/>
 		<cfscript>
 			if ( not valueExists(arguments.name) ){
 				setValue(arguments.name, arguments.value);
@@ -257,35 +293,35 @@ Modification History:
 	    </cfscript>
 	</cffunction>
 
-	<cffunction name="showdebugpanel" access="public" returntype="void" hint="I can override to show or not the debug panel. Very useful in AJAX debugging">
+	<cffunction name="showDebugPanel" access="public" returntype="void" hint="I can override to show or not the debug panel. Very useful in AJAX debugging">
 		<cfargument name="show" type="boolean" required="true">
-		<cfset setValue("coldbox_debugpanel",arguments.show)>
+		<cfset setValue(name="coldbox_debugpanel",value=arguments.show,private=true)>
 	</cffunction>
 
-	<cffunction name="getdebugpanelFlag" access="public" returntype="boolean" hint="I return the debugpanel flag for this request.">
-		<cfreturn getValue("coldbox_debugpanel",true)>
+	<cffunction name="getDebugPanelFlag" access="public" returntype="boolean" hint="I return the debugpanel flag for this request.">
+		<cfreturn getValue(name="coldbox_debugpanel",value=true,private=true)>
 	</cffunction>
 	
 	<cffunction name="isProxyRequest" access="public" returntype="boolean" hint="Is this a coldbox proxy request">
-		<cfreturn getValue("coldbox_proxyrequest",false)>
+		<cfreturn getValue(name="coldbox_proxyrequest",default=false,private=true)>
 	</cffunction>
 	
 	<cffunction name="setProxyRequest" access="public" returntype="void" hint="Set that this is a proxy request">
-		<cfset setValue("coldbox_proxyrequest",true)>
+		<cfset setValue(name="coldbox_proxyrequest",value=true,private=true)>
 	</cffunction>
 	
 	<cffunction name="NoRender" access="public" returntype="void" hint="Set the flag that tells the framework not to render, just execute">
 		<cfargument name="remove" required="false" type="boolean" default="false" hint="If true, it removes the flag, else its set.">
 		<cfscript>
 			if (arguments.remove eq false)
-				setValue("coldbox_norender",true);
+				setValue(name="coldbox_norender",value=true,private=true);
 			else
-				removeValue("coldbox_norender");
+				removeValue(name="coldbox_norender",private=true);
 		</cfscript>		
 	</cffunction>
 	
 	<cffunction name="isNoRender" access="public" returntype="boolean" hint="Is this a no render request">
-		<cfreturn getValue("coldbox_norender",false)>
+		<cfreturn getValue(name="coldbox_norender",default=false,private=true)>
 	</cffunction>
 	
 	<cffunction name="getEventName" access="public" returntype="any" output="false" hint="The event name used by the application: String">
@@ -349,35 +385,34 @@ Modification History:
 	
 	<cffunction name="isEventCacheable" access="public" returntype="boolean" hint="Check wether the incoming event has been flagged for caching" output="false" >
 		<cfscript>
-			return valueExists("cbox_eventCacheableEntry");
+			return valueExists(name="cbox_eventCacheableEntry",private=true);
 		</cfscript>
-	</cffunction>
-	
+	</cffunction>	
 	<cffunction name="setEventCacheableEntry" access="public" returntype="void" hint="Set the event cacheable entry" output="false" >
 		<cfargument name="mdCacheEntry" required="true" type="any" hint="The cache entry we need to get to cache">
-		<cfset setValue("cbox_eventCacheableEntry",arguments.mdCacheEntry)>
+		<cfset setValue(name="cbox_eventCacheableEntry",value=arguments.mdCacheEntry,private=true)>
 	</cffunction>
 	<cffunction name="getEventCacheableEntry" access="public" returntype="any" hint="Get the event cacheable entry" output="false" >
-		<cfreturn getValue("cbox_eventCacheableEntry",structnew())>
+		<cfreturn getValue(name="cbox_eventCacheableEntry",default=structnew(),private=true)>
 	</cffunction>
 	<cffunction name="removeEventCacheableEntry" access="public" returntype="void" hint="Remove the cacheable entry" output="false" >
-		<cfset removeValue('cbox_eventCacheableEntry')>
+		<cfset removeValue(name='cbox_eventCacheableEntry',private=true)>
 	</cffunction>
 	
 	<cffunction name="isViewCacheable" access="public" returntype="boolean" hint="Check wether the incoming view has been flagged for caching" output="false" >
 		<cfscript>
-			return valueExists("cbox_viewCacheableEntry");
+			return valueExists(name="cbox_viewCacheableEntry",private=true);
 		</cfscript>
 	</cffunction>
 	
 	<cffunction name="setViewCacheableEntry" access="public" returntype="void" hint="Set the view cacheable entry" output="false" >
 		<cfargument name="mdCacheEntry" required="true" type="any" hint="The cache entry we need to get to cache">
 		<cfscript>
-			setValue("cbox_viewCacheableEntry",arguments.mdCacheEntry);
+			setValue(name="cbox_viewCacheableEntry",value=arguments.mdCacheEntry,private=true);
 		</cfscript>
 	</cffunction>
 	<cffunction name="getViewCacheableEntry" access="public" returntype="any" hint="Get the event cacheable entry" output="false" >
-		<cfreturn getValue("cbox_viewCacheableEntry",structnew())>
+		<cfreturn getValue(name="cbox_viewCacheableEntry",default=structnew(),private=true)>
 	</cffunction>
 	
 	<cffunction name="isSES" access="public" output="false" returntype="boolean" hint="Determine if you are in SES mode.">
@@ -388,18 +423,18 @@ Modification History:
 		<cfset instance.isSES = arguments.isSES/>
 	</cffunction>
 	
-	<cffunction name="getsesBaseURL" access="public" output="false" returntype="string" hint="Get the sesBaseURL">
+	<cffunction name="getSESBaseURL" access="public" output="false" returntype="string" hint="Get the sesBaseURL">
 		<cfreturn instance.sesBaseURL/>
 	</cffunction>
-	<cffunction name="setsesBaseURL" access="public" output="false" returntype="void" hint="Set the sesBaseURL">
+	<cffunction name="setSESBaseURL" access="public" output="false" returntype="void" hint="Set the sesBaseURL">
 		<cfargument name="sesBaseURL" type="string" required="true"/>
 		<cfset instance.sesBaseURL = arguments.sesBaseURL/>
 	</cffunction>
 	
-	<cffunction name="getroutedStruct" access="public" output="false" returntype="struct" hint="Get the routed structure of key-value pairs. What the ses interceptor could match.">
+	<cffunction name="getRoutedStruct" access="public" output="false" returntype="struct" hint="Get the routed structure of key-value pairs. What the ses interceptor could match.">
 		<cfreturn instance.routedStruct/>
 	</cffunction>	
-	<cffunction name="setroutedStruct" access="public" output="false" returntype="void" hint="Set routed struct of key-value pairs. This is used only by the SES interceptor. Not for public use.">
+	<cffunction name="setRoutedStruct" access="public" output="false" returntype="void" hint="Set routed struct of key-value pairs. This is used only by the SES interceptor. Not for public use.">
 		<cfargument name="routedStruct" type="struct" required="true"/>
 		<cfset instance.routedStruct = arguments.routedStruct/>
 	</cffunction>
@@ -504,13 +539,13 @@ Modification History:
 				}
 			}
 			
-			/* Save */
-			setValue('cbox_renderdata',rd);			
+			// Save Rendering data privately.
+			setValue(name='cbox_renderdata',value=rd,private=true);			
 		</cfscript>
 	</cffunction>
 	
 	<cffunction name="getrenderData" access="public" output="false" returntype="struct" hint="Get the renderData structure.">
-		<cfreturn getValue("cbox_renderdata", structnew() )/>
+		<cfreturn getValue(name="cbox_renderdata",default=structnew(),private=true)/>
 	</cffunction>
 
 	<cffunction name="getHTTPMethod" access="public" returntype="string" hint="Get the HTTP Request Method Type" output="false" >
@@ -519,11 +554,8 @@ Modification History:
 	
 	<cffunction name="isSSL" access="public" returntype="boolean" hint="Returns boolean result whether current request is in ssl or not" output="false">
 	    <cfscript>
-			var isSSLRequest = false;
-			if (isBoolean(cgi.server_port_secure) AND cgi.server_port_secure) {
-				isSSLRequest = true;
-			}
-			return isSSLRequest;
+			if (isBoolean(cgi.server_port_secure) AND cgi.server_port_secure) { return true; }
+			return false;
 		</cfscript>
 	</cffunction>
 	

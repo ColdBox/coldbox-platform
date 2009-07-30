@@ -9,8 +9,7 @@ Date     :	September 23, 2005
 Description :
 	This is ColdBox's Renderer plugin.
 ----------------------------------------------------------------------->
-<cfcomponent name="Renderer"
-			 hint="This service renders layouts, views, framework includes, etc."
+<cfcomponent hint="This service renders layouts, views, framework includes, etc."
 			 extends="coldbox.system.Plugin"
 			 output="false"
 			 cache="false">
@@ -24,26 +23,25 @@ Description :
 		<cfscript>
 			super.Init(arguments.controller);
 			
-			/* Plugin Properties */
+			// Plugin Properties
 			setpluginName("Renderer");
 			setpluginVersion("2.1");
 			setpluginDescription("This is the rendering service for ColdBox.");
 			setpluginAuthor("Luis Majano");
 			setpluginAuthorURL("http://www.coldbox.org");
 				
-			/* Set Conventions */
+			// Set Conventions
 			instance.layoutsConvention = controller.getSetting("layoutsConvention",true);
 			instance.viewsConvention = controller.getSetting("viewsConvention",true);
 			instance.appMapping = controller.getSetting("AppMapping");
 			instance.viewsExternalLocation = controller.getSetting('ViewsExternalLocation');
 			instance.layoutsExternalLocation = controller.getSetting('LayoutsExternalLocation');
 			
-			/* Inject UDF For Views/Layouts */
+			// Inject UDF For Views/Layouts
 			if(Len(Trim(controller.getSetting("UDFLibraryFile")))){
 				includeUDF(controller.getSetting("UDFLibraryFile"));
 			}
 			
-			/* Return Renderer */
 			return this;
 		</cfscript>
 	</cffunction>
@@ -56,7 +54,6 @@ Description :
 		<cfargument name="view" required="true" type="string" hint="The view to purge from the cache">
 		<!--- ************************************************************* --->
 		<cfscript>
-			/* Clear the view */
 			getColdBoxOCM().clearView(arguments.view);
 		</cfscript>
 	</cffunction>
@@ -158,6 +155,7 @@ Description :
 		<cfset var Event = controller.getRequestService().getContext()>
 		<!--- Create View Scope --->
 		<cfset var rc = event.getCollection()>
+		<cfset var prc = event.getCollection(private=true)>
 		<!--- Cache Entries --->
 		<cfset var cbox_cacheKey = "">
 		<cfset var cbox_cacheEntry = "">
@@ -201,9 +199,10 @@ Description :
 		
 		<!--- Implicit set Scopes --->
 		<cfset var event = controller.getRequestService().getContext()>
-		<cfset var rc = event.getCollection()>
+		<cfset var rc  = event.getCollection()>
+		<cfset var prc = event.getCollection(private=true)>
 		<!--- Get Current Set Layout From Request Collection --->
-		<cfset var cbox_currentLayout = event.getcurrentLayout()>
+		<cfset var cbox_currentLayout = implicitViewChecks(event)>
 		<!--- Content Variables --->
 		<cfset var cbox_RederedLayout = "">
 		<cfset var cbox_timerhash = "">
@@ -211,15 +210,13 @@ Description :
 		<!--- Check if no view has been set in the Request Collection --->
 		<cfif structKeyExists(arguments,"layout")>
 			<cfset cbox_currentLayout = arguments.layout & ".cfm">
-		<cfelse>
-			<cfset cbox_currentLayout = implicitViewChecks(event)>
 		</cfif>
 		
 		<!--- Start Timer --->
 		<cfset cbox_timerhash = controller.getDebuggerService().timerStart("rendering Layout [#cbox_currentLayout#]")>
 			
 		<!--- If Layout is blank, then just delegate to the view --->
-		<cfif cbox_currentLayout eq "">
+		<cfif len(cbox_currentLayout) eq 0>
 			<cfset cbox_RederedLayout = renderView()>
 		<cfelse>			
 			<!--- RenderLayout --->

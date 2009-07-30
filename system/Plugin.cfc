@@ -100,7 +100,8 @@ Modification History:
 	
 	<!--- Get RC --->
 	<cffunction name="getRequestCollection" access="private" returntype="struct" hint="Get a reference to the request collection" output="false" >
-		<cfreturn getRequestContext().getCollection()>
+		<cfargument name="private" type="boolean" required="false" default="false" hint="Get the request collection or private request collection"/>
+		<cfreturn getRequestContext().getCollection(private=arguments.private)>
 	</cffunction>
 
 </cfcomponent>

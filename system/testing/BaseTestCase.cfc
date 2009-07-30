@@ -33,8 +33,7 @@ id , name , mail
 </cfscript>
 
 ---------------------------------------------------------------------->
-<cfcomponent name="BaseTestCase" 
-			 extends="mxunit.framework.TestCase" 
+<cfcomponent extends="mxunit.framework.TestCase" 
 			 output="false" 
 			 hint="A base test case for doing ColdBox Testing based on the MXUnit Framework">
 
@@ -61,13 +60,14 @@ id , name , mail
 		<cfscript>
 		var appRootPath = expandPath(instance.AppMapping);
 		
-		/* Verify App Root Path */
+		// Verify App Root Path
 		if( right(appRootPath,1) neq "/" ){
 			appRootPath = appRootPath & "/";
 		}
-		/* Load ColdBox? */
+		
+		// Load ColdBox?
 		if( this.loadColdbox ){
-			/* Check on Scope Firsty */
+			// Check on Scope Firsty
 			if( structKeyExists(application,getColdboxAppKey()) ){
 				instance.controller = application[getColdboxAppKey()];
 			}
@@ -75,12 +75,12 @@ id , name , mail
 				//Initialize ColdBox
 				instance.controller = CreateObject("component", "coldbox.system.testing.TestController").init( appRootPath );
 				
-				/* Verify Persistence */
+				// Verify Persistence
 				if( this.persist_framework ){
 					application[getColdboxAppKey()] = instance.controller;
 				}
 				
-				/* Setup */
+				// Setup
 				instance.controller.getLoaderService().configLoader(instance.ConfigMapping,instance.AppMapping);
 			}
 			
@@ -89,6 +89,7 @@ id , name , mail
 			
 			//Clean up Initial Event Context
 			getRequestContext().clearCollection();
+			getRequestContext().clearCollection(private=true);
 		}
 		</cfscript>
 	</cffunction>
