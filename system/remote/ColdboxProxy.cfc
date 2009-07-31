@@ -179,14 +179,14 @@ Description :
 	<!--- Trace messages to the tracer panel --->
 	<cffunction name="tracer" access="private" returntype="void" hint="Trace messages to the tracer panel, will only trace if in debug mode." output="false" >
 		<!--- ************************************************************* --->
-		<cfargument name="message"    type="string" required="Yes" hint="Message to Send" >
-		<cfargument name="ExtraInfo"  required="No" default="" type="any" hint="Extra Information to dump on the trace">
+		<cfargument name="message"    type="string" required="true" hint="Message to Send" >
+		<cfargument name="extraInfo"  required="false" default="" type="any" hint="Extra Information to dump on the trace">
 		<!--- ************************************************************* --->
 		<cfscript>
 			var cbController = getController();
 			
 			if( cbController.getDebuggerService().getDebugMode() ){
-				cbController.getPlugin("Logger").tracer(argumentCollection=arguments);
+				cbController.getDebuggerService().pushTracer(argumentCollection=arguments);
 			}
 		</cfscript>
 	</cffunction>
