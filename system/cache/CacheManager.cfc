@@ -12,10 +12,6 @@ Description :
 Dependencies :
  - Controller to get to dependencies
  - Interceptor Service for event model
- - Handler Service for event caching
-
-Modification History:
-01/18/2007 - Created
 
 ----------------------------------------------------------------------->
 <cfcomponent name="CacheManager" 
@@ -40,21 +36,23 @@ Modification History:
 	<cffunction name="init" access="public" output="false" returntype="CacheManager" hint="Constructor">
 		<cfargument name="controller" type="any" required="true">
 		<cfscript>
-			/* Set Controller Injection */
+			// Set Controller Injection
 			instance.controller = arguments.controller;
-			/* Runtime Java object */
+			// Runtime Java object
 			instance.javaRuntime = CreateObject("java", "java.lang.Runtime");
-			/* Locking Timeout */
+			// Locking Timeout
 			instance.lockTimeout = "15";
-			/* Event URL Facade Setup */
+			// Event URL Facade Setup
 			instance.eventURLFacade = CreateObject("component","coldbox.system.cache.util.EventURLFacade").init(this);
-			/* Cache Stats */
+			// Cache Stats
 			instance.cacheStats = CreateObject("component","coldbox.system.cache.util.CacheStats").init(this);
-			/* Set the NOTFOUND public constant */
+			// Set the NOTFOUND public constant
 			this.NOT_FOUND = '_NOTFOUND_';		
-			/* Init the object Pool on instantiation */
+			// Init the object Pool on instantiation 
 			initPool();
-			/* return Cache Manager reference */
+			// Eviction Policy as struct
+			instance.evictionPolicy = structnew();
+			
 			return this;
 		</cfscript>
 	</cffunction>
@@ -79,7 +77,8 @@ Modification History:
 			Catch(Any e){
 				getUtil().throwit('Error creating eviction policy','Error creating the eviction policy object: #e.message# #e.detail#','cacheManager.EvictionPolicyCreationException');	
 			}
-			/* Save the Policy */
+			
+			// Save the Policy
 			instance.evictionPolicy = oEvictionPolicy;
 		</cfscript>
 	</cffunction>
