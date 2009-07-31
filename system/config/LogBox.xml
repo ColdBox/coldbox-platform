@@ -10,9 +10,6 @@ It is configured to log EVERYTHING to console and the CF facilities
 
 	<!-- Default Appender Definitions -->
 	<Appender name="CFTracer"  class="coldbox.system.logging.appenders.TracerAppender" />
-	<Appender name="CFLogs"   class="coldbox.system.logging.appenders.CFAppender">
-		<Property name="fileName">ColdBox</Property>
-	</Appender>
 	
 	<!-- Root Logger: Will log anything by default -->
 	<Root levelMin="FATAL" levelMax="TRACE" appenders="*" />

@@ -7,12 +7,10 @@ www.coldboxframework.com | www.luismajano.com | www.ortussolutions.com
 Author 	    :	Luis Majano
 Date        :	January 18, 2007
 Description :
-	This cfc takes care of debugging settings.
+ This is the service that powers the ColdBox Debugger.
 
-Modification History:
-01/18/2007 - Created
 ----------------------------------------------------------------------->
-<cfcomponent name="debuggerService" output="false" hint="The coldbox debugger service" extends="coldbox.system.services.BaseService">
+<cfcomponent output="false" hint="This is the service that powers the ColdBox Debugger." extends="coldbox.system.services.BaseService">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
@@ -20,12 +18,14 @@ Modification History:
 		<cfargument name="controller" type="any" required="true">
 		<cfscript>
 			setController(arguments.controller);
-			/* set the unique cookie name */
+			// set the unique cookie name
 			setCookieName("coldbox_debugmode_#controller.getAppHash()#");
-			/* Create persistent profilers */
+			// Create persistent profilers
 			setProfilers(arrayNew(1));
-			/* Create persistent tracers */
+			// Create persistent tracers
 			setTracers(arrayNew(1));
+			// Set a maximum tracers possible.
+			instance.maxTracers = 100;
 			
 			return this;
 		</cfscript>
@@ -86,7 +86,7 @@ Modification History:
 				timerInfo = request[arguments.labelHash];
 				qTimers = getTimers();
 				
-				// ID
+				// ID: FRIGGING CF7 SUPPORT, JUST DIE!!!
 				if( controller.oCFMLEngine.isMT() ){
 					id = createobject("java", "java.util.UUID").randomUUID();
 				}
@@ -100,15 +100,16 @@ Modification History:
 				QuerySetCell(qTimers, "Method", timerInfo.label);
 				QuerySetCell(qTimers, "Time", getTickCount() - timerInfo.stime);
 				QuerySetCell(qTimers, "Timestamp", now());
-				/* Request Context SnapShot */
+				
+				// RC Snapshot
 				if ( not findnocase("rendering",timerInfo.label) ){
-					/* Save Collection */
+					// Save collection
 					QuerySetCell(qTimers, "RC", htmlEditFormat(controller.getRequestService().getContext().getCollection().toString()) );
 				}
 				else{
 					QuerySetCell(qTimers, "RC", '');
 				}
-				/* Cleanup */
+				// Cleanup
 				structDelete(request,arguments.labelHash);
 			}
 		</cfscript>
@@ -217,7 +218,7 @@ Modification History:
 		<cfset var renderType = "CachePanel">
 
 		<!--- Generate Debugging --->
-		<cfsavecontent variable="RenderedDebugging"><cfinclude template="/coldbox/system/includes/panels/CachePanel.cfm"></cfsavecontent>
+		<cfsavecontent variable="RenderedDebugging"><cfinclude template="/shared/frameworks/coldbox_3_00/system/includes/panels/CachePanel.cfm"></cfsavecontent>
 		<cfreturn RenderedDebugging>
 	</cffunction>
 	
@@ -246,7 +247,7 @@ Modification History:
 		<cfset var x = 1>
 		<cfset var refLocal = structnew()>
 		
-		<cfsavecontent variable="profilerContents"><cfinclude template="/coldbox/system/includes/panels/ProfilerPanel.cfm"></cfsavecontent>
+		<cfsavecontent variable="profilerContents"><cfinclude template="/shared/frameworks/coldbox_3_00/system/includes/panels/ProfilerPanel.cfm"></cfsavecontent>
 				
 		<cfreturn profilerContents>
 	</cffunction>
@@ -293,15 +294,14 @@ Modification History:
 		<cfscript>
 			var newRecord = structnew();
 			
-			/* Activate Check */
 			if( NOT getDebuggerConfig().getPersistentRequestProfiler() ){ return; }
 			
-			/* Size Check */
+			// size check
 			if( ArrayLen(getProfilers()) gte getDebuggerConfig().getmaxPersistentRequestProfilers() ){
 				popProfiler();
 			}
 			
-			/* Append the new profiler */
+			// New Profiler
 			newRecord.datetime = now();
 			newRecord.ip = cgi.REMOTE_ADDR;
 			newRecord.timers = arguments.profilerRecord;
@@ -313,7 +313,6 @@ Modification History:
 	<!--- Pop a profiler --->
 	<cffunction name="popProfiler" access="public" returntype="void" hint="Pop a profiler record" output="false" >
 		<cfscript>
-			/* Delete eldest Entry */
 			ArrayDeleteAt(getProfilers(),1);
 		</cfscript>
 	</cffunction>
@@ -334,14 +333,16 @@ Modification History:
 		<cfscript>
 			var tracerEntry = StructNew();
 			
-			/* Activate Check */
+			// Active Check
 			if( NOT getDebuggerConfig().getPersistentTracers() ){ return; }
 			
-			/* Insert Message & Info to entry */
-			tracerEntry["message"] = arguments.message;
-			tracerEntry["ExtraInfo"] = arguments.extraInfo;
+			// Max Check
+			if( arrayLen(getTracers()) gte instance.maxTracers) { resetTracers(); }
 			
-			/* Append Entry to Array */
+			// Create Message
+			tracerEntry["message"] = arguments.message;
+			tracerEntry["extraInfo"] = arguments.extraInfo;
+			
 			ArrayAppend(getTracers(),tracerEntry);
 		</cfscript>
 	</cffunction>

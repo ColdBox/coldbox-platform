@@ -11,10 +11,10 @@ Date     :	September 25, 2005
 Description :
 	Debugging template for the application
 ----------------------------------------------------------------------->
-<cfif getDebuggerConfig().getShowTracerPanel() and controller.getPlugin("SessionStorage").exists("fw_tracerStack")>
-	<cfset TracerArray = controller.getPlugin("SessionStorage").getVar("fw_tracerStack")>
+<cfif getDebuggerConfig().getShowTracerPanel() and arrayLen(getTracers())>
+	<cfset TracerArray = getTracers()>
 	<cfoutput>
-	<div class="fw_titles" onClick="fw_toggle('fw_tracer')">&nbsp;Tracer Messages </div>
+	<div class="fw_titles" onClick="fw_toggle('fw_tracer')">&nbsp;ColdBox Tracer Messages </div>
 	<div class="fw_debugContent<cfif getDebuggerConfig().getExpandedTracerPanel()>View</cfif>" id="fw_tracer">
 		<cfloop from="1" to="#arrayLen(TracerArray)#" index="i">
 			<div class="fw_tracerMessage">
@@ -36,7 +36,7 @@ Description :
 		</cfloop>
 	</div>
 	<!--- Rendered, now Remove --->
-	<cfset controller.getPlugin("SessionStorage").deleteVar("fw_tracerStack")>
+	<cfset resetTracers()>
 	</cfoutput>
 </cfif>
 <cfsetting enablecfoutputonly="false">
