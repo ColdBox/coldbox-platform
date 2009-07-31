@@ -218,7 +218,7 @@ Description :
 		<cfset var renderType = "CachePanel">
 
 		<!--- Generate Debugging --->
-		<cfsavecontent variable="RenderedDebugging"><cfinclude template="/shared/frameworks/coldbox_3_00/system/includes/panels/CachePanel.cfm"></cfsavecontent>
+		<cfsavecontent variable="RenderedDebugging"><cfinclude template="/coldbox/system/includes/panels/CachePanel.cfm"></cfsavecontent>
 		<cfreturn RenderedDebugging>
 	</cffunction>
 	
@@ -247,7 +247,7 @@ Description :
 		<cfset var x = 1>
 		<cfset var refLocal = structnew()>
 		
-		<cfsavecontent variable="profilerContents"><cfinclude template="/shared/frameworks/coldbox_3_00/system/includes/panels/ProfilerPanel.cfm"></cfsavecontent>
+		<cfsavecontent variable="profilerContents"><cfinclude template="/coldbox/system/includes/panels/ProfilerPanel.cfm"></cfsavecontent>
 				
 		<cfreturn profilerContents>
 	</cffunction>
