@@ -54,27 +54,28 @@ Description :
 		<cfargument name="interceptData" required="true" type="struct" hint="interceptData of intercepted info.">
 		<!--- ************************************************************* --->
 		<cfscript>
-			var interceptorConfig = getController().getSetting("InterceptorConfig");
+			var interceptorConfig = getSetting("InterceptorConfig");
 			var INTERCEPTOR_CACHEKEY_PREFIX = getColdboxOCM().INTERCEPTOR_CACHEKEY_PREFIX;
 			var x = 1;
 			
-			/* Setup the targettype */
+			// Setup the targettype
 			arguments.targetType = "interceptor";
 			
-			/* Loop over the Interceptor Array, to begin autowiring */
+			// Loop over the Interceptor Array, to begin autowiring
 			for (; x lte arrayLen(interceptorConfig.interceptors); x=x+1){
 				
-				/* Get the cache path */
+				// Get the cache path
 				arguments.interceptData.interceptorPath = INTERCEPTOR_CACHEKEY_PREFIX & interceptorConfig.interceptors[x].class;
 				
-				/* Exclude yourself */
+				// Exclude yourself
 				if( not findnocase("coldbox.system.interceptors.Autowire",interceptorConfig.interceptors[x].class) ){
 					
-					/* No locking necessary here, since the after aspects load is executed in thread safe conditions */
+					// No locking necessary here, since the after aspects load is executed in thread safe conditions
 					
-					/* Try to get the interceptor Object. */
+					// Try to get the interceptor Object.
 					arguments.interceptData.oInterceptor = getColdboxOCM().get(arguments.interceptData.interceptorPath);
-					/* Autowire it */
+					
+					// Autowire it
 					processAutowire(argumentCollection=arguments);
 				}
 				
@@ -116,28 +117,32 @@ Description :
 		<cfargument name="targetType" 	 required="true" type="string" hint="Either plugin or handler or interceptor">
 		<!--- ************************************************************* --->
 		<cfscript>
-			/* Targets */
+			// Targets
 			var targetPath = "";
 			var targetObject = "";
 			
-			/* Determine targets by type */
-			if ( targetType eq "plugin" ){
-				targetObject = interceptData.oPlugin;
-				targetPath = interceptData.custom & "_" & interceptData.pluginPath;
-			}
-			else if( targetType eq "handler"){
-				targetObject = interceptData.oHandler;
-				targetPath = interceptData.handlerPath;
-			}
-			else if( targetType eq "interceptor" ){
-				targetObject = interceptData.oInterceptor;
-				targetPath = interceptData.interceptorPath;
+			switch(targetType){
+				case "plugin" : {
+					targetObject = interceptData.oPlugin;
+					targetPath = interceptData.custom & "_" & interceptData.pluginPath;
+					break;
+				}
+				case "handler" : {
+					targetObject = interceptData.oHandler;
+					targetPath = interceptData.handlerPath;
+					break;
+				}
+				case "interceptor" : {
+					targetObject = interceptData.oInterceptor;
+					targetPath = interceptData.interceptorPath;
+					break;
+				}
 			}
 			
-			/* Exclude the core plugins from autowires */
+			// Exclude the core plugins from autowires
 			if( not findnocase("coldbox.system.plugins",targetPath) ){
 				try{
-					/* Process Autowire */
+					// Process Autowire
 					instance.beanFactory.autowire(target=targetObject,
 												  useSetterInjection=getProperty('enableSetterInjection'),
 												  annotationCheck=getProperty("annotationCheck"),
