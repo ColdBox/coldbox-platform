@@ -174,16 +174,6 @@ Description :
 	
 <!------------------------------------------- Facade methods for categoreis with levels only ------------------------------------------>
 	
-	<!--- TRACE --->
-	<cffunction name="TRACE" output="false" access="public" returntype="void" hint="Add categories to the TRACE level. Send each category as an argument.">
-		<cfscript>
-			var key = "";
-			for(key in arguments){
-				category(name=arguments[key],levelMin=this.logLevels.TRACE,levelMax=this.logLevels.TRACE);
-			}
-		</cfscript>
-	</cffunction>
-	
 	<!--- DEBUG --->
 	<cffunction name="DEBUG" output="false" access="public" returntype="void" hint="Add categories to the DEBUG level. Send each category as an argument.">
 		<cfscript>

@@ -22,7 +22,7 @@
 	</Root>
 	
 	<!-- Very advanced category -->
-	<Category name="MySES" levelMin="3" levelMax="5">
+	<Category name="MySES" levelMin="0" levelMax="3">
 		<Appender-ref ref="myconsole" />
 	</Category>	
 	

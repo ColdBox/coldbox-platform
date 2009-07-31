@@ -12,7 +12,6 @@ Description :
 <cfcomponent name="LogLevels" hint="The available log levels in LogBox" output="false">
 <cfscript>
 	// All Available Logging Levels for LogBox
-	this.TRACE = 5;
 	this.DEBUG = 4;
 	this.INFO = 3;
 	this.WARN = 2;
@@ -25,7 +24,7 @@ Description :
 	
 	// Max
 	this.MINLEVEL = -1;
-	this.MAXLEVEL = 5;
+	this.MAXLEVEL = 4;
 	
 	function lookup(level){
 		switch(level){
@@ -34,8 +33,7 @@ Description :
 			case 1: return "ERROR";
 			case 2: return "WARN";
 			case 3: return "INFO";
-			case 4: return "DEBUG";
-			case 5: return "TRACE";			
+			case 4: return "DEBUG";		
 		}
 	}
 	function lookupAsInt(level){
@@ -47,8 +45,7 @@ Description :
 			case "WARNING" : return 2;
 			case "INFO": return 3;
 			case "INFORMATION" : return 3;
-			case "DEBUG": return 4;
-			case "TRACE": return 5;		
+			case "DEBUG": return 4;	
 			default: return 999;	
 		}
 	}
@@ -59,8 +56,7 @@ Description :
 			case 1: return "Error";
 			case 2: return "Warning";
 			case 3: return "Information";
-			case 4: return "Information";
-			case 5: return "Information";			
+			case 4: return "Information";		
 		}
 	}
 	

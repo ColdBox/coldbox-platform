@@ -241,18 +241,6 @@ Description :
 		</cfscript>
 	</cffunction>
 	
-	<!--- Trace --->
-	<cffunction name="trace" access="public" output="false" returntype="void" hint="I log a trace message.">
-		<!--- ************************************************************* --->
-		<cfargument name="message" 	 type="string" required="true"  hint="The message to log.">
-		<cfargument name="extraInfo" type="any"    required="false" default="" hint="Extra information to send to the loggers.">
-		<!--- ************************************************************* --->
-		<cfscript>
-			arguments.severity = this.logLevels.TRACE;
-			logMessage(argumentCollection=arguments);
-		</cfscript>
-	</cffunction>
-	
 	<!--- warn --->
 	<cffunction name="warn" access="public" output="false" returntype="void" hint="I log a warning message.">
 		<!--- ************************************************************* --->

@@ -652,7 +652,6 @@
 									<xs:enumeration value="WARN"/>
 									<xs:enumeration value="INFO"/>
 									<xs:enumeration value="DEBUG"/>
-									<xs:enumeration value="TRACE"/>
 								</xs:restriction>
 							</xs:simpleType>
 						</xs:attribute>
@@ -668,7 +667,6 @@
 									<xs:enumeration value="WARN"/>
 									<xs:enumeration value="INFO"/>
 									<xs:enumeration value="DEBUG"/>
-									<xs:enumeration value="TRACE"/>
 								</xs:restriction>
 							</xs:simpleType>
 						</xs:attribute>
@@ -710,7 +708,6 @@
 									<xs:enumeration value="WARN"/>
 									<xs:enumeration value="INFO"/>
 									<xs:enumeration value="DEBUG"/>
-									<xs:enumeration value="TRACE"/>
 								</xs:restriction>
 							</xs:simpleType>
 						</xs:attribute>
@@ -726,7 +723,6 @@
 									<xs:enumeration value="WARN"/>
 									<xs:enumeration value="INFO"/>
 									<xs:enumeration value="DEBUG"/>
-									<xs:enumeration value="TRACE"/>
 								</xs:restriction>
 							</xs:simpleType>
 						</xs:attribute>
@@ -790,7 +786,6 @@
 							<xs:enumeration value="WARN"/>
 							<xs:enumeration value="INFO"/>
 							<xs:enumeration value="DEBUG"/>
-							<xs:enumeration value="TRACE"/>
 						</xs:restriction>
 					</xs:simpleType>
 				</xs:element>
@@ -867,7 +862,6 @@
 							<xs:enumeration value="WARN"/>
 							<xs:enumeration value="INFO"/>
 							<xs:enumeration value="DEBUG"/>
-							<xs:enumeration value="TRACE"/>
 						</xs:restriction>
 					</xs:simpleType>
 				</xs:element>				
