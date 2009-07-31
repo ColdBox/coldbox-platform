@@ -70,9 +70,10 @@ Description :
 		<cfset var cbox_viewpath = "">
 		<cfset var cbox_viewHelperPath = "">
 		<!--- Local Event --->
-		<cfset var Event = controller.getRequestService().getContext()>
+		<cfset var event = controller.getRequestService().getContext()>
 		<!--- Create View Scope --->
 		<cfset var rc = event.getCollection()>
+		<cfset var prc = event.getCollection(private=true)>
 		<!--- Cache Entries --->
 		<cfset var cbox_cacheKey = "">
 		<cfset var cbox_cacheEntry = "">
@@ -85,7 +86,7 @@ Description :
 		
 		<!--- Test if we have a view to render --->
 		<cfif len(trim(arguments.view)) eq 0>
-			<cfthrow type="plugins.Renderer.ViewNotSetException" 
+			<cfthrow type="Renderer.ViewNotSetException" 
 				     message="The ""currentview"" variable has not been set, therefore there is no view to render." 
 					 detail="Please remember to use the 'setView()' method in your handler.">
 		</cfif>
@@ -97,46 +98,47 @@ Description :
 		<cfif getColdboxOCM().lookup(cbox_cacheKey)>
 			<!--- Render The View --->
 			<cfset timerHash = controller.getDebuggerService().timerStart("rendering Cached View [#arguments.view#.cfm]")>
-				<cfset cbox_RenderedView = controller.getColdBoxOCM().get(cbox_cacheKey)>
+			<cfset cbox_RenderedView = controller.getColdBoxOCM().get(cbox_cacheKey)>
 			<cfset controller.getDebuggerService().timerEnd(timerHash)>
-		<cfelse>
-			<!--- The View Path is by convention or external?? --->
-			<cfset cbox_viewpath = "/#instance.appMapping#/#instance.viewsConvention#/#arguments.view#.cfm">
-			<!--- Check if View in Conventions --->
+			<cfreturn cbox_RenderedView>
+		</cfif>
+		
+		<!--- The View Path is by convention or external?? --->
+		<cfset cbox_viewpath = "/#instance.appMapping#/#instance.viewsConvention#/#arguments.view#.cfm">
+		<!--- Check if View in Conventions --->
+		<cfif not fileExists(expandPath(cbox_viewpath))>
+			<!--- Set the Path to be the External Location --->
+			<cfset cbox_viewpath = "#instance.viewsExternalLocation#/#arguments.view#.cfm">
+			<!--- Verify the External Location now --->
 			<cfif not fileExists(expandPath(cbox_viewpath))>
-				<!--- Set the Path to be the External Location --->
-				<cfset cbox_viewpath = "#instance.viewsExternalLocation#/#arguments.view#.cfm">
-				<!--- Verify the External Location now --->
-				<cfif not fileExists(expandPath(cbox_viewpath))>
-					<cfthrow message="View not located" 
-							 detail="The view: #arguments.view#.cfm could not be located in the conventions folder or in the external location. Please verify the view name" 
-							 type="plugins.Renderer.ViewNotFound">
-				</cfif>
-				<!--- Helper? --->
-				<cfif fileExists(expandPath("#instance.viewsExternalLocation#/#arguments.view#Helper.cfm"))>
-					<cfset cbox_viewHelperPath =  "#instance.viewsExternalLocation#/#arguments.view#Helper.cfm">
-				</cfif>				
-			<cfelse>
-				<!--- Do we have a conventions Helper --->
-				<cfif fileExists(expandPath("/#instance.appMapping#/#instance.viewsConvention#/#arguments.view#Helper.cfm"))>
-					<cfset cbox_viewHelperPath =  "/#instance.appMapping#/#instance.viewsConvention#/#arguments.view#Helper.cfm">
-				</cfif>
+				<cfthrow message="View not located" 
+						 detail="The view: #arguments.view#.cfm could not be located in the conventions folder or in the external location. Please verify the view name" 
+						 type="plugins.Renderer.ViewNotFound">
 			</cfif>
-			
-			<!--- Render The View & Its Helper --->
-			<cfset timerHash = controller.getDebuggerService().timerStart("rendering View [#arguments.view#.cfm]")>
-				<cfsavecontent variable="cbox_RenderedView"><cfif len(cbox_viewHelperPath)><cfoutput><cfinclude template="#cbox_viewHelperPath#"></cfoutput></cfif><cfoutput><cfinclude template="#cbox_viewpath#"></cfoutput></cfsavecontent>
-			<cfset controller.getDebuggerService().timerEnd(timerHash)>
-			
-			<!--- Is this view cacheable by setting, and if its the view we need to cache. --->
-			<cfif event.isViewCacheable() and (arguments.view eq event.getViewCacheableEntry().view)>
-				<!--- Cache it baby!! --->
-				<cfset cbox_cacheEntry = event.getViewCacheableEntry()>
-				<cfset getColdboxOCM().set(getColdboxOCM().VIEW_CACHEKEY_PREFIX & cbox_cacheEntry.view,cbox_RenderedView,cbox_cacheEntry.timeout,cbox_cacheEntry.lastAccessTimeout)>
-			<!--- Are we caching explicitly --->
-			<cfelseif arguments.cache>
-				<cfset getColdboxOCM().set(cbox_cacheKey,cbox_RenderedView,arguments.cacheTimeout,arguments.cacheLastAccessTimeout)>
+			<!--- Helper? --->
+			<cfif fileExists(expandPath("#instance.viewsExternalLocation#/#arguments.view#Helper.cfm"))>
+				<cfset cbox_viewHelperPath =  "#instance.viewsExternalLocation#/#arguments.view#Helper.cfm">
+			</cfif>				
+		<cfelse>
+			<!--- Do we have a conventions Helper --->
+			<cfif fileExists(expandPath("/#instance.appMapping#/#instance.viewsConvention#/#arguments.view#Helper.cfm"))>
+				<cfset cbox_viewHelperPath =  "/#instance.appMapping#/#instance.viewsConvention#/#arguments.view#Helper.cfm">
 			</cfif>
+		</cfif>
+		
+		<!--- Render The View & Its Helper --->
+		<cfset timerHash = controller.getDebuggerService().timerStart("rendering View [#arguments.view#.cfm]")>
+			<cfsavecontent variable="cbox_RenderedView"><cfif len(cbox_viewHelperPath)><cfoutput><cfinclude template="#cbox_viewHelperPath#"></cfoutput></cfif><cfoutput><cfinclude template="#cbox_viewpath#"></cfoutput></cfsavecontent>
+		<cfset controller.getDebuggerService().timerEnd(timerHash)>
+		
+		<!--- Is this view cacheable by setting, and if its the view we need to cache. --->
+		<cfif event.isViewCacheable() and (arguments.view eq event.getViewCacheableEntry().view)>
+			<!--- Cache it baby!! --->
+			<cfset cbox_cacheEntry = event.getViewCacheableEntry()>
+			<cfset getColdboxOCM().set(getColdboxOCM().VIEW_CACHEKEY_PREFIX & cbox_cacheEntry.view,cbox_RenderedView,cbox_cacheEntry.timeout,cbox_cacheEntry.lastAccessTimeout)>
+		<!--- Are we caching explicitly --->
+		<cfelseif arguments.cache>
+			<cfset getColdboxOCM().set(cbox_cacheKey,cbox_RenderedView,arguments.cacheTimeout,arguments.cacheLastAccessTimeout)>
 		</cfif>
 		
 		<!--- Return cached, or rendered view --->
@@ -169,25 +171,26 @@ Description :
 			<cfset timerHash = controller.getDebuggerService().timerStart("rendering Cached External View [#arguments.view#.cfm]")>
 				<cfset cbox_RenderedView = getColdBoxOCM().get(cbox_cacheKey)>
 			<cfset controller.getDebuggerService().timerEnd(timerHash)>
-		<cfelse>
-			<cfset timerHash = controller.getDebuggerService().timerStart("rendering External View [#arguments.view#.cfm]")>
-				<cftry>
-					<!--- Render the View --->
-					<cfsavecontent variable="cbox_RenderedView"><cfoutput><cfinclude template="#arguments.view#.cfm"></cfoutput></cfsavecontent>
-					<!--- Catches --->
-					<cfcatch type="missinginclude">
-						<cfthrow type="plugins.Renderer.RenderExternalViewNotFoundException" message="The external view: #arguments.view# cannot be found. Please check your paths." >
-					</cfcatch>
-					<cfcatch type="any">
-						<cfrethrow />
-					</cfcatch>
-				</cftry>
-			<cfset controller.getDebuggerService().timerEnd(timerHash)>
-			
-			<!--- Are we caching explicitly --->
-			<cfif arguments.cache>
-				<cfset getColdboxOCM().set(cbox_cacheKey,cbox_RenderedView,arguments.cacheTimeout,arguments.cacheLastAccessTimeout)>
-			</cfif>
+			<cfreturn cbox_RenderedView>
+		</cfif>	
+		
+		<cfset timerHash = controller.getDebuggerService().timerStart("rendering External View [#arguments.view#.cfm]")>
+			<cftry>
+				<!--- Render the View --->
+				<cfsavecontent variable="cbox_RenderedView"><cfoutput><cfinclude template="#arguments.view#.cfm"></cfoutput></cfsavecontent>
+				<!--- Catches --->
+				<cfcatch type="missinginclude">
+					<cfthrow type="plugins.Renderer.RenderExternalViewNotFoundException" message="The external view: #arguments.view# cannot be found. Please check your paths." >
+				</cfcatch>
+				<cfcatch type="any">
+					<cfrethrow />
+				</cfcatch>
+			</cftry>
+		<cfset controller.getDebuggerService().timerEnd(timerHash)>
+		
+		<!--- Are we caching explicitly --->
+		<cfif arguments.cache>
+			<cfset getColdboxOCM().set(cbox_cacheKey,cbox_RenderedView,arguments.cacheTimeout,arguments.cacheLastAccessTimeout)>
 		</cfif>
 
 		<cfreturn cbox_RenderedView>
