@@ -59,6 +59,10 @@ Modifications
 		<cfargument name="addHeader"  	type="boolean"  required="false" default="true" hint="Add an xml header to the packet returned.">
 		<cfargument name="encoding" 	type="string" 	required="true"  default="UTF-8" hint="The character encoding of the header. UTF-8 is the default"/>
 		<cfargument name="delimiter" 	type="string" 	required="false" default="," hint="The delimiter in the list. Comma by default">
+		
+		<cfargument name="rootElementName" 	type="string" required="false" default="array" hint="xml root element name like array, salereport etc">
+		<cfargument name="itemElementName" 	type="string" required="false" default="row" hint="xml item node name like row, sale, buyer etc">
+		
 		<cfscript>
 			var buffer = createObject("java","java.lang.StringBuffer").init('');
 			/* Header */
@@ -71,6 +75,9 @@ Modifications
 			}
 			/* Query Check? */
 			else if( isQuery(arguments.data) ){
+				if(arguments.rootElementName eq "array"){
+					arguments.rootElementName="query";
+				}
 				buffer.append( queryToXML(argumentCollection=arguments) );
 			}
 			/* Array Check? */
@@ -90,6 +97,8 @@ Modifications
 		<cfargument name="data" 		type="array"    required="true" hint="The array to convert">
 		<cfargument name="useCDATA"  	type="boolean"  required="false" default="false" hint="Use CDATA content for ALL values. False by default">
 		<cfargument name="isList" 		type="boolean"  required="false" default="false" hint="If the conversion is from a list or not. Defaults to false. If true, the root element is called 'list'">
+		<cfargument name="rootElementName" 	type="string" required="false" default="array" hint="xml root element name like array, salereport etc">
+		<cfargument name="itemElementName" 	type="string" required="false" default="row" hint="xml item node name like row, sale, buyer etc">
 		
 		<cfscript>
 		var buffer = createObject('java','java.lang.StringBuffer').init('');
@@ -97,8 +106,8 @@ Modifications
 		var x = 1;
 		var dataLen = arrayLen(target);
 		var thisValue = "";
-		var rootElement = "array";
-		var itemElement = "item";
+		var rootElement = arguments.rootElementName;
+		var itemElement = arguments.itemElementName;
 		
 		//isList?
 		if( arguments.isList ){ rootElement = "list"; }
@@ -141,13 +150,15 @@ Modifications
 		<cfargument name="CDATAColumns" type="string" required="false" default="" 		hint="Which columns to wrap in cdata tags">
 		<cfargument name="columnlist"   type="string" required="false" default="#arguments.data.columnlist#" hint="Choose which columns to include in the translation, by default it uses all the columns in the query">
 		<cfargument name="useCDATA"  	type="boolean" required="false" default="false" hint="Use CDATA content for ALL values">
+		<cfargument name="rootElementName" 	type="string" required="false" default="query" hint="xml root element name like query, salereport etc">
+		<cfargument name="itemElementName" 	type="string" required="false" default="row" hint="xml item node name like row, sale, buyer etc">
 		
 		<cfset var buffer = createObject('java','java.lang.StringBuffer').init('')>
 		<cfset var col = "">
 		<cfset var columns = arguments.columnlist>
 		<cfset var value = "">
-		<cfset var rootElement = "query">
-		<cfset var itemElement = "row">
+		<cfset var rootElement = arguments.rootElementName>
+		<cfset var itemElement = arguments.itemElementName>
 		
 		<!--- Create Root --->
 		<cfset buffer.append('<#rootelement#>')>
