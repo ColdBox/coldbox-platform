@@ -24,32 +24,26 @@ Description:
 
 		<cfscript>
 			var AntiSamyJarPath = ArrayNew(1);
+			var javaLoader = "";
 			
-			/* Properties */
-			super.Init(arguments.controller);
+			super.init(arguments.controller);
+			
+			// Properties
 			setpluginName("OWASP AntiSamy Project");
 			setpluginVersion("1.0");
 			setpluginDescription("AntiSamy to protect from XSS hacks.");
 			setpluginAuthor("Sana Ullah");
 			setpluginAuthorURL("http://www.coldbox.org");
 			
-			/* Create Policy Structure */			
+			// Create Policy Structure			
 			instance.PolicyFileStruct = StructNew();
 			
-			/* load AntiSamy .jar file */
-			ArrayAppend(AntiSamyJarPath, ExpandPath("/coldbox/system/extras/AntiSamy/antisamy-bin.1.3.jar"));
-			ArrayAppend(AntiSamyJarPath, ExpandPath("/coldbox/system/extras/AntiSamy/commons-httpclient-3.1.jar"));
-
-			ArrayAppend(AntiSamyJarPath, ExpandPath("/coldbox/system/extras/AntiSamy/xercesImpl.jar"));
-			ArrayAppend(AntiSamyJarPath, ExpandPath("/coldbox/system/extras/AntiSamy/nekohtml.jar"));
-			ArrayAppend(AntiSamyJarPath, ExpandPath("/coldbox/system/extras/AntiSamy/batik-util.jar"));
-			ArrayAppend(AntiSamyJarPath, ExpandPath("/coldbox/system/extras/AntiSamy/batik-css.jar"));
-			// if this lib deos not exists then enable
-			//ArrayAppend(AntiSamyJarPath, ExpandPath("/coldbox/system/extras/AntiSamy/xml-apis.jar"));
-			ArrayAppend(AntiSamyJarPath, ExpandPath("/coldbox/system/extras/AntiSamy/xml-apis-ext.jar"));
+			// Prepare Java Loader
+			javaLoader = getPlugin("JavaLoader");
+			AntiSamyJarPath = javaLoader.queryJars(expandPath("/coldbox/system/extras/AntiSamy"));
 			
-			/* Load .jar files */
-			getPlugin("JavaLoader").setup(loadPaths=AntiSamyJarPath);
+			// Load .jar files
+			javaLoader.setup(loadPaths=AntiSamyJarPath);
 			
 			// AntiSamy policyfile
 			instance.PolicyFileStruct['antisamy'] = expandPath('/coldbox/system/extras/AntiSamy/antisamy-1.3.xml');
