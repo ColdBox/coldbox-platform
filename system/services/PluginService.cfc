@@ -19,15 +19,13 @@ Modification History:
 	<cffunction name="init" access="public" output="false" returntype="PluginService" hint="Constructor">
 		<cfargument name="controller" type="any" required="true">
 		<cfscript>
-			/* Set Controller */
 			setController(arguments.controller);
 			
-			/* Set Service Properties */
+			// Set Service Properties
 			setColdBoxPluginsPath('coldbox.system.plugins');
 			setColdBoxExtensionsPluginsPath('coldbox.system.extensions.plugins');
 			setCacheDictionary(CreateObject("component","coldbox.system.util.collections.BaseDictionary").init('PluginMetadata'));
 			
-			/* Return instance */
 			return this;
 		</cfscript>
 	</cffunction>

@@ -39,14 +39,6 @@ Only one instance of a specific ColdBox application exists.
 			setConfigSettings(structnew());
 			setColdboxSettings(structnew());
 			
-			//Create & init ColdBox Services
-			if ( this.oCFMLENGINE.isMT() ){
-				setColdboxOCM( CreateObject("component","coldbox.system.cache.MTCacheManager").init(this) );
-			}
-			else{
-				setColdboxOCM( CreateObject("component","coldbox.system.cache.CacheManager").init(this) );
-			}
-			
 			// Setup the ColdBox Services
 			setLoaderService( CreateObject("component", "coldbox.system.services.LoaderService").init(this) );
 			setRequestService( CreateObject("component","coldbox.system.services.RequestService").init(this) );
@@ -56,12 +48,11 @@ Only one instance of a specific ColdBox application exists.
 			setHandlerService( CreateObject("component", "coldbox.system.services.HandlerService").init(this) );
 			
 			// LogBox Configuration & Creation
-			setLogBox( getLoaderService().createLogBox() );
+			setLogBox(getLoaderService().createLogBox());
 			setLogger(getLogBox().getLogger("coldbox.system.Controller"));
 			
 			// Log Creation
-			getLogger().debug("ColdBox Application Initialized Successfully at #arguments.appRootPath#");
-			
+			getLogger().info("ColdBox Application Controller Created Successfully at #arguments.appRootPath#");
 			//Return instance
 			return this;
 		</cfscript>

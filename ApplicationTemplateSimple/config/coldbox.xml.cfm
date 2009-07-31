@@ -37,10 +37,14 @@ http://ortus.svnrepository.com/coldbox/trac.cgi/wiki/cbConfigGuide
 
 	<YourSettings />
 	
-	<Models>
-		<ObjectCaching>true</ObjectCaching>
-		<SetterInjection>false</SetterInjection>
-	</Models>
+	<!-- 
+		ColdBox Logging via LogBox
+		Levels: -1=OFF,0=FATAL,1=ERROR,2=WARN,3=INFO,4=DEBUG
+	-->
+	<LogBox>
+		<Appender name="coldboxTracer" class="coldbox.system.logging.appenders.ColdboxTracerAppender" />
+		<Root levelMin="FATAL" levelMax="INFO" appenders="*" />
+	</LogBox>
 	
 	<Layouts>
 		<DefaultLayout>Layout.Main.cfm</DefaultLayout>

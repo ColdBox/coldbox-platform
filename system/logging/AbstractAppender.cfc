@@ -16,6 +16,8 @@ Description :
 	<cfscript>
 		// The log levels enum as a public property
 		this.logLevels = createObject("component","coldbox.system.logging.LogLevels");
+		// An appender can be decorated with ColdBox if running inside a coldbox app
+		this.coldbox = "";
 		
 		// private instance scope
 		instance = structnew();
@@ -63,6 +65,15 @@ Description :
 	</cffunction>
 
 <!------------------------------------------- PUBLIC ------------------------------------------->
+	
+	<!--- ColdBox --->
+	<cffunction name="getColdbox" access="public" returntype="any" output="false" hint="Get the ColdBox application controller LogBox is linked to. If not set, it will return an empty string.">
+    	<cfreturn instance.coldbox>
+    </cffunction>
+    <cffunction name="setColdbox" access="public" returntype="void" output="false" hint="Set the ColdBox application link">
+    	<cfargument name="coldbox" type="any" required="true">
+    	<cfset instance.coldbox = arguments.coldbox>
+    </cffunction>
 	
 	<!--- getCustomLayout --->
 	<cffunction name="getCustomLayout" output="false" access="public" returntype="any" hint="Get the custom layout object">

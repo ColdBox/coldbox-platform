@@ -335,9 +335,6 @@ Description :
 		<cfscript>
 			var tracerEntry = StructNew();
 			
-			// Active Check
-			if( NOT getDebuggerConfig().getPersistentTracers() ){ return; }
-			
 			// Max Check
 			if( arrayLen(getTracers()) gte instance.maxTracers) { resetTracers(); }
 			

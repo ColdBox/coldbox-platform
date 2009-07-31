@@ -9,8 +9,6 @@ Date        :	04/12/2009
 Description :
 	An appender that interfaces with the ColdBox Tracer Panel
 	
-Properties:
- - coldbox_app_key : (Optional), the coldbox application key to use, else uses default.
 ----------------------------------------------------------------------->
 <cfcomponent extends="coldbox.system.logging.AbstractAppender" 
 			 output="false"
@@ -26,14 +24,6 @@ Properties:
 			// Init supertype
 			super.init(argumentCollection=arguments);
 			
-			//check properties
-			if( NOT propertyExists('coldbox_app_key') ){
-				setProperty('coldbox_app_key',"");
-			}
-			
-			// Create ColdBox Factory
-			instance.coldboxFactory = createObject("component","coldbox.system.ioc.ColdboxFactory").init(getProperty('coldbox_app_key'));
-			
 			return this;
 		</cfscript>
 	</cffunction>	
@@ -47,20 +37,32 @@ Properties:
 			var loge = arguments.logEvent;
 			var entry = "";
 			var traceSeverity = "information";
-			var coldbox = instance.coldboxFactory.getColdBox();
+			var severityStyle = "";
+			var severity = severityToString(loge.getseverity());
+			
+			// Severity Styles
+			switch(severity){
+				case "FATAL" : { severityStyle = "fw_redText"; break;}
+				case "ERROR" : { severityStyle = "fw_orangeText"; break;}
+				case "WARN"  : { severityStyle = "fw_greenText"; break;}
+				case "INFO"  : { severityStyle = "fw_blackText"; break;}
+				case "DEBUG" : { severityStyle = "fw_blueText"; break;}
+			}
 			
 			if ( hasCustomLayout() ){
 				entry = getCustomLayout().format(loge);
 			}
 			else{
-				entry = "#severityToString(loge.getseverity())# #loge.getCategory()# #loge.getMessage()#";
+				entry = "<span class='#severityStyle#'><b>#severity#</b></span> #timeFormat(loge.getTimeStamp(),"hh:MM:SS.l tt")# <b>#loge.getCategory()#</b> <br/> #loge.getMessage()#";
 			}
 			
-			coldbox.getDebuggerService().pushTracer(entry,loge.getExtraInfo());
+			//send to coldBox debugger
+			getColdBox().getDebuggerService().pushTracer(entry,loge.getExtraInfo());
 		</cfscript>
 	</cffunction>
 	
 <!------------------------------------------- PRIVATE ------------------------------------------>
+
 	
 	
 </cfcomponent>

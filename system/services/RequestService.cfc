@@ -83,7 +83,7 @@ Modification History:
 			controller.getHandlerService().defaultEventCheck(Context);
 			
 			/* Are we using event caching? */
-			EventCachingTest(Context);
+			eventCachingTest(Context);
 			
 			/* Return captured Context */
 			return Context;
@@ -91,14 +91,14 @@ Modification History:
 	</cffunction>
 
 	<!--- Event caching test --->
-	<cffunction name="EventCachingTest" access="public" output="false" returntype="void" hint="Tests if the incoming context is an event cache">
+	<cffunction name="eventCachingTest" access="public" output="false" returntype="void" hint="Tests if the incoming context is an event cache">
 		<!--- ************************************************************* --->
 		<cfargument name="context" 			required="true"  type="any" hint="The request context to test for event caching.">
 		<!--- ************************************************************* --->
 		<cfscript>
 			var eventCacheKey = "";
 			var oEventURLFacade = controller.getColdboxOCM().getEventURLFacade();
-			var EventDictionary = 0;
+			var eventDictionary = 0;
 			var oOCM = controller.getColdboxOCM();
 			
 			/* Are we using event caching? */
@@ -107,17 +107,17 @@ Modification History:
 				Context.removeEventCacheableEntry();
 					
 				/* Get Entry */
-				EventDictionary = controller.getHandlerService().getEventMetaDataEntry(Context.getCurrentEvent());	
+				eventDictionary = controller.getHandlerService().getEventMetaDataEntry(Context.getCurrentEvent());	
 				
 				/* debug("eventmd: " & controller.getHandlerService().getEventCacheDictionary().getDictionary().toString()); */
 				
 				/* Verify that it is cacheable, else quit, no need for testing anymore. */
-				if( not EventDictionary.cacheable ){
+				if( not eventDictionary.cacheable ){
 					return;	
 				}
 				
 				/* setup the cache key. */
-				eventCacheKey = oEventURLFacade.buildEventKey(keySuffix=EventDictionary.suffix,
+				eventCacheKey = oEventURLFacade.buildEventKey(keySuffix=eventDictionary.suffix,
 															  targetEvent=Context.getCurrentEvent(),
 															  targetContext=Context);
 				/* Check for Event Cache Purge */

@@ -57,7 +57,6 @@
 		<Setting name="EnableDumpVar" value="true"/>
         <Setting name="PersistentRequestProfiler" value="true"/>
         <Setting name="maxPersistentRequestProfilers" value="10"/>
-        <Setting name="PersistentTracers" value="true"/>
         <Setting name="maxRCPanelQueryRows" value="50"/>
         <Setting name="showTracerPanel" value="true"/>
         <Setting name="expandedTracerPanel" value="true"/>

@@ -21,7 +21,7 @@ Description :
 	<cfscript>
 		// The log levels enum as a public property
 		this.logLevels = createObject("component","coldbox.system.logging.LogLevels");
-	
+		
 		// private instance scope
 		instance = structnew();
 		// LogBox Unique ID
@@ -35,13 +35,18 @@ Description :
 		// Version
 		instance.version = "1.0 Beta 3";	 
 		// Configuration object
-		instance.config = "";	
+		instance.config = "";
+		// ColdBox Application Link
+		instance.coldbox = "";	
 	</cfscript>
 	
 	<!--- Init --->
 	<cffunction name="init" access="public" returntype="LogBox" hint="Constructor" output="false" >
-		<cfargument name="config" type="coldbox.system.logging.config.LogBoxConfig" required="true" hint="The LogBoxConfig object to use to configure this instance of LogBox"/>
+		<cfargument name="config"  type="coldbox.system.logging.config.LogBoxConfig" required="true" hint="The LogBoxConfig object to use to configure this instance of LogBox"/>
+		<cfargument name="coldbox" type="coldbox.system.Controller" required="false" default="" hint="A coldbox application that this instance of logbox can be linked to."/>
 		<cfscript>
+			// Check if linking ColdBox
+			if( isObject(arguments.coldbox) ){ instance.coldbox = arguments.coldbox; }
 			
 			// Configure LogBox
 			configure(arguments.config);
@@ -229,6 +234,8 @@ Description :
 					if( NOT structKeyExists(appenders,arguments.name) ){
 						// Create appender
 						oAppender = createObject("component",arguments.class).init(argumentCollection=arguments);
+						// Is running within ColdBox
+						if( isObject(instance.coldbox) ){ oAppender.setColdbox(instance.coldbox); }
 						// run registration event
 						oAppender.onRegistration();
 						// set initialized

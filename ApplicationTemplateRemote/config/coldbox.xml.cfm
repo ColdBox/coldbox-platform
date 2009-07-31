@@ -56,35 +56,30 @@
 	
 	<!--Model Integration -->
 	<Models>
-		<ObjectCaching>true</ObjectCaching>
 		<DefinitionFile>config/ModelMappings.cfm</DefinitionFile>
-		<SetterInjection>false</SetterInjection>
 		<!--
+		<SetterInjection>false</SetterInjection>
+		<ObjectCaching>true</ObjectCaching>
 		<ExternalLocation></ExternalLocation>
 		<DICompleteUDF>onDIComplete</DICompleteUDF>
 		<StopRecursion></StopRecursion>		
-		<DebugMode>false</DebugMode>
-		<DebugLevel>TRACE</DebugLevel> -->
+		<ParentFactory type="coldspring or lightwire">definition file</ParentFactory>
+		-->
 	</Models>
 	
 	<!-- 
 		ColdBox Logging via LogBox
-		Levels: -1=OFF,0=FATAL,1=ERROR,2=WARN,3=INFO,4=DEBUG,5=TRACE
+		Levels: -1=OFF,0=FATAL,1=ERROR,2=WARN,3=INFO,4=DEBUG
 	-->
 	<LogBox>
-		<!-- Log to console -->
-		<Appender name="console" class="coldbox.system.logging.appenders.ConsoleAppender" />
-		<!-- Log to ColdBox Files -->
-		<Appender name="coldboxfile" class="coldbox.system.logging.appenders.AsyncRollingFileAppender">
+		<Appender name="coldboxTracer" class="coldbox.system.logging.appenders.ColdboxTracerAppender" />
+		<!-- Log to ColdBox File
+		<Appender name="fileLog" class="coldbox.system.logging.appenders.AsyncRollingFileAppender">
 			<Property name="filePath">logs</Property>
 			<Property name="fileName">${AppName}</Property>
-			<Property name="autoExpand">true</Property>
-			<Property name="fileMaxSize">2000</Property>
-			<Property name="fileMaxArchives">2</Property>		
-		</Appender>
+		</Appender> -->
 		<!-- Root Logger Definition -->
-		<Root levelMin="FATAL" levelMax="TRACE" appenders="*" />
-		<!-- Category Definitions Below -->
+		<Root levelMin="FATAL" levelMax="INFO" appenders="*" />
 	</LogBox>
 	
 	<!-- Custom Conventions : You can override the framework wide conventions of the locations of the needed objects -->

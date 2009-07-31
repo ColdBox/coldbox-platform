@@ -1114,7 +1114,6 @@ Description :
 				ConfigStruct.DebuggerSettings.EnableDumpVar = fwSettings.enableDumpVar;
 				ConfigStruct.DebuggerSettings.PersistentRequestProfiler = fwSettings.PersistentRequestProfiler;
 				ConfigStruct.DebuggerSettings.maxPersistentRequestProfilers = fwSettings.maxPersistentRequestProfilers;
-				ConfigStruct.DebuggerSettings.PersistentTracers = fwSettings.PersistentTracers;
 				ConfigStruct.DebuggerSettings.maxRCPanelQueryRows = fwSettings.maxRCPanelQueryRows;
 				ConfigStruct.DebuggerSettings.showTracerPanel = fwSettings.showTracerPanel;
 				ConfigStruct.DebuggerSettings.expandedTracerPanel = fwSettings.expandedTracerPanel;
@@ -1135,10 +1134,6 @@ Description :
 				// PersistentRequestProfiler
 				if ( structKeyExists(DebuggerSettingNodes[1], "PersistentRequestProfiler") and isBoolean(DebuggerSettingNodes[1].PersistentRequestProfiler.xmlText) ){
 					ConfigStruct.DebuggerSettings.PersistentRequestProfiler = trim(DebuggerSettingNodes[1].PersistentRequestProfiler.xmlText);
-				}
-				// PersistentTracers
-				if ( structKeyExists(DebuggerSettingNodes[1], "PersistentTracers") and isBoolean(DebuggerSettingNodes[1].PersistentTracers.xmlText) ){
-					ConfigStruct.DebuggerSettings.PersistentTracers = trim(DebuggerSettingNodes[1].PersistentTracers.xmlText);
 				}
 				// maxPersistentRequestProfilers
 				if ( structKeyExists(DebuggerSettingNodes[1], "maxPersistentRequestProfilers") and isNumeric(DebuggerSettingNodes[1].maxPersistentRequestProfilers.xmlText) ){

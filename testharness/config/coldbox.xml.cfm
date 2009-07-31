@@ -47,6 +47,9 @@
 		
 		<!--Testing Model Path -->
 		<Setting name="TestingModelPath" value="coldbox.testing.testmodel" />
+		
+		<!-- javaloader lib path to load libraries -->
+		<Setting name="javaloader_libpath" value="${applicationPath}model/java" />
 	</YourSettings>
 	
 	<!-- IOC Integration -->
@@ -156,7 +159,6 @@
 		
 		<Interceptor class="coldbox.system.interceptors.EnvironmentControl">
 			<Property name="configFile">config/environments.xml.cfm</Property>
-			<Property name="fireOnInit">true</Property>
 		</Interceptor>
 		<Interceptor class="coldbox.system.interceptors.Deploy">
 			<Property name="tagFile">config/_deploy.tag</Property>
@@ -164,7 +166,6 @@
 		</Interceptor>
 		<Interceptor class="coldbox.system.interceptors.Autowire">
 			<Property name="debugMode">true</Property>
-			<Property name="enableSetterInjection">false</Property>
 		</Interceptor>
 		<Interceptor class="coldbox.system.interceptors.SES">
 			<Property name="configFile">/config/routes.cfm</Property>
@@ -179,6 +180,7 @@
 	        <Property name="debugMode">true</Property>
 	        <Property name="preEventSecurity">false</Property>
 		</Interceptor>	
+		
 		<!-- Developer's ColdBox Sidebar -->
 		<Interceptor class="coldbox.system.interceptors.ColdboxSideBar" />
 	</Interceptors>

@@ -18,19 +18,26 @@ Description :
 		<cfargument name="controller" type="any" required="true">
 		<!--- ************************************************************* --->
 		<cfscript>
-			/* Setup The Controller. */
+			// Setup The Controller.
 			setController(arguments.controller);
-			/* Setup the Event Handler Cache Dictionary */
+			// Setup the Event Handler Cache Dictionary
 			setHandlerCacheDictionary(CreateObject("component","coldbox.system.util.collections.BaseDictionary").init('HandlersMetadata'));
-			/* Setup the Event Cache Dictionary */
+			// Setup the Event Cache Dictionary
 			setEventCacheDictionary(CreateObject("component","coldbox.system.util.collections.BaseDictionary").init('EventCache'));
-			
-			/* Return Service */			
+						
 			return this;
 		</cfscript>
 	</cffunction>
 
 <!------------------------------------------- PUBLIC ------------------------------------------->
+	
+	<!--- onConfigurationLoad --->
+    <cffunction name="onConfigurationLoad" output="false" access="public" returntype="void" hint="Called by loader service when configuration file loads">
+    	<cfscript>
+    		// execute the handler registrations after configurations loaded
+			registerHandlers();			
+    	</cfscript>
+    </cffunction>
 	
 	<!--- Get a new handler Instance --->
 	<cffunction name="newHandler" access="public" returntype="any" hint="Create a New Handler Instance" output="false" >
@@ -45,7 +52,7 @@ Description :
 			interceptMetadata.oHandler = oHandler;
 			
 			//Fire Interception
-			getController().getInterceptorService().processState("afterHandlerCreation",interceptMetadata);
+			controller.getInterceptorService().processState("afterHandlerCreation",interceptMetadata);
 			
 			//Return handler
 			return oHandler;
@@ -213,52 +220,46 @@ Description :
 		var onInvalidEvent = controller.getSetting("onInvalidEvent");
 		var HandlerBean = CreateObject("component","coldbox.system.beans.EventHandlerBean").init(controller.getSetting("HandlersInvocationPath"));
 	
-		/* Rip the handler and method. */
+		// Rip the handler and method
 		HandlerReceived = reReplace(event,"\.[^.]*$","");
 		MethodReceived = listLast(event,".");
 		
-		/* Try to do list localization in the registry for full event string. */
+		// Try to do list localization in the registry for full event string.
 		handlerIndex = listFindNoCase(handlersList, HandlerReceived);
-		handlerExternalIndex = listFindNoCase(handlersExternalList, HandlerReceived);
-
-		/* The following is done in order to get the appropriate case-sensitive handler registrations, we do not use the incomign event syntax. */
-				
-		/* Check for conventions location */
+		// Check for conventions location
 		if ( handlerIndex ){
 			HandlerBean.setHandler(listgetAt(handlersList,handlerIndex));
 			HandlerBean.setMethod(MethodReceived);
+			return HandlerBean;
 		}
-		/* Check for external location */
-		else if( handlerExternalIndex ){
+		
+		// Check for external location
+		handlerExternalIndex = listFindNoCase(handlersExternalList, HandlerReceived);
+		if( handlerExternalIndex ){
 			HandlerBean.setInvocationPath(controller.getSetting("HandlersExternalLocation"));
 			HandlerBean.setHandler(listgetAt(handlersExternalList,handlerExternalIndex));
 			HandlerBean.setMethod(MethodReceived);
+			return HandlerBean;
 		}
-		/* Else maybe invalid event. */
-		else if( arguments.noThrow eq false ){
-			/* Check for invalid Event */
-			if ( len(trim(onInvalidEvent)) ){
-					/* Check if the invalid event is the same as the current event */
-					if ( CompareNoCase(onInvalidEvent,event) eq 0){
-						getUtil().throwit("The invalid event handler: #onInvalidEvent# is also invalid. Please check your settings","","Framework.InvalidEventHandlerException");
-					}
-					else{
-						/* Log Invalid Event */
-						controller.getPlugin("Logger").logEntry("error","Invalid Event detected: #HandlerReceived#.#MethodReceived#");
-						/* Override Event */
-						HandlerBean.setHandler(reReplace(onInvalidEvent,"\.[^.]*$",""));
-						HandlerBean.setMethod(listLast(onInvalidEvent,"."));
-					}
-				}
-			else{
-				/* Throw invalid event */
-				getUtil().throwit("The event handler: #event# is not valid registered event.","","Framework.EventHandlerNotRegisteredException");
+		
+		// Check for invalid Event
+		if ( len(trim(onInvalidEvent)) ){
+			// Check if the invalid event is the same as the current event
+			if ( CompareNoCase(onInvalidEvent,event) eq 0){
+				getUtil().throwit(message="The invalid event handler: #onInvalidEvent# is also invalid. Please check your settings",type="HandlerService.onInvalidEventException");
 			}
 			
-		}//end if noThrow
+			// Log Invalid Event
+			controller.getPlugin("Logger").logEntry("error","Invalid Event detected: #HandlerReceived#.#MethodReceived#");
+			
+			// Override Event
+			HandlerBean.setHandler(reReplace(onInvalidEvent,"\.[^.]*$",""));
+			HandlerBean.setMethod(listLast(onInvalidEvent,"."));
+			return HandlerBean;
+		}
 		
-		//Return validated Handler Bean
-		return HandlerBean;
+		getUtil().throwit(message="The event handler: #event# is not valid registered event.",type="HandlerService.EventHandlerNotRegisteredException");
+		
 		</cfscript>
 	</cffunction>
 	
@@ -274,37 +275,35 @@ Description :
 		
 		//Check for Handlers Directory Location
 		if ( not directoryExists(HandlersPath) ){
-			getUtil().throwit("The handlers directory: #handlerspath# does not exist please check your application structure or your Application Mapping.","","Framework.loaderService.HandlersDirectoryNotFoundException");
+			getUtil().throwit("The handlers directory: #handlerspath# does not exist please check your application structure or your Application Mapping.","","HandlerService.HandlersDirectoryNotFoundException");
 		}
 		
 		//Get recursive Array listing
-		HandlerArray = recurseListing(HandlerArray, HandlersPath, HandlersPath);
+		HandlerArray = getHandlerListing(HandlersPath);
 		
 		//Verify it
 		if ( ArrayLen(HandlerArray) eq 0 ){
-			getUtil().throwit("No handlers were found in: #HandlersPath#. So I have no clue how you are going to run this application.","","Framework.loaderService.NoHandlersFoundException");
+			getUtil().throwit("No handlers were found in: #HandlersPath#. So I have no clue how you are going to run this application.","","HandlerService.NoHandlersFoundException");
 		}
 		
 		//Set registered Handlers
-		controller.setSetting("RegisteredHandlers",arrayToList(HandlerArray));
+		controller.setSetting(name="RegisteredHandlers",value=arrayToList(HandlerArray));
 		
 		/* ::::::::::::::::::::::::::::::::::::::::: EXTERNAL HANDLERS :::::::::::::::::::::::::::::::::::::::::::: */
 		
-		if( HandlersExternalLocationPath neq ""){
+		if( len(HandlersExternalLocationPath) ){
 			
 			//Check for Handlers Directory Location
 			if ( not directoryExists(HandlersExternalLocationPath) ){
-				getUtil().throwit("The external handlers directory: #HandlersExternalLocationPath# does not exist please check your application structure.","","Framework.loaderService.HandlersDirectoryNotFoundException");
+				getUtil().throwit("The external handlers directory: #HandlersExternalLocationPath# does not exist please check your application structure.","","HandlerService.HandlersDirectoryNotFoundException");
 			}
 			
 			//Get recursive Array listing
-			HandlersExternalArray = recurseListing(HandlersExternalArray, HandlersExternalLocationPath, HandlersExternalLocationPath);
-			
-			//Sort The Array
-			ArraySort(HandlersExternalArray,"text");
+			HandlersExternalArray = getHandlerListing(HandlersExternalLocationPath);
 		}
-		//Set registered External Handlers, if found
-		controller.setSetting("RegisteredExternalHandlers",arrayToList(HandlersExternalArray));
+		
+		//Set registered External Handlers
+		controller.setSetting(name="RegisteredExternalHandlers",value=arrayToList(HandlersExternalArray));
 		</cfscript>
 	</cffunction>
 
@@ -461,54 +460,41 @@ Description :
 	</cffunction>
 	
 	<!--- Recursive Registration of Handler Directories --->
-	<cffunction name="recurseListing" access="private" output="false" returntype="array" hint="Recursive creation of handlers in a directory.">
+	<cffunction name="getHandlerListing" access="private" output="false" returntype="array" hint="Get an array of registered handlers">
 		<!--- ************************************************************* --->
-		<cfargument name="fileArray" 	type="array"  required="true">
-		<cfargument name="Directory" 	type="string" required="true">
-		<cfargument name="HandlersPath" type="string" required="true">
+		<cfargument name="directory" 	type="string" required="true">
 		<!--- ************************************************************* --->
+		<cfset var files = "">
+		<cfset var i = 1>
+		<cfset var thisAbsolutePath = "">
+		<cfset var cleanHandler = "">
+		<cfset var fileArray = arrayNew(1)>
+		
+		<!--- List Handlers --->
+		<cfdirectory action="list" recurse="true" name="files" directory="#arguments.directory#" filter="*.cfc"/>
+		
 		<cfscript>
-		var oDirectory = CreateObject("java","java.io.File").init(arguments.Directory);
-		var Files = oDirectory.list();
-		var i = 1;
-		var tempfile = "";
-		var cleanHandler = "";
-		var thisAbsolutePath = "";
-		
-		/* Clean Handler Path for Windows based systems */
-		arguments.handlersPath = replace(arguments.handlersPath,"\","/","all");
-		
-		//Loop Through listing if any files found.
-		for (; i lte arrayLen(Files); i=i+1 ){
+			// Convert windows \ to java /
+			arguments.directory = replace(arguments.directory,"\","/","all");
 			
-			//get first reference as File Object
-			tempFile = CreateObject("java","java.io.File").init(oDirectory,Files[i]);
-			
-			//Directory Check for recursion
-			if ( tempFile.isDirectory() ){
-				arguments.fileArray = recurseListing(arguments.fileArray,tempFile.getPath(), arguments.HandlersPath);
-			}
-			else{
-				//Filter only cfc's
-				if ( listlast(tempFile.getName(),".") neq "cfc" )
-					continue;
+			// Iterate, clean and register
+			for (; i lte files.recordcount; i=i+1 ){
 				
-				/* Clean base path */
-				thisAbsolutePath = replace(tempFile.getAbsolutePath(),"\","/","all");
-				cleanHandler = replacenocase(thisAbsolutePath,arguments.handlersPath,"","all");
+				thisAbsolutePath = replace(files.directory[i],"\","/","all") & "/";
+				cleanHandler = replacenocase(thisAbsolutePath,arguments.directory,"","all") & files.name[i];
 				
-				/* Clean OS separators */
+				// Clean OS separators to dot notation.
 				cleanHandler = removeChars(replacenocase(cleanHandler,"/",".","all"),1,1);
 		
 				//Clean Extension
 				cleanHandler = getUtil().ripExtension(cleanhandler);
 				
 				//Add data to array
-				ArrayAppend(arguments.fileArray,cleanHandler);
+				ArrayAppend(fileArray,cleanHandler);
 			}
-		}
-		return arguments.fileArray;
-		</cfscript>
+		
+			return fileArray;
+		</cfscript>		
 	</cffunction>
 
 	

@@ -36,6 +36,14 @@ Description :
 			return this;
 		</cfscript>
 	</cffunction>
+	
+	<!--- onConfigurationLoad --->
+    <cffunction name="onConfigurationLoad" output="false" access="public" returntype="void" hint="Called by loader service when configuration file loads">
+    	<cfscript>
+    		// Register The Interceptors
+			registerInterceptors();
+    	</cfscript>
+    </cffunction>
 
 <!------------------------------------------- PUBLIC ------------------------------------------->
 

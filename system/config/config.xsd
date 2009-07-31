@@ -456,11 +456,6 @@
 						<xs:documentation>Whether to activate the dumpVar URL action or not.</xs:documentation>
 					</xs:annotation>
 				</xs:element>
-				<xs:element maxOccurs="1" minOccurs="0" name="PersistentTracers" type="xs:boolean" default="true">
-					<xs:annotation>
-						<xs:documentation>Whether to activate or not the persistent tracers.</xs:documentation>
-					</xs:annotation>
-				</xs:element>
 				<xs:element maxOccurs="1" minOccurs="0" name="PersistentRequestProfiler" type="xs:boolean" default="false">
 					<xs:annotation>
 						<xs:documentation>Whether to activate or not the request profile persisten storage</xs:documentation>
@@ -696,6 +691,11 @@
 								</xs:complexType>
 							</xs:element>
 						</xs:sequence>
+						<xs:attribute name="name" use="required" type="xs:string">
+							<xs:annotation>
+								<xs:documentation>The name of the category to configure.</xs:documentation>
+							</xs:annotation>
+						</xs:attribute>
 						<xs:attribute name="levelMin" use="optional">
 							<xs:annotation>
 								<xs:documentation>The minimum logging level for this root logger.</xs:documentation>
@@ -774,21 +774,6 @@
 						</xs:simpleContent>
 					</xs:complexType>
 				</xs:element>
-				<xs:element maxOccurs="1" minOccurs="0" name="DebugLevel" default="OFF">
-					<xs:annotation>
-						<xs:documentation>The debugging level of the ioc integration package</xs:documentation>
-					</xs:annotation>
-					<xs:simpleType>
-						<xs:restriction base="xs:string">
-							<xs:enumeration value="OFF"/>
-							<xs:enumeration value="FATAL"/>
-							<xs:enumeration value="ERROR"/>
-							<xs:enumeration value="WARN"/>
-							<xs:enumeration value="INFO"/>
-							<xs:enumeration value="DEBUG"/>
-						</xs:restriction>
-					</xs:simpleType>
-				</xs:element>
 				<xs:element maxOccurs="1" minOccurs="0" name="ParentFactory">
 					<xs:annotation>
 						<xs:documentation>The parent IOC frammework to add to the ioc framework. The text contents is the definition file.</xs:documentation>
@@ -849,21 +834,6 @@
 					<xs:annotation>
 						<xs:documentation>The class paths (comma-delimmitted) that the coldbox bean factory will stop recursion on when searching for dependencies.</xs:documentation>
 					</xs:annotation>
-				</xs:element>
-				<xs:element maxOccurs="1" minOccurs="0" name="DebugLevel" default="OFF">
-					<xs:annotation>
-						<xs:documentation>The debugging level of the model integration package</xs:documentation>
-					</xs:annotation>
-					<xs:simpleType>
-						<xs:restriction base="xs:string">
-							<xs:enumeration value="OFF"/>
-							<xs:enumeration value="FATAL"/>
-							<xs:enumeration value="ERROR"/>
-							<xs:enumeration value="WARN"/>
-							<xs:enumeration value="INFO"/>
-							<xs:enumeration value="DEBUG"/>
-						</xs:restriction>
-					</xs:simpleType>
 				</xs:element>				
 				<xs:element maxOccurs="1" minOccurs="0" name="ParentFactory">
 					<xs:annotation>

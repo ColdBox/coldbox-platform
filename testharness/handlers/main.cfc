@@ -36,11 +36,6 @@ coldbox:cacheManager	 get the cache manager
 
 	<cffunction name="onApplicationStart" access="public" output="false" returntype="void">
 		<cfargument name="Event" type="coldbox.system.beans.RequestContext">
-
-		<cfif not event.isProxyRequest()>
-			<cfset getPlugin("JavaLoader").setup( listToArray( ExpandPath("/coldbox/testharness/includes/helloworld.jar")) )>
-		</cfif>
-		
 		<cfset getColdboxOCM().set("mysiteDSNBean",getDatasource("mysite"),0)>
 		<cfset getPlugin("Logger").logEntry("information","AppStart Fired")>
 	</cffunction>

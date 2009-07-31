@@ -40,10 +40,10 @@ Description :
 		<cfargument name="COLDBOX_APP_ROOT_PATH" required="true"  type="string" hint="The coldbox app root path from the application.cfc">
 		<cfargument name="COLDBOX_APP_KEY" 		 required="false" type="string" hint="The key name to use when storing the Coldbox application">
 		<cfscript>
-			/* Set vars for two main locations */
+			// Set vars for two main locations
 			setCOLDBOX_CONFIG_FILE(arguments.COLDBOX_CONFIG_FILE);
 			setCOLDBOX_APP_ROOT_PATH(arguments.COLDBOX_APP_ROOT_PATH);
-			/* App Key Check */
+			// App Key Check
 			if( structKeyExists(arguments,"COLDBOX_APP_KEY") AND len(trim(arguments.COLDBOX_APP_KEY)) ){
 				setCOLDBOX_APP_KEY(arguments.COLDBOX_APP_KEY);
 			}

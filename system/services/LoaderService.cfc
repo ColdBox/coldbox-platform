@@ -49,10 +49,13 @@ Modification History:
 			controller.getPluginService().clearDictionary();
 			controller.getHandlerService().clearDictionaries();
 			
-			// Prepare Parser
+			// Create the Cache Container
+			controller.setColdboxOCM(createCacheManager());
+			
+			// Get Parser Reference
 			XMLParser = controller.getPlugin("XMLParser");
 			
-			// Load Coldbox Config Settings Structure
+			// Load Global ColdBox Configuration Settings Structure
 			FrameworkSettings = XMLParser.loadFramework(arguments.overrideConfigFile);
 			controller.setColdboxSettings(FrameworkSettings);
 			
@@ -90,19 +93,13 @@ Modification History:
 			DebuggerConfig.populate(ConfigSettings.DebuggerSettings);
 			controller.getDebuggerService().setDebuggerConfig(DebuggerConfig);
 			
-			// execute the handler registrations after configurations loaded
-			controller.getHandlerService().registerHandlers();
-			
-			// Register The Interceptors
-			controller.getInterceptorService().registerInterceptors();
-			
-			// Flag the initiation, Framework is ready to serve requests. Praise be to GOD.
-			controller.setColdboxInitiated(true);
-			
 			// Execute onConfigurationLoad for services()
 			for(key in services){
 				services[key].onConfigurationLoad();
 			}
+			
+			// Flag the initiation, Framework is ready to serve requests. Praise be to GOD.
+			controller.setColdboxInitiated(true);
 			
 			// Execute afterConfigurationLoad
 			controller.getInterceptorService().processState("afterConfigurationLoad");
@@ -123,14 +120,21 @@ Modification History:
 	<!--- Register the Aspects --->
 	<cffunction name="registerAspects" access="public" returntype="void" hint="I Register the current Application's Aspects" output="false" >
 		<cfscript>
+		var javaLoader = "";
+		
+		// Init JavaLoader with paths if set as settings.
+		if( controller.settingExists("javaloader_libpath") ){
+			javaLoader = controller.getPlugin("JavaLoader");
+			javaLoader.setup( javaLoader.queryJars(controller.getSetting('javaloader_libpath')) );
+		}
 		
 		// Init Model Integration
-		controller.getPlugin("BeanFactory").configure();
+		controller.getPlugin("BeanFactory");
 		
 		// IoC Plugin Manager Configuration
-		if ( controller.getSetting("IOCFramework") neq "" ){
+		if ( len(controller.getSetting("IOCFramework")) ){
 			//Create IoC Factory and configure it.
-			controller.getPlugin("IOC").configure();
+			controller.getPlugin("IOC");
 		}
 
 		// Load i18N if application is using it.
@@ -154,7 +158,19 @@ Modification History:
 			
 			logBoxConfig = createObject("component","coldbox.system.logging.config.LogBoxConfig").init(expandPath("/coldbox/system/config/LogBox.xml"));
 			
-			return createObject("component","coldbox.system.logging.LogBox").init(logBoxConfig);
+			return createObject("component","coldbox.system.logging.LogBox").init(logBoxConfig,controller);
+    	</cfscript>
+    </cffunction>
+	
+	<!--- createCacheManager --->
+    <cffunction name="createCacheManager" output="false" access="public" returntype="coldbox.system.cache.CacheManager" hint="Create the object cache manager">
+    	<cfscript>
+    		if ( controller.oCFMLENGINE.isMT() ){
+				return CreateObject("component","coldbox.system.cache.MTCacheManager").init(controller);
+			}
+			else{
+				return CreateObject("component","coldbox.system.cache.CacheManager").init(controller);
+			}
     	</cfscript>
     </cffunction>
 	
