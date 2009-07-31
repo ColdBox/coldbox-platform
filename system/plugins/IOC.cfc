@@ -13,8 +13,7 @@ Modification History:
 07/24/2007 - LightWire integration added by Aaron Roberson
 02/15/2007 - Created
 ----------------------------------------------------------------------->
-<cfcomponent name="IOC"
-			 hint="An Inversion Of Control plugin."
+<cfcomponent hint="An Inversion Of Control plugin."
 			 extends="coldbox.system.Plugin"
 			 output="false"
 			 cache="true"
@@ -29,37 +28,37 @@ Modification History:
 		<cfscript>
 			super.Init(arguments.controller);
 			
-			/* Plugin Properties */
+			// Plugin Properties
 			setpluginName("IOC");
 			setpluginVersion("2.1");
 			setpluginDescription("This is an inversion of control plugin.");
 			setpluginAuthor("Luis Majano");
 			setpluginAuthorURL("http://www.coldbox.org");
 			
-			/* Setup the framework chosen in the config */
+			// Setup the framework chosen in the config
 			setIOCFramework( getSetting("IOCFramework") );
-			/* Setup the IOC definition file or cfc from the config */
+			// Setup the IOC definition file or cfc from the config
 			setIOCDefinitionFile( getSetting("IOCDefinitionFile") );
-			/* Setup the initial expanded file */
+			// Setup the initial expanded file 
 			setExpandedIOCDefinitionFile("");
-			/* Create an empty factory placeholder */
+			// Create an empty factory placeholder
 			setIOCFactory( structNew() );
 			
-			/* This can be overriden by the custom settings now: */
+			// Default Locations:
+			setCOLDSPRING_FACTORY( getSetting("ColdspringBeanFactory",true) );
+			setLIGHTWIRE_FACTORY( getSetting("LightWireBeanFactory",true) );
+			
+			// This can be overriden by the custom settings now:
 			if( settingExists('ColdspringBeanFactory') ){
 				setCOLDSPRING_FACTORY( getSetting("ColdspringBeanFactory") );
-			}
-			else{
-				setCOLDSPRING_FACTORY( getSetting("ColdspringBeanFactory",true) );
 			}
 			if( settingExists('LightWireBeanFactory') ){
 				setLIGHTWIRE_FACTORY( getSetting("LightWireBeanFactory") );
 			}
-			else{
-				setLIGHTWIRE_FACTORY( getSetting("LightWireBeanFactory",true) );
-			}
 			
-			/* Return instance. */
+			// Configure the factory for operation
+			configure();
+			
 			return this;
 		</cfscript>
 	</cffunction>

@@ -63,31 +63,33 @@ Description: This is the framework's simple bean factory.
 			// Setup the Autowire DI Dictionary
 			setDICacheDictionary(CreateObject("component","coldbox.system.util.collections.BaseDictionary").init('DIMetadata'));
 			
+			// Configure the plugin
+			configure();
+			
 			return this;
 		</cfscript>
 	</cffunction>
 	
-	<cffunction name="configure" access="public" returntype="BeanFactory" hint="Configure the bean factory for operation" output="false" >
+	<cffunction name="configure" access="public" returntype="BeanFactory" hint="Configure the bean factory for operation from the configuration file." output="false" >
 		<cfscript>
 			var configFilePath = "/";
-			var controller = getController();
 			
-			/* If AppMapping is not Blank check */
-			if( controller.getSetting('AppMapping') neq "" ){
-				configFilePath = configFilePath & controller.getSetting('AppMapping') & "/";
+			// If AppMapping is set, then add it to the config Path
+			if( len(getSetting('AppMapping')) ){
+				configFilePath = configFilePath & getSetting('AppMapping') & "/";
 			}
 			
-			/* Setup the config Path */
+			// Setup the config Path
 			configFilePath = configFilePath & reReplace(instance.ModelsDefinitionFile,"^/","");
 			
-			/* Check if File Exists, else skip and log */
+			// Check if File Exists, else skip and log
 			if( fileExists(expandPath(configFilePath)) ){
 				try{
 					$include(configFilePath);
 				}
 				catch(Any e){
 					$throw("Error including models definition file #configFilePath#. Error: #e.message#",
-						   e.detail,
+						   e.detail & e.tagContext.toString(),
 						   "BeanFactory.ModelsDefinitionFileIncludeException");
 				}
 			}

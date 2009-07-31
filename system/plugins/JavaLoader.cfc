@@ -34,15 +34,15 @@ Luis Majano		07/11/2006		Updated it to work with ColdBox. look at license in the
 		<cfscript>
 			super.Init(arguments.controller);
 			
-			/* Plugin Properties */
+			// Plugin Properties
 			setpluginName("Java Loader");
-			setpluginVersion("1.0");
+			setpluginVersion("2.0");
 			setpluginDescription("Java Loader plugin, based on Mark Mandel's brain.");
 			setpluginAuthor("Luis Majano");
 			setpluginAuthorURL("http://www.coldbox.org");
 			
-			/* Set a static ID for the loader */
-			setstaticIDKey("cbox-javaloader-#getController().getAppHash()#");
+			// Set a static ID for the loader
+			setStaticIDKey("cbox-javaloader-#getController().getAppHash()#");
 			
 			return this;
 		</cfscript>
@@ -54,7 +54,7 @@ Luis Majano		07/11/2006		Updated it to work with ColdBox. look at license in the
 	<!--- Setup the Loader --->
 	<cffunction name="setup" hint="setup the loader" access="public" returntype="any" output="false">
 		<!--- ************************************************************* --->
-		<cfargument name="loadPaths" hint="An array of directories of classes, or paths to .jar files to load" 
+		<cfargument name="loadPaths" hint="An array of directories of classes, or paths to .jar files to load"
 					type="array" default="#ArrayNew(1)#" required="no">
 		<cfargument name="loadColdFusionClassPath" hint="Loads the ColdFusion libraries" 
 					type="boolean" required="No" default="false">
@@ -98,8 +98,33 @@ Luis Majano		07/11/2006		Updated it to work with ColdBox. look at license in the
 	</cffunction>
 	
 	<!--- Get the static javaloder id --->
-	<cffunction name="getstaticIDKey" access="public" returntype="string" output="false" hint="Return the original server id static key">
+	<cffunction name="getStaticIDKey" access="public" returntype="string" output="false" hint="Return the original server id static key">
 		<cfreturn instance.staticIDKey>
+	</cffunction>
+	
+	<!--- Get jars from a path as an array --->
+	<cffunction name="queryJars" hint="pulls a query of all the jars in the folder passed" access="public" returntype="array" output="false">
+		<cfargument name="dirPath" type="string" required="true" default="" hint="The directory path to query"/>
+		<cfargument name="filter" type="string" required="false" default="*.jar" hint="The directory filter to use"/>
+	
+		<cfset var qJars = 0>
+		<cfset var aJars = ArrayNew(1)>
+		<cfset var path = arguments.dirPath>
+		
+		<!--- Verify It --->
+		<cfif not directoryExists(path)>
+			<cfthrow message="Invalid library path" detail="The path is #path#" type="JavaLoader.DirectoryNotFoundException">
+		</cfif>
+		
+		<!--- Get Listing --->
+		<cfdirectory action="list" name="qJars" directory="#path#" filter="#arguments.filter#" sort="name desc"/>
+		
+		<!--- Loop and create the array that we will use to load. --->
+		<cfloop query="qJars">
+			<cfset ArrayAppend(aJars, directory & "/" & name)>
+		</cfloop>
+	
+		<cfreturn aJars>
 	</cffunction>
 
 <!------------------------------------------- PRIVATE ------------------------------------------->
@@ -129,7 +154,7 @@ Luis Majano		07/11/2006		Updated it to work with ColdBox. look at license in the
 	</cffunction>	
 	
 	<!--- set the static javaloader id --->
-	<cffunction name="setstaticIDKey" access="private" returntype="void" output="false">
+	<cffunction name="setStaticIDKey" access="private" returntype="void" output="false">
 		<cfargument name="staticIDKey" type="string" required="true">
 		<cfset instance.staticIDKey = arguments.staticIDKey>
 	</cffunction>
