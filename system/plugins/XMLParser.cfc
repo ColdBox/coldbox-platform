@@ -658,7 +658,6 @@ Description :
 				ConfigStruct.IOCFramework = "";
 				ConfigStruct.IOCFrameworkReload = false;
 				ConfigStruct.IOCDefinitionFile = "";
-				ConfigStruct.IOCDebugLevel = "OFF";
 				ConfigStruct.IOCObjectCaching = false;
 				ConfigStruct.IOCParentFactory = "";
 				ConfigStruct.IOCParentFactoryDefinitionFile = "";
@@ -679,10 +678,6 @@ Description :
 					}
 					ConfigStruct["IOCDefinitionFile"] = iocNodes[1].Framework.xmltext;
 				}
-				//Debug Level
-				if ( structKeyExists(iocNodes[1], "DebugLevel") ){
-					ConfigStruct["IOCDebugLevel"] = iocNodes[1].DebugLevel.xmltext;
-				}	
 				// Parent Factory
 				if ( structKeyExists(iocNodes[1], "ParentFactory") ){
 					ConfigStruct["IOCParentFactoryDefinitionFile"] = iocNodes[1].ParentFactory.xmltext;
@@ -714,7 +709,6 @@ Description :
 				ConfigStruct.ModelsDICompleteUDF = fwSettingsStruct["ModelsDICompleteUDF"];
 				ConfigStruct.ModelsStopRecursion = fwSettingsStruct["ModelsStopRecursion"];
 				ConfigStruct.ModelsDefinitionFile = fwSettingsStruct["ModelsDefinitionFile"];
-				ConfigStruct.ModelsDebugLevel = fwSettingsStruct["ModelsDebugLevel"];
 			}
 			
 			//Check if empty
@@ -752,11 +746,6 @@ Description :
 				//Check for ModelsDefinitionFile
 				if ( structKeyExists(ModelNodes[1], "DefinitionFile") AND len(ModelNodes[1].DefinitionFile.xmltext) ){
 					ConfigStruct["ModelsDefinitionFile"] = ModelNodes[1].DefinitionFile.xmltext;
-				}
-				
-				//Check for ModelsDebugLevel
-				if ( structKeyExists(ModelNodes[1], "DebugLevel") AND len(ModelNodes[1].DebugLevel.xmltext) ){
-					ConfigStruct["ModelsDebugLevel"] = ModelNodes[1].DebugLevel.xmltext;
 				}
 			} 
 		</cfscript>
