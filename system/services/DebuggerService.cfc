@@ -167,6 +167,7 @@ Description :
 		<cfset var RenderedDebugging = "">
 		<cfset var Event = controller.getRequestService().getContext()>
 		<cfset var rc = event.getCollection()>
+		<cfset var prc = event.getCollection(private=true)>
 
 		<!--- Set local Variables --->
 		<cfset var itemTypes = controller.getColdboxOCM().getItemTypes()>
@@ -176,7 +177,8 @@ Description :
 
 		<!--- Setup Local Variables --->
 		<cfset var debugStartTime = GetTickCount()>
-		<cfset var RequestCollection = Event.getCollection()>
+		<cfset var thisCollection = "">
+		<cfset var thisCollectionType = "">
 		<cfset var debugTimers = getTimers()>
 
 		<!--- Debug Rendering Type --->

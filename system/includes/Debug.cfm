@@ -215,33 +215,16 @@ Description :
 	&nbsp;Request Collection Structure
 	</div>
 	<div class="fw_debugContent<cfif getDebuggerConfig().getExpandedRCPanel()>View</cfif>" id="fw_reqCollection">
-		<table border="0" cellpadding="0" cellspacing="1" class="fw_debugTables" width="100%">
-		  <cfloop collection="#RequestCollection#" item="vars">
-		  <cfset varVal = requestCollection[vars]>
-		  <tr>
-			<td align="right" width="15%" class="fw_debugTablesTitles"><strong>#lcase(vars)#:</strong></td>
-			<td  class="fw_debugTablesCells">
-			<cfif isSimpleValue(varVal) >
-				<cfif varVal eq "">
-					<span class="fw_redText">N/A</span>
-				<cfelse>
-					#htmlEditFormat(varVal)#
-				</cfif>
-			<cfelse>
-				<!--- Max Display For Queries  --->
-				<cfif isQuery(varVal) and (varVal.recordCount gt getDebuggerConfig().getmaxRCPanelQueryRows())>
-					<cfquery name="varVal" dbType="query" maxrows="#getDebuggerConfig().getmaxRCPanelQueryRows()#">
-						select * from varVal
-					</cfquery>
-					<cfdump var="#varVal#" label="Query Truncated to #getDebuggerConfig().getmaxRCPanelQueryRows()# records" expand="false">
-				<cfelse>
-					<cfdump var="#varVal#" expand="false">
-				</cfif>				
-			</cfif>
-			</td>
-		  </tr>
-		  </cfloop>
-		</table>
+		
+		<!--- Public Collection --->
+		<cfset thisCollection = rc>
+		<cfset thisCollectionType = "Public">
+		<cfinclude template="/coldbox/system/includes/panels/CollectionPanel.cfm">
+		<!--- Private Collection --->
+		<cfset thisCollection = prc>
+		<cfset thisCollectionType = "Private">
+		<cfinclude template="/coldbox/system/includes/panels/CollectionPanel.cfm">
+		
 	</div>
 	</cfif>
 <!--- **************************************************************--->
