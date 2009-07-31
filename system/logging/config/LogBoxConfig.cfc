@@ -109,8 +109,8 @@ Description :
 	
 	<!--- Set the root logger information  --->
 	<cffunction name="root" access="public" returntype="void" output="false" hint="Register the root logger in this configuration.">
-		<cfargument name="levelMin" 	type="numeric" required="false" default="0" hint="The default log level for the root logger, by default it is 0. Optional. ex: config.logLevels.WARN"/>
-		<cfargument name="levelMax" 	type="numeric" required="false" default="5" hint="The default log level for the root logger, by default it is 5. Optional. ex: config.logLevels.WARN"/>
+		<cfargument name="levelMin" 	type="numeric" required="false" default="0" hint="The default log level for the root logger, by default it is 0 (FATAL). Optional. ex: config.logLevels.WARN"/>
+		<cfargument name="levelMax" 	type="numeric" required="false" default="4" hint="The default log level for the root logger, by default it is 4 (DEBUG). Optional. ex: config.logLevels.WARN"/>
 		<cfargument name="appenders" 	type="string"  required="true"  hint="A list of appenders to configure the root logger with. Send a * to add all appenders"/>
 		<cfscript>
 			var x = 1;
@@ -137,7 +137,7 @@ Description :
 	<cffunction name="category" output="false" access="public" returntype="void" hint="Add a new category configuration with appender(s).  Appenders MUST be defined first, else this method will throw an exception">
 		<cfargument name="name" 		type="string"  required="true"  hint="A unique name for the appender to register. Only unique names can be registered per instance."/>
 		<cfargument name="levelMin" 	type="numeric" required="false" default="0" hint="The default min log level for this category. Defaults to the lowest level 0 or FATAL"/>
-		<cfargument name="levelMax" 	type="numeric" required="false" default="5" hint="The max default log level for this category. If not passed it defaults to the highest level possible"/>
+		<cfargument name="levelMax" 	type="numeric" required="false" default="4" hint="The max default log level for this category. If not passed it defaults to the highest level possible"/>
 		<cfargument name="appenders" 	type="string"  required="false" default=""  hint="A list of appender names to configure this category with."/>
 		<cfscript>
 			var x = 1;
