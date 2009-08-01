@@ -579,5 +579,12 @@ Modification History:
 		<cfargument name="type"  	type="string" 	required="no" default="Framework">
 		<cfthrow type="#arguments.type#" message="#arguments.message#"  detail="#arguments.detail#">
 	</cffunction>
-
+	
+	<!--- Dump facade --->
+	<cffunction name="$dump" access="private" hint="Facade for cfmx dump" returntype="void">
+		<cfargument name="var" required="yes" type="any">
+		<cfargument name="isAbort" type="boolean" default="false" required="false" hint="Abort also"/>
+		<cfdump var="#var#">
+		<cfif arguments.isAbort><cfabort></cfif>
+	</cffunction>
 </cfcomponent>

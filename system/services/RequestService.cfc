@@ -20,12 +20,10 @@ Modification History:
 	<cffunction name="init" access="public" output="false" returntype="RequestService" hint="Constructor">
 		<cfargument name="controller" type="any" required="true" hint="Coldbox controller">
 		<cfscript>
-			/* Setup Controller */
 			setController(arguments.controller);			
 			
-			/* Setup context properties */
-			instance.ContextProperties = structnew();
-			
+			instance.contextProperties = structnew();
+		
 			return this;
 		</cfscript>
 	</cffunction>
@@ -40,52 +38,49 @@ Modification History:
 			var EventName = controller.getSetting("EventName");
 			var oFlashStorage = "";
 			
-			/* Collection Appends */
-			Context.collectionAppend(FORM,true);
-			Context.collectionAppend(URL);			
-					
-			/* Get Flash Persistance Storage */
+			// Get Flash Persistance Storage
 			if( controller.getSetting("FlashURLPersistScope",1) eq "session" ){
 				oFlashStorage = controller.getPlugin("SessionStorage");
 			}
 			else{
-				/* Get Client Storage */
+				// Get Client Storage
 				oFlashStorage = controller.getPlugin("ClientStorage");				
 			}
 			
-			/* Flash Persistance Contruction */	
+			// Flash Persistance Contruction	
 			if ( oFlashStorage.exists('_coldbox_persistStruct') ){
-				/* Append flash persistance structure and overwrite if needed. */
+				// Append flash persistance structure and overwrite if needed.
 				Context.collectionAppend(oFlashStorage.getVar('_coldbox_persistStruct'),true);
-				/* Remove Flash persistance */
+				// Remove Flash persistance
 				oFlashStorage.deleteVar('_coldbox_persistStruct');
 			}	
 					
-			/* Object Caching Garbage Collector */
+			// Object Caching Garbage Collector
 			controller.getColdboxOCM().reap();
 				
-			/* Debug Mode Checks */
+			// Debug Mode Checks
 			if ( Context.valueExists("debugMode") and isBoolean(Context.getValue("debugMode")) ){
-				if ( DebugPassword eq "")
+				if ( DebugPassword eq ""){
 					controller.getDebuggerService().setDebugMode(Context.getValue("debugMode"));
-				else if ( Context.valueExists("debugpass") and CompareNoCase(DebugPassword,Context.getValue("debugpass")) eq 0 )
+				}
+				else if ( Context.valueExists("debugpass") and CompareNoCase(DebugPassword,Context.getValue("debugpass")) eq 0 ){
 					controller.getDebuggerService().setDebugMode(Context.getValue("debugMode"));
+				}
 			}
 
-			/* Default Event Definition */
+			// Default Event Definition
 			if ( not Context.valueExists(EventName))
 				Context.setValue(EventName, controller.getSetting("DefaultEvent"));
-			/* Event More Than 1 Check, grab the first event instance, other's are discarded */
+			// Event More Than 1 Check, grab the first event instance, other's are discarded
 			if ( listLen(Context.getValue(EventName)) gte 2 )
 				Context.setValue(EventName, getToken(Context.getValue(EventName),2,","));
 			
-			/* Default Event Action Checks */
+			// Default Event Action Checks
 			controller.getHandlerService().defaultEventCheck(Context);
 			
-			/* Are we using event caching? */
+			// Are we using event caching?
 			eventCachingTest(Context);
 			
-			/* Return captured Context */
 			return Context;
 		</cfscript>
 	</cffunction>
@@ -100,35 +95,34 @@ Modification History:
 			var oEventURLFacade = controller.getColdboxOCM().getEventURLFacade();
 			var eventDictionary = 0;
 			var oOCM = controller.getColdboxOCM();
+			var currentEvent = arguments.context.getCurrentEvent();
 			
-			/* Are we using event caching? */
+			// Are we using event caching?
 			if ( controller.getSetting("EventCaching") ){
-				/* Cleanup the cache key, just in case, maybe ses interceptor has been used. */
-				Context.removeEventCacheableEntry();
+				// Cleanup the cache key, just in case, maybe ses interceptor has been used.
+				arguments.context.removeEventCacheableEntry();
 					
-				/* Get Entry */
-				eventDictionary = controller.getHandlerService().getEventMetaDataEntry(Context.getCurrentEvent());	
+				// Get Entry
+				eventDictionary = controller.getHandlerService().getEventMetaDataEntry(currentEvent);	
 				
-				/* debug("eventmd: " & controller.getHandlerService().getEventCacheDictionary().getDictionary().toString()); */
-				
-				/* Verify that it is cacheable, else quit, no need for testing anymore. */
+				// Verify that it is cacheable, else quit, no need for testing anymore.
 				if( not eventDictionary.cacheable ){
 					return;	
 				}
 				
-				/* setup the cache key. */
+				// setup the cache key.
 				eventCacheKey = oEventURLFacade.buildEventKey(keySuffix=eventDictionary.suffix,
-															  targetEvent=Context.getCurrentEvent(),
-															  targetContext=Context);
-				/* Check for Event Cache Purge */
+															  targetEvent=currentEvent,
+															  targetContext=arguments.context);
+				// Check for Event Cache Purge
 				if ( Context.valueExists("fwCache") ){
 					/* Clear the key from the cache */
 					oOCM.clearKey( eventCacheKey );
 				}
-				/* Determine if this event has been cached */
+				// Determine if this event has been cached
 				else if ( oOCM.lookup(eventCacheKey) ){
-					/* Event has been found, flag it so we can render it */
-					Context.setEventCacheableEntry(eventCacheKey);
+					// Event has been found, flag it so we can render it
+					arguments.context.setEventCacheableEntry(eventCacheKey);
 				}//end else no purging
 				
 			}//If using event caching.
@@ -178,10 +172,9 @@ Modification History:
 		var oContext = "";
 		var oDecorator = "";
 		
-		/* Ensure Loaded Properties */
-		loadProperties();
-		/* Param FORM/URL */
+		// Param FORM/URL
 		initFORMURL();
+		loadProperties();
 		//Create the original request context
 		oContext = CreateObject("component","coldbox.system.beans.RequestContext").init(FORM,URL,instance.ContextProperties);
 		
@@ -206,21 +199,19 @@ Modification History:
 	<!--- Lazy Load Context Properties --->
 	<cffunction name="loadProperties" access="private" returntype="void" hint="Load the context properties" output="false" >
 		<cfscript>
-			var Properties = structnew();
+			var properties = structnew();
 			
-			/* Verify we have context properties */
-			if( structisEmpty(instance.ContextProperties) ){
-				/* Setup Context Properties */
-				Properties.DefaultLayout = "";
-				Properties.DefaultView = "";
-				Properties.ViewLayouts = structNew();
-				Properties.FolderLayouts = structNew();
-				Properties.EventName = "";
-				Properties.isSES = false;
-				Properties.sesbaseURL = "";
-				Properties.decorator = "";
+			if( structIsEmpty(instance.contextProperties) ){
+				properties.DefaultLayout = "";
+				properties.DefaultView = "";
+				properties.ViewLayouts = structNew();
+				properties.FolderLayouts = structNew();
+				properties.EventName = "";
+				properties.isSES = false;
+				properties.sesbaseURL = "";
+				properties.decorator = "";
+				properties.isUsingDecorator = false;
 				
-				/* Get default context properties */
 				if( controller.settingExists("EventName") ){
 					Properties.EventName = controller.getSetting("EventName");
 				}		
@@ -239,17 +230,13 @@ Modification History:
 				if( controller.settingExists("sesbaseURL") ){
 					Properties.sesbaseurl = controller.getSetting('sesBaseURL');
 				}
-				/* Decorator */
 				if ( controller.settingExists("RequestContextDecorator") and controller.getSetting("RequestContextDecorator") neq ""){
 					Properties.isUsingDecorator = true;
 					Properties.decorator = controller.getSetting("RequestContextDecorator");
 				}
-				else{
-					Properties.isUsingDecorator = false;
-				}
-				/* Persist them */
-				instance.ContextProperties = Properties;		
-			}// end if empty properties
+				
+				instance.contextProperties = Properties;	
+			}
 		</cfscript>
 	</cffunction>
 

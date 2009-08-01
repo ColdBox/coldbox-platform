@@ -55,7 +55,6 @@
 	<!-- IOC Integration -->
 	<IOC>
 		<Framework reload="true" type="lightwire">config/coldspring.xml.cfm</Framework>
-		<DebugLevel>TRACE</DebugLevel>
 		<ParentFactory type="coldspring">config/parent.xml.cfm</ParentFactory>
 	</IOC>
 	
@@ -64,25 +63,19 @@
 		<ObjectCaching>true</ObjectCaching>
 		<DefinitionFile>config/modelMappings.cfm</DefinitionFile>
 		<ExternalLocation>coldbox.testing.testmodel</ExternalLocation>
-		<DebugLevel>OFF</DebugLevel>
 	</Models>
 	
 	<LogBox>
 		<!-- Appender Definitions -->
 		<Appender name="myconsole" class="coldbox.system.logging.appenders.ConsoleAppender" />
-		<Appender name="TracerAppender" class="coldbox.system.logging.appenders.TracerAppender" />
-		<Appender name="CFAppender" class="coldbox.system.logging.appenders.CFAppender">
-			<Property name="fileName">${AppName}</Property>
-		</Appender>
+		<Appender name="ColdBoxTracer" class="coldbox.system.logging.appenders.ColdboxTracerAppender" />
 		<Appender name="FileAppender" class="coldbox.system.logging.appenders.RollingFileAppender">
 			<Property name="filePath">logs</Property>
 			<Property name="fileName">${AppName}</Property>
-			<Property name="autoExpand">true</Property>
-			<Property name="fileMaxSize">3</Property>
-			<Property name="fileMaxArchives">2</Property>		
+			<Property name="autoExpand">true</Property>		
 		</Appender>
 		<!-- Root Logger -->
-		<Root levelMin="FATAL" levelMax="TRACE" appenders="*" />
+		<Root levelMin="FATAL" levelMax="DEBUG" appenders="*" />
 	</LogBox>
 	
 	<!-- Custom Conventions : You can override the framework wide conventions -->
