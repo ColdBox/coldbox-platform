@@ -116,9 +116,10 @@ Modification History:
 	<!--- Interceptor Facade --->
 	<cffunction name="getInterceptor" access="public" output="false" returntype="any" hint="Get an interceptor">
 		<!--- ************************************************************* --->
-		<cfargument name="interceptorClass" required="true" type="string" hint="The qualified class of the itnerceptor to retrieve">
+		<cfargument name="interceptorName" 	required="false" type="string" hint="The name of the interceptor to search for"/>
+		<cfargument name="deepSearch" 		required="false" type="boolean" default="false" hint="By default we search the cache for the interceptor reference. If true, we search all the registered interceptor states for a match."/>
 		<!--- ************************************************************* --->
-		<cfreturn application[coldboxAppKey].getInterceptorService().getInterceptor(arguments.interceptorClass)>
+		<cfreturn application[coldboxAppKey].getInterceptorService().getInterceptor(argumentCollection=arguments)>
 	</cffunction>
 	
 	<!--- Get a datasource --->

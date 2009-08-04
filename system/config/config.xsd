@@ -435,6 +435,11 @@
 								<xs:documentation>The instantiation class of the interceptor.</xs:documentation>
 							</xs:annotation>
 						</xs:attribute>
+						<xs:attribute name="name" use="optional" type="xs:string">
+							<xs:annotation>
+								<xs:documentation>The unique name to use for this interceptor. If not set, we will use the interceptor's cfc name.</xs:documentation>
+							</xs:annotation>
+						</xs:attribute>
 					</xs:complexType>
 				</xs:element>
 			</xs:sequence>

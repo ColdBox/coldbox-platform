@@ -10,8 +10,7 @@ Description :
 	This is a utility function for the framework. It includes any methods
 	that will be called from the framework for XML parsing.
 ----------------------------------------------------------------------->
-<cfcomponent name="XMLParser"
-			 hint="This is the XML Parser plugin for the framework. It takes care of any XML parsing for the framework's usage."
+<cfcomponent hint="This is the XML Parser plugin for the framework. It takes care of any XML parsing for the framework's usage."
 			 extends="coldbox.system.Plugin"
 			 output="false"
 			 cache="false">
@@ -177,7 +176,7 @@ Description :
 		<!--- ************************************************************* --->
 		<cfscript>
 		//Create Config Structure
-		var ConfigStruct = StructNew();
+		var configStruct = StructNew();
 		var fwSettingsStruct = getController().getColdboxSettings();
 		var ConfigFileLocation = fwSettingsStruct["ConfigFileLocation"];
 		var configXML = "";
@@ -213,38 +212,38 @@ Description :
 			
 			//Setup the Application Path with an Override
 			if( arguments.overrideAppMapping neq "" ){
-				ConfigStruct.ApplicationPath = ExpandPath(arguments.overrideAppMapping);
-				if( right(ConfigStruct.ApplicationPath,1) neq "/"){
-					ConfigStruct.ApplicationPath = ConfigStruct.ApplicationPath & "/";
+				configStruct.ApplicationPath = ExpandPath(arguments.overrideAppMapping);
+				if( right(configStruct.ApplicationPath,1) neq "/"){
+					configStruct.ApplicationPath = configStruct.ApplicationPath & "/";
 				}
 			}
 			else{
 				// Setup Default App Path from main controller
-				ConfigStruct.ApplicationPath = controller.getAppRootPath();
+				configStruct.ApplicationPath = controller.getAppRootPath();
 			}
 			
 			//Calculate AppMapping if not set in the config, else auto-calculate
-			if ( not structKeyExists(ConfigStruct, "AppMapping") ){
+			if ( not structKeyExists(configStruct, "AppMapping") ){
 				webPath = replacenocase(cgi.script_name,getFileFromPath(cgi.script_name),"");
 				localPath = getDirectoryFromPath(replacenocase(getTemplatePath(),"\","/","all"));
 				PathLocation = findnocase(webPath, localPath);
 				
 				if ( PathLocation neq 0)
-					ConfigStruct.AppMapping = mid(localPath,PathLocation,len(webPath));
+					configStruct.AppMapping = mid(localPath,PathLocation,len(webPath));
 				else
-					ConfigStruct.AppMapping = webPath;
+					configStruct.AppMapping = webPath;
 
 				//Clean last /
-				if ( right(ConfigStruct.AppMapping,1) eq "/" ){
-					if ( len(ConfigStruct.AppMapping) -1 gt 0)
-						ConfigStruct.AppMapping = left(ConfigStruct.AppMapping,len(ConfigStruct.AppMapping)-1);
+				if ( right(configStruct.AppMapping,1) eq "/" ){
+					if ( len(configStruct.AppMapping) -1 gt 0)
+						configStruct.AppMapping = left(configStruct.AppMapping,len(configStruct.AppMapping)-1);
 					else
-						ConfigStruct.AppMapping = "";
+						configStruct.AppMapping = "";
 				}
 				
 				//Clean j2ee context
 				if( len(getContextRoot()) )
-					ConfigStruct.AppMapping = replacenocase(ConfigStruct.AppMapping,getContextRoot(),"");
+					configStruct.AppMapping = replacenocase(configStruct.AppMapping,getContextRoot(),"");
 			}
 			
 			/* ::::::::::::::::::::::::::::::::::::::::: GET COLDBOX SETTINGS  :::::::::::::::::::::::::::::::::::::::::::: */
@@ -278,7 +277,7 @@ Description :
 			parseBugTracers(configXML,configStruct,oUtilities);			
 			
 			/* ::::::::::::::::::::::::::::::::::::::::: ENVIRONMENT SETTING :::::::::::::::::::::::::::::::::::::::::::: */
-			ConfigStruct.Environment = "PRODUCTION";
+			configStruct.Environment = "PRODUCTION";
 			
 			/* ::::::::::::::::::::::::::::::::::::::::: WS SETTINGS :::::::::::::::::::::::::::::::::::::::::::: */
 			parseWebservices(configXML,configStruct,oUtilities);			
@@ -302,7 +301,7 @@ Description :
 			parseLogBox(configXML,configStruct,oUtilities);
 			
 			/* ::::::::::::::::::::::::::::::::::::::::: CONFIG FILE LAST MODIFIED SETTING :::::::::::::::::::::::::::::::::::::::::::: */
-			ConfigStruct.ConfigTimeStamp = oUtilities.FileLastModified(ConfigFileLocation);
+			configStruct.ConfigTimeStamp = oUtilities.FileLastModified(ConfigFileLocation);
 			
 			/* ::::::::::::::::::::::::::::::::::::::::: XSD VALIDATION :::::::::::::::::::::::::::::::::::::::::::: */
 		
@@ -327,7 +326,7 @@ Description :
 			
 		
 		//finish
-		return ConfigStruct;
+		return configStruct;
 		</cfscript>
 	</cffunction>
 	
@@ -338,7 +337,7 @@ Description :
 		<cfargument name="utility"  type="any" required="true" hint="The utility object"/>
 		<cfargument name="overrideAppMapping" type="string" required="false" default="" hint="Only used for unit testing or reparsing of a specific coldbox config file."/>
 		<cfscript>
-			var ConfigStruct = arguments.config;
+			var configStruct = arguments.config;
 			var fwSettingsStruct = controller.getColdBoxSettings();
 			var SettingNodes = XMLSearch(arguments.xml,"//Settings/Setting");
 			var i=1;
@@ -347,94 +346,94 @@ Description :
 				$throw("No Setting elements could be found in the configuration file.","","XMLParser.ConfigXMLParsingException");
 			//Insert  ColdBox Settings to Config Struct
 			for (i=1; i lte ArrayLen(SettingNodes); i=i+1){
-				ConfigStruct[trim(SettingNodes[i].XMLAttributes["name"])] = arguments.utility.placeHolderReplacer(trim(SettingNodes[i].XMLAttributes["value"]),ConfigStruct);
+				configStruct[trim(SettingNodes[i].XMLAttributes["name"])] = arguments.utility.placeHolderReplacer(trim(SettingNodes[i].XMLAttributes["value"]),configStruct);
 			}
 			//overrideAppMapping if passed in.
 			if ( arguments.overrideAppMapping neq "" ){
-				ConfigStruct["AppMapping"] = arguments.overrideAppMapping;
+				configStruct["AppMapping"] = arguments.overrideAppMapping;
 			}
 			// Clean the first / if found
-			if( len(ConfigStruct.AppMapping) eq 1 ){
-				ConfigStruct["AppMapping"] = "";
+			if( len(configStruct.AppMapping) eq 1 ){
+				configStruct["AppMapping"] = "";
 			}
 			
 			/* ::::::::::::::::::::::::::::::::::::::::: COLDBOX SETTINGS VALIDATION :::::::::::::::::::::::::::::::::::::::::::: */
 			//Check for AppName or throw
-			if ( not StructKeyExists(ConfigStruct, "AppName") )
+			if ( not StructKeyExists(configStruct, "AppName") )
 				$throw("There was no 'AppName' setting defined. This is required by the framework.","","XMLParser.ConfigXMLParsingException");
 			//Check for Default Event
-			if ( not StructKeyExists(ConfigStruct, "DefaultEvent") )
+			if ( not StructKeyExists(configStruct, "DefaultEvent") )
 				$throw("There was no 'DefaultEvent' setting defined. This is required by the framework.","","XMLParser.ConfigXMLParsingException");
 			//Check for Event Name
-			if ( not StructKeyExists(ConfigStruct, "EventName") )
-				ConfigStruct["EventName"] = fwSettingsStruct["EventName"] ;
+			if ( not StructKeyExists(configStruct, "EventName") )
+				configStruct["EventName"] = fwSettingsStruct["EventName"] ;
 			//Check for Request Start Handler
-			if ( not StructKeyExists(ConfigStruct, "ApplicationStartHandler") )
-				ConfigStruct["ApplicationStartHandler"] = "";
+			if ( not StructKeyExists(configStruct, "ApplicationStartHandler") )
+				configStruct["ApplicationStartHandler"] = "";
 			//Check for Request End Handler
-			if ( not StructKeyExists(ConfigStruct, "RequestStartHandler") )
-				ConfigStruct["RequestStartHandler"] = "";
+			if ( not StructKeyExists(configStruct, "RequestStartHandler") )
+				configStruct["RequestStartHandler"] = "";
 			//Check for Application Start Handler
-			if ( not StructKeyExists(ConfigStruct, "RequestEndHandler") )
-				ConfigStruct["RequestEndHandler"] = "";
+			if ( not StructKeyExists(configStruct, "RequestEndHandler") )
+				configStruct["RequestEndHandler"] = "";
 			//Check for Session Start Handler
-			if ( not StructKeyExists(ConfigStruct, "SessionStartHandler") )
-				ConfigStruct["SessionStartHandler"] = "";
+			if ( not StructKeyExists(configStruct, "SessionStartHandler") )
+				configStruct["SessionStartHandler"] = "";
 			//Check for Session End Handler
-			if ( not StructKeyExists(ConfigStruct, "SessionEndHandler") )
-				ConfigStruct["SessionEndHandler"] = "";
+			if ( not StructKeyExists(configStruct, "SessionEndHandler") )
+				configStruct["SessionEndHandler"] = "";
 			//Check for InvalidEventHandler
-			if ( not StructKeyExists(ConfigStruct, "onInvalidEvent") )
-				ConfigStruct["onInvalidEvent"] = "";
+			if ( not StructKeyExists(configStruct, "onInvalidEvent") )
+				configStruct["onInvalidEvent"] = "";
 			//Check For DebugMode in settings
-			if ( not structKeyExists(ConfigStruct, "DebugMode") or not isBoolean(ConfigStruct.DebugMode) )
-				ConfigStruct["DebugMode"] = "false";
+			if ( not structKeyExists(configStruct, "DebugMode") or not isBoolean(configStruct.DebugMode) )
+				configStruct["DebugMode"] = "false";
 			//Check for DebugPassword in settings, else leave blank.
-			if ( not structKeyExists(ConfigStruct, "DebugPassword") )
-				ConfigStruct["DebugPassword"] = "";
+			if ( not structKeyExists(configStruct, "DebugPassword") )
+				configStruct["DebugPassword"] = "";
 			//Check for ReinitPassword
-			if ( not structKeyExists(ConfigStruct, "ReinitPassword") )
-				ConfigStruct["ReinitPassword"] = "";
+			if ( not structKeyExists(configStruct, "ReinitPassword") )
+				configStruct["ReinitPassword"] = "";
 			//Check For UDFLibraryFile
-			if ( not StructKeyExists(ConfigStruct, "UDFLibraryFile") )
-				ConfigStruct["UDFLibraryFile"] = "";
+			if ( not StructKeyExists(configStruct, "UDFLibraryFile") )
+				configStruct["UDFLibraryFile"] = "";
 			//Check For CustomErrorTemplate
-			if ( not StructKeyExists(ConfigStruct, "CustomErrorTemplate") )
-				ConfigStruct["CustomErrorTemplate"] = "";
+			if ( not StructKeyExists(configStruct, "CustomErrorTemplate") )
+				configStruct["CustomErrorTemplate"] = "";
 			//Check for MessageboxStyleOverride if found, default = false
-			if ( not structkeyExists(ConfigStruct, "MessageboxStyleOverride") or not isBoolean(ConfigStruct.MessageboxStyleOverride) )
-				ConfigStruct["MessageboxStyleOverride"] = "false";
+			if ( not structkeyExists(configStruct, "MessageboxStyleOverride") or not isBoolean(configStruct.MessageboxStyleOverride) )
+				configStruct["MessageboxStyleOverride"] = "false";
 			//Check for HandlersIndexAutoReload, default = false
-			if ( not structkeyExists(ConfigStruct, "HandlersIndexAutoReload") or not isBoolean(ConfigStruct.HandlersIndexAutoReload) )
-				ConfigStruct["HandlersIndexAutoReload"] = false;
+			if ( not structkeyExists(configStruct, "HandlersIndexAutoReload") or not isBoolean(configStruct.HandlersIndexAutoReload) )
+				configStruct["HandlersIndexAutoReload"] = false;
 			//Check for ConfigAutoReload
-			if ( not structKeyExists(ConfigStruct, "ConfigAutoReload") or not isBoolean(ConfigStruct.ConfigAutoReload) )
-				ConfigStruct["ConfigAutoReload"] = false;
+			if ( not structKeyExists(configStruct, "ConfigAutoReload") or not isBoolean(configStruct.ConfigAutoReload) )
+				configStruct["ConfigAutoReload"] = false;
 			//Check for ExceptionHandler if found
-			if ( not structkeyExists(ConfigStruct, "ExceptionHandler") )
-				ConfigStruct["ExceptionHandler"] = "";
+			if ( not structkeyExists(configStruct, "ExceptionHandler") )
+				configStruct["ExceptionHandler"] = "";
 			//Check for PluginsExternalLocation if found
-			if ( not structkeyExists(ConfigStruct, "PluginsExternalLocation") )
-				ConfigStruct["PluginsExternalLocation"] = "";
+			if ( not structkeyExists(configStruct, "PluginsExternalLocation") )
+				configStruct["PluginsExternalLocation"] = "";
 			//Check for Handler Caching
-			if ( not structKeyExists(ConfigStruct, "HandlerCaching") or not isBoolean(ConfigStruct.HandlerCaching) )
-				ConfigStruct["HandlerCaching"] = true;
+			if ( not structKeyExists(configStruct, "HandlerCaching") or not isBoolean(configStruct.HandlerCaching) )
+				configStruct["HandlerCaching"] = true;
 			//Check for Event Caching
-			if ( not structKeyExists(ConfigStruct, "EventCaching") or not isBoolean(ConfigStruct.EventCaching) )
-				ConfigStruct["EventCaching"] = true;
+			if ( not structKeyExists(configStruct, "EventCaching") or not isBoolean(configStruct.EventCaching) )
+				configStruct["EventCaching"] = true;
 			//RequestContextDecorator
-			if ( not structKeyExists(ConfigStruct, "RequestContextDecorator") or len(ConfigStruct["RequestContextDecorator"]) eq 0 ){
-				ConfigStruct["RequestContextDecorator"] = "";
+			if ( not structKeyExists(configStruct, "RequestContextDecorator") or len(configStruct["RequestContextDecorator"]) eq 0 ){
+				configStruct["RequestContextDecorator"] = "";
 			}
 			//Check for ProxyReturnCollection
-			if ( not structKeyExists(ConfigStruct, "ProxyReturnCollection") or not isBoolean(ConfigStruct.ProxyReturnCollection) )
-				ConfigStruct["ProxyReturnCollection"] = false;
+			if ( not structKeyExists(configStruct, "ProxyReturnCollection") or not isBoolean(configStruct.ProxyReturnCollection) )
+				configStruct["ProxyReturnCollection"] = false;
 			//Check for External Handlers Location
-			if ( not structKeyExists(ConfigStruct, "HandlersExternalLocation") or len(ConfigStruct["HandlersExternalLocation"]) eq 0 )
-				ConfigStruct["HandlersExternalLocation"] = "";
+			if ( not structKeyExists(configStruct, "HandlersExternalLocation") or len(configStruct["HandlersExternalLocation"]) eq 0 )
+				configStruct["HandlersExternalLocation"] = "";
 			// Flash URL Persist Scope Override
-			if( structKeyExists(ConfigStruct,"FlashURLPersistScope") and reFindnocase("^(session|client)$",ConfigStruct["FlashURLPersistScope"]) ){
-				fwSettingsStruct["FlashURLPersistScope"] = ConfigStruct["FlashURLPersistScope"];
+			if( structKeyExists(configStruct,"FlashURLPersistScope") and reFindnocase("^(session|client)$",configStruct["FlashURLPersistScope"]) ){
+				fwSettingsStruct["FlashURLPersistScope"] = configStruct["FlashURLPersistScope"];
 			}
 		</cfscript>
 	</cffunction>
@@ -445,64 +444,64 @@ Description :
 		<cfargument name="config" 	type="struct" required="true" hint="The config struct"/>
 		<cfargument name="utility"  type="any" required="true" hint="The utility object"/>
 		<cfscript>
-			var ConfigStruct = arguments.config;
+			var configStruct = arguments.config;
 			var fwSettingsStruct = controller.getColdBoxSettings();
 			
 			//Set the Handlers External Configuration Paths
 			if( configStruct["HandlersExternalLocation"] neq "" ){
 				//Expand the external location to get a registration path
-				configStruct["HandlersExternalLocationPath"] = ExpandPath("/" & replace(ConfigStruct["HandlersExternalLocation"],".","/","all"));
+				configStruct["HandlersExternalLocationPath"] = ExpandPath("/" & replace(configStruct["HandlersExternalLocation"],".","/","all"));
 			}
 			else{
 				configStruct["HandlersExternalLocationPath"] = "";
 			}
 			
 			//Set the Handlers,Models, & Custom Plugin Invocation & Physical Path for this Application
-			if( ConfigStruct["AppMapping"] neq ""){
+			if( configStruct["AppMapping"] neq ""){
 				
 				//Parse out the first / to create invocation Path
-				if ( left(ConfigStruct["AppMapping"],1) eq "/" ){
-					ConfigStruct["AppMapping"] = removeChars(ConfigStruct["AppMapping"],1,1);
+				if ( left(configStruct["AppMapping"],1) eq "/" ){
+					configStruct["AppMapping"] = removeChars(configStruct["AppMapping"],1,1);
 				}
 				
 				//Set the Invocation Path
-				ConfigStruct["HandlersInvocationPath"] = replace(ConfigStruct["AppMapping"],"/",".","all") & ".#fwSettingsStruct.handlersConvention#";
-				ConfigStruct["MyPluginsInvocationPath"] = replace(ConfigStruct["AppMapping"],"/",".","all") & ".#fwSettingsStruct.pluginsConvention#";
-				ConfigStruct["ModelsInvocationPath"] = replace(ConfigStruct["AppMapping"],"/",".","all") & ".#fwSettingsStruct.ModelsConvention#";
+				configStruct["HandlersInvocationPath"] = replace(configStruct["AppMapping"],"/",".","all") & ".#fwSettingsStruct.handlersConvention#";
+				configStruct["MyPluginsInvocationPath"] = replace(configStruct["AppMapping"],"/",".","all") & ".#fwSettingsStruct.pluginsConvention#";
+				configStruct["ModelsInvocationPath"] = replace(configStruct["AppMapping"],"/",".","all") & ".#fwSettingsStruct.ModelsConvention#";
 				
 				//Set the Location Path
-				ConfigStruct["HandlersPath"] = ConfigStruct["AppMapping"];
-				ConfigStruct["MyPluginsPath"] = ConfigStruct["AppMapping"];
-				ConfigStruct["ModelsPath"] = ConfigStruct["AppMapping"];
+				configStruct["HandlersPath"] = configStruct["AppMapping"];
+				configStruct["MyPluginsPath"] = configStruct["AppMapping"];
+				configStruct["ModelsPath"] = configStruct["AppMapping"];
 				
 				//Set the physical path according to system.
-				ConfigStruct["HandlersPath"] = "/" & ConfigStruct["HandlersPath"] & "/#fwSettingsStruct.handlersConvention#";
-				ConfigStruct["MyPluginsPath"] = "/" & ConfigStruct["MyPluginsPath"] & "/#fwSettingsStruct.pluginsConvention#";
-				ConfigStruct["ModelsPath"] = "/" & ConfigStruct["ModelsPath"] & "/#fwSettingsStruct.ModelsConvention#";
+				configStruct["HandlersPath"] = "/" & configStruct["HandlersPath"] & "/#fwSettingsStruct.handlersConvention#";
+				configStruct["MyPluginsPath"] = "/" & configStruct["MyPluginsPath"] & "/#fwSettingsStruct.pluginsConvention#";
+				configStruct["ModelsPath"] = "/" & configStruct["ModelsPath"] & "/#fwSettingsStruct.ModelsConvention#";
 				
 				//Set the Handlerspath expanded.
-				ConfigStruct["HandlersPath"] = ExpandPath(ConfigStruct["HandlersPath"]);
-				ConfigStruct["MyPluginsPath"] = ExpandPath(ConfigStruct["MyPluginsPath"]);
-				ConfigStruct["ModelsPath"] = ExpandPath(ConfigStruct["ModelsPath"]);
+				configStruct["HandlersPath"] = ExpandPath(configStruct["HandlersPath"]);
+				configStruct["MyPluginsPath"] = ExpandPath(configStruct["MyPluginsPath"]);
+				configStruct["ModelsPath"] = ExpandPath(configStruct["ModelsPath"]);
 					
 			}
 			else{
 				//Parse out the first / to create the invocation Path
-				if ( left(ConfigStruct["AppMapping"],1) eq "/" ){
-					ConfigStruct["AppMapping"] = removeChars(ConfigStruct["AppMapping"],1,1);
+				if ( left(configStruct["AppMapping"],1) eq "/" ){
+					configStruct["AppMapping"] = removeChars(configStruct["AppMapping"],1,1);
 				}
 				
 				/* Handler Registration */
-				ConfigStruct["HandlersInvocationPath"] = "#fwSettingsStruct.handlersConvention#";
-				ConfigStruct["HandlersPath"] = controller.getAppRootPath() & "#fwSettingsStruct.handlersConvention#";
+				configStruct["HandlersInvocationPath"] = "#fwSettingsStruct.handlersConvention#";
+				configStruct["HandlersPath"] = controller.getAppRootPath() & "#fwSettingsStruct.handlersConvention#";
 
 				/* Custom Plugins Registration */
-				ConfigStruct["MyPluginsInvocationPath"] = "#fwSettingsStruct.pluginsConvention#";
-				ConfigStruct["MyPluginsPath"] = controller.getAppRootPath() & "#fwSettingsStruct.pluginsConvention#";
+				configStruct["MyPluginsInvocationPath"] = "#fwSettingsStruct.pluginsConvention#";
+				configStruct["MyPluginsPath"] = controller.getAppRootPath() & "#fwSettingsStruct.pluginsConvention#";
 				
 				/* Models Registration */
-				ConfigStruct["ModelsInvocationPath"] = "#fwSettingsStruct.ModelsConvention#";
-				ConfigStruct["ModelsPath"] = controller.getAppRootPath() & "#fwSettingsStruct.ModelsConvention#";
+				configStruct["ModelsInvocationPath"] = "#fwSettingsStruct.ModelsConvention#";
+				configStruct["ModelsPath"] = controller.getAppRootPath() & "#fwSettingsStruct.ModelsConvention#";
 			}
 		</cfscript>
 	</cffunction>
@@ -513,13 +512,13 @@ Description :
 		<cfargument name="config" 	type="struct" required="true" hint="The config struct"/>
 		<cfargument name="utility"  type="any" required="true" hint="The utility object"/>
 		<cfscript>
-			var ConfigStruct = arguments.config;
+			var configStruct = arguments.config;
 			
 			// check for ViewsExternalLocation 
 			if( structKeyExists(configStruct,"ViewsExternalLocation") and configStruct["ViewsExternalLocation"] neq "" ){
 				// Verify the locations, do relative to the app mapping first 
 				if( directoryExists(controller.getAppRootPath() & configStruct["ViewsExternalLocation"]) ){
-					configStruct["ViewsExternalLocation"] = "/" & ConfigStruct["AppMapping"] & "/" & configStruct["ViewsExternalLocation"];
+					configStruct["ViewsExternalLocation"] = "/" & configStruct["AppMapping"] & "/" & configStruct["ViewsExternalLocation"];
 				}
 				else if( not directoryExists(expandPath(configStruct["ViewsExternalLocation"])) ){
 					$throw("ViewsExternalLocation could not be found.","The directories tested was relative and expanded using #configStruct['ViewsExternalLocation']#. Please verify your setting.","XMLParser.ConfigXMLParsingException");
@@ -536,7 +535,7 @@ Description :
 			if( structKeyExists(configStruct,"LayoutsExternalLocation") and configStruct["LayoutsExternalLocation"] neq "" ){
 				// Verify the locations, do relative to the app mapping first
 				if( directoryExists(controller.getAppRootPath() & configStruct["LayoutsExternalLocation"]) ){
-					configStruct["LayoutsExternalLocation"] = "/" & ConfigStruct["AppMapping"] & "/" & configStruct["LayoutsExternalLocation"];
+					configStruct["LayoutsExternalLocation"] = "/" & configStruct["AppMapping"] & "/" & configStruct["LayoutsExternalLocation"];
 				}
 				else if( not directoryExists(expandPath(configStruct["LayoutsExternalLocation"])) ){
 					$throw("LayoutsExternalLocation could not be found.","The directories tested was relative and expanded using #configStruct['LayoutsExternalLocation']#. Please verify your setting.","XMLParser.ConfigXMLParsingException");
@@ -557,7 +556,7 @@ Description :
 		<cfargument name="config" 	type="struct" required="true" hint="The config struct"/>
 		<cfargument name="utility"  type="any" required="true" hint="The utility object"/>
 		<cfscript>
-			var ConfigStruct = arguments.config;
+			var configStruct = arguments.config;
 			var conventions = XMLSearch(arguments.xml,"//Conventions");
 			var fwSettingsStruct = controller.getColdboxSettings();
 			
@@ -579,7 +578,7 @@ Description :
 		<cfargument name="config" 	type="struct" required="true" hint="The config struct"/>
 		<cfargument name="utility"  type="any" required="true" hint="The utility object"/>
 		<cfscript>
-			var ConfigStruct = arguments.config;
+			var configStruct = arguments.config;
 			//Your Settings To Load
 			var YourSettingNodes = XMLSearch(arguments.xml, "//YourSettings/Setting");
 			var i=1;
@@ -589,13 +588,13 @@ Description :
 				//Insert Your Settings to Config Struct
 				for (i=1; i lte ArrayLen(YourSettingNodes); i=i+1){
 					/* Get Setting with PlaceHolding */
-					tester = arguments.utility.placeHolderReplacer(trim(YourSettingNodes[i].XMLAttributes["value"]),ConfigStruct);
+					tester = arguments.utility.placeHolderReplacer(trim(YourSettingNodes[i].XMLAttributes["value"]),configStruct);
 					//Test for JSON
 					if( reFindNocase(instance.jsonRegex,tester) ){
-						ConfigStruct[YourSettingNodes[i].XMLAttributes["name"]] = getPlugin("JSON").decode(replace(tester,"'","""","all"));
+						configStruct[YourSettingNodes[i].XMLAttributes["name"]] = getPlugin("JSON").decode(replace(tester,"'","""","all"));
 					}
 					else
-						ConfigStruct[YourSettingNodes[i].XMLAttributes["name"]] = tester;
+						configStruct[YourSettingNodes[i].XMLAttributes["name"]] = tester;
 				}
 			}
 		</cfscript>
@@ -608,35 +607,35 @@ Description :
 		<cfargument name="utility"  type="any" required="true" hint="The utility object"/>
 		<cfargument name="isOverride" type="boolean" required="false" default="false" hint="Flag to denote if overriding or first time runner."/>
 		<cfscript>
-			var ConfigStruct = arguments.config;
+			var configStruct = arguments.config;
 			//Mail Settings
 			var MailSettingsNodes = XMLSearch(arguments.xml,"//MailServerSettings");
 			
 			// Overrides?
 			if (NOT arguments.isOverride){
-				ConfigStruct.MailServer = "";
-				ConfigStruct.MailUsername = "";
-				ConfigStruct.MailPassword = "";
-				ConfigStruct.MailPort = 25;
+				configStruct.MailServer = "";
+				configStruct.MailUsername = "";
+				configStruct.MailPassword = "";
+				configStruct.MailPort = 25;
 			}
 			
 			//Check if empty
 			if ( ArrayLen(MailSettingsNodes) gt 0 and ArrayLen(MailSettingsNodes[1].XMLChildren) gt 0){
 				//Checks
 				if ( structKeyExists(MailSettingsNodes[1], "MailServer") )
-					ConfigStruct.MailServer = trim(MailSettingsNodes[1].MailServer.xmlText);
+					configStruct.MailServer = trim(MailSettingsNodes[1].MailServer.xmlText);
 				
 				//Mail username
 				if ( structKeyExists(MailSettingsNodes[1], "MailUsername") )
-					ConfigStruct.MailUsername = trim(MailSettingsNodes[1].MailUsername.xmlText);
+					configStruct.MailUsername = trim(MailSettingsNodes[1].MailUsername.xmlText);
 				
 				//Mail password
 				if ( structKeyExists(MailSettingsNodes[1], "MailPassword") )
-					ConfigStruct.MailPassword = trim(MailSettingsNodes[1].MailPassword.xmlText);
+					configStruct.MailPassword = trim(MailSettingsNodes[1].MailPassword.xmlText);
 				
 				//Mail Port
 				if ( structKeyExists(MailSettingsNodes[1], "MailPort") AND isNumeric(MailSettingsNodes[1].MailPort.xmlText) ){
-					ConfigStruct.MailPort = trim(MailSettingsNodes[1].MailPort.xmlText);
+					configStruct.MailPort = trim(MailSettingsNodes[1].MailPort.xmlText);
 				}				
 			}
 		</cfscript>
@@ -649,18 +648,18 @@ Description :
 		<cfargument name="utility"  type="any" required="true" hint="The utility object"/>
 		<cfargument name="isOverride" type="boolean" required="false" default="false" hint="Flag to denote if overriding or first time runner."/>
 		<cfscript>
-			var ConfigStruct = arguments.config;
+			var configStruct = arguments.config;
 			var iocNodes = XMLSearch(arguments.xml,"//IOC");
 			var fwSettingsStruct = controller.getColdBoxSettings();
 			
 			// Defaults
 			if (NOT arguments.isOverride){
-				ConfigStruct.IOCFramework = "";
-				ConfigStruct.IOCFrameworkReload = false;
-				ConfigStruct.IOCDefinitionFile = "";
-				ConfigStruct.IOCObjectCaching = false;
-				ConfigStruct.IOCParentFactory = "";
-				ConfigStruct.IOCParentFactoryDefinitionFile = "";
+				configStruct.IOCFramework = "";
+				configStruct.IOCFrameworkReload = false;
+				configStruct.IOCDefinitionFile = "";
+				configStruct.IOCObjectCaching = false;
+				configStruct.IOCParentFactory = "";
+				configStruct.IOCParentFactoryDefinitionFile = "";
 			}
 			
 			//Check if empty
@@ -668,21 +667,21 @@ Description :
 				//Check for IOC Framework
 				if ( structKeyExists(iocNodes[1], "Framework") ){
 					if( structKeyExists(iocNodes[1].Framework.xmlAttributes,"type") ){
-						ConfigStruct["IOCFramework"] = iocNodes[1].Framework.xmlAttributes.type;
+						configStruct["IOCFramework"] = iocNodes[1].Framework.xmlAttributes.type;
 					}
 					if( structKeyExists(iocNodes[1].Framework.xmlAttributes,"reload") ){
-						ConfigStruct["IOCFrameworkReload"] = iocNodes[1].Framework.xmlAttributes.reload;
+						configStruct["IOCFrameworkReload"] = iocNodes[1].Framework.xmlAttributes.reload;
 					}
 					if( structKeyExists(iocNodes[1].Framework.xmlAttributes,"objectCaching") ){
-						ConfigStruct["IOCObjectCaching"] = iocNodes[1].Framework.xmlAttributes.objectCaching;
+						configStruct["IOCObjectCaching"] = iocNodes[1].Framework.xmlAttributes.objectCaching;
 					}
-					ConfigStruct["IOCDefinitionFile"] = iocNodes[1].Framework.xmltext;
+					configStruct["IOCDefinitionFile"] = iocNodes[1].Framework.xmltext;
 				}
 				// Parent Factory
 				if ( structKeyExists(iocNodes[1], "ParentFactory") ){
-					ConfigStruct["IOCParentFactoryDefinitionFile"] = iocNodes[1].ParentFactory.xmltext;
+					configStruct["IOCParentFactoryDefinitionFile"] = iocNodes[1].ParentFactory.xmltext;
 					if( structKeyExists(iocNodes[1].Framework.xmlAttributes,"type") ){
-						ConfigStruct["IOCParentFactory"] = iocNodes[1].Framework.xmlAttributes.type;
+						configStruct["IOCParentFactory"] = iocNodes[1].Framework.xmlAttributes.type;
 					}
 				}	
 			} 
@@ -696,56 +695,56 @@ Description :
 		<cfargument name="utility"  type="any" required="true" hint="The utility object"/>
 		<cfargument name="isOverride" type="boolean" required="false" default="false" hint="Flag to denote if overriding or first time runner."/>
 		<cfscript>
-			var ConfigStruct = arguments.config;
+			var configStruct = arguments.config;
 			var ModelNodes = XMLSearch(arguments.xml,"//Models");
 			var fwSettingsStruct = controller.getColdBoxSettings();
 			
 			// Defaults
 			if (NOT arguments.isOverride){
-				ConfigStruct.ModelsExternalLocation = "";
-				ConfigStruct.ModelsObjectCaching = fwSettingsStruct["ModelsObjectCaching"];
-				ConfigStruct.ModelsDebugMode = fwSettingsStruct["ModelsDebugMode"];
-				ConfigStruct.ModelsSetterInjection = fwSettingsStruct["ModelsSetterInjection"];
-				ConfigStruct.ModelsDICompleteUDF = fwSettingsStruct["ModelsDICompleteUDF"];
-				ConfigStruct.ModelsStopRecursion = fwSettingsStruct["ModelsStopRecursion"];
-				ConfigStruct.ModelsDefinitionFile = fwSettingsStruct["ModelsDefinitionFile"];
+				configStruct.ModelsExternalLocation = "";
+				configStruct.ModelsObjectCaching = fwSettingsStruct["ModelsObjectCaching"];
+				configStruct.ModelsDebugMode = fwSettingsStruct["ModelsDebugMode"];
+				configStruct.ModelsSetterInjection = fwSettingsStruct["ModelsSetterInjection"];
+				configStruct.ModelsDICompleteUDF = fwSettingsStruct["ModelsDICompleteUDF"];
+				configStruct.ModelsStopRecursion = fwSettingsStruct["ModelsStopRecursion"];
+				configStruct.ModelsDefinitionFile = fwSettingsStruct["ModelsDefinitionFile"];
 			}
 			
 			//Check if empty
 			if ( ArrayLen(ModelNodes) gt 0 and ArrayLen(ModelNodes[1].XMLChildren) gt 0){
 				//Check for Models External Location
 				if ( structKeyExists(ModelNodes[1], "ExternalLocation") AND len(ModelNodes[1].ExternalLocation.xmltext)){
-					ConfigStruct["ModelsExternalLocation"] = ModelNodes[1].ExternalLocation.xmltext;
+					configStruct["ModelsExternalLocation"] = ModelNodes[1].ExternalLocation.xmltext;
 				}		
 							
 				//Check for Models ObjectCaching
 				if ( structKeyExists(ModelNodes[1], "ObjectCaching") AND isBoolean(ModelNodes[1].ObjectCaching.xmltext) ){
-					ConfigStruct["ModelsObjectCaching"] = ModelNodes[1].ObjectCaching.xmltext;
+					configStruct["ModelsObjectCaching"] = ModelNodes[1].ObjectCaching.xmltext;
 				}
 				
 				//Check for ModelsDebugMode
 				if ( structKeyExists(ModelNodes[1], "DebugMode") AND isBoolean(ModelNodes[1].DebugMode.xmltext) ){
-					ConfigStruct["ModelsDebugMode"] = ModelNodes[1].DebugMode.xmltext;
+					configStruct["ModelsDebugMode"] = ModelNodes[1].DebugMode.xmltext;
 				}
 				
 				//Check for ModelsSetterInjection
 				if ( structKeyExists(ModelNodes[1], "SetterInjection") AND isBoolean(ModelNodes[1].SetterInjection.xmltext) ){
-					ConfigStruct["ModelsSetterInjection"] = ModelNodes[1].SetterInjection.xmltext;
+					configStruct["ModelsSetterInjection"] = ModelNodes[1].SetterInjection.xmltext;
 				}
 				
 				//Check for ModelsDICompleteUDF
 				if ( structKeyExists(ModelNodes[1], "DICompleteUDF") AND len(ModelNodes[1].DICompleteUDF.xmltext) ){
-					ConfigStruct["ModelsDICompleteUDF"] =ModelNodes[1].DICompleteUDF.xmltext;
+					configStruct["ModelsDICompleteUDF"] =ModelNodes[1].DICompleteUDF.xmltext;
 				}
 				
 				//Check for ModelsStopRecursion
 				if ( structKeyExists(ModelNodes[1], "StopRecursion") AND len(ModelNodes[1].StopRecursion.xmltext) ){
-					ConfigStruct["ModelsStopRecursion"] = ModelNodes[1].StopRecursion.xmltext;
+					configStruct["ModelsStopRecursion"] = ModelNodes[1].StopRecursion.xmltext;
 				}
 				
 				//Check for ModelsDefinitionFile
 				if ( structKeyExists(ModelNodes[1], "DefinitionFile") AND len(ModelNodes[1].DefinitionFile.xmltext) ){
-					ConfigStruct["ModelsDefinitionFile"] = ModelNodes[1].DefinitionFile.xmltext;
+					configStruct["ModelsDefinitionFile"] = ModelNodes[1].DefinitionFile.xmltext;
 				}
 			} 
 		</cfscript>
@@ -758,18 +757,18 @@ Description :
 		<cfargument name="utility"  type="any" required="true" hint="The utility object"/>
 		<cfargument name="isOverride" type="boolean" required="false" default="false" hint="Flag to denote if overriding or first time runner."/>
 		<cfscript>
-			var ConfigStruct = arguments.config;
+			var configStruct = arguments.config;
 			//i18N Settings
 			var i18NSettingNodes = XMLSearch(arguments.xml,"//i18N");
 			var i=1;
 			var DefaultLocale = "";
 			
 			if (NOT arguments.isOverride){
-				ConfigStruct.DefaultResourceBundle = "";
-				ConfigStruct.DefaultLocale = "";
-				ConfigStruct.LocaleStorage = "";
-				ConfigStruct.UknownTranslation = "";
-				ConfigStruct["using_i18N"] = false;
+				configStruct.DefaultResourceBundle = "";
+				configStruct.DefaultLocale = "";
+				configStruct.LocaleStorage = "";
+				configStruct.UknownTranslation = "";
+				configStruct["using_i18N"] = false;
 			}
 			
 			//Check if empty
@@ -777,18 +776,18 @@ Description :
 				
 				//Check for DefaultResourceBundle
 				if ( structKeyExists(i18NSettingNodes[1], "DefaultResourceBundle") AND len(i18NSettingNodes[1].DefaultResourceBundle.xmltext) ){
-					ConfigStruct["DefaultResourceBundle"] = i18NSettingNodes[1].DefaultResourceBundle.xmltext;
+					configStruct["DefaultResourceBundle"] = i18NSettingNodes[1].DefaultResourceBundle.xmltext;
 				}
 				
 				//Check for DefaultResourceBundle
 				if ( structKeyExists(i18NSettingNodes[1], "DefaultLocale") AND len(i18NSettingNodes[1].DefaultLocale.xmltext) ){
 					defaultLocale = i18NSettingNodes[1].DefaultLocale.xmltext;
-					ConfigStruct["DefaultLocale"] = lcase(listFirst(DefaultLocale,"_")) & "_" & ucase(listLast(DefaultLocale,"_"));
+					configStruct["DefaultLocale"] = lcase(listFirst(DefaultLocale,"_")) & "_" & ucase(listLast(DefaultLocale,"_"));
 				}
 				
 				//Check for LocaleStorage
 				if ( structKeyExists(i18NSettingNodes[1], "LocaleStorage") AND len(i18NSettingNodes[1].LocaleStorage.xmltext) ){
-					ConfigStruct["LocaleStorage"] = i18NSettingNodes[1].LocaleStorage.xmltext;
+					configStruct["LocaleStorage"] = i18NSettingNodes[1].LocaleStorage.xmltext;
 					if( NOT reFindNoCase("^(session|cookie|client)$",configStruct["LocaleStorage"]) ){
 						$throw(message="Invalid local storage scope: #configStruct["localeStorage"]#",
 							   detail="Valid scopes are session,client, cookie",
@@ -798,11 +797,11 @@ Description :
 				
 				//Check for DefaultResourceBundle
 				if ( structKeyExists(i18NSettingNodes[1], "UknownTranslation") AND len(i18NSettingNodes[1].UknownTranslation.xmltext) ){
-					ConfigStruct["UknownTranslation"] = i18NSettingNodes[1].UknownTranslation.xmltext;
+					configStruct["UknownTranslation"] = i18NSettingNodes[1].UknownTranslation.xmltext;
 				}
 				
 				//set i18n
-				ConfigStruct["using_i18N"] = true;
+				configStruct["using_i18N"] = true;
 			}
 		</cfscript>
 	</cffunction>
@@ -814,17 +813,17 @@ Description :
 		<cfargument name="utility"  type="any" required="true" hint="The utility object"/>
 		<cfargument name="isOverride" type="boolean" required="false" default="false" hint="Flag to denote if overriding or first time runner."/>
 		<cfscript>
-			var ConfigStruct = arguments.config;
+			var configStruct = arguments.config;
 			var BugEmailNodes = XMLSearch(arguments.xml,"//BugTracerReports/BugEmail");
 			var bugNodes = XMLSearch(arguments.xml,"//BugTracerReports");
 			var i=1;
 			var BugEmails = "";
 			
 			if( NOT arguments.isOverride ){
-				ConfigStruct.BugEmails = "";
-				ConfigStruct.EnableBugReports = false;
-				ConfigStruct.MailFrom = "";
-				ConfigStruct.CustomEmailBugReport = "";
+				configStruct.BugEmails = "";
+				configStruct.EnableBugReports = false;
+				configStruct.MailFrom = "";
+				configStruct.CustomEmailBugReport = "";
 			}
 			
 			if( arrayLen(bugNodes) gt 0 and ArrayLen(bugNodes[1].XMLChildren) gt 0) {
@@ -848,7 +847,7 @@ Description :
 							BugEmails = BugEmails & ",";
 					}
 					//Insert Into Config
-					ConfigStruct.BugEmails = BugEmails;
+					configStruct.BugEmails = BugEmails;
 				}
 			}
 		</cfscript>
@@ -861,7 +860,7 @@ Description :
 		<cfargument name="utility"  type="any" required="true" hint="The utility object"/>
 		<cfargument name="isOverride" type="boolean" required="false" default="false" hint="Flag to denote if overriding or first time runner."/>
 		<cfscript>
-			var ConfigStruct = arguments.config;
+			var configStruct = arguments.config;
 			var WebServiceNodes = "";
 			var i=1;
 			
@@ -887,7 +886,7 @@ Description :
 		<cfargument name="utility"  type="any" required="true" hint="The utility object"/>
 		<cfargument name="isOverride" type="boolean" required="false" default="false" hint="Flag to denote if overriding or first time runner."/>
 		<cfscript>
-			var ConfigStruct = arguments.config;
+			var configStruct = arguments.config;
 			var DatasourcesNodes = "";
 			var i=1;
 			var DSNStruct = "";
@@ -896,7 +895,7 @@ Description :
 			DatasourcesNodes = XMLSearch(arguments.xml,"//Datasources/Datasource");
 			if ( ArrayLen(DatasourcesNodes) ){
 				//Create Structures
-				ConfigStruct.Datasources = structnew();
+				configStruct.Datasources = structnew();
 				for(i=1;i lte ArrayLen(DatasourcesNodes); i=i+1){
 					DSNStruct = structNew();
 
@@ -927,11 +926,11 @@ Description :
 						DSNStruct.Password  = "";
 
 					//Insert to structure with Alias as key
-					ConfigStruct.Datasources[DSNStruct.Alias] = DSNStruct;
+					configStruct.Datasources[DSNStruct.Alias] = DSNStruct;
 				}
 			}
 			else if( NOT arguments.isOverride ){
-				ConfigStruct.Datasources = structnew();
+				configStruct.Datasources = structnew();
 			}				
 		</cfscript>
 	</cffunction>
@@ -942,7 +941,7 @@ Description :
 		<cfargument name="config" 	type="struct" required="true" hint="The config struct"/>
 		<cfargument name="utility"  type="any" required="true" hint="The utility object"/>
 		<cfscript>
-			var ConfigStruct = arguments.config;
+			var configStruct = arguments.config;
 			var DefaultLayout = "";
 			var DefaultView = "";
 			var LayoutNodes = "";
@@ -961,20 +960,20 @@ Description :
 			if ( ArrayLen(DefaultLayout) gt 1 )
 				$throw("There were more than 1 DefaultLayout elements found. There can only be one.","","XMLParser.ConfigXMLParsingException");
 			//Insert Default Layout
-			ConfigStruct.DefaultLayout = Trim(DefaultLayout[1].XMLText);
+			configStruct.DefaultLayout = Trim(DefaultLayout[1].XMLText);
 			
 			//Default View into Config
 			DefaultView = XMLSearch(arguments.xml,"//Layouts/DefaultView");
 			//validate Default Layout.
 			if ( ArrayLen(DefaultView) eq 0 ){
-				ConfigStruct["DefaultView"] = "";
+				configStruct["DefaultView"] = "";
 			}
 			else if ( ArrayLen(DefaultView) gt 1 ){
 				$throw("There were more than 1 DefaultView elements found. There can only be one.","","XMLParser.ConfigXMLParsingException");
 			}
 			else{
 				//Set the Default View.
-				ConfigStruct["DefaultView"] = Trim(DefaultView[1].XMLText);
+				configStruct["DefaultView"] = Trim(DefaultView[1].XMLText);
 			}
 			
 			//Get View Layouts
@@ -999,8 +998,8 @@ Description :
 				}//end for loop for the layout children
 			}//end for loop of all layout nodes
 			
-			ConfigStruct.ViewLayouts = LayoutViewStruct;
-			ConfigStruct.FolderLayouts = LayoutFolderStruct;
+			configStruct.ViewLayouts = LayoutViewStruct;
+			configStruct.FolderLayouts = LayoutFolderStruct;
 		</cfscript>
 	</cffunction>
 
@@ -1010,77 +1009,77 @@ Description :
 		<cfargument name="config" 	type="struct" required="true" hint="The config struct"/>
 		<cfargument name="utility"  type="any" required="true" hint="The utility object"/>
 		<cfscript>
-			var ConfigStruct = arguments.config;
+			var configStruct = arguments.config;
 			var CacheSettingNodes  = "";
 			var fwSettingsStruct = controller.getColdboxSettings();
 			
 			//Cache Override Settings
 			CacheSettingNodes = XMLSearch(arguments.xml,"//Cache");
-			ConfigStruct.CacheSettings = structnew();
+			configStruct.CacheSettings = structnew();
 			
 			//Check if empty
 			if ( ArrayLen(CacheSettingNodes) gt 0 and ArrayLen(CacheSettingNodes[1].XMLChildren) gt 0){
 				//Checks For Default Timeout
 				if ( structKeyExists(CacheSettingNodes[1], "ObjectDefaultTimeout") and isNumeric(CacheSettingNodes[1].ObjectDefaultTimeout.xmlText) ){
-					ConfigStruct.CacheSettings.ObjectDefaultTimeout = trim(CacheSettingNodes[1].ObjectDefaultTimeout.xmlText);
+					configStruct.CacheSettings.ObjectDefaultTimeout = trim(CacheSettingNodes[1].ObjectDefaultTimeout.xmlText);
 				}
 				else{
-					ConfigStruct.CacheSettings.ObjectDefaultTimeout = fwSettingsStruct.CacheObjectDefaultTimeout;
+					configStruct.CacheSettings.ObjectDefaultTimeout = fwSettingsStruct.CacheObjectDefaultTimeout;
 				}
 							
 
 				//Check ObjectDefaultLastAccessTimeout
 				if ( structKeyExists(CacheSettingNodes[1], "ObjectDefaultLastAccessTimeout") and isNumeric(CacheSettingNodes[1].ObjectDefaultLastAccessTimeout.xmlText)){
-					ConfigStruct.CacheSettings.ObjectDefaultLastAccessTimeout = trim(CacheSettingNodes[1].ObjectDefaultLastAccessTimeout.xmlText);
+					configStruct.CacheSettings.ObjectDefaultLastAccessTimeout = trim(CacheSettingNodes[1].ObjectDefaultLastAccessTimeout.xmlText);
 				}
 				else{
-					ConfigStruct.CacheSettings.ObjectDefaultLastAccessTimeout = fwSettingsStruct.CacheObjectDefaultLastAccessTimeout;
+					configStruct.CacheSettings.ObjectDefaultLastAccessTimeout = fwSettingsStruct.CacheObjectDefaultLastAccessTimeout;
 				}
 				
 				//Check ReapFrequency
 				if ( structKeyExists(CacheSettingNodes[1], "ReapFrequency") and isNumeric(CacheSettingNodes[1].ReapFrequency.xmlText)){
-					ConfigStruct.CacheSettings.ReapFrequency = trim(CacheSettingNodes[1].ReapFrequency.xmlText);
+					configStruct.CacheSettings.ReapFrequency = trim(CacheSettingNodes[1].ReapFrequency.xmlText);
 				}
 				else{
-					ConfigStruct.CacheSettings.ReapFrequency = fwSettingsStruct.CacheReapFrequency;
+					configStruct.CacheSettings.ReapFrequency = fwSettingsStruct.CacheReapFrequency;
 				}
 				
 				//Check MaxObjects
 				if ( structKeyExists(CacheSettingNodes[1], "MaxObjects") and isNumeric(CacheSettingNodes[1].MaxObjects.xmlText)){
-					ConfigStruct.CacheSettings.MaxObjects = trim(CacheSettingNodes[1].MaxObjects.xmlText);
+					configStruct.CacheSettings.MaxObjects = trim(CacheSettingNodes[1].MaxObjects.xmlText);
 				}
 				else{
-					ConfigStruct.CacheSettings.MaxObjects = fwSettingsStruct.CacheMaxObjects;
+					configStruct.CacheSettings.MaxObjects = fwSettingsStruct.CacheMaxObjects;
 				}
 				
 				//Check FreeMemoryPercentageThreshold
 				if ( structKeyExists(CacheSettingNodes[1], "FreeMemoryPercentageThreshold") and isNumeric(CacheSettingNodes[1].FreeMemoryPercentageThreshold.xmlText)){
-					ConfigStruct.CacheSettings.FreeMemoryPercentageThreshold = trim(CacheSettingNodes[1].FreeMemoryPercentageThreshold.xmlText);
+					configStruct.CacheSettings.FreeMemoryPercentageThreshold = trim(CacheSettingNodes[1].FreeMemoryPercentageThreshold.xmlText);
 				}
 				else{
-					ConfigStruct.CacheSettings.FreeMemoryPercentageThreshold = fwSettingsStruct.CacheFreeMemoryPercentageThreshold;
+					configStruct.CacheSettings.FreeMemoryPercentageThreshold = fwSettingsStruct.CacheFreeMemoryPercentageThreshold;
 				}
 				
 				//Check for CacheUseLastAccessTimeouts
 				if ( structKeyExists(CacheSettingNodes[1], "UseLastAccessTimeouts") and isBoolean(CacheSettingNodes[1].UseLastAccessTimeouts.xmlText) ){
-					ConfigStruct.CacheSettings.UseLastAccessTimeouts = trim(CacheSettingNodes[1].UseLastAccessTimeouts.xmlText);
+					configStruct.CacheSettings.UseLastAccessTimeouts = trim(CacheSettingNodes[1].UseLastAccessTimeouts.xmlText);
 				}
 				else{
-					ConfigStruct.CacheSettings.UseLastAccessTimeouts = fwSettingsStruct.CacheUseLastAccessTimeouts;
+					configStruct.CacheSettings.UseLastAccessTimeouts = fwSettingsStruct.CacheUseLastAccessTimeouts;
 				}	
 				
 				//Check for CacheEvictionPolicy
 				if ( structKeyExists(CacheSettingNodes[1], "EvictionPolicy") ){
-					ConfigStruct.CacheSettings.EvictionPolicy = trim(CacheSettingNodes[1].EvictionPolicy.xmlText);
+					configStruct.CacheSettings.EvictionPolicy = trim(CacheSettingNodes[1].EvictionPolicy.xmlText);
 				}
 				else{
-					ConfigStruct.CacheSettings.EvictionPolicy = fwSettingsStruct.CacheEvictionPolicy;
+					configStruct.CacheSettings.EvictionPolicy = fwSettingsStruct.CacheEvictionPolicy;
 				}			
 				//Set Override to true.
-				ConfigStruct.CacheSettings.Override = true;
+				configStruct.CacheSettings.Override = true;
 			}
 			else{
-				ConfigStruct.CacheSettings.Override = false;
+				configStruct.CacheSettings.Override = false;
 			}
 		</cfscript>
 	</cffunction>	
@@ -1092,61 +1091,61 @@ Description :
 		<cfargument name="utility"  type="any" required="true" hint="The utility object"/>
 		<cfargument name="isOverride" type="boolean" required="false" default="false" hint="Flag to denote if overriding or first time runner."/>
 		<cfscript>
-			var ConfigStruct = arguments.config;
+			var configStruct = arguments.config;
 			var DebuggerSettingNodes = "";
 			var fwSettings = controller.getColdBoxSettings();
 			
 			DebuggerSettingNodes = XMLSearch(arguments.xml,"//DebuggerSettings");
 			
 			if (NOT arguments.isOverride){
-				ConfigStruct.DebuggerSettings = structnew();
-				ConfigStruct.DebuggerSettings.EnableDumpVar = fwSettings.enableDumpVar;
-				ConfigStruct.DebuggerSettings.PersistentRequestProfiler = fwSettings.PersistentRequestProfiler;
-				ConfigStruct.DebuggerSettings.maxPersistentRequestProfilers = fwSettings.maxPersistentRequestProfilers;
-				ConfigStruct.DebuggerSettings.maxRCPanelQueryRows = fwSettings.maxRCPanelQueryRows;
-				ConfigStruct.DebuggerSettings.showTracerPanel = fwSettings.showTracerPanel;
-				ConfigStruct.DebuggerSettings.expandedTracerPanel = fwSettings.expandedTracerPanel;
-				ConfigStruct.DebuggerSettings.showInfoPanel = fwSettings.showInfoPanel;
-				ConfigStruct.DebuggerSettings.expandedInfoPanel = fwSettings.expandedInfoPanel;
-				ConfigStruct.DebuggerSettings.showCachePanel = fwSettings.showCachePanel;
-				ConfigStruct.DebuggerSettings.expandedCachePanel = fwSettings.expandedCachePanel;
-				ConfigStruct.DebuggerSettings.showRCPanel = fwSettings.showRCPanel;
-				ConfigStruct.DebuggerSettings.expandedRCPanel = fwSettings.expandedRCPanel;
+				configStruct.DebuggerSettings = structnew();
+				configStruct.DebuggerSettings.EnableDumpVar = fwSettings.enableDumpVar;
+				configStruct.DebuggerSettings.PersistentRequestProfiler = fwSettings.PersistentRequestProfiler;
+				configStruct.DebuggerSettings.maxPersistentRequestProfilers = fwSettings.maxPersistentRequestProfilers;
+				configStruct.DebuggerSettings.maxRCPanelQueryRows = fwSettings.maxRCPanelQueryRows;
+				configStruct.DebuggerSettings.showTracerPanel = fwSettings.showTracerPanel;
+				configStruct.DebuggerSettings.expandedTracerPanel = fwSettings.expandedTracerPanel;
+				configStruct.DebuggerSettings.showInfoPanel = fwSettings.showInfoPanel;
+				configStruct.DebuggerSettings.expandedInfoPanel = fwSettings.expandedInfoPanel;
+				configStruct.DebuggerSettings.showCachePanel = fwSettings.showCachePanel;
+				configStruct.DebuggerSettings.expandedCachePanel = fwSettings.expandedCachePanel;
+				configStruct.DebuggerSettings.showRCPanel = fwSettings.showRCPanel;
+				configStruct.DebuggerSettings.expandedRCPanel = fwSettings.expandedRCPanel;
 			}
 			
 			//Check if empty
 			if ( ArrayLen(DebuggerSettingNodes) ){
 				// EnableDumpVar
 				if ( structKeyExists(DebuggerSettingNodes[1], "EnableDumpVar") and isBoolean(DebuggerSettingNodes[1].EnableDumpVar.xmlText) ){
-					ConfigStruct.DebuggerSettings.EnableDumpVar = trim(DebuggerSettingNodes[1].EnableDumpVar.xmlText);
+					configStruct.DebuggerSettings.EnableDumpVar = trim(DebuggerSettingNodes[1].EnableDumpVar.xmlText);
 				}
 				// PersistentRequestProfiler
 				if ( structKeyExists(DebuggerSettingNodes[1], "PersistentRequestProfiler") and isBoolean(DebuggerSettingNodes[1].PersistentRequestProfiler.xmlText) ){
-					ConfigStruct.DebuggerSettings.PersistentRequestProfiler = trim(DebuggerSettingNodes[1].PersistentRequestProfiler.xmlText);
+					configStruct.DebuggerSettings.PersistentRequestProfiler = trim(DebuggerSettingNodes[1].PersistentRequestProfiler.xmlText);
 				}
 				// maxPersistentRequestProfilers
 				if ( structKeyExists(DebuggerSettingNodes[1], "maxPersistentRequestProfilers") and isNumeric(DebuggerSettingNodes[1].maxPersistentRequestProfilers.xmlText) ){
-					ConfigStruct.DebuggerSettings.maxPersistentRequestProfilers = trim(DebuggerSettingNodes[1].maxPersistentRequestProfilers.xmlText);
+					configStruct.DebuggerSettings.maxPersistentRequestProfilers = trim(DebuggerSettingNodes[1].maxPersistentRequestProfilers.xmlText);
 				}
 				// maxRCPanelQueryRows */
 				if ( structKeyExists(DebuggerSettingNodes[1], "maxRCPanelQueryRows") and isNumeric(DebuggerSettingNodes[1].maxRCPanelQueryRows.xmlText) ){
-					ConfigStruct.DebuggerSettings.maxRCPanelQueryRows = trim(DebuggerSettingNodes[1].maxRCPanelQueryRows.xmlText);
+					configStruct.DebuggerSettings.maxRCPanelQueryRows = trim(DebuggerSettingNodes[1].maxRCPanelQueryRows.xmlText);
 				}
 				// TracerPanel
 				if ( structKeyExists(DebuggerSettingNodes[1], "TracerPanel") ){
-					debugPanelAttributeInsert(ConfigStruct.DebuggerSettings,"TracerPanel",DebuggerSettingNodes[1].TracerPanel.xmlAttributes);
+					debugPanelAttributeInsert(configStruct.DebuggerSettings,"TracerPanel",DebuggerSettingNodes[1].TracerPanel.xmlAttributes);
 				}
 				// InfoPanel
 				if ( structKeyExists(DebuggerSettingNodes[1], "InfoPanel") ){
-					debugPanelAttributeInsert(ConfigStruct.DebuggerSettings,"InfoPanel",DebuggerSettingNodes[1].InfoPanel.xmlAttributes);
+					debugPanelAttributeInsert(configStruct.DebuggerSettings,"InfoPanel",DebuggerSettingNodes[1].InfoPanel.xmlAttributes);
 				}
 				// CachePanel
 				if ( structKeyExists(DebuggerSettingNodes[1], "CachePanel") ){
-					debugPanelAttributeInsert(ConfigStruct.DebuggerSettings,"CachePanel",DebuggerSettingNodes[1].CachePanel.xmlAttributes);
+					debugPanelAttributeInsert(configStruct.DebuggerSettings,"CachePanel",DebuggerSettingNodes[1].CachePanel.xmlAttributes);
 				}
 				// RCPanel
 				if ( structKeyExists(DebuggerSettingNodes[1], "RCPanel") ){
-					debugPanelAttributeInsert(ConfigStruct.DebuggerSettings,"RCPanel",DebuggerSettingNodes[1].RCPanel.xmlAttributes);
+					debugPanelAttributeInsert(configStruct.DebuggerSettings,"RCPanel",DebuggerSettingNodes[1].RCPanel.xmlAttributes);
 				}							
 			}
 		</cfscript>
@@ -1159,27 +1158,30 @@ Description :
 		<cfargument name="utility"  type="any" required="true" hint="The utility object"/>
 		<cfargument name="isOverride" type="boolean" required="false" default="false" hint="Flag to denote if overriding or first time runner."/>
 		<cfscript>
-			var ConfigStruct = arguments.config;
+			var configStruct = arguments.config;
 			var InterceptorBase = "";
 			var CustomInterceptionPoints = "";
 			var InterceptorNodes = "";
 			var i=1;
 			var j=1;
-			var InterceptorStruct = "";
+			var interceptorStruct = "";
 			var tempProperty = "";
 			
 			//Search for Interceptors
 			InterceptorBase = XMLSearch(arguments.xml,"//Interceptors");
+			
+			if (NOT arguments.isOverride){
+				// Interceptor Defaults.
+				configStruct.InterceptorConfig = structnew();
+				configStruct.InterceptorConfig.Interceptors = arrayNew(1);
+				configStruct.InterceptorConfig.throwOnInvalidStates = true;
+				configStruct.InterceptorConfig.CustomInterceptionPoints = "";				
+			}
+			
 			if( arrayLen(InterceptorBase) ){
-				// Interceptor Preparation.
-				ConfigStruct.InterceptorConfig = structnew();
-				ConfigStruct.InterceptorConfig.Interceptors = arrayNew(1);
-				ConfigStruct.InterceptorConfig.throwOnInvalidStates = true;
-				ConfigStruct.InterceptorConfig.CustomInterceptionPoints = "";
-				
 				// Invalid States
 				if ( structKeyExists(InterceptorBase[1].XMLAttributes, "throwOnInvalidStates") ){
-					ConfigStruct.InterceptorConfig['throwOnInvalidStates'] = InterceptorBase[1].XMLAttributes.throwOnInvalidStates;
+					configStruct.InterceptorConfig['throwOnInvalidStates'] = InterceptorBase[1].XMLAttributes.throwOnInvalidStates;
 				}
 				
 				// Custom Interception Points
@@ -1187,44 +1189,40 @@ Description :
 				if ( ArrayLen(CustomInterceptionPoints) gt 1 ){
 					$throw("There were more than 1 CustomInterceptionPoints elements found. There can only be one.","","XMLParser.ConfigXMLParsingException");
 				}
-				else if( arraylen(CustomInterceptionPoints) ){
-					ConfigStruct.InterceptorConfig.CustomInterceptionPoints = arguments.utility.placeHolderReplacer(Trim(CustomInterceptionPoints[1].XMLText),ConfigStruct);
+				if( arraylen(CustomInterceptionPoints) ){
+					configStruct.InterceptorConfig.CustomInterceptionPoints = arguments.utility.placeHolderReplacer(Trim(CustomInterceptionPoints[1].XMLText),configStruct);
 				}
 				
 				//Parse all Interceptor Nodes now.
 				InterceptorNodes = XMLSearch(arguments.xml,"//Interceptors/Interceptor");
 				for (i=1; i lte ArrayLen(InterceptorNodes); i=i+1){
-					//Interceptor Struct
-					InterceptorStruct = structnew();
-					//get Class
-					InterceptorStruct.class = arguments.utility.placeHolderReplacer(Trim(InterceptorNodes[i].XMLAttributes["class"]),ConfigStruct);
+					interceptorStruct = structnew();
+					// get Class
+					interceptorStruct.class = arguments.utility.placeHolderReplacer(Trim(InterceptorNodes[i].XMLAttributes["class"]),configStruct);
+					// get Name if found?
+					interceptorStruct.name = listLast(interceptorStruct.class,".");
+					if( structKeyExists(InterceptorNodes[i].XMLAttributes,"name") ){
+						interceptorStruct.name = InterceptorNodes[i].XMLAttributes.name;
+					}
 					//Prepare Properties
-					InterceptorStruct.properties = structnew();
+					interceptorStruct.properties = structnew();
 					//Parse Interceptor Properties
 					if ( ArrayLen(InterceptorNodes[i].XMLChildren) ){
 						for(j=1; j lte ArrayLen(InterceptorNodes[i].XMLChildren); j=j+1){
 							//Property Complex Check
-							tempProperty = arguments.utility.placeHolderReplacer(Trim( InterceptorNodes[i].XMLChildren[j].XMLText ),ConfigStruct);
+							tempProperty = arguments.utility.placeHolderReplacer(Trim( InterceptorNodes[i].XMLChildren[j].XMLText ),configStruct);
 							//Check for Complex Setup
 							if( reFindNocase(instance.jsonRegex,tempProperty) ){
-								StructInsert( InterceptorStruct.properties, Trim(InterceptorNodes[i].XMLChildren[j].XMLAttributes["name"]), getPlugin('JSON').decode(replace(tempProperty,"'","""","all")) );
+								StructInsert( interceptorStruct.properties, Trim(InterceptorNodes[i].XMLChildren[j].XMLAttributes["name"]), getPlugin('JSON').decode(replace(tempProperty,"'","""","all")) );
 							}
 							else{
-								StructInsert( InterceptorStruct.properties, Trim(InterceptorNodes[i].XMLChildren[j].XMLAttributes["name"]), tempProperty );
+								StructInsert( interceptorStruct.properties, Trim(InterceptorNodes[i].XMLChildren[j].XMLAttributes["name"]), tempProperty );
 							}
 						}//end loop of properties
 					}//end if no properties					
 					//Add to Array
-					ArrayAppend( ConfigStruct.InterceptorConfig.Interceptors, InterceptorStruct );
-				}//end interceptor nodes
-				
-			}// end if interceptors found
-			else if (NOT arguments.isOverride){
-				// Interceptor Defaults.
-				ConfigStruct.InterceptorConfig = structnew();
-				ConfigStruct.InterceptorConfig.Interceptors = arrayNew(1);
-				ConfigStruct.InterceptorConfig.throwOnInvalidStates = true;
-				ConfigStruct.InterceptorConfig.CustomInterceptionPoints = "";				
+					ArrayAppend( configStruct.InterceptorConfig.Interceptors, interceptorStruct );
+				}//end interceptor nodes				
 			}
 		</cfscript>
 	</cffunction>

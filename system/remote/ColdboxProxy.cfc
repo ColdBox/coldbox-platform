@@ -251,9 +251,10 @@ Description :
 	<!--- Interceptor Facade --->
 	<cffunction name="getInterceptor" access="private" output="false" returntype="any" hint="Get an interceptor">
 		<!--- ************************************************************* --->
-		<cfargument name="interceptorClass" required="true" type="string" hint="The qualified class of the itnerceptor to retrieve">
+		<cfargument name="interceptorName" 	required="false" type="string" hint="The name of the interceptor to search for"/>
+		<cfargument name="deepSearch" 		required="false" type="boolean" default="false" hint="By default we search the cache for the interceptor reference. If true, we search all the registered interceptor states for a match."/>
 		<!--- ************************************************************* --->
-		<cfreturn getController().getInterceptorService().getInterceptor(arguments.interceptorClass)>
+		<cfreturn getController().getInterceptorService().getInterceptor(argumentCollection=arguments)>
 	</cffunction>
 	
 	<!--- Facade: Get the IOC Plugin. --->
