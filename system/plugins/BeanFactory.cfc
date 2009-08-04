@@ -9,8 +9,7 @@ Date:   July 28, 2006
 Description: This is the framework's simple bean factory.
 
 ----------------------------------------------------------------------->
-<cfcomponent name="BeanFactory"
-			 hint="I am the ColdBox BeanFactory plugin that takes care of autowiring and dependency injection"
+<cfcomponent hint="I am the ColdBox BeanFactory plugin that takes care of autowiring and dependency injection"
 			 extends="coldbox.system.Plugin"
 			 output="false"
 			 cache="true"
@@ -516,22 +515,22 @@ Description: This is the framework's simple bean factory.
 		<cfargument name="stopRecursion" 		required="false" 	type="string"   default="" hint="The stop recursion class. Ex: transfer.com.TransferDecorator. By default all ColdBox base classes are included.">
 		<!--- ************************************************************* --->
 		<cfscript>
-			/* Targets */
+			// Targets
 			var targetObject = arguments.target;
-			var MetaData = getMetaData(targetObject);
+			var metaData = getMetaData(targetObject);
 			var targetCacheKey = MetaData.name;
 			
-			/* Dependencies */
+			// Dependencies
 			var thisDependency = instance.NOT_FOUND;
 			
-			/* Metadata entry structures */
+			// Metadata entry structures
 			var mdEntry = "";
 			var targetDIEntry = "";
 			var dependenciesLength = 0;
 			var x = 1;
 			var tmpBean = "";
 			
-			/* Helpers */
+			// Helpers
 			var oMethodInjector = '';
 		</cfscript>
 		
@@ -539,29 +538,25 @@ Description: This is the framework's simple bean factory.
 		<cfif not getDICacheDictionary().keyExists(targetCacheKey) OR NOT instance.ModelsObjectCaching>
 			<cflock type="exclusive" name="plugins.autowire.#targetCacheKey#" timeout="30" throwontimeout="true">
 				<cfscript>
-					/* Double Lock for thread concurrency */
 					if ( not getDICacheDictionary().keyExists(targetCacheKey) ){
-						/* Get Empty Default MD Entry */
+						// Get Empty Default MD Entry, default autowire = false
 						mdEntry = getNewMDEntry();
 												
-						/* Annotation Check*/
-						if( not arguments.annotationCheck ){
-							MetaData.autowire = true;
-						}
-						else if ( not structKeyExists(MetaData,"autowire") or not isBoolean(MetaData["autowire"]) ){
-							MetaData.autowire = false;
-							mdEntry.autowire = false;
-						}
-						
-						/* Lookup Dependencies if using autowire */
-						if ( MetaData["autowire"] ){
-							/* Set md entry to true for autowiring */
+						// Annotation Checks
+						if( arguments.annotationCheck eq false){
 							mdEntry.autowire = true;
-							/* Recurse for dependencies here, in order to build them. */
-							mdEntry.dependencies = parseMetadata(MetaData,mdEntry.dependencies,arguments.useSetterInjection,arguments.stopRecursion);
+						}
+						else if ( structKeyExists(metaData,"autowire") and isBoolean(metaData["autowire"]) ){
+							mdEntry.autowire = metaData.autowire;
 						}
 						
-						/* Set Entry in dictionary */
+						// Lookup Dependencies if using autowire and not a ColdBox core object
+						if ( mdEntry.autowire and findNoCase("coldbox.system",metaData.name) EQ 0 ){
+							// Recurse for dependencies here, in order to build them
+							mdEntry.dependencies = parseMetadata(metaData,mdEntry.dependencies,arguments.useSetterInjection,arguments.stopRecursion);
+						}
+						
+						// Set Entry in dictionary
 						getDICacheDictionary().setKey(targetCacheKey,mdEntry);
 					}
 				</cfscript>
@@ -569,18 +564,20 @@ Description: This is the framework's simple bean factory.
 		</cfif>
 			
 		<cfscript>
-		/* We are now assured that the DI cache has data. */
+		// We are now assured that the DI cache has data.
 		targetDIEntry = getDICacheDictionary().getKey(targetCacheKey);
-		/* Do we Inject Dependencies, are we AutoWiring */
+		
+		// Do we Inject Dependencies, are we AutoWiring
 		if ( targetDIEntry.autowire ){
-			/* Dependencies Length */
+			// Dependencies Length
 			dependenciesLength = arrayLen(targetDIEntry.dependencies);
 			if( dependenciesLength gt 0 ){
-				/* References */
+				// References 
 				oMethodInjector = getPlugin("MethodInjector");
-				/* Let's inject our mixins */
+				// Let's inject our mixins
 				oMethodInjector.start(targetObject);
-				/* Loop over dependencies and inject. */
+				
+				// Loop over dependencies and inject
 				for(x=1; x lte dependenciesLength; x=x+1){
 					// Get Dependency
 					thisDependency = getDSLDependency(definition=targetDIEntry.dependencies[x],debugMode=arguments.debugmode);
@@ -608,8 +605,9 @@ Description: This is the framework's simple bean factory.
 				
 				// Process After ID Complete
 				processAfterCompleteDI(targetObject,onDICompleteUDF);
+				
 				// Let's cleanup our mixins
-				getPlugin("MethodInjector").stop(targetObject);
+				oMethodInjector.stop(targetObject);
 				
 			}// if dependencies found.
 		}//if autowiring			

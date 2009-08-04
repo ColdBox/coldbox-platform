@@ -1,0 +1,5 @@
+"Severity","Appender","Date","Time","Category","Message"
+"INFO","FileAppender","07/30/2009","21:39:11","ColdBox TestHarness","Deploy tag registered successfully"
+"INFO","FileAppender","07/30/2009","21:40:01","ColdBox TestHarness","Deploy tag registered successfully"
+"INFO","FileAppender","07/30/2009","21:40:12","ColdBox TestHarness","Deploy tag registered successfully"
+"INFO","FileAppender","07/30/2009","21:40:13","ColdBox TestHarness","Deploy tag registered successfully"
