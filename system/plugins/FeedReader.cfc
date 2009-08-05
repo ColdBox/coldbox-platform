@@ -652,7 +652,7 @@ Quick and Dirty Feed Dump:
 			}//end if rss 1 or 2
 			else if(feed.specs.type is "Atom") {
 				/* Parse items */
-				if( not isDefined("xmlDoc.xmlRoot.entry") ) feed.items = extras.parseAtomItems(arrayNew(1),arguments.itemsType,arguments.maxItems);
+				if( not structKeyExists(xmlDoc.xmlRoot,"entry") ) feed.items = extras.parseAtomItems(arrayNew(1),arguments.itemsType,arguments.maxItems);
 				else feed.items = extras.parseAtomItems(xmlDoc.xmlRoot.entry,arguments.itemsType,arguments.maxItems);
 				/* Author information */
 				if(structKeyExists(xmlDoc.xmlRoot,"author")){

@@ -252,7 +252,7 @@ Only one instance of a specific ColdBox application exists.
 		<!--- ************************************************************* --->
 		<cfscript>
 		if (arguments.FWSetting){
-			return isDefined("instance.ColdboxSettings.#arguments.name#");
+			return structKeyExists(instance.ColdboxSettings,arguments.name);
 		}
 		else{
 			return structKeyExists(instance.ConfigSettings, arguments.name);

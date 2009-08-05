@@ -723,7 +723,7 @@ License		: 	Apache 2 License
 			fs["docs"] = instance.SpecRss;
 
 			/* Items isQuery validation */
-			if( IsDefined("fs.items") ) {
+			if( structKeyExists(fs,"items") ) {
 				if( not isQuery(fs.items) ){
 					invalidList = invalidList & "| The items element must be a valid query.";
 				}

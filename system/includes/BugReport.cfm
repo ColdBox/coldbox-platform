@@ -10,11 +10,6 @@ Author 	 :	Luis Majano
 Date     :	September 25, 2005
 Description :
 	This is the BugReport template that gets emailed to the administrators
-
-Modification History:
-10/13/2005 - Moved reqCollection from session to request.
-12/26/2005 - Exception Struct empty check.
-06/09/2006 - Updated to coldbox. Changed all isDefined to structKeyExists
 ----------------------------------------------------------------------->
 </cfsilent>
 <cfoutput>

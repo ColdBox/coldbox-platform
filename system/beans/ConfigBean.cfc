@@ -71,7 +71,7 @@ Modification History:
 		<!--- ************************************************************* --->
 		<cfargument name="key" type="string" required="true">
 		<!--- ************************************************************* --->
-		<cfreturn isDefined("configStruct.#arguments.key#")>
+		<cfreturn structKeyExists(configStruct,arguments.key)>
 	</cffunction>
 
 </cfcomponent>

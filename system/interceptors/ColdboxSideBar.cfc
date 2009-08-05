@@ -150,7 +150,7 @@ Modification History:
 			</cfif>
 	
 			<!--- Clear Scope? --->
-			<cfif isDefined("rc.sbClearScope") AND ListFindNoCase( "session,client", event.getValue('sbClearScope','') )>
+			<cfif structKeyExists(rc,"sbClearScope") AND ListFindNoCase( "session,client", event.getValue('sbClearScope','') )>
 				<cfset StructClear( evaluate(rc.sbClearScope) )>
 			</cfif>
 		
