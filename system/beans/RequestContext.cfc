@@ -175,8 +175,8 @@ Modification History:
 		<cfargument name="value" 	hint="The value of the variable to set if not found." 			type="Any" >
 		<cfargument name="private" 		type="boolean" required="false" default="false" hint="Use public or private request collection"/>
 		<cfscript>
-			if ( not valueExists(arguments.name) ){
-				setValue(arguments.name, arguments.value);
+			if ( not valueExists(name=arguments.name,private=arguments.private) ){
+				setValue(name=arguments.name,value=arguments.value,private=arguments.private);
 			}
 		</cfscript>
 	</cffunction>

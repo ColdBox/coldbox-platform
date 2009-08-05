@@ -1,16 +1,58 @@
 <!-----------------------------------------------------------------------
-Template : util.cfc
-Author 	  : Luis Majano
-Date       : Aug 29, 2007
+Template : Util.cfc
+Author 	 : Luis Majano
+Date     : Aug 29, 2007
 
 Description :
 	This is a utility method cfc, wished we had static methods.
 
-Modification History:
-
 ---------------------------------------------------------------------->
-<cfcomponent name="Util" output="false" hint="A utility method cfc">
+<cfcomponent output="false" hint="The main ColdBox utility library.">
 
+	<!--- PlaceHolder Replacer --->
+	<cffunction name="placeHolderReplacer" access="public" returntype="any" hint="PlaceHolder Replacer for strings containing ${} patterns" output="false" >
+		<!---************************************************************************************************ --->
+		<cfargument name="str" 		required="true" type="any" hint="The string variable to look for replacements">
+		<cfargument name="settings" required="true" type="any" hint="The structure of settings to use in replacing">
+		<!---************************************************************************************************ --->
+		<cfscript>
+			var returnString = arguments.str;
+			var regex = "\$\{([0-9a-z\-\.\_]+)\}";
+			var lookup = 0;
+			var varName = 0;
+			var varValue = 0;
+			// Loop and Replace 
+			while(true){
+				// Search For Pattern
+				lookup = reFindNocase(regex,returnString,1,true);	
+				// Found?
+				if( lookup.pos[1] ){
+					//Get Variable Name From Pattern
+					varName = mid(returnString,lookup.pos[2],lookup.len[2]);
+					varValue = "VAR_NOT_FOUND";
+					
+					// Lookup Value
+					if( structKeyExists(arguments.settings,varname) ){
+						varValue = arguments.settings[varname];
+					}
+					// Lookup Nested Value
+					else if( isDefined("arguments.settings.#varName#") ){
+						varValue = Evaluate("arguments.settings.#varName#");
+					}
+					// Remove PlaceHolder Entirely
+					returnString = removeChars(returnString, lookup.pos[1], lookup.len[1]);
+					// Insert Var Value
+					returnString = insert(varValue, returnString, lookup.pos[1]-1);
+				}
+				else{
+					break;
+				}	
+			}
+			
+			return returnString;
+		</cfscript>
+	</cffunction>
+	
 	<cffunction name="ripExtension" access="public" returntype="string" output="false" hint="Rip the extension of a filename.">
 		<cfargument name="filename" type="string" required="true">
 		<cfreturn reReplace(arguments.filename,"\.[^.]*$","")>
