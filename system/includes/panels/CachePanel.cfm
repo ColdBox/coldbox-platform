@@ -1,5 +1,4 @@
 <!--- Setup the panel --->
-<cfsetting showdebugoutput="false">
 <cfparam name="url.frequency" default="0">
 
 <!--- Verify Frequency --->
@@ -9,6 +8,7 @@
 <cfoutput>
 	<!--- If CachePanel render the polling code --->
 	<cfif renderType eq "CachePanel">
+		<cfsetting showdebugoutput="false">
 		<html>
 		<head>
 			<title>ColdBox Cache Monitor</title>
