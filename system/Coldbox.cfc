@@ -181,8 +181,8 @@ Description :
 				<cfoutput>#renderedContent#</cfoutput>
 			<cfelse>
 			
-				<!--- Run Default/Set Event if no view has been dispatched --->
-				<cfif NOT event.isViewDispatched()>
+				<!--- Run Default/Set Event if no view has been dispatched or not executing an event --->
+				<cfif NOT event.isViewDispatched() AND NOT event.isNoExecution()>
 					<cfset cbController.runEvent(default=true)>
 				</cfif>
 				

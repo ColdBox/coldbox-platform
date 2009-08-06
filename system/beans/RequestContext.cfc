@@ -30,6 +30,7 @@ Modification History:
 		instance.sesBaseURL = "";
 		instance.routedStruct = structnew();
 		instance.isViewDispatched = false;
+		instance.isNoExecution = false;
 	</cfscript>
 
 	<cffunction name="init" access="public" output="false" hint="constructor" returntype="RequestContext">
@@ -570,6 +571,13 @@ Modification History:
 		<cfset instance.isViewDispatched = true>
 		<cfset setView(arguments.view,arguments.noLayout)>
 	</cffunction>
+	
+	<cffunction name="isNoExecution" access="public" returntype="boolean" hint="Determine if we need to execute an incoming event or not." output="false" >
+		<cfreturn instance.isNoExecution>
+	</cffunction>
+	<cffunction name="noExecution" output="false" access="public" returntype="void" hint="Set that the request will not execute an incoming event. Most likely simulating a servlet call.">
+   		<cfset instance.isNoExecution = true>
+    </cffunction>
 
 <!------------------------------------------- PRIVATE ------------------------------------------->
 

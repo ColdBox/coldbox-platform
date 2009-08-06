@@ -160,12 +160,17 @@ id , name , mail
 	</cffunction>
 
 	<!--- getter for controller --->
-	<cffunction name="getcontroller" access="private" returntype="any" output="false" hint="Get a reference to the ColdBox mock controller">
+	<cffunction name="getController" access="private" returntype="any" output="false" hint="Get a reference to the ColdBox mock controller">
 		<cfif this.persist_framework>
 			<cfset instance.controller = application[getColdboxAppKey()]>
 		</cfif>
 		<cfreturn instance.controller>
 	</cffunction>
+	
+	<!--- getColdboxOCM --->
+    <cffunction name="getColdboxOCM" output="false" access="private" returntype="any" hint="Get a reference to the cache manager">
+    	<cfreturn getController().getColdboxOCM()>
+    </cffunction>
 
 	<!--- Get current request context --->
 	<cffunction name="getRequestContext" access="private" output="false" returntype="any" hint="Get a reference to the mock request context">
