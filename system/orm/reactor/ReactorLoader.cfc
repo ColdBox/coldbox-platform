@@ -11,8 +11,7 @@ Description :
 	This loader  is used to create Reactor and load it
 	
 ---------------------------------------------------------------------->
-<cfcomponent name="ReactorLoader"
-			 hint="Creates Reactor and caches it within ColdBox" 
+<cfcomponent hint="Creates Reactor and caches it within ColdBox" 
 			 output="false"
 			 extends="coldbox.system.Interceptor">
 <!---
@@ -67,31 +66,33 @@ Description :
 			var reactor = CreateObject("component", getProperty("ReactorFactoryClassPath"));
 			var dsnBean = "";
 			
-			/* Check Datasource Alias */
+			// Check Datasource Alia
 			if( not structKeyExists(datasources, getProperty('dsnAlias')) ){
 				$throw("No datasource alias #getProperty('dsnAlias')# found.",
 					  "Please pass in the alias of the datasource to use that exists in your datasources section of your config file.",
 					  "ReactorLoader.DSNAliasNotFoundException");
 			}
-			/* Get DSN Object */
+			// Get DSN Object
 			dsnBean = getDatasource(getProperty('dsnAlias'));
 			
-			/* Configure reactor */
+			// Configure reactor
 			reactorConfig.setDsn(dsnBean.getName());
 			reactorConfig.setProject(getProperty("project"));
 			reactorConfig.setType(dsnBean.getDBType());
 			reactorConfig.setMapping(getProperty("mapping"));
 			reactorConfig.setMode(getProperty("mode"));
 			
-			/* Init Reactor */
+			// Init Reactor
 			reactor.init(reactorConfig);
 			
-			/*Now cache it as a singleton*/
+			// Now cache it as a singleton
 			getColdboxOCM().set(getProperty('ReactorCacheKey'), reactor,0);
 			
-			/* Debug */
+			// Debug
 			getPlugin("Logger").debug("Reactor loaded at #now()#");
 		</cfscript>	
 	</cffunction>
+	
+	
 	
 </cfcomponent>
