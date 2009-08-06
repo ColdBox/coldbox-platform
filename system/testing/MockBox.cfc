@@ -155,15 +155,15 @@ Description		:
 		<!--- Check if current method set? --->
 		<cfif len(this._mockCurrentMethod)>
 			<cfscript>
-				/* Check if arguments hash is set */
+				// Check if arguments hash is set
 				if( len(this._mockCurrentArgsHash) ){
 					this._mockArgResults[this._mockCurrentArgsHash] = arguments;
 				}
 				else{
-					/* Save incoming results array */
+					// Save incoming results array
 					this._mockResults[this._mockCurrentMethod] = arguments;
 				}
-				/* Cleanup */
+				// Cleanup
 				this._mockCurrentMethod = "";
 				this._mockCurrentArgsHash = "";
 			</cfscript>
