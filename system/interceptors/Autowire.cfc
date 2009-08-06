@@ -13,14 +13,13 @@ Description :
 	application aspects to be in place.
 	
 ----------------------------------------------------------------------->
-<cfcomponent name="Autowire"
-			 hint="This is an autowire interceptor"
+<cfcomponent hint="This is an autowire interceptor"
 			 output="false"
 			 extends="coldbox.system.Interceptor">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
-	<cffunction name="Configure" access="public" returntype="void" hint="This is the configuration method for your interceptors" output="false" >
+	<cffunction name="configure" access="public" returntype="void" output="false" >
 		<cfscript>
 			// Get set properties
 			if( not propertyExists("debugMode") or not isBoolean(getProperty("debugMode")) ){
@@ -50,110 +49,69 @@ Description :
 	<!--- After Aspects Load --->
 	<cffunction name="afterAspectsLoad" access="public" returntype="void" output="false" >
 		<!--- ************************************************************* --->
-		<cfargument name="event" 		 required="true" type="coldbox.system.beans.RequestContext" hint="The event object.">
-		<cfargument name="interceptData" required="true" type="struct" hint="interceptData of intercepted info.">
+		<cfargument name="event" 		 required="true" type="any" hint="The event object.">
+		<cfargument name="interceptData" required="true" type="any" hint="interceptData of intercepted info.">
 		<!--- ************************************************************* --->
 		<cfscript>
 			var interceptorConfig = getSetting("InterceptorConfig");
-			var INTERCEPTOR_CACHEKEY_PREFIX = getColdboxOCM().INTERCEPTOR_CACHEKEY_PREFIX;
 			var x = 1;
-			
-			// Setup the targettype
-			arguments.targetType = "interceptor";
 			
 			// Loop over the Interceptor Array, to begin autowiring
 			for (; x lte arrayLen(interceptorConfig.interceptors); x=x+1){
 				
-				// Get the cache path
-				arguments.interceptData.interceptorPath = INTERCEPTOR_CACHEKEY_PREFIX & interceptorConfig.interceptors[x].class;
-				
 				// Exclude yourself
 				if( not findnocase("coldbox.system.interceptors.Autowire",interceptorConfig.interceptors[x].class) ){
-					
 					// No locking necessary here, since the after aspects load is executed in thread safe conditions
-					
-					// Try to get the interceptor Object.
-					arguments.interceptData.oInterceptor = getColdboxOCM().get(arguments.interceptData.interceptorPath);
-					
 					// Autowire it
-					processAutowire(argumentCollection=arguments);
+					processAutowire(getInterceptor(interceptorConfig.interceptors[x].name,true));
 				}
 				
-			}//end declared interceptor loop
+			}
 		</cfscript>
 	</cffunction>
 	
 	<!--- After Handler Creation --->
 	<cffunction name="afterHandlerCreation" access="public" returntype="void" output="false" >
 		<!--- ************************************************************* --->
-		<cfargument name="event" 		 required="true" type="coldbox.system.beans.RequestContext" hint="The event object.">
-		<cfargument name="interceptData" required="true" type="struct" hint="A structure containing intercepted data = [handlerPath (The path of the handler), oHandler (The actual handler object)]">
+		<cfargument name="event" 		 required="true" type="any" hint="The event object.">
+		<cfargument name="interceptData" required="true" type="any" hint="A structure containing intercepted data = [handlerPath (The path of the handler), oHandler (The actual handler object)]">
 		<!--- ************************************************************* --->
-		<cfset arguments.targetType = "handler">
-			
-		<cflock type="exclusive" name="cboxautowire_handler_#interceptData.handlerPath#" timeout="30" throwontimeout="true">
-			<cfset processAutowire(argumentCollection=arguments)>		
+		<cflock type="exclusive" name="cboxautowire_handler_#arguments.interceptData.handlerPath#" timeout="30" throwontimeout="true">
+			<cfset processAutowire(arguments.interceptData.oHandler)>		
 		</cflock>		
 	</cffunction>
 		
 	<!--- After Plugin Creation --->
 	<cffunction name="afterPluginCreation" access="public" returntype="void" output="false" >
 		<!--- ************************************************************* --->
-		<cfargument name="event" 		 required="true" type="coldbox.system.beans.RequestContext" hint="The event object.">
-		<cfargument name="interceptData" required="true" type="struct" hint="A structure containing intercepted data = [pluginPath (The path of the plugin), custom (Flag if the plugin is custom or not), oPlugin (The actual plugin object)]">
+		<cfargument name="event" 		 required="true" type="any" hint="The event object.">
+		<cfargument name="interceptData" required="true" type="any" hint="A structure containing intercepted data = [pluginPath (The path of the plugin), custom (Flag if the plugin is custom or not), oPlugin (The actual plugin object)]">
 		<!--- ************************************************************* --->
-		<cfset arguments.targetType = "plugin">
-			
-		<cflock type="exclusive" name="cboxautowire_plugin_#interceptData.pluginPath#" timeout="30" throwontimeout="true">
-			<cfset processAutowire(argumentCollection=arguments)>		
-		</cflock>		
+		<cfif( not findnocase("coldbox.system.plugins",arguments.interceptData.custom & "_" & arguments.interceptData.pluginPath) )>
+			<cflock type="exclusive" name="cboxautowire_plugin_#arguments.interceptData.pluginPath#" timeout="30" throwontimeout="true">
+				<cfset processAutowire(arguments.interceptData.oPlugin)>		
+			</cflock>
+		</cfif>		
 	</cffunction>
 	
 	<!--- After Plugin Creation --->
 	<cffunction name="processAutowire" access="public" returntype="void" output="false" hint="Process autowiring using a targetype and data.">
 		<!--- ************************************************************* --->
-		<cfargument name="event" 		 required="true" type="coldbox.system.beans.RequestContext" hint="The event object.">
-		<cfargument name="interceptData" required="true" type="struct" hint="A structure containing intercepted data = [pluginPath (The path of the plugin), custom (Flag if the plugin is custom or not), oPlugin (The actual plugin object)]">
-		<cfargument name="targetType" 	 required="true" type="string" hint="Either plugin or handler or interceptor">
+		<cfargument name="target" type="any" required="true" hint="The target object to autowire" >
 		<!--- ************************************************************* --->
 		<cfscript>
-			// Targets
-			var targetPath = "";
-			var targetObject = "";
-			
-			switch(targetType){
-				case "plugin" : {
-					targetObject = interceptData.oPlugin;
-					targetPath = interceptData.custom & "_" & interceptData.pluginPath;
-					break;
-				}
-				case "handler" : {
-					targetObject = interceptData.oHandler;
-					targetPath = interceptData.handlerPath;
-					break;
-				}
-				case "interceptor" : {
-					targetObject = interceptData.oInterceptor;
-					targetPath = interceptData.interceptorPath;
-					break;
-				}
+			try{
+				// Process Autowire
+				instance.beanFactory.autowire(target=arguments.target,
+											  useSetterInjection=getProperty('enableSetterInjection'),
+											  annotationCheck=getProperty("annotationCheck"),
+											  onDICompleteUDF=getProperty('completeDIMethodName'),
+											  debugMode=getProperty('debugMode'));
 			}
-			
-			// Exclude the core plugins from autowires
-			if( not findnocase("coldbox.system.plugins",targetPath) ){
-				try{
-					// Process Autowire
-					instance.beanFactory.autowire(target=targetObject,
-												  useSetterInjection=getProperty('enableSetterInjection'),
-												  annotationCheck=getProperty("annotationCheck"),
-												  onDICompleteUDF=getProperty('completeDIMethodName'),
-												  debugMode=getProperty('debugMode'));
-				}
-				catch(Any e){
-					getPlugin("logger").error("Error autowiring handler #getmetadata(targetObject).name#. #e.message# #e.detail#");
-					$throw(message="Error autowiring handler #getmetadata(targetObject).name#",detail="#e.stacktrace#",type="Autowire.AutowireException");
-				}
-			}	
+			catch(Any e){
+				getPlugin("logger").error("Error autowiring #getmetadata(targetObject).name#. #e.message# #e.detail#");
+				$throw(message="Error autowiring #getmetadata(targetObject).name#. #e.message# #e.detail#",detail="#e.stacktrace#",type="Autowire.AutowireException");
+			}
 		</cfscript>
 	</cffunction>
 	
