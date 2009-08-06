@@ -502,43 +502,42 @@ Modification History:
 		<cfargument name="xmlColumnList"    type="string"   required="false" default="" hint="XML Only: Choose which columns to inspect, by default it uses all the columns in the query, if using a query">
 		<cfargument name="xmlUseCDATA"  	type="boolean"  required="false" default="false" hint="XML Only: Use CDATA content for ALL values. The default is false">
 		<cfargument name="xmlListDelimiter" type="string"   required="false" default="," hint="XML Only: The delimiter in the list. Comma by default">
+		<cfargument name="xmlRootName"      type="string"   required="false" default="" hint="XML Only: The name of the initial root element of the XML packet">
 		<!--- ************************************************************* --->
 		<cfscript>
 			var rd = structnew();
-			/* Validate */
+			// Validate
 			if( not reFindnocase("^(JSON|WDDX|XML|PLAIN)$",arguments.type) ){
 				$throw("Invalid rendering type","The type you sent #arguments.type# is not a valid rendering type. Valid types are JSON,XML,WDDX and PLAIN","RequestContext.InvalidRenderTypeException");
 			}
-			/* Populate */
+			// Default Values
 			rd.type = arguments.type;
 			rd.data = arguments.data;
 			rd.encoding = arguments.encoding;
+			rd.contentType = "text/html";
 			
-			/* XML Properties */
+			// XML Properties
 			rd.xmlColumnList = arguments.xmlColumnList;
 			rd.xmluseCDATA = arguments.xmlUseCDATA;
 			rd.xmlListDelimiter = arguments.xmlListDelimiter;
+			rd.xmlRootName = arguments.xmlRootName;
 			
-			/* JSON Properties */
+			// JSON Properties
 			rd.jsonCase = arguments.jsonCase;	
 			rd.jsonQueryFormat = arguments.jsonQueryFormat;		
 			
-			/* contenttype selections */
-			if( rd.type eq "JSON" ){
-				rd.contenttype = 'application/json';
-				if( arguments.jsonAsText ){ rd.contentType = "text/plain"; }
-			}
-			else if( rd.type eq "WDDX" OR rd.type eq "XML"){
-				rd.contentType = 'text/xml';
-			}
-			else{
-				/* If contenttype passed? */
-				if( len(trim(arguments.contentType)) ){
-					rd.contentType = arguments.contentType;
+			// Automatic Content Types by marshalling type
+			switch( rd.type ){
+				case "JSON" : { 
+					rd.contenttype = 'application/json'; 
+					if( arguments.jsonAsText ){ rd.contentType = "text/plain"; }
+					break; 
 				}
-				else{
-					rd.contentType = "text/html";
-				}
+				case "XML" : case "WDDX" : { rd.contentType = 'text/xml'; break; }
+			}
+			// If contenttype passed, then override it?
+			if( len(trim(arguments.contentType)) ){
+				rd.contentType = arguments.contentType;
 			}
 			
 			// Save Rendering data privately.

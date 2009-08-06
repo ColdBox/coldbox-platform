@@ -109,8 +109,8 @@ Description :
 											  debugMode=getProperty('debugMode'));
 			}
 			catch(Any e){
-				getPlugin("logger").error("Error autowiring #getmetadata(targetObject).name#. #e.message# #e.detail#");
-				$throw(message="Error autowiring #getmetadata(targetObject).name#. #e.message# #e.detail#",detail="#e.stacktrace#",type="Autowire.AutowireException");
+				getPlugin("logger").error("Error autowiring #getmetadata(arguments.target).name#. #e.message# #e.detail#");
+				$throw(message="Error autowiring #getmetadata(arguments.target).name#. #e.message# #e.detail#",detail="#e.stacktrace#",type="Autowire.AutowireException");
 			}
 		</cfscript>
 	</cffunction>

@@ -26,8 +26,7 @@ Modifications
 	- Ability to nest complex variables and still convert to XML.
 	
 --->
-<cfcomponent name="XMLConverter"
-			 hint="A utility tool that can marshall data to XML"
+<cfcomponent hint="A utility tool that can marshall data to XML"
 			 extends="coldbox.system.Plugin"
 			 output="false"
 			 cache="true">
@@ -39,7 +38,7 @@ Modifications
 		<cfscript>
 			super.init(arguments.controller);
 			
-			/* Plugin Properties */
+			// Plugin Properties
 			setpluginName("XMLConverter");
 			setpluginVersion("1.0");
 			setpluginDescription("A utility to marshall data to XML");
@@ -59,27 +58,30 @@ Modifications
 		<cfargument name="addHeader"  	type="boolean"  required="false" default="true" hint="Add an xml header to the packet returned.">
 		<cfargument name="encoding" 	type="string" 	required="true"  default="UTF-8" hint="The character encoding of the header. UTF-8 is the default"/>
 		<cfargument name="delimiter" 	type="string" 	required="false" default="," hint="The delimiter in the list. Comma by default">
+		<cfargument name="rootName"     type="string"   required="true"   default="" hint="The name of the root element, else it defaults to the internal defaults."/>
 		<cfscript>
 			var buffer = createObject("java","java.lang.StringBuffer").init('');
-			/* Header */
+			
+			// Header
 			if( arguments.addHeader ){
 				buffer.append('<?xml version="1.0" encoding="#arguments.encoding#"?>');
 			}
-			/* Struct Check? */
+			// Struct Check?
 			if( isStruct(arguments.data) ){
 				buffer.append( structToXML(argumentCollection=arguments) );
 			}
-			/* Query Check? */
+			// Query Check?
 			else if( isQuery(arguments.data) ){
 				buffer.append( queryToXML(argumentCollection=arguments) );
 			}
-			/* Array Check? */
+			// Array Check?
 			else if( isArray(arguments.data) ){
 				buffer.append( arrayToXML(argumentCollection=arguments) );
 			}
-			/* Simple Value Check, treated as a simple array list? */
+			// Simple Value Check, treated as a simple array list?
 			else if( isSimpleValue(arguments.data) ){
-				buffer.append( listToXML(argumentCollection=arguments) );
+				arguments.data = listToArray(arguments.data,arguments.delimiter);
+				buffer.append( arrayToXML(argumentCollection=arguments) );
 			}
 			
 			return buffer.toString();
@@ -89,7 +91,7 @@ Modifications
 	<cffunction name="arrayToXML" returnType="string" access="public" output="false" hint="Converts an array into XML with no headers.">
 		<cfargument name="data" 		type="array"    required="true" hint="The array to convert">
 		<cfargument name="useCDATA"  	type="boolean"  required="false" default="false" hint="Use CDATA content for ALL values. False by default">
-		<cfargument name="isList" 		type="boolean"  required="false" default="false" hint="If the conversion is from a list or not. Defaults to false. If true, the root element is called 'list'">
+		<cfargument name="rootName"     type="string"   required="true"   default="" hint="The name of the root element, else it defaults to the internal defaults."/>
 		
 		<cfscript>
 		var buffer = createObject('java','java.lang.StringBuffer').init('');
@@ -100,8 +102,8 @@ Modifications
 		var rootElement = "array";
 		var itemElement = "item";
 		
-		//isList?
-		if( arguments.isList ){ rootElement = "list"; }
+		// Root Name		
+		if( len(arguments.rootName) ){ rootElement = arguments.rootName; }
 		
 		//Create Root
 		buffer.append("<#rootElement#>");
@@ -124,23 +126,13 @@ Modifications
 		return buffer.toString();
 		</cfscript>
 	</cffunction>
-
-	<cffunction name="listToXML" returnType="string" access="public" output="false" hint="Converts a list into XML with no headers.">
-		<cfargument name="data" 		type="string" 	required="true" hint="The list to convert">
-		<cfargument name="delimiter" 	type="string" 	required="false" default="," hint="The delimiter in the list. Comma by default">
-		<cfargument name="useCDATA"  	type="boolean"  required="false" default="false" hint="Use CDATA content for ALL values">
-		<cfscript>
-			arguments.isList = true;
-			arguments.data = listToArray(arguments.data,arguments.delimiter);
-			return arrayToXML(argumentCollection=arguments);
-		</cfscript>
-	</cffunction>
 	
 	<cffunction name="queryToXML" returnType="string" access="public" output="false" hint="Converts a query to XML with no headers.">
 		<cfargument name="data" 		type="query"  required="true" hint="The query to convert">
 		<cfargument name="CDATAColumns" type="string" required="false" default="" 		hint="Which columns to wrap in cdata tags">
 		<cfargument name="columnlist"   type="string" required="false" default="#arguments.data.columnlist#" hint="Choose which columns to include in the translation, by default it uses all the columns in the query">
 		<cfargument name="useCDATA"  	type="boolean" required="false" default="false" hint="Use CDATA content for ALL values">
+		<cfargument name="rootName"     type="string"  required="true"   default="" hint="The name of the root element, else it defaults to the internal defaults."/>
 		
 		<cfset var buffer = createObject('java','java.lang.StringBuffer').init('')>
 		<cfset var col = "">
@@ -148,6 +140,11 @@ Modifications
 		<cfset var value = "">
 		<cfset var rootElement = "query">
 		<cfset var itemElement = "row">
+		
+		<!--- Override First root --->
+		<cfif len(arguments.rootName)>
+			<cfset rootElement = arguments.rootName>
+		</cfif>
 		
 		<!--- Create Root --->
 		<cfset buffer.append('<#rootelement#>')>
@@ -181,6 +178,7 @@ Modifications
 	<cffunction name="structToXML" returnType="string" access="public" output="false" hint="Converts a struct into XML with no headers.">
 		<cfargument name="data" 		type="any" 		required="true" hint="The structure, object, any to convert.">
 		<cfargument name="useCDATA"  	type="boolean"  required="false"  default="false" hint="Use CDATA content for ALL values">
+		<cfargument name="rootName"     type="string"   required="true"   default="" hint="The name of the root element, else it defaults to the internal defaults."/>
 		<cfscript>
 		var target = arguments.data;
 		var buffer = createObject("java","java.lang.StringBuffer").init('');
@@ -189,6 +187,9 @@ Modifications
 		var args = structnew();
 		var rootElement = "struct";
 		var objectType = "";
+		
+		// Root Element
+		if( len(arguments.rootName) ){ rootElement = arguments.rootName; }
 					
 		// Declare Root
 		if( isObject(arguments.data) ){
