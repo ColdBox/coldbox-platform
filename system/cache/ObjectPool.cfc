@@ -73,14 +73,14 @@ Modification History:
 	</cffunction>
 	
 	<!--- Getter/Setter For pool --->
-	<cffunction name="getpool" access="public" returntype="any" output="false" hint="Get the cache pool">
+	<cffunction name="getPool" access="public" returntype="any" output="false" hint="Get the cache pool">
 		<cfreturn instance.pool>
 	</cffunction>
 	
 	<!--- Getter/Setter for Pool Metdata --->
 	<cffunction name="getPoolMetadata" access="public" returntype="any" output="false" hint="Get the cache pool metadata">
 		<cflock name="coldbox.objectpool.metadatapool.#instance._hash#" type="readonly" timeout="10" throwonTimeout="true">
-		<cfreturn instance.pool_metadata >
+			<cfreturn instance.pool_metadata >
 		</cflock>
 	</cffunction>
 	
@@ -92,33 +92,41 @@ Modification History:
 	<!--- Setter/Getter metdata property --->
 	<cffunction name="getObjectMetadata" access="public" returntype="any" output="false" hint="Get a metadata entry for a specific cache entry">
 		<cfargument name="objectKey" type="any" required="true">
+		
 		<cflock name="coldbox.objectpool.metadatapool.#instance._hash#" type="readonly" timeout="10" throwonTimeout="true">
-		<cfreturn instance.pool_metadata[arguments.objectKey] >
+			<cfreturn instance.pool_metadata[arguments.objectKey] >
 		</cflock>
+		
 	</cffunction>
 	<cffunction name="setObjectMetadata" access="public" returntype="void" output="false" hint="Set the metadata entry for a specific cache entry">
 		<cfargument name="objectKey" type="any" required="true">
 		<cfargument name="metadata"  type="any" required="true">
+		
 		<cflock name="coldbox.objectpool.metadatapool.#instance._hash#" type="exclusive" timeout="10" throwonTimeout="true">
-		<cfset instance.pool_metadata[arguments.objectKey] = arguments.metadata>
+			<cfset instance.pool_metadata[arguments.objectKey] = arguments.metadata>
 		</cflock>
+		
 	</cffunction>
 	
 	<!--- Properties Metadata --->
 	<cffunction name="getMetadataProperty" access="public" returntype="any" output="false" hint="Get a metadata property for a specific cache entry">
 		<cfargument name="objectKey" type="any" required="true">
 		<cfargument name="property"  type="any" required="true">
+		
 		<cflock name="coldbox.objectpool.metadatapool.#instance._hash#" type="readonly" timeout="10" throwonTimeout="true">
-		<cfreturn instance.pool_metadata[arguments.objectKey][arguments.property] >
+			<cfreturn instance.pool_metadata[arguments.objectKey][arguments.property] >
 		</cflock>
+		
 	</cffunction>
 	<cffunction name="setMetadataProperty" access="public" returntype="void" output="false" hint="Set a metadata property for a specific cache entry">
 		<cfargument name="objectKey" type="any" required="true">
 		<cfargument name="property"  type="any" required="true">
-		<cfargument name="value"  	 type="any"    required="true">
+		<cfargument name="value"  	 type="any" required="true">
+		
 		<cflock name="coldbox.objectpool.metadatapool.#instance._hash#" type="exclusive" timeout="10" throwonTimeout="true">
-		<cfset instance.pool_metadata[arguments.objectKey][arguments.property] = arguments.value >
+			<cfset instance.pool_metadata[arguments.objectKey][arguments.property] = arguments.value >
 		</cflock>
+		
 	</cffunction>
 
 	<!--- Simple Object Lookup --->
@@ -159,9 +167,6 @@ Modification History:
 	<cffunction name="expireObject" output="false" access="public" returntype="void" hint="Set an object for expiration">
 		<cfargument name="objectKey" 			type="any"  required="true" hint="The object key">
 		<cfscript>
-			setMetadataProperty(arguments.objectKey,"Timeout", 1);
-			setMetadataProperty(arguments.objectKey,"Created", dateadd("n",-5,now()) );
-			setMetadataProperty(arguments.objectKey,"LastAccesed", dateadd("n",-5,now()) );
 			setMetadataProperty(arguments.objectKey,"isExpired", true );
 		</cfscript>
 	</cffunction>
@@ -179,7 +184,7 @@ Modification History:
 			var targetObj = 0;
 			
 			// Check for eternal object
-			if( arguments.timeout neq 0 ){
+			if( arguments.timeout GT 0 ){
 				// Cache as soft reference not an eternal object
 				targetObj = createSoftReference(arguments.objectKey,arguments.object);
 			}
@@ -229,7 +234,7 @@ Modification History:
 				results = true;
 			}
 			catch(Any e){
-				//Nothing;
+				//TODO: Add log box logging;
 			}
 			return results;
 		</cfscript>
@@ -280,14 +285,13 @@ Modification History:
 		<cfargument name="MyObject"	 type="any" 	required="true" hint="The object to wrap">
 		<!--- ************************************************************* --->
 		<cfscript>
-			/* Create Soft Reference Wrapper and register with Queue */
+			// Create Soft Reference Wrapper and register with Queue
 			var softRef = CreateObject("java","java.lang.ref.SoftReference").init(arguments.MyObject,getReferenceQueue());
 			var RefKeyMap = getSoftRefKeyMap();
 			
-			/* Create Reverse Mapping */
+			// Create Reverse Mapping
 			RefKeyMap[softRef] = arguments.objectKey;
 			
-			/* Return object */
 			return softRef;
 		</cfscript>
 	</cffunction>
@@ -299,9 +303,8 @@ Modification History:
 			if( isObject(arguments.myObject) and getMetaData(arguments.MyObject).name eq "java.lang.ref.SoftReference" ){
 				return true;
 			}
-			else{
-				return false;
-			}			
+			
+			return false;			
 		</cfscript>
 	</cffunction>
 

@@ -52,7 +52,7 @@ Description :
 				if( structIsEmpty(md) ){ continue; }
 				
 				//Override Eternal Checks
-				if ( NOT md.isExpired ){
+				if ( md.timeout gt 0 AND NOT md.isExpired ){
 					//Evict it
 					getCacheManager().expireKey(LFUIndex[x]);
 					//Record Eviction 

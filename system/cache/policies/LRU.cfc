@@ -51,8 +51,8 @@ Description :
 				md = getCacheManager().getCachedObjectMetadata(LRUIndex[x]);
 				if( structIsEmpty(md) ){ continue; }
 				
-				// Evict if not already marked for eviction
-				if( NOT md.isExpired ){
+				// Evict if not already marked for eviction or an eternal object.
+				if( md.timeout gt 0 AND NOT md.isExpired ){
 					//Evict it
 					getCacheManager().expireKey(LRUIndex[x]);
 					//Record Eviction 

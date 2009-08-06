@@ -23,13 +23,13 @@ Dependencies :
 	<cfscript>
 		instance = structnew();
 		
-		/* Cache Key prefixes. These are used by ColdBox For specific type saving */
-		this.VIEW_CACHEKEY_PREFIX = "cboxview_view-";
-		this.EVENT_CACHEKEY_PREFIX = "cboxevent_event-";
-		this.HANDLER_CACHEKEY_PREFIX = "cboxhandler_handler-";
-		this.INTERCEPTOR_CACHEKEY_PREFIX = "cboxinterceptor_interceptor-";
-		this.PLUGIN_CACHEKEY_PREFIX = "cboxplugin_plugin-";
-		this.CUSTOMPLUGIN_CACHEKEY_PREFIX = "cboxplugin_customplugin-";
+		// Cache Key prefixes. These are used by ColdBox For specific type saving
+		this.VIEW_CACHEKEY_PREFIX 			= "cboxview_view-";
+		this.EVENT_CACHEKEY_PREFIX 			= "cboxevent_event-";
+		this.HANDLER_CACHEKEY_PREFIX 		= "cboxhandler_handler-";
+		this.INTERCEPTOR_CACHEKEY_PREFIX 	= "cboxinterceptor_interceptor-";
+		this.PLUGIN_CACHEKEY_PREFIX 		= "cboxplugin_plugin-";
+		this.CUSTOMPLUGIN_CACHEKEY_PREFIX 	= "cboxplugin_customplugin-";
 		this.CACHE_ID = hash(createObject('java','java.lang.System').identityHashCode(this));
 	</cfscript>
 
@@ -550,8 +550,18 @@ Dependencies :
 					// Check if found, else continue, already reaped.
 					if( structIsEmpty(thisMD) ){ continue; }
 					
-					//Reap only non-eternal objects that have timeous gt 0
+					//Reap only non-eternal objects
 					if ( thisMD.Timeout gt 0 ){
+						
+						// Check if expired already
+						if( thisMD.isExpired ){ 
+							// Clear The Key
+							if( clearKey(thisKey) ){
+								// Announce Expiration only if removed, else maybe another thread cleaned it
+								announceExpiration(thisKey);
+							}	
+							continue;						
+						}
 						
 						//Check for creation timeouts and clear
 						if ( dateDiff("n", thisMD.created, now() ) gte thisMD.Timeout ){
