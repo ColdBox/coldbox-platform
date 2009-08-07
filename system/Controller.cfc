@@ -437,89 +437,101 @@ Only one instance of a specific ColdBox application exists.
 		<!--- Get the event handler to execute --->
 		<cfset oEventHandler = getHandlerService().getHandler(oEventHandlerBean,oRequestContext)>
 		
-		<!--- Determine if it is an Allowed HTTP Method to Execute the requested action --->
-		<cfif NOT structIsEmpty(oEventHandler.allowedMethods) AND
-			  structKeyExists(oEventHandler.allowedMethods,oEventHandlerBean.getMethod()) AND
-			  NOT listFindNoCase(oEventHandler.allowedMethods[oEventHandlerBean.getMethod()],oRequestContext.getHTTPMethod())>
-			
-			<cfset throwInvalidHTTP("The requested event: #event# cannot be executed using the incoming HTTP request method '#oRequestContext.getHTTPMethod()#'.")>
-		
-		</cfif>
-		
 		<!--- InterceptMetadata --->
 		<cfset interceptMetadata.processedEvent = arguments.event>
 		<!--- Execute preEvent Interception --->
 		<cfif not arguments.prepostExempt>
 			<cfset getInterceptorService().processState("preEvent",interceptMetadata)>
 		</cfif>		
-		<!--- PreHandler Execution --->
-		<cfif not arguments.prepostExempt and structKeyExists(oEventHandler,"preHandler")>
-			<!--- Validate ONLY & EXCEPT lists --->
-			<cfif ( (len(oEventHandler.PREHANDLER_ONLY) AND listfindnocase(oEventHandler.PREHANDLER_ONLY,oEventHandlerBean.getMethod())) 
-				     OR 
-				    (len(oEventHandler.PREHANDLER_ONLY) EQ 0) )
-				  AND
-				  ( listFindNoCase(oEventHandler.PREHANDLER_EXCEPT,oEventHandlerBean.getMethod()) EQ 0 )>
-				<cfset timerHash = getDebuggerService().timerStart("invoking runEvent [preHandler] for #arguments.event#")>
-					<!--- Execute the preHandler() action --->
-					<cfset oEventHandler.preHandler(oRequestContext,oEventHandlerBean.getMethod())>
-				<cfset getDebuggerService().timerEnd(timerHash)>
-			</cfif>
-		</cfif>
 		
-		<!--- Verify if event was overriden --->
-		<cfif (arguments.default) and (arguments.event neq oRequestContext.getCurrentEvent())>
-			<!--- Validate the overriden event --->
-			<cfset oEventHandlerBean = getHandlerService().getRegisteredHandler(oRequestContext.getCurrentEvent())>
-			<!--- Get the new event handler to execute --->
-			<cfset oEventHandler = getHandlerService().getHandler(oEventHandlerBean,oRequestContext)>
-		</cfif>
-
-		<!--- Private or Public Event Execution --->
-		<cfif arguments.private>
-			<!--- Private Arg Collection --->
-			<cfset privateArgCollection["event"] = oRequestContext>
+		<cftry>
+			<!--- Determine if it is an Allowed HTTP Method to Execute the requested action --->
+			<cfif NOT structIsEmpty(oEventHandler.allowedMethods) AND
+				  structKeyExists(oEventHandler.allowedMethods,oEventHandlerBean.getMethod()) AND
+				  NOT listFindNoCase(oEventHandler.allowedMethods[oEventHandlerBean.getMethod()],oRequestContext.getHTTPMethod())>
+				
+				<cfset throwInvalidHTTP("The requested event: #event# cannot be executed using the incoming HTTP request method '#oRequestContext.getHTTPMethod()#'.")>
 			
-			<!--- Start Timer --->
-			<cfset timerHash = getDebuggerService().timerStart("invoking PRIVATE runEvent [#arguments.event#]")>
-				<!--- Call Private Event --->
-				<cfinvoke component="#oEventHandler#" method="_privateInvoker" returnvariable="refLocal.results">
-					<cfinvokeargument name="method" value="#oEventHandlerBean.getMethod()#">
-					<cfinvokeargument name="argCollection" value="#privateArgCollection#">
-				</cfinvoke>
-			<cfset getDebuggerService().timerEnd(timerHash)>
-			
-		<cfelse>
-			<!--- Start Timer --->
-			<cfset timerHash = getDebuggerService().timerStart("invoking runEvent [#arguments.event#]")>
-				<cfif oEventHandlerBean.getisMissingAction()>
-					<!--- Execute OnMissingACtion() --->
-					<cfinvoke component="#oEventHandler#" method="onMissingAction" returnvariable="refLocal.results">
-						<cfinvokeargument name="event" 			value="#oRequestContext#">
-						<cfinvokeargument name="missingAction"  value="#oEventHandlerBean.getMissingAction()#">
-					</cfinvoke>
-				<cfelse>
-					<!--- Execute the Public Event --->
-					<cfinvoke component="#oEventHandler#" method="#oEventHandlerBean.getMethod()#" returnvariable="refLocal.results">
-						<cfinvokeargument name="event" value="#oRequestContext#">
-					</cfinvoke>
-				</cfif>
-			<cfset getDebuggerService().timerEnd(timerHash)>
-		</cfif>	
-
-		<!--- PostHandler Execution --->
-		<cfif not arguments.prepostExempt and structKeyExists(oEventHandler,"postHandler")>
-			<cfif ( (len(oEventHandler.POSTHANDLER_ONLY) AND listfindnocase(oEventHandler.POSTHANDLER_ONLY,oEventHandlerBean.getMethod())) 
-				     OR 
-				    (len(oEventHandler.POSTHANDLER_ONLY) EQ 0) )
-				  AND
-				  ( listFindNoCase(oEventHandler.POSTHANDLER_EXCEPT,oEventHandlerBean.getMethod()) EQ 0 )>
-				<cfset timerHash = getDebuggerService().timerStart("invoking runEvent [postHandler] for #arguments.event#")>
-					<!--- Execute the postHandler() action --->
-					<cfset oEventHandler.postHandler(oRequestContext,oEventHandlerBean.getMethod())>
-				<cfset getDebuggerService().timerEnd(timerHash)>
 			</cfif>
-		</cfif>
+			
+			<!--- PreHandler Execution --->
+			<cfif not arguments.prepostExempt and oEventHandler._actionExists("preHandler")>
+				<!--- Validate ONLY & EXCEPT lists --->
+				<cfif ( (len(oEventHandler.PREHANDLER_ONLY) AND listfindnocase(oEventHandler.PREHANDLER_ONLY,oEventHandlerBean.getMethod())) 
+					     OR 
+					    (len(oEventHandler.PREHANDLER_ONLY) EQ 0) )
+					  AND
+					  ( listFindNoCase(oEventHandler.PREHANDLER_EXCEPT,oEventHandlerBean.getMethod()) EQ 0 )>
+					<cfset timerHash = getDebuggerService().timerStart("invoking runEvent [preHandler] for #arguments.event#")>
+						<!--- Execute the preHandler() action --->
+						<cfset oEventHandler.preHandler(oRequestContext,oEventHandlerBean.getMethod())>
+					<cfset getDebuggerService().timerEnd(timerHash)>
+				</cfif>
+			</cfif>
+			
+			<!--- Verify if event was overriden --->
+			<cfif (arguments.default) and (arguments.event neq oRequestContext.getCurrentEvent())>
+				<!--- Validate the overriden event --->
+				<cfset oEventHandlerBean = getHandlerService().getRegisteredHandler(oRequestContext.getCurrentEvent())>
+				<!--- Get the new event handler to execute --->
+				<cfset oEventHandler = getHandlerService().getHandler(oEventHandlerBean,oRequestContext)>
+			</cfif>
+	
+			<!--- Private or Public Event Execution --->
+			<cfif arguments.private>
+				<!--- Private Arg Collection --->
+				<cfset privateArgCollection["event"] = oRequestContext>
+				
+				<!--- Start Timer --->
+				<cfset timerHash = getDebuggerService().timerStart("invoking PRIVATE runEvent [#arguments.event#]")>
+					<!--- Call Private Event --->
+					<cfinvoke component="#oEventHandler#" method="_privateInvoker" returnvariable="refLocal.results">
+						<cfinvokeargument name="method" value="#oEventHandlerBean.getMethod()#">
+						<cfinvokeargument name="argCollection" value="#privateArgCollection#">
+					</cfinvoke>
+				<cfset getDebuggerService().timerEnd(timerHash)>
+				
+			<cfelse>
+				<!--- Start Timer --->
+				<cfset timerHash = getDebuggerService().timerStart("invoking runEvent [#arguments.event#]")>
+					<cfif oEventHandlerBean.getisMissingAction()>
+						<!--- Execute OnMissingACtion() --->
+						<cfinvoke component="#oEventHandler#" method="onMissingAction" returnvariable="refLocal.results">
+							<cfinvokeargument name="event" 			value="#oRequestContext#">
+							<cfinvokeargument name="missingAction"  value="#oEventHandlerBean.getMissingAction()#">
+						</cfinvoke>
+					<cfelse>
+						<!--- Execute the Public Event --->
+						<cfinvoke component="#oEventHandler#" method="#oEventHandlerBean.getMethod()#" returnvariable="refLocal.results">
+							<cfinvokeargument name="event" value="#oRequestContext#">
+						</cfinvoke>
+					</cfif>
+				<cfset getDebuggerService().timerEnd(timerHash)>
+			</cfif>	
+	
+			<!--- PostHandler Execution --->
+			<cfif not arguments.prepostExempt and oEventHandler._actionExists("postHandler")>
+				<cfif ( (len(oEventHandler.POSTHANDLER_ONLY) AND listfindnocase(oEventHandler.POSTHANDLER_ONLY,oEventHandlerBean.getMethod())) 
+					     OR 
+					    (len(oEventHandler.POSTHANDLER_ONLY) EQ 0) )
+					  AND
+					  ( listFindNoCase(oEventHandler.POSTHANDLER_EXCEPT,oEventHandlerBean.getMethod()) EQ 0 )>
+					<cfset timerHash = getDebuggerService().timerStart("invoking runEvent [postHandler] for #arguments.event#")>
+						<!--- Execute the postHandler() action --->
+						<cfset oEventHandler.postHandler(oRequestContext,oEventHandlerBean.getMethod())>
+					<cfset getDebuggerService().timerEnd(timerHash)>
+				</cfif>
+			</cfif>
+			
+			<cfcatch type="any">
+				<!--- Check if onError Exists --->
+				<cfif oEventHandler._actionExists("onError")>
+					<cfset oEventHandler.onError(oRequestContext,oEventHandlerBean.getmethod(),cfcatch)>
+				<cfelse>
+					<cfrethrow>
+				</cfif>
+			</cfcatch>
+		</cftry>
 		
 		<!--- Execute postEvent Interception --->
 		<cfif not arguments.prepostExempt>
@@ -589,7 +601,7 @@ Only one instance of a specific ColdBox application exists.
     <cffunction name="throwInvalidHTTP" output="false" access="private" returntype="void" hint="Throw an invalid HTTP exception">
     	<cfargument name="description" type="string" required="true" hint="The exception description"/>
 		<cfheader statuscode="403" statustext="403 Invalid HTTP Method Exception">
-		<cfthrow type="SES.403" 
+		<cfthrow type="ColdBox.403" 
 			     errorcode="403"
 			     message="403 Invalid HTTP Method Exception"
 				 detail="#arguments.description#">
