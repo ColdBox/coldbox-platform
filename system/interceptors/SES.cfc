@@ -673,7 +673,8 @@ Description :
 		<cfargument name="match"  			type="any" 		required="true" hint="The regex matcher">
 		<cfargument name="params"  		 	type="struct" 	required="true" hint="The parameter structure">
 		<cfscript>
-		var leftOverLen = len(arguments.requestString)-(arguments.match.pos[arraylen(arguments.match.pos)]+arguments.match.len[arrayLen(arguments.match.len)]-1);
+		//var leftOverLen = len(arguments.requestString)-(arguments.match.pos[arraylen(arguments.match.pos)]+arguments.match.len[arrayLen(arguments.match.len)]-1);
+		var leftOverLen = len(arguments.requestString) - arguments.match.len[1];
 		var conventionString = 0;
 		var conventionStringLen = 0;
 		var tmpVar = 0;
