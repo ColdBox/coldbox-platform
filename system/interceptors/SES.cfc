@@ -200,17 +200,6 @@ Description :
 				$throw("Invalid JSON action","The action #arguments.action# is not valid JSON","SES.InvalidJSONAction");
 			}
 		}
-		// Process a json constraints?
-		thisRoute.constraints = structnew();
-		if( reFindnocase(jsonRegex,arguments.constraints) ){
-			try{
-				// Inflate constratints to structure
-				thisRoute.constraints = oJSON.decode(arguments.constraints);
-			}
-			catch(Any e){
-				$throw("Invalid JSON constraints","The constraints #arguments.constraints# is not valid JSON","SES.InvalidJSONConstraint");
-			}
-		}
 		
 		// Add trailing / to make it easier to parse
 		if( right(thisRoute.pattern,1) IS NOT "/" ){
@@ -229,6 +218,19 @@ Description :
 			processRouteOptionals(thisRoute);
 			return;
 		}
+		
+		// Process a json constraints?
+		thisRoute.constraints = structnew();
+		if( reFindnocase(jsonRegex,arguments.constraints) ){
+			try{
+				// Inflate constratints to structure
+				thisRoute.constraints = oJSON.decode(arguments.constraints);
+			}
+			catch(Any e){
+				$throw("Invalid JSON constraints","The constraints #arguments.constraints# is not valid JSON","SES.InvalidJSONConstraint");
+			}
+		}
+		
 		
 		// Init the regexpattern
 		thisRoute.regexPattern = "";
