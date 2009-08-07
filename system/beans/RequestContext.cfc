@@ -29,7 +29,6 @@ Modification History:
 		instance.isSES = false;
 		instance.sesBaseURL = "";
 		instance.routedStruct = structnew();
-		instance.isViewDispatched = false;
 		instance.isNoExecution = false;
 	</cfscript>
 
@@ -259,6 +258,10 @@ Modification History:
 	<cffunction name="getCurrentLayout" access="public" hint="Gets the current set layout" returntype="string" output="false">
 		<cfreturn getValue("currentLayout","")>
 	</cffunction>
+	
+	<cffunction name="getCurrentRoute" output="false" access="public" returntype="string" hint="Get the current request's URL route if found.">
+    	<cfreturn getValue("currentRoute","")>
+    </cffunction>
 
 	<cffunction name="setLayout" access="public" returntype="void" hint="I Set the layout to override and render. Layouts are pre-defined in the config file. However I can override these settings if needed. Do not append a the cfm extension. Request Collection name: currentLayout"  output="false">
 		<cfargument name="name"  hint="The name of the layout file to set." type="string" >
@@ -278,9 +281,8 @@ Modification History:
 			if( listLen(testHandler,".") eq 1){
 				return testHandler;
 			}
-			else{
-				return listLast(testHandler,".");
-			}
+			
+			return listLast(testHandler,".");
 		</cfscript>
 	</cffunction>
 	
@@ -558,17 +560,6 @@ Modification History:
 			if (isBoolean(cgi.server_port_secure) AND cgi.server_port_secure) { return true; }
 			return false;
 		</cfscript>
-	</cffunction>
-	
-	<cffunction name="isViewDispatched" access="public" returntype="boolean" hint="Determine if we need to dispatch a view" output="false" >
-		<cfreturn instance.isViewDispatched>
-	</cffunction>
-		
-	<cffunction name="setViewDispatched" access="public" returntype="void" hint="Set by the framework to determine if a view is to be dispatched immediately wihout executing an event" output="false" >
-		<cfargument name="view"  	 type="string"  required="true" hint="The view to dispatch">
-		<cfargument name="noLayout"  type="boolean" required="true" hint="Wether to dispatch a view with an assigned layout or not">
-		<cfset instance.isViewDispatched = true>
-		<cfset setView(arguments.view,arguments.noLayout)>
 	</cffunction>
 	
 	<cffunction name="isNoExecution" access="public" returntype="boolean" hint="Determine if we need to execute an incoming event or not." output="false" >

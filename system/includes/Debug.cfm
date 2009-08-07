@@ -111,6 +111,13 @@ Description :
 		</div>
 		
 		<div class="fw_debugTitleCell">
+		  Current Route:
+		</div>
+		<div class="fw_debugContentCell">
+		<cfif Event.getCurrentRoute() eq ""><span class="fw_redText">N/A</span><cfelse>#Event.getCurrentRoute()#</cfif>
+		</div>
+		
+		<div class="fw_debugTitleCell">
 		  LogBox Appenders:
 		</div>
 		<div class="fw_debugContentCell">#controller.getLogBox().getCurrentAppenders()#</div>
