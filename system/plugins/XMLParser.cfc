@@ -210,40 +210,19 @@ Description :
 
 			/* ::::::::::::::::::::::::::::::::::::::::: APP LOCATION CALCULATIONS :::::::::::::::::::::::::::::::::::::::::::: */
 			
-			//Setup the Application Path with an Override
-			if( arguments.overrideAppMapping neq "" ){
+			// Setup Default Application Path from main controller
+			configStruct.ApplicationPath = controller.getAppRootPath();
+			// Check for Override of AppMapping
+			if( len(trim(arguments.overrideAppMapping)) ){
 				configStruct.ApplicationPath = ExpandPath(arguments.overrideAppMapping);
 				if( right(configStruct.ApplicationPath,1) neq "/"){
 					configStruct.ApplicationPath = configStruct.ApplicationPath & "/";
 				}
 			}
-			else{
-				// Setup Default App Path from main controller
-				configStruct.ApplicationPath = controller.getAppRootPath();
-			}
 			
-			//Calculate AppMapping if not set in the config, else auto-calculate
-			if ( not structKeyExists(configStruct, "AppMapping") ){
-				webPath = replacenocase(cgi.script_name,getFileFromPath(cgi.script_name),"");
-				localPath = getDirectoryFromPath(replacenocase(getTemplatePath(),"\","/","all"));
-				PathLocation = findnocase(webPath, localPath);
-				
-				if ( PathLocation neq 0)
-					configStruct.AppMapping = mid(localPath,PathLocation,len(webPath));
-				else
-					configStruct.AppMapping = webPath;
-
-				//Clean last /
-				if ( right(configStruct.AppMapping,1) eq "/" ){
-					if ( len(configStruct.AppMapping) -1 gt 0)
-						configStruct.AppMapping = left(configStruct.AppMapping,len(configStruct.AppMapping)-1);
-					else
-						configStruct.AppMapping = "";
-				}
-				
-				//Clean j2ee context
-				if( len(getContextRoot()) )
-					configStruct.AppMapping = replacenocase(configStruct.AppMapping,getContextRoot(),"");
+			//Calculate AppMapping if not set in the config
+			if ( NOT structKeyExists(configStruct, "AppMapping") ){
+				calculateAppMapping(configStruct);
 			}
 			
 			/* ::::::::::::::::::::::::::::::::::::::::: GET COLDBOX SETTINGS  :::::::::::::::::::::::::::::::::::::::::::: */
@@ -330,6 +309,38 @@ Description :
 		</cfscript>
 	</cffunction>
 	
+	<!--- calculateAppMapping --->
+    <cffunction name="calculateAppMapping" output="false" access="public" returntype="void" hint="Calculate the AppMapping">
+    	<cfargument name="config" 	type="struct" required="true" hint="The config struct"/>
+		<cfscript>
+			var configStruct = arguments.config;
+			// Get the web path from CGI.
+			var	 webPath = replacenocase(cgi.script_name,getFileFromPath(cgi.script_name),"");
+			// Cleanup the template path
+			var localPath = getDirectoryFromPath(replacenocase(getTemplatePath(),"\","/","all"));
+			// Verify Path Location
+			var pathLocation = findnocase(webPath, localPath);
+			
+			if ( pathLocation )
+				configStruct.AppMapping = mid(localPath,pathLocation,len(webPath));
+			else
+				configStruct.AppMapping = webPath;
+
+			//Clean last /
+			if ( right(configStruct.AppMapping,1) eq "/" ){
+				if ( len(configStruct.AppMapping) -1 gt 0)
+					configStruct.AppMapping = left(configStruct.AppMapping,len(configStruct.AppMapping)-1);
+				else
+					configStruct.AppMapping = "";
+			}
+			
+			//Clean j2ee context
+			if( len(getContextRoot()) ){
+				configStruct.AppMapping = replacenocase(configStruct.AppMapping,getContextRoot(),"");
+			}
+    	</cfscript>
+    </cffunction>
+	
 	<!--- parseColdboxSettings --->
 	<cffunction name="parseColdboxSettings" output="false" access="public" returntype="void" hint="Parse ColdBox Settings">
 		<cfargument name="xml" 		type="any" required="true" hint="The xml object"/>
@@ -342,14 +353,16 @@ Description :
 			var SettingNodes = XMLSearch(arguments.xml,"//Settings/Setting");
 			var i=1;
 			
-			if ( ArrayLen(SettingNodes) eq 0 )
+			if ( ArrayLen(SettingNodes) eq 0 ){
 				$throw("No Setting elements could be found in the configuration file.","","XMLParser.ConfigXMLParsingException");
+			}
+			
 			//Insert  ColdBox Settings to Config Struct
 			for (i=1; i lte ArrayLen(SettingNodes); i=i+1){
 				configStruct[trim(SettingNodes[i].XMLAttributes["name"])] = arguments.utility.placeHolderReplacer(trim(SettingNodes[i].XMLAttributes["value"]),configStruct);
 			}
-			//overrideAppMapping if passed in.
-			if ( arguments.overrideAppMapping neq "" ){
+			// override AppMapping from what user set if passed in via the creation. Mostly for unit testing this is done. 
+			if ( len(trim(arguments.overrideAppMapping)) ){
 				configStruct["AppMapping"] = arguments.overrideAppMapping;
 			}
 			// Clean the first / if found
@@ -446,62 +459,45 @@ Description :
 		<cfscript>
 			var configStruct = arguments.config;
 			var fwSettingsStruct = controller.getColdBoxSettings();
+			var appMappingAsDots = "";
 			
-			//Set the Handlers External Configuration Paths
-			if( configStruct["HandlersExternalLocation"] neq "" ){
-				//Expand the external location to get a registration path
-				configStruct["HandlersExternalLocationPath"] = ExpandPath("/" & replace(configStruct["HandlersExternalLocation"],".","/","all"));
+			// Default Locations for ROOT based apps, which is the default
+			//Parse out the first / to create the invocation Path
+			if ( left(configStruct["AppMapping"],1) eq "/" ){
+				configStruct["AppMapping"] = removeChars(configStruct["AppMapping"],1,1);
 			}
-			else{
-				configStruct["HandlersExternalLocationPath"] = "";
-			}
+			// Handler Registration
+			configStruct["HandlersInvocationPath"] = reReplace(fwSettingsStruct.handlersConvention,"(/|\\)",".","all");
+			configStruct["HandlersPath"] = controller.getAppRootPath() & fwSettingsStruct.handlersConvention;
+			// Custom Plugins Registration
+			configStruct["MyPluginsInvocationPath"] = reReplace(fwSettingsStruct.pluginsConvention,"(/|\\)",".","all");
+			configStruct["MyPluginsPath"] = controller.getAppRootPath() & fwSettingsStruct.pluginsConvention;
+			// Models Registration
+			configStruct["ModelsInvocationPath"] = reReplace(fwSettingsStruct.ModelsConvention,"(/|\\)",".","all");
+			configStruct["ModelsPath"] = controller.getAppRootPath() & fwSettingsStruct.ModelsConvention;
 			
 			//Set the Handlers,Models, & Custom Plugin Invocation & Physical Path for this Application
-			if( configStruct["AppMapping"] neq ""){
-				
-				//Parse out the first / to create invocation Path
-				if ( left(configStruct["AppMapping"],1) eq "/" ){
-					configStruct["AppMapping"] = removeChars(configStruct["AppMapping"],1,1);
-				}
-				
-				//Set the Invocation Path
-				configStruct["HandlersInvocationPath"] = replace(configStruct["AppMapping"],"/",".","all") & ".#fwSettingsStruct.handlersConvention#";
-				configStruct["MyPluginsInvocationPath"] = replace(configStruct["AppMapping"],"/",".","all") & ".#fwSettingsStruct.pluginsConvention#";
-				configStruct["ModelsInvocationPath"] = replace(configStruct["AppMapping"],"/",".","all") & ".#fwSettingsStruct.ModelsConvention#";
-				
-				//Set the Location Path
-				configStruct["HandlersPath"] = configStruct["AppMapping"];
-				configStruct["MyPluginsPath"] = configStruct["AppMapping"];
-				configStruct["ModelsPath"] = configStruct["AppMapping"];
-				
-				//Set the physical path according to system.
-				configStruct["HandlersPath"] = "/" & configStruct["HandlersPath"] & "/#fwSettingsStruct.handlersConvention#";
-				configStruct["MyPluginsPath"] = "/" & configStruct["MyPluginsPath"] & "/#fwSettingsStruct.pluginsConvention#";
-				configStruct["ModelsPath"] = "/" & configStruct["ModelsPath"] & "/#fwSettingsStruct.ModelsConvention#";
-				
-				//Set the Handlerspath expanded.
-				configStruct["HandlersPath"] = ExpandPath(configStruct["HandlersPath"]);
-				configStruct["MyPluginsPath"] = ExpandPath(configStruct["MyPluginsPath"]);
-				configStruct["ModelsPath"] = ExpandPath(configStruct["ModelsPath"]);
-					
+			if( len(configStruct["AppMapping"]) ){
+				appMappingAsDots = reReplace(configStruct["AppMapping"],"(/|\\)",".","all");
+				// Handler Path Registrations
+				configStruct["HandlersInvocationPath"] = appMappingAsDots & ".#reReplace(fwSettingsStruct.handlersConvention,"(/|\\)",".","all")#";
+				configStruct["HandlersPath"] = "/" & configStruct.AppMapping & "/#fwSettingsStruct.handlersConvention#";
+				configStruct["HandlersPath"] = expandPath(configStruct["HandlersPath"]);
+				// Custom Plugins Registrations
+				configStruct["MyPluginsInvocationPath"] = appMappingAsDots & ".#reReplace(fwSettingsStruct.pluginsConvention,"(/|\\)",".","all")#";
+				configStruct["MyPluginsPath"] = "/" & configStruct.AppMapping & "/#fwSettingsStruct.pluginsConvention#";
+				configStruct["MyPluginsPath"] = expandPath(configStruct["MyPluginsPath"]);
+				// Model Registrations
+				configStruct["ModelsInvocationPath"] = appMappingAsDots & ".#reReplace(fwSettingsStruct.ModelsConvention,"(/|\\)",".","all")#";
+				configStruct["ModelsPath"] = "/" & configStruct.AppMapping & "/#fwSettingsStruct.ModelsConvention#";
+				configStruct["ModelsPath"] = expandPath(configStruct["ModelsPath"]);
 			}
-			else{
-				//Parse out the first / to create the invocation Path
-				if ( left(configStruct["AppMapping"],1) eq "/" ){
-					configStruct["AppMapping"] = removeChars(configStruct["AppMapping"],1,1);
-				}
-				
-				/* Handler Registration */
-				configStruct["HandlersInvocationPath"] = "#fwSettingsStruct.handlersConvention#";
-				configStruct["HandlersPath"] = controller.getAppRootPath() & "#fwSettingsStruct.handlersConvention#";
-
-				/* Custom Plugins Registration */
-				configStruct["MyPluginsInvocationPath"] = "#fwSettingsStruct.pluginsConvention#";
-				configStruct["MyPluginsPath"] = controller.getAppRootPath() & "#fwSettingsStruct.pluginsConvention#";
-				
-				/* Models Registration */
-				configStruct["ModelsInvocationPath"] = "#fwSettingsStruct.ModelsConvention#";
-				configStruct["ModelsPath"] = controller.getAppRootPath() & "#fwSettingsStruct.ModelsConvention#";
+			
+			//Set the Handlers External Configuration Paths
+			configStruct["HandlersExternalLocationPath"] = "";
+			if( len(configStruct["HandlersExternalLocation"]) ){
+				//Expand the external location to get a registration path
+				configStruct["HandlersExternalLocationPath"] = ExpandPath("/" & replace(configStruct["HandlersExternalLocation"],".","/","all"));
 			}
 		</cfscript>
 	</cffunction>
@@ -514,8 +510,9 @@ Description :
 		<cfscript>
 			var configStruct = arguments.config;
 			
-			// check for ViewsExternalLocation 
-			if( structKeyExists(configStruct,"ViewsExternalLocation") and configStruct["ViewsExternalLocation"] neq "" ){
+			// ViewsExternalLocation Setup 
+			configStruct["ViewsExternalLocation"] = "";
+			if( structKeyExists(configStruct,"ViewsExternalLocation") and len(configStruct["ViewsExternalLocation"]) ){
 				// Verify the locations, do relative to the app mapping first 
 				if( directoryExists(controller.getAppRootPath() & configStruct["ViewsExternalLocation"]) ){
 					configStruct["ViewsExternalLocation"] = "/" & configStruct["AppMapping"] & "/" & configStruct["ViewsExternalLocation"];
@@ -527,11 +524,10 @@ Description :
 				if ( right(configStruct["ViewsExternalLocation"],1) eq "/" ){
 					 configStruct["ViewsExternalLocation"] = left(configStruct["ViewsExternalLocation"],len(configStruct["ViewsExternalLocation"])-1);
 				}
-			}else{
-				configStruct["ViewsExternalLocation"] = "";
 			}
 			
-			// check for LayoutsExternalLocation
+			// LayoutsExternalLocation Setup
+			configStruct["LayoutsExternalLocation"] = "";
 			if( structKeyExists(configStruct,"LayoutsExternalLocation") and configStruct["LayoutsExternalLocation"] neq "" ){
 				// Verify the locations, do relative to the app mapping first
 				if( directoryExists(controller.getAppRootPath() & configStruct["LayoutsExternalLocation"]) ){
@@ -544,8 +540,6 @@ Description :
 				if ( right(configStruct["LayoutsExternalLocation"],1) eq "/" ){
 					 configStruct["LayoutsExternalLocation"] = left(configStruct["LayoutsExternalLocation"],len(configStruct["LayoutsExternalLocation"])-1);
 				}
-			}else{
-				configStruct["LayoutsExternalLocation"] = "";
 			}
 		</cfscript>
 	</cffunction>
