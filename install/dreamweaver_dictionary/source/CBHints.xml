@@ -105,12 +105,15 @@
 	</menu>
 	<menu pattern="getPlugin(&quot;" doctypes="ColdFusion,CFC">
 		<menuitem label="ApplicationStorage" icon="shared/CBHints/images/hintCB.gif" />
-		<menuitem label="beanFactory" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="BeanFactory" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label="ClientStorage" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label="CookieStorage" icon="shared/CBHints/images/hintCB.gif" />
-		<menuitem label="ioc" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="FeedGenerator" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="FeedReader" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="IOC" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label="ResourceBundle" icon="shared/CBHints/images/hintCB.gif" />
-		<menuitem label="javaLoader" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="JavaLoader" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="JVMUtils" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label="JSON" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label="Logger" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label="MTLogger" icon="shared/CBHints/images/hintCB.gif" />
@@ -119,19 +122,22 @@
 		<menuitem label="Renderer" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label="SessionStorage" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label="StringBuffer" icon="shared/CBHints/images/hintCB.gif" />
-		<menuitem label="timer" icon="shared/CBHints/images/hintCB.gif" />
-		<menuitem label="utilities" icon="shared/CBHints/images/hintCB.gif" />
-		<menuitem label="webservices" icon="shared/CBHints/images/hintCB.gif" />
-		<menuitem label="zip" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="Timer" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="Utilities" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="Webservices" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="Zip" icon="shared/CBHints/images/hintCB.gif" />
 	</menu>
 	<menu pattern="getPlugin('" doctypes="ColdFusion,CFC">
 		<menuitem label="ApplicationStorage" icon="shared/CBHints/images/hintCB.gif" />
-		<menuitem label="beanFactory" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="BeanFactory" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label="ClientStorage" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label="CookieStorage" icon="shared/CBHints/images/hintCB.gif" />
-		<menuitem label="ioc" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="FeedGenerator" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="FeedReader" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="IOC" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label="ResourceBundle" icon="shared/CBHints/images/hintCB.gif" />
-		<menuitem label="javaLoader" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="JavaLoader" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="JVMUtils" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label="JSON" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label="Logger" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label="MTLogger" icon="shared/CBHints/images/hintCB.gif" />
@@ -140,10 +146,10 @@
 		<menuitem label="Renderer" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label="SessionStorage" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label="StringBuffer" icon="shared/CBHints/images/hintCB.gif" />
-		<menuitem label="timer" icon="shared/CBHints/images/hintCB.gif" />
-		<menuitem label="utilities" icon="shared/CBHints/images/hintCB.gif" />
-		<menuitem label="webservices" icon="shared/CBHints/images/hintCB.gif" />
-		<menuitem label="zip" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="Timer" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="Utilities" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="Webservices" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="Zip" icon="shared/CBHints/images/hintCB.gif" />
 	</menu>
 	<menu pattern="getPlugin(&quot;ApplicationStorage&quot;)" doctypes="ColdFusion,CFC">
 		<menuitem label=".clearAll()" icon="shared/CBHints/images/hintCB.gif" />
@@ -272,6 +278,17 @@
 		<menuitem label=".encode()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".getVersion()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".setup()" icon="shared/CBHints/images/hintCB.gif" />
+	</menu>
+	<menu pattern="getPlugin('JBMUtils')" doctypes="ColdFusion,CFC">
+		<menuitem label=".getIPAddress()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".getInetHost()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".getOSFileSeparator()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".getOSName()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".getOSPathSeparator()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".getJavaRuntime()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".getJavaVersion()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".getJVMFreeMemory()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".getJVMTotalMemory()" icon="shared/CBHints/images/hintCB.gif" />
 	</menu>
 	<menu pattern="getPlugin(&quot;Logger&quot;)" doctypes="ColdFusion,CFC">
 		<menuitem label=".logEntry()" icon="shared/CBHints/images/hintCB.gif" />
@@ -417,35 +434,26 @@
 		<menuitem label=".setup()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".subString()" icon="shared/CBHints/images/hintCB.gif" />
 	</menu>
-	<menu pattern="getPlugin(&quot;timer&quot;)" doctypes="ColdFusion,CFC">
+	<menu pattern="getPlugin(&quot;Timer&quot;)" doctypes="ColdFusion,CFC">
 		<menuitem label=".getTimerScope()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".logTime()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".start()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".stop()" icon="shared/CBHints/images/hintCB.gif" />
 	</menu>
-	<menu pattern="getPlugin('timer')" doctypes="ColdFusion,CFC">
+	<menu pattern="getPlugin('Timer')" doctypes="ColdFusion,CFC">
 		<menuitem label=".getTimerScope()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".logTime()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".start()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".stop()" icon="shared/CBHints/images/hintCB.gif" />
 	</menu>
-	<menu pattern="getPlugin(&quot;utilities&quot;)" doctypes="ColdFusion,CFC">
+	<menu pattern="getPlugin(&quot;Utilities&quot;)" doctypes="ColdFusion,CFC">
 		<menuitem label=".isCFUUID()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".isEmail()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".isURL()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".sleeper()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".createArray()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".createStruct()" icon="shared/CBHints/images/hintCB.gif" />
-		<menuitem label=".getOSFileSeparator()" icon="shared/CBHints/images/hintCB.gif" />
-		<menuitem label=".getOSPathSeparator()" icon="shared/CBHints/images/hintCB.gif" />
-		<menuitem label=".getOSName()" icon="shared/CBHints/images/hintCB.gif" />
-		<menuitem label=".getInetHost()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".checkCharSet()" icon="shared/CBHints/images/hintCB.gif" />
-		<menuitem label=".getIPAddress()" icon="shared/CBHints/images/hintCB.gif" />
-		<menuitem label="getJavaRuntime()" icon="shared/CBHints/images/hintCB.gif" />
-		<menuitem label=".getJavaVersion()" icon="shared/CBHints/images/hintCB.gif" />
-		<menuitem label=".getJVMFreeMemory()" icon="shared/CBHints/images/hintCB.gif" />
-		<menuitem label=".getJVMTotalMemory()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".fileLastModified()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".ripExtension()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".createFile()" icon="shared/CBHints/images/hintCB.gif" />
@@ -461,23 +469,14 @@
 		<menuitem label=".getAbsolutePath()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".isSSL()" icon="shared/CBHints/images/hintCB.gif" />
 	</menu>
-	<menu pattern="getPlugin('utilities')" doctypes="ColdFusion,CFC">
+	<menu pattern="getPlugin('Utilities')" doctypes="ColdFusion,CFC">
 		<menuitem label=".isCFUUID()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".isEmail()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".isURL()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".sleeper()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".createArray()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".createStruct()" icon="shared/CBHints/images/hintCB.gif" />
-		<menuitem label=".getOSFileSeparator()" icon="shared/CBHints/images/hintCB.gif" />
-		<menuitem label=".getOSPathSeparator()" icon="shared/CBHints/images/hintCB.gif" />
-		<menuitem label=".getOSName()" icon="shared/CBHints/images/hintCB.gif" />
-		<menuitem label=".getInetHost()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".checkCharSet()" icon="shared/CBHints/images/hintCB.gif" />
-		<menuitem label=".getIPAddress()" icon="shared/CBHints/images/hintCB.gif" />
-		<menuitem label="getJavaRuntime()" icon="shared/CBHints/images/hintCB.gif" />
-		<menuitem label=".getJavaVersion()" icon="shared/CBHints/images/hintCB.gif" />
-		<menuitem label=".getJVMFreeMemory()" icon="shared/CBHints/images/hintCB.gif" />
-		<menuitem label=".getJVMTotalMemory()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".fileLastModified()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".ripExtension()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".createFile()" icon="shared/CBHints/images/hintCB.gif" />
@@ -493,17 +492,17 @@
 		<menuitem label=".getAbsolutePath()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".isSSL()" icon="shared/CBHints/images/hintCB.gif" />
 	</menu>
-	<menu pattern="getPlugin(&quot;webservices&quot;)" doctypes="ColdFusion,CFC">
+	<menu pattern="getPlugin(&quot;Webservices&quot;)" doctypes="ColdFusion,CFC">
 		<menuitem label=".getWS()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".getWSObj()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".refreshWS()" icon="shared/CBHints/images/hintCB.gif" />
 	</menu>
-	<menu pattern="getPlugin('webservices')" doctypes="ColdFusion,CFC">
+	<menu pattern="getPlugin('Webservices')" doctypes="ColdFusion,CFC">
 		<menuitem label=".getWS()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".getWSObj()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".refreshWS()" icon="shared/CBHints/images/hintCB.gif" />
 	</menu>
-	<menu pattern="getPlugin(&quot;zip&quot;)" doctypes="ColdFusion,CFC">
+	<menu pattern="getPlugin(&quot;Zip&quot;)" doctypes="ColdFusion,CFC">
 		<menuitem label=".addFiles()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".deleteFiles()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".extract()" icon="shared/CBHints/images/hintCB.gif" />
@@ -513,7 +512,7 @@
 		<menuitem label=".list()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".pathFormat()" icon="shared/CBHints/images/hintCB.gif" />
 	</menu>
-	<menu pattern="getPlugin('zip')" doctypes="ColdFusion,CFC">
+	<menu pattern="getPlugin('Zip')" doctypes="ColdFusion,CFC">
 		<menuitem label=".addFiles()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".deleteFiles()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".extract()" icon="shared/CBHints/images/hintCB.gif" />
