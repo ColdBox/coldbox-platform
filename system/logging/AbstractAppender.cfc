@@ -16,8 +16,6 @@ Description :
 	<cfscript>
 		// The log levels enum as a public property
 		this.logLevels = createObject("component","coldbox.system.logging.LogLevels");
-		// An appender can be decorated with ColdBox if running inside a coldbox app
-		this.coldbox = "";
 		
 		// private instance scope
 		instance = structnew();

@@ -43,7 +43,7 @@ Description :
 	<!--- Init --->
 	<cffunction name="init" access="public" returntype="LogBox" hint="Constructor" output="false" >
 		<cfargument name="config"  type="coldbox.system.logging.config.LogBoxConfig" required="true" hint="The LogBoxConfig object to use to configure this instance of LogBox"/>
-		<cfargument name="coldbox" type="coldbox.system.Controller" required="false" default="" hint="A coldbox application that this instance of logbox can be linked to."/>
+		<cfargument name="coldbox" type="any" required="false" default="" hint="A coldbox application that this instance of logbox can be linked to."/>
 		<cfscript>
 			// Check if linking ColdBox
 			if( isObject(arguments.coldbox) ){ instance.coldbox = arguments.coldbox; }
