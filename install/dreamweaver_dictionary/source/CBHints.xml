@@ -104,42 +104,42 @@
 		<menuitem label="valueExists('name')" icon="shared/CBHints/images/hintCB.gif" />
 	</menu>
 	<menu pattern="getPlugin(&quot;" doctypes="ColdFusion,CFC">
-		<menuitem label="applicationStorage" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="ApplicationStorage" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label="beanFactory" icon="shared/CBHints/images/hintCB.gif" />
-		<menuitem label="clientStorage" icon="shared/CBHints/images/hintCB.gif" />
-		<menuitem label="cookieStorage" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="ClientStorage" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="CookieStorage" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label="ioc" icon="shared/CBHints/images/hintCB.gif" />
-		<menuitem label="resourceBundle" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="ResourceBundle" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label="javaLoader" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label="JSON" icon="shared/CBHints/images/hintCB.gif" />
-		<menuitem label="logger" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="Logger" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label="MTLogger" icon="shared/CBHints/images/hintCB.gif" />
-		<menuitem label="messagebox" icon="shared/CBHints/images/hintCB.gif" />
-		<menuitem label="methodInjector" icon="shared/CBHints/images/hintCB.gif" />
-		<menuitem label="renderer" icon="shared/CBHints/images/hintCB.gif" />
-		<menuitem label="sessionStorage" icon="shared/CBHints/images/hintCB.gif" />
-		<menuitem label="stringBuffer" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="MessageBox" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="MethodInjector" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="Renderer" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="SessionStorage" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="StringBuffer" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label="timer" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label="utilities" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label="webservices" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label="zip" icon="shared/CBHints/images/hintCB.gif" />
 	</menu>
 	<menu pattern="getPlugin('" doctypes="ColdFusion,CFC">
-		<menuitem label="applicationStorage" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="ApplicationStorage" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label="beanFactory" icon="shared/CBHints/images/hintCB.gif" />
-		<menuitem label="clientStorage" icon="shared/CBHints/images/hintCB.gif" />
-		<menuitem label="cookieStorage" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="ClientStorage" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="CookieStorage" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label="ioc" icon="shared/CBHints/images/hintCB.gif" />
-		<menuitem label="resourceBundle" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="ResourceBundle" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label="javaLoader" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label="JSON" icon="shared/CBHints/images/hintCB.gif" />
-		<menuitem label="logger" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="Logger" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label="MTLogger" icon="shared/CBHints/images/hintCB.gif" />
-		<menuitem label="messagebox" icon="shared/CBHints/images/hintCB.gif" />
-		<menuitem label="methodInjector" icon="shared/CBHints/images/hintCB.gif" />
-		<menuitem label="renderer" icon="shared/CBHints/images/hintCB.gif" />
-		<menuitem label="sessionStorage" icon="shared/CBHints/images/hintCB.gif" />
-		<menuitem label="stringBuffer" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="MessageBox" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="MethodInjector" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="Renderer" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="SessionStorage" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="StringBuffer" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label="timer" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label="utilities" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label="webservices" icon="shared/CBHints/images/hintCB.gif" />
@@ -173,19 +173,19 @@
 		<menuitem label=".populateFromJSON()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".populateFromStruct()" icon="shared/CBHints/images/hintCB.gif" />
 	</menu>
-	<menu pattern="getPlugin(&quot;clientStorage&quot;)" doctypes="ColdFusion,CFC">
+	<menu pattern="getPlugin(&quot;ClientStorage&quot;)" doctypes="ColdFusion,CFC">
 		<menuitem label=".deleteVar()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".exists()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".getVar()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".setVar()" icon="shared/CBHints/images/hintCB.gif" />
 	</menu>
-	<menu pattern="getPlugin('clientStorage')" doctypes="ColdFusion,CFC">
+	<menu pattern="getPlugin('ClientStorage')" doctypes="ColdFusion,CFC">
 		<menuitem label=".deleteVar()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".exists()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".getVar()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".setVar()" icon="shared/CBHints/images/hintCB.gif" />
 	</menu>
-	<menu pattern="getPlugin(&quot;cookieStorage&quot;)" doctypes="ColdFusion,CFC">
+	<menu pattern="getPlugin(&quot;CookieStorage&quot;)" doctypes="ColdFusion,CFC">
 		<menuitem label=".delete()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".exists()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".getEncryption()" icon="shared/CBHints/images/hintCB.gif" />
@@ -197,7 +197,7 @@
 		<menuitem label=".getVar()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".setVar()" icon="shared/CBHints/images/hintCB.gif" />
 	</menu>
-	<menu pattern="getPlugin('cookieStorage')" doctypes="ColdFusion,CFC">
+	<menu pattern="getPlugin('CookieStorage')" doctypes="ColdFusion,CFC">
 		<menuitem label=".delete()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".exists()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".getEncryption()" icon="shared/CBHints/images/hintCB.gif" />
@@ -227,7 +227,7 @@
 		<menuitem label=".getIOCFramework()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".reloadDefinitionFile()" icon="shared/CBHints/images/hintCB.gif" />
 	</menu>
-	<menu pattern="getPlugin(&quot;resourceBundle&quot;)" doctypes="ColdFusion,CFC">
+	<menu pattern="getPlugin(&quot;ResourceBundle&quot;)" doctypes="ColdFusion,CFC">
 		<menuitem label=".formatRBString()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".getRBkeys()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".getRBString()" icon="shared/CBHints/images/hintCB.gif" />
@@ -238,7 +238,7 @@
 		<menuitem label=".setupInstance()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".verifyPattern()" icon="shared/CBHints/images/hintCB.gif" />
 	</menu>
-	<menu pattern="getPlugin('resourceBundle')" doctypes="ColdFusion,CFC">
+	<menu pattern="getPlugin('ResourceBundle')" doctypes="ColdFusion,CFC">
 		<menuitem label=".formatRBString()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".getRBkeys()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".getRBString()" icon="shared/CBHints/images/hintCB.gif" />
@@ -273,14 +273,14 @@
 		<menuitem label=".getVersion()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".setup()" icon="shared/CBHints/images/hintCB.gif" />
 	</menu>
-	<menu pattern="getPlugin(&quot;logger&quot;)" doctypes="ColdFusion,CFC">
+	<menu pattern="getPlugin(&quot;Logger&quot;)" doctypes="ColdFusion,CFC">
 		<menuitem label=".logEntry()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".logError()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".removeLogFile()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".tracer()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".getValidSeverities()" icon="shared/CBHints/images/hintCB.gif" />
 	</menu>
-	<menu pattern="getPlugin('logger')" doctypes="ColdFusion,CFC">
+	<menu pattern="getPlugin('Logger')" doctypes="ColdFusion,CFC">
 		<menuitem label=".logEntry()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".logError()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".removeLogFile()" icon="shared/CBHints/images/hintCB.gif" />
@@ -301,7 +301,7 @@
 		<menuitem label=".tracer()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".getValidSeverities()" icon="shared/CBHints/images/hintCB.gif" />
 	</menu>
-	<menu pattern="getPlugin(&quot;messagebox&quot;)" doctypes="ColdFusion,CFC">
+	<menu pattern="getPlugin(&quot;MessageBox&quot;)" doctypes="ColdFusion,CFC">
 		<menuitem label=".append()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".appendArray()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".clearMessage()" icon="shared/CBHints/images/hintCB.gif" />
@@ -310,7 +310,7 @@
 		<menuitem label=".renderIt()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".setMessage()" icon="shared/CBHints/images/hintCB.gif" />
 	</menu>
-	<menu pattern="getPlugin('messagebox')" doctypes="ColdFusion,CFC">
+	<menu pattern="getPlugin('MessageBox')" doctypes="ColdFusion,CFC">
 		<menuitem label=".append()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".appendArray()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".clearMessage()" icon="shared/CBHints/images/hintCB.gif" />
@@ -319,7 +319,7 @@
 		<menuitem label=".renderIt()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".setMessage()" icon="shared/CBHints/images/hintCB.gif" />
 	</menu>
-	<menu pattern="getPlugin(&quot;methodinjector&quot;)" doctypes="ColdFusion,CFC">
+	<menu pattern="getPlugin(&quot;MethodInjector&quot;)" doctypes="ColdFusion,CFC">
 		<menuitem label=".injectMixin()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".injectPropertyMixin()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".invokerMixin()" icon="shared/CBHints/images/hintCB.gif" />
@@ -328,7 +328,7 @@
 		<menuitem label=".start()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".stop()" icon="shared/CBHints/images/hintCB.gif" />
 	</menu>
-	<menu pattern="getPlugin('methodinjector')" doctypes="ColdFusion,CFC">
+	<menu pattern="getPlugin('MethodInjector')" doctypes="ColdFusion,CFC">
 		<menuitem label=".injectMixin()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".injectPropertyMixin()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".invokerMixin()" icon="shared/CBHints/images/hintCB.gif" />
@@ -337,7 +337,7 @@
 		<menuitem label=".start()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".stop()" icon="shared/CBHints/images/hintCB.gif" />
 	</menu>
-	<menu pattern="getPlugin(&quot;queryHelper&quot;)" doctypes="ColdFusion,CFC">
+	<menu pattern="getPlugin(&quot;QueryHelper&quot;)" doctypes="ColdFusion,CFC">
 		<menuitem label=".doInnerJoin()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".doLeftOuterJoin()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".doQueryAppend()" icon="shared/CBHints/images/hintCB.gif" />
@@ -347,7 +347,7 @@
 		<menuitem label=".getRowNumber()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".sortQuery()" icon="shared/CBHints/images/hintCB.gif" />
 	</menu>
-	<menu pattern="getPlugin('queryHelper')" doctypes="ColdFusion,CFC">
+	<menu pattern="getPlugin('QueryHelper')" doctypes="ColdFusion,CFC">
 		<menuitem label=".doInnerJoin()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".doLeftOuterJoin()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".doQueryAppend()" icon="shared/CBHints/images/hintCB.gif" />
@@ -357,19 +357,19 @@
 		<menuitem label=".getRowNumber()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".sortQuery()" icon="shared/CBHints/images/hintCB.gif" />
 	</menu>
-	<menu pattern="getPlugin(&quot;renderer&quot;)" doctypes="ColdFusion,CFC">
+	<menu pattern="getPlugin(&quot;Renderer&quot;)" doctypes="ColdFusion,CFC">
 		<menuitem label=".purgeView()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".renderExternalView()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".renderLayout()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".renderView()" icon="shared/CBHints/images/hintCB.gif" />
 	</menu>
-	<menu pattern="getPlugin('renderer')" doctypes="ColdFusion,CFC">
+	<menu pattern="getPlugin('Renderer')" doctypes="ColdFusion,CFC">
 		<menuitem label=".purgeView()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".renderExternalView()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".renderLayout()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".renderView()" icon="shared/CBHints/images/hintCB.gif" />
 	</menu>
-	<menu pattern="getPlugin(&quot;sessionStorage&quot;)" doctypes="ColdFusion,CFC">
+	<menu pattern="getPlugin(&quot;SessionStorage&quot;)" doctypes="ColdFusion,CFC">
 		<menuitem label=".clearAll()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".deleteVar()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".exists()" icon="shared/CBHints/images/hintCB.gif" />
@@ -385,7 +385,7 @@
 		<menuitem label=".getVar()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".setVar()" icon="shared/CBHints/images/hintCB.gif" />
 	</menu>
-	<menu pattern="getPlugin(&quot;stringBuffer&quot;)" doctypes="ColdFusion,CFC">
+	<menu pattern="getPlugin(&quot;StringBuffer&quot;)" doctypes="ColdFusion,CFC">
 		<menuitem label=".append()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".capacity()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".delete()" icon="shared/CBHints/images/hintCB.gif" />
@@ -401,7 +401,7 @@
 		<menuitem label=".setup()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".subString()" icon="shared/CBHints/images/hintCB.gif" />
 	</menu>
-	<menu pattern="getPlugin('stringBuffer')" doctypes="ColdFusion,CFC">
+	<menu pattern="getPlugin('StringBuffer')" doctypes="ColdFusion,CFC">
 		<menuitem label=".append()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".capacity()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".delete()" icon="shared/CBHints/images/hintCB.gif" />
