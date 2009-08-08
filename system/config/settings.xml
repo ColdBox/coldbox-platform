@@ -5,7 +5,7 @@
         <Setting name="Author" value="Luis Majano"/>
         <Setting name="AuthorEmail" value="info@coldboxframework.com"/>
         <Setting name="AuthorWebsite" value="http://www.coldboxframework.com"/>
-        <Setting name="Suffix" value="ALPHA - Proverbs 20:3"/>
+        <Setting name="Suffix" value="Beta 1 - Proverbs 20:3"/>
         <Setting name="Version" value="3.0.0"/>
         <Setting name="Description" value="This is the ColdBox Platform for ColdFusion Powered Web Applications."/>
         <Setting name="ModifyLogLocation" value="readme.txt"/>
