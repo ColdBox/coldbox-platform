@@ -5,7 +5,7 @@ Copyright 2005-2007 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 www.coldboxframework.com | www.luismajano.com | www.ortussolutions.com
 ********************************************************************************
 
-Author     :	Luis Majano
+Author     :	Luis Majano, Sana Ullah 
 Date        :	10/16/2007
 Description :
 	This is the CFEclipse Dictionary for ColdBox
@@ -146,7 +146,7 @@ Description :
 			</parameter>
 		</function>
 		
-		<function creator="8" name="getColdboxOCM" returns="coldbox.cache.cacheManager">
+		<function creator="8" name="getColdboxOCM" returns="coldbox.cache.CacheManager">
 			<help><![CDATA[
 				Get a reference to the ColdBox Object Cache Manager
 			]]></help>
@@ -289,6 +289,7 @@ Description :
 					<value option="&quot;i18n&quot;"/>
 					<value option="&quot;IOC&quot;"/>
 					<value option="&quot;JavaLoader&quot;"/>
+					<value option="&quot;JVMUtils&quot;"/>
 					<value option="&quot;JSON&quot;"/>
 					<value option="&quot;Logger&quot;"/>
 					<value option="&quot;MessageBox&quot;"/>
@@ -1024,7 +1025,7 @@ Description :
 		]]></help>
 		</scope>
 		
-		<scope value="controller.getColdboxOCM" type="coldbox.system.cache.cacheManager">
+		<scope value="controller.getColdboxOCM" type="coldbox.system.cache.CacheManager">
 			<help><![CDATA[ 
 			 Get a reference to the coldbox OCM
 		]]></help>
