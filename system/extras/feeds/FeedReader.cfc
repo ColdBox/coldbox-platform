@@ -19,7 +19,9 @@ Description :
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
 	<cffunction name="init" access="public" returntype="FeedReader" output="false">
+		<cfargument name="controller" type="any">
 		<cfscript>
+			variables.controller = arguments.controller;
 			return this;
 		</cfscript>
 	</cffunction>
@@ -364,7 +366,7 @@ Description :
 			var rtnItems = "";
 			var node = "";
 			var loop = "";
-			var oUtilities = createObject('component','coldbox.system.plugins.Utilities').init('getPluginService');
+			var oUtilities = controller.getPlugin("DateUtils");
 
 			/* Items length */
 			if( arguments.maxItems neq 0 and arguments.maxItems lt itemLength ){
@@ -484,7 +486,7 @@ Description :
 			var node = "";
 			var loop = "";
 			var merge = "";
-			var oUtilities = createObject('component','coldbox.system.plugins.Utilities').init('getPluginService');
+			var oUtilities = controller.getPlugin("DateUtils");
 
 			/* Itemslength */
 			if( arguments.maxItems neq 0 and arguments.maxItems lt itemLength ){

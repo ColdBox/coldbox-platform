@@ -32,8 +32,7 @@ Quick and Dirty Feed Dump:
 
 ----------------------------------------------------------------------->
 
-<cfcomponent name="FeedReader" 
-			 extends="coldbox.system.plugin"
+<cfcomponent extends="coldbox.system.plugin"
 			 hint="A feed reader plug-in that processes Atom, RDF and RSS formats. The recommended method for general usage is readFeed()."
 			 cache="true">
 
@@ -412,7 +411,7 @@ Quick and Dirty Feed Dump:
 		<cfset var merge = "">
 		<cfset var xmlrootkey = "">
 		<cfset var oUtilities = getPlugin("Utilities")>
-		<cfset var extras = createObject('component','coldbox.system.extras.feeds.FeedReader').init()>
+		<cfset var extras = createObject('component','coldbox.system.extras.feeds.FeedReader').init(controller)>
 
 		<cfscript>
 			// check to make sure arguments.xmlDoc is a XML document, not just a URL or path pointing to a feed

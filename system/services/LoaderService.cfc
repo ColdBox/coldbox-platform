@@ -126,6 +126,7 @@ Modification History:
 		if( controller.settingExists("javaloader_libpath") ){
 			javaLoader = controller.getPlugin("JavaLoader");
 			javaLoader.setup( javaLoader.queryJars(controller.getSetting('javaloader_libpath')) );
+			
 		}
 		
 		// Init Model Integration
