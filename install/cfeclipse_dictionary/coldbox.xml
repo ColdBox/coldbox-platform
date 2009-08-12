@@ -284,13 +284,15 @@ Description :
 					<value option="&quot;CFCViewer&quot;"/>
 					<value option="&quot;ClientStorage&quot;"/>
 					<value option="&quot;CookieStorage&quot;"/>
+					<value option="&quot;DateUtils&quot;"/>
 					<value option="&quot;FeedGenerator&quot;"/>
 					<value option="&quot;FeedReader&quot;"/>
+					<value option="&quot;FileUtils&quot;"/>
 					<value option="&quot;i18n&quot;"/>
 					<value option="&quot;IOC&quot;"/>
 					<value option="&quot;JavaLoader&quot;"/>
-					<value option="&quot;JVMUtils&quot;"/>
 					<value option="&quot;JSON&quot;"/>
+					<value option="&quot;JVMUtils&quot;"/>
 					<value option="&quot;Logger&quot;"/>
 					<value option="&quot;MessageBox&quot;"/>
 					<value option="&quot;MethodInjector&quot;"/>

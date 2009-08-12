@@ -108,6 +108,7 @@
 		<menuitem label="BeanFactory" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label="ClientStorage" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label="CookieStorage" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="DateUtils" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label="FeedGenerator" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label="FeedReader" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label="FileUtils" icon="shared/CBHints/images/hintCB.gif" />
@@ -133,6 +134,7 @@
 		<menuitem label="BeanFactory" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label="ClientStorage" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label="CookieStorage" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label="DateUtils" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label="FeedGenerator" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label="FeedReader" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label="FileUtils" icon="shared/CBHints/images/hintCB.gif" />
@@ -318,7 +320,18 @@
 		<menuitem label=".getVersion()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".setup()" icon="shared/CBHints/images/hintCB.gif" />
 	</menu>
-	<menu pattern="getPlugin('JBMUtils')" doctypes="ColdFusion,CFC">
+	<menu pattern="getPlugin('JVMUtils')" doctypes="ColdFusion,CFC">
+		<menuitem label=".getIPAddress()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".getInetHost()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".getOSFileSeparator()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".getOSName()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".getOSPathSeparator()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".getJavaRuntime()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".getJavaVersion()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".getJVMFreeMemory()" icon="shared/CBHints/images/hintCB.gif" />
+		<menuitem label=".getJVMTotalMemory()" icon="shared/CBHints/images/hintCB.gif" />
+	</menu>
+	<menu pattern="getPlugin(&quot;JVMUtils&quot;)" doctypes="ColdFusion,CFC">
 		<menuitem label=".getIPAddress()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".getInetHost()" icon="shared/CBHints/images/hintCB.gif" />
 		<menuitem label=".getOSFileSeparator()" icon="shared/CBHints/images/hintCB.gif" />
