@@ -67,14 +67,16 @@ Description :
 		<cfargument name="sortOrder" 	type="string" 	required="no" default="ASC" hint="ASC/DESC">
 		<!--- ************************************************************* --->
 		<cfset var qryNew = QueryNew("")>
+		
 		<!--- Validate sortOrder --->
 		<cfif not reFindnocase("(asc|desc)", arguments.sortOrder)>
-			<cfthrow type="Framework.plugin.QueryHelper.InvalidSortOrderException" message="The sortOrder you sent in: #arguments.sortOrder# is not valid. Valid sort orders are ASC|DESC">
+			<cfthrow type="QueryHelper.InvalidSortOrderException" message="The sortOrder you sent in: #arguments.sortOrder# is not valid. Valid sort orders are ASC|DESC">
 		</cfif>
+		
 		<cfquery name="qryNew" dbtype="query">
-			SELECT *
+			SELECT *, UPPER(#trim(arguments.sortBy)#) as sortBy
 				FROM arguments.qry
-				ORDER BY #trim(Arguments.SortBy)# #Arguments.SortOrder#
+				ORDER BY sortBy #arguments.sortOrder#
 		</cfquery>
 		<cfreturn qryNew>
 	</cffunction>
