@@ -184,8 +184,9 @@ id , name , mail
 
 	<!--- prepare request, execute request and retrieve request --->
 	<cffunction name="execute" access="private" output="false" returntype="any" hint="Executes a framework lifecycle by executing an event.  This method returns a request context object that can be used for assertions">
-		<cfargument name="eventhandler" required="true"  type="string" hint="The event to execute">
-		<cfargument name="private" 		required="false" type="boolean" default="false" hint="Call a private event or not">
+		<cfargument name="event" 	required="true"  type="string" hint="The event to execute">
+		<cfargument name="private" 	required="false" type="boolean" default="false" hint="Call a private event or not">
+		<cfargument name="prepostExempt" type="boolean" required="false" default="false" hint="If true, pre/post handlers will not be fired.">
 		<cfscript>
 			var handlerResults = "";
 			var requestContext = "";
@@ -194,7 +195,7 @@ id , name , mail
 			setupRequest();
 			
 			//TEST EVENT EXECUTION
-			handlerResults = getController().runEvent(event=eventhandler,private=arguments.private);
+			handlerResults = getController().runEvent(event=arguments.event,private=arguments.private,prepostExempt=arguments.prepostExempt);
 			
 			//Return the correct event context.
 			requestContext = getRequestContext();
