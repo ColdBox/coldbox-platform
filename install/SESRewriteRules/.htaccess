@@ -11,6 +11,16 @@ RewriteEngine on
 #RewriteRule ^.*sp_password.*$   /includes/templates/404.html [L,F,NC]
 #RewriteRule ^.*%20xp_.*$        /includes/templates/404.html [L,F,NC]
 
+# BLOCK unsupported HTTP methods
+#RewriteCond %{REQUEST_METHOD} !^(GET|HEAD|OPTIONS|POST|PROPFIND|TRACE)$
+#RewriteRule .* - [F]
+
+#You may also want to block proxy attempts, if you see those in your logs:
+# BLOCK attempts to use our server as a proxy, but allow absolute URIs (change example.com to your domain)
+#RewriteCond %{THE_REQUEST} ^(GET|HEAD|POST)./?http:// [NC]
+#RewriteCond %{THE_REQUEST} !^(GET|HEAD|POST)./?http://(www\.)?example\.com/
+#RewriteRule .* - [F]
+
 #if this call related to adminstrators or non rewrite folders, you can add more here.
 RewriteCond %{REQUEST_URI} ^/(.*(CFIDE|cfide|CFFormGateway|jrunscripts|railo-context|fckeditor)).*$
 RewriteRule ^(.*)$ - [NC,L]
