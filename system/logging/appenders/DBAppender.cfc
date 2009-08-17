@@ -16,6 +16,7 @@ Properties:
  - table : the table to store the logs in
  - columnMap : A column map for aliasing columns. (Optional)
  - autocreate : if true, then we will create the table. Defaults to false (Optional)
+ - ensureChecks : if true, then we will check the dsn and table existence.  Defaults to true (Optional)
 	
 The columns needed in the table are
 
@@ -61,6 +62,9 @@ If you are building a mapper, the map must have the above keys in it.
 			if( propertyExists("columnMap") ){
 				checkColumnMap();
 			}
+			if( NOT propertyExists("ensureChecks") ){
+				setProperty("ensureChecks",true);
+			}
 			
 			// columns
 			instance.columns = "id,severity,category,logdate,appendername,message,extrainfo";
@@ -72,10 +76,12 @@ If you are building a mapper, the map must have the above keys in it.
 	<!--- onRegistration --->
 	<cffunction name="onRegistration" output="false" access="public" returntype="void" hint="Runs on registration">
 		<cfscript>
-			// DSN Check
-			ensureDSN();			
-			// Table Checks
-			ensureTable();
+			if( getProperty("ensureChecks") ){
+				// DSN Check
+				ensureDSN();			
+				// Table Checks
+				ensureTable();
+			}
 		</cfscript>
 	</cffunction>
 	
