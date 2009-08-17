@@ -139,6 +139,7 @@ Description :
 			
 			// Parse Other Sections Available in the environment config.
 			environmentXML = xmlSearch( oXML , "/environmentcontrol/environment[@name='#environment#']");
+			environmentXML = xmlParse( toString(environmentXML[1]) );
 			// Mail Settings
 			oXMLParser.parseMailSettings(environmentXML[1],configSettings,oUtilities,true);		
 			// IOC
