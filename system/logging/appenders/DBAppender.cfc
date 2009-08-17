@@ -150,7 +150,6 @@ If you are building a mapper, the map must have the above keys in it.
 		<!--- Get Tables on this DSN --->
 		<cfdbinfo datasource="#dsn#" name="qTables" type="tables" />
 
-		<cfdump var="#qTables#">
 		<!--- Verify it exists --->
 		<cfloop query="qTables">
 			<cfif qTables.table_name eq getProperty("table")>
