@@ -20,7 +20,7 @@ Description :
 	<cfscript>
 		// Reserved Keys as needed for cleanups
 		instance.RESERVED_KEYS = "handler,action,view,viewNoLayout";
-		instance.RESERVED_ROUTE_ARGUMENTS = "pattern,regexpattern,matchVariables,packageresolverexempt,patternParams,valuePairTranslation";
+		instance.RESERVED_ROUTE_ARGUMENTS = "constraints,pattern,regexpattern,matchVariables,packageresolverexempt,patternParams,valuePairTranslation";
 	</cfscript>
 
 	<cffunction name="configure" access="public" returntype="void" hint="This is where the ses plugin configures itself." output="false" >
