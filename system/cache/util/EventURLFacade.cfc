@@ -40,31 +40,31 @@ Modification History:
 			var urlCopy = duplicate(URL);
 			var eventName = arguments.event.getEventName();
 			var urlActionsList = "fwReinit,fwCache,debugMode,debugpass,dumpvar,debugpanel";
-			var urlColdboxExempt = "currentview,currentlayout,cbox_eventcacheableentry";
+			var urlColdboxExempt = "currentview,currentlayout,currentroute";
 			var x = 1;
 			var routedStruct = arguments.event.getRoutedStruct();
 			
-			/* Remove event if it exists */
+			// Remove event if it exists
 			if( structKeyExists(urlCopy, eventName) ){
 				structDelete(urlCopy,eventName);
 			}
 			
-			/* Remove fw URL Actions */
+			// Remove fw URL Actions
 			for(x=1; x lte listLen(urlActionsList); x=x+1){
 				if( structKeyExists(urlCopy, listgetAt(urlActionsList,x)) ){
 					structDelete(urlCopy,listgetAt(urlActionsList,x));
 				}
 			}
 			
-			/* Add incoming event to hash: DEPRECATED */
+			// Add incoming event to hash: DEPRECATED
 			//urlCopy[eventName] = arguments.event.getCurrentEvent();
 			
-			/* Incorporate Routed Structs */
+			// Incorporate Routed Structs
 			for( key in routedStruct ){
 				urlCopy[key] = routedStruct[key];
 			}
 			
-			/* Get a unique key */
+			// Get a unique key
 			return hash(urlCopy.toString());			
 		</cfscript>
 	</cffunction>
@@ -83,7 +83,7 @@ Modification History:
 			
 			//Build structure from arg list
 			for(x=1;x lte listlen(arguments.args,"&"); x=x+1){
-				myStruct[trim(listFirst(arguments.args,'='))] = urlDecode(trim(listLast(arguments.args,'=')));
+				myStruct[trim(listFirst(listGetAt(arguments.args, x, "&"),'='))] = urlDecode(trim(listLast(listGetAt(arguments.args, x, "&"),'=')));
 			}
 			
 			//return hash
