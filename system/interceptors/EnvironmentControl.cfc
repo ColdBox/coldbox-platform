@@ -139,30 +139,31 @@ Description :
 			
 			// Parse Other Sections Available in the environment config.
 			environmentXML = xmlSearch( oXML , "/environmentcontrol/environment[@name='#environment#']");
+			//dump(environmentXML);$abort();
 			if( arrayLen(environmentXML) ){
 				environmentXML = xmlParse( toString(environmentXML[1]) );
 				// Mail Settings
-				oXMLParser.parseMailSettings(environmentXML[1],configSettings,oUtilities,true);		
+				oXMLParser.parseMailSettings(environmentXML,configSettings,oUtilities,true);
 				// IOC
-				oXMLParser.parseIOC(environmentXML[1],configSettings,oUtilities,true);		
+				oXMLParser.parseIOC(environmentXML,configSettings,oUtilities,true);		
 				// Models
-				oXMLParser.parseModels(environmentXML[1],configSettings,oUtilities,true);		
+				oXMLParser.parseModels(environmentXML,configSettings,oUtilities,true);		
 				// i18N
-				oXMLParser.parseLocalization(environmentXML[1],configSettings,oUtilities,true);
+				oXMLParser.parseLocalization(environmentXML,configSettings,oUtilities,true);
 				// Bug Tracers
-				oXMLParser.parseBugTracers(environmentXML[1],configSettings,oUtilities,true);
+				oXMLParser.parseBugTracers(environmentXML,configSettings,oUtilities,true);
 				// Web Services
-				oXMLParser.parseWebservices(environmentXML[1],configSettings,oUtilities,true);
+				oXMLParser.parseWebservices(environmentXML,configSettings,oUtilities,true);
 				// Parse Datasources
-				oXMLParser.parseDatasources(environmentXML[1],configSettings,oUtilities,true);
+				oXMLParser.parseDatasources(environmentXML,configSettings,oUtilities,true);
 				// Parse Debugger Settings
-				oXMLParser.parseDebuggerSettings(environmentXML[1],configSettings,oUtilities,true);
+				oXMLParser.parseDebuggerSettings(environmentXML,configSettings,oUtilities,true);
 				// Reload Debugger Configuration
 				controller.getDebuggerService().getDebuggerConfig().populate(configSettings.DebuggerSettings);
 				// Parse Interceptors
-				oXMLParser.parseInterceptors(environmentXML[1],configSettings,oUtilities,true);	
+				oXMLParser.parseInterceptors(environmentXML,configSettings,oUtilities,true);	
 				// Parse LogBox
-				oXMLParser.parseLogBox(environmentXML[1],configSettings,oUtilities,true);
+				oXMLParser.parseLogBox(environmentXML,configSettings,oUtilities,true);
 				// Reconfigure LogBox
 				if( NOT structIsEmpty(configSettings["LogBoxConfig"]) ){
 					controller.getLogBox().configure(controller.getLogBox().getConfig());
