@@ -139,34 +139,36 @@ Description :
 			
 			// Parse Other Sections Available in the environment config.
 			environmentXML = xmlSearch( oXML , "/environmentcontrol/environment[@name='#environment#']");
-			environmentXML = xmlParse( toString(environmentXML[1]) );
-			// Mail Settings
-			oXMLParser.parseMailSettings(environmentXML[1],configSettings,oUtilities,true);		
-			// IOC
-			oXMLParser.parseIOC(environmentXML[1],configSettings,oUtilities,true);		
-			// Models
-			oXMLParser.parseModels(environmentXML[1],configSettings,oUtilities,true);		
-			// i18N
-			oXMLParser.parseLocalization(environmentXML[1],configSettings,oUtilities,true);
-			// Bug Tracers
-			oXMLParser.parseBugTracers(environmentXML[1],configSettings,oUtilities,true);
-			// Web Services
-			oXMLParser.parseWebservices(environmentXML[1],configSettings,oUtilities,true);
-			// Parse Datasources
-			oXMLParser.parseDatasources(environmentXML[1],configSettings,oUtilities,true);
-			// Parse Debugger Settings
-			oXMLParser.parseDebuggerSettings(environmentXML[1],configSettings,oUtilities,true);
-			// Reload Debugger Configuration
-			controller.getDebuggerService().getDebuggerConfig().populate(configSettings.DebuggerSettings);
-			// Parse Interceptors
-			oXMLParser.parseInterceptors(environmentXML[1],configSettings,oUtilities,true);	
-			// Parse LogBox
-			oXMLParser.parseLogBox(environmentXML[1],configSettings,oUtilities,true);
-			// Reconfigure LogBox
-			if( NOT structIsEmpty(configSettings["LogBoxConfig"]) ){
-				controller.getLogBox().configure(controller.getLogBox().getConfig());
-				controller.setLogger(controller.getLogBox().getLogger("coldbox.system.Controller"));
-			}				
+			if( arrayLen(environmentXML) ){
+				environmentXML = xmlParse( toString(environmentXML[1]) );
+				// Mail Settings
+				oXMLParser.parseMailSettings(environmentXML[1],configSettings,oUtilities,true);		
+				// IOC
+				oXMLParser.parseIOC(environmentXML[1],configSettings,oUtilities,true);		
+				// Models
+				oXMLParser.parseModels(environmentXML[1],configSettings,oUtilities,true);		
+				// i18N
+				oXMLParser.parseLocalization(environmentXML[1],configSettings,oUtilities,true);
+				// Bug Tracers
+				oXMLParser.parseBugTracers(environmentXML[1],configSettings,oUtilities,true);
+				// Web Services
+				oXMLParser.parseWebservices(environmentXML[1],configSettings,oUtilities,true);
+				// Parse Datasources
+				oXMLParser.parseDatasources(environmentXML[1],configSettings,oUtilities,true);
+				// Parse Debugger Settings
+				oXMLParser.parseDebuggerSettings(environmentXML[1],configSettings,oUtilities,true);
+				// Reload Debugger Configuration
+				controller.getDebuggerService().getDebuggerConfig().populate(configSettings.DebuggerSettings);
+				// Parse Interceptors
+				oXMLParser.parseInterceptors(environmentXML[1],configSettings,oUtilities,true);	
+				// Parse LogBox
+				oXMLParser.parseLogBox(environmentXML[1],configSettings,oUtilities,true);
+				// Reconfigure LogBox
+				if( NOT structIsEmpty(configSettings["LogBoxConfig"]) ){
+					controller.getLogBox().configure(controller.getLogBox().getConfig());
+					controller.setLogger(controller.getLogBox().getLogger("coldbox.system.Controller"));
+				}	
+			}			
 		</cfscript>
 	</cffunction>
 	
