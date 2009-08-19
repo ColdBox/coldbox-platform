@@ -619,6 +619,11 @@
 								<xs:documentation>The instantiation class of the appender.</xs:documentation>
 							</xs:annotation>
 						</xs:attribute>
+						<xs:attribute name="layout" use="optional" type="xs:string" default="">
+							<xs:annotation>
+								<xs:documentation>A custom layout class to use with this appender.</xs:documentation>
+							</xs:annotation>
+						</xs:attribute>
 					</xs:complexType>
 				</xs:element>
 				<xs:element minOccurs="1" maxOccurs="1" name="Root">
