@@ -38,11 +38,15 @@ Modification History:
 		<!--- **************************************************************************** --->
 		<cfscript>
 			var urlCopy = duplicate(URL);
+			var formCopy = duplicate(FORM);
 			var eventName = arguments.event.getEventName();
 			var urlActionsList = "fwReinit,fwCache,debugMode,debugpass,dumpvar,debugpanel";
 			var urlColdboxExempt = "currentview,currentlayout,currentroute";
 			var x = 1;
 			var routedStruct = arguments.event.getRoutedStruct();
+			
+			// Collide the form vars also
+			structAppend(urlCopy,formCopy);
 			
 			// Remove event if it exists
 			if( structKeyExists(urlCopy, eventName) ){

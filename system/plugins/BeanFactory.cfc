@@ -155,7 +155,7 @@ Description: This is the framework's simple bean factory.
 	<!--- Get Model --->
 	<cffunction name="getModel" access="public" returntype="any" hint="Create or retrieve model objects by convention" output="false" >
 		<!--- ************************************************************* --->
-		<cfargument name="name" 				required="true"  type="string" hint="The name of the model to retrieve">
+		<cfargument name="name" 				required="true"  type="string"  hint="The name of the model to retrieve">
 		<cfargument name="useSetterInjection" 	required="false" type="boolean" hint="Whether to use setter injection alongside the annotations property injection. cfproperty injection takes precedence.">
 		<cfargument name="onDICompleteUDF" 		required="false" type="string"	hint="After Dependencies are injected, this method will look for this UDF and call it if it exists. The default value is onDIComplete">
 		<cfargument name="debugMode" 			required="false" type="boolean" hint="Debugging Mode or not">
@@ -169,7 +169,15 @@ Description: This is the framework's simple bean factory.
 			var announceData = structnew();
 			var isModelFinalized = false;
 			
-			/* Argument Overrides, else grab from existing settings */
+			// Resolve name in Aliases 
+			arguments.name = resolveModelAlias(arguments.name);
+			
+			// Check if Model in Cache, if it is, return it and exit.
+			if ( getColdboxOCM().lookup(arguments.name) ){
+				return getColdBoxOCM().get(arguments.name);
+			}
+			
+			// Argument Overrides, else grab from existing settings
 			if( not structKeyExists(arguments,"useSetterInjection") ){
 				arguments.useSetterInjection = getSetting("ModelsSetterInjection");
 			}
@@ -183,56 +191,55 @@ Description: This is the framework's simple bean factory.
 				arguments.stopRecursion = getSetting("ModelsStopRecursion");
 			}
 			
-			/* Resolve name in Alias Checks */
-			arguments.name = resolveModelAlias(arguments.name);
-			
-			/* Check if Model in Cache, if it is, return it and exit. */
-			if ( getColdboxOCM().lookup(arguments.name) ){
-				return getColdBoxOCM().get(arguments.name);
-			}
-			
-			/* Locate the model Class Path */
+			// Class Path
 			modelClassPath = locateModel(arguments.name);
+			
+			// Trip error if not found
+			if( NOT len(modelClassPath) ){
+				$throw(message="Model #arguments.name# could not be located.",
+					   detail="The model object could not be located in the following locations: #instance.ModelsPath# OR #instance.ModelsExternalLocation#",
+					   type="BeanFactory.modelNotFoundException");
+			}
 		</cfscript>
 		
-		<!--- Create It if it exists --->
+		<!--- Create It if it exists, race conditions --->
 		<cfif NOT isModelFinalized>
 			<cflock name="beanfactory.createmodel.#arguments.name#" type="exclusive" timeout="20" throwontimeout="true">
 				<cfscript>
 				if( NOT isModelFinalized ){
-					/* Create the model object */
+					// Create the model object
 					oModel = createObject("component", modelClassPath);
-					/* Verify Constructor: Init() and execute */
+					// Verify Constructor: Init() and execute
 					if( structKeyExists(oModel,"init") ){
 						oModel.init(argumentCollection=getConstructorArguments(oModel));
 					}
-					/* Persistence Checks */
+					// Persistence Checks
 					if( instance.ModelsObjectCaching ){
-						/* Caching Metadata */
+						// Caching Metadata 
 						md = getMetadata(oModel);
 						if( not structKeyExists(md,"cache") or not isBoolean(md.cache) ){
 							md.cache = false;
 						}
-						/* Singleton Support */
+						// Singleton Support
 						if( structKeyExists(md,"singleton") AND isBoolean(md.singleton) ){
 							md.cache = md.singleton;
 							md.cacheTimeout = 0;
 						}
-						/* Are we Caching? */
+						// Are we Caching? 
 						if( md.cache ){
-							/* Prepare Timeouts and info. */
+							// Prepare Timeouts and info.
 							if( not structKeyExists(md,"cachetimeout") or not isNumeric(md.cacheTimeout) ){
 								md.cacheTimeout = "";
 							}
 							if( not structKeyExists(md,"cacheLastAccessTimeout") or not isNumeric(md.cacheLastAccessTimeout) ){
 								md.cacheLastAccessTimeout = "";
 							}
-							/* Cache This Puppy. */
+							// Cache This Puppy.
 							getColdBoxOCM().set(arguments.name,oModel,md.cacheTimeout,md.CacheLastAccessTimeout);
 						}
 					}//end if caching enabled via settings.
 					
-					/* Autowire Dependencies */
+					// Autowire Dependencies
 					autowire(target=oModel,
 							 useSetterInjection=arguments.useSetterInjection,
 							 annotationCheck=false,
@@ -240,19 +247,19 @@ Description: This is the framework's simple bean factory.
 							 debugMode=arguments.debugmode,
 							 stopRecursion=arguments.stopRecursion);
 					
-					/* Announce Model Creation */
+					// Announce Model Creation
 					announceData.oModel = oModel;
 					announceData.modelName = arguments.name;
 					announceInterception("afterModelCreation",announceData);
-					/* Model Creation Finalized */
+					// Model Creation Finalized
 					isModelFinalized = true; 
 				}
 				</cfscript>
 			</cflock>
 		<cfelse>
 			<cfthrow message="Model #arguments.name# could not be located."
-					 type="plugin.BeanFactory.modelNotFoundException"
-					 detail="The model object #arguments.name# cannot be located in the following locations: #instance.ModelsPath# OR #instance.ModelsExternalPath#">
+					 type="BeanFactory.modelNotFoundException"
+					 detail="The model object #arguments.name# cannot be located in the following locations: #instance.ModelsPath# OR #instance.ModelsExternalLocation#">
 		</cfif>
 		
 		<cfreturn oModel>
