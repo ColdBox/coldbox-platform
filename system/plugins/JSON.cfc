@@ -34,7 +34,7 @@ Modifications:
 			setpluginAuthor("Luis Majano");
 			setpluginAuthorURL("http://www.coldbox.org");
 			
-			instance.json = createObject("component","coldbox.core.util.conversion.JSON").init();
+			instance.json = createObject("component","coldbox.system.core.util.conversion.JSON").init();
 			
 			return this;
 		</cfscript>
