@@ -79,7 +79,7 @@ Modification History:
 		<cfargument name="args"  type="string" required="true" hint="The string of args to incorporate into the hash"/>
 		<!--- **************************************************************************** --->
 		<cfscript>
-			var mySruct = structnew();
+			var myStruct = structnew();
 			var x =1;
 			
 			//add event to structure: DEPRECATED
