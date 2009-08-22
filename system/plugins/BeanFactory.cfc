@@ -60,7 +60,7 @@ Description: This is the framework's simple bean factory.
 			}
 			
 			// Setup the Autowire DI Dictionary
-			setDICacheDictionary(CreateObject("component","coldbox.system.util.collections.BaseDictionary").init('DIMetadata'));
+			setDICacheDictionary(CreateObject("component","coldbox.system.core.util.collections.BaseDictionary").init('DIMetadata'));
 			
 			// Configure the plugin
 			configure();
@@ -636,29 +636,33 @@ Description: This is the framework's simple bean factory.
 			var x =1;
 			var args = structnew();
 			var definition = structnew();
+			var thisDependency = instance.NOT_FOUND;
 			
-			/* Loop Over Arguments */
+			// Loop Over Arguments
 			for(x=1;x lte paramLen; x=x+1){
-				/* Check Marker and IOC Framework*/
+				// Check Marker and IOC Framework
 				if( structKeyExists(params[x],instance.dslMarker) ){
 					definition.type = params[x][instance.dslMarker];
 				}
-				/* If IOC Framework defined, let setter be defaulted to IOC */
-				else if(getSetting("IOCFramework") neq ""){
-					definition.type = "ioc";
-				}
-				/* Else default to model integration */
 				else{
-					definition.type = "model";
+					definition.type = instance.dslDefaultType;
 				}
-				/* Other Defaults */
+				// Other Defaults
 				definition.name = params[x].name;
 				definition.scope="";
 				
-				/* Get Dependency */
-				args[definition.name] = getDSLDependency(definition=definition,debugMode=arguments.debugMode);
+				// Get Dependency
+				thisDependency = getDSLDependency(definition=definition,debugMode=arguments.debugMode);
+				if( isSimpleValue(thisDependency) and thisDependency eq instance.NOT_FOUND ){
+					if( arguments.debugMode ){
+						getPlugin("Logger").debug("BeanFactory.getConstructorArguments() - Model :#arguments.mode#. Dependency: #definition.toString()# not found.");
+					}
+				}
+				else{
+					args[definition.name] = thisDependency;
+				}
 			}
-			
+
 			return args;			
 		</cfscript>
 	</cffunction>
@@ -1093,11 +1097,11 @@ Description: This is the framework's simple bean factory.
 	</cffunction>
 
 	<!--- Get Set DI CACHE Dictionary --->
-	<cffunction name="getDICacheDictionary" access="private" output="false" returntype="coldbox.system.util.collections.BaseDictionary" hint="Get DICacheDictionary">
+	<cffunction name="getDICacheDictionary" access="private" output="false" returntype="coldbox.system.core.util.collections.BaseDictionary" hint="Get DICacheDictionary">
 		<cfreturn instance.DICacheDictionary/>
 	</cffunction>
 	<cffunction name="setDICacheDictionary" access="private" output="false" returntype="void" hint="Set DICacheDictionary">
-		<cfargument name="DICacheDictionary" type="coldbox.system.util.collections.BaseDictionary" required="true"/>
+		<cfargument name="DICacheDictionary" type="coldbox.system.core.util.collections.BaseDictionary" required="true"/>
 		<cfset instance.DICacheDictionary = arguments.DICacheDictionary/>
 	</cffunction>
 	

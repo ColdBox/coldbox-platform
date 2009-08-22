@@ -4,7 +4,7 @@
 	<cffunction name="setup" output="false" access="public" returntype="any" hint="">
 		<cfscript>
 			this.loadColdbox = false;
-			scope = CreateObject("component","coldbox.system.util.collections.ScopeStorage").init();
+			scope = CreateObject("component","coldbox.system.core.util.collections.ScopeStorage").init();
 		</cfscript>
 	</cffunction>
 	

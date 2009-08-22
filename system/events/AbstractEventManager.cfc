@@ -1,2 +1,0 @@
-<cfcomponent name="AbstractEventManager">
-</cfcomponent>

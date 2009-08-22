@@ -28,19 +28,44 @@ Description		: This is a unit test controller that basically overrides the setNe
 		<cfset var context = getRequestService().getContext()>
 		
 		<cfset context.setValue("setNextEvent","#arguments.event#")>
-		<!--- Save also the persist collection keys --->
-		<cfset context.setValue("persistKeys","#arguments.persist#")>
-		<!--- Save also the persist collection keys --->
-		<cfset context.setValue("persistVarStruct","#arguments.varStruct#")>
-		<cfset context.setValue("ssl","#arguments.ssl#")>
-		<cfset context.setValue("baseURL","#arguments.baseURL#")>
-		<cfset context.setValue("queryString","#arguments.queryString#")>
-		<cfset context.setValue("addToken","#arguments.addToken#")>
+		<cfset context.setValue("setNextEvent_queryString","#arguments.queryString#")>
+		<cfset context.setValue("setNextEvent_addToken","#arguments.addToken#")>
+		<cfset context.setValue("setNextEvent_persistKeys","#arguments.persist#")>
+		<cfset context.setValue("setNextEvent_persistVarStruct","#arguments.varStruct#")>
+		<cfset context.setValue("setNextEvent_ssl","#arguments.ssl#")>
+		<cfset context.setValue("setNextEvent_baseURL","#arguments.baseURL#")>
+		<cfset context.setValue("setNextEvent_postProcessExempt","#arguments.postProcessExempt#")>
+		
+		<!--- Post Process --->
+		<cfif arguments.postProcessExempt>
+			<cfset getInterceptorService().processState("postProcess")>
+		</cfif>
+		
+		<cfthrow type="TestController.setNextEvent" message="Relocating via setnextevent">
+	</cffunction>
+	
+	<!--- relocate --->
+	<cffunction name="relocate" access="public" hint="Facade for cflocation" returntype="void">
+		<cfargument name="url" 		required="true" 	type="string">
+		<cfargument name="addtoken" required="false" 	type="boolean" default="false">
+		<cfargument name="postProcessExempt"  type="boolean" required="false" default="false" hint="Do not fire the postProcess interceptors">
+		
+		<cfset var context = getRequestService().getContext()>
+		
+		<cfset context.setValue("relocate_url","#arguments.url#")>
+		<cfset context.setValue("relocate_addToken","#arguments.addToken#")>
+		<cfset context.setValue("relocate_postProcessExempt","#arguments.postProcessExempt#")>
+		
+		<!--- Post Process --->
+		<cfif arguments.postProcessExempt>
+			<cfset getInterceptorService().processState("postProcess")>
+		</cfif>
+		
+		<cfthrow type="TestController.relocate" message="Relocating via relocate">
 	</cffunction>
 	
 	<!--- Event Context Methods --->
 	<cffunction name="setNextRoute" access="Public" returntype="void" hint="I Set the next ses route to relocate to. This method pre-pends the baseURL"  output="false">
-		<!--- ************************************************************* --->
 		<!--- ************************************************************* --->
 		<cfargument name="route"  		required="yes" 	 type="string"  hint="The route to relocate to, do not prepend the baseURL or /.">
 		<cfargument name="persist" 		required="false" type="string"  default="" hint="What request collection keys to persist in the relocation">
@@ -52,15 +77,20 @@ Description		: This is a unit test controller that basically overrides the setNe
 		<!--- ************************************************************* --->
 		<cfset var context = getRequestService().getContext()>
 		
-		<!--- Save the route --->
 		<cfset context.setValue("setNextRoute","#arguments.route#")>
-		<!--- Save also the persist collection keys --->
-		<cfset context.setValue("persistKeys","#arguments.persist#")>
-		<!--- Save also the persist collection keys --->
-		<cfset context.setValue("persistVarStruct","#arguments.varStruct#")>
-		<cfset context.setValue("ssl","#arguments.ssl#")>
-		<cfset context.setValue("queryString","#arguments.queryString#")>
-		<cfset context.setValue("addToken","#arguments.addToken#")>
+		<cfset context.setValue("setNextRoute_persistKeys","#arguments.persist#")>
+		<cfset context.setValue("setNextRoute_persistVarStruct","#arguments.varStruct#")>
+		<cfset context.setValue("setNextRoute_addToken","#arguments.addToken#")>
+		<cfset context.setValue("setNextRoute_ssl","#arguments.ssl#")>
+		<cfset context.setValue("setNextRoute_queryString","#arguments.queryString#")>
+		<cfset context.setValue("setNextRoute_postProcessExempt","#arguments.postProcessExempt#")>
+		
+		<!--- Post Process --->
+		<cfif arguments.postProcessExempt>
+			<cfset getInterceptorService().processState("postProcess")>
+		</cfif>
+		
+		<cfthrow type="TestController.setNextRoute" message="Relocating via setNextRoute">
 	</cffunction>
 
 </cfcomponent>

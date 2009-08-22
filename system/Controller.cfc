@@ -26,7 +26,7 @@ Only one instance of a specific ColdBox application exists.
 		<cfscript>
 			
 			//Public Available Engine Utility
-			this.oCFMLENGINE = CreateObject("component","coldbox.system.util.CFMLEngine").init();
+			this.oCFMLENGINE = CreateObject("component","coldbox.system.core.util.CFMLEngine").init();
 			
 			// Set Main Application Properties
 			setColdboxInitiated(false);
@@ -363,6 +363,24 @@ Only one instance of a specific ColdBox application exists.
 		</cfif>
 	</cffunction>
 	
+	<!--- relocate --->
+	<cffunction name="relocate" access="public" hint="Facade for cflocation" returntype="void">
+		<cfargument name="url" 		required="true" 	type="string">
+		<cfargument name="addtoken" required="false" 	type="boolean" default="false">
+		<cfargument name="postProcessExempt"  type="boolean" required="false" default="false" hint="Do not fire the postProcess interceptors">
+		
+		<!--- Push Timers --->
+		<cfset pushTimers()>
+		
+		<!--- Post Process --->
+		<cfif arguments.postProcessExempt>
+			<cfset getInterceptorService().processState("postProcess")>
+		</cfif>
+		
+		<!--- Relocate --->
+		<cflocation url="#arguments.url#" addtoken="#addtoken#">
+	</cffunction>
+	
 	<!--- Set Next Route --->
 	<cffunction name="setNextRoute" access="Public" returntype="void" hint="I Set the next ses route to relocate to. This method pre-pends the baseURL"  output="false">
 		<!--- ************************************************************* --->
@@ -588,8 +606,8 @@ Only one instance of a specific ColdBox application exists.
 <!------------------------------------------- PRIVATE ------------------------------------------->
 
 	<!--- Get the util object --->
-	<cffunction name="getUtil" access="private" output="false" returntype="coldbox.system.util.Util" hint="Create and return a util object">
-		<cfreturn CreateObject("component","coldbox.system.util.Util")/>
+	<cffunction name="getUtil" access="private" output="false" returntype="coldbox.system.core.util.Util" hint="Create and return a util object">
+		<cfreturn CreateObject("component","coldbox.system.core.util.Util")/>
 	</cffunction>
 	
 	<!--- Push Timers --->

@@ -266,8 +266,8 @@ Description :
 	</cffunction>
 	
 	<!--- Get ColdBox Util --->
-	<cffunction name="getUtil" access="private" output="false" returntype="coldbox.system.util.Util" hint="Create and return a util object">
-		<cfreturn createObject("component","coldbox.system.util.Util")/>
+	<cffunction name="getUtil" access="private" output="false" returntype="coldbox.system.core.util.Util" hint="Create and return a util object">
+		<cfreturn createObject("component","coldbox.system.core.util.Util")/>
 	</cffunction>
 
 </cfcomponent>

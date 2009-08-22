@@ -26,7 +26,7 @@
 		assertEquals( mockIService.$count("unregister"), 1 );
 	}
 	function testRequestBuffer(){
-		mockBuffer = getMockBox().createMock(className="coldbox.system.util.RequestBuffer").init();
+		mockBuffer = getMockBox().createMock(className="coldbox.system.core.util.RequestBuffer").init();
 		mockIService.$("getRequestBuffer",mockBuffer);
 		
 		interceptor.appendToBuffer("Hello");

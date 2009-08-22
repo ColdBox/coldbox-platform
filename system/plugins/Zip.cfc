@@ -72,7 +72,7 @@ Modification History:
 			setpluginAuthor("Luis Majano, Sana Ullah");
 			setpluginAuthorURL("http://www.coldbox.org");
 			
-			instance.oZip = createObject("component","coldbox.system.util.Zip").init();
+			instance.oZip = createObject("component","coldbox.system.core.util.Zip").init();
 	
 			//Return instance
 			return this;

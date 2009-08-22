@@ -20,7 +20,7 @@ Modification History:
 	<cfscript>
 		variables.instance = structnew();
 		variables.controller = structnew();
-		variables.util = CreateObject("component","coldbox.system.util.Util");
+		variables.util = CreateObject("component","coldbox.system.core.util.Util");
 	</cfscript>
 
 <!------------------------------------------- PUBLIC ------------------------------------------->
@@ -50,7 +50,7 @@ Modification History:
 	
 <!------------------------------------------- PRIVATE ------------------------------------------->
 
-	<cffunction name="getUtil" access="private" output="false" returntype="coldbox.system.util.Util" hint="Create and return a util object">
+	<cffunction name="getUtil" access="private" output="false" returntype="coldbox.system.core.util.Util" hint="Create and return a util object">
 		<cfreturn util/>
 	</cffunction>
 	

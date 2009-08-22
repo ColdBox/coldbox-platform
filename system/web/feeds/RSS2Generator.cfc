@@ -13,7 +13,7 @@ License		: 	Apache 2 License
 
 ----------------------------------------------------------------------->
 <cfcomponent name="RSS2Generator"
-			extends="coldbox.system.extras.feeds.SharedGenerator"
+			extends="coldbox.system.web.feeds.SharedGenerator"
 			hint="Methods belonging to the FeedGenerator plug-in that specifically relate to RSS creation">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->

@@ -3,7 +3,7 @@
 	<!--- setup --->
 	<cffunction name="setup" output="false" access="public" returntype="any" hint="">
 		<cfscript>
-			rb = CreateObject("component","coldbox.system.util.RequestBuffer").init("1.5");
+			rb = CreateObject("component","coldbox.system.core.util.RequestBuffer").init("1.5");
 		</cfscript>
 	</cffunction>
 	

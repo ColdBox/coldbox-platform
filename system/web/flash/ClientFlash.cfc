@@ -7,14 +7,9 @@ www.coldboxframework.com | www.luismajano.com | www.ortussolutions.com
 Author     :	Luis Majano
 Date        :	10/2/2007
 Description :
-	An abstract flash scope that can be used to build ColdBox Flash scopes.
-	
-	This flash scope is smart enought to not create unecessary cluster variables
-	unless data is put in it.  Else, it does not abuse cluster.
-	
-	This scope only works on railo.
+	An abstract flash scope that can be used to build ColdBox Flash scopes
 ----------------------------------------------------------------------->
-<cfcomponent output="false" extends="coldbox.system.util.flash.AbstractFlashScope" hint="A ColdBox cluster flash scope">
+<cfcomponent output="false" extends="coldbox.system.web.flash.AbstractFlashScope" hint="A ColdBox client flash scope">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------>
 	
@@ -23,13 +18,14 @@ Description :
 	</cfscript>
 
 	<!--- init --->
-    <cffunction name="init" output="false" access="public" returntype="ClusterFlash" hint="Constructor">
+    <cffunction name="init" output="false" access="public" returntype="ClientFlash" hint="Constructor">
     	<cfargument name="controller" type="coldbox.system.Controller" required="true" hint="The ColdBox Controller"/>
     	<cfscript>
     		super.init(arguments.controller);
 			
-			instance.cache = getController().getColdboxOCM();
-			instance.flashKey = "cbox_flash_" & getController().getAppHash();
+			// Marshaller
+			instance.converter = createObject("component","coldbox.system.core.util.conversion.ObjectMarshaller").init();
+			instance.flashKey = "cbox_flash";
 			
 			return this;
     	</cfscript>
@@ -39,27 +35,53 @@ Description :
 
 	<!--- clear --->
     <cffunction name="clear" output="false" access="public" returntype="void" hint="Clear the flash scope and remove all data">
-    	<cfset structClear(getScope())>
+    	<cfscript>
+    		if( isStorageAttached() ){
+				serializeToScope(structnew());
+			}
+    	</cfscript>
     </cffunction>
 	
 	<!--- put --->
     <cffunction name="put" output="false" access="public" returntype="void" hint="Put an object in flash scope">
     	<cfargument name="name"  type="string" required="true" hint="The name of the value"/>
 		<cfargument name="value" type="any" required="true" default="" hint="The value to store"/>
-		<cfset var scope = ensureStorage()>
-		<cfset scope[arguments.name] = arguments.value>
+		<cfscript>
+			var scope = getScope();
+			// save and serialize again
+			scope[arguments.name] = arguments.value;
+			serializeToScope(scope);
+		</cfscript>
     </cffunction>
 	
 	<!--- putAll --->
     <cffunction name="putAll" output="false" access="public" returntype="void" hint="Put a map of name-value pairs into the flash scope overriding if possible.">
     	<cfargument name="map" type="struct" required="true" default="" hint="The map of "/>
-		<cfset structAppend(ensureStorage(),arguments.map)>
+   		<cfscript>
+			var scope = getScope();
+			
+			structAppend(scope, arguments.map);
+			serializeToScope(scope);
+			
+		</cfscript>
     </cffunction>
 	
 	<!--- remove --->
     <cffunction name="remove" output="false" access="public" returntype="boolean" hint="Remove an object from flash scope">
     	<cfargument name="name"  type="string" required="true" hint="The name of the value"/>
-    	<cfreturn structDelete(getScope(),arguments.name,true)>
+    	<cfscript>
+			var results = false;
+			var scope = getScope();
+			
+			if( isStorageAttached() ){
+				results = structDelete(scope,arguments.name,true);
+				if( results ){
+					serializeToScope(scope);
+				}
+			}
+			
+			return results;
+		</cfscript>
 	</cffunction>
 	
 	<!--- exists --->
@@ -110,20 +132,29 @@ Description :
     <cffunction name="getFlashKey" output="false" access="public" returntype="string" hint="Get the flash key">
     	<cfreturn instance.flashKey>
     </cffunction>
-	
+
 <!------------------------------------------- PRIVATE ------------------------------------------>
-	
+
+	<!--- serializeScope --->
+    <cffunction name="serializeToScope" output="false" access="private" returntype="void" hint="Serialize and save the scope">
+    	<cfargument name="scope" type="struct" required="true" hint="The struct to serialize into the client flash scope"/>
+		<cfset client[getFlashKey()] = instance.converter.serializeObject(arguments.scope)>
+    </cffunction>
+
 	<!--- ensureStorage --->
     <cffunction name="ensureStorage" output="false" access="private" returntype="struct" hint="Makes sure the storage is created else create and return it.">
-    	<cfif NOT isStorageAttached()>
-    		<cfset instance.cache.set(getFlashKey(),structnew())>
+    	<!--- If not created, then create Storage --->
+		<cfif NOT isStorageAttached()>
+    		<cfset serializeToScope(structnew())>
 		</cfif>
-		<cfreturn instance.cache.get(getFlashKey())>
+		
+		<!--- Deserialize Scope --->
+		<cfreturn instance.converter.deserializeObject(client[getFlashKey()])>
     </cffunction>
 
 	<!--- isStorageAttached --->
-    <cffunction name="isStorageAttached" output="false" access="private" returntype="boolean" hint="Checks if the storage in the cache is attached, else returns false">
-    	<cfreturn instance.cache.lookup(getFlashKey())>
+    <cffunction name="isStorageAttached" output="false" access="private" returntype="boolean" hint="Checks if the storage in the session scope is attached, else returns false">
+    	<cfreturn structKeyExists(client,getFlashKey())>
     </cffunction>
 
 </cfcomponent>

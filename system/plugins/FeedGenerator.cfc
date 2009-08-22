@@ -39,23 +39,21 @@ METHODS:
 
 <!---------------------------------------- CONSTRUCTOR --------------------------------------------------->
 
-	<cfset variables.extrasRSS2 = createObject('component','coldbox.system.extras.feeds.RSS2Generator').init()>
-	<cfset variables.extrasShared = createObject('component','coldbox.system.extras.feeds.SharedGenerator').init()>
+	<cfset variables.extrasRSS2 = createObject('component','coldbox.system.web.feeds.RSS2Generator').init()>
+	<cfset variables.extrasShared = createObject('component','coldbox.system.web.feeds.SharedGenerator').init()>
 
 	<cffunction name="init" access="public" returntype="FeedGenerator" output="false" hint="Plug-in constructor.">
 		<cfargument name="controller" type="any" required="true">
 		<cfscript>
-			/* Super */
 			super.Init(arguments.controller);
 
-			/* Plug-in properties */
+			// Plug-in properties
 			setpluginName("ColdBox Feed Generator");
 			setpluginVersion("2.1");
 			setpluginDescription("I create Really Simple Syndication (RSS revision 2.0.10) feeds that also allow a variety of popular RSS extensions.");
 			setPluginAuthor("Luis Majano & Ben Garrett");
 			setPluginAuthorURL("http://www.coldbox.org");
 			
-			/* Return instance */
 			return this;
 		</cfscript>
 	</cffunction>

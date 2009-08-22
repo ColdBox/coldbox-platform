@@ -104,7 +104,7 @@ Description :
 	</cffunction>
 	
 	<!--- getBufferObject --->
-	<cffunction name="getBufferObject" output="false" access="public" returntype="any" hint="Get the request buffer object: coldbox.system.util.RequestBuffer">
+	<cffunction name="getBufferObject" output="false" access="public" returntype="any" hint="Get the request buffer object: coldbox.system.core.util.RequestBuffer">
 		<cfreturn getInterceptorService().getRequestBuffer()>
 	</cffunction>
 	

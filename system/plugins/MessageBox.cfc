@@ -36,7 +36,7 @@ Description :
 			setpluginAuthor("Luis Majano");
 			setpluginAuthorURL("http://www.coldbox.org");
 			
-			instance.scopeStorage = createObject("component","coldbox.system.util.collections.ScopeStorage").init();
+			instance.scopeStorage = createObject("component","coldbox.system.core.util.collections.ScopeStorage").init();
 			
 			/* Setup The initial storage scope. */
 			if( settingExists("MessageBox_storage_scope") ){

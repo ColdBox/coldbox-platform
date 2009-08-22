@@ -324,8 +324,8 @@ Description :
 	</cffunction>
 	
 	<!--- Get Simple Util --->
-	<cffunction name="getUtil" access="private" output="false" returntype="coldbox.system.util.Util" hint="Create and return a util object">
-		<cfreturn CreateObject("component","coldbox.system.util.Util")/>
+	<cffunction name="getUtil" access="private" output="false" returntype="coldbox.system.core.util.Util" hint="Create and return a util object">
+		<cfreturn CreateObject("component","coldbox.system.core.util.Util")/>
 	</cffunction>
 	
 	<!--- setter COLDBOX_APP_KEY --->

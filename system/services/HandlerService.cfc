@@ -21,9 +21,9 @@ Description :
 			// Setup The Controller.
 			setController(arguments.controller);
 			// Setup the Event Handler Cache Dictionary
-			setHandlerCacheDictionary(CreateObject("component","coldbox.system.util.collections.BaseDictionary").init('HandlersMetadata'));
+			setHandlerCacheDictionary(CreateObject("component","coldbox.system.core.util.collections.BaseDictionary").init('HandlersMetadata'));
 			// Setup the Event Cache Dictionary
-			setEventCacheDictionary(CreateObject("component","coldbox.system.util.collections.BaseDictionary").init('EventCache'));
+			setEventCacheDictionary(CreateObject("component","coldbox.system.core.util.collections.BaseDictionary").init('EventCache'));
 						
 			return this;
 		</cfscript>
@@ -318,20 +318,20 @@ Description :
 <!------------------------------------------- ACCESSOR/MUTATORS ------------------------------------------->
 	
 	<!--- Handler Cache Dictionary --->
-	<cffunction name="getHandlerCacheDictionary" access="public" returntype="coldbox.system.util.collections.BaseDictionary" output="false">
+	<cffunction name="getHandlerCacheDictionary" access="public" returntype="coldbox.system.core.util.collections.BaseDictionary" output="false">
 		<cfreturn instance.HandlerCacheDictionary>
 	</cffunction>
 	<cffunction name="setHandlerCacheDictionary" access="public" returntype="void" output="false">
-		<cfargument name="HandlerCacheDictionary" type="coldbox.system.util.collections.BaseDictionary" required="true">
+		<cfargument name="HandlerCacheDictionary" type="coldbox.system.core.util.collections.BaseDictionary" required="true">
 		<cfset instance.HandlerCacheDictionary = arguments.HandlerCacheDictionary>
 	</cffunction>
 	
 	<!--- Event Cache Dictionary --->
-	<cffunction name="getEventCacheDictionary" access="public" returntype="coldbox.system.util.collections.BaseDictionary" output="false">
+	<cffunction name="getEventCacheDictionary" access="public" returntype="coldbox.system.core.util.collections.BaseDictionary" output="false">
 		<cfreturn instance.EventCacheDictionary>
 	</cffunction>
 	<cffunction name="setEventCacheDictionary" access="public" returntype="void" output="false">
-		<cfargument name="EventCacheDictionary" type="coldbox.system.util.collections.BaseDictionary" required="true">
+		<cfargument name="EventCacheDictionary" type="coldbox.system.core.util.collections.BaseDictionary" required="true">
 		<cfset instance.EventCacheDictionary = arguments.EventCacheDictionary>
 	</cffunction>
 	

@@ -1,9 +1,9 @@
-<cfcomponent name="BaseDictionaryTest" output="false" extends="coldbox.testing.resources.baseMockCase">
+<cfcomponent name="BaseDictionaryTest" output="false" extends="coldbox.system.testing.BaseTestCase">
 	
 	<!--- setup --->
 	<cffunction name="setup" output="false" access="public" returntype="any" hint="">
 		<cfscript>
-			dictionary = CreateObject("component","coldbox.system.util.collections.BaseDictionary").init('MyTest');
+			dictionary = CreateObject("component","coldbox.system.core.util.collections.BaseDictionary").init('MyTest');
 		</cfscript>
 	</cffunction>
 	

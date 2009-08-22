@@ -23,7 +23,7 @@ Description :
 	
 	<cffunction name="init" access="public" returntype="CacheFactory" hint="Constructor" output="false" >
 		<cfscript>
-		instance.CFMLEngine = createObject("component","coldbox.system.util.CFMLEngine").init();
+		instance.CFMLEngine = createObject("component","coldbox.system.core.util.CFMLEngine").init();
 		
 		return this;
 		</cfscript>

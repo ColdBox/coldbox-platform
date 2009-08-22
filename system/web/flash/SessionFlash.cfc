@@ -9,12 +9,10 @@ Date        :	10/2/2007
 Description :
 	An abstract flash scope that can be used to build ColdBox Flash scopes.
 	
-	This flash scope is smart enought to not create unecessary cluster variables
-	unless data is put in it.  Else, it does not abuse cluster.
-	
-	This scope only works on railo.
+	This flash scope is smart enought to not create unecessary session variables
+	unless data is put in it.  Else, it does not abuse session.
 ----------------------------------------------------------------------->
-<cfcomponent output="false" extends="coldbox.system.util.flash.AbstractFlashScope" hint="A ColdBox cluster flash scope">
+<cfcomponent output="false" extends="coldbox.system.web.flash.AbstractFlashScope" hint="A ColdBox session flash scope">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------>
 	
@@ -23,12 +21,12 @@ Description :
 	</cfscript>
 
 	<!--- init --->
-    <cffunction name="init" output="false" access="public" returntype="ClusterFlash" hint="Constructor">
+    <cffunction name="init" output="false" access="public" returntype="SessionFlash" hint="Constructor">
     	<cfargument name="controller" type="coldbox.system.Controller" required="true" hint="The ColdBox Controller"/>
     	<cfscript>
     		super.init(arguments.controller);
 			
-			instance.flashKey = "cbox_flash_" & getController().getAppHash();
+			instance.flashKey = "cbox_flash";
 			
 			return this;
     	</cfscript>
@@ -102,7 +100,7 @@ Description :
 	
 	<!--- getKeys --->
     <cffunction name="getKeys" output="false" access="public" returntype="string" hint="Get a list of all the objects in the flash scope">
-    	<cfset structKeyList(getScope())>
+    	<cfreturn structKeyList(getScope())>
     </cffunction>
 
 	<!--- getFlashKey --->
@@ -115,18 +113,22 @@ Description :
 	<!--- ensureStorage --->
     <cffunction name="ensureStorage" output="false" access="private" returntype="struct" hint="Makes sure the storage is created else create and return it.">
     	<cfif NOT isStorageAttached()>
-    		<cfset cluster[getFlashKey()] = structNew()>
+    		<cflock scope="Session" throwontimeout="true" timeout="20">
+				<cfif NOT isStorageAttached()>
+					<cfset session[getFlashKey()] = structNew()>
+				</cfif>
+			</cflock>	
 		</cfif>
-		<cfreturn cluster[getFlashKey()]>
+		<cfreturn session[getFlashKey()]>
     </cffunction>
 
 	<!--- isStorageAttached --->
-    <cffunction name="isStorageAttached" output="false" access="private" returntype="boolean" hint="Checks if the storage in the cluster scope is attached, else returns false">
+    <cffunction name="isStorageAttached" output="false" access="private" returntype="boolean" hint="Checks if the storage in the session scope is attached, else returns false">
     	<cfscript>
-    		// Check if cluster is defined first
-    		if( NOT isDefined("cluster") ) { return false; }
+    		// Check if session is defined first
+    		if( NOT isDefined("session") ) { return false; }
 			// Check if storage is set
-			return structKeyExists(cluster, getFlashKey());
+			return structKeyExists(session, getFlashKey());
     	</cfscript>
     </cffunction>
 
