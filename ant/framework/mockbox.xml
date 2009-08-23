@@ -37,8 +37,8 @@
       	<copy todir="${dir.build}/system/testing">
         	<fileset dir="system/testing" />
         </copy>
-		<copy todir="${dir.build}/system/util">
-        	<fileset dir="system/util" />
+		<copy todir="${dir.build}/system/core">
+        	<fileset dir="system/core" />
         </copy>
 		
 		<!--Copy text files to root folder-->
