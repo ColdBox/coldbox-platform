@@ -47,7 +47,7 @@ Modifications:
 		<!--- ************************************************************* --->
 		<cfargument name="data" type="string" required="Yes" hint="JSON Packet" />
 		<!--- ************************************************************* --->
-		<cfset instance.json.decode(argumentCollection=arguments)>
+		<cfreturn instance.json.decode(argumentCollection=arguments)>
 	</cffunction>
 	
 	<!--- CONVERTS DATA FROM CF TO JSON FORMAT --->
@@ -61,7 +61,7 @@ Modifications:
 		<cfargument name="columnListFormat" type="string" 	required="No" default="string" hint="string or array" >
 		<cfargument name="keyCase"			type="string" 	required="No" default="lower"  hint="lower or upper"/>
 		<!--- ************************************************************* --->
-		<cfset instance.json.encode(argumentCollection=arguments)>
+		<cfreturn instance.json.encode(argumentCollection=arguments)>
 	</cffunction>
 	
 	<!--- Validate a JSON document --->
@@ -76,7 +76,7 @@ Modifications:
 		<cfargument name="_schema" 		type="any" 		required="No" />
 		<cfargument name="_item" 		type="string" 	required="No" default="root" />
     	<!--- ************************************************************* --->
-		<cfset instance.json.validate(argumentCollection=arguments)>
+		<cfreturn instance.json.validate(argumentCollection=arguments)>
     </cffunction>
 	
 <!------------------------------------------- PRIVATE ------------------------------------------->
