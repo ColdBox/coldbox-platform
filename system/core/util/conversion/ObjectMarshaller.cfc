@@ -11,7 +11,7 @@ Description :
 ----------------------------------------------------------------------->
 <cfcomponent output="false" hint="Ability to serialize/deserialize objects.">
 
-	<cffunction name="init" output="false" access="public" returntype="ObjectMarshaler" hint="Constructor">
+	<cffunction name="init" output="false" access="public" returntype="ObjectMarshaller" hint="Constructor">
     	<cfscript>
 			var engine = "";
 			var version = "";
@@ -126,7 +126,7 @@ Description :
             var ObjectOutput    = CreateObject("java", "java.io.ObjectOutputStream").init(ByteArrayOutput);
            
             // Serialize the incoming object.
-            ObjectOutput.writeObject(arguments.ComplexObject);
+            ObjectOutput.writeObject(arguments.target);
             ObjectOutput.close();
 
             return ToBase64(ByteArrayOutput.toByteArray());

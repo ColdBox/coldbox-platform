@@ -1,0 +1,71 @@
+<cfcomponent extends="coldbox.system.testing.BaseTestCase" output="false">
+<cfscript>
+	function setup(){
+		flash = getMockBox().createMock("coldbox.system.web.flash.AbstractFlashScope");
+		mockController = getMockBox().createMock(className="coldbox.system.Controller",clearMethods=true);
+		mockRService = getMockBox().createMock(className="coldbox.system.services.RequestService",clearMethods=true);
+		mockEvent = getMockBox().createMock(className="coldbox.system.beans.RequestContext",clearMethods=true);
+		mockController.$("getRequestService",mockRService);
+		mockRService.$("getContext",mockEvent);
+		
+		
+		flash.init(mockController);
+		
+		testScope = {name="luis majano", date=now()};
+	}	
+	function teardown(){ 
+		structClear(request);
+	}
+	function testInflateFlash(){
+		mockEvent.$("collectionAppend");
+		flash.$("getFlash",testScope);
+		
+		flash.inflateFlash();
+		assertEquals( flash.size(), 2);
+		assertEquals( mockEvent.$callLog().collectionAppend[1].collection, testScope );
+	}
+	
+	function testScopeMethods(){
+		assertEquals( flash.size(), 0);
+		assertEquals( flash.isEmpty(), true);
+		
+		flash.put("name","luis majano");
+		flash.put("obj",this);
+		
+		assertEquals( flash.exists("name"), true);
+		assertEquals( flash.exists("obj2"), false);
+		assertEquals( flash.isEmpty(), false);
+		
+		flash.clear()
+		assertEquals( flash.size(), 0);
+		
+		flash.putAll(testScope);
+		assertEquals( flash.size(), 2);
+		assertEquals( flash.get("name"),"luis majano");
+		flash.remove("name");
+		assertEquals( flash.get("name",""),"");
+		
+	}
+	
+	function testPersistRC(){
+		mockEvent.$("getCollection",testScope);
+		
+		flash.persistRC();
+		assertEquals( flash.size(), 0);
+		
+		flash.persistRC(include="name");
+		assertEquals( flash.size(), 1);
+		
+		flash.clear();
+		
+		flash.persistRC(include="name,date");
+		assertEquals( flash.size(), 2);
+		
+		flash.clear();
+		
+		flash.persistRC(exclude="name");
+		assertEquals( flash.size(), 1);		
+	}
+	
+</cfscript>
+</cfcomponent>
