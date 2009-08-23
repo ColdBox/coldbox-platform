@@ -2,8 +2,7 @@
 <cfscript>
 
 	function setup(){
-		mockController = getMockBox().createMock(className="coldbox.system.Controller",clearMethods=true);
-		xml = getMockBox().createMock(className="coldbox.system.plugins.XMLConverter").init(mockController);
+		xml = getMockBox().createMock(className="coldbox.system.core.util.conversion.XMLConverter").init();
 	}
 	
 	function testArrayToXML(){
@@ -19,7 +18,7 @@
 		assertTrue( isXML(results) );
 		debug(results);
 	}
-		
+	
 	function testqueryToXML(){
 		qTest = querySim("id, name
 						  1 | luis
