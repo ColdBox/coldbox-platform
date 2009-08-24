@@ -22,7 +22,7 @@ RewriteEngine on
 #RewriteRule .* - [F]
 
 #if this call related to adminstrators or non rewrite folders, you can add more here.
-RewriteCond %{REQUEST_URI} ^/(.*(CFIDE|cfide|CFFormGateway|jrunscripts|railo-context|fckeditor)).*$
+RewriteCond %{REQUEST_URI} ^/(.*(CFIDE|cfide|CFFormGateway|jrunscripts|railo-context|mapping-tag|fckeditor)).*$
 RewriteRule ^(.*)$ - [NC,L]
 
 #dealing with flash / flex communication
