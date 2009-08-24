@@ -445,7 +445,7 @@ Description :
 			if ( not structKeyExists(configStruct, "HandlersExternalLocation") or len(configStruct["HandlersExternalLocation"]) eq 0 )
 				configStruct["HandlersExternalLocation"] = "";
 			// Flash URL Persist Scope Override
-			if( structKeyExists(configStruct,"FlashURLPersistScope") and reFindnocase("^(session|client)$",configStruct["FlashURLPersistScope"]) ){
+			if( structKeyExists(configStruct,"FlashURLPersistScope") ){
 				fwSettingsStruct["FlashURLPersistScope"] = configStruct["FlashURLPersistScope"];
 			}
 		</cfscript>

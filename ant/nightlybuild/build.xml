@@ -61,6 +61,7 @@
 	   		<export srcUrl= "${svn.url}/${svn.install}" destPath="${src.dir}/${svn.install}" force="true"/>
 	   		<export srcUrl= "${svn.samplesurl}/" destPath="${src.dir}/${svn.samples}" force="true"/>
 	   		<export srcUrl= "${svn.url}/${svn.source}" destPath="${src.dir}/${svn.source}" force="true"/>
+			<export srcUrl= "${svn.cfbuilderextension}" destPath="${src.dir}/${svn.cfbuilder}" force="true"/>
 		</svn>
 	</target>
 
@@ -91,7 +92,15 @@
 			<fileset file="${src.dir}/system/config/license.txt" />
 			<fileset file="${src.dir}/system/config/readme.txt" />						
 		</copy>		
-
+		
+		<!-- CFBuilder extensions -->
+		<mkdir dir="${build.dir}/install/cfbuilder_extensions" />
+		
+		<zip destfile="${build.dir}/install/cfbuilder_extensions/ColdboxPlatformUtilities_Nightly.zip"
+			       basedir="${src.dir}/${svn.cfbuilder}"
+			       update="true"
+			  />
+		
 		<delete dir="${src.dir}"/>
 			
 		<concat destfile="${build.dir}\${build.label}">Built on ${start.TODAY}</concat>
