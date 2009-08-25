@@ -354,6 +354,9 @@ Only one instance of a specific ColdBox application exists.
 				<cfset getInterceptorService().processState("postProcess")>
 			</cfif>
 			
+			<!--- Save Flash Ram --->
+			<cfset getRequestService().getFlashScope().saveFlash()>
+			
 			<!--- Check if query String needs appending --->
 			<cfif len(trim(arguments.queryString)) eq 0>
 				<cflocation url="#frontController#?#EventName#=#arguments.event#" addtoken="#arguments.addToken#">
@@ -376,6 +379,9 @@ Only one instance of a specific ColdBox application exists.
 		<cfif arguments.postProcessExempt>
 			<cfset getInterceptorService().processState("postProcess")>
 		</cfif>
+		
+		<!--- Save Flash Ram --->
+		<cfset getRequestService().getFlashScope().saveFlash()>
 		
 		<!--- Relocate --->
 		<cflocation url="#arguments.url#" addtoken="#addtoken#">
@@ -422,6 +428,9 @@ Only one instance of a specific ColdBox application exists.
 		<cfif arguments.postProcessExempt>
 			<cfset getInterceptorService().processState("postProcess")>
 		</cfif>
+		
+		<!--- Save Flash Ram --->
+		<cfset getRequestService().getFlashScope().saveFlash()>
 			
 		<!--- Reroute --->
 		<cflocation url="#routeLocation#" addtoken="#arguments.addToken#">

@@ -23,8 +23,11 @@ Description :
 		<cfscript>
 			// Register Controller
 			variables.controller = arguments.controller;
-			// Register ColdBox
+			// Register LogBox
 			variables.logBox = arguments.controller.getLogBox();
+			// Register Flash RAM
+			variables.flash = arguments.controller.getRequestService().getFlashScope();
+			
 			// Register properties
 			setProperties(arguments.properties);
 			

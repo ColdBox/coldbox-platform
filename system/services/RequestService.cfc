@@ -23,8 +23,40 @@ Modification History:
 			setController(arguments.controller);			
 			
 			instance.contextProperties = structnew();
+			instance.flashScope = 0;
 		
 			return this;
+		</cfscript>
+	</cffunction>
+	
+	<cffunction name="onConfigurationLoad" access="public" output="false" returntype="void">
+		<cfscript>
+			// Let's determine the flash type and create our flash ram object
+			var flashType = controller.getSetting("FlashURLPersistScope",true);
+			var flashPath = flashType;
+			
+			// Shorthand Flash Types
+			switch(flashType){
+				case "session" : {
+					flashpath = "coldbox.system.web.flash.SessionFlash";
+					break;
+				}
+				case "client" : {
+					flashpath = "coldbox.system.web.flash.ClientFlash";
+					break;
+				}
+				case "cluster" : {
+					flashpath = "coldbox.system.web.flash.ClusterFlash";
+					break;
+				}
+				case "cache" : {
+					flashpath = "coldbox.system.web.flash.ColdboxCacheFlash";
+					break;
+				}
+			}
+			
+			// Create Flash RAM object
+			instance.flashScope = createObject("component",flashPath).init(controller);
 		</cfscript>
 	</cffunction>
 
@@ -36,24 +68,11 @@ Modification History:
 			var Context = getContext();
 			var DebugPassword = controller.getSetting("debugPassword");
 			var EventName = controller.getSetting("EventName");
-			var oFlashStorage = "";
-			
-			// Get Flash Persistance Storage
-			if( controller.getSetting("FlashURLPersistScope",1) eq "session" ){
-				oFlashStorage = controller.getPlugin("SessionStorage");
+
+			// Do we have flash elements to inflate?
+			if( getFlashScope().flashExists() ){
+				getFlashScope().inflateFlash();
 			}
-			else{
-				// Get Client Storage
-				oFlashStorage = controller.getPlugin("ClientStorage");				
-			}
-			
-			// Flash Persistance Contruction	
-			if ( oFlashStorage.exists('_coldbox_persistStruct') ){
-				// Append flash persistance structure and overwrite if needed.
-				Context.collectionAppend(oFlashStorage.getVar('_coldbox_persistStruct'),true);
-				// Remove Flash persistance
-				oFlashStorage.deleteVar('_coldbox_persistStruct');
-			}	
 					
 			// Object Caching Garbage Collector
 			controller.getColdboxOCM().reap();
@@ -158,6 +177,11 @@ Modification History:
 	<cffunction name="getContextProperties" access="public" output="false" returntype="struct" hint="Get ContextProperties">
 		<cfreturn instance.ContextProperties/>
 	</cffunction>	
+	
+	<!--- getFlashScope --->
+    <cffunction name="getFlashScope" output="false" access="public" returntype="coldbox.system.web.flash.AbstractFlashScope" hint="Get the current running Flash Ram Scope">
+    	<cfreturn instance.flashScope >
+    </cffunction>
 	
 <!------------------------------------------- PRIVATE ------------------------------------------->
 	
