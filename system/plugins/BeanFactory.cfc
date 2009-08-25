@@ -221,8 +221,8 @@ Description: This is the framework's simple bean factory.
 							md.cache = false;
 						}
 						// Singleton Support
-						if( structKeyExists(md,"singleton") AND isBoolean(md.singleton) ){
-							md.cache = md.singleton;
+						if( structKeyExists(md,"singleton") ){
+							md.cache = true;
 							md.cacheTimeout = 0;
 						}
 						// Are we Caching? 

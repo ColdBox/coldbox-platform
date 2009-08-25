@@ -151,7 +151,7 @@ Modification History:
 			}
 			
 			// Test for singleton parameters
-			if( structKeyExists(metadata,"singleton") and isBoolean(metadata.singleton) and metadata.singleton){
+			if( structKeyExists(metadata,"singleton") ){
 				mdEntry.cacheable = true;
 				mdEntry.timeout = 0;
 			}
