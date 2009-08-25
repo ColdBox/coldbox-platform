@@ -581,7 +581,7 @@ Only one instance of a specific ColdBox application exists.
 			var flash = getRequestService().getFlashScope();
 			
 			// persist varstruct
-			if( structKeyExists(arguments, varStruct) ){
+			if( structKeyExists(arguments, "varStruct") ){
 				flash.putAll(arguments.varStruct);
 			}
 			
