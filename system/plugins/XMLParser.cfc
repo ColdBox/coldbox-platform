@@ -511,7 +511,6 @@ Description :
 			var configStruct = arguments.config;
 			
 			// ViewsExternalLocation Setup 
-			configStruct["ViewsExternalLocation"] = "";
 			if( structKeyExists(configStruct,"ViewsExternalLocation") and len(configStruct["ViewsExternalLocation"]) ){
 				// Verify the locations, do relative to the app mapping first 
 				if( directoryExists(controller.getAppRootPath() & configStruct["ViewsExternalLocation"]) ){
@@ -525,9 +524,11 @@ Description :
 					 configStruct["ViewsExternalLocation"] = left(configStruct["ViewsExternalLocation"],len(configStruct["ViewsExternalLocation"])-1);
 				}
 			}
+			else{
+				configStruct["ViewsExternalLocation"] = "";
+			}
 			
 			// LayoutsExternalLocation Setup
-			configStruct["LayoutsExternalLocation"] = "";
 			if( structKeyExists(configStruct,"LayoutsExternalLocation") and configStruct["LayoutsExternalLocation"] neq "" ){
 				// Verify the locations, do relative to the app mapping first
 				if( directoryExists(controller.getAppRootPath() & configStruct["LayoutsExternalLocation"]) ){
@@ -540,6 +541,9 @@ Description :
 				if ( right(configStruct["LayoutsExternalLocation"],1) eq "/" ){
 					 configStruct["LayoutsExternalLocation"] = left(configStruct["LayoutsExternalLocation"],len(configStruct["LayoutsExternalLocation"])-1);
 				}
+			}
+			else{
+				configStruct["LayoutsExternalLocation"] = "";
 			}
 		</cfscript>
 	</cffunction>
