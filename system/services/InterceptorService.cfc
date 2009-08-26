@@ -263,24 +263,24 @@ Description :
 	</cffunction>
 	
 	<!--- Unregister From a State --->
-	<cffunction name="unregister" access="public" returntype="boolean" hint="Unregister an interceptor from an interception state. If the state does not exists, it returns false" output="false" >
+	<cffunction name="unregister" access="public" returntype="boolean" hint="Unregister an interceptor from an interception state or all states. If the state does not exists, it returns false" output="false" >
 		<!--- ************************************************************* --->
-		<cfargument name="interceptorClass" 	required="true" type="string" hint="The qualified class of the interceptor to unregister">
-		<cfargument name="state" 				required="true" type="string" hint="The named state to unregister this interceptor from">
+		<cfargument name="interceptorName" 	required="false" type="string" hint="The name of the interceptor to search for"/>
+		<cfargument name="state" 			required="false" type="string" default="" hint="The named state to unregister this interceptor from. If not passed, then it will be unregistered from all states.">
 		<!--- ************************************************************* --->
 		<cfscript>
-			/* Verify the state */
-			var foundState = getStateContainer(arguments.state);
-			var interceptorKey = getColdboxOCM().INTERCEPTOR_CACHEKEY_PREFIX & arguments.interceptorClass;
+			var states = getInterceptionStates();
+			var unregistered = false;
 			
-			/* State Exists */
-			if( isObject(foundState) ){
-				foundState.unregister(interceptorKey);
-				return true;
-			}	
-			else{
-				return false;
-			}						
+			// Else, unregister from all states
+			for(key in states){
+				if( len(trim(state)) eq 0 OR trim(state) eq key ){
+					structFind(states,key).unregister(arguments.interceptorName);
+					unregistered = true;
+				}				
+			}
+			
+			return unregistered;						
 		</cfscript>
 	</cffunction>
 

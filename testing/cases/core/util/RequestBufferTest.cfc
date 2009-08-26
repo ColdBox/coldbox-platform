@@ -1,4 +1,4 @@
-<cfcomponent name="RequestBufferTest" output="false" extends="coldbox.testing.resources.baseMockCase">
+<cfcomponent name="RequestBufferTest" output="false" extends="coldbox.system.testing.BaseTestCase">
 	
 	<!--- setup --->
 	<cffunction name="setup" output="false" access="public" returntype="any" hint="">

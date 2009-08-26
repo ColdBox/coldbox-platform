@@ -1,4 +1,4 @@
-<cfcomponent name="cfmlengine" output="false" extends="coldbox.testing.resources.baseMockCase">
+<cfcomponent name="cfmlengine" output="false" extends="coldbox.system.testing.BaseTestCase">
 	
 	<!--- setup --->
 	<cffunction name="setup" output="false" access="public" returntype="any" hint="">
@@ -26,7 +26,7 @@
 			
 			AssertTrue( isNumeric(cfmlengine.getVersion()) , "Version Test");
 
-			AssertEquals( cfmlengine.isMT(), (enginetype eq "adobe" and version gte 8) OR (enginetype eq "bd" and version gte 7) );
+			AssertEquals( cfmlengine.isMT(), (enginetype eq "adobe" and version gte 8) OR (enginetype eq "bd" and version gte 7) OR (enginetype eq "railo" ) );
 			
 			
 		</cfscript>
