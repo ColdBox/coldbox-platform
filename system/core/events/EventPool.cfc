@@ -42,11 +42,17 @@ Description :
 	</cffunction>
 	
 	<!--- Remove a target object from the pool state --->
-	<cffunction name="unregister" access="public" returntype="void" hint="Unregister an object from this event pool" output="false" >
+	<cffunction name="unregister" access="public" returntype="boolean" hint="Unregister an object from this event pool" output="false" >
 		<!--- ************************************************************* --->
 		<cfargument name="key" 	required="true" type="string" 	hint="The key of the object">
 		<!--- ************************************************************* --->
-		<cfset getPool().remove(lcase(arguments.key))>
+		<cfscript>
+			if( exists(arguments.key) ){
+				getPool().remove(lcase(arguments.key));
+				return true;
+			}
+			return false;
+		</cfscript>
 	</cffunction>	
 	
 	<!--- exists --->

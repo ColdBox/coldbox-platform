@@ -179,7 +179,7 @@ Description :
 		<!--- *********************************************************************** --->
 		<cfscript>
 			for(i=1; i lte ArrayLen(arguments.environmentsArray); i=i+1){
-				if ( listFindNoCase(trim(arguments.environmentsArray[i].XMLAttributes.urls),cgi.http_host) ){
+				if ( listContainsNoCase(trim(arguments.environmentsArray[i].XMLAttributes.urls),cgi.http_host) ){
 					//Place the ENVIRONMENT on the settings structure.
 					setSetting("ENVIRONMENT", trim(arguments.environmentsArray[i].XMLAttributes.name));
 					return trim(arguments.environmentsArray[i].XMLAttributes.name);
