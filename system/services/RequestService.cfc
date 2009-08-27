@@ -179,8 +179,9 @@ Modification History:
 	</cffunction>	
 	
 	<!--- getFlashScope --->
-    <cffunction name="getFlashScope" output="false" access="public" returntype="coldbox.system.web.flash.AbstractFlashScope" hint="Get the current running Flash Ram Scope">
-    	<cfreturn instance.flashScope >
+    <cffunction name="getFlashScope" output="false" access="public" returntype="any" hint="Get the current running Flash Ram Scope of base type:coldbox.system.web.flash.AbstractFlashScope">
+    <!--- TODO: Change returntype back to what it was once new loader is built. --->	
+	<cfreturn instance.flashScope >
     </cffunction>
 	
 <!------------------------------------------- PRIVATE ------------------------------------------->

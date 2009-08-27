@@ -98,20 +98,33 @@ method which will most likely be called by the saveFlash() method in order to pe
     <cffunction name="put" output="false" access="public" returntype="void" hint="Put an object in temp flash scope">
     	<cfargument name="name"  type="string" required="true" hint="The name of the value"/>
 		<cfargument name="value" type="any" required="true" default="" hint="The value to store"/>
-		<cfset var scope = getScope()>
-		<cfset scope[arguments.name] = arguments.value>
+		<cfargument name="saveNow" type="boolean" required="false" default="false" hint="Whether to send the contents for saving to flash ram or not. Default is to wait for a relocation"/>
+		<cfscript>
+			var scope = getScope();
+			scope[arguments.name] = arguments.value;
+			
+			if( arguments.saveNow ){ saveFlash(); }
+		</cfscript>
     </cffunction>
 	
 	<!--- putAll --->
     <cffunction name="putAll" output="false" access="public" returntype="void" hint="Put a map of name-value pairs into the flash scope">
     	<cfargument name="map" type="struct" required="true" default="" hint="The map of "/>
-		<cfset structAppend(getScope(),arguments.map)>
+		<cfargument name="saveNow" type="boolean" required="false" default="false" hint="Whether to send the contents for saving to flash ram or not. Default is to wait for a relocation"/>
+		<cfscript>
+			structAppend(getScope(),arguments.map);
+			if( arguments.saveNow ){ saveFlash(); }
+		</cfscript>
     </cffunction>
 	
 	<!--- remove --->
     <cffunction name="remove" output="false" access="public" returntype="void" hint="Remove an object from flash scope">
     	<cfargument name="name"  type="string" required="true" hint="The name of the value"/>
-		<cfset structDelete(getScope(),arguments.name)>
+		<cfargument name="saveNow" type="boolean" required="false" default="false" hint="Whether to send the contents for saving to flash ram or not. Default is to wait for a relocation"/>
+		<cfscript>
+			structDelete(getScope(),arguments.name);
+			if( arguments.saveNow ){ saveFlash(); }
+		</cfscript>
     </cffunction>
 	
 	<!--- exists --->
@@ -151,6 +164,7 @@ method which will most likely be called by the saveFlash() method in order to pe
 	<cffunction name="persistRC" output="false" access="public" returntype="void" hint="Persist keys from the coldbox request collection in flash scope. If using exclude, then it will try to persist the entire rc but excluding.  Including will only include the keys passed.">
 		<cfargument name="include" type="string"  required="false" default="" hint="MUTEX: A list of request collection keys you want to persist"/>
 		<cfargument name="exclude" type="string"  required="false" default="" hint="MUTEX: A list of request collection keys you want to exclude from persisting. If sent, then we inspect all rc keys."/>
+		<cfargument name="saveNow" type="boolean" required="false" default="false" hint="Whether to send the contents for saving to flash ram or not. Default is to wait for a relocation"/>
 		<cfscript>
 			var rc = getController().getRequestService().getContext().getCollection();
 			var key = "";
@@ -180,7 +194,10 @@ method which will most likely be called by the saveFlash() method in order to pe
 						put(thisKey,rc[thisKey]);
 					}
 				}
-			}			
+			}	
+			
+			// Save Now?
+			if( arguments.saveNow ){ saveFlash(); }		
 		</cfscript>
 	</cffunction>
 		
