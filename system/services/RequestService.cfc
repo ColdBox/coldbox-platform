@@ -236,6 +236,7 @@ Modification History:
 				properties.sesbaseURL = "";
 				properties.decorator = "";
 				properties.isUsingDecorator = false;
+				properties.registeredLayouts = structnew();
 				
 				if( controller.settingExists("EventName") ){
 					Properties.EventName = controller.getSetting("EventName");
@@ -258,6 +259,9 @@ Modification History:
 				if ( controller.settingExists("RequestContextDecorator") and controller.getSetting("RequestContextDecorator") neq ""){
 					Properties.isUsingDecorator = true;
 					Properties.decorator = controller.getSetting("RequestContextDecorator");
+				}
+				if( controller.settingExists("registeredLayouts") ){
+					Properties.registeredLayouts = controller.getSetting('registeredLayouts');
 				}
 				
 				instance.contextProperties = Properties;	

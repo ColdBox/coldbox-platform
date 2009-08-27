@@ -12,24 +12,12 @@ Description :
 Modification History:
 
 ----------------------------------------------------------------------->
-<cfcomponent hint="I am a coldbox request" output="false">
+<cfcomponent hint="The request context object simulates a user request. It has two internal data collections: one public and one private.  You can also manipulate the request stream and contents from this object." output="false">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 	
 	<cfscript>
-		variables.instance = structnew();
-		
-		// Create Properties
-		instance.context = structnew();
-		instance.privateContext = structnew();
-		instance.defaultLayout = "";
-		instance.defaultView = "";
-		instance.ViewLayouts = "";
-		instance.eventName = "";
-		instance.isSES = false;
-		instance.sesBaseURL = "";
-		instance.routedStruct = structnew();
-		instance.isNoExecution = false;
+		instance = structnew();
 	</cfscript>
 
 	<cffunction name="init" access="public" output="false" hint="constructor" returntype="RequestContext">
@@ -39,18 +27,31 @@ Modification History:
 		<cfargument name="properties" 		type="any" 	required="true" hint="The context properties struct">
 		<!--- ************************************************************* --->
 		<cfscript>
+			// Create the Collections
+			instance.context = structnew();
+			instance.privateContext = structnew();
+			
+			// Create Default Properties
+			instance.isSES = false;
+			instance.sesBaseURL = "";
+			instance.routedStruct = structnew();
+			instance.isNoExecution = false;
+		
 			// Append incoming Collections
 			collectionAppend(arguments.struct1);
 			collectionAppend(arguments.struct2);
 			
-			// Setup context properties as they got sent in
+			// Extra properties passed in by the request constructor.
 			setDefaultLayout(arguments.properties.DefaultLayout);
 			setDefaultView(arguments.properties.DefaultView);
-			setViewLayouts(arguments.properties.ViewLayouts);
-			setFolderLayouts(arguments.properties.FolderLayouts);
-			setEventName(arguments.properties.EventName);
 			setisSES(arguments.properties.isSES);
-			setsesBaseURL(arguments.properties.sesBaseURL);
+			setSESBaseURL(arguments.properties.sesBaseURL);
+			
+			instance.viewLayouts = arguments.properties.ViewLayouts; 
+			instance.folderLayouts = arguments.properties.FolderLayouts; 
+			instance.registeredLayouts = arguments.properties.registeredLayouts;
+			instance.eventName = arguments.properties.eventName;
+			
 			
 			return this;
 		</cfscript>		
@@ -264,10 +265,20 @@ Modification History:
     </cffunction>
 
 	<cffunction name="setLayout" access="public" returntype="void" hint="I Set the layout to override and render. Layouts are pre-defined in the config file. However I can override these settings if needed. Do not append a the cfm extension. Request Collection name: currentLayout"  output="false">
-		<cfargument name="name"  hint="The name of the layout file to set." type="string" >
+		<cfargument name="name"  hint="The name or alias of the layout file to set." type="string" >
 		<cfscript>
+			var layouts = getRegisteredLayouts();
+			
+			// Set direct layout first.
 			instance.context["currentLayout"] = trim(arguments.name) & ".cfm";
-	  		instance.context["layoutoverride"] = true;
+			
+			// Do an Alias Check and override if found.
+			if( structKeyExists(layouts,arguments.name) ){
+				instance.context["currentLayout"] = layouts[arguments.name];
+			}
+			
+			// set layout overwritten flag.
+			instance.context["layoutoverride"] = true;
 		</cfscript>
 	</cffunction>
 
@@ -392,13 +403,16 @@ Modification History:
 			return valueExists(name="cbox_eventCacheableEntry",private=true);
 		</cfscript>
 	</cffunction>	
+	
 	<cffunction name="setEventCacheableEntry" access="public" returntype="void" hint="Set the event cacheable entry" output="false" >
 		<cfargument name="mdCacheEntry" required="true" type="any" hint="The cache entry we need to get to cache">
 		<cfset setValue(name="cbox_eventCacheableEntry",value=arguments.mdCacheEntry,private=true)>
 	</cffunction>
+	
 	<cffunction name="getEventCacheableEntry" access="public" returntype="any" hint="Get the event cacheable entry" output="false" >
 		<cfreturn getValue(name="cbox_eventCacheableEntry",defaultValue=structnew(),private=true)>
 	</cffunction>
+	
 	<cffunction name="removeEventCacheableEntry" access="public" returntype="void" hint="Remove the cacheable entry" output="false" >
 		<cfset removeValue(name='cbox_eventCacheableEntry',private=true)>
 	</cffunction>
@@ -415,6 +429,7 @@ Modification History:
 			setValue(name="cbox_viewCacheableEntry",value=arguments.mdCacheEntry,private=true);
 		</cfscript>
 	</cffunction>
+	
 	<cffunction name="getViewCacheableEntry" access="public" returntype="any" hint="Get the event cacheable entry" output="false" >
 		<cfreturn getValue(name="cbox_viewCacheableEntry",defaultValue=structnew(),private=true)>
 	</cffunction>
@@ -422,15 +437,17 @@ Modification History:
 	<cffunction name="isSES" access="public" output="false" returntype="boolean" hint="Determine if you are in SES mode.">
 		<cfreturn instance.isSES/>
 	</cffunction>
-	<cffunction name="setisSES" access="public" output="false" returntype="void" hint="Set isSES flag">
+	
+	<cffunction name="setisSES" access="public" output="false" returntype="void" hint="Set the isSES flag, usualy done by the SES interceptor">
 		<cfargument name="isSES" type="boolean" required="true"/>
 		<cfset instance.isSES = arguments.isSES/>
 	</cffunction>
 	
-	<cffunction name="getSESBaseURL" access="public" output="false" returntype="string" hint="Get the sesBaseURL">
+	<cffunction name="getSESBaseURL" access="public" output="false" returntype="string" hint="Get the ses base URL for this request">
 		<cfreturn instance.sesBaseURL/>
 	</cffunction>
-	<cffunction name="setSESBaseURL" access="public" output="false" returntype="void" hint="Set the sesBaseURL">
+	
+	<cffunction name="setSESBaseURL" access="public" output="false" returntype="void" hint="Set the ses base URL for this request">
 		<cfargument name="sesBaseURL" type="string" required="true"/>
 		<cfset instance.sesBaseURL = arguments.sesBaseURL/>
 	</cffunction>
@@ -438,6 +455,7 @@ Modification History:
 	<cffunction name="getRoutedStruct" access="public" output="false" returntype="struct" hint="Get the routed structure of key-value pairs. What the ses interceptor could match.">
 		<cfreturn instance.routedStruct/>
 	</cffunction>	
+	
 	<cffunction name="setRoutedStruct" access="public" output="false" returntype="void" hint="Set routed struct of key-value pairs. This is used only by the SES interceptor. Not for public use.">
 		<cfargument name="routedStruct" type="struct" required="true"/>
 		<cfset instance.routedStruct = arguments.routedStruct/>
@@ -448,7 +466,8 @@ Modification History:
 	<cffunction name="getDefaultLayout" access="public" returntype="any" output="false" hint="Get's the default layout of the application: String">
 		<cfreturn instance.defaultLayout>
 	</cffunction>
-	<cffunction name="setDefaultLayout" access="public" returntype="void" output="false">
+	
+	<cffunction name="setDefaultLayout" access="public" returntype="void" output="false" hint="Override the default layout for a request">
 		<cfargument name="DefaultLayout" type="string" required="true">
 		<cfset instance.defaultLayout = arguments.DefaultLayout>
 	</cffunction>
@@ -456,36 +475,28 @@ Modification History:
 	<cffunction name="getDefaultView" access="public" returntype="any" output="false" hint="Get's the default view of the application: String">
 		<cfreturn instance.defaultView>
 	</cffunction>
-	<cffunction name="setDefaultView" access="public" returntype="void" output="false">
+	
+	<cffunction name="setDefaultView" access="public" returntype="void" output="false" hint="Override the default view for a request">
 		<cfargument name="DefaultView" type="string" required="true">
 		<cfset instance.defaultView = arguments.DefaultView>
 	</cffunction>
 	
-	<cffunction name="getViewLayouts" access="public" returntype="struct" output="false">
+	<cffunction name="getViewLayouts" access="public" returntype="struct" output="false" hint="Get the registered view layout associations map">
 		<cfreturn instance.ViewLayouts>
 	</cffunction>
-	<cffunction name="setViewLayouts" access="public" returntype="void" output="false">
-		<cfargument name="ViewLayouts" type="struct" required="true">
-		<cfset instance.ViewLayouts = arguments.ViewLayouts>
-	</cffunction>
 	
-	<cffunction name="getFolderLayouts" access="public" returntype="struct" output="false">
+	<cffunction name="getRegisteredLayouts" output="false" access="public" returntype="struct" hint="Get all the registered layouts in the configuration file">
+    	<cfreturn instance.registeredLayouts>
+    </cffunction>
+	
+	<cffunction name="getFolderLayouts" access="public" returntype="struct" output="false" hint="Get the registered folder layout associations map">
 		<cfreturn instance.FolderLayouts>
 	</cffunction>
-	<cffunction name="setFolderLayouts" access="public" returntype="void" output="false">
-		<cfargument name="FolderLayouts" type="struct" required="true">
-		<cfset instance.FolderLayouts = arguments.FolderLayouts>
-	</cffunction>
 	
-	<cffunction name="setEventName" access="public" returntype="void" output="false">
-		<cfargument name="EventName" type="string" required="true">
-		<cfset instance.eventName = arguments.EventName>
-	</cffunction>
-	
-	<cffunction name="getmemento" access="public" returntype="any" output="false">
+	<cffunction name="getMemento" access="public" returntype="any" output="false" hint="Get the state of this request context">
 		<cfreturn variables.instance>
 	</cffunction>
-	<cffunction name="setmemento" access="public" returntype="void" output="false">
+	<cffunction name="setMemento" access="public" returntype="void" output="false" hint="Set the state of this request context">
 		<cfargument name="memento" type="any" required="true">
 		<cfset variables.instance = arguments.memento>
 	</cffunction>
@@ -547,7 +558,7 @@ Modification History:
 		</cfscript>
 	</cffunction>
 	
-	<cffunction name="getrenderData" access="public" output="false" returntype="struct" hint="Get the renderData structure.">
+	<cffunction name="getRenderData" access="public" output="false" returntype="struct" hint="Get the renderData structure.">
 		<cfreturn getValue(name="cbox_renderdata",defaultValue=structnew(),private=true)/>
 	</cffunction>
 
@@ -565,6 +576,7 @@ Modification History:
 	<cffunction name="isNoExecution" access="public" returntype="boolean" hint="Determine if we need to execute an incoming event or not." output="false" >
 		<cfreturn instance.isNoExecution>
 	</cffunction>
+	
 	<cffunction name="noExecution" output="false" access="public" returntype="void" hint="Set that the request will not execute an incoming event. Most likely simulating a servlet call.">
    		<cfset instance.isNoExecution = true>
     </cffunction>

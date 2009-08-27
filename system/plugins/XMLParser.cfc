@@ -949,7 +949,10 @@ Description :
 			var Collections = createObject("java", "java.util.Collections"); 
 			var	LayoutViewStruct = Collections.synchronizedMap(CreateObject("java","java.util.LinkedHashMap").init());
 			var	LayoutFolderStruct = Collections.synchronizedMap(CreateObject("java","java.util.LinkedHashMap").init());
-		
+			
+			// Registered Layouts
+			configStruct.registeredLayouts = structnew();
+			
 			//Layout into Config
 			DefaultLayout = XMLSearch(arguments.xml,"//Layouts/DefaultLayout");
 			//validate Default Layout.
@@ -994,6 +997,9 @@ Description :
 					}
 					
 				}//end for loop for the layout children
+				
+				// Register Layout Aliases
+				configStruct.registeredLayouts[Trim(LayoutNodes[i].XMLAttributes["name"])] = Trim(LayoutNodes[i].XMLAttributes["file"]);
 			}//end for loop of all layout nodes
 			
 			configStruct.ViewLayouts = LayoutViewStruct;
