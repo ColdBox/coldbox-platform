@@ -209,7 +209,7 @@ method which will most likely be called by the saveFlash() method in order to pe
     </cffunction>
 	
 	<!--- getUtil --->
-	<cffunction name="getUtil" output="false" access="public" returntype="any" hint="Get the coldbox utility class">
+	<cffunction name="getUtil" output="false" access="private" returntype="coldbox.system.core.util.Util" hint="Get the coldbox utility class">
 		<cfreturn createObject("component","coldbox.system.core.util.Util")>
 	</cffunction>
 

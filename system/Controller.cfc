@@ -572,7 +572,7 @@ Only one instance of a specific ColdBox application exists.
 	</cffunction>
 
 	<!--- Flash Perist variables. --->
-	<cffunction name="persistVariables" access="public" returntype="void" hint="@deprecated DO NOT USE ANYMORE. Persist variables for flash redirections, it can use a structure of name-value pairs or keys from the request collection" output="false" >
+	<cffunction name="persistVariables" access="public" returntype="void" hint="@deprecated DO NOT USE ANYMORE. Persist variables for flash redirections, it can use a structure of name-value pairs or keys from the request collection. Use the flash object instead, this method will auto-save all persistence automatically." output="false" >
 		<!--- ************************************************************* --->
 		<cfargument name="persist" 	 	required="false" type="string" default="" hint="What request collection keys to persist in the relocation. Keys must exist in the relocation">
 		<cfargument name="varStruct" 	required="false" type="struct" hint="A structure of key-value pairs to persist.">
@@ -582,7 +582,7 @@ Only one instance of a specific ColdBox application exists.
 			
 			// persist varstruct
 			if( structKeyExists(arguments, "varStruct") ){
-				flash.putAll(arguments.varStruct);
+				flash.putAll(map=arguments.varStruct,saveNow=true);
 			}
 			
 			// Persist keys
