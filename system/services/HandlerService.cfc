@@ -281,11 +281,6 @@ Description :
 		//Get recursive Array listing
 		HandlerArray = getHandlerListing(HandlersPath);
 		
-		//Verify it
-		if ( ArrayLen(HandlerArray) eq 0 ){
-			getUtil().throwit("No handlers were found in: #HandlersPath#. So I have no clue how you are going to run this application.","","HandlerService.NoHandlersFoundException");
-		}
-		
 		//Set registered Handlers
 		controller.setSetting(name="RegisteredHandlers",value=arrayToList(HandlerArray));
 		
@@ -300,6 +295,11 @@ Description :
 			
 			//Get recursive Array listing
 			HandlersExternalArray = getHandlerListing(HandlersExternalLocationPath);
+		}
+		
+		//Verify it
+		if ( ArrayLen(HandlerArray) eq 0 AND ArrayLen(HandlersExternalArray) eq 0){
+			getUtil().throwit("No handlers were found in: #HandlersPath# or in #HandlersExternalLocationPath#. So I have no clue how you are going to run this application.","","HandlerService.NoHandlersFoundException");
 		}
 		
 		//Set registered External Handlers
