@@ -11,18 +11,19 @@
 		
 		flash.init(mockController);
 		
-		testScope = {name="luis majano", date=now()};
+		testScope = { name={content="luis majano",keep=true}, date={content=now(),keep=true} };
 	}	
 	function teardown(){ 
 		structClear(request);
 	}
 	function testInflateFlash(){
-		mockEvent.$("collectionAppend");
+		mockEvent.$("setValue");
 		flash.$("getFlash",testScope);
 		
 		flash.inflateFlash();
 		assertEquals( flash.size(), 2);
-		assertEquals( mockEvent.$callLog().collectionAppend[1].collection, testScope );
+		debug(arrayLen(mockEvent.$callLog().setValue));
+		//assertEquals( arrayLen(mockEvent.$callLog().setValue), 2 );
 	}
 	
 	function testScopeMethods(){
@@ -39,7 +40,9 @@
 		flash.clear()
 		assertEquals( flash.size(), 0);
 		
-		flash.putAll(testScope);
+		testMap = {name="luis majano", date=now()};
+		
+		flash.putAll(testMap);
 		assertEquals( flash.size(), 2);
 		assertEquals( flash.get("name"),"luis majano");
 		flash.remove("name");
