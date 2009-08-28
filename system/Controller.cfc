@@ -586,7 +586,7 @@ Only one instance of a specific ColdBox application exists.
 			}
 			
 			// Persist keys
-			flash.persistRC(include=arguments.persist);
+			flash.persistRC(include=arguments.persist,saveNow=true);
 		</cfscript>	
 	</cffunction>
 	

@@ -62,11 +62,17 @@ method which will most likely be called by the saveFlash() method in order to pe
 		<cfscript>
 			var event = getController().getRequestService().getContext();
 			var flash = getFlash();
+			var key = "";
 			
-			// Append flash into request collection.
-			event.collectionAppend(collection=flash,overwrite=true);
-			// Append flash to temp flash request storage
-			putAll(flash);
+			// Inflate only kept flash variables, other ones are marked for discard.
+			for(key in flash){
+				if( flash[key].keep ){
+					// Save into RC
+					event.setValue(key,flash[key].content);
+					// Save and mark for cleaning
+					put(name=key,value=flash[key].content,keep=false);
+				}
+			}
 			
 			// Clear Flash Storage
 			clearFlash();
@@ -94,15 +100,36 @@ method which will most likely be called by the saveFlash() method in order to pe
 		<cfset structClear(getScope())>
     </cffunction>
 	
+	<!--- keep --->
+    <cffunction name="keep" output="false" access="public" returntype="void" hint="Keep all or a single flash temp variable alive for another relocation.">
+    	<cfargument name="keys" type="string" required="false" default="" hint="The keys in the flash ram that you want to mark to be kept until the next relocation"/>
+		<cfset statusMarks(arguments.keys,true)>
+    </cffunction>
+	
+	<!--- discard --->
+    <cffunction name="discard" output="false" access="public" returntype="void" hint="Mark for discard all or a single flash temp variable for another relocation. You can also remove them if you like.">
+    	<cfargument name="keys" type="string" required="false" default="" hint="The keys in the flash ram that you want to be discarded until the next relocation"/>
+		<cfset statusMarks(arguments.keys,false)>
+    </cffunction>
+	
 	<!--- put --->
     <cffunction name="put" output="false" access="public" returntype="void" hint="Put an object in temp flash scope">
     	<cfargument name="name"  type="string" required="true" hint="The name of the value"/>
 		<cfargument name="value" type="any" required="true" default="" hint="The value to store"/>
 		<cfargument name="saveNow" type="boolean" required="false" default="false" hint="Whether to send the contents for saving to flash ram or not. Default is to wait for a relocation"/>
+		<cfargument name="keep" type="boolean" required="false" default="true" hint="Whether to mark the entry to be kept after saving to the flash storage."/>
 		<cfscript>
 			var scope = getScope();
-			scope[arguments.name] = arguments.value;
+			var entry = structnew();
 			
+			// Create Flash Entry
+			entry.content = arguments.value;
+			entry.keep = arguments.keep;
+			
+			// Save entry in temp storage
+			scope[arguments.name] = entry;
+			
+			// Save to storage
 			if( arguments.saveNow ){ saveFlash(); }
 		</cfscript>
     </cffunction>
@@ -111,8 +138,16 @@ method which will most likely be called by the saveFlash() method in order to pe
     <cffunction name="putAll" output="false" access="public" returntype="void" hint="Put a map of name-value pairs into the flash scope">
     	<cfargument name="map" type="struct" required="true" default="" hint="The map of "/>
 		<cfargument name="saveNow" type="boolean" required="false" default="false" hint="Whether to send the contents for saving to flash ram or not. Default is to wait for a relocation"/>
+		<cfargument name="keep" type="boolean" required="false" default="true" hint="Whether to mark the entry to be kept after saving to the flash storage."/>
 		<cfscript>
-			structAppend(getScope(),arguments.map);
+			var key = "";
+			
+			// Save all keys in map
+			for( key in arguments.map ){
+				put(key,arguments.map[key],arguments.keep);
+			}
+			
+			// Save to Storage
 			if( arguments.saveNow ){ saveFlash(); }
 		</cfscript>
     </cffunction>
@@ -150,7 +185,7 @@ method which will most likely be called by the saveFlash() method in order to pe
 		<cfset var scope = getScope()>
 		
 		<cfif exists(arguments.name)>
-			<cfreturn scope[arguments.name]>
+			<cfreturn scope[arguments.name].content>
 		</cfif>
 		
 		<cfif structKeyExists(arguments,"default")>
@@ -170,6 +205,7 @@ method which will most likely be called by the saveFlash() method in order to pe
 			var key = "";
 			var x=1;
 			var thisKey = "";
+			var somethingToSave = false;
 			
 			// Cleanup
 			arguments.include = trim(arguments.include);
@@ -181,6 +217,7 @@ method which will most likely be called by the saveFlash() method in order to pe
 					// Only persist keys that are not Excluded.
 					if( NOT listFindNoCase(arguments.exclude,thisKey) ){
 						put(thisKey,rc[thisKey]);
+						somethingToSave = true;
 					}
 				}
 			}
@@ -192,16 +229,40 @@ method which will most likely be called by the saveFlash() method in order to pe
 					// Check if key exists in RC
 					if( structKeyExists(rc,thisKey) ){
 						put(thisKey,rc[thisKey]);
+						somethingToSave = true;
 					}
 				}
 			}	
 			
 			// Save Now?
-			if( arguments.saveNow ){ saveFlash(); }		
+			if( arguments.saveNow AND somethingToSave ){ saveFlash(); }		
 		</cfscript>
 	</cffunction>
 		
 <!------------------------------------------- PRIVATE ------------------------------------------>
+
+	<!--- statusMarks --->
+    <cffunction name="statusMarks" output="false" access="private" returntype="void" hint="Change the status marks of the temp scope entries">
+    	<cfargument name="keys" type="string" required="false" default="" hint="The keys in the flash ram that you want to be discarded or kept until the next relocation"/>
+		<cfargument name="keep" type="boolean" required="true" hint="Keep or Discard"/>
+    	<cfscript>
+			var scope = getScope();
+			var targetKeys = structKeyList(scope);
+			var x=1;
+			
+			// keys passed in?
+			if( len(trim(arguments.keys)) ){
+				targetKeys = keys;
+			}
+			
+			// Keep them if they exist
+			for(x=1; x lte listLen(targetKeys); x=x+1){
+				if( structKeyExists(scope,listGetAt(targetKeys,x)) ){
+					scope[listGetAt(targetKeys,x)].keep = arguments.keep;
+				}
+			}			
+		</cfscript>
+    </cffunction>
 
 	<!--- getController --->
     <cffunction name="getController" output="false" access="private" returntype="coldbox.system.Controller" hint="Get the controller reference">
