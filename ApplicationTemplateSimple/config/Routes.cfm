@@ -1,7 +1,8 @@
 <cfscript>
 	// General Properties
 	setEnabled(true);
-	setUniqueURLS(false);
+	setUniqueURLS(false);	
+	//setAutoReload(false);
 	
 	// Base URL
 	if( len(getSetting('AppMapping') ) lte 1){

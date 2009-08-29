@@ -40,6 +40,7 @@ Description :
 			setUniqueURLs(true);
 			setEnabled(true);
 			setDebugMode(false);
+			setAutoReload(false);
 			
 			// Verify the config file, else set it to our convention.
 			if( not propertyExists('configFile') ){
@@ -87,6 +88,9 @@ Description :
 			// Check if active or in proxy mode
 			if ( NOT getEnabled() OR arguments.event.isProxyRequest() )
 				return;
+			
+			//Auto Reload?
+			if( getAutoReload() ){ configure(); }
 			
 			// Set that we are in ses mode
 			arguments.event.setIsSES(true);
@@ -311,6 +315,14 @@ Description :
 		// Finally add it to the routing table
 		ArrayAppend(getRoutes(), thisRoute);
 		</cfscript>
+	</cffunction>
+	
+	<cffunction name="getAutoReload" access="public" returntype="boolean" output="false" hint="Set to auto reload the rules in each request">
+		<cfreturn instance.autoReload>
+	</cffunction>
+	<cffunction name="setAutoReload" access="public" returntype="void" output="false" hint="Get the auto reload flag.">
+		<cfargument name="autoReload" type="boolean" required="true">
+		<cfset instance.autoReload = arguments.autoReload>
 	</cffunction>
 	
 	<!--- Getter/Setter for uniqueURLs --->
