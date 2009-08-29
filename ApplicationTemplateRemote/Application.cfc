@@ -64,20 +64,4 @@ Description :
 		<!--- WHATEVER YOU WANT BELOW --->
 	</cffunction>
 	
-	<!--- on Session Start --->
-	<cffunction name="onSessionStart" returnType="void" output="false">			
-		<cfset super.onSessionStart()>
-		<!--- WHATEVER YOU WANT BELOW --->
-	</cffunction>
-	
-	<!--- on Session End --->
-	<cffunction name="onSessionEnd" returnType="void" output="false">
-		<!--- ************************************************************* --->
-		<cfargument name="sessionScope" type="struct" required="true">
-		<cfargument name="appScope" 	type="struct" required="false">
-		<!--- ************************************************************* --->
-		<cfset super.onSessionEnd(argumentCollection=arguments)>
-		<!--- WHATEVER YOU WANT BELOW --->
-	</cffunction>
-	
 </cfcomponent>

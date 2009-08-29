@@ -448,6 +448,10 @@ Description :
 			if( structKeyExists(configStruct,"FlashURLPersistScope") ){
 				fwSettingsStruct["FlashURLPersistScope"] = configStruct["FlashURLPersistScope"];
 			}
+			//Check for Missing Template Handler
+			if ( not StructKeyExists(configStruct, "MissingTemplateHandler") )
+				configStruct["MissingTemplateHandler"] = "";
+			
 		</cfscript>
 	</cffunction>
 	

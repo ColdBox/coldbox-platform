@@ -25,6 +25,7 @@
 		<Setting name="ApplicationStartHandler" 	value="main.onAppInit"/>
 		<Setting name="SessionStartHandler" 		value=""/>
 		<Setting name="SessionEndHandler" 			value=""/>
+		<Setting name="MissingTemplateHandler"		value=""/>
 		
 		<!-- Extension Points -->
 		<Setting name="UDFLibraryFile" 				value="" />

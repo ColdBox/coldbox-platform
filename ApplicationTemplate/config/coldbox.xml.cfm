@@ -29,6 +29,7 @@ http://ortus.svnrepository.com/coldbox/trac.cgi/wiki/cbConfigGuide
 		<Setting name="ApplicationStartHandler" 	value="Main.onAppInit"/>
 		<Setting name="SessionStartHandler" 		value=""/>
 		<Setting name="SessionEndHandler" 			value=""/>
+		<Setting name="MissingTemplateHandler"		value=""/>
 		
 		<!-- Extension Points -->
 		<Setting name="UDFLibraryFile" 				value="includes/helpers/ApplicationHelper.cfm" />

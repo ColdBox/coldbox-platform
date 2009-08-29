@@ -274,6 +274,35 @@ Description :
 		</cfif>		
 	</cffunction>
 	
+	<!--- OnMissing Template --->
+	<cffunction	name="onMissingTemplate" access="public" returntype="boolean" output="true" hint="I execute when a non-existing CFM page was requested.">
+		<cfargument name="template"	type="string" required="true"	hint="I am the template that the user requested."/>
+		<cfset var cbController = "">
+		<cfset var event = "">
+		
+		<cflock type="readonly" name="#getAppHash()#" timeout="#getLockTimeout()#" throwontimeout="true">
+			<cfset cbController = application[locateAppKey()]>
+		</cflock>	
+		
+		<cfscript>
+			//Execute Missing Template Handler
+			if ( len(cbController.getSetting("MissingTemplateHandler")) ){
+				// Save missing template in RC and right handler for this call.
+				event = cbController.getRequestService().getContext();
+				event.setValue("missingTemplate",arguments.template);
+				event.setValue(cbController.getSetting("EventName"),cbController.getSetting("MissingTemplateHandler"));
+				
+				//Process it
+				processColdBoxRequest();
+				
+				// Return processed
+				return true;
+			}
+			
+			return false;
+		</cfscript>
+	</cffunction>
+	
 	<!--- Session Start --->
 	<cffunction name="onSessionStart" returnType="void" output="false" hint="An onSessionStart method to use or call from your Application.cfc">
 		<cfset var cbController = "">

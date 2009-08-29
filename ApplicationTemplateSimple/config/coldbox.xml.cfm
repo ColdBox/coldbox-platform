@@ -28,6 +28,7 @@ http://ortus.svnrepository.com/coldbox/trac.cgi/wiki/cbConfigGuide
 		<Setting name="ApplicationStartHandler" 	value=""/>
 		<Setting name="SessionStartHandler" 		value=""/>
 		<Setting name="SessionEndHandler" 			value=""/>
+		<Setting name="MissingTemplateHandler"		value=""/>
 		
 		<!-- Error/Exception Handling -->
 		<Setting name="ExceptionHandler" 			value=""/>
