@@ -91,7 +91,7 @@ Description :
 	<!--- OnMissing Template --->
 	<cffunction	name="onMissingTemplate" access="public" returntype="boolean" output="true" hint="I execute when a non-existing CFM page was requested.">
 		<cfargument name="template"	type="string" required="true"	hint="I am the template that the user requested."/>
-		<cfreturn appScope.cbBootstrap.onMissingTemplate(argumentCollection=arguments)>
+		<cfreturn application.cbBootstrap.onMissingTemplate(argumentCollection=arguments)>
 	</cffunction>
 	
 </cfcomponent>
