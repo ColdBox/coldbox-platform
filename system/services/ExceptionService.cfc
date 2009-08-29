@@ -38,30 +38,25 @@ Modification History:
 		var ExceptionBean = CreateObject("component","coldbox.system.beans.ExceptionBean").init(errorStruct=arguments.Exception,extramessage=arguments.extraMessage,errorType=arguments.ErrorType);
 		var requestContext = controller.getRequestService().getContext();
 		
-		/* Test Error Type */
+		// Test Error Type
 		if ( not reFindnocase("(application|framework|coldboxproxy)",arguments.errorType) )
 			arguments.errorType = "application";
 		
-		/* Test type of error, proxy errors */	
-		if ( arguments.ErrorType neq "framework" ){
-			
-			//Run custom Exception handler if Found, else run default
-			if ( controller.getSetting("ExceptionHandler") neq "" ){
-				try{
-					requestContext.setValue("ExceptionBean",ExceptionBean);
-					controller.runEvent(controller.getSetting("Exceptionhandler"));
-				}
-				catch(Any e){
-					ExceptionBean = CreateObject("component","coldbox.system.beans.ExceptionBean").init(errorStruct=e,extramessage="Error Running Custom Exception handler",errorType="application");
-					controller.getPlugin("Logger").logErrorWithBean(ExceptionBean);
-				}
+		// Log Error:
+		controller.getPlugin("Logger").logErrorWithBean(ExceptionBean);
+		
+		//Run custom Exception handler if Found, else run default exception routines
+		if ( len(controller.getSetting("ExceptionHandler")) ){
+			try{
+				requestContext.setValue("ExceptionBean",ExceptionBean);
+				controller.runEvent(controller.getSetting("Exceptionhandler"));
 			}
-			else{
+			catch(Any e){
+				ExceptionBean = CreateObject("component","coldbox.system.beans.ExceptionBean").init(errorStruct=e,extramessage="Error Running Custom Exception handler",errorType="application");
 				controller.getPlugin("Logger").logErrorWithBean(ExceptionBean);
 			}
-		}		
+		}
 		
-		//return
 		return ExceptionBean;
 		</cfscript>
 	</cffunction>
