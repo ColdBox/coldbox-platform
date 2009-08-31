@@ -114,6 +114,15 @@ http://ortus.svnrepository.com/coldbox/trac.cgi/wiki/cbConfigGuide
 		<!-- @SIDEBAR@ -->
 	</Interceptors>
 	
+	<i18N>
+		<!--Default Resource Bundle without locale and properties extension-->
+		<!--<DefaultResourceBundle>includes/main</DefaultResourceBundle>-->
+		<!--Java Standard Locale-->
+		<!--<DefaultLocale>en_US</DefaultLocale>-->
+		<!--session or client-->
+		<!--<LocaleStorage>session</LocaleStorage>-->
+		<!--<UknownTranslation>nothing</UknownTranslation>-->
+	</i18N>
 	
 	<!-- Datasource Settings 
 		<Datasources>
