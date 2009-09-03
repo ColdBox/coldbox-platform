@@ -579,10 +579,10 @@ Description :
 				}
 				// verify dates
 				if( len(node.datepublished) neq 0 and len(node.dateupdated) eq 0){
-					node.dateupdated = node.datepublished;
+					node.dateupdated = CreateODBCDateTime(node.datepublished);
 				}
 				else if( len(node.dateupdated) neq 0 and len(node.datepublished) eq 0){
-					node.datepublished = node.dateupdated;
+					node.datepublished = CreateODBCDateTime(node.dateupdated);
 				}
 				/* Id */
 				if( structKeyExists(items[x],"guid") ) node.id = items[x].guid.xmlText;
@@ -685,5 +685,72 @@ Description :
 			return feed;
 		</cfscript>
 	</cffunction>
+	
+	<cffunction name="arrayOfStructsSort" access="public" returntype="array" output="false" hint="Sorts a structured array by a selected value">
+		<!--- ******************************************************************************** --->
+		<cfargument name="aOfS" type="array" required="true" hint="The array to sort"/>
+		<cfargument name="key" type="string" required="true" hint="Structure Key to sort by"/>
+		<cfargument name="sortOrder" type="string" default="desc" hint="Order to sort by, asc or desc"/>
+		<cfargument name="sortType" type="string" default="textnocase" hint="Text, textnocase, or numeric"/>
+		<!--- ******************************************************************************** --->
+		<cfscript>
+			/**
+			* Sorts an array of structures based on a key in the structures.
+			*
+			* @return Returns a sorted array.
+			* @author Nathan Dintenfass (nathan@changemedia.com)
+			* @version 1, December 10, 2001
+			* 
+			*/
+	        //by default, use ascii character 30 as the delim
+	        var delim = ".";
+	        //make an array to hold the sort stuff
+	        var sortArray = arraynew(1);
+	        //make an array to return
+	        var returnArray = arraynew(1);
+	        //grab the number of elements in the array (used in the loops)
+	        var count = arrayLen(aOfS);
+	        //make a variable to use in the loop
+	        var ii = 1;
+	        //if there is a 3rd argument, set the sortOrder
+	        if(arraylen(arguments) GT 2)
+	            sortOrder = arguments[3];
+	        //if there is a 4th argument, set the sortType
+	        if(arraylen(arguments) GT 3)
+	            sortType = arguments[4];
+	        //if there is a 5th argument, set the delim
+	        if(arraylen(arguments) GT 4)
+	            delim = arguments[5];
+	        //loop over the array of structs, building the sortArray
+	        for(ii = 1; ii lte count; ii = ii + 1)
+	            sortArray[ii] = aOfS[ii][key] & delim & ii;
+	        //now sort the array
+	        arraySort(sortArray,sortType,sortOrder);
+	        //now build the return array
+	        for(ii = 1; ii lte count; ii = ii + 1)
+	            returnArray[ii] = aOfS[listLast(sortArray[ii],delim)];
+	        //return the array
+	        return returnArray;
+		</cfscript>
+	</cffunction>
 
+	<cffunction name="querySortandTrim" access="public" returntype="query" output="false" hint="Sorts a structured array by a selected value">
+		<!--- ******************************************************************************** --->
+		<cfargument name="query" type="query" required="true" hint="The query to trim"/>
+		<cfargument name="maxRecords" type="numeric" required="true" hint="Trim to maximum records"/>
+		<cfargument name="sort" type="string" required="true" hint="Sort query by this column"/>
+		<cfargument name="direction" type="string" required="true" hint="Sort direction, either 'asc' or 'desc'"/>
+		<!--- ******************************************************************************** --->
+		<cfset var lowFatQuery = "">
+		<cfif not reFindnocase("^(asc|desc)$",arguments.direction)>
+			<cfset arguments.direction = "desc">
+		</cfif>
+		<cfquery dbtype="query" name="lowFatQuery" maxrows="#arguments.maxRecords#">
+			SELECT *
+			FROM arguments.query
+			ORDER BY #arguments.sort# #arguments.direction#;
+		</cfquery>
+		<cfreturn lowFatQuery>
+	</cffunction>
+	
 </cfcomponent>

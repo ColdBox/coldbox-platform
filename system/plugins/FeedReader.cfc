@@ -354,8 +354,12 @@ Quick and Dirty Feed Dump:
 		<cfargument name="itemsType" 	type="string" required="false" default="array" hint="The type of the items either query or array, array is default"/>
 		<cfargument name="maxItems" 	type="numeric" required="false" default="0" hint="The max number of entries to retrieve, default is all"/>
 		<!--- ******************************************************************************** --->
+		<cfset var feed = structnew()>
+		<cfset var i = 0>
+		<cfset var j = 0>
+		<cfset var feedCombArr = arrayNew(1)>
+		<cfset var url = "">
 		<cfset var xmlDoc = "">
-		<cfset var feedResult = structnew()>
 
 		<!--- Check for return type --->
 		<cfif not reFindnocase("^(query|array)$",arguments.itemsType)>
@@ -365,38 +369,101 @@ Quick and Dirty Feed Dump:
 		<!--- Replace protocols --->
 		<cfset arguments.feedURL = ReplaceNoCase(arguments.feedURL,"feed://","http://")>
 
-		<!--- Retrieve feed --->
-		<cfhttp method="get" url="#arguments.feedURL#" 
-			charset="utf-8"
-				resolveurl="yes" 
-				redirect="yes" 
-				timeout="#gethttpTimeout()#" 
-				result="feedResult" 
-				useragent="#createUserAgent()#">
-			<!--- HTTP compression algorithm decompress --->
-			<cfhttpparam type="Header" name="Accept-Encoding" value="deflate;q=0">
-			<cfhttpparam type="Header" name="TE" value="deflate;q=0">
-		</cfhttp>
-
-		<cftry>
-			<!--- Attempt to parse the XML document and remove Byte-Order-Mark (BOM) which is not compatible with XMLParse() --->
-			<cfset xmlDoc = XMLParse(REReplace(trim(feedResult.FileContent), "^[^<]*", "", "all"))>
-			<cfcatch type="Expression">
-				<cfthrow type="plugins.FeedReader.FeedParsingException"
-						 message="Error parsing the feed into an XML document. Please verify that the feed is correct and valid"
-						 detail="The returned cfhttp content is: <pre>#XMLFormat(feedResult.fileContent.toString())#</pre>">
-			</cfcatch>
-		</cftry>
-
-		<!--- Validate to see if it is a Atom or RSS/RDF feed --->
-		<cfif not structKeyExists(xmlDoc,"rss") and not structKeyExists(xmlDoc,"feed") and not structKeyExists(xmlDoc,"rdf:RDF")>
-			<cfthrow type="plugins.FeedReader.FeedParsingException"
-					 message="Cannot continue parsing the feed since it does not seem to be a valid RSS, RDF or Atom feed. Please verify that the feed is correct and valid"
-					 detail="The XML document is: #htmlEditFormat(toString(xmlDoc))#">
-		</cfif>
+		<!--- Download feeds and (if required) combine the data into a master feed --->
+		<cfloop list="#arguments.feedURL#" delimiters="," index="url">
+			<cfscript>
+				// increase i value for array number
+				i++;
+				// download feed
+				xmlDoc = downloadFeed(url);
+				/* parse feed when there are multiple urls to process */
+				if(ListLen(arguments.feedURL) gt 1) {
+					// process the downloaded feed
+					feedCombArr[i] = parseFeed(xmlDoc,arguments.itemsType,arguments.maxItems,true);
+					// merge downloaded feed into master feed
+					if(i lte 1) {
+						// this is the feed to process, so by default it becomes the master feed
+						feed.category = feedCombArr[i].category;
+						feed.datebuilt = feedCombArr[i].datebuilt;
+						feed.dateupdated = feedCombArr[i].dateupdated;
+						feed.description = "This is a custom, merged feed which combines the following sources: " & feedCombArr[i].title;
+						feed.specs.extensions = feedCombArr[i].specs.extensions;
+						feed.specs.namespace = feedCombArr[i].specs.namespace;
+						feed.specs.type = feedCombArr[i].specs.type;
+						feed.specs.version = feedCombArr[i].specs.version;
+						feed.title = feedCombArr[i].title;
+						feed.websiteurl = feedCombArr[i].websiteurl;
+						if( arguments.itemsType eq "array" ) feed.items = feedCombArr[i].items;
+						else feed.items = feedCombArr[i].items;
+					}
+					else {
+						// this is the 2nd or greater feed processed, so we have to combine the feed data with the master feed
+						// category appending and resorting
+						for (j=1;j lte ArrayLen(feedCombArr[i].category);j=j+1) {
+								ArrayAppend(feed.category,feedCombArr[i].category[j]);
+							}
+							feed.category = createObject('component','coldbox.system.web.feeds.FeedReader').arrayOfStructsSort(feed.category,'tag');
+						// datebuilt, here we only update the most recent date
+						try { if(DateCompare(feedCombArr[i].datebuilt,feed.datebuilt) is 1) feed.datebuilt = feedCombArr[i].datebuilt; }
+                        catch(Any e) { if(IsDate(feedCombArr[i].datebuilt)) feed.datebuilt = feedCombArr[i].datebuilt; }
+						// dateupdated, here we only update the most recent date
+						try { if(DateCompare(feedCombArr[i].datebuilt,feed.dateupdated) is 1) feed.dateupdated = feedCombArr[i].dateupdated; }
+                        catch(Any e) { if(IsDate(feedCombArr[i].dateupdated)) feed.dateupdated = feedCombArr[i].dateupdated; }
+						// the rest are more simple to merge
+						feed.description = listAppend(feed.description," #feedCombArr[i].title#");
+						feed.specs.extensions = listAppend(feed.specs.extensions,feedCombArr[i].specs.extensions);
+						structAppend(feed.specs.namespace,feedCombArr[i].specs.namespace,false);
+						feed.specs.type = listAppend(feed.specs.type,feedCombArr[i].specs.type);
+						feed.specs.version = listAppend(feed.specs.version,feedCombArr[i].specs.version);
+						feed.title = feed.title & " + " & feedCombArr[i].title;
+						feed.websiteurl = listAppend(feed.websiteurl,feedCombArr[i].websiteurl);
+						// when arguments itemType is 'array', combine the feed items with the master feed, reorder item array and trim the length to argument maxItems
+						if( arguments.itemsType eq "array" ) {
+							// append new feed items to master items
+							for (j=1;j lte ArrayLen(feedCombArr[i].items);j=j+1) {
+								ArrayAppend(feed.items,feedCombArr[i].items[j]);
+							}
+							// reorder master items
+							feed.items = createObject('component','coldbox.system.web.feeds.FeedReader').arrayOfStructsSort(feed.items,'datepublished');
+							// trim item length to arguments maxItems
+							for (j=arguments.maxItems;j lt ArrayLen(feed.items);j=arguments.maxItems) {
+								ArrayDeleteAt(feed.items,arguments.maxItems+1);
+							}
+						}
+						// when arguments itemType is 'query', ...
+						else {
+							// append new feed items to master items
+							feed.items = getPlugin("queryHelper").doQueryAppend(feed.items,feedCombArr[i].items);
+							// reorder and trim the master items
+							feed.items = createObject('component','coldbox.system.web.feeds.FeedReader').querySortandTrim(feed.items,arguments.maxItems,'datepublished','desc');
+						}
+					}
+					// set blanks for missing feed data where there could be conflicts
+					feed.author.email = "";
+					feed.author.name = "";
+					feed.author.url = "";
+					feed.image.description = "";
+					feed.image.height = "";
+					feed.image.icon = "";
+					feed.image.link = "";
+					feed.image.title = "";
+					feed.image.url = "";
+					feed.image.width = "";
+					feed.language = "";
+					feed.opensearch = StructNew();
+					feed.rating = "";
+					feed.rights.copyright = "";
+					feed.rights.creativecommonds = "";	
+					feed.specs.generator = "Multiple feeds combined";
+					feed.specs.url = "";
+				}
+				/* parse feed when there is only a single url to process (a much quicker process) */
+				else feed = parseFeed(xmlDoc,arguments.itemsType,arguments.maxItems,false);
+			</cfscript>
+		</cfloop>
 
 		<!--- Return a universal parsed structure --->
-		<cfreturn parseFeed(xmlDoc,arguments.itemsType,arguments.maxItems)>
+		<cfreturn feed>
 	</cffunction>
 
 	<cffunction name="parseFeed" access="public" returntype="struct" hint="This parses a feed as a XML document and returns the results as a structure of elements">
@@ -774,6 +841,44 @@ Quick and Dirty Feed Dump:
 			ua = ua & ' (#server.coldfusion.productname# #server.coldfusion.productversion#;#getPlugin('utilities').getOSName()#)'; // CFML engine and operating system
 			return ua;
 		</cfscript>
+	</cffunction>
+	
+	<cffunction name="downloadFeed" access="package" output="false" returntype="string" hint="">
+		<cfargument name="feedURL" 	type="string" required="yes" hint="The url to retrieve the feed from.">
+		<cfset var feedResult = structNew()>
+		<cfset var xmlDoc = "">
+		<!--- Retrieve feed --->
+		<cfhttp method="get" url="#arguments.feedURL#" 
+			charset="utf-8"
+				resolveurl="yes" 
+				redirect="yes" 
+				timeout="#gethttpTimeout()#" 
+				result="feedResult" 
+				useragent="#createUserAgent()#">
+			<!--- HTTP compression algorithm decompress --->
+			<cfhttpparam type="Header" name="Accept-Encoding" value="deflate;q=0">
+			<cfhttpparam type="Header" name="TE" value="deflate;q=0">
+		</cfhttp>
+		<!--- for these error messages, allow support for multiple feeds, ie to output the feed that is generating the error rather than just assume it is the first one --->
+		<cftry>
+			<!--- Attempt to parse the XML document and remove Byte-Order-Mark (BOM) which is not compatible with XMLParse() --->
+			<cfset xmlDoc = XMLParse(REReplace(trim(feedResult.FileContent), "^[^<]*", "", "all"))>
+			<cfcatch type="Expression">
+				<cfthrow type="plugins.FeedReader.FeedParsingException"
+						 message="Error parsing the feed into an XML document. Please verify that the feed is correct and valid"
+						 detail="The returned cfhttp content belonging to (#arguments.feedURL#) : <pre>#XMLFormat(feedResult.fileContent.toString())#</pre>">
+			</cfcatch>
+		</cftry>
+
+		<!--- Validate to see if it is a Atom or RSS/RDF feed --->
+		<cfif not structKeyExists(xmlDoc,"rss") and not structKeyExists(xmlDoc,"feed") and not structKeyExists(xmlDoc,"rdf:RDF")>
+			<cfthrow type="plugins.FeedReader.FeedParsingException"
+					 message="Cannot continue parsing the feed since it does not seem to be a valid RSS, RDF or Atom feed. Please verify that the feed is correct and valid"
+					 detail="The XML document belonging to (#arguments.feedURL#) : #htmlEditFormat(toString(xmlDoc))#">
+		</cfif>
+		
+		<!--- Return downloaded feed as a structure --->
+		<cfreturn xmlDoc/>
 	</cffunction>
 
 	<!--- GET/SET lock name --->
