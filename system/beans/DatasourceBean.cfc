@@ -54,27 +54,27 @@ Modification History:
 
 	<!--- ************************************************************* --->
 
-	<cffunction name="setname" access="public" returntype="void" output="false" hint="Set name of the datasource, this maps to the Coldfusion datasource name">
+	<cffunction name="setName" access="public" returntype="void" output="false" hint="Set name of the datasource, this maps to the Coldfusion datasource name">
 	  <cfargument name="name" type="string" required="true">
 	  <cfset instance.name=arguments.name >
 	</cffunction>
 
 	<!--- ************************************************************* --->
 
-	<cffunction name="getname" access="public" returntype="string" output="false" hint="Get the name">
+	<cffunction name="getName" access="public" returntype="string" output="false" hint="Get the name">
 	  <cfreturn instance.name >
 	</cffunction>
 
 	<!--- ************************************************************* --->
 
-	<cffunction name="setalias" access="public" returntype="void" output="false" hint="Set alias of the datasource, this is used for reference to the structure.">
+	<cffunction name="setAlias" access="public" returntype="void" output="false" hint="Set alias of the datasource, this is used for reference to the structure.">
 	  <cfargument name="alias" type="string" required="true">
 	  <cfset instance.alias=arguments.alias >
 	</cffunction>
 
 	<!--- ************************************************************* --->
 
-	<cffunction name="getalias" access="public" returntype="string" output="false" hint="Get the alias">
+	<cffunction name="getAlias" access="public" returntype="string" output="false" hint="Get the alias">
 	  <cfreturn instance.alias >
 	</cffunction>
 
