@@ -49,40 +49,40 @@ Modification History:
 
 	<!--- ************************************************************* --->
 
-	<cffunction name="getmemento" access="public" returntype="any" output="false" hint="Get the memento">
+	<cffunction name="getMemento" access="public" returntype="any" output="false" hint="Get the memento">
 		<cfreturn variables.instance >
 	</cffunction>
 
 	<!--- ************************************************************* --->
 
-	<cffunction name="setmemento" access="public" returntype="void" output="false" hint="Set the memento">
+	<cffunction name="setMemento" access="public" returntype="void" output="false" hint="Set the memento">
 		<cfargument name="memento" type="struct" required="true">
 		<cfset variables.instance = arguments.memento>
 	</cffunction>
 
 	<!--- ************************************************************* --->
 
-	<cffunction name="setserver" access="public" return="void" output="false" hint="Set server">
+	<cffunction name="setServer" access="public" return="void" output="false" hint="Set server">
 	  <cfargument name="server" type="string" >
 	  <cfset instance.server=arguments.server >
 	</cffunction>
 
 	<!--- ************************************************************* --->
 
-	<cffunction name="getserver" access="public" return="string" output="false" hint="Get server">
+	<cffunction name="getServer" access="public" return="string" output="false" hint="Get server">
 	  <cfreturn instance.server >
 	</cffunction>
 
 	<!--- ************************************************************* --->
 
-	<cffunction name="setport" access="public" return="void" output="false" hint="Set port">
+	<cffunction name="setPort" access="public" return="void" output="false" hint="Set port">
 	  <cfargument name="port" type="string" >
 	  <cfset instance.port=arguments.port >
 	</cffunction>
 
 	<!--- ************************************************************* --->
 
-	<cffunction name="getport" access="public" return="string" output="false" hint="Get port">
+	<cffunction name="getPort" access="public" return="string" output="false" hint="Get port">
 	  <cfreturn instance.port >
 	</cffunction>
 

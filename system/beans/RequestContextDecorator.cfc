@@ -38,16 +38,16 @@ Description :
 <!------------------------------------------- PUBLIC ------------------------------------------->
 	
 	<!--- Configure --->
-	<cffunction name="Configure" access="public" returntype="void" hint="Override to provide a pseudo-constructor for your decorator" output="false" >
+	<cffunction name="configure" access="public" returntype="void" hint="Override to provide a pseudo-constructor for your decorator" output="false" >
 	</cffunction>
 	
 	<!--- Get the original context --->
-	<cffunction name="getrequestContext" access="public" output="false" returntype="any" hint="Get the original request context. coldbox.system.beans.RequestContext">
+	<cffunction name="getRequestContext" access="public" output="false" returntype="any" hint="Get the original request context. coldbox.system.beans.RequestContext">
 		<cfreturn instance.requestContext/>
 	</cffunction>
 	
 	<!--- Set the original context --->
-	<cffunction name="setrequestContext" access="public" output="false" returntype="void" hint="DO NOT OVERRIDE: Set the original request context.">
+	<cffunction name="setRequestContext" access="public" output="false" returntype="void" hint="DO NOT OVERRIDE: Set the original request context.">
 		<cfargument name="requestContext" type="any" required="true"/>
 		<cfset instance.requestContext = arguments.requestContext/>
 	</cffunction>
@@ -55,7 +55,7 @@ Description :
 <!------------------------------------------- PRIVATE ------------------------------------------->
 
 	<!--- Get Set Controller --->
-	<cffunction name="getcontroller" access="private" output="false" returntype="any" hint="Get controller: coldbox.system.Controller">
+	<cffunction name="getController" access="private" output="false" returntype="any" hint="Get controller: coldbox.system.Controller">
 		<cfreturn instance.controller/>
 	</cffunction>	
 
