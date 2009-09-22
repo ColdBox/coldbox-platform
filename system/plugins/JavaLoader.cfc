@@ -102,6 +102,12 @@ Luis Majano		07/11/2006		Updated it to work with ColdBox. look at license in the
 		<cfreturn instance.staticIDKey>
 	</cffunction>
 	
+	<!--- set the static javaloader id --->
+	<cffunction name="setStaticIDKey" access="public" returntype="void" output="false" hint="override the static server key for this javaloader instance.">
+		<cfargument name="staticIDKey" type="string" required="true">
+		<cfset instance.staticIDKey = arguments.staticIDKey>
+	</cffunction>
+	
 	<!--- Get jars from a path as an array --->
 	<cffunction name="queryJars" hint="pulls a query of all the jars in the folder passed" access="public" returntype="array" output="false">
 		<cfargument name="dirPath" type="string" required="true" default="" hint="The directory path to query"/>
@@ -152,11 +158,5 @@ Luis Majano		07/11/2006		Updated it to work with ColdBox. look at license in the
 			return structKeyExists( server, getstaticIDKey());
 		</cfscript>
 	</cffunction>	
-	
-	<!--- set the static javaloader id --->
-	<cffunction name="setStaticIDKey" access="private" returntype="void" output="false">
-		<cfargument name="staticIDKey" type="string" required="true">
-		<cfset instance.staticIDKey = arguments.staticIDKey>
-	</cffunction>
 	
 </cfcomponent>
