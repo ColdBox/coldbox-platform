@@ -104,10 +104,10 @@ Description :
 	</cffunction>
 	
 	<!--- getter setter state --->
-	<cffunction name="getstate" access="public" output="false" returntype="string" hint="Get the state's name">
+	<cffunction name="getState" access="public" output="false" returntype="string" hint="Get the state's name">
 		<cfreturn instance.state/>
 	</cffunction>	
-	<cffunction name="setstate" access="public" output="false" returntype="void" hint="Set the state's name">
+	<cffunction name="setState" access="public" output="false" returntype="void" hint="Set the state's name">
 		<!--- ************************************************************* --->
 		<cfargument name="state" type="string" required="true"/>
 		<!--- ************************************************************* --->
@@ -115,10 +115,10 @@ Description :
 	</cffunction>
 	
 	<!--- getter setter interceptors --->
-	<cffunction name="getinterceptors" access="public" output="false" returntype="any" hint="Get the interceptors linked hash map">
+	<cffunction name="getInterceptors" access="public" output="false" returntype="any" hint="Get the interceptors linked hash map">
 		<cfreturn instance.interceptors/>
 	</cffunction>	
-	<cffunction name="setinterceptors" access="public" output="false" returntype="void" hint="Set interceptors linked hash map">
+	<cffunction name="setInterceptors" access="public" output="false" returntype="void" hint="Set interceptors linked hash map">
 		<!--- ************************************************************* --->
 		<cfargument name="interceptors" type="any" required="true"/>
 		<!--- ************************************************************* --->

@@ -39,7 +39,7 @@ Modification History:
 	<cffunction name="getMemento" access="public" returntype="struct" output="false" hint="Get the memento">
 		<cfreturn variables.instance >
 	</cffunction>
-	<cffunction name="setmemento" access="public" returntype="void" output="false" hint="Set the memento">
+	<cffunction name="setMemento" access="public" returntype="void" output="false" hint="Set the memento">
 		<cfargument name="memento" type="struct" required="true">
 		<cfset variables.instance = arguments.memento>
 	</cffunction>
@@ -64,10 +64,10 @@ Modification History:
 	</cffunction>
 	
 	<!--- Get/Set Private --->
-	<cffunction name="getisPrivate" access="public" returntype="boolean" output="false">
+	<cffunction name="getIsPrivate" access="public" returntype="boolean" output="false">
 		<cfreturn instance.isPrivate>
 	</cffunction>
-	<cffunction name="setisPrivate" access="public" returntype="void" output="false">
+	<cffunction name="setIsPrivate" access="public" returntype="void" output="false">
 		<cfargument name="isPrivate" type="boolean" required="true">
 		<cfset instance.isPrivate = arguments.isPrivate>
 	</cffunction>
@@ -91,19 +91,19 @@ Modification History:
 	</cffunction>
 	
 	<!--- Is missing Action --->
-	<cffunction name="getisMissingAction" access="public" returntype="boolean" output="false">
+	<cffunction name="getIsMissingAction" access="public" returntype="boolean" output="false">
 		<cfreturn instance.isMissingAction>
 	</cffunction>
-	<cffunction name="setisMissingAction" access="public" returntype="void" output="false">
+	<cffunction name="setIsMissingAction" access="public" returntype="void" output="false">
 		<cfargument name="isMissingAction" type="boolean" required="true">
 		<cfset instance.isMissingAction = arguments.isMissingAction>
 	</cffunction>
 	
 	<!--- Missing Action item. --->
-	<cffunction name="getmissingAction" access="public" returntype="string" output="false">
+	<cffunction name="getMissingAction" access="public" returntype="string" output="false">
 		<cfreturn instance.missingAction>
 	</cffunction>
-	<cffunction name="setmissingAction" access="public" returntype="void" output="false">
+	<cffunction name="setMissingAction" access="public" returntype="void" output="false">
 		<cfargument name="missingAction" type="string" required="true">
 		<cfset instance.missingAction = arguments.missingAction>
 	</cffunction>
