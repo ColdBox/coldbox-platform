@@ -745,7 +745,7 @@ License		: 	Apache 2 License
 			}
 		</cfscript>
 		<cfif throwErr>
-			<cfthrow type="ColdBox.FeedGenerator.InvalidFeedStructure" message="The generated RSS feed has some problems which makes it incomplete"  detail="#invalidDsp#">
+			<cfthrow type="RSS2Generator.InvalidFeedStructure" message="The generated RSS feed has some problems which makes it incomplete"  detail="#invalidDsp#">
 		</cfif>
 	</cffunction>
 

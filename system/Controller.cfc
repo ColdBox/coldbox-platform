@@ -243,7 +243,7 @@ Only one instance of a specific ColdBox application exists.
 		else if ( settingExists(arguments.name) )
 			 return instance.ConfigSettings[arguments.name];
 		else
-			getUtil().throwit("The setting #arguments.name# does not exist.","FWSetting flag is #arguments.FWSetting#","Framework.SettingNotFoundException");
+			getUtil().throwit("The setting #arguments.name# does not exist.","FWSetting flag is #arguments.FWSetting#","Controller.SettingNotFoundException");
 		</cfscript>
 	</cffunction>
 	<cffunction name="settingExists" returntype="boolean" access="Public"	hint="I Check if a value exists in the configstruct or the fwsettingsStruct." output="false">
@@ -282,7 +282,7 @@ Only one instance of a specific ColdBox application exists.
 				break;
 			//Default Case
 			default:
-				getUtil().throwit("Invalid Service detected","service:#arguments.service#","Framework.ServiceNotDefinedException");
+				getUtil().throwit("Invalid Service detected","service:#arguments.service#","Controller.ServiceNotDefinedException");
 		}
 		</cfscript>
 	</cffunction>

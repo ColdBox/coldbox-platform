@@ -131,14 +131,14 @@ Modification History:
 		var datasources = application[coldboxAppKey].getSetting("Datasources");
 		//Check for datasources structure
 		if ( structIsEmpty(datasources) ){
-			getUtil().throwit("There are no datasources defined for this application.","","Framework.coldboxFactory.DatasourceStructureEmptyException");
+			getUtil().throwit("There are no datasources defined for this application.","","ColdboxFactory.DatasourceStructureEmptyException");
 		}
 		//Try to get the correct datasource.
 		if ( structKeyExists(datasources, arguments.alias) ){
 			return CreateObject("component",datasourceBeanPath).init(datasources[arguments.alias]);
 		}
 		else{
-			getUtil().throwit("The datasource: #arguments.alias# is not defined.","","Framework.coldboxFactory.DatasourceNotFoundException");
+			getUtil().throwit("The datasource: #arguments.alias# is not defined.","","ColdboxFactory.DatasourceNotFoundException");
 		}
 		</cfscript>
 	</cffunction>

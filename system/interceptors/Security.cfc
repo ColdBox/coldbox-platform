@@ -423,7 +423,7 @@ For the latest usage, please visit the wiki.
 			<!--- Validate Query --->
 			<cfloop list="#validColumns#" index="col">
 				<cfif not listfindnocase(arguments.qRules.columnlist,col)>
-					<cfthrow message="The required column: #col# was not found in the rules query" type="interceptors.Security.invalidRuleQuery">
+					<cfthrow message="The required column: #col# was not found in the rules query" type="Security.invalidRuleQuery">
 				</cfif>
 			</cfloop>
 		</cfif>

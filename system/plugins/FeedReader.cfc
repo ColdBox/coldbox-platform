@@ -193,7 +193,7 @@ Quick and Dirty Feed Dump:
 			</cflock>
 			<!--- Exists check --->
 			<cfif qFile.recordcount eq 0>
-				<cfthrow message="The feed does not exist in the cache." type="customPlugins.plugins.FeedReader">
+				<cfthrow message="The feed does not exist in the cache." type="FeedReader.FeedDoesNotExistInTheCache">
 			</cfif>
 			<!--- Timeout check --->
 			<cfif DateDiff("n", qFile.dateLastModified, now()) gt getCacheTimeout()>
@@ -864,7 +864,7 @@ Quick and Dirty Feed Dump:
 			<!--- Attempt to parse the XML document and remove Byte-Order-Mark (BOM) which is not compatible with XMLParse() --->
 			<cfset xmlDoc = XMLParse(REReplace(trim(feedResult.FileContent), "^[^<]*", "", "all"))>
 			<cfcatch type="Expression">
-				<cfthrow type="plugins.FeedReader.FeedParsingException"
+				<cfthrow type="FeedReader.FeedParsingException"
 						 message="Error parsing the feed into an XML document. Please verify that the feed is correct and valid"
 						 detail="The returned cfhttp content belonging to (#arguments.feedURL#) : <pre>#XMLFormat(feedResult.fileContent.toString())#</pre>">
 			</cfcatch>
@@ -872,7 +872,7 @@ Quick and Dirty Feed Dump:
 
 		<!--- Validate to see if it is a Atom or RSS/RDF feed --->
 		<cfif not structKeyExists(xmlDoc,"rss") and not structKeyExists(xmlDoc,"feed") and not structKeyExists(xmlDoc,"rdf:RDF")>
-			<cfthrow type="plugins.FeedReader.FeedParsingException"
+			<cfthrow type="FeedReader.FeedParsingException"
 					 message="Cannot continue parsing the feed since it does not seem to be a valid RSS, RDF or Atom feed. Please verify that the feed is correct and valid"
 					 detail="The XML document belonging to (#arguments.feedURL#) : #htmlEditFormat(toString(xmlDoc))#">
 		</cfif>

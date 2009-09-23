@@ -104,7 +104,7 @@ Modification History: March 23,2008 Added new feature to encrypt/decrypt cookie 
 		
 		<!--- Store cookie with expiration info --->
 		<cfif len(arguments.path) GT 0 and not len(arguments.domain) GT 0>
-			<cfthrow type="Framework.plugin.cookiestorage.MissingDomainArgument" message="If you specify path, you must also specify domain.">
+			<cfthrow type="CookieStorage.MissingDomainArgument" message="If you specify path, you must also specify domain.">
 		<cfelseif len(arguments.path) GT 0 and len(arguments.domain) GT 0>
 			<cfset args["path"]		= arguments.path />
 			<cfset args["domain"]	= arguments.domain />

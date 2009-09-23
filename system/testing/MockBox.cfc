@@ -181,7 +181,7 @@ Description		:
 			<!--- Save incoming arguments as results --->
 			<cfset this._mockCurrentArgsHash = this._mockCurrentMethod & "|" & hash(arguments.toString())>
 		<cfelse>
-			<cfthrow type="MockFactory.IllegalStateException"
+			<cfthrow type="MockBox.IllegalStateException"
 					 message="No current method name set"
 					 detail="This method was probably called without chaining it to a mockMethod() call. Ex: obj.mockMethod().mockArgs()">
 		</cfif>

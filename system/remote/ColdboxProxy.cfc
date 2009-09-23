@@ -169,7 +169,7 @@ Description :
 			cbController.getInterceptorService().processState("onException",interceptData);
 			
 			/* Log Exception */
-			cbController.getExceptionService().ExceptionHandler(arguments.exceptionObject,"coldboxproxy","ColdBox Proxy Exception");
+			cbController.getExceptionService().ExceptionHandler(arguments.exceptionObject,"ColdboxProxy","ColdBox Proxy Exception");
 			
 			/* Request Profilers */
 			pushTimers();

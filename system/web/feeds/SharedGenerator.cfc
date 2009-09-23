@@ -132,7 +132,7 @@ License		: 	Apache 2 License
 			/* Validate we have a real date to work with */
 		</cfscript>
 		<cfif not isDate(arguments.targetDate)>
-			<cfthrow errorcode="ColdBox.FeedGenerator.InvalidDate" message="The date sent in for parsing is not valid" detail="TargetDate: #arguments.targetDate#">
+			<cfthrow errorcode="SharedGenerator.InvalidDate" message="The date sent in for parsing is not valid" detail="TargetDate: #arguments.targetDate#">
 		</cfif>
 		<cfscript>
 			/* Calculate with offset the GMT DateTime object */

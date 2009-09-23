@@ -113,7 +113,7 @@ Description :
 			<cfif not fileExists(expandPath(cbox_viewpath))>
 				<cfthrow message="View not located" 
 						 detail="The view: #arguments.view#.cfm could not be located in the conventions folder or in the external location. Please verify the view name" 
-						 type="plugins.Renderer.ViewNotFound">
+						 type="Renderer.ViewNotFound">
 			</cfif>
 			<!--- Helper? --->
 			<cfif fileExists(expandPath("#instance.viewsExternalLocation#/#arguments.view#Helper.cfm"))>
@@ -180,7 +180,7 @@ Description :
 				<cfsavecontent variable="cbox_RenderedView"><cfoutput><cfinclude template="#arguments.view#.cfm"></cfoutput></cfsavecontent>
 				<!--- Catches --->
 				<cfcatch type="missinginclude">
-					<cfthrow type="plugins.Renderer.RenderExternalViewNotFoundException" message="The external view: #arguments.view# cannot be found. Please check your paths." >
+					<cfthrow type="Renderer.RenderExternalViewNotFoundException" message="The external view: #arguments.view# cannot be found. Please check your paths." >
 				</cfcatch>
 				<cfcatch type="any">
 					<cfrethrow />

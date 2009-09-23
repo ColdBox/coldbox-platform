@@ -255,7 +255,7 @@ Description :
 		
 		<!--- INVALID JSON --->
 		<cfelse>
-			<cfthrow message="Invalid JSON" detail="The document you are trying to decode is not in valid JSON format" />
+			<cfthrow message="Invalid JSON" detail="The document you are trying to decode is not in valid JSON format" type="Utility.InvalidJSON" />
 		</cfif>
 	</cffunction>
 	

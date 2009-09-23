@@ -85,7 +85,7 @@ Description :
 		
 		/* Validate Incoming State */
 		if ( controller.getSetting("InterceptorConfig").throwOnInvalidStates AND NOT listfindnocase(getInterceptionPoints(),arguments.state) ){
-			getUtil().throwit("The interception state sent in to process is not valid: #arguments.state#","","Framework.InterceptorService.InvalidInterceptionState");
+			getUtil().throwit("The interception state sent in to process is not valid: #arguments.state#","","InterceptorService.InvalidInterceptionState");
 		}
 		
 		/* Process The State if it exists, else just exit out */
@@ -134,7 +134,7 @@ Description :
 			<cfset objectKey = getColdboxOCM().INTERCEPTOR_CACHEKEY_PREFIX & interceptorName>
 			<cfset oInterceptor = arguments.interceptorObject>			
 		<cfelse>
-			<cfthrow message="Invalid registration" detail="You did not send in an interceptorClass or interceptorObject for registration" type="Framework.InterceptorService.InvalidRegistration">
+			<cfthrow message="Invalid registration" detail="You did not send in an interceptorClass or interceptorObject for registration" type="InterceptorService.InvalidRegistration">
 		</cfif>
 		
 		<!--- Lock this registration --->

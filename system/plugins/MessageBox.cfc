@@ -129,7 +129,7 @@ Description :
 			<!--- Flatten it --->
 			<cfwddx action="cfml2wddx" input="#msgStruct#" output="#getstorageScope()#.ColdBox_fw_MessageBox">
 		<cfelse>
-			<cfthrow type="ColdBox.plugins.MessageBox.InvalidMessageTypeException" message="The message type sent in: #arguments.type# is invalid. Available types: error,warning,info">
+			<cfthrow type="MessageBox.InvalidMessageTypeException" message="The message type sent in: #arguments.type# is invalid. Available types: error,warning,info">
 		</cfif>
 	</cffunction>
 	

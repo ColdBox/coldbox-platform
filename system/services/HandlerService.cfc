@@ -127,7 +127,7 @@ Description :
 					if ( compareNoCase(controller.getSetting("onInvalidEvent"),oRequestContext.getCurrentEvent()) eq 0 ){
 						getUtil().throwit(message="The onInvalid event is invalid",
 										  detail="The onInvalidEvent setting is also invalid: #controller.getSetting('onInvalidEvent')#. Please check your settings",
-										  type="Framework.onInValidEventSettingException");
+										  type="HandlerService.onInValidEventSettingException");
 					}
 					//Place invalid event in request context.
 					oRequestContext.setValue("invalidevent",oEventHandlerBean.getRunnable());
@@ -138,7 +138,7 @@ Description :
 				else{
 					getUtil().throwit(message="An invalid event has been detected",
 									  detail="An invalid event has been detected: [#oEventHandlerBean.getRunnable()#] The action requested: [#oEventHandlerBean.getMethod()#] does not exists in the specified handler.",
-									  type="Framework.invalidEventException");
+									  type="HandlerService.invalidEventException");
 				}
 			}//method check finalized.
 			
