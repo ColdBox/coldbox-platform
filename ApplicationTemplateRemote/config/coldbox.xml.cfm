@@ -81,6 +81,8 @@
 		</Appender> -->
 		<!-- Root Logger Definition -->
 		<Root levelMin="FATAL" levelMax="INFO" appenders="*" />
+		<!-- ColdBox Package Logging -->
+		<Category name="coldbox.system" appenders="*" levelMin="FATAL" levelMax="INFO" />
 	</LogBox>
 	
 	<!-- Custom Conventions : You can override the framework wide conventions of the locations of the needed objects -->
