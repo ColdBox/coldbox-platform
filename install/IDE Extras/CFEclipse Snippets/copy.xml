@@ -29,7 +29,7 @@
 
 	<target name="init" depends="createDefaultPropertiesFile">
 		<path id="cp">
-			<fileset dir="../antlib">
+			<fileset dir="../../antlib">
 				<include name="**/*.jar" />
 			</fileset>
 		</path>

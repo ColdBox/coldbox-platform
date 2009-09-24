@@ -24,7 +24,7 @@
 	<target name="init" description="Init the task">
 		<!-- Load Paths -->
 		<path id="cp">
-			<fileset dir="../antlib" includes="**/*.jar"/>
+			<fileset dir="../../antlib" includes="**/*.jar"/>
 		</path>
 		
 		<!-- Task Definitions -->
