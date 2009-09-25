@@ -161,7 +161,7 @@
 			<Property name="debugMode">true</Property>
 		</Interceptor>
 		<Interceptor class="coldbox.system.interceptors.SES">
-			<Property name="configFile">/config/routes.cfm</Property>
+			<Property name="configFile">config/routes.cfm</Property>
 		</Interceptor>
 		
 		<Interceptor class="${AppMapping}.interceptors.errorObserver" />

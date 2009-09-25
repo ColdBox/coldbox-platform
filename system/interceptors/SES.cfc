@@ -25,15 +25,6 @@ Description :
 
 	<cffunction name="configure" access="public" returntype="void" hint="This is where the ses plugin configures itself." output="false" >
 		<cfscript>
-			var configFilePath = "/";
-			var controller = getController();
-			var local = structnew();
-			
-			// If AppMapping is not Blank check
-			if( controller.getSetting('AppMapping') neq "" ){
-				configFilePath = configFilePath & controller.getSetting('AppMapping') & "/";
-			}
-			
 			// Setup the default interceptor properties
 			setRoutes( ArrayNew(1) );
 			setLooseMatching(false);
@@ -42,32 +33,15 @@ Description :
 			setDebugMode(false);
 			setAutoReload(false);
 			
-			// Verify the config file, else set it to our convention.
-			if( not propertyExists('configFile') ){
-				setProperty('configFile','config/Routes.cfm');
-			}
-			
-			// Setup the config Path
-			configFilePath = configFilePath & reReplace(getProperty('ConfigFile'),"^/","");
-			
-			// We are ready to roll. Import config to setup the routes.
-			try{
-				$include(configFilePath);
-			}
-			catch(Any e){
-				$throw("Error including config file: #e.message# #e.detail#",e.tagContext.toString(),"SES.executingConfigException");
-			}
-			
-			// Validate the base URL
-			if ( len(getBaseURL()) eq 0 ){
-				$throw('The baseURL property has not been defined. Please define it using the setBaseURL() method.','','interceptors.SES.invalidPropertyException');
-			}
+			//Import Config
+			importConfiguration();
 			
 			// Save the base URL in the application settings
 			setSetting('sesBaseURL', getBaseURL() );
 			setSetting('htmlBaseURL', replacenocase(getBaseURL(),"index.cfm",""));
 		</cfscript>
 	</cffunction>
+	
 
 <!------------------------------------------- INTERCEPTION POINTS ------------------------------------------->
 	
@@ -781,6 +755,49 @@ Description :
 			arguments.thisRoute.pattern = base;
 			// Register the final route
 			addRoute(argumentCollection=arguments.thisRoute);
+		</cfscript>
+	</cffunction>
+	
+	<!--- importConfiguration --->
+	<cffunction name="importConfiguration" output="false" access="private" returntype="void" hint="Import the routing configuration file">
+		<cfscript>
+			var appLocPrefix = "/";
+			var configFilePath = "";
+			var controller = getController();
+			var local = structnew();
+			
+			// Verify the config file, else set it to our convention in the config/Routes.cfm
+			if( not propertyExists('configFile') ){
+				setProperty('configFile','config/Routes.cfm');
+			}			
+			
+			//Check if file exists in our App
+			if( len(getSetting('AppMapping')) ){
+				appLocPrefix = appLocPrefix & getSetting('AppMapping') & "/";
+			}
+			
+			// Setup the config Path for relative location first.
+			configFilePath = appLocPrefix & reReplace(getProperty('ConfigFile'),"^/","");
+			if( NOT fileExists(expandPath(configFilePath)) ){
+				//Check absolute location as not found inside our app
+				configFilePath = getProperty('ConfigFile');
+				if( NOT fileExists(expandPath(configFilePath)) ){
+					$throw(message="Error locating routes file: #configFilePath#",type="SES.ConfigFileNotFound");
+				}	
+			}
+			
+			// We are ready to roll. Import config to setup the routes.
+			try{
+				$include(configFilePath);
+			}
+			catch(Any e){
+				$throw("Error including config file: #e.message# #e.detail#",e.tagContext.toString(),"SES.executingConfigException");
+			}
+			
+			// Validate the base URL
+			if ( len(getBaseURL()) eq 0 ){
+				$throw('The baseURL property has not been defined. Please define it using the setBaseURL() method.','','interceptors.SES.invalidPropertyException');
+			}
 		</cfscript>
 	</cffunction>
 
