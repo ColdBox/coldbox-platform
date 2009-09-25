@@ -763,7 +763,6 @@ Description :
 		<cfscript>
 			var appLocPrefix = "/";
 			var configFilePath = "";
-			var controller = getController();
 			var local = structnew();
 			
 			// Verify the config file, else set it to our convention in the config/Routes.cfm
@@ -771,7 +770,7 @@ Description :
 				setProperty('configFile','config/Routes.cfm');
 			}			
 			
-			//Check if file exists in our App
+			//App location prefix
 			if( len(getSetting('AppMapping')) ){
 				appLocPrefix = appLocPrefix & getSetting('AppMapping') & "/";
 			}

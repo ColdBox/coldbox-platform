@@ -22,10 +22,9 @@ Description: This is the framework's simple bean factory.
 		<cfargument name="controller" type="any" required="true" hint="coldbox.system.Controller">
 		<!--- ************************************************************* --->
 		<cfscript>
-			/* Super Init */
 			super.Init(arguments.controller);
 			
-			/* Plugin Properties */
+			//Plugin properties
 			setpluginName("Bean Factory");
 			setpluginVersion("3.0");
 			setpluginDescription("I am an awesome conventions,IoC and DI bean factory plugin.");
@@ -72,28 +71,34 @@ Description: This is the framework's simple bean factory.
 	<cffunction name="configure" access="public" returntype="BeanFactory" hint="Configure the bean factory for operation from the configuration file." output="false" >
 		<cfscript>
 			var configFilePath = "/";
-			
-			// If AppMapping is set, then add it to the config Path
+			var appLocPrefix = "/";
+			var local = structnew();
+					
+			//App location prefix
 			if( len(getSetting('AppMapping')) ){
-				configFilePath = configFilePath & getSetting('AppMapping') & "/";
+				appLocPrefix = appLocPrefix & getSetting('AppMapping') & "/";
 			}
 			
-			// Setup the config Path
-			configFilePath = configFilePath & reReplace(instance.ModelsDefinitionFile,"^/","");
-			
-			// Check if File Exists, else skip and log
-			if( fileExists(expandPath(configFilePath)) ){
-				try{
-					$include(configFilePath);
-				}
-				catch(Any e){
-					$throw("Error including models definition file #configFilePath#. Error: #e.message#",
-						   e.detail & e.tagContext.toString(),
-						   "BeanFactory.ModelsDefinitionFileIncludeException");
-				}
+			// Setup the config Path for relative location first.
+			configFilePath = appLocPrefix & reReplace(instance.ModelsDefinitionFile,"^/","");
+			if( NOT fileExists(expandPath(configFilePath)) ){
+				
+				//Check absolute location as not found inside our app
+				configFilePath = instance.ModelsDefinitionFile;
+				if( NOT fileExists(expandPath(configFilePath)) ){
+					getPlugin("Logger").info("No bean factory configuration file found, continuing operation.");
+					return this;
+				}	
 			}
-			else{
-				getPlugin("Logger").warn("The BeanFactory definition file cannot be located -> #configFilePath#");
+			
+			// We are ready to roll. Import configuration as we have found it somewhere
+			try{
+				$include(configFilePath);
+			}
+			catch(Any e){
+				$throw("Error including configuration file #configFilePath#. Error: #e.message#",
+					   e.detail & e.tagContext.toString(),
+					   "BeanFactory.ModelsDefinitionFileIncludeException");
 			}
 			
 			return this;
