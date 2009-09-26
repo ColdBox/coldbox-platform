@@ -179,6 +179,7 @@ id , name , mail
 
 	<!--- Setup a request context --->
 	<cffunction name="setupRequest" access="private" output="false" returntype="void" hint="Setup an initial request capture.  I basically look at the FORM/URL scopes and create the request collection out of them.">
+		<cfset structClear(request)>
 		<cfset getController().getRequestService().requestCapture() >
 	</cffunction>
 
@@ -190,12 +191,21 @@ id , name , mail
 		<cfscript>
 			var handlerResults = "";
 			var requestContext = "";
+			var relocationTypes = "TestController.setNextEvent,TestController.setNextRoute,TestController.relocate";
 			
 			//Setup the request Context with setup FORM/URL variables set in the unit test.
 			setupRequest();
 			
-			//TEST EVENT EXECUTION
-			handlerResults = getController().runEvent(event=arguments.event,private=arguments.private,prepostExempt=arguments.prepostExempt);
+			try{
+				//TEST EVENT EXECUTION
+				handlerResults = getController().runEvent(event=arguments.event,private=arguments.private,prepostExempt=arguments.prepostExempt);
+			}
+			catch(Any e){
+				// Exclude relocations so they can be asserted.
+				if( NOT listFindNoCase(relocationTypes,e.type) ){
+					$rethrow(e);
+				}
+			}
 			
 			//Return the correct event context.
 			requestContext = getRequestContext();

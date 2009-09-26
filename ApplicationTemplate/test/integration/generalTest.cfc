@@ -52,12 +52,9 @@ Description :
 		//Place any variables on the form or URL scope to test the handler.
 		//FORM.name = "luis"
 		event = execute("general.doSomething");
-		
 		debug(event.getCollection());
-			
 		//Do your asserts below for setnextevent you can test for a setnextevent boolean flag
 		assertEquals("general.index", event.getValue("setnextevent",""), "Relocation Test");
-			
 		</cfscript>
 	</cffunction>
 	
