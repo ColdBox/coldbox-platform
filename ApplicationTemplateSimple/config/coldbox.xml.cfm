@@ -45,7 +45,7 @@ http://ortus.svnrepository.com/coldbox/trac.cgi/wiki/cbConfigGuide
 	<LogBox>
 		<Appender name="coldboxTracer" class="coldbox.system.logging.appenders.ColdboxTracerAppender" />
 		<Root levelMin="FATAL" levelMax="INFO" appenders="*" />
-		<Category name="coldbox.system" appenders="*" levelMin="FATAL" levelMax="INFO" />
+		<Category name="coldbox.system" levelMin="FATAL" levelMax="INFO" />
 	</LogBox>
 	
 	<Layouts>

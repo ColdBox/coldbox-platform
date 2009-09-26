@@ -86,7 +86,7 @@ http://ortus.svnrepository.com/coldbox/trac.cgi/wiki/cbConfigGuide
 		<!-- Root Logger Definition -->
 		<Root levelMin="FATAL" levelMax="INFO" appenders="*" />
 		<!-- ColdBox Package Logging -->
-		<Category name="coldbox.system" appenders="*" levelMin="FATAL" levelMax="INFO" />
+		<Category name="coldbox.system" levelMin="FATAL" levelMax="INFO" />
 	</LogBox>
 	
 	<Layouts>
