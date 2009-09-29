@@ -86,7 +86,7 @@ http://ortus.svnrepository.com/coldbox/trac.cgi/wiki/cbConfigGuide
 		<!-- Root Logger Definition -->
 		<Root levelMin="FATAL" levelMax="INFO" appenders="*" />
 		<!-- ColdBox Package Logging -->
-		<Category name="coldbox.system" levelMin="FATAL" levelMax="INFO" />
+		<Category name="coldbox.system" levelMax="INFO" />
 	</LogBox>
 	
 	<Layouts>
@@ -110,9 +110,7 @@ http://ortus.svnrepository.com/coldbox/trac.cgi/wiki/cbConfigGuide
 		<!-- USE AUTOWIRING -->
 		<Interceptor class="coldbox.system.interceptors.Autowire" />
 		<!-- USE SES -->
-		<Interceptor class="coldbox.system.interceptors.SES">
-			<Property name="configFile">config/Routes.cfm</Property>
-		</Interceptor>		
+		<Interceptor class="coldbox.system.interceptors.SES" />
 		<!-- @SIDEBAR@ -->
 	</Interceptors>
 	

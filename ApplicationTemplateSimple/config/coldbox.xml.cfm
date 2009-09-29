@@ -45,7 +45,7 @@ http://ortus.svnrepository.com/coldbox/trac.cgi/wiki/cbConfigGuide
 	<LogBox>
 		<Appender name="coldboxTracer" class="coldbox.system.logging.appenders.ColdboxTracerAppender" />
 		<Root levelMin="FATAL" levelMax="INFO" appenders="*" />
-		<Category name="coldbox.system" levelMin="FATAL" levelMax="INFO" />
+		<Category name="coldbox.system" levelMax="INFO" />
 	</LogBox>
 	
 	<Layouts>
@@ -56,9 +56,7 @@ http://ortus.svnrepository.com/coldbox/trac.cgi/wiki/cbConfigGuide
 		<!-- USE AUTOWIRING -->
 		<Interceptor class="coldbox.system.interceptors.Autowire" />
 		<!-- USE SES -->
-		<Interceptor class="coldbox.system.interceptors.SES">
-			<Property name="configFile">config/Routes.cfm</Property>
-		</Interceptor>		
+		<Interceptor class="coldbox.system.interceptors.SES" />		
 	</Interceptors>
 	
 </Config>

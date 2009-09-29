@@ -52,9 +52,8 @@ Properties:
 			// Setup the log file full path
 			instance.logFullpath = getProperty("filePath");
 			// Clean ending slash
-			if( right(instance.logFullpath,1) eq "/" OR right(instance.logFullPath,1) eq "\"){
-				instance.logFullPath = left(instance.logFullpath, len(instance.logFullPath)-1);
-			}
+			instance.logFullPath = reReplacenocase(instance.logFullPath,"[/\\]$","");
+			// Concatenate Full Log path
 			instance.logFullPath = instance.logFullpath & "/" & getProperty("filename") & ".log";
 			
 			// Do we expand the path?
