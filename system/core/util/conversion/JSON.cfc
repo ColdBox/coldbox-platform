@@ -329,7 +329,7 @@ Modifications:
 				<cfset recordcountKey = "RECORDCOUNT" />
 				<cfset columnlistKey = "COLUMNLIST" />
 				<cfset columnlist = _data.columnlist />
-				<cfset dataKey = "data" />
+				<cfset dataKey = "DATA" />
 			</cfif>
 			
 			<cfset dJSONString.append('"#recordcountKey#":' & _data.recordcount) />
