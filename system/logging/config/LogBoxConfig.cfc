@@ -309,16 +309,22 @@ Description :
 			//Categories
 			for( x=1; x lte arrayLen(categoriesXML); x=x+1){
 				args = structnew();
-				if( NOT structKeyExists(categoriesXML[x].XMLAttributes,"name") OR
-				    NOT structKeyExists(categoriesXML[x].XMLAttributes,"levelMin") ){
-					$throw(message="A category definition must have a name and a levelMin attribute",type="LogBoxConfig.InvalidCategoryDefinition");
+				
+				// Category Name
+				if( NOT structKeyExists(categoriesXML[x].XMLAttributes,"name") ){
+					$throw(message="A category definition must have a name attribute",type="LogBoxConfig.InvalidCategoryDefinition");
 				}
 				args.name = trim(categoriesXML[x].XMLAttributes.name);
-				args.levelMin = trim(categoriesXML[x].XMLAttributes.levelMin);
-				// Numeric Check
-				if( NOT isNumeric(args.levelMin) ){
-					args.levelMin = this.logLevels.lookupAsInt(args.levelMin);
+				
+				// Level Min
+				if( structKeyExists(categoriesXML[x].XMLAttributes,"levelMin") ){
+					args.levelMin = trim(categoriesXML[x].XMLAttributes.levelMin);
+					if( NOT isNumeric(args.levelMin) ){
+						args.levelMin = this.logLevels.lookupAsInt(args.levelMin);
+					}
 				}
+				
+				// Level Max
 				if( structKeyExists(categoriesXML[x].XMLAttributes,"levelMax") ){
 					args.levelMax = trim(categoriesXML[x].XMLAttributes.levelMax);
 					if( NOT isNumeric(args.levelMax) ){
