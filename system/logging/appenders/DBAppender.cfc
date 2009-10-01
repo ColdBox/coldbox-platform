@@ -17,7 +17,9 @@ Properties:
  - columnMap : A column map for aliasing columns. (Optional)
  - autocreate : if true, then we will create the table. Defaults to false (Optional)
  - ensureChecks : if true, then we will check the dsn and table existence.  Defaults to true (Optional)
-	
+ - textDBType : Defaults to 'text'. This is used on the autocreate features of the appender for the
+ 				   message and extended info fields.  This is the actual database type.
+				   
 The columns needed in the table are
 
  - id : UUID
@@ -64,6 +66,9 @@ If you are building a mapper, the map must have the above keys in it.
 			}
 			if( NOT propertyExists("ensureChecks") ){
 				setProperty("ensureChecks",true);
+			}
+			if( NOT propertyExists("textDBType") ){
+				setProperty("textDBType","text");
 			}
 			
 			// columns
@@ -168,8 +173,8 @@ If you are building a mapper, the map must have the above keys in it.
 					#listgetAt(cols,3)# VARCHAR(100) NOT NULL,
 					#listgetAt(cols,4)# DATETIME NOT NULL,
 					#listgetAt(cols,5)# VARCHAR(100) NOT NULL,
-					#listgetAt(cols,6)# TEXT,
-					#listgetAt(cols,7)# TEXT,
+					#listgetAt(cols,6)# #getProperty("textDBType")#,
+					#listgetAt(cols,7)# #getProperty("textDBType")#,
 					PRIMARY KEY (id)
 				)
 			</cfquery>
