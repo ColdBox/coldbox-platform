@@ -130,7 +130,7 @@
 		<DefaultLocale>en_US</DefaultLocale>
 		<!--session or client-->
 		<LocaleStorage>session</LocaleStorage>
-		<UknownTranslation>nothing</UknownTranslation>
+		<UnknownTranslation>nothing</UnknownTranslation>
 	</i18N>
 
 	<Datasources>

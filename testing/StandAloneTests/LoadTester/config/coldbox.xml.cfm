@@ -161,7 +161,7 @@
 		<DefaultResourceBundle>includes/main</DefaultResourceBundle>
 		<DefaultLocale>en_US</DefaultLocale>
 		<LocaleStorage>session</LocaleStorage>
-		<UknownTranslation></UknownTranslation>
+		<UnknownTranslation></UnknownTranslation>
 	</i18N>
 	-->
 	<i18N />

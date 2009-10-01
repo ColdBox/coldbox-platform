@@ -300,7 +300,7 @@
 						</xs:restriction>
 					</xs:simpleType>
 				</xs:element>
-				<xs:element maxOccurs="1" minOccurs="0" name="UknownTranslation" type="xs:string" default="">
+				<xs:element maxOccurs="1" minOccurs="0" name="UnknownTranslation" type="xs:string" default="">
 					<xs:annotation>
 						<xs:documentation>The key to use when a translation is not found. default is _UNKNOWNTRANSLATION_</xs:documentation>
 					</xs:annotation>

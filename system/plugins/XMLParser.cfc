@@ -769,7 +769,7 @@ Description :
 				configStruct.DefaultResourceBundle = "";
 				configStruct.DefaultLocale = "";
 				configStruct.LocaleStorage = "";
-				configStruct.UknownTranslation = "";
+				configStruct.UnknownTranslation = "";
 				configStruct["using_i18N"] = false;
 			}
 			
@@ -798,8 +798,8 @@ Description :
 				}
 				
 				//Check for DefaultResourceBundle
-				if ( structKeyExists(i18NSettingNodes[1], "UknownTranslation") AND len(i18NSettingNodes[1].UknownTranslation.xmltext) ){
-					configStruct["UknownTranslation"] = i18NSettingNodes[1].UknownTranslation.xmltext;
+				if ( structKeyExists(i18NSettingNodes[1], "UnknownTranslation") AND len(i18NSettingNodes[1].UnknownTranslation.xmltext) ){
+					configStruct["UnknownTranslation"] = i18NSettingNodes[1].UnknownTranslation.xmltext;
 				}
 				
 				//set i18n
