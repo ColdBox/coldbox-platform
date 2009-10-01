@@ -131,7 +131,7 @@ Description :
 			<cfif structKeyExists(arguments,"interceptorName")>
 				<cfset objectName = arguments.interceptorName>
 			</cfif>			
-			<cfset objectKey = getColdboxOCM().INTERCEPTOR_CACHEKEY_PREFIX & interceptorName>
+			<cfset objectKey = getColdboxOCM().INTERCEPTOR_CACHEKEY_PREFIX & objectName>
 			<cfset oInterceptor = arguments.interceptorObject>			
 		<cfelse>
 			<cfthrow message="Invalid registration" detail="You did not send in an interceptorClass or interceptorObject for registration" type="InterceptorService.InvalidRegistration">
