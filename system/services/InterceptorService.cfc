@@ -78,25 +78,25 @@ Description :
 		<!--- ************************************************************* --->
 		<cfset var timerHash = 0><cfsetting enablecfoutputonly="true"><cfsilent>
 		<cfscript>
-		/* Is ColdBox Inited and ready to serve requests? */
+		// Is ColdBox Inited and ready to serve requests?
 		if ( not controller.getColdboxInitiated() ){ 
 			return;
 		}
 		
-		/* Validate Incoming State */
+		// Validate Incoming State
 		if ( controller.getSetting("InterceptorConfig").throwOnInvalidStates AND NOT listfindnocase(getInterceptionPoints(),arguments.state) ){
 			getUtil().throwit("The interception state sent in to process is not valid: #arguments.state#","","InterceptorService.InvalidInterceptionState");
 		}
 		
-		/* Process The State if it exists, else just exit out */
+		// Process The State if it exists, else just exit out
 		if( structKeyExists(getinterceptionStates(), arguments.state) ){
-			/* Execute Interception */
+			// Execute Interception
 			timerHash = controller.getDebuggerService().timerStart("interception [#arguments.state#]");
-				structFind( getinterceptionStates(), arguments.state).process(controller.getRequestService().getContext(),arguments.interceptData);
+			structFind( getinterceptionStates(), arguments.state).process(controller.getRequestService().getContext(),arguments.interceptData);
 			controller.getDebuggerService().timerEnd(timerHash);
 		}
 		
-		/* Process Output Buffer: looks weird, but we are outputting stuff */
+		// Process Output Buffer: looks weird, but we are outputting stuff
 		</cfscript>
 		</cfsilent><cfif getRequestBuffer().isBufferInScope()><cfset writeOutput(getRequestBuffer().getString())><cfset getRequestBuffer().clear()></cfif><cfsetting enablecfoutputonly="false">
 	</cffunction>

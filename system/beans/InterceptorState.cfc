@@ -10,7 +10,7 @@ Description :
 	This object models an interception state
 ----------------------------------------------------------------------->
 <cfcomponent name="InterceptorState"
-			 hint="I model an interception state."
+			 hint="I am a pool of interceptors that can execute on a state or interception value."
 			 output="false">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
@@ -26,11 +26,10 @@ Description :
 			var LinkedHashMap = CreateObject("java","java.util.LinkedHashMap").init(3);
 			var Collections = createObject("java", "java.util.Collections"); 
 			
-			/* Create the interceptor container, start with 3 instead of 16 to save space */
+			// Create the interceptor container, start with 3 instead of 16 to save space
 			setInterceptors( Collections.synchronizedMap(LinkedHashMap) );
 			setState( arguments.state );
 			
-			/* Return instance */
 			return this;
 		</cfscript>
 	</cffunction>
@@ -92,15 +91,41 @@ Description :
 		<cfscript>
 		var key = "";
 		var stopChain = "";
+		var thisInterceptor = "";
 		
-		/* Loop and execute each interceptor as registered in order */
+		// Loop and execute each interceptor as registered in order
 		for( key in getInterceptors()){
-			/* Invoke the execution point */
-			stopChain = invoker( getInterceptors().get(key), arguments.event, arguments.interceptData );
-			/* Check for results */
-			if( stopChain ){ break; }
+			thisInterceptor = getInterceptors().get(key);
+			
+			// Check if we can execute this Interceptor
+			if( isExecutable(thisInterceptor,arguments.event) ){
+				// Invoke the execution point
+				stopChain = invoker( thisInterceptor, arguments.event, arguments.interceptData );
+				// Check for results
+				if( stopChain ){ break; }
+			}
 		}		
 		</cfscript>
+	</cffunction>
+	
+	<!--- isExecutable --->
+	<cffunction name="isExecutable" output="false" access="public" returntype="boolean" hint="Checks if an interceptor is executable or not">
+		<cfargument name="target" type="any" required="true" hint="The target interceptor to check"/>
+		<cfargument name="event"  type="any" required="true" hint="The event context object.">
+		<cfscript>
+			var fncMetadata = getMetadata(target[getState()]);
+			
+			// Check if the event pattern matches the current event, else return false
+			if( structKeyExists(fncMetadata,"eventPattern") AND
+				len(fncMetadata.eventPattern) AND
+			    NOT reFindNoCase(fncMetadata.eventPattern, arguments.event.getCurrentEvent()) ){
+				return false;
+			}
+			
+			// No event pattern found, we can execute.
+			return true;
+		</cfscript>		
+		<cfdump var="#getTickCount()-stimeMD# ms"><cfabort>
 	</cffunction>
 	
 	<!--- getter setter state --->

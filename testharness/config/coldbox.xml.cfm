@@ -176,6 +176,8 @@
 		
 		<!-- Developer's ColdBox Sidebar -->
 		<Interceptor class="coldbox.system.interceptors.ColdboxSideBar" />
+		
+		<Interceptor class="${AppMapping}.interceptors.executionTracer" />
 	</Interceptors>
 
 </Config>

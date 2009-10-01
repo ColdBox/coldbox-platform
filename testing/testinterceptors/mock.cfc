@@ -23,7 +23,7 @@ Modification History:
 
 <!------------------------------------------- PRIVATE ------------------------------------------->	 	
 
-	<cffunction name="unittest" access="public" returntype="void" hint="Unit Testing" output="false" >
+	<cffunction name="unittest" access="public" returntype="void" hint="Unit Testing" output="false">
 		<cfargument name="event" 		 required="true" type="coldbox.system.beans.RequestContext" hint="The event object.">
 		<cfargument name="interceptData" required="true" type="struct" hint="A structure containing intercepted information. NONE BY DEFAULT HERE">
 		

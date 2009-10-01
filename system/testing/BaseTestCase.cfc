@@ -102,13 +102,39 @@ id , name , mail
 
 <!------------------------------------------- HELPERS ------------------------------------------->
 
-	<!--- getmockBox --->
-	<cffunction name="getmockBox" output="false" access="private" returntype="coldbox.system.testing.MockBox" hint="Get a reference to the MockBox framework">
+	<!--- getMockBox --->
+	<cffunction name="getMockBox" output="false" access="private" returntype="coldbox.system.testing.MockBox" hint="Get a reference to the MockBox framework">
 		<cfreturn instance.mockBox>
 	</cffunction>
 	
+	<!--- getMockRequestContext --->
+	<cffunction name="getMockRequestContext" output="false" access="public" returntype="coldbox.system.beans.RequestContext" hint="Builds an empty functioning request context">
+		<cfargument name="clearMethods" type="boolean" required="false" default="false" hint="Clear Methods on it?"/>
+		<cfscript>
+			var mockRC = "";
+			var rcProps = structnew();
+			
+			if( arguments.clearMethods ){
+				return getMockBox().createMock(className="coldbox.system.beans.RequestContext",clearMethods=true);
+			}
+			// Create functioning request context
+			mockRC = getMockBox().createMock(className="coldbox.system.beans.RequestContext");
+			// Create mock properties
+			rcProps.DefaultLayout = "";
+			rcProps.DefaultView = "";
+			rcProps.isSES = false;
+			rcProps.sesBaseURL = "";
+			rcProps.eventName = "event";
+			rcProps.ViewLayouts = structnew();
+			rcProps.FolderLayouts = structnew();
+			rcProps.RegisteredLayouts = structnew();
+			
+			return mockRC.init(structnew(),structNew(),rcProps);
+		</cfscript>
+	</cffunction>
+	
 	<!--- Get a Mock Model --->
-	<cffunction name="mockModel" access="private" returntype="any" hint="Get a mock model object by convention. The object is created but not initiated, that would be your job." output="false" >
+	<cffunction name="getMockModel" access="private" returntype="any" hint="Get a mock model object by convention. The object is created but not initiated, that would be your job." output="false" >
 		<cfargument name="name" 			type="string"   required="true" hint="The name of the model to mock">
 		<cfargument name="clearMethods" 	type="boolean"  required="false" default="false" hint="If true, all methods in the target mock object will be removed. You can then mock only the methods that you want to mock"/>
 		<cfscript>

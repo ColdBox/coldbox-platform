@@ -4,7 +4,7 @@
 	<cffunction name="setUp" returntype="void" access="public">
 		<cfscript>
 			this.state = createObject("component","coldbox.system.beans.InterceptorState");		
-			this.event = createobject("component","coldbox.system.beans.RequestContext");
+			this.event = getMockRequestContext();
 			this.mock = createObject("component","coldbox.testing.testinterceptors.mock");
 			this.mock2 = createObject("component","coldbox.testing.testinterceptors.mock");
 			
@@ -45,7 +45,18 @@
 	<cffunction name="testprocess" access="public" returnType="void">
 		<cfscript>
 			this.state.process(this.event,structnew());
-			assertEquals( this.event.getValue('unittest') , true);
+			assertEquals( this.event.getValue('unittest'), true);
+			
+			// Now process with other method for event pattern
+			this.event.setValue("unittest",false);
+			this.mock.unittest = variables.unittest;
+			this.state.process(this.event,structnew());
+			assertEquals(false,this.event.getValue('unittest'));
+			
+			// Now add event
+			this.event.setValue("event","UnitTest.test");
+			this.state.process(this.event,structnew());
+			assertEquals(true,this.event.getValue('unittest'));
 		</cfscript>
 	</cffunction>		
 	
@@ -55,6 +66,9 @@
 			AssertEquals( this.state.getInterceptor(this.key), this.mock);
 		</cfscript>
 	</cffunction>		
+	
+	
+
 	
 	<cffunction name="testsetinterceptors" access="public" returnType="void">
 		<cfscript>
@@ -80,5 +94,11 @@
 		</cfscript>
 	</cffunction>		
 	
+	
+	<cffunction name="unittest" access="private" returntype="void" eventPattern="^UnitTest">
+		<cfargument name="event" 		 required="true" type="any" hint="The event object.">
+		<cfargument name="interceptData" required="true" type="any" hint="A structure containing intercepted information. NONE BY DEFAULT HERE">
+		<cfset arguments.event.setValue('unittest',true)>
+	</cffunction>
 
 </cfcomponent>
