@@ -21,7 +21,7 @@ Description :
 			// Setup The Controller.
 			setController(arguments.controller);
 			// Setup the Event Handler Cache Dictionary
-			setHandlerCacheDictionary(CreateObject("component","coldbox.system.core.util.collections.BaseDictionary").init('HandlersMetadata'));
+			setHandlerCacheDictionary(CreateObject("component","coldbox.system.core.util.collections.BaseDictionary").init('Handlersmetadata'));
 			// Setup the Event Cache Dictionary
 			setEventCacheDictionary(CreateObject("component","coldbox.system.core.util.collections.BaseDictionary").init('EventCache'));
 						
@@ -45,14 +45,14 @@ Description :
 		<cfscript>
 			//Create Handler
 			var oHandler = CreateObject("component", invocationPath ).init( controller );
-			var interceptMetadata = structnew();
+			var interceptmetadata = structnew();
 			
-			//Fill-up Intercepted MetaData
-			interceptMetadata.handlerPath = invocationPath;
-			interceptMetadata.oHandler = oHandler;
+			//Fill-up Intercepted metadata
+			interceptmetadata.handlerPath = invocationPath;
+			interceptmetadata.oHandler = oHandler;
 			
 			//Fire Interception
-			controller.getInterceptorService().processState("afterHandlerCreation",interceptMetadata);
+			controller.getInterceptorService().processState("afterHandlerCreation",interceptmetadata);
 			
 			//Return handler
 			return oHandler;
@@ -75,7 +75,7 @@ Description :
 			var eventCacheKey = "";
 			/* Cache Util */
 			var oEventURLFacade = getController().getColdboxOCM().getEventURLFacade();
-			/* Metadata entry structures */
+			/* metadata entry structures */
 			var handlerDictionaryEntry = "";
 			var eventDictionaryEntry = "";
 			
@@ -88,8 +88,8 @@ Description :
 				if( not isObject(oEventHandler) ){
 					/* Create a new handler */
 					oEventHandler = newHandler(oEventHandlerBean.getRunnable());
-					/* Save its Metadata For event Caching and Aspects */
-					saveHandlerMetaData(oEventHandler,cacheKey);					
+					/* Save its metadata For event Caching and Aspects */
+					saveHandlermetadata(oEventHandler,cacheKey);					
 					/* Get dictionary entry for operations, it is now guaranteed. */
 					handlerDictionaryEntry = getHandlerCacheDictionary().getKey(cacheKey);
 					/* Do we Cache this handler */
@@ -101,8 +101,8 @@ Description :
 			else{
 				/* Create Runnable Object */
 				oEventHandler = newHandler(oEventHandlerBean.getRunnable());
-				/* Save its Metadata For event Caching and Aspects */
-				saveHandlerMetaData(oEventHandler,cacheKey);					
+				/* Save its metadata For event Caching and Aspects */
+				saveHandlermetadata(oEventHandler,cacheKey);					
 			}
 			
 			/* ::::::::::::::::::::::::::::::::::::::::: EVENT METHOD TESTING :::::::::::::::::::::::::::::::::::::::::::: */
@@ -147,8 +147,8 @@ Description :
 			/* Event Caching Routines, if using caching and we are executing the main event */
 			if ( controller.getSetting("EventCaching") and oEventHandlerBean.getFullEvent() eq oRequestContext.getCurrentEvent() ){
 				
-				/* Save Event Caching Metadata */
-				saveEventCachingMetaData(eventUDF=oEventHandler[oEventHandlerBean.getMethod()],
+				/* Save Event Caching metadata */
+				saveEventCachingmetadata(eventUDF=oEventHandler[oEventHandlerBean.getMethod()],
 										 cacheKey=oEventHandlerBean.getFullEvent(),
 										 cacheKeySuffix=oEventHandler.EVENT_CACHE_SUFFIX);
 				/* get dictionary entry for operations, it is now guaranteed. */
@@ -335,7 +335,7 @@ Description :
 		<cfset instance.EventCacheDictionary = arguments.EventCacheDictionary>
 	</cffunction>
 	
-	<cffunction name="getEventMetaDataEntry" access="public" returntype="struct" hint="Get an event string's metadata entry" output="false" >
+	<cffunction name="getEventmetadataEntry" access="public" returntype="struct" hint="Get an event string's metadata entry" output="false" >
 		<!--- ************************************************************* --->
 		<cfargument name="targetEvent" required="true" type="any" hint="The target event">
 		<!--- ************************************************************* --->
@@ -368,47 +368,54 @@ Description :
 		</cfscript>
 	</cffunction>
 	
-	<!--- Save Event Caching Metadata --->
-	<cffunction name="saveEventCachingMetaData" access="private" returntype="void" hint="Save a handler's event caching metadata in the dictionary">
+	<!--- Save Event Caching metadata --->
+	<cffunction name="saveEventCachingmetadata" access="private" returntype="void" hint="Save a handler's event caching metadata in the dictionary">
 		<!--- ************************************************************* --->
 		<cfargument name="eventUDF" 		type="any" required="true" hint="The handler event UDF to inspect" />
 		<cfargument name="cacheKey"     	type="any" required="true" hint="The event cache key" />
 		<cfargument name="cacheKeySuffix"   type="any" required="true" hint="The event cache key suffix" />
 		<!--- ************************************************************* --->
-		<cfset var Metadata = 0>
+		<cfset var metadata = 0>
 		<cfset var mdEntry = 0>
 		
 		<cfif not getEventCacheDictionary().keyExists(arguments.cacheKey)>
 			<cflock name="handlerservice.eventcachingmd.#arguments.cacheKey#" type="exclusive" throwontimeout="true" timeout="10">
 			<cfscript>
-			/* Determine if we have md for the event to execute in the md dictionary, else set it  */
+			// Determine if we have md for the event to execute in the md dictionary, else set it
 			if ( not getEventCacheDictionary().keyExists(arguments.cacheKey) ){
-				/* Get Method MetaData */
-				MetaData = getMetaData(arguments.eventUDF);
-				/* Get New Default MD Entry */
+				// Get Method metadata
+				metadata = getmetadata(arguments.eventUDF);
+				// Get New Default MD Entry
 				mdEntry = getNewMDEntry();
-				/* By Default, events with no cache flag are set to FALSE */
-				if ( not structKeyExists(MetaData,"cache") or not isBoolean(MetaData["cache"]) ){
-					MetaData.cache = false;
+				// By Default, events with no cache flag are set to FALSE
+				if ( not structKeyExists(metadata,"cache") or not isBoolean(metadata["cache"]) ){
+					metadata.cache = false;
 				}
-				/* Cache Entries for timeout and last access timeout */
-				if ( MetaData["cache"] ){
+				// Cache Entries for timeout and last access timeout
+				if ( metadata["cache"] ){
 					mdEntry.cacheable = true;
-					/* Event Timeout */
-					if ( structKeyExists(MetaData,"cachetimeout") and MetaData.cachetimeout neq 0 ){
-						mdEntry.timeout = MetaData["cachetimeout"];
+					// Event Timeout
+					if ( structKeyExists(metadata,"cachetimeout") and metadata.cachetimeout neq 0 ){
+						mdEntry.timeout = metadata["cachetimeout"];
 					}
-					/* Last Access Timeout */
-					if ( structKeyExists(MetaData, "cacheLastAccessTimeout") ){
-						mdEntry.lastAccessTimeout = MetaData["cacheLastAccessTimeout"];
+					// Last Access Timeout
+					if ( structKeyExists(metadata, "cacheLastAccessTimeout") ){
+						mdEntry.lastAccessTimeout = metadata["cacheLastAccessTimeout"];
 					}
 				} //end cache metadata is true
 				else{
 					mdEntry.cacheable = false;
 				}
-				/* Handler Event Cache Key Suffix */
+				
+				// Test for singleton parameters
+				if( structKeyExists(metadata,"singleton") ){
+					mdEntry.cacheable = true;
+					mdEntry.timeout = 0;
+				}
+				
+				// Handler Event Cache Key Suffix
 				mdEntry.suffix = arguments.cacheKeySuffix;
-				/* Set md Entry in dictionary */
+				// Save md Entry in dictionary
 				getEventCacheDictionary().setKey(cacheKey,mdEntry);
 			}//end of md cache dictionary.
 			</cfscript>
@@ -416,17 +423,17 @@ Description :
 		</cfif>
 	</cffunction>
 	
-	<!--- Save Handler Metadata --->
-	<cffunction name="saveHandlerMetaData" access="private" returntype="void" hint="Save a handler's metadata in the dictionary">
+	<!--- Save Handler metadata --->
+	<cffunction name="saveHandlermetadata" access="private" returntype="void" hint="Save a handler's metadata in the dictionary">
 		<!--- ************************************************************* --->
 		<cfargument name="targetHandler" type="any" required="true" hint="The handler target" />
 		<cfargument name="cacheKey"      type="any" required="true" hint="The handler cache key" />
 		<!--- ************************************************************* --->
-		<cfset var Metadata = 0>
+		<cfset var metadata = 0>
 		<cfset var mdEntry = 0>
 		
 		<cfif not getHandlerCacheDictionary().keyExists(arguments.cacheKey)>
-			<cfset MetaData = getMetadata(arguments.targetHandler)>
+			<cfset metadata = getmetadata(arguments.targetHandler)>
 			<cflock name="handlerservice.handlermd.#metadata.name#" type="exclusive" throwontimeout="true" timeout="10">
 			<cfscript>
 			/* Determine if we have md and cacheable, else set it  */
@@ -434,17 +441,17 @@ Description :
 				/* Get Default MD Entry */
 				mdEntry = getNewMDEntry();
 				/* By Default, handlers with no cache flag are set to true */
-				if ( not structKeyExists(MetaData,"cache") or not isBoolean(MetaData["cache"]) ){
-					MetaData.cache = true;
+				if ( not structKeyExists(metadata,"cache") or not isBoolean(metadata["cache"]) ){
+					metadata.cache = true;
 				}
 				/* Cache Entries for timeout and last access timeout */
-				if ( MetaData["cache"] ){
+				if ( metadata["cache"] ){
 					mdEntry.cacheable = true;
-					if ( structKeyExists(MetaData,"cachetimeout") ){
-						mdEntry.timeout = MetaData["cachetimeout"];
+					if ( structKeyExists(metadata,"cachetimeout") ){
+						mdEntry.timeout = metadata["cachetimeout"];
 					}
-					if ( structKeyExists(MetaData, "cacheLastAccessTimeout") ){
-						mdEntry.lastAccessTimeout = MetaData["cacheLastAccessTimeout"];
+					if ( structKeyExists(metadata, "cacheLastAccessTimeout") ){
+						mdEntry.lastAccessTimeout = metadata["cacheLastAccessTimeout"];
 					}
 				} // end we cached.
 				else{
