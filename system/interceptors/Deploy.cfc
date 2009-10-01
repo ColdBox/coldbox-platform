@@ -60,31 +60,40 @@ any kind of cleanup code or anything you like:
 
 	<cffunction name="configure" access="public" returntype="void" output="false" hint="My configuration method">
 		<cfscript>
-			/* Private Properties */
+			// Private Properties
 			instance.tagFilepath = "";
 			instance.deployCommandObject = "";
 			
-			/* Verify the properties */
+			// Verify the properties
 			if( not propertyExists('tagFile') ){
 				$throw('The tagFile property has not been defined. Please define it.','','Deploy.tagFilePropertyNotDefined');
 			}
 			
-			/* Try to locate the path */
+			// Try to locate the path
 			instance.tagFilepath = locateFilePath(reReplace(getProperty('tagFile'),"^/",""));
 			
-			/* Validate it */
+			// Validate it
 			if( len(instance.tagFilepath) eq 0 ){
 				$throw('Tag file not found: #getProperty('tagFile')#. Please check again.','','interceptors.Deploy.tagFileNotFound');
 			}
 			
-			/* Save TimeStamp */
-			setSetting("_deploytagTimestamp", FileLastModified(instance.tagFilepath) );
+			// Save TimeStamp
+			setSetting("_deploytagTimestamp", fileLastModified(instance.tagFilepath) );
 			
-			/* Check for a cleanupCommandObject */
+			// Check for a deploy command object
 			if( propertyExists('deployCommandObject') ){
 				try{
-					/* Create it */
 					instance.deployCommandObject = createObject("component",getProperty('deployCommandObject')).init(controller);
+				}
+				catch(Any e){
+					rethrowit(e);
+				}
+			}
+			
+			// Deploy Command Model
+			if( propertyExists('deployCommandModel') ){
+				try{
+					instance.deployCommandObject = getModel(getProperty("deployCommandModel"));
 				}
 				catch(Any e){
 					rethrowit(e);
@@ -111,7 +120,7 @@ any kind of cleanup code or anything you like:
 		<cfargument name="interceptData" required="true" type="struct" hint="interceptData of intercepted info.">
 		<!--- ************************************************************* --->
 		<cfset var applicationTimestamp = "">
-		<cfset var fileTimestamp = FileLastModified(instance.tagFilepath)>
+		<cfset var fileTimestamp = fileLastModified(instance.tagFilepath)>
 		
 		<!--- Check if setting exists --->
 		<cfif settingExists("_deploytagTimestamp")>
@@ -125,16 +134,16 @@ any kind of cleanup code or anything you like:
 					if ( dateCompare(fileTimestamp, applicationTimestamp) eq 1 ){
 						try{
 							
-							/* cleanup command */
-							if( propertyExists('deployCommandObject') ){
+							// cleanup command
+							if( isObject(instance.deployCommandObject) ){
 								instance.deployCommandObject.execute();
 							}
 							
-							/* Reload ColdBox */
+							// Reload ColdBox
 							getController().setColdboxInitiated(false);
 							getController().setAspectsInitiated(false);
 							
-							/* Log Reloading */
+							// Log Reloading
 							getPlugin("Logger").logEntry("information","Deploy tag reloaded successfully at #now()#");
 							
 						}
@@ -154,7 +163,7 @@ any kind of cleanup code or anything you like:
 		 
 <!------------------------------------------- PRIVATE ------------------------------------------->
 	
-	<cffunction name="FileLastModified" access="private" returntype="string" output="false" hint="Get the last modified date of a file">
+	<cffunction name="fileLastModified" access="private" returntype="string" output="false" hint="Get the last modified date of a file">
 		<!--- ************************************************************* --->
 		<cfargument name="filename" type="string" required="yes">
 		<!--- ************************************************************* --->

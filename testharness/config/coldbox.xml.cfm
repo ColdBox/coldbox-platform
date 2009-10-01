@@ -156,6 +156,7 @@
 		<Interceptor class="coldbox.system.interceptors.Deploy">
 			<Property name="tagFile">config/_deploy.tag</Property>
 			<Property name="deployCommandObject">coldbox.testharness.model.DeployCleanup</Property>
+			<Property name="deployCommandModel">DeployCommand</Property>
 		</Interceptor>
 		<Interceptor class="coldbox.system.interceptors.Autowire">
 			<Property name="debugMode">true</Property>
