@@ -24,14 +24,14 @@ For the latest usage, please visit the wiki.
 
 	<cffunction name="Configure" access="public" returntype="void" hint="This is the configuration method for your interceptors" output="false" >
 		<cfscript>
-			/* Start processing properties */
+			// Start processing properties
 			if( not propertyExists('useRegex') or not isBoolean(getproperty('useRegex')) ){
 				setProperty('useRegex',true);
 			}
 			if( not propertyExists('debugMode') or not isBoolean(getproperty('debugMode')) ){
 				setProperty('debugMode',false);
 			}
-			/* Source Checks */
+			// Rule Source Checks
 			if( not propertyExists('rulesSource') ){
 				$throw(message="The rulesSource property has not been set.",type="interceptors.Security.settingUndefinedException");
 			}
@@ -40,19 +40,19 @@ For the latest usage, please visit the wiki.
 					  detail="The valid sources are xml,db,ioc, model and ocm.",
 					  type="interceptors.Security.settingUndefinedException");
 			}
-			/* Query Checks */
+			// Query Checks
 			if( not propertyExists("queryChecks") or not isBoolean(getProperty("queryChecks")) ){
-				setProperty("queryChecks",true);
+				setProperty("queryChecks",false);
 			}
-			/* PreEvent Security */
+			// PreEvent Security
 			if( not propertyExists("preEventSecurity") or not isBoolean(getProperty("preEventSecurity")) ){
 				setProperty("preEventSecurity",false);
 			}
 						
-			/* Now Call sourcesCheck */
+			// Now Call sourcesCheck
 			RulesSourceChecks();
 			
-			/* Create the internal properties now */
+			// Create the internal properties now
 			setProperty('rules',Arraynew(1));
 			setProperty('rulesLoaded',false);
 		</cfscript>

@@ -37,25 +37,24 @@ id , name , mail
 			 output="false" 
 			 hint="A base test case for doing ColdBox Testing based on the MXUnit Framework">
 
-<!------------------------------------------- CONSTRUCTOR ------------------------------------------->
-
 	<cfscript>
 		instance = structnew();
 		
-		/* Internal Properties */
+		// Internal Properties
 		instance.appMapping = "";
 		instance.configMapping = "";
 		instance.controller = 0;
 		instance.coldboxAppKey = "cbController";
 		
-		/* Public Switch Properties */
+		// Public Switch Properties
 		this.persist_framework = true;
 		this.loadColdbox = true;
 		
-		/* Prepare MockBox */
+		// Prepare MockBox
 		instance.mockBox = createObject("component","coldbox.system.testing.MockBox").init();
 	</cfscript>
 
+	<!--- setup --->
 	<cffunction name="setup" hint="The main setup method">
 		<cfscript>
 		var appRootPath = expandPath(instance.AppMapping);
@@ -94,6 +93,7 @@ id , name , mail
 		</cfscript>
 	</cffunction>
 	
+	<!--- tearDown --->
 	<cffunction name="tearDown" hint="The main teardown" >
 		<cfscript>
 			structDelete(application,getColdboxAppKey());
