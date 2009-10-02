@@ -204,6 +204,8 @@ Description :
 					<cfset interceptorData.renderedContent = renderedContent>
 					<!--- Execute preRender Interception --->
 					<cfset cbController.getInterceptorService().processState("preRender",interceptorData)>
+					<!--- Replace back Content --->
+					<cfset renderedContent = interceptorData.renderedContent>
 					
 					<!--- Check if caching the content --->
 					<cfif event.isEventCacheable()>
