@@ -15,6 +15,8 @@
 <cfset addRoute(pattern="contactus",view="simpleView")>
 <cfset addRoute(pattern="contactus2",view="simpleView",viewnoLayout=true)>
 
+<!--- Constraints --->
+<cfset addRoute(pattern="/const/:test",view="simpleView",constraints={test='(ATest)'})>
 
 <!--- STANDARD COLDBOX COURSES, DO NOT MODIFY UNLESS YOU DON'T LIKE THEM --->
 <cfset addRoute(pattern=":handler/:action?/:id-numeric?",matchVariables="isFound=true,testDate=#now()#")>

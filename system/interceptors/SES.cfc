@@ -127,7 +127,7 @@ Description :
 <!------------------------------------------- PUBLIC ------------------------------------------->
 	
 	<!--- AddCourse --->
-	<cffunction name="addCourse" returntype="void" access="public" hint="@Deprecated, please use addRoute as this method will be removed eventually." output="false">
+	<cffunction name="addCourse" returntype="void" access="public" hint="@Deprecated (removed in next release), please use addRoute as this method will be removed eventually." output="false">
 		<cfargument name="pattern" 				 type="string" 	required="true"  hint="The pattern to match against the URL." />
 		<cfargument name="handler" 				 type="string" 	required="false" hint="The handler to execute if pattern matched.">
 		<cfargument name="action"  				 type="string" 	required="false" hint="The action in a handler to execute if a pattern is matched.">
@@ -150,7 +150,7 @@ Description :
 		<cfargument name="view"  				 type="string"  required="false" hint="The view to dispatch if pattern matches.  No event will be fired, so handler,action will be ignored.">
 		<cfargument name="viewNoLayout"  		 type="boolean" required="false" default="false" hint="If view is choosen, then you can choose to override and not display a layout with the view. Else the view renders in the assigned layout.">
 		<cfargument name="valuePairTranslation"  type="boolean" required="false" default="true"  hint="Activate convention name value pair translations or not. Turned on by default">
-		<cfargument name="constraints" 			 type="string"  required="true"  default="" hint="A json map of regex constraint overrides for variable placeholders. The key is the name of the variable, the value is the regex to try to match."/>
+		<cfargument name="constraints" 			 type="any"  	required="true"  default="" hint="A structure or JSON structure of regex constraint overrides for variable placeholders. The key is the name of the variable, the value is the regex to try to match."/>
 		<!--- ************************************************************* --->
 		<cfscript>
 		var thisRoute = structNew();
@@ -199,7 +199,9 @@ Description :
 		
 		// Process a json constraints?
 		thisRoute.constraints = structnew();
-		if( reFindnocase(jsonRegex,arguments.constraints) ){
+		// Check if implicit struct first, else try to do JSON conversion.
+		if( isStruct(arguments.constraints) ){ thisRoute.constraints = arguments.constraints; }
+		else if( reFindnocase(jsonRegex,arguments.constraints) ){
 			try{
 				// Inflate constratints to structure
 				thisRoute.constraints = oJSON.decode(arguments.constraints);
@@ -208,11 +210,11 @@ Description :
 				$throw("Invalid JSON constraints","The constraints #arguments.constraints# is not valid JSON","SES.InvalidJSONConstraint");
 			}
 		}
-		
-		
+				
 		// Init the regexpattern
 		thisRoute.regexPattern = "";
 		thisRoute.patternParams = arrayNew(1);
+		
 		// Process the route as a regex pattern
 		for(x=1; x lte listLen(thisRoute.pattern,"/");x=x+1){
 			
@@ -627,7 +629,6 @@ Description :
 					return findRoute(packagedRequestString,arguments.event);
 				}
 			}
-			
 			// Populate the params, with variables found in the request string
 			for(x=1; x lte arrayLen(foundRoute.patternParams); x=x+1){
 				params[foundRoute.patternParams[x]] = mid(requestString, match.pos[x+1], match.len[x+1]);
