@@ -15,7 +15,7 @@ Description :
 	<cffunction name="setUp" returntype="void" output="false">
 		<cfscript>
 		//Setup ColdBox Mappings For this Test
-		setAppMapping("/coldbox/ApplicationTemplates/Advanced");
+		setAppMapping("/coldbox/ApplicationTemplates/Simple");
 		setConfigMapping(ExpandPath(instance.AppMapping & "/config/coldbox.xml.cfm"));
 			
 		//Call the super setup method to setup the app.
@@ -42,19 +42,6 @@ Description :
 		//Do your asserts below
 		assertEquals("Welcome to ColdBox!", event.getValue("welcomeMessage",""), "Failed to assert welcome message");
 			
-		</cfscript>
-	</cffunction>
-	
-	<cffunction name="testdoSomething" returntype="void" output="false">
-		<cfscript>
-		var event = "";
-		
-		//Place any variables on the form or URL scope to test the handler.
-		//FORM.name = "luis"
-		event = execute("general.doSomething");
-		debug(event.getCollection());
-		//Do your asserts below for setnextevent you can test for a setnextevent boolean flag
-		assertEquals("general.index", event.getValue("setnextevent",""), "Relocation Test");
 		</cfscript>
 	</cffunction>
 	

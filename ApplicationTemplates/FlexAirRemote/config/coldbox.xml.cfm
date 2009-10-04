@@ -8,7 +8,7 @@
 		<!-- 
 			YOU NEED TO UNCOMMENT AND FILL THIS OUT FOR REMOTE OPERATIONS
 		-->		
-		<Setting name="AppMapping"					value="/coldbox/ApplicationTemplateRemote"/>
+		<Setting name="AppMapping"					value="/coldbox/ApplicationTemplates/FlexAirRemote"/>
 		<Setting name="EventName"					value="event" />
 		
 		<!-- Development Settings -->
