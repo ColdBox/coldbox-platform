@@ -144,7 +144,7 @@ Description :
 		<!--- ************************************************************* --->
 		<cfargument name="pattern" 				 type="string" 	required="true"  hint="The pattern to match against the URL." />
 		<cfargument name="handler" 				 type="string" 	required="false" hint="The handler to execute if pattern matched.">
-		<cfargument name="action"  				 type="string" 	required="false" hint="The action in a handler to execute if a pattern is matched.  This can also be a json structure based on the HTTP method(GET,POST,PUT,DELETE). ex: {GET:'show', PUT:'update', DELETE:'delete', POST:'save'}">
+		<cfargument name="action"  				 type="any" 	required="false" hint="The action in a handler to execute if a pattern is matched.  This can also be a structure or JSON structured based on the HTTP method(GET,POST,PUT,DELETE). ex: {GET:'show', PUT:'update', DELETE:'delete', POST:'save'}">
 		<cfargument name="packageResolverExempt" type="boolean" required="false" default="false" hint="If this is set to true, then the interceptor will not try to do handler package resolving. Else a package will always be resolved. Only works if :handler is in a pattern">
 		<cfargument name="matchVariables" 		 type="string" 	required="false" hint="A string of name-value pair variables to add to the request collection when this pattern matches. This is a comma delimmitted list. Ex: spaceFound=true,missingAction=onTest">
 		<cfargument name="view"  				 type="string"  required="false" hint="The view to dispatch if pattern matches.  No event will be fired, so handler,action will be ignored.">
@@ -168,8 +168,8 @@ Description :
 			if( structKeyExists(arguments,arg) ){ thisRoute[arg] = arguments[arg]; }
 		}
 		
-		// Process json action?
-		if( structKeyExists(arguments,"action") AND reFindnocase(jsonRegex,arguments.action) ){
+		// Process action as a JSON structure
+		if( structKeyExists(arguments,"action") AND isSimpleValue(arguments.action) AND reFindnocase(jsonRegex,arguments.action) ){
 			try{
 				// Inflate action to structure
 				thisRoute.action = oJSON.decode(arguments.action);
