@@ -9,7 +9,7 @@ Date     		: June 6, 2007
 Description		: This is a unit test controller that basically overrides the setNextEvent
 				  in order to unit test with set next events.
 ----------------------------------------------------------------------->
-<cfcomponent name="Testcontroller" hint="This is the ColdBox Unit Test Front Controller." output="false" extends="coldbox.system.Controller">
+<cfcomponent hint="This is the ColdBox Unit Test Front Controller." output="false" extends="coldbox.system.Controller">
 
 <!------------------------------------------- PUBLIC ------------------------------------------->
 

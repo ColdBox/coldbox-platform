@@ -8,7 +8,7 @@ Date     		: April 20, 2009
 Description		: 
 	A mock generator
 ----------------------------------------------------------------------->
-<cfcomponent name="MockGenerator" output="false" hint="The guy in charge of creating mocks">
+<cfcomponent output="false" hint="The guy in charge of creating mocks">
 
 	<cfscript>
 		instance = structnew();
@@ -43,7 +43,7 @@ Description		:
 			var lb = "#chr(13)##chr(10)#";
 			var fncMD = arguments.metadata;
 			
-			/* Create Method Signature */
+			// Create Method Signature
 			udfOut.append('
 			<cfset this["#arguments.method#"] = #arguments.method#>
 			<cfset variables["#arguments.method#"] = #arguments.method#>
@@ -71,16 +71,16 @@ Description		:
 			<cfset internalCounter = this._mockMethodCallCounters[listFirst(resultsKey,"|")]>
 			');
 			
-			/* Call Logging argument or Global Flag */
+			// Call Logging argument or Global Flag
 			if( arguments.callLogging OR arguments.targetObject._mockCallLoggingActive  ){
 				udfOut.append('<cfset arrayAppend(this._mockCallLoggers["#arguments.method#"], arguments)>#lb#');
 			}
 			
-			/* Exceptions? To Throw */
+			// Exceptions? To Throw
 			if( arguments.throwException ){
 				udfOut.append('<cfthrow type="#arguments.throwType#" message="#arguments.throwMessage#" detail="#arguments.throwDetail#" />#lb#');
 			}			
-			/* Returns Something according to metadata? */
+			// Returns Something according to metadata?
 			if ( fncMD["returntype"] neq "void" ){
 				/* Results Recyling Code, basically, state machine code */
 				udfOut.append('
@@ -96,19 +96,19 @@ Description		:
 			}
 			udfOut.append('</cffunction>');
 			
-			/* Write it out */
+			// Write it out
 			writeStub(genPath & tmpFile, udfOUt.toString());
 		
-			/* Mix In Stub */
+			// Mix In Stub
 			try{
 				arguments.targetObject.$include = variables.$include;
 				arguments.targetObject.$include(getMockBox().getGenerationPath() & tmpFile);
 				structDelete(arguments.targetObject,"$include");
-				/* Remove Stub */	
+				// Remove Stub	
 				removeStub(genPath & tmpFile);				
 			}
 			catch(Any e){
-				/* Remove Stub */	
+				// Remove Stub
 				removeStub(genPath & tmpFile);
 			}			
 		</cfscript>

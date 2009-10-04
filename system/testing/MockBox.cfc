@@ -8,7 +8,7 @@ Date     		: April 20, 2009
 Description		: 
 	The Official ColdBox Mocking Factory
 ----------------------------------------------------------------------->
-<cfcomponent name="MockBox" output="false" hint="A unit testing mocking/stubing factory for ColdFusion 7 and above and any CFML Engine">
+<cfcomponent output="false" hint="A unit testing mocking/stubing factory for ColdFusion 7 and above and any CFML Engine">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------>
 
@@ -16,31 +16,28 @@ Description		:
 		instance = structnew();
 	</cfscript>
 
-	<cffunction name="init" access="public" output="false" returntype="MockBox" hint="Constructor">
+	<cffunction name="init" access="public" output="false" returntype="MockBox" hint="Create an instance of MockBox">
 		<cfargument name="generationPath" type="string" required="false" default="" hint="The mocking generation relative path.  If not defined, then the factory will use its internal tmp path. Just make sure that this folder is accessible from an include."/>
 		<cfscript>
 			var tempDir =  "/coldbox/system/testing/stubs";
 			
-			/* Setup the generation Path */
+			// Setup the generation Path
 			if( len(trim(arguments.generationPath)) neq 0 ){
-				/* Default to coldbox tmp path */
+				// Default to coldbox tmp path
 				instance.generationPath = arguments.generationPath;
 			}
 			else{
 				instance.generationPath = tempDir;
 			}
 			
-			/* Cleanup */
+			// Cleanup of paths.
 			if( right(instance.generationPath,1) neq "/" ){
 				instance.generationPath = instance.generationPath & "/";
 			}
 			
-			/* version */
 			instance.version = "1.0 Beta";
-			/* Generator */
 			instance.mockGenerator = createObject("component","coldbox.system.testing.mocks.MockGenerator").init(this);
 			
-			/* Return Instance */
 			return this;
 		</cfscript>
 	</cffunction>
@@ -48,21 +45,21 @@ Description		:
 <!------------------------------------------- PUBLIC ------------------------------------------>
 	
 	<!--- Get Generator --->
-	<cffunction name="getmockGenerator" access="public" returntype="coldbox.system.testing.mocks.MockGenerator" output="false">
+	<cffunction name="getMockGenerator" access="public" returntype="coldbox.system.testing.mocks.MockGenerator" output="false">
 		<cfreturn instance.mockGenerator>
 	</cffunction>
 	
 	<!--- Get/Set generation path --->
-	<cffunction name="getgenerationPath" access="public" returntype="string" output="false" hint="Get the current generation path">
+	<cffunction name="getGenerationPath" access="public" returntype="string" output="false" hint="Get the current generation path">
 		<cfreturn instance.generationPath>
 	</cffunction>
-	<cffunction name="setgenerationPath" access="public" returntype="void" output="false" hint="Override the generation path">
+	<cffunction name="setGenerationPath" access="public" returntype="void" output="false" hint="Override the generation path">
 		<cfargument name="generationPath" type="string" required="true">
 		<cfset instance.generationPath = arguments.generationPath>
 	</cffunction>
 	
 	<!--- Get/Set version --->
-	<cffunction name="getversion" access="public" returntype="string" output="false" hint="Get the current mock factory version">
+	<cffunction name="getVersion" access="public" returntype="string" output="false" hint="Get the current mock factory version">
 		<cfreturn instance.version>
 	</cffunction>
 	
@@ -76,29 +73,30 @@ Description		:
 		<!--- ************************************************************* --->
 		<cfscript>
 			var obj = 0;
-			/* class to mock */
+			
+			// class to mock
 			if ( structKeyExists(arguments, "className") ){
 				obj = createObject("component",arguments.className);
 			}
 			else if ( structKeyExists(arguments, "object") ){
-				/* Object to Mock */
+				// Object to Mock
 				obj = arguments.object;
 			}
 			else{
-				getUtil().throwit(type="mock.invalidArguments",message="You need a className or an object argument.");
+				getUtil().throwit(type="mock.invalidArguments",message="Invalid mocking arguments: className or object not found");
 			}		
 			
-			/* Clear up Mock object? */
+			// Clear up Mock object?
 			if( arguments.clearMethods ){
 				structClear(obj);
 			}
-			/* Decorate Mock */
+			// Decorate Mock
 			decorateMock(obj);
 			
-			/* Call Logging Global Flag */
+			// Call Logging Global Flag
 			if( arguments.callLogging ){ obj._mockCallLoggingActive = true; }
 			
-			/* Return mock obj */
+			// Return Mock
 			return obj;			
 		</cfscript>
 	</cffunction>	
@@ -205,16 +203,16 @@ Description		:
 			var genFile = "";
 			var oMockGenerator = this.MockBox.getmockGenerator();
 			
-			/* Check if the method is existent in public scope */
+			// Check if the method is existent in public scope
 			if ( structKeyExists(this,arguments.method) ){
 				fncMD = getMetadata(this[arguments.method]);
 			}
-			/* Else check in private scope */
+			// Else check in private scope
 			else if( structKeyExists(variables,arguments.method) ){
 				fncMD = getMetadata(variables[arguments.method]);				
 			}
 			
-			/* Prepare Metadata Existence, works on virtual methods also */
+			// Prepare Metadata Existence, works on virtual methods also
 			if ( not structKeyExists(fncMD,"returntype") ){
 				fncMD["returntype"] = "any";
 			}
@@ -224,21 +222,21 @@ Description		:
 			if( not structKeyExists(fncMD,"output") ){
 				fncMD["output"] = false;
 			}
-			/* Preserve Return Type? */
+			// Preserve Return Type?
 			if( NOT arguments.preserveReturnType ){
 				fncMD["returntype"] = "any";
 			}
 			
-			/* Remove Method From Object */
+			// Remove Method From Object
 			structDelete(this,arguments.method);
 			structDelete(variables,arguments.method);
 			
-			/* Generate Mock Method */
+			// Generate Mock Method
 			arguments.metadata = fncMD;
 			arguments.targetObject = this;
 			oMockGenerator.generate(argumentCollection=arguments);
 			
-			/* Results Setup For No Argument Definitions or base results */
+			// Results Setup For No Argument Definitions or base results
 			if( structKeyExists(arguments, "returns") ){
 				this._mockResults[arguments.method] = ArrayNew(1);
 				this._mockResults[arguments.method][1] = arguments.returns;
@@ -246,14 +244,14 @@ Description		:
 			else{
 				this._mockResults[arguments.method] = ArrayNew(1);
 			}
-			/* Create Mock Call Counters */
+			// Create Mock Call Counters
 			this._mockMethodCallCounters["#arguments.method#"] = 0;
 			
-			/* Save method name for concatenation */
+			// Save method name for concatenation
 			this._mockCurrentMethod = arguments.method;
 			this._mockCurrentArgsHash = "";
 			
-			/* Create Call Loggers, just in case */
+			// Create Call Loggers, just in case
 			this._mockCallLoggers[arguments.method] = arrayNew(1);
 			
 			return this;
@@ -288,46 +286,46 @@ Description		:
 		<cfscript>
 			var obj = target;
 			
-			/* Mock Method Results Holder */
+			// Mock Method Results Holder
 			obj._mockResults = structnew();
 			obj._mockArgResults = structnew();
 			obj._mockMethodCallCounters = structnew();
 			obj._mockCallLoggingActive = false;
 			
-			/* Mock Method Call Logger */
+			// Mock Method Call Logger
 			obj._mockCallLoggers = structnew();
 			
-			/* Mock Generation Path */
+			// Mock Generation Path
 			obj._mockGenerationPath = getGenerationPath();
 			
-			/* Original Metadata */
+			// Original Metadata
 			obj._mockOriginalMD = getMetadata(obj);
 			
-			/* Chanining Properties */
+			// Chanining Properties
 			obj._mockCurrentMethod = "";
 			obj._mockCurrentArgsHash = "";
 			
-			/* Mock Method */
+			// Mock Method
 			obj.$ 					= variables.mockMethod;
 			obj.mockMethod			= variables.mockMethod;
-			/* Mock Property */
+			// Mock Property
 			obj.$property	 		= variables.mockProperty;
 			obj.mockProperty 		= variables.mockProperty;
-			/* MOck Method Call COunts */
+			// MOck Method Call COunts
 			obj.$count 				= variables.mockMethodCallCount;
 			obj.mockMethodCallCount = variables.mockMethodCallCount;
-			/* Mock Results */
+			// Mock Results
 			obj.mockResults 		= variables.mockResults;
 			obj.$results			= obj.mockResults;
-			/* Mock Arguments */
+			// Mock Arguments
 			obj.mockArgs			= variables.mockArgs;
 			obj.$args				= obj.mockArgs;
-			/* CallLog */
+			/ CallLog
 			obj.mockCallLog			= variables.mockCallLog;
 			obj.$callLog			= obj.mockCallLog;
-			/* Debug */
+			// Debug
 			obj.$debug				= variables.mockDebug;
-			/* Mock Box */
+			// Mock Box
 			obj.mockBox 			= this;			
 		</cfscript>
 	</cffunction>
