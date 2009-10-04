@@ -91,7 +91,16 @@ Luis Majano		07/11/2006		Updated it to work with ColdBox. look at license in the
 			var qFiles = queryJars(argumentCollection=arguments);
 			var iterator = qFiles.iterator();
 			var thisFile = "";
-			var URLClassLoader = getURLClassLoader();
+			var URLClassLoader = "";
+			
+			// Try to check if javaloader in scope? else, set it up.
+			if( NOT isJavaLoaderInScope() ){
+				setup(qFiles);
+				return;
+			}
+			
+			// Get URL Class Loader
+			URLClassLoader = getURLClassLoader();
 			
 			// Try to load new locations
 			while( iterator.hasNext() ){
