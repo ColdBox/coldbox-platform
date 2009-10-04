@@ -108,7 +108,7 @@ id , name , mail
 	</cffunction>
 	
 	<!--- getMockRequestContext --->
-	<cffunction name="getMockRequestContext" output="false" access="public" returntype="coldbox.system.beans.RequestContext" hint="Builds an empty functioning request context">
+	<cffunction name="getMockRequestContext" output="false" access="private" returntype="coldbox.system.beans.RequestContext" hint="Builds an empty functioning request context">
 		<cfargument name="clearMethods" type="boolean" required="false" default="false" hint="Clear Methods on it?"/>
 		<cfscript>
 			var mockRC = "";
