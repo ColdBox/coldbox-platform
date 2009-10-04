@@ -155,10 +155,10 @@ id , name , mail
 	</cffunction>
 	
 	<!--- get/Set Coldbox App Key --->
-	<cffunction name="getcoldboxAppKey" access="private" output="false" returntype="string" hint="Get the coldboxAppKey used to store the coldbox controller in application scope.">
+	<cffunction name="getColdboxAppKey" access="private" output="false" returntype="string" hint="Get the coldboxAppKey used to store the coldbox controller in application scope.">
 		<cfreturn instance.coldboxAppKey/>
 	</cffunction>
-	<cffunction name="setcoldboxAppKey" access="private" output="false" returntype="void" hint="Override the coldboxAppKey, used to store the coldbox controller in application scope.">
+	<cffunction name="setColdboxAppKey" access="private" output="false" returntype="void" hint="Override the coldboxAppKey, used to store the coldbox controller in application scope.">
 		<cfargument name="coldboxAppKey" type="string" required="true"/>
 		<cfset instance.coldboxAppKey = arguments.coldboxAppKey/>
 	</cffunction>
