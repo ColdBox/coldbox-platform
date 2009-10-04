@@ -124,8 +124,7 @@ Description :
 			
 			// No event pattern found, we can execute.
 			return true;
-		</cfscript>		
-		<cfdump var="#getTickCount()-stimeMD# ms"><cfabort>
+		</cfscript>	
 	</cffunction>
 	
 	<!--- getter setter state --->
