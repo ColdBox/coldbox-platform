@@ -9,8 +9,7 @@ Date        :	9/28/2007
 Description :
 	The base interceptor class
 ----------------------------------------------------------------------->
-<cfcomponent name="interceptor"
-			 hint="This is the base Interceptor class"
+<cfcomponent hint="This is the base Interceptor class"
 			 output="false"
 			 extends="coldbox.system.FrameworkSupertype"
 			 serializable="false">
