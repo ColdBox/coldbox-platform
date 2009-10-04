@@ -1,4 +1,4 @@
-<!--- Document Information -----------------------------------------------------
+<!------------------------------------------------------------------------------
 ********************************************************************************
 Copyright 2005-2008 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 www.coldboxframework.com | www.luismajano.com | www.ortussolutions.com
@@ -18,8 +18,7 @@ Mark Mandel		08/05/2006		Created
 Mark Mandel		22/06/2006		Added verification that the path exists
 Luis Majano		07/11/2006		Updated it to work with ColdBox. look at license in the install folder.
 ------------------------------------------------------------------------------->
-<cfcomponent name="JavaLoader"
-			 hint="Loads External Java Classes, while providing access to ColdFusion classes"
+<cfcomponent hint="Loads External Java Classes, while providing access to ColdFusion classes"
 			 extends="coldbox.system.Plugin"
 			 output="false"
 			 cache="true" 
@@ -48,18 +47,14 @@ Luis Majano		07/11/2006		Updated it to work with ColdBox. look at license in the
 		</cfscript>
 	</cffunction>
 
-
 <!------------------------------------------- PUBLIC ------------------------------------------->
 
 	<!--- Setup the Loader --->
-	<cffunction name="setup" hint="setup the loader" access="public" returntype="any" output="false">
+	<cffunction name="setup" hint="Setup the URL loader with paths to load and how to treat class loaders" access="public" returntype="any" output="false">
 		<!--- ************************************************************* --->
-		<cfargument name="loadPaths" hint="An array of directories of classes, or paths to .jar files to load"
-					type="array" default="#ArrayNew(1)#" required="no">
-		<cfargument name="loadColdFusionClassPath" hint="Loads the ColdFusion libraries" 
-					type="boolean" required="No" default="false">
-		<cfargument name="parentClassLoader" hint="(Expert use only) The parent java.lang.ClassLoader to set when creating the URLClassLoader" 
-					type="any" default="" required="false">
+		<cfargument name="loadPaths" 				type="array" 	required="false" default="#ArrayNew(1)#" hint="An array of directories of classes, or paths to .jar files to load">
+		<cfargument name="loadColdFusionClassPath"  type="boolean"  required="false" default="false" hint="Loads the ColdFusion libraries">
+		<cfargument name="parentClassLoader" 		type="any" 		required="false" default=""  hint="(Expert use only) The parent java.lang.ClassLoader to set when creating the URLClassLoader">
 		<!--- ************************************************************* --->
 			<cfset var JavaLoader = "">
 			
@@ -85,6 +80,43 @@ Luis Majano		07/11/2006		Updated it to work with ColdBox. look at license in the
 		<cfargument name="className" hint="The name of the class to create" type="string" required="Yes">
 		<!--- ************************************************************* --->
 		<cfreturn getJavaLoaderFromScope().create(argumentCollection=arguments)>
+	</cffunction>
+	
+	<!--- addPaths --->
+	<cffunction name="appendPaths" output="false" access="public" returntype="void" hint="Appends a directory path of *.jar's,*.classes to the current loaded class loader.">
+		<cfargument name="dirPath" type="string" required="true" default="" hint="The directory path to query"/>
+		<cfargument name="filter" type="string" required="false" default="*.jar" hint="The directory filter to use"/>
+		<cfscript>
+			// Convert paths to array of file locations
+			var qFiles = queryJars(argumentCollection=arguments);
+			var iterator = qFiles.iterator();
+			var thisFile = "";
+			var URLClassLoader = getURLClassLoader();
+			
+			// Try to load new locations
+			while( iterator.hasNext() ){
+				thisFile = createObject("java", "java.io.File").init(iterator.next());
+				if(NOT thisFile.exists()){
+					$throw(message="The path you have specified could not be found",detail=thisFile.getAbsolutePath() & "does not exist",type="PathNotFoundException");
+				}
+				// Load up the URL
+				URLClassLoader.addUrl(thisFile.toURL());
+			}		
+		</cfscript>
+	</cffunction>
+	
+	<!--- getLoadedURLs --->
+	<cffunction name="getLoadedURLs" output="false" access="public" returntype="array" hint="Returns the paths of all the loaded java classes and resources.">
+		<cfscript>
+			var loadedURLs = getURLClassLoader().getURLs();
+			var returnArray = arrayNew(1);
+			
+			while( loadedURLs.hasMoreElements() ){
+				arrayAppend(returnArray, loadedURLs.next().toString());
+			}
+			
+			return returnArray;
+		</cfscript>
 	</cffunction>
 
 	<!--- Get URL Class Loader --->

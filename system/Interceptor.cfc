@@ -25,6 +25,8 @@ Description :
 			variables.controller = arguments.controller;
 			// Register LogBox
 			variables.logBox = arguments.controller.getLogBox();
+			// Register Log object
+			variables.log = variables.logBox.getLogger(this);
 			// Register Flash RAM
 			variables.flash = arguments.controller.getRequestService().getFlashScope();
 			

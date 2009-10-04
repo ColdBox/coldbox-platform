@@ -108,9 +108,7 @@ Mark Mandel		22/06/2006		Added verification that the path exists
 
 <!------------------------------------------- PRIVATE ------------------------------------------->
 
-<cffunction name="ensureNetworkClassLoaderOnServerScope"
-			hint="makes sure there is a URL class loader on the server scope that can load me up some networkClassLoader goodness"
-			access="private" returntype="void" output="false">
+<cffunction name="ensureNetworkClassLoaderOnServerScope" access="private" returntype="void" output="false" hint="makes sure there is a URL class loader on the server scope that can load me up some networkClassLoader goodness">
 	<cfscript>
 		var Class = createObject("java", "java.lang.Class");
 		var Array = createObject("java", "java.lang.reflect.Array");
