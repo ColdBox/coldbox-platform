@@ -1,11 +1,11 @@
-<cfcomponent name="requestContextDecoratorTest" extends="coldbox.system.testing.BaseTestCase">
+<cfcomponent extends="coldbox.system.testing.BaseTestCase">
 	
 	<!--- setup and teardown --->
 	
 	<cffunction name="setUp" returntype="void" access="public">
 		<cfscript>
-			this.decorator = createObject("component","coldbox.system.beans.RequestContextDecorator");		
-			this.rc = createObject("component","coldbox.system.beans.RequestContext");		
+			this.decorator = createObject("component","coldbox.system.web.context.RequestContextDecorator");		
+			this.rc = createObject("component","coldbox.system.web.context.RequestContext");		
 			this.controller = createObject("component","coldbox.system.Controller");
 			
 			this.decorator.init(this.rc,this.controller);

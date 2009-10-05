@@ -31,7 +31,7 @@ Modification History:
 
 	<!--- do something --->
 	<cffunction name="index" access="public" returntype="Void" output="false">
-		<cfargument name="Event" type="coldbox.system.beans.RequestContext" required="yes">
+		<cfargument name="Event" type="coldbox.system.web.context.RequestContext" required="yes">
 		<cfset var rc = event.getCollection()>
 		 
 		<cfset event.setView('vwQuote')>

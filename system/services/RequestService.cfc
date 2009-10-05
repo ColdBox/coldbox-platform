@@ -63,7 +63,7 @@ Modification History:
 <!------------------------------------------- PUBLIC ------------------------------------------->
 
 	<!--- Request Capture --->
-	<cffunction name="requestCapture" access="public" returntype="any" output="false" hint="I capture an incoming request. Returns: coldbox.system.beans.RequestContext">
+	<cffunction name="requestCapture" access="public" returntype="any" output="false" hint="I capture an incoming request. Returns: coldbox.system.web.context.RequestContext">
 		<cfscript>
 			var Context = getContext();
 			var DebugPassword = controller.getSetting("debugPassword");
@@ -201,7 +201,7 @@ Modification History:
 		initFORMURL();
 		loadProperties();
 		//Create the original request context
-		oContext = CreateObject("component","coldbox.system.beans.RequestContext").init(FORM,URL,instance.ContextProperties);
+		oContext = CreateObject("component","coldbox.system.web.context.RequestContext").init(FORM,URL,instance.ContextProperties);
 		
 		//Determine if we have a decorator, if we do, then decorate it.
 		if ( instance.ContextProperties.isUsingDecorator ){

@@ -63,7 +63,7 @@ For the latest usage, please visit the wiki.
 	<!--- After Aspects Load --->
 	<cffunction name="afterAspectsLoad" access="public" returntype="void" output="false" >
 		<!--- ************************************************************* --->
-		<cfargument name="event" 		 required="true" type="coldbox.system.beans.RequestContext" hint="The event object.">
+		<cfargument name="event" 		 required="true" type="coldbox.system.web.context.RequestContext" hint="The event object.">
 		<cfargument name="interceptData" required="true" type="struct" hint="interceptData of intercepted info.">
 		<!--- ************************************************************* --->
 		<cfscript>
@@ -132,7 +132,7 @@ For the latest usage, please visit the wiki.
 	<!--- pre-process --->
 	<cffunction name="preProcess" access="public" returntype="void" output="false" >
 		<!--- ************************************************************* --->
-		<cfargument name="event" 		 required="true" type="coldbox.system.beans.RequestContext" hint="The event object.">
+		<cfargument name="event" 		 required="true" type="coldbox.system.web.context.RequestContext" hint="The event object.">
 		<cfargument name="interceptData" required="true" type="struct" hint="interceptData of intercepted info.">
 		<!--- ************************************************************* --->
 		<cfscript>
@@ -150,7 +150,7 @@ For the latest usage, please visit the wiki.
 	<!--- pre-event --->
 	<cffunction name="preEvent" access="public" returntype="void" output="false" >
 		<!--- ************************************************************* --->
-		<cfargument name="event" 		 required="true" type="coldbox.system.beans.RequestContext" hint="The event object.">
+		<cfargument name="event" 		 required="true" type="coldbox.system.web.context.RequestContext" hint="The event object.">
 		<cfargument name="interceptData" required="true" type="struct" hint="interceptData of intercepted info.">
 		<!--- ************************************************************* --->
 		<cfscript>
@@ -163,7 +163,7 @@ For the latest usage, please visit the wiki.
 	<!--- Process Rules --->
 	<cffunction name="processRules" access="public" returntype="void" hint="Process security rules. This method is called from an interception point" output="false" >
 		<!--- ************************************************************* --->
-		<cfargument name="event" 		 required="true" type="coldbox.system.beans.RequestContext" hint="The event object.">
+		<cfargument name="event" 		 required="true" type="coldbox.system.web.context.RequestContext" hint="The event object.">
 		<cfargument name="interceptData" required="true" type="struct" hint="interceptData of intercepted info.">
 		<cfargument name="currentEvent"  required="true" type="string" hint="The event to check">
 		<!--- ************************************************************* --->

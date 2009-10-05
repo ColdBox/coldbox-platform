@@ -18,7 +18,7 @@ Sep/25/2005 - Luis Majano
 <cfproperty name="badService" type="ioc" scope="instance">
 
 	<cffunction name="doColdboxFactoryTests" access="public" returntype="any" hint="" output="false" >
-		<cfargument name="Event" type="coldbox.system.beans.RequestContext">
+		<cfargument name="Event" type="coldbox.system.web.context.RequestContext">
 		<cfscript>
 		var rc = event.getCollection();
 		

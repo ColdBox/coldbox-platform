@@ -52,7 +52,6 @@ Modification History:
 			instance.registeredLayouts = arguments.properties.registeredLayouts;
 			instance.eventName = arguments.properties.eventName;
 			
-			
 			return this;
 		</cfscript>		
 	</cffunction>

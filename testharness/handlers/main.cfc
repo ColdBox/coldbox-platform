@@ -35,14 +35,14 @@ coldbox:cacheManager	 get the cache manager
 			 autowire="false">
 
 	<cffunction name="onApplicationStart" access="public" output="false" returntype="void">
-		<cfargument name="Event" type="coldbox.system.beans.RequestContext">
+		<cfargument name="Event" type="coldbox.system.web.context.RequestContext">
 		<cfset getColdboxOCM().set("mysiteDSNBean",getDatasource("mysite"),0)>
 		<cfset getPlugin("Logger").logEntry("information","AppStart Fired")>
 	</cffunction>
 
 	
 	<cffunction name="onSessionStart" access="public" output="false" returntype="void">
-		<cfargument name="Event" type="coldbox.system.beans.RequestContext">
+		<cfargument name="Event" type="coldbox.system.web.context.RequestContext">
 		<cfscript>
 		var logger = getPlugin("Logger");
 		logger.logEntry("information","I am in the onSessionStart baby.");
@@ -50,7 +50,7 @@ coldbox:cacheManager	 get the cache manager
 	</cffunction>
 
 	<cffunction name="onSessionEnd" access="public" output="false" returntype="void">
-		<cfargument name="Event" type="coldbox.system.beans.RequestContext">
+		<cfargument name="Event" type="coldbox.system.web.context.RequestContext">
 		<cfscript>
 		var logger = getPlugin("Logger");
 		logger.logEntry("information","I am in the onSessionEnd baby.");

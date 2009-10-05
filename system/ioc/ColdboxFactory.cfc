@@ -86,7 +86,7 @@ Modification History:
 	</cffunction>
 	
 	<!--- Get Context Facade --->
-	<cffunction name="getRequestContext" access="public" returntype="coldbox.system.beans.RequestContext" hint="Tries to retrieve the request context object" output="false" >
+	<cffunction name="getRequestContext" access="public" returntype="coldbox.system.web.context.RequestContext" hint="Tries to retrieve the request context object" output="false" >
 		<cfreturn getColdbox().getRequestService().getContext()>
 	</cffunction>
 	

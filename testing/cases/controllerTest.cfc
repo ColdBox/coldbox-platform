@@ -132,7 +132,7 @@
 			
 			mocksession = createObject("component","coldbox.system.plugins.SessionStorage").init(controller);
 			
-			context = mockFactory.createMock('coldbox.system.beans.RequestContext');
+			context = mockFactory.createMock('coldbox.system.web.context.RequestContext');
 			context.mockMethod('getCollection').returns(mockCollection,mockCollection);
 			
 			pluginService = mockfactory.createMock('coldbox.system.services.pluginService');
@@ -164,7 +164,7 @@
 			
 			mocksession = createObject("component","coldbox.system.plugins.ClientStorage").init(controller);
 			
-			context = mockFactory.createMock('coldbox.system.beans.RequestContext');
+			context = mockFactory.createMock('coldbox.system.web.context.RequestContext');
 			context.mockMethod('getCollection').returns(mockCollection,mockCollection);
 			
 			pluginService = mockfactory.createMock('coldbox.system.services.pluginService');

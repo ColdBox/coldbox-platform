@@ -108,17 +108,17 @@ id , name , mail
 	</cffunction>
 	
 	<!--- getMockRequestContext --->
-	<cffunction name="getMockRequestContext" output="false" access="private" returntype="coldbox.system.beans.RequestContext" hint="Builds an empty functioning request context">
+	<cffunction name="getMockRequestContext" output="false" access="private" returntype="coldbox.system.web.context.RequestContext" hint="Builds an empty functioning request context">
 		<cfargument name="clearMethods" type="boolean" required="false" default="false" hint="Clear Methods on it?"/>
 		<cfscript>
 			var mockRC = "";
 			var rcProps = structnew();
 			
 			if( arguments.clearMethods ){
-				return getMockBox().createMock(className="coldbox.system.beans.RequestContext",clearMethods=true);
+				return getMockBox().createMock(className="coldbox.system.web.context.RequestContext",clearMethods=true);
 			}
 			// Create functioning request context
-			mockRC = getMockBox().createMock(className="coldbox.system.beans.RequestContext");
+			mockRC = getMockBox().createMock(className="coldbox.system.web.context.RequestContext");
 			// Create mock properties
 			rcProps.DefaultLayout = "";
 			rcProps.DefaultView = "";

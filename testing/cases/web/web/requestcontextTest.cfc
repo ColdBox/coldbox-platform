@@ -1,8 +1,8 @@
-<cfcomponent name="requestcontextTest" extends="coldbox.system.testing.BaseTestCase" output="false">
+<cfcomponent extends="coldbox.system.testing.BaseTestCase" output="false">
 
 	<cffunction name="setUp" returntype="void" access="public" output="false">
 		<cfscript>
-			oRC = createObject("component","coldbox.system.beans.RequestContext");
+			oRC = createObject("component","coldbox.system.web.context.RequestContext");
 			
 			/* Properties */
 			props.DefaultLayout = "Main.cfm";
@@ -12,6 +12,7 @@
 			props.EventName = "event";
 			props.isSES = false;
 			props.sesBaseURL = "http://jfetmac/applications/coldbox/testharness/index.cfm";
+			props.registeredLayouts = structnew();
 			
 			/* Init it */
 			oRC.init(structnew(),structnew(),props);
@@ -30,28 +31,12 @@
 		</cfscript>
 	</cffunction>
 
-	<!--- ************************************************************* --->
-
-	<cffunction name="testsetCollection" access="public" returntype="void" output="false">
-		<cfscript>
-			var event = getRequestContext();
-			var test = {name='luis',test=now()};
-			
-			event.setCollection(test);
-			
-			AssertEquals( test, event.getCollection() );
-		</cfscript>
-	</cffunction>
-
-	<!--- ************************************************************* --->
-
 	<cffunction name="testclearCollection" access="public" returntype="void" output="false">
 		<cfscript>
 			var event = getRequestContext();
-			var test = structnew();
-			test.today = now();
+			var test = {today=now()};
 			
-			event.setCollection(test);
+			event.collectionAppend(test);
 			event.clearCollection();
 			
 			AssertEquals( structnew(), event.getCollection() );
@@ -102,12 +87,6 @@
 			assertEquals( test.today , event.getValue("today") );
 			
 			assertEquals( "null", event.getValue("invalidVar", "null") );
-			
-			assertTrue( isArray(event.getValue("invalidVar", "[array]") ) );
-			
-			assertTrue( isQuery ( event.getValue("invalidVar", "[query]")  )) ;
-			
-			assertTrue( isStruct( event.getValue("invalidVar", "[struct]") ) );
 			
 		</cfscript>
 	</cffunction>
@@ -509,22 +488,13 @@
 		</cfscript>
 	</cffunction>
 	
-	<cffunction name="testViewDispatched">
+	<cffunction name="testNoExecution">
 		<cfscript>
 			var event = getRequestContext();
 			
-			assertFalse( event.isViewDispatched() );
-			
-			event.setViewDispatched("simple",false);
-			
-			assertTrue( event.isViewDispatched() );
-			assertEquals( event.getCurrentView(), "simple");
-			assertTrue( len(event.getCurrentLayout()) );
-			
-			event.setViewDispatched("simple",true);
-			assertTrue( event.isViewDispatched() );
-			assertEquals( event.getCurrentView(), "simple");
-			assertFalse( len(event.getCurrentLayout()) );
+			assertFalse( event.isNoExecution() );
+			event.noExecution();
+			assertTrue( event.isNoExecution() );
 			
 		</cfscript>
 	</cffunction>

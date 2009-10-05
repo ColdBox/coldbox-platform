@@ -1,5 +1,5 @@
 	<%cffunction name="list" access="public" returntype="void" output="false"%>
-		<%cfargument name="event" type="coldbox.system.beans.RequestContext" required="yes"%>
+		<%cfargument name="event" type="any" required="yes"%>
 		<%cfscript%>
 		//Get references
 		var rc = event.getCollection();

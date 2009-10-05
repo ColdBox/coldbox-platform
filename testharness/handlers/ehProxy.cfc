@@ -3,7 +3,7 @@
 	<!--- ************************************************************* --->
 
 	<cffunction name="getIntroArrays" access="public" output="false" returntype="Array">
-		<cfargument name="Event" type="coldbox.system.beans.RequestContext">
+		<cfargument name="Event" type="coldbox.system.web.context.RequestContext">
 		<cfscript>
 		//Just return an array
 		var myArray = ArrayNew(1);
@@ -21,7 +21,7 @@
 	</cffunction>
 	
 	<cffunction name="getIntroArraysCollection" access="public" output="false" returntype="void">
-		<cfargument name="Event" type="coldbox.system.beans.RequestContext">
+		<cfargument name="Event" type="coldbox.system.web.context.RequestContext">
 		<cfscript>
 		//Just return an array
 		var myArray = ArrayNew(1);
@@ -43,7 +43,7 @@
 	<!--- ************************************************************* --->
 
 	<cffunction name="getIntroStructure" access="public" output="false" returntype="any">
-		<cfargument name="Event" type="coldbox.system.beans.RequestContext">
+		<cfargument name="Event" type="coldbox.system.web.context.RequestContext">
 		<cfscript>
 		var introStruct = structnew();
 		
@@ -61,7 +61,7 @@
 	
 	<!--- jsondata --->
 	<cffunction name="jsondata" access="public" returntype="void" output="false" hint="">
-		<cfargument name="Event" type="coldbox.system.beans.RequestContext" required="yes">
+		<cfargument name="Event" type="coldbox.system.web.context.RequestContext" required="yes">
 	    <cfset var test = structnew()>
 	    
 	    <cfset test.name = "Luis Majano">
@@ -73,13 +73,13 @@
 	
 	<!--- jsondata --->
 	<cffunction name="plaindata" access="public" returntype="void" output="false" hint="">
-		<cfargument name="Event" type="coldbox.system.beans.RequestContext" required="yes">
+		<cfargument name="Event" type="coldbox.system.web.context.RequestContext" required="yes">
 
 	    <cfset event.renderData(type="plain",data='<h2>Hello Luis</h2>')> 
 	</cffunction>
 	
 	<cffunction name="xmldata" access="public" returntype="void" output="false" hint="">
-		<cfargument name="Event" type="coldbox.system.beans.RequestContext" required="yes">
+		<cfargument name="Event" type="coldbox.system.web.context.RequestContext" required="yes">
 		 <cfset var test = structnew()>
 	    
 	    <cfset test.name = "Luis Majano">

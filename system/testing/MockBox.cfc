@@ -320,7 +320,7 @@ Description		:
 			// Mock Arguments
 			obj.mockArgs			= variables.mockArgs;
 			obj.$args				= obj.mockArgs;
-			/ CallLog
+			// CallLog
 			obj.mockCallLog			= variables.mockCallLog;
 			obj.$callLog			= obj.mockCallLog;
 			// Debug

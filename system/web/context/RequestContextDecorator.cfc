@@ -9,26 +9,26 @@ Date        :	10/2/2007
 Description :
 	This is the base request context decorator object
 ----------------------------------------------------------------------->
-<cfcomponent name="RequestContextDecorator" hint="This is the base request context decorator" output="false" extends="coldbox.system.beans.RequestContext">
+<cfcomponent hint="This is the base request context decorator used as an abstract class for implementing request context decorators" output="false" extends="coldbox.system.web.context.RequestContext">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 		
 	<cffunction name="init" access="public" output="false" hint="constructor" returntype="RequestContextDecorator">
 		<!--- ************************************************************* --->
-		<cfargument name="oContext" 	type="any" 	required="true" hint="The original context we are decorating. coldbox.system.beans.RequestContext">
+		<cfargument name="oContext" 	type="any" 	required="true" hint="The original context we are decorating. coldbox.system.web.context.RequestContext">
 		<cfargument name="controller" 	type="any" 	required="true"	hint="The coldbox controller">
 		<!--- ************************************************************* --->
 		<cfscript>
-			/* Set the memento state */
+			// Set the memento state
 			setMemento(arguments.oContext.getMemento());
 			
-			/* Set Controller */
+			// Set Controller
 			instance.controller = arguments.controller;
 			
-			/* Composite the original context */
+			// Composite the original context
 			setRequestContext(arguments.oContext);
 			
-			/* Configure this decorated request context. */
+			// Configure this decorated request context.
 			configure();
 			
 			return this;
@@ -42,7 +42,7 @@ Description :
 	</cffunction>
 	
 	<!--- Get the original context --->
-	<cffunction name="getRequestContext" access="public" output="false" returntype="any" hint="Get the original request context. coldbox.system.beans.RequestContext">
+	<cffunction name="getRequestContext" access="public" output="false" returntype="any" hint="Get the original request context. coldbox.system.web.context.RequestContext">
 		<cfreturn instance.requestContext/>
 	</cffunction>
 	

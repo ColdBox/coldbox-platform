@@ -57,7 +57,7 @@ Description :
 	
 	<cffunction name="afterConfigurationLoad" output="false" access="public" returntype="void" hint="Load Reactor after configuration has loaded">
 		<!--- *********************************************************************** --->
-		<cfargument name="event" 			required="true" type="any" hint="The event object: coldbox.system.beans.RequestContext">
+		<cfargument name="event" 			required="true" type="any" hint="The event object: coldbox.system.web.context.RequestContext">
 		<cfargument name="interceptData" 	required="true" type="struct" hint="A structure containing intercepted information. NONE BY DEFAULT HERE">
 		<!--- *********************************************************************** --->
 		<cfscript >

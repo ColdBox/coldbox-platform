@@ -31,7 +31,7 @@ Modification History:
 
 	<!--- do something --->
 	<cffunction name="index" access="public" returntype="Void" output="false">
-		<cfargument name="Event" type="coldbox.system.beans.RequestContext" required="yes">
+		<cfargument name="Event" type="coldbox.system.web.context.RequestContext" required="yes">
 		<cfset var rc = event.getCollection()>
 		 
 		<cfset event.setView('vwQuote')>
@@ -39,12 +39,12 @@ Modification History:
 	
 	<!--- Pre Handler --->
 	<cffunction name="preHandler" access="public" returntype="any" hint="" output="false" >
-		<cfargument name="Event" type="coldbox.system.beans.RequestContext" required="yes">
+		<cfargument name="Event" type="coldbox.system.web.context.RequestContext" required="yes">
 	    <cfset event.overrideEvent('default.override')>
 	</cffunction>
 	<!--- protect --->
 	<cffunction name="protect" access="public" returntype="void" output="false" hint="">
-		<cfargument name="Event" type="coldbox.system.beans.RequestContext" required="yes">
+		<cfargument name="Event" type="coldbox.system.web.context.RequestContext" required="yes">
 	    <cfset var rc = event.getCollection()>
 	    
 	    <cfset getPlugin("MessageBox").setMessage(type="error", message="Override did not work")>    
@@ -52,7 +52,7 @@ Modification History:
 	</cffunction>
 	<!--- override --->
 	<cffunction name="override" access="public" returntype="void" output="false" hint="">
-		<cfargument name="Event" type="coldbox.system.beans.RequestContext" required="yes">
+		<cfargument name="Event" type="coldbox.system.web.context.RequestContext" required="yes">
 	    <cfset var rc = event.getCollection()>
 	    
 	    <cfset getPlugin("MessageBox").setMessage(type="info", message="Override Worked")>
@@ -61,7 +61,7 @@ Modification History:
 	
 	<!--- implicit --->
 	<cffunction name="implicit" access="public" returntype="void" output="false" hint="">
-		<cfargument name="Event" type="coldbox.system.beans.RequestContext" required="yes">
+		<cfargument name="Event" type="coldbox.system.web.context.RequestContext" required="yes">
 	    <cfset var rc = event.getCollection()>
 	    
 	    <cfset rc.ImplicitView = "The implicit view has to be done for event: #event.getCurrentEvent()#">    
@@ -70,7 +70,7 @@ Modification History:
 	
 	<!--- RSS --->
 	<cffunction name="rss" access="public" returntype="void" output="false" hint="">
-		<cfargument name="Event" type="coldbox.system.beans.RequestContext" required="yes">
+		<cfargument name="Event" type="coldbox.system.web.context.RequestContext" required="yes">
 	    <cfset var rc = event.getCollection()>
 	    <cfscript>
 			//get rss feed
@@ -80,7 +80,7 @@ Modification History:
 	
 	<!--- onMissingAction --->
 	<cffunction name="onMissingAction" access="public" returntype="void" output="false" hint="on missing action">
-		<cfargument name="Event" type="coldbox.system.beans.RequestContext" required="yes">
+		<cfargument name="Event" type="coldbox.system.web.context.RequestContext" required="yes">
 	    <cfargument name="missingAction" required="true" type="string" hint="">
 	    <cfset var rc = event.getCollection()>
 	   	<cfscript>
@@ -91,7 +91,7 @@ Modification History:
 	
 	<!--- testRoute --->
 	<cffunction name="testRoute" access="public" returntype="void" output="false" hint="">
-		<cfargument name="Event" type="coldbox.system.beans.RequestContext" required="yes">
+		<cfargument name="Event" type="coldbox.system.web.context.RequestContext" required="yes">
 	    <cfset var rc = event.getCollection()>
 	    
 	    <cfset getPlugin("MessageBox").setMessage("warning","I am relocating from <strong>default.testRoute</strong>")>

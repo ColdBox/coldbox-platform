@@ -25,7 +25,7 @@ Description :
 
 	<cffunction name="onException" access="public" returntype="void" hint="My very own custom interception point. " output="true" >
 		<!--- ************************************************************* --->
-		<cfargument name="event" required="true" type="coldbox.system.beans.RequestContext" hint="The event object.">
+		<cfargument name="event" required="true" type="coldbox.system.web.context.RequestContext" hint="The event object.">
 		<cfargument name="interceptData" required="true" type="struct" hint="Metadata of intercepted info.">
 		<!--- ************************************************************* --->
 		<cfset getPlugin("Logger").logEntry("information","an error ocurred")>

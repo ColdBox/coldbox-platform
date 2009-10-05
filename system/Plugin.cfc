@@ -97,7 +97,7 @@ Modification History:
 <!------------------------------------------- PRIVATE METHODS ------------------------------------------->
 
 	<!--- Get Context --->
-	<cffunction name="getRequestContext" access="private" returntype="coldbox.system.beans.RequestContext" hint="Retrieve the request context object" output="false" >
+	<cffunction name="getRequestContext" access="private" returntype="coldbox.system.web.context.RequestContext" hint="Retrieve the request context object" output="false" >
 		<cfreturn controller.getRequestService().getContext()>
 	</cffunction>
 	
