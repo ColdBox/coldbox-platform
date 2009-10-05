@@ -36,7 +36,7 @@ Description		:
 			}
 			
 			instance.version = "1.0 Beta";
-			instance.mockGenerator = createObject("component","coldbox.system.testing.mocks.MockGenerator").init(this);
+			instance.mockGenerator = createObject("component","coldbox.system.testing.mockutils.MockGenerator").init(this);
 			
 			return this;
 		</cfscript>
@@ -45,7 +45,7 @@ Description		:
 <!------------------------------------------- PUBLIC ------------------------------------------>
 	
 	<!--- Get Generator --->
-	<cffunction name="getMockGenerator" access="public" returntype="coldbox.system.testing.mocks.MockGenerator" output="false">
+	<cffunction name="getMockGenerator" access="public" returntype="coldbox.system.testing.mockutils.MockGenerator" output="false">
 		<cfreturn instance.mockGenerator>
 	</cffunction>
 	
@@ -116,7 +116,7 @@ Description		:
 	<cffunction name="createStub" output="false" access="public" returntype="any" hint="Create an empty stub object that you can use for mocking.">
 		<cfargument name="callLogging" 	type="boolean" required="false" default="false" hint="Add method call logging for all mocked methods"/>
 		<cfscript>
-			return createMock(className="coldbox.system.testing.mocks.Stub",callLogging=arguments.callLogging);
+			return createMock(className="coldbox.system.testing.mockutils.Stub",callLogging=arguments.callLogging);
 		</cfscript>
 	</cffunction>	
 
