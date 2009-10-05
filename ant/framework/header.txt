@@ -3,7 +3,7 @@ ColdBox is open source. However, if you use this product please know that it is
 bound to the following Licence. If you use ColdBox, please make mention of it 
 in your code or web site or add a Powered By Coldbox icon.
 ********************************************************************************
-Copyright 2005-2007 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 ********************************************************************************
 
 Apache License, Version 2.0

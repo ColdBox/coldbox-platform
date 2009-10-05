@@ -76,15 +76,9 @@
         </copy>
 		
 		<!--AppTemplate-->
-		<copy todir="${dir.build}/ApplicationTemplate">
-        	<fileset dir="ApplicationTemplate" />
+		<copy todir="${dir.build}/ApplicationTemplates">
+        	<fileset dir="ApplicationTemplates" />
         </copy>
-		<copy todir="${dir.build}/ApplicationTemplateRemote">
-	       	<fileset dir="ApplicationTemplateRemote" />
-        </copy>
-		<copy todir="${dir.build}/ApplicationTemplateSimple">
-			<fileset dir="ApplicationTemplateSimple" />
-		</copy>
 		
 		<!--Copy text files to install folder-->
 		<copy todir="${dir.build}/install">
@@ -106,8 +100,16 @@
 		<!-- Zip Bundle -->
 		<zip destfile="${dir.exports}/coldbox_${coldbox.version}.zip" basedir="${dir.build}"></zip>
 		
+		<!-- Cleanup for StandAlone Build -->
+		<delete dir="${dir.build}/install" />
+		<copy todir="${dir.build}/install">
+			<fileset file="system/config/license.txt" />
+			<fileset file="system/config/readme.txt" />		
+		</copy>
+		
 		<!-- Zip Standalone -->
-		<zip destfile="${dir.exports}/coldbox_standalone_${coldbox.version}.zip" basedir="${dir.build}" excludes="dashboard/**,samples/**">								
+		<zip destfile="${dir.exports}/coldbox_standalone_${coldbox.version}.zip" basedir="${dir.build}" 
+			 excludes="dashboard/**,samples/**">							
 		</zip>	
 		
     </target>

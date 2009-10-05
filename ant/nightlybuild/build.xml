@@ -55,9 +55,7 @@
 
 	<target name="export-app" depends="clean,init" description="Clean export of entire application">
 	   	<svn username="${svn.user}" password="${svn.password}" javasvn="true" javahl="false">
-			<export srcUrl= "${svn.url}/${svn.appTemplate}" destPath="${src.dir}/${svn.appTemplate}" force="true"/>
-	   		<export srcUrl= "${svn.url}/${svn.appTemplateRemote}" destPath="${src.dir}/${svn.appTemplateRemote}" force="true"/>
-	   		<export srcUrl= "${svn.url}/${svn.appTemplateSimple}" destPath="${src.dir}/${svn.appTemplateSimple}" force="true"/>
+			<export srcUrl= "${svn.url}/${svn.appTemplates}" destPath="${src.dir}/${svn.appTemplates}" force="true"/>
 	   		<export srcUrl= "${svn.url}/${svn.install}" destPath="${src.dir}/${svn.install}" force="true"/>
 	   		<export srcUrl= "${svn.samplesurl}/" destPath="${src.dir}/${svn.samples}" force="true"/>
 	   		<export srcUrl= "${svn.url}/${svn.source}" destPath="${src.dir}/${svn.source}" force="true"/>
@@ -78,14 +76,8 @@
 		<copy todir="${build.dir}/coldbox/install">
         	<fileset dir="${src.dir}/install" />
         </copy>		
-		<copy todir="${build.dir}/coldbox/ApplicationTemplate">
-        	<fileset dir="${src.dir}/ApplicationTemplate" />
-        </copy>	
-		<copy todir="${build.dir}/coldbox/ApplicationTemplateRemote">
-        	<fileset dir="${src.dir}/ApplicationTemplateRemote" />
-        </copy>	
-		<copy todir="${build.dir}/coldbox/ApplicationTemplateSimple">
-        	<fileset dir="${src.dir}/ApplicationTemplateSimple" />
+		<copy todir="${build.dir}/coldbox/ApplicationTemplates">
+        	<fileset dir="${src.dir}/ApplicationTemplates" />
         </copy>	
 		<!--Copy text files to install folder-->
 		<copy todir="${build.dir}/coldbox/install">

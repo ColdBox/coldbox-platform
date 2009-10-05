@@ -14,13 +14,11 @@
 	
 	<property name="ftp.server"  		value="ftp.coldboxframework.com" />
 	<property name="ftp.remotedir" 		value="/httpdocs/downloads" />
-	
-	<property name="src.dictionary"     value="../../install/cfeclipse_dictionary" />
-	<property name="src.dwdictionary"     value="../../install/dreamweaver_dictionary" />
-	<property name="src.snippets"     	value="../../install/cfeclipse_snippets" />
-	<property name="src.illudium"     	value="../../install/illudium_templates" />
+	<property name="src.dictionary"     value="../../install/IDE Extras/CFEclipse Dictionary" />
+	<property name="src.dwdictionary"     value="../../install/IDE Extras/Dreamweaver Dictionary" />
+	<property name="src.snippets"     	value="../../install/IDE Extras/CFEclipse Snippets" />
+	<property name="src.illudium"     	value="../../install/Illudium Scaffolding Templates" />
 	<property name="src.cheatsheet"    	value="../../install/ColdboxCheatSheet.pdf" />
-	
 	<property name="build" 				value="build" />
 	
 	<target name="do.cleanup">
