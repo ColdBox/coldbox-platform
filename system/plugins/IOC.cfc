@@ -23,7 +23,7 @@ Modification History:
 
 	<cffunction name="init" access="public" returntype="IOC" output="false" hint="The IOC constructor">
 		<!--- ************************************************************* --->
-		<cfargument name="controller" type="any" required="true" hint="coldbox.system.Controller">
+		<cfargument name="controller" type="any" required="true" hint="coldbox.system.web.Controller">
 		<!--- ************************************************************* --->
 		<cfscript>
 			super.Init(arguments.controller);

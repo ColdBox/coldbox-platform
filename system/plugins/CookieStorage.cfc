@@ -24,7 +24,7 @@ Modification History: March 23,2008 Added new feature to encrypt/decrypt cookie 
 
 	<cffunction name="init" access="public" returntype="CookieStorage" output="false" hint="Constructor.">
 		<!--- ************************************************************* --->
-		<cfargument name="controller" type="any" required="true" hint="coldbox.system.Controller">
+		<cfargument name="controller" type="any" required="true" hint="coldbox.system.web.Controller">
 		<!--- ************************************************************* --->
 		<cfscript>	
 			super.Init(arguments.controller);

@@ -18,7 +18,7 @@ Description :
 <!----------------------------------------- CONSTRUCTOR ------------------------------------->			
 	
 	<cffunction name="init" access="public" returntype="ColdSpringAdapter" hint="Constructor" output="false" >
-		<cfargument name="controller"  type="coldbox.system.Controller" required="true" hint="The ColdBox controller">
+		<cfargument name="controller"  type="coldbox.system.web.Controller" required="true" hint="The ColdBox controller">
 		<cfargument name="IOCPlugin"   type="coldbox.system.plugins.IOC" required="true" hint="The IOC plugin object">
 		<cfscript>
 		super.init(argumentCollection=arguments);

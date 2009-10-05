@@ -2,7 +2,7 @@
 <cfscript>
 	function setup(){
 		flash = getMockBox().createMock("coldbox.system.web.flash.SessionFlash");
-		mockController = getMockBox().createMock(className="coldbox.system.Controller");
+		mockController = getMockBox().createMock(className="coldbox.system.web.Controller");
 		flash.init(mockController);
 		
 		//test scope

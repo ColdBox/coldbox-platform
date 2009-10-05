@@ -4,7 +4,7 @@
 		<cfscript>
 			super.setup();
 		
-			controller = createObject("component","coldbox.system.Controller").init(ExpandPath('/coldbox/testharness'));
+			controller = createObject("component","coldbox.system.web.Controller").init(ExpandPath('/coldbox/testharness'));
 		
 		</cfscript>
 	</cffunction>

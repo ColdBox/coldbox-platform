@@ -306,7 +306,7 @@ Description :
 						structDelete(application,COLDBOX_APP_KEY);
 					}
 					/* Load it Up baby!! */
-					cbController = CreateObject("component", "coldbox.system.controller").init( appRootPath );
+					cbController = CreateObject("component", "coldbox.system.web.Controller").init( appRootPath );
 					/* Put in Scope */
 					application[COLDBOX_APP_KEY] = cbController;
 					/* Setup Calls */

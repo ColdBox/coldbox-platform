@@ -17,7 +17,7 @@ Description :
 		
 		//super.setup();
 		
-		mockController = getMockBox().createMock(className='coldbox.system.Controller',clearMethods=true,callLogging=true);
+		mockController = getMockBox().createMock(className='coldbox.system.web.Controller',clearMethods=true,callLogging=true);
 		mockService = getMockBox().createMock(className='coldbox.system.services.interceptorService',clearMethods=true,callLogging=true);
 		mockService.$("processState");
 		

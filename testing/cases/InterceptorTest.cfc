@@ -2,7 +2,7 @@
 <cfscript>
 	function setup(){
 		interceptor = getMockBox().createMock(className="coldbox.system.Interceptor");
-		mockController = getMockBox().createMock("coldbox.system.Controller");
+		mockController = getMockBox().createMock("coldbox.system.web.Controller");
 		mockIService = getMockBox().createMock(className="coldbox.system.services.InterceptorService",clearMethods=true);
 		
 		properties = {debugmode=true,configFile='config/routes.cfm'};

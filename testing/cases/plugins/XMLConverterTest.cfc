@@ -2,7 +2,7 @@
 <cfscript>
 
 	function setup(){
-		mockController = getMockBox().createMock(className="coldbox.system.Controller",clearMethods=true);
+		mockController = getMockBox().createMock(className="coldbox.system.web.Controller",clearMethods=true);
 		xml = getMockBox().createMock(className="coldbox.system.plugins.XMLConverter").init(mockController);
 	}
 	

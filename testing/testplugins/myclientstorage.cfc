@@ -12,7 +12,7 @@ Modification History:
 
 	<!--- ************************************************************* --->
 	<cffunction name="init" access="public" returntype="any" output="false">
-		<cfargument name="controller" type="coldbox.system.Controller">
+		<cfargument name="controller" type="coldbox.system.web.Controller">
 		<cfset super.Init(arguments.controller) />
 		<cfreturn this>
 	</cffunction>

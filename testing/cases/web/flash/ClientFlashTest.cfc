@@ -2,7 +2,7 @@
 <cfscript>
 	function setup(){
 		flash = getMockBox().createMock("coldbox.system.web.flash.ClientFlash");
-		mockController = getMockBox().createMock(className="coldbox.system.Controller");
+		mockController = getMockBox().createMock(className="coldbox.system.web.Controller");
 		converter = getMockBox().createMock(className="coldbox.system.core.util.conversion.ObjectMarshaller").init();
 		flash.init(mockController);
 		obj = createObject("component","coldbox.system.core.util.CFMLEngine").init();

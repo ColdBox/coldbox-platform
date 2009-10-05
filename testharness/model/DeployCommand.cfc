@@ -19,7 +19,7 @@ Modification History:
 	</cfscript>
 
 	<cffunction name="init" returntype="DeployCommand" output="false" hint="Constructor">
-		<cfargument name="controller" required="true" type="coldbox.system.Controller" hint="The coldbox controller">
+		<cfargument name="controller" required="true" type="coldbox.system.web.Controller" hint="The coldbox controller">
 		<cfscript>
 			return this;
 		</cfscript>

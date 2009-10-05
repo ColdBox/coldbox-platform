@@ -30,7 +30,7 @@ method which will most likely be called by the saveFlash() method in order to pe
 
 	<!--- init --->
     <cffunction name="init" output="false" access="public" returntype="AbstractFlashScope" hint="Constructor">
-    	<cfargument name="controller" type="coldbox.system.Controller" required="true" hint="The ColdBox Controller"/>
+    	<cfargument name="controller" type="coldbox.system.web.Controller" required="true" hint="The ColdBox Controller"/>
     	<cfscript>
     		instance.controller = arguments.controller;
 			return this;
@@ -265,7 +265,7 @@ method which will most likely be called by the saveFlash() method in order to pe
     </cffunction>
 
 	<!--- getController --->
-    <cffunction name="getController" output="false" access="private" returntype="coldbox.system.Controller" hint="Get the controller reference">
+    <cffunction name="getController" output="false" access="private" returntype="coldbox.system.web.Controller" hint="Get the controller reference">
     	<cfreturn instance.controller>
     </cffunction>
 	

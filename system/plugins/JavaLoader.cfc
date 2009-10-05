@@ -28,7 +28,7 @@ Luis Majano		07/11/2006		Updated it to work with ColdBox. look at license in the
 
 	<cffunction name="init" access="public" returntype="JavaLoader" output="false" hint="Constructor">
 		<!--- ************************************************************* --->
-		<cfargument name="controller" type="any" required="true" hint="coldbox.system.Controller">
+		<cfargument name="controller" type="any" required="true" hint="coldbox.system.web.Controller">
 		<!--- ************************************************************* --->
 		<cfscript>
 			super.Init(arguments.controller);

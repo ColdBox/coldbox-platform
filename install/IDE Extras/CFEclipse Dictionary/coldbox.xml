@@ -152,7 +152,7 @@ Description :
 			]]></help>
 		</function>
 		
-		<function creator="8" name="getController" returns="coldbox.system.Controller">
+		<function creator="8" name="getController" returns="coldbox.system.web.Controller">
 			<help><![CDATA[
 				Get a reference to the ColdBox Controller
 			]]></help>

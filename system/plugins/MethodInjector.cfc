@@ -87,11 +87,11 @@ Description :
 	</cffunction>
 	
 	<!--- ColdBox Controller Accessor/Mutators used to mixing --->
-	<cffunction name="getcontroller" access="public" output="false" returntype="any" hint="Get controller: coldbox.system.Controller">
+	<cffunction name="getcontroller" access="public" output="false" returntype="any" hint="Get controller: coldbox.system.web.Controller">
 		<cfreturn variables.controller/>
 	</cffunction>
 	<cffunction name="setcontroller" access="public" output="false" returntype="void" hint="Set controller">
-		<cfargument name="controller" type="any" required="true" hint="coldbox.system.Controller"/>
+		<cfargument name="controller" type="any" required="true" hint="coldbox.system.web.Controller"/>
 		<cfset variables.controller = arguments.controller/>
 	</cffunction>
 

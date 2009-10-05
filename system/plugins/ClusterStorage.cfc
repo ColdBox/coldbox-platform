@@ -30,7 +30,7 @@ Blog Etnry (help/doc): http://www.railo.ch/blog/index.cfm/2008/7/6/Cluster-Scope
 
 	<cffunction name="init" access="public" returntype="ClusterStorage" output="false">
 		<!--- ************************************************************* --->
-		<cfargument name="controller" type="any" required="true" hint="coldbox.system.controller">
+		<cfargument name="controller" type="any" required="true" hint="coldbox.system.web.Controller">
 		<!--- ************************************************************* --->
 		<cfscript>
 			super.Init(arguments.controller);

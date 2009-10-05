@@ -70,7 +70,7 @@ Modification History:
 			// Re-Configure LogBox if defined by application
 			if( NOT structIsEmpty(configSettings["LogBoxConfig"]) ){
 				controller.getLogBox().configure(controller.getLogBox().getConfig());
-				controller.setLogger(controller.getLogBox().getLogger("coldbox.system.Controller"));
+				controller.setLogger(controller.getLogBox().getLogger("coldbox.system.web.Controller"));
 			}
 			//Get Local Logger Now Configured
 			instance.logger = controller.getLogBox().getLogger("coldbox.system.services.LoaderService");

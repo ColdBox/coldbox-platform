@@ -2,7 +2,7 @@
 <cfscript>
 	function setup(){
 		handler = getMockBox().createMock("coldbox.system.EventHandler");
-		mockController = getMockBox().createMock(className="coldbox.system.Controller");
+		mockController = getMockBox().createMock(className="coldbox.system.web.Controller");
 		
 	}	
 	function testInit(){

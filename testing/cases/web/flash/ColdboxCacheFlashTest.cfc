@@ -2,7 +2,7 @@
 <cfscript>
 	function setup(){
 		flash = getMockBox().createMock("coldbox.system.web.flash.ColdboxCacheFlash");
-		mockController = getMockBox().createMock(className="coldbox.system.Controller",clearMethods=true);
+		mockController = getMockBox().createMock(className="coldbox.system.web.Controller",clearMethods=true);
 		mockCache = getMockBox().createMock(className="coldbox.system.cache.CacheManager",clearMethods=true);
 		mockController.$("getColdboxOCM",mockCache);
 		

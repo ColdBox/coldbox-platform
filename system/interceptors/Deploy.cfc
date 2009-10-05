@@ -37,7 +37,7 @@ any kind of cleanup code or anything you like:
 
 <cfcomponent name="DeployCommand" output="false">
 	<cffunction name="init" access="public" returntype="any" hint="Constructor" output="false" >
-		<cfargument name="controller" required="true" type="coldbox.system.Controller" hint="The coldbox controller">
+		<cfargument name="controller" required="true" type="coldbox.system.web.Controller" hint="The coldbox controller">
 		<cfset instance = structnew()>
 		<cfset instance.controller = arguments.controller>
 	</cffunction>

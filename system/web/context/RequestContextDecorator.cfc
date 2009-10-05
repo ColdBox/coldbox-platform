@@ -55,7 +55,7 @@ Description :
 <!------------------------------------------- PRIVATE ------------------------------------------->
 
 	<!--- Get Set Controller --->
-	<cffunction name="getController" access="private" output="false" returntype="any" hint="Get controller: coldbox.system.Controller">
+	<cffunction name="getController" access="private" output="false" returntype="any" hint="Get controller: coldbox.system.web.Controller">
 		<cfreturn instance.controller/>
 	</cffunction>	
 

@@ -2,7 +2,7 @@
 	
 	<cffunction name="setUp" returntype="void" access="public" output="false">
 		<cfscript>
-		mockController = getMockFactory().createMock("coldbox.system.Controller");
+		mockController = getMockFactory().createMock("coldbox.system.web.Controller");
 		
 		super.setup();
 		</cfscript>

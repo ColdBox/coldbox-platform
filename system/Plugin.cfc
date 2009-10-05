@@ -19,7 +19,7 @@ Modification History:
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
 	<cffunction name="init" access="public" returntype="any" output="false" hint="The plugin constructor.">
-		<cfargument name="controller" type="any" required="true" hint="coldbox.system.Controller">
+		<cfargument name="controller" type="any" required="true" hint="coldbox.system.web.Controller">
 		<cfscript>
 			// Register Controller
 			variables.controller = arguments.controller;

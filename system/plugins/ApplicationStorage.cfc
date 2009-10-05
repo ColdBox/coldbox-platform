@@ -31,7 +31,7 @@ clearStorage():void
 
 	<cffunction name="init" access="public" returntype="ApplicationStorage" output="false" hint="Constructor">
 		<!--- ************************************************************* --->
-		<cfargument name="controller" type="any" required="true" hint="coldbox.system.Controller">
+		<cfargument name="controller" type="any" required="true" hint="coldbox.system.web.Controller">
 		<!--- ************************************************************* --->
 		<cfscript>
 			/* Init Plugin */

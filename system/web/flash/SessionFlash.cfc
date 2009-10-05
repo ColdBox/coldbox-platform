@@ -22,7 +22,7 @@ Description :
 
 	<!--- init --->
     <cffunction name="init" output="false" access="public" returntype="SessionFlash" hint="Constructor">
-    	<cfargument name="controller" type="coldbox.system.Controller" required="true" hint="The ColdBox Controller"/>
+    	<cfargument name="controller" type="coldbox.system.web.Controller" required="true" hint="The ColdBox Controller"/>
     	<cfscript>
     		super.init(arguments.controller);
 			

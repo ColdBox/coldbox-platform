@@ -167,7 +167,7 @@ Description :
 				// Reconfigure LogBox
 				if( NOT structIsEmpty(configSettings["LogBoxConfig"]) ){
 					controller.getLogBox().configure(controller.getLogBox().getConfig());
-					controller.setLogger(controller.getLogBox().getLogger("coldbox.system.Controller"));
+					controller.setLogger(controller.getLogBox().getLogger("coldbox.system.web.Controller"));
 				}	
 			}			
 		</cfscript>

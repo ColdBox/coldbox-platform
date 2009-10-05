@@ -11,7 +11,7 @@ Description :
 <cfcomponent extends="coldbox.system.testing.BaseTestCase">
 <cfscript>
 	function setup(){
-		mockController = getMockBox().createMock(className="coldbox.system.Controller",clearMethods=true);
+		mockController = getMockBox().createMock(className="coldbox.system.web.Controller",clearMethods=true);
 		mockInterceptorService = getMockBox().createMock(className="coldbox.system.services.InterceptorService",clearMethods=true);
 		mockController.$("getInterceptorService",mockInterceptorService);
 		

@@ -2,7 +2,7 @@
 <cfscript>
 	function setup(){
 		plugin = getMockBox().createMock("coldbox.system.Plugin");
-		mockController = getMockBox().createMock(className="coldbox.system.Controller");
+		mockController = getMockBox().createMock(className="coldbox.system.web.Controller");
 		
 		plugin.init(mockController);
 	}	

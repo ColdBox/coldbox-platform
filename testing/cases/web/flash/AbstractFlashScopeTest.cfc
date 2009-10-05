@@ -2,7 +2,7 @@
 <cfscript>
 	function setup(){
 		flash = getMockBox().createMock("coldbox.system.web.flash.AbstractFlashScope");
-		mockController = getMockBox().createMock(className="coldbox.system.Controller",clearMethods=true);
+		mockController = getMockBox().createMock(className="coldbox.system.web.Controller",clearMethods=true);
 		mockRService = getMockBox().createMock(className="coldbox.system.services.RequestService",clearMethods=true);
 		mockEvent = getMockBox().createMock(className="coldbox.system.web.context.RequestContext",clearMethods=true);
 		mockController.$("getRequestService",mockRService);

@@ -18,7 +18,7 @@ Description :
 <!----------------------------------------- CONSTRUCTOR ------------------------------------->			
 	
 	<cffunction name="init" access="public" returntype="LightWireAdapter" hint="Constructor" output="false" >
-		<cfargument name="controller"  type="coldbox.system.Controller" required="true" hint="The ColdBox controller">
+		<cfargument name="controller"  type="coldbox.system.web.Controller" required="true" hint="The ColdBox controller">
 		<cfscript>
 		super.init(argumentCollection=arguments);
 		

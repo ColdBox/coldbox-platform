@@ -17,7 +17,7 @@ Modification History:
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->	 	
 
 	<cffunction name="init" access="public" returntype="ehSecure" output="false" hint="Optional Constructor">
-		<cfargument name="controller" type="coldbox.system.Controller">
+		<cfargument name="controller" type="coldbox.system.web.Controller">
 		
 		<!--- Mandatory Super call --->
 		<cfset super.init(arguments.controller)>

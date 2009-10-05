@@ -22,7 +22,7 @@ Description :
 	</cfscript>
 	
 	<cffunction name="init" access="public" returntype="AbstractIOCAdapter" hint="Constructor" output="false" >
-		<cfargument name="controller"  type="coldbox.system.Controller" required="true" hint="The ColdBox controller">
+		<cfargument name="controller"  type="coldbox.system.web.Controller" required="true" hint="The ColdBox controller">
 		<cfargument name="IOCPlugin"   type="coldbox.system.plugins.IOC" required="true" hint="The IOC plugin object">
 		<cfscript>
 		instance.controller = arguments.controller;
@@ -64,7 +64,7 @@ Description :
 
 <!----------------------------------------- PRIVATE ------------------------------------->	
 
-	<cffunction name="getcontroller" access="private" output="false" returntype="coldbox.system.Controller" hint="Get the ColdBox controller">
+	<cffunction name="getcontroller" access="private" output="false" returntype="coldbox.system.web.Controller" hint="Get the ColdBox controller">
 		<cfreturn instance.controller/>
 	</cffunction>
 	

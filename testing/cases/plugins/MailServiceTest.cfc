@@ -15,7 +15,7 @@ Modification History:
 <cfcomponent extends="coldbox.system.testing.BaseTestCase" output="false">
 <cfscript>
 	function setup(){
-		mockController = getMockBox().createMock(className="coldbox.system.Controller",clearMethod=true);
+		mockController = getMockBox().createMock(className="coldbox.system.web.Controller",clearMethod=true);
 		ms = getMockBox().createMock(className="coldbox.system.plugins.MailService").init(mockController);
 		
 		ms.$("getSetting").$args("MailServer").$results("");

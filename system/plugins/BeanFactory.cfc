@@ -19,7 +19,7 @@ Description: This is the framework's simple bean factory.
 
 	<cffunction name="init" access="public" returntype="BeanFactory" output="false" hint="constructor">
 		<!--- ************************************************************* --->
-		<cfargument name="controller" type="any" required="true" hint="coldbox.system.Controller">
+		<cfargument name="controller" type="any" required="true" hint="coldbox.system.web.Controller">
 		<!--- ************************************************************* --->
 		<cfscript>
 			super.Init(arguments.controller);

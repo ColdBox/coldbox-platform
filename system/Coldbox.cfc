@@ -60,7 +60,7 @@ Description :
 				structDelete(application,appKey);
 			}
 			// Create Brand New Controller
-			application[appKey] = CreateObject("component","coldbox.system.Controller").init(COLDBOX_APP_ROOT_PATH);
+			application[appKey] = CreateObject("component","coldbox.system.web.Controller").init(COLDBOX_APP_ROOT_PATH);
 			// Setup the Framework And Application
 			application[appKey].getLoaderService().configLoader(COLDBOX_CONFIG_FILE);			
 		</cfscript>

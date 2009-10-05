@@ -21,7 +21,7 @@ Only one instance of a specific ColdBox application exists.
 		services = structnew();
 	</cfscript>
 
-	<cffunction name="init" returntype="coldbox.system.Controller" access="Public" hint="Constructor" output="false">
+	<cffunction name="init" returntype="coldbox.system.web.Controller" access="Public" hint="Constructor" output="false">
 		<cfargument name="AppRootPath" type="string" required="true" hint="The app Root Path"/>
 		<cfscript>
 			
@@ -49,7 +49,7 @@ Only one instance of a specific ColdBox application exists.
 			
 			// LogBox Configuration & Creation
 			setLogBox(getLoaderService().createLogBox());
-			setLogger(getLogBox().getLogger("coldbox.system.Controller"));
+			setLogger(getLogBox().getLogger("coldbox.system.web.Controller"));
 			
 			// Log Creation
 			getLogger().info("ColdBox Application Controller Created Successfully at #arguments.appRootPath#");

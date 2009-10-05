@@ -6,7 +6,7 @@
 		<cfscript>
 			this.decorator = createObject("component","coldbox.system.web.context.RequestContextDecorator");		
 			this.rc = createObject("component","coldbox.system.web.context.RequestContext");		
-			this.controller = createObject("component","coldbox.system.Controller");
+			this.controller = createObject("component","coldbox.system.web.Controller");
 			
 			this.decorator.init(this.rc,this.controller);
 		</cfscript>

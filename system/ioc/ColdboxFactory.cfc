@@ -65,7 +65,7 @@ Modification History:
 	</cffunction>
 	
 	<!--- Get the coldbox controller --->
-	<cffunction name="getColdbox" output="false" access="public" returntype="coldbox.system.Controller" hint="Get the coldbox controller reference: coldbox.system.Controller">
+	<cffunction name="getColdbox" output="false" access="public" returntype="coldbox.system.web.Controller" hint="Get the coldbox controller reference: coldbox.system.web.Controller">
 		<cfreturn application[coldboxAppKey]>
 	</cffunction>
 	

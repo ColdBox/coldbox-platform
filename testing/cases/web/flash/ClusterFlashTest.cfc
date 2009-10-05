@@ -2,7 +2,7 @@
 <cfscript>
 	function setup(){
 		flash = getMockBox().createMock("coldbox.system.web.flash.ClusterFlash");
-		mockController = getMockBox().createMock(className="coldbox.system.Controller",clearMethods=true);
+		mockController = getMockBox().createMock(className="coldbox.system.web.Controller",clearMethods=true);
 		mockController.$("getAppHash",hash(now()));
 		flash.init(mockController);
 		
