@@ -70,7 +70,7 @@ Modification History:
 			<cfthread name="#threadName#"
 					  objectKey="#arguments.objectKey#">  
 				<cfscript>  
-					super.expireKey(Attributes.objectKey); 
+					super.expireKey(attributes.objectKey); 
 				</cfscript>
 			</cfthread>
 		<cfelse>
@@ -93,7 +93,7 @@ Modification History:
 					  keySnippet="#arguments.keySnippet#"
 					  regex="#arguments.regex#">  
 				<cfscript>  
-					super.expireByKeySnippet(Attributes.objectKey,Attributes.regex); 
+					super.expireByKeySnippet(attributes.keySnippet,attributes.regex); 
 				</cfscript>
 			</cfthread>
 		<cfelse>
@@ -116,7 +116,7 @@ Modification History:
 					  keySnippet="#arguments.keySnippet#"
 					  regex="#arguments.regex#">  
 				<cfscript>  
-					super.clearByKeySnippet(Attributes.keySnippet,Attributes.regex); 
+					super.clearByKeySnippet(attributes.keySnippet,attributes.regex); 
 				</cfscript>
 			</cfthread>
 		<cfelse>
@@ -139,7 +139,7 @@ Modification History:
 					  eventsnippet="#arguments.eventsnippet#"
 					  queryString="#arguments.queryString#">  
 				<cfscript>  
-					super.clearEvent(Attributes.eventsnippet,Attributes.queryString); 
+					super.clearEvent(attributes.eventsnippet,attributes.queryString); 
 				</cfscript>
 			</cfthread>
 		<cfelse>
@@ -179,7 +179,7 @@ Modification History:
 			<cfthread name="#threadName#"
 					  viewSnippet="#arguments.viewSnippet#">  
 				<cfscript>  
-					super.clearView(Attributes.viewSnippet); 
+					super.clearView(attributes.viewSnippet); 
 				</cfscript>
 			</cfthread>
 		<cfelse>
