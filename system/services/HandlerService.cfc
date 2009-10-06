@@ -242,23 +242,22 @@ Description :
 			return HandlerBean;
 		}
 		
-		// Check for invalid Event
-		if ( len(trim(onInvalidEvent)) ){
-			// Check if the invalid event is the same as the current event
-			if ( CompareNoCase(onInvalidEvent,event) eq 0){
-				getUtil().throwit(message="The invalid event handler: #onInvalidEvent# is also invalid. Please check your settings",type="HandlerService.onInvalidEventException");
-			}
-			
-			// Log Invalid Event
-			controller.getPlugin("Logger").logEntry("error","Invalid Event detected: #HandlerReceived#.#MethodReceived#");
-			
-			// Override Event
-			HandlerBean.setHandler(reReplace(onInvalidEvent,"\.[^.]*$",""));
-			HandlerBean.setMethod(listLast(onInvalidEvent,"."));
-			return HandlerBean;
-		}
+		// Invalid Event Detected
+		controller.getPlugin("Logger").logEntry("error","Invalid Event detected: #event# ");
 		
-		getUtil().throwit(message="The event handler: #event# is not valid registered event.",type="HandlerService.EventHandlerNotRegisteredException");
+		// If onInvalidEvent is registered, use it
+		if ( len(trim(onInvalidEvent)) ){
+			// Test for invalid Event Error
+			if ( compareNoCase(onInvalidEvent,event) eq 0 ){
+				getUtil().throwit(message="The onInvalid event is also invalid",
+								  detail="The onInvalidEvent setting is also invalid: #onInvalidEvent#. Please check your settings",
+								  type="HandlerService.onInValidEventSettingException");
+			}
+			// Relocate to Invalid Event
+			controller.setNextEvent(event=onInvalidEvent);
+		}
+		// Throw Exception
+		getUtil().throwit(message="The event: #event# is not valid registered event.",type="HandlerService.EventHandlerNotRegisteredException");
 		
 		</cfscript>
 	</cffunction>
