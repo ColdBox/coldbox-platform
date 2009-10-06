@@ -306,13 +306,13 @@ Only one instance of a specific ColdBox application exists.
 	<!--- Set Next Event --->
 	<cffunction name="setNextEvent" access="Public" returntype="void" hint="I Set the next event to run and relocate the browser to that event. If you are in SES mode, this method will use routing instead"  output="false">
 		<!--- ************************************************************* --->
-		<cfargument name="event"  			required="false" type="string" default="#getSetting("DefaultEvent")#" hint="The name of the event to run.">
+		<cfargument name="event"  			required="false" type="string"  default="#getSetting("DefaultEvent")#" hint="The name of the event to run.">
 		<cfargument name="queryString"  	required="false" type="string"  default="" hint="The query string to append, if needed.">
 		<cfargument name="addToken"			required="false" type="boolean" default="false"	hint="Wether to add the tokens or not. Default is false">
-		<cfargument name="persist" 			required="false" type="string" default="" hint="What request collection keys to persist in flash ram">
-		<cfargument name="varStruct" 		required="false" type="struct" hint="A structure key-value pairs to persist in flash ram.">
+		<cfargument name="persist" 			required="false" type="string"  default="" hint="What request collection keys to persist in flash ram">
+		<cfargument name="varStruct" 		required="false" type="struct"  default="#structnew()#" hint="A structure key-value pairs to persist in flash ram.">
 		<cfargument name="ssl"				required="false" type="boolean" default="false"	hint="Whether to relocate in SSL or not">
-		<cfargument name="baseURL" 			required="false" type="string" default="" hint="Use this baseURL instead of the index.cfm that is used by default. You can use this for ssl or any full base url you would like to use. Ex: https://mysite.com/index.cfm"/>
+		<cfargument name="baseURL" 			required="false" type="string"  default="" hint="Use this baseURL instead of the index.cfm that is used by default. You can use this for ssl or any full base url you would like to use. Ex: https://mysite.com/index.cfm"/>
 		<cfargument name="postProcessExempt"  type="boolean" required="false" default="false" hint="Do not fire the postProcess interceptors">
 		<!--- ************************************************************* --->
 		<cfset var EventName = getSetting("EventName")>
@@ -340,7 +340,8 @@ Only one instance of a specific ColdBox application exists.
 			</cfif>
 			<!--- Relocate with routing --->
 			<cfset setNextRoute(route=routeString,
-						 		persist=arguments.persist,varStruct=arguments.varStruct,
+						 		persist=arguments.persist,
+								varStruct=arguments.varStruct,
 						 		addToken=arguments.addToken,
 						 		ssl=arguments.ssl)>		
 		<cfelse>
