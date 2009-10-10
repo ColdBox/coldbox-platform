@@ -104,6 +104,7 @@ method which will most likely be called by the saveFlash() method in order to pe
     <cffunction name="keep" output="false" access="public" returntype="void" hint="Keep all or a single flash temp variable alive for another relocation.">
     	<cfargument name="keys" type="string" required="false" default="" hint="The keys in the flash ram that you want to mark to be kept until the next relocation"/>
 		<cfset statusMarks(arguments.keys,true)>
+		<cfset saveFlash()>
     </cffunction>
 	
 	<!--- discard --->
