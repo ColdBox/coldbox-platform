@@ -211,10 +211,10 @@ Dependencies :
 			var returnStruct = structnew();
 			var x = 1;
 			var thisKey = "";
-			/* Clear Prefix */
+			// Clear Prefix
 			arguments.prefix = trim(arguments.prefix);
 			
-			/* Loop on Keys */
+			// Loop keys
 			for(x=1;x lte listLen(arguments.keys);x=x+1){
 				thisKey = arguments.prefix & listGetAt(arguments.keys,x);
 				if( lookup(thisKey) ){
@@ -222,7 +222,6 @@ Dependencies :
 				}
 			}
 			
-			/* Return Struct */
 			return returnStruct;
 		</cfscript>
 	</cffunction>

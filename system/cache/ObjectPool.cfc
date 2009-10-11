@@ -146,14 +146,14 @@ Modification History:
 		<cfscript>
 			var tmpObj = 0;
 			
-			/* Record Metadata Access */
+			// Record Metadata Access
 			setMetadataProperty(arguments.objectKey,"hits", getMetaDataProperty(arguments.objectKey,"hits")+1);
 			setMetadataProperty(arguments.objectKey,"lastAccesed", now());
 			
-			/* Get Object */
+			// Get Object
 			tmpObj = instance.pool[arguments.objectKey];
 			
-			/* Validate if SR or eternal */
+			// Validate if SR or eternal
 			if( isSoftReference(tmpObj) ){
 				return tmpObj.get();
 			}
@@ -228,7 +228,7 @@ Modification History:
 				
 				// Remove Normal Cache Entries
 				structDelete(instance.pool, arguments.objectKey);
-				structDelete(getObjectMetadata(), arguments.objectKey);
+				structDelete(instance.pool_metadata, arguments.objectKey);
 								
 				// Removed
 				results = true;
