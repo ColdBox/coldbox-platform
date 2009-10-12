@@ -72,7 +72,7 @@ id , name , mail
 			}
 			else{
 				//Initialize ColdBox
-				instance.controller = CreateObject("component", "coldbox.system.testing.mock.web.TestController").init( appRootPath );
+				instance.controller = CreateObject("component", "coldbox.system.testing.mock.web.MockController").init( appRootPath );
 				
 				// Verify Persistence
 				if( this.persist_framework ){
