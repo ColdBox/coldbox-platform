@@ -10,18 +10,15 @@ Description:
 			http://www.owasp.org/index.php/Category:OWASP_AntiSamy_Project
 			http://code.google.com/p/owaspantisamy/downloads/list
 ----------------------------------------------------------------------->
-<cfcomponent name="AntiSamy"
-			 hint="OWASP AntiSamy Project."
+<cfcomponent hint="OWASP AntiSamy Project."
 			 extends="coldbox.system.Plugin"
 			 output="false"
-			 cache="true"
-			 cacheTimeout="0">
+			 singleton="true">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 	
 	<cffunction name="init" access="public" returntype="AntiSamy" output="false">
 		<cfargument name="controller" type="any" required="true">
-
 		<cfscript>
 			var AntiSamyJarPath = ArrayNew(1);
 			var javaLoader = "";
@@ -38,20 +35,16 @@ Description:
 			// Create Policy Structure			
 			instance.PolicyFileStruct = StructNew();
 			
-			// Prepare Java Loader
-			javaLoader = getPlugin("JavaLoader");
-			AntiSamyJarPath = javaLoader.queryJars(expandPath("/coldbox/system/extras/AntiSamy"));
-			
-			// Load .jar files
-			javaLoader.setup(loadPaths=AntiSamyJarPath);
+			// Load jar files.
+			getPlugin("JavaLoader").appendPaths(expandPath("/coldbox/system/extras/AntiSamy"));
 			
 			// AntiSamy policyfile
 			instance.PolicyFileStruct['antisamy'] = expandPath('/coldbox/system/extras/AntiSamy/antisamy-1.3.xml');
 			//Load eBay policyfile
 			instance.PolicyFileStruct['ebay']	  = expandPath('/coldbox/system/extras/AntiSamy/antisamy-ebay-1.3.xml');
-			//Load myspacwe policyfile
+			//Load myspace policyfile
 			instance.PolicyFileStruct['myspace']  = expandPath('/coldbox/system/extras/AntiSamy/antisamy-myspace-1.3.xml');
-			//Load salshdot policyfile
+			//Load slashdot policyfile
 			instance.PolicyFileStruct['slashdot'] = expandPath('/coldbox/system/extras/AntiSamy/antisamy-slashdot-1.3.xml');
 			
 			return this;
