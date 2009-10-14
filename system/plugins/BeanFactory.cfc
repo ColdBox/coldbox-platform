@@ -980,7 +980,7 @@ Description: This is the framework's simple bean factory.
 					if( structKeyExists(md.properties[x],"inject") ){
 						// Setup the type if it has a value.
 						if( len(md.properties[x].inject) ){
-							entry.type 	= md.properties[x].type;
+							entry.type 	= md.properties[x].inject;
 						}
 						// Add to found list
 						listAppend(foundDependencies,entry.name);
