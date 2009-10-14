@@ -581,22 +581,30 @@ Description :
 		<cfargument name="utility"  type="any" required="true" hint="The utility object"/>
 		<cfscript>
 			var configStruct = arguments.config;
-			//Your Settings To Load
-			var YourSettingNodes = XMLSearch(arguments.xml, "//YourSettings/Setting");
+			var yourSettingNodes = XMLSearch(arguments.xml, "//YourSettings/Setting");
 			var i=1;
 			var tester = "";
 			
-			if ( ArrayLen(YourSettingNodes) ){
+			if ( ArrayLen(yourSettingNodes) ){
 				//Insert Your Settings to Config Struct
-				for (i=1; i lte ArrayLen(YourSettingNodes); i=i+1){
-					/* Get Setting with PlaceHolding */
-					tester = arguments.utility.placeHolderReplacer(trim(YourSettingNodes[i].XMLAttributes["value"]),configStruct);
+				for (i=1; i lte ArrayLen(yourSettingNodes); i=i+1){
+					
+					// Check if value attribute exists, else check text.
+					if( structKeyExists(yourSettingNodes[i].XMLAttributes,"value") ){
+						tester = arguments.utility.placeHolderReplacer(trim(yourSettingNodes[i].XMLAttributes["value"]),configStruct);
+					}
+					// Check for the xml text
+					if( len(yourSettingNodes[i].XMLText) ){
+						tester = arguments.utility.placeHolderReplacer(trim(yourSettingNodes[i].XMLText),configStruct);
+					}
+					
 					//Test for JSON
 					if( reFindNocase(instance.jsonRegex,tester) ){
-						configStruct[YourSettingNodes[i].XMLAttributes["name"]] = getPlugin("JSON").decode(replace(tester,"'","""","all"));
+						configStruct[yourSettingNodes[i].XMLAttributes["name"]] = getPlugin("JSON").decode(replace(tester,"'","""","all"));
 					}
-					else
-						configStruct[YourSettingNodes[i].XMLAttributes["name"]] = tester;
+					else{
+						configStruct[yourSettingNodes[i].XMLAttributes["name"]] = tester;
+					}
 				}
 			}
 		</cfscript>
