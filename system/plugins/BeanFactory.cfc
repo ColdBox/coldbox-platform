@@ -954,22 +954,34 @@ Description: This is the framework's simple bean factory.
 			}
 			
 			// Look For cfProperties for annotation injections
+			// TODO: This will need to change and standardized later as blenderbox gets here. Refactoring needed.
 			if( structKeyExists(md,"properties") and ArrayLen(md.properties) gt 0){
 				for(x=1; x lte ArrayLen(md.properties); x=x+1 ){
 					
-					// Check types are valid for autowiring.
-					if( structKeyExists(md.properties[x],"type") AND listFindNoCase(DSLNamespaces, listFirst(md.properties[x].type,":")) ){
-						// New MD Entry
-						entry = structnew();
-						// Scope Check
-						if( not structKeyExists(md.properties[x],"scope") ){
-							md.properties[x].scope = "variables";
-						}		
-						// Setup Entry
-						entry.name 	= md.properties[x].name;
+					// New MD Entry
+					entry = structnew();
+					entry.name 	= md.properties[x].name;
+					entry.scope = "variables";
+					entry.type 	= instance.dslDefaultType;
+					
+					// Scope override if it exists
+					if( structKeyExists(md.properties[x],"scope") ){
 						entry.scope = md.properties[x].scope;
-						entry.type 	= md.properties[x].type;
+					}
 						
+					// Check type, if it exists, add it as a dependency
+					if( structKeyExists(md.properties[x],"type") AND listFindNoCase(DSLNamespaces, listFirst(md.properties[x].type,":")) ){
+						entry.type 	= md.properties[x].type;
+						// Add to found list
+						listAppend(foundDependencies,entry.name);
+						ArrayAppend( arguments.dependencies, entry );
+					}
+					// Check Inject annotation, if it exists, add it.
+					if( structKeyExists(md.properties[x],"inject") ){
+						// Setup the type if it has a value.
+						if( len(md.properties[x].inject) ){
+							entry.type 	= md.properties[x].type;
+						}
 						// Add to found list
 						listAppend(foundDependencies,entry.name);
 						ArrayAppend( arguments.dependencies, entry );
