@@ -399,7 +399,8 @@ Only one instance of a specific ColdBox application exists.
 		<cfargument name="queryString"  required="false" type="string"  default="" hint="The query string to append, if needed.">
 		<cfargument name="postProcessExempt"  type="boolean" required="false" default="false" hint="Do not fire the postProcess interceptors">
 		<!--- ************************************************************* --->
-		<cfset var routeLocation = getSetting("sesBaseURL")>
+		<cfset var oRequestContext = getRequestService().getContext()>
+		<cfset var routeLocation = oRequestContext.getSESBaseURL()>
 		
 		<!--- SSL --->
 		<cfif arguments.ssl>
