@@ -672,26 +672,24 @@ Description :
 			conventionString = right(arguments.requestString,leftOverLen);
 			conventionStringLen = listLen(conventionString,"/");
 			// If conventions found, continue parsing
-			if( conventionStringLen gt 1 ){
-				for(i=1; i lte conventionStringLen; i=i+1){
-					if( i mod 2 eq 0 ){
-						// Even: Means Variable Value
-						arguments.params[tmpVar] = listGetAt(conventionString,i,'/');
+			for(i=1; i lte conventionStringLen; i=i+1){
+				if( i mod 2 eq 0 ){
+					// Even: Means Variable Value
+					arguments.params[tmpVar] = listGetAt(conventionString,i,'/');
+				}
+				else{
+					// ODD: Means variable name
+					tmpVar = trim(listGetAt(conventionString,i,'/'));
+					// Verify it is a valid variable Name
+					if ( NOT isValid("variableName",tmpVar) ){
+						tmpVar = "_INVALID_VARIABLE_NAME_POS_#i#_";
 					}
 					else{
-						// ODD: Means variable name
-						tmpVar = trim(listGetAt(conventionString,i,'/'));
-						// Verify it is a valid variable Name
-						if ( NOT isValid("variableName",tmpVar) ){
-							tmpVar = "_INVALID_VARIABLE_NAME_POS_#i#_";
-						}
-						else{
-							// Default Value of empty
-							arguments.params[tmpVar] = "";
-						}
+						// Default Value of empty
+						arguments.params[tmpVar] = "";
 					}
-				}//end loop over pairs
-			}//end if at least one pair found
+				}
+			}//end loop over pairs
 		}//end if convention name value pairs
 		</cfscript>
 	</cffunction>
