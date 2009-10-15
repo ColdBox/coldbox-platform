@@ -1,5 +1,6 @@
-#Sun Oct 04 14:28:37 PDT 2009
+#Wed Oct 14 15:43:59 PDT 2009
 eclipse.preferences.version=1
+encoding//ApplicationTemplates/Advanced/config/coldbox.xml.cfm=UTF-8
 encoding//testharness/config/coldbox.xml.cfm=UTF-8
 encoding//testharness/config/environments.xml.cfm=UTF-8
 encoding//testing/StandAloneTests/LoadTester/config/coldbox.xml.cfm=UTF-8

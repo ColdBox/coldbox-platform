@@ -214,6 +214,7 @@ Modifications
 		<cfscript>
 			arguments.args.data = arguments.targetValue;
 			arguments.args.addHeader = false;
+			structDelete(arguments.args,"rootName");
 			return toXML(argumentCollection=arguments.args);
 		</cfscript>
 	</cffunction>
