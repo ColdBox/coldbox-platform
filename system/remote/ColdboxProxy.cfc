@@ -14,7 +14,7 @@ Description :
 <cfcomponent name="ColdboxProxy" output="false" hint="This component is the coldbox remote proxy used for remote operations." >
 	
 	<cfscript>
-		/* Setup Namespace Key */
+		// Setup Namespace Key for controller locations
 		setCOLDBOX_APP_KEY("cbController");
 	</cfscript>
 	
@@ -24,29 +24,30 @@ Description :
 		<cfset var cbController = "">
 		<cfset var event = "">
 		<cfset var refLocal = structnew()>
+		<cfset var interceptData = structnew()>
 		<cfsetting showdebugoutput="false">
 		<cfsetting enablecfoutputonly="true">
 		<cfscript>
 			
-			/* Get ColdBox Controller */
+			// Locate ColdBox Controller
 			cbController = getController();
 			
 			try{
-				/* Trace the incoming arguments. */
+				// Trace the incoming arguments for debuggers
 				tracer('Process: Incoming arguments',arguments);
 				
-				/* Create the request context */
-				Event = cbController.getRequestService().requestCapture();
+				// Create the request context
+				event = cbController.getRequestService().requestCapture();
 				
-				/* Test Event Name */
-				if( not structKeyExists(arguments, "#event.getEventName()#") ){
+				// Test event Name in the arguemnts.
+				if( not structKeyExists(arguments,event.getEventName()) ){
 					getUtil().throwit("Event not detected","The #event.geteventName()# variable does not exist in the arguments.");
 				}
 				
 				//Append the arguments to the collection
-				Event.collectionAppend(arguments,true);
+				event.collectionAppend(arguments,true);
 				//Set that this is a proxy request.
-				Event.setProxyRequest();
+				event.setProxyRequest();
 				
 				//Execute the app start handler if not fired already
 				if ( cbController.getSetting("ApplicationStartHandler") neq "" and (not cbController.getAppStartHandlerFired()) ){
@@ -73,45 +74,50 @@ Description :
 				//Execute the post process interceptor
 				cbController.getInterceptorService().processState("postProcess");
 				
-				/* Request Profilers */
+				// Request Profilers for debuggers.
 				pushTimers();
 			}
 			catch(Any e){
-				/* Log Exception */
 				handleException(e);
-				/* Rethrow it */
 				getUtil().rethrowit(e);
 			}
 				
-			/* Determine what to return via the setting */
+			// Determine what to return via the setting for proxy calls, no preProxyReturn because we can just listen to the collection
 			if ( cbController.getSetting("ProxyReturnCollection") ){
-				/* Return request collection */
-				return Event.getCollection();
+				// Return request collection
+				return event.getCollection();
+			}
+			
+			// Check for Marshalling
+			refLocal.marshalData = event.getRenderData();
+			if ( not structisEmpty(refLocal.marshalData) ){
+				// Marshal Data
+				refLocal.results = getPlugin("Utilities").marshallData(argumentCollection=refLocal.marshalData);
+				
+				// Set Return Format according to Marshalling Type if not incoming
+				if( not structKeyExists(arguments, "returnFormat") ){
+					arguments.returnFormat = refLocal.marshalData.type;
+				}
+			}
+			
+			// Return results from handler only if found, else method will produce a null result
+			if( structKeyExists(refLocal,"results") ){
+				// prepare packet by reference, so changes can take effect if modified in interceptions.
+				interceptData.proxyResults = refLocal;
+				
+				// preProxyResults interception call
+				announceInterception("preProxyResults",interceptData);
+				
+				// Trace the results for debuggers
+				tracer('Process: Outgoing Results',refLocal.results);
+				
+				// Return The results
+				return refLocal.results;
 			}
 			else{
-				/* Check for Marshalling */
-				refLocal.marshalData = Event.getRenderData();
-				if ( not structisEmpty(refLocal.marshalData) ){
-					/* Marshal Data */
-					refLocal.results = getPlugin("Utilities").marshallData(argumentCollection=refLocal.marshalData);
-					/* Set Return Format according to Marshalling Type if not incoming */
-					if( not structKeyExists(arguments, "returnFormat") ){
-						arguments.returnFormat = refLocal.marshalData.type;
-					}
-				}
-				
-				/* Return results from handler only if found, else method will produce a null result */
-				if( structKeyExists(refLocal,"results") ){
-					/* Trace the results */
-					tracer('Process: Outgoing Results',refLocal.results);
-					/* Return The results */
-					return refLocal.results;
-				}
-				else{
-					/* Trace the results */
-					tracer('No outgoing results found in the local scope.');
-				}				
-			}
+				// Trace the results
+				tracer('No outgoing results found in the local scope.');
+			}	
 		</cfscript>		
 	</cffunction>
 	
@@ -125,30 +131,27 @@ Description :
 			var cbController = "";
 			var interceptionStructure = structnew();
 			
-			/* Get ColdBox Controller */
+			// locate ColdBox Controller
 			cbController = getController();
 			
-			/* emded contents */
+			// emded contents
 			interceptionStructure.interceptData = arguments.interceptData;
 			
-			/* Trace the incoming arguments */
+			// Trace the incoming arguments
 			tracer('AnnounceInterception: incoming arguments',arguments);
 					
-			/* Intercept */
+			// Intercept
 			try{
 				cbController.getInterceptorService().processState(arguments.state,interceptionStructure);
 			}
 			catch(Any e){
-				/* Handle Exception */
 				handleException(e);				
-				/* Rethrow it */
 				getUtil().rethrowit(e);
 			}
 			
-			/* Request Profilers */
+			// Request Profilers
 			pushTimers();
 			
-			/* Return */
 			return true;
 		</cfscript>
 	</cffunction>
@@ -160,18 +163,17 @@ Description :
 			var cbController = "";
 			var interceptData = structnew();
 			
-			/* Get ColdBox Controller */
+			// Locate ColdBox Controller
 			cbController = getController();
 			
-			/* Intercept Exception */
-			interceptData = structnew();
+			// Intercept Exception
 			interceptData.exception = arguments.exceptionObject;
 			cbController.getInterceptorService().processState("onException",interceptData);
 			
-			/* Log Exception */
+			// Log Exception
 			cbController.getExceptionService().ExceptionHandler(arguments.exceptionObject,"ColdboxProxy","ColdBox Proxy Exception");
 			
-			/* Request Profilers */
+			// Request Profilers
 			pushTimers();
 		</cfscript>
 	</cffunction>
@@ -194,7 +196,6 @@ Description :
 	<!--- Push Timers --->
 	<cffunction name="pushTimers" access="private" returntype="void" hint="Push timers into debugging stack" output="false" >
 		<cfscript>
-			/* Request Profilers */
 			getController().getDebuggerService().recordProfiler();
 		</cfscript>
 	</cffunction>
@@ -215,9 +216,9 @@ Description :
 	<!--- Get the ColdBox Controller. --->
 	<cffunction name="getController" output="false" access="private" returntype="any" hint="Get the controller from application scope.">
 		<cfscript>
-			/* Verify ColdBox */
+			// Verify ColdBox
 			verifyColdBox();
-			/* Return it. */
+			
 			return application[COLDBOX_APP_KEY];
 		</cfscript>
 	</cffunction>
@@ -301,15 +302,15 @@ Description :
 				if ( not structkeyExists(application,COLDBOX_APP_KEY) OR NOT
 					 application[COLDBOX_APP_KEY].getColdboxInitiated() OR
 					 arguments.reloadApp ){
-					/* Cleanup, Just in Case */
+					// Cleanup, Just in Case
 					if( structKeyExists(application,COLDBOX_APP_KEY) ){
 						structDelete(application,COLDBOX_APP_KEY);
 					}
-					/* Load it Up baby!! */
+					// Load it Up baby!!
 					cbController = CreateObject("component", "coldbox.system.web.Controller").init( appRootPath );
-					/* Put in Scope */
+					// Put in Scope
 					application[COLDBOX_APP_KEY] = cbController;
-					/* Setup Calls */
+					// Setup Calls
 					cbController.getLoaderService().configLoader(arguments.configLocation);					
 				}				
 				</cfscript>

@@ -24,7 +24,7 @@ Description :
 			instance.InterceptionPoints = "afterConfigurationLoad,afterAspectsLoad,onException," &
 										  "afterHandlerCreation,afterModelCreation,afterPluginCreation," &
 										  "sessionStart,sessionEnd," &
-										  "preProcess,preEvent,postEvent,postProcess," &
+										  "preProcess,preEvent,postEvent,postProcess,preProxyResults," &
 										  "preLayout,preRender,postRender," &
 										  "afterCacheElementInsert,afterCacheElementRemoved,afterCacheElementExpired";
 			// Init Container/
