@@ -341,11 +341,7 @@ License		: 	Apache 2 License
 	<cffunction name="validateURI" output="false" access="private" returntype="boolean" hint="Validate string object against a HTTP or HTTPS, FTP, news, mailto URI">
 		<cfargument name="targetString" type="string" required="true" hint="The target string"/>
 		<cfscript>
-			var result = yesNoFormat(0);
-			if(reFindNoCase('^(https?|ftp|news)://[-\w.]+(:\d+)?(/([\w/_.]*)?)?', arguments.targetString) GT 0 OR reFind('^mailto:(\w+\.)*\w+@((((\d{1,2})|(1\d{2})|(2[0-4]\d)|(25[0-5]))\.){3}((\d{1,2})|(1\d{2})|(2[0-4]\d)|(25[0-5]))|(\w+\.)+[A-Za-z]+)( \(.*\))?$', arguments.targetString) GT 0) {
-				result = yesNoFormat(1);
-			}
-			return result;
+			return isValid("URL",arguments.targetString);
 		</cfscript>
 	</cffunction>
 
@@ -353,21 +349,7 @@ License		: 	Apache 2 License
 	<cffunction name="validateURL" output="false" access="private" returntype="boolean" hint="Validate string object against a URL">
 		<cfargument name="targetString" type="string" required="true" hint="The target string"/>
 		<cfscript>
-			// regexURL based on an expression by Ivan Porto Carrero (http://geekswithblogs.net/casualjim/archive/2005/12/01/61722.aspx)
-			// regexIP4 is a result of merging parts of regexURL with an expression by Paul Hayman (http://www.geekzilla.co.uk/view0CBFD9A7-621D-4B0C-9554-91FD48AADC77.htm)
-			var result = yesNoFormat(0);
-			var topleveldomains = replace(instance.topLevelDomains,',','|','all');
-			var regexURL = "^(?##Protocol)(?:(?:ht|f)tp(?:s?)\:\/\/|~/|/)(?##Username:Password)(?:\w+:\w+@)?(?##Subdomains)(?:(?:[-\w]+\.)+(?##TopLevel Domains)(?:#topleveldomains#))(?##Port)(?::[\d]{1,5})?(?##Directories)(?:(?:(?:/(?:[-\w~!$+|.,=]|%[a-f\d]{2})+)+|/)+|\?|##)?(?##Query)(?:(?:\?(?:[-\w~!$+|.,*:]|%[a-f\d{2}])+=(?:[-\w~!$+|.,*:=]|%[a-f\d]{2})*)(?:&(?:[-\w~!$+|.,*:]|%[a-f\d{2}])+=(?:[-\w~!$+|.,*:=]|%[a-f\d]{2})*)*)*(?##Anchor)(?:##(?:[-\w~!$+|.,*:=]|%[a-f\d]{2})*)?$";
-			var regexURLBackup = "^(?##Protocol)(?:(?:ht|f)tp(?:s?)\:\/\/|~/|/)(?##Username:Password)(?:\w+:\w+@)?(?##Subdomains)(?:(?:[-\w]+\.)+(?##TopLevel Domains)(?:com|org|edu|net|gov|mil|biz|info|mobi|name|aero|jobs|museum|travel|[a-z]{2}))(?##Port)(?::[\d]{1,5})?(?##Directories)(?:(?:(?:/(?:[-\w~!$+|.,=]|%[a-f\d]{2})+)+|/)+|\?|##)?(?##Query)(?:(?:\?(?:[-\w~!$+|.,*:]|%[a-f\d{2}])+=(?:[-\w~!$+|.,*:=]|%[a-f\d]{2})*)(?:&(?:[-\w~!$+|.,*:]|%[a-f\d{2}])+=(?:[-\w~!$+|.,*:=]|%[a-f\d]{2})*)*)*(?##Anchor)(?:##(?:[-\w~!$+|.,*:=]|%[a-f\d]{2})*)?$";
-			var regexIPv4 = "^(?##Protocol)(?:(?:ht|f)tp(?:s?)\:\/\/|~/|/)(?##Address)((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))(?##Port)(?::[\d]{1,5})?(?##Directories)(?:(?:(?:/(?:[-\w~!$+|.,=]|%[a-f\d]{2})+)+|/)+|\?|##)?(?##Query)(?:(?:\?(?:[-\w~!$+|.,*:]|%[a-f\d{2}])+=(?:[-\w~!$+|.,*:=]|%[a-f\d]{2})*)(?:&(?:[-\w~!$+|.,*:]|%[a-f\d{2}])+=(?:[-\w~!$+|.,*:=]|%[a-f\d]{2})*)*)*(?##Anchor)(?:##(?:[-\w~!$+|.,*:=]|%[a-f\d]{2})*)?$";
-			var regexIPv6 = "";
-			if( not result ) {
-				result = yesNoFormat(reFindNoCase(regexURL, arguments.targetString));
-			}
-			if( not result ) { 
-				result = yesNoFormat(reFindNoCase(regexIPv4, arguments.targetString));
-			}
-			return result;
+			return isValid("URL",arguments.targetString);
 		</cfscript>
 	</cffunction>
 
