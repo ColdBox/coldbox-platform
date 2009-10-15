@@ -263,8 +263,12 @@ Modifications:
 		<cfset var _data = arguments.data />
 		
 		<!--- BOOLEAN --->
-		<cfif IsBoolean(_data) AND NOT IsNumeric(_data) AND NOT ListFindNoCase("Yes,No", _data)>
-			<cfreturn LCase(ToString(_data)) />
+		<cfif IsBoolean(_data) AND NOT IsNumeric(_data)>
+			<cfif _data>
+				<cfreturn LCase(ToString(true)) />
+			<cfelse>
+				<cfreturn LCase(ToString(false)) />
+			</cfif>		
 			
 		<!--- NUMBER --->
 		<cfelseif NOT stringNumbers AND IsNumeric(_data) AND NOT REFind("^0+[^\.]",_data)>
