@@ -23,15 +23,22 @@ Description :
 
 <!------------------------------------------- INTERCEPTION POINTS ------------------------------------------->
 
-	<cffunction name="onException" access="public" returntype="void" hint="My very own custom interception point. " output="true" >
+	<cffunction name="onException" access="public" returntype="void" hint="My very own custom interception point. " output="false" >
 		<!--- ************************************************************* --->
-		<cfargument name="event" required="true" type="coldbox.system.web.context.RequestContext" hint="The event object.">
-		<cfargument name="interceptData" required="true" type="struct" hint="Metadata of intercepted info.">
+		<cfargument name="event">
+		<cfargument name="interceptData">
 		<!--- ************************************************************* --->
 		<cfset getPlugin("Logger").logEntry("information","an error ocurred")>
 		<cfscript>
 			appendToBuffer('<h1>This is a Test</h1>');
 		</cfscript>
+	</cffunction>
+	
+	
+	<cffunction name="onLog" access="public" returntype="void" output="false" interceptionPoint>
+		<cfargument name="event">
+		<cfargument name="interceptData">
+		<cfset getPlugin("Logger").info("onLog called: #arguments.toString()#")>
 	</cffunction>
 
 

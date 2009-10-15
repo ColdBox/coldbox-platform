@@ -102,7 +102,7 @@
 	<!--Optional,if blank it will use the CFMX administrator settings.-->
 	<MailServerSettings />
 
-	<BugTracerReports enabled="true">
+	<BugTracerReports enabled="false">
 		<MailFrom>info@coldboxframework.com</MailFrom>
 		<CustomEmailBugReport>includes/EmailBugReport.cfm</CustomEmailBugReport>
 		<BugEmail>info@coldboxframework.com</BugEmail>
@@ -148,7 +148,6 @@
 	</Cache>
 	
 	<Interceptors throwOnInvalidStates="true">
-		<CustomInterceptionPoints>onLog</CustomInterceptionPoints>
 		
 		<Interceptor class="coldbox.system.interceptors.EnvironmentControl">
 			<Property name="configFile">config/environments.xml.cfm</Property>

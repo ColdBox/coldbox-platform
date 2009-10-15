@@ -1,6 +1,6 @@
 <cfscript>
 	setUniqueURLs(false);
-	setBaseURL("http://#cgi.http_host#/#getSetting('AppMapping')#/index.cfm")
+	setBaseURL("http://#cgi.http_host#/#getSetting('AppMapping')#/index.cfm");
 	
 	// REST services via new action as JSON Struct
 	addRoute(pattern="/rest",

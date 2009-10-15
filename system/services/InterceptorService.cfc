@@ -21,7 +21,7 @@ Description :
 			setController(arguments.controller);
 			
 			// Register the interception points ENUM 
-			instance.InterceptionPoints = "afterConfigurationLoad,afterAspectsLoad,onException," &
+			instance.interceptionPoints = "afterConfigurationLoad,afterAspectsLoad,onException," &
 										  "afterHandlerCreation,afterModelCreation,afterPluginCreation," &
 										  "sessionStart,sessionEnd," &
 										  "preProcess,preEvent,postEvent,postProcess,preProxyResults," &
@@ -229,17 +229,17 @@ Description :
 				}
 			}
 			// Save New Interception Points
-			instance.InterceptionPoints = currentList;			
+			instance.interceptionPoints = currentList;			
 		</cfscript>
 	</cffunction>
 	
 	<!--- getter interceptionPoints --->
-	<cffunction name="getinterceptionPoints" access="public" output="false" returntype="string" hint="Get the interceptionPoints ENUM">
+	<cffunction name="getInterceptionPoints" access="public" output="false" returntype="string" hint="Get the interceptionPoints ENUM of all registered points of execution">
 		<cfreturn instance.interceptionPoints/>
 	</cffunction>
 
 	<!--- getter interception states --->
-	<cffunction name="getinterceptionStates" access="public" output="false" returntype="struct" hint="Get interceptionStates">
+	<cffunction name="getInterceptionStates" access="public" output="false" returntype="struct" hint="Get all the interception states defined in this service">
 		<cfreturn instance.interceptionStates/>
 	</cffunction>
 	
@@ -298,14 +298,22 @@ Description :
 			
 			// Register local functions		
 			if( structKeyExists(arguments.metadata, "functions") ){
+				
 				for(x=1; x lte ArrayLen(arguments.metadata.functions); x=x+1 ){
-					/* verify its a plugin point */
-					if ( listfindnocase(getinterceptionPoints(),arguments.metadata.functions[x].name) and 
-						 not structKeyExists(pointsFound,arguments.metadata.functions[x].name) ){
-						/* Insert to md struct */
+					// Verify the @interceptionPoint annotation
+					if( structKeyExists(arguments.metadata.functions[x],"interceptionPoint") ){
+						// Register the point by convention and annotation
+						appendInterceptionPoints(arguments.metadata.functions[x].name);
+					}
+					
+					// verify its a plugin point by comparing it to the local defined interception points
+					if ( listFindNoCase(getInterceptionPoints(),arguments.metadata.functions[x].name) AND 
+						 NOT structKeyExists(pointsFound,arguments.metadata.functions[x].name) ){
+						// Insert to metadata struct of points found
 						structInsert(pointsFound,arguments.metadata.functions[x].name,true);			
 					}
-				}
+					
+				}// loop over functions
 			}
 			
 			// Start Registering inheritances
