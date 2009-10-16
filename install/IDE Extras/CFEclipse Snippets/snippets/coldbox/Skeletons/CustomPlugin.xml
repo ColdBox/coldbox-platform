@@ -9,11 +9,9 @@ Description :
  $${Plugin Description}
 		
 ----------------------------------------------------------------------->
-<cfcomponent name="$${Plugin Name}" 
-			 hint="$${Hint}" 
+<cfcomponent hint="$${Hint}" 
 			 extends="coldbox.system.Plugin" 
 			 output="false" 
-			 autowire="$${Autowire:false|true}"
 			 cache="$${Cache:true|false}"
 			 cacheTimeout="$${Cache Timeout:0}">
   
@@ -22,16 +20,17 @@ Description :
     <cffunction name="init" access="public" returntype="$${Plugin Name}" output="false">
 		<cfargument name="controller" type="any" required="true">
 		<cfscript>
-  		super.Init(arguments.controller);
-  		setpluginName("$${Plugin Name}");
-  		setpluginVersion("$${Plugin Version}");
-  		setpluginDescription("$${Plugin Description}");
-  		setPluginAuthor("$${Author}");
-  		setPluginAuthorURL("");
-  		//My own Constructor code here
-  		
-  		//Return instance
-  		return this;
+	  		super.Init(arguments.controller);
+	  		setpluginName("$${Plugin Name}");
+	  		setpluginVersion("$${Plugin Version}");
+	  		setpluginDescription("$${Plugin Description}");
+	  		setPluginAuthor("$${Author}");
+	  		setPluginAuthorURL("");
+	  		
+	  		//My own Constructor code here
+	  		
+	  		
+	  		return this;
 		</cfscript>
 	</cffunction>
 

@@ -1,19 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <snippet filetemplate="true" extension="cfc">
-<name>ColdBox Test Case</name>
+<name>ColdBox Generic Test Case</name>
 <help></help>
-<starttext><![CDATA[<cfcomponent name="$${test Name}" extends="coldbox.system.testing.BaseTestCase" output="false">
-	<cfscript>
-		//Uncomment the following if you dont' need the controller in application scope for testing.
-		//this.PERSIST_FRAMEWORK = false;
-	</cfscript>
+<starttext><![CDATA[<cfcomponent extends="coldbox.system.testing.BaseTestCase" output="false" appMapping="$${App Mapping}">
 	
 	<cffunction name="setUp">
 		<cfscript>
-		//Setup ColdBox Mappings For this Test
-		setAppMapping("$${App Mapping}");
-		setConfigMapping(ExpandPath(instance.AppMapping & "/config/config.xml.cfm"));
-		
 		//Call the super setup method to setup the app.
 		super.setup();
 		

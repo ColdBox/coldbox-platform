@@ -30,13 +30,11 @@ coldbox:handlerService	 get the handler service
 coldbox:interceptorService	 get the interceptor service
 coldbox:cacheManager	 get the cache manager
 ----------------------------------------------------------------------->
-<cfcomponent name="$${Handler Name}" 
-			 hint="$${Hint}" 
+<cfcomponent hint="$${Hint}" 
 			 extends="coldbox.system.EventHandler" 
 			 output="false">
 
 	<cfscript>
-		this.event_cache_suffix = "";
 		this.prehandler_only 	= "";
 		this.prehandler_except 	= "";
 		this.posthandler_only 	= "";
@@ -52,29 +50,39 @@ coldbox:cacheManager	 get the cache manager
 	
 	<!--- preHandler --->
 	<cffunction name="preHandler" access="public" returntype="void" output="false" hint="Executes before any event in this handler">
-		<cfargument name="Event" type="any" required="yes">
-		<cfset var rc = event.getCollection()>
+		<cfargument name="event" type="any">
 		<cfscript>	
-	
+			var rc = event.getCollection();
+			
 		</cfscript>
 	</cffunction>
 	
 	<!--- postHandler --->
 	<cffunction name="postHandler" access="public" returntype="void" output="false" hint="Executes after any event in this handler">
-		<cfargument name="Event" type="any" required="yes">
-		<cfset var rc = event.getCollection()>
+		<cfargument name="event" type="any">
 		<cfscript>	
-	
+			var rc = event.getCollection();
 		</cfscript>
 	</cffunction>
 	
 	<!--- onMissingAction --->
 	<cffunction name="onMissingAction" access="public" returntype="void" output="false" hint="Executes if a request action (method) is not found in this handler">
-		<cfargument name="Event" 			type="any" required="yes">
-		<cfargument name="MissingAction" 	type="any" required="true" hint="The requested action string"/>
-		<cfset var rc = event.getCollection()>
+		<cfargument name="event" 			type="any">
+		<cfargument name="missingAction" 	type="any" hint="The requested action string"/>
 		<cfscript>	
+			var rc = event.getCollection();
+			
+		</cfscript>
+	</cffunction>
 	
+	<!--- onError --->
+	<cffunction name="onError" access="public" returntype="void" output="false" hint="Executes if ANY error ocurrs in this handler.">
+		<cfargument name="event" 		type="any">
+		<cfargument name="faultAction" 	type="any" hint="The name of the action that caused the exception">
+		<cfargument name="exception" 	type="any" hint="The exception object">
+		<cfscript>	
+			var rc = event.getCollection();
+			
 		</cfscript>
 	</cffunction>
 	
@@ -83,10 +91,11 @@ coldbox:cacheManager	 get the cache manager
 <!------------------------------------------- PUBLIC EVENTS ------------------------------------------->	 	
 
 	<cffunction name="index" returntype="Void" output="false">
-		<cfargument name="Event" type="any" required="yes">
-		<cfset var rc = event.getCollection()>
-		 
-		 
+		<cfargument name="event" type="any">
+		<cfscript>	
+			var rc = event.getCollection();
+			
+		</cfscript>
 	</cffunction>
 	
 <!------------------------------------------- PRIVATE EVENTS ------------------------------------------->	 	

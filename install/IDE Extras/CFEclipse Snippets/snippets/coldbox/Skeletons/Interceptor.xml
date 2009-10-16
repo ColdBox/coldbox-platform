@@ -9,11 +9,9 @@ Description :
  $${Interceptor Description}
 		
 ----------------------------------------------------------------------->
-<cfcomponent name="$${Interceptor Name}" 
-			 hint="$${Hint}" 
+<cfcomponent hint="$${Hint}" 
 			 extends="coldbox.system.Interceptor" 
-			 output="false"
-			 autowire="$${Autowire:false|true}">
+			 output="false">
   
 <!------------------------------------------- PUBLIC ------------------------------------------->	 	
 

@@ -32,15 +32,13 @@ coldbox:cacheManager	 get the cache manager
 
 CACHING ATTRIBUTES:
 Add the following attributes to the cfcomponent tag
- - singleton = boolean (equivalent to cache=true cacheTimeout=0)
+ - singleton (equivalent to cache=true cacheTimeout=0)
  - cache = boolean
  - cacheTimeout = minutes
  - cacheLastAccessTimeout = minutes
 ----------------------------------------------------------------------->
-<cfcomponent name="$${Model Name}" 
-			 hint="$${Hint}"
-			 output="false"
-			 singleton="false">
+<cfcomponent hint="$${Hint}"
+			 output="false">
 
 	<!--- Dependencies Here: Ex <cfproperty name="dsn" type="coldbox:datasource:dsn" /> --->	
 
