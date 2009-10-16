@@ -16,7 +16,7 @@
 	
 	<!-- Load Contrib Tasks -->
 	<path id="cp">
-		<fileset dir="../install/antlib">
+		<fileset dir="../../install/antlib">
 			<include name="**/*.jar" />
 		</fileset>
 	</path>
