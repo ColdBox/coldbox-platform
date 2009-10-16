@@ -15,7 +15,7 @@ Description :
 	to be changed in order to match your application path.
 
 	MODIFY:
-	1) instance.AppMapping : To point to your application relative from the root
+	1) instance.appMapping : To point to your application relative from the root
 	                         or via CF Mappings.
 	2) instance.ConfigMapping : The expanded path location of your coldbox configuration file.
 
@@ -47,44 +47,69 @@ id , name , mail
 		instance.coldboxAppKey = "cbController";
 		
 		// Public Switch Properties
-		this.persist_framework = true;
 		this.loadColdbox = true;
 		
 		// Prepare MockBox
 		instance.mockBox = createObject("component","coldbox.system.testing.MockBox").init();
 	</cfscript>
 
-	<!--- setup --->
-	<cffunction name="setup" hint="The main setup method">
+	<cffunction name="metadataInspection" access="private" returntype="void" hint="Inspect test case for annotations">
 		<cfscript>
-		var appRootPath = expandPath(instance.AppMapping);
+			var md = getMetadata(this);
+			// Inspect for appMapping annotation
+			if( structKeyExists(md,"appMapping") ){
+				instance.appMapping = md.appMapping;
+			}
+			// Config.xml mapping
+			if( structKeyExists(md,"configMapping") ){
+				instance.configMapping = md.configMapping;
+			}
+			// ColdBox App Key
+			if( structKeyExists(md,"coldboxAppKey") ){
+				instance.coldboxAppKey = md.coldboxAppKey;
+			}	
+			// Load coldBox annotation
+			if( structKeyExists(md,"loadColdbox") ){
+				this.loadColdbox = md.loadColdbox;
+			}		
+		</cfscript>
+	</cffunction>
+
+	<!--- setup --->
+	<cffunction name="setup" hint="The main setup method for running ColdBox enabled tests">
+		<cfscript>
+		var appRootPath = "";
 		
-		// Verify App Root Path
-		if( right(appRootPath,1) neq "/" ){
-			appRootPath = appRootPath & "/";
-		}
+		// metadataInspection
+		metadataInspection();
 		
-		// Load ColdBox?
+		// Load ColdBox Application for testing?
 		if( this.loadColdbox ){
 			// Check on Scope Firsty
 			if( structKeyExists(application,getColdboxAppKey()) ){
 				instance.controller = application[getColdboxAppKey()];
 			}
 			else{
-				//Initialize ColdBox
-				instance.controller = CreateObject("component", "coldbox.system.testing.mock.web.MockController").init( appRootPath );
-				
-				// Verify Persistence
-				if( this.persist_framework ){
-					application[getColdboxAppKey()] = instance.controller;
+				// Verify App Root Path
+				appRootPath = expandPath(instance.appMapping);
+				if( right(appRootPath,1) neq "/" ){
+					appRootPath = appRootPath & "/";
 				}
 				
+				// Config.xml by convention if not set before setup() call.
+				if(NOT len(instance.configMapping) ){
+					instance.configMapping = appRootPath & "config/coldbox.xml.cfm";
+				}
+				
+				//Initialize mock Controller
+				instance.controller = CreateObject("component", "coldbox.system.testing.mock.web.MockController").init( appRootPath );
+				
+				// persist for mock testing in right name
+				application[getColdboxAppKey()] = instance.controller;
+				
 				// Setup
-				instance.controller.getLoaderService().configLoader(instance.ConfigMapping,instance.AppMapping);
+				instance.controller.getLoaderService().configLoader(instance.ConfigMapping,instance.appMapping);
 			}
-			
-			//Create Initial Event Context
-			setupRequest();
 			
 			//Clean up Initial Event Context
 			getRequestContext().clearCollection();
@@ -94,7 +119,7 @@ id , name , mail
 	</cffunction>
 	
 	<!--- tearDown --->
-	<cffunction name="tearDown" hint="The main teardown" >
+	<cffunction name="tearDown" hint="The main teardown for ColdBox enabled applications" >
 		<cfscript>
 			structDelete(application,getColdboxAppKey());
 		</cfscript>
@@ -108,7 +133,7 @@ id , name , mail
 	</cffunction>
 	
 	<!--- getMockRequestContext --->
-	<cffunction name="getMockRequestContext" output="false" access="private" returntype="coldbox.system.web.context.RequestContext" hint="Builds an empty functioning request context">
+	<cffunction name="getMockRequestContext" output="false" access="private" returntype="coldbox.system.web.context.RequestContext" hint="Builds an empty functioning request context mocked with methods via MockBox.  You can also optionally wipe all methods on it.">
 		<cfargument name="clearMethods" type="boolean" required="false" default="false" hint="Clear Methods on it?"/>
 		<cfscript>
 			var mockRC = "";
@@ -117,8 +142,10 @@ id , name , mail
 			if( arguments.clearMethods ){
 				return getMockBox().createMock(className="coldbox.system.web.context.RequestContext",clearMethods=true);
 			}
+			
 			// Create functioning request context
 			mockRC = getMockBox().createMock(className="coldbox.system.web.context.RequestContext");
+			
 			// Create mock properties
 			rcProps.DefaultLayout = "";
 			rcProps.DefaultView = "";
@@ -165,13 +192,13 @@ id , name , mail
 	
 	<!--- getter for AppMapping --->
 	<cffunction name="getAppMapping" access="private" returntype="string" output="false" hint="Get the AppMapping used for this test case">
-		<cfreturn instance.AppMapping>
+		<cfreturn instance.appMapping>
 	</cffunction>
 	
 	<!--- setter for AppMapping --->
 	<cffunction name="setAppMapping" access="private" output="false" returntype="void" hint="Set the AppMapping for this test case">
 		<cfargument name="AppMapping" type="string" required="true"/>
-		<cfset instance.AppMapping = arguments.AppMapping/>
+		<cfset instance.appMapping = arguments.appMapping/>
 	</cffunction>
 
 	<!--- getter for ConfigMapping --->
@@ -187,9 +214,6 @@ id , name , mail
 
 	<!--- getter for controller --->
 	<cffunction name="getController" access="private" returntype="any" output="false" hint="Get a reference to the ColdBox mock controller">
-		<cfif this.persist_framework>
-			<cfset instance.controller = application[getColdboxAppKey()]>
-		</cfif>
 		<cfreturn instance.controller>
 	</cffunction>
 	
@@ -205,8 +229,11 @@ id , name , mail
 
 	<!--- Setup a request context --->
 	<cffunction name="setupRequest" access="private" output="false" returntype="void" hint="Setup an initial request capture.  I basically look at the FORM/URL scopes and create the request collection out of them.">
-		<cfset structClear(request)>
-		<cfset getController().getRequestService().requestCapture() >
+		<cfargument name="event" 	required="false"  type="string" default="" hint="The event to setup the request context with">
+		<cfscript>
+			structDelete(request,"cb_requestContext");
+			getController().getRequestService().requestCapture();
+		</cfscript>
 	</cffunction>
 
 	<!--- prepare request, execute request and retrieve request --->

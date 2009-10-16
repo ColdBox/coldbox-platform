@@ -6,19 +6,12 @@ Description :
 	Unit test for the ehMain Handler.
 
 ----------------------------------------------------------------------->
-<cfcomponent name="mainTest" extends="coldbox.system.testing.BaseTestCase" output="false">
-	
-	<cfscript>
-		//Uncomment the following if you dont' need the controller in application scope for testing.
-		//this.PERSIST_FRAMEWORK = false;
-	</cfscript>
+<cfcomponent extends="coldbox.system.testing.BaseTestCase" 
+			 output="false"
+			 appMapping="/coldbox/ApplicationTemplates/Advanced">
 	
 	<cffunction name="setup" returntype="void" output="false">
 		<cfscript>
-		//Setup ColdBox Mappings For this Test
-		setAppMapping("/coldbox/ApplicationTemplates/Advanced");
-		setConfigMapping(ExpandPath(instance.AppMapping & "/config/coldbox.xml.cfm"));
-		
 		//Call the super setup method to setup the app.
 		super.setup();
 		
@@ -35,7 +28,7 @@ Description :
 		var event = "";
 		
 		//Place any variables on the form or URL scope to test the handler.
-		//FORM.name = "luis"
+		//URL.name = "luis"
 		event = execute("main.onAppInit");
 			
 		//Do your asserts below
@@ -48,7 +41,7 @@ Description :
 		var event = "";
 		
 		//Place any variables on the form or URL scope to test the handler.
-		//FORM.name = "luis"
+		//URL.name = "luis"
 		event = execute("main.onRequestStart");
 			
 		//Do your asserts below
@@ -61,7 +54,7 @@ Description :
 		var event = "";
 		
 		//Place any variables on the form or URL scope to test the handler.
-		//FORM.name = "luis"
+		//URL.name = "luis"
 		event = execute("main.onRequestEnd");
 			
 		//Do your asserts below
@@ -74,7 +67,7 @@ Description :
 		var event = "";
 		
 		//Place any variables on the form or URL scope to test the handler.
-		//FORM.name = "luis"
+		//URL.name = "luis"
 		event = execute("main.onSessionStart");
 			
 		//Do your asserts below
