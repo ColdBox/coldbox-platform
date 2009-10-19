@@ -28,7 +28,7 @@ Description :
 			  application[COLDBOX_BOOTSTRAPPER_KEY].isfwReinit()>
 				  
 			<cfset structDelete(application,COLDBOX_BOOTSTRAPPER_KEY)>
-			<cfset application[COLDBOX_BOOTSTRAPPER_KEY] = CreateObject("component","coldbox.system.coldbox").init(COLDBOX_CONFIG_FILE,COLDBOX_APP_ROOT_PATH,COLDBOX_APP_KEY)>
+			<cfset application[COLDBOX_BOOTSTRAPPER_KEY] = CreateObject("component","coldbox.system.Coldbox").init(COLDBOX_CONFIG_FILE,COLDBOX_APP_ROOT_PATH,COLDBOX_APP_KEY)>
 			
 		</cfif>
 	</cflock>
