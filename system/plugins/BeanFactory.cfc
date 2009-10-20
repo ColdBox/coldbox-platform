@@ -704,7 +704,7 @@ Description: This is the framework's simple bean factory.
 		<cfscript>
 			var oWebservices = getPlugin("Webservices");
 			var thisDependency = arguments.Definition;
-			var webserviceName = listLast(thisDependency.type);
+			var webserviceName = listLast(thisDependency.type,":");
 			
 			// Get Dependency
 			return oWebservices.getWSobj(webserviceName);
