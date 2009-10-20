@@ -43,6 +43,7 @@
 									<xs:enumeration value="ApplicationStartHandler" />
 									<xs:enumeration value="CustomErrorTemplate" />
 									<xs:enumeration value="ConfigAutoReload" />
+									<xs:enumeration value="ColdBoxExtensionsLocation" />
 									<xs:enumeration value="DebugMode"/>		
 									<xs:enumeration value="DebugPassword"/>
 									<xs:enumeration value="DefaultEvent"/>	

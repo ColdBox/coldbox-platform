@@ -21,6 +21,8 @@
 		<Setting name="ConfigAutoReload"			value="false" />
 		<Setting name="ExceptionHandler"     		value="" />
 		<Setting name="onInvalidEvent" 				value="" />
+		
+		<Setting name="ColdBoxExtensionsLocation"	value="coldbox.testharness.extensions" />
 		<Setting name="PluginsExternalLocation" 	value="coldbox.testing.testplugins"/>
 		<Setting name="ViewsExternalLocation"		value="/coldbox/testing/testviews" />
 		<Setting name="HandlersExternalLocation" 	value="coldbox.testing.testhandlers"/>

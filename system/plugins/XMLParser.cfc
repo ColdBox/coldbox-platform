@@ -451,7 +451,10 @@ Description :
 			//Check for Missing Template Handler
 			if ( not StructKeyExists(configStruct, "MissingTemplateHandler") )
 				configStruct["MissingTemplateHandler"] = "";
-			
+			// Check for ColdBox Extensions Location, else use framework default.
+			if( not structKeyExists(configStruct, "ColdBoxExtensionsLocation") OR not len(configStruct.ColdBoxExtensionsLocation) ){
+				configStruct["ColdBoxExtensionsLocation"] = fwSettingsStruct.ColdBoxExtensionsLocation;
+			}
 		</cfscript>
 	</cffunction>
 	
