@@ -91,6 +91,7 @@ id , name , mail
 			}
 			else{
 				// Verify App Root Path
+				if( NOT len(instance.appMapping) ){ instance.appMapping = "/"; }
 				appRootPath = expandPath(instance.appMapping);
 				if( right(appRootPath,1) neq "/" ){
 					appRootPath = appRootPath & "/";

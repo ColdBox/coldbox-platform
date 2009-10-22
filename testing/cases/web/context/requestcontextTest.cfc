@@ -445,6 +445,9 @@
 			assertEquals( rd.type, "json");
 			assertEquals( rd.jsonQueryFormat, "query");
 			assertEquals( rd.jsonCase, "lower");
+			assertEquals( rd.statusCode, "200");
+			assertEquals( rd.statusText, "");
+			
 			
 			event.renderData(type='JSON',data="[1,2,3,4]",jsonQueryFormat="array",jsonCase="upper");		
 			rd = event.getRenderData();
@@ -476,15 +479,13 @@
 			rd = event.getRenderData();
 			assertEquals( rd.type, "plain");
 			assertEquals( rd.contenttype, "application/ms-excel");
-		</cfscript>
-	</cffunction>
-	
-	<cffunction name="testgetHTTPMethod">
-		<cfscript>
-			var event = getRequestContext();
 			
-			assertEquals( event.getHTTPMethod(), "POST");
-		
+			// Test StatusCodes
+			event.renderData(data="hello",statusCode="400",statusText="Invalid Call!");
+			rd = event.getRenderData();
+			assertEquals( rd.statusCode, "400");
+			assertEquals( rd.statusText, "Invalid Call!");
+			
 		</cfscript>
 	</cffunction>
 	
