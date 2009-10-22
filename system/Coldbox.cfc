@@ -131,6 +131,7 @@ Description :
 		<cfset var renderedContent = "">
 		<cfset var eventCacheEntry = 0>
 		<cfset var interceptorData = structnew()>
+		<cfset var renderData = structnew()>
 		
 		<!--- Start Application Requests --->
 		<cflock type="readonly" name="#getAppHash()#" timeout="#getLockTimeout()#" throwontimeout="true">
@@ -193,8 +194,9 @@ Description :
 					<cfset cbController.getInterceptorService().processState("preLayout")>
 					
 					<!--- Check for Marshalling and data render --->
-					<cfif isStruct(event.getRenderData()) and not structisEmpty(event.getRenderData())>
-						<cfset renderedContent = cbController.getPlugin("Utilities").marshallData(argumentCollection=event.getRenderData())>
+					<cfset renderData = event.getRenderData()>
+					<cfif isStruct(renderData) and not structisEmpty(renderData)>
+						<cfset renderedContent = cbController.getPlugin("Utilities").marshallData(argumentCollection=renderData)>
 					<cfelse>
 						<!--- Render Layout/View pair via set variable to eliminate whitespace--->
 						<cfset renderedContent = cbController.getPlugin("Renderer").renderLayout()>
@@ -218,9 +220,11 @@ Description :
 					</cfif>
 					
 					<!--- Render Content Type if using Render Data --->
-					<cfif isStruct(event.getRenderData()) and not structisEmpty(event.getRenderData())>
+					<cfif isStruct(renderData) and not structisEmpty(renderData)>
+						<!--- Status Codes --->
+						<cfheader statuscode="#renderData.statusCode#" statustext="#renderData.statusText#" >
 						<!--- Render the Data Content Type --->
-						<cfcontent type="#event.getRenderData().contentType#; charset=#event.getRenderData().encoding#" reset="true">
+						<cfcontent type="#renderData.contentType#; charset=#renderData.encoding#" reset="true">
 						<!--- Remove panels --->
 						<cfsetting showdebugoutput="false">
 						<cfset event.showDebugPanel(false)>

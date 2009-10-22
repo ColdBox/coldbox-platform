@@ -506,6 +506,8 @@ Modification History:
 		<cfargument name="data" 		required="true"  type="any"    hint="The data you would like to marshall and return by the framework">
 		<cfargument name="contentType"  required="true"  type="string" default="" hint="The content type of the data. This will be used in the cfcontent tag: text/html, text/plain, text/xml, text/json, etc. The default value is text/html. However, if you choose JSON this method will choose application/json, if you choose WDDX or XML this method will choose text/xml for you. The default encoding is utf-8"/>
 		<cfargument name="encoding" 	required="false" type="string" default="utf-8" hint="The default character encoding to use"/>
+		<cfargument name="statusCode"   required="false" type="numeric" default="200" hint="The HTTP status code to send to the browser. Defaults to 200" />
+		<cfargument name="statusText"   required="false" type="string"  default="" hint="Explains the HTTP status code sent to the browser." />
 		<!--- ************************************************************* --->
 		<cfargument name="jsonCase" 		type="string" required="false" default="lower" hint="JSON Only: Whether to use lower or upper case translations in the JSON transformation. Lower is default"/>
 		<cfargument name="jsonQueryFormat" 	type="string" required="false" default="query" hint="JSON Only: query or array" />
@@ -518,15 +520,21 @@ Modification History:
 		<!--- ************************************************************* --->
 		<cfscript>
 			var rd = structnew();
-			// Validate
+			
+			// Validate rendering type
 			if( not reFindnocase("^(JSON|WDDX|XML|PLAIN)$",arguments.type) ){
 				$throw("Invalid rendering type","The type you sent #arguments.type# is not a valid rendering type. Valid types are JSON,XML,WDDX and PLAIN","RequestContext.InvalidRenderTypeException");
 			}
-			// Default Values
+			
+			// Default Values for incoming variables
 			rd.type = arguments.type;
 			rd.data = arguments.data;
 			rd.encoding = arguments.encoding;
 			rd.contentType = "text/html";
+			
+			// HTTP status
+			rd.statusCode = arguments.statusCode;
+			rd.statusText = arguments.statusText;
 			
 			// XML Properties
 			rd.xmlColumnList = arguments.xmlColumnList;
@@ -547,6 +555,7 @@ Modification History:
 				}
 				case "XML" : case "WDDX" : { rd.contentType = 'text/xml'; break; }
 			}
+			
 			// If contenttype passed, then override it?
 			if( len(trim(arguments.contentType)) ){
 				rd.contentType = arguments.contentType;
