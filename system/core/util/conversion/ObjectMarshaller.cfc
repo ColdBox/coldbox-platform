@@ -23,7 +23,7 @@ Description :
 			// Algorithm detection
 			instance.algorithm = "generic";
 			if( engine eq CFMLEngine.RAILO ){ instance.algorithm = "railo"; }
-			if( engine eq CFMLEngine.ADOBE and version GTE 9 ){ instance.algorithm = "objectLoad"; }
+			if( engine eq CFMLEngine.ADOBE and version GTE 9 ){ instance.algorithm = "objectSave"; }
 			
 			return this;
     	</cfscript>
@@ -45,8 +45,8 @@ Description :
 					binaryData = serializeRailo(arguments.target);
 					break;
 				}
-				case "objectLoad" : {
-					binaryData = serializeWithObjectLoad(arguments.target);
+				case "objectSave" : {
+					binaryData = serializeWithObjectSave(arguments.target);
 					break;
 				}
 			}
@@ -109,13 +109,18 @@ Description :
 	<!--- serializeWithObjectLoad --->
 	<cffunction name="serializeWithObjectSave" output="false" access="public" returntype="any" hint="Serialize using new object save method">
 		<cfargument name="target"   type="any" 		required="true" 	hint="The complex object, such as a query or CFC, that will be serialized."/>
-	   	<cfreturn objectSave(arguments.target)>
+	   	<cfreturn toBase64(objectSave(arguments.target))>
 	</cffunction>
 	
 	<!--- deserializeWithObjectLoad --->
 	<cffunction name="deserializeWithObjectLoad" output="false" access="public" returntype="any" hint="deserialize using the new object load method">
 		<cfargument name="binaryObject" type="any" 		required="false" hint="The binary object to inflate"/>
-		<cfreturn objectLoad(arguments.binaryObject)>
+		<cfscript>
+			// check if string
+			if( not isBinary(arguments.binaryObject) ){ arguments.binaryObject = toBinary(arguments.binaryObject); }
+			
+			return objectLoad(arguments.binaryObject);
+		</cfscript>
 	</cffunction>
 	
 	<!--- serializeGeneric --->
@@ -129,7 +134,7 @@ Description :
             ObjectOutput.writeObject(arguments.target);
             ObjectOutput.close();
 
-            return ToBase64(ByteArrayOutput.toByteArray());
+            return toBase64(ByteArrayOutput.toByteArray());
 		</cfscript>
 	</cffunction>
 	
