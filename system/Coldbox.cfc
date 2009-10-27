@@ -459,7 +459,7 @@ Description :
 			if( len(command) eq 0 ){ return; }
 			/* Commands */
 			switch(command){
-				case "expirecache" : {cbController.getColdboxOCM().expireAll(async=true);break;}
+				case "expirecache" : {cbController.getColdboxOCM().expireAll(async=false);break;}
 				case "delcacheentry" : {cbController.getColdboxOCM().clearKey(event.getValue('cbox_cacheentry',""));break;}
 				case "clearallevents" : {cbController.getColdboxOCM().clearAllEvents(async=false);break;}
 				case "clearallviews" : {cbController.getColdboxOCM().clearAllViews(async=false);break;}
