@@ -180,6 +180,7 @@
 			<th align="center" width="10%" >Created</th>
 			<th align="center" width="10%" >Last Accessed</th>
 			<th align="center" width="10%" >Expires On</th>
+			<th align="center" width="10%" >Status</th>
 			<th align="center" width="5%" >CMDS</th>
 		  </tr>
 		  <cfset cacheKeyIndex = 1>
@@ -194,7 +195,10 @@
 				<td align="center" >#cacheMetadata[key].Timeout#</td>
 				<td align="center" >#dateformat(cacheMetadata[key].Created,"mmm-dd")# <Br/> #timeformat(cacheMetadata[key].Created,"hh:mm:ss tt")#</td>
 				<td align="center">#dateformat(cacheMetadata[key].lastaccesed,"mmm-dd")# <br/> #timeformat(cacheMetadata[key].lastaccesed,"hh:mm:ss tt")#</td>
-			 	<td align="center" class="fw_redText" ><cfif cacheMetadata[key].timeout eq 0>---<cfelse>#dateFormat(expDate,"mmm-dd")# <br /> #timeformat(expDate,"hh:mm:ss tt")#</cfif></td>
+			 	<td align="center" class="fw_redText" >
+			 		<cfif cacheMetadata[key].timeout eq 0>---<cfelse>#dateFormat(expDate,"mmm-dd")# <br /> #timeformat(expDate,"hh:mm:ss tt")#</cfif>
+				</td>
+				<td align="center" class="fw_redText" ><cfif cacheMetadata[key].isExpired>EXPIRED<cfelse>ACTIVE</cfif></td>
 			 	<td align="center">
 					<input type="button" value="DEL" 
 						   name="cboxbutton_removeentry"

@@ -49,7 +49,7 @@ Modification History:
 		<cfif arguments.async>
 			<cfthread name="#threadName#">  
 				<cfscript>  
-					super.expireAll(); 
+					super.expireAll(async=false); 
 				</cfscript>
 			</cfthread>
 		<cfelse>
