@@ -9,7 +9,7 @@ Date        :	11/14/2007
 Description :
 	This is a cache statistics object
 ----------------------------------------------------------------------->
-<cfcomponent name="CacheStats" output="false" hint="This object keeps the cache statistics">
+<cfcomponent output="false" hint="This object keeps the cache statistics">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 	
@@ -18,16 +18,18 @@ Description :
 	</cfscript>
 
 	<cffunction name="init" access="public" output="false" returntype="CacheStats" hint="Constructor">
-		<!--- ************************************************************************* --->
 		<cfargument name="cacheManager" type="any" required="true" hint="The associated cache manager"/>
-		<!--- ************************************************************************* --->
 		<cfscript>
-			/* Set Dependencies */
-			instance.cacheManager = arguments.cacheManager;
+			
+			// Setup the cacheManager as a property
+			cacheManager = arguments.cacheManager;
+			
+			// Init reap to right now
 			setLastReapDateTime(now());
-			/* Clear the stats */
+			
+			// Clear the stats to strat fresh.
 			clearStats();
-			//return reference;
+			
 			return this;
 		</cfscript>
 	</cffunction>
@@ -36,7 +38,7 @@ Description :
 	
 	<!--- getAssociatedCacheManager --->
 	<cffunction name="getAssociatedCacheManager" output="false" access="public" returntype="coldbox.system.cache.CacheManager" hint="Get the associated Cache Manager for this stats object">
-		<cfreturn instance.cacheManager>
+		<cfreturn cacheManager>
 	</cffunction>
 	
 	<!--- Get Cache Performance --->
@@ -52,7 +54,7 @@ Description :
 	
 	<!--- Get Cache object count --->
 	<cffunction name="getObjectCount" access="public" output="false" returntype="numeric" hint="Get the cache's object count">
-		<cfreturn instance.cacheManager.getSize()>
+		<cfreturn getAssociatedCacheManager().getSize()>
 	</cffunction>
 	
 	<!--- Record an eviction Hit --->
@@ -63,7 +65,7 @@ Description :
 	</cffunction>
 	
 	<!--- Record a GC Hit --->
-	<cffunction name="gcHit" access="public" output="false" returntype="void" hint="Record a garbage collection hit">
+	<cffunction name="GCHit" access="public" output="false" returntype="void" hint="Record a garbage collection hit">
 		<cfscript>
 			setGarbageCollections(getGarbageCollections()+1);
 		</cfscript>
@@ -112,30 +114,35 @@ Description :
 	</cffunction>
 	
 	<!--- The hits --->
-	<cffunction name="gethits" access="public" returntype="numeric" output="false">
+	<cffunction name="getHits" access="public" returntype="numeric" output="false">
 		<cfreturn instance.hits>
 	</cffunction>
-	<cffunction name="sethits" access="public" returntype="void" output="false">
+	<cffunction name="setHits" access="public" returntype="void" output="false">
 		<cfargument name="hits" type="numeric" required="true">
 		<cfset instance.hits = arguments.hits>
 	</cffunction>
 	
 	<!--- The Misses --->
-	<cffunction name="getmisses" access="public" returntype="numeric" output="false">
+	<cffunction name="getMisses" access="public" returntype="numeric" output="false">
 		<cfreturn instance.misses>
 	</cffunction>
-	<cffunction name="setmisses" access="public" returntype="void" output="false">
+	<cffunction name="setMisses" access="public" returntype="void" output="false">
 		<cfargument name="misses" type="numeric" required="true">
 		<cfset instance.misses = arguments.misses>
 	</cffunction>
 	
 	<!--- Last Reap Date Time --->
-	<cffunction name="getlastReapDatetime" access="public" returntype="string" output="false">
+	<cffunction name="getLastReapDatetime" access="public" returntype="string" output="false">
 		<cfreturn instance.lastReapDatetime>
 	</cffunction>
-	<cffunction name="setlastReapDatetime" access="public" returntype="void" output="false">
+	<cffunction name="setLastReapDatetime" access="public" returntype="void" output="false">
 		<cfargument name="lastReapDatetime" type="string" required="true">
 		<cfset instance.lastReapDatetime = arguments.lastReapDatetime>
+	</cffunction>
+
+	<!--- getMemento --->
+	<cffunction name="getMemento" output="false" access="public" returntype="any" hint="Get the instance memento">
+		<cfreturn instance>
 	</cffunction>
 
 </cfcomponent>
