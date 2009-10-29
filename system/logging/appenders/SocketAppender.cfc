@@ -17,8 +17,7 @@ Properties:
 - timeout : the timeout in seconds. defaults to 5 seconds
 - persistConnection : Whether to persist the connection or create a new one every log time. Defaults to true;
 ----------------------------------------------------------------------->
-<cfcomponent name="SocketAppender" 
-			 extends="coldbox.system.logging.AbstractAppender" 
+<cfcomponent extends="coldbox.system.logging.AbstractAppender" 
 			 output="false"
 			 hint="A NIO socket appender">
 	

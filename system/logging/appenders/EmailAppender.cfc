@@ -21,8 +21,7 @@ Properties:
 - mailport (optional - 25)
 
 ----------------------------------------------------------------------->
-<cfcomponent name="EmailAppender" 
-			 extends="coldbox.system.logging.AbstractAppender" 
+<cfcomponent extends="coldbox.system.logging.AbstractAppender" 
 			 output="false"
 			 hint="An appender that sends out emails">
 	

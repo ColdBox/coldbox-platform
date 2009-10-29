@@ -12,8 +12,7 @@ Description :
 Properties:
 - none
 ----------------------------------------------------------------------->
-<cfcomponent name="ConsoleAppender" 
-			 extends="coldbox.system.logging.AbstractAppender" 
+<cfcomponent extends="coldbox.system.logging.AbstractAppender" 
 			 output="false"
 			 hint="A simple Console Appender">
 	

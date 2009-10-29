@@ -12,8 +12,7 @@ Description :
 Properties:
 
 ----------------------------------------------------------------------->
-<cfcomponent name="TracerAppender" 
-			 extends="coldbox.system.logging.AbstractAppender" 
+<cfcomponent extends="coldbox.system.logging.AbstractAppender" 
 			 output="false"
 			 hint="A simple cftrace Appender">
 	

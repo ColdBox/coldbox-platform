@@ -20,8 +20,7 @@ Properties:
 - fileMaxSize : The max file size for log files. Defaults to 2000 (2 MB)
 - fileMaxArchives : The max number of archives to keep. Defaults to 2.
 ----------------------------------------------------------------------->
-<cfcomponent name="RollingFileAppender" 
-			 extends="coldbox.system.logging.appenders.AsyncFileAppender" 
+<cfcomponent extends="coldbox.system.logging.appenders.AsyncFileAppender" 
 			 output="false"
 			 hint="This is a simple implementation of an appender that is file based but multithreaded">
 			 

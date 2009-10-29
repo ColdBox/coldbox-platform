@@ -18,8 +18,7 @@ Properties:
 
 
 ----------------------------------------------------------------------->
-<cfcomponent name="TwitterAppender" 
-			 extends="coldbox.system.logging.AbstractAppender" 
+<cfcomponent extends="coldbox.system.logging.AbstractAppender" 
 			 output="false"
 			 hint="A cool twitter appender">
 	

@@ -33,8 +33,7 @@ The columns needed in the table are
 If you are building a mapper, the map must have the above keys in it.
 
 ----------------------------------------------------------------------->
-<cfcomponent name="DBAppender" 
-			 extends="coldbox.system.logging.AbstractAppender" 
+<cfcomponent extends="coldbox.system.logging.AbstractAppender" 
 			 output="false"
 			 hint="This is a simple implementation of a appender that is db based.">
 	
@@ -73,6 +72,9 @@ If you are building a mapper, the map must have the above keys in it.
 			
 			// columns
 			instance.columns = "id,severity,category,logdate,appendername,message,extrainfo";
+			// UUID generator
+			instance.uuid = createobject("java", "java.util.UUID");
+			
 						
 			return this;
 		</cfscript>
@@ -121,7 +123,7 @@ If you are building a mapper, the map must have the above keys in it.
 		<!--- write the log message to the DB --->
 		<cfquery datasource="#getProperty("dsn")#">
 			INSERT INTO #getProperty('table')# (#cols#) VALUES (
-				<cfqueryparam cfsqltype="cf_sql_varchar" value="#createUUID()#">,
+				<cfqueryparam cfsqltype="cf_sql_varchar" value="#instance.uuid.randomUUID().toString()#">,
 				<cfqueryparam cfsqltype="cf_sql_varchar" value="#severityToString(loge.getseverity())#">,
 				<cfqueryparam cfsqltype="cf_sql_varchar" value="#category#">,
 				<cfqueryparam cfsqltype="cf_sql_timestamp" value="#loge.getTimestamp()#">,

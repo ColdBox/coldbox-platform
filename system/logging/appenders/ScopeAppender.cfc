@@ -17,8 +17,7 @@ Properties:
 - limit : a limit to the amount of logs to rotate. Defaults to 0, unlimited (optional)
 
 ----------------------------------------------------------------------->
-<cfcomponent name="ScopeAppender" 
-			 extends="coldbox.system.logging.AbstractAppender" 
+<cfcomponent extends="coldbox.system.logging.AbstractAppender" 
 			 output="false"
 			 hint="A scope appender">
 	
@@ -47,6 +46,9 @@ Properties:
 			instance.scopeStorage = createObject("component","coldbox.system.core.util.collections.ScopeStorage").init();
 			// Scope Checks
 			instance.scopeStorage.scopeCheck(getproperty('scope'));
+			// UUID generator
+			instance.uuid = createobject("java", "java.util.UUID");
+			
 						
 			return this;
 		</cfscript>
@@ -75,7 +77,7 @@ Properties:
 			}
 			
 			// Log Away
-			entry.id = createUUID();
+			entry.id = instance.uuid.randomUUID().toString();
 			entry.logDate = loge.getTimeStamp();
 			entry.appenderName = getName();
 			entry.severity = severityToString(loge.getseverity());

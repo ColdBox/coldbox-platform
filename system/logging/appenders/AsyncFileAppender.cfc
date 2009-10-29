@@ -17,8 +17,7 @@ Properties:
 		     Do not append an extension to it. We will append a .log to it.
 - fileEncoding : The file encoding to use, by default we use UTF-8;
 ----------------------------------------------------------------------->
-<cfcomponent name="AsyncFileAppender" 
-			 extends="coldbox.system.logging.appenders.FileAppender" 
+<cfcomponent extends="coldbox.system.logging.appenders.FileAppender" 
 			 output="false"
 			 hint="This is a simple implementation of an appender that is file based but multithreaded">
 			 

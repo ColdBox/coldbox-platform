@@ -14,8 +14,7 @@ Properties:
 - logType : file or application
 - fileName : The log file name to use, else uses the appender's name
 ----------------------------------------------------------------------->
-<cfcomponent name="CFAppender" 
-			 extends="coldbox.system.logging.AbstractAppender" 
+<cfcomponent extends="coldbox.system.logging.AbstractAppender" 
 			 output="false"
 			 hint="A simple CF Appender">
 	
