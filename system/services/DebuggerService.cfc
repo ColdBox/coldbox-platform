@@ -42,7 +42,7 @@ Description :
     <cffunction name="getTimers" output="false" access="public" returntype="query" hint="Get the timers query from the request. Empty query if it does not exist.">
     	<cfscript>
     		if( NOT timersExist() ){
-				request.debugTimers = QueryNew("Id,Method,Time,Timestamp,RC");
+				request.debugTimers = QueryNew("Method,Time,Timestamp,RC");
 			}
 			return request.debugTimers;
     	</cfscript>
@@ -55,17 +55,20 @@ Description :
 			var labelHash = 0;
 			var timerInfo = 0;
 			
-			/* Verify Debug Mode */
+			// Verify Debug Mode
 			if( getDebugMode() ){
-				/* Check if DebugTimers Query is set, else create it for this request */
+				// Check if DebugTimers Query is set, else create it for this request
 				getTimers();
-				/* Create Timer Hash */
+				
+				// Create Timer Hash
 				labelHash = hash(arguments.label);
-				/* Create timer Info */
+				
+				// Create timer Info
 				timerInfo = structnew();
 				timerInfo.stime = getTickCount();
 				timerInfo.label = arguments.label;
-				/* Persist in request for timing */
+				
+				// Persist in request for timing
 				request[labelHash] = timerInfo;
 			}
 			return labelHash;
@@ -78,7 +81,6 @@ Description :
 		<cfscript>
 			var timerInfo = 0;
 			var qTimers = "";
-			var id = "";
 			
 			// Verify Debug Mode and timer label exists, else do nothing.
 			if( getDebugMode() and structKeyExists(request,arguments.labelHash) ){
@@ -86,17 +88,8 @@ Description :
 				timerInfo = request[arguments.labelHash];
 				qTimers = getTimers();
 				
-				// ID: FRIGGING CF7 SUPPORT, JUST DIE!!!
-				if( controller.oCFMLEngine.isMT() ){
-					id = createobject("java", "java.util.UUID").randomUUID();
-				}
-				else{
-					id = createUUID();
-				}
-				
 				// Save timer
 				QueryAddRow(qTimers,1);
-				QuerySetCell(qTimers, "Id", id);
 				QuerySetCell(qTimers, "Method", timerInfo.label);
 				QuerySetCell(qTimers, "Time", getTickCount() - timerInfo.stime);
 				QuerySetCell(qTimers, "Timestamp", now());

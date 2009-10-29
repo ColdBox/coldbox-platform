@@ -75,17 +75,8 @@ Modification History:
 		<cfargument name="Tickcount" required="true" type="string" hint="The tickcounts of the time.">
 		<cfscript>
 		var qTimers = getTimerScope();
-		var id = "";
-		
-		if( controller.oCFMLEngine.isMT() ){
-			id = createobject("java", "java.util.UUID").randomUUID();
-		}
-		else{
-			id = createUUID();
-		}
 		
 		QueryAddRow(qTimers,1);
-		QuerySetCell(qTimers, "Id", id);
 		QuerySetCell(qTimers, "Method", arguments.Label);
 		QuerySetCell(qTimers, "Time", arguments.Tickcount);
 		QuerySetCell(qTimers, "Timestamp", now());

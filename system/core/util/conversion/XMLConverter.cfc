@@ -54,7 +54,7 @@ Modifications
 				buffer.append('<?xml version="1.0" encoding="#arguments.encoding#"?>');
 			}
 			// Struct Check?
-			if( isStruct(arguments.data) ){
+			if( isStruct(arguments.data) OR isObject(arguments.data) ){
 				buffer.append( structToXML(argumentCollection=arguments) );
 			}
 			// Query Check?
@@ -134,11 +134,12 @@ Modifications
 		</cfif>
 		
 		<!--- Create Root --->
-		<cfset buffer.append('<#rootelement#>')>
+		<cfset buffer.append('<#rootelement# rowCount="#arguments.data.recordCount#" fieldNames="#columns#">')>
 		<!--- Data --->
 		<cfloop query="arguments.data">
-			<cfset buffer.append("<#itemElement#>")>
+			<cfset buffer.append('<#itemElement#>')>
 			<cfloop index="col" list="#columns#">
+				<cftry>
 				<!--- Get Value --->
 				<cfset value = arguments.data[col][currentRow]>
 				<!--- Check for nested translation --->
@@ -152,13 +153,16 @@ Modifications
 					<cfset value = "<![CDATA[" & value & "]]" & ">">
 				</cfif>
 				<cfset buffer.append("<#lcase(col)#>#value#</#lcase(col)#>")>
+				
+				<cfcatch type="any"><cfdump var="#cfcatch#"><cfdump var="#arguments#"><cfdump var="#currentRow#"><cfdump var="#col#"><cfabort></cfcatch>
+				</cftry>
+		
 			</cfloop>
 			<cfset buffer.append("</#itemElement#>")>	
 		</cfloop>
 		
 		<!--- End Root --->
 		<cfset buffer.append("</#rootelement#>")>
-		
 		<cfreturn buffer.toString()>
 	</cffunction>
 
@@ -212,10 +216,11 @@ Modifications
 		<cfargument name="args"  		type="struct" 	required="true" hint="The original argument collection">
 		<cfargument name="targetValue"  type="any" 		required="true" hint="The value to translate">
 		<cfscript>
-			arguments.args.data = arguments.targetValue;
-			arguments.args.addHeader = false;
-			structDelete(arguments.args,"rootName");
-			return toXML(argumentCollection=arguments.args);
+			var newArgs = structnew();
+			newArgs.data = arguments.targetValue;
+			newArgs.useCDATA = arguments.args.useCDATA;
+			newArgs.addHeader = false;
+			return toXML(argumentCollection=newArgs);
 		</cfscript>
 	</cffunction>
 	
@@ -265,6 +270,11 @@ Modifications
 			string = replaceNoCase(string,chr(8364),'&##8364','all');		// � 
 			return string;
 		</cfscript>
+	</cffunction>
+	
+	<!--- Get ColdBox Util --->
+	<cffunction name="getUtil" access="private" output="false" returntype="coldbox.system.core.util.Util" hint="Create and return a util object">
+		<cfreturn createObject("component","coldbox.system.core.util.Util")/>
 	</cffunction>
 
 </cfcomponent>
