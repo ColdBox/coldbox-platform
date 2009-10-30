@@ -42,7 +42,7 @@ Description :
     <cffunction name="getTimers" output="false" access="public" returntype="query" hint="Get the timers query from the request. Empty query if it does not exist.">
     	<cfscript>
     		if( NOT timersExist() ){
-				request.debugTimers = QueryNew("Method,Time,Timestamp,RC");
+				request.debugTimers = QueryNew("Id,Method,Time,Timestamp,RC");
 			}
 			return request.debugTimers;
     	</cfscript>
@@ -90,6 +90,7 @@ Description :
 				
 				// Save timer
 				QueryAddRow(qTimers,1);
+				QuerySetCell(qTimers, "Id", createUUID());
 				QuerySetCell(qTimers, "Method", timerInfo.label);
 				QuerySetCell(qTimers, "Time", getTickCount() - timerInfo.stime);
 				QuerySetCell(qTimers, "Timestamp", now());

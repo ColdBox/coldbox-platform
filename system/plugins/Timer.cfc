@@ -77,6 +77,7 @@ Modification History:
 		var qTimers = getTimerScope();
 		
 		QueryAddRow(qTimers,1);
+		QuerySetCell(qTimers, "Id", createUUID());
 		QuerySetCell(qTimers, "Method", arguments.Label);
 		QuerySetCell(qTimers, "Time", arguments.Tickcount);
 		QuerySetCell(qTimers, "Timestamp", now());
