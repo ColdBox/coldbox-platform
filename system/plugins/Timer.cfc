@@ -71,17 +71,17 @@ Modification History:
 <!------------------------------------------- PRIVATE ------------------------------------------->
 
 	<cffunction name="addRow" access="private" returntype="void" output="false" hint="Add a new timer row.">
-		<cfargument name="Label" 	 required="true" type="string" hint="The lable of the timer.">
-		<cfargument name="Tickcount" required="true" type="string" hint="The tickcounts of the time.">
+		<cfargument name="label" 	 required="true" type="string" hint="The lable of the timer.">
+		<cfargument name="tickcount" required="true" type="string" hint="The tickcounts of the time.">
 		<cfscript>
-		var qTimers = getTimerScope();
-		
-		QueryAddRow(qTimers,1);
-		QuerySetCell(qTimers, "Id", createUUID());
-		QuerySetCell(qTimers, "Method", arguments.Label);
-		QuerySetCell(qTimers, "Time", arguments.Tickcount);
-		QuerySetCell(qTimers, "Timestamp", now());
-		QuerySetCell(qTimers, "RC", '');
+			var qTimers = getTimerScope();
+			
+			QueryAddRow(qTimers,1);
+			QuerySetCell(qTimers, "ID", hash(arguments.label & now()));
+			QuerySetCell(qTimers, "Method", arguments.label);
+			QuerySetCell(qTimers, "Time", arguments.tickcount);
+			QuerySetCell(qTimers, "Timestamp", now());
+			QuerySetCell(qTimers, "RC", '');
 		</cfscript>
 	</cffunction>
 
