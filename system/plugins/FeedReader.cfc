@@ -44,27 +44,26 @@ Quick and Dirty Feed Dump:
 			var cacheLocation = "";
 			var slash = "";
 
-			/* Super */
 			super.Init(arguments.controller);
 
-			/* Plug-in Properties */
+			// Plug-in Properties
 			setpluginName("FeedReader");
 			setpluginVersion("2.0");
 			setpluginDescription("I am a feed reader for rdf, rss and atom feeds.");
 			setpluginAuthor("Ben Garrett");
 			setpluginAuthorURL("http://www.coldbox.org");
 
-			/* Check if using cache and set useCache setting */
+			// Check if using cache and set useCache setting
 			if( not settingExists('FeedReader_useCache') or not isBoolean(getSetting('FeedReader_useCache')) ){
 				setUseCache(true);
 			}else{
 				setUseCache(getSetting('FeedReader_useCache'));
 			}
 
-			/* Setup caching variables if enabled */
+			// Setup caching variables if enabled
 			if( getUseCache() ){	
 
-				/* RAM caching used by default */
+				// RAM caching used by default
 				if( not settingExists('FeedReader_cacheType') or not reFindNoCase("^(ram|file)$",getSetting('FeedReader_cacheType')) ){
 					setCacheType('ram');
 				}
@@ -72,12 +71,12 @@ Quick and Dirty Feed Dump:
 					setCacheType(getSetting('FeedReader_cacheType'));
 				}
 
-				/* File caching */
+				// File caching
 				if( getCacheType() eq "file" ){
 					/* Cache prefix */
 					setCachePrefix('');
 					/* File separator */
-					slash = getSetting("OSFileSeparator",true);
+					slash = "/";
 					/* Cache location */
 					if( not settingExists('FeedReader_cacheLocation') ){
 						$throw(message="The setting FeedReader_cacheLocation is missing, please create it.",type='plugins.FeedReader.InvalidSettingException');
@@ -127,7 +126,7 @@ Quick and Dirty Feed Dump:
 	<!--- Flush all cache --->
 	<cffunction name="flushCache" output="false" access="public" returntype="void" hint="Flushes the entire file cache by removing all the entries">
 		<cfset var qFiles = "">
-		<cfset var slash = getSetting("OSFileSeparator",true)>
+		<cfset var slash = "/">
 
 		<cfif getCacheType() eq "ram">
 			<cfset getColdboxOCM().clearByKeySnippet(getCachePrefix)>
@@ -236,7 +235,7 @@ Quick and Dirty Feed Dump:
 			<cfreturn getColdboxOCM().clearKey(URLToCacheKey(arguments.feedURL))>
 		<cfelse>
 			<!--- Cache file --->
-			<cfset cacheFile = getCacheLocation() & getSetting("OSFileSeparator",true) & URLToCacheKey(arguments.feedURL)>
+			<cfset cacheFile = getCacheLocation() & "/" & URLToCacheKey(arguments.feedURL)>
 			<!--- Lock, get files and remove --->		
 			<cflock name="#getLockName()#" type="exclusive" timeout="30" throwontimeout="true">
 				<!--- Is feed cached check --->
@@ -263,7 +262,7 @@ Quick and Dirty Feed Dump:
 		<cfif getCacheType() eq "ram">
 			<cfset results = getColdboxOCM().get(URLToCacheKey(arguments.feedURL))>
 		<cfelse>
-			<cfset cacheFile = getCacheLocation() & getSetting("OSFileSeparator",true) & URLToCacheKey(arguments.feedURL)>
+			<cfset cacheFile = getCacheLocation() & "/" & URLToCacheKey(arguments.feedURL)>
 			<!--- Secure cache read --->
 			<cflock name="#getLockName()#" type="exclusive" timeout="30" throwontimeout="true">
 				<cfif isFeedCached(arguments.feedURL)>
@@ -296,7 +295,7 @@ Quick and Dirty Feed Dump:
 		<cfif getCacheType() eq "ram">
 			<cfset getColdboxOCM().set(cacheKey, feedStruct, getCacheTimeout())>
 		<cfelse>
-			<cfset cacheFile = getCacheLocation() & getSetting("OSFileSeparator",true) & cacheKey>
+			<cfset cacheFile = getCacheLocation() & "/" & cacheKey>
 			<!--- Secure cache write --->
 			<cflock name="#getLockName()#" type="exclusive" timeout="30" throwontimeout="true">
 				<cfif structKeyExists(server,"railo")>
