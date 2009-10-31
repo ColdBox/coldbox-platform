@@ -15,7 +15,7 @@ Properties:
 - autoExpand : Whether to expand the file path or not. Defaults to true.
 - filename : The name of the file, if not defined, then it will use the name of this appender.
 		     Do not append an extension to it. We will append a .log to it.
-- fileEncoding : The file encoding to use, by default we use UTF-8;
+- fileEncoding : The file encoding to use, by default we use ISO-8859-1;
 ----------------------------------------------------------------------->
 <cfcomponent extends="coldbox.system.logging.AbstractAppender" 
 			 output="false"
@@ -43,7 +43,7 @@ Properties:
 				setProperty("filename",getName());
 			}
 			if( NOT propertyExists("fileEncoding") ){
-				setProperty("fileEncoding","UTF-8");
+				setProperty("fileEncoding","ISO-8859-1");
 			}
 			// Cleanup File Names
 			setProperty("filename", REreplacenocase(getProperty("filename"), "[^0-9a-z]","","ALL") );
