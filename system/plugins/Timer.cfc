@@ -8,8 +8,7 @@ Description :
 Modification History:
 3/13/2007 - Created Template
 ---------------------------------------------------------------------->
-<cfcomponent name="Timer"
-			 hint="This is the Timer plugin. It is used to time executions. Facade for request variable"
+<cfcomponent hint="This is the Timer plugin. It is used to time executions. Facade for request variable"
 			 extends="coldbox.system.Plugin"
 			 output="false"
 			 cache="true"
@@ -20,12 +19,17 @@ Modification History:
 	<cffunction name="init" access="public" returntype="Timer" output="false" hint="Constructor">
 		<cfargument name="controller" type="any" required="true">
 		<cfscript>
-			super.Init(arguments.controller);
+			super.init(arguments.controller);
 			setpluginName("Timer");
 			setpluginVersion("1.0");
 			setpluginDescription("A useful code Timer plugin.");
 			setpluginAuthor("Luis Majano");
 			setpluginAuthorURL("http://www.coldbox.org");
+			
+			// ID: FRIGGING CF7 SUPPORT, JUST DIE!!!
+			if( controller.oCFMLEngine.isMT() ){
+				instance.uuid = createobject("java", "java.util.UUID");
+			}
 			
 			return this;
 		</cfscript>
@@ -35,27 +39,30 @@ Modification History:
 
 	<cffunction name="start" access="public" returntype="void" output="false" hint="Start the Timer with label.">
 		<cfargument name="Label" 	 required="true" type="string">
-		<!--- Create request Timer --->
-		<cfset var timerStruct = structnew()>
-		<cfset timerStruct.stime = getTickcount()>
-		<cfset timerStruct.label = arguments.label>
-		<!--- Place timer struct in request scope --->
-		<cfset request[hash(arguments.label)] = timerStruct>
+		<cfscript>
+			var timerStruct = structnew();
+			timerStruct.stime = getTickcount();
+			timerStruct.label = arguments.label;
+			
+			request[hash(arguments.label)] = timerStruct;
+		</cfscript>
 	</cffunction>
 
 	<cffunction name="stop" access="public" returntype="void" output="false" hint="Stop the timer with label">
 		<cfargument name="Label" 	 required="true" type="string">
-		<cfset var stopTime = getTickcount()>
-		<cfset var timerStruct = "">
-		<cfset var labelhash = hash(arguments.label)>
-
-		<!--- Check if the label exists --->
-		<cfif StructKeyExists(request,labelhash)>
-			<cfset timerStruct = request[labelhash]>
-			<cfset addRow(timerStruct.label,stopTime - timerStruct.stime)>
-		<cfelse>
-			<cfset addRow("#arguments.label# invalid",0)>
-		</cfif>
+		<cfscript>
+			var stopTime = getTickcount();
+			var timerStruct = "";
+			var labelhash = hash(arguments.label);
+			
+			if ( structKeyExists(request,labelhash) ){
+				timerStruct = request[labelhash];
+				addRow(timerStruct.label,stopTime - timerStruct.stime);
+			}
+			else{
+				addRow("#arguments.label# invalid",0);
+			}
+		</cfscript>
 	</cffunction>
 
 	<cffunction name="logTime" access="public" returntype="void" output="false" hint="Use this method to add a new timer entry to the timers.">
@@ -75,9 +82,19 @@ Modification History:
 		<cfargument name="tickcount" required="true" type="string" hint="The tickcounts of the time.">
 		<cfscript>
 			var qTimers = getTimerScope();
+			var id = "";
+			
+			// Prepare ID
+			// ID: FRIGGING CF7 SUPPORT, JUST DIE!!!
+			if( controller.oCFMLEngine.isMT() ){
+				id = instance.uuid.randomUUID().toString();
+			}
+			else{
+				id = hash(arguments.label & now());
+			}
 			
 			QueryAddRow(qTimers,1);
-			QuerySetCell(qTimers, "ID", hash(arguments.label & now()));
+			QuerySetCell(qTimers, "ID", id);
 			QuerySetCell(qTimers, "Method", arguments.label);
 			QuerySetCell(qTimers, "Time", arguments.tickcount);
 			QuerySetCell(qTimers, "Timestamp", now());
