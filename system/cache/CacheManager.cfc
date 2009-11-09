@@ -649,7 +649,7 @@ Dependencies :
 				if( lookup(poolKeys[keyIndex]) ){
 					// Override for Eternal Objects and the match keys
 					if ( getObjectPool().getMetadataProperty(poolKeys[keyIndex],"Timeout") gt 0 and tester ){
-						expireKey(objectKey=poolKeys[keyIndex],async=arguments.async);
+						expireKey(poolKeys[keyIndex]);
 					}
 				}
 			}//end key loops
