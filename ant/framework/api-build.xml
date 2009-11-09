@@ -15,7 +15,7 @@
 	<!-- FTP -->
 	<property name="ftp.server"  		value="ftp.coldboxframework.com" />
 	<property name="ftp.remotedir" 		value="/httpdocs/builds/" />
-	<property name="site.api" value="/Users/lmajano/Documents/MyDevelopment/applications/coldboxframework_com/builds" />
+	<property name="site.api" value="/Users/lmajano/sites/websites/coldbox.org/builds" />
 	
 	<!-- Init -->
 	<target name="init" description="Init">

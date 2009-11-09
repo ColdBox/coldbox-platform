@@ -10,12 +10,12 @@
 <project name="coldbox.newbuild" default="build" basedir="../../">
 
 	<!--Build Properties-->
-	<property name="dir.userlocation"	value="/Users/lmajano/Documents" />
-	<property name="dir.exports"		value="${dir.userlocation}/MyDocs/My Programs/exports" />
+	<property name="dir.userlocation"	value="/Users/lmajano" />
+	<property name="dir.exports"		value="${dir.userlocation}/exports" />
 	<property name="dir.build" 			value="${dir.exports}/coldbox" />
-	<property name="dir.dashboard"	    value="${dir.userlocation}/MyDevelopment/cboxdev/core/dashboard" />
-	<property name="dir.samples"		value="${dir.userlocation}/MyDevelopment/cboxdev/samples/coldbox/samples"/>
-	<property name="dir.wallpapers"		value="${dir.userlocation}/MyDocs/My Programs/OrtusSolutions/ColdBox/workbench/wallpapers/" />
+	<property name="dir.dashboard"	    value="${dir.userlocation}/sites/cboxdev/core/dashboard" />
+	<property name="dir.samples"		value="${dir.userlocation}/sites/cboxdev/samples/coldbox/samples"/>
+	<property name="dir.wallpapers"		value="${dir.userlocation}/Documents/MyDocs/My Programs/OrtusSolutions/ColdBox/workbench/wallpapers/" />
 	
 	<!--External Ant Tasks-->
 	<property name="ant.compilechecks"  value="ant/framework/ant_compile.xml" />

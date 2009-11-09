@@ -7,8 +7,8 @@
 <project name="logbox.newbuild" default="build" basedir="../../">
 
 	<!--Build Properties-->
-	<property name="dir.userlocation"	value="/Users/lmajano/Documents" />
-	<property name="dir.exports"		value="${dir.userlocation}/MyDocs/My Programs/exports" />
+	<property name="dir.userlocation"	value="/Users/lmajano" />
+	<property name="dir.exports"		value="${dir.userlocation}/exports" />
 	<property name="dir.build" 			value="${dir.exports}/coldbox" />
 	<!-- FTP -->
 	<property name="ftp.server"  		value="ftp.coldboxframework.com" />
