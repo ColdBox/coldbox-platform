@@ -9,15 +9,14 @@ Description :
 	I model a mail payload object
 
 ----------------------------------------------------------------------->
-<cfcomponent name="Mail" 
-			 output="false" 
+<cfcomponent output="false" 
 			 hint="I model a cfmail object with extra pizzazz">
 				 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
 	<cfscript>
 		instance = structnew();
-		/* Internal Properties */
+		// Internal Properties
 		instance.bodyTokens = structnew();
 		instance.mailParams = ArrayNew(1);
 		instance.mailParts = ArrayNew(1);
@@ -48,27 +47,27 @@ Description :
 		<cfargument name="group"			required="false" type="string" 		hint="Initial value for the group property." />
 		<cfargument name="groupcasesensitive" required="false" type="boolean" 	hint="Initial value for the groupcasesensitive property." />
 		<cfargument name="mailerid" 		required="false" type="string" 		hint="Initial value for the mailerid property." />
-		<cfargument name="maxrows" 			required="false" type="int" 		hint="Initial value for the maxrows property." />
+		<cfargument name="maxrows" 			required="false" type="numeric" 		hint="Initial value for the maxrows property." />
 		<cfargument name="mimeattach" 		required="false" type="string" 		hint="Initial value for the mimeattach property." />
 		<cfargument name="password" 		required="false" type="string" 		hint="Initial value for the password property." />
-		<cfargument name="port" 			required="false" type="int" 		hint="Initial value for the port property." />
+		<cfargument name="port" 			required="false" type="numeric" 		hint="Initial value for the port property." />
 		<cfargument name="priority" 		required="false" type="string" 		hint="Initial value for the priority property." />
 		<cfargument name="query" 			required="false" type="string" 		hint="Initial value for the query property." />
 		<cfargument name="replyto" 			required="false" type="string" 		hint="Initial value for the replyto property." />
 		<cfargument name="server" 			required="false" type="string" 		hint="Initial value for the server property." />
 		<cfargument name="spoolenable" 		required="false" type="boolean" 	hint="Initial value for the spoolenable property." />
-		<cfargument name="startrow" 		required="false" type="int" 		hint="Initial value for the startrow property." />
+		<cfargument name="startrow" 		required="false" type="numeric" 		hint="Initial value for the startrow property." />
 		<cfargument name="subject" 			required="false" type="string" 		hint="Initial value for the subject property." />
-		<cfargument name="timeout" 			required="false" type="int" 		hint="Initial value for the timeout property." />
+		<cfargument name="timeout" 			required="false" type="numeric" 		hint="Initial value for the timeout property." />
 		<cfargument name="type" 			required="false" type="string" 		hint="Initial value for the type property." />
 		<cfargument name="username" 		required="false" type="string" 		hint="Initial value for the username property." />
 		<cfargument name="useSSL" 			required="false" type="boolean" 	hint="Initial value for the useSSL property." />
 		<cfargument name="useTLS" 			required="false" type="boolean" 	hint="Initial value for the useTLS property." />
-		<cfargument name="wraptext" 		required="false" type="int" 		hint="Initial value for the wraptext property." />
+		<cfargument name="wraptext" 		required="false" type="numeric" 		hint="Initial value for the wraptext property." />
 		<cfscript>
 			var key = 0;
 			
-			/* populate mail keys */
+			// populate mail keys
 			for(key in arguments){
 				if( structKeyExists(arguments,key) ){
 					instance[key] = arguments[key];
@@ -264,7 +263,7 @@ Description :
 	</cffunction>
 
 	<cffunction name="setMaxrows" access="public" output="false" returntype="void" hint="Sets a new value for the maxrows property">
-		<cfargument name="newMaxrows" type="int" required="yes" />
+		<cfargument name="newMaxrows" type="numeric" required="yes" />
 		<cfset instance.maxrows = arguments.newMaxrows />
 	</cffunction>
 
@@ -279,7 +278,7 @@ Description :
 	</cffunction>
 
 	<cffunction name="setPort" access="public" output="false" returntype="void" hint="Sets a new value for the port property">
-		<cfargument name="newPort" type="int" required="yes" />
+		<cfargument name="newPort" type="numeric" required="yes" />
 		<cfset instance.port = arguments.newPort />
 	</cffunction>
 
@@ -309,7 +308,7 @@ Description :
 	</cffunction>
 
 	<cffunction name="setStartrow" access="public" output="false" returntype="void" hint="Sets a new value for the startrow property">
-		<cfargument name="newStartrow" type="int" required="yes" />
+		<cfargument name="newStartrow" type="numeric" required="yes" />
 		<cfset instance.startrow = arguments.newStartrow />
 	</cffunction>
 
@@ -319,7 +318,7 @@ Description :
 	</cffunction>
 
 	<cffunction name="setTimeout" access="public" output="false" returntype="void" hint="Sets a new value for the timeout property">
-		<cfargument name="newTimeout" type="int" required="yes" />
+		<cfargument name="newTimeout" type="numeric" required="yes" />
 		<cfset instance.timeout = arguments.newTimeout />
 	</cffunction>
 
@@ -344,7 +343,7 @@ Description :
 	</cffunction>
 
 	<cffunction name="setWraptext" access="public" output="false" returntype="void" hint="Sets a new value for the wraptext property">
-		<cfargument name="newWraptext" type="int" required="yes" />
+		<cfargument name="newWraptext" type="numeric" required="yes" />
 		<cfset instance.wraptext = arguments.newWraptext />
 	</cffunction>
 	
@@ -374,10 +373,10 @@ Description :
 	<cffunction name="addMailPart" access="public" returntype="void" output="false" >
 		<cfargument name="charset" 		required="false" type="string" 	hint="Initial value for the charsetproperty." />
 		<cfargument name="type" 		required="false" type="string" 	hint="Initial value for the typeproperty." />
-		<cfargument name="wraptext" 	required="false" type="int" 	hint="Initial value for the wraptextproperty." />
+		<cfargument name="wraptext" 	required="false" type="numeric" hint="Initial value for the wraptextproperty." />
 		<cfargument name="body" 		required="false" type="string" 	hint="Initial value for the bodyproperty." />
 		<cfscript>
-			/* Add new mail part */
+			// Add new mail part
 			var mailpart = structnew();
 			var key = 0;
 			
@@ -397,7 +396,7 @@ Description :
 		<cfargument name="name" 		required="false" type="string" hint="Initial value for the nameproperty." />
 		<cfargument name="value" 		required="false" type="string" hint="Initial value for the valueproperty." />
 		<cfscript>
-			/* Add new mail Param */
+			// Add new mail Param 
 			var mailparams = structnew();
 			var key = 0;
 			
