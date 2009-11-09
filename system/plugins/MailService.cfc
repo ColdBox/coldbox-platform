@@ -11,29 +11,24 @@ Description :
 
 
 ----------------------------------------------------------------------->
-<cfcomponent name="MailService" 
-			 output="false" 
+<cfcomponent  output="false" 
 			 hint="The ColdBox Mail Service used to send emails in an oo fashion"
 			 extends="coldbox.system.Plugin">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
 	<cffunction name="init" access="public" output="false" returntype="MailService" hint="Constructor">
-		<!--- ************************************************************* --->
 		<cfargument name="controller" type="any" required="true">
-		<!--- ************************************************************* --->
 		<cfscript>
-			/* Set Controller */
 			super.init(argumentCollection=arguments);
 			
-			/* Plugin Properties */
+			// Plugin Properties
 			setPluginName("MailService");
 			setPluginDescription("This is a mail service used to send mails in an OO fashion");
 			setPluginVersion("1.0");
 			setPluginAuthor("Luis Majano");
 			setPluginAuthorURL("http://www.coldbox.org");
 			
-			/* Return instance */
 			return this;
 		</cfscript>
 	</cffunction>
@@ -92,7 +87,7 @@ Description :
 		catch(Any e){
 			ArrayAppend(rtnStruct.errorArray,"Error sending mail. #e.message# : #e.detail# : #e.stackTrace#");
 			// log it
-			getLogger().logError("MailService - Error sending mail",e,payload.getMemento());
+			log.error("Error sending mail. #e.message# : #e.detail# : #e.stackTrace#",payload.getMemento());
 		}			
 
 		//return
