@@ -127,9 +127,11 @@ Properties:
 	
 	<!--- Remove the log File --->
 	<cffunction name="removeLogFile" access="public" hint="Removes the log file" output="false" returntype="void">
-		<cflock name="#instance.lockName#" type="exclusive" timeout="#instance.lockTimeout#" throwontimeout="true">
-			<cffile action="delete" file="#getLogFullPath()#">
-		</cflock>
+		<cfif fileExists(getLogFullPath())>
+			<cflock name="#instance.lockName#" type="exclusive" timeout="#instance.lockTimeout#" throwontimeout="true">
+				<cffile action="delete" file="#getLogFullPath()#">
+			</cflock>
+		</cfif>
 	</cffunction>
 
 	<!--- Init Log Location --->
