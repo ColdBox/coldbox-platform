@@ -41,7 +41,7 @@ Description :
 			instance.bluedragon 			= structnew();
 			instance.bluedragon.mt 			= true;
 			instance.bluedragon.json 		= true;
-			instance.bluedragon.ramResource = true;
+			instance.bluedragon.ramResource = false;
 			instance.bluedragon.onmm 		= true;
 			
 			return this;

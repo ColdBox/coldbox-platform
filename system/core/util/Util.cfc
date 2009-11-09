@@ -9,6 +9,21 @@ Description :
 ---------------------------------------------------------------------->
 <cfcomponent output="false" hint="The main ColdBox utility library.">
 
+	<!--- Get Absolute Path --->
+	<cffunction name="getAbsolutePath" access="public" output="false" returntype="string" hint="Turn any system path, either relative or absolute, into a fully qualified one">
+		<!--- ************************************************************* --->
+		<cfargument name="path" type="string" required="true" hint="Abstract pathname">
+		<!--- ************************************************************* --->
+		<cfscript>
+			var fileObj = createObject("java","java.io.File").init(javaCast("String",arguments.path));
+			if(fileObj.isAbsolute()){
+				return arguments.path;
+			}
+			
+			return expandPath(arguments.path);
+		</cfscript>
+	</cffunction>
+
 	<!--- PlaceHolder Replacer --->
 	<cffunction name="placeHolderReplacer" access="public" returntype="any" hint="PlaceHolder Replacer for strings containing ${} patterns" output="false" >
 		<!---************************************************************************************************ --->
