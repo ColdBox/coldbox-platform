@@ -85,6 +85,13 @@ Description :
 			// Check all Category Appenders
 			for(key in instance.categories){
 				thisAppenders = instance.categories[key].appenders;
+				
+				// Check * all appenders
+				if( thisAppenders eq "*"){
+					instance.categories[key].appenders = structKeyList(getAllAppenders());
+					continue;
+				}
+				
 				for(x=1; x lte listlen(thisAppenders); x=x+1){
 					if( NOT structKeyExists(instance.appenders, listGetAt(thisAppenders,x)) ){
 						$throw(message="Invalid appender in Category: #key#",
