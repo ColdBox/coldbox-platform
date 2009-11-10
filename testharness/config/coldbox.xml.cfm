@@ -144,9 +144,11 @@
 		<ObjectDefaultTimeout>15</ObjectDefaultTimeout>
 		<ObjectDefaultLastAccessTimeout>5</ObjectDefaultLastAccessTimeout>
 		<ReapFrequency>1</ReapFrequency>
-		<MaxObjects>100</MaxObjects>
+		<MaxObjects>5</MaxObjects>
 		<FreeMemoryPercentageThreshold>0</FreeMemoryPercentageThreshold>
 		<UseLastAccessTimeouts>false</UseLastAccessTimeouts>
+		<EvictCount>2</EvictCount>
+		<EvictionPolicy>LFU</EvictionPolicy>
 	</Cache>
 	
 	<Interceptors throwOnInvalidStates="true">

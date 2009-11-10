@@ -33,8 +33,8 @@ Description :
 			pool['obj3'].Created = dateAdd("n",-6,now());
 			pool['obj3'].Timeout = 10;
 			
-			/* Mock Pool */
-			mockPool.$('getpool_metadata',pool);
+			mockCM.$('getPoolMetadata',pool);
+			mockConfig.$("getEvictCount",1);
 			
 			debug(pool);
 			

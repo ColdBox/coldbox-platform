@@ -38,6 +38,8 @@ Dependencies :
 		<cfscript>
 			// Set Controller Injection
 			instance.controller = arguments.controller;
+			// Logger object
+			instance.logger = instance.controller.getLogBox().getLogger(this);
 			// Runtime Java object
 			instance.javaRuntime = CreateObject("java", "java.lang.Runtime");
 			// Locking Timeout

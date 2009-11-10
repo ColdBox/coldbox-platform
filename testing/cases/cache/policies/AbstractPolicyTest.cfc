@@ -17,10 +17,12 @@ Description :
 		mockCM = getMockBox().createMock(className='coldbox.system.cache.cacheManager',clearMethods=true,callLogging=true);
 		mockPool = getMockBox().createMock(className='coldbox.system.cache.objectPool',clearMethods=true);
 		mockStats = getMockBox().createMock(className='coldbox.system.cache.util.cacheStats',clearMethods=true);
+		mockConfig = getMockBox().createEmptyMock(className='coldbox.system.cache.config.CacheConfig');
 		
 		/* Mock */
 		mockCM.$('getObjectPool',mockPool);
 		mockCM.$('getCacheStats',mockStats);
+		mockCM.$('getCacheConfig',mockConfig);
 		mockStats.$('evictionHit');
 		
 		/* Mock Injections expire to get data locally */

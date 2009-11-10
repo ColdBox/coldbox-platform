@@ -146,6 +146,7 @@ http://ortus.svnrepository.com/coldbox/trac.cgi/wiki/cbConfigGuide
 		<MaxObjects>100</MaxObjects>
 		<FreeMemoryPercentageThreshold>0</FreeMemoryPercentageThreshold>
 		<EvictionPolicy>LRU</EvictionPolicy>
+		<EvictCount>1</EvictCount>
 	</Cache>
 	-->
 	

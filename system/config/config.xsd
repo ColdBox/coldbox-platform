@@ -393,15 +393,22 @@
 				</xs:element>
 				<xs:element maxOccurs="1" minOccurs="0" name="EvictionPolicy" default="LFU">
 					<xs:annotation>
-						<xs:documentation>The default eviction policy</xs:documentation>
+						<xs:documentation>The eviction policy to use in the caching engine</xs:documentation>
 					</xs:annotation>
 					<xs:simpleType>
 						<xs:restriction base="xs:string">
 							<xs:enumeration value="LFU"/>
 							<xs:enumeration value="LRU"/>
+							<xs:enumeration value="FIFO"/>
 						</xs:restriction>
 					</xs:simpleType>
 				</xs:element>
+				<xs:element maxOccurs="1" minOccurs="0" name="EvictCount" type="xs:integer" default="1">
+					<xs:annotation>
+						<xs:documentation>The evict count to use when evicting objects, the default is 1.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				
 			</xs:all>
 		</xs:complexType>
 	</xs:element>

@@ -30,11 +30,15 @@ Description :
 	<!--- execute --->
 	<cffunction name="execute" output="false" access="public" returntype="void" hint="Execute the policy">
 		<cfscript>
-			var poolMD = getCacheManager().getPoolMetadata(deepCopy=false);
+			var oCacheManager = getCacheManager();
+			var poolMD = oCacheManager.getPoolMetadata(deepCopy=false);
 			var LFUIndex = "";
 			var indexLength = 0;
 			var x = 1;
 			var md = "";
+			var evictCount = oCacheManager.getCacheConfig().getEvictCount();
+			var evictedCounter = 0;
+			
 		
 			// Get searchable index
 			try{
@@ -48,17 +52,21 @@ Description :
 			//Loop Through Metadata
 			for (x=1; x lte indexLength; x=x+1){
 				//get object metadata and verify it
-				md = getCacheManager().getCachedObjectMetadata(LFUIndex[x]);
+				md = oCacheManager.getCachedObjectMetadata(LFUIndex[x]);
 				if( structIsEmpty(md) ){ continue; }
 				
 				//Override Eternal Checks
 				if ( md.timeout gt 0 AND NOT md.isExpired ){
-					//Evict it
-					getCacheManager().expireKey(LFUIndex[x]);
-					//Record Eviction 
-					getCacheManager().getCacheStats().evictionHit();
-					//Object evicted, loop out.
-					break;
+					// Expire Key
+					oCacheManager.expireKey(LFUIndex[x]);
+					// Record Eviction 
+					oCacheManager.getCacheStats().evictionHit();
+					evictedCounter = evictedCounter + 1;
+					
+					// Can we break or keep on evicting
+					if( evictedCounter gte evictCount ){
+						break;
+					}
 				}//end timeout gt 0
 			}//end for loop			
 		</cfscript>
