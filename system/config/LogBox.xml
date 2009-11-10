@@ -2,9 +2,9 @@
 <!-- 
 This is the Default ColdBox LogBox Configuration for immediate operation 
 of ColdBox once it loads.  Once the configuration file is read then the
-LogBox instance is reconfigured with the user settings.
+LogBox instance is reconfigured with the user settings, if set.
 
-It is configured to log EVERYTHING via ColdboxTracerAppender
+It is configured to log up to INFO via ColdboxTracerAppender
 -->
 <LogBox>
 

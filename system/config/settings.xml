@@ -6,7 +6,7 @@
         <Setting name="Author" value="Luis Majano"/>
         <Setting name="AuthorEmail" value="info@coldboxframework.com"/>
         <Setting name="AuthorWebsite" value="http://www.coldboxframework.com"/>
-        <Setting name="Suffix" value="Beta 2 - Proverbs 20:3"/>
+        <Setting name="Suffix" value="Beta 3 - Proverbs 20:3"/>
         <Setting name="Version" value="3.0.0"/>
         <Setting name="Description" value="This is the ColdBox Platform for ColdFusion Powered Web Applications."/>
         <Setting name="ModifyLogLocation" value="readme.txt"/>
@@ -21,10 +21,6 @@
         <Setting name="AvailableCFCharacterSets" value="utf-8,iso-8859-1,windows-1252,us-ascii,shift_jis,iso-2022-jp,euc-jp,euc-kr,big5,euc-cn,utf-16"/>
         <Setting name="DefaultFileCharacterSet" value="iso-8859-1"/>
         <Setting name="LogFileEncoding" value="ISO-8859-1"/>
-        <Setting name="DefaultLogDirectory" value="logs"/>
-		<Setting name="DefaultLogLevel" value="4"/>
-		<Setting name="LogFileMaxSize" value="5000"/>
-        <Setting name="LogFileMaxArchives" value="5"/>
         
         <!--  ColdBox Defaults -->
 		<Setting name="EventName" value="event"/>
@@ -47,7 +43,8 @@
         <Setting name="CacheMaxObjects" value="100"/>
         <Setting name="CacheFreeMemoryPercentageThreshold" value="0"/>
         <Setting name="CacheUseLastAccessTimeouts" value="true"/> 
-        <Setting name="CacheEvictionPolicy" value="LRU"/> 
+        <Setting name="CacheEvictionPolicy" value="LRU"/>
+		<Setting name="CacheEvictCount" value="1"/> 
         
         <!-- Debugger settings -->
 		<Setting name="EnableDumpVar" value="true"/>
@@ -74,7 +71,7 @@
     
     <!-- Conventions -->
     <Conventions>
-        <configLocation>config{sep}coldbox.xml.cfm,config{sep}config.xml.cfm</configLocation>
+        <configLocation>config/coldbox.xml.cfm</configLocation>
         <handlerLocation>handlers</handlerLocation>
         <pluginsLocation>plugins</pluginsLocation>
         <layoutsLocation>layouts</layoutsLocation>

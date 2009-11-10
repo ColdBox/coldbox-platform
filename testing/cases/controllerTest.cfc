@@ -34,7 +34,7 @@
 		<cfscript>
 			//Populate
 			config = {handlerCaching=true, mysetting='nothing', eventCaching=true};
-			fwsettings = {OSFileSeparator="/", Author="Luis Majano"};
+			fwsettings = {Author="Luis Majano"};
 			
 			controller.setConfigSettings(config);
 			controller.setColdboxSettings(fwsettings);
@@ -61,16 +61,13 @@
 		<cfscript>
 			//Populate
 			config = {handlerCaching=true, mysetting='nothing', eventCaching=true};
-			fwsettings = {OSFileSeparator="/", Author="Luis Majano"};
+			fwsettings = {Author="Luis Majano"};
 			
 			controller.setConfigSettings(config);
 			controller.setColdboxSettings(fwsettings);
 			
 			obj = controller.getSetting('HandlerCaching');
 			AssertTrue( isBoolean(obj), "get test");
-			
-			obj = controller.getSetting("OSFileSeparator",true);
-			AssertTrue( obj.length() gt 0, "get fw test");
 			
 			obj = controller.settingExists('nada');
 			AssertFalse(obj, "config exists check");
@@ -80,9 +77,6 @@
 			
 			obj = controller.settingExists('nada',true);
 			AssertFalse(obj, "fw exists check");
-			
-			obj = controller.settingExists('OSFileSeparator',true);
-			AssertTrue(obj, "fw exists check");
 			
 			obj = "test_#createUUID()#";
 			controller.setSetting(obj,obj);

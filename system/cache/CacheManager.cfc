@@ -60,19 +60,20 @@ Dependencies :
 	<!--- Configure the Cache for Operation --->
 	<cffunction name="configure" access="public" output="false" returntype="void" hint="Configures the cache for operation, sets the configuration object, sets and creates the eviction policy and clears the stats. If this method is not called, the cache is useless.">
 		<!--- ************************************************************* --->
-		<cfargument name="CacheConfig" type="coldbox.system.cache.config.CacheConfig" required="true" hint="The configuration object">
+		<cfargument name="cacheConfig" type="coldbox.system.cache.config.CacheConfig" required="true" hint="The configuration object">
 		<!--- ************************************************************* --->
 		<cfscript>		
 			var oEvictionPolicy = 0;
 				
 			//set the config bean
-			setCacheConfig(arguments.CacheConfig);
+			setCacheConfig(arguments.cacheConfig);
+			
 			//Reset the statistics.
 			getCacheStats().clearStats();
 			
 			//Setup the eviction Policy to use
 			try{
-				oEvictionPolicy = CreateObject("component","coldbox.system.cache.policies.#getCacheConfig().getCacheEvictionPolicy()#").init(this);
+				oEvictionPolicy = CreateObject("component","coldbox.system.cache.policies.#getCacheConfig().getEvictionPolicy()#").init(this);
 			}
 			Catch(Any e){
 				getUtil().throwit('Error creating eviction policy','Error creating the eviction policy object: #e.message# #e.detail#','cacheManager.EvictionPolicyCreationException');	
@@ -171,11 +172,11 @@ Dependencies :
 		
 		<cflock type="exclusive" name="coldbox.cacheManager.#arguments.objectKey#" timeout="#instance.lockTimeout#" throwontimeout="true">
 			<cfscript>
-				/* Check if in pool first */
+				// Check if in pool first 
 				if( getObjectPool().lookup(arguments.objectKey) ){
-					/* Get Object from cache */
+					// Get Object from cache
 					refLocal.tmpObj = getobjectPool().get(arguments.objectKey);
-					/* Validate it */
+					// Validate it 
 					if( not structKeyExists(refLocal,"tmpObj") ){
 						refLocal.needCleanup = true;
 						getCacheStats().miss();
@@ -186,7 +187,7 @@ Dependencies :
 					}
 				}
 				else{
-					/* log miss */
+					// log miss
 					getCacheStats().miss();
 				}
 			</cfscript>
@@ -254,10 +255,11 @@ Dependencies :
 			var returnStruct = structnew();
 			var x = 1;
 			var thisKey = "";
-			/* Clear Prefix */
+			
+			// Clear Prefix
 			arguments.prefix = trim(arguments.prefix);
 			
-			/* Loop on Keys */
+			// Loop on Keys
 			for(x=1;x lte listLen(arguments.keys);x=x+1){
 				thisKey = arguments.prefix & listGetAt(arguments.keys,x);
 				if( lookup(thisKey) ){
@@ -265,7 +267,6 @@ Dependencies :
 				}
 			}
 			
-			/* Return Struct */
 			return returnStruct;
 		</cfscript>
 	</cffunction>
@@ -280,11 +281,11 @@ Dependencies :
 		<!--- ************************************************************* --->
 		<cfscript>
 			var key = 0;
-			/* Clear Prefix */
+			// Clear Prefix
 			arguments.prefix = trim(arguments.prefix);
-			/* Loop Over mappings */
+			// Loop Over mappings
 			for(key in arguments.mapping){
-				/* Cache theses puppies */
+				// Cache theses puppies
 				set(objectKey=arguments.prefix & key,MyObject=arguments.mapping[key],Timeout=arguments.timeout,LastAccessTimeout=arguments.LastAccessTimeout);
 			}
 		</cfscript>
@@ -309,25 +310,25 @@ Dependencies :
 		<cfset arguments.lastAccessTimeout = trim(arguments.lastAccessTimeout)>
 		
 		<!--- JVMThreshold Check if enabled. --->
-		<cfif ccBean.getCacheFreeMemoryPercentageThreshold() neq 0 and ThresholdChecks() eq false>
+		<cfif ccBean.getFreeMemoryPercentageThreshold() neq 0 and ThresholdChecks() eq false>
 			<!--- Evict Using Policy --->
 			<cfset instance.evictionPolicy.execute()>
 		</cfif>
 		
 		<!--- Check for max objects reached --->
-		<cfif ccBean.getCacheMaxObjects() NEQ 0 and getSize() GTE ccBean.getCacheMaxObjects()>
+		<cfif ccBean.getMaxObjects() NEQ 0 and getSize() GTE ccBean.getMaxObjects()>
 			<!--- Evict Using Policy --->
 			<cfset instance.evictionPolicy.execute()>
 		</cfif>
 			
 		<!--- Test Timeout Argument, if false, then inherit framework's timeout --->
 		<cfif len(arguments.timeout) eq 0 or not isNumeric(arguments.timeout) or arguments.timeout lt 0>
-			<cfset arguments.timeout = ccBean.getCacheObjectDefaultTimeout()>
+			<cfset arguments.timeout = ccBean.getObjectDefaultTimeout()>
 		</cfif>
 		
 		<!--- Test the Last Access Timeout --->
 		<cfif len(arguments.lastAccessTimeout) eq 0 or not isNumeric(arguments.lastAccessTimeout) or arguments.lastAccessTimeout lte 0>
-			<cfset arguments.lastAccessTimeout = ccBean.getCacheObjectDefaultLastAccessTimeout()>
+			<cfset arguments.lastAccessTimeout = ccBean.getObjectDefaultLastAccessTimeout()>
 		</cfif>
 		
 		<!--- Set object in Cache --->
@@ -522,7 +523,7 @@ Dependencies :
 		<cflock type="exclusive" name="coldbox.cacheManager.reaping" timeout="#instance.lockTimeout#" throwontimeout="true">
 		<cfscript>
 			// Expire and cleanup if in frequency
-			if ( TRUE OR dateDiff("n", getCacheStats().getlastReapDatetime(), now() ) gte ccBean.getCacheReapFrequency() ){
+			if ( TRUE OR dateDiff("n", getCacheStats().getlastReapDatetime(), now() ) gte ccBean.getReapFrequency() ){
 				
 				// Init Ref Key Vars
 				reflocal.softRef = getObjectPool().getReferenceQueue().poll();
@@ -578,7 +579,7 @@ Dependencies :
 						}
 						
 						//Check for last accessed timeouts. If object has not been accessed in the default span
-						if ( ccBean.getCacheUseLastAccessTimeouts() and 
+						if ( ccBean.getUseLastAccessTimeouts() and 
 						     dateDiff("n", thisMD.lastAccesed, now() ) gte thisMD.LastAccessTimeout ){
 							
 							// Clear The Key
@@ -776,9 +777,9 @@ Dependencies :
 		
 		<cftry>
 			<!--- Checks --->
-			<cfif getCacheConfig().getCacheFreeMemoryPercentageThreshold() neq 0>
+			<cfif getCacheConfig().getFreeMemoryPercentageThreshold() neq 0>
 				<cfset jvmThreshold = ( (instance.javaRuntime.getRuntime().freeMemory() / instance.javaRuntime.getRuntime().maxMemory() ) * 100 )>
-				<cfset check = getCacheConfig().getCacheFreeMemoryPercentageThreshold() lt jvmThreshold>				
+				<cfset check = getCacheConfig().getFreeMemoryPercentageThreshold() lt jvmThreshold>				
 			</cfif>
 			<cfcatch type="any">
 				<cfset check = true>

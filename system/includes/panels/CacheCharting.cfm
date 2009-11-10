@@ -10,9 +10,8 @@
 <table align="center" width="100%" border="1" cellpadding="0" cellspacing="0" style="background:white">
 	<tr>
 		<td align="center">
-		<cfchart format="png" show3d="false" backgroundcolor="##ffffff" gridlines="true" 
-				 chartwidth="275" >
-			<cfchartseries type="pie" colorlist="85ca0F,172A7F" >
+		<cfchart format="png" show3d="false" backgroundcolor="##ffffff" chartwidth="250">
+			<cfchartseries type="pie" colorlist="85ca0F,000000" >
 				<cfchartdata item="Free Memory (KB)"  value="#JVMFreeMemory#">
 				<cfchartdata item="Used Memory (KB)" value="#JVMMaxMemory-JVMFreeMemory#">
 			</cfchartseries>
@@ -20,17 +19,17 @@
 		</td>
 		<td align="center">
 		<cfchart format="png" show3d="#show3d#" backgroundcolor="##ffffff" 
-				 chartwidth="200" chartheight="300" showlegend="true">
-			<cfchartseries type="bar" colorlist="93C2DD,ED2939,FF6F9D" >
-				<cfchartdata item="Hits" value="#controller.getColdboxOCM().getCacheStats().getHits()#">
-				<cfchartdata item="Misses" value="#controller.getColdboxOCM().getCacheStats().getMisses()#">
-				<cfchartdata item="Garbage Collections" value="#controller.getColdboxOCM().getCacheStats().getGarbageCollections()#">
-				<cfchartdata item="Evictions" value="#controller.getColdboxOCM().getCacheStats().getEvictionCount()#">
+				 chartwidth="225" chartheight="275" showlegend="true">
+			<cfchartseries type="bar" colorlist="131cd7,ED2939,FF6F9D,d47f00">
+				<cfchartdata item="Hits" value="#cacheStats.getHits()#">
+				<cfchartdata item="Misses" value="#cacheStats.getMisses()#">
+				<cfchartdata item="Garbage Collections" value="#cacheStats.getGarbageCollections()#">
+				<cfchartdata item="Evictions" value="#cacheStats.getEvictionCount()#">
 			</cfchartseries>
 		</cfchart>
 		</td>
 		<td align="center">
-		<cfchart format="png" show3d="#show3d#" backgroundcolor="##ffffff" gridlines="true" chartwidth="275">
+		<cfchart format="png" show3d="#show3d#" backgroundcolor="##ffffff" gridlines="true" chartwidth="250">
 			<cfchartseries type="pie" colorlist="AA0000" >
 				<cfchartdata item="Plugins" value="#itemTypes.plugins#">
 				<cfchartdata item="Handlers" value="#itemTypes.handlers#">

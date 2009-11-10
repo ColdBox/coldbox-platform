@@ -222,7 +222,7 @@ License		: 	Apache 2 License
 			var i = 0;
 			var items = "";
 			var itemsXML = "";
-			var local = structnew();
+			var refLocal = structnew();
 			var map = generateDefaultPropertyMap();
 		</cfscript>
 
@@ -242,38 +242,38 @@ License		: 	Apache 2 License
 		<cfsavecontent variable="itemsXML">
 		<cfoutput query="items">
 		<cfscript>
-			/* For some optional variables */
-			local = structnew();
-			/* Date tests */
+			// For some optional variable
+			refLocal = structnew();
+			// Date tests
 			if( structKeyExists(items, "#map.pubdate#") ){
 				if( validateRFC822Date(items[map.pubdate][currentRow]) ) {
 					// if pubdate is already a valid RFC822 date, do nothing
-					local.pubDate = items[map.pubdate][currentRow];
+					refLocal.pubDate = items[map.pubdate][currentRow];
 				}
 				else if ( len(items[map.pubdate][currentRow]) ) {
 					// convert the given date into a valid RFC822 date
-					local.pubDate = generateRFC822Date(items[map.pubdate][currentRow]);
+					refLocal.pubDate = generateRFC822Date(items[map.pubdate][currentRow]);
 				}
 			}
-			/* PermaLink tests */
+			// PermaLink tests
 			if( structKeyExists(items,"#map.guid_permalink#") and len(items[map.guid_permalink][currentRow]) ){
-				local.guid_permaLink = RSSFormat(items[map.guid_permalink][currentrow]);
+				refLocal.guid_permaLink = RSSFormat(items[map.guid_permalink][currentrow]);
 			}
-			else{ local.guid_permaLink = "false"; }
-			/* Enclosure tests */
+			else{ refLocal.guid_permaLink = "false"; }
+			// Enclosure tests
 			if( structKeyExists(items,"#map.enclosure_url#") ){
-				local.enclosure = structnew();
-				local.enclosure.url = URLFormat(items[map.enclosure_url][currentrow]);
+				refLocal.enclosure = structnew();
+				refLocal.enclosure.url = URLFormat(items[map.enclosure_url][currentrow]);
 				/* Length */
 				if( structKeyExists(items, "#map.enclosure_length#") ){
-					local.enclosure.length = RSSFormat(items[map.enclosure_length][currentrow]);
+					refLocal.enclosure.length = RSSFormat(items[map.enclosure_length][currentrow]);
 				}
-				else{ local.enclosure.length = ""; }
+				else{ refLocal.enclosure.length = ""; }
 				/* Type */
 				if( structKeyExists(items, "#map.enclosure_type#") ){
-					local.enclosure.type = RSSFormat(items[map.enclosure_type][currentrow]);
+					refLocal.enclosure.type = RSSFormat(items[map.enclosure_type][currentrow]);
 				}
-				else{ local.enclosure.type = ""; }
+				else{ refLocal.enclosure.type = ""; }
 			} //end of enclosure setup.
 		</cfscript>
 		<item>
@@ -298,8 +298,8 @@ License		: 	Apache 2 License
 			<atom:link href="#URLFormat(items[map.atomSelfLink][currentrow])#" rel="self" type="application/rss+xml"/>
 		</cfif>
 		<!--- Optional pubDate --->
-		<cfif structKeyExists(local,"pubDate") and len(local.pubDate)>
-			<pubDate>#local.pubDate#</pubDate>
+		<cfif structKeyExists(refLocal,"pubDate") and len(refLocal.pubDate)>
+			<pubDate>#refLocal.pubDate#</pubDate>
 		</cfif>
 		<!--- Optional author --->
 		<cfif structKeyExists(items,"#map.author#") and len(items[map.author][currentrow])>
@@ -338,7 +338,7 @@ License		: 	Apache 2 License
 		</cfif>
 		<!--- Optional guid --->
 		<cfif structKeyExists(items,"#map.guid_string#") and len(items[map.guid_string][currentrow])>
-			<guid isPermaLink="#RSSFormat(local.guid_permaLink)#">#RSSFormat(items[map.guid_string][currentrow])#</guid>
+			<guid isPermaLink="#RSSFormat(refLocal.guid_permaLink)#">#RSSFormat(items[map.guid_string][currentrow])#</guid>
 		</cfif>
 		<!--- Optional DCMI Metadata terms --->
 		<cfif listContainsNoCase(items.columnList,'dcmiterm_')>
@@ -353,10 +353,10 @@ License		: 	Apache 2 License
 			#cclicenseGenItem(items,map,currentrow)#
 		</cfif>
 		<!--- Optional enclosure --->
-		<cfif structKeyExists(local,"enclosure") and Len(local.enclosure.url)>
-			<cfloop from="1" to="#listLen(local.enclosure.url)#" index="i">
-				<cfif i lte listLen(local.enclosure.length) and i lte listLen(local.enclosure.type)>
-					<enclosure url="#URLFormat(listGetAt(local.enclosure.url,i))#" length="#RSSFormat(listGetAt(local.enclosure.length,i))#" type="#RSSFormat(listGetAt(local.enclosure.type,i))#"/>
+		<cfif structKeyExists(refLocal,"enclosure") and Len(refLocal.enclosure.url)>
+			<cfloop from="1" to="#listLen(refLocal.enclosure.url)#" index="i">
+				<cfif i lte listLen(refLocal.enclosure.length) and i lte listLen(refLocal.enclosure.type)>
+					<enclosure url="#URLFormat(listGetAt(refLocal.enclosure.url,i))#" length="#RSSFormat(listGetAt(refLocal.enclosure.length,i))#" type="#RSSFormat(listGetAt(refLocal.enclosure.type,i))#"/>
 				</cfif>
 			</cfloop>
 		</cfif>

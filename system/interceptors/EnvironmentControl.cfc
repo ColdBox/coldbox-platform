@@ -20,8 +20,7 @@ Description :
 
 
 ----------------------------------------------------------------------->
-<cfcomponent name="EnvironmentControl"
-			 hint="ENVIRONMENT settings interceptor"
+<cfcomponent hint="ENVIRONMENT settings interceptor"
 			 extends="coldbox.system.Interceptor"
 			 output="false">
 
@@ -31,20 +30,22 @@ Description :
 		<cfscript>
 			var configFile = "";
 			
-			// Regex for JSON
-			instance.jsonRegex = "^(\{|\[)(.)*(\}|\])$";
-		
+			// App Loader
+			instance.appLoader = controller.getLoaderService().getAppLoader();
+			
 			// Verify that the configFile propety is set
 			if( not propertyExists('configFile') ){
 				$throw("Config File property does not exist. Please declare it.",'','interceptors.EnvironmentControl.configFilePropertyNotDefined');
 			}
+			
 			// Try to locate the path
 			configFile = locateFilePath(getProperty('configFile'));
 			// Validate it
 			if( len(configFile) eq 0 ){
 				$throw('Config File could not be located: #getProperty('configFile')#. Please check again.','','interceptors.EnvironmentControl.configFileNotFound');
 			}
-			// Save Config File
+			
+			// Save Config File location
 			setConfigFile(configFile);			
 			
 			// Completed Flag
@@ -93,18 +94,19 @@ Description :
 	<cffunction name="parseAndSet" output="false" access="private" returntype="void" hint="ENVIRONMENT control the settings">
 		<cfscript>
 			var environmentsArray = ArrayNew(1);
-			var SettingsArray = ArrayNew(1);
+			var settingsArray = ArrayNew(1);
 			var environmentXML = "";
 			var i = 1;
 			var environment = "";
 			var oXML = "";
 			var configSettings = getController().getConfigSettings();
 			var thisValue = "";
-			var oUtilities = getPlugin("Utilities");
-			var oJSON = getPlugin("JSON");
-			var oXMLParser = getPlugin("XMLParser");
-		
-			//Parse it
+			var appLoader = instance.appLoader;
+			var oUtilities = appLoader.getUtil();
+			var oJSON = appLoader.getJSONUtil();
+			var jsonRegex = appLoader.getJSONRegex();
+			
+			//Parse environment config file
 			oXML = XMLParse(getConfigFile());
 			
 			//Search and test for environments
@@ -114,26 +116,35 @@ Description :
 			}
 			// Detect the environment
 			environment = detectEnvironment(environmentsArray);
+			
 			// If no overrides found, then just exit out.
 			if( len(trim(environment)) eq 0 ){ return; }
 			
-			//Parse Settings
-			SettingsArray = xmlSearch( oXML , "/environmentcontrol/environment[@name='#environment#']/Setting");
+			//Parse Custom Settings
+			settingsArray = xmlSearch( oXML , "/environmentcontrol/environment[@name='#environment#']/Setting");
 			//Insert Your Settings to Config Struct
-			for (i=1; i lte ArrayLen(SettingsArray); i=i+1){
-				// Get Setting value with PlaceHolding replacements
-				thisValue = oUtilities.placeHolderReplacer(trim(SettingsArray[i].XMLAttributes["value"]),configSettings);
+			for (i=1; i lte ArrayLen(settingsArray); i=i+1){
+				
+				// Check if value attribute exists, else check text.
+				if( structKeyExists(settingsArray[i].XMLAttributes,"value") ){
+					thisValue = oUtilities.placeHolderReplacer(trim(settingsArray[i].XMLAttributes["value"]),configSettings);
+				}
+				// Check for the xml text
+				if( len(settingsArray[i].XMLText) ){
+					thisValue = oUtilities.placeHolderReplacer(trim(settingsArray[i].XMLText),configSettings);
+				}
+				
 				//Test for JSON
-				if( reFindNocase(instance.jsonRegex,thisValue) ){
+				if( reFindNocase(jsonRegex,thisValue) ){
 					thisValue = oJSON.decode(replace(thisValue,"'","""","all"));
 				}
 				// Check if overriding or new one?
-				if( settingExists(trim(SettingsArray[i].xmlAttributes.name)) ){
-					setSetting( trim(SettingsArray[i].xmlAttributes.name) , thisValue );
+				if( settingExists(trim(settingsArray[i].xmlAttributes.name)) ){
+					setSetting( trim(settingsArray[i].xmlAttributes.name) , thisValue );
 				}
 				else{
-					// Do a full set
-					"configSettings.#trim(SettingsArray[i].xmlAttributes.name)#" = thisValue;
+					// Do a full set override
+					"configSettings.#trim(settingsArray[i].xmlAttributes.name)#" = thisValue;
 				}
 			}
 			
@@ -143,31 +154,31 @@ Description :
 			if( arrayLen(environmentXML) ){
 				environmentXML = xmlParse( toString(environmentXML[1]) );
 				// Mail Settings
-				oXMLParser.parseMailSettings(environmentXML,configSettings,oUtilities,true);
+				appLoader.parseMailSettings(environmentXML,configSettings,true);
 				// IOC
-				oXMLParser.parseIOC(environmentXML,configSettings,oUtilities,true);		
+				appLoader.parseIOC(environmentXML,configSettings,true);		
 				// Models
-				oXMLParser.parseModels(environmentXML,configSettings,oUtilities,true);		
+				appLoader.parseModels(environmentXML,configSettings,true);		
 				// i18N
-				oXMLParser.parseLocalization(environmentXML,configSettings,oUtilities,true);
+				appLoader.parseLocalization(environmentXML,configSettings,true);
 				// Bug Tracers
-				oXMLParser.parseBugTracers(environmentXML,configSettings,oUtilities,true);
+				appLoader.parseBugTracers(environmentXML,configSettings,true);
 				// Web Services
-				oXMLParser.parseWebservices(environmentXML,configSettings,oUtilities,true);
+				appLoader.parseWebservices(environmentXML,configSettings,true);
 				// Parse Datasources
-				oXMLParser.parseDatasources(environmentXML,configSettings,oUtilities,true);
+				appLoader.parseDatasources(environmentXML,configSettings,true);
 				// Parse Debugger Settings
-				oXMLParser.parseDebuggerSettings(environmentXML,configSettings,oUtilities,true);
+				appLoader.parseDebuggerSettings(environmentXML,configSettings,true);
 				// Reload Debugger Configuration
 				controller.getDebuggerService().getDebuggerConfig().populate(configSettings.DebuggerSettings);
 				// Parse Interceptors
-				oXMLParser.parseInterceptors(environmentXML,configSettings,oUtilities,true);	
+				appLoader.parseInterceptors(environmentXML,configSettings,true);	
 				// Parse LogBox
-				oXMLParser.parseLogBox(environmentXML,configSettings,oUtilities,true);
-				// Reconfigure LogBox
+				appLoader.parseLogBox(environmentXML,configSettings,true);
+				// Reconfigure LogBox if resset
 				if( NOT structIsEmpty(configSettings["LogBoxConfig"]) ){
 					controller.getLogBox().configure(controller.getLogBox().getConfig());
-					controller.setLogger(controller.getLogBox().getLogger("coldbox.system.web.Controller"));
+					controller.setLogger(controller.getLogBox().getLogger(controller));
 				}	
 			}			
 		</cfscript>

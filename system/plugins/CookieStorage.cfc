@@ -43,7 +43,7 @@ Modification History: March 23,2008 Added new feature to encrypt/decrypt cookie 
 			setEncryptionEncoding("HEX");
 			
 			/* set defautl alogrithm according to CFML engine */
-			if(controller.oCFMLENGINE.getEngine() EQ 'BLUEDRAGON'){
+			if(controller.getCFMLEngine().getEngine() EQ 'BLUEDRAGON'){
 				setEncryptionAlgorithm("BD_DEFAULT");
 			}
 			

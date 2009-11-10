@@ -27,11 +27,6 @@ Description :
 			// Set a maximum tracers possible.
 			instance.maxTracers = 100;
 			
-			// ID: FRIGGING CF7 SUPPORT, JUST DIE!!!
-			if( controller.oCFMLEngine.isMT() ){
-				instance.uuid = createobject("java", "java.util.UUID");
-			}
-			
 			return this;
 		</cfscript>
 	</cffunction>
@@ -86,7 +81,6 @@ Description :
 		<cfscript>
 			var timerInfo = 0;
 			var qTimers = "";
-			var id = "";
 			
 			// Verify Debug Mode and timer label exists, else do nothing.
 			if( getDebugMode() and structKeyExists(request,arguments.labelHash) ){
@@ -94,18 +88,9 @@ Description :
 				timerInfo = request[arguments.labelHash];
 				qTimers = getTimers();
 				
-				// Prepare ID
-				// ID: FRIGGING CF7 SUPPORT, JUST DIE!!!
-				if( controller.oCFMLEngine.isMT() ){
-					id = instance.uuid.randomUUID().toString();
-				}
-				else{
-					id = hash(timerInfo.label & now());
-				}
-				
 				// Save timer
 				QueryAddRow(qTimers,1);
-				QuerySetCell(qTimers, "ID", id );
+				QuerySetCell(qTimers, "ID", hash(timerInfo.label & now()));
 				QuerySetCell(qTimers, "Method", timerInfo.label);
 				QuerySetCell(qTimers, "Time", getTickCount() - timerInfo.stime);
 				QuerySetCell(qTimers, "Timestamp", now());
@@ -183,7 +168,9 @@ Description :
 		<cfset var cacheMetadata = "">
 		<cfset var cacheKeyList = "">
 		<cfset var cacheKeyIndex = 1>
-
+		<cfset var cacheConfig = controller.getColdboxOCM().getCacheConfig()>
+		<cfset var cacheStats = controller.getColdboxOCM().getCacheStats()>
+		
 		<!--- Setup Local Variables --->
 		<cfset var debugStartTime = GetTickCount()>
 		<cfset var thisCollection = "">
@@ -215,7 +202,9 @@ Description :
 		<cfset var cacheMetadata = controller.getColdboxOCM().getPoolMetadata()>
 		<cfset var cacheKeyList = listSort(structKeyList(cacheMetaData),"textnocase")>
 		<cfset var cacheKeyIndex = 1>
-
+		<cfset var cacheConfig = controller.getColdboxOCM().getCacheConfig()>
+		<cfset var cacheStats = controller.getColdboxOCM().getCacheStats()>
+		
 		<!--- Setup Local Variables --->
 		<cfset var RequestCollection = Event.getCollection()>
 

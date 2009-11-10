@@ -35,7 +35,7 @@ Description		:
 				instance.generationPath = instance.generationPath & "/";
 			}
 			
-			instance.version = "1.0 Beta 2";
+			instance.version = "1.0 RC 1";
 			instance.mockGenerator = createObject("component","coldbox.system.testing.mockutils.MockGenerator").init(this);
 			
 			return this;
@@ -61,6 +61,17 @@ Description		:
 	<!--- Get/Set version --->
 	<cffunction name="getVersion" access="public" returntype="string" output="false" hint="Get the current mock factory version">
 		<cfreturn instance.version>
+	</cffunction>
+	
+	<!--- createEmptyMock --->
+	<cffunction name="createEmptyMock" output="false" access="public" returntype="any" hint="Creates an empty mock object. By empty we mean we remove all methods so you can mock them.">
+		<!--- ************************************************************* --->
+		<cfargument name="className"		type="string" 	required="false" hint="The class name of the object to mock. The mock factory will instantiate it for you"/>
+		<cfargument name="object" 			type="any" 		required="false" hint="The object to mock, already instantiated"/>
+		<cfargument name="callLogging" 		type="boolean"  required="false" default="true" hint="Add method call logging for all mocked methods. Defaults to true"/>
+		<!--- ************************************************************* --->
+		<cfset arguments.clearMethods = true>
+		<cfreturn createMock(argumentCollection=arguments)>
 	</cffunction>
 	
 	<!--- createMock --->

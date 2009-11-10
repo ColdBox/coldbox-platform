@@ -18,7 +18,8 @@ Description :
 		
 		// Instance private scope
 		instance = structnew();
-		//Reset Config
+		
+		// Startup the configuration
 		reset();
 	</cfscript>
 

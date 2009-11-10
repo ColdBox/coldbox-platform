@@ -109,7 +109,7 @@ id , name , mail
 				application[getColdboxAppKey()] = instance.controller;
 				
 				// Setup
-				instance.controller.getLoaderService().configLoader(instance.ConfigMapping,instance.appMapping);
+				instance.controller.getLoaderService().loadApplication(instance.ConfigMapping,instance.appMapping);
 			}
 			
 			//Clean up Initial Event Context

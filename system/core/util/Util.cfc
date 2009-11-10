@@ -8,7 +8,21 @@ Description :
 
 ---------------------------------------------------------------------->
 <cfcomponent output="false" hint="The main ColdBox utility library.">
-
+	
+	<!--- File last Modified --->
+	<cffunction name="fileLastModified" access="public" returntype="string" output="false" hint="Get the last modified date of a file">
+		<!--- ************************************************************* --->
+		<cfargument name="filename" type="string" required="yes">
+		<!--- ************************************************************* --->
+		<cfscript>
+		var objFile =  createObject("java","java.io.File").init(javaCast("string",arguments.filename));
+		// Calculate adjustments fot timezone and daylightsavindtime
+		var offset = ((getTimeZoneInfo().utcHourOffset)+1)*-3600;
+		// Date is returned as number of seconds since 1-1-1970
+		return dateAdd('s', (round(objFile.lastModified()/1000))+offset, CreateDateTime(1970, 1, 1, 0, 0, 0));
+		</cfscript>
+	</cffunction>
+	
 	<!--- Get Absolute Path --->
 	<cffunction name="getAbsolutePath" access="public" output="false" returntype="string" hint="Turn any system path, either relative or absolute, into a fully qualified one">
 		<!--- ************************************************************* --->

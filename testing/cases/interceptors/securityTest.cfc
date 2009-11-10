@@ -87,7 +87,7 @@ Description :
 			setConfigMapping("#mypath#../../resources/interceptor_configs/security_cbox_xml.xml");
 			
 			//resetup
-			getController().getLoaderService().configLoader(getConfigMapping(),getAppMapping());
+			getController().getLoaderService().loadApplication(getConfigMapping(),getAppMapping());
 		</cfscript>
 		<!--- Login a user --->
 		<cflogout>
@@ -120,7 +120,7 @@ Description :
 		setConfigMapping("#mypath#../../resources/interceptor_configs/security_cbox_db.xml");
 		
 		//resetup
-		getController().getLoaderService().configLoader(getConfigMapping(),getAppMapping());
+		getController().getLoaderService().loadApplication(getConfigMapping(),getAppMapping());
 	
 		</cfscript>
 	</cffunction>
@@ -135,7 +135,7 @@ Description :
 		setConfigMapping("#mypath#../../resources/interceptor_configs/security_cbox_model.xml");
 		
 		//resetup
-		getController().getLoaderService().configLoader(getConfigMapping(),getAppMapping());
+		getController().getLoaderService().loadApplication(getConfigMapping(),getAppMapping());
 				
 		</cfscript>
 	</cffunction>
@@ -150,7 +150,7 @@ Description :
 		setConfigMapping("#mypath#../../resources/interceptor_configs/security_cbox_ioc.xml");
 		
 		//resetup
-		getController().getLoaderService().configLoader(getConfigMapping(),getAppMapping());
+		getController().getLoaderService().loadApplication(getConfigMapping(),getAppMapping());
 				
 		</cfscript>
 	</cffunction>
@@ -165,7 +165,7 @@ Description :
 		setConfigMapping("#mypath#../../resources/interceptor_configs/security_cbox_ocm.xml");
 		
 		//resetup
-		getController().getLoaderService().configLoader(getConfigMapping(),getAppMapping());
+		getController().getLoaderService().loadApplication(getConfigMapping(),getAppMapping());
 		
 		/* Place rules on OCM */
 		getController().getColdboxOCM().set('qSecurityRules', getRules(),0);
@@ -203,7 +203,7 @@ Description :
 		setConfigMapping("#mypath#../../resources/interceptor_configs/security_cbox_ioc.xml");
 		
 		//resetup
-		getController().getLoaderService().configLoader(getConfigMapping(),getAppMapping());
+		getController().getLoaderService().loadApplication(getConfigMapping(),getAppMapping());
 		
 		/* Test */
 		event.setValue('event','admin.list');

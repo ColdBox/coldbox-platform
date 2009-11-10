@@ -287,7 +287,7 @@ Modification History:
 				// Set plugin key and file path check
 				pluginFilePath = replace(arguments.plugin,".","/","all") & ".cfc";
 				
-				// Check for Convention First, MyPluginsPath was already setup with conventions on XMLParser
+				// Check for Convention First, MyPluginsPath was already setup with conventions
 				if ( fileExists(getCustomPluginsPhysicalPath() & "/" & pluginFilePath ) ){
 					return "#getCustomPluginsPath()#.#arguments.plugin#";
 				}

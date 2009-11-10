@@ -14,6 +14,7 @@
 			this.memento.CacheFreeMemoryPercentageThreshold = 1;
 			this.memento.CacheUseLastAccessTimeouts = true;
 			this.memento.CacheEvictionPolicy = "LFU";
+			this.memento.CacheEvictCount = 10;
 			
 			this.ccbean.init(argumentCollection=this.memento);
 		</cfscript>
@@ -65,10 +66,17 @@
 		<cfscript>
 			assertEquals(this.ccbean.getCacheUseLastAccessTimeouts(), this.memento.CacheUseLastAccessTimeouts);
 		</cfscript>
+	</cffunction>	
+	
+	<cffunction name="testGetCacheEvictCount" access="public" returnType="void">
+		<cfscript>
+			assertEquals(this.ccbean.getCacheEvictCount(), this.memento.cacheEvictCount);
+		</cfscript>
 	</cffunction>		
 	
 	<cffunction name="testgetmemento" access="public" returnType="void">
 		<cfscript>
+			this.ccbean.setMemento( this.memento );
 			assertEquals( this.ccbean.getMemento(), this.memento);
 		</cfscript>
 	</cffunction>		

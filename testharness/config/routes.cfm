@@ -8,10 +8,12 @@
 		     action="{GET:'show', PUT:'update', DELETE:'delete', POST:'save'}");
 	
 	// REST services as Implicit structures
+	/*
 	addRoute(pattern="/api",
 		     handler="Rest",
 		     action={GET='show', PUT='update', DELETE='delete', POST='save'});
 	
+	*/
 	
 	addRoute(pattern="/test/:id-numeric{2}/:num-numeric/:name/:month{3}?",handler="ehGeneral",action="dspHello");
 	addRoute(pattern="test/:id/:name{4}?",handler="ehGeneral",action="dspHello");
@@ -21,7 +23,7 @@
 	addRoute(pattern="contactus2",view="simpleView",viewnoLayout=true);
 	
 	// Constraints Implicitly
-	addRoute(pattern="/const/:test",view="simpleView",constraints={test='(ATest)'});
+	//addRoute(pattern="/const/:test",view="simpleView",constraints={test='(ATest)'});
 	
 	addRoute(pattern=":handler/:action?/:id-numeric?",matchVariables="isFound=true,testDate=#now()#");
 	

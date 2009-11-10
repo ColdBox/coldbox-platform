@@ -12,7 +12,7 @@ This is the ColdBox Front Controller that dispatches events and manages your Col
 Only one instance of a specific ColdBox application exists.
 
 ----------------------------------------------------------------------->
-<cfcomponent name="controller" hint="This is the ColdBox Front Controller that dispatches events and manages your ColdBox application." output="false" serializable="false">
+<cfcomponent hint="This is the ColdBox Front Controller that dispatches events and manages your ColdBox application." output="false" serializable="false">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
@@ -21,23 +21,26 @@ Only one instance of a specific ColdBox application exists.
 		services = structnew();
 	</cfscript>
 
-	<cffunction name="init" returntype="coldbox.system.web.Controller" access="Public" hint="Constructor" output="false">
-		<cfargument name="AppRootPath" type="string" required="true" hint="The app Root Path"/>
+	<cffunction name="init" returntype="coldbox.system.web.Controller" access="public" hint="Constructor" output="false">
+		<cfargument name="appRootPath" type="string" required="true" hint="The app Root Path"/>
 		<cfscript>
+			// Framewokr Setings Loader
+			var settingsLoader = createObject("component","coldbox.system.web.loader.FrameworkLoader").init();
 			
-			//Public Available Engine Utility
-			this.oCFMLENGINE = CreateObject("component","coldbox.system.core.util.CFMLEngine").init();
+			// CFML Engine Utility
+			instance.CFMLEngine = CreateObject("component","coldbox.system.core.util.CFMLEngine").init();
 			
 			// Set Main Application Properties
 			setColdboxInitiated(false);
 			setAspectsInitiated(false);
 			setAppStartHandlerFired(false);
-			setAppHash( hash(arguments.AppRootPath) );
-			setAppRootPath(arguments.AppRootPath);
+			setAppHash( hash(arguments.appRootPath) );
+			setAppRootPath(arguments.appRootPath);
 			
-			// Init Configuration structures
+			// Init application Configuration structures
 			setConfigSettings(structnew());
-			setColdboxSettings(structnew());
+			// Load up ColdBox Settings
+			settingsLoader.loadSettings(this);
 			
 			// Setup the ColdBox Services
 			setLoaderService( CreateObject("component", "coldbox.system.services.LoaderService").init(this) );
@@ -47,18 +50,23 @@ Only one instance of a specific ColdBox application exists.
 			setInterceptorService( CreateObject("component", "coldbox.system.services.InterceptorService").init(this) );
 			setHandlerService( CreateObject("component", "coldbox.system.services.HandlerService").init(this) );
 			
-			// LogBox Configuration & Creation
+			// LogBox Default Configuration & Creation
 			setLogBox(getLoaderService().createLogBox());
-			setLogger(getLogBox().getLogger("coldbox.system.web.Controller"));
+			setLogger(getLogBox().getLogger(this));
 			
 			// Log Creation
 			getLogger().info("ColdBox Application Controller Created Successfully at #arguments.appRootPath#");
-			//Return instance
+			
 			return this;
 		</cfscript>
 	</cffunction>
 
 <!------------------------------------------- PUBLIC ------------------------------------------->
+	
+	<!--- Get The CFMLEngine object --->
+	<cffunction name="getCFMLEngine" access="public" returntype="coldbox.system.core.util.CFMLEngine" output="false" hint="Get the CFMLEngine utility class">
+		<cfreturn instance.CFMLEngine>
+	</cffunction>
 	
 	<!--- getLogBox --->
 	<cffunction name="getLogBox" output="false" access="public" returntype="coldbox.system.logging.LogBox" hint="Get the application's LogBox instance">
@@ -85,11 +93,11 @@ Only one instance of a specific ColdBox application exists.
 	
 	<!--- AppRootPath --->
 	<cffunction name="getAppRootPath" access="public" returntype="string" output="false" hint="Get this application's physical path">
-		<cfreturn instance.AppRootPath>
+		<cfreturn instance.appRootPath>
 	</cffunction>
 	<cffunction name="setAppRootPath" access="public" returntype="void" output="false" hint="Set this application's physical path.">
-		<cfargument name="AppRootPath" type="string" required="true">
-		<cfset instance.AppRootPath = arguments.AppRootPath>
+		<cfargument name="appRootPath" type="string" required="true">
+		<cfset instance.appRootPath = arguments.appRootPath>
 	</cffunction>
 	
 	<!--- ColdBox Cache Manager --->
@@ -238,13 +246,17 @@ Only one instance of a specific ColdBox application exists.
 		<cfargument name="FWSetting"  	type="boolean" 	 	required="false"  hint="Boolean Flag. If true, it will retrieve from the fwSettingsStruct else from the configStruct. Default is false." default="false">
 		<!--- ************************************************************* --->
 		<cfscript>
-		if ( arguments.FWSetting and settingExists(arguments.name,true) )
-			return instance.ColdboxSettings[arguments.name];
-		else if ( settingExists(arguments.name) )
-			 return instance.ConfigSettings[arguments.name];
-		else
-			getUtil().throwit("The setting #arguments.name# does not exist.","FWSetting flag is #arguments.FWSetting#","Controller.SettingNotFoundException");
-		</cfscript>
+			var target = instance.configSettings;
+			
+			if( arguments.FWSetting ){ target = instance.coldboxSettings; }
+			
+			if ( settingExists(arguments.name,arguments.FWSetting) )
+				return target[arguments.name];
+			
+			getUtil().throwit(message="The setting #arguments.name# does not exist.",
+							  detail="FWSetting flag is #arguments.FWSetting#",
+							  type="Controller.SettingNotFoundException");
+			</cfscript>
 	</cffunction>
 	<cffunction name="settingExists" returntype="boolean" access="Public"	hint="I Check if a value exists in the configstruct or the fwsettingsStruct." output="false">
 		<cfargument name="name" hint="Name of the setting to find." type="string">
@@ -555,7 +567,7 @@ Only one instance of a specific ColdBox application exists.
 			<cfcatch type="any">
 				<!--- Check if onError Exists --->
 				<cfif oEventHandler._actionExists("onError")>
-					<cfset oEventHandler.onError(oRequestContext,oEventHandlerBean.getmethod(),cfcatch)>
+					<cfset refLocal.results = oEventHandler.onError(oRequestContext,oEventHandlerBean.getmethod(),cfcatch)>
 				<cfelse>
 					<cfrethrow>
 				</cfif>

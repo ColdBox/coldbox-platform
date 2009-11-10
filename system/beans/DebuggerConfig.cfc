@@ -146,7 +146,7 @@ Modification History:
 	</cffunction>
 	
 	<!--- Populate from struct --->
-	<cffunction name="populate" access="public" returntype="void" hint="Populate with a memento">
+	<cffunction name="populate" access="public" returntype="any" hint="Populate with a memento">
 		<!--- ************************************************************* --->
 		<cfargument name="memento"  required="true" type="struct" 	hint="The structure to populate the object with.">
 		<!--- ************************************************************* --->
@@ -154,7 +154,7 @@ Modification History:
 			var key = "";
 			var udfCall = "";
 			
-			/* Populate Bean */
+			// Populate Bean
 			for(key in arguments.memento){
 				/* Check if setter exists */
 				if( structKeyExists(this,"set" & key) ){
@@ -162,6 +162,8 @@ Modification History:
 					udfCall(arguments.memento[key]);
 				}
 			}
+			
+			return this;
 		</cfscript>
 	</cffunction>
 	

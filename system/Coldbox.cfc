@@ -26,9 +26,9 @@ Description :
 		setAppHash(hash(getBaseTemplatePath()));
 		//Set the COLDBOX CONFIG FILE
 		setCOLDBOX_CONFIG_FILE(COLDBOX_CONFIG_FILE);
-		//Set the Root
+		//Set the App Root Location
 		setCOLDBOX_APP_ROOT_PATH(COLDBOX_APP_ROOT_PATH);
-		//Set the App Key
+		//Set the App Key to use in application scope
 		setCOLDBOX_APP_KEY(COLDBOX_APP_KEY);
 	</cfscript>
 
@@ -62,7 +62,7 @@ Description :
 			// Create Brand New Controller
 			application[appKey] = CreateObject("component","coldbox.system.web.Controller").init(COLDBOX_APP_ROOT_PATH);
 			// Setup the Framework And Application
-			application[appKey].getLoaderService().configLoader(COLDBOX_CONFIG_FILE);			
+			application[appKey].getLoaderService().loadApplication(COLDBOX_CONFIG_FILE);			
 		</cfscript>
 	</cffunction>
 	
@@ -91,7 +91,7 @@ Description :
 					<cflock type="exclusive" name="#getAppHash()#" timeout="#getLockTimeout()#" throwontimeout="true">
 						<cfif cbController.getSetting("ConfigAutoReload")>
 							<cfset cbController.setAppStartHandlerFired(false)>
-							<cfset cbController.getLoaderService().configLoader(COLDBOX_CONFIG_FILE)>
+							<cfset cbController.getLoaderService().loadApplication(COLDBOX_CONFIG_FILE)>
 						</cfif>
 					</cflock>
 				<cfelse>
@@ -459,10 +459,10 @@ Description :
 			if( len(command) eq 0 ){ return; }
 			/* Commands */
 			switch(command){
-				case "expirecache" : {cbController.getColdboxOCM().expireAll(async=false);break;}
+				case "expirecache" : {cbController.getColdboxOCM().expireAll();break;}
 				case "delcacheentry" : {cbController.getColdboxOCM().clearKey(event.getValue('cbox_cacheentry',""));break;}
-				case "clearallevents" : {cbController.getColdboxOCM().clearAllEvents(async=false);break;}
-				case "clearallviews" : {cbController.getColdboxOCM().clearAllViews(async=false);break;}
+				case "clearallevents" : {cbController.getColdboxOCM().clearAllEvents();break;}
+				case "clearallviews" : {cbController.getColdboxOCM().clearAllViews();break;}
 				default: break;
 			}
 		</cfscript>

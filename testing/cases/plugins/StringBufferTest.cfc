@@ -30,7 +30,7 @@ Description :
 			AssertEquals( getMetadata(obj).name, "java.lang.StringBuilder" );
 			
 			//JDK 1.4 TeST
-			getController().oCFMLENGINE.JDK_VERSION = 1.4;
+			getController().getCFMLEngine().JDK_VERSION = 1.4;
 			plugin = getController().getPlugin("StringBuffer").setup('test');
 			obj = plugin.getStringBuffer().init();
 			AssertEquals( getMetadata(obj).name, "java.lang.StringBuffer" );

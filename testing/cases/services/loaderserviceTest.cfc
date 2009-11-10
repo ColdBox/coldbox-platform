@@ -21,14 +21,14 @@ Description :
 		</cfscript>
 	</cffunction>
 	
-	<cffunction name="testconfigLoader" access="public" returntype="void" output="false">
+	<cffunction name="testloadApplication" access="public" returntype="void" output="false">
 		<cfscript>
 		var service = getController().getservice("loader");
 		var context = "";
 		
 		getController().setSetting("dummyVar", true);
 		
-		service.configLoader(getConfigMapping(),getAppMapping());
+		service.loadApplication(getConfigMapping(),getAppMapping());
 		
 		AssertFalse( getController().settingExists("dummyVar") );		
 		
@@ -49,7 +49,7 @@ Description :
 		<cfscript>
 		var service = getController().getservice("loader");
 		var context = "";
-		var fs = getController().getSetting("OSFileSeparator",true);
+		var fs = "/";
 		var dummyFile = getController().getSetting("HandlersPath") & fs & "dummy.cfc";
 		
 		createFile( dummyFile );

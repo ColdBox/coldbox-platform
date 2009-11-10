@@ -57,11 +57,11 @@
 		</div>
 		
 		<div class="fw_debugContentCell">
-		 <em>Hit Ratio:</em> #NumberFormat(controller.getColdboxOCM().getCacheStats().getCachePerformanceRatio(),"999.99")#%  ==>
-		 <em>Hits:</em> #controller.getColdboxOCM().getCacheStats().gethits()# |
-		 <em>Misses:</em> #controller.getColdboxOCM().getCacheStats().getmisses()# |
-		 <em>Evictions:</em> #controller.getColdboxOCM().getCacheStats().getEvictionCount()# |
-		 <em>Garbage Collections:</em> #controller.getColdboxOCM().getCacheStats().getGarbageCollections()#
+		 <em>Hit Ratio:</em> #NumberFormat(cacheStats.getCachePerformanceRatio(),"999.99")#%  ==>
+		 <em>Hits:</em> #cacheStats.gethits()# |
+		 <em>Misses:</em> #cacheStats.getmisses()# |
+		 <em>Evictions:</em> #cacheStats.getEvictionCount()# |
+		 <em>Garbage Collections:</em> #cacheStats.getGarbageCollections()#
 		</div>
 
 		<div class="fw_debugTitleCell">
@@ -77,44 +77,44 @@
 		  JVM Threshold
 		</div>
 		<div class="fw_debugContentCell">
-			#controller.getColdboxOCM().getCacheConfig().getCacheFreeMemoryPercentageThreshold()#% (0=Unlimited)
+			#cacheConfig.getFreeMemoryPercentageThreshold()#% (0=Unlimited)
 		</div>
 		
 		<div class="fw_debugTitleCell">
 		  Last Reap
 		</div>
 		<div class="fw_debugContentCell">
-		 #DateFormat(controller.getColdboxOCM().getCacheStats().getlastReapDatetime(),"MMM-DD-YYYY")#
-		 #TimeFormat(controller.getColdboxOCM().getCacheStats().getlastReapDatetime(),"hh:mm:ss tt")#
+		 #DateFormat(cacheStats.getlastReapDatetime(),"MMM-DD-YYYY")#
+		 #TimeFormat(cacheStats.getlastReapDatetime(),"hh:mm:ss tt")#
 		</div>
 
 		<div class="fw_debugTitleCell">
 		  Reap Frequency
 		</div>
 		<div class="fw_debugContentCell">
-		 Every #controller.getColdboxOCM().getCacheConfig().getCacheReapFrequency()# Minute(s)
+		 Every #cacheConfig.getReapFrequency()# Minute(s)
 		</div>
 		
 		<div class="fw_debugTitleCell">
 		  Eviction Policy
 		</div>
 		<div class="fw_debugContentCell">
-		 #controller.getColdboxOCM().getCacheConfig().getCacheEvictionPolicy()#
+		 #cacheConfig.getEvictionPolicy()# (#cacheConfig.getEvictCount()# evict count)
 		</div>
 
 		<div class="fw_debugTitleCell">
 		  Default Timeout
 		</div>
 		<div class="fw_debugContentCell">
-		 #controller.getColdboxOCM().getCacheConfig().getCacheObjectDefaultTimeout()# Minutes
+		 #cacheConfig.getObjectDefaultTimeout()# Minutes
 		</div>
 
-		<cfif controller.getColdboxOCM().getCacheConfig().getCacheUseLastAccessTimeouts()>
+		<cfif cacheConfig.getUseLastAccessTimeouts()>
 		<div class="fw_debugTitleCell">
 		  Last Access Timeout
 		</div>
 		<div class="fw_debugContentCell">
-		 #controller.getColdboxOCM().getCacheConfig().getCacheObjectDefaultLastAccessTimeout()# Minutes
+		 #cacheConfig.getObjectDefaultLastAccessTimeout()# Minutes
 		</div>
 		</cfif>
 
@@ -122,34 +122,17 @@
 		  Cache Contents
 		</div>
 		<div class="fw_debugContentCell">
-		 <cfif controller.getColdboxOCM().getSize() gte controller.getColdboxOCM().getCacheConfig().getCacheMaxObjects()>
-		 	<span class="fw_redText">#controller.getColdBoxOCM().getSize()# / #controller.getColdboxOCM().getCacheConfig().getCacheMaxObjects()# (0=Unlimited)</span>
+		 <cfif controller.getColdboxOCM().getSize() gte cacheConfig.getMaxObjects()>
+		 	<span class="fw_redText">#controller.getColdBoxOCM().getSize()# / #cacheConfig.getMaxObjects()# (0=Unlimited)</span>
 		 <cfelse>
-		 	#controller.getColdBoxOCM().getSize()# / #controller.getColdboxOCM().getCacheConfig().getCacheMaxObjects()# (0=Unlimited) 
+		 	#controller.getColdBoxOCM().getSize()# / #cacheConfig.getMaxObjects()# (0=Unlimited) 
 		</cfif>
 		 
 		</div>
-		<!--- **************************************************************--->
-		<cfif controller.getSetting("chartingActive",true)>
-			<!--- Why use a cfinclude? well, bluedragon would not compile this without it --->
-			<cfinclude template="/coldbox/system/includes/panels/CacheCharting.cfm">
-		<cfelse>
-			<div class="fw_debugTitleCell">
-			  Objects In Cache:
-			</div>
-			<div class="fw_debugContentCell">
-			 <b>Plugins: </b> #itemTypes.plugins# &nbsp;
-			 <b>Handlers: </b> #itemTypes.handlers# &nbsp;
-			 <b>Events: </b> #itemTypes.events# &nbsp;
-			 <b>Views: </b> #itemTypes.views# &nbsp;
-			 <b>IoC Beans: </b> #itemTypes.ioc_beans# &nbsp;
-			 <b>Interceptors: </b> #itemTypes.interceptors# &nbsp;
-			 <b>Other: </b> #itemTypes.other#
-			</div>
-			<em>Charting is not supported in your coldfusion engine. Cache Charts skipped.</em>
-			<br>
-		</cfif>
-
+		
+		<!--- Cache Charting --->
+		<cfinclude template="/coldbox/system/includes/panels/CacheCharting.cfm">
+		
 		<!--- Content Report --->
 		<br />
 		<h3>Cache Content Report (Time: #timeformat(now(),"hh:mm:ss tt")#)</h3>
@@ -176,10 +159,10 @@
 		  <tr >
 		  	<th >Object</th>
 			<th align="center" width="10%" >Hits</th>
-			<th align="center" width="10%" >Timeout (Min)</th>
+			<th align="center" width="10%" >Timeout <br/>(Min)</th>
 			<th align="center" width="10%" >Created</th>
 			<th align="center" width="10%" >Last Accessed</th>
-			<th align="center" width="10%" >Expires On</th>
+			<th align="center" width="10%" >Expires</th>
 			<th align="center" width="10%" >Status</th>
 			<th align="center" width="5%" >CMDS</th>
 		  </tr>
@@ -195,10 +178,14 @@
 				<td align="center" >#cacheMetadata[key].Timeout#</td>
 				<td align="center" >#dateformat(cacheMetadata[key].Created,"mmm-dd")# <Br/> #timeformat(cacheMetadata[key].Created,"hh:mm:ss tt")#</td>
 				<td align="center">#dateformat(cacheMetadata[key].lastaccesed,"mmm-dd")# <br/> #timeformat(cacheMetadata[key].lastaccesed,"hh:mm:ss tt")#</td>
-			 	<td align="center" class="fw_redText" >
-			 		<cfif cacheMetadata[key].timeout eq 0>---<cfelse>#dateFormat(expDate,"mmm-dd")# <br /> #timeformat(expDate,"hh:mm:ss tt")#</cfif>
+			 	<td align="center" class="fw_redText" ><cfif cacheMetadata[key].timeout eq 0>---<cfelse>#dateFormat(expDate,"mmm-dd")# <br /> #timeformat(expDate,"hh:mm:ss tt")#</cfif></td>
+			 	<td align="center">
+					<cfif cacheMetadata[key].isExpired>
+						<span class="fw_redText">Expired</span>
+					<cfelse>
+						<span class="fw_blueText">Alive</span>
+					</cfif>
 				</td>
-				<td align="center" class="fw_redText" ><cfif cacheMetadata[key].isExpired>EXPIRED<cfelse>ACTIVE</cfif></td>
 			 	<td align="center">
 					<input type="button" value="DEL" 
 						   name="cboxbutton_removeentry"

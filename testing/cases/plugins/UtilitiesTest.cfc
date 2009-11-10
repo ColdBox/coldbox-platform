@@ -50,8 +50,6 @@ Description :
 			
 			plugin.sleeper(500);
 			
-			plugin.getOSFileSeparator();
-			
 			plugin.getOSName();
 			
 			plugin.getInetHost();
