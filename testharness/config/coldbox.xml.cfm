@@ -78,6 +78,8 @@
 		</Appender>
 		<!-- Root Logger -->
 		<Root levelMin="FATAL" levelMax="DEBUG" appenders="*" />
+		<!-- ColdBox -->
+		<Category name="coldbox.system" levelMax="DEBUG" appenders="*" />
 	</LogBox>
 	
 	<!-- Custom Conventions : You can override the framework wide conventions -->
@@ -177,9 +179,6 @@
 	        <Property name="debugMode">true</Property>
 	        <Property name="preEventSecurity">false</Property>
 		</Interceptor>	
-		
-		<!-- Developer's ColdBox Sidebar -->
-		<Interceptor class="coldbox.system.interceptors.ColdboxSideBar" />
 		
 		<Interceptor class="${AppMapping}.interceptors.executionTracer" />
 	</Interceptors>

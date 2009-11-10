@@ -889,7 +889,7 @@ Loads a coldbox xml configuration file
 	</cffunction>	
 
 	<!--- parsedebuggerSettings --->
-	<cffunction name="parsedebuggerSettings" output="false" access="public" returntype="void" hint="Parse Debugger Settings">
+	<cffunction name="parseDebuggerSettings" output="false" access="public" returntype="void" hint="Parse Debugger Settings">
 		<cfargument name="xml" 		type="any" required="true" hint="The xml object"/>
 		<cfargument name="config" 	type="struct" required="true" hint="The config struct"/>
 		<cfargument name="isOverride" type="boolean" required="false" default="false" hint="Flag to denote if overriding or first time runner."/>
@@ -898,7 +898,7 @@ Loads a coldbox xml configuration file
 			var debuggerSettingNodes = "";
 			var fwSettings = getColdBoxSettings();
 			
-			debuggerSettingNodes = XMLSearch(arguments.xml,"//debuggerSettings");
+			debuggerSettingNodes = XMLSearch(arguments.xml,"//DebuggerSettings");
 			
 			if (NOT arguments.isOverride){
 				configStruct.debuggerSettings = structnew();

@@ -9,10 +9,10 @@
 		config.appender(name="MyCF",class="coldbox.system.logging.appenders.CFAppender");
 		
 		//create root
-		config.root(levelMin=-1,appenders="CFConsole,mycf");
+		config.root(levelMin=-1,appenders="*");
 		
 		//Create some nice categories
-		config.category(name="coldbox.testing.VariousTests",levelMin=3,appenders="CFConsole");
+		config.category(name="coldbox.testing.VariousTests",levelMin=3,appenders="*");
 		config.category(name="MyCat",levelMin=3,appenders="cfconsole");
 		
 		//nice cats with root logger appenders
@@ -25,15 +25,15 @@
 	function test1(){
 		// good cat
 		logger = logBox.getLogger("Mycat");
-		logger.trace("MESSAGE VALID");
+		logger.debug("MESSAGE VALID");
 		
 		// root logger
 		logger = logBox.getRootLogger();
-		logger.trace("nada");
+		logger.debug("nada");
 		
 		// not defined cat
 		logger = logBox.getLogger("NONE TEST");
-		logger.trace("nada");
+		logger.debug("nada");
 			
 				
 	}

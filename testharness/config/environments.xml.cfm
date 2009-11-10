@@ -3,7 +3,7 @@
 <environmentcontrol>
 	
 	<!-- give an environment a name and a comma delimmited list of url snippets to match -->
-	<environment name="development" urls="localhost,dev,jfetmac">
+	<environment name="development" urls="localhost,cf8cboxdev.jfetmac,cf9cboxdev.jfetmac,railocboxdev.jfetmac">
 		<!--ColdBoxSpecific Settings -->
 		<Setting name="HandlerCaching"			value="false" />
 		<Setting name="HandlersIndexAutoReload" value="true" />
@@ -18,9 +18,15 @@
 		<!--
 			AppSpecific Settings: <Setting name="MySetting" value="Hello" />
 		-->		
-
+		
 		<Setting name="TierControlFired" value="TRUE" />
 		<Setting name="MyBaseURL" value="cf8.jfetmac" />
+		
+		<!--  Dev Interceptors -->
+		<Interceptors>
+			<!-- Developer's ColdBox Sidebar -->
+			<Interceptor class="coldbox.system.interceptors.ColdboxSideBar" />
+		</Interceptors>
 	</environment>
 	
 	<!-- give an environment a name and a comma delimmited list of url snippets to match -->
