@@ -97,7 +97,7 @@
 		<maxPersistentRequestProfilers>10</maxPersistentRequestProfilers>
 		<maxRCPanelQueryRows>50</maxRCPanelQueryRows>
 		<!--Panels-->
-		<TracerPanel 	show="true" expanded="false" />
+		<TracerPanel 	show="true" expanded="true" />
 		<InfoPanel 		show="true" expanded="false" />
 		<CachePanel 	show="true" expanded="false" />
 		<RCPanel		show="false" expanded="false" />

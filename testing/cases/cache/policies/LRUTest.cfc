@@ -15,7 +15,8 @@ Description :
 		<cfscript>
 		super.setup();
 		
-		lru = createObject("component","coldbox.system.cache.policies.LRU").init(mockCM);		
+		lru = getMockBox().createMock("coldbox.system.cache.policies.LRU").init(mockCM);	
+		lru.$("$log");	
 		</cfscript>
 	</cffunction>
 	
@@ -25,15 +26,26 @@ Description :
 			pool['obj2'] = structnew();
 			pool['obj3'] = structnew();
 			
-			pool['obj1'].LastAccessTimeout = now();
+			pool['obj1'].LastAccesed = now();
 			pool['obj1'].Timeout = 5;
-			pool['obj2'].LastAccessTimeout = dateAdd("n",-7,now());
-			pool['obj2'].Timeout = 10;
-			pool['obj3'].LastAccessTimeout = dateAdd("n",-6,now());
-			pool['obj3'].Timeout = 10;
+			pool['obj1'].isExpired = false;
 			
-			/* Mock Pool */
-			mockPool.$('getpool_metadata',pool);
+			pool['obj2'].LastAccesed = dateAdd("n",-7,now());
+			pool['obj2'].Timeout = 10;
+			pool['obj2'].isExpired = false;
+			
+			pool['obj3'].LastAccesed = dateAdd("n",-6,now());
+			pool['obj3'].Timeout = 10;
+			pool['obj3'].isExpired = false;
+			
+			mockCM.$('getPoolMetadata',pool);
+			mockCM.$('getCachedObjectMetadata').$args("obj1").$results(pool.obj1);
+			mockCM.$('getCachedObjectMetadata').$args("obj2").$results(pool.obj2);
+			mockCM.$('getCachedObjectMetadata').$args("obj3").$results(pool.obj3);
+			
+			mockConfig.$("getEvictCount",1);
+			
+			debug(mockcm.getPoolMetadata());
 			
 			lru.execute();	
 			

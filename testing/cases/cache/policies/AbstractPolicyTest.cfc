@@ -14,9 +14,9 @@ Description :
 	<cffunction name="setUp" returntype="void" access="public" output="false">
 		<cfscript>
 		
-		mockCM = getMockBox().createMock(className='coldbox.system.cache.cacheManager',clearMethods=true,callLogging=true);
-		mockPool = getMockBox().createMock(className='coldbox.system.cache.objectPool',clearMethods=true);
-		mockStats = getMockBox().createMock(className='coldbox.system.cache.util.cacheStats',clearMethods=true);
+		mockCM = getMockBox().createEmptyMock(className='coldbox.system.cache.CacheManager');
+		mockPool = getMockBox().createEmptyMock(className='coldbox.system.cache.ObjectPool');
+		mockStats = getMockBox().createEmptyMock(className='coldbox.system.cache.util.CacheStats');
 		mockConfig = getMockBox().createEmptyMock(className='coldbox.system.cache.config.CacheConfig');
 		
 		/* Mock */

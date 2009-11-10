@@ -24,8 +24,8 @@ Description :
 			setProfilers(arrayNew(1));
 			// Create persistent tracers
 			setTracers(arrayNew(1));
-			// Set a maximum tracers possible 50 is enough
-			instance.maxTracers = 50;
+			// Set a maximum tracers possible
+			instance.maxTracers = 75;
 			
 			return this;
 		</cfscript>

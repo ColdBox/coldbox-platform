@@ -110,7 +110,7 @@ any kind of cleanup code or anything you like:
 		<cfargument name="interceptData" required="true" type="struct" hint="interceptData of intercepted info.">
 		<!--- ************************************************************* --->
 		<cfscript>
-			getPlugin("Logger").logEntry("information","Deploy tag registered successfully");
+			log.info("Deploy tag registered successfully.");
 		</cfscript>	
 	</cffunction>
 
@@ -144,12 +144,12 @@ any kind of cleanup code or anything you like:
 							getController().setAspectsInitiated(false);
 							
 							// Log Reloading
-							getPlugin("Logger").logEntry("information","Deploy tag reloaded successfully at #now()#");
+							log.info("Deploy tag reloaded successfully.");
 							
 						}
 						catch(Any e){
 							//Log Error
-							getPlugin("Logger").logError("error","Error in deploy tag: #e.message# #e.detail#");
+							log.error("Error in deploy tag: #e.message# #e.detail#",e.stackTrace);
 						}
 					}
 				</cfscript>

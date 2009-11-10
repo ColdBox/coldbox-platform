@@ -86,7 +86,7 @@ Description: This is the framework's simple bean factory.
 				//Check absolute location as not found inside our app
 				configFilePath = instance.ModelsDefinitionFile;
 				if( NOT fileExists(expandPath(configFilePath)) ){
-					getPlugin("Logger").info("No bean factory configuration file found, continuing operation.");
+					log.info("No bean factory model mappings configuration file found, continuing operation.");
 					return this;
 				}	
 			}
@@ -597,7 +597,7 @@ Description: This is the framework's simple bean factory.
 					// Was dependency Found?
 					if( isSimpleValue(thisDependency) and thisDependency eq instance.NOT_FOUND ){
 						if( arguments.debugMode ){
-							getPlugin("Logger").warn("Dependency: #targetDIEntry.dependencies[x].toString()# Not Found");
+							log.debug("Dependency: #targetDIEntry.dependencies[x].toString()# Not Found when wiring #getMetadata(arguments.target).name#");
 						}
 						continue;
 					}
@@ -610,7 +610,7 @@ Description: This is the framework's simple bean factory.
 					
 					// Debug Mode Check
 					if( arguments.debugMode ){
-						getPlugin("Logger").info("Dependency: #targetDIEntry.dependencies[x].toString()# --> injected into #getMetadata(targetObject).name#.");
+						log.debug("Dependency: #targetDIEntry.dependencies[x].toString()# --> injected into #getMetadata(targetObject).name#.");
 					}
 					
 				}//end for loop of dependencies.
@@ -660,7 +660,7 @@ Description: This is the framework's simple bean factory.
 				thisDependency = getDSLDependency(definition=definition,debugMode=arguments.debugMode);
 				if( isSimpleValue(thisDependency) and thisDependency eq instance.NOT_FOUND ){
 					if( arguments.debugMode ){
-						getPlugin("Logger").debug("BeanFactory.getConstructorArguments() - Model :#arguments.mode#. Dependency: #definition.toString()# not found.");
+						log.debug("Constructor Dependency: #definition.toString()# not found when wiring model: #getMetaData(arguments.model).name#, skipping");
 					}
 				}
 				else{
@@ -758,7 +758,7 @@ Description: This is the framework's simple bean factory.
 				}
 			}
 			else if (arguments.debugMode){
-				getPlugin("Logger").warn("BeanFactory.getModelDSL - Model :#args.name# was not found. Definition=#thisDependency.toString()#");
+				log.debug("getModelDSL() cannot find model object #args.name# using definition #arguments.definition.toString()#");
 			}
 			
 			return locatedDependency;
@@ -889,7 +889,7 @@ Description: This is the framework's simple bean factory.
 				locatedDependency = oIOC.getBean(thisLocationKey);
 			}
 			else{
-				getPlugin("Logger").warn("BeanFactory.getIOCDependency - Bean :#thisLocationKey# was not found. Definition=#thisDependency.toString()#");
+				log.debug("getIOCDependency() cannot find IOC Bean: #thisLocationKey# using definition: #arguments.definition.toString()#");
 			}
 					
 			return locatedDependency;
@@ -923,7 +923,7 @@ Description: This is the framework's simple bean factory.
 				locatedDependency = oOCM.get(thisLocationKey);
 			}	
 			else if( arguments.debugMode ){
-				getPlugin("Logger").warn("BeanFactory.getOCMDependency - Bean :#thisLocationKey# not found in the Cache. Definition=#thisDependency.toString()#");
+				log.debug("getOCMDependency() cannot find cache Key: #thisLocationKey# using definition: #arguments.definition.toString()#");
 			}
 			
 			return locatedDependency;
