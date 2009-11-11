@@ -236,17 +236,17 @@ Description :
 					<!--- Execute postRender Interception --->
 					<cfset cbController.getInterceptorService().processState("postRender")>
 				</cfif>
-				
-				<!--- If Found in config, run onRequestEnd Handler --->
-				<cfif cbController.getSetting("RequestEndHandler") neq "">
-					<cfset cbController.runEvent(cbController.getSetting("RequestEndHandler"),true)>
-				</cfif>
-				
-				<!--- Execute postProcess Interception --->
-				<cfset cbController.getInterceptorService().processState("postProcess")>
 			
 			<!--- End else if not cached event --->
 			</cfif>
+			
+			<!--- If Found in config, run onRequestEnd Handler --->
+			<cfif cbController.getSetting("RequestEndHandler") neq "">
+				<cfset cbController.runEvent(cbController.getSetting("RequestEndHandler"),true)>
+			</cfif>
+			
+			<!--- Execute postProcess Interception --->
+			<cfset cbController.getInterceptorService().processState("postProcess")>
 			
 			<!--- Trap Application Errors --->
 			<cfcatch type="any">
