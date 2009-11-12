@@ -9,8 +9,7 @@ Date        :	August 21, 2006
 Description :
 	This is a query helper plugin.
 ----------------------------------------------------------------------->
-<cfcomponent name="QueryHelper"
-			 hint="A query helper plugin."
+<cfcomponent hint="A query helper plugin."
 			 extends="coldbox.system.Plugin"
 			 output="false"
 			 cache="true">
@@ -24,7 +23,7 @@ Description :
 		<cfscript>
 			super.Init(arguments.controller);
 			
-			/* Plugin Properties */
+			// Plugin Properties
 			setpluginName("Query Helper");
 			setpluginVersion("1.5");
 			setpluginDescription("This is a query helper plugin");
@@ -74,10 +73,34 @@ Description :
 		</cfif>
 		
 		<cfquery name="qryNew" dbtype="query">
+			SELECT *
+				FROM arguments.qry
+				ORDER BY #arguments.sortBy# #arguments.sortOrder#
+		</cfquery>
+		
+		<cfreturn qryNew>
+	</cffunction>
+	
+	<!--- Sort a query --->
+	<cffunction name="sortQueryNoCase" access="public" returntype="query" hint="Sorts a query by the given field non-case" output="false">
+		<!--- ************************************************************* --->
+		<cfargument name="qry" 			type="query" 	required="yes" hint="Query to sort">
+		<cfargument name="sortBy" 		type="string" 	required="yes" hint="Sort by column">
+		<cfargument name="sortOrder" 	type="string" 	required="no" default="ASC" hint="ASC/DESC">
+		<!--- ************************************************************* --->
+		<cfset var qryNew = QueryNew("")>
+		
+		<!--- Validate sortOrder --->
+		<cfif not reFindnocase("(asc|desc)", arguments.sortOrder)>
+			<cfthrow type="QueryHelper.InvalidSortOrderException" message="The sortOrder you sent in: #arguments.sortOrder# is not valid. Valid sort orders are ASC|DESC">
+		</cfif>
+		
+		<cfquery name="qryNew" dbtype="query">
 			SELECT *, UPPER(#trim(arguments.sortBy)#) as sortBy
 				FROM arguments.qry
 				ORDER BY sortBy #arguments.sortOrder#
 		</cfquery>
+		
 		<cfreturn qryNew>
 	</cffunction>
 

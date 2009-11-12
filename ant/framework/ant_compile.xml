@@ -20,7 +20,7 @@
     	<property name="dist"							location="dist" />
         
         <!--CFcompile Properties -->
-        <property name="webroot"						location="${dir.userlocation}/sites/MyDevelopment/" />
+        <property name="webroot"						location="${dir.userlocation}/sites/cboxdev/core" />
         <property name="cfcompile.path" 				location="/Applications/JRun4/servers/cfusion/cfusion-ear/cfusion-war/WEB-INF/cfusion/bin"/>
         <property name="cfcompile.tmpClasses"  			location="/Applications/JRun4/servers/cfusion/cfusion-ear/cfusion-war/WEB-INF/cfclasses/" />
         <property name="cfuser"		    				value="cfusion" />
