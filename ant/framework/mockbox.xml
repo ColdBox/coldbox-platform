@@ -14,6 +14,10 @@
 	<property name="ftp.server"  		value="ftp.coldboxframework.com" />
 	<property name="ftp.remotedir" 		value="/httpdocs/builds" />
 	
+	<!-- Build Labels -->
+	<tstamp prefix="start"/>
+	<property name="build.label" 		value="mockbox-buildID-${start.DSTAMP}${start.TSTAMP}"/>
+	
 	<!-- Init -->
 	<target name="init" description="Init">
 		<!-- Version -->
@@ -33,7 +37,11 @@
 	
 	<!--build-->
 	<target name="build" description="Build a new logbox distribution" depends="init">
-      	<!-- Copy src -->	
+      	
+		<!-- Copy build ID -->
+		<concat destfile="${dir.build}/${build.label}">Built on ${start.TODAY}</concat>
+		
+		<!-- Copy src -->	
       	<copy todir="${dir.build}/system/testing">
         	<fileset dir="system/testing" />
         </copy>

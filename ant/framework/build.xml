@@ -17,6 +17,10 @@
 	<property name="dir.samples"		value="${dir.userlocation}/sites/cboxdev/samples/coldbox/samples"/>
 	<property name="dir.wallpapers"		value="${dir.userlocation}/Documents/MyDocs/My Programs/OrtusSolutions/ColdBox/workbench/wallpapers/" />
 	
+	<!-- Build Labels -->
+	<tstamp prefix="start"/>
+	<property name="build.label" 		value="coldbox-buildID-${start.DSTAMP}${start.TSTAMP}"/>
+	
 	<!--External Ant Tasks-->
 	<property name="ant.compilechecks"  value="ant/framework/ant_compile.xml" />
 	<property name="ant.dashboard"      value="${dir.dashboard}/build.xml" />
@@ -58,6 +62,9 @@
 	<!--BUild-->
 	<target name="build" description="Build a new coldbox distribution" depends="compilechecks">
       	
+		<!-- Copy build ID -->
+		<concat destfile="${dir.build}/${build.label}">Built on ${start.TODAY}</concat>
+		
 		<!-- Copy src -->	
       	<copy todir="${dir.build}/system">
         	<fileset dir="system">
