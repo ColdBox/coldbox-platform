@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+This is the Default ColdBox LogBox Configuration for immediate operation 
+of ColdBox once it loads.  Once the configuration file is read then the
+LogBox instance is reconfigured with the user settings, if set.
+
+It is configured to log up to INFO via ColdboxTracerAppender
+-->
+<LogBox>
+
+	<!-- Default Appender Definitions -->
+	<Appender name="ColdboxTracer"  class="coldbox.system.logging.appenders.ColdboxTracerAppender" />
+	
+	<!-- Root Logger: Will log anything by default -->
+	<Root levelMin="FATAL" levelMax="INFO" appenders="*" />
+	
+</LogBox>
