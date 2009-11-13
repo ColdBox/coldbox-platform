@@ -132,6 +132,7 @@ Description :
 		<cfset var eventCacheEntry = 0>
 		<cfset var interceptorData = structnew()>
 		<cfset var renderData = structnew()>
+		<cfset var refResults = structnew()>
 		
 		<!--- Start Application Requests --->
 		<cflock type="readonly" name="#getAppHash()#" timeout="#getLockTimeout()#" throwontimeout="true">
@@ -177,14 +178,14 @@ Description :
 			</cfif>
 			
 			<!--- Before Any Execution, do we have cached content to deliver --->
-			<cfif Event.isEventCacheable() and cbController.getColdboxOCM().lookup(Event.getEventCacheableEntry())>
-				<cfset renderedContent = cbController.getColdboxOCM().get(Event.getEventCacheableEntry())>
+			<cfif event.isEventCacheable() and cbController.getColdboxOCM().lookup(event.getEventCacheableEntry())>
+				<cfset renderedContent = cbController.getColdboxOCM().get(event.getEventCacheableEntry())>
 				<cfoutput>#renderedContent#</cfoutput>
 			<cfelse>
 			
 				<!--- Run Default/Set Event not executing an event --->
 				<cfif NOT event.isNoExecution()>
-					<cfset cbController.runEvent(default=true)>
+					<cfset refResults.results = cbController.runEvent(default=true)>
 				</cfif>
 				
 				<!--- No Render Test --->
@@ -197,6 +198,9 @@ Description :
 					<cfset renderData = event.getRenderData()>
 					<cfif isStruct(renderData) and not structisEmpty(renderData)>
 						<cfset renderedContent = cbController.getPlugin("Utilities").marshallData(argumentCollection=renderData)>
+					<!--- Check for Event Handler return results --->
+					<cfelseif structKeyExists(refResults,"results")>
+						<cfset renderedContent = refResults.results>
 					<cfelse>
 						<!--- Render Layout/View pair via set variable to eliminate whitespace--->
 						<cfset renderedContent = cbController.getPlugin("Renderer").renderLayout()>
