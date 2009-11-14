@@ -106,7 +106,7 @@ Description :
 				interceptData.proxyResults = refLocal;
 				
 				// preProxyResults interception call
-				announceInterception("preProxyResults",interceptData);
+				cbController.getInterceptorService().processState("preProxyResults",interceptData);
 				
 				// Trace the results for debuggers
 				tracer('Process: Outgoing Results',refLocal.results);
@@ -114,10 +114,9 @@ Description :
 				// Return The results
 				return refLocal.results;
 			}
-			else{
-				// Trace the results
-				tracer('No outgoing results found in the local scope.');
-			}	
+			
+			// Trace that no results where found, returns void or null
+			tracer('No outgoing results found in the local scope.');	
 		</cfscript>		
 	</cffunction>
 	
