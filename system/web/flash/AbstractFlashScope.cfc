@@ -67,8 +67,15 @@ method which will most likely be called by the saveFlash() method in order to pe
 			// Inflate only kept flash variables, other ones are marked for discard.
 			for(key in flash){
 				if( flash[key].keep ){
-					// Save into RC
-					event.setValue(key,flash[key].content);
+					// Inflate into RC?
+					if( flash[key].inflateToRC ){
+						event.setValue(name=key,value=flash[key].content);
+					}
+					// Inflate into PRC?
+					if( flash[key].inflateToPRC ){
+						event.setValue(name=key,value=flash[key].content,private=true);
+					}
+					
 					// Save and mark for cleaning
 					put(name=key,value=flash[key].content,keep=false);
 				}
@@ -115,10 +122,12 @@ method which will most likely be called by the saveFlash() method in order to pe
 	
 	<!--- put --->
     <cffunction name="put" output="false" access="public" returntype="void" hint="Put an object in temp flash scope">
-    	<cfargument name="name"  type="string" required="true" hint="The name of the value"/>
-		<cfargument name="value" type="any" required="true" default="" hint="The value to store"/>
-		<cfargument name="saveNow" type="boolean" required="false" default="false" hint="Whether to send the contents for saving to flash ram or not. Default is to wait for a relocation"/>
-		<cfargument name="keep" type="boolean" required="false" default="true" hint="Whether to mark the entry to be kept after saving to the flash storage."/>
+    	<cfargument name="name"  		type="string" 	required="true"  hint="The name of the value"/>
+		<cfargument name="value" 		type="any" 		required="true"  hint="The value to store"/>
+		<cfargument name="saveNow" 		type="boolean" 	required="false" default="false" hint="Whether to send the contents for saving to flash ram or not. Default is to wait for a relocation"/>
+		<cfargument name="keep" 		type="boolean" 	required="false" default="true" hint="Whether to mark the entry to be kept after saving to the flash storage."/>
+		<cfargument name="inflateToRC"  type="boolean"  required="false" default="true" hint="Whether this flash variable is inflated to the Request Collection or not"/>
+		<cfargument name="inflateToPRC" type="boolean"  required="false" default="false" hint="Whether this flash variable is inflated to the Private Request Collection or not"/>
 		<cfscript>
 			var scope = getScope();
 			var entry = structnew();
@@ -126,6 +135,8 @@ method which will most likely be called by the saveFlash() method in order to pe
 			// Create Flash Entry
 			entry.content = arguments.value;
 			entry.keep = arguments.keep;
+			entry.inflateToRC = arguments.inflateToRC;
+			entry.inflateToPRC = arguments.inflateToPRC;
 			
 			// Save entry in temp storage
 			scope[arguments.name] = entry;
@@ -137,15 +148,17 @@ method which will most likely be called by the saveFlash() method in order to pe
 	
 	<!--- putAll --->
     <cffunction name="putAll" output="false" access="public" returntype="void" hint="Put a map of name-value pairs into the flash scope">
-    	<cfargument name="map" type="struct" required="true" default="" hint="The map of "/>
-		<cfargument name="saveNow" type="boolean" required="false" default="false" hint="Whether to send the contents for saving to flash ram or not. Default is to wait for a relocation"/>
-		<cfargument name="keep" type="boolean" required="false" default="true" hint="Whether to mark the entry to be kept after saving to the flash storage."/>
+    	<cfargument name="map" 		type="struct"  required="true" hint="The map of "/>
+		<cfargument name="saveNow"  type="boolean" required="false" default="false" hint="Whether to send the contents for saving to flash ram or not. Default is to wait for a relocation"/>
+		<cfargument name="keep" 	type="boolean" required="false" default="true" hint="Whether to mark the entry to be kept after saving to the flash storage."/>
+		<cfargument name="inflateToRC"  type="boolean"  required="false" default="true" hint="Whether this flash variable is inflated to the Request Collection or not"/>
+		<cfargument name="inflateToPRC" type="boolean"  required="false" default="false" hint="Whether this flash variable is inflated to the Private Request Collection or not"/>
 		<cfscript>
 			var key = "";
 			
 			// Save all keys in map
 			for( key in arguments.map ){
-				put(key,arguments.map[key],arguments.keep);
+				put(key,arguments.map[key],arguments.keep,arguments.inflateToRC,inflateToPRC);
 			}
 			
 			// Save to Storage
