@@ -54,7 +54,7 @@ Modification History:
 		}
 		
 		// Load application configuration file
-		createAppLoader().loadConfiguration();
+		createAppLoader().loadConfiguration(arguments.overrideAppMapping);
 		
 		// Check if application has loaded logbox settings so we can reconfigure, else using defaults.
 		if( NOT structIsEmpty( controller.getSetting("LogBoxConfig") ) ){
