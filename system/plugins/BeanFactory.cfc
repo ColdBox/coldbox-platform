@@ -979,7 +979,7 @@ Description: This is the framework's simple bean factory.
 					// Check Inject annotation, if it exists, add it.
 					if( structKeyExists(md.properties[x],"inject") ){
 						// Setup the type if it has a value.
-						if( len(md.properties[x].inject) ){
+						if( len(md.properties[x].inject) and md.properties[x].inject neq "true" ){
 							entry.type 	= md.properties[x].inject;
 						}
 						// Add to found list
