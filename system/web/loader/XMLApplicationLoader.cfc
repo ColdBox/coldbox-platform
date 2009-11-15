@@ -989,7 +989,7 @@ Loads a coldbox xml configuration file
 				}
 				
 				// Custom Interception Points
-				customInterceptionPoints = XMLSearch(arguments.xml,"//Interceptors/customInterceptionPoints");
+				customInterceptionPoints = XMLSearch(arguments.xml,"//Interceptors/CustomInterceptionPoints");
 				if( arraylen(customInterceptionPoints) ){
 					configStruct.interceptorConfig.customInterceptionPoints = oUtil.placeHolderReplacer(Trim(customInterceptionPoints[1].XMLText),configStruct);
 				}
