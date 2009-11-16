@@ -15,8 +15,7 @@ and the user's credentials on roles and/or permissions.
 	
 For the latest usage, please visit the wiki.
 ----------------------------------------------------------------------->
-<cfcomponent name="Security"
-			 hint="This is a security interceptor"
+<cfcomponent hint="This is a security interceptor"
 			 output="false"
 			 extends="coldbox.system.Interceptor">
 
@@ -27,9 +26,6 @@ For the latest usage, please visit the wiki.
 			// Start processing properties
 			if( not propertyExists('useRegex') or not isBoolean(getproperty('useRegex')) ){
 				setProperty('useRegex',true);
-			}
-			if( not propertyExists('debugMode') or not isBoolean(getproperty('debugMode')) ){
-				setProperty('debugMode',false);
 			}
 			// Rule Source Checks
 			if( not propertyExists('rulesSource') ){
@@ -50,7 +46,7 @@ For the latest usage, please visit the wiki.
 			}
 						
 			// Now Call sourcesCheck
-			RulesSourceChecks();
+			rulesSourceChecks();
 			
 			// Create the internal properties now
 			setProperty('rules',Arraynew(1));
@@ -69,7 +65,7 @@ For the latest usage, please visit the wiki.
 		<cfscript>
 			var oValidator = "";
 			
-			/* Load Rules */
+			// Load Rules
 			switch( getProperty('rulesSource') ){
 				case "xml" : { 
 					loadXMLRules(); 
@@ -89,36 +85,30 @@ For the latest usage, please visit the wiki.
 				}
 			}//end of switch
 			
-			/* See if using validator */
+			// See if using validator 
 			if( propertyExists('validator') ){
-				/* Try to create Validator */
 				try{
-					/* Create it */
 					oValidator = CreateObject("component",getProperty('validator'));
-					/* Verify the init */
 					if( structKeyExists(oValidator, "init") ){
 						oValidator = oValidator.init(controller);
 					}
-					/* Cache It */
 					setValidator(oValidator);
 				}
 				catch(Any e){
-					$throw("Error creating validator",e.message & e.detail, "interceptors.Security.validatorCreationException");
+					$throw("Error creating validator",e.message & e.detail, "Security.validatorCreationException");
 				}
 			}
-			/* See if using validator from ioc */
+			// See if using validator from ioc
 			else if( propertyExists('validatorIOC') ){
-				/* Try to create Validator */
 				try{
 					setValidator( getPlugin("IOC").getBean(getProperty('validatorIOC')) );
 				}
 				catch(Any e){
-					$throw("Error creating validatorIOC",e.message & e.detail, "interceptors.Security.validatorCreationException");
+					$throw("Error creating validatorIOC",e.message & e.detail, "Security.validatorCreationException");
 				}
 			}
-			/* See if using validator from model */
+			// See if using validator from Model Integration
 			else if( propertyExists('validatorModel') ){
-				/* Try to create Validator */
 				try{
 					setValidator( getModel(getProperty('validatorModel') ) );
 				}
@@ -136,14 +126,13 @@ For the latest usage, please visit the wiki.
 		<cfargument name="interceptData" required="true" type="struct" hint="interceptData of intercepted info.">
 		<!--- ************************************************************* --->
 		<cfscript>
-			/* Load OCM rules */
+			// Load OCM rules
 			if( getProperty('rulesSource') eq "ocm" and not getProperty('rulesLoaded') ){
 				loadOCMRules();
 			}
 			
-			/* Execute Rule processing */
+			// Execute Rule processing 
 			processRules(arguments.event,arguments.interceptData,arguments.event.getCurrentEvent());
-			
 		</cfscript>
 	</cffunction>
 	
@@ -173,52 +162,47 @@ For the latest usage, please visit the wiki.
 			var rulesLen = arrayLen(rules);
 			var rc = event.getCollection();
 			
-			/* Loop through Rules */
+			// Loop through Rules
 			for(x=1; x lte rulesLen; x=x+1){
-				/* is current event in this whitelist pattern? then continue to next rule */
+				// is current event in this whitelist pattern? then continue to next rule
 				if( isEventInPattern(currentEvent,rules[x].whitelist) ){
-					if( getProperty('debugMode') ){
-						getPlugin("Logger").logEntry("information","#currentEvent# found in whitelist: #rules[x].whitelist#");
-					}
+					log.debug("#currentEvent# found in whitelist: #rules[x].whitelist#");
 					continue;
 				}
-				/* is currentEvent in the secure list and is user in role */
+				
+				// is currentEvent in the secure list and is user in role
 				if( isEventInPattern(currentEvent,rules[x].securelist) ){
-					/* Verify if user is logged in and in a secure state */	
+					// Verify if user is logged in and in a secure state	
 					if( _isUserInValidState(rules[x]) eq false ){
-						/* Log if Necessary */
-						if( getProperty('debugMode') ){
-							getPlugin("Logger").logEntry("warning","User not in appropriate roles #rules[x].roles# for event=#currentEvent#");
-						}
-						/* Redirect */
+						// Log if Necessary
+						log.debug("User did not validate security for secured event=#currentEvent#. Rule: #rules[x].toString()#");
+						
+						//Redirect
 						if( arguments.event.isSES() ){
-							/* Save the secured URL */
+							// Save the secured URL
 							rc._securedURL = "#cgi.script_name##cgi.path_info#";
 						}
 						else{ 
-							/* Save the secured URL */
+							// Save the secured URL */
 							rc._securedURL = "#cgi.script_name#";							
 						}
-						/* Check query string for secure URL */
+						
+						// Check query string for secure URL
 						if( cgi.query_string neq ""){
 							rc._securedURL = rc._securedURL & "?#cgi.query_string#";
 						}
-						/* Route to safe event */
+						
+						// Route to safe event
 						setNextEvent(event=rules[x].redirect,persist="_securedURL");
-						/* Break Just in Case */
 						break;
 					}//end user in roles
 					else{
-						if( getProperty('debugMode') ){
-							getPlugin("Logger").logEntry("information","Secure event=#currentEvent# matched and user is in roles=#rules[x].roles#. Proceeding");
-						}
+						log.debug("Secure event=#currentEvent# matched and user validated for rule: #rules[x].toString()#.");
 						break;
 					}
 				}//end if current event did not match a secure event.
 				else{
-					if( getProperty('debugMode') ){
-						getPlugin("Logger").logEntry("information","#currentEvent# Did not match this rule: #rules[x].toString()#");
-					}
+					log.debug("#currentEvent# Did not match this rule: #rules[x].toString()#");
 				}							
 			}//end of rules checks
 		</cfscript>
@@ -228,12 +212,11 @@ For the latest usage, please visit the wiki.
 	<cffunction name="registerValidator" access="public" returntype="void" hint="Register a validator object with this interceptor" output="false" >
 		<cfargument name="validatorObject" required="true" type="any" hint="The validator object to register">
 		<cfscript>
-			/* Test if it has the correct method on it */
 			if( structKeyExists(arguments.validatorObject,"userValidator") ){
 				setValidator(arguments.validatorObject);
 			}
 			else{
-				$throw(message="Validator object does not have a 'userValidator' method ",type="interceptors.Security.validatorException");
+				$throw(message="Validator object does not have a 'userValidator' method ",type="Security.validatorException");
 			}
 		</cfscript>
 	</cffunction>	
@@ -251,15 +234,15 @@ For the latest usage, please visit the wiki.
 		<cfif isValidatorUsed()>
 			<!--- Validate via Validator --->
 			<cfreturn getValidator().userValidator(arguments.rule,getPlugin("MessageBox"),controller)>
-		<cfelse>
-			<!--- Loop Over Roles --->
-			<cfloop list="#arguments.rule.roles#" index="thisRole">
-				<cfif isUserInRole(thisRole)>
-					<cfreturn true>
-				</cfif>
-			</cfloop>	
-			<cfreturn false>
-		</cfif>	
+		</cfif>
+		
+		<!--- Loop Over CF Roles --->
+		<cfloop list="#arguments.rule.roles#" index="thisRole">
+			<cfif isUserInRole(thisRole)>
+				<cfreturn true>
+			</cfif>
+		</cfloop>	
+		<cfreturn false>
 	</cffunction>
 	
 	<!--- isEventInPattern --->
@@ -276,7 +259,7 @@ For the latest usage, please visit the wiki.
 				<cfif reFindNocase(trim(pattern),arguments.currentEvent)>
 					<cfreturn true>
 				</cfif>
-			<cfelseif FindNocase(trim(pattern),arguments.currentEvent)>
+			<cfelseif findNocase(trim(pattern),arguments.currentEvent)>
 				<cfreturn true>
 			</cfif>	
 		</cfloop>	
@@ -286,7 +269,7 @@ For the latest usage, please visit the wiki.
 	<!--- Load XML Rules --->
 	<cffunction name="loadXMLRules" access="private" returntype="void" output="false" hint="Load rules from XML file">
 		<cfscript>
-			/* Validate the XML File */
+			// Validate the XML File
 			var rulesFile = "";
 			var xmlRules = "";
 			var x=1;
@@ -294,28 +277,28 @@ For the latest usage, please visit the wiki.
 			var node = "";
 			var thisElement = "";
 			
-			/* Try to locate the file path */
+			// Try to locate the file path
 			rulesFile = locateFilePath(getProperty('rulesFile'));
-			/* Validate Location */
+			// Validate Location
 			if( len(rulesFile) eq 0 ){
-				$throw('Security Rules File could not be located: #getProperty('rulesFile')#. Please check again.','','interceptors.security.rulesFileNotFound');
+				$throw('Security Rules File could not be located: #getProperty('rulesFile')#. Please check again.','','Security.rulesFileNotFound');
 			}
 			
-			/* Set the correct expanded path now */
+			// Set the correct expanded path now
 			setProperty('rulesFile',rulesFile);
-			/* Read in and parse */
+			// Read in and parse
 			xmlRules = xmlSearch(XMLParse(rulesFile),"/rules/rule");
-			/* Loop And create Rules */
+			// Loop And create Rules
 			for(x=1; x lte Arraylen(xmlRules); x=x+1){
 				node = structnew();
-				/* Loop over elements found and create Rule Node */
+				// Loop over elements found and create Rule Node
 				for(y=1; y lte ArrayLen(xmlRules[x].xmlChildren);y=y+1){
 					thisElement = xmlRules[x].xmlChildren[y];
 					node[thisElement.xmlName] = trim(thisElement.xmlText);
 				}
 				ArrayAppend(getProperty('rules'),node);
 			}
-			/* finalize */
+			
 			setProperty('rulesLoaded',true);	
 		</cfscript>
 	</cffunction>
@@ -397,7 +380,7 @@ For the latest usage, please visit the wiki.
 		
 		<!--- Get Rules From OCM --->
 		<cfif not getColdboxOCM().lookup(getProperty('rulesOCMkey'))>
-			<cfthrow message="No key #getProperty('rulesOCMKey')# in the OCM." type="interceptors.Security.invalidOCMKey">
+			<cfthrow message="No key #getProperty('rulesOCMKey')# in the OCM." type="Security.invalidOCMKey">
 		<cfelse>
 			<cfset qRules = getColdboxOCM().get(getProperty('rulesOCMKey'))>
 		</cfif>
@@ -441,20 +424,18 @@ For the latest usage, please visit the wiki.
 			var rtnArray = ArrayNew(1);
 			var columns = arguments.qRules.columnlist;
 			
-			/* Loop over Rules */
+			// Loop over Rules
 			for(x=1; x lte qRules.recordcount; x=x+1){
-				/* Create Row Node */
 				node = structnew();
 				
-				/* Create Node with all columns */
+				// Create Node with all columns
 				for(y=1; y lte listLen(columns); y=y+1){
 					node[listgetAt(columns,y)] = qRules[listgetAt(columns,y)][x];
 				}
 				
-				/* Append it to the array */
 				ArrayAppend(rtnArray,node);
 			}
-			/* return array */
+			
 			return rtnArray;
 		</cfscript>
 	</cffunction>
@@ -466,22 +447,20 @@ For the latest usage, please visit the wiki.
 				
 				case "xml" :
 				{
-					/* Check if file property exists */
+					// Check if file property exists
 					if( not propertyExists('rulesFile') ){
-						$throw(message="Missing setting for XML source: rulesFile ",type="interceptors.Security.settingUndefinedException");
+						$throw(message="Missing setting for XML source: rulesFile ",type="Security.settingUndefinedException");
 					}
 					break;
 				}//end of xml check
 				
 				case "db" :
 				{
-					/* Check for DSN */
 					if( not propertyExists('rulesDSN') ){
-						$throw(message="Missing setting for DB source: rulesDSN ",type="interceptors.Security.settingUndefinedException");
+						$throw(message="Missing setting for DB source: rulesDSN ",type="Security.settingUndefinedException");
 					}
-					/* Check for table */
 					if( not propertyExists('rulesTable') ){
-						$throw(message="Missing setting for DB source: rulesTable ",type="interceptors.Security.settingUndefinedException");
+						$throw(message="Missing setting for DB source: rulesTable ",type="Security.settingUndefinedException");
 					}
 					/* Optional DB settings are checked when loading rules. */
 					break;
@@ -489,12 +468,11 @@ For the latest usage, please visit the wiki.
 				
 				case "ioc" :
 				{
-					/* Check for bean */
 					if( not propertyExists('rulesBean') ){
-						$throw(message="Missing setting for ioc source: rulesBean ",type="interceptors.Security.settingUndefinedException");
+						$throw(message="Missing setting for ioc source: rulesBean ",type="Security.settingUndefinedException");
 					}
 					if( not propertyExists('rulesBeanMethod') ){
-						$throw(message="Missing setting for ioc source: rulesBeanMethod ",type="interceptors.Security.settingUndefinedException");
+						$throw(message="Missing setting for ioc source: rulesBeanMethod ",type="Security.settingUndefinedException");
 					}
 					
 					break;
@@ -502,12 +480,11 @@ For the latest usage, please visit the wiki.
 				
 				case "model" :
 				{
-					/* Check for bean */
 					if( not propertyExists('rulesModel') ){
-						$throw(message="Missing setting for model source: rulesModel ",type="interceptors.Security.settingUndefinedException");
+						$throw(message="Missing setting for model source: rulesModel ",type="Security.settingUndefinedException");
 					}
 					if( not propertyExists('rulesModelMethod') ){
-						$throw(message="Missing setting for model source: rulesModelMethod ",type="interceptors.Security.settingUndefinedException");
+						$throw(message="Missing setting for model source: rulesModelMethod ",type="Security.settingUndefinedException");
 					}
 					
 					break;
@@ -515,9 +492,8 @@ For the latest usage, please visit the wiki.
 				
 				case "ocm" :
 				{
-					/* Check for bean */
 					if( not propertyExists('rulesOCMkey') ){
-						$throw(message="Missing setting for ioc source: rulesOCMkey ",type="interceptors.Security.settingUndefinedException");
+						$throw(message="Missing setting for ioc source: rulesOCMkey ",type="Security.settingUndefinedException");
 					}
 					break;
 				}//end of OCM check			
