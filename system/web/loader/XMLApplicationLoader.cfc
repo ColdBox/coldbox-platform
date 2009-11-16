@@ -216,9 +216,6 @@ Loads a coldbox xml configuration file
 			//Check For CustomErrorTemplate
 			if ( not StructKeyExists(configStruct, "CustomErrorTemplate") )
 				configStruct["CustomErrorTemplate"] = "";
-			//Check for MessageboxStyleOverride if found, default = false
-			if ( not structkeyExists(configStruct, "MessageboxStyleOverride") or not isBoolean(configStruct.MessageboxStyleOverride) )
-				configStruct["MessageboxStyleOverride"] = "false";
 			//Check for HandlersIndexAutoReload, default = false
 			if ( not structkeyExists(configStruct, "HandlersIndexAutoReload") or not isBoolean(configStruct.HandlersIndexAutoReload) )
 				configStruct["HandlersIndexAutoReload"] = false;

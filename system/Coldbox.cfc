@@ -289,13 +289,14 @@ Description :
 		<cfargument name="template"	type="string" required="true"	hint="I am the template that the user requested."/>
 		<cfset var cbController = "">
 		<cfset var event = "">
+		<cfset var interceptData = structnew()>
 		
 		<cflock type="readonly" name="#getAppHash()#" timeout="#getLockTimeout()#" throwontimeout="true">
 			<cfset cbController = application[locateAppKey()]>
 		</cflock>	
 		
 		<cfscript>
-			//Execute Missing Template Handler
+			//Execute Missing Template Handler if it exists
 			if ( len(cbController.getSetting("MissingTemplateHandler")) ){
 				// Save missing template in RC and right handler for this call.
 				event = cbController.getRequestService().getContext();
@@ -320,6 +321,7 @@ Description :
 		<cflock type="readonly" name="#getAppHash()#" timeout="#getLockTimeout()#" throwontimeout="true">
 			<cfset cbController = application[locateAppKey()]>
 		</cflock>	
+		
 		<cfscript>
 			//Execute Session Start interceptors
 			cbController.getInterceptorService().processState("sessionStart",session);
@@ -352,7 +354,7 @@ Description :
 		
 		<cfscript>
 			if ( not isSimpleValue(cbController) ){
-				/* Get Context */
+				// Get Context
 				event = cbController.getRequestService().getContext();
 					
 				//Execute Session End interceptors
@@ -408,46 +410,43 @@ Description :
 		<cfset var appKey = locateAppKey()>
 		
 		<!--- CF Parm Structures just in case. --->
-		<cfparam name="FORM" default="#StructNew()#">
-		<cfparam name="URL"	 default="#StructNew()#">
+		<cfparam name="FORM" default="#structNew()#">
+		<cfparam name="URL"	 default="#structNew()#">
 		
 		<cfscript>
-			/* Check if app exists */
+			// Check if app exists already in scope
 			if(not structKeyExists(application,appKey) ){
 				return true;
 			}
-			/* Check if we have a reinit password at hand. */
+			
+			// Check if we have a reinit password at hand.
 			if ( application[appKey].settingExists("ReinitPassword") ){
 				reinitPass = application[appKey].getSetting("ReinitPassword");
 			}			
-			/* Verify the reinit key is passed */
+			
+			// Verify the reinit key is passed
 			if ( structKeyExists(url,"fwreinit") or structKeyExists(form,"fwreinit") ){
 				
-				/* pass Checks */
-				if ( reinitPass eq "" ){
+				// pass Checks
+				if ( NOT len(reinitPass) ){
 					return true;
 				}
-				else{
-					/* Get the incoming pass from form or url */
-					if( structKeyExists(form,"fwreinit") ){
-						incomingPass = form.fwreinit;
-					}
-					else{
-						incomingPass = url.fwreinit;
-					}
-					/* Compare the passwords */
-					if( Compare(reinitPass, incomingPass) eq 0 ){
-						return true;
-					}
-					else{
-						return false;
-					}
-				}//end if reinitpass neq ""
 				
+				// Get the incoming pass from form or url
+				if( structKeyExists(form,"fwreinit") ){
+					incomingPass = form.fwreinit;
+				}
+				else{
+					incomingPass = url.fwreinit;
+				}
+				
+				// Compare the passwords
+				if( compare(reinitPass, incomingPass) eq 0 ){
+					return true;
+				}
 			}//else if reinit found.
-			else{
-				return false;
-			}
+			
+			return false;
 		</cfscript>
 	</cffunction>
 	
@@ -459,18 +458,18 @@ Description :
 		<cfargument name="event" 		type="any" required="true" hint="An event context object"/>
 		<cfset var command = event.getTrimValue("cbox_command","")>
 		<cfscript>
-			/* Verify it */
+			// Verify command
 			if( len(command) eq 0 ){ return; }
-			/* Commands */
+			// Commands
 			switch(command){
-				case "expirecache" : {cbController.getColdboxOCM().expireAll();break;}
-				case "delcacheentry" : {cbController.getColdboxOCM().clearKey(event.getValue('cbox_cacheentry',""));break;}
-				case "clearallevents" : {cbController.getColdboxOCM().clearAllEvents();break;}
-				case "clearallviews" : {cbController.getColdboxOCM().clearAllViews();break;}
+				case "expirecache"    : { cbController.getColdboxOCM().expireAll();break;}
+				case "delcacheentry"  : { cbController.getColdboxOCM().clearKey(event.getValue('cbox_cacheentry',""));break;}
+				case "clearallevents" : { cbController.getColdboxOCM().clearAllEvents();break;}
+				case "clearallviews"  : { cbController.getColdboxOCM().clearAllViews();break;}
 				default: break;
 			}
 		</cfscript>
-		<!--- Relocate --->
+		<!--- TODO: use ses or not? Relocate --->
 		<cfif event.getValue("debugPanel","") eq "">
 			<cflocation url="index.cfm" addtoken="false">
 		<cfelse>

@@ -47,8 +47,6 @@
 		<Setting name="CustomErrorTemplate"			value="" />
 		<!--UDF Library To Load on every request for your views and handlers -->
 		<Setting name="UDFLibraryFile" 				value="" />
-		<!--Messagebox Style Override. A boolean of wether to override the styles using your own css.-->
-		<Setting name="MessageboxStyleOverride"		value="" />
 		<!--Flag to Auto reload the internal handlers directory listing. False for production. -->
 		<Setting name="HandlersIndexAutoReload"   	value="false" />
 		<!--Flag to auto reload the config.xml settings. False for production. -->

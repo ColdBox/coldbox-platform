@@ -55,7 +55,6 @@
 									<xs:enumeration value="HandlersExternalLocation" />
 									<xs:enumeration value="HandlerCaching" />
 									<xs:enumeration value="LayoutsExternalLocation" />	
-									<xs:enumeration value="MessageboxStyleOverride" />
 									<xs:enumeration value="MissingTemplateHandler"/>
 									<xs:enumeration value="PluginsExternalLocation" />
 									<xs:enumeration value="onInvalidEvent"/>	

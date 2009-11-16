@@ -392,7 +392,6 @@ Description :
 					<value option="&quot;MailPort&quot;"/>
 					<value option="&quot;MailServer&quot;"/>
 					<value option="&quot;MailUsername&quot;"/>
-					<value option="&quot;MessageboxStyleOverride&quot;"/>
 					
 					<value option="&quot;ModelsObjectCaching&quot;"/>
 					<value option="&quot;ModelsSetterInjection&quot;"/>
