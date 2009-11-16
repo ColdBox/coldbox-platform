@@ -146,7 +146,7 @@ Description :
 		<cfargument name="name" 		type="string"  required="true"  hint="A unique name for the appender to register. Only unique names can be registered per instance."/>
 		<cfargument name="levelMin" 	type="numeric" required="false" default="0" hint="The default min log level for this category. Defaults to the lowest level 0 or FATAL"/>
 		<cfargument name="levelMax" 	type="numeric" required="false" default="4" hint="The max default log level for this category. If not passed it defaults to the highest level possible"/>
-		<cfargument name="appenders" 	type="string"  required="false" default=""  hint="A list of appender names to configure this category with."/>
+		<cfargument name="appenders" 	type="string"  required="false" default="*"  hint="A list of appender names to configure this category with. By default it uses all the registered appenders"/>
 		<cfscript>
 			var x = 1;
 			
@@ -345,7 +345,7 @@ Description :
 					args.appenders = trim(categoriesXML[x].XMLAttributes.appenders);
 				}
 				else{
-					args.appenders = "";
+					args.appenders = "*";
 					for( y=1; y lte arrayLen(categoriesXML[x].xmlChildren); y=y+1){
 						if( categoriesXML[x].xmlChildren[y].XMLName eq "Appender-ref" ){
 							args.appenders = listAppend(args.appenders, trim(categoriesXML[x].xmlChildren[y].XMLAttributes.ref) );
