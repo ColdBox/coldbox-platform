@@ -82,7 +82,7 @@ Description :
 					obj = deserializeRailo(arguments.binaryObject);
 					break;
 				}
-				case "objectLoad" : {
+				case "objectSave" : {
 					obj = deserializeWithObjectLoad(arguments.binaryObject);
 					break;
 				}
