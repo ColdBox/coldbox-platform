@@ -148,9 +148,9 @@ method which will most likely be called by the saveFlash() method in order to pe
 	
 	<!--- putAll --->
     <cffunction name="putAll" output="false" access="public" returntype="void" hint="Put a map of name-value pairs into the flash scope">
-    	<cfargument name="map" 		type="struct"  required="true" hint="The map of "/>
-		<cfargument name="saveNow"  type="boolean" required="false" default="false" hint="Whether to send the contents for saving to flash ram or not. Default is to wait for a relocation"/>
-		<cfargument name="keep" 	type="boolean" required="false" default="true" hint="Whether to mark the entry to be kept after saving to the flash storage."/>
+    	<cfargument name="map" 			type="struct"  required="true" hint="The map of "/>
+		<cfargument name="saveNow"  	type="boolean" required="false" default="false" hint="Whether to send the contents for saving to flash ram or not. Default is to wait for a relocation"/>
+		<cfargument name="keep" 		type="boolean" required="false" default="true" hint="Whether to mark the entry to be kept after saving to the flash storage."/>
 		<cfargument name="inflateToRC"  type="boolean"  required="false" default="true" hint="Whether this flash variable is inflated to the Request Collection or not"/>
 		<cfargument name="inflateToPRC" type="boolean"  required="false" default="false" hint="Whether this flash variable is inflated to the Private Request Collection or not"/>
 		<cfscript>
@@ -158,7 +158,11 @@ method which will most likely be called by the saveFlash() method in order to pe
 			
 			// Save all keys in map
 			for( key in arguments.map ){
-				put(key,arguments.map[key],arguments.keep,arguments.inflateToRC,inflateToPRC);
+				// Store value and key to pass
+				arguments.name  = key;
+				arguments.value = arguments.map[key];
+				// place in put
+				put(argumentCollection=arguments);
 			}
 			
 			// Save to Storage
