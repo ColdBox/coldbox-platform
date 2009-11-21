@@ -532,7 +532,7 @@ Description :
 				<cfheader statuscode="303" statustext="See Other" />
 			</cfif>
 			<!--- Relocate --->
-			<cfheader name="Location" value="#getBaseURL()##newpath##serializeURL(httpRequestData.content,event)#" />
+			<cfheader name="Location" value="#event.getSESbaseURL()##newpath##serializeURL(httpRequestData.content,event)#" />
 			<cfabort />			
 		</cfif>
 	</cffunction>
