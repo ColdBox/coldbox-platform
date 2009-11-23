@@ -55,13 +55,5 @@ Description :
 		<!--- WHATEVER YOU WANT BELOW --->
 		<cfreturn true>
 	</cffunction>
-	
-	<!--- on Application End --->
-	<cffunction name="onApplicationEnd" returnType="void"  output="false">
-		<!--- ************************************************************* --->
-		<cfargument name="applicationScope" type="struct" required="true">
-		<!--- ************************************************************* --->
-		<!--- WHATEVER YOU WANT BELOW --->
-	</cffunction>
-	
+
 </cfcomponent>

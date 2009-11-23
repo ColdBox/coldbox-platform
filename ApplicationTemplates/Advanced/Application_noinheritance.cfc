@@ -67,8 +67,9 @@ Description :
 	<!--- on Application End --->
 	<cffunction name="onApplicationEnd" returnType="void"  output="false">
 		<!--- ************************************************************* --->
-		<cfargument name="applicationScope" type="struct" required="true">
+		<cfargument name="appScope" type="struct" required="true">
 		<!--- ************************************************************* --->
+		<cfset application.cbBootstrap.onApplicationEnd(argumentCollection=arguments)>
 		<!--- WHATEVER YOU WANT BELOW --->
 	</cffunction>
 	

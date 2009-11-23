@@ -149,6 +149,20 @@ Description :
 		<!--- IMPLEMENTED BY INTERCEPTOR --->
 	</cffunction>
 	
+	<!--- ApplicationEnd --->
+	<cffunction name="applicationEnd" access="public" returntype="boolean" hint="Executes on application end" output="false" >
+		<cfargument name="event" 	required="true" type="any" hint="The event object : coldbox.system.web.context.RequestContext">
+		<cfargument name="interceptData" required="true" type="struct" hint="A structure containing intercepted information. NONE">
+		<!--- IMPLEMENTED BY INTERCEPTOR --->
+	</cffunction>
+	
+	<!--- preReinit --->
+	<cffunction name="preReinit" access="public" returntype="boolean" hint="Executes before an application reinit is executed" output="false" >
+		<cfargument name="event" 	required="true" type="any" hint="The event object : coldbox.system.web.context.RequestContext">
+		<cfargument name="interceptData" required="true" type="struct" hint="A structure containing intercepted information. NONE">
+		<!--- IMPLEMENTED BY INTERCEPTOR --->
+	</cffunction>
+	
 	<!--- Session Start --->
 	<cffunction name="sessionStart" access="public" returntype="boolean" hint="Executes on Session start" output="false" >
 		<cfargument name="event" 	required="true" type="any" hint="The event object : coldbox.system.web.context.RequestContext">
@@ -237,6 +251,13 @@ Description :
 	<cffunction name="onException" access="public" returntype="boolean" hint="Executes after an exception has been detected." output="false" >
 		<cfargument name="event" 	required="true" type="any" hint="The event object : coldbox.system.web.context.RequestContext">
 		<cfargument name="interceptData" required="true" type="struct" hint="A structure containing intercepted information = [exception]">
+		<!--- IMPLEMENTED BY INTERCEPTOR --->
+	</cffunction>
+	
+	<!--- Pre Render Execution --->
+	<cffunction name="preProxyResults" access="public" returntype="boolean" hint="Executes before the ColdBox proxy returns results to callers" output="false" >
+		<cfargument name="event" required="true" type="any" hint="The event object : coldbox.system.web.context.RequestContext">
+		<cfargument name="interceptData" 	required="true" type="struct" hint="A structure containing intercepted information. [proxyResults]">
 		<!--- IMPLEMENTED BY INTERCEPTOR --->
 	</cffunction>
 

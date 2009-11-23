@@ -36,5 +36,13 @@ Description :
 		<!--- ************************************************************* --->
 		 <cfset appendToBuffer('<h4>I love my buffer</h4>')>
 	</cffunction>
+	
+	<cffunction name="preReinit" access="public" returntype="void" output="false">
+		<!--- ************************************************************* --->
+		<cfargument name="event" required="true" type="coldbox.system.web.context.RequestContext" hint="The event object.">
+		<cfargument name="interceptData" required="true" type="struct" hint="Metadata of intercepted info.">
+		<!--- ************************************************************* --->
+		<cfset log.info("Application reinited at #now()#")>
+	</cffunction>
 
 </cfcomponent>

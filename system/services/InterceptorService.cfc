@@ -21,9 +21,9 @@ Description :
 			setController(arguments.controller);
 			
 			// Register the interception points ENUM 
-			instance.interceptionPoints = "afterConfigurationLoad,afterAspectsLoad,onException," &
+			instance.interceptionPoints = "afterConfigurationLoad,afterAspectsLoad,onException,preReinit," &
 										  "afterHandlerCreation,afterModelCreation,afterPluginCreation," &
-										  "sessionStart,sessionEnd," &
+										  "applicationEnd,sessionStart,sessionEnd," &
 										  "preProcess,preEvent,postEvent,postProcess,preProxyResults," &
 										  "preLayout,preRender,postRender," &
 										  "afterCacheElementInsert,afterCacheElementRemoved,afterCacheElementExpired";

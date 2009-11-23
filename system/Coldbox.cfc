@@ -72,11 +72,17 @@ Description :
 		<cfset var ExceptionBean = "">
 		<cfset var appKey = locateAppKey()>
 		<cfset var cbController = 0>
+		<cfset var needReinit = isfwReinit()>
 		
-		<!--- Initialize the Controller If Needed--->
-		<cfif NOT structkeyExists(application,appkey) OR NOT application[appKey].getColdboxInitiated() OR isfwReinit()>
+		<!--- Initialize the Controller If Needed, double locked --->
+		<cfif NOT structkeyExists(application,appkey) OR NOT application[appKey].getColdboxInitiated() OR needReinit>
 			<cflock type="exclusive" name="#getAppHash()#" timeout="#getLockTimeout()#" throwontimeout="true">
-				<cfif NOT structkeyExists(application,"cbController") OR NOT application[appKey].getColdboxInitiated() OR isfwReinit()>
+				<cfif NOT structkeyExists(application,"cbController") OR NOT application[appKey].getColdboxInitiated() OR needReinit>
+					<!--- Verify if reiniting onColdboxReinit interceptor --->
+					<cfif structkeyExists(application,appKey) AND application[appKey].getColdboxInitiated() AND needReinit>
+						<cfset application[appKey].getInterceptorService().processState("preReinit")>
+					</cfif>
+					<!--- Reload ColdBox --->
 					<cfset loadColdBox()>
 				</cfif>
 			</cflock>
@@ -164,7 +170,7 @@ Description :
 			</cfif>
 		
 			<!--- Application Start Handler --->
-			<cfif cbController.getSetting("ApplicationStartHandler") neq "" and (not cbController.getAppStartHandlerFired())>
+			<cfif len(cbController.getSetting("ApplicationStartHandler")) and (not cbController.getAppStartHandlerFired())>
 				<cfset cbController.runEvent(cbController.getSetting("ApplicationStartHandler"),true)>
 				<cfset cbController.setAppStartHandlerFired(true)>
 			</cfif>
@@ -173,7 +179,7 @@ Description :
 			<cfset cbController.getInterceptorService().processState("preProcess")>
 			
 			<!--- IF Found in config, run onRequestStart Handler --->
-			<cfif cbController.getSetting("RequestStartHandler") neq "">
+			<cfif len(cbController.getSetting("RequestStartHandler"))>
 				<cfset cbController.runEvent(cbController.getSetting("RequestStartHandler"),true)>
 			</cfif>
 			
@@ -245,7 +251,7 @@ Description :
 			</cfif>
 			
 			<!--- If Found in config, run onRequestEnd Handler --->
-			<cfif cbController.getSetting("RequestEndHandler") neq "">
+			<cfif len(cbController.getSetting("RequestEndHandler"))>
 				<cfset cbController.runEvent(cbController.getSetting("RequestEndHandler"),true)>
 			</cfif>
 			
@@ -327,8 +333,8 @@ Description :
 			cbController.getInterceptorService().processState("sessionStart",session);
 			
 			//Execute Session Start Handler
-			if ( cbController.getSetting("SessionStartHandler") neq "" ){
-				cbController.runEvent(cbController.getSetting("SessionStartHandler"),true);
+			if ( len(cbController.getSetting("SessionStartHandler")) ){
+				cbController.runEvent(event=cbController.getSetting("SessionStartHandler"),prePostExempt=true);
 			}
 		</cfscript>
 	</cffunction>
@@ -361,16 +367,32 @@ Description :
 				cbController.getInterceptorService().processState("sessionEnd",arguments.sessionScope);
 				
 				//Execute Session End Handler
-				if ( cbController.getSetting("SessionEndHandler") neq "" ){
+				if ( len(cbController.getSetting("SessionEndHandler")) ){
 					//Place session reference on event object
 					event.setValue("sessionReference", arguments.sessionScope);
 					//Place app reference on event object
 					event.setValue("applicationReference", arguments.appScope);
 					//Execute the Handler
-					cbController.runEvent(event=cbController.getSetting("SessionEndHandler"),
-										  prepostExempt=true,
-										  default=true);
+					cbController.runEvent(event=cbController.getSetting("SessionEndHandler"),prepostExempt=true);
 				}
+			}
+		</cfscript>
+	</cffunction>
+	
+	<!--- Application End --->
+	<cffunction name="onApplicationEnd" returnType="void" output="false" hint="An onApplicationEnd method to use or call from your Application.cfc">
+		<!--- ************************************************************* --->
+		<cfargument name="appScope" 	type="struct" required="false">
+		<!--- ************************************************************* --->
+		<cfscript>
+			var cbController = arguments.appScope[locateAppKey()];
+			
+			//Execute Application End interceptors
+			cbController.getInterceptorService().processState("applicationEnd");
+			
+			// Execute Application End Handler
+			if( len(cbController.getSetting('applicationEndHandler')) ){
+				cbController.runEvent(event=cbController.getSetting("applicationEndHandler"),prePostExempt=true);
 			}
 		</cfscript>
 	</cffunction>

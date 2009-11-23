@@ -183,9 +183,12 @@ Loads a coldbox xml configuration file
 			//Check for Event Name
 			if ( not StructKeyExists(configStruct, "EventName") )
 				configStruct["EventName"] = fwSettingsStruct["EventName"] ;
-			//Check for Request Start Handler
+			//Check for Application Start Handler
 			if ( not StructKeyExists(configStruct, "ApplicationStartHandler") )
 				configStruct["ApplicationStartHandler"] = "";
+			//Check for Application End Handler
+			if ( not StructKeyExists(configStruct, "applicationEndHandler") )
+				configStruct["applicationEndHandler"] = "";
 			//Check for Request End Handler
 			if ( not StructKeyExists(configStruct, "RequestStartHandler") )
 				configStruct["RequestStartHandler"] = "";

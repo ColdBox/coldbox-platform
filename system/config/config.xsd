@@ -41,6 +41,7 @@
 									<xs:enumeration value="AppMapping"/>
 									<xs:enumeration value="AppName"/>	
 									<xs:enumeration value="ApplicationStartHandler" />
+									<xs:enumeration value="ApplicationEndHandler" />
 									<xs:enumeration value="CustomErrorTemplate" />
 									<xs:enumeration value="ConfigAutoReload" />
 									<xs:enumeration value="ColdBoxExtensionsLocation" />

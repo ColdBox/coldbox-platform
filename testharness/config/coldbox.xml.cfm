@@ -152,7 +152,7 @@
 		<EvictionPolicy>LFU</EvictionPolicy>
 	</Cache>
 	
-	<Interceptors throwOnInvalidStates="true">
+	<Interceptors throwOnInvalidStates="false">
 		
 		<Interceptor class="coldbox.system.interceptors.EnvironmentControl">
 			<Property name="configFile">config/environments.xml.cfm</Property>
