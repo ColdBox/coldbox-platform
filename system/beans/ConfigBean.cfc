@@ -51,7 +51,7 @@ Modification History:
 		<cfif keyExists(arguments.key)>
 			<cfreturn configStruct[arguments.key]>
 		<cfelseif isSimpleValue(arguments.defaultValue) and arguments.defaultValue eq "_NONE_">
-			<cfthrow message="Key not found in configStruct" type="ConfigBean.KeyNotFoundInConfigStruct">
+			<cfthrow message="Key [#arguments.key#] not found in configStruct" detail="Keys are #structKeyList(getConfigStruct())#" type="ConfigBean.KeyNotFoundInConfigStruct">
 		<cfelse>
 			<cfreturn arguments.defaultValue>
 		</cfif>
