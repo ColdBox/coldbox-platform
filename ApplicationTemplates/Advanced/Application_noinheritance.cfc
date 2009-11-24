@@ -69,7 +69,7 @@ Description :
 		<!--- ************************************************************* --->
 		<cfargument name="appScope" type="struct" required="true">
 		<!--- ************************************************************* --->
-		<cfset application.cbBootstrap.onApplicationEnd(argumentCollection=arguments)>
+		<cfset arguments.appScope.cbBootstrap.onApplicationEnd(argumentCollection=arguments)>
 		<!--- WHATEVER YOU WANT BELOW --->
 	</cffunction>
 	

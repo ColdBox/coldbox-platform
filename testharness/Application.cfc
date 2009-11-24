@@ -51,7 +51,6 @@ Description :
 		<cfset var start = getTickCount()>
 		<cfsetting enablecfoutputonly="yes">
 		<cfsetting showdebugoutput="true">
-		
 		<!--- BootStrap Reinit Check --->
 		<cfif not structKeyExists(application,"cbBootstrap") or application.cbBootStrap.isfwReinit()>
 			<cflock name="coldbox.bootstrap_#hash(getCurrentTemplatePath())#" type="exclusive" timeout="5" throwontimeout="true">
