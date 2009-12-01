@@ -30,7 +30,6 @@ Description :
 			setLooseMatching(false);
 			setUniqueURLs(true);
 			setEnabled(true);
-			setDebugMode(false);
 			setAutoReload(false);
 			
 			//Import Config
@@ -97,9 +96,8 @@ Description :
 					// Verify HTTP method used is valid, else throw exception and 403 error
 					if( structKeyExists(aRoute.action,event.getHTTPMethod()) ){
 						aRoute.action = aRoute.action[event.getHTTPMethod()];
-						if( getDebugMode() ){
-							getPlugin("Logger").debug("SES. Matched HTTP Method (#event.getHTTPMethod()#) to Action: #aRoute.action#");					
-						}
+						// Send for logging in debug mode
+						log.debug("Matched HTTP Method (#event.getHTTPMethod()#) to routed action: #aRoute.action#");					
 					}
 					else{ 
 						throwInvalidHTTP("The HTTP method used: #event.getHTTPMethod()# is not valid for the current executing event.");
@@ -125,19 +123,6 @@ Description :
 	</cffunction>
 
 <!------------------------------------------- PUBLIC ------------------------------------------->
-	
-	<!--- AddCourse --->
-	<cffunction name="addCourse" returntype="void" access="public" hint="@Deprecated (removed in next release), please use addRoute as this method will be removed eventually." output="false">
-		<cfargument name="pattern" 				 type="string" 	required="true"  hint="The pattern to match against the URL." />
-		<cfargument name="handler" 				 type="string" 	required="false" hint="The handler to execute if pattern matched.">
-		<cfargument name="action"  				 type="string" 	required="false" hint="The action in a handler to execute if a pattern is matched.">
-		<cfargument name="packageResolverExempt" type="boolean" required="false" default="false" hint="If this is set to true, then the interceptor will not try to do handler package resolving. Else a package will always be resolved. Only works if :handler is in a pattern">
-		<cfargument name="matchVariables" 		 type="string" 	required="false" hint="A string of name-value pair variables to add to the request collection when this pattern matches. This is a comma delimmitted list. Ex: spaceFound=true,missingAction=onTest">
-		<cfargument name="view"  				 type="string"  required="false" hint="The view to dispatch if pattern matches.  No event will be fired, so handler,action will be ignored.">
-		<cfargument name="viewNoLayout"  		 type="boolean" required="false" default="false" hint="If view is choosen, then you can choose to override and not display a layout with the view. Else the view renders in the assigned layout.">
-		<cfargument name="valuePairTranslation"  type="boolean" required="false" default="true"  hint="Activate convention name value pair translations or not. Turned on by default">
-		<cfset addRoute(argumentCollection=arguments)>
-	</cffunction>
 	
 	<!--- Add a new Route --->
 	<cffunction name="addRoute" access="public" returntype="void" hint="Adds a route to dispatch" output="false">
@@ -310,15 +295,6 @@ Description :
 		<cfreturn instance.uniqueURLs/>
 	</cffunction>
 	
-	<!--- Interceptor DebugMode --->
-	<cffunction name="getdebugMode" access="public" output="false" returntype="boolean" hint="Get the current debug mode for the interceptor">
-		<cfreturn instance.debugMode/>
-	</cffunction>
-	<cffunction name="setdebugMode" access="public" output="false" returntype="void" hint="Set the interceptor into debug mode and log all translations">
-		<cfargument name="debugMode" type="boolean" required="true"/>
-		<cfset instance.debugMode = arguments.debugMode/>
-	</cffunction>
-	
 	<!--- Setter/Getter for Base URL --->
 	<cffunction name="setBaseURL" access="public" output="false" returntype="void" hint="Set the base URL for the application.">
 		<cfargument name="baseURL" type="string" required="true" />
@@ -342,7 +318,7 @@ Description :
 		<cfargument name="enabled" type="boolean" required="true" />
 		<cfset instance.enabled = arguments.enabled />
 	</cffunction>
-	<cffunction name="getenabled" access="public" output="false" returntype="boolean" hint="Get enabled">
+	<cffunction name="getEnabled" access="public" output="false" returntype="boolean" hint="Get enabled">
 		<cfreturn instance.enabled/>
 	</cffunction>
 	
@@ -367,8 +343,8 @@ Description :
     
 	<!--- Set Routes --->
 	<cffunction name="setRoutes" access="private" output="false" returntype="void" hint="Internal override of the routes array">
-		<cfargument name="Routes" type="Array" required="true"/>
-		<cfset instance.Routes = arguments.Routes/>
+		<cfargument name="routes" type="Array" required="true"/>
+		<cfset instance.routes = arguments.routes/>
 	</cffunction>
 	
 	<!--- Get Default Framework Action --->
@@ -436,6 +412,7 @@ Description :
 						break;
 					}//end not a folder.
 				}//end for loop
+				
 				/* Replace Return String */
 				if( len(newEvent) ){
 					returnString = replacenocase(returnString,replace(newEvent,".","/","all"),newEvent);
@@ -482,32 +459,32 @@ Description :
 		<cfset var action = "" />
 		<cfset var newpath = "" />
 		<cfset var httpRequestData = "">
-		<cfset var EventName = getSetting('EventName')>
-		<cfset var DefaultEvent = getSetting('DefaultEvent')>
+		<cfset var eventName = getSetting('EventName')>
+		<cfset var defaultEvent = getSetting('DefaultEvent')>
 		<cfset var rc = event.getCollection()>
 		
 		<!--- Get the HTTP Data --->
-		<cfset httpRequestData = GetHttpRequestData()/>
+		<cfset httpRequestData = getHttpRequestData()/>
 		
 		<!--- 
 		Verify we have uniqueURLs ON, the event var exists, route is empty or index.cfm
 		AND
 		if the incoming event is not the default OR it is the default via the URL.
 		--->
-		<cfif StructKeyExists(rc, EventName)
+		<cfif StructKeyExists(rc, eventName)
 			  AND (arguments.route EQ "/index.cfm" or arguments.route eq "")
 			  AND (
-			  		rc[EventName] NEQ DefaultEvent
+			  		rc[eventName] NEQ defaultEvent
 			  		OR
-			  		( structKeyExists(url,EventName) AND rc[EventName] EQ DefaultEvent )
+			  		( structKeyExists(url,eventName) AND rc[eventName] EQ defaultEvent )
 			  )>
 			
 			<!--- New Pathing Calculations if not the default event. If default, relocate to the domain. --->
-			<cfif rc[EventName] neq getSetting('DefaultEvent')>
+			<cfif rc[eventName] neq defaultEvent>
 				<!--- Clean for handler & Action --->
-				<cfif StructKeyExists(rc, EventName)>
-					<cfset handler = reReplace(rc[EventName],"\.[^.]*$","") />
-					<cfset action = ListLast( rc[EventName], "." ) />
+				<cfif StructKeyExists(rc, eventName)>
+					<cfset handler = reReplace(rc[eventName],"\.[^.]*$","") />
+					<cfset action = ListLast( rc[eventName], "." ) />
 				</cfif>
 				<!--- route a handler --->
 				<cfif len(handler)>
@@ -520,10 +497,9 @@ Description :
 					<cfset newpath = newpath & "/" & action />
 				</cfif>
 			</cfif>
-			<!--- Debug Mode? --->
-			<cfif getDebugMode()>
-				<cfset getPlugin("Logger").debug("SES.Invalid URL detected. Route: #arguments.route#, script_name: #arguments.script_name#")>
-			</cfif>
+			
+			<!--- Debug Logging --->
+			<cfset log.debug("SES Invalid URL detected. Route: #arguments.route#, script_name: #arguments.script_name#")>
 			
 			<!--- Relocation headers --->
 			<cfif httpRequestData.method EQ "GET">
@@ -531,8 +507,9 @@ Description :
 			<cfelse>
 				<cfheader statuscode="303" statustext="See Other" />
 			</cfif>
+			
 			<!--- Relocate --->
-			<cfheader name="Location" value="#event.getSESbaseURL()##newpath##serializeURL(httpRequestData.content,event)#" />
+			<cfheader name="Location" value="#arguments.event.getSESbaseURL()##newpath##serializeURL(httpRequestData.content,arguments.event)#" />
 			<cfabort />			
 		</cfif>
 	</cffunction>
@@ -597,25 +574,32 @@ Description :
 			
 			// Let's Find a Route, Loop over all the routes array
 			for(i=1; i lte _routesLength; i=i+1){
+				
 				// Match The route to request String
 				match = reFindNoCase(_routes[i].regexPattern,requestString,1,true);
-				if( (match.len[1] IS NOT 0 AND getLooseMatching()) OR
+				
+				if( (match.len[1] IS NOT 0 AND getLooseMatching()) 
+				     OR
 				    (NOT getLooseMatching() AND match.len[1] IS NOT 0 AND match.pos[1] EQ 1) ){
 					// Setup the found Route
 					foundRoute = _routes[i];
-					// Debug mode? 
-					if( getDebugMode() ){
-						getPlugin("Logger").debug("SES.Route matched: #foundRoute.toString()#");					
-					}
+					// Debug logging 
+					log.debug("SES Route matched: #foundRoute.toString()# on routed string: #requestString#");				
 					break;
 				}				
+				
 			}//end finding routes
 			
 			// Check if we found a route, else just return empty params struct
-			if( structIsEmpty(foundRoute) ){ return params; }
+			if( structIsEmpty(foundRoute) ){ 
+				log.debug("No SES routes matched on routed string: #requestString#");
+				return params; 
+			}
 			
 			// Save Found Route
-			arguments.event.setValue("currentRoute",foundRoute.pattern);
+			arguments.event.setValue(name="currentRoute",value=foundRoute.pattern,private=true);
+			// Save Found URL
+			arguments.event.setValue(name="currentRoutedURL",value=requestString,private=true);
 			
 			// Do we need to do package resolving		
 			if( NOT foundRoute.packageResolverExempt ){
@@ -623,12 +607,15 @@ Description :
 				packagedRequestString = packageResolver(requestString,foundRoute.patternParams);
 				// reset pattern matching, if packages found.
 				if( compare(packagedRequestString,requestString) NEQ 0 ){
-					if( getDebugMode() ){
-						getPlugin("Logger").debug("SES.Package Resolved: #packagedRequestString#");					
-					}
+					
+					// Log package resolved
+					log.debug("SES Package Resolved: #packagedRequestString#");
+					
+					// Return found Route recursively.					
 					return findRoute(packagedRequestString,arguments.event);
 				}
 			}
+			
 			// Populate the params, with variables found in the request string
 			for(x=1; x lte arrayLen(foundRoute.patternParams); x=x+1){
 				params[foundRoute.patternParams[x]] = mid(requestString, match.pos[x+1], match.len[x+1]);

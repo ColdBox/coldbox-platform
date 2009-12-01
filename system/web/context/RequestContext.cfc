@@ -184,7 +184,7 @@ Modification History:
 <!------------------------------------------- GET/SET CURRENT REQUEST VARIABLES ------------------------------------------->
 
 	<cffunction name="getCurrentView" access="public" hint="Gets the current set view" returntype="string" output="false">
-		<cfreturn getValue("currentView","")>
+		<cfreturn getValue("currentView","",true)>
 	</cffunction>
 	
 	<cffunction name="setView" access="public" returntype="void" hint="I Set the view to render in this request.I am called from event handlers. Request Collection Name: currentView, currentLayout"  output="false">
@@ -205,31 +205,31 @@ Modification History:
 				setLayout(arguments.layout);
 			}
 			// If we need a layout or we haven't overriden the current layout enter if...
-		    else if ( NOT arguments.nolayout AND NOT getValue("layoutoverride",false) ){
+		    else if ( NOT arguments.nolayout AND NOT getValue("layoutoverride",false,true) ){
 		    		
 		    	//Verify that the view has a layout in the viewLayouts structure.
 			    if ( StructKeyExists(instance.ViewLayouts, lcase(arguments.name)) ){
-					setValue("currentLayout",instance.ViewLayouts[lcase(arguments.name)]);
+					setValue("currentLayout",instance.ViewLayouts[lcase(arguments.name)],true);
 			    }
 				else{
 					//Check the folders structure
 					for( key in instance.FolderLayouts ){
 						if ( reFindnocase('^#key#', lcase(arguments.name)) ){
-							setValue("currentLayout",instance.FolderLayouts[key]);
+							setValue("currentLayout",instance.FolderLayouts[key],true);
 							break;
 						}
 					}//end for loop
 				}//end else
 				
 				//If not layout, then set default
-				if( not valueExists("currentLayout") ){
-					setValue("currentLayout", instance.defaultLayout);
+				if( not valueExists("currentLayout",true) ){
+					setValue("currentLayout", instance.defaultLayout,true);
 				}					
 			}//end if overridding layout
 			
 			// No Layout Rendering?
 			if( arguments.nolayout ){
-				removeValue('currentLayout');
+				removeValue('currentLayout',true);
 			}
 			
 			//Do we need to cache the view
@@ -251,16 +251,20 @@ Modification History:
 			}
 			
 			//Set the current view to render.
-			instance.context["currentView"] = arguments.name;
+			instance.privateContext["currentView"] = arguments.name;
 		</cfscript>
 	</cffunction>
 
 	<cffunction name="getCurrentLayout" access="public" hint="Gets the current set layout" returntype="string" output="false">
-		<cfreturn getValue("currentLayout","")>
+		<cfreturn getValue("currentLayout","",true)>
 	</cffunction>
 	
 	<cffunction name="getCurrentRoute" output="false" access="public" returntype="string" hint="Get the current request's URL route if found.">
-    	<cfreturn getValue("currentRoute","")>
+    	<cfreturn getValue("currentRoute","",true)>
+    </cffunction>
+	
+	<cffunction name="getCurrentRoutedURL" output="false" access="public" returntype="string" hint="Get the current request's routed URL string if found. This is what usually the current route matches.">
+    	<cfreturn getValue("currentRoutedURL","",true)>
     </cffunction>
 
 	<cffunction name="setLayout" access="public" returntype="void" hint="I Set the layout to override and render. Layouts are pre-defined in the config file. However I can override these settings if needed. Do not append a the cfm extension. Request Collection name: currentLayout"  output="false">
@@ -269,15 +273,15 @@ Modification History:
 			var layouts = getRegisteredLayouts();
 			
 			// Set direct layout first.
-			instance.context["currentLayout"] = trim(arguments.name) & ".cfm";
+			instance.privateContext["currentLayout"] = trim(arguments.name) & ".cfm";
 			
 			// Do an Alias Check and override if found.
 			if( structKeyExists(layouts,arguments.name) ){
-				instance.context["currentLayout"] = layouts[arguments.name];
+				instance.privateContext["currentLayout"] = layouts[arguments.name];
 			}
 			
 			// set layout overwritten flag.
-			instance.context["layoutoverride"] = true;
+			instance.privateContext["layoutoverride"] = true;
 		</cfscript>
 	</cffunction>
 

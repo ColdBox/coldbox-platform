@@ -114,7 +114,14 @@ Description :
 		  Current Route:
 		</div>
 		<div class="fw_debugContentCell">
-		<cfif Event.getCurrentRoute() eq ""><span class="fw_redText">N/A</span><cfelse>#Event.getCurrentRoute()#</cfif>
+		<cfif Event.getCurrentRoute() eq ""><span class="fw_redText">N/A</span><cfelse>#event.getCurrentRoute()#</cfif>
+		</div>
+		
+		<div class="fw_debugTitleCell">
+		  Routed URL:
+		</div>
+		<div class="fw_debugContentCell">
+		<cfif Event.getCurrentRoutedURL() eq ""><span class="fw_redText">N/A</span><cfelse>#event.getCurrentRoutedURL()#</cfif>
 		</div>
 		
 		<div class="fw_debugTitleCell">
