@@ -65,9 +65,9 @@ Modification History:
 	<!--- Request Capture --->
 	<cffunction name="requestCapture" access="public" returntype="any" output="false" hint="I capture an incoming request. Returns: coldbox.system.web.context.RequestContext">
 		<cfscript>
-			var Context = getContext();
-			var DebugPassword = controller.getSetting("debugPassword");
-			var EventName = controller.getSetting("EventName");
+			var context = createContext();
+			var debugPassword = controller.getSetting("debugPassword");
+			var eventName = controller.getSetting("EventName");
 
 			// Do we have flash elements to inflate?
 			if( getFlashScope().flashExists() ){
@@ -180,8 +180,7 @@ Modification History:
 	
 	<!--- getFlashScope --->
     <cffunction name="getFlashScope" output="false" access="public" returntype="any" hint="Get the current running Flash Ram Scope of base type:coldbox.system.web.flash.AbstractFlashScope">
-    <!--- TODO: Change returntype back to what it was once new loader is built. --->	
-	<cfreturn instance.flashScope >
+   		<cfreturn instance.flashScope >
     </cffunction>
 	
 <!------------------------------------------- PRIVATE ------------------------------------------->
@@ -200,6 +199,7 @@ Modification History:
 		// Param FORM/URL
 		initFORMURL();
 		loadProperties();
+		
 		//Create the original request context
 		oContext = CreateObject("component","coldbox.system.web.context.RequestContext").init(FORM,URL,instance.ContextProperties);
 		

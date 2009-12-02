@@ -232,7 +232,6 @@ id , name , mail
 	<cffunction name="setupRequest" access="private" output="false" returntype="void" hint="Setup an initial request capture.  I basically look at the FORM/URL scopes and create the request collection out of them.">
 		<cfargument name="event" 	required="false"  type="string" default="" hint="The event to setup the request context with">
 		<cfscript>
-			structDelete(request,"cb_requestContext");
 			getController().getRequestService().requestCapture();
 		</cfscript>
 	</cffunction>
