@@ -27,6 +27,7 @@
 			<!-- Developer's ColdBox Sidebar -->
 			<Interceptor class="coldbox.system.interceptors.ColdboxSideBar" />
 		</Interceptors>
+		
 	</environment>
 	
 	<!-- give an environment a name and a comma delimmited list of url snippets to match -->

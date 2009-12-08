@@ -173,6 +173,12 @@ Description :
 				controller.getDebuggerService().getDebuggerConfig().populate(configSettings.DebuggerSettings);
 				// Parse Interceptors
 				appLoader.parseInterceptors(environmentXML,configSettings,true);	
+				// Parse Cache Settings
+				appLoader.parseCacheSettings(environmentXML,configSettings,true);
+				// Reconfigure Cache Config Settings and Cache
+				controller.getColdBoxOCM().getCacheConfig().populate(configSettings.cacheSettings);
+				controller.getColdBoxOCM().configure(controller.getColdBoxOCM().getCacheConfig());
+				
 				// Parse LogBox
 				appLoader.parseLogBox(environmentXML,configSettings,true);
 				// Reconfigure LogBox if resset
