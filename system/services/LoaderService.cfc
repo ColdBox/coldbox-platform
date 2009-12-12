@@ -200,11 +200,13 @@ Modification History:
 		
 		// If CFC loader, then create it and return it
 		if( listLast(coldboxSettings["ConfigFileLocation"],".")  eq "cfc" ){
-			return createObject("component","coldbox.system.web.loader.CFCApplicationLoader").init(controller);
+			instance.appLoader = createObject("component","coldbox.system.web.loader.CFCApplicationLoader").init(controller);
+			return instance.appLoader;
 		}
 		
 		// Return XML Loader
-		return createObject("component","coldbox.system.web.loader.XMLApplicationLoader").init(controller);
+		instance.appLoader = createObject("component","coldbox.system.web.loader.XMLApplicationLoader").init(controller);
+		return instance.appLoader;
 		</cfscript>
 	</cffunction>
 	
