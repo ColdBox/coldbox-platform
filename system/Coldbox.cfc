@@ -17,6 +17,7 @@ Description :
 	<cfparam name="variables.COLDBOX_CONFIG_FILE" 	default="" type="string">
 	<cfparam name="variables.COLDBOX_APP_ROOT_PATH" default="#getDirectoryFromPath(getbaseTemplatePath())#" type="string">
 	<cfparam name="variables.COLDBOX_APP_KEY" 		default="cbController" type="string">
+	<cfparam name="variables.COLDBOX_APP_MAPPING" 	default="" type="string">
 	
 	<cfscript>
 		instance = structnew();
@@ -30,6 +31,8 @@ Description :
 		setCOLDBOX_APP_ROOT_PATH(COLDBOX_APP_ROOT_PATH);
 		//Set the App Key to use in application scope
 		setCOLDBOX_APP_KEY(COLDBOX_APP_KEY);
+		//Set the App Mapping
+		setCOLDBOX_APP_MAPPING(COLDBOX_APP_MAPPING); 
 	</cfscript>
 
 <!------------------------------------------- PUBLIC ------------------------------------------->
@@ -39,10 +42,13 @@ Description :
 		<cfargument name="COLDBOX_CONFIG_FILE" 	 required="true"  type="string" hint="The coldbox config file from the application.cfc">
 		<cfargument name="COLDBOX_APP_ROOT_PATH" required="true"  type="string" hint="The coldbox app root path from the application.cfc">
 		<cfargument name="COLDBOX_APP_KEY" 		 required="false" type="string" hint="The key name to use when storing the Coldbox application">
+		<cfargument name="COLDBOX_APP_MAPPING" 	 required="false" type="string" default="" hint="The dot notation path to this application">
 		<cfscript>
 			// Set vars for two main locations
 			setCOLDBOX_CONFIG_FILE(arguments.COLDBOX_CONFIG_FILE);
 			setCOLDBOX_APP_ROOT_PATH(arguments.COLDBOX_APP_ROOT_PATH);
+			setCOLDBOX_APP_MAPPING(arguments.COLDBOX_APP_MAPPING); 
+			
 			// App Key Check
 			if( structKeyExists(arguments,"COLDBOX_APP_KEY") AND len(trim(arguments.COLDBOX_APP_KEY)) ){
 				setCOLDBOX_APP_KEY(arguments.COLDBOX_APP_KEY);
@@ -62,7 +68,7 @@ Description :
 			// Create Brand New Controller
 			application[appKey] = CreateObject("component","coldbox.system.web.Controller").init(COLDBOX_APP_ROOT_PATH);
 			// Setup the Framework And Application
-			application[appKey].getLoaderService().loadApplication(COLDBOX_CONFIG_FILE);			
+			application[appKey].getLoaderService().loadApplication(COLDBOX_CONFIG_FILE,COLDBOX_APP_MAPPING);			
 		</cfscript>
 	</cffunction>
 	
@@ -413,6 +419,12 @@ Description :
 	<cffunction name="setCOLDBOX_APP_KEY" access="public" output="false" returntype="void" hint="Set COLDBOX_APP_KEY">
 		<cfargument name="COLDBOX_APP_KEY" type="string" required="true"/>
 		<cfset variables.COLDBOX_APP_KEY = arguments.COLDBOX_APP_KEY/>
+	</cffunction>
+	
+	<!--- setter COLDBOX_APP_MAPPING --->
+	<cffunction name="setCOLDBOX_APP_MAPPING" access="public" output="false" returntype="void" hint="Set COLDBOX_APP_MAPPING">
+		<cfargument name="COLDBOX_APP_MAPPING" type="string" required="true"/>
+		<cfset variables.COLDBOX_APP_MAPPING = arguments.COLDBOX_APP_MAPPING/>
 	</cffunction>
 	
 	<!--- Getter setter lock timeout --->

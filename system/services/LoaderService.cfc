@@ -39,8 +39,8 @@ Modification History:
 	<!--- Config Loader Method --->
 	<cffunction name="loadApplication" returntype="void" access="Public" hint="I load a coldbox application for operation." output="false">
 		<!--- ************************************************************* --->
-		<cfargument name="overrideConfigFile" required="false" type="string" default="" hint="Only used for unit testing or reparsing of a specific coldbox config file.">
-		<cfargument name="overrideAppMapping" required="false" type="string" default="" hint="Only used for unit testing or reparsing of a specific coldbox config file."/>
+		<cfargument name="overrideConfigFile" required="false" type="string" default="" hint="The configuration file to load the application with">
+		<cfargument name="overrideAppMapping" required="false" type="string" default="" hint="The direct location of the application in the web server."/>
 		<!--- ************************************************************* --->
 		<cfscript>
 		var debuggerConfig = createObject("Component","coldbox.system.beans.DebuggerConfig").init();
@@ -48,13 +48,8 @@ Modification History:
 		var key = "";
 		var services = controller.getServices();
 		
-		// Overriding the config file location? Maybe unit testing?
-		if( len(arguments.overrideConfigFile) ){
-			coldboxSettings["ConfigFileLocation"] = getUtil().getAbsolutePath(arguments.overrideConfigFile);
-		}
-		
 		// Load application configuration file
-		createAppLoader().loadConfiguration(arguments.overrideAppMapping);
+		createAppLoader(arguments.overrideConfigFile).loadConfiguration(arguments.overrideAppMapping);
 		
 		// Check if application has loaded logbox settings so we can reconfigure, else using defaults.
 		if( NOT structIsEmpty( controller.getSetting("LogBoxConfig") ) ){
@@ -178,16 +173,38 @@ Modification History:
 	
 	<!--- createAppLoader --->
 	<cffunction name="createAppLoader" output="false" access="private" returntype="coldbox.system.web.loader.AbstractApplicationLoader" hint="Detect the application loader to use and create it">
+		<cfargument name="overrideConfigFile" required="false" type="string" default="" hint="Only used for unit testing or reparsing of a specific coldbox config file.">
 		<cfscript>
-		// Load app loader determined by file extension, only XML or CFC allowed
-		if( listLast(controller.getSetting("configFileLocation",true),".")  eq "cfc" ){
-			instance.appLoader = createObject("component","coldbox.system.web.loader.CFCApplicationLoader").init(controller);
-		}
-		else{
-			instance.appLoader = createObject("component","coldbox.system.web.loader.XMLApplicationLoader").init(controller);
+		var coldBoxSettings = controller.getColdBoxSettings();
+		var appRootPath = controller.getAppRootPath();
+		var configFileLocations = coldboxSettings.configConvention;
+		var x = 1;
+		
+		// Loop over conventions and load found config file
+		for(x=1; x lte listLen(configFileLocations); x=x+1){
+			// Verify File Exists
+			if( fileExists(appRootPath & listGetAt(configFileLocations,x) ) ){
+				coldboxSettings["ConfigFileLocation"] = appRootPath & listGetAt(configFileLocations,x);				
+			}			
 		}
 		
-		return instance.appLoader;
+		// If no config file location throw exception
+		if( not len(coldboxSettings["ConfigFileLocation"]) ){
+			getUtil().throwit(message="Config file not located in convetions: #coldboxSettings.configConvention#",detail="",type="LoaderService.ConfigFileNotFound");
+		}
+		
+		// Overriding the config file location? Maybe unit testing?
+		if( len(arguments.overrideConfigFile) ){
+			coldboxSettings["ConfigFileLocation"] = getUtil().getAbsolutePath(arguments.overrideConfigFile);
+		}
+		
+		// If CFC loader, then create it and return it
+		if( listLast(coldboxSettings["ConfigFileLocation"],".")  eq "cfc" ){
+			return createObject("component","coldbox.system.web.loader.CFCApplicationLoader").init(controller);
+		}
+		
+		// Return XML Loader
+		return createObject("component","coldbox.system.web.loader.XMLApplicationLoader").init(controller);
 		</cfscript>
 	</cffunction>
 	

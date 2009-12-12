@@ -24,6 +24,9 @@ Description :
 	<!--- COLDBOX STATIC PROPERTY, DO NOT CHANGE UNLESS THIS IS NOT THE ROOT OF YOUR COLDBOX APP --->
 	<cfset COLDBOX_APP_ROOT_PATH = getDirectoryFromPath(getCurrentTemplatePath())>
 
+	<!--- The web server mapping to this application. Used for remote purposes or static purposes --->
+	<cfset COLDBOX_APP_MAPPING   = "">
+	
 	<!--- COLDBOX PROPERTIES --->
 	<cfset COLDBOX_CONFIG_FILE = "">
 	
@@ -55,5 +58,6 @@ Description :
 		<!--- WHATEVER YOU WANT BELOW --->
 		<cfreturn true>
 	</cffunction>
+
 	
 </cfcomponent>

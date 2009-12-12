@@ -25,6 +25,10 @@ Loads a coldbox xml configuration file
 		<cfscript>
 			super.init(arguments.controller);
 			
+			// Regex for JSON
+			instance.jsonRegex = "^(\{|\[)(.)*(\}|\])$";
+			instance.jsonUtil = createObject("component","coldbox.system.core.util.conversion.JSON").init();
+			
 			return this;
 		</cfscript>
 	</cffunction>
@@ -1070,6 +1074,16 @@ Loads a coldbox xml configuration file
 			}
 		</cfscript>
 	</cffunction>
+	
+	<!--- JSON REGEX --->
+	<cffunction name="getJSONRegex" access="public" returntype="string" output="false" hint="Get the json regex string">
+		<cfreturn instance.jsonRegex>
+	</cffunction>
+	
+	<!--- getJSONUtil --->
+	<cffunction name="getJSONUtil" access="public" output="false" returntype="coldbox.system.core.util.conversion.JSON" hint="Create and return a util object for JSON">
+		<cfreturn instance.jsonUtil/>
+	</cffunction>
 
 <!------------------------------------------- PRIVATE ------------------------------------------>
 	
@@ -1091,6 +1105,5 @@ Loads a coldbox xml configuration file
 			}		
 		</cfscript>
 	</cffunction>
-
 
 </cfcomponent>

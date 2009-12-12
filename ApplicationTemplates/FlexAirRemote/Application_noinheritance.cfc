@@ -24,6 +24,9 @@ Description :
 	<!--- COLDBOX STATIC PROPERTY, DO NOT CHANGE UNLESS THIS IS NOT THE ROOT OF YOUR COLDBOX APP --->
 	<cfset COLDBOX_APP_ROOT_PATH = getDirectoryFromPath(getCurrentTemplatePath())>
 
+	<!--- The web server mapping to this application. Used for remote purposes or static purposes --->
+	<cfset COLDBOX_APP_MAPPING   = "/coldbox/ApplicationTemplates/FlexAirRemote">
+	
 	<!--- COLDBOX PROPERTIES --->
 	<cfset COLDBOX_CONFIG_FILE = "">
 	
@@ -34,7 +37,7 @@ Description :
 	<cffunction name="onApplicationStart" returnType="boolean" output="false">
 		<cfscript>
 			//Load ColdBox
-			application.cbBootstrap = CreateObject("component","coldbox.system.Coldbox").init(COLDBOX_CONFIG_FILE,COLDBOX_APP_ROOT_PATH,COLDBOX_APP_KEY);
+			application.cbBootstrap = CreateObject("component","coldbox.system.Coldbox").init(COLDBOX_CONFIG_FILE,COLDBOX_APP_ROOT_PATH,COLDBOX_APP_KEY,COLDBOX_APP_MAPPING);
 			application.cbBootstrap.loadColdbox();
 			return true;
 		</cfscript>
@@ -49,7 +52,7 @@ Description :
 		<cfif not structKeyExists(application,"cbBootstrap") or application.cbBootStrap.isfwReinit()>
 			<cflock name="coldbox.bootstrap_#hash(getCurrentTemplatePath())#" type="exclusive" timeout="5" throwontimeout="true">
 				<cfset structDelete(application,"cbBootStrap")>
-				<cfset application.cbBootstrap = CreateObject("component","coldbox.system.Coldbox").init(COLDBOX_CONFIG_FILE,COLDBOX_APP_ROOT_PATH,COLDBOX_APP_KEY)>
+				<cfset application.cbBootstrap = CreateObject("component","coldbox.system.Coldbox").init(COLDBOX_CONFIG_FILE,COLDBOX_APP_ROOT_PATH,COLDBOX_APP_KEY,COLDBOX_APP_MAPPING)>
 			</cflock>
 		</cfif>
 		<!--- Reload Checks --->

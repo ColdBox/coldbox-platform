@@ -24,9 +24,13 @@ Description :
 	
 	<!--- COLDBOX STATIC PROPERTY, DO NOT CHANGE UNLESS THIS IS NOT THE ROOT OF YOUR COLDBOX APP --->
 	<cfset COLDBOX_APP_ROOT_PATH = getDirectoryFromPath(getCurrentTemplatePath())>
-
+	<!--- The web server mapping to this application. Used for remote purposes or static purposes --->
+	<cfset COLDBOX_APP_MAPPING   = "/coldbox/testharness">
 	<!--- COLDBOX PROPERTIES --->
 	<cfset COLDBOX_CONFIG_FILE = "">
+	<!--- COLDBOX APPLICATION KEY OVERRIDE --->
+	<cfset COLDBOX_APP_KEY = "">
+	
 	
 	<cfset this.mappings["/coldbox"] = expandPath('../') />
 	
@@ -36,9 +40,9 @@ Description :
 		<cfscript>
 			request.fwloadTime = getTickCount() - start;
 			
-			/* Load Bootstrapper and load coldbox */
-			application.cbBootstrap = CreateObject("component","coldbox.system.Coldbox").init(COLDBOX_CONFIG_FILE,COLDBOX_APP_ROOT_PATH);
+			application.cbBootstrap = CreateObject("component","coldbox.system.Coldbox").init(COLDBOX_CONFIG_FILE,COLDBOX_APP_ROOT_PATH,COLDBOX_APP_KEY,COLDBOX_APP_MAPPING);
 			application.cbBootstrap.loadColdbox();
+			
 			return true;
 		</cfscript>
 	</cffunction>
@@ -51,11 +55,16 @@ Description :
 		<cfset var start = getTickCount()>
 		<cfsetting enablecfoutputonly="yes">
 		<cfsetting showdebugoutput="true">
+		
+		<cfif structKeyExists(url,"fwreinit")>
+			<cfset structDelete(application,"cbBootStrap")>
+		</cfif>
+		
 		<!--- BootStrap Reinit Check --->
 		<cfif not structKeyExists(application,"cbBootstrap") or application.cbBootStrap.isfwReinit()>
 			<cflock name="coldbox.bootstrap_#hash(getCurrentTemplatePath())#" type="exclusive" timeout="5" throwontimeout="true">
 				<cfset structDelete(application,"cbBootStrap")>
-				<cfset application.cbBootstrap = CreateObject("component","coldbox.system.Coldbox").init(COLDBOX_CONFIG_FILE,COLDBOX_APP_ROOT_PATH)>
+				<cfset application.cbBootstrap = CreateObject("component","coldbox.system.Coldbox").init(COLDBOX_CONFIG_FILE,COLDBOX_APP_ROOT_PATH,COLDBOX_APP_KEY,COLDBOX_APP_MAPPING)>
 			</cflock>
 		</cfif>
 		<!--- Reload Checks --->

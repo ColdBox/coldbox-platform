@@ -86,9 +86,7 @@ Loads all the default ColdBox settings into an application controller
 			settingsStruct["EventAction"] = conventions[1].eventAction.xmltext;
 			settingsStruct["ModelsConvention"] = conventions[1].modelsLocation.xmltext;
 			settingsStruct["ConfigConvention"] = conventions[1].configLocation.xmltext;
-			
-			// Setup the location of the config file by convention, tested later.
-			settingsStruct["ConfigFileLocation"] = appRootPath & "/" & settingsStruct["ConfigConvention"];
+			settingsStruct["ConfigFileLocation"] = "";
 			
 			// Store loaded settings
 			arguments.controller.setColdBoxSettings(settingsStruct);

@@ -68,7 +68,7 @@
     
     <!-- Conventions -->
     <Conventions>
-        <configLocation>config/coldbox.xml.cfm</configLocation>
+        <configLocation>config/coldbox.xml.cfm,config/Coldbox.cfc</configLocation>
         <handlerLocation>handlers</handlerLocation>
         <pluginsLocation>plugins</pluginsLocation>
         <layoutsLocation>layouts</layoutsLocation>
