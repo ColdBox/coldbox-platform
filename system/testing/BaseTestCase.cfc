@@ -99,7 +99,13 @@ id , name , mail
 				
 				// Config.xml by convention if not set before setup() call.
 				if(NOT len(instance.configMapping) ){
-					instance.configMapping = appRootPath & "config/coldbox.xml.cfm";
+					// check CFC First for convention testing.
+					if( fileExists(appRootPath & "config/Coldbox.cfc") ){
+						instance.configMapping = appRootPath & "config/Coldbox.cfc";
+					}
+					else{
+						instance.configMapping = appRootPath & "config/coldbox.xml.cfm";
+					}
 				}
 				
 				//Initialize mock Controller
@@ -109,7 +115,7 @@ id , name , mail
 				application[getColdboxAppKey()] = instance.controller;
 				
 				// Setup
-				instance.controller.getLoaderService().loadApplication(instance.ConfigMapping,instance.appMapping);
+				instance.controller.getLoaderService().loadApplication(instance.configMapping,instance.appMapping);
 			}
 			
 			//Clean up Initial Event Context
