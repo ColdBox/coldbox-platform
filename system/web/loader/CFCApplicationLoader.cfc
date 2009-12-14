@@ -171,9 +171,6 @@ Loads a coldbox xml configuration file
 			
 			/* ::::::::::::::::::::::::::::::::::::::::: COLDBOX SETTINGS VALIDATION :::::::::::::::::::::::::::::::::::::::::::: */
 			
-			// Default environment setting.
-			configStruct.environment = "PRODUCTION";
-			
 			//Check for AppName or throw
 			if ( not StructKeyExists(configStruct, "AppName") )
 				getUtil().throwit("There was no 'AppName' setting defined. This is required by the framework.","","XMLApplicationLoader.ConfigXMLParsingException");
@@ -839,7 +836,7 @@ Loads a coldbox xml configuration file
 	</cffunction>
 	
 	<cffunction name="detectEnvironment" access="private" returntype="void" hint="Detect the running environment and return the name" output="false" >
-		<cfargument name="oConfig" 		type="any" 	   required="true" hint="The config object"/>
+		<cfargument name="oConfig" 		type="any" 	    required="true" hint="The config object"/>
 		<cfargument name="config" 		type="struct" 	required="true" hint="The config struct"/>
 		<cfscript>
 			var environments = arguments.oConfig.getPropertyMixin("environments","variables",structnew());
@@ -850,13 +847,13 @@ Loads a coldbox xml configuration file
 			// Set default to production
 			configStruct.environment = "production";
 			
-			// is detection custom
+			// is detection is custom
 			if( structKeyExists(arguments.oConfig,"detectEnvironment") ){
 				//detect custom environment
 				configStruct.environment = arguments.oConfig.detectEnvironment();
 			}
 			else{
-				// loop over environments and do your magic
+				// loop over environments and do coldbox environment detection
 				for(key in environments){
 					// loop over patterns
 					for(i=1; i lte listLen(environments[key]); i=i+1){
@@ -867,7 +864,7 @@ Loads a coldbox xml configuration file
 					}			
 				}
 			}
-				
+			
 			// call environment method if exists
 			if( structKeyExists(arguments.oConfig,configStruct.environment) ){
 				invoker(arguments.oConfig,configStruct.environment);
