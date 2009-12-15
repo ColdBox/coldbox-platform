@@ -209,7 +209,6 @@ Description :
 	<cffunction name="getRegisteredHandler" access="public" hint="I get a registered handler and method according to passed event from the registeredHandlers setting." returntype="coldbox.system.beans.EventHandlerBean"  output="false">
 		<!--- ************************************************************* --->
 		<cfargument name="event"   type="any"  		required="true"  hint="The full event string to check and get." >
-		<cfargument name="noThrow" type="any" 		required="false" default="false" hint="No error throwing, used by request service."/>
 		<!--- ************************************************************* --->
 		<cfscript>
 		var handlerIndex = 0;
@@ -351,6 +350,44 @@ Description :
 		</cfscript>
 	</cffunction>
 	
+	<!--- Recursive Registration of Handler Directories --->
+	<cffunction name="getHandlerListing" access="public" output="false" returntype="array" hint="Get an array of registered handlers">
+		<!--- ************************************************************* --->
+		<cfargument name="directory" 	type="string" required="true">
+		<!--- ************************************************************* --->
+		<cfset var files = "">
+		<cfset var i = 1>
+		<cfset var thisAbsolutePath = "">
+		<cfset var cleanHandler = "">
+		<cfset var fileArray = arrayNew(1)>
+		
+		<!--- List Handlers --->
+		<cfdirectory action="list" recurse="true" name="files" directory="#arguments.directory#" filter="*.cfc"/>
+		
+		<cfscript>
+			// Convert windows \ to java /
+			arguments.directory = replace(arguments.directory,"\","/","all");
+			
+			// Iterate, clean and register
+			for (; i lte files.recordcount; i=i+1 ){
+				
+				thisAbsolutePath = replace(files.directory[i],"\","/","all") & "/";
+				cleanHandler = replacenocase(thisAbsolutePath,arguments.directory,"","all") & files.name[i];
+				
+				// Clean OS separators to dot notation.
+				cleanHandler = removeChars(replacenocase(cleanHandler,"/",".","all"),1,1);
+		
+				//Clean Extension
+				cleanHandler = getUtil().ripExtension(cleanhandler);
+				
+				//Add data to array
+				ArrayAppend(fileArray,cleanHandler);
+			}
+		
+			return fileArray;
+		</cfscript>		
+	</cffunction>
+	
 <!------------------------------------------- PRIVATE ------------------------------------------->
 	
 	<!--- Get a new MD cache entry structure --->
@@ -465,44 +502,5 @@ Description :
 			</cflock>
 		</cfif>
 	</cffunction>
-	
-	<!--- Recursive Registration of Handler Directories --->
-	<cffunction name="getHandlerListing" access="private" output="false" returntype="array" hint="Get an array of registered handlers">
-		<!--- ************************************************************* --->
-		<cfargument name="directory" 	type="string" required="true">
-		<!--- ************************************************************* --->
-		<cfset var files = "">
-		<cfset var i = 1>
-		<cfset var thisAbsolutePath = "">
-		<cfset var cleanHandler = "">
-		<cfset var fileArray = arrayNew(1)>
-		
-		<!--- List Handlers --->
-		<cfdirectory action="list" recurse="true" name="files" directory="#arguments.directory#" filter="*.cfc"/>
-		
-		<cfscript>
-			// Convert windows \ to java /
-			arguments.directory = replace(arguments.directory,"\","/","all");
-			
-			// Iterate, clean and register
-			for (; i lte files.recordcount; i=i+1 ){
-				
-				thisAbsolutePath = replace(files.directory[i],"\","/","all") & "/";
-				cleanHandler = replacenocase(thisAbsolutePath,arguments.directory,"","all") & files.name[i];
-				
-				// Clean OS separators to dot notation.
-				cleanHandler = removeChars(replacenocase(cleanHandler,"/",".","all"),1,1);
-		
-				//Clean Extension
-				cleanHandler = getUtil().ripExtension(cleanhandler);
-				
-				//Add data to array
-				ArrayAppend(fileArray,cleanHandler);
-			}
-		
-			return fileArray;
-		</cfscript>		
-	</cffunction>
-
 	
 </cfcomponent>
