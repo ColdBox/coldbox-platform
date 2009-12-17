@@ -182,26 +182,18 @@ Description :
 			var handlersList = controller.getSetting("RegisteredHandlers");
 			var handlersExternalList = controller.getSetting("RegisteredExternalHandlers");
 			var currentEvent = arguments.event.getCurrentEvent();
-			var EventName = controller.getSetting("EventName");
-		
-			/* Verify our incoming event in our registration lists */
-			handlerIndex = listFindNoCase(handlersList, currentEvent);
+			
+			// Verify our incoming event in our registration lists
+			handlerIndex 		 = listFindNoCase(handlersList, currentEvent);
 			handlerExternalIndex = listFindNoCase(handlersExternalList, currentEvent);
 			
-			/* Do a Default Action Test First, if default action desired. */
-			if( handlerIndex ){
-				/* Append the default event action */
+			// Do a Default Action Test First, if default action desired.
+			if( handlerIndex OR handlerExternalIndex ){
+				// Append the default event action
 				currentEvent = currentEvent & "." & controller.getSetting('EventAction',1);
-				/* Save it as the current Event */
-				event.setValue(EventName,currentEvent);
-			}
-			/* Check for external location */
-			else if( handlerExternalIndex ){
-				/* Append the default event action */
-				currentEvent = currentEvent & "." & controller.getSetting('EventAction',1);
-				/* Save it as the current EVent */
-				event.setValue(EventName,currentEvent);
-			}			
+				// Save it as the current Event
+				event.setValue(controller.getSetting("EventName"),currentEvent);
+			}		
 		</cfscript>
 	</cffunction>
 	
