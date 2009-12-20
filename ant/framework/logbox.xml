@@ -37,16 +37,33 @@
 	
 	<!--build-->
 	<target name="build" description="Build a new logbox distribution" depends="init">
-      	<!-- Copy build ID -->
+      	<delete dir="${dir.build}" />
+		
+		<!-- Copy build ID -->
 		<concat destfile="${dir.build}/${build.label}">Built on ${start.TODAY}</concat>
 		
 		<!-- Copy src -->	
-      	<copy todir="${dir.build}/system/logging">
+      	<copy todir="${dir.build}/logbox/system/logging">
         	<fileset dir="system/logging" />
         </copy>
-		<copy todir="${dir.build}/system/core">
+		<copy todir="${dir.build}/logbox/system/core">
         	<fileset dir="system/core" />
         </copy>
+		
+		<echo>Refactoring for coldbox absolute paths</echo>
+		<replace dir="${dir.build}" value="/logbox/system/" summary="yes">
+		  	<include name="**/*.cfc" />
+			<include name="**/*.cfm" />
+			<include name="**/*.xml" />
+			<replacetoken>/coldbox/system/</replacetoken>
+		</replace>
+		<echo>Refactoring for coldbox instantitation and cfc paths</echo>
+		<replace dir="${dir.build}" value="logbox.system." summary="yes">
+		  	<include name="**/*.cfc" />
+			<include name="**/*.cfm" />
+			<include name="**/*.xml" />
+			<replacetoken>coldbox.system.</replacetoken>
+		</replace>
 		
 		<!--Copy text files to root folder-->
 		<copy todir="${dir.build}/">

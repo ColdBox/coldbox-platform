@@ -151,6 +151,11 @@ Description :
 	
 <!------------------------------------------- PRIVATE ------------------------------------------->
 	
+	<!--- Get ColdBox Util --->
+	<cffunction name="getUtil" access="private" output="false" returntype="coldbox.system.core.util.Util" hint="Create and return a util object">
+		<cfreturn createObject("component","coldbox.system.core.util.Util")/>
+	</cffunction>
+	
 	<!--- $log --->
 	<cffunction name="$log" output="false" access="public" returntype="void" hint="Log an internal message to the ColdFusion facilities.  Used when errors ocurrs or diagnostics">
 		<cfargument name="severity" type="string" required="true" default="INFO" hint="The severity to use."/>

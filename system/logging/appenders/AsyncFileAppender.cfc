@@ -70,13 +70,18 @@ Properties:
 				entry = '"#severityToString(logEvent.getSeverity())#","#getname()#","#dateformat(timestamp,"MM/DD/YYYY")#","#timeformat(timestamp,"HH:MM:SS")#","#loge.getCategory()#","#message#"';
 			}
 			
-			</cfscript>
+		</cfscript>
 		
-		<!--- Thread this puppy --->
-		<cfthread name="#threadName#" entry="#entry#"> 
+		<!--- Are we in a thread already? --->
+		<cfif getUtil().inThread()>
 			<cfset append(attributes.entry)>
-		</cfthread>		
-
+		<cfelse>
+			<!--- Thread this puppy --->
+			<cfthread name="#threadName#" entry="#entry#"> 
+				<cfset append(attributes.entry)>
+			</cfthread>		
+		</cfif>
+				
 	</cffunction>
 
 <!------------------------------------------- PRIVATE ------------------------------------------->
