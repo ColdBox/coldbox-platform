@@ -25,7 +25,7 @@ Description :
 										  "afterHandlerCreation,afterModelCreation,afterPluginCreation," &
 										  "applicationEnd,sessionStart,sessionEnd," &
 										  "preProcess,preEvent,postEvent,postProcess,preProxyResults," &
-										  "preLayout,preRender,postRender," &
+										  "preLayout,preRender,postRender,preViewRender,postViewRender" &
 										  "afterCacheElementInsert,afterCacheElementRemoved,afterCacheElementExpired";
 			// Init Container/
 			instance.interceptionStates = structnew();
