@@ -36,13 +36,13 @@
 		<div style="margin-bottom:5px;">
 		  <input type="button" value="Open Cache Monitor" name="cachemonitor" style="font-size:10px" 
 		  		 title="Open the cache monitor in a new window." 
-		  		 onClick="window.open('index.cfm?debugpanel=cache','cachemonitor','status=1,toolbar=0,location=0,resizable=1,scrollbars=1,height=750,width=850')">
+		  		 onClick="window.open('#URLBase#?debugpanel=cache','cachemonitor','status=1,toolbar=0,location=0,resizable=1,scrollbars=1,height=750,width=850')">
 		  <br>
 		</div>
 		<cfelse>
 		<div>
 			<strong>Monitor Refresh Frequency (Seconds): </strong>
-			<select id="frequency" style="font-size:10px" onChange="fw_pollmonitor('cache',this.value)">
+			<select id="frequency" style="font-size:10px" onChange="fw_pollmonitor('cache',this.value,'#URLBase#')">
 				<option value="0">No Polling</option>
 				<cfloop from="5" to="30" index="i" step="5">
 				<option value="#i#" <cfif url.frequency eq i>selected</cfif>>#i# sec</option>
@@ -141,17 +141,17 @@
 			   name="cboxbutton_expirekeys"
 			   style="font-size:10px" 
 			   title="Expire all the keys in the cache" 
-			   onClick="location.href='index.cfm?cbox_command=expirecache&debugpanel=#event.getValue('debugPanel','')#'" />
+			   onClick="location.href='#URLBase#?cbox_command=expirecache&debugpanel=#event.getValue('debugPanel','')#'" />
 		<input type="button" value="Clear All Events" 
 			   name="cboxbutton_clearallevents"
 			   style="font-size:10px" 
 			   title="Remove all the events in the cache" 
-			   onClick="location.href='index.cfm?cbox_command=clearallevents&debugpanel=#event.getValue('debugPanel','')#'" />
+			   onClick="location.href='#URLBase#?cbox_command=clearallevents&debugpanel=#event.getValue('debugPanel','')#'" />
 		<input type="button" value="Clear All Views" 
 			   name="cboxbutton_clearallviews"
 			   style="font-size:10px" 
 			   title="Remove all the views in the cache" 
-			   onClick="location.href='index.cfm?cbox_command=clearallviews&debugpanel=#event.getValue('debugPanel','')#'" />
+			   onClick="location.href='#URLBase#?cbox_command=clearallviews&debugpanel=#event.getValue('debugPanel','')#'" />
 		
 		<!--- Object Charts --->
 		<div class="fw_cachetable">
@@ -173,7 +173,7 @@
 			  <cfset expDate = dateadd("n",cacheMetaData[key].timeout,cacheMetadata[key].Created)>
 			  <tr <cfif cacheKeyIndex mod 2 eq 0>class="even"</cfif>>
 			  	<td align="left">
-				  	<a href="javascript:fw_openwindow('index.cfm?debugpanel=cacheviewer&key=#urlEncodedFormat(key)#','CacheViewer',650,375,'resizable,scrollbars,status')" title="Dump contents">#listLast(key,"_")#</a></td>
+				  	<a href="javascript:fw_openwindow('#URLBase#?debugpanel=cacheviewer&key=#urlEncodedFormat(key)#','CacheViewer',650,375,'resizable,scrollbars,status')" title="Dump contents">#listLast(key,"_")#</a></td>
 				<td align="center" >#cacheMetadata[key].hits#</td>
 				<td align="center" >#cacheMetadata[key].Timeout#</td>
 				<td align="center" >#dateformat(cacheMetadata[key].Created,"mmm-dd")# <Br/> #timeformat(cacheMetadata[key].Created,"hh:mm:ss tt")#</td>
@@ -191,7 +191,7 @@
 						   name="cboxbutton_removeentry"
 					  	   style="font-size:10px" 
 						   title="Remove this entry from the cache." 
-					   	   onClick="location.href='index.cfm?cbox_command=delcacheentry&cbox_cacheentry=#urlEncodedFormat(key)#&debugpanel=#event.getValue('debugPanel','')#'">
+					   	   onClick="location.href='#URLBase#?cbox_command=delcacheentry&cbox_cacheentry=#urlEncodedFormat(key)#&debugpanel=#event.getValue('debugPanel','')#'">
 				</td>
 			  </tr>
 			  <cfset cacheKeyIndex = cacheKeyIndex + 1>

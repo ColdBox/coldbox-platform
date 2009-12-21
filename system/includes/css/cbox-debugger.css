@@ -1,4 +1,3 @@
-/* DEBUG PANEL MAIN */
 .fw_debugPanel{
     font-family: Verdana,Arial,sans-serif;
     font-size: 11px;
@@ -83,9 +82,6 @@
 	font-weight: bold;
 	font-style: italic;	
 }
-/* END OF DEBUG PANEL MAIN */
-
-/* Types of Text To Render in Spans */
 .fw_redText{
 	font-weight:bold;
 	color:#CC0000;
@@ -115,9 +111,6 @@
 	color: #666666;
 	font-weight:bold;
 }
-/* END OF COLORS */
-
-/* Debugging Tables */
 .fw_debugTables{
 	font-size: 11px;
 	border:1px outset #93C2FF;
@@ -166,9 +159,6 @@
 	background-color: white;
 	text-align: center;
 }
-/* END OF Debugging Tables */
-
-
 .fw_errorTables{
 	font-size: 12px;
 	font-family: verdana;
@@ -199,3 +189,19 @@
 	overflow:scroll;
 	height: 300px;
 }
+.fw_errorDiv{
+	font-size:12px;
+	font-family: verdana;
+	margin: 5px;
+	padding: 5px;
+}
+.fw_errorDiv h3{
+	margin-top: 3px;
+	margin-bottom: 3px;
+	color: ##993333;
+}
+.fw_errorNotice{
+	padding: 5px;
+	background-color: ##FFF6CC;
+	border: 1px solid ##999999;
+}CSS Tools.codaplugin

@@ -13,28 +13,9 @@ Description :
 ----------------------------------------------------------------------->
 </cfsilent>
 <cfoutput>
-<style>
-<cfinclude template="Style.css">
-</style>
+<!--- StyleSheets --->
+<style><cfinclude template="/coldbox/system/includes/css/cbox-debugger.css"></style>
 
-<style>
-.fw_errorDiv{
-	font-size:12px;
-	font-family: verdana;
-	margin: 5px;
-	padding: 5px;
-}
-.fw_errorDiv h3{
-	margin-top: 3px;
-	margin-bottom: 3px;
-	color: ##993333;
-}
-.fw_errorNotice{
-	padding: 5px;
-	background-color: ##FFF6CC;
-	border: 1px solid ##999999;
-}
-</style>
 <div class="fw_errorDiv">
 	<h1>Oops! Exception Encountered</h1>
 	
