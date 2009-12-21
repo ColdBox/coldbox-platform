@@ -51,6 +51,7 @@ Description :
 					if( findNoCase("cfthread",createObject("java","java.lang.Thread").currentThread().getThreadGroup().getName()) ){
 						return true;
 					}
+					break;
 				}
 				
 				case "RAILO"	: { 
@@ -61,6 +62,7 @@ Description :
 					if( findNoCase("cfthread",createObject("java","java.lang.Thread").currentThread().getThreadGroup().getName()) ){
 						return true;
 					}
+					break;
 				}
 			} //end switch statement.
 			
