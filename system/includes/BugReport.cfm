@@ -14,7 +14,7 @@ Description :
 </cfsilent>
 <cfoutput>
 <!--- StyleSheets --->
-<style><cfinclude template="/coldbox/system/includes/css/cbox-debugger.css"></style>
+<style><cfinclude template="/coldbox/system/includes/css/cbox-debugger.pack.css"></style>
 
 <div class="fw_errorDiv">
 	<h1>Oops! Exception Encountered</h1>
@@ -111,31 +111,31 @@ Description :
 	 </tr>
 	 <tr>
 	   <td align="right" class="fw_errorTablesTitles">Template Path : </td>
-	   <td >#CGI.CF_TEMPLATE_PATH#</td>
+	   <td >#htmlEditFormat(CGI.CF_TEMPLATE_PATH)#</td>
 	 </tr>
 	  <tr>
 	   <td align="right" class="fw_errorTablesTitles">Path Info : </td>
-	   <td >#CGI.PATH_INFO#</td>
+	   <td >#htmlEditFormat(CGI.PATH_INFO)#</td>
 	 </tr>
 	 <tr>
 	   <td align="right" class="fw_errorTablesTitles"> Host &amp; Server: </td>
-	   <td >#cgi.http_host# #controller.getPlugin("Utilities").getInetHost()#</td>
+	   <td >#htmlEditFormat(cgi.http_host)# #controller.getPlugin("Utilities").getInetHost()#</td>
 	 </tr>
 	 <tr>
 	   <td align="right" class="fw_errorTablesTitles">Query String: </td>
-	   <td >#cgi.QUERY_STRING#</td>
+	   <td >#htmlEditFormat(cgi.QUERY_STRING)#</td>
 	 </tr>
 	
-	<cfif len(cgi.HTTP_REFERER) neq 0>
+	<cfif len(cgi.HTTP_REFERER)>
 	 <tr>
 	   <td align="right" class="fw_errorTablesTitles">Referrer:</td>
-	   <td >#cgi.HTTP_REFERER#</td>
+	   <td >#htmlEditFormat(cgi.HTTP_REFERER)#</td>
 	 </tr>
 	</cfif>
 	
 	<tr>
 	   <td align="right" class="fw_errorTablesTitles">Browser:</td>
-	   <td >#cgi.HTTP_USER_AGENT#</td>
+	   <td >#htmlEditFormat(cgi.HTTP_USER_AGENT)#</td>
 	</tr>
 	
 	 <cfif isStruct(Exception.getExceptionStruct()) >
@@ -199,7 +199,7 @@ Description :
 	 <tr>
 	    <td colspan="2" >
 	    <cfif isSimpleValue(Exception.getExtraInfo())>
-	   		<cfif Exception.getExtraInfo() eq "">[N/A]<cfelse>#Exception.getExtraInfo()#</cfif>
+	   		<cfif not len(Exception.getExtraInfo())>[N/A]<cfelse>#Exception.getExtraInfo()#</cfif>
 	   	<cfelse>
 	   		<cfdump var="#Exception.getExtraInfo()#" expand="false">
 		</cfif>

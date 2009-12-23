@@ -78,7 +78,7 @@ Description :
 		  Query String:
 		</div>
 		<div class="fw_debugContentCell">
-		<cfif cgi.QUERY_STRING eq ""><span class="fw_redText">N/A</span></cfif>#cgi.QUERY_STRING#
+		#htmlEditFormat(cgi.QUERY_STRING)#
 		</div>
 
 		<div class="fw_debugTitleCell">
