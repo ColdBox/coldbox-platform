@@ -3,34 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title><cfoutput>#controller.getSetting("Codename",1)# #controller.getSetting("Version",1)#</cfoutput></title>
-<link href="includes/style.css" rel="stylesheet" type="text/css" />
-<style type="text/css">
-<!--
-.Titles {
-	font:Arial, Helvetica, sans-serif;
-	font-size: 12px;
-	font-weight: bold;
-	color: #FFFFFF;
-	background-color: #7b5cae;
-	padding: 5px 5px 5px 5px;
-	height: 30px;
-	text-align:center;
-}
-body{
-font:Arial, Helvetica, sans-serif;
-font-size: 12px;
-}
-a {
-	font:Arial, Helvetica, sans-serif;
-	font-size: 12px;
-	color: #ffffff;
-}
-a:hover {
-	color: #FF6600;
-}
-
--->
-</style>
+<link href="includes/mypack.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
 <table width="700" border="0" align="center" cellpadding="2" cellspacing="1" style="border: 1px solid #7b5cae">
