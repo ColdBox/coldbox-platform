@@ -432,7 +432,7 @@ Quick and Dirty Feed Dump:
 						// when arguments itemType is 'query', ...
 						else {
 							// append new feed items to master items
-							feed.items = getPlugin("queryHelper").doQueryAppend(feed.items,feedCombArr[i].items);
+							feed.items = getPlugin("QueryHelper").doQueryAppend(feed.items,feedCombArr[i].items);
 							// reorder and trim the master items
 							feed.items = createObject('component','coldbox.system.web.feeds.FeedReader').querySortandTrim(feed.items,arguments.maxItems,'datepublished','desc');
 						}
@@ -837,7 +837,7 @@ Quick and Dirty Feed Dump:
 		<cfscript>
 			var ua = "ColdBox/";
 			ua = ua & getSetting("version",1); // ColdBox version
-			ua = ua & ' (#server.coldfusion.productname# #server.coldfusion.productversion#;#getPlugin('utilities').getOSName()#)'; // CFML engine and operating system
+			ua = ua & ' (#server.coldfusion.productname# #server.coldfusion.productversion#;#getPlugin('JVMUtils').getOSName()#)'; // CFML engine and operating system
 			return ua;
 		</cfscript>
 	</cffunction>
