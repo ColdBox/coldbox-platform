@@ -140,6 +140,7 @@ Description :
 		<cfargument name="cache" 					required="false" type="boolean" default="false" hint="True if you want to cache the view.">
 		<cfargument name="cacheTimeout" 			required="false" type="string"  default=""		hint="The cache timeout">
 		<cfargument name="cacheLastAccessTimeout" 	required="false" type="string"  default="" 		hint="The last access timeout">
+		<cfargument name="cacheSuffix" 				required="false" type="string"  default=""      hint="Add a cache suffix to the view cache entry. Great for multi-domain caching or i18n caching."/>
 		<!--- ************************************************************* --->
 		<cfset var cbox_RenderedView = "">
 		<!--- Cache Entries --->
@@ -147,7 +148,7 @@ Description :
 		<cfset var cbox_cacheEntry = "">
 		
 		<!--- Setup the cache key --->
-		<cfset cbox_cacheKey = getColdboxOCM().VIEW_CACHEKEY_PREFIX & "external-" & arguments.view>
+		<cfset cbox_cacheKey = getColdboxOCM().VIEW_CACHEKEY_PREFIX & "external-" & arguments.view & arguments.cacheSuffix>
 		
 		<!--- Do we have a cached view?? --->
 		<cfif getColdboxOCM().lookup(cbox_cacheKey)>
