@@ -158,12 +158,12 @@ Description :
 
 	<!--- render the debug log --->
 	<cffunction name="renderDebugLog" access="public" hint="Return the debug log." output="false" returntype="Any">
-		<cfset var RenderedDebugging = "">
-		<cfset var Event = controller.getRequestService().getContext()>
+		<cfset var renderedDebugging = "">
+		<cfset var event = controller.getRequestService().getContext()>
 		<cfset var rc = event.getCollection()>
 		<cfset var prc = event.getCollection(private=true)>
 
-		<!--- Set local Variables --->
+		<!--- Set Cache Data --->
 		<cfset var itemTypes = controller.getColdboxOCM().getItemTypes()>
 		<cfset var cacheMetadata = "">
 		<cfset var cacheKeyList = "">
@@ -179,23 +179,32 @@ Description :
 
 		<!--- Debug Rendering Type --->
 		<cfset var renderType = "main">
+		
+		<!--- URL Base --->
+		<cfset var URLBase = event.getsesBaseURL()>
 
 		<!--- JVM Data --->
-		<cfset var JVMRuntime = controller.getColdboxOCM().getJavaRuntime().getRuntime()>
+		<cfset var JVMRuntime = createObject("java", "java.lang.Runtime").getRuntime()>
 		<cfset var JVMFreeMemory = JVMRuntime.freeMemory()/1024>
 		<cfset var JVMTotalMemory = JVMRuntime.totalMemory()/1024>
 		<cfset var JVMMaxMemory = JVMRuntime.maxMemory()/1024>
 
+		<!--- URL Base --->
+		<cfif NOT event.isSES()>
+			<cfset URLBase = "index.cfm">
+		</cfif>
+
 		<!--- Render debuglog --->
-		<cfsavecontent variable="RenderedDebugging"><cfinclude template="../includes/Debug.cfm"></cfsavecontent>
-		<cfreturn RenderedDebugging>
+		<cfsavecontent variable="renderedDebugging"><cfinclude template="../includes/Debug.cfm"></cfsavecontent>
+		
+		<cfreturn renderedDebugging>
 	</cffunction>
 
 	<!--- Render the cache panel --->
 	<cffunction name="renderCachePanel" access="public" hint="Renders the caching panel." output="false" returntype="Any">
 		<cfset var event = controller.getRequestService().getContext()>
 		<cfset var rc = event.getCollection()>
-		<cfset var RenderedDebugging = "">
+		<cfset var renderedDebugging = "">
 
 		<!--- Set local Variables --->
 		<cfset var itemTypes = controller.getColdboxOCM().getItemTypes()>
@@ -206,20 +215,27 @@ Description :
 		<cfset var cacheStats = controller.getColdboxOCM().getCacheStats()>
 		
 		<!--- Setup Local Variables --->
-		<cfset var RequestCollection = Event.getCollection()>
+		<cfset var requestCollection = event.getCollection()>
 
 		<!--- JVM Data --->
-		<cfset var JVMRuntime = controller.getColdboxOCM().getJavaRuntime().getRuntime()>
+		<cfset var JVMRuntime = createObject("java", "java.lang.Runtime").getRuntime()>
 		<cfset var JVMFreeMemory = JVMRuntime.freeMemory()/1024>
 		<cfset var JVMTotalMemory = JVMRuntime.totalMemory()/1024>
 		<cfset var JVMMaxMemory = JVMRuntime.maxMemory()/1024>
 
 		<!--- Debug Rendering Type --->
 		<cfset var renderType = "CachePanel">
+		
+		<!--- URL Base --->
+		<cfset var URLBase = event.getsesBaseURL()>
+		<!--- URL Base --->
+		<cfif NOT event.isSES()>
+			<cfset URLBase = "index.cfm">
+		</cfif>
 
 		<!--- Generate Debugging --->
-		<cfsavecontent variable="RenderedDebugging"><cfinclude template="/coldbox/system/includes/panels/CachePanel.cfm"></cfsavecontent>
-		<cfreturn RenderedDebugging>
+		<cfsavecontent variable="renderedDebugging"><cfinclude template="/coldbox/system/includes/panels/CachePanel.cfm"></cfsavecontent>
+		<cfreturn renderedDebugging>
 	</cffunction>
 	
 	<!--- Render Cache Dumpver --->
@@ -253,10 +269,10 @@ Description :
 	</cffunction>
 	
 	<!--- Get set the cookie name --->
-	<cffunction name="getcookieName" access="public" output="false" returntype="string" hint="Get cookieName">
+	<cffunction name="getCookieName" access="public" output="false" returntype="string" hint="Get cookieName">
 		<cfreturn instance.cookieName/>
 	</cffunction>
-	<cffunction name="setcookieName" access="public" output="false" returntype="void" hint="Set cookieName">
+	<cffunction name="setCookieName" access="public" output="false" returntype="void" hint="Set cookieName">
 		<cfargument name="cookieName" type="string" required="true"/>
 		<cfset instance.cookieName = arguments.cookieName/>
 	</cffunction>

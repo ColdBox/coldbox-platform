@@ -672,19 +672,22 @@ Loads a coldbox xml configuration file
 				configStruct.registeredLayouts[key] = layouts[key].file;
 				
 				// register views
-				for(i=1; i lte listLen(layouts[key].views); i=i+1){
-					if ( not StructKeyExists(LayoutViewStruct, lcase( listGetAt(layouts[key].views,i) ) ) ){
-						LayoutViewStruct[lcase( listGetAt(layouts[key].views,i) )] = layouts[key].file;
+				if( structKeyExists(layouts[key],"views") ){
+					for(i=1; i lte listLen(layouts[key].views); i=i+1){
+						if ( not StructKeyExists(LayoutViewStruct, lcase( listGetAt(layouts[key].views,i) ) ) ){
+							LayoutViewStruct[lcase( listGetAt(layouts[key].views,i) )] = layouts[key].file;
+						}
 					}
 				}
 				
 				// register folders
-				for(i=1; i lte listLen(layouts[key].folders); i=i+1){
-					if ( not StructKeyExists(LayoutFolderStruct, lcase( listGetAt(layouts[key].folders,i) ) ) ){
-						LayoutFolderStruct[lcase( listGetAt(layouts[key].folders,i) )] = layouts[key].file;
+				if( structKeyExists(layouts[key],"folders") ){
+					for(i=1; i lte listLen(layouts[key].folders); i=i+1){
+						if ( not StructKeyExists(LayoutFolderStruct, lcase( listGetAt(layouts[key].folders,i) ) ) ){
+							LayoutFolderStruct[lcase( listGetAt(layouts[key].folders,i) )] = layouts[key].file;
+						}
 					}
 				}
-				
 			}
 			
 			// Register extra layout/view/folder combos

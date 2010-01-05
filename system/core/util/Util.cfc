@@ -37,6 +37,38 @@ Description :
 			return expandPath(arguments.path);
 		</cfscript>
 	</cffunction>
+	
+	<!--- inThread --->
+	<cffunction name="inThread" output="false" access="public" returntype="boolean" hint="Check if you are in cfthread or not">
+		<cfscript>
+			var engine = "ADOBE";
+			
+			if ( server.coldfusion.productname eq "Railo" ){ engine = "RAILO"; }
+			if ( server.coldfusion.productname eq "BlueDragon" ){ engine = "BD"; }
+			
+			switch(engine){
+				case "ADOBE"	: { 
+					if( findNoCase("cfthread",createObject("java","java.lang.Thread").currentThread().getThreadGroup().getName()) ){
+						return true;
+					}
+					break;
+				}
+				
+				case "RAILO"	: { 
+					return getPageContext().hasFamily(); 
+				}
+				
+				case "BD"		: { 
+					if( findNoCase("cfthread",createObject("java","java.lang.Thread").currentThread().getThreadGroup().getName()) ){
+						return true;
+					}
+					break;
+				}
+			} //end switch statement.
+			
+			return false;
+		</cfscript>
+	</cffunction>
 
 	<!--- PlaceHolder Replacer --->
 	<cffunction name="placeHolderReplacer" access="public" returntype="any" hint="PlaceHolder Replacer for strings containing ${} patterns" output="false" >

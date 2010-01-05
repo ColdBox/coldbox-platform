@@ -12,6 +12,7 @@ Description :
 	The ColdBox debugger
 ----------------------------------------------------------------------->
 <cfoutput>
+<!--- set cbox debugger header --->
 <cfinclude template="DebugHeader.cfm">
 <div style="margin-top:40px"></div>
 <div class="fw_debugPanel">
@@ -33,7 +34,7 @@ Description :
 	<div class="fw_debugContent<cfif getDebuggerConfig().getExpandedInfoPanel()>View</cfif>" id="fw_info">
 		
 		<div>
-			<form name="fw_reinitcoldbox" id="fw_reinitcoldbox" action="#cgi.script_name#" method="POST">
+			<form name="fw_reinitcoldbox" id="fw_reinitcoldbox" action="#URLBase#" method="POST">
 				<input type="hidden" name="fwreinit" id="fwreinit" value="">
 				<input type="button" value="Reinitialize Framework" name="reinitframework" style="font-size:10px" 
 					   title="Reinitialize the framework." 
@@ -42,8 +43,13 @@ Description :
 				&nbsp;
 				<input type="button" value="Open Profiler Monitor" name="profilermonitor" style="font-size:10px" 
 					   title="Open the profiler monitor in a new window." 
-					   onClick="window.open('index.cfm?debugpanel=profiler','profilermonitor','status=1,toolbar=0,location=0,resizable=1,scrollbars=1,height=750,width=850')">
+					   onClick="window.open('#URLBase#?debugpanel=profiler','profilermonitor','status=1,toolbar=0,location=0,resizable=1,scrollbars=1,height=750,width=850')">
 				</cfif>
+				&nbsp;
+				<input type="button" value="Turn Debugger Off" name="debuggerButton" style="font-size:10px" 
+					   title="Turn the ColdBox Debugger Off" 
+					   onClick="window.location='#URLBase#?debugmode=false'">
+				
 			</form>
 		  <br>
 		</div>
@@ -60,13 +66,7 @@ Description :
 		<div class="fw_debugContentCell">
 		#controller.getSetting("AppName")# <span class="fw_purpleText">(#lcase(controller.getSetting("Environment"))#)</span>
 		</div>
-		<div class="fw_debugTitleCell">
-		  Template:
-		</div>
-		<div class="fw_debugContentCell">
-			#cgi.PATH_TRANSLATED#
-		</div>
-
+		
 		<div class="fw_debugTitleCell">
 		  TimeStamp:
 		</div>
@@ -78,7 +78,7 @@ Description :
 		  Query String:
 		</div>
 		<div class="fw_debugContentCell">
-		<cfif cgi.QUERY_STRING eq ""><span class="fw_redText">N/A</span></cfif>#cgi.QUERY_STRING#
+		#htmlEditFormat(cgi.QUERY_STRING)#
 		</div>
 
 		<div class="fw_debugTitleCell">

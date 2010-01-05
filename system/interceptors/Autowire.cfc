@@ -109,7 +109,7 @@ Description :
 											  debugMode=getProperty('debugMode'));
 			}
 			catch(Any e){
-				getPlugin("logger").error("Error autowiring #getmetadata(arguments.target).name#. #e.message# #e.detail#");
+				log.error("Error autowiring #getmetadata(arguments.target).name#. #e.message# #e.detail#");
 				$throw(message="Error autowiring #getmetadata(arguments.target).name#. #e.message# #e.detail#",detail="#e.stacktrace#",type="Autowire.AutowireException");
 			}
 		</cfscript>

@@ -44,7 +44,7 @@ Description :
 	
 		<div>
 			<strong>Monitor Refresh Frequency (Seconds): </strong>
-			<select id="frequency" style="font-size:10px" onChange="fw_pollmonitor('profiler',this.value)">
+			<select id="frequency" style="font-size:10px" onChange="fw_pollmonitor('profiler',this.value,'#URLBase#')">
 				<option value="0">No Polling</option>
 				<cfloop from="5" to="30" index="i" step="5">
 				<option value="#i#" <cfif url.frequency eq i>selected</cfif>>#i# sec</option>
