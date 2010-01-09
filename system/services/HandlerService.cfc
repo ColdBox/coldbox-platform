@@ -67,18 +67,14 @@ Description :
 		<cfargument name="RequestContext"    type="any" required="true" hint="The request Context"/>
 		<!--- ************************************************************* --->
 		<cfscript>
-			/* Get the validated event handler bean */
 			var oEventHandler = "";
-			/* Request context to check */
 			var oRequestContext = arguments.RequestContext;
-			/* Cache Keys */
-			var cacheKey = getColdboxOCM().HANDLER_CACHEKEY_PREFIX & oEventHandlerBean.getRunnable();
+			var cacheKey = getColdboxOCM().HANDLER_CACHEKEY_PREFIX & arguments.oEventHandlerBean.getRunnable();
 			var eventCacheKey = "";
-			/* Cache Util */
 			var oEventURLFacade = getController().getColdboxOCM().getEventURLFacade();
-			/* metadata entry structures */
 			var handlerDictionaryEntry = "";
 			var eventDictionaryEntry = "";
+			var onInvalidEvent = controller.getSetting("onInvalidEvent");
 			
 			/* ::::::::::::::::::::::::::::::::::::::::: HANDLERS CACHING :::::::::::::::::::::::::::::::::::::::::::: */
 			/* Are we caching handlers? */
@@ -88,7 +84,7 @@ Description :
 				/* Verify if not found, then create it and cache it */
 				if( not isObject(oEventHandler) ){
 					/* Create a new handler */
-					oEventHandler = newHandler(oEventHandlerBean.getRunnable());
+					oEventHandler = newHandler(arguments.oEventHandlerBean.getRunnable());
 					/* Save its metadata For event Caching and Aspects */
 					saveHandlermetadata(oEventHandler,cacheKey);					
 					/* Get dictionary entry for operations, it is now guaranteed. */
@@ -101,7 +97,7 @@ Description :
 			}
 			else{
 				/* Create Runnable Object */
-				oEventHandler = newHandler(oEventHandlerBean.getRunnable());
+				oEventHandler = newHandler(arguments.oEventHandlerBean.getRunnable());
 				/* Save its metadata For event Caching and Aspects */
 				saveHandlermetadata(oEventHandler,cacheKey);					
 			}
@@ -109,36 +105,43 @@ Description :
 			/* ::::::::::::::::::::::::::::::::::::::::: EVENT METHOD TESTING :::::::::::::::::::::::::::::::::::::::::::: */
 			
 			/* Method Testing and Validation */
-			if ( not oEventHandlerBean.getisPrivate() and not structKeyExists(oEventHandler,oEventHandlerBean.getMethod()) ){
+			if ( not arguments.oEventHandlerBean.getisPrivate() and not structKeyExists(oEventHandler,arguments.oEventHandlerBean.getMethod()) ){
 				
 				/* Check if the handler has an onMissingAction() method, virtual Events */
 				if( structKeyExists(oEventHandler,"onMissingAction") ){
-					oEventHandlerBean.setisMissingAction(true);
-					oEventHandlerBean.setMissingAction(oEventHandlerBean.getMethod());
+					arguments.oEventHandlerBean.setisMissingAction(true);
+					arguments.oEventHandlerBean.setMissingAction(arguments.oEventHandlerBean.getMethod());
 					/* Let's execute our missing action */
 					return oEventHandler;
 				}
 				
 				/* Invalid Event Detected, log it */
-				controller.getPlugin("Logger").logEntry("error","Invalid Event detected: #oEventHandlerBean.getRunnable()#");
+				controller.getPlugin("Logger").logEntry("error","Invalid Event detected: #arguments.oEventHandlerBean.getRunnable()#");
 				
 				// If onInvalidEvent is registered, use it
-				if ( len(trim(controller.getSetting("onInvalidEvent"))) ){
+				if ( len(trim(onInvalidEvent)) ){
 					// Test for invalid Event Error
-					if ( compareNoCase(controller.getSetting("onInvalidEvent"),oRequestContext.getCurrentEvent()) eq 0 ){
+					if ( compareNoCase(onInvalidEvent,arguments.oEventHandlerBean.getRunnable()) eq 0 ){
 						getUtil().throwit(message="The onInvalid event is invalid",
-										  detail="The onInvalidEvent setting is also invalid: #controller.getSetting('onInvalidEvent')#. Please check your settings",
+										  detail="The onInvalidEvent setting is also invalid: #onInvalidEvent#. Please check your settings",
 										  type="HandlerService.onInValidEventSettingException");
 					}
-					//Place invalid event in request context.
-					oRequestContext.setValue("invalidevent",oEventHandlerBean.getRunnable());
 					
-					// Relocate to Invalid Event, with collection persistance
-					controller.setNextEvent(event=controller.getSetting("onInvalidEvent"),persist="invalidevent");
+					//Place invalid event in private request context.
+					arguments.RequestContext.setValue("invalidevent",arguments.oEventHandlerBean.getRunnable(),true);
+					
+					// Hijack to invalid event and return that event handler
+					/* Override Event in the handler bean */
+					arguments.oEventHandlerBean.setHandler(reReplace(onInvalidEvent,"\.[^.]*$",""));
+					arguments.oEventHandlerBean.setMethod(listLast(onInvalidEvent,"."));
+					
+					//Try to return the correct handler object.
+					return getHandler(arguments.oEventHandlerBean,arguments.RequestContext);
+					
 				}
 				else{
 					getUtil().throwit(message="An invalid event has been detected",
-									  detail="An invalid event has been detected: [#oEventHandlerBean.getRunnable()#] The action requested: [#oEventHandlerBean.getMethod()#] does not exists in the specified handler.",
+									  detail="An invalid event has been detected: [#arguments.oEventHandlerBean.getRunnable()#] The action requested: [#arguments.oEventHandlerBean.getMethod()#] does not exists in the specified handler.",
 									  type="HandlerService.invalidEventException");
 				}
 			}//method check finalized.
@@ -235,19 +238,27 @@ Description :
 		}
 		
 		// Invalid Event Detected
-		controller.getPlugin("Logger").logEntry("error","Invalid Event detected: #event# ");
+		controller.getPlugin("Logger").logEntry("error","Invalid Event detected: #arguments.event# ");
 		
 		// If onInvalidEvent is registered, use it
 		if ( len(trim(onInvalidEvent)) ){
+			
 			// Test for invalid Event Error
-			if ( compareNoCase(onInvalidEvent,event) eq 0 ){
+			if ( compareNoCase(onInvalidEvent,arguments.event) eq 0 ){
 				getUtil().throwit(message="The onInvalid event is also invalid",
 								  detail="The onInvalidEvent setting is also invalid: #onInvalidEvent#. Please check your settings",
 								  type="HandlerService.onInValidEventSettingException");
 			}
-			// Relocate to Invalid Event
-			controller.setNextEvent(event=onInvalidEvent);
+			
+			/* Store Invalid Event in PRC */
+			controller.getRequestService().getContext().setValue("invalidevent",arguments.event,true);
+			
+			/* Override Event */
+			HandlerBean.setHandler(reReplace(onInvalidEvent,"\.[^.]*$",""));
+			HandlerBean.setMethod(listLast(onInvalidEvent,"."));
+			return HandlerBean;
 		}
+		
 		// Throw Exception
 		getUtil().throwit(message="The event: #event# is not valid registered event.",type="HandlerService.EventHandlerNotRegisteredException");
 		
