@@ -74,7 +74,7 @@ Properties:
 		
 		<!--- Are we in a thread already? --->
 		<cfif getUtil().inThread()>
-			<cfset append(attributes.entry)>
+			<cfset append(entry)>
 		<cfelse>
 			<!--- Thread this puppy --->
 			<cfthread name="#threadName#" entry="#entry#"> 
