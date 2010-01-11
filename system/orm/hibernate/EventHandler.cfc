@@ -30,7 +30,7 @@ component extends="coldbox.system.remote.ColdboxProxy" implements="CFIDE.orm.IEv
 		var md = getMetadata(this);
 		if( structKeyExists(md,"injector") and md.injector ){
 			
-			var entityName = getMetadata(arguments.entity).name;
+			var entityName = listLast(getMetadata(arguments.entity).name,".");
 			
 			// Injector Defaults
 			if( NOT structKeyExists(md,"injectorSetterInjection") ){	md.injectorSetterInjection = false; }
