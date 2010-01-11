@@ -163,7 +163,6 @@ Description: This is the framework's simple bean factory.
 		<cfargument name="name" 				required="true"  type="string"  hint="The name of the model to retrieve">
 		<cfargument name="useSetterInjection" 	required="false" type="boolean" hint="Whether to use setter injection alongside the annotations property injection. cfproperty injection takes precedence.">
 		<cfargument name="onDICompleteUDF" 		required="false" type="string"	hint="After Dependencies are injected, this method will look for this UDF and call it if it exists. The default value is onDIComplete">
-		<cfargument name="debugMode" 			required="false" type="boolean" hint="Debugging Mode or not">
 		<cfargument name="stopRecursion"		required="false" type="string"  hint="A comma-delimmited list of stoprecursion classpaths.">
 		<!--- ************************************************************* --->
 		<cfscript>
@@ -188,9 +187,6 @@ Description: This is the framework's simple bean factory.
 			}
 			if( not structKeyExists(arguments,"onDICompleteUDF") ){
 				arguments.onDICompleteUDF = getSetting("ModelsDICompleteUDF");
-			}
-			if( not structKeyExists(arguments,"debugMode") ){
-				arguments.debugMode = getSetting("ModelsDebugMode");
 			}
 			if( not structKeyExists(arguments,"stopRecursion") ){
 				arguments.stopRecursion = getSetting("ModelsStopRecursion");
@@ -249,7 +245,6 @@ Description: This is the framework's simple bean factory.
 							 useSetterInjection=arguments.useSetterInjection,
 							 annotationCheck=false,
 							 onDICompleteUDF=arguments.onDICompleteUDF,
-							 debugMode=arguments.debugmode,
 							 stopRecursion=arguments.stopRecursion);
 					
 					// Announce Model Creation
@@ -495,11 +490,6 @@ Description: This is the framework's simple bean factory.
 					
 				}//end for loop
 				
-				// Stop The Mixins
-				if( scopeInjection ){
-					getPlugin("MethodInjector").stop(beanInstance);
-				}
-				
 				return beanInstance;
 			}
 			catch(Any e){
@@ -523,7 +513,6 @@ Description: This is the framework's simple bean factory.
 		<cfargument name="useSetterInjection" 	required="false" 	type="boolean" 	default="true"	hint="Whether to use setter injection alongside the annotations property injection. cfproperty injection takes precedence.">
 		<cfargument name="annotationCheck" 		required="false" 	type="boolean"  default="false" hint="This value determines if we check if the target contains an autowire annotation in the cfcomponent tag: autowire=true|false, it will only autowire if that metadata attribute is set to true. The default is false, which will autowire automatically.">
 		<cfargument name="onDICompleteUDF" 		required="false" 	type="string"	default="onDIComplete" hint="After Dependencies are injected, this method will look for this UDF and call it if it exists. The default value is onDIComplete">
-		<cfargument name="debugMode" 			required="false" 	type="boolean"  default="false" hint="Whether to log debug messages. Default is false">
 		<cfargument name="stopRecursion" 		required="false" 	type="string"   default="" hint="The stop recursion class. Ex: transfer.com.TransferDecorator. By default all ColdBox base classes are included.">
 		<!--- ************************************************************* --->
 		<cfscript>
@@ -592,13 +581,11 @@ Description: This is the framework's simple bean factory.
 				// Loop over dependencies and inject
 				for(x=1; x lte dependenciesLength; x=x+1){
 					// Get Dependency
-					thisDependency = getDSLDependency(definition=targetDIEntry.dependencies[x],debugMode=arguments.debugmode);
+					thisDependency = getDSLDependency(definition=targetDIEntry.dependencies[x]);
 					
 					// Was dependency Found?
 					if( isSimpleValue(thisDependency) and thisDependency eq instance.NOT_FOUND ){
-						if( arguments.debugMode ){
-							log.debug("Dependency: #targetDIEntry.dependencies[x].toString()# Not Found when wiring #getMetadata(arguments.target).name#");
-						}
+						log.debug("Dependency: #targetDIEntry.dependencies[x].toString()# Not Found when wiring #getMetadata(arguments.target).name#");
 						continue;
 					}
 					
@@ -608,18 +595,11 @@ Description: This is the framework's simple bean factory.
 							   beanObject=thisDependency,
 							   scope=targetDIEntry.dependencies[x].scope);
 					
-					// Debug Mode Check
-					if( arguments.debugMode ){
-						log.debug("Dependency: #targetDIEntry.dependencies[x].toString()# --> injected into #getMetadata(targetObject).name#.");
-					}
-					
+					log.debug("Dependency: #targetDIEntry.dependencies[x].toString()# --> injected into #getMetadata(targetObject).name#.");
 				}//end for loop of dependencies.
 				
 				// Process After ID Complete
 				processAfterCompleteDI(targetObject,onDICompleteUDF);
-				
-				// Let's cleanup our mixins
-				oMethodInjector.stop(targetObject);
 				
 			}// if dependencies found.
 		}//if autowiring			
@@ -632,7 +612,6 @@ Description: This is the framework's simple bean factory.
 	<cffunction name="getConstructorArguments" output="false" access="private" returntype="struct" hint="The constructor argument collection for a model object">
 		<!--- ************************************************************* --->
 		<cfargument name="model" 				required="true" 	type="any"		default="" hint="The model object"/>
-		<cfargument name="debugMode" 			required="false" 	type="boolean"  default="false" hint="Whether to log debug messages. Default is false">
 		<!--- ************************************************************* --->
 		<cfscript>
 			var md = getMetadata(model.init);
@@ -657,11 +636,9 @@ Description: This is the framework's simple bean factory.
 				definition.scope="";
 				
 				// Get Dependency
-				thisDependency = getDSLDependency(definition=definition,debugMode=arguments.debugMode);
+				thisDependency = getDSLDependency(definition=definition);
 				if( isSimpleValue(thisDependency) and thisDependency eq instance.NOT_FOUND ){
-					if( arguments.debugMode ){
-						log.debug("Constructor Dependency: #definition.toString()# not found when wiring model: #getMetaData(arguments.model).name#, skipping");
-					}
+					log.debug("Constructor Dependency: #definition.toString()# not found when wiring model: #getMetaData(arguments.model).name#, skipping");
 				}
 				else{
 					args[definition.name] = thisDependency;
@@ -676,7 +653,6 @@ Description: This is the framework's simple bean factory.
 	<cffunction name="getDSLDependency" output="false" access="private" returntype="any" hint="get a dsl dependency">
 		<!--- ************************************************************* --->
 		<cfargument name="definition" 			required="true" 	type="any" hint="The dependency definition structure">
-		<cfargument name="debugMode" 			required="false" 	type="boolean"  default="false" hint="Whether to log debug messages. Default is false">
 		<!--- ************************************************************* --->
 		<cfscript>
 			var dependency = instance.NOT_FOUND;
@@ -684,12 +660,12 @@ Description: This is the framework's simple bean factory.
 			
 			// Determine Type of Injection according to Type
 			switch(DSLNamespace){
-				case "ioc" 			: { dependency = getIOCDependency(arguments.definition,arguments.debugmode); break; }
-				case "ocm" 			: { dependency = getOCMDependency(arguments.definition,arguments.debugmode); break; }
+				case "ioc" 			: { dependency = getIOCDependency(arguments.definition); break; }
+				case "ocm" 			: { dependency = getOCMDependency(arguments.definition); break; }
 				case "coldbox" 		: { dependency = getColdboxDSL(arguments.definition); break; }
-				case "model" 		: { dependency = getModelDSL(definition=arguments.definition,debugMode=arguments.debugMode); break; }
+				case "model" 		: { dependency = getModelDSL(definition=arguments.definition); break; }
 				case "webservice" 	: { dependency = getWebserviceDSL(arguments.definition); break; }
-				case "logbox"		: { dependency = getLogBoxDSL(definition=arguments.definition,debugMode=arguments.debugMode); break;}
+				case "logbox"		: { dependency = getLogBoxDSL(definition=arguments.definition); break;}
 			}
 			
 			return dependency;
@@ -715,7 +691,6 @@ Description: This is the framework's simple bean factory.
 	<cffunction name="getModelDSL" access="private" returntype="any" hint="Get dependencies using the model dependency DSL" output="false" >
 		<!--- ************************************************************* --->
 		<cfargument name="definition" 			required="true" 	type="any" hint="The dependency definition structure">
-		<cfargument name="debugMode" 			required="false" 	type="boolean"  default="false" hint="Whether to log debug messages. Default is false">
 		<!--- ************************************************************* --->
 		<cfscript>
 			var thisDependency = arguments.Definition;
@@ -725,9 +700,6 @@ Description: This is the framework's simple bean factory.
 			var thisLocationKey = "";
 			var locatedDependency = instance.NOT_FOUND;
 			var args = structnew();
-			
-			// Prepare Arguments
-			args.debugmode = arguments.debugMode;
 			
 			// DSL stages
 			switch(thisTypeLen){
@@ -757,7 +729,7 @@ Description: This is the framework's simple bean factory.
 					locatedDependency = evaluate("locatedDependency.#thisLocationKey#()");
 				}
 			}
-			else if (arguments.debugMode){
+			else{
 				log.debug("getModelDSL() cannot find model object #args.name# using definition #arguments.definition.toString()#");
 			}
 			
@@ -863,7 +835,6 @@ Description: This is the framework's simple bean factory.
 	<cffunction name="getIOCDependency" access="private" returntype="any" hint="Get an IOC dependency" output="false" >
 		<!--- ************************************************************* --->
 		<cfargument name="definition" 	required="true" type="any" hint="The dependency definition structure">
-		<cfargument name="debugMode" 	required="false" 	type="boolean"  default="false" hint="Whether to log debug messages. Default is false">
 		<!--- ************************************************************* --->
 		<cfscript>
 			var oIOC = getPlugin("IOC");
@@ -900,7 +871,6 @@ Description: This is the framework's simple bean factory.
 	<cffunction name="getOCMDependency" access="private" returntype="any" hint="Get OCM dependencies" output="false" >
 		<!--- ************************************************************* --->
 		<cfargument name="definition" 	required="true" type="any" hint="The dependency definition structure">
-		<cfargument name="debugMode" 	required="false" 	type="boolean"  default="false" hint="Whether to log debug messages. Default is false">
 		<!--- ************************************************************* --->
 		<cfscript>
 			var oOCM = getColdboxOCM();
@@ -922,7 +892,7 @@ Description: This is the framework's simple bean factory.
 			if( oOCM.lookup(thisLocationKey) ){
 				locatedDependency = oOCM.get(thisLocationKey);
 			}	
-			else if( arguments.debugMode ){
+			else{
 				log.debug("getOCMDependency() cannot find cache Key: #thisLocationKey# using definition: #arguments.definition.toString()#");
 			}
 			

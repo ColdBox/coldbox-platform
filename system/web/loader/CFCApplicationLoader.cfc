@@ -302,7 +302,6 @@ Loads a coldbox xml configuration file
 			// Defaults if not overriding
 			configStruct.ModelsExternalLocation = "";
 			configStruct.ModelsObjectCaching = fwSettingsStruct["ModelsObjectCaching"];
-			configStruct.ModelsDebugMode = fwSettingsStruct["ModelsDebugMode"];
 			configStruct.ModelsSetterInjection = fwSettingsStruct["ModelsSetterInjection"];
 			configStruct.ModelsDICompleteUDF = fwSettingsStruct["ModelsDICompleteUDF"];
 			configStruct.ModelsStopRecursion = fwSettingsStruct["ModelsStopRecursion"];
@@ -316,11 +315,6 @@ Loads a coldbox xml configuration file
 			//Check for Models ObjectCaching
 			if ( structKeyExists(models, "ObjectCaching") AND isBoolean(models.ObjectCaching) ){
 				configStruct["ModelsObjectCaching"] = models.ObjectCaching;
-			}
-			
-			//Check for ModelsDebugMode
-			if ( structKeyExists(models, "DebugMode") AND isBoolean(models.DebugMode) ){
-				configStruct["ModelsDebugMode"] = models.DebugMode;
 			}
 			
 			//Check for ModelsSetterInjection
