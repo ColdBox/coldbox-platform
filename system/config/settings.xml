@@ -75,6 +75,7 @@
         <viewsLocation>views</viewsLocation>
         <eventAction>index</eventAction>
         <modelslocation>model</modelslocation>
+		<modulesLocation>modules</modulesLocation>		
     </Conventions>
     
 </Config>

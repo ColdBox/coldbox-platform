@@ -86,6 +86,8 @@ Loads all the default ColdBox settings into an application controller
 			settingsStruct["EventAction"] = conventions[1].eventAction.xmltext;
 			settingsStruct["ModelsConvention"] = conventions[1].modelsLocation.xmltext;
 			settingsStruct["ConfigConvention"] = conventions[1].configLocation.xmltext;
+			settingsStruct["ModulesConvention"] = conventions[1].modulesLocation.xmltext;
+			
 			settingsStruct["ConfigFileLocation"] = "";
 			
 			// Store loaded settings

@@ -255,6 +255,11 @@ Loads a coldbox xml configuration file
 			if( not structKeyExists(configStruct, "ColdBoxExtensionsLocation") OR not len(configStruct.ColdBoxExtensionsLocation) ){
 				configStruct["ColdBoxExtensionsLocation"] = fwSettingsStruct.ColdBoxExtensionsLocation;
 			}
+			
+			//Modules
+			if( not structKeyExists(configStruct,"ModulesLocation") ){
+				configStruct.ModulesLocation = "";
+			}
 		</cfscript>
 	</cffunction>
 	
@@ -287,6 +292,7 @@ Loads a coldbox xml configuration file
 			if( structKeyExists(conventions,"viewsLocation") ){ fwSettingsStruct["ViewsConvention"] = trim(conventions.viewsLocation); }
 			if( structKeyExists(conventions,"eventAction") ){ fwSettingsStruct["eventAction"] = trim(conventions.eventAction); }
 			if( structKeyExists(conventions,"modelsLocation") ){ fwSettingsStruct["ModelsConvention"] = trim(conventions.modelsLocation); }
+			if( structKeyExists(conventions,"modulesLocation") ){ fwSettingsStruct["ModulesConvention"] = trim(conventions.modulesLocation); }
 		</cfscript>
 	</cffunction>
 
@@ -419,6 +425,24 @@ Loads a coldbox xml configuration file
 			if( len(configStruct["HandlersExternalLocation"]) ){
 				//Expand the external location to get a registration path
 				configStruct["HandlersExternalLocationPath"] = ExpandPath("/" & replace(configStruct["HandlersExternalLocation"],".","/","all"));
+			}
+			
+			//Configure the modules locations if not set already on config.
+			if( NOT len(configStruct.ModulesLocation) ){
+				if( len(configStruct.AppMapping) ){
+					configStruct.ModulesLocation 		= "/#configStruct.AppMapping#/#fwSettingsStruct.ModulesConvention#";
+					configStruct.ModulesInvocationPath	= appMappingAsDots & ".#reReplace(fwSettingsStruct.ModulesConvention,"(/|\\)",".","all")#";
+				}
+				else{
+					configStruct.ModulesLocation 		= "/#fwSettingsStruct.ModulesConvention#";
+					configStruct.ModulesInvocationPath 	= reReplace(fwSettingsStruct.ModulesConvention,"(/|\\)",".","all");
+				}
+				configStruct.ModulesPath = fwSettingsStruct.ApplicationPath & fwSettingsStruct.ModulesConvention;
+			}
+			else{
+				//Configure using the set mapping in the config
+				configStruct.ModulesPath 			= expandPath(configStruct.ModulesLocation);
+				configStruct.ModulesInvocationPath 	= reReplace(reReplace(configStruct.ModulesLocation,"^/",""),"(/|\\)",".","all");
 			}
 		</cfscript>
 	</cffunction>

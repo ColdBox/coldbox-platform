@@ -263,10 +263,16 @@ Loads a coldbox xml configuration file
 				configStruct["ColdBoxExtensionsLocation"] = fwSettingsStruct.ColdBoxExtensionsLocation;
 			}
 			
-			// calculate AppMapping if not found in the user configuratio file
+			// calculate AppMapping if not found in the user configuration file
 			if ( NOT structKeyExists(configStruct, "AppMapping") ){
 				calculateAppMapping(configStruct);
 			}
+			
+			// Modules Location
+			if( NOT structKeyExists(configStruct,"ModulesLocation") ){
+				configStruct.ModulesLocation = "";
+			}
+			
 		</cfscript>
 	</cffunction>
 	
@@ -323,6 +329,7 @@ Loads a coldbox xml configuration file
 				if( structKeyExists(conventions[1],"viewsLocation") ){ fwSettingsStruct["ViewsConvention"] = trim(conventions[1].viewsLocation.xmltext); }
 				if( structKeyExists(conventions[1],"eventAction") ){ fwSettingsStruct["eventAction"] = trim(conventions[1].eventAction.xmltext); }
 				if( structKeyExists(conventions[1],"modelsLocation") ){ fwSettingsStruct["ModelsConvention"] = trim(conventions[1].modelsLocation.xmltext); }
+				if( structKeyExists(conventions[1],"modulesLocation") ){ fwSettingsStruct["ModulesConvention"] = trim(conventions[1].modulesLocation.xmltext); }
 			}
 		</cfscript>
 	</cffunction>
@@ -453,9 +460,11 @@ Loads a coldbox xml configuration file
 			configStruct["ModelsInvocationPath"] = reReplace(fwSettingsStruct.ModelsConvention,"(/|\\)",".","all");
 			configStruct["ModelsPath"] = fwSettingsStruct.ApplicationPath & fwSettingsStruct.ModelsConvention;
 			
+			//App Mapping Invocation Path
+			appMappingAsDots = reReplace(configStruct["AppMapping"],"(/|\\)",".","all");
+			
 			//Set the Handlers,Models, & Custom Plugin Invocation & Physical Path for this Application
 			if( len(configStruct["AppMapping"]) ){
-				appMappingAsDots = reReplace(configStruct["AppMapping"],"(/|\\)",".","all");
 				// Handler Path Registrations
 				configStruct["HandlersInvocationPath"] = appMappingAsDots & ".#reReplace(fwSettingsStruct.handlersConvention,"(/|\\)",".","all")#";
 				configStruct["HandlersPath"] = "/" & configStruct.AppMapping & "/#fwSettingsStruct.handlersConvention#";
@@ -475,6 +484,24 @@ Loads a coldbox xml configuration file
 			if( len(configStruct["HandlersExternalLocation"]) ){
 				//Expand the external location to get a registration path
 				configStruct["HandlersExternalLocationPath"] = ExpandPath("/" & replace(configStruct["HandlersExternalLocation"],".","/","all"));
+			}
+			
+			//Configure the modules locations if not set already on config.
+			if( NOT len(configStruct.ModulesLocation) ){
+				if( len(configStruct.AppMapping) ){
+					configStruct.ModulesLocation 		= "/#configStruct.AppMapping#/#fwSettingsStruct.ModulesConvention#";
+					configStruct.ModulesInvocationPath	= appMappingAsDots & ".#reReplace(fwSettingsStruct.ModulesConvention,"(/|\\)",".","all")#";
+				}
+				else{
+					configStruct.ModulesLocation 		= "/#fwSettingsStruct.ModulesConvention#";
+					configStruct.ModulesInvocationPath 	= reReplace(fwSettingsStruct.ModulesConvention,"(/|\\)",".","all");
+				}
+				configStruct.ModulesPath = fwSettingsStruct.ApplicationPath & fwSettingsStruct.ModulesConvention;
+			}
+			else{
+				//Configure using the set mapping in the config
+				configStruct.ModulesPath 			= expandPath(configStruct.ModulesLocation);
+				configStruct.ModulesInvocationPath 	= reReplace(reReplace(configStruct.ModulesLocation,"^/",""),"(/|\\)",".","all");
 			}
 		</cfscript>
 	</cffunction>
