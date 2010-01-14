@@ -24,6 +24,7 @@ Properties:
 		
 			instance.system = createObject("java", "java.lang.System");
 			instance.uuid = createobject("java", "java.util.UUID");
+			instance.mdCache = {};
 			
 			// Check if gen path set?
 			if( NOT propertyExists("generationPath") ){
@@ -33,6 +34,11 @@ Properties:
 			if( right(getProperty("generationPath"),1) neq "/" ){
 				setProperty("generationPath", getProperty("generationPath") & "/");
 			}
+			// MD Cache Reload
+			if( NOT propertyExists("metadataCacheReload") ){
+				setProperty("metadataCacheReload",false);
+			}
+			
 		</cfscript>
 	 </cffunction>
 
@@ -63,19 +69,41 @@ Properties:
      	<cfargument name="target" type="any" required="true" hint="The target to advise"/>
 		<cfscript>
 			// loop over functions
-			var functions = getMetadata(arguments.target).functions;
-			var fncLen = arrayLen(functions);
+			var functions = "";
+			var fncLen = "";
 			var x = 1;
+			var aopFound = false;
+			var idCode = instance.system.identityHashCode(arguments.target);
 			
+			// MD Cache Reload
+			if( getProperty("metadataCacheReload") ){
+				instance.mdCache = {};
+			}
+			
+			// Check if object already inspected for AOP capabilities
+			if( structKeyExists(instance.mdCache, idCode ) AND instance.mdCache[idCode] eq false ){
+				if( log.canLog(log.logLevels.DEBUG) ){
+					log.debug("Target (#getMetadata(arguments.target).name#) inspected already.");
+				}
+				return;
+			}
+			
+			// Get Function info
+			functions = getMetadata(arguments.target).functions;
+			fncLen = arrayLen(functions);
 			for(x=1; x lte fncLen; x++){
 				//Check annotation
 				if( structKeyExists(functions[x],"transactional") ){
+					aopFound = true;
 					// decorate target with AOP capabilities, if not already
 					decorateAOPTarget(arguments.target);
 					// Build the the AOP advisor with the function
 					weaveAdvise(arguments.target, functions[x].name);
 				}
 			}
+			
+			// Save aopFound in cache
+			instance.mdCache[idCode] = aopFound; 
 		</cfscript>
      </cffunction>
 	 
