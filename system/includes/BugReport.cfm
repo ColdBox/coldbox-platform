@@ -14,7 +14,7 @@ Description :
 </cfsilent>
 <cfoutput>
 <!--- StyleSheets --->
-<style><cfinclude template="/coldbox/system/includes/css/cbox-debugger.pack.css"></style>
+<style type="text/css"><cfinclude template="/coldbox/system/includes/css/cbox-debugger.pack.css"></style>
 
 <div class="fw_errorDiv">
 	<h1>Oops! Exception Encountered</h1>

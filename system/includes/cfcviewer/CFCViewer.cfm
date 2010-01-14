@@ -15,7 +15,7 @@ Modification History:
 <cfoutput>
 <!--- Style Sheet --->
 <cfif not instance.styleSheet.length()>
-	<style>
+	<style type="text/css">
 	<cfinclude template="/coldbox/system/includes/cfcviewer/CFCViewer.css">
 	</style>
 <cfelse>
