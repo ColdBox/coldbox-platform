@@ -1,6 +1,6 @@
 <cfsavecontent variable="cbox_debug_header">
 <cfoutput>
-<style><cfinclude template="/coldbox/system/includes/css/cbox-debugger.pack.css"></style>
+<style type="text/css"><cfinclude template="/coldbox/system/includes/css/cbox-debugger.pack.css"></style>
 <script type="text/javascript"><cfinclude template="/coldbox/system/includes/js/cbox-debugger.pack.js"></script>
 </cfoutput>
 </cfsavecontent>
