@@ -73,8 +73,8 @@ Loads a coldbox xml configuration file
 		oConfig = createObject("component", configCreatePath);
 		
 		//Decorate It
-		oConfig.injectPropertyMixin = variables.injectPropertyMixin;
-		oConfig.getPropertyMixin 	= variables.getPropertyMixin;
+		oConfig.injectPropertyMixin = getUtil().injectPropertyMixin;
+		oConfig.getPropertyMixin 	= getUtil().getPropertyMixin;
 		
 		//MixIn Variables
 		oConfig.injectPropertyMixin("controller",getController());
@@ -260,6 +260,7 @@ Loads a coldbox xml configuration file
 			if( not structKeyExists(configStruct,"ModulesLocation") ){
 				configStruct.ModulesLocation = "";
 			}
+			configStruct.modules = structnew();
 		</cfscript>
 	</cffunction>
 	
@@ -824,37 +825,6 @@ Loads a coldbox xml configuration file
 	</cffunction>
 
 <!------------------------------------------- PRIVATE ------------------------------------------>
-	
-	<!--- mixin --->
-	<cffunction name="injectPropertyMixin" hint="injects a property into the passed scope" access="private" returntype="void" output="false">
-		<!--- ************************************************************* --->
-		<cfargument name="propertyName" 	type="string" 	required="true" hint="The name of the property to inject."/>
-		<cfargument name="propertyValue" 	type="any" 		required="true" hint="The value of the property to inject"/>
-		<cfargument name="scope" 			type="string" 	required="false" default="variables" hint="The scope to which inject the property to."/>
-		<!--- ************************************************************* --->
-		<cfscript>
-			"#arguments.scope#.#arguments.propertyName#" = arguments.propertyValue;
-		</cfscript>
-	</cffunction>
-
-	<!--- mixin --->
-	<cffunction name="getPropertyMixin" hint="gets a property" access="private" returntype="any" output="false">
-		<!--- ************************************************************* --->
-		<cfargument name="name" 	type="string" 	required="true" hint="The name of the property to inject."/>
-		<cfargument name="scope" 	type="string" 	required="false" default="variables" hint="The scope to which inject the property to."/>
-		<cfargument name="default"  type="any"      required="false" hint="Default value to return"/>
-		<!--- ************************************************************* --->
-		<cfscript>
-			var thisScope = variables;
-			if( arguments.scope eq "this"){ thisScope = this; }
-			
-			if( NOT structKeyExists(thisScope,arguments.name) AND structKeyExists(arguments,"default")){
-				return arguments.default;
-			}
-			
-			return thisScope[arguments.name];
-		</cfscript>
-	</cffunction>
 	
 	<cffunction name="detectEnvironment" access="private" returntype="void" hint="Detect the running environment and return the name" output="false" >
 		<cfargument name="oConfig" 		type="any" 	    required="true" hint="The config object"/>

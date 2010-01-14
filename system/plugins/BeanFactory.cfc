@@ -31,11 +31,11 @@ Description: This is the framework's simple bean factory.
 			setpluginAuthor("Luis Majano, Sana Ullah");
 			setpluginAuthorURL("http://www.coldbox.org");
 			
-			instance.ModelsPath = getSetting("ModelsPath");
-			instance.ModelsInvocationPath = getSetting("ModelsInvocationPath");
-			instance.ModelsObjectCaching = getSetting("ModelsObjectCaching");
+			instance.ModelsPath 			= getSetting("ModelsPath");
+			instance.ModelsInvocationPath 	= getSetting("ModelsInvocationPath");
+			instance.ModelsObjectCaching 	= getSetting("ModelsObjectCaching");
 			instance.ModelsExternalLocation = getSetting("ModelsExternalLocation");
-			instance.ModelsDefinitionFile = getSetting("ModelsDefinitionFile");
+			instance.ModelsDefinitionFile 	= getSetting("ModelsDefinitionFile");
 			
 			// Model Mappings Map
 			instance.modelMappings = structnew();
@@ -46,13 +46,13 @@ Description: This is the framework's simple bean factory.
 			if( settingExists("BeanFactory_dslMarker") ){
 				instance.dslMarker = getSetting("BeanFactory_dslMarker");
 			}
+			
 			// Default DSL Type, mostly used in setters or constructor arguments.
+			instance.dslDefaultType = "model";
 			if( len(trim(getSetting("IOCFramework"))) ){
 				instance.dslDefaultType = "ioc";
 			}
-			else{
-				instance.dslDefaultType = "model";
-			}
+			
 			// Default DSL Type override
 			if( settingExists("BeanFactory_dslDefaultType") ){
 				instance.dslDefaultType = getSetting("BeanFactory_dslDefaultType");
@@ -269,14 +269,65 @@ Description: This is the framework's simple bean factory.
 	<cffunction name="resolveModelAlias" access="public" returntype="string" hint="Resolve the real name of any incoming argument model name or alias" output="false" >
 		<cfargument name="name" required="true"  type="string" hint="The model alias or name to resolve">
 		<cfscript>
-		var mappings = getModelMappings();
-		/* Resolve name in Aliases */
-		if( structKeyExists(mappings,arguments.name) ){
-			return mappings[arguments.name];
-		}
-		else{ 
+			var mappings = getModelMappings();
+			// Resolve name in Aliases
+			if( structKeyExists(mappings,arguments.name) ){
+				return mappings[arguments.name];
+			}
+			
 			return arguments.name; 
-		}
+		</cfscript>
+	</cffunction>
+	
+	<!--- getExternalLocations --->
+	<cffunction name="getExternalLocations" output="false" access="public" returntype="string" hint="Get all the registered external locations">
+		<cfreturn instance.ModelsExternalLocation>
+	</cffunction>
+	
+	<!--- removeExternalLocations --->
+	<cffunction name="removeExternalLocations" output="false" access="public" returntype="void" hint="Try to remove all the external locations passed in">
+		<cfargument name="locations" type="string" required="true" hint="Locations to remove from the lookup.  Comma delimited allowed."/>
+		<cfscript>
+			var currentList = getExternalLocations();
+			var x = 1;
+			
+			// Validate locations
+			if( len(trim(arguments.locations)) eq 0){ return; }
+			
+			// Loop and Add
+			for(;x lte listlen(arguments.locations); x=x+1 ){
+				//Check if found in list
+				idxFound = listFindNoCase(currentList, listgetAt(arguments.locations,x) );
+				if( idxFound ){
+					// Remove it
+					currentList = listDeleteAt(currentList,idxFound);
+				}
+			}
+			
+			// Save it
+			instance.ModelsExternalLocation = currentList;
+		</cfscript>
+	</cffunction>
+	
+	<!--- appendExternalLocation --->
+	<cffunction name="appendExternalLocations" output="false" access="public" returntype="void" hint="Try to append a new model external location">
+		<cfargument name="locations" type="string" required="true" hint="Locations to add to the lookup, will be added in passed order.  Comma delimited allowed."/>
+		<cfscript>
+			var currentList = getExternalLocations();
+			var x = 1;
+			
+			// Validate locations
+			if( len(trim(arguments.locations)) eq 0){ return; }
+			
+			// Loop and Add
+			for(;x lte listlen(arguments.locations); x=x+1 ){
+				if ( not listfindnocase(currentList, listgetAt(arguments.locations,x)) ){
+					currentList = listAppend(currentList,listgetAt(arguments.locations,x));
+				}
+			}
+			
+			// Save it
+			instance.ModelsExternalLocation = currentList;
 		</cfscript>
 	</cffunction>
 	

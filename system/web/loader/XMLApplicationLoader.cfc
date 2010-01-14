@@ -272,7 +272,7 @@ Loads a coldbox xml configuration file
 			if( NOT structKeyExists(configStruct,"ModulesLocation") ){
 				configStruct.ModulesLocation = "";
 			}
-			
+			configStruct.modules = structnew();
 		</cfscript>
 	</cffunction>
 	

@@ -73,6 +73,9 @@ Modification History:
 		// Create the Cache Container
 		controller.setColdboxOCM(createCacheManager());
 		
+		// init Model Integration
+		controller.getPlugin("BeanFactory");
+		
 		// Execute onConfigurationLoad for coldbox internal services()
 		for(key in services){
 			services[key].onConfigurationLoad();
@@ -109,9 +112,6 @@ Modification History:
 			javaLoader = controller.getPlugin("JavaLoader");
 			javaLoader.setup( javaLoader.queryJars(controller.getSetting('javaloader_libpath')) );
 		}
-		
-		// init Model Integration
-		controller.getPlugin("BeanFactory");
 		
 		// IoC Plugin Manager Configuration
 		if ( len(controller.getSetting("IOCFramework")) ){

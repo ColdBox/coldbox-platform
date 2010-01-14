@@ -26,7 +26,8 @@ Description :
 										  "applicationEnd,sessionStart,sessionEnd," &
 										  "preProcess,preEvent,postEvent,postProcess,preProxyResults," &
 										  "preLayout,preRender,postRender,preViewRender,postViewRender" &
-										  "afterCacheElementInsert,afterCacheElementRemoved,afterCacheElementExpired";
+										  "afterCacheElementInsert,afterCacheElementRemoved,afterCacheElementExpired" &
+										  "preModuleLoad,postModuleLoad,preModuleUnload,postModuleUnload";
 			// Init Container/
 			instance.interceptionStates = structnew();
 			
@@ -225,7 +226,7 @@ Description :
 			// Loop and Add
 			for(;x lte listlen(arguments.customPoints); x=x+1 ){
 				if ( not listfindnocase(currentList, listgetAt(arguments.customPoints,x)) ){
-					currentList = currentList & "," & listgetAt(arguments.customPoints,x);
+					listAppend(currentList,listgetAt(arguments.customPoints,x));
 				}
 			}
 			// Save New Interception Points
