@@ -211,6 +211,8 @@ Description :
 		<!--- Test to clear message structure from flash? --->
 		<cfif NOT arguments.clearMessage>
 			<cfset flash.keep(instance.flashKey)>
+		<cfelse>
+			<cfset clearMessage()>
 		</cfif>
 		
 		<!--- Return Message --->
