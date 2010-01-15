@@ -63,6 +63,12 @@ Properties:
 			if( NOT propertyExists("mailusername") ){
 				setProperty("mailusername","");
 			}
+			if( NOT propertyExists("useTLS") ){
+				setProperty("useTLS","false");
+			}
+			if( NOT propertyExists("useSSL") ){
+				setProperty("useSSL","false");
+			}
 						
 			return this;
 		</cfscript>
@@ -104,6 +110,8 @@ Properties:
 						cc="#getProperty("cc")#"
 						bcc="#getProperty("bcc")#"
 						type="text/html"
+						useTLS="#getProperty("useTLS")#"
+						useSSL="#getProperty("useSSL")#"
 						server="#getProperty("mailserver")#" port="#getProperty("mailport")#"
 						username="#getProperty("mailusername")#" 
 						password="#getProperty("mailpassword")#" 
@@ -115,6 +123,8 @@ Properties:
 						cc="#getProperty("cc")#"
 						bcc="#getProperty("bcc")#"
 						type="text/html"
+						useTLS="#getProperty("useTLS")#"
+						useSSL="#getProperty("useSSL")#"
 						subject="#subject#"><cfoutput>#entry#</cfoutput></cfmail>
 			</cfif>
 				
