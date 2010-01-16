@@ -82,6 +82,7 @@ Modification History:
 			QuerySetCell(qTimers, "Time", arguments.tickcount);
 			QuerySetCell(qTimers, "Timestamp", now());
 			QuerySetCell(qTimers, "RC", '');
+			QuerySetCell(qTimers, "PRC", '');
 		</cfscript>
 	</cffunction>
 

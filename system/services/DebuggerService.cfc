@@ -42,7 +42,7 @@ Description :
     <cffunction name="getTimers" output="false" access="public" returntype="query" hint="Get the timers query from the request. Empty query if it does not exist.">
     	<cfscript>
     		if( NOT timersExist() ){
-				request.debugTimers = QueryNew("ID,Method,Time,Timestamp,RC");
+				request.debugTimers = QueryNew("ID,Method,Time,Timestamp,RC,PRC");
 			}
 			return request.debugTimers;
     	</cfscript>
@@ -81,12 +81,14 @@ Description :
 		<cfscript>
 			var timerInfo = 0;
 			var qTimers = "";
+			var context = ""; 
 			
 			// Verify Debug Mode and timer label exists, else do nothing.
 			if( getDebugMode() and structKeyExists(request,arguments.labelHash) ){
 				// Get Timer Info
-				timerInfo = request[arguments.labelHash];
-				qTimers = getTimers();
+				timerInfo 	= request[arguments.labelHash];
+				qTimers 	= getTimers();
+				context 	= controller.getRequestService().getContext();
 				
 				// Save timer
 				QueryAddRow(qTimers,1);
@@ -98,11 +100,14 @@ Description :
 				// RC Snapshot
 				if ( not findnocase("rendering",timerInfo.label) ){
 					// Save collection
-					QuerySetCell(qTimers, "RC", htmlEditFormat(controller.getRequestService().getContext().getCollection().toString()) );
+					QuerySetCell(qTimers, "RC", htmlEditFormat(left(context.getCollection().toString(),5000)) );
+					QuerySetCell(qTimers, "PRC", htmlEditFormat(left(context.getCollection(private=true).toString(),5000)) );
 				}
 				else{
 					QuerySetCell(qTimers, "RC", '');
+					QuerySetCell(qTimers, "PRC", '');
 				}
+				
 				// Cleanup
 				structDelete(request,arguments.labelHash);
 			}
