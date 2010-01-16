@@ -252,8 +252,8 @@ Loads a coldbox xml configuration file
 			if ( not structKeyExists(configStruct, "HandlersExternalLocation") or len(configStruct["HandlersExternalLocation"]) eq 0 )
 				configStruct["HandlersExternalLocation"] = "";
 			// Flash URL Persist Scope Override
-			if( structKeyExists(configStruct,"FlashURLPersistScope") ){
-				fwSettingsStruct["FlashURLPersistScope"] = configStruct["FlashURLPersistScope"];
+			if( not structKeyExists(configStruct,"FlashURLPersistScope") ){
+				configStruct["FlashURLPersistScope"] = fwSettingsStruct["FlashURLPersistScope"];
 			}
 			//Check for Missing Template Handler
 			if ( not StructKeyExists(configStruct, "MissingTemplateHandler") )
