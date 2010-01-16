@@ -242,8 +242,11 @@ id , name , mail
 
 	<!--- Setup a request context --->
 	<cffunction name="setupRequest" access="private" output="false" returntype="void" hint="Setup an initial request capture.  I basically look at the FORM/URL scopes and create the request collection out of them.">
-		<cfargument name="event" 	required="false"  type="string" default="" hint="The event to setup the request context with">
+		<cfargument name="event" 	required="true"  type="string" hint="The event to setup the request context with">
 		<cfscript>
+			// Setup the incoming event
+			URL[getController().getSetting("EventName")] = arguments.event;
+			// Capture the request
 			getController().getRequestService().requestCapture();
 		</cfscript>
 	</cffunction>
@@ -259,7 +262,7 @@ id , name , mail
 			var relocationTypes = "TestController.setNextEvent,TestController.setNextRoute,TestController.relocate";
 			
 			//Setup the request Context with setup FORM/URL variables set in the unit test.
-			setupRequest();
+			setupRequest(arguments.event);
 			
 			try{
 				//TEST EVENT EXECUTION
