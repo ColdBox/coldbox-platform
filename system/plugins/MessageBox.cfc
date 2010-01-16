@@ -212,7 +212,7 @@ Description :
 		<cfif NOT arguments.clearMessage>
 			<cfset flash.keep(instance.flashKey)>
 		<cfelse>
-			<cfset clearMessage()>
+			<cfset flash.remove(name=instance.flashKey,saveNow=true)>
 		</cfif>
 		
 		<!--- Return Message --->
