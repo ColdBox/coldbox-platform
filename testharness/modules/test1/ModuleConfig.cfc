@@ -68,11 +68,11 @@ Required Methods
 	}
 	
 	function onLoad(){
-	
+		controller.getLogBox().getLogger(this).info("onLoad called on module: #getMetadata(this).name#");
 	}
 	
 	function onUnload(){
-	
+		controller.getLogBox().getLogger(this).info("onUnload called on module: #getMetadata(this).name#");
 	}
 	
 	

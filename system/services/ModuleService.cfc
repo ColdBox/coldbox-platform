@@ -21,6 +21,7 @@ I oversee and manage ColdBox modules
 			
 			// service properties
 			instance.logger = "";
+			instance.mConfigCache = {};
 			
 			return this;
 		</cfscript>
@@ -96,8 +97,8 @@ I oversee and manage ColdBox modules
 				routes = []
 			};
 			
-			// Load Module configuration from cfc
-			loadModuleConfiguration(mConfig);
+			// Load Module configuration from cfc and store it in module Config Cache.
+			instance.mConfigCache[modName] = loadModuleConfiguration(mConfig);
 			
 			// Register handlers
 			mConfig.registeredHandlers = controller.getHandlerService().getHandlerListing(mConfig.path & "/" & controller.getSetting("handlersConvention",true));
@@ -120,6 +121,11 @@ I oversee and manage ColdBox modules
 			
 			// Save module configuration
 			controller.getConfigSettings().modules[modName] = mConfig;
+			
+			// Call on module configuration object onLoad() if found
+			if( structKeyExists(instance.mConfigCache[modName],"onLoad") ){
+				instance.mConfigCache[modName].onLoad();
+			}
 			
 			// postModuleLoad interception
 			iData = {moduleLocation=modLocation,moduleName=modName,moduleConfig=mConfig};
@@ -171,6 +177,11 @@ I oversee and manage ColdBox modules
 			// Before unloading a module interception
 			interceptorService.processState("preModuleUnload",iData);
 			
+			// Call on module configuration object onLoad() if found
+			if( structKeyExists(mConfigCache[modName],"onUnload") ){
+				instance.mConfigCache[modName].onUnload();
+			}
+			
 			// Unregister all interceptors
 			for(x=1; x lte arrayLen(appConfig.modules[arguments.moduleName].interceptors); x++){
 				interceptorService.unregister(appConfig.modules[arguments.moduleName].interceptors[x].name);
@@ -181,6 +192,9 @@ I oversee and manage ColdBox modules
 			
 			// Remove configuration
 			structDelete(appConfig.modules, arguments.moduleName);
+			
+			// Remove Configuration object from Cache
+			structDelete(instance.mConfigCache,arguments.moduleName);
 			
 			//After unloading a module interception
 			interceptorService.processState("postModuleUnload",iData);
@@ -201,12 +215,13 @@ I oversee and manage ColdBox modules
 				unloadModule(key);
 			}	
 			
-			controller.setSetting("modules",structnew());		
+			controller.setSetting("modules",structnew());
+			instance.mConfigCache = structnew();					
 		</cfscript>
 	</cffunction>
 	
 	<!--- loadModuleConfiguration --->
-	<cffunction name="loadModuleConfiguration" output="false" access="public" returntype="void" hint="Load the module configuration object">
+	<cffunction name="loadModuleConfiguration" output="false" access="public" returntype="any" hint="Load the module configuration object">
 		<cfargument name="config" type="struct" required="true" hint="The module config structure"/>
 		<cfscript>
 			var mConfig = arguments.config;
@@ -269,7 +284,9 @@ I oversee and manage ColdBox modules
 			
 			
 			//Get Routes
-			mConfig.routes = oConfig.getPropertyMixin("routes","variables",arrayNew(1));			
+			mConfig.routes = oConfig.getPropertyMixin("routes","variables",arrayNew(1));	
+			
+			return oConfig;		
 		</cfscript>
 	</cffunction>
 	
