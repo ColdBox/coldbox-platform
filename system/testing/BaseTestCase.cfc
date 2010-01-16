@@ -93,7 +93,8 @@ id , name , mail
 				// Verify App Root Path
 				if( NOT len(instance.appMapping) ){ instance.appMapping = "/"; }
 				appRootPath = expandPath(instance.appMapping);
-				if( right(appRootPath,1) neq "/" ){
+				// Clean the path for nice root path.
+				if( NOT reFind("(/|\\)$",appRootPath) ){
 					appRootPath = appRootPath & "/";
 				}
 				
@@ -235,7 +236,7 @@ id , name , mail
 	</cffunction>
 	
 	<!--- getFlashScope --->
-	<cffunction name="getFlashScope" output="false" access="public" returntype="coldbox.system.web.Flash.AbstractFlashScope" hint="Returns to you the currently used flash ram object">
+	<cffunction name="getFlashScope" output="false" access="private" returntype="coldbox.system.web.Flash.AbstractFlashScope" hint="Returns to you the currently used flash ram object">
 		<cfreturn getController().getRequestService().getFlashScope()>
 	</cffunction>
 

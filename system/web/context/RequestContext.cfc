@@ -154,7 +154,7 @@ Modification History:
 			var collection = instance.context;
 			if( arguments.private ){ collection = instance.privateContext; }
 			
-			if( valueExists(arguments.name) ){
+			if( valueExists(arguments.name,arguments.private) ){
 				structDelete(collection,arguments.name);
 			}
 		</cfscript>
