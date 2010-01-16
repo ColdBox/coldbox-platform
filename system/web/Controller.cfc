@@ -471,134 +471,122 @@ Only one instance of a specific ColdBox application exists.
 		<cfargument name="private" 		 type="boolean" required="false" default="false" hint="Execute a private event or not, default is false"/>
 		<cfargument name="default" 		 type="boolean" required="false" default="false" hint="The flag that let's this service now if it is the default set event running or not. USED BY THE FRAMEWORK ONLY">
 		<!--- ************************************************************* --->
-		<cfset var oEventHandler = "">
-		<cfset var oEventHandlerBean = "">
-		<cfset var oRequestContext = getRequestService().getContext()>
-		<cfset var interceptMetadata = structnew()>
-		<cfset var refLocal = structnew()>
-		<cfset var privateArgCollection = structnew()>
-		<cfset var timerHash = 0>
-		
-		<!--- Default Event Check --->
-		<cfif len(trim(arguments.event)) eq 0>
-			<cfset arguments.event = oRequestContext.getCurrentEvent()>
-		</cfif>
-		
-		<!--- Validate the incoming event and get a Handler Bean simulating the event to execute --->
-		<cfset oEventHandlerBean = getHandlerService().getRegisteredHandler(arguments.event)>
-		<!--- Private Event or Not? --->
-		<cfset oEventHandlerBean.setisPrivate(arguments.private)>
-		
-		<!--- Get the event handler to execute --->
-		<cfset oEventHandler = getHandlerService().getHandler(oEventHandlerBean,oRequestContext)>
-		
-		<!--- InterceptMetadata --->
-		<cfset interceptMetadata.processedEvent = arguments.event>
-		<!--- Execute preEvent Interception --->
-		<cfif not arguments.prepostExempt>
-			<cfset getInterceptorService().processState("preEvent",interceptMetadata)>
-		</cfif>		
-		
-		<cftry>
-			<!--- Determine if it is an Allowed HTTP Method to Execute the requested action --->
-			<cfif NOT structIsEmpty(oEventHandler.allowedMethods) AND
-				  structKeyExists(oEventHandler.allowedMethods,oEventHandlerBean.getMethod()) AND
-				  NOT listFindNoCase(oEventHandler.allowedMethods[oEventHandlerBean.getMethod()],oRequestContext.getHTTPMethod())>
+		<cfscript>
+			
+			var oRequestContext 	= getRequestService().getContext();
+			var loc					= structnew();
+			var debuggerService	 	= getDebuggerService();
+			var handlerService 		= getHandlerService();
+			var interceptorService 	= getInterceptorService();
+			var ehBean 				= "";
+			var oHandler 			= "";
+			var iData				= structnew();
+			
+			// Check if event empty, if empty then use default event
+			if(NOT len(trim(arguments.event)) ){
+				arguments.event = oRequestContext.getCurrentEvent();
+			}
+			
+			// Setup Invoker args
+			loc.args 				= structnew();
+			loc.args.event 			= oRequestContext;
+			// Setup interception data
+			iData.processedEvent 	= arguments.event;
+			
+			// Validate the incoming event and get a handler bean to continue execution
+			ehBean = getHandlerService().getRegisteredHandler(arguments.event);
+			// Is this a private event execution?
+			ehBean.setIsPrivate(arguments.private);
+			// Now get the correct handler to execute
+			oHandler = handlerService.getHandler(ehBean,oRequestContext);
+			
+			try{
 				
-				<cfset throwInvalidHTTP("The requested event: #event# cannot be executed using the incoming HTTP request method '#oRequestContext.getHTTPMethod()#'.")>
-			
-			</cfif>
-			
-			<!--- PreHandler Execution --->
-			<cfif not arguments.prepostExempt and oEventHandler._actionExists("preHandler")>
-				<!--- Validate ONLY & EXCEPT lists --->
-				<cfif ( (len(oEventHandler.PREHANDLER_ONLY) AND listfindnocase(oEventHandler.PREHANDLER_ONLY,oEventHandlerBean.getMethod())) 
-					     OR 
-					    (len(oEventHandler.PREHANDLER_ONLY) EQ 0) )
-					  AND
-					  ( listFindNoCase(oEventHandler.PREHANDLER_EXCEPT,oEventHandlerBean.getMethod()) EQ 0 )>
-					<cfset timerHash = getDebuggerService().timerStart("invoking runEvent [preHandler] for #arguments.event#")>
-						<!--- Execute the preHandler() action --->
-						<cfset oEventHandler.preHandler(oRequestContext,oEventHandlerBean.getMethod())>
-					<cfset getDebuggerService().timerEnd(timerHash)>
-				</cfif>
-			</cfif>
-			
-			<!--- Verify if event was overriden --->
-			<cfif (arguments.default) and (arguments.event neq oRequestContext.getCurrentEvent())>
-				<!--- Validate the overriden event --->
-				<cfset oEventHandlerBean = getHandlerService().getRegisteredHandler(oRequestContext.getCurrentEvent())>
-				<!--- Get the new event handler to execute --->
-				<cfset oEventHandler = getHandlerService().getHandler(oEventHandlerBean,oRequestContext)>
-			</cfif>
-	
-			<!--- Private or Public Event Execution --->
-			<cfif arguments.private>
-				<!--- Private Arg Collection --->
-				<cfset privateArgCollection["event"] = oRequestContext>
+				// Determine if it is An allowed HTTP method to execute, else throw error
+				if( NOT structIsEmpty(oHandler.allowedMethods) AND
+					structKeyExists(oHandler.allowedMethods,ehBean.getMethod()) AND
+					NOT listFindNoCase(oHandler.allowedMethods[ehBean.getMethod()],oRequestContext.getHTTPMethod()) ){
+					
+					throwInvalidHTTP("The requested event: #arguments.event# cannot be executed using the incoming HTTP request method '#oRequestContext.getHTTPMethod()#'.");	
+				}
 				
-				<!--- Start Timer --->
-				<cfset timerHash = getDebuggerService().timerStart("invoking PRIVATE runEvent [#arguments.event#]")>
-					<!--- Call Private Event --->
-					<cfinvoke component="#oEventHandler#" method="_privateInvoker" returnvariable="refLocal.results">
-						<cfinvokeargument name="method" value="#oEventHandlerBean.getMethod()#">
-						<cfinvokeargument name="argCollection" value="#privateArgCollection#">
-					</cfinvoke>
-				<cfset getDebuggerService().timerEnd(timerHash)>
+				// PRE ACTIONS
+				if( NOT arguments.prePostExempt ){
+					
+					// PREEVENT Interceptor
+					interceptorService.processState("preEvent",iData);
+					
+					// Execute Pre Handler
+					if( oHandler._actionExists("preHandler") AND validateAction(ehBean.getMethod(),oHandler.PREHANDLER_ONLY,oHandler.PREHANDLER_EXCEPT) ){
+						loc.tHash = debuggerService.timerStart("invoking runEvent [preHandler] for #arguments.event#");
+						oHandler.preHandler(oRequestContext,ehBean.getMethod());
+						debuggerService.timerEnd(loc.tHash);
+					}
+					
+					// Execute pre{Action}?
+					if( oHandler._actionExists("pre#ehBean.getMethod()#") ){
+						loc.tHash = debuggerService.timerStart("invoking runEvent [pre#ehBean.getMethod()#] for #arguments.event#");
+						invoker(oHandler,"pre#ehBean.getMethod()#",loc.args);
+						debuggerService.timerEnd(loc.tHash);
+					}
+				}
 				
-			<cfelse>
-				<!--- Start Timer --->
-				<cfset timerHash = getDebuggerService().timerStart("invoking runEvent [#arguments.event#]")>
-					<cfif oEventHandlerBean.getisMissingAction()>
-						<!--- Execute OnMissingACtion() --->
-						<cfinvoke component="#oEventHandler#" method="onMissingAction" returnvariable="refLocal.results">
-							<cfinvokeargument name="event" 			value="#oRequestContext#">
-							<cfinvokeargument name="missingAction"  value="#oEventHandlerBean.getMissingAction()#">
-						</cfinvoke>
-					<cfelse>
-						<!--- Execute the Public Event --->
-						<cfinvoke component="#oEventHandler#" method="#oEventHandlerBean.getMethod()#" returnvariable="refLocal.results">
-							<cfinvokeargument name="event" value="#oRequestContext#">
-						</cfinvoke>
-					</cfif>
-				<cfset getDebuggerService().timerEnd(timerHash)>
-			</cfif>	
-	
-			<!--- PostHandler Execution --->
-			<cfif not arguments.prepostExempt and oEventHandler._actionExists("postHandler")>
-				<cfif ( (len(oEventHandler.POSTHANDLER_ONLY) AND listfindnocase(oEventHandler.POSTHANDLER_ONLY,oEventHandlerBean.getMethod())) 
-					     OR 
-					    (len(oEventHandler.POSTHANDLER_ONLY) EQ 0) )
-					  AND
-					  ( listFindNoCase(oEventHandler.POSTHANDLER_EXCEPT,oEventHandlerBean.getMethod()) EQ 0 )>
-					<cfset timerHash = getDebuggerService().timerStart("invoking runEvent [postHandler] for #arguments.event#")>
-						<!--- Execute the postHandler() action --->
-						<cfset oEventHandler.postHandler(oRequestContext,oEventHandlerBean.getMethod())>
-					<cfset getDebuggerService().timerEnd(timerHash)>
-				</cfif>
-			</cfif>
+				// Verify if event was overriden
+				if( arguments.default and arguments.event NEQ oRequestContext.getCurrentEvent() ){
+					// Validate the overriden event
+					ehBean = getHandlerService().getRegisteredHandler(oRequestContext.getCurrentEvent());
+					// Get new handler to follow execution
+					oHandler = getHandlerService().getHandler(ehBean,oRequestContext);
+				} 
+				
+				// Execute Main Event
+				if( arguments.private)
+					loc.tHash 	= debuggerService.timerStart("invoking PRIVATE runEvent [#arguments.event#]");
+				else
+					loc.tHash 	= debuggerService.timerStart("invoking runEvent [#arguments.event#]");
+				loc.results 	= invoker(oHandler,ehBean.getMethod(),loc.args,arguments.private);
+				debuggerService.timerEnd(loc.tHash);
+				
+				// POST ACTIONS
+				if( NOT arguments.prePostExempt ){
+					
+					// Execute post{Action}?
+					if( oHandler._actionExists("post#ehBean.getMethod()#") ){
+						loc.tHash = debuggerService.timerStart("invoking runEvent [post#ehBean.getMethod()#] for #arguments.event#");
+						invoker(oHandler,"post#ehBean.getMethod()#",loc.args);
+						debuggerService.timerEnd(loc.tHash);
+					}
+					
+					// Execute postHandler()?
+					if( oHandler._actionExists("postHandler") AND validateAction(ehBean.getMethod(),oHandler.POSTHANDLER_ONLY,oHandler.POSTHANDLER_EXCEPT) ){
+						loc.tHash = debuggerService.timerStart("invoking runEvent [postHandler] for #arguments.event#");
+						oHandler.postHandler(oRequestContext,ehBean.getMethod());
+						debuggerService.timerEnd(loc.tHash);
+					}
+					
+					// Execute POSTEVENT interceptor
+					interceptorService.processState("postEvent",iData);
+					
+				}// end if prePostExempt			
+				
+			}// end of try
+			catch(Any e){
+				// Check if onError exists?
+				if( oHandler._actionExists("onError") ){
+					loc.results = oHandler.onError(oRequestContext,ehBean.getmethod(),e);
+				}
+				else{
+					getUtil().rethrowit(e);
+				}				
+			}
 			
-			<cfcatch type="any">
-				<!--- Check if onError Exists --->
-				<cfif oEventHandler._actionExists("onError")>
-					<cfset refLocal.results = oEventHandler.onError(oRequestContext,oEventHandlerBean.getmethod(),cfcatch)>
-				<cfelse>
-					<cfrethrow>
-				</cfif>
-			</cfcatch>
-		</cftry>
-		
-		<!--- Execute postEvent Interception --->
-		<cfif not arguments.prepostExempt>
-			<cfset getInterceptorService().processState("postEvent",interceptMetadata)>
-		</cfif>
-		
-		<!--- Return Results for proxy if needed. --->
-		<cfif structKeyExists(refLocal,"results")>
-			<cfreturn refLocal.results>
-		</cfif>
+			// Check if sending back results
+			if( structKeyExists(loc,"results") ){
+				return loc.results;
+			}			
+		</cfscript>
 	</cffunction>
-
+	
 	<!--- Flash Perist variables. --->
 	<cffunction name="persistVariables" access="public" returntype="void" hint="@deprecated DO NOT USE ANYMORE. Persist variables for flash redirections, it can use a structure of name-value pairs or keys from the request collection. Use the flash object instead, this method will auto-save all persistence automatically." output="false" >
 		<!--- ************************************************************* --->
@@ -620,9 +608,54 @@ Only one instance of a specific ColdBox application exists.
 	
 <!------------------------------------------- PRIVATE ------------------------------------------->
 
+	<!--- validateAction --->
+	<cffunction name="validateAction" output="false" access="private" returntype="boolean" hint="Checks if an action can be executed according to inclusion/exclusion lists">
+		<cfargument name="action" type="string" required="true" default="" hint="The action to check"/>
+		<cfargument name="inclusion" type="string" required="false" default="" hint="inclusion list"/>
+		<cfargument name="exclusion" type="string" required="false" default="" hint="exclusion list"/>
+		<cfscript>
+			if( ( 
+					(len(arguments.inclusion) AND listfindnocase(arguments.inclusion,arguments.action)) 
+				     OR 
+				    (NOT len(arguments.inclusion)) 
+				 )
+				 AND
+				 ( listFindNoCase(arguments.exclusion,arguments.action) EQ 0 )
+			){
+				return true;	  
+			}
+			
+			return false;
+		</cfscript>
+	</cffunction>
+
 	<!--- Get the util object --->
 	<cffunction name="getUtil" access="private" output="false" returntype="coldbox.system.core.util.Util" hint="Create and return a util object">
 		<cfreturn CreateObject("component","coldbox.system.core.util.Util")/>
+	</cffunction>
+	
+	<!--- invoker --->
+	<cffunction name="invoker" output="false" access="private" returntype="any" hint="Method Invoker">
+		<cfargument name="target" 			type="any" 		required="true" hint=""/>
+		<cfargument name="method" 			type="any" 		required="true" hint=""/>
+		<cfargument name="argCollection" 	type="any" 		required="false" default="#structNew()#" hint="The argument collection to pass"/>
+		<cfargument name="private" 			type="boolean" 	required="false" default="false" hint="Private method or not?"/>
+		<cfset var results = "">
+		
+		<cfif arguments.private>
+			<!--- Call Private Event --->
+			<cfinvoke component="#arguments.target#" method="_privateInvoker" returnvariable="results">
+				<cfinvokeargument name="method" 		value="#arguments.method#">
+				<cfinvokeargument name="argCollection" 	value="#arguments.argCollection#">
+			</cfinvoke>
+		<cfelse>
+			<cfinvoke component="#arguments.target#"
+					  method="#arguments.method#"
+					  returnvariable="results"
+				  	  argumentcollection="#arguments.argCollection#">		
+		</cfif>
+				  
+		<cfif isDefined("results")><cfreturn results></cfif>
 	</cffunction>
 	
 	<!--- Push Timers --->

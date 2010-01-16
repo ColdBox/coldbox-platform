@@ -64,7 +64,8 @@ Description :
 		  Application Name:
 		</div>
 		<div class="fw_debugContentCell">
-		#controller.getSetting("AppName")# <span class="fw_purpleText">(#lcase(controller.getSetting("Environment"))#)</span>
+		#controller.getSetting("AppName")# 
+		<span class="fw_purpleText">(environment=#lcase(controller.getSetting("Environment"))#)</span>
 		</div>
 		
 		<div class="fw_debugTitleCell">
@@ -72,13 +73,6 @@ Description :
 		</div>
 		<div class="fw_debugContentCell">
 		#dateformat(now(), "MMM-DD-YYYY")# #timeFormat(now(), "hh:MM:SS tt")#
-		</div>
-
-		<div class="fw_debugTitleCell">
-		  Query String:
-		</div>
-		<div class="fw_debugContentCell">
-		#htmlEditFormat(cgi.QUERY_STRING)#
 		</div>
 
 		<div class="fw_debugTitleCell">
@@ -145,6 +139,7 @@ Description :
 			<th width="10%" align="center" >Execution Time</th>
 			<th >Framework Method</th>
 			<th width="75" align="center" >RC Snapshot</th>
+			<th width="75" align="center" >PRC Snapshot</th>
 		  </tr>
 		 
 		  <cfif debugTimers.recordCount>
@@ -165,26 +160,36 @@ Description :
 					<td align="center" >#debugTimers.Time# ms</td>
 					<td ><span class="#color#">#debugTimers.Method#</span></td>
 					<td align="center" >
-						<cfif debugTimers.rc neq ''><a href="javascript:fw_poprc('fw_poprc_#debugTimers.id#')">View</a><cfelse>...</cfif>
+						<cfif len(debugTimers.rc)><a href="javascript:fw_poprc('fw_poprc_#debugTimers.id#')">View</a><cfelse>...</cfif>
+					</td>
+					<td align="center" >
+						<cfif len(debugTimers.prc)><a href="javascript:fw_poprc('fw_popprc_#debugTimers.id#')">View</a><cfelse>...</cfif>
 					</td>
 				  </tr>
 				 <tr id="fw_poprc_#debugTimers.id#" class="hideRC">
-				  	<td colspan="4" style="padding:5px;" wrap="true">
+				  	<td colspan="5" style="padding:5px;" wrap="true">
 					  	<div style="overflow:auto;width:98%; height:150px;padding:5px">
 						  #replacenocase(debugTimers.rc,",",chr(10) & chr(13),"all")#
+						</div>
+					</td>
+		  		  </tr>
+		  		  <tr id="fw_popprc_#debugTimers.id#" class="hideRC">
+				  	<td colspan="5" style="padding:5px;" wrap="true">
+					  	<div style="overflow:auto;width:98%; height:150px;padding:5px">
+						  #replacenocase(debugTimers.prc,",",chr(10) & chr(13),"all")#
 						</div>
 					</td>
 		  		  </tr>
 			  </cfloop>
 		  <cfelse>
 		  	<tr>
-			  	<td colspan="4">No Timers Found...</td>			
+			  	<td colspan="5">No Timers Found...</td>			
 			</tr>
 		  </cfif>
 		  
 		  <cfif structKeyExists(request,"fwExecTime")>
 		  <tr>
-			<th colspan="4">Total Framework Request Execution Time: #request.fwExecTime# ms</th>
+			<th colspan="5">Total Framework Request Execution Time: #request.fwExecTime# ms</th>
 		  </tr>
 		  </cfif>
 		</table>		
