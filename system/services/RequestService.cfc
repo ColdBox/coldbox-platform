@@ -32,7 +32,7 @@ Modification History:
 	<cffunction name="onConfigurationLoad" access="public" output="false" returntype="void">
 		<cfscript>
 			// Let's determine the flash type and create our flash ram object
-			var flashType = controller.getSetting("FlashURLPersistScope",true);
+			var flashType = controller.getSetting("FlashURLPersistScope");
 			var flashPath = flashType;
 			
 			// Shorthand Flash Types

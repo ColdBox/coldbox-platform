@@ -168,7 +168,7 @@ id , name , mail
 	</cffunction>
 	
 	<!--- Get a Mock Model --->
-	<cffunction name="getMockModel" access="private" returntype="any" hint="Get a mock model object by convention. The object is created but not initiated, that would be your job." output="false" >
+	<cffunction name="getMockModel" access="private" returntype="any" hint="*ColdBox must be loaded for this to work. Get a mock model object by convention. You can optional clear all the methods on the model object if you wanted to. The object is created but not initiated, that would be your job." output="false" >
 		<cfargument name="name" 			type="string"   required="true" hint="The name of the model to mock">
 		<cfargument name="clearMethods" 	type="boolean"  required="false" default="false" hint="If true, all methods in the target mock object will be removed. You can then mock only the methods that you want to mock"/>
 		<cfscript>
@@ -230,8 +230,13 @@ id , name , mail
     </cffunction>
 
 	<!--- Get current request context --->
-	<cffunction name="getRequestContext" access="private" output="false" returntype="any" hint="Get a reference to the mock request context">
+	<cffunction name="getRequestContext" access="private" output="false" returntype="any" hint="Get a reference to the current mock request context">
 		<cfreturn getController().getRequestService().getContext() >
+	</cffunction>
+	
+	<!--- getFlashScope --->
+	<cffunction name="getFlashScope" output="false" access="public" returntype="coldbox.system.web.Flash.AbstractFlashScope" hint="Returns to you the currently used flash ram object">
+		<cfreturn getController().getRequestService().getFlashScope()>
 	</cffunction>
 
 	<!--- Setup a request context --->

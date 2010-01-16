@@ -13,6 +13,18 @@ Description		: This is a unit test controller that basically overrides the setNe
 
 <!------------------------------------------- PUBLIC ------------------------------------------->
 
+	<cffunction name="init" returntype="coldbox.system.web.Controller" access="public" hint="Constructor" output="false">
+		<cfargument name="appRootPath" type="string" required="true" hint="The app Root Path"/>
+		<cfscript>
+			super.init(argumentCollection=arguments);
+			
+			// Override mocks
+			setRequestService( CreateObject("component","coldbox.system.testing.mock.services.MockRequestService").init(this) );
+			
+			return this;
+		</cfscript>
+	</cffunction>
+
 	<!--- Event Context Methods --->
 	<cffunction name="setNextEvent" access="Public" returntype="void" hint="I Set the next event to run and relocate the browser to that event."  output="false">
 		<!--- ************************************************************* --->
