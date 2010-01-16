@@ -93,7 +93,8 @@ id , name , mail
 				// Verify App Root Path
 				if( NOT len(instance.appMapping) ){ instance.appMapping = "/"; }
 				appRootPath = expandPath(instance.appMapping);
-				if( right(appRootPath,1) neq "/" ){
+				// Clean the path for nice root path.
+				if( NOT reFind("(/|\\)$",appRootPath) ){
 					appRootPath = appRootPath & "/";
 				}
 				
