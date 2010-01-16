@@ -154,7 +154,7 @@ Modification History:
 			var collection = instance.context;
 			if( arguments.private ){ collection = instance.privateContext; }
 			
-			if( valueExists(arguments.name) ){
+			if( valueExists(arguments.name,arguments.private) ){
 				structDelete(collection,arguments.name);
 			}
 		</cfscript>
@@ -287,6 +287,14 @@ Modification History:
 			
 			// set layout overwritten flag.
 			instance.privateContext["layoutoverride"] = true;
+		</cfscript>
+	</cffunction>
+
+	<cffunction name="getCurrentModule" access="public" hint="Gets the current module, if any" returntype="any" output="false">
+		<cfscript>
+			var event = getCurrentEvent();
+			if( NOT find(":",event) ){ return "";}
+			return listFirst(event,":");
 		</cfscript>
 	</cffunction>
 

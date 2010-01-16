@@ -180,8 +180,8 @@
 			event.clearCollection();
 			
 			event.setView(view, true);
-			assertEquals( view, event.getCurrentView() );
-			assertEquals( '', event.getCurrentLayout() );
+			assertEquals(view, event.getCurrentView() );
+			assertEquals('', event.getCurrentLayout() );
 			
 		</cfscript>
 	</cffunction>
@@ -496,6 +496,21 @@
 			assertFalse( event.isNoExecution() );
 			event.noExecution();
 			assertTrue( event.isNoExecution() );
+			
+		</cfscript>
+	</cffunction>
+	
+	<cffunction name="testCurrentModule" access="public"  returntype="void" output="false">
+		<cfscript>
+			var event = getRequestContext();
+			
+			event.setValue("event","myModule:test.home");
+			
+			//debug(event.getCurrentEVent());
+			assertEquals("myModule", event.getCurrentModule());
+			
+			event.setValue("event","test.home");
+			assertEquals("", event.getCurrentModule());
 			
 		</cfscript>
 	</cffunction>

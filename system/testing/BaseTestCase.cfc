@@ -235,7 +235,7 @@ id , name , mail
 	</cffunction>
 	
 	<!--- getFlashScope --->
-	<cffunction name="getFlashScope" output="false" access="public" returntype="coldbox.system.web.Flash.AbstractFlashScope" hint="Returns to you the currently used flash ram object">
+	<cffunction name="getFlashScope" output="false" access="private" returntype="coldbox.system.web.Flash.AbstractFlashScope" hint="Returns to you the currently used flash ram object">
 		<cfreturn getController().getRequestService().getFlashScope()>
 	</cffunction>
 
