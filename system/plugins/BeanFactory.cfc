@@ -42,7 +42,7 @@ Description: This is the framework's simple bean factory.
 			instance.NOT_FOUND = "_NOT_FOUND_";
 			
 			// Default DSL marker
-			instance.dslMarker = "_wireme";
+			instance.dslMarker = "inject";
 			if( settingExists("BeanFactory_dslMarker") ){
 				instance.dslMarker = getSetting("BeanFactory_dslMarker");
 			}
