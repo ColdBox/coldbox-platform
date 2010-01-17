@@ -242,11 +242,12 @@ I oversee and manage ColdBox modules
 			oConfig.injectPropertyMixin("modulePath",mConfig.path);
 			
 			//Get Public Module Properties
-			mConfig.title 		= oConfig.title;
-			mConfig.author 		= oConfig.author;
-			mConfig.webURL		= oConfig.webURL;
-			mConfig.description = oConfig.description;
-			mConfig.version		= oConfig.version; 
+			mConfig.title 				= oConfig.title;
+			mConfig.author 				= oConfig.author;
+			mConfig.webURL				= oConfig.webURL;
+			mConfig.description 		= oConfig.description;
+			mConfig.version				= oConfig.version; 
+			mConfig.viewParentLookup 	= oConfig.viewParentLookup;
 			
 			//Configure the module
 			oConfig.configure();

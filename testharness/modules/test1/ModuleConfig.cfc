@@ -7,6 +7,7 @@ this.author = "Author of the module";
 this.webURL = "Web URL for docs purposes";
 this.description = "Module description";
 this.version = "Module Version"
+this.viewParentLookup = true [boolean] // If true, checks for views in the parent first, then it the module.If false, then modules first, then parent.
 
 structures to create for configuration
 - parentSettings : struct (will append and override parent)
@@ -26,14 +27,20 @@ Available objects in variable scope
 Required Methods
 - configure() : The method ColdBox calls to configure the module.
 
+Optional Methods
+- onLoad() 		: If found, it is fired once the module is fully loaded
+- onUnload() 	: If found, it is fired once the module is unloaded
+
 */
 	
-	//Module Properties
+	// Module Properties
 	this.title 			= "My Test Module";
 	this.author 		= "Luis Majano";
 	this.webURL 		= "http://www.coldbox.org";
 	this.description 	= "A funky test module";
 	this.version		= "1.0";
+	// If true, looks for views in the parent first, if not found, then in the module
+	this.viewParentLookup = true;
 	
 	function configure(){
 		
