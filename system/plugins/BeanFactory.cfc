@@ -1,7 +1,7 @@
 <!-----------------------------------------------------------------------
 ********************************************************************************
-Copyright 2005-2008 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
-www.coldboxframework.com | www.luismajano.com | www.ortussolutions.com
+Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 ********************************************************************************
 
 Author: Luis Majano
@@ -42,7 +42,7 @@ Description: This is the framework's simple bean factory.
 			instance.NOT_FOUND = "_NOT_FOUND_";
 			
 			// Default DSL marker
-			instance.dslMarker = "_wireme";
+			instance.dslMarker = "inject";
 			if( settingExists("BeanFactory_dslMarker") ){
 				instance.dslMarker = getSetting("BeanFactory_dslMarker");
 			}

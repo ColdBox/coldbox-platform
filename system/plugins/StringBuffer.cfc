@@ -1,7 +1,7 @@
 <!---
 ********************************************************************************
-Copyright 2005-2008 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
-www.coldboxframework.com | www.luismajano.com | www.ortussolutions.com
+Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 ********************************************************************************
 
 StringBuffer.cfc
