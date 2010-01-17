@@ -123,7 +123,7 @@
             <h3>ColdBox Community Links</h3>
             <ul class="links">
                 <li>
-                    <a href="http://www.coldboxframework.com">ColdBox Site</a>
+                    <a href="http://www.coldbox.org">ColdBox Site</a>
                 </li>
                 <li>
                     <a href="http://blog.coldboxframework.com">Blog</a>
@@ -138,29 +138,29 @@
                     <a href="http://groups.google.com/group/coldbox">Mailing List</a>
                 </li>
 				<li>
-					<a href="http://www.coldboxframework.com/index.cfm/download/main">Downloads</a>
+					<a href="http://www.coldbox.org/index.cfm/download/main">Downloads</a>
 				</li>
 				<li>
-					<a href="http://www.coldboxframework.com/api/">ColdBox API</a>
+					<a href="http://www.coldbox.org/api/">ColdBox API</a>
 				</li>
 				<li>
 					<a href="http://ortus.svnrepository.com/coldbox/trac.cgi/wiki/cbCodeDepot">Code Depot</a>
 				</li>
 				<li>
-					<a href="http://www.coldboxframework.com/index.cfm/download/videos">ColdBox Videos</a>
+					<a href="http://www.coldbox.org/index.cfm/download/videos">ColdBox Videos</a>
 				</li>
 				<li>
-					<a href="http://www.coldboxframework.com/index.cfm/support/overview">Community Support</a>
+					<a href="http://www.coldbox.org/index.cfm/support/overview">Community Support</a>
 				</li>
 				<li>
-					<a href="http://www.coldboxframework.com/index.cfm/support/training">Training & Courses</a>
+					<a href="http://www.coldbox.org/index.cfm/support/training">Training & Courses</a>
 				</li>
             </ul>
         </li>
 		
 		<p>&nbsp;</p>
 		<div style="margin:auto;text-align:center">
-		<img src="http://www.coldboxframework.com/includes/images/logos/poweredby.gif">
+		<img src="http://www.coldbox.org/includes/images/logos/poweredby.gif">
 		</div>
     </td>
     </tr>

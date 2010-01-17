@@ -1,7 +1,7 @@
 <!-----------------------------------------------------------------------
 ********************************************************************************
 Copyright 2005-2007 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
-www.coldboxframework.com | www.luismajano.com | www.ortussolutions.com
+www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 ********************************************************************************
 
 Author      :	Sana Ullah

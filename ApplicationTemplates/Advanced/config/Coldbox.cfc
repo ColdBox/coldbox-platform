@@ -225,7 +225,7 @@ Optional Methods
 		//webservices
 		webservices = {
 			testWS = "http://www.test.com/test.cfc?wsdl",
-			AnotherTestWS = "http://www.coldboxframework.com/distribution/updatews.cfc?wsdl"	
+			AnotherTestWS = "http://www.coldbox.org/distribution/updatews.cfc?wsdl"	
 		};
 		
 		//Datasources
