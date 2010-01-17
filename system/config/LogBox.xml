@@ -9,7 +9,7 @@ It is configured to log up to INFO via ColdboxTracerAppender
 <LogBox>
 
 	<!-- Default Appender Definitions -->
-	<Appender name="ColdboxTracer"  class="coldbox.system.logging.appenders.ColdboxTracerAppender" />
+	<Appender name="ColdboxTracer"  class="coldbox.system.logging.appenders.ConsoleAppender" />
 	
 	<!-- Root Logger: Will log anything by default -->
 	<Root levelMin="FATAL" levelMax="INFO" appenders="*" />
