@@ -532,7 +532,7 @@ Only one instance of a specific ColdBox application exists.
 				else
 					loc.tHash 	= debuggerService.timerStart("invoking runEvent [#arguments.event#]");
 				
-				if( ehBean.isMissingAction() ){
+				if( ehBean.getIsMissingAction() ){
 					loc.results		= oHandler.onMissingAction(oRequestContext,ehBean.getMissingAction());
 				}
 				else{
