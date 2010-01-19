@@ -526,12 +526,18 @@ Only one instance of a specific ColdBox application exists.
 					oHandler = getHandlerService().getHandler(ehBean,oRequestContext);
 				} 
 				
-				// Execute Main Event
+				// Execute Main Event or Missing Action Event
 				if( arguments.private)
 					loc.tHash 	= debuggerService.timerStart("invoking PRIVATE runEvent [#arguments.event#]");
 				else
 					loc.tHash 	= debuggerService.timerStart("invoking runEvent [#arguments.event#]");
-				loc.results 	= invoker(oHandler,ehBean.getMethod(),loc.args,arguments.private);
+				
+				if( ehBean.isMissingAction() ){
+					loc.results		= oHandler.onMissingAction(oRequestContext,ehBean.getMissingAction());
+				}
+				else{
+					loc.results 	= invoker(oHandler,ehBean.getMethod(),loc.args,arguments.private);	
+				}
 				debuggerService.timerEnd(loc.tHash);
 				
 				// POST ACTIONS

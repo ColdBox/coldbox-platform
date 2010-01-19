@@ -99,7 +99,7 @@ Description :
 				/* Create Runnable Object */
 				oEventHandler = newHandler(arguments.oEventHandlerBean.getRunnable());
 				/* Save its metadata For event Caching and Aspects */
-				saveHandlermetadata(oEventHandler,cacheKey);					
+				saveHandlermetadata(oEventHandler,cacheKey,true);					
 			}
 			
 			/* ::::::::::::::::::::::::::::::::::::::::: EVENT METHOD TESTING :::::::::::::::::::::::::::::::::::::::::::: */
@@ -466,25 +466,31 @@ Description :
 	<!--- Save Handler metadata --->
 	<cffunction name="saveHandlermetadata" access="private" returntype="void" hint="Save a handler's metadata in the dictionary">
 		<!--- ************************************************************* --->
-		<cfargument name="targetHandler" type="any" required="true" hint="The handler target" />
-		<cfargument name="cacheKey"      type="any" required="true" hint="The handler cache key" />
+		<cfargument name="targetHandler" type="any" 	required="true" hint="The handler target" />
+		<cfargument name="cacheKey"      type="any" 	required="true" hint="The handler cache key" />
+		<cfargument name="force" 		 type="boolean" required="true" default="false" hint="Force the md lookup. Most likely used when controller caching is off"/>
 		<!--- ************************************************************* --->
 		<cfset var metadata = 0>
 		<cfset var mdEntry = 0>
 		
-		<cfif not getHandlerCacheDictionary().keyExists(arguments.cacheKey)>
+		<!--- Check if md already in our data dictionary --->
+		<cfif NOT getHandlerCacheDictionary().keyExists(arguments.cacheKey) OR arguments.force>
 			<cfset metadata = getmetadata(arguments.targetHandler)>
 			<cflock name="handlerservice.handlermd.#metadata.name#" type="exclusive" throwontimeout="true" timeout="10">
 			<cfscript>
-			/* Determine if we have md and cacheable, else set it  */
-			if ( not getHandlerCacheDictionary().keyExists(arguments.cacheKey) ){
-				/* Get Default MD Entry */
+			// Determine if we have md and cacheable, else set it 
+			if ( NOT getHandlerCacheDictionary().keyExists(arguments.cacheKey) OR arguments.force){
+				
+				// Get Default MD Entry
 				mdEntry = getNewMDEntry();
-				/* By Default, handlers with no cache flag are set to true */
+				
+				// By Default, handlers with no cache flag are set to true
 				if ( not structKeyExists(metadata,"cache") or not isBoolean(metadata["cache"]) ){
 					metadata.cache = true;
 				}
-				/* Cache Entries for timeout and last access timeout */
+				
+				// Cache Entries for timeout and last access timeout
+				mdEntry.cacheable = false;
 				if ( metadata["cache"] ){
 					mdEntry.cacheable = true;
 					if ( structKeyExists(metadata,"cachetimeout") ){
@@ -494,11 +500,11 @@ Description :
 						mdEntry.lastAccessTimeout = metadata["cacheLastAccessTimeout"];
 					}
 				} // end we cached.
-				else{
-					mdEntry.cacheable = false;
-				}
 				
-				/* Set Entry in dictionary */
+				//TODO: Add function md entries here too. Maybe create a handlerMD object that can store
+				// Persistence, event caching and more. Then we can use that easily for next requests.
+				
+				// Set Entry in dictionary
 				getHandlerCacheDictionary().setKey(arguments.cacheKey,mdEntry);
 			}
 			</cfscript>
