@@ -86,15 +86,19 @@ I oversee and manage ColdBox modules
 			
 			// Config information for module
 			mConfig = {
-				title = "", author="", webURL="", description="", version="",
-				path = modLocation,
-				invocationPath = modulesInvocationPath & "." & modName,
-				mapping = modulesLocation & "/" & modName,
-				registeredHandlers = '',
-				settings = {},
-				interceptors = [],
+				// Module MetaData and Directives
+				title = "", author="", webURL="", description="", version="",viewParentLookup = "true", layoutParentLookup = "true",
+				// Module Configurations
+				path				 	= modLocation,
+				invocationPath 			= modulesInvocationPath & "." & modName,
+				mapping 				= modulesLocation & "/" & modName,
+				handlerInvocationPath 	= modulesInvocationPath & "." & modName & "." & controller.getSetting("handlersConvention",true),
+				pluginInvocationPath  	= modulesInvocationPath & "." & modName & "." & controller.getSetting("pluginsConvention",true),
+				registeredHandlers 		= '',
+				settings 				= {},
+				interceptors 			= [],
 				customInterceptionPoints = "",
-				routes = []
+				routes 					= []
 			};
 			
 			// Load Module configuration from cfc and store it in module Config Cache.
@@ -248,6 +252,7 @@ I oversee and manage ColdBox modules
 			mConfig.description 		= oConfig.description;
 			mConfig.version				= oConfig.version; 
 			mConfig.viewParentLookup 	= oConfig.viewParentLookup;
+			mConfig.layoutParentLookup  = oConfig.layoutParentLookup;
 			
 			//Configure the module
 			oConfig.configure();

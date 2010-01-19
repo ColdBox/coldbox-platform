@@ -129,6 +129,12 @@ Description :
 			#controller.getLogBox().logLevels.lookup(controller.getLogBox().getRootLogger().getLevelMin())# - 
 			#controller.getLogBox().logLevels.lookup(controller.getLogBox().getRootLogger().getLevelMax())#	
 		</div>
+		<div class="fw_debugTitleCell">
+		  Loaded Modules:
+		</div>
+		<div class="fw_debugContentCell">
+			#arrayToList(controller.getModuleService().getLoadedModules())#	
+		</div>
 		
 		<!--- **************************************************************--->
 		<!--- Method Executions --->

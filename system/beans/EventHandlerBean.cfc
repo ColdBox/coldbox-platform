@@ -18,13 +18,13 @@ Modification History:
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
 	<cfscript>
-		variables.instance = structnew();
-		instance.invocationPath = "";
-		instance.handler = "";
-		instance.method = "";
-		instance.isPrivate = false;
-		instance.isMissingAction = false;
-		instance.MissingAction = "";
+		variables.instance 			= structnew();
+		instance.invocationPath 	= "";
+		instance.handler 			= "";
+		instance.method 			= "";
+		instance.isPrivate 			= false;
+		instance.missingAction 		= "";
+		instance.module				= "";
 	</cfscript>
 
 	<cffunction name="init" access="public" returntype="EventHandlerBean" output="false">
@@ -46,7 +46,13 @@ Modification History:
 		
 	<!--- Get Full Event Syntax --->
 	<cffunction name="getFullEvent" access="public" returntype="any" output="false">
-		<cfreturn getHandler() & "." & getMethod()>
+		<cfscript>
+			var event = getHandler() & "." & getMethod();
+			if( isModule() ){
+				return getModule()  & ":" & event;
+			}
+			return event;
+		</cfscript>
 	</cffunction>
 
 	<!--- Getr Runnable object --->
@@ -71,6 +77,20 @@ Modification History:
 		<cfargument name="isPrivate" type="boolean" required="true">
 		<cfset instance.isPrivate = arguments.isPrivate>
 	</cffunction>
+	
+	<!--- isModule --->
+	<cffunction name="isModule" access="public" returntype="boolean" output="false" hint="Checks if we are using a module or not">
+		<cfreturn (len(getModule()) GT 0)>
+	</cffunction>
+
+	<!--- get/set module --->
+	<cffunction name="getmodule" access="public" returntype="any" output="false">
+		<cfreturn instance.module>
+	</cffunction>
+	<cffunction name="setmodule" access="public" returntype="void" output="false">
+		<cfargument name="module" type="any" required="true">
+		<cfset instance.module = arguments.module>
+	</cffunction>
 
 	<!--- Get/Set Handler name --->
 	<cffunction name="setHandler" access="public" returntype="void" output="false">
@@ -91,12 +111,8 @@ Modification History:
 	</cffunction>
 	
 	<!--- Is missing Action --->
-	<cffunction name="getIsMissingAction" access="public" returntype="boolean" output="false">
-		<cfreturn instance.isMissingAction>
-	</cffunction>
-	<cffunction name="setIsMissingAction" access="public" returntype="void" output="false">
-		<cfargument name="isMissingAction" type="boolean" required="true">
-		<cfset instance.isMissingAction = arguments.isMissingAction>
+	<cffunction name="isMissingAction" access="public" returntype="boolean" output="false">
+		<cfreturn (len(getMissingAction()) GT 0)>
 	</cffunction>
 	
 	<!--- Missing Action item. --->

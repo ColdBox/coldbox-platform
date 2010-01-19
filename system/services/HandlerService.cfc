@@ -46,16 +46,16 @@ Description :
 		<cfscript>
 			//Create Handler
 			var oHandler = CreateObject("component", invocationPath ).init( controller );
-			var interceptmetadata = structnew();
+			var iData = structnew();
 			
-			//Fill-up Intercepted metadata
-			interceptmetadata.handlerPath = invocationPath;
-			interceptmetadata.oHandler = oHandler;
+			// Fill-up Intercepted metadata
+			iData.handlerPath 	= invocationPath;
+			iData.oHandler 		= oHandler;
 			
-			//Fire Interception
-			controller.getInterceptorService().processState("afterHandlerCreation",interceptmetadata);
+			// Fire Interception
+			controller.getInterceptorService().processState("afterHandlerCreation",iData);
 			
-			//Return handler
+			//return handler
 			return oHandler;
 		</cfscript>
 	</cffunction>
@@ -63,13 +63,13 @@ Description :
 	<!--- Get a validated handler instance, using a handlerBean --->
 	<cffunction name="getHandler" output="false" access="public" returntype="any" hint="Returns a valid event handler object ready for execution">
 		<!--- ************************************************************* --->
-		<cfargument name="oEventHandlerBean" type="coldbox.system.beans.EventHandlerBean" required="true" hint="The event handler bean to use"/>
-		<cfargument name="RequestContext"    type="any" required="true" hint="The request Context"/>
+		<cfargument name="ehBean" 			type="any" required="true" hint="The event handler bean to use: coldbox.system.beans.EventHandlerBean"/>
+		<cfargument name="RequestContext"   type="any" required="true" hint="The request context"/>
 		<!--- ************************************************************* --->
 		<cfscript>
 			var oEventHandler = "";
 			var oRequestContext = arguments.RequestContext;
-			var cacheKey = getColdboxOCM().HANDLER_CACHEKEY_PREFIX & arguments.oEventHandlerBean.getRunnable();
+			var cacheKey = getColdboxOCM().HANDLER_CACHEKEY_PREFIX & arguments.ehBean.getRunnable();
 			var eventCacheKey = "";
 			var oEventURLFacade = getController().getColdboxOCM().getEventURLFacade();
 			var handlerDictionaryEntry = "";
@@ -77,93 +77,73 @@ Description :
 			var onInvalidEvent = controller.getSetting("onInvalidEvent");
 			
 			/* ::::::::::::::::::::::::::::::::::::::::: HANDLERS CACHING :::::::::::::::::::::::::::::::::::::::::::: */
-			/* Are we caching handlers? */
+			// Are we caching handlers?
 			if ( controller.getSetting("HandlerCaching") ){
-				/* Lookup handler in Cache */
+				// Lookup handler in Cache
 				oEventHandler = getColdboxOCM().get(cacheKey);
-				/* Verify if not found, then create it and cache it */
-				if( not isObject(oEventHandler) ){
-					/* Create a new handler */
-					oEventHandler = newHandler(arguments.oEventHandlerBean.getRunnable());
-					/* Save its metadata For event Caching and Aspects */
+				
+				// Verify if not found, then create it and cache it
+				if( NOT isObject(oEventHandler) ){
+					// Create a new handler
+					oEventHandler = newHandler(arguments.ehBean.getRunnable());
+					// Save its metadata For event Caching and Aspects
 					saveHandlermetadata(oEventHandler,cacheKey);					
-					/* Get dictionary entry for operations, it is now guaranteed. */
+					// Get dictionary entry for operations, it is now guaranteed
 					handlerDictionaryEntry = getHandlerCacheDictionary().getKey(cacheKey);
-					/* Do we Cache this handler */
+					// Do we Cache this handler
 					if ( handlerDictionaryEntry.cacheable ){
 						getColdboxOCM().set(cacheKey,oEventHandler,handlerDictionaryEntry.timeout,handlerDictionaryEntry.lastAccessTimeout);
 					}
 				}//end of caching strategy				
 			}
 			else{
-				/* Create Runnable Object */
-				oEventHandler = newHandler(arguments.oEventHandlerBean.getRunnable());
-				/* Save its metadata For event Caching and Aspects */
-				saveHandlermetadata(oEventHandler,cacheKey);					
+				// Create Runnable Object
+				oEventHandler = newHandler(arguments.ehBean.getRunnable());
+				// Save its metadata For event Caching and Aspects
+				saveHandlermetadata(oEventHandler,cacheKey,true);					
 			}
 			
 			/* ::::::::::::::::::::::::::::::::::::::::: EVENT METHOD TESTING :::::::::::::::::::::::::::::::::::::::::::: */
 			
-			/* Method Testing and Validation */
-			if ( not arguments.oEventHandlerBean.getisPrivate() and not structKeyExists(oEventHandler,arguments.oEventHandlerBean.getMethod()) ){
+			// Does requested method/action of execution exist in handler?
+			if ( NOT oEventHandler._actionExists(arguments.ehBean.getMethod()) ){
 				
-				/* Check if the handler has an onMissingAction() method, virtual Events */
-				if( structKeyExists(oEventHandler,"onMissingAction") ){
-					arguments.oEventHandlerBean.setisMissingAction(true);
-					arguments.oEventHandlerBean.setMissingAction(arguments.oEventHandlerBean.getMethod());
-					/* Let's execute our missing action */
+				// Check if the handler has an onMissingAction() method, virtual Events
+				if( oEventHandler._actionExists("onMissingAction") ){
+					// Override the method of execution
+					arguments.ehBean.setMissingAction(arguments.ehBean.getMethod());
+					// Let's go execute our missing action
 					return oEventHandler;
 				}
 				
-				/* Invalid Event Detected, log it */
-				controller.getPlugin("Logger").logEntry("error","Invalid Event detected: #arguments.oEventHandlerBean.getRunnable()#");
+				// Invalid Event procedures
+				invalidEvent(arguments.ehBean.getFullEvent(), arguments.ehBean);
 				
-				// If onInvalidEvent is registered, use it
-				if ( len(trim(onInvalidEvent)) ){
-					// Test for invalid Event Error
-					if ( compareNoCase(onInvalidEvent,arguments.oEventHandlerBean.getRunnable()) eq 0 ){
-						getUtil().throwit(message="The onInvalid event is invalid",
-										  detail="The onInvalidEvent setting is also invalid: #onInvalidEvent#. Please check your settings",
-										  type="HandlerService.onInValidEventSettingException");
-					}
-					
-					//Place invalid event in private request context.
-					arguments.RequestContext.setValue("invalidevent",arguments.oEventHandlerBean.getRunnable(),true);
-					
-					// Hijack to invalid event and return that event handler
-					/* Override Event in the handler bean */
-					arguments.oEventHandlerBean.setHandler(reReplace(onInvalidEvent,"\.[^.]*$",""));
-					arguments.oEventHandlerBean.setMethod(listLast(onInvalidEvent,"."));
-					
-					//Try to return the correct handler object.
-					return getHandler(arguments.oEventHandlerBean,arguments.RequestContext);
-					
-				}
-				else{
-					getUtil().throwit(message="An invalid event has been detected",
-									  detail="An invalid event has been detected: [#arguments.oEventHandlerBean.getRunnable()#] The action requested: [#arguments.oEventHandlerBean.getMethod()#] does not exists in the specified handler.",
-									  type="HandlerService.invalidEventException");
-				}
+				// If we get here, then the invalid event kicked in and exists, else an exception is thrown
+				return getHandler(arguments.ehBean,oRequestContext);
+				
 			}//method check finalized.
 			
 			/* ::::::::::::::::::::::::::::::::::::::::: EVENT CACHING :::::::::::::::::::::::::::::::::::::::::::: */
 		
-			/* Event Caching Routines, if using caching and we are executing the main event */
-			if ( controller.getSetting("EventCaching") and oEventHandlerBean.getFullEvent() eq oRequestContext.getCurrentEvent() ){
+			// Event Caching Routines, if using caching and we are executing the main event
+			if ( controller.getSetting("EventCaching") and ehBean.getFullEvent() eq oRequestContext.getCurrentEvent() ){
 				
-				/* Save Event Caching metadata */
-				saveEventCachingmetadata(eventUDF=oEventHandler[oEventHandlerBean.getMethod()],
-										 cacheKey=oEventHandlerBean.getFullEvent(),
+				// Save Event Caching metadata
+				saveEventCachingmetadata(eventUDF=oEventHandler[ehBean.getMethod()],
+										 cacheKey=ehBean.getFullEvent(),
 										 cacheKeySuffix=oEventHandler.EVENT_CACHE_SUFFIX);
-				/* get dictionary entry for operations, it is now guaranteed. */
-				eventDictionaryEntry = getEventCacheDictionary().getKey(oEventHandlerBean.getFullEvent());
-				/* Do we need to cache this event's output after it executes?? */
+				
+				// get dictionary entry for operations, it is now guaranteed
+				eventDictionaryEntry = getEventCacheDictionary().getKey(ehBean.getFullEvent());
+				
+				// Do we need to cache this event's output after it executes??
 				if ( eventDictionaryEntry.cacheable ){
-					/* Create the Cache Key to save */
+					// Create the Cache Key to save
 					eventDictionaryEntry.cacheKey = oEventURLFacade.buildEventKey(keySuffix=eventDictionaryEntry.suffix,
-																				  targetEvent=oEventHandlerBean.getFullEvent(),
+																				  targetEvent=ehBean.getFullEvent(),
 																				  targetContext=oRequestContext);
-					/* Event is cacheable and we need to flag it so the Renderer caches it. */
+					// Event is cacheable and we need to flag it so the Renderer caches it
 					oRequestContext.setEventCacheableEntry(eventDictionaryEntry);
 				}//end if md says that this event is cacheable
 				
@@ -180,18 +160,26 @@ Description :
 		<cfargument name="event"   type="any"  required="true"  hint="The created event context to test." >
 		<!--- ************************************************************* --->
 		<cfscript>
-			var handlerIndex = 0;
-			var handlerExternalIndex = 0;
-			var handlersList = controller.getSetting("RegisteredHandlers");
-			var handlersExternalList = controller.getSetting("RegisteredExternalHandlers");
-			var currentEvent = arguments.event.getCurrentEvent();
+			var handlersList 			= controller.getSetting("RegisteredHandlers");
+			var handlersExternalList 	= controller.getSetting("RegisteredExternalHandlers");
+			var currentEvent 			= arguments.event.getCurrentEvent();
+			var module 					= "";
+			var modulesConfig 			= controller.getSetting("modules");
 			
-			// Verify our incoming event in our registration lists
-			handlerIndex 		 = listFindNoCase(handlersList, currentEvent);
-			handlerExternalIndex = listFindNoCase(handlersExternalList, currentEvent);
+			// Module Check?
+			if( find(":",currentEvent) ){
+				module = listFirst(currentEvent,":");
+				if( structKeyExists(modulesConfig,module) AND listFindNoCase(modulesConfig[module].registeredHandlers,reReplaceNoCase(currentEvent,"^([^:.]*):","")) ){
+					// Append the default event action
+					currentEvent = currentEvent & "." & controller.getSetting('EventAction',1);
+					// Save it as the current Event
+					event.setValue(controller.getSetting("EventName"),currentEvent);
+				}
+				return;
+			}
 			
 			// Do a Default Action Test First, if default action desired.
-			if( handlerIndex OR handlerExternalIndex ){
+			if( listFindNoCase(handlersList, currentEvent) OR listFindNoCase(handlersExternalList, currentEvent) ){
 				// Append the default event action
 				currentEvent = currentEvent & "." & controller.getSetting('EventAction',1);
 				// Save it as the current Event
@@ -201,69 +189,104 @@ Description :
 	</cffunction>
 	
 	<!--- Get a Registered Handler Bean --->
-	<cffunction name="getRegisteredHandler" access="public" hint="I get a registered handler and method according to passed event from the registeredHandlers setting." returntype="coldbox.system.beans.EventHandlerBean"  output="false">
+	<cffunction name="getRegisteredHandler" access="public" hint="I parse the incoming event string into an event handler bean that is used for executions." returntype="coldbox.system.beans.EventHandlerBean"  output="false">
 		<!--- ************************************************************* --->
-		<cfargument name="event"   type="any"  		required="true"  hint="The full event string to check and get." >
+		<cfargument name="event"   type="any"  required="true"  hint="The full event string to check and get." >
 		<!--- ************************************************************* --->
 		<cfscript>
-		var handlerIndex = 0;
-		var handlerExternalIndex = 0;
-		var HandlerReceived = "";
-		var MethodReceived = "";
-		var handlersList = controller.getSetting("RegisteredHandlers");
-		var handlersExternalList = controller.getSetting("RegisteredExternalHandlers");
-		var onInvalidEvent = controller.getSetting("onInvalidEvent");
-		var HandlerBean = CreateObject("component","coldbox.system.beans.EventHandlerBean").init(controller.getSetting("HandlersInvocationPath"));
+		var handlerIndex 			= 0;
+		var handlerReceived 		= "";
+		var methodReceived 			= "";
+		var handlersList 			= controller.getSetting("RegisteredHandlers");
+		var handlersExternalList 	= controller.getSetting("RegisteredExternalHandlers");
+		var HandlerBean 			= CreateObject("component","coldbox.system.beans.EventHandlerBean").init(controller.getSetting("HandlersInvocationPath"));
+		var moduleReceived			= "";
+		var moduleSettings 			= controller.getSetting("modules");
+			
 	
 		// Rip the handler and method
-		HandlerReceived = reReplace(event,"\.[^.]*$","");
-		MethodReceived = listLast(event,".");
-		
-		// Try to do list localization in the registry for full event string.
-		handlerIndex = listFindNoCase(handlersList, HandlerReceived);
-		// Check for conventions location
-		if ( handlerIndex ){
-			HandlerBean.setHandler(listgetAt(handlersList,handlerIndex));
-			HandlerBean.setMethod(MethodReceived);
-			return HandlerBean;
+		handlerReceived = listLast(reReplace(arguments.event,"\.[^.]*$",""),":");
+		methodReceived = listLast(arguments.event,".");
+				
+		// Verify if this is a module call
+		if( find(":", arguments.event) ){ 
+			moduleReceived = listFirst(arguments.event,":"); 
+			// Does this module exist?
+			if( structKeyExists(moduleSettings,moduleReceived) ){
+				// Verify handler in module handlers
+				handlerIndex = listFindNoCase(moduleSettings[moduleReceived].registeredHandlers,handlerReceived);
+				if( handlerIndex ){
+					HandlerBean.setInvocationPath(moduleSettings[moduleReceived].handlerInvocationPath);
+					handlerBean.setHandler(listgetAt(moduleSettings[moduleReceived].registeredHandlers,handlerIndex));
+					handlerBean.setMethod(methodReceived);
+					handlerBean.setModule(moduleReceived);
+					return handlerBean;
+				}
+			}
 		}
-		
-		// Check for external location
-		handlerExternalIndex = listFindNoCase(handlersExternalList, HandlerReceived);
-		if( handlerExternalIndex ){
-			HandlerBean.setInvocationPath(controller.getSetting("HandlersExternalLocation"));
-			HandlerBean.setHandler(listgetAt(handlersExternalList,handlerExternalIndex));
-			HandlerBean.setMethod(MethodReceived);
-			return HandlerBean;
-		}
-		
-		// Invalid Event Detected
-		controller.getPlugin("Logger").logEntry("error","Invalid Event detected: #arguments.event# ");
-		
-		// If onInvalidEvent is registered, use it
-		if ( len(trim(onInvalidEvent)) ){
-			
-			// Test for invalid Event Error
-			if ( compareNoCase(onInvalidEvent,arguments.event) eq 0 ){
-				getUtil().throwit(message="The onInvalid event is also invalid",
-								  detail="The onInvalidEvent setting is also invalid: #onInvalidEvent#. Please check your settings",
-								  type="HandlerService.onInValidEventSettingException");
+		else{
+			// Try to do list localization in the registry for full event string.
+			handlerIndex = listFindNoCase(handlersList, HandlerReceived);
+			// Check for conventions location
+			if ( handlerIndex ){
+				HandlerBean.setHandler(listgetAt(handlersList,handlerIndex));
+				HandlerBean.setMethod(MethodReceived);
+				return HandlerBean;
 			}
 			
-			/* Store Invalid Event in PRC */
-			controller.getRequestService().getContext().setValue("invalidevent",arguments.event,true);
-			
-			/* Override Event */
-			HandlerBean.setHandler(reReplace(onInvalidEvent,"\.[^.]*$",""));
-			HandlerBean.setMethod(listLast(onInvalidEvent,"."));
-			return HandlerBean;
-		}
+			// Check for external location
+			handlerIndex = listFindNoCase(handlersExternalList, HandlerReceived);
+			if( handlerIndex ){
+				HandlerBean.setInvocationPath(controller.getSetting("HandlersExternalLocation"));
+				HandlerBean.setHandler(listgetAt(handlersExternalList,handlerIndex));
+				HandlerBean.setMethod(MethodReceived);
+				return HandlerBean;
+			}
+		} //end else
 		
-		// Throw Exception
-		getUtil().throwit(message="The event: #event# is not valid registered event.",type="HandlerService.EventHandlerNotRegisteredException");
+		// Run invalid event procedures, handler not found
+		invalidEvent(arguments.event,handlerBean);
 		
+		// onInvalidEvent detected, so just return the overriden bean
+		return handlerBean;		
 		</cfscript>
 	</cffunction>
+	
+	<!--- invalidEvent --->
+	<cffunction name="invalidEvent" output="false" access="private" returntype="void" hint="Invalid Event procedures. Throws EventHandlerNotRegisteredException">
+		<cfargument name="event"  type="string" required="true" hint="The event that was found invalid"/>
+		<cfargument name="ehBean" type="any" 	required="true" hint="The event handler bean"/>
+		<cfscript>
+			var onInvalidEvent = controller.getSetting("onInvalidEvent");
+			
+			// Invalid Event Detected, log it in the Application log, not a coldbox log but an app log
+			controller.getPlugin("Logger").error("Invalid Event detected: #arguments.event#. Path info: #cgi.path_info# , query string: #cgi.query_string#");
+			
+			// If onInvalidEvent is registered, use it
+			if ( len(trim(onInvalidEvent)) ){
+				
+				// Test for invalid Event Error
+				if ( compareNoCase(onInvalidEvent,arguments.event) eq 0 ){
+					getUtil().throwit(message="The onInvalid event is also invalid",
+									  detail="The onInvalidEvent setting is also invalid: #onInvalidEvent#. Please check your settings",
+									  type="HandlerService.onInValidEventSettingException");
+				}
+				
+				// Store Invalid Event in PRC
+				controller.getRequestService().getContext().setValue("invalidevent",arguments.event,true);
+				
+				// Override Event
+				arguments.ehBean.setHandler(reReplace(onInvalidEvent,"\.[^.]*$",""));
+				arguments.ehBean.setMethod(listLast(onInvalidEvent,"."));
+				
+				return;
+			}
+			
+			// Throw Exception
+			getUtil().throwit(message="The event: #arguments.event# is not valid registered event.",type="HandlerService.EventHandlerNotRegisteredException");
+		</cfscript>
+	</cffunction>
+	
 	
 	<!--- Handler Registration System --->
 	<cffunction name="registerHandlers" access="public" returntype="void" hint="I register your application's event handlers" output="false">
@@ -466,25 +489,31 @@ Description :
 	<!--- Save Handler metadata --->
 	<cffunction name="saveHandlermetadata" access="private" returntype="void" hint="Save a handler's metadata in the dictionary">
 		<!--- ************************************************************* --->
-		<cfargument name="targetHandler" type="any" required="true" hint="The handler target" />
-		<cfargument name="cacheKey"      type="any" required="true" hint="The handler cache key" />
+		<cfargument name="targetHandler" type="any" 	required="true" hint="The handler target" />
+		<cfargument name="cacheKey"      type="any" 	required="true" hint="The handler cache key" />
+		<cfargument name="force" 		 type="boolean" required="true" default="false" hint="Force the md lookup. Most likely used when controller caching is off"/>
 		<!--- ************************************************************* --->
 		<cfset var metadata = 0>
 		<cfset var mdEntry = 0>
 		
-		<cfif not getHandlerCacheDictionary().keyExists(arguments.cacheKey)>
+		<!--- Check if md already in our data dictionary --->
+		<cfif NOT getHandlerCacheDictionary().keyExists(arguments.cacheKey) OR arguments.force>
 			<cfset metadata = getmetadata(arguments.targetHandler)>
 			<cflock name="handlerservice.handlermd.#metadata.name#" type="exclusive" throwontimeout="true" timeout="10">
 			<cfscript>
-			/* Determine if we have md and cacheable, else set it  */
-			if ( not getHandlerCacheDictionary().keyExists(arguments.cacheKey) ){
-				/* Get Default MD Entry */
+			// Determine if we have md and cacheable, else set it 
+			if ( NOT getHandlerCacheDictionary().keyExists(arguments.cacheKey) OR arguments.force){
+				
+				// Get Default MD Entry
 				mdEntry = getNewMDEntry();
-				/* By Default, handlers with no cache flag are set to true */
+				
+				// By Default, handlers with no cache flag are set to true
 				if ( not structKeyExists(metadata,"cache") or not isBoolean(metadata["cache"]) ){
 					metadata.cache = true;
 				}
-				/* Cache Entries for timeout and last access timeout */
+				
+				// Cache Entries for timeout and last access timeout
+				mdEntry.cacheable = false;
 				if ( metadata["cache"] ){
 					mdEntry.cacheable = true;
 					if ( structKeyExists(metadata,"cachetimeout") ){
@@ -494,11 +523,11 @@ Description :
 						mdEntry.lastAccessTimeout = metadata["cacheLastAccessTimeout"];
 					}
 				} // end we cached.
-				else{
-					mdEntry.cacheable = false;
-				}
 				
-				/* Set Entry in dictionary */
+				//TODO: Add function md entries here too. Maybe create a handlerMD object that can store
+				// Persistence, event caching and more. Then we can use that easily for next requests.
+				
+				// Set Entry in dictionary
 				getHandlerCacheDictionary().setKey(arguments.cacheKey,mdEntry);
 			}
 			</cfscript>

@@ -34,10 +34,10 @@ Optional Methods
 */
 	
 	// Module Properties
-	this.title 				= "My Test Module";
+	this.title 				= "ForgeBox";
 	this.author 			= "Luis Majano";
 	this.webURL 			= "http://www.coldbox.org";
-	this.description 		= "A funky test module";
+	this.description 		= "A module that interacts with forgebox";
 	this.version			= "1.0";
 	// If true, looks for views in the parent first, if not found, then in the module. Else vice-versa
 	this.viewParentLookup 	= true;
@@ -45,25 +45,9 @@ Optional Methods
 	this.layoutParentLookup = true;
 	
 	function configure(){
-		
-		// parent settings
-		parentSettings = {
-			woot = "Module set it!"
-		};
-	
 		// module settings - stored in modules.name.settings
 		settings = {
-			display = "core"
-		};
-		
-		// datasources
-		datasources = {
-			mysite   = {name="mySite", dbType="mysql", username="root", password="root"}
-		};
-		
-		// web services
-		webservices = {
-			google = "http://news.google.com/news?pz=1&cf=all&ned=us&hl=en&topic=h&num=3&output=rss"
+			
 		};
 		
 		// SES Routes
@@ -71,19 +55,7 @@ Optional Methods
 			{pattern="/docs", handler="api",action="index"}		
 		];		
 		
-		
-		customInterceptionPoints = "onPio";
 		interceptors = [];
 	}
-	
-	function onLoad(){
-		controller.getLogBox().getLogger(this).info("onLoad called on module: #getMetadata(this).name#");
-	}
-	
-	function onUnload(){
-		controller.getLogBox().getLogger(this).info("onUnload called on module: #getMetadata(this).name#");
-	}
-	
-	
 </cfscript>
-</cfcomponent>
+</cfcmponent>
