@@ -353,6 +353,7 @@ Description :
 		<!--- ************************************************************* --->
 		<cfset var cbController = "">
 		<cfset var event = "">
+		<cfset var iData = structnew()>
 		
 		<cflock type="readonly" name="#getAppHash()#" timeout="#getLockTimeout()#" throwontimeout="true">
 			<cfscript>
@@ -370,7 +371,9 @@ Description :
 				event = cbController.getRequestService().getContext();
 					
 				//Execute Session End interceptors
-				cbController.getInterceptorService().processState("sessionEnd",arguments.sessionScope);
+				iData.sessionReference = arguments.sessionScope;
+				iData.applicationReference = arguments.appScope;
+				cbController.getInterceptorService().processState("sessionEnd",iData);
 				
 				//Execute Session End Handler
 				if ( len(cbController.getSetting("SessionEndHandler")) ){

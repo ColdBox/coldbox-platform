@@ -263,11 +263,14 @@ Description :
 			var layoutPath 	  		= "/#instance.appMapping#/#instance.layoutsConvention#/#arguments.layout#";
 			var extLayoutPath 		= "#instance.layoutsExternalLocation#/#arguments.layout#";
 			var moduleName 			= event.getCurrentModule();
-			var moduleLayoutPath 	= "#instance.modulesConfig[moduleName].mapping#/#instance.layoutsConvention#/#arguments.layout#";				
+			var moduleLayoutPath 	= "";
 			
 			// If layout exists in module and this is a module call, then use module layout.
-			if( len(moduleName) AND fileExists(expandPath(moduleLayoutPath)) ){
-				return moduleLayoutPath;
+			if( len(moduleName) ){
+				moduleLayoutPath 	= "#instance.modulesConfig[moduleName].mapping#/#instance.layoutsConvention#/#arguments.layout#";
+				if( fileExists(expandPath(moduleLayoutPath)) ){				
+					return moduleLayoutPath;
+				}
 			}
 			
 			// Check if layout does not exists in Conventions, but in the ext location
@@ -340,8 +343,9 @@ Description :
 		<cfscript>
 			var parentViewPath = "";
 			var moduleViewPath = "";
-			var moduleName = event.getCurrentModule();
+			var moduleName     = event.getCurrentModule();
 			
+			// Declare Locations
 			parentViewPath = "/#instance.appMapping#/#instance.viewsConvention#/modules/#moduleName#/#arguments.view#";
 			moduleViewPath = "#instance.modulesConfig[moduleName].mapping#/#instance.viewsConvention#/#arguments.view#";				
 			
@@ -359,6 +363,7 @@ Description :
 			if( fileExists(expandPath(moduleViewPath & ".cfm")) ){
 				return moduleViewPath;
 			}
+			
 			// Not found, then just return parent path, let the include throw exception if not found
 			return parentViewPath;
 		</cfscript>

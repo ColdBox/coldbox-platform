@@ -58,4 +58,4 @@ Optional Methods
 		interceptors = [];
 	}
 </cfscript>
-</cfcmponent>
+</cfcomponent>

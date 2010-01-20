@@ -9,13 +9,10 @@ Date        :	9/3/2007
 Description :
 	Request service Test
 ----------------------------------------------------------------------->
-<cfcomponent name="requestserviceTest" extends="coldbox.system.testing.BaseTestCase" output="false">
+<cfcomponent name="requestserviceTest" extends="coldbox.system.testing.BaseTestCase" output="false" appMapping="/coldbox/testharness">
 
 	<cffunction name="setUp" returntype="void" access="public" output="false">
 		<cfscript>
-		//Setup ColdBox Mappings For this Test
-		setAppMapping("/coldbox/testharness");
-		setConfigMapping(ExpandPath(instance.AppMapping & "/config/coldbox.xml.cfm"));
 		//Call the super setup method to setup the app.
 		super.setup();
 		</cfscript>
@@ -91,6 +88,9 @@ Description :
 		/* GetPlugin */
 		makePublic(proxy, "getPlugin");
 		local.plugin = proxy.getPlugin("Logger");
+		local.plugin = proxy.getPlugin("date",true);
+		local.plugin = proxy.getPlugin(plugin="ModPlugin",module="test1");
+		
 		
 		/* Get IOCFactory */
 		makePublic(proxy, "getIoCFactory");
@@ -124,18 +124,16 @@ Description :
 		var proxy = CreateObject("component","coldbox.testharness.coldboxproxy");
 		var local = structnew();
 		
-		/* Get Method Injector */
 		getController().getPlugin("MethodInjector").start(proxy);
 		
-		/* Load ColdBox */
 		local.load = structnew();
-		local.load.appRootPath = ExpandPath("/coldbox/testharness");
-		local.load.configLocation = local.load.appRootPath & "/config/coldbox.xml.cfm";
+		local.load.appMapping = "/coldbox/testharness";
+		local.load.configLocation = expandPath(local.load.appMapping) & "/config/Coldbox.cfc";
 		local.load.reloadApp = true;
 		proxy.invokerMixin(method='loadColdbox',argCollection=local.load);
 		
 		local.load = structnew();
-		local.load.appRootPath = ExpandPath("/coldbox/testharness");
+		local.load.appMapping = "/coldbox/testharness";
 		local.load.reloadApp = true;
 		
 		proxy.invokerMixin(method='loadColdbox',argCollection=local.load);

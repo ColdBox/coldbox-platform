@@ -241,9 +241,10 @@ Description :
 	<!--- Facade: Get a plugin --->
 	<cffunction name="getPlugin" access="private" returntype="any" hint="Plugin factory, returns a new or cached instance of a plugin." output="false">
 		<!--- ************************************************************* --->
-		<cfargument name="plugin" 		type="string"  hint="The Plugin object's name to instantiate" >
+		<cfargument name="plugin" 		type="any"  hint="The Plugin object's name to instantiate" >
 		<cfargument name="customPlugin" type="boolean" required="false" default="false" hint="Used internally to create custom plugins.">
 		<cfargument name="newInstance"  type="boolean" required="false" default="false" hint="If true, it will create and return a new plugin. No caching or persistance.">
+		<cfargument name="module" 		type="any" 	   required="false" default="" hint="The module to retrieve the plugin from"/>
 		<!--- ************************************************************* --->
 		<cfreturn getController().getPlugin(argumentCollection=arguments)>
 	</cffunction>
@@ -287,7 +288,7 @@ Description :
 	<!--- Bootstrapper LoadColdBox --->
 	<cffunction name="loadColdbox" access="private" output="false" returntype="void" hint="Load a coldbox application, and place the coldbox controller in application scope for usage. If the application is already running, then it will not re-do it, unless you specify the reload argument or the application expired.">
 		<!--- ************************************************************* --->
-		<cfargument name="appRootPath" 		type="string"  required="true" hint="The absolute location of the root of the coldbox application. This is usually where the Application.cfc is and where the conventions are read from."/>
+		<cfargument name="appMapping" 		type="string"  required="true" hint="The absolute location of the root of the coldbox application. This is usually where the Application.cfc is and where the conventions are read from."/>
 		<cfargument name="configLocation" 	type="string"  required="false" default="" 		hint="The absolute location of the config file to override, if not passed, it will try to locate it by convention."/>
 		<cfargument name="reloadApp" 		type="boolean" required="false" default="false" hint="Flag to reload the application or not"/>
 		<!--- ************************************************************* --->
@@ -306,11 +307,11 @@ Description :
 						structDelete(application,COLDBOX_APP_KEY);
 					}
 					// Load it Up baby!!
-					cbController = CreateObject("component", "coldbox.system.web.Controller").init( appRootPath );
+					cbController = CreateObject("component", "coldbox.system.web.Controller").init( expandPath(arguments.appMapping) );
 					// Put in Scope
 					application[COLDBOX_APP_KEY] = cbController;
 					// Setup Calls
-					cbController.getLoaderService().loadApplication(arguments.configLocation);					
+					cbController.getLoaderService().loadApplication(arguments.configLocation,arguments.appMapping);					
 				}				
 				</cfscript>
 			</cflock>

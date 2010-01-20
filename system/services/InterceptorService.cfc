@@ -226,7 +226,7 @@ Description :
 			// Loop and Add
 			for(;x lte listlen(arguments.customPoints); x=x+1 ){
 				if ( not listfindnocase(currentList, listgetAt(arguments.customPoints,x)) ){
-					listAppend(currentList,listgetAt(arguments.customPoints,x));
+					currentList = listAppend(currentList,listgetAt(arguments.customPoints,x));
 				}
 			}
 			// Save New Interception Points
@@ -301,6 +301,7 @@ Description :
 			if( structKeyExists(arguments.metadata, "functions") ){
 				
 				for(x=1; x lte ArrayLen(arguments.metadata.functions); x=x+1 ){
+					
 					// Verify the @interceptionPoint annotation
 					if( structKeyExists(arguments.metadata.functions[x],"interceptionPoint") ){
 						// Register the point by convention and annotation

@@ -68,7 +68,7 @@ Optional Methods
 			coldboxExtensionsLocation = "coldbox.testharness.extensions",
 			pluginsExternalLocation = "coldbox.testing.testplugins",
 			viewsExternalLocation	= "/coldbox/testing/testviews",
-			layoutsExternalLocation = "extlayouts",
+			layoutsExternalLocation = "/#appMapping#/extlayouts",
 			handlersExternalLocation  = "coldbox.testing.testhandlers",
 			requestContextDecorator = "coldbox.testharness.model.myRequestContextDecorator",
 			

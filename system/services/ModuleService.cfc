@@ -94,6 +94,7 @@ I oversee and manage ColdBox modules
 				mapping 				= modulesLocation & "/" & modName,
 				handlerInvocationPath 	= modulesInvocationPath & "." & modName & "." & controller.getSetting("handlersConvention",true),
 				pluginInvocationPath  	= modulesInvocationPath & "." & modName & "." & controller.getSetting("pluginsConvention",true),
+				pluginsPhysicalPath		= modLocation & "/" & controller.getSetting("pluginsConvention",true),
 				registeredHandlers 		= '',
 				settings 				= {},
 				interceptors 			= [],
@@ -110,6 +111,9 @@ I oversee and manage ColdBox modules
 			
 			// Register Custom Interception Points
 			interceptorService.appendInterceptionPoints(mConfig.customInterceptionPoints);
+			
+			// Register the Config as an observable also.
+			interceptorService.registerInterceptor(interceptorObject=instance.mConfigCache[modName]);
 			
 			// Register Interceptors with Announcement service
 			for(y=1; y lte arrayLen(mConfig.interceptors); y++){

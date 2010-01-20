@@ -12,14 +12,10 @@ Description :
 Modification History:
 01/18/2007 - Created
 ----------------------------------------------------------------------->
-<cfcomponent name="pluginserviceTest" extends="coldbox.system.testing.BaseTestCase" output="false">
+<cfcomponent name="pluginserviceTest" extends="coldbox.system.testing.BaseTestCase" output="false" appMapping="/coldbox/testharness">
 
 	<cffunction name="setUp" returntype="void" access="public" output="false">
 		<cfscript>
-		//Setup ColdBox Mappings For this Test
-		setAppMapping("/coldbox/testharness");
-		setConfigMapping(ExpandPath(instance.AppMapping & "/config/coldbox.xml.cfm"));
-		//Call the super setup method to setup the app.
 		super.setup();
 		</cfscript>
 	</cffunction>
@@ -27,7 +23,7 @@ Modification History:
 	<cffunction name="testNewInstanceViaController" access="public" returntype="void" output="false">
 		<cfscript>
 		var plugin = getController().getPlugin("Logger",false,true);
-		AssertTrue( isObject(plugin));
+		AssertTrue( isObject(plugin) );
 		</cfscript>
 	</cffunction>
 	
@@ -49,6 +45,31 @@ Modification History:
 		<cfscript>
 		var plugin = getController().getPluginService().get("myclientstorage",true);
 		AssertTrue( isObject(plugin));
+		</cfscript>
+	</cffunction>
+	
+	<cffunction name="testPluginByModule" access="public" returntype="void" output="false">
+		<cfscript>
+		plugin = getController().getPluginService().get("ModPlugin",true,"test1");
+		AssertTrue( isObject(plugin));
+		
+		try{
+			plugin = getController().getPluginService().get("ModPlugin",true,"test2");
+			fail("Should Fail");
+		}
+		catch("PluginService.ModuleConfigurationNotFound" e){}
+		catch(any e){
+			$rethrow(e);
+		}
+		
+		try{
+			plugin = getController().getPluginService().get("BogusPlugin",true,"test1");
+			fail("Should Fail");
+		}
+		catch("PluginService.ModulePluginNotFound" e){}
+		catch(any e){
+			$rethrow(e);
+		}
 		</cfscript>
 	</cffunction>
 	

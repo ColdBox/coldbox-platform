@@ -84,6 +84,17 @@ Optional Methods
 		controller.getLogBox().getLogger(this).info("onUnload called on module: #getMetadata(this).name#");
 	}
 	
+	// This object can also act as an interceptor
+	function preProcess(event,interceptData){
+		controller.getLogBox().getLogger(this).info("I can now listen on preprocess from the Test1 Module");
+	}
+	
+	/**
+	* @interceptionPoint
+	*/
+	function onHenrik(event, interceptData){
+	
+	}
 	
 </cfscript>
 </cfcomponent>

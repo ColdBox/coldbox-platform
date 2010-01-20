@@ -212,7 +212,14 @@ Description: This is the framework's simple bean factory.
 					oModel = createObject("component", modelClassPath);
 					// Verify Constructor: Init() and execute
 					if( structKeyExists(oModel,"init") ){
-						oModel.init(argumentCollection=getConstructorArguments(oModel));
+						try{
+							oModel.init(argumentCollection=getConstructorArguments(oModel));
+						}
+						catch(Any e){
+							$throw(message="Error constructing model: #arguments.name#",
+								   detail=e.message & e.detail & e.stacktrace,
+								   type="BeanFactory.BeanCreationException");
+						}
 					}
 					// Persistence Checks
 					if( instance.ModelsObjectCaching ){
