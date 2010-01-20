@@ -263,10 +263,17 @@ Description :
 	<!--- Render Profilers --->
 	<cffunction name="renderProfiler" access="public" hint="Renders the execution profilers." output="false" returntype="Any">
 		<cfset var profilerContents = "">
-		<cfset var profilers = getProfilers()>
-		<cfset var profilersCount = ArrayLen(profilers)>
-		<cfset var x = 1>
-		<cfset var refLocal = structnew()>
+		<cfset var profilers 		= getProfilers()>
+		<cfset var profilersCount 	= ArrayLen(profilers)>
+		<cfset var x 				= 1>
+		<cfset var refLocal 		= structnew()>
+		<cfset var event 			= controller.getRequestService().getContext()>
+		<cfset var URLBase 			= event.getsesBaseURL()>
+		
+		<!--- URL Base --->
+		<cfif NOT event.isSES()>
+			<cfset URLBase = "index.cfm">
+		</cfif>
 		
 		<cfsavecontent variable="profilerContents"><cfinclude template="/coldbox/system/includes/panels/ProfilerPanel.cfm"></cfsavecontent>
 				
