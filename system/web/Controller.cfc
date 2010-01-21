@@ -48,11 +48,11 @@ Only one instance of a specific ColdBox application exists.
 			setDebuggerService( CreateObject("component","coldbox.system.services.DebuggerService").init(this) );
 			setHandlerService( CreateObject("component", "coldbox.system.services.HandlerService").init(this) );
 			setPluginService( CreateObject("component","coldbox.system.services.PluginService").init(this) );
-			setInterceptorService( CreateObject("component", "coldbox.system.services.InterceptorService").init(this) );
 			// Nasty cf7, once you die this goes out. Modules are cf8 only and above.
 			if ( instance.CFMLEngine.isMT() ){
 				setModuleService( CreateObject("component", "coldbox.system.services.ModuleService").init(this) );
 			}
+			setInterceptorService( CreateObject("component", "coldbox.system.services.InterceptorService").init(this) );
 			
 			// LogBox Default Configuration & Creation
 			setLogBox(getLoaderService().createLogBox());

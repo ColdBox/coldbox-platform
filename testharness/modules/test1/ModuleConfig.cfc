@@ -68,7 +68,7 @@ Optional Methods
 		
 		// SES Routes
 		routes = [
-			{pattern="/docs", handler="api",action="index"}		
+			{pattern="/api-docs", handler="api",action="index"}		
 		];		
 		
 		

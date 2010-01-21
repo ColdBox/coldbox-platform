@@ -188,14 +188,14 @@ Modification History:
 			}			
 		}
 		
-		// If no config file location throw exception
-		if( not len(coldboxSettings["ConfigFileLocation"]) ){
-			getUtil().throwit(message="Config file not located in convetions: #coldboxSettings.configConvention#",detail="",type="LoaderService.ConfigFileNotFound");
-		}
-		
 		// Overriding the config file location? Maybe unit testing?
 		if( len(arguments.overrideConfigFile) ){
 			coldboxSettings["ConfigFileLocation"] = getUtil().getAbsolutePath(arguments.overrideConfigFile);
+		}
+		
+		// If no config file location throw exception
+		if( not len(coldboxSettings["ConfigFileLocation"]) ){
+			getUtil().throwit(message="Config file not located in convetions: #coldboxSettings.configConvention#",detail="",type="LoaderService.ConfigFileNotFound");
 		}
 		
 		// If CFC loader, then create it and return it

@@ -3,17 +3,19 @@
 	setBaseURL("http://#cgi.http_host#/#getSetting('AppMapping')#/index.cfm");
 	
 	// REST services via new action as JSON Struct
+	
 	addRoute(pattern="/rest",
 		     handler="Rest",
 		     action="{GET:'show', PUT:'update', DELETE:'delete', POST:'save'}");
-	
-	// REST services as Implicit structures
 	/*
+	// REST services as Implicit structures
 	addRoute(pattern="/api",
 		     handler="Rest",
 		     action={GET='show', PUT='update', DELETE='delete', POST='save'});
 	
 	*/
+	
+	addModuleRoutes(pattern="/test1",module="test1");
 	
 	addRoute(pattern="/test/:id-numeric{2}/:num-numeric/:name/:month{3}?",handler="ehGeneral",action="dspHello");
 	addRoute(pattern="test/:id/:name{4}?",handler="ehGeneral",action="dspHello");

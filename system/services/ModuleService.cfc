@@ -40,6 +40,14 @@ I oversee and manage ColdBox modules
     	</cfscript>
     </cffunction>
 	
+	<!--- onAspectsLoad --->
+    <cffunction name="onAspectsLoad" output="false" access="public" returntype="void" hint="Called by loader service when all aspects have loaded">
+    	<cfscript>
+			// Now that we are up and running we will turn on all the modules.
+			activateModules();
+    	</cfscript>
+    </cffunction>
+	
 	<!--- registerAllModules --->
 	<cffunction name="registerAllModules" output="false" access="public" returntype="void" hint="Register all located modules">
 		<cfscript>
@@ -60,8 +68,8 @@ I oversee and manage ColdBox modules
 	</cffunction>
 	
 	<!--- registerModule --->
-	<cffunction name="registerModule" output="false" access="public" returntype="boolean" hint="Register a module by name and location">
-		<cfargument name="moduleName" type="string" required="true" hint="The module absolute location to load. Must be inside of the ModulesLocation path"/>
+	<cffunction name="registerModule" output="false" access="public" returntype="boolean" hint="Register a module's configuration information and object.">
+		<cfargument name="moduleName" type="string" required="true" hint="The name of the module to load. It must exist and be valid. Else we ignore it by logging a warning and returning false."/>
 		<cfscript>
 			var modulesLocation 		= controller.getSetting("ModulesLocation");
 			var modulesPath 			= controller.getSetting("ModulesPath");
@@ -69,20 +77,14 @@ I oversee and manage ColdBox modules
 			// Module To Load
 			var modName 				= arguments.moduleName;
 			var modLocation 			= modulesPath & "/" & modName;
-			var iData 					= {};
-			var interceptorService 		= controller.getInterceptorService();
 			var mConfig 				= "";
-			var y						= 1;
+			var modulesConfiguration	= controller.getSetting("modules");
 			
 			//Check if module config exists, else skip and exit and log
 			if( NOT fileExists(modLocation & "/ModuleConfig.cfc") ){
 				instance.logger.WARN("The module (#modName#) cannot be loaded as it does not have a ModuleConfig.cfc in its root. Path Checked: #modLocation#");
 				return false;
 			}
-			
-			// preModuleLoad interception
-			iData = {moduleLocation=modLocation,moduleName=modName};
-			interceptorService.processState("preModuleLoad",iData);
 			
 			// Config information for module
 			mConfig = {
@@ -102,44 +104,66 @@ I oversee and manage ColdBox modules
 				routes 					= []
 			};
 			
-			// Load Module configuration from cfc and store it in module Config Cache.
+			// Load Module configuration from cfc and store it in module Config Cache
 			instance.mConfigCache[modName] = loadModuleConfiguration(mConfig);
 			
-			// Register handlers
-			mConfig.registeredHandlers = controller.getHandlerService().getHandlerListing(mConfig.path & "/" & controller.getSetting("handlersConvention",true));
-			mConfig.registeredHandlers = arrayToList(mConfig.registeredHandlers);
-			
-			// Register Custom Interception Points
-			interceptorService.appendInterceptionPoints(mConfig.customInterceptionPoints);
-			
-			// Register the Config as an observable also.
-			interceptorService.registerInterceptor(interceptorObject=instance.mConfigCache[modName]);
-			
-			// Register Interceptors with Announcement service
-			for(y=1; y lte arrayLen(mConfig.interceptors); y++){
-				interceptorService.registerInterceptor(interceptorClass=mConfig.interceptors[y].class,
-													   interceptorProperties=mConfig.interceptors[y].properties,
-													   interceptorName=mConfig.interceptors[y].name);
-			}
-			
-			// Register Model path if it exists according to parent convention.
-			if( directoryExists(modLocation & "/" & controller.getSetting("modelsConvention",true)) ){
-				controller.getPlugin("BeanFactory").appendExternalLocations(mConfig.invocationPath & "." & controller.getSetting("modelsConvention",true));
-			}
-			
-			// Save module configuration
-			controller.getConfigSettings().modules[modName] = mConfig;
-			
-			// Call on module configuration object onLoad() if found
-			if( structKeyExists(instance.mConfigCache[modName],"onLoad") ){
-				instance.mConfigCache[modName].onLoad();
-			}
-			
-			// postModuleLoad interception
-			iData = {moduleLocation=modLocation,moduleName=modName,moduleConfig=mConfig};
-			interceptorService.processState("postModuleLoad",iData);
+			// Store module configuration in main modules configuration
+			modulesConfiguration[modName] = mConfig;
 			
 			return true;
+		</cfscript>
+	</cffunction>
+	
+	<!--- activateModules --->
+	<cffunction name="activateModules" output="false" access="public" returntype="void" hint="Go over all the loaded module configurations and activate them for usage">
+		<cfscript>
+			var modules 			= controller.getSetting("modules");
+			var moduleName 			= "";
+			var mConfig				= "";
+			var iData       		= {};
+			var y					= 1;
+			var interceptorService  = controller.getInterceptorService();
+			
+			// Iterate through module configuration and activate each module
+			for(moduleName in modules){
+				// Start activation procedures.
+				mConfig = modules[moduleName];
+				
+				// preModuleLoad interception
+				iData = {moduleLocation=mConfig.path,moduleName=moduleName};
+				interceptorService.processState("preModuleLoad",iData);
+				
+				// Register handlers
+				mConfig.registeredHandlers = controller.getHandlerService().getHandlerListing(mConfig.path & "/" & controller.getSetting("handlersConvention",true));
+				mConfig.registeredHandlers = arrayToList(mConfig.registeredHandlers);
+				
+				// Register Custom Interception Points
+				interceptorService.appendInterceptionPoints(mConfig.customInterceptionPoints);
+				
+				// Register the Config as an observable also.
+				interceptorService.registerInterceptor(interceptorObject=instance.mConfigCache[moduleName]);
+				
+				// Register Interceptors with Announcement service
+				for(y=1; y lte arrayLen(mConfig.interceptors); y++){
+					interceptorService.registerInterceptor(interceptorClass=mConfig.interceptors[y].class,
+														   interceptorProperties=mConfig.interceptors[y].properties,
+														   interceptorName=mConfig.interceptors[y].name);
+				}
+				
+				// Register Model path if it exists according to parent convention.
+				if( directoryExists(mConfig.path & "/" & controller.getSetting("modelsConvention",true)) ){
+					controller.getPlugin("BeanFactory").appendExternalLocations(mConfig.invocationPath & "." & controller.getSetting("modelsConvention",true));
+				}
+				
+				// Call on module configuration object onLoad() if found
+				if( structKeyExists(instance.mConfigCache[moduleName],"onLoad") ){
+					instance.mConfigCache[moduleName].onLoad();
+				}
+				
+				// postModuleLoad interception
+				iData = {moduleLocation=mConfig.path,moduleName=moduleName,moduleConfig=mConfig};
+				interceptorService.processState("postModuleLoad",iData);
+			}
 		</cfscript>
 	</cffunction>
 	
