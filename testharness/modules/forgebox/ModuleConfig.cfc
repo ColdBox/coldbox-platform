@@ -56,6 +56,10 @@ Optional Methods
 		];		
 		
 		interceptors = [];
+		
+		modelMappings = {
+			
+		};
 	}
 </cfscript>
 </cfcomponent>

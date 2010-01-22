@@ -16,6 +16,7 @@
 	*/
 	
 	addModuleRoutes(pattern="/test1",module="test1");
+	addModuleRoutes(pattern="/modTest1",module="test1");
 	
 	addRoute(pattern="/test/:id-numeric{2}/:num-numeric/:name/:month{3}?",handler="ehGeneral",action="dspHello");
 	addRoute(pattern="test/:id/:name{4}?",handler="ehGeneral",action="dspHello");

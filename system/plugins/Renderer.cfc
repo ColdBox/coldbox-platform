@@ -237,22 +237,29 @@ Description :
 
 	<!--- implicitViewChecks --->
 	<cffunction name="implicitViewChecks" output="false" access="private" returntype="any" hint="Does implicit view rendering checks">
-		<cfset var cbox_currentLayout = event.getcurrentLayout()>
-		
-		<!--- Check if no view has been set in the Request Collection --->
-		<cfif NOT len(event.getCurrentView())>
-			<!--- Implicit Views according to event --->
-			<cfset event.setView(lcase(replace(event.getCurrentEvent(),".","/","all")))>
-			<!--- Check if default view set, if yes, then set it. --->
-			<cfif len(event.getDefaultView())>
-				<!--- Set the Default View --->
-				<cfset event.setView(event.getDefaultView())>
-			</cfif>
-			<!--- Reset the layout again, as we set views for rendering implicitly --->
-			<cfset cbox_CurrentLayout = event.getcurrentLayout()>
-		</cfif>
-		
-		<cfreturn cbox_currentLayout>
+		<cfscript>
+			var layout = event.getCurrentLayout();
+			var cEvent = event.getCurrentEvent();
+			
+			// Cleanup for modules
+			cEvent = reReplaceNoCase(cEvent,"^([^:.]*):","");
+			
+			//Check if no view set?
+			if( NOT len( event.getCurrentView() ) ){
+				// Implicit views
+				event.setView( lcase(replace(cEvent,".","/","all")) );
+				
+				// check if default view is set?
+				if( len( event.getDefaultView() ) ){
+					event.setView(event.getDefaultView());
+				}
+				
+				// reset layout according to newly set views;
+				layout = event.getCurrentLayout();				
+			}
+			
+			return layout;		
+		</cfscript>
 	</cffunction>
 
 	<!--- locateLayout --->

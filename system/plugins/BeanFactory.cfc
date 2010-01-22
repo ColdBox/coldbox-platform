@@ -825,6 +825,7 @@ Description: This is the framework's simple bean factory.
 						case "handlerService"		: { locatedDependency = getController().gethandlerService(); break; }
 						case "interceptorService"	: { locatedDependency = getController().getinterceptorService(); break; }
 						case "cacheManager"			: { locatedDependency = getController().getColdboxOCM(); break; }
+						case "moduleService"		: { locatedDependency = getController().getModuleService(); break; }
 					}//end of services
 					break;
 				}
@@ -835,7 +836,15 @@ Description: This is the framework's simple bean factory.
 					switch(thisLocationType){
 						case "setting" 				: { locatedDependency = getSetting(thisLocationKey); break; }
 						case "plugin" 				: { locatedDependency = getPlugin(thisLocationKey); break; }
-						case "myplugin" 			: { locatedDependency = getMyPlugin(thisLocationKey); break; }
+						case "myplugin" 			: { 
+							if( find("@",thisLocationKey) ){
+								locatedDependency = getMyPlugin(plugin=listFirst(thisLocationKey,"@"),module=listLast(thisLocationKey,"@")); 
+							}
+							else{
+								locatedDependency = getMyPlugin(thisLocationKey);
+							}
+							break; 
+						}
 						case "datasource" 			: { locatedDependency = getDatasource(thisLocationKey); break; }
 					}//end of services
 					break;
@@ -845,6 +854,7 @@ Description: This is the framework's simple bean factory.
 			return locatedDependency;
 		</cfscript>
 	</cffunction>
+	
 	
 	<!--- getLogBoxDSL --->
 	<cffunction name="getLogBoxDSL" access="private" returntype="any" hint="Get dependencies using the logbox dependency DSL" output="false" >

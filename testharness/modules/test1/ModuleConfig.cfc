@@ -71,9 +71,11 @@ Optional Methods
 			{pattern="/api-docs", handler="api",action="index"}		
 		];		
 		
-		
+		// Interceptor Config
 		customInterceptionPoints = "onPio";
 		interceptors = [];
+		
+		// TODO: Model Mappings
 	}
 	
 	function onLoad(){

@@ -65,9 +65,9 @@ Modification History:
 	<!--- Request Capture --->
 	<cffunction name="requestCapture" access="public" returntype="any" output="false" hint="I capture an incoming request. Returns: coldbox.system.web.context.RequestContext">
 		<cfscript>
-			var context = getContext();
-			var debugPassword = controller.getSetting("debugPassword");
-			var eventName = controller.getSetting("EventName");
+			var context 		= getContext();
+			var debugPassword 	= controller.getSetting("debugPassword");
+			var eventName 		= controller.getSetting("EventName");
 			
 			// Capture FORM/URL
 			initFORMURL();
@@ -205,7 +205,7 @@ Modification History:
 		loadProperties();
 		
 		//Create the original request context
-		oContext = CreateObject("component","coldbox.system.web.context.RequestContext").init(structnew(),structnew(),instance.ContextProperties);
+		oContext = CreateObject("component","coldbox.system.web.context.RequestContext").init(instance.contextProperties);
 		
 		//Determine if we have a decorator, if we do, then decorate it.
 		if ( instance.ContextProperties.isUsingDecorator ){
@@ -243,30 +243,32 @@ Modification History:
 				properties.registeredLayouts = structnew();
 				
 				if( controller.settingExists("EventName") ){
-					Properties.EventName = controller.getSetting("EventName");
+					properties.EventName = controller.getSetting("EventName");
 				}		
 				if ( controller.settingExists("DefaultLayout") ){
-					Properties.DefaultLayout = controller.getSetting("DefaultLayout");
+					properties.DefaultLayout = controller.getSetting("DefaultLayout");
 				}
 				if ( controller.settingExists("DefaultView") ){
-					Properties.DefaultView = controller.getSetting("DefaultView");
+					properties.DefaultView = controller.getSetting("DefaultView");
 				}
 				if ( controller.settingExists("ViewLayouts") ){
-					Properties.ViewLayouts = controller.getSetting("ViewLayouts");
+					properties.ViewLayouts = controller.getSetting("ViewLayouts");
 				}
 				if ( controller.settingExists("FolderLayouts") ){
-					Properties.FolderLayouts = controller.getSetting("FolderLayouts");
+					properties.FolderLayouts = controller.getSetting("FolderLayouts");
 				}
 				if( controller.settingExists("sesbaseURL") ){
-					Properties.sesbaseurl = controller.getSetting('sesBaseURL');
+					properties.sesbaseurl = controller.getSetting('sesBaseURL');
 				}
 				if ( controller.settingExists("RequestContextDecorator") and controller.getSetting("RequestContextDecorator") neq ""){
-					Properties.isUsingDecorator = true;
-					Properties.decorator = controller.getSetting("RequestContextDecorator");
+					properties.isUsingDecorator = true;
+					properties.decorator = controller.getSetting("RequestContextDecorator");
 				}
 				if( controller.settingExists("registeredLayouts") ){
-					Properties.registeredLayouts = controller.getSetting('registeredLayouts');
+					properties.registeredLayouts = controller.getSetting('registeredLayouts');
 				}
+				
+				properties.modules = controller.getSetting("modules");
 				
 				instance.contextProperties = Properties;	
 			}
