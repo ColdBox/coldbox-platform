@@ -122,7 +122,8 @@ Modifications:
 			<!--- Store the data type we're dealing with --->
 			<cfif Left(_data, 1) EQ "[" AND Right(_data, 1) EQ "]">
 				<cfset dataType = "array" />
-			<cfelseif ReFindNoCase('^\{"recordcount":[0-9]+,"columnlist":"[^"]+","data":\{("[^"]+":\[[^]]*\],?)+\}\}$', _data, 0) EQ 1>
+				<!--- original regex seemed unecessary: \{("[^"]+":\[[^]]*\],?)+\}\}$ --->
+			<cfelseif ReFindNoCase('^\{"recordcount":[0-9]+,"columnlist":"[^"]+","data":[^}].*}', _data, 0) EQ 1>
 				<cfset dataType = "query" />
 			<cfelse>
 				<cfset dataType = "struct" />

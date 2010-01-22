@@ -184,7 +184,7 @@ Settings:
 			
 			// Try to inflate JSON
 			results.response = getPlugin("JSON").decode(results.rawResponse);
-			
+			writeDump(results.response);abort;
 			return results;
 		</cfscript>	
 	</cffunction>
