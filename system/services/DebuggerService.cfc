@@ -167,7 +167,8 @@ Description :
 		<cfset var event = controller.getRequestService().getContext()>
 		<cfset var rc = event.getCollection()>
 		<cfset var prc = event.getCollection(private=true)>
-
+		<cfset var loc = structnew()>
+		
 		<!--- Set Cache Data --->
 		<cfset var itemTypes = controller.getColdboxOCM().getItemTypes()>
 		<cfset var cacheMetadata = "">
@@ -181,6 +182,8 @@ Description :
 		<cfset var thisCollection = "">
 		<cfset var thisCollectionType = "">
 		<cfset var debugTimers = getTimers()>
+		<cfset var loadedModules = controller.getModuleService().getLoadedModules()>
+		<cfset var moduleSettings = controller.getSetting("modules")>
 
 		<!--- Debug Rendering Type --->
 		<cfset var renderType = "main">
@@ -193,12 +196,12 @@ Description :
 		<cfset var JVMFreeMemory = JVMRuntime.freeMemory()/1024>
 		<cfset var JVMTotalMemory = JVMRuntime.totalMemory()/1024>
 		<cfset var JVMMaxMemory = JVMRuntime.maxMemory()/1024>
-
+	
 		<!--- URL Base --->
 		<cfif NOT event.isSES()>
 			<cfset URLBase = "index.cfm">
 		</cfif>
-
+		
 		<!--- Render debuglog --->
 		<cfsavecontent variable="renderedDebugging"><cfinclude template="../includes/Debug.cfm"></cfsavecontent>
 		

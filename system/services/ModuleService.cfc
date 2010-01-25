@@ -89,7 +89,8 @@ I oversee and manage ColdBox modules
 			// Config information for module
 			mConfig = {
 				// Module MetaData and Directives
-				title = "", author="", webURL="", description="", version="",viewParentLookup = "true", layoutParentLookup = "true",
+				title = "", author="", webURL="", description="", version="",
+				viewParentLookup = "true", layoutParentLookup = "true", entryPoint = "",
 				// Module Configurations
 				path				 	= modLocation,
 				invocationPath 			= modulesInvocationPath & "." & modName,
@@ -285,8 +286,20 @@ I oversee and manage ColdBox modules
 			mConfig.webURL				= oConfig.webURL;
 			mConfig.description 		= oConfig.description;
 			mConfig.version				= oConfig.version; 
-			mConfig.viewParentLookup 	= oConfig.viewParentLookup;
-			mConfig.layoutParentLookup  = oConfig.layoutParentLookup;
+			
+			// Optional Properties
+			mConfig.viewParentLookup 	= true;
+			if( structKeyExists(oConfig,"viewParentLookup") ){
+				mConfig.viewParentLookup 	= oConfig.viewParentLookup;
+			}
+			mConfig.layoutParentLookup  = true;
+			if( structKeyExists(oConfig,"layoutParentLookup") ){
+				mConfig.layoutParentLookup 	= oConfig.layoutParentLookup;
+			}
+			mConfig.entryPoint  = "";
+			if( structKeyExists(oConfig,"entryPoint") ){
+				mConfig.entryPoint 	= oConfig.entryPoint;
+			}
 			
 			//Configure the module
 			oConfig.configure();

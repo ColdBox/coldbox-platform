@@ -133,7 +133,14 @@ Description :
 		  Loaded Modules:
 		</div>
 		<div class="fw_debugContentCell">
-			#arrayToList(controller.getModuleService().getLoadedModules())#	
+			<cfloop from="1" to="#arrayLen(loadedModules)#" index="loc.x">
+				<cfif len(moduleSettings[loadedModules[loc.x]].entryPoint)>
+					<a href="#event.buildLink(moduleSettings[loadedModules[loc.x]].entryPoint)#">#loadedModules[loc.x]#</a>
+				<cfelse>
+					#loadedModules[loc.x]#
+				</cfif>
+				<cfif loc.x NEQ arrayLen(loadedModules)>,</cfif>
+			</cfloop>			
 		</div>
 		
 		<!--- **************************************************************--->

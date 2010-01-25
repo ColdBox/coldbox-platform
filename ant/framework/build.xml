@@ -24,6 +24,7 @@
 	<!--External Ant Tasks-->
 	<property name="ant.compilechecks"  value="ant/framework/ant_compile.xml" />
 	<property name="ant.dashboard"      value="${dir.dashboard}/build.xml" />
+	<property name="ant.forgeboxModule" value="ant/framework/ForgeBoxToTemplates.xml" />
 	
 	<!-- FTP -->
 	<property name="ftp.server"  		value="ftp.coldboxframework.com" />
@@ -81,6 +82,9 @@
 		<copy todir="${dir.build}/install">
         	<fileset dir="install" />
         </copy>
+		
+		<!--Copy ForgeBox Modules-->
+		<ant antfile="${ant.forgeboxModule}" target="copy" />
 		
 		<!--AppTemplate-->
 		<copy todir="${dir.build}/ApplicationTemplates">

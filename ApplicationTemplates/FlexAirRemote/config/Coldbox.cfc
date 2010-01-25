@@ -106,8 +106,9 @@ function configure(){
 	//Conventions
 	conventions = {
 		handlersLocation = "monitor/handlers",
-		viewsLocation = "monitor/views",
-		layoutsLocation = "monitor/layouts"
+		viewsLocation 	 = "monitor/views",
+		layoutsLocation  = "monitor/layouts",
+		modulesLocation	 = "monitor/modules"
 	};
 	
 
