@@ -215,9 +215,11 @@ Description :
 		// Cleanup initial /
 		if( left(thisRoute.pattern,1) IS "/" ){
 			if( thisRoute.pattern eq "/" ){ 
-				$throw(message="Pattern is empty, please verify the pattern is valid. Route: #thisRoute.toString()#",type="SES.InvalidRoute");
+				//$throw(message="Pattern is empty, please verify the pattern is valid. Route: #thisRoute.toString()#",type="SES.InvalidRoute");
 			}
-			thisRoute.pattern = right(thisRoute.pattern,len(thisRoute.pattern)-1);
+			else{
+				thisRoute.pattern = right(thisRoute.pattern,len(thisRoute.pattern)-1);
+			}
 		}
 		
 		// Check if we have optional args by looking for a ?
@@ -243,7 +245,12 @@ Description :
 		// Init the matching variables
 		thisRoute.regexPattern = "";
 		thisRoute.patternParams = arrayNew(1);
-				
+		
+		// Check for / pattern
+		if( len(thisRoute.pattern) eq 1){
+			thisRoute.regexPattern = "/";
+		}
+		
 		// Process the route as a regex pattern
 		for(x=1; x lte listLen(thisRoute.pattern,"/");x=x+1){
 			
@@ -660,7 +667,6 @@ Description :
 				
 				// Match The route to request String
 				match = reFindNoCase(_routes[i].regexPattern,requestString,1,true);
-				
 				if( (match.len[1] IS NOT 0 AND getLooseMatching()) 
 				     OR
 				    (NOT getLooseMatching() AND match.len[1] IS NOT 0 AND match.pos[1] EQ 1) ){
@@ -672,7 +678,7 @@ Description :
 				}				
 				
 			}//end finding routes
-			
+				
 			// Check if we found a route, else just return empty params struct
 			if( structIsEmpty(foundRoute) ){ 
 				log.debug("No SES routes matched on routed string: #requestString#");

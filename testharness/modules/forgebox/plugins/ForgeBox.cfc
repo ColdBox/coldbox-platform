@@ -91,7 +91,7 @@ Settings:
 				orderBY = arguments.orderby,
 				maxrows = arguments.maxrows,
 				startrow = arguments.startrow,
-				type = arguments.typeSlug	
+				typeSlug = arguments.typeSlug	
 			};
 			
 			// Invoke call
@@ -184,7 +184,7 @@ Settings:
 			
 			// Try to inflate JSON
 			results.response = getPlugin("JSON").decode(results.rawResponse);
-			writeDump(results.response);abort;
+			
 			return results;
 		</cfscript>	
 	</cffunction>

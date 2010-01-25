@@ -16,7 +16,8 @@ structures to create for configuration
 - webservices : struct (will append and override parent)
 - customInterceptionPoints : string list of custom interception points
 - interceptors : array
-- routes : array
+- routes : array Allowed keys are same as the addRoute() method of the SES interceptor.
+- modelMappings : array of model mappings. Allowed keys are the alias and path, same as normal model mappings.
 
 Available objects in variable scope
 - controller
@@ -50,16 +51,18 @@ Optional Methods
 			
 		};
 		
-		// SES Routes
+		// SES Routes ORDER MATTERS
 		routes = [
-			{pattern="/docs", handler="api",action="index"}		
+			{pattern="/", handler="manager",action="index", orderby="POPULAR"},
+			{pattern="/install/results/:entrySlug", handler="manager", action="installResults"},
+			{pattern="/install", handler="manager", action="install"},
+			{pattern="/manager/:orderby/:typeSlug?", handler="manager",action="index"}
 		];		
 		
-		interceptors = [];
-		
-		modelMappings = {
-			
-		};
+		// Array of Model Mappings
+		modelMappings = [
+			{ alias="forgeService@forgeBox", path = "ForgeService" }
+		];
 	}
 </cfscript>
 </cfcomponent>

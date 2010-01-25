@@ -123,6 +123,7 @@ I oversee and manage ColdBox modules
 			var iData       		= {};
 			var y					= 1;
 			var interceptorService  = controller.getInterceptorService();
+			var beanFactory 		= controller.getPlugin("BeanFactory");
 			
 			// Iterate through module configuration and activate each module
 			for(moduleName in modules){
@@ -152,7 +153,12 @@ I oversee and manage ColdBox modules
 				
 				// Register Model path if it exists according to parent convention.
 				if( directoryExists(mConfig.path & "/" & controller.getSetting("modelsConvention",true)) ){
-					controller.getPlugin("BeanFactory").appendExternalLocations(mConfig.invocationPath & "." & controller.getSetting("modelsConvention",true));
+					beanFactory.appendExternalLocations(mConfig.invocationPath & "." & controller.getSetting("modelsConvention",true));
+				}
+				
+				// Register Model Mappings Now
+				for(y=1; y lte arrayLen(mConfig.modelMappings); y++){
+					beanFactory.addModelMapping(argumentCollection=mConfig.modelMappings[y]);
 				}
 				
 				// Call on module configuration object onLoad() if found
@@ -316,9 +322,11 @@ I oversee and manage ColdBox modules
 			//Get custom interception points
 			mConfig.customInterceptionPoints = oConfig.getPropertyMixin("customInterceptionPoints","variables","");
 			
-			
 			//Get Routes
 			mConfig.routes = oConfig.getPropertyMixin("routes","variables",arrayNew(1));	
+			
+			//Get Model Mappings
+			mConfig.modelMappings = oConfig.getPropertyMixin("modelMappings","variables",arrayNew(1));
 			
 			return oConfig;		
 		</cfscript>
