@@ -14,10 +14,7 @@
 	
 	<!--copy-->
 	<target name="copy" description="Copy forgebox module to templates">
-      	<delete dir="${dir.app1}/forgebox" />
-		<delete dir="${dir.app2}/forgebox" />
-      	<delete dir="${dir.app3}/forgebox" />
-		
+      	
 		<!-- Copy src -->	
       	<copy todir="${dir.app1}/forgebox">
         	<fileset dir="${dir.forgebox}" />

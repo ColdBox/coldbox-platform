@@ -96,9 +96,9 @@ I oversee and manage ColdBox modules
 				path				 	= modLocation,
 				invocationPath 			= modulesInvocationPath & "." & modName,
 				mapping 				= modulesLocation & "/" & modName,
-				handlerInvocationPath 	= modulesInvocationPath & "." & modName & "." & controller.getSetting("handlersConvention",true),
-				pluginInvocationPath  	= modulesInvocationPath & "." & modName & "." & controller.getSetting("pluginsConvention",true),
-				pluginsPhysicalPath		= modLocation & "/" & controller.getSetting("pluginsConvention",true),
+				handlerInvocationPath 	= modulesInvocationPath & "." & modName & "." & "handlers",
+				pluginInvocationPath  	= modulesInvocationPath & "." & modName & "." & "plugins",
+				pluginsPhysicalPath		= modLocation & "/" & "plugins",
 				registeredHandlers 		= '',
 				settings 				= {},
 				interceptors 			= [],
@@ -153,7 +153,7 @@ I oversee and manage ColdBox modules
 			interceptorService.processState("preModuleLoad",iData);
 			
 			// Register handlers
-			mConfig.registeredHandlers = controller.getHandlerService().getHandlerListing(mConfig.path & "/" & controller.getSetting("handlersConvention",true));
+			mConfig.registeredHandlers = controller.getHandlerService().getHandlerListing(mConfig.path & "/" & "handlers");
 			mConfig.registeredHandlers = arrayToList(mConfig.registeredHandlers);
 			
 			// Register Custom Interception Points
@@ -169,9 +169,9 @@ I oversee and manage ColdBox modules
 													   interceptorName=mConfig.interceptors[y].name);
 			}
 			
-			// Register Model path if it exists according to parent convention.
-			if( directoryExists(mConfig.path & "/" & controller.getSetting("modelsConvention",true)) ){
-				beanFactory.appendExternalLocations(mConfig.invocationPath & "." & controller.getSetting("modelsConvention",true));
+			// Register Model path if it exists.
+			if( directoryExists(mConfig.path & "/" & "model") ){
+				beanFactory.appendExternalLocations(mConfig.invocationPath & "." & "model");
 			}
 			
 			// Register Model Mappings Now
@@ -247,7 +247,7 @@ I oversee and manage ColdBox modules
 			}
 			
 			//Remove Model Mapping Location
-			controller.getPlugin("BeanFactory").removeExternalLocations(appConfig.modules[arguments.moduleName].invocationPath & "." & controller.getSetting("modelsConvention",true));
+			controller.getPlugin("BeanFactory").removeExternalLocations(appConfig.modules[arguments.moduleName].invocationPath & "." & "model");
 			
 			// Remove configuration
 			structDelete(appConfig.modules, arguments.moduleName);
@@ -297,6 +297,9 @@ I oversee and manage ColdBox modules
 			oConfig.injectPropertyMixin("moduleMapping",mConfig.mapping);
 			oConfig.injectPropertyMixin("modulePath",mConfig.path);
 			
+			//Configure the module
+			oConfig.configure();
+			
 			//Get Public Module Properties
 			mConfig.title 				= oConfig.title;
 			mConfig.author 				= oConfig.author;
@@ -317,9 +320,6 @@ I oversee and manage ColdBox modules
 			if( structKeyExists(oConfig,"entryPoint") ){
 				mConfig.entryPoint 	= oConfig.entryPoint;
 			}
-			
-			//Configure the module
-			oConfig.configure();
 			
 			//Get the parent settings and append them
 			toLoad = oConfig.getPropertyMixin("parentSettings","variables",structnew());

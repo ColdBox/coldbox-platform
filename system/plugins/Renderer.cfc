@@ -298,7 +298,7 @@ Description :
 			var moduleName = event.getCurrentModule();
 			
 			parentLayoutPath = "/#instance.appMapping#/#instance.layoutsConvention#/modules/#moduleName#/#arguments.layout#";
-			moduleLayoutPath = "#instance.modulesConfig[moduleName].mapping#/#instance.layoutsConvention#/#arguments.layout#";				
+			moduleLayoutPath = "#instance.modulesConfig[moduleName].mapping#/layouts/#arguments.layout#";				
 			
 			// Check parent view order setup
 			if( instance.modulesConfig[moduleName].layoutParentLookup ){
@@ -354,7 +354,7 @@ Description :
 			
 			// Declare Locations
 			parentViewPath = "/#instance.appMapping#/#instance.viewsConvention#/modules/#moduleName#/#arguments.view#";
-			moduleViewPath = "#instance.modulesConfig[moduleName].mapping#/#instance.viewsConvention#/#arguments.view#";				
+			moduleViewPath = "#instance.modulesConfig[moduleName].mapping#/views/#arguments.view#";				
 			
 			// Check parent view order setup
 			if( instance.modulesConfig[moduleName].viewParentLookup ){
