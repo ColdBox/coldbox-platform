@@ -197,7 +197,9 @@ Optional Methods
 			showCachePanel = true,
 			expandedCachePanel = true,
 			showRCPanel = true,
-			expandedRCPanel = true
+			expandedRCPanel = true,
+			showModulesPanel = true,
+			expandedModulesPanel = false
 		};
 		
 		//Mailsettings

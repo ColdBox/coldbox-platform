@@ -44,12 +44,12 @@ I oversee and manage ColdBox modules
     <cffunction name="onAspectsLoad" output="false" access="public" returntype="void" hint="Called by loader service when all aspects have loaded">
     	<cfscript>
 			// Now that we are up and running we will turn on all the modules.
-			activateModules();
+			activateAllModules();
     	</cfscript>
     </cffunction>
 	
 	<!--- registerAllModules --->
-	<cffunction name="registerAllModules" output="false" access="public" returntype="void" hint="Register all located modules">
+	<cffunction name="registerAllModules" output="false" access="public" returntype="void" hint="Register all located modules in the conventions or set location. Usually called by framework to load configuraiton data.">
 		<cfscript>
 			var foundModules = "";
 			var x = 1;
@@ -68,7 +68,7 @@ I oversee and manage ColdBox modules
 	</cffunction>
 	
 	<!--- registerModule --->
-	<cffunction name="registerModule" output="false" access="public" returntype="boolean" hint="Register a module's configuration information and object.">
+	<cffunction name="registerModule" output="false" access="public" returntype="boolean" hint="Register a module's configuration information and config object">
 		<cfargument name="moduleName" type="string" required="true" hint="The name of the module to load. It must exist and be valid. Else we ignore it by logging a warning and returning false."/>
 		<cfscript>
 			var modulesLocation 		= controller.getSetting("ModulesLocation");
@@ -91,6 +91,7 @@ I oversee and manage ColdBox modules
 				// Module MetaData and Directives
 				title = "", author="", webURL="", description="", version="",
 				viewParentLookup = "true", layoutParentLookup = "true", entryPoint = "",
+				loadTime = now(), activated = false,
 				// Module Configurations
 				path				 	= modLocation,
 				invocationPath 			= modulesInvocationPath & "." & modName,
@@ -116,61 +117,78 @@ I oversee and manage ColdBox modules
 	</cffunction>
 	
 	<!--- activateModules --->
-	<cffunction name="activateModules" output="false" access="public" returntype="void" hint="Go over all the loaded module configurations and activate them for usage">
+	<cffunction name="activateAllModules" output="false" access="public" returntype="void" hint="Go over all the loaded module configurations and activate them for usage within the application">
 		<cfscript>
 			var modules 			= controller.getSetting("modules");
 			var moduleName 			= "";
+			
+			// Iterate through module configuration and activate each module
+			for(moduleName in modules){
+				activateModule(moduleName);
+			}
+		</cfscript>
+	</cffunction>
+	
+	<!--- activateModule --->
+	<cffunction name="activateModule" output="false" access="public" returntype="boolean" hint="Activate a module">
+		<cfargument name="moduleName" type="string" required="true" hint="The name of the module to load. It must exist and be valid. Else we ignore it by logging a warning and returning false."/>
+		<cfscript>
+			var modules 			= controller.getSetting("modules");
 			var mConfig				= "";
 			var iData       		= {};
 			var y					= 1;
 			var interceptorService  = controller.getInterceptorService();
 			var beanFactory 		= controller.getPlugin("BeanFactory");
 			
-			// Iterate through module configuration and activate each module
-			for(moduleName in modules){
-				// Start activation procedures.
-				mConfig = modules[moduleName];
+			// Get module settings	
+			mConfig = modules[arguments.moduleName];
 				
-				// preModuleLoad interception
-				iData = {moduleLocation=mConfig.path,moduleName=moduleName};
-				interceptorService.processState("preModuleLoad",iData);
-				
-				// Register handlers
-				mConfig.registeredHandlers = controller.getHandlerService().getHandlerListing(mConfig.path & "/" & controller.getSetting("handlersConvention",true));
-				mConfig.registeredHandlers = arrayToList(mConfig.registeredHandlers);
-				
-				// Register Custom Interception Points
-				interceptorService.appendInterceptionPoints(mConfig.customInterceptionPoints);
-				
-				// Register the Config as an observable also.
-				interceptorService.registerInterceptor(interceptorObject=instance.mConfigCache[moduleName]);
-				
-				// Register Interceptors with Announcement service
-				for(y=1; y lte arrayLen(mConfig.interceptors); y++){
-					interceptorService.registerInterceptor(interceptorClass=mConfig.interceptors[y].class,
-														   interceptorProperties=mConfig.interceptors[y].properties,
-														   interceptorName=mConfig.interceptors[y].name);
-				}
-				
-				// Register Model path if it exists according to parent convention.
-				if( directoryExists(mConfig.path & "/" & controller.getSetting("modelsConvention",true)) ){
-					beanFactory.appendExternalLocations(mConfig.invocationPath & "." & controller.getSetting("modelsConvention",true));
-				}
-				
-				// Register Model Mappings Now
-				for(y=1; y lte arrayLen(mConfig.modelMappings); y++){
-					beanFactory.addModelMapping(argumentCollection=mConfig.modelMappings[y]);
-				}
-				
-				// Call on module configuration object onLoad() if found
-				if( structKeyExists(instance.mConfigCache[moduleName],"onLoad") ){
-					instance.mConfigCache[moduleName].onLoad();
-				}
-				
-				// postModuleLoad interception
-				iData = {moduleLocation=mConfig.path,moduleName=moduleName,moduleConfig=mConfig};
-				interceptorService.processState("postModuleLoad",iData);
+			// if module already active, do not activate again.
+			if( mConfig.activated ){
+				return false;
 			}
+				
+			// preModuleLoad interception
+			iData = {moduleLocation=mConfig.path,moduleName=arguments.moduleName};
+			interceptorService.processState("preModuleLoad",iData);
+			
+			// Register handlers
+			mConfig.registeredHandlers = controller.getHandlerService().getHandlerListing(mConfig.path & "/" & controller.getSetting("handlersConvention",true));
+			mConfig.registeredHandlers = arrayToList(mConfig.registeredHandlers);
+			
+			// Register Custom Interception Points
+			interceptorService.appendInterceptionPoints(mConfig.customInterceptionPoints);
+			
+			// Register the Config as an observable also.
+			interceptorService.registerInterceptor(interceptorObject=instance.mConfigCache[arguments.moduleName]);
+			
+			// Register Interceptors with Announcement service
+			for(y=1; y lte arrayLen(mConfig.interceptors); y++){
+				interceptorService.registerInterceptor(interceptorClass=mConfig.interceptors[y].class,
+													   interceptorProperties=mConfig.interceptors[y].properties,
+													   interceptorName=mConfig.interceptors[y].name);
+			}
+			
+			// Register Model path if it exists according to parent convention.
+			if( directoryExists(mConfig.path & "/" & controller.getSetting("modelsConvention",true)) ){
+				beanFactory.appendExternalLocations(mConfig.invocationPath & "." & controller.getSetting("modelsConvention",true));
+			}
+			
+			// Register Model Mappings Now
+			for(y=1; y lte arrayLen(mConfig.modelMappings); y++){
+				beanFactory.addModelMapping(argumentCollection=mConfig.modelMappings[y]);
+			}
+			
+			// Call on module configuration object onLoad() if found
+			if( structKeyExists(instance.mConfigCache[arguments.moduleName],"onLoad") ){
+				instance.mConfigCache[arguments.moduleName].onLoad();
+			}
+			
+			// postModuleLoad interception
+			iData = {moduleLocation=mConfig.path,moduleName=arguments.moduleName,moduleConfig=mConfig};
+			interceptorService.processState("postModuleLoad",iData);	
+			
+			return true;		
 		</cfscript>
 	</cffunction>
 	
@@ -178,8 +196,9 @@ I oversee and manage ColdBox modules
 	<cffunction name="reload" output="false" access="public" returntype="void" hint="Reload a targeted module">
 		<cfargument name="moduleName" type="string" required="true" hint="The module to reload"/>
 		<cfscript>
-			unloadModule(arguments.moduleName);
+			unload(arguments.moduleName);
 			registerModule(arguments.moduleName);
+			activateModule(arguments.moduleName);
 		</cfscript>
 	</cffunction>
 	
@@ -188,6 +207,7 @@ I oversee and manage ColdBox modules
 		<cfscript>
 			unloadAll();
 			registerAllModules();
+			activateAllModules();
 		</cfscript>
 	</cffunction>
 	
@@ -200,8 +220,8 @@ I oversee and manage ColdBox modules
 		</cfscript>
 	</cffunction>
 	
-	<!--- unloadModule --->
-	<cffunction name="unloadModule" output="false" access="public" returntype="boolean" hint="Unload a module if found from the configuration">
+	<!--- unload --->
+	<cffunction name="unload" output="false" access="public" returntype="boolean" hint="Unload a module if found from the configuration">
 		<cfargument name="moduleName" type="string" required="true" hint="The module name to unload"/>
 		<cfscript>
 			// This method basically unregisters the module configuration
@@ -217,8 +237,8 @@ I oversee and manage ColdBox modules
 			interceptorService.processState("preModuleUnload",iData);
 			
 			// Call on module configuration object onLoad() if found
-			if( structKeyExists(mConfigCache[modName],"onUnload") ){
-				instance.mConfigCache[modName].onUnload();
+			if( structKeyExists(instance.mConfigCache[arguments.moduleName],"onUnload") ){
+				instance.mConfigCache[arguments.moduleName].onUnload();
 			}
 			
 			// Unregister all interceptors
@@ -251,11 +271,8 @@ I oversee and manage ColdBox modules
 			
 			// Unload all modules
 			for(key in modules){
-				unloadModule(key);
-			}	
-			
-			controller.setSetting("modules",structnew());
-			instance.mConfigCache = structnew();					
+				unload(key);
+			}						
 		</cfscript>
 	</cffunction>
 	

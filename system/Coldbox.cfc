@@ -503,6 +503,10 @@ Description :
 				case "delcacheentry"  : { cbController.getColdboxOCM().clearKey(event.getValue('cbox_cacheentry',""));break;}
 				case "clearallevents" : { cbController.getColdboxOCM().clearAllEvents();break;}
 				case "clearallviews"  : { cbController.getColdboxOCM().clearAllViews();break;}
+				case "reloadModules"  : { cbController.getModuleService().reloadAll(); break;}
+				case "unloadModules"  : { cbController.getModuleService().unloadAll(); break;}
+				case "reloadModule"   : { cbController.getModuleService().reload(event.getValue("module","")); break;}
+				case "unloadModule"   : { cbController.getModuleService().unload(event.getValue("module","")); break;}
 				default: break;
 			}
 		</cfscript>

@@ -268,10 +268,11 @@ Modification History:
 					properties.registeredLayouts = controller.getSetting('registeredLayouts');
 				}
 				
-				properties.modules = controller.getSetting("modules");
-				
 				instance.contextProperties = Properties;	
 			}
+			
+			// Dynamic Modules pointer
+			instance.contextProperties.modules = controller.getSetting("modules");
 		</cfscript>
 	</cffunction>
 

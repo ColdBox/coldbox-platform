@@ -939,6 +939,8 @@ Loads a coldbox xml configuration file
 				configStruct.debuggerSettings.expandedCachePanel 			= fwSettings.expandedCachePanel;
 				configStruct.debuggerSettings.showRCPanel 					= fwSettings.showRCPanel;
 				configStruct.debuggerSettings.expandedRCPanel				= fwSettings.expandedRCPanel;
+				configStruct.debuggerSettings.showModulesPanel 				= fwSettings.showModulesPanel;
+				configStruct.debuggerSettings.expandedModulesPanel			= fwSettings.expandedModulesPanel;
 			}
 			
 			//Check if empty
@@ -974,6 +976,10 @@ Loads a coldbox xml configuration file
 				// RCPanel
 				if ( structKeyExists(DebuggerSettingNodes[1], "RCPanel") ){
 					debugPanelAttributeInsert(configStruct.debuggerSettings,"RCPanel",DebuggerSettingNodes[1].RCPanel.xmlAttributes);
+				}
+				// ModulesPanel
+				if ( structKeyExists(DebuggerSettingNodes[1], "ModulesPanel") ){
+					debugPanelAttributeInsert(configStruct.debuggerSettings,"ModulesPanel",DebuggerSettingNodes[1].ModulesPanel.xmlAttributes);
 				}							
 			}
 		</cfscript>

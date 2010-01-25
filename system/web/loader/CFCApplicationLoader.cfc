@@ -764,6 +764,8 @@ Loads a coldbox xml configuration file
 			configStruct.debuggerSettings.expandedCachePanel 			= fwSettings.expandedCachePanel;
 			configStruct.debuggerSettings.showRCPanel 					= fwSettings.showRCPanel;
 			configStruct.debuggerSettings.expandedRCPanel				= fwSettings.expandedRCPanel;
+			configStruct.debuggerSettings.showModulesPanel 				= fwSettings.showModulesPanel;
+			configStruct.debuggerSettings.expandedModulesPanel			= fwSettings.expandedModulesPanel;
 			
 			//append settings
 			structAppend(configStruct.debuggerSettings, debugger, true);

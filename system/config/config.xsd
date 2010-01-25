@@ -554,6 +554,23 @@
 							</xs:annotation>
 						</xs:attribute>
 					</xs:complexType>
+				</xs:element>
+				<xs:element maxOccurs="1" minOccurs="0" name="ModulesPanel">
+					<xs:annotation>
+						<xs:documentation>The modules panel info</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:attribute name="show" type="xs:boolean" use="optional" default="true">
+							<xs:annotation>
+								<xs:documentation>Whether to show or not this panel</xs:documentation>
+							</xs:annotation>
+						</xs:attribute>
+						<xs:attribute name="expanded" type="xs:boolean" use="optional" default="false">
+							<xs:annotation>
+								<xs:documentation>Whether this panel is expanded or not.</xs:documentation>
+							</xs:annotation>
+						</xs:attribute>
+					</xs:complexType>
 				</xs:element>	
 			</xs:all>
 		</xs:complexType>
