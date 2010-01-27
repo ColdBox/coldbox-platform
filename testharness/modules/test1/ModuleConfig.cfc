@@ -1,13 +1,18 @@
 <cfcomponent output="false" hint="My App Configuration">
 <cfscript>
 /**
-public properties to set:
-this.title = "Title of the module";
-this.author = "Author of the module";
-this.webURL = "Web URL for docs purposes";
-this.description = "Module description";
-this.version = "Module Version"
-this.viewParentLookup = true [boolean] // If true, checks for views in the parent first, then it the module.If false, then modules first, then parent.
+Module Directives as public properties
+this.title 				= "Title of the module";
+this.author 			= "Author of the module";
+this.webURL 			= "Web URL for docs purposes";
+this.description 		= "Module description";
+this.version 			= "Module Version"
+
+Optional Properties
+this.viewParentLookup   = (true) [boolean] (Optional) // If true, checks for views in the parent first, then it the module.If false, then modules first, then parent.
+this.layoutParentLookup = (true) [boolean] (Optional) // If true, checks for layouts in the parent first, then it the module.If false, then modules first, then parent.
+this.entryPoint  		= "" (Optional) // If set, this is the default event (ex:forgebox:manager.index) or default route (/forgebox) the framework
+									       will use to create an entry link to the module. Similar to a default event.
 
 structures to create for configuration
 - parentSettings : struct (will append and override parent)
@@ -16,7 +21,8 @@ structures to create for configuration
 - webservices : struct (will append and override parent)
 - customInterceptionPoints : string list of custom interception points
 - interceptors : array
-- routes : array
+- routes : array Allowed keys are same as the addRoute() method of the SES interceptor.
+- modelMappings : array of model mappings. Allowed keys are the alias and path, same as normal model mappings.
 
 Available objects in variable scope
 - controller
