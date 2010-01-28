@@ -57,6 +57,7 @@ Description :
 		<cfargument name="cacheTimeout" 			required="false" type="string"  default=""		hint="The cache timeout">
 		<cfargument name="cacheLastAccessTimeout" 	required="false" type="string"  default="" 		hint="The last access timeout">
 		<cfargument name="cacheSuffix" 				required="false" type="string"  default=""      hint="Add a cache suffix to the view cache entry. Great for multi-domain caching or i18n caching."/>
+		<cfargument name="module" 					required="false" type="string"  default=""      hint="Explicitly render a layout from this module"/>
 		<!--- ************************************************************* --->
 		<cfset var cbox_RenderedView 	= "">
 		<cfset var cbox_viewpath 		= "">
@@ -76,6 +77,9 @@ Description :
 				<cfset locationUDF = variables.locateModuleView>
 			</cfif>
 		</cfif>
+		
+		<!--- Check if explicit module view rendering --->
+		<cfif len(arguments.module)><cfset locationUDF = variables.locateModuleView></cfif>
 		
 		<!--- Test if we have a view to render --->
 		<cfif NOT len(trim(arguments.view)) >
@@ -198,8 +202,9 @@ Description :
 
 	<!--- Render the layout --->
 	<cffunction name="renderLayout" access="Public" hint="Renders the current layout + view Combinations if declared." output="false" returntype="any">
-		<cfargument name="layout" type="any" required="false" hint="The explicit layout to use in rendering."/>
-		<cfargument name="view"   type="any" required="false" default="" hint="The name of the view to passthrough as an argument so you can refer to it as arguments.view"/>
+		<cfargument name="layout" type="any" 	required="false" hint="The explicit layout to use in rendering."/>
+		<cfargument name="view"   type="any" 	required="false" default="" hint="The name of the view to passthrough as an argument so you can refer to it as arguments.view"/>
+		<cfargument name="module" type="string" required="false" default="" hint="Explicitly render a layout from this module"/>
 		<!--- Get Current Set Layout From Request Collection --->
 		<cfset var cbox_currentLayout 	= implicitViewChecks()>
 		<!--- Content Variables --->
@@ -210,6 +215,8 @@ Description :
 		<!--- Check explicit layout rendering --->
 		<cfif structKeyExists(arguments,"layout")>
 			<cfset cbox_currentLayout = arguments.layout & ".cfm">
+			<!--- Check if Explicit Module Layout Call --->
+			<cfif len(arguments.module)><cfset locateUDF = variables.locateModuleLayout></cfif>
 		<!--- Not explicit, then check if in module rendering? --->
 		<cfelseif len(event.getCurrentModule())>
 			<cfset locateUDF = variables.locateModuleLayout>
