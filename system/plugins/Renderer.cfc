@@ -65,21 +65,21 @@ Description :
 		<!--- Cache Entries --->
 		<cfset var cbox_cacheKey 		= "">
 		<cfset var cbox_cacheEntry 		= "">
-		<cfset var timerHash 			= 0>
-		<cfset var interceptData 		= arguments>
-		<cfset var locationUDF			= variables.locateView>
+		<cfset var cbox_timerHash 		= 0>
+		<cfset var cbox_iData 			= arguments>
+		<cfset var cbox_locationUDF			= variables.locateView>
 		
 		<!--- Check if rendering set view or a-la-carte --->
 		<cfif NOT len(arguments.view)>
 			<cfset arguments.view = event.getCurrentView()>
 			<!--- Is Module Call? --->
 			<cfif len(event.getCurrentModule())>
-				<cfset locationUDF = variables.locateModuleView>
+				<cfset cbox_locationUDF = variables.locateModuleView>
 			</cfif>
 		</cfif>
 		
 		<!--- Check if explicit module view rendering --->
-		<cfif len(arguments.module)><cfset locationUDF = variables.locateModuleView></cfif>
+		<cfif len(arguments.module)><cfset cbox_locationUDF = variables.locateModuleView></cfif>
 		
 		<!--- Test if we have a view to render --->
 		<cfif NOT len(trim(arguments.view)) >
@@ -89,7 +89,7 @@ Description :
 		</cfif>
 		
 		<!--- preViewRender interception point --->
-		<cfset announceInterception("preViewRender",interceptData)>
+		<cfset announceInterception("preViewRender",cbox_iData)>
 		
 		<!--- Setup the cache key --->
 		<cfset cbox_cacheKey = getColdboxOCM().VIEW_CACHEKEY_PREFIX & arguments.view & arguments.cacheSuffix>
@@ -100,19 +100,19 @@ Description :
 		<!--- Do we have a cached view?? --->
 		<cfif getColdboxOCM().lookup(cbox_cacheKey)>
 			<!--- Render The View --->
-			<cfset timerHash = controller.getDebuggerService().timerStart("rendering Cached View [#arguments.view#.cfm]")>
+			<cfset cbox_timerHash = controller.getDebuggerService().timerStart("rendering Cached View [#arguments.view#.cfm]")>
 			<cfset cbox_RenderedView = controller.getColdBoxOCM().get(cbox_cacheKey)>
-			<cfset controller.getDebuggerService().timerEnd(timerHash)>
+			<cfset controller.getDebuggerService().timerEnd(cbox_timerHash)>
 			
 			<!--- postViewRender --->
-			<cfset interceptData.renderedView = cbox_RenderedView>
-			<cfset announceInterception("postViewRender",interceptData)>
+			<cfset cbox_iData.renderedView = cbox_RenderedView>
+			<cfset announceInterception("postViewRender",cbox_iData)>
 			
-			<cfreturn interceptData.renderedView>
+			<cfreturn cbox_iData.renderedView>
 		</cfif>
 		
 		<!--- Locate the view to render --->
-		<cfset cbox_viewPath = locationUDF(arguments.view)>
+		<cfset cbox_viewPath = cbox_locationUDF(arguments.view)>
 		
 		<!--- Check for helper convention? --->
 		<cfif fileExists(expandPath(cbox_viewPath & "Helper.cfm"))>
@@ -120,13 +120,13 @@ Description :
 		</cfif>
 		
 		<!--- Render The View & Its Helper --->
-		<cfset timerHash = controller.getDebuggerService().timerStart("rendering View [#arguments.view#.cfm]")>
+		<cfset cbox_timerHash = controller.getDebuggerService().timerStart("rendering View [#arguments.view#.cfm]")>
 		<cfsavecontent variable="cbox_RenderedView"><cfif len(cbox_viewHelperPath)><cfoutput><cfinclude template="#cbox_viewHelperPath#"></cfoutput></cfif><cfoutput><cfinclude template="#cbox_viewpath#.cfm"></cfoutput></cfsavecontent>
-		<cfset controller.getDebuggerService().timerEnd(timerHash)>
+		<cfset controller.getDebuggerService().timerEnd(cbox_timerHash)>
 		
 		<!--- postViewRender --->
-		<cfset interceptData.renderedView = cbox_RenderedView>
-		<cfset announceInterception("postViewRender",interceptData)>
+		<cfset cbox_iData.renderedView = cbox_RenderedView>
+		<cfset announceInterception("postViewRender",cbox_iData)>
 		
 		<!--- Is this view cacheable by setting, and if its the view we need to cache. --->
 		<cfif event.isViewCacheable() and (arguments.view eq event.getViewCacheableEntry().view)>
@@ -137,19 +137,19 @@ Description :
 				<cfset cbox_cacheKey = getColdboxOCM().VIEW_CACHEKEY_PREFIX & event.getCurrentModule() & ":" & cbox_cacheEntry.view & cbox_cacheEntry.cacheSuffix>
 			</cfif>
 			<cfset getColdboxOCM().set(cbox_cacheKey,
-									   interceptData.renderedView,
+									   cbox_iData.renderedView,
 									   cbox_cacheEntry.timeout,
 									   cbox_cacheEntry.lastAccessTimeout)>
 		<!--- Are we caching explicitly --->
 		<cfelseif arguments.cache>
 			<cfset getColdboxOCM().set(cbox_cacheKey,
-									   interceptData.renderedView,
+									   cbox_iData.renderedView,
 									   arguments.cacheTimeout,
 									   arguments.cacheLastAccessTimeout)>
 		</cfif>
 		
 		<!--- Return cached, or rendered view --->
-		<cfreturn interceptData.renderedView>
+		<cfreturn cbox_iData.renderedView>
 	</cffunction>
 
 	<!--- Render an external View --->
@@ -172,13 +172,13 @@ Description :
 		<!--- Do we have a cached view?? --->
 		<cfif getColdboxOCM().lookup(cbox_cacheKey)>
 			<!--- Render The View --->
-			<cfset timerHash = controller.getDebuggerService().timerStart("rendering Cached External View [#arguments.view#.cfm]")>
+			<cfset cbox_timerHash = controller.getDebuggerService().timerStart("rendering Cached External View [#arguments.view#.cfm]")>
 				<cfset cbox_RenderedView = getColdBoxOCM().get(cbox_cacheKey)>
-			<cfset controller.getDebuggerService().timerEnd(timerHash)>
+			<cfset controller.getDebuggerService().timerEnd(cbox_timerHash)>
 			<cfreturn cbox_RenderedView>
 		</cfif>	
 		
-		<cfset timerHash = controller.getDebuggerService().timerStart("rendering External View [#arguments.view#.cfm]")>
+		<cfset cbox_timerHash = controller.getDebuggerService().timerStart("rendering External View [#arguments.view#.cfm]")>
 			<cftry>
 				<!--- Render the View --->
 				<cfsavecontent variable="cbox_RenderedView"><cfoutput><cfinclude template="#arguments.view#.cfm"></cfoutput></cfsavecontent>
@@ -190,7 +190,7 @@ Description :
 					<cfrethrow />
 				</cfcatch>
 			</cftry>
-		<cfset controller.getDebuggerService().timerEnd(timerHash)>
+		<cfset controller.getDebuggerService().timerEnd(cbox_timerHash)>
 		
 		<!--- Are we caching explicitly --->
 		<cfif arguments.cache>
@@ -205,21 +205,19 @@ Description :
 		<cfargument name="layout" type="any" 	required="false" hint="The explicit layout to use in rendering."/>
 		<cfargument name="view"   type="any" 	required="false" default="" hint="The name of the view to passthrough as an argument so you can refer to it as arguments.view"/>
 		<cfargument name="module" type="string" required="false" default="" hint="Explicitly render a layout from this module"/>
-		<!--- Get Current Set Layout From Request Collection --->
 		<cfset var cbox_currentLayout 	= implicitViewChecks()>
-		<!--- Content Variables --->
 		<cfset var cbox_RederedLayout 	= "">
 		<cfset var cbox_timerhash 		= "">
-		<cfset var locateUDF 			= variables.locateLayout>
+		<cfset var cbox_locateUDF 		= variables.locateLayout>
 		
 		<!--- Check explicit layout rendering --->
 		<cfif structKeyExists(arguments,"layout")>
 			<cfset cbox_currentLayout = arguments.layout & ".cfm">
 			<!--- Check if Explicit Module Layout Call --->
-			<cfif len(arguments.module)><cfset locateUDF = variables.locateModuleLayout></cfif>
+			<cfif len(arguments.module)><cfset cbox_locateUDF = variables.locateModuleLayout></cfif>
 		<!--- Not explicit, then check if in module rendering? --->
 		<cfelseif len(event.getCurrentModule())>
-			<cfset locateUDF = variables.locateModuleLayout>
+			<cfset cbox_locateUDF = variables.locateModuleLayout>
 		</cfif>
 		
 		<!--- Start Timer --->
@@ -230,7 +228,7 @@ Description :
 			<cfset cbox_RederedLayout = renderView()>
 		<cfelse>			
 			<!--- RenderLayout --->
-			<cfsavecontent variable="cbox_RederedLayout"><cfoutput><cfinclude template="#locateUDF(cbox_currentLayout)#"></cfoutput></cfsavecontent>
+			<cfsavecontent variable="cbox_RederedLayout"><cfoutput><cfinclude template="#cbox_locateUDF(cbox_currentLayout)#"></cfoutput></cfsavecontent>
 		</cfif>
 		
 		<!--- Stop Timer --->
