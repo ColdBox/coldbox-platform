@@ -131,7 +131,6 @@ Usage:
 		<cfargument name="ColdBoxBeanFactory" 	required="true"		type="any" 		 hint="The coldbox bean factory"/>
 		<cfargument name="useSetterInjection" 	required="false" 	type="boolean" 	default="true"	hint="Whether to use setter injection alongside the annotations property injection. cfproperty injection takes precedence.">
 		<cfargument name="onDICompleteUDF" 		required="false" 	type="string"	default="onDIComplete" hint="After Dependencies are injected, this method will look for this UDF and call it if it exists. The default value is onDIComplete">
-		<cfargument name="debugMode" 			required="false" 	type="boolean"  default="false" hint="Whether to log debug messages. Default is false">
 		<cfargument name="stopRecursion" 		required="false" 	type="string"   default="transfer.com.TransferDecorator" hint="The stop recursion class. Ex: transfer.com.TransferDecorator">
 		<!--- ************************************************************* --->
 		<cfscript>
@@ -140,7 +139,6 @@ Usage:
 			
 			/* Add Other Dependencies*/
 			setColdboxBeanFactory(arguments.ColdBoxBeanFactory);
-			setDebugMode(arguments.debugMode);
 			setuseSetterInjection(arguments.useSetterInjection);
 			setonDICompleteUDF(trim(arguments.onDICompleteUDF));
 			setStopRecursion(trim(arguments.stopRecursion));
@@ -161,7 +159,6 @@ Usage:
 		<cfset getColdBoxBeanFactory().autowire(target=arguments.event.getTransferObject(),
 												useSetterInjection=getUseSetterInjection(),
 												onDICompleteUDF=getonDICompleteUDF(),
-												debugMode=getDebugMode(),
 												stopRecursion=getStopRecursion() )>
 	</cffunction>
 
@@ -185,14 +182,6 @@ Usage:
 		<cfset instance.useSetterInjection = arguments.useSetterInjection>
 	</cffunction>
 	
-	<!--- Debug Mode --->
-	<cffunction name="getdebugMode" access="private" returntype="boolean" output="false">
-		<cfreturn instance.debugMode>
-	</cffunction>
-	<cffunction name="setdebugMode" access="private" returntype="void" output="false">
-		<cfargument name="debugMode" type="boolean" required="true">
-		<cfset instance.debugMode = arguments.debugMode>
-	</cffunction>
 	<!--- onDICompleteUDF --->
 	<cffunction name="getonDICompleteUDF" access="private" returntype="string" output="false">
 		<cfreturn instance.onDICompleteUDF>
