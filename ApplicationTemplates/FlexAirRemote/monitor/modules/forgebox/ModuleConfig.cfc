@@ -54,14 +54,11 @@ Optional Methods
 	
 	function configure(){
 		
-		// SES mode?
-		if( NOT controller.settingExists("sesBaseURL") ){
-			this.entryPoint = "forgebox:manager";
-		}	
+		// Uncomment this for NON SES mode.
+		//this.entryPoint = "forgebox:manager";
 		
 		// module settings - stored in modules.name.settings
 		settings = {
-			
 		};
 		
 		// SES Routes ORDER MATTERS
