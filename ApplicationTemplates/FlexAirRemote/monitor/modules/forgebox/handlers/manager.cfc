@@ -1,11 +1,23 @@
+<!-----------------------------------------------------------------------
+********************************************************************************
+Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+www.coldbox.org | www.luismajano.com | www.ortussolutions.com
+********************************************************************************
+
+Author 	 :	Luis Majano
+Date     :	January 10, 2010
+Description :
+The forgebox manager handler
+
+----------------------------------------------------------------------->
 <cfcomponent extends="coldbox.system.EventHandler" output="false">
 
 	<!--- dependencies --->
 	<cfproperty name="forgeService" inject="model:forgeService@forgeBox">
 
 	<!--- preHandler --->
-	<cffunction name="preHandler" access="public" returntype="void" output="false" hint="">
-		<cfargument name="Event" type="any" required="yes">
+	<cffunction name="preHandler" returntype="void" output="false">
+		<cfargument name="Event">
 		<cfscript>	
 			event.paramValue("typeSlug","");
 			event.paramValue("orderBy","POPULAR");
@@ -37,8 +49,8 @@
 	</cffunction>
 	
 	<!--- install --->
-	<cffunction name="install" access="public" returntype="void" output="false" hint="">
-		<cfargument name="Event" type="any" required="yes">
+	<cffunction name="install" returntype="void" output="false">
+		<cfargument name="Event">
 		<cfscript>	
 			var rc = event.getCollection();
 			
@@ -56,8 +68,8 @@
 	</cffunction>
 	
 	<!--- installResults --->
-	<cffunction name="installResults" access="public" returntype="void" output="false" hint="">
-		<cfargument name="Event" type="any" required="yes">
+	<cffunction name="installResults" returntype="void" output="false">
+		<cfargument name="Event">
 		<cfscript>	
 			var rc = event.getCollection();
 			
@@ -65,9 +77,7 @@
 			flash.keep("logInfo");
 			
 			// Get entry information
-			rc.entry = forgeService.getEntry(rc.entrySlug);
-			
-			event.setView("manager/installResults");			
+			rc.entry = forgeService.getEntry(rc.entrySlug);	
 		</cfscript>
 	</cffunction>
 	

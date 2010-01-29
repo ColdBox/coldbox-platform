@@ -44,6 +44,15 @@
 	
 	<cfloop query="rc.entries">
 	<div class="forgeBox-entrybox">
+		
+		<div class="forgebox-rating">
+			<input name="star_#rc.entries.entryID#" type="radio" class="star" <cfif rc.entries.entryRating gte 1>checked="checked"</cfif> value="1" disabled="disabled"/>
+			<input name="star_#rc.entries.entryID#" type="radio" class="star" <cfif rc.entries.entryRating gte 2>checked="checked"</cfif> value="2" disabled="disabled"/>
+			<input name="star_#rc.entries.entryID#" type="radio" class="star" <cfif rc.entries.entryRating gte 3>checked="checked"</cfif> value="3" disabled="disabled"/>
+			<input name="star_#rc.entries.entryID#" type="radio" class="star" <cfif rc.entries.entryRating gte 4>checked="checked"</cfif> value="4" disabled="disabled"/>
+			<input name="star_#rc.entries.entryID#" type="radio" class="star" <cfif rc.entries.entryRating gte 5>checked="checked"</cfif> value="5" disabled="disabled"/>
+		</div>
+	
 		<h3>#rc.entries.title# v#rc.entries.version# (#rc.entries.typeName#)</h3>
 		<p><label>ColdBox Version: </label> #rc.entries.coldboxversion#<br /></p>
 		<p>#rc.entries.summary#</p>

@@ -22,9 +22,9 @@ Modification History:
 		<cfscript>
 			setController(arguments.controller);			
 			
-			instance.contextProperties = structnew();
-			instance.flashScope = 0;
-		
+			instance.flashScope 		= 0;
+			instance.decorator			= "";
+			
 			return this;
 		</cfscript>
 	</cffunction>
@@ -57,6 +57,11 @@ Modification History:
 			
 			// Create Flash RAM object
 			instance.flashScope = createObject("component",flashPath).init(controller);
+			
+			// Request Context Decorator?
+			if ( controller.settingExists("RequestContextDecorator") and len(controller.getSetting("RequestContextDecorator")) ){
+				instance.decorator = controller.getSetting("RequestContextDecorator");
+			}
 		</cfscript>
 	</cffunction>
 
@@ -178,11 +183,6 @@ Modification History:
 		</cfscript>
 	</cffunction>
 	
-	<!--- Get / Set context properties --->
-	<cffunction name="getContextProperties" access="public" output="false" returntype="struct" hint="Get ContextProperties">
-		<cfreturn instance.ContextProperties/>
-	</cffunction>	
-	
 	<!--- getFlashScope --->
     <cffunction name="getFlashScope" output="false" access="public" returntype="any" hint="Get the current running Flash Ram Scope of base type:coldbox.system.web.flash.AbstractFlashScope">
    		<cfreturn instance.flashScope >
@@ -201,16 +201,13 @@ Modification History:
 		var oContext = "";
 		var oDecorator = "";
 		
-		// load context properties
-		loadProperties();
-		
 		//Create the original request context
-		oContext = CreateObject("component","coldbox.system.web.context.RequestContext").init(instance.contextProperties);
+		oContext = CreateObject("component","coldbox.system.web.context.RequestContext").init(controller.getConfigSettings());
 		
 		//Determine if we have a decorator, if we do, then decorate it.
-		if ( instance.ContextProperties.isUsingDecorator ){
+		if ( len(instance.decorator) ){
 			//Create the decorator
-			oDecorator = CreateObject("component",instance.ContextProperties.decorator).init(oContext,controller);
+			oDecorator = CreateObject("component",instance.decorator).init(oContext,controller);
 			//Set Request Context in storage
 			setContext(oDecorator);
 			//Return
@@ -222,57 +219,6 @@ Modification History:
 		
 		//Return Context
 		return oContext;
-		</cfscript>
-	</cffunction>
-	
-	<!--- Lazy Load Context Properties --->
-	<cffunction name="loadProperties" access="private" returntype="void" hint="Load the context properties" output="false" >
-		<cfscript>
-			var properties = structnew();
-			
-			if( structIsEmpty(instance.contextProperties) ){
-				properties.DefaultLayout = "";
-				properties.DefaultView = "";
-				properties.ViewLayouts = structNew();
-				properties.FolderLayouts = structNew();
-				properties.EventName = "";
-				properties.isSES = false;
-				properties.sesbaseURL = "";
-				properties.decorator = "";
-				properties.isUsingDecorator = false;
-				properties.registeredLayouts = structnew();
-				
-				if( controller.settingExists("EventName") ){
-					properties.EventName = controller.getSetting("EventName");
-				}		
-				if ( controller.settingExists("DefaultLayout") ){
-					properties.DefaultLayout = controller.getSetting("DefaultLayout");
-				}
-				if ( controller.settingExists("DefaultView") ){
-					properties.DefaultView = controller.getSetting("DefaultView");
-				}
-				if ( controller.settingExists("ViewLayouts") ){
-					properties.ViewLayouts = controller.getSetting("ViewLayouts");
-				}
-				if ( controller.settingExists("FolderLayouts") ){
-					properties.FolderLayouts = controller.getSetting("FolderLayouts");
-				}
-				if( controller.settingExists("sesbaseURL") ){
-					properties.sesbaseurl = controller.getSetting('sesBaseURL');
-				}
-				if ( controller.settingExists("RequestContextDecorator") and controller.getSetting("RequestContextDecorator") neq ""){
-					properties.isUsingDecorator = true;
-					properties.decorator = controller.getSetting("RequestContextDecorator");
-				}
-				if( controller.settingExists("registeredLayouts") ){
-					properties.registeredLayouts = controller.getSetting('registeredLayouts');
-				}
-				
-				instance.contextProperties = Properties;	
-			}
-			
-			// Dynamic Modules pointer
-			instance.contextProperties.modules = controller.getSetting("modules");
 		</cfscript>
 	</cffunction>
 

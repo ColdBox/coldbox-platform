@@ -2,18 +2,23 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-	<meta name="author" content="Luka Cvrk (www.solucija.com)" />
+	<meta name="author" content="Luis Majano & Design by Luka Cvrk (www.solucija.com)" />
 	<meta http-equiv="content-type" content="text/html;charset=utf-8" />
 	<cfif event.isSES()>
 		<base href="#getSetting('htmlBaseURL')#">
 	</cfif>
+	<!--- CSS --->
 	<link rel="stylesheet" href="#event.getModuleRoot()#/includes/css/style.css" type="text/css" />
+	<link rel="stylesheet" href="#event.getModuleRoot()#/includes/js/ratings/jquery.ratings.css" type="text/css" />
+	<!--- Javascript --->
 	<script type="text/javascript" src="#event.getModuleRoot()#/includes/js/jquery-latest.pack.js"></script>
 	<script type="text/javascript" src="#event.getModuleRoot()#/includes/js/forgebox.js"></script>
 	<script type="text/javascript" src="#event.getModuleRoot()#/includes/js/jquery.simplemodal-latest.min.js"></script>
 	<script type="text/javascript" src="#event.getModuleRoot()#/includes/js/jquery.uidivfilter.js"></script>
-	<title>ForgeBox Module!</title>
+	<script type="text/javascript" src="#event.getModuleRoot()#/includes/js/ratings/jquery.ratings.pack.js"></script>
+	<title>The Awesome ForgeBox Module!</title>
 </head>
+
 <body>
 	<div id="content">
 		<h1>
@@ -40,9 +45,11 @@
 			</p>
 		</div>
 		
+		<!--- Main Render view --->
 		#renderView()#
 		
 		<div id="footer">
+			<p>Copyright <a href="http://www.coldbox.org/">ColdBox Platform</a></p>
 			<p>Design: Luka Cvrk, <a title="Awsome Web Templates" href="http://www.solucija.com/">Solucija</a></p>
 		</div>
 	</div>

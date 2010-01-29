@@ -1,3 +1,15 @@
+<!-----------------------------------------------------------------------
+********************************************************************************
+Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+www.coldbox.org | www.luismajano.com | www.ortussolutions.com
+********************************************************************************
+
+Author 	 :	Luis Majano
+Date     :	January 10, 2010
+Description :
+The forgebox manager handler
+
+----------------------------------------------------------------------->
 <cfcomponent output="false" hint="My App Configuration">
 <cfscript>
 /**
@@ -45,21 +57,16 @@ Optional Methods
 	this.webURL 			= "http://www.coldbox.org";
 	this.description 		= "A module that interacts with forgebox";
 	this.version			= "1.0";
-	// If true, looks for views in the parent first, if not found, then in the module. Else vice-versa
 	this.viewParentLookup 	= true;
-	// If true, looks for layouts in the parent first, if not found, then in module. Else vice-versa
 	this.layoutParentLookup = true;
-	// Module Default event or default route, used for default entry points: ex: /forgebox or forgebox:manager.index, etc.
-	this.entryPoint	= "forgebox";
+	this.entryPoint			= "forgebox";
 	
+	// Configure the Module
 	function configure(){
 		
 		// Uncomment this for NON SES mode.
 		//this.entryPoint = "forgebox:manager";
 		
-		// module settings - stored in modules.name.settings
-		settings = {
-		};
 		
 		// SES Routes ORDER MATTERS
 		routes = [

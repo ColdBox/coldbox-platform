@@ -1,4 +1,16 @@
-<cfcomponent outut="false">
+<!-----------------------------------------------------------------------
+********************************************************************************
+Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+www.coldbox.org | www.luismajano.com | www.ortussolutions.com
+********************************************************************************
+
+Author 	 :	Luis Majano
+Date     :	January 10, 2010
+Description :
+The forgebox module service layer
+
+----------------------------------------------------------------------->
+<cfcomponent outut="false" hint="The forgebox module service layer">
 
 	<!--- Dependencies --->
 	<cfproperty name="forgeBoxAPI" inject="coldbox:myplugin:ForgeBox@forgebox">
