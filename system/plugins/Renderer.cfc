@@ -24,7 +24,6 @@ Description :
 			super.init(arguments.controller);
 
 			// Set Conventions
-			instance.modulesConvention 			= controller.getSetting("modulesConvention",true);
 			instance.layoutsConvention 			= controller.getSetting("layoutsConvention",true);
 			instance.viewsConvention 			= controller.getSetting("viewsConvention",true);
 			instance.appMapping 				= controller.getSetting("AppMapping");
@@ -33,11 +32,11 @@ Description :
 			instance.modulesConfig				= controller.getSetting("modules");
 
 			// Set event scope, we are not caching, so it is threadsafe.
-			event = getRequestContext();
+			event 	= getRequestContext();
 
 			// Create View Scopes
-			rc = event.getCollection();
-			prc = event.getCollection(private=true);
+			rc 		= event.getCollection();
+			prc 	= event.getCollection(private=true);
 
 			// Inject UDF For Views/Layouts
 			if(Len(Trim(controller.getSetting("UDFLibraryFile")))){
@@ -205,7 +204,7 @@ Description :
 	<cffunction name="renderLayout" access="Public" hint="Renders the current layout + view Combinations if declared." output="false" returntype="any">
 		<cfargument name="layout" type="any" 	required="false" hint="The explicit layout to use in rendering."/>
 		<cfargument name="view"   type="any" 	required="false" default="" hint="The name of the view to passthrough as an argument so you can refer to it as arguments.view"/>
-		<cfargument name="module" type="string" required="false" default="" hint="Explicitly render a layout from this module"/>
+		<cfargument name="module" type="any"    required="false" default="" hint="Explicitly render a layout from this module"/>
 		<cfset var cbox_currentLayout 	= implicitViewChecks()>
 		<cfset var cbox_RederedLayout 	= "">
 		<cfset var cbox_timerhash 		= "">
@@ -229,7 +228,7 @@ Description :
 			<cfset cbox_RederedLayout = renderView()>
 		<cfelse>
 			<!--- RenderLayout --->
-			<cfsavecontent variable="cbox_RederedLayout"><cfoutput><cfinclude template="#cbox_locateUDF(cbox_currentLayout)#"></cfoutput></cfsavecontent>
+			<cfsavecontent variable="cbox_RederedLayout"><cfoutput><cfinclude template="#cbox_locateUDF(cbox_currentLayout,arguments.module)#"></cfoutput></cfsavecontent>
 		</cfif>
 
 		<!--- Stop Timer --->
@@ -246,9 +245,8 @@ Description :
 		<cfscript>
 			var layout = event.getCurrentLayout();
 			var cEvent = event.getCurrentEvent();
-
 			// Cleanup for modules
-			cEvent = reReplaceNoCase(cEvent,"^([^:.]*):","");
+			cEvent     = reReplaceNoCase(cEvent,"^([^:.]*):","");
 
 			//Check if no view set?
 			if( NOT len( event.getCurrentView() ) ){
@@ -297,12 +295,20 @@ Description :
 
 	<!--- locateModuleLayout --->
 	<cffunction name="locateModuleLayout" output="false" access="private" returntype="any" hint="Locate the view to render using module logic">
-		<cfargument name="layout" type="any" required="true" hint="The layout name" >
+		<cfargument name="layout" type="any" required="true"  hint="The layout name" >
+		<cfargument name="module" type="any" required="false" default="" hint="The name of the module to explicity look for a layout"/>
 		<cfscript>
 			var parentLayoutPath = "";
 			var moduleLayoutPath = "";
-			var moduleName = event.getCurrentModule();
+			var moduleName 		 = "";
 
+			// Explicit Module layout lookup?
+			if( len(arguments.module) ){
+				return "#instance.modulesConfig[arguments.module].mapping#/layouts/#arguments.layout#";
+			}
+			
+			// Declare Locations
+			moduleName 	     = event.getCurrentModule();
 			parentLayoutPath = "/#instance.appMapping#/#instance.layoutsConvention#/modules/#moduleName#/#arguments.layout#";
 			moduleLayoutPath = "#instance.modulesConfig[moduleName].mapping#/layouts/#arguments.layout#";
 
@@ -352,44 +358,38 @@ Description :
 
 	<!--- locateModuleView --->
 	<cffunction name="locateModuleView" output="false" access="private" returntype="any" hint="Locate the view to render using module logic">
-		<cfargument name="view" 		type="any" 		required="true" hint="The view name" >
-		<cfargument name="module" 		type="string"	required="true" hint="Explicitly render a layout from this module"/>
+		<cfargument name="view" 		type="any" 		required="true"  hint="The view name" >
+		<cfargument name="module" 		type="any"	    required="false" default="" hint="The name of the module to explicity look for a view"/>
 		<cfscript>
 			var parentViewPath = "";
 			var moduleViewPath = "";
 			var moduleName     = "";
 
-			// Declare Locations
-			parentViewPath = "/#instance.appMapping#/#instance.viewsConvention#/modules/#moduleName#/#arguments.view#";
-			//Check if we are calling from a module
-			if (len(event.getCurrentModule())) {
-				moduleName     = event.getCurrentModule();
-				// Declare Locations
-				parentViewPath = "/#instance.appMapping#/#instance.viewsConvention#/modules/#moduleName#/#arguments.view#";
-				moduleViewPath = "#instance.modulesConfig[moduleName].mapping#/views/#arguments.view#";
-
-				// Check parent view order setup
-				if( instance.modulesConfig[moduleName].viewParentLookup ){
-					// We check if view is overriden in parent first.
-					if( fileExists(expandPath(parentViewPath & ".cfm")) ){
-						return parentViewPath;
-					}
-					// Not found, then just return module path, let the include throw exception if not found
-					return moduleViewPath;
-				}
-
-				// If we reach here then we are doing module lookup first then if not parent.
-				if( fileExists(expandPath(moduleViewPath & ".cfm")) ){
-					return moduleViewPath;
-				}
+			// Explicit Module view lookup?
+			if( len(arguments.module) ){
+				return "#instance.modulesConfig[arguments.module].mapping#/views/#arguments.view#";
 			}
-			//We are not calling from a module, so we must be calling explictly
-			else
-			{
-				moduleName     = #arguments.module#;
-				moduleViewPath = "/#instance.appMapping#/#instance.modulesConvention#/#moduleName#/views/#arguments.view#";
+				
+			// Declare Locations
+			moduleName     = event.getCurrentModule();
+			parentViewPath = "/#instance.appMapping#/#instance.viewsConvention#/modules/#moduleName#/#arguments.view#";
+			moduleViewPath = "#instance.modulesConfig[moduleName].mapping#/views/#arguments.view#";
+
+			// Check parent view order setup
+			if( instance.modulesConfig[moduleName].viewParentLookup ){
+				// We check if view is overriden in parent first.
+				if( fileExists(expandPath(parentViewPath & ".cfm")) ){
+					return parentViewPath;
+				}
+				// Not found, then just return module path, let the include throw exception if not found
 				return moduleViewPath;
 			}
+
+			// If we reach here then we are doing module lookup first then if not parent.
+			if( fileExists(expandPath(moduleViewPath & ".cfm")) ){
+				return moduleViewPath;
+			}
+			
 
 			// Not found, then just return parent path, let the include throw exception if not found
 			return parentViewPath;
