@@ -79,8 +79,8 @@
 	
 		<p>
 		  <em>
-			  * V.P.L = View Parent Lookup <br />
-		  	  *L.P.L = Layout Parent Lookup
+			  * V.P.L = View Parent Lookup Order <br />
+		  	  * L.P.L = Layout Parent Lookup Order
 		  </em>
 		</p>
 	
