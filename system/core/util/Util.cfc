@@ -154,5 +154,34 @@ Description :
 		<cfargument name="template" type="string" required="yes">
 		<cfinclude template="#template#">
 	</cffunction>
+	
+	<cffunction name="injectPropertyMixin" hint="injects a property into the passed scope" access="public" returntype="void" output="false">
+		<!--- ************************************************************* --->
+		<cfargument name="propertyName" 	type="string" 	required="true" hint="The name of the property to inject."/>
+		<cfargument name="propertyValue" 	type="any" 		required="true" hint="The value of the property to inject"/>
+		<cfargument name="scope" 			type="string" 	required="false" default="variables" hint="The scope to which inject the property to."/>
+		<!--- ************************************************************* --->
+		<cfscript>
+			"#arguments.scope#.#arguments.propertyName#" = arguments.propertyValue;
+		</cfscript>
+	</cffunction>
+
+	<cffunction name="getPropertyMixin" hint="gets a property" access="public" returntype="any" output="false">
+		<!--- ************************************************************* --->
+		<cfargument name="name" 	type="string" 	required="true" hint="The name of the property to inject."/>
+		<cfargument name="scope" 	type="string" 	required="false" default="variables" hint="The scope to which inject the property to."/>
+		<cfargument name="default"  type="any"      required="false" hint="Default value to return"/>
+		<!--- ************************************************************* --->
+		<cfscript>
+			var thisScope = variables;
+			if( arguments.scope eq "this"){ thisScope = this; }
+			
+			if( NOT structKeyExists(thisScope,arguments.name) AND structKeyExists(arguments,"default")){
+				return arguments.default;
+			}
+			
+			return thisScope[arguments.name];
+		</cfscript>
+	</cffunction>
 
 </cfcomponent>

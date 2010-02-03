@@ -10,8 +10,8 @@
 			this.instance.handler = "general";
 			this.instance.method = "index";
 			this.instance.isPrivate = false;
-			this.instance.isMissingAction = false;
-			this.instance.MissingAction = "nothing";
+			this.instance.missingAction = "";
+			this.instance.module = "";
 			
 			this.ehbean.init(this.instance.invocationPath);
 			this.ehbean.setMemento(this.instance);
@@ -51,6 +51,8 @@
 	<cffunction name="testgetFullEvent" access="public" returnType="void">
 		<cfscript>
 			assertEquals( this.ehBean.getFullEvent(), this.instance.handler & "." & this.instance.method );
+			this.ehBean.setModule("luis");
+			assertEquals( this.ehBean.getFullEvent(), "luis:" & this.instance.handler & "." & this.instance.method );
 		</cfscript>
 	</cffunction>		
 	
@@ -87,13 +89,34 @@
 	
 	<cffunction name="testgetmissingAction" access="public" returnType="void">
 		<cfscript>
+			assertFalse( this.ehBean.isMissingAction());
 			assertEquals( this.ehBean.getMissingAction(), this.instance.missingAction );
+			this.ehBean.setMissingAction('nothing');
+			assertTrue( this.ehBean.isMissingAction());			
 		</cfscript>
 	</cffunction>		
 	
 	<cffunction name="testgetRunnable" access="public" returnType="void">
 		<cfscript>
 			assertEquals( this.ehBean.getRunnable(), this.instance.invocationPath & "." & this.instance.handler );
+		</cfscript>
+	</cffunction>	
+	
+	<cffunction name="testGetModule" access="public" returnType="void">
+		<cfscript>
+			assertEquals( this.ehBean.getModule(), this.instance.module );
+			this.ehBean.setModule('TEST');
+			assertEquals( this.ehBean.getModule(), "TEST");
+			
+		</cfscript>
+	</cffunction>	
+	
+	<cffunction name="testIsModule" access="public" returnType="void">
+		<cfscript>
+			assertEquals( this.ehBean.isModule(), false );
+			this.ehBean.setModule('TEST');
+			assertEquals( this.ehBean.isModule(), true );
+			
 		</cfscript>
 	</cffunction>		
 		

@@ -145,6 +145,24 @@ Modification History:
 		<cfset instance.expandedRCPanel = arguments.expandedRCPanel/>
 	</cffunction>
 	
+	<!--- Expanded modules Panel --->
+	<cffunction name="getExpandedModulesPanel" access="public" returntype="boolean" output="false">
+		<cfreturn instance.expandedModulesPanel>
+	</cffunction>
+	<cffunction name="setExpandedModulesPanel" access="public" returntype="void" output="false">
+		<cfargument name="expandedModulesPanel" type="boolean" required="true">
+		<cfset instance.expandedModulesPanel = arguments.expandedModulesPanel>
+	</cffunction>
+	
+	<!--- Show Modules Panel --->
+	<cffunction name="getshowModulesPanel" access="public" returntype="boolean" output="false">
+		<cfreturn instance.showModulesPanel>
+	</cffunction>
+	<cffunction name="setshowModulesPanel" access="public" returntype="void" output="false">
+		<cfargument name="showModulesPanel" type="boolean" required="true">
+		<cfset instance.showModulesPanel = arguments.showModulesPanel>
+	</cffunction>
+	
 	<!--- Populate from struct --->
 	<cffunction name="populate" access="public" returntype="any" hint="Populate with a memento">
 		<!--- ************************************************************* --->

@@ -129,6 +129,19 @@ Description :
 			#controller.getLogBox().logLevels.lookup(controller.getLogBox().getRootLogger().getLevelMin())# - 
 			#controller.getLogBox().logLevels.lookup(controller.getLogBox().getRootLogger().getLevelMax())#	
 		</div>
+		<div class="fw_debugTitleCell">
+		  Loaded Modules:
+		</div>
+		<div class="fw_debugContentCell">
+			<cfloop from="1" to="#arrayLen(loadedModules)#" index="loc.x">
+				<cfif len(moduleSettings[loadedModules[loc.x]].entryPoint)>
+					<a href="#event.buildLink(moduleSettings[loadedModules[loc.x]].entryPoint)#">#loadedModules[loc.x]#</a>
+				<cfelse>
+					#loadedModules[loc.x]#
+				</cfif>
+				<cfif loc.x NEQ arrayLen(loadedModules)>,</cfif>
+			</cfloop>			
+		</div>
 		
 		<!--- **************************************************************--->
 		<!--- Method Executions --->
@@ -225,13 +238,21 @@ Description :
 	</cfif>
 <!--- **************************************************************--->
 
+<!--- **************************************************************--->
+<!--- ColdBox Modules --->
+<!--- **************************************************************--->
+	<cfif getDebuggerConfig().getShowModulesPanel()>
+		<cfinclude template="panels/ModulesPanel.cfm">
+	</cfif>
+<!--- **************************************************************--->
+
 
 <!--- **************************************************************--->
 <!--- Request Collection Debug --->
 <!--- **************************************************************--->
 	<cfif getDebuggerConfig().getShowRCPanel()>
 	<div class="fw_titles"  onClick="fw_toggle('fw_reqCollection')" >
-	&nbsp;Request Collection Structure
+	&nbsp;ColdBox Request Structures
 	</div>
 	<div class="fw_debugContent<cfif getDebuggerConfig().getExpandedRCPanel()>View</cfif>" id="fw_reqCollection">
 		

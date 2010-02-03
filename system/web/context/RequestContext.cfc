@@ -22,35 +22,26 @@ Modification History:
 
 	<cffunction name="init" access="public" output="false" hint="constructor" returntype="RequestContext">
 		<!--- ************************************************************* --->
-		<cfargument name="struct1" 		 	type="any"	required="true" hint="Usually the FORM scope">
-		<cfargument name="struct2" 		 	type="any"	required="true" hint="Usually the URL scope">
-		<cfargument name="properties" 		type="any" 	required="true" hint="The context properties struct">
+		<cfargument name="properties" 	type="any" 	required="true" hint="The context properties struct">
 		<!--- ************************************************************* --->
 		<cfscript>
+			var key = "";
+			
 			// Create the Collections
-			instance.context = structnew();
+			instance.context		= structnew();
 			instance.privateContext = structnew();
 			
 			// Create Default Properties
-			instance.isSES = false;
-			instance.sesBaseURL = "";
-			instance.routedStruct = structnew();
-			instance.isNoExecution = false;
-		
-			// Append incoming Collections
-			collectionAppend(arguments.struct1);
-			collectionAppend(arguments.struct2);
+			instance.isSES 				= false;
+			instance.sesBaseURL 		= "";
+			instance.routedStruct 		= structnew();
+			instance.isNoExecution  	= false;
+			instance.modules			= structnew();
 			
-			// Extra properties passed in by the request constructor.
-			setDefaultLayout(arguments.properties.DefaultLayout);
-			setDefaultView(arguments.properties.DefaultView);
-			setisSES(arguments.properties.isSES);
-			setSESBaseURL(arguments.properties.sesBaseURL);
-			
-			instance.viewLayouts = arguments.properties.ViewLayouts; 
-			instance.folderLayouts = arguments.properties.FolderLayouts; 
-			instance.registeredLayouts = arguments.properties.registeredLayouts;
-			instance.eventName = arguments.properties.eventName;
+			// Populate instance
+			for( key in arguments.properties ){
+				instance[key] = arguments.properties[key];
+			}
 			
 			return this;
 		</cfscript>		
@@ -287,6 +278,23 @@ Modification History:
 			
 			// set layout overwritten flag.
 			instance.privateContext["layoutoverride"] = true;
+		</cfscript>
+	</cffunction>
+
+	<cffunction name="getModuleRoot" output="false" access="public" returntype="any" hint="Convenience method to get the current request's module root path. If no module, then returns empty path. You can also get this from the modules settings.">
+		<cfscript>
+			if( len(getCurrentModule()) ){
+				return instance.modules[getCurrentModule()].mapping;
+			}
+			return "";
+		</cfscript>
+	</cffunction>
+
+	<cffunction name="getCurrentModule" access="public" hint="Gets the current module, if any" returntype="any" output="false">
+		<cfscript>
+			var event = getCurrentEvent();
+			if( NOT find(":",event) ){ return "";}
+			return listFirst(event,":");
 		</cfscript>
 	</cffunction>
 

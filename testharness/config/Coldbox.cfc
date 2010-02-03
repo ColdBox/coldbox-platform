@@ -68,7 +68,7 @@ Optional Methods
 			coldboxExtensionsLocation = "coldbox.testharness.extensions",
 			pluginsExternalLocation = "coldbox.testing.testplugins",
 			viewsExternalLocation	= "/coldbox/testing/testviews",
-			layoutsExternalLocation = "extlayouts",
+			layoutsExternalLocation = "/#appMapping#/extlayouts",
 			handlersExternalLocation  = "coldbox.testing.testhandlers",
 			requestContextDecorator = "coldbox.testharness.model.myRequestContextDecorator",
 			
@@ -260,7 +260,13 @@ Optional Methods
 		
 		
 		//LogBox config using the logBoxConfig object;
-
+		logBoxConfig.appender(name="myConsole",class="coldbox.system.logging.appenders.ConsoleAppender");
+		logBoxConfig.appender(name="ColdBoxTracer",class="coldbox.system.logging.appenders.ColdboxTracerAppender");
+		
+		props = {filePath="logs",fileName=coldbox.appName,autoExpand=true};
+		logBoxConfig.appender(name="FileAppender",class="coldbox.system.logging.appenders.RollingFileAppender",properties=props);
+		
+		logBoxConfig.root(levelMax=logBoxConfig.logLevels.DEBUG,appenders="*");		
 	}
 	
 	function development(){

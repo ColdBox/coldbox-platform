@@ -73,6 +73,9 @@ Modification History:
 		// Create the Cache Container
 		controller.setColdboxOCM(createCacheManager());
 		
+		// init Model Integration
+		controller.getPlugin("BeanFactory");
+		
 		// Execute onConfigurationLoad for coldbox internal services()
 		for(key in services){
 			services[key].onConfigurationLoad();
@@ -109,9 +112,6 @@ Modification History:
 			javaLoader = controller.getPlugin("JavaLoader");
 			javaLoader.setup( javaLoader.queryJars(controller.getSetting('javaloader_libpath')) );
 		}
-		
-		// init Model Integration
-		controller.getPlugin("BeanFactory");
 		
 		// IoC Plugin Manager Configuration
 		if ( len(controller.getSetting("IOCFramework")) ){
@@ -188,14 +188,14 @@ Modification History:
 			}			
 		}
 		
-		// If no config file location throw exception
-		if( not len(coldboxSettings["ConfigFileLocation"]) ){
-			getUtil().throwit(message="Config file not located in convetions: #coldboxSettings.configConvention#",detail="",type="LoaderService.ConfigFileNotFound");
-		}
-		
 		// Overriding the config file location? Maybe unit testing?
 		if( len(arguments.overrideConfigFile) ){
 			coldboxSettings["ConfigFileLocation"] = getUtil().getAbsolutePath(arguments.overrideConfigFile);
+		}
+		
+		// If no config file location throw exception
+		if( not len(coldboxSettings["ConfigFileLocation"]) ){
+			getUtil().throwit(message="Config file not located in conventions: #coldboxSettings.configConvention#",detail="",type="LoaderService.ConfigFileNotFound");
 		}
 		
 		// If CFC loader, then create it and return it

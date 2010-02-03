@@ -1,0 +1,1 @@
+<cfoutput>A cool module view at #now()#</cfoutput>

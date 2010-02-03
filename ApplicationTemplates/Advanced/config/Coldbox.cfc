@@ -63,6 +63,7 @@ Optional Methods
 			//Extension Points
 			UDFLibraryFile 			= "includes/helpers/ApplicationHelper.cfm",
 			coldboxExtensionsLocation = "",
+			modulesLocation			= "",
 			pluginsExternalLocation = "",
 			viewsExternalLocation	= "",
 			layoutsExternalLocation = "",
@@ -162,11 +163,12 @@ Optional Methods
 		//Conventions
 		conventions = {
 			handlersLocation = "handlers",
-			pluginsLocation = "plugins",
-			viewsLocation = "views",
-			layoutsLocation = "layouts",
-			modelsLocation = "model",
-			eventAction = "index"
+			pluginsLocation  = "plugins",
+			viewsLocation 	 = "views",
+			layoutsLocation  = "layouts",
+			modelsLocation 	 = "model",
+			modulesLocation  = "modules",
+			eventAction 	 = "index"
 		};
 		
 		//IOC Integration
@@ -195,7 +197,9 @@ Optional Methods
 			showCachePanel = true,
 			expandedCachePanel = true,
 			showRCPanel = true,
-			expandedRCPanel = true
+			expandedRCPanel = true,
+			showModulesPanel = true,
+			expandedModulesPanel = false
 		};
 		
 		//Mailsettings

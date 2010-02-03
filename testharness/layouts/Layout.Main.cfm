@@ -1,1 +1,1 @@
-<cfset addAsset('includes/jquery-1.2.6.min.js')><cfoutput>#renderLayout('Embedded')#</cfoutput>
+<cfset addAsset('includes/jquery-1.2.6.min.js')><cfoutput>Event: #event.getCurrentEvent()#, Route: #event.getCurrentRoute()#, RoutedURL: #event.getCurrentRoutedURL()#<br /> #renderLayout('Embedded')#</cfoutput>

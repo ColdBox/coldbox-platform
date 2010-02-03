@@ -23,7 +23,6 @@ Description :
 			var beanInjectorProperties = structnew();
 			/* Default BeanInjector Properties */
 			beanInjectorProperties.useSetterInjection = true;
-			beanInjectorProperties.debugMode = false;
 			
 			/* Property Checks */
 			if( not propertyExists('datasourceAlias') ){
@@ -85,7 +84,6 @@ Description :
 																configClassPath=getProperty('TransferConfigurationClassPath'));
 																
 			var TransferFactory = createObject("component",getProperty('TransferFactoryClassPath')).init(configuration=configuration);
-			var BeanInjectorProperties = getProperty("BeanInjectorProperties");
 			var TDO = 0;
 			var Transfer = TransferFactory.getTransfer();
 			var TDOArgs = getProperty("BeanInjectorProperties");

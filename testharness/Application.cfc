@@ -16,7 +16,7 @@ Description :
 <cfcomponent output="false">
 
 	<!--- APPLICATION CFC PROPERTIES --->
-	<cfset this.name = hash(getCurrentTemplatePath())> 
+	<cfset this.name = "Test Harness" & hash(getCurrentTemplatePath())> 
 	<cfset this.sessionManagement = true>
 	<cfset this.sessionTimeout = createTimeSpan(0,0,1,0)>
 	<cfset this.setClientCookies = true>
@@ -58,6 +58,7 @@ Description :
 		
 		<cfif structKeyExists(url,"fwreinit")>
 			<cfset structDelete(application,"cbBootStrap")>
+			<cfset structDelete(application,"cbController")>
 		</cfif>
 		
 		<!--- BootStrap Reinit Check --->

@@ -9,13 +9,10 @@ Date        :	9/3/2007
 Description :
 	Request service Test
 ----------------------------------------------------------------------->
-<cfcomponent name="requestserviceTest" extends="coldbox.system.testing.BaseTestCase" output="false">
+<cfcomponent name="requestserviceTest" extends="coldbox.system.testing.BaseTestCase" output="false" appMapping="/coldbox/testharness">
 
 	<cffunction name="setUp" returntype="void" access="public" output="false">
 		<cfscript>
-		//Setup ColdBox Mappings For this Test
-		setAppMapping("/coldbox/testharness");
-		setConfigMapping(ExpandPath(instance.AppMapping & "/config/coldbox.xml.cfm"));
 		//Call the super setup method to setup the app.
 		super.setup();
 		</cfscript>
@@ -45,7 +42,13 @@ Description :
 		obj = factory.getPlugin("Logger");
 		AssertEquals(getController().getPlugin("Logger"), obj, "Logger Plugin");
 		
-		AssertTrue( isObject(factory.getInterceptor("coldbox.system.interceptors.SES")), "Interceptor");
+		obj = factory.getPlugin("date",true);
+		AssertEquals(getController().getPlugin("date",true), obj, "Date Custom Plugin");
+		
+		obj = factory.getPlugin(plugin="ModPlugin",module="test1");
+		AssertEquals(getController().getPlugin(plugin="ModPlugin",module="test1"), obj, "Module Plugin");
+		
+		AssertTrue( isObject(factory.getInterceptor("SES")), "Interceptor");
 		
 		obj = factory.getPlugin("date",true);
 		AssertTrue(structKeyExists(obj,"getToday"), "Date Plugin");

@@ -19,7 +19,7 @@ Description :
 
 	<cfscript>
 		// Reserved Keys as needed for cleanups
-		instance.RESERVED_KEYS = "handler,action,view,viewNoLayout";
+		instance.RESERVED_KEYS 			  = "handler,action,view,viewNoLayout,module,moduleRouting";
 		instance.RESERVED_ROUTE_ARGUMENTS = "constraints,pattern,regexpattern,matchVariables,packageresolverexempt,patternParams,valuePairTranslation";
 	</cfscript>
 
@@ -27,6 +27,7 @@ Description :
 		<cfscript>
 			// Setup the default interceptor properties
 			setRoutes( ArrayNew(1) );
+			setModuleRoutingTable( structnew() );
 			setLooseMatching(false);
 			setUniqueURLs(true);
 			setEnabled(true);
@@ -105,7 +106,13 @@ Description :
 				}
 				// Create event
 				rc[getSetting('EventName')] = aRoute.handler & "." & aRoute.action;
-			}
+				
+				// Do we have a module?
+				if( len(aRoute.module) ){
+					rc[getSetting('EventName')] = aRoute.module & ":" & rc[getSetting('EventName')];
+				}
+				
+			}// if handler exists
 			
 			// See if View is Dispatched
 			if( structKeyExists(aRoute,"view") ){
@@ -124,6 +131,40 @@ Description :
 
 <!------------------------------------------- PUBLIC ------------------------------------------->
 	
+	<!--- addModuleRoutes --->
+	<cffunction name="addModuleRoutes" output="false" access="public" returntype="void" hint="Add modules routes in the specified position">
+		<cfargument name="pattern" type="string" required="true"  hint="The pattern to match against the URL." />
+		<cfargument name="module"  type="string" required="true"  hint="The module to load routes for"/>
+		<cfscript>
+			var mConfig 	 = getSetting("modules");
+			var routingTable = getModulesRoutingTable();
+			var x 			 = 1;
+			var args		 = structnew();
+			
+			// Verify module exists and loaded
+			if( NOT structKeyExists(mConfig,arguments.module) ){
+				$throw(message="Error loading module routes as the moduel requested '#arguments.module#' is not loaded.",
+					   detail="The loaded modules are: #structKeyList(mConfig)#",
+					   type="SES.InvalidModuleName");
+			}
+			
+			// Create the module routes container if it does not exist already
+			if( NOT structKeyExists(routingTable, arguments.module) ){
+				routingTable[arguments.module] = arraynew(1);
+			}
+			
+			// Store the entry point for the module routes.
+			addRoute(pattern=arguments.pattern,moduleRouting=arguments.module);
+			
+			// Iterate through module routes and process them
+			for(x=1; x lte ArrayLen(mConfig[arguments.module].routes); x=x+1){
+				args = mConfig[arguments.module].routes[x];
+				args.module = arguments.module;
+				addRoute(argumentCollection=args);
+			}
+		</cfscript>
+	</cffunction>
+	
 	<!--- Add a new Route --->
 	<cffunction name="addRoute" access="public" returntype="void" hint="Adds a route to dispatch" output="false">
 		<!--- ************************************************************* --->
@@ -135,7 +176,9 @@ Description :
 		<cfargument name="view"  				 type="string"  required="false" hint="The view to dispatch if pattern matches.  No event will be fired, so handler,action will be ignored.">
 		<cfargument name="viewNoLayout"  		 type="boolean" required="false" default="false" hint="If view is choosen, then you can choose to override and not display a layout with the view. Else the view renders in the assigned layout.">
 		<cfargument name="valuePairTranslation"  type="boolean" required="false" default="true"  hint="Activate convention name value pair translations or not. Turned on by default">
-		<cfargument name="constraints" 			 type="any"  	required="true"  default="" hint="A structure or JSON structure of regex constraint overrides for variable placeholders. The key is the name of the variable, the value is the regex to try to match."/>
+		<cfargument name="constraints" 			 type="any"  	required="false" default="" hint="A structure or JSON structure of regex constraint overrides for variable placeholders. The key is the name of the variable, the value is the regex to try to match."/>
+		<cfargument name="module" 				 type="string"  required="false" default="" hint="The module to add this route to"/>
+		<cfargument name="moduleRouting" 		 type="string"  required="false" default="" hint="Called internally by addModuleRoutes to add a module routing route."/>
 		<!--- ************************************************************* --->
 		<cfscript>
 		var thisRoute = structNew();
@@ -147,7 +190,7 @@ Description :
 		var oJSON = getPlugin("JSON");
 		var jsonRegex = "^(\{|\[)(.)+(\}|\])$";
 		var patternType = "";
-			
+		
 		// Process all incoming arguments
 		for(arg in arguments){
 			if( structKeyExists(arguments,arg) ){ thisRoute[arg] = arguments[arg]; }
@@ -164,6 +207,7 @@ Description :
 			}
 		}
 		
+		// TODO: Cleanups via REgex.
 		// Add trailing / to make it easier to parse
 		if( right(thisRoute.pattern,1) IS NOT "/" ){
 			thisRoute.pattern = thisRoute.pattern & "/";
@@ -171,9 +215,11 @@ Description :
 		// Cleanup initial /
 		if( left(thisRoute.pattern,1) IS "/" ){
 			if( thisRoute.pattern eq "/" ){ 
-				$throw(message="Pattern is empty, please verify the pattern is valid. Route: #thisRoute.toString()#",type="SES.InvalidRoute");
+				//$throw(message="Pattern is empty, please verify the pattern is valid. Route: #thisRoute.toString()#",type="SES.InvalidRoute");
 			}
-			thisRoute.pattern = right(thisRoute.pattern,len(thisRoute.pattern)-1);
+			else{
+				thisRoute.pattern = right(thisRoute.pattern,len(thisRoute.pattern)-1);
+			}
 		}
 		
 		// Check if we have optional args by looking for a ?
@@ -196,9 +242,14 @@ Description :
 			}
 		}
 				
-		// Init the regexpattern
+		// Init the matching variables
 		thisRoute.regexPattern = "";
 		thisRoute.patternParams = arrayNew(1);
+		
+		// Check for / pattern
+		if( len(thisRoute.pattern) eq 1){
+			thisRoute.regexPattern = "/";
+		}
 		
 		// Process the route as a regex pattern
 		for(x=1; x lte listLen(thisRoute.pattern,"/");x=x+1){
@@ -273,8 +324,14 @@ Description :
 			
 		} // end looping of pattern optionals
 		
-		// Finally add it to the routing table
-		ArrayAppend(getRoutes(), thisRoute);
+		
+		// Add it to the routing map table
+		if( len(arguments.module) ){
+			ArrayAppend(getModuleRoutes(arguments.module), thisRoute);
+		}
+		else{
+			ArrayAppend(getRoutes(), thisRoute);
+		}
 		</cfscript>
 	</cffunction>
 	
@@ -325,7 +382,26 @@ Description :
 	<!--- Getter routes --->
 	<cffunction name="getRoutes" access="public" output="false" returntype="Array" hint="Get the array containing all the routes">
 		<cfreturn instance.Routes/>
-	</cffunction>	
+	</cffunction>
+	
+	<!--- getModulesRoutingTable --->
+	<cffunction name="getModulesRoutingTable" output="false" access="public" returntype="struct" hint="Get the entire modules routing table">
+		<cfreturn instance.moduleRoutingTable>
+	</cffunction>
+	
+	<!--- getModuleRoutes --->
+	<cffunction name="getModuleRoutes" output="false" access="public" returntype="array" hint="Get a modules routes">
+		<cfargument name="module" type="string" required="true" default="" hint="The name of the module"/>
+		<cfscript>
+			var table = getModulesRoutingTable();
+			if( structKeyExists(table, arguments.module) ){
+				return table[arguments.module];
+			}
+			$throw(message="Module routes for #arguments.module# do not exists", detail="Loaded module routes are #structKeyList(table)#",type="SES.InvalidModuleException");
+		</cfscript>
+	</cffunction>
+	
+	
 
 <!------------------------------------------- PRIVATE ------------------------------------------->
 	
@@ -341,6 +417,12 @@ Description :
 				 
     </cffunction>
     
+	<!--- setmoduleRoutingTable --->
+	<cffunction name="setModuleRoutingTable" output="false" access="private" returntype="void" hint="Set the module routing table">
+		<cfargument name="routes" type="struct" required="true"/>
+		<cfset instance.moduleRoutingTable = arguments.routes>
+	</cffunction>
+	
 	<!--- Set Routes --->
 	<cffunction name="setRoutes" access="private" output="false" returntype="void" hint="Internal override of the routes array">
 		<cfargument name="routes" type="Array" required="true"/>
@@ -545,8 +627,9 @@ Description :
 	<!--- Find a route --->
 	<cffunction name="findRoute" access="private" output="false" returntype="Struct" hint="Figures out which route matches this request">
 		<!--- ************************************************************* --->
-		<cfargument name="action" required="true" type="any" hint="The action evaluated by the path_info">
-		<cfargument name="event"  required="true" type="any" hint="The event object.">
+		<cfargument name="action" type="any"    required="true"  hint="The action evaluated by the path_info">
+		<cfargument name="event"  type="any"    required="true"  hint="The event object.">
+		<cfargument name="module" type="string" required="false" default="" hint="Find a route on a module"/>
 		<!--- ************************************************************* --->
 		<cfset var requestString = arguments.action />
 		<cfset var packagedRequestString = "">
@@ -561,6 +644,13 @@ Description :
 		<cfset var _routesLength = ArrayLen(_routes)>
 		
 		<cfscript>
+			
+			// Module call? Switch routes
+			if( len(arguments.module) ){
+				_routes = getModuleRoutes(arguments.module);
+				_routesLength = arrayLen(_routes);
+			}
+			
 			// fix URL vars after ?
 			requestString = fixIISURLVars(requestString,rc);
 			//Remove the leading slash
@@ -577,7 +667,6 @@ Description :
 				
 				// Match The route to request String
 				match = reFindNoCase(_routes[i].regexPattern,requestString,1,true);
-				
 				if( (match.len[1] IS NOT 0 AND getLooseMatching()) 
 				     OR
 				    (NOT getLooseMatching() AND match.len[1] IS NOT 0 AND match.pos[1] EQ 1) ){
@@ -589,11 +678,21 @@ Description :
 				}				
 				
 			}//end finding routes
-			
+				
 			// Check if we found a route, else just return empty params struct
 			if( structIsEmpty(foundRoute) ){ 
 				log.debug("No SES routes matched on routed string: #requestString#");
 				return params; 
+			}
+			
+			// Check if the match is a module Routing entry point or not?
+			if( len( foundRoute.moduleRouting ) ){
+				// Try to discover the route via the module routing calls
+				params = findRoute(reReplaceNoCase(requestString,foundRoute.regexpattern,""),arguments.event,foundRoute.moduleRouting);
+				// If empty, then just continue matching calls, else return matched route.
+				if( NOT structIsEmpty(params) ){
+					return params;
+				}
 			}
 			
 			// Save Found Route
@@ -615,7 +714,7 @@ Description :
 					return findRoute(packagedRequestString,arguments.event);
 				}
 			}
-			
+					
 			// Populate the params, with variables found in the request string
 			for(x=1; x lte arrayLen(foundRoute.patternParams); x=x+1){
 				params[foundRoute.patternParams[x]] = mid(requestString, match.pos[x+1], match.len[x+1]);

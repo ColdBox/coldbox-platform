@@ -56,6 +56,8 @@
         <Setting name="expandedCachePanel" value="false"/>
         <Setting name="showRCPanel" value="true"/>
         <Setting name="expandedRCPanel" value="false"/>  
+        <Setting name="showModulesPanel" value="true"/>
+        <Setting name="expandedModulesPanel" value="false"/>  
        
         <!-- Model Integration -->
         <Setting name="ModelsObjectCaching"  value="true" />
@@ -75,6 +77,7 @@
         <viewsLocation>views</viewsLocation>
         <eventAction>index</eventAction>
         <modelslocation>model</modelslocation>
+		<modulesLocation>modules</modulesLocation>		
     </Conventions>
     
 </Config>

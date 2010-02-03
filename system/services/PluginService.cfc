@@ -58,12 +58,13 @@ Modification History:
 	<!--- Get a new plugin Instance --->
 	<cffunction name="new" access="public" returntype="any" hint="Create a New Plugin Instance whether it is core or custom" output="false" >
 		<!--- ************************************************************* --->
-		<cfargument name="plugin" required="true" type="string"  hint="The name (classpath) of the plugin to create">
-		<cfargument name="custom" required="true" type="boolean" hint="Custom plugin or coldbox plugin">
+		<cfargument name="plugin" type="any"  	 required="true"  hint="The name (classpath) of the plugin to create">
+		<cfargument name="custom" type="boolean" required="true"  hint="Custom plugin or coldbox plugin">
+		<cfargument name="module" type="any" 	 required="false" default="" hint="The module to retrieve the plugin from"/>
 		<!--- ************************************************************* --->
 		<cfscript>
 			var oPlugin = 0;
-			var interceptMetadata = structnew();
+			var iData = structnew();
 			var pluginKey = getPluginCacheKey(argumentCollection=arguments);
 			var mdEntry = "";
 			
@@ -86,12 +87,13 @@ Modification History:
 			//Interception if application is up and running. We need the interceptors.
 			if ( controller.getColdboxInitiated() ){
 				//Fill-up Intercepted MetaData
-				interceptMetadata.pluginPath = arguments.plugin;
-				interceptMetadata.custom = arguments.custom;			
-				interceptMetadata.oPlugin = oPlugin;
+				iData.pluginPath = arguments.plugin;
+				iData.custom 	 = arguments.custom;	
+				iData.module 	 = arguments.module;		
+				iData.oPlugin    = oPlugin;
 				
 				//Fire Interception
-				controller.getInterceptorService().processState("afterPluginCreation",interceptMetadata);
+				controller.getInterceptorService().processState("afterPluginCreation",iData);
 			}
 			
 			//Return plugin
@@ -102,8 +104,9 @@ Modification History:
 	<!--- Get a new or cached plugin instance --->
 	<cffunction name="get" access="public" returntype="any" hint="Get a new/cached plugin instance" output="false" >
 		<!--- ************************************************************* --->
-		<cfargument name="plugin" required="true" type="string"  hint="The name (classpath) of the plugin to create. We will search for it.">
-		<cfargument name="custom" required="true" type="boolean" hint="Custom plugin or coldbox plugin">
+		<cfargument name="plugin" type="any"     required="true" hint="The name (classpath) of the plugin to create. We will search for it.">
+		<cfargument name="custom" type="boolean" required="true" hint="Custom plugin or coldbox plugin">
+		<cfargument name="module" type="any" 	 required="false" default="" hint="The module to retrieve the plugin from"/>
 		<!--- ************************************************************* --->
 		<cfscript>
 			var pluginKey = getPluginCacheKey(argumentCollection=arguments);
@@ -275,19 +278,42 @@ Modification History:
 	<!--- Locate a Plugin Instantiation Path --->
 	<cffunction name="locatePluginPath" access="private" returntype="string" hint="Locate a full plugin instantiation path from the requested plugin name" output="false" >
 		<!--- ************************************************************* --->
-		<cfargument name="plugin" required="true" type="string" hint="The plugin to validate the path on.">
-		<cfargument name="custom" required="true" type="boolean" hint="Whether its a custom plugin or not.">
+		<cfargument name="plugin" type="any" 	 required="true" hint="The plugin to validate the path on.">
+		<cfargument name="custom" type="boolean" required="true" hint="Whether its a custom plugin or not.">
+		<cfargument name="module" type="any" 	 required="false" default="" hint="The module to retrieve the plugin from"/>
 		<!--- ************************************************************* --->
 		<cfscript>
 			var pluginFilePath = "";
+			var mConfig = "";
 			
 			// Check if getting from custom plugins
-			if ( arguments.custom ){
+			if ( arguments.custom OR len(arguments.module) ){
 				
 				// Set plugin key and file path check
 				pluginFilePath = replace(arguments.plugin,".","/","all") & ".cfc";
 				
-				// Check for Convention First, MyPluginsPath was already setup with conventions
+				// Is this a Module Call?
+				if( len(arguments.module) ){
+					mConfig = controller.getSetting("modules");
+					// Verify module
+					if( NOT structKeyExists(mConfig,arguments.module) ){
+						getUtil().throwit(message="The module requested #arguments.module# does not exist or has not been loaded.",
+									  	  detail="Modules defined are #structKeyList(mConfig)#",
+									  	  type="PluginService.ModuleConfigurationNotFound");
+					}
+					
+					// Verify it exists
+					if( fileExists(mConfig[arguments.module].pluginsPhysicalPath & "/" & pluginFilePath) ){
+						return "#mConfig[arguments.module].pluginInvocationPath#.#arguments.plugin#";
+					}
+					
+					// Else throw exception
+					getUtil().throwit(message="Plugin #arguments.plugin# was not located in the specified module: #arguments.module#",
+									  detail="The path search was: ",
+									  type="PluginService.ModulePluginNotFound");
+				}
+				
+				// Check for Convention First, pluginsExternalLocation was already setup with conventions
 				if ( fileExists(getCustomPluginsPhysicalPath() & "/" & pluginFilePath ) ){
 					return "#getCustomPluginsPath()#.#arguments.plugin#";
 				}
@@ -305,21 +331,27 @@ Modification History:
 				return getExtensionsPath() & "." & arguments.plugin;
 			}
 			
-			// Else return the core path
+			// Else return the core coldbox path
 			return getCorePluginsPath() & "." & arguments.plugin;
 		</cfscript>
 	</cffunction>
 
 	<!--- getPluginCacheKey --->
 	<cffunction name="getPluginCacheKey" output="false" access="private" returntype="string" hint="Get the plugin Cache Key">
-		<cfargument name="plugin" required="true" type="string"  hint="The name (classpath) of the plugin to create">
-		<cfargument name="custom" required="true" type="boolean" hint="Custom plugin or coldbox plugin">
+		<cfargument name="plugin" type="any"     required="true"  hint="The name (classpath) of the plugin to create">
+		<cfargument name="custom" type="boolean" required="true"  hint="Custom plugin or coldbox plugin">
+		<cfargument name="module" type="any" 	 required="false" default="" hint="The module to retrieve the plugin from"/>
 		<cfscript>
 			var pluginKey = getColdboxOCM().PLUGIN_CACHEKEY_PREFIX & arguments.plugin;
 			
+			// A module Plugin
+			if( len(arguments.module) ){
+				return getColdboxOCM().CUSTOMPLUGIN_CACHEKEY_PREFIX & arguments.module & ":" & arguments.plugin;
+			}
+			
 			// Differentiate a Custom PluginKey
 			if ( arguments.custom ){
-				pluginKey = getColdboxOCM().CUSTOMPLUGIN_CACHEKEY_PREFIX & arguments.plugin;
+				return getColdboxOCM().CUSTOMPLUGIN_CACHEKEY_PREFIX & arguments.plugin;
 			}
 			
 			return pluginKey;

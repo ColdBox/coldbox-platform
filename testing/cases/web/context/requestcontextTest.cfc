@@ -13,9 +13,14 @@
 			props.isSES = false;
 			props.sesBaseURL = "http://jfetmac/applications/coldbox/testharness/index.cfm";
 			props.registeredLayouts = structnew();
+			props.modules = {
+				test1 = {
+					mapping = "/coldbox/testharness"
+				}
+			};
 			
 			/* Init it */
-			oRC.init(structnew(),structnew(),props);
+			oRC.init(props);
 		</cfscript>
 	</cffunction>
 	
@@ -180,8 +185,8 @@
 			event.clearCollection();
 			
 			event.setView(view, true);
-			assertEquals( view, event.getCurrentView() );
-			assertEquals( '', event.getCurrentLayout() );
+			assertEquals(view, event.getCurrentView() );
+			assertEquals('', event.getCurrentLayout() );
 			
 		</cfscript>
 	</cffunction>
@@ -496,6 +501,36 @@
 			assertFalse( event.isNoExecution() );
 			event.noExecution();
 			assertTrue( event.isNoExecution() );
+			
+		</cfscript>
+	</cffunction>
+	
+	<cffunction name="testCurrentModule" access="public"  returntype="void" output="false">
+		<cfscript>
+			var event = getRequestContext();
+			
+			event.setValue("event","myModule:test.home");
+			
+			//debug(event.getCurrentEVent());
+			assertEquals("myModule", event.getCurrentModule());
+			
+			event.setValue("event","test.home");
+			assertEquals("", event.getCurrentModule());
+			
+		</cfscript>
+	</cffunction>
+	
+	
+	<cffunction name="testModuleRoot" access="public"  returntype="void" output="false">
+		<cfscript>
+			var event = getRequestContext();
+			
+			
+			//debug(event.getCurrentEVent());
+			assertEquals("", event.getmoduleRoot());
+			event.setValue("event","test1:test.home");
+			assertEquals(props.modules.test1.mapping, event.getmoduleRoot());
+			
 			
 		</cfscript>
 	</cffunction>

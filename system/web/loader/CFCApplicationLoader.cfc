@@ -73,8 +73,8 @@ Loads a coldbox xml configuration file
 		oConfig = createObject("component", configCreatePath);
 		
 		//Decorate It
-		oConfig.injectPropertyMixin = variables.injectPropertyMixin;
-		oConfig.getPropertyMixin 	= variables.getPropertyMixin;
+		oConfig.injectPropertyMixin = getUtil().injectPropertyMixin;
+		oConfig.getPropertyMixin 	= getUtil().getPropertyMixin;
 		
 		//MixIn Variables
 		oConfig.injectPropertyMixin("controller",getController());
@@ -256,6 +256,12 @@ Loads a coldbox xml configuration file
 			if( not structKeyExists(configStruct, "ColdBoxExtensionsLocation") OR not len(configStruct.ColdBoxExtensionsLocation) ){
 				configStruct["ColdBoxExtensionsLocation"] = fwSettingsStruct.ColdBoxExtensionsLocation;
 			}
+			
+			//Modules
+			if( not structKeyExists(configStruct,"ModulesLocation") ){
+				configStruct.ModulesLocation = "";
+			}
+			configStruct.modules = structnew();
 		</cfscript>
 	</cffunction>
 	
@@ -288,6 +294,7 @@ Loads a coldbox xml configuration file
 			if( structKeyExists(conventions,"viewsLocation") ){ fwSettingsStruct["ViewsConvention"] = trim(conventions.viewsLocation); }
 			if( structKeyExists(conventions,"eventAction") ){ fwSettingsStruct["eventAction"] = trim(conventions.eventAction); }
 			if( structKeyExists(conventions,"modelsLocation") ){ fwSettingsStruct["ModelsConvention"] = trim(conventions.modelsLocation); }
+			if( structKeyExists(conventions,"modulesLocation") ){ fwSettingsStruct["ModulesConvention"] = trim(conventions.modulesLocation); }
 		</cfscript>
 	</cffunction>
 
@@ -420,6 +427,24 @@ Loads a coldbox xml configuration file
 			if( len(configStruct["HandlersExternalLocation"]) ){
 				//Expand the external location to get a registration path
 				configStruct["HandlersExternalLocationPath"] = ExpandPath("/" & replace(configStruct["HandlersExternalLocation"],".","/","all"));
+			}
+			
+			//Configure the modules locations if not set already on config.
+			if( NOT len(configStruct.ModulesLocation) ){
+				if( len(configStruct.AppMapping) ){
+					configStruct.ModulesLocation 		= "/#configStruct.AppMapping#/#fwSettingsStruct.ModulesConvention#";
+					configStruct.ModulesInvocationPath	= appMappingAsDots & ".#reReplace(fwSettingsStruct.ModulesConvention,"(/|\\)",".","all")#";
+				}
+				else{
+					configStruct.ModulesLocation 		= "/#fwSettingsStruct.ModulesConvention#";
+					configStruct.ModulesInvocationPath 	= reReplace(fwSettingsStruct.ModulesConvention,"(/|\\)",".","all");
+				}
+				configStruct.ModulesPath = fwSettingsStruct.ApplicationPath & fwSettingsStruct.ModulesConvention;
+			}
+			else{
+				//Configure using the set mapping in the config
+				configStruct.ModulesPath 			= expandPath(configStruct.ModulesLocation);
+				configStruct.ModulesInvocationPath 	= reReplace(reReplace(configStruct.ModulesLocation,"^/",""),"(/|\\)",".","all");
 			}
 		</cfscript>
 	</cffunction>
@@ -739,6 +764,8 @@ Loads a coldbox xml configuration file
 			configStruct.debuggerSettings.expandedCachePanel 			= fwSettings.expandedCachePanel;
 			configStruct.debuggerSettings.showRCPanel 					= fwSettings.showRCPanel;
 			configStruct.debuggerSettings.expandedRCPanel				= fwSettings.expandedRCPanel;
+			configStruct.debuggerSettings.showModulesPanel 				= fwSettings.showModulesPanel;
+			configStruct.debuggerSettings.expandedModulesPanel			= fwSettings.expandedModulesPanel;
 			
 			//append settings
 			structAppend(configStruct.debuggerSettings, debugger, true);
@@ -801,37 +828,6 @@ Loads a coldbox xml configuration file
 	</cffunction>
 
 <!------------------------------------------- PRIVATE ------------------------------------------>
-	
-	<!--- mixin --->
-	<cffunction name="injectPropertyMixin" hint="injects a property into the passed scope" access="private" returntype="void" output="false">
-		<!--- ************************************************************* --->
-		<cfargument name="propertyName" 	type="string" 	required="true" hint="The name of the property to inject."/>
-		<cfargument name="propertyValue" 	type="any" 		required="true" hint="The value of the property to inject"/>
-		<cfargument name="scope" 			type="string" 	required="false" default="variables" hint="The scope to which inject the property to."/>
-		<!--- ************************************************************* --->
-		<cfscript>
-			"#arguments.scope#.#arguments.propertyName#" = arguments.propertyValue;
-		</cfscript>
-	</cffunction>
-
-	<!--- mixin --->
-	<cffunction name="getPropertyMixin" hint="gets a property" access="private" returntype="any" output="false">
-		<!--- ************************************************************* --->
-		<cfargument name="name" 	type="string" 	required="true" hint="The name of the property to inject."/>
-		<cfargument name="scope" 	type="string" 	required="false" default="variables" hint="The scope to which inject the property to."/>
-		<cfargument name="default"  type="any"      required="false" hint="Default value to return"/>
-		<!--- ************************************************************* --->
-		<cfscript>
-			var thisScope = variables;
-			if( arguments.scope eq "this"){ thisScope = this; }
-			
-			if( NOT structKeyExists(thisScope,arguments.name) AND structKeyExists(arguments,"default")){
-				return arguments.default;
-			}
-			
-			return thisScope[arguments.name];
-		</cfscript>
-	</cffunction>
 	
 	<cffunction name="detectEnvironment" access="private" returntype="void" hint="Detect the running environment and return the name" output="false" >
 		<cfargument name="oConfig" 		type="any" 	    required="true" hint="The config object"/>

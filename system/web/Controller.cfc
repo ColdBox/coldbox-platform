@@ -18,7 +18,7 @@ Only one instance of a specific ColdBox application exists.
 
 	<cfscript>
 		instance = structnew();
-		services = structnew();
+		services = createObject("java","java.util.LinkedHashMap").init(7);
 	</cfscript>
 
 	<cffunction name="init" returntype="coldbox.system.web.Controller" access="public" hint="Constructor" output="false">
@@ -46,9 +46,13 @@ Only one instance of a specific ColdBox application exists.
 			setLoaderService( CreateObject("component", "coldbox.system.services.LoaderService").init(this) );
 			setRequestService( CreateObject("component","coldbox.system.services.RequestService").init(this) );
 			setDebuggerService( CreateObject("component","coldbox.system.services.DebuggerService").init(this) );
-			setPluginService( CreateObject("component","coldbox.system.services.PluginService").init(this) );
-			setInterceptorService( CreateObject("component", "coldbox.system.services.InterceptorService").init(this) );
 			setHandlerService( CreateObject("component", "coldbox.system.services.HandlerService").init(this) );
+			setPluginService( CreateObject("component","coldbox.system.services.PluginService").init(this) );
+			// Nasty cf7, once you die this goes out. Modules are cf8 only and above.
+			if ( instance.CFMLEngine.isMT() ){
+				setModuleService( CreateObject("component", "coldbox.system.services.ModuleService").init(this) );
+			}
+			setInterceptorService( CreateObject("component", "coldbox.system.services.InterceptorService").init(this) );
 			
 			// LogBox Default Configuration & Creation
 			setLogBox(getLoaderService().createLogBox());
@@ -116,6 +120,15 @@ Only one instance of a specific ColdBox application exists.
 	<cffunction name="setLoaderService" access="public" output="false" returntype="void" hint="Set LoaderService">
 		<cfargument name="LoaderService" type="any" required="true"/>
 		<cfset services.LoaderService = arguments.LoaderService/>
+	</cffunction>
+	
+	<!--- Module Service --->
+	<cffunction name="getModuleService" access="public" returntype="any" output="false" hint="Get ModuleService: coldbox.system.services.ModuleService">
+		<cfreturn services.ModuleService>
+	</cffunction>
+	<cffunction name="setModuleService" access="public" returntype="void" output="false" hint="Set ModuleService">
+		<cfargument name="ModuleService" type="any" required="true">
+		<cfset services.ModuleService = arguments.ModuleService>
 	</cffunction>
 	
 	<!--- Exception Service --->
@@ -301,16 +314,17 @@ Only one instance of a specific ColdBox application exists.
 
 	<!--- Plugin Factories --->
 	<cffunction name="getPlugin" access="Public" returntype="any" hint="I am the Plugin cfc object factory." output="false">
-		<cfargument name="plugin" 		type="string"  hint="The Plugin object's name to instantiate" >
+		<cfargument name="plugin" 		type="any"     required="true"  hint="The Plugin object's name to instantiate" >
 		<cfargument name="customPlugin" type="boolean" required="false" default="false" hint="Used internally to create custom plugins.">
 		<cfargument name="newInstance"  type="boolean" required="false" default="false" hint="If true, it will create and return a new plugin. No caching or persistance.">
+		<cfargument name="module" 		type="any" 	   required="false" default="" hint="The module to retrieve the plugin from"/>
 		<!--- ************************************************************* --->
 		<cfscript>
 		if ( arguments.newInstance ){
-			return getPluginService().new(arguments.plugin,arguments.customPlugin);
+			return getPluginService().new(arguments.plugin,arguments.customPlugin,arguments.module);
 		}
 		else{
-			return getPluginService().get(arguments.plugin,arguments.customPlugin);
+			return getPluginService().get(arguments.plugin,arguments.customPlugin,arguments.module);
 		}
 		</cfscript>		
 	</cffunction>
@@ -532,7 +546,7 @@ Only one instance of a specific ColdBox application exists.
 				else
 					loc.tHash 	= debuggerService.timerStart("invoking runEvent [#arguments.event#]");
 				
-				if( ehBean.getIsMissingAction() ){
+				if( ehBean.isMissingAction() ){
 					loc.results		= oHandler.onMissingAction(oRequestContext,ehBean.getMissingAction());
 				}
 				else{

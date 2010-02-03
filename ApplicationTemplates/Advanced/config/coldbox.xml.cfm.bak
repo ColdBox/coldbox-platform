@@ -159,6 +159,7 @@ http://ortus.svnrepository.com/coldbox/trac.cgi/wiki/cbConfigGuide
 		<InfoPanel 		show="true" expanded="true" />
 		<CachePanel 	show="true" expanded="false" />
 		<RCPanel		show="true" expanded="false" />
+		<ModulesPanel	show="true" expanded="false" />
 	</DebuggerSettings>	
 	
 	-->
