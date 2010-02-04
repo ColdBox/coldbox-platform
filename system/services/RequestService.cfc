@@ -120,11 +120,11 @@ Modification History:
 		<cfargument name="context" 			required="true"  type="any" hint="The request context to test for event caching.">
 		<!--- ************************************************************* --->
 		<cfscript>
-			var eventCacheKey = "";
+			var eventCacheKey   = "";
 			var oEventURLFacade = controller.getColdboxOCM().getEventURLFacade();
 			var eventDictionary = 0;
-			var oOCM = controller.getColdboxOCM();
-			var currentEvent = arguments.context.getCurrentEvent();
+			var oOCM 		    = controller.getColdboxOCM();
+			var currentEvent    = arguments.context.getCurrentEvent();
 			
 			// Are we using event caching?
 			if ( controller.getSetting("EventCaching") ){
@@ -135,7 +135,7 @@ Modification History:
 				eventDictionary = controller.getHandlerService().getEventMetaDataEntry(currentEvent);	
 				
 				// Verify that it is cacheable, else quit, no need for testing anymore.
-				if( not eventDictionary.cacheable ){
+				if( NOT eventDictionary.cacheable ){
 					return;	
 				}
 				
@@ -145,14 +145,13 @@ Modification History:
 															  targetContext=arguments.context);
 				// Check for Event Cache Purge
 				if ( Context.valueExists("fwCache") ){
-					/* Clear the key from the cache */
+					// Clear the key from the cache
 					oOCM.clearKey( eventCacheKey );
+					return;
 				}
-				// Determine if this event has been cached
-				else if ( oOCM.lookup(eventCacheKey) ){
-					// Event has been found, flag it so we can render it
-					arguments.context.setEventCacheableEntry(eventCacheKey);
-				}//end else no purging
+				
+				// Event has been found, flag it so we can render it from cache if it still survives
+				arguments.context.setEventCacheableEntry(eventCacheKey);
 				
 			}//If using event caching.
 		</cfscript>

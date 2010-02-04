@@ -71,11 +71,12 @@ Description :
 			var oRequestContext = arguments.RequestContext;
 			var cacheKey = getColdboxOCM().HANDLER_CACHEKEY_PREFIX & arguments.ehBean.getRunnable();
 			var eventCacheKey = "";
+			var eventCachingData = structnew();
 			var oEventURLFacade = getController().getColdboxOCM().getEventURLFacade();
 			var handlerDictionaryEntry = "";
 			var eventDictionaryEntry = "";
 			var onInvalidEvent = controller.getSetting("onInvalidEvent");
-			
+						
 			/* ::::::::::::::::::::::::::::::::::::::::: HANDLERS CACHING :::::::::::::::::::::::::::::::::::::::::::: */
 			// Are we caching handlers?
 			if ( controller.getSetting("HandlerCaching") ){
@@ -139,12 +140,18 @@ Description :
 				
 				// Do we need to cache this event's output after it executes??
 				if ( eventDictionaryEntry.cacheable ){
+					// Create caching data structure according to MD.
+					structAppend(eventCachingData,eventDictionaryEntry,true);
+					
 					// Create the Cache Key to save
-					eventDictionaryEntry.cacheKey = oEventURLFacade.buildEventKey(keySuffix=eventDictionaryEntry.suffix,
-																				  targetEvent=ehBean.getFullEvent(),
-																				  targetContext=oRequestContext);
+					eventCachingData.cacheKey = oEventURLFacade.buildEventKey(keySuffix=eventCachingData.suffix,
+																		      targetEvent=ehBean.getFullEvent(),
+																		      targetContext=oRequestContext);
+					
+					
 					// Event is cacheable and we need to flag it so the Renderer caches it
-					oRequestContext.setEventCacheableEntry(eventDictionaryEntry);
+					oRequestContext.setEventCacheableEntry(eventCachingData);
+					
 				}//end if md says that this event is cacheable
 				
 			}//end if event caching.

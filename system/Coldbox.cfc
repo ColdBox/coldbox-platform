@@ -190,7 +190,7 @@ Description :
 			</cfif>
 			
 			<!--- Before Any Execution, do we have cached content to deliver --->
-			<cfif event.isEventCacheable() and cbController.getColdboxOCM().lookup(event.getEventCacheableEntry())>
+			<cfif event.isEventCacheable() AND cbController.getColdboxOCM().lookup(event.getEventCacheableEntry())>
 				<cfset renderedContent = cbController.getColdboxOCM().get(event.getEventCacheableEntry())>
 				<cfoutput>#renderedContent#</cfoutput>
 			<cfelse>
@@ -225,9 +225,9 @@ Description :
 					<!--- Replace back Content --->
 					<cfset renderedContent = interceptorData.renderedContent>
 					
-					<!--- Check if caching the content --->
+					<!--- Check if caching the event, this is a cacheable event? --->
 					<cfif event.isEventCacheable()>
-						<cfset eventCacheEntry = Event.getEventCacheableEntry()>
+						<cfset eventCacheEntry = event.getEventCacheableEntry()>
 						<!--- Cache the content of the event --->
 						<cfset cbController.getColdboxOCM().set(eventCacheEntry.cacheKey,
 																renderedContent,
