@@ -43,11 +43,11 @@ Description :
 			// Get searchable index
 			try{
 				LFUIndex = structSort(poolMD,"numeric", "ASC", "hits");
+				indexLength = ArrayLen(LFUIndex);
 			}
 			catch(Any e){
-				$log("error","Error sorting metadata pool. #e.message# #e.detail#. Serialized Pool: #poolMD.toString()#");
+				$log("error","Error sorting metadata pool. #e.message# #e.detail#. Serialized Pool: #poolMD.toString()#. Serialized LFUIndex: #LFUIndex.toString()#");
 			}
-			indexLength = ArrayLen(LFUIndex);
 			
 			//Loop Through Metadata
 			for (x=1; x lte indexLength; x=x+1){

@@ -41,12 +41,12 @@ Description :
 			
 			// Get searchable index
 			try{
-				LRUIndex = structSort(poolMD,"numeric", "ASC", "LastAccesed");
+				LRUIndex    = structSort(poolMD,"numeric", "ASC", "LastAccesed");
+				indexLength = ArrayLen(LRUIndex);
 			}
 			catch(Any e){
-				$log("error","Error sorting metadata pool. #e.message# #e.detail#. Serialized Pool: #poolMD.toString()#");
+				$log("error","Error sorting metadata pool. #e.message# #e.detail#. Serialized Pool: #poolMD.toString()#. Serialized LRUIndex: #LRUIndex.toString()#");
 			}
-			indexLength = ArrayLen(LRUIndex);
 			
 			//Loop Through Metadata
 			for (x=1; x lte indexLength; x=x+1){

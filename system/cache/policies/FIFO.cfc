@@ -41,12 +41,12 @@ Description :
 			
 			// Get searchable index
 			try{
-				FIFOIndex = structSort(poolMD,"numeric", "ASC", "Created");
+				FIFOIndex   = structSort(poolMD,"numeric", "ASC", "Created");
+				indexLength = ArrayLen(FIFOIndex);
 			}
 			catch(Any e){
-				$log("error","Error sorting metadata pool. #e.message# #e.detail#. Serialized Pool: #poolMD.toString()#");
+				$log("error","Error sorting metadata pool. #e.message# #e.detail#. Serialized Pool: #poolMD.toString()#. Serialized FIFOIndex: #FIFOIndex.toString()#");
 			}
-			indexLength = ArrayLen(FIFOIndex);
 			
 			//Loop Through Metadata
 			for (x=1; x lte indexLength; x=x+1){

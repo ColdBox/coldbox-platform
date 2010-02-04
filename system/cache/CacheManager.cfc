@@ -405,7 +405,6 @@ Dependencies :
 		<!--- ************************************************************* --->
 		<cfargument name="keySnippet"  	type="string"  required="true"  hint="the cache key snippet to use">
 		<cfargument name="regex" 		type="boolean" required="false" default="false" hint="Use regex or not">
-		<cfargument name="async" 		type="boolean" required="false" default="true" hint="Run asynchronously or not"/>
 		<!--- ************************************************************* --->
 		<cfscript>
 			var poolKeys = listSort(getPoolKeys(),"textnocase");
@@ -439,7 +438,6 @@ Dependencies :
 		<!--- ************************************************************* --->
 		<cfargument name="eventsnippet" type="string" 	required="true" hint="The event snippet to clear on. Can be partial or full">
 		<cfargument name="queryString" 	type="string" 	required="false" default="" hint="If passed in, it will create a unique hash out of it. For purging purposes"/>
-		<cfargument name="async" 		type="boolean"  required="false" default="true" hint="Run asynchronously or not"/>
 		<!--- ************************************************************* --->
 		<cfscript>
 			//.*- = the cache suffix and appendages for regex to match
@@ -451,20 +449,17 @@ Dependencies :
 			}
 			
 			// Clear All Events by Criteria
-			clearByKeySnippet(keySnippet=cacheKey,regex=true,async=false);
+			clearByKeySnippet(keySnippet=cacheKey,regex=true);
 		</cfscript>
 	</cffunction>
 	
 	<!--- Clear All the Events form the cache --->
 	<cffunction name="clearAllEvents" access="public" output="false" returntype="void" hint="Clears all events from the cache.">
-		<!--- ************************************************************* --->
-		<cfargument name="async" 		type="boolean"  required="false" default="true" hint="Run asynchronously or not"/>
-		<!--- ************************************************************* --->
 		<cfscript>
 			var cacheKey = this.EVENT_CACHEKEY_PREFIX;
 			
 			// Clear All Events
-			clearByKeySnippet(keySnippet=cacheKey,regex=false,async=false);
+			clearByKeySnippet(keySnippet=cacheKey,regex=false);
 		</cfscript>
 	</cffunction>
 
@@ -472,26 +467,22 @@ Dependencies :
 	<cffunction name="clearView" output="false" access="public" returntype="void" hint="Clears all view name permutations from the cache according to the view name.">
 		<!--- ************************************************************* --->
 		<cfargument name="viewSnippet"  required="true" type="string" hint="The view name snippet to purge from the cache">
-		<cfargument name="async" 		type="boolean"  required="false" default="true" hint="Run asynchronously or not"/>
 		<!--- ************************************************************* --->
 		<cfscript>
 			var cacheKey = this.VIEW_CACHEKEY_PREFIX & arguments.viewSnippet;
 			
 			// Clear All View snippets
-			clearByKeySnippet(keySnippet=cacheKey,regex=false,async=false);
+			clearByKeySnippet(keySnippet=cacheKey,regex=false);
 		</cfscript>
 	</cffunction>
 
 	<!--- Clear All The Views from the Cache. --->
 	<cffunction name="clearAllViews" access="public" output="false" returntype="void" hint="Clears all views from the cache.">
-		<!--- ************************************************************* --->
-		<cfargument name="async" 		type="boolean"  required="false" default="true" hint="Run asynchronously or not"/>
-		<!--- ************************************************************* --->
 		<cfscript>
 			var cacheKey = this.VIEW_CACHEKEY_PREFIX;
 			
 			// Clear All the views
-			clearByKeySnippet(keySnippet=cacheKey,regex=false,async=false);
+			clearByKeySnippet(keySnippet=cacheKey,regex=false);
 		</cfscript>
 	</cffunction>
 
@@ -605,11 +596,8 @@ Dependencies :
 	
 	<!--- Expire All Objects --->
 	<cffunction name="expireAll" access="public" returntype="void" hint="Expire All Objects. Use this instead of clear() from within handlers or any cached object, this sets the metadata for the objects to expire in the next request. Note that this is not an inmmediate expiration. Clear should only be used from outside a cached object" output="false" >
-		<!--- ************************************************************* --->
-		<cfargument name="async" 		type="boolean" required="false" default="true" hint="Run asynchronously or not"/>
-		<!--- ************************************************************* --->
 		<cfscript>
-			expireByKeySnippet(keySnippet=".*",regex=true,async=false);
+			expireByKeySnippet(keySnippet=".*",regex=true);
 		</cfscript>
 	</cffunction>
 	
@@ -617,7 +605,6 @@ Dependencies :
 	<cffunction name="expireKey" access="public" returntype="void" hint="Expire an Object. Use this instead of clearKey() from within handlers or any cached object, this sets the metadata for the objects to expire in the next request. Note that this is not an inmmediate expiration. Clear should only be used from outside a cached object" output="false" >
 		<!--- ************************************************************* --->
 		<cfargument name="objectKey" type="string" required="true">
-		<cfargument name="async" 	 type="boolean" required="false" default="true" hint="Run asynchronously or not"/>
 		<!--- ************************************************************* --->
 		<cfscript>
 			getObjectPool().expireObject(lcase(trim(arguments.objectKey)));
@@ -629,7 +616,6 @@ Dependencies :
 		<!--- ************************************************************* --->
 		<cfargument name="keySnippet" type="string"  required="true" hint="The key snippet to use">
 		<cfargument name="regex" 	  type="boolean" required="false" default="false" hint="Use regex or not">
-		<cfargument name="async" 	  type="boolean" required="false" default="true" hint="Run asynchronously or not"/>
 		<!--- ************************************************************* --->
 		<cfscript>
 			var keyIndex = 1;

@@ -9,12 +9,8 @@ Date        :	January 18, 2007
 Description :
 	The multi-threaded cache manager.
 
-Modification History:
-01/18/2007 - Created
-
 ----------------------------------------------------------------------->
-<cfcomponent name="MTCacheManager" 
-			 hint="The multi-threaded cache manager." 
+<cfcomponent hint="The multi-threaded cache manager." 
 			 extends="coldbox.system.cache.CacheManager" 
 			 output="false">
 
@@ -59,96 +55,6 @@ Modification History:
 		</cfif>
 	</cffunction>
 	
-	<!--- Expire an Object --->
-	<cffunction name="expireKey" access="public" returntype="void" hint="Expire an Object. Use this instead of clearKey() from within handlers or any cached object, this sets the metadata for the objects to expire in the next request. Note that this is not an inmmediate expiration. Clear should only be used from outside a cached object" output="false" >
-		<!--- ************************************************************* --->
-		<cfargument name="objectKey" type="string" required="true">
-		<cfargument name="async" 	 type="boolean" required="false" default="true" hint="Run asynchronously or not"/>
-		<!--- ************************************************************* --->
-		<cfset var ThreadName = "coldbox.cache.expireKey_#replace(instance.uuid.randomUUID(),"-","","all")#">
-		<cfif arguments.async>
-			<cfthread name="#threadName#"
-					  objectKey="#arguments.objectKey#">  
-				<cfscript>  
-					super.expireKey(attributes.objectKey); 
-				</cfscript>
-			</cfthread>
-		<cfelse>
-			<cfscript>
-				super.expireKey(argumentCollection=arguments);
-			</cfscript>
-		</cfif>
-	</cffunction>
-	
-	<!--- Expire an Object --->
-	<cffunction name="expireByKeySnippet" access="public" returntype="void" hint="Same as expireKey but can touch multiple objects depending on the keysnippet that is sent in." output="false" >
-		<!--- ************************************************************* --->
-		<cfargument name="keySnippet" type="string" required="true" hint="The key snippet to use">
-		<cfargument name="regex" 	  type="boolean" required="false" default="false" hint="Use regex or not">
-		<cfargument name="async" 	 type="boolean" required="false" default="true" hint="Run asynchronously or not"/>
-		<!--- ************************************************************* --->
-		<cfset var ThreadName = "coldbox.cache.expireByKeySnippet_#replace(instance.uuid.randomUUID(),"-","","all")#">
-		<cfif arguments.async>
-			<cfthread name="#threadName#"
-					  keySnippet="#arguments.keySnippet#"
-					  regex="#arguments.regex#">  
-				<cfscript>  
-					super.expireByKeySnippet(attributes.keySnippet,attributes.regex); 
-				</cfscript>
-			</cfthread>
-		<cfelse>
-			<cfscript>
-				super.expireByKeySnippet(argumentCollection=arguments);
-			</cfscript>
-		</cfif>
-	</cffunction>
-	
-	<!--- Clear by Key Snippet --->
-	<cffunction name="clearByKeySnippet" access="public" returntype="void" hint="Clears keys using the passed in object key snippet" output="false" >
-		<!--- ************************************************************* --->
-		<cfargument name="keySnippet" 	type="string" 	required="true" hint="The key snippet to use to clear keys. It matches using findnocase">
-		<cfargument name="regex" 		type="boolean"  required="false" default="false" hint="Use regex or not">
-		<cfargument name="async" 		type="boolean"  required="false" default="true" hint="Run asynchronously or not, defaults to true"/>
-		<!--- ************************************************************* --->
-		<cfset var ThreadName = "coldbox.cache.clearByKeySnippet_#replace(instance.uuid.randomUUID(),"-","","all")#">
-		<cfif arguments.async>
-			<cfthread name="#threadName#"
-					  keySnippet="#arguments.keySnippet#"
-					  regex="#arguments.regex#">  
-				<cfscript>  
-					super.clearByKeySnippet(attributes.keySnippet,attributes.regex); 
-				</cfscript>
-			</cfthread>
-		<cfelse>
-			<cfscript>
-				super.clearByKeySnippet(argumentCollection=arguments);
-			</cfscript>
-		</cfif>
-	</cffunction>
-	
-	<!--- Clear an event --->
-	<cffunction name="clearEvent" access="public" output="false" returntype="void" hint="Clears all the event permuations from the cache.">
-		<!--- ************************************************************* --->
-		<cfargument name="eventsnippet" type="string" required="true" hint="The event snippet to clear on. Can be partial or full">
-		<cfargument name="queryString" 	type="string" 	required="false" default="" hint="If passed in, it will create a unique hash out of it. For purging purposes"/>
-		<cfargument name="async" 		type="boolean"  required="false" default="true" hint="Run asynchronously or not"/>
-		<!--- ************************************************************* --->
-		<cfset var ThreadName = "coldbox.cache.clearEvent_#replace(instance.uuid.randomUUID(),"-","","all")#">
-		<cfif arguments.async>
-			<cfthread name="#threadName#"
-					  eventsnippet="#arguments.eventsnippet#"
-					  queryString="#arguments.queryString#">  
-				<cfscript>  
-					super.clearEvent(attributes.eventsnippet,attributes.queryString); 
-				</cfscript>
-			</cfthread>
-		<cfelse>
-			<cfscript>
-				super.clearEvent(argumentCollection=arguments);
-			</cfscript>
-		</cfif>
-	</cffunction>
-	
 	<!--- Clear All Events --->
 	<cffunction name="clearAllEvents" access="public" output="false" returntype="void" hint="Clears all events from the cache.">
 		<!--- ************************************************************* --->
@@ -164,27 +70,6 @@ Modification History:
 		<cfelse>
 			<cfscript>  
 				super.clearAllEvents();  
-			</cfscript>
-		</cfif>
-	</cffunction>
-	
-	<!--- Clear a view --->
-	<cffunction name="clearView" output="false" access="public" returntype="void" hint="Clears all view name permutations from the cache according to the view name.">
-		<!--- ************************************************************* --->
-		<cfargument name="viewSnippet"  required="true" type="string" hint="The view name snippet to purge from the cache">
-		<cfargument name="async" 		type="boolean"  required="false" default="true" hint="Run asynchronously or not"/>
-		<!--- ************************************************************* --->
-		<cfset var ThreadName = "coldbox.cache.clearView_#replace(instance.uuid.randomUUID(),"-","","all")#">
-		<cfif arguments.async>
-			<cfthread name="#threadName#"
-					  viewSnippet="#arguments.viewSnippet#">  
-				<cfscript>  
-					super.clearView(attributes.viewSnippet); 
-				</cfscript>
-			</cfthread>
-		<cfelse>
-			<cfscript>
-				super.clearView(argumentCollection=arguments);
 			</cfscript>
 		</cfif>
 	</cffunction>
