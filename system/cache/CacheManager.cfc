@@ -453,6 +453,37 @@ Dependencies :
 		</cfscript>
 	</cffunction>
 	
+	<!--- Clear an event Multi --->
+	<cffunction name="clearEventMulti" access="public" output="false" returntype="void" hint="Clears all the event permutations from the cache according to the list of snippets and querystrings. Be careful when using incomplete event name with query strings as partial event names are not guaranteed to match with query string permutations">
+		<!--- ************************************************************* --->
+		<cfargument name="eventsnippets"    type="string"   required="true"  hint="The comma-delimmitted list event snippet to clear on. Can be partial or full">
+		<cfargument name="queryString"      type="string"   required="false" default="" hint="The comma-delimmitted list of queryStrings passed in. If passed in, it will create a unique hash out of it. For purging purposes.  If passed in the list length must be equal to the list length of the event snippets passed in."/>
+		<!--- ************************************************************* --->
+		<cfscript>
+			var regexCacheKey = "";
+			var x 			  = 1;
+			var eventsnippet  = "";
+			var cacheKey	  = "";
+			
+			// Loop on the incoming snippets
+			for(x=1;x lte listLen(arguments.eventsnippets);x=x+1){
+			      //.*- = the cache suffix and appendages for regex to match
+			      cacheKey = this.EVENT_CACHEKEY_PREFIX & replace(listGetAt(arguments.eventsnippets,x),".","\.","all") & "-.*";
+			      //Check if we are purging with query string
+			      if( len(arguments.queryString) neq 0 ){
+			            cacheKey = cacheKey & "-" & getEventURLFacade().buildHash(listGetAt(arguments.queryString,x));
+			      }
+			      regexCacheKey = regexCacheKey & cacheKey;
+			      //check that we aren't at the end of the list, and the | char to the regex as the OR statement
+			      if (x NEQ listLen(arguments.eventsnippets)) {
+			            regexCacheKey = regexCacheKey & "|";
+			      }
+			}
+			// Clear All Events by Criteria
+			clearByKeySnippet(keySnippet=regexCacheKey,regex=true);
+		</cfscript>
+      </cffunction>
+	
 	<!--- Clear All the Events form the cache --->
 	<cffunction name="clearAllEvents" access="public" output="false" returntype="void" hint="Clears all events from the cache.">
 		<cfscript>
