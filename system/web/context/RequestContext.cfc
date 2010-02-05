@@ -591,6 +591,23 @@ Modification History:
 		<cfreturn cgi.REQUEST_METHOD>
 	</cffunction>
 	
+	<!--- getHTTPHeader --->
+	<cffunction name="getHTTPHeader" output="false" access="public" returntype="any" hint="Get a HTTP header">
+		<cfargument name="header"  type="string" required="true"  hint="The header key"/>
+		<cfargument name="default" type="any"    required="false" hint="A default value if the header does not exist"/>
+		<cfscript>
+			var headers = getHttpRequestData().headers;
+			
+			if( structKeyExists(headers, arguments.header) ){
+				return headers[arguments.header];
+			}
+			if( structKeyExists(arguments,"default") ){
+				return arguments.default;
+			}
+			$throw(message="Header #arguments.header# not found in HTTP headers",detail="Headers found: #structKeyList(headers)#",type="RequestContext.InvalidHTTPHeader");
+		</cfscript>
+	</cffunction>
+	
 	<cffunction name="isSSL" access="public" returntype="boolean" hint="Returns boolean result whether current request is in ssl or not" output="false">
 	    <cfscript>
 			if (isBoolean(cgi.server_port_secure) AND cgi.server_port_secure) { return true; }
