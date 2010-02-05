@@ -9,7 +9,7 @@ Date        :	10/10/2007
 Description :
 	This is the main ColdBox handler service.
 ----------------------------------------------------------------------->
-<cfcomponent name="HandlerService" extends="coldbox.system.services.BaseService" hint="This is the main Coldbox Handler service" output="false">
+<cfcomponent extends="coldbox.system.services.BaseService" hint="This is the main Coldbox Handler service" output="false">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
@@ -100,7 +100,7 @@ Description :
 			else{
 				// Create Runnable Object
 				oEventHandler = newHandler(arguments.ehBean.getRunnable());
-				// Save its metadata For event Caching and Aspects
+				// Save its metadata For event Caching and Aspects to work
 				saveHandlermetadata(oEventHandler,cacheKey,true);					
 			}
 			
@@ -131,7 +131,7 @@ Description :
 			if ( controller.getSetting("EventCaching") and ehBean.getFullEvent() eq oRequestContext.getCurrentEvent() ){
 				
 				// Save Event Caching metadata
-				saveEventCachingmetadata(eventUDF=oEventHandler[ehBean.getMethod()],
+				saveEventCachingMetadata(eventUDF=oEventHandler[ehBean.getMethod()],
 										 cacheKey=ehBean.getFullEvent(),
 										 cacheKeySuffix=oEventHandler.EVENT_CACHE_SUFFIX);
 				
@@ -367,7 +367,7 @@ Description :
 		<cfset instance.EventCacheDictionary = arguments.EventCacheDictionary>
 	</cffunction>
 	
-	<cffunction name="getEventmetadataEntry" access="public" returntype="struct" hint="Get an event string's metadata entry" output="false" >
+	<cffunction name="getEventMetadataEntry" access="public" returntype="struct" hint="Get an event string's metadata entry" output="false" >
 		<!--- ************************************************************* --->
 		<cfargument name="targetEvent" required="true" type="any" hint="The target event">
 		<!--- ************************************************************* --->
@@ -428,11 +428,11 @@ Description :
 		<cfscript>
 			var mdEntry = structNew();
 			
-			mdEntry.cacheable = false;
-			mdEntry.timeout = "";
+			mdEntry.cacheable 		  = false;
+			mdEntry.timeout 		  = "";
 			mdEntry.lastAccessTimeout = "";
-			mdEntry.cacheKey = "";
-			mdEntry.suffix = "";
+			mdEntry.cacheKey  		  = "";
+			mdEntry.suffix 			  = "";
 			
 			return mdEntry;
 		</cfscript>
@@ -446,7 +446,7 @@ Description :
 		<cfargument name="cacheKeySuffix"   type="any" required="true" hint="The event cache key suffix" />
 		<!--- ************************************************************* --->
 		<cfset var metadata = 0>
-		<cfset var mdEntry = 0>
+		<cfset var mdEntry  = 0>
 		
 		<cfif not getEventCacheDictionary().keyExists(arguments.cacheKey)>
 			<cflock name="handlerservice.eventcachingmd.#arguments.cacheKey#" type="exclusive" throwontimeout="true" timeout="10">
@@ -457,12 +457,14 @@ Description :
 				metadata = getmetadata(arguments.eventUDF);
 				// Get New Default MD Entry
 				mdEntry = getNewMDEntry();
+				
 				// By Default, events with no cache flag are set to FALSE
 				if ( not structKeyExists(metadata,"cache") or not isBoolean(metadata["cache"]) ){
 					metadata.cache = false;
 				}
+				
 				// Cache Entries for timeout and last access timeout
-				if ( metadata["cache"] ){
+				if ( metadata.cache ){
 					mdEntry.cacheable = true;
 					// Event Timeout
 					if ( structKeyExists(metadata,"cachetimeout") and metadata.cachetimeout neq 0 ){
@@ -473,18 +475,10 @@ Description :
 						mdEntry.lastAccessTimeout = metadata["cacheLastAccessTimeout"];
 					}
 				} //end cache metadata is true
-				else{
-					mdEntry.cacheable = false;
-				}
-				
-				// Test for singleton parameters
-				if( structKeyExists(metadata,"singleton") ){
-					mdEntry.cacheable = true;
-					mdEntry.timeout = 0;
-				}
 				
 				// Handler Event Cache Key Suffix
 				mdEntry.suffix = arguments.cacheKeySuffix;
+				
 				// Save md Entry in dictionary
 				getEventCacheDictionary().setKey(cacheKey,mdEntry);
 			}//end of md cache dictionary.
@@ -494,14 +488,14 @@ Description :
 	</cffunction>
 	
 	<!--- Save Handler metadata --->
-	<cffunction name="saveHandlermetadata" access="private" returntype="void" hint="Save a handler's metadata in the dictionary">
+	<cffunction name="saveHandlerMetadata" access="private" returntype="void" hint="Save a handler's persistence metadata in the dictionary">
 		<!--- ************************************************************* --->
 		<cfargument name="targetHandler" type="any" 	required="true" hint="The handler target" />
 		<cfargument name="cacheKey"      type="any" 	required="true" hint="The handler cache key" />
 		<cfargument name="force" 		 type="boolean" required="true" default="false" hint="Force the md lookup. Most likely used when controller caching is off"/>
 		<!--- ************************************************************* --->
 		<cfset var metadata = 0>
-		<cfset var mdEntry = 0>
+		<cfset var mdEntry  = 0>
 		
 		<!--- Check if md already in our data dictionary --->
 		<cfif NOT getHandlerCacheDictionary().keyExists(arguments.cacheKey) OR arguments.force>
@@ -515,13 +509,12 @@ Description :
 				mdEntry = getNewMDEntry();
 				
 				// By Default, handlers with no cache flag are set to true
-				if ( not structKeyExists(metadata,"cache") or not isBoolean(metadata["cache"]) ){
+				if ( NOT structKeyExists(metadata,"cache") or NOT isBoolean(metadata["cache"]) ){
 					metadata.cache = true;
 				}
 				
 				// Cache Entries for timeout and last access timeout
-				mdEntry.cacheable = false;
-				if ( metadata["cache"] ){
+				if ( metadata.cache ){
 					mdEntry.cacheable = true;
 					if ( structKeyExists(metadata,"cachetimeout") ){
 						mdEntry.timeout = metadata["cachetimeout"];
@@ -530,6 +523,13 @@ Description :
 						mdEntry.lastAccessTimeout = metadata["cacheLastAccessTimeout"];
 					}
 				} // end we cached.
+				
+				// Test for singleton parameters
+				if( structKeyExists(metadata,"singleton") ){
+					mdEntry.cacheable = true;
+					mdEntry.timeout   = 0;
+				}
+				
 				
 				//TODO: Add function md entries here too. Maybe create a handlerMD object that can store
 				// Persistence, event caching and more. Then we can use that easily for next requests.
