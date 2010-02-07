@@ -113,6 +113,7 @@
 		<InfoPanel 		show="false" expanded="true" />
 		<CachePanel 	show="false" expanded="false" />
 		<RCPanel		show="false" expanded="false" />
+		<ModulesPanel	show="false" expanded="false" />
 	</DebuggerSettings>
 
 	<!--Optional,if blank it will use the CFMX administrator settings.-->
