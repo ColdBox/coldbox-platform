@@ -7,13 +7,11 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 Author 	    :	Luis Majano
 Date        :	January 18, 2007
 Description :
-	This cfc acts as an URL facade for event caching
+	This cfc acts as an URL/FORM facade for event caching
 
-Modification History:
-01/18/2007 - Created
 
 ----------------------------------------------------------------------->
-<cfcomponent name="EventURLFacade" hint="This object acts as an url facade for event caching" output="false">
+<cfcomponent hint="This object acts as an url/form facade for event caching" output="false">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 	
@@ -60,8 +58,8 @@ Modification History:
 				}
 			}
 			
-			// Add incoming event to hash: DEPRECATED
-			//urlCopy[eventName] = arguments.event.getCurrentEvent();
+			// Multi-Host support
+			urlCopy['cgihost'] = cgi.http_host;
 			
 			// Incorporate Routed Structs
 			for( key in routedStruct ){
@@ -82,8 +80,8 @@ Modification History:
 			var myStruct = structnew();
 			var x =1;
 			
-			//add event to structure: DEPRECATED
-			//myStruct[instance.eventName] = arguments.event;
+			// Multi-Host support
+			myStruct['cgihost'] = cgi.http_host;
 			
 			//Build structure from arg list
 			for(x=1;x lte listlen(arguments.args,"&"); x=x+1){
