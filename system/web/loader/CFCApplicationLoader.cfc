@@ -645,17 +645,18 @@ Loads a coldbox xml configuration file
 			
 			//loop over datasources
 			for( key in datasources ){
+				
 				if( NOT structKeyExists(datasources[key],"name") ){
 					getUtil().throwit("This datasource #key# entry's name cannot be blank","","CFCApplicationLoader.DatasourceException");
 				}
 				// defaults
-				if( structKeyExists(datasources[key],"username") ){
+				if( NOT structKeyExists(datasources[key],"username") ){
 					datasources[key].username = "";
 				}
-				if( structKeyExists(datasources[key],"password") ){
+				if( NOT structKeyExists(datasources[key],"password") ){
 					datasources[key].password = "";
 				}
-				if( structKeyExists(datasources[key],"dbType") ){
+				if( NOT structKeyExists(datasources[key],"dbType") ){
 					datasources[key].dbType = "";
 				}
 				// save datasoure definition
