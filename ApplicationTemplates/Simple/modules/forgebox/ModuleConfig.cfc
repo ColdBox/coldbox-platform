@@ -61,12 +61,10 @@ Optional Methods
 	this.layoutParentLookup = true;
 	this.entryPoint			= "forgebox";
 	
-	// Configure the Module
+	/** 
+	* Configure the ForgeBox Module
+	*/
 	function configure(){
-		
-		// Uncomment this for NON SES mode.
-		//this.entryPoint = "forgebox:manager";
-		
 		
 		// SES Routes ORDER MATTERS
 		routes = [
@@ -80,6 +78,15 @@ Optional Methods
 		modelMappings = [
 			{ alias="forgeService@forgeBox", path = "ForgeService" }
 		];
+	}
+	
+	/**
+	* Called when the moduel is activated and application has loaded
+	*/
+	function onLoad(){
+		if( controller.settingExists("sesBaseURL") ){
+			this.entryPoint = "forgebox:manager";
+		}
 	}
 </cfscript>
 </cfcomponent>
