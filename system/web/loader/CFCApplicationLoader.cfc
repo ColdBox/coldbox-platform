@@ -670,19 +670,18 @@ Loads a coldbox xml configuration file
 		<cfargument name="oConfig" 	type="any" 	  required="true" hint="The config object"/>
 		<cfargument name="config" 	type="struct" required="true" hint="The config struct"/>
 		<cfscript>
-			var configStruct = arguments.config;
-			var Collections = createObject("java", "java.util.Collections"); 
-			var	LayoutViewStruct = Collections.synchronizedMap(CreateObject("java","java.util.LinkedHashMap").init());
-			var	LayoutFolderStruct = Collections.synchronizedMap(CreateObject("java","java.util.LinkedHashMap").init());
-			var key = "";
-			var layoutSettings = arguments.oConfig.getPropertyMixin("layoutSettings","variables",structnew());
-			var layouts = arguments.oConfig.getPropertyMixin("layouts","variables",structnew());
-			var i = 1;
+			var configStruct 		= arguments.config;
+			var	LayoutViewStruct 	= CreateObject("java","java.util.LinkedHashMap").init();
+			var	LayoutFolderStruct 	= CreateObject("java","java.util.LinkedHashMap").init();
+			var key 				= "";
+			var layoutSettings 		= arguments.oConfig.getPropertyMixin("layoutSettings","variables",structnew());
+			var layouts 			= arguments.oConfig.getPropertyMixin("layouts","variables",structnew());
+			var i 					= 1;
 			
 			// defaults
-			configStruct.defaultLayout = "";
-			configStruct.defaultView = "";
-			configStruct.registeredLayouts = structnew();
+			configStruct.defaultLayout 		= "";
+			configStruct.defaultView 		= "";
+			configStruct.registeredLayouts  = structnew();
 			
 			// Register layout settings
 			structAppend(configStruct,layoutSettings);
@@ -712,7 +711,7 @@ Loads a coldbox xml configuration file
 			}
 			
 			// Register extra layout/view/folder combos
-			configStruct.ViewLayouts = LayoutViewStruct;
+			configStruct.ViewLayouts   = LayoutViewStruct;
 			configStruct.FolderLayouts = LayoutFolderStruct;
 		</cfscript>
 	</cffunction>
