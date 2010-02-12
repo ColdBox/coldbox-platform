@@ -19,7 +19,16 @@
 				<li><a href="#event.buildLink(handler)#">#handler#</a></li>
 				</cfloop>
 			</ul>
-            <br />
+            
+            <h3>Registered Modules</h3>
+			<p>You can click on the following modules to visit them (If they have an entry point defined)</p>
+			<ul>
+				<cfloop collection="#getSetting("Modules")#" item="module">
+				<li><a href="#event.buildLink(getModuleSettings(module).entryPoint)#">#module#</a></li>
+				</cfloop>
+			</ul>
+           
+           
            <h4>ColdBox URL Actions</h4>
 			<p>ColdBox can use some very important URL actions to interact with your application. You can try them out below:</p>
 				<ol>
