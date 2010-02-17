@@ -139,6 +139,7 @@ I oversee and manage ColdBox modules
 			var y					= 1;
 			var interceptorService  = controller.getInterceptorService();
 			var beanFactory 		= controller.getPlugin("BeanFactory");
+			var key					= "";
 			
 			// Get module settings	
 			mConfig = modules[arguments.moduleName];
@@ -175,8 +176,14 @@ I oversee and manage ColdBox modules
 			}
 			
 			// Register Model Mappings Now
-			for(y=1; y lte arrayLen(mConfig.modelMappings); y++){
-				beanFactory.addModelMapping(argumentCollection=mConfig.modelMappings[y]);
+			for(key in mConfig.modelMappings){
+				// Default alias check
+				if( NOT structKeyExists(mConfig.modelMappings[key], "alias") ){
+					mConfig.modelMappings[key].alias = "";
+				}
+				// Register mapping
+				beanFactory.addModelMapping(alias = listAppend(key,mConfig.modelMappings[key].alias),
+											path  = mConfig.modelMappings[key].path);
 			}
 			
 			// Call on module configuration object onLoad() if found
@@ -356,7 +363,7 @@ I oversee and manage ColdBox modules
 			mConfig.routes = oConfig.getPropertyMixin("routes","variables",arrayNew(1));	
 			
 			//Get Model Mappings
-			mConfig.modelMappings = oConfig.getPropertyMixin("modelMappings","variables",arrayNew(1));
+			mConfig.modelMappings = oConfig.getPropertyMixin("modelMappings","variables",structnew());
 			
 			return oConfig;		
 		</cfscript>

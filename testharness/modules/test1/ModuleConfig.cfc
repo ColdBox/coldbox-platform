@@ -22,7 +22,7 @@ structures to create for configuration
 - customInterceptionPoints : string list of custom interception points
 - interceptors : array
 - routes : array Allowed keys are same as the addRoute() method of the SES interceptor.
-- modelMappings : array of model mappings. Allowed keys are the alias and path, same as normal model mappings.
+- modelMappings : structure of model mappings. Allowed keys are the alias and path, same as normal model mappings.
 
 Available objects in variable scope
 - controller
@@ -81,7 +81,6 @@ Optional Methods
 		customInterceptionPoints = "onPio";
 		interceptors = [];
 		
-		// TODO: Model Mappings
 	}
 	
 	function onLoad(){
@@ -100,8 +99,8 @@ Optional Methods
 	/**
 	* @interceptionPoint
 	*/
-	function onHenrik(event, interceptData){
-	
+	function onPio(event, interceptData){
+		controller.getLogBox().getLogger(this).info("I can now listen onPio");
 	}
 	
 </cfscript>

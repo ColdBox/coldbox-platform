@@ -34,7 +34,7 @@ structures to create for configuration
 - customInterceptionPoints : string list of custom interception points
 - interceptors : array
 - routes : array Allowed keys are same as the addRoute() method of the SES interceptor.
-- modelMappings : array of model mappings. Allowed keys are the alias and path, same as normal model mappings.
+- modelMappings : structure of model mappings. Allowed keys are the alias and path, same as normal model mappings.
 
 Available objects in variable scope
 - controller
@@ -74,10 +74,12 @@ Optional Methods
 			{pattern="/manager/:orderby/:typeSlug?", handler="manager",action="index"}
 		];		
 		
-		// Array of Model Mappings
-		modelMappings = [
-			{ alias="forgeService@forgeBox", path = "ForgeService" }
-		];
+		// Defined Model Mappings for this module.
+		modelMappings = {
+			"forgeService@forgebox" = {
+				path = "ForgeService"
+			}
+		};
 	}
 	
 	/**
