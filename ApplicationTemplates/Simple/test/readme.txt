@@ -1,49 +1,21 @@
 ********************************************************************************
-Copyright 2005-2007 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+Copyright since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 ********************************************************************************
 
-ColdBox Unit Testing
+ColdBox Unit & Integration Testing
 
-The following test cases have been created for testing of event handlers, please
-note that the controller created is the ColdBox's testcontroller.
-
-The code speaks for itself. Just make sure you tests inherit from the base test
-according to testing framework. 
-
-Then create a setup method that follows the following pattern:
-
-<cffunction name="setUp" returntype="void" access="private">
-	<cfscript>
-	//Persist Framework in application scope for test.
-	THIS.PERSIST_FRAMEWORK = true or false;
-	
-	//Setup ColdBox Mappings For this Test
-	setAppMapping("/applications/coldbox/ApplicationTemplate");
-	setConfigMapping(ExpandPath(instance.AppMapping & "/config/config.xml.cfm"));
-		
-	//Call the super setup method to setup the app.
-	super.setup();
-		
-	//EXECUTE THE APPLICATION START HANDLER: UNCOMMENT IF NEEDED AND FILL IT OUT.
-	//getController().runEvent("ehMain.onAppInit");
-
-	//EXECUTE THE ON REQUEST START HANDLER: UNCOMMENT IF NEEDED AND FILL IT OUT
-	//getController().runEvent("ehMain.onRequestStart");
-	</cfscript>
-</cffunction>
-
+The code speaks for itself. Just make sure you tests inherit from the 
+ColdBox Base Test Case so you get more testing goodness.
 
 Structure:
--integration
-	- GeneralTest.cfc - The test case for the General.cfc handler
- 	- MaintTest.cfc - The test case for the Main.cfc handler
- -unit
- 	- For all your unit test cases.
- -mocks
- 	- For any mock testing or mock objects.
-
-
+- integration (Where you place all your integration tests for handlers)
+- mocks (For any mock testing or mock objects)
+- resources (where you can drop testing resources, it includes already an MXUnit
+	         RemoteFacade.cfc you can configure from eclipse.)
+ -unit (For all your unit test cases)
+ Application.cfc (So you can configure it as you like for your own testing)
+ 
 SPECIAL CONSIDERATIONS:
 Make sure that if you are using any relative paths in your application, that they become
 absolute. This is because the unit testing occurs inside of the unit testing framework
