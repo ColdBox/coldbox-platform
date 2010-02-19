@@ -626,7 +626,7 @@ Loads a coldbox xml configuration file
 			configStruct.webservices = structnew();
 			
 			for(key in webservices){
-				configStruct[key] = webservices[key];
+				configStruct.webservices[key] = webservices[key];
 			}
 		</cfscript>
 	</cffunction>
