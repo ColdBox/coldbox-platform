@@ -47,6 +47,21 @@ Description :
 		</cfscript>
 	</cffunction>
 	
+	<!--- resetAppenders --->
+    <cffunction name="resetAppenders" output="false" access="public" returntype="void" hint="Reset the appender configurations">
+    	<cfset instance.appenders = structNew()>
+    </cffunction>
+	
+	<!--- resetCategories --->
+    <cffunction name="resetCategories" output="false" access="public" returntype="void" hint="Reset the set categories">
+    	<cfset instance.categories = structnew()>
+    </cffunction>
+	
+	<!--- resetRoot --->
+    <cffunction name="resetRoot" output="false" access="public" returntype="void" hint="Reset the root logger">
+    	<cfset instance.rootLogger = structnew()>
+    </cffunction>
+	
 	<!--- Get Memento --->
 	<cffunction name="getMemento" access="public" returntype="struct" output="false" hint="Get the instance data">
 		<cfreturn instance>
