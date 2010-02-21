@@ -514,9 +514,9 @@ Description :
 		</cfscript>
 		<!--- Relocate to correct URL --->
 		<cfif event.getValue("debugPanel","") eq "">
-			<cflocation url="#event.buildLink('')#" addtoken="false">
+			<cflocation url="index.cfm" addtoken="false">
 		<cfelse>
-			<cflocation url="#event.buildLink('')#?debugpanel=#event.getValue('debugPanel','')#" addtoken="false">
+			<cflocation url="index.cfm?debugpanel=#event.getValue('debugPanel','')#" addtoken="false">
 		</cfif>
 	</cffunction>
 	
