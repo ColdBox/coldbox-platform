@@ -101,7 +101,7 @@ Description :
 						</td>
 					  </tr>
 					 <tr id="fw_poprc_#id#" class="hideRC">
-					  	<td colspan="4" style="padding:5px;" wrap="true">
+					  	<td colspan="5" style="padding:5px;" wrap="true">
 						  	<div style="overflow:auto;width:98%; height:150px;padding:5px">
 							  #replacenocase(rc,",",chr(10) & chr(13),"all")#
 							</div>
