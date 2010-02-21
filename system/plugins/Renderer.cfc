@@ -62,6 +62,7 @@ Description :
 		<cfset var cbox_RenderedView 	= "">
 		<cfset var cbox_viewpath 		= "">
 		<cfset var cbox_viewHelperPath 	= "">
+		<cfset var cbox_local			= structnew()>
 		<!--- Cache Entries --->
 		<cfset var cbox_cacheKey 		= "">
 		<cfset var cbox_cacheEntry 		= "">
@@ -114,9 +115,13 @@ Description :
 		<!--- Locate the view to render --->
 		<cfset cbox_viewPath = cbox_locationUDF(arguments.view,arguments.module)>
 
-		<!--- Check for helper convention? --->
+		<!--- Check for view helper convention? --->
+		<cfset cbox_local.dPath = getDirectoryFromPath(cbox_viewPath)>
 		<cfif fileExists(expandPath(cbox_viewPath & "Helper.cfm"))>
 			<cfset cbox_viewHelperPath = cbox_viewPath & "Helper.cfm">
+		<!--- Check for Directory Helper Convention --->
+		<cfelseif fileExists(expandPath( cbox_local.dPath & listLast(cbox_local.dPath,"/") & "Helper.cfm" ))>
+			<cfset cbox_viewHelperPath = cbox_local.dPath & listLast(cbox_local.dPath,"/") & "Helper.cfm">
 		</cfif>
 
 		<!--- Render The View & Its Helper --->
