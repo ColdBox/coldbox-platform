@@ -147,22 +147,34 @@ Description		:
 	</cffunction>	
 	
 	<!--- Tell how many times a method has been called. --->
-	<cffunction name="mockMethodCallCount" output="false" returntype="numeric" hint="I return the number of times the specified mock method has been called.  If the mock method has not been defined the results is a -1. Method Alias = $count()">
-		<cfargument name="methodName" type="string" hint="Name of the method to get calls from" />
+	<cffunction name="mockMethodCallCount" output="false" returntype="numeric" hint="I return the number of times the specified mock method has been called or ALL mock methods have been called.  If the mock method has not been defined the results is a -1. Method Alias = $count()">
+		<cfargument name="methodName" type="string" default="" required="false" hint="Name of the method to get calls from" />
 		<cfscript>
-			if( structKeyExists(this._mockMethodCallCounters, arguments.methodName) ){
-				return this._mockMethodCallCounters[arguments.methodName];
+			var key   		= "";
+			var totalCount 	= 0;
+			
+			// If method name used?
+			if( len(arguments.methodName) ){
+				if( structKeyExists(this._mockMethodCallCounters, arguments.methodName) ){
+					return this._mockMethodCallCounters[arguments.methodName];
+				}
+				else{
+					return -1;
+				}
 			}
-			else{
-				return -1;
+			
+			// All Calls
+			for( key in this._mockMethodCallCounters ){
+				totalCount = totalCount + this._mockMethodCallCounters[key];
 			}
+			return totalCount;
 		</cfscript>
 	</cffunction>
 	
 	<!--- Verify How Many Calls have been made. --->
 	<cffunction name="mockVerifyCallCount" output="false" returntype="numeric" hint="Assert how many calls have been made to the mock or a specific mock method">
-		<cfargument name="count" 		type="numeric" required="true" hint="The number of calls made"/>
-		<cfargument name="methodName" 	type="string"  default="" hint="Name of the method to verify the calls from" />
+		<cfargument name="count" 		type="numeric" required="true"  hint="The number of calls made"/>
+		<cfargument name="methodName" 	type="string"  required="false" default="" hint="Name of the method to verify the calls from" />
 		<cfscript>
 			var key   		= "";
 			var totalCount 	= 0;

@@ -20,5 +20,21 @@
 		assertEquals(true,  test.$verifyCallCount(4,"displayData"));
 	}
 	
+	function testMockMethodCallCount(){
+		test.$("displayData",queryNew(''));
+		test.$("getLuis",1);
+		
+		assertEquals(0, test.$count("displayData") );
+		assertEquals(-1, test.$count("displayData2") );
+		
+		test.displayData();
+		
+		assertEquals(1, test.$count("displayData") );
+		
+		test.getLuis();test.getLuis();
+		assertEquals(3, test.$count() );
+		
+	}
+	
 </cfscript>
 </cfcomponent>

@@ -4,7 +4,8 @@
 * Added new method: $verifyCallCount(count,[methodName]) that can assert how many times
 a component's methods have been called, or how many times a specific method has been called.
 Basically, it returns a boolean according to the passed expected count calls.
-
+* mockMethodCallCount() the methodname is now optional and it will return to you the TOTAL
+number of calls that have been made for ALL methods in the mocked CFC.
 
 == Version 1.1 ==* Refactoring for standalone so it is in its own namespace: mockbox.* Addition of the query simulator: querySim()Ex: querySim("id, name1 | luis2 | joe");
 == Version 1.0 (November, 2009) ==* Initial release of MockBox* Ability to create mocks with or without methods cleared: createMock(), createEmptyMock()* Ability to get debugging information about a mock object: obj.$debug() or obj.mockDebug()* Ability to get call loggers about method calls to assert inspecting parameters.----AS ALWAYS, VISIT THE WIKI FOR THE LATEST DOCUMENTATION == THE DAILY BREAD == "I am the way, and the truth, and the life; no one comes to the Father, but by me (JESUS)" John 14:1-12
