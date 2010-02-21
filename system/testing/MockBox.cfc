@@ -159,6 +159,28 @@ Description		:
 		</cfscript>
 	</cffunction>
 	
+	<!--- Verify How Many Calls have been made. --->
+	<cffunction name="mockVerifyCallCount" output="false" returntype="numeric" hint="Assert how many calls have been made to the mock or a specific mock method">
+		<cfargument name="count" 		type="numeric" required="true" hint="The number of calls made"/>
+		<cfargument name="methodName" 	type="string"  default="" hint="Name of the method to verify the calls from" />
+		<cfscript>
+			var key   		= "";
+			var totalCount 	= 0;
+			
+			// Specific Method Calls
+			if( len(arguments.methodName) ){
+				return (this.mockMethodCallCount(arguments.methodName) eq arguments.count);
+			}
+			
+			// All Calls
+			for( key in this._mockMethodCallCounters ){
+				totalCount = totalCount + this._mockMethodCallCounters[key];
+			}
+			return (totalCount eq arguments.count );
+		</cfscript>
+	</cffunction>
+	
+	
 	<!--- mockResults --->
 	<cffunction name="mockResults" output="false" access="public" returntype="any" hint="Use this method to mock more than 1 result as passed in arguments.  Can only be called when chained to a mockMethod(),$() or $().mockArgs() call.  Results will be recycled on a multiple of their lengths according to how many times they are called, simulating a state-machine algorithm. Method Alias: $results()">
 		<!--- Check if current method set? --->
@@ -270,7 +292,7 @@ Description		:
 	</cffunction>	
 	
 	<!--- mockCallLog --->
-	<cffunction name="mockCallLog" output="false" access="private" returntype="struct" hint="Retrieve the method call logger structure. Method Alias: $callLog()">
+	<cffunction name="mockCallLog" output="false" access="public" returntype="struct" hint="Retrieve the method call logger structure. Method Alias: $callLog()">
 		<cfreturn this._mockCallLoggers>
 	</cffunction>
 	
@@ -332,14 +354,14 @@ Description		:
 	<!--- Mock Debugging Calls --->
 	<cffunction name="mockDebug" access="private" returntype="struct" hint="Debugging method for MockBox">
 	<cfscript>
-		var rtn = structnew();
-		rtn.mockResults = this._mockResults;
-		rtn.mockArgResults = this._mockArgResults;
-		rtn.mockMethodCallCounters = this._mockMethodCallCounters;
-		rtn.mockCallLoggingActive = this._mockCallLoggingActive;
-		rtn.mockCallLoggers = this._mockCallLoggers;
-		rtn.mockGenerationPath = this._mockGenerationPath;
-		rtn.mockOriginalMD = this._mockOriginalMD;
+		var rtn 					= structnew();
+		rtn.mockResults 			= this._mockResults;
+		rtn.mockArgResults 			= this._mockArgResults;
+		rtn.mockMethodCallCounters 	= this._mockMethodCallCounters;
+		rtn.mockCallLoggingActive 	= this._mockCallLoggingActive;
+		rtn.mockCallLoggers 		= this._mockCallLoggers;
+		rtn.mockGenerationPath 		= this._mockGenerationPath;
+		rtn.mockOriginalMD 			= this._mockOriginalMD;
 		return rtn;		
 	</cfscript>
 	</cffunction>
@@ -375,7 +397,7 @@ Description		:
 			// Mock Property
 			obj.$property	 		= variables.mockProperty;
 			obj.mockProperty 		= variables.mockProperty;
-			// MOck Method Call COunts
+			// Mock Method Call COunts
 			obj.$count 				= variables.mockMethodCallCount;
 			obj.mockMethodCallCount = variables.mockMethodCallCount;
 			// Mock Results
@@ -387,6 +409,9 @@ Description		:
 			// CallLog
 			obj.mockCallLog			= variables.mockCallLog;
 			obj.$callLog			= obj.mockCallLog;
+			// Verify Call Count
+			obj.mockVerifyCallCount	= variables.mockVerifyCallCount;
+			obj.$verifyCallCount	= obj.mockVerifyCallCount;
 			// Debug
 			obj.$debug				= variables.mockDebug;
 			// Mock Box
