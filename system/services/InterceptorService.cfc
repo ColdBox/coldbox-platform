@@ -145,20 +145,23 @@ Description :
 				if( structKeyExists(arguments,"interceptorClass") ){
 					// Create the Interceptor Class
 					try{
-						oInterceptor = createObject("component", arguments.interceptorClass ).init(controller,interceptorProperties);
+						oInterceptor = createInterceptor(arguments.interceptorClass, arguments.interceptorProperties);
 					}
 					catch(Any e){
 						getUtil().rethrowit(e);
 					}
+					
 					// Configure the Interceptor
 					oInterceptor.configure();
+					
 					// Cache The Interceptor for quick references
 					if ( NOT controller.getColdBoxOCM().set(objectKey, oInterceptor, 0) ){
 						getUtil().throwit("The interceptor could not be cached, either the cache is full, the threshold has been reached or we are out of memory.","Please check your cache limits, try increasing them or verify your server memory","InterceptorService.InterceptorCantBeCached");
 					}
+					
 				}//end if class is sent.
 				
-				// Append Custom Poings
+				// Append Custom Points
 				appendInterceptionPoints(arguments.customPoints);
 				
 				// Parse Interception Points, thanks to inheritance.
@@ -177,6 +180,34 @@ Description :
 			</cfscript>
 		</cflock>
 	</cffunction>
+	
+	<!--- createInterceptor --->
+    <cffunction name="createInterceptor" output="false" access="private" returntype="any" hint="Create an interceptor">
+    	<cfargument name="interceptorClass" 	 type="string" required="true" hint="The class Path"/>
+		<cfargument name="interceptorProperties" type="struct" required="false" default="#structnew()#" hint="The properties"/>
+		<cfscript>
+    		var oInterceptor 	= createObject("component", arguments.interceptorClass );
+			var baseInterceptor = "";
+			var key 			= "";
+			
+			// Check family if it is handler inheritance or simple CFC?
+			if( NOT isInterceptorFamily(oInterceptor) ){
+				// Mix it up baby
+				oInterceptor.$injectUDF = getUtil().injectUDFMixin;
+				baseInterceptor 		= createObject("component","coldbox.system.Interceptor");
+				
+				// Mix in methods
+				for(key in baseInterceptor){
+					// If handler has overriden method, then don't override it with mixin, simulated inheritance
+					if( NOT structKeyExists(oInterceptor, key) ){
+						oInterceptor.$injectUDF(key,baseInterceptor[key]);
+					}
+				}			
+			}
+			
+			return	oInterceptor.init(controller,arguments.interceptorProperties);
+		</cfscript>
+    </cffunction>
 	
 	<!--- Get Interceptor --->
 	<cffunction name="getInterceptor" access="public" output="false" returntype="any" hint="Get an interceptor according to its name from cache, not from a state. If retrieved, it does not mean that the interceptor is registered still. It just means, that it is in cache. Use the deepSearch argument if you want to check all the interception states for the interceptor.">
@@ -366,5 +397,20 @@ Description :
 			instance.interceptionStates = structnew();
 		</cfscript>
 	</cffunction>
+	
+	<!--- isInterceptorFamily --->
+    <cffunction name="isInterceptorFamily" output="false" access="private" returntype="boolean" hint="Checks if an object is of the interceptor family type">
+    	<cfargument name="obj" type="any" required="true" hint="The object to test"/>
+		<cfscript>
+			var family = "coldbox.system.Interceptor";
+			
+			if( controller.getCFMLEngine().isInstanceCheck() ){
+				return isInstanceOf(arguments.obj,family);
+			}
+			else{
+				return getUtil().isInstanceCheck(arguments.obj,family);
+			}
+		</cfscript>		
+    </cffunction>
 
 </cfcomponent>

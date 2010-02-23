@@ -1,4 +1,4 @@
-<cfcomponent name="ehProxy" extends="coldbox.system.EventHandler" output="false">
+<cfcomponent name="ehProxy" output="false">
 
 	<!--- ************************************************************* --->
 

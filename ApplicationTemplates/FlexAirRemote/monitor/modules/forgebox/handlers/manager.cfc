@@ -10,7 +10,7 @@ Description :
 The forgebox manager handler
 
 ----------------------------------------------------------------------->
-<cfcomponent extends="coldbox.system.EventHandler" output="false">
+<cfcomponent output="false">
 
 	<!--- dependencies --->
 	<cfproperty name="forgeService" inject="model:forgeService@forgeBox">

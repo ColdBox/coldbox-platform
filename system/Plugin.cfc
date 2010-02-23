@@ -18,9 +18,16 @@ Modification History:
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
+	<cfscript>
+		instance = structnew();
+	</cfscript>
+
 	<cffunction name="init" access="public" returntype="any" output="false" hint="The plugin constructor.">
 		<cfargument name="controller" type="any" required="true" hint="coldbox.system.web.Controller">
 		<cfscript>
+			// Unique Instance ID for the object.
+			instance.__hash = hash(createObject('java','java.lang.System').identityHashCode(this));
+			
 			// Register Controller
 			variables.controller = arguments.controller;
 			// Register LogBox

@@ -9,10 +9,7 @@ Date        :	9/28/2007
 Description :
 	An error observer
 ----------------------------------------------------------------------->
-<cfcomponent name="errorObserver"
-			 hint="This is a simple error observer"
-			 output="false"
-			 extends="coldbox.system.Interceptor">
+<cfcomponent hint="This is a simple error observer"	output="false">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 

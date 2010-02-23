@@ -7,7 +7,7 @@ Description :
 Modification History:
 
 ----------------------------------------------------------------------->
-<cfcomponent extends="coldbox.system.EventHandler" output="false">
+<cfcomponent output="false">
 
 			 
 <!------------------------------------------- PUBLIC ------------------------------------------->	 	

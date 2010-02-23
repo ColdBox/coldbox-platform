@@ -13,7 +13,10 @@ Description :
 	function setup(){
 		mockController = getMockBox().createMock(className="coldbox.system.web.Controller",clearMethods=true);
 		mockInterceptorService = getMockBox().createMock(className="coldbox.system.services.InterceptorService",clearMethods=true);
+		mockEngine     = getMockBox().createEmptyMock(className="coldbox.system.core.util.CFMLEngine");
+		
 		mockController.$("getInterceptorService",mockInterceptorService);
+		mockController.$("getCFMLEngine",mockEngine);
 		
 		handlerService = getMockBox().createMock(classname="coldbox.system.services.HandlerService");
 		handlerService.init(mockController);

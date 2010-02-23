@@ -183,5 +183,50 @@ Description :
 			return thisScope[arguments.name];
 		</cfscript>
 	</cffunction>
+	
+	<!--- isInstanceCheck --->
+    <cffunction name="isInstanceCheck" output="false" access="public" returntype="boolean" hint="Checks if an object is of a certain type of family via inheritance">
+    	<cfargument name="obj"    type="any" required="true" hint="The object to evaluate"/>
+		<cfargument name="family" type="string" required="true" default="" hint="The family string to check"/>
+    	<cfscript>
+    		var md 			= "";
+			var moreChecks  = true;
+			
+    		// Get cf7 nasty metadata
+			md = getMetadata(arguments.obj);
+			if( NOT structKeyExists(md, "extends") ){
+				return false;
+			}
+			md = md.extends;
+			
+			while(moreChecks){
+				// Check inheritance family?
+				if( md.name eq arguments.family){
+					return true;
+				}
+				// Else check further inheritance?
+				else if ( structKeyExists(md, "extends") ){
+					md = md.extends;
+				}
+				else{
+					return false;
+				}
+			}
+    		
+			return false;
+    	</cfscript>
+    </cffunction>
+	
+	<!--- Inject Mixin --->
+	<cffunction name="injectUDFMixin" hint="injects a method into the CFC scope" access="public" returntype="void" output="false">
+		<!--- ************************************************************* --->
+		<cfargument name="name">
+		<cfargument name="UDF">
+		<!--- ************************************************************* --->
+		<cfscript>
+			variables[arguments.name] = arguments.UDF;
+			this[arguments.name] 	  = arguments.UDF;
+		</cfscript>
+	</cffunction>
 
 </cfcomponent>

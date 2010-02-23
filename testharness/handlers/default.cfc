@@ -7,11 +7,7 @@ Description :
 Modification History:
 
 ----------------------------------------------------------------------->
-<cfcomponent name="default" 
-			 hint="a default handler" 
-			 extends="coldbox.system.EventHandler" 
-			 output="false"
-			 autowire="false">
+<cfcomponent hint="a default handler" output="false">
 
 			 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->	 	

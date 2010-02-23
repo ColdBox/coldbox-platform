@@ -63,10 +63,12 @@ Modification History:
 		<cfargument name="module" type="any" 	 required="false" default="" hint="The module to retrieve the plugin from"/>
 		<!--- ************************************************************* --->
 		<cfscript>
-			var oPlugin = 0;
-			var iData = structnew();
-			var pluginKey = getPluginCacheKey(argumentCollection=arguments);
-			var mdEntry = "";
+			var oPlugin 	= 0;
+			var iData 		= structnew();
+			var pluginKey 	= getPluginCacheKey(argumentCollection=arguments);
+			var mdEntry 	= "";
+			var basePlugin	= "";
+			var key			= "";
 			
 			// Create Plugin
 			oPlugin = createObject("component",locatePluginPath(argumentCollection=arguments));
@@ -77,6 +79,21 @@ Modification History:
 			}
 			else{
 				mdEntry = getCacheDictionary().getKey(pluginKey);
+			}
+			
+			// Is it plugin family or not? If not, then decorate it
+			if( NOT isPluginFamily(oPlugin) ){
+				// Mix it up baby
+				oPlugin.$injectUDF  = getUtil().injectUDFMixin;
+				basePlugin 			= createObject("component","coldbox.system.Plugin");
+				
+				// Mix in methods
+				for(key in basePlugin){
+					// Don't mixin if concrete object has method overriden, simulated inheritance.
+					if( NOT structKeyExists(oPlugin, key) ){
+						oPlugin.$injectUDF(key,basePlugin[key]);
+					}
+				}
 			}
 				
 			// init It if it exists, more flexible now.
@@ -357,4 +374,20 @@ Modification History:
 			return pluginKey;
 		</cfscript>
 	</cffunction>
+	
+	<!--- isPluginFamily --->
+    <cffunction name="isPluginFamily" output="false" access="private" returntype="boolean" hint="Checks if an object is of the plugin family type">
+    	<cfargument name="obj" type="any" required="true" hint="The object to test"/>
+		<cfscript>
+			var family = "coldbox.system.Plugin";
+			
+			if( controller.getCFMLEngine().isInstanceCheck() ){
+				return isInstanceOf(arguments.obj,family);
+			}
+			else{
+				return getUtil().isInstanceCheck(arguments.obj,family);
+			}
+		</cfscript>		
+    </cffunction>
+	
 </cfcomponent>

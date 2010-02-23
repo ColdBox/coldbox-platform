@@ -18,9 +18,9 @@ Modification History:
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
 	<cfscript>
-		variables.instance = structnew();
-		variables.controller = structnew();
-		variables.util = CreateObject("component","coldbox.system.core.util.Util");
+		variables.instance 		= structnew();
+		variables.controller 	= structnew();
+		variables.util 			= CreateObject("component","coldbox.system.core.util.Util");
 	</cfscript>
 
 <!------------------------------------------- PUBLIC ------------------------------------------->

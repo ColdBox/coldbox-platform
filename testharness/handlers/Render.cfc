@@ -1,4 +1,4 @@
-<cfcomponent extends="coldbox.system.eventhandler" output="false">
+<cfcomponent output="false">
 <cfscript>
 
 	function wddx(){

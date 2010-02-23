@@ -45,8 +45,28 @@ Description :
 		<cfargument name="invocationPath" type="string" required="true" hint="The handler invocation path"/>
 		<cfscript>
 			//Create Handler
-			var oHandler = CreateObject("component", invocationPath ).init( controller );
-			var iData = structnew();
+			var oHandler 	= CreateObject("component", invocationPath );
+			var iData 		= structnew();
+			var baseHandler = "";
+			var key			= "";
+			
+			// Check family if it is handler inheritance or simple CFC?
+			if( NOT isHandlerFamily(oHandler) ){
+				// Mix it up baby
+				oHandler.$injectUDF = getUtil().injectUDFMixin;
+				baseHandler 		= createObject("component","coldbox.system.EventHandler");
+				
+				// Mix in methods
+				for(key in baseHandler){
+					// If handler has overriden method, then don't override it with mixin, simulated inheritance
+					if( NOT structKeyExists(oHandler, key) ){
+						oHandler.$injectUDF(key,baseHandler[key]);
+					}
+				}			
+			}
+			
+			// Init the handler
+			oHandler.init( controller );
 			
 			// Fill-up Intercepted metadata
 			iData.handlerPath 	= invocationPath;
@@ -541,5 +561,20 @@ Description :
 			</cflock>
 		</cfif>
 	</cffunction>
+	
+	<!--- isHandlerFamily --->
+    <cffunction name="isHandlerFamily" output="false" access="private" returntype="boolean" hint="Checks if an object is of the handler family type">
+    	<cfargument name="obj" type="any" required="true" hint="The object to test"/>
+		<cfscript>
+			var family = "coldbox.system.EventHandler";
+			
+			if( controller.getCFMLEngine().isInstanceCheck() ){
+				return isInstanceOf(arguments.obj,family);
+			}
+			else{
+				return getUtil().isInstanceCheck(arguments.obj,family);
+			}
+		</cfscript>		
+    </cffunction>
 	
 </cfcomponent>

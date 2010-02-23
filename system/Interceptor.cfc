@@ -16,10 +16,17 @@ Description :
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
+	<cfscript>
+		instance = structnew();
+	</cfscript>
+
 	<cffunction name="init" access="public" returntype="any" output="false">
 		<cfargument name="controller" type="any" 	required="true"  hint="The ColdBox controller reference: coldbox.system.web.Controller">
 		<cfargument name="properties" type="struct" required="true"  hint="The Interceptor properties">
 		<cfscript>
+			// Unique Instance ID for the object.
+			instance.__hash = hash(createObject('java','java.lang.System').identityHashCode(this));
+			
 			// Register Controller
 			variables.controller = arguments.controller;
 			// Register LogBox

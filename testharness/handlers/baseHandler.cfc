@@ -12,7 +12,7 @@ Modification History:
 Sep/25/2005 - Luis Majano
 	-Created the template.
 ----------------------------------------------------------------------->
-<cfcomponent name="baseHandler" extends="coldbox.system.EventHandler" output="false">
+<cfcomponent name="baseHandler" output="false">
 
 <!--- Autowire --->
 <cfproperty name="badService" type="ioc" scope="instance">

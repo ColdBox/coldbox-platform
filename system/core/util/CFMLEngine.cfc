@@ -31,18 +31,21 @@ Description :
 			instance.adobe.json 		= true;
 			instance.adobe.ramResource	= true;
 			instance.adobe.onmm			= true;
+			instance.adobe.instanceCheck = true;
 			
 			instance.railo = structnew();
 			instance.railo.mt   		= true;
 			instance.railo.json 		= true;
 			instance.railo.ramResource 	= true;
-			instance.railo.onmm 	= true;
+			instance.railo.onmm 		= true;
+			instance.railo.instanceCheck = true;
 			
 			instance.bluedragon 			= structnew();
 			instance.bluedragon.mt 			= true;
 			instance.bluedragon.json 		= true;
 			instance.bluedragon.ramResource = false;
 			instance.bluedragon.onmm 		= true;
+			instance.bluedragon.instanceCheck = true;
 			
 			return this;
 		</cfscript>
@@ -114,6 +117,23 @@ Description :
 				 (engine eq this.BLUEDRAGON and version gte 7) or
 				 (engine eq this.RAILO) ){
 				return (true AND featureCheck("mt",engine));
+			}
+			else{
+				return false;
+			}
+		</cfscript>
+	</cffunction>
+	
+	<!--- checks instance --->
+	<cffunction name="isInstanceCheck" access="public" returntype="boolean" hint="Checks if the engine can check instances." output="false" >
+		<cfscript>
+			var version = getVersion();
+			var engine  = getEngine();
+			
+			if ( (engine eq this.ADOBE and version gte 8) or
+				 (engine eq this.BLUEDRAGON and version gte 7) or
+				 (engine eq this.RAILO) ){
+				return (true AND featureCheck("instanceCheck",engine));
 			}
 			else{
 				return false;

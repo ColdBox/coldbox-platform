@@ -9,7 +9,7 @@ Modification History:
 ----------------------------------------------------------------------->
 <cfcomponent name="ehSecure" 
 			 hint="a default handler" 
-			 extends="coldbox.system.EventHandler" 
+			 
 			 output="false"
 			 autowire="false">
 
