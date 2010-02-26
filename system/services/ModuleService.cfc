@@ -303,6 +303,7 @@ I oversee and manage ColdBox modules
 			oConfig.injectPropertyMixin("appMapping",controller.getSetting("appMapping"));
 			oConfig.injectPropertyMixin("moduleMapping",mConfig.mapping);
 			oConfig.injectPropertyMixin("modulePath",mConfig.path);
+			oConfig.injectPropertyMixin("log",controller.getLogBox().getLogger(oConfig));
 			
 			//Configure the module
 			oConfig.configure();

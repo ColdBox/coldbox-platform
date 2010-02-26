@@ -41,6 +41,7 @@ Available objects in variable scope
 - appMapping (application mapping)
 - moduleMapping (include,cf path)
 - modulePath (absolute path)
+- log (A pre-configured logBox logger object for this object)
 
 Required Methods
 - configure() : The method ColdBox calls to configure the module.
