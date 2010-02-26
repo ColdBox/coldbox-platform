@@ -66,38 +66,24 @@ Modification History:
 			var oPlugin 	= 0;
 			var iData 		= structnew();
 			var pluginKey 	= getPluginCacheKey(argumentCollection=arguments);
-			var mdEntry 	= "";
-			var basePlugin	= "";
-			var key			= "";
 			
 			// Create Plugin
 			oPlugin = createObject("component",locatePluginPath(argumentCollection=arguments));
 			
 			// Determine if we have md and cacheable, else store object metadata for efficiency
 			if ( not getCacheDictionary().keyExists(pluginKey) ){
-				mdEntry = storeMetadata(pluginKey,getMetadata(oPlugin));
-			}
-			else{
-				mdEntry = getCacheDictionary().getKey(pluginKey);
+				storeMetadata(pluginKey,getMetadata(oPlugin));
 			}
 			
 			// Is it plugin family or not? If not, then decorate it
 			if( NOT isPluginFamily(oPlugin) ){
-				// Mix it up baby
-				oPlugin.$injectUDF  = getUtil().injectUDFMixin;
-				basePlugin 			= createObject("component","coldbox.system.Plugin");
-				
-				// Mix in methods
-				for(key in basePlugin){
-					// Don't mixin if concrete object has method overriden, simulated inheritance.
-					if( NOT structKeyExists(oPlugin, key) ){
-						oPlugin.$injectUDF(key,basePlugin[key]);
-					}
-				}
+				convertToColdBox( "plugin", oPlugin );
+				// Check if doing cbInit()
+				if( structKeyExists(oPlugin, "$cbInit") ){ oPlugin.$cbInit( controller ); }
 			}
 				
-			// init It if it exists, more flexible now.
-			if( structKeyExists(oPlugin,"init") and mdEntry.init ){
+			// init It if it exists
+			if( structKeyExists(oPlugin,"init") ){
 				oPlugin.init( controller );
 			}						
 			

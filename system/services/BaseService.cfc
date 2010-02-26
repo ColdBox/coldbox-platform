@@ -25,15 +25,54 @@ Modification History:
 
 <!------------------------------------------- PUBLIC ------------------------------------------->
 
+	<!--- convertToColdBox --->
+    <cffunction name="convertToColdBox" output="false" access="public" returntype="void" hint="Decorate an object as a ColdBox object">
+    	<cfargument name="family" type="string" required="true" hint="The family to covert it to: handler, plugin, interceptor"/>
+		<cfargument name="target" type="any" 	required="true" hint="The target object"/>
+		<cfscript>
+			var baseObject = "";
+			var familyPath = "";
+			
+			switch(arguments.family){
+				case "handler" 		: { familyPath = "coldbox.system.EventHandler"; break; }
+				case "plugin" 		: { familyPath = "coldbox.system.Plugin"; break; }
+				case "interceptor"  : { familyPath = "coldbox.system.Interceptor"; break; }
+				default:{
+					getUtil().throwit('Invalid family sent #arguments.family#');
+				}
+			}
+			
+			// Mix it up baby
+			arguments.target.$injectUDF = getUtil().injectUDFMixin;
+			
+			// Create base family object
+			baseObject = createObject("component",familyPath);
+			
+			// Check if init already exists?
+			if( structKeyExists(arguments.target, "init") ){ arguments.target.$cbInit = baseObject.init;	}	
+			
+			// Mix in methods
+			for(key in baseObject){
+				// If handler has overriden method, then don't override it with mixin, simulated inheritance
+				if( NOT structKeyExists(arguments.target, key) ){
+					arguments.target.$injectUDF(key,baseObject[key]);
+				}
+			}
+		</cfscript>
+    </cffunction>
+
+	<!--- Get Controller --->
 	<cffunction name="getcontroller" access="package" output="false" returntype="any" hint="Get controller">
 		<cfreturn controller/>
 	</cffunction>
 	
+	<!--- Set Controller --->
 	<cffunction name="setcontroller" access="package" output="false" returntype="void" hint="Set controller">
 		<cfargument name="controller" type="any" required="true"/>
 		<cfset variables.controller = arguments.controller/>
 	</cffunction>
 	
+	<!--- Get OCM Facade --->	
 	<cffunction name="getColdboxOCM" access="package" output="false" returntype="any" hint="Get the Coldbox Cache Manager">
 		<cfreturn controller.getColdboxOCM()/>
 	</cffunction>	

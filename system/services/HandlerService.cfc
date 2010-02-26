@@ -47,25 +47,15 @@ Description :
 			//Create Handler
 			var oHandler 	= CreateObject("component", invocationPath );
 			var iData 		= structnew();
-			var baseHandler = "";
-			var key			= "";
 			
 			// Check family if it is handler inheritance or simple CFC?
 			if( NOT isHandlerFamily(oHandler) ){
-				// Mix it up baby
-				oHandler.$injectUDF = getUtil().injectUDFMixin;
-				baseHandler 		= createObject("component","coldbox.system.EventHandler");
-				
-				// Mix in methods
-				for(key in baseHandler){
-					// If handler has overriden method, then don't override it with mixin, simulated inheritance
-					if( NOT structKeyExists(oHandler, key) ){
-						oHandler.$injectUDF(key,baseHandler[key]);
-					}
-				}			
+				convertToColdBox( "handler", oHandler );
+				// Check if doing cbInit()
+				if( structKeyExists(oHandler, "$cbInit") ){ oHandler.$cbInit( controller ); }
 			}
 			
-			// Init the handler
+			// init the handler for usage
 			oHandler.init( controller );
 			
 			// Fill-up Intercepted metadata

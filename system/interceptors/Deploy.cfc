@@ -96,6 +96,7 @@ any kind of cleanup code or anything you like:
 					instance.deployCommandObject = getModel(getProperty("deployCommandModel"));
 				}
 				catch(Any e){
+					writeDump(e);abort;
 					rethrowit(e);
 				}
 			}

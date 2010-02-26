@@ -58,7 +58,7 @@ Modification History:
 	<!--- Get a config bean --->
 	<cffunction name="getConfigBean" output="false" access="public" returntype="coldbox.system.beans.ConfigBean" hint="Returns an application's config bean: coldbox.system.beans.ConfigBean">
 		<cfscript>
-			retur CreateObject("component",configBeanPath).init( getColdbox().getConfigSettings() );
+			return CreateObject("component",configBeanPath).init( getColdbox().getConfigSettings() );
 		</cfscript>
 	</cffunction>
 	

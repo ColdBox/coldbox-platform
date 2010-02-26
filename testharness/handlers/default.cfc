@@ -17,7 +17,6 @@ Modification History:
 		
 		<!--- Mandatory Super call --->
 		<cfset super.init(arguments.controller)>
-		
 		<!--- Any custom constructor code here --->
 		
 		<cfreturn this>

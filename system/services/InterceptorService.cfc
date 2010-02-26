@@ -190,19 +190,9 @@ Description :
 			var baseInterceptor = "";
 			var key 			= "";
 			
-			// Check family if it is handler inheritance or simple CFC?
+			// Check family if it is interceptor inheritance or simple CFC?
 			if( NOT isInterceptorFamily(oInterceptor) ){
-				// Mix it up baby
-				oInterceptor.$injectUDF = getUtil().injectUDFMixin;
-				baseInterceptor 		= createObject("component","coldbox.system.Interceptor");
-				
-				// Mix in methods
-				for(key in baseInterceptor){
-					// If handler has overriden method, then don't override it with mixin, simulated inheritance
-					if( NOT structKeyExists(oInterceptor, key) ){
-						oInterceptor.$injectUDF(key,baseInterceptor[key]);
-					}
-				}			
+				convertToColdBox( "interceptor", oInterceptor );
 			}
 			
 			return	oInterceptor.init(controller,arguments.interceptorProperties);
