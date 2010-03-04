@@ -755,17 +755,18 @@ Description :
 		
 		if( leftOverLen gt 0 ){
 			// Cleanup remaining string
-			conventionString = right(arguments.requestString,leftOverLen);
-			conventionStringLen = listLen(conventionString,"/");
+			conventionString 	= right(arguments.requestString,leftOverLen).split("/");
+			conventionStringLen = arrayLen(conventionString);
+			
 			// If conventions found, continue parsing
 			for(i=1; i lte conventionStringLen; i=i+1){
 				if( i mod 2 eq 0 ){
 					// Even: Means Variable Value
-					arguments.params[tmpVar] = listGetAt(conventionString,i,'/');
+					arguments.params[tmpVar] = conventionString[i];
 				}
 				else{
 					// ODD: Means variable name
-					tmpVar = trim(listGetAt(conventionString,i,'/'));
+					tmpVar = trim(conventionString[i]);
 					// Verify it is a valid variable Name
 					if ( NOT isValid("variableName",tmpVar) ){
 						tmpVar = "_INVALID_VARIABLE_NAME_POS_#i#_";
