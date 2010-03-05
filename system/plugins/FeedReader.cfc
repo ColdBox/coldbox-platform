@@ -26,7 +26,7 @@ Quick and Dirty Feed Dump:
 	URL and run the event.
 	
 	<cfset var rc = event.getCollection()>
-	<cfset rc.webfeed = getPlugin("feedReader").retrieveFeed("http://www.example.com/feeds/rss")>
+	<cfset rc.webfeed = getPlugin("FeedReader").retrieveFeed("http://www.example.com/feeds/rss")>
 	<cfdump var="#rc.webfeed#">
 	<cfabort>
 
