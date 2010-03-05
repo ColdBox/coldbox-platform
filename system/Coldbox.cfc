@@ -83,7 +83,7 @@ Description :
 		<!--- Initialize the Controller If Needed, double locked --->
 		<cfif NOT structkeyExists(application,appkey) OR NOT application[appKey].getColdboxInitiated() OR needReinit>
 			<cflock type="exclusive" name="#getAppHash()#" timeout="#getLockTimeout()#" throwontimeout="true">
-				<cfif NOT structkeyExists(application,"cbController") OR NOT application[appKey].getColdboxInitiated() OR needReinit>
+				<cfif NOT structkeyExists(application,appkey) OR NOT application[appKey].getColdboxInitiated() OR needReinit>
 					<!--- Verify if reiniting onColdboxReinit interceptor --->
 					<cfif structkeyExists(application,appKey) AND application[appKey].getColdboxInitiated() AND needReinit>
 						<cfset application[appKey].getInterceptorService().processState("preReinit")>
