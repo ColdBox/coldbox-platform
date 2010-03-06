@@ -212,7 +212,7 @@ Optional Methods
 		
 		//i18n & Localization
 		i18n = {
-			defaultResourceBundle = "includes/main",
+			defaultResourceBundle = "includes/i18n/main",
 			defaultLocale = "en_US",
 			localeStorage = "session",
 			unknownTranslation = "**NOT FOUND**"		
