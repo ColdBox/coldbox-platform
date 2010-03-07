@@ -58,9 +58,10 @@ Modification History:
 	<!--- Get a new plugin Instance --->
 	<cffunction name="new" access="public" returntype="any" hint="Create a New Plugin Instance whether it is core or custom" output="false" >
 		<!--- ************************************************************* --->
-		<cfargument name="plugin" type="any"  	 required="true"  hint="The name (classpath) of the plugin to create">
-		<cfargument name="custom" type="boolean" required="true"  hint="Custom plugin or coldbox plugin">
-		<cfargument name="module" type="any" 	 required="false" default="" hint="The module to retrieve the plugin from"/>
+		<cfargument name="plugin" type="any"  	  required="true"  hint="The name (classpath) of the plugin to create">
+		<cfargument name="custom" type="boolean"  required="true"  hint="Custom plugin or coldbox plugin">
+		<cfargument name="module" type="any" 	  required="false" default="" hint="The module to retrieve the plugin from"/>
+		<cfargument name="init"   type="boolean"  required="false" default="true" hint="Auto init() the plugin upon construction"/>
 		<!--- ************************************************************* --->
 		<cfscript>
 			var oPlugin 	= 0;
@@ -83,7 +84,7 @@ Modification History:
 			}
 				
 			// init It if it exists
-			if( structKeyExists(oPlugin,"init") ){
+			if( structKeyExists(oPlugin,"init") and arguments.init ){
 				oPlugin.init( controller );
 			}						
 			
@@ -107,9 +108,10 @@ Modification History:
 	<!--- Get a new or cached plugin instance --->
 	<cffunction name="get" access="public" returntype="any" hint="Get a new/cached plugin instance" output="false" >
 		<!--- ************************************************************* --->
-		<cfargument name="plugin" type="any"     required="true" hint="The name (classpath) of the plugin to create. We will search for it.">
-		<cfargument name="custom" type="boolean" required="true" hint="Custom plugin or coldbox plugin">
-		<cfargument name="module" type="any" 	 required="false" default="" hint="The module to retrieve the plugin from"/>
+		<cfargument name="plugin" type="any"      required="true" hint="The name (classpath) of the plugin to create. We will search for it.">
+		<cfargument name="custom" type="boolean"  required="true" hint="Custom plugin or coldbox plugin">
+		<cfargument name="module" type="any" 	  required="false" default="" hint="The module to retrieve the plugin from"/>
+		<cfargument name="init"   type="boolean"  required="false" default="true" hint="Auto init() the plugin upon construction"/>
 		<!--- ************************************************************* --->
 		<cfscript>
 			var pluginKey = getPluginCacheKey(argumentCollection=arguments);

@@ -314,17 +314,18 @@ Only one instance of a specific ColdBox application exists.
 
 	<!--- Plugin Factories --->
 	<cffunction name="getPlugin" access="Public" returntype="any" hint="I am the Plugin cfc object factory." output="false">
-		<cfargument name="plugin" 		type="any"     required="true"  hint="The Plugin object's name to instantiate" >
-		<cfargument name="customPlugin" type="boolean" required="false" default="false" hint="Used internally to create custom plugins.">
-		<cfargument name="newInstance"  type="boolean" required="false" default="false" hint="If true, it will create and return a new plugin. No caching or persistance.">
-		<cfargument name="module" 		type="any" 	   required="false" default="" hint="The module to retrieve the plugin from"/>
+		<cfargument name="plugin" 		type="any"      required="true"  hint="The Plugin object's name to instantiate" >
+		<cfargument name="customPlugin" type="boolean"  required="false" default="false" hint="Used internally to create custom plugins.">
+		<cfargument name="newInstance"  type="boolean"  required="false" default="false" hint="If true, it will create and return a new plugin. No caching or persistance.">
+		<cfargument name="module" 		type="any" 	    required="false" default="" hint="The module to retrieve the plugin from"/>
+		<cfargument name="init" 		type="boolean"  required="false" default="true" hint="Auto init() the plugin upon construction"/>
 		<!--- ************************************************************* --->
 		<cfscript>
 		if ( arguments.newInstance ){
-			return getPluginService().new(arguments.plugin,arguments.customPlugin,arguments.module);
+			return getPluginService().new(arguments.plugin,arguments.customPlugin,arguments.module,arguments.init);
 		}
 		else{
-			return getPluginService().get(arguments.plugin,arguments.customPlugin,arguments.module);
+			return getPluginService().get(arguments.plugin,arguments.customPlugin,arguments.module,arguments.init);
 		}
 		</cfscript>		
 	</cffunction>
