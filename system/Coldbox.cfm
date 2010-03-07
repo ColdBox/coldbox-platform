@@ -13,11 +13,12 @@ Description :
 
 	Please view the quickstart guide if you have more questions.
 ---------------------------------------------------------------------->
-<cfparam name="COLDBOX_CONFIG_FILE" 		default="" type="string">
-<cfparam name="COLDBOX_APP_ROOT_PATH" 		default="#getDirectoryFromPath(getbaseTemplatePath())#" type="string">
-<cfparam name="COLDBOX_APP_KEY" 			default="" type="string">
-<cfparam name="COLDBOX_BOOTSTRAPPER_KEY"	default="cbBootstrap" type="string">
-
+<cfparam name="COLDBOX_CONFIG_FILE" 			default="" type="string">
+<cfparam name="COLDBOX_APP_ROOT_PATH" 			default="#getDirectoryFromPath(getbaseTemplatePath())#" type="string">
+<cfparam name="COLDBOX_APP_KEY" 				default="" type="string">
+<cfparam name="COLDBOX_BOOTSTRAPPER_KEY"		default="cbBootstrap" type="string">
+<cfparam name="COLDBOX_APP_MAPPING" 			default="" type="string">
+	
 
 <!--- Create the BootStrapper --->
 <cfif NOT structKeyExists(application,COLDBOX_BOOTSTRAPPER_KEY) OR 
@@ -28,8 +29,12 @@ Description :
 			  application[COLDBOX_BOOTSTRAPPER_KEY].isfwReinit()>
 				  
 			<cfset structDelete(application,COLDBOX_BOOTSTRAPPER_KEY)>
-			<cfset application[COLDBOX_BOOTSTRAPPER_KEY] = CreateObject("component","coldbox.system.Coldbox").init(COLDBOX_CONFIG_FILE,COLDBOX_APP_ROOT_PATH,COLDBOX_APP_KEY)>
-			
+			<cfset application[COLDBOX_BOOTSTRAPPER_KEY] = CreateObject("component","coldbox.system.Coldbox").init(COLDBOX_CONFIG_FILE,
+																												   COLDBOX_APP_ROOT_PATH,
+																												   COLDBOX_APP_KEY,
+																												   COLDBOX_APP_MAPPING)>
+			<!--- Load ColdBox --->
+			<cfset application[COLDBOX_BOOTSTRAPPER_KEY].loadColdBox()>
 		</cfif>
 	</cflock>
 	

@@ -7,11 +7,11 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 Author     :	Luis Majano
 Date        :	10/16/2007
 Description :
-	This is the Application.cfc for usage withing the ColdBox Framework.
-	Make sure that it extends the coldbox object:
-	coldbox.system.Coldbox
+	This is the bootstrapper Application.cfc for ColdBox Applications.
+	It uses inheritance on the CFC, so if you do not want inheritance
+	then use the Application_noinheritance.cfc instead.
 	
-	So if you have refactored your framework, make sure it extends coldbox.
+	
 ----------------------------------------------------------------------->
 <cfcomponent extends="coldbox.system.Coldbox" output="false">
 	<cfsetting enablecfoutputonly="yes">
@@ -23,15 +23,12 @@ Description :
 	
 	<!--- COLDBOX STATIC PROPERTY, DO NOT CHANGE UNLESS THIS IS NOT THE ROOT OF YOUR COLDBOX APP --->
 	<cfset COLDBOX_APP_ROOT_PATH = getDirectoryFromPath(getCurrentTemplatePath())>
-
 	<!--- The web server mapping to this application. Used for remote purposes or static purposes --->
-	<cfset COLDBOX_APP_MAPPING   = "/coldbox/ApplicationTemplates/FlexAirRemote">
-	
+	<cfset COLDBOX_APP_MAPPING   = "">
 	<!--- COLDBOX PROPERTIES --->
-	<cfset COLDBOX_CONFIG_FILE = "">
-	
+	<cfset COLDBOX_CONFIG_FILE   = "">	
 	<!--- COLDBOX APPLICATION KEY OVERRIDE --->
-	<cfset COLDBOX_APP_KEY = "">
+	<cfset COLDBOX_APP_KEY       = "">
 	
 	<!--- on Application Start --->
 	<cffunction name="onApplicationStart" returnType="boolean" output="false">

@@ -27,7 +27,7 @@ I oversee and manage ColdBox modules
 		</cfscript>
 	</cffunction>
 
-<!------------------------------------------- PUBLIC ------------------------------------------->
+<!------------------------------------------- INTERNAL COLDBOX EVENTS ------------------------------------------->
 
 	<!--- onConfigurationLoad --->
     <cffunction name="onConfigurationLoad" output="false" access="public" returntype="void" hint="Called by loader service when configuration file loads">
@@ -48,6 +48,16 @@ I oversee and manage ColdBox modules
     	</cfscript>
     </cffunction>
 	
+	<!--- onShutdown --->
+    <cffunction name="onShutdown" output="false" access="public" returntype="void" hint="Called when the application stops">
+    	<cfscript>
+    		// Unload all modules
+			unloadAll();
+    	</cfscript>
+    </cffunction>
+
+<!------------------------------------------- PUBLIC ------------------------------------------->
+
 	<!--- registerAllModules --->
 	<cffunction name="registerAllModules" output="false" access="public" returntype="void" hint="Register all located modules in the conventions or set location. Usually called by framework to load configuraiton data.">
 		<cfscript>

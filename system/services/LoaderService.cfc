@@ -169,6 +169,22 @@ Modification History:
     	</cfscript>
     </cffunction>
 	
+	<!--- processShutdown --->
+    <cffunction name="processShutdown" output="false" access="public" returntype="void" hint="Process the shutdown of the application">
+    	<cfscript>
+    		var key 	 = "";
+			var services = controller.getServices();
+			
+    		// Process services reinit
+			for(key in services){
+				services[key].onShutdown();
+			}
+			
+			// Shutdown any services like cache engine, etc.
+			// TODO
+		</cfscript>
+    </cffunction>
+	
 <!------------------------------------------- PRIVATE ------------------------------------------->
 	
 	<!--- createAppLoader --->

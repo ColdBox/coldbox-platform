@@ -84,10 +84,16 @@ Description :
 		<cfif NOT structkeyExists(application,appkey) OR NOT application[appKey].getColdboxInitiated() OR needReinit>
 			<cflock type="exclusive" name="#getAppHash()#" timeout="#getLockTimeout()#" throwontimeout="true">
 				<cfif NOT structkeyExists(application,appkey) OR NOT application[appKey].getColdboxInitiated() OR needReinit>
-					<!--- Verify if reiniting onColdboxReinit interceptor --->
+					
+					<!--- Verify if we are Reiniting? --->
 					<cfif structkeyExists(application,appKey) AND application[appKey].getColdboxInitiated() AND needReinit>
+						<!--- Process user interceptors --->
 						<cfset application[appKey].getInterceptorService().processState("preReinit")>
+						
+						<!--- Shutdown the application services --->
+						<cfset application[appKey].getLoaderService().processReinit()>
 					</cfif>
+					
 					<!--- Reload ColdBox --->
 					<cfset loadColdBox()>
 				</cfif>
@@ -396,13 +402,16 @@ Description :
 		<cfscript>
 			var cbController = arguments.appScope[locateAppKey()];
 			
-			//Execute Application End interceptors
+			// Execute Application End interceptors
 			cbController.getInterceptorService().processState("applicationEnd");
 			
 			// Execute Application End Handler
 			if( len(cbController.getSetting('applicationEndHandler')) ){
 				cbController.runEvent(event=cbController.getSetting("applicationEndHandler"),prePostExempt=true);
 			}
+			
+			// Controlled service shutdown operations
+			cbController.getLoaderService().processShutdown();
 		</cfscript>
 	</cffunction>
 

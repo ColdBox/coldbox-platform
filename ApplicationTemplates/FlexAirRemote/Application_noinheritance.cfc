@@ -23,15 +23,12 @@ Description :
 	
 	<!--- COLDBOX STATIC PROPERTY, DO NOT CHANGE UNLESS THIS IS NOT THE ROOT OF YOUR COLDBOX APP --->
 	<cfset COLDBOX_APP_ROOT_PATH = getDirectoryFromPath(getCurrentTemplatePath())>
-
 	<!--- The web server mapping to this application. Used for remote purposes or static purposes --->
-	<cfset COLDBOX_APP_MAPPING   = "/coldbox/ApplicationTemplates/FlexAirRemote">
-	
+	<cfset COLDBOX_APP_MAPPING   = "">
 	<!--- COLDBOX PROPERTIES --->
-	<cfset COLDBOX_CONFIG_FILE = "">
-	
+	<cfset COLDBOX_CONFIG_FILE 	 = "">
 	<!--- COLDBOX APPLICATION KEY OVERRIDE --->
-	<cfset COLDBOX_APP_KEY = "">
+	<cfset COLDBOX_APP_KEY 		 = "">
 	
 	<!--- on Application Start --->
 	<cffunction name="onApplicationStart" returnType="boolean" output="false">
@@ -73,13 +70,11 @@ Description :
 		<cfargument name="appScope" type="struct" required="true">
 		<!--- ************************************************************* --->
 		<cfset arguments.appScope.cbBootstrap.onApplicationEnd(argumentCollection=arguments)>
-		<!--- WHATEVER YOU WANT BELOW --->
 	</cffunction>
 	
 	<!--- on Session Start --->
 	<cffunction name="onSessionStart" returnType="void" output="false">			
 		<cfset application.cbBootstrap.onSessionStart()>
-		<!--- WHATEVER YOU WANT BELOW --->
 	</cffunction>
 	
 	<!--- on Session End --->
@@ -89,7 +84,6 @@ Description :
 		<cfargument name="appScope" 	type="struct" required="false">
 		<!--- ************************************************************* --->
 		<cfset appScope.cbBootstrap.onSessionEnd(argumentCollection=arguments)>
-		<!--- WHATEVER YOU WANT BELOW --->
 	</cffunction>
 	
 	<!--- OnMissing Template --->

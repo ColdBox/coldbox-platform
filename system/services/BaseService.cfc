@@ -77,6 +77,9 @@ Modification History:
 		<cfreturn controller.getColdboxOCM()/>
 	</cffunction>	
 	
+
+<!------------------------------------------- INTERNAL EVENTS ------------------------------------------>	
+	
 	<!--- onConfigurationLoad --->
     <cffunction name="onConfigurationLoad" output="false" access="public" returntype="void" hint="Called by loader service when configuration file loads">
     	<!--- Implemented by Concrete Services --->
@@ -84,6 +87,11 @@ Modification History:
 	
 	<!--- onAspectsLoad --->
     <cffunction name="onAspectsLoad" output="false" access="public" returntype="void" hint="Called by loader service after aspects load">
+    	<!--- Implemented by Concrete Services --->
+    </cffunction>
+	
+	<!--- onShutdown --->
+    <cffunction name="onShutdown" output="false" access="public" returntype="void" hint="Called by bootstrapper, whenever the application shuts down">
     	<!--- Implemented by Concrete Services --->
     </cffunction>
 	

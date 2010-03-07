@@ -7,47 +7,34 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 Author     :	Luis Majano
 Date        :	9/3/2007
 Description :
-	loaderserviceTest
+	Some tests just are expecting to execute
 ----------------------------------------------------------------------->
-<cfcomponent name="loaderserviceTest" extends="coldbox.system.testing.BaseTestCase" output="false">
-
-	<cffunction name="setUp" returntype="void" access="public" output="false">
-		<cfscript>
-		//Setup ColdBox Mappings For this Test
-		setAppMapping("/coldbox/testharness");
-		setConfigMapping(ExpandPath(instance.AppMapping & "/config/coldbox.xml.cfm"));
-		//Call the super setup method to setup the app.
-		super.setup();
-		</cfscript>
-	</cffunction>
+<cfcomponent extends="coldbox.system.testing.BaseTestCase" appMapping="/coldbox/testharness">
+<cfscript>
 	
-	<cffunction name="testloadApplication" access="public" returntype="void" output="false">
-		<cfscript>
-		var service = getController().getservice("loader");
+	function setup(){
+		super.setup();
+		
+		ls = getController().getLoaderService();
+	}
+	
+	function testLoadApplication(){
 		var context = "";
 		
 		getController().setSetting("dummyVar", true);
 		
-		service.loadApplication(getConfigMapping(),getAppMapping());
+		ls.loadApplication(getConfigMapping(),getAppMapping());
 		
 		AssertFalse( getController().settingExists("dummyVar") );		
-		
-		</cfscript>
-	</cffunction>	
+	}
 	
-	<cffunction name="testRegisterAspects" access="public" returntype="void" output="false">
-		<cfscript>
-		var service = getController().getservice("loader");
+	function testRegisterAspects(){
 		var context = "";
 		
-		service.registerAspects();
-		
-		</cfscript>
-	</cffunction>	
+		ls.registerAspects();
+	}
 	
-	<cffunction name="testRegisterHandlers" access="public" returntype="void" output="false">
-		<cfscript>
-		var service = getController().getservice("loader");
+	function testRegisterHandlers(){
 		var context = "";
 		var fs = "/";
 		var dummyFile = getController().getSetting("HandlersPath") & fs & "dummy.cfc";
@@ -56,9 +43,12 @@ Description :
 		getController().getHandlerService().registerHandlers();
 		AssertTrue( listFindNocase(getController().getSetting("RegisteredHandlers"), "dummy") );
 		removeFile( dummyFile );
-		
-		</cfscript>
-	</cffunction>		
+	}
+	
+	function testProcessShutdown(){
+		ls.processShutdown();
+	}
+</cfscript>
 	
 	
 	<cffunction name="createFile" access="private" hint="Create a new empty fileusing java.io.File." returntype="void" output="false">
@@ -80,5 +70,6 @@ Description :
 		return fileObj.delete();
 		</cfscript>
 	</cffunction>	
+
 	
 </cfcomponent>
