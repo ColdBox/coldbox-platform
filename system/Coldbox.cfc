@@ -91,7 +91,7 @@ Description :
 						<cfset application[appKey].getInterceptorService().processState("preReinit")>
 						
 						<!--- Shutdown the application services --->
-						<cfset application[appKey].getLoaderService().processReinit()>
+						<cfset application[appKey].getLoaderService().processShutdown()>
 					</cfif>
 					
 					<!--- Reload ColdBox --->
