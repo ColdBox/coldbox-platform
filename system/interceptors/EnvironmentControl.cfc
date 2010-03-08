@@ -191,19 +191,48 @@ Description :
 	</cffunction>
 	
 	<cffunction name="detectEnvironment" access="private" returntype="string" hint="Detect the running environment and return the name" output="false" >
-		<!--- *********************************************************************** --->
 		<cfargument name="environmentsArray" required="true" type="array" hint="The environment array">
-		<!--- *********************************************************************** --->
 		<cfscript>
+			var i = 0;
+			var j = 0;
+			var XMLAttributes = '';
+			var urls = '';
+			var patterns = '';
+			var environmentIndex = 0;
+			var environment = '';
+			
 			for(i=1; i lte ArrayLen(arguments.environmentsArray); i=i+1){
-				if ( listContainsNoCase(trim(arguments.environmentsArray[i].XMLAttributes.urls),cgi.http_host) ){
-					//Place the ENVIRONMENT on the settings structure.
-					setSetting("ENVIRONMENT", trim(arguments.environmentsArray[i].XMLAttributes.name));
-					return trim(arguments.environmentsArray[i].XMLAttributes.name);
-					break;
-				}
+			    XMLAttributes = arguments.environmentsArray[i].XMLAttributes;
+			   
+			    urls = '';
+			    if(structKeyExists(XMLAttributes,'urls')){
+			          urls = trim(XMLAttributes.urls);
+			          if (len(urls) and listFindNoCase(urls,cgi.http_host)){
+			                environmentIndex = i;
+			                break;
+			          }
+			    }
+			   
+			    patterns = '';
+			    if(structKeyExists(XMLAttributes,'patterns')){
+			          patterns = trim(XMLAttributes.patterns);
+			          if (len(patterns)){
+			                for(j=1; j lte listLen(patterns); j=j+1){
+			                      if (reFindNoCase(listGetAt(patterns,j),cgi.http_host)){
+			                            environmentIndex = i;
+			                            break;
+			                      }
+			                }
+			          }
+			    }
 			}
-			return "";
+			
+			if (environmentIndex){
+			    environment = trim(arguments.environmentsArray[environmentIndex].XMLAttributes.name);
+			    setSetting("ENVIRONMENT",environment);
+			}
+			
+			return environment;
 		</cfscript>
 	</cffunction>
 	
