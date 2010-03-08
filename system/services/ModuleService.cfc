@@ -151,13 +151,15 @@ I oversee and manage ColdBox modules
 			var beanFactory 		= controller.getPlugin("BeanFactory");
 			var key					= "";
 			
+			// If module not registered, throw exception
+			if(NOT structKeyExists(modules, arguments.moduleName) ){
+				getUtil().throwit(message="Cannot activate module: #arguments.moduleName#",
+								  detail="The module has not been registered, register the module first and then activate it.",
+								  type="ModuleService.IllegalModuleState");
+			}
+			
 			// Get module settings	
 			mConfig = modules[arguments.moduleName];
-				
-			// if module already active, do not activate again.
-			if( mConfig.activated ){
-				return false;
-			}
 				
 			// preModuleLoad interception
 			iData = {moduleLocation=mConfig.path,moduleName=arguments.moduleName};
