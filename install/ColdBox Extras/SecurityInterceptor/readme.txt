@@ -2,6 +2,9 @@ This interceptor provides security to an application. It is very flexible
 and customizable. It bases off on the ability to secure events by creating
 rules. This interceptor will then try to match a rule to the incoming event
 and the user's credentials on roles and/or permissions. 
+
+For the latest documentation refer to the online guide:
+http://wiki.coldbox.org/wiki/Interceptors:Security.cfm
 	
 Default Security:
 This interceptor will try to use ColdFusion's cflogin + cfloginuser authentication

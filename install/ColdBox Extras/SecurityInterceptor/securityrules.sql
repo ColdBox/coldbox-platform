@@ -8,6 +8,7 @@ CREATE TABLE securityrules
 	roles VARCHAR(255),
 	permissions VARCHAR(255),
 	redirect VARCHAR(255),
+	useSSL bit NOT NULL DEFAULT 0
 	PRIMARY KEY (securityrule_id),
 	UNIQUE (securityrule_id)
 ) 

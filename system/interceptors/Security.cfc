@@ -157,10 +157,11 @@ For the latest usage, please visit the wiki.
 		<cfargument name="currentEvent"  required="true" type="string" hint="The event to check">
 		<!--- ************************************************************* --->
 		<cfscript>
-			var x = 1;
-			var rules = getProperty('rules');
+			var x 		 = 1;
+			var rules 	 = getProperty('rules');
 			var rulesLen = arrayLen(rules);
-			var rc = event.getCollection();
+			var rc 		 = event.getCollection();
+			var ssl		 = false;
 			
 			// Loop through Rules
 			for(x=1; x lte rulesLen; x=x+1){
@@ -174,6 +175,7 @@ For the latest usage, please visit the wiki.
 				if( isEventInPattern(currentEvent,rules[x].securelist) ){
 					// Verify if user is logged in and in a secure state	
 					if( _isUserInValidState(rules[x]) eq false ){
+						
 						// Log if Necessary
 						log.debug("User did not validate security for secured event=#currentEvent#. Rule: #rules[x].toString()#");
 						
@@ -192,8 +194,14 @@ For the latest usage, please visit the wiki.
 							rc._securedURL = rc._securedURL & "?#cgi.query_string#";
 						}
 						
-						// Route to safe event
-						setNextEvent(event=rules[x].redirect,persist="_securedURL");
+						// SSL?
+						if( structKeyExists(rules[x], "useSSL") ){
+							ssl = rules[x].useSSL;
+						}
+						
+						// Route to redirect event
+						setNextEvent(event=rules[x].redirect,persist="_securedURL",ssl=ssl);
+						
 						break;
 					}//end user in roles
 					else{
@@ -398,7 +406,7 @@ For the latest usage, please visit the wiki.
 		<!--- ************************************************************* --->
 		<cfargument name="qRules" type="query" required="true" hint="The query to check">
 		<!--- ************************************************************* --->
-		<cfset var validColumns = "whitelist,securelist,roles,permissions,redirect">
+		<cfset var validColumns = "whitelist,securelist,roles,permissions,redirect,useSSL">
 		<cfset var col = "">
 		
 		<!--- Verify only if used --->
@@ -503,10 +511,10 @@ For the latest usage, please visit the wiki.
 	</cffunction>
 	
 	<!--- Get/Set Validator --->
-	<cffunction name="getvalidator" access="private" output="false" returntype="any" hint="Get validator">
+	<cffunction name="getValidator" access="private" output="false" returntype="any" hint="Get validator">
 		<cfreturn instance.validator/>
 	</cffunction>	
-	<cffunction name="setvalidator" access="private" output="false" returntype="void" hint="Set validator">
+	<cffunction name="setValidator" access="private" output="false" returntype="void" hint="Set validator">
 		<cfargument name="validator" type="any" required="true"/>
 		<cfset instance.validator = arguments.validator/>
 	</cffunction>
