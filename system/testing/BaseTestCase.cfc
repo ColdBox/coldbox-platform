@@ -53,6 +53,7 @@ id , name , mail
 		instance.mockBox = createObject("component","coldbox.system.testing.MockBox").init();
 	</cfscript>
 
+	<!--- metadata Inspection --->
 	<cffunction name="metadataInspection" access="private" returntype="void" hint="Inspect test case for annotations">
 		<cfscript>
 			var md = getMetadata(this);
@@ -257,16 +258,37 @@ id , name , mail
 		<cfargument name="private" 	required="false" type="boolean" default="false" hint="Call a private event or not">
 		<cfargument name="prepostExempt" type="boolean" required="false" default="false" hint="If true, pre/post handlers will not be fired.">
 		<cfscript>
-			var handlerResults = "";
-			var requestContext = "";
+			var handlerResults  = "";
+			var requestContext  = "";
 			var relocationTypes = "TestController.setNextEvent,TestController.setNextRoute,TestController.relocate";
-			
+			var cbController    = getController();
+				
 			//Setup the request Context with setup FORM/URL variables set in the unit test.
 			setupRequest(arguments.event);
 			
 			try{
+			
+				// App Start Handler
+				if ( len(cbController.getSetting("ApplicationStartHandler")) ){
+					cbController.runEvent(cbController.getSetting("ApplicationStartHandler"),true);
+				}
+				// preProcess
+				cbController.getInterceptorService().processState("preProcess");
+				// Request Start Handler
+				if ( len(cbController.getSetting("RequestStartHandler")) ){
+					cbController.runEvent(cbController.getSetting("RequestStartHandler"),true);
+				}
+			
 				//TEST EVENT EXECUTION
-				handlerResults = getController().runEvent(event=arguments.event,private=arguments.private,prepostExempt=arguments.prepostExempt);
+				handlerResults = cbController.runEvent(event=arguments.event,private=arguments.private,prepostExempt=arguments.prepostExempt);
+			
+				// Request Start Handler
+				if ( len(cbController.getSetting("RequestEndHandler")) ){
+					cbController.runEvent(cbController.getSetting("RequestEndHandler"),true);
+				}
+				// postProcess
+				cbController.getInterceptorService().processState("postProcess");
+				
 			}
 			catch(Any e){
 				// Exclude relocations so they can be asserted.
