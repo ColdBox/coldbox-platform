@@ -443,6 +443,47 @@ Description :
 	    return( tmpQuery );
 		</cfscript>
 	</cffunction>
+	
+	<!--- getCSV --->
+	<cffunction name="getCSV" access="public" returntype="string" output="false" hint="returns query in delimited text file format">
+		<cfargument name="qry"  	 type="query"  required="true" hint="query to return as a delimited text file" />
+		<cfargument name="delimiter" type="string" required="false" default="," hint="delimiter" />
+		<cfscript>
+        var i = 0;
+        var rptQry = arguments.qry;
+        var delim = arguments.delimiter;
+        var cols = 0;
+        var col = 0;
+        var csv = 0;
+        var c = 0;
+		</cfscript>
+		
+		<!--- set columns as first row in the csv --->
+		<cfset cols = lcase(rptQry.columnList)>
+		<cfset csv = cols & chr(13) & chr(10)>
+		
+		<!--- return data rows in csv format --->
+		<cfset i = 0>
+		<cfloop query="rptQry">
+			<cfset i = i + 1>
+			<cfset line = "">
+			<cfset c = 0>
+			<cfloop list="#cols#" index="col">
+				<cfif c gt 0>
+					<cfset line = line & ",">
+				</cfif>
+				<cfif findNoCase("date",col)>
+					<cfset line = line & DateFormat(replace(rptQry[col][i],delim,"","all"))>
+				<cfelse>
+					<cfset line = line & replace(rptQry[col][i],delim,"","all")>
+				</cfif>
+				<cfset c = c + 1>
+			</cfloop>
+			<cfset csv = csv & line & chr(13) & chr(10)>	
+		</cfloop>
+		
+		<cfreturn csv>
+	</cffunction>
 
 <!------------------------------------------- PRIVATE ------------------------------------------->
 
