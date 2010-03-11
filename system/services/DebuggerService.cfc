@@ -182,8 +182,8 @@ Description :
 		<cfset var thisCollection = "">
 		<cfset var thisCollectionType = "">
 		<cfset var debugTimers = getTimers()>
-		<cfset var loadedModules = controller.getModuleService().getLoadedModules()>
-		<cfset var moduleSettings = controller.getSetting("modules")>
+		<cfset var loadedModules = arrayNew(1)>
+		<cfset var moduleSettings = structnew()>
 
 		<!--- Debug Rendering Type --->
 		<cfset var renderType = "main">
@@ -197,6 +197,12 @@ Description :
 		<cfset var JVMTotalMemory = JVMRuntime.totalMemory()/1024>
 		<cfset var JVMMaxMemory = JVMRuntime.maxMemory()/1024>
 	
+		<!--- Modules Stuff --->
+		<cfif structKeyExists(controller.getServices(), "ModuleService")>
+			<cfset loadedModules = controller.getModuleService().getLoadedModules()>
+			<cfset moduleSettings = controller.getSetting("modules")>
+		</cfif>
+		
 		<!--- URL Base --->
 		<cfif NOT event.isSES()>
 			<cfset URLBase = "index.cfm">
