@@ -80,7 +80,7 @@ Loads a coldbox xml configuration file
 		parseModels(configXML,configStruct);
 		
 		/* ::::::::::::::::::::::::::::::::::::::::: MODULE SETTINGS  :::::::::::::::::::::::::::::::::::::::::::: */
-		parseModules(oConfig,configStruct);
+		parseModules(configXML,configStruct);
 		
 		/* ::::::::::::::::::::::::::::::::::::::::: IOC SETTINGS  :::::::::::::::::::::::::::::::::::::::::::: */
 		parseIOC(configXML,configStruct);
