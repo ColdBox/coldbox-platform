@@ -9,13 +9,10 @@ Date        :	April 04, 2008
 Description :
 	UtilitiesTest
 ----------------------------------------------------------------------->
-<cfcomponent name="UtilitiesTest" extends="coldbox.system.testing.BaseTestCase" output="false">
+<cfcomponent extends="coldbox.system.testing.BaseTestCase" appMapping="/coldbox/testharness">
 
 	<cffunction name="setUp" returntype="void" access="public" output="false">
 		<cfscript>
-		//Setup ColdBox Mappings For this Test
-		setAppMapping("/coldbox/testharness");
-		setConfigMapping(ExpandPath(instance.AppMapping & "/config/coldbox.xml.cfm"));
 		//Call the super setup method to setup the app.
 		super.setup();
 		</cfscript>
@@ -34,10 +31,10 @@ Description :
 		<!--- Now test test plugin as a object --->
 		<cfscript>
 			var plugin = getController().getPlugin("Utilities");
-			var direactoryPath = ExpandPath('/coldbox/testing/tests/resources');
+			var direactoryPath = ExpandPath('/coldbox/testing/resources');
 			var sStruct	= structNew() ;
 			var sString = "";
-			var sObject = CreateObject("component","coldbox.testing.tests.resources.test1");
+			var sObject = CreateObject("component","coldbox.testing.resources.test1");
 			
 			sStruct["1"] = "ColdBox";
 			sStruct["2"] = "Great Toolkit";

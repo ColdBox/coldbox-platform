@@ -9,25 +9,17 @@ Date        :	April 04, 2008
 Description :
 	StringBufferTest
 ----------------------------------------------------------------------->
-<cfcomponent name="StringBufferTest" extends="coldbox.system.testing.BaseTestCase" output="false">
+<cfcomponent extends="coldbox.system.testing.BaseTestCase" appMapping="/coldbox/testharness">
 
 	<cffunction name="setUp" returntype="void" access="public" output="false">
 		<cfscript>
-		//Setup ColdBox Mappings For this Test
-		setAppMapping("/coldbox/testharness");
-		setConfigMapping(ExpandPath(instance.AppMapping & "/config/coldbox.xml.cfm"));
 		//Call the super setup method to setup the app.
 		super.setup();
 		</cfscript>
 	</cffunction>
 	
 	<cffunction name="testPlugin" access="public" returntype="void" output="false">
-		<!--- Returned value is object...? --->
 		<cfscript>
-			//JDK 1.5 TEST
-			var plugin = getController().getPlugin("StringBuffer").setup('test');
-			obj = plugin.getStringBuffer().init();
-			AssertEquals( getMetadata(obj).name, "java.lang.StringBuilder" );
 			
 			//JDK 1.4 TeST
 			getController().getCFMLEngine().JDK_VERSION = 1.4;

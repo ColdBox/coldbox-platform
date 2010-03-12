@@ -11,7 +11,7 @@ Description :
 
 
 ----------------------------------------------------------------------->
-<cfcomponent  output="false" 
+<cfcomponent output="false" 
 			 hint="The ColdBox Mail Service used to send emails in an oo fashion"
 			 extends="coldbox.system.Plugin">
 

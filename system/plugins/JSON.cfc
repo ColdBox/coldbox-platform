@@ -17,24 +17,23 @@ Modifications:
 ----------------------------------------------------------------------->
 <cfcomponent name="JSON"
 			 hint="JSON Plugin is used to serialize and deserialize JSON data to/from native ColdFusion objects."
-			 extends="coldbox.system.Plugin"
+			 extends="coldbox.system.core.util.conversion.JSON"
 			 output="false"
 			 cache="true">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
 	<cffunction name="init" access="public" returntype="JSON" output="false">
-		<cfargument name="controller" type="any" required="true" hint="coldbox.system.web.Controller">
 		<cfscript>
-			super.Init(arguments.controller);
 			
+			super.init();
+			
+			// Decorated ColdBox Plugin Methods thanks to new 3.0.0 zero inheritance
 			setpluginName("JSON");
 			setpluginVersion("1.9");
 			setpluginDescription("JSON Plugin is used to serialize and deserialize JSON data to/from native ColdFusion objects");
 			setpluginAuthor("Luis Majano");
 			setpluginAuthorURL("http://www.coldbox.org");
-			
-			instance.json = createObject("component","coldbox.system.core.util.conversion.JSON").init();
 			
 			return this;
 		</cfscript>
@@ -42,42 +41,6 @@ Modifications:
 
 <!------------------------------------------- PUBLIC ------------------------------------------->
 	
-	<!--- Decode from JSON to CF --->
-	<cffunction name="decode" access="public" returntype="any" output="no" hint="Converts data from JSON to CF format">
-		<!--- ************************************************************* --->
-		<cfargument name="data" type="string" required="Yes" hint="JSON Packet" />
-		<!--- ************************************************************* --->
-		<cfreturn instance.json.decode(argumentCollection=arguments)>
-	</cffunction>
-	
-	<!--- CONVERTS DATA FROM CF TO JSON FORMAT --->
-	<cffunction name="encode" access="public" returntype="string" output="No" hint="Converts data from CF to JSON format">
-		<!--- ************************************************************* --->
-		<cfargument name="data" 			type="any" 		required="Yes" hint="The CF structure" />
-		<cfargument name="queryFormat" 		type="string" 	required="No" default="query" hint="query or array" />
-		<cfargument name="queryKeyCase" 	type="string" 	required="No" default="lower" hint="lower or upper"/>
-		<cfargument name="stringNumbers" 	type="boolean" 	required="No" default="false" >
-		<cfargument name="formatDates" 		type="boolean" 	required="No" default="false" >
-		<cfargument name="columnListFormat" type="string" 	required="No" default="string" hint="string or array" >
-		<cfargument name="keyCase"			type="string" 	required="No" default="lower"  hint="lower or upper"/>
-		<!--- ************************************************************* --->
-		<cfreturn instance.json.encode(argumentCollection=arguments)>
-	</cffunction>
-	
-	<!--- Validate a JSON document --->
-	<cffunction name="validate" access="remote" output="yes" returntype="boolean" hint="I validate a JSON document against a JSON schema">
-		<!--- ************************************************************* --->
-		<cfargument name="doc" 			type="string" 	required="No" />
-		<cfargument name="schema"	 	type="string" 	required="No" />
-		<cfargument name="errorVar" 	type="string" 	required="No" default="JSONSchemaErrors" />
-		<cfargument name="stopOnError" 	type="boolean" 	required="No" default=true />
-		<!--- These arguments are for internal use only --->
-		<cfargument name="_doc" 		type="any" 		required="No" />
-		<cfargument name="_schema" 		type="any" 		required="No" />
-		<cfargument name="_item" 		type="string" 	required="No" default="root" />
-    	<!--- ************************************************************* --->
-		<cfreturn instance.json.validate(argumentCollection=arguments)>
-    </cffunction>
 	
 <!------------------------------------------- PRIVATE ------------------------------------------->
 

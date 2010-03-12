@@ -46,8 +46,7 @@ Modification History:
 08/01/2006 - Updated the cfc to work for ColdBox.
 
 --->
-<cfcomponent name="StringBuffer"
-			 hint="This CFC greatly increases the speed of string concatenation. CF strings are immutable. When you append a string to another string, a whole new string is created. This is fine for a small number of iterations but painfully slow and memory intensive for a large number of concatenation operations. This plugin switches between StringBuilder and StringBuffer if running under cf8"
+<cfcomponent hint="This CFC greatly increases the speed of string concatenation. CF strings are immutable. When you append a string to another string, a whole new string is created. This is fine for a small number of iterations but painfully slow and memory intensive for a large number of concatenation operations. This plugin switches between StringBuilder and StringBuffer if running under cf8"
 			 extends="coldbox.system.Plugin"
 			 output="false"
 			 cache="false">
@@ -58,7 +57,7 @@ Modification History:
 	<cffunction name="init" access="public" returntype="StringBuffer" output="false">
 		<cfargument name="controller" type="any" required="true">
 		<cfscript>
-			/* Init Plugin */
+			
 			super.Init(arguments.controller);
 			setpluginName("StringBuffer");
 			setpluginVersion("1.0");
@@ -66,10 +65,9 @@ Modification History:
 			setpluginAuthor("Luis Majano");
 			setpluginAuthorURL("http://www.coldbox.org");
 			
-			/* Init the String Buffer */
+			// init the string buffer
 			instance.joStringBuffer = createObject("java","java.lang.StringBuffer");
-			
-			/* Return Instance */		
+				
 			return this;
 		</cfscript>		
 	</cffunction>

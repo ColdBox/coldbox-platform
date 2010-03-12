@@ -1,9 +1,14 @@
-<cfcomponent extends="coldbox.system.testing.BaseTestCase">
+<cfcomponent extends="BasePluginTest">
 <cfscript>
 
 	function setup(){
 		mockController = getMockBox().createMock(className="coldbox.system.web.Controller",clearMethods=true);
-		xml = getMockBox().createMock(className="coldbox.system.plugins.XMLConverter").init(mockController);
+		xml = getMockBox().createMock(className="coldbox.system.plugins.XMLConverter");
+		
+		// mock core plugin methods
+		mockPluginMethods(xml);
+		
+		xml.init();
 	}
 	
 	function testArrayToXML(){
