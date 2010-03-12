@@ -104,6 +104,9 @@ Loads a coldbox xml configuration file
 		/* ::::::::::::::::::::::::::::::::::::::::: MODEL SETTINGS  :::::::::::::::::::::::::::::::::::::::::::: */
 		parseModels(oConfig,configStruct);
 		
+		/* ::::::::::::::::::::::::::::::::::::::::: MODULE SETTINGS  :::::::::::::::::::::::::::::::::::::::::::: */
+		parseModules(oConfig,configStruct);
+		
 		/* ::::::::::::::::::::::::::::::::::::::::: IOC SETTINGS  :::::::::::::::::::::::::::::::::::::::::::: */
 		parseIOC(oConfig,configStruct);
 		
@@ -675,8 +678,11 @@ Loads a coldbox xml configuration file
 			var	LayoutFolderStruct 	= CreateObject("java","java.util.LinkedHashMap").init();
 			var key 				= "";
 			var layoutSettings 		= arguments.oConfig.getPropertyMixin("layoutSettings","variables",structnew());
-			var layouts 			= arguments.oConfig.getPropertyMixin("layouts","variables",structnew());
+			var layouts 			= arguments.oConfig.getPropertyMixin("layouts","variables",arrayNew(1));
 			var i 					= 1;
+			var x 					= 1;
+			var thisLayout			= "";
+			var layoutsArray 		= arrayNew(1);
 			
 			// defaults
 			configStruct.defaultLayout 		= "";
@@ -687,27 +693,42 @@ Loads a coldbox xml configuration file
 			structAppend(configStruct,layoutSettings);
 			
 			// registered layouts
-			for(key in layouts){
+			if( isStruct(layouts) ){ 
+				// process structure into array
+				for(key in layouts){
+					thisLayout = layouts[key];
+					thisLayout.name = key;
+					arrayAppend(layoutsArray, thisLayout);
+				}
+			}
+			else{
+				layoutsArray = layouts;
+			}
+			
+			// Process layouts
+			for(x=1; x lte ArrayLen(layoutsArray); x=x+1){
+				thisLayout = layoutsArray[x];
+				
 				// register file with alias
-				configStruct.registeredLayouts[key] = layouts[key].file;
+				configStruct.registeredLayouts[thisLayout.name] = thisLayout.file;
 				
 				// register views
-				if( structKeyExists(layouts[key],"views") ){
-					for(i=1; i lte listLen(layouts[key].views); i=i+1){
-						if ( not StructKeyExists(LayoutViewStruct, lcase( listGetAt(layouts[key].views,i) ) ) ){
-							LayoutViewStruct[lcase( listGetAt(layouts[key].views,i) )] = layouts[key].file;
+				if( structKeyExists(thisLayout,"views") ){
+					for(i=1; i lte listLen(thislayout.views); i=i+1){
+						if ( not StructKeyExists(LayoutViewStruct, lcase( listGetAt(thisLayout.views,i) ) ) ){
+							LayoutViewStruct[lcase( listGetAt(thisLayout.views,i) )] = thisLayout.file;
 						}
 					}
 				}
 				
 				// register folders
-				if( structKeyExists(layouts[key],"folders") ){
-					for(i=1; i lte listLen(layouts[key].folders); i=i+1){
-						if ( not StructKeyExists(LayoutFolderStruct, lcase( listGetAt(layouts[key].folders,i) ) ) ){
-							LayoutFolderStruct[lcase( listGetAt(layouts[key].folders,i) )] = layouts[key].file;
+				if( structKeyExists(thisLayout,"folders") ){
+					for(i=1; i lte listLen(thisLayout.folders); i=i+1){
+						if ( not StructKeyExists(LayoutFolderStruct, lcase( listGetAt(thisLayout.folders,i) ) ) ){
+							LayoutFolderStruct[lcase( listGetAt(thisLayout.folders,i) )] = thisLayout.file;
 						}
 					}
-				}
+				}			
 			}
 			
 			// Register extra layout/view/folder combos
@@ -826,6 +847,26 @@ Loads a coldbox xml configuration file
 			}
 		</cfscript>
 	</cffunction>
+	
+	<!--- parseModules --->
+	<cffunction name="parseModules" output="false" access="public" returntype="void" hint="Parse Module Settings">
+		<cfargument name="oConfig" 		type="any" 	   required="true" hint="The config object"/>
+		<cfargument name="config" 	  	type="struct"  required="true" hint="The config struct"/>
+		<cfscript>
+			var configStruct  = arguments.config;
+			var modules 	  = arguments.oConfig.getPropertyMixin("modules","variables",structnew());
+			
+			// Defaults
+			configStruct.ModulesAutoReload  = false;
+			configStruct.ModulesInclude		= arrayNew(1);
+			configStruct.ModulesExclude		= arrayNew(1);
+			
+			// setup the overrides
+			for(key in modules){
+				configStruct["modules#key#"] = modules[key];	
+			}			
+		</cfscript>
+	</cffunction>	
 
 <!------------------------------------------- PRIVATE ------------------------------------------>
 	

@@ -71,6 +71,13 @@ http://ortus.svnrepository.com/coldbox/trac.cgi/wiki/cbConfigGuide
 		-->
 	</Models>
 	
+	<!-- Modules Directives -->
+	<Modules>
+		<AutoReload>false</AutoReload>
+		<Include></Include>
+		<Exclude></Exclude>
+	</Modules>
+	
 	<!-- 
 		ColdBox Logging via LogBox
 		Levels: -1=OFF,0=FATAL,1=ERROR,2=WARN,3=INFO,4=DEBUG

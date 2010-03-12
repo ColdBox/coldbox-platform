@@ -79,6 +79,9 @@ Loads a coldbox xml configuration file
 		/* ::::::::::::::::::::::::::::::::::::::::: MODEL SETTINGS  :::::::::::::::::::::::::::::::::::::::::::: */
 		parseModels(configXML,configStruct);
 		
+		/* ::::::::::::::::::::::::::::::::::::::::: MODULE SETTINGS  :::::::::::::::::::::::::::::::::::::::::::: */
+		parseModules(oConfig,configStruct);
+		
 		/* ::::::::::::::::::::::::::::::::::::::::: IOC SETTINGS  :::::::::::::::::::::::::::::::::::::::::::: */
 		parseIOC(configXML,configStruct);
 		
@@ -1101,6 +1104,42 @@ Loads a coldbox xml configuration file
 			}
 		</cfscript>
 	</cffunction>
+	
+	<!--- parseModules --->
+	<cffunction name="parseModules" output="false" access="public" returntype="void" hint="Parse Module Settings">
+		<cfargument name="xml" 		  type="any"     required="true" hint="The xml object"/>
+		<cfargument name="config" 	  type="struct"  required="true" hint="The config struct"/>
+		<cfargument name="isOverride" type="boolean" required="false" default="false" hint="Flag to denote if overriding or first time runner."/>
+		<cfscript>
+			var configStruct  = arguments.config;
+			// Module Settings
+			var moduleSettingsNodes = XMLSearch(arguments.xml,"//Modules");
+			
+			// Defaults if not overriding from global framework settings
+			if (NOT arguments.isOverride){
+				// Defaults
+				configStruct.ModulesAutoReload  = false;
+				configStruct.ModulesInclude		= arrayNew(1);
+				configStruct.ModulesExclude		= arrayNew(1);
+			}
+			
+			//Check if empty
+			if ( ArrayLen(moduleSettingsNodes) gt 0 and ArrayLen(moduleSettingsNodes[1].XMLChildren) gt 0){
+				//Checks For AutoReload
+				if ( structKeyExists(moduleSettingsNodes[1], "AutoReload") ){
+					configStruct.modulesAutoReload = trim(moduleSettingsNodes[1].AutoReload.xmlText);
+				}
+				//Checks For Include
+				if ( structKeyExists(moduleSettingsNodes[1], "Include") ){
+					configStruct.modulesInclude = listToArray(trim(moduleSettingsNodes[1].Include.xmlText));
+				}
+				//Checks For Exclude
+				if ( structKeyExists(moduleSettingsNodes[1], "Exclude") ){
+					configStruct.modulesExclude = listToArray(trim(moduleSettingsNodes[1].Exclude.xmlText));
+				}
+			}						
+		</cfscript>
+	</cffunction>	
 	
 	<!--- JSON REGEX --->
 	<cffunction name="getJSONRegex" access="public" returntype="string" output="false" hint="Get the json regex string">

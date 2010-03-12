@@ -13,11 +13,35 @@
 	}
 	
 	function testLoadSettings(){
-	
-		
 		
 	}
+	function testParseModules(){
+		config = {};
+		xml = xmlParse("<Modules></Modules>");
+		
+		// Test layouts as sstruct first
+		loader.parseModules(xml, config, false);
+		
+		assertEquals( false, config.modulesAutoReload);
+		assertEquals( arrayNew(1), config.modulesInclude);
+		assertEquals( arrayNew(1), config.modulesExclude);
+		
+		xml = xmlParse("<Modules>
+			<AutoReload>True</AutoReload>
+			<Include>mod1,test2</Include>
+			<Exclude>mod2</Exclude>
+		</Modules>");
+		
+		// Test layouts as sstruct first
+		loader.parseModules(xml, config, false);
+		
+		assertEquals( true, config.modulesAutoReload);
+		assertEquals( listToArray('mod1,test2'), config.modulesInclude);
+		assertEquals( listToArray('mod2'), config.modulesExclude);
+		
+		debug(config);
 	
+	}
 	
 	
 </cfscript>

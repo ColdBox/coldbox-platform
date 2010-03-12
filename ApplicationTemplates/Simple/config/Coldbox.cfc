@@ -20,6 +20,7 @@ structures to create for configuration
 - cacheEngine
 - interceptorSettings
 - interceptors
+- modules
 
 Available objects in variable scope
 - controller
@@ -74,6 +75,16 @@ function configure(){
 	// the value of the environment is a list of regex patterns to match the cgi.http_host.
 	environments = {
 		//development = "^cf8.,^railo."
+	};
+	
+	// Module Directives
+	modules = {
+		//Turn to false in production
+		autoReload = true,
+		// An array of modules names to load, empty means all of them
+		include = [],
+		// An array of modules names to NOT load, empty means none
+		exclude = [] 
 	};
 
 	//Layout Settings

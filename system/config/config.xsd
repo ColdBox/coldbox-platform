@@ -21,6 +21,7 @@
 				<xs:element maxOccurs="1" minOccurs="0" ref="LogBox"/>
 				<xs:element maxOccurs="1" minOccurs="0" ref="IOC"/>
 				<xs:element maxOccurs="1" minOccurs="0" ref="Models"/>
+				<xs:element maxOccurs="1" minOccurs="0" ref="Modules"/>
 			</xs:all>
 		</xs:complexType>
 	</xs:element>
@@ -899,6 +900,30 @@
 							</xs:extension>
 						</xs:simpleContent>
 					</xs:complexType>
+				</xs:element>
+			</xs:all>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="Modules">
+		<xs:annotation>
+			<xs:documentation>These are the modules directives.</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:all>
+				<xs:element maxOccurs="1" minOccurs="0" name="AutoReload" type="xs:boolean" default="false">
+					<xs:annotation>
+						<xs:documentation>Whether to auto reload the modules on each request, use true in development only.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element maxOccurs="1" minOccurs="0" name="Include" type="xs:string" default="">
+					<xs:annotation>
+						<xs:documentation>A list of modules to include in the loading process. Empty means load all discovered modules.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element maxOccurs="1" minOccurs="0" name="Exclude" type="xs:string" default="">
+					<xs:annotation>
+						<xs:documentation>A list of modules to exclude in the loading process. Empty means exclude nothing</xs:documentation>
+					</xs:annotation>
 				</xs:element>
 			</xs:all>
 		</xs:complexType>
