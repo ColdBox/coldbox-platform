@@ -113,6 +113,10 @@ Description :
 						</cfif>
 					</cflock>
 				<cfelse>
+					<!--- Modules Auto Reload --->
+					<cfif cbController.getSetting("ModulesAutoReload")>
+						<cfset cbController.getModuleService().reloadAll()>
+					</cfif>
 					<!--- Handler's Index Auto Reload --->
 					<cfif cbController.getSetting("HandlersIndexAutoReload")>
 						<cflock type="exclusive" name="#getAppHash()#" timeout="#getLockTimeout()#" throwontimeout="true">

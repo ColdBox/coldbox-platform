@@ -241,7 +241,7 @@ Description :
 <!--- **************************************************************--->
 <!--- ColdBox Modules --->
 <!--- **************************************************************--->
-	<cfif structKeyExists(controller.getServices(), "ModuleService") AND	getDebuggerConfig().getShowModulesPanel()>
+	<cfif controller.getCFMLEngine().isMT() AND getDebuggerConfig().getShowModulesPanel()>
 		<cfinclude template="panels/ModulesPanel.cfm">
 	</cfif>
 <!--- **************************************************************--->

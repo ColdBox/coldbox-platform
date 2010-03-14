@@ -198,7 +198,7 @@ Description :
 		<cfset var JVMMaxMemory = JVMRuntime.maxMemory()/1024>
 	
 		<!--- Modules Stuff --->
-		<cfif structKeyExists(controller.getServices(), "ModuleService")>
+		<cfif controller.getCFMLEngine().isMT()>
 			<cfset loadedModules = controller.getModuleService().getLoadedModules()>
 			<cfset moduleSettings = controller.getSetting("modules")>
 		</cfif>

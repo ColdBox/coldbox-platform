@@ -61,8 +61,8 @@ I oversee and manage ColdBox modules
 	<!--- registerAllModules --->
 	<cffunction name="registerAllModules" output="false" access="public" returntype="void" hint="Register all located modules in the conventions or set location. Usually called by framework to load configuraiton data.">
 		<cfscript>
-			var foundModules = "";
-			var x = 1;
+			var foundModules   = "";
+			var x 			   = 1;
 			
 			// Register the module configuration
 			controller.setSetting("modules",structnew());
@@ -72,7 +72,12 @@ I oversee and manage ColdBox modules
 			
 			// Iterate through them.
 			for(x=1; x lte arrayLen(foundModules); x++){
-				registerModule(foundModules[x]);
+				
+				// Verify the exception and inclusion lists
+				if( canLoad( foundModules[x] ) ){
+					registerModule(foundModules[x]);
+				}
+				
 			}
 		</cfscript>
 	</cffunction>
@@ -89,7 +94,10 @@ I oversee and manage ColdBox modules
 			var modLocation 			= modulesPath & "/" & modName;
 			var mConfig 				= "";
 			var modulesConfiguration	= controller.getSetting("modules");
+		</cfscript>	
 			
+		<cflock name="module.registration.#arguments.modulename#" type="exclusive" throwontimeout="true" timeout="20">
+			<cfscript>	
 			//Check if module config exists, else skip and exit and log
 			if( NOT fileExists(modLocation & "/ModuleConfig.cfc") ){
 				instance.logger.WARN("The module (#modName#) cannot be loaded as it does not have a ModuleConfig.cfc in its root. Path Checked: #modLocation#");
@@ -122,8 +130,12 @@ I oversee and manage ColdBox modules
 			// Store module configuration in main modules configuration
 			modulesConfiguration[modName] = mConfig;
 			
-			return true;
-		</cfscript>
+			// Log registration
+			instance.logger.DEBUG("Module #arguments.moduleName# registered successfully.");
+			</cfscript>
+		</cflock>
+		
+		<cfreturn true>
 	</cffunction>
 	
 	<!--- activateModules --->
@@ -134,7 +146,12 @@ I oversee and manage ColdBox modules
 			
 			// Iterate through module configuration and activate each module
 			for(moduleName in modules){
-				activateModule(moduleName);
+				
+				// Verify the exception and inclusion lists
+				if( canLoad( moduleName ) ){
+					activateModule(moduleName);
+				}
+				
 			}
 		</cfscript>
 	</cffunction>
@@ -157,7 +174,10 @@ I oversee and manage ColdBox modules
 								  detail="The module has not been registered, register the module first and then activate it.",
 								  type="ModuleService.IllegalModuleState");
 			}
-			
+		</cfscript>
+		
+		<cflock name="module.activation.#arguments.moduleName#" type="exclusive" timeout="20" throwontimeout="true">
+		<cfscript>	
 			// Get module settings	
 			mConfig = modules[arguments.moduleName];
 				
@@ -207,8 +227,12 @@ I oversee and manage ColdBox modules
 			iData = {moduleLocation=mConfig.path,moduleName=arguments.moduleName,moduleConfig=mConfig};
 			interceptorService.processState("postModuleLoad",iData);	
 			
-			return true;		
+			// Log it
+			instance.logger.DEBUG("Module #arguments.moduleName# activated sucessfully.");
 		</cfscript>
+		</cflock>
+		
+		<cfreturn true>
 	</cffunction>
 	
 	<!--- reload --->
@@ -252,6 +276,13 @@ I oversee and manage ColdBox modules
 			// Check if module is loaded?
 			if( NOT structKeyExists(appConfig.modules,arguments.moduleName) ){ return false; }
 			
+		</cfscript>
+		
+		<cflock name="module.unload.#arguments.moduleName#" type="exclusive" timeout="20" throwontimeout="true">
+		<cfscript>
+			// Check if module is loaded?
+			if( NOT structKeyExists(appConfig.modules,arguments.moduleName) ){ return false; }
+			
 			// Before unloading a module interception
 			interceptorService.processState("preModuleUnload",iData);
 			
@@ -277,8 +308,12 @@ I oversee and manage ColdBox modules
 			//After unloading a module interception
 			interceptorService.processState("postModuleUnload",iData);
 			
-			return true;
+			// Log it
+			instance.logger.debug("Module #arguments.moduleName# unloaded successfully.");
 		</cfscript>
+		</cflock>
+		
+		<cfreturn true>
 	</cffunction>
 	
 	<!--- unloadAll --->
@@ -401,6 +436,31 @@ I oversee and manage ColdBox modules
 		
 		<cfreturn results>
 	</cffunction>
+	
+	<!--- canLoad --->
+    <cffunction name="canLoad" output="false" access="private" returntype="boolean" hint="Checks if the module can be loaded or registered">
+  		<cfargument name="moduleName" type="string" required="true" hint="The module name"/>
+  		<cfscript>
+    		var includeModules = controller.getSetting("ModulesInclude"); 
+			var excludeModules = controller.getSetting("ModulesExclude"); 
+			
+			// If we have includes and in the includes
+			if( len(includeModules) and listFindNoCase(includeModules,arguments.moduleName) ){
+				return true;
+			}
+			// If we have includes and NOT in the includes
+			else if( len(includeModules) and NOT listFindNoCase(includeModules,arguments.moduleName) ){
+				return false;
+			}
+			
+			// If we have excludes and in the excludes
+			if( len(excludeModules) and listFindNoCase(excludeModules,arguments.moduleName) ){
+				return false;
+			}
+			
+			return true;			
+    	</cfscript>
+    </cffunction>
 	
 	
 </cfcomponent>

@@ -20,6 +20,7 @@ structures to create for configuration
 - cacheEngine
 - interceptorSettings
 - interceptors
+- modules
 
 Special Placeholders
 @AppMapping@
@@ -96,6 +97,13 @@ Optional Methods
 			coldboxSideBar = true,
 			testingModelPath = "coldbox.testing.testmodel",
 			javaloader_libpath = controller.getAppRootPath() & "model/java"
+		};
+		
+		// Modules Configuration 
+		modules = {
+			autoReload = true,
+			exclude = "",
+			include = ""
 		};
 		
 		//Conventions
