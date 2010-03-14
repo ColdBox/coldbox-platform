@@ -858,13 +858,14 @@ Loads a coldbox xml configuration file
 			
 			// Defaults
 			configStruct.ModulesAutoReload  = false;
-			configStruct.ModulesInclude		= arrayNew(1);
-			configStruct.ModulesExclude		= arrayNew(1);
+			configStruct.ModulesInclude		= "";
+			configStruct.ModulesExclude		= "";
 			
-			// setup the overrides
-			for(key in modules){
-				configStruct["modules#key#"] = modules[key];	
-			}			
+			// setup the overrides: We do lists, because array function support is only decent until CF9 or railo :(
+			if( structKeyExists(modules,"autoReload") ){ configStruct.modulesAutoReload = modules.autoReload; }
+			if( structKeyExists(modules,"include") ){ configStruct.include = arrayToList(modules.include); }
+			if( structKeyExists(modules,"exclude") ){ configStruct.exclude = arrayToList(modules.exclude); }	
+			
 		</cfscript>
 	</cffunction>	
 

@@ -36,8 +36,8 @@
 		loader.parseModules(xml, config, false);
 		
 		assertEquals( true, config.modulesAutoReload);
-		assertEquals( listToArray('mod1,test2'), config.modulesInclude);
-		assertEquals( listToArray('mod2'), config.modulesExclude);
+		assertEquals( 'mod1,test2', config.modulesInclude);
+		assertEquals( 'mod2', config.modulesExclude);
 		
 		debug(config);
 	

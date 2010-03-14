@@ -102,8 +102,8 @@ Optional Methods
 		// Modules Configuration 
 		modules = {
 			autoReload = true,
-			exclude = "",
-			include = ""
+			exclude    = [],
+			include    = []
 		};
 		
 		//Conventions

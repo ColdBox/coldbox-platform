@@ -1131,11 +1131,11 @@ Loads a coldbox xml configuration file
 				}
 				//Checks For Include
 				if ( structKeyExists(moduleSettingsNodes[1], "Include") ){
-					configStruct.modulesInclude = listToArray(trim(moduleSettingsNodes[1].Include.xmlText));
+					configStruct.modulesInclude = trim(moduleSettingsNodes[1].Include.xmlText);
 				}
 				//Checks For Exclude
 				if ( structKeyExists(moduleSettingsNodes[1], "Exclude") ){
-					configStruct.modulesExclude = listToArray(trim(moduleSettingsNodes[1].Exclude.xmlText));
+					configStruct.modulesExclude = trim(moduleSettingsNodes[1].Exclude.xmlText);
 				}
 			}						
 		</cfscript>
