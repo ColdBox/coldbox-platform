@@ -120,7 +120,7 @@ I oversee and manage ColdBox modules
 				registeredHandlers 		= '',
 				settings 				= {},
 				interceptors 			= [],
-				customInterceptionPoints = "",
+				interceptorSettings     = { customInterceptionPoints = "" },
 				routes 					= []
 			};
 
@@ -190,7 +190,7 @@ I oversee and manage ColdBox modules
 			mConfig.registeredHandlers = arrayToList(mConfig.registeredHandlers);
 
 			// Register Custom Interception Points
-			interceptorService.appendInterceptionPoints(mConfig.customInterceptionPoints);
+			interceptorService.appendInterceptionPoints(mConfig.interceptorSettings.customInterceptionPoints);
 
 			// Register the Config as an observable also.
 			interceptorService.registerInterceptor(interceptorObject=instance.mConfigCache[arguments.moduleName]);
@@ -406,13 +406,10 @@ I oversee and manage ColdBox modules
 
 			//Get custom interception points
 			mConfig.interceptorSettings = oConfig.getPropertyMixin("interceptorSettings","variables",structnew());
-			if( isDefined("mConfig.interceptorSettings.customInterceptionPoints") ){
-				mConfig.customInterceptionPoints = mConfig.interceptorSettings.customInterceptionPoints;
-			} else {
-				mConfig.customInterceptionPoints = "";
+			if( NOT structKeyExists(mConfig.interceptorSettings,"customInterceptionPoints") ){
+				mConfig.interceptorSettings.customInterceptionPoints = "";
 			}
-
-
+			
 			//Get Routes
 			mConfig.routes = oConfig.getPropertyMixin("routes","variables",arrayNew(1));
 

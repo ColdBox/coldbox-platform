@@ -17,13 +17,22 @@
       	
 		<!-- Copy src -->	
       	<copy todir="${dir.app1}/forgebox">
-        	<fileset dir="${dir.forgebox}" />
+        	<fileset dir="${dir.forgebox}">
+        		<exclude name="**/build.xml"/>
+        		<exclude name="**/*.zip"/>
+        	</fileset>
         </copy>
 		<copy todir="${dir.app2}/forgebox">
-        	<fileset dir="${dir.forgebox}" />
+			<fileset dir="${dir.forgebox}">
+        		<exclude name="**/build.xml"/>
+        		<exclude name="**/*.zip"/>
+        	</fileset>
         </copy>
 		<copy todir="${dir.app3}/forgebox">
-        	<fileset dir="${dir.forgebox}" />
+			<fileset dir="${dir.forgebox}">
+        		<exclude name="**/build.xml"/>
+        		<exclude name="**/*.zip"/>
+        	</fileset>
         </copy>
 		
     </target>
