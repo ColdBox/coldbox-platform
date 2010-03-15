@@ -68,6 +68,10 @@ Optional Methods
 	*/
 	function configure(){
 		
+		settings = {
+			version = "1.1"
+		};
+		
 		// SES Routes ORDER MATTERS
 		routes = [
 			{pattern="/", handler="manager",action="index", orderby="POPULAR"},
