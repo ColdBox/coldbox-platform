@@ -372,7 +372,7 @@ Quick and Dirty Feed Dump:
 		<cfloop list="#arguments.feedURL#" delimiters="," index="url">
 			<cfscript>
 				// increase i value for array number
-				i++;
+				i=i+1;
 				// download feed
 				xmlDoc = downloadFeed(url);
 				/* parse feed when there are multiple urls to process */
