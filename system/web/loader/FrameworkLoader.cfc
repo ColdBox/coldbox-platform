@@ -56,7 +56,7 @@ Loads all the default ColdBox settings into an application controller
 			settingsStruct["ConfigFileSchemaLocation"] = instance.FrameworkConfigXSDFile;
 			
 			//Fix Application Path to last / standard.
-			if( right(appRootPath,1) neq  OSSeparator){
+			if( NOT reFind("(/|\\)$",appRootPath) ){
 				arguments.controller.setAppRootPath( appRootPath & OSSeparator );
 			}
 			
