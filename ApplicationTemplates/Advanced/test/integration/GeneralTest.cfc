@@ -5,20 +5,14 @@ Description :
 	Unit Tests integration for the ehGeneral Handler.
 
 ----------------------------------------------------------------------->
-<cfcomponent extends="coldbox.system.testing.BaseTestCase" 
-			 output="false"
-			 appMapping="/coldbox/ApplicationTemplates/Advanced">
+<cfcomponent extends="coldbox.system.testing.BaseTestCase" appMapping="/coldbox/ApplicationTemplates/Advanced">
 
 	<cffunction name="setUp" returntype="void" output="false">
 		<cfscript>
-		//Call the super setup method to setup the app.
+		// Call the super setup method to setup the app.
 		super.setup();
 		
-		//EXECUTE THE APPLICATION START HANDLER: UNCOMMENT IF NEEDED AND FILL IT OUT.
-		//getController().runEvent("main.onAppInit");
-
-		//EXECUTE THE ON REQUEST START HANDLER: UNCOMMENT IF NEEDED AND FILL IT OUT
-		//getController().runEvent("main.onRequestStart");
+		// Any preparation work will go here for this test.
 		</cfscript>
 	</cffunction>
 	
