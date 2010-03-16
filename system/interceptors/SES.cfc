@@ -796,8 +796,6 @@ Description :
 			}	
 			// Clean up the path_info from index.cfm and nested pathing
 			items["pathInfo"] = trim(reReplacenocase(items["pathInfo"],"[/\\]index\.cfm",""));
-			// Clean up empty placeholders
-			items["pathInfo"] = replace(items["pathInfo"],"//","/","all");
 			if( len(items["scriptName"]) ){
 				items["pathInfo"] = replaceNocase(items["pathInfo"],items["scriptName"],'');
 			}
