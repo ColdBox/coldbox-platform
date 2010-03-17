@@ -834,7 +834,7 @@ Description: This is the framework's simple bean factory.
 				//coldobx:{key}:{target} Usually for named factories
 				case 3: {
 					thisLocationType = getToken(thisType,2,":");
-					thisLocationKey = getToken(thisType,3,":");
+					thisLocationKey  = getToken(thisType,3,":");
 					switch(thisLocationType){
 						case "setting" 				: { locatedDependency = getSetting(thisLocationKey); break; }
 						case "plugin" 				: { locatedDependency = getPlugin(thisLocationKey); break; }
@@ -848,6 +848,7 @@ Description: This is the framework's simple bean factory.
 							break; 
 						}
 						case "datasource" 			: { locatedDependency = getDatasource(thisLocationKey); break; }
+						case "interceptor" 			: { locatedDependency = getInterceptor(thisLocationKey,true); break; }
 					}//end of services
 					break;
 				}
