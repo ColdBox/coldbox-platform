@@ -228,5 +228,19 @@ Description :
 			this[arguments.name] 	  = arguments.UDF;
 		</cfscript>
 	</cffunction>
+	
+	<!--- arrayToStruct --->
+	<cffunction name="arrayToStruct" output="false" access="public" returntype="struct" hint="Convert an array to struct argument notation">
+		<cfargument name="in" type="array" required="true" hint="The array to convert"/>
+		<cfscript>
+			var results = structnew();
+			
+			for(x=1; x lte Arraylen(arguments.in); x=x+1){
+				results[x] = arguments.in[x];
+			}
+			
+			return results;
+		</cfscript>
+	</cffunction>
 
 </cfcomponent>

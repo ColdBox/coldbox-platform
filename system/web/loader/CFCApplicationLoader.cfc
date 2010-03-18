@@ -37,13 +37,14 @@ Loads a coldbox xml configuration file
 		<!--- ************************************************************* --->
 		<cfscript>
 		//Create Config Structure
-		var configStruct = structNew();
-		var coldboxSettings = getColdboxSettings();
-		var appRootPath = getController().getAppRootPath();
-		var configCFCLocation = getUtil().ripExtension(replacenocase(coldboxSettings["ConfigFileLocation"],appRootPath,""));
-		var configCreatePath = "";
-		var oConfig = "";
-		var logBoxConfigHash = hash(getController().getLogBox().getConfig().getMemento().toString());
+		var configStruct		= structNew();
+		var coldboxSettings 	= getColdboxSettings();
+		var appRootPath 		= getController().getAppRootPath();
+		var configCFCLocation 	= getUtil().ripExtension(replacenocase(coldboxSettings["ConfigFileLocation"],appRootPath,""));
+		var configCreatePath 	= "";
+		var oConfig 			= "";
+		var logBoxConfigHash  	= hash(getController().getLogBox().getConfig().getMemento().toString());
+			
 		
 		//Is incoming app mapping set, or do we auto-calculate
 		if( NOT len(arguments.overrideAppMapping) ){
@@ -60,7 +61,7 @@ Loads a coldbox xml configuration file
 			configStruct["AppMapping"] = removeChars(configStruct["AppMapping"],1,1);
 		}
 		//AppMappingInvocation Path
-		appMappingAsDots = reReplace(configStruct["AppMapping"],"(/|\\)",".","all");
+		appMappingAsDots = getAppMappingAsDots(configStruct.AppMapping);
 		//Config Create Path
 		if( len(appMappingAsDots) ){
 			configCreatePath = appMappingAsDots & "." & configCFCLocation;
@@ -144,7 +145,7 @@ Loads a coldbox xml configuration file
 		parseInterceptors(oConfig,configStruct);
 		
 		/* ::::::::::::::::::::::::::::::::::::::::: LOGBOX Configuration :::::::::::::::::::::::::::::::::::::::::::: */
-		parseLogBox(configStruct,logBoxConfigHash);
+		parseLogBox(oConfig,configStruct,logBoxConfigHash);
 		
 		/* ::::::::::::::::::::::::::::::::::::::::: CONFIG FILE LAST MODIFIED SETTING :::::::::::::::::::::::::::::::::::::::::::: */
 		configStruct.configTimeStamp = getUtil().fileLastModified(coldboxSettings["ConfigFileLocation"]);
@@ -831,18 +832,44 @@ Loads a coldbox xml configuration file
 	
 	<!--- parseLogBox --->
 	<cffunction name="parseLogBox" output="false" access="public" returntype="void" hint="Parse LogBox">
-		<cfargument name="config" 				type="struct"  required="true" hint="The config struct"/>
-		<cfargument name="logBoxConfigHash" 	type="string"  required="true"  hint="The logbox config hash"/>
+		<cfargument name="oConfig" 		type="any" 	   required="true" hint="The config object"/>
+		<cfargument name="config" 		type="struct"  required="true" hint="The config struct"/>
+		<cfargument name="configHash"   type="string"  required="true" hint="The initial logBox config hash"/>
 		<cfscript>
-			var logBoxConfig = getController().getLogBox().getConfig();
-			var newConfigHash = hash(logBoxConfig.getMemento().toString());
-			
-			// Default
+			var logBoxConfig 	  = getController().getLogBox().getConfig();
+			var newConfigHash 	  = hash(logBoxConfig.getMemento().toString());
+			var logBoxDSL		  = structnew();
+			var key				  = "";
+		
+			// Default Config Structure
 			arguments.config["LogBoxConfig"] = structnew();
 			
-			// Check if hash changed
-			if( compare(arguments.logBoxConfigHash, newConfigHash) neq 0 ){
-				//Store LogBox Configuration on settings as new config
+			// Check if we have defined DSL first in application config
+			logBoxDSL = arguments.oConfig.getPropertyMixin("logBox","variables",structnew());
+			if( NOT structIsEmpty(logBoxDSL) ){
+				// Reset Configuration we have declared a configuration DSL
+				logBoxConfig.reset();
+				
+				// Do we have a configFile key?
+				if( structKeyExists(logBoxDSL,"configFile") ){
+					// Load by file
+					loadLogBoxByFile( logBoxConfig, logBoxDSL.configFile);
+				}
+				// Then we load via the DSL data.
+				else{
+					// Load the Data Configuration DSL
+					logBoxConfig.loadDataDSL( logBoxDSL );
+				}
+				
+				// Store for reconfiguration
+				arguments.config["LogBoxConfig"] = logBoxConfig.getMemento();				
+			}
+			// Check if LogBoxConfig.cfc exists in the config conventions and load it.
+			else if( fileExists( appRootPath & "config/LogBox.cfc") ){
+				loadLogBoxByConvention(logBoxConfig,arguments.config);
+			}
+			// Check if hash changed by means of programmatic object config
+			else if( compare(arguments.configHash, newConfigHash) neq 0 ){
 				arguments.config["LogBoxConfig"] = logBoxConfig.getMemento();
 			}
 		</cfscript>
@@ -916,5 +943,7 @@ Loads a coldbox xml configuration file
 		<!--- ************************************************************* --->
 		<cfinvoke component="#arguments.oConfig#" method="#arguments.method#" />
 	</cffunction>
+	
+	
 
 </cfcomponent>

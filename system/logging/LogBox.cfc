@@ -222,7 +222,7 @@ Description :
 		<cfargument name="name" 		type="string"  required="true"  hint="A unique name for the appender to register. Only unique names can be registered per instance."/>
 		<cfargument name="class" 		type="string"  required="true"  hint="The appender's class to register. We will create, init it and register it for you."/>
 		<cfargument name="properties" 	type="struct"  required="false" default="#structnew()#" hint="The structure of properties to configure this appender with."/>
-		<cfargument name="layout" 		type="string"  required="true"  default="" hint="The layout class to use in this appender for custom message rendering."/>
+		<cfargument name="layout" 		type="string"  required="false" default="" hint="The layout class to use in this appender for custom message rendering."/>
 		<!--- ************************************************************* --->
 		<cfset var appenders = instance.appenderRegistry>
 		<cfset var oAppender = "">

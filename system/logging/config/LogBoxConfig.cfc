@@ -17,7 +17,8 @@ Description :
 		this.logLevels = createObject("component","coldbox.system.logging.LogLevels");
 		
 		// Instance private scope
-		instance = structnew();
+		instance 		  = structnew();
+		instance.utility  = createObject("component","coldbox.system.core.util.Util");
 		
 		// Startup the configuration
 		reset();
@@ -25,15 +26,91 @@ Description :
 
 	<!--- init --->
 	<cffunction name="init" output="false" access="public" returntype="LogBoxConfig" hint="Constructor">
-		<cfargument name="xmlConfig" type="string" required="false" default="" hint="The xml configuration file to use instead of a programmatic approach"/>
+		<cfargument name="XMLConfig" type="string"  required="false" default="" hint="The xml configuration file to use instead of a programmatic approach"/>
+		<cfargument name="CFCConfig" type="any" 	required="false" hint="The logBox Data Configuration CFC"/>
+		<cfargument name="CFCConfigPath" type="string" 	required="false" hint="The logBox Data Configuration CFC path to use"/>
 		<cfscript>
-			if( len(trim(arguments.xmlConfig)) ){
-				parseAndLoad(xmlParse(arguments.xmlConfig));
+			var logBoxDSL = "";
+			
+			// Test and load via XML
+			if( len(trim(arguments.XMLConfig)) ){
+				parseAndLoad(xmlParse(arguments.XMLConfig));
 			}
 			
+			// Test and load via Data CFC Path
+			if( structKeyExists(arguments, "CFCConfigPath") ){
+				arguments.CFCConfig = createObject("component",arguments.CFCConfigPath);
+			}
+			
+			// Test and load via Data CFC
+			if( structKeyExists(arguments,"CFCConfig") and isObject(arguments.CFCConfig) ){
+				// Decorate our data CFC
+				arguments.CFCConfig.getPropertyMixin = instance.utility.getPropertyMixin;
+				// Execute the configuration
+				arguments.CFCConfig.configure();
+				// Get Data
+				logBoxDSL = arguments.CFCConfig.getPropertyMixin("logBox","variables",structnew());
+				// Load the DSL
+				loadDataDSL( logBoxDSL );
+			}
+			
+			// Just return, most likely programmatic config
 			return this;
 		</cfscript>
 	</cffunction>
+	
+	<!--- loadDataCFC --->
+    <cffunction name="loadDataDSL" output="false" access="public" returntype="void" hint="Load a data configuration CFC data DSL">
+    	<cfargument name="rawDSL" type="struct" required="true" hint="The data configuration DSL structure"/>
+    	<cfscript>
+			var logBoxDSL  = arguments.rawDSL;
+			var key 		= "";
+			
+			// Are appenders defined?
+			if( NOT structKeyExists( logBoxDSL, "appenders" ) ){
+				$throw("No appenders defined","Please define at least one appender","LogBoxConfig.NoAppendersFound");
+			}
+			// Register Appenders
+			for( key in logBoxDSL.appenders ){
+				logBoxDSL.appenders[key].name = key;
+				appender(argumentCollection=logBoxDSL.appenders[key]);
+			}
+			
+			// Register Root Logger
+			if( NOT structKeyExists( logBoxDSL, "root" ) ){
+				$throw("No Root Logger Defined","Please define the root logger","CFCApplicationLoader.NoRootLoggerException");
+			}
+			root(argumentCollection=convertLevels(logBoxDSL.root));
+			
+			// Register Categories
+			if( structKeyExists( logBoxDSL, "categories") ){
+				for( key in logBoxDSL.categories ){
+					logBoxDSL.categories[key].name = key;
+					category(argumentCollection=convertLevels(logBoxDSL.categories[key]));
+				}
+			}
+			
+			// Register Level Categories
+			if( structKeyExists( logBoxDSL, "debug" ) ){ 
+				DEBUG(argumentCollection=instance.utility.arrayToStruct(logBoxDSL.debug) );
+			}
+			if( structKeyExists( logBoxDSL, "info" ) ){ 
+				INFO(argumentCollection=instance.utility.arrayToStruct(logBoxDSL.info) );
+			}
+			if( structKeyExists( logBoxDSL, "warn" ) ){ 
+				WARN(argumentCollection=instance.utility.arrayToStruct(logBoxDSL.warn) );
+			}
+			if( structKeyExists( logBoxDSL, "error" ) ){ 
+				ERROR(argumentCollection=instance.utility.arrayToStruct(logBoxDSL.error) );
+			}
+			if( structKeyExists( logBoxDSL, "fatal" ) ){ 
+				FATAL(argumentCollection=instance.utility.arrayToStruct(logBoxDSL.fatal) );
+			}
+			if( structKeyExists( logBoxDSL, "off" ) ){ 
+				OFF(argumentCollection=instance.utility.arrayToStruct(logBoxDSL.off) );
+			}			
+		</cfscript>
+    </cffunction>
 	
 	<!--- reset --->
 	<cffunction name="reset" output="false" access="public" returntype="void" hint="Reset the configuration">
@@ -123,7 +200,7 @@ Description :
 		<cfargument name="name" 		type="string"  required="true"  hint="A unique name for the appender to register. Only unique names can be registered per instance."/>
 		<cfargument name="class" 		type="string"  required="true"  hint="The appender's class to register. We will create, init it and register it for you."/>
 		<cfargument name="properties" 	type="struct"  required="false" default="#structnew()#" hint="The structure of properties to configure this appender with."/>
-		<cfargument name="layout" 		type="string"  required="true"  default="" hint="The layout class path to use in this appender for custom message rendering."/>
+		<cfargument name="layout" 		type="string"  required="false" default="" hint="The layout class path to use in this appender for custom message rendering."/>
 		<cfscript>
 			// REgister appender
 			instance.appenders[arguments.name] = arguments;
@@ -295,6 +372,7 @@ Description :
 				// Register appender
 				appender(argumentCollection=args);
 			}
+			
 			//Register Root Logger
 			if( NOT arrayLen(rootXML) ){
 				$throw(message="The root element cannot be found and it is mandatory",type="LogBoxConfig.RootLoggerNotFound");
@@ -375,7 +453,23 @@ Description :
 	
 <!------------------------------------------- PRIVATE ------------------------------------------>
 
-	
+	<!--- convertLevels --->
+    <cffunction name="convertLevels" output="false" access="private" returntype="struct" hint="Convert levels from an incoming structure of data">
+    	<cfargument name="target" type="struct" required="true" default="" hint="The structure to look for elements: LevelMin and LevelMax"/>
+		<cfscript>
+			// Check levelMin
+			if( structKeyExists(arguments.target, "levelMIN") and NOT isNumeric(arguments.target.levelMin)){
+				arguments.target.levelMin = this.logLevels.lookupAsInt(arguments.target.levelMin);
+			}
+			// Check levelMax
+			if( structKeyExists(arguments.target, "levelMax") and NOT isNumeric(arguments.target.levelMax)){
+				arguments.target.levelMax = this.logLevels.lookupAsInt(arguments.target.levelMax);
+			}
+			
+			// For chaining
+			return arguments.target;
+		</cfscript>
+    </cffunction>
 
 	<!--- levelChecks --->
 	<cffunction name="levelChecks" output="false" access="private" returntype="void" hint="Level checks or throw">

@@ -1068,11 +1068,14 @@ Loads a coldbox xml configuration file
 		<cfargument name="config" 	type="struct" required="true" hint="The config struct"/>
 		<cfargument name="isOverride" type="boolean" required="false" default="false" hint="Flag to denote if overriding or first time runner."/>
 		<cfscript>
-			var logboxXML = xmlSearch(arguments.xml,"//LogBox");
-			var logBoxConfig = "";
-			var memento = "";
-			var prop = "";
-			var oUtil = getUtil();
+			var logboxXML 		 = xmlSearch(arguments.xml,"//LogBox");
+			var logBoxConfig 	 = getController().getLogBox().getConfig();
+			var memento 		 = "";
+			var prop 			 = "";
+			var oUtil 		 	 = getUtil();
+			var appRootPath 	 = getController().getAppRootPath();
+			var appMappingAsDots = "";
+			var configCreatePath  = "config.LogBox";
 			
 			// Default
 			if( NOT arguments.isOverride){
@@ -1080,27 +1083,37 @@ Loads a coldbox xml configuration file
 			}
 			
 			if( arrayLen(logboxXML) ){
-				// Get config object From controller's logbox
-				logBoxConfig = getController().getLogBox().getConfig();
 				// Reset the configuration
 				logBoxConfig.reset();
-				// Parse and load new configuration data
-				logBoxConfig.parseAndLoad(logboxXML[1]);
-				// Get reference to do ${} replacements
-				memento = logBoxConfig.getMemento();
 				
-				// Appender Replacements
-				for( key in memento.appenders ){
-					memento.appenders[key].class = oUtil.placeHolderReplacer(memento.appenders[key].class,arguments.config);
-					//Appender properties
-					for(prop in memento.appenders[key].properties){
-						// ${} replacement
-						memento.appenders[key].properties[prop] = oUtil.placeHolderReplacer(memento.appenders[key].properties[prop],arguments.config);
-					}
+				// Does configFile exists
+				if( structKeyExists(logboxXML[1], "ConfigFile") ){
+					// Load by file
+					loadLogBoxByFile( logBoxConfig, oUtil.placeHolderReplacer(logBoxXML[1].configFile.xmlText,arguments.config));
 				}
+				else{
+					// Parse and load new configuration data
+					logBoxConfig.parseAndLoad(logboxXML[1]);
+					// Get reference to do ${} replacements
+					memento = logBoxConfig.getMemento();
+					
+					// Appender Replacements
+					for( key in memento.appenders ){
+						memento.appenders[key].class = oUtil.placeHolderReplacer(memento.appenders[key].class,arguments.config);
+						//Appender properties
+						for(prop in memento.appenders[key].properties){
+							// ${} replacement
+							memento.appenders[key].properties[prop] = oUtil.placeHolderReplacer(memento.appenders[key].properties[prop],arguments.config);
+						}
+					}
+				}			
 				
 				//Store LogBox Configuration on settings
-				arguments.config["LogBoxConfig"] = memento;
+				arguments.config["LogBoxConfig"] = logBoxConfig.getMemento();		
+			}
+			// Check if LogBox.cfc exists in the config conventions and load it.
+			else if( fileExists( appRootPath & "config/LogBox.cfc") ){
+				loadLogBoxByConvention(logBoxConfig,arguments.config);
 			}
 		</cfscript>
 	</cffunction>
@@ -1119,8 +1132,8 @@ Loads a coldbox xml configuration file
 			if (NOT arguments.isOverride){
 				// Defaults
 				configStruct.ModulesAutoReload  = false;
-				configStruct.ModulesInclude		= arrayNew(1);
-				configStruct.ModulesExclude		= arrayNew(1);
+				configStruct.ModulesInclude		= "";
+				configStruct.ModulesExclude		= "";
 			}
 			
 			//Check if empty

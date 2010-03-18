@@ -1,26 +1,27 @@
 <cfcomponent output="false" hint="My App Configuration">
 <cfscript>
 /**
-structures to create for configuration
+structures/arrays to create for configuration
 
-- coldbox
-- settings
-- conventions
-- environments
-- ioc
-- models
-- debugger
-- mailSettings
-- i18n
-- bugTracers
-- webservices
-- datasources
-- layoutSettings
-- layouts
-- cacheEngine
-- interceptorSettings
-- interceptors
-- modules
+- coldbox (struct)
+- settings (struct)
+- conventions (struct)
+- environments (struct)
+- ioc (struct)
+- models (struct)
+- debugger (struct)
+- mailSettings (struct)
+- i18n (struct)
+- bugTracers (struct)
+- webservices (struct)
+- datasources (struct)
+- layoutSettings (struct)
+- layouts (array of structs)
+- cacheEngine (struct)
+- interceptorSettings (struct)
+- interceptors (array of structs)
+- modules (struct)
+- logBox (struct)
 
 Available objects in variable scope
 - controller
@@ -105,11 +106,17 @@ Optional Methods
 			exclude = [] 
 		};
 		
-		
-		//LogBox
-		logBoxConfig.appender(name="coldboxTracer",class="coldbox.system.logging.appenders.ColdboxTracerAppender");
-		logBoxConfig.root(levelMax=logBoxConfig.logLevels.INFO,appenders="*");
-		logBoxConfig.info("coldbox.system");
+		//LogBox DSL
+		logBox = {
+			// Define Appenders
+			appenders = {
+				coldboxTracer = { class="coldbox.system.logging.appenders.ColdboxTracerAppender" }
+			},
+			// Root Logger
+			root = { levelmax="INFO", appenders="*" },
+			// Implicit Level Categories
+			info = [ "coldbox.system" ] 
+		};
 		
 		//Layout Settings
 		layoutSettings = {

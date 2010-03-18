@@ -266,15 +266,20 @@ Optional Methods
 			  {class="#variables.appMapping#.interceptors.executionTracer"}
 		];
 		
-		
-		//LogBox config using the logBoxConfig object;
-		logBoxConfig.appender(name="myConsole",class="coldbox.system.logging.appenders.ConsoleAppender");
-		logBoxConfig.appender(name="ColdBoxTracer",class="coldbox.system.logging.appenders.ColdboxTracerAppender");
-		
-		props = {filePath="logs",fileName=coldbox.appName,autoExpand=true};
-		logBoxConfig.appender(name="FileAppender",class="coldbox.system.logging.appenders.RollingFileAppender",properties=props);
-		
-		logBoxConfig.root(levelMax=logBoxConfig.logLevels.DEBUG,appenders="*");		
+		//LogBox DSL
+		logBox = {
+			// Define Appenders
+			appenders = {
+				coldboxTracer = { class="coldbox.system.logging.appenders.ColdboxTracerAppender" },
+				myConsole     = { class="coldbox.system.logging.appenders.ConsoleAppender" },
+				fileAppender  = { class="coldbox.system.logging.appenders.RollingFileAppender",
+								  properties = {
+								  	filePath="logs", fileName=coldbox.appName, autoExpand=true
+								 }}
+			},
+			// Root Logger
+			root = { levelmax="DEBUG", appenders="*" } 
+		};
 	}
 	
 	function development(){

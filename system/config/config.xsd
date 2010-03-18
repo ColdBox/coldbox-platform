@@ -624,6 +624,11 @@
 		<xs:annotation><xs:documentation>This is how you configure the ColdBox Logging Library: LogBox</xs:documentation></xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
+				<xs:element minOccurs="0" maxOccurs="1" name="ConfigFile" type="xs:string">
+					<xs:annotation>
+						<xs:documentation>The location of the external file location, if declared.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
 				<xs:element minOccurs="1" maxOccurs="unbounded" name="Appender">
 					<xs:annotation>
 						<xs:documentation>An Appender declaration.</xs:documentation>

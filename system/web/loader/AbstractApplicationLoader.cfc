@@ -95,11 +95,57 @@ Abstract application loader
 			}
     	</cfscript>
     </cffunction>
+	
+	<!--- getAppMappingAsDots --->
+    <cffunction name="getAppMappingAsDots" output="false" access="public" returntype="string" hint="Get the App Mapping as Dots">
+    	<cfargument name="appMapping" type="string" required="true" />
+		<cfscript>
+			return reReplace(arguments.appMapping,"(/|\\)",".","all");
+		</cfscript>
+    </cffunction>
 
 	<!--- Get ColdBox Util --->
 	<cffunction name="getUtil" access="public" output="false" returntype="coldbox.system.core.util.Util" hint="Create and return a util object">
 		<cfreturn instance.util/>
 	</cffunction>
+	
+	<!--- loadLogBoxByConvention --->
+    <cffunction name="loadLogBoxByConvention" output="false" access="public" returntype="void" hint="Load logBox by convention">
+    	<cfargument name="logBoxConfig" type="any" required="true"/>
+    	<cfargument name="config" type="struct" required="true"/>
+		<cfscript>
+    		var appRootPath 	  = getController().getAppRootPath();
+			var appMappingAsDots  = "";
+			var configCreatePath  = "config.LogBox";
+			
+			// Reset Configuration we have declared a configuration DSL
+			arguments.logBoxConfig.reset();
+			//AppMappingInvocation Path
+			appMappingAsDots = getAppMappingAsDots(arguments.config.appMapping);
+			//Config Create Path
+			if( len(appMappingAsDots) ){
+				configCreatePath = appMappingAsDots & "." & configCreatePath;
+			}
+			arguments.logBoxConfig.init(CFCConfigPath=configCreatePath).validate();
+			arguments.config["LogBoxConfig"] = arguments.logBoxConfig.getMemento();
+		</cfscript>
+    </cffunction>
+	
+	<!--- loadLogBoxByFile --->
+    <cffunction name="loadLogBoxByFile" output="false" access="public" returntype="void" hint="Load logBox by file">
+    	<cfargument name="logBoxConfig" type="any" required="true"/>
+    	<cfargument name="filePath" type="string" required="true"/>
+		<cfscript>
+    		// Load according xml?
+			if( listFindNoCase("cfm,xml", listLast(arguments.filePath,".")) ){
+				arguments.logBoxConfig.init(XMLConfig=arguments.filePath).validate();
+			}
+			// Load according to CFC Path
+			else{
+				arguments.logBoxConfig.init(CFCConfigPath=arguments.filePath).validate();
+			}
+		</cfscript>
+    </cffunction>
 	
 <!------------------------------------------- PRIVATE ------------------------------------------>
 

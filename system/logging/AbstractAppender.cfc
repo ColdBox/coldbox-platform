@@ -36,7 +36,7 @@ Description :
 		<!--- ************************************************************* --->
 		<cfargument name="name" 		type="string"  required="true" hint="The unique name for this appender."/>
 		<cfargument name="properties" 	type="struct"  required="false" default="#structnew()#" hint="A map of configuration properties for the appender"/>
-		<cfargument name="layout" 		type="string"  required="true"  default="" hint="The layout class to use in this appender for custom message rendering."/>
+		<cfargument name="layout" 		type="string"  required="false" default="" hint="The layout class to use in this appender for custom message rendering."/>
 		<!--- ************************************************************* --->
 		<cfscript>
 			// Appender's Name

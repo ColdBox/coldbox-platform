@@ -122,7 +122,18 @@ function configure(){
 		modulesLocation	 = "monitor/modules"
 	};
 	
-
+	//LogBox DSL
+	logBox = {
+		// Define Appenders
+		appenders = {
+			coldboxTracer = { class="coldbox.system.logging.appenders.ColdboxTracerAppender" }
+		},
+		// Root Logger
+		root = { levelmax="INFO", appenders="*" },
+		// Implicit Level Categories
+		info = [ "coldbox.system" ] 
+	};
+	
 	//Layout Settings
 	layoutSettings = {
 		defaultLayout = "Layout.Main.cfm"
