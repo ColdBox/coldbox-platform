@@ -172,7 +172,7 @@ Description		:
 	</cffunction>
 	
 	<!--- Verify How Many Calls have been made. --->
-	<cffunction name="mockVerifyCallCount" output="false" returntype="numeric" hint="Assert how many calls have been made to the mock or a specific mock method">
+	<cffunction name="mockVerifyCallCount" output="false" returntype="boolean" hint="Assert how many calls have been made to the mock or a specific mock method">
 		<cfargument name="count" 		type="numeric" required="true"  hint="The number of calls made"/>
 		<cfargument name="methodName" 	type="string"  required="false" default="" hint="Name of the method to verify the calls from" />
 		<cfscript>
