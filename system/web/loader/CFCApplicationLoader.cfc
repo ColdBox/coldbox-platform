@@ -865,7 +865,7 @@ Loads a coldbox xml configuration file
 				arguments.config["LogBoxConfig"] = logBoxConfig.getMemento();				
 			}
 			// Check if LogBoxConfig.cfc exists in the config conventions and load it.
-			else if( fileExists( appRootPath & "config/LogBox.cfc") ){
+			else if( fileExists( getController().getAppRootPath() & "config/LogBox.cfc") ){
 				loadLogBoxByConvention(logBoxConfig,arguments.config);
 			}
 			// Check if hash changed by means of programmatic object config
