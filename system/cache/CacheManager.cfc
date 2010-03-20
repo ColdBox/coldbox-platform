@@ -441,7 +441,7 @@ Dependencies :
 		<!--- ************************************************************* --->
 		<cfscript>
 			//.*- = the cache suffix and appendages for regex to match
-			var cacheKey = this.EVENT_CACHEKEY_PREFIX & replace(arguments.eventsnippet,".","\.","all") & "-.*";
+			var cacheKey = this.EVENT_CACHEKEY_PREFIX & replace(arguments.eventsnippet,".","\.","all") & ".*-.*";
 														  
 			//Check if we are purging with query string
 			if( len(arguments.queryString) neq 0 ){
