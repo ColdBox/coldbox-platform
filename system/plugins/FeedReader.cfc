@@ -32,7 +32,7 @@ Quick and Dirty Feed Dump:
 
 ----------------------------------------------------------------------->
 
-<cfcomponent extends="coldbox.system.plugin"
+<cfcomponent extends="coldbox.system.Plugin"
 			 hint="A feed reader plug-in that processes Atom, RDF and RSS formats. The recommended method for general usage is readFeed()."
 			 cache="true">
 

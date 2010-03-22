@@ -22,7 +22,7 @@ Blog Etnry (help/doc): http://www.railo.ch/blog/index.cfm/2008/7/6/Cluster-Scope
 ----------------------------------------------------------------------->
 <cfcomponent name="ClusterStorage"
 			 hint="Cluster Storage plugin. It provides the user with a mechanism for permanent data storage using the Cluster scope. This plugin creates a special variable in cluster scope that correctly identifies the coldbox app."
-			 extends="coldbox.system.plugin"
+			 extends="coldbox.system.Plugin"
 			 output="false"
 			 cache="true">
 

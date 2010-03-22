@@ -33,7 +33,7 @@ METHODS:
 	
 ----------------------------------------------------------------------->
 <cfcomponent name="FeedGenerator" 
-			 extends="coldbox.system.plugin"
+			 extends="coldbox.system.Plugin"
 			 hint="A feed generator plug-in. Currently this plug-in only generates RSS 2.0 feeds."
 			 cache="true">
 
