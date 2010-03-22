@@ -20,7 +20,7 @@ Description :
 	</cfscript>
 
 	<!--- Init --->
-	<cffunction name="init" access="public" returntype="TransferConfigFactory" hint="Constructor.">
+	<cffunction name="init" access="public" returntype="TransferConfigFactory" hint="Constructor." output="false">
 		<cfreturn this>
 	</cffunction>
 

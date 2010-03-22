@@ -364,7 +364,7 @@ Description		:
 <!------------------------------------------- PRIVATE ------------------------------------------>
 	
 	<!--- Mock Debugging Calls --->
-	<cffunction name="mockDebug" access="private" returntype="struct" hint="Debugging method for MockBox">
+	<cffunction name="mockDebug" access="private" returntype="struct" hint="Debugging method for MockBox" output="false">
 	<cfscript>
 		var rtn 					= structnew();
 		rtn.mockResults 			= this._mockResults;

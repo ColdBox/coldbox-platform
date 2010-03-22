@@ -164,7 +164,7 @@ Modification History:
 	</cffunction>
 	
 	<!--- Populate from struct --->
-	<cffunction name="populate" access="public" returntype="any" hint="Populate with a memento">
+	<cffunction name="populate" access="public" returntype="any" hint="Populate with a memento" output="false">
 		<!--- ************************************************************* --->
 		<cfargument name="memento"  required="true" type="struct" 	hint="The structure to populate the object with.">
 		<!--- ************************************************************* --->

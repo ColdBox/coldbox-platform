@@ -54,7 +54,7 @@ id , name , mail
 	</cfscript>
 
 	<!--- metadata Inspection --->
-	<cffunction name="metadataInspection" access="private" returntype="void" hint="Inspect test case for annotations">
+	<cffunction name="metadataInspection" access="private" returntype="void" hint="Inspect test case for annotations" output="false">
 		<cfscript>
 			var md = getMetadata(this);
 			// Inspect for appMapping annotation
@@ -77,7 +77,7 @@ id , name , mail
 	</cffunction>
 
 	<!--- setup --->
-	<cffunction name="setup" hint="The main setup method for running ColdBox enabled tests">
+	<cffunction name="setup" hint="The main setup method for running ColdBox enabled tests" output="false">
 		<cfscript>
 		var appRootPath = "";
 		
@@ -128,7 +128,7 @@ id , name , mail
 	</cffunction>
 	
 	<!--- tearDown --->
-	<cffunction name="tearDown" hint="The main teardown for ColdBox enabled applications" >
+	<cffunction name="tearDown" hint="The main teardown for ColdBox enabled applications" output="false">
 		<cfscript>
 			structDelete(application,getColdboxAppKey());
 		</cfscript>
@@ -349,7 +349,7 @@ id , name , mail
 	</cffunction>
 	
 	<!--- Dump facade --->
-	<cffunction name="$dump" access="private" hint="Facade for cfmx dump" returntype="void">
+	<cffunction name="$dump" access="private" hint="Facade for cfmx dump" returntype="void" output="false">
 		<cfargument name="var" required="yes" type="any">
 		<cfargument name="isAbort" type="boolean" default="false" required="false" hint="Abort also"/>
 		<cfdump var="#var#">

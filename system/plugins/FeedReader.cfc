@@ -312,7 +312,7 @@ Quick and Dirty Feed Dump:
 
 <!---------------------------------------- PUBLIC FEED METHODS ------------------------------------------->
 
-	<cffunction name="readFeed" access="public" returntype="struct" hint="Read a feed sourced from HTTP or from cache. Return a universal structure representation of the feed.">
+	<cffunction name="readFeed" access="public" returntype="struct" hint="Read a feed sourced from HTTP or from cache. Return a universal structure representation of the feed." output="false">
 		<!--- ******************************************************************************** --->
 		<cfargument name="feedURL" 		type="string"  required="yes" hint="The feed url to parse or retrieve from cache">
 		<cfargument name="itemsType" 	type="string"  required="false" default="array" hint="The type of the items either query or array, array is used by default"/>
@@ -347,7 +347,7 @@ Quick and Dirty Feed Dump:
 		</cfscript>
 	</cffunction>
 
-	<cffunction name="retrieveFeed" access="public" returntype="struct" hint="This method does a cfhttp call on the feed url and returns a universal parsed feed structure. You can use this when you don't want to use the cache facilities.">
+	<cffunction name="retrieveFeed" access="public" returntype="struct" hint="This method does a cfhttp call on the feed url and returns a universal parsed feed structure. You can use this when you don't want to use the cache facilities." output="false">
 		<!--- ******************************************************************************** --->
 		<cfargument name="feedURL" 		type="string" required="yes" hint="The url to retrieve the feed from.">
 		<cfargument name="itemsType" 	type="string" required="false" default="array" hint="The type of the items either query or array, array is default"/>
@@ -465,7 +465,7 @@ Quick and Dirty Feed Dump:
 		<cfreturn feed>
 	</cffunction>
 
-	<cffunction name="parseFeed" access="public" returntype="struct" hint="This parses a feed as a XML document and returns the results as a structure of elements">
+	<cffunction name="parseFeed" access="public" returntype="struct" hint="This parses a feed as a XML document and returns the results as a structure of elements" output="false">
 		<!--- ******************************************************************************** --->
 		<cfargument name="xmlDoc" 		type="xml" required="yes" hint="The XML document (saved as a ColdFusion object) to parse and normalize">
 		<cfargument name="itemsType" 	type="string" required="false" default="array" hint="The type of the items either query or array, array is used by default"/>

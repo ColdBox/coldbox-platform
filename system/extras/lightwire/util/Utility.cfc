@@ -270,7 +270,7 @@ Description :
 	</cffunction>
 	
 	<!--- Dump it Facade --->
-	<cffunction name="dumpit" access="public" hint="Facade for cfmx dump" returntype="void">
+	<cffunction name="dumpit" access="public" hint="Facade for cfmx dump" returntype="void" output="false">
 		<cfargument name="var" required="yes" type="any">
 		<cfargument name="abort" type="boolean" required="false" default="false"/>
 		<cfdump var="#var#"><cfif abort><cfabort></cfif>

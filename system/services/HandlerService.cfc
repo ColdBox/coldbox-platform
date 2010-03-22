@@ -449,7 +449,7 @@ Description :
 	</cffunction>
 	
 	<!--- Save Event Caching metadata --->
-	<cffunction name="saveEventCachingmetadata" access="private" returntype="void" hint="Save a handler's event caching metadata in the dictionary">
+	<cffunction name="saveEventCachingmetadata" access="private" returntype="void" hint="Save a handler's event caching metadata in the dictionary" output="false">
 		<!--- ************************************************************* --->
 		<cfargument name="eventUDF" 		type="any" required="true" hint="The handler event UDF to inspect" />
 		<cfargument name="cacheKey"     	type="any" required="true" hint="The event cache key" />
@@ -498,7 +498,7 @@ Description :
 	</cffunction>
 	
 	<!--- Save Handler metadata --->
-	<cffunction name="saveHandlerMetadata" access="private" returntype="void" hint="Save a handler's persistence metadata in the dictionary">
+	<cffunction name="saveHandlerMetadata" access="private" returntype="void" hint="Save a handler's persistence metadata in the dictionary" output="false">
 		<!--- ************************************************************* --->
 		<cfargument name="targetHandler" type="any" 	required="true" hint="The handler target" />
 		<cfargument name="cacheKey"      type="any" 	required="true" hint="The handler cache key" />

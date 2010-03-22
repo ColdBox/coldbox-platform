@@ -324,24 +324,24 @@ Modification History:
 	    </cfscript>
 	</cffunction>
 
-	<cffunction name="showDebugPanel" access="public" returntype="void" hint="I can override to show or not the debug panel. Very useful in AJAX debugging">
+	<cffunction name="showDebugPanel" access="public" returntype="void" hint="I can override to show or not the debug panel. Very useful in AJAX debugging" output="false">
 		<cfargument name="show" type="boolean" required="true">
 		<cfset setValue(name="coldbox_debugpanel",value=arguments.show,private=true)>
 	</cffunction>
 
-	<cffunction name="getDebugPanelFlag" access="public" returntype="boolean" hint="I return the debugpanel flag for this request.">
+	<cffunction name="getDebugPanelFlag" access="public" returntype="boolean" hint="I return the debugpanel flag for this request." output="false">
 		<cfreturn getValue(name="coldbox_debugpanel",defaultValue=true,private=true)>
 	</cffunction>
 	
-	<cffunction name="isProxyRequest" access="public" returntype="boolean" hint="Is this a coldbox proxy request">
+	<cffunction name="isProxyRequest" access="public" returntype="boolean" hint="Is this a coldbox proxy request" output="false">
 		<cfreturn getValue(name="coldbox_proxyrequest",defaultValue=false,private=true)>
 	</cffunction>
 	
-	<cffunction name="setProxyRequest" access="public" returntype="void" hint="Set that this is a proxy request">
+	<cffunction name="setProxyRequest" access="public" returntype="void" hint="Set that this is a proxy request" output="false">
 		<cfset setValue(name="coldbox_proxyrequest",value=true,private=true)>
 	</cffunction>
 	
-	<cffunction name="NoRender" access="public" returntype="void" hint="Set the flag that tells the framework not to render, just execute">
+	<cffunction name="NoRender" access="public" returntype="void" hint="Set the flag that tells the framework not to render, just execute" output="false">
 		<cfargument name="remove" required="false" type="boolean" default="false" hint="If true, it removes the flag, else its set.">
 		<cfscript>
 			if (arguments.remove eq false)
@@ -351,7 +351,7 @@ Modification History:
 		</cfscript>		
 	</cffunction>
 	
-	<cffunction name="isNoRender" access="public" returntype="boolean" hint="Is this a no render request">
+	<cffunction name="isNoRender" access="public" returntype="boolean" hint="Is this a no render request" output="false">
 		<cfreturn getValue(name="coldbox_norender",defaultValue=false,private=true)>
 	</cffunction>
 	
@@ -633,7 +633,7 @@ Modification History:
 	</cffunction>
 	
 	<!--- Dump facade --->
-	<cffunction name="$dump" access="private" hint="Facade for cfmx dump" returntype="void">
+	<cffunction name="$dump" access="private" hint="Facade for cfmx dump" returntype="void" output="false">
 		<cfargument name="var" required="yes" type="any">
 		<cfargument name="isAbort" type="boolean" default="false" required="false" hint="Abort also"/>
 		<cfdump var="#var#">

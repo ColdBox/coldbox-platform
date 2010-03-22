@@ -395,7 +395,7 @@ Only one instance of a specific ColdBox application exists.
 	</cffunction>
 	
 	<!--- relocate --->
-	<cffunction name="relocate" access="public" hint="Facade for cflocation" returntype="void">
+	<cffunction name="relocate" access="public" hint="Facade for cflocation" returntype="void" output="false">
 		<cfargument name="url" 		required="true" 	type="string">
 		<cfargument name="addtoken" required="false" 	type="boolean" default="false">
 		<cfargument name="postProcessExempt"  type="boolean" required="false" default="false" hint="Do not fire the postProcess interceptors">
@@ -466,7 +466,7 @@ Only one instance of a specific ColdBox application exists.
 	</cffunction>
 	
 	<!--- Event Service Locator Factory --->
-	<cffunction name="runEvent" returntype="any" access="Public" hint="I am an event handler runnable factory. If no event is passed in then it will run the default event from the config file.">
+	<cffunction name="runEvent" returntype="any" access="Public" hint="I am an event handler runnable factory. If no event is passed in then it will run the default event from the config file." output="false">
 		<!--- ************************************************************* --->
 		<cfargument name="event"         type="any" 	required="false" default="" 	 hint="The event to run as a string. If no current event is set, use the default event from the config.xml. This is a string">
 		<cfargument name="prepostExempt" type="boolean" required="false" default="false" hint="If true, pre/post handlers will not be fired.">

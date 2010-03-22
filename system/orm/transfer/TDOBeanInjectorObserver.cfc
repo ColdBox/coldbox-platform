@@ -125,7 +125,7 @@ Usage:
 	</cfscript>
 
 	<!--- Init --->
-	<cffunction name="init" access="public" returntype="any" hint="Constructor.">
+	<cffunction name="init" access="public" returntype="any" hint="Constructor." output="false">
 		<!--- ************************************************************* --->
 		<cfargument name="transfer"			  	required="true"		type="any" 		 hint="The transfer.transfer object" />
 		<cfargument name="ColdBoxBeanFactory" 	required="true"		type="any" 		 hint="The coldbox bean factory"/>

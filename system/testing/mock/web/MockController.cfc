@@ -57,7 +57,7 @@ Description		: This is a unit test controller that basically overrides the setNe
 	</cffunction>
 	
 	<!--- relocate --->
-	<cffunction name="relocate" access="public" hint="Facade for cflocation" returntype="void">
+	<cffunction name="relocate" access="public" hint="Facade for cflocation" returntype="void" output="false">
 		<cfargument name="url" 		required="true" 	type="string">
 		<cfargument name="addtoken" required="false" 	type="boolean" default="false">
 		<cfargument name="postProcessExempt"  type="boolean" required="false" default="false" hint="Do not fire the postProcess interceptors">
