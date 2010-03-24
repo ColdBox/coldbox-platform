@@ -544,10 +544,10 @@ Dependencies :
 		</cfscript>
 		
 		<!--- Lock Reaping, so only one can be ran even if called manually, for concurrency protection --->
-		<cflock type="exclusive" name="coldbox.cacheManager.reaping" timeout="#instance.lockTimeout#" throwontimeout="true">
+		<cflock type="exclusive" name="coldbox.cacheManager.#this.CACHE_ID#.reap" timeout="#instance.lockTimeout#" throwontimeout="true">
 		<cfscript>
 			// Expire and cleanup if in frequency
-			if ( TRUE OR dateDiff("n", getCacheStats().getlastReapDatetime(), now() ) gte ccBean.getReapFrequency() ){
+			if ( dateDiff("n", getCacheStats().getlastReapDatetime(), now() ) gte ccBean.getReapFrequency() ){
 				
 				// Init Ref Key Vars
 				reflocal.softRef = getObjectPool().getReferenceQueue().poll();
