@@ -134,8 +134,16 @@ Modification History:
 		<!--- ************************************************************* --->
 		<cfargument name="objectKey" type="any" required="true">
 		<!--- ************************************************************* --->
-		<!--- Check for Object in Cache. --->
-		<cfreturn structKeyExists(instance.pool, arguments.objectKey) >
+		<cfscript>
+			// Check if object in pool and object not dead
+			if( structKeyExists(instance.pool, arguments.objectKey)  
+			    AND structKeyExists(instance.pool_metadata,arguments.objectKey) 
+				AND NOT instance.pool_metadata[arguments.objectkey].isExpired){
+				return true;
+			}
+			
+			return false;
+		</cfscript>
 	</cffunction>
 
 	<!--- Get an object from the pool --->

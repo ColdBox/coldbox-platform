@@ -22,7 +22,7 @@ Description :
 		<cfscript>
 			
 			// Setup the cacheManager as a property
-			cacheManager = arguments.cacheManager;
+			instance.cacheManager = arguments.cacheManager;
 			
 			// Init reap to right now
 			setLastReapDateTime(now());
@@ -38,7 +38,7 @@ Description :
 	
 	<!--- getAssociatedCacheManager --->
 	<cffunction name="getAssociatedCacheManager" output="false" access="public" returntype="coldbox.system.cache.CacheManager" hint="Get the associated Cache Manager for this stats object">
-		<cfreturn cacheManager>
+		<cfreturn instance.cacheManager>
 	</cffunction>
 	
 	<!--- Get Cache Performance --->

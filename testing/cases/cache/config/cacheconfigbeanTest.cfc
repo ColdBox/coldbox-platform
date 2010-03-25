@@ -7,14 +7,14 @@
 			this.ccbean = createObject("component","coldbox.system.cache.config.CacheConfig");
 			this.memento = structnew();
 			
-			this.memento.CacheObjectDefaultTimeout = 20;
-			this.memento.CacheObjectDefaultLastAccessTimeout = 20;
-			this.memento.CacheReapFrequency = 1;
-			this.memento.CacheMaxObjects = 100;
-			this.memento.CacheFreeMemoryPercentageThreshold = 1;
-			this.memento.CacheUseLastAccessTimeouts = true;
-			this.memento.CacheEvictionPolicy = "LFU";
-			this.memento.CacheEvictCount = 10;
+			this.memento.ObjectDefaultTimeout = 20;
+			this.memento.ObjectDefaultLastAccessTimeout = 20;
+			this.memento.ReapFrequency = 1;
+			this.memento.MaxObjects = 100;
+			this.memento.FreeMemoryPercentageThreshold = 1;
+			this.memento.UseLastAccessTimeouts = true;
+			this.memento.EvictionPolicy = "LFU";
+			this.memento.EvictCount = 10;
 			
 			this.ccbean.init(argumentCollection=this.memento);
 		</cfscript>
@@ -28,49 +28,49 @@
 	
 	<cffunction name="testgetCacheEvictionPolicy" access="public" returnType="void">
 		<cfscript>
-			assertEquals(this.ccbean.getCacheEvictionPolicy(), this.memento.cacheEvictionPolicy);
+			assertEquals(this.ccbean.getEvictionPolicy(), this.memento.EvictionPolicy);
 		</cfscript>
 	</cffunction>		
 	
 	<cffunction name="testgetCacheFreeMemoryPercentageThreshold" access="public" returnType="void">
 		<cfscript>
-			assertEquals(this.ccbean.getCacheFreeMemoryPercentageThreshold(), this.memento.CacheFreeMemoryPercentageThreshold);
+			assertEquals(this.ccbean.getFreeMemoryPercentageThreshold(), this.memento.FreeMemoryPercentageThreshold);
 		</cfscript>
 	</cffunction>		
 	
 	<cffunction name="testgetCacheMaxObjects" access="public" returnType="void">
 		<cfscript>
-			assertEquals(this.ccbean.getCacheMaxObjects(), this.memento.CacheMaxObjects);
+			assertEquals(this.ccbean.getMaxObjects(), this.memento.MaxObjects);
 		</cfscript>
 	</cffunction>		
 	
 	<cffunction name="testgetCacheObjectDefaultLastAccessTimeout" access="public" returnType="void">
 		<cfscript>
-			assertEquals(this.ccbean.getCacheObjectDefaultLastAccessTimeout(), this.memento.CacheObjectDefaultLastAccessTimeout);
+			assertEquals(this.ccbean.getObjectDefaultLastAccessTimeout(), this.memento.ObjectDefaultLastAccessTimeout);
 		</cfscript>
 	</cffunction>		
 	
 	<cffunction name="testgetCacheObjectDefaultTimeout" access="public" returnType="void">
 		<cfscript>
-			assertEquals(this.ccbean.getCacheObjectDefaultTimeout(), this.memento.CacheObjectDefaultTimeout);
+			assertEquals(this.ccbean.getObjectDefaultTimeout(), this.memento.ObjectDefaultTimeout);
 		</cfscript>
 	</cffunction>		
 	
 	<cffunction name="testgetCacheReapFrequency" access="public" returnType="void">
 		<cfscript>
-			assertEquals(this.ccbean.getCacheReapFrequency(), this.memento.CacheReapFrequency);
+			assertEquals(this.ccbean.getReapFrequency(), this.memento.ReapFrequency);
 		</cfscript>
 	</cffunction>		
 	
 	<cffunction name="testgetCacheUseLastAccessTimeouts" access="public" returnType="void">
 		<cfscript>
-			assertEquals(this.ccbean.getCacheUseLastAccessTimeouts(), this.memento.CacheUseLastAccessTimeouts);
+			assertEquals(this.ccbean.getUseLastAccessTimeouts(), this.memento.UseLastAccessTimeouts);
 		</cfscript>
 	</cffunction>	
 	
 	<cffunction name="testGetCacheEvictCount" access="public" returnType="void">
 		<cfscript>
-			assertEquals(this.ccbean.getCacheEvictCount(), this.memento.cacheEvictCount);
+			assertEquals(this.ccbean.getEvictCount(), this.memento.EvictCount);
 		</cfscript>
 	</cffunction>		
 	
