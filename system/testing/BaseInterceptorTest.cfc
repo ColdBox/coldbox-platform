@@ -8,13 +8,51 @@ Date        : 06/20/2009
 Description :
  Base Test case for Interceptors
 ---------------------------------------------------------------------->
-<cfcomponent name="BaseInterceptorTest" 
-			 output="false" 
-			 extends="coldbox.system.testing.BaseTestCase"
-			 hint="A base test for testing interceptors">
-	
+<cfcomponent output="false" extends="coldbox.system.testing.BaseTestCase" hint="A base test for testing interceptors">
+
 	<cfscript>
 		this.loadColdbox = false;	
 	</cfscript>
-	
+
+	<!--- setupTest --->
+    <cffunction name="setup" output="false" access="public" returntype="void" hint="Prepare for testing">
+    	<cfscript>
+    		var md 		= getMetadata(this);
+			var mockBox = getMockBox();
+			
+			// Check for plugin else throw exception
+			if( NOT structKeyExists(md, "interceptor") ){
+				$throw("interceptor annotation not found on component tag","Please declare a 'interceptor=path' annotation","BaseInterceptorTest.InvalidStateException");
+			}
+			
+			// Check if user setup interceptor properties on scope
+			if( NOT structKeyExists(variables,"configProperties") ){
+				variables.configProperties = structnew();
+			}
+			
+			// Create interceptor with Mocking capabilities
+			variables.interceptor = mockBox.createMock(md.interceptor);
+			
+			// Create Mock Objects
+			variables.mockController = mockBox.createEmptyMock("coldbox.system.testing.mock.web.MockController");
+			variables.mockRequestService = mockBox.createEmptyMock("coldbox.system.services.RequestService");
+			variables.mockLogBox	 = mockBox.createEmptyMock("coldbox.system.logging.LogBox");
+			variables.mockLogger	 = mockBox.createEmptyMock("coldbox.system.logging.Logger");
+			variables.mockFlash		 = mockBox.createMock("coldbox.system.web.flash.MockFlash").init(mockController);
+			
+			// Mock Plugin Dependencies
+			variables.mockController.$("getLogBox",variables.mockLogBox);
+			variables.mockController.$("getRequestService",variables.mockRequestService);
+			variables.mockRequestService.$("getFlashScope",variables.mockFlash);
+			variables.mockLogBox.$("getLogger",variables.mockLogger);
+			
+			// Decorate plugin?
+			if( NOT getUtil().isFamilyType("plugin",variables.plugin) ){
+				getUtil().convertToColdBox( "plugin", variables.plugin );	
+				// Check if doing cbInit()
+				if( structKeyExists(variables.plugin, "$cbInit") ){ variables.plugin.$cbInit( mockController, configProperties ); }
+			}
+    	</cfscript>
+    </cffunction>
+
 </cfcomponent>

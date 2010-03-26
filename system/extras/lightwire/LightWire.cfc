@@ -421,19 +421,19 @@
 		<cfargument name="argCollection" type="struct"  required="false" hint="Can be called with an argument collection struct">
 		<cfargument name="argList" 		 type="string"  required="false" hint="Can be called with an argument list, for simple values only: ex: 'plugin=logger,number=1'">
 		<!--- ************************************************************* --->
-		<cfset var results = "">
-		<cfset var key = "">
+		<cfset var refLocal = structnew()>
+		<cfset var key 		= "">
 		
 		<!--- Determine type of invocation --->
 		<cfif structKeyExists(arguments,"argCollection")>
 			<cfinvoke component="#arguments.object#"
 					  method="#arguments.method#" 
-					  returnvariable="results" 
+					  returnvariable="refLocal.results" 
 					  argumentcollection="#arguments.argCollection#" />
 		<cfelseif structKeyExists(arguments, "argList")>
 			<cfinvoke component="#arguments.object#"
 					  method="#arguments.method#" 
-					  returnvariable="results">
+					  returnvariable="refLocal.results">
 				<cfloop list="#argList#" index="key">
 					<cfinvokeargument name="#listFirst(key,'=')#" value="#listLast(key,'=')#">
 				</cfloop>
@@ -441,12 +441,12 @@
 		<cfelse>
 			<cfinvoke component="#arguments.object#"
 					  method="#arguments.method#" 
-					  returnvariable="results" />
+					  returnvariable="refLocal.results" />
 		</cfif>
 		
 		<!--- Return results if Found --->
-		<cfif isDefined("results")>
-			<cfreturn results>
+		<cfif structKeyExists(refLocal,"results")>
+			<cfreturn refLocal.results>
 		</cfif>
 	</cffunction>
 	

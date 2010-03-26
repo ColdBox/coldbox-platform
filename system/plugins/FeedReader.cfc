@@ -476,7 +476,7 @@ Quick and Dirty Feed Dump:
 		<cfset var loop = "">
 		<cfset var merge = "">
 		<cfset var xmlrootkey = "">
-		<cfset var oUtilities = getPlugin("Utilities")>
+		<cfset var oUtilities = getPlugin("DateUtils")>
 		<cfset var extras = createObject('component','coldbox.system.web.feeds.FeedReader').init(controller)>
 
 		<cfscript>

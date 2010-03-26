@@ -77,7 +77,7 @@ Modification History:
 			}
 			
 			// Is it plugin family or not? If not, then decorate it
-			if( NOT isPluginFamily(oPlugin) ){
+			if( NOT isFamilyType("plugin",oPlugin) ){
 				convertToColdBox( "plugin", oPlugin );
 				// Check if doing cbInit()
 				if( structKeyExists(oPlugin, "$cbInit") ){ oPlugin.$cbInit( controller ); }
@@ -362,20 +362,5 @@ Modification History:
 			return pluginKey;
 		</cfscript>
 	</cffunction>
-	
-	<!--- isPluginFamily --->
-    <cffunction name="isPluginFamily" output="false" access="private" returntype="boolean" hint="Checks if an object is of the plugin family type">
-    	<cfargument name="obj" type="any" required="true" hint="The object to test"/>
-		<cfscript>
-			var family = "coldbox.system.Plugin";
-			
-			if( controller.getCFMLEngine().isInstanceCheck() ){
-				return isInstanceOf(arguments.obj,family);
-			}
-			else{
-				return getUtil().isInstanceCheck(arguments.obj,family);
-			}
-		</cfscript>		
-    </cffunction>
 	
 </cfcomponent>

@@ -25,7 +25,8 @@
 			manager.getObject("Event");
 			fail("Event still exists"); 
 		}
-		catch("EventPoolManager.ObjectNotFound"){}
+		catch("EventPoolManager.ObjectNotFound" e){
+		}
 		catch(Any e){ fail("wrong throw"); }
 		
 		manager.register(event);
@@ -39,7 +40,7 @@
 			manager.getObject("luis");
 			fail("Event still exists"); 
 		}
-		catch("EventPoolManager.ObjectNotFound"){}
+		catch("EventPoolManager.ObjectNotFound" e){}
 		catch(Any e){ fail("wrong throw"); }
 		
 		// 3 type registration
@@ -51,7 +52,7 @@
 			manager.getObject("luis");
 			fail("Event still exists"); 
 		}
-		catch("EventPoolManager.ObjectNotFound"){}
+		catch("EventPoolManager.ObjectNotFound" e){}
 		catch(Any e){ fail("wrong throw"); }
 		
 		// 4 type registration Annotation
@@ -63,7 +64,7 @@
 			manager.getObject("luis");
 			fail("Event still exists"); 
 		}
-		catch("EventPoolManager.ObjectNotFound"){}
+		catch("EventPoolManager.ObjectNotFound" e){}
 		catch(Any e){ fail("wrong throw"); }
 	}
 	function testProcessStates(){

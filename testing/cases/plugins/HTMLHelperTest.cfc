@@ -1,0 +1,163 @@
+<!-----------------------------------------------------------------------
+********************************************************************************
+Copyright 2005-2007 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+www.coldbox.org | www.luismajano.com | www.ortussolutions.com
+********************************************************************************
+----------------------------------------------------------------------->
+<cfcomponent extends="coldbox.system.testing.BasePluginTest" plugin="coldbox.system.plugins.HTMLHelper">
+<cfscript>
+
+	function testaddAssetJS(){
+		var mockEvent = getMockRequestContext();
+		mockRequestService.$("getContext", mockEvent);
+		
+		plugin.$("$htmlhead");
+		plugin.addAsset('test.js,luis.js');
+		
+		debug( plugin.$callLog().$htmlhead);
+		
+		// test duplicate call
+		assertEquals('<script src="test.js" type="text/javascript"></script><script src="luis.js" type="text/javascript"></script>' , plugin.$callLog().$htmlhead[1][1] );
+		plugin.addAsset('test.js');
+		assertEquals(1, arrayLen(plugin.$callLog().$htmlHead) );
+	}
+	
+	function testaddAssetCSS(){
+		var mockEvent = getMockRequestContext();
+		mockRequestService.$("getContext", mockEvent);
+		
+		plugin.$("$htmlhead");
+		plugin.addAsset('test.css,luis.css');
+		
+		debug( plugin.$callLog().$htmlhead);
+		
+		// test duplicate call
+		assertEquals('<link href="test.css" type="text/css" rel="stylesheet" /><link href="luis.css" type="text/css" rel="stylesheet" />' , plugin.$callLog().$htmlhead[1][1] );
+		plugin.addAsset('test.css');
+		assertEquals(1, arrayLen(plugin.$callLog().$htmlHead) );
+	}
+	
+	function testbr(){
+		assertEquals( "<br/>", plugin.br() );
+		assertEquals( "<br/><br/><br/>", plugin.br(3) );
+	}
+	function testnbs(){
+		assertEquals( "&nbsp;", plugin.nbs() );
+		assertEquals( "&nbsp;&nbsp;&nbsp;", plugin.nbs(3) );
+	}
+	
+	function testHeading(){
+		assertEquals( "<h1>Hello</h1>", plugin.heading("Hello") );
+	}
+	
+	function testIMG(){
+		// with htmlbaseURL
+		mockController.$("settingExists",true);
+		plugin.$("getSetting").$args("htmlBaseURL").$results("http://www.coldbox.org");
+		
+		img = plugin.img("includes/images/pio.jpg");
+		assertEquals('<img src="http://www.coldbox.org/includes/images/pio.jpg" />', img);
+		
+		img = plugin.img("http://hello.com/includes/images/pio.jpg");
+		assertEquals('<img src="http://hello.com/includes/images/pio.jpg" />', img);
+		
+		// no base url
+		mockController.$("settingExists",false);
+		img = plugin.img("includes/images/pio.jpg");
+		assertEquals('<img src="includes/images/pio.jpg" />', img);
+		
+		props = {
+			alt="test",
+			src="includes/images/pio.jpg",
+			title="test",
+			width="400"
+		};
+		
+		img = plugin.img(props);
+		assertEquals('<img alt="test" src="includes/images/pio.jpg" width="400" title="test" />', img);
+	}
+	
+	function testLink(){
+		// with htmlbaseURL
+		mockController.$("settingExists",true);
+		plugin.$("getSetting").$args("htmlBaseURL").$results("http://www.coldbox.org");
+		
+		str = plugin.link('luis.css');
+		
+		debug(str);
+		
+		str = plugin.link('http://hello.com/luis.css');
+		
+		assertEquals('<link rel="stylesheet" type="text/css" href="http://hello.com/luis.css" />', str);
+	}
+	
+	
+	function testOL(){
+		
+		str = plugin.ol("1,2");
+		assertEquals( "<ol><li>1</li><li>2</li></ol>", str);
+	}
+	
+	function testUL(){
+		var data = [1,2,[1,2]];
+		var attrs = {
+			class="cool"
+		};
+		
+		str = plugin.ul("1,2");
+		assertEquals( "<ul><li>1</li><li>2</li></ul>", str);
+		
+		str = plugin.ul(data,attrs);
+		assertEquals( '<ul class="cool"><li>1</li><li>2</li><ul class="cool"><li>1</li><li>2</li></ul></ul>', str);
+	}
+	
+	function testMeta(){
+		var data = [
+			{name="luis",content="awesome"},
+			{name="test",content="2",type="equiv"}
+		];
+		
+		
+		str = plugin.meta(name="luis",content="awesome");
+		assertEquals('<meta name="luis" content="awesome" />', str);
+		
+		str = plugin.meta(name="luis",content="awesome",type="equiv");
+		assertEquals('<meta http-equiv="luis" content="awesome" />', str);
+		
+		str = plugin.meta(data);
+		assertEquals('<meta name="luis" content="awesome" /><meta http-equiv="test" content="2" />', str);
+	}
+	
+	function testDocType(){
+		str = plugin.docType();
+		
+		assertEquals('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">',str);
+	}
+	
+	function testtag(){
+	
+		str = plugin.tag("code","hello");
+		assertEquals('<code>hello</code>', str);
+		
+		data={class="cool"};
+		str = plugin.tag("code","hello",data);
+		assertEquals('<code class="cool">hello</code>', str);
+	}
+	
+	function testAddJSContent(){
+		str  = plugin.addJSContent('function test(){ alert("luis"); }');
+		debug(str);
+		
+		assertEquals('<script type="text/javascript"><![CDATA[function test(){ alert("luis"); }//]]></script>', str);
+	}
+	
+	function testAddStyleContent(){
+		str  = plugin.addStyleContent('.test{color: ##123}');
+		debug(str);
+		
+		assertEquals('<style type="text/css">.test{color: ##123}</style>', str);
+	}
+	
+</cfscript>
+
+</cfcomponent>

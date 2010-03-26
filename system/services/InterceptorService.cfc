@@ -191,7 +191,7 @@ Description :
 			var key 			= "";
 			
 			// Check family if it is interceptor inheritance or simple CFC?
-			if( NOT isInterceptorFamily(oInterceptor) ){
+			if( NOT isFamilyType("interceptor",oInterceptor) ){
 				convertToColdBox( "interceptor", oInterceptor );
 			}
 			
@@ -387,20 +387,5 @@ Description :
 			instance.interceptionStates = structnew();
 		</cfscript>
 	</cffunction>
-	
-	<!--- isInterceptorFamily --->
-    <cffunction name="isInterceptorFamily" output="false" access="private" returntype="boolean" hint="Checks if an object is of the interceptor family type">
-    	<cfargument name="obj" type="any" required="true" hint="The object to test"/>
-		<cfscript>
-			var family = "coldbox.system.Interceptor";
-			
-			if( controller.getCFMLEngine().isInstanceCheck() ){
-				return isInstanceOf(arguments.obj,family);
-			}
-			else{
-				return getUtil().isInstanceCheck(arguments.obj,family);
-			}
-		</cfscript>		
-    </cffunction>
 
 </cfcomponent>

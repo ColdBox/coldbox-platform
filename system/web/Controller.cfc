@@ -648,22 +648,22 @@ Only one instance of a specific ColdBox application exists.
 		<cfargument name="method" 			type="any" 		required="true" hint=""/>
 		<cfargument name="argCollection" 	type="any" 		required="false" default="#structNew()#" hint="The argument collection to pass"/>
 		<cfargument name="private" 			type="boolean" 	required="false" default="false" hint="Private method or not?"/>
-		<cfset var results = "">
+		<cfset var refLocal = structnew()>
 		
 		<cfif arguments.private>
 			<!--- Call Private Event --->
-			<cfinvoke component="#arguments.target#" method="_privateInvoker" returnvariable="results">
+			<cfinvoke component="#arguments.target#" method="_privateInvoker" returnvariable="refLocal.results">
 				<cfinvokeargument name="method" 		value="#arguments.method#">
 				<cfinvokeargument name="argCollection" 	value="#arguments.argCollection#">
 			</cfinvoke>
 		<cfelse>
 			<cfinvoke component="#arguments.target#"
 					  method="#arguments.method#"
-					  returnvariable="results"
+					  returnvariable="refLocal.results"
 				  	  argumentcollection="#arguments.argCollection#">		
 		</cfif>
 				  
-		<cfif isDefined("results")><cfreturn results></cfif>
+		<cfif structKeyExists(refLocal,"results")><cfreturn refLocal.results></cfif>
 	</cffunction>
 	
 	<!--- Push Timers --->

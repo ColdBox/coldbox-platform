@@ -158,17 +158,17 @@ Description :
 		<cfargument name="event" 		 	required="true" type="any" 		hint="The event context">
 		<cfargument name="interceptData" 	required="true" type="any" 		hint="A metadata structure used to pass intercepted information.">
 		<!--- ************************************************************* --->
-		<cfset var results = false>
+		<cfset var refLocal = structnew()>
 		
 		<!--- Invoke the interceptor --->
-		<cfinvoke component="#arguments.interceptor#" method="#getstate()#" returnvariable="results">
+		<cfinvoke component="#arguments.interceptor#" method="#getstate()#" returnvariable="refLocal.results">
 			<cfinvokeargument name="event" 			value="#arguments.event#">
 			<cfinvokeargument name="interceptData" 	value="#arguments.interceptData#">
 		</cfinvoke>
 		
 		<!--- Check if we have results --->
-		<cfif isDefined("results") and isBoolean(results)>
-			<cfreturn results>
+		<cfif structKeyExists(refLocal,"results") and isBoolean(refLocal.results)>
+			<cfreturn refLocal.results>
 		<cfelse>
 			<cfreturn false>
 		</cfif>			

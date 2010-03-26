@@ -380,5 +380,10 @@ id , name , mail
 		return getMockBox().querySim(argumentCollection=arguments);
 		</cfscript>
 	</cffunction>
+	
+	<!--- getUtil --->
+	<cffunction name="getUtil" access="private" output="false" returntype="coldbox.system.core.util.Util" hint="Create and return a util object">
+		<cfreturn CreateObject("component","coldbox.system.core.util.Util")/>
+	</cffunction>
 
 </cfcomponent>

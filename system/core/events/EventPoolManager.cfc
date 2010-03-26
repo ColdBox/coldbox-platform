@@ -21,9 +21,9 @@ Description :
 		instance = structnew();
 	</cfscript>
 	
-	<cffunction name="init" access="public" output="false" returntype="EventManager" hint="Constructor">
-		<cfargument name="eventStates" type="string" required="true" default="" hint="The event states to listen for"/>
-		<cfargument name="stopRecursionClasses" type="string" required="true" default="" hint="The classes (comma-delim) to not inspect for events"/>
+	<cffunction name="init" access="public" output="false" returntype="EventPoolManager" hint="Constructor">
+		<cfargument name="eventStates" 		    type="string" required="true" hint="The event states to listen for"/>
+		<cfargument name="stopRecursionClasses" type="string" required="false" default="" hint="The classes (comma-delim) to not inspect for events"/>
 		<cfscript>
 			// Setup properties of the event manager
 			instance.eventStates = arguments.eventStates;

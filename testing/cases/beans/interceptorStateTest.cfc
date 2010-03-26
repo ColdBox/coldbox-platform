@@ -5,6 +5,7 @@
 		<cfscript>
 			this.state = createObject("component","coldbox.system.beans.InterceptorState");		
 			this.event = getMockRequestContext();
+			this.event.$("getEventName","event");
 			this.mock = createObject("component","coldbox.testing.testinterceptors.mock");
 			this.mock2 = createObject("component","coldbox.testing.testinterceptors.mock");
 			

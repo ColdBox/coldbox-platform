@@ -49,7 +49,7 @@ Description :
 			var iData 		= structnew();
 			
 			// Check family if it is handler inheritance or simple CFC?
-			if( NOT isHandlerFamily(oHandler) ){
+			if( NOT isFamilyType("handler",oHandler) ){
 				convertToColdBox( "handler", oHandler );
 				// Check if doing cbInit()
 				if( structKeyExists(oHandler, "$cbInit") ){ oHandler.$cbInit( controller ); }
@@ -551,20 +551,5 @@ Description :
 			</cflock>
 		</cfif>
 	</cffunction>
-	
-	<!--- isHandlerFamily --->
-    <cffunction name="isHandlerFamily" output="false" access="private" returntype="boolean" hint="Checks if an object is of the handler family type">
-    	<cfargument name="obj" type="any" required="true" hint="The object to test"/>
-		<cfscript>
-			var family = "coldbox.system.EventHandler";
-			
-			if( controller.getCFMLEngine().isInstanceCheck() ){
-				return isInstanceOf(arguments.obj,family);
-			}
-			else{
-				return getUtil().isInstanceCheck(arguments.obj,family);
-			}
-		</cfscript>		
-    </cffunction>
 	
 </cfcomponent>
