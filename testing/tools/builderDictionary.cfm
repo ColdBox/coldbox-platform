@@ -16,35 +16,41 @@ functions = {
 	testCase = "coldbox.system.testing.BaseTestCase"
 };
 
+out.append('#tab#<functions>
+');
+
 for( key in functions ){
 	
 	md = getComponentMetaData( functions[key] );
 	
-	out.append('#tab#<scopevar name="#key#">
-	#tab#<help><![CDATA[#md.hint#]]></help>
-	');
-
+	out.append('<!-- Functions for: #md.name# -->#br#');
+	
 	for(x=1; x lte arrayLen(md.functions); x++){
-		out.append('#tab#<scopevar name="#md.functions[x].name#(');	
+		if( NOT structKeyExists(md.functions[x],"returntype") ){ md.functions[x].returntype = "any"; }
+		if( NOT structKeyExists(md.functions[x],"hint") ){ md.functions[x].hint = ""; }
+		out.append('#tab#<function name="#md.functions[x].name#" returns="#md.functions[x].returntype#">
+			<help><![CDATA[ #md.functions[x].hint# (Context: #listLast(md.name,".")#) ]]></help>
+		');	
 		
-		// Args
+		// Parameters
 		for( y=1; y lte arrayLen(md.functions[x].parameters); y++){
-			if(NOT structKeyExists(md.functions[x].parameters[y],"required") ){
-				md.functions[x].parameters[y].required = false;
-			}
-			out.append((md.functions[x].parameters[y].required ? '':'[') & '#md.functions[x].parameters[y].name#' & (md.functions[x].parameters[y].required ? '':']'));
+			if(NOT structKeyExists(md.functions[x].parameters[y],"required") ){	md.functions[x].parameters[y].required = false;	}
+			if(NOT structKeyExists(md.functions[x].parameters[y],"hint") ){	md.functions[x].parameters[y].hint = "";	}
+			if(NOT structKeyExists(md.functions[x].parameters[y],"type") ){	md.functions[x].parameters[y].type = "any";	}
 			
-			if( y le  ( arrayLen(md.functions[x].parameters)-1) ){
-				out.append(",");
-			} 
+			out.append('<parameter name="#md.functions[x].parameters[y].name#" required="#md.functions[x].parameters[y].required#" type="#md.functions[x].parameters[y].type#">
+				<help><![CDATA[ #md.functions[x].parameters[y].hint# ]]></help>
+			</parameter>
+			');
 		}
 		
-		out.append(')">
-		#tab#<help><![CDATA[#md.functions[x].hint#]]></help>#br##tab#');
+		out.append('</function>#br#');
 	}
-	
-	out.append('</scopevar>#br#');
 }
+
+out.append('#tab#</functions>#br##br#
+<cfscopes>
+');
 
 scopes = {
 	controller = "coldbox.system.web.Controller",
@@ -57,7 +63,7 @@ for( key in scopes ){
 	
 	md = getComponentMetaData( scopes[key] );
 	
-	out.append('#tab#<scopevar name="#key#">
+	out.append('#tab#<scopevar name="#lcase(key)#">
 	#tab#<help><![CDATA[#md.hint#]]></help>
 	');
 
@@ -77,32 +83,21 @@ for( key in scopes ){
 		}
 		
 		out.append(')">
-		#tab#<help><![CDATA[#md.functions[x].hint#]]></help>#br##tab#');
+		#tab#<help><![CDATA[#md.functions[x].hint#]]></help>
+		</scopevar>#br#');
 	}
 	
 	out.append('</scopevar>#br#');
 }
 
-out.append('</dictionary>');
+out.append('
+	</cfscopes>
+</dictionary>');
+
+fileWrite(expandPath('./coldbox.builder.xml'), out.toString());
 </cfscript>
 
 <textarea rows="30" cols="160">
 <cfoutput>#out.toString()#</cfoutput>
 </textarea>
-<!--- Scope Vars:
-	controller 
-	event
-	flash
-	log
-	logbox
 
-Functions From the Following objects
-
-Framework Super Type
-Event Handler
-Plugin
-Interceptor
-BaseTestCase
-	
-	
- --->

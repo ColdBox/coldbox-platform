@@ -1,10 +1,11 @@
 ColdBox Eclipse Snippets
 
-Just place the ColdBox snippets folder under your snippets directory of your CFEclipse installation.
+Just place the ColdBox snippets folder under your snippets directory of your CFEclipse or CF Builder installation.
 
 To find your snippets folder do the following:
 
 Click on Window > Preferences > CFEclipse
+Click on Window > Preferences > ColdFusion > Snippets
 
 On the right panel, you will see the snippets directory. There is where you place these files.
 
