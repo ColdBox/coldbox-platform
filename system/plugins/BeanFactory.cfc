@@ -818,6 +818,7 @@ Description: This is the framework's simple bean factory.
 				case 2: {
 					thisLocationKey = getToken(thisType,2,":");
 					switch( thisLocationKey ){
+						case "fwconfigbean" 		: { locatedDependency = getSettingsBean(true); break; }
 						case "configbean" 			: { locatedDependency = getSettingsBean(); break; }
 						case "mailsettingsbean"		: { locatedDependency = getMailSettings(); break; }
 						case "loaderService"		: { locatedDependency = getController().getLoaderService(); break; }
@@ -837,6 +838,7 @@ Description: This is the framework's simple bean factory.
 					thisLocationKey  = getToken(thisType,3,":");
 					switch(thisLocationType){
 						case "setting" 				: { locatedDependency = getSetting(thisLocationKey); break; }
+						case "fwSetting" 			: { locatedDependency = getSetting(thisLocationKey,true); break; }
 						case "plugin" 				: { locatedDependency = getPlugin(thisLocationKey); break; }
 						case "myplugin" 			: { 
 							if( find("@",thisLocationKey) ){
