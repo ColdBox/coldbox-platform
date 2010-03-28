@@ -111,6 +111,22 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 		assertEquals( '<ul class="cool"><li>1</li><li>2</li><ul class="cool"><li>1</li><li>2</li></ul></ul>', str);
 	}
 	
+	function testListWithQuery(){
+		var data = querySim("id,name
+		#createUUID()# | luis
+		#createUUID()# | joe
+		#createUUID()# | fernando
+		");
+		queryHelperStub = getMockBox().createStub();
+		mockArray = ["luis","joe","fernando"];
+		queryHelperStub.$("getColumnArray",mockArray);
+		plugin.$("getPlugin",queryHelperStub);
+		
+		str = plugin.ul(values=data,column="name");
+		debug(str);
+		assertEquals( '<ul><li>luis</li><li>joe</li><li>fernando</li></ul>', str);
+	}
+	
 	function testMeta(){
 		var data = [
 			{name="luis",content="awesome"},
