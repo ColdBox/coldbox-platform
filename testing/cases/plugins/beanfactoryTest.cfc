@@ -9,19 +9,13 @@ Date        :	9/3/2007
 Description :
 	BeanFactoryTest
 ----------------------------------------------------------------------->
-<cfcomponent name="beanfactoryTest" extends="coldbox.system.testing.BaseTestCase" output="false">
-
-	<cffunction name="setUp" returntype="void" access="public" output="false">
-		<cfscript>
-			//Setup ColdBox Mappings For this Test
-			setAppMapping("/coldbox/testharness");
-			setConfigMapping(ExpandPath("/coldbox/testing/resources/coldbox.test.xml.cfm"));
+<cfcomponent extends="coldbox.system.testing.BaseTestCase" output="false" appMapping="/coldbox/testharness">
+	<cfscript>
+		function testcoldboxDSL(){
 			
-			//reset();
-			//Call the super setup method to setup the app.
-			super.setup();
-		</cfscript>
-	</cffunction>
+		}
+		
+	</cfscript>
 	
 	<cffunction name="testPlugin" access="public" returntype="void" output="false">
 		<!--- Now test some events --->
@@ -88,7 +82,7 @@ Description :
 			}		
 			
 			/* Populate using onMissingMethod */
-			local.obj = plugin.populateFromStruct(formBean='coldbox.testing.testmodel.formImplicitBean',memento=local.myStruct,trustedSetter=true);
+			local.obj = plugin.populateFromStruct(target='coldbox.testing.testmodel.formImplicitBean',memento=local.myStruct,trustedSetter=true);
 			local.objInstance = local.obj.getInstance();
 			/* Assert Population */
 			for( local.key in local.objInstance ){
