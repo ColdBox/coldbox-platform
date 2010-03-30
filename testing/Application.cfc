@@ -22,4 +22,14 @@ Description :
 	<cfset this.clientManagement = true>
 	<cfset this.sessionTimeout = createTimeSpan(0,0,5,0)>
 	
+	<cfset this.datasource = "coolblog">
+	<cfset this.ormEnabled = "true">
+	
+	<cfset this.ormSettings = {
+		cfcLocation = "testmodel",
+		dialect = "MySQLwithInnoDB",
+		eventHandling=true,
+		logSQL = true
+	}>
+	
 </cfcomponent>
