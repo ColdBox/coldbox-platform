@@ -22,14 +22,31 @@ Description :
 	<cfset this.clientManagement = true>
 	<cfset this.sessionTimeout = createTimeSpan(0,0,5,0)>
 	
+	<cfset this.mappings["/testmodel"] = expandPath("/coldbox/testing/testmodel")>
+	
+	
 	<cfset this.datasource = "coolblog">
 	<cfset this.ormEnabled = "true">
 	
 	<cfset this.ormSettings = {
-		cfcLocation = "testmodel",
 		dialect = "MySQLwithInnoDB",
 		eventHandling=true,
-		logSQL = true
+		logSQL = true,
+		eventhandling = true,
+		secondarycacheenabled = true,
+		cacheProvider = "ehcache",
+		flushAtRequestEnd = false
 	}>
+	
+	<!--- on Request Start --->
+	<cffunction name="onRequestStart" returnType="boolean" output="true">
+		<!--- ************************************************************* --->
+		<cfargument name="targetPage" type="string" required="true" />
+		<!--- ************************************************************* --->
+		
+		<cfset ORMReload()>
+		
+		<cfreturn true>
+	</cffunction>
 	
 </cfcomponent>

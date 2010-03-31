@@ -630,6 +630,18 @@ Description: This is the framework's simple bean factory.
 		
 		// Do we Inject Dependencies, are we AutoWiring
 		if ( targetDIEntry.autowire ){
+			
+			// Bean Factory Awareness
+			if( structKeyExists(targetObject,"setBeanFactory") ){
+				targetObject.setBeanFactory( this );  
+			}
+			
+			// ColdBox Context Awareness
+			if( structKeyExists(targetObject,"setColdBox") ){
+				targetObject.setColdBox( controller );  
+			}
+			
+		
 			// Dependencies Length
 			dependenciesLength = arrayLen(targetDIEntry.dependencies);
 			if( dependenciesLength gt 0 ){

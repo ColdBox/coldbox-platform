@@ -303,6 +303,9 @@ Description :
 					arguments.target.$injectUDF(key,baseObject[key]);
 				}
 			}
+			
+			// Mix in fake super class
+			arguemnts.target.$super = baseObject;
 		</cfscript>
     </cffunction>
 
