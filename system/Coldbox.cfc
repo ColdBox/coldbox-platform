@@ -301,7 +301,7 @@ Description :
 				<!--- Time the request --->
 				<cfset request.fwExecTime = GetTickCount() - request.fwExecTime>
 				<!--- Render Debug Log --->
-				<cfoutput>#cbController.getDebuggerService().renderDebugLog()#</cfoutput>
+				<cfoutput>#cbController.getInterceptorService().processState("beforeDebuggerPanel")##cbController.getDebuggerService().renderDebugLog()##cbController.getInterceptorService().processState("afterDebuggerPanel")#</cfoutput>
 			</cfif>
 		</cfif>		
 	</cffunction>

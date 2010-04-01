@@ -27,7 +27,8 @@ Description :
 										  "preProcess,preEvent,postEvent,postProcess,preProxyResults," &
 										  "preLayout,preRender,postRender,preViewRender,postViewRender" &
 										  "afterCacheElementInsert,afterCacheElementRemoved,afterCacheElementExpired" &
-										  "preModuleLoad,postModuleLoad,preModuleUnload,postModuleUnload";
+										  "preModuleLoad,postModuleLoad,preModuleUnload,postModuleUnload" &
+										  "beforeDebuggerPanel,afterDebuggerPanel";
 			// Init Container/
 			instance.interceptionStates = structnew();
 			
