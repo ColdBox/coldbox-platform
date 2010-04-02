@@ -192,6 +192,7 @@ If you are building a mapper, the map must have the above keys in it.
 	<cffunction name="checkColumnMap" output="false" access="private" returntype="void" hint="Check a column map definition">
 		<cfscript>
 			var map = getProperty('columnMap');
+			var key = "";
 			
 			for(key in map){
 				if( NOT listFindNoCase(instance.columns,key) ){
