@@ -409,7 +409,7 @@ License		: 	Apache 2 License
 			var fi = arguments.feedItems;
 			var i = 0;
 			var map = generateDefaultPropertyMap();
-			invalidList = arguments.invalidList;
+			var invalidList = arguments.invalidList;
 
 			/* Map columns to data */
 			if( structKeyExists(arguments, "ColumnMap") ) {
@@ -522,7 +522,7 @@ License		: 	Apache 2 License
 			</cfscript>
 		</cfloop>
 	
-		<cfreturn arguments.invalidList>
+		<cfreturn invalidList>
 
 	</cffunction>
 
@@ -545,6 +545,7 @@ License		: 	Apache 2 License
 			var j = 1;
 			var throwErr = false;
 			var validStruct = structNew();
+			var invalidFeedLL = "";
 
 			/* Verify mandatory properties */
 			for( i=1; i lte listLen(instance.requiredItems); i=i+1 ){

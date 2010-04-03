@@ -65,6 +65,8 @@ Description :
 			var categoryCol = arguments.categorynode;
 			var path = "";
 			var y = 1;
+			var itemStruct = "";
+			
 			// MediaRSS categories
 			if( structKeyExists(item,"media:group") and structKeyExists(item["media:group"],"media:category") ) path = item["media:group"]["media:category"];
 			else if (structKeyExists(item,"media:category") ) path = item["media:category"];
@@ -481,13 +483,15 @@ Description :
 		<!--- ******************************************************************************** --->
 		<cfscript>
 			var x = 1;
+			var y = 1;
 			var itemLength = arrayLen(arguments.items);
 			var rtnItems = "";
 			var node = "";
 			var loop = "";
 			var merge = "";
 			var oUtilities = controller.getPlugin("DateUtils");
-
+			var itemStruct = "";
+			
 			/* Itemslength */
 			if( arguments.maxItems neq 0 and arguments.maxItems lt itemLength ){
 				itemLength = arguments.maxItems;
@@ -647,7 +651,7 @@ Description :
 		<cfargument name="feed" type="struct" required="true" hint="Structure of the current state of the parseFeed process"/>
 		<!--- ******************************************************************************** --->
 		<cfscript>
-			feed = arguments.feed;
+			var feed = arguments.feed;
 			/* Set the elements */
 			feed.author = StructNew();
 			feed.author.email = "";
@@ -709,26 +713,27 @@ Description :
 	        //make an array to return
 	        var returnArray = arraynew(1);
 	        //grab the number of elements in the array (used in the loops)
-	        var count = arrayLen(aOfS);
+	        var count = arrayLen(arguments.aOfS);
 	        //make a variable to use in the loop
 	        var ii = 1;
+			
 	        //if there is a 3rd argument, set the sortOrder
 	        if(arraylen(arguments) GT 2)
-	            sortOrder = arguments[3];
+	            arguments.sortOrder = arguments[3];
 	        //if there is a 4th argument, set the sortType
 	        if(arraylen(arguments) GT 3)
-	            sortType = arguments[4];
+	        	arguments.sortType = arguments[4];
 	        //if there is a 5th argument, set the delim
 	        if(arraylen(arguments) GT 4)
 	            delim = arguments[5];
 	        //loop over the array of structs, building the sortArray
 	        for(ii = 1; ii lte count; ii = ii + 1)
-	            sortArray[ii] = aOfS[ii][key] & delim & ii;
+	            sortArray[ii] = arguments.aOfS[ii][key] & delim & ii;
 	        //now sort the array
 	        arraySort(sortArray,sortType,sortOrder);
 	        //now build the return array
 	        for(ii = 1; ii lte count; ii = ii + 1)
-	            returnArray[ii] = aOfS[listLast(sortArray[ii],delim)];
+	            returnArray[ii] = arguments.aOfS[listLast(sortArray[ii],delim)];
 	        //return the array
 	        return returnArray;
 		</cfscript>

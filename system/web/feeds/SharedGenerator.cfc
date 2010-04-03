@@ -54,9 +54,9 @@ License		: 	Apache 2 License
 		<cfargument name="columnMap" type="struct" required="true" hint="The column map to parse"/>
 		<!--- ******************************************************************************** --->
 		<cfscript>
-			var map = generateDefaultPropertyMap();
+			var map  = generateDefaultPropertyMap();
 			var cmap = arguments.columnMap;
-			var key = "";
+			var key  = "";
 
 			/* start parsing */
 			for(key in map){
@@ -416,6 +416,8 @@ License		: 	Apache 2 License
 		<cfargument name="fs" type="struct" required="true" hint="The structure used to build a feed"/>
 		<cfset var returnedXML = "">
 		<cfset var container = "">
+		<cfset var i = 1>
+		<cfset var j = 1>
 		<cfsavecontent variable="returnedXML">
 			<cfoutput>
 			<!--- Optional iTunes author --->
@@ -469,6 +471,8 @@ License		: 	Apache 2 License
 			var invalidList = "";
 			var container_a = "";
 			var container_b = "";
+			var i 			= 1;
+			var j 			= 1;
 			/* itunes category */
 			if( structKeyExists(fs.itunes,"category") and isStruct(fs.itunes.category) ) {
 				for(i=1; i lte structCount(fs.itunes.category); i=i+1){
@@ -604,6 +608,7 @@ License		: 	Apache 2 License
 	<cffunction name="cclicenseGenChannel" output="false" access="public" returntype="string" hint="Generate Creative Commons extension channel XML">
 		<cfargument name="fs" type="struct" required="true" hint="The structure used to build a feed"/>
 		<cfset var returnedXML = "">
+		<cfset var i		   = 1>
 		<cfsavecontent variable="returnedXML">
 		<cfloop from="1" to="#listLen(fs['commonslicense'])#" index="i">
 			<cfoutput><creativeCommons:license>#RSSFormat(listGetAt(fs["commonslicense"],i))#</creativeCommons:license></cfoutput>
@@ -616,6 +621,7 @@ License		: 	Apache 2 License
 		<cfargument name="fs" type="struct" required="true" hint="The structure used to build a feed"/>
 		<cfscript>
 			var invalidList = "";
+			var i 			= 1;
 			for( i=1; i lte listLen(fs.commonslicense); i=i+1 ){
 				if ( not validatecommonslicense(listGetAt(fs.commonslicense,i)) ) {
 					invalidList = invalidList & "| The #generateNumSuffix(i)# commonslicense element '#listGetAt(fs.commonslicense,i)#' : Is not an valid URL pointing to a Creative Commons license (See <a href='http://creativecommons.org/about/licenses/meet-the-licenses'>http://creativecommons.org/about/licenses/meet-the-licenses</a>)";
@@ -630,6 +636,7 @@ License		: 	Apache 2 License
 		<cfargument name="map" type="struct" required="true" hint="The column mapper to map items to queries"/>
 		<cfargument name="currentrow" type="numeric" required="true" hint="Current item number"/>
 		<cfset var returnedXML = "">
+		<cfset var i		   = 1>
 		<cfsavecontent variable="returnedXML">
 		<cfloop from="1" to="#listLen(items[map.commonslicense][currentrow])#" index="i">
 			<cfoutput><creativeCommons:license>#URLFormat(listGetAt(items[map.commonslicense][currentrow],i))#</creativeCommons:license></cfoutput>
@@ -644,6 +651,7 @@ License		: 	Apache 2 License
 		<cfargument name="currentrow" type="numeric" required="true" hint="Current item number"/>
 		<cfscript>
 			var invalidList = "";
+			var i 			= 1;
 			for( i=1; i lte listLen(fi[map.commonslicense][currentrow]); i=i+1 ){
 				if ( not validatecommonslicense(listGetAt(fi[map.commonslicense][currentrow],i)) ) {
 					invalidList = invalidList & "| The #generateNumSuffix(i)# commonslicense element in item #currentrow# '#listGetAt(fi[map.commonslicense][currentrow],i)#' : Is not an valid URL pointing to a Creative Commons license (See <a href='http://creativecommons.org/about/licenses/meet-the-licenses'>http://creativecommons.org/about/licenses/meet-the-licenses</a>)";
@@ -658,7 +666,8 @@ License		: 	Apache 2 License
 	<cffunction name="dcmtGenChannel" output="false" access="public" returntype="string" hint="Generate DCMI Metadata terms extension channel XML">
 		<cfargument name="fs" type="struct" required="true" hint="The structure used to build a feed"/>
 		<cfset var returnedXML = "">
-		<cfset var container = "">
+		<cfset var container   = "">
+		<cfset var i 		   = 1>
 		<cfsavecontent variable="returnedXML">
 		<cfloop from="1" to="#structCount(fs.dcmiterm)#" index="i">
 			<cfset container = listGetAt(structKeyList(fs.dcmiterm),i)>
@@ -673,7 +682,8 @@ License		: 	Apache 2 License
 		<cfargument name="map" type="struct" required="true" hint="The column mapper to map items to queries"/>
 		<cfargument name="currentrow" type="numeric" required="true" hint="Current item number"/>
 		<cfset var returnedXML = "">
-		<cfset var term = "">
+		<cfset var term 	   = "">
+		<cfset var i 		   = 1>
 		<cfsavecontent variable="returnedXML">
 		<cfloop from="1" to="#listLen(items.columnList)#" index="i">
 			<cfset term = replaceNocase(listGetAt(items.columnList,i),'dcmiterm_','')>
@@ -691,6 +701,7 @@ License		: 	Apache 2 License
 	<cffunction name="opensearchGenChannel" output="false" access="public" returntype="string" hint="Generate OpenSearch extension channel XML">
 		<cfargument name="fs" type="struct" required="true" hint="The structure used to build a feed"/>
 		<cfset var returnedXML = "">
+		<cfset var i		   = 1>
 		<cfsavecontent variable="returnedXML">
 			<cfoutput>
 			<!--- Optional OpenSearch 1.1 (draft 3) total results --->
@@ -727,6 +738,8 @@ License		: 	Apache 2 License
 		<cfargument name="fs" type="struct" required="true" hint="The structure used to build a feed"/>
 		<cfscript>
 			var invalidList = "";
+			var i 		    = 1;
+			
 			/* opensearch autodiscovery */
 			if( structKeyExists(fs.opensearch,"autodiscovery") and not validateURL(fs.opensearch.autodiscovery) ) {
 				invalidList = invalidList & "| The OpenSearch search-link element (autodiscovery) '#fs.opensearch.autodiscovery#' : Is not a valid URL (See <a href='#instance.SpecOS#Autodiscovery_in_RSS.2FAtom'>#instance.SpecOS#Autodiscovery_in_RSS.2FAtom</a>)";
