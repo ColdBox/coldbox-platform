@@ -306,7 +306,7 @@ Description :
 			}
 			
 			// Mix in fake super class
-			arguemnts.target.$super = baseObject;
+			arguments.target.$super = baseObject;
 		</cfscript>
     </cffunction>
 
