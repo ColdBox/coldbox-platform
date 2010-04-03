@@ -51,6 +51,8 @@ Description :
 			// Check family if it is handler inheritance or simple CFC?
 			if( NOT isFamilyType("handler",oHandler) ){
 				convertToColdBox( "handler", oHandler );
+				// Init super
+				oHandler.$super.init( controller );
 				// Check if doing cbInit()
 				if( structKeyExists(oHandler, "$cbInit") ){ oHandler.$cbInit( controller ); }
 			}

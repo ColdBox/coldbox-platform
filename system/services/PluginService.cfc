@@ -79,6 +79,8 @@ Modification History:
 			// Is it plugin family or not? If not, then decorate it
 			if( NOT isFamilyType("plugin",oPlugin) ){
 				convertToColdBox( "plugin", oPlugin );
+				// Init super
+				oPlugin.$super.init( controller );
 				// Check if doing cbInit()
 				if( structKeyExists(oPlugin, "$cbInit") ){ oPlugin.$cbInit( controller ); }
 			}

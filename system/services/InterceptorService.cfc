@@ -194,6 +194,8 @@ Description :
 			// Check family if it is interceptor inheritance or simple CFC?
 			if( NOT isFamilyType("interceptor",oInterceptor) ){
 				convertToColdBox( "interceptor", oInterceptor );
+				// Init super
+				oInterceptor.$super.init( controller );
 			}
 			
 			return	oInterceptor.init(controller,arguments.interceptorProperties);
