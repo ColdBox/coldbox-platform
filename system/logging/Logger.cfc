@@ -285,10 +285,11 @@ Description :
 		<cfargument name="extraInfo" type="any"     required="false" default="" hint="Extra information to send to the loggers.">
 		<!--- ************************************************************* --->
 		<cfscript>
-			var key = "";
+			var key 		 = "";
 			var thisAppender = "";
-			var logEvent = "";
-			var target = this;
+			var appenders	 = "";
+			var logEvent     = "";
+			var target 		 = this;
 			
 			// Verify severity, if invalid, default to INFO
 			if( NOT this.logLevels.isLevelValid(arguments.severity) ){
