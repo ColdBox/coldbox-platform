@@ -234,6 +234,7 @@ Description :
 		<cfargument name="in" type="array" required="true" hint="The array to convert"/>
 		<cfscript>
 			var results = structnew();
+			var x       = 1;
 			
 			for(x=1; x lte Arraylen(arguments.in); x=x+1){
 				results[x] = arguments.in[x];
