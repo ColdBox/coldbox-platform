@@ -802,7 +802,7 @@ Loads a coldbox xml configuration file
 			var configStruct = arguments.config;
 			var x = 1;
 			var interceptorSettings = arguments.oConfig.getPropertyMixin("interceptorSettings","variables",structnew());
-			var interceptors = arguments.oConfig.getPropertyMixin("interceptors","variables",structnew());
+			var interceptors = arguments.oConfig.getPropertyMixin("interceptors","variables",arrayNew(1));
 			
 			//defaults
 			configStruct.interceptorConfig = structnew();
