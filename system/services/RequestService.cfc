@@ -53,6 +53,10 @@ Modification History:
 					flashpath = "coldbox.system.web.flash.ColdboxCacheFlash";
 					break;
 				}
+				case "mock" : {
+					flashpath = "coldbox.system.web.flash.MockFlash";
+					break;
+				}
 			}
 			
 			// Create Flash RAM object
