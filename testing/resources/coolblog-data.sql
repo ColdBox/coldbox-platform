@@ -4,7 +4,7 @@
 #
 # Host: localhost (MySQL 5.0.45)
 # Database: coolblog
-# Generation Time: 2010-03-30 23:42:18 -0700
+# Generation Time: 2010-03-31 13:06:35 -0700
 # ************************************************************
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -25,9 +25,10 @@ INSERT INTO `categories` (`category_id`,`category`,`description`,`modifydate`)
 VALUES
 	('3A2C516C-41CE-41D3-A9224EA690ED1128','Presentations.','<p style=\"margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Lucida Grande; color: #333333\">Presso</p>','2009-04-18 11:48:53'),
 	('5898F818-A9B6-4F5D-96FE70A31EBB78AC','Release','<p style=\"margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Lucida Grande; color: #333333\">Releases</p>','2009-04-18 11:48:53'),
-	('88B689EA-B1C0-8EEF-143A84813ACADA35','general','A general category','2009-04-18 11:48:53'),
+	('88B689EA-B1C0-8EEF-143A84813ACADA35','general','A general category','2010-03-31 12:53:21'),
 	('88B6C087-F37E-7432-A13A84D45A0F703B','News','A news cateogyr','2009-04-18 11:48:53'),
-	('A13C0DB0-0CBC-4D85-A5261F2E3FCBEF91','Training','Training','2009-04-18 11:48:53');
+	('A13C0DB0-0CBC-4D85-A5261F2E3FCBEF91','Training','Training','2009-04-18 11:48:53'),
+	('A13C0DB0-0CBC-4D85-A5261F2E3FCBEF92','general','A test general','2010-03-31 13:06:03');
 
 /*!40000 ALTER TABLE `categories` ENABLE KEYS */;
 UNLOCK TABLES;
