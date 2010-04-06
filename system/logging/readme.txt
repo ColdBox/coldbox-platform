@@ -5,7 +5,7 @@
 http://coldbox.assembla.com/spaces/coldbox/milestones/187467-logbox-1-3
 
 * Varscoping issue for DBAppender
-* Varscoping issue for Logger object
+* Varscoping issue for Logger object* fix for category inheritance issues on locateCategoryParentLogger thanks to Sean Corfield
 
 == Version 1.2 ==
 http://coldbox.assembla.com/spaces/coldbox/milestones/153095-logbox-1-2

@@ -208,8 +208,8 @@ Description :
 				return instance.loggerRegistry[parentCategory];
 			}
 			// Do we need to create it, lazy loading?
-			if( getConfig().categoryExists(arguments.category) ){
-				return getLogger(arguments.category);	
+			if( getConfig().categoryExists(parentCategory) ){
+				return getLogger(parentCategory);	
 			}
 			// Else, it was not located, recurse
 			return locateCategoryParentLogger(parentCategory);			
