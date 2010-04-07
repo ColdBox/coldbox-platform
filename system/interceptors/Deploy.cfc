@@ -50,18 +50,16 @@ any kind of cleanup code or anything you like:
 </cfcomponent>
 	
 ----------------------------------------------------------------------->
-<cfcomponent name="Deploy"
-			 hint="Deployment Control Interceptor"
-			 extends="coldbox.system.Interceptor"
-			 output="false">
+<cfcomponent hint="Deployment Control Interceptor" extends="coldbox.system.Interceptor" output="false">
 	
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
+	<!--- Configure --->
 	<cffunction name="configure" access="public" returntype="void" output="false" hint="My configuration method">
 		<cfscript>
 			// Private Properties
-			instance.tagFilepath = "";
+			instance.tagFilepath 		 = "";
 			instance.deployCommandObject = "";
 			
 			// Verify the properties
@@ -86,7 +84,9 @@ any kind of cleanup code or anything you like:
 					instance.deployCommandObject = createObject("component",getProperty('deployCommandObject')).init(controller);
 				}
 				catch(Any e){
-					rethrowit(e);
+					$throw("Error creating command object #getProperty('deployCommandObject')#",
+						   e.detail & e.message & e.stacktrace,
+						   "Deploy.CommandObjectCreationException");
 				}
 			}
 			
@@ -96,8 +96,9 @@ any kind of cleanup code or anything you like:
 					instance.deployCommandObject = getModel(getProperty("deployCommandModel"));
 				}
 				catch(Any e){
-					writeDump(e);abort;
-					rethrowit(e);
+					$throw("Error creating command model object #getProperty('deployCommandModel')#",
+						   e.detail & e.message & e.stacktrace,
+						   "Deploy.CommandObjectCreationException");
 				}
 			}
 		</cfscript>
@@ -105,23 +106,25 @@ any kind of cleanup code or anything you like:
 
 <!------------------------------------------- PUBLIC ------------------------------------------->
 
+	<!--- afterAspectsLoad --->
 	<cffunction name="afterAspectsLoad" output="false" access="public" returntype="void">
 		<!--- ************************************************************* --->
-		<cfargument name="event" 		 required="true" type="any" hint="The event object.">
-		<cfargument name="interceptData" required="true" type="struct" hint="interceptData of intercepted info.">
+		<cfargument name="event">
+		<cfargument name="interceptData">
 		<!--- ************************************************************* --->
 		<cfscript>
 			log.info("Deploy tag registered successfully.");
 		</cfscript>	
 	</cffunction>
 
-	<cffunction name="preProcess" output="false" access="public" returntype="void" hint="Check if a deploy has been made">
+	<!--- postProcess --->
+	<cffunction name="postProcess" output="false" access="public" returntype="void" hint="Check if a deploy has been made">
 		<!--- ************************************************************* --->
-		<cfargument name="event" 		 required="true" type="any" hint="The event object.">
-		<cfargument name="interceptData" required="true" type="struct" hint="interceptData of intercepted info.">
+		<cfargument name="event">
+		<cfargument name="interceptData">
 		<!--- ************************************************************* --->
 		<cfset var applicationTimestamp = "">
-		<cfset var fileTimestamp = fileLastModified(instance.tagFilepath)>
+		<cfset var fileTimestamp 		= fileLastModified(instance.tagFilepath)>
 		
 		<!--- Check if setting exists --->
 		<cfif settingExists("_deploytagTimestamp")>
@@ -129,7 +132,7 @@ any kind of cleanup code or anything you like:
 			<cfset applicationTimestamp = getSetting("_deploytagTimestamp")>
 			<!--- Validate Timestamp --->
 			<cfif dateCompare(fileTimestamp, applicationTimestamp) eq 1>
-				<cflock scope="application" type="exclusive" timeout="15" throwontimeout="true">
+				<cflock scope="application" type="exclusive" timeout="25">
 				<cfscript>
 					//Extra if statement for concurrency
 					if ( dateCompare(fileTimestamp, applicationTimestamp) eq 1 ){
@@ -164,6 +167,7 @@ any kind of cleanup code or anything you like:
 		 
 <!------------------------------------------- PRIVATE ------------------------------------------->
 	
+	<!--- fileLastModified --->
 	<cffunction name="fileLastModified" access="private" returntype="string" output="false" hint="Get the last modified date of a file">
 		<!--- ************************************************************* --->
 		<cfargument name="filename" type="string" required="yes">
@@ -175,11 +179,6 @@ any kind of cleanup code or anything you like:
 		// Date is returned as number of seconds since 1-1-1970
 		return DateAdd('s', (Round(objFile.lastModified()/1000))+Offset, CreateDateTime(1970, 1, 1, 0, 0, 0));
 		</cfscript>
-	</cffunction>
-	
-	<cffunction name="rethrowit" access="private" returntype="void" hint="Rethrow an exception" output="false" >
-		<cfargument name="throwObject" required="true" type="any" hint="The exception object">
-		<cfthrow object="#arguments.throwObject#">
 	</cffunction>
 	
 </cfcomponent>
