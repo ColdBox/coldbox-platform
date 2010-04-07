@@ -25,15 +25,15 @@ component accessors="true"{
 	* The queryCacheRegion name property for all query caching produced in this service
 	*/
 	property name="queryCacheRegion" type="string" default="ORMService.defaultCache";
-	
+
 	/**
 	* The bit that tells the service to enable query caching, disabled by default
 	*/
 	property name="useQueryCaching" type="boolean" default="false";
-	
+
 /* ----------------------------------- DEPENDENCIES ------------------------------ */
-	
-	
+
+
 
 /* ----------------------------------- CONSTRUCTOR ------------------------------ */
 
@@ -56,16 +56,16 @@ component accessors="true"{
 	* the queryCacheRegion class property.
 	* @tested true
 	*/
-	any function list(required string entityName, 
-					  struct criteria=structnew(), 
-					  string sortOrder="", 
+	any function list(required string entityName,
+					  struct criteria=structnew(),
+					  string sortOrder="",
 					  numeric offset=0,
 					  numeric max=0,
 					  numeric timeout=0,
 					  boolean ignoreCase=false,
 					  boolean asQuery=true){
 		var options = {};
-		
+
 		// Setup listing options
 		if( arguments.offset neq 0 ){
 			options.offset = arguments.offset;
@@ -76,45 +76,45 @@ component accessors="true"{
 		if( arguments.timeout neq 0 ){
 			options.timeout = arguments.timeout;
 		}
-		
+
 		// Caching?
 		if( getUseQueryCaching() ){
 			options.cacheName  = getQueryCacheRegion();
 			options.cacheable  = true;
 		}
-		
+
 		// Sort Order Case
 		if( len(trim(arguments.sortOrder)) ){
 			options.ignoreCase = arguments.ignoreCase;
 		}
-		
+
 		// Get listing
 		var results = entityLoad(arguments.entityName, arguments.criteria, arguments.sortOrder, options);
-		
+
 		// Is it Null?
 		if( isNull(results) ){ results = []; }
-		
+
 		// Objects or Query?
 		if( arguments.asQuery ){
 			results = entityToQuery(results);
 		}
-		
+
 		return results;
 	}
-	
+
 	/**
 	* Allows the execution of HQL queries using several nice arguments and returns either an array of entities or a query as specified by the asQuery argument.
 	* The params filtering can be using named or positional.
 	* @tested true
 	*/
-	any function executeQuery(required string query, 
-							  any params=structnew(), 
+	any function executeQuery(required string query,
+							  any params=structnew(),
 							  numeric offset=0,
 					  		  numeric max=0,
 					  		  numeric timeout=0,
 						      boolean asQuery=true){
 		var options = {};
-		
+
 		// Setup listing options
 		if( arguments.offset neq 0 ){
 			options.offset = arguments.offset;
@@ -130,15 +130,15 @@ component accessors="true"{
 			options.cacheName  = getQueryCacheRegion();
 			options.cacheable  = true;
 		}
-		
+
 		// Get listing
 		var results = ORMExecuteQuery( arguments.query, arguments.params, false, options );
-		
+
 		// Objects or Query?
 		if( arguments.asQuery ){
 			results = entityToQuery(results);
 		}
-		
+
 		return results;
 	}
 
@@ -149,16 +149,16 @@ component accessors="true"{
 	*/
 	any function find(string query,any params=structnew(), any example){
 		var options = {maxresults=1};
-		
+
 		// Get entry by example
 		if( structKeyExists( arguments, "example") ){
 			return entityLoadByExample( arguments.example, true );
 		}
-		
+
 		// Normal Find
 		return ORMExecuteQuery( arguments.query, arguments.params, true, options);
 	}
-	
+
 	/**
 	* Find all the entities for the specified query and params or example
 	* @tested true
@@ -166,10 +166,10 @@ component accessors="true"{
 	array function findAll(string query,
 						   any params=structnew(),
 						   numeric offset=0,
-					       numeric max=0, 
+					       numeric max=0,
 						   any example){
 		var options = {};
-		
+
 		// Setup find options
 		if( arguments.offset neq 0 ){
 			options.offset = arguments.offset;
@@ -177,16 +177,16 @@ component accessors="true"{
 		if( arguments.max neq 0 ){
 			options.maxresults = arguments.max;
 		}
-		
+
 		// Get entry by example
 		if( structKeyExists( arguments, "example") ){
 			return entityLoadByExample( arguments.example );
 		}
-		
+
 		// Normal Find
 		return ORMExecuteQuery( arguments.query, arguments.params, false, options);
 	}
-	
+
 	/**
 	* Find one entity or null if not found according to the passed in name value pairs into the function
 	* ex: findWhere(entityName="Category", category="Training"), findWhere(entityName="Users", age=40);
@@ -198,9 +198,9 @@ component accessors="true"{
 		var operator = "AND";
 		var params	  = {};
 		var idx	  = 1;
-		 
+
 		buffer.append('from #arguments.entityName#');
-		 
+
 		// Do we have params?
 		if( structCount(arguments) gt 1){
 			buffer.append(" WHERE");
@@ -215,10 +215,10 @@ component accessors="true"{
 				// Check AND?
 				if( idx neq structCount(arguments) ){
 					buffer.append(" AND");
-				}		
+				}
 			}
 		}
-		
+
 		// execute query as unique
 		try{
 			return ORMExecuteQuery( buffer.toString(), params, true, {maxresults=1});
@@ -241,9 +241,9 @@ component accessors="true"{
 		var operator = "AND";
 		var params	  = {};
 		var idx	  = 1;
-		 
+
 		buffer.append('from #arguments.entityName#');
-		 
+
 		// Do we have params?
 		if( structCount(arguments) gt 1){
 			buffer.append(" WHERE");
@@ -258,10 +258,10 @@ component accessors="true"{
 				// Check AND?
 				if( idx neq structCount(arguments) ){
 					buffer.append(" AND");
-				}		
+				}
 			}
 		}
-		
+
 		// execute query as unique
 		try{
 			return ORMExecuteQuery( buffer.toString(), params);
@@ -272,35 +272,35 @@ component accessors="true"{
 			  type="ORMService.MaybeInvalidParamCaseException");
 		}
 	}
-		
-	/** 
+
+	/**
     * Get a new entity object by entity name
 	* @tested true
     */
 	any function new(required entityName){
 		return entityNew(arguments.entityName);
 	}
-	
-	/** 
+
+	/**
     * Refresh the state of an entity or array of entities from the database
 	* @tested true
     */
 	void function refresh(required any entity){
 		var objects = arrayNew(1);
-		
+
 		if( not isArray(arguments.entity) ){
 			arrayAppend(objects, arguments.entity);
 		}
 		else{
 			objects = arguments.entity;
 		}
-		
+
 		for( var x=1; x lte arrayLen(objects); x++){
 			ORMGetSession().refresh( objects[x] );
 		}
 	}
-	
-	/** 
+
+	/**
     * Checks if the given entityName and id exists in the database
 	* @tested true
     */
@@ -308,9 +308,9 @@ component accessors="true"{
 		var target = get(argumentCollection=arguments);
 		return isNull(target);
 	}
-	
-	
-	/** 
+
+
+	/**
 	* Get an entity using a primary key, if the id is not found this method returns null
 	* @tested true
     */
@@ -318,8 +318,8 @@ component accessors="true"{
 		// Retrieve by ID
 		return entityLoadByPK(arguments.entityName, arguments.id);
 	}
-	
-	/** 
+
+	/**
 	* Retrieve all the instances from the passed in entity name using the id argument if specified
 	* The id can be a list of IDs or an array of IDs or none to retrieve all.
 	* If the id is not found or returns null the array position will have an empty string in it in the specified order
@@ -327,15 +327,15 @@ component accessors="true"{
     */
 	array function getAll(required string entityName,any id) {
 		var results = [];
-		
+
 		// Return all entity values
 		if( NOT structKeyExists(arguments,"id") ){
 			return entityLoad(arguments.entityName);
-		} 
-		
+		}
+
 		// Convert ID to array if simple value
 		if( isSimpleValue(arguments.id) ){ arguments.id = listToArray(arguments.id); }
-		
+
 		// Iterate and get
 		for(var x=1; x lte arraylen(arguments.id); x++ ){
 			var obj = entityLoadByPK(arguments.entityName,arguments.id[x]);
@@ -344,11 +344,11 @@ component accessors="true"{
 			}
 			arrayAppend(results, obj);
 		}
-		
+
 		return results;
 	}
 
-	/** 
+	/**
     * Delete an entity using hibernate transactions. The entity argument can be a single entity
 	* or an array of entities. You can optionally flush the session also after committing
 	* @tested true
@@ -357,7 +357,7 @@ component accessors="true"{
 		var tx 		= ORMGetSession().beginTransaction();
 		var objects = arrayNew(1);
 		var objLen  = 0;
-		
+
 		try{
 			if( not isArray(arguments.entity) ){
 				arrayAppend(objects, arguments.entity);
@@ -365,12 +365,12 @@ component accessors="true"{
 			else{
 				objects = arguments.entity;
 			}
-			
+
 			objLen = arrayLen(objects);
 			for(var x=1; x lte objLen; x++){
 				entityDelete( objects[x] );
 			}
-			
+
 			tx.commit();
 		}
 		catch(Any e){
@@ -380,7 +380,7 @@ component accessors="true"{
 		// Auto Flush
 		if( arguments.flush ){ ORMFlush(); }
 	}
-	
+
 	/**
 	* Delete using an entity name and an incoming id, you can also flush the session if needed
 	* The method returns false if the passed in entityName and id is not found in the database.
@@ -388,22 +388,22 @@ component accessors="true"{
 	*/
 	boolean function deleteByID(required string entityName, required any id, boolean flush=false){
 		var entity = get(argumentCollection=arguments);
-		
+
 		if( isNull(entity) ){ return false; }
-		
+
 		delete( entity,arguments.flush );
-		
+
 		return true;
 	}
 
 	/**
-	* Delete by using an HQL query and iterating via the results, it is not performing a delete query but 
+	* Delete by using an HQL query and iterating via the results, it is not performing a delete query but
 	* it actually is a select query that should retrieve objects to remove
 	* @tested true
 	*/
 	void function deleteByQuery(required string query, any params, boolean unique=false, struct queryOptions=structnew(), boolean flush=false ){
 		var objects = arrayNew(1);
-		 
+
 		// Query
 		if( structKeyExists(arguments, "params") ){
 			objects = ORMExecuteQuery(arguments.query, arguments.params, arguments.unique, arguments.queryOptions);
@@ -411,10 +411,10 @@ component accessors="true"{
 		else{
 			objects = ORMExecuteQuery(arguments.query, arguments.unique, arguments.queryOptions);
 		}
-		 
+
 		delete( objects, arguments.flush );
 	}
-	
+
 	/**
 	* Deletes entities by using name value pairs as arguments to this function.  One mandatory argument is to pass the 'entityName'.
 	* The rest of the arguments are used in the where class using AND notation and parameterized.
@@ -427,9 +427,9 @@ component accessors="true"{
 		 var operator = "AND";
 		 var params	  = {};
 		 var idx	  = 1;
-		 
+
 		 buffer.append('delete from #arguments.entityName#');
-		 
+
 		 // Do we have arguments?
 		 if( structCount(arguments) gt 1){
 		 	buffer.append(" WHERE");
@@ -439,7 +439,7 @@ component accessors="true"{
 				  detail="We will not do a full delete via this method, you need to pass in named value arguments.",
 				  type="BaseORMService.NoWhereArgumentsFound");
 		 }
-		 
+
 		 // Go over Params
 		 for(key in arguments){
 		 	// Build where parameterized
@@ -450,10 +450,10 @@ component accessors="true"{
 				// Check AND?
 				if( idx neq structCount(arguments) ){
 					buffer.append(" AND");
-				}		
+				}
 			}
 		 }
-		 
+
 		 // execute query as unique for the count
 		 try{
 		 	return ORMExecuteQuery( buffer.toString(), params, true);
@@ -465,16 +465,16 @@ component accessors="true"{
 		 }
 	}
 
-	/** 
+	/**
     * Save an entity using hibernate transactions. You can optionally flush the session also
 	* @tested true
     */
 	void function save(required any entity, boolean forceInsert=false, boolean flush=false){
 		var tx = ORMGetSession().beginTransaction();
-		
+
 		try{
 			entitySave(arguments.entity, arguments.forceInsert);
-			
+
 			tx.commit();
 		}
 		catch(Any e){
@@ -484,7 +484,7 @@ component accessors="true"{
 		// Auto Flush
 		if( arguments.flush ){ ORMFlush(); }
 	}
-	
+
 	/**
 	* Return the count of records in the DB for the given entity name. You can also pass an optional where statement
 	* that can filter the count. Ex: count('User','age > 40 AND name="joe"'). You can even use params with this method:
@@ -495,14 +495,14 @@ component accessors="true"{
 		 var buffer   = createObject("java","java.lang.StringBuffer").init('');
 		 var key      = "";
 		 var operator = "AND";
-		 
+
 		 buffer.append('select count(*) from #arguments.entityName#');
-		 
+
 		 // build params
 		 if( len(trim(arguments.where)) ){
 		 	buffer.append(" WHERE #arguments.where#");
 		 }
-		 
+
 		 // execute query as unique for the count
 		 try{
 		 	return ORMExecuteQuery( buffer.toString(), arguments.params, true);
@@ -512,9 +512,9 @@ component accessors="true"{
 				  detail="The most likely reason is that the keys in the passed in structure need to be case sensitive. Passed Keys=#structKeyList(arguments.params)#",
 				  type="ORMService.MaybeInvalidParamCaseException");
 		 }
-		 
+
 	}
-	
+
 	/**
 	* Returns the count by passing name value pairs as arguments to this function.  One mandatory argument is to pass the 'entityName'.
 	* The rest of the arguments are used in the where class using AND notation and parameterized.
@@ -527,9 +527,9 @@ component accessors="true"{
 		 var operator = "AND";
 		 var params	  = {};
 		 var idx	  = 1;
-		 
+
 		 buffer.append('select count(*) from #arguments.entityName#');
-		 
+
 		 // Do we have params?
 		 if( structCount(arguments) gt 1){
 		 	buffer.append(" WHERE");
@@ -544,10 +544,10 @@ component accessors="true"{
 				// Check AND?
 				if( idx neq structCount(arguments) ){
 					buffer.append(" AND");
-				}		
+				}
 			}
 		 }
-		 
+
 		 // execute query as unique for the count
 		 try{
 		 	return ORMExecuteQuery( buffer.toString(), params, true);
@@ -558,13 +558,13 @@ component accessors="true"{
 				  type="ORMService.MaybeInvalidParamCaseException");
 		 }
 	}
-	
-	/** 
+
+	/**
     * Evict an entity from session, the id can be a string or structure for the primary key
 	* You can also pass in a collection name to evict from the collection
     */
 	void function evict(required string entityName,string collectionName, any id){
-		
+
 		//Collection?
 		if( structKeyExists(arguments,"collectionName") ){
 			if( structKeyExists(arguments,"id") )
@@ -580,27 +580,27 @@ component accessors="true"{
 				ORMEvictEntity(arguments.entityName);
 		}
 	}
-	
-	/** 
+
+	/**
     * Evict entity objects from session. The argument can be one persistence entity or an array of entities
     */
 	void function evictEntity(required any entity){
 		var objects = arrayNew(1);
-		
+
 		if( not isArray(arguments.entities) ){
 			arrayAppend(objects, arguments.entities);
 		}
 		else{
 			objects = arguments.entities;
 		}
-		
+
 		for( var x=1; x lte arrayLen(objects); x++){
 			ORMGetSession().evict( objects[x] );
 		}
-		
+
 	}
-	
-	/** 
+
+	/**
     * Evict all queries in the default cache or the cache region passed
     */
 	void function evictQueries(string cacheName){
@@ -609,26 +609,26 @@ component accessors="true"{
 		else
 			ORMEvictQueries();
 	}
-	
-	/** 
+
+	/**
     * Merge an entity or array of entities back into the session
     */
 	void function merge(required any entity){
 		var objects = arrayNew(1);
-		
+
 		if( not isArray(arguments.entities) ){
 			arrayAppend(objects, arguments.entities);
 		}
 		else{
 			objects = arguments.entities;
 		}
-		
+
 		for( var x=1; x lte arrayLen(objects); x++){
 			entityMerge( objects[x] );
 		}
-		
+
 	}
-	
+
 	/**
 	* Clear the session removes all the entities that are loaded or created in the session.
 	* This clears the first level cache and removes the objects that are not yet saved to the database.
@@ -637,7 +637,7 @@ component accessors="true"{
 	void function clear(){
 		ORMClearSession();
 	}
-	
+
 	/**
 	* Checks if the session contains dirty objects that are awaiting persistence
 	* @tested true
@@ -645,7 +645,7 @@ component accessors="true"{
 	boolean function isSessionDirty(){
 		return ORMGetSession().isDirty();
 	}
-	
+
 	/**
 	* Checks if the current session contains the passed in entity
 	* @tested true
@@ -655,7 +655,7 @@ component accessors="true"{
 		// weird CFML thing
 		return ormSession.contains(arguments.entity);
 	}
-	
+
 	/**
 	* Information about the first-level (session) cache for the current session
 	* @tested true
@@ -668,7 +668,7 @@ component accessors="true"{
 			entityCount	    = stats.getEntityCount(),
 			entityKeys		= stats.getEntityKeys().toString()
 		};
-		
+
 		return results;
 	}
 
@@ -678,13 +678,36 @@ component accessors="true"{
 	any function onMissingMethod(String missingMethodName,Struct missingMethodArguments){
 		var method = arguments.missingMethodName;
 		var args   = arguments.missingMethodArguments;
-	}	
-	
+	}
+
+	/**
+	* Returns the key (id field) of the entity
+	*/
+	string function getKey(required string entityName){
+		return ormGetSessionFactory().getClassMetaData(arguments.entityName).getIdentifierPropertyName();
+	}
+
+	/**
+	* Returns the Property Names of the entity
+	*/
+	array function getPropertyNames(required string entityName){
+		return ormGetSessionFactory().getClassMetaData(arguments.entityName).getPropertyNames();
+	}
+
+	/**
+	* Returns the table name of the of the entity
+	*/
+	string function getTableName(required string entityName){
+		return ormGetSessionFactory().getClassMetadata(arguments.entityName).getTableName();
+	}
+
 	/**
 	* Facade to rethrowit, where is this Adobe?
-	*/	
+	*/
 	private function rethrowit(e){
 		throw(object=arguments.e);
 	}
-	
+
+
+
 }

@@ -86,7 +86,7 @@ id , name , mail
 		
 		// Load ColdBox Application for testing?
 		if( this.loadColdbox ){
-			// Check on Scope Firsty
+			// Check on Scope First
 			if( structKeyExists(application,getColdboxAppKey()) ){
 				instance.controller = application[getColdboxAppKey()];
 			}
