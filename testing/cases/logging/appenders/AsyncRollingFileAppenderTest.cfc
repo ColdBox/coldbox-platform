@@ -23,6 +23,7 @@
 			loge.setSeverity(x);
 			loge.setCategory("coldbox.system.testing");
 			fileappender.logMessage(loge);
+			sleep(50);
 		}
 		files = dirlist(props.filePath);
 		assertTrue( files.recordcount gt 1 );

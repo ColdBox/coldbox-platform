@@ -62,9 +62,6 @@
 		debug(config.getRoot());
 	}
 	function testConventionMethods(){
-		config.trace("com.coldbox","com.transfer");
-		assertEquals( structCount(config.getAllCategories()), 2);
-		
 		config.info("com.coldbox","com.transfer");
 		assertEquals( structCount(config.getAllCategories()), 2);
 		

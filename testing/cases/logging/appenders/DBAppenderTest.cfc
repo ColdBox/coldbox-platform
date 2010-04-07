@@ -1,7 +1,7 @@
 <cfcomponent extends="coldbox.system.testing.BaseTestCase">
 <cfscript>
 	function setup(){
-		props = {dsn='test',table='logs',autocreate='true'};
+		props = {dsn='coolblog',table='logs',autocreate='true'};
 		db = getMockBox().createMock(className="coldbox.system.logging.appenders.DBAppender");
 		db.init('UnitTest',props);
 		

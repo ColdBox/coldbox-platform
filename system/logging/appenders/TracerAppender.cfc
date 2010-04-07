@@ -51,11 +51,14 @@ Properties:
 			switch( this.logLevels.lookupCF(loge.getSeverity()) ){
 				case "FATAL" : { traceSeverity = "fatal information"; break; }
 				case "ERROR" : { traceSeverity = "error"; break; }
-				case "WARN" : { traceSeverity = "warning"; break; }
+				case "WARN"  : { traceSeverity = "warning"; break; }
 			}
 		</cfscript>
 		
-		<cftrace category="#loge.getCategory()#" text="#entry#" type="#traceSeverity#">	   
+		<cftry>
+			<cftrace category="#loge.getCategory()#" text="#entry#" type="#traceSeverity#">
+			<cfcatch type="any"><!--- Silent as sometimes, the tag fails itself on cf9, boohoo! ---></cfcatch>
+		</cftry>
 	</cffunction>
 	
 <!------------------------------------------- PRIVATE ------------------------------------------>

@@ -20,7 +20,7 @@ Description :
 	this.OFF = -1;
 	
 	// List of valid levels
-	this.VALIDLEVELS = "off,trace,debug,info,warn,error,fatal";
+	this.VALIDLEVELS = "off,fatal,error,warn,info,debug";
 	
 	// Max
 	this.MINLEVEL = -1;
@@ -56,7 +56,8 @@ Description :
 			case 1: return "Error";
 			case 2: return "Warning";
 			case 3: return "Information";
-			case 4: return "Information";		
+			case 4: return "Information";
+			default: return "Information";		
 		}
 	}
 	

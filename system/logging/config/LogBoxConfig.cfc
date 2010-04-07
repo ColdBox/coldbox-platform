@@ -150,7 +150,6 @@ Description :
 		<cfscript>
 			var x=1;
 			var key ="";
-			var thisAppenders = "";
 			
 			// Are appenders defined
 			if( structIsEmpty(instance.appenders) ){
@@ -176,18 +175,16 @@ Description :
 			
 			// Check all Category Appenders
 			for(key in instance.categories){
-				thisAppenders = instance.categories[key].appenders;
 				
 				// Check * all appenders
-				if( thisAppenders eq "*"){
+				if( instance.categories[key].appenders eq "*"){
 					instance.categories[key].appenders = structKeyList(getAllAppenders());
-					continue;
 				}
 				
-				for(x=1; x lte listlen(thisAppenders); x=x+1){
-					if( NOT structKeyExists(instance.appenders, listGetAt(thisAppenders,x)) ){
+				for(x=1; x lte listlen(instance.categories[key].appenders); x=x+1){
+					if( NOT structKeyExists(instance.appenders, listGetAt(instance.categories[key].appenders,x)) ){
 						$throw(message="Invalid appender in Category: #key#",
-							   detail="The appender #listGetAt(thisAppenders,x)# has not been defined yet. Please define it first.",
+							   detail="The appender #listGetAt(instance.categories[key].appenders,x)# has not been defined yet. Please define it first.",
 							   type="LogBoxConfig.AppenderNotFound");
 					}
 				}
@@ -438,11 +435,16 @@ Description :
 					args.appenders = trim(categoriesXML[x].XMLAttributes.appenders);
 				}
 				else{
-					args.appenders = "*";
+					args.appenders = "";
+					// Find xml appender references
 					for( y=1; y lte arrayLen(categoriesXML[x].xmlChildren); y=y+1){
 						if( categoriesXML[x].xmlChildren[y].XMLName eq "Appender-ref" ){
 							args.appenders = listAppend(args.appenders, trim(categoriesXML[x].xmlChildren[y].XMLAttributes.ref) );
 						}
+					}
+					// check if we have appenders else default to *
+					if(NOT len(args.appenders) ){
+						args.appenders = "*";
 					}
 				}
 				// Register category

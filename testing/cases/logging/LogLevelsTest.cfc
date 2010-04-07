@@ -11,7 +11,7 @@
 		assertEquals( logLevels.lookupAsInt("WARN"), "2" );
 		assertEquals( logLevels.lookupAsInt("INFO"), "3" );
 		assertEquals( logLevels.lookupAsInt("DEBUG"), "4" );
-		assertEquals( logLevels.lookupAsInt("TRACE"), "5" );
+		assertEquals( logLevels.lookupAsInt("TRACE"), "999" );
 	}
 </cfscript>
 </cfcomponent>

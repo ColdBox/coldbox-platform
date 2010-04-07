@@ -2,7 +2,7 @@
 <cfscript>
 	function setup(){
 		xmlFile = expandPath("/coldbox/system/logging/config/Sample.LogBox.xml");
-		config = getMockBox().createMock(className="coldbox.system.logging.config.LogBoxConfig").init(xmlFile);
+		config = getMockBox().createMock(className="coldbox.system.logging.config.LogBoxConfig").init(xmlConfig=xmlFile);
 	}
 	
 	function testCreations(){
@@ -17,6 +17,7 @@
 		config = getMockBox().createMock(className="coldbox.system.logging.config.LogBoxConfig").init();
 		configxml = xmlParse(expandpath('/coldbox/testing/cases/logging/config/cbox.logbox.xml'));
 		logbox = xmlSearch(configxml,"//LogBox");
+		
 		config.parseAndLoad(logBox[1]);
 		
 		config.validate();

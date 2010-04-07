@@ -122,7 +122,7 @@ Properties:
 			}
 			catch(Any e){
 				$throw(message="Error opening socket to #getProperty("host")#:#getProperty("port")#",
-					   detail=e.message & e.detail,
+					   detail=e.message & e.detail & e.stacktrace,
 					   type="SocketAppender.ConnectionException");
 			}
 			// Set Timeout
