@@ -9,15 +9,15 @@ Date        :	3/13/2009
 Description :
 	This resembles a logging event within log box.
 ----------------------------------------------------------------------->
-<cfcomponent name="LogEvent" output="false" hint="Resembles a logging event.">
+<cfcomponent output="false" hint="Resembles a logging event.">
 
 	<cfscript>
-		instance = structnew();
-		instance.category = "";
-		instance.timestamp = now();
-		instance.message = "";
-		instance.severity = "";
-		instance.extraInfo = "";
+		instance 			= structnew();
+		instance.category 	= "";
+		instance.timestamp	= now();
+		instance.message 	= "";
+		instance.severity 	= "";
+		instance.extraInfo	= "";
 	</cfscript>
 	
 	<!--- init --->
@@ -38,7 +38,7 @@ Description :
 		</cfscript>
 	</cffunction>
 	
-	<cffunction name="getextraInfoAsString" access="public" returntype="string" output="false">
+	<cffunction name="getExtraInfoAsString" access="public" returntype="string" output="false">
 		<cfset var info = instance.extraInfo>
 		<cfif NOT isSimpleValue(info)>
 			<cfreturn info.toString()>
@@ -46,45 +46,44 @@ Description :
 			<cfreturn info>
 		</cfif>
 	</cffunction>
-	<cffunction name="getextraInfo" access="public" returntype="any" output="false">
+	<cffunction name="getExtraInfo" access="public" returntype="any" output="false">
 		<cfreturn instance.extraInfo>
 	</cffunction>
-	<cffunction name="setextraInfo" access="public" returntype="void" output="false">
+	<cffunction name="setExtraInfo" access="public" returntype="void" output="false">
 		<cfargument name="extraInfo" type="any" required="true">
 		<cfset instance.extraInfo = arguments.extraInfo>
 	</cffunction>
 	
-	<cffunction name="getcategory" access="public" returntype="string" output="false">
+	<cffunction name="getCategory" access="public" returntype="string" output="false">
 		<cfreturn instance.category>
 	</cffunction>
-	<cffunction name="setcategory" access="public" returntype="void" output="false">
+	<cffunction name="setCategory" access="public" returntype="void" output="false">
 		<cfargument name="category" type="string" required="true">
 		<cfset instance.category = arguments.category>
 	</cffunction>
 	
-	<cffunction name="gettimestamp" access="public" returntype="string" output="false">
+	<cffunction name="getTimestamp" access="public" returntype="string" output="false">
 		<cfreturn instance.timestamp>
 	</cffunction>
-	<cffunction name="settimestamp" access="public" returntype="void" output="false">
+	<cffunction name="setTimestamp" access="public" returntype="void" output="false">
 		<cfargument name="timestamp" type="string" required="true">
 		<cfset instance.timestamp = arguments.timestamp>
 	</cffunction>
 	
-	<cffunction name="getmessage" access="public" returntype="string" output="false">
+	<cffunction name="getMessage" access="public" returntype="string" output="false">
 		<cfreturn instance.message>
 	</cffunction>
-	<cffunction name="setmessage" access="public" returntype="void" output="false">
+	<cffunction name="setMessage" access="public" returntype="void" output="false">
 		<cfargument name="message" type="string" required="true">
 		<cfset instance.message = arguments.message>
 	</cffunction>
 	
-	<cffunction name="getseverity" access="public" returntype="numeric" output="false">
+	<cffunction name="getSeverity" access="public" returntype="numeric" output="false">
 		<cfreturn instance.severity>
 	</cffunction>
-	<cffunction name="setseverity" access="public" returntype="void" output="false">
+	<cffunction name="setSeverity" access="public" returntype="void" output="false">
 		<cfargument name="severity" type="numeric" required="true">
 		<cfset instance.severity = arguments.severity>
 	</cffunction>
-
 
 </cfcomponent>

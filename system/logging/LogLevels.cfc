@@ -9,15 +9,15 @@ Date        :	3/13/2009
 Description :
 	The log levels enum
 ----------------------------------------------------------------------->
-<cfcomponent name="LogLevels" hint="The available log levels in LogBox" output="false">
+<cfcomponent hint="The available log levels in LogBox" output="false">
 <cfscript>
 	// All Available Logging Levels for LogBox
-	this.DEBUG = 4;
-	this.INFO = 3;
-	this.WARN = 2;
-	this.ERROR = 1;
-	this.FATAL = 0;
-	this.OFF = -1;
+	this.OFF 	= -1;
+	this.FATAL 	= 0;
+	this.ERROR 	= 1;
+	this.WARN 	= 2;
+	this.INFO 	= 3;
+	this.DEBUG 	= 4;
 	
 	// List of valid levels
 	this.VALIDLEVELS = "off,fatal,error,warn,info,debug";
@@ -36,6 +36,7 @@ Description :
 			case 4: return "DEBUG";		
 		}
 	}
+	
 	function lookupAsInt(level){
 		switch(level){
 			case "OFF": return -1;
@@ -49,6 +50,7 @@ Description :
 			default: return 999;	
 		}
 	}
+	
 	function lookupCF(level){
 		switch(level){
 			case -1: return "OFF";

@@ -2,7 +2,7 @@
 <cfscript>
 	function setup(){
 		xmlFile = expandPath("/coldbox/system/logging/config/Sample.LogBox.xml");
-		config = getMockBox().createMock(className="coldbox.system.logging.config.LogBoxConfig").init(xmlConfig=xmlFile);
+		config  = getMockBox().createMock(className="coldbox.system.logging.config.LogBoxConfig").init(xmlConfig=xmlFile);
 	}
 	
 	function testCreations(){
@@ -11,6 +11,7 @@
 		root = logBox.getRootLogger();
 		
 		root.debug("Hello man");
+		
 	}
 	
 	function testInlineXML(){
@@ -22,5 +23,6 @@
 		
 		config.validate();
 	}
+	
 </cfscript>
 </cfcomponent>

@@ -3,6 +3,8 @@
 	function setup(){
 		mockLB = getMockBox().createMock(className="coldbox.system.logging.LogBox",clearMethods=true);
 		logger = getMockBox().createMock(className="coldbox.system.logging.Logger");
+		logger.logLevels = getMockBox().createMock(className="coldbox.system.logging.LogLevels");
+		
 		
 		//init Logger
 		logger.init(category="coldbox.system.logging.UnitTest");
@@ -29,6 +31,25 @@
 		assertTrue( logger.hasAppenders() );
 		logger.removeAllAppenders();
 		assertFalse( logger.hasAppenders() );		
+	}
+	
+	function testAppenderLoggingLevels(){
+		//appender Add
+		newAppender = getMockBox().createEmptyMock("coldbox.system.logging.appenders.ConsoleAppender");
+		newAppender.$("canLog",false).$("getName","ConsoleAppender").$("isInitialized",true).$("logMessage");
+		// register appender in logger
+		logger.addAppender(newAppender);
+		
+		// Logger can log with debug, but appender should not
+		assertTrue( logger.canLog(4) );
+		
+		logger.logMessage("My Unit Test",4);
+		
+		assertEquals(0,  arrayLen(newAppender.$callLog().logMessage) );
+		
+		newAppender.$("canLog",true);
+		logger.logMessage("My Unit Test",1);
+		assertEquals(1,  arrayLen(newAppender.$callLog().logMessage) );
 	}
 	
 	

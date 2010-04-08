@@ -30,6 +30,9 @@ Properties:
 		<!--- ************************************************************* --->
 		<cfargument name="name" 		type="string"  required="true" hint="The unique name for this logger."/>
 		<cfargument name="properties" 	type="struct"  required="false" default="#structnew()#" hint="A map of configuration properties for the logger"/>
+		<cfargument name="layout" 		type="string"  required="false" default="" hint="The layout class to use in this appender for custom message rendering."/>
+		<cfargument name="levelMin"  	type="numeric" required="false" default="0" hint="The default log level for this appender, by default it is 0. Optional. ex: LogBox.logLevels.WARN"/>
+		<cfargument name="levelMax"  	type="numeric" required="false" default="4" hint="The default log level for this appender, by default it is 5. Optional. ex: LogBox.logLevels.WARN"/>
 		<!--- ************************************************************* --->
 		<cfscript>
 			// Init supertype

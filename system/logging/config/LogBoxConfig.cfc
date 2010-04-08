@@ -10,7 +10,7 @@ Description :
 	This is a LogBox configuration object.  You can use it to configure
 	a log box instance.
 ----------------------------------------------------------------------->
-<cfcomponent name="LogBoxConfig" output="false" hint="This is a LogBox configuration object.  You can use it to configure a log box instance">
+<cfcomponent output="false" hint="This is a LogBox configuration object.  You can use it to configure a log box instance">
 
 	<cfscript>
 		// The log levels enum as a public property
@@ -198,8 +198,10 @@ Description :
 		<cfargument name="class" 		type="string"  required="true"  hint="The appender's class to register. We will create, init it and register it for you."/>
 		<cfargument name="properties" 	type="struct"  required="false" default="#structnew()#" hint="The structure of properties to configure this appender with."/>
 		<cfargument name="layout" 		type="string"  required="false" default="" hint="The layout class path to use in this appender for custom message rendering."/>
+		<cfargument name="levelMin" 	type="numeric" required="false" default="0" hint="The default log level for the root logger, by default it is 0 (FATAL). Optional. ex: config.logLevels.WARN"/>
+		<cfargument name="levelMax" 	type="numeric" required="false" default="4" hint="The default log level for the root logger, by default it is 4 (DEBUG). Optional. ex: config.logLevels.WARN"/>
 		<cfscript>
-			// REgister appender
+			// Register appender
 			instance.appenders[arguments.name] = arguments;
 		</cfscript>
 	</cffunction>
@@ -358,10 +360,26 @@ Description :
 				args.name = trim(thisAppender.XMLAttributes.name);
 				args.class = trim(thisAppender.XMLAttributes.class);
 				
-				//Appender layout
+				//Appender layout?
 				if( structKeyExists(thisAppender.XMLAttributes,"layout") ){
 					args.layout = trim(thisAppender.XMLAttributes.layout);
 				}
+				//Appender Levels?
+				if( structKeyExists(thisAppender.XMLAttributes,"levelMin") ){
+					args.levelMin = trim(thisAppender.XMLAttributes.levelMin);
+					// Numeric Check
+					if( NOT isNumeric(args.levelMin) ){
+						args.levelMin = this.logLevels.lookupAsInt(args.levelMin);
+					}
+				}
+				if( structKeyExists(thisAppender.XMLAttributes,"levelMax") ){
+					args.levelMax = trim(thisAppender.XMLAttributes.levelMax);
+					// Numeric Check
+					if( NOT isNumeric(args.levelMax) ){
+						args.levelMin = this.logLevels.lookupAsInt(args.levelMax);
+					}
+				}
+				
 				// Check Properties Out
 				for(y=1; y lte arrayLen(thisAppender.xmlChildren); y=y+1 ){
 					args.properties[trim(thisAppender.xmlChildren[y].xmlAttributes.name)] = trim(thisAppender.xmlChildren[y].xmlText);

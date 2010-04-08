@@ -14,7 +14,7 @@ Description :
 	By default, LogBox will log any warnings pertaining to itself in the CF logs
 	according to its name.
 ----------------------------------------------------------------------->
-<cfcomponent name="LogBox" output="false" hint="This is LogBox, an enterprise logger. Please remember to persist this factory once it has been created.">
+<cfcomponent output="false" hint="This is LogBox, an enterprise logger. Please remember to persist this factory once it has been created.">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
@@ -25,7 +25,7 @@ Description :
 		// private instance scope
 		instance = structnew();
 		// LogBox Unique ID
-		instance._hash = hash(createObject('java','java.lang.System').identityHashCode(this));	
+		instance._hash = createObject('java','java.lang.System').identityHashCode(this);	
 		// Appenders
 		instance.appenderRegistry = structnew();
 		// Loggers
@@ -60,14 +60,14 @@ Description :
 	<cffunction name="configure" output="false" access="public" returntype="void" hint="Configure logbox for operation. You can also re-configure LogBox programmatically. Basically we register all appenders here and all categories">
 		<cfargument name="config" type="coldbox.system.logging.config.LogBoxConfig" required="true" hint="The LogBoxConfig object to use to configure this instance of LogBox"/>
 		<cfscript>
-			var appenders = "";
-			var key = "";
-			var oRoot = "";
-			var rootConfig = "";
-			var args = structnew();
+			var appenders 	= "";
+			var key 		= "";
+			var oRoot 		= "";
+			var rootConfig 	= "";
+			var args 		= structnew();
 		</cfscript>
 		
-		<cflock name="#instance._hash#.logBox.config" type="exclusive" throwontimeout="true" timeout="30">
+		<cflock name="#instance._hash#.logBox.config" type="exclusive" timeout="30">
 			<cfscript>
 			// Store config object
 			instance.config = arguments.config;
@@ -223,13 +223,15 @@ Description :
 		<cfargument name="class" 		type="string"  required="true"  hint="The appender's class to register. We will create, init it and register it for you."/>
 		<cfargument name="properties" 	type="struct"  required="false" default="#structnew()#" hint="The structure of properties to configure this appender with."/>
 		<cfargument name="layout" 		type="string"  required="false" default="" hint="The layout class to use in this appender for custom message rendering."/>
+		<cfargument name="levelMin"  	type="numeric" required="false" default="0" hint="The default log level for this appender, by default it is 0. Optional. ex: LogBox.logLevels.WARN"/>
+		<cfargument name="levelMax"  	type="numeric" required="false" default="4" hint="The default log level for this appender, by default it is 5. Optional. ex: LogBox.logLevels.WARN"/>
 		<!--- ************************************************************* --->
 		<cfset var appenders = instance.appenderRegistry>
 		<cfset var oAppender = "">
 		
 		<!--- Verify Registration --->
 		<cfif NOT structKeyExists(appenders,arguments.name)>
-			<cflock name="#instance._hash#.registerappender.#name#" type="exclusive" throwontimeout="true" timeout="30">
+			<cflock name="#instance._hash#.registerappender.#name#" type="exclusive" timeout="15">
 				<cfscript>
 					if( NOT structKeyExists(appenders,arguments.name) ){
 						// Create appender

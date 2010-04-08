@@ -7,9 +7,9 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 Author     :	Luis Majano
 Date        :	3/13/2009
 Description :
-	This acts as a logbox object with instance variables such as category.
+	This is a logging object that allows for all kinds of logging to occur within its appender
 ----------------------------------------------------------------------->
-<cfcomponent name="Logger" output="false" hint="This acts as a logbox object with instance variables such as category.">
+<cfcomponent output="false" hint="This is a logging object that allows for all kinds of logging to occur within its appenders">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
@@ -19,7 +19,7 @@ Description :
 		
 		// private instance scope
 		instance = structnew();
-		instance._hash = hash(createObject('java','java.lang.System').identityHashCode(this));
+		instance._hash = createObject('java','java.lang.System').identityHashCode(this);
 		instance.rootLogger = "";
 		instance.category = "";
 		instance.levelMin = "";
@@ -33,7 +33,7 @@ Description :
 	<cffunction name="init" access="public" returntype="Logger" hint="Create a new logger object." output="false" >
 		<cfargument name="category"  type="string"  required="true" hint="The category name to use this logger with"/>
 		<cfargument name="levelMin"  type="numeric" required="false" default="0" hint="The default log level for this appender, by default it is 0. Optional. ex: LogBox.logLevels.WARN"/>
-		<cfargument name="levelMax"  type="numeric" required="false" default="5" hint="The default log level for this appender, by default it is 5. Optional. ex: LogBox.logLevels.WARN"/>
+		<cfargument name="levelMax"  type="numeric" required="false" default="4" hint="The default log level for this appender, by default it is 5. Optional. ex: LogBox.logLevels.WARN"/>
 		<cfargument name="appenders" type="struct"  required="false" default="#structnew()#" hint="A map of already created appenders for this category, or blank to use the root logger."/>
 		<cfscript>
 			
@@ -319,15 +319,17 @@ Description :
 				for(key in appenders){
 					// Get Appender
 					thisAppender = appenders[key];
-					// Log the message in the appender
-					thisAppender.logMessage(logEvent);
+					// Log the message in the appender if the appender allows it
+					if( thisAppender.canLog(arguments.severity) ){
+						thisAppender.logMessage(logEvent);
+					}
 				}
 			}				
 		</cfscript>	
 	</cffunction>
 	
 	<!--- canLog --->
-	<cffunction name="canLog" output="false" access="public" returntype="boolean" hint="Checks wether a log can be made on this appender using a passed in level">
+	<cffunction name="canLog" output="false" access="public" returntype="boolean" hint="Checks wether a log can be made on this Logger using a passed in level">
 		<cfargument name="level" type="numeric" required="true" hint="The level to check if it can be logged in this Logger"/>
 		<cfscript>
 			return (arguments.level GTE getLevelMin() AND arguments.level LTE getLevelMax() );

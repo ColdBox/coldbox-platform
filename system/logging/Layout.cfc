@@ -10,7 +10,7 @@ Description :
 	This is a base layout object that will help you create custom 
 	layout's for messages in appenders
 ----------------------------------------------------------------------->
-<cfcomponent name="Layout" output="false" hint="This is a base custom layout for a message in an appender.">
+<cfcomponent output="false" hint="This is a base custom layout for a message in an appender.">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
@@ -18,7 +18,7 @@ Description :
 		// The log levels enum as a public property
 		this.logLevels = createObject("component","coldbox.system.logging.LogLevels");
 		// A line Sep Constant, man, wish we had final in CF.
-		this.LINE_SEP = chr(13) & chr(10);
+		this.LINE_SEP  = chr(13) & chr(10);
 	</cfscript>
 	
 	<!--- Init --->

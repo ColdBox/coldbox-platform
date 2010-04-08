@@ -663,6 +663,36 @@
 								<xs:documentation>A custom layout class to use with this appender.</xs:documentation>
 							</xs:annotation>
 						</xs:attribute>
+						<xs:attribute name="levelMin" use="optional">
+							<xs:annotation>
+								<xs:documentation>The minimum logging level for this root logger.</xs:documentation>
+							</xs:annotation>
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:enumeration value="OFF"/>
+									<xs:enumeration value="FATAL"/>
+									<xs:enumeration value="ERROR"/>
+									<xs:enumeration value="WARN"/>
+									<xs:enumeration value="INFO"/>
+									<xs:enumeration value="DEBUG"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:attribute>
+						<xs:attribute name="levelMax" use="optional">
+							<xs:annotation>
+								<xs:documentation>The maximum logging level for this root logger.</xs:documentation>
+							</xs:annotation>
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:enumeration value="OFF"/>
+									<xs:enumeration value="FATAL"/>
+									<xs:enumeration value="ERROR"/>
+									<xs:enumeration value="WARN"/>
+									<xs:enumeration value="INFO"/>
+									<xs:enumeration value="DEBUG"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:attribute>
 					</xs:complexType>
 				</xs:element>
 				<xs:element minOccurs="1" maxOccurs="1" name="Root">

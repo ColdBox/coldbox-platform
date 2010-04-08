@@ -3,7 +3,7 @@
 
 	<!-- Appender Definitions -->
 	<Appender name="myconsole" class="coldbox.system.logging.appenders.ConsoleAppender" />
-	<Appender name="MyCF" class="coldbox.system.logging.appenders.CFAppender" />
+	<Appender name="MyCF" class="coldbox.system.logging.appenders.CFAppender" levelMin="FATAL" levelMax="INFO" />
 	<Appender name="FileAppender" class="coldbox.system.logging.appenders.AsyncRollingFileAppender">
 		<Property name="filePath">/coldbox/testing/logging/tmp</Property>
 		<Property name="autoExpand">true</Property>
