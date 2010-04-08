@@ -49,6 +49,16 @@ component accessors="true"{
 
 /* ----------------------------------- PUBLIC ------------------------------ */
 
+
+	/**
+	* Create an abstract service for a specfic entity.
+	*/
+	any function createService(required string entityName) {
+		var service = "";
+		service =  CreateObject("component", "AbstractEntityService").init(arguments.entityName,variables.queryCacheRegion,variables.useQueryCaching);
+		return service;
+	}
+
 	/**
 	* List all of the instances of the passed in entity class name. You can pass in several optional arguments like
 	* a struct of filtering criteria, a sortOrder string, offset, max, ignorecase, and timeout.
@@ -688,7 +698,7 @@ component accessors="true"{
 	}
 
 	/**
-	* Returns the Property Names of the entity
+	* Returns the Property Names  of the entity
 	*/
 	array function getPropertyNames(required string entityName){
 		return ormGetSessionFactory().getClassMetaData(arguments.entityName).getPropertyNames();
