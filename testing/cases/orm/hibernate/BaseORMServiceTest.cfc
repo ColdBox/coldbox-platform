@@ -312,10 +312,10 @@ component extends="coldbox.system.testing.BaseTestCase"{
 	function testGetTableName(){
 
 		test = ormservice.getTableName(entityName="Category");
-		assertEquals( '[categories]', test );
+		assertEquals( 'categories', test );
 
 		test = ormservice.getTableName(entityName="User");
-		assertEquals( '[users]', test );
+		assertEquals( 'users', test );
 	}
 
 	function testCreateService(){
@@ -327,12 +327,12 @@ component extends="coldbox.system.testing.BaseTestCase"{
 		assertEquals( 'id', test );
 
 		test=UserService.getTableName();
-		assertEquals( '[users]', test );
+		assertEquals( 'users', test );
 
 		test = CategoryService.getKey();
 		assertEquals( 'id', test );
 
 		test=CategoryService.getTableName();
-		assertEquals( '[categories]', test );
+		assertEquals( 'categories', test );
 	}
 }

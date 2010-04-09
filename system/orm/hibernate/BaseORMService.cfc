@@ -51,12 +51,13 @@ component accessors="true"{
 
 
 	/**
-	* Create an abstract service for a specfic entity.
+	* Create a virtual abstract service for a specfic entity.
 	*/
-	any function createService(required string entityName) {
-		var service = "";
-		service =  CreateObject("component", "AbstractEntityService").init(arguments.entityName,variables.queryCacheRegion,variables.useQueryCaching);
-		return service;
+	any function createService(required string entityName, 
+							   boolean useQueryCaching=getUseQueryCaching(), 
+							   string queryCacheRegion=getQueryCacheRegion()) {
+								   
+		return  CreateObject("component", "coldbox.system.orm.hibernate.AbstractEntityService").init(argumentCollection=arguments);
 	}
 
 	/**
@@ -691,14 +692,28 @@ component accessors="true"{
 	}
 
 	/**
-	* Returns the key (id field) of the entity
+	* Returns the key (id field) of a given entity, either simple or composite keys.
+	* If the key is a simple pk then it will return a string, if it is a composite key then it returns an array
 	*/
-	string function getKey(required string entityName){
-		return ormGetSessionFactory().getClassMetaData(arguments.entityName).getIdentifierPropertyName();
+	any function getKey(required string entityName){
+		var hibernateMD =  ormGetSessionFactory().getClassMetaData(arguments.entityName);
+		
+		// Is this a simple key?
+		if( hibernateMD.hasIdentifierProperty() ){
+			return hibernateMD.getIdentifierPropertyName();
+		}
+		
+		// Composite Keys?
+		if( hibernateMD.getIdentifierType().isComponentType() ){
+			// Do conversion to CF Array instead of java array, just in case
+			return listToArray(arrayToList(hibernateMD.getIdentifierType().getPropertyNames()));
+		}
+		
+		return "";
 	}
 
 	/**
-	* Returns the Property Names  of the entity
+	* Returns the Property Names of the entity
 	*/
 	array function getPropertyNames(required string entityName){
 		return ormGetSessionFactory().getClassMetaData(arguments.entityName).getPropertyNames();
@@ -710,14 +725,5 @@ component accessors="true"{
 	string function getTableName(required string entityName){
 		return ormGetSessionFactory().getClassMetadata(arguments.entityName).getTableName();
 	}
-
-	/**
-	* Facade to rethrowit, where is this Adobe?
-	*/
-	private function rethrowit(e){
-		throw(object=arguments.e);
-	}
-
-
 
 }

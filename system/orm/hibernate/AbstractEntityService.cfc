@@ -28,7 +28,7 @@ UserService function init(){
 
 ----------------------------------------------------------------------->
 */
-component extends="BaseORMService" accessors="true"{
+component extends="coldbox.system.orm.hibernate.BaseORMService" accessors="true"{
 
 	/**
 	* The entityName property for this "version" of the AbstractORMService
@@ -45,11 +45,13 @@ component extends="BaseORMService" accessors="true"{
 	/**
 	* Constructor
 	*/
-	AbstractEntityService function init(string entityname, string queryCacheRegion="ORMService.defaultCache", boolean useQueryCaching=false){
+	AbstractEntityService function init(required string entityname, string queryCacheRegion, boolean useQueryCaching){
 
-		// setup properties
-		super.init(queryCacheRegion=arguments.queryCacheRegion, useQueryCaching=arguments.useQueryCaching);
+		// init parent
+		super.init(argumentCollection=arguments);
+		// Set the local entity to be used in this virtual abstract entity service
 		setEntityName(arguments.entityName);
+		
 		return this;
 	}
 
