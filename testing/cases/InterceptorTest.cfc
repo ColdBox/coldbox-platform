@@ -1,9 +1,20 @@
 <cfcomponent extends="coldbox.system.testing.BaseTestCase" output="false">
 <cfscript>
 	function setup(){
-		interceptor = getMockBox().createMock(className="coldbox.system.Interceptor");
-		mockController = getMockBox().createMock("coldbox.system.web.Controller");
-		mockIService = getMockBox().createMock(className="coldbox.system.services.InterceptorService",clearMethods=true);
+		interceptor 	= getMockBox().createMock(className="coldbox.system.Interceptor");
+		mockIService 	= getMockBox().createMock(className="coldbox.system.services.InterceptorService",clearMethods=true);
+		mockController  = getMockBox().createMock(className="coldbox.system.web.Controller");
+		mockRS 			= getMockBox().createMock(className="coldbox.system.services.RequestService");
+		flashScope 		= getMockBox().createMock(className="coldbox.system.web.flash.MockFlash");
+		mockLogBox 		= getMockBox().createMock(className="coldbox.system.logging.LogBox");
+		mockLogger 		= getMockBox().createMock(className="coldbox.system.logging.Logger");
+		
+		
+		mockController.$("getLogBox",mockLogBox);
+		mockController.$("getRequestService",mockRS);
+		mockRS.$("getFlashScope",flashScope);
+		mockLogBox.$("getLogger",mockLogger);
+		
 		
 		properties = {debugmode=true,configFile='config/routes.cfm'};
 		interceptor.init(mockController,properties);

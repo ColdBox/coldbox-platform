@@ -15,8 +15,7 @@ functions = {
 	superType = "coldbox.system.FrameworkSuperType",
 	eventHandler = "coldbox.system.EventHandler",
 	plugin = "coldbox.system.Plugin",
-	interceptor = "coldbox.system.Interceptor",
-	testCase = "coldbox.system.testing.BaseTestCase"
+	interceptor = "coldbox.system.Interceptor"
 };
 
 out.append('#tab#<functions>

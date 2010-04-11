@@ -1,8 +1,19 @@
 <cfcomponent extends="coldbox.system.testing.BaseTestCase" output="false">
 <cfscript>
 	function setup(){
-		plugin = getMockBox().createMock("coldbox.system.Plugin");
-		mockController = getMockBox().createMock(className="coldbox.system.web.Controller");
+		plugin 			= getMockBox().createMock("coldbox.system.Plugin");
+		mockController  = getMockBox().createMock(className="coldbox.system.web.Controller");
+		mockRS 			= getMockBox().createMock(className="coldbox.system.services.RequestService");
+		flashScope 		= getMockBox().createMock(className="coldbox.system.web.flash.MockFlash");
+		mockLogBox 		= getMockBox().createMock(className="coldbox.system.logging.LogBox");
+		mockLogger 		= getMockBox().createMock(className="coldbox.system.logging.Logger");
+		
+		
+		mockController.$("getLogBox",mockLogBox);
+		mockController.$("getRequestService",mockRS);
+		mockRS.$("getFlashScope",flashScope);
+		mockLogBox.$("getLogger",mockLogger);
+		
 		
 		plugin.init(mockController);
 	}	

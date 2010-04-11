@@ -1,9 +1,8 @@
-<cfcomponent name="settingsTest" extends="coldbox.testing.resources.baseMockCase" output="false">
+<cfcomponent extends="coldbox.system.testing.BaseTestCase">
 
 	<cffunction name="setUp" returntype="void" access="public" output="false">
 		<cfscript>
-			super.setup();
-		
+			
 			controller = createObject("component","coldbox.system.web.Controller").init(ExpandPath('/coldbox/testharness'));
 		
 		</cfscript>
@@ -122,7 +121,7 @@
 			fwsetting.FlashURLPersistScope = "session";
 			controller.setColdboxSettings(fwsetting);
 			mockCollection = {test='luis', today=now(), lastname="majano"};
-			varStruct = {test="Jose", myVar="nothing"};
+			persistStruct = {test="Jose", myVar="nothing"};
 			
 			mocksession = createObject("component","coldbox.system.plugins.SessionStorage").init(controller);
 			
@@ -137,7 +136,7 @@
 			requestService.mockMethod('getContext').returns(context,context);
 			controller.setrequestService(requestService,requestService);
 			
-			controller.persistVariables('test',varStruct);
+			controller.persistVariables('test',persistStruct);
 			
 			debug(session);
 			AssertTrue(mocksession.exists('_coldbox_persistStruct'));
@@ -154,7 +153,7 @@
 			fwsetting.FlashURLPersistScope = "client";
 			controller.setColdboxSettings(fwsetting);
 			mockCollection = {test='luis', today=now(), lastname="majano"};
-			varStruct = {test="Jose", myVar="nothing"};
+			persistStruct = {test="Jose", myVar="nothing"};
 			
 			mocksession = createObject("component","coldbox.system.plugins.ClientStorage").init(controller);
 			
@@ -169,7 +168,7 @@
 			requestService.mockMethod('getContext').returns(context,context);
 			controller.setrequestService(requestService,requestService);
 			
-			controller.persistVariables('test',varStruct);
+			controller.persistVariables('test',persistStruct);
 			
 			debug(client);
 			AssertTrue(mocksession.exists('_coldbox_persistStruct'));

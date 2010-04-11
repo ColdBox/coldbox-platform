@@ -195,7 +195,7 @@ Description :
 			if( NOT isFamilyType("interceptor",oInterceptor) ){
 				convertToColdBox( "interceptor", oInterceptor );
 				// Init super
-				oInterceptor.$super.init( controller );
+				oInterceptor.$super.init( controller, arguments.interceptorProperties);
 			}
 			
 			return	oInterceptor.init(controller,arguments.interceptorProperties);
