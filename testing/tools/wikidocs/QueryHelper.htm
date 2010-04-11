@@ -1,0 +1,3575 @@
+
+[[Dashboard | << Back to Dashboard ]]
+
+{| align="right"
+| __TOC__
+|}
+
+= Exploring the AntiSamy Plugin =
+
+
+== Overview ==
+OWASP AntiSamy Project that provides XSS cleanup operations to ColdBox applications
+
+
+== HtmlSanitizer ==
+clean HTML from XSS scripts using the AntiSamy project. The available policies are antisamy, ebay,myspace or slashdot
+
+=== Returns ===
+* This function returns ''Any''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| HtmlData || string || Yes || --- || The html text to sanitize
+|-
+| PolicyFile || string || No || myspace || Provide policy file to scan html. Available options are: antisamy, ebay, myspace, slashdot
+|}
+
+=== Examples ===
+
+[[Dashboard | << Back to Dashboard ]]
+
+{| align="right"
+| __TOC__
+|}
+
+= Exploring the ApplicationStorage Plugin =
+
+
+== Overview ==
+Application Storage plugin. It provides the user with a mechanism for permanent data storage using the application scope.
+
+
+== setVar ==
+Set a new permanent variable.
+
+=== Returns ===
+* This function returns ''void''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| name || string || Yes || --- || The name of the variable.
+|-
+| value || any || Yes || --- || The value to set in the variable.
+|}
+
+=== Examples ===
+
+== getVar ==
+Get a new permanent variable. If the variable does not exist. The method returns blank unless using the default return argument.
+
+=== Returns ===
+* This function returns ''any''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| name || string || Yes || --- || The variable name to retrieve.
+|-
+| default || any || No ||  || The default value to set. If not used, a blank is returned.
+|}
+
+=== Examples ===
+
+== removeStorage ==
+remove the entire storage from scope
+
+=== Returns ===
+* This function returns ''void''
+
+
+=== Examples ===
+
+== exists ==
+Checks wether the permanent variable exists.
+
+=== Returns ===
+* This function returns ''boolean''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| name || string || Yes || --- || The variable name to retrieve.
+|}
+
+=== Examples ===
+
+== clearAll ==
+Clear the entire coldbox application storage
+
+=== Returns ===
+* This function returns ''void''
+
+
+=== Examples ===
+
+== deleteVar ==
+Tries to delete a permanent application variable. Returns True if deleted.
+
+=== Returns ===
+* This function returns ''boolean''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| name || string || Yes || --- || The variable name to retrieve.
+|}
+
+=== Examples ===
+
+== getStorage ==
+Get the entire storage scope structure
+
+=== Returns ===
+* This function returns ''struct''
+
+
+=== Examples ===
+
+[[Dashboard | << Back to Dashboard ]]
+
+{| align="right"
+| __TOC__
+|}
+
+= Exploring the CFCViewer Plugin =
+
+
+== Overview ==
+This components provides functionality to obtain information about cfcs via introspection.
+
+
+== setRenderingTemplate ==
+Set the rendering template to use
+
+=== Returns ===
+* This function returns ''void''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| RenderingTemplate || string || Yes || --- || 
+|}
+
+=== Examples ===
+
+== renderit ==
+Render the content
+
+=== Returns ===
+* This function returns ''any''
+
+
+=== Examples ===
+
+== getlinkType ==
+Get linkType
+
+=== Returns ===
+* This function returns ''string''
+
+
+=== Examples ===
+
+== getDirpath ==
+Get the dirpath of where the cfc's reside. This is expanded.
+
+=== Returns ===
+* This function returns ''string''
+
+
+=== Examples ===
+
+== getaCFC ==
+returns an array with the names of all components within the current directory
+
+=== Returns ===
+* This function returns ''array''
+
+
+=== Examples ===
+
+== setup ==
+Use this method to initialize for documentation. You must persist it in your request so you can do renderings and interact with the object.
+
+=== Returns ===
+* This function returns ''CFCViewer''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| dirpath || string || Yes || --- || The directory path to which is the root of what you want the cfcviewer to report on. This must be a valid instantiation path: ex: /coldbox/system
+|-
+| accessTypesFilter || string || No ||  || Use this argument to only display methods with the access types given. If empty, displays all methods (public, private, remote, package).
+|-
+| dirLink || string || No || --- || If you pass this. it will create a linkable directory or package structure according to the link provided and append an internal package variable.
+|-
+| jsLink || string || No || --- || If you pass this, it will create a linkable package according to the js provided. Also, place a @package@ on your link, so it can correctly identify where to place the url parameter for the package choosen
+|-
+| RenderingTemplate || string || No || --- || Override the rendering template with yours
+|-
+| LinkBaseURL || string || No || --- || The base url to use for anchors
+|}
+
+=== Examples ===
+
+== setlinkType ==
+Set linkType
+
+=== Returns ===
+* This function returns ''void''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| linkType || string || Yes || --- || 
+|}
+
+=== Examples ===
+
+== buildLink ==
+Build a link for a package name
+
+=== Returns ===
+* This function returns ''string''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| package || string || Yes || --- || 
+|}
+
+=== Examples ===
+
+== getrootPath ==
+Get rootPath
+
+=== Returns ===
+* This function returns ''string''
+
+
+=== Examples ===
+
+== buildRootLink ==
+Build a link for a root name
+
+=== Returns ===
+* This function returns ''string''
+
+
+=== Examples ===
+
+== setlstAccessTypes ==
+Set lstAccessTypes
+
+=== Returns ===
+* This function returns ''void''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| lstAccessTypes || string || Yes || --- || 
+|}
+
+=== Examples ===
+
+== setLinkBaseURL ==
+
+
+=== Returns ===
+* This function returns ''void''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| LinkBaseURL || string || Yes || --- || 
+|}
+
+=== Examples ===
+
+== getStyleSheet ==
+Get the stylesheet to use when rendering the documentation.
+
+=== Returns ===
+* This function returns ''string''
+
+
+=== Examples ===
+
+== setrootPath ==
+Set rootPath
+
+=== Returns ===
+* This function returns ''void''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| rootPath || string || Yes || --- || 
+|}
+
+=== Examples ===
+
+== setdirpath ==
+Set the dirpath
+
+=== Returns ===
+* This function returns ''void''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| dirpath || string || Yes || --- || 
+|}
+
+=== Examples ===
+
+== getCFCMetaData ==
+returns a structure with information about the given component. This structure contains information about returntype, methods, parameters, etc.
+
+=== Returns ===
+* This function returns ''any''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| cfcName || string || Yes || --- || The name of the cfc
+|}
+
+=== Examples ===
+
+== setStyleSheet ==
+Set the stylesheet to use when rendering the documentation
+
+=== Returns ===
+* This function returns ''void''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| styleSheet || string || Yes || --- || 
+|}
+
+=== Examples ===
+
+== setaPacks ==
+Set aPacks
+
+=== Returns ===
+* This function returns ''void''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| aPacks || array || Yes || --- || 
+|}
+
+=== Examples ===
+
+== getRenderingTemplate ==
+Get rendering template to use
+
+=== Returns ===
+* This function returns ''string''
+
+
+=== Examples ===
+
+== getlinkString ==
+Get linkString
+
+=== Returns ===
+* This function returns ''string''
+
+
+=== Examples ===
+
+== getaPacks ==
+Get aPacks
+
+=== Returns ===
+* This function returns ''array''
+
+
+=== Examples ===
+
+== setaCFC ==
+Set CFCs
+
+=== Returns ===
+* This function returns ''void''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| aCFC || array || Yes || --- || 
+|}
+
+=== Examples ===
+
+== getLinkBaseURL ==
+
+
+=== Returns ===
+* This function returns ''string''
+
+
+=== Examples ===
+
+== getlstAccessTypes ==
+Get lstAccessTypes
+
+=== Returns ===
+* This function returns ''string''
+
+
+=== Examples ===
+
+== setlinkString ==
+Set linkString
+
+=== Returns ===
+* This function returns ''void''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| linkString || string || Yes || --- || 
+|}
+
+=== Examples ===
+
+[[Dashboard | << Back to Dashboard ]]
+
+{| align="right"
+| __TOC__
+|}
+
+= Exploring the ClientStorage Plugin =
+
+
+== Overview ==
+Client Storage plugin. It provides the user with a mechanism for permanent data storage using the client scope and WDDX.
+
+
+== clearAll ==
+Clear the entire coldbox client storage
+
+=== Returns ===
+* This function returns ''void''
+
+
+=== Examples ===
+
+== exists ==
+Checks wether the permanent variable exists.
+
+=== Returns ===
+* This function returns ''boolean''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| name || string || Yes || --- || The variable name to retrieve.
+|}
+
+=== Examples ===
+
+== getVar ==
+Get a new permanent variable. If the variable does not exist. The method returns blank.
+
+=== Returns ===
+* This function returns ''any''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| name || string || Yes || --- || The variable name to retrieve.
+|-
+| default || any || No ||  || The default value to set. If not used, a blank is returned.
+|}
+
+=== Examples ===
+
+== setVar ==
+Set a new permanent variable.
+
+=== Returns ===
+* This function returns ''void''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| name || string || Yes || --- || The name of the variable.
+|-
+| value || any || Yes || --- || The value to set in the variable.
+|}
+
+=== Examples ===
+
+== getStorage ==
+Get the entire storage scope structure
+
+=== Returns ===
+* This function returns ''struct''
+
+
+=== Examples ===
+
+== deleteVar ==
+Tries to delete a permanent client var.
+
+=== Returns ===
+* This function returns ''boolean''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| name || string || Yes || --- || The variable name to retrieve.
+|}
+
+=== Examples ===
+
+[[Dashboard | << Back to Dashboard ]]
+
+{| align="right"
+| __TOC__
+|}
+
+= Exploring the ClusterStorage Plugin =
+
+
+== Overview ==
+Cluster Storage plugin. It provides the user with a mechanism for permanent data storage using the Cluster scope. This plugin creates a special variable in cluster scope that correctly identifies the coldbox app.
+
+
+== setVar ==
+Set a new permanent variable.
+
+=== Returns ===
+* This function returns ''void''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| name || string || Yes || --- || The name of the variable.
+|-
+| value || any || Yes || --- || The value to set in the variable.
+|}
+
+=== Examples ===
+
+== getVar ==
+Get a new permanent variable. If the variable does not exist. The method returns blank unless using the default return argument.
+
+=== Returns ===
+* This function returns ''any''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| name || string || Yes || --- || The variable name to retrieve.
+|-
+| default || any || No ||  || The default value to set. If not used, a blank is returned.
+|}
+
+=== Examples ===
+
+== removeStorage ==
+remove the entire storage from scope
+
+=== Returns ===
+* This function returns ''void''
+
+
+=== Examples ===
+
+== exists ==
+Checks wether the permanent variable exists.
+
+=== Returns ===
+* This function returns ''boolean''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| name || string || Yes || --- || The variable name to retrieve.
+|}
+
+=== Examples ===
+
+== clearAll ==
+Clear the entire coldbox cluster storage
+
+=== Returns ===
+* This function returns ''void''
+
+
+=== Examples ===
+
+== deleteVar ==
+Tries to delete a permanent cluster variable. Returns True if deleted.
+
+=== Returns ===
+* This function returns ''boolean''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| name || string || Yes || --- || The variable name to retrieve.
+|}
+
+=== Examples ===
+
+== getStorage ==
+Get the entire storage scope structure
+
+=== Returns ===
+* This function returns ''struct''
+
+
+=== Examples ===
+
+[[Dashboard | << Back to Dashboard ]]
+
+{| align="right"
+| __TOC__
+|}
+
+= Exploring the CookieStorage Plugin =
+
+
+== Overview ==
+Cookie Storage plugin. It provides the user with a mechanism for permanent data storage using the cookie scope.
+
+
+== getEncryptionAlgorithm ==
+Get EncryptionAlgorithm
+
+=== Returns ===
+* This function returns ''string''
+
+
+=== Examples ===
+
+== setVar ==
+Set a new permanent variable.
+
+=== Returns ===
+* This function returns ''void''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| name || string || Yes || --- || The name of the variable.
+|-
+| value || any || Yes || --- || The value to set in the variable, simple, array, query or structure.
+|-
+| expires || numeric || No || 0 || Cookie Expire in number of days. [default cookie is session only = 0 days]
+|-
+| secure || boolean || No || false || If browser does not support Secure Sockets Layer (SSL) security, the cookie is not sent. To use the cookie, the page must be accessed using the https protocol.
+|-
+| path || string || No ||  || URL, within a domain, to which the cookie applies; typically a directory. Only pages in this path can use the cookie. By default, all pages on the server that set the cookie can access the cookie.
+|-
+| domain || string || No ||  || Domain in which cookie is valid and to which cookie content can be sent from the user's system.
+|}
+
+=== Examples ===
+
+== getEncryptionKey ==
+Get EncryptionKey
+
+=== Returns ===
+* This function returns ''string''
+
+
+=== Examples ===
+
+== getVar ==
+Get a new permanent variable. If the cookie does not exist. The method returns blank.
+
+=== Returns ===
+* This function returns ''any''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| name || string || Yes || --- || The variable name to retrieve.
+|-
+| default || any || No ||  || The default value to set. If not used, a blank is returned.
+|}
+
+=== Examples ===
+
+== setEncryptionAlgorithm ==
+Set EncryptionAlgorithm
+
+=== Returns ===
+* This function returns ''void''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| EncryptionAlgorithm || string || Yes || --- || 
+|}
+
+=== Examples ===
+
+== setEncryptionEncoding ==
+Set EncryptionEncoding
+
+=== Returns ===
+* This function returns ''void''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| EncryptionEncoding || string || Yes || --- || 
+|}
+
+=== Examples ===
+
+== getEncryptionEncoding ==
+Get EncryptionEncoding
+
+=== Returns ===
+* This function returns ''string''
+
+
+=== Examples ===
+
+== getEncryption ==
+Get Encryption
+
+=== Returns ===
+* This function returns ''boolean''
+
+
+=== Examples ===
+
+== exists ==
+Checks wether the permanent variable exists.
+
+=== Returns ===
+* This function returns ''boolean''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| name || string || Yes || --- || The variable name to retrieve.
+|}
+
+=== Examples ===
+
+== deleteVar ==
+Tries to delete a permanent cookie var.
+
+=== Returns ===
+* This function returns ''boolean''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| name || string || Yes || --- || The variable name to retrieve.
+|}
+
+=== Examples ===
+
+== setEncryption ==
+Set Encryption
+
+=== Returns ===
+* This function returns ''void''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| Encryption || boolean || Yes || --- || 
+|}
+
+=== Examples ===
+
+== setEncryptionKey ==
+Set EncryptionKey
+
+=== Returns ===
+* This function returns ''void''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| EncryptionKey || string || Yes || --- || 
+|}
+
+=== Examples ===
+
+[[Dashboard | << Back to Dashboard ]]
+
+{| align="right"
+| __TOC__
+|}
+
+= Exploring the DateUtils Plugin =
+
+
+== Overview ==
+This CFC is a utility that helps you deal with date representations
+
+
+== parseRFC822 ==
+Parse RFC822 dates, returns empty string if not a valid date.
+
+=== Returns ===
+* This function returns ''string''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| datetime || string || Yes || --- || The datetime string to convert
+|}
+
+=== Examples ===
+
+== parseISO8601 ==
+Parse a UTC or iso8601 date to a normal CF datetime object
+
+=== Returns ===
+* This function returns ''string''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| datetime || string || Yes || --- || The datetime string to convert
+|}
+
+=== Examples ===
+
+[[Dashboard | << Back to Dashboard ]]
+
+{| align="right"
+| __TOC__
+|}
+
+= Exploring the FileUtils Plugin =
+
+
+== Overview ==
+This is a File Utilities CFC
+
+
+== checkCharSet ==
+Check a charset with valid CF char sets, if invalid, it returns the framework's default character set
+
+=== Returns ===
+* This function returns ''string''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| charset || string || Yes || --- || Charset to check
+|}
+
+=== Examples ===
+
+== createFile ==
+Create a new empty fileusing java.io.File.
+
+=== Returns ===
+* This function returns ''void''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| filename || String || Yes || --- || The absolute path of the file to create.
+|}
+
+=== Examples ===
+
+== appendFile ==
+Facade to append to a file's content
+
+=== Returns ===
+* This function returns ''void''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| FileToSave || any || Yes || --- || The absolute path to the file.
+|-
+| FileContents || any || Yes || --- || The file contents
+|-
+| CharSet || string || No || utf-8 || CF File CharSet Encoding to use.
+|-
+| CheckCharSetFlag || boolean || No || false || Check the charset.
+|}
+
+=== Examples ===
+
+== getFileMimeType ==
+Get's the file mime type for a given file extension
+
+=== Returns ===
+* This function returns ''string''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| extension || string || Yes || --- || e.g. jpg or gif
+|}
+
+=== Examples ===
+
+== isFile ==
+Checks whether the filename argument is a file or not.
+
+=== Returns ===
+* This function returns ''boolean''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| Filename || String || Yes || --- || The absolute path of the file to check.
+|}
+
+=== Examples ===
+
+== fileLastModified ==
+Get the last modified date of a file
+
+=== Returns ===
+* This function returns ''string''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| filename || string || Yes || --- || 
+|}
+
+=== Examples ===
+
+== getAbsolutePath ==
+Turn any system path, either relative or absolute, into a fully qualified one
+
+=== Returns ===
+* This function returns ''string''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| path || string || Yes || --- || Abstract pathname
+|}
+
+=== Examples ===
+
+== fileSize ==
+Get the filesize of a file.
+
+=== Returns ===
+* This function returns ''string''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| filename || string || Yes || --- || 
+|-
+| sizeFormat || string || No || bytes || Available formats: [bytes][kbytes][mbytes][gbytes]
+|}
+
+=== Examples ===
+
+== fileCanWrite ==
+Check wether you can write to a file
+
+=== Returns ===
+* This function returns ''boolean''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| Filename || String || Yes || --- || The absolute path of the file to check.
+|}
+
+=== Examples ===
+
+== readFile ==
+Facade to Read a file's content
+
+=== Returns ===
+* This function returns ''Any''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| FileToRead || String || Yes || --- || The absolute path to the file.
+|-
+| ReadInBinaryFlag || boolean || No || false || Read in binary flag.
+|-
+| CharSet || string || No ||  || CF File CharSet Encoding to use.
+|-
+| CheckCharSetFlag || boolean || No || false || Check the charset.
+|}
+
+=== Examples ===
+
+== isDirectory ==
+Check wether the filename argument is a directory or not
+
+=== Returns ===
+* This function returns ''boolean''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| Filename || String || Yes || --- || The absolute path of the file to check.
+|}
+
+=== Examples ===
+
+== uploadFile ==
+Facade to upload to a file, returns the cffile variable.
+
+=== Returns ===
+* This function returns ''any''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| FileField || string || Yes || --- || The name of the form field used to select the file
+|-
+| Destination || string || Yes || --- || The absolute path to the destination.
+|-
+| NameConflict || string || No || makeunique || Action to take if filename is the same as that of a file in the directory.
+|-
+| Accept || string || No ||  || Limits the MIME types to accept. Comma-delimited list.
+|-
+| Attributes || string || No || Normal || Comma-delimitted list of window file attributes
+|-
+| Mode || string || No || 755 || The mode of the file for Unix systems, the default is 755
+|}
+
+=== Examples ===
+
+== sendFile ==
+Send a file to the browser
+
+=== Returns ===
+* This function returns ''void''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| file || any || No ||  || The absolute path to the file or a binary file
+|-
+| name || string || No ||  || The name to send the file to the browser. If not sent in, it will use the name of the file or a UUID for a binary file
+|-
+| mimeType || string || No ||  || A valid mime type to use. If not sent in, we will try to use a default one according to file extension
+|-
+| disposition || string || No || attachment || The browser content disposition (attachment/inline)
+|-
+| abortAtEnd || boolean || No || false || Do an abort after content sending
+|-
+| extension || string || No ||  || Only used if file is binary. e.g. jpg or gif
+|-
+| deleteFile || string || No || false || Delete the file after sending. Only used if file is not binary
+|}
+
+=== Examples ===
+
+== fileCanRead ==
+Check wether you can read a file
+
+=== Returns ===
+* This function returns ''boolean''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| Filename || String || Yes || --- || The absolute path of the file to check.
+|}
+
+=== Examples ===
+
+== removeFile ==
+Remove a file using java.io.File
+
+=== Returns ===
+* This function returns ''boolean''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| filename || string || Yes || --- || The absolute path to the file.
+|}
+
+=== Examples ===
+
+== ripExtension ==
+Rip the extension of a filename.
+
+=== Returns ===
+* This function returns ''string''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| filename || string || Yes || --- || 
+|}
+
+=== Examples ===
+
+== directoryCopy ==
+Copies an entire source directory to a destination directory
+
+=== Returns ===
+* This function returns ''void''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| source || string || Yes || --- || 
+|-
+| destination || string || Yes || --- || 
+|-
+| nameconflict || any || Yes || overwrite || 
+|}
+
+=== Examples ===
+
+== saveFile ==
+Facade to save a file's content
+
+=== Returns ===
+* This function returns ''void''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| FileToSave || any || Yes || --- || The absolute path to the file.
+|-
+| FileContents || any || Yes || --- || The file contents
+|-
+| CharSet || string || No || utf-8 || CF File CharSet Encoding to use.
+|-
+| CheckCharSetFlag || boolean || No || false || Check the charset.
+|}
+
+=== Examples ===
+
+[[Dashboard | << Back to Dashboard ]]
+
+{| align="right"
+| __TOC__
+|}
+
+= Exploring the HTMLHelper Plugin =
+
+
+== Overview ==
+A cool utility that helps you when working with HTML
+
+
+== img ==
+Create image tags
+
+=== Returns ===
+* This function returns ''any''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| src || any || Yes || --- || The source URL to link to or a structure of name-value pairs to use to construct the image: [src,alt,class,width,height,title,rel]
+|-
+| alt || string || No ||  || The alt tag
+|-
+| class || string || No ||  || The class tag
+|-
+| width || string || No ||  || The width tag
+|-
+| height || string || No ||  || The height tag
+|-
+| title || string || No ||  || The title tag
+|-
+| rel || string || No ||  || The rel tag
+|-
+| noBaseURL || boolean || No || false || Prepends the setting of baseURL if false
+|}
+
+=== Examples ===
+
+== tag ==
+surround content with a tag
+
+=== Returns ===
+* This function returns ''any''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| tag || string || Yes || --- || The title
+|-
+| content || string || No ||  || The content of the tag
+|-
+| attributes || struct || No || [runtime expression] || The properties for the tag
+|}
+
+=== Examples ===
+
+== toHTMLList ==
+Convert a sent in tag type to an HTML list
+
+=== Returns ===
+* This function returns ''any''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| tag || string || Yes || --- || The list tag type
+|-
+| values || any || Yes ||  || An array of values or list of values
+|-
+| attributes || struct || No || [runtime expression] || Attributes for the enclosing list tag
+|-
+| column || string || No ||  || If the values is a query, this is a column value to show in the list
+|}
+
+=== Examples ===
+
+== ol ==
+Create ordered lists according to passed in values and arguments, compressed HTML
+
+=== Returns ===
+* This function returns ''any''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| values || any || Yes ||  || An array of values or list of values
+|-
+| attributes || struct || No || [runtime expression] || Attributes for the enclosing OL tags
+|-
+| column || string || No ||  || If the values is a query, this is a column value to show in the list
+|}
+
+=== Examples ===
+
+== ul ==
+Create un-ordered lists according to passed in values and arguments, compressed HTML
+
+=== Returns ===
+* This function returns ''any''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| values || any || Yes ||  || An array of values or list of values
+|-
+| attributes || struct || No || [runtime expression] || Attributes for the enclosing UL tags
+|-
+| column || string || No ||  || If the values is a query, this is a column value to show in the list
+|}
+
+=== Examples ===
+
+== table ==
+Convert a table out of data (either a query or array of structures)
+
+=== Returns ===
+* This function returns ''any''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| data || any || Yes || --- || The query or array of structures to convert into a table
+|-
+| includes || string || No ||  || The columns to include in the rendering
+|-
+| excludes || string || No ||  || The columns to exclude in the rendering
+|-
+| attributes || struct || No || [runtime expression] || Attributes for the enclosing table tag
+|}
+
+=== Examples ===
+
+== addStyleContent ==
+Open and close xhtml style tags for easy of just adding content
+
+=== Returns ===
+* This function returns ''any''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| content || any || Yes || --- || The content to render out
+|}
+
+=== Examples ===
+
+== link ==
+Create link tags, using the SES base URL or not
+
+=== Returns ===
+* This function returns ''any''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| href || string || Yes || --- || The href link or a structure of name-value pairs to render: keys [href,rel,type,title,media]
+|-
+| rel || string || No || stylesheet || The rel attribute
+|-
+| type || string || No || text/css || The type attribute
+|-
+| title || string || No ||  || The title attribute
+|-
+| media || string || No ||  || The media attribute
+|-
+| noBaseURL || boolean || No || false || Prepends the setting of baseURL if false
+|}
+
+=== Examples ===
+
+== br ==
+Generate line breaks
+
+=== Returns ===
+* This function returns ''any''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| count || numeric || No || 1 || The number of repeats
+|}
+
+=== Examples ===
+
+== heading ==
+Generate header tags
+
+=== Returns ===
+* This function returns ''any''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| title || string || Yes || --- || The title
+|-
+| size || numeric || No || 1 || The header size
+|}
+
+=== Examples ===
+
+== addAsset ==
+Add a js/css asset(s) to the html head section. You can also pass in a list of assets.
+
+=== Returns ===
+* This function returns ''any''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| asset || any || Yes || --- || The asset to load, only js or css files. This can also be a comma delimmited list.
+|-
+| sendToHeader || boolean || No || true || Send to the header via htmlhead? Defaults to true, else it returns the content
+|}
+
+=== Examples ===
+
+== meta ==
+Helps you generate meta tags
+
+=== Returns ===
+* This function returns ''any''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| name || any || Yes || --- || A name for the meta tag or an array of struct data to convert to meta tags.Keys [name,content,type]
+|-
+| content || any || No ||  || The content attribute
+|-
+| type || string || No || name || Either name or equiv which produces http-equiv instead of the name
+|}
+
+=== Examples ===
+
+== nbs ==
+Generate non-breaking spaces (&nbsp;)
+
+=== Returns ===
+* This function returns ''any''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| count || numeric || No || 1 || The number of repeats
+|}
+
+=== Examples ===
+
+== addJSContent ==
+Open and close xhtml javascript tags for easy of just adding content
+
+=== Returns ===
+* This function returns ''any''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| content || any || Yes || --- || The content to render out
+|}
+
+=== Examples ===
+
+== docType ==
+Render a doctype by type name: xhtml11,xhtml1-strict,xhtml-trans,xthml-frame,html5,html4-strict,html4-trans,html4-frame
+
+=== Returns ===
+* This function returns ''any''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| type || string || No || xhtml1-trans || The doctype to generate
+|}
+
+=== Examples ===
+
+[[Dashboard | << Back to Dashboard ]]
+
+{| align="right"
+| __TOC__
+|}
+
+= Exploring the i18n Plugin =
+
+
+== Overview ==
+This is the i18N plugin based on Paul Hastings cfc. It uses standard Java locale names and has its own storage mechanism via RBundles['Locale'].  In order to use the plugin, you must instantiate it and call its setfwLocale() method with the appropriate locale to initialize with. Then you may use its methods.
+
+
+== getSecond ==
+returns second from epoch offset
+
+=== Returns ===
+* This function returns ''numeric''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| thisOffset || numeric || Yes || --- || java epoch offset
+|-
+| tz || any || No || [runtime expression] || 
+|}
+
+=== Examples ===
+
+== showLanguage ==
+returns display country name for given locale
+
+=== Returns ===
+* This function returns ''string''
+
+
+=== Examples ===
+
+== getServerTZ ==
+returns server TZ
+
+=== Returns ===
+* This function returns ''any''
+
+
+=== Examples ===
+
+== showLocaleCountry ==
+returns display country name for given locale
+
+=== Returns ===
+* This function returns ''string''
+
+
+=== Examples ===
+
+== getLocalizedYear ==
+Returns localized year, probably only useful for BE calendars like in thailand, etc.
+
+=== Returns ===
+* This function returns ''string''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| thisYear || numeric || Yes || --- || 
+|}
+
+=== Examples ===
+
+== dateLocaleFormat ==
+locale version of dateFormat. Needs object instantiation. That is your job not mine.
+
+=== Returns ===
+* This function returns ''any''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| date || date || Yes || --- || 
+|-
+| style || string || No || LONG || FULL=0, LONG=1, MEDIUM=2, SHORT=3
+|}
+
+=== Examples ===
+
+== getLocalizedDays ==
+Facade to getShortWeedDays. For compatability
+
+=== Returns ===
+* This function returns ''any''
+
+
+=== Examples ===
+
+== showLocaleLanguage ==
+returns display country name for given locale
+
+=== Returns ===
+* This function returns ''string''
+
+
+=== Examples ===
+
+== setfwLocale ==
+Set the default locale to use in the framework for a specific user.
+
+=== Returns ===
+* This function returns ''any''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| locale || string || No || [runtime expression] || The locale to change and set. Must be Java Style: en_US
+|-
+| dontloadRBFlag || boolean || No || false || Flag to load the resource bundle for the specified locale (If not already loaded) or just change the framework's locale.
+|}
+
+=== Examples ===
+
+== getVersion ==
+ returns version of this CFC and icu4j library it uses.
+
+=== Returns ===
+* This function returns ''struct''
+
+
+=== Examples ===
+
+== getTZByOffset ==
+returns a list of timezones available on this server for a given raw offset
+
+=== Returns ===
+* This function returns ''array''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| thisOffset || numeric || Yes || --- || 
+|}
+
+=== Examples ===
+
+== toEpoch ==
+converts datetime to java epoch offset
+
+=== Returns ===
+* This function returns ''numeric''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| thisDate || date || Yes || --- || datetime to convert to java epoch
+|}
+
+=== Examples ===
+
+== inDST ==
+determines if a given date in a given timezone is in DST
+
+=== Returns ===
+* This function returns ''boolean''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| thisOffset || numeric || Yes || --- || 
+|-
+| tzToTest || any || No || [runtime expression] || 
+|}
+
+=== Examples ===
+
+== getDay ==
+returns day from epoch offset
+
+=== Returns ===
+* This function returns ''numeric''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| thisOffset || numeric || Yes || --- || java epoch offset
+|-
+| tz || any || No || [runtime expression] || 
+|}
+
+=== Examples ===
+
+== timeLocaleFormat ==
+locale version of timeFormat. Needs object instantiation. That is your job not mine.
+
+=== Returns ===
+* This function returns ''any''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| date || date || Yes || --- || 
+|-
+| style || string || No || SHORT || FULL=0, LONG=1, MEDIUM=2, SHORT=3
+|}
+
+=== Examples ===
+
+== getMonth ==
+returns month from epoch offset
+
+=== Returns ===
+* This function returns ''numeric''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| thisOffset || numeric || Yes || --- || java epoch offset
+|-
+| tz || any || No || [runtime expression] || 
+|}
+
+=== Examples ===
+
+== isValidLocale ==
+Validate a locale
+
+=== Returns ===
+* This function returns ''boolean''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| thisLocale || string || Yes || --- || Locale to validate
+|}
+
+=== Examples ===
+
+== i18nDateTimeParse ==
+parses localized datetime string to datetime object or returns blank if it can't parse
+
+=== Returns ===
+* This function returns ''numeric''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| thisDate || string || Yes || --- || 
+|}
+
+=== Examples ===
+
+== getTZOffset ==
+returns offset in hours
+
+=== Returns ===
+* This function returns ''any''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| thisOffset || numeric || Yes || --- || 
+|-
+| thisTZ || any || No || [runtime expression] || 
+|}
+
+=== Examples ===
+
+== getYear ==
+returns year from epoch offset
+
+=== Returns ===
+* This function returns ''numeric''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| thisOffset || numeric || Yes || --- || java epoch offset
+|-
+| tz || any || No || [runtime expression] || 
+|}
+
+=== Examples ===
+
+== getLocalizedMonth ==
+Returns localized month.
+
+=== Returns ===
+* This function returns ''string''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| month || numeric || Yes || --- || 
+|}
+
+=== Examples ===
+
+== datetimeLocaleFormat ==
+locale date/time format. Needs object instantiation. That is your job not mine.
+
+=== Returns ===
+* This function returns ''any''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| date || date || Yes || --- || 
+|-
+| dateStyle || string || No || SHORT || FULL=0, LONG=1, MEDIUM=2, SHORT=3
+|-
+| timeStyle || string || No || SHORT || FULL=0, LONG=1, MEDIUM=2, SHORT=3
+|}
+
+=== Examples ===
+
+== fromEpoch ==
+converts java epoch offset to datetime
+
+=== Returns ===
+* This function returns ''date''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| thisOffset || numeric || Yes || --- || java epoch offset to convert to datetime
+|}
+
+=== Examples ===
+
+== getDST ==
+returns DST savings in hours
+
+=== Returns ===
+* This function returns ''numeric''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| thisTZ || any || No || [runtime expression] || 
+|}
+
+=== Examples ===
+
+== getRawOffset ==
+returns rawoffset in hours
+
+=== Returns ===
+* This function returns ''numeric''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| tZ || any || No || [runtime expression] || 
+|}
+
+=== Examples ===
+
+== usesDST ==
+determines if a given timezone uses DST
+
+=== Returns ===
+* This function returns ''boolean''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| tz || any || No || [runtime expression] || 
+|}
+
+=== Examples ===
+
+== getTZQuery ==
+returns a sorted query of timezones, optionally filters for only unique display names (fields:id,offset,dspName,longname,shortname,usesDST). Suitable for use in creating select lists.
+
+=== Returns ===
+* This function returns ''query''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| returnUnique || boolean || Yes || true || 
+|}
+
+=== Examples ===
+
+== i18nDateDiff ==
+
+
+=== Returns ===
+* This function returns ''numeric''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| thisOffset || numeric || Yes || --- || 
+|-
+| thatOffset || numeric || Yes || --- || 
+|-
+| thisDatePart || string || Yes || --- || 
+|-
+| thisTZ || any || No || [runtime expression] || 
+|}
+
+=== Examples ===
+
+== getLocaleNames ==
+returns list of locale names, UNICODE direction char (LRE/RLE) added as required
+
+=== Returns ===
+* This function returns ''string''
+
+
+=== Examples ===
+
+== getLocaleQuery ==
+returns a sorted query of locales (locale,country,language,dspName,localname. 'localname' will contain the locale's name in its native characters). Suitable for use in creating select lists.
+
+=== Returns ===
+* This function returns ''query''
+
+
+=== Examples ===
+
+== getShortWeekDays ==
+returns short day names for this calendar
+
+=== Returns ===
+* This function returns ''array''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| calendarOrder || boolean || No || true || 
+|}
+
+=== Examples ===
+
+== i18nDateFormat ==
+
+
+=== Returns ===
+* This function returns ''string''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| thisOffset || numeric || Yes || --- || java epoch offset
+|-
+| thisDateFormat || numeric || No || 1 || FULL=0, LONG=1, MEDIUM=2, SHORT=3
+|-
+| tz || any || No || [runtime expression] || 
+|}
+
+=== Examples ===
+
+== showISOCountry ==
+returns 2-letter ISO country name for given locale
+
+=== Returns ===
+* This function returns ''string''
+
+
+=== Examples ===
+
+== getTZDisplayName ==
+returns the display name of the timezone requested in either long, short, or default style
+
+=== Returns ===
+* This function returns ''string''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| thisTZ || any || No || [runtime expression] || 
+|-
+| dspType || string || No ||  || 
+|}
+
+=== Examples ===
+
+== i18nDateTimeFormat ==
+
+
+=== Returns ===
+* This function returns ''string''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| thisOffset || numeric || Yes || --- || java epoch offset
+|-
+| thisDateFormat || numeric || No || 1 || FULL=0, LONG=1, MEDIUM=2, SHORT=3
+|-
+| thisTimeFormat || numeric || No || 1 || FULL=0, LONG=1, MEDIUM=2, SHORT=3
+|-
+| tz || any || No || [runtime expression] || 
+|}
+
+=== Examples ===
+
+== getDecimalSymbols ==
+returns strucure holding decimal format symbols for this locale
+
+=== Returns ===
+* This function returns ''struct''
+
+
+=== Examples ===
+
+== getAvailableTZ ==
+returns an array of timezones available on this server
+
+=== Returns ===
+* This function returns ''array''
+
+
+=== Examples ===
+
+== i18nDateParse ==
+parses localized date string to datetime object or returns blank if it can't parse
+
+=== Returns ===
+* This function returns ''numeric''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| thisDate || string || Yes || --- || 
+|}
+
+=== Examples ===
+
+== getHour ==
+returns hour of day, 24 hr format, from epoch offset
+
+=== Returns ===
+* This function returns ''numeric''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| thisOffset || numeric || Yes || --- || java epoch offset
+|-
+| tz || any || No || [runtime expression] || 
+|}
+
+=== Examples ===
+
+== i18nDateAdd ==
+
+
+=== Returns ===
+* This function returns ''numeric''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| thisOffset || numeric || Yes || --- || 
+|-
+| thisDatePart || string || Yes || --- || 
+|-
+| dateUnits || numeric || Yes || --- || 
+|-
+| thisTZ || any || No || [runtime expression] || 
+|}
+
+=== Examples ===
+
+== getISOcountries ==
+returns array of 2 letter ISO countries
+
+=== Returns ===
+* This function returns ''array''
+
+
+=== Examples ===
+
+== formatDateTime ==
+formats a date/time to given pattern
+
+=== Returns ===
+* This function returns ''string''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| thisOffset || numeric || Yes || --- || 
+|-
+| thisPattern || string || Yes || --- || 
+|-
+| tz || any || No || [runtime expression] || 
+|}
+
+=== Examples ===
+
+== isBidi ==
+determines if given locale is BIDI
+
+=== Returns ===
+* This function returns ''boolean''
+
+
+=== Examples ===
+
+== getMinute ==
+returns minute from epoch offset
+
+=== Returns ===
+* This function returns ''numeric''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| thisOffset || numeric || Yes || --- || java epoch offset
+|-
+| tz || any || No || [runtime expression] || 
+|}
+
+=== Examples ===
+
+== getISOlanguages ==
+returns array of 2 letter ISO languages
+
+=== Returns ===
+* This function returns ''array''
+
+
+=== Examples ===
+
+== i18nTimeFormat ==
+
+
+=== Returns ===
+* This function returns ''string''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| thisOffset || numeric || Yes || --- || java epoch offset
+|-
+| thisTimeFormat || numeric || No || 1 || FULL=0, LONG=1, MEDIUM=2, SHORT=3
+|-
+| tz || any || No || [runtime expression] || 
+|}
+
+=== Examples ===
+
+== weekStarts ==
+Determines the first DOW.
+
+=== Returns ===
+* This function returns ''string''
+
+
+=== Examples ===
+
+== getLocales ==
+returns array of locales
+
+=== Returns ===
+* This function returns ''array''
+
+
+=== Examples ===
+
+== getfwLocale ==
+Get the user's locale
+
+=== Returns ===
+* This function returns ''any''
+
+
+=== Examples ===
+
+== showCountry ==
+returns display country name for given locale
+
+=== Returns ===
+* This function returns ''string''
+
+
+=== Examples ===
+
+== getDateTimePattern ==
+returns locale date/time pattern
+
+=== Returns ===
+* This function returns ''string''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| thisDateFormat || numeric || No || 1 || FULL=0, LONG=1, MEDIUM=2, SHORT=3
+|-
+| thisTimeFormat || numeric || No || 3 || FULL=0, LONG=1, MEDIUM=2, SHORT=3
+|}
+
+=== Examples ===
+
+== getCurrencySymbol ==
+returns currency symbol for this locale
+
+=== Returns ===
+* This function returns ''string''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| localized || boolean || No || true || return international (USD, THB, etc.) or localized ($,etc.) symbol
+|}
+
+=== Examples ===
+
+[[Dashboard | << Back to Dashboard ]]
+
+{| align="right"
+| __TOC__
+|}
+
+= Exploring the JavaLoader Plugin =
+
+
+== Overview ==
+Loads External Java Classes, while providing access to ColdFusion classes
+
+
+== setStaticIDKey ==
+override the static server key for this javaloader instance.
+
+=== Returns ===
+* This function returns ''void''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| staticIDKey || string || Yes || --- || 
+|}
+
+=== Examples ===
+
+== getVersion ==
+Retrieves the version of the loader you are using
+
+=== Returns ===
+* This function returns ''string''
+
+
+=== Examples ===
+
+== create ==
+Retrieves a reference to the java class. To create a instance, you must run init() on this object
+
+=== Returns ===
+* This function returns ''any''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| className || string || Yes || --- || The name of the class to create
+|}
+
+=== Examples ===
+
+== queryJars ==
+pulls a query of all the jars in the folder passed
+
+=== Returns ===
+* This function returns ''array''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| dirPath || string || Yes ||  || The directory path to query
+|-
+| filter || string || No || *.jar || The directory filter to use
+|}
+
+=== Examples ===
+
+== getStaticIDKey ==
+Return the original server id static key
+
+=== Returns ===
+* This function returns ''string''
+
+
+=== Examples ===
+
+== getURLClassLoader ==
+Returns the java.net.URLClassLoader in case you need access to it
+
+=== Returns ===
+* This function returns ''any''
+
+
+=== Examples ===
+
+== getLoadedURLs ==
+Returns the paths of all the loaded java classes and resources.
+
+=== Returns ===
+* This function returns ''array''
+
+
+=== Examples ===
+
+== appendPaths ==
+Appends a directory path of *.jar's,*.classes to the current loaded class loader.
+
+=== Returns ===
+* This function returns ''void''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| dirPath || string || Yes ||  || The directory path to query
+|-
+| filter || string || No || *.jar || The directory filter to use
+|}
+
+=== Examples ===
+
+== setup ==
+Setup the URL loader with paths to load and how to treat class loaders
+
+=== Returns ===
+* This function returns ''any''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| loadPaths || array || No || [runtime expression] || An array of directories of classes, or paths to .jar files to load
+|-
+| loadColdFusionClassPath || boolean || No || false || Loads the ColdFusion libraries
+|-
+| parentClassLoader || any || No ||  || (Expert use only) The parent java.lang.ClassLoader to set when creating the URLClassLoader
+|}
+
+=== Examples ===
+
+[[Dashboard | << Back to Dashboard ]]
+
+{| align="right"
+| __TOC__
+|}
+
+= Exploring the JVMUtils Plugin =
+
+
+== Overview ==
+This is a JVM Utilities CFC
+
+
+== getInetHost ==
+Get the hostname of the executing machine.
+
+=== Returns ===
+* This function returns ''string''
+
+
+=== Examples ===
+
+== getOSFileSeparator ==
+Get the operating system's file separator character
+
+=== Returns ===
+* This function returns ''string''
+
+
+=== Examples ===
+
+== getJVMFreeMemory ==
+Get the JVM's free memory.
+
+=== Returns ===
+* This function returns ''string''
+
+
+=== Examples ===
+
+== getJVMTotalMemory ==
+Get the JVM's total memory.
+
+=== Returns ===
+* This function returns ''string''
+
+
+=== Examples ===
+
+== getOSPathSeparator ==
+Get the operating system's path separator character.
+
+=== Returns ===
+* This function returns ''string''
+
+
+=== Examples ===
+
+== getJavaVersion ==
+Get the java version.
+
+=== Returns ===
+* This function returns ''string''
+
+
+=== Examples ===
+
+== getJavaRuntime ==
+Get the java runtime version
+
+=== Returns ===
+* This function returns ''string''
+
+
+=== Examples ===
+
+== getIPAddress ==
+Get the ip address of the executing hostname machine.
+
+=== Returns ===
+* This function returns ''string''
+
+
+=== Examples ===
+
+== getOSName ==
+Get the operating system's name
+
+=== Returns ===
+* This function returns ''string''
+
+
+=== Examples ===
+
+[[Dashboard | << Back to Dashboard ]]
+
+{| align="right"
+| __TOC__
+|}
+
+= Exploring the Logger Plugin =
+
+
+== Overview ==
+This is the frameworks Logger object. It is used for all logging facilities interfacing with LogBox and the ColdBox debugger.
+
+
+== info ==
+I log an information message.
+
+=== Returns ===
+* This function returns ''void''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| Message || string || Yes || --- || The message to log.
+|-
+| ExtraInfo || string || No ||  || Extra information to append.
+|}
+
+=== Examples ===
+
+== fatal ==
+I log a fatal message.
+
+=== Returns ===
+* This function returns ''void''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| Message || string || Yes || --- || The message to log.
+|-
+| ExtraInfo || string || No ||  || Extra information to append.
+|}
+
+=== Examples ===
+
+== logError ==
+Log an error into the framework using arguments. Facade to logErrorWithBean.
+
+=== Returns ===
+* This function returns ''void''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| Message || string || Yes || --- || 
+|-
+| ExceptionStruct || any || No || [runtime expression] || The CF cfcatch structure.
+|-
+| ExtraInfo || any || No ||  || 
+|}
+
+=== Examples ===
+
+== error ==
+I log an error message.
+
+=== Returns ===
+* This function returns ''void''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| Message || string || Yes || --- || The message to log.
+|-
+| ExtraInfo || string || No ||  || Extra information to append.
+|}
+
+=== Examples ===
+
+== logEntry ==
+Log a message to the LogBox
+
+=== Returns ===
+* This function returns ''void''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| Severity || string || Yes || --- || Severity: fatal,error,warn,info,debug,trace
+|-
+| Message || string || Yes || --- || The message to log.
+|-
+| ExtraInfo || string || No ||  || Extra information to append.
+|}
+
+=== Examples ===
+
+== logErrorWithBean ==
+Log an error into the framework using a coldbox exceptionBean
+
+=== Returns ===
+* This function returns ''void''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| ExceptionBean || any || Yes || --- || This is the exception bean
+|}
+
+=== Examples ===
+
+== warn ==
+I log a warning message.
+
+=== Returns ===
+* This function returns ''void''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| Message || string || Yes || --- || The message to log.
+|-
+| ExtraInfo || string || No ||  || Extra information to append.
+|}
+
+=== Examples ===
+
+== tracer ==
+Log a trace message to the ColdBox debugger panel, not LOGBOX
+
+=== Returns ===
+* This function returns ''void''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| message || string || Yes || --- || Message to Send
+|-
+| extraInfo || any || No ||  || Extra Information to dump on the trace
+|}
+
+=== Examples ===
+
+== debug ==
+I log a debug message.
+
+=== Returns ===
+* This function returns ''void''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| Message || string || Yes || --- || The message to log.
+|-
+| ExtraInfo || string || No ||  || Extra information to append.
+|}
+
+=== Examples ===
+
+== getLogger ==
+This coldbox apps's logger.
+
+=== Returns ===
+* This function returns ''coldbox.system.logging.Logger''
+
+
+=== Examples ===
+
+[[Dashboard | << Back to Dashboard ]]
+
+{| align="right"
+| __TOC__
+|}
+
+= Exploring the MailService Plugin =
+
+
+== Overview ==
+The ColdBox Mail Service used to send emails in an oo fashion
+
+
+== newMail ==
+Get a new Mail payload object, just use config() on it to prepare it.
+
+=== Returns ===
+* This function returns ''coldbox.system.beans.Mail''
+
+
+=== Examples ===
+
+== send ==
+Send an email payload. Returns a struct: [error:boolean,errorArray:array]
+
+=== Returns ===
+* This function returns ''struct''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| mail || coldbox.system.beans.Mail || Yes || --- || The mail payload to send.
+|}
+
+=== Examples ===
+
+[[Dashboard | << Back to Dashboard ]]
+
+{| align="right"
+| __TOC__
+|}
+
+= Exploring the MessageBox Plugin =
+
+
+== Overview ==
+This is the MessageBox plugin. It uses the session/client scope to save messages.
+
+
+== info ==
+Facade to setmessage with info type
+
+=== Returns ===
+* This function returns ''void''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| message || string || No ||  || The message to show.
+|-
+| messageArray || Array || No || --- || You can also send in an array of messages to render separated by a <br />
+|}
+
+=== Examples ===
+
+== isEmpty ==
+Checks wether the MessageBox is empty or not.
+
+=== Returns ===
+* This function returns ''boolean''
+
+
+=== Examples ===
+
+== error ==
+Facade to setmessage with error type
+
+=== Returns ===
+* This function returns ''void''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| message || string || No ||  || The message to show.
+|-
+| messageArray || Array || No || --- || You can also send in an array of messages to render separated by a <br />
+|}
+
+=== Examples ===
+
+== setMessage ==
+Create a new MessageBox. Look at types.
+
+=== Returns ===
+* This function returns ''void''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| type || string || Yes || --- || The message type.Available types [error][warning][info]
+|-
+| message || string || No ||  || The message to show.
+|-
+| messageArray || Array || No || --- || You can also send in an array of messages to render separated by a <br />
+|}
+
+=== Examples ===
+
+== renderMessage ==
+Renders a messagebox immediately for you with the passed in arguments
+
+=== Returns ===
+* This function returns ''any''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| type || string || Yes || --- || The message type.Available types [error][warning][info]
+|-
+| message || string || No ||  || The message to show.
+|-
+| messageArray || Array || No || --- || You can also send in an array of messages to render separated by a <br />
+|}
+
+=== Examples ===
+
+== getMessage ==
+Returns a structure of the message if it exists, else a blank structure.
+
+=== Returns ===
+* This function returns ''any''
+
+
+=== Examples ===
+
+== warn ==
+Facade to setmessage with warning type
+
+=== Returns ===
+* This function returns ''void''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| message || string || No ||  || The message to show.
+|-
+| messageArray || Array || No || --- || You can also send in an array of messages to render separated by a <br />
+|}
+
+=== Examples ===
+
+== renderit ==
+Renders the message box and clears the message structure by default.
+
+=== Returns ===
+* This function returns ''any''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| clearMessage || boolean || No || true || Flag to clear the message structure or not after rendering. Default is true.
+|}
+
+=== Examples ===
+
+== clearMessage ==
+Clears the message structure by deleting it from the session scope.
+
+=== Returns ===
+* This function returns ''void''
+
+
+=== Examples ===
+
+== appendArray ==
+Append an array of messages to the MessageBox. If there is no message, then it sets the type to information.
+
+=== Returns ===
+* This function returns ''void''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| messageArray || Array || Yes || --- || The array of messages to append. You must send that.
+|}
+
+=== Examples ===
+
+== append ==
+Append a message to the MessageBox. If there is no message, then it sets the type to information.
+
+=== Returns ===
+* This function returns ''void''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| message || string || Yes || --- || The message to append, it does not include any breaks or delimiters. You must send that.
+|}
+
+=== Examples ===
+
+[[Dashboard | << Back to Dashboard ]]
+
+{| align="right"
+| __TOC__
+|}
+
+= Exploring the MethodInjector Plugin =
+
+
+== Overview ==
+Method Injector plugin. It provides a nice way to mixin and remove methods from cfc's
+
+
+== injectPropertyMixin ==
+injects a property into the passed scope
+
+=== Returns ===
+* This function returns ''void''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| propertyName || string || Yes || --- || The name of the property to inject.
+|-
+| propertyValue || any || Yes || --- || The value of the property to inject
+|-
+| scope || string || No || variables || The scope to which inject the property to.
+|}
+
+=== Examples ===
+
+== removePropertyMixin ==
+removes a property from the cfc used.
+
+=== Returns ===
+* This function returns ''void''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| propertyName || string || Yes || --- || The name of the property to remove.
+|-
+| scope || string || No || variables || The scope to which inject the property to.
+|}
+
+=== Examples ===
+
+== getcontroller ==
+Get controller: coldbox.system.web.Controller
+
+=== Returns ===
+* This function returns ''any''
+
+
+=== Examples ===
+
+== removeMixin ==
+removes a method in a CFC
+
+=== Returns ===
+* This function returns ''void''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| UDFName || string || Yes || --- || Name of the UDF to be removed
+|}
+
+=== Examples ===
+
+== injectMixin ==
+injects a method into the CFC scope
+
+=== Returns ===
+* This function returns ''void''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| UDF || any || Yes || --- || UDF to be checked
+|}
+
+=== Examples ===
+
+== invokerMixin ==
+calls private/packaged/public methods
+
+=== Returns ===
+* This function returns ''any''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| method || string || Yes || --- || Name of the private method to call
+|-
+| argCollection || struct || No || --- || Can be called with an argument collection struct
+|-
+| argList || string || No || --- || Can be called with an argument list, for simple values only: ex: 'plugin=logger,number=1'
+|}
+
+=== Examples ===
+
+== setcontroller ==
+Set controller
+
+=== Returns ===
+* This function returns ''void''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| controller || any || Yes || --- || coldbox.system.web.Controller
+|}
+
+=== Examples ===
+
+== stop ==
+stop injection block. Removes mixed in methods.
+
+=== Returns ===
+* This function returns ''void''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| CFC || any || Yes || --- || The cfc to inject the method into
+|}
+
+=== Examples ===
+
+== populatePropertyMixin ==
+Populates a property if it exists
+
+=== Returns ===
+* This function returns ''void''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| propertyName || string || Yes || --- || The name of the property to inject.
+|-
+| propertyValue || any || Yes || --- || The value of the property to inject
+|-
+| scope || string || No || variables || The scope to which inject the property to.
+|}
+
+=== Examples ===
+
+== start ==
+start method injection set. Injects: injectMixin,removeMixin,invokerMixin,injectPropertyMixin,removePropertyMixin
+
+=== Returns ===
+* This function returns ''void''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| CFC || any || Yes || --- || The cfc to inject the method into
+|}
+
+=== Examples ===
+
+[[Dashboard | << Back to Dashboard ]]
+
+{| align="right"
+| __TOC__
+|}
+
+= Exploring the QueryHelper Plugin =
+
+
+== Overview ==
+A query helper plugin.
+
+
+== getCountDistinct ==
+Returns total/count disninct values
+
+=== Returns ===
+* This function returns ''numeric''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| qry || query || Yes || --- || cf query
+|-
+| ColumnName || string || Yes || --- || column/s name
+|}
+
+=== Examples ===
+
+== doQueryAppend ==
+Append Query1 into Query2
+
+=== Returns ===
+* This function returns ''query''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| qryFrom || query || Yes || --- || Append Query1 into Query2
+|-
+| qryTo || query || Yes || --- || Query2 will have all record from Query1
+|}
+
+=== Examples ===
+
+== sortQueryNoCase ==
+Sorts a query by the given field non-case
+
+=== Returns ===
+* This function returns ''query''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| qry || query || Yes || --- || Query to sort
+|-
+| sortBy || string || Yes || --- || Sort by column
+|-
+| sortOrder || string || No || ASC || ASC/DESC
+|}
+
+=== Examples ===
+
+== sortQuery ==
+Sorts a query by the given field
+
+=== Returns ===
+* This function returns ''query''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| qry || query || Yes || --- || Query to sort
+|-
+| sortBy || string || Yes || --- || Sort by column(s)
+|-
+| sortOrder || string || No || ASC || ASC/DESC
+|}
+
+=== Examples ===
+
+== filterQuery ==
+Filters a query by the given value
+
+=== Returns ===
+* This function returns ''query''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| qry || query || Yes || --- || Query to filter
+|-
+| field || string || Yes || --- || Field to filter on
+|-
+| value || string || Yes || --- || Value to filter on
+|-
+| cfsqltype || string || No || cf_sql_varchar || The cf sql type of the value.
+|-
+| list || boolean || No || false || Whether to do a where IN list.
+|}
+
+=== Examples ===
+
+== doInnerJoin ==
+Return inner-joined Query
+
+=== Returns ===
+* This function returns ''query''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| qryLeft || query || Yes || --- || 
+|-
+| qryRight || query || Yes || --- || 
+|-
+| LeftJoinColumn || string || Yes || --- || the column name, not the value of column
+|-
+| RightJoinColumn || string || Yes || --- || the column name, not the value of column
+|-
+| OrderByElement || string || No ||  || 
+|-
+| CaseSensitive || boolean || No || false || 
+|}
+
+=== Examples ===
+
+== querySim ==
+First line are the query columns separated by commas. Then do a consecuent rows separated by line breaks separated by | to denote columns.
+
+=== Returns ===
+* This function returns ''query''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| queryData || string || Yes || --- || The data to create queries
+|}
+
+=== Examples ===
+
+== getColumnArray ==
+Returns an array of the values
+
+=== Returns ===
+* This function returns ''any''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| qry || query || Yes || --- || cf query
+|-
+| ColumnName || string || Yes || --- || column name
+|}
+
+=== Examples ===
+
+== getCSV ==
+returns query in delimited text file format
+
+=== Returns ===
+* This function returns ''string''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| qry || query || Yes || --- || query to return as a delimited text file
+|-
+| delimiter || string || No || , || delimiter
+|}
+
+=== Examples ===
+
+== filterNull ==
+Filters a query by NULL
+
+=== Returns ===
+* This function returns ''query''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| qry || query || Yes || --- || Query to filter
+|-
+| field || string || Yes || --- || Field to filter on
+|-
+| null || string || No || NULL || NULL by default, also accepts NOT NULL
+|}
+
+=== Examples ===
+
+== doLeftOuterJoin ==
+Return left outer-joined Query
+
+=== Returns ===
+* This function returns ''query''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| qryLeft || query || Yes || --- || 
+|-
+| qryRight || query || Yes || --- || 
+|-
+| LeftJoinColumn || string || Yes || --- || the column name, not the value of column
+|-
+| RightJoinColumn || string || Yes || --- || the column name, not the value of column
+|-
+| OrderByElement || string || No ||  || 
+|-
+| CaseSensitive || boolean || No || false || 
+|}
+
+=== Examples ===
+
+== getRowNumber ==
+Returns the row number of the first match
+
+=== Returns ===
+* This function returns ''numeric''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| qry || query || Yes || --- || cf query
+|-
+| ColumnValue || string || Yes || --- || column value
+|-
+| ColumnName || string || Yes || --- || column name
+|}
+
+=== Examples ===

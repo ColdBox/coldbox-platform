@@ -1,0 +1,32 @@
+
+[[Dashboard | << Back to Dashboard ]]
+
+{| align="right"
+| __TOC__
+|}
+
+= Exploring the AntiSamy Plugin =
+
+
+== Overview ==
+OWASP AntiSamy Project that provides XSS cleanup operations to ColdBox applications
+
+
+== HtmlSanitizer ==
+clean HTML from XSS scripts using the AntiSamy project. The available policies are antisamy, ebay,myspace or slashdot
+
+=== Returns ===
+* This function returns ''Any''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| HtmlData || string || Yes || --- || The html text to sanitize
+|-
+| PolicyFile || string || No || myspace || Provide policy file to scan html. Available options are: antisamy, ebay, myspace, slashdot
+|}
+
+=== Examples ===

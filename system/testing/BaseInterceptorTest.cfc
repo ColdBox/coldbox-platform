@@ -46,11 +46,14 @@ Description :
 			variables.mockRequestService.$("getFlashScope",variables.mockFlash);
 			variables.mockLogBox.$("getLogger",variables.mockLogger);
 			
-			// Decorate plugin?
-			if( NOT getUtil().isFamilyType("plugin",variables.plugin) ){
-				getUtil().convertToColdBox( "plugin", variables.plugin );	
+			// Decorate interceptor?
+			if( NOT getUtil().isFamilyType("interceptor",variables.interceptor) ){
+				getUtil().convertToColdBox( "interceptor", variables.interceptor );	
 				// Check if doing cbInit()
-				if( structKeyExists(variables.plugin, "$cbInit") ){ variables.plugin.$cbInit( mockController, configProperties ); }
+				if( structKeyExists(variables.interceptor, "$cbInit") ){ variables.interceptor.$cbInit( mockController, configProperties ); }
+			}
+			else{
+				variables.interceptor.init( mockController, configProperties );
 			}
     	</cfscript>
     </cffunction>

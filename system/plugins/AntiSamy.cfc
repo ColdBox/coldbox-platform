@@ -10,7 +10,7 @@ Description:
 			http://www.owasp.org/index.php/Category:OWASP_AntiSamy_Project
 			http://code.google.com/p/owaspantisamy/downloads/list
 ----------------------------------------------------------------------->
-<cfcomponent hint="OWASP AntiSamy Project."
+<cfcomponent hint="OWASP AntiSamy Project that provides XSS cleanup operations to ColdBox applications"
 			 extends="coldbox.system.Plugin"
 			 output="false"
 			 singleton="true">
@@ -57,7 +57,7 @@ Description:
 	<cffunction name="HtmlSanitizer" returntype="Any" output="false" hint="clean HTML from XSS scripts using the AntiSamy project. The available policies are antisamy, ebay,myspace or slashdot">
 		<!--- ************************************************************* --->
 		<cfargument name="HtmlData"		type="string" required="true" hint="The html text to sanitize">
-		<cfargument name="PolicyFile"	type="string" required="false" default="myspace" hint="Provide policy file to scan html. Available options are: 'antisamy, ebay, myspace, slashdot'">
+		<cfargument name="PolicyFile"	type="string" required="false" default="myspace" hint="Provide policy file to scan html. Available options are: antisamy, ebay, myspace, slashdot">
 		<!--- ************************************************************* --->
 		<cfscript>
 			// you can use any xml, our your own customised policy xml
