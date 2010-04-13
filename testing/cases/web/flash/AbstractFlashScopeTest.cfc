@@ -38,7 +38,7 @@
 		assertEquals( flash.exists("obj2"), false);
 		assertEquals( flash.isEmpty(), false);
 		
-		flash.clear()
+		flash.clear();
 		assertEquals( flash.size(), 0);
 		
 		testMap = {name="luis majano", date=now()};

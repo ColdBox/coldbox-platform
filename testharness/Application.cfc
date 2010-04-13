@@ -33,6 +33,21 @@ Description :
 	
 	
 	<cfset this.mappings["/coldbox"] = expandPath('../') />
+	<cfset this.mappings["/testing"] = expandpath("/coldbox/testing")>
+	
+	<cfset this.datasource = "coolblog">
+	<cfset this.ormEnabled = "true">
+	
+	<cfset this.ormSettings = {
+		dialect = "MySQLwithInnoDB",
+		cfclocation = ["/coldbox","/testing"],
+		eventHandling=true,
+		logSQL = true,
+		eventhandling = true,
+		secondarycacheenabled = true,
+		cacheProvider = "ehcache",
+		flushAtRequestEnd = false
+	}>
 	
 	<!--- on Application Start --->
 	<cffunction name="onApplicationStart" returnType="boolean" output="false">
@@ -59,6 +74,10 @@ Description :
 		<cfif structKeyExists(url,"fwreinit")>
 			<cfset structDelete(application,"cbBootStrap")>
 			<cfset structDelete(application,"cbController")>
+		</cfif>
+		
+		<cfif structKeyExists(URL,"ormreinit")>
+			<cfset ORMReload()>
 		</cfif>
 		
 		<!--- BootStrap Reinit Check --->

@@ -12,9 +12,9 @@ License		: 	Apache 2 License
 	to reduce potential bloat in the plug-in component.
 
 ----------------------------------------------------------------------->
-<cfcomponent name="RSS2Generator"
-			extends="coldbox.system.web.feeds.SharedGenerator"
-			hint="Methods belonging to the FeedGenerator plug-in that specifically relate to RSS creation">
+<cfcomponent extends="coldbox.system.web.feeds.SharedGenerator"
+			 hint="Methods belonging to the FeedGenerator plug-in that specifically relate to RSS creation"
+			 output="false">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
@@ -409,8 +409,7 @@ License		: 	Apache 2 License
 			var fi = arguments.feedItems;
 			var i = 0;
 			var map = generateDefaultPropertyMap();
-			var invalidList = arguments.invalidList;
-
+			
 			/* Map columns to data */
 			if( structKeyExists(arguments, "ColumnMap") ) {
 				map = parseColumnMap(arguments.ColumnMap);
@@ -523,7 +522,6 @@ License		: 	Apache 2 License
 		</cfloop>
 	
 		<cfreturn invalidList>
-
 	</cffunction>
 
 	<!--- verifyFeed --->

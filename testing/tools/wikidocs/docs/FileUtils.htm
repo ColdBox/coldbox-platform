@@ -1,0 +1,365 @@
+
+[[Dashboard | << Back to Dashboard ]]
+
+{| align="right"
+| __TOC__
+|}
+
+= Exploring the FileUtils Plugin =
+
+
+== Overview ==
+This is a File Utilities CFC
+
+
+== checkCharSet ==
+Check a charset with valid CF char sets, if invalid, it returns the framework's default character set
+
+=== Returns ===
+* This function returns ''string''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| charset || string || Yes || --- || Charset to check
+|}
+
+=== Examples ===
+
+== createFile ==
+Create a new empty fileusing java.io.File.
+
+=== Returns ===
+* This function returns ''void''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| filename || String || Yes || --- || The absolute path of the file to create.
+|}
+
+=== Examples ===
+
+== appendFile ==
+Facade to append to a file's content
+
+=== Returns ===
+* This function returns ''void''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| FileToSave || any || Yes || --- || The absolute path to the file.
+|-
+| FileContents || any || Yes || --- || The file contents
+|-
+| CharSet || string || No || utf-8 || CF File CharSet Encoding to use.
+|-
+| CheckCharSetFlag || boolean || No || false || Check the charset.
+|}
+
+=== Examples ===
+
+== getFileMimeType ==
+Get's the file mime type for a given file extension
+
+=== Returns ===
+* This function returns ''string''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| extension || string || Yes || --- || e.g. jpg or gif
+|}
+
+=== Examples ===
+
+== isFile ==
+Checks whether the filename argument is a file or not.
+
+=== Returns ===
+* This function returns ''boolean''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| Filename || String || Yes || --- || The absolute path of the file to check.
+|}
+
+=== Examples ===
+
+== fileLastModified ==
+Get the last modified date of a file
+
+=== Returns ===
+* This function returns ''string''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| filename || string || Yes || --- || 
+|}
+
+=== Examples ===
+
+== getAbsolutePath ==
+Turn any system path, either relative or absolute, into a fully qualified one
+
+=== Returns ===
+* This function returns ''string''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| path || string || Yes || --- || Abstract pathname
+|}
+
+=== Examples ===
+
+== fileSize ==
+Get the filesize of a file.
+
+=== Returns ===
+* This function returns ''string''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| filename || string || Yes || --- || 
+|-
+| sizeFormat || string || No || bytes || Available formats: [bytes][kbytes][mbytes][gbytes]
+|}
+
+=== Examples ===
+
+== fileCanWrite ==
+Check wether you can write to a file
+
+=== Returns ===
+* This function returns ''boolean''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| Filename || String || Yes || --- || The absolute path of the file to check.
+|}
+
+=== Examples ===
+
+== readFile ==
+Facade to Read a file's content
+
+=== Returns ===
+* This function returns ''Any''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| FileToRead || String || Yes || --- || The absolute path to the file.
+|-
+| ReadInBinaryFlag || boolean || No || false || Read in binary flag.
+|-
+| CharSet || string || No ||  || CF File CharSet Encoding to use.
+|-
+| CheckCharSetFlag || boolean || No || false || Check the charset.
+|}
+
+=== Examples ===
+
+== isDirectory ==
+Check wether the filename argument is a directory or not
+
+=== Returns ===
+* This function returns ''boolean''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| Filename || String || Yes || --- || The absolute path of the file to check.
+|}
+
+=== Examples ===
+
+== uploadFile ==
+Facade to upload to a file, returns the cffile variable.
+
+=== Returns ===
+* This function returns ''any''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| FileField || string || Yes || --- || The name of the form field used to select the file
+|-
+| Destination || string || Yes || --- || The absolute path to the destination.
+|-
+| NameConflict || string || No || makeunique || Action to take if filename is the same as that of a file in the directory.
+|-
+| Accept || string || No ||  || Limits the MIME types to accept. Comma-delimited list.
+|-
+| Attributes || string || No || Normal || Comma-delimitted list of window file attributes
+|-
+| Mode || string || No || 755 || The mode of the file for Unix systems, the default is 755
+|}
+
+=== Examples ===
+
+== sendFile ==
+Send a file to the browser
+
+=== Returns ===
+* This function returns ''void''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| file || any || No ||  || The absolute path to the file or a binary file
+|-
+| name || string || No ||  || The name to send the file to the browser. If not sent in, it will use the name of the file or a UUID for a binary file
+|-
+| mimeType || string || No ||  || A valid mime type to use. If not sent in, we will try to use a default one according to file extension
+|-
+| disposition || string || No || attachment || The browser content disposition (attachment/inline)
+|-
+| abortAtEnd || boolean || No || false || Do an abort after content sending
+|-
+| extension || string || No ||  || Only used if file is binary. e.g. jpg or gif
+|-
+| deleteFile || string || No || false || Delete the file after sending. Only used if file is not binary
+|}
+
+=== Examples ===
+
+== fileCanRead ==
+Check wether you can read a file
+
+=== Returns ===
+* This function returns ''boolean''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| Filename || String || Yes || --- || The absolute path of the file to check.
+|}
+
+=== Examples ===
+
+== removeFile ==
+Remove a file using java.io.File
+
+=== Returns ===
+* This function returns ''boolean''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| filename || string || Yes || --- || The absolute path to the file.
+|}
+
+=== Examples ===
+
+== ripExtension ==
+Rip the extension of a filename.
+
+=== Returns ===
+* This function returns ''string''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| filename || string || Yes || --- || 
+|}
+
+=== Examples ===
+
+== directoryCopy ==
+Copies an entire source directory to a destination directory
+
+=== Returns ===
+* This function returns ''void''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| source || string || Yes || --- || 
+|-
+| destination || string || Yes || --- || 
+|-
+| nameconflict || any || Yes || overwrite || 
+|}
+
+=== Examples ===
+
+== saveFile ==
+Facade to save a file's content
+
+=== Returns ===
+* This function returns ''void''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| FileToSave || any || Yes || --- || The absolute path to the file.
+|-
+| FileContents || any || Yes || --- || The file contents
+|-
+| CharSet || string || No || utf-8 || CF File CharSet Encoding to use.
+|-
+| CheckCharSetFlag || boolean || No || false || Check the charset.
+|}
+
+=== Examples ===

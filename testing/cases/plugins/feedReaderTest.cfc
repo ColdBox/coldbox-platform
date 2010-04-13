@@ -9,13 +9,10 @@ Date        :	June 01 2008
 Description :
 	FeedReaderTest plugin test
 ----------------------------------------------------------------------->
-<cfcomponent name="FeedReaderTest" extends="coldbox.system.testing.BaseTestCase" output="false">
+<cfcomponent extends="coldbox.system.testing.BaseTestCase" appMapping="/coldbox/testharness">
 
 	<cffunction name="setUp" returntype="void" access="public" output="false">
 		<cfscript>
-		//Setup ColdBox Mappings For this Test
-		setAppMapping("/coldbox/testharness");
-		setConfigMapping(ExpandPath(instance.AppMapping & "/config/coldbox.xml.cfm"));
 		//Call the super setup method to setup the app.
 		super.setup();
 		variables.feedlink = 'http://newsrss.bbc.co.uk/rss/newsonline_world_edition/front_page/rss.xml';

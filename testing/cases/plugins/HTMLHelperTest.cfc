@@ -174,6 +174,62 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 		assertEquals('<style type="text/css">.test{color: ##123}</style>', str);
 	}
 	
+	function testTable(){
+		data = querySim("id,name
+		1 | luis
+		2 | peter");
+		attrs = {class="test"};
+		
+		str = plugin.table(data=data);
+		assertEquals("<table><thead><tr><th>ID</th><th>NAME</th></tr></thead><tbody><tr><td>1</td><td>luis</td></tr><tr><td>2</td><td>peter</td></tr></tbody></table>",
+					 str);
+					 
+		str = plugin.table(data=data,attributes=attrs);
+		assertEquals('<table class="test"><thead><tr><th>ID</th><th>NAME</th></tr></thead><tbody><tr><td>1</td><td>luis</td></tr><tr><td>2</td><td>peter</td></tr></tbody></table>',
+					 str);
+					 
+		str = plugin.table(data=data,attributes=attrs,includes="name");
+		assertEquals('<table class="test"><thead><tr><th>NAME</th></tr></thead><tbody><tr><td>luis</td></tr><tr><td>peter</td></tr></tbody></table>',
+					 str);
+					 
+		str = plugin.table(data=data,attributes=attrs,excludes="id");
+		assertEquals('<table class="test"><thead><tr><th>NAME</th></tr></thead><tbody><tr><td>luis</td></tr><tr><td>peter</td></tr></tbody></table>',
+					 str);
+	}
+	
+	function testTableORM(){
+		data = entityLoad("User");
+		
+		str = plugin.table(data=data,includes="firstName");
+		debug(str);
+		assertEquals('<table><thead><tr><th>firstName</th></tr></thead><tbody><tr><td>Joe</td></tr><tr><td>Luis</td></tr></tbody></table>',
+					 str);
+	}
+	
+	function testTableArrayofStructs(){
+		data = [
+		{id=1, name="luis"},
+		{id=2, name="peter"}
+		];
+		attrs = {class="test"};
+		
+		str = plugin.table(data=data);
+		assertEquals("<table><thead><tr><th>NAME</th><th>ID</th></tr></thead><tbody><tr><td>luis</td><td>1</td></tr><tr><td>peter</td><td>2</td></tr></tbody></table>",
+					 str);
+					 
+		str = plugin.table(data=data,attributes=attrs);
+		assertEquals('<table class="test"><thead><tr><th>NAME</th><th>ID</th></tr></thead><tbody><tr><td>luis</td><td>1</td></tr><tr><td>peter</td><td>2</td></tr></tbody></table>',
+					 str);
+					 
+		str = plugin.table(data=data,attributes=attrs,includes="name");
+		assertEquals('<table class="test"><thead><tr><th>NAME</th></tr></thead><tbody><tr><td>luis</td></tr><tr><td>peter</td></tr></tbody></table>',
+					 str);
+					 
+		str = plugin.table(data=data,attributes=attrs,excludes="id");
+		assertEquals('<table class="test"><thead><tr><th>NAME</th></tr></thead><tbody><tr><td>luis</td></tr><tr><td>peter</td></tr></tbody></table>',
+					 str);
+	}
+	
 </cfscript>
 
 </cfcomponent>

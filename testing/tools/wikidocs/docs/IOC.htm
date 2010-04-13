@@ -1,0 +1,143 @@
+
+[[Dashboard | << Back to Dashboard ]]
+
+{| align="right"
+| __TOC__
+|}
+
+= Exploring the IOC Plugin =
+
+
+== Overview ==
+An Inversion Of Control plugin.
+
+
+== getIOCFramework ==
+Gets the IoC Framework used: lightwire or coldspring
+
+=== Returns ===
+* This function returns ''string''
+
+
+=== Examples ===
+
+== setCOLDSPRING_FACTORY ==
+Set COLDSPRING_FACTORY
+
+=== Returns ===
+* This function returns ''void''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| COLDSPRING_FACTORY || string || Yes || --- || The instantiation path for coldspring
+|}
+
+=== Examples ===
+
+== setIOCFramework ==
+Set the IoC Framework used: lightwire or coldspring
+
+=== Returns ===
+* This function returns ''void''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| IOCFramework || string || Yes || --- || 
+|}
+
+=== Examples ===
+
+== getBean ==
+Get a Bean from the object factories
+
+=== Returns ===
+* This function returns ''any''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| beanName || string || Yes || --- || The bean name to retrieve from the object factory
+|}
+
+=== Examples ===
+
+== getIoCFactory ==
+Returns the IoC Factory in use.
+
+=== Returns ===
+* This function returns ''any''
+
+
+=== Examples ===
+
+== configure ==
+Configure the IoC Plugin. Loads the IoC Factory and configures it.
+
+=== Returns ===
+* This function returns ''void''
+
+
+=== Examples ===
+
+== getLIGHTWIRE_FACTORY ==
+Get LIGHTWIRE_FACTORY. This is the instantiation path for lightwire
+
+=== Returns ===
+* This function returns ''string''
+
+
+=== Examples ===
+
+== setIoCFactory ==
+Override and set the IoCFactory
+
+=== Returns ===
+* This function returns ''void''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| IoCFactory || any || Yes || --- || 
+|}
+
+=== Examples ===
+
+== getCOLDSPRING_FACTORY ==
+Get COLDSPRING_FACTORY. This is the instantiation path for coldspring
+
+=== Returns ===
+* This function returns ''string''
+
+
+=== Examples ===
+
+== setLIGHTWIRE_FACTORY ==
+Set LIGHTWIRE_FACTORY
+
+=== Returns ===
+* This function returns ''void''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| LIGHTWIRE_FACTORY || string || Yes || --- || This is the instantiation path for lightwire
+|}
+
+=== Examples ===

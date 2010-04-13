@@ -44,7 +44,7 @@ Quick and Dirty Feed Dump:
 			var cacheLocation = "";
 			var slash = "";
 
-			super.Init(arguments.controller);
+			super.init(arguments.controller);
 
 			// Plug-in Properties
 			setpluginName("FeedReader");

@@ -1,0 +1,195 @@
+
+[[Dashboard | << Back to Dashboard ]]
+
+{| align="right"
+| __TOC__
+|}
+
+= Exploring the Logger Plugin =
+
+
+== Overview ==
+This is the frameworks Logger object. It is used for all logging facilities interfacing with LogBox and the ColdBox debugger.
+
+
+== info ==
+I log an information message.
+
+=== Returns ===
+* This function returns ''void''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| Message || string || Yes || --- || The message to log.
+|-
+| ExtraInfo || string || No ||  || Extra information to append.
+|}
+
+=== Examples ===
+
+== fatal ==
+I log a fatal message.
+
+=== Returns ===
+* This function returns ''void''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| Message || string || Yes || --- || The message to log.
+|-
+| ExtraInfo || string || No ||  || Extra information to append.
+|}
+
+=== Examples ===
+
+== logError ==
+Log an error into the framework using arguments. Facade to logErrorWithBean.
+
+=== Returns ===
+* This function returns ''void''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| Message || string || Yes || --- || 
+|-
+| ExceptionStruct || any || No || [runtime expression] || The CF cfcatch structure.
+|-
+| ExtraInfo || any || No ||  || 
+|}
+
+=== Examples ===
+
+== error ==
+I log an error message.
+
+=== Returns ===
+* This function returns ''void''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| Message || string || Yes || --- || The message to log.
+|-
+| ExtraInfo || string || No ||  || Extra information to append.
+|}
+
+=== Examples ===
+
+== logEntry ==
+Log a message to the LogBox
+
+=== Returns ===
+* This function returns ''void''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| Severity || string || Yes || --- || Severity: fatal,error,warn,info,debug,trace
+|-
+| Message || string || Yes || --- || The message to log.
+|-
+| ExtraInfo || string || No ||  || Extra information to append.
+|}
+
+=== Examples ===
+
+== logErrorWithBean ==
+Log an error into the framework using a coldbox exceptionBean
+
+=== Returns ===
+* This function returns ''void''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| ExceptionBean || any || Yes || --- || This is the exception bean
+|}
+
+=== Examples ===
+
+== warn ==
+I log a warning message.
+
+=== Returns ===
+* This function returns ''void''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| Message || string || Yes || --- || The message to log.
+|-
+| ExtraInfo || string || No ||  || Extra information to append.
+|}
+
+=== Examples ===
+
+== tracer ==
+Log a trace message to the ColdBox debugger panel, not LOGBOX
+
+=== Returns ===
+* This function returns ''void''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| message || string || Yes || --- || Message to Send
+|-
+| extraInfo || any || No ||  || Extra Information to dump on the trace
+|}
+
+=== Examples ===
+
+== debug ==
+I log a debug message.
+
+=== Returns ===
+* This function returns ''void''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| Message || string || Yes || --- || The message to log.
+|-
+| ExtraInfo || string || No ||  || Extra information to append.
+|}
+
+=== Examples ===
+
+== getLogger ==
+This coldbox apps's logger.
+
+=== Returns ===
+* This function returns ''coldbox.system.logging.Logger''
+
+
+=== Examples ===

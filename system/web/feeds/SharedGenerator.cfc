@@ -12,8 +12,7 @@ License		: 	Apache 2 License
 	to reduce potential bloat in the plug-in component.
 
 ----------------------------------------------------------------------->
-<cfcomponent name="SharedGenerator"
-			 hint="Methods belonging to the FeedGenerator plug-in that specifically relate to feed creation">
+<cfcomponent hint="Methods belonging to the FeedGenerator plug-in that specifically relate to feed creation" output="false">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 

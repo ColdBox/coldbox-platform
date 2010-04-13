@@ -651,8 +651,7 @@ Description :
 		<cfargument name="feed" type="struct" required="true" hint="Structure of the current state of the parseFeed process"/>
 		<!--- ******************************************************************************** --->
 		<cfscript>
-			var feed = arguments.feed;
-			/* Set the elements */
+			// Set the elements
 			feed.author = StructNew();
 			feed.author.email = "";
 			feed.author.name = "";
@@ -676,7 +675,7 @@ Description :
 			feed.rights.copyright = "";
 			feed.title = "";
 			feed.websiteurl = "";
-			/* OpenSearch */
+			// OpenSearch 
 			feed.opensearch = StructNew();
 			feed.opensearch.autodiscovery = StructNew();
 			feed.opensearch.autodiscovery.url = "";
@@ -685,7 +684,7 @@ Description :
 			feed.opensearch.startindex = "";
 			feed.opensearch.totalresults = "";
 			feed.opensearch.query = ArrayNew(1);
-			/* Return expanded structure */
+			
 			return feed;
 		</cfscript>
 	</cffunction>
