@@ -225,17 +225,17 @@ Facade to upload to a file, returns the cffile variable.
 {| cellpadding="5", class="tablelisting"
 ! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
 |-
-| FileField || string || Yes || --- || The name of the form field used to select the file
+| fileField || string || Yes || --- || The name of the form field used to select the file
 |-
-| Destination || string || Yes || --- || The absolute path to the destination.
+| destination || string || Yes || --- || The absolute path to the destination.
 |-
-| NameConflict || string || No || makeunique || Action to take if filename is the same as that of a file in the directory.
+| nameConflict || string || No || makeunique || Action to take if filename is the same as that of a file in the directory.
 |-
-| Accept || string || No ||  || Limits the MIME types to accept. Comma-delimited list.
+| accept || string || No ||  || Limits the MIME types to accept. Comma-delimited list.
 |-
-| Attributes || string || No || Normal || Comma-delimitted list of window file attributes
+| attributes || string || No || Normal || Comma-delimitted list of window file attributes
 |-
-| Mode || string || No || 755 || The mode of the file for Unix systems, the default is 755
+| mode || string || No || 755 || The mode of the file for Unix systems, the default is 755
 |}
 
 === Examples ===

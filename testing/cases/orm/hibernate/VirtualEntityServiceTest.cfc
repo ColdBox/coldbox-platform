@@ -1,0 +1,338 @@
+component extends="coldbox.system.testing.BaseTestCase"{
+
+	function setup(){
+		ormservice = getMockBox().createMock("coldbox.system.orm.hibernate.VirtualEntityService");
+		// Mocks
+		ormservice.init("User");
+
+		// Test ID's
+		testUserID = '88B73A03-FEFA-935D-AD8036E1B7954B76';
+		testCatID  = '3A2C516C-41CE-41D3-A9224EA690ED1128';
+	}
+
+	function testClear(){
+		test = entityLoad("User");
+		stats = ormservice.getSessionStatistics();
+		debug(stats);
+
+		ormservice.clear();
+
+		stats = ormservice.getSessionStatistics();
+		assertEquals( 0, stats.entityCount );
+	}
+
+	function testGetSessionStatistics(){
+		stats = ormservice.getSessionStatistics();
+		assertEquals( 0, stats.entityCount );
+		assertEquals( 0, stats.collectionCount );
+		assertEquals( '[]', stats.entityKeys );
+		assertEquals( '[]', stats.collectionKeys );
+	}
+
+	function testisSessionDirty(){
+		assertFalse( ormservice.isSessionDirty() );
+		test = entityLoad("User",{firstName="Luis"},true);
+		test.setPassword('unit_tests');
+		assertTrue(ormService.isSessionDirty());
+		ORMClearSession();
+	}
+
+	function testSessionContains(){
+		assertFalse( ormservice.sessionContains( entityNew("User") ));
+		test = entityLoad("User",{firstName="Luis"},true);
+		assertTrue( ormservice.sessionContains( test ));
+		ORMEvictEntity("user");
+		assertFalse( ormservice.sessionContains( entityNew("User") ));
+	}
+
+	function testNew(){
+		ormservice.new("User");
+	}
+
+	function testGet(){
+		user = ormService.get("User","123");
+		assertTrue( isNull(user) );
+
+		user = ormService.get("User",testUserID);
+		assertEquals( testUserID, user.getID());
+	}
+	function testGetAll(){
+		r = ormService.getAll('Category');
+		assertTrue( arrayLen(r) );
+
+		r = ormService.getAll('Category','1,2');
+		assertTrue( isSimpleValue( r[1] ) );
+		assertTrue( isSimpleValue( r[2] ) );
+
+		r = ormService.getAll('Category',[1,2]);
+		assertTrue( isSimpleValue( r[1] ) );
+		assertTrue( isSimpleValue( r[2] ) );
+
+		r = ormService.getAll('Category',testCatID);
+		assertTrue( isObject( r[1] ) );
+
+		r = ormService.getAll('Category',[testCatID,testCatID]);
+		assertTrue( isObject( r[1] ) );
+		assertTrue( isObject( r[2] ) );
+
+	}
+
+	function testDelete(){
+		cat = entityNew("Category");
+		cat.setCategory('unitTest');
+		cat.setDescription('unitTest');
+		entitySave(cat);ORMFlush();
+
+		try{
+			test = entityLoad("Category",{category="unittest"}, true);
+			//debug(test);
+			ormservice.delete( test );
+			test = entityLoad("Category",{category="unittest"}, true);
+			assertTrue( isNull(test) );
+		}
+		catch(any e){
+			fail(e.detail & e.message);
+		}
+		finally{
+			q = new Query(datasource="coolblog");
+			q.execute(sql="delete from categories where category = 'unitTest'");
+		}
+	}
+
+	function testDeleteByID(){
+		cat = entityNew("Category");
+		cat.setCategory('unitTest');
+		cat.setDescription('unitTest');
+		entitySave(cat);ORMFlush();
+
+		try{
+			ormservice.deleteByID( "Category", cat.getID() );
+			test = entityLoad("Category",{category="unittest"}, true);
+			assertTrue( isNull(test) );
+		}
+		catch(any e){
+			fail(e.detail & e.message);
+		}
+		finally{
+			q = new Query(datasource="coolblog");
+			q.execute(sql="delete from categories where category = 'unitTest'");
+		}
+	}
+
+	function testDeleteByQuery(){
+		for(var x=1; x lte 3; x++){
+			cat = entityNew("Category");
+			cat.setCategory('unitTest');
+			cat.setDescription('unitTest at #now()#');
+			entitySave(cat);
+		}
+		ORMFlush();
+		q = new Query(datasource="coolblog");
+
+		try{
+			ormservice.deleteByQuery(query="from Category where category = :category",params={category='unitTest'});
+			result = q.execute(sql="select * from categories where category = 'unitTest'");
+			assertEquals( 0, result.getResult().recordcount );
+		}
+		catch(any e){
+			fail(e.detail & e.message);
+		}
+		finally{
+			q.execute(sql="delete from categories where category = 'unitTest'");
+		}
+	}
+
+	function testDeleteWhere(){
+		for(var x=1; x lte 3; x++){
+			cat = entityNew("Category");
+			cat.setCategory('unitTest');
+			cat.setDescription('unitTest at #now()#');
+			entitySave(cat);
+		}
+		ORMFlush();
+		q = new Query(datasource="coolblog");
+
+		try{
+			ormService.deleteWhere(entityName="Category",category="unitTest");
+
+			result = q.execute(sql="select * from categories where category = 'unitTest'");
+			assertEquals( 0, result.getResult().recordcount );
+		}
+		catch(any e){
+			fail(e.detail & e.message);
+		}
+		finally{
+			q.execute(sql="delete from categories where category = 'unitTest'");
+		}
+	}
+
+	function testSave(){
+		cat = entityNew("Category");
+		cat.setCategory('unitTest');
+		cat.setDescription('unitTest at #now()#');
+
+		try{
+			ormservice.save( cat );
+			assertTrue( len(cat.getID()) );
+		}
+		catch(any e){
+			fail(e.detail & e.message);
+		}
+		finally{
+			var q = new Query(datasource="coolblog");
+			q.execute(sql="delete from categories where category = 'unitTest'");
+		}
+	}
+
+	function testRefresh(){
+		cat = entityLoad("Category",{category="Training"},true);
+		id = cat.getID();
+		originalDescription = cat.getDescription();
+
+		try{
+			var q = new Query(datasource="coolblog");
+			q.execute(sql="update categories set description = 'unittest' where category_id = '#id#'");
+
+			ormservice.refresh( cat );
+
+			assertEquals( "unittest" , cat.getDescription() );
+		}
+		catch(any e){
+			fail(e.detail & e.message);
+		}
+		finally{
+			var q = new Query(datasource="coolblog");
+			q.execute(sql="update categories set description = '#originalDescription#' where category_id = '#id#'");
+		}
+	}
+
+	function testCount(){
+		count = ormService.count("Category");
+		assertTrue( count gt 0 );
+
+		count = ormService.count("Category","category='general'");
+		assertEquals(2,  count);
+
+		count = ormService.count("Category","category=?",['Training']);
+		assertEquals(1,  count);
+
+		count = ormService.count("Category","category=:category",{category="Training"});
+		assertEquals(1,  count);
+
+		count = ormService.count("Category","category like 'gen%'");
+		assertEquals(2,  count);
+
+		count = ormService.countWhere(entityName="Category",category="Training");
+		assertEquals(1,  count);
+	}
+
+	function testList(){
+		criteria = {category="general"};
+		test = ormservice.list(entityName="Category",sortorder="category asc",criteria=criteria);
+
+		assertTrue( test.recordcount );
+	}
+
+	function testExecuteQuery(){
+		test = ormservice.executeQuery(query="from Category");
+		assertTrue( test.recordcount );
+
+		params = ["general"];
+		test = ormservice.executeQuery(query="from Category where category = ?",params=params);
+		assertTrue( test.recordcount );
+	}
+
+	function testFind(){
+
+		test = ormservice.find("from Category where category = ?",['Training']);
+		assertEquals( 'Training', test.getCategory() );
+
+		test = ormservice.find("from Category where category = :category",{category="Training"});
+		assertEquals( 'Training', test.getCategory() );
+
+		sample = entityLoad("Category",{category="Training"},true);
+		test = ormService.find(example=sample);
+		assertEquals( 'Training', test.getCategory() );
+	}
+
+	function testFindAll(){
+
+		test = ormservice.findAll("from Category where category = ?",['Training']);
+		assertEquals( 1, arrayLen(test) );
+
+		test = ormservice.findAll("from Category where category = :category",{category="Training"});
+		assertEquals( 1, arrayLen(test) );
+
+		sample = entityLoad("Category",{category="Training"},true);
+		test = ormService.findAll(example=sample);
+		assertEquals( 1, arrayLen(test) );
+
+		test = ormService.findAll(query="from Category",max=2,offset=1);
+		assertEquals( 2, arrayLen(test) );
+
+	}
+
+	function testFindWhere(){
+
+		test = ormservice.findWhere(entityName="Category",category="Training");
+		assertEquals( 'Training', test.getCategory() );
+
+		test = ormservice.findWhere(entityName="User",firstName="Luis", lastName="Majano");
+		assertEquals( 'Majano', test.getLastName() );
+	}
+
+	function testFindAllWhere(){
+
+		test = ormservice.findAllWhere(entityName="Category",category="general");
+		assertEquals( 2, arrayLen(test) );
+
+		test = ormservice.findAllWhere(entityName="User",firstName="Luis", lastName="Majano");
+		assertEquals( 1, arrayLen(test) );
+	}
+
+
+	function testGetKey(){
+
+		test = ormservice.getKey(entityName="Category");
+		assertEquals( 'id', test );
+
+		test = ormservice.getKey(entityName="User");
+		assertEquals( 'id', test );
+	}
+
+	function testGetPropertyNames(){
+
+		test = ormservice.getPropertyNames(entityName="Category");
+		assertEquals( 3, arrayLen(test) );
+
+		test = ormservice.getPropertyNames(entityName="User");
+		assertEquals( 5, arrayLen(test) );
+	}
+
+	function testGetTableName(){
+
+		test = ormservice.getTableName(entityName="Category");
+		assertEquals( 'categories', test );
+
+		test = ormservice.getTableName(entityName="User");
+		assertEquals( 'users', test );
+	}
+
+	function testCreateService(){
+
+		UserService = ormservice.CreateService(entityName="User");
+		CategoryService = ormservice.CreateService(entityName="Category");
+
+		test = UserService.getKey();
+		assertEquals( 'id', test );
+
+		test=UserService.getTableName();
+		assertEquals( 'users', test );
+
+		test = CategoryService.getKey();
+		assertEquals( 'id', test );
+
+		test=CategoryService.getTableName();
+		assertEquals( 'categories', test );
+	}
+}

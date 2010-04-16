@@ -13,15 +13,14 @@ Modification History:
 07/24/2007 - LightWire integration added by Aaron Roberson
 02/15/2007 - Created
 ----------------------------------------------------------------------->
-<cfcomponent hint="An Inversion Of Control plugin."
+<cfcomponent hint="An Inversion Of Control plugin that interfaces with major ColdFusion IoC/DI frameworks such as ColdSpring and LightWire"
 			 extends="coldbox.system.Plugin"
 			 output="false"
-			 cache="true"
-			 cachetimeout="0">
+			 singleton=true>
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
-	<cffunction name="init" access="public" returntype="IOC" output="false" hint="The IOC constructor">
+	<cffunction name="init" access="public" returntype="IOC" output="false" hint="Constructor">
 		<!--- ************************************************************* --->
 		<cfargument name="controller" type="any" required="true" hint="coldbox.system.web.Controller">
 		<!--- ************************************************************* --->
@@ -30,7 +29,7 @@ Modification History:
 			
 			// Plugin Properties
 			setpluginName("IOC");
-			setpluginVersion("2.1");
+			setpluginVersion("2.2");
 			setpluginDescription("This is an inversion of control plugin.");
 			setpluginAuthor("Luis Majano");
 			setpluginAuthorURL("http://www.coldbox.org");
@@ -66,7 +65,7 @@ Modification History:
 <!------------------------------------------- PUBLIC ------------------------------------------->
 
 	<!--- Configure the plugin --->
-	<cffunction name="configure" access="public" returntype="void" hint="Configure the IoC Plugin. Loads the IoC Factory and configures it." output="false">
+	<cffunction name="configure" access="public" returntype="void" hint="Configure or Re-Configure the IoC Plugin. Loads the chosen IoC Factory and configures it for usage" output="false">
 		<!--- Load the appropriate IOC Framework Bean Factory --->
 		<cfswitch expression="#lcase(getIOCFramework())#">
 
@@ -104,7 +103,7 @@ Modification History:
 	</cffunction>
 
 	<!--- Get a Bean --->
-	<cffunction name="getBean" access="public" output="false" returntype="any" hint="Get a Bean from the object factories">
+	<cffunction name="getBean" access="public" output="false" returntype="any" hint="Get a Bean from the loaded object factory">
 		<!--- ************************************************************* --->
 		<cfargument name="beanName" type="string" required="true" hint="The bean name to retrieve from the object factory">
 		<!--- ************************************************************* --->
@@ -161,13 +160,13 @@ Modification History:
 	<cffunction name="getIoCFactory" access="public" output="false" returntype="any" hint="Returns the IoC Factory in use.">
 		<cfreturn instance.IoCFactory>
 	</cffunction>
-	<cffunction name="setIoCFactory" access="public" output="false" returntype="void" hint="Override and set the IoCFactory">
+	<cffunction name="setIoCFactory" access="public" output="false" returntype="void" hint="Override and set the IoCFactory the plugin will interface with">
 		<cfargument name="IoCFactory" type="any" required="true"/>
 		<cfset instance.IoCFactory = arguments.IoCFactory/>
 	</cffunction>
 
 	<!--- get/set which IoC Framework is Used --->
-	<cffunction name="getIOCFramework" access="public" output="false" returntype="string" hint="Gets the IoC Framework used: lightwire or coldspring">
+	<cffunction name="getIOCFramework" access="public" output="false" returntype="string" hint="Gets the IoC Framework string used: lightwire or coldspring">
 		<cfreturn instance.IOCFramework/>
 	</cffunction>
 	<cffunction name="setIOCFramework" access="public" output="false" returntype="void" hint="Set the IoC Framework used: lightwire or coldspring">
@@ -176,19 +175,19 @@ Modification History:
 	</cffunction>
 
 	<!--- get/set The Definition file --->
-	<cffunction name="getIOCDefinitionFile" access="public" output="false" returntype="string" hint="Get the IOCDefinitionFile">
+	<cffunction name="getIOCDefinitionFile" access="public" output="false" returntype="string" hint="Get the definition file configured for this plugin">
 		<cfreturn instance.IOCDefinitionFile/>
 	</cffunction>
-	<cffunction name="setIOCDefinitionFile" access="public" output="false" returntype="void" hint="Set the IOCDefinitionFile">
+	<cffunction name="setIOCDefinitionFile" access="public" output="false" returntype="void" hint="Set the definition file configured for this plugin">
 		<cfargument name="IOCDefinitionFile" type="string" required="true" hint="The relative or absolute location of the coldspring main xml file."/>
 		<cfset instance.IOCDefinitionFile = arguments.IOCDefinitionFile/>
 	</cffunction>
 
 	<!--- Get/set the Expanded IoC Definiton File --->
-	<cffunction name="getExpandedIOCDefinitionFile" access="public" output="false" returntype="string" hint="Get ExpandedIOCDefinitionFile, only used for coldspring">
+	<cffunction name="getExpandedIOCDefinitionFile" access="public" output="false" returntype="string" hint="Get the full expanded path of the configuration file, only used for coldspring">
 		<cfreturn instance.ExpandedIOCDefinitionFile/>
 	</cffunction>
-	<cffunction name="setExpandedIOCDefinitionFile" access="public" output="false" returntype="void" hint="Set ExpandedIOCDefinitionFile">
+	<cffunction name="setExpandedIOCDefinitionFile" access="public" output="false" returntype="void" hint="Set the full expanded path of the definition file">
 		<cfargument name="ExpandedIOCDefinitionFile" type="string" required="true" hint="The expanded path of the main coldspring xml file"/>
 		<cfset instance.ExpandedIOCDefinitionFile = arguments.ExpandedIOCDefinitionFile/>
 	</cffunction>
@@ -197,7 +196,7 @@ Modification History:
 	<cffunction name="getCOLDSPRING_FACTORY" access="public" output="false" returntype="string" hint="Get COLDSPRING_FACTORY. This is the instantiation path for coldspring">
 		<cfreturn instance.COLDSPRING_FACTORY/>
 	</cffunction>
-	<cffunction name="setCOLDSPRING_FACTORY" access="public" output="false" returntype="void" hint="Set COLDSPRING_FACTORY">
+	<cffunction name="setCOLDSPRING_FACTORY" access="public" output="false" returntype="void" hint="Set the instantiation path for ColdSpring.">
 		<cfargument name="COLDSPRING_FACTORY" type="string" required="true" hint="The instantiation path for coldspring"/>
 		<cfset instance.COLDSPRING_FACTORY = arguments.COLDSPRING_FACTORY/>
 	</cffunction>	
@@ -206,7 +205,7 @@ Modification History:
 	<cffunction name="getLIGHTWIRE_FACTORY" access="public" output="false" returntype="string" hint="Get LIGHTWIRE_FACTORY. This is the instantiation path for lightwire">
 		<cfreturn instance.LIGHTWIRE_FACTORY/>
 	</cffunction>	
-	<cffunction name="setLIGHTWIRE_FACTORY" access="public" output="false" returntype="void" hint="Set LIGHTWIRE_FACTORY">
+	<cffunction name="setLIGHTWIRE_FACTORY" access="public" output="false" returntype="void" hint="Set the instantiation path for LightWire">
 		<cfargument name="LIGHTWIRE_FACTORY" type="string" required="true" hint="This is the instantiation path for lightwire"/>
 		<cfset instance.LIGHTWIRE_FACTORY = arguments.LIGHTWIRE_FACTORY/>
 	</cffunction>

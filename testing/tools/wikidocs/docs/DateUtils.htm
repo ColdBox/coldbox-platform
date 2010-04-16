@@ -9,11 +9,11 @@
 
 
 == Overview ==
-This CFC is a utility that helps you deal with date representations
+This CFC is a utility that helps you deal with date representations for specific date-time formats
 
 
 == parseRFC822 ==
-Parse RFC822 dates, returns empty string if not a valid date.
+Parse RFC822 dates, returns empty string if not a valid date. More information at <a href='http://www.faqs.org/rfcs/rfc822.html'>http://www.faqs.org/rfcs/rfc822.html</a>. Example: Wed, 02 Oct 2002 08:00:00 EST
 
 === Returns ===
 * This function returns ''string''
@@ -30,7 +30,7 @@ Parse RFC822 dates, returns empty string if not a valid date.
 === Examples ===
 
 == parseISO8601 ==
-Parse a UTC or iso8601 date to a normal CF datetime object
+Parse a UTC or iso8601 date to a normal CF datetime object: <a href='http://en.wikipedia.org/wiki/ISO_8601'>http://en.wikipedia.org/wiki/ISO_8601</a>, usually follows the YYYY-MM-DDThh:mm:ss format
 
 === Returns ===
 * This function returns ''string''

@@ -1,0 +1,623 @@
+
+[[Dashboard | << Back to Dashboard ]]
+
+{| align="right"
+| __TOC__
+|}
+
+= Exploring the BaseORMService Plugin =
+
+
+== Overview ==
+******************************************************************************* Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp www.coldbox.org | www.luismajano.com | www.ortussolutions.com ******************************************************************************* Author      :	Luis Majano Description : This is a helper ORM service that will help you abstract some complexities when dealing with CF's ORM via Hibernate.  You can use this service in its concrete form or you can inherit from it and extend it. TODO: - Add dynamic findBy methods - Add dynamic countBy methods - Add dynamic getBy methods - Add find methods by criteria with projections - Add validations maybe via Hyrule, but more implicit and mixin methods - Add dml style batch updates ----------------------------------------------------------------------->
+
+
+== evictEntity ==
+Evict entity objects from session. The argument can be one persistence entity or an array of entities
+
+=== Returns ===
+* This function returns ''void''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| entity || any || Yes || --- || 
+|}
+
+=== Examples ===
+
+== getAll ==
+Retrieve all the instances from the passed in entity name using the id argument if specified The id can be a list of IDs or an array of IDs or none to retrieve all. If the id is not found or returns null the array position will have an empty string in it in the specified order
+
+=== Returns ===
+* This function returns ''array''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| entityName || string || Yes || --- || 
+|-
+| id || any || No || --- || 
+|}
+
+=== Examples ===
+
+== save ==
+Save an entity using hibernate transactions. You can optionally flush the session also
+
+=== Returns ===
+* This function returns ''void''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| entity || any || Yes || --- || 
+|-
+| forceInsert || boolean || No || false || 
+|-
+| flush || boolean || No || false || 
+|}
+
+=== Examples ===
+
+== GETQUERYCACHEREGION ==
+
+
+=== Returns ===
+* This function returns ''string''
+
+
+=== Examples ===
+
+== count ==
+Return the count of records in the DB for the given entity name. You can also pass an optional where statement that can filter the count. Ex: count('User','age > 40 AND name="joe"'). You can even use params with this method: Ex: count('User','age > ? AND name = ?',[40,"joe"])
+
+=== Returns ===
+* This function returns ''numeric''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| entityName || string || Yes || --- || 
+|-
+| where || string || No ||  || 
+|-
+| params || any || No || [runtime expression] || 
+|}
+
+=== Examples ===
+
+== sessionContains ==
+Checks if the current session contains the passed in entity
+
+=== Returns ===
+* This function returns ''boolean''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| entity || any || Yes || --- || 
+|}
+
+=== Examples ===
+
+== delete ==
+Delete an entity using hibernate transactions. The entity argument can be a single entity or an array of entities. You can optionally flush the session also after committing
+
+=== Returns ===
+* This function returns ''void''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| entity || any || Yes || --- || 
+|-
+| flush || boolean || No || false || 
+|}
+
+=== Examples ===
+
+== getTableName ==
+Returns the table name of the of the entity
+
+=== Returns ===
+* This function returns ''string''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| entityName || string || Yes || --- || 
+|}
+
+=== Examples ===
+
+== SETQUERYCACHEREGION ==
+
+
+=== Returns ===
+* This function returns ''void''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| queryCacheRegion || string || Yes || --- || 
+|}
+
+=== Examples ===
+
+== findWhere ==
+Find one entity or null if not found according to the passed in name value pairs into the function ex: findWhere(entityName="Category", category="Training"), findWhere(entityName="Users", age=40);
+
+=== Returns ===
+* This function returns ''any''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| entityName || string || Yes || --- || 
+|}
+
+=== Examples ===
+
+== getKey ==
+Returns the key (id field) of a given entity, either simple or composite keys. If the key is a simple pk then it will return a string, if it is a composite key then it returns an array
+
+=== Returns ===
+* This function returns ''any''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| entityName || string || Yes || --- || 
+|}
+
+=== Examples ===
+
+== merge ==
+Merge an entity or array of entities back into the session
+
+=== Returns ===
+* This function returns ''void''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| entity || any || Yes || --- || 
+|}
+
+=== Examples ===
+
+== evictQueries ==
+Evict all queries in the default cache or the cache region passed
+
+=== Returns ===
+* This function returns ''void''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| cacheName || string || No || --- || 
+|}
+
+=== Examples ===
+
+== findAll ==
+Find all the entities for the specified query and params or example
+
+=== Returns ===
+* This function returns ''array''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| query || string || No || --- || 
+|-
+| params || any || No || [runtime expression] || 
+|-
+| offset || numeric || No || 0 || 
+|-
+| max || numeric || No || 0 || 
+|-
+| example || any || No || --- || 
+|}
+
+=== Examples ===
+
+== deleteByQuery ==
+Delete by using an HQL query and iterating via the results, it is not performing a delete query but it actually is a select query that should retrieve objects to remove
+
+=== Returns ===
+* This function returns ''void''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| query || string || Yes || --- || 
+|-
+| params || any || No || --- || 
+|-
+| unique || boolean || No || false || 
+|-
+| queryOptions || struct || No || [runtime expression] || 
+|-
+| flush || boolean || No || false || 
+|}
+
+=== Examples ===
+
+== isSessionDirty ==
+Checks if the session contains dirty objects that are awaiting persistence
+
+=== Returns ===
+* This function returns ''boolean''
+
+
+=== Examples ===
+
+== deleteByID ==
+Delete using an entity name and an incoming id, you can also flush the session if needed The method returns false if the passed in entityName and id is not found in the database.
+
+=== Returns ===
+* This function returns ''boolean''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| entityName || string || Yes || --- || 
+|-
+| id || any || Yes || --- || 
+|-
+| flush || boolean || No || false || 
+|}
+
+=== Examples ===
+
+== SETUSEQUERYCACHING ==
+
+
+=== Returns ===
+* This function returns ''void''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| useQueryCaching || boolean || Yes || --- || 
+|}
+
+=== Examples ===
+
+== new ==
+Get a new entity object by entity name
+
+=== Returns ===
+* This function returns ''any''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| entityName || any || Yes || --- || 
+|}
+
+=== Examples ===
+
+== getSessionStatistics ==
+Information about the first-level (session) cache for the current session
+
+=== Returns ===
+* This function returns ''struct''
+
+
+=== Examples ===
+
+== list ==
+List all of the instances of the passed in entity class name. You can pass in several optional arguments like a struct of filtering criteria, a sortOrder string, offset, max, ignorecase, and timeout. Caching for the list is based on the useQueryCaching class property and the cachename property is based on the queryCacheRegion class property.
+
+=== Returns ===
+* This function returns ''any''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| entityName || string || Yes || --- || 
+|-
+| criteria || struct || No || [runtime expression] || 
+|-
+| sortOrder || string || No ||  || 
+|-
+| offset || numeric || No || 0 || 
+|-
+| max || numeric || No || 0 || 
+|-
+| timeout || numeric || No || 0 || 
+|-
+| ignoreCase || boolean || No || false || 
+|-
+| asQuery || boolean || No || true || 
+|}
+
+=== Examples ===
+
+== createService ==
+Create a virtual abstract service for a specfic entity.
+
+=== Returns ===
+* This function returns ''any''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| entityName || string || Yes || --- || 
+|-
+| useQueryCaching || boolean || No || [runtime expression] || 
+|-
+| queryCacheRegion || string || No || [runtime expression] || 
+|}
+
+=== Examples ===
+
+== findAllWhere ==
+Find one entity or null if not found according to the passed in name value pairs into the function ex: findWhere(entityName="Category", category="Training"), findWhere(entityName="Users", age=40);
+
+=== Returns ===
+* This function returns ''array''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| entityName || string || Yes || --- || 
+|}
+
+=== Examples ===
+
+== countWhere ==
+Returns the count by passing name value pairs as arguments to this function.  One mandatory argument is to pass the 'entityName'. The rest of the arguments are used in the where class using AND notation and parameterized. Ex: countWhere(entityName="User",age="20");
+
+=== Returns ===
+* This function returns ''numeric''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| entityName || string || Yes || --- || 
+|}
+
+=== Examples ===
+
+== exists ==
+Checks if the given entityName and id exists in the database
+
+=== Returns ===
+* This function returns ''boolean''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| entityName || any || Yes || --- || 
+|-
+| id || any || Yes || --- || 
+|}
+
+=== Examples ===
+
+== evict ==
+Evict an entity from session, the id can be a string or structure for the primary key You can also pass in a collection name to evict from the collection
+
+=== Returns ===
+* This function returns ''void''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| entityName || string || Yes || --- || 
+|-
+| collectionName || string || No || --- || 
+|-
+| id || any || No || --- || 
+|}
+
+=== Examples ===
+
+== find ==
+Finds and returns the first result for the given query or null if no entity was found. You can either use the query and params combination or send in an example entity to find.
+
+=== Returns ===
+* This function returns ''any''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| query || string || No || --- || 
+|-
+| params || any || No || [runtime expression] || 
+|-
+| example || any || No || --- || 
+|}
+
+=== Examples ===
+
+== deleteWhere ==
+Deletes entities by using name value pairs as arguments to this function.  One mandatory argument is to pass the 'entityName'. The rest of the arguments are used in the where class using AND notation and parameterized. Ex: deleteWhere(entityName="User",age="4",isActive=true);
+
+=== Returns ===
+* This function returns ''numeric''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| entityName || string || Yes || --- || 
+|}
+
+=== Examples ===
+
+== executeQuery ==
+Allows the execution of HQL queries using several nice arguments and returns either an array of entities or a query as specified by the asQuery argument. The params filtering can be using named or positional.
+
+=== Returns ===
+* This function returns ''any''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| query || string || Yes || --- || 
+|-
+| params || any || No || [runtime expression] || 
+|-
+| offset || numeric || No || 0 || 
+|-
+| max || numeric || No || 0 || 
+|-
+| timeout || numeric || No || 0 || 
+|-
+| asQuery || boolean || No || true || 
+|}
+
+=== Examples ===
+
+== refresh ==
+Refresh the state of an entity or array of entities from the database
+
+=== Returns ===
+* This function returns ''void''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| entity || any || Yes || --- || 
+|}
+
+=== Examples ===
+
+== getPropertyNames ==
+Returns the Property Names of the entity
+
+=== Returns ===
+* This function returns ''array''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| entityName || string || Yes || --- || 
+|}
+
+=== Examples ===
+
+== get ==
+Get an entity using a primary key, if the id is not found this method returns null
+
+=== Returns ===
+* This function returns ''any''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| entityName || string || Yes || --- || 
+|-
+| id || any || Yes || --- || 
+|}
+
+=== Examples ===
+
+== clear ==
+Clear the session removes all the entities that are loaded or created in the session. This clears the first level cache and removes the objects that are not yet saved to the database.
+
+=== Returns ===
+* This function returns ''void''
+
+
+=== Examples ===
+
+== GETUSEQUERYCACHING ==
+
+
+=== Returns ===
+* This function returns ''boolean''
+
+
+=== Examples ===

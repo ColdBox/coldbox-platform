@@ -6,6 +6,7 @@ dq      = chr(34);
 objects = [
 	"coldbox.system.plugins.AntiSamy",
 	"coldbox.system.plugins.ApplicationStorage",
+	"coldbox.system.plugins.BeanFactory",
 	"coldbox.system.plugins.CFCViewer",
 	"coldbox.system.plugins.ClientStorage",
 	"coldbox.system.plugins.ClusterStorage",
@@ -30,9 +31,10 @@ objects = [
 	"coldbox.system.plugins.Validator",
 	"coldbox.system.plugins.Webservices",
 	"coldbox.system.plugins.Zip",
-	"coldbox.system.core.util.conversion.XMLConverter"	
+	"coldbox.system.core.util.conversion.XMLConverter",
+	"coldbox.system.orm.hibernate.BaseORMService"
 ];
-fncExclude  = "init";
+fncExclude  = "init,onMissingMethod";
 
 for( idx=1; idx lte arrayLen(objects); idx++){
 	out   = createObject("java","java.lang.StringBuffer").init('');
@@ -63,7 +65,7 @@ out.append('
 		if( NOT structKeyExists(md.functions[x],"access") ){ md.functions[x].access = "public"; }
 
 		// Exclude certain functions
-		if( findnocase(fncExclude, md.functions[x].name) or listFindNoCase("private,package",md.functions[x].access) ){ continue; }
+		if( listFindNoCase(fncExclude, md.functions[x].name) or listFindNoCase("private,package",md.functions[x].access) ){ continue; }
 			
 out.append("
 == #md.functions[x].name# ==

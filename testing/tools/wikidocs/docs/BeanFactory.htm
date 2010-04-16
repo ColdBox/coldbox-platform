@@ -1,0 +1,346 @@
+
+[[Dashboard | << Back to Dashboard ]]
+
+{| align="right"
+| __TOC__
+|}
+
+= Exploring the BeanFactory Plugin =
+
+
+== Overview ==
+I am the ColdBox BeanFactory plugin that takes care of autowiring and dependency injection
+
+
+== getModelMappings ==
+Get the model mappings structure
+
+=== Returns ===
+* This function returns ''struct''
+
+
+=== Examples ===
+
+== getExternalLocations ==
+Get all the registered external locations
+
+=== Returns ===
+* This function returns ''string''
+
+
+=== Examples ===
+
+== autowire ==
+Autowire an object using the ColdBox DSL
+
+=== Returns ===
+* This function returns ''void''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| target || any || Yes || --- || The object to autowire
+|-
+| useSetterInjection || boolean || No || true || Whether to use setter injection alongside the annotations property injection. cfproperty injection takes precedence.
+|-
+| annotationCheck || boolean || No || false || This value determines if we check if the target contains an autowire annotation in the cfcomponent tag: autowire=true|false, it will only autowire if that metadata attribute is set to true. The default is false, which will autowire automatically.
+|-
+| onDICompleteUDF || string || No || onDIComplete || After Dependencies are injected, this method will look for this UDF and call it if it exists. The default value is onDIComplete
+|-
+| stopRecursion || string || No ||  || The stop recursion class. Ex: transfer.com.TransferDecorator. By default all ColdBox base classes are included.
+|}
+
+=== Examples ===
+
+== removeExternalLocations ==
+Try to remove all the external locations passed in
+
+=== Returns ===
+* This function returns ''void''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| locations || string || Yes || --- || Locations to remove from the lookup.  Comma delimited allowed.
+|}
+
+=== Examples ===
+
+== populateBean ==
+Populate a named or instantiated bean (java/cfc) from the request collection items
+
+=== Returns ===
+* This function returns ''Any''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| target || any || Yes || --- || This can be an instantiated bean object or a bean instantitation path as a string.  This method follows the bean contract (set{property_name}). Example: setUsername(), setfname()
+|-
+| scope || string || No ||  || Use scope injection instead of setters population. Ex: scope=variables.instance.
+|-
+| trustedSetter || boolean || No || false || If set to true, the setter method will be called even if it does not exist in the bean
+|-
+| include || string || No ||  || A list of keys to include in the population
+|-
+| exclude || string || No ||  || A list of keys to exclude in the population
+|}
+
+=== Examples ===
+
+== populateFromStruct ==
+Populate a named or instantiated bean from a structure
+
+=== Returns ===
+* This function returns ''any''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| target || any || Yes || --- || This can be an instantiated bean object or a bean instantitation path as a string. If you pass an instantiation path and the bean has an 'init' method. It will be executed. This method follows the bean contract (set{property_name}). Example: setUsername(), setfname()
+|-
+| memento || struct || Yes || --- || The structure to populate the object with.
+|-
+| scope || string || No || --- || Use scope injection instead of setters population.
+|-
+| trustedSetter || boolean || No || false || If set to true, the setter method will be called even if it does not exist in the bean
+|-
+| include || string || No ||  || A list of keys to include in the population
+|-
+| exclude || string || No ||  || A list of keys to exclude in the population
+|}
+
+=== Examples ===
+
+== getModel ==
+Create or retrieve model objects by convention
+
+=== Returns ===
+* This function returns ''any''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| name || string || Yes || --- || The name of the model to retrieve
+|-
+| useSetterInjection || boolean || No || --- || Whether to use setter injection alongside the annotations property injection. cfproperty injection takes precedence.
+|-
+| onDICompleteUDF || string || No || --- || After Dependencies are injected, this method will look for this UDF and call it if it exists. The default value is onDIComplete
+|-
+| stopRecursion || string || No || --- || A comma-delimmited list of stoprecursion classpaths.
+|}
+
+=== Examples ===
+
+== locateModel ==
+Get the location instantiation path for a model object. If the model location is not found, this method returns an empty string.
+
+=== Returns ===
+* This function returns ''string''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| name || string || Yes || --- || The model to locate
+|-
+| resolveAlias || boolean || No || false || Resolve model aliases
+|}
+
+=== Examples ===
+
+== create ==
+Create a named bean, simple as that. If the bean has an init() method, it will be called.
+
+=== Returns ===
+* This function returns ''Any''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| bean || string || Yes || --- || The type of bean to create and return. Uses full cfc path mapping.Ex: coldbox.beans.ExceptionBean
+|}
+
+=== Examples ===
+
+== resolveModelAlias ==
+Resolve the real name of any incoming argument model name or alias
+
+=== Returns ===
+* This function returns ''string''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| name || string || Yes || --- || The model alias or name to resolve
+|}
+
+=== Examples ===
+
+== configure ==
+Configure the bean factory for operation from the configuration file.
+
+=== Returns ===
+* This function returns ''BeanFactory''
+
+
+=== Examples ===
+
+== populateFromJSON ==
+Populate a named or instantiated bean from a json string
+
+=== Returns ===
+* This function returns ''any''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| target || any || Yes || --- || This can be an instantiated bean object or a bean instantitation path as a string. If you pass an instantiation path and the bean has an 'init' method. It will be executed. This method follows the bean contract (set{property_name}). Example: setUsername(), setfname()
+|-
+| JSONString || string || Yes || --- || The JSON string to populate the object with. It has to be valid JSON and also a structure with name-key value pairs. 
+|-
+| scope || string || No ||  || Use scope injection instead of setters population. Ex: scope=variables.instance.
+|-
+| trustedSetter || boolean || No || false || If set to true, the setter method will be called even if it does not exist in the bean
+|-
+| include || string || No ||  || A list of keys to include in the population
+|-
+| exclude || string || No ||  || A list of keys to exclude in the population
+|}
+
+=== Examples ===
+
+== containsModel ==
+Checks if the factory has a model object definition found
+
+=== Returns ===
+* This function returns ''boolean''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| name || string || Yes || --- || The name of the model to check
+|-
+| resolveAlias || boolean || No || false || Resolve model aliases
+|}
+
+=== Examples ===
+
+== addModelMapping ==
+Add a new model mapping. Ex: addModelMapping('myBean','security.test.FormBean'). The alias can be a single item or a comma delimmitted list
+
+=== Returns ===
+* This function returns ''void''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| alias || string || No || --- || The model alias to use, this can also be a list of aliases. Ex: SecurityService,Security
+|-
+| path || string || Yes || --- || The model path (From the model conventions downward). Do not add full path, this is a convenience
+|}
+
+=== Examples ===
+
+== appendExternalLocations ==
+Try to append a new model external location
+
+=== Returns ===
+* This function returns ''void''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| locations || string || Yes || --- || Locations to add to the lookup, will be added in passed order.  Comma delimited allowed.
+|}
+
+=== Examples ===
+
+== populateModel ==
+Populate a named or instantiated model (java/cfc) from the request collection items
+
+=== Returns ===
+* This function returns ''Any''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| model || any || Yes || --- || The name of the model to get and populate or the acutal model object. If you already have an instance of a model, then use the populateBean() method
+|-
+| scope || string || No ||  || Use scope injection instead of setters population. Ex: scope=variables.instance.
+|-
+| trustedSetter || boolean || No || false || If set to true, the setter method will be called even if it does not exist in the bean
+|-
+| include || string || No ||  || A list of keys to include in the population
+|-
+| exclude || string || No ||  || A list of keys to exclude in the population
+|}
+
+=== Examples ===
+
+== populateFromQuery ==
+Populate a named or instantiated bean from query
+
+=== Returns ===
+* This function returns ''Any''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| target || any || Yes || --- || This can be an instantiated bean object or a bean instantitation path as a string. If you pass an instantiation path and the bean has an 'init' method. It will be executed. This method follows the bean contract (set{property_name}). Example: setUsername(), setfname()
+|-
+| qry || query || Yes || --- || The query to popluate the bean object with
+|-
+| RowNumber || Numeric || No || 1 || The query row number to use for population
+|-
+| scope || string || No ||  || Use scope injection instead of setters population. Ex: scope=variables.instance.
+|-
+| trustedSetter || boolean || No || false || If set to true, the setter method will be called even if it does not exist in the bean
+|-
+| include || string || No ||  || A list of keys to include in the population
+|-
+| exclude || string || No ||  || A list of keys to exclude in the population
+|}
+
+=== Examples ===

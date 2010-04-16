@@ -776,6 +776,25 @@ returns display country name for given locale
 
 === Examples ===
 
+== init_i18N ==
+Reads,parses,saves the locale and resource bundles defined in the config. Called only internally by the framework. Use at your own risk
+
+=== Returns ===
+* This function returns ''void''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| rbFile || string || Yes || --- || This must be the path + filename UP to but NOT including the locale. We auto-add .properties to the end.
+|-
+| rbLocale || string || No || en_US || 
+|}
+
+=== Examples ===
+
 == getDateTimePattern ==
 returns locale date/time pattern
 

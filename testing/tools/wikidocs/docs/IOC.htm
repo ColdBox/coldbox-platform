@@ -9,11 +9,11 @@
 
 
 == Overview ==
-An Inversion Of Control plugin.
+An Inversion Of Control plugin that interfaces with major ColdFusion IoC/DI frameworks such as ColdSpring and LightWire
 
 
 == getIOCFramework ==
-Gets the IoC Framework used: lightwire or coldspring
+Gets the IoC Framework string used: lightwire or coldspring
 
 === Returns ===
 * This function returns ''string''
@@ -22,7 +22,7 @@ Gets the IoC Framework used: lightwire or coldspring
 === Examples ===
 
 == setCOLDSPRING_FACTORY ==
-Set COLDSPRING_FACTORY
+Set the instantiation path for ColdSpring.
 
 === Returns ===
 * This function returns ''void''
@@ -55,8 +55,34 @@ Set the IoC Framework used: lightwire or coldspring
 
 === Examples ===
 
+== reloadDefinitionFile ==
+Reloads the IoC factory with the Definition File or Object
+
+=== Returns ===
+* This function returns ''void''
+
+
+=== Examples ===
+
+== setIOCDefinitionFile ==
+Set the definition file configured for this plugin
+
+=== Returns ===
+* This function returns ''void''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| IOCDefinitionFile || string || Yes || --- || The relative or absolute location of the coldspring main xml file.
+|}
+
+=== Examples ===
+
 == getBean ==
-Get a Bean from the object factories
+Get a Bean from the loaded object factory
 
 === Returns ===
 * This function returns ''any''
@@ -72,6 +98,24 @@ Get a Bean from the object factories
 
 === Examples ===
 
+== getExpandedIOCDefinitionFile ==
+Get the full expanded path of the configuration file, only used for coldspring
+
+=== Returns ===
+* This function returns ''string''
+
+
+=== Examples ===
+
+== getIOCDefinitionFile ==
+Get the definition file configured for this plugin
+
+=== Returns ===
+* This function returns ''string''
+
+
+=== Examples ===
+
 == getIoCFactory ==
 Returns the IoC Factory in use.
 
@@ -82,7 +126,7 @@ Returns the IoC Factory in use.
 === Examples ===
 
 == configure ==
-Configure the IoC Plugin. Loads the IoC Factory and configures it.
+Configure or Re-Configure the IoC Plugin. Loads the chosen IoC Factory and configures it for usage
 
 === Returns ===
 * This function returns ''void''
@@ -100,7 +144,7 @@ Get LIGHTWIRE_FACTORY. This is the instantiation path for lightwire
 === Examples ===
 
 == setIoCFactory ==
-Override and set the IoCFactory
+Override and set the IoCFactory the plugin will interface with
 
 === Returns ===
 * This function returns ''void''
@@ -125,8 +169,25 @@ Get COLDSPRING_FACTORY. This is the instantiation path for coldspring
 
 === Examples ===
 
+== setExpandedIOCDefinitionFile ==
+Set the full expanded path of the definition file
+
+=== Returns ===
+* This function returns ''void''
+
+
+=== Arguments ===
+
+{| cellpadding="5", class="tablelisting"
+! '''Key''' !! '''Type'''  !! '''Required''' !! '''Default''' !! '''Description''' 
+|-
+| ExpandedIOCDefinitionFile || string || Yes || --- || The expanded path of the main coldspring xml file
+|}
+
+=== Examples ===
+
 == setLIGHTWIRE_FACTORY ==
-Set LIGHTWIRE_FACTORY
+Set the instantiation path for LightWire
 
 === Returns ===
 * This function returns ''void''
