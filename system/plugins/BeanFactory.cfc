@@ -738,6 +738,7 @@ Description: This is the framework's simple bean factory.
 				case "model" 		: { dependency = getModelDSL(definition=arguments.definition); break; }
 				case "webservice" 	: { dependency = getWebserviceDSL(arguments.definition); break; }
 				case "logbox"		: { dependency = getLogBoxDSL(definition=arguments.definition); break;}
+				case "javaloader"	: { dependency = getJavaLoaderDSL(definition=arguments.definition); break;}
 			}
 			
 			return dependency;
@@ -756,6 +757,20 @@ Description: This is the framework's simple bean factory.
 			
 			// Get Dependency
 			return oWebservices.getWSobj(webserviceName);
+		</cfscript>
+	</cffunction>
+
+	<!--- getJavaLoaderDSL --->
+	<cffunction name="getJavaLoaderDSL" access="private" returntype="any" hint="Get JavaLoader Dependency" output="false" >
+		<!--- ************************************************************* --->
+		<cfargument name="definition" 	required="true" type="any" hint="The dependency definition structure">
+		<!--- ************************************************************* --->
+		<cfscript>
+			var thisDependency  = arguments.Definition;
+			var className  = listLast(thisDependency.type,":");
+			
+			// Get Dependency
+			return getPlugin("JavaLoader").create(className);
 		</cfscript>
 	</cffunction>	
 	
