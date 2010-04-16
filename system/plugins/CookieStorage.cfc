@@ -59,6 +59,10 @@ Modification History: March 23,2008 Added new feature to encrypt/decrypt cookie 
 			if(settingExists('CookieStorage_encryption_algorithm') and len(getSetting('CookieStorage_encryption_algorithm'))){
 				setEncryptionAlgorithm(getSetting('CookieStorage_encryption_algorithm'));
 			}
+			/* Override the encoding if used. */
+			if(settingExists('CookieStorage_encryption_encoding') and len(getSetting('CookieStorage_encryption_encoding'))){
+				setEncryptionEncoding(getSetting('CookieStorage_encryption_encoding'));
+			}
 			
 			/* Return Instance. */
 			return this;
