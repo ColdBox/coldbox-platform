@@ -53,20 +53,20 @@ Description:
 
 <!------------------------------------------- PUBLIC ------------------------------------------->
 	
-	<!--- HTML Sanitizer --->
-	<cffunction name="HtmlSanitizer" returntype="Any" output="false" hint="clean HTML from XSS scripts using the AntiSamy project. The available policies are antisamy, ebay,myspace or slashdot">
+	<!--- htmlSanitizer --->
+	<cffunction name="htmlSanitizer" returntype="Any" output="false" hint="clean HTML from XSS scripts using the AntiSamy project. The available policies are antisamy, ebay,myspace or slashdot">
 		<!--- ************************************************************* --->
-		<cfargument name="HtmlData"		type="string" required="true" hint="The html text to sanitize">
-		<cfargument name="PolicyFile"	type="string" required="false" default="myspace" hint="Provide policy file to scan html. Available options are: antisamy, ebay, myspace, slashdot">
+		<cfargument name="htmlData"		type="string" required="true" hint="The html text to sanitize">
+		<cfargument name="policyFile"	type="string" required="false" default="myspace" hint="Provide policy file to scan html. Available options are: antisamy, ebay, myspace, slashdot">
 		<!--- ************************************************************* --->
 		<cfscript>
 			// you can use any xml, our your own customised policy xml
-			var CleanedHtml  = "";
-			var AntiSamy	= getPlugin("JavaLoader").create("org.owasp.validator.html.AntiSamy");
+			var cleanedHtml  = "";
+			var antiSamy	= getPlugin("JavaLoader").create("org.owasp.validator.html.AntiSamy");
 			
-			CleanedHtml	= AntiSamy.scan(arguments.HtmlData, instance.PolicyFileStruct[arguments.PolicyFile]);
+			cleanedHtml	= antiSamy.scan(arguments.htmlData, instance.policyFileStruct[arguments.policyFile]);
 			
-			return CleanedHtml.getCleanHTML(); 
+			return cleanedHtml.getCleanHTML(); 
 		</cfscript>
 	</cffunction>
 	
