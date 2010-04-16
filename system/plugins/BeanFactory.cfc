@@ -732,16 +732,36 @@ Description: This is the framework's simple bean factory.
 			
 			// Determine Type of Injection according to Type
 			switch(DSLNamespace){
-				case "ioc" 			: { dependency = getIOCDependency(arguments.definition); break; }
-				case "ocm" 			: { dependency = getOCMDependency(arguments.definition); break; }
-				case "coldbox" 		: { dependency = getColdboxDSL(arguments.definition); break; }
-				case "model" 		: { dependency = getModelDSL(definition=arguments.definition); break; }
-				case "webservice" 	: { dependency = getWebserviceDSL(arguments.definition); break; }
-				case "logbox"		: { dependency = getLogBoxDSL(definition=arguments.definition); break;}
-				case "javaloader"	: { dependency = getJavaLoaderDSL(definition=arguments.definition); break;}
+				case "ioc" 				: { dependency = getIOCDependency(arguments.definition); break; }
+				case "ocm" 				: { dependency = getOCMDependency(arguments.definition); break; }
+				case "coldbox" 			: { dependency = getColdboxDSL(arguments.definition); break; }
+				case "model" 			: { dependency = getModelDSL(definition=arguments.definition); break; }
+				case "webservice" 		: { dependency = getWebserviceDSL(arguments.definition); break; }
+				case "logbox"			: { dependency = getLogBoxDSL(definition=arguments.definition); break;}
+				case "javaloader"		: { dependency = getJavaLoaderDSL(definition=arguments.definition); break;}
+				case "entityService"	: { dependency = getEntityServiceDSL(definition=arguments.definition); break;}
 			}
 			
 			return dependency;
+		</cfscript>
+	</cffunction>
+	
+	<!--- getEntityServiceDSL --->
+	<cffunction name="getEntityServiceDSL" access="private" returntype="any" hint="Get a virtual entity service object" output="false" >
+		<!--- ************************************************************* --->
+		<cfargument name="definition" 	required="true" type="any" hint="The dependency definition structure">
+		<!--- ************************************************************* --->
+		<cfscript>
+			var thisDependency  = arguments.Definition;
+			var entityName  	= listLast(thisDependency.type,":");
+			
+			// Do we have an entity name? If we do create virtual entity service
+			if( len(entityName) ){
+				return createObject("component","coldbox.system.orm.hibernate.VirtualEntityService").init(entityName);
+			}
+			
+			// else Return Base ORM Service
+			return createObject("component","coldbox.system.orm.hibernate.BaseORMService").init();			
 		</cfscript>
 	</cffunction>
 	
