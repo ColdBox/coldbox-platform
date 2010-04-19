@@ -8,13 +8,28 @@ Date        : 06/20/2009
 Description :
  Base Test case for Model Objects
 ---------------------------------------------------------------------->
-<cfcomponent name="BaseModelTest" 
-			 output="false" 
-			 extends="coldbox.system.testing.BaseTestCase"
-			 hint="A base test for testing model objects">
+<cfcomponent output="false" extends="coldbox.system.testing.BaseTestCase" hint="A base test for testing model objects">
 
 	<cfscript>
 		this.loadColdbox = false;	
 	</cfscript>
+	
+	<!--- setupTest --->
+    <cffunction name="setup" output="false" access="public" returntype="void" hint="Prepare for testing">
+    	<cfscript>
+    		var md 		= getMetadata(this);
+			var mockBox = getMockBox();
+			
+			// Check for model path annotation, and use it if declared.
+			if( structKeyExists(md, "model") ){
+				// Create model with Mocking capabilities
+				variables.model = mockBox.createMock(md.model);				
+			}	
+			
+			// Create Mock Objects
+			variables.mockLogBox	 = mockBox.createEmptyMock("coldbox.system.logging.LogBox");
+			variables.mockLogger	 = mockBox.createEmptyMock("coldbox.system.logging.Logger");		
+    	</cfscript>
+    </cffunction>
 	
 </cfcomponent>
