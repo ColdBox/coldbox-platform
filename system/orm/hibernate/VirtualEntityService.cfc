@@ -68,7 +68,7 @@ component extends="coldbox.system.orm.hibernate.BaseORMService" accessors="true"
 					  boolean asQuery=true){
 
 		arguments.entityName = this.getEntityName();
-		results = super.list(argumentCollection=arguments);
+		var results = super.list(argumentCollection=arguments);
 		return results;
 	}
 
@@ -83,7 +83,8 @@ component extends="coldbox.system.orm.hibernate.BaseORMService" accessors="true"
 	}
 
 	any function new(){
-		return super.new(this.getEntityName());
+		arguments.entityName = this.getEntityName();
+		return super.new(argumentCollection=arguments);
 	}
 
 	boolean function exists(required any id) {
@@ -106,7 +107,7 @@ component extends="coldbox.system.orm.hibernate.BaseORMService" accessors="true"
 		return super.deleteByID(argumentCollection=arguments);
 	}
 
-	numeric function deleteWhere(required string entityName){
+	numeric function deleteWhere(){
 		arguments.entityName = this.getEntityName();
 		return super.deleteWhere(argumentCollection=arguments);
 	}

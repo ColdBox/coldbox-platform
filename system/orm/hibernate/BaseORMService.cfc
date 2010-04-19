@@ -14,6 +14,12 @@ TODO:
 - Add dynamic findBy methods
 - Add dynamic countBy methods
 - Add dynamic getBy methods
+- Dynamic entity methods for the following methods:
+   - new{entityName}()
+   - exists{entityName}()
+   - get{entityName}()
+   - getAll{entityName}()
+   - count{entityName}()
 - Add find methods by criteria with projections
 - Add validations maybe via Hyrule, but more implicit and mixin methods
 - Add dml style batch updates
@@ -57,7 +63,7 @@ component accessors="true"{
 							   boolean useQueryCaching=getUseQueryCaching(), 
 							   string queryCacheRegion=getQueryCacheRegion()) {
 								   
-		return  CreateObject("component", "coldbox.system.orm.hibernate.AbstractEntityService").init(argumentCollection=arguments);
+		return  CreateObject("component", "coldbox.system.orm.hibernate.VirtualEntityService").init(argumentCollection=arguments);
 	}
 
 	/**
@@ -285,11 +291,23 @@ component accessors="true"{
 	}
 
 	/**
-    * Get a new entity object by entity name
+    * Get a new entity object by entity name and you can pass in any named parameter and the method will try to set it for you.
 	* @tested true
     */
-	any function new(required entityName){
-		return entityNew(arguments.entityName);
+	any function new(required string entityName){
+		var entity = entityNew(arguments.entityName);
+		var key    = "";
+		
+		// iterate over arguments
+		for( key in arguments ){
+		
+			// Check if method exists and not entityName
+			if( key NEQ "entityName" and structKeyExists(entity, "set#key#") ){
+				evaluate("entity.set#key#( arguments[key] )");
+			}		
+		}
+		
+		return entity;
 	}
 
 	/**
@@ -412,15 +430,23 @@ component accessors="true"{
 	* it actually is a select query that should retrieve objects to remove
 	* @tested true
 	*/
-	void function deleteByQuery(required string query, any params, boolean unique=false, struct queryOptions=structnew(), boolean flush=false ){
+	void function deleteByQuery(required string query, any params, numeric max=0, numeric offset=0, boolean flush=false ){
 		var objects = arrayNew(1);
+		var options = {};
 
+		// Setup query options
+		if( arguments.offset neq 0 ){
+			options.offset = arguments.offset;
+		}
+		if( arguments.max neq 0 ){
+			options.maxresults = arguments.max;
+		}
 		// Query
 		if( structKeyExists(arguments, "params") ){
-			objects = ORMExecuteQuery(arguments.query, arguments.params, arguments.unique, arguments.queryOptions);
+			objects = ORMExecuteQuery(arguments.query, arguments.params, false, options);
 		}
 		else{
-			objects = ORMExecuteQuery(arguments.query, arguments.unique, arguments.queryOptions);
+			objects = ORMExecuteQuery(arguments.query, false, options);
 		}
 
 		delete( objects, arguments.flush );
@@ -684,11 +710,13 @@ component accessors="true"{
 	}
 
 	/**
-	* A nice onMissingMethod template to create awesome methods
+	* A nice onMissingMethod template to create awesome dynamic methods.
+	* 
 	*/
 	any function onMissingMethod(String missingMethodName,Struct missingMethodArguments){
 		var method = arguments.missingMethodName;
 		var args   = arguments.missingMethodArguments;
+
 	}
 
 	/**

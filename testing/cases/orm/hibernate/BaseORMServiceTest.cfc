@@ -47,6 +47,12 @@ component extends="coldbox.system.testing.BaseTestCase"{
 
 	function testNew(){
 		ormservice.new("User");
+		
+		// Test with arguments.
+		user = ormService.new(entityName="User",firstName="luis",lastName="majano");
+		debug(user);
+		assertEquals( "luis", user.getFirstName() );
+		assertEquals( "majano", user.getLastName() );
 	}
 
 	function testGet(){
