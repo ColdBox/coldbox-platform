@@ -9,8 +9,7 @@
 	<!--Build Properties-->
 	<property name="dir.forgebox"		value="testharness/modules/forgebox" />
 	<property name="dir.app1"			value="ApplicationTemplates/Advanced/modules" />
-	<property name="dir.app2"			value="ApplicationTemplates/FlexAirRemote/monitor/modules" />
-	<property name="dir.app3"			value="ApplicationTemplates/Simple/modules" />
+	<property name="dir.app2"			value="ApplicationTemplates/Simple/modules" />
 	
 	<!--copy-->
 	<target name="copy" description="Copy forgebox module to templates">
@@ -23,12 +22,6 @@
         	</fileset>
         </copy>
 		<copy todir="${dir.app2}/forgebox">
-			<fileset dir="${dir.forgebox}">
-        		<exclude name="**/build.xml"/>
-        		<exclude name="**/*.zip"/>
-        	</fileset>
-        </copy>
-		<copy todir="${dir.app3}/forgebox">
 			<fileset dir="${dir.forgebox}">
         		<exclude name="**/build.xml"/>
         		<exclude name="**/*.zip"/>
