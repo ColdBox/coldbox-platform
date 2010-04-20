@@ -331,138 +331,104 @@ Only one instance of a specific ColdBox application exists.
 	</cffunction>
 
 	<!--- Set Next Event --->
-	<cffunction name="setNextEvent" access="Public" returntype="void" hint="I Set the next event to run and relocate the browser to that event. If you are in SES mode, this method will use routing instead"  output="false">
+	<cffunction name="setNextEvent" access="Public" returntype="void" hint="I Set the next event to run and relocate the browser to that event. If you are in SES mode, this method will use routing instead. You can also use this method to relocate to an absolute URL or a relative URI"  output="false">
 		<!--- ************************************************************* --->
-		<cfargument name="event"  			required="false" type="string"  default="#getSetting("DefaultEvent")#" hint="The name of the event to run.">
-		<cfargument name="queryString"  	required="false" type="string"  default="" hint="The query string to append, if needed.">
-		<cfargument name="addToken"			required="false" type="boolean" default="false"	hint="Wether to add the tokens or not. Default is false">
-		<cfargument name="persist" 			required="false" type="string"  default="" hint="What request collection keys to persist in flash ram">
-		<cfargument name="persistStruct" 	required="false" type="struct"  default="#structnew()#" hint="A structure key-value pairs to persist in flash ram.">
-		<cfargument name="ssl"				required="false" type="boolean" default="false"	hint="Whether to relocate in SSL or not">
-		<cfargument name="baseURL" 			required="false" type="string"  default="" hint="Use this baseURL instead of the index.cfm that is used by default. You can use this for ssl or any full base url you would like to use. Ex: https://mysite.com/index.cfm"/>
-		<cfargument name="postProcessExempt"  type="boolean" required="false" default="false" hint="Do not fire the postProcess interceptors">
+		<cfargument name="event"  				required="false" type="string"  default="#getSetting("DefaultEvent")#" hint="The name of the event to run, if not passed, then it will use the default event found in your configuration file.">
+		<cfargument name="queryString"  		required="false" type="string"  default="" hint="The query string to append, if needed. If in SES mode it will be translated to convention name value pairs">
+		<cfargument name="addToken"				required="false" type="boolean" default="false"	hint="Wether to add the tokens or not. Default is false">
+		<cfargument name="persist" 				required="false" type="string"  default="" hint="What request collection keys to persist in flash ram">
+		<cfargument name="persistStruct" 		required="false" type="struct"  default="#structnew()#" hint="A structure key-value pairs to persist in flash ram.">
+		<cfargument name="ssl"					required="false" type="boolean" default="false"	hint="Whether to relocate in SSL or not">
+		<cfargument name="baseURL" 				required="false" type="string"  default="" hint="Use this baseURL instead of the index.cfm that is used by default. You can use this for ssl or any full base url you would like to use. Ex: https://mysite.com/index.cfm"/>
+		<cfargument name="postProcessExempt"    required="false" type="boolean" default="false" hint="Do not fire the postProcess interceptors">
+		<cfargument name="URL"  				required="false" type="string"  hint="The full URL you would like to relocate to instead of an event: ex: URL='http://www.google.com'"/>
+		<cfargument name="URI"  				required="false" type="string"  hint="The relative URI you would like to relocate to instead of an event: ex: URI='/mypath/awesome/here'"/>
+		<cfargument name="statusCode" 			required="false" type="numeric" default="0" hint="The status code to use in the relocation"/>
 		<!--- ************************************************************* --->
-		<cfset var EventName = getSetting("EventName")>
-		<cfset var frontController = listlast(cgi.script_name,"/")>
-		<cfset var oRequestContext = getRequestService().getContext()>
-		<cfset var routeString = 0>
-		
-		<!--- Front Controller Base URL --->
-		<cfif len(trim(arguments.baseURL)) neq 0>
-			<cfset frontController = arguments.baseURL>
-		</cfif>
-		
-		<!--- Cleanup Event --->
-		<cfif len(trim(arguments.event)) eq 0>
-			<cfset arguments.event = getSetting("DefaultEvent")>
-		</cfif>
-		
-		<!--- Are we in SES Mode? --->
-		<cfif oRequestContext.isSES()>
-			<!--- setup the route --->
-			<cfset routeString = replace(arguments.event,".","/","all")>
-			<cfif len(trim(arguments.queryString))>
-				<cfset routeString = routeString & "/" & replace(arguments.queryString,"&","/","all")>
-				<cfset routeString = replace(routeString,"=","/","all")>
-			</cfif>
-			<!--- Relocate with routing --->
-			<cfset setNextRoute(route=routeString,
-						 		persist=arguments.persist,
-								persistStruct=arguments.persistStruct,
-						 		addToken=arguments.addToken,
-						 		ssl=arguments.ssl)>		
-		<cfelse>
-			<!--- Persistance Logic --->
-			<cfset persistVariables(argumentCollection=arguments)>
-			<!--- Push Timers --->
-			<cfset pushTimers()>
+		<cfscript>
+			// Determine the type of relocation
+			var relocationType  = "EVENT";
+			var relocationURL   = "";
+			var eventName	    = getSetting('EventName');
+			var frontController = listlast(cgi.script_name,"/");
+			var oRequestContext = getRequestService().getContext();
+			var routeString     = 0;
 			
-			<!--- Post Process --->
-			<cfif arguments.postProcessExempt>
-				<cfset getInterceptorService().processState("postProcess")>
-			</cfif>
+			// Determine relocation type
+			if( structKeyExists(arguments,"URL") ){ relocationType = "URL"; }
+			if( structKeyExists(arguments,"URI") ){ relocationType = "URI"; }
+			if( oRequestContext.isSES() ){ relocationType = "SES"; }
 			
-			<!--- Save Flash Ram --->
-			<cfset getRequestService().getFlashScope().saveFlash()>
+			// Cleanup event string to default if not sent in
+			if( len(trim(arguments.event)) eq 0 ){ arguments.event = getSetting("DefaultEvent"); }
+			// Overriding Front Controller via baseURL argument
+			if( len(trim(arguments.baseURL)) ){ frontController = arguments.baseURL; }
 			
-			<!--- Check if query String needs appending --->
-			<cfif len(trim(arguments.queryString)) eq 0>
-				<cflocation url="#frontController#?#EventName#=#arguments.event#" addtoken="#arguments.addToken#">
-			<cfelse>
-				<cflocation url="#frontController#?#EventName#=#arguments.event#&#arguments.queryString#" addtoken="#arguments.addToken#">
-			</cfif>		
-		</cfif>
-	</cffunction>
-	
-	<!--- relocate --->
-	<cffunction name="relocate" access="public" hint="Facade for cflocation" returntype="void" output="false">
-		<cfargument name="url" 		required="true" 	type="string">
-		<cfargument name="addtoken" required="false" 	type="boolean" default="false">
-		<cfargument name="postProcessExempt"  type="boolean" required="false" default="false" hint="Do not fire the postProcess interceptors">
-		
-		<!--- Push Timers --->
-		<cfset pushTimers()>
-		
-		<!--- Post Process --->
-		<cfif arguments.postProcessExempt>
-			<cfset getInterceptorService().processState("postProcess")>
-		</cfif>
-		
-		<!--- Save Flash Ram --->
-		<cfset getRequestService().getFlashScope().saveFlash()>
-		
-		<!--- Relocate --->
-		<cflocation url="#arguments.url#" addtoken="#addtoken#">
-	</cffunction>
-	
-	<!--- Set Next Route --->
-	<cffunction name="setNextRoute" access="Public" returntype="void" hint="I Set the next ses route to relocate to. This method pre-pends the baseURL"  output="false">
-		<!--- ************************************************************* --->
-		<cfargument name="route"  		required="true"	 type="string" hint="The route to relocate to, do not prepend the baseURL or /.">
-		<cfargument name="persist" 		required="false" type="string" default="" hint="What request collection keys to persist in flash ram">
-		<cfargument name="persistStruct" 	required="false" type="struct" hint="A structure key-value pairs to persist in flash ram.">
-		<cfargument name="addToken"		required="false" type="boolean" default="false"	hint="Wether to add the tokens or not. Default is false">
-		<cfargument name="ssl"			required="false" type="boolean" default="false"	hint="Whether to relocate in SSL or not">
-		<cfargument name="queryString"  required="false" type="string"  default="" hint="The query string to append, if needed.">
-		<cfargument name="postProcessExempt"  type="boolean" required="false" default="false" hint="Do not fire the postProcess interceptors">
-		<!--- ************************************************************* --->
-		<cfset var oRequestContext = getRequestService().getContext()>
-		<cfset var routeLocation = oRequestContext.getSESBaseURL()>
-		
-		<!--- SSL --->
-		<cfif arguments.ssl>
-			<cfset routeLocation = replacenocase(routeLocation,"http:","https:")>
-		</cfif>
-		
-		<!--- Persistance Logic --->
-		<cfset persistVariables(argumentCollection=arguments)>
-		
-		<!--- Create Route --->
-		<cfif right(routeLocation,1) eq "/">
-			<cfset routeLocation = routeLocation & arguments.route>
-		<cfelse>
-			<cfset routeLocation = routeLocation & "/" & arguments.route>
-		</cfif>
-		
-		<!--- Query String --->
-		<cfif len(trim(arguments.queryString))>
-			<cfset routeLocation = routeLocation & "/" & replace(arguments.queryString,"&","/","all")>
-			<cfset routeLocation = replace(routeLocation,"=","/","all")>
-		</cfif>
-		
-		<!--- Push Timers --->
-		<cfset pushTimers()>
-		
-		<!--- Post PRocess --->
-		<cfif arguments.postProcessExempt>
-			<cfset getInterceptorService().processState("postProcess")>
-		</cfif>
-		
-		<!--- Save Flash Ram --->
-		<cfset getRequestService().getFlashScope().saveFlash()>
+			// Relocation Types
+			switch( relocationType ){
+				// FULL URL relocations
+				case "URL" : {
+					relocationURL = arguments.URL;
+					// Query String?
+					if( len(trim(arguments.queryString)) ){ relocationURL = relocationURL & "?#arguments.queryString#"; }
+					break;
+				}
+				
+				// URI relative relocations
+				case "URI" : {
+					relocationURL = arguments.URI;
+					// Query String?
+					if( len(trim(arguments.queryString)) ){ relocationURL = relocationURL & "?#arguments.queryString#"; }
+					break;
+				}
+				
+				// Default event relocations
+				case "SES" : {
+					// Route String start by converting event syntax to / syntax
+					routeString = replace(arguments.event,".","/","all");
+					// Convert Query String to convention name value-pairs
+					if( len(trim(arguments.queryString)) ){
+						routeString = routeString & "/" & replace(arguments.queryString,"&","/","all");
+						routeString = replace(routeString,"=","/","all");
+					}
+					
+					// Get Base relocation URL from context
+					relocationURL = oRequestContext.getSESBaseURL();
+					if( right(relocationURL,1) neq "/" ){ relocationURL = relocationURL & "/"; }
+					
+					// Check SSL?
+					if( arguments.ssl ){  relocationURL = replacenocase(relocationURL,"http:","https:"); }
+					
+					// Finalize the URL
+					relocationURL = relocationURL & routeString;
+					
+					break;
+				}
+				default :{
+					// Basic URL Relocation
+					relocationURL = "#frontController#?#eventName#=#arguments.event#";
+					// Query String?
+					if( len(trim(arguments.queryString)) ){ relocationURL = relocationURL & "&#arguments.queryString#"; }
+				}
+			}
 			
-		<!--- Reroute --->
-		<cflocation url="#routeLocation#" addtoken="#arguments.addToken#">
+			// persist Flash RAM
+			persistVariables(argumentCollection=arguments);
+			
+			// push Debugger Timers
+			pushTimers();
+			
+			// Post Processors
+			if ( arguments.postProcessExempt ){
+				getInterceptorService().processState("postProcess");
+			}
+			
+			// Save Flash RAM
+			getRequestService().getFlashScope().saveFlash();
+			
+			// Send Relocation
+			sendRelocation(URL=relocationURL,addToken=arguments.addToken,statusCode=arguments.statusCode);
+		</cfscript>
 	</cffunction>
 	
 	<!--- Event Service Locator Factory --->
@@ -679,6 +645,18 @@ Only one instance of a specific ColdBox application exists.
 			     errorcode="403"
 			     message="403 Invalid HTTP Method Exception"
 				 detail="#arguments.description#">
+    </cffunction>
+	
+	<!--- sendRelocation --->
+    <cffunction name="sendRelocation" output="false" access="private" returntype="void" hint="Send a CF relocation via ColdBox">
+    	<cfargument name="url" 			type="string"   required="true"  hint="The URL to relocate to"/>
+		<cfargument name="addtoken"		type="boolean"  required="false" default="false" hint="Add the CF tokens or not">
+    	<cfargument name="statusCode" 	type="numeric"  required="false" default="0" hint="The status code to use"/>
+    	<cfif arguments.statusCode eq 0>
+			<cflocation url="#arguments.url#" addtoken="#addtoken#">
+		<cfelse>
+			<cflocation url="#arguments.url#" addtoken="#addtoken#" statuscode="#arguments.statusCode#">
+		</cfif>
     </cffunction>
 	
 </cfcomponent>

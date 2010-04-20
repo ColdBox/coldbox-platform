@@ -3,14 +3,16 @@
 	<cffunction name="setUp" returntype="void" access="public" output="false">
 		<cfscript>
 			
-			controller = createObject("component","coldbox.system.web.Controller").init(ExpandPath('/coldbox/testharness'));
-		
+			controller = getMockBox().createMock("coldbox.system.web.Controller").init(ExpandPath('/coldbox/testharness'));
+			getMockBox().prepareMock( controller.getRequestService() );
+			getMockBox().prepareMock( controller.getInterceptorService() );
+			
 		</cfscript>
 	</cffunction>
 	
 	<cffunction name="testAppRoots" returntype="void" access="public" output="false">
 		<cfscript>
-			AssertTrue( controller.getAppRootPath() eq expandPath('/coldbox/testharness'));
+			AssertTrue( controller.getAppRootPath() eq expandPath('/coldbox/testharness') & "/");
 			controller.setAppRootPath('nothing');
 			AssertTrue( controller.getAppRootPath() eq "nothing");
 		</cfscript>
@@ -18,7 +20,6 @@
 	
 	<cffunction name="testDependencies" access="public" returntype="any" hint="" output="false" >
 		<cfscript>
-			AssertTrue( isObject(controller.getColdboxOCM()) );
 			AssertTrue( isObject(controller.getLoaderService()) );
 			AssertTrue( isObject(controller.getExceptionService()) );
 			AssertTrue( isObject(controller.getRequestService()) );
@@ -26,6 +27,7 @@
 			AssertTrue( isObject(controller.getPluginService()) );
 			AssertTrue( isObject(controller.getinterceptorService()) );
 			AssertTrue( isObject(controller.getHandlerService()) );
+			AssertTrue( isObject(controller.getModuleService()) );
 		</cfscript>
 	</cffunction>
 	
@@ -116,69 +118,59 @@
 		</cfscript>
 	</cffunction>
 	
-	<cffunction name="testSessionPersistance" access="public" returntype="any" hint="" output="false" >
-		<cfscript>
-			fwsetting.FlashURLPersistScope = "session";
-			controller.setColdboxSettings(fwsetting);
-			mockCollection = {test='luis', today=now(), lastname="majano"};
-			persistStruct = {test="Jose", myVar="nothing"};
-			
-			mocksession = createObject("component","coldbox.system.plugins.SessionStorage").init(controller);
-			
-			context = mockFactory.createMock('coldbox.system.web.context.RequestContext');
-			context.mockMethod('getCollection').returns(mockCollection,mockCollection);
-			
-			pluginService = mockfactory.createMock('coldbox.system.services.pluginService');
-			pluginService.mockMethod('get').returns(mocksession,mocksession);
-			controller.setPluginService(pluginService,pluginService);
-			
-			requestService = mockfactory.createMock('coldbox.system.services.requestService');
-			requestService.mockMethod('getContext').returns(context,context);
-			controller.setrequestService(requestService,requestService);
-			
-			controller.persistVariables('test',persistStruct);
-			
-			debug(session);
-			AssertTrue(mocksession.exists('_coldbox_persistStruct'));
-			
-			controller.persistVariables('today,lastname');
-			
-			debug(session);
-			AssertTrue(mocksession.exists('_coldbox_persistStruct'));
-		</cfscript>
-	</cffunction>
+	<cfscript>
 	
-	<cffunction name="testClientPersistance" access="public" returntype="any" hint="" output="false" >
-		<cfscript>
-			fwsetting.FlashURLPersistScope = "client";
-			controller.setColdboxSettings(fwsetting);
-			mockCollection = {test='luis', today=now(), lastname="majano"};
-			persistStruct = {test="Jose", myVar="nothing"};
+		function testPersistVariables(){
+			mockFlash = getMockBox().createMock("coldbox.system.web.flash.MockFlash").init(controller);
+			controller.getRequestService().$("getFlashScope",mockFlash);
+			mockFlash.$("persistRC").$("putAll");
 			
-			mocksession = createObject("component","coldbox.system.plugins.ClientStorage").init(controller);
+			controller.persistVariables("hello,test");
+			assertEquals( "hello,test", mockFlash.$callLog().persistRC[1].include  );
 			
-			context = mockFactory.createMock('coldbox.system.web.context.RequestContext');
-			context.mockMethod('getCollection').returns(mockCollection,mockCollection);
+ 			persistStruct = { hello="test", name="luis"};
+			controller.persistVariables(persistStruct=persistStruct);
+			assertEquals( persistStruct, mockFlash.$callLog().putAll[1].map  );
+		}
+		
+		function testsetNextEvent(){
+			// mock data
+			mockFlash = getMockBox().createMock("coldbox.system.web.flash.MockFlash").init(controller);
+			mockContext = getMockRequestContext();
 			
-			pluginService = mockfactory.createMock('coldbox.system.services.pluginService');
-			pluginService.mockMethod('get').returns(mocksession,mocksession);
-			controller.setPluginService(pluginService,pluginService);
+			mockFlash.$("saveFlash");
 			
-			requestService = mockfactory.createMock('coldbox.system.services.requestService');
-			requestService.mockMethod('getContext').returns(context,context);
-			controller.setrequestService(requestService,requestService);
+			controller.$("getSetting").$args("EventName").$results("event");
+			controller.$("getSetting").$args("DefaultEvent").$results("general.index");
+			controller.$("persistVariables").$("pushTimers").$("sendRelocation");
+			controller.getRequestService().$("getContext", mockContext );
+			controller.getRequestService().$("getFlashScope",mockFlash);
+			controller.getRequestService().$("processState");
 			
-			controller.persistVariables('test',persistStruct);
+			// Test Full URL
+			controller.setNextEvent(URL="http://www.coldbox.org",addToken=true);
+			assertEquals( "http://www.coldbox.org", controller.$callLog().sendRelocation[1].URL );
+			assertEquals( true, controller.$callLog().sendRelocation[1].addToken );
+			assertEquals( 0, controller.$callLog().sendRelocation[1].statusCode );
 			
-			debug(client);
-			AssertTrue(mocksession.exists('_coldbox_persistStruct'));
+			// Full URL with more stuff
+			controller.setNextEvent(URL="http://www.coldbox.org",statusCode=301,queryString="page=2&test=1");
+			assertEquals( "http://www.coldbox.org?page=2&test=1", controller.$callLog().sendRelocation[2].URL );
+			assertEquals( false, controller.$callLog().sendRelocation[2].addToken );
+			assertEquals( 301, controller.$callLog().sendRelocation[2].statusCode );
 			
-			controller.persistVariables('today,lastname');
+			// Test relative URI with query strings
+			controller.setNextEvent(URI="/route/path/two",queryString="page=2&test=1");
+			assertEquals( "/route/path/two?page=2&test=1", controller.$callLog().sendRelocation[3].URL );
 			
-			debug(client);
-			AssertTrue(mocksession.exists('_coldbox_persistStruct'));
-		</cfscript>
-	</cffunction>
+			// Test normal event
+			controller.setNextEvent(event="general.page",querystring="page=2&test=1");
+			//assertEquals( "", controller.$callLog().sendRelocation[4].URL );
+			
+			debug( controller.$calllog() );
+		}
+	
+	</cfscript>
 	
 	
 </cfcomponent>
