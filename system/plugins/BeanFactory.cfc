@@ -12,8 +12,7 @@ Description: This is the framework's simple bean factory.
 <cfcomponent hint="I am the ColdBox BeanFactory plugin that takes care of autowiring and dependency injection"
 			 extends="coldbox.system.Plugin"
 			 output="false"
-			 cache="true"
-			 cacheTimeout="0">
+			 singleton="true">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
@@ -753,7 +752,7 @@ Description: This is the framework's simple bean factory.
 		<!--- ************************************************************* --->
 		<cfscript>
 			var thisDependency  = arguments.Definition;
-			var entityName  	= listLast(thisDependency.type,":");
+			var entityName  	= getToken(thisDependency.type,2,":");
 			
 			// Do we have an entity name? If we do create virtual entity service
 			if( len(entityName) ){
