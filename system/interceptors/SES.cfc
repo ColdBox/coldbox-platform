@@ -847,7 +847,7 @@ Description :
 		<cfscript>
 			var appLocPrefix = "/";
 			var configFilePath = "";
-			var local = structnew();
+			var refLocal = structnew();
 			
 			// Verify the config file, else set it to our convention in the config/Routes.cfm
 			if( not propertyExists('configFile') ){

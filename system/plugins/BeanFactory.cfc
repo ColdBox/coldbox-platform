@@ -71,7 +71,7 @@ Description: This is the framework's simple bean factory.
 		<cfscript>
 			var configFilePath = "/";
 			var appLocPrefix = "/";
-			var local = structnew();
+			var refLocal = structnew();
 					
 			//App location prefix
 			if( len(getSetting('AppMapping')) ){
