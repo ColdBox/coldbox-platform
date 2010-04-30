@@ -9,27 +9,17 @@ Date        :	9/28/2007
 Description :
 	This object models an interception state
 ----------------------------------------------------------------------->
-<cfcomponent name="InterceptorState"
-			 hint="I am a pool of interceptors that can execute on a state or interception value."
-			 output="false">
+<cfcomponent hint="I am a pool of interceptors that can execute on a state or interception value." output="false" extends="coldbox.system.core.events.EventPool">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
-	<cfscript>
-		variables.instance = structnew();
-	</cfscript>
 	
+	<!--- init --->
 	<cffunction name="init" access="public" output="false" hint="constructor" returntype="InterceptorState">
 	    <!--- ************************************************************* --->
 	    <cfargument name="state" 		type="string" 	required="true" hint="The interception state I model">
 	    <!--- ************************************************************* --->
 		<cfscript>
-			var LinkedHashMap = CreateObject("java","java.util.LinkedHashMap").init(3);
-			var Collections = createObject("java", "java.util.Collections"); 
-			
-			// Create the interceptor container, start with 3 instead of 16 to save space
-			setInterceptors( Collections.synchronizedMap(LinkedHashMap) );
-			setState( arguments.state );
-			
+			super.init(argumentCollection=arguments);			
 			return this;
 		</cfscript>
 	</cffunction>
@@ -39,47 +29,33 @@ Description :
 	<!--- Register a new interceptor with this state --->
 	<cffunction name="register" access="public" returntype="void" hint="Register an interceptor class with this state" output="false" >
 		<!--- ************************************************************* --->
-		<cfargument name="InterceptorKey" 	required="true" type="string" 	hint="The interceptor key class to register">
-		<cfargument name="Interceptor" 		required="true" type="any" 		hint="The interceptor reference from the cache.">
+		<cfargument name="interceptorKey" 	required="true" type="string" 	hint="The interceptor key class to register">
+		<cfargument name="interceptor" 		required="true" type="any" 		hint="The interceptor reference from the cache.">
 		<!--- ************************************************************* --->
-		<cfset getInterceptors().put(arguments.interceptorKey, arguments.Interceptor)>
+		<cfset super.register(arguments.interceptorKey,arguments.interceptor)>
 	</cffunction>
 	
 	<!--- Remove an interceptor key from this state --->
 	<cffunction name="unregister" access="public" returntype="void" hint="Unregister an interceptor class from this state" output="false" >
 		<!--- ************************************************************* --->
-		<cfargument name="InterceptorKey" 	required="true" type="string" 	hint="The interceptor key class to Unregister">
+		<cfargument name="interceptorKey" 	required="true" type="string" 	hint="The interceptor key class to Unregister">
 		<!--- ************************************************************* --->
-		<cfset getInterceptors().remove(arguments.interceptorKey)>
+		<cfset super.unregister(arguments.interceptorKey)>
 	</cffunction>	
 	
 	<!--- exists --->
 	<cffunction name="exists" output="false" access="public" returntype="boolean" hint="Checks if the passed interceptor key already exists">
 		<!--- ************************************************************* --->
-		<cfargument name="InterceptorKey" 	required="true" type="string" 	hint="The interceptor key class to register">
+		<cfargument name="interceptorKey" 	required="true" type="string" 	hint="The interceptor key class to register">
 		<!--- ************************************************************* --->
-		<cfscript>
-			if( structKeyExists(getInterceptors(), arguments.InterceptorKey) ){
-				return true;
-			}
-			else{
-				return false;
-			}
-		</cfscript>
+		<cfreturn super.exists(arguments.interceptorKey)>
 	</cffunction>
 	
 	<cffunction name="getInterceptor" access="public" returntype="any" hint="Get an interceptor from this state. Else return a blank structure if not found" output="false" >
 		<!--- ************************************************************* --->
-		<cfargument name="InterceptorKey" 	required="true" type="string" 	hint="The interceptor key class to Unregister">
+		<cfargument name="interceptorKey" 	required="true" type="string" 	hint="The interceptor key class to Unregister">
 		<!--- ************************************************************* --->
-		<cfscript>
-			if( structKeyExists(getInterceptors(), arguments.InterceptorKey) ){
-				return structFind(getInterceptors(), arguments.InterceptorKey);
-			}
-			else{
-				return structnew();
-			}
-		</cfscript>
+		<cfreturn super.getObject(arguments.interceptorKey)>
 	</cffunction>
 	
 	<!--- Process the Interceptors --->
@@ -89,18 +65,20 @@ Description :
 		<cfargument name="interceptData" required="true" 	type="struct" hint="A data structure used to pass intercepted information.">
 		<!--- ************************************************************* --->
 		<cfscript>
-		var key = "";
-		var stopChain = "";
+		var key 			= "";
+		var stopChain 		= "";
 		var thisInterceptor = "";
+		var interceptors    = getInterceptors();
 		
 		// Loop and execute each interceptor as registered in order
-		for( key in getInterceptors()){
-			thisInterceptor = getInterceptors().get(key);
+		for( key in interceptors ){
+			thisInterceptor = interceptors.get(key);
 			
 			// Check if we can execute this Interceptor
 			if( isExecutable(thisInterceptor,arguments.event) ){
 				// Invoke the execution point
 				stopChain = invoker( thisInterceptor, arguments.event, arguments.interceptData );
+				
 				// Check for results
 				if( stopChain ){ break; }
 			}
@@ -127,26 +105,9 @@ Description :
 		</cfscript>	
 	</cffunction>
 	
-	<!--- getter setter state --->
-	<cffunction name="getState" access="public" output="false" returntype="string" hint="Get the state's name">
-		<cfreturn instance.state/>
-	</cffunction>	
-	<cffunction name="setState" access="public" output="false" returntype="void" hint="Set the state's name">
-		<!--- ************************************************************* --->
-		<cfargument name="state" type="string" required="true"/>
-		<!--- ************************************************************* --->
-		<cfset instance.state = arguments.state/>
-	</cffunction>
-	
-	<!--- getter setter interceptors --->
+	<!--- getInterceptors --->
 	<cffunction name="getInterceptors" access="public" output="false" returntype="any" hint="Get the interceptors linked hash map">
-		<cfreturn instance.interceptors/>
-	</cffunction>	
-	<cffunction name="setInterceptors" access="public" output="false" returntype="void" hint="Set interceptors linked hash map">
-		<!--- ************************************************************* --->
-		<cfargument name="interceptors" type="any" required="true"/>
-		<!--- ************************************************************* --->
-		<cfset instance.interceptors = arguments.interceptors/>
+		<cfreturn super.getPool() />
 	</cffunction>
 	
 <!------------------------------------------- PRIVATE ------------------------------------------->
@@ -174,5 +135,4 @@ Description :
 		</cfif>			
 	</cffunction>
 	
-</cfcomponent>
-	
+</cfcomponent>	

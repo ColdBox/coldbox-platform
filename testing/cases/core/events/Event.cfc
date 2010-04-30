@@ -13,7 +13,7 @@
 	}
 </cfscript>
 
-	<cffunction name="onAnnotation" output="false" observe=true>
+	<cffunction name="onAnnotation" output="false" interceptionPoint=true>
 		<cfargument name="interceptData" type="struct" required="true" default="" hint=""/>
 		<cfscript>
 		var data ={stat="onAnnotation", data=interceptData};

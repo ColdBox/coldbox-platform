@@ -2,7 +2,7 @@
 <cfscript>
 	function setup(){
 		manager = getMockBox().createMock("coldbox.system.core.events.EventPoolManager");
-		manager.init('onTest');
+		manager.init( listToArray('onTest') );
 	}
 	function testProperties(){
 		assertEquals( manager.getEventStates(), "onTest");

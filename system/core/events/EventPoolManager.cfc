@@ -21,16 +21,17 @@ Description :
 		instance = structnew();
 	</cfscript>
 	
+	<!--- init --->
 	<cffunction name="init" access="public" output="false" returntype="EventPoolManager" hint="Constructor">
-		<cfargument name="eventStates" 		    type="string" required="true" hint="The event states to listen for"/>
+		<cfargument name="eventStates" 		    type="array" required="true" hint="The event states to listen for"/>
 		<cfargument name="stopRecursionClasses" type="string" required="false" default="" hint="The classes (comma-delim) to not inspect for events"/>
 		<cfscript>
 			// Setup properties of the event manager
-			instance.eventStates = arguments.eventStates;
-			instance.stopRecursionClasses = arguments.stopRecursionClasses;
+			instance.eventStates 			= arrayToList( arguments.eventStates );
+			instance.stopRecursionClasses   = arguments.stopRecursionClasses;
 			
-			// Init event pool containers
-			instance.eventPoolContainer = structnew();
+			// Init event pool container
+			instance.eventPoolContainer 	= structnew();
 			
 			return this;
 		</cfscript>
@@ -38,31 +39,33 @@ Description :
 	
 <!------------------------------------------- PUBLIC ------------------------------------------->
 
+	<!--- processState --->
 	<cffunction name="processState" access="public" returntype="void" hint="Process a state announcement. If the state does not exist, it will ignore it" output="true">
 		<!--- ************************************************************* --->
 		<cfargument name="state" 		 required="true" 	type="string" hint="The state to process">
 		<cfargument name="interceptData" required="false" 	type="struct" default="#structNew()#" hint="A data structure used to pass intercepted information.">
 		<!--- ************************************************************* --->
 		<cfscript>
-			var pool = geteventPoolContainer();
+			var pool = getEventPoolContainer();
 			
 			// Process The State if it exists, else just exit out
 			if( structKeyExists(pool, arguments.state) ){
-				structFind(pool, arguments.state).process(arguments.interceptData);
+				pool[ arguments.state ].process( arguments.interceptData );
 			}
 		</cfscript>
 	</cffunction>
 	
+	<!--- register --->
 	<cffunction name="register" access="public" output="false" returntype="void" hint="Register an object in an event pool. If the target object is already in a state, it will not be added again. The object get's inspected for registered states or you can even send custom states in.  Also, you can annotate the methods in the target object with 'observe=true' and we will register that state also.">
 		<!--- ************************************************************* --->
-		<cfargument name="target"		 type="any" required="true" hint="The target object to register in an event pool"/>
-		<cfargument name="name" 		 type="string" required="false" default="" hint="The name to use when registering the object.  If not passed, the name will be used from the object's metadata"/>
-		<cfargument name="customStates"  type="string" required="false" default="" hint="A comma delimmited list of custom states, if the object or class sent in observes them.">
+		<cfargument name="target"		 type="any" 	required="true" hint="The target object to register in an event pool"/>
+		<cfargument name="name" 		 type="string"  required="false" default="" hint="The name to use when registering the object.  If not passed, the name will be used from the object's metadata"/>
+		<cfargument name="customStates"  type="string"  required="false" default="" hint="A comma delimmited list of custom states, if the object or class sent in observes them.">
 		<!--- ************************************************************* --->
 		<cfscript>
-			var objectName = "";
+			var objectName 		 = "";
 			var eventStatesFound = structNew();
-			var stateKey = "";
+			var stateKey 		 = "";
 			
 			// Check if name sent? If not, get the name from the last part of its name
 			if( NOT len(trim(arguments.name)) ){
@@ -113,12 +116,13 @@ Description :
 		</cfscript>
 	</cffunction>
 	
+	<!--- Append custom states --->
 	<cffunction name="appendCustomStates" access="public" returntype="void" hint="Append a list of custom event states to the CORE observation states" output="false" >
 		<!--- ************************************************************* --->
 		<cfargument name="customStates" required="true" type="string" hint="A comma delimmited list of custom observation states to append. If they already exists, then they will not be added again.">
 		<!--- ************************************************************* --->
 		<cfscript>
-			var x = 1;
+			var x 			= 1;
 			var currentList = getEventStates();
 			
 			// Validate
@@ -127,7 +131,7 @@ Description :
 			// Loop and Add
 			for(;x lte listlen(arguments.customStates); x=x+1 ){
 				if ( not listfindnocase(currentList, listgetAt(arguments.customStates,x)) ){
-					currentList = currentList & "," & listgetAt(arguments.customStates,x);
+					currentList = listAppend(currentList,listgetAt(arguments.customStates,x));
 				}
 			}
 			
@@ -156,9 +160,8 @@ Description :
 			if( structKeyExists(pools,arguments.state) ){
 				return pools[arguments.state];
 			}
-			else{
-				return structnew();
-			}
+		
+			return structnew();
 		</cfscript>
 	</cffunction>
 	
@@ -169,15 +172,14 @@ Description :
 		<!--- ************************************************************* --->
 		<cfscript>
 			var poolContainer = getEventPoolContainer();
-			var unregistered = false;
-			var key = "";
+			var unregistered  = false;
+			var key 		  = "";
 			
 			// Unregister the object
 			for(key in poolContainer){
 				if( len(trim(arguments.state)) eq 0 OR trim(arguments.state) eq key ){
-					if( structFind(poolContainer,key).unregister(arguments.name) ){
-						unregistered = true;	
-					}					
+					structFind(poolContainer,key).unregister(arguments.name);
+					unregistered = true;
 				}				
 			}
 			
@@ -200,7 +202,7 @@ Description :
 				for(x=1; x lte ArrayLen(arguments.metadata.functions); x=x+1 ){
 					
 					// Verify observe annotation
-					if( structKeyExists(arguments.metadata.functions[x],"observe") ){
+					if( structKeyExists(arguments.metadata.functions[x],"interceptionPoint") ){
 						// Register the observation point just in case
 						appendCustomStates(arguments.metadata.functions[x].name);
 					}
@@ -232,8 +234,8 @@ Description :
 		<cfargument name="target" 	required="true" type="any" 	  hint="The object to register">
 		<!--- ************************************************************* --->
 		<cfscript>
-			var eventPool = "";
-			var poolContainer = getEventPoolContainer();
+			var eventPool 		= "";
+			var poolContainer 	= getEventPoolContainer();
 			
 			// Verify if the event state doesn't exist in the evnet pool, else create it
 			if ( not structKeyExists(poolContainer, arguments.state) ){

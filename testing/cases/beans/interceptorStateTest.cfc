@@ -68,16 +68,6 @@
 		</cfscript>
 	</cffunction>		
 	
-	
-
-	
-	<cffunction name="testsetinterceptors" access="public" returnType="void">
-		<cfscript>
-			this.state.setINterceptors( this.state.getInterceptors() );
-			AssertTrue( this.state.getInterceptors().size());
-		</cfscript>
-	</cffunction>		
-	
 	<cffunction name="testsetstate" access="public" returnType="void">
 		<cfscript>
 			this.state.setState('nothing');
