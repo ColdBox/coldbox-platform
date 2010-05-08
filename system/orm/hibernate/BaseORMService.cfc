@@ -510,7 +510,7 @@ component accessors="true"{
 
 		if(arguments.validate){
 			//TODO: CustomErrorMessage file path. it would be coldbox setting "ValidationErrorMessage" = "file name"
-			var validator	= new coldbox.orm.hibernate.hyrule.Validator();
+			var validator	= new coldbox.system.orm.hibernate.hyrule.Validator();
 			var result		= validator.validate(arguments.entity);
 			
 			if(result.hasErrors()){

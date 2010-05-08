@@ -141,4 +141,14 @@ component extends="coldbox.system.testing.BaseTestCase"{
 		test = ormservice.getTableName();
 		assertEquals( 'users', test );
 	}
+	
+	function testEmptyValidation(){
+			user = ormservice.new();
+			user.setFirstName('');
+			user.setLastName('unitTest');
+			user.setUsername('unitTest');
+			user.setPassword('unitTest');
+			result = ormservice.Save(entity=user,validate=true);
+			assertEquals("Please provide firstname", result[1].getMessage());
+	}
 }
