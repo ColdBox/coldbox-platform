@@ -2,7 +2,6 @@
 /* 
 New Component annotations
 
-
 New DSLs: 
 factory:modelName:method (This will search in the definitions for a factoryArguments struct, if not found,
 it just calls the method)
@@ -17,51 +16,102 @@ When you register an object with type of "webservice" you can refer to it by:
 
 - model:name or webservice:name
 
+
+Active Factory Annotations on Component Tag
+@singleton
+@cache
+@cacheTimeout
+@cacheLastAccessTimeout
+@cacheName
+@scope
+@scopeKey
+
+Active Factory Methods Annotations
+@onDIComplete will fire on an object when di completes. 1 or more
+@inject
+
 */
 
-// Paths that you register for convention lookups
-externalLocations = [
+// Wirebox configuraiton settings
+settings = {
+	// defaults
+	defaultConstructor = "[init]",
+	scopeLeech = "scope name",
+	scopeLeechKey = "keyname, defaults to 'wirebox'",
+	
+	// Cache Box Config
+	cacheBoxConfig = "path or cfc for altering the default cache. Defaults to: coldbox.system.ioc.config.CacheBoxConfig",
+	
+	// aop config
+	aop = {
+		// if false, we use onMM
+		generateFiles = "[true],false",
+		generatePath  = "file path or file ram path"
+	}
+};
+
+// Paths that you register for convention lookups or package scans
+externalPackages = [
 	"shared",
 	"model.test",
 	"transfer"
 ];
 
-// Register Custom DSL Classes that must implement: coldbox.system.ioc.dsl.IDSL
+// Register Custom DSL Classes that must implement: coldbox.system.ioc.dsl.INamespace
 customDSL = {
-	DSLName = {namespace="Custom", classPath="path.to.DSLCFC", dsl="I can use a declare model mapping for it too."}
+	DSLNamespace = "bean ID",
+	groovy = "CFGroovy"
 };
 
-modelMappings = {
+/* listeners IN ORDER, as they will fire by convention in registered order
+	and receive a structure of data of information
+	- afterDIComplete()
+	- afterBeanInitialization()
+	- beforeBeanInitialization()
+	- onFactoryStartup()
+	- onFactoryShutdown()
+	- afterLateralFactoryRegistration()
+	- afterLateralFactoryRemoval()
+*/
+listeners = [
+	{name="optional", id="beanPostProcessor"},
+	{name="trans", id="transformer"}
+];
+
+// The bean mappings, optional, as objects can be retrieved via externalPackages and autowired
+beanMappings = {
 	beanName = {
-	  alias 		= "list", 
-	  path			= "shortcut using registered external locations path", 
-	  classPath		= "The full class path of an object",
-	  autowire		= "true or false",
-	  classpath		= 'full class path', 
-	  singleton		= "true or false", 
-	  cache			= "true or false", 
-	  cacheTimeout  = 0, 
-	  cacheLastAccessTimeout=0,
-	  type			= "cfc,java,feed,webservice", 
-	  dsl			= "full DSL",
-	  persistScope	= "session, server, application, cluster",
-	  persistKey 	= "the key to save on, else defaults to bean name",
-	  // Constructor arguments
-	  Constructor = [
-	      {name="",value="optional",dsl="", castTo="", def=""}
+	  alias 		= "list,of,aliases", 
+	  path			= "shortcut using registered external package paths", 
+	  class			= "The full class path of an object",
+	  autowire		= "[true] or false",
+	  type			= "[cfc],java,feed,webservice", 
+	  dsl			= "full DSL used for wiring purposes or retrieval purposes",
+	  scope			= "[singleton], transient or prototype, cache, session, server, application, cluster, request",
+	  scopeKey 		= "the key to save on some persistent scopes, else defaults to bean name",
+	  cache			= {timeout=10, lastAccessTimeout=5,cachename="Region"},
+	  constructorName   = "[init]",
+	  callConstructor   = "[true],false",
+	  parent		= "BeanID",
+	  
+	  
+	  // Constructor Arguments
+	  constructor = [
+	      {name="ArgumentName",value="Optional",dsl="optional, defaults to id", castTo="",definition=""}
 	  ],
+	  
 	  // Setter method injections, if name is not used, we revert to a model name
-	  Setters = [
-	     {name="",value="optional",dsl="",castTo="",def=""}
+	  setters = [
+	     {name="setterName",value="optional",dsl="optional, defaults to id",castTo="",definition=""}
 	  ],
+	  
 	  // CFproperty injections: If name is not used, we rever to a model name
 	  Injections = [
-	     {name="",value="optional",dsl="", scope="variables", castTo="",def=""}
+	     {name="setterName",value="optional",dsl="optional, defaults to id", scope="variables", castTo="",definition=""}
 	  ],
-	  // Used only for factory arguments
-	  factoryArguments = {
-	  
-	  }
+	  factoryArguments = [
+	  	{name="ArgumentName",value="Optional",dsl="optional, defaults to id", castTo="",definition=""}
+	  ]
 	},
 	
 	// Webservice
@@ -93,33 +143,33 @@ modelMappings = {
 	// UserGateway
 	userGateway = {
 		path 		= "UserGateway", 
-		singleton	= true,
 		Injections 	= [
 			{name="dsn", dsl="model:CodexDatasource"},
-			{dsl="model:BeanInjector"}
+			{dsl="model:BeanInjector"},
+			{name="utilList", type="java", class="java.util.LinkedList"}
 		]
 	},  
+	
 	UserService = {
 		path		 = "UserService",
-		cache		 = true,
-		cacheTimeout = 60, // 60 minutes
-		cacheLastAccessTimeout = 15, // purge if not used in the next 15 minutes
+		cache		 = {timeout=60, lastAccessTimeout=15},
 		constructor	= [
 			{name="MyArray", value=[1,2,3] },
 			{name="MyStruct", value={name="luis",age="32"} }
 		],
 		injections  = [
 			{dsl="model:UserGateway", scope="instance"},
-			{name="defaultRole", value=controller.getSetting('Admin'), scope="instance"}
+			{name="defaultRole", value=controller.getSetting('Admin'), scope="instance"},
+			{name="util", value=createObject("component","my.class.util")}
 		]
 	},
 
 	// Register Java Class
 	MyStringBuffer = {
-		classPath	= "java.lang.StringBuffer",
-		type		= "java",
+		class	= "java.lang.StringBuffer",
+		type	= "java",
 		constructor = [
-			{value="nada", castTo="string"}
+			{value="Starting Buffer...", castTo="string"}
 		],
 		setters		= [
 			{name="buffer", value="16000", castTo="int"},
@@ -130,14 +180,13 @@ modelMappings = {
 	//Inner Bean Definitions
 	TransferFactory = {
         path		 ='TransferFactory',
-        singleton	 = true,
-		persistScope = "application",
-		persistKey   = "transferFactory1",
+        scope 		 = "application",
+		scopeKey	 = "transferFactory1",
         constructor=[
             {
                 name="Configuration",
-                def={
-                    classPath="transfer.com.config.Configuration",
+                definition={
+                    class="transfer.com.config.Configuration",
                     constructor=[
                         {name='datasourcePath',value='#controller.getSetting('transfer-config-path')#'},
                         {name='configPath',value='#controller.getSetting('transfer-definition-path')#'},
@@ -146,28 +195,54 @@ modelMappings = {
                 }
             }
         ]
-	},
-	// Inner Bean Definitions with References:
-	TransferFactory = {
-        path='TransferFactory',
-        singleton=true,
-        constructor=[
-            {name="Configuration", bean=refConfig}
-        ]
 	}
 };
 
-var refConfig = {
-    classPath="transfer.com.config.Configuration",
-    constructor=[
-        {name='datasourcePath',value='#controller.getSetting('transfer-config-path')#'},
-        {name='configPath',value='#controller.getSetting('transfer-definition-path')#'},
-        {name='definitionsPath',value='/config/definitions'}
-    ]
+aop = {
+
+	aspectName = {
+		// The aspect object
+		id = "beanID",
+		// Optional class, instead of bean
+		class = "path.to.class",
+		// optional directed bean targets
+		target = "beanID,beanID2",
+		// optional annotation the aop weaver should look for instead of pointcuts
+		annotation = "name[=value]",
+		// Optional Pointcuts, as the actual aspect can implement an annotation based approach.
+		pointCuts = {
+			// method names, via a list of regex
+			methods = "",
+			// a list of regex of family types
+			types = "",
+			//aspectJ execution
+			execution  = "aspectJ parser"
+		}		
+	},
+	transaction = {
+		class = "coldbox.system.aop.aspects.AnnotationTransaction",
+		pointCuts = {
+			types = ".*\.services"
+		}
+	}
 };
 
 
 
+/*
+Aspects can have annotations to determine what annotations to weave upon.
+
+@annotation name[=value]
+component{
+
+	function before(AOPEvent){}
+	function after(AOPEvent){}
+	function around(AOPEvent){}
+	function afterThrows(AOPEvent){}
+	function afterFinally(AOPEvent){}
+	
+}
 
 
+*/
 </cfscript>
