@@ -63,21 +63,25 @@ I oversee and manage ColdBox modules
 		<cfscript>
 			var foundModules   = "";
 			var x 			   = 1;
-
+			var includeModules = controller.getSetting("ModulesInclude");
+			
 			// Register the module configuration
 			controller.setSetting("modules",structnew());
 
-			//Get all modules in application
+			//Get all modules found in the application
 			foundModules = scanModulesDirectory(controller.getSetting("ModulesPath"));
-
+			
+			// Check if we have an inclusion list, if we do just iterate through it instead of the found modules
+			if( listLen(includeModules) ){
+				foundModules = listToArray(includeModules);
+			}
+			
 			// Iterate through them.
 			for(x=1; x lte arrayLen(foundModules); x++){
-
-				// Verify the exception and inclusion lists
+				// Verify the exception lists
 				if( canLoad( foundModules[x] ) ){
 					registerModule(foundModules[x]);
 				}
-
 			}
 		</cfscript>
 	</cffunction>
@@ -451,17 +455,7 @@ I oversee and manage ColdBox modules
     <cffunction name="canLoad" output="false" access="private" returntype="boolean" hint="Checks if the module can be loaded or registered">
   		<cfargument name="moduleName" type="string" required="true" hint="The module name"/>
   		<cfscript>
-    		var includeModules = controller.getSetting("ModulesInclude");
-			var excludeModules = controller.getSetting("ModulesExclude");
-
-			// If we have includes and in the includes
-			if( len(includeModules) and listFindNoCase(includeModules,arguments.moduleName) ){
-				return true;
-			}
-			// If we have includes and NOT in the includes
-			else if( len(includeModules) and NOT listFindNoCase(includeModules,arguments.moduleName) ){
-				return false;
-			}
+    		var excludeModules = controller.getSetting("ModulesExclude");
 
 			// If we have excludes and in the excludes
 			if( len(excludeModules) and listFindNoCase(excludeModules,arguments.moduleName) ){

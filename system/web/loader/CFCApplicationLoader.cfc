@@ -890,8 +890,8 @@ Loads a coldbox xml configuration file
 			
 			// setup the overrides: We do lists, because array function support is only decent until CF9 or railo :(
 			if( structKeyExists(modules,"autoReload") ){ configStruct.modulesAutoReload = modules.autoReload; }
-			if( structKeyExists(modules,"include") ){ configStruct.include = arrayToList(modules.include); }
-			if( structKeyExists(modules,"exclude") ){ configStruct.exclude = arrayToList(modules.exclude); }	
+			if( structKeyExists(modules,"include") ){ configStruct.modulesInclude = arrayToList(modules.include); }
+			if( structKeyExists(modules,"exclude") ){ configStruct.modulesExclude = arrayToList(modules.exclude); }	
 			
 		</cfscript>
 	</cffunction>	
