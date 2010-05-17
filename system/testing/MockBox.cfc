@@ -409,7 +409,7 @@ Description		:
 			// Mock Property
 			obj.$property	 		= variables.mockProperty;
 			obj.mockProperty 		= variables.mockProperty;
-			// Mock Method Call COunts
+			// Mock Method Call Counts
 			obj.$count 				= variables.mockMethodCallCount;
 			obj.mockMethodCallCount = variables.mockMethodCallCount;
 			// Mock Results
