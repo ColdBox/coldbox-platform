@@ -73,7 +73,7 @@ Description :
 			// Register Appenders
 			for( key in logBoxDSL.appenders ){
 				logBoxDSL.appenders[key].name = key;
-				appender(argumentCollection=logBoxDSL.appenders[key]);
+				appender(argumentCollection=convertLevels( logBoxDSL.appenders[key] ));
 			}
 			
 			// Register Root Logger
