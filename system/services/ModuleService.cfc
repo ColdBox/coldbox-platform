@@ -125,9 +125,9 @@ I oversee and manage ColdBox modules
 				path				 	= modLocation,
 				invocationPath 			= modulesInvocationPath & "." & modName,
 				mapping 				= modulesLocation & "/" & modName,
-				handlerInvocationPath 	= modulesInvocationPath & "." & modName & "." & controller.getSetting("HandlersConvention",1),
-				pluginInvocationPath  	= modulesInvocationPath & "." & modName & "." & controller.getSetting("PluginsConvention",1),
-				pluginsPhysicalPath		= modLocation & "/" & controller.getSetting("PluginsConvention",1),
+				handlerInvocationPath 	= modulesInvocationPath & "." & modName & ".handlers",
+				pluginInvocationPath  	= modulesInvocationPath & "." & modName & ".plugins",
+				pluginsPhysicalPath		= modLocation & "/plugins",
 				registeredHandlers 		= '',
 				settings 				= {},
 				interceptors 			= [],
@@ -197,7 +197,7 @@ I oversee and manage ColdBox modules
 			interceptorService.processState("preModuleLoad",iData);
 
 			// Register handlers
-			mConfig.registeredHandlers = controller.getHandlerService().getHandlerListing( mConfig.path & "/" & controller.getSetting("HandlersConvention",1) );
+			mConfig.registeredHandlers = controller.getHandlerService().getHandlerListing( mConfig.path & "/handlers" );
 			mConfig.registeredHandlers = arrayToList(mConfig.registeredHandlers);
 
 			// Register Custom Interception Points
@@ -214,8 +214,8 @@ I oversee and manage ColdBox modules
 			}
 
 			// Register Model path if it exists.
-			if( directoryExists( mConfig.path & "/" & controller.getSetting("ModelsConvention",1) ) ){
-				beanFactory.appendExternalLocations( mConfig.invocationPath & "." & controller.getSetting("ModelsConvention",1) );
+			if( directoryExists( mConfig.path & "/model" ) ){
+				beanFactory.appendExternalLocations( mConfig.invocationPath & ".model" );
 			}
 
 			// Register Model Mappings Now
