@@ -270,7 +270,7 @@ Optional Methods
 		logBox = {
 			// Define Appenders
 			appenders = {
-				coldboxTracer = { class="coldbox.system.logging.appenders.ColdboxTracerAppender" },
+				coldboxTracer = { class="coldbox.system.logging.appenders.ColdboxTracerAppender", levelMin="FATAL", levelMax="DEBUG" },
 				myConsole     = { class="coldbox.system.logging.appenders.ConsoleAppender" },
 				fileAppender  = { class="coldbox.system.logging.appenders.RollingFileAppender",
 								  properties = {

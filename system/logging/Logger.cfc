@@ -14,19 +14,20 @@ Description :
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
 	<cfscript>
-		// Injected Dependencies by LogBox
-		this.logLevels  = "";
+		// The log levels enum as a public property
+		this.logLevels = createObject("component","coldbox.system.logging.LogLevels");
 		
 		// private instance scope
-		instance = structnew();
-		instance._hash = createObject('java','java.lang.System').identityHashCode(this);
-		instance.rootLogger = "";
-		instance.category = "";
-		instance.levelMin = "";
-		instance.levelMax = "";
-		instance.appenders = "";
-		instance.lockName = instance._hash & "LoggerOperation";	
-		instance.lockTimeout = 20;		 	
+		instance 				= structnew();
+		instance._hash 			= createObject('java','java.lang.System').identityHashCode(this);
+		instance.rootLogger 	= "";
+		instance.category 		= "";
+		instance.appenders 		= "";
+		instance.lockName 		= instance._hash & "LoggerOperation";	
+		instance.lockTimeout 	= 20;
+		// Logger Logging Level defaults, which is wideeeee open!
+		instance.levelMin 		= this.logLevels.FATAL;
+		instance.levelMax 		= this.logLevels.DEBUG;		 	
 	</cfscript>
 	
 	<!--- Init --->
@@ -39,9 +40,11 @@ Description :
 			
 			// Save Properties
 			instance.category = arguments.category;
-			instance.levelMin = arguments.levelMin;
-			instance.levelMax = arguments.levelMax;
-			instance.appenders = arguments.appenders;				
+			instance.appenders = arguments.appenders;	
+						
+			// Set logging levels
+			setLevelMin( arguments.levelMin );
+			setLevelMax( arguments.levelMax );
 			
 			return this;
 		</cfscript>

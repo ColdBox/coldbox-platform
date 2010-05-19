@@ -13,5 +13,17 @@
 		assertEquals( logLevels.lookupAsInt("DEBUG"), "4" );
 		assertEquals( logLevels.lookupAsInt("TRACE"), "999" );
 	}
+	
+	function testisLevelValid(){
+		assertEquals( true, logLevels.isLevelValid(-1) );
+		assertEquals( true, logLevels.isLevelValid(0) );
+		assertEquals( true, logLevels.isLevelValid(1) );
+		assertEquals( true, logLevels.isLevelValid(2) );
+		assertEquals( true, logLevels.isLevelValid(3) );
+		assertEquals( true, logLevels.isLevelValid(4) );
+		assertEquals( false, logLevels.isLevelValid(5) );
+		assertEquals( false, logLevels.isLevelValid(50) );		
+	}
+	
 </cfscript>
 </cfcomponent>

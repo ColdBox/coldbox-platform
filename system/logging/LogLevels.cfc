@@ -64,7 +64,7 @@ Description :
 	}
 	
 	function isLevelValid(level){
-		return ( arguments.level gte this.MINLEVEL OR arguments.level lte this.MAXLEVEL );
+		return ( arguments.level gte this.MINLEVEL AND arguments.level lte this.MAXLEVEL );
 	}
 
 </cfscript>

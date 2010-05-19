@@ -72,7 +72,7 @@
 		</Root>
 		
 		<!-- Very advanced category -->
-		<Category name="MySES" levelMin="3" levelMax="5">
+		<Category name="MySES" levelMin="3" levelMax="4">
 			<Appender-ref ref="myconsole" />
 		</Category>		
 	</LogBox>

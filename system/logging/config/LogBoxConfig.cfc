@@ -73,20 +73,20 @@ Description :
 			// Register Appenders
 			for( key in logBoxDSL.appenders ){
 				logBoxDSL.appenders[key].name = key;
-				appender(argumentCollection=convertLevels( logBoxDSL.appenders[key] ));
+				appender(argumentCollection=logBoxDSL.appenders[key]);
 			}
 			
 			// Register Root Logger
 			if( NOT structKeyExists( logBoxDSL, "root" ) ){
 				$throw("No Root Logger Defined","Please define the root logger","CFCApplicationLoader.NoRootLoggerException");
 			}
-			root(argumentCollection=convertLevels(logBoxDSL.root));
+			root(argumentCollection=logBoxDSL.root);
 			
 			// Register Categories
 			if( structKeyExists( logBoxDSL, "categories") ){
 				for( key in logBoxDSL.categories ){
 					logBoxDSL.categories[key].name = key;
-					category(argumentCollection=convertLevels(logBoxDSL.categories[key]));
+					category(argumentCollection=logBoxDSL.categories[key]);
 				}
 			}
 			
@@ -194,13 +194,19 @@ Description :
 	
 	<!--- addAppender --->
 	<cffunction name="appender" output="false" access="public" returntype="void" hint="Add an appender configuration.">
-		<cfargument name="name" 		type="string"  required="true"  hint="A unique name for the appender to register. Only unique names can be registered per instance."/>
-		<cfargument name="class" 		type="string"  required="true"  hint="The appender's class to register. We will create, init it and register it for you."/>
-		<cfargument name="properties" 	type="struct"  required="false" default="#structnew()#" hint="The structure of properties to configure this appender with."/>
-		<cfargument name="layout" 		type="string"  required="false" default="" hint="The layout class path to use in this appender for custom message rendering."/>
-		<cfargument name="levelMin" 	type="numeric" required="false" default="0" hint="The default log level for the root logger, by default it is 0 (FATAL). Optional. ex: config.logLevels.WARN"/>
-		<cfargument name="levelMax" 	type="numeric" required="false" default="4" hint="The default log level for the root logger, by default it is 4 (DEBUG). Optional. ex: config.logLevels.WARN"/>
-		<cfscript>
+		<cfargument name="name" 		type="string"  	required="true"  hint="A unique name for the appender to register. Only unique names can be registered per instance."/>
+		<cfargument name="class" 		type="string"  	required="true"  hint="The appender's class to register. We will create, init it and register it for you."/>
+		<cfargument name="properties" 	type="struct"  	required="false" default="#structnew()#" hint="The structure of properties to configure this appender with."/>
+		<cfargument name="layout" 		type="string"  	required="false" default="" hint="The layout class path to use in this appender for custom message rendering."/>
+		<cfargument name="levelMin" 	type="any" 	   	required="false" default="0" hint="The default log level for the root logger, by default it is 0 (FATAL). Optional. ex: config.logLevels.WARN"/>
+		<cfargument name="levelMax" 	type="any" 		required="false" default="4" hint="The default log level for the root logger, by default it is 4 (DEBUG). Optional. ex: config.logLevels.WARN"/>
+		<cfscript>			
+			// Convert Levels
+			convertLevels(arguments);
+			
+			// Check levels
+			levelChecks(arguments.levelMin, arguments.levelMax);
+			
 			// Register appender
 			instance.appenders[arguments.name] = arguments;
 		</cfscript>
@@ -208,11 +214,13 @@ Description :
 	
 	<!--- Set the root logger information  --->
 	<cffunction name="root" access="public" returntype="void" output="false" hint="Register the root logger in this configuration.">
-		<cfargument name="levelMin" 	type="numeric" required="false" default="0" hint="The default log level for the root logger, by default it is 0 (FATAL). Optional. ex: config.logLevels.WARN"/>
-		<cfargument name="levelMax" 	type="numeric" required="false" default="4" hint="The default log level for the root logger, by default it is 4 (DEBUG). Optional. ex: config.logLevels.WARN"/>
-		<cfargument name="appenders" 	type="string"  required="true"  hint="A list of appenders to configure the root logger with. Send a * to add all appenders"/>
+		<cfargument name="levelMin" 	type="any" 		required="false" default="0" hint="The default log level for the root logger, by default it is 0 (FATAL). Optional. ex: config.logLevels.WARN"/>
+		<cfargument name="levelMax" 	type="any" 		required="false" default="4" hint="The default log level for the root logger, by default it is 4 (DEBUG). Optional. ex: config.logLevels.WARN"/>
+		<cfargument name="appenders" 	type="string"  	required="true"  hint="A list of appenders to configure the root logger with. Send a * to add all appenders"/>
 		<cfscript>
 			var x = 1;
+			// Convert Levels
+			convertLevels(arguments);
 			
 			// Check levels
 			levelChecks(arguments.levelMin, arguments.levelMax);
@@ -234,12 +242,14 @@ Description :
 	
 	<!--- addCategory --->
 	<cffunction name="category" output="false" access="public" returntype="void" hint="Add a new category configuration with appender(s).  Appenders MUST be defined first, else this method will throw an exception">
-		<cfargument name="name" 		type="string"  required="true"  hint="A unique name for the appender to register. Only unique names can be registered per instance."/>
-		<cfargument name="levelMin" 	type="numeric" required="false" default="0" hint="The default min log level for this category. Defaults to the lowest level 0 or FATAL"/>
-		<cfargument name="levelMax" 	type="numeric" required="false" default="4" hint="The max default log level for this category. If not passed it defaults to the highest level possible"/>
-		<cfargument name="appenders" 	type="string"  required="false" default="*"  hint="A list of appender names to configure this category with. By default it uses all the registered appenders"/>
+		<cfargument name="name" 		type="string"  	required="true"  hint="A unique name for the appender to register. Only unique names can be registered per instance."/>
+		<cfargument name="levelMin" 	type="any" 		required="false" default="0" hint="The default min log level for this category. Defaults to the lowest level 0 or FATAL"/>
+		<cfargument name="levelMax" 	type="any"		required="false" default="4" hint="The max default log level for this category. If not passed it defaults to the highest level possible"/>
+		<cfargument name="appenders" 	type="string" 	required="false" default="*"  hint="A list of appender names to configure this category with. By default it uses all the registered appenders"/>
 		<cfscript>
 			var x = 1;
+			// Convert Levels
+			convertLevels(arguments);
 			
 			// Check levels
 			levelChecks(arguments.levelMin, arguments.levelMax);

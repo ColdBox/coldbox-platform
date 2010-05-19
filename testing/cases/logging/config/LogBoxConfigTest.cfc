@@ -8,6 +8,16 @@
 		config.appender("luis2","coldbox.system.logging.AbstractAppender");
 		
 		assertEquals( structCount(config.getAllAppenders()), 2);
+		
+		// Test bad Appender levels
+		try{
+			config.appender(name="luis2",class="coldbox.system.logging.AbstractAppender",levelMin=-40,levelMax=50);
+		}
+		catch("LogBoxConfig.InvalidLevel" e){
+		}
+		catch(Any e){
+			fail(e);
+		}
 	}
 	function testValidateCategories(){
 		config.category(name="ses",levelMin=0,levelMax=2,appenders="luis,2");

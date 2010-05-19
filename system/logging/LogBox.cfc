@@ -94,8 +94,6 @@ Description :
 			args.levelMax = rootConfig.levelMax;
 			args.appenders = getAppendersMap(rootConfig.appenders);
 			oRoot = createObject("component","coldbox.system.logging.Logger").init(argumentCollection=args);
-			// add the log levels
-			oRoot.logLevels = this.logLevels;
 			
 			//Save in Registry
 			instance.loggerRegistry = structnew();
@@ -168,8 +166,6 @@ Description :
 					oLogger = createObject("component","coldbox.system.logging.Logger").init(argumentCollection=args);
 					// Inject Root Logger
 					oLogger.setRootLogger(root);
-					// Inject Log Levels
-					oLogger.logLevels = this.logLevels;
 					// Store it
 					instance.loggerRegistry[arguments.category] = oLogger;
 				}

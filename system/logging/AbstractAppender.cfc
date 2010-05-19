@@ -54,6 +54,10 @@ Description :
 			if( len(trim(arguments.layout)) ){
 				instance.customLayout = createObject("component",arguments.layout).init(this);
 			}
+			
+			// Levels
+			setLevelMin( arguments.levelMin );
+			setLevelMax( arguments.levelMax );
 					
 			return this;
 		</cfscript>
