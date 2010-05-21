@@ -316,6 +316,12 @@ Description :
 		<cfset instance.Profilers = arguments.Profilers/>
 	</cffunction>
 	
+	<!--- resetProfilers --->
+    <cffunction name="resetProfilers" output="false" access="public" returntype="void" hint="Reset all profilers">
+    	<cfset setProfilers(arrayNew(1))>
+    </cffunction>
+	
+	
 	<!--- recordProfiler --->
     <cffunction name="recordProfiler" output="false" access="public" returntype="void" hint="This method will try to push a profiler record">
     	<cfscript>
