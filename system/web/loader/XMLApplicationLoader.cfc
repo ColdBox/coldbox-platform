@@ -503,6 +503,7 @@ Loads a coldbox xml configuration file
 			}
 			else{
 				//Configure using the set mapping in the config
+				configStruct.ModulesLocation        = reReplace(configStruct.ModulesLocation,"/$","");
 				configStruct.ModulesPath 			= expandPath(configStruct.ModulesLocation);
 				configStruct.ModulesInvocationPath 	= reReplace(reReplace(configStruct.ModulesLocation,"^/",""),"(/|\\)",".","all");
 			}
