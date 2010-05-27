@@ -30,6 +30,7 @@ Description: This is the framework's simple bean factory.
 			setpluginAuthor("Luis Majano, Sana Ullah");
 			setpluginAuthorURL("http://www.coldbox.org");
 			
+			// Model Settings
 			instance.ModelsPath 			= getSetting("ModelsPath");
 			instance.ModelsInvocationPath 	= getSetting("ModelsInvocationPath");
 			instance.ModelsObjectCaching 	= getSetting("ModelsObjectCaching");
@@ -161,18 +162,26 @@ Description: This is the framework's simple bean factory.
 	<!--- Get Model --->
 	<cffunction name="getModel" access="public" returntype="any" hint="Create or retrieve model objects by convention" output="false" >
 		<!--- ************************************************************* --->
-		<cfargument name="name" 				required="true"  type="string"  hint="The name of the model to retrieve">
+		<cfargument name="name" 				required="false" type="string"  hint="The name of the model to retrieve">
 		<cfargument name="useSetterInjection" 	required="false" type="boolean" hint="Whether to use setter injection alongside the annotations property injection. cfproperty injection takes precedence.">
 		<cfargument name="onDICompleteUDF" 		required="false" type="string"	hint="After Dependencies are injected, this method will look for this UDF and call it if it exists. The default value is onDIComplete">
 		<cfargument name="stopRecursion"		required="false" type="string"  hint="A comma-delimmited list of stoprecursion classpaths.">
+		<cfargument name="dsl"					required="false" type="string"  hint="The dsl string to use to retrieve the domain object"/>
 		<!--- ************************************************************* --->
 		<cfscript>
-			var oModel = 0;
-			var modelClassPath = 0;
-			var md = 0;
-			var modelMappings = getModelMappings();
-			var announceData = structnew();
+			var oModel 			 = 0;
+			var modelClassPath   = 0;
+			var md 				 = 0;
+			var modelMappings	 = getModelMappings();
+			var announceData 	 = structnew();
 			var isModelFinalized = false;
+			var definition		 = structnew();
+			
+			// Are we using dsl or name localization?
+			if( structKeyExists(arguments,"dsl") ){
+				definition.type = arguments.dsl;
+				return getDSLDependency(definition);
+			}
 			
 			// Resolve name in Aliases 
 			arguments.name = resolveModelAlias(arguments.name);

@@ -11,8 +11,19 @@ Description :
 ----------------------------------------------------------------------->
 <cfcomponent extends="coldbox.system.testing.BaseTestCase" output="false" appMapping="/coldbox/testharness">
 	<cfscript>
+	
+		function setup(){
+			super.setup();
+			bf = getController().getPlugin("BeanFactory");
+		}
+	
 		function testcoldboxDSL(){
 			
+		}
+		
+		function testGetModelWithDSL(){
+			target = bf.getModel(dsl="coldbox:cacheManager");
+			assertEquals( getController().getColdBoxOCM(), target); 
 		}
 		
 	</cfscript>
