@@ -157,13 +157,13 @@ Optional Methods
 		
 		/*
 		//Register Layouts
-		layouts = {
-			login = {
-				file = "Layout.tester.cfm",
-				views = "vwLogin,test",
-				folders = "tags,pdf/single"
+		layouts = [
+			{ name = "login",
+		 	  file = "Layout.tester.cfm",
+			  views = "vwLogin,test",
+			  folders = "tags,pdf/single"
 			}
-		};
+		];
 		
 		//Model Integration
 		models = {
