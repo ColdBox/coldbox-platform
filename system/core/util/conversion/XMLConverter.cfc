@@ -200,6 +200,7 @@ Modifications
 			else{
 				thisValue = safeText(target[key],arguments.useCDATA);
 			}
+			key = replace(xmlFormat(unicodeWin1252(trim(key))),"$","","all");
 			buffer.append("<#lcase(key)#>#thisValue#</#lcase(key)#>");
 		}
 		
