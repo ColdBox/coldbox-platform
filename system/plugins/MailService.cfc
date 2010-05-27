@@ -29,12 +29,30 @@ Description :
 			setPluginAuthor("Luis Majano");
 			setPluginAuthorURL("http://www.coldbox.org");
 			
+			// Mail Token Symbol
+			setTokenMarker("@");
+			
+			// Setting Override
+			if( settingExists("mailservice_tokenMarker") ){
+				setTokenMarker( getSetting("mailservice_tokenMarker") ); 
+			}
+			
 			return this;
 		</cfscript>
 	</cffunction>
 
 <!------------------------------------------- PUBLIC ------------------------------------------->
 
+	<!--- Get/Set Token Marker --->
+	<cffunction name="getTokenMarker" access="public" returntype="string" output="false" hint="Get the token marker">
+    	<cfreturn instance.TokenMarker>
+    </cffunction>
+    <cffunction name="setTokenMarker" access="public" returntype="void" output="false" hint="Set the token marker">
+    	<cfargument name="TokenMarker" type="string" required="true">
+    	<cfset instance.TokenMarker = arguments.TokenMarker>
+    </cffunction>
+
+	<!--- newMail --->
 	<cffunction name="newMail" access="public" returntype="coldbox.system.beans.Mail" output="false" hint="Get a new Mail payload object, just use config() on it to prepare it.">
 		<cfscript>
 			return createObject("component","coldbox.system.beans.Mail").init();
@@ -165,9 +183,10 @@ Description :
 			var tokens = arguments.Mail.getBodyTokens();
 			var body = arguments.Mail.getBody();
 			var key = 0;
+			var tokenMarker = getTokenMarker();
 			
 			for(key in tokens){
-				body = replaceNoCase(body,"@#key#@", tokens[key],"all");
+				body = replaceNoCase(body,"#tokenMarker##key##tokenMarker#", tokens[key],"all");
 			}
 			
 			arguments.Mail.setBody(body);

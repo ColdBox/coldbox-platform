@@ -12,16 +12,20 @@ Description :
 Modification History:
 01/18/2007 - Created
 ----------------------------------------------------------------------->
-<cfcomponent extends="coldbox.system.testing.BaseTestCase" output="false">
+<cfcomponent extends="coldbox.system.testing.BasePluginTest" output="false" plugin="coldbox.system.plugins.MailService">
 <cfscript>
 	function setup(){
-		mockController = getMockBox().createMock(className="coldbox.system.web.Controller",clearMethod=true);
-		ms = getMockBox().createMock(className="coldbox.system.plugins.MailService").init(mockController);
+		super.setup();
+		
+		//namespace the plugin test target
+		ms = plugin;
 		
 		ms.$("getSetting").$args("MailServer").$results("");
 		ms.$("getSetting").$args("MailUsername").$results("");
 		ms.$("getSetting").$args("MailPassword").$results("");
 		ms.$("getSetting").$args("MailPort").$results("25");
+		ms.setTokenMarker("@");
+		
 	}
 	function testNewMail(){
 		mail = ms.newMail();
@@ -31,6 +35,19 @@ Modification History:
 		tokens = {name="Luis Majano",time=dateformat(now(),"full")};
 		mail.setBodyTokens(tokens);
 		mail.setBody("Hello @name@, how are you today? Today is the @time@");
+		
+		makePublic(ms,"parseTokens");
+		
+		ms.parseTokens(mail);
+		
+		assertEquals( mail.getBody(), "Hello #tokens.name#, how are you today? Today is the #tokens.time#");
+	}
+	function testparseTokensCustom(){
+		ms.setTokenMarker("$");
+		mail = ms.newMail();
+		tokens = {name="Luis Majano",time=dateformat(now(),"full")};
+		mail.setBodyTokens(tokens);
+		mail.setBody("Hello $name$, how are you today? Today is the $time$");
 		
 		makePublic(ms,"parseTokens");
 		
