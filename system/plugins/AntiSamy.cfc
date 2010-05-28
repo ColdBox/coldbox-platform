@@ -53,11 +53,12 @@ Description:
 
 <!------------------------------------------- PUBLIC ------------------------------------------->
 	
-	<!--- htmlSanitizer --->
-	<cffunction name="htmlSanitizer" returntype="Any" output="false" hint="clean HTML from XSS scripts using the AntiSamy project. The available policies are antisamy, ebay,myspace or slashdot">
+	<!--- HTMLSanitizer --->
+	<cffunction name="HTMLSanitizer" returntype="Any" output="false" hint="clean HTML from XSS scripts using the AntiSamy project. The available policies are antisamy, ebay,myspace or slashdot">
 		<!--- ************************************************************* --->
-		<cfargument name="htmlData"		type="string" required="true" hint="The html text to sanitize">
-		<cfargument name="policyFile"	type="string" required="false" default="myspace" hint="Provide policy file to scan html. Available options are: antisamy, ebay, myspace, slashdot">
+		<cfargument name="HTMLData"		 type="string"  required="true" hint="The html text to sanitize">
+		<cfargument name="policyFile"	 type="string"  required="false" default="myspace" hint="Provide policy file to scan html. Available options are: antisamy, ebay, myspace, slashdot">
+		<cfargument name="resultsObject" type="boolean" required="false" default="false" hint="Return the cleaned HTML or the results object. By default it is the cleaned HTML"/>
 		<!--- ************************************************************* --->
 		<cfscript>
 			// you can use any xml, our your own customised policy xml
@@ -66,7 +67,11 @@ Description:
 			
 			cleanedHtml	= antiSamy.scan(arguments.htmlData, instance.policyFileStruct[arguments.policyFile]);
 			
-			return cleanedHtml.getCleanHTML(); 
+			if( arguments.resultsObject ){
+				return cleanedHtml;
+			} 
+			
+			return cleanedHTML.getCleanHTML();
 		</cfscript>
 	</cffunction>
 	
