@@ -138,7 +138,7 @@ Modification History:
     	<cfscript>
    		var logBoxConfig = "";
 		
-		logBoxConfig = createObject("component","coldbox.system.logging.config.LogBoxConfig").init(expandPath("/coldbox/system/config/LogBox.xml"));
+		logBoxConfig = createObject("component","coldbox.system.logging.config.LogBoxConfig").init(CFCConfigPath="coldbox.system.config.LogBox");
 		
 		return createObject("component","coldbox.system.logging.LogBox").init(logBoxConfig,controller);
     	</cfscript>

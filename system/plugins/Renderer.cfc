@@ -309,13 +309,13 @@ Description :
 
 			// Explicit Module layout lookup?
 			if( len(arguments.module) ){
-				return "#instance.modulesConfig[arguments.module].mapping#/layouts/#arguments.layout#";
+				return "#instance.modulesConfig[arguments.module].mapping#/#instance.modulesConfig[arguments.module].conventions.layoutsLocation#/#arguments.layout#";
 			}
 			
 			// Declare Locations
 			moduleName 	     = event.getCurrentModule();
 			parentLayoutPath = "/#instance.appMapping#/#instance.layoutsConvention#/modules/#moduleName#/#arguments.layout#";
-			moduleLayoutPath = "#instance.modulesConfig[moduleName].mapping#/layouts/#arguments.layout#";
+			moduleLayoutPath = "#instance.modulesConfig[moduleName].mapping#/#instance.modulesConfig[moduleName].conventions.layoutsLocation#/#arguments.layout#";
 
 			// Check parent view order setup
 			if( instance.modulesConfig[moduleName].layoutParentLookup ){
@@ -369,16 +369,16 @@ Description :
 			var parentViewPath = "";
 			var moduleViewPath = "";
 			var moduleName     = "";
-
+			
 			// Explicit Module view lookup?
 			if( len(arguments.module) ){
-				return "#instance.modulesConfig[arguments.module].mapping#/views/#arguments.view#";
+				return "#instance.modulesConfig[arguments.module].mapping#/#instance.modulesConfig[arguments.module].conventions.viewsLocation#/#arguments.view#";
 			}
 				
 			// Declare Locations
 			moduleName     = event.getCurrentModule();
 			parentViewPath = "/#instance.appMapping#/#instance.viewsConvention#/modules/#moduleName#/#arguments.view#";
-			moduleViewPath = "#instance.modulesConfig[moduleName].mapping#/views/#arguments.view#";
+			moduleViewPath = "#instance.modulesConfig[moduleName].mapping#/#instance.modulesConfig[moduleName].conventions.viewsLocation#/#arguments.view#";
 
 			// Check parent view order setup
 			if( instance.modulesConfig[moduleName].viewParentLookup ){

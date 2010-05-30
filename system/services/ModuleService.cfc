@@ -125,19 +125,37 @@ I oversee and manage ColdBox modules
 				path				 	= modLocation,
 				invocationPath 			= modulesInvocationPath & "." & modName,
 				mapping 				= modulesLocation & "/" & modName,
-				handlerInvocationPath 	= modulesInvocationPath & "." & modName & ".handlers",
-				pluginInvocationPath  	= modulesInvocationPath & "." & modName & ".plugins",
-				pluginsPhysicalPath		= modLocation & "/plugins",
+				handlerInvocationPath 	= modulesInvocationPath & "." & modName,
+				handlerPhysicalPath     = modLocation,
+				pluginInvocationPath  	= modulesInvocationPath & "." & modName,
+				pluginsPhysicalPath		= modLocation,
+				modelsInvocationPath     = modulesInvocationPath & "." & modName,
+				modelsPhysicalPath		= modLocation,
 				registeredHandlers 		= '',
 				settings 				= {},
 				interceptors 			= [],
 				interceptorSettings     = { customInterceptionPoints = "" },
-				routes 					= []
+				routes 					= [],
+				conventions = {
+					handlersLocation 	= "handlers",
+					layoutsLocation 	= "layouts",
+					viewsLocation 		= "views",
+					pluginsLocation     = "plugins",
+					modelsLocation       = "model"
+				}
 			};
-
+			
 			// Load Module configuration from cfc and store it in module Config Cache
 			instance.mConfigCache[modName] = loadModuleConfiguration(mConfig);
-
+			
+			// Update the paths according to conventions
+			mConfig.handlerInvocationPath 	&= ".#replace(mConfig.conventions.handlersLocation,"/",".","all")#";
+			mConfig.handlerPhysicalPath     &= "/#mConfig.conventions.handlersLocation#";
+			mConfig.pluginInvocationPath  	&= ".#replace(mConfig.conventions.pluginsLocation,"/",".","all")#";
+			mConfig.pluginsPhysicalPath		&= "/#mConfig.conventions.pluginsLocation#";
+			mConfig.modelsInvocationPath    &= ".#replace(mConfig.conventions.modelsLocation,"/",".","all")#";
+			mConfig.modelsPhysicalPath		&= "/#mConfig.conventions.modelsLocation#";
+			
 			// Store module configuration in main modules configuration
 			modulesConfiguration[modName] = mConfig;
 
@@ -197,7 +215,7 @@ I oversee and manage ColdBox modules
 			interceptorService.processState("preModuleLoad",iData);
 
 			// Register handlers
-			mConfig.registeredHandlers = controller.getHandlerService().getHandlerListing( mConfig.path & "/handlers" );
+			mConfig.registeredHandlers = controller.getHandlerService().getHandlerListing( mconfig.handlerPhysicalPath );
 			mConfig.registeredHandlers = arrayToList(mConfig.registeredHandlers);
 
 			// Register Custom Interception Points
@@ -214,8 +232,8 @@ I oversee and manage ColdBox modules
 			}
 
 			// Register Model path if it exists.
-			if( directoryExists( mConfig.path & "/model" ) ){
-				beanFactory.appendExternalLocations( mConfig.invocationPath & ".model" );
+			if( directoryExists( mconfig.modelsPhysicalPath ) ){
+				beanFactory.appendExternalLocations( mConfig.modelsInvocationPath );
 			}
 
 			// Register Model Mappings Now
@@ -426,7 +444,10 @@ I oversee and manage ColdBox modules
 
 			//Get Model Mappings
 			mConfig.modelMappings = oConfig.getPropertyMixin("modelMappings","variables",structnew());
-
+			
+			// Get and Append Module conventions
+			structAppend(mConfig.conventions,oConfig.getPropertyMixin("conventions","variables",structnew()),true);
+			
 			return oConfig;
 		</cfscript>
 	</cffunction>
