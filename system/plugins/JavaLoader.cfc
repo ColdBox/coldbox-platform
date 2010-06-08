@@ -21,8 +21,7 @@ Luis Majano		07/11/2006		Updated it to work with ColdBox. look at license in the
 <cfcomponent hint="Loads External Java Classes, while providing access to ColdFusion classes"
 			 extends="coldbox.system.Plugin"
 			 output="false"
-			 cache="true" 
-			 cachetimeout="0">
+			 singleton="true">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
@@ -31,7 +30,10 @@ Luis Majano		07/11/2006		Updated it to work with ColdBox. look at license in the
 		<cfargument name="controller" type="any" required="true" hint="coldbox.system.web.Controller">
 		<!--- ************************************************************* --->
 		<cfscript>
-			super.Init(arguments.controller);
+			var dirs = arrayNew(1);
+			var x    = 1;
+			
+			super.init(arguments.controller);
 			
 			// Plugin Properties
 			setpluginName("Java Loader");
@@ -42,6 +44,17 @@ Luis Majano		07/11/2006		Updated it to work with ColdBox. look at license in the
 			
 			// Set a static ID for the loader
 			setStaticIDKey("cbox-javaloader-#getController().getAppHash()#");
+			
+			// Set up default lib paths by looking at its settings?
+			if( settingExists("javaloader_libpath") ){
+				dirs = getSetting("javaloader_libpath");
+				// Convert simple location to array format
+				if( isSimpleValue(dirs) ){ dirs = listToArray(dirs); }
+				// iterate and classload
+				for(x=1; x lte arrayLen(dirs); x=x+1){
+					appendPaths( dirs[x] );
+				}
+			}
 			
 			return this;
 		</cfscript>
@@ -82,16 +95,16 @@ Luis Majano		07/11/2006		Updated it to work with ColdBox. look at license in the
 		<cfreturn getJavaLoaderFromScope().create(argumentCollection=arguments)>
 	</cffunction>
 	
-	<!--- addPaths --->
+	<!--- appendPaths --->
 	<cffunction name="appendPaths" output="false" access="public" returntype="void" hint="Appends a directory path of *.jar's,*.classes to the current loaded class loader.">
 		<cfargument name="dirPath" type="string" required="true" default="" hint="The directory path to query"/>
-		<cfargument name="filter" type="string" required="false" default="*.jar" hint="The directory filter to use"/>
+		<cfargument name="filter"  type="string" required="false" default="*.jar" hint="The directory filter to use"/>
 		<cfscript>
 			// Convert paths to array of file locations
-			var qFiles = queryJars(argumentCollection=arguments);
-			var iterator = qFiles.iterator();
-			var thisFile = "";
-			var URLClassLoader = "";
+			var qFiles	  		= queryJars(argumentCollection=arguments);
+			var iterator 		= qFiles.iterator();
+			var thisFile 		= "";
+			var URLClassLoader  = "";
 			
 			// Try to check if javaloader in scope? else, set it up.
 			if( NOT isJavaLoaderInScope() ){

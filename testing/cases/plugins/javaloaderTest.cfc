@@ -7,14 +7,23 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 Author     :	Luis Majano
 Date        :	9/3/2007
 ----------------------------------------------------------------------->
-<cfcomponent extends="coldbox.system.testing.BaseTestCase" output="false">
+<cfcomponent extends="coldbox.system.testing.BasePluginTest" output="false" plugin="coldbox.system.plugins.JavaLoader">
 <cfscript>
 	function setup(){
-		javaloader = getMockBox().createMock(className="coldbox.system.plugins.JavaLoader");
+		super.setup();
+		
+		// alias test
+		javaloader = plugin;
 		javaloader.setStaticIDKey("cbox-javaloader-#hash(getCurrentTemplatePath())#");
 		
-		testJarsr = expandPath('/coldbox/testing/resources/helloworld.jar');
-		javaloader.setup( listToArray(testJarsr) );
+		testJarsr = expandPath('/coldbox/testing/resources');
+		
+		javaLoader.$("settingExists",true);
+		javaLoader.$("getSetting").$args("javaloader_libpath").$results(testJarsr);
+		
+		mockController.$("getAppHash",hash(now()));
+		javaLoader.init(mockController);
+		
 		assertTrue( structKeyExists(server, javaloader.getStaticIDKey()) , "Javaloader in scope");
 	}
 	function tearDown(){
@@ -42,6 +51,7 @@ Date        :	9/3/2007
 		javaloader.appendPaths(expandPath("/coldbox/testing/resources/javalib"));
 		urls = javaloader.getLoadedURLs();
 		debug(urls);
+		assertTrue( findNoCase("hello.jar", urls[2]));
 	}
 </cfscript>
 	

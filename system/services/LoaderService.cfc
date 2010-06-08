@@ -109,8 +109,7 @@ Modification History:
 		
 		// Init JavaLoader with paths if set as settings.
 		if( controller.settingExists("javaloader_libpath") ){
-			javaLoader = controller.getPlugin("JavaLoader");
-			javaLoader.setup( javaLoader.queryJars(controller.getSetting('javaloader_libpath')) );
+			controller.getPlugin("JavaLoader");
 		}
 		
 		// IoC Plugin Manager Configuration
