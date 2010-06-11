@@ -45,10 +45,14 @@ component extends="coldbox.system.orm.hibernate.BaseORMService" accessors="true"
 	/**
 	* Constructor
 	*/
-	VirtualEntityService function init(required string entityname, string queryCacheRegion, boolean useQueryCaching){
+	VirtualEntityService function init(required string entityname, 
+										string queryCacheRegion, 
+										boolean useQueryCaching,
+										boolean eventHandling){
 
 		// init parent
 		super.init(argumentCollection=arguments);
+		
 		// Set the local entity to be used in this virtual entity service
 		setEntityName(arguments.entityName);
 		

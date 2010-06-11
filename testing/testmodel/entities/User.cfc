@@ -16,4 +16,8 @@
 	property name="userName";
 	property name="password";
 	property name="lastLogin" ormtype="date";
+	
+	// DI Test
+	property name="testDI" inject="model:testService" persistent="false";
+
 }

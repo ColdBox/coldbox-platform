@@ -10,6 +10,10 @@ This is a helper ORM service that will help you abstract some complexities
 when dealing with CF's ORM via Hibernate.  You can use this service in its
 concrete form or you can inherit from it and extend it.
 
+Events:
+This service can also be enabled to produce events via ColdBox Interceptors. However, the application
+must be a Coldbox application if enabled.
+
 TODO:
 - Add dynamic findBy methods
 - Add dynamic countBy methods
@@ -37,6 +41,11 @@ component accessors="true"{
 	*/
 	property name="useQueryCaching" type="boolean" default="false";
 
+	/**
+	* The bit that enables event handling via the ORM Event handler such as interceptions when new entities get created, etc, disabled by default.
+	*/
+	property name="eventHandling" type="boolean" default="false";
+	
 /* ----------------------------------- DEPENDENCIES ------------------------------ */
 
 
@@ -46,10 +55,17 @@ component accessors="true"{
 	/**
 	* Constructor
 	*/
-	BaseORMService function init(string queryCacheRegion="ORMService.defaultCache", boolean useQueryCaching=false){
+	BaseORMService function init(string queryCacheRegion="ORMService.defaultCache", 
+								  boolean useQueryCaching=false,
+								  boolean eventHandling=false){
 		// setup properties
 		setQueryCacheRegion( arguments.queryCacheRegion );
 		setUseQueryCaching( arguments.useQueryCaching );
+		setEventHandling( arguments.eventHandling );
+		
+		// Create the service ORM Event Handler composition
+		ORMEventHandler = new coldbox.system.orm.hibernate.EventHandler();
+		
 		return this;
 	}
 
@@ -295,21 +311,27 @@ component accessors="true"{
 	* @tested true
     */
 	any function new(required string entityName){
-		var entity = entityNew(arguments.entityName);
-		var key    = "";
+		var entity   = entityNew(arguments.entityName);
+		var key      = "";
+		var excludes = "entityName";
 		
 		// iterate over arguments
 		for( key in arguments ){
 		
 			// Check if method exists and not entityName
-			if( key NEQ "entityName" and structKeyExists(entity, "set#key#") ){
+			if( NOT listFindNoCase(excludes, key) and structKeyExists(entity, "set#key#") ){
 				evaluate("entity.set#key#( arguments[key] )");
 			}		
 		}
 		
+		// Event Handling? If enabled, cal the postNew() interception
+		if( getEventHandling() ){
+			ORMEventHandler.postNew( entity );
+		}
+				
 		return entity;
 	}
-
+	
 	/**
     * Refresh the state of an entity or array of entities from the database
 	* @tested true

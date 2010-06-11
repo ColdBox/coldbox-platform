@@ -4,8 +4,7 @@ Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 ********************************************************************************
 
-Author     :	Luis Majano
-Date        :	01/15/2008
+Author      :	Luis Majano
 Description :
 	This interceptor is used to autowire plugins, handlers and interceptors.
 	Plugins and handlers are autowired after creation. Intreceptors will always
@@ -13,34 +12,44 @@ Description :
 	application aspects to be in place.
 	
 ----------------------------------------------------------------------->
-<cfcomponent hint="This is an autowire interceptor"
-			 output="false"
-			 extends="coldbox.system.Interceptor">
+<cfcomponent hint="This is an autowire interceptor" output="false" extends="coldbox.system.Interceptor">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
+	<!--- configure --->
 	<cffunction name="configure" access="public" returntype="void" output="false" >
 		<cfscript>
-			// Get set properties
-			if( not propertyExists("debugMode") or not isBoolean(getProperty("debugMode")) ){
-				setProperty("debugMode",false);
-			}
+			
+			// Prepare Autowire Settings
+			
 			// DI Complete Method
 			if(not propertyExists("completeDIMethodName")){
 				setProperty("completeDIMethodName",'onDIComplete');
 			}
+			
 			// enableSetterInjection
 			if(NOT propertyExists("enableSetterInjection") OR
 			   NOT isBoolean(getProperty('enableSetterInjection')) ){
 				setProperty("enableSetterInjection",'false');
 			}		
+			
 			// Annotation Check
 			if( NOT propertyExists("annotationCheck") or NOT isBoolean(getProperty("annotationCheck")) ){
 				setProperty("annotationCheck",false);
 			}
 			
-			// Create our BeanFactory plugin, we do this here, because we need it not to execute an endless loop
-			instance.beanFactory = getPlugin("BeanFactory");	
+			// Enable Entity Injection
+			if(NOT propertyExists("entityInjection") or NOT isBoolean(getProperty("entityInjection"))){
+				setProperty("entityInjection",false);
+			}
+			// Entity Includes
+			if(NOT propertyExists("entityInclude") ){
+				setProperty("entityInclude",'');
+			}
+			// Entity Excludes
+			if(NOT propertyExists("entityExclude") ){
+				setProperty("entityExclude",'');
+			}
 		</cfscript>
 	</cffunction>
 
@@ -94,7 +103,25 @@ Description :
 		</cfif>		
 	</cffunction>
 	
-	<!--- After Plugin Creation --->
+	<!--- After EntityNew --->
+	<cffunction name="ORMPostNew" access="public" returntype="void" output="false" >
+		<!--- ************************************************************* --->
+		<cfargument name="event" 		 required="true" type="any" hint="The event object.">
+		<cfargument name="interceptData" required="true" type="any" hint="A structure containing intercepted data = [entity=The created entity]">
+		<!--- ************************************************************* --->
+		<cfset processEntityInjection(argumentCollection=arguments)>
+	</cffunction>
+	
+	<!--- ORMPostLoad --->
+	<cffunction name="ORMPostLoad" access="public" returntype="void" output="false" >
+		<!--- ************************************************************* --->
+		<cfargument name="event" 		 required="true" type="any" hint="The event object.">
+		<cfargument name="interceptData" required="true" type="any" hint="A structure containing intercepted data = [entity=The created entity]">
+		<!--- ************************************************************* --->
+		<cfset processEntityInjection(argumentCollection=arguments)>
+	</cffunction>
+	
+	<!--- processAutowire --->
 	<cffunction name="processAutowire" access="public" returntype="void" output="false" hint="Process autowiring using a targetype and data.">
 		<!--- ************************************************************* --->
 		<cfargument name="target" type="any" required="true" hint="The target object to autowire" >
@@ -102,11 +129,10 @@ Description :
 		<cfscript>
 			try{
 				// Process Autowire
-				instance.beanFactory.autowire(target=arguments.target,
-											  useSetterInjection=getProperty('enableSetterInjection'),
-											  annotationCheck=getProperty("annotationCheck"),
-											  onDICompleteUDF=getProperty('completeDIMethodName'),
-											  debugMode=getProperty('debugMode'));
+				getPlugin("BeanFactory").autowire(target=arguments.target,
+											  	  useSetterInjection=getProperty('enableSetterInjection'),
+											  	  annotationCheck=getProperty("annotationCheck"),
+											  	  onDICompleteUDF=getProperty('completeDIMethodName'));
 			}
 			catch(Any e){
 				log.error("Error autowiring #getmetadata(arguments.target).name#. #e.message# #e.detail#");
@@ -117,6 +143,32 @@ Description :
 	
 <!------------------------------------------- PRIVATE METHDOS ------------------------------------------->
 	
-
+	<cffunction name="processEntityInjection" access="private" returntype="void" output="false" >
+		<!--- ************************************************************* --->
+		<cfargument name="event" 		 required="true" type="any" hint="The event object.">
+		<cfargument name="interceptData" required="true" type="any" hint="A structure containing intercepted data = [entity=The created entity]">
+		<!--- ************************************************************* --->
+		<cfscript>
+			var entityName		= listLast(getMetadata(arguments.interceptData.entity).name,".");
+			var injectorInclude = getProperty("entityInclude");
+			var injectorExclude = getProperty("entityExclude");
+			
+			// Enabled?
+			if( NOT getProperty("entityInjection") ){
+				return;
+			}
+			
+			// Include,Exclude?
+			if( (len(injectorInclude) AND listContainsNoCase(injectorInclude,entityName))
+			    OR
+				(len(injectorExclude) AND NOT listContainsNoCase(injectorExclude,entityName))
+				OR 
+				(NOT len(injectorInclude) AND NOT len(injectorExclude) ) ){
+				
+				// Process DI
+				processAutowire(arguments.interceptData.entity);
+			}
+		</cfscript>
+	</cffunction>
 
 </cfcomponent>

@@ -1,10 +1,15 @@
 component extends="coldbox.system.testing.BaseTestCase"{
 
 	function setup(){
-		ormservice = getMockBox().createMock("coldbox.system.orm.hibernate.BaseORMService");
+		ormservice   = getMockBox().createMock("coldbox.system.orm.hibernate.BaseORMService");
+		mockEH = getMockBox().createEmptyMock("coldbox.system.orm.hibernate.EventHandler");
+		
 		// Mocks
 		ormservice.init();
-
+		
+		// Mock event handler
+		ormservice.$property("ORMEventHandler","variables",mockEH);
+	
 		// Test ID's
 		testUserID = '88B73A03-FEFA-935D-AD8036E1B7954B76';
 		testCatID  = '3A2C516C-41CE-41D3-A9224EA690ED1128';
@@ -46,6 +51,11 @@ component extends="coldbox.system.testing.BaseTestCase"{
 	}
 
 	function testNew(){
+		//mocks
+		mockEventHandler = getMockBox().createEmptyMock("coldbox.system.orm.hibernate.EventHandler");
+		mockEventHandler.$("postNew");
+		ormService.$property("ORMEventHandler","variables",mockEventHandler);
+		
 		ormservice.new("User");
 		
 		// Test with arguments.
@@ -53,8 +63,23 @@ component extends="coldbox.system.testing.BaseTestCase"{
 		debug(user);
 		assertEquals( "luis", user.getFirstName() );
 		assertEquals( "majano", user.getLastName() );
+		
+		assertFalse( arrayLen(mockEventHandler.$callLog().postNew) );	
 	}
-
+	
+	function testNewWithEvents(){
+		//mocks
+		mockEventHandler = getMockBox().createEmptyMock("coldbox.system.orm.hibernate.EventHandler");
+		mockEventHandler.$("postNew");
+		ormService.setEventHandling( true );
+		ormService.$property("ORMEventHandler","variables",mockEventHandler);
+		
+		// Call it
+		ormservice.new("User");
+		
+		assertTrue( arrayLen(mockEventHandler.$callLog().postNew) );	
+	}
+	
 	function testGet(){
 		user = ormService.get("User","123");
 		assertTrue( isNull(user) );

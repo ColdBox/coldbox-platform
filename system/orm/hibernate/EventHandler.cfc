@@ -14,14 +14,16 @@ Description :
 	
 	We also fires several coldbox interceptors that match the ORM events prefixed by ORM within
 	a ColdBox application, so it makes it super easy to chain ORM interceptions
-@injector false
-@injectorSetterInjection false
-@injectorStopRecursion ''
-@injectorInclude ''
-@injectorExclude ''
-@output false
+
 */
 component extends="coldbox.system.remote.ColdboxProxy" implements="CFIDE.orm.IEventHandler"{
+	
+	/**
+	* postNew called by ColdBox which in turn announces a coldbox interception: ORMPostNew
+	*/
+	public void function postNew(any entity){
+		announceInterception("ORMPostNew",{entity = arguments.entity});
+	}
 	
 	/**
 	* preLoad called by hibernate which in turn announces a coldbox interception: ORMPreLoad
@@ -31,35 +33,9 @@ component extends="coldbox.system.remote.ColdboxProxy" implements="CFIDE.orm.IEv
 	}
 
 	/**
-	* Whenever entities are loaded I get fired and can do some funky ColdBox wiring.
-	* Also announces a coldbox interception: ORMPostLoad
+	* postLoad called by hibernate which in turn announces a coldbox interception: ORMPostLoad
 	*/
 	public void function postLoad(any entity){
-		var md = getMetadata(this);
-		// Verify metadata injections
-		if( structKeyExists(md,"injector") and md.injector ){
-			
-			var entityName = listLast(getMetadata(arguments.entity).name,".");
-			
-			// Injector Defaults
-			if( NOT structKeyExists(md,"injectorSetterInjection") ){	md.injectorSetterInjection = false; }
-			if( NOT structKeyExists(md,"injectorStopRecursion") ){	md.injectorStopRecursion = ''; }
-			if( NOT structKeyExists(md,"injectorInclude") ){	md.injectorInclude = ''; }
-			if( NOT structKeyExists(md,"injectorExclude") ){	md.injectorExclude = ''; }
-		
-			// Include,Exclude?
-			if( (len(md.injectorInclude) AND listContainsNoCase(md.injectorInclude,entityName))
-			    OR
-				(len(md.injectorExclude) AND NOT listContainsNoCase(md.injectorExclude,entityName))
-				OR 
-				(NOT len(md.injectorInclude) AND NOT len(md.injectorExclude) ) ){
-				
-				// Inject Entity
-				autowire(arguments.entity,md.injectorSetterInjection,md.injectorStopRecursion);
-			}
-		}// end if injecting
-		
-		// Announce interception
 		announceInterception("ORMPostLoad",{entity=arguments.entity});
 	}
 	
@@ -104,15 +80,4 @@ component extends="coldbox.system.remote.ColdboxProxy" implements="CFIDE.orm.IEv
 	public void function postInsert(any entity){
 		announceInterception("ORMPostInsert", {entity=arguments.entity});
 	}
-	
-	/**
-	* Autowire entities based on arguments
-	*/
-	public void function autowire(required any entity, boolean useSetterInjection=false, string stopRecursion=""){
-		// Inject Entity
-		getPlugin("BeanFactory").autowire(target=arguments.entity,
-			   							  useSetterInjection=arguments.useSetterInjection,
-									      stopRecursion=arguments.stopRecursion);
-	}
-	
 }
