@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CacheBox>
+	
+	<!--  The LogBox Configuration File to Use -->
+	<LogBoxConfiguration>coldbox.system.cache.config.LogBoxConfig</LogBoxConfiguration>
+	
+	<!-- The defaultCache has an implicit name "default" which is a reserved cache name
+		 It also has a default provider of cachebox which cannot be changed.
+		 All timeouts are in minutes -->
+	<DefaultConfiguration 
+		objectDefaultTimeout="60"
+		objectDefaultLastAccessTimeout="30"
+		useLastAccessTimeouts="true"
+		reapFrequency="2"
+		freeMemoryPercentageThreshold="0"
+		evictionPolicy="LRU"
+		evictCount="1"
+		maxObjects="100"
+		objectStore="ConcurrentSoftReferenceStore" />
+		
+	<!--  Register all the named caches below -->
+	<Cache name="SampleCache1"
+		provider="cachebox"
+		objectDefaultTimeout="20"
+		useLastAccessTimeouts="false"
+		reapFrequency="1"
+		evictionPolicy="LFU"
+		evictCount="1"
+		maxObjects="100"
+		objectStore="ConcurrentSoftReferenceStore" />
+	 <Cache name="sampleCache2"
+		maxElementsInMemory="500"
+		evictionPolicy="FIFO" />
+	
+	<!--  Register cache listeners -->
+	<EventListeners>
+		<Listener class="test.path.Listner" name="SampleListner">
+			<Property name="prop1">value1</Property>
+			<Property name="prop2">value2</Property>
+		</Listener>
+	</EventListeners>
+	
+</CacheBox>

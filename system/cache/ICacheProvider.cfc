@@ -6,10 +6,14 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 
 Author 	    :	Luis Majano
 Description :
-	The main interface for a CacheBox cache manager object.
+	The main interface for a CacheBox cache provider.  You need to implement 
+	all the methods in order for CacheBox to work correctly for the implementing
+	cache provider.
+	
+	Please note that all cache providers have a reference back to the CacheBox Factory.
 
 ----------------------------------------------------------------------->
-<cfinterface hint="The main interface for a CacheBox cache manager object.">
+<cfinterface hint="The main interface for a CacheBox cache provider object.">
 
 	<!--- getName --->
     <cffunction name="getName" output="false" access="public" returntype="string" hint="Get the name of this cache">
@@ -122,7 +126,6 @@ Description :
 		<cfargument name="objectKey" type="string" required="true" hint="The key the object was stored under.">
 	</cffunction>
 	
-
 	<!--- shutdown --->
     <cffunction name="shutdown" output="false" access="public" returntype="void" hint="Shutdown gracefully a cache">
     </cffunction>

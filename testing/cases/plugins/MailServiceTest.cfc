@@ -58,8 +58,8 @@ Modification History:
 	function testSend(){
 		// mockings
 		mockLogger = getMockBox().createMock(className="coldbox.system.plugins.Logger",clearMethods=true);
-		ms.mockMethod("getLogger",mockLogger);
-		mockLogger.$("logError");
+		ms.$property("log","variables",mockLogger);
+		mockLogger.$("error");
 		
 		// 1:Mail with No Params
 		mail = ms.newMail().config(from="info@coldboxframework.com",to="lmajano@gmail.com",type="html");

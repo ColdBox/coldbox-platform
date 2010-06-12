@@ -9,8 +9,7 @@ Description :
 	I model a mail payload object
 
 ----------------------------------------------------------------------->
-<cfcomponent output="false" 
-			 hint="I model a cfmail object with extra pizzazz">
+<cfcomponent output="false" hint="I model a cfmail object with extra pizzazz">
 				 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
@@ -25,6 +24,7 @@ Description :
 		instance.to = "";
 	</cfscript>
 	
+	<!--- init --->
 	<cffunction name="init" access="public" output="false" returntype="Mail" hint="Initialize the Mail object">
 		<cfreturn this>
 	</cffunction>
@@ -35,6 +35,7 @@ Description :
 		<cfreturn structKeyExists(instance,arguments.property)>
 	</cffunction>
 	
+	<!--- config --->
 	<cffunction name="config" access="public" output="false" returntype="Mail" hint="Configure the Mail object">
 		<cfargument name="from" 			required="false" type="string" 		hint="Initial value for the from property." />
 		<cfargument name="to" 				required="false" type="string" 		hint="Initial value for the to property." />

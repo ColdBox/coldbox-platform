@@ -591,7 +591,6 @@ Modification History:
 		<cfreturn cgi.REQUEST_METHOD>
 	</cffunction>
 	
-	<!--- getHTTPHeader --->
 	<cffunction name="getHTTPHeader" output="false" access="public" returntype="any" hint="Get a HTTP header">
 		<cfargument name="header"  type="string" required="true"  hint="The header key"/>
 		<cfargument name="default" type="any"    required="false" hint="A default value if the header does not exist"/>
@@ -606,6 +605,24 @@ Modification History:
 			}
 			$throw(message="Header #arguments.header# not found in HTTP headers",detail="Headers found: #structKeyList(headers)#",type="RequestContext.InvalidHTTPHeader");
 		</cfscript>
+	</cffunction>
+	
+	<cffunction name="setHTTPHeader" output="false" access="public" returntype="void" hint="Set an HTTP Header">
+    	<cfargument name="statusCode" type="string" required="false" hint="A status code"/>
+		<cfargument name="statusText" type="string" required="false" default="" hint="A status text"/>
+		<cfargument name="name" 	  type="string" required="false" hint="The header name"/>
+    	<cfargument name="value" 	  type="string" required="false" default="" hint="The header value"/>
+		<cfargument name="charset" 	  type="string" required="false" default="UTF-8" hint="The charset to use"/>	
+    	
+		<!--- statusCode exists? --->
+		<cfif structKeyExists(arguments,"statusCode")>
+			<cfheader statuscode="#arguments.statusCode#" statustext="#arguments.statusText#">
+		<!--- Name exists --->
+		<cfelseif structKeyExists(arguments,"name")>
+			<cfheader name="#arguments.name#" value="#arguments.value#" charset="#arguments.charset#">
+		<cfelse>
+			<cfthrow message="Invalid header arguments" detail="Pass in either a statusCode or name argument" type="RequestContext.InvalidHTTPHeaderParameters">
+		</cfif>	
 	</cffunction>
 	
 	<cffunction name="isSSL" access="public" returntype="boolean" hint="Returns boolean result whether current request is in ssl or not" output="false">
@@ -632,7 +649,6 @@ Modification History:
 		<cfthrow type="#arguments.type#" message="#arguments.message#"  detail="#arguments.detail#">
 	</cffunction>
 	
-	<!--- Dump facade --->
 	<cffunction name="$dump" access="private" hint="Facade for cfmx dump" returntype="void" output="false">
 		<cfargument name="var" required="yes" type="any">
 		<cfargument name="isAbort" type="boolean" default="false" required="false" hint="Abort also"/>

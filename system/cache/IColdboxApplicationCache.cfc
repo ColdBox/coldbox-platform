@@ -6,10 +6,10 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 
 Author 	    :	Luis Majano
 Description :
-	The main interface to produce a ColdBox Application cache
+	The main interface to produce a ColdBox Application cache.
 
 ----------------------------------------------------------------------->
-<cfinterface extends="coldbox.system.cache.ICache" hint="The main interface to produce a ColdBox Application cache">
+<cfinterface extends="coldbox.system.cache.ICacheProvider" hint="The main interface to produce a ColdBox Application cache">
 
 	<!--- getViewCacheKeyPrefix --->
     <cffunction name="getViewCacheKeyPrefix" output="false" access="public" returntype="string" hint="Get the cached view key prefix">

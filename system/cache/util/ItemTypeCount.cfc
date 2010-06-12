@@ -9,7 +9,7 @@ Description :
 	A simple data holder CFC for coldbox application caches
 
 ----------------------------------------------------------------------->
-<cfcomponent output="false" hint="A simple data holder CFC for coldbox application caches, item type counts">
+<cfcomponent output="false" hint="A simple data holder CFC for coldbox application caches, item type counts needed for creating cool reports">
 
 	<cfscript>
 		this.plugins  		= 0;

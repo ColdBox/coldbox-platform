@@ -6,7 +6,8 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 
 Author 	    :	Luis Majano
 Description :
-	The main CacheBox factory and configuration of caches
+	The main CacheBox factory and configuration of caches. From this factory
+	is where you will get all the caches you need to work with or register more caches.
 
 ----------------------------------------------------------------------->
 <cfcomponent hint="The ColdBox CacheBox Factory" output="false">

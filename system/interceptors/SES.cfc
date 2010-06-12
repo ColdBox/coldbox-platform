@@ -191,12 +191,12 @@ Description :
 		var jsonRegex = "^(\{|\[)(.)+(\}|\])$";
 		var patternType = "";
 		
-		// Process all incoming arguments
+		// Process all incoming arguments into the route to store
 		for(arg in arguments){
 			if( structKeyExists(arguments,arg) ){ thisRoute[arg] = arguments[arg]; }
 		}
 		
-		// Process action as a JSON structure
+		// Process actions as a JSON structure?
 		if( structKeyExists(arguments,"action") AND isSimpleValue(arguments.action) AND reFindnocase(jsonRegex,arguments.action) ){
 			try{
 				// Inflate action to structure
@@ -207,28 +207,24 @@ Description :
 			}
 		}
 		
-		// TODO: Cleanups via REgex.
-		// Add trailing / to make it easier to parse
+		// Cleanup Route: Add trailing / to make it easier to parse
 		if( right(thisRoute.pattern,1) IS NOT "/" ){
 			thisRoute.pattern = thisRoute.pattern & "/";
 		}		
-		// Cleanup initial /
+		// Cleanup initial /, not needed if found.
 		if( left(thisRoute.pattern,1) IS "/" ){
-			if( thisRoute.pattern eq "/" ){ 
-				//$throw(message="Pattern is empty, please verify the pattern is valid. Route: #thisRoute.toString()#",type="SES.InvalidRoute");
-			}
-			else{
+			if( thisRoute.pattern neq "/" ){ 
 				thisRoute.pattern = right(thisRoute.pattern,len(thisRoute.pattern)-1);
 			}
 		}
 		
 		// Check if we have optional args by looking for a ?
-		if( findnocase("?",thisRoute.pattern) ){
+		if( findnocase("?",thisRoute.pattern) AND NOT findNoCase("regex:",thisRoute.pattern) ){
 			processRouteOptionals(thisRoute);
 			return;
 		}
 		
-		// Process a json constraints?
+		// Process json constraints?
 		thisRoute.constraints = structnew();
 		// Check if implicit struct first, else try to do JSON conversion.
 		if( isStruct(arguments.constraints) ){ thisRoute.constraints = arguments.constraints; }
@@ -262,8 +258,16 @@ Description :
 			patternType = "alphanumeric";
 			if( findnoCase("-numeric",thisPattern) ){ patternType = "numeric"; }
 			if( findnoCase("-alpha",thisPattern) ){ patternType = "alpha"; }
+			if( findNoCase("regex:",thisPattern) ){ patternType = "regex"; }
 			
+			// Pattern Type Regex
 			switch(patternType){
+				// CUSTOM REGEX
+				case "regex" : {
+					thisRegex = replacenocase(thisPattern,"regex:","");
+					break;	
+				}
+						
 				// ALPHANUMERICAL OPTIONAL
 				case "alphanumeric" : {
 					if( find(":",thisPattern) ){
@@ -323,7 +327,6 @@ Description :
 			thisRoute.regexPattern = thisRoute.regexPattern & thisRegex & "/";
 			
 		} // end looping of pattern optionals
-		
 		
 		// Add it to the routing map table
 		if( len(arguments.module) ){

@@ -180,15 +180,30 @@ Description :
 	<cffunction name="parseTokens" access="private" returntype="void" output="false" hint="Parse the tokens and do body replacements.">
 		<cfargument name="Mail" required="true" type="coldbox.system.beans.Mail" hint="The mail payload" />
 		<cfscript>
-			var tokens = arguments.Mail.getBodyTokens();
-			var body = arguments.Mail.getBody();
-			var key = 0;
+			var tokens 		= arguments.Mail.getBodyTokens();
+			var body 		= arguments.Mail.getBody();
+			var mailParts	= arguments.Mail.getMailParts();
+      		var key 		= 0;
 			var tokenMarker = getTokenMarker();
+			var mailPart 	= 1;
 			
+			//Check mail parts for content
+			if( arrayLen(mailparts) ){
+				// Loop over mail parts
+				for(mailPart=1; mailPart lte arrayLen(mailParts); mailPart++){
+					body = mailParts[mailPart].body;
+					for(key in tokens){
+						body = replaceNoCase(body,"#tokenMarker##key##tokenMarker#", tokens[key],"all");
+					}
+					mailParts[mailPart].body = body;
+				}
+			}
+			
+			// Do token replacement on the body text
 			for(key in tokens){
 				body = replaceNoCase(body,"#tokenMarker##key##tokenMarker#", tokens[key],"all");
 			}
-			
+			// replace back the body
 			arguments.Mail.setBody(body);
 		</cfscript>
 	</cffunction>

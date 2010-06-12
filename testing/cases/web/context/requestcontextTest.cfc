@@ -535,5 +535,15 @@
 		</cfscript>
 	</cffunction>
 	
-
+	
+	<cffunction name="testsetHTTPHeader" access="public"  returntype="void" output="false">
+		<cfscript>
+			var event = getRequestContext();
+			
+			event.setHTTPHeader(statusCode="200",statusText="Hello");
+			
+			event.setHTTPHeader(name="expires",value="#now()#");
+		</cfscript>
+	</cffunction>
+	
 </cfcomponent>
