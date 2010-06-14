@@ -87,8 +87,6 @@ If you are building a mapper, the map must have the above keys in it.
 	<cffunction name="onRegistration" output="false" access="public" returntype="void" hint="Runs on registration">
 		<cfscript>
 			if( getProperty("ensureChecks") ){
-				// DSN Check
-				ensureDSN();			
 				// Table Checks
 				ensureTable();
 			}
@@ -139,17 +137,6 @@ If you are building a mapper, the map must have the above keys in it.
 	
 <!------------------------------------------- PRIVATE ------------------------------------------>
 	
-	<!--- ensureDSN --->
-	<cffunction name="ensureDSN" output="false" access="private" returntype="void" hint="Verify the datasource">
-		<cfscript>
-			var datasources = CreateObject("java", "coldfusion.server.ServiceFactory").datasourceservice.getDatasources();
-			
-			if( NOT structKeyExists(datasources, getProperty('dsn')) ){
-				$throw(message="The dsn #getProperty("dsn")# does not exist. Please create it before using this DBAppender",type="DBAppender.DSNException");
-			}			
-		</cfscript>
-	</cffunction>
-	
 	<!--- ensureTable --->
 	<cffunction name="ensureTable" output="false" access="private" returntype="void" hint="Verify or create the logging table">
 		<cfset var dsn = getProperty("dsn")>
@@ -157,6 +144,7 @@ If you are building a mapper, the map must have the above keys in it.
 		<cfset var tableFound = false>
 		<cfset var qCreate = "">
 		<cfset var cols = instance.columns>
+		
 		<!--- Get Tables on this DSN --->
 		<cfdbinfo datasource="#dsn#" name="qTables" type="tables" />
 

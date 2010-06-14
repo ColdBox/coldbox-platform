@@ -9,21 +9,6 @@
 		loge.init("Unit Test Sample",0,structnew(),"UnitTest");
 	}
 	
-	function testensureDSN(){
-		makePublic(db,"ensureDSN");
-		db.ensureDSN();
-		
-		// invalid
-		props.dsn = 'invalid';
-		db.init('UnitTest',props);
-		try{
-			db.ensureDSN();
-			fail('invalid dsn');
-		}
-		catch("DBAppender.DSNException" e){}
-		catch(Any e){ fail(e.message & e.detail);}
-	}
-	
 	function testEnsureTable(){
 		makePublic(db,"ensureTable");
 		db.ensureTable();
