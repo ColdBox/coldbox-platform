@@ -12,20 +12,10 @@ Description :
 Modification History:
 01/18/2007 - Created
 ----------------------------------------------------------------------->
-<cfcomponent extends="coldbox.system.testing.BasePluginTest" output="false" plugin="coldbox.system.plugins.MailService">
+<cfcomponent extends="coldbox.system.testing.BaseTestCase" output="false">
 <cfscript>
 	function setup(){
-		super.setup();
-		
-		//namespace the plugin test target
-		ms = plugin;
-		
-		mockSettings = getMockBox().createMock("coldbox.system.core.mail.MailSettingsBean").init();
-		ms.$("settingExists",true);
-		ms.$("getMailSettings", mockSettings );
-		ms.$("getSetting").$args("mailservice_tokenMarker").$results("@");
-		
-		ms = ms.init();		
+		ms = getMockBox().createMock("coldbox.system.core.mail.MailService").init();
 	}
 	function testNewMail(){
 		mail = ms.newMail();
@@ -92,6 +82,33 @@ Modification History:
 		mail.addMailParam(name="Disposition-Notification-To",value="info@coldboxframework.com");
 		rtn = ms.send(mail);
 		debug(rtn);
+	}
+	
+	function testMailWithSettings(){
+		mockSettings = getMockBox().createMock("coldbox.system.core.mail.MailSettingsBean").init("0.0.0.0","test","test",25);
+		ms = ms.init(mockSettings);
+		mail = ms.newMail(from="info@coldboxframework.com",to="lmajano@gmail.com",type="html",body="Test",subject="Test");
+		
+		// Mocks
+		ms.$("parseTokens").$("mailIt");
+		ms.send( mail );
+		//debug( mail.getMemento() );
+		
+		assertEquals( "0.0.0.0", mail.getServer() );
+		assertEquals( "test", mail.getUsername() );
+		assertEquals( "test", mail.getPassword() );
+		assertEquals( "25", mail.getPort() );
+		
+		// Test with No settings
+		ms = ms.init();
+		mail = ms.newMail(from="info@coldboxframework.com",to="lmajano@gmail.com",type="html",body="Test",subject="Test");
+		ms.send( mail );
+		
+		//debug( mail.getMemento() );
+		assertFalse( mail.propertyExists("server") );
+		assertFalse( mail.propertyExists("username") );
+		assertFalse( mail.propertyExists("password") );
+		assertFalse( mail.propertyExists("port") );		
 	}
 </cfscript>
 </cfcomponent>

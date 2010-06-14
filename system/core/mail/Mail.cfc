@@ -26,7 +26,9 @@ Description :
 	
 	<!--- init --->
 	<cffunction name="init" access="public" output="false" returntype="Mail" hint="Initialize the Mail object">
-		<cfreturn this>
+		<cfscript>
+			return config(argumentCollection=arguments);
+		</cfscript>
 	</cffunction>
 	
 	<!--- propertyExists --->

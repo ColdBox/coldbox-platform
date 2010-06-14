@@ -4,7 +4,7 @@
 	
 	<cffunction name="setUp" returntype="void" access="public">
 		<cfscript>
-			this.mail = createObject("component","coldbox.system.beans.MailSettingsBean");		
+			this.mail = createObject("component","coldbox.system.core.mail.MailSettingsBean");		
 			
 			this.instance.server = "mail.mail.com";
 			this.instance.username = "mail";
