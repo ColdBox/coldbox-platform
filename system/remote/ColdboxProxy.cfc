@@ -124,24 +124,20 @@ Description :
 	<cffunction name="announceInterception" output="false" access="private" returntype="boolean" hint="Process a remote interception">
 		<!--- ************************************************************* --->
 		<cfargument name="state" 			type="string" 	required="true" hint="The intercept state"/>
-		<cfargument name="interceptData"    type="any" 	    required="false" default="" hint="This method will take the contents and embedded into a structure"/>
+		<cfargument name="interceptData"    type="any" 	    required="false" default="#structNew()#" hint="This method will take the contents and embedded into a structure"/>
 		<!--- ************************************************************* --->
 		<cfscript>
 			var cbController = "";
-			var interceptionStructure = structnew();
 			
 			// locate ColdBox Controller
 			cbController = getController();
-			
-			// emded contents
-			interceptionStructure.interceptData = arguments.interceptData;
 			
 			// Trace the incoming arguments
 			tracer('AnnounceInterception: incoming arguments',arguments);
 					
 			// Intercept
 			try{
-				cbController.getInterceptorService().processState(arguments.state,interceptionStructure);
+				cbController.getInterceptorService().processState(arguments.state,arguments.interceptData);
 			}
 			catch(Any e){
 				handleException(e);				

@@ -45,6 +45,7 @@ Description :
 			eventHandling=true,
 			logSQL = true,
 			eventhandling = true,
+			eventhandler = "model.EventHandler",
 			secondarycacheenabled = true,
 			cacheProvider = "ehcache",
 			flushAtRequestEnd = false

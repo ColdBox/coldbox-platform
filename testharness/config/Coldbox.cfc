@@ -246,7 +246,11 @@ Optional Methods
 			 	deployCommandModel = "DeployCommand"}},
 			 
 			 //Autowire
-			 {class="coldbox.system.interceptors.Autowire"},
+			 {class="coldbox.system.interceptors.Autowire",
+			  properties = {
+			  	entityInjection = true
+			  }
+			  },
 			 
 			 //SES
 			 {class="coldbox.system.interceptors.SES",
