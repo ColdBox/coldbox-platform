@@ -528,19 +528,7 @@ component accessors="true"{
     * Save an entity using hibernate transactions. You can optionally flush the session also
 	* @tested true
     */
-	any function save(required any entity, boolean forceInsert=false, boolean flush=false, boolean validate=false){
-
-		if(arguments.validate){
-			//TODO: CustomErrorMessage file path. it would be coldbox setting "ValidationErrorMessage" = "file name"
-			var validator	= new coldbox.system.orm.hibernate.hyrule.Validator();
-			var result		= validator.validate(arguments.entity);
-			
-			if(result.hasErrors()){
-				// Return Array of error messages
-				return result.getErrors();
-			}
-		}
-
+	any function save(required any entity, boolean forceInsert=false, boolean flush=false){
 		var tx = ORMGetSession().beginTransaction();		
 		try{
 			entitySave(arguments.entity, arguments.forceInsert);
@@ -787,5 +775,21 @@ component accessors="true"{
 	string function getTableName(required string entityName){
 		return ormGetSessionFactory().getClassMetadata(arguments.entityName).getTableName();
 	}
-
+	
+	/**
+	* Returns array of error or empty array.
+	*/
+	array function validate(required any entity){
+		//TODO: CustomErrorMessage file path. it would be coldbox setting "ValidationErrorMessage" = "file name"
+		var validator	= new coldbox.system.orm.hibernate.hyrule.Validator();
+		var result		= validator.validate(arguments.entity);
+		
+		if(result.hasErrors()){
+			// Return Array of error messages
+			return result.getErrors();
+		}
+		
+		return new Array();
+	}
+	
 }
