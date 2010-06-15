@@ -148,7 +148,7 @@ component extends="coldbox.system.testing.BaseTestCase"{
 			user.setLastName('unitTest');
 			user.setUsername('unitTest');
 			user.setPassword('unitTest');
-			result = ormservice.Save(entity=user,validate=true);
+			result = ormservice.validate(user);
 			assertEquals("Please provide firstname", result[1].getMessage());
 	}
 }
