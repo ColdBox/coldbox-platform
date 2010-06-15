@@ -789,7 +789,7 @@ component accessors="true"{
 			return result.getErrors();
 		}
 		
-		return new Array();
+		return ArrayNew();
 	}
 	
 }
