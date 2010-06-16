@@ -25,10 +25,10 @@ Description :
 										  "afterHandlerCreation,afterModelCreation,afterPluginCreation," &
 										  "applicationEnd,sessionStart,sessionEnd," &
 										  "preProcess,preEvent,postEvent,postProcess,preProxyResults," &
-										  "preLayout,preRender,postRender,preViewRender,postViewRender" &
-										  "afterCacheElementInsert,afterCacheElementRemoved,afterCacheElementExpired" &
-										  "preModuleLoad,postModuleLoad,preModuleUnload,postModuleUnload" &
-										  "beforeDebuggerPanel,afterDebuggerPanel" &
+										  "preLayout,preRender,postRender,preViewRender,postViewRender," &
+										  "afterCacheElementInsert,afterCacheElementRemoved,afterCacheElementExpired," &
+										  "preModuleLoad,postModuleLoad,preModuleUnload,postModuleUnload," &
+										  "beforeDebuggerPanel,afterDebuggerPanel," &
 										  "ORMPostNew,ORMPreLoad,ORMPostLoad,ORMPostDelete,ORMPreDelete,ORMPreUpdate,ORMPostUpdate,ORMPreInsert,ORMPostInsert";
 			// Init Container/
 			instance.interceptionStates = structnew();
