@@ -31,7 +31,7 @@ Modification History:
 	<cfscript>
 		variables.configBeanPath 		= "coldbox.system.beans.ConfigBean";
 		variables.datasourceBeanPath 	= "coldbox.system.beans.DatasourceBean";
-		variables.mailsettingsBeanPath 	= "coldbox.system.beans.MailSettingsBean";
+		variables.mailsettingsBeanPath 	= "coldbox.system.core.mail.MailSettingsBean";
 		variables.coldboxAppKey 		= "cbController";
 	</cfscript>
 	
@@ -144,7 +144,7 @@ Modification History:
 	</cffunction>
 	
 	<!--- Get a mail settings bean --->
-	<cffunction name="getMailSettings" access="public" output="false" returnType="coldbox.system.beans.MailSettingsBean" hint="I will return to you a mailsettingsBean modeled after your mail settings in your config file.">
+	<cffunction name="getMailSettings" access="public" output="false" returnType="coldbox.system.core.mail.MailSettingsBean" hint="I will return to you a mailsettingsBean modeled after your mail settings in your config file.">
 		<cfreturn CreateObject("component",mailsettingsBeanPath).init(application[coldboxAppKey].getSetting("MailServer"),
 																   application[coldboxAppKey].getSetting("MailUsername"),
 																   application[coldboxAppKey].getSetting("MailPassword"), 

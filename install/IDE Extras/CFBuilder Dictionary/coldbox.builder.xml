@@ -498,7 +498,7 @@
 	<function name="getInstance" returns="any">
 			<help><![CDATA[ Get the instance of this object (Context: FrameworkSuperType) ]]></help>
 		</function>
-	<function name="getMailSettings" returns="coldbox.system.beans.MailSettingsBean">
+	<function name="getMailSettings" returns="coldbox.system.core.mail.MailSettingsBean">
 			<help><![CDATA[ I will return to you a mailsettingsBean modeled after your mail settings in your config file. (Context: FrameworkSuperType) ]]></help>
 		</function>
 	<function name="runEvent" returns="any">
