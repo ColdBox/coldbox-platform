@@ -53,8 +53,13 @@ Modifications
 			if( arguments.addHeader ){
 				buffer.append('<?xml version="1.0" encoding="#arguments.encoding#"?>');
 			}
+			
+			// Object Check
+			if( isObject(arguments.data) ){
+				buffer.append( objectToXML(argumentCollection=arguments) );
+			}
 			// Struct Check?
-			if( isStruct(arguments.data) OR isObject(arguments.data) ){
+			else if( isStruct(arguments.data) ){
 				buffer.append( structToXML(argumentCollection=arguments) );
 			}
 			// Query Check?
@@ -200,9 +205,69 @@ Modifications
 			else{
 				thisValue = safeText(target[key],arguments.useCDATA);
 			}
-			key = replace(xmlFormat(unicodeWin1252(trim(key))),"$","","all");
 			buffer.append("<#lcase(key)#>#thisValue#</#lcase(key)#>");
 		}
+		
+		// End Root
+		buffer.append("</#rootElement#>");
+		
+		return buffer.toString();
+		</cfscript>
+	</cffunction>
+	
+	<cffunction name="objectToXML" returnType="string" access="public" output="false" hint="Converts an object(entity) into XML by inspecting its properties and then calling the appropriate getters on it.">
+		<cfargument name="data" 		type="any" 		required="true" hint="The structure, object, any to convert.">
+		<cfargument name="useCDATA"  	type="boolean"  required="false"  default="false" hint="Use CDATA content for ALL values">
+		<cfargument name="rootName"     type="string"   required="true"   default="" hint="The name of the root element, else it defaults to the internal defaults."/>
+		<cfscript>
+		var target 			= arguments.data;
+		var buffer 			= createObject("java","java.lang.StringBuffer").init('');
+		var md 				= getMetadata(target);
+		var rootElement		= lcase( safeText( listLast( md.name, "." ) ) );
+		var thisName 		= "";
+		var thisValue 		= "";
+		var	x				= 0;
+		var newValue		= "";
+			
+		// Root Element Override
+		if( len(arguments.rootName) ){ rootElement = arguments.rootName; }
+					
+		// Declare Root
+		buffer.append('<#rootElement# type="#md.name#">');
+		
+		// if no properties to marshall, then return blank
+		if( structKeyExists(md,"properties") ){
+		
+			// loop over properties
+			for(x=1; x lte ArrayLen(md.properties); x++){
+				// check the property name exists and if it has a marshal annotation of false
+				if( structKeyExists(md.properties[x],"name") 
+					OR NOT structKeyExists(md.properties[x],"marhsal")
+					OR md.properties[x]["marshal"] EQ true
+				){
+					thisName  = md.properties[x].name;
+					thisValue = evaluate("target.get#thisName#()");
+					
+					// Value Defined?
+					if( not isDefined("thisValue") ){
+						thisValue = "";
+					}
+					
+					// Translate Value
+					if( NOT isSimpleValue( thisValue ) ){
+						thisValue = translateValue(arguments, thisValue);
+					}
+					else{
+						thisValue = safeText(thisValue,arguments.useCDATA);
+					}
+					
+					buffer.append("<#lcase(thisName)#>#thisValue#</#lcase(thisName)#>");
+					
+				}//end if property has a name, else skip
+				
+			}// end loop over properties
+			
+		}// end if no properties detected
 		
 		// End Root
 		buffer.append("</#rootElement#>");

@@ -472,6 +472,51 @@ Description: This is the framework's simple bean factory.
 			return populateFromStruct(argumentCollection=arguments);
 		</cfscript>
 	</cffunction>
+	
+	<!--- Populate from XML--->
+	<cffunction name="populateFromXML" access="public" returntype="any" hint="Populate a named or instantiated bean from an XML packet" output="false" >
+		<!--- ************************************************************* --->
+		<cfargument name="target" 			required="true" 	type="any" 		hint="This can be an instantiated bean object or a bean instantitation path as a string. If you pass an instantiation path and the bean has an 'init' method. It will be executed. This method follows the bean contract (set{property_name}). Example: setUsername(), setfname()">
+		<cfargument name="xml"   			required="true" 	type="any" 	hint="The XML string or packet">
+		<cfargument name="root"   			required="false" 	type="string" 	default=""  hint="The XML root element to start from">
+		<cfargument name="scope" 			required="false" 	type="string"  default=""   hint="Use scope injection instead of setters population. Ex: scope=variables.instance."/>
+		<cfargument name="trustedSetter"  	required="false" 	type="boolean" default="false" hint="If set to true, the setter method will be called even if it does not exist in the bean"/>
+		<cfargument name="include"  		required="false" 	type="string"  default="" hint="A list of keys to include in the population">
+		<cfargument name="exclude"  		required="false"	type="string"  default="" hint="A list of keys to exclude in the population">
+		<!--- ************************************************************* --->
+		<cfscript>
+			var key				= "";
+			var childElements 	= "";
+			var	x				= 1;
+			
+			// determine XML
+			if( isSimpleValue(arguments.xml) ){
+				arguments.xml = xmlParse( arguments.xml );
+			}
+			
+			// check root
+			if( NOT len(arguments.root) ){
+				arguments.root = "XMLRoot";
+			}
+			
+			// check children
+			if( NOT structKeyExists(arguments.xml[arguments.root],"XMLChildren") ){
+				log.debug("XML root does not have any XMLChildren, aborting population", arguments.xml);
+				return;
+			}
+			
+			// prepare memento
+			arguments.memento = structnew();
+			
+			// iterate and build struct of data
+			childElements = arguments.xml[arguments.root].XMLChildren;
+			for(x=1; x lte arrayLen(childElements); x=x+1){
+				arguments.memento[ childElements[x].XMLName ] = trim(childElements[x].XMLText);
+			}
+			
+			return populateFromStruct(argumentCollection=arguments);
+		</cfscript>
+	</cffunction>
 
 	<!--- Populate from Query --->
 	<cffunction name="populateFromQuery" access="public" returntype="Any" hint="Populate a named or instantiated bean from query" output="false">
