@@ -42,9 +42,9 @@ component accessors="true"{
 	property name="useQueryCaching" type="boolean" default="false";
 
 	/**
-	* The bit that enables event handling via the ORM Event handler such as interceptions when new entities get created, etc, disabled by default.
+	* The bit that enables event handling via the ORM Event handler such as interceptions when new entities get created, etc, enabled by default.
 	*/
-	property name="eventHandling" type="boolean" default="false";
+	property name="eventHandling" type="boolean" default="true";
 	
 /* ----------------------------------- DEPENDENCIES ------------------------------ */
 
@@ -57,7 +57,7 @@ component accessors="true"{
 	*/
 	BaseORMService function init(string queryCacheRegion="ORMService.defaultCache", 
 								  boolean useQueryCaching=false,
-								  boolean eventHandling=false){
+								  boolean eventHandling=true){
 		// setup properties
 		setQueryCacheRegion( arguments.queryCacheRegion );
 		setUseQueryCaching( arguments.useQueryCaching );
@@ -77,7 +77,8 @@ component accessors="true"{
 	*/
 	any function createService(required string entityName, 
 							   boolean useQueryCaching=getUseQueryCaching(), 
-							   string queryCacheRegion=getQueryCacheRegion()) {
+							   string queryCacheRegion=getQueryCacheRegion(),
+							   boolean eventHandling=getEventHandling()) {
 								   
 		return  CreateObject("component", "coldbox.system.orm.hibernate.VirtualEntityService").init(argumentCollection=arguments);
 	}
@@ -307,29 +308,54 @@ component accessors="true"{
 	}
 
 	/**
-    * Get a new entity object by entity name and you can pass in any named parameter and the method will try to set it for you.
+    * Get a new entity object by entity name and you can pass in any named parameter and the method will try to set them for you.
+    * You can pass in the properties structre also to bind the entity
 	* @tested true
     */
-	any function new(required string entityName){
+	any function new(required string entityName,struct properties=structnew()){
 		var entity   = entityNew(arguments.entityName);
 		var key      = "";
-		var excludes = "entityName";
+		var excludes = "entityName,properties";
 		
-		// iterate over arguments
-		for( key in arguments ){
-		
-			// Check if method exists and not entityName
-			if( NOT listFindNoCase(excludes, key) and structKeyExists(entity, "set#key#") ){
-				evaluate("entity.set#key#( arguments[key] )");
-			}		
+		// Properties exists?
+		if( NOT structIsEmpty(arguments.properties) ){
+			populate( entity, arguments.properties );
+		}
+		else{
+			populate(entity=entity,map=arguments,excludes="entityName,properties");
 		}
 		
-		// Event Handling? If enabled, cal the postNew() interception
+		// Event Handling? If enabled, call the postNew() interception
 		if( getEventHandling() ){
 			ORMEventHandler.postNew( entity );
 		}
 				
 		return entity;
+	}
+	
+	/**
+    * Simple map to property population for entities
+    */
+	void function populate(required any entity, required struct map, string includes="", string excludes=""){
+		var key = "";
+		var go  = true;
+		
+		// iterate over map
+		for( key in arguments.map ){
+			
+			// Exclusions
+			if( len(arguments.excludes) and listFindNoCase(arguments.excludes, key) ){
+				go = false;
+			}
+			// Inclusions
+			if( len(arguments.includes) and NOT listFindNoCase(arguments.includes, key) ){
+				go = false;
+			}
+			// Populate if go ahead and setter exists
+			if( go AND structKeyExists(arguments.entity, "set#key#") ){
+				evaluate("arguments.entity.set#key#( arguments.map[key] )");
+			}		
+		}
 	}
 	
 	/**
@@ -362,11 +388,15 @@ component accessors="true"{
 
 
 	/**
-	* Get an entity using a primary key, if the id is not found this method returns null
+	* Get an entity using a primary key, if the id is not found this method returns null, if the id=0 it returns a new entity.
 	* @tested true
     */
 	any function get(required string entityName,required any id) {
-		// Retrieve by ID
+		// If ID = 0 then return a new entity
+		if( isSimpleValue(arguments.id) and arguments.id eq 0 ){
+			return new(arguments.entityName);
+		}
+		// else return or try to return by PK
 		return entityLoadByPK(arguments.entityName, arguments.id);
 	}
 
