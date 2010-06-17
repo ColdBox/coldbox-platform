@@ -23,6 +23,7 @@ UserService function init(){
     setEntityName('User');
     setQueryCacheRegion( 'ORMService.defaultCache' );
     setUseQueryCaching( false );
+	setEventHandling( false );
     return this;
 }
 
