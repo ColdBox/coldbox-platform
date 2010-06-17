@@ -34,7 +34,7 @@ Modification History:
 			setExtensionsPhysicalPath('');
 			
 			// MD dictionary
-			setCacheDictionary(CreateObject("component","coldbox.system.core.util.collections.BaseDictionary").init('PluginMetadata'));
+			setCacheDictionary(CreateObject("component","coldbox.system.core.collections.BaseDictionary").init('PluginMetadata'));
 			
 			return this;
 		</cfscript>
@@ -278,7 +278,7 @@ Modification History:
 	
 	<!--- Set the internal plugin cache dictionary. --->
 	<cffunction name="setCacheDictionary" access="private" output="false" returntype="void" hint="Set the plugin cache dictionary. NOT EXPOSED to avoid screwups">
-		<cfargument name="cacheDictionary" type="coldbox.system.core.util.collections.BaseDictionary" required="true"/>
+		<cfargument name="cacheDictionary" type="coldbox.system.core.collections.BaseDictionary" required="true"/>
 		<cfset instance.cacheDictionary = arguments.cacheDictionary/>
 	</cffunction>
 	

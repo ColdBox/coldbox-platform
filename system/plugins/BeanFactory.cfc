@@ -59,7 +59,7 @@ Description: This is the framework's simple bean factory.
 			}
 
 			// Setup the Autowire DI Dictionary
-			setDICacheDictionary(CreateObject("component","coldbox.system.core.util.collections.BaseDictionary").init('DIMetadata'));
+			setDICacheDictionary(CreateObject("component","coldbox.system.core.collections.BaseDictionary").init('DIMetadata'));
 
 			// Configure the plugin
 			configure();
@@ -1216,11 +1216,11 @@ Description: This is the framework's simple bean factory.
 	</cffunction>
 
 	<!--- Get Set DI CACHE Dictionary --->
-	<cffunction name="getDICacheDictionary" access="private" output="false" returntype="coldbox.system.core.util.collections.BaseDictionary" hint="Get DICacheDictionary">
+	<cffunction name="getDICacheDictionary" access="private" output="false" returntype="coldbox.system.core.collections.BaseDictionary" hint="Get DICacheDictionary">
 		<cfreturn instance.DICacheDictionary/>
 	</cffunction>
 	<cffunction name="setDICacheDictionary" access="private" output="false" returntype="void" hint="Set DICacheDictionary">
-		<cfargument name="DICacheDictionary" type="coldbox.system.core.util.collections.BaseDictionary" required="true"/>
+		<cfargument name="DICacheDictionary" type="coldbox.system.core.collections.BaseDictionary" required="true"/>
 		<cfset instance.DICacheDictionary = arguments.DICacheDictionary/>
 	</cffunction>
 

@@ -46,7 +46,7 @@ Properties:
 			}
 			
 			// Scope storage
-			instance.scopeStorage = createObject("component","coldbox.system.core.util.collections.ScopeStorage").init();
+			instance.scopeStorage = createObject("component","coldbox.system.core.collections.ScopeStorage").init();
 			// Scope Checks
 			instance.scopeStorage.scopeCheck(getproperty('scope'));
 			// UUID generator

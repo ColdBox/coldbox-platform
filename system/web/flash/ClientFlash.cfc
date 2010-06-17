@@ -24,7 +24,7 @@ Description :
     		super.init(arguments.controller);
 			
 			// Marshaller
-			instance.converter = createObject("component","coldbox.system.core.util.conversion.ObjectMarshaller").init();
+			instance.converter = createObject("component","coldbox.system.core.conversion.ObjectMarshaller").init();
 			instance.flashKey = "cbox_flash";
 			
 			return this;

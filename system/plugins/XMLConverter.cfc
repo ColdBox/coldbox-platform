@@ -27,7 +27,7 @@ Modifications
 	
 --->
 <cfcomponent hint="A utility tool that can marshall data to XML"
-			 extends="coldbox.system.core.util.conversion.XMLConverter"
+			 extends="coldbox.system.core.conversion.XMLConverter"
 			 output="false"
 			 cache="true">
 
