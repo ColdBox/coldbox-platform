@@ -1,19 +1,26 @@
 <cfcomponent output="false">
 <cfscript>
 
-	function wddx(){
+	function wddx(event){
 		event.renderdata(type="wddx",data=server);
 	}
 	
-	function plain(){
+	function plain(event){
 		event.renderdata(type="plain",data="<h1>Hello HTML</h1>");
 	}
+	function html(event){
+		event.renderdata(type="html",data="<h1>Hello HTML</h1>");
+	}
 	
-	function json(){
+	function json(event){
 		event.renderdata(type="json",data=server,jsonCase="upper",jsonAsText=true);
 	}
 	
-	function xml(){
+	function text(event){
+		event.renderdata(type="text",data="this is some cool text");
+	}
+	
+	function xml(event){
 		q = queryNew("ID,NAME");
 		queryAddRow(q,1);
 		querySetCell(q,"ID", createUUID(),1);

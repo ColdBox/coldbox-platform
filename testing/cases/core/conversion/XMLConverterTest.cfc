@@ -2,7 +2,7 @@
 <cfscript>
 
 	function setup(){
-		xml = getMockBox().createMock(className="coldbox.system.core.util.conversion.XMLConverter").init();
+		xml = getMockBox().createMock(className="coldbox.system.core.conversion.XMLConverter").init();
 	}
 	
 	function testArrayToXML(){

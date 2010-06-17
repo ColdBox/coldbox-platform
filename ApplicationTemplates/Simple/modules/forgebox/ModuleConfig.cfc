@@ -81,10 +81,9 @@ Optional Methods
 		];		
 		
 		// Defined Model Mappings for this module.
-		modelMappings = {
-			"forgeService@forgebox" = {
-				path = "ForgeService"
-			}
+		modelMappings = {};
+		modelMappings["forgeService@forgebox"] = {
+			path = "ForgeService"
 		};
 	}
 	
