@@ -9,7 +9,7 @@ Date        :	10/31/2007
 Description :
 	A thread wrapping utility
 ----------------------------------------------------------------------->
-<cfcomponent name="ThreadWrapper" output="false" hint="A thread wrapping utility">
+<cfcomponent output="false" hint="A thread wrapping utility">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 	
@@ -28,7 +28,8 @@ Description :
 			
 			//uuid
 			instance.uuid = createobject("java", "java.util.UUID");
-			
+			//util
+			instance.util = createObject("component","coldbox.system.core.util.Util");
 			
 			return this;
 		</cfscript>
@@ -42,11 +43,14 @@ Description :
 		<cfargument name="method" 		 type="string"  required="Yes" hint="Name of the method to invoke">
 		<cfargument name="argCollection" type="struct"  required="No"  default="#structnew()#"  hint="Called with an argument collection struct">
 		<!--- ************************************************************* --->
-		<cfset var ThreadName = "coldbox.util.ThreadWrapper_#replace(instance.uuid.randomUUID(),"-","","all")#">
-		<cfset var ResponseToken = instance.uuid.randomUUID()>
+		<cfset var threadName = "ThreadWrapper_#replace(instance.uuid.randomUUID(),"-","","all")#">
+		<cfset var responseToken = instance.uuid.randomUUID()>
+		
+		<!--- Passthrough responseToken --->
+		<cfset arguments.argCollection.$responseToken = responseToken>
 		
 		<!--- Validate if inside thread --->
-		<cfif isInsideCFThread()>
+		<cfif instance.util.inThread()>
 			
 			<!--- Invoke the method sync --->
 			<cfinvoke component="#getTarget()#"
@@ -56,7 +60,7 @@ Description :
 		<cfelse>
 		
 			<!--- Thread it. --->
-			<cfthread name="#ThreadName#" args="#arguments.argCollection#">
+			<cfthread name="#threadName#" args="#arguments.argCollection#">
 				
 				<!--- Invoke the method async --->
 				<cfinvoke component="#getTarget()#"
@@ -71,40 +75,14 @@ Description :
 	</cffunction>
 
 	<!--- Get Set Target --->
-	<cffunction name="gettarget" access="public" output="false" returntype="any" hint="Get target">
+	<cffunction name="getTarget" access="public" output="false" returntype="any" hint="Get target object">
 		<cfreturn instance.target/>
 	</cffunction>
-	<cffunction name="settarget" access="public" output="false" returntype="void" hint="Set target">
+	<cffunction name="setTarget" access="public" output="false" returntype="void" hint="Set target object">
 		<cfargument name="target" type="any" required="true"/>
 		<cfset instance.target = arguments.target/>
 	</cffunction>
 	
 <!------------------------------------------- PRIVATE ------------------------------------------->
 	
-	<!--- Check if inside cfthread --->
-	<cffunction name="isInsideCFThread" access="private" returntype="boolean" hint="See if the running thread is inside a cfthread." output="false" >
-		<cfscript>
-			try{
-				if ( findNoCase("cfthread", getThread().currentThread().getThreadGroup().getName() ) ){
-					return true;
-				}
-				else{
-					return false;
-				}
-			}
-			catch(Any e){ 
-				return true;
-			}
-		</cfscript>
-	</cffunction>	
-	
-	<!--- Get/set thread object --->
-	<cffunction name="getThread" access="private" returntype="any" output="false">
-		<cfreturn instance.Thread />
-	</cffunction>	
-	<cffunction name="setThread" access="private" returntype="void" output="false">
-		<cfargument name="Thread" type="any" required="true">
-		<cfset instance.Thread = arguments.Thread />
-	</cffunction>
-
 </cfcomponent>
