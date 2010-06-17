@@ -64,7 +64,19 @@ component extends="coldbox.system.testing.BaseTestCase"{
 		assertEquals( "luis", user.getFirstName() );
 		assertEquals( "majano", user.getLastName() );
 		
-		assertFalse( arrayLen(mockEventHandler.$callLog().postNew) );	
+		assertTrue( arrayLen(mockEventHandler.$callLog().postNew) );
+	}
+	
+	function testNewWithProperties(){
+		//mocks
+		mockEventHandler = getMockBox().createEmptyMock("coldbox.system.orm.hibernate.EventHandler");
+		mockEventHandler.$("postNew");
+		ormService.$property("ORMEventHandler","variables",mockEventHandler);
+		// Test Porperties
+		user = ormService.new("User",{firstName="pio",lastName="majano"});
+		debug(user);
+		assertEquals( "pio", user.getFirstName() );
+		assertEquals( "majano", user.getLastName() );
 	}
 	
 	function testNewWithEvents(){

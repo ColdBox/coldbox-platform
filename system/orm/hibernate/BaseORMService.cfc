@@ -342,7 +342,8 @@ component accessors="true"{
 		
 		// iterate over map
 		for( key in arguments.map ){
-			
+			// Reset to populate
+			go = true;
 			// Exclusions
 			if( len(arguments.excludes) and listFindNoCase(arguments.excludes, key) ){
 				go = false;
@@ -354,7 +355,7 @@ component accessors="true"{
 			// Populate if go ahead and setter exists
 			if( go AND structKeyExists(arguments.entity, "set#key#") ){
 				evaluate("arguments.entity.set#key#( arguments.map[key] )");
-			}		
+			}	
 		}
 	}
 	
