@@ -18,6 +18,9 @@ Description :
 		
 		// The CacheBox configuration structure DSL
 		cacheBox = {
+			// LogBox Configuration file
+			logBoxConfig = "coldbox.system.cache.config.LogBoxConfig", 
+			
 			// The defaultCache has an implicit name "default" which is a reserved cache name
 			// It also has a default provider of cachebox which cannot be changed.
 			// All timeouts are in minutes
@@ -29,8 +32,8 @@ Description :
 				freeMemoryPercentageThreshold = 0,
 				evictionPolicy = "LRU",
 				evictCount = 1,
-				maxObjects = 100,
-				objectStore = "ConcurrentSoftReferenceStore"
+				maxObjects = 200,
+				objectStore = "coldbox.system.cache.store.ConcurrentSoftReferenceStore"
 			},
 			
 			// Register all the custom named caches you like here
@@ -40,10 +43,8 @@ Description :
 			// Register all event listeners here, they are created in the specified order
 			listeners = [
 				// { class="", name="", properties={} }
-			],
+			]
 			
-			// Optional LogBox configuration file to use, else uses defaults
-			logBoxConfiguration = "coldbox.system.cache.config.LogBoxConfig" 
 		};
 	}	
 </cfscript>

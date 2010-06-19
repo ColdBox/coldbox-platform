@@ -28,7 +28,7 @@ Only one instance of a specific ColdBox application exists.
 			var settingsLoader = createObject("component","coldbox.system.web.loader.FrameworkLoader").init();
 
 			// CFML Engine Utility
-			instance.CFMLEngine = CreateObject("component","coldbox.system.core.util.CFMLEngine").init();
+			instance.CFMLEngine = CreateObject("component","coldbox.system.core.cf.CFMLEngine").init();
 
 			// Set Main Application Properties
 			setColdboxInitiated(false);
@@ -68,7 +68,7 @@ Only one instance of a specific ColdBox application exists.
 <!------------------------------------------- PUBLIC ------------------------------------------->
 
 	<!--- Get The CFMLEngine object --->
-	<cffunction name="getCFMLEngine" access="public" returntype="coldbox.system.core.util.CFMLEngine" output="false" hint="Get the CFMLEngine utility class">
+	<cffunction name="getCFMLEngine" access="public" returntype="coldbox.system.core.cf.CFMLEngine" output="false" hint="Get the CFMLEngine utility class">
 		<cfreturn instance.CFMLEngine>
 	</cffunction>
 

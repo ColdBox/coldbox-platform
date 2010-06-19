@@ -3,7 +3,7 @@
 	
 	<cffunction name="setUp" returntype="void" access="public">
 		<cfscript>
-			this.cbean = createObject("component","coldbox.system.beans.ConfigBean");		
+			this.cbean = createObject("component","coldbox.system.core.collections.ConfigBean");		
 			
 			this.settings = structnew();
 			

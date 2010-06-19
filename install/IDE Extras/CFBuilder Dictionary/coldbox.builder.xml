@@ -204,7 +204,7 @@
 				<help><![CDATA[ Flag to load the resource bundle for the specified locale (If not already loaded) or just change the framework's locale. ]]></help>
 			</parameter>
 			</function>
-	<function name="getDatasource" returns="coldbox.system.beans.DatasourceBean">
+	<function name="getDatasource" returns="coldbox.system.core.db.DatasourceBean">
 			<help><![CDATA[ I will return to you a datasourceBean according to the alias of the datasource you wish to get from the configstruct (Context: FrameworkSuperType) ]]></help>
 		<parameter name="alias" required="false" type="string">
 				<help><![CDATA[ The alias of the datasource to get from the configstruct (alias property in the config file) ]]></help>
@@ -366,7 +366,7 @@
 				<help><![CDATA[ The asset to load, only js or css files. This can also be a comma delimmited list. ]]></help>
 			</parameter>
 			</function>
-	<function name="getSettingsBean" returns="coldbox.system.beans.ConfigBean">
+	<function name="getSettingsBean" returns="coldbox.system.core.collections.ConfigBean">
 			<help><![CDATA[ Returns a configBean with all the configuration structure. (Context: FrameworkSuperType) ]]></help>
 		<parameter name="FWSettings" required="false" type="boolean">
 				<help><![CDATA[ Whether to build the config bean with coldbox settings or config settings ]]></help>

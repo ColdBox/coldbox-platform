@@ -5,7 +5,7 @@
 		mockController = getMockBox().createMock(className="coldbox.system.web.Controller");
 		converter = getMockBox().createMock(className="coldbox.system.core.util.conversion.ObjectMarshaller").init();
 		flash.init(mockController);
-		obj = createObject("component","coldbox.system.core.util.CFMLEngine").init();
+		obj = createObject("component","coldbox.system.core.cf.CFMLEngine").init();
 		//test scope
 		testscope = {test="luis",date=now(),obj=obj};
 	}	

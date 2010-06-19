@@ -29,8 +29,8 @@ Modification History:
 
 	<!--- The beans paths --->
 	<cfscript>
-		variables.configBeanPath 		= "coldbox.system.beans.ConfigBean";
-		variables.datasourceBeanPath 	= "coldbox.system.beans.DatasourceBean";
+		variables.configBeanPath 		= "coldbox.system.core.collections.ConfigBean";
+		variables.datasourceBeanPath 	= "coldbox.system.core.db.DatasourceBean";
 		variables.mailsettingsBeanPath 	= "coldbox.system.core.mail.MailSettingsBean";
 		variables.coldboxAppKey 		= "cbController";
 	</cfscript>
@@ -56,7 +56,7 @@ Modification History:
 <!------------------------------------------- HELPERS ------------------------------------------->
 	
 	<!--- Get a config bean --->
-	<cffunction name="getConfigBean" output="false" access="public" returntype="coldbox.system.beans.ConfigBean" hint="Returns an application's config bean: coldbox.system.beans.ConfigBean">
+	<cffunction name="getConfigBean" output="false" access="public" returntype="coldbox.system.core.collections.ConfigBean" hint="Returns an application's config bean: coldbox.system.core.collections.ConfigBean">
 		<cfscript>
 			return CreateObject("component",configBeanPath).init( getColdbox().getConfigSettings() );
 		</cfscript>
@@ -123,7 +123,7 @@ Modification History:
 	</cffunction>
 	
 	<!--- Get a datasource --->
-	<cffunction name="getDatasource" access="public" output="false" returnType="coldbox.system.beans.DatasourceBean" hint="I will return to you a datasourceBean according to the alias of the datasource you wish to get from the configstruct: coldbox.system.beans.DatasourceBean">
+	<cffunction name="getDatasource" access="public" output="false" returnType="coldbox.system.core.db.DatasourceBean" hint="I will return to you a datasourceBean according to the alias of the datasource you wish to get from the configstruct: coldbox.system.core.db.DatasourceBean">
 		<!--- ************************************************************* --->
 		<cfargument name="alias" type="string" hint="The alias of the datasource to get from the configstruct (alias property in the config file)">
 		<!--- ************************************************************* --->

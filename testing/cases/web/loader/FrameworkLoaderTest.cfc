@@ -3,7 +3,7 @@
 	function setup(){
 		//mocks
 		mockController = getMockBox().createEmptyMock(className="coldbox.system.web.Controller");
-		mockEngine = getMockBox().createMock("coldbox.system.core.util.CFMLEngine").init();
+		mockEngine = getMockBox().createMock("coldbox.system.core.cf.CFMLEngine").init();
 		mockController.$("getCFMLEngine",mockEngine);
 		mockController.$("getAppRootPath",expandPath("/coldbox/testHarness"));
 		mockController.$("setAppRootPath");

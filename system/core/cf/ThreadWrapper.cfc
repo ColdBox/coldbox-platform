@@ -83,6 +83,15 @@ Description :
 		<cfset instance.target = arguments.target/>
 	</cffunction>
 	
+	<!--- onMissingMethod --->
+    <cffunction name="onMissingMethod" output="false" access="public" returntype="any" hint="">
+    	<cfargument	name="missingMethodName"		type="string" required="true"	hint=""	/>
+		<cfargument	name="missingMethodArguments" 	type="struct" required="true"	hint=""/>
+    	<cfscript>
+    		return invoker(arguments.missingMethodName,missingMethodArguments);
+    	</cfscript>
+    </cffunction>
+	
 <!------------------------------------------- PRIVATE ------------------------------------------->
 	
 </cfcomponent>

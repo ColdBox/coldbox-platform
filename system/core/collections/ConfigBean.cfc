@@ -11,9 +11,7 @@ Description :
 Modification History:
 
 ----------------------------------------------------------------------->
-<cfcomponent name="ConfigBean"
-			 hint="I hold a coldbox configuration file data."
-			 output="false">
+<cfcomponent output="false">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 

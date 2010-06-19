@@ -18,7 +18,7 @@ Description :
 		
 		TransferConfigFactory = createObject("component","coldbox.system.extras.transfer.TransferConfigFactory").init();
 		
-		dsnBean = createObject("component","coldbox.system.beans.DatasourceBean");		
+		dsnBean = createObject("component","coldbox.system.core.db.DatasourceBean");		
 		memento.name = "mydsn";
 		memento.username = "user";
 		memento.password = "pass";

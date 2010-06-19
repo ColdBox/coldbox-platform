@@ -3,7 +3,7 @@
 	
 	<cffunction name="setUp" returntype="void" access="public">
 		<cfscript>
-			mail = createObject("component","coldbox.system.beans.Mail").init();
+			mail = createObject("component","coldbox.system.core.mail.Mail").init();
 		</cfscript>
 	</cffunction>
 	

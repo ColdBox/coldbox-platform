@@ -9,35 +9,23 @@ Date        :	April 03, 2008
 Description :
 	zipTest
 ----------------------------------------------------------------------->
-<cfcomponent name="zipTest" extends="coldbox.system.testing.BaseTestCase" output="false">
+<cfcomponent extends="coldbox.system.testing.BasePluginTest" plugin="coldbox.system.plugins.Zip">
 
 	<cffunction name="setUp" returntype="void" access="public" output="false">
 		<cfscript>
-		//Setup ColdBox Mappings For this Test
-		setAppMapping("/coldbox/testharness");
-		setConfigMapping(ExpandPath(instance.AppMapping & "/config/coldbox.xml.cfm"));
-		
-		//Call the super setup method to setup the app.
 		super.setup();
 		
+		plugin.init();
+		
 		this.directoryPath = getDirectoryFromPath(getMetaData(this).path);
-		</cfscript>
-	</cffunction>
-	
-	<cffunction name="testPlugin" access="public" returntype="void" output="false">
-		<!--- Now test some events --->
-		<cfscript>
-			var plugin = getController().getPlugin("Zip");
-
-			AssertTrue( isObject(plugin) );
+		
+		debug(this.directoryPath);
 		</cfscript>
 	</cffunction>
 	
 	<cffunction name="testMethods" access="public" returntype="void" output="false">
 		<!--- test methods --->
 		<cfscript>
-			var plugin		    = getController().getPlugin("Zip");
-			
 			assertTrue(plugin.AddFiles(zipFilePath = this.directoryPath  & 'Test1.zip', directory = this.directoryPath, savePaths = true),'AddFiles() something gone wrong');
 			
 			assertTrue(plugin.Extract(zipFilePath = this.directoryPath  & 'Test1.zip', extractFiles = 'security.xml.cfm', useFolderNames= true, overwriteFiles = true),'Extract() something gone wrong');
@@ -55,11 +43,11 @@ Description :
 
 	<cffunction name="tearDown" output="false" access="public" returntype="void" hint="delete generated zip files">
 		<cfif fileExists(this.directoryPath & "Test1.zip")>
-		<cffile action="delete" file="#this.directoryPath#Test1.zip">
+			<cffile action="delete" file="#this.directoryPath#Test1.zip">
 		</cfif>
 		
 		<cfif fileExists(this.directoryPath & "security.xml.cfm.gz")>
-		<cffile action="delete" file="#this.directoryPath#security.xml.cfm.gz">
+			<cffile action="delete" file="#this.directoryPath#security.xml.cfm.gz">
 		</cfif> 
 	</cffunction>
 		

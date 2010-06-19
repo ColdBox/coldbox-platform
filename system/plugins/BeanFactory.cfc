@@ -38,8 +38,9 @@ Description: This is the framework's simple bean factory.
 			instance.ModelsDefinitionFile 	= getSetting("ModelsDefinitionFile");
 
 			// Model Mappings Map
-			instance.modelMappings = structnew();
-			instance.NOT_FOUND = "_NOT_FOUND_";
+			instance.modelMappings 	= structnew();
+			instance.NOT_FOUND 		= "_NOT_FOUND_";
+			instance.refLocationMap = structnew();
 
 			// Default DSL marker
 			instance.dslMarker = "inject";
@@ -205,7 +206,7 @@ Description: This is the framework's simple bean factory.
 
 			// Class Path
 			modelClassPath = locateModel(arguments.name);
-
+		
 			// Trip error if not found
 			if( NOT len(modelClassPath) ){
 				$throw(message="Model #arguments.name# could not be located.",
@@ -354,63 +355,75 @@ Description: This is the framework's simple bean factory.
 
 	<!--- Locate a Model Object --->
 	<cffunction name="locateModel" access="public" returntype="string" hint="Get the location instantiation path for a model object. If the model location is not found, this method returns an empty string." output="false" >
-		<cfargument name="name" required="true"  type="string" hint="The model to locate">
-		<cfargument name="resolveAlias"  type="boolean" required="false" default="false" hint="Resolve model aliases">
+		<cfargument name="name" 		type="string"  required="true" hint="The model to locate">
+		<cfargument name="resolveAlias" type="boolean" required="false" default="false" hint="Resolve model aliases">
 		<cfscript>
-			var checkPath = 0;
-			var checkExternalPath = 0;
-			var extPaths = instance.ModelsExternalLocation;
-			var thisExtPath = "";
-			var x=1;
+			var checkPath 			= 0;
+			var checkExternalPath 	= 0;
+			var extPaths 			= instance.ModelsExternalLocation;
+			var thisExtPath 		= "";
+			var x					= 1;
 
-			/* Resolve Alias? */
+			// Resolve Alias?
 			if( arguments.resolveAlias ){
 				arguments.name = resolveModelAlias(arguments.name);
 			}
-
-			/* TODO: Create a RefLocationMap, so location routines are only done once. */
-
-			/* Conventions Check First */
-			checkPath = instance.ModelsPath & "/" & replace(arguments.name,".","/","all") & ".cfc";
-
-			/* Class Path Determination */
-			if( fileExists(checkPath) ){
-				return instance.ModelsInvocationPath & "." & arguments.name;
+			
+			// Check refLocationMap for location discovery
+			if( structKeyExists(instance.refLocationMap, arguments.name) ){
+				return instance.refLocationMap[ arguments.name ];
 			}
-			else{
-				/* Check External Locations in declared Order */
-				for(x=1; x lte listLen(extPaths);x=x+1){
-					/* Compose Object Location */
-					thisExtPath = listGetAt(extPaths,x);
-					checkExternalPath = "/" & replace(thisExtPath,".","/","all")  & "/" & replace(arguments.name,".","/","all") & ".cfc";
-					/* Check if located */
-					if( fileExists(expandPath(checkExternalPath)) ){
-						return  thisExtPath & "." & arguments.name;
-					}
+			
+			// Conventions Check First
+			checkPath = instance.ModelsPath & "/" & replace(arguments.name,".","/","all") & ".cfc";
+			
+			// Check Conventions First
+			if( fileExists(checkPath) ){
+				instance.refLocationMap[ arguments.name ] = instance.ModelsInvocationPath & "." & arguments.name;
+				return instance.refLocationMap[ arguments.name ];
+			}
+			
+			// Check External Locations in declared Order
+			for(x=1; x lte listLen(extPaths);x=x+1){
+			
+				// Compose Object Location
+				thisExtPath = listGetAt(extPaths,x);
+				checkExternalPath = "/" & replace(thisExtPath,".","/","all")  & "/" & replace(arguments.name,".","/","all") & ".cfc";
+				
+				// Check if located
+				if( fileExists(expandPath(checkExternalPath)) ){
+					instance.refLocationMap[ arguments.name ] = thisExtPath & "." & arguments.name;
+					return instance.refLocationMap[ arguments.name ];
 				}
 			}
-
+			
+			// Try full namespace
+			checkPath = "/" & replace(arguments.name,".","/","all") & ".cfc";
+			if( fileExists( expandPath(checkPath) ) ){
+				instance.refLocationMap[ arguments.name ] = arguments.name;
+				return instance.refLocationMap[ arguments.name ];
+			}
+			
 			return "";
 		</cfscript>
 	</cffunction>
 
 	<!--- Check if the model exists in a path --->
 	<cffunction name="containsModel" access="public" returntype="boolean" hint="Checks if the factory has a model object definition found" output="false" >
-		<cfargument name="name" required="true"  type="string" hint="The name of the model to check">
-		<cfargument name="resolveAlias"  type="boolean" required="false" default="false" hint="Resolve model aliases">
+		<cfargument name="name" 		type="string"  required="true" hint="The name of the model to check">
+		<cfargument name="resolveAlias" type="boolean" required="false" default="false" hint="Resolve model aliases">
 		<cfscript>
-			/* Resolve Alias? */
+			// Resolve Alias?
 			if( arguments.resolveAlias ){ arguments.name = resolveModelAlias(arguments.name); }
-			/* Try to Locate */
+			
+			// Try to Locate with already resolved alias
 			if( len(locateModel(arguments.name)) ){
 				return true;
 			}
-			else{
-				return false;
-			}
+			
+			return false;
 		</cfscript>
 	</cffunction>
-
 
 	<!--- Populate a model object from the request Collection --->
 	<cffunction name="populateModel" access="public" output="false" returntype="Any" hint="Populate a named or instantiated model (java/cfc) from the request collection items">
@@ -883,7 +896,7 @@ Description: This is the framework's simple bean factory.
 					break;
 				}
 			}
-
+			
 			// Check if model Exists
 			if( containsModel(name=args.name,resolveAlias=true) ){
 				// Get Model
