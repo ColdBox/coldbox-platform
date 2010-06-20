@@ -21,7 +21,7 @@ Description: This is the framework's simple bean factory.
 		<cfargument name="controller" type="any" required="true" hint="coldbox.system.web.Controller">
 		<!--- ************************************************************* --->
 		<cfscript>
-			super.Init(arguments.controller);
+			super.init(arguments.controller);
 
 			//Plugin properties
 			setpluginName("Bean Factory");
@@ -61,6 +61,9 @@ Description: This is the framework's simple bean factory.
 
 			// Setup the Autowire DI Dictionary
 			setDICacheDictionary(CreateObject("component","coldbox.system.core.collections.BaseDictionary").init('DIMetadata'));
+
+			// Bean Populator
+			instance.beanPopulator = createObject("component","coldbox.system.core.dynamic.BeanPopulator").init();
 
 			// Configure the plugin
 			configure();
@@ -437,7 +440,7 @@ Description: This is the framework's simple bean factory.
 		<cfscript>
 			arguments.memento = controller.getRequestService().getContext().getCollection();
 
-			/* Do we have a model or name */
+			// Do we have a model or name
 			if( isSimpleValue(arguments.model) ){
 				arguments.target = getModel(model);
 			}
@@ -445,8 +448,8 @@ Description: This is the framework's simple bean factory.
 				arguments.target = arguments.model;
 			}
 
-			/* Inflate from Request Collection */
-			return populateFromStruct(argumentCollection=arguments);
+			// Inflate from Request Collection
+			return instance.beanPopulator.populateFromStruct(argumentCollection=arguments);
 		</cfscript>
 	</cffunction>
 
@@ -461,9 +464,12 @@ Description: This is the framework's simple bean factory.
 		<!--- ************************************************************* --->
 		<cfscript>
 			arguments.memento = controller.getRequestService().getContext().getCollection();
-
-			/* Inflate from Request Collection */
-			return populateFromStruct(argumentCollection=arguments);
+			
+			if( isSimpleValue(arguments.target) ){
+				arguments.target = create(arguments.target);
+			}
+			
+			return instance.beanPopulator.populateFromStruct(argumentCollection=arguments);
 		</cfscript>
 	</cffunction>
 
@@ -478,11 +484,11 @@ Description: This is the framework's simple bean factory.
 		<cfargument name="exclude"  		required="false" type="string"  default="" hint="A list of keys to exclude in the population">
 		<!--- ************************************************************* --->
 		<cfscript>
-			/* Inflate JSON */
-			arguments.memento = getPlugin("JSON").decode(arguments.JSONString);
-
-			/* populate and return */
-			return populateFromStruct(argumentCollection=arguments);
+			if( isSimpleValue(arguments.target) ){
+				arguments.target = create(arguments.target);
+			}
+			
+			return instance.beanPopulator.populateFromJSON(argumentCollection=arguments);
 		</cfscript>
 	</cffunction>
 	
@@ -498,36 +504,11 @@ Description: This is the framework's simple bean factory.
 		<cfargument name="exclude"  		required="false"	type="string"  default="" hint="A list of keys to exclude in the population">
 		<!--- ************************************************************* --->
 		<cfscript>
-			var key				= "";
-			var childElements 	= "";
-			var	x				= 1;
-			
-			// determine XML
-			if( isSimpleValue(arguments.xml) ){
-				arguments.xml = xmlParse( arguments.xml );
+			if( isSimpleValue(arguments.target) ){
+				arguments.target = create(arguments.target);
 			}
 			
-			// check root
-			if( NOT len(arguments.root) ){
-				arguments.root = "XMLRoot";
-			}
-			
-			// check children
-			if( NOT structKeyExists(arguments.xml[arguments.root],"XMLChildren") ){
-				log.debug("XML root does not have any XMLChildren, aborting population", arguments.xml);
-				return;
-			}
-			
-			// prepare memento
-			arguments.memento = structnew();
-			
-			// iterate and build struct of data
-			childElements = arguments.xml[arguments.root].XMLChildren;
-			for(x=1; x lte arrayLen(childElements); x=x+1){
-				arguments.memento[ childElements[x].XMLName ] = trim(childElements[x].XMLText);
-			}
-			
-			return populateFromStruct(argumentCollection=arguments);
+			return instance.beanPopulator.populateFromXML(argumentCollection=arguments);
 		</cfscript>
 	</cffunction>
 
@@ -543,21 +524,11 @@ Description: This is the framework's simple bean factory.
 		<cfargument name="exclude"  		required="false" type="string"  default="" hint="A list of keys to exclude in the population">
 		<!--- ************************************************************* --->
 		<cfscript>
-			//by default to take values from first row of the query
-			var row = arguments.RowNumber;
-			//columns array
-			var cols = listToArray(arguments.qry.columnList);
-			//new struct to hold query colum name and value
-			var i   = 1;
-			arguments.memento = structnew();
-
-			//build the struct from the query row
-			for(i = 1; i lte arraylen(cols); i = i + 1){
-				arguments.memento[cols[i]] = arguments.qry[cols[i]][row];
+			if( isSimpleValue(arguments.target) ){
+				arguments.target = create(arguments.target);
 			}
-
-			//populate bean and return
-			return populateFromStruct(argumentCollection=arguments);
+			
+			return instance.beanPopulator.populateFromQuery(argumentCollection=arguments);
 		</cfscript>
 	</cffunction>
 
@@ -572,67 +543,11 @@ Description: This is the framework's simple bean factory.
 		<cfargument name="exclude"  		required="false" type="string"  default="" hint="A list of keys to exclude in the population">
 		<!--- ************************************************************* --->
 		<cfscript>
-			var beanInstance = 0;
-			var key = "";
-			var pop = true;
-			var scopeInjection = false;
-			var udfCall = "";
-			var args = "";
-
-			try{
-				// Local Ref to bean instance
-				if( isSimpleValue(arguments.target) ){
-					beanInstance = create(arguments.target);
-				}
-				else{
-					beanInstance = arguments.target;
-				}
-
-				// Determine Method of population
-				if( structKeyExists(arguments,"scope") and len(trim(arguments.scope)) neq 0 ){
-					scopeInjection = true;
-					getPlugin("MethodInjector").start(beanInstance);
-				}
-
-				// Populate Bean
-				for(key in arguments.memento){
-					pop = true;
-					// Include List?
-					if( len(arguments.include) AND NOT listFindNoCase(arguments.include,key) ){
-						pop = false;
-					}
-					// Exclude List?
-					if( len(arguments.exclude) AND listFindNoCase(arguments.exclude,key) ){
-						pop = false;
-					}
-
-					// Pop?
-					if( pop ){
-						// Scope Injection?
-						if( scopeInjection ){
-							beanInstance.populatePropertyMixin(propertyName=key,propertyValue=arguments.memento[key],scope=arguments.scope);
-						}
-						// Check if setter exists, evaluate is used, so it can call on java/groovy objects
-						else if( structKeyExists(beanInstance,"set" & key) or arguments.trustedSetter ){
-							evaluate("beanInstance.set#key#(arguments.memento[key])");
-						}
-					}
-
-				}//end for loop
-
-				return beanInstance;
+			if( isSimpleValue(arguments.target) ){
+				arguments.target = create(arguments.target);
 			}
-			catch(Any e){
-				if (isObject(arguments.memento[key]) OR isCustomFunction(arguments.memento[key])){
-					arguments.keyTypeAsString = getMetaData(arguments.memento[key]).name;
-				}
-				else{
-		        	arguments.keyTypeAsString = arguments.memento[key].getClass().toString();
-				}
-				$throw(type="ColdBox.plugins.BeanFactory.PopulateBeanException",
-					  message="Error populating bean #getMetaData(beanInstance).name# with argument #key# of type #arguments.keyTypeAsString#.",
-					  detail="#e.Detail#<br>#e.message#<br>#e.tagContext.toString()#");
-			}
+			
+			return instance.beanPopulator.populateFromStruct(argumentCollection=arguments);
 		</cfscript>
 	</cffunction>
 

@@ -52,108 +52,122 @@ Description :
 	<cffunction name="testPopulateFromStruct" access="public" returntype="void" output="false">
 		<!--- Now test some events --->
 		<cfscript>
-			var plugin = getController().getPlugin("BeanFactory");
-			var local = structnew();
-			var event = getRequestContext();
-			
 			stime = getTickCount();
 			
 			/* We are using the formBean object: fname,lname,email,initDate */
-			local.obj = plugin.create('coldbox.testing.testmodel.formBean');
+			obj = getMockBox().createMock('coldbox.testing.testmodel.formBean');
 			
 			/* Struct */
-			local.myStruct = structnew();
-			local.myStruct.fname = "Luis";
-			local.myStruct.lname = "Majano";
-			local.myStruct.email = "test@coldboxframework.com";
-			local.myStruct.initDate = now();
-			
-			
-			/* Populate RC */
-			for( local.key in local.myStruct ){
-				event.setValue(local.key, local.myStruct[local.key]);
-			}
+			myStruct = structnew();
+			myStruct.fname = "Luis";
+			myStruct.lname = "Majano";
+			myStruct.email = "test@coldboxframework.com";
+			myStruct.initDate = now();
 			
 			/* Populate From Struct */
-			local.obj = plugin.populateFromStruct(local.obj,local.myStruct);
-			local.objInstance = local.obj.getInstance();
+			obj = bf.populateFromStruct(obj,myStruct);
+			objInstance = obj.getInstance();
+			
 			//debug("Timer: #getTickCount()-stime#");
 			
 			/* Assert Population */
-			for( local.key in local.objInstance ){
-				AssertEquals(local.objInstance[local.key], local.myStruct[local.key], "Asserting #local.key# From Struct" );
+			for( key in objInstance ){
+				AssertEquals(objInstance[key], myStruct[key], "Asserting #key# From Struct" );
 			}
 			
 			/* populate using scope now */
-			local.obj = plugin.populateFromStruct('coldbox.testing.testmodel.formBean',local.myStruct,"variables.instance");
-			local.objInstance = local.obj.getInstance();
+			obj = getMockBox().createMock('coldbox.testing.testmodel.formBean');
+			obj = bf.populateFromStruct(obj,myStruct,"variables.instance");
+			objInstance = obj.getInstance();
 			/* Assert Population */
-			for( local.key in local.objInstance ){
-				AssertEquals(local.objInstance[local.key], local.myStruct[local.key], "Asserting by Scope #local.key# From Struct" );
+			for( key in objInstance ){
+				AssertEquals(objInstance[key], myStruct[key], "Asserting by Scope #key# From Struct" );
 			}		
 			
 			/* Populate using onMissingMethod */
-			local.obj = plugin.populateFromStruct(target='coldbox.testing.testmodel.formImplicitBean',memento=local.myStruct,trustedSetter=true);
-			local.objInstance = local.obj.getInstance();
+			obj = getMockBox().createMock('coldbox.testing.testmodel.formImplicitBean');
+			obj = bf.populateFromStruct(target=obj,memento=myStruct,trustedSetter=true);
+			objInstance = obj.getInstance();
 			/* Assert Population */
-			for( local.key in local.objInstance ){
-				AssertEquals(local.objInstance[local.key], local.myStruct[local.key], "Asserting by Trusted Setter #local.key# From Struct" );
-			}		
-			
-				
+			for( key in objInstance ){
+				AssertEquals(objInstance[key], myStruct[key], "Asserting by Trusted Setter #key# From Struct" );
+			}	
 		</cfscript>
 	</cffunction>
 	
 	<!--- testpopulateFromJSON --->
 	<cffunction name="testpopulateFromJSON" output="false" access="public" returntype="any" hint="">
 		<cfscript>
-			var plugin = getController().getPlugin("BeanFactory");
-			var local = structnew();
+			JSONUtil  = createObject("component","coldbox.system.core.conversion.JSON").init();
+			
 			/* We are using the formBean object: fname,lname,email,initDate */
-			local.obj = plugin.create('coldbox.testing.testmodel.formBean');
+			obj = getMockBox().createMock('coldbox.testing.testmodel.formBean');
 			
 			/* Struct */
-			local.myStruct = structnew();
-			local.myStruct.fname = "Luis";
-			local.myStruct.lname = "Majano";
-			local.myStruct.email = "test@coldboxframework.com";
-			local.myStruct.initDate = now();
+			myStruct = structnew();
+			myStruct.fname = "Luis";
+			myStruct.lname = "Majano";
+			myStruct.email = "test@coldboxframework.com";
+			myStruct.initDate = now();
 			/* JSON Packet */
-			local.myJSON = getController().getPlugin("JSON").encode(local.myStruct);
+			myJSON = JSONUtil.encode(myStruct);
 			
 			/* Populate From JSON */
-			local.obj = plugin.populateFromJSON(local.obj,local.myJSON);
-			local.objInstance = local.obj.getInstance();
+			obj = bf.populateFromJSON(obj,myJSON);
+			objInstance = obj.getInstance();
+			
 			/* Assert Population */
-			for( local.key in local.objInstance ){
-				AssertEquals(local.objInstance[local.key], local.myStruct[local.key], "Asserting #local.key# From JSON" );
+			for( key in objInstance ){
+				AssertEquals(objInstance[key], myStruct[key], "Asserting #key# From JSON" );
 			}		
+		</cfscript>
+	</cffunction>
+	
+	<cffunction name="testPopulateFromXML" output="false" access="public" returntype="any" hint="">
+		<cfscript>
+			/* We are using the formBean object: fname,lname,email,initDate */
+			obj = getMockBox().createMock('coldbox.testing.testmodel.formBean');
+			
+			/* Struct */
+			xml = "<root>
+			<fname>Luis</fname>
+			<lname>Majano</lname>
+			<email>test@coldbox.org</email>
+			<initDate>#now()#</initDate>
+			</root>
+			";
+			xml = xmlParse( xml );
+			
+			obj = bf.populateFromXML(obj,xml);
+			objInstance = obj.getInstance();
+			
+			assertEquals( "Luis", obj.getFName() );
+			assertEquals( "Majano", obj.getLname() );
+			assertEquals( "test@coldbox.org", obj.getEmail() );
 		</cfscript>
 	</cffunction>
 	
 	<cffunction name="testpopulateFromQuery" access="public" returntype="void" output="false">
 		<!--- Now test some events --->
 		<cfscript>
-			var plugin = getController().getPlugin("BeanFactory");
-			var local = structnew();
 			
 			// We are using the formBean object: fname,lname,email,initDate 
-			local.obj = plugin.create('coldbox.testing.testmodel.formBean');
+			obj = getMockBox().createMock('coldbox.testing.testmodel.formBean');
 			
 			// Query 
-			local.myQuery = QueryNew('fname,lname,email,initDate');
-			QueryAddRow(local.myQuery,1);
-			querySetCell(local.myQuery, "fname", "Sana");
-			querySetCell(local.myQuery, "lname", "Ullah");
-			querySetCell(local.myQuery, "email", "test13@test13.com");
-			querySetCell(local.myQuery, "initDate", now());
+			myQuery = QueryNew('fname,lname,email,initDate');
+			QueryAddRow(myQuery,1);
+			querySetCell(myQuery, "fname", "Sana");
+			querySetCell(myQuery, "lname", "Ullah");
+			querySetCell(myQuery, "email", "test13@test13.com");
+			querySetCell(myQuery, "initDate", now());
 		
 			// Populate From Query 
-			local.obj = plugin.populateFromQuery(local.obj,local.myQuery);
+			obj = bf.populateFromQuery(obj,myQuery);
 			
-			AssertEquals(local.myQuery["fname"][1],local.obj.getfname());
-			AssertEquals(local.myQuery["lname"][1],local.obj.getlname());
-			AssertEquals(local.myQuery["email"][1],local.obj.getemail());
+			AssertEquals(myQuery["fname"][1],obj.getfname());
+			AssertEquals(myQuery["lname"][1],obj.getlname());
+			AssertEquals(myQuery["email"][1],obj.getemail());
 		</cfscript>
 	</cffunction>
 	
