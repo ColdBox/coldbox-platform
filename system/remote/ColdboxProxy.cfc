@@ -18,6 +18,11 @@ Description :
 		setCOLDBOX_APP_KEY("cbController");
 	</cfscript>
 	
+	<!--- getRemotingUtil --->
+    <cffunction name="getRemotingUtil" output="false" access="private" returntype="coldbox.system.remote.RemotingUtil" hint="Get a reference to the ColdBox Remoting utility class.">
+		<cfreturn createObject("component","coldbox.system.remote.RemotingUtil")>    	
+    </cffunction>
+	
 	<!--- process a remote call --->
 	<cffunction name="process" output="false" access="private" returntype="any" hint="Process a remote call into ColdBox's event model and return data/objects back. If no results where found, this method returns null/void">
 		<!--- There are no arguments defined as they come in as a collection of arguments. --->
