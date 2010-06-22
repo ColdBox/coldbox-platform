@@ -88,7 +88,7 @@ Description :
 			// check message type
 			if( refindnocase("(error|warning|info)", trim(arguments.type)) ){
 				// Populate message
-				msg.type = arguments.type;
+				msg.type 	= arguments.type;
 				msg.message = arguments.message;
 				
 				// Do we have a message array to flatten?
@@ -97,7 +97,7 @@ Description :
 				}
 				
 				// Flash it
-				flash.put(name=instance.flashKey,value=msg,inflateToRC=false,saveNow=true);
+				flash.put(name=instance.flashKey,value=msg,inflateToRC=false,saveNow=true,autoPurge=false);
 				
 			}
 			else{
@@ -209,9 +209,7 @@ Description :
 		</cfif>
 		
 		<!--- Test to clear message structure from flash? --->
-		<cfif NOT arguments.clearMessage>
-			<cfset flash.keep(instance.flashKey)>
-		<cfelse>
+		<cfif arguments.clearMessage>
 			<cfset flash.remove(name=instance.flashKey,saveNow=true)>
 		</cfif>
 		

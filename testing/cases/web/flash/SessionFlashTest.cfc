@@ -6,7 +6,10 @@
 		flash.init(mockController);
 		
 		//test scope
-		testscope = {test="luis",date=now()};
+		testscope = {
+			test={content="luis",autoPurge=true,keep=true},
+			date={content=now(),autoPurge=true,keep=true}
+		};
 	}	
 	function teardown(){ 
 		structClear(session);
@@ -14,7 +17,7 @@
 	function testClearFlash(){
 		session[flash.getFlashKey()] = testscope;
 		flash.clearFlash();
-		assertTrue( structIsEmpty(session[flash.getFlashKey()]));
+		assertFalse( structKeyExists(session, flash.getFlashKey() ));
 	}
 	function testSaveFlash(){
 		flash.$("getScope",testscope);

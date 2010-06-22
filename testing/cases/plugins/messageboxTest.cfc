@@ -39,9 +39,9 @@ Description :
 			
 			/* setting */
 			getController().setSetting("MessageBox_storage_scope","session");
+			
 			/* get Plugin */
 			plugin = getController().getPlugin("MessageBox");
-			AssertEquals( plugin.getStorageScope(), "session", "Custom Storage");
 			
 			/* Set Message */
 			plugin.setMessage("info","TestMessage");

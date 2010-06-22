@@ -19,7 +19,7 @@
 	}
 	function testInflateFlash(){
 		mockEvent.$("setValue");
-		flash.$("getFlash",testScope);
+		flash.$("getFlash",testScope).$("clearFlash");
 		
 		flash.inflateFlash();
 		assertEquals( flash.size(), 2);
@@ -69,6 +69,23 @@
 		
 		flash.persistRC(exclude="name");
 		assertEquals( flash.size(), 1);		
+	}
+	
+	function testClearFlash(){
+		flash.$("flashExists",true);
+		testScope = {
+			t1 = {content=createUUID(),keep=true,autoPurge=true},
+			t2 = {content=createUUID(),keep=true,autoPurge=true},
+			t3 = {content=createUUID(),keep=true,autoPurge=false},
+			t4 = {content=createUUID(),keep=true,autoPurge=true},
+			t5 = {content=createUUID(),keep=true,autoPurge=false}
+		};
+		flash.$("getFlash",testScope);
+		
+		flash.clearFlash();
+		
+		assertTrue( structKeyExists(testScope,"t3") );
+		assertTrue( structKeyExists(testScope,"t5") );
 	}
 	
 </cfscript>

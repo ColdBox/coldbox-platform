@@ -7,13 +7,18 @@
 		mockController.$("getColdboxOCM",mockCache);
 		
 		flash.init(mockController);
+		obj = createObject("component","coldbox.system.core.cf.CFMLEngine").init();
 		
 		//test scope
-		testscope = {test="luis",date=now()};
+		testscope = {
+			test={content="luis",autoPurge=true,keep=true},
+			date={content=now(),autoPurge=true,keep=true},
+			obj={content=obj,autoPurge=true,keep=true}
+		};
 	}	
 	function testClearFlash(){
 		flash.$("flashExists",true);
-		mockCache.$("clear");
+		mockCache.$("clear").$("get",testScope);
 		flash.clearFlash();
 		assertTrue( arrayLen(mockCache.$callLog().clear) );
 	}

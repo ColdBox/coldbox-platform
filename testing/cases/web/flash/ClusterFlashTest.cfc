@@ -7,7 +7,10 @@
 		flash.init(mockController);
 		
 		//test scope
-		testscope = {test="luis",date=now()};
+		testscope = {
+			test={content="luis",autoPurge=true,keep=true},
+			date={content=now(),autoPurge=true,keep=true}
+		};
 	}	
 	function teardown(){ 
 		//structClear(cluster);

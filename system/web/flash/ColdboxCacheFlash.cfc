@@ -50,13 +50,6 @@ Description :
 		<cfreturn instance.flashKey>
 	</cffunction>
 
-	<!--- clearFlash --->
-	<cffunction name="clearFlash" output="false" access="public" returntype="void" hint="Clear the flash storage">
-		<cfif flashExists()>
-			<cfset instance.cache.clear(getFlashKey())>
-		</cfif>
-	</cffunction>
-
 	<!--- saveFlash --->
 	<cffunction name="saveFlash" output="false" access="public" returntype="void" hint="Save the flash storage in preparing to go to the next request">
 		<!--- Now Save the Storage --->
@@ -77,5 +70,10 @@ Description :
 		
 		<cfreturn structnew()>
 	</cffunction>
+	
+	<!--- removeFlash --->
+    <cffunction name="removeFlash" output="false" access="public" returntype="void" hint="Remove the entire flash storage">
+    	<cfset instance.cache.clear(getFlashKey())>
+    </cffunction>
 
 </cfcomponent>

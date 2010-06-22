@@ -38,13 +38,6 @@ Description :
 		<cfreturn instance.flashKey>
 	</cffunction>
 
-	<!--- clearFlash --->
-	<cffunction name="clearFlash" output="false" access="public" returntype="void" hint="Clear the flash storage">
-		<cfif flashExists()>
-			<cfset structDelete(client,getFlashKey())>
-		</cfif>
-	</cffunction>
-
 	<!--- saveFlash --->
 	<cffunction name="saveFlash" output="false" access="public" returntype="void" hint="Save the flash storage in preparing to go to the next request">
 		<cfset client[getFlashKey()] = instance.converter.serializeObject( getScope() )>
@@ -69,5 +62,10 @@ Description :
 		
 		<cfreturn structnew()>
 	</cffunction>
+	
+	<!--- removeFlash --->
+    <cffunction name="removeFlash" output="false" access="public" returntype="void" hint="Remove the entire flash storage">
+    	<cfset structDelete(client,getFlashKey())>
+    </cffunction>
 
 </cfcomponent>

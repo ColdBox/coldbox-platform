@@ -3,11 +3,16 @@
 	function setup(){
 		flash = getMockBox().createMock("coldbox.system.web.flash.ClientFlash");
 		mockController = getMockBox().createMock(className="coldbox.system.web.Controller");
-		converter = getMockBox().createMock(className="coldbox.system.core.util.conversion.ObjectMarshaller").init();
+		converter = getMockBox().createMock(className="coldbox.system.core.conversion.ObjectMarshaller").init();
 		flash.init(mockController);
 		obj = createObject("component","coldbox.system.core.cf.CFMLEngine").init();
+		
 		//test scope
-		testscope = {test="luis",date=now(),obj=obj};
+		testscope = {
+			test={content="luis",autoPurge=true,keep=true},
+			date={content=now(),autoPurge=true,keep=true},
+			obj={content=obj,autoPurge=true,keep=true}
+		};
 	}	
 	function teardown(){ 
 		structClear(client);
