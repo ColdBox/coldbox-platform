@@ -16,7 +16,8 @@
 		evictionPolicy="LRU"
 		evictCount="1"
 		maxObjects="100"
-		objectStore="ConcurrentSoftReferenceStore" />
+		objectStore="ConcurrentSoftReferenceStore"
+		coldboxEnabled="true" />
 		
 	<!--  Register all the named caches below -->
 	<Cache name="SampleCache1" provider="coldbox.system.cache.providers.CacheBoxProvider">

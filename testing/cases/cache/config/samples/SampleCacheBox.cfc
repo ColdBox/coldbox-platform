@@ -61,7 +61,7 @@ Description :
 			
 			// Register all event listeners here, they are created in the specified order
 			listeners = [
-				// { class="", name="", properties={} }
+				{ class="path.to.listener", name="Syncrhonizer", properties={} }
 			]
 			
 		};

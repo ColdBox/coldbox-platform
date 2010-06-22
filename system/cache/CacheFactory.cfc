@@ -291,7 +291,7 @@ Description :
     <cffunction name="configureLogBox" output="false" access="private" returntype="void" hint="Configure a standalone version of logBox for logging">
     	<cfscript>
     		// Config LogBox Configuration
-			var config = createObject("component","coldbox.system.logging.config.LogBoxConfig").init(CFCConfigPath="coldbox.system.cache.config.LogBoxConfig");
+			var config = createObject("component","coldbox.system.logging.config.LogBoxConfig").init(CFCConfigPath="coldbox.system.cache.config.LogBox");
 			// Create LogBox
 			instance.logBox = createObject("component","coldbox.system.logging.LogBox").init( config );
 		</cfscript>

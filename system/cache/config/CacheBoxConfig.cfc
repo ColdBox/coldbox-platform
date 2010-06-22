@@ -30,7 +30,9 @@ Description :
 			evictCount = 1,
 			maxObjects = 200,
 			objectStore = "coldbox.system.cache.store.ConcurrentSoftReferenceStore",
-			logBoxConfig = "coldbox.system.cache.config.LogBoxConfig"
+			logBoxConfig = "coldbox.system.cache.config.LogBox",
+			coldboxEnabled = false,
+			provider = "coldbox.system.cache.providers.CacheBoxProvider"
 		};
 		
 		// Startup the configuration
@@ -38,10 +40,10 @@ Description :
 	</cfscript>
 
 	<!--- init --->
-	<cffunction name="init" output="false" access="public" returntype="LogBoxConfig" hint="Constructor">
-		<cfargument name="XMLConfig" type="string"  required="false" default="" hint="The xml configuration file to use instead of a programmatic approach"/>
-		<cfargument name="CFCConfig" type="any" 	required="false" hint="The cacheBox Data Configuration CFC"/>
-		<cfargument name="CFCConfigPath" type="string" 	required="false" hint="The cacheBox Data Configuration CFC path to use"/>
+	<cffunction name="init" output="false" access="public" returntype="CacheBoxConfig" hint="Constructor">
+		<cfargument name="XMLConfig" 		type="string"   required="false" default="" hint="The xml configuration file to use instead of a programmatic approach"/>
+		<cfargument name="CFCConfig" 		type="any" 		required="false" hint="The cacheBox Data Configuration CFC"/>
+		<cfargument name="CFCConfigPath" 	type="string" 	required="false" hint="The cacheBox Data Configuration CFC path to use"/>
 		<cfscript>
 			var cacheBoxDSL = "";
 			
@@ -163,61 +165,26 @@ Description :
 	<!--- validate --->
 	<cffunction name="validate" output="false" access="public" returntype="void" hint="Validates the configuration. If not valid, it will throw an appropriate exception.">
 		<cfscript>
-			var x=1;
-			var key ="";
-			
-			// Are appenders defined
-			if( structIsEmpty(instance.appenders) ){
-				$throw(message="Invalid Configuration. No appenders defined.",type="LogBoxConfig.NoAppendersFound");
-			}
-			// Check root logger definition
-			if( structIsEmpty(instance.rootLogger) ){
-				$throw(message="Invalid Configuration. No root logger defined.",type="LogBoxConfig.RootLoggerNotFound");
+			// Is the default cache defined
+			if( structIsEmpty(instance.defaultCache) ){
+				$throw(message="Invalid Configuration. No default cache defined",type="CacheBoxConfig.NoDefaultCacheFound");
 			}
 			
-			// All root appenders?
-			if( instance.rootLogger.appenders eq "*"){
-				instance.rootLogger.appenders = structKeyList(getAllAppenders());
-			}
-			// Check root's appenders
-			for(x=1; x lte listlen(instance.rootLogger.appenders); x=x+1){
-				if( NOT structKeyExists(instance.appenders, listGetAt(instance.rootLogger.appenders,x)) ){
-					$throw(message="Invalid appender in Root Logger",
-						   detail="The appender #listGetAt(instance.rootLogger.appenders,x)# has not been defined yet. Please define it first.",
-						   type="LogBoxConfig.AppenderNotFound");
-				}
-			}
-			
-			// Check all Category Appenders
-			for(key in instance.categories){
-				
-				// Check * all appenders
-				if( instance.categories[key].appenders eq "*"){
-					instance.categories[key].appenders = structKeyList(getAllAppenders());
-				}
-				
-				for(x=1; x lte listlen(instance.categories[key].appenders); x=x+1){
-					if( NOT structKeyExists(instance.appenders, listGetAt(instance.categories[key].appenders,x)) ){
-						$throw(message="Invalid appender in Category: #key#",
-							   detail="The appender #listGetAt(instance.categories[key].appenders,x)# has not been defined yet. Please define it first.",
-							   type="LogBoxConfig.AppenderNotFound");
-					}
-				}
-			}
 		</cfscript>
 	</cffunction>
 	
 	<!--- defaultCache --->
 	<cffunction name="defaultCache" output="false" access="public" returntype="void" hint="Add a default cache configuration.">
-		<cfargument name="objectDefaultTimeout" 			type="numeric" required="false" default="#variables.defaults.objectDefaultTimeout#">
-	    <cfargument name="objectDefaultLastAccessTimeout"   type="numeric" required="true"  default="#variables.defaults.objectDefaultLastAccessTimeout#">
-	    <cfargument name="reapFrequency" 					type="numeric" required="true"  default="#variables.defaults.reapFrequency#">
-	    <cfargument name="maxObjects" 						type="numeric" required="true"  default="#variables.defaults.maxObjects#">
-	    <cfargument name="freeMemoryPercentageThreshold" 	type="numeric" required="true"  default="#variables.defaults.freeMemoryPercentageThreshold#">
-	    <cfargument name="useLastAccessTimeouts"			type="boolean" required="true"  default="#variables.defaults.useLastAccessTimeouts#">
-	    <cfargument name="evictionPolicy"					type="string"  required="true"  default="#variables.defaults.evictionPolicy#">
-	    <cfargument name="evictCount"						type="numeric" required="true"  default="#variables.defaults.evictCount#">
-	    <cfargument name="objectStore" 						type="string"  required="true"  default="#variables.defaults.objectStore#">
+		<cfargument name="objectDefaultTimeout" 			type="numeric" required="false"  default="#variables.defaults.objectDefaultTimeout#">
+	    <cfargument name="objectDefaultLastAccessTimeout"   type="numeric" required="false"  default="#variables.defaults.objectDefaultLastAccessTimeout#">
+	    <cfargument name="reapFrequency" 					type="numeric" required="false"  default="#variables.defaults.reapFrequency#">
+	    <cfargument name="maxObjects" 						type="numeric" required="false"  default="#variables.defaults.maxObjects#">
+	    <cfargument name="freeMemoryPercentageThreshold" 	type="numeric" required="false"  default="#variables.defaults.freeMemoryPercentageThreshold#">
+	    <cfargument name="useLastAccessTimeouts"			type="boolean" required="false"  default="#variables.defaults.useLastAccessTimeouts#">
+	    <cfargument name="evictionPolicy"					type="string"  required="false"  default="#variables.defaults.evictionPolicy#">
+	    <cfargument name="evictCount"						type="numeric" required="false"  default="#variables.defaults.evictCount#">
+	    <cfargument name="objectStore" 						type="string"  required="false"  default="#variables.defaults.objectStore#">
+	    <cfargument name="coldboxEnabled" 					type="boolean" required="false"  default="#variables.defaults.coldboxEnabled#"/>
 	    <cfscript>			
 			structAppend(getDefaultCache(), arguments);
 		</cfscript>
@@ -230,8 +197,8 @@ Description :
 	
 	<!--- cache --->
 	<cffunction name="cache" output="false" access="public" returntype="void" hint="Add a new cache configuration.">
-		<cfargument name="name" 		type="string" required="true"  hint="The name of the cache"/>
-		<cfargument name="provider" 	type="string" required="false" default="coldbox.system.cache.providers.CacheBoxProvider" hint="The cache provider class"/>
+		<cfargument name="name" 		type="string" required="true"   hint="The name of the cache"/>
+		<cfargument name="provider" 	type="string" required="false"  default="#variables.defaults.provider#" hint="The cache provider class, defaults to: coldbox.system.cache.providers.CacheBoxProvider"/>
 		<cfargument name="properties" 	type="struct" required="false"  default="#structNew()#" hint="The structure of properties for the cache"/>
 		<cfscript>
 			instance.caches[arguments.name] = {
@@ -297,7 +264,7 @@ Description :
 			var xml 		 = arguments.xmlDoc;
 			var logBoxXML	 = xmlSearch(xml,"//LogBoxConfig");
 			var defaultXML	 = xmlSearch(xml,"//DefaultConfiguration");
-			var cachesXML	 = xmlSearch(xml,"//Cache");
+			var cachesXML	 = xmlSearch(xml,"//CacheBox/Cache");
 			var listenersXML = xmlSearch(xml,"//Listener");
 			var args = structnew();
 			var x =1;
@@ -307,23 +274,20 @@ Description :
 			if( NOT arrayLen(defaultXML) ){
 				$throw(message="The defaultcache configuration cannot be found and it is mandatory",type="CacheBoxConfig.DefaultCacheConfigurationNotFound");
 			}
-			
 			// Register Default Cache
 			defaultCache(argumentCollection=defaultXML[1].XMLAttributes);
 			
 			// Register LogBox Configuration
 			logBoxConfig( variables.defaults.logBoxConfig );
 			if( arrayLen(logBoxXML) ){
-				logBoxConfig( trim(logBoxXML[1]) );
+				logBoxConfig( trim(logBoxXML[1].XMLText) );
 			}
 			
 			// Register Caches
 			for(x=1; x lte arrayLen( cachesXML ); x++){
-				
 				// Add arguments
 				args = {};
 				structAppend(args,cachesXML[x].XMLAttributes);
-				
 				// Check if properties exist
 				if( structKeyExists(cachesXML[x],"Properties") ){
 					args.properties = cachesXML[x].properties.XMLAttributes;
@@ -342,9 +306,7 @@ Description :
 					args.properties = listenersXML[x].properties.XMLAttributes;
 				}
 				listener(argumentCollection=args);
-			}
-			
-			$dump(instance,1);			
+			}		
 		</cfscript>
 	</cffunction>
 	

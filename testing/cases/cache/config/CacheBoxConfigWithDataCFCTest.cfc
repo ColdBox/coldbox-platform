@@ -1,25 +1,17 @@
 <cfcomponent extends="coldbox.system.testing.BaseTestCase">
 <cfscript>
 	function setup(){
-		xmlFile = expandPath("/coldbox/testing/cases/cache/config/samples/Sample.CacheBox.xml");
-		config  = getMockBox().createMock(className="coldbox.system.cache.config.CacheBoxConfig").
-		init(xmlConfig=xmlFile);
+		//cacheBox = getMockBox().createMock(className="coldbox.system.logging.LogBox");
+		dataConfigPath = "coldbox.testing.cases.cache.config.samples.SampleCacheBox";
 	}
 	
-	function testCreations(){
-		//logbox = createObject("component","coldbox.system.logging.LogBox").init(config);
-		
-		//root = logBox.getRootLogger();
-		
-		//root.debug("Hello man");
-		
-	}
-	
-	function testInlineXML(){
-		config = getMockBox().createMock(className="coldbox.system.cache.config.CacheBoxConfig").init();
-		configxml = xmlParse(expandpath('/coldbox/testing/cases/cache/config/samples/cbox.cachebox.xml'));
-		cacheBox = xmlSearch(configxml,"//CacheBox");
-		config.parseAndLoad(cacheBox[1]);
+	function testLoader(){
+		// My Data Object
+		dataConfig = createObject("component",dataConfigPath);
+		// Config LogBox
+		config = createObject("component","coldbox.system.cache.config.CacheBoxConfig").init(CFCConfig=dataConfig);
+		// Create it
+		//cacheBox.init( config );
 		
 		memento = config.getMemento();
 		debug(memento);
@@ -35,10 +27,11 @@
 		config.validate();
 	}
 	
-	function testNormalXML(){
-		config = getMockBox().createMock(className="coldbox.system.cache.config.CacheBoxConfig").init();
-		configxml = xmlParse( xmlFile );
-		config.parseAndLoad( configxml );
+	function testLoader2(){
+		// Config LogBox
+		config = createObject("component","coldbox.system.cache.config.CacheBoxConfig").init(CFCConfigPath=dataConfigPath);
+		// Create it
+		//cacheBox.init( config );
 		
 		memento = config.getMemento();
 		debug(memento);
@@ -50,8 +43,10 @@
 		assertTrue( len(memento.logBoxConfig) );
 		assertEquals("coldbox.system.cache.config.LogBoxConfig", memento.logBoxConfig);
 		
+		
 		config.validate();
 	}
+	
 	
 </cfscript>
 </cfcomponent>

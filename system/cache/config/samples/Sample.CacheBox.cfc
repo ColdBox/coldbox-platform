@@ -51,7 +51,7 @@ Description :
 					}
 				},
 				sampleCache2 = {
-					provider = "coldbox.system.cache.providers.CacheBox",
+					provider = "coldbox.system.cache.providers.CacheBoxProvider",
 					properties = {
 						maxObjects = 100,
 						evictionPolicy="FIFO"
