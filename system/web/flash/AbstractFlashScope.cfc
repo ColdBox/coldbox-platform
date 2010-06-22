@@ -103,7 +103,7 @@ method which will most likely be called by the saveFlash() method in order to pe
 					}
 					
 					// Keep = true if autoPurge is false, because we need to keep it around.
-					if( NOT autoPurge ){ keep = true; }
+					if( NOT flash[key].autoPurge ){ keep = true; }
 					else{ keep = false; }
 					
 					// Save and mark for cleaning
