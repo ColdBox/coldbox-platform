@@ -63,14 +63,14 @@ Optional Methods
 			missingTemplateHandler	= "",
 			
 			//Extension Points
-			UDFLibraryFile 			= "includes/helpers/ApplicationHelper.cfm",
-			coldboxExtensionsLocation = "",
-			modulesLocation			= "",
-			pluginsExternalLocation = "",
-			viewsExternalLocation	= "",
-			layoutsExternalLocation = "",
-			handlersExternalLocation  = "",
-			requestContextDecorator = "",
+			UDFLibraryFile 				= "includes/helpers/ApplicationHelper.cfm",
+			coldboxExtensionsLocation 	= "",
+			modulesExternalLocation		= "",
+			pluginsExternalLocation 	= "",
+			viewsExternalLocation		= "",
+			layoutsExternalLocation 	= "",
+			handlersExternalLocation  	= "",
+			requestContextDecorator 	= "",
 			
 			//Error/Exception Handling
 			exceptionHandler		= "",
@@ -186,7 +186,7 @@ Optional Methods
 			viewsLocation 	 = "views",
 			layoutsLocation  = "layouts",
 			modelsLocation 	 = "model",
-			modulesLocation  = "modules",
+			modulesExternalLocation  = "",
 			eventAction 	 = "index"
 		};
 		

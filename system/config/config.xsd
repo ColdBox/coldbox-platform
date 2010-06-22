@@ -58,7 +58,7 @@
 									<xs:enumeration value="HandlerCaching" />
 									<xs:enumeration value="LayoutsExternalLocation" />	
 									<xs:enumeration value="MissingTemplateHandler"/>
-									<xs:enumeration value="ModulesLocation"/>
+									<xs:enumeration value="ModulesExternalLocation"/>
 									<xs:enumeration value="PluginsExternalLocation" />
 									<xs:enumeration value="onInvalidEvent"/>	
 									<xs:enumeration value="ProxyReturnCollection" />

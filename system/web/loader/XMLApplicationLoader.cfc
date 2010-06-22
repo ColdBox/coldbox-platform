@@ -489,24 +489,17 @@ Loads a coldbox xml configuration file
 				configStruct["HandlersExternalLocationPath"] = ExpandPath("/" & replace(configStruct["HandlersExternalLocation"],".","/","all"));
 			}
 			
-			//Configure the modules locations if not set already on config.
-			if( NOT len(configStruct.ModulesLocation) ){
-				if( len(configStruct.AppMapping) ){
-					configStruct.ModulesLocation 		= "/#configStruct.AppMapping#/#fwSettingsStruct.ModulesConvention#";
-					configStruct.ModulesInvocationPath	= appMappingAsDots & ".#reReplace(fwSettingsStruct.ModulesConvention,"(/|\\)",".","all")#";
-				}
-				else{
-					configStruct.ModulesLocation 		= "/#fwSettingsStruct.ModulesConvention#";
-					configStruct.ModulesInvocationPath 	= reReplace(fwSettingsStruct.ModulesConvention,"(/|\\)",".","all");
-				}
-				configStruct.ModulesPath = fwSettingsStruct.ApplicationPath & fwSettingsStruct.ModulesConvention;
+			//Configure the modules locations in the application
+			if( len(configStruct.AppMapping) ){
+				configStruct.ModulesLocation 		= "/#configStruct.AppMapping#/#fwSettingsStruct.ModulesConvention#";
+				configStruct.ModulesInvocationPath	= appMappingAsDots & ".#reReplace(fwSettingsStruct.ModulesConvention,"(/|\\)",".","all")#";
 			}
 			else{
-				//Configure using the set mapping in the config
-				configStruct.ModulesLocation        = reReplace(configStruct.ModulesLocation,"/$","");
-				configStruct.ModulesPath 			= expandPath(configStruct.ModulesLocation);
-				configStruct.ModulesInvocationPath 	= reReplace(reReplace(configStruct.ModulesLocation,"^/",""),"(/|\\)",".","all");
+				configStruct.ModulesLocation 		= "/#fwSettingsStruct.ModulesConvention#";
+				configStruct.ModulesInvocationPath 	= reReplace(fwSettingsStruct.ModulesConvention,"(/|\\)",".","all");
 			}
+			configStruct.ModulesPath = fwSettingsStruct.ApplicationPath & fwSettingsStruct.ModulesConvention;
+		
 		</cfscript>
 	</cffunction>
 
