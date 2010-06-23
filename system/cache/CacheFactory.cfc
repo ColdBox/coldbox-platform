@@ -28,65 +28,159 @@ Description :
 		instance.logBox  = "";
 		instance.log	 = "";
 		// Caches
-		instance.caches  = {};
+		instance.caches  		= {};
+		// Lock info
+		instance.lockName = "CacheFactory.#instance.factoryID#";
 	</cfscript>
 	
 	<!--- init --->
 	<cffunction name="init" access="public" returntype="CacheFactory" hint="Constructor" output="false" >
-		<cfargument name="config"  type="coldbox.system.cache.config.CacheBoxConfig" required="true" hint="The CacheBoxConfig object to use to configure this instance of CacheBox"/>
-		<cfargument name="coldbox" type="any" required="false" default="" hint="A coldbox application that this instance of CacheBox can be linked to."/>
+		<cfargument name="config"  type="coldbox.system.cache.config.CacheBoxConfig" required="false" hint="The CacheBoxConfig object to use to configure this instance of CacheBox. If not passed then CacheBox will instantiate the default configuration."/>
+		<cfargument name="coldbox" type="coldbox.system.web.Controller" 			 required="false" hint="A coldbox application that this instance of CacheBox can be linked to, if not using it, just ignore it."/>
 		<cfscript>
+			var defaultConfigPath = "coldbox.system.cache.config.DefaultConfiguration";
+			
 			// Check if linking ColdBox
-			if( isObject(arguments.coldbox) ){ 
+			if( structKeyExists(arguments, "coldbox") ){ 
 				instance.coldbox = arguments.coldbox; 
 				// link LogBox
 				instance.logBox  = instance.coldbox.getLogBox();
 			}
 			else{
-				// Running standalone, so create our own logging
+				// Running standalone, so create our own logging first
 				configureLogBox();
+			}
+			
+			// Passed in configuration?
+			if( NOT structKeyExists(arguments,"config") ){
+				// Create default configuration
+				arguments.config = createObject("component","coldbox.system.cache.config.CacheBoxConfig").init(CFCConfigPath=defaultConfigPath);
 			}
 			
 			// Configure Logging for the Cache Factory
 			instance.log = getLogBox().getLogger( this );
+			
+			// Configure the Cache Factory
+			configure( arguments.config );
 			
 			return this;
 		</cfscript>
 	</cffunction>
 	
 	<!--- configure --->
-	<cffunction name="configure" output="false" access="public" returntype="void" hint="Configure logbox for operation. You can also re-configure LogBox programmatically. Basically we register all appenders here and all categories">
-		<cfargument name="config" type="coldbox.system.logging.config.LogBoxConfig" required="true" hint="The LogBoxConfig object to use to configure this instance of LogBox"/>
+	<cffunction name="configure" output="false" access="public" returntype="void" hint="Configure the cache factory for operation. You can also re-configure CacheBox programmatically.">
+		<cfargument name="config" type="coldbox.system.cache.config.CacheBoxConfig" required="true" hint="The CacheBoxConfig object to use to configure this instance of CacheBox"/>
 		<cfscript>
-		
+			var defaultCacheConfig = "";
+			var caches 	= "";
+			var key 	= "";
+			
 		</cfscript>
+		
+		<cflock name="#instance.lockName#" type="exclusive" timeout="30" throwontimeout="true">
+			<cfscript>
+			// Store config object
+			instance.config = arguments.config;
+			// Validate configuration
+			instance.config.validate();
+			// Reset Registries
+			instance.caches = {};
+			// Register Listeners
+			
+			// Register default cache first
+			defaultCacheConfig	  = instance.config.getDefaultCache();
+			createCache(name="default",provider=defaultCacheConfig.provider,properties=defaultCacheConfig);
+			
+			// Register named caches
+			caches = instance.config.getCaches();
+			for(key in caches){
+				createCache(name=key,provider=caches[key].provider,properties=caches[key].properties);
+			}			
+			</cfscript>
+		</cflock>
 	</cffunction>
+	
+	<!--- createCache --->
+    <cffunction name="createCache" output="false" access="private" returntype="coldbox.system.cache.ICacheProvider" hint="Create a new cache according the the arguments, register it and return it">
+    	<cfargument name="name" 		type="string" required="true" hint="The name of the cache to add"/>
+		<cfargument name="provider" 	type="string" required="true" hint="The provider class path of the cache to add"/>
+		<cfargument name="properties" 	type="struct" required="false" default="#structNew()#" hint="The properties of the cache to configure with"/>
+		<cfscript>
+			// Create Cache
+			var oCache = createObject("component",arguments.provider).init();
+			// Register Name
+			oCache.setName( arguments.name );
+			// Register Cache
+			registerCache( oCache );
+			
+			return oCache;
+		</cfscript>
+    </cffunction>
+	
+	<!--- registerCache --->
+    <cffunction name="registerCache" output="false" access="private" returntype="void" hint="Register a cache instance internaly">
+    	<cfargument name="cache" 	 type="coldbox.system.cache.ICacheProvider" required="true" hint="The cache instance to register with this factory"/>
+    	<cfset var name		= arguments.cache.getName()>
+    	<cfset var oCache 	= arguments.cache>
+    	
+    	<!--- Verify it does not exist already --->
+		<cfif structKeyExists(instance.caches, name)>
+			<cfthrow message="Cache #name# already exists!" type="CacheFactory.CacheExistsException">
+		</cfif>
+		
+		<!--- Verify Registration --->
+		<cfif NOT structKeyExists(instance.caches, name)>
+			<cflock name="#instance.lockName#" type="exclusive" timeout="20" throwontimeout="true">
+				<cfscript>
+					if( NOT structKeyExists(instance.caches, name) ){
+						// Link to this CacheFactory
+						oCache.setCacheFactory( this );
+						// Link Properties
+						oCache.setConfiguration( arguments.properties );
+						// Link ColdBox if using it
+						if( isObject(instance.coldbox) AND structKeyExists(oCache,"setColdBox")){ 
+							oCache.setColdBox( instance.coldbox );
+						}		
+						// Call Configure it to start the cache up
+						oCache.configure();				
+						// Store it
+						instance.caches[ name ] = oCache;
+						
+						// Announce new cache registration now 
+						
+					}
+				</cfscript>
+			</cflock>
+		</cfif>
+    </cffunction>	
 	
 <!------------------------------------------- PUBLIC CACHE FACTORY OPERATIONS ------------------------------------------>
 
 	<!--- getCache --->
-    <cffunction name="getCache" output="false" access="public" returntype="coldbox.system.cache." hint="Get a reference to a registered cache in this factory.  If the cache does not exist we will return null">
+    <cffunction name="getCache" output="false" access="public" returntype="coldbox.system.cache.ICacheProvider" hint="Get a reference to a registered cache in this factory.  If the cache does not exist it will return an exception">
     	<cfargument name="name" type="string" required="true" hint="The named cache to retrieve"/>
 		
-		<cflock name="cacheBoxFactory-#getFactoryID()#" type="readonly" timeout="20">
-			<cfreturn getCaches().get( arguments.name )>
+		<cflock name="#instance.lockName#" type="readonly" timeout="20" throwontimeout="true">
+			<cfif structKeyExists(instance.caches, arguments.name)>
+				<cfreturn instance.caches[ arguments.name ]>
+			</cfif>
+			<!--- Not Found --->
+			<cfthrow message="Cache #arguments.name# is not registered." detail="Valid cache names are #structKeyList(instance.caches)#" type="CacheFactory.CacheNotFoundException">
 		</cflock>
 		
     </cffunction>
 	
 	<!--- addCache --->
-    <cffunction name="addCache" output="false" access="public" returntype="void" hint="Register a cache with this cache factory">
-    	<cfargument name="cache" 	 type="coldbox.system.cache.ICache" required="true" hint="The cache instance to register with this factory"/>
-    	<cfscript>
-			
-		</cfscript>
+    <cffunction name="addCache" output="false" access="public" returntype="void" hint="Register a new instantiated cache with this cache factory">
+    	<cfargument name="cache" 	 type="coldbox.system.cache.ICacheProvider" required="true" hint="The cache instance to register with this factory"/>
+    	<cfset registerCache( arguments.cache )>
 	</cffunction>
 	
 	<!--- addDefaultCache --->
-    <cffunction name="addDefaultCache" output="false" access="public" returntype="coldbox.system.cache.ICache" hint="Add a default named cache to our registry, create it, config it, register it and return it">
+    <cffunction name="addDefaultCache" output="false" access="public" returntype="coldbox.system.cache.ICacheProvider" hint="Add a default named cache to our registry, create it, config it, register it and return it">
     	<cfargument name="name" type="string" required="true" hint="The name of the default cache to create"/>
     	<cfscript>
-    		var cache = "";
+    		var defaultCacheConfig	  = instance.config.getDefaultCache();
 			
 			// Check length
 			if( len(arguments.name) eq 0 ){ return; }
@@ -98,12 +192,8 @@ Description :
 								  type="CacheFactory.CacheExistsException");
 			}
 			
-			// Create default cache with name
-			cache = createDefaultCache();
-			cache.setName( arguments.name );
-			
-			// Add it
-			addCache( cache );
+			// Create default cache instance
+			cache = createCache(name=arguments.name,provider=defaultCacheConfig.provider,properties=defaultCacheConfig);
 			
 			// Return it
 			return cache;
@@ -130,7 +220,7 @@ Description :
 		<cfset var cache = "">
 						
 		<cfif cacheExists( arguments.name )>
-			<cflock name="cacheBoxFactory-#getFactoryID()#" type="exclusive" timeout="20">
+			<cflock name="#instance.lockName#" type="exclusive" timeout="20" throwontimeout="true">
 				<cfscript>
 					// double check
 					if( structKeyExists( instance.caches, arguments.name ) ){
@@ -142,11 +232,15 @@ Description :
 						
 						// Remove it
 						structDelete( instance.caches, arguments.name );
+						// Log It
 						instance.log.debug("Cache: #arguments.name# removed from factory: #getFactoryID()#");
+						return true;
 					}
 				</cfscript>
 			</cflock>
 		</cfif>
+		
+		<cfset instance.log.debug("Cache: #arguments.name# not removed because it does not exist in registered caches")>
 		
 		<cfreturn false>
     </cffunction>
@@ -154,9 +248,9 @@ Description :
 	<!--- removeAll --->
     <cffunction name="removeAll" output="false" access="public" returntype="void" hint="Remove all the registered caches in this factory, this triggers individual cache shutdowns">
     	<cfscript>
-			var cacheNames = getCacheNames();
-			var cacheLen   = arraylen(cacheNames);
-			var i 		   = 1;
+			var cacheNames 	= getCacheNames();
+			var cacheLen   	= arraylen(cacheNames);
+			var i 		   	= 1;
 		
 			instance.log.debug("Removal of all caches requested.");
 		
@@ -170,8 +264,8 @@ Description :
     <cffunction name="cacheExists" output="false" access="public" returntype="boolean" hint="Check if the passed in named cache is already registered in this factory">
     	<cfargument name="name" type="string" required="true" hint="The name of the cache to check"/>
     	
-		<cflock name="cacheBoxFactory-#getFactoryID()#" type="readonly" timeout="20">
-			<cfreturn getCaches().containsKey( arguments.name )>
+		<cflock name="#instance.lockName#" type="readonly" timeout="20" throwontimeout="true">
+			<cfreturn structKeyExists(getCaches(), arguments.name )>
 		</cflock>
 		
     </cffunction>
@@ -179,7 +273,7 @@ Description :
 	<!--- replaceCache --->
     <cffunction name="replaceCache" output="false" access="public" returntype="void" hint="Replace a registered named cache with a new decorated cache of the same name.">
     	<cfargument name="cache" type="any" required="true" hint="The name of the cache to replace or the actual instance of the cache to replace"/>
-		<cfargument name="decoratedCache" type="coldbox.system.cache.ICache" required="true" hint="The decorated cache manager instance to replace with"/>
+		<cfargument name="decoratedCache" type="coldbox.system.cache.ICacheProvider" required="true" hint="The decorated cache manager instance to replace with"/>
 		
 		<cfscript>
 			var name = "";
@@ -193,23 +287,14 @@ Description :
 			}
 		</cfscript>		
 
-		<cflock name="cacheBoxFactory-#getFactoryID()#" type="exclusive" timeout="20">
+		<cflock name="#instance.lockName#" type="exclusive" timeout="20" throwontimeout="true">
 			<cfset structDelete( instance.caches, name)>
 			<cfset instance.caches[ name ] = arguments.decoratedCache>
+			<cfset instance.log.debug("Cache #name# replaced with decorated cache: #getMetadata(arguments.decoratedCache).name#")>
 		</cflock>
 		
     </cffunction>
 	
-	<!--- newCache --->
-    <cffunction name="newCache" output="false" access="public" returntype="coldbox.system.cache.ICache" hint="Create a new cache according the the arguments, register it and return it">
-    	<cfargument name="name" 		type="string" required="true" hint="The name of the cache to add"/>
-		<cfargument name="class" 		type="string" required="true" hint="The class path of the cache to add"/>
-		<cfargument name="properties" 	type="struct" required="false" default="#structNew()#" hint="The properties of the cache to configure with"/>
-		<cfscript>
-		
-		</cfscript>
-    </cffunction>
-
 	<!--- clearAll --->
     <cffunction name="clearAll" output="false" access="public" returntype="void" hint="Clears all the elements in all the registered caches without de-registrations">
     	<cfscript>
@@ -247,8 +332,8 @@ Description :
 	<!--- getCacheNames --->
     <cffunction name="getCacheNames" output="false" access="public" returntype="array" hint="Get the array of caches registered with this factory">
     	
-    	<cflock name="cacheBoxFactory-#getFactoryID()#" type="readonly" timeout="20">
-			<cfreturn getCaches().keySet().toArray()>
+    	<cflock name="#instance.lockName#" type="readonly" timeout="20" throwontimeout="true">
+			<cfreturn structKeyArray( instance.caches )>
 		</cflock>
 		
     </cffunction>
@@ -272,7 +357,7 @@ Description :
 
 	<!--- Get Version --->
 	<cffunction name="getVersion" access="public" returntype="string" output="false" hint="Get the CacheBox version string.">
-		<cfreturn instance.Version>
+		<cfreturn instance.version>
 	</cffunction>
 	
 	<!--- Get the config object --->
@@ -283,6 +368,11 @@ Description :
 	<!--- getFactoryID --->
     <cffunction name="getFactoryID" output="false" access="public" returntype="any" hint="Get the unique ID of this cache factory">
     	<cfreturn instance.factoryID>
+    </cffunction>
+	
+	<!--- getDefaultCache --->
+    <cffunction name="getDefaultCache" output="false" access="public" returntype="coldbox.system.cache.ICacheProvider" hint="Get the default cache provider">
+    	<cfreturn getCache("default")>
     </cffunction>
 
 <!----------------------------------------- PRIVATE ------------------------------------->	

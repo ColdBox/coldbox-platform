@@ -17,7 +17,7 @@ Description :
 		utility  = createObject("component","coldbox.system.core.util.Util");
 		
 		// Instance private scope
-		instance 		  = structnew();
+		instance = structnew();
 		
 		// CacheBox Defaults
 		defaults = {
@@ -32,7 +32,8 @@ Description :
 			objectStore = "coldbox.system.cache.store.ConcurrentSoftReferenceStore",
 			logBoxConfig = "coldbox.system.cache.config.LogBox",
 			coldboxEnabled = false,
-			provider = "coldbox.system.cache.providers.CacheBoxProvider"
+			cacheBoxProvider = "coldbox.system.cache.providers.CacheBoxProvider",
+			coldboxAppProvider = "coldbox.system.cache.providers.ColdBoxAppProvider"
 		};
 		
 		// Startup the configuration
@@ -168,8 +169,7 @@ Description :
 			// Is the default cache defined
 			if( structIsEmpty(instance.defaultCache) ){
 				$throw(message="Invalid Configuration. No default cache defined",type="CacheBoxConfig.NoDefaultCacheFound");
-			}
-			
+			}			
 		</cfscript>
 	</cffunction>
 	
@@ -186,7 +186,16 @@ Description :
 	    <cfargument name="objectStore" 						type="string"  required="false"  default="#variables.defaults.objectStore#">
 	    <cfargument name="coldboxEnabled" 					type="boolean" required="false"  default="#variables.defaults.coldboxEnabled#"/>
 	    <cfscript>			
-			structAppend(getDefaultCache(), arguments);
+	    	var cacheConfig = getDefaultCache();
+			
+			structAppend(cacheConfig, arguments);
+			
+			if( arguments.coldboxEnabled ){
+				cacheConfig.provider = variables.defaults.coldboxAppProvider;
+			}
+			else{
+				cacheConfig.provider = variables.defaults.cacheboxProvider;
+			}
 		</cfscript>
 	</cffunction>
 	
@@ -198,7 +207,7 @@ Description :
 	<!--- cache --->
 	<cffunction name="cache" output="false" access="public" returntype="void" hint="Add a new cache configuration.">
 		<cfargument name="name" 		type="string" required="true"   hint="The name of the cache"/>
-		<cfargument name="provider" 	type="string" required="false"  default="#variables.defaults.provider#" hint="The cache provider class, defaults to: coldbox.system.cache.providers.CacheBoxProvider"/>
+		<cfargument name="provider" 	type="string" required="false"  default="#variables.defaults.cacheBoxProvider#" hint="The cache provider class, defaults to: coldbox.system.cache.providers.CacheBoxProvider"/>
 		<cfargument name="properties" 	type="struct" required="false"  default="#structNew()#" hint="The structure of properties for the cache"/>
 		<cfscript>
 			instance.caches[arguments.name] = {

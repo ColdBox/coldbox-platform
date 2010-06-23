@@ -15,6 +15,10 @@ Description :
 ----------------------------------------------------------------------->
 <cfinterface hint="The main interface for a CacheBox cache provider object.">
 
+	<!--- init --->
+    <cffunction name="init" output="false" access="public" returntype="any" hint="Simple Constructor">
+    </cffunction>
+
 	<!--- getName --->
     <cffunction name="getName" output="false" access="public" returntype="string" hint="Get the name of this cache">
     </cffunction>
@@ -33,7 +37,7 @@ Description :
     </cffunction>
 	
 	<!--- clearStatistics --->
-    <cffunction name="clearStatistics" output="false" access="public" returntype="void" hint="Clear the cache stats">
+    <cffunction name="clearStatistics" output="false" access="public" returntype="void" hint="Clear the cache statistics">
     </cffunction>
 
 	<!--- getConfiguration --->
@@ -46,7 +50,7 @@ Description :
     </cffunction>
 
 	<!--- getCacheFactory --->
-    <cffunction name="getCacheFactory" output="false" access="public" returntype="coldbox.system.cache.CacheFactory" hint="Get the cache factory reference this cache manager belongs to">
+    <cffunction name="getCacheFactory" output="false" access="public" returntype="coldbox.system.cache.CacheFactory" hint="Get the cache factory reference this cache provider belongs to">
     </cffunction>
 	
 	<!--- setCacheFactory --->
@@ -64,7 +68,11 @@ Description :
     </cffunction>
 
 	<!--- configure --->
-    <cffunction name="configure" output="false" access="public" returntype="void" hint="Configure the cache for operation">
+    <cffunction name="configure" output="false" access="public" returntype="void" hint="This method makes the cache ready to accept elements and run">
+    </cffunction>
+			
+	<!--- shutdown --->
+    <cffunction name="shutdown" output="false" access="public" returntype="void" hint="Shutdown command issued when CacheBox is going through shutdown phase">
     </cffunction>
 
 <!------------------------------------------- CACHE OPERATIONS ------------------------------------------>
@@ -125,9 +133,5 @@ Description :
 	<cffunction name="expireKey" access="public" output="false" returntype="boolean" hint="Expires an object from the cache by using its cache key. Returns false if object was not removed or did not exist anymore">
 		<cfargument name="objectKey" type="string" required="true" hint="The key the object was stored under.">
 	</cffunction>
-	
-	<!--- shutdown --->
-    <cffunction name="shutdown" output="false" access="public" returntype="void" hint="Shutdown gracefully a cache">
-    </cffunction>
 
 </cfinterface>
