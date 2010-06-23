@@ -41,6 +41,7 @@ Description: This is the framework's simple bean factory.
 			instance.modelMappings 	= structnew();
 			instance.NOT_FOUND 		= "_NOT_FOUND_";
 			instance.refLocationMap = structnew();
+			instance.cachePrefix	= "model-";
 
 			// Default DSL marker
 			instance.dslMarker = "inject";
@@ -181,6 +182,8 @@ Description: This is the framework's simple bean factory.
 			var announceData 	 = structnew();
 			var isModelFinalized = false;
 			var definition		 = structnew();
+			var alias			 = arguments.name;
+			var cacheKey		 = "";
 
 			// Are we using dsl or name localization?
 			if( structKeyExists(arguments,"dsl") ){
@@ -191,11 +194,22 @@ Description: This is the framework's simple bean factory.
 			// Resolve name in Aliases
 			arguments.name = resolveModelAlias(arguments.name);
 
-			// Check if Model in Cache, if it is, return it and exit.
-			if ( getColdboxOCM().lookup(arguments.name) ){
-				return getColdBoxOCM().get(arguments.name);
+			// Class Path
+			modelClassPath = locateModel(arguments.name);
+		
+			// Trip error if not found
+			if( NOT len(modelClassPath) ){
+				$throw(message="Model #arguments.name# could not be located.",
+					   detail="The model object could not be located in the following locations: #instance.ModelsPath# OR #instance.ModelsExternalLocation#",
+					   type="BeanFactory.modelNotFoundException");
 			}
-
+			
+			// Construct CacheKey, Check if Model in Cache, if it is, return it and exit.
+			cacheKey = buildCacheKey(alias,modelClassPath);
+			if ( getColdboxOCM().lookup( cacheKey ) ){
+				return getColdBoxOCM().get( cacheKey );
+			}
+			
 			// Argument Overrides, else grab from existing settings
 			if( not structKeyExists(arguments,"useSetterInjection") ){
 				arguments.useSetterInjection = getSetting("ModelsSetterInjection");
@@ -205,16 +219,6 @@ Description: This is the framework's simple bean factory.
 			}
 			if( not structKeyExists(arguments,"stopRecursion") ){
 				arguments.stopRecursion = getSetting("ModelsStopRecursion");
-			}
-
-			// Class Path
-			modelClassPath = locateModel(arguments.name);
-		
-			// Trip error if not found
-			if( NOT len(modelClassPath) ){
-				$throw(message="Model #arguments.name# could not be located.",
-					   detail="The model object could not be located in the following locations: #instance.ModelsPath# OR #instance.ModelsExternalLocation#",
-					   type="BeanFactory.modelNotFoundException");
 			}
 		</cfscript>
 
@@ -261,7 +265,7 @@ Description: This is the framework's simple bean factory.
 								md.cacheLastAccessTimeout = "";
 							}
 							// Cache This Puppy.
-							getColdBoxOCM().set(arguments.name,oModel,md.cacheTimeout,md.CacheLastAccessTimeout);
+							getColdBoxOCM().set(cacheKey,oModel,md.cacheTimeout,md.CacheLastAccessTimeout);
 						}
 					}//end if caching enabled via settings.
 
@@ -664,6 +668,15 @@ Description: This is the framework's simple bean factory.
 	</cffunction>
 
 <!------------------------------------------- PRIVATE ------------------------------------------->
+
+	<!--- buildCacheKey --->
+    <cffunction name="buildCacheKey" output="false" access="private" returntype="any" hint="Get a cache key constructed for model objects">
+    	<cfargument name="alias" 	type="any"/>
+		<cfargument name="location" type="any"/>
+		<cfscript>
+			return instance.cachePrefix & arguments.alias & "-" & arguments.location;
+		</cfscript>
+    </cffunction>
 
 	<!--- getConstructorArguments --->
 	<cffunction name="getConstructorArguments" output="false" access="private" returntype="struct" hint="The constructor argument collection for a model object">
