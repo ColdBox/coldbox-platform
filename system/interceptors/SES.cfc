@@ -730,12 +730,17 @@ Description :
 			
 			// Now setup all found variables in the param struct, so we can return
 			for(key in foundRoute){
-				if( NOT listFindNoCase(instance.RESERVED_ROUTE_ARGUMENTS,key) ){
+				// Check that the key is not a reserved route argument and NOT already routed
+				if( NOT listFindNoCase(instance.RESERVED_ROUTE_ARGUMENTS,key) 
+					AND NOT structKeyExists(params, key) ){
 					params[key] = foundRoute[key];
 				}
 				else if (key eq "matchVariables"){
 					for(i=1; i lte listLen(foundRoute.matchVariables); i = i+1){
-						params[listFirst(listGetAt(foundRoute.matchVariables,i),"=")] = listLast(listGetAt(foundRoute.matchVariables,i),"=");
+						// Check if the key does not exist in the routed params yet.
+						if( NOT structKeyExists(params, listFirst(listGetAt(foundRoute.matchVariables,i),"=") ) ){
+							params[listFirst(listGetAt(foundRoute.matchVariables,i),"=")] = listLast(listGetAt(foundRoute.matchVariables,i),"=");
+						}
 					}
 				}
 			}
