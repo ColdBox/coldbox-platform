@@ -68,7 +68,7 @@ Description :
 	</cffunction>
 	
 	<!--- configure --->
-	<cffunction name="configure" output="false" access="public" returntype="void" hint="Configure the cache factory for operation. You can also re-configure CacheBox programmatically.">
+	<cffunction name="configure" output="false" access="public" returntype="void" hint="Configure the cache factory for operation, called by the init(). You can also re-configure CacheBox programmatically.">
 		<cfargument name="config" type="coldbox.system.cache.config.CacheBoxConfig" required="true" hint="The CacheBoxConfig object to use to configure this instance of CacheBox"/>
 		<cfscript>
 			var defaultCacheConfig = "";
@@ -88,7 +88,7 @@ Description :
 			// Register Listeners
 			
 			// Register default cache first
-			defaultCacheConfig	  = instance.config.getDefaultCache();
+			defaultCacheConfig = instance.config.getDefaultCache();
 			createCache(name="default",provider=defaultCacheConfig.provider,properties=defaultCacheConfig);
 			
 			// Register named caches

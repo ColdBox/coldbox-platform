@@ -144,10 +144,10 @@ Modification History:
     </cffunction>
 	
 	<!--- createCacheManager --->
-    <cffunction name="createCacheManager" output="false" access="public" returntype="coldbox.system.cache.CacheManager" hint="Create the cboxCache provider">
+    <cffunction name="createCacheManager" output="false" access="public" returntype="any" hint="Create the caching engine">
     	<cfscript>
 		// Create cache Config
-		var cacheConfig = createObject("Component","coldbox.system.cache.config.CacheConfig");
+		var cacheConfig = createObject("Component","coldbox.system.cache.archive.config.CacheConfig");
 		var cache = "";
 		
 		// populate configuratio from loaded application
@@ -155,10 +155,10 @@ Modification History:
 		
 		// Create according cache manager
    		if ( controller.getCFMLEngine().isMT() ){
-			cache = CreateObject("component","coldbox.system.cache.MTCacheManager").init(controller);
+			cache = CreateObject("component","coldbox.system.cache.archive.MTCacheManager").init(controller);
 		}
 		else{
-			cache = CreateObject("component","coldbox.system.cache.CacheManager").init(controller);
+			cache = CreateObject("component","coldbox.system.cache.archive.CacheManager").init(controller);
 		}
 		
 		// Configure the cache

@@ -12,13 +12,13 @@ Description :
 <cfcomponent name="FIFO" 
 			 output="false" 
 			 hint="FIFO Eviction Policy Command" 
-			 extends="coldbox.system.cache.policies.AbstractEvictionPolicy">
+			 extends="coldbox.system.cache.archive.policies.AbstractEvictionPolicy">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
 	<!--- init --->
 	<cffunction name="init" output="false" access="public" returntype="FIFO" hint="Constructor">
-		<cfargument name="cacheManager" type="coldbox.system.cache.CacheManager" required="true" hint="The cache manager"/>
+		<cfargument name="cacheManager" type="coldbox.system.cache.archive.CacheManager" required="true" hint="The cache manager"/>
 		<cfscript>
 			setCacheManager(arguments.cacheManager);
 			return this;

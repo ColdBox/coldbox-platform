@@ -45,9 +45,9 @@ Dependencies :
 			// Locking Timeout
 			instance.lockTimeout = "15";
 			// Event URL Facade Setup
-			instance.eventURLFacade = CreateObject("component","coldbox.system.cache.util.EventURLFacade").init(this);
+			instance.eventURLFacade = CreateObject("component","coldbox.system.cache.archive.util.EventURLFacade").init(this);
 			// Cache Stats
-			instance.cacheStats = CreateObject("component","coldbox.system.cache.util.CacheStats").init(this);
+			instance.cacheStats = CreateObject("component","coldbox.system.cache.archive.util.CacheStats").init(this);
 			// Set the NOTFOUND public constant
 			this.NOT_FOUND = '_NOTFOUND_';		
 			// Init the object Pool on instantiation 
@@ -62,7 +62,7 @@ Dependencies :
 	<!--- Configure the Cache for Operation --->
 	<cffunction name="configure" access="public" output="false" returntype="void" hint="Configures the cache for operation, sets the configuration object, sets and creates the eviction policy and clears the stats. If this method is not called, the cache is useless.">
 		<!--- ************************************************************* --->
-		<cfargument name="cacheConfig" type="coldbox.system.cache.config.CacheConfig" required="true" hint="The configuration object">
+		<cfargument name="cacheConfig" type="coldbox.system.cache.archive.config.CacheConfig" required="true" hint="The configuration object">
 		<!--- ************************************************************* --->
 		<cfscript>		
 			var oEvictionPolicy = 0;
@@ -75,7 +75,7 @@ Dependencies :
 			
 			//Setup the eviction Policy to use
 			try{
-				oEvictionPolicy = CreateObject("component","coldbox.system.cache.policies.#getCacheConfig().getEvictionPolicy()#").init(this);
+				oEvictionPolicy = CreateObject("component","coldbox.system.cache.archive.policies.#getCacheConfig().getEvictionPolicy()#").init(this);
 			}
 			Catch(Any e){
 				getUtil().throwit('Error creating eviction policy','Error creating the eviction policy object: #e.message# #e.detail#','cacheManager.EvictionPolicyCreationException');	
@@ -719,21 +719,21 @@ Dependencies :
 <!------------------------------------------- ACCESSOR/MUTATORS ------------------------------------------->
 
 	<!--- get Event URL Facade --->
-	<cffunction name="geteventURLFacade" access="public" returntype="coldbox.system.cache.util.EventURLFacade" output="false" hint="Get the event url facade object.">
+	<cffunction name="geteventURLFacade" access="public" returntype="coldbox.system.cache.archive.util.EventURLFacade" output="false" hint="Get the event url facade object.">
 		<cfreturn instance.eventURLFacade>
 	</cffunction>
 
 	<!--- The cache stats --->
-	<cffunction name="getCacheStats" access="public" returntype="coldbox.system.cache.util.CacheStats" output="false" hint="Return the cache stats object.">
+	<cffunction name="getCacheStats" access="public" returntype="coldbox.system.cache.archive.util.CacheStats" output="false" hint="Return the cache stats object.">
 		<cfreturn instance.cacheStats>
 	</cffunction>
 	
 	<!--- The cache Config Bean --->
 	<cffunction name="setCacheConfig" access="public" returntype="void" output="false" hint="Set & Override the cache configuration bean. You can use this to programmatically alter the cache.">
-		<cfargument name="CacheConfig" type="coldbox.system.cache.config.CacheConfig" required="true">
+		<cfargument name="CacheConfig" type="coldbox.system.cache.archive.config.CacheConfig" required="true">
 		<cfset instance.CacheConfig = arguments.CacheConfig>
 	</cffunction>
-	<cffunction name="getCacheConfig" access="public" returntype="coldbox.system.cache.config.CacheConfig" output="false" hint="Get the current cache configuration bean.">
+	<cffunction name="getCacheConfig" access="public" returntype="coldbox.system.cache.archive.config.CacheConfig" output="false" hint="Get the current cache configuration bean.">
 		<cfreturn instance.CacheConfig >
 	</cffunction>
 	
@@ -759,7 +759,7 @@ Dependencies :
 
 	<!--- Set The Eviction Policy --->
 	<cffunction name="setEvictionPolicy" access="public" returntype="void" output="false" hint="You can now override the set eviction policy by programmatically sending it in.">
-		<cfargument name="evictionPolicy" type="coldbox.system.cache.policies.AbstractEvictionPolicy" required="true">
+		<cfargument name="evictionPolicy" type="coldbox.system.cache.archive.policies.AbstractEvictionPolicy" required="true">
 		<cfset instance.evictionPolicy = arguments.evictionPolicy>
 	</cffunction>
 	
@@ -785,7 +785,7 @@ Dependencies :
 	<!--- Initialize our object cache pool --->
 	<cffunction name="initPool" access="private" output="false" returntype="void" hint="Initialize and set the internal object Pool">
 		<cfscript>
-			instance.objectPool = CreateObject("component","coldbox.system.cache.ObjectPool").init();
+			instance.objectPool = CreateObject("component","coldbox.system.cache.archive.ObjectPool").init();
 		</cfscript>
 	</cffunction>
 

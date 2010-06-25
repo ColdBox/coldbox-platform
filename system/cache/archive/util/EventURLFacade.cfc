@@ -20,7 +20,7 @@ Description :
 	</cfscript>
 
 	<cffunction name="init" access="public" output="false" returntype="EventURLFacade" hint="Constructor">
-		<cfargument name="cacheManager" type="coldbox.system.cache.CacheManager" 	required="true" hint="The cache manager"/>
+		<cfargument name="cacheManager" type="coldbox.system.cache.archive.CacheManager" 	required="true" hint="The cache manager"/>
 		<cfscript>
 			instance.cacheManager = arguments.cacheManager;
 			return this;

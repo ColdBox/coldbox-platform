@@ -11,7 +11,7 @@ Description :
 
 ----------------------------------------------------------------------->
 <cfcomponent hint="The multi-threaded cache manager." 
-			 extends="coldbox.system.cache.CacheManager" 
+			 extends="coldbox.system.cache.archive.CacheManager" 
 			 output="false">
 
 <!------------------------------------------- PUBLIC ------------------------------------------->
@@ -98,7 +98,7 @@ Description :
 	<!--- Init the pool --->
 	<cffunction name="initPool" access="private" output="false" returntype="void" hint="Initialize and set the internal object Pool">
 		<cfscript>
-			instance.objectPool = CreateObject("component","coldbox.system.cache.MTObjectPool").init();
+			instance.objectPool = CreateObject("component","coldbox.system.cache.archive.MTObjectPool").init();
 		</cfscript>
 	</cffunction>
 	

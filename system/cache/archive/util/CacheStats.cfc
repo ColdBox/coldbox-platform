@@ -37,7 +37,7 @@ Description :
 <!------------------------------------------- PUBLIC ------------------------------------------->
 	
 	<!--- getAssociatedCacheManager --->
-	<cffunction name="getAssociatedCacheManager" output="false" access="public" returntype="coldbox.system.cache.CacheManager" hint="Get the associated Cache Manager for this stats object">
+	<cffunction name="getAssociatedCacheManager" output="false" access="public" returntype="coldbox.system.cache.archive.CacheManager" hint="Get the associated Cache Manager for this stats object">
 		<cfreturn instance.cacheManager>
 	</cffunction>
 	

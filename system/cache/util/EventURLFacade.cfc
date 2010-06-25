@@ -7,22 +7,22 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 Author 	    :	Luis Majano
 Date        :	January 18, 2007
 Description :
-	This cfc acts as an URL/FORM facade for event caching
+	This cfc acts as an URL/FORM facade for event caching.  The associated cache 
+	will have to implement the IColdboxApplicationCache in order to retrieve the right
+	prefix keys.
 
 
 ----------------------------------------------------------------------->
-<cfcomponent hint="This object acts as an url/form facade for event caching" output="false">
+<cfcomponent hint="This object acts as an url/form facade for CacheBox event caching" output="false">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
-	
-	<cfscript>
-		instance = structnew();
-	</cfscript>
 
 	<cffunction name="init" access="public" output="false" returntype="EventURLFacade" hint="Constructor">
-		<cfargument name="cacheManager" type="coldbox.system.cache.CacheManager" 	required="true" hint="The cache manager"/>
+		<cfargument name="cacheProvider" type="coldbox.system.cache.IColdboxApplicationCache" 	required="true" hint="The cache provider/manager this utility will be associated with"/>
 		<cfscript>
-			instance.cacheManager = arguments.cacheManager;
+			instance = {
+				cacheProvider = arguments.cacheProvider
+			};
 			return this;
 		</cfscript>
 	</cffunction>
@@ -134,7 +134,7 @@ Description :
 		<cfscript>
 			var key = "";
 			
-			key = instance.cacheManager.EVENT_CACHEKEY_PREFIX & arguments.targetEvent & "-" & arguments.keySuffix & "-";
+			key = instance.cacheProvider.getEventCacheKeyPrefix() & arguments.targetEvent & "-" & arguments.keySuffix & "-";
 			
 			return key;
 		</cfscript>		

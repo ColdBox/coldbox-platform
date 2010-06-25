@@ -25,7 +25,7 @@ Description :
 	</cffunction>
 	
 	<!--- Get Cache object count --->
-	<cffunction name="getObjectCount" access="public" output="false" returntype="numeric" hint="Get the cache's object count">
+	<cffunction name="getObjectCount" access="public" output="false" returntype="numeric" hint="Get the associated cache's live object count">
 	</cffunction>
 	
 	<!--- clearStats --->
@@ -33,23 +33,23 @@ Description :
 	</cffunction>	
 		
 	<!--- Get/Set Garbage Collections --->
-	<cffunction name="getGarbageCollections" access="public" output="false" returntype="numeric" hint="Get Garbage Collections">
+	<cffunction name="getGarbageCollections" access="public" output="false" returntype="numeric" hint="Get the total cache's garbage collections">
 	</cffunction>
 	
 	<!--- Eviction Count --->
-	<cffunction name="getEvictionCount" access="public" returntype="numeric" output="false" hint="Get the eviction count">
+	<cffunction name="getEvictionCount" access="public" returntype="numeric" output="false" hint="Get the total cache's eviction count">
 	</cffunction>
 	
 	<!--- The hits --->
-	<cffunction name="getHits" access="public" returntype="numeric" output="false" hint="Get the hits">
+	<cffunction name="getHits" access="public" returntype="numeric" output="false" hint="Get the total cache's hits">
 	</cffunction>
 	
 	<!--- The Misses --->
-	<cffunction name="getMisses" access="public" returntype="numeric" output="false" hint="Get the misses">
+	<cffunction name="getMisses" access="public" returntype="numeric" output="false" hint="Get the total cache's misses">
 	</cffunction>
 	
 	<!--- Last Reap Date Time --->
-	<cffunction name="getLastReapDatetime" access="public" returntype="string" output="false" hint="Get the last reap date time property">
+	<cffunction name="getLastReapDatetime" access="public" returntype="string" output="false" hint="Get the date/time of the last reap the cache did">
 	</cffunction>
 
 </cfinterface>

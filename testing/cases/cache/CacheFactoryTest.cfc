@@ -2,8 +2,21 @@
 <cfscript>
 	
 	function setup(){
-		cacheFactory = getMockBox().createMock("coldbox.system.cache.CacheFactory").init();
+		// init with defaults
+		cacheFactory = getMockBox().createMock("coldbox.system.cache.CacheFactory");
+		mockCache 	 = getMockBox().createMock("coldbox.system.cache.providers.MockProvider").init();
+		// mock configure()
+		cacheFactory.$("createCache",mockCache);
+		// init factory
+		cacheFactory.init();
 	}
+	
+	function testCreateCache(){
+		makePublic(cacheFactory,"createCache");
+		cacheFactory.createCache("test","coldbox.system.cache.providers.MockProvider");		
+		
+	}
+	
 	function testGetConfig(){
 		debug( cacheFactory.getConfig() );
 	}
