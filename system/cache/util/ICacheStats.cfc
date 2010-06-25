@@ -16,10 +16,6 @@ Description :
 		<cfargument name="cacheProvider" type="coldbox.system.cache.ICacheProvider" required="true" hint="The associated cache manager/provider"/>
 	</cffunction>
 	
-	<!--- Get Associated Cache --->
-	<cffunction name="getAssociatedCache" access="public" output="false" returntype="coldbox.system.cache.ICacheProvider" hint="Get the associated cache provider/manager">
-	</cffunction>
-	
 	<!--- Get Cache Performance --->
 	<cffunction name="getCachePerformanceRatio" access="public" output="false" returntype="numeric" hint="Get the cache's performance ratio">
 	</cffunction>

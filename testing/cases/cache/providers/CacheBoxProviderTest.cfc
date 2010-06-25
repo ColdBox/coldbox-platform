@@ -9,13 +9,17 @@ Date        :	9/3/2007
 Description :
 	Request service Test
 ----------------------------------------------------------------------->
-<cfcomponent name="requestserviceTest" extends="objectPoolTest" output="false">
+<cfcomponent name="cacheTest" extends="coldbox.system.testing.BaseTestCase" output="false">
+<cfscript>
 
-	<cffunction name="setUp" returntype="void" access="public" output="false">
-		<cfscript>
-		super.setup();
-		pool = CreateObject("component","coldbox.system.cache.MTObjectPool").init();
-		</cfscript>
-	</cffunction>
+	function setup(){
+		cache = getMockBox().createMock("coldbox.system.cache.providers.CacheBoxProvider").init();
+	}
 	
+	function testConfigure(){
+	
+	}
+
+
+</cfscript>
 </cfcomponent>

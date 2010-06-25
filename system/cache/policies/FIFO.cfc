@@ -18,9 +18,9 @@ Description :
 
 	<!--- init --->
 	<cffunction name="init" output="false" access="public" returntype="FIFO" hint="Constructor">
-		<cfargument name="cacheManager" type="coldbox.system.cache.CacheManager" required="true" hint="The cache manager"/>
+		<cfargument name="cacheProvider" type="coldbox.system.cache.ICacheProvider" required="true" hint="The cache manager"/>
 		<cfscript>
-			setCacheManager(arguments.cacheManager);
+			instance.cacheProvider = arguments.cacheProvider;
 			return this;
 		</cfscript>
 	</cffunction>
@@ -30,7 +30,7 @@ Description :
 	<!--- execute --->
 	<cffunction name="execute" output="false" access="public" returntype="void" hint="Execute the policy">
 		<cfscript>
-			var oCacheManager = getCacheManager();
+			var oCacheManager = getCacheProvider();
 			var poolMD = oCacheManager.getPoolMetadata(deepCopy=false);
 			var FIFOIndex = "";
 			var indexLength = 0;

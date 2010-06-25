@@ -9,14 +9,13 @@ Date        :	9/3/2007
 Description :
 	Request service Test
 ----------------------------------------------------------------------->
-<cfcomponent name="eventURLFacadeTest" extends="coldbox.system.testing.BaseTestCase" output="false">
+<cfcomponent extends="coldbox.system.testing.BaseTestCase" output="false">
 
 	<cffunction name="setUp" returntype="void" access="public" output="false">
 		<cfscript>
-		super.setup();
-		cacheManager = mockFactory.createMock('coldbox.system.cache.CacheManager');
-		cacheManager.EVENT_CACHEKEY_PREFIX = "UNITEVENTTEST";
-		facade = CreateObject("component","coldbox.system.cache.util.eventURLFacade").init(cacheManager);
+		cm = getMockBox().createEmptyMock(className='coldbox.system.cache.providers.MockProvider');
+		cm.$("getEventCacheKeyPrefix","mock");
+		facade = CreateObject("component","coldbox.system.cache.util.eventURLFacade").init(cm);
 		</cfscript>
 	</cffunction>
 	
@@ -25,16 +24,16 @@ Description :
 			routedStruct.name = "luis";
 			
 			/* Mocks */
-			context = mockFactory.createMock('coldbox.system.web.context.RequestContext');
-			context.mockMethod('getRoutedStruct').returns(routedStruct);
-			context.mockMethod('getCurrentEvent').returns('main.index');
-			context.mockMethod('getEventName').returns('event');
+			context = getMockBox().createMock('coldbox.system.web.context.RequestContext');
+			context.$('getRoutedStruct').$results(routedStruct);
+			context.$('getCurrentEvent').$results('main.index');
+			context.$('getEventName').$results('event');
 			
 			/* setup url vars */
 			url.event = 'main.index';
 			url.id = "123";
 			url.fwCache="True";
-			
+						
 			testHash = facade.getUniqueHash(context);
 			
 			AssertTrue( len(testHash) );			
@@ -49,6 +48,8 @@ Description :
 			
 			testHash = facade.buildHash(args);
 			
+			myStruct['cgihost'] = cgi.http_host;
+			
 			AssertEquals( testHash, hash(myStruct.toString()) );
 		</cfscript>
 	</cffunction>
@@ -58,10 +59,10 @@ Description :
 			routedStruct.name = "majano";
 			
 			/* Mocks */
-			context = mockFactory.createMock('coldbox.system.web.context.RequestContext');
-			context.mockMethod('getRoutedStruct').returns(routedStruct,routedStruct);
-			context.mockMethod('getCurrentEvent').returns('main.index');
-			context.mockMethod('getEventName').returns('event','event');
+			context = getMockBox().createMock('coldbox.system.web.context.RequestContext');
+			context.$('getRoutedStruct').$results(routedStruct,routedStruct);
+			context.$('getCurrentEvent').$results('main.index');
+			context.$('getEventName').$results('event','event');
 			
 			/* setup url vars */
 			url.event = 'main.index';
@@ -81,9 +82,10 @@ Description :
 			event = "main.index";
 			args = "id=1";
 			myStruct["id"] = 1;
+			myStruct['cgihost'] = cgi.http_host;
 			
 			testCacheKey = facade.buildEventKeyNoContext("unittest","main.index",args);
-			targetKey = cacheManager.EVENT_CACHEKEY_PREFIX & "main.index-unittest-" & hash(myStruct.toString());
+			targetKey = cm.getEventCacheKeyPrefix() & "main.index-unittest-" & hash(myStruct.toString());
 			
 			AssertEquals( testCacheKey, targetKey  );
 		</cfscript>

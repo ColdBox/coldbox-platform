@@ -35,7 +35,7 @@ Description :
 		<cfargument name="event" type="any" required="true" hint="The event request context to incorporate into the hash"/>
 		<!--- **************************************************************************** --->
 		<cfscript>
-			var urlCopy = duplicate(URL);
+			var urlCopy  = duplicate(URL);
 			var formCopy = duplicate(FORM);
 			var eventName = arguments.event.getEventName();
 			var urlActionsList = "fwReinit,fwCache,debugMode,debugpass,dumpvar,debugpanel";
@@ -119,7 +119,7 @@ Description :
 		<cfscript>
 			var key = "";
 			
-			key = buildBasicCacheKey(argumentCollection=arguments) & buildHash(arguments.args);
+			key = buildBasicCacheKey(argumentCollection=arguments) & buildHash(arguments.targetArgs);
 			
 			return key;
 		</cfscript>		

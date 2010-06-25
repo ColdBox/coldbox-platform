@@ -6,47 +6,28 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 
 Author 	    :	Luis Majano
 Description :
-	The CacheBox Cache Provider
+	The coolest standalone CacheBox Provider ever built.
 
 ----------------------------------------------------------------------->
-<cfcomponent hint="The most awesome CacheBox Cache Provider" output="false" implements="coldbox.system.cache.ICacheProvider">
+<cfcomponent hint="The coolest standalone CacheBox Provider ever built" output="false" extends="coldbox.system.cache.providers.AbstractCacheBoxProvider">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 	
-	<cfscript>
-		instance = structnew();
-		
-		// Cache Key prefixes. These are used by ColdBox For specific type saving
-		this.VIEW_CACHEKEY_PREFIX 			= "cboxview_view-";
-		this.EVENT_CACHEKEY_PREFIX 			= "cboxevent_event-";
-		this.HANDLER_CACHEKEY_PREFIX 		= "cboxhandler_handler-";
-		this.INTERCEPTOR_CACHEKEY_PREFIX 	= "cboxinterceptor_interceptor-";
-		this.PLUGIN_CACHEKEY_PREFIX 		= "cboxplugin_plugin-";
-		this.CUSTOMPLUGIN_CACHEKEY_PREFIX 	= "cboxplugin_customplugin-";
-		this.CACHE_ID = hash(createObject('java','java.lang.System').identityHashCode(this));
-	</cfscript>
-
-	<cffunction name="init" access="public" output="false" returntype="CacheManager" hint="Constructor">
-		<cfargument name="controller" type="any" required="true">
+	<cffunction name="init" access="public" output="false" returntype="any" hint="Constructor">
 		<cfscript>
-			// Set Controller Injection
-			instance.controller = arguments.controller;
+			// super size me
+			super.init();
+			
 			// Logger object
-			instance.logger = instance.controller.getLogBox().getLogger(this);
+			instance.logger = {};
+			// Cache Stats
+			instance.cacheStats = {};
 			// Runtime Java object
 			instance.javaRuntime = CreateObject("java", "java.lang.Runtime");
 			// Locking Timeout
 			instance.lockTimeout = "15";
-			// Event URL Facade Setup
-			instance.eventURLFacade = CreateObject("component","coldbox.system.cache.util.EventURLFacade").init(this);
-			// Cache Stats
-			instance.cacheStats = CreateObject("component","coldbox.system.cache.util.CacheStats").init(this);
-			// Set the NOTFOUND public constant
-			this.NOT_FOUND = '_NOTFOUND_';		
-			// Init the object Pool on instantiation 
-			initPool();
-			// Eviction Policy as struct
-			instance.evictionPolicy = structnew();
+			// Eviction Policy
+			instance.evictionPolicy = {};
 			
 			return this;
 		</cfscript>
@@ -54,30 +35,73 @@ Description :
 
 	<!--- Configure the Cache for Operation --->
 	<cffunction name="configure" access="public" output="false" returntype="void" hint="Configures the cache for operation, sets the configuration object, sets and creates the eviction policy and clears the stats. If this method is not called, the cache is useless.">
-		<!--- ************************************************************* --->
-		<cfargument name="cacheConfig" type="coldbox.system.cache.config.CacheConfig" required="true" hint="The configuration object">
-		<!--- ************************************************************* --->
 		<cfscript>		
-			var oEvictionPolicy = 0;
-				
-			//set the config bean
-			setCacheConfig(arguments.cacheConfig);
+			var cacheConfig     = getCacheConfiguration();
+			var evictionPolicy  = "";
+			var objectStore		= "";
 			
-			//Reset the statistics.
-			getCacheStats().clearStats();
+			// Prepare the logger
+			instance.logger = getCacheFactory().getLogBox().getLogger( this );
+			instance.logger.debug("Starting up CacheBox Cache: #getName()#...");
 			
-			//Setup the eviction Policy to use
+			// Prepare Statistics
+			instance.cacheStats = CreateObject("component","coldbox.system.cache.util.CacheStats").init(this);
+			
+			// Setup the eviction Policy to use
 			try{
-				oEvictionPolicy = CreateObject("component","coldbox.system.cache.policies.#getCacheConfig().getEvictionPolicy()#").init(this);
+				evictionPolicy = locateEvictionPolicy( cacheConfig.evictionPolicy );
+				instance.evictionPolicy = CreateObject("component", evictionPolicy).init(this);
 			}
-			Catch(Any e){
-				getUtil().throwit('Error creating eviction policy','Error creating the eviction policy object: #e.message# #e.detail#','cacheManager.EvictionPolicyCreationException');	
+			catch(Any e){
+				instance.logger.error("Error creating eviction policy: #evictionPolicy#", e);
+				getUtil().throwit('Error creating eviction policy: #evictionPolicy#','#e.message# #e.detail# #e.stackTrace#','CacheBoxProvider.EvictionPolicyCreationException');	
 			}
 			
-			// Save the Policy
-			instance.evictionPolicy = oEvictionPolicy;
+			// Create the object store
+			try{
+				objectStore = locateObjectStore( cacheConfig.objectStore );
+				instance.objectStore = CreateObject("component", objectStore).init(this);
+			}
+			catch(Any e){
+				instance.logger.error("Error creating object store: #objectStore#", e);
+				getUtil().throwit('Error creating object store #objectStore#','#e.message# #e.detail# #e.stackTrace#','CacheBoxProvider.ObjectStoreCreationException');	
+			}
+			
+			// Enabled cache
+			instance.enabled = true;
+			
+			instance.logger.info("CacheBox Cache: #getName()# has been initialized successfully for operation");			
 		</cfscript>
 	</cffunction>
+	
+	<!--- shutdown --->
+    <cffunction name="shutdown" output="false" access="public" returntype="void" hint="Shutdown command issued when CacheBox is going through shutdown phase">
+   		<cfscript>
+   			instance.logger.info("CacheBox Cache: #getName()# has been shutdown.");	
+   		</cfscript>
+    </cffunction>
+	
+	<!--- locateEvictionPolicy --->
+    <cffunction name="locateEvictionPolicy" output="false" access="private" returntype="any" hint="Locate the eviction policy">
+    	<cfargument name="policy" type="string"/>
+    	<cfscript>
+    		if( fileExists( expandPath("/coldbox/system/cache/policies/#arguments.policy#") ) ){
+				return "coldbox.system.cache.policies.#arguments.policy#";
+			}
+			return arguments.policy;
+    	</cfscript>
+    </cffunction>
+	
+	<!--- locateObjectStore --->
+    <cffunction name="locateObjectStore" output="false" access="private" returntype="any" hint="Locate the object store">
+    	<cfargument name="store" type="string"/>
+    	<cfscript>
+    		if( fileExists( expandPath("/coldbox/system/cache/store/#arguments.store#") ) ){
+				return "coldbox.system.cache.store.#arguments.store#";
+			}
+			return arguments.store;
+    	</cfscript>
+    </cffunction>
 
 <!------------------------------------------- PUBLIC ------------------------------------------->
 
@@ -91,16 +115,16 @@ Description :
 			var returnStruct = structnew();
 			var x = 1;
 			var thisKey = "";
-			/* Clear Prefix */
+			
+			// Clear Prefix
 			arguments.prefix = trim(arguments.prefix);
 			
-			/* Loop on Keys */
+			// Loop on Keys
 			for(x=1;x lte listLen(arguments.keys);x=x+1){
 				thisKey = arguments.prefix & listGetAt(arguments.keys,x);
 				returnStruct[thiskey] = lookup(thisKey);
 			}
 			
-			/* Return Struct */
 			return returnStruct;
 		</cfscript>
 	</cffunction>
@@ -113,41 +137,35 @@ Description :
 		<cfset var refLocal = structnew()>
 		
 		<cfset refLocal.needCleanup = false>
-		<cfset refLocal.ObjectFound = false>
-		<cfset refLocal.tmpObj = 0>
+		<cfset refLocal.objectFound = false>
+		<cfset refLocal.tmpObj 		= 0>
 		
 		<!--- Cleanup the key --->
-		<cfset arguments.objectKey = lcase(trim(arguments.objectKey))>
+		<cfset arguments.objectKey = lcase(arguments.objectKey)>
 		
-		<cflock type="readonly" name="coldbox.cacheManager.#arguments.objectKey#" timeout="#instance.lockTimeout#" throwontimeout="true">
+		<cflock type="readonly" name="CacheBox.#getName()#.#arguments.objectKey#" timeout="#instance.lockTimeout#" throwontimeout="true">
 			<cfscript>
 				// Check if in pool first
 				if( getObjectPool().lookup(arguments.objectKey) ){
-					// Get Object from cache
+					// Check if object still exists: TODO: Revise this
 					refLocal.tmpObj = getobjectPool().get(arguments.objectKey);
+					
 					// Validate it
-					if( not structKeyExists(refLocal, "tmpObj") ){
-						refLocal.needCleanup = true;
-						getCacheStats().miss();
+					if( NOT structKeyExists(refLocal, "tmpObj") ){
+						getStats().miss();
+						return false;
 					}
-					else{
-						// Object Found
-						refLocal.ObjectFound = true;
-					}					
-				}// first lookup test
-				else{
-					// log miss
-					getCacheStats().miss();
+					
+					// Object Found
+					return true;
+										
 				}
+				
+				// log miss
+				getCacheStats().miss();
+				return false;
 			</cfscript>
 		</cflock>
-		
-		<!--- Check if needs clearing --->
-		<cfif refLocal.needCleanup>
-			<cfset clearKey(arguments.objectKey)>
-		</cfif>
-		
-		<cfreturn refLocal.ObjectFound>
 	</cffunction>
 
 	<!--- Get an object from the cache --->
@@ -165,7 +183,7 @@ Description :
 		<!--- Cleanup the key --->
 		<cfset arguments.objectKey = lcase(trim(arguments.objectKey))>
 		
-		<cflock type="exclusive" name="coldbox.cacheManager.#arguments.objectKey#" timeout="#instance.lockTimeout#" throwontimeout="true">
+		<cflock type="exclusive" name="CacheBox.#getName()#.#arguments.objectKey#" timeout="#instance.lockTimeout#" throwontimeout="true">
 			<cfscript>
 				// Check if in pool first 
 				if( getObjectPool().lookup(arguments.objectKey) ){
@@ -327,7 +345,7 @@ Description :
 		</cfif>
 		
 		<!--- Set object in Cache --->
-		<cflock type="exclusive" name="coldbox.cacheManager.#arguments.objectKey#" timeout="#instance.lockTimeout#" throwontimeout="true">
+		<cflock type="exclusive" name="CacheBox.#getName()#.#arguments.objectKey#" timeout="#instance.lockTimeout#" throwontimeout="true">
 			<cfset getobjectPool().set(arguments.objectKey,arguments.myObject,arguments.timeout,arguments.lastAccessTimeout)>
 		</cflock>
 		
@@ -354,7 +372,7 @@ Description :
 		<cfset arguments.objectKey = lcase(trim(arguments.objectKey))>
 		
 		<!--- Remove Object --->
-		<cflock type="exclusive" name="coldbox.cacheManager.#arguments.objectKey#" timeout="#instance.lockTimeout#" throwontimeout="true">
+		<cflock type="exclusive" name="CacheBox.#getName()#.#arguments.objectKey#" timeout="#instance.lockTimeout#" throwontimeout="true">
 			<cfif getobjectPool().lookup(arguments.objectKey)>
 				<cfset clearCheck = getobjectPool().clearKey(arguments.objectKey)>
 			</cfif>
@@ -425,90 +443,6 @@ Description :
 			}
 		</cfscript>
 	</cffunction>
-	
-	<!--- Clear an event --->
-	<cffunction name="clearEvent" access="public" output="false" returntype="void" hint="Clears all the event permutations from the cache according to snippet and querystring. Be careful when using incomplete event name with query strings as partial event names are not guaranteed to match with query string permutations">
-		<!--- ************************************************************* --->
-		<cfargument name="eventsnippet" type="string" 	required="true" hint="The event snippet to clear on. Can be partial or full">
-		<cfargument name="queryString" 	type="string" 	required="false" default="" hint="If passed in, it will create a unique hash out of it. For purging purposes"/>
-		<!--- ************************************************************* --->
-		<cfscript>
-			//.*- = the cache suffix and appendages for regex to match
-			var cacheKey = this.EVENT_CACHEKEY_PREFIX & replace(arguments.eventsnippet,".","\.","all") & ".*-.*";
-														  
-			//Check if we are purging with query string
-			if( len(arguments.queryString) neq 0 ){
-				cacheKey = cacheKey & "-" & getEventURLFacade().buildHash(arguments.queryString);
-			}
-			
-			// Clear All Events by Criteria
-			clearByKeySnippet(keySnippet=cacheKey,regex=true);
-		</cfscript>
-	</cffunction>
-	
-	<!--- Clear an event Multi --->
-	<cffunction name="clearEventMulti" access="public" output="false" returntype="void" hint="Clears all the event permutations from the cache according to the list of snippets and querystrings. Be careful when using incomplete event name with query strings as partial event names are not guaranteed to match with query string permutations">
-		<!--- ************************************************************* --->
-		<cfargument name="eventsnippets"    type="string"   required="true"  hint="The comma-delimmitted list event snippet to clear on. Can be partial or full">
-		<cfargument name="queryString"      type="string"   required="false" default="" hint="The comma-delimmitted list of queryStrings passed in. If passed in, it will create a unique hash out of it. For purging purposes.  If passed in the list length must be equal to the list length of the event snippets passed in."/>
-		<!--- ************************************************************* --->
-		<cfscript>
-			var regexCacheKey = "";
-			var x 			  = 1;
-			var eventsnippet  = "";
-			var cacheKey	  = "";
-			
-			// Loop on the incoming snippets
-			for(x=1;x lte listLen(arguments.eventsnippets);x=x+1){
-			      //.*- = the cache suffix and appendages for regex to match
-			      cacheKey = this.EVENT_CACHEKEY_PREFIX & replace(listGetAt(arguments.eventsnippets,x),".","\.","all") & "-.*";
-			      //Check if we are purging with query string
-			      if( len(arguments.queryString) neq 0 ){
-			            cacheKey = cacheKey & "-" & getEventURLFacade().buildHash(listGetAt(arguments.queryString,x));
-			      }
-			      regexCacheKey = regexCacheKey & cacheKey;
-			      //check that we aren't at the end of the list, and the | char to the regex as the OR statement
-			      if (x NEQ listLen(arguments.eventsnippets)) {
-			            regexCacheKey = regexCacheKey & "|";
-			      }
-			}
-			// Clear All Events by Criteria
-			clearByKeySnippet(keySnippet=regexCacheKey,regex=true);
-		</cfscript>
-      </cffunction>
-	
-	<!--- Clear All the Events form the cache --->
-	<cffunction name="clearAllEvents" access="public" output="false" returntype="void" hint="Clears all events from the cache.">
-		<cfscript>
-			var cacheKey = this.EVENT_CACHEKEY_PREFIX;
-			
-			// Clear All Events
-			clearByKeySnippet(keySnippet=cacheKey,regex=false);
-		</cfscript>
-	</cffunction>
-
-	<!--- clear View --->
-	<cffunction name="clearView" output="false" access="public" returntype="void" hint="Clears all view name permutations from the cache according to the view name.">
-		<!--- ************************************************************* --->
-		<cfargument name="viewSnippet"  required="true" type="string" hint="The view name snippet to purge from the cache">
-		<!--- ************************************************************* --->
-		<cfscript>
-			var cacheKey = this.VIEW_CACHEKEY_PREFIX & arguments.viewSnippet;
-			
-			// Clear All View snippets
-			clearByKeySnippet(keySnippet=cacheKey,regex=false);
-		</cfscript>
-	</cffunction>
-
-	<!--- Clear All The Views from the Cache. --->
-	<cffunction name="clearAllViews" access="public" output="false" returntype="void" hint="Clears all views from the cache.">
-		<cfscript>
-			var cacheKey = this.VIEW_CACHEKEY_PREFIX;
-			
-			// Clear All the views
-			clearByKeySnippet(keySnippet=cacheKey,regex=false);
-		</cfscript>
-	</cffunction>
 
 	<!--- Clear The Pool --->
 	<cffunction name="clear" access="public" output="false" returntype="void" hint="Clears the entire object cache and recreates the object pool and statistics. Call from a non-cached object or you will get 500 NULL errors, VERY VERY BAD!!. TRY NOT TO USE THIS METHOD">
@@ -537,7 +471,7 @@ Description :
 		</cfscript>
 		
 		<!--- Lock Reaping, so only one can be ran even if called manually, for concurrency protection --->
-		<cflock type="exclusive" name="coldbox.cacheManager.#this.CACHE_ID#.reap" timeout="#instance.lockTimeout#">
+		<cflock type="exclusive" name="CacheBox.#getName()#.#this.CACHE_ID#.reap" timeout="#instance.lockTimeout#">
 		<cfscript>
 			// Expire and cleanup if in frequency
 			if ( dateDiff("n", getCacheStats().getlastReapDatetime(), now() ) gte ccBean.getReapFrequency() ){
@@ -710,29 +644,10 @@ Description :
 	</cffunction>
 
 <!------------------------------------------- ACCESSOR/MUTATORS ------------------------------------------->
-
-	<!--- get Event URL Facade --->
-	<cffunction name="geteventURLFacade" access="public" returntype="coldbox.system.cache.util.EventURLFacade" output="false" hint="Get the event url facade object.">
-		<cfreturn instance.eventURLFacade>
-	</cffunction>
-
-	<!--- The cache stats --->
-	<cffunction name="getCacheStats" access="public" returntype="coldbox.system.cache.util.CacheStats" output="false" hint="Return the cache stats object.">
-		<cfreturn instance.cacheStats>
-	</cffunction>
-	
-	<!--- The cache Config Bean --->
-	<cffunction name="setCacheConfig" access="public" returntype="void" output="false" hint="Set & Override the cache configuration bean. You can use this to programmatically alter the cache.">
-		<cfargument name="CacheConfig" type="coldbox.system.cache.config.CacheConfig" required="true">
-		<cfset instance.CacheConfig = arguments.CacheConfig>
-	</cffunction>
-	<cffunction name="getCacheConfig" access="public" returntype="coldbox.system.cache.config.CacheConfig" output="false" hint="Get the current cache configuration bean.">
-		<cfreturn instance.CacheConfig >
-	</cffunction>
 	
 	<!--- Get the internal object pool --->
 	<cffunction name="getObjectPool" access="public" returntype="any" output="false" hint="Get the internal object pool: coldbox.system.cache.objectPool or MTobjectPool">
-		<cfreturn instance.objectPool >
+		<cfreturn instance.objectStore >
 	</cffunction>
 
 	<!--- Get the Pool Metadata --->
@@ -778,7 +693,7 @@ Description :
 	<!--- Initialize our object cache pool --->
 	<cffunction name="initPool" access="private" output="false" returntype="void" hint="Initialize and set the internal object Pool">
 		<cfscript>
-			instance.objectPool = CreateObject("component","coldbox.system.cache.ObjectPool").init();
+			instance.objectStore = CreateObject("component","coldbox.system.cache.ObjectPool").init();
 		</cfscript>
 	</cffunction>
 
@@ -801,9 +716,4 @@ Description :
 		<cfreturn check>
 	</cffunction>
 
-	<!--- Get Util --->
-	<cffunction name="getUtil" access="private" output="false" returntype="coldbox.system.core.util.Util" hint="Create and return a util object">
-		<cfreturn CreateObject("component","coldbox.system.core.util.Util")/>
-	</cffunction>
-	
 </cfcomponent>

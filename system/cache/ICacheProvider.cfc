@@ -36,10 +36,6 @@ Description :
     <cffunction name="getStats" output="false" access="public" returntype="coldbox.system.cache.util.ICacheStats" hint="Get the cache statistics object">
     </cffunction>
 	
-	<!--- clearStatistics --->
-    <cffunction name="clearStatistics" output="false" access="public" returntype="void" hint="Clear the cache statistics">
-    </cffunction>
-
 	<!--- getConfiguration --->
     <cffunction name="getConfiguration" output="false" access="public" returntype="struct" hint="Get the structure of configuration parameters for the cache">
     </cffunction>
@@ -86,23 +82,18 @@ Description :
     	<cfargument name="objectKey" type="any" required="true" hint="The object key"/>
     </cffunction>
 	
-	<!--- exists --->
-	<cffunction name="exists" access="public" output="false" returntype="boolean" hint="Check if an object is in cache, if not found it records a miss.">
+	<!--- lookup --->
+	<cffunction name="lookup" access="public" output="false" returntype="boolean" hint="Check if an object is in cache, if not found it records a miss.">
 		<cfargument name="objectKey" type="any" required="true" hint="The key of the object to lookup.">
 	</cffunction>	
 	
-	<!--- isExpired --->
-    <cffunction name="isExpired" output="false" access="public" returntype="Boolean" hint="Checks if an object has expired in the cache">
-    	<cfargument name="objectKey" type="any" required="true" hint="The key of the object to lookup its metadata">
+	<!--- lookupValue --->
+	<cffunction name="lookupValue" access="public" output="false" returntype="boolean" hint="Check if an object value is in cache, if not found it records a miss.">
+		<cfargument name="objectValue" type="any" required="true" hint="The value of the object to lookup.">
 	</cffunction>
-	
-	<!--- getCachedObjectMetadata --->
-	<cffunction name="getCachedObjectMetadata" output="false" access="public" returntype="struct" hint="Get the cached object's metadata structure. If the object does not exist, it returns an empty structure.">
-		<cfargument name="objectKey" type="any" required="true" hint="The key of the object to lookup its metadata">
-	</cffunction>	
-	
+
 	<!--- Set --->
-	<cffunction name="set" access="public" output="false" returntype="boolean" hint="sets an object in cache.">
+	<cffunction name="set" access="public" output="false" returntype="void" hint="sets an object in cache.">
 		<!--- ************************************************************* --->
 		<cfargument name="objectKey" 	type="any"  required="true" hint="The object cache key">
 		<cfargument name="object"		type="any" 	required="true" hint="The object to cache">

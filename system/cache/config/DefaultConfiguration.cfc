@@ -33,7 +33,7 @@ Description :
 				evictionPolicy = "LRU",
 				evictCount = 1,
 				maxObjects = 200,
-				objectStore = "coldbox.system.cache.store.ConcurrentSoftReferenceStore",
+				objectStore = "ConcurrentSoftReferenceStore",
 				// This switches the internal provider from normal cacheBox to coldbox enabled cachebox
 				coldboxEnabled = false
 			},

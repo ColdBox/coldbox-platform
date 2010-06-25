@@ -13,7 +13,7 @@ Description :
 
 	<cffunction name="setUp" returntype="void" access="public" output="false">
 		<cfscript>
-		pool = getMockBox().createMock(className="coldbox.system.cache.ObjectPool").init();
+			pool = getMockBox().createMock(className="coldbox.system.cache.archive.ObjectPool").init();
 		</cfscript>
 	</cffunction>
 	
@@ -51,7 +51,7 @@ Description :
 	
 	<cffunction name="testgetpoolMD" access="public" returntype="void" hint="" output="false" >
 		<cfscript>
-			AssertTrue( isStruct(pool.getpool_metadata()) );
+			AssertTrue( isStruct(pool.getPoolMetadata()) );
 		</cfscript>
 	</cffunction>
 	
@@ -75,10 +75,18 @@ Description :
 		<cfscript>
 			assertFalse( pool.lookup('nada') );
 			map = {myKey="hello"};
+			md  = {myKey={isExpired=false}};
 			
 			makePublic(pool,"setPool");
 			pool.setPool(map);
+			pool.setPool_Metadata(md);
+			
 			assertTrue( pool.lookup('myKey') );
+			
+			map = {myKey="hello"};
+			md  = {myKey={isExpired=true}};
+			pool.setPool_Metadata(md);
+			assertFalse( pool.lookup('myKey') );
 		</cfscript>
 	</cffunction>
 	

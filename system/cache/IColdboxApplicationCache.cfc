@@ -52,4 +52,27 @@ Description :
 	<cffunction name="getItemTypesCount" access="public" output="false" returntype="coldbox.system.cache.util.ItemTypeCount" hint="Get the item types counts of the cache. These are calculated according to the prefixes set.">
 	</cffunction>
 	
+	<!--- Clear All the Events form the cache --->
+	<cffunction name="clearAllEvents" access="public" output="false" returntype="void" hint="Clears all events from the cache.">
+	</cffunction>
+	
+	<!--- Clear an event --->
+	<cffunction name="clearEvent" access="public" output="false" returntype="void" hint="Clears all the event permutations from the cache according to snippet and querystring. Be careful when using incomplete event name with query strings as partial event names are not guaranteed to match with query string permutations">
+		<!--- ************************************************************* --->
+		<cfargument name="eventsnippet" type="string" 	required="true"  hint="The event snippet to clear on. Can be partial or full">
+		<cfargument name="queryString" 	type="string" 	required="false" default="" hint="If passed in, it will create a unique hash out of it. For purging purposes"/>
+		<!--- ************************************************************* --->
+	</cffunction>
+	
+	<!--- clear View --->
+	<cffunction name="clearView" output="false" access="public" returntype="void" hint="Clears all view name permutations from the cache according to the view name.">
+		<!--- ************************************************************* --->
+		<cfargument name="viewSnippet"  required="true" type="string" hint="The view name snippet to purge from the cache">
+		<!--- ************************************************************* --->
+	</cffunction>
+
+	<!--- Clear All The Views from the Cache. --->
+	<cffunction name="clearAllViews" access="public" output="false" returntype="void" hint="Clears all views from the cache.">
+	</cffunction>
+	
 </cfinterface>

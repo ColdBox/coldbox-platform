@@ -33,7 +33,7 @@ Description :
 				evictionPolicy = "LRU",
 				evictCount = 1,
 				maxObjects = 200,
-				objectStore = "coldbox.system.cache.store.ConcurrentSoftReferenceStore"
+				objectStore = "ConcurrentSoftReferenceStore"
 			},
 			
 			// Register all the custom named caches you like here
@@ -47,7 +47,7 @@ Description :
 						evictionPolicy="LFU",
 						evictCount="1",
 						maxObjects="100",
-						objectStore="coldbox.system.cache.store.ConcurrentSoftReferenceStore"
+						objectStore="ConcurrentSoftReferenceStore"
 					}
 				},
 				sampleCache2 = {

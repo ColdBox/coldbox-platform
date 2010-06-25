@@ -23,19 +23,25 @@ Description :
 		
 		mockController.$('getInterceptorService',mockService);
 		mockController.$('getAppHash', hash(createUUID()) );
-		
-		ccbean = createObject("component","coldbox.system.cache.config.CacheConfig");
+		mockLogBox	 = getMockBox().createEmptyMock("coldbox.system.logging.LogBox");
+		mockLogger	 = getMockBox().createEmptyMock("coldbox.system.logging.Logger");
+		mockController.$("getLogBox",mockLogBox);
+		mockLogBox.$("getLogger",mockLogger);
+			
+				
+		ccbean = createObject("component","coldbox.system.cache.archive.config.CacheConfig");
 		memento = structnew();
-		memento.CacheObjectDefaultTimeout = 20;
-		memento.CacheObjectDefaultLastAccessTimeout = 20;
-		memento.CacheReapFrequency = 1;
-		memento.CacheMaxObjects = 100;
-		memento.CacheFreeMemoryPercentageThreshold = 1;
-		memento.CacheUseLastAccessTimeouts = true;
-		memento.CacheEvictionPolicy = "FIFO";
+		memento.ObjectDefaultTimeout = 20;
+		memento.ObjectDefaultLastAccessTimeout = 20;
+		memento.ReapFrequency = 1;
+		memento.MaxObjects = 100;
+		memento.FreeMemoryPercentageThreshold = 1;
+		memento.UseLastAccessTimeouts = true;
+		memento.EvictionPolicy = "FIFO";
+		memento.EvictCount = "2";
 		ccbean.init(argumentCollection=memento);
 		
-		cm = createObject("component","coldbox.system.cache.CacheManager").init(mockController);
+		cm = getMockBox().createMock("coldbox.system.cache.archive.CacheManager").init(mockController);
 		cm.configure(ccbean);
 		</cfscript>
 	</cffunction>
@@ -141,7 +147,7 @@ Description :
 			cm.setMulti(mapping=mapping);
 			
 			debug(cm.getObjectPool().getPool());
-			debug(cm.getpool_metadata());
+			debug(cm.getPoolMetaData());
 			
 			AssertTrue(cm.lookup('MyTest'),'MyTest failed');
 			AssertTrue(cm.lookup('Myname'),'Myname failed');
