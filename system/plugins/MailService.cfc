@@ -11,7 +11,10 @@ Description :
 
 
 ----------------------------------------------------------------------->
-<cfcomponent output="false" hint="The ColdBox Mail Service used to send emails in an oo fashion" extends="coldbox.system.core.mail.MailService">
+<cfcomponent output="false" 
+			 hint="The ColdBox Mail Service used to send emails in an oo fashion" 
+			 extends="coldbox.system.core.mail.MailService"
+			 cache="true">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
@@ -30,9 +33,11 @@ Description :
 			if( settingExists("mailservice_tokenMarker") ){
 				args.tokenMarker = getSetting("mailservice_tokenMarker"); 
 			}
+			
 			// Mail Settings
 			args.mailSettings = getMailSettings();
 			
+			// Super init it
 			super.init(argumentCollection=args);
 			
 			return this;

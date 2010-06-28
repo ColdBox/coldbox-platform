@@ -46,7 +46,7 @@ Description :
     </cffunction>
 	
 	<!--- Mail Settings --->
-	<cffunction name="getMailSettings" output="false" access="public" returntype="coldbox.system.core.mail.MailSettingsBean" hint="Get the mail settings configuration object">
+	<cffunction name="getMailSettingsBean" output="false" access="public" returntype="coldbox.system.core.mail.MailSettingsBean" hint="Get the mail settings configuration object">
 		<cfreturn variables.mailSettings>    	
     </cffunction>
 
@@ -63,7 +63,7 @@ Description :
 		<cfscript>
 			var rtnStruct 	 = structnew();
 			var payload 	 = arguments.mail;
-			var mailSettings = getMailSettings();
+			var mailSettings = getMailSettingsBean();
 			
 			// The return structure
 			rtnStruct.error = true;
