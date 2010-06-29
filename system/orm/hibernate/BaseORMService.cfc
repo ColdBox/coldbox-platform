@@ -184,7 +184,7 @@ component accessors="true"{
 	* You can either use the query and params combination or send in an example entity to find.
 	* @tested true
 	*/
-	any function find(string query,any params=structnew(), any example){
+	any function findit(string query,any params=structnew(), any example){
 		var options = {maxresults=1};
 
 		// Get entry by example
