@@ -287,14 +287,14 @@ component extends="coldbox.system.testing.BaseTestCase"{
 
 	function testFind(){
 
-		test = ormservice.find("from Category where category = ?",['Training']);
+		test = ormservice.findit("from Category where category = ?",['Training']);
 		assertEquals( 'Training', test.getCategory() );
 
-		test = ormservice.find("from Category where category = :category",{category="Training"});
+		test = ormservice.findit("from Category where category = :category",{category="Training"});
 		assertEquals( 'Training', test.getCategory() );
 
 		sample = entityLoad("Category",{category="Training"},true);
-		test = ormService.find(example=sample);
+		test = ormService.findit(example=sample);
 		assertEquals( 'Training', test.getCategory() );
 	}
 
