@@ -402,7 +402,7 @@ component accessors="true"{
 	* @exclude.hint A list of keys to exclude from the population
 	*/
 	void function populateFromQuery(required any target,
-								    required string qry,
+								    required any qry,
 								    numeric rowNumber=1,
 								    string scope="",
 								    boolean trustedSetter=false,
