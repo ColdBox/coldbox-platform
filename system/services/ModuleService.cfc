@@ -67,13 +67,16 @@ I oversee and manage ColdBox modules
 			
 			// Register the module configuration
 			controller.setSetting("modules",structnew());
-
-			//Get all modules found in the application
-			foundModules = scanModulesDirectory(controller.getSetting("ModulesPath"));
 			
 			// Check if we have an inclusion list, if we do just iterate through it instead of the found modules
 			if( listLen(includeModules) ){
 				foundModules = listToArray(includeModules);
+			}
+			else{
+				// Get all modules found in the application first
+				foundModules = scanModulesDirectory(controller.getSetting("ModulesPath"));
+				
+				// Iterate through all 
 			}
 			
 			// Iterate through them.
@@ -88,7 +91,8 @@ I oversee and manage ColdBox modules
 
 	<!--- registerModule --->
 	<cffunction name="registerModule" output="false" access="public" returntype="boolean" hint="Register a module's configuration information and config object">
-		<cfargument name="moduleName" type="string" required="true" hint="The name of the module to load. It must exist and be valid. Else we ignore it by logging a warning and returning false."/>
+		<cfargument name="moduleName" 		type="string" required="true" hint="The name of the module to load. It must exist and be valid. Else we ignore it by logging a warning and returning false."/>
+		<cfargument name="moduleLocation" 	type="string" required="false" hint="The base coldfusion mapping or instantiation location of the module. Ex: /shared/modules means that the modules exist in that directory. This argument will be expanded to get a physical location path"
 		<cfscript>
 			var modulesLocation 		= controller.getSetting("ModulesLocation");
 			var modulesPath 			= controller.getSetting("ModulesPath");
