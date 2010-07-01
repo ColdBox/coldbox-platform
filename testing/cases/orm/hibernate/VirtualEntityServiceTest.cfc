@@ -12,6 +12,11 @@ component extends="coldbox.system.testing.BaseTestCase"{
 
 	
 	function testNew(){
+		//mocks
+		mockEventHandler = getMockBox().createEmptyMock("coldbox.system.orm.hibernate.EventHandler");
+		mockEventHandler.$("postNew");
+		ormService.$property("ORMEventHandler","variables",mockEventHandler);
+		
 		user = ormservice.new();
 		assertFalse( isNull(user) );
 		
@@ -113,13 +118,13 @@ component extends="coldbox.system.testing.BaseTestCase"{
 
 	function testFindWhere(){
 
-		test = ormservice.findWhere(firstName="Luis");
+		test = ormservice.findWhere({firstName="Luis"});
 		assertEquals( 'Majano', test.getLastName() );
 	}
 
 	function testFindAllWhere(){
 
-		test = ormservice.findAllWhere(firstName="Luis");
+		test = ormservice.findAllWhere({firstName="Luis"});
 		assertEquals( 1, arrayLen(test) );
 	}
 
@@ -143,6 +148,11 @@ component extends="coldbox.system.testing.BaseTestCase"{
 	}
 	
 	function testEmptyValidation(){
+			//mocks
+			mockEventHandler = getMockBox().createEmptyMock("coldbox.system.orm.hibernate.EventHandler");
+			mockEventHandler.$("postNew");
+			ormService.$property("ORMEventHandler","variables",mockEventHandler);
+			
 			user = ormservice.new();
 			user.setFirstName('');
 			user.setLastName('unitTest');
@@ -153,6 +163,11 @@ component extends="coldbox.system.testing.BaseTestCase"{
 	}
 	
 	function testValidationSuccess(){
+			//mocks
+			mockEventHandler = getMockBox().createEmptyMock("coldbox.system.orm.hibernate.EventHandler");
+			mockEventHandler.$("postNew");
+			ormService.$property("ORMEventHandler","variables",mockEventHandler);
+			
 			user = ormservice.new();
 			user.setFirstName('unitTest');
 			user.setLastName('unitTest');

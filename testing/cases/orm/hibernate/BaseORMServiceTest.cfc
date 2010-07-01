@@ -317,19 +317,19 @@ component extends="coldbox.system.testing.BaseTestCase"{
 
 	function testFindWhere(){
 
-		test = ormservice.findWhere(entityName="Category",category="Training");
+		test = ormservice.findWhere("Category",{category="Training"});
 		assertEquals( 'Training', test.getCategory() );
 
-		test = ormservice.findWhere(entityName="User",firstName="Luis", lastName="Majano");
+		test = ormservice.findWhere("User",{ firstName="Luis", lastName="Majano"});
 		assertEquals( 'Majano', test.getLastName() );
 	}
 
 	function testFindAllWhere(){
 
-		test = ormservice.findAllWhere(entityName="Category",category="general");
+		test = ormservice.findAllWhere("Category",{category="general"});
 		assertEquals( 2, arrayLen(test) );
 
-		test = ormservice.findAllWhere(entityName="User",firstName="Luis", lastName="Majano");
+		test = ormservice.findAllWhere("User",{firstName="Luis", lastName="Majano"});
 		assertEquals( 1, arrayLen(test) );
 	}
 

@@ -184,7 +184,7 @@ component accessors="true"{
 	* You can either use the query and params combination or send in an example entity to find.
 	* @tested true
 	*/
-	any function findit(string query,any params=structnew(), any example){
+	any function findIt(string query,any params=structnew(), any example){
 		var options = {maxresults=1};
 
 		// Get entry by example
@@ -225,89 +225,19 @@ component accessors="true"{
 	}
 
 	/**
-	* Find one entity or null if not found according to the passed in name value pairs into the function
-	* ex: findWhere(entityName="Category", category="Training"), findWhere(entityName="Users", age=40);
+	* Find one entity or null if not found according to criteria structure
 	* @tested true
 	*/
-	any function findWhere(required string entityName){
-		var buffer   = createObject("java","java.lang.StringBuffer").init('');
-		var key      = "";
-		var operator = "AND";
-		var params	  = {};
-		var idx	  = 1;
-
-		buffer.append('from #arguments.entityName#');
-
-		// Do we have params?
-		if( structCount(arguments) gt 1){
-			buffer.append(" WHERE");
-		}
-		// Go over Params
-		for(key in arguments){
-			// Build where parameterized
-			if( key neq "entityName" ){
-				params[key] = arguments[key];
-				buffer.append(" #key# = :#key#");
-				idx++;
-				// Check AND?
-				if( idx neq structCount(arguments) ){
-					buffer.append(" AND");
-				}
-			}
-		}
-
-		// execute query as unique
-		try{
-			return ORMExecuteQuery( buffer.toString(), params, true, {maxresults=1});
-		}
-		catch("java.lang.NullPointerException" e){
-			throw(message="A null pointer exception occurred when running the find operation",
-			  detail="The most likely reason is that the keys in the passed in structure need to be case sensitive. Passed Keys=#structKeyList(params)#",
-			  type="ORMService.MaybeInvalidParamCaseException");
-		}
+	any function findWhere(required string entityName, required struct criteria){
+		return entityLoad( arguments.entityName, arguments.criteria, true);
 	}
 
 	/**
-	* Find one entity or null if not found according to the passed in name value pairs into the function
-	* ex: findWhere(entityName="Category", category="Training"), findWhere(entityName="Users", age=40);
+	* Find all entities according to criteria parameters
 	* @tested true
 	*/
-	array function findAllWhere(required string entityName){
-		var buffer   = createObject("java","java.lang.StringBuffer").init('');
-		var key      = "";
-		var operator = "AND";
-		var params	  = {};
-		var idx	  = 1;
-
-		buffer.append('from #arguments.entityName#');
-
-		// Do we have params?
-		if( structCount(arguments) gt 1){
-			buffer.append(" WHERE");
-		}
-		// Go over Params
-		for(key in arguments){
-			// Build where parameterized
-			if( key neq "entityName" ){
-				params[key] = arguments[key];
-				buffer.append(" #key# = :#key#");
-				idx++;
-				// Check AND?
-				if( idx neq structCount(arguments) ){
-					buffer.append(" AND");
-				}
-			}
-		}
-
-		// execute query as unique
-		try{
-			return ORMExecuteQuery( buffer.toString(), params);
-		}
-		catch("java.lang.NullPointerException" e){
-			throw(message="A null pointer exception occurred when running the find operation",
-			  detail="The most likely reason is that the keys in the passed in structure need to be case sensitive. Passed Keys=#structKeyList(params)#",
-			  type="ORMService.MaybeInvalidParamCaseException");
-		}
+	array function findAllWhere(required string entityName, required struct criteria){
+		return entityLoad( arguments.entityName, arguments.criteria);
 	}
 
 	/**
