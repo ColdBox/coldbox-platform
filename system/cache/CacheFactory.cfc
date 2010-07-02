@@ -13,26 +13,7 @@ Description :
 <cfcomponent hint="The ColdBox CacheBox Factory" output="false">
 
 <!----------------------------------------- CONSTRUCTOR ------------------------------------->			
-	
-	<cfscript>
-		instance = structnew();
-		// CacheBox Factory UniqueID
-		instance.factoryID = createObject('java','java.lang.System').identityHashCode(this);	
-		// Version
-		instance.version = "1.0";	 
-		// Configuration object
-		instance.config  = "";
-		// ColdBox Application Link
-		instance.coldbox = "";	
-		// LogBox Links
-		instance.logBox  = "";
-		instance.log	 = "";
-		// Caches
-		instance.caches  		= {};
-		// Lock info
-		instance.lockName = "CacheFactory.#instance.factoryID#";
-	</cfscript>
-	
+		
 	<!--- init --->
 	<cffunction name="init" access="public" returntype="CacheFactory" hint="Constructor" output="false" >
 		<cfargument name="config"  type="coldbox.system.cache.config.CacheBoxConfig" required="false" hint="The CacheBoxConfig object to use to configure this instance of CacheBox. If not passed then CacheBox will instantiate the default configuration."/>
@@ -40,15 +21,56 @@ Description :
 		<cfscript>
 			var defaultConfigPath = "coldbox.system.cache.config.DefaultConfiguration";
 			
+			// Prepare factory instance
+			instance = {
+				// CacheBox Factory UniqueID
+				factoryID = createObject('java','java.lang.System').identityHashCode(this),	
+				// Version
+				version = "1.0",	 
+				// Configuration object
+				config  = "",
+				// ColdBox Application Link
+				coldbox = "",
+				// Event Manager Link
+				eventManager = "",
+				// Configured Event States
+				eventStates = [
+					"afterCacheElementInsert",
+					"afterCacheElementRemoved",
+					"afterCacheElementExpired",
+					"afterCacheElementUpdated",
+					"afterCacheRegistration",
+					"afterCacheRemoval",
+					"beforeCacheRemoval",
+					"afterCacheReplacement",
+					"beforeCacheFactoryShutdown",
+					"afterCacheFactoryShutdown",
+					"beforeCacheShutdown",
+					"afterCacheShutdown"
+				],
+				// LogBox Links
+				logBox  = "",
+				log		= "",
+				// Caches
+				caches  = {}
+			};
+			
+			// Prepare Lock Info
+			instance.lockName = "CacheFactory.#instance.factoryID#";
+			
 			// Check if linking ColdBox
 			if( structKeyExists(arguments, "coldbox") ){ 
 				instance.coldbox = arguments.coldbox; 
 				// link LogBox
 				instance.logBox  = instance.coldbox.getLogBox();
+				// Link Event Manager
+				instance.eventManager = instance.coldbox.getInterceptorService();
 			}
 			else{
 				// Running standalone, so create our own logging first
 				configureLogBox();
+				// Running standalone, so create our own event manager
+				configureEventManager();
 			}
 			
 			// Passed in configuration?
@@ -374,6 +396,11 @@ Description :
     <cffunction name="getDefaultCache" output="false" access="public" returntype="coldbox.system.cache.ICacheProvider" hint="Get the default cache provider">
     	<cfreturn getCache("default")>
     </cffunction>
+	
+	<!--- getEventManager --->
+    <cffunction name="getEventManager" output="false" access="public" returntype="any" hint="Get this cache managers event listner manager">
+ 		<cfreturn instance.eventManager>
+    </cffunction>
 
 <!----------------------------------------- PRIVATE ------------------------------------->	
 
@@ -384,6 +411,13 @@ Description :
 			var config = createObject("component","coldbox.system.logging.config.LogBoxConfig").init(CFCConfigPath="coldbox.system.cache.config.LogBox");
 			// Create LogBox
 			instance.logBox = createObject("component","coldbox.system.logging.LogBox").init( config );
+		</cfscript>
+    </cffunction>
+	
+	<!--- configureEventManager --->
+    <cffunction name="configureEventManager" output="false" access="private" returntype="void" hint="Configure a standalone version of a ColdBox Event Manager">
+    	<cfscript>
+    		instance.eventManager = createObject("component","coldbox.system.core.events.EventPoolManager").init( instance.eventStates );
 		</cfscript>
     </cffunction>
 

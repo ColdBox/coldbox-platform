@@ -13,13 +13,13 @@ Description :
 <cfcomponent output="false" hint="This is a CacheBox configuration object.  You can use it to configure a CacheBox instance">
 
 	<cfscript>
-		// Utility
+		// Utility class
 		utility  = createObject("component","coldbox.system.core.util.Util");
 		
 		// Instance private scope
 		instance = structnew();
 		
-		// CacheBox Defaults
+		// CacheBox Provider Defaults
 		defaults = {
 			objectDefaultTimeout = 60,
 			objectDefaultLastAccessTimeout = 30,
@@ -100,7 +100,7 @@ Description :
 			
 			// Is default configuration defined
 			if( NOT structKeyExists( cacheBoxDSL, "defaultCache" ) ){
-				$throw("No default cache defined","Please define the 'defaultCache'","CacheBoxConfig.NoDefaultCacheFound");
+				utility.throwIt("No default cache defined","Please define the 'defaultCache'","CacheBoxConfig.NoDefaultCacheFound");
 			}
 			
 			// Register Default Cache
@@ -168,7 +168,7 @@ Description :
 		<cfscript>
 			// Is the default cache defined
 			if( structIsEmpty(instance.defaultCache) ){
-				$throw(message="Invalid Configuration. No default cache defined",type="CacheBoxConfig.NoDefaultCacheFound");
+				utility.throwIt(message="Invalid Configuration. No default cache defined",type="CacheBoxConfig.NoDefaultCacheFound");
 			}			
 		</cfscript>
 	</cffunction>
@@ -281,7 +281,7 @@ Description :
 			
 			// Default Cache Config Check
 			if( NOT arrayLen(defaultXML) ){
-				$throw(message="The defaultcache configuration cannot be found and it is mandatory",type="CacheBoxConfig.DefaultCacheConfigurationNotFound");
+				utility.throwIt(message="The defaultcache configuration cannot be found and it is mandatory",type="CacheBoxConfig.DefaultCacheConfigurationNotFound");
 			}
 			// Register Default Cache
 			defaultCache(argumentCollection=defaultXML[1].XMLAttributes);
@@ -320,28 +320,5 @@ Description :
 	</cffunction>
 	
 <!------------------------------------------- PRIVATE ------------------------------------------>
-
-	<!--- Throw Facade --->
-	<cffunction name="$throw" access="private" hint="Facade for cfthrow" output="false">
-		<!--- ************************************************************* --->
-		<cfargument name="message" 	type="string" 	required="yes">
-		<cfargument name="detail" 	type="string" 	required="no" default="">
-		<cfargument name="type"  	type="string" 	required="no" default="Framework">
-		<!--- ************************************************************* --->
-		<cfthrow type="#arguments.type#" message="#arguments.message#"  detail="#arguments.detail#">
-	</cffunction>
-	
-		<!--- Dump facade --->
-	<cffunction name="$dump" access="private" hint="Facade for cfmx dump" returntype="void" output="false">
-		<cfargument name="var" required="yes" type="any">
-		<cfargument name="isAbort" type="boolean" default="false" required="false" hint="Abort also"/>
-		<cfdump var="#var#">
-		<cfif arguments.isAbort><cfabort></cfif>
-	</cffunction>
-	
-	<!--- Abort Facade --->
-	<cffunction name="$abort" access="private" hint="Facade for cfabort" returntype="void" output="false">
-		<cfabort>
-	</cffunction>
 	
 </cfcomponent>
