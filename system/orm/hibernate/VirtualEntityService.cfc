@@ -105,6 +105,11 @@ component extends="coldbox.system.orm.hibernate.BaseORMService" accessors="true"
 		return super.getAll(argumentCollection=arguments);
 	}
 
+	numeric function deleteAll(boolean flush=false){
+		arguments.entityName = this.getEntityName();
+		return super.deleteAll(arguments.entityName,arguments.flush);
+	}
+	
 	boolean function deleteByID(required any id, boolean flush=false){
 		arguments.entityName = this.getEntityName();
 		return super.deleteByID(argumentCollection=arguments);

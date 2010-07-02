@@ -29,7 +29,7 @@ Description :
 										  "afterCacheElementInsert,afterCacheElementRemoved,afterCacheElementExpired," &
 										  "preModuleLoad,postModuleLoad,preModuleUnload,postModuleUnload," &
 										  "beforeDebuggerPanel,afterDebuggerPanel," &
-										  "ORMPostNew,ORMPreLoad,ORMPostLoad,ORMPostDelete,ORMPreDelete,ORMPreUpdate,ORMPostUpdate,ORMPreInsert,ORMPostInsert";
+										  "ORMPostNew,ORMPreLoad,ORMPostLoad,ORMPostDelete,ORMPreDelete,ORMPreUpdate,ORMPostUpdate,ORMPreInsert,ORMPostInsert,ORMPreSave,ORMPostSave";
 			// Init Container/
 			instance.interceptionStates = structnew();
 			

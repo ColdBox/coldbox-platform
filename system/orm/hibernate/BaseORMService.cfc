@@ -26,7 +26,6 @@ TODO:
    - count{entityName}()
 - Add find methods by criteria with projections
 - Add validations maybe via Hyrule, but more implicit and mixin methods
-- Add dml style batch updates
 ----------------------------------------------------------------------->
 */
 component accessors="true"{
@@ -91,7 +90,6 @@ component accessors="true"{
 	* a struct of filtering criteria, a sortOrder string, offset, max, ignorecase, and timeout.
 	* Caching for the list is based on the useQueryCaching class property and the cachename property is based on
 	* the queryCacheRegion class property.
-	* @tested true
 	*/
 	any function list(required string entityName,
 					  struct criteria=structnew(),
@@ -142,14 +140,13 @@ component accessors="true"{
 	/**
 	* Allows the execution of HQL queries using several nice arguments and returns either an array of entities or a query as specified by the asQuery argument.
 	* The params filtering can be using named or positional.
-	* @tested true
 	*/
 	any function executeQuery(required string query,
-							  any params=structnew(),
-							  numeric offset=0,
-					  		  numeric max=0,
-					  		  numeric timeout=0,
-						      boolean asQuery=true){
+							   any params=structnew(),
+							   numeric offset=0,
+					  		   numeric max=0,
+					  		   numeric timeout=0,
+						       boolean asQuery=true){
 		var options = {};
 
 		// Setup listing options
@@ -182,7 +179,6 @@ component accessors="true"{
 	/**
 	* Finds and returns the first result for the given query or null if no entity was found.
 	* You can either use the query and params combination or send in an example entity to find.
-	* @tested true
 	*/
 	any function findIt(string query,any params=structnew(), any example){
 		var options = {maxresults=1};
@@ -201,10 +197,10 @@ component accessors="true"{
 	* @tested true
 	*/
 	array function findAll(string query,
-						   any params=structnew(),
-						   numeric offset=0,
-					       numeric max=0,
-						   any example){
+						    any params=structnew(),
+						    numeric offset=0,
+					        numeric max=0,
+						    any example){
 		var options = {};
 
 		// Setup find options
@@ -225,16 +221,14 @@ component accessors="true"{
 	}
 
 	/**
-	* Find one entity or null if not found according to criteria structure
-	* @tested true
+	* Find one entity (or null if not found) according to a criteria structure
 	*/
 	any function findWhere(required string entityName, required struct criteria){
 		return entityLoad( arguments.entityName, arguments.criteria, true);
 	}
 
 	/**
-	* Find all entities according to criteria parameters
-	* @tested true
+	* Find all entities according to criteria structure
 	*/
 	array function findAllWhere(required string entityName, required struct criteria){
 		return entityLoad( arguments.entityName, arguments.criteria);
@@ -243,7 +237,6 @@ component accessors="true"{
 	/**
     * Get a new entity object by entity name and you can pass in any named parameter and the method will try to set them for you.
     * You can pass in the properties structre also to bind the entity
-	* @tested true
     */
 	any function new(required string entityName,struct properties=structnew()){
 		var entity   = entityNew(arguments.entityName);
@@ -345,7 +338,6 @@ component accessors="true"{
 	
 	/**
     * Refresh the state of an entity or array of entities from the database
-	* @tested true
     */
 	void function refresh(required any entity){
 		var objects = arrayNew(1);
@@ -364,13 +356,11 @@ component accessors="true"{
 
 	/**
     * Checks if the given entityName and id exists in the database
-	* @tested true
-    */
+	*/
 	boolean function exists(required entityName, required any id) {
 		var target = get(argumentCollection=arguments);
 		return isNull(target);
 	}
-
 
 	/**
 	* Get an entity using a primary key, if the id is not found this method returns null, if the id=0 it returns a new entity.
@@ -446,26 +436,61 @@ component accessors="true"{
 		// Auto Flush
 		if( arguments.flush ){ ORMFlush(); }
 	}
+	
+	/**
+	* Delete all entries for an entity DLM style and transaction safe. It also returns all the count of deletions
+	*/
+	numeric function deleteAll(required string entityName,boolean flush=false){
+		var tx 		= ORMGetSession().beginTransaction();
+		var count   = 0;
+		try{
+			count = ORMExecuteQuery("delete from #arguments.entityName#");
+			tx.commit();
+		}
+		catch(Any e){
+			tx.rollback();
+			throw(e);
+		}
+		// Auto Flush
+		if( arguments.flush ){ ORMFlush(); }
+		
+		return count;
+	}
 
 	/**
-	* Delete using an entity name and an incoming id, you can also flush the session if needed
-	* The method returns false if the passed in entityName and id is not found in the database.
-	* @tested true
+	* Delete using an entity name and an incoming id, you can also flush the session if needed. The id parameter can be a single id or an array of IDs to delete
+	* The method returns the count of deleted entities.
 	*/
-	boolean function deleteByID(required string entityName, required any id, boolean flush=false){
-		var entity = get(argumentCollection=arguments);
-
-		if( isNull(entity) ){ return false; }
-
-		delete( entity,arguments.flush );
-
-		return true;
+	numeric function deleteByID(required string entityName, required any id, boolean flush=false){
+		var tx 		= ORMGetSession().beginTransaction();
+		var count   = 0;
+		
+		//id conversion to array
+		if( isSimpleValue(arguments.id) ){
+			arguments.id = listToArray(arguments.id);
+		}
+		
+		try{
+			// delete using lowercase id convention from hibernate for identifier
+			var query = ORMGetSession().createQuery("delete FROM #arguments.entityName# where id in (:idlist)");
+			query.setParameterList("idlist",arguments.id);
+			count = query.executeUpdate();
+			tx.commit();
+		}
+		catch(Any e){
+			tx.rollback();
+			throw(e);
+		}
+		
+		// Auto Flush
+		if( arguments.flush ){ ORMFlush(); }
+		
+		return count;
 	}
 
 	/**
 	* Delete by using an HQL query and iterating via the results, it is not performing a delete query but
 	* it actually is a select query that should retrieve objects to remove
-	* @tested true
 	*/
 	void function deleteByQuery(required string query, any params, numeric max=0, numeric offset=0, boolean flush=false ){
 		var objects = arrayNew(1);
@@ -493,30 +518,30 @@ component accessors="true"{
 	* Deletes entities by using name value pairs as arguments to this function.  One mandatory argument is to pass the 'entityName'.
 	* The rest of the arguments are used in the where class using AND notation and parameterized.
 	* Ex: deleteWhere(entityName="User",age="4",isActive=true);
-	* @tested true
 	*/
 	numeric function deleteWhere(required string entityName){
-		 var buffer   = createObject("java","java.lang.StringBuffer").init('');
-		 var key      = "";
-		 var operator = "AND";
-		 var params	  = {};
-		 var idx	  = 1;
-
-		 buffer.append('delete from #arguments.entityName#');
-
-		 // Do we have arguments?
-		 if( structCount(arguments) gt 1){
-		 	buffer.append(" WHERE");
-		 }
-		 else{
-		 	throw(message="No where arguments sent, aborting deletion"
-				  detail="We will not do a full delete via this method, you need to pass in named value arguments.",
-				  type="BaseORMService.NoWhereArgumentsFound");
-		 }
-
-		 // Go over Params
-		 for(key in arguments){
-		 	// Build where parameterized
+		var buffer   = createObject("java","java.lang.StringBuffer").init('');
+		var key      = "";
+		var operator = "AND";
+		var params	  = {};
+		var idx	  	  = 1;
+		var count	  = 0;
+		
+		buffer.append('delete from #arguments.entityName#');
+		
+		// Do we have arguments?
+		if( structCount(arguments) gt 1){
+			buffer.append(" WHERE");
+		}
+		else{
+			throw(message="No where arguments sent, aborting deletion"
+			  detail="We will not do a full delete via this method, you need to pass in named value arguments.",
+			  type="BaseORMService.NoWhereArgumentsFound");
+		}
+		
+		// Go over Params
+		for(key in arguments){
+			// Build where parameterized
 			if( key neq "entityName" ){
 				params[key] = arguments[key];
 				buffer.append(" #key# = :#key#");
@@ -526,24 +551,38 @@ component accessors="true"{
 					buffer.append(" AND");
 				}
 			}
-		 }
-
-		 // execute query as unique for the count
-		 try{
-		 	return ORMExecuteQuery( buffer.toString(), params, true);
-		 }
-		 catch("java.lang.NullPointerException" e){
-		 	throw(message="A null pointer exception occurred when running the query",
-				  detail="The most likely reason is that the keys in the passed in structure need to be case sensitive. Passed Keys=#structKeyList(params)#",
-				  type="BaseORMService.MaybeInvalidParamCaseException");
-		 }
+		}
+		
+		//start transaction DLM deleteion
+		var tx = ORMGetSession().beginTransaction();
+		try{
+			count = ORMExecuteQuery( buffer.toString(), params, true);
+			tx.commit();
+		}
+		catch("java.lang.NullPointerException" e){
+			tx.rollback();
+			throw(message="A null pointer exception occurred when running the query",
+			  detail="The most likely reason is that the keys in the passed in structure need to be case sensitive. Passed Keys=#structKeyList(params)#",
+			  type="BaseORMService.MaybeInvalidParamCaseException");
+		}
+		catch(Any e){
+			tx.rollback();
+			throw(e);
+		}
+		
+		return count;
 	}
 
 	/**
     * Save an entity using hibernate transactions. You can optionally flush the session also
-	* @tested true
     */
 	any function save(required any entity, boolean forceInsert=false, boolean flush=false){
+		
+		// Event Handling? If enabled, call the preSave() interception
+		if( getEventHandling() ){
+			ORMEventHandler.preSave( arguments.entity );
+		}
+		
 		var tx = ORMGetSession().beginTransaction();		
 		try{
 			entitySave(arguments.entity, arguments.forceInsert);
@@ -554,8 +593,15 @@ component accessors="true"{
 			tx.rollback();
 			throw(e);
 		}
+		
 		// Auto Flush
 		if( arguments.flush ){ ORMFlush(); }
+		
+		// Event Handling? If enabled, call the postSave() interception
+		if( getEventHandling() ){
+			ORMEventHandler.postSave( arguments.entity );
+		}
+		
 		return true;
 	}
 
@@ -563,7 +609,6 @@ component accessors="true"{
 	* Return the count of records in the DB for the given entity name. You can also pass an optional where statement
 	* that can filter the count. Ex: count('User','age > 40 AND name="joe"'). You can even use params with this method:
 	* Ex: count('User','age > ? AND name = ?',[40,"joe"])
-	* @tested true
 	*/
 	numeric function count(required string entityName,string where="", any params=structNew()){
 		 var buffer   = createObject("java","java.lang.StringBuffer").init('');
@@ -593,7 +638,6 @@ component accessors="true"{
 	* Returns the count by passing name value pairs as arguments to this function.  One mandatory argument is to pass the 'entityName'.
 	* The rest of the arguments are used in the where class using AND notation and parameterized.
 	* Ex: countWhere(entityName="User",age="20");
-	* @tested true
 	*/
 	numeric function countWhere(required string entityName){
 		 var buffer   = createObject("java","java.lang.StringBuffer").init('');
@@ -706,7 +750,6 @@ component accessors="true"{
 	/**
 	* Clear the session removes all the entities that are loaded or created in the session.
 	* This clears the first level cache and removes the objects that are not yet saved to the database.
-	* @tested true
 	*/
 	void function clear(){
 		ORMClearSession();
@@ -714,7 +757,6 @@ component accessors="true"{
 
 	/**
 	* Checks if the session contains dirty objects that are awaiting persistence
-	* @tested true
 	*/
 	boolean function isSessionDirty(){
 		return ORMGetSession().isDirty();
@@ -722,7 +764,6 @@ component accessors="true"{
 
 	/**
 	* Checks if the current session contains the passed in entity
-	* @tested true
 	*/
 	boolean function sessionContains(required any entity){
 		var ormSession = ORMGetSession();
@@ -732,7 +773,6 @@ component accessors="true"{
 
 	/**
 	* Information about the first-level (session) cache for the current session
-	* @tested true
 	*/
 	struct function getSessionStatistics(){
 		var stats   = ormGetSession().getStatistics();

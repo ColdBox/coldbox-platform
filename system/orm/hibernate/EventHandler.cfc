@@ -80,4 +80,18 @@ component extends="coldbox.system.remote.ColdboxProxy" implements="CFIDE.orm.IEv
 	public void function postInsert(any entity){
 		announceInterception("ORMPostInsert", {entity=arguments.entity});
 	}
+	
+	/**
+	* preSave called by ColdBox Base service before save() calls
+	*/
+	public void function preSave(any entity){
+		announceInterception("ORMPreSave", {entity=arguments.entity});
+	}
+	
+	/**
+	* postSave called by ColdBox Base service after transaction commit or rollback via the save() method
+	*/
+	public void function postSave(any entity){
+		announceInterception("ORMPostSave", {entity=arguments.entity});
+	}
 }

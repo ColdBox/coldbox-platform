@@ -15,6 +15,7 @@
 		makePublic(cacheFactory,"createCache");
 		cacheFactory.createCache("test","coldbox.system.cache.providers.MockProvider");		
 		
+		debug( cacheFactory.getCacheNames() );
 	}
 	
 	function testGetConfig(){
