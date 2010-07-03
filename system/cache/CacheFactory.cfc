@@ -39,14 +39,15 @@ Description :
 					"afterCacheElementRemoved",
 					"afterCacheElementExpired",
 					"afterCacheElementUpdated",
-					"afterCacheRegistration",
-					"afterCacheRemoval",
-					"beforeCacheRemoval",
-					"afterCacheReplacement",
-					"beforeCacheFactoryShutdown",
-					"afterCacheFactoryShutdown",
-					"beforeCacheShutdown",
-					"afterCacheShutdown"
+					"afterCacheRegistration", //done
+					"afterCacheRemoval", //done
+					"beforeCacheRemoval", //done
+					"beforeCacheReplacement", //done
+					"afterCacheFactoryConfiguration", 
+					"beforeCacheFactoryShutdown", //done
+					"afterCacheFactoryShutdown", //done
+					"beforeCacheShutdown", //implemented by cachebox only
+					"afterCacheShutdown" //implemented by cachebox only
 				],
 				// LogBox Links
 				logBox  = "",
@@ -96,7 +97,7 @@ Description :
 			var defaultCacheConfig = "";
 			var caches 	= "";
 			var key 	= "";
-			
+			var iData	= {};
 		</cfscript>
 		
 		<cflock name="#instance.lockName#" type="exclusive" timeout="30" throwontimeout="true">
@@ -117,7 +118,11 @@ Description :
 			caches = instance.config.getCaches();
 			for(key in caches){
 				createCache(name=key,provider=caches[key].provider,properties=caches[key].properties);
-			}			
+			}		
+			
+			// Announce To Listeners
+			iData.cacheFactory = this;
+			getEventManager().process("afterCacheFactoryConfiguration",iData);	
 			</cfscript>
 		</cflock>
 	</cffunction>
@@ -144,6 +149,7 @@ Description :
     	<cfargument name="cache" 	 type="coldbox.system.cache.ICacheProvider" required="true" hint="The cache instance to register with this factory"/>
     	<cfset var name		= arguments.cache.getName()>
     	<cfset var oCache 	= arguments.cache>
+    	<cfset var iData 	= {}>
     	
     	<!--- Verify it does not exist already --->
 		<cfif structKeyExists(instance.caches, name)>
@@ -163,13 +169,16 @@ Description :
 						if( isObject(instance.coldbox) AND structKeyExists(oCache,"setColdBox")){ 
 							oCache.setColdBox( instance.coldbox );
 						}		
+						// Link Event Manager
+						oCache.setEventManager( instance.eventManager );
 						// Call Configure it to start the cache up
 						oCache.configure();				
 						// Store it
 						instance.caches[ name ] = oCache;
 						
 						// Announce new cache registration now 
-						
+						iData.cache = oCache;
+						getEventManager().process("afterCacheRegistration",iData);
 					}
 				</cfscript>
 			</cflock>
@@ -227,12 +236,14 @@ Description :
     	<cfscript>
     		instance.log.info("Shutdown of cache factory: #getFactoryID()# requested and started.");
 			
+			// Notify Listeners
+			getEventManager().process("beforeCacheFactoryShutdown");
+			
 			// Remove all caches first
 			removeAll();
 			
 			// Notify Listeners
-			
-			// Shutdown listeners
+			getEventManager().process("afterCacheFactoryShutdown");
 		</cfscript>
     </cffunction>
 	
@@ -240,6 +251,7 @@ Description :
     <cffunction name="removeCache" output="false" access="public" returntype="boolean" hint="Try to remove a named cache from this factory">
     	<cfargument name="name" type="string" required="true" hint="The name of the cache to remove"/>
 		<cfset var cache = "">
+		<cfset var iData = {}>
 						
 		<cfif cacheExists( arguments.name )>
 			<cflock name="#instance.lockName#" type="exclusive" timeout="20" throwontimeout="true">
@@ -248,14 +260,22 @@ Description :
 					if( structKeyExists( instance.caches, arguments.name ) ){
 						// Retrieve it
 						cache = instance.caches[ arguments.name ];
+						
+						// Notify listeners here
+						iData.cache = cache;
+						getEventManager().process("beforeCacheRemoval",iData);
+						
 						// process shutdown
 						cache.shutdown();
-						// Notify listeners here
 						
 						// Remove it
 						structDelete( instance.caches, arguments.name );
+						
 						// Log It
+						iData.cache = arguments.name;
+						getEventManager().process("afterCacheRemoval",iData);
 						instance.log.debug("Cache: #arguments.name# removed from factory: #getFactoryID()#");
+						
 						return true;
 					}
 				</cfscript>
@@ -299,6 +319,7 @@ Description :
 		
 		<cfscript>
 			var name = "";
+			var iData = {};
 			
 			// determine cache name
 			if( isObject(arguments.cache) ){
@@ -310,9 +331,18 @@ Description :
 		</cfscript>		
 
 		<cflock name="#instance.lockName#" type="exclusive" timeout="20" throwontimeout="true">
-			<cfset structDelete( instance.caches, name)>
-			<cfset instance.caches[ name ] = arguments.decoratedCache>
-			<cfset instance.log.debug("Cache #name# replaced with decorated cache: #getMetadata(arguments.decoratedCache).name#")>
+			<cfscript>
+				// Announce to listeners
+				iData.oldCache = instance.caches[name];
+				iData.newCache = arguments.decoratedCache;
+				getEventManager().process("beforeCacheReplacement",iData);
+				// remove old Cache
+				structDelete( instance.caches, name);
+				// Replace it
+				instance.caches[ name ] = arguments.decoratedCache;
+				
+				instance.log.debug("Cache #name# replaced with decorated cache: #getMetadata(arguments.decoratedCache).name#");
+			</cfscript>
 		</cflock>
 		
     </cffunction>
@@ -398,7 +428,7 @@ Description :
     </cffunction>
 	
 	<!--- getEventManager --->
-    <cffunction name="getEventManager" output="false" access="public" returntype="any" hint="Get this cache managers event listner manager">
+    <cffunction name="getEventManager" output="false" access="public" returntype="any" hint="Get the cache factory's event manager">
  		<cfreturn instance.eventManager>
     </cffunction>
 
