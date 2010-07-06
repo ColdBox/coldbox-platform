@@ -14,8 +14,12 @@ component extends="coldbox.system.testing.BaseTestCase"{
 		testUserID = '88B73A03-FEFA-935D-AD8036E1B7954B76';
 		testCatID  = '3A2C516C-41CE-41D3-A9224EA690ED1128';
 		test2 = ["1","2"];
-		
-		
+	}
+
+	function testExists(){
+		assertEquals( false, ormservice.exists("Category", "123") );
+		assertEquals( true, ormservice.exists("Category", testCatID) );
+			
 	}
 
 	function testClear(){
@@ -96,11 +100,22 @@ component extends="coldbox.system.testing.BaseTestCase"{
 	}
 	
 	function testGet(){
+		//mocks
+		mockEventHandler = getMockBox().createEmptyMock("coldbox.system.orm.hibernate.EventHandler");
+		mockEventHandler.$("postNew");
+		ormService.$property("ORMEventHandler","variables",mockEventHandler);
+		
 		user = ormService.get("User","123");
 		assertTrue( isNull(user) );
 
 		user = ormService.get("User",testUserID);
 		assertEquals( testUserID, user.getID());
+		
+		user = ormService.get("User",0);
+		assertTrue( isNull( user.getID() ) );
+		
+		user = ormService.get("User",'');
+		assertTrue( isNull( user.getID() ) );
 	}
 	function testGetAll(){
 		r = ormService.getAll('Category');

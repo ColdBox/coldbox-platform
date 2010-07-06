@@ -355,20 +355,21 @@ component accessors="true"{
 	}
 
 	/**
-    * Checks if the given entityName and id exists in the database
+    * Checks if the given entityName and id exists in the database, this method does not load the entity into session
 	*/
 	boolean function exists(required entityName, required any id) {
-		var target = get(argumentCollection=arguments);
-		return isNull(target);
+		// Do it DLM style
+		var count = ORMExecuteQuery("select count(id) from #arguments.entityName# where id = ?",[arguments.id],true);
+		return (count gt 0);
 	}
 
 	/**
-	* Get an entity using a primary key, if the id is not found this method returns null, if the id=0 it returns a new entity.
+	* Get an entity using a primary key, if the id is not found this method returns null, if the id=0 or blank it returns a new entity.
 	* @tested true
     */
 	any function get(required string entityName,required any id) {
 		// If ID = 0 then return a new entity
-		if( isSimpleValue(arguments.id) and arguments.id eq 0 ){
+		if( isSimpleValue(arguments.id) and ( arguments.id eq 0  OR len(arguments.id) eq 0 ) ){
 			return new(arguments.entityName);
 		}
 		// else return or try to return by PK
