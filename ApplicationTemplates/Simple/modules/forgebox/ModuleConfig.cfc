@@ -52,7 +52,7 @@ Optional Methods
 - onUnload() 	: If found, it is fired once the module is unloaded
 
 */
-	
+
 	// Module Properties
 	this.title 				= "ForgeBox";
 	this.author 			= "Luis Majano";
@@ -62,33 +62,33 @@ Optional Methods
 	this.viewParentLookup 	= true;
 	this.layoutParentLookup = true;
 	this.entryPoint			= "forgebox";
-	
-	/** 
+
+	/**
 	* Configure the ForgeBox Module
 	*/
 	function configure(){
-		
+
 		settings = {
 			version = "1.1"
 		};
-		
+
 		// SES Routes ORDER MATTERS
 		routes = [
 			{pattern="/", handler="manager",action="index", orderby="POPULAR"},
 			{pattern="/install/results/:entrySlug", handler="manager", action="installResults"},
 			{pattern="/install", handler="manager", action="install"},
 			{pattern="/manager/:orderby/:typeSlug?", handler="manager",action="index"}
-		];		
-		
+		];
+
 		// Defined Model Mappings for this module.
 		modelMappings = {};
 		modelMappings["forgeService@forgebox"] = {
 			path = "ForgeService"
 		};
 	}
-	
+
 	/**
-	* Called when the moduel is activated and application has loaded
+	* Called when the module is activated and application has loaded
 	*/
 	function onLoad(){
 		if( controller.settingExists("sesBaseURL") ){
