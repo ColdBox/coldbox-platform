@@ -330,15 +330,19 @@ Modification History:
 				
 			}//end if custom plugin
 			
-			// Plugin File Path to check, start with extensions first.
-			pluginFilePath = getExtensionsPhysicalPath() & replace(arguments.plugin,".","/","all") & ".cfc";
 			
-			// Check Extensions locations First
-			if( fileExists(pluginFilePath) ){
-				return getExtensionsPath() & "." & arguments.plugin;
+			// Check coldbox extensions
+			if( len(controller.getSetting("ColdBoxExtensionsLocation")) ){
+				// Plugin File Path to check, start with extensions first.
+				pluginFilePath = getExtensionsPhysicalPath() & replace(arguments.plugin,".","/","all") & ".cfc";
+				
+				// Check Extensions locations First
+				if( fileExists(pluginFilePath) ){
+					return getExtensionsPath() & "." & arguments.plugin;
+				}
 			}
-			
-			// Else return the core coldbox path
+						
+			// else return the core coldbox path
 			return getCorePluginsPath() & "." & arguments.plugin;
 		</cfscript>
 	</cffunction>
