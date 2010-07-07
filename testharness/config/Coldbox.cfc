@@ -72,6 +72,7 @@ Optional Methods
 			layoutsExternalLocation = "/#appMapping#/extlayouts",
 			handlersExternalLocation  = "coldbox.testing.testhandlers",
 			requestContextDecorator = "coldbox.testharness.model.myRequestContextDecorator",
+			modulesExternalLocation = ["/coldbox/testing/testModules","/coldbox/testing/testModules2"],
 			
 			//Error/Exception Handling
 			exceptionHandler		= "",

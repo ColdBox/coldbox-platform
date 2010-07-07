@@ -261,11 +261,13 @@ Loads a coldbox xml configuration file
 				configStruct["ColdBoxExtensionsLocation"] = fwSettingsStruct.ColdBoxExtensionsLocation;
 			}
 			
-			//Modules
-			if( not structKeyExists(configStruct,"ModulesLocation") ){
-				configStruct.ModulesLocation = "";
+			//Modules Configuration
+			if( not structKeyExists(configStruct,"ModulesExternalLocation") ){
+				configStruct.ModulesExternalLocation = arrayNew(1);
 			}
-			configStruct.modules = structnew();
+			if( isSimpleValue(configStruct.ModulesExternalLocation) ){
+				configStruct.ModulesExternalLocation = listToArray( configStruct.ModulesExternalLocation );
+			}
 		</cfscript>
 	</cffunction>
 	
@@ -881,10 +883,9 @@ Loads a coldbox xml configuration file
 			configStruct.ModulesInclude		= "";
 			configStruct.ModulesExclude		= "";
 			
-			// setup the overrides: We do lists, because array function support is only decent until CF9 or railo :(
 			if( structKeyExists(modules,"autoReload") ){ configStruct.modulesAutoReload = modules.autoReload; }
-			if( structKeyExists(modules,"include") ){ configStruct.modulesInclude = arrayToList(modules.include); }
-			if( structKeyExists(modules,"exclude") ){ configStruct.modulesExclude = arrayToList(modules.exclude); }	
+			if( structKeyExists(modules,"include") ){ configStruct.modulesInclude = modules.include; }
+			if( structKeyExists(modules,"exclude") ){ configStruct.modulesExclude = modules.exclude; }	
 			
 		</cfscript>
 	</cffunction>	

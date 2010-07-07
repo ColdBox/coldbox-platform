@@ -34,17 +34,17 @@
 			<cfloop from="1" to="#arrayLen(loadedModules)#" index="loc.x">
 			<cfset loc.mod = moduleSettings[loadedModules[loc.x]]>
 			<tr>
-				<td>
+				<td title=" Invocation Path: #loc.mod.invocationPath#">
 					<strong>#loc.mod.Title#</strong><br />
 					#loc.mod.description# <br /><br />
 					<cfif len(moduleSettings[loadedModules[loc.x]].entryPoint)>
-					<a href="#event.buildLink(loc.mod.entryPoint)#">Open Module Entry Point</a>
+					<a href="#event.buildLink(loc.mod.entryPoint)#" title="#event.buildLink(loc.mod.entryPoint)#">Open Module Entry Point</a>
 					<cfelse>
 						<em>No Entry Point Defined</em>
 					</cfif>
 				</td>
 				<td align="center">
-					<a href="#loc.mod.webURL#">#loc.mod.Author#</a>
+					<a href="#loc.mod.webURL#" title="#loc.mod.webURL#">#loc.mod.Author#</a>
 				</td>
 				<td align="center">
 					#loc.mod.Version#

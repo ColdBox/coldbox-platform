@@ -65,7 +65,7 @@ Optional Methods
 			//Extension Points
 			UDFLibraryFile 				= "includes/helpers/ApplicationHelper.cfm",
 			coldboxExtensionsLocation 	= "",
-			modulesExternalLocation		= "",
+			modulesExternalLocation		= [""],
 			pluginsExternalLocation 	= "",
 			viewsExternalLocation		= "",
 			layoutsExternalLocation 	= "",

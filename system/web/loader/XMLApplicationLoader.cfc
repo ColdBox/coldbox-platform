@@ -271,11 +271,10 @@ Loads a coldbox xml configuration file
 				calculateAppMapping(configStruct);
 			}
 			
-			// Modules Location
-			if( NOT structKeyExists(configStruct,"ModulesLocation") ){
-				configStruct.ModulesLocation = "";
+			// Modules Configuration
+			if( isSimpleValue(configStruct.ModulesExternalLocation) ){
+				configStruct.ModulesExternalLocation = listToArray( configStruct.ModulesExternalLocation );
 			}
-			configStruct.modules = structnew();
 		</cfscript>
 	</cffunction>
 	
@@ -1139,10 +1138,16 @@ Loads a coldbox xml configuration file
 				//Checks For Include
 				if ( structKeyExists(moduleSettingsNodes[1], "Include") ){
 					configStruct.modulesInclude = trim(moduleSettingsNodes[1].Include.xmlText);
+					if( isSimpleValue(configStruct.modulesInclude) ){
+						configStruct.modulesInclude = listToArray( configStruct.modulesInclude );
+					}
 				}
 				//Checks For Exclude
 				if ( structKeyExists(moduleSettingsNodes[1], "Exclude") ){
 					configStruct.modulesExclude = trim(moduleSettingsNodes[1].Exclude.xmlText);
+					if( isSimpleValue(configStruct.modulesExclude) ){
+						configStruct.modulesExclude = listToArray( configStruct.modulesExclude );
+					}
 				}
 			}						
 		</cfscript>

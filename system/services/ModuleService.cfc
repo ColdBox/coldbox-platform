@@ -20,8 +20,9 @@ I oversee and manage ColdBox modules
 			setController(arguments.controller);
 
 			// service properties
-			instance.logger = "";
-			instance.mConfigCache = {};
+			instance.logger 		= "";
+			instance.mConfigCache 	= {};
+			instance.moduleRegistry = createObject("java","java.util.LinkedHashMap").init();
 
 			return this;
 		</cfscript>
@@ -58,52 +59,81 @@ I oversee and manage ColdBox modules
 
 <!------------------------------------------- PUBLIC ------------------------------------------->
 
+	<!--- getModuleRegistry --->
+    <cffunction name="getModuleRegistry" output="false" access="public" returntype="struct" hint="Get the discovered module's registry structure">
+    	<cfreturn instance.moduleRegistry>
+    </cffunction>
+
 	<!--- registerAllModules --->
-	<cffunction name="registerAllModules" output="false" access="public" returntype="void" hint="Register all located modules in the conventions or set location. Usually called by framework to load configuraiton data.">
+	<cffunction name="registerAllModules" output="false" access="public" returntype="void" hint="Register all modules for the application. Usually called by framework to load configuraiton data.">
 		<cfscript>
 			var foundModules   = "";
 			var x 			   = 1;
+			var key			   = "";
 			var includeModules = controller.getSetting("ModulesInclude");
+			var modLocations   = [ controller.getSetting("ModulesLocation") ];
 			
-			// Register the module configuration
+			// Register the initial empty module configuration
 			controller.setSetting("modules",structnew());
 			
-			// Check if we have an inclusion list, if we do just iterate through it instead of the found modules
-			if( listLen(includeModules) ){
-				foundModules = listToArray(includeModules);
+			// construct our locations array, conventions first.
+			modLocations.addAll( controller.getSetting("ModulesExternalLocation") );
+			
+			// iterate through locations and build the module registry in order
+			for(x=1; x lte arrayLen(modLocations); x++){
+				// Get all modules found in the module location and append to module registry, only new ones are added
+				scanModulesDirectory( modLocations[x] );
 			}
-			else{
-				// Get all modules found in the application first
-				foundModules = scanModulesDirectory(controller.getSetting("ModulesPath"));
-				
-				// Iterate through all 
+		
+			// Are we using an include list?
+			if( arrayLen(includeModules) ){
+				// use this instead
+				for(x=1; x lte arrayLen(includeModules); x++){
+					// does module exists in the registry?
+					if( structKeyExists(instance.moduleRegistry, includeModules[x] ) ){
+						registerModule( includeModules[x] );
+					}
+				}
+				return;
 			}
 			
-			// Iterate through them.
-			for(x=1; x lte arrayLen(foundModules); x++){
-				// Verify the exception lists
-				if( canLoad( foundModules[x] ) ){
-					registerModule(foundModules[x]);
+			// Iterate through registry and register each module's configuration data
+			for(key in instance.moduleRegistry){
+				if( canLoad( key ) ){
+					registerModule( key );
 				}
 			}
+			
 		</cfscript>
 	</cffunction>
 
 	<!--- registerModule --->
 	<cffunction name="registerModule" output="false" access="public" returntype="boolean" hint="Register a module's configuration information and config object">
-		<cfargument name="moduleName" 		type="string" required="true" hint="The name of the module to load. It must exist and be valid. Else we ignore it by logging a warning and returning false."/>
-		<cfargument name="moduleLocation" 	type="string" required="false" hint="The base coldfusion mapping or instantiation location of the module. Ex: /shared/modules means that the modules exist in that directory. This argument will be expanded to get a physical location path"/>
+		<cfargument name="moduleName" 	type="string" required="true" hint="The name of the module to load. It must exist in our module registry and be valid. Else we ignore it by logging a warning and returning false."/>
 		<cfscript>
-			var modulesLocation 		= controller.getSetting("ModulesLocation");
-			var modulesPath 			= controller.getSetting("ModulesPath");
-			var modulesInvocationPath 	= controller.getSetting("ModulesInvocationPath");
+			var modulesLocation 		= "";
+			var modulesPath 			= "";
+			var modulesInvocationPath 	= "";
 			// Module To Load
 			var modName 				= arguments.moduleName;
-			var modLocation 			= modulesPath & "/" & modName;
+			var modLocation 			= "";
 			var mConfig 				= "";
 			var modulesConfiguration	= controller.getSetting("modules");
+		
+			// Check if passed module name is invalid, throw exception
+			if( NOT structKeyExists(instance.moduleRegistry, arguments.moduleName) ){
+				getUtil().throwit(message="The module #arguments.moduleName# is not valid",
+								  detail="Valid module names are: #structKeyList(instance.moduleRegistry)#",
+								  type="ModuleService.InvalidModuleName");
+			}
+			
+			// Setup locations with registry information
+			modulesLocation 		= instance.moduleRegistry[modName].locationPath;
+			modulesPath 			= instance.moduleRegistry[modName].physicalPath;
+			modulesInvocationPath	= instance.moduleRegistry[modName].invocationPath;
+			modLocation				= modulesPath & "/" & modName;
 		</cfscript>
-
+			
 		<cflock name="module.registration.#arguments.modulename#" type="exclusive" throwontimeout="true" timeout="20">
 			<cfscript>
 			//Check if module config exists, else skip and exit and log
@@ -460,28 +490,36 @@ I oversee and manage ColdBox modules
 <!------------------------------------------- PRIVATE ------------------------------------------->
 
 	<!--- scanModulesDirectory --->
-	<cffunction name="scanModulesDirectory" output="false" access="private" returntype="array" hint="Get an array of modules found">
-		<cfargument name="dirPath" type="string" required="true" hint="Path to scan"/>
+	<cffunction name="scanModulesDirectory" output="false" access="private" returntype="void" hint="Get an array of modules found and add to the registry structure">
+		<cfargument name="dirPath" 			type="string" required="true" hint="Path to scan"/>
 		<cfset var q = "">
-		<cfset var results = []>
+		<cfset var expandedPath = expandPath(arguments.dirpath)>
 
-		<cfdirectory action="list" directory="#arguments.dirpath#" name="q" type="dir" sort="asc">
+		<cfdirectory action="list" directory="#expandedPath#" name="q" type="dir" sort="asc">
 
 		<cfloop query="q">
 			<cfif NOT find(".", q.name)>
-				<cfset arrayAppend(results,q.name)>
+				<!--- Add only if it does not exist, so location preference kicks in --->
+				<cfif  NOT structKeyExists(instance.moduleRegistry, q.name)>
+					<cfset instance.moduleRegistry[q.name] = { 
+						locationPath 	= arguments.dirPath,
+						physicalPath 	= expandedPath,
+						invocationPath 	= replace( reReplace(arguments.dirPath,"^/",""), "/", ".","all") 
+					}>
+				<cfelse>
+					<cfset instance.logger.debug("Found duplicate module: #q.name# in #arguments.dirPath#. Skipping its registration in our module registry, order of preference given.") >
+				</cfif>
 			</cfif>
 		</cfloop>
-
-		<cfreturn results>
+		
 	</cffunction>
 
 	<!--- canLoad --->
     <cffunction name="canLoad" output="false" access="private" returntype="boolean" hint="Checks if the module can be loaded or registered">
   		<cfargument name="moduleName" type="string" required="true" hint="The module name"/>
   		<cfscript>
-    		var excludeModules = controller.getSetting("ModulesExclude");
-
+    		var excludeModules = ArrayToList(controller.getSetting("ModulesExclude"));
+			
 			// If we have excludes and in the excludes
 			if( len(excludeModules) and listFindNoCase(excludeModules,arguments.moduleName) ){
 				return false;
