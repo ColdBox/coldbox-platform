@@ -308,7 +308,7 @@ Description :
 	<cffunction name="set" access="public" output="false" returntype="boolean" hint="sets an object in cache. Sets might be expensive. If the JVM threshold is used and it has been reached, the object won't be cached. If the pool is at maximum it will expire using its eviction policy and still cache the object. Cleanup will be done later.">
 		<!--- ************************************************************* --->
 		<cfargument name="objectKey" 			type="any"  required="true" hint="The object cache key">
-		<cfargument name="myObject"				type="any" 	required="true" hint="The object to cache">
+		<cfargument name="object"				type="any" 	required="true" hint="The object to cache">
 		<cfargument name="timeout"				type="any"  required="false" default="" hint="Timeout in minutes. If timeout = 0 then object never times out. If timeout is blank, then timeout will be inherited from framework.">
 		<cfargument name="lastAccessTimeout"	type="any"  required="false" default="" hint="Last Access Timeout in minutes. If timeout is blank, then timeout will be inherited from framework.">
 		<!--- ************************************************************* --->

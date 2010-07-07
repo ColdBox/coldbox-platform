@@ -18,6 +18,7 @@ Description :
 	<cffunction name="init" access="public" returntype="CacheFactory" hint="Constructor" output="false" >
 		<cfargument name="config"  type="coldbox.system.cache.config.CacheBoxConfig" required="false" hint="The CacheBoxConfig object to use to configure this instance of CacheBox. If not passed then CacheBox will instantiate the default configuration."/>
 		<cfargument name="coldbox" type="coldbox.system.web.Controller" 			 required="false" hint="A coldbox application that this instance of CacheBox can be linked to, if not using it, just ignore it."/>
+		<cfargument name="factoryID" type="string" 									 required="false" default="" hint="A unique ID or name for this factory. If not passed I will make one up for you."/>
 		<cfscript>
 			var defaultConfigPath = "coldbox.system.cache.config.DefaultConfiguration";
 			
@@ -39,15 +40,15 @@ Description :
 					"afterCacheElementRemoved",
 					"afterCacheElementExpired",
 					"afterCacheElementUpdated",
-					"afterCacheRegistration", //done
-					"afterCacheRemoval", //done
-					"beforeCacheRemoval", //done
-					"beforeCacheReplacement", //done
+					"afterCacheRegistration",
+					"afterCacheRemoval", 
+					"beforeCacheRemoval",
+					"beforeCacheReplacement", 
 					"afterCacheFactoryConfiguration", 
-					"beforeCacheFactoryShutdown", //done
-					"afterCacheFactoryShutdown", //done
-					"beforeCacheShutdown", //implemented by cachebox only
-					"afterCacheShutdown" //implemented by cachebox only
+					"beforeCacheFactoryShutdown", 
+					"afterCacheFactoryShutdown",
+					"beforeCacheShutdown",
+					"afterCacheShutdown"
 				],
 				// LogBox Links
 				logBox  = "",
@@ -55,6 +56,11 @@ Description :
 				// Caches
 				caches  = {}
 			};
+			
+			// Did we send a factoryID in?
+			if( len(arguments.factoryID) ){
+				instance.factoryID = arguments.factoryID;
+			}
 			
 			// Prepare Lock Info
 			instance.lockName = "CacheFactory.#instance.factoryID#";
@@ -122,7 +128,7 @@ Description :
 			
 			// Announce To Listeners
 			iData.cacheFactory = this;
-			getEventManager().process("afterCacheFactoryConfiguration",iData);	
+			getEventManager().processState("afterCacheFactoryConfiguration",iData);	
 			</cfscript>
 		</cflock>
 	</cffunction>
@@ -178,7 +184,7 @@ Description :
 						
 						// Announce new cache registration now 
 						iData.cache = oCache;
-						getEventManager().process("afterCacheRegistration",iData);
+						getEventManager().processState("afterCacheRegistration",iData);
 					}
 				</cfscript>
 			</cflock>
@@ -214,7 +220,11 @@ Description :
     		var defaultCacheConfig	  = instance.config.getDefaultCache();
 			
 			// Check length
-			if( len(arguments.name) eq 0 ){ return; }
+			if( len(arguments.name) eq 0 ){ 
+				getUtil().throwit(message="Invalid Cache Name",
+								  detail="The name you sent in is invalid as it was blank, please send in a name",
+								  type="CacheFactory.InvalidNameException");
+			}
 			
 			// Check it does not exist already
 			if( cacheExists( arguments.name ) ){
@@ -234,16 +244,46 @@ Description :
 	<!--- shutdown --->
     <cffunction name="shutdown" output="false" access="public" returntype="void" hint="Recursively sends shutdown commands to al registered caches and cleans up in preparation for shutdown">
     	<cfscript>
+    		var iData 	= {};
+			var cacheNames = getCacheNames();
+			var cacheLen   = arraylen(cacheNames);
+			var cache 	   = "";
+			var i 		   = 1;
+			
     		instance.log.info("Shutdown of cache factory: #getFactoryID()# requested and started.");
 			
 			// Notify Listeners
-			getEventManager().process("beforeCacheFactoryShutdown");
+			iData = {cacheFactory=this};
+			getEventManager().processState("beforeCacheFactoryShutdown",iData);
 			
-			// Remove all caches first
+			// safely iterate and shutdown caches
+			for( i=1; i lte cacheLen; i++){
+				
+				// Get cache to shutdown
+				cache = getCache( cacheNames[i] );
+				instance.log.debug("Shutting down cache: #cacheNames[i]# on factoryID: #getFactoryID()#.");
+				
+				//process listners
+				iData = {cache=cache};
+				getEventManager().processState("beforeCacheShutdown",iData);
+				
+				//Shutdown each cache
+				cache.shutdown();
+				
+				//process listeners
+				getEventManager().processState("afterCacheShutdown",iData);
+				
+				instance.log.debug("Cache: #cacheNames[i]# was shut down on factoryID: #getFactoryID()#.");				
+			}
+			
+			// Remove all caches
 			removeAll();
 			
 			// Notify Listeners
-			getEventManager().process("afterCacheFactoryShutdown");
+			iData = {cacheFactory=this};
+			getEventManager().processState("afterCacheFactoryShutdown",iData);
+			
+			instance.log.info("Shutdown of cache factory: #getFactoryID()# completed.");
 		</cfscript>
     </cffunction>
 	
@@ -258,12 +298,15 @@ Description :
 				<cfscript>
 					// double check
 					if( structKeyExists( instance.caches, arguments.name ) ){
+					
+						instance.log.debug("Cache: #arguments.name# asked to be removed from factory: #getFactoryID()#");
+						
 						// Retrieve it
 						cache = instance.caches[ arguments.name ];
 						
 						// Notify listeners here
 						iData.cache = cache;
-						getEventManager().process("beforeCacheRemoval",iData);
+						getEventManager().processState("beforeCacheRemoval",iData);
 						
 						// process shutdown
 						cache.shutdown();
@@ -273,7 +316,7 @@ Description :
 						
 						// Log It
 						iData.cache = arguments.name;
-						getEventManager().process("afterCacheRemoval",iData);
+						getEventManager().processState("afterCacheRemoval",iData);
 						instance.log.debug("Cache: #arguments.name# removed from factory: #getFactoryID()#");
 						
 						return true;
@@ -282,7 +325,7 @@ Description :
 			</cflock>
 		</cfif>
 		
-		<cfset instance.log.debug("Cache: #arguments.name# not removed because it does not exist in registered caches")>
+		<cfset instance.log.debug("Cache: #arguments.name# not removed because it does not exist in registered caches: #arrayToList(getCacheNames())#. FactoryID: #getFactoryID()#")>
 		
 		<cfreturn false>
     </cffunction>
@@ -294,11 +337,13 @@ Description :
 			var cacheLen   	= arraylen(cacheNames);
 			var i 		   	= 1;
 		
-			instance.log.debug("Removal of all caches requested.");
+			instance.log.debug("Removal of all caches requested on factoryID: #getFactoryID()#");
 		
 			for( i=1; i lte cacheLen; i++){
 				removeCache( cacheNames[i] );
 			}
+			
+			instance.log.debug("All caches removed.");
 		</cfscript>
     </cffunction>
 	
@@ -335,13 +380,13 @@ Description :
 				// Announce to listeners
 				iData.oldCache = instance.caches[name];
 				iData.newCache = arguments.decoratedCache;
-				getEventManager().process("beforeCacheReplacement",iData);
+				getEventManager().processState("beforeCacheReplacement",iData);
 				// remove old Cache
 				structDelete( instance.caches, name);
 				// Replace it
 				instance.caches[ name ] = arguments.decoratedCache;
 				
-				instance.log.debug("Cache #name# replaced with decorated cache: #getMetadata(arguments.decoratedCache).name#");
+				instance.log.debug("Cache #name# replaced with decorated cache: #getMetadata(arguments.decoratedCache).name# on factoryID: #getFactoryID()#");
 			</cfscript>
 		</cflock>
 		
@@ -355,7 +400,7 @@ Description :
 			var i 		   = 1;
 			var cache 	   = "";
 		
-			instance.log.debug("Clearing all registered caches of their content");
+			instance.log.debug("Clearing all registered caches of their content on factoryID: #getFactoryID()#");
 		
 			for( i=1; i lte cacheLen; i++){
 				cache = getCache( cacheNames[i] );
@@ -372,7 +417,7 @@ Description :
 			var i 		   = 1;
 			var cache 	   = "";
 		
-			instance.log.debug("Expiring all registered caches of their content");
+			instance.log.debug("Expiring all registered caches of their content on factoryID: #getFactoryID()#");
 		
 			for( i=1; i lte cacheLen; i++){
 				cache = getCache( cacheNames[i] );

@@ -93,7 +93,7 @@ Description :
 	</cffunction>
 
 	<!--- Set --->
-	<cffunction name="set" access="public" output="false" returntype="void" hint="sets an object in cache.">
+	<cffunction name="set" access="public" output="false" returntype="boolean" hint="sets an object in cache and returns true if set correctly, else false.">
 		<!--- ************************************************************* --->
 		<cfargument name="objectKey" 	type="any"  required="true" hint="The object cache key">
 		<cfargument name="object"		type="any" 	required="true" hint="The object to cache">
