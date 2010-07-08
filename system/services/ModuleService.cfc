@@ -73,7 +73,7 @@ I oversee and manage ColdBox modules
 			var includeModules = controller.getSetting("ModulesInclude");
 			var modLocations   = [ controller.getSetting("ModulesLocation") ];
 			
-			// Register the initial empty module configuration
+			// Register the initial empty module configuration holder structure
 			controller.setSetting("modules",structnew());
 			
 			// construct our locations array, conventions first.
@@ -86,10 +86,10 @@ I oversee and manage ColdBox modules
 			}
 		
 			// Are we using an include list?
-			if( isArray(includeModules) and arrayLen(includeModules) ){
+			if( arrayLen(includeModules) ){
 				// use this instead
 				for(x=1; x lte arrayLen(includeModules); x++){
-					// does module exists in the registry?
+					// does module exists in the registry? We only register what is found
 					if( structKeyExists(instance.moduleRegistry, includeModules[x] ) ){
 						registerModule( includeModules[x] );
 					}
