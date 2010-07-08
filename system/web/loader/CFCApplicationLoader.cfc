@@ -880,8 +880,8 @@ Loads a coldbox xml configuration file
 			
 			// Defaults
 			configStruct.ModulesAutoReload  = false;
-			configStruct.ModulesInclude		= "";
-			configStruct.ModulesExclude		= "";
+			configStruct.ModulesInclude		= arrayNew(1);
+			configStruct.ModulesExclude		= arrayNew(1);
 			
 			if( structKeyExists(modules,"autoReload") ){ configStruct.modulesAutoReload = modules.autoReload; }
 			if( structKeyExists(modules,"include") ){ configStruct.modulesInclude = modules.include; }

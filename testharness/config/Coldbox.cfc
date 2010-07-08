@@ -100,7 +100,7 @@ Optional Methods
 			javaloader_libpath = controller.getAppRootPath() & "model/java"
 		};
 		
-		// Modules Configuration 
+		// Modules Configuration
 		modules = {
 			autoReload = true,
 			exclude    = [],

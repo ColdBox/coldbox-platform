@@ -1125,8 +1125,8 @@ Loads a coldbox xml configuration file
 			if (NOT arguments.isOverride){
 				// Defaults
 				configStruct.ModulesAutoReload  = false;
-				configStruct.ModulesInclude		= "";
-				configStruct.ModulesExclude		= "";
+				configStruct.ModulesInclude		= arrayNew(1);
+				configStruct.ModulesExclude		= arrayNew(1);
 			}
 			
 			//Check if empty
