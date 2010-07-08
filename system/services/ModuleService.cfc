@@ -86,7 +86,7 @@ I oversee and manage ColdBox modules
 			}
 		
 			// Are we using an include list?
-			if( arrayLen(includeModules) ){
+			if( isArray(includeModules) and arrayLen(includeModules) ){
 				// use this instead
 				for(x=1; x lte arrayLen(includeModules); x++){
 					// does module exists in the registry?

@@ -33,10 +33,11 @@ http://ortus.svnrepository.com/coldbox/trac.cgi/wiki/cbConfigGuide
 		
 		<!-- Extension Points -->
 		<Setting name="UDFLibraryFile" 				value="includes/helpers/ApplicationHelper.cfm" />
-		<Setting name="PluginsExternalLocation"   	value="" />
+		<Setting name="PluginsExternalLocation"   	value=""/>
 		<Setting name="ViewsExternalLocation" 		value=""/>
-		<Setting name="LayoutsExternalLocation"   	value="" />
-		<Setting name="HandlersExternalLocation"   	value="" />
+		<Setting name="LayoutsExternalLocation"   	value=""/>
+		<Setting name="HandlersExternalLocation"   	value=""/>
+		<Setting name="ModulesExternalLocation"   	value=""/>
 		<Setting name="RequestContextDecorator" 	value=""/>
 		
 		<!-- Error/Exception Handling -->
