@@ -9,7 +9,6 @@ Date        :	may 7, 2009
 Description :
 	This is a base abstract IOC Adapter
 
-
 ----------------------------------------------------------------------->
 <cfcomponent name="AbstractIOCAdapter" 
 			 hint="The ColdBox base IOC factory adapter in usage by the ioc plugin" 
@@ -17,59 +16,68 @@ Description :
 
 <!----------------------------------------- CONSTRUCTOR ------------------------------------->			
 	
-	<cfscript>
-	instance = structnew();
-	</cfscript>
-	
 	<cffunction name="init" access="public" returntype="AbstractIOCAdapter" hint="Constructor" output="false" >
-		<cfargument name="controller"  type="coldbox.system.web.Controller" required="true" hint="The ColdBox controller">
-		<cfargument name="IOCPlugin"   type="coldbox.system.plugins.IOC" required="true" hint="The IOC plugin object">
+		<cfargument name="coldbox" type="any" required="false" default="" hint="A coldbox application that this instance of logbox can be linked to, not used if not using within a ColdBox Application."/>
 		<cfscript>
-		instance.controller = arguments.controller;
-		instance.IOCPlugin = arguments.IOCPlugin;
-		return this;
+			instance 		 		= structnew();
+			instance.coldbox 		= "";
+			instance.factory 		= "";
+			
+			// Link to coldbox if passed
+			if( isObject(arguments.coldbox) ){ instance.coldbox = arguments.coldbox; }
+			
+			return this;
 		</cfscript>
 	</cffunction>
 
 
 <!----------------------------------------- PUBLIC ------------------------------------->	
-
-	<cffunction name="createFactory" access="public" returntype="void" hint="Create the factory" output="false" >
-	</cffunction>
-
-	<cffunction name="getbeanFactory" access="public" output="false" returntype="any" hint="Get the bean factory">
-		<cfreturn instance.beanFactory/>
+	
+	<!--- getColdBox --->
+	<cffunction name="getColdBox" access="public" output="false" returntype="coldbox.system.web.Controller" hint="Get the ColdBox controller this adapter is linked to. If not linked and exception is thrown">
+		<cfreturn instance.coldbox/>
 	</cffunction>
 	
+	<!--- createFactory --->
+	<cffunction name="createFactory" access="public" returntype="void" output="false" hint="Create the factory" >
+	</cffunction>
+
+	<!--- getFactory --->
+	<cffunction name="getFactory" access="public" output="false" returntype="any" hint="Get the factory">
+		<cfreturn instance.factory/>
+	</cffunction>
+	
+	<!--- getBean --->
 	<cffunction name="getBean" access="public" output="false" returntype="any" hint="Get a Bean from the object factory">
 		<cfargument name="beanName" type="string" required="true" hint="The bean name to retrieve from the object factory">
 	</cffunction>
 	
+	<!--- containsBean --->
 	<cffunction name="containsBean" access="public" returntype="boolean" hint="Check if the bean factory contains a bean" output="false" >
 		<cfargument name="beanName" type="string" required="true" hint="The bean name to retrieve from the object factory">	
 	</cffunction>
 
+	<!--- invokeFactoryMethod --->
 	<cffunction name="invokeFactoryMethod" access="public" returntype="any" hint="Invoke a factory method in the bean factory. If the factory returns a void/null, this method returns void or null" output="false" >
 		<cfargument name="method"   type="string" required="true" hint="The method to invoke">
 		<cfargument name="args"  	type="struct" required="false" default="#structnew()#" hint="The arguments to pass into the method">
-		<cfset var results = 0>
+		<cfset var refLocal = structnew()>
 		
-		<cfinvoke component="#getBeanFactory()#"
+		<cfinvoke component="#getFactory()#"
 				  method="#arguments.method#"
 				  argumentcollection="#arguments.args#"
-				  returnvariable="results">
-				  
-		<cfreturn results>
+				  returnvariable="refLocal.results">
+		
+		<cfif structKeyExists(refLocal,"results")>
+			<cfreturn refLocal.results>
+		</cfif>
 	</cffunction>
 
 <!----------------------------------------- PRIVATE ------------------------------------->	
-
-	<cffunction name="getcontroller" access="private" output="false" returntype="coldbox.system.web.Controller" hint="Get the ColdBox controller">
-		<cfreturn instance.controller/>
-	</cffunction>
 	
-	<cffunction name="getIOCPlugin" access="private" output="false" returntype="coldbox.system.plugins.IOC" hint="Get IOCPlugin">
-		<cfreturn instance.IOCPlugin/>
-	</cffunction>
+	<!--- Get ColdBox Util --->
+	<cffunction name="getUtil" access="private" output="false" returntype="coldbox.system.core.util.Util" hint="Create and return a util object">
+		<cfreturn createObject("component","coldbox.system.core.util.Util")/>
+	</cffunction>	
 	
 </cfcomponent>

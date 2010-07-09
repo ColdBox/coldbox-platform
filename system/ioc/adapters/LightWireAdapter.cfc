@@ -13,6 +13,7 @@ Description :
 ----------------------------------------------------------------------->
 <cfcomponent name="LightWireAdapter" 
 			 hint="The ColdBox LightWire IOC factory adapter" 
+			 extends="coldbox.system.ioc.AbstractIOCAdapter" 
 			 output="false">
 
 <!----------------------------------------- CONSTRUCTOR ------------------------------------->			
@@ -29,20 +30,6 @@ Description :
 
 <!----------------------------------------- PUBLIC ------------------------------------->	
 
-	<cffunction name="createFactory" access="public" returntype="void" hint="Create the ColdSpring Factory" output="false" >
-	</cffunction>
-
-	<cffunction name="getbeanFactory" access="public" output="false" returntype="any" hint="Get the bean factory">
-		<cfreturn instance.beanFactory/>
-	</cffunction>
-	
-	<cffunction name="getBean" access="public" output="false" returntype="any" hint="Get a Bean from the object factory">
-		<cfargument name="beanName" type="string" required="true" hint="The bean name to retrieve from the object factory">
-	</cffunction>
-	
-	<cffunction name="containsBean" access="public" returntype="boolean" hint="Check if the bean factory contains a bean" output="false" >
-		<cfargument name="beanName" type="string" required="true" hint="The bean name to retrieve from the object factory">	
-	</cffunction>
 
 <!----------------------------------------- PRIVATE ------------------------------------->	
 
