@@ -63,9 +63,9 @@ I oversee and manage ColdBox modules
     <cffunction name="getModuleRegistry" output="false" access="public" returntype="struct" hint="Get the discovered module's registry structure">
     	<cfreturn instance.moduleRegistry>
     </cffunction>
-
+	
 	<!--- registerAllModules --->
-	<cffunction name="registerAllModules" output="false" access="public" returntype="void" hint="Register all modules for the application. Usually called by framework to load configuraiton data.">
+	<cffunction name="registerAllModules" output="false" access="public" returntype="void" hint="Register all modules for the application. Usually called by framework to load configuration data.">
 		<cfscript>
 			var foundModules   = "";
 			var x 			   = 1;
@@ -80,11 +80,8 @@ I oversee and manage ColdBox modules
 			modLocations.addAll( controller.getSetting("ModulesExternalLocation") );
 			
 			// iterate through locations and build the module registry in order
-			for(x=1; x lte arrayLen(modLocations); x++){
-				// Get all modules found in the module location and append to module registry, only new ones are added
-				scanModulesDirectory( modLocations[x] );
-			}
-		
+			buildRegistry( modLocations );
+			
 			// Are we using an include list?
 			if( arrayLen(includeModules) ){
 				// use this instead
@@ -489,6 +486,23 @@ I oversee and manage ColdBox modules
 
 <!------------------------------------------- PRIVATE ------------------------------------------->
 
+	<!--- buildRegistry --->
+    <cffunction name="buildRegistry" output="false" access="private" returntype="void" hint="Build the modules registry">
+    	<cfargument name="locations" type="array" required="true" hint="The array of locations to register"/>
+    	<cfscript>
+    		var x	   = 1;
+			var locLen = arrayLen(arguments.locations);
+			
+			// Init the module registry
+    		instance.moduleRegistry = createObject("java","java.util.LinkedHashMap").init();
+			
+			for(x=1; x lte locLen; x++){
+				// Get all modules found in the module location and append to module registry, only new ones are added
+				scanModulesDirectory( arguments.locations[x] );
+			}
+		</cfscript>
+    </cffunction>
+	
 	<!--- scanModulesDirectory --->
 	<cffunction name="scanModulesDirectory" output="false" access="private" returntype="void" hint="Get an array of modules found and add to the registry structure">
 		<cfargument name="dirPath" 			type="string" required="true" hint="Path to scan"/>
