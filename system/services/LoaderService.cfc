@@ -78,11 +78,11 @@ Modification History:
 			services[key].onConfigurationLoad();
 		}
 		
-		// Flag the initiation, Framework is ready to serve requests. Praise be to GOD.
-		controller.setColdboxInitiated(true);
-		
 		// Create WireBox
 		controller.getPlugin("BeanFactory");
+		
+		// Flag the initiation, Framework is ready to serve requests. Praise be to GOD.
+		controller.setColdboxInitiated(true);
 		
 		// Execute afterConfigurationLoad
 		controller.getInterceptorService().processState("afterConfigurationLoad");
