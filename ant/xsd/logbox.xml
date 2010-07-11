@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <!-- ====================================================================== 
-     export the cachebox xsd to the site
+     export the logbox xsd to the site
      ====================================================================== -->
-<project name="cachebox.xsd_upload" default="ftp.deploy" basedir="../../">
+<project name="logbox.xsd_upload" default="ftp.deploy" basedir="../../">
     <description>
             This task will export the config.xsd and upload it to the coldboxframework site
     </description>
