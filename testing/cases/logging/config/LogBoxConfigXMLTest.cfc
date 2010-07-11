@@ -1,7 +1,7 @@
 <cfcomponent extends="coldbox.system.testing.BaseTestCase">
 <cfscript>
 	function setup(){
-		xmlFile = expandPath("/coldbox/system/logging/config/Sample.LogBox.xml");
+		xmlFile = expandPath("/coldbox/testing/cases/logging/config/samples/Sample.LogBox.xml");
 		config  = getMockBox().createMock(className="coldbox.system.logging.config.LogBoxConfig").init(xmlConfig=xmlFile);
 	}
 	
@@ -16,7 +16,7 @@
 	
 	function testInlineXML(){
 		config = getMockBox().createMock(className="coldbox.system.logging.config.LogBoxConfig").init();
-		configxml = xmlParse(expandpath('/coldbox/testing/cases/logging/config/cbox.logbox.xml'));
+		configxml = xmlParse(expandpath('/coldbox/testing/cases/logging/config/samples/cbox.logbox.xml'));
 		logbox = xmlSearch(configxml,"//LogBox");
 		
 		config.parseAndLoad(logBox[1]);
