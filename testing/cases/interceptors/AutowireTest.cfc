@@ -7,6 +7,10 @@
 	}
 	
 	function testConfigure(){
+		//mocks
+		bf = getMockBox().createEmptyMock("coldbox.system.plugins.BeanFactory");
+		autowire.$("getPlugin").$args("BeanFactory").$results(bf);
+	
 		autowire.configure();
 		props = autowire.getProperties();
 		assertEquals( false, props.annotationCheck );
@@ -81,6 +85,7 @@
 		makePublic(autowire, "processEntityInjection");
 		
 		// Test Allow
+		autowire.setProperty("entityInjection",true);
 		autowire.setProperty("entityInclude","");
 		autowire.setProperty("entityExclude","");
 		autowire.processEntityInjection( getMockRequestContext(), data );

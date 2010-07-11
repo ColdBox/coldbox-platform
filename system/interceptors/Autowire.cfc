@@ -50,6 +50,10 @@ Description :
 			if(NOT propertyExists("entityExclude") ){
 				setProperty("entityExclude",'');
 			}
+			
+			// Get bean factory
+			beanFactory = getPlugin("BeanFactory");
+			
 		</cfscript>
 	</cffunction>
 
@@ -129,7 +133,7 @@ Description :
 		<cfscript>
 			try{
 				// Process Autowire
-				getPlugin("BeanFactory").autowire(target=arguments.target,
+				beanFactory.autowire(target=arguments.target,
 											  	  useSetterInjection=getProperty('enableSetterInjection'),
 											  	  annotationCheck=getProperty("annotationCheck"),
 											  	  onDICompleteUDF=getProperty('completeDIMethodName'));
@@ -169,6 +173,10 @@ Description :
 				processAutowire(arguments.interceptData.entity);
 			}
 		</cfscript>
+	</cffunction>
+	
+	<cffunction name="getUtil" access="private" output="false" returntype="coldbox.system.core.util.Util" hint="Create and return a util object">
+		<cfreturn CreateObject("component","coldbox.system.core.util.Util")/>
 	</cffunction>
 
 </cfcomponent>

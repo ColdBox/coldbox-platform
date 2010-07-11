@@ -21,6 +21,7 @@
 		assertTrue( structKeyExists(memento.caches,"SampleCache2") );
 		assertTrue( arrayLen(memento.listeners) );
 		assertTrue( len(memento.logBoxConfig) );
+		assertEquals( "cacheBoxAwesome", memento.scopeRegistration.key );
 		assertEquals("coldbox.system.cache.config.LogBoxConfig", memento.logBoxConfig);
 		
 		
@@ -41,6 +42,7 @@
 		assertTrue( structKeyExists(memento.caches,"SampleCache2") );
 		assertTrue( arrayLen(memento.listeners) );
 		assertTrue( len(memento.logBoxConfig) );
+		assertEquals( "cacheBoxAwesome", memento.scopeRegistration.key );
 		assertEquals("coldbox.system.cache.config.LogBoxConfig", memento.logBoxConfig);
 		
 		

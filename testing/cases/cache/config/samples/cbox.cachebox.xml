@@ -130,6 +130,9 @@
 		<!--  The LogBox Configuration File to Use -->
 		<LogBoxConfig>coldbox.system.cache.config.LogBoxConfig</LogBoxConfig>
 		
+		<!-- Scope Registration -->
+		<ScopeRegistration enabled="true" scope="server" key="cachebox" />
+	
 		<!-- The defaultCache has an implicit name "default" which is a reserved cache name
 			 It also has a default provider of cachebox which cannot be changed.
 			 All timeouts are in minutes -->

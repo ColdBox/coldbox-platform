@@ -73,13 +73,13 @@ Modification History:
 		// Create the Cache Container
 		controller.setColdboxOCM(createCacheManager());
 		
+		// Create WireBox
+		controller.getPlugin("BeanFactory");
+		
 		// Execute onConfigurationLoad for coldbox internal services()
 		for(key in services){
 			services[key].onConfigurationLoad();
 		}
-		
-		// Create WireBox
-		controller.getPlugin("BeanFactory");
 		
 		// Flag the initiation, Framework is ready to serve requests. Praise be to GOD.
 		controller.setColdboxInitiated(true);

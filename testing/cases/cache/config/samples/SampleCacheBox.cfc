@@ -21,6 +21,11 @@ Description :
 			// LogBox Configuration file
 			logBoxConfig = "coldbox.system.cache.config.LogBoxConfig", 
 			
+			// Scope Registration
+			scopeRegistration = {
+				enabled = true, scope = "application", key = "cacheBoxAwesome"
+			},	
+			
 			// The defaultCache has an implicit name "default" which is a reserved cache name
 			// It also has a default provider of cachebox which cannot be changed.
 			// All timeouts are in minutes
