@@ -317,11 +317,6 @@ Description :
 
 		/* ::::::::::::::::::::::::::::::::::::::::: HANDLERS BY CONVENTION :::::::::::::::::::::::::::::::::::::::::::: */
 		
-		//Check for Handlers Directory Location
-		if ( not directoryExists(HandlersPath) ){
-			getUtil().throwit("The handlers directory: #handlerspath# does not exist please check your application structure or your Application Mapping.","","HandlerService.HandlersDirectoryNotFoundException");
-		}
-		
 		//Get recursive Array listing
 		HandlerArray = getHandlerListing(HandlersPath);
 		
