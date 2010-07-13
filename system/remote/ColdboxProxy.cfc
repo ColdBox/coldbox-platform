@@ -31,7 +31,6 @@ Description :
 		<cfset var refLocal = structnew()>
 		<cfset var interceptData = structnew()>
 		<cfsetting showdebugoutput="false">
-		<cfsetting enablecfoutputonly="true">
 		<cfscript>
 			
 			// Locate ColdBox Controller
