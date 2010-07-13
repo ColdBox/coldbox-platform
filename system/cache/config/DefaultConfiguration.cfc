@@ -21,6 +21,13 @@ Description :
 			// LogBox Configuration file
 			logBoxConfig = "coldbox.system.cache.config.LogBox", 
 			
+			// Scope registration, automatically register the cachebox factory instance on any CF scope
+			scopeRegistration = {
+				enabled = false,
+				scope   = "server", // server, cluster, session
+				key		= "cacheBox"
+			},
+			
 			// The defaultCache has an implicit name "default" which is a reserved cache name
 			// It also has a default provider of cachebox which cannot be changed.
 			// All timeouts are in minutes

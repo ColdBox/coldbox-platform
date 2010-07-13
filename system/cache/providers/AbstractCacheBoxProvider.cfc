@@ -9,7 +9,10 @@ Description :
 	An abstract CacheBox Provider
 
 ----------------------------------------------------------------------->
-<cfcomponent hint="An abstract CacheBox Provider with basic/boring functionality built" output="false" implements="coldbox.system.cache.ICacheProvider">
+<cfcomponent hint="An abstract CacheBox Provider with basic/boring functionality built" 
+			 output="false" 
+			 implements="coldbox.system.cache.ICacheProvider" 
+			 serializable="false">
 	
 	<!--- init --->
     <cffunction name="init" output="false" access="public" returntype="any" hint="Simple Constructor">
@@ -91,12 +94,6 @@ Description :
     	<cfset instance.eventManager = arguments.eventManager>
 	</cffunction>
 	
-	<!--- Get Util --->
-	<cffunction name="getUtil" access="private" output="false" returntype="coldbox.system.core.util.Util" hint="Create and return a util object">
-		<cfreturn CreateObject("component","coldbox.system.core.util.Util")/>
-	</cffunction>
-	
-	
 <!------------------------------------------- ABSTRACT CACHE OPERATIONS ------------------------------------------>
 
 	<!--- configure --->
@@ -171,5 +168,12 @@ Description :
 		<cfargument name="objectKey" type="string" required="true" hint="The key the object was stored under.">
 		<cfthrow message="Abstract method, please implement" type="AbstractMethodException">
     </cffunction>
+	
+<!------------------------------------------- PRIVATE ------------------------------------------>
+
+	<!--- Get Util --->
+	<cffunction name="getUtil" access="private" output="false" returntype="coldbox.system.core.util.Util" hint="Create and return a util object">
+		<cfreturn CreateObject("component","coldbox.system.core.util.Util")/>
+	</cffunction>	
 	
 </cfcomponent>

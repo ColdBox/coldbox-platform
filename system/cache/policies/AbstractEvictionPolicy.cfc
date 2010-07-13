@@ -9,7 +9,7 @@ Date        :	11/14/2007
 Description :
 	This is an AbstractEviction Policy object.
 ----------------------------------------------------------------------->
-<cfcomponent name="AbstractEvictionPolicy" hint="An abstract CacheBox eviction policy" output="false">
+<cfcomponent hint="An abstract CacheBox eviction policy" output="false" serializable="false">
 
 	<cfscript>
 		instance = {};

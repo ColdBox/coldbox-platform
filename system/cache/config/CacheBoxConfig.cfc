@@ -112,6 +112,11 @@ Description :
 				logBoxConfig(cacheBoxDSL.logBoxConfig);
 			}
 			
+			// Register Server Scope Registration
+			if( structKeyExists( cacheBoxDSL, "scopeRegistration") ){
+				scopeRegistration(argumentCollection=cacheBoxDSL.scopeRegistration);
+			}
+			
 			// Register Caches
 			if( structKeyExists( cacheBoxDSL, "caches") ){
 				for( key in cacheBoxDSL.caches ){
@@ -140,6 +145,12 @@ Description :
 			instance.caches = {};
 			// Listeners
 			instance.listeners = [];
+			// Scope Registration
+			instance.scopeRegistration = {
+				enabled = false,
+				scope 	= "server",
+				key		= "cachebox"
+			};
 		</cfscript>
 	</cffunction>
 	
@@ -172,6 +183,23 @@ Description :
 			}			
 		</cfscript>
 	</cffunction>
+	
+	<!--- scopeRegistration --->
+    <cffunction name="scopeRegistration" output="false" access="public" returntype="void" hint="Use to define cachebox factory scope registration">
+    	<cfargument name="enabled" 	type="boolean" 	required="false" default="false" hint="Enable registration"/>
+		<cfargument name="scope" 	type="string" 	required="false" default="server" hint="The scope to register on, defaults to server scope"/>
+		<cfargument name="key" 		type="string" 	required="false" default="cachebox" hint="The key to use in the scope, defaults to cachebox"/>
+		<cfscript>
+			instance.scopeRegistration.enabled 	= arguments.enabled;
+			instance.scopeRegistration.key 		= arguments.key;
+			instance.scopeRegistration.scope 	= arguments.scope;
+		</cfscript>
+    </cffunction>
+
+	<!--- getScopeRegistration --->
+    <cffunction name="getScopeRegistration" output="false" access="public" returntype="struct" hint="Get the scope registration details">
+    	<cfreturn instance.scopeRegistration>
+    </cffunction>
 	
 	<!--- defaultCache --->
 	<cffunction name="defaultCache" output="false" access="public" returntype="void" hint="Add a default cache configuration.">
@@ -272,6 +300,7 @@ Description :
 		<cfscript>
 			var xml 		 = arguments.xmlDoc;
 			var logBoxXML	 = xmlSearch(xml,"//LogBoxConfig");
+			var scopeXML	 = xmlSearch(xml,"//ScopeRegistration");
 			var defaultXML	 = xmlSearch(xml,"//DefaultConfiguration");
 			var cachesXML	 = xmlSearch(xml,"//CacheBox/Cache");
 			var listenersXML = xmlSearch(xml,"//Listener");
@@ -290,6 +319,11 @@ Description :
 			logBoxConfig( variables.defaults.logBoxConfig );
 			if( arrayLen(logBoxXML) ){
 				logBoxConfig( trim(logBoxXML[1].XMLText) );
+			}
+			
+			// Register ScopeRegistrations
+			if( arrayLen(scopeXML) ){
+				scopeRegistration(argumentCollection=scopeXML[1].XMLAttributes);
 			}
 			
 			// Register Caches

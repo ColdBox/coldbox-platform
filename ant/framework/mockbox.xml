@@ -9,7 +9,9 @@
 	<!--Build Properties-->
 	<property name="dir.userlocation"	value="/Users/lmajano" />
 	<property name="dir.exports"		value="${dir.userlocation}/exports" />
-	<property name="dir.build" 			value="${dir.exports}/coldbox" />
+	<property name="dir.build" 			value="${dir.exports}/mockbox-distro" />
+	<property name="colddoc.http"		value="http://cf9tools.jfetmac/ColdDoc/mockbox.cfm?version=" />
+	
 	<!-- FTP -->
 	<property name="ftp.server"  		value="ftp.coldboxframework.com" />
 	<property name="ftp.remotedir" 		value="/httpdocs/builds" />
@@ -42,7 +44,7 @@
 		<!-- Copy build ID -->
 		<concat destfile="${dir.build}/${build.label}">Built on ${start.TODAY}</concat>
 		
-		<!-- Copy src -->	
+		<!-- Copy src to mockbox namespace -->	
       	<copy todir="${dir.build}/mockbox/system/testing">
         	<fileset dir="system/testing" />
         </copy>
@@ -50,6 +52,14 @@
         	<fileset dir="system/core" />
         </copy>
 		
+		<!-- Copy src to coldbox namespace -->	
+      	<copy todir="${dir.build}/coldbox/system/testing">
+        	<fileset dir="system/testing" />
+        </copy>
+		<copy todir="${dir.build}/coldbox/system/core">
+        	<fileset dir="system/core" />
+        </copy>
+				
 		<echo>Refactoring for coldbox absolute paths</echo>
 		<replace dir="${dir.build}" value="/mockbox/system/" summary="yes">
 		  	<include name="**/*.cfc" />
@@ -70,6 +80,10 @@
 			<fileset file="system/config/license.txt" />
 			<fileset file="system/testing/readme.txt" />						
 		</copy>
+		
+		<!-- Execute ColdDoc -->
+		<get dest="${dir.build}/colddoc.html" src="${colddoc.http}${mockbox.version}" verbose="true"/>
+		<delete file="${dir.build}/colddoc.html" />
 				
 		<!-- Zip Bundle -->
 		<zip destfile="${dir.exports}/mockbox_${mockbox.version}.zip" basedir="${dir.build}"></zip>

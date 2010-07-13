@@ -16,6 +16,7 @@
 	<property name="dir.dashboard"	    value="${dir.userlocation}/sites/cboxdev/core/dashboard" />
 	<property name="dir.samples"		value="${dir.userlocation}/sites/cboxdev/samples/coldbox/samples"/>
 	<property name="dir.wallpapers"		value="${dir.userlocation}/Documents/MyDocs/My Programs/OrtusSolutions/ColdBox/workbench/wallpapers/" />
+	<property name="colddoc.http"		value="http://cf9tools.jfetmac/ColdDoc/coldbox.cfm?version=" />
 	
 	<!-- Build Labels -->
 	<tstamp prefix="start"/>
@@ -117,6 +118,11 @@
 			<fileset file="system/config/license.txt" />
 			<fileset file="system/config/readme.txt" />		
 		</copy>
+		
+		<!-- Execute ColdDoc -->
+		<get dest="${dir.build}/colddoc.html" src="${colddoc.http}${coldbox.version}" verbose="true"/>
+		<delete file="${dir.build}/colddoc.html" />
+		
 		
 		<!-- Zip Standalone -->
 		<zip destfile="${dir.exports}/coldbox_standalone_${coldbox.version}.zip" basedir="${dir.build}" 

@@ -9,7 +9,9 @@
 	<!--Build Properties-->
 	<property name="dir.userlocation"	value="/Users/lmajano" />
 	<property name="dir.exports"		value="${dir.userlocation}/exports" />
-	<property name="dir.build" 			value="${dir.exports}/coldbox" />
+	<property name="dir.build" 			value="${dir.exports}/logbox-distro" />
+	<property name="colddoc.http"		value="http://cf9tools.jfetmac/ColdDoc/logbox.cfm?version=" />
+	
 	<!-- FTP -->
 	<property name="ftp.server"  		value="ftp.coldboxframework.com" />
 	<property name="ftp.remotedir" 		value="/httpdocs/builds" />
@@ -42,7 +44,7 @@
 		<!-- Copy build ID -->
 		<concat destfile="${dir.build}/${build.label}">Built on ${start.TODAY}</concat>
 		
-		<!-- Copy src -->	
+		<!-- Copy src to logbox namespace-->	
       	<copy todir="${dir.build}/logbox/system/logging">
         	<fileset dir="system/logging" />
         </copy>
@@ -50,6 +52,15 @@
         	<fileset dir="system/core" />
         </copy>
 		
+		<!-- Copy src to coldbox namespace -->
+		<copy todir="${dir.build}/coldbox/system/logging">
+        	<fileset dir="system/logging" />
+        </copy>
+		<copy todir="${dir.build}/coldbox/system/core">
+        	<fileset dir="system/core" />
+        </copy>
+		
+		<!-- Refactor logbox namespace -->
 		<echo>Refactoring for coldbox absolute paths</echo>
 		<replace dir="${dir.build}" value="/logbox/system/" summary="yes">
 		  	<include name="**/*.cfc" />
@@ -70,7 +81,11 @@
 			<fileset file="system/config/license.txt" />
 			<fileset file="system/logging/readme.txt" />						
 		</copy>
-				
+		
+		<!-- Execute ColdDoc -->
+		<get dest="${dir.build}/colddoc.html" src="${colddoc.http}${logbox.version}" verbose="true"/>
+		<delete file="${dir.build}/colddoc.html" />
+		
 		<!-- Zip Bundle -->
 		<zip destfile="${dir.exports}/logbox_${logbox.version}.zip" basedir="${dir.build}"></zip>
 		
