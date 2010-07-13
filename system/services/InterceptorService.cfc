@@ -79,7 +79,7 @@ Description :
 		<cfargument name="state" 		 required="true" 	type="string" hint="An interception state to process">
 		<cfargument name="interceptData" required="false" 	type="struct" default="#structNew()#" hint="A data structure used to pass intercepted information.">
 		<!--- ************************************************************* --->
-		<cfset var timerHash = 0><cfsetting enablecfoutputonly="true"><cfsilent>
+		<cfset var timerHash = 0><cfsilent>
 		<cfscript>
 		// Is ColdBox Inited and ready to serve requests?
 		if ( not controller.getColdboxInitiated() ){ 
@@ -101,7 +101,7 @@ Description :
 		
 		// Process Output Buffer: looks weird, but we are outputting stuff
 		</cfscript>
-		</cfsilent><cfif getRequestBuffer().isBufferInScope()><cfset writeOutput(getRequestBuffer().getString())><cfset getRequestBuffer().clear()></cfif><cfsetting enablecfoutputonly="false">
+		</cfsilent><cfif getRequestBuffer().isBufferInScope()><cfset writeOutput(getRequestBuffer().getString())><cfset getRequestBuffer().clear()></cfif>
 	</cffunction>
 	
 	<!--- Register an Interceptor --->
