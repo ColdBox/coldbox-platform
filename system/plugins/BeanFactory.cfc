@@ -1031,8 +1031,9 @@ Description: This is the framework's simple bean factory.
 			var md = arguments.metadata;
 			var entry = structnew();
 			var foundDependencies = "";
-			var DSLNamespaces = "webservice,model,ioc,ocm,coldbox,logbox";
-
+			
+			//TODO: The foundDependencies check should be made on the recursive array not the single list.
+			
 			// Look for Object's attributes, and override if found.
 			if( structKeyExists(md,"autowire_stoprecursion") ){
 				arguments.stopRecursion = md["autowire_stoprecursion"];
@@ -1041,35 +1042,31 @@ Description: This is the framework's simple bean factory.
 				arguments.useSetterInjection = md["autowire_setterinjection"];
 			}
 
-			// Look For cfProperties for annotation injections
-			// TODO: This will need to change and standardized later as blenderbox gets here. Refactoring needed.
+			// Look For properties for annotation injections
 			if( structKeyExists(md,"properties") and ArrayLen(md.properties) gt 0){
+				
+				// Loop over each property and identify injectable properties
 				for(x=1; x lte ArrayLen(md.properties); x=x+1 ){
 
-					// New MD Entry
-					entry = structnew();
-					entry.name 	= md.properties[x].name;
-					entry.scope = "variables";
-					entry.type 	= instance.dslDefaultType;
-
-					// Scope override if it exists
-					if( structKeyExists(md.properties[x],"scope") ){
-						entry.scope = md.properties[x].scope;
-					}
-
-					// Check type, if it exists, add it as a dependency
-					if( structKeyExists(md.properties[x],"type") AND listFindNoCase(DSLNamespaces, listFirst(md.properties[x].type,":")) ){
-						entry.type 	= md.properties[x].type;
-						// Add to found list
-						listAppend(foundDependencies,entry.name);
-						ArrayAppend( arguments.dependencies, entry );
-					}
-					// Check Inject annotation, if it exists, add it.
+					// Check Inject annotation, if it exists, add it and process it
 					if( structKeyExists(md.properties[x],"inject") ){
-						// Setup the type if it has a value.
-						if( len(md.properties[x].inject) and md.properties[x].inject neq "true" ){
+					
+						// New MD Entry
+						entry 		= structnew();
+						entry.name 	= md.properties[x].name;
+						entry.scope = "variables";
+						entry.type 	= instance.dslDefaultType;
+	
+						// Scope override if it exists
+						if( structKeyExists(md.properties[x],"scope") ){
+							entry.scope = md.properties[x].scope;
+						}
+						
+						// Setup the DSL Type if it has a value
+						if( len(md.properties[x].inject) ){
 							entry.type 	= md.properties[x].inject;
 						}
+						
 						// Add to found list
 						listAppend(foundDependencies,entry.name);
 						ArrayAppend( arguments.dependencies, entry );
@@ -1081,30 +1078,30 @@ Description: This is the framework's simple bean factory.
 			// Setter injection if enabled?
 			if( arguments.useSetterInjection and structKeyExists(md, "functions") ){
 				for(x=1; x lte ArrayLen(md.functions); x=x+1 ){
-					// Verify we have a setter
-					if( left(md.functions[x].name,3) eq "set" ){
+				
+					// Verify we have a setter marked with the DSL injector annotation
+					if( left(md.functions[x].name,3) eq "set" AND structKeyExists(md.functions[x],instance.dslMarker)){
 
 						// New MD Entry
-						entry = structnew();
-						entry.name = Right(md.functions[x].name, Len(md.functions[x].name)-3);
+						entry 		= structnew();
+						entry.name 	= right(md.functions[x].name, Len(md.functions[x].name)-3);
 						entry.scope = "";
-
-						// Check DSL marker
-						if( structKeyExists(md.functions[x],instance.dslMarker) ){
+						entry.type 	= instance.dslDefaultType;
+						
+						// Check DSL marker if it has a value else use default
+						if( len(md.functions[x].instance.dslMarker) ){
 							entry.type = md.functions[x][instance.dslMarker];
-						}
-						else{
-							entry.type = instance.dslDefaultType;
 						}
 
 						// Add if not already in properties
-						if( not listFindNoCase(foundDependencies,entry.name) ){
+						if( NOT listFindNoCase(foundDependencies,entry.name) ){
 							// Found Setter, append property Name
 							listAppend(foundDependencies,entry.name);
 							ArrayAppend(arguments.dependencies, entry);
 						}
 
-					}//end if setter found.
+					}//end if setter found with annotation
+					
 				}//end loop of functions
 			}//end if functions found
 
@@ -1112,11 +1109,12 @@ Description: This is the framework's simple bean factory.
 			if ( structKeyExists(md, "extends")
 				 AND
 				 stopClassRecursion(classname=md.extends.name,stopRecursion=arguments.stopRecursion) EQ FALSE){
+				
 				// Recursive lookup
 				arguments.dependencies = parseMetadata(md.extends,arguments.dependencies,arguments.useSetterInjection,arguments.stopRecursion);
+				
 			}
 
-			/* return the dependencies found */
 			return arguments.dependencies;
 		</cfscript>
 	</cffunction>
