@@ -18,13 +18,14 @@ Description :
     <cffunction name="init" output="false" access="public" returntype="any" hint="Simple Constructor">
     	<cfscript>
     		instance = {
-				name 			= "",
-				enabled 		= false,
-				stats   		= {},
-				configuration 	= {},
-				cacheFactory 	= {},
-				eventManager	= {},
-				cacheID			= createObject('java','java.lang.System').identityHashCode(this)
+				name 				= "",
+				enabled 			= false,
+				reportingEnabled 	= false,
+				stats   			= {},
+				configuration 		= {},
+				cacheFactory 		= {},
+				eventManager		= {},
+				cacheID				= createObject('java','java.lang.System').identityHashCode(this)
 			};
 			return this;
     	</cfscript>
@@ -49,6 +50,11 @@ Description :
 	<!--- isEnabled --->
     <cffunction name="isEnabled" output="false" access="public" returntype="boolean" hint="Returns a flag indicating if the cache is ready for operation">
     	<cfreturn instance.enabled>
+    </cffunction>
+	
+	<!--- isReportingEnabled --->
+    <cffunction name="isReportingEnabled" output="false" access="public" returntype="boolean" hint="Returns a flag indicating if the cache has reporting enabled">
+   		<cfreturn instance.reportingEnabled>
     </cffunction>
 
 	<!--- getStats --->
@@ -105,11 +111,27 @@ Description :
     <cffunction name="shutdown" output="false" access="public" returntype="void" hint="Shutdown command issued when CacheBox is going through shutdown phase">
     	<cfthrow message="Abstract method, please implement" type="AbstractMethodException">
     </cffunction>
+	
+	<!--- getObjectStore --->
+    <cffunction name="getObjectStore" output="false" access="public" returntype="coldbox.system.cache.store.IObjectStore" hint="If the cache provider implements it, this returns the cache's object store">
+   		<cfthrow message="Abstract method, please implement" type="AbstractMethodException">
+    </cffunction>
+	
+	<!--- getStoreMetadataReport --->
+	<cffunction name="getStoreMetadataReport" output="false" access="public" returntype="struct" hint="Get a structure of all the keys in the cache with their appropriate metadata structures. This is used to build the reporting.">
+		<cfthrow message="Abstract method, please implement" type="AbstractMethodException">
+	</cffunction>
 
 	<!--- getKeys --->
     <cffunction name="getKeys" output="false" access="public" returntype="array" hint="Returns a list of all elements in the cache, whether or not they are expired.">
     	<cfthrow message="Abstract method, please implement" type="AbstractMethodException">
     </cffunction>
+	
+	<!--- getCachedObjectMetadata --->
+	<cffunction name="getCachedObjectMetadata" output="false" access="public" returntype="struct" hint="Get a cache objects metadata about its performance.">
+		<cfargument name="objectKey" type="any" required="true" hint="The key of the object to lookup its metadata">
+		<cfthrow message="Abstract method, please implement" type="AbstractMethodException">
+	</cffunction>
 	
 	<!--- get --->
     <cffunction name="get" output="false" access="public" returntype="any" hint="Get an object from the cache and updates stats">
@@ -117,23 +139,49 @@ Description :
     	<cfthrow message="Abstract method, please implement" type="AbstractMethodException">
     </cffunction>
 	
+	<!--- getQuiet --->
+    <cffunction name="getQuiet" output="false" access="public" returntype="any" hint="Get an object from the cache without updating stats or listners">
+    	<cfargument name="objectKey" type="any" required="true" hint="The object key"/>
+		<cfthrow message="Abstract method, please implement" type="AbstractMethodException">
+    </cffunction>	
+	
+	<!--- isExpired --->
+    <cffunction name="isExpired" output="false" access="public" returntype="boolean" hint="Has the object key expired in the cache">
+   		<cfargument name="objectKey" type="any" required="true" hint="The object key"/>
+		<cfthrow message="Abstract method, please implement" type="AbstractMethodException">
+   	</cffunction>
+	
 	<!--- lookup --->
 	<cffunction name="lookup" access="public" output="false" returntype="boolean" hint="Check if an object is in cache, if not found it records a miss.">
 		<cfargument name="objectKey" type="any" required="true" hint="The key of the object to lookup.">
 		<cfthrow message="Abstract method, please implement" type="AbstractMethodException">
     </cffunction>	
 	
-	<!--- lookupValue --->
-	<cffunction name="lookupValue" access="public" output="false" returntype="boolean" hint="Check if an object value is in cache, if not found it records a miss.">
-		<cfargument name="objectValue" type="any" required="true" hint="The value of the object to lookup.">
+	<!--- lookupQuiet --->
+	<cffunction name="lookupQuiet" access="public" output="false" returntype="boolean" hint="Check if an object is in cache, no stats updated or listeners">
+		<cfargument name="objectKey" type="any" required="true" hint="The key of the object to lookup.">
 		<cfthrow message="Abstract method, please implement" type="AbstractMethodException">
     </cffunction>
 
 	<!--- Set --->
-	<cffunction name="set" access="public" output="false" returntype="boolean" hint="sets an object in cache.">
+	<cffunction name="set" access="public" output="false" returntype="boolean" hint="sets an object in cache and returns true if set correctly, else false.">
 		<!--- ************************************************************* --->
-		<cfargument name="objectKey" 	type="any"  required="true" hint="The object cache key">
-		<cfargument name="object"		type="any" 	required="true" hint="The object to cache">
+		<cfargument name="objectKey" 			type="any"  	required="true" hint="The object cache key">
+		<cfargument name="object"				type="any" 		required="true" hint="The object to cache">
+		<cfargument name="timeout"				type="any"  	required="false" default="" hint="The timeout to use on the object (if any, provider specific)">
+		<cfargument name="lastAccessTimeout"	type="any" 	 	required="false" default="" hint="The idle timeout to use on the object (if any, provider specific)">
+		<cfargument name="extra" 				type="struct" 	required="false" hint="A map of name-value pairs to use as extra arguments to pass to a providers set operation"/>
+		<cfthrow message="Abstract method, please implement" type="AbstractMethodException">
+    </cffunction>
+	
+	<!--- setQuiet --->
+	<cffunction name="setQuiet" access="public" output="false" returntype="boolean" hint="sets an object in cache and returns true if set correctly, else false. With no statistic updates or listener updates">
+		<!--- ************************************************************* --->
+		<cfargument name="objectKey" 			type="any"  	required="true" hint="The object cache key">
+		<cfargument name="object"				type="any" 		required="true" hint="The object to cache">
+		<cfargument name="timeout"				type="any"  	required="false" default="" hint="The timeout to use on the object (if any, provider specific)">
+		<cfargument name="lastAccessTimeout"	type="any" 	 	required="false" default="" hint="The idle timeout to use on the object (if any, provider specific)">
+		<cfargument name="extra" 				type="struct" 	required="false" hint="A map of name-value pairs to use as extra arguments to pass to a providers set operation"/>
 		<cfthrow message="Abstract method, please implement" type="AbstractMethodException">
     </cffunction>
 	
@@ -152,11 +200,17 @@ Description :
     	<cfthrow message="Abstract method, please implement" type="AbstractMethodException">
     </cffunction>
 
-	<!--- Clear Key --->
-	<cffunction name="clearKey" access="public" output="false" returntype="boolean" hint="Clears an object from the cache by using its cache key. Returns false if object was not removed or did not exist anymore">
+	<!--- clear --->
+	<cffunction name="clear" access="public" output="false" returntype="boolean" hint="Clears an object from the cache by using its cache key. Returns false if object was not removed or did not exist anymore">
 		<cfargument name="objectKey" type="string" required="true" hint="The key the object was stored under.">
 		<cfthrow message="Abstract method, please implement" type="AbstractMethodException">
-    </cffunction>
+	</cffunction>
+	
+	<!--- clearQuiet --->
+	<cffunction name="clearQuiet" access="public" output="false" returntype="boolean" hint="Clears an object from the cache by using its cache key. Returns false if object was not removed or did not exist anymore without doing statistics or updating listeners">
+		<cfargument name="objectKey" type="string" required="true" hint="The key the object was stored under.">
+		<cfthrow message="Abstract method, please implement" type="AbstractMethodException">
+	</cffunction>
 	
 	<!--- expireAll --->
     <cffunction name="expireAll" output="false" access="public" returntype="void" hint="Expire all the elments in the cache">

@@ -16,7 +16,7 @@
 		assertEquals( 0, cp.getSize() );
 		
 		cp.set("test",1);
-		cp.clearKey("test");
+		cp.clear("test");
 		assertEquals( 0, cp.getSize() );
 		
 	}

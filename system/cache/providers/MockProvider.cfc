@@ -31,12 +31,18 @@ Description :
     	<cfscript>
     		instance.cache 	 = {};
 			instance.enabled = true;
+			instance.reportingEnabled = true;
 		</cfscript>
     </cffunction>
 	
 	<!--- shutdown --->
     <cffunction name="shutdown" output="false" access="public" returntype="void" hint="Shutdown command issued when CacheBox is going through shutdown phase">
     </cffunction>
+	
+	<!--- getStoreMetadataReport --->
+	<cffunction name="getStoreMetadataReport" output="false" access="public" returntype="struct" hint="Get a structure of all the keys in the cache with their appropriate metadata structures. This is used to build the reporting.">
+		<cfreturn {}>
+	</cffunction>
 
 <!------------------------------------------- CACHE OPERATIONS ------------------------------------------>
 
@@ -45,11 +51,29 @@ Description :
    		<cfreturn structKeyList(instance.cache)>
     </cffunction>
 	
+	<!--- getCachedObjectMetadata --->
+	<cffunction name="getCachedObjectMetadata" output="false" access="public" returntype="struct" hint="Get a cache objects metadata about its performance.">
+		<cfargument name="objectKey" type="any" required="true" hint="The key of the object to lookup its metadata">
+		<cfreturn {}>
+	</cffunction>
+	
 	<!--- get --->
     <cffunction name="get" output="false" access="public" returntype="any" hint="Get an object from the cache and updates stats">
     	<cfargument name="objectKey" type="any" required="true" hint="The object key"/>
     	<cfreturn instance.cache[ arguments.objectKey ]>
 	</cffunction>
+	
+	<!--- getQuiet --->
+    <cffunction name="getQuiet" output="false" access="public" returntype="any" hint="Get an object from the cache without updating stats or listners">
+    	<cfargument name="objectKey" type="any" required="true" hint="The object key"/>
+		<cfreturn instance.cache[ arguments.objectKey ]>
+    </cffunction>	
+	
+	<!--- isExpired --->
+    <cffunction name="isExpired" output="false" access="public" returntype="boolean" hint="Has the object key expired in the cache">
+   		<cfargument name="objectKey" type="any" required="true" hint="The object key"/>
+		<cfreturn lookup(arguments.objectKey)>
+   	</cffunction>
 	
 	<!--- lookup --->
 	<cffunction name="lookup" access="public" output="false" returntype="boolean" hint="Check if an object is in cache, if not found it records a miss.">
@@ -57,7 +81,13 @@ Description :
 		<cfreturn structKeyExists(instance.cache, arguments.objectKey)>
 	</cffunction>	
 	
-	<!--- lookup --->
+	<!--- lookupQuiet --->
+	<cffunction name="lookupQuiet" access="public" output="false" returntype="boolean" hint="Check if an object is in cache, no stats updated or listeners">
+		<cfargument name="objectKey" type="any" required="true" hint="The key of the object to lookup.">
+		<cfreturn structKeyExists(instance.cache, arguments.objectKey)>
+    </cffunction>
+	
+	<!--- lookupValue --->
 	<cffunction name="lookupValue" access="public" output="false" returntype="boolean" hint="Check if an object is in cache, if not found it records a miss.">
 		<cfargument name="objectValue" type="any" required="true" hint="The value of the object to lookup.">
 		<cfreturn instance.cache.containsValue( arguments.objectValue )>
@@ -66,8 +96,23 @@ Description :
 	<!--- Set --->
 	<cffunction name="set" access="public" output="false" returntype="boolean" hint="sets an object in cache.">
 		<!--- ************************************************************* --->
-		<cfargument name="objectKey" 	type="any"  required="true" hint="The object cache key">
-		<cfargument name="object"		type="any" 	required="true" hint="The object to cache">
+		<cfargument name="objectKey" 			type="any"  	required="true" hint="The object cache key">
+		<cfargument name="object"				type="any" 		required="true" hint="The object to cache">
+		<cfargument name="timeout"				type="any"  	required="false" default="" hint="The timeout to use on the object (if any, provider specific)">
+		<cfargument name="lastAccessTimeout"	type="any" 	 	required="false" default="" hint="The idle timeout to use on the object (if any, provider specific)">
+		<cfargument name="extra" 				type="struct" 	required="false" hint="A map of name-value pairs to use as extra arguments to pass to a providers set operation"/>
+		<cfset instance.cache[ arguments.objectKey ] = arguments.object>
+		<cfreturn true>
+	</cffunction>
+	
+	<!--- setQuiet --->
+	<cffunction name="setQuiet" access="public" output="false" returntype="boolean" hint="sets an object in cache and returns true if set correctly, else false. With no statistic updates or listener updates">
+		<!--- ************************************************************* --->
+		<cfargument name="objectKey" 			type="any"  	required="true" hint="The object cache key">
+		<cfargument name="object"				type="any" 		required="true" hint="The object to cache">
+		<cfargument name="timeout"				type="any"  	required="false" default="" hint="The timeout to use on the object (if any, provider specific)">
+		<cfargument name="lastAccessTimeout"	type="any" 	 	required="false" default="" hint="The idle timeout to use on the object (if any, provider specific)">
+		<cfargument name="extra" 				type="struct" 	required="false" hint="A map of name-value pairs to use as extra arguments to pass to a providers set operation"/>
 		<cfset instance.cache[ arguments.objectKey ] = arguments.object>
 		<cfreturn true>
 	</cffunction>
@@ -85,9 +130,9 @@ Description :
     <cffunction name="clearAll" output="false" access="public" returntype="void" hint="Clear all the cache elements from the cache">
     	<cfset instance.cache = {}>
     </cffunction>
-
-	<!--- Clear Key --->
-	<cffunction name="clearKey" access="public" output="false" returntype="boolean" hint="Clears an object from the cache by using its cache key. Returns false if object was not removed or did not exist anymore">
+	
+	<!--- clear --->
+	<cffunction name="clear" access="public" output="false" returntype="boolean" hint="Clears an object from the cache by using its cache key. Returns false if object was not removed or did not exist anymore">
 		<cfargument name="objectKey" type="string" required="true" hint="The key the object was stored under.">
 		<cfreturn structDelete(instance.cache, arguments.objectKey, true)>
 	</cffunction>
@@ -103,7 +148,7 @@ Description :
 	
 <!------------------------------------------- ColdBox Application Cache Methods ------------------------------------------>
 
-<!--- getViewCacheKeyPrefix --->
+	<!--- getViewCacheKeyPrefix --->
     <cffunction name="getViewCacheKeyPrefix" output="false" access="public" returntype="string" hint="Get the cached view key prefix">
     	<cfreturn "mock-">
     </cffunction>

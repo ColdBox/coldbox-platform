@@ -16,6 +16,12 @@
 		cp.$property("enabled","instance",true);
 		assertTrue( cp.isEnabled() );
 	}
+	
+	function testReportingEnabled(){
+		assertFalse( cp.isEnabled() );
+		cp.$property("enabled","instance",true);
+		assertTrue( cp.isEnabled() );
+	}
 
 	function testClearStatistics(){
 		mockStats = getMockBox().createMock("coldbox.system.cache.util.CacheStats");

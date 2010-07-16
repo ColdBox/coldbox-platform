@@ -67,11 +67,14 @@ Description :
 			
 			// Check if linking ColdBox
 			if( structKeyExists(arguments, "coldbox") ){ 
-				instance.coldbox = arguments.coldbox; 
+				// Link ColdBox
+				instance.coldbox = arguments.coldbox;
 				// link LogBox
 				instance.logBox  = instance.coldbox.getLogBox();
 				// Link Event Manager
 				instance.eventManager = instance.coldbox.getInterceptorService();
+				// Link Interception States
+				instance.coldbox.getInterceptorService().appendInterceptionPoints( arrayToList(instance.eventStates) ); 
 			}
 			else{
 				// Running standalone, so create our own logging first

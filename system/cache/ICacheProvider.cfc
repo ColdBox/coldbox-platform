@@ -103,7 +103,7 @@ Description :
     	<cfargument name="objectKey" type="any" required="true" hint="The object key"/>
     </cffunction>
 	
-	<!--- get --->
+	<!--- getQuiet --->
     <cffunction name="getQuiet" output="false" access="public" returntype="any" hint="Get an object from the cache without updating stats or listners">
     	<cfargument name="objectKey" type="any" required="true" hint="The object key"/>
     </cffunction>	
