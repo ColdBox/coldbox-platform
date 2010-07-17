@@ -139,7 +139,7 @@ Description :
 		<cflocation url="#arguments.url#" addtoken="#addtoken#">
 	</cffunction>
 	
-	<cffunction name="dumpit" access="public" hint="Facade for cfmx dump" returntype="void" output="false">
+	<cffunction name="dumpit" access="public" hint="Facade for cfmx dump" returntype="void" output="true">
 		<cfargument name="var" required="yes" type="any">
 		<cfargument name="isAbort" type="boolean" default="false" required="false" hint="Abort also"/>
 		<cfdump var="#var#">

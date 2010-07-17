@@ -3,34 +3,30 @@
 Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 ********************************************************************************
-
 Author 	    :	Luis Majano
 Description :
-	An object store that uses concurrent soft references
+	I am a concurrent soft reference object store. In other words, I am fancy!
+	
 ----------------------------------------------------------------------->
-<cfcomponent hint="I manage persistance for objects." output="false">
+<cfcomponent hint="I am a concurrent soft reference object store. In other words, I am fancy!" output="false">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
+	<!--- init --->
 	<cffunction name="init" access="public" output="false" returntype="ConcurrentSoftReferenceStore" hint="Constructor">
+		<cfargument name="cacheProvider" type="coldbox.system.cache.ICacheProvider" required="true" hint="The associated cache provider"/>
 		<cfscript>
 			// Since we use JDK 5> we can use the concurrent package.
-			var Map 			= CreateObject("java","java.util.concurrent.ConcurrentHashMap").init();
-			var MetadataMap 	= CreateObject("java","java.util.concurrent.ConcurrentHashMap").init();
-			var SoftRefKeyMap 	= CreateObject("java","java.util.concurrent.ConcurrentHashMap").init();
 			
 			// Prepare instance
-			variables.instance = structnew();
-			
-			instance._hash = hash(createObject('java','java.lang.System').identityHashCode(this));
-			
-			// set object pools
-			setPool(Map);
-			setPool_metadata( MetadataMap );
-			setSoftRefKeyMap( SoftRefKeyMap );
-			
-			// Register the reference queue for our soft references
-			setReferenceQueue( CreateObject("java","java.lang.ref.ReferenceQueue").init() );
+			instance = {
+				storeID 		= createObject('java','java.lang.System').identityHashCode(this),
+				cacheProvider   = arguments.cacheProvider,
+				pool			= CreateObject("java","java.util.concurrent.ConcurrentHashMap").init(),
+				poolMetadata    = CreateObject("java","java.util.concurrent.ConcurrentHashMap").init(),
+				softRefKeyMap	= CreateObject("java","java.util.concurrent.ConcurrentHashMap").init(),
+				referenceQueue  = CreateObject("java","java.lang.ref.ReferenceQueue").init()
+			};
 			
 			return this;
 		</cfscript>
@@ -38,103 +34,117 @@ Description :
 
 <!------------------------------------------- PUBLIC ------------------------------------------->
 	
-	<!--- Get/Set the Ref Queue --->
-	<cffunction name="getReferenceQueue" access="public" output="false" returntype="any" hint="Get ReferenceQueue">
-		<cfreturn instance.ReferenceQueue/>
+	<!--- clearAll --->
+    <cffunction name="clearAll" output="false" access="public" returntype="void" hint="Clear all elements of the store">
+    	<cflock name="store.metadata.#instance.storeID#" type="exclusive" timeout="10" throwonTimeout="true">
+			<cfscript>
+				instance.pool.clear();
+				instance.poolMetadata.clear();
+				instance.softRefKeyMap.clear();
+			</cfscript>
+		</cflock>
+    </cffunction>
+	
+	<!--- Get the Ref Queue --->
+	<cffunction name="getReferenceQueue" access="public" output="false" returntype="any" hint="Get soft reference queue object">
+		<cfreturn instance.referenceQueue/>
 	</cffunction>	
 	
-	<!--- Get/Set Soft Reference KeyMap --->
-	<cffunction name="getSoftRefKeyMap" access="public" output="false" returntype="any" hint="Get SoftRefKeyMap">
-		<cfreturn instance.SoftRefKeyMap/>
+	<!--- Get Soft Reference KeyMap --->
+	<cffunction name="getSoftRefKeyMap" access="public" output="false" returntype="any" hint="Get the soft reference key map">
+		<cfreturn instance.softRefKeyMap/>
 	</cffunction>	
 		
-	<!--- Check if the soft reference exists --->
-	<cffunction name="softRefLookup" access="public" returntype="boolean" hint="See if the soft reference is in the key map" output="false" >
+	<!--- softRefLookup --->
+	<cffunction name="softRefLookup" access="public" returntype="boolean" hint="See if the soft reference is in the reference key map" output="false" >
 		<cfargument name="softRef" required="true" type="any" hint="The soft reference to check">
-		<cfreturn structKeyExists(getSoftRefKeyMap(),arguments.softRef)>
+		<cfreturn structKeyExists(instance.softRefKeyMap,arguments.softRef)>
 	</cffunction>
 	
-	<!--- Get the ref key --->
+	<!--- getSoftRefKey --->
 	<cffunction name="getSoftRefKey" access="public" returntype="any" hint="Get the soft reference's key from the soft reference lookback map" output="false" >
 		<cfargument name="softRef" required="true" type="any" hint="The soft reference to check">
 		<cfscript>
 			var keyMap = getSoftRefKeyMap();
+			
 			if( structKeyExists(keyMap,arguments.softRef) ){
 				return keyMap[arguments.softRef];
 			}
-			else{
-				return "NOT_FOUND";
-			}
+			
+			// TODO: check why I do this? DOn't remember
+			return "NOT_FOUND";
 		</cfscript>
 	</cffunction>
 	
-	<!--- Getter/Setter For pool --->
-	<cffunction name="getPool" access="public" returntype="any" output="false" hint="Get the cache pool">
+	<!--- getPool --->
+	<cffunction name="getPool" access="public" returntype="any" output="false" hint="Get the store's pool of objects">
 		<cfreturn instance.pool>
 	</cffunction>
 	
-	<!--- Getter/Setter for Pool Metdata --->
-	<cffunction name="getPoolMetadata" access="public" returntype="any" output="false" hint="Get the cache pool metadata">
-		<cflock name="coldbox.objectpool.metadatapool.#instance._hash#" type="readonly" timeout="10" throwonTimeout="true">
-			<cfreturn instance.pool_metadata >
+	<!--- getPoolMetadata --->
+	<cffunction name="getPoolMetadata" access="public" returntype="any" output="false" hint="Get the store's pool metadata report">
+		<cflock name="store.metadata.#instance.storeID#" type="readonly" timeout="10" throwonTimeout="true">
+			<cfreturn instance.poolMetadata >
 		</cflock>
 	</cffunction>
 	
-	<!--- getPoolKeys --->
-	<cffunction name="getPoolKeys" output="false" access="public" returntype="any" hint="Get all the pool keys">
-		<cfreturn structKeyList(getPoolMetadata())>
+	<!--- getKeys --->
+	<cffunction name="getKeys" output="false" access="public" returntype="array" hint="Get all the store's object keys">
+		<cfreturn structKeyArray( getPoolMetadata() )>
 	</cffunction>
 
-	<!--- Setter/Getter metdata property --->
+	<!--- getObjectMetadata --->
 	<cffunction name="getObjectMetadata" access="public" returntype="any" output="false" hint="Get a metadata entry for a specific cache entry">
-		<cfargument name="objectKey" type="any" required="true">
+		<cfargument name="objectKey" type="any" required="true" hint="The key of the object">
 		
-		<cflock name="coldbox.objectpool.metadatapool.#instance._hash#" type="readonly" timeout="10" throwonTimeout="true">
-			<cfreturn instance.pool_metadata[arguments.objectKey] >
-		</cflock>
-		
-	</cffunction>
-	<cffunction name="setObjectMetadata" access="public" returntype="void" output="false" hint="Set the metadata entry for a specific cache entry">
-		<cfargument name="objectKey" type="any" required="true">
-		<cfargument name="metadata"  type="any" required="true">
-		
-		<cflock name="coldbox.objectpool.metadatapool.#instance._hash#" type="exclusive" timeout="10" throwonTimeout="true">
-			<cfset instance.pool_metadata[arguments.objectKey] = arguments.metadata>
+		<cflock name="store.metadata.#instance.storeID#" type="readonly" timeout="10" throwonTimeout="true">
+			<cfreturn instance.poolMetadata[ arguments.objectKey ] >
 		</cflock>
 		
 	</cffunction>
 	
-	<!--- Properties Metadata --->
-	<cffunction name="getMetadataProperty" access="public" returntype="any" output="false" hint="Get a metadata property for a specific cache entry">
-		<cfargument name="objectKey" type="any" required="true">
-		<cfargument name="property"  type="any" required="true">
+	<!--- setObjectMetadata --->
+	<cffunction name="setObjectMetadata" access="public" returntype="void" output="false" hint="Set the metadata entry for a specific cache entry">
+		<cfargument name="objectKey" type="any" required="true" hint="The key of the object">
+		<cfargument name="metadata"  type="any" required="true" hint="The metadata structure to store for the cache entry">
 		
-		<cflock name="coldbox.objectpool.metadatapool.#instance._hash#" type="readonly" timeout="10" throwonTimeout="true">
-			<cfreturn instance.pool_metadata[arguments.objectKey][arguments.property] >
+		<cflock name="store.metadata.#instance.storeID#" type="exclusive" timeout="10" throwonTimeout="true">
+			<cfset instance.poolMetadata[ arguments.objectKey ] = arguments.metadata>
 		</cflock>
 		
 	</cffunction>
-	<cffunction name="setMetadataProperty" access="public" returntype="void" output="false" hint="Set a metadata property for a specific cache entry">
-		<cfargument name="objectKey" type="any" required="true">
-		<cfargument name="property"  type="any" required="true">
-		<cfargument name="value"  	 type="any" required="true">
+	
+	<!--- getMetadataProperty --->
+	<cffunction name="getMetadataProperty" access="public" returntype="any" output="false" hint="Get a specific metadata property for a specific cache entry">
+		<cfargument name="objectKey" type="any" required="true" hint="The key of the object">
+		<cfargument name="property"  type="any" required="true" hint="The property of the metadata to retrieve">
 		
-		<cflock name="coldbox.objectpool.metadatapool.#instance._hash#" type="exclusive" timeout="10" throwonTimeout="true">
-			<cfset instance.pool_metadata[arguments.objectKey][arguments.property] = arguments.value >
+		<cflock name="store.metadata.#instance.storeID#" type="readonly" timeout="10" throwonTimeout="true">
+			<cfreturn instance.poolMetadata[ arguments.objectKey ][ arguments.property ] >
+		</cflock>
+		
+	</cffunction>
+	
+	<!--- setMetadataProperty --->
+	<cffunction name="setMetadataProperty" access="public" returntype="void" output="false" hint="Set a metadata property for a specific cache entry">
+		<cfargument name="objectKey" type="any" required="true" hint="The key of the object">
+		<cfargument name="property"  type="any" required="true" hint="The property of the metadata to retrieve">
+		<cfargument name="value"  	 type="any" required="true" hint="The value of the property">
+		
+		<cflock name="store.metadata.#instance.storeID#" type="exclusive" timeout="10" throwonTimeout="true">
+			<cfset instance.poolMetadata[ arguments.objectKey ][ arguments.property ] = arguments.value >
 		</cflock>
 		
 	</cffunction>
 
-	<!--- Simple Object Lookup --->
-	<cffunction name="lookup" access="public" output="false" returntype="boolean" hint="Check if an object is in cache, it doesn't tell you if the soft reference expired or not">
-		<!--- ************************************************************* --->
-		<cfargument name="objectKey" type="any" required="true">
-		<!--- ************************************************************* --->
+	<!--- lookup --->
+	<cffunction name="lookup" access="public" output="false" returntype="boolean" hint="Check if an object is in cache, but does not tell you if the soft reference is gone or not">
+		<cfargument name="objectKey" type="any" required="true" hint="The key of the object">
 		<cfscript>
 			// Check if object in pool and object not dead
 			if( structKeyExists(instance.pool, arguments.objectKey)  
-			    AND structKeyExists(instance.pool_metadata,arguments.objectKey) 
-				AND NOT instance.pool_metadata[arguments.objectkey].isExpired){
+			    AND structKeyExists(instance.poolMetadata,arguments.objectKey) 
+				AND NOT instance.poolMetadata[arguments.objectkey].isExpired){
 				return true;
 			}
 			
@@ -144,9 +154,7 @@ Description :
 
 	<!--- Get an object from the pool --->
 	<cffunction name="get" access="public" output="false" returntype="any" hint="Get an object from cache. If its a soft reference object it might return a null value.">
-		<!--- ************************************************************* --->
-		<cfargument name="objectKey" type="any" required="true">
-		<!--- ************************************************************* --->
+		<cfargument name="objectKey" type="any" required="true" hint="The key of the object">
 		<cfscript>
 			var tmpObj = 0;
 			
@@ -232,7 +240,7 @@ Description :
 				
 				// Remove Normal Cache Entries
 				structDelete(instance.pool, arguments.objectKey);
-				structDelete(instance.pool_metadata, arguments.objectKey);
+				structDelete(instance.poolMetadata, arguments.objectKey);
 								
 				// Removed
 				results = true;
@@ -256,11 +264,11 @@ Description :
 
 <!------------------------------------------- PRIVATE ------------------------------------------->
 
-	<!--- Set the pool_metadata --->
-	<cffunction name="setpool_metadata" access="public" returntype="void" output="false" hint="Set the cache pool metadata">
-		<cfargument name="pool_metadata" type="struct" required="true">
-		<cflock name="coldbox.objectpool.metadatapool.#instance._hash#" type="exclusive" timeout="10" throwonTimeout="true">
-		<cfset instance.pool_metadata = arguments.pool_metadata>
+	<!--- Set the poolMetadata --->
+	<cffunction name="setpoolMetadata" access="public" returntype="void" output="false" hint="Set the cache pool metadata">
+		<cfargument name="poolMetadata" type="struct" required="true">
+		<cflock name="store.metadata.#instance.storeID#" type="exclusive" timeout="10" throwonTimeout="true">
+			<cfset instance.poolMetadata = arguments.poolMetadata>
 		</cflock>
 	</cffunction>
 	

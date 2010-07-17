@@ -19,15 +19,15 @@ Description :
 			super.init();
 			
 			// Logger object
-			instance.logger = {};
+			instance.logger = "";
 			// Cache Stats
-			instance.cacheStats = {};
+			instance.cacheStats = "";
 			// Runtime Java object
-			instance.javaRuntime = CreateObject("java", "java.lang.Runtime");
+			instance.javaRuntime = createObject("java", "java.lang.Runtime");
 			// Locking Timeout
 			instance.lockTimeout = "15";
 			// Eviction Policy
-			instance.evictionPolicy = {};
+			instance.evictionPolicy = "";
 			
 			return this;
 		</cfscript>
@@ -67,9 +67,12 @@ Description :
 				getUtil().throwit('Error creating object store #objectStore#','#e.message# #e.detail# #e.stackTrace#','CacheBoxProvider.ObjectStoreCreationException');	
 			}
 			
-			// Enabled cache
+			// Enable cache
 			instance.enabled = true;
+			// Enable reporting
+			instance.reportingEnabled = true;
 			
+			// startup message
 			instance.logger.info("CacheBox Cache: #getName()# has been initialized successfully for operation");			
 		</cfscript>
 	</cffunction>
@@ -77,7 +80,9 @@ Description :
 	<!--- shutdown --->
     <cffunction name="shutdown" output="false" access="public" returntype="void" hint="Shutdown command issued when CacheBox is going through shutdown phase">
    		<cfscript>
-   			instance.logger.info("CacheBox Cache: #getName()# has been shutdown.");	
+   			// TODO: We can do fancy shmancy stuff later on here.
+			
+   			instance.logger.info("CacheBox Cache: #getName()# has been shutdown.");
    		</cfscript>
     </cffunction>
 	
@@ -361,50 +366,28 @@ Description :
 	</cffunction>
 
 	<!--- Clear an object from the cache --->
-	<cffunction name="clearKey" access="public" output="false" returntype="boolean" hint="Clears an object from the cache by using its cache key. Returns false if object was not removed or did not exist anymore">
+	<cffunction name="clearMulti" access="public" output="false" returntype="struct" hint="Clears objects from the cache by using its cache key. The returned value is a structure of name-value pairs of all the keys that where removed from the operation.">
 		<!--- ************************************************************* --->
-		<cfargument name="objectKey" type="string" required="true" hint="The key the object was stored under.">
-		<!--- ************************************************************* --->
-		<cfset var clearCheck = false>
-		<cfset var interceptMetadata = structnew()>
-		
-		<!--- Cleanup the key --->
-		<cfset arguments.objectKey = lcase(trim(arguments.objectKey))>
-		
-		<!--- Remove Object --->
-		<cflock type="exclusive" name="CacheBox.#getName()#.#arguments.objectKey#" timeout="#instance.lockTimeout#" throwontimeout="true">
-			<cfif getobjectPool().lookup(arguments.objectKey)>
-				<cfset clearCheck = getobjectPool().clearKey(arguments.objectKey)>
-			</cfif>
-		</cflock>
-		<!--- Only fire if object removed. --->
-		<cfif clearCheck>
-			<!--- InterceptMetadata --->
-			<cfset interceptMetadata.cacheObjectKey = arguments.objectKey>
-			<!--- Execute afterCacheElementInsert Interception --->
-			<cfset instance.controller.getInterceptorService().processState("afterCacheElementRemoved",interceptMetadata)>
-		</cfif>
-		
-		<cfreturn clearCheck>
-	</cffunction>
-	
-	<!--- Clear an object from the cache --->
-	<cffunction name="clearKeyMulti" access="public" output="false" returntype="struct" hint="Clears objects from the cache by using its cache key. The returned value is a structure of name-value pairs of all the keys that where removed from the operation.">
-		<!--- ************************************************************* --->
-		<cfargument name="keys" 		type="string" required="true" hint="The comma-delimmitted list of keys to remove.">
+		<cfargument name="keys" 		type="any" 	  required="true" hint="The comma-delimmitted list or array of keys to remove.">
 		<cfargument name="prefix" 		type="string" required="false" default="" hint="A prefix to prepend to the keys">
 		<!--- ************************************************************* --->
 		<cfscript>
-			var returnStruct = structnew();
+			var returnStruct = {};
 			var x = 1;
 			var thisKey = "";
+			
 			// Clear Prefix
 			arguments.prefix = trim(arguments.prefix);
 			
+			// array?
+			if( isArray(arguments.keys) ){
+				arguments.keys = arrayToList( arguments.keys );
+			}
+			
 			// Loop on Keys
-			for(x=1;x lte listLen(arguments.keys);x=x+1){
+			for(x=1;x lte listLen(arguments.keys);x=x++){
 				thisKey = arguments.prefix & listGetAt(arguments.keys,x);
-				returnStruct[thiskey] = clearKey(thisKey);
+				returnStruct[thiskey] = clear(thisKey);
 			}
 			
 			return returnStruct;
@@ -418,16 +401,17 @@ Description :
 		<cfargument name="regex" 		type="boolean" required="false" default="false" hint="Use regex or not">
 		<!--- ************************************************************* --->
 		<cfscript>
-			var poolKeys = listSort(getPoolKeys(),"textnocase");
-			var poolKeysLength = listlen(poolKeys);
+			var poolKeys 		= listSort(getPoolKeys(),"textnocase");
+			var poolKeysLength 	= listlen(poolKeys);
 			var x = 1;
 			var tester = 0;
 			var thisKey = "";
 			
 			//Find all the event keys.
-			for(x=1; x lte poolKeysLength; x=x+1){
+			for(x=1; x lte poolKeysLength; x=x++){
 				// Get List Value
 				thisKey = listGetAt(poolKeys,x);
+				
 				// Using Regex
 				if( arguments.regex ){
 					tester = refindnocase( arguments.keySnippet, thisKey );
@@ -438,19 +422,67 @@ Description :
 				
 				// Test Evaluation
 				if ( tester ){
-					clearKey( thisKey );
+					clear( thisKey );
 				}
 			}
 		</cfscript>
 	</cffunction>
 
-	<!--- Clear The Pool --->
-	<cffunction name="clear" access="public" output="false" returntype="void" hint="Clears the entire object cache and recreates the object pool and statistics. Call from a non-cached object or you will get 500 NULL errors, VERY VERY BAD!!. TRY NOT TO USE THIS METHOD">
+	<!--- clearQuiet --->
+	<cffunction name="clearQuiet" access="public" output="false" returntype="boolean" hint="Clears an object from the cache by using its cache key. Returns false if object was not removed or did not exist anymore">
+		<cfargument name="objectKey" type="string" required="true" hint="The key the object was stored under.">
+		<cfset var clearCheck 	= false>
+		<cfset var objectStore	= getObjectPool()>
+		
+		<!--- Cleanup the key --->
+		<cfset arguments.objectKey = lcase(trim(arguments.objectKey))>
+		
+		<!--- Remove Object --->
+		<cflock type="exclusive" name="CacheBox.#getName()#.#arguments.objectKey#" timeout="#instance.lockTimeout#" throwontimeout="true">
+			<cfif objectStore.lookup( arguments.objectKey )>
+				<cfset clearCheck = objectStore.clearKey( arguments.objectKey )>
+			</cfif>
+		</cflock>
+		
+		<cfreturn clearCheck>		
+	</cffunction>
+	
+	<!--- clear --->
+	<cffunction name="clear" access="public" output="false" returntype="boolean" hint="Clears an object from the cache by using its cache key. Returns false if object was not removed or did not exist anymore">
+		<cfargument name="objectKey" type="string" required="true" hint="The key the object was stored under.">
 		<cfscript>
-			structDelete(variables,"objectPool");
-			initPool();
-			getCacheStats().clearStats();
-		</cfscript>			
+			var clearCheck = clearQuiet( arguments.objectKey );
+			var iData = {
+				cacheObjectKey 	= arguments.objectKey,
+				cacheProvider	= this
+			};
+			
+			// If cleared notify listeners
+			if( clearCheck ){
+				getEventManager().processState("afterCacheElementRemoved",iData);
+			}
+			
+			return clearCheck;
+		</cfscript>		
+	</cffunction>
+	
+	<!--- clearAll --->
+    <cffunction name="clearAll" output="false" access="public" returntype="void" hint="Clear all the cache elements from the cache">
+    	<cfscript>
+			var iData = {
+				cacheProvider	= this
+			};
+			
+			getObjectPool().clearAll();		
+			// TODO: notify listeners: afterCacheClearAll		
+			//getEventManager().processState("afterCacheClearAll",iData);
+		</cfscript>
+    </cffunction>
+	
+	<!--- Clear an object from the cache --->
+	<cffunction name="clearKey" access="public" output="false" returntype="boolean" hint="Deprecated, please use clear()">
+		<cfargument name="objectKey" type="string" required="true" hint="The key the object was stored under.">
+		<cfreturn clear( arguments.objectKey )>
 	</cffunction>
 
 	<!--- Get the Cache Size --->
@@ -661,7 +693,7 @@ Description :
 	</cffunction>
 	
 	<!--- Get the Pool Keys --->
-	<cffunction name="getPoolKeys" access="public" returntype="string" output="false" hint="Get a listing of all the keys of the objects in the cache pool">
+	<cffunction name="getPoolKeys" access="public" returntype="array" output="false" hint="Get a listing of all the keys of the objects in the cache pool">
 		<cfreturn getObjectPool().getPoolKeys()>
 	</cffunction>
 

@@ -7,7 +7,11 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 Author     :	Luis Majano
 Date        :	11/14/2007
 Description :
-	This is an AbstractEviction Policy object.
+	This is the LFU or least frequently used algorithm for cachebox.
+	Removes entities from the cache that are used the least.
+	
+	More information can be found here:
+	http://en.wikipedia.org/wiki/Least_Frequently_Used
 ----------------------------------------------------------------------->
 <cfcomponent name="LFU" 
 			 output="false" 
@@ -18,9 +22,10 @@ Description :
 
 	<!--- init --->
 	<cffunction name="init" output="false" access="public" returntype="LFU" hint="Constructor">
-		<cfargument name="cacheManager" type="coldbox.system.cache.ICacheProvider" required="true" hint="The cache manager"/>
+		<cfargument name="cacheProvider" type="coldbox.system.cache.ICacheProvider" required="true" hint="The associated cache provider"/>
 		<cfscript>
-			setCacheManager(arguments.cacheManager);
+			super.init(arguments.cacheProvider);
+			
 			return this;
 		</cfscript>
 	</cffunction>
@@ -30,41 +35,44 @@ Description :
 	<!--- execute --->
 	<cffunction name="execute" output="false" access="public" returntype="void" hint="Execute the policy">
 		<cfscript>
-			var oCacheManager = getCacheProvider();
-			var poolMD = oCacheManager.getPoolMetadata(deepCopy=false);
-			var LFUIndex = "";
-			var indexLength = 0;
-			var x = 1;
-			var md = "";
-			var evictCount = oCacheManager.getCacheConfig().getEvictCount();
-			var evictedCounter = 0;
+			var oCacheManager 	= getAssociatedCache();
+			var poolMD 			= oCacheManager.getStoreMetadataReport();
+			var LFUIndex 		= "";
+			var indexLength 	= 0;
+			var x 				= 1;
+			var md 				= "";
+			var evictCount 		= oCacheManager.getConfiguration().evictCount;
+			var evictedCounter 	= 0;
 			
-		
 			// Get searchable index
 			try{
-				LFUIndex = structSort(poolMD,"numeric", "ASC", "hits");
+				LFUIndex 	= structSort(poolMD, "numeric", "ASC", "hits");
 				indexLength = ArrayLen(LFUIndex);
 			}
 			catch(Any e){
-				$log("error","Error sorting metadata pool. #e.message# #e.detail#. Serialized Pool: #poolMD.toString()#. Serialized LFUIndex: #LFUIndex.toString()#");
+				getLogger().error("Error sorting metadata pool. #e.message# #e.detail#. Serialized Pool: #poolMD.toString()#. Serialized LFUIndex: #LFUIndex.toString()#");
 			}
 			
 			//Loop Through Metadata
 			for (x=1; x lte indexLength; x=x+1){
+				
 				//get object metadata and verify it
-				md = oCacheManager.getCachedObjectMetadata(LFUIndex[x]);
-				if( structIsEmpty(md) ){ continue; }
+				if( NOT structKeyExists(poolMD, LFUIndex[x]) ){
+					continue;
+				}
+				md = poolMD[ LFUIndex[x] ];
 				
 				//Override Eternal Checks
 				if ( md.timeout gt 0 AND NOT md.isExpired ){
 					// Expire Key
-					oCacheManager.expireKey(LFUIndex[x]);
+					oCacheManager.expireKey( LFUIndex[x] );
+					
 					// Record Eviction 
-					oCacheManager.getCacheStats().evictionHit();
-					evictedCounter = evictedCounter + 1;
+					oCacheManager.getStats().evictionHit();
+					evictedCounter++;
 					
 					// Can we break or keep on evicting
-					if( evictedCounter gte evictCount ){
+					if( evictedCounter GTE evictCount ){
 						break;
 					}
 				}//end timeout gt 0

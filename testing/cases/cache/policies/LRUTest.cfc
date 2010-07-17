@@ -15,44 +15,44 @@ Description :
 		<cfscript>
 		super.setup();
 		
-		lru = getMockBox().createMock("coldbox.system.cache.policies.LRU").init(mockCM);	
-		lru.$("$log");	
+		config = {
+			evictCount = 1
+		};
+		
+		pool['obj1'] = structnew();
+		pool['obj2'] = structnew();
+		pool['obj3'] = structnew();
+		
+		pool['obj1'].Created = now();
+		pool['obj1'].LastAccesed = now();
+		pool['obj1'].Timeout = 5;
+		pool['obj1'].isExpired = false;
+		pool['obj1'].hits = 999;
+		
+		pool['obj2'].Created = dateAdd("n",-15,now());
+		pool['obj2'].LastAccesed = dateAdd("n",-14,now());
+		pool['obj2'].Timeout = 10;
+		pool['obj2'].isExpired = false;
+		pool['obj2'].hits = 555;
+		
+		pool['obj3'].Created = dateAdd("n",-15,now());
+		pool['obj3'].LastAccesed = dateAdd("n",-7,now());
+		pool['obj3'].Timeout = 10;
+		pool['obj3'].isExpired = false;
+		pool['obj3'].hits = 111;
+		
+		mockCM.$("getStoreMetadataReport",pool);
+		mockCM.$("getConfiguration",config).$("expireKey",true);
+		lru = getMockBox().createMock("coldbox.system.cache.policies.LRU").init(mockCM);
 		</cfscript>
 	</cffunction>
 	
 	<cffunction name="testPolicy" access="public" returntype="void" hint="" output="false" >
 		<cfscript>
-			pool['obj1'] = structnew();
-			pool['obj2'] = structnew();
-			pool['obj3'] = structnew();
-			
-			pool['obj1'].LastAccesed = now();
-			pool['obj1'].Timeout = 5;
-			pool['obj1'].isExpired = false;
-			
-			pool['obj2'].LastAccesed = dateAdd("n",-7,now());
-			pool['obj2'].Timeout = 10;
-			pool['obj2'].isExpired = false;
-			
-			pool['obj3'].LastAccesed = dateAdd("n",-6,now());
-			pool['obj3'].Timeout = 10;
-			pool['obj3'].isExpired = false;
-			
-			mockCM.$('getPoolMetadata',pool);
-			mockCM.$('getCachedObjectMetadata').$args("obj1").$results(pool.obj1);
-			mockCM.$('getCachedObjectMetadata').$args("obj2").$results(pool.obj2);
-			mockCM.$('getCachedObjectMetadata').$args("obj3").$results(pool.obj3);
-			
-			mockConfig.$("getEvictCount",1);
-			
-			debug(mockcm.getPoolMetadata());
-			
 			lru.execute();	
 			
-			//debug(cm._logTest);
-				
-			AssertTrue( arrayLen(mockCM._logTest) eq 1);
-			AssertEquals( mockCM._logTest[1] , "obj2" );		
+			assertEquals(1 , arrayLen(mockCM.$callLog().expireKey) );			
+			assertEquals( "obj2", mockCM.$callLog().expireKey[1][1] );		
 		</cfscript>
 	</cffunction>
 	

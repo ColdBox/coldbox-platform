@@ -9,36 +9,45 @@ Date        :	11/14/2007
 Description :
 	This is an AbstractEviction Policy object.
 ----------------------------------------------------------------------->
-<cfcomponent hint="An abstract CacheBox eviction policy" output="false" serializable="false">
+<cfcomponent hint="An abstract CacheBox eviction policy" output="false" serializable="false" implements="coldbox.system.cache.policies.IEvictionPolicy">
 
-	<cfscript>
-		instance = {};
-	</cfscript>
+	<!--- init --->
+	<cffunction name="init" output="false" access="public" returntype="any" hint="Constructor">
+		<cfargument name="cacheProvider" type="coldbox.system.cache.ICacheProvider" required="true" hint="The associated cache provider"/>
+		<cfscript>
+			// link associated cache
+			variables.cacheProvider = arguments.cacheProvider;
+			// setup logger
+			variables.logger = arguments.cacheProvider.getCacheFactory().getLogBox().getLogger( this );
+			variables.logger.debug("Policy #getMetadata(this).name# constructed for cache: #arguments.cacheProvider.getname()#");
+			
+			return this;
+		</cfscript>
+	</cffunction>
 
 <!------------------------------------------- PUBLIC ------------------------------------------->
-
+	
 	<!--- execute --->
 	<cffunction name="execute" output="false" access="public" returntype="void" hint="Execute the eviction policy on the associated cache">
 		<!--- Implemented by Concrete Classes --->
+		<cfthrow message="Abstract method, please implement" type="AbstractMethodException">
+	</cffunction>
+	
+	<!--- Get Associated Cache --->
+	<cffunction name="getAssociatedCache" access="public" returntype="coldbox.system.cache.ICacheProvider" output="false" hint="Get the Associated Cache Provider">
+		<cfreturn variables.cacheProvider>
 	</cffunction>
 
 <!------------------------------------------- PRIVATE ------------------------------------------->
 	
-	<!--- Get/Set Associated Cache --->
-	<cffunction name="getAssociatedCache" access="private" returntype="coldbox.system.cache.ICacheProvider" output="false" hint="Get the Associated Cache Provider">
-		<cfreturn instance.cacheProvider>
-	</cffunction>
+	<!--- getLogger --->
+    <cffunction name="getLogger" output="false" access="private" returntype="any" hint="Get a logbox logger for the policy">
+    	<cfreturn variables.logger>
+    </cffunction>
 	
 	<!--- Get ColdBox Util --->
 	<cffunction name="getUtil" access="private" output="false" returntype="coldbox.system.core.util.Util" hint="Create and return a ColdBox utility object">
 		<cfreturn createObject("component","coldbox.system.core.util.Util")/>
 	</cffunction>
-
-	<!--- $log --->
-	<cffunction name="$log" output="false" access="public" returntype="void" hint="Log an internal message to the ColdFusion facilities.  Used when errors ocurrs or diagnostics">
-		<cfargument name="severity" type="string" required="true" default="INFO" hint="The severity to use."/>
-		<cfargument name="message" type="string" required="true" default="" hint="The message to log"/>
-		<cflog type="#arguments.severity#" file="ColdBoxCache-#getCacheProvider().CACHE_ID#" text="#arguments.message#">
-	</cffunction>
-	
+		
 </cfcomponent>

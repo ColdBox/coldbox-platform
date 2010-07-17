@@ -7,20 +7,25 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 Author     :	Luis Majano
 Date        :	11/14/2007
 Description :
-	This is an AbstractEviction Policy object.
+	This is the LRU or least recently used algorithm for cachebox.
+	It basically discards the least recently used items first according to the last accessed date.
+	This is also the default algorithm for CacheBox.
+	
+	For more information visit: http://en.wikipedia.org/wiki/Least_Recently_Used
+
 ----------------------------------------------------------------------->
-<cfcomponent name="LRU" 
-			 output="false" 
-			 hint="LFU Eviction Policy Command" 
+<cfcomponent output="false" 
+			 hint="LRU Eviction Policy Command" 
 			 extends="coldbox.system.cache.policies.AbstractEvictionPolicy">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
 	<!--- init --->
 	<cffunction name="init" output="false" access="public" returntype="LRU" hint="Constructor">
-		<cfargument name="cacheManager" type="coldbox.system.cache.ICacheProvider" required="true" hint="The cache manager"/>
+		<cfargument name="cacheProvider" type="coldbox.system.cache.ICacheProvider" required="true" hint="The associated cache provider"/>
 		<cfscript>
-			setCacheManager(arguments.cacheManager);
+			super.init(arguments.cacheProvider);
+			
 			return this;
 		</cfscript>
 	</cffunction>
@@ -30,14 +35,14 @@ Description :
 	<!--- execute --->
 	<cffunction name="execute" output="false" access="public" returntype="void" hint="Execute the policy">
 		<cfscript>
-			var oCacheManager = getCacheProvider();
-			var poolMD = oCacheManager.getPoolMetadata(deepCopy=false);
-			var LRUIndex = "";
-			var indexLength = 0;
-			var x = 1;
-			var md = "";
-			var evictCount = oCacheManager.getCacheConfig().getEvictCount();
-			var evictedCounter = 0;
+			var oCacheManager 	= getAssociatedCache();
+			var poolMD 			= oCacheManager.getStoreMetadataReport();
+			var LRUIndex 		= "";
+			var indexLength 	= 0;
+			var x 				= 1;
+			var md 				= "";
+			var evictCount 		= oCacheManager.getConfiguration().evictCount;
+			var evictedCounter 	= 0;
 			
 			// Get searchable index
 			try{
@@ -45,25 +50,29 @@ Description :
 				indexLength = ArrayLen(LRUIndex);
 			}
 			catch(Any e){
-				$log("error","Error sorting metadata pool. #e.message# #e.detail#. Serialized Pool: #poolMD.toString()#. Serialized LRUIndex: #LRUIndex.toString()#");
+				getLogger().error("Error sorting metadata pool. #e.message# #e.detail#. Serialized Pool: #poolMD.toString()#. Serialized LRUIndex: #LRUIndex.toString()#");
 			}
 			
 			//Loop Through Metadata
 			for (x=1; x lte indexLength; x=x+1){
+				
 				//get object metadata and verify it
-				md = oCacheManager.getCachedObjectMetadata(LRUIndex[x]);
-				if( structIsEmpty(md) ){ continue; }
+				if( NOT structKeyExists(poolMD, LRUIndex[x]) ){
+					continue;
+				}
+				md = poolMD[ LRUIndex[x] ];
 				
 				// Evict if not already marked for eviction or an eternal object.
 				if( md.timeout gt 0 AND NOT md.isExpired ){
 					// Expire Key
-					oCacheManager.expireKey(LRUIndex[x]);
+					oCacheManager.expireKey( LRUIndex[x] );
+					
 					// Record Eviction 
-					oCacheManager.getCacheStats().evictionHit();
-					evictedCounter = evictedCounter + 1;
+					oCacheManager.getStats().evictionHit();
+					evictedCounter++;
 					
 					// Can we break or keep on evicting
-					if( evictedCounter gte evictCount ){
+					if( evictedCounter GTE evictCount ){
 						break;
 					}			
 				}
