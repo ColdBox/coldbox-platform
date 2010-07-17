@@ -1,3 +1,5 @@
-<cfset test = entityNew("Category")>
-<cfset hello = entityDelete(test)>
-<cfdump var="#hello#">
+<cfscript>
+test = createObject("java","java.lang.ref.SoftReference");
+</cfscript>
+
+<cfdump var="#isInstanceOf( "", "java.lang.ref.SoftReference")#">
