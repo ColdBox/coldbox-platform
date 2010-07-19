@@ -33,6 +33,52 @@
 		
 		test.getLuis();test.getLuis();
 		assertEquals(3, test.$count() );
+	}
+	
+	function testMethodArgumentSignatures(){
+		//1: Mock with positional and all calls should validate.
+		test.$("getSetting").$args("test","23").$results("UnitTest");
+	
+		// Test positional
+		results = test.getSetting("test","23");
+		assertEquals( "UnitTest", results );
+		// Test name-value pairs
+		results = test.getSetting(name="test",testArg="23");
+		assertEquals( "UnitTest", results );
+		// Test argCollection
+		args = {name="test", testArg="23"};
+		results = test.getSetting(argumentCollection=args);
+		assertEquals( "UnitTest", results );
+		
+		
+		//2. Mock with named values and all calls should validate.
+		test.$("getSetting").$args(name="test",testArg="23").$results("UnitTest2");
+	
+		// Test positional
+		results = test.getSetting("test","23");
+		assertEquals( "UnitTest2", results );
+		// Test name-value pairs
+		results = test.getSetting(name="test",testArg="23");
+		assertEquals( "UnitTest2", results );
+		// Test argCollection
+		args = {name="test", testArg="23"};
+		results = test.getSetting(argumentCollection=args);
+		assertEquals( "UnitTest2", results );
+		
+		//3. Mock with argument Collections
+		args = {name="test", testArg="23"};
+		test.$("getSetting").$args(argumentCollection=args).$results("UnitTest3");
+	
+		// Test positional
+		results = test.getSetting("test","23");
+		assertEquals( "UnitTest3", results );
+		// Test name-value pairs
+		results = test.getSetting(name="test",testArg="23");
+		assertEquals( "UnitTest3", results );
+		// Test argCollection
+		args = {name="test", testArg="23"};
+		results = test.getSetting(argumentCollection=args);
+		assertEquals( "UnitTest3", results );
 		
 	}
 	

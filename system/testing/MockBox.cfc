@@ -35,7 +35,7 @@ Description		:
 				instance.generationPath = instance.generationPath & "/";
 			}
 			
-			instance.version = "1.2";
+			instance.version = "1.3";
 			instance.mockGenerator = createObject("component","coldbox.system.testing.mockutils.MockGenerator").init(this);
 			
 			return this;
@@ -220,15 +220,24 @@ Description		:
 	
 	<!--- mockArgs --->
 	<cffunction name="mockArgs" output="false" access="public" returntype="any" hint="Use this method to mock specific arguments when calling a mocked method.  Can only be called when chained to a mockMethod() call.  If a method is called with arguments and no match, it defaults to the base results defined. Method Alias: $args()">
-		<cfif len(this._mockCurrentMethod)>
-			<!--- Save incoming arguments as results --->
-			<cfset this._mockCurrentArgsHash = this._mockCurrentMethod & "|" & hash(arguments.toString())>
-		<cfelse>
-			<cfthrow type="MockBox.IllegalStateException"
-					 message="No current method name set"
-					 detail="This method was probably called without chaining it to a mockMethod() call. Ex: obj.mockMethod().mockArgs()">
-		</cfif>
-		<cfreturn this>
+		<cfscript>
+			var argOrderedTree = "";
+			
+			// check if method is set on concat
+			if( len(this._mockCurrentMethod) ){
+				
+				// argument Hash Signature
+				this._mockCurrentArgsHash = this._mockCurrentMethod & "|" & this.mockBox.normalizeArguments(arguments);
+				
+				// concat this
+				return this;
+			}
+		</cfscript>
+		
+		<cfthrow type="MockBox.IllegalStateException"
+				 message="No current method name set"
+				 detail="This method was probably called without chaining it to a mockMethod() call. Ex: obj.mockMethod().mockArgs()">
+
 	</cffunction>
 	
 	<!--- mockMethod --->
@@ -360,6 +369,16 @@ Description		:
 	    return( tmpQuery );
 		</cfscript>
 	</cffunction>
+	
+	<!--- normalizeArguments --->
+    <cffunction name="normalizeArguments" output="false" access="public" returntype="string" hint="Normalize the argument values">
+    	<cfargument name="args" type="any" required="true" hint="The arguments to normalize"/>
+    	<cfscript>
+    		var argOrderedTree = createObject("java","java.util.TreeMap").init(arguments.args).values().toString();
+			
+			return hash( argOrderedTree );
+		</cfscript>
+    </cffunction>
 
 <!------------------------------------------- PRIVATE ------------------------------------------>
 	

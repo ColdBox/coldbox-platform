@@ -53,7 +53,7 @@ Description		:
 			<cfset var resultsCounter = 0>
 			<cfset var internalCounter = 0>
 			<cfset var resultsLen = 0>
-			<cfset var argsHashKey = resultsKey & "|" & hash(arguments.toString())>
+			<cfset var argsHashKey = resultsKey & "|" & this.mockBox.normalizeArguments(arguments)>
 			
 			<!--- If Method & argument Hash Results, switch the results struct --->
 			<cfif structKeyExists(this._mockArgResults,argsHashKey)>
