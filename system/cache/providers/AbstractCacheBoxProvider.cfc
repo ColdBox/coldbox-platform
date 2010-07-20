@@ -12,7 +12,8 @@ Description :
 <cfcomponent hint="An abstract CacheBox Provider with basic/boring functionality built" 
 			 output="false" 
 			 implements="coldbox.system.cache.ICacheProvider" 
-			 serializable="false">
+			 serializable="false"
+			 colddoc:abstract="true">
 	
 	<!--- init --->
     <cffunction name="init" output="false" access="public" returntype="any" hint="Simple Constructor">
@@ -58,7 +59,7 @@ Description :
     </cffunction>
 
 	<!--- getStats --->
-    <cffunction name="getStats" output="false" access="public" returntype="coldbox.system.cache.util.ICacheStats" hint="Get the cache statistics object">
+    <cffunction name="getStats" output="false" access="public" returntype="any" hint="Get the cache statistics object as coldbox.system.cache.util.ICacheStats" colddoc:generic="coldbox.system.cache.util.ICacheStats">
     	<cfreturn instance.stats>
     </cffunction>
 	
@@ -113,7 +114,7 @@ Description :
     </cffunction>
 	
 	<!--- getObjectStore --->
-    <cffunction name="getObjectStore" output="false" access="public" returntype="coldbox.system.cache.store.IObjectStore" hint="If the cache provider implements it, this returns the cache's object store">
+    <cffunction name="getObjectStore" output="false" access="public" returntype="any" hint="If the cache provider implements it, this returns the cache's object store as type: coldbox.system.cache.store.IObjectStore" colddoc:generic="coldbox.system.cache.store.IObjectStore">
    		<cfthrow message="Abstract method, please implement" type="AbstractMethodException">
     </cffunction>
 	
@@ -218,7 +219,7 @@ Description :
     </cffunction>
 	
 	<!--- Expire Key --->
-	<cffunction name="expireKey" access="public" output="false" returntype="boolean" hint="Expires an object from the cache by using its cache key. Returns false if object was not removed or did not exist anymore">
+	<cffunction name="expireKey" access="public" output="false" returntype="void" hint="Expires an object from the cache by using its cache key. Returns false if object was not removed or did not exist anymore">
 		<cfargument name="objectKey" type="string" required="true" hint="The key the object was stored under.">
 		<cfthrow message="Abstract method, please implement" type="AbstractMethodException">
     </cffunction>

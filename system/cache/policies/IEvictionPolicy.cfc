@@ -16,7 +16,7 @@ Description :
 	</cffunction>
 	
 	<!--- Get Associated Cache --->
-	<cffunction name="getAssociatedCache" access="public" returntype="coldbox.system.cache.ICacheProvider" output="false" hint="Get the Associated Cache Provider">
+	<cffunction name="getAssociatedCache" access="public" returntype="any" output="false" hint="Get the Associated Cache Provider of type: coldbox.system.cache.ICacheProvider">
 	</cffunction>
 		
 </cfinterface>

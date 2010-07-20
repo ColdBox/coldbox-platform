@@ -16,9 +16,10 @@ Description :
 		super.setup();
 		
 		config = {
-			evictCount = 1
+			evictCount = 2
 		};
 		
+		pool = {};
 		pool['obj1'] = structnew();
 		pool['obj2'] = structnew();
 		pool['obj3'] = structnew();
@@ -33,8 +34,12 @@ Description :
 		pool['obj3'].Timeout = 10;
 		pool['obj3'].isExpired = false;
 		
-		mockCM.$("getStoreMetadataReport",pool);
-		mockCM.$("getConfiguration",config).$("expireKey",true);
+		mockCM.$("getConfiguration",config);
+		mockIndexer.$("getPoolMetadata", pool).$("objectExists",true);
+		keys = ["obj2","obj3","obj1"];
+		mockIndexer.$("getSortedKeys", keys);
+		mockIndexer.$("getObjectMetadata").$results(pool.obj2,pool.obj3,pool.obj1);
+		
 		fifo = getMockBox().createMock("coldbox.system.cache.policies.FIFO").init(mockCM);
 		
 		</cfscript>
@@ -43,7 +48,7 @@ Description :
 	<cffunction name="testPolicy" access="public" returntype="void" hint="" output="false" >
 		<cfscript>
 			fifo.execute();	
-			assertEquals(1 , arrayLen(mockCM.$callLog().expireKey) );			
+			assertEquals( 2 , arrayLen(mockCM.$callLog().expireKey) );			
 			assertEquals( "obj2", mockCM.$callLog().expireKey[1][1] );
 		</cfscript>
 	</cffunction>

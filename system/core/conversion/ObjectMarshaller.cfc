@@ -156,21 +156,21 @@ Description :
 	<!--- Save To File --->
 	<cffunction name="saveToFile" access="private" hint="Facade to save a file's content" returntype="void" output="false">
 		<!--- ************************************************************* --->
-		<cfargument name="FileToSave"	 	type="any"  	required="yes" 	 hint="The absolute path to the file.">
-		<cfargument name="FileContents" 	type="any"  	required="yes"   hint="The file contents">
+		<cfargument name="fileToSave"	 	type="any"  	required="yes" 	 hint="The absolute path to the file.">
+		<cfargument name="fileContents" 	type="any"  	required="yes"   hint="The file contents">
+		<cfargument name="charSet"			type="string"   required="false" default="utf-8" hint="CF File CharSet Encoding to use.">
 		<!--- ************************************************************* --->
-		<cffile action="write" file="#arguments.FileToSave#" output="#arguments.FileContents#" charset="#arguments.charset#">
+		<cffile action="write" file="#arguments.fileToSave#" output="#arguments.fileContents#" charset="#arguments.charset#">
 	</cffunction>
 	
 	<!--- Read File --->
 	<cffunction name="readFile" access="private" hint="Facade to Read a file's content" returntype="Any" output="false">
 		<!--- ************************************************************* --->
-		<cfargument name="FileToRead"	 		type="String"  required="yes" 	 hint="The absolute path to the file.">
-		<cfargument name="ReadInBinaryFlag" 	type="boolean" required="false" default="false" hint="Read in binary flag.">
+		<cfargument name="fileToRead"	 		type="String"  required="yes" 	 hint="The absolute path to the file.">
 		<!--- ************************************************************* --->
-		<cfset var FileContents = "">
-		<cffile action="read" file="#arguments.FileToRead#" variable="FileContents">
-		<cfreturn FileContents>
+		<cfset var fileContents = "">
+		<cffile action="read" file="#arguments.fileToRead#" variable="fileContents">
+		<cfreturn fileContents>
 	</cffunction>
 
 </cfcomponent>

@@ -36,7 +36,7 @@ Description :
 	<!--- Configure the Cache for Operation --->
 	<cffunction name="configure" access="public" output="false" returntype="void" hint="Configures the cache for operation, sets the configuration object, sets and creates the eviction policy and clears the stats. If this method is not called, the cache is useless.">
 		<cfscript>		
-			var cacheConfig     = getCacheConfiguration();
+			var cacheConfig     = getConfiguration();
 			var evictionPolicy  = "";
 			var objectStore		= "";
 			
@@ -90,7 +90,7 @@ Description :
     <cffunction name="locateEvictionPolicy" output="false" access="private" returntype="any" hint="Locate the eviction policy">
     	<cfargument name="policy" type="string"/>
     	<cfscript>
-    		if( fileExists( expandPath("/coldbox/system/cache/policies/#arguments.policy#") ) ){
+    		if( fileExists( expandPath("/coldbox/system/cache/policies/#arguments.policy#.cfc") ) ){
 				return "coldbox.system.cache.policies.#arguments.policy#";
 			}
 			return arguments.policy;
@@ -101,7 +101,7 @@ Description :
     <cffunction name="locateObjectStore" output="false" access="private" returntype="any" hint="Locate the object store">
     	<cfargument name="store" type="string"/>
     	<cfscript>
-    		if( fileExists( expandPath("/coldbox/system/cache/store/#arguments.store#") ) ){
+    		if( fileExists( expandPath("/coldbox/system/cache/store/#arguments.store#.cfc") ) ){
 				return "coldbox.system.cache.store.#arguments.store#";
 			}
 			return arguments.store;
@@ -113,32 +113,33 @@ Description :
 	<!--- Lookup Multiple Keys --->
 	<cffunction name="lookupMulti" access="public" output="false" returntype="struct" hint="The returned value is a structure of name-value pairs of all the keys that where found or not.">
 		<!--- ************************************************************* --->
-		<cfargument name="keys" 			type="string" required="true" hint="The comma delimited list of keys to lookup in the cache.">
-		<cfargument name="prefix" 			type="string" required="false" default="" hint="A prefix to prepend to the keys">
+		<cfargument name="keys" 	type="any" 		required="true" hint="The comma delimited list or an array of keys to lookup in the cache.">
+		<cfargument name="prefix" 	type="string" 	required="false" default="" hint="A prefix to prepend to the keys">
 		<!--- ************************************************************* --->
 		<cfscript>
-			var returnStruct = structnew();
-			var x = 1;
-			var thisKey = "";
+			var returnStruct 	= structnew();
+			var x 				= 1;
+			var thisKey 		= "";
 			
-			// Clear Prefix
-			arguments.prefix = trim(arguments.prefix);
+			// Normalize keys
+			if( isArray(arguments.keys) ){
+				arguments.keys = arrayToList( arguments.keys );
+			}
 			
 			// Loop on Keys
-			for(x=1;x lte listLen(arguments.keys);x=x+1){
+			for(x=1;x lte listLen(arguments.keys);x=x++){
 				thisKey = arguments.prefix & listGetAt(arguments.keys,x);
-				returnStruct[thiskey] = lookup(thisKey);
+				returnStruct[thiskey] = lookup( thisKey );
 			}
 			
 			return returnStruct;
 		</cfscript>
 	</cffunction>
 	
-	<!--- Simple cache Lookup --->
+	<!--- lookup --->
 	<cffunction name="lookup" access="public" output="false" returntype="boolean" hint="Check if an object is in cache, if not found it records a miss.">
-		<!--- ************************************************************* --->
 		<cfargument name="objectKey" type="any" required="true" hint="The key of the object to lookup.">
-		<!--- ************************************************************* --->
+		
 		<cfset var refLocal = structnew()>
 		
 		<cfset refLocal.needCleanup = false>
@@ -151,9 +152,9 @@ Description :
 		<cflock type="readonly" name="CacheBox.#getName()#.#arguments.objectKey#" timeout="#instance.lockTimeout#" throwontimeout="true">
 			<cfscript>
 				// Check if in pool first
-				if( getObjectPool().lookup(arguments.objectKey) ){
+				if( getObjectStore().lookup(arguments.objectKey) ){
 					// Check if object still exists: TODO: Revise this
-					refLocal.tmpObj = getobjectPool().get(arguments.objectKey);
+					refLocal.tmpObj = getObjectStore().get(arguments.objectKey);
 					
 					// Validate it
 					if( NOT structKeyExists(refLocal, "tmpObj") ){
@@ -171,6 +172,19 @@ Description :
 				return false;
 			</cfscript>
 		</cflock>
+	</cffunction>
+	
+	<!--- lookupQuiet --->
+	<cffunction name="lookupQuiet" access="public" output="false" returntype="boolean" hint="Check if an object is in cache quietly, advising nobody!">
+		<cfargument name="objectKey" type="any" required="true" hint="The key of the object to lookup.">
+
+		<!--- Cleanup the key --->
+		<cfset arguments.objectKey = lcase(arguments.objectKey)>
+		
+		<cflock type="readonly" name="CacheBox.#getName()#.#arguments.objectKey#" timeout="#instance.lockTimeout#" throwontimeout="true">
+			<cfreturn instance.objectStore.lookup( arguments.objectKey )>
+		</cflock>
+		
 	</cffunction>
 
 	<!--- Get an object from the cache --->
@@ -191,9 +205,9 @@ Description :
 		<cflock type="exclusive" name="CacheBox.#getName()#.#arguments.objectKey#" timeout="#instance.lockTimeout#" throwontimeout="true">
 			<cfscript>
 				// Check if in pool first 
-				if( getObjectPool().lookup(arguments.objectKey) ){
+				if( getObjectStore().lookup(arguments.objectKey) ){
 					// Get Object from cache
-					refLocal.tmpObj = getobjectPool().get(arguments.objectKey);
+					refLocal.tmpObj = getObjectStore().get(arguments.objectKey);
 					// Validate it 
 					if( not structKeyExists(refLocal,"tmpObj") ){
 						refLocal.needCleanup = true;
@@ -255,7 +269,7 @@ Description :
 			arguments.objectKey = lcase(trim(arguments.objectKey));
 			// Check if in the pool first
 			if( lookup(arguments.objectKey) ){
-				return getObjectPool().getObjectMetadata(arguments.objectKey);
+				return getObjectStore().getObjectMetadata(arguments.objectKey);
 			}
 			else{
 				return structnew();
@@ -312,10 +326,11 @@ Description :
 	<!--- Set an Object in the cache --->
 	<cffunction name="set" access="public" output="false" returntype="boolean" hint="sets an object in cache. Sets might be expensive. If the JVM threshold is used and it has been reached, the object won't be cached. If the pool is at maximum it will expire using its eviction policy and still cache the object. Cleanup will be done later.">
 		<!--- ************************************************************* --->
-		<cfargument name="objectKey" 			type="any"  required="true" hint="The object cache key">
-		<cfargument name="object"				type="any" 	required="true" hint="The object to cache">
-		<cfargument name="timeout"				type="any"  required="false" default="" hint="Timeout in minutes. If timeout = 0 then object never times out. If timeout is blank, then timeout will be inherited from framework.">
-		<cfargument name="lastAccessTimeout"	type="any"  required="false" default="" hint="Last Access Timeout in minutes. If timeout is blank, then timeout will be inherited from framework.">
+		<cfargument name="objectKey" 			type="any"  	required="true" hint="The object cache key">
+		<cfargument name="object"				type="any" 		required="true" hint="The object to cache">
+		<cfargument name="timeout"				type="any"  	required="false" default="" hint="The timeout to use on the object (if any, provider specific)">
+		<cfargument name="lastAccessTimeout"	type="any" 	 	required="false" default="" hint="The idle timeout to use on the object (if any, provider specific)">
+		<cfargument name="extra" 				type="struct" 	required="false" hint="A map of name-value pairs to use as extra arguments to pass to a providers set operation"/>
 		<!--- ************************************************************* --->
 		<!---JVM Threshold Checks --->
 		<cfset var isJVMSafe = true>
@@ -351,7 +366,7 @@ Description :
 		
 		<!--- Set object in Cache --->
 		<cflock type="exclusive" name="CacheBox.#getName()#.#arguments.objectKey#" timeout="#instance.lockTimeout#" throwontimeout="true">
-			<cfset getobjectPool().set(arguments.objectKey,arguments.myObject,arguments.timeout,arguments.lastAccessTimeout)>
+			<cfset getObjectStore().set(arguments.objectKey,arguments.myObject,arguments.timeout,arguments.lastAccessTimeout)>
 		</cflock>
 		
 		<!--- InterceptMetadata --->
@@ -432,7 +447,7 @@ Description :
 	<cffunction name="clearQuiet" access="public" output="false" returntype="boolean" hint="Clears an object from the cache by using its cache key. Returns false if object was not removed or did not exist anymore">
 		<cfargument name="objectKey" type="string" required="true" hint="The key the object was stored under.">
 		<cfset var clearCheck 	= false>
-		<cfset var objectStore	= getObjectPool()>
+		<cfset var objectStore	= getObjectStore()>
 		
 		<!--- Cleanup the key --->
 		<cfset arguments.objectKey = lcase(trim(arguments.objectKey))>
@@ -473,7 +488,7 @@ Description :
 				cacheProvider	= this
 			};
 			
-			getObjectPool().clearAll();		
+			getObjectStore().clearAll();		
 			// TODO: notify listeners: afterCacheClearAll		
 			//getEventManager().processState("afterCacheClearAll",iData);
 		</cfscript>
@@ -487,7 +502,7 @@ Description :
 
 	<!--- Get the Cache Size --->
 	<cffunction name="getSize" access="public" output="false" returntype="numeric" hint="Get the cache's size in items">
-		<cfreturn getObjectPool().getSize()>
+		<cfreturn getObjectStore().getSize()>
 	</cffunction>
 
 	<!--- Reap the Cache --->
@@ -509,18 +524,18 @@ Description :
 			if ( dateDiff("n", getCacheStats().getlastReapDatetime(), now() ) gte ccBean.getReapFrequency() ){
 				
 				// Init Ref Key Vars
-				reflocal.softRef = getObjectPool().getReferenceQueue().poll();
+				reflocal.softRef = getObjectStore().getReferenceQueue().poll();
 				
 				// Let's reap the garbage collected soft references first before expriring
 				while( StructKeyExists(reflocal, "softRef") ){
 					// Clean if it still exists
-					if( getObjectPool().softRefLookup(reflocal.softRef) ){
-						clearKey( getObjectPool().getSoftRefKey(refLocal.softRef) );
+					if( getObjectStore().softRefLookup(reflocal.softRef) ){
+						clearKey( getObjectStore().getSoftRefKey(refLocal.softRef) );
 						// GC Collection Hit
 						getCacheStats().gcHit();
 					}
 					// Poll Again
-					reflocal.softRef = getObjectPool().getReferenceQueue().poll();
+					reflocal.softRef = getObjectStore().getReferenceQueue().poll();
 				}
 				
 				// Let's Get our reaping vars ready, get a duplicate of the pool metadata so we can work on a good copy
@@ -597,7 +612,7 @@ Description :
 		<cfargument name="objectKey" type="string" required="true">
 		<!--- ************************************************************* --->
 		<cfscript>
-			getObjectPool().expireObject(lcase(trim(arguments.objectKey)));
+			getObjectStore().expireObject(lcase(trim(arguments.objectKey)));
 		</cfscript>
 	</cffunction>
 	
@@ -627,7 +642,7 @@ Description :
 				// Check if object still exists
 				if( lookup(poolKeys[keyIndex]) ){
 					// Override for Eternal Objects and the match keys
-					if ( getObjectPool().getMetadataProperty(poolKeys[keyIndex],"Timeout") gt 0 and tester ){
+					if ( getObjectStore().getMetadataProperty(poolKeys[keyIndex],"Timeout") gt 0 and tester ){
 						expireKey(poolKeys[keyIndex]);
 					}
 				}
@@ -639,7 +654,7 @@ Description :
 	<cffunction name="getItemTypes" access="public" output="false" returntype="struct" hint="Get the item types of the cache. These are calculated according to internal coldbox entry prefixes">
 		<cfscript>
 		var x = 1;
-		var itemList = getObjectPool().getObjectsKeyList();
+		var itemList = getObjectStore().getObjectsKeyList();
 		var itemTypes = Structnew();
 
 		//Init types
@@ -677,24 +692,24 @@ Description :
 
 <!------------------------------------------- ACCESSOR/MUTATORS ------------------------------------------->
 	
-	<!--- Get the internal object pool --->
-	<cffunction name="getObjectPool" access="public" returntype="any" output="false" hint="Get the internal object pool: coldbox.system.cache.objectPool or MTobjectPool">
-		<cfreturn instance.objectStore >
+	<!--- getObjectStore --->
+	<cffunction name="getObjectStore" output="false" access="public" returntype="any" hint="If the cache provider implements it, this returns the cache's object store as type: coldbox.system.cache.store.IObjectStore" colddoc:generic="coldbox.system.cache.store.IObjectStore">
+    	<cfreturn instance.objectStore>
 	</cffunction>
 
 	<!--- Get the Pool Metadata --->
 	<cffunction name="getPoolMetadata" access="public" returntype="struct" output="false" hint="Get a copy of the pool's metadata structure">
 		<cfargument name="deepCopy" type="boolean" required="false" default="true" hint="Deep copy of structure or by reference. Default is deep copy"/>
 		<cfif arguments.deepCopy>
-			<cfreturn duplicate(getObjectPool().getPoolMetadata())>
+			<cfreturn duplicate(getObjectStore().getPoolMetadata())>
 		<cfelse>
-			<cfreturn getObjectPool().getPoolMetadata()>
+			<cfreturn getObjectStore().getPoolMetadata()>
 		</cfif>
 	</cffunction>
 	
 	<!--- Get the Pool Keys --->
 	<cffunction name="getPoolKeys" access="public" returntype="array" output="false" hint="Get a listing of all the keys of the objects in the cache pool">
-		<cfreturn getObjectPool().getPoolKeys()>
+		<cfreturn getObjectStore().getPoolKeys()>
 	</cffunction>
 
 	<!--- Set The Eviction Policy --->

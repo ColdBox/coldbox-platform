@@ -22,7 +22,7 @@ Description :
 
 	<!--- init --->
 	<cffunction name="init" output="false" access="public" returntype="LFU" hint="Constructor">
-		<cfargument name="cacheProvider" type="coldbox.system.cache.ICacheProvider" required="true" hint="The associated cache provider"/>
+		<cfargument name="cacheProvider" type="any" required="true" hint="The associated cache provider of type: coldbox.system.cache.ICacheProvider" colddoc:generic="coldbox.system.cache.ICacheProvider"/>
 		<cfscript>
 			super.init(arguments.cacheProvider);
 			
@@ -35,48 +35,17 @@ Description :
 	<!--- execute --->
 	<cffunction name="execute" output="false" access="public" returntype="void" hint="Execute the policy">
 		<cfscript>
-			var oCacheManager 	= getAssociatedCache();
-			var poolMD 			= oCacheManager.getStoreMetadataReport();
-			var LFUIndex 		= "";
-			var indexLength 	= 0;
-			var x 				= 1;
-			var md 				= "";
-			var evictCount 		= oCacheManager.getConfiguration().evictCount;
-			var evictedCounter 	= 0;
+			var index 		= "";
 			
 			// Get searchable index
 			try{
-				LFUIndex 	= structSort(poolMD, "numeric", "ASC", "hits");
-				indexLength = ArrayLen(LFUIndex);
+				index 	= getAssociatedCache().getObjectStore().getIndexer().getSortedKeys("hits","numeric","asc");
+				// process evictions
+				processEvictions( index );
 			}
 			catch(Any e){
-				getLogger().error("Error sorting metadata pool. #e.message# #e.detail#. Serialized Pool: #poolMD.toString()#. Serialized LFUIndex: #LFUIndex.toString()#");
-			}
-			
-			//Loop Through Metadata
-			for (x=1; x lte indexLength; x=x+1){
-				
-				//get object metadata and verify it
-				if( NOT structKeyExists(poolMD, LFUIndex[x]) ){
-					continue;
-				}
-				md = poolMD[ LFUIndex[x] ];
-				
-				//Override Eternal Checks
-				if ( md.timeout gt 0 AND NOT md.isExpired ){
-					// Expire Key
-					oCacheManager.expireKey( LFUIndex[x] );
-					
-					// Record Eviction 
-					oCacheManager.getStats().evictionHit();
-					evictedCounter++;
-					
-					// Can we break or keep on evicting
-					if( evictedCounter GTE evictCount ){
-						break;
-					}
-				}//end timeout gt 0
-			}//end for loop			
+				getLogger().error("Error sorting via store indexer #e.message# #e.detail# #e.stackTrace#.");
+			}		
 		</cfscript>
 	</cffunction>
 

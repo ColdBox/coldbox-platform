@@ -6,19 +6,8 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 Author 	    :	Luis Majano
 Description :
 	I am a concurrent soft reference object store. In other words, I am fancy!
-	
-	The structure for the metadata report can be found below for each objectKey, which in turn
-	is stored in its own concurrent map for easy sorting and querying.
-	
-	objectKey = {
-		hits,
-		misses,
-		timeout,
-		lastAccessTimeout,
-		created,
-		lastAccessed,
-		isExpired
-	};
+	This store is case-sensitive
+
 ----------------------------------------------------------------------->
 <cfcomponent hint="I am a concurrent soft reference object store. In other words, I am fancy!" output="false" extends="coldbox.system.cache.store.ConcurrentStore">
 
@@ -26,13 +15,16 @@ Description :
 
 	<!--- init --->
 	<cffunction name="init" access="public" output="false" returntype="ConcurrentSoftReferenceStore" hint="Constructor">
-		<cfargument name="cacheProvider" type="coldbox.system.cache.ICacheProvider" required="true" hint="The associated cache provider"/>
+		<cfargument name="cacheProvider" type="any" required="true" hint="The associated cache provider as coldbox.system.cache.ICacheProvider" colddoc:generic="coldbox.system.cache.ICacheProvider"/>
 		<cfscript>
 			// Super size me
 			super.init(arguments.cacheProvider);
 			
+			// Override Fields
+			getIndexer().setFields( getIndexer().getFields() & ",isSoftReference");
+			
 			// Prepare instance
-			instance.softRefKeyMap	= CreateObject("java","java.util.concurrent.ConcurrentHashMap").init();
+			instance.softRefKeyMap	 = CreateObject("java","java.util.concurrent.ConcurrentHashMap").init();
 			instance.referenceQueue  = CreateObject("java","java.lang.ref.ReferenceQueue").init();
 			
 			return this;
@@ -49,6 +41,32 @@ Description :
 		</cfscript>
     </cffunction>
 	
+	<!--- lookup --->
+	<cffunction name="lookup" access="public" output="false" returntype="boolean" hint="Check if an object is in cache.">
+		<cfargument name="objectKey" type="any" required="true" hint="The key of the object">
+		<cfscript>
+			var results = super.lookup( arguments.objectKey );
+			var target  = "";
+			
+			// Check if false and return immediately
+			if( NOT results ){
+				return results;
+			}
+			
+			// Validate if SR or normal object and if SR is null
+			if( getIndexer().getObjectMetadataProperty(arguments.objectKey,"isSoftReference") 
+				AND ( javaCast("null","") EQ getQuiet( arguments.objectKey ) ) ){
+				
+				// Mark as dead
+				expireObject( arguments.objectKey );
+				return false;
+			}
+			
+			//found
+			return true;			
+		</cfscript>
+	</cffunction>
+	
 	<!--- Get an object from the pool --->
 	<cffunction name="get" access="public" output="false" returntype="any" hint="Get an object from cache. If its a soft reference object it might return a null value.">
 		<cfargument name="objectKey" type="any" required="true" hint="The key of the object">
@@ -59,7 +77,25 @@ Description :
 			target = super.get( arguments.objectKey );
 			
 			// Validate if SR or normal object
-			if( isSoftReference( target ) ){
+			if( getIndexer().getObjectMetadataProperty(arguments.objectKey,"isSoftReference") ){
+				return target.get();
+			}
+			
+			return target;
+		</cfscript>
+	</cffunction>
+	
+	<!--- getQuiet --->
+	<cffunction name="getQuiet" access="public" output="false" returntype="any" hint="Get an object from cache. If its a soft reference object it might return a null value.">
+		<cfargument name="objectKey" type="any" required="true" hint="The key of the object">
+		<cfscript>
+			var target = 0;
+			
+			// Get via concurrent store
+			target = super.getQuiet( arguments.objectKey );
+			
+			// Validate if SR or normal object
+			if( getIndexer().getObjectMetadataProperty(arguments.objectKey,"isSoftReference") ){
 				return target.get();
 			}
 			
@@ -78,9 +114,10 @@ Description :
 		<!--- ************************************************************* --->
 		<cfscript>
 			var target 	= 0;
+			var isSR	= (arguments.timeout GT 0);
 			
 			// Check for eternal object
-			if( arguments.timeout GT 0 ){
+			if( isSR ){
 				// Cache as soft reference not an eternal object
 				target = createSoftReference(arguments.objectKey,arguments.object);
 			}
@@ -94,6 +131,9 @@ Description :
 					  timeout=arguments.timeout,
 					  lastAccessTimeout=arguments.lastAccessTimeout,
 					  extras=arguments.extras);
+			
+			// Set extra md in indexer
+			getIndexer().setObjectMetadataProperty(arguments.objectKey,"isSoftReference", isSR );
 		</cfscript>
 	</cffunction>
 
@@ -112,7 +152,7 @@ Description :
 			softRef = instance.pool[arguments.objectKey];
 			
 			// Removal of Soft Ref Lookup
-			if( isSoftReference(softRef) ){
+			if( getIndexer().getObjectMetadataProperty(arguments.objectKey,"isSoftReference") ){
 				structDelete(getSoftRefKeyMap(),softRef);
 			}
 			
@@ -167,14 +207,6 @@ Description :
 			refKeyMap[ softRef ] = arguments.objectKey;
 			
 			return softRef;
-		</cfscript>
-	</cffunction>
-	
-	<!--- Check if this is a soft reference --->
-	<cffunction name="isSoftReference" access="private" returntype="boolean" hint="Checks whether the passed object is a soft reference" output="false" >
-		<cfargument name="target"	 type="any" required="true" hint="The object to test">
-		<cfscript>
-			return isInstanceOf( arguments.target, "java.lang.ref.SoftReference");
 		</cfscript>
 	</cffunction>
 

@@ -121,13 +121,15 @@ Description :
 			
 			//1:Timeout = 0 (Eternal)
 			pool.set('test',"123",0,0);
-			assertEquals( pool.getPool()['test'], "123" );
+			data = pool.getPool();
+			assertEquals( data['test'], "123" );
 			assertEquals(pool.$count('setObjectMetaData'),1);
 			
 			//2:Timeout = X
 			pool.$("createSoftReference","MySoftReference");
 			pool.set('test',"123",20,20);
-			assertEquals( pool.getPool()['test'], "MySoftReference" );
+			data = pool.getPool();
+			assertEquals( data['test'], "MySoftReference" );
 			assertEquals(pool.$count('setObjectMetaData'),2);
 			
 		</cfscript>
@@ -197,7 +199,7 @@ Description :
 	<cffunction name="testClearKey">
 		<cfscript>
 			makePublic(pool,"setPool");
-			map = {'test'='test'};
+			map = {test='test'};
 			map2 = duplicate(map);
 			debug(map2);
 			pool.setPool(map);			
@@ -213,7 +215,7 @@ Description :
 			
 			//2: Not soft reference
 			pool.$("isSoftReference",false);
-			map = {'test' = '123' };
+			map = {test = '123' };
 			pool.setPool(map);
 			results = pool.clearKey('test');
 			debug( pool.$callLog() );

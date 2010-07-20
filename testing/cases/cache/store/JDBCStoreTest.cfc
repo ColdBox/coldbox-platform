@@ -13,8 +13,17 @@ Description :
 <cfscript>
 
 	function setup(){
+		config = {
+			dsn   = "cacheTest",
+			table = "cacheBox"
+		};
 		mockProvider = getMockBox().createMock("coldbox.system.cache.providers.MockProvider");
-		store = getMockBox().createMock(className="coldbox.system.cache.store.ConcurrentStore").init(mockProvider);
+		mockProvider.$("getConfiguration", config);
+		store = getMockBox().createMock(className="coldbox.system.cache.store.JDBCStore").init(mockProvider);
+	}
+	
+	function tearDown(){
+		store.clearAll();
 	}
 	
 	function testClearAll(){
@@ -22,10 +31,6 @@ Description :
 		assertEquals( 1, store.getSize() );
 		store.clearAll();
 		assertEquals( 0, store.getSize() );
-	}
-
-	function testGetPool(){
-		AssertTrue( isStruct(store.getpool()) );
 	}
 	
 	function testGetIndexer(){
@@ -58,9 +63,7 @@ Description :
 	}
 	
 	function testGetQuiet(){
-		map = {myKey="123"};
-		store.$property("pool","instance",map);
-		
+		store.set("myKey","123",0);
 		assertEquals( store.getQuiet('myKey'), "123" );
 	}
 	
@@ -74,54 +77,29 @@ Description :
 	function testSet(){
 		//1:Timeout = 0 (Eternal)
 		store.set('test',"123",0,0);
-		data = store.getPool();
-		assertEquals( data['test'], "123" );
 		assertEquals( 0, store.getIndexer().getObjectMetadataProperty("test","timeout") );
+		assertEquals("123", store.get("test") );
 		
 		//2:Timeout = X
 		store.set('test',"123",20,20);
-		data = store.getPool();
-		assertEquals( data['test'], "123" );
 		assertEquals( 20, store.getIndexer().getObjectMetadataProperty("test","timeout") );
-	}
-	
-	function testSetEternals(){
-		obj = {name='luis',date=now()};
-		key = "myObj";
+		assertEquals("123", store.get("test") );
 		
-		store.set(key,obj,0);
-		AssertSame( store.get(key), obj);
-		
-		AssertTrue(store.lookup(key) );
-		AssertFalse(store.lookup('nothing') );
-		
-		assertEquals( 0, store.getIndexer().getObjectMetadataProperty( key,"timeout") );
-		assertEquals( 2, store.getIndexer().getObjectMetadataProperty(key,"hits") );
-		assertEquals( false, store.getIndexer().getObjectMetadataProperty(key,"isExpired") );
-		assertEquals( '', store.getIndexer().getObjectMetadataProperty(key,"LastAccessTimeout") );
-		AssertTrue( isDate(store.getIndexer().getObjectMetadataProperty(key,'Created')) );
-		AssertTrue( isDate(store.getIndexer().getObjectMetadataProperty(key,'LastAccesed')) );
-		
-		store.clear( key );
-		AssertFalse(store.lookup(key) );
+		//3 complex
+		complex = createObject("component", "coldbox.testing.testmodel.formBean").init();
+		store.set('test', complex, 20);
+		results = store.get("test");
+		assertEquals(complex, results );
+		debug(results);
 	}
 	
 	function testClear(){
-		map = {test='test'};
-		map2 = duplicate(map);
-		debug(map2);
 		
-		store.$property("pool","instance",map);			
-
-		map = {test = '123' };
-		store.$property("pool","instance",map);
+		assertFalse( store.clear('invalid') );
 		
+		store.set("test", now(), 20);
 		results = store.clear('test');
-		
-		debug( store.$callLog() );
-		assertEquals( results, true );
-		assertTrue( structIsEmpty(map) );
-		
+		assertTrue( results );
 	}
 
 	function testGetSize(){

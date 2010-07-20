@@ -144,7 +144,7 @@ Description :
 <!------------------------------------------- PUBLIC CACHE FACTORY OPERATIONS ------------------------------------------>
 
 	<!--- getCache --->
-    <cffunction name="getCache" output="false" access="public" returntype="coldbox.system.cache.ICacheProvider" hint="Get a reference to a registered cache in this factory.  If the cache does not exist it will return an exception">
+    <cffunction name="getCache" output="false" access="public" returntype="any" hint="Get a reference to a registered cache in this factory.  If the cache does not exist it will return an exception. Type: coldbox.system.cache.ICacheProvider" colddoc:generic="coldbox.system.cache.ICacheProvider">
     	<cfargument name="name" type="string" required="true" hint="The named cache to retrieve"/>
 		
 		<cflock name="#instance.lockName#" type="readonly" timeout="20" throwontimeout="true">
@@ -159,12 +159,12 @@ Description :
 	
 	<!--- addCache --->
     <cffunction name="addCache" output="false" access="public" returntype="void" hint="Register a new instantiated cache with this cache factory">
-    	<cfargument name="cache" 	 type="coldbox.system.cache.ICacheProvider" required="true" hint="The cache instance to register with this factory"/>
+    	<cfargument name="cache" 	 type="any" required="true" hint="The cache instance to register with this factory of type: coldbox.system.cache.ICacheProvider" colddoc:generic="coldbox.system.cache.ICacheProvider"/>
     	<cfset registerCache( arguments.cache )>
 	</cffunction>
 	
 	<!--- addDefaultCache --->
-    <cffunction name="addDefaultCache" output="false" access="public" returntype="coldbox.system.cache.ICacheProvider" hint="Add a default named cache to our registry, create it, config it, register it and return it">
+    <cffunction name="addDefaultCache" output="false" access="public" returntype="any" hint="Add a default named cache to our registry, create it, config it, register it and return it of type: coldbox.system.cache.ICacheProvider" colddoc:generic="coldbox.system.cache.ICacheProvider">
     	<cfargument name="name" type="string" required="true" hint="The name of the default cache to create"/>
     	<cfscript>
     		var defaultCacheConfig	  = instance.config.getDefaultCache();
@@ -325,8 +325,8 @@ Description :
 	
 	<!--- replaceCache --->
     <cffunction name="replaceCache" output="false" access="public" returntype="void" hint="Replace a registered named cache with a new decorated cache of the same name.">
-    	<cfargument name="cache" type="any" required="true" hint="The name of the cache to replace or the actual instance of the cache to replace"/>
-		<cfargument name="decoratedCache" type="coldbox.system.cache.ICacheProvider" required="true" hint="The decorated cache manager instance to replace with"/>
+    	<cfargument name="cache" 			type="any" required="true" hint="The name of the cache to replace or the actual instance of the cache to replace" colddoc:generic="coldbox.system.cache.ICacheProvider"/>
+		<cfargument name="decoratedCache" 	type="any" required="true" hint="The decorated cache manager instance to replace with of type coldbox.system.cache.ICacheProvider" colddoc:generic="coldbox.system.cache.ICacheProvider"/>
 		
 		<cfscript>
 			var name = "";
@@ -409,7 +409,7 @@ Description :
     </cffunction>
 	
 	<!--- getColdbox --->
-    <cffunction name="getColdbox" output="false" access="public" returntype="any" hint="Get the instance of ColdBox linked in this cache factory. Empty if using standalone version">
+    <cffunction name="getColdbox" output="false" access="public" returntype="coldbox.system.web.Controller" hint="Get the instance of ColdBox linked in this cache factory. Empty if using standalone version">
     	<cfreturn instance.coldbox>
     </cffunction>
 
@@ -434,7 +434,7 @@ Description :
     </cffunction>
 	
 	<!--- getDefaultCache --->
-    <cffunction name="getDefaultCache" output="false" access="public" returntype="coldbox.system.cache.ICacheProvider" hint="Get the default cache provider">
+    <cffunction name="getDefaultCache" output="false" access="public" returntype="any" hint="Get the default cache provider of type coldbox.system.cache.ICacheProvider" colddoc:generic="coldbox.system.cache.ICacheProvider">
     	<cfreturn getCache("default")>
     </cffunction>
 	
@@ -456,7 +456,7 @@ Description :
     </cffunction>
 	
 	<!--- createCache --->
-    <cffunction name="createCache" output="false" access="private" returntype="coldbox.system.cache.ICacheProvider" hint="Create a new cache according the the arguments, register it and return it">
+    <cffunction name="createCache" output="false" access="private" returntype="any" hint="Create a new cache according the the arguments, register it and return it of type: coldbox.system.cache.ICacheProvider" colddoc:generic="coldbox.system.cache.ICacheProvider">
     	<cfargument name="name" 		type="string" required="true" hint="The name of the cache to add"/>
 		<cfargument name="provider" 	type="string" required="true" hint="The provider class path of the cache to add"/>
 		<cfargument name="properties" 	type="struct" required="false" default="#structNew()#" hint="The properties of the cache to configure with"/>
@@ -465,6 +465,8 @@ Description :
 			var oCache = createObject("component",arguments.provider).init();
 			// Register Name
 			oCache.setName( arguments.name );
+			// Link Properties
+			oCache.setConfiguration( arguments.properties );
 			// Register Cache
 			registerCache( oCache );
 			
@@ -474,7 +476,7 @@ Description :
 	
 	<!--- registerCache --->
     <cffunction name="registerCache" output="false" access="private" returntype="void" hint="Register a cache instance internaly">
-    	<cfargument name="cache" 	 type="coldbox.system.cache.ICacheProvider" required="true" hint="The cache instance to register with this factory"/>
+    	<cfargument name="cache" 	 type="any" required="true" hint="The cache instance to register with this factory of type: coldbox.system.cache.ICacheProvider" colddoc:generic="coldbox.system.cache.ICacheProvider"/>
     	<cfset var name		= arguments.cache.getName()>
     	<cfset var oCache 	= arguments.cache>
     	<cfset var iData 	= {}>
@@ -491,8 +493,6 @@ Description :
 					if( NOT structKeyExists(instance.caches, name) ){
 						// Link to this CacheFactory
 						oCache.setCacheFactory( this );
-						// Link Properties
-						oCache.setConfiguration( arguments.properties );
 						// Link ColdBox if using it
 						if( isObject(instance.coldbox) AND structKeyExists(oCache,"setColdBox")){ 
 							oCache.setColdBox( instance.coldbox );

@@ -13,7 +13,7 @@ Description :
 
 	<!--- Constructor --->
 	<cffunction name="init" access="public" output="false" returntype="any" hint="Constructor">
-		<cfargument name="cacheProvider" type="coldbox.system.cache.ICacheProvider" required="true" hint="The associated cache manager/provider"/>
+		<cfargument name="cacheProvider" type="any" required="true" hint="The associated cache manager/provider of type coldbox.system.cache.ICacheProvider" colddoc:generic="coldbox.system.cache.ICacheProvider"/>
 	</cffunction>
 	
 	<!--- Get Cache Performance --->

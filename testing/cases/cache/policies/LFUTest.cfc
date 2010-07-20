@@ -16,7 +16,7 @@ Description :
 		super.setup();
 		
 		config = {
-			evictCount = 1
+			evictCount = 2
 		};
 		
 		pool['obj1'] = structnew();
@@ -38,8 +38,12 @@ Description :
 		pool['obj3'].isExpired = false;
 		pool['obj3'].hits = 111;
 		
-		mockCM.$("getStoreMetadataReport",pool);
-		mockCM.$("getConfiguration",config).$("expireKey",true);
+		mockCM.$("getConfiguration",config);
+		mockIndexer.$("getPoolMetadata", pool).$("objectExists",true);
+		keys = ["obj3","obj2","obj1"];
+		mockIndexer.$("getSortedKeys", keys);
+		mockIndexer.$("getObjectMetadata").$results(pool.obj2,pool.obj3,pool.obj1);
+		
 		lfu = getMockBox().createMock("coldbox.system.cache.policies.LFU").init(mockCM);
 		</cfscript>
 	</cffunction>
@@ -49,7 +53,7 @@ Description :
 			
 			lfu.execute();	
 				
-			assertEquals(1 , arrayLen(mockCM.$callLog().expireKey) );			
+			assertEquals(2 , arrayLen(mockCM.$callLog().expireKey) );			
 			assertEquals( "obj3", mockCM.$callLog().expireKey[1][1] );
 		</cfscript>
 	</cffunction>

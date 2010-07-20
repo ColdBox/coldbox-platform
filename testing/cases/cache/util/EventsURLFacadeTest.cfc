@@ -12,6 +12,7 @@ Description :
 <cfcomponent extends="coldbox.system.testing.BaseTestCase" output="false">
 
 	<cffunction name="setUp" returntype="void" access="public" output="false">
+		<cfparam name="FORM" default="#structnew()#">
 		<cfscript>
 		cm = getMockBox().createEmptyMock(className='coldbox.system.cache.providers.MockProvider');
 		cm.$("getEventCacheKeyPrefix","mock");
@@ -71,7 +72,7 @@ Description :
 			
 			testCacheKey = facade.buildEventKey("unittest","main.index",context);
 			uniqueHash = facade.getUniqueHash(context);
-			targetKey = cacheManager.EVENT_CACHEKEY_PREFIX & "main.index-unittest-" & uniqueHash;
+			targetKey = cm.getEventCacheKeyPrefix() & "main.index-unittest-" & uniqueHash;
 			
 			AssertEquals( testCacheKey, targetKey );
 		</cfscript>

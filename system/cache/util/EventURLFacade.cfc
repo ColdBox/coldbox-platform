@@ -18,7 +18,7 @@ Description :
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
 	<cffunction name="init" access="public" output="false" returntype="EventURLFacade" hint="Constructor">
-		<cfargument name="cacheProvider" type="coldbox.system.cache.IColdboxApplicationCache" 	required="true" hint="The cache provider/manager this utility will be associated with"/>
+		<cfargument name="cacheProvider" type="any" required="true" hint="The cache provider/manager this utility will be associated with as type: coldbox.system.cache.IColdboxApplicationCache" colddoc:generic="coldbox.system.cache.IColdboxApplicationCache"/>
 		<cfscript>
 			instance = {
 				cacheProvider = arguments.cacheProvider
@@ -35,13 +35,18 @@ Description :
 		<cfargument name="event" type="any" required="true" hint="The event request context to incorporate into the hash"/>
 		<!--- **************************************************************************** --->
 		<cfscript>
-			var urlCopy  = duplicate(URL);
-			var formCopy = duplicate(FORM);
-			var eventName = arguments.event.getEventName();
-			var urlActionsList = "fwReinit,fwCache,debugMode,debugpass,dumpvar,debugpanel";
+			var urlCopy  		 = "";
+			var formCopy 		 = "";
+			var eventName 		 = arguments.event.getEventName();
+			var urlActionsList 	 = "fwReinit,fwCache,debugMode,debugpass,dumpvar,debugpanel";
 			var urlColdboxExempt = "currentview,currentlayout,currentroute";
-			var x = 1;
-			var routedStruct = arguments.event.getRoutedStruct();
+			var x 				 = 1;
+			var routedStruct 	 = arguments.event.getRoutedStruct();
+			
+			// Param URL/FORM
+			paramStructs();
+			urlCopy 	= duplicate(URL);
+			formCopy	= duplicate(FORM);
 			
 			// Collide the form vars also
 			structAppend(urlCopy,formCopy);
@@ -142,6 +147,11 @@ Description :
 
 <!------------------------------------------- PRIVATE ------------------------------------------->
 	
-	
+	<!--- paramStructs --->
+    <cffunction name="paramStructs" output="false" access="private" returntype="void" hint="Param structs">
+    	<cfparam name="URL" 	default="#structNew()#">
+    	<cfparam name="FORM" 	default="#structNew()#">
+    </cffunction>
+
 
 </cfcomponent>

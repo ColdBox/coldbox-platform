@@ -37,7 +37,7 @@ Description :
     </cffunction>
 
 	<!--- getStats --->
-    <cffunction name="getStats" output="false" access="public" returntype="coldbox.system.cache.util.ICacheStats" hint="Get the cache statistics object">
+    <cffunction name="getStats" output="false" access="public" returntype="any" hint="Get the cache statistics object as coldbox.system.cache.util.ICacheStats" colddoc:generic="coldbox.system.cache.util.ICacheStats">
     </cffunction>
 	
 	<!--- clearStatistics --->
@@ -63,7 +63,7 @@ Description :
     </cffunction>
 
 	<!--- getEventManager --->
-    <cffunction name="getEventManager" output="false" access="public" returntype="any" hint="Get this cache managers event listner manager">
+    <cffunction name="getEventManager" output="false" access="public" returntype="any" hint="Get this cache managers event listener manager">
     </cffunction>
 	
 	<!--- setEventManager --->
@@ -80,11 +80,11 @@ Description :
     </cffunction>
 	
 	<!--- getObjectStore --->
-    <cffunction name="getObjectStore" output="false" access="public" returntype="coldbox.system.cache.store.IObjectStore" hint="If the cache provider implements it, this returns the cache's object store">
+    <cffunction name="getObjectStore" output="false" access="public" returntype="any" hint="If the cache provider implements it, this returns the cache's object store as type: coldbox.system.cache.store.IObjectStore" colddoc:generic="coldbox.system.cache.store.IObjectStore">
     </cffunction>
 	
 	<!--- getStoreMetadataReport --->
-	<cffunction name="getStoreMetadataReport" output="false" access="public" returntype="struct" hint="Get a structure of all the keys in the cache with their appropriate metadata structures. This is used to build the reporting.">
+	<cffunction name="getStoreMetadataReport" output="false" access="public" returntype="struct" hint="Get a structure of all the keys in the cache with their appropriate metadata structures. This is used to build the reporting.[keyX->[metadataStructure]]">
 	</cffunction>
 	
 <!------------------------------------------- CACHE OPERATIONS ------------------------------------------>
@@ -94,7 +94,7 @@ Description :
     </cffunction>
 	
 	<!--- getCachedObjectMetadata --->
-	<cffunction name="getCachedObjectMetadata" output="false" access="public" returntype="struct" hint="Get a cache objects metadata about its performance.">
+	<cffunction name="getCachedObjectMetadata" output="false" access="public" returntype="struct" hint="Get a cache objects metadata about its performance. This value is a structure of name-value pairs of metadata.">
 		<cfargument name="objectKey" type="any" required="true" hint="The key of the object to lookup its metadata">
 	</cffunction>
 	
@@ -170,7 +170,7 @@ Description :
     </cffunction>
 	
 	<!--- Expire Key --->
-	<cffunction name="expireKey" access="public" output="false" returntype="boolean" hint="Expires an object from the cache by using its cache key. Returns false if object was not removed or did not exist anymore (if supported by the provider)">
+	<cffunction name="expireKey" access="public" output="false" returntype="void" hint="Expires an object from the cache by using its cache key. Returns false if object was not removed or did not exist anymore (if supported by the provider)">
 		<cfargument name="objectKey" type="string" required="true" hint="The key the object was stored under.">
 	</cffunction>
 

@@ -12,17 +12,21 @@ Description :
 ----------------------------------------------------------------------->
 <cfinterface hint="The main interface for CacheBox object storages.">
 
-	<!--- getKeys --->
-	<cffunction name="getKeys" output="false" access="public" returntype="array" hint="Get all the store's object keys">
-	</cffunction>
+	<!--- flush --->
+    <cffunction name="flush" output="false" access="public" returntype="void" hint="Flush the store to a permanent storage">
+    </cffunction>
 	
 	<!--- clearAll --->
     <cffunction name="clearAll" output="false" access="public" returntype="void" hint="Clear all elements of the store">
     </cffunction>
 	
-	<!--- flush --->
-    <cffunction name="flush" output="false" access="public" returntype="void" hint="Flush the store to a permanent storage">
-    </cffunction>
+	<!--- getIndexer --->
+	<cffunction name="getIndexer" access="public" returntype="coldbox.system.cache.util.MetadataIndexer" output="false" hint="Get the store's pool metadata indexer structure">
+	</cffunction>
+	
+	<!--- getKeys --->
+	<cffunction name="getKeys" output="false" access="public" returntype="array" hint="Get all the store's object keys">
+	</cffunction>
 	
 	<!--- lookup --->
 	<cffunction name="lookup" access="public" output="false" returntype="boolean" hint="Check if an object is in the store">
@@ -31,6 +35,11 @@ Description :
 	
 	<!--- get --->
 	<cffunction name="get" access="public" output="false" returntype="any" hint="Get an object from the store">
+		<cfargument name="objectKey" type="any" required="true" hint="The key of the object">
+	</cffunction>
+	
+	<!--- getQuiet --->
+	<cffunction name="getQuiet" access="public" output="false" returntype="any" hint="Get an object from the store with no stat updates">
 		<cfargument name="objectKey" type="any" required="true" hint="The key of the object">
 	</cffunction>
 	

@@ -41,7 +41,7 @@ Description :
 	
 	<!--- getStoreMetadataReport --->
 	<cffunction name="getStoreMetadataReport" output="false" access="public" returntype="struct" hint="Get a structure of all the keys in the cache with their appropriate metadata structures. This is used to build the reporting.">
-		<cfreturn {}>
+		<cfreturn structNew()>
 	</cffunction>
 
 <!------------------------------------------- CACHE OPERATIONS ------------------------------------------>
@@ -54,7 +54,7 @@ Description :
 	<!--- getCachedObjectMetadata --->
 	<cffunction name="getCachedObjectMetadata" output="false" access="public" returntype="struct" hint="Get a cache objects metadata about its performance.">
 		<cfargument name="objectKey" type="any" required="true" hint="The key of the object to lookup its metadata">
-		<cfreturn {}>
+		<cfreturn structNew()>
 	</cffunction>
 	
 	<!--- get --->
@@ -142,7 +142,7 @@ Description :
     </cffunction>
 	
 	<!--- Expire Key --->
-	<cffunction name="expireKey" access="public" output="false" returntype="boolean" hint="Expires an object from the cache by using its cache key. Returns false if object was not removed or did not exist anymore">
+	<cffunction name="expireKey" access="public" output="false" returntype="void" hint="Expires an object from the cache by using its cache key. Returns false if object was not removed or did not exist anymore">
 		<cfargument name="objectKey" type="string" required="true" hint="The key the object was stored under.">
 	</cffunction>
 	

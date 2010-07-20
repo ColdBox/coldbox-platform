@@ -46,7 +46,7 @@
 		assertFalse( structIsEmpty(memento.caches) );
 		assertTrue( structKeyExists(memento.caches,"SampleCache1") );
 		assertTrue( structKeyExists(memento.caches,"SampleCache2") );
-		assertTrue( arrayLen(memento.listeners) );
+		//assertTrue( arrayLen(memento.listeners) );
 		assertTrue( len(memento.logBoxConfig) );
 		assertEquals("coldbox.system.cache.config.LogBoxConfig", memento.logBoxConfig);
 		

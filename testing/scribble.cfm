@@ -1,13 +1,7 @@
-<!--- mockArgs --->
-<cffunction name="mockArgs" output="true" access="public" returntype="any" hint="">
-	<cfdump var="#hash(arguments.toString())#">
-	<cfset tm = createObject("java","java.util.TreeMap").init(arguments)>
-	<cfdump var="#tm.values().toString()#">
-	<cfdump var="#tm.keySet().toString()#">
-</cffunction>
+<cfquery name="q" datasource="cacheTest">
+SELECT * 
+  FROM cacheBox
+ WHERE id = <cfqueryparam cfsqltype="cf_sql_varchar" value="234">
+</cfquery>
 
-<cfscript>
-mockArgs(name="hello",testArg="99");
-mockArgs("hello","99");
-</cfscript>
-
+<cfdump var="#q#">

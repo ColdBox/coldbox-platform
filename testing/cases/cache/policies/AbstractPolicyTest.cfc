@@ -18,13 +18,17 @@ Description :
 		mockFactory  = getMockBox().createEmptyMock(className='coldbox.system.cache.CacheFactory');
 		mockLogBox	 = getMockBox().createEmptyMock("coldbox.system.logging.LogBox");
 		mockLogger	 = getMockBox().createEmptyMock("coldbox.system.logging.Logger");	
-		mockPool 	 = getMockBox().createEmptyMock(className='coldbox.system.cache.store.ConcurrentSoftReferenceStore');
+		mockPool 	 = getMockBox().createEmptyMock(className='coldbox.system.cache.store.ConcurrentStore');
 		mockStats 	 = getMockBox().createEmptyMock(className='coldbox.system.cache.util.CacheStats');
+		mockIndexer  = getMockBox().createEmptyMock(className='coldbox.system.cache.util.MetadataIndexer');
 		
 		// Mocks
 		mockCM.$("getCacheFactory", mockFactory);
 		mockCM.$('getStats',mockStats);
 		mockCM.$("getName","MockCache");
+		mockCM.$("getObjectStore", mockPool);
+		mockCM.$("expireKey");
+		mockPool.$("getIndexer", mockIndexer);
 		mockFactory.$("getLogBox",mockLogBox);
 		mockLogBox.$("getLogger", mockLogger);
 		mockLogger.$("error").$("debug").$("info");

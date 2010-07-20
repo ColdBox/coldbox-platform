@@ -6,19 +6,7 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 Author 	    :	Luis Majano
 Description :
 	I am a concurrent object store. In other words, I am fancy!
-	
-	The structure for the metadata report can be found below for each objectKey, which in turn
-	is stored in its own concurrent map for easy sorting and querying.
-	
-	objectKey = {
-		hits,
-		misses,
-		timeout,
-		lastAccessTimeout,
-		created,
-		lastAccessed,
-		isExpired
-	};
+	This store is case-sensitive
 ----------------------------------------------------------------------->
 <cfcomponent hint="I am a concurrent object store. In other words, I am fancy!" output="false" implements="coldbox.system.cache.store.IObjectStore">
 
@@ -26,15 +14,17 @@ Description :
 
 	<!--- init --->
 	<cffunction name="init" access="public" output="false" returntype="ConcurrentStore" hint="Constructor">
-		<cfargument name="cacheProvider" type="coldbox.system.cache.ICacheProvider" required="true" hint="The associated cache provider"/>
+		<cfargument name="cacheProvider" type="any" required="true" hint="The associated cache provider as coldbox.system.cache.ICacheProvider" colddoc:generic="coldbox.system.cache.ICacheProvider"/>
 		<cfscript>
+			// Store Fields
+			var fields = "hits,timeout,lastAccessTimeout,created,lastAccesed,isExpired";
 			
 			// Prepare instance
 			instance = {
 				storeID 		= createObject('java','java.lang.System').identityHashCode(this),
 				cacheProvider   = arguments.cacheProvider,
 				pool			= CreateObject("java","java.util.concurrent.ConcurrentHashMap").init(),
-				poolMetadata    = CreateObject("java","java.util.concurrent.ConcurrentHashMap").init()
+				indexer    		= CreateObject("component","coldbox.system.cache.util.MetadataIndexer").init(fields)
 			};
 			
 			return this;
@@ -54,14 +44,10 @@ Description :
 	
 	<!--- clearAll --->
     <cffunction name="clearAll" output="false" access="public" returntype="void" hint="Clear all elements of the store">
-    	
-    	<cflock name="store.metadata.#instance.storeID#" type="exclusive" timeout="10" throwonTimeout="true">
-			<cfscript>
-				instance.pool.clear();
-				instance.poolMetadata.clear();
-			</cfscript>
-		</cflock>
-		
+		<cfscript>
+			instance.pool.clear();
+			instance.indexer.clearAll();
+		</cfscript>
     </cffunction>
 	
 	<!--- getPool --->
@@ -69,60 +55,14 @@ Description :
 		<cfreturn instance.pool>
 	</cffunction>
 
-	<!--- getPoolMetadata --->
-	<cffunction name="getPoolMetadata" access="public" returntype="any" output="false" hint="Get the store's pool metadata report structure">
-		<cflock name="store.metadata.#instance.storeID#" type="readonly" timeout="10" throwonTimeout="true">
-			<cfreturn instance.poolMetadata >
-		</cflock>
+	<!--- getIndexer --->
+	<cffunction name="getIndexer" access="public" returntype="coldbox.system.cache.util.MetadataIndexer" output="false" hint="Get the store's pool metadata indexer structure">
+		<cfreturn instance.indexer >
 	</cffunction>
 	
 	<!--- getKeys --->
 	<cffunction name="getKeys" output="false" access="public" returntype="array" hint="Get all the store's object keys">
-		<cfreturn structKeyArray( getPoolMetadata() )>
-	</cffunction>
-	
-	<!--- getObjectMetadata --->
-	<cffunction name="getObjectMetadata" access="public" returntype="any" output="false" hint="Get a metadata entry for a specific cache entry">
-		<cfargument name="objectKey" type="any" required="true" hint="The key of the object">
-		
-		<cflock name="store.metadata.#instance.storeID#" type="readonly" timeout="10" throwonTimeout="true">
-			<cfreturn instance.poolMetadata[ arguments.objectKey ] >
-		</cflock>
-		
-	</cffunction>
-	
-	<!--- setObjectMetadata --->
-	<cffunction name="setObjectMetadata" access="public" returntype="void" output="false" hint="Set the metadata entry for a specific cache entry">
-		<cfargument name="objectKey" type="any" required="true" hint="The key of the object">
-		<cfargument name="metadata"  type="any" required="true" hint="The metadata structure to store for the cache entry">
-		
-		<cflock name="store.metadata.#instance.storeID#" type="exclusive" timeout="10" throwonTimeout="true">
-			<cfset instance.poolMetadata[ arguments.objectKey ] = arguments.metadata>
-		</cflock>
-		
-	</cffunction>
-	
-	<!--- getMetadataProperty --->
-	<cffunction name="getMetadataProperty" access="public" returntype="any" output="false" hint="Get a specific metadata property for a specific cache entry">
-		<cfargument name="objectKey" type="any" required="true" hint="The key of the object">
-		<cfargument name="property"  type="any" required="true" hint="The property of the metadata to retrieve">
-		
-		<cflock name="store.metadata.#instance.storeID#" type="readonly" timeout="10" throwonTimeout="true">
-			<cfreturn instance.poolMetadata[ arguments.objectKey ][ arguments.property ] >
-		</cflock>
-		
-	</cffunction>
-	
-	<!--- setMetadataProperty --->
-	<cffunction name="setMetadataProperty" access="public" returntype="void" output="false" hint="Set a metadata property for a specific cache entry">
-		<cfargument name="objectKey" type="any" required="true" hint="The key of the object">
-		<cfargument name="property"  type="any" required="true" hint="The property of the metadata to retrieve">
-		<cfargument name="value"  	 type="any" required="true" hint="The value of the property">
-		
-		<cflock name="store.metadata.#instance.storeID#" type="exclusive" timeout="10" throwonTimeout="true">
-			<cfset instance.poolMetadata[ arguments.objectKey ][ arguments.property ] = arguments.value >
-		</cflock>
-		
+		<cfreturn structKeyArray( getPool() )>
 	</cffunction>
 	
 	<!--- lookup --->
@@ -131,8 +71,8 @@ Description :
 		<cfscript>
 			// Check if object in pool and object not dead
 			if( structKeyExists(instance.pool, arguments.objectKey)  
-			    AND structKeyExists(instance.poolMetadata,arguments.objectKey) 
-				AND NOT instance.poolMetadata[arguments.objectkey].isExpired){
+			    AND instance.indexer.objectExists( arguments.objectKey ) 
+				AND NOT instance.indexer.getObjectMetadataProperty(arguments.objectKey,"isExpired") ){
 				return true;
 			}
 			
@@ -140,31 +80,35 @@ Description :
 		</cfscript>
 	</cffunction>
 	
-	<!--- Get an object from the pool --->
+	<!--- get --->
 	<cffunction name="get" access="public" output="false" returntype="any" hint="Get an object from cache">
 		<cfargument name="objectKey" type="any" required="true" hint="The key of the object">
 		<cfscript>
 			// Record Metadata Access
-			setMetadataProperty(arguments.objectKey,"hits", getMetaDataProperty(arguments.objectKey,"hits")+1);
-			setMetadataProperty(arguments.objectKey,"lastAccesed", now());
+			instance.indexer.setObjectMetadataProperty(arguments.objectKey,"hits", instance.indexer.getObjectMetadataProperty(arguments.objectKey,"hits")+1);
+			instance.indexer.setObjectMetadataProperty(arguments.objectKey,"lastAccesed", now());
 			
-			// Get Object
+			// return object
 			return instance.pool[arguments.objectKey];
 		</cfscript>
+	</cffunction>
+	
+	<!--- getQuiet --->
+	<cffunction name="getQuiet" access="public" output="false" returntype="any" hint="Get an object from cache with no stats">
+		<cfargument name="objectKey" type="any" required="true" hint="The key of the object">
+		<cfreturn instance.pool[arguments.objectKey]>
 	</cffunction>
 	
 	<!--- expireObject --->
 	<cffunction name="expireObject" output="false" access="public" returntype="void" hint="Mark an object for expiration">
 		<cfargument name="objectKey" type="any"  required="true" hint="The object key">
-		<cfscript>
-			setMetadataProperty(arguments.objectKey,"isExpired", true );
-		</cfscript>
+		<cfset instance.indexer.setObjectMetadataProperty(arguments.objectKey,"isExpired", true)>
 	</cffunction>
 	
 	<!--- isExpired --->
     <cffunction name="isExpired" output="false" access="public" returntype="boolean" hint="Test if an object in the store has expired or not">
     	<cfargument name="objectKey" type="any"  required="true" hint="The object key">
-		<cfreturn getMetadataProperty(arguments.objectKey,"isExpired")>
+		<cfreturn instance.indexer.getObjectMetadataProperty(arguments.objectKey,"isExpired")>
     </cffunction>
 
 	<!--- Set an Object in the pool --->
@@ -178,24 +122,22 @@ Description :
 		<!--- ************************************************************* --->
 		<cfscript>
 			var metaData 	= structnew();
-			var targetObj 	= 0;
-			
-			// set target object to save
-			targetObj = arguments.object;
 			
 			// Set new Object into cache pool
-			instance.pool[arguments.objectKey] = targetObj;
+			instance.pool[arguments.objectKey] = arguments.object;
 			
 			// Create object's metdata
-			metaData.hits = 1;
-			metaData.Timeout = arguments.timeout;
-			metaData.LastAccessTimeout = arguments.LastAccessTimeout;
-			metaData.Created = now();
-			metaData.LastAccesed = now();		
-			metaData.isExpired = false;	
+			metaData = {
+				hits = 1,
+				timeout = arguments.timeout,
+				lastAccessTimeout = arguments.LastAccessTimeout,
+				created = now(),
+				lastAccesed = now(),		
+				isExpired = false
+			};
 			
 			// Save the object's metadata
-			setObjectMetaData(arguments.objectkey,metaData);
+			instance.indexer.setObjectMetadata(arguments.objectKey, metaData);
 		</cfscript>
 	</cffunction>
 
@@ -210,9 +152,9 @@ Description :
 				return false;
 			}
 			
-			// Remove Normal Cache Entries
+			// Remove it
 			structDelete(instance.pool, arguments.objectKey);
-			structDelete(instance.poolMetadata, arguments.objectKey);
+			instance.indexer.clear( arguments.objectKey );
 							
 			// Removed
 			return true;

@@ -28,10 +28,6 @@ Description :
 		AssertTrue( isStruct(store.getpool()) );
 	}
 	
-	function testGetPoolMetadata(){
-		AssertTrue( isStruct(store.getPoolMetadata()) );
-	}
-	
 	function testGetKeys(){
 		assertEquals( arrayNew(1), store.getKeys() );
 		store.set("test", now() );
@@ -40,53 +36,60 @@ Description :
 		assertEquals( 3 , arrayLen( store.getKeys() ) );
 	}
 	
-	function testObjectsMetadataProperties(){
-		key = "oMyObj";
-		metadata = {hits=1,lastAccessed=now(),created=now(),timeout=0,isExpired=false};
-		
-		store.setObjectMetadata(key,metadata);
-		AssertEquals(store.getObjectMetadata(key), metadata);
-		
-		AssertEquals(store.getMetadataProperty(key,'hits'),1);
-		store.setMetadataProperty(key,"hits",40);
-		AssertEquals(store.getMetadataProperty(key,'hits'),40);
-	}
-	
 	function testLookup(){
+		// don't exist
 		assertFalse( store.lookup('nada') );
-		map = {myKey="hello"};
-		md  = {myKey={isExpired=false}};
 		
-		store.$property("pool","instance",map);
-		store.$property("poolMetadata","instance",md);
+		// non sr
+		store.set("test",now(),0);
+		assertEquals(true, store.lookup("test") );
 		
-		assertTrue( store.lookup('myKey') );
+		// store SR
+		store.set("test", now(), 10);
+		assertEquals(true, store.lookup("test") );
 		
-		md.myKey.isExpired=true;
+		// expired one
+		store.set("test", now(), 10);
+		store.expireObject("test");
+		assertEquals(false, store.lookup("test") );
 		
-		assertFalse( store.lookup('myKey') );
+		// expire SR
+		store.set("test", now(), 10);
+		pool = store.getPool();
+		pool["test"].clear();
+		assertEquals(false, store.lookup("test") );
 	}
 	
 	function testGet(){
-		store.$("setMetadataProperty");
-		map = {myKey="123"};
-		store.$property("pool","instance",map);
+		test = {
+			name="luis", created = now()
+		};
+		// non-sr
+		store.set("test",test, 0);
+		assertEquals( test, store.get("test") );
+		assertEquals( 2, store.getIndexer().getObjectMetadataProperty("test","hits") );
+	
+		// sr	
+		store.set("test",test, 10);
+		assertEquals( test, store.get("test") );
+		assertEquals( true, store.getIndexer().getObjectMetadataProperty("test","isSoftReference") );
+		assertEquals( 2, store.getIndexer().getObjectMetadataProperty("test","hits") );
+	}
+	
+	function testGetQuiet(){
+		test = {
+			name="luis", created = now()
+		};
+		// non-sr
+		store.set("test",test, 0);
+		assertEquals( test, store.getQuiet("test") );
+		assertEquals( 1, store.getIndexer().getObjectMetadataProperty("test","hits") );
 		
-		//1: non soft reference
-		store.$("getMetadataProperty",0);
-		store.$("isSoftReference",false);
-		assertEquals( store.get('myKey'), "123" );
-		assertEquals( store.$count('setMetadataProperty'), 2);
-		
-		//2: soft reference
-		store.$("isSoftReference",true);
-		// Mock Soft Reference Stub
-		stub = getMockBox().createStub();
-		stub.$("get","123");
-		map.myKey = stub;
-		
-		assertEquals( store.get('myKey'), "123" );
-		assertEquals( store.$count('setMetadataProperty'), 4);
+		// sr	
+		store.set("test",test, 10);
+		assertEquals( test, store.getQuiet("test") );
+		assertEquals( true, store.getIndexer().getObjectMetadataProperty("test","isSoftReference") );
+		assertEquals( 1, store.getIndexer().getObjectMetadataProperty("test","hits") );
 	}
 	
 	function testExpirations(){
@@ -97,106 +100,30 @@ Description :
 	}
 	
 	function testSet(){
-		store.$("setObjectMetaData");
-			
 		//1:Timeout = 0 (Eternal)
 		store.set('test',"123",0,0);
-		assertEquals( store.getPool()['test'], "123" );
-		assertEquals(store.$count('setObjectMetaData'),1);
+		data = store.getPool();
+		assertEquals( data['test'], "123" );
 		
 		//2:Timeout = X
 		store.$("createSoftReference","MySoftReference");
 		store.set('test',"123",20,20);
-		assertEquals( store.getPool()['test'], "MySoftReference" );
-		assertEquals(store.$count('setObjectMetaData'),2);
-	}
-	
-	function testSetEternals(){
-		obj = {name='luis',date=now()};
-		key = "myObj";
+		data = store.getPool();
+		assertEquals( data['test'], "MySoftReference" );
 		
-		store.set(key,obj,0);
-		AssertSame( store.get(key), obj);
-		
-		AssertTrue(store.lookup(key) );
-		AssertFalse(store.lookup('nothing') );
-		
-		AssertEquals(store.getMetadataProperty(key,'Timeout'),0);
-		AssertEquals(store.getMetadataProperty(key,'hits'),2);
-		AssertEquals(false, store.getMetadataProperty(key,'isExpired'));
-		AssertEquals(store.getMetadataProperty(key,'LastAccessTimeout'),'');
-		AssertTrue( isDate(store.getMetadataProperty(key,'Created')) );
-		AssertTrue( isDate(store.getMetadataProperty(key,'LastAccesed')) );
-		
-		store.clear( key );
-		AssertFalse(store.lookup(key) );
-		
-		try{
-			store.getObjectMetadata(key);
-			Fail("This method should have failed.");
-		}
-		catch(Any e){
-			
-		}	
-	
-	}
-	
-	function testSetSoftReferences(){
-		obj = {name='luis',date=now()};
-		key = "myObj";
-		
-		store.set(key,obj,30,10);
-		AssertSame( store.get(key), obj);
-		
-		AssertTrue(store.lookup(key) );
-		AssertFalse(store.lookup('nothing') );
-		
-		AssertEquals(store.getMetadataProperty(key,'Timeout'),30);
-		AssertEquals(store.getMetadataProperty(key,'hits'),2);
-		AssertEquals(false, store.getMetadataProperty(key,'isExpired'));
-		AssertEquals(store.getMetadataProperty(key,'LastAccessTimeout'),10);
-		AssertTrue( isDate(store.getMetadataProperty(key,'Created')) );
-		AssertTrue( isDate(store.getMetadataProperty(key,'LastAccesed')) );
-
-		store.clear(key);
-		AssertFalse(store.lookup(key) );
-		
-		try{
-			store.getObjectMetadata(key);
-			Fail("This method should have failed.");
-		}
-		catch(Any e){
-			
-		}		
 	}
 	
 	function testClear(){
-		map = {'test'='test'};
-		map2 = duplicate(map);
-		debug(map2);
 		
-		store.$property("pool","instance",map);			
-		store.$("getSoftRefKeyMap",map2);
-		
-		//1: softReference
-		store.$("isSoftReference",true);
+		// non sr
+		store.set("test",now(),0);
 		results = store.clear('test');
-		debug( store.$callLog() );
 		assertEquals( results, true );
-		assertTrue( structIsEmpty(map) );
-		assertTrue( structIsEmpty(map2) );
 		
-		//2: Not soft reference
-		store.$("isSoftReference",false);
-		map = {'test' = '123' };
-		store.$property("pool","instance",map);
-		
+		// sr
+		store.set("test",now(),10);
 		results = store.clear('test');
-		
-		debug( store.$callLog() );
 		assertEquals( results, true );
-		assertTrue( structIsEmpty(map) );
-		
 	}
 
 	function testGetSize(){
@@ -237,19 +164,6 @@ Description :
 		AssertTrue(store.softRefLookup(sr));
 		refKey = store.getSoftRefKey(sr);
 		AssertTrue(refKey eq key);
-	}
-	
-	function testisSoftReference(){
-		key = "myObj";
-		obj = {name="luis",date=now()};
-		
-		makePublic(store,"createSoftReference");
-		makePublic(store,"isSoftReference");
-		
-		sr = store.createSoftReference(key,obj);
-		
-		AssertFalse(store.isSoftReference(now()));
-		AssertTrue(store.isSoftReference(sr));
 	}
 	
 </cfscript>

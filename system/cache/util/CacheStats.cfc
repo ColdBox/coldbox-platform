@@ -15,7 +15,7 @@ Description :
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 	
 	<cffunction name="init" access="public" output="false" returntype="any" hint="Constructor">
-		<cfargument name="cacheProvider" type="coldbox.system.cache.ICacheProvider" required="true" hint="The associated cache manager/provider"/>
+		<cfargument name="cacheProvider" type="any" required="true" hint="The associated cache manager/provider of type: coldbox.system.cache.ICacheProvider" colddoc:generic="coldbox.system.cache.ICacheProvider"/>
 		<cfscript>
 			instance = {
 				cacheProvider = arguments.cacheProvider
@@ -34,7 +34,7 @@ Description :
 <!------------------------------------------- PUBLIC ------------------------------------------->
 	
 	<!--- Get Associated Cache --->
-	<cffunction name="getAssociatedCache" access="public" output="false" returntype="coldbox.system.cache.ICacheProvider" hint="Get the associated cache provider/manager">
+	<cffunction name="getAssociatedCache" access="public" output="false" returntype="any" hint="Get the associated cache provider/manager of type: coldbox.system.cache.ICacheProvider" colddoc:generic="coldbox.system.cache.ICacheProvider">
 		<cfreturn instance.cacheProvider>
 	</cffunction>
 	
