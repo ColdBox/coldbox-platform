@@ -8,6 +8,15 @@ Author 	    :	Luis Majano
 Description :
 	An abstract CacheBox Provider
 
+Properties
+- name : The cache name
+- enabled : Boolean flag if cache is enabled
+- reportingEnabled: Boolean falg if cache can report
+- stats : The statistics object
+- configuration : The configuration structure
+- cacheFactory : The linkage to the cachebox factory
+- eventManager : The linkage to the event manager
+- cacheID : The unique identity code of this CFC
 ----------------------------------------------------------------------->
 <cfcomponent hint="An abstract CacheBox Provider with basic/boring functionality built" 
 			 output="false" 
@@ -22,10 +31,10 @@ Description :
 				name 				= "",
 				enabled 			= false,
 				reportingEnabled 	= false,
-				stats   			= {},
+				stats   			= "",
 				configuration 		= {},
-				cacheFactory 		= {},
-				eventManager		= {},
+				cacheFactory 		= "",
+				eventManager		= "",
 				cacheID				= createObject('java','java.lang.System').identityHashCode(this)
 			};
 			return this;
@@ -222,6 +231,11 @@ Description :
 	<cffunction name="expireKey" access="public" output="false" returntype="void" hint="Expires an object from the cache by using its cache key. Returns false if object was not removed or did not exist anymore">
 		<cfargument name="objectKey" type="string" required="true" hint="The key the object was stored under.">
 		<cfthrow message="Abstract method, please implement" type="AbstractMethodException">
+    </cffunction>
+	
+	<!--- getMemento --->
+    <cffunction name="getMemento" output="false" access="public" returntype="any" hint="">
+    	<cfreturn instance>
     </cffunction>
 	
 <!------------------------------------------- PRIVATE ------------------------------------------>

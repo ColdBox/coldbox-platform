@@ -15,10 +15,6 @@ Description :
 ----------------------------------------------------------------------->
 <cfinterface hint="The main interface for a CacheBox cache provider object, you implement it so CacheBox can manage it for you.">
 
-	<!--- init --->
-    <cffunction name="init" output="false" access="public" returntype="any" hint="Simple Constructor">
-    </cffunction>
-
 	<!--- getName --->
     <cffunction name="getName" output="false" access="public" returntype="string" hint="Get the name of this cache">
     </cffunction>

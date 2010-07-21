@@ -14,7 +14,7 @@ Description :
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 	
-	<cffunction name="init" access="public" output="false" returntype="any" hint="Constructor">
+	<cffunction name="init" access="public" output="false" returntype="CacheStats" hint="Constructor">
 		<cfargument name="cacheProvider" type="any" required="true" hint="The associated cache manager/provider of type: coldbox.system.cache.ICacheProvider" colddoc:generic="coldbox.system.cache.ICacheProvider"/>
 		<cfscript>
 			instance = {

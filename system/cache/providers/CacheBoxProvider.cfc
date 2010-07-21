@@ -8,20 +8,30 @@ Author 	    :	Luis Majano
 Description :
 	The coolest standalone CacheBox Provider ever built.
 
+Properties
+- name : The cache name
+- enabled : Boolean flag if cache is enabled
+- reportingEnabled: Boolean falg if cache can report
+- stats : The statistics object
+- configuration : The configuration structure
+- cacheFactory : The linkage to the cachebox factory
+- eventManager : The linkage to the event manager
+- cacheID : The unique identity code of this CFC
 ----------------------------------------------------------------------->
-<cfcomponent hint="The coolest standalone CacheBox Provider ever built" output="false" extends="coldbox.system.cache.providers.AbstractCacheBoxProvider">
+<cfcomponent hint="The coolest standalone CacheBox Provider ever built" 
+			 output="false" 
+			 extends="coldbox.system.cache.providers.AbstractCacheBoxProvider"
+			 serializable="false">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 	
-	<cffunction name="init" access="public" output="false" returntype="any" hint="Constructor">
+	<cffunction name="init" access="public" output="false" returntype="CacheBoxProvider" hint="Constructor">
 		<cfscript>
 			// super size me
 			super.init();
 			
 			// Logger object
 			instance.logger = "";
-			// Cache Stats
-			instance.cacheStats = "";
 			// Runtime Java object
 			instance.javaRuntime = createObject("java", "java.lang.Runtime");
 			// Locking Timeout
@@ -42,10 +52,10 @@ Description :
 			
 			// Prepare the logger
 			instance.logger = getCacheFactory().getLogBox().getLogger( this );
-			instance.logger.debug("Starting up CacheBox Cache: #getName()#...");
+			instance.logger.debug("Starting up CacheBox Cache: #getName()# with configuration: #cacheConfig.toString()#");
 			
 			// Prepare Statistics
-			instance.cacheStats = CreateObject("component","coldbox.system.cache.util.CacheStats").init(this);
+			instance.stats = CreateObject("component","coldbox.system.cache.util.CacheStats").init(this);
 			
 			// Setup the eviction Policy to use
 			try{
@@ -57,7 +67,7 @@ Description :
 				getUtil().throwit('Error creating eviction policy: #evictionPolicy#','#e.message# #e.detail# #e.stackTrace#','CacheBoxProvider.EvictionPolicyCreationException');	
 			}
 			
-			// Create the object store
+			// Create the object store the configuration mandated
 			try{
 				objectStore = locateObjectStore( cacheConfig.objectStore );
 				instance.objectStore = CreateObject("component", objectStore).init(this);
@@ -112,10 +122,8 @@ Description :
 
 	<!--- Lookup Multiple Keys --->
 	<cffunction name="lookupMulti" access="public" output="false" returntype="struct" hint="The returned value is a structure of name-value pairs of all the keys that where found or not.">
-		<!--- ************************************************************* --->
 		<cfargument name="keys" 	type="any" 		required="true" hint="The comma delimited list or an array of keys to lookup in the cache.">
 		<cfargument name="prefix" 	type="string" 	required="false" default="" hint="A prefix to prepend to the keys">
-		<!--- ************************************************************* --->
 		<cfscript>
 			var returnStruct 	= structnew();
 			var x 				= 1;
@@ -127,7 +135,7 @@ Description :
 			}
 			
 			// Loop on Keys
-			for(x=1;x lte listLen(arguments.keys);x=x++){
+			for(x=1;x lte listLen(arguments.keys);x++){
 				thisKey = arguments.prefix & listGetAt(arguments.keys,x);
 				returnStruct[thiskey] = lookup( thisKey );
 			}
@@ -139,39 +147,19 @@ Description :
 	<!--- lookup --->
 	<cffunction name="lookup" access="public" output="false" returntype="boolean" hint="Check if an object is in cache, if not found it records a miss.">
 		<cfargument name="objectKey" type="any" required="true" hint="The key of the object to lookup.">
+		<cfscript>
+			
+			if( lookupQuiet(arguments.objectKey) ){
+				// record a hit
+				getStats().hit();
+				return true;
+			}
+			
+			// record a miss
+			getStats().miss();
 		
-		<cfset var refLocal = structnew()>
-		
-		<cfset refLocal.needCleanup = false>
-		<cfset refLocal.objectFound = false>
-		<cfset refLocal.tmpObj 		= 0>
-		
-		<!--- Cleanup the key --->
-		<cfset arguments.objectKey = lcase(arguments.objectKey)>
-		
-		<cflock type="readonly" name="CacheBox.#getName()#.#arguments.objectKey#" timeout="#instance.lockTimeout#" throwontimeout="true">
-			<cfscript>
-				// Check if in pool first
-				if( getObjectStore().lookup(arguments.objectKey) ){
-					// Check if object still exists: TODO: Revise this
-					refLocal.tmpObj = getObjectStore().get(arguments.objectKey);
-					
-					// Validate it
-					if( NOT structKeyExists(refLocal, "tmpObj") ){
-						getStats().miss();
-						return false;
-					}
-					
-					// Object Found
-					return true;
-										
-				}
-				
-				// log miss
-				getCacheStats().miss();
-				return false;
-			</cfscript>
-		</cflock>
+			return false;
+		</cfscript>
 	</cffunction>
 	
 	<!--- lookupQuiet --->
@@ -188,62 +176,41 @@ Description :
 	</cffunction>
 
 	<!--- Get an object from the cache --->
-	<cffunction name="get" access="public" output="false" returntype="any" hint="Get an object from cache. If it doesn't exist it returns the THIS.NOT_FOUND value">
-		<!--- ************************************************************* --->
+	<cffunction name="get" access="public" output="false" returntype="any" hint="Get an object from cache. If object does not exist it returns null">
 		<cfargument name="objectKey" type="any" required="true" hint="The key of the object to lookup.">
-		<!--- ************************************************************* --->
-		<cfset var refLocal = structNew()>
-		
-		<!--- INit Vars --->
-		<cfset refLocal.needCleanup = false>
-		<cfset refLocal.tmpObj = 0>
-		<cfset refLocal.targetObject = this.NOT_FOUND>
 		
 		<!--- Cleanup the key --->
 		<cfset arguments.objectKey = lcase(trim(arguments.objectKey))>
 		
-		<cflock type="exclusive" name="CacheBox.#getName()#.#arguments.objectKey#" timeout="#instance.lockTimeout#" throwontimeout="true">
+		<cflock type="readonly" name="CacheBox.#getName()#.#arguments.objectKey#" timeout="#instance.lockTimeout#" throwontimeout="true">
 			<cfscript>
-				// Check if in pool first 
-				if( getObjectStore().lookup(arguments.objectKey) ){
-					// Get Object from cache
-					refLocal.tmpObj = getObjectStore().get(arguments.objectKey);
-					// Validate it 
-					if( not structKeyExists(refLocal,"tmpObj") ){
-						refLocal.needCleanup = true;
-						getCacheStats().miss();
-					}
-					else{
-						refLocal.targetObject = refLocal.tmpObj;
-						getCacheStats().hit();
-					}
+				// Check if it exists
+				if( instance.objectStore.lookup(arguments.objectKey) ){
+					getStats().hit();
+					return instance.objectStore.get( arguments.objectKey );
 				}
-				else{
-					// log miss
-					getCacheStats().miss();
-				}
+				getStats().miss();
+				// don't return anything = null
 			</cfscript>
 		</cflock>
-		
-		<!--- Check if needs clearing --->
-		<cfif refLocal.needCleanup>
-			<cfset clearKey(arguments.objectKey)>
-		</cfif>
-		
-		<!--- Return Target Object --->
-		<cfreturn refLocal.targetObject>
 	</cffunction>
 	
 	<!--- Get multiple objects from the cache --->
 	<cffunction name="getMulti" access="public" output="false" returntype="struct" hint="The returned value is a structure of name-value pairs of all the keys that where found. Not found values will not be returned">
 		<!--- ************************************************************* --->
-		<cfargument name="keys" 			type="string" required="true" hint="The comma delimited list of keys to retrieve from the cache.">
-		<cfargument name="prefix" 			type="string" required="false" default="" hint="A prefix to prepend to the keys">
+		<cfargument name="keys" 		type="any" 		required="true" hint="The comma delimited list or array of keys to retrieve from the cache.">
+		<cfargument name="prefix"		type="string" 	required="false" default="" hint="A prefix to prepend to the keys">
 		<!--- ************************************************************* --->
 		<cfscript>
 			var returnStruct = structnew();
 			var x = 1;
 			var thisKey = "";
+			
+			// Normalize keys
+			if( isArray(arguments.keys) ){
+				arguments.keys = arrayToList( arguments.keys );
+			}
+			
 			// Clear Prefix
 			arguments.prefix = trim(arguments.prefix);
 			
@@ -400,7 +367,7 @@ Description :
 			}
 			
 			// Loop on Keys
-			for(x=1;x lte listLen(arguments.keys);x=x++){
+			for(x=1;x lte listLen(arguments.keys); x++){
 				thisKey = arguments.prefix & listGetAt(arguments.keys,x);
 				returnStruct[thiskey] = clear(thisKey);
 			}
@@ -423,7 +390,7 @@ Description :
 			var thisKey = "";
 			
 			//Find all the event keys.
-			for(x=1; x lte poolKeysLength; x=x++){
+			for(x=1; x lte poolKeysLength; x++){
 				// Get List Value
 				thisKey = listGetAt(poolKeys,x);
 				

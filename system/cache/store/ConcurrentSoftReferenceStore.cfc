@@ -45,8 +45,9 @@ Description :
 	<cffunction name="lookup" access="public" output="false" returntype="boolean" hint="Check if an object is in cache.">
 		<cfargument name="objectKey" type="any" required="true" hint="The key of the object">
 		<cfscript>
-			var results = super.lookup( arguments.objectKey );
-			var target  = "";
+			var results 	= super.lookup( arguments.objectKey );
+			var target 	 	= "";
+			var refLocal 	= {};
 			
 			// Check if false and return immediately
 			if( NOT results ){
@@ -54,8 +55,9 @@ Description :
 			}
 			
 			// Validate if SR or normal object and if SR is null
+			refLocal.target = getQuiet( arguments.objectKey );
 			if( getIndexer().getObjectMetadataProperty(arguments.objectKey,"isSoftReference") 
-				AND ( javaCast("null","") EQ getQuiet( arguments.objectKey ) ) ){
+				AND NOT structKeyExists(refLocal,"target") ){
 				
 				// Mark as dead
 				expireObject( arguments.objectKey );
