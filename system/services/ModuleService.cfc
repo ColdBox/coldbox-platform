@@ -267,15 +267,15 @@ I oversee and manage ColdBox modules
 				beanFactory.appendExternalLocations( mConfig.modelsInvocationPath );
 			}
 
-			// Register Model Mappings Now
+		   // Register Model Mappings Now
 			for(key in mConfig.modelMappings){
-				// Default alias check
-				if( NOT structKeyExists(mConfig.modelMappings[key], "alias") ){
-					mConfig.modelMappings[key].alias = "";
-				}
-				// Register mapping
-				beanFactory.addModelMapping(alias = listAppend(key,mConfig.modelMappings[key].alias),
-											path  = mConfig.modelMappings[key].path);
+					// Default alias check
+					if( NOT structKeyExists(key, "alias") ){
+							key.alias = "";
+					}
+					// Register mapping
+					beanFactory.addModelMapping(alias = key.alias,
+												path  = key.path);
 			}
 
 			// Call on module configuration object onLoad() if found
