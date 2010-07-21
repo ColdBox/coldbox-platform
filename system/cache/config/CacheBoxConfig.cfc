@@ -216,8 +216,9 @@ Description :
 	    <cfscript>			
 	    	var cacheConfig = getDefaultCache();
 			
+			// Append all incoming arguments to configuration, just in case using non-default arguments, maybe for stores
 			structAppend(cacheConfig, arguments);
-			
+			// coldbox enabled context
 			if( arguments.coldboxEnabled ){
 				cacheConfig.provider = variables.defaults.coldboxAppProvider;
 			}

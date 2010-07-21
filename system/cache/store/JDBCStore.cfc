@@ -9,20 +9,47 @@ Description :
 	
 You need to create the table first with the following columns
 
-id 			- varchar(100)
+id 			- varchar(100) PK
 objectKey 	- varchar(255)
-objectValue	- blob
+objectValue	- clob, longtext, etc
+createDate	- timestamp
 
 MYSQL Script
 CREATE TABLE `cacheBox` (
-  `id` varchar(100) NOT NULL DEFAULT '',
+  `id` varchar(100) NOT NULL,
   `objectKey` varchar(255) NOT NULL,
   `objectValue` longtext NOT NULL,
-  `createDate` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `createDate` datetime NOT null,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 MSSQL
+CREATE TABLE cacheBox (
+  id varchar(100) NOT NULL,
+  objectKey varchar(255) NOT NULL,
+  objectValue ntext NOT NULL,
+  createDate datetime NOT NULL
+  PRIMARY KEY (`id`)
+)
+
+Oracle, Apache Derby
+CREATE TABLE cacheBox (
+  id varchar(100) NOT NULL,
+  objectKey varchar(255) NOT NULL,
+  objectValue clob NOT NULL,
+  createDate timestamp NOT NULL
+  PRIMARY KEY (`id`)
+)
+
+POSTGRES
+CREATE TABLE cacheBox (
+  id varchar(100) NOT NULL,
+  objectKey varchar(255) NOT NULL,
+  objectValue text NOT NULL,
+  createDate timestamp NOT NULL
+  PRIMARY KEY (`id`)
+)
+
 
 ----------------------------------------------------------------------->
 <cfcomponent hint="I am a cool cool JDBC Store for CacheBox" output="false" implements="coldbox.system.cache.store.IObjectStore">
@@ -65,10 +92,11 @@ MSSQL
 			}
 			instance.tableAutoCreate = config.tableAutoCreate;
 			
-			// Check column type, use for autoCreate, defaults to longtext
-			if( NOT structKeyExists(config,"textDBType") ){
-				instance.textDBType = "longtext";
+			// table ValueType
+			if( NOT structKeyExists(config, "tableValueType") ){
+				config.tableValueType = "";
 			}
+			instance.tableValueType = config.tableValueType;
 			
 			// ensure the table
 			if( config.tableAutoCreate ){
@@ -296,15 +324,50 @@ MSSQL
 	</cffunction>
 
 	<!--- ensureTable --->
-	<cffunction name="ensureTable" output="false" access="private" returntype="void" hint="Verify or create the caching table">
-		<cfset var dsn 			= instance.dsn>
+	<cffunction name="ensureTable" output="false" access="private" returntype="void" hint="Create the caching table if necessary">
 		<cfset var qTables 		= 0>
-		<cfset var tableFound 	= false>
 		<cfset var qCreate 		= "">
+		<cfset var qDBInfo		= "">
+		<cfset var tableFound 	= false>
+		<cfset var create		= {}>
+		
+		<!--- Get DB Info --->
+		<cfdbinfo datasource="#instance.dsn#" name="qDBInfo" type="version" />
 		
 		<!--- Get Tables on this DSN --->
 		<cfdbinfo datasource="#instance.dsn#" name="qTables" type="tables" />
-
+		
+		<!--- Choose Text Type --->
+		<cfset create.afterCreate 	= "">
+		<cfswitch expression="#qDBInfo.database_productName#">
+			<cfcase value="PostgreSQL">
+				<cfset create.valueType = "text">
+				<cfset create.timeType 	= "timestamp">
+			</cfcase>
+			<cfcase value="MySQL">
+				<cfset create.valueType   = "longtext">
+				<cfset create.afterCreate = "ENGINE=InnoDB DEFAULT CHARSET=utf8">
+				<cfset create.timeType 	  = "datetime">
+			</cfcase>
+			<cfcase value="Microsoft SQL Server">
+				<cfset create.valueType = "ntext">
+				<cfset create.timeType  = "datetime">
+			</cfcase>
+			<cfcase value="Oracle,Apache Derby">
+				<cfset create.valueType = "clob">
+				<cfset create.timeType 	= "timestamp">
+			</cfcase>
+			<cfdefaultcase>
+				<cfset create.valueType = "text">
+				<cfset create.timeType 	= "timestamp">
+			</cfdefaultcase>
+		</cfswitch>
+		
+		<!--- Did user set the tableDBType --->
+		<cfif len(instance.tableValueType)>
+			<cfset create.valueType = instance.tableValueType>
+		</cfif>
+		
 		<!--- Verify it exists --->
 		<cfloop query="qTables">
 			<cfif qTables.table_name eq instance.table>
@@ -316,14 +379,14 @@ MSSQL
 		<!--- AutoCreate Table? --->
 		<cfif NOT tableFound>
 			<!--- Try to Create Table  --->
-			<cfquery name="qCreate" datasource="#dsn#">
+			<cfquery name="qCreate" datasource="#instance.dsn#">
 				CREATE TABLE #instance.table# (
 					id VARCHAR(100) NOT NULL,
 					objectKey VARCHAR(255) NOT NULL,
-					objectValue #instance.textDBType# NOT NULL,
-					createDate DATETIME NOT NULL
+					objectValue #create.valueType# NOT NULL,
+					createDate #create.timeType# NOT NULL
 					PRIMARY KEY (id)
-				)
+				) #create.afterCreate#
 			</cfquery>
 		</cfif>
 	</cffunction>

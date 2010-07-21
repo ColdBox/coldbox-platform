@@ -23,7 +23,7 @@ Description :
 	}
 	
 	function tearDown(){
-		store.clearAll();
+		//store.clearAll();
 	}
 	
 	function testClearAll(){

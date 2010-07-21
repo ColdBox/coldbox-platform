@@ -15,10 +15,20 @@ Description :
 	function setup(){
 		config = {
 			autoExpandPath = true,
-			directoryPath  = "/coldbox/testing/cacheDepot"
+			directoryPath  = "/coldbox/testing/cacheDepotInvalid"
 		};
 		mockProvider = getMockBox().createMock("coldbox.system.cache.providers.MockProvider");
 		mockProvider.$("getConfiguration", config);
+		
+		try{
+			store = getMockBox().createMock(className="coldbox.system.cache.store.DiskStore").init(mockProvider);
+			fail("this should have failed");
+		}
+		catch("DiskStore.DirectoryNotFoundException" e){}
+		catch(any e){ fail(e); }
+		
+		// good directory
+		config.directoryPath = "/coldbox/testing/cacheDepot";
 		store = getMockBox().createMock(className="coldbox.system.cache.store.DiskStore").init(mockProvider);
 	}
 	

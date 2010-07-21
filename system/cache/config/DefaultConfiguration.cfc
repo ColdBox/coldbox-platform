@@ -23,7 +23,7 @@ Description :
 			
 			// Scope registration, automatically register the cachebox factory instance on any CF scope
 			scopeRegistration = {
-				enabled = false,
+				enabled = true,
 				scope   = "server", // server, cluster, session
 				key		= "cacheBox"
 			},

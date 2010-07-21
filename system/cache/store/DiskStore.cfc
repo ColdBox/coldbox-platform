@@ -47,7 +47,7 @@ Description :
 			if( NOT directoryExists(instance.directoryPath) ){
 				getUtil().throwit(message="Directory #instance.directoryPath# does not exist",
 								  detail="Please make sure the cache directory exists",
-								  type="DirectoryNotFoundException");
+								  type="DiskStore.DirectoryNotFoundException");
 			}
 			
 			return this;
@@ -94,7 +94,13 @@ Description :
 		
 		<cflock name="DiskStore.#instance.storeID#" type="readonly" timeout="10" throwonTimeout="true">
 		<cfscript>
-			// Check if object in pool
+			// check if object is missing and in indexer
+			if( NOT instance.fileUtils.isFile( getCacheFilePath(arguments.objectKey) ) AND instance.indexer.objectExists( arguments.objectKey ) ){
+				instance.indexer.clear( arguments.objectKey );
+				return false;
+			}
+		
+			// Check if object on disk, on indexer and NOT expired
 			if( instance.fileUtils.isFile( getCacheFilePath(arguments.objectKey) ) 
 			    AND instance.indexer.objectExists( arguments.objectKey ) 
 				AND NOT instance.indexer.getObjectMetadataProperty(arguments.objectKey,"isExpired") ){
