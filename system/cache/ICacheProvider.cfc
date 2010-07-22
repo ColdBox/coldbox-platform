@@ -153,12 +153,12 @@ Description :
 
 	<!--- clear --->
 	<cffunction name="clear" access="public" output="false" returntype="boolean" hint="Clears an object from the cache by using its cache key. Returns false if object was not removed or did not exist anymore">
-		<cfargument name="objectKey" type="string" required="true" hint="The key the object was stored under.">
+		<cfargument name="objectKey" 			type="any"  	required="true" hint="The object cache key">
 	</cffunction>
 	
 	<!--- clearQuiet --->
 	<cffunction name="clearQuiet" access="public" output="false" returntype="boolean" hint="Clears an object from the cache by using its cache key. Returns false if object was not removed or did not exist anymore without doing statistics or updating listeners">
-		<cfargument name="objectKey" type="string" required="true" hint="The key the object was stored under.">
+		<cfargument name="objectKey" 			type="any"  	required="true" hint="The object cache key">
 	</cffunction>
 	
 	<!--- expireAll --->
@@ -167,7 +167,7 @@ Description :
 	
 	<!--- Expire Key --->
 	<cffunction name="expireKey" access="public" output="false" returntype="void" hint="Expires an object from the cache by using its cache key. Returns false if object was not removed or did not exist anymore (if supported by the provider)">
-		<cfargument name="objectKey" type="string" required="true" hint="The key the object was stored under.">
+		<cfargument name="objectKey" 			type="any"  	required="true" hint="The object cache key">
 	</cffunction>
 
 </cfinterface>

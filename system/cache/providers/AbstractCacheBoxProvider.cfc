@@ -74,7 +74,7 @@ Properties
 	
 	<!--- clearStatistics --->
     <cffunction name="clearStatistics" output="false" access="public" returntype="void" hint="Clear the cache statistics">
-    	<cfset instance.stats.clearStats()>
+    	<cfset instance.stats.clearStatistics()>
     </cffunction>
 
 	<!--- getConfiguration --->
@@ -212,13 +212,13 @@ Properties
 
 	<!--- clear --->
 	<cffunction name="clear" access="public" output="false" returntype="boolean" hint="Clears an object from the cache by using its cache key. Returns false if object was not removed or did not exist anymore">
-		<cfargument name="objectKey" type="string" required="true" hint="The key the object was stored under.">
+		<cfargument name="objectKey" 			type="any"  	required="true" hint="The object cache key">
 		<cfthrow message="Abstract method, please implement" type="AbstractMethodException">
 	</cffunction>
 	
 	<!--- clearQuiet --->
 	<cffunction name="clearQuiet" access="public" output="false" returntype="boolean" hint="Clears an object from the cache by using its cache key. Returns false if object was not removed or did not exist anymore without doing statistics or updating listeners">
-		<cfargument name="objectKey" type="string" required="true" hint="The key the object was stored under.">
+		<cfargument name="objectKey" 			type="any"  	required="true" hint="The object cache key">
 		<cfthrow message="Abstract method, please implement" type="AbstractMethodException">
 	</cffunction>
 	
@@ -229,7 +229,7 @@ Properties
 	
 	<!--- Expire Key --->
 	<cffunction name="expireKey" access="public" output="false" returntype="void" hint="Expires an object from the cache by using its cache key. Returns false if object was not removed or did not exist anymore">
-		<cfargument name="objectKey" type="string" required="true" hint="The key the object was stored under.">
+		<cfargument name="objectKey" 			type="any"  	required="true" hint="The object cache key">
 		<cfthrow message="Abstract method, please implement" type="AbstractMethodException">
     </cffunction>
 	

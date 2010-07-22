@@ -16,7 +16,7 @@
 	
 	<cffunction name="testclearStats" access="public" returnType="void">
 		<cfscript>
-			stats.clearStats();
+			stats.clearStatistics();
 			assertTrue(stats.getHits() eq 0);
 			assertTrue(stats.getMisses() eq 0);
 			assertTrue(stats.getEvictionCount() eq 0);

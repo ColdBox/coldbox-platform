@@ -20,7 +20,7 @@ Description :
 	</cffunction>
 	
 	<!--- clearStats --->
-	<cffunction name="clearStats" output="false" access="public" returntype="void" hint="Clear the stats">
+	<cffunction name="clearStatistics" output="false" access="public" returntype="void" hint="Clear the stats">
 	</cffunction>	
 		
 	<!--- Get/Set Garbage Collections --->

@@ -133,7 +133,7 @@ Description :
 	
 	<!--- clear --->
 	<cffunction name="clear" access="public" output="false" returntype="boolean" hint="Clears an object from the cache by using its cache key. Returns false if object was not removed or did not exist anymore">
-		<cfargument name="objectKey" type="string" required="true" hint="The key the object was stored under.">
+		<cfargument name="objectKey" 			type="any"  	required="true" hint="The object cache key">
 		<cfreturn structDelete(instance.cache, arguments.objectKey, true)>
 	</cffunction>
 	
@@ -143,7 +143,8 @@ Description :
 	
 	<!--- Expire Key --->
 	<cffunction name="expireKey" access="public" output="false" returntype="void" hint="Expires an object from the cache by using its cache key. Returns false if object was not removed or did not exist anymore">
-		<cfargument name="objectKey" type="string" required="true" hint="The key the object was stored under.">
+		<cfargument name="objectKey" 			type="any"  	required="true" hint="The object cache key">
+		
 	</cffunction>
 	
 <!------------------------------------------- ColdBox Application Cache Methods ------------------------------------------>

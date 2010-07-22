@@ -10,7 +10,7 @@ This CacheBox provider communicates with the built in caches in
 the Adobe ColdFusion Engine for ColdBox applications.
 
 */
-component serializable="false" extends="coldbox.system.cache.providers.CFProvider" implements="coldbox.system.cache.IColdboxApplicationCache"{
+component serializable="false" extends="coldbox.system.cache.providers.RailoProvider" implements="coldbox.system.cache.IColdboxApplicationCache"{
 
 	/**
     * Constructor
@@ -27,8 +27,9 @@ component serializable="false" extends="coldbox.system.cache.providers.CFProvide
 	string function getPluginCacheKeyPrefix() output=false{}
 	string function getCustomPluginCacheKeyPrefix() output=false{}
 	
-	coldbox.system.web.Controller function getColdbox() output=false{}
+	Controller function getColdbox() output=false{}
 	
+	void function getColdbox(Controller coldbox) output=false{}
 	
 	coldbox.system.cache.util.EventURLFacade function getEventURLFacade() output=false{
 	}
@@ -42,6 +43,9 @@ component serializable="false" extends="coldbox.system.cache.providers.CFProvide
 	void function clearView(required string viewSnippet) output=false{}
 	void function clearAllViews() output=false{}
 	
-	void function getColdbox(coldbox.system.web.Controller coldbox) output=false{}
+	
+	
+	
+	
 }
 			 

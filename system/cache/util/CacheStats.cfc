@@ -25,7 +25,7 @@ Description :
 			setLastReapDateTime(now());
 			
 			// Clear the stats to start fresh.
-			clearStats();
+			clearStatistics();
 			
 			return this;
 		</cfscript>
@@ -57,7 +57,7 @@ Description :
 	</cffunction>
 	
 	<!--- clear --->
-	<cffunction name="clearStats" output="false" access="public" returntype="void" hint="Clear the stats">
+	<cffunction name="clearStatistics" output="false" access="public" returntype="void" hint="Clear the stats">
 		<cfscript>
 			instance.hits 					= 0;
 			instance.misses 				= 0;

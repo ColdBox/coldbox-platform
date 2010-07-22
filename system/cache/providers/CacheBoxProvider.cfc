@@ -412,7 +412,7 @@ Properties
 
 	<!--- clearQuiet --->
 	<cffunction name="clearQuiet" access="public" output="false" returntype="boolean" hint="Clears an object from the cache by using its cache key. Returns false if object was not removed or did not exist anymore">
-		<cfargument name="objectKey" type="string" required="true" hint="The key the object was stored under.">
+		<cfargument name="objectKey" 			type="any"  	required="true" hint="The object cache key">
 		<cfset var clearCheck 	= false>
 		<cfset var objectStore	= getObjectStore()>
 		
@@ -431,7 +431,7 @@ Properties
 	
 	<!--- clear --->
 	<cffunction name="clear" access="public" output="false" returntype="boolean" hint="Clears an object from the cache by using its cache key. Returns false if object was not removed or did not exist anymore">
-		<cfargument name="objectKey" type="string" required="true" hint="The key the object was stored under.">
+		<cfargument name="objectKey" 			type="any"  	required="true" hint="The object cache key">
 		<cfscript>
 			var clearCheck = clearQuiet( arguments.objectKey );
 			var iData = {
@@ -463,7 +463,7 @@ Properties
 	
 	<!--- Clear an object from the cache --->
 	<cffunction name="clearKey" access="public" output="false" returntype="boolean" hint="Deprecated, please use clear()">
-		<cfargument name="objectKey" type="string" required="true" hint="The key the object was stored under.">
+		<cfargument name="objectKey" 			type="any"  	required="true" hint="The object cache key">
 		<cfreturn clear( arguments.objectKey )>
 	</cffunction>
 
@@ -576,7 +576,7 @@ Properties
 	<!--- Expire an Object --->
 	<cffunction name="expireKey" access="public" returntype="void" hint="Expire an Object. Use this instead of clearKey() from within handlers or any cached object, this sets the metadata for the objects to expire in the next request. Note that this is not an inmmediate expiration. Clear should only be used from outside a cached object" output="false" >
 		<!--- ************************************************************* --->
-		<cfargument name="objectKey" type="string" required="true">
+		<cfargument name="objectKey" 			type="any"  	required="true" hint="The object cache key">
 		<!--- ************************************************************* --->
 		<cfscript>
 			getObjectStore().expireObject(lcase(trim(arguments.objectKey)));
@@ -694,7 +694,7 @@ Properties
 	
 	<!--- announceExpiration --->
 	<cffunction name="announceExpiration" output="false" access="private" returntype="void" hint="Announce an Expiration">
-		<cfargument name="objectKey" type="string" required="true" hint="The object key to announce expiration"/>
+		<cfargument name="objectKey" 			type="any"  	required="true" hint="The object cache key">
 		<cfscript>
 			var interceptData = structnew();
 			// interceptData
