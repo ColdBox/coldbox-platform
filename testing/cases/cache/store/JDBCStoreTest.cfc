@@ -27,6 +27,7 @@ Description :
 	}
 	
 	function testClearAll(){
+		store.clearAll();
 		store.set("test", now(), 20);
 		assertEquals( 1, store.getSize() );
 		store.clearAll();
@@ -38,6 +39,7 @@ Description :
 	}
 	
 	function testGetKeys(){
+		store.clearAll();
 		assertEquals( arrayNew(1), store.getKeys() );
 		store.set("test", now() );
 		store.set("test1", now() );
@@ -46,13 +48,14 @@ Description :
 	}
 	
 	function testLookup(){
+		store.clearAll();
 		assertFalse( store.lookup('nada') );
 		
 		store.set("myKey","hello");
 		
 		assertTrue( store.lookup('myKey') );
 		
-		store.getIndexer().setObjectMetadataProperty("myKey","isExpired",true);
+		store.expireObject("myKey");
 		
 		assertFalse( store.lookup('myKey') );
 	}
@@ -77,12 +80,10 @@ Description :
 	function testSet(){
 		//1:Timeout = 0 (Eternal)
 		store.set('test',"123",0,0);
-		assertEquals( 0, store.getIndexer().getObjectMetadataProperty("test","timeout") );
 		assertEquals("123", store.get("test") );
 		
 		//2:Timeout = X
 		store.set('test',"123",20,20);
-		assertEquals( 20, store.getIndexer().getObjectMetadataProperty("test","timeout") );
 		assertEquals("123", store.get("test") );
 		
 		//3 complex
@@ -99,10 +100,12 @@ Description :
 		
 		store.set("test", now(), 20);
 		results = store.clear('test');
+		
 		assertTrue( results );
 	}
 
 	function testGetSize(){
+		store.clearAll();
 		assertTrue(store.getSize() eq 0);
 		store.set('test',now(),0);
 		assertTrue(store.getSize() eq 1);
