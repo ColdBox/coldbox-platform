@@ -288,7 +288,7 @@ Description :
 		<cfscript>
 			var key = "";
 			for(key in arguments){
-				category(name=arguments[key],levelMin=this.logLevels.DEBUG,levelMax=this.logLevels.DEBUG);
+				category(name=arguments[key],levelMax=this.logLevels.DEBUG);
 			}
 		</cfscript>
 	</cffunction>
@@ -298,7 +298,7 @@ Description :
 		<cfscript>
 			var key = "";
 			for(key in arguments){
-				category(name=arguments[key],levelMin=this.logLevels.INFO,levelMax=this.logLevels.INFO);
+				category(name=arguments[key],levelMax=this.logLevels.INFO);
 			}
 		</cfscript>
 	</cffunction>
@@ -308,7 +308,7 @@ Description :
 		<cfscript>
 			var key = "";
 			for(key in arguments){
-				category(name=arguments[key],levelMin=this.logLevels.WARN,levelMax=this.logLevels.WARN);
+				category(name=arguments[key],levelMax=this.logLevels.WARN);
 			}
 		</cfscript>
 	</cffunction>
@@ -318,7 +318,7 @@ Description :
 		<cfscript>
 			var key = "";
 			for(key in arguments){
-				category(name=arguments[key],levelMin=this.logLevels.ERROR,levelMax=this.logLevels.ERROR);
+				category(name=arguments[key],levelMax=this.logLevels.ERROR);
 			}
 		</cfscript>
 	</cffunction>
@@ -328,7 +328,7 @@ Description :
 		<cfscript>
 			var key = "";
 			for(key in arguments){
-				category(name=arguments[key],levelMin=this.logLevels.FATAL,levelMax=this.logLevels.FATAL);
+				category(name=arguments[key],levelMax=this.logLevels.FATAL);
 			}
 		</cfscript>
 	</cffunction>
