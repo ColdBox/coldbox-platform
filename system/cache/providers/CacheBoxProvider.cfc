@@ -20,7 +20,7 @@ Properties
 ----------------------------------------------------------------------->
 <cfcomponent hint="The coolest standalone CacheBox Provider ever built" 
 			 output="false" 
-			 extends="coldbox.system.cache.providers.AbstractCacheBoxProvider"
+			 extends="coldbox.system.cache.AbstractCacheBoxProvider"
 			 serializable="false">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->

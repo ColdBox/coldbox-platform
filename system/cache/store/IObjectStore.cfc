@@ -21,7 +21,7 @@ Description :
     </cffunction>
 	
 	<!--- getIndexer --->
-	<cffunction name="getIndexer" access="public" returntype="coldbox.system.cache.util.MetadataIndexer" output="false" hint="Get the store's pool metadata indexer structure">
+	<cffunction name="getIndexer" access="public" returntype="coldbox.system.cache.store.indexers.MetadataIndexer" output="false" hint="Get the store's pool metadata indexer structure">
 	</cffunction>
 	
 	<!--- getKeys --->

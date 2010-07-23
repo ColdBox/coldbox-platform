@@ -2,7 +2,7 @@
 <cfscript>
 
 	function setup(){
-		cp = getMockBox().createMock("coldbox.system.cache.providers.AbstractCacheBoxProvider").init();
+		cp = getMockBox().createMock("coldbox.system.cache.AbstractCacheBoxProvider").init();
 	}
 	
 	function testName(){
@@ -25,10 +25,10 @@
 
 	function testClearStatistics(){
 		mockStats = getMockBox().createMock("coldbox.system.cache.util.CacheStats");
-		mockStats.$("clearStats");
+		mockStats.$("clearStatistics");
 		cp.$property("stats","instance",mockStats);
 		cp.clearStatistics();
-		asserttrue( arrayLen(mockStats.$callLog().clearStats) );
+		asserttrue( arrayLen(mockStats.$callLog().clearStatistics) );
 		debug( mockStats.$callLog() );
 	}
 	

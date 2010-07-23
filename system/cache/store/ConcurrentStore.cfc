@@ -24,7 +24,7 @@ Description :
 				storeID 		= createObject('java','java.lang.System').identityHashCode(this),
 				cacheProvider   = arguments.cacheProvider,
 				pool			= CreateObject("java","java.util.concurrent.ConcurrentHashMap").init(),
-				indexer    		= CreateObject("component","coldbox.system.cache.util.MetadataIndexer").init(fields)
+				indexer    		= CreateObject("component","coldbox.system.cache.store.indexers.MetadataIndexer").init(fields)
 			};
 			
 			return this;
@@ -56,7 +56,7 @@ Description :
 	</cffunction>
 
 	<!--- getIndexer --->
-	<cffunction name="getIndexer" access="public" returntype="coldbox.system.cache.util.MetadataIndexer" output="false" hint="Get the store's pool metadata indexer structure">
+	<cffunction name="getIndexer" access="public" returntype="coldbox.system.cache.store.indexers.MetadataIndexer" output="false" hint="Get the store's pool metadata indexer structure">
 		<cfreturn instance.indexer >
 	</cffunction>
 	

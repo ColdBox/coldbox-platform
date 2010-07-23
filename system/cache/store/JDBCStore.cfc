@@ -69,7 +69,7 @@ Or look in the /coldbox/system/cache/store/sql/*.sql for you sql script for your
 			}
 			
 			// Indexer
-			instance.indexer = createObject("component","coldbox.system.cache.util.JDBCMetadataIndexer").init(fields,config,this);
+			instance.indexer = createObject("component","coldbox.system.cache.store.indexers.JDBCMetadataIndexer").init(fields,config,this);
 			
 			return this;
 		</cfscript>
@@ -97,7 +97,7 @@ Or look in the /coldbox/system/cache/store/sql/*.sql for you sql script for your
     </cffunction>
 
 	<!--- getIndexer --->
-	<cffunction name="getIndexer" access="public" returntype="coldbox.system.cache.util.MetadataIndexer" output="false" hint="Get the store's pool metadata indexer structure">
+	<cffunction name="getIndexer" access="public" returntype="coldbox.system.cache.store.indexers.MetadataIndexer" output="false" hint="Get the store's pool metadata indexer structure">
 		<cfreturn instance.indexer >
 	</cffunction>
 	

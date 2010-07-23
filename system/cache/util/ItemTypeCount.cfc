@@ -13,8 +13,8 @@ Description :
 
 	<cfscript>
 		this.plugins  		= 0;
+		this.customPlugins	= 0;
 		this.handlers 		= 0;
-		this.ioc_beans 		= 0;
 		this.interceptors	= 0;
 		this.events			= 0;
 		this.views			= 0;

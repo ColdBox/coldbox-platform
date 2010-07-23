@@ -13,7 +13,7 @@ Description :
 ----------------------------------------------------------------------->
 <cfcomponent output="false" 
 			 hint="This is a utility object that helps object stores keep their items indexed and pretty"
-			 extends="coldbox.system.cache.util.MetadataIndexer">
+			 extends="coldbox.system.cache.store.indexers.MetadataIndexer">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 	

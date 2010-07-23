@@ -42,21 +42,5 @@ Description :
 	<!--- Last Reap Date Time --->
 	<cffunction name="getLastReapDatetime" access="public" returntype="string" output="false" hint="Get the date/time of the last reap the cache did">
 	</cffunction>
-	
-	<!--- Record an eviction Hit --->
-	<cffunction name="evictionHit" access="public" output="false" returntype="void" hint="Record an eviction hit">
-	</cffunction>
-	
-	<!--- Record a GC Hit --->
-	<cffunction name="GCHit" access="public" output="false" returntype="void" hint="Record a garbage collection hit">
-	</cffunction>
-	
-	<!--- Record a Hit --->
-	<cffunction name="hit" access="public" output="false" returntype="void" hint="Record a hit">
-	</cffunction>
-
-	<!--- Record a Miss --->
-	<cffunction name="miss" access="public" output="false" returntype="void" hint="Record a miss">
-	</cffunction>
 
 </cfinterface>

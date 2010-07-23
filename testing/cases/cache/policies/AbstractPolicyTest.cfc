@@ -20,7 +20,7 @@ Description :
 		mockLogger	 = getMockBox().createEmptyMock("coldbox.system.logging.Logger");	
 		mockPool 	 = getMockBox().createEmptyMock(className='coldbox.system.cache.store.ConcurrentStore');
 		mockStats 	 = getMockBox().createEmptyMock(className='coldbox.system.cache.util.CacheStats');
-		mockIndexer  = getMockBox().createEmptyMock(className='coldbox.system.cache.util.MetadataIndexer');
+		mockIndexer  = getMockBox().createEmptyMock(className='coldbox.system.cache.store.indexers.MetadataIndexer');
 		
 		// Mocks
 		mockCM.$("getCacheFactory", mockFactory);

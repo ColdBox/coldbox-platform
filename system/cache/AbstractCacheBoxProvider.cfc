@@ -178,8 +178,8 @@ Properties
 		<!--- ************************************************************* --->
 		<cfargument name="objectKey" 			type="any"  	required="true" hint="The object cache key">
 		<cfargument name="object"				type="any" 		required="true" hint="The object to cache">
-		<cfargument name="timeout"				type="any"  	required="false" default="" hint="The timeout to use on the object (if any, provider specific)">
-		<cfargument name="lastAccessTimeout"	type="any" 	 	required="false" default="" hint="The idle timeout to use on the object (if any, provider specific)">
+		<cfargument name="timeout"				type="any"  	required="false" hint="The timeout to use on the object (if any, provider specific)">
+		<cfargument name="lastAccessTimeout"	type="any" 	 	required="false" hint="The idle timeout to use on the object (if any, provider specific)">
 		<cfargument name="extra" 				type="struct" 	required="false" hint="A map of name-value pairs to use as extra arguments to pass to a providers set operation"/>
 		<cfthrow message="Abstract method, please implement" type="AbstractMethodException">
     </cffunction>
@@ -189,8 +189,8 @@ Properties
 		<!--- ************************************************************* --->
 		<cfargument name="objectKey" 			type="any"  	required="true" hint="The object cache key">
 		<cfargument name="object"				type="any" 		required="true" hint="The object to cache">
-		<cfargument name="timeout"				type="any"  	required="false" default="" hint="The timeout to use on the object (if any, provider specific)">
-		<cfargument name="lastAccessTimeout"	type="any" 	 	required="false" default="" hint="The idle timeout to use on the object (if any, provider specific)">
+		<cfargument name="timeout"				type="any"  	required="false" hint="The timeout to use on the object (if any, provider specific)">
+		<cfargument name="lastAccessTimeout"	type="any" 	 	required="false" hint="The idle timeout to use on the object (if any, provider specific)">
 		<cfargument name="extra" 				type="struct" 	required="false" hint="A map of name-value pairs to use as extra arguments to pass to a providers set operation"/>
 		<cfthrow message="Abstract method, please implement" type="AbstractMethodException">
     </cffunction>

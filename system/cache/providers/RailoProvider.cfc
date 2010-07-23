@@ -7,10 +7,9 @@ Author: Luis Majano
 Description:
 	
 This CacheBox provider communicates with the built in caches in
-the Adobe ColdFusion Engine.
+the Railo Engine.
 
-TODO:
- Add user registered cache names
+TODO: test script in railo, also use their custom functions.
 
 */
 component serializable="false" implements="coldbox.system.cache.ICacheProvider"{
@@ -18,7 +17,7 @@ component serializable="false" implements="coldbox.system.cache.ICacheProvider"{
 	/**
     * Constructor
     */
-	CFProvider function init() output=false{
+	RailoProvider function init() output=false{
 		instance = {
 			name 				= "",
 			enabled 			= false,
@@ -27,20 +26,21 @@ component serializable="false" implements="coldbox.system.cache.ICacheProvider"{
 			cacheFactory 		= "",
 			eventManager		= "",
 			store				= "",
-			cacheID				= createObject('java','java.lang.System').identityHashCode(this)
+			cacheID				= createObject('java','java.lang.System').identityHashCode(this),
+			defaultCacheName	= "object"
 		};
 		return this;
 	}
 	
 	/**
-    * get cache name
+    * get the cache name
     */    
 	string function getName() output=false{
 		return instance.name;
 	}
 	
 	/**
-    * set cache name
+    * set the cache name
     */    
 	void function setName(required string name) output=false{
 		instance.name = arguments.name;
@@ -85,19 +85,27 @@ component serializable="false" implements="coldbox.system.cache.ICacheProvider"{
     * configure the cache for operation
     */
     void function configure() output=false{
+		var config = getConfiguration();
+		
 		// Prepare the logger
 		instance.logger = getCacheFactory().getLogBox().getLogger( this );
-		instance.logger.debug("Starting up CacheBox Cache: #getName()# with configuration: #cacheConfig.toString()#");
+		instance.logger.debug("Starting up CFProvider Cache: #getName()# with configuration: #config.toString()#");
+		
+		// link cacheName according to property if defined, else use default
+		if( NOT structKeyExists(config,"cacheName") ){
+			config.cacheName = instance.defaultCacheName;
+		}
 		
 		// enabled cache
 		instance.enabled = true;
+		instance.logger.info("Cache #getName()# started up successfully");
 	}
 	
 	/**
     * shutdown the cache
     */
     void function shutdown() output=false{
-		instance.logger.info("CacheBox Cache: #getName()# has been shutdown.");
+		instance.logger.info("CFProvider Cache: #getName()# has been shutdown.");
 	}
 	
 	/*
@@ -119,7 +127,7 @@ component serializable="false" implements="coldbox.system.cache.ICacheProvider"{
 	* @colddoc:generic coldbox.system.cache.util.ICacheStats
 	*/
 	any function getStats() output=false{
-		//TODO
+		return CreateObject("component", "coldbox.system.cache.providers.cf-lib.CFStats").init( getObjectStore().getStatistics() );		
 	}
 	
 	/**
@@ -130,10 +138,11 @@ component serializable="false" implements="coldbox.system.cache.ICacheProvider"{
 	}
 	
 	/**
-    * Returns the ehCache storage session
+    * Returns the ehCache storage session according to configured cache name
     */
     any function getObjectStore() output=false{
-		return cacheGetSession("object");
+		// get the cache session according to set name
+		return cacheGetSession( getConfiguration().cacheName );
 	}
 	
 	/**
@@ -168,7 +177,10 @@ component serializable="false" implements="coldbox.system.cache.ICacheProvider"{
     * get an item silently from cache, no stats advised
     */
     any function getQuiet(required any objectKey) output=false{
-		return getObjectStore().getQuiet( ucase(arguments.objectKey) );
+		var element = getObjectStore().getQuiet( ucase(arguments.objectKey) );
+		if( NOT isNull(element) ){
+			return element.getValue();
+		}
 	}
 	
 	/**
@@ -198,21 +210,33 @@ component serializable="false" implements="coldbox.system.cache.ICacheProvider"{
     */
     boolean function set(required any objectKey,
 						 required any object,
-						 any timeout="",
-						 any lastAccessTimeout="",
+						 any timeout="0",
+						 any lastAccessTimeout="0",
 						 struct extra) output=false{
 		
-		return setQuiet(argumentCollection=arguments);
+		setQuiet(argumentCollection=arguments);
+		
+		//ColdBox events
+		var iData = { 
+			cache				= this,
+			cacheObject			= arguments.object,
+			cacheObjectKey 		= arguments.objectKey,
+			cacheObjectTimeout 	= arguments.timeout,
+			cacheObjectLastAccessTimeout = arguments.lastAccessTimeout
+		};		
+		getEventManager().processState("afterCacheElementInsert",iData);
+		
+		return true;
 	}	
 	
 	/**
     * set an object in cache with no stats
     */
     boolean function setQuiet(required any objectKey,
-						 	  required any object,
-						 	  any timeout="",
-						 	  any lastAccessTimeout="",
-						  	  struct extra) output=false{
+						 	   required any object,
+						 	   any timeout="0",
+						 	   any lastAccessTimeout="0",
+						  	   struct extra) output=false{
 		
 		cachePut(arguments.objectKey,arguments.object,arguments.timeout,arguments.lastAccessTimeout);
 		
@@ -230,7 +254,7 @@ component serializable="false" implements="coldbox.system.cache.ICacheProvider"{
     * Not implemented, let ehCache due its thang!
     */
     void function reap() output=false{
-		// Not implemented, let ehCache due its thang!
+		// Not implemented, let ehCache due its thang!		
 	}
 	
 	/**
@@ -245,6 +269,14 @@ component serializable="false" implements="coldbox.system.cache.ICacheProvider"{
     */
     boolean function clear(required any objectKey) output=false{
 		cacheRemove( arguments.objectKey );
+		
+		//ColdBox events
+		var iData = { 
+			cache				= this,
+			cacheObjectKey 		= arguments.objectKey
+		};		
+		getEventManager().processState("afterCacheElementRemoved",iData);
+		
 		return true;
 	}
 	
@@ -278,4 +310,3 @@ component serializable="false" implements="coldbox.system.cache.ICacheProvider"{
 	}
 
 }
-			 

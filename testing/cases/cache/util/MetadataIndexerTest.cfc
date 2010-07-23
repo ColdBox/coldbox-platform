@@ -2,7 +2,7 @@
 <cfscript>
 
 	function setup(){
-		index = getMockBox().createMock("coldbox.system.cache.util.MetadataIndexer").init("hits,timeout,created,lastAccessed");
+		index = getMockBox().createMock("coldbox.system.cache.store.indexers.MetadataIndexer").init("hits,timeout,created,lastAccessed");
 	}
 
 	function testGetFields(){
