@@ -142,11 +142,6 @@ Description :
 	}
 	
 	function testgetSoftRefKey(){
-		/*1: not found */
-		store.$("getSoftRefKeyMap",structnew());
-		assertEquals( store.getSoftRefKey('nada'), "NOT_FOUND" );
-		
-		//2: Found
 		map = {softRef='123'};
 		store.$("getSoftRefKeyMap",map);
 		assertEquals(map.softRef, store.getSoftRefKey('softRef') );

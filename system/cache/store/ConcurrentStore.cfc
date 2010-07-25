@@ -16,15 +16,15 @@ Description :
 	<cffunction name="init" access="public" output="false" returntype="ConcurrentStore" hint="Constructor">
 		<cfargument name="cacheProvider" type="any" required="true" hint="The associated cache provider as coldbox.system.cache.ICacheProvider" colddoc:generic="coldbox.system.cache.ICacheProvider"/>
 		<cfscript>
-			// Store Fields
+			// Indexing Fields
 			var fields = "hits,timeout,lastAccessTimeout,created,lastAccesed,isExpired";
 			
 			// Prepare instance
 			instance = {
-				storeID 		= createObject('java','java.lang.System').identityHashCode(this),
 				cacheProvider   = arguments.cacheProvider,
-				pool			= CreateObject("java","java.util.concurrent.ConcurrentHashMap").init(),
-				indexer    		= CreateObject("component","coldbox.system.cache.store.indexers.MetadataIndexer").init(fields)
+				storeID 		= createObject('java','java.lang.System').identityHashCode(this),
+				pool			= createObject("java","java.util.concurrent.ConcurrentHashMap").init(),
+				indexer    		= createObject("component","coldbox.system.cache.store.indexers.MetadataIndexer").init(fields)
 			};
 			
 			return this;
@@ -57,7 +57,7 @@ Description :
 
 	<!--- getIndexer --->
 	<cffunction name="getIndexer" access="public" returntype="coldbox.system.cache.store.indexers.MetadataIndexer" output="false" hint="Get the store's pool metadata indexer structure">
-		<cfreturn instance.indexer >
+		<cfreturn instance.indexer>
 	</cffunction>
 	
 	<!--- getKeys --->
@@ -68,9 +68,11 @@ Description :
 	<!--- lookup --->
 	<cffunction name="lookup" access="public" output="false" returntype="boolean" hint="Check if an object is in cache.">
 		<cfargument name="objectKey" type="any" required="true" hint="The key of the object">
+		
+		<cflock name="ConcurrentStore.#arguments.objectKey#" type="readonly" timeout="10" throwonTimeout="true">
 		<cfscript>
 			// Check if object in pool and object not dead
-			if( structKeyExists(instance.pool, arguments.objectKey)  
+			if( structKeyExists( instance.pool , arguments.objectKey)  
 			    AND instance.indexer.objectExists( arguments.objectKey ) 
 				AND NOT instance.indexer.getObjectMetadataProperty(arguments.objectKey,"isExpired") ){
 				return true;
@@ -78,11 +80,14 @@ Description :
 			
 			return false;
 		</cfscript>
+		</cflock>
 	</cffunction>
 	
 	<!--- get --->
 	<cffunction name="get" access="public" output="false" returntype="any" hint="Get an object from cache">
 		<cfargument name="objectKey" type="any" required="true" hint="The key of the object">
+		
+		<cflock name="ConcurrentStore.#arguments.objectKey#" type="readonly" timeout="10" throwonTimeout="true">
 		<cfscript>
 			// Record Metadata Access
 			instance.indexer.setObjectMetadataProperty(arguments.objectKey,"hits", instance.indexer.getObjectMetadataProperty(arguments.objectKey,"hits")+1);
@@ -91,6 +96,7 @@ Description :
 			// return object
 			return instance.pool[arguments.objectKey];
 		</cfscript>
+		</cflock>
 	</cffunction>
 	
 	<!--- getQuiet --->
@@ -120,9 +126,11 @@ Description :
 		<cfargument name="lastAccessTimeout"	type="any"  required="false" default="" hint="Timeout in minutes">
 		<cfargument name="extras" 				type="struct" default="#structnew()#" hint="A map of extra name-value pairs"/>
 		<!--- ************************************************************* --->
+		
+		<cfset var metadata = {}>
+		
+		<cflock name="ConcurrentStore.#arguments.objectKey#" type="exclusive" timeout="10" throwonTimeout="true">
 		<cfscript>
-			var metaData 	= structnew();
-			
 			// Set new Object into cache pool
 			instance.pool[arguments.objectKey] = arguments.object;
 			
@@ -139,14 +147,18 @@ Description :
 			// Save the object's metadata
 			instance.indexer.setObjectMetadata(arguments.objectKey, metaData);
 		</cfscript>
+		</cflock>
 	</cffunction>
 
 	<!--- Clear an object from the pool --->
 	<cffunction name="clear" access="public" output="false" returntype="boolean" hint="Clears an object from the storage pool">
 		<cfargument name="objectKey" 			type="any"  required="true" hint="The object key">
-		<cfscript>
-			var target = "";
 		
+		<cfset var target = "">
+		
+		<cflock name="ConcurrentStore.#arguments.objectKey#" type="exclusive" timeout="10" throwonTimeout="true">
+		<cfscript>
+			
 			// Check if it exists
 			if( NOT structKeyExists(instance.pool, arguments.objectKey) ){
 				return false;
@@ -159,11 +171,12 @@ Description :
 			// Removed
 			return true;
 		</cfscript>
+		</cflock>
 	</cffunction>
 
 	<!--- Get the size of the pool --->
 	<cffunction name="getSize" access="public" output="false" returntype="numeric" hint="Get the cache's size in items">
-		<cfreturn getPool().size()>
+		<cfreturn structCount( instance.pool )>
 	</cffunction>
 
 <!------------------------------------------- PRIVATE ------------------------------------------->

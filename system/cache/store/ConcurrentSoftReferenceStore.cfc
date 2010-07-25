@@ -18,12 +18,12 @@ Description :
 		<cfargument name="cacheProvider" type="any" required="true" hint="The associated cache provider as coldbox.system.cache.ICacheProvider" colddoc:generic="coldbox.system.cache.ICacheProvider"/>
 		<cfscript>
 			// Super size me
-			super.init(arguments.cacheProvider);
+			super.init( arguments.cacheProvider );
 			
 			// Override Fields
 			getIndexer().setFields( getIndexer().getFields() & ",isSoftReference");
 			
-			// Prepare instance
+			// Prepare soft reference lookup maps
 			instance.softRefKeyMap	 = CreateObject("java","java.util.concurrent.ConcurrentHashMap").init();
 			instance.referenceQueue  = CreateObject("java","java.lang.ref.ReferenceQueue").init();
 			
@@ -44,10 +44,13 @@ Description :
 	<!--- lookup --->
 	<cffunction name="lookup" access="public" output="false" returntype="boolean" hint="Check if an object is in cache.">
 		<cfargument name="objectKey" type="any" required="true" hint="The key of the object">
+		
+		<cfset var results 	= super.lookup( arguments.objectKey )>
+		<cfset var target 	= "">
+		<cfset var refLocal = {}>
+			
+		<cflock name="ConcurrentSoftReferenceStore.#arguments.objectKey#" type="readonly" timeout="10" throwonTimeout="true">
 		<cfscript>
-			var results 	= super.lookup( arguments.objectKey );
-			var target 	 	= "";
-			var refLocal 	= {};
 			
 			// Check if false and return immediately
 			if( NOT results ){
@@ -67,6 +70,7 @@ Description :
 			//found
 			return true;			
 		</cfscript>
+		</cflock>
 	</cffunction>
 	
 	<!--- Get an object from the pool --->
@@ -93,7 +97,7 @@ Description :
 		<cfscript>
 			var target = 0;
 			
-			// Get via concurrent store
+			// Get via concurrent store, locking already done here
 			target = super.getQuiet( arguments.objectKey );
 			
 			// Validate if SR or normal object
@@ -110,13 +114,17 @@ Description :
 		<!--- ************************************************************* --->
 		<cfargument name="objectKey" 			type="any"  required="true" hint="The object key">
 		<cfargument name="object"				type="any" 	required="true" hint="The object to save">
-		<cfargument name="timeout"				type="any"  required="false" default="" hint="Timeout in minutes">
-		<cfargument name="lastAccessTimeout"	type="any"  required="false" default="" hint="Timeout in minutes">
+		<cfargument name="timeout"				type="any"  required="false" default="0" hint="Timeout in minutes">
+		<cfargument name="lastAccessTimeout"	type="any"  required="false" default="0" hint="Idle Timeout in minutes">
 		<cfargument name="extras" 				type="struct" default="#structnew()#" hint="A map of extra name-value pairs"/>
 		<!--- ************************************************************* --->
+		
+		<cfset var target 	= 0>
+		<cfset var isSR	= (arguments.timeout GT 0)>
+		
+		<!--- Extra lock due to extra md --->
+		<cflock name="ConcurrentSoftReferenceStore.#arguments.objectKey#" type="exclusive" timeout="10" throwonTimeout="true">
 		<cfscript>
-			var target 	= 0;
-			var isSR	= (arguments.timeout GT 0);
 			
 			// Check for eternal object
 			if( isSR ){
@@ -137,14 +145,18 @@ Description :
 			// Set extra md in indexer
 			getIndexer().setObjectMetadataProperty(arguments.objectKey,"isSoftReference", isSR );
 		</cfscript>
+		</cflock>
 	</cffunction>
 
 	<!--- Clear an object from the pool --->
 	<cffunction name="clear" access="public" output="false" returntype="boolean" hint="Clears an object from the storage pool">
 		<cfargument name="objectKey" 			type="any"  required="true" hint="The object key">
-		<cfscript>
-			var softRef = "";
 		
+		<cfset var softRef = "">
+		
+		<cflock name="ConcurrentSoftReferenceStore.#arguments.objectKey#" type="exclusive" timeout="10" throwonTimeout="true">
+		<cfscript>
+			
 			// Check if it exists
 			if( NOT structKeyExists(instance.pool, arguments.objectKey) ){
 				return false;
@@ -160,6 +172,7 @@ Description :
 			
 			return super.clear( arguments.objectKey );
 		</cfscript>
+		</cflock>
 	</cffunction>
 
 	<!--- getReferenceQueue --->
@@ -187,9 +200,6 @@ Description :
 			if( structKeyExists(keyMap,arguments.softRef) ){
 				return keyMap[arguments.softRef];
 			}
-			
-			// TODO: check why I do this? DOn't remember
-			return "NOT_FOUND";
 		</cfscript>
 	</cffunction>
 

@@ -22,8 +22,8 @@ Description :
 			
 			// Prepare instance
 			instance = {
-				storeID 		= createObject('java','java.lang.System').identityHashCode(this),
 				cacheProvider   = arguments.cacheProvider,
+				storeID 		= createObject('java','java.lang.System').identityHashCode(this),
 				indexer    		= createObject("component","coldbox.system.cache.store.indexers.MetadataIndexer").init(fields),
 				converter 		= createObject("component","coldbox.system.core.conversion.ObjectMarshaller").init(),
 				fileUtils		= createObject("component","coldbox.system.core.util.FileUtils")
@@ -67,15 +67,11 @@ Description :
 	
 	<!--- clearAll --->
     <cffunction name="clearAll" output="false" access="public" returntype="void" hint="Clear all elements of the store">
-		
-		<cflock name="DiskStore.#instance.storeID#" type="exclusive" timeout="10" throwonTimeout="true">
-			<cfscript>
-				instance.fileUtils.directoryRemove(path=instance.directoryPath,recurse=true);
-				instance.indexer.clearAll();
-				instance.fileUtils.directoryCreate(path=instance.directoryPath);
-			</cfscript>
-		</cflock>
-		
+		<cfscript>
+			instance.fileUtils.directoryRemove(path=instance.directoryPath,recurse=true);
+			instance.indexer.clearAll();
+			instance.fileUtils.directoryCreate(path=instance.directoryPath);
+		</cfscript>
     </cffunction>
 
 	<!--- getIndexer --->
@@ -92,7 +88,7 @@ Description :
 	<cffunction name="lookup" access="public" output="false" returntype="boolean" hint="Check if an object is in cache.">
 		<cfargument name="objectKey" type="any" required="true" hint="The key of the object">
 		
-		<cflock name="DiskStore.#instance.storeID#" type="readonly" timeout="10" throwonTimeout="true">
+		<cflock name="DiskStore.#arguments.objectKey#" type="readonly" timeout="10" throwonTimeout="true">
 		<cfscript>
 			// check if object is missing and in indexer
 			if( NOT instance.fileUtils.isFile( getCacheFilePath(arguments.objectKey) ) AND instance.indexer.objectExists( arguments.objectKey ) ){
@@ -131,7 +127,7 @@ Description :
 		
 		<cfset var thisFilePath = getCacheFilePath(arguments.objectKey)>
 		
-		<cflock name="DiskStore.#instance.storeID#" type="readonly" timeout="10" throwonTimeout="true">
+		<cflock name="DiskStore.#arguments.objectKey#" type="exclusive" timeout="10" throwonTimeout="true">
 		<cfscript>
 			// if simple value, just return it
 			if( instance.indexer.getObjectMetadataProperty(arguments.objectKey,"isSimple") ){
@@ -180,20 +176,20 @@ Description :
 			isSimple = true
 		}>
 			
-		<cflock name="DiskStore.#instance.storeID#" type="exclusive" timeout="10" throwonTimeout="true">
-			<cfscript>
-				// If simple value just write it out to disk
-				if( isSimpleValue(arguments.object) ){
-					instance.fileUtils.saveFile( thisFilePath, arguments.object );
-				}
-				else{
-					// serialize it
-					instance.converter.serializeObject(arguments.object, thisFilePath);
-					metaData.isSimple = false;
-				}
-				// Save the object's metadata
-				instance.indexer.setObjectMetadata(arguments.objectKey, metaData);
-			</cfscript>		
+		<cflock name="DiskStore.#arguments.objectKey#" type="exclusive" timeout="10" throwonTimeout="true">
+		<cfscript>
+			// If simple value just write it out to disk
+			if( isSimpleValue(arguments.object) ){
+				instance.fileUtils.saveFile( thisFilePath, arguments.object );
+			}
+			else{
+				// serialize it
+				instance.converter.serializeObject(arguments.object, thisFilePath);
+				metaData.isSimple = false;
+			}
+			// Save the object's metadata
+			instance.indexer.setObjectMetadata(arguments.objectKey, metaData);
+		</cfscript>		
 		</cflock>
 	</cffunction>
 
@@ -203,20 +199,19 @@ Description :
 		
 		<cfset var thisFilePath = getCacheFilePath(arguments.objectKey)>
 		
-		<!--- Check if it exists?No return false --->
-		<cfif NOT instance.fileUtils.isFile( thisFilePath )>
-			<cfreturn false>
-		</cfif>
-		
-		<cflock name="DiskStore.#instance.storeID#" type="exclusive" timeout="10" throwonTimeout="true">
+		<cflock name="DiskStore.#arguments.objectKey#" type="exclusive" timeout="10" throwonTimeout="true">
 			<cfscript>
+			// check it
+			if( NOT instance.fileUtils.isFile(thisFilePath) ){
+				return false;
+			}
 			// Remove it
 			instance.fileUtils.removeFile( thisFilePath );
 			instance.indexer.clear( arguments.objectKey );
+			
+			return true;
 			</cfscript>	
 		</cflock>
-		
-		<cfreturn true>		
 	</cffunction>
 
 	<!--- Get the size of the pool --->
@@ -230,7 +225,7 @@ Description :
     <cffunction name="getCacheFilePath" output="false" access="private" returntype="any" hint="Get the cached file path">
     	<cfargument name="objectKey" type="any" required="true" hint="The key of the object">
 		<cfscript>
-			return instance.directoryPath & "/" & hash(arguments.objectKey) & ".cache";
+			return instance.directoryPath & "/" & hash(arguments.objectKey) & ".cachebox";
 		</cfscript>
     </cffunction>
 	
