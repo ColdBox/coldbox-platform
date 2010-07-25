@@ -22,7 +22,7 @@ Description :
 		mockFactory.$("getLogBox",mockLogBox);
 		mockLogBox.$("getLogger", mockLogger);
 		mockLogger.$("error").$("debug").$("info");
-		mockEventManager.$("process");
+		mockEventManager.$("processState");
 		
 		// Config 
 		config = {
@@ -106,7 +106,226 @@ Description :
 		assertFalse( isDefined("results") );
 		assertEquals( 1, cache.getStats().getMisses() );
 	}
+	
+	function testGetQuiet(){
+		testVal = {name="luis", age=32};
+		cache.getObjectStore().set("test",testVal,20);
+		cache.clearStatistics();
+	
+		results = cache.getQuiet("test");
+		assertEquals( results, testval );
+		assertEquals( 0, cache.getStats().getMisses() );
+		assertEquals( 0, cache.getStats().getHits() );
+	}
+	
+	function testGetMulti(){
+		testVal = {name="luis", age=32};
+		cache.getObjectStore().set("test",testVal,20);
+		cache.clearStatistics();
+	
+		results = cache.getMulti("test,test2");
+		debug(results);
+		
+		assertEquals( testVal, results.test );
+		assertFalse( structKeyExists(results,"test2") );
+		
+	}
 
+	function testgetCachedObjectMetadata(){
+		testVal = {name="luis", age=32};
+		cache.getObjectStore().set("test",testVal,20);
+		cache.clearStatistics();
+	
+		results = cache.getCachedObjectMetadata("test");
+		debug(results);
+		
+		assertEquals( 1, results.hits);
+	}
+	
+	function testset(){
+		testVal = {name="luis", age=32};
+		cache.set("test",testVal,20);
+		
+		assertEquals( testVal, cache.get("test") );
+		assertEquals( 1, arrayLen(mockEventManager.$callLog().processState) );
+		md = cache.getCachedObjectMetadata("test");
+		assertEquals( 20, md.timeout );
+		assertEquals( config.objectDefaultLastAccessTimeout, md.lastAccesstimeout );
+		
+		cache.set("test",testVal,20,20);
+		assertEquals( testVal, cache.get("test") );
+		md = cache.getCachedObjectMetadata("test");
+		assertEquals( 20, md.timeout );
+		assertEquals( 20, md.lastAccesstimeout );
+		
+		cache.set("test",testVal);
+		assertEquals( testVal, cache.get("test") );
+		md = cache.getCachedObjectMetadata("test");
+		assertEquals( config.objectDefaultTimeout, md.timeout );
+		assertEquals( config.objectDefaultLastAccessTimeout, md.lastAccesstimeout );
+	}
+	
+	function testsetQuiet(){
+		testVal = {name="luis", age=32};
+		cache.setQuiet("test",testVal,20);
+		
+		assertEquals( testVal, cache.get("test") );
+		assertEquals( 0, arrayLen(mockEventManager.$callLog().processState) );
+	}
+	
+	function testSetMulti(){
+		test = {
+			key1 = now(),
+			key2 = this
+		};
+		cache.setMulti(test);
+		
+		assertEquals( test.key1, cache.get("key1") );
+		assertEquals( test.key2, cache.get("key2") );
+	}
+
+	function testClearMulti(){
+		test = {
+			key1 = now(),
+			key2 = this
+		};
+		cache.setMulti(test);
+		
+		cache.clearMulti("key1,key2");
+		
+		assertFalse( cache.lookup("key1") );
+		assertFalse( cache.lookup("key2") );
+		
+	}
+	
+	function testClearQuiet(){
+		test = {
+			key1 = now(),
+			key2 = this
+		};
+		cache.setQuiet("key1",test.key1);
+		
+		cache.clearQuiet("key1");
+		
+		assertFalse( cache.lookup("key1") );
+		assertEquals( 0, arrayLen(mockEventManager.$callLog().processState) );
+	}
+	
+	function testClear(){
+		test = {
+			key1 = now(),
+			key2 = this
+		};
+		cache.setQuiet("key1",test.key1);
+		
+		cache.clear("key1");
+		
+		assertFalse( cache.lookup("key1") );
+		assertEquals( 1, arrayLen(mockEventManager.$callLog().processState) );
+	}
+	
+	function testClearAll(){
+		test = {
+			key1 = now(),
+			key2 = this
+		};
+		cache.setMulti(test);
+		
+		cache.clearAll();
+		
+		assertFalse( cache.lookup("key1") );
+		assertFalse( cache.lookup("key2") );
+		
+		assertEquals( 3, arrayLen(mockEventManager.$callLog().processState) );
+	}
+	
+	function testGetSize(){
+		test = {
+			key1 = now(),
+			key2 = this
+		};
+		cache.setMulti(test);
+		
+		assertEquals(2, cache.getSize() );
+		
+	}
+	
+	function testExpireObjectAndIsExpired(){
+		test = {
+			key1 = now(),
+			key2 = this
+		};
+		cache.set("test", test);
+		cache.expireObject("test");
+		
+		assertTrue( cache.isExpired("test") );	
+		
+		cache.set("test3", test);
+		assertFalse( cache.isExpired("test3") );		
+	}
+	
+	function testExpireByKeySnippet(){
+		test = {
+			key1 = now(),
+			key2 = this
+		};
+		cache.set("test1", test.key1);
+		cache.set("test2", test.key2);
+		
+		cache.expireByKeySnippet("tes",true);
+		
+		assertTrue( cache.isExpired("test1") );	
+		assertTrue( cache.isExpired("test2") );	
+			
+	}
+	
+	function testExpireAll(){
+		test = {
+			key1 = now(),
+			key2 = this
+		};
+		cache.set("test1", test.key1);
+		cache.set("test2", test.key2);
+		
+		cache.expireAll();
+		
+		assertTrue( cache.isExpired("test1") );	
+		assertTrue( cache.isExpired("test2") );	
+			
+	}
+	
+	function testGetKeys(){
+		test = {
+			key1 = now(),
+			key2 = this
+		};
+		cache.set("test1", test.key1);
+		cache.set("test2", test.key2);
+		
+		keys = cache.getKeys();
+		
+		assertTrue( keys.contains("test1") );	
+		assertTrue( keys.contains("test2") );	
+			
+	}
+	
+	function testReap(){
+		test = {
+			key1 = now(),
+			key2 = this
+		};
+		cache.set("test1", test.key1);
+		cache.set("test2", test.key2);
+		
+		cache.expireAll();
+		
+		makePublic(cache,"_reap");
+		cache._reap();
+		
+		debug( cache.$callLog() );
+		assertEquals( 0, cache.getSize() );
+			
+	}
 
 </cfscript>
 </cfcomponent>

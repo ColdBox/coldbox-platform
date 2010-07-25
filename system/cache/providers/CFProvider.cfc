@@ -28,8 +28,14 @@ component serializable="false" implements="coldbox.system.cache.ICacheProvider"{
 			eventManager		= "",
 			store				= "",
 			cacheID				= createObject('java','java.lang.System').identityHashCode(this),
-			defaultCacheName	= "object"
+			defaultCacheName	= "object",
+			// Element Cleaner Helper
+			elementCleaner		= CreateObject("component","coldbox.system.cache.util.ElementCleaner").init(this),
+			// Utilities
+			utility				= createObject("component","coldbox.system.core.util.Util"),
+			uuidHelper			= createobject("java", "java.util.UUID")
 		};
+		
 		return this;
 	}
 	
@@ -88,18 +94,22 @@ component serializable="false" implements="coldbox.system.cache.ICacheProvider"{
     void function configure() output=false{
 		var config = getConfiguration();
 		
-		// Prepare the logger
-		instance.logger = getCacheFactory().getLogBox().getLogger( this );
-		instance.logger.debug("Starting up CFProvider Cache: #getName()# with configuration: #config.toString()#");
+		lock name="CFProvider.config.#instance.cacheID#" type="exclusive" throwontimeout="true" timeout="20"{
 		
-		// link cacheName according to property if defined, else use default
-		if( NOT structKeyExists(config,"cacheName") ){
-			config.cacheName = instance.defaultCacheName;
+			// Prepare the logger
+			instance.logger = getCacheFactory().getLogBox().getLogger( this );
+			instance.logger.debug("Starting up CFProvider Cache: #getName()# with configuration: #config.toString()#");
+			
+			// link cacheName according to property if defined, else use default
+			if( NOT structKeyExists(config,"cacheName") ){
+				config.cacheName = instance.defaultCacheName;
+			}
+			
+			// enabled cache
+			instance.enabled = true;
+			instance.logger.info("Cache #getName()# started up successfully");
 		}
 		
-		// enabled cache
-		instance.enabled = true;
-		instance.logger.info("Cache #getName()# started up successfully");
 	}
 	
 	/**
@@ -290,6 +300,23 @@ component serializable="false" implements="coldbox.system.cache.ICacheProvider"{
 	}
 	
 	/**
+	* Clear by key snippet
+	*/
+	void function clearByKeySnippet(required string keySnippet, boolean regex=false, boolean async=false) output=false{
+		var threadName = "clearByKeySnippet_#replace(instance.uuidHelper.randomUUID(),"-","","all")#";
+		
+		// Async? IF so, do checks
+		if( arguments.async AND NOT instance.util.inThread() ){
+			thread name="#threadName#"{
+				instance.elementCleaner.clearByKeySnippet(arguments.keySnippet,arguments.regex);
+			}
+		}
+		else{
+			instance.elementCleaner.clearByKeySnippet(arguments.keySnippet,arguments.regex);
+		}
+	}
+	
+	/**
     * not implemented by cache
     */
     void function expireAll() output=false{ 
@@ -299,7 +326,7 @@ component serializable="false" implements="coldbox.system.cache.ICacheProvider"{
 	/**
     * not implemented by cache
     */
-    void function expireKey(required any objectKey) output=false{
+    void function expireObject(required any objectKey) output=false{
 		//not implemented
 	}
 	

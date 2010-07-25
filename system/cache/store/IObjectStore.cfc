@@ -16,6 +16,10 @@ Description :
     <cffunction name="flush" output="false" access="public" returntype="void" hint="Flush the store to a permanent storage">
     </cffunction>
 	
+	<!--- reap --->
+    <cffunction name="reap" output="false" access="public" returntype="void" hint="Reap the storage, clean it from old stuff">
+    </cffunction>
+	
 	<!--- clearAll --->
     <cffunction name="clearAll" output="false" access="public" returntype="void" hint="Clear all elements of the store">
     </cffunction>

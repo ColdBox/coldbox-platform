@@ -165,8 +165,8 @@ Description :
     <cffunction name="expireAll" output="false" access="public" returntype="void" hint="Expire all the elments in the cache (if supported by the provider)">
     </cffunction>
 	
-	<!--- Expire Key --->
-	<cffunction name="expireKey" access="public" output="false" returntype="void" hint="Expires an object from the cache by using its cache key. Returns false if object was not removed or did not exist anymore (if supported by the provider)">
+	<!--- expireObject --->
+	<cffunction name="expireObject" access="public" output="false" returntype="void" hint="Expires an object from the cache by using its cache key. Returns false if object was not removed or did not exist anymore (if supported by the provider)">
 		<cfargument name="objectKey" 			type="any"  	required="true" hint="The object cache key">
 	</cffunction>
 

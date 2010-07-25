@@ -40,6 +40,7 @@ Description :
 					"afterCacheElementRemoved",
 					"afterCacheElementExpired",
 					"afterCacheElementUpdated",
+					"afterCacheClearAll",
 					"afterCacheRegistration",
 					"afterCacheRemoval", 
 					"beforeCacheRemoval",
@@ -248,7 +249,7 @@ Description :
 			
 			if( scopeInfo.enabled ){
 				scopeStorage = createObject("component","coldbox.system.core.collections.ScopeStorage").init();
-				scopeStorage.remove(scopeInfo.key, scopeInfo.scope);
+				scopeStorage.delete(scopeInfo.key, scopeInfo.scope);
 			}
 		</cfscript>
     </cffunction>
@@ -451,7 +452,7 @@ Description :
     		var scopeInfo 		= instance.config.getScopeRegistration();
 			var scopeStorage	= createObject("component","coldbox.system.core.collections.ScopeStorage").init();
 			// register factory with scope
-			scopeStorage.put(scopeInfo.key, scopeInfo.scope, this);
+			scopeStorage.put(scopeInfo.key, this, scopeInfo.scope);
 		</cfscript>
     </cffunction>
 	

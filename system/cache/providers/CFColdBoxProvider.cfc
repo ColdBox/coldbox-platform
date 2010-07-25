@@ -25,12 +25,6 @@ component serializable="false" extends="coldbox.system.cache.providers.CFProvide
 		
 		// URL Facade Utility
 		eventURLFacade		= CreateObject("component","coldbox.system.cache.util.EventURLFacade").init(this);
-		// Element Cleaner Helper
-		elementCleaner		= CreateObject("component","coldbox.system.cache.util.ElementCleaner").init(this);
-		
-		// Utilities
-		utility				= createObject("component","coldbox.system.core.util.Util");
-		uuidHelper			= createobject("java", "java.util.UUID");
 		
 		return this;
 	}
@@ -87,16 +81,16 @@ component serializable="false" extends="coldbox.system.cache.providers.CFProvide
 	* Clear all events
 	*/
 	void function clearAllEvents(boolean async=false) output=false{
-		var threadName = "clearAllEvents_#replace(uuidHelper.randomUUID(),"-","","all")#";
+		var threadName = "clearAllEvents_#replace(instance.uuidHelper.randomUUID(),"-","","all")#";
 		
 		// Async? IF so, do checks
-		if( arguments.async AND NOT util.inThread() ){
+		if( arguments.async AND NOT instance.util.inThread() ){
 			thread name="#threadName#"{
-				elementCleaner.clearAllEvents();
+				instance.elementCleaner.clearAllEvents();
 			}
 		}
 		else{
-			elementCleaner.clearAllEvents();
+			instance.elementCleaner.clearAllEvents();
 		}		
 	}
 	
@@ -104,33 +98,16 @@ component serializable="false" extends="coldbox.system.cache.providers.CFProvide
 	* Clear all views
 	*/
 	void function clearAllViews(boolean async=false) output=false{
-		var threadName = "clearAllViews_#replace(uuidHelper.randomUUID(),"-","","all")#";
+		var threadName = "clearAllViews_#replace(instance.uuidHelper.randomUUID(),"-","","all")#";
 		
 		// Async? IF so, do checks
-		if( arguments.async AND NOT util.inThread() ){
+		if( arguments.async AND NOT instance.util.inThread() ){
 			thread name="#threadName#"{
-				elementCleaner.clearAllViews();
+				instance.elementCleaner.clearAllViews();
 			}
 		}
 		else{
-			elementCleaner.clearAllViews();
-		}
-	}
-	
-	/**
-	* Clear by key snippet
-	*/
-	void function clearByKeySnippet(required string keySnippet, boolean regex=false, boolean async=false) output=false{
-		var threadName = "clearByKeySnippet_#replace(uuidHelper.randomUUID(),"-","","all")#";
-		
-		// Async? IF so, do checks
-		if( arguments.async AND NOT util.inThread() ){
-			thread name="#threadName#"{
-				lementCleaner.clearByKeySnippet(arguments.keySnippet,arguments.regex);
-			}
-		}
-		else{
-			elementCleaner.clearByKeySnippet(arguments.keySnippet,arguments.regex);
+			instance.elementCleaner.clearAllViews();
 		}
 	}
 	
@@ -138,28 +115,28 @@ component serializable="false" extends="coldbox.system.cache.providers.CFProvide
 	* Clear event
 	*/
 	void function clearEvent(required string eventsnippet, string queryString="") output=false{
-		elementCleaner.clearEvent(arguments.eventsnippet,arguments.queryString);
+		instance.elementCleaner.clearEvent(arguments.eventsnippet,arguments.queryString);
 	}
 	
 	/**
 	* Clear multiple events
 	*/
 	void function clearEventMulti(required any eventsnippets,string queryString="") output=false{
-		elementCleaner.clearEventMulti(arguments.eventsnippets,arguments.queryString);
+		instance.elementCleaner.clearEventMulti(arguments.eventsnippets,arguments.queryString);
 	}
 	
 	/**
 	* Clear view
 	*/
 	void function clearView(required string viewSnippet) output=false{
-		elementCleaner.clearView(arguments.viewSnippet);
+		instance.elementCleaner.clearView(arguments.viewSnippet);
 	}
 	
 	/**
 	* Clear multiple view
 	*/
 	void function clearViewMulti(required any viewsnippets) output=false{
-		elementCleaner.clearView(arguments.viewsnippets);
+		instance.elementCleaner.clearView(arguments.viewsnippets);
 	}
 	
 }

@@ -39,6 +39,11 @@ Description :
     <cffunction name="shutdown" output="false" access="public" returntype="void" hint="Shutdown command issued when CacheBox is going through shutdown phase">
     </cffunction>
 	
+	<!--- getObjectStore --->
+    <cffunction name="getObjectStore" output="false" access="public" returntype="any" hint="If the cache provider implements it, this returns the cache's object store as type: coldbox.system.cache.store.IObjectStore" colddoc:generic="coldbox.system.cache.store.IObjectStore">
+   		<cfreturn instance.cache>
+    </cffunction>
+	
 	<!--- getStoreMetadataReport --->
 	<cffunction name="getStoreMetadataReport" output="false" access="public" returntype="struct" hint="Get a structure of all the keys in the cache with their appropriate metadata structures. This is used to build the reporting.">
 		<cfreturn structNew()>
@@ -142,9 +147,14 @@ Description :
     </cffunction>
 	
 	<!--- Expire Key --->
-	<cffunction name="expireKey" access="public" output="false" returntype="void" hint="Expires an object from the cache by using its cache key. Returns false if object was not removed or did not exist anymore">
+	<cffunction name="expireObject" access="public" output="false" returntype="void" hint="Expires an object from the cache by using its cache key. Returns false if object was not removed or did not exist anymore">
 		<cfargument name="objectKey" 			type="any"  	required="true" hint="The object cache key">
-		
+	</cffunction>
+	
+	<!--- clearQuiet --->
+	<cffunction name="clearQuiet" access="public" output="false" returntype="boolean" hint="Clears an object from the cache by using its cache key. Returns false if object was not removed or did not exist anymore without doing statistics or updating listeners">
+		<cfargument name="objectKey" 			type="any"  	required="true" hint="The object cache key">
+		<cfset clear(arguments.objectKey)>
 	</cffunction>
 	
 <!------------------------------------------- ColdBox Application Cache Methods ------------------------------------------>

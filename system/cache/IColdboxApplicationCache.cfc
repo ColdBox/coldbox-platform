@@ -52,13 +52,6 @@ Description :
 	<cffunction name="getItemTypesCount" access="public" output="false" returntype="coldbox.system.cache.util.ItemTypeCount" hint="Get the item types counts of the cache. These are calculated according to the prefixes set.">
 	</cffunction>
 	
-	<!--- Clear By Key Snippet --->
-	<cffunction name="clearByKeySnippet" access="public" returntype="void" hint="Clears keys using the passed in object key snippet" output="false" >
-		<cfargument name="keySnippet"  	type="string" required="true"  hint="the cache key snippet to use">
-		<cfargument name="regex" 		type="boolean" hint="Use regex or not">
-		<cfargument name="async" 		type="boolean" hint="Run command asynchronously or not"/>
-	</cffunction>
-	
 	<!--- Clear All the Events form the cache --->
 	<cffunction name="clearAllEvents" access="public" output="false" returntype="void" hint="Clears all events from the cache.">
 		<cfargument name="async" type="boolean" hint="Run command asynchronously or not"/>

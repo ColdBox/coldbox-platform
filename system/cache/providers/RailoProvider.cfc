@@ -298,7 +298,7 @@ component serializable="false" implements="coldbox.system.cache.ICacheProvider"{
 	/**
     * not implemented by cache
     */
-    void function expireKey(required any objectKey) output=false{
+    void function expireObject(required any objectKey) output=false{
 		//not implemented
 	}
 	

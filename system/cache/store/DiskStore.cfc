@@ -60,6 +60,10 @@ Description :
     <cffunction name="flush" output="false" access="public" returntype="void" hint="Flush the store to a permanent storage">
     </cffunction>
 	
+	<!--- reap --->
+    <cffunction name="reap" output="false" access="public" returntype="void" hint="Reap the storage, clean it from old stuff">
+    </cffunction>
+	
 	<!--- getStoreID --->
     <cffunction name="getStoreID" output="false" access="public" returntype="string" hint="Get this storage's ID">
     	<cfreturn instance.storeID>

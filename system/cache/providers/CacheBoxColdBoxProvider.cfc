@@ -26,12 +26,6 @@ Description :
 			
 			// URL Facade Utility
 			instance.eventURLFacade		= CreateObject("component","coldbox.system.cache.util.EventURLFacade").init(this);
-			// Element Cleaner Helper
-			instance.elementCleaner		= CreateObject("component","coldbox.system.cache.util.ElementCleaner").init(this);
-			
-			// Utilities
-			instance.utility			= createObject("component","coldbox.system.core.util.Util");
-			instance.uuidHelper			= createobject("java", "java.util.UUID");
 			
 			// ColdBox linkage
 			instance.coldbox 			= "";
@@ -120,27 +114,6 @@ Description :
 		
 		return itemTypes;
 		</cfscript>
-	</cffunction>
-	
-	<!--- Clear By Key Snippet --->
-	<cffunction name="clearByKeySnippet" access="public" returntype="void" hint="Clears keys using the passed in object key snippet" output="false" >
-		<cfargument name="keySnippet"  	type="string" required="true"  hint="the cache key snippet to use">
-		<cfargument name="regex" 		type="boolean" hint="Use regex or not">
-		<cfargument name="async" 		type="boolean" hint="Run command asynchronously or not"/>
-		
-		<cfset var threadName = "clearByKeySnippet_#replace(instance.uuidHelper.randomUUID(),"-","","all")#">
-		
-		<!--- check if async and not in thread --->
-		<cfif arguments.async AND NOT instance.util.inThread()>
-			
-			<cfthread name="#threadName#">
-				<cfset instance.elementCleaner.clearByKeySnippet(arguments.keySnippet,arguments.regex)>
-			</cfthread>
-		
-		<cfelse>
-			<cfset instance.elementCleaner.clearByKeySnippet(arguments.keySnippet,arguments.regex)>
-		</cfif>
-		
 	</cffunction>
 	
 	<!--- Clear All the Events form the cache --->

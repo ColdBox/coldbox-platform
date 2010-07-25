@@ -26,7 +26,7 @@ Description :
 										  "applicationEnd,sessionStart,sessionEnd," &
 										  "preProcess,preEvent,postEvent,postProcess,preProxyResults," &
 										  "preLayout,preRender,postRender,preViewRender,postViewRender," &
-										  "afterCacheElementInsert,afterCacheElementRemoved,afterCacheElementExpired," &
+										  "afterCacheElementInsert,afterCacheElementRemoved,afterCacheElementExpired,afterCacheClearAll," &
 										  "preModuleLoad,postModuleLoad,preModuleUnload,postModuleUnload," &
 										  "beforeDebuggerPanel,afterDebuggerPanel," &
 										  "ORMPostNew,ORMPreLoad,ORMPostLoad,ORMPostDelete,ORMPreDelete,ORMPreUpdate,ORMPostUpdate,ORMPreInsert,ORMPostInsert,ORMPreSave,ORMPostSave";

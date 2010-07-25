@@ -41,6 +41,38 @@ Description :
 		</cfscript>
     </cffunction>
 	
+	<!--- reap --->
+    <cffunction name="reap" output="false" access="public" returntype="void" hint="Reap the storage, clean it from old stuff">
+    	
+    	<cfset var refLocal = {}>
+    	
+    	<cflock name="ConcurrentSoftReferenceStore.reap.#instance.storeID#" type="exclusive" timeout="20">
+    	<cfscript>
+    		
+    		// Init Ref Key Vars
+			refLocal.collected = instance.referenceQueue.poll();
+			
+			// Let's reap the garbage collected soft references
+			while( structKeyExists(reflocal, "collected") ){
+				
+				// Clean if it still exists
+				if( softRefLookup( reflocal.collected ) ){
+					
+					// expire it
+					expireObject( getSoftRefKey(refLocal.collected) );
+					
+					// GC Collection Hit
+					instance.provider.getStats().gcHit();
+				}
+				
+				// Poll Again
+				reflocal.collected = instance.referenceQueue.poll();
+			}
+		</cfscript>
+		</cflock>
+		
+    </cffunction>
+	
 	<!--- lookup --->
 	<cffunction name="lookup" access="public" output="false" returntype="boolean" hint="Check if an object is in cache.">
 		<cfargument name="objectKey" type="any" required="true" hint="The key of the object">
