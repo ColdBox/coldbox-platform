@@ -24,8 +24,8 @@ Loads all the default ColdBox settings into an application controller
 		<cfscript>
 			// File locations
 			instance.FrameworkPath = expandPath("/coldbox/system") & "/";
-			instance.FrameworkConfigFile = instance.FrameworkPath & "config/settings.xml";
-			instance.FrameworkConfigXSDFile = instance.FrameworkPath & "config/config.xsd";
+			instance.FrameworkConfigFile = instance.FrameworkPath & "web/config/settings.xml";
+			instance.FrameworkConfigXSDFile = instance.FrameworkPath & "web/config/config.xsd";
 			
 			return this;
 		</cfscript>

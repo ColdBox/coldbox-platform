@@ -18,7 +18,7 @@ Description :
 		// The CacheBox configuration structure DSL
 		cacheBox = {
 			// LogBox Configuration file - uses the coldbox application default
-			logBoxConfig = "coldbox.system.config.LogBox", 
+			logBoxConfig = "coldbox.system.web.config.LogBox", 
 			
 			// The defaultCache has an implicit name "default" which is a reserved cache name
 			// It also has a default provider of cachebox which cannot be changed.

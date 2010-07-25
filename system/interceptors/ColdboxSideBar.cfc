@@ -265,7 +265,7 @@ Modification History:
 		
  		<cftry>
 			<!--- Read SideBar XML --->
-			<cffile action="read" file="#ExpandPath('/coldbox/system/config/ColdBoxSideBar.xml')#" variable="sideBarXMLDoc">
+			<cffile action="read" file="#ExpandPath('/coldbox/system/web/config/ColdBoxSideBar.xml')#" variable="sideBarXMLDoc">
 			<!--- Parse XML --->
 			<cfset sideBarXML = XmlParse(sideBarXMLDoc)>
 			<!--- Set xml properties array --->
