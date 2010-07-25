@@ -97,7 +97,7 @@ Description :
 	</cffunction>
 	
 	<!--- getSize --->
-    <cffunction name="getSize" output="false" access="public" returntype="numeric" hint="Get the size of the indexer">
+    <cffunction name="getSize" output="false" access="public" returntype="numeric" hint="Get the size of the elements indexed">
     	<cfreturn instance.store.getSize()>
     </cffunction>
 	

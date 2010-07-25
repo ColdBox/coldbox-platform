@@ -56,30 +56,18 @@ Description :
 	
 	<!--- getPoolMetadata --->
     <cffunction name="getPoolMetadata" output="false" access="public" returntype="any" hint="Get the entire pool reference">
-    	
-    	<cflock name="metadataIndexer.#instance.indexID#" type="readonly" timeout="10" throwonTimeout="true">
-    		<cfreturn instance.poolMetadata>
-    	</cflock>
-		
+    	<cfreturn instance.poolMetadata>
     </cffunction>
 	
 	<!--- clearAll --->
-    <cffunction name="clearAll" output="false" access="public" returntype="void" hint="Clear the metadata">
-    	
-    	<cflock name="metadataIndexer.#instance.indexID#" type="exclusive" timeout="10" throwonTimeout="true">
-    		<cfset instance.poolMetadata.clear()>
-    	</cflock>
-		
+    <cffunction name="clearAll" output="false" access="public" returntype="void" hint="Clear the entire metadata map">
+    	<cfset instance.poolMetadata.clear()>
     </cffunction>
 	
 	<!--- clear --->
     <cffunction name="clear" output="false" access="public" returntype="void" hint="Clear a metadata key">
     	<cfargument name="objectKey" type="any" required="true" hint="The key of the object">
-		
-		<cflock name="metadataIndexer.#instance.indexID#" type="exclusive" timeout="10" throwonTimeout="true">
-    		<cfset structDelete(instance.poolMetadata, arguments.objectKey)>
-    	</cflock>
-		
+		<cfset structDelete( instance.poolMetadata, arguments.objectKey )>
     </cffunction>
 	
 	<!--- getKeys --->
@@ -90,28 +78,20 @@ Description :
 	<!--- getObjectMetadata --->
 	<cffunction name="getObjectMetadata" access="public" returntype="any" output="false" hint="Get a metadata entry for a specific entry. Exception if key not found">
 		<cfargument name="objectKey" type="any" required="true" hint="The key of the object">
-		
-		<cflock name="metadataIndexer.#instance.indexID#" type="readonly" timeout="10" throwonTimeout="true">
-    		<cfreturn instance.poolMetadata[ arguments.objectKey ] >
-		</cflock>
-		
+		<cfreturn instance.poolMetadata[ arguments.objectKey ]>
 	</cffunction>
 	
 	<!--- setObjectMetadata --->
 	<cffunction name="setObjectMetadata" access="public" returntype="void" output="false" hint="Set the metadata entry for a specific entry">
 		<cfargument name="objectKey" type="any" required="true" hint="The key of the object">
 		<cfargument name="metadata"  type="any" required="true" hint="The metadata structure to store for the cache entry">
-		
-		<cflock name="metadataIndexer.#instance.indexID#" type="exclusive" timeout="10" throwonTimeout="true">
-    		<cfset instance.poolMetadata[ arguments.objectKey ] = arguments.metadata>
-		</cflock>
-		
+		<cfset instance.poolMetadata[ arguments.objectKey ] = arguments.metadata>
 	</cffunction>
 	
 	<!--- objectExists --->
     <cffunction name="objectExists" output="false" access="public" returntype="boolean" hint="Check if the metadata entry exists for an object">
     	<cfargument name="objectKey" type="any" required="true" hint="The key of the object">
-		<cfreturn structKeyExists( getPoolMetadata(), arguments.objectKey )>
+		<cfreturn structKeyExists( instance.poolMetadata, arguments.objectKey )>
     </cffunction>
 	
 	<!--- getObjectMetadataProperty --->
@@ -121,7 +101,7 @@ Description :
 		
 		<cfset validateField( arguments.property )>
 		
-		<cflock name="metadataIndexer.#instance.indexID#" type="readonly" timeout="10" throwonTimeout="true">
+		<cflock name="metadataIndexer.#arguments.objectKey#" type="readonly" timeout="10" throwonTimeout="true">
 			<cfreturn instance.poolMetadata[ arguments.objectKey ][ arguments.property ] >
 		</cflock>
 		
@@ -135,7 +115,7 @@ Description :
 		
 		<cfset validateField( arguments.property )>
 		
-		<cflock name="metadataIndexer.#instance.indexID#" type="exclusive" timeout="10" throwonTimeout="true">
+		<cflock name="metadataIndexer.#arguments.objectKey#" type="exclusive" timeout="10" throwonTimeout="true">
 			<cfset instance.poolMetadata[ arguments.objectKey ][ arguments.property ] = arguments.value >
 		</cflock>
 		
@@ -143,7 +123,7 @@ Description :
 	
 	<!--- getSize --->
     <cffunction name="getSize" output="false" access="public" returntype="numeric" hint="Get the size of the indexer">
-    	<cfreturn getPoolMetadata().size()>
+    	<cfreturn structCount( instance.poolMetadata )>
     </cffunction>
 	
 	<!--- getSortedKeys --->
@@ -154,7 +134,7 @@ Description :
 		<cfscript>
 			validateField( arguments.property );
 			
-			return structSort( getPoolMetadata(), arguments.sortType, arguments.sortOrder, arguments.property );
+			return structSort( instance.poolMetadata, arguments.sortType, arguments.sortOrder, arguments.property );
 		</cfscript>
     </cffunction>
 
