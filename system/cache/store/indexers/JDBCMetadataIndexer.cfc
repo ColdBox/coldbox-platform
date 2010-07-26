@@ -55,6 +55,23 @@ Description :
 		</cfscript>
     </cffunction>
 
+	<!--- objectExists --->
+    <cffunction name="objectExists" output="false" access="public" returntype="boolean" hint="Check if the metadata entry exists for an object">
+    	<cfargument name="objectKey" type="any" required="true" hint="The key of the object">
+		
+		<cfset var q 				= "">
+		<cfset var normalizedID 	= instance.store.getNormalizedID(arguments.objectKey)>
+		
+		<!--- select entry --->
+		<cfquery name="q" datasource="#instance.config.dsn#" username="#instance.config.dsnUsername#" password="#instance.config.dsnPassword#">
+		SELECT id
+		  FROM #instance.config.table#
+		 WHERE id = <cfqueryparam cfsqltype="cf_sql_varchar" value="#normalizedID#"> 
+		</cfquery>
+		
+		<cfreturn (q.recordcount EQ 1)>
+	</cffunction>
+	
 	<!--- getObjectMetadata --->
 	<cffunction name="getObjectMetadata" access="public" returntype="any" output="false" hint="Get a metadata entry for a specific entry. Exception if key not found">
 		<cfargument name="objectKey" type="any" required="true" hint="The key of the object">

@@ -135,7 +135,7 @@ Description :
 		<cfscript>
 			// if simple value, just return it
 			if( instance.indexer.getObjectMetadataProperty(arguments.objectKey,"isSimple") ){
-				return instance.fileUtils.readFile( thisFilePath );
+				return trim(instance.fileUtils.readFile( thisFilePath ));
 			}
 			
 			//else we deserialize
@@ -184,7 +184,7 @@ Description :
 		<cfscript>
 			// If simple value just write it out to disk
 			if( isSimpleValue(arguments.object) ){
-				instance.fileUtils.saveFile( thisFilePath, arguments.object );
+				instance.fileUtils.saveFile( thisFilePath, trim(arguments.object) );
 			}
 			else{
 				// serialize it

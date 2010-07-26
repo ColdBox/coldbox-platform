@@ -51,6 +51,10 @@ Description :
 		
 	}
 	
+	function teardown(){
+		cache.clearAll();
+	}
+	
 	function testShutdown(){
 		cache.shutdown();
 	}
@@ -144,25 +148,27 @@ Description :
 	
 	function testset(){
 		testVal = {name="luis", age=32};
-		cache.set("test",testVal,20);
+		cache.clearAll();
 		
-		assertEquals( testVal, cache.get("test") );
-		assertEquals( 1, arrayLen(mockEventManager.$callLog().processState) );
+		cache.set("test",testVal,20);
 		md = cache.getCachedObjectMetadata("test");
+		assertEquals( testVal, cache.get("test") );
+		assertEquals( 2, arrayLen(mockEventManager.$callLog().processState) );
 		assertEquals( 20, md.timeout );
 		assertEquals( config.objectDefaultLastAccessTimeout, md.lastAccesstimeout );
 		
 		cache.set("test",testVal,20,20);
-		assertEquals( testVal, cache.get("test") );
 		md = cache.getCachedObjectMetadata("test");
+		assertEquals( testVal, cache.get("test") );
 		assertEquals( 20, md.timeout );
 		assertEquals( 20, md.lastAccesstimeout );
 		
 		cache.set("test",testVal);
-		assertEquals( testVal, cache.get("test") );
 		md = cache.getCachedObjectMetadata("test");
+		assertEquals( testVal, cache.get("test") );
 		assertEquals( config.objectDefaultTimeout, md.timeout );
 		assertEquals( config.objectDefaultLastAccessTimeout, md.lastAccesstimeout );
+		
 	}
 	
 	function testsetQuiet(){
@@ -175,8 +181,8 @@ Description :
 	
 	function testSetMulti(){
 		test = {
-			key1 = now(),
-			key2 = this
+			key1 = {name="luis",age=2},
+			key2 = "hello"
 		};
 		cache.setMulti(test);
 		
@@ -186,8 +192,8 @@ Description :
 
 	function testClearMulti(){
 		test = {
-			key1 = now(),
-			key2 = this
+			key1 = {name="luis",age=2},
+			key2 = "hello"
 		};
 		cache.setMulti(test);
 		
@@ -201,7 +207,7 @@ Description :
 	function testClearQuiet(){
 		test = {
 			key1 = now(),
-			key2 = this
+			key2 = {name="Pio", age="32", cool="beyond belief"}
 		};
 		cache.setQuiet("key1",test.key1);
 		
@@ -214,7 +220,7 @@ Description :
 	function testClear(){
 		test = {
 			key1 = now(),
-			key2 = this
+			key2 = {name="Pio", age="32", cool="beyond belief"}
 		};
 		cache.setQuiet("key1",test.key1);
 		
@@ -227,7 +233,7 @@ Description :
 	function testClearAll(){
 		test = {
 			key1 = now(),
-			key2 = this
+			key2 = {name="Pio", age="32", cool="beyond belief"}
 		};
 		cache.setMulti(test);
 		
@@ -242,8 +248,9 @@ Description :
 	function testGetSize(){
 		test = {
 			key1 = now(),
-			key2 = this
+			key2 = {age="32", name="Lui Mahoney"}
 		};
+		cache.clearAll();
 		cache.setMulti(test);
 		
 		assertEquals(2, cache.getSize() );
@@ -253,7 +260,7 @@ Description :
 	function testExpireObjectAndIsExpired(){
 		test = {
 			key1 = now(),
-			key2 = this
+			key2 = {name="Pio", age="32", cool="beyond belief"}
 		};
 		cache.set("test", test);
 		cache.expireObject("test");
@@ -267,7 +274,7 @@ Description :
 	function testExpireByKeySnippet(){
 		test = {
 			key1 = now(),
-			key2 = this
+			key2 = {name="Pio", age="32", cool="beyond belief"}
 		};
 		cache.set("test1", test.key1);
 		cache.set("test2", test.key2);
@@ -282,7 +289,7 @@ Description :
 	function testExpireAll(){
 		test = {
 			key1 = now(),
-			key2 = this
+			key2 = {name="Pio", age="32", cool="beyond belief"}
 		};
 		cache.set("test1", test.key1);
 		cache.set("test2", test.key2);
@@ -297,7 +304,7 @@ Description :
 	function testGetKeys(){
 		test = {
 			key1 = now(),
-			key2 = this
+			key2 = {name="Luis Mahoney", cool="You betcha!"}
 		};
 		cache.set("test1", test.key1);
 		cache.set("test2", test.key2);
@@ -312,8 +319,9 @@ Description :
 	function testReap(){
 		test = {
 			key1 = now(),
-			key2 = this
+			key2 = {name="luis",age=2}
 		};
+		cache.clearAll();
 		cache.set("test1", test.key1);
 		cache.set("test2", test.key2);
 		

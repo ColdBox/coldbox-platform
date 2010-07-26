@@ -295,7 +295,7 @@ Or look in the /coldbox/system/cache/store/sql/*.sql for you sql script for your
 					lastAccessTimeout	= <cfqueryparam cfsqltype="cf_sql_integer" value="#arguments.lastAccessTimeout#">,
 					created				= <cfqueryparam cfsqltype="cf_sql_timestamp" value="#now()#">,
 					lastAccessed		= <cfqueryparam cfsqltype="cf_sql_timestamp" value="#now()#">,
-					isExpired			= <cfqueryparam cfsqltype="cf_sql_bit" value="1">,
+					isExpired			= <cfqueryparam cfsqltype="cf_sql_bit" value="0">,
 					isSimple			= <cfqueryparam cfsqltype="cf_sql_bit" value="#isSimple#">
 			  WHERE id = <cfqueryparam cfsqltype="cf_sql_varchar" value="#normalizedID#">
 			</cfquery>

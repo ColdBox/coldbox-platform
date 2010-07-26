@@ -16,12 +16,12 @@ component serializable="false" extends="coldbox.system.cache.providers.RailoProv
 		super.init();
 		
 		// Prefixes
-		viewPrefix  		= "railo-view-";
-		eventPrefix 		= "railo-event-";
-		handlerPrefix 		= "railo-handler-";
-		interceptorPrefix	= "railo-interceptor-";
-		pluginPrefix		= "railo-plugin-";
-		cpluginPrefix		= "railo-cplugin-";
+		this.VIEW_CACHEKEY_PREFIX 			= "cboxview_view-";
+		this.EVENT_CACHEKEY_PREFIX 			= "cboxevent_event-";
+		this.HANDLER_CACHEKEY_PREFIX 		= "cboxhandler_handler-";
+		this.INTERCEPTOR_CACHEKEY_PREFIX 	= "cboxinterceptor_interceptor-";
+		this.PLUGIN_CACHEKEY_PREFIX 		= "cboxplugin_plugin-";
+		this.CUSTOMPLUGIN_CACHEKEY_PREFIX 	= "cboxplugin_customplugin-";
 		
 		// URL Facade Utility
 		eventURLFacade		= CreateObject("component","coldbox.system.cache.util.EventURLFacade").init(this);
@@ -36,12 +36,12 @@ component serializable="false" extends="coldbox.system.cache.providers.RailoProv
 	}
 	
 	// Cache Key prefixes
-	string function getViewCacheKeyPrefix() output=false{ return viewPrefix; }
-	string function getEventCacheKeyPrefix() output=false{ return eventPrefix; }
-	string function getHandlerCacheKeyPrefix() output=false{ return handlerPrefix; }
-	string function getInterceptorCacheKeyPrefix() output=false{ return interceptorPrefix; }
-	string function getPluginCacheKeyPrefix() output=false{ return pluginPrefix; }
-	string function getCustomPluginCacheKeyPrefix() output=false{ return cpluginPrefix; }
+	string function getViewCacheKeyPrefix() output=false{ return this.VIEW_CACHEKEY_PREFIX; }
+	string function getEventCacheKeyPrefix() output=false{ return this.EVENT_CACHEKEY_PREFIX; }
+	string function getHandlerCacheKeyPrefix() output=false{ return this.HANDLER_CACHEKEY_PREFIX; }
+	string function getInterceptorCacheKeyPrefix() output=false{ return this.INTERCEPTOR_CACHEKEY_PREFIX; }
+	string function getPluginCacheKeyPrefix() output=false{ return this.PLUGIN_CACHEKEY_PREFIX; }
+	string function getCustomPluginCacheKeyPrefix() output=false{ return this.CUSTOMPLUGIN_CACHEKEY_PREFIX; }
 	
 	// set the coldbox controller
 	void function setColdbox(required any coldbox) output=false{

@@ -29,11 +29,11 @@ Description :
 			evictionPolicy = "LRU",
 			evictCount = 1,
 			maxObjects = 200,
-			objectStore = "ConcurrentSoftReferenceStore",
+			objectStore = "ConcurrentStore",
 			logBoxConfig = "coldbox.system.cache.config.LogBox",
 			coldboxEnabled = false,
 			cacheBoxProvider = "coldbox.system.cache.providers.CacheBoxProvider",
-			coldboxAppProvider = "coldbox.system.cache.providers.ColdBoxAppProvider"
+			coldboxAppProvider = "coldbox.system.cache.providers.CacheBoxColdBoxProvider"
 		};
 		
 		// Startup the configuration

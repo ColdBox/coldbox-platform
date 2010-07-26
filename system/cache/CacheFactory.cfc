@@ -314,6 +314,23 @@ Description :
 		</cfscript>
     </cffunction>
 	
+	<!--- reap --->
+    <cffunction name="reap" output="false" access="public" returntype="void" hint="A nice way to call reap on all registered caches">
+    	<cfscript>
+			var cacheNames = getCacheNames();
+			var cacheLen   = arraylen(cacheNames);
+			var i 		   = 1;
+			var cache 	   = "";
+		
+			instance.log.debug("Executing reap on factoryID: #getFactoryID()#");
+		
+			for( i=1; i lte cacheLen; i++){
+				cache = getCache( cacheNames[i] );
+				cache.reap();
+			}
+		</cfscript>
+    </cffunction>
+	
 	<!--- cacheExists --->
     <cffunction name="cacheExists" output="false" access="public" returntype="boolean" hint="Check if the passed in named cache is already registered in this factory">
     	<cfargument name="name" type="string" required="true" hint="The name of the cache to check"/>

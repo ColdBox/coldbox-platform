@@ -22,15 +22,17 @@ Description :
 			logBoxConfig = "coldbox.system.cache.config.LogBox", 
 			
 			// Scope registration, automatically register the cachebox factory instance on any CF scope
+			// By default it registeres itself on server scope
 			scopeRegistration = {
 				enabled = true,
 				scope   = "server", // server, cluster, session
 				key		= "cacheBox"
 			},
 			
-			// The defaultCache has an implicit name "default" which is a reserved cache name
+			// The defaultCache has an implicit name of "default" which is a reserved cache name
 			// It also has a default provider of cachebox which cannot be changed.
 			// All timeouts are in minutes
+			// Please note that each object store could have more configuration properties
 			defaultCache = {
 				objectDefaultTimeout = 60,
 				objectDefaultLastAccessTimeout = 30,
@@ -40,6 +42,7 @@ Description :
 				evictionPolicy = "LRU",
 				evictCount = 1,
 				maxObjects = 200,
+				// Our default store is the concurrent soft reference
 				objectStore = "ConcurrentSoftReferenceStore",
 				// This switches the internal provider from normal cacheBox to coldbox enabled cachebox
 				coldboxEnabled = false

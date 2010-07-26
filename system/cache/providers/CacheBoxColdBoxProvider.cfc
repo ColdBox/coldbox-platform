@@ -17,12 +17,12 @@ Description :
 			super.init();
 		
 			// Prefixes
-			instance.viewPrefix  		= "cbox-view-";
-			instance.eventPrefix 		= "cbox-event-";
-			instance.handlerPrefix 		= "cbox-handler-";
-			instance.interceptorPrefix	= "cbox-interceptor-";
-			instance.pluginPrefix		= "cbox-plugin-";
-			instance.cpluginPrefix		= "cbox-cplugin-";
+			this.VIEW_CACHEKEY_PREFIX 			= "cboxview_view-";
+			this.EVENT_CACHEKEY_PREFIX 			= "cboxevent_event-";
+			this.HANDLER_CACHEKEY_PREFIX 		= "cboxhandler_handler-";
+			this.INTERCEPTOR_CACHEKEY_PREFIX 	= "cboxinterceptor_interceptor-";
+			this.PLUGIN_CACHEKEY_PREFIX 		= "cboxplugin_plugin-";
+			this.CUSTOMPLUGIN_CACHEKEY_PREFIX 	= "cboxplugin_customplugin-";
 			
 			// URL Facade Utility
 			instance.eventURLFacade		= CreateObject("component","coldbox.system.cache.util.EventURLFacade").init(this);
@@ -38,32 +38,32 @@ Description :
 
 	<!--- getViewCacheKeyPrefix --->
     <cffunction name="getViewCacheKeyPrefix" output="false" access="public" returntype="string" hint="Get the cached view key prefix">
-    	<cfreturn instance.viewPrefix>
+    	<cfreturn this.VIEW_CACHEKEY_PREFIX>
     </cffunction>
 
 	<!--- getEventCacheKeyPrefix --->
     <cffunction name="getEventCacheKeyPrefix" output="false" access="public" returntype="string" hint="Get the event cache key prefix">
-    	<cfreturn instance.eventPrefix>
+    	<cfreturn this.EVENT_CACHEKEY_PREFIX>
     </cffunction>
 
 	<!--- getHandlerCacheKeyPrefix --->
     <cffunction name="getHandlerCacheKeyPrefix" output="false" access="public" returntype="string" hint="Get the handler cache key prefix">
-    	<cfreturn instance.handlerPrefix>
+    	<cfreturn this.HANDLER_CACHEKEY_PREFIX>
     </cffunction>
 
 	<!--- getInterceptorCacheKeyPrefix --->
     <cffunction name="getInterceptorCacheKeyPrefix" output="false" access="public" returntype="string" hint="Get the interceptor cache key prefix">
-    	<cfreturn instance.interceptorPrefix>
+    	<cfreturn this.INTERCEPTOR_CACHEKEY_PREFIX>
     </cffunction>
 
 	<!--- getPluginCacheKeyPrefix --->
     <cffunction name="getPluginCacheKeyPrefix" output="false" access="public" returntype="string" hint="Get the plugin cache key prefix">
-    	<cfreturn instance.pluginPrefix>
+    	<cfreturn this.PLUGIN_CACHEKEY_PREFIX>
     </cffunction>
 
 	<!--- getCustomPluginCacheKeyPrefix --->
     <cffunction name="getCustomPluginCacheKeyPrefix" output="false" access="public" returntype="string" hint="Get the custom plugin cache key prefix">
-    	<cfreturn instance.cpluginPrefix>
+    	<cfreturn this.CUSTOMPLUGIN_CACHEKEY_PREFIX>
     </cffunction>
 
 	<!--- getColdbox --->
