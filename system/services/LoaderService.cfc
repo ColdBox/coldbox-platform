@@ -71,7 +71,7 @@ Modification History:
 		controller.getHandlerService().clearDictionaries();
 		
 		// Create the Cache Container
-		controller.setColdboxOCM(createCacheManager());
+		createCacheContainer();
 		
 		// Create WireBox
 		controller.getPlugin("BeanFactory");
@@ -132,8 +132,8 @@ Modification History:
 		</cfscript>
 	</cffunction>
 	
-	<!--- createLogBox --->
-    <cffunction name="createLogBox" output="false" access="public" returntype="coldbox.system.logging.LogBox" hint="Create a running LogBox instance configured using ColdBox's default config">
+	<!--- createDefaultLogBox --->
+    <cffunction name="createDefaultLogBox" output="false" access="public" returntype="coldbox.system.logging.LogBox" hint="Create a running LogBox instance configured using ColdBox's default config">
     	<cfscript>
    		var logBoxConfig = "";
 		
@@ -143,8 +143,54 @@ Modification History:
     	</cfscript>
     </cffunction>
 	
+	<!--- createCacheBox --->
+    <cffunction name="createCacheBox" output="false" access="public" returntype="coldbox.system.cache.CacheFactory" hint="Create the application's CacheBox instance">
+    	<cfscript>
+    		var config 				= createObject("Component","coldbox.system.cache.config.CacheBoxConfig").init();
+			var cacheBoxSettings 	= controller.getSetting("cacheBox");
+			
+			// Load by File
+			if( len(cacheBoxSettings.configFile) ){
+				
+				// load by config file type
+				if( listLast(cacheBoxSettings.configFile,".") eq "xml"){
+					config.init(XMLConfig=cacheBoxSettings.configFile);
+				}
+				else{
+					config.init(CFCConfigPath=cacheBoxSettings.configFile);
+				}
+			}
+			// Load by DSL
+			else if ( NOT structIsEmpty(cacheBoxSettings.dsl) ){
+				config.loadDataDSL( cacheBoxSettings.dsl );
+			}
+			// Load by XML
+			else{
+				config.parseAndLoad( cacheBoxSettings.xml );
+			}
+			
+			// Create CacheBox
+			return createObject("component","coldbox.system.cache.CacheFactory").init(config,controller);
+		</cfscript>
+    </cffunction>
+
+	<!--- createCacheContainer --->
+    <cffunction name="createCacheContainer" output="false" access="public" returntype="void" hint="Create the cache container">
+    	<cfscript>
+    		// Determine compat mode or new cachebox mode
+			if( structIsEmpty( controller.getSetting("cacheSettings") ) ){
+				// CacheBox creation
+				controller.setCacheBox( createCacheBox() );
+				return;
+			}
+			
+			// else we are on compatmode
+			controller.setColdboxOCM( createCacheManager() );
+    	</cfscript>
+    </cffunction>
+
 	<!--- createCacheManager --->
-    <cffunction name="createCacheManager" output="false" access="public" returntype="any" hint="Create the caching engine">
+    <cffunction name="createCacheManager" output="false" access="public" returntype="any" hint="Create the compatibility caching engine">
     	<cfscript>
 		// Create cache Config
 		var cacheConfig = createObject("Component","coldbox.system.cache.archive.config.CacheConfig");

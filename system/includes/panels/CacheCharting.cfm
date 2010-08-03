@@ -10,12 +10,24 @@
 <table align="center" width="100%" border="1" cellpadding="0" cellspacing="0" style="background:white">
 	<tr>
 		<td align="center">
-		<cfchart format="png" show3d="false" backgroundcolor="##ffffff" chartwidth="250">
-			<cfchartseries type="pie" colorlist="85ca0F,000000" >
-				<cfchartdata item="Free Memory (KB)"  value="#JVMFreeMemory#">
-				<cfchartdata item="Used Memory (KB)" value="#JVMMaxMemory-JVMFreeMemory#">
-			</cfchartseries>
-		</cfchart>
+			<cfchart format="png" show3d="false" backgroundcolor="##ffffff" chartwidth="250">
+				<cfchartseries type="pie" colorlist="85ca0F,000000" >
+					<cfchartdata item="Free Memory (KB)"  value="#JVMFreeMemory#">
+					<cfchartdata item="Used Memory (KB)" value="#JVMMaxMemory-JVMFreeMemory#">
+				</cfchartseries>
+			</cfchart>
+			
+			<div>
+				<cfoutput>
+				<!--- RunGC --->
+				<input type="button" value="Run Garbage Collection" 
+				   	   name="cboxbutton_gc"
+				   	   style="font-size:10px" 
+				   	   title="Try to influence a garbage collection." 
+				   	   onClick="location.href='#URLBase#?cbox_command=gc&debugpanel=#event.getValue('debugPanel','')#'" />
+				</cfoutput>
+			</div>
+		
 		</td>
 		<td align="center">
 		<cfchart format="png" show3d="#show3d#" backgroundcolor="##ffffff" 

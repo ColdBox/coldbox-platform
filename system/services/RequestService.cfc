@@ -88,9 +88,15 @@ Modification History:
 				getFlashScope().inflateFlash();
 			}
 					
-			// Object Caching Garbage Collector
-			controller.getColdboxOCM().reap();
-				
+			// Object Caching Garbage Collector, check if using cachebox first
+			if( isObject(controller.getCacheBox()) ){
+				controller.getCacheBox().reapAll();
+			}
+			else{
+				// Compat mode, remove this at release
+				controller.getColdboxOCM().reap();
+			}
+			
 			// Debug Mode Checks
 			if ( Context.valueExists("debugMode") and isBoolean(Context.getValue("debugMode")) ){
 				if ( DebugPassword eq ""){
@@ -125,9 +131,9 @@ Modification History:
 		<!--- ************************************************************* --->
 		<cfscript>
 			var eventCacheKey   = "";
-			var oEventURLFacade = controller.getColdboxOCM().getEventURLFacade();
+			var oEventURLFacade = controller.getColdboxOCM("template").getEventURLFacade();
 			var eventDictionary = 0;
-			var oOCM 		    = controller.getColdboxOCM();
+			var oOCM 		    = controller.getColdboxOCM("template");
 			var currentEvent    = arguments.context.getCurrentEvent();
 			
 			// Are we using event caching?

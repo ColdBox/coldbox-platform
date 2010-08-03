@@ -23,9 +23,16 @@ Description :
     <cffunction name="init" output="false" access="public" returntype="ColdboxCacheFlash" hint="Constructor">
     	<cfargument name="controller" type="coldbox.system.web.Controller" required="true" hint="The ColdBox Controller"/>
     	<cfscript>
+    		var cacheName = "default";
+			
     		super.init(arguments.controller);
 			
-			instance.cache = getController().getColdboxOCM();
+			// get the cacheName from the custom settings
+			if( arguments.controller.settingExists("flashRAM_cacheName") ){
+				cacheName = arguments.controller.getSetting("flashRAM_cacheName");
+			}
+			// Setup the cache
+			instance.cache = arguments.controller.getColdboxOCM(cacheName);
 			
 			// Check jsession id First
 			if( isDefined("session") and structKeyExists(session,"sessionid") ){

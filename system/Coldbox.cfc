@@ -170,11 +170,13 @@ Description :
 			
 			<!--- Debugging Monitors & Commands Check --->
 			<cfif cbController.getDebuggerService().getDebugMode()>
-				<!--- Commands Check --->
+				
+				<!--- ColdBox Command Executions --->
 				<cfset coldboxCommands(cbController,event)>
+				
 				<!--- Which panel to render --->
 				<cfif event.getValue("debugPanel","") eq "cache">
-					<cfoutput>#cbController.getDebuggerService().renderCachePanel()#</cfoutput>
+					<cfoutput>#cbController.getDebuggerService().renderCachePanel(monitor=true)#</cfoutput>
 					<cfabort>
 				<cfelseif event.getValue("debugPanel","") eq "cacheviewer">
 					<cfoutput>#cbController.getDebuggerService().renderCacheDumper()#</cfoutput>
@@ -200,8 +202,8 @@ Description :
 			</cfif>
 			
 			<!--- Before Any Execution, do we have cached content to deliver --->
-			<cfif event.isEventCacheable() AND cbController.getColdboxOCM().lookup(event.getEventCacheableEntry())>
-				<cfset renderedContent = cbController.getColdboxOCM().get(event.getEventCacheableEntry())>
+			<cfif event.isEventCacheable() AND cbController.getColdboxOCM("template").lookup(event.getEventCacheableEntry())>
+				<cfset renderedContent = cbController.getColdboxOCM("template").get(event.getEventCacheableEntry())>
 				<cfoutput>#renderedContent#</cfoutput>
 			<cfelse>
 			
@@ -239,7 +241,7 @@ Description :
 					<cfif event.isEventCacheable()>
 						<cfset eventCacheEntry = event.getEventCacheableEntry()>
 						<!--- Cache the content of the event --->
-						<cfset cbController.getColdboxOCM().set(eventCacheEntry.cacheKey,
+						<cfset cbController.getColdboxOCM("template").set(eventCacheEntry.cacheKey,
 																renderedContent,
 																eventCacheEntry.timeout,
 																eventCacheEntry.lastAccessTimeout)>
@@ -507,17 +509,25 @@ Description :
 		<cfargument name="cbController" type="any" required="true" hint="The cb Controller"/>
 		<cfargument name="event" 		type="any" required="true" hint="The event context object"/>
 		<cfscript>
-			var command = event.getTrimValue("cbox_command","");
+			var command 	= event.getTrimValue("cbox_command","");
+			var cacheName 	= event.getTrimValue("cbox_cacheName","default");
 			
 			// Verify command
-			if( len(command) eq 0 ){ return; }
+			if( NOT len(command) ){ return; }
 			
 			// Commands
 			switch(command){
-				case "expirecache"    : { cbController.getColdboxOCM().expireAll();break;}
-				case "delcacheentry"  : { cbController.getColdboxOCM().clearKey(event.getValue('cbox_cacheentry',""));break;}
-				case "clearallevents" : { cbController.getColdboxOCM().clearAllEvents();break;}
-				case "clearallviews"  : { cbController.getColdboxOCM().clearAllViews();break;}
+				// Cache Commands
+				case "expirecache"    : { cbController.getColdboxOCM(cacheName).expireAll(); break; }
+				case "reapcache"  	  : { cbController.getColdboxOCM(cacheName).reap(); break;}
+				case "delcacheentry"  : { cbController.getColdboxOCM(cacheName).clear(event.getValue('cbox_cacheentry',""));break;}
+				case "clearallevents" : { cbController.getColdboxOCM(cacheName).clearAllEvents();break;}
+				case "clearallviews"  : { cbController.getColdboxOCM(cacheName).clearAllViews();break;}
+				case "reapAll"		  : { cbController.getCacheBox().reapAll();break;}
+				case "expireAll"	  : { cbController.getCacheBox().expireAll();break;}
+				case "gc"			  : { createObject("java", "java.lang.Runtime").getRuntime().gc(); break;}
+				
+				// Module Commands
 				case "reloadModules"  : { cbController.getModuleService().reloadAll(); break;}
 				case "unloadModules"  : { cbController.getModuleService().unloadAll(); break;}
 				case "reloadModule"   : { cbController.getModuleService().reload(event.getValue("module","")); break;}

@@ -17,7 +17,7 @@ structures/arrays to create for configuration
 - datasources (struct)
 - layoutSettings (struct)
 - layouts (array of structs)
-- cacheEngine (struct)
+- cacheBox (struct)
 - interceptorSettings (struct)
 - interceptors (array of structs)
 - modules (struct)
@@ -124,18 +124,6 @@ Optional Methods
 			defaultView   = ""
 		};
 		
-		//cacheEngine
-		cacheEngine = {
-			objectDefaultTimeout = 60,
-			objectDefaultLastAccessTimeout = 30,
-			reapFrequency = 1,
-			freeMemoryPercentageThreshold = 0,
-			useLastAccessTimeouts = true,
-			evictionPolicy = "LRU",
-			evictCount = 1,
-			maxObjects = 100
-		};
-	
 		//Interceptor Settings
 		interceptorSettings = {
 			throwOnInvalidStates = false,

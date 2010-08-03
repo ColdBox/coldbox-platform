@@ -141,6 +141,7 @@
 		<Datasource alias="blog_dsn" name="myblog" dbtype="oracle" username="root" password="pass" />
 	</Datasources>
 	
+	<!--
 	<Cache>
 		<ObjectDefaultTimeout>15</ObjectDefaultTimeout>
 		<ObjectDefaultLastAccessTimeout>5</ObjectDefaultLastAccessTimeout>
@@ -151,6 +152,7 @@
 		<EvictCount>2</EvictCount>
 		<EvictionPolicy>LFU</EvictionPolicy>
 	</Cache>
+	-->
 	
 	<Interceptors throwOnInvalidStates="false">
 		

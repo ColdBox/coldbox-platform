@@ -27,6 +27,9 @@ Description :
 			// Set a maximum tracers possible
 			instance.maxTracers = 75;
 			
+			// Runtime
+			instance.jvmRuntime = createObject("java", "java.lang.Runtime");
+			
 			return this;
 		</cfscript>
 	</cffunction>
@@ -169,14 +172,6 @@ Description :
 		<cfset var prc = event.getCollection(private=true)>
 		<cfset var loc = structnew()>
 		
-		<!--- Set Cache Data --->
-		<cfset var itemTypes = controller.getColdboxOCM().getItemTypes()>
-		<cfset var cacheMetadata = "">
-		<cfset var cacheKeyList = "">
-		<cfset var cacheKeyIndex = 1>
-		<cfset var cacheConfig = controller.getColdboxOCM().getCacheConfig()>
-		<cfset var cacheStats = controller.getColdboxOCM().getCacheStats()>
-		
 		<!--- Setup Local Variables --->
 		<cfset var debugStartTime = GetTickCount()>
 		<cfset var thisCollection = "">
@@ -191,12 +186,6 @@ Description :
 		<!--- URL Base --->
 		<cfset var URLBase = event.getsesBaseURL()>
 
-		<!--- JVM Data --->
-		<cfset var JVMRuntime = createObject("java", "java.lang.Runtime").getRuntime()>
-		<cfset var JVMFreeMemory = JVMRuntime.freeMemory()/1024>
-		<cfset var JVMTotalMemory = JVMRuntime.totalMemory()/1024>
-		<cfset var JVMMaxMemory = JVMRuntime.maxMemory()/1024>
-	
 		<!--- Modules Stuff --->
 		<cfif controller.getCFMLEngine().isMT()>
 			<cfset loadedModules = controller.getModuleService().getLoadedModules()>
@@ -215,57 +204,96 @@ Description :
 	</cffunction>
 
 	<!--- Render the cache panel --->
-	<cffunction name="renderCachePanel" access="public" hint="Renders the caching panel." output="false" returntype="Any">
-		<cfset var event = controller.getRequestService().getContext()>
-		<cfset var rc = event.getCollection()>
-		<cfset var renderedDebugging = "">
-
-		<!--- Set local Variables --->
-		<cfset var itemTypes = controller.getColdboxOCM().getItemTypes()>
-		<cfset var cacheMetadata = controller.getColdboxOCM().getPoolMetadata()>
-		<cfset var cacheKeyList = listSort(structKeyList(cacheMetaData),"textnocase")>
-		<cfset var cacheKeyIndex = 1>
-		<cfset var cacheConfig = controller.getColdboxOCM().getCacheConfig()>
-		<cfset var cacheStats = controller.getColdboxOCM().getCacheStats()>
+	<cffunction name="renderCachePanel" access="public" hint="Renders the caching panel." output="false" returntype="any">
+		<cfargument name="monitor" type="boolean" required="false" default="false" hint="monitor or panel"/>
+		<cfscript>
+			var event 			= controller.getRequestService().getContext();
+			var rc				= event.getCollection();
+			var toRender		= "";
+			
+			// Cache iterators
+			var	thisKey			= "";
+			var x				= 1;
+			var expDate			= "";
+			
+			// Cache info
+			var itemTypes		= controller.getColdboxOCM().getItemTypes();
+			var cacheMetadata	= "";
+			var cacheConfig		= "";
+			var cacheStats		= "";
+			var cacheKeys		= "";
+			var cacheKeysLen	= "";
+			var cacheSize		= controller.getColdboxOCM().getSize();
+			
+			// JVM Data
+			var JVMRuntime 		= instance.jvmRuntime.getRuntime();
+			var JVMFreeMemory 	= JVMRuntime.freeMemory()/1024;
+			var JVMTotalMemory 	= JVMRuntime.totalMemory()/1024;
+			var JVMMaxMemory 	= JVMRuntime.maxMemory()/1024; 
+				
+			// CacheType Rendering
+			var isMonitor		= arguments.monitor;
+			
+			// URL Base
+			var URLBase			= event.getSESBaseURL();
+			
+			// Command URL Base if not using SES
+			if( NOT event.isSES() ){
+				URLBase = "index.cfm";
+			}
+			
+			// Prepare cache report for cachebox
+			if( isObject(controller.getCacheBox()) ){
+			
+			}
+			// COMPAT MODE: REMOVE LATER
+			else{
+				cacheConfig 	= controller.getColdboxOCM().getCacheConfig().getMemento();
+				cacheStats  	= controller.getColdboxOCM().getCacheStats();
+				cacheMetadata 	= controller.getColdboxOCM().getPoolMetadata();
+				cacheKeys		= structKeyArray( cacheMetadata ); 
+				cacheKeysLen	= arrayLen( cacheKeys );
+				
+				// Sort Keys
+				arraySort( cacheKeys ,"textnocase" );
+			}
+			
+		</cfscript>
 		
-		<!--- Setup Local Variables --->
-		<cfset var requestCollection = event.getCollection()>
-
-		<!--- JVM Data --->
-		<cfset var JVMRuntime = createObject("java", "java.lang.Runtime").getRuntime()>
-		<cfset var JVMFreeMemory = JVMRuntime.freeMemory()/1024>
-		<cfset var JVMTotalMemory = JVMRuntime.totalMemory()/1024>
-		<cfset var JVMMaxMemory = JVMRuntime.maxMemory()/1024>
-
-		<!--- Debug Rendering Type --->
-		<cfset var renderType = "CachePanel">
+		<!--- Param the monitor frequency if used --->
+		<cfparam name="url.frequency" default="0" type="numeric" min="0">
 		
-		<!--- URL Base --->
-		<cfset var URLBase = event.getsesBaseURL()>
-		<!--- URL Base --->
-		<cfif NOT event.isSES()>
-			<cfset URLBase = "index.cfm">
-		</cfif>
-
 		<!--- Generate Debugging --->
-		<cfsavecontent variable="renderedDebugging"><cfinclude template="/coldbox/system/includes/panels/CachePanel.cfm"></cfsavecontent>
-		<cfreturn renderedDebugging>
+		<cfsavecontent variable="toRender"><cfinclude template="/coldbox/system/includes/panels/CachePanel.cfm"></cfsavecontent>
+		
+		<cfreturn toRender>
 	</cffunction>
 	
 	<!--- Render Cache Dumpver --->
 	<cffunction name="renderCacheDumper" access="public" hint="Renders the caching key value dumper." output="false" returntype="Any">
-		<cfset var event = controller.getRequestService().getContext()>
-		<cfset var rc = event.getCollection()>
-		<cfset var cachekey = URLDecode(event.getValue('key',''))>
-		<cfset var cacheValue = controller.getColdboxOCM().get(cachekey)>
-		<cfset var dumperContents = "">
+		<cfset var event 			= controller.getRequestService().getContext()>
+		<cfset var cachekey 		= URLDecode(event.getValue('key',''))>
+		<cfset var cacheName 		= event.getTrimValue("cbox_cacheName","default")>
+		<cfset var cacheValue 		= "">
+		<cfset var dumperContents 	= "">
+		<cfset var cache 			= controller.getColdboxOCM( cacheName )>
 		
+		<!--- check key --->
+		<cfif NOT len(cacheKey) OR NOT cache.lookup( cacheKey )>
+			<cfreturn dumperContents>
+		</cfif>
+		
+		<!--- Get Data --->
+		<cfset cacheValue = cache.get( cacheKey )>
+		
+		<!--- Dump it out --->
 		<cfif isSimpleValue(cacheValue)>
 			<cfsavecontent variable="dumperContents"><cfoutput><strong>#cachekey#</strong> = #cacheValue#</cfoutput></cfsavecontent>
 		<cfelse>
-			<cfsavecontent variable="dumperContents"><cfdump var="#cacheValue#" label="#cachekey#"></cfsavecontent>
+			<cfsavecontent variable="dumperContents"><cfdump var="#cacheValue#" label="#cachekey#" top="1"></cfsavecontent>
 		</cfif>
 		
+		<!--- Return it --->
 		<cfreturn dumperContents>
 	</cffunction>
 	

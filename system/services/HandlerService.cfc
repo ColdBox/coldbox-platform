@@ -84,19 +84,20 @@ Description :
 			var cacheKey = getColdboxOCM().HANDLER_CACHEKEY_PREFIX & arguments.ehBean.getRunnable();
 			var eventCacheKey = "";
 			var eventCachingData = structnew();
-			var oEventURLFacade = getController().getColdboxOCM().getEventURLFacade();
+			var oEventURLFacade = getController().getColdboxOCM("template").getEventURLFacade();
 			var handlerDictionaryEntry = "";
 			var eventDictionaryEntry = "";
 			var onInvalidEvent = controller.getSetting("onInvalidEvent");
+			var refLocal = structnew();
 						
 			/* ::::::::::::::::::::::::::::::::::::::::: HANDLERS CACHING :::::::::::::::::::::::::::::::::::::::::::: */
 			// Are we caching handlers?
 			if ( controller.getSetting("HandlerCaching") ){
 				// Lookup handler in Cache
-				oEventHandler = getColdboxOCM().get(cacheKey);
+				refLocal.oEventHandler = getColdboxOCM().get(cacheKey);
 				
 				// Verify if not found, then create it and cache it
-				if( NOT isObject(oEventHandler) ){
+				if( NOT structKeyExists(refLocal, oEventHandler) OR NOT isObject(refLocal.oEventHandler) ){
 					// Create a new handler
 					oEventHandler = newHandler(arguments.ehBean.getRunnable());
 					// Save its metadata For event Caching and Aspects
@@ -107,7 +108,10 @@ Description :
 					if ( handlerDictionaryEntry.cacheable ){
 						getColdboxOCM().set(cacheKey,oEventHandler,handlerDictionaryEntry.timeout,handlerDictionaryEntry.lastAccessTimeout);
 					}
-				}//end of caching strategy				
+				}//end of caching strategy
+				else{
+					oEventHandler = refLocal.oEventHandler;
+				}				
 			}
 			else{
 				// Create Runnable Object

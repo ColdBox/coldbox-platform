@@ -35,6 +35,8 @@ Description :
 			variables.log = variables.logBox.getLogger(this);
 			// Register Flash RAM
 			variables.flash = arguments.controller.getRequestService().getFlashScope();
+			// Register CacheBox
+			variables.cacheBox = arguments.controller.getCacheBox();
 			
 			// Register properties
 			setProperties(arguments.properties);

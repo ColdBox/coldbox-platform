@@ -167,7 +167,7 @@ Description: This is the framework's simple bean factory.
 	<!--- Get Model --->
 	<cffunction name="getModel" access="public" returntype="any" hint="Create or retrieve model objects by convention" output="false" >
 		<!--- ************************************************************* --->
-		<cfargument name="name" 				required="false" type="string"  hint="The name of the model to retrieve">
+		<cfargument name="name" 				required="false" type="string" default="" hint="The name of the model to retrieve">
 		<cfargument name="useSetterInjection" 	required="false" type="boolean" hint="Whether to use setter injection alongside the annotations property injection. cfproperty injection takes precedence.">
 		<cfargument name="onDICompleteUDF" 		required="false" type="string"	hint="After Dependencies are injected, this method will look for this UDF and call it if it exists. The default value is onDIComplete">
 		<cfargument name="stopRecursion"		required="false" type="string"  hint="A comma-delimmited list of stoprecursion classpaths.">
@@ -738,6 +738,7 @@ Description: This is the framework's simple bean factory.
 				case "logbox"			: { dependency = getLogBoxDSL(definition=arguments.definition); break;}
 				case "javaloader"		: { dependency = getJavaLoaderDSL(definition=arguments.definition); break;}
 				case "entityService"	: { dependency = getEntityServiceDSL(definition=arguments.definition); break;}
+				case "cacheBox"			: { dependency = getCacheBoxDSL(definition=arguments.definition); break;}
 			}
 
 			return dependency;
@@ -941,6 +942,59 @@ Description: This is the framework's simple bean factory.
 						// Get a named Logger
 						case "logger" : { locatedDependency = thisLogBox.getLogger(thisLocationKey); break; }
 					}
+					break;
+				} // end level 3 main DSL
+			}
+
+			return locatedDependency;
+		</cfscript>
+	</cffunction>
+	
+	<!--- getCacheBoxDSL --->
+	<cffunction name="getCacheBoxDSL" access="private" returntype="any" hint="Get dependencies using the cacheBox dependency DSL" output="false" >
+		<!--- ************************************************************* --->
+		<cfargument name="definition" 	required="true" type="any" hint="The dependency definition structure">
+		<!--- ************************************************************* --->
+		<cfscript>
+			var thisDependency 		= arguments.Definition;
+			var thisType 			= thisDependency.type;
+			var thisTypeLen 		= listLen(thisType,":");
+			var cacheName 			= "";
+			var cacheElement 		= "";
+			var thisCacheBox 		= getController().getCacheBox();
+			var locatedDependency 	= instance.NOT_FOUND;
+
+			// DSL stages
+			switch(thisTypeLen){
+				// CacheBox
+				case 1 : { locatedDependency = thisCacheBox; break;}
+				// CacheBox:CacheName
+				case 2 : {
+					cacheName 			= getToken(thisType,2,":");
+					
+					// Verify that cache exists
+					if( thisCacheBox.cacheExists( cacheName ) ){
+						locatedDependency = thisCacheBox.getCache( cacheName );
+					}
+					else{
+						log.debug("getOCMDependency() cannot find named cache #cacheName# using definition: #arguments.definition.toString()#. Existing cache names are #thisCacheBox.getCacheNames().toString#");
+					}
+					
+					break;
+				}
+				// CacheBox:CacheName:Element
+				case 3 : {
+					cacheName 			= getToken(thisType,2,":");
+					cacheElement 		= getToken(thisType,3,":");
+					
+					// Verify that dependency exists in the Cache container
+					if( thisCacheBox.getCache( cacheName ).lookup( cacheElement ) ){
+						locatedDependency = thisCacheBox.getCache( cacheName ).get( cacheElement );
+					}
+					else{
+						log.debug("getOCMDependency() cannot find cache Key: #cacheElement# in the #cacheName# cache using definition: #arguments.definition.toString()#");
+					}
+					
 					break;
 				} // end level 3 main DSL
 			}

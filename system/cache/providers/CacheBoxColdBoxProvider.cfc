@@ -83,7 +83,7 @@ Description :
     </cffunction>
 
 	<!--- getItemTypes --->
-	<cffunction name="getItemTypesCount" access="public" output="false" returntype="coldbox.system.cache.util.ItemTypeCount" hint="Get the item types counts of the cache. These are calculated according to the prefixes set.">
+	<cffunction name="getItemTypes" access="public" output="false" returntype="coldbox.system.cache.util.ItemTypeCount" hint="Get the item types counts of the cache. These are calculated according to the prefixes set.">
 		<cfscript>
 		var x 			= 1;
 		var itemList 	= getKeys();

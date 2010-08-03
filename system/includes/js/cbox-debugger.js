@@ -46,3 +46,27 @@ function fw_reinitframework(usingPassword){
 function fw_pollmonitor(panel, frequency, urlBase){
 	window.location=urlBase + '?debugpanel='+panel+'&frequency='+frequency;
 }
+function fw_cboxCommand( commandURL, verb ){
+	if( verb == null ){
+		verb = "GET";
+	}
+	var request = new XMLHttpRequest();
+	request.open( verb, commandURL, false);
+	request.send();
+	return request.responseText;
+}
+//Cache Commands
+function fw_cacheClearItem(itemKey){
+		
+}
+function fw_cacheCommand(URLBase, command, refreshContent){
+	var reportHTML = fw_cboxCommand( URLBase + "?cbox_command=" + command + "&cbox_cacheName="+cacheName);
+}
+function fw_cacheReport(URLBase,cacheName,div){
+	var reportHTML = fw_cboxCommand(URLBase+"?debugPanel=cacheReport&cbox_cacheName="+cacheName);
+	document.getElementById(div).innerHTML(reportHTML);
+}
+function fw_cacheContentReport(URLBase,cacheName,div){
+	var reportHTML = fw_cboxCommand(URLBase+"?debugPanel=cacheContentReport&cbox_cacheName="+cacheName);
+	document.getElementById(div).innerHTML(reportHTML);
+}

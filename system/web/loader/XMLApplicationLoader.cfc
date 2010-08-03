@@ -272,6 +272,9 @@ Loads a coldbox xml configuration file
 			}
 			
 			// Modules Configuration
+			if( not structKeyExists(configStruct,"ModulesExternalLocation") ){
+				configStruct.ModulesExternalLocation = arrayNew(1);
+			}
 			if( isSimpleValue(configStruct.ModulesExternalLocation) ){
 				configStruct.ModulesExternalLocation = listToArray( configStruct.ModulesExternalLocation );
 			}
@@ -838,73 +841,115 @@ Loads a coldbox xml configuration file
 
 	<!--- parseCacheSettings --->
 	<cffunction name="parseCacheSettings" output="false" access="public" returntype="void" hint="Parse Cache Settings">
-		<cfargument name="xml" 		  type="any" required="true" hint="The xml object"/>
-		<cfargument name="config" 	  type="struct" required="true" hint="The config struct"/>
-		<cfargument name="isOverride" type="boolean" required="false" default="false" hint="Flag to denote if overriding or first time runner."/>
+		<cfargument name="xml" 		  type="any" 		required="true" hint="The xml object"/>
+		<cfargument name="config" 	  type="struct" 	required="true" hint="The config struct"/>
+		<cfargument name="isOverride" type="boolean" 	required="false" default="false" hint="Flag to denote if overriding or first time runner."/>
 		<cfscript>
-			var configStruct = arguments.config;
-			var cacheSettingNodes  = "";
-			var fwSettingsStruct = getColdboxSettings();
+			var configStruct 		= arguments.config;
+			var fwSettingsStruct 	= getColdboxSettings();
+			var cacheSettingNodes  	= "";
+			var cboxSettingNodes	= "";
 			
 			//Cache Override Settings
-			cacheSettingNodes = XMLSearch(arguments.xml,"//Cache");
+			cacheSettingNodes = XMLSearch(arguments.xml,"//Config/Cache");
+			cboxSettingNodes  = XMLSearch(arguments.xml,"//CacheBox");
 			
-			// Defaults if not overriding from global framework settings
+			// CacheBox Defaults if not Overriding
 			if (NOT arguments.isOverride){
-				configStruct.cacheSettings = structnew();
-				configStruct.cacheSettings.objectDefaultTimeout 		  = fwSettingsStruct.cacheObjectDefaultTimeout;
-				configStruct.cacheSettings.objectDefaultLastAccessTimeout = fwSettingsStruct.cacheObjectDefaultLastAccessTimeout;
-				configStruct.cacheSettings.reapFrequency 				  = fwSettingsStruct.cacheObjectDefaultTimeout;
-				configStruct.cacheSettings.freeMemoryPercentageThreshold  = fwSettingsStruct.cacheFreeMemoryPercentageThreshold;
-				configStruct.cacheSettings.useLastAccessTimeouts 		  = fwSettingsStruct.cacheUseLastAccessTimeouts;
-				configStruct.cacheSettings.evictionPolicy 				  = fwSettingsStruct.cacheEvictionPolicy;
-				configStruct.cacheSettings.evictCount					  = fwSettingsStruct.cacheEvictCount;
-				configStruct.cacheSettings.maxObjects					  = fwSettingsStruct.cacheMaxObjects;	
+				configStruct.cacheSettings 			= structnew();
+				configStruct.cacheBox				= structnew();
+				configStruct.cacheBox.dsl			= structnew();
+				configStruct.cacheBox.xml  			= cboxSettingNodes;
+				configStruct.cacheBox.configFile 	= "";
 			}
 			
-			//Check if empty
-			if ( ArrayLen(cacheSettingNodes) gt 0 and ArrayLen(cacheSettingNodes[1].XMLChildren) gt 0){
-				//Checks For Default Timeout
-				if ( structKeyExists(cacheSettingNodes[1], "ObjectDefaultTimeout") and isNumeric(cacheSettingNodes[1].ObjectDefaultTimeout.xmlText) ){
-					configStruct.cacheSettings.objectDefaultTimeout = trim(cacheSettingNodes[1].ObjectDefaultTimeout.xmlText);
+			// cacheSettingNodes in COMPAT MODE
+			if( arrayLen(cacheSettingNodes) ){
+				
+				// Defaults if not overriding from global framework settings
+				if (NOT arguments.isOverride){
+					configStruct.cacheSettings = structnew();
+					configStruct.cacheSettings.objectDefaultTimeout 		  = fwSettingsStruct.cacheObjectDefaultTimeout;
+					configStruct.cacheSettings.objectDefaultLastAccessTimeout = fwSettingsStruct.cacheObjectDefaultLastAccessTimeout;
+					configStruct.cacheSettings.reapFrequency 				  = fwSettingsStruct.cacheObjectDefaultTimeout;
+					configStruct.cacheSettings.freeMemoryPercentageThreshold  = fwSettingsStruct.cacheFreeMemoryPercentageThreshold;
+					configStruct.cacheSettings.useLastAccessTimeouts 		  = fwSettingsStruct.cacheUseLastAccessTimeouts;
+					configStruct.cacheSettings.evictionPolicy 				  = fwSettingsStruct.cacheEvictionPolicy;
+					configStruct.cacheSettings.evictCount					  = fwSettingsStruct.cacheEvictCount;
+					configStruct.cacheSettings.maxObjects					  = fwSettingsStruct.cacheMaxObjects;	
 				}
 				
-				//Check ObjectDefaultLastAccessTimeout
-				if ( structKeyExists(cacheSettingNodes[1], "ObjectDefaultLastAccessTimeout") and isNumeric(cacheSettingNodes[1].ObjectDefaultLastAccessTimeout.xmlText)){
-					configStruct.cacheSettings.objectDefaultLastAccessTimeout = trim(cacheSettingNodes[1].ObjectDefaultLastAccessTimeout.xmlText);
-				}
+				//Check if empty
+				if ( ArrayLen(cacheSettingNodes[1].XMLChildren) gt 0){
+					//Checks For Default Timeout
+					if ( structKeyExists(cacheSettingNodes[1], "ObjectDefaultTimeout") and isNumeric(cacheSettingNodes[1].ObjectDefaultTimeout.xmlText) ){
+						configStruct.cacheSettings.objectDefaultTimeout = trim(cacheSettingNodes[1].ObjectDefaultTimeout.xmlText);
+					}
+					
+					//Check ObjectDefaultLastAccessTimeout
+					if ( structKeyExists(cacheSettingNodes[1], "ObjectDefaultLastAccessTimeout") and isNumeric(cacheSettingNodes[1].ObjectDefaultLastAccessTimeout.xmlText)){
+						configStruct.cacheSettings.objectDefaultLastAccessTimeout = trim(cacheSettingNodes[1].ObjectDefaultLastAccessTimeout.xmlText);
+					}
+					
+					//Check ReapFrequency
+					if ( structKeyExists(cacheSettingNodes[1], "ReapFrequency") and isNumeric(cacheSettingNodes[1].ReapFrequency.xmlText)){
+						configStruct.cacheSettings.reapFrequency = trim(cacheSettingNodes[1].ReapFrequency.xmlText);
+					}
+					
+					//Check MaxObjects
+					if ( structKeyExists(cacheSettingNodes[1], "MaxObjects") and isNumeric(cacheSettingNodes[1].MaxObjects.xmlText)){
+						configStruct.cacheSettings.maxObjects = trim(cacheSettingNodes[1].MaxObjects.xmlText);
+					}
+					
+					//Check FreeMemoryPercentageThreshold
+					if ( structKeyExists(cacheSettingNodes[1], "FreeMemoryPercentageThreshold") and isNumeric(cacheSettingNodes[1].FreeMemoryPercentageThreshold.xmlText)){
+						configStruct.cacheSettings.freeMemoryPercentageThreshold = trim(cacheSettingNodes[1].FreeMemoryPercentageThreshold.xmlText);
+					}
+					
+					//Check for CacheUseLastAccessTimeouts
+					if ( structKeyExists(cacheSettingNodes[1], "UseLastAccessTimeouts") and isBoolean(cacheSettingNodes[1].UseLastAccessTimeouts.xmlText) ){
+						configStruct.cacheSettings.useLastAccessTimeouts = trim(cacheSettingNodes[1].UseLastAccessTimeouts.xmlText);
+					}
+					
+					//Check for CacheEvictionPolicy
+					if ( structKeyExists(cacheSettingNodes[1], "EvictionPolicy") ){
+						configStruct.cacheSettings.evictionPolicy = trim(cacheSettingNodes[1].EvictionPolicy.xmlText);
+					}
+					
+					//Check for CacheEvictCount
+					if ( structKeyExists(cacheSettingNodes[1], "EvictCount") and 
+						 isNumeric(trim(cacheSettingNodes[1].evictCount.xmlText)) and
+						 trim(cacheSettingNodes[1].evictCount.xmlText) gt 0 ){
+						configStruct.cacheSettings.evictCount = trim(cacheSettingNodes[1].evictCount.xmlText);
+					}
+				}// if cachesettings had children
 				
-				//Check ReapFrequency
-				if ( structKeyExists(cacheSettingNodes[1], "ReapFrequency") and isNumeric(cacheSettingNodes[1].ReapFrequency.xmlText)){
-					configStruct.cacheSettings.reapFrequency = trim(cacheSettingNodes[1].ReapFrequency.xmlText);
-				}
+				return;
+			} // if in compat cache settings mode
+			
+			
+			//CacheBox loading here
+			
+			// Check if we have defined DSL first in application config
+			if( arrayLen(cboxSettingNodes) ){
 				
-				//Check MaxObjects
-				if ( structKeyExists(cacheSettingNodes[1], "MaxObjects") and isNumeric(cacheSettingNodes[1].MaxObjects.xmlText)){
-					configStruct.cacheSettings.maxObjects = trim(cacheSettingNodes[1].MaxObjects.xmlText);
+				// Do we have a configFile key for external loading?
+				if( structKeyExists(cboxSettingNodes[1], "ConfigFile") ){
+					configStruct.cacheBox.configFile = cboxSettingNodes[1].ConfigFile.XMLText;
 				}
-				
-				//Check FreeMemoryPercentageThreshold
-				if ( structKeyExists(cacheSettingNodes[1], "FreeMemoryPercentageThreshold") and isNumeric(cacheSettingNodes[1].FreeMemoryPercentageThreshold.xmlText)){
-					configStruct.cacheSettings.freeMemoryPercentageThreshold = trim(cacheSettingNodes[1].FreeMemoryPercentageThreshold.xmlText);
+				else{
+					// else just save the xml for parsing
+					configStruct.cacheBox.xml = cboxSettingNodes;
 				}
-				
-				//Check for CacheUseLastAccessTimeouts
-				if ( structKeyExists(cacheSettingNodes[1], "UseLastAccessTimeouts") and isBoolean(cacheSettingNodes[1].UseLastAccessTimeouts.xmlText) ){
-					configStruct.cacheSettings.useLastAccessTimeouts = trim(cacheSettingNodes[1].UseLastAccessTimeouts.xmlText);
-				}
-				
-				//Check for CacheEvictionPolicy
-				if ( structKeyExists(cacheSettingNodes[1], "EvictionPolicy") ){
-					configStruct.cacheSettings.evictionPolicy = trim(cacheSettingNodes[1].EvictionPolicy.xmlText);
-				}
-				
-				//Check for CacheEvictCount
-				if ( structKeyExists(cacheSettingNodes[1], "EvictCount") and 
-					 isNumeric(trim(cacheSettingNodes[1].evictCount.xmlText)) and
-					 trim(cacheSettingNodes[1].evictCount.xmlText) gt 0 ){
-					configStruct.cacheSettings.evictCount = trim(cacheSettingNodes[1].evictCount.xmlText);
-				}
+			
+			}
+			// Check if LogBoxConfig.cfc exists in the config conventions
+			else if( fileExists( getController().getAppRootPath() & "config/CacheBox.cfc") ){
+				configStruct.cacheBox.configFile = loadCacheBoxByConvention(configStruct);
+			}
+			// else, load the default coldbox cachebox config
+			else{
+				configStruct.cacheBox.configFile = "coldbox.system.web.config.CacheBox";
 			}
 		</cfscript>
 	</cffunction>	

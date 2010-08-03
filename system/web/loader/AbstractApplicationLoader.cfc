@@ -112,7 +112,7 @@ Abstract application loader
 	<!--- loadLogBoxByConvention --->
     <cffunction name="loadLogBoxByConvention" output="false" access="public" returntype="void" hint="Load logBox by convention">
     	<cfargument name="logBoxConfig" type="any" required="true"/>
-    	<cfargument name="config" type="struct" required="true"/>
+    	<cfargument name="config" 		type="any" required="true"/>
 		<cfscript>
     		var appRootPath 	  = getController().getAppRootPath();
 			var appMappingAsDots  = "";
@@ -133,8 +133,8 @@ Abstract application loader
 	
 	<!--- loadLogBoxByFile --->
     <cffunction name="loadLogBoxByFile" output="false" access="public" returntype="void" hint="Load logBox by file">
-    	<cfargument name="logBoxConfig" type="any" required="true"/>
-    	<cfargument name="filePath" type="string" required="true"/>
+    	<cfargument name="logBoxConfig" type="any" 		required="true"/>
+    	<cfargument name="filePath" 	type="string" 	required="true"/>
 		<cfscript>
     		// Load according xml?
 			if( listFindNoCase("cfm,xml", listLast(arguments.filePath,".")) ){
@@ -144,6 +144,26 @@ Abstract application loader
 			else{
 				arguments.logBoxConfig.init(CFCConfigPath=arguments.filePath).validate();
 			}
+		</cfscript>
+    </cffunction>
+	
+	<!--- loadCacheBoxByConvention --->
+    <cffunction name="loadCacheBoxByConvention" output="false" access="public" returntype="any" hint="Basically get the right config file to load in place">
+    	<cfargument name="config" type="any" required="true"/>
+		<cfscript>
+    		var appRootPath 	  = getController().getAppRootPath();
+			var appMappingAsDots  = "";
+			var configCreatePath  = "config.CacheBox";
+			
+			//AppMappingInvocation Path
+			appMappingAsDots = getAppMappingAsDots(arguments.config.appMapping);
+			
+			//Config Create Path
+			if( len(appMappingAsDots) ){
+				configCreatePath = appMappingAsDots & "." & configCreatePath;
+			}
+			
+			return configCreatePath;
 		</cfscript>
     </cffunction>
 	

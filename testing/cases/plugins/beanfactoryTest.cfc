@@ -21,37 +21,33 @@ Description :
 			
 		}
 		
+		function testCacheBoxDSL(){
+			makePublic(bf,"getcacheBoxDSL");
+			target = bf.getCacheBoxDSL({type="cacheBox"});
+			assertEquals( getController().getCacheBox(), target);
+			
+			target = bf.getCacheBoxDSL({type="cacheBox:default"});
+			assertEquals( getController().getCacheBox().getDefaultCache(), target);
+		
+			getController().getCacheBox().getDefaultCache().set("unitTest",now(),0);
+			target = bf.getCacheBoxDSL({type="cacheBox:default:unitTest"});
+			assertEquals( getController().getCacheBox().getDefaultCache().get("unitTest"), target);
+		}
+		
 		function testGetModelWithDSL(){
 			target = bf.getModel(dsl="coldbox:cacheManager");
 			assertEquals( getController().getColdBoxOCM(), target); 
 		}
 		
-	</cfscript>
-	
-	<cffunction name="testPlugin" access="public" returntype="void" output="false">
-		<!--- Now test some events --->
-		<cfscript>
-			var plugin = getController().getPlugin("BeanFactory");
-			
-			assertTrue( isObject(plugin) );			
-		</cfscript>
-	</cffunction>	
-	
-	<cffunction name="testCreate" access="public" returntype="void" output="false">
-		<!--- Now test some events --->
-		<cfscript>
+		function testCreate(){
 			var plugin = getController().getPlugin("BeanFactory");
 			var local = structnew();
 			
-			/* test create */
 			local.obj = plugin.create('coldbox.testing.testmodel.formBean');
-
-		</cfscript>
-	</cffunction>
-	
-	<cffunction name="testPopulateFromStruct" access="public" returntype="void" output="false">
-		<!--- Now test some events --->
-		<cfscript>
+		}
+		
+		
+		function testPopulateFromStruct(){
 			stime = getTickCount();
 			
 			/* We are using the formBean object: fname,lname,email,initDate */
@@ -91,13 +87,11 @@ Description :
 			/* Assert Population */
 			for( key in objInstance ){
 				AssertEquals(objInstance[key], myStruct[key], "Asserting by Trusted Setter #key# From Struct" );
-			}	
-		</cfscript>
-	</cffunction>
+			}
+		}
 	
-	<!--- testpopulateFromJSON --->
-	<cffunction name="testpopulateFromJSON" output="false" access="public" returntype="any" hint="">
-		<cfscript>
+	
+		function testpopulateFromJSON(){
 			JSONUtil  = createObject("component","coldbox.system.core.conversion.JSON").init();
 			
 			/* We are using the formBean object: fname,lname,email,initDate */
@@ -120,11 +114,10 @@ Description :
 			for( key in objInstance ){
 				AssertEquals(objInstance[key], myStruct[key], "Asserting #key# From JSON" );
 			}		
-		</cfscript>
-	</cffunction>
+		}
 	
-	<cffunction name="testPopulateFromXML" output="false" access="public" returntype="any" hint="">
-		<cfscript>
+		function testPopulateFromXML(){
+		
 			/* We are using the formBean object: fname,lname,email,initDate */
 			obj = getMockBox().createMock('coldbox.testing.testmodel.formBean');
 			
@@ -144,12 +137,9 @@ Description :
 			assertEquals( "Luis", obj.getFName() );
 			assertEquals( "Majano", obj.getLname() );
 			assertEquals( "test@coldbox.org", obj.getEmail() );
-		</cfscript>
-	</cffunction>
-	
-	<cffunction name="testpopulateFromQuery" access="public" returntype="void" output="false">
-		<!--- Now test some events --->
-		<cfscript>
+		}
+		
+		function testpopulateFromQuery(){
 			
 			// We are using the formBean object: fname,lname,email,initDate 
 			obj = getMockBox().createMock('coldbox.testing.testmodel.formBean');
@@ -168,50 +158,37 @@ Description :
 			AssertEquals(myQuery["fname"][1],obj.getfname());
 			AssertEquals(myQuery["lname"][1],obj.getlname());
 			AssertEquals(myQuery["email"][1],obj.getemail());
-		</cfscript>
-	</cffunction>
-	
-	<cffunction name="testLocateModel" access="public" returntype="void" output="false">
-		<cfscript>
+		}
+		
+		function testLocateModel(){
 			bf = getController().getPlugin("BeanFactory");
 			
 			assertTrue( bf.locateModel('testService').length() );
 			
 			assertFalse( bf.locateModel('whatever').length() );
-		</cfscript>
-	</cffunction>	
+		}	
 	
-	<cffunction name="testContainsModel" access="public" returntype="void" output="false">
-		<cfscript>
-		bf = getController().getPlugin("BeanFactory");
-		
-		assertFalse( bf.containsModel('Nothing') );
-		
-		assertTrue( bf.containsModel('testService') );	
-		</cfscript>
-	</cffunction>	
+		function testContainsModel(){
+			bf = getController().getPlugin("BeanFactory");
+			assertFalse( bf.containsModel('Nothing') );
+			assertTrue( bf.containsModel('testService') );	
+		}
 	
-	<cffunction name="testResolveModelAlias" access="public" returntype="void" output="false">
-		<cfscript>
-		bf = getController().getPlugin("BeanFactory");
+		function testResolveModelAlias(){
+			bf = getController().getPlugin("BeanFactory");
+			
+			assertEquals( bf.resolveModelAlias('MyFormBean'), "formBean" );
+			
+			assertEquals( bf.resolveModelAlias('HELLO'), "HELLO" );
+			
+			bf.addModelMapping(path='mypath.whateverman');
+			assertEquals( bf.resolveModelAlias('whateverman'), "mypath.whateverman" );
+		}
 		
-		assertEquals( bf.resolveModelAlias('MyFormBean'), "formBean" );
-		
-		assertEquals( bf.resolveModelAlias('HELLO'), "HELLO" );
-		
-		bf.addModelMapping(path='mypath.whateverman');
-		assertEquals( bf.resolveModelAlias('whateverman'), "mypath.whateverman" );
-		</cfscript>
-	</cffunction>
-	
-	<cffunction name="testgetModelMappings" access="public" returntype="void" output="false">
-		<cfscript>
-		bf = getController().getPlugin("BeanFactory");
-		
-		assertTrue( isStruct(bf.getModelMappings()) );
-		
-		</cfscript>
-	</cffunction>	
-	
-	
+		function testgetModelMappings(){
+			bf = getController().getPlugin("BeanFactory");
+			
+			assertTrue( isStruct(bf.getModelMappings()) );
+		}
+	</cfscript>
 </cfcomponent>

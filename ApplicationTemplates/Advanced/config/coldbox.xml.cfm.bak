@@ -110,10 +110,6 @@ http://ortus.svnrepository.com/coldbox/trac.cgi/wiki/cbConfigGuide
 	</Layouts>
 
 	<Interceptors>
-		<!-- USE ENVIRONMENT CONTROL -->
-		<Interceptor class="coldbox.system.interceptors.EnvironmentControl">
-			<Property name='configFile'>config/environments.xml.cfm</Property>
-		</Interceptor>
 		<!-- USE AUTOWIRING -->
 		<Interceptor class="coldbox.system.interceptors.Autowire" />
 		<!-- USE SES -->
@@ -144,7 +140,7 @@ http://ortus.svnrepository.com/coldbox/trac.cgi/wiki/cbConfigGuide
 		</IOC>	
 	-->
 	
-	<!-- Cache Settings 
+	<!-- Cache Settings COMPAT MODE
 	<Cache>
 		<ObjectDefaultTimeout>60</ObjectDefaultTimeout>
 		<ObjectDefaultLastAccessTimeout>30</ObjectDefaultLastAccessTimeout>

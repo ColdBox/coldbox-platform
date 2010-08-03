@@ -282,8 +282,9 @@ Description :
 	</cffunction>
 	
 	<!--- Facade: Get COldBox OCM --->
-	<cffunction name="getColdboxOCM" access="private" output="false" returntype="any" hint="Get ColdboxOCM: coldbox.system.cache.CacheManager">
-		<cfreturn getController().getColdboxOCM()/>
+	<cffunction name="getColdboxOCM" access="private" output="false" returntype="any" hint="Get ColdboxOCM: coldbox.system.cache.CacheManager or new CacheBox providers" colddoc:generic="coldbox.system.cache.IColdboxApplicationCache">
+		<cfargument name="cacheName" type="string" required="false" default="default" hint="The cache name to retrieve"/>
+		<cfreturn getController().getColdboxOCM(arguments.cacheName)/>
 	</cffunction>
 	
 	<!--- Bootstrapper LoadColdBox --->

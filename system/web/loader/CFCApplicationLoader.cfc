@@ -734,27 +734,59 @@ Loads a coldbox xml configuration file
 	</cffunction>
 
 	<!--- parseCacheSettings --->
-	<cffunction name="parseCacheSettings" output="false" access="public" returntype="void" hint="Parse Cache Settings">
+	<cffunction name="parseCacheSettings" output="false" access="public" returntype="void" hint="Parse Cache Settings for CacheBox operation">
 		<cfargument name="oConfig" 		type="any" 	   required="true" hint="The config object"/>
 		<cfargument name="config" 	  	type="struct"  required="true" hint="The config struct"/>
 		<cfscript>
-			var configStruct = arguments.config;
-			var fwSettingsStruct = getColdboxSettings();
-			var cacheEngine = arguments.oConfig.getPropertyMixin("cacheEngine","variables",structnew());
+			var configStruct 		= arguments.config;
+			var fwSettingsStruct 	= getColdboxSettings();
+			var cacheEngine 		= arguments.oConfig.getPropertyMixin("cacheEngine","variables",structnew());
 			
-			// Defaults
-			configStruct.cacheSettings = structnew();
-			configStruct.cacheSettings.objectDefaultTimeout 		  = fwSettingsStruct.cacheObjectDefaultTimeout;
-			configStruct.cacheSettings.objectDefaultLastAccessTimeout = fwSettingsStruct.cacheObjectDefaultLastAccessTimeout;
-			configStruct.cacheSettings.reapFrequency 				  = fwSettingsStruct.cacheObjectDefaultTimeout;
-			configStruct.cacheSettings.freeMemoryPercentageThreshold  = fwSettingsStruct.cacheFreeMemoryPercentageThreshold;
-			configStruct.cacheSettings.useLastAccessTimeouts 		  = fwSettingsStruct.cacheUseLastAccessTimeouts;
-			configStruct.cacheSettings.evictionPolicy 				  = fwSettingsStruct.cacheEvictionPolicy;
-			configStruct.cacheSettings.evictCount					  = fwSettingsStruct.cacheEvictCount;
-			configStruct.cacheSettings.maxObjects					  = fwSettingsStruct.cacheMaxObjects;	
+			// Default, cache compatibility
+			configStruct.cacheSettings  		= structnew();
 			
-			//append settings
-			structAppend(configStruct.cacheSettings, cacheEngine, true);
+			// CacheBox Defaults
+			configStruct.cacheBox				= structnew();
+			configStruct.cacheBox.dsl  			= arguments.oConfig.getPropertyMixin("cacheBox","variables",structnew());
+			configStruct.cacheBox.xml  			= "";
+			configStruct.cacheBox.configFile 	= "";
+			
+			// Test if in compatibility mode, basically using the cacheEngine structure, this loads the cache archive
+			// If cacheBox structure is found, then we use cachebox.
+			// This will be deprecated on 3.1
+			if( NOT structIsEmpty(cacheEngine) ){
+				// Defaults
+				configStruct.cacheSettings.objectDefaultTimeout 		  = fwSettingsStruct.cacheObjectDefaultTimeout;
+				configStruct.cacheSettings.objectDefaultLastAccessTimeout = fwSettingsStruct.cacheObjectDefaultLastAccessTimeout;
+				configStruct.cacheSettings.reapFrequency 				  = fwSettingsStruct.cacheObjectDefaultTimeout;
+				configStruct.cacheSettings.freeMemoryPercentageThreshold  = fwSettingsStruct.cacheFreeMemoryPercentageThreshold;
+				configStruct.cacheSettings.useLastAccessTimeouts 		  = fwSettingsStruct.cacheUseLastAccessTimeouts;
+				configStruct.cacheSettings.evictionPolicy 				  = fwSettingsStruct.cacheEvictionPolicy;
+				configStruct.cacheSettings.evictCount					  = fwSettingsStruct.cacheEvictCount;
+				configStruct.cacheSettings.maxObjects					  = fwSettingsStruct.cacheMaxObjects;	
+				
+				//append cache settings to main app cache structure
+				structAppend(configStruct.cacheSettings, cacheEngine, true);
+				return;
+			}
+			
+			// Check if we have defined DSL first in application config
+			if( NOT structIsEmpty(configStruct.cacheBox.dsl) ){
+				
+				// Do we have a configFile key for external loading?
+				if( structKeyExists(configStruct.cacheBox.dsl,"configFile") ){
+					configStruct.cacheBox.configFile = configStruct.cacheBox.dsl.configFile;
+				}
+			
+			}
+			// Check if LogBoxConfig.cfc exists in the config conventions
+			else if( fileExists( getController().getAppRootPath() & "config/CacheBox.cfc") ){
+				configStruct.cacheBox.configFile = loadCacheBoxByConvention(configStruct);
+			}
+			// else, load the default coldbox cachebox config
+			else{
+				configStruct.cacheBox.configFile = "coldbox.system.web.config.CacheBox";
+			}
 		</cfscript>
 	</cffunction>	
 

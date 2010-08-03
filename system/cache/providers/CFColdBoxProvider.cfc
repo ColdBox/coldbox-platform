@@ -47,7 +47,7 @@ component serializable="false" extends="coldbox.system.cache.providers.CFProvide
 	// Get Event URL Facade Tool
 	coldbox.system.cache.util.EventURLFacade function getEventURLFacade() output=false{ return eventURLFacade; }
 	// Get Item Type Counts
-	coldbox.system.cache.util.ItemTypeCount function getItemTypesCount() output=false{
+	coldbox.system.cache.util.ItemTypeCount function getItemTypes() output=false{
 		var x 			= 1;
 		var itemList 	= getKeys();
 		var itemTypes	= new coldbox.system.cache.util.ItemTypeCount();

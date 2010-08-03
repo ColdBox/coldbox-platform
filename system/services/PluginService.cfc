@@ -116,15 +116,15 @@ Modification History:
 		<cfargument name="init"   type="boolean"  required="false" default="true" hint="Auto init() the plugin upon construction"/>
 		<!--- ************************************************************* --->
 		<cfscript>
-			var pluginKey = getPluginCacheKey(argumentCollection=arguments);
-			var oPlugin = 0;
-			var pluginDictionaryEntry = "";
+			var pluginKey 				= getPluginCacheKey(argumentCollection=arguments);
+			var pluginDictionaryEntry 	= "";
+			var refLocal				= structnew();
 			
 			// Lookup plugin in Cache
-			oPlugin = controller.getColdboxOCM().get(pluginKey);
+			refLocal.oPlugin = controller.getColdboxOCM().get(pluginKey);
 			
-			// Verify it
-			if( not isObject(oPlugin) ){
+			// Verify it, COMPAT MODE Remove later
+			if( NOT structKeyExists(refLocal,"oPlugin") OR NOT isObject(refLocal.oPlugin) ){
 				// Object not found, proceed to create and verify
 				oPlugin = new(argumentCollection=arguments);
 				
@@ -137,6 +137,9 @@ Modification History:
 				}				
 			}
 			//end else if instance not in cache.
+			else{
+				oPlugin = refLocal.oPlugin;
+			}
 			
 			return oPlugin;
 		</cfscript>

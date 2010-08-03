@@ -232,7 +232,7 @@ Quick and Dirty Feed Dump:
 		<cfset var cacheFile = "">
 
 		<cfif getCacheType() eq "ram">
-			<cfreturn getColdboxOCM().clearKey(URLToCacheKey(arguments.feedURL))>
+			<cfreturn getColdboxOCM().clear(URLToCacheKey(arguments.feedURL))>
 		<cfelse>
 			<!--- Cache file --->
 			<cfset cacheFile = getCacheLocation() & "/" & URLToCacheKey(arguments.feedURL)>

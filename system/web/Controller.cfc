@@ -55,8 +55,11 @@ Only one instance of a specific ColdBox application exists.
 			setInterceptorService( CreateObject("component", "coldbox.system.services.InterceptorService").init(this) );
 
 			// LogBox Default Configuration & Creation
-			setLogBox(getLoaderService().createLogBox());
+			setLogBox(getLoaderService().createDefaultLogBox());
 			setLogger(getLogBox().getLogger(this));
+			
+			// CacheBox
+			setCacheBox("");
 
 			// Log Creation
 			getLogger().info("ColdBox Application Controller Created Successfully at #arguments.appRootPath#");
@@ -71,7 +74,16 @@ Only one instance of a specific ColdBox application exists.
 	<cffunction name="getCFMLEngine" access="public" returntype="coldbox.system.core.cf.CFMLEngine" output="false" hint="Get the CFMLEngine utility class">
 		<cfreturn instance.CFMLEngine>
 	</cffunction>
-
+	
+	<!--- getSetCacheBox --->
+	<cffunction name="getCacheBox" access="public" returntype="any" output="false" hint="Get the application's CacheBox instance as coldbox.system.cache.CacheFactory" colddoc:generic="coldbox.system.cache.CacheFactory">
+    	<cfreturn instance.cacheBox>
+    </cffunction>
+    <cffunction name="setCacheBox" access="public" returntype="void" output="false" hint="Set the application's CacheBox instance">
+    	<cfargument name="cacheBox" type="any" required="true" hint="As coldbox.system.cache.CacheFactory" colddoc:generic="coldbox.system.cache.CacheFactory">
+    	<cfset instance.cacheBox = arguments.cacheBox>
+    </cffunction>
+    
 	<!--- getLogBox --->
 	<cffunction name="getLogBox" output="false" access="public" returntype="coldbox.system.logging.LogBox" hint="Get the application's LogBox instance">
 		<cfreturn instance.logBox>
@@ -105,8 +117,18 @@ Only one instance of a specific ColdBox application exists.
 	</cffunction>
 
 	<!--- ColdBox Cache Manager --->
-	<cffunction name="getColdboxOCM" access="public" output="false" returntype="any" hint="Get ColdboxOCM: coldbox.system.cache.CacheManager">
-		<cfreturn instance.ColdboxOCM/>
+	<cffunction name="getColdboxOCM" access="public" output="false" returntype="any" hint="Get ColdboxOCM: coldbox.system.cache.CacheManager or new CacheBox providers coldbox.system.cache.IColdboxApplicationCache" colddoc:generic="coldbox.system.cache.IColdboxApplicationCache">
+		<cfargument name="cacheName" type="string" required="false" default="default" hint="The cache name to retrieve"/>
+		<cfscript>
+			var cacheBox = getCacheBox();
+			
+			// if cachebox exists, return cachebox cache
+			if( isObject(cacheBox) ){
+				return cacheBox.getCache( arguments.cacheName );
+			}
+			//else return compat mode for now.
+			return instance.coldboxOCM;
+		</cfscript>
 	</cffunction>
 	<cffunction name="setColdboxOCM" access="public" output="false" returntype="void" hint="Set ColdboxOCM">
 		<cfargument name="ColdboxOCM" type="any" required="true" hint="coldbox.system.cache.CacheManager"/>

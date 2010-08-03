@@ -209,15 +209,12 @@ Description :
 		<!--- **************************************************************--->
 	</div>
 	</cfif>
-
 <!--- **************************************************************--->
-<!--- Cache Performance --->
+<!--- CACHE PANEL --->
 <!--- **************************************************************--->
-	
 	<cfif getDebuggerConfig().getShowCachePanel()>
-		<cfinclude template="panels/CachePanel.cfm">
+		#controller.getDebuggerService().renderCachePanel(monitor=false)#
 	</cfif>
-	
 <!--- **************************************************************--->
 <!--- DUMP VAR --->
 <!--- **************************************************************--->
@@ -237,16 +234,11 @@ Description :
 		</cfif>
 	</cfif>
 <!--- **************************************************************--->
-
-<!--- **************************************************************--->
 <!--- ColdBox Modules --->
 <!--- **************************************************************--->
 	<cfif controller.getCFMLEngine().isMT() AND getDebuggerConfig().getShowModulesPanel()>
 		<cfinclude template="panels/ModulesPanel.cfm">
 	</cfif>
-<!--- **************************************************************--->
-
-
 <!--- **************************************************************--->
 <!--- Request Collection Debug --->
 <!--- **************************************************************--->
@@ -255,7 +247,6 @@ Description :
 	&nbsp;ColdBox Request Structures
 	</div>
 	<div class="fw_debugContent<cfif getDebuggerConfig().getExpandedRCPanel()>View</cfif>" id="fw_reqCollection">
-		
 		<!--- Public Collection --->
 		<cfset thisCollection = rc>
 		<cfset thisCollectionType = "Public">
@@ -264,14 +255,10 @@ Description :
 		<cfset thisCollection = prc>
 		<cfset thisCollectionType = "Private">
 		<cfinclude template="/coldbox/system/includes/panels/CollectionPanel.cfm">
-		
 	</div>
 	</cfif>
-<!--- **************************************************************--->
 
-	<div class="fw_renderTime">
-	Approximate Debug Rendering Time: #GetTickCount()-DebugStartTime# ms
-	</div>
+	<div class="fw_renderTime">Approximate Debug Rendering Time: #GetTickCount()-DebugStartTime# ms</div>
 
 </div>
 </cfoutput>

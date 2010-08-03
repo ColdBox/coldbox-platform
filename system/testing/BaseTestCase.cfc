@@ -227,9 +227,10 @@ id , name , mail
 	</cffunction>
 	
 	<!--- getColdboxOCM --->
-    <cffunction name="getColdboxOCM" output="false" access="private" returntype="any" hint="Get a reference to the cache manager">
-    	<cfreturn getController().getColdboxOCM()>
-    </cffunction>
+    <cffunction name="getColdboxOCM" access="public" output="false" returntype="any" hint="Get ColdboxOCM: coldbox.system.cache.CacheManager or new CacheBox providers coldbox.system.cache.IColdboxApplicationCache" colddoc:generic="coldbox.system.cache.IColdboxApplicationCache">
+		<cfargument name="cacheName" type="string" required="false" default="default" hint="The cache name to retrieve"/>
+		<cfreturn getController().getColdboxOCM(arguments.cacheName)/>
+	</cffunction>
 
 	<!--- Get current request context --->
 	<cffunction name="getRequestContext" access="private" output="false" returntype="any" hint="Get a reference to the current mock request context">

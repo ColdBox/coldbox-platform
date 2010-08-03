@@ -96,11 +96,11 @@ Modification History:
 	
 	
 	<!--- Get the cache manager --->
-	<cffunction name="getColdboxOCM" output="false" access="public" returntype="any" hint="Get the coldbox cache manager reference: coldbox.system.cache.CacheManager">
-		<cfscript>
-		return application[coldboxAppKey].getColdboxOCM();
-		</cfscript>
+	<cffunction name="getColdboxOCM" access="public" output="false" returntype="any" hint="Get ColdboxOCM: coldbox.system.cache.CacheManager or new CacheBox providers as coldbox.system.cache.IColdboxApplicationCache" colddoc:generic="coldbox.system.cache.IColdboxApplicationCache">
+		<cfargument name="cacheName" type="string" required="false" default="default" hint="The cache name to retrieve"/>
+		<cfreturn application[coldboxAppKey].getColdboxOCM(arguments.cacheName)/>
 	</cffunction>
+
 	
 	<!--- Get a plugin --->
 	<cffunction name="getPlugin" access="Public" returntype="any" hint="Plugin factory, returns a new or cached instance of a plugin." output="false">

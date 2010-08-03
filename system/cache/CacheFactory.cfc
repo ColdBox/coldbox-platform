@@ -314,8 +314,8 @@ Description :
 		</cfscript>
     </cffunction>
 	
-	<!--- reap --->
-    <cffunction name="reap" output="false" access="public" returntype="void" hint="A nice way to call reap on all registered caches">
+	<!--- reapAll --->
+    <cffunction name="reapAll" output="false" access="public" returntype="void" hint="A nice way to call reap on all registered caches">
     	<cfscript>
 			var cacheNames = getCacheNames();
 			var cacheLen   = arraylen(cacheNames);

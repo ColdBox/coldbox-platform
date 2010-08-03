@@ -55,9 +55,10 @@ Modification History:
 	</cffunction>
 	
 	<!--- Get OCM Facade --->	
-	<cffunction name="getColdboxOCM" access="package" output="false" returntype="any" hint="Get the Coldbox Cache Manager">
-		<cfreturn controller.getColdboxOCM()/>
-	</cffunction>	
+	<cffunction name="getColdboxOCM" access="public" output="false" returntype="any" hint="Get ColdboxOCM: coldbox.system.cache.CacheManager or new CacheBox providers">
+		<cfargument name="cacheName" type="string" required="false" default="default" hint="The cache name to retrieve"/>
+		<cfreturn controller.getColdboxOCM(arguments.cacheName)/>
+	</cffunction>
 	
 
 <!------------------------------------------- INTERNAL EVENTS ------------------------------------------>	

@@ -105,6 +105,7 @@ Description :
 			var oUtilities = appLoader.getUtil();
 			var oJSON = appLoader.getJSONUtil();
 			var jsonRegex = appLoader.getJSONRegex();
+			var cacheBoxHash	= "";
 			
 			//Parse environment config file
 			oXML = XMLParse(getConfigFile());
@@ -173,11 +174,22 @@ Description :
 				controller.getDebuggerService().getDebuggerConfig().populate(configSettings.DebuggerSettings);
 				// Parse Interceptors
 				appLoader.parseInterceptors(environmentXML,configSettings,true);	
+				
+				//****** COMPAT MODE, REMOVE LATER ***********
+				// Store CacheBox settings
+				cacheBoxHash = hash(configSettings.cacheBox.toString());
 				// Parse Cache Settings
 				appLoader.parseCacheSettings(environmentXML,configSettings,true);
-				// Reconfigure Cache Config Settings and Cache
-				controller.getColdBoxOCM().getCacheConfig().populate(configSettings.cacheSettings);
-				controller.getColdBoxOCM().configure(controller.getColdBoxOCM().getCacheConfig());
+				// Reconfigure Cache Config Settings and Cache: TODO change with compat modes
+				if( NOT isObject(controller.getCacheBox()) ){
+					controller.getColdBoxOCM().getCacheConfig().populate(configSettings.cacheSettings);
+					controller.getColdBoxOCM().configure(controller.getColdBoxOCM().getCacheConfig());
+				}
+				// Check if cacheBox changes where made, then reload it according to environment
+				else if( cacheBoxHash NEQ hash(configSettings.cacheBox.toString()) ){
+					controller.getLoaderService().createCacheContainer();
+				}
+				//****** COMPAT MODE, REMOVE LATER ***********
 				
 				// Parse LogBox
 				appLoader.parseLogBox(environmentXML,configSettings,true);
