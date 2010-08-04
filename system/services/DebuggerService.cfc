@@ -217,13 +217,14 @@ Description :
 			var expDate			= "";
 			
 			// Cache info
-			var itemTypes		= controller.getColdboxOCM().getItemTypes();
+			var cacheProvider 	= controller.getColdboxOCM();
+			var itemTypes		= cacheProvider.getItemTypes();
 			var cacheMetadata	= "";
 			var cacheConfig		= "";
 			var cacheStats		= "";
 			var cacheKeys		= "";
 			var cacheKeysLen	= "";
-			var cacheSize		= controller.getColdboxOCM().getSize();
+			var cacheSize		= cacheProvider.getSize();			
 			
 			// JVM Data
 			var JVMRuntime 		= instance.jvmRuntime.getRuntime();
@@ -244,13 +245,16 @@ Description :
 			
 			// Prepare cache report for cachebox
 			if( isObject(controller.getCacheBox()) ){
-			
+				cacheConfig 	= cacheProvider.getConfiguration();
+				cacheStats  	= cacheProvider.getStats();
+				cacheKeys		= structKeyArray( cacheProvider.getKeys() ); 
+				cacheKeysLen	= arrayLen( cacheKeys );				
 			}
 			// COMPAT MODE: REMOVE LATER
 			else{
-				cacheConfig 	= controller.getColdboxOCM().getCacheConfig().getMemento();
-				cacheStats  	= controller.getColdboxOCM().getCacheStats();
-				cacheMetadata 	= controller.getColdboxOCM().getPoolMetadata();
+				cacheConfig 	= cacheProvider.getCacheConfig().getMemento();
+				cacheStats  	= cacheProvider.getCacheStats();
+				cacheMetadata 	= cacheProvider.getPoolMetadata();
 				cacheKeys		= structKeyArray( cacheMetadata ); 
 				cacheKeysLen	= arrayLen( cacheKeys );
 				

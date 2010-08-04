@@ -497,8 +497,10 @@ I oversee and manage ColdBox modules
     		instance.moduleRegistry = createObject("java","java.util.LinkedHashMap").init();
 			
 			for(x=1; x lte locLen; x++){
-				// Get all modules found in the module location and append to module registry, only new ones are added
-				scanModulesDirectory( arguments.locations[x] );
+				if( len(trim(arguments.locations[x])) ){
+					// Get all modules found in the module location and append to module registry, only new ones are added
+					scanModulesDirectory( arguments.locations[x] );
+				}
 			}
 		</cfscript>
     </cffunction>

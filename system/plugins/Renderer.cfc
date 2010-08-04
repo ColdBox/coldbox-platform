@@ -68,8 +68,13 @@ Description :
 		<cfset var cbox_cacheEntry 		= "">
 		<cfset var cbox_timerHash 		= 0>
 		<cfset var cbox_iData 			= arguments>
-		<cfset var cbox_locationUDF			= variables.locateView>
-
+		<cfset var cbox_locationUDF		= variables.locateView>
+		
+		<!--- Module Default Value --->
+		<cfif NOT len(arguments.module)>
+			<cfset arguments.module = event.getCurrentModule()>
+		</cfif>
+		
 		<!--- Check if rendering set view or a-la-carte --->
 		<cfif NOT len(arguments.view)>
 			<cfset arguments.view = event.getCurrentView()>
@@ -210,10 +215,16 @@ Description :
 		<cfargument name="layout" type="any" 	required="false" hint="The explicit layout to use in rendering."/>
 		<cfargument name="view"   type="any" 	required="false" default="" hint="The name of the view to passthrough as an argument so you can refer to it as arguments.view"/>
 		<cfargument name="module" type="any"    required="false" default="" hint="Explicitly render a layout from this module"/>
+		
 		<cfset var cbox_currentLayout 	= implicitViewChecks()>
 		<cfset var cbox_RederedLayout 	= "">
 		<cfset var cbox_timerhash 		= "">
 		<cfset var cbox_locateUDF 		= variables.locateLayout>
+		
+		<!--- Module Default Value --->
+		<cfif NOT len(arguments.module)>
+			<cfset arguments.module = event.getCurrentModule()>
+		</cfif>
 
 		<!--- Check explicit layout rendering --->
 		<cfif structKeyExists(arguments,"layout")>
