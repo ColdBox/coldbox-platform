@@ -55,18 +55,33 @@ function fw_cboxCommand( commandURL, verb ){
 	request.send();
 	return request.responseText;
 }
-//Cache Commands
-function fw_cacheClearItem(itemKey){
-		
+//Cache Panel JS
+function fw_cacheClearItem(cacheKey,cacheName){
+	// Button
+	var button = document.getElementById('button_ccr_del_'+cacheKey);
+	button.disabled = true;
+	button.value = "Wait";
+	// Execute Command
+	fw_cboxCommand( URLBase + "?cbox_command=delcacheentry&cbox_cacheentry=" + cacheKey + "&cbox_cacheName="+cacheName);
+	// Remove Entry
+	var element = document.getElementById('tr_ccr_'+cacheKey);
+	element.parentNode.removeChild(element);
 }
-function fw_cacheCommand(URLBase, command, refreshContent){
-	var reportHTML = fw_cboxCommand( URLBase + "?cbox_command=" + command + "&cbox_cacheName="+cacheName);
+function fw_cacheCommand(URLBase, command, cacheName, refreshContent){
+	// Execute Command
+	fw_cboxCommand( URLBase + "?cbox_command=" + command + "&cbox_cacheName="+cacheName);
+	// refresh defaults
+	if( refreshContent == null ){ refreshContent = true; }
+	// ReFill the content report
+	if( refreshContent ){
+		fw_cacheContentReport(URLBase,cacheName);
+	}
 }
-function fw_cacheReport(URLBase,cacheName,div){
+function fw_cacheReport(URLBase,cacheName){
 	var reportHTML = fw_cboxCommand(URLBase+"?debugPanel=cacheReport&cbox_cacheName="+cacheName);
-	document.getElementById(div).innerHTML(reportHTML);
+	document.getElementById('fw_cacheReport').innerHTML(reportHTML);
 }
-function fw_cacheContentReport(URLBase,cacheName,div){
+function fw_cacheContentReport(URLBase,cacheName){
 	var reportHTML = fw_cboxCommand(URLBase+"?debugPanel=cacheContentReport&cbox_cacheName="+cacheName);
-	document.getElementById(div).innerHTML(reportHTML);
+	document.getElementById('fw_cacheContentReport').innerHTML(reportHTML);
 }
