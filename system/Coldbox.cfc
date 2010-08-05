@@ -155,6 +155,7 @@ Description :
 		<cfset var interceptorData  = structnew()>
 		<cfset var renderData 	    = structnew()>
 		<cfset var refResults 		= structnew()>
+		<cfset var debugPanel		= "">
 		
 		<!--- Start Application Requests --->
 		<cflock type="readonly" name="#getAppHash()#" timeout="#getLockTimeout()#" throwontimeout="true">
@@ -175,16 +176,29 @@ Description :
 				<cfset coldboxCommands(cbController,event)>
 				
 				<!--- Which panel to render --->
-				<cfif event.getValue("debugPanel","") eq "cache">
-					<cfoutput>#cbController.getDebuggerService().renderCachePanel(monitor=true)#</cfoutput>
-					<cfabort>
-				<cfelseif event.getValue("debugPanel","") eq "cacheviewer">
-					<cfoutput>#cbController.getDebuggerService().renderCacheDumper()#</cfoutput>
-					<cfabort>
-				<cfelseif event.getValue("debugPanel","") eq "profiler">
-					<cfoutput>#cbController.getDebuggerService().renderProfiler()#</cfoutput>
-					<cfabort>
-				</cfif>		
+				<cfset debugPanel = event.getValue("debugPanel","")>
+				<cfswitch expression="#debugPanel#">
+					<cfcase value="cache">
+						<cfoutput>#cbController.getDebuggerService().renderCachePanel(monitor=true)#</cfoutput>
+					</cfcase>
+					<cfcase value="cacheReport">
+						<cfoutput>#cbController.getDebuggerService().renderCacheReport(name=event.getTrimValue("cbox_cacheName","default"))#</cfoutput>
+					</cfcase>
+					<cfcase value="cacheContentReport">
+						<cfoutput>#cbController.getDebuggerService().renderCacheContentReport(name=event.getTrimValue("cbox_cacheName","default"))#</cfoutput>
+					</cfcase>
+					<cfcase value="cacheViewer">
+						<cfoutput>#cbController.getDebuggerService().renderCacheDumper()#</cfoutput>
+					</cfcase>	
+					<cfcase value="profiler">
+						<cfoutput>#cbController.getDebuggerService().renderProfiler()#</cfoutput>
+					</cfcase>			
+				</cfswitch>
+				<!--- Stop Processing --->
+				<cfif len(debugPanel)>
+					<cfsetting showdebugoutput="false">
+					<cfreturn>
+				</cfif>
 			</cfif>
 		
 			<!--- Application Start Handler --->

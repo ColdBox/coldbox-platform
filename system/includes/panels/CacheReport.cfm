@@ -1,4 +1,15 @@
 <cfoutput>
+<!--- Id & Name --->
+<cfif isObject( controller.getCacheBox() ) >
+<div class="fw_debugTitleCell">
+  Cache Name
+</div>
+<div class="fw_debugContentCell">
+ #cacheProvider.getName()#
+</div>
+</cfif>
+
+<!--- Performance --->
 <div class="fw_debugTitleCell">
   Performance
 </div>
@@ -63,26 +74,38 @@
 </div>
 
 <!--- Content Report --->
-<h3>Cache Content Report (Time: #timeformat(now(),"hh:mm:ss tt")#)</h3>
-<!--- Cache Commands --->
+<h3>Cache Content Report</h3>
+
+<!--- Reload Contents --->
+<input type="button" value="Reload Contents" 
+	   name="cboxbutton_reloadContents"
+	   style="font-size:10px" 
+	   title="Reload the contents" 
+	   onClick="fw_reloadCacheContentReport('#URLBase#','#arguments.cacheName#')" />
+<!--- Expire All Keys --->
 <input type="button" value="Expire All Keys" 
-	   name="cboxbutton_expirekeys"
+	   name="cboxbutton_expirekeys" id="cboxbutton_expirekeys"
 	   style="font-size:10px" 
 	   title="Expire all the keys in the cache" 
-	   onClick="location.href='#URLBase#?cbox_command=expirecache&debugpanel=#event.getValue('debugPanel','')#'" />
+	   onclick="fw_cacheCommand('#URLBase#','expirecache', '#arguments.cacheName#')" />
+<!--- Clear All Events --->
 <input type="button" value="Clear All Events" 
-	   name="cboxbutton_clearallevents"
+	   name="cboxbutton_clearallevents" id="cboxbutton_clearallevents"
 	   style="font-size:10px" 
 	   title="Remove all the events in the cache" 
-	   onClick="location.href='#URLBase#?cbox_command=clearallevents&debugpanel=#event.getValue('debugPanel','')#'" />
+	   onclick="fw_cacheCommand('#URLBase#','clearallevents', '#arguments.cacheName#')" />
+<!--- Clear All Views --->
 <input type="button" value="Clear All Views" 
-	   name="cboxbutton_clearallviews"
+	   name="cboxbutton_clearallviews" id="cboxbutton_clearallviews"
 	   style="font-size:10px" 
 	   title="Remove all the views in the cache" 
-	   onClick="location.href='#URLBase#?cbox_command=clearallviews&debugpanel=#event.getValue('debugPanel','')#'" />
+	   onclick="fw_cacheCommand('#URLBase#','clearallviews', '#arguments.cacheName#')" />
 
-<!--- Object Charts --->
-<div class="fw_cacheContentReport">
-	#renderCacheContentReport()#
+<!--- Loader --->
+<span class="fw_redText fw_debugContent" id="fw_cacheContentReport_loader">Please Wait, Processing...</span>
+	  
+<!--- Content Report --->
+<div class="fw_cacheContentReport" id="fw_cacheContentReport">
+	#renderCacheContentReport(arguments.cacheName)#
 </div>
 </cfoutput>

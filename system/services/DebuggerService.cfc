@@ -208,30 +208,8 @@ Description :
 		<cfargument name="monitor" type="boolean" required="false" default="false" hint="monitor or panel"/>
 		<cfscript>
 			var event 			= controller.getRequestService().getContext();
-			var rc				= event.getCollection();
-			var toRender		= "";
+			var content			= "";
 			
-			// Cache iterators
-			var	thisKey			= "";
-			var x				= 1;
-			var expDate			= "";
-			
-			// Cache info
-			var cacheProvider 	= controller.getColdboxOCM();
-			var itemTypes		= cacheProvider.getItemTypes();
-			var cacheMetadata	= "";
-			var cacheConfig		= "";
-			var cacheStats		= "";
-			var cacheKeys		= "";
-			var cacheKeysLen	= "";
-			var cacheSize		= cacheProvider.getSize();			
-			
-			// JVM Data
-			var JVMRuntime 		= instance.jvmRuntime.getRuntime();
-			var JVMFreeMemory 	= JVMRuntime.freeMemory()/1024;
-			var JVMTotalMemory 	= JVMRuntime.totalMemory()/1024;
-			var JVMMaxMemory 	= JVMRuntime.maxMemory()/1024; 
-				
 			// CacheType Rendering
 			var isMonitor		= arguments.monitor;
 			
@@ -243,49 +221,26 @@ Description :
 				URLBase = "index.cfm";
 			}
 			
-			// Prepare cache report for cachebox
-			if( isObject(controller.getCacheBox()) ){
-				cacheConfig 	= cacheProvider.getConfiguration();
-				cacheStats  	= cacheProvider.getStats();
-				cacheMetadata 	= cacheProvider.getStoreMetadataReport();
-				cacheKeys		= cacheProvider.getKeys(); 
-				cacheKeysLen	= arrayLen( cacheKeys );	
-				isCacheBox		= true;
-							
-			}
-			// COMPAT MODE: REMOVE LATER, cf7 and compat
-			else{
-				cacheConfig 	= cacheProvider.getCacheConfig().getMemento();
-				cacheStats  	= cacheProvider.getCacheStats();
-				cacheMetadata 	= cacheProvider.getPoolMetadata();
-				cacheKeys		= structKeyArray( cacheMetadata ); 
-				cacheKeysLen	= arrayLen( cacheKeys );
-				isCacheBox		= false;
-				
-			}
-			
-			// Sort Keys
-			arraySort( cacheKeys ,"textnocase" );
 		</cfscript>
 		
 		<!--- Param the monitor frequency if used --->
 		<cfparam name="url.frequency" default="0" type="numeric" min="0">
 		
 		<!--- Generate Debugging --->
-		<cfsavecontent variable="toRender"><cfinclude template="/coldbox/system/includes/panels/CachePanel.cfm"></cfsavecontent>
+		<cfsavecontent variable="content"><cfinclude template="/coldbox/system/includes/panels/CachePanel.cfm"></cfsavecontent>
 		
-		<cfreturn toRender>
+		<cfreturn content>
 	</cffunction>
 	
 	<!--- renderCacheReport --->
     <cffunction name="renderCacheReport" output="false" access="public" returntype="any" hint="Render a cache report for a specific cache">
-    	<cfargument name="name" type="any" required="true" default="default" hint="The cache name"/>
+    	<cfargument name="cacheName" type="any" required="true" default="default" hint="The cache name"/>
     	<cfscript>
     		var content 		= "";
 			var event 			= controller.getRequestService().getContext();
 			
 			// Cache info
-			var cacheProvider 	= controller.getColdboxOCM( arguments.name );
+			var cacheProvider 	= controller.getColdboxOCM( arguments.cacheName );
 			var itemTypes		= cacheProvider.getItemTypes();
 			var cacheConfig		= "";
 			var cacheStats		= "";
@@ -327,13 +282,13 @@ Description :
 
 	<!--- renderCacheContentReport --->
     <cffunction name="renderCacheContentReport" output="false" access="public" returntype="any" hint="Render a cache's content report">
-    	<cfargument name="name" type="any" required="true" default="default" hint="The cache name"/>
+    	<cfargument name="cacheName" type="any" required="true" default="default" hint="The cache name"/>
 		<cfscript>
     		var thisKey			= "";
 			var expDate			= "";
 			var x				= "";
 			var content			= "";
-			var cacheProvider 	= controller.getColdboxOCM( arguments.name );
+			var cacheProvider 	= controller.getColdboxOCM( arguments.cacheName );
 			var cacheKeys		= "";
 			var cacheKeysLen	= 0;
 			var cacheMetadata	= "";

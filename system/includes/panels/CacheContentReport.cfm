@@ -13,7 +13,7 @@
   <cfloop from="1" to="#cacheKeysLen#" index="x">
   	<cfset thisKey = cacheKeys[x]>
   	<cfset expDate = dateadd("n",cacheMetaData[ thisKey ].timeout, cacheMetaData[ thisKey ].created)>
-	<tr <cfif x mod 2 eq 0>class="even"</cfif>>
+	<tr <cfif x mod 2 eq 0>class="even"</cfif> id="cbox_cache_tr_#urlEncodedFormat(thisKey)#">
 	  	<!--- Link --->
 		<td align="left">
 		  	<a href="javascript:fw_openwindow('#URLBase#?debugpanel=cacheviewer&key=#urlEncodedFormat( thisKey )#','CacheViewer',650,375,'resizable,scrollbars,status')" title="Dump contents">#listLast(thisKey,"_")#</a></td>
@@ -38,10 +38,10 @@
 		<!--- Commands --->
 	 	<td align="center">
 			<input type="button" value="DEL" 
-				   name="cboxbutton_removeentry"
+				   name="cboxbutton_removeentry_#urlEncodedFormat(thisKey)#" id="cboxbutton_removeentry_#urlEncodedFormat(thisKey)#"
 			  	   style="font-size:10px" 
 				   title="Remove this entry from the cache." 
-			   	   onClick="location.href='#URLBase#?cbox_command=delcacheentry&cbox_cacheentry=#urlEncodedFormat(thisKey)#&debugpanel=#event.getValue('debugPanel','')#'">
+				   onclick="fw_cacheClearItem('#URLBase#','#urlEncodedFormat(thisKey)#','#arguments.cacheName#')">
 		</td>
 	  </tr>
 	

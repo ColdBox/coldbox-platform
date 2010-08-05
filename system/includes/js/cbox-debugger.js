@@ -56,36 +56,61 @@ function fw_cboxCommand( commandURL, verb ){
 	return request.responseText;
 }
 //Cache Panel JS
-function fw_cacheClearItem(cacheKey,cacheName){
+function fw_cacheClearItem(URLBase, cacheKey, cacheName){
 	// Button
-	var button = document.getElementById('button_ccr_del_'+cacheKey);
-	button.disabled = true;
-	button.value = "Wait";
+	var btn = document.getElementById('cboxbutton_removeentry_'+cacheKey);
+	btn.disabled = true;
+	btn.value = "Wait";
 	// Execute Command
 	fw_cboxCommand( URLBase + "?cbox_command=delcacheentry&cbox_cacheentry=" + cacheKey + "&cbox_cacheName="+cacheName);
 	// Remove Entry
-	var element = document.getElementById('tr_ccr_'+cacheKey);
+	var element = document.getElementById('cbox_cache_tr_'+cacheKey);
 	element.parentNode.removeChild(element);
 }
-function fw_cacheCommand(URLBase, command, cacheName, refreshContent){
+function fw_cacheCommand(URLBase, command, cacheName){
+	var loader = document.getElementById('fw_cacheContentReport_loader');
+	loader.style.display='inline';
 	// Execute Command
 	fw_cboxCommand( URLBase + "?cbox_command=" + command + "&cbox_cacheName="+cacheName);
-	// refresh defaults
-	if( refreshContent == null ){ refreshContent = true; }
 	// ReFill the content report
-	if( refreshContent ){
-		fw_cacheContentReport(URLBase,cacheName);
-	}
+	fw_cacheContentReport(URLBase,cacheName);
+	// turn off loader
+	loader.style.display='none';
+}
+function fw_cacheGC(URLBase,cacheName){
+	var btn = document.getElementById('cboxbutton_gc');
+	btn.value = "Please wait...";
+	// run GC
+	fw_cboxCommand(URLBase+"?cbox_command=gc&cbox_cacheName="+cacheName);
+	// reload report
+	fw_cacheReport(URLBase,cacheName);
 }
 function fw_cacheReport(URLBase,cacheName){
+	// loader change
+	var loader = document.getElementById('fw_cachebox_selector_loading');
+	loader.style.display='inline';
+	// get report
 	var reportHTML = fw_cboxCommand(URLBase+"?debugPanel=cacheReport&cbox_cacheName="+cacheName);
-	document.getElementById('fw_cacheReport').innerHTML(reportHTML);
+	document.getElementById('fw_cacheReport').innerHTML = reportHTML;
+	// turn off loader
+	loader.style.display='none';
+}
+function fw_reloadCacheContentReport(URLBase,cacheName){
+	// loader change
+	var loader = document.getElementById('fw_cacheContentReport_loader');
+	loader.style.display='inline';
+	document.getElementById('fw_cacheContentReport').innerHTML = "";
+	fw_cacheContentReport(URLBase,cacheName);
+	// turn off loader
+	loader.style.display='none';
 }
 function fw_cacheContentReport(URLBase,cacheName){
+	// run report
 	var reportHTML = fw_cboxCommand(URLBase+"?debugPanel=cacheContentReport&cbox_cacheName="+cacheName);
-	document.getElementById('fw_cacheContentReport').innerHTML(reportHTML);
+	document.getElementById('fw_cacheContentReport').innerHTML = reportHTML;
 }
 function fw_toggleDiv(targetDiv, displayStyle){
+	// toggle a div with styles, man I miss jquery
 	if( displayStyle == null){ displayStyle = "block"; }
 	var target = document.getElementById(targetDiv);
 	if( target.style.display == displayStyle ){

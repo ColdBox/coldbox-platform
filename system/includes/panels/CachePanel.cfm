@@ -27,28 +27,30 @@
 		
 		<!--- ToolBar --->
 		<div style="margin-bottom:5px;">
-		<cfif NOT isMonitor>
-			<input type="button" value="Open Cache Monitor" name="cachemonitor" style="font-size:10px" 
-				   title="Open the cache monitor in a new window." 
-				   onClick="window.open('#URLBase#?debugpanel=cache','cachemonitor','status=1,toolbar=0,location=0,resizable=1,scrollbars=1,height=750,width=850')">
-			
-		<cfelse>
-			<strong>Refresh Monitor: </strong>
-			<select id="frequency" style="font-size:10px" onChange="fw_pollmonitor('cache',this.value,'#URLBase#')" title="Refresh Frequency">
-				<option value="0">No Polling</option>
-				<cfloop from="5" to="30" index="i" step="5">
-				<option value="#i#" <cfif url.frequency eq i>selected</cfif>>#i# sec</option>
-				</cfloop>
-			</select>
-		</cfif>
+			<cfif NOT isMonitor>
+				<!--- Button: Open Cache Monitor --->
+				<input type="button" value="Open Cache Monitor" name="cachemonitor" style="font-size:10px" 
+					   title="Open the cache monitor in a new window." 
+					   onClick="window.open('#URLBase#?debugpanel=cache','cachemonitor','status=1,toolbar=0,location=0,resizable=1,scrollbars=1,height=750,width=850')">
+				
+			<cfelse>
+				<!--- Refresh Monitor --->
+				<strong>Refresh Monitor: </strong>
+				<select id="frequency" style="font-size:10px" onChange="fw_pollmonitor('cache',this.value,'#URLBase#')" title="Refresh Frequency">
+					<option value="0">No Polling</option>
+					<cfloop from="5" to="30" index="i" step="5">
+					<option value="#i#" <cfif url.frequency eq i>selected</cfif>>#i# sec</option>
+					</cfloop>
+				</select>
+			</cfif>
 			<cfif isObject( controller.getCacheBox() )>
-			<!--- ExpireAll --->
+			<!--- Button: CacheBox ExpireAll --->
 			<input type="button" value="CacheBox ExpireAll()" 
 			   name="cboxbutton_expireAll"
 			   style="font-size:10px" 
 			   title="Tell CacheBox to run an expireAll() on all caches" 
 			   onClick="location.href='#URLBase#?cbox_command=expireAll&debugpanel=#event.getValue('debugPanel','')#'" />
-			<!--- Reap All --->
+			<!--- Button: CacheBox Reap All --->
 			<input type="button" value="CacheBox ReapAll()" 
 			   name="cboxbutton_reapAll"
 			   style="font-size:10px" 
@@ -56,7 +58,7 @@
 			   onClick="location.href='#URLBase#?cbox_command=reapAll&debugpanel=#event.getValue('debugPanel','')#'" />
 			  </cfif>			
 		</div>
-		
+			
 		<cfif isObject( controller.getCacheBox() )>
 			<!--- CacheBox Info --->
 			<div class="fw_debugTitleCell">
@@ -81,13 +83,17 @@
 			
 			<!--- Cache Report Switcher --->
 			<h3>Performance Report For 
-			<select name="fw_cachebox_selector" id="fw_cachebox_selector" style="font-size:9px;"
-					title="Choose a cache from the list to generate the report">
+			<select name="fw_cachebox_selector" id="fw_cachebox_selector" 
+					style="font-size:9px;"
+					title="Choose a cache from the list to generate the report"
+					onChange="fw_cacheReport('#URLBase#',this.value)">
 				<cfloop array="#controller.getCacheBox().getCacheNames()#" index="thisCache">
-					<option value="#thisCache#">#thisCache#</option>
+					<option value="#thisCache#" <cfif thisCache eq "default">selected="selected"</cfif>>#thisCache#</option>
 				</cfloop>
 			</select>
-			Cache</h3>
+			Cache
+			<span class="fw_redText fw_debugContent" id="fw_cachebox_selector_loading">Loading...</span>
+			</h3>
 		</cfif>
 			
 		<!--- Named Cache Report --->
