@@ -48,7 +48,6 @@
 				<cfchartdata item="Events" value="#itemTypes.events#">
 				<cfchartdata item="Views" value="#itemTypes.views#">
 				<cfchartdata item="Interceptors" value="#itemTypes.interceptors#">
-				<cfchartdata item="IoC Objects" value="#itemTypes.ioc_beans#">
 				<cfchartdata item="Other Objects" value="#itemTypes.other#">
 			</cfchartseries>
 		</cfchart>

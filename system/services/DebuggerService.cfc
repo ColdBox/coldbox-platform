@@ -247,21 +247,25 @@ Description :
 			if( isObject(controller.getCacheBox()) ){
 				cacheConfig 	= cacheProvider.getConfiguration();
 				cacheStats  	= cacheProvider.getStats();
-				cacheKeys		= structKeyArray( cacheProvider.getKeys() ); 
-				cacheKeysLen	= arrayLen( cacheKeys );				
+				cacheMetadata 	= cacheProvider.getStoreMetadataReport();
+				cacheKeys		= cacheProvider.getKeys(); 
+				cacheKeysLen	= arrayLen( cacheKeys );	
+				isCacheBox		= true;
+							
 			}
-			// COMPAT MODE: REMOVE LATER
+			// COMPAT MODE: REMOVE LATER, cf7 and compat
 			else{
 				cacheConfig 	= cacheProvider.getCacheConfig().getMemento();
 				cacheStats  	= cacheProvider.getCacheStats();
 				cacheMetadata 	= cacheProvider.getPoolMetadata();
 				cacheKeys		= structKeyArray( cacheMetadata ); 
 				cacheKeysLen	= arrayLen( cacheKeys );
+				isCacheBox		= false;
 				
-				// Sort Keys
-				arraySort( cacheKeys ,"textnocase" );
 			}
 			
+			// Sort Keys
+			arraySort( cacheKeys ,"textnocase" );
 		</cfscript>
 		
 		<!--- Param the monitor frequency if used --->
@@ -272,6 +276,22 @@ Description :
 		
 		<cfreturn toRender>
 	</cffunction>
+	
+	<!--- renderCacheReport --->
+    <cffunction name="renderCacheReport" output="false" access="public" returntype="any" hint="Render a cache report for a specific cache">
+    	<cfargument name="name" type="any" required="true" default="" hint="The cache name"/>
+    	<cfscript>
+    	
+    	</cfscript>	
+	</cffunction>
+
+	<!--- renderCacheContentReport --->
+    <cffunction name="renderCacheContentReport" output="false" access="public" returntype="any" hint="Render a cache's content report">
+    	<cfargument name="name" type="any" required="true" default="" hint="The cache name"/>
+		<cfscript>
+    	
+    	</cfscript>
+    </cffunction>
 	
 	<!--- Render Cache Dumpver --->
 	<cffunction name="renderCacheDumper" access="public" hint="Renders the caching key value dumper." output="false" returntype="Any">

@@ -306,7 +306,7 @@ component serializable="false" implements="coldbox.system.cache.ICacheProvider"{
 		var threadName = "clearByKeySnippet_#replace(instance.uuidHelper.randomUUID(),"-","","all")#";
 		
 		// Async? IF so, do checks
-		if( arguments.async AND NOT instance.util.inThread() ){
+		if( arguments.async AND NOT instance.utility.inThread() ){
 			thread name="#threadName#"{
 				instance.elementCleaner.clearByKeySnippet(arguments.keySnippet,arguments.regex);
 			}

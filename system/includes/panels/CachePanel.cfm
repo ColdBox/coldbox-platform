@@ -17,7 +17,7 @@
 		<div class="fw_debugPanel">
 	</cfif>
 
-	<!--- Start Rendering the Cache panel  --->
+	<!--- CacheBox Panel Accordion --->
 	<div class="fw_titles" onClick="fw_toggle('fw_cache')">&nbsp;CacheBox</div>
 	<cfif isMonitor>
 		<div class="fw_debugContentView" id="fw_cache">
@@ -54,138 +54,180 @@
 			   style="font-size:10px" 
 			   title="Tell CacheBox to run an reapAll() on all caches" 
 			   onClick="location.href='#URLBase#?cbox_command=reapAll&debugpanel=#event.getValue('debugPanel','')#'" />
-			  </cfif>
-			<hr />
+			  </cfif>			
 		</div>
 		
-		<!--- Cache Report --->
+		<!--- CacheBox Info --->
 		<div class="fw_debugTitleCell">
-		  Cache Performance
+		  CacheBox ID
 		</div>
 		<div class="fw_debugContentCell">
-		 <em>Hit Ratio:</em> #NumberFormat(cacheStats.getCachePerformanceRatio(),"999.99")#%  ==>
-		 <em>Hits:</em> #cacheStats.getHits()# |
-		 <em>Misses:</em> #cacheStats.getMisses()# |
-		 <em>Evictions:</em> #cacheStats.getEvictionCount()# |
-		 <em>Garbage Collections:</em> #cacheStats.getGarbageCollections()# |
-		 <em>Object Count: </em> #cacheSize#
+			#controller.getCacheBox().getFactoryID()#
 		</div>
-		
-		<!--- JVM Memory Stats --->
 		<div class="fw_debugTitleCell">
-		  JVM Memory Stats
+		  Configured Caches
 		</div>
 		<div class="fw_debugContentCell">
-		 <em>#NumberFormat((JVMFreeMemory/JVMMaxMemory)*100,"99.99")# % Free </em> |
-		 <em>Total Assigned: </em> #NumberFormat(JVMTotalMemory)# KB |
-		 <em>Max: </em> #NumberFormat(JVMMaxMemory)# KB		 
+			#controller.getCacheBox().getCacheNames().toString()#
 		</div>
-		
-		<!--- Last Reap --->
 		<div class="fw_debugTitleCell">
-		  Last Reap
+		  Scope Registration
 		</div>
 		<div class="fw_debugContentCell">
-		 #DateFormat(cacheStats.getlastReapDatetime(),"MMM-DD-YYYY")#
-		 #TimeFormat(cacheStats.getlastReapDatetime(),"hh:mm:ss tt")#
-		</div>
+			#controller.getCacheBox().getScopeRegistration().toString()#
+		</div>		
+		<hr />
 		
-		<!--- Cache Charting --->
-		<h3>Cache Performance Report</h3>
-		<cfinclude template="/coldbox/system/includes/panels/CacheCharting.cfm">
-		
-		<!--- Cache Properties --->
-		<h3>Cache Properties</h3>
-		<table border="0" cellpadding="0" cellspacing="1" class="fw_debugTables">
-			<thead>
-				<tr>
-				  	<th width="30%">Property</th>
-					<th>Value</th>
-				</tr>
-			</thead>
-			<tbody>
-				<cfset x = 1>
-				<cfloop collection="#cacheConfig#" item="thisKey">
-				<tr <cfif x mod 2 eq 0>class="even"</cfif>>
-					<td>#lcase(thisKey)#</td>
-					<td>#cacheConfig[thisKey].toString()#</td>
-				</tr>
-				<cfset x=x+1>
-				</cfloop>
-			</tbody>
-		</table>
-		
-		<!--- Content Report --->
-		<h3>Cache Content Report (Time: #timeformat(now(),"hh:mm:ss tt")#)</h3>
-		<!--- Cache Commands --->
-		<input type="button" value="Expire All Keys" 
-			   name="cboxbutton_expirekeys"
-			   style="font-size:10px" 
-			   title="Expire all the keys in the cache" 
-			   onClick="location.href='#URLBase#?cbox_command=expirecache&debugpanel=#event.getValue('debugPanel','')#'" />
-		<input type="button" value="Clear All Events" 
-			   name="cboxbutton_clearallevents"
-			   style="font-size:10px" 
-			   title="Remove all the events in the cache" 
-			   onClick="location.href='#URLBase#?cbox_command=clearallevents&debugpanel=#event.getValue('debugPanel','')#'" />
-		<input type="button" value="Clear All Views" 
-			   name="cboxbutton_clearallviews"
-			   style="font-size:10px" 
-			   title="Remove all the views in the cache" 
-			   onClick="location.href='#URLBase#?cbox_command=clearallviews&debugpanel=#event.getValue('debugPanel','')#'" />
-		
-		<!--- Object Charts --->
-		<div class="fw_cachetable">
-		<table border="0" cellpadding="0" cellspacing="1" class="fw_debugTables">
-		  <tr >
-		  	<th >Object</th>
-			<th align="center" width="10%" >Hits</th>
-			<th align="center" width="10%" >Timeout <br/>(Min)</th>
-			<th align="center" width="10%" >Created</th>
-			<th align="center" width="10%" >Last Accessed</th>
-			<th align="center" width="10%" >Expires</th>
-			<th align="center" width="10%" >Status</th>
-			<th align="center" width="5%" >CMDS</th>
-		  </tr>
-		  <cfloop from="1" to="#cacheKeysLen#" index="x">
-		  	<cfset thisKey = cacheKeys[x]>
-		  	<cfset expDate = dateadd("n",cacheMetaData[ thisKey ].timeout, cacheMetaData[ thisKey ].created)>
-			<tr <cfif x mod 2 eq 0>class="even"</cfif>>
-			  	<!--- Link --->
-				<td align="left">
-				  	<a href="javascript:fw_openwindow('#URLBase#?debugpanel=cacheviewer&key=#urlEncodedFormat( thisKey )#','CacheViewer',650,375,'resizable,scrollbars,status')" title="Dump contents">#listLast(thisKey,"_")#</a></td>
-				<!--- Hits --->
-				<td align="center" >#cacheMetadata[thisKey].hits#</td>
-				<!--- Timeout --->
-				<td align="center" >#cacheMetadata[thisKey].Timeout#</td>
-				<!--- Created --->
-				<td align="center" >#dateformat(cacheMetadata[thisKey].Created,"mmm-dd")# <Br/> #timeformat(cacheMetadata[thisKey].Created,"hh:mm:ss tt")#</td>
-				<!--- Last Accessed --->
-				<td align="center">#dateformat(cacheMetadata[thisKey].lastaccesed,"mmm-dd")# <br/> #timeformat(cacheMetadata[thisKey].lastaccesed,"hh:mm:ss tt")#</td>
-			 	<!--- Timeouts --->
-				<td align="center" class="fw_redText" ><cfif cacheMetadata[thisKey].timeout eq 0>---<cfelse>#dateFormat(expDate,"mmm-dd")# <br /> #timeformat(expDate,"hh:mm:ss tt")#</cfif></td>
-			 	<!--- isExpired --->
-				<td align="center">
-					<cfif cacheMetadata[thisKey].isExpired>
-						<span class="fw_redText">Expired</span>
-					<cfelse>
-						<span class="fw_blueText">Alive</span>
-					</cfif>
-				</td>
-				<!--- Commands --->
-			 	<td align="center">
-					<input type="button" value="DEL" 
-						   name="cboxbutton_removeentry"
-					  	   style="font-size:10px" 
-						   title="Remove this entry from the cache." 
-					   	   onClick="location.href='#URLBase#?cbox_command=delcacheentry&cbox_cacheentry=#urlEncodedFormat(thisKey)#&debugpanel=#event.getValue('debugPanel','')#'">
-				</td>
-			  </tr>
+		<!--- Cache Report Switcher --->
+		<h3>Performance Report For 
+		<select name="fw_cachebox_selector" id="fw_cachebox_selector" style="font-size:9px;"
+				title="Choose a cache from the list to generate the report">
+			<cfloop array="#controller.getCacheBox().getCacheNames()#" index="thisCache">
+				<option value="#thisCache#">#thisCache#</option>
+			</cfloop>
+		</select>
+		Cache</h3>
 			
-		  </cfloop>
-		  
-		</table>
+		<!--- Named Cache Report --->
+		<div id="fw_cacheReport">
+		
+			<div class="fw_debugTitleCell">
+			  Performance
+			</div>
+			<div class="fw_debugContentCell">
+			 <em>Hit Ratio:</em> #NumberFormat(cacheStats.getCachePerformanceRatio(),"999.99")#%  ==>
+			 <em>Hits:</em> #cacheStats.getHits()# |
+			 <em>Misses:</em> #cacheStats.getMisses()# |
+			 <em>Evictions:</em> #cacheStats.getEvictionCount()# |
+			 <em>Garbage Collections:</em> #cacheStats.getGarbageCollections()# |
+			 <em>Object Count: </em> #cacheSize#
+			</div>
+			
+			<!--- JVM Memory Stats --->
+			<div class="fw_debugTitleCell">
+			  JVM Memory Stats
+			</div>
+			<div class="fw_debugContentCell">
+			 <em>#NumberFormat((JVMFreeMemory/JVMMaxMemory)*100,"99.99")# % Free </em> |
+			 <em>Total Assigned: </em> #NumberFormat(JVMTotalMemory)# KB |
+			 <em>Max: </em> #NumberFormat(JVMMaxMemory)# KB		 
+			</div>
+			
+			<!--- Last Reap --->
+			<div class="fw_debugTitleCell">
+			  Last Reap
+			</div>
+			<div class="fw_debugContentCell">
+			 #DateFormat(cacheStats.getlastReapDatetime(),"MMM-DD-YYYY")#
+			 #TimeFormat(cacheStats.getlastReapDatetime(),"hh:mm:ss tt")#
+			</div>
+			
+			<!--- Cache Charting --->
+			<cfinclude template="/coldbox/system/includes/panels/CacheCharting.cfm">
+			
+			<!--- Cache Configuration --->
+			<h3>Cache Configuration
+				<input type="button" value="Show/Hide Configuration" 
+					   name="cboxbutton_cacheproperties"
+					   style="font-size:10px" 
+					   title="View Cache Properties" 
+					   onClick="fw_toggleDiv('fw_cacheConfigurationTable')" />
+			</h3>
+			<div id="fw_cacheConfiguration">
+				<table border="0" cellpadding="0" cellspacing="1" class="fw_debugTables" id="fw_cacheConfigurationTable" style="display:none">
+					<thead>
+						<tr>
+						  	<th width="30%">Property</th>
+							<th>Value</th>
+						</tr>
+					</thead>
+					<tbody>
+						<cfset x = 1>
+						<cfloop collection="#cacheConfig#" item="thisKey">
+						<tr <cfif x mod 2 eq 0>class="even"</cfif>>
+							<td>#lcase(thisKey)#</td>
+							<td>#cacheConfig[thisKey].toString()#</td>
+						</tr>
+						<cfset x=x+1>
+						</cfloop>
+					</tbody>
+				</table>
+			</div>
+			
+			<!--- Content Report --->
+			<h3>Cache Content Report (Time: #timeformat(now(),"hh:mm:ss tt")#)</h3>
+			<!--- Cache Commands --->
+			<input type="button" value="Expire All Keys" 
+				   name="cboxbutton_expirekeys"
+				   style="font-size:10px" 
+				   title="Expire all the keys in the cache" 
+				   onClick="location.href='#URLBase#?cbox_command=expirecache&debugpanel=#event.getValue('debugPanel','')#'" />
+			<input type="button" value="Clear All Events" 
+				   name="cboxbutton_clearallevents"
+				   style="font-size:10px" 
+				   title="Remove all the events in the cache" 
+				   onClick="location.href='#URLBase#?cbox_command=clearallevents&debugpanel=#event.getValue('debugPanel','')#'" />
+			<input type="button" value="Clear All Views" 
+				   name="cboxbutton_clearallviews"
+				   style="font-size:10px" 
+				   title="Remove all the views in the cache" 
+				   onClick="location.href='#URLBase#?cbox_command=clearallviews&debugpanel=#event.getValue('debugPanel','')#'" />
+			
+			<!--- Object Charts --->
+			<div class="fw_cacheContentReport">
+				<table border="0" cellpadding="0" cellspacing="1" class="fw_debugTables">
+				  <tr >
+				  	<th >Object</th>
+					<th align="center" width="10%" >Hits</th>
+					<th align="center" width="10%" >Timeout <br/>(Min)</th>
+					<th align="center" width="10%" >Created</th>
+					<th align="center" width="10%" >Last Accessed</th>
+					<th align="center" width="10%" >Expires</th>
+					<th align="center" width="10%" >Status</th>
+					<th align="center" width="5%" >CMDS</th>
+				  </tr>
+				  <cfloop from="1" to="#cacheKeysLen#" index="x">
+				  	<cfset thisKey = cacheKeys[x]>
+				  	<cfset expDate = dateadd("n",cacheMetaData[ thisKey ].timeout, cacheMetaData[ thisKey ].created)>
+					<tr <cfif x mod 2 eq 0>class="even"</cfif>>
+					  	<!--- Link --->
+						<td align="left">
+						  	<a href="javascript:fw_openwindow('#URLBase#?debugpanel=cacheviewer&key=#urlEncodedFormat( thisKey )#','CacheViewer',650,375,'resizable,scrollbars,status')" title="Dump contents">#listLast(thisKey,"_")#</a></td>
+						<!--- Hits --->
+						<td align="center" >#cacheMetadata[thisKey].hits#</td>
+						<!--- Timeout --->
+						<td align="center" >#cacheMetadata[thisKey].Timeout#</td>
+						<!--- Created --->
+						<td align="center" >#dateformat(cacheMetadata[thisKey].Created,"mmm-dd")# <Br/> #timeformat(cacheMetadata[thisKey].Created,"hh:mm:ss tt")#</td>
+						<!--- Last Accessed --->
+						<td align="center">#dateformat(cacheMetadata[thisKey].lastaccesed,"mmm-dd")# <br/> #timeformat(cacheMetadata[thisKey].lastaccesed,"hh:mm:ss tt")#</td>
+					 	<!--- Timeouts --->
+						<td align="center" class="fw_redText" ><cfif cacheMetadata[thisKey].timeout eq 0>---<cfelse>#dateFormat(expDate,"mmm-dd")# <br /> #timeformat(expDate,"hh:mm:ss tt")#</cfif></td>
+					 	<!--- isExpired --->
+						<td align="center">
+							<cfif cacheMetadata[thisKey].isExpired>
+								<span class="fw_redText">Expired</span>
+							<cfelse>
+								<span class="fw_blueText">Alive</span>
+							</cfif>
+						</td>
+						<!--- Commands --->
+					 	<td align="center">
+							<input type="button" value="DEL" 
+								   name="cboxbutton_removeentry"
+							  	   style="font-size:10px" 
+								   title="Remove this entry from the cache." 
+							   	   onClick="location.href='#URLBase#?cbox_command=delcacheentry&cbox_cacheentry=#urlEncodedFormat(thisKey)#&debugpanel=#event.getValue('debugPanel','')#'">
+						</td>
+					  </tr>
+					
+				  </cfloop>			  
+				</table>
+			</div>
+		
+		<!--- end of cache report --->
 		</div>
+		
 	</div>
 	<!--- **************************************************************--->
 

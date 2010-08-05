@@ -220,7 +220,7 @@ Optional Methods
 	
 		//cacheEngine
 		/*
-		*/
+		
 		cacheEngine = {
 			objectDefaultTimeout = 60,
 			objectDefaultLastAccessTimeout = 20,
@@ -231,6 +231,7 @@ Optional Methods
 			evictCount = 5,
 			maxObjects = 100
 		};
+		*/
 	
 		//Interceptor Settings
 		interceptorSettings = {

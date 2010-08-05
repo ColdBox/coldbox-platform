@@ -152,7 +152,7 @@
 .fw_debugTables tr.hideRC{
 	display: none;
 }
-.fw_cachetable{
+.fw_cacheContentReport{
 	overflow: auto;
 	height: 375px;
 	border: 2px inset #cccccc;
@@ -204,4 +204,4 @@
 	padding: 5px;
 	background-color: ##FFF6CC;
 	border: 1px solid ##999999;
-}CSS Tools.codaplugin
+}

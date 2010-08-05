@@ -85,3 +85,12 @@ function fw_cacheContentReport(URLBase,cacheName){
 	var reportHTML = fw_cboxCommand(URLBase+"?debugPanel=cacheContentReport&cbox_cacheName="+cacheName);
 	document.getElementById('fw_cacheContentReport').innerHTML(reportHTML);
 }
+function fw_toggleDiv(targetDiv){
+	var target = document.getElementById(targetDiv);
+	if( target.style.display == "block" ){
+		target.style.display = "none";
+	}
+	else{
+		target.style.display = "block";
+	}	
+}

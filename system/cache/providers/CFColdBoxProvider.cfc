@@ -85,7 +85,7 @@ component serializable="false" extends="coldbox.system.cache.providers.CFProvide
 		var threadName = "clearAllEvents_#replace(instance.uuidHelper.randomUUID(),"-","","all")#";
 		
 		// Async? IF so, do checks
-		if( arguments.async AND NOT instance.util.inThread() ){
+		if( arguments.async AND NOT instance.utility.inThread() ){
 			thread name="#threadName#"{
 				instance.elementCleaner.clearAllEvents();
 			}
@@ -102,7 +102,7 @@ component serializable="false" extends="coldbox.system.cache.providers.CFProvide
 		var threadName = "clearAllViews_#replace(instance.uuidHelper.randomUUID(),"-","","all")#";
 		
 		// Async? IF so, do checks
-		if( arguments.async AND NOT instance.util.inThread() ){
+		if( arguments.async AND NOT instance.utility.inThread() ){
 			thread name="#threadName#"{
 				instance.elementCleaner.clearAllViews();
 			}

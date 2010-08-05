@@ -42,7 +42,7 @@ Properties
 			// Element Cleaner Helper
 			instance.elementCleaner		= CreateObject("component","coldbox.system.cache.util.ElementCleaner").init(this);
 			// Utilities
-			instance.utility				= createObject("component","coldbox.system.core.util.Util");
+			instance.utility			= createObject("component","coldbox.system.core.util.Util");
 			instance.uuidHelper			= createobject("java", "java.util.UUID");
 			
 			return this;
@@ -432,7 +432,7 @@ Properties
 		<cfset var threadName = "clearByKeySnippet_#replace(instance.uuidHelper.randomUUID(),"-","","all")#">
 		
 		<!--- Async? --->
-		<cfif arguments.async AND NOT instance.util.inThread()>
+		<cfif arguments.async AND NOT instance.utility.inThread()>
 			<cfthread name="#threadName#">
 				<cfset instance.elementCleaner.clearByKeySnippet(arguments.keySnippet,arguments.regex)>
 			</cfthread>		
@@ -506,7 +506,7 @@ Properties
 		<cfif dateDiff("n", getStats().getLastReapDatetime(), now() ) GTE getConfiguration().reapFrequency>
 			
 			<!--- check if in thread already --->
-			<cfif NOT instance.util.inThread()>
+			<cfif NOT instance.utility.inThread()>
 			
 				<cfthread name="#threadName#">  
 					<cfset _reap()>
@@ -660,22 +660,13 @@ Properties
     	<cfreturn instance.objectStore>
 	</cffunction>
 
-	<!--- TODO: Still Verify This Get the Pool Metadata --->
-	<cffunction name="getPoolMetadata" access="public" returntype="struct" output="false" hint="Get a copy of the pool's metadata structure.">
-		<cfargument name="deepCopy" type="boolean" required="false" default="true" hint="Deep copy of structure or by reference. Default is deep copy"/>
+	<!--- getStoreMetadataReport --->
+	<cffunction name="getStoreMetadataReport" output="false" access="public" returntype="struct" hint="Get a structure of all the keys in the cache with their appropriate metadata structures. This is used to build the reporting.[keyX->[metadataStructure]]">
 		<cfscript>
 			var target = instance.objectStore.getIndexer().getPoolMetadata();
 			
-			if( arguments.deepCopy ){
-				return duplicate( target );
-			}
-		
 			return target;
 		</cfscript>
-	</cffunction>
-	
-	<!--- getStoreMetadataReport --->
-	<cffunction name="getStoreMetadataReport" output="false" access="public" returntype="struct" hint="Get a structure of all the keys in the cache with their appropriate metadata structures. This is used to build the reporting.[keyX->[metadataStructure]]">
 	</cffunction>
 	
 	<!--- get Keys --->

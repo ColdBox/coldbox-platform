@@ -90,7 +90,7 @@ component serializable="false" extends="coldbox.system.cache.providers.RailoProv
 		var threadName = "clearAllEvents_#replace(uuidHelper.randomUUID(),"-","","all")#";
 		
 		// Async? IF so, do checks
-		if( arguments.async AND NOT util.inThread() ){
+		if( arguments.async AND NOT utility.inThread() ){
 			thread name="#threadName#"{
 				elementCleaner.clearAllEvents();
 			}
@@ -107,7 +107,7 @@ component serializable="false" extends="coldbox.system.cache.providers.RailoProv
 		var threadName = "clearAllViews_#replace(uuidHelper.randomUUID(),"-","","all")#";
 		
 		// Async? IF so, do checks
-		if( arguments.async AND NOT util.inThread() ){
+		if( arguments.async AND NOT utility.inThread() ){
 			thread name="#threadName#"{
 				elementCleaner.clearAllViews();
 			}
@@ -124,7 +124,7 @@ component serializable="false" extends="coldbox.system.cache.providers.RailoProv
 		var threadName = "clearByKeySnippet_#replace(uuidHelper.randomUUID(),"-","","all")#";
 		
 		// Async? IF so, do checks
-		if( arguments.async AND NOT util.inThread() ){
+		if( arguments.async AND NOT utility.inThread() ){
 			thread name="#threadName#"{
 				lementCleaner.clearByKeySnippet(arguments.keySnippet,arguments.regex);
 			}

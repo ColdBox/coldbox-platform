@@ -123,7 +123,7 @@ Description :
 		<cfset var threadName = "clearAllEvents_#replace(instance.uuidHelper.randomUUID(),"-","","all")#">
 		
 		<!--- check if async and not in thread --->
-		<cfif arguments.async AND NOT instance.util.inThread()>
+		<cfif arguments.async AND NOT instance.utility.inThread()>
 			
 			<cfthread name="#threadName#">
 				<cfset instance.elementCleaner.clearAllEvents()>
@@ -167,7 +167,7 @@ Description :
 		<cfset var threadName = "clearAllViews_#replace(instance.uuidHelper.randomUUID(),"-","","all")#">
 		
 		<!--- check if async and not in thread --->
-		<cfif arguments.async AND NOT instance.util.inThread()>
+		<cfif arguments.async AND NOT instance.utility.inThread()>
 			
 			<cfthread name="#threadName#">
 				<cfset instance.elementCleaner.clearAllViews()>

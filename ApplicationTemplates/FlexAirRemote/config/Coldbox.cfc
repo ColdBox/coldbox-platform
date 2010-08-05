@@ -64,7 +64,7 @@ function configure(){
 		//Extension Points
 		UDFLibraryFile 			= "",
 		coldboxExtensionsLocation = "",
-		modulesExternalLocation		= [""],
+		modulesExternalLocation		= [],
 		viewsExternalLocation	= "",
 		layoutsExternalLocation = "",
 		handlersExternalLocation  = "",

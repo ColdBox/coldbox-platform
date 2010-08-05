@@ -461,6 +461,11 @@ Description :
  		<cfreturn instance.eventManager>
     </cffunction>
 
+	<!--- getScopeRegistration --->
+    <cffunction name="getScopeRegistration" output="false" access="public" returntype="struct" hint="Get the scope registration information">
+    	<cfreturn instance.config.getScopeRegistration()>
+    </cffunction>
+
 <!----------------------------------------- PRIVATE ------------------------------------->	
 
 	<!--- doScopeRegistration --->
