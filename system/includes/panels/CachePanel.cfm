@@ -57,36 +57,38 @@
 			  </cfif>			
 		</div>
 		
-		<!--- CacheBox Info --->
-		<div class="fw_debugTitleCell">
-		  CacheBox ID
-		</div>
-		<div class="fw_debugContentCell">
-			#controller.getCacheBox().getFactoryID()#
-		</div>
-		<div class="fw_debugTitleCell">
-		  Configured Caches
-		</div>
-		<div class="fw_debugContentCell">
-			#controller.getCacheBox().getCacheNames().toString()#
-		</div>
-		<div class="fw_debugTitleCell">
-		  Scope Registration
-		</div>
-		<div class="fw_debugContentCell">
-			#controller.getCacheBox().getScopeRegistration().toString()#
-		</div>		
-		<hr />
-		
-		<!--- Cache Report Switcher --->
-		<h3>Performance Report For 
-		<select name="fw_cachebox_selector" id="fw_cachebox_selector" style="font-size:9px;"
-				title="Choose a cache from the list to generate the report">
-			<cfloop array="#controller.getCacheBox().getCacheNames()#" index="thisCache">
-				<option value="#thisCache#">#thisCache#</option>
-			</cfloop>
-		</select>
-		Cache</h3>
+		<cfif isObject( controller.getCacheBox() )>
+			<!--- CacheBox Info --->
+			<div class="fw_debugTitleCell">
+			  CacheBox ID
+			</div>
+			<div class="fw_debugContentCell">
+				#controller.getCacheBox().getFactoryID()#
+			</div>
+			<div class="fw_debugTitleCell">
+			  Configured Caches
+			</div>
+			<div class="fw_debugContentCell">
+				#controller.getCacheBox().getCacheNames().toString()#
+			</div>
+			<div class="fw_debugTitleCell">
+			  Scope Registration
+			</div>
+			<div class="fw_debugContentCell">
+				#controller.getCacheBox().getScopeRegistration().toString()#
+			</div>		
+			<hr />
+			
+			<!--- Cache Report Switcher --->
+			<h3>Performance Report For 
+			<select name="fw_cachebox_selector" id="fw_cachebox_selector" style="font-size:9px;"
+					title="Choose a cache from the list to generate the report">
+				<cfloop array="#controller.getCacheBox().getCacheNames()#" index="thisCache">
+					<option value="#thisCache#">#thisCache#</option>
+				</cfloop>
+			</select>
+			Cache</h3>
+		</cfif>
 			
 		<!--- Named Cache Report --->
 		<div id="fw_cacheReport">
