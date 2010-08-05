@@ -85,12 +85,13 @@ function fw_cacheContentReport(URLBase,cacheName){
 	var reportHTML = fw_cboxCommand(URLBase+"?debugPanel=cacheContentReport&cbox_cacheName="+cacheName);
 	document.getElementById('fw_cacheContentReport').innerHTML(reportHTML);
 }
-function fw_toggleDiv(targetDiv){
+function fw_toggleDiv(targetDiv, displayStyle){
+	if( displayStyle == null){ displayStyle = "block"; }
 	var target = document.getElementById(targetDiv);
-	if( target.style.display == "block" ){
+	if( target.style.display == displayStyle ){
 		target.style.display = "none";
 	}
 	else{
-		target.style.display = "block";
+		target.style.display = displayStyle;
 	}	
 }

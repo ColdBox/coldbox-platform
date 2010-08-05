@@ -279,18 +279,96 @@ Description :
 	
 	<!--- renderCacheReport --->
     <cffunction name="renderCacheReport" output="false" access="public" returntype="any" hint="Render a cache report for a specific cache">
-    	<cfargument name="name" type="any" required="true" default="" hint="The cache name"/>
+    	<cfargument name="name" type="any" required="true" default="default" hint="The cache name"/>
     	<cfscript>
-    	
+    		var content 		= "";
+			var event 			= controller.getRequestService().getContext();
+			
+			// Cache info
+			var cacheProvider 	= controller.getColdboxOCM( arguments.name );
+			var itemTypes		= cacheProvider.getItemTypes();
+			var cacheConfig		= "";
+			var cacheStats		= "";
+			var cacheSize		= cacheProvider.getSize();		
+			var isCacheBox		= true;	
+			
+			// JVM Data
+			var JVMRuntime 		= instance.jvmRuntime.getRuntime();
+			var JVMFreeMemory 	= JVMRuntime.freeMemory()/1024;
+			var JVMTotalMemory 	= JVMRuntime.totalMemory()/1024;
+			var JVMMaxMemory 	= JVMRuntime.maxMemory()/1024; 
+				
+			// URL Base
+			var URLBase			= event.getSESBaseURL();
+			
+			// Command URL Base if not using SES
+			if( NOT event.isSES() ){
+				URLBase = "index.cfm";
+			}
+			
+			// Prepare cache report for cachebox
+			if( isObject(controller.getCacheBox()) ){
+				cacheConfig 	= cacheProvider.getConfiguration();
+				cacheStats  	= cacheProvider.getStats();			
+			}
+			// COMPAT MODE: REMOVE LATER, cf7 and compat
+			else{
+				cacheConfig 	= cacheProvider.getCacheConfig().getMemento();
+				cacheStats  	= cacheProvider.getCacheStats();
+				isCacheBox		= false;				
+			}
     	</cfscript>	
+		
+		<!--- Generate Debugging --->
+		<cfsavecontent variable="content"><cfinclude template="/coldbox/system/includes/panels/CacheReport.cfm"></cfsavecontent>
+		
+		<cfreturn content>
 	</cffunction>
 
 	<!--- renderCacheContentReport --->
     <cffunction name="renderCacheContentReport" output="false" access="public" returntype="any" hint="Render a cache's content report">
-    	<cfargument name="name" type="any" required="true" default="" hint="The cache name"/>
+    	<cfargument name="name" type="any" required="true" default="default" hint="The cache name"/>
 		<cfscript>
-    	
+    		var thisKey			= "";
+			var expDate			= "";
+			var x				= "";
+			var content			= "";
+			var cacheProvider 	= controller.getColdboxOCM( arguments.name );
+			var cacheKeys		= "";
+			var cacheKeysLen	= 0;
+			var cacheMetadata	= "";
+			var isCacheBox		= true;
+			// URL Base
+			var event 			= controller.getRequestService().getContext();
+			var URLBase			= event.getSESBaseURL();
+			
+			// Command URL Base if not using SES
+			if( NOT event.isSES() ){
+				URLBase = "index.cfm";
+			}
+			
+			// Prepare cache report for cachebox
+			if( isObject(controller.getCacheBox()) ){
+				cacheMetadata 	= cacheProvider.getStoreMetadataReport();
+				cacheKeys		= cacheProvider.getKeys(); 
+				cacheKeysLen	= arrayLen( cacheKeys );							
+			}
+			// COMPAT MODE: REMOVE LATER, cf7 and compat
+			else{
+				cacheMetadata 	= cacheProvider.getPoolMetadata();
+				cacheKeys		= structKeyArray( cacheMetadata ); 
+				cacheKeysLen	= arrayLen( cacheKeys );
+				isCacheBox		= false;				
+			}
+			
+			// Sort Keys
+			arraySort( cacheKeys ,"textnocase" );
     	</cfscript>
+		
+		<!--- Render content out --->
+		<cfsavecontent variable="content"><cfinclude template="/coldbox/system/includes/panels/CacheContentReport.cfm"></cfsavecontent>
+				
+		<cfreturn content>		
     </cffunction>
 	
 	<!--- Render Cache Dumpver --->
