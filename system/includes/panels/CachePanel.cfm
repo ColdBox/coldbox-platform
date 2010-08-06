@@ -91,8 +91,8 @@
 				style="font-size:9px;"
 				title="Choose a cache from the list to generate the report"
 				onChange="fw_cacheReport('#URLBase#',this.value)">
-			<cfloop array="#cacheNames#" index="thisCache">
-				<option value="#thisCache#" <cfif thisCache eq "default">selected="selected"</cfif>>#thisCache#</option>
+			<cfloop from="1" to="#arrayLen(cacheNames)#" index="x">
+				<option value="#cacheNames[x]#" <cfif cacheNames[x] eq "default">selected="selected"</cfif>>#cacheNames[x]#</option>
 			</cfloop>
 		</select>
 		Cache

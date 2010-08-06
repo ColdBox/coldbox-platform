@@ -670,14 +670,14 @@ Only one instance of a specific ColdBox application exists.
     </cffunction>
 
 	<!--- sendRelocation --->
-    <cffunction name="sendRelocation" output="false" access="private" returntype="void" hint="Send a CF relocation via ColdBox">
+    <cffunction name="sendRelocation" output="false" access="public" returntype="void" hint="Send a CF relocation via ColdBox">
     	<cfargument name="url" 			type="string"   required="true"  hint="The URL to relocate to"/>
 		<cfargument name="addtoken"		type="boolean"  required="false" default="false" hint="Add the CF tokens or not">
     	<cfargument name="statusCode" 	type="numeric"  required="false" default="0" hint="The status code to use"/>
     	<cfif arguments.statusCode eq 0>
 			<cflocation url="#arguments.url#" addtoken="#addtoken#">
 		<cfelse>
-			<cflocation url="#arguments.url#" addtoken="#addtoken#" statuscode="#arguments.statusCode#">
+			<cfinclude template="/coldbox/system/includes/cf7_cflocation_compat.cfm">
 		</cfif>
     </cffunction>
 

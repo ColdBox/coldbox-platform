@@ -177,8 +177,8 @@ Modification History:
 	<!--- createCacheContainer --->
     <cffunction name="createCacheContainer" output="false" access="public" returntype="void" hint="Create the cache container">
     	<cfscript>
-    		// Determine compat mode or new cachebox mode
-			if( structIsEmpty( controller.getSetting("cacheSettings") ) ){
+    		// Determine compat mode or new cachebox mode or pesky cf7 until 3.1
+			if( controller.getCFMLEngine().isMT() AND NOT controller.getSetting("cacheSettings").compatMode ){
 				// CacheBox creation
 				controller.setCacheBox( createCacheBox() );
 				return;

@@ -744,7 +744,9 @@ Loads a coldbox xml configuration file
 			
 			// Default, cache compatibility
 			configStruct.cacheSettings  		= structnew();
-			
+			// Mark the Compat Mode
+			configStruct.cacheSettings.compatMode = false;
+					
 			// CacheBox Defaults
 			configStruct.cacheBox				= structnew();
 			configStruct.cacheBox.dsl  			= arguments.oConfig.getPropertyMixin("cacheBox","variables",structnew());
@@ -755,6 +757,9 @@ Loads a coldbox xml configuration file
 			// If cacheBox structure is found, then we use cachebox.
 			// This will be deprecated on 3.1
 			if( NOT structIsEmpty(cacheEngine) ){
+				// Mark the Compat Mode
+				configStruct.cacheSettings.compatMode = true;
+				
 				// Defaults
 				configStruct.cacheSettings.objectDefaultTimeout 		  = fwSettingsStruct.cacheObjectDefaultTimeout;
 				configStruct.cacheSettings.objectDefaultLastAccessTimeout = fwSettingsStruct.cacheObjectDefaultLastAccessTimeout;
@@ -914,6 +919,7 @@ Loads a coldbox xml configuration file
 			configStruct.ModulesAutoReload  = false;
 			configStruct.ModulesInclude		= arrayNew(1);
 			configStruct.ModulesExclude		= arrayNew(1);
+			configStruct.Modules 			= structNew();
 			
 			if( structKeyExists(modules,"autoReload") ){ configStruct.modulesAutoReload = modules.autoReload; }
 			if( structKeyExists(modules,"include") ){ configStruct.modulesInclude = modules.include; }

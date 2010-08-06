@@ -856,31 +856,35 @@ Loads a coldbox xml configuration file
 			
 			// CacheBox Defaults if not Overriding
 			if (NOT arguments.isOverride){
-				configStruct.cacheSettings 			= structnew();
+				
+				// setup the cache configs
 				configStruct.cacheBox				= structnew();
 				configStruct.cacheBox.dsl			= structnew();
 				configStruct.cacheBox.xml  			= cboxSettingNodes;
 				configStruct.cacheBox.configFile 	= "";
+								
+				// Cache Compat Defaults
+				configStruct.cacheSettings 								  = structnew();
+				configStruct.cacheSettings.objectDefaultTimeout 		  = fwSettingsStruct.cacheObjectDefaultTimeout;
+				configStruct.cacheSettings.objectDefaultLastAccessTimeout = fwSettingsStruct.cacheObjectDefaultLastAccessTimeout;
+				configStruct.cacheSettings.reapFrequency 				  = fwSettingsStruct.cacheObjectDefaultTimeout;
+				configStruct.cacheSettings.freeMemoryPercentageThreshold  = fwSettingsStruct.cacheFreeMemoryPercentageThreshold;
+				configStruct.cacheSettings.useLastAccessTimeouts 		  = fwSettingsStruct.cacheUseLastAccessTimeouts;
+				configStruct.cacheSettings.evictionPolicy 				  = fwSettingsStruct.cacheEvictionPolicy;
+				configStruct.cacheSettings.evictCount					  = fwSettingsStruct.cacheEvictCount;
+				configStruct.cacheSettings.maxObjects					  = fwSettingsStruct.cacheMaxObjects;	
+				configStruct.cacheSettings.compatMode					  = false;
 			}
 			
 			// cacheSettingNodes in COMPAT MODE
 			if( arrayLen(cacheSettingNodes) ){
 				
-				// Defaults if not overriding from global framework settings
-				if (NOT arguments.isOverride){
-					configStruct.cacheSettings = structnew();
-					configStruct.cacheSettings.objectDefaultTimeout 		  = fwSettingsStruct.cacheObjectDefaultTimeout;
-					configStruct.cacheSettings.objectDefaultLastAccessTimeout = fwSettingsStruct.cacheObjectDefaultLastAccessTimeout;
-					configStruct.cacheSettings.reapFrequency 				  = fwSettingsStruct.cacheObjectDefaultTimeout;
-					configStruct.cacheSettings.freeMemoryPercentageThreshold  = fwSettingsStruct.cacheFreeMemoryPercentageThreshold;
-					configStruct.cacheSettings.useLastAccessTimeouts 		  = fwSettingsStruct.cacheUseLastAccessTimeouts;
-					configStruct.cacheSettings.evictionPolicy 				  = fwSettingsStruct.cacheEvictionPolicy;
-					configStruct.cacheSettings.evictCount					  = fwSettingsStruct.cacheEvictCount;
-					configStruct.cacheSettings.maxObjects					  = fwSettingsStruct.cacheMaxObjects;	
-				}
-				
 				//Check if empty
 				if ( ArrayLen(cacheSettingNodes[1].XMLChildren) gt 0){
+					
+					// Mark the Compat Mode
+					configStruct.cacheSettings.compatMode = true;
+					
 					//Checks For Default Timeout
 					if ( structKeyExists(cacheSettingNodes[1], "ObjectDefaultTimeout") and isNumeric(cacheSettingNodes[1].ObjectDefaultTimeout.xmlText) ){
 						configStruct.cacheSettings.objectDefaultTimeout = trim(cacheSettingNodes[1].ObjectDefaultTimeout.xmlText);
@@ -1172,6 +1176,7 @@ Loads a coldbox xml configuration file
 				configStruct.ModulesAutoReload  = false;
 				configStruct.ModulesInclude		= arrayNew(1);
 				configStruct.ModulesExclude		= arrayNew(1);
+				configStruct.Modules 			= structNew();
 			}
 			
 			//Check if empty

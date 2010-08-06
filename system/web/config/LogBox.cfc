@@ -18,16 +18,17 @@ It is configured to log up to INFO via ConsoleAppender
 	* Configure LogBox, that's it!
 	*/
 	function configure(){
-		logBox = {
-			// Define Appenders
-			appenders = {
-				console = { 
-					class="coldbox.system.logging.appenders.ConsoleAppender"
-				}
-			},
-			// Root Logger
-			root = { levelmax="INFO", levelMin="FATAL", appenders="*" }
-		};
+		// Have to do it cf7 style until we kill it in 3.1
+		logBox = structnew();
+		
+		// Define Appenders
+		logBox.appenders = structnew();
+		logBox.appenders.console.class="coldbox.system.logging.appenders.ConsoleAppender";
+		// Root Logger
+		logBox.root = structnew();
+		logBox.root.levelmax="INFO";
+		logBox.root.levelMin="FATAL";
+		logBox.root.appenders="*";		
 	}
 </cfscript>
 </cfcomponent>
