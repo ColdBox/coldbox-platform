@@ -46,17 +46,20 @@
 			<cfif isObject( controller.getCacheBox() )>
 			<!--- Button: CacheBox ExpireAll --->
 			<input type="button" value="CacheBox ExpireAll()" 
-			   name="cboxbutton_expireAll"
+			   name="cboxbutton_cacheBoxExpireAll" id="cboxbutton_cacheBoxExpireAll"
 			   style="font-size:10px" 
 			   title="Tell CacheBox to run an expireAll() on all caches" 
-			   onClick="location.href='#URLBase#?cbox_command=expireAll&debugpanel=#event.getValue('debugPanel','')#'" />
+			   onclick="fw_cacheBoxCommand('#URLBase#','cacheBoxExpireAll', this.id)" />
 			<!--- Button: CacheBox Reap All --->
 			<input type="button" value="CacheBox ReapAll()" 
-			   name="cboxbutton_reapAll"
+			   name="cboxbutton_cacheBoxReapAll" id="cboxbutton_cacheBoxReapAll"
 			   style="font-size:10px" 
 			   title="Tell CacheBox to run an reapAll() on all caches" 
-			   onClick="location.href='#URLBase#?cbox_command=reapAll&debugpanel=#event.getValue('debugPanel','')#'" />
-			  </cfif>			
+			   onclick="fw_cacheBoxCommand('#URLBase#','cacheBoxReapAll', this.id)" />
+			   			  
+			<!--- Loader --->
+			<span class="fw_redText fw_debugContent" id="fw_cachebox_toolbar_loader">Loading...</span>
+			</cfif>			
 		</div>
 			
 		<cfif isObject( controller.getCacheBox() )>
@@ -71,7 +74,7 @@
 			  Configured Caches
 			</div>
 			<div class="fw_debugContentCell">
-				#controller.getCacheBox().getCacheNames().toString()#
+				#arrayToList(controller.getCacheBox().getCacheNames())#
 			</div>
 			<div class="fw_debugTitleCell">
 			  Scope Registration
@@ -92,8 +95,16 @@
 				</cfloop>
 			</select>
 			Cache
-			<span class="fw_redText fw_debugContent" id="fw_cachebox_selector_loading">Loading...</span>
-			</h3>
+			<!--- Reload Contents --->
+			<input type="button" value="Regenerate Report" 
+				   name="cboxbutton_cachebox_regenerateReport"
+				   style="font-size:10px" 
+				   title="Regenerate Report" 
+				   onClick="fw_cacheReport('#URLBase#',document.getElementById('fw_cachebox_selector').value)" />  
+	   
+			<span class="fw_redText fw_debugContent" id="fw_cachebox_selector_loading">Loading...</span>	   
+	   </h3>
+			
 		</cfif>
 			
 		<!--- Named Cache Report --->

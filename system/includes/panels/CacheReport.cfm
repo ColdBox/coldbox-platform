@@ -1,4 +1,4 @@
-<cfoutput>
+<cfoutput>		   
 <!--- Id & Name --->
 <cfif isObject( controller.getCacheBox() ) >
 <div class="fw_debugTitleCell">

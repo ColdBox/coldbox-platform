@@ -24,7 +24,7 @@
 				   	   name="cboxbutton_gc" id="cboxbutton_gc"
 				   	   style="font-size:10px" 
 				   	   title="Try to influence a garbage collection." 
-				   	   onClick="fw_cacheGC('#URLBase#','#arguments.cacheName#')" />
+				   	   onClick="fw_cacheGC('#URLBase#','#arguments.cacheName#',this.id)" />
 				</cfoutput>
 			</div>
 		

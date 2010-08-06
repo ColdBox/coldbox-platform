@@ -175,17 +175,17 @@ Description :
 				<!--- ColdBox Command Executions --->
 				<cfset coldboxCommands(cbController,event)>
 				
-				<!--- Which panel to render --->
+				<!--- Debug Panel rendering --->
 				<cfset debugPanel = event.getValue("debugPanel","")>
 				<cfswitch expression="#debugPanel#">
 					<cfcase value="cache">
 						<cfoutput>#cbController.getDebuggerService().renderCachePanel(monitor=true)#</cfoutput>
 					</cfcase>
 					<cfcase value="cacheReport">
-						<cfoutput>#cbController.getDebuggerService().renderCacheReport(name=event.getTrimValue("cbox_cacheName","default"))#</cfoutput>
+						<cfoutput>#cbController.getDebuggerService().renderCacheReport(cacheName=event.getTrimValue("cbox_cacheName","default"))#</cfoutput>
 					</cfcase>
 					<cfcase value="cacheContentReport">
-						<cfoutput>#cbController.getDebuggerService().renderCacheContentReport(name=event.getTrimValue("cbox_cacheName","default"))#</cfoutput>
+						<cfoutput>#cbController.getDebuggerService().renderCacheContentReport(cacheName=event.getTrimValue("cbox_cacheName","default"))#</cfoutput>
 					</cfcase>
 					<cfcase value="cacheViewer">
 						<cfoutput>#cbController.getDebuggerService().renderCacheDumper()#</cfoutput>
@@ -532,14 +532,14 @@ Description :
 			// Commands
 			switch(command){
 				// Cache Commands
-				case "expirecache"    : { cbController.getColdboxOCM(cacheName).expireAll(); break; }
-				case "reapcache"  	  : { cbController.getColdboxOCM(cacheName).reap(); break;}
-				case "delcacheentry"  : { cbController.getColdboxOCM(cacheName).clear(event.getValue('cbox_cacheentry',""));break;}
-				case "clearallevents" : { cbController.getColdboxOCM(cacheName).clearAllEvents();break;}
-				case "clearallviews"  : { cbController.getColdboxOCM(cacheName).clearAllViews();break;}
-				case "reapAll"		  : { cbController.getCacheBox().reapAll();break;}
-				case "expireAll"	  : { cbController.getCacheBox().expireAll();break;}
-				case "gc"			  : { createObject("java", "java.lang.Runtime").getRuntime().gc(); break;}
+				case "expirecache"    		: { cbController.getColdboxOCM(cacheName).expireAll(); break; }
+				case "reapcache"  	  		: { cbController.getColdboxOCM(cacheName).reap(); break;}
+				case "delcacheentry"  		: { cbController.getColdboxOCM(cacheName).clear(event.getValue('cbox_cacheentry',""));break;}
+				case "clearallevents" 		: { cbController.getColdboxOCM(cacheName).clearAllEvents();break;}
+				case "clearallviews"  		: { cbController.getColdboxOCM(cacheName).clearAllViews();break;}
+				case "cacheBoxReapAll"		: { cbController.getCacheBox().reapAll();break;}
+				case "cacheBoxExpireAll"	: { cbController.getCacheBox().expireAll();break;}
+				case "gc"			 		: { createObject("java", "java.lang.Runtime").getRuntime().gc(); break;}
 				
 				// Module Commands
 				case "reloadModules"  : { cbController.getModuleService().reloadAll(); break;}

@@ -55,7 +55,7 @@ function fw_cboxCommand( commandURL, verb ){
 	request.send();
 	return request.responseText;
 }
-//Cache Panel JS
+//CacheBox Panel JS
 function fw_cacheClearItem(URLBase, cacheKey, cacheName){
 	// Button
 	var btn = document.getElementById('cboxbutton_removeentry_'+cacheKey);
@@ -67,7 +67,44 @@ function fw_cacheClearItem(URLBase, cacheKey, cacheName){
 	var element = document.getElementById('cbox_cache_tr_'+cacheKey);
 	element.parentNode.removeChild(element);
 }
-function fw_cacheCommand(URLBase, command, cacheName){
+//Execute a command from the cacheBox Toolbar
+function fw_cacheBoxCommand(URLBase, command, btnID, showAlert){
+	if( showAlert == null){ showAlert = true; }
+	var btn = document.getElementById(btnID)
+	btn.disabled = true
+	fw_cboxCommand( URLBase + "?cbox_command=" + command)
+	btn.disabled = false
+	if( showAlert ){ alert("CacheBox Command Completed!"); }
+}
+// Execute a garbage collection
+function fw_cacheGC(URLBase,cacheName,btnID){
+	// Run GC
+	fw_cacheBoxCommand(URLBase,"gc",btnID,false)
+	// Re-Render Cache Report
+	fw_cacheReport(URLBase,cacheName)
+}
+// Render a cache report dynamically based on a cache name
+function fw_cacheReport(URLBase,cacheName){
+	// loader change
+	var loader = document.getElementById('fw_cachebox_selector_loading');
+	loader.style.display='inline';
+	var reportDiv = document.getElementById('fw_cacheReport');
+	reportDiv.innerHTML = "";
+	// get report
+	var reportHTML = fw_cboxCommand(URLBase+"?debugPanel=cacheReport&cbox_cacheName="+cacheName);
+	reportDiv.innerHTML = reportHTML;
+	// turn off loader
+	loader.style.display='none';
+}
+// Re-Fill Content Report
+function fw_cacheContentReport(URLBase,cacheName){
+	var reportDiv = document.getElementById('fw_cacheContentReport')
+	reportDiv.innerHTML = ""
+	var reportHTML = fw_cboxCommand(URLBase+"?debugPanel=cacheContentReport&cbox_cacheName="+cacheName);
+	reportDiv.innerHTML = reportHTML;
+}
+//Execute a CacheContent Command
+function fw_cacheContentCommand(URLBase, command, cacheName, loaderDiv){
 	var loader = document.getElementById('fw_cacheContentReport_loader');
 	loader.style.display='inline';
 	// Execute Command
@@ -76,38 +113,6 @@ function fw_cacheCommand(URLBase, command, cacheName){
 	fw_cacheContentReport(URLBase,cacheName);
 	// turn off loader
 	loader.style.display='none';
-}
-function fw_cacheGC(URLBase,cacheName){
-	var btn = document.getElementById('cboxbutton_gc');
-	btn.value = "Please wait...";
-	// run GC
-	fw_cboxCommand(URLBase+"?cbox_command=gc&cbox_cacheName="+cacheName);
-	// reload report
-	fw_cacheReport(URLBase,cacheName);
-}
-function fw_cacheReport(URLBase,cacheName){
-	// loader change
-	var loader = document.getElementById('fw_cachebox_selector_loading');
-	loader.style.display='inline';
-	// get report
-	var reportHTML = fw_cboxCommand(URLBase+"?debugPanel=cacheReport&cbox_cacheName="+cacheName);
-	document.getElementById('fw_cacheReport').innerHTML = reportHTML;
-	// turn off loader
-	loader.style.display='none';
-}
-function fw_reloadCacheContentReport(URLBase,cacheName){
-	// loader change
-	var loader = document.getElementById('fw_cacheContentReport_loader');
-	loader.style.display='inline';
-	document.getElementById('fw_cacheContentReport').innerHTML = "";
-	fw_cacheContentReport(URLBase,cacheName);
-	// turn off loader
-	loader.style.display='none';
-}
-function fw_cacheContentReport(URLBase,cacheName){
-	// run report
-	var reportHTML = fw_cboxCommand(URLBase+"?debugPanel=cacheContentReport&cbox_cacheName="+cacheName);
-	document.getElementById('fw_cacheContentReport').innerHTML = reportHTML;
 }
 function fw_toggleDiv(targetDiv, displayStyle){
 	// toggle a div with styles, man I miss jquery
