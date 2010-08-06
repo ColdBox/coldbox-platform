@@ -1,35 +1,41 @@
 <cfoutput>
 <table border="0" cellpadding="0" cellspacing="1" class="fw_debugTables">
-  <tr >
-  	<th >Object</th>
-	<th align="center" width="10%" >Hits</th>
-	<th align="center" width="10%" >Timeout <br/>(Min)</th>
-	<th align="center" width="10%" >Created</th>
-	<th align="center" width="10%" >Last Accessed</th>
-	<th align="center" width="10%" >Expires</th>
-	<th align="center" width="10%" >Status</th>
-	<th align="center" width="5%" >CMDS</th>
-  </tr>
+  <thead>
+  	<tr>
+	  	<th>Object</th>
+		<th align="center" width="10%" >Hits</th>
+		<th align="center" width="10%" >Timeout</th>
+		<th align="center" width="10%" >Idle Timeout</th>
+		<th align="center" width="10%" >Created</th>
+		<th align="center" width="10%" >Last Accessed</th>
+		<th align="center" width="10%" >Status</th>
+		<th align="center" width="5%" >CMDS</th>
+ 	</tr>
+  </thead>
+  <tbody>
   <cfloop from="1" to="#cacheKeysLen#" index="x">
   	<cfset thisKey = cacheKeys[x]>
-  	<cfset expDate = dateadd("n",cacheMetaData[ thisKey ].timeout, cacheMetaData[ thisKey ].created)>
-	<tr <cfif x mod 2 eq 0>class="even"</cfif> id="cbox_cache_tr_#urlEncodedFormat(thisKey)#">
+  	<tr <cfif x mod 2 eq 0>class="even"</cfif> id="cbox_cache_tr_#urlEncodedFormat(thisKey)#">
 	  	<!--- Link --->
 		<td align="left">
-		  	<a href="javascript:fw_openwindow('#URLBase#?debugpanel=cacheviewer&key=#urlEncodedFormat( thisKey )#','CacheViewer',650,375,'resizable,scrollbars,status')" title="Dump contents">#listLast(thisKey,"_")#</a></td>
+		  	<a href="javascript:fw_openwindow('#URLBase#?debugpanel=cacheviewer&cbox_cacheName=#arguments.cacheName#&key=#urlEncodedFormat( thisKey )#','CacheViewer',650,375,'resizable,scrollbars,status')" 
+			   title="#thisKey#">
+		  	#left(thisKey,40)#<cfif len(thisKey) gt 40>...</cfif>
+			</a>
+		</td>
 		<!--- Hits --->
-		<td align="center" >#cacheMetadata[thisKey].hits#</td>
+		<td align="center" >#cacheMetadata[thisKey][ cacheMDKeyLookup.hits ]#</td>
 		<!--- Timeout --->
-		<td align="center" >#cacheMetadata[thisKey].Timeout#</td>
+		<td align="center" >#cacheMetadata[thisKey][ cacheMDKeyLookup.timeout ]#</td>
+		<!--- Last Access Timeout --->
+		<td align="center" >#cacheMetadata[thisKey][ cacheMDKeyLookup.lastAccessTimeout ]#</td>
 		<!--- Created --->
-		<td align="center" >#dateformat(cacheMetadata[thisKey].Created,"mmm-dd")# <Br/> #timeformat(cacheMetadata[thisKey].Created,"hh:mm:ss tt")#</td>
+		<td align="center" >#dateformat(cacheMetadata[thisKey][ cacheMDKeyLookup.Created ],"mmm-dd")# <Br/> #timeformat(cacheMetadata[thisKey][ cacheMDKeyLookup.created ],"hh:mm:ss tt")#</td>
 		<!--- Last Accessed --->
-		<td align="center">#dateformat(cacheMetadata[thisKey].lastaccesed,"mmm-dd")# <br/> #timeformat(cacheMetadata[thisKey].lastaccesed,"hh:mm:ss tt")#</td>
-	 	<!--- Timeouts --->
-		<td align="center" class="fw_redText" ><cfif cacheMetadata[thisKey].timeout eq 0>---<cfelse>#dateFormat(expDate,"mmm-dd")# <br /> #timeformat(expDate,"hh:mm:ss tt")#</cfif></td>
+		<td align="center">#dateformat(cacheMetadata[thisKey][ cacheMDKeyLookup.lastAccesed ],"mmm-dd")# <br/> #timeformat(cacheMetadata[thisKey][ cacheMDKeyLookup.lastAccesed ],"hh:mm:ss tt")#</td>
 	 	<!--- isExpired --->
 		<td align="center">
-			<cfif cacheMetadata[thisKey].isExpired>
+			<cfif structKeyExists(cacheMDKeyLookup,"isExpired") and cacheMetadata[thisKey][ cacheMDKeyLookup.isExpired ]>
 				<span class="fw_redText">Expired</span>
 			<cfelse>
 				<span class="fw_blueText">Alive</span>
@@ -44,7 +50,7 @@
 				   onclick="fw_cacheClearItem('#URLBase#','#urlEncodedFormat(thisKey)#','#arguments.cacheName#')">
 		</td>
 	  </tr>
-	
-  </cfloop>			  
+  </cfloop>	
+  </tbody>		  
 </table>
 </cfoutput>

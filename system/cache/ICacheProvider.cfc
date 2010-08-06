@@ -83,6 +83,10 @@ Description :
 	<cffunction name="getStoreMetadataReport" output="false" access="public" returntype="struct" hint="Get a structure of all the keys in the cache with their appropriate metadata structures. This is used to build the reporting.[keyX->[metadataStructure]]">
 	</cffunction>
 	
+	<!--- getStoreMetadataKeyMap --->
+	<cffunction name="getStoreMetadataKeyMap" output="false" access="public" returntype="struct" hint="Get a key lookup structure where cachebox can build the report on. Ex: [timeout=timeout,lastAccessTimeout=idleTimeout].  It is a way for the visualizer to construct the columns correctly on the reports">
+	</cffunction>
+	
 <!------------------------------------------- CACHE OPERATIONS ------------------------------------------>
 
 	<!--- getKeys --->

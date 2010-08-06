@@ -193,7 +193,7 @@ Description :
 	</cffunction>
 	
 	<!--- addAppender --->
-	<cffunction name="appender" output="false" access="public" returntype="void" hint="Add an appender configuration.">
+	<cffunction name="appender" output="false" access="public" returntype="any" hint="Add an appender configuration.">
 		<cfargument name="name" 		type="string"  	required="true"  hint="A unique name for the appender to register. Only unique names can be registered per instance."/>
 		<cfargument name="class" 		type="string"  	required="true"  hint="The appender's class to register. We will create, init it and register it for you."/>
 		<cfargument name="properties" 	type="struct"  	required="false" default="#structnew()#" hint="The structure of properties to configure this appender with."/>
@@ -209,11 +209,13 @@ Description :
 			
 			// Register appender
 			instance.appenders[arguments.name] = arguments;
+			
+			return this;
 		</cfscript>
 	</cffunction>
 	
 	<!--- Set the root logger information  --->
-	<cffunction name="root" access="public" returntype="void" output="false" hint="Register the root logger in this configuration.">
+	<cffunction name="root" access="public" returntype="any" output="false" hint="Register the root logger in this configuration.">
 		<cfargument name="levelMin" 	type="any" 		required="false" default="0" hint="The default log level for the root logger, by default it is 0 (FATAL). Optional. ex: config.logLevels.WARN"/>
 		<cfargument name="levelMax" 	type="any" 		required="false" default="4" hint="The default log level for the root logger, by default it is 4 (DEBUG). Optional. ex: config.logLevels.WARN"/>
 		<cfargument name="appenders" 	type="string"  	required="true"  hint="A list of appenders to configure the root logger with. Send a * to add all appenders"/>
@@ -232,6 +234,8 @@ Description :
 
 			// Add definition
 			instance.rootLogger = arguments;
+			
+			return this;
 		</cfscript>
 	</cffunction>
 	
@@ -241,7 +245,7 @@ Description :
 	</cffunction>
 	
 	<!--- addCategory --->
-	<cffunction name="category" output="false" access="public" returntype="void" hint="Add a new category configuration with appender(s).  Appenders MUST be defined first, else this method will throw an exception">
+	<cffunction name="category" output="false" access="public" returntype="any" hint="Add a new category configuration with appender(s).  Appenders MUST be defined first, else this method will throw an exception">
 		<cfargument name="name" 		type="string"  	required="true"  hint="A unique name for the appender to register. Only unique names can be registered per instance."/>
 		<cfargument name="levelMin" 	type="any" 		required="false" default="0" hint="The default min log level for this category. Defaults to the lowest level 0 or FATAL"/>
 		<cfargument name="levelMax" 	type="any"		required="false" default="4" hint="The max default log level for this category. If not passed it defaults to the highest level possible"/>
@@ -256,6 +260,8 @@ Description :
 
 			// Add category registration
 			instance.categories[arguments.name] = arguments;
+			
+			return this;
 		</cfscript>
 	</cffunction>
 	
@@ -284,62 +290,68 @@ Description :
 <!------------------------------------------- Facade methods for categoreis with levels only ------------------------------------------>
 	
 	<!--- DEBUG --->
-	<cffunction name="DEBUG" output="false" access="public" returntype="void" hint="Add categories to the DEBUG level. Send each category as an argument.">
+	<cffunction name="DEBUG" output="false" access="public" returntype="any" hint="Add categories to the DEBUG level. Send each category as an argument.">
 		<cfscript>
 			var key = "";
 			for(key in arguments){
 				category(name=arguments[key],levelMax=this.logLevels.DEBUG);
 			}
+			return this;
 		</cfscript>
 	</cffunction>
 	
 	<!--- INFO --->
-	<cffunction name="INFO" output="false" access="public" returntype="void" hint="Add categories to the INFO level. Send each category as an argument.">
+	<cffunction name="INFO" output="false" access="public" returntype="any" hint="Add categories to the INFO level. Send each category as an argument.">
 		<cfscript>
 			var key = "";
 			for(key in arguments){
 				category(name=arguments[key],levelMax=this.logLevels.INFO);
 			}
+			return this;
 		</cfscript>
 	</cffunction>
 	
 	<!--- WARN --->
-	<cffunction name="WARN" output="false" access="public" returntype="void" hint="Add categories to the WARN level. Send each category as an argument.">
+	<cffunction name="WARN" output="false" access="public" returntype="any" hint="Add categories to the WARN level. Send each category as an argument.">
 		<cfscript>
 			var key = "";
 			for(key in arguments){
 				category(name=arguments[key],levelMax=this.logLevels.WARN);
 			}
+			return this;
 		</cfscript>
 	</cffunction>
 	
 	<!--- ERROR --->
-	<cffunction name="ERROR" output="false" access="public" returntype="void" hint="Add categories to the ERROR level. Send each category as an argument.">
+	<cffunction name="ERROR" output="false" access="public" returntype="any" hint="Add categories to the ERROR level. Send each category as an argument.">
 		<cfscript>
 			var key = "";
 			for(key in arguments){
 				category(name=arguments[key],levelMax=this.logLevels.ERROR);
 			}
+				return this;
 		</cfscript>
 	</cffunction>
 	
 	<!--- FATAL --->
-	<cffunction name="FATAL" output="false" access="public" returntype="void" hint="Add categories to the FATAL level. Send each category as an argument.">
+	<cffunction name="FATAL" output="false" access="public" returntype="any" hint="Add categories to the FATAL level. Send each category as an argument.">
 		<cfscript>
 			var key = "";
 			for(key in arguments){
 				category(name=arguments[key],levelMax=this.logLevels.FATAL);
 			}
+			return this;
 		</cfscript>
 	</cffunction>
 	
 	<!--- OFF --->
-	<cffunction name="OFF" output="false" access="public" returntype="void" hint="Add categories to the OFF level. Send each category as an argument.">
+	<cffunction name="OFF" output="false" access="public" returntype="any" hint="Add categories to the OFF level. Send each category as an argument.">
 		<cfscript>
 			var key = "";
 			for(key in arguments){
 				category(name=arguments[key],levelMin=this.logLevels.OFF,levelMax=this.logLevels.OFF);
 			}
+			return this;
 		</cfscript>
 	</cffunction>
 

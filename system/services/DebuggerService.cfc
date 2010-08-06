@@ -209,16 +209,23 @@ Description :
 		<cfscript>
 			var event 			= controller.getRequestService().getContext();
 			var content			= "";
-			
+			var cacheNames		= arrayNew(1);
 			// CacheType Rendering
 			var isMonitor		= arguments.monitor;
-			
 			// URL Base
 			var URLBase			= event.getSESBaseURL();
 			
 			// Command URL Base if not using SES
 			if( NOT event.isSES() ){
 				URLBase = "index.cfm";
+			}
+			
+			// Caches
+			if( isObject(controller.getCacheBox()) ){
+				cacheNames = controller.getCacheBox().getCacheNames();
+			}
+			else{
+				cacheNames[1] = "default";
 			}
 			
 		</cfscript>
@@ -285,14 +292,15 @@ Description :
     	<cfargument name="cacheName" type="any" required="true" default="default" hint="The cache name"/>
 		<cfscript>
     		var thisKey			= "";
-			var expDate			= "";
 			var x				= "";
 			var content			= "";
 			var cacheProvider 	= controller.getColdboxOCM( arguments.cacheName );
 			var cacheKeys		= "";
 			var cacheKeysLen	= 0;
 			var cacheMetadata	= "";
+			var cacheMDKeyLookup = structnew();
 			var isCacheBox		= true;
+			
 			// URL Base
 			var event 			= controller.getRequestService().getContext();
 			var URLBase			= event.getSESBaseURL();
@@ -304,16 +312,24 @@ Description :
 			
 			// Prepare cache report for cachebox
 			if( isObject(controller.getCacheBox()) ){
-				cacheMetadata 	= cacheProvider.getStoreMetadataReport();
-				cacheKeys		= cacheProvider.getKeys(); 
-				cacheKeysLen	= arrayLen( cacheKeys );							
+				cacheMetadata 		= cacheProvider.getStoreMetadataReport();
+				cacheMDKeyLookup 	= cacheProvider.getStoreMetadataKeyMap();
+				cacheKeys			= cacheProvider.getKeys(); 
+				cacheKeysLen		= arrayLen( cacheKeys );							
 			}
 			// COMPAT MODE: REMOVE LATER, cf7 and compat
 			else{
 				cacheMetadata 	= cacheProvider.getPoolMetadata();
 				cacheKeys		= structKeyArray( cacheMetadata ); 
 				cacheKeysLen	= arrayLen( cacheKeys );
-				isCacheBox		= false;				
+				// I DETEST CF7
+				cacheMDKeyLookup = structnew();
+				cacheMDKeyLookup["timeout"] = "timeout";
+				cacheMDKeyLookup["lastAccessTimeout"] = "lastAccessTimeout";
+				cacheMDKeyLookup["hits"] = "hits";
+				cacheMDKeyLookup["lastAccesed"] = "lastAccesed";
+				cacheMDKeyLookup["created"] = "created";
+				cacheMDKeyLookup["isExpired"] = "isExpired";								
 			}
 			
 			// Sort Keys
@@ -328,12 +344,12 @@ Description :
 	
 	<!--- Render Cache Dumpver --->
 	<cffunction name="renderCacheDumper" access="public" hint="Renders the caching key value dumper." output="false" returntype="Any">
+		<cfargument name="cacheName" type="any" required="true" default="default" hint="The cache name"/>
 		<cfset var event 			= controller.getRequestService().getContext()>
-		<cfset var cachekey 		= URLDecode(event.getValue('key',''))>
-		<cfset var cacheName 		= event.getTrimValue("cbox_cacheName","default")>
+		<cfset var cachekey 		= URLDecode(event.getTrimValue('key',''))>
 		<cfset var cacheValue 		= "">
-		<cfset var dumperContents 	= "">
-		<cfset var cache 			= controller.getColdboxOCM( cacheName )>
+		<cfset var dumperContents 	= "NOT_FOUND">
+		<cfset var cache 			= controller.getColdboxOCM( arguments.cacheName )>
 		
 		<!--- check key --->
 		<cfif NOT len(cacheKey) OR NOT cache.lookup( cacheKey )>

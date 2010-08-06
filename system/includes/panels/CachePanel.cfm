@@ -83,29 +83,28 @@
 				#controller.getCacheBox().getScopeRegistration().toString()#
 			</div>		
 			<hr />
-			
-			<!--- Cache Report Switcher --->
-			<h3>Performance Report For 
-			<select name="fw_cachebox_selector" id="fw_cachebox_selector" 
-					style="font-size:9px;"
-					title="Choose a cache from the list to generate the report"
-					onChange="fw_cacheReport('#URLBase#',this.value)">
-				<cfloop array="#controller.getCacheBox().getCacheNames()#" index="thisCache">
-					<option value="#thisCache#" <cfif thisCache eq "default">selected="selected"</cfif>>#thisCache#</option>
-				</cfloop>
-			</select>
-			Cache
-			<!--- Reload Contents --->
-			<input type="button" value="Regenerate Report" 
-				   name="cboxbutton_cachebox_regenerateReport"
-				   style="font-size:10px" 
-				   title="Regenerate Report" 
-				   onClick="fw_cacheReport('#URLBase#',document.getElementById('fw_cachebox_selector').value)" />  
-	   
-			<span class="fw_redText fw_debugContent" id="fw_cachebox_selector_loading">Loading...</span>	   
-	   </h3>
-			
 		</cfif>
+			
+		<!--- Cache Report Switcher --->
+		<h3>Performance Report For 
+		<select name="fw_cachebox_selector" id="fw_cachebox_selector" 
+				style="font-size:9px;"
+				title="Choose a cache from the list to generate the report"
+				onChange="fw_cacheReport('#URLBase#',this.value)">
+			<cfloop array="#cacheNames#" index="thisCache">
+				<option value="#thisCache#" <cfif thisCache eq "default">selected="selected"</cfif>>#thisCache#</option>
+			</cfloop>
+		</select>
+		Cache
+		<!--- Reload Contents --->
+		<input type="button" value="Regenerate Report" 
+			   name="cboxbutton_cachebox_regenerateReport"
+			   style="font-size:10px" 
+			   title="Regenerate Report" 
+			   onClick="fw_cacheReport('#URLBase#',document.getElementById('fw_cachebox_selector').value)" />  
+   
+		<span class="fw_redText fw_debugContent" id="fw_cachebox_selector_loading">Loading...</span>	   
+  		</h3>
 			
 		<!--- Named Cache Report --->
 		<div id="fw_cacheReport">

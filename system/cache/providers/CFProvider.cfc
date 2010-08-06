@@ -9,9 +9,6 @@ Description:
 This CacheBox provider communicates with the built in caches in
 the Adobe ColdFusion Engine.
 
-TODO:
- Add user registered cache names
-
 */
 component serializable="false" implements="coldbox.system.cache.ICacheProvider"{
 
@@ -92,7 +89,8 @@ component serializable="false" implements="coldbox.system.cache.ICacheProvider"{
     * configure the cache for operation
     */
     void function configure() output=false{
-		var config = getConfiguration();
+		var config 	= getConfiguration();
+		var props	= [];
 		
 		lock name="CFProvider.config.#instance.cacheID#" type="exclusive" throwontimeout="true" timeout="20"{
 		
@@ -105,8 +103,16 @@ component serializable="false" implements="coldbox.system.cache.ICacheProvider"{
 				config.cacheName = instance.defaultCacheName;
 			}
 			
+			// Merge configurations
+			props = cacheGetProperties();
+			var key = "";
+			for(key in props){
+				config["ehcache_#key.objectType#"] = key;
+			}
+			
 			// enabled cache
 			instance.enabled = true;
+			instance.reportingEnabled = true;
 			instance.logger.info("Cache #getName()# started up successfully");
 		}
 		
@@ -131,6 +137,27 @@ component serializable="false" implements="coldbox.system.cache.ICacheProvider"{
 	*/
 	boolean function isReportingEnabled() output=false{
 		return instance.reportingEnabled;
+	}
+	
+	/*
+	* Indicates if the cache is Terracota clustered
+	*/
+	boolean function isTerracotaClustered(){
+		return getObjectStore().isTerracottaClustered();
+	}
+	
+	/*
+	* Indicates if the cache node is coherent
+	*/
+	boolean function isNodeCoherent(){
+		return getObjectStore().isNodeCoherent();
+	}
+	
+	/*
+	* Returns true if the cache is in coherent mode cluster-wide.
+	*/
+	boolean function isClusterCoherent(){
+		return getObjectStore().isClusterCoherent();
 	}
 	
 	/*
@@ -160,21 +187,44 @@ component serializable="false" implements="coldbox.system.cache.ICacheProvider"{
     * get the cache's metadata report
     */
     struct function getStoreMetadataReport() output=false{ 
-		//TODO: implement this
+		var md 		= {};
+		var keys 	= getKeys();
+		var item	= "";
+		
+		for(item in keys){
+			md[item] = getCachedObjectMetadata(item);
+		}
+		
+		return md;
+	}
+	
+	/**
+	* Get a key lookup structure where cachebox can build the report on. Ex: [timeout=timeout,lastAccessTimeout=idleTimeout].  It is a way for the visualizer to construct the columns correctly on the reports
+	*/
+	struct function getStoreMetadataKeyMap() output="false"{
+		var keyMap = {
+				timeout = "timespan", hits = "hitcount", lastAccessTimeout = "idleTime",
+				created = "createdtime", lastAccesed = "lasthit"
+			};
+		return keymap;
 	}
 	
 	/**
     * get all the keys in this provider
     */
     array function getKeys() output=false{
-		return cacheGetAllIds();
+		var thisCacheName = getConfiguration().cacheName;
+		if( thisCacheName eq "object" ){
+			return cacheGetAllIds();
+		}
+		return cacheGetAllIds(thisCacheName);
 	}
 	
 	/**
     * get an object's cached metadata
     */
     struct function getCachedObjectMetadata(required any objectKey) output=false{
-		return cacheGetMetadata( arguments.objectKey );
+		return cacheGetMetadata( arguments.objectKey, getConfiguration().cacheName );
 	}
 	
 	/**
@@ -198,8 +248,11 @@ component serializable="false" implements="coldbox.system.cache.ICacheProvider"{
     * Not implemented by this cache
     */
     boolean function isExpired(required any objectKey) output=false{
-		var target = cacheGet(arguments.objectKey);
-		return (isNull(target));
+		var element = getObjectStore().getQuiet( ucase(arguments.objectKey) );
+		if( NOT isNull(element) ){
+			return element.isExpired();
+		}
+		return true;
 	}
 	 
 	/**
@@ -320,7 +373,8 @@ component serializable="false" implements="coldbox.system.cache.ICacheProvider"{
     * not implemented by cache
     */
     void function expireAll() output=false{ 
-		//not implemented 
+		// Just try to evict stuff, not a way to expire all elements.
+		getObjectStore().evictExpiredElements();
 	}
 	
 	/**

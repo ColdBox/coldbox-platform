@@ -227,7 +227,7 @@ id , name , mail
 	</cffunction>
 	
 	<!--- getColdboxOCM --->
-    <cffunction name="getColdboxOCM" access="public" output="false" returntype="any" hint="Get ColdboxOCM: coldbox.system.cache.CacheManager or new CacheBox providers coldbox.system.cache.IColdboxApplicationCache" colddoc:generic="coldbox.system.cache.IColdboxApplicationCache">
+    <cffunction name="getColdboxOCM" access="private" output="false" returntype="any" hint="Get ColdboxOCM: coldbox.system.cache.CacheManager or new CacheBox providers coldbox.system.cache.IColdboxApplicationCache" colddoc:generic="coldbox.system.cache.IColdboxApplicationCache">
 		<cfargument name="cacheName" type="string" required="false" default="default" hint="The cache name to retrieve"/>
 		<cfreturn getController().getColdboxOCM(arguments.cacheName)/>
 	</cffunction>

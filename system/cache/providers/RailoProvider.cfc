@@ -7,9 +7,7 @@ Author: Luis Majano
 Description:
 	
 This CacheBox provider communicates with the built in caches in
-the Railo Engine.
-
-TODO: test script in railo, also use their custom functions.
+the Railo Engine
 
 */
 component serializable="false" implements="coldbox.system.cache.ICacheProvider"{
@@ -27,8 +25,14 @@ component serializable="false" implements="coldbox.system.cache.ICacheProvider"{
 			eventManager		= "",
 			store				= "",
 			cacheID				= createObject('java','java.lang.System').identityHashCode(this),
-			defaultCacheName	= "object"
+			defaultCacheName	= "object",
+			// Element Cleaner Helper
+			elementCleaner		= CreateObject("component","coldbox.system.cache.util.ElementCleaner").init(this),
+			// Utilities
+			utility				= createObject("component","coldbox.system.core.util.Util"),
+			uuidHelper			= createobject("java", "java.util.UUID")
 		};
+		
 		return this;
 	}
 	
@@ -85,20 +89,33 @@ component serializable="false" implements="coldbox.system.cache.ICacheProvider"{
     * configure the cache for operation
     */
     void function configure() output=false{
-		var config = getConfiguration();
+		var config 	= getConfiguration();
+		var props	= [];
 		
-		// Prepare the logger
-		instance.logger = getCacheFactory().getLogBox().getLogger( this );
-		instance.logger.debug("Starting up CFProvider Cache: #getName()# with configuration: #config.toString()#");
+		lock name="Railoprovider.config.#instance.cacheID#" type="exclusive" throwontimeout="true" timeout="20"{
 		
-		// link cacheName according to property if defined, else use default
-		if( NOT structKeyExists(config,"cacheName") ){
-			config.cacheName = instance.defaultCacheName;
+			// Prepare the logger
+			instance.logger = getCacheFactory().getLogBox().getLogger( this );
+			instance.logger.debug("Starting up Railoprovider Cache: #getName()# with configuration: #config.toString()#");
+			
+			// link cacheName according to property if defined, else use default
+			if( NOT structKeyExists(config,"cacheName") ){
+				config.cacheName = instance.defaultCacheName;
+			}
+			
+			// Merge configurations
+			props = cacheGetProperties();
+			var key = "";
+			for(key in props){
+				config["ehcache_#key.objectType#"] = key;
+			}
+			
+			// enabled cache
+			instance.enabled = true;
+			instance.reportingEnabled = true;
+			instance.logger.info("Cache #getName()# started up successfully");
 		}
 		
-		// enabled cache
-		instance.enabled = true;
-		instance.logger.info("Cache #getName()# started up successfully");
 	}
 	
 	/**
@@ -149,21 +166,44 @@ component serializable="false" implements="coldbox.system.cache.ICacheProvider"{
     * get the cache's metadata report
     */
     struct function getStoreMetadataReport() output=false{ 
-		//TODO: implement this
+		var md 		= {};
+		var keys 	= getKeys();
+		var item	= "";
+		
+		for(item in keys){
+			md[item] = getCachedObjectMetadata(item);
+		}
+		
+		return md;
+	}
+	
+	/**
+	* Get a key lookup structure where cachebox can build the report on. Ex: [timeout=timeout,lastAccessTimeout=idleTimeout].  It is a way for the visualizer to construct the columns correctly on the reports
+	*/
+	struct function getStoreMetadataKeyMap() output="false"{
+		var keyMap = {
+				timeout = "timespan", hits = "hitcount", lastAccessTimeout = "idleTime",
+				created = "createdtime", lastAccesed = "lasthit"
+			};
+		return keymap;
 	}
 	
 	/**
     * get all the keys in this provider
     */
     array function getKeys() output=false{
-		return cacheGetAllIds();
+		var thisCacheName = getConfiguration().cacheName;
+		if( thisCacheName eq "object" ){
+			return cacheGetAllIds();
+		}
+		return cacheGetAllIds(thisCacheName);
 	}
 	
 	/**
     * get an object's cached metadata
     */
     struct function getCachedObjectMetadata(required any objectKey) output=false{
-		return cacheGetMetadata( arguments.objectKey );
+		return cacheGetMetadata( arguments.objectKey, getConfiguration().cacheName );
 	}
 	
 	/**
@@ -187,8 +227,11 @@ component serializable="false" implements="coldbox.system.cache.ICacheProvider"{
     * Not implemented by this cache
     */
     boolean function isExpired(required any objectKey) output=false{
-		var target = cacheGet(arguments.objectKey);
-		return (isNull(target));
+		var element = getObjectStore().getQuiet( ucase(arguments.objectKey) );
+		if( NOT isNull(element) ){
+			return element.isExpired();
+		}
+		return true;
 	}
 	 
 	/**
@@ -289,10 +332,28 @@ component serializable="false" implements="coldbox.system.cache.ICacheProvider"{
 	}
 	
 	/**
+	* Clear by key snippet
+	*/
+	void function clearByKeySnippet(required string keySnippet, boolean regex=false, boolean async=false) output=false{
+		var threadName = "clearByKeySnippet_#replace(instance.uuidHelper.randomUUID(),"-","","all")#";
+		
+		// Async? IF so, do checks
+		if( arguments.async AND NOT instance.utility.inThread() ){
+			thread name="#threadName#"{
+				instance.elementCleaner.clearByKeySnippet(arguments.keySnippet,arguments.regex);
+			}
+		}
+		else{
+			instance.elementCleaner.clearByKeySnippet(arguments.keySnippet,arguments.regex);
+		}
+	}
+	
+	/**
     * not implemented by cache
     */
     void function expireAll() output=false{ 
-		//not implemented 
+		// Just try to evict stuff, not a way to expire all elements.
+		getObjectStore().evictExpiredElements();
 	}
 	
 	/**

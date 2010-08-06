@@ -19,7 +19,14 @@ component implements="coldbox.system.cache.util.ICacheStats" accessors="true"{
 	}
 	
 	numeric function getCachePerformanceRatio() output=false{
-		return getCacheStats().getStatisticsAccuracy();
+		var hits 		= getHits();
+		var requests 	= hits + getMisses();
+		
+	 	if ( requests eq 0){
+	 		return 0;
+		}
+		
+		return (hits/requests) * 100;
 	}
 	
 	numeric function getObjectCount() output=false{

@@ -81,9 +81,10 @@ Description :
     </cffunction>
 	
 	<!--- logBoxConfig --->
-    <cffunction name="logBoxConfig" output="false" access="public" returntype="void" hint="Set the logBox Configuration to use">
+    <cffunction name="logBoxConfig" output="false" access="public" returntype="any" hint="Set the logBox Configuration to use">
     	<cfargument name="config" type="string" required="true" hint="The configuration file to use"/>
 		<cfset instance.logBoxConfig = arguments.config>
+		<cfreturn this>
     </cffunction>
 	
 	<!--- getLogBoxConfig --->
@@ -185,7 +186,7 @@ Description :
 	</cffunction>
 	
 	<!--- scopeRegistration --->
-    <cffunction name="scopeRegistration" output="false" access="public" returntype="void" hint="Use to define cachebox factory scope registration">
+    <cffunction name="scopeRegistration" output="false" access="public" returntype="any" hint="Use to define cachebox factory scope registration">
     	<cfargument name="enabled" 	type="boolean" 	required="false" default="false" hint="Enable registration"/>
 		<cfargument name="scope" 	type="string" 	required="false" default="server" hint="The scope to register on, defaults to server scope"/>
 		<cfargument name="key" 		type="string" 	required="false" default="cachebox" hint="The key to use in the scope, defaults to cachebox"/>
@@ -193,6 +194,8 @@ Description :
 			instance.scopeRegistration.enabled 	= arguments.enabled;
 			instance.scopeRegistration.key 		= arguments.key;
 			instance.scopeRegistration.scope 	= arguments.scope;
+			
+			return this;
 		</cfscript>
     </cffunction>
 
@@ -202,7 +205,7 @@ Description :
     </cffunction>
 	
 	<!--- defaultCache --->
-	<cffunction name="defaultCache" output="false" access="public" returntype="void" hint="Add a default cache configuration.">
+	<cffunction name="defaultCache" output="false" access="public" returntype="any" hint="Add a default cache configuration.">
 		<cfargument name="objectDefaultTimeout" 			type="numeric" required="false"  default="#variables.defaults.objectDefaultTimeout#">
 	    <cfargument name="objectDefaultLastAccessTimeout"   type="numeric" required="false"  default="#variables.defaults.objectDefaultLastAccessTimeout#">
 	    <cfargument name="reapFrequency" 					type="numeric" required="false"  default="#variables.defaults.reapFrequency#">
@@ -225,6 +228,8 @@ Description :
 			else{
 				cacheConfig.provider = variables.defaults.cacheboxProvider;
 			}
+			
+			return this;
 		</cfscript>
 	</cffunction>
 	
@@ -234,7 +239,7 @@ Description :
 	</cffunction>
 	
 	<!--- cache --->
-	<cffunction name="cache" output="false" access="public" returntype="void" hint="Add a new cache configuration.">
+	<cffunction name="cache" output="false" access="public" returntype="any" hint="Add a new cache configuration.">
 		<cfargument name="name" 		type="string" required="true"   hint="The name of the cache"/>
 		<cfargument name="provider" 	type="string" required="false"  default="#variables.defaults.cacheBoxProvider#" hint="The cache provider class, defaults to: coldbox.system.cache.providers.CacheBoxProvider"/>
 		<cfargument name="properties" 	type="struct" required="false"  default="#structNew()#" hint="The structure of properties for the cache"/>
@@ -243,6 +248,7 @@ Description :
 				provider 	= arguments.provider,
 				properties 	= arguments.properties
 			};
+			return this;
 		</cfscript>
 	</cffunction>
 	
@@ -264,7 +270,7 @@ Description :
 	</cffunction>
 	
 	<!--- listener --->
-	<cffunction name="listener" output="false" access="public" returntype="void" hint="Add a new listener configuration.">
+	<cffunction name="listener" output="false" access="public" returntype="any" hint="Add a new listener configuration.">
 		<cfargument name="class" 		type="string" required="true"  hint="The class of the listener"/>
 		<cfargument name="properties" 	type="struct" required="false" default="#structNew()#" hint="The structure of properties for the listner"/>
 		<cfargument name="name" 		type="string" required="false" default=""  hint="The name of the listener"/>
@@ -275,6 +281,8 @@ Description :
 			}
 			// add listener
 			arrayAppend(instance.listeners, arguments);
+			
+			return this;
 		</cfscript>
 	</cffunction>
 	

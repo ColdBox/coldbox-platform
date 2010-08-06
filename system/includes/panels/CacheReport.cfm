@@ -1,12 +1,12 @@
 <cfoutput>		   
 <!--- Id & Name --->
 <cfif isObject( controller.getCacheBox() ) >
-<div class="fw_debugTitleCell">
-  Cache Name
-</div>
-<div class="fw_debugContentCell">
- #cacheProvider.getName()#
-</div>
+	<div class="fw_debugTitleCell">
+	  Cache Name
+	</div>
+	<div class="fw_debugContentCell">
+	 #cacheProvider.getName()# [class=#getMetadata(cacheProvider).name#]
+	</div>
 </cfif>
 
 <!--- Performance --->
@@ -33,20 +33,22 @@
 </div>
 
 <!--- Last Reap --->
-<div class="fw_debugTitleCell">
-  Last Reap
-</div>
-<div class="fw_debugContentCell">
- #DateFormat(cacheStats.getlastReapDatetime(),"MMM-DD-YYYY")#
- #TimeFormat(cacheStats.getlastReapDatetime(),"hh:mm:ss tt")#
-</div>
+<cfif len(cacheStats.getlastReapDatetime())>
+	<div class="fw_debugTitleCell">
+	  Last Reap
+	</div>
+	<div class="fw_debugContentCell">
+	 #DateFormat(cacheStats.getlastReapDatetime(),"MMM-DD-YYYY")#
+	 #TimeFormat(cacheStats.getlastReapDatetime(),"hh:mm:ss tt")#
+	</div>
+</cfif>
 
 <!--- Cache Charting --->
 <cfinclude template="/coldbox/system/includes/panels/CacheCharting.cfm">
 
 <!--- Cache Configuration --->
 <h3>Cache Configuration
-	<input type="button" value="Show/Hide Configuration" 
+	<input type="button" value="Show/Hide" 
 		   name="cboxbutton_cacheproperties"
 		   style="font-size:10px" 
 		   title="View Cache Properties" 
@@ -73,6 +75,9 @@
 	</table>
 </div>
 
+<!--- Check if reporting enabled --->
+<cfif isCacheBox and NOT cacheProvider.isReportingEnabled()><cfexit></cfif>
+
 <!--- Content Report --->
 <h3>Cache Content Report</h3>
 
@@ -81,29 +86,29 @@
 	   name="cboxbutton_reloadContents"
 	   style="font-size:10px" 
 	   title="Reload the contents" 
-	   onClick="fw_reloadCacheContentReport('#URLBase#','#arguments.cacheName#')" />
+	   onClick="fw_cacheContentReport('#URLBase#','#arguments.cacheName#')" />
 <!--- Expire All Keys --->
 <input type="button" value="Expire All Keys" 
 	   name="cboxbutton_expirekeys" id="cboxbutton_expirekeys"
 	   style="font-size:10px" 
 	   title="Expire all the keys in the cache" 
-	   onclick="fw_cacheCommand('#URLBase#','expirecache', '#arguments.cacheName#')" />
+	   onclick="fw_cacheContentCommand('#URLBase#','expirecache', '#arguments.cacheName#')" />
 <!--- Clear All Events --->
 <input type="button" value="Clear All Events" 
 	   name="cboxbutton_clearallevents" id="cboxbutton_clearallevents"
 	   style="font-size:10px" 
 	   title="Remove all the events in the cache" 
-	   onclick="fw_cacheCommand('#URLBase#','clearallevents', '#arguments.cacheName#')" />
+	   onclick="fw_cacheContentCommand('#URLBase#','clearallevents', '#arguments.cacheName#')" />
 <!--- Clear All Views --->
 <input type="button" value="Clear All Views" 
 	   name="cboxbutton_clearallviews" id="cboxbutton_clearallviews"
 	   style="font-size:10px" 
 	   title="Remove all the views in the cache" 
-	   onclick="fw_cacheCommand('#URLBase#','clearallviews', '#arguments.cacheName#')" />
+	   onclick="fw_cacheContentCommand('#URLBase#','clearallviews', '#arguments.cacheName#')" />
 
 <!--- Loader --->
 <span class="fw_redText fw_debugContent" id="fw_cacheContentReport_loader">Please Wait, Processing...</span>
-	  
+
 <!--- Content Report --->
 <div class="fw_cacheContentReport" id="fw_cacheContentReport">
 	#renderCacheContentReport(arguments.cacheName)#

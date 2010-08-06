@@ -74,7 +74,7 @@ Description :
 	
 	<!--- Reload Checks --->
 	<cffunction name="reloadChecks" access="public" returntype="void" hint="Reload checks and reload settings." output="false" >
-		<cfset var ExceptionService = "">
+		<cfset var exceptionService = "">
 		<cfset var ExceptionBean = "">
 		<cfset var appKey = locateAppKey()>
 		<cfset var cbController = 0>
@@ -135,9 +135,9 @@ Description :
 				
 				<!--- Trap Framework Errors --->
 				<cfcatch type="any">
-					<cfset ExceptionService = cbController.getExceptionService()>
-					<cfset ExceptionBean = ExceptionService.ExceptionHandler(cfcatch,"framework","Framework Initialization/Configuration Exception")>
-					<cfoutput>#ExceptionService.renderBugReport(ExceptionBean)#</cfoutput>
+					<cfset exceptionService = cbController.getExceptionService()>
+					<cfset ExceptionBean = exceptionService.ExceptionHandler(cfcatch,"framework","Framework Initialization/Configuration Exception")>
+					<cfoutput>#exceptionService.renderBugReport(ExceptionBean)#</cfoutput>
 					<cfabort>
 				</cfcatch>
 			</cftry>
@@ -188,13 +188,13 @@ Description :
 						<cfoutput>#cbController.getDebuggerService().renderCacheContentReport(cacheName=event.getTrimValue("cbox_cacheName","default"))#</cfoutput>
 					</cfcase>
 					<cfcase value="cacheViewer">
-						<cfoutput>#cbController.getDebuggerService().renderCacheDumper()#</cfoutput>
+						<cfoutput>#cbController.getDebuggerService().renderCacheDumper(cacheName=event.getTrimValue("cbox_cacheName","default"))#</cfoutput>
 					</cfcase>	
 					<cfcase value="profiler">
 						<cfoutput>#cbController.getDebuggerService().renderProfiler()#</cfoutput>
 					</cfcase>			
 				</cfswitch>
-				<!--- Stop Processing --->
+				<!--- Stop Processing, we are rendering a debugger panel --->
 				<cfif len(debugPanel)>
 					<cfsetting showdebugoutput="false">
 					<cfreturn>
@@ -216,7 +216,7 @@ Description :
 			</cfif>
 			
 			<!--- Before Any Execution, do we have cached content to deliver --->
-			<cfif event.isEventCacheable() AND cbController.getColdboxOCM("template").lookup(event.getEventCacheableEntry())>
+			<cfif event.isEventCacheable() AND cbController.getColdboxOCM("template").lookupQuiet(event.getEventCacheableEntry())>
 				<cfset renderedContent = cbController.getColdboxOCM("template").get(event.getEventCacheableEntry())>
 				<cfoutput>#renderedContent#</cfoutput>
 			<cfelse>
@@ -293,7 +293,7 @@ Description :
 			<!--- Trap Application Errors --->
 			<cfcatch type="any">
 				<!--- Get Exception Service --->
-				<cfset ExceptionService = cbController.getExceptionService()>
+				<cfset exceptionService = cbController.getExceptionService()>
 				
 				<!--- Intercept The Exception --->
 				<cfset interceptorData = structnew()>
@@ -301,21 +301,22 @@ Description :
 				<cfset cbController.getInterceptorService().processState("onException",interceptorData)>
 				
 				<!--- Handle The Exception --->
-				<cfset ExceptionBean = ExceptionService.ExceptionHandler(cfcatch,"application","Application Execution Exception")>
+				<cfset ExceptionBean = exceptionService.ExceptionHandler(cfcatch,"application","Application Execution Exception")>
 				
 				<!--- Render The Exception --->
-				<cfoutput>#ExceptionService.renderBugReport(ExceptionBean)#</cfoutput>
+				<cfoutput>#exceptionService.renderBugReport(ExceptionBean)#</cfoutput>
 			</cfcatch>
 		</cftry>
 		
+		<!--- Time the request --->
+		<cfset request.fwExecTime = getTickCount() - request.fwExecTime>
+		
 		<!--- DebugMode Routines --->
 		<cfif cbController.getDebuggerService().getDebugMode()>
-			<!--- Request Profilers --->
+			<!--- Record Profilers --->
 			<cfset cbController.getDebuggerService().recordProfiler()>
 			<!--- Render DebugPanel --->
-			<cfif Event.getdebugpanelFlag()>
-				<!--- Time the request --->
-				<cfset request.fwExecTime = GetTickCount() - request.fwExecTime>
+			<cfif event.getDebugPanelFlag()>
 				<!--- Render Debug Log --->
 				<cfoutput>#cbController.getInterceptorService().processState("beforeDebuggerPanel")##cbController.getDebuggerService().renderDebugLog()##cbController.getInterceptorService().processState("afterDebuggerPanel")#</cfoutput>
 			</cfif>

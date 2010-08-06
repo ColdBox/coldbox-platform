@@ -17,12 +17,12 @@ Description :
 			super.init();
 		
 			// Prefixes
-			this.VIEW_CACHEKEY_PREFIX 			= "cboxview_view-";
-			this.EVENT_CACHEKEY_PREFIX 			= "cboxevent_event-";
-			this.HANDLER_CACHEKEY_PREFIX 		= "cboxhandler_handler-";
-			this.INTERCEPTOR_CACHEKEY_PREFIX 	= "cboxinterceptor_interceptor-";
-			this.PLUGIN_CACHEKEY_PREFIX 		= "cboxplugin_plugin-";
-			this.CUSTOMPLUGIN_CACHEKEY_PREFIX 	= "cboxplugin_customplugin-";
+			this.VIEW_CACHEKEY_PREFIX 			= "cbox_view-";
+			this.EVENT_CACHEKEY_PREFIX 			= "cbox_event-";
+			this.HANDLER_CACHEKEY_PREFIX 		= "cbox_handler-";
+			this.INTERCEPTOR_CACHEKEY_PREFIX 	= "cbox_interceptor-";
+			this.PLUGIN_CACHEKEY_PREFIX 		= "cbox_plugin-";
+			this.CUSTOMPLUGIN_CACHEKEY_PREFIX 	= "cbox_customplugin-";
 			
 			// URL Facade Utility
 			instance.eventURLFacade		= CreateObject("component","coldbox.system.cache.util.EventURLFacade").init(this);

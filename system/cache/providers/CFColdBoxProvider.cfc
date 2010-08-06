@@ -16,12 +16,12 @@ component serializable="false" extends="coldbox.system.cache.providers.CFProvide
 		super.init();
 		
 		// Prefixes
-		this.VIEW_CACHEKEY_PREFIX 			= "cboxview_view-";
-		this.EVENT_CACHEKEY_PREFIX 			= "cboxevent_event-";
-		this.HANDLER_CACHEKEY_PREFIX 		= "cboxhandler_handler-";
-		this.INTERCEPTOR_CACHEKEY_PREFIX 	= "cboxinterceptor_interceptor-";
-		this.PLUGIN_CACHEKEY_PREFIX 		= "cboxplugin_plugin-";
-		this.CUSTOMPLUGIN_CACHEKEY_PREFIX 	= "cboxplugin_customplugin-";
+		this.VIEW_CACHEKEY_PREFIX 			= "cf_view-";
+		this.EVENT_CACHEKEY_PREFIX 			= "cf_event-";
+		this.HANDLER_CACHEKEY_PREFIX 		= "cf_handler-";
+		this.INTERCEPTOR_CACHEKEY_PREFIX 	= "cf_interceptor-";
+		this.PLUGIN_CACHEKEY_PREFIX 		= "cf_plugin-";
+		this.CUSTOMPLUGIN_CACHEKEY_PREFIX 	= "cf_customplugin-";
 		
 		
 		// URL Facade Utility

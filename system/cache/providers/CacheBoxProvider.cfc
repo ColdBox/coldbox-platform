@@ -669,6 +669,17 @@ Properties
 		</cfscript>
 	</cffunction>
 	
+	<!--- getStoreMetadataKeyMap --->
+	<cffunction name="getStoreMetadataKeyMap" output="false" access="public" returntype="struct" hint="Get a key lookup structure where cachebox can build the report on. Ex: [timeout=timeout,lastAccessTimeout=idleTimeout].  It is a way for the visualizer to construct the columns correctly on the reports">
+		<cfscript>	
+			var keyMap = {
+				timeout = "timeout", hits = "hits", lastAccessTimeout = "lastAccessTimeout",
+				created = "created", lastAccesed = "lastAccesed", isExpire="isExpired"
+			};
+			return keymap;
+		</cfscript>
+	</cffunction>
+	
 	<!--- get Keys --->
 	<cffunction name="getKeys" access="public" returntype="array" output="false" hint="Get a listing of all the keys of the objects in the cache">
 		<cfreturn instance.objectStore.getKeys()>
