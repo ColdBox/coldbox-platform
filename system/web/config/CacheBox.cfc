@@ -46,6 +46,7 @@ Description :
 						objectDefaultLastAccessTimeout = 30,
 						useLastAccessTimeouts = true,
 						reapFrequency = 2,
+						freeMemoryPercentageThreshold = 0,
 						evictionPolicy = "LRU",
 						evictCount = 2,
 						maxObjects = 300,

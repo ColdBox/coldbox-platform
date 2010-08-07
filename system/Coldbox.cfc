@@ -256,9 +256,9 @@ Description :
 						<cfset eventCacheEntry = event.getEventCacheableEntry()>
 						<!--- Cache the content of the event --->
 						<cfset cbController.getColdboxOCM("template").set(eventCacheEntry.cacheKey,
-																renderedContent,
-																eventCacheEntry.timeout,
-																eventCacheEntry.lastAccessTimeout)>
+																		  renderedContent,
+																   		  eventCacheEntry.timeout,
+																		  eventCacheEntry.lastAccessTimeout)>
 					</cfif>
 					
 					<!--- Render Content Type if using Render Data --->
