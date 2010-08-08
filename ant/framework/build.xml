@@ -15,7 +15,7 @@
 	<property name="dir.build" 			value="${dir.exports}/coldbox" />
 	<property name="dir.dashboard"	    value="${dir.userlocation}/sites/cboxdev/core/dashboard" />
 	<property name="dir.samples"		value="${dir.userlocation}/sites/cboxdev/samples/coldbox/samples"/>
-	<property name="dir.wallpapers"		value="${dir.userlocation}/Documents/MyDocs/My Programs/OrtusSolutions/ColdBox/workbench/wallpapers/" />
+	<property name="dir.wallpapers"		value="${dir.userlocation}/Documents/MyDocs/OrtusSolutions/Products/ColdBox/workbench/wallpapers/" />
 	<property name="colddoc.http"		value="http://cf9tools.jfetmac/ColdDoc/coldbox.cfm?version=" />
 	
 	<!-- Build Labels -->
@@ -64,6 +64,8 @@
 	<!--BUild-->
 	<target name="build" description="Build a new coldbox distribution" depends="compilechecks">
       	
+		<mkdir dir="${dir.build}"/>
+		
 		<!-- Copy build ID -->
 		<concat destfile="${dir.build}/${build.label}">Built on ${start.TODAY}</concat>
 		
@@ -95,7 +97,7 @@
 		<!--Copy text files to install folder-->
 		<copy todir="${dir.build}/install">
 			<fileset file="system/web/config/license.txt" />
-			<fileset file="system/config/readme.txt" />						
+			<fileset file="system/web/config/readme.txt" />						
 		</copy>
 		
 		<!--Copy Wallpapers-->
@@ -116,7 +118,7 @@
 		<delete dir="${dir.build}/install" />
 		<copy todir="${dir.build}/install">
 			<fileset file="system/web/config/license.txt" />
-			<fileset file="system/config/readme.txt" />		
+			<fileset file="system/web/config/readme.txt" />		
 		</copy>
 		
 		<!-- Execute ColdDoc -->
