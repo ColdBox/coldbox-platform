@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CacheBox xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:noNamespaceSchemaLocation="http://www.coldbox.org/schema/CacheBoxConfig_1.0.xsd">
+	
+	<!--  The LogBox Configuration File to Use -->
+	<LogBoxConfig>coldbox.system.cache.config.LogBoxConfig</LogBoxConfig>
+	
+	<!-- Scope Registration -->
+	<ScopeRegistration enabled="true" scope="server" key="cachebox" />
+	
+	<!-- The defaultCache has an implicit name "default" which is a reserved cache name
+		 It also has a default provider of cachebox which cannot be changed.
+		 All timeouts are in minutes -->
+	<DefaultConfiguration 
+		objectDefaultTimeout="60"
+		objectDefaultLastAccessTimeout="30"
+		useLastAccessTimeouts="true"
+		reapFrequency="2"
+		freeMemoryPercentageThreshold="0"
+		evictionPolicy="LRU"
+		evictCount="1"
+		maxObjects="100"
+		objectStore="ConcurrentSoftReferenceStore"
+		coldboxEnabled="true" />
+		
+	<!--  Register all the named caches below -->
+	<Cache name="SampleCache1" provider="coldbox.system.cache.providers.CacheBoxProvider">
+		<Properties 
+			objectDefaultTimeout="20"
+			useLastAccessTimeouts="false"
+			reapFrequency="1"
+			evictionPolicy="LFU"
+			evictCount="1"
+			maxObjects="100"
+			objectStore="ConcurrentSoftReferenceStore" />
+	</Cache>
+	<Cache name="sampleCache2" provider="coldbox.system.cache.providers.CacheBoxProvider">
+		<Properties maxObjects="500"
+					evictionPolicy="FIFO" />
+	</Cache>
+	
+	<!--  Register cache listeners 
+	<CacheListeners>
+		<Listener class="test.path.Listner" name="SampleListner">
+			<Property name=""></Property>
+		</Listener>
+	</CacheListeners>
+	-->
+</CacheBox>
