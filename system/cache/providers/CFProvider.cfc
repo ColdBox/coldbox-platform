@@ -325,7 +325,14 @@ component serializable="false" implements="coldbox.system.cache.ICacheProvider"{
     * clear all elements from cache
     */
     void function clearAll() output=false{
-		getObjectStore().removeAll();
+		var iData = {
+			cache	= this
+		};
+		
+		getObjectStore().removeAll();	
+		
+		// notify listeners		
+		getEventManager().processState("afterCacheClearAll",iData);
 	}
 	
 	/**

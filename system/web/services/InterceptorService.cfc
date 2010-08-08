@@ -21,6 +21,7 @@ Description :
 			setController(arguments.controller);
 			
 			// Register the interception points ENUM 
+			// REMOVE Cache Related Items by 3.1
 			instance.interceptionPoints = "afterConfigurationLoad,afterAspectsLoad,onException,preReinit," &
 										  "afterHandlerCreation,afterModelCreation,afterPluginCreation," &
 										  "applicationEnd,sessionStart,sessionEnd," &

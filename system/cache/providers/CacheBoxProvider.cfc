@@ -159,7 +159,6 @@ Properties
 	<cffunction name="lookup" access="public" output="false" returntype="boolean" hint="Check if an object is in cache, if not found it records a miss.">
 		<cfargument name="objectKey" type="any" required="true" hint="The key of the object to lookup.">
 		<cfscript>
-			
 			if( lookupQuiet(arguments.objectKey) ){
 				// record a hit
 				getStats().hit();
@@ -177,8 +176,6 @@ Properties
 	<cffunction name="lookupQuiet" access="public" output="false" returntype="boolean" hint="Check if an object is in cache quietly, advising nobody!">
 		<cfargument name="objectKey" type="any" required="true" hint="The key of the object to lookup.">
 		<cfscript>
-			statusCheck();
-			
 			// cleanup the key
 			arguments.objectKey = lcase(arguments.objectKey);
 			
@@ -331,9 +328,26 @@ Properties
 		<!--- ************************************************************* --->
 		<cfscript>
 			var iData = "";
-		
+			// Check if updating or not
+			var refLocal = {
+				oldObject = getQuiet( arguments.objectKey )
+			};
+			
 			// save object
 			setQuiet(arguments.objectKey,arguments.object,arguments.timeout,arguments.lastAccessTimeout);
+			
+			// Announce update if it exists?
+			if( structKeyExists(refLocal,"oldObject") ){
+				// interception Data
+				iData = {
+					cache = this,
+					cacheNewObject = arguments.object,
+					cacheOldObject = refLocal.oldObject
+				};
+				
+				// announce it
+				getEventManager().processState("afterCacheElementUpdated", iData);
+			}
 			
 			// interception Data
 			iData = {
@@ -343,6 +357,7 @@ Properties
 				cacheObjectTimeout = arguments.timeout,
 				cacheObjectLastAccessTimeout = arguments.lastAccessTimeout
 			};
+			
 			// announce it
 			getEventManager().processState("afterCacheElementInsert", iData);
 			
