@@ -1,4 +1,4 @@
-<cfcomponent name="BeanConfig" extends="coldbox.system.extras.lightwire.BaseConfigObject" hint="A LightWire configuration bean.">
+<cfcomponent name="BeanConfig" extends="coldbox.system.ioc.lightwire.BaseConfigObject" hint="A LightWire configuration bean.">
 <!--- 
 BEAN DEFINITION SYNTAX
 SINGLETONS:

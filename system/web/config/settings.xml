@@ -31,7 +31,7 @@
 		
 		<!--IOC Framework Locations -->
         <Setting name="ColdspringBeanFactory" value="coldspring.beans.DefaultXmlBeanFactory"/>
-		<Setting name="LightWireBeanFactory" value="coldbox.system.extras.lightwire.LightWire"/>
+		<Setting name="LightWireBeanFactory" value="coldbox.system.ioc.lightwire.LightWire"/>
 		
         <!-- Default Cache Settings -->
 		<Setting name="CacheObjectDefaultTimeout" value="60"/>

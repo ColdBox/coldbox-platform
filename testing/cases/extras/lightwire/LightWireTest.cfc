@@ -6,7 +6,7 @@
 	<cffunction name="setUp" returntype="void" access="public">
 		<cfscript>
 			beanConfig = createObject("component","coldbox.testing.tests.cases.extras.lightwire.BeanConfig").init();		
-			beanFactory = createObject("component","coldbox.system.extras.lightwire.LightWire").init(beanConfig);
+			beanFactory = createObject("component","coldbox.system.ioc.lightwire.LightWire").init(beanConfig);
 		</cfscript>
 	</cffunction>
 
@@ -55,7 +55,7 @@
 			props.mapping = "coldbox.testing.testmodel";
 			
 			config = createObject("component","coldbox.testing.tests.cases.extras.lightwire.xmlBeanConfig").init(this.xmlSingle,props);		
-			factory = createObject("component","coldbox.system.extras.lightwire.LightWire").init(config);
+			factory = createObject("component","coldbox.system.ioc.lightwire.LightWire").init(config);
 			
 			testSet(factory);
 			
@@ -76,12 +76,12 @@
 			
 			/* Parent Factory */
 			parentconfig = createObject("component","coldbox.testing.tests.cases.extras.lightwire.xmlBeanConfig").init(this.xmlParent,props);		
-			parentFactory = createObject("component","coldbox.system.extras.lightwire.LightWire").init(parentconfig);
+			parentFactory = createObject("component","coldbox.system.ioc.lightwire.LightWire").init(parentconfig);
 			AssertTrue( parentFactory.containsBean('formBean') );
 			
 			/* Main Factory */
 			config = createObject("component","coldbox.testing.tests.cases.extras.lightwire.xmlBeanConfig").init(this.xmlSingle,props);		
-			factory = createObject("component","coldbox.system.extras.lightwire.LightWire").init(configBean=config,parentFactory=parentFactory);
+			factory = createObject("component","coldbox.system.ioc.lightwire.LightWire").init(configBean=config,parentFactory=parentFactory);
 			
 			/* TestSet */
 			testSet(factory);

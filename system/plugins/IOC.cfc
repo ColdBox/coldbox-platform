@@ -277,7 +277,7 @@ Modification History:
 			}
 			else{
 				/* Create base ColdBox config Bean */
-				lightwireBeanConfig = CreateObject("component", "coldbox.system.extras.lightwire.BaseConfigObject").init();	
+				lightwireBeanConfig = CreateObject("component", "coldbox.system.ioc.lightwire.BaseConfigObject").init();	
 				/* validate definiton file */
 				validateDefinitionFile();
 				/* Copy the settings Structure */

@@ -25,7 +25,7 @@
 			/* Hierarchy Factory */
 			variables.parentFactory = arguments.parentFactory;
 			/* Utility Object */
-			variables.oUtil = createObject("component","coldbox.system.extras.lightwire.util.Utility");
+			variables.oUtil = createObject("component","coldbox.system.ioc.lightwire.util.Utility");
 			
 			/* Are we lazy loading? */
 			if (NOT ConfigBean.getLazyLoad()){
@@ -479,7 +479,7 @@
 	</cffunction>
 	
 	<!--- getUtil --->
-	<cffunction name="getUtil" output="false" access="private" returntype="any" hint="Get the LightWire utility object: coldbox.system.extras.lightwire.util.Utility">
+	<cffunction name="getUtil" output="false" access="private" returntype="any" hint="Get the LightWire utility object: coldbox.system.ioc.lightwire.util.Utility">
 		<cfreturn variables.oUtil>
 	</cffunction>
 
