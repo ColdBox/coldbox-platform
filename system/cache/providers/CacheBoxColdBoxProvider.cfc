@@ -138,26 +138,26 @@ Description :
 	<cffunction name="clearEvent" access="public" output="false" returntype="void" hint="Clears all the event permutations from the cache according to snippet and querystring. Be careful when using incomplete event name with query strings as partial event names are not guaranteed to match with query string permutations">
 		<cfargument name="eventsnippet" type="string" 	required="true"  hint="The event snippet to clear on. Can be partial or full">
 		<cfargument name="queryString" 	type="string" 	required="false" default="" hint="If passed in, it will create a unique hash out of it. For purging purposes"/>
-		<cfset elementCleaner.clearEvent(arguments.eventsnippet,arguments.queryString)>
+		<cfset instance.elementCleaner.clearEvent(arguments.eventsnippet,arguments.queryString)>
 	</cffunction>
 	
 	<!--- Clear an event Multi --->
 	<cffunction name="clearEventMulti" access="public" output="false" returntype="void" hint="Clears all the event permutations from the cache according to the list of snippets and querystrings. Be careful when using incomplete event name with query strings as partial event names are not guaranteed to match with query string permutations">
 		<cfargument name="eventsnippets"    type="any"   	required="true"  hint="The comma-delimmitted list event snippet to clear on. Can be partial or full">
 		<cfargument name="queryString"      type="string"   required="false" default="" hint="The comma-delimmitted list of queryStrings passed in. If passed in, it will create a unique hash out of it. For purging purposes.  If passed in the list length must be equal to the list length of the event snippets passed in."/>
-    	<cfset elementCleaner.clearEventMulti(arguments.eventsnippets,arguments.queryString)>
+    	<cfset instance.elementCleaner.clearEventMulti(arguments.eventsnippets,arguments.queryString)>
 	</cffunction>
 	
 	<!--- clearView --->
 	<cffunction name="clearView" output="false" access="public" returntype="void" hint="Clears all view name permutations from the cache according to the view name.">
 		<cfargument name="viewSnippet"  required="true" type="string" hint="The view name snippet to purge from the cache">
-		<cfset elementCleaner.clearView(arguments.viewSnippet)>
+		<cfset instance.elementCleaner.clearView(arguments.viewSnippet)>
 	</cffunction>
 	
 	<!--- clearViewMulti --->
 	<cffunction name="clearViewMulti" output="false" access="public" returntype="void" hint="Clears all view name permutations from the cache according to the view name.">
 		<cfargument name="viewSnippets"    type="any"   required="true"  hint="The comma-delimmitted list or array of view snippet to clear on. Can be partial or full">
-		<cfset elementCleaner.clearViewMulti(arguments.viewSnippets)>
+		<cfset instance.elementCleaner.clearViewMulti(arguments.viewSnippets)>
 	</cffunction>
 
 	<!--- Clear All The Views from the Cache. --->

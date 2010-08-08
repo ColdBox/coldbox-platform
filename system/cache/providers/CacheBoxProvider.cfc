@@ -441,7 +441,7 @@ Properties
 	<!--- Clear By Key Snippet --->
 	<cffunction name="clearByKeySnippet" access="public" returntype="void" hint="Clears keys using the passed in object key snippet" output="false" >
 		<cfargument name="keySnippet"  	type="string" required="true"  hint="the cache key snippet to use">
-		<cfargument name="regex" 		type="boolean" hint="Use regex or not">
+		<cfargument name="regex" 		type="boolean" default="false" hint="Use regex or not">
 		<cfargument name="async" 		type="boolean" default="false" hint="Run command asynchronously or not"/>
 		
 		<cfset var threadName = "clearByKeySnippet_#replace(instance.uuidHelper.randomUUID(),"-","","all")#">
