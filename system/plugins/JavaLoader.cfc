@@ -76,7 +76,7 @@ Luis Majano		07/11/2006		Updated it to work with ColdBox. look at license in the
 				<cflock name="#getStaticIDKey()#" throwontimeout="true" timeout="30" type="exclusive">
 					<cfif ( not isJavaLoaderInScope() )>
 						<!--- Place java loader in scope, create it. --->
-						<cfset setJavaLoaderInScope( CreateObject("component","coldbox.system.extras.javaloader.JavaLoader").init(argumentCollection=arguments) )>
+						<cfset setJavaLoaderInScope( CreateObject("component","coldbox.system.core.javaloader.JavaLoader").init(argumentCollection=arguments) )>
 					</cfif>
 				</cflock>
 			<cfelse>
@@ -192,7 +192,7 @@ Luis Majano		07/11/2006		Updated it to work with ColdBox. look at license in the
 	<!--- setJavaLoaderInScope --->
 	<cffunction name="setJavaLoaderInScope" output="false" access="private" returntype="any" hint="Set the javaloader in server scope">
 		<!--- ************************************************************* --->
-		<cfargument name="javaloader" required="true" type="coldbox.system.extras.javaloader.javaLoader" hint="The javaloader instance to scope">
+		<cfargument name="javaloader" required="true" type="coldbox.system.core.javaloader.javaLoader" hint="The javaloader instance to scope">
 		<!--- ************************************************************* --->
 		<cfscript>
 			structInsert(server, getstaticIDKey(), arguments.javaloader);
