@@ -24,7 +24,7 @@
 	<function creator="8" name="getproperties" returns="struct">
 			<help><![CDATA[ Get properties (Context: Interceptor) ]]></help>
 		</function>
-	<function creator="8" name="getInterceptorService" returns="coldbox.system.services.interceptorService">
+	<function creator="8" name="getInterceptorService" returns="coldbox.system.web.services.interceptorService">
 			<help><![CDATA[  (Context: Interceptor) ]]></help>
 		</function>
 	<function creator="8" name="Configure" returns="void">
@@ -914,7 +914,7 @@
 			<help><![CDATA[Set the coldbox controller logger]]></help>
 		</scope>
 	<scope value="controller.getExceptionService()">
-			<help><![CDATA[Get ExceptionService: coldbox.system.services.ExceptionService]]></help>
+			<help><![CDATA[Get ExceptionService: coldbox.system.web.services.ExceptionService]]></help>
 		</scope>
 	<scope value="controller.setHandlerService(HandlerService)">
 			<help><![CDATA[Set HandlerService]]></help>
@@ -929,7 +929,7 @@
 			<help><![CDATA[Get the application's LogBox instance]]></help>
 		</scope>
 	<scope value="controller.getInterceptorService()">
-			<help><![CDATA[Get interceptorService: coldbox.system.services.InterceptorService]]></help>
+			<help><![CDATA[Get interceptorService: coldbox.system.web.services.InterceptorService]]></help>
 		</scope>
 	<scope value="controller.setConfigSettings(ConfigSettings)">
 			<help><![CDATA[Set ConfigSettings]]></help>
@@ -953,7 +953,7 @@
 			<help><![CDATA[Set the logBox instance]]></help>
 		</scope>
 	<scope value="controller.getDebuggerService()">
-			<help><![CDATA[Get DebuggerService: coldbox.system.services.DebuggerService]]></help>
+			<help><![CDATA[Get DebuggerService: coldbox.system.web.services.DebuggerService]]></help>
 		</scope>
 	<scope value="controller.getColdboxSettings()">
 			<help><![CDATA[I retrieve the ColdBox Settings Structure by Reference]]></help>
@@ -965,7 +965,7 @@
 			<help><![CDATA[Get all the registered services]]></help>
 		</scope>
 	<scope value="controller.getPluginService()">
-			<help><![CDATA[Get PluginService: coldbox.system.services.PluginService]]></help>
+			<help><![CDATA[Get PluginService: coldbox.system.web.services.PluginService]]></help>
 		</scope>
 	<scope value="controller.settingExists([name],[FWSetting])">
 			<help><![CDATA[I Check if a value exists in the configstruct or the fwsettingsStruct.]]></help>
@@ -983,10 +983,10 @@
 			<help><![CDATA[Compatability & Utility Method. By default I retrieve the Config Settings. You can change this by using the FWSetting flag.]]></help>
 		</scope>
 	<scope value="controller.getRequestService()">
-			<help><![CDATA[Get RequestService: coldbox.system.services.RequestService]]></help>
+			<help><![CDATA[Get RequestService: coldbox.system.web.services.RequestService]]></help>
 		</scope>
 	<scope value="controller.getLoaderService()">
-			<help><![CDATA[Get LoaderService: coldbox.system.services.LoaderService]]></help>
+			<help><![CDATA[Get LoaderService: coldbox.system.web.services.LoaderService]]></help>
 		</scope>
 	<scope value="controller.setNextRoute(route,[persist],[persistStruct],[addToken],[ssl],[queryString],[postProcessExempt])">
 			<help><![CDATA[I Set the next ses route to relocate to. This method pre-pends the baseURL]]></help>
@@ -1004,7 +1004,7 @@
 			<help><![CDATA[Set DebuggerService]]></help>
 		</scope>
 	<scope value="controller.getHandlerService()">
-			<help><![CDATA[Get HandlerService: coldbox.system.services.HandlerService]]></help>
+			<help><![CDATA[Get HandlerService: coldbox.system.web.services.HandlerService]]></help>
 		</scope>
 	<scope value="controller.getAppStartHandlerFired()">
 			<help><![CDATA[Get AppStartHandlerFired]]></help>
@@ -1052,7 +1052,7 @@
 			<help><![CDATA[Set PluginService]]></help>
 		</scope>
 	<scope value="controller.getModuleService()">
-			<help><![CDATA[Get ModuleService: coldbox.system.services.ModuleService]]></help>
+			<help><![CDATA[Get ModuleService: coldbox.system.web.services.ModuleService]]></help>
 		</scope>
 
 	</scopes>

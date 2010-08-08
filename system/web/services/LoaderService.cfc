@@ -12,7 +12,7 @@ Description :
 Modification History:
 01/18/2007 - Created
 ----------------------------------------------------------------------->
-<cfcomponent name="LoaderService" output="false" hint="The application and framework loader service" extends="coldbox.system.services.BaseService">
+<cfcomponent name="LoaderService" output="false" hint="The application and framework loader service" extends="coldbox.system.web.services.BaseService">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 

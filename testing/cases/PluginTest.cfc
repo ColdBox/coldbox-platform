@@ -3,7 +3,7 @@
 	function setup(){
 		plugin 			= getMockBox().createMock("coldbox.system.Plugin");
 		mockController  = getMockBox().createMock(className="coldbox.system.web.Controller");
-		mockRS 			= getMockBox().createMock(className="coldbox.system.services.RequestService");
+		mockRS 			= getMockBox().createMock(className="coldbox.system.web.services.RequestService");
 		flashScope 		= getMockBox().createMock(className="coldbox.system.web.flash.MockFlash");
 		mockLogBox 		= getMockBox().createMock(className="coldbox.system.logging.LogBox");
 		mockLogger 		= getMockBox().createMock(className="coldbox.system.logging.Logger");

@@ -9,7 +9,7 @@ Date        :	10/10/2007
 Description :
 	This is the main ColdBox handler service.
 ----------------------------------------------------------------------->
-<cfcomponent extends="coldbox.system.services.BaseService" hint="This is the main Coldbox Handler service" output="false">
+<cfcomponent extends="coldbox.system.web.services.BaseService" hint="This is the main Coldbox Handler service" output="false">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 

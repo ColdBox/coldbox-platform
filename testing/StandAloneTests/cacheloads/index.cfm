@@ -3,7 +3,7 @@
 	if( structKeyExistS(url,"reinit") or NOT structKeyExists(application,"cachemanager") ){
 		mockBox = createObject("component","coldbox.system.testing.MockBox").init();
 		mockController = mockBox.createMock(classname="coldbox.system.web.Controller",clearMethods=true);
-		mockService = mockBox.createMock(classname="coldbox.system.services.InterceptorService",clearMethods=true);
+		mockService = mockBox.createMock(classname="coldbox.system.web.services.InterceptorService",clearMethods=true);
 		mockController.$("getInterceptorService",mockService);
 		mockService.$("processState");
 		

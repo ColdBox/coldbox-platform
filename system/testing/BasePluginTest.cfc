@@ -30,7 +30,7 @@ Description :
 			
 			// Create Mock Objects
 			variables.mockController = mockBox.createEmptyMock("coldbox.system.testing.mock.web.MockController");
-			variables.mockRequestService = mockBox.createEmptyMock("coldbox.system.services.RequestService");
+			variables.mockRequestService = mockBox.createEmptyMock("coldbox.system.web.services.RequestService");
 			variables.mockLogBox	 = mockBox.createEmptyMock("coldbox.system.logging.LogBox");
 			variables.mockLogger	 = mockBox.createEmptyMock("coldbox.system.logging.Logger");
 			variables.mockFlash		 = mockBox.createMock("coldbox.system.web.flash.MockFlash").init(mockController);

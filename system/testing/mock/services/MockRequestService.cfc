@@ -10,7 +10,7 @@ Description :
 
 This is a mock request service object
 ----------------------------------------------------------------------->
-<cfcomponent output="false" hint="This is a mock request service object" extends="coldbox.system.services.RequestService">
+<cfcomponent output="false" hint="This is a mock request service object" extends="coldbox.system.web.services.RequestService">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 

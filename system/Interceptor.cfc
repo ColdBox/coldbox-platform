@@ -93,7 +93,7 @@ Description :
 	</cffunction>
 
 	<!--- Get the Interceptor Service --->
-	<cffunction name="getInterceptorService" access="public" returntype="coldbox.system.services.interceptorService" output="false">
+	<cffunction name="getInterceptorService" access="public" returntype="coldbox.system.web.services.interceptorService" output="false">
 		<cfreturn variables.controller.getInterceptorService()>
 	</cffunction>
 	

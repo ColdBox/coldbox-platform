@@ -2,9 +2,9 @@
 <cfscript>
 	function setup(){
 		interceptor 	= getMockBox().createMock(className="coldbox.system.Interceptor");
-		mockIService 	= getMockBox().createMock(className="coldbox.system.services.InterceptorService",clearMethods=true);
+		mockIService 	= getMockBox().createMock(className="coldbox.system.web.services.InterceptorService",clearMethods=true);
 		mockController  = getMockBox().createMock(className="coldbox.system.web.Controller");
-		mockRS 			= getMockBox().createMock(className="coldbox.system.services.RequestService");
+		mockRS 			= getMockBox().createMock(className="coldbox.system.web.services.RequestService");
 		flashScope 		= getMockBox().createMock(className="coldbox.system.web.flash.MockFlash");
 		mockLogBox 		= getMockBox().createMock(className="coldbox.system.logging.LogBox");
 		mockLogger 		= getMockBox().createMock(className="coldbox.system.logging.Logger");

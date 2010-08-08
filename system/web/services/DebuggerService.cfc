@@ -10,7 +10,7 @@ Description :
  This is the service that powers the ColdBox Debugger.
 
 ----------------------------------------------------------------------->
-<cfcomponent output="false" hint="This is the service that powers the ColdBox Debugger." extends="coldbox.system.services.BaseService">
+<cfcomponent output="false" hint="This is the service that powers the ColdBox Debugger." extends="coldbox.system.web.services.BaseService">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 

@@ -20,8 +20,8 @@ Description:
 	<cffunction name="init" access="public" returntype="AntiSamy" output="false">
 		<cfargument name="controller" type="any" required="true">
 		<cfscript>
-			var AntiSamyJarPath = ArrayNew(1);
-			var javaLoader = "";
+			var javaLoader 	= "";
+			var libPath 	= "/coldbox/system/plugins/AntiSamy-lib";
 			
 			super.init(arguments.controller);
 			
@@ -33,19 +33,19 @@ Description:
 			setpluginAuthorURL("http://www.coldbox.org");
 			
 			// Create Policy Structure			
-			instance.PolicyFileStruct = StructNew();
+			instance.policyFileStruct = StructNew();
 			
 			// Load jar files.
-			getPlugin("JavaLoader").appendPaths(expandPath("/coldbox/system/extras/AntiSamy"));
+			getPlugin("JavaLoader").appendPaths(expandPath("#libPath#"));
 			
 			// AntiSamy policyfile
-			instance.PolicyFileStruct['antisamy'] = expandPath('/coldbox/system/extras/AntiSamy/antisamy-1.3.xml');
+			instance.PolicyFileStruct['antisamy'] = expandPath('#libPath#/antisamy-1.3.xml');
 			//Load eBay policyfile
-			instance.PolicyFileStruct['ebay']	  = expandPath('/coldbox/system/extras/AntiSamy/antisamy-ebay-1.3.xml');
+			instance.PolicyFileStruct['ebay']	  = expandPath('#libPath#/antisamy-ebay-1.3.xml');
 			//Load myspace policyfile
-			instance.PolicyFileStruct['myspace']  = expandPath('/coldbox/system/extras/AntiSamy/antisamy-myspace-1.3.xml');
+			instance.PolicyFileStruct['myspace']  = expandPath('#libPath#/antisamy-myspace-1.3.xml');
 			//Load slashdot policyfile
-			instance.PolicyFileStruct['slashdot'] = expandPath('/coldbox/system/extras/AntiSamy/antisamy-slashdot-1.3.xml');
+			instance.PolicyFileStruct['slashdot'] = expandPath('#libPath#/antisamy-slashdot-1.3.xml');
 			
 			return this;
 		</cfscript>

@@ -43,16 +43,16 @@ Only one instance of a specific ColdBox application exists.
 			settingsLoader.loadSettings(this);
 
 			// Setup the ColdBox Services
-			setLoaderService( CreateObject("component", "coldbox.system.services.LoaderService").init(this) );
-			setRequestService( CreateObject("component","coldbox.system.services.RequestService").init(this) );
-			setDebuggerService( CreateObject("component","coldbox.system.services.DebuggerService").init(this) );
-			setHandlerService( CreateObject("component", "coldbox.system.services.HandlerService").init(this) );
-			setPluginService( CreateObject("component","coldbox.system.services.PluginService").init(this) );
+			setLoaderService( CreateObject("component", "coldbox.system.web.services.LoaderService").init(this) );
+			setRequestService( CreateObject("component","coldbox.system.web.services.RequestService").init(this) );
+			setDebuggerService( CreateObject("component","coldbox.system.web.services.DebuggerService").init(this) );
+			setHandlerService( CreateObject("component", "coldbox.system.web.services.HandlerService").init(this) );
+			setPluginService( CreateObject("component","coldbox.system.web.services.PluginService").init(this) );
 			// Nasty cf7, once you die this goes out. Modules are cf8 only and above.
 			if ( instance.CFMLEngine.isMT() ){
-				setModuleService( CreateObject("component", "coldbox.system.services.ModuleService").init(this) );
+				setModuleService( CreateObject("component", "coldbox.system.web.services.ModuleService").init(this) );
 			}
-			setInterceptorService( CreateObject("component", "coldbox.system.services.InterceptorService").init(this) );
+			setInterceptorService( CreateObject("component", "coldbox.system.web.services.InterceptorService").init(this) );
 
 			// LogBox Default Configuration & Creation
 			setLogBox(getLoaderService().createDefaultLogBox());
@@ -136,7 +136,7 @@ Only one instance of a specific ColdBox application exists.
 	</cffunction>
 
 	<!--- Loader Service --->
-	<cffunction name="getLoaderService" access="public" output="false" returntype="any" hint="Get LoaderService: coldbox.system.services.LoaderService">
+	<cffunction name="getLoaderService" access="public" output="false" returntype="any" hint="Get LoaderService: coldbox.system.web.services.LoaderService">
 		<cfreturn services.LoaderService/>
 	</cffunction>
 	<cffunction name="setLoaderService" access="public" output="false" returntype="void" hint="Set LoaderService">
@@ -145,7 +145,7 @@ Only one instance of a specific ColdBox application exists.
 	</cffunction>
 
 	<!--- Module Service --->
-	<cffunction name="getModuleService" access="public" returntype="any" output="false" hint="Get ModuleService: coldbox.system.services.ModuleService">
+	<cffunction name="getModuleService" access="public" returntype="any" output="false" hint="Get ModuleService: coldbox.system.web.services.ModuleService">
 		<cfreturn services.ModuleService>
 	</cffunction>
 	<cffunction name="setModuleService" access="public" returntype="void" output="false" hint="Set ModuleService">
@@ -154,12 +154,12 @@ Only one instance of a specific ColdBox application exists.
 	</cffunction>
 
 	<!--- Exception Service --->
-	<cffunction name="getExceptionService" access="public" output="false" returntype="any" hint="Get ExceptionService: coldbox.system.services.ExceptionService">
-		<cfreturn CreateObject("component", "coldbox.system.services.ExceptionService").init(this)/>
+	<cffunction name="getExceptionService" access="public" output="false" returntype="any" hint="Get ExceptionService: coldbox.system.web.services.ExceptionService">
+		<cfreturn CreateObject("component", "coldbox.system.web.services.ExceptionService").init(this)/>
 	</cffunction>
 
 	<!--- Request Service --->
-	<cffunction name="getRequestService" access="public" output="false" returntype="any" hint="Get RequestService: coldbox.system.services.RequestService">
+	<cffunction name="getRequestService" access="public" output="false" returntype="any" hint="Get RequestService: coldbox.system.web.services.RequestService">
 		<cfreturn services.RequestService/>
 	</cffunction>
 	<cffunction name="setRequestService" access="public" output="false" returntype="void" hint="Set RequestService">
@@ -168,7 +168,7 @@ Only one instance of a specific ColdBox application exists.
 	</cffunction>
 
 	<!--- Debugger Service --->
-	<cffunction name="getDebuggerService" access="public" output="false" returntype="any" hint="Get DebuggerService: coldbox.system.services.DebuggerService">
+	<cffunction name="getDebuggerService" access="public" output="false" returntype="any" hint="Get DebuggerService: coldbox.system.web.services.DebuggerService">
 		<cfreturn services.DebuggerService/>
 	</cffunction>
 	<cffunction name="setDebuggerService" access="public" output="false" returntype="void" hint="Set DebuggerService">
@@ -177,7 +177,7 @@ Only one instance of a specific ColdBox application exists.
 	</cffunction>
 
 	<!--- Plugin Service --->
-	<cffunction name="getPluginService" access="public" output="false" returntype="any" hint="Get PluginService: coldbox.system.services.PluginService">
+	<cffunction name="getPluginService" access="public" output="false" returntype="any" hint="Get PluginService: coldbox.system.web.services.PluginService">
 		<cfreturn services.PluginService/>
 	</cffunction>
 	<cffunction name="setPluginService" access="public" output="false" returntype="void" hint="Set PluginService">
@@ -186,7 +186,7 @@ Only one instance of a specific ColdBox application exists.
 	</cffunction>
 
 	<!--- Interceptor Service --->
-	<cffunction name="getInterceptorService" access="public" output="false" returntype="any" hint="Get interceptorService: coldbox.system.services.InterceptorService">
+	<cffunction name="getInterceptorService" access="public" output="false" returntype="any" hint="Get interceptorService: coldbox.system.web.services.InterceptorService">
 		<cfreturn services.interceptorService/>
 	</cffunction>
 	<cffunction name="setInterceptorService" access="public" output="false" returntype="void" hint="Set interceptorService">
@@ -195,7 +195,7 @@ Only one instance of a specific ColdBox application exists.
 	</cffunction>
 
 	<!--- Handler Service --->
-	<cffunction name="getHandlerService" access="public" output="false" returntype="any" hint="Get HandlerService: coldbox.system.services.HandlerService">
+	<cffunction name="getHandlerService" access="public" output="false" returntype="any" hint="Get HandlerService: coldbox.system.web.services.HandlerService">
 		<cfreturn services.HandlerService/>
 	</cffunction>
 	<cffunction name="setHandlerService" access="public" output="false" returntype="void" hint="Set HandlerService">

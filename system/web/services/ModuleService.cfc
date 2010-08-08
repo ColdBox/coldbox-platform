@@ -10,7 +10,7 @@ Description :
 I oversee and manage ColdBox modules
 
 ----------------------------------------------------------------------->
-<cfcomponent output="false" hint="I oversee and manage ColdBox modules" extends="coldbox.system.services.BaseService">
+<cfcomponent output="false" hint="I oversee and manage ColdBox modules" extends="coldbox.system.web.services.BaseService">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
