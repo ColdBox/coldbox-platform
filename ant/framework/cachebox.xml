@@ -1,16 +1,14 @@
 <?xml version="1.0"?>
 <!-- ====================================================================== 
-     Mar 18, 2007 1:30:20 AM                                                        
-
-     MockBox Build                                                                
+     CacheBox Build                                                                
      ====================================================================== -->
-<project name="mockbox.newbuild" default="build" basedir="../../">
+<project name="cachebox.newbuild" default="build" basedir="../../">
 
 	<!--Build Properties-->
 	<property name="dir.userlocation"	value="/Users/lmajano" />
 	<property name="dir.exports"		value="${dir.userlocation}/exports" />
-	<property name="dir.build" 			value="${dir.exports}/mockbox-distro" />
-	<property name="colddoc.http"		value="http://cf9tools.jfetmac/ColdDoc/mockbox.cfm?version=" />
+	<property name="dir.build" 			value="${dir.exports}/cachebox-distro" />
+	<property name="colddoc.http"		value="http://cf9tools.jfetmac/ColdDoc/cachebox.cfm?version=" />
 	
 	<!-- FTP -->
 	<property name="ftp.server"  		value="ftp.coldboxframework.com" />
@@ -18,12 +16,12 @@
 	
 	<!-- Build Labels -->
 	<tstamp prefix="start"/>
-	<property name="build.label" 		value="mockbox-buildID-${start.DSTAMP}${start.TSTAMP}"/>
+	<property name="build.label" 		value="cachebox-buildID-${start.DSTAMP}${start.TSTAMP}"/>
 	
 	<!-- Init -->
 	<target name="init" description="Init">
 		<!-- Version -->
-		<input addproperty="mockbox.version" message="MockBox Version" />
+		<input addproperty="cachebox.version" message="CacheBox Version" />
 	</target>
 	
 	<!-- FTP Upload of new build -->
@@ -33,42 +31,43 @@
       	
 		<ftp action="send" server="${ftp.server}" userid="${ftp.username}" password="${ftp.password}" 
        		remotedir="${ftp.remotedir}" passive="yes" verbose="yes">
-        	<fileset file="${dir.exports}/mockbox_{mockbox.version}.zip" />
+        	<fileset file="${dir.exports}/cachebox_${cachebox.version}.zip" />
        	</ftp>		
 	</target>
 	
 	<!--build-->
-	<target name="build" description="Build a new logbox distribution" depends="init">
+	<target name="build" description="Build a new cachebox distribution" depends="init">
       	<delete dir="${dir.build}" />
 		
 		<!-- Copy build ID -->
 		<concat destfile="${dir.build}/${build.label}">Built on ${start.TODAY}</concat>
 		
-		<!-- Copy src to mockbox namespace -->	
-      	<copy todir="${dir.build}/mockbox/system/testing">
-        	<fileset dir="system/testing" />
+		<!-- Copy src to cachebox namespace-->	
+      	<copy todir="${dir.build}/cachebox/system/cache">
+        	<fileset dir="system/cache" />
         </copy>
-		<copy todir="${dir.build}/mockbox/system/core">
+		<copy todir="${dir.build}/cachebox/system/core">
         	<fileset dir="system/core" />
         </copy>
 		
-		<!-- Copy src to coldbox namespace -->	
-      	<copy todir="${dir.build}/coldbox/system/testing">
-        	<fileset dir="system/testing" />
+		<!-- Copy src to coldbox namespace -->
+		<copy todir="${dir.build}/coldbox/system/cache">
+        	<fileset dir="system/cache" />
         </copy>
 		<copy todir="${dir.build}/coldbox/system/core">
         	<fileset dir="system/core" />
         </copy>
-				
+		
+		<!-- Refactor cachebox namespace -->
 		<echo>Refactoring for coldbox absolute paths</echo>
-		<replace dir="${dir.build}" value="/mockbox/system/" summary="yes">
+		<replace dir="${dir.build}" value="/cachebox/system/" summary="yes">
 		  	<include name="**/*.cfc" />
 			<include name="**/*.cfm" />
 			<include name="**/*.xml" />
 			<replacetoken>/coldbox/system/</replacetoken>
 		</replace>
 		<echo>Refactoring for coldbox instantitation and cfc paths</echo>
-		<replace dir="${dir.build}" value="mockbox.system." summary="yes">
+		<replace dir="${dir.build}" value="cachebox.system." summary="yes">
 		  	<include name="**/*.cfc" />
 			<include name="**/*.cfm" />
 			<include name="**/*.xml" />
@@ -78,15 +77,15 @@
 		<!--Copy text files to root folder-->
 		<copy todir="${dir.build}/">
 			<fileset file="system/web/config/license.txt" />
-			<fileset file="system/testing/readme.txt" />						
+			<fileset file="system/logging/readme.txt" />						
 		</copy>
 		
 		<!-- Execute ColdDoc -->
-		<get dest="${dir.build}/colddoc.html" src="${colddoc.http}${mockbox.version}" verbose="true"/>
+		<get dest="${dir.build}/colddoc.html" src="${colddoc.http}${cachebox.version}" verbose="true"/>
 		<delete file="${dir.build}/colddoc.html" />
-				
+		
 		<!-- Zip Bundle -->
-		<zip destfile="${dir.exports}/mockbox_${mockbox.version}.zip" basedir="${dir.build}"></zip>
+		<zip destfile="${dir.exports}/cachebox_${cachebox.version}.zip" basedir="${dir.build}"></zip>
 		
     </target>
 </project>

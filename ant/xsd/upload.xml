@@ -17,7 +17,7 @@
 	<property name="ftp.server" value="www.coldbox.org" />
 	<!-- directory in server to move files to (root relative) -->
 	<property name="ftp.remotedir" value="/httpdocs/schema" />
-	<property name="config.file" value="${basedir}/system/config/config.xsd" />
+	<property name="config.file" value="${basedir}/system/web/config/config.xsd" />
 	<property name="copy.dir" value="${basedir}/ant/xsd"/>
 
 	<target name="ftp.about">

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
- xsi:noNamespaceSchemaLocation="../system/config/config.xsd">
+ xsi:noNamespaceSchemaLocation="../system/web/config/config.xsd">
 	<Settings>
 		<Setting name="AppName" 					value="ColdBox TestHarness"/>
 		<Setting name="AppMapping"					value="/coldbox/testharness" />

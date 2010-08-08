@@ -81,8 +81,8 @@
         </copy>	
 		<!--Copy text files to install folder-->
 		<copy todir="${build.dir}/coldbox/install">
-			<fileset file="${src.dir}/system/config/license.txt" />
-			<fileset file="${src.dir}/system/config/readme.txt" />						
+			<fileset file="${src.dir}/system/web/config/license.txt" />
+			<fileset file="${src.dir}/system/web/config/readme.txt" />						
 		</copy>		
 		
 		<!-- CFBuilder extensions -->

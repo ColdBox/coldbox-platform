@@ -94,7 +94,7 @@
 		
 		<!--Copy text files to install folder-->
 		<copy todir="${dir.build}/install">
-			<fileset file="system/config/license.txt" />
+			<fileset file="system/web/config/license.txt" />
 			<fileset file="system/config/readme.txt" />						
 		</copy>
 		
@@ -115,7 +115,7 @@
 		<!-- Cleanup for StandAlone Build -->
 		<delete dir="${dir.build}/install" />
 		<copy todir="${dir.build}/install">
-			<fileset file="system/config/license.txt" />
+			<fileset file="system/web/config/license.txt" />
 			<fileset file="system/config/readme.txt" />		
 		</copy>
 		
