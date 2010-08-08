@@ -219,6 +219,7 @@ Modification History:
     	<cfscript>
     		var key 	 = "";
 			var services = controller.getServices();
+			var cacheBox = controller.getCacheBox();
 			
     		// Process services reinit
 			for(key in services){
@@ -226,7 +227,9 @@ Modification History:
 			}
 			
 			// Shutdown any services like cache engine, etc.
-			// TODO
+			if( isObject(cacheBox) ){
+				cacheBox.shutdown();
+			}
 		</cfscript>
     </cffunction>
 	
@@ -241,6 +244,9 @@ Modification History:
 		var configFileLocations = coldboxSettings.configConvention;
 		var x = 1;
 		
+		// OVerriding Marker
+		coldboxSettings["ConfigFileLocationOverride"] = false;
+		
 		// Loop over conventions and load found config file
 		for(x=1; x lte listLen(configFileLocations); x=x+1){
 			// Verify File Exists
@@ -251,7 +257,8 @@ Modification History:
 		
 		// Overriding the config file location? Maybe unit testing?
 		if( len(arguments.overrideConfigFile) ){
-			coldboxSettings["ConfigFileLocation"] = getUtil().getAbsolutePath(arguments.overrideConfigFile);
+			coldboxSettings["ConfigFileLocation"] 			= getUtil().getAbsolutePath(arguments.overrideConfigFile);
+			coldboxSettings["ConfigFileLocationOverride"] 	= true;
 		}
 		
 		// If no config file location throw exception

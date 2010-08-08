@@ -117,6 +117,7 @@ function configure(){
 	//Conventions
 	conventions = {
 		handlersLocation = "monitor/handlers",
+		pluginsLocation = "monitor/plugins",
 		viewsLocation 	 = "monitor/views",
 		layoutsLocation  = "monitor/layouts",
 		modulesLocation	 = "monitor/modules"
@@ -144,11 +145,6 @@ function configure(){
 		 //Autowire
 		 {class="coldbox.system.interceptors.Autowire"}
 	];
-	
-	//LogBox
-	logBoxConfig.appender(name="coldboxTracer",class="coldbox.system.logging.appenders.ColdboxTracerAppender");
-	logBoxConfig.root(levelMax=logBoxConfig.logLevels.INFO,appenders="*");
-	logBoxConfig.info("coldbox.system");
 	
 }
 	

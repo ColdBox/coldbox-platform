@@ -15,6 +15,7 @@ Description :
 ----------------------------------------------------------------------->
 <cfcomponent extends="coldbox.system.Coldbox" output="false">
 	<cfsetting enablecfoutputonly="yes">
+	
 	<!--- APPLICATION CFC PROPERTIES --->
 	<cfset this.name = hash(getCurrentTemplatePath())> 
 	<cfset this.sessionManagement = true>
@@ -24,7 +25,8 @@ Description :
 	<!--- COLDBOX STATIC PROPERTY, DO NOT CHANGE UNLESS THIS IS NOT THE ROOT OF YOUR COLDBOX APP --->
 	<cfset COLDBOX_APP_ROOT_PATH = getDirectoryFromPath(getCurrentTemplatePath())>
 	<!--- The web server mapping to this application. Used for remote purposes or static purposes --->
-	<cfset COLDBOX_APP_MAPPING   = "">
+	<!--- THIS IS SUPER IMPORTANT AND MANDATORY FOR FLEX/AIR APPS --->
+	<cfset COLDBOX_APP_MAPPING   = "/coldbox/ApplicationTemplates/FlexAirRemote">
 	<!--- COLDBOX PROPERTIES --->
 	<cfset COLDBOX_CONFIG_FILE   = "">	
 	<!--- COLDBOX APPLICATION KEY OVERRIDE --->
