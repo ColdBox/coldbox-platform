@@ -198,7 +198,7 @@ Description :
 		</cfif>
 		
 		<!--- Render debuglog --->
-		<cfsavecontent variable="renderedDebugging"><cfinclude template="../includes/Debug.cfm"></cfsavecontent>
+		<cfsavecontent variable="renderedDebugging"><cfinclude template="/coldbox/system/includes/Debug.cfm"></cfsavecontent>
 		
 		<cfreturn renderedDebugging>
 	</cffunction>
