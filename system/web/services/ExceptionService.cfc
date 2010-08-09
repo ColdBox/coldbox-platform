@@ -79,12 +79,12 @@ Modification History:
 				<cfcatch type="any">
 					<cfset Exception = ExceptionHandler(cfcatch,"Application","Error creating custom error template.")>
 					<!--- Save the Bug Report --->
-					<cfsavecontent variable="cboxBugReport"><cfinclude template="../includes/BugReport.cfm"></cfsavecontent>
+					<cfsavecontent variable="cboxBugReport"><cfinclude template="/coldbox/system/includes/BugReport.cfm"></cfsavecontent>
 				</cfcatch>
 			</cftry>
 		<cfelse>
 			<!--- Save the Bug Report --->
-			<cfsavecontent variable="cboxBugReport"><cfinclude template="../includes/BugReport.cfm"></cfsavecontent>
+			<cfsavecontent variable="cboxBugReport"><cfinclude template="/coldbox/system/includes/BugReport.cfm"></cfsavecontent>
 		</cfif>
 		<cfreturn cboxBugReport>
 	</cffunction>
@@ -107,12 +107,12 @@ Modification History:
 				<cfcatch type="any">
 					<cfset Exception = ExceptionHandler(cfcatch,"Application","Error creating custom email bug report.")>
 					<!--- Save the Bug Report --->
-					<cfsavecontent variable="cboxBugReport"><cfinclude template="../includes/BugReport.cfm"></cfsavecontent>
+					<cfsavecontent variable="cboxBugReport"><cfinclude template="/coldbox/system/includes/BugReport.cfm"></cfsavecontent>
 				</cfcatch>
 			</cftry>
 		<cfelse>
 			<!--- Render the Default Email Bug Report --->
-			<cfsavecontent variable="cboxBugReport"><cfinclude template="../includes/BugReport.cfm"></cfsavecontent>
+			<cfsavecontent variable="cboxBugReport"><cfinclude template="/coldbox/system/includes/BugReport.cfm"></cfsavecontent>
 		</cfif>
 		<cfreturn cboxBugReport>		
 	</cffunction>
