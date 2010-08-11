@@ -536,7 +536,7 @@ Properties
 	</cffunction>
 	
 	<!--- _reap --->
-	<cffunction name="_reap" access="private" output="false" returntype="void" hint="Reap the cache, clear out everything that is dead.">
+	<cffunction name="_reap" access="public" output="false" returntype="void" hint="Reap the cache, clear out everything that is dead.">
 		<cfscript>
 			var keyIndex 		= 1;
 			var cacheKeys 		= "";
@@ -595,7 +595,7 @@ Properties
 					
 					//Check for last accessed timeouts. If object has not been accessed in the default span
 					if ( config.useLastAccessTimeouts AND 
-					     dateDiff("n", thisMD.lastAccessed, now() ) gte thisMD.LastAccessTimeout ){
+					     dateDiff("n", thisMD.lastAccesed, now() ) gte thisMD.LastAccessTimeout ){
 						
 						// Clear the object from cache
 						if( clear( thisKey ) ){
