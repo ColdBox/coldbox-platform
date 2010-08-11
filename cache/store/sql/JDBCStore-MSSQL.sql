@@ -1,0 +1,81 @@
+CREATE TABLE [dbo].[cacheBox] (
+  [id] varchar(100) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
+  [objectKey] varchar(255) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
+  [objectValue] ntext COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
+  [hits] int CONSTRAINT [DF_cacheBox_hits] DEFAULT 1 NOT NULL,
+  [timeout] int NOT NULL,
+  [lastAccessTimeout] int NOT NULL,
+  [created] datetime NOT NULL,
+  [lastAccessed] datetime NOT NULL,
+  [isExpired] tinyint CONSTRAINT [DF_cacheBox_isExpired] DEFAULT 0 NOT NULL,
+  [isSimple] tinyint CONSTRAINT [DF_cacheBox_isSimple] DEFAULT 1 NOT NULL,
+  CONSTRAINT [PK_cacheBox] PRIMARY KEY CLUSTERED ([id])
+)
+ON [PRIMARY]
+TEXTIMAGE_ON [PRIMARY]
+GO
+
+CREATE NONCLUSTERED INDEX [created] ON [dbo].[cacheBox]
+  ([created])
+WITH (
+  PAD_INDEX = OFF,
+  DROP_EXISTING = OFF,
+  STATISTICS_NORECOMPUTE = OFF,
+  SORT_IN_TEMPDB = OFF,
+  ONLINE = OFF,
+  ALLOW_ROW_LOCKS = ON,
+  ALLOW_PAGE_LOCKS = ON)
+ON [PRIMARY]
+GO
+
+CREATE NONCLUSTERED INDEX [hits] ON [dbo].[cacheBox]
+  ([hits])
+WITH (
+  PAD_INDEX = OFF,
+  DROP_EXISTING = OFF,
+  STATISTICS_NORECOMPUTE = OFF,
+  SORT_IN_TEMPDB = OFF,
+  ONLINE = OFF,
+  ALLOW_ROW_LOCKS = ON,
+  ALLOW_PAGE_LOCKS = ON)
+ON [PRIMARY]
+GO
+
+CREATE NONCLUSTERED INDEX [isExpired] ON [dbo].[cacheBox]
+  ([isExpired])
+WITH (
+  PAD_INDEX = OFF,
+  DROP_EXISTING = OFF,
+  STATISTICS_NORECOMPUTE = OFF,
+  SORT_IN_TEMPDB = OFF,
+  ONLINE = OFF,
+  ALLOW_ROW_LOCKS = ON,
+  ALLOW_PAGE_LOCKS = ON)
+ON [PRIMARY]
+GO
+
+CREATE NONCLUSTERED INDEX [lastAccessed] ON [dbo].[cacheBox]
+  ([lastAccessed])
+WITH (
+  PAD_INDEX = OFF,
+  DROP_EXISTING = OFF,
+  STATISTICS_NORECOMPUTE = OFF,
+  SORT_IN_TEMPDB = OFF,
+  ONLINE = OFF,
+  ALLOW_ROW_LOCKS = ON,
+  ALLOW_PAGE_LOCKS = ON)
+ON [PRIMARY]
+GO
+
+CREATE NONCLUSTERED INDEX [timeout] ON [dbo].[cacheBox]
+  ([timeout])
+WITH (
+  PAD_INDEX = OFF,
+  DROP_EXISTING = OFF,
+  STATISTICS_NORECOMPUTE = OFF,
+  SORT_IN_TEMPDB = OFF,
+  ONLINE = OFF,
+  ALLOW_ROW_LOCKS = ON,
+  ALLOW_PAGE_LOCKS = ON)
+ON [PRIMARY]
+GO
