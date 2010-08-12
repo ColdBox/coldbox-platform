@@ -45,6 +45,7 @@ Description :
 						objectDefaultTimeout = 120,
 						objectDefaultLastAccessTimeout = 30,
 						useLastAccessTimeouts = true,
+						freeMemoryPercentageThreshold = 0,
 						reapFrequency = 2,
 						evictionPolicy = "LRU",
 						evictCount = 2,
