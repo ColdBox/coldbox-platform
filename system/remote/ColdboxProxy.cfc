@@ -131,14 +131,8 @@ Description :
 		<cfargument name="interceptData"    type="any" 	    required="false" default="#structNew()#" hint="This method will take the contents and embedded into a structure"/>
 		<!--- ************************************************************* --->
 		<cfscript>
-			var cbController = "";
+			var cbController = getController();
 			
-			// locate ColdBox Controller
-			cbController = getController();
-			
-			// Trace the incoming arguments
-			tracer('AnnounceInterception: incoming arguments',arguments);
-					
 			// Intercept
 			try{
 				cbController.getInterceptorService().processState(arguments.state,arguments.interceptData);
