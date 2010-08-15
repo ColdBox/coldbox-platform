@@ -535,7 +535,7 @@ component accessors="true"{
 			buffer.append(" WHERE");
 		}
 		else{
-			throw(message="No where arguments sent, aborting deletion"
+			throw(message="No where arguments sent, aborting deletion",
 			  detail="We will not do a full delete via this method, you need to pass in named value arguments.",
 			  type="BaseORMService.NoWhereArgumentsFound");
 		}
