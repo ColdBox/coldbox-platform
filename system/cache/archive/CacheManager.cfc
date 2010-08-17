@@ -112,6 +112,14 @@ Dependencies :
 		</cfscript>
 	</cffunction>
 	
+	<!--- lookupQuiet --->
+	<cffunction name="lookupQuiet" access="public" output="false" returntype="boolean" hint="For new COMPAT Mode only.">
+		<!--- ************************************************************* --->
+		<cfargument name="objectKey" type="any" required="true" hint="The key of the object to lookup.">
+		<!--- ************************************************************* --->
+		<cfreturn lookup(arguments.objectKey)>
+	</cffunction>
+	
 	<!--- Simple cache Lookup --->
 	<cffunction name="lookup" access="public" output="false" returntype="boolean" hint="Check if an object is in cache, if not found it records a miss.">
 		<!--- ************************************************************* --->
