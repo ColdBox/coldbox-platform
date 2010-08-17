@@ -6,7 +6,7 @@
         <Setting name="Author" value="Luis Majano"/>
         <Setting name="AuthorEmail" value="info@coldbox.org"/>
         <Setting name="AuthorWebsite" value="http://www.coldbox.org"/>
-        <Setting name="Suffix" value="M6-318-GENESIS-14:14"/>
+        <Setting name="Suffix" value="M6.1-318-GENESIS-14:14"/>
         <Setting name="Version" value="3.0.0"/>
         <Setting name="Description" value="This is the ColdBox Platform for ColdFusion Powered Web Applications."/>
         <Setting name="ModifyLogLocation" value="readme.txt"/>

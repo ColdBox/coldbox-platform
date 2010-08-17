@@ -34,15 +34,14 @@ Description :
 			// All timeouts are in minutes
 			// Please note that each object store could have more configuration properties
 			defaultCache = {
-				objectDefaultTimeout = 60,
+				objectDefaultTimeout = 120,
 				objectDefaultLastAccessTimeout = 30,
 				useLastAccessTimeouts = true,
 				reapFrequency = 2,
 				freeMemoryPercentageThreshold = 0,
 				evictionPolicy = "LRU",
 				evictCount = 1,
-				maxObjects = 200,
-				// Our default store is the concurrent soft reference
+				maxObjects = 300,
 				objectStore = "ConcurrentSoftReferenceStore",
 				// This switches the internal provider from normal cacheBox to coldbox enabled cachebox
 				coldboxEnabled = false
