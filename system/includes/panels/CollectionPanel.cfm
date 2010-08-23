@@ -29,7 +29,7 @@ Description :
 			#htmlEditFormat(varVal)#
 		</cfif>
 	<cfelse>
-		
+
 		<!--- Max Display For Queries  --->
 		<cfif isQuery(varVal) and (varVal.recordCount gt getDebuggerConfig().getmaxRCPanelQueryRows())>
 			<cfquery name="varVal" dbType="query" maxrows="#getDebuggerConfig().getmaxRCPanelQueryRows()#">
@@ -37,11 +37,11 @@ Description :
 			</cfquery>
 			<cfdump var="#varVal#" label="Query Truncated to #getDebuggerConfig().getmaxRCPanelQueryRows()# records" expand="false">
 		<cfelseif isObject(varVal)>
-			<cfdump var="#varVal#" expand="false" top="1">
+			<cfdump var="#varVal#" expand="false" top="2">
 		<cfelse>
 			<cfdump var="#varVal#" expand="false">
-		</cfif>		
-				
+		</cfif>
+
 	</cfif>
 	</td>
   </tr>
