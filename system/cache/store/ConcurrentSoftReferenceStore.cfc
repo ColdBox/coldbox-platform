@@ -62,7 +62,7 @@ Description :
 					expireObject( getSoftRefKey(refLocal.collected) );
 					
 					// GC Collection Hit
-					instance.provider.getStats().gcHit();
+					instance.cacheProvider.getStats().gcHit();
 				}
 				
 				// Poll Again
