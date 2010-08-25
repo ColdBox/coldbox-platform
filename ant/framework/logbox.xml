@@ -78,7 +78,7 @@
 		
 		<!--Copy text files to root folder-->
 		<copy todir="${dir.build}/">
-			<fileset file="system/web/config/license.txt" />
+			<fileset file="license.txt" />
 			<fileset file="system/logging/readme.txt" />						
 		</copy>
 		

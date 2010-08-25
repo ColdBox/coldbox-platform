@@ -96,8 +96,8 @@
 		
 		<!--Copy text files to install folder-->
 		<copy todir="${dir.build}/install">
-			<fileset file="system/web/config/license.txt" />
-			<fileset file="system/web/config/readme.txt" />						
+			<fileset file="license.txt" />
+			<fileset file="readme.txt" />						
 		</copy>
 		
 		<!--Copy Wallpapers-->
@@ -117,8 +117,8 @@
 		<!-- Cleanup for StandAlone Build -->
 		<delete dir="${dir.build}/install" />
 		<copy todir="${dir.build}/install">
-			<fileset file="system/web/config/license.txt" />
-			<fileset file="system/web/config/readme.txt" />		
+			<fileset file="license.txt" />
+			<fileset file="readme.txt" />		
 		</copy>
 		
 		<!-- Execute ColdDoc -->
