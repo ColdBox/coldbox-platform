@@ -26,7 +26,7 @@
 	    <element name = "args" optional = "true" />
 	    <sequential>
 	        <echo message = "git @{command}" />
-	        <exec executable = "git" dir = "@{dir}">
+	        <exec executable = "C:\Program Files\Git\bin\git.exe" dir = "@{dir}">
 	            <arg value = "@{command}" />
 	            <args/>
 	        </exec>
@@ -69,6 +69,14 @@
 
 	<!--export app-->
 	<target name="export-app" depends="clean,init" description="Clean export of entire application">
+		<!-- clone cfbuilder extensions -->
+		<git command = "clone">
+		    <args>
+		    	<arg value = "-v" />
+		    	<arg value = "${git.cfbuilderextension}" />
+		        <arg value = "${src.dir}/coldbox-platform-utilities" />
+		    </args>
+		</git>
 		<!-- clone distro -->
 		<git command = "clone">
 		    <args>
@@ -86,32 +94,29 @@
 		        <arg value = "${src.dir}/coldbox-samples" />
 		    </args>
 		</git>
-		
-		<!-- clone cfbuilder extensions -->
-		<git command = "clone">
-		    <args>
-		    	<arg value = "-v" />
-		    	<arg value = "${git.cfbuilderextension}" />
-		        <arg value = "${src.dir}/coldbox-platform-utilities" />
-		    </args>
-		</git>
 	</target>
 
 	<!--Build distro-->
 	<target name="build" depends="export-app" description="Copies fileset from source to build directory, adding a label file">
 		<!-- Copy Structure -->
-		<copy todir="${build.dir}/coldbox">
+		<move todir="${build.dir}/coldbox">
         	<fileset dir="${src.dir}/coldbox">
+				<exclude name="**/.git" />
+				<exclude name="**/.git/**" />
         	</fileset>
-        </copy>		
-		<copy todir="${build.dir}/coldbox/samples">
+        </move>		
+		<move todir="${build.dir}/coldbox/samples">
         	<fileset dir="${src.dir}/coldbox-samples">
+				<exclude name="**/.git" />
+				<exclude name="**/.git/**" />
         	</fileset>
-        </copy>	
-		<copy todir="${build.dir}/coldbox-platform-utilities">
+        </move>	
+		<move todir="${build.dir}/coldbox-platform-utilities">
         	<fileset dir="${src.dir}/coldbox-platform-utilities">
+				<exclude name="**/.git" />
+				<exclude name="**/.git/**" />
         	</fileset>
-        </copy>
+        </move>
 		<!--Remove src-->
 		<delete dir="${src.dir}"/>
 		<!--contact build-->
