@@ -230,6 +230,21 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 					 str);
 	}
 	
+	function testSlugify(){
+		data = {
+			title1 = "My Awesome Post",
+			title2 = "Sept. Is great- for me--and you"
+		};	
+		
+		str = plugin.slugify( data.title1 );
+		debug(str);	
+		assertEquals("my-awesome-post", str);	
+		
+		str = plugin.slugify( data.title2 );
+		debug(str);	
+		assertEquals("sept-is-great-for-me-and-you", str);	
+	}
+	
 </cfscript>
 
 </cfcomponent>
