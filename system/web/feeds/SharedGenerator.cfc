@@ -173,7 +173,11 @@ License		: 	Apache 2 License
 				 fmtStr = removeChars(fmtStr,i, 1); // removed the old non-hexed character
 				 i = i+len(tmpStr); // add the location to the loop count and then loop again from that character position
 			}
-			/* return Unicoded string */
+			
+			// Replace nasty &nbsp; references
+			fmtStr = replaceNoCase(fmtStr,"&nbsp;","","all");
+			
+			// return Unicoded string
 			return fmtStr;
 		</cfscript>
 	</cffunction>

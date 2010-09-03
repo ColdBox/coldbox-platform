@@ -101,7 +101,7 @@ Description :
 				
 			}
 			else{
-				$throw("The message type is invalid: #argumetns.type#","Valid types are info,error or warning","MessageBox.InvalidMessageType");
+				$throw("The message type is invalid: #arguments.type#","Valid types are info,error or warning","MessageBox.InvalidMessageType");
 			}
 		</cfscript>
 	</cffunction>
