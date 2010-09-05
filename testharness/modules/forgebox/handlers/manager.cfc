@@ -45,6 +45,7 @@ The forgebox manager handler
 				default: { rc.entriesTitle = "Most Popular!"; }
 			}
 			
+			event.setView("manager/index");
 		</cfscript>
 	</cffunction>
 	

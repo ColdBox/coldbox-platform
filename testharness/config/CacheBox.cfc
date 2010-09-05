@@ -51,6 +51,7 @@ Description :
 					properties = {
 						objectDefaultTimeout = 120,
 						objectDefaultLastAccessTimeout = 30,
+						freeMemoryPercentageThreshold = 0,
 						useLastAccessTimeouts = true,
 						reapFrequency = 2,
 						evictionPolicy = "LRU",

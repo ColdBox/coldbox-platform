@@ -52,114 +52,122 @@ Description :
 	<!--- Render the View --->
 	<cffunction name="renderView"	access="Public" hint="Renders the current view." output="false" returntype="Any">
 		<!--- ************************************************************* --->
-		<cfargument name="view" 					required="false" type="string"  default=""		hint="If not passed in, the value in the currentView in the current RequestContext will be used.">
-		<cfargument name="cache" 					required="false" type="boolean" default="false" hint="True if you want to cache the view.">
-		<cfargument name="cacheTimeout" 			required="false" type="string"  default=""		hint="The cache timeout">
-		<cfargument name="cacheLastAccessTimeout" 	required="false" type="string"  default="" 		hint="The last access timeout">
+		<cfargument name="view" 					required="false" type="string"  default=""		hint="If not passed in, the value in the currentView in the current RequestContext will be used">
+		<cfargument name="cache" 					required="false" type="boolean" default="false" hint="True if you want to cache the view">
+		<cfargument name="cacheTimeout" 			required="false" type="string"  default=""		hint="The cache timeout for the view contents">
+		<cfargument name="cacheLastAccessTimeout" 	required="false" type="string"  default="" 		hint="The last access timeout for the view contents">
 		<cfargument name="cacheSuffix" 				required="false" type="string"  default=""      hint="Add a cache suffix to the view cache entry. Great for multi-domain caching or i18n caching."/>
-		<cfargument name="module" 					required="false" type="string"  default=""      hint="Explicitly render a layout from this module"/>
+		<cfargument name="module" 					required="false" type="string"  default=""      hint="Explicitly render a view from this module by passing the module name"/>
 		<!--- ************************************************************* --->
-		<cfset var cbox_RenderedView 	= "">
-		<cfset var cbox_viewpath 		= "">
-		<cfset var cbox_viewHelperPath 	= "">
-		<cfset var cbox_local			= structnew()>
-		<!--- Cache Entries --->
-		<cfset var cbox_cacheKey 		= "">
-		<cfset var cbox_cacheEntry 		= "">
-		<cfset var cbox_timerHash 		= 0>
-		<cfset var cbox_iData 			= arguments>
-		<cfset var cbox_locationUDF		= variables.locateView>
+		<cfscript>
+			var cbox_RenderedView 	= "";
+			var cbox_viewpath 		= "";
+			var cbox_viewHelperPath = "";
+			var cbox_local			= structnew();
+			var cbox_cacheKey 		= "";
+			var cbox_cacheEntry 	= "";
+			var cbox_timerHash 		= 0;
+			var cbox_iData 			= arguments;
+			var cbox_locationUDF	= variables.locateView;
+			var cbox_explicitModule = false;
 		
-		<!--- Module Default Value --->
-		<cfif NOT len(arguments.module)>
-			<cfset arguments.module = event.getCurrentModule()>
-		</cfif>
+			// If no incoming explicit module call, default the value to the one in the request context for convenience
+			if( NOT len(arguments.module) ){
+				// if no module is execution, this will be empty anyways.
+				arguments.module = event.getCurrentModule();
+			}
+			else{
+				cbox_explicitModule = true;
+			}
+			
+			// Rendering an explicit view or do we need to get the view from the context?
+			if( NOT len(arguments.view) ){
+				arguments.view = event.getCurrentView();
+			}
+			
+			// Do we have a view To render?
+			if( NOT len(arguments.view) ){
+				$throw(message="The ""currentview"" variable has not been set, therefore there is no view to render.",
+					   detail="Please remember to use the 'event.setView()' method in your handler or pass in a view to render.",
+					   type="Renderer.ViewNotSetException");
+			}
+			
+			// Change the location algorithm if in module mode
+			if( len(arguments.module)  ){
+				cbox_locationUDF = variables.locateModuleView;
+			}
+			
+			// Announce preViewRender
+			announceInterception("preViewRender", cbox_iData);
+			
+			// prepare cache key
+			cbox_cacheKey = controller.getColdboxOCM("template").VIEW_CACHEKEY_PREFIX & arguments.view & arguments.cacheSuffix;
+			if( len(event.getCurrentModule()) ){
+				cbox_cacheKey = controller.getColdboxOCM("template").VIEW_CACHEKEY_PREFIX & event.getCurrentModule() & ":" & arguments.view & arguments.cacheSuffix;
+			}
+			
+			// Do we have a cached View?
+			if( controller.getColdboxOCM("template").lookup(cbox_cacheKey) ){
+				// Render it out
+				cbox_timerHash = controller.getDebuggerService().timerStart("rendering Cached View [#arguments.view#.cfm]");
+				cbox_renderedView = controller.getColdBoxOCM("template").get(cbox_cacheKey);
+				controller.getDebuggerService().timerEnd(cbox_timerHash);
+				// Post View Render
+				cbox_iData.renderedView = cbox_RenderedView;
+				announceInterception("postViewRender", cbox_iData);
+				// Return it
+				return cbox_iData.renderedView;
+			}
+			
+			// Locate the view to render according to discovery algorithm
+			cbox_viewPath = cbox_locationUDF(arguments.view,arguments.module,cbox_explicitModule);
+			
+			// Check for view helper convention
+			cbox_local.dPath = getDirectoryFromPath(cbox_viewPath);
+			if( fileExists(expandPath(cbox_viewPath & "Helper.cfm")) ){
+				cbox_viewHelperPath = cbox_viewPath & "Helper.cfm";
+			}
+			// Check for directory helper convention
+			else if( fileExists( expandPath( cbox_local.dPath & listLast(cbox_local.dPath,"/") & "Helper.cfm" ) ) ){
+				cbox_viewHelperPath = cbox_local.dPath & listLast(cbox_local.dPath,"/") & "Helper.cfm";
+			}
 		
-		<!--- Check if rendering set view or a-la-carte --->
-		<cfif NOT len(arguments.view)>
-			<cfset arguments.view = event.getCurrentView()>
-			<!--- Is Module Call? --->
-			<cfif len(event.getCurrentModule())>
-				<cfset cbox_locationUDF = variables.locateModuleView>
-			</cfif>
-		</cfif>
+		</cfscript>
 
-		<!--- Check if explicit module view rendering --->
-		<cfif len(arguments.module)><cfset cbox_locationUDF = variables.locateModuleView></cfif>
-
-		<!--- Test if we have a view to render --->
-		<cfif NOT len(trim(arguments.view)) >
-			<cfthrow type="Renderer.ViewNotSetException"
-				     message="The ""currentview"" variable has not been set, therefore there is no view to render."
-					 detail="Please remember to use the 'setView()' method in your handler or pass in a view to render.">
-		</cfif>
-
-		<!--- preViewRender interception point --->
-		<cfset announceInterception("preViewRender",cbox_iData)>
-
-		<!--- Setup the cache key --->
-		<cfset cbox_cacheKey = getColdboxOCM("template").VIEW_CACHEKEY_PREFIX & arguments.view & arguments.cacheSuffix>
-		<cfif len(event.getCurrentModule())>
-			<cfset cbox_cacheKey = getColdboxOCM("template").VIEW_CACHEKEY_PREFIX & event.getCurrentModule() & ":" & arguments.view & arguments.cacheSuffix>
-		</cfif>
-
-		<!--- Do we have a cached view?? --->
-		<cfif getColdboxOCM("template").lookup(cbox_cacheKey)>
-			<!--- Render The View --->
-			<cfset cbox_timerHash = controller.getDebuggerService().timerStart("rendering Cached View [#arguments.view#.cfm]")>
-			<cfset cbox_RenderedView = controller.getColdBoxOCM("template").get(cbox_cacheKey)>
-			<cfset controller.getDebuggerService().timerEnd(cbox_timerHash)>
-
-			<!--- postViewRender --->
-			<cfset cbox_iData.renderedView = cbox_RenderedView>
-			<cfset announceInterception("postViewRender",cbox_iData)>
-
-			<cfreturn cbox_iData.renderedView>
-		</cfif>
-
-		<!--- Locate the view to render --->
-		<cfset cbox_viewPath = cbox_locationUDF(arguments.view,arguments.module)>
-
-		<!--- Check for view helper convention? --->
-		<cfset cbox_local.dPath = getDirectoryFromPath(cbox_viewPath)>
-		<cfif fileExists(expandPath(cbox_viewPath & "Helper.cfm"))>
-			<cfset cbox_viewHelperPath = cbox_viewPath & "Helper.cfm">
-		<!--- Check for Directory Helper Convention --->
-		<cfelseif fileExists(expandPath( cbox_local.dPath & listLast(cbox_local.dPath,"/") & "Helper.cfm" ))>
-			<cfset cbox_viewHelperPath = cbox_local.dPath & listLast(cbox_local.dPath,"/") & "Helper.cfm">
-		</cfif>
-
-		<!--- Render The View & Its Helper --->
+		<!--- Render The View & Its Helpers --->
 		<cfset cbox_timerHash = controller.getDebuggerService().timerStart("rendering View [#arguments.view#.cfm]")>
 		<cfsavecontent variable="cbox_RenderedView"><cfif len(cbox_viewHelperPath)><cfoutput><cfinclude template="#cbox_viewHelperPath#"></cfoutput></cfif><cfoutput><cfinclude template="#cbox_viewpath#.cfm"></cfoutput></cfsavecontent>
 		<cfset controller.getDebuggerService().timerEnd(cbox_timerHash)>
 
-		<!--- postViewRender --->
-		<cfset cbox_iData.renderedView = cbox_RenderedView>
-		<cfset announceInterception("postViewRender",cbox_iData)>
-
-		<!--- Is this view cacheable by setting, and if its the view we need to cache. --->
-		<cfif event.isViewCacheable() and (arguments.view eq event.getViewCacheableEntry().view)>
-			<!--- Cache it baby!! --->
-			<cfset cbox_cacheEntry = event.getViewCacheableEntry()>
-			<cfset cbox_cacheKey = getColdboxOCM("template").VIEW_CACHEKEY_PREFIX & cbox_cacheEntry.view & cbox_cacheEntry.cacheSuffix>
-			<cfif len(event.getCurrentModule())>
-				<cfset cbox_cacheKey = getColdboxOCM("template").VIEW_CACHEKEY_PREFIX & event.getCurrentModule() & ":" & cbox_cacheEntry.view & cbox_cacheEntry.cacheSuffix>
-			</cfif>
-			<cfset getColdboxOCM("template").set(cbox_cacheKey,
-									   cbox_iData.renderedView,
-									   cbox_cacheEntry.timeout,
-									   cbox_cacheEntry.lastAccessTimeout)>
-		<!--- Are we caching explicitly --->
-		<cfelseif arguments.cache>
-			<cfset getColdboxOCM("template").set(cbox_cacheKey,
-									   cbox_iData.renderedView,
-									   arguments.cacheTimeout,
-									   arguments.cacheLastAccessTimeout)>
-		</cfif>
-
-		<!--- Return cached, or rendered view --->
-		<cfreturn cbox_iData.renderedView>
+		<cfscript>
+			// Post View Render
+			cbox_iData.renderedView = cbox_RenderedView;
+			announceInterception("postViewRender",cbox_iData);
+			
+			// Implicit view caching?
+			if( event.isViewCacheable() and (arguments.view eq event.getViewCacheableEntry().view) ){
+				cbox_cacheEntry = event.getViewCacheableEntry();
+				cbox_cacheKey = getColdboxOCM("template").VIEW_CACHEKEY_PREFIX & cbox_cacheEntry.view & cbox_cacheEntry.cacheSuffix;
+				if( len(event.getCurrentModule()) ){
+					cbox_cacheKey = getColdboxOCM("template").VIEW_CACHEKEY_PREFIX & event.getCurrentModule() & ":" & cbox_cacheEntry.view & cbox_cacheEntry.cacheSuffix;
+				}
+				// cache it
+				controller.getColdboxOCM("template").set(cbox_cacheKey,
+													     cbox_iData.renderedView,
+													     cbox_cacheEntry.timeout,
+													     cbox_cacheEntry.lastAccessTimeout);
+			}
+			// Explicit view caching?
+			else if ( arguments.cache ){
+				controller.getColdboxOCM("template").set(cbox_cacheKey,
+													     cbox_iData.renderedView,
+													     arguments.cacheTimeout,
+													     arguments.cacheLastAccessTimeout);
+			}
+			
+			// Return view content
+			return cbox_iData.renderedView;
+		</cfscript>
 	</cffunction>
 
 	<!--- Render an external View --->
@@ -212,27 +220,30 @@ Description :
 
 	<!--- Render the layout --->
 	<cffunction name="renderLayout" access="Public" hint="Renders the current layout + view Combinations if declared." output="false" returntype="any">
-		<cfargument name="layout" type="any" 	required="false" hint="The explicit layout to use in rendering."/>
+		<cfargument name="layout" type="any" 	required="false" hint="The explicit layout to use in rendering"/>
 		<cfargument name="view"   type="any" 	required="false" default="" hint="The name of the view to passthrough as an argument so you can refer to it as arguments.view"/>
-		<cfargument name="module" type="any"    required="false" default="" hint="Explicitly render a layout from this module"/>
+		<cfargument name="module" type="any"    required="false" default="" hint="Explicitly render a layout from this module by passing its module name"/>
 		
 		<cfset var cbox_currentLayout 	= implicitViewChecks()>
 		<cfset var cbox_RederedLayout 	= "">
 		<cfset var cbox_timerhash 		= "">
 		<cfset var cbox_locateUDF 		= variables.locateLayout>
+		<cfset var cbox_explicitModule  = false>
 		
 		<!--- Module Default Value --->
 		<cfif NOT len(arguments.module)>
 			<cfset arguments.module = event.getCurrentModule()>
+		<cfelse>
+			<cfset cbox_explicitModule = true>
 		</cfif>
 
 		<!--- Check explicit layout rendering --->
 		<cfif structKeyExists(arguments,"layout")>
 			<cfset cbox_currentLayout = arguments.layout & ".cfm">
-			<!--- Check if Explicit Module Layout Call --->
-			<cfif len(arguments.module)><cfset cbox_locateUDF = variables.locateModuleLayout></cfif>
-		<!--- Not explicit, then check if in module rendering? --->
-		<cfelseif len(event.getCurrentModule())>
+		</cfif>
+		
+		<!--- Choose location algorithm if in module mode --->
+		<cfif len(arguments.module)>
 			<cfset cbox_locateUDF = variables.locateModuleLayout>
 		</cfif>
 
@@ -244,7 +255,7 @@ Description :
 			<cfset cbox_RederedLayout = renderView()>
 		<cfelse>
 			<!--- RenderLayout --->
-			<cfsavecontent variable="cbox_RederedLayout"><cfoutput><cfinclude template="#cbox_locateUDF(cbox_currentLayout,arguments.module)#"></cfoutput></cfsavecontent>
+			<cfsavecontent variable="cbox_RederedLayout"><cfoutput><cfinclude template="#cbox_locateUDF(cbox_currentLayout,arguments.module,cbox_explicitModule)#"></cfoutput></cfsavecontent>
 		</cfif>
 
 		<!--- Stop Timer --->
@@ -311,15 +322,16 @@ Description :
 
 	<!--- locateModuleLayout --->
 	<cffunction name="locateModuleLayout" output="false" access="private" returntype="any" hint="Locate the view to render using module logic">
-		<cfargument name="layout" type="any" required="true"  hint="The layout name" >
-		<cfargument name="module" type="any" required="false" default="" hint="The name of the module to explicity look for a layout"/>
+		<cfargument name="layout" 			type="any" 		required="true"  hint="The layout name to discover" >
+		<cfargument name="module" 			type="any" 		required="false" default="" hint="The name of the module we are searching for"/>
+		<cfargument name="explicitModule" 	type="boolean" 	required="false" default="false" hint="Are we locating explicitly or implicitly for a module layout"/>
 		<cfscript>
 			var parentLayoutPath = "";
 			var moduleLayoutPath = "";
 			var moduleName 		 = "";
-
+			
 			// Explicit Module layout lookup?
-			if( len(arguments.module) ){
+			if( len(arguments.module) and arguments.explicitModule ){
 				return "#instance.modulesConfig[arguments.module].mapping#/#instance.modulesConfig[arguments.module].conventions.layoutsLocation#/#arguments.layout#";
 			}
 			
@@ -374,15 +386,16 @@ Description :
 
 	<!--- locateModuleView --->
 	<cffunction name="locateModuleView" output="false" access="private" returntype="any" hint="Locate the view to render using module logic">
-		<cfargument name="view" 		type="any" 		required="true"  hint="The view name" >
-		<cfargument name="module" 		type="any"	    required="false" default="" hint="The name of the module to explicity look for a view"/>
+		<cfargument name="view" 			type="any" 		required="true"  hint="The view name" >
+		<cfargument name="module" 			type="any"	    required="false" default="" hint="The name of the module to explicity look for a view"/>
+		<cfargument name="explicitModule" 	type="boolean" 	required="false" default="false" hint="Are we locating explicitly or implicitly for a module layout"/>
 		<cfscript>
 			var parentViewPath = "";
 			var moduleViewPath = "";
 			var moduleName     = "";
 			
 			// Explicit Module view lookup?
-			if( len(arguments.module) ){
+			if( len(arguments.module) and arguments.explicitModule){
 				return "#instance.modulesConfig[arguments.module].mapping#/#instance.modulesConfig[arguments.module].conventions.viewsLocation#/#arguments.view#";
 			}
 				
@@ -397,18 +410,25 @@ Description :
 				if( fileExists(expandPath(parentViewPath & ".cfm")) ){
 					return parentViewPath;
 				}
-				// Not found, then just return module path, let the include throw exception if not found
-				return moduleViewPath;
+				// Check module for view
+				if( fileExists(expandPath(moduleViewPath) & ".cfm") ){
+					return moduleViewPath;
+				}
+				// Return normal view lookup
+				return locateView(arguments.view);
 			}
 
 			// If we reach here then we are doing module lookup first then if not parent.
 			if( fileExists(expandPath(moduleViewPath & ".cfm")) ){
 				return moduleViewPath;
 			}
-			
+			// We check if view is overriden in parent first.
+			if( fileExists(expandPath(parentViewPath & ".cfm")) ){
+				return parentViewPath;
+			}
 
-			// Not found, then just return parent path, let the include throw exception if not found
-			return parentViewPath;
+			// Return normal view lookup
+			return locateView(arguments.view);
 		</cfscript>
 	</cffunction>
 
