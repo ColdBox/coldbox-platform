@@ -548,25 +548,12 @@ Description: This is the framework's simple bean factory.
 		<cfargument name="exclude"  		required="false" 	type="string"  	default="" hint="A list of keys to exclude in the population">
 		<cfargument name="prefix"  			required="true" 	type="string"  	hint="The prefix used to filter, Example: 'user_' would apply to the following columns: 'user_id' and 'user_name' but not 'address_id'.">
 		<cfscript>
-			// Create a struct including only those keys that match the prefix.
-			//by default to take values from first row of the query
-			var row 	= arguments.RowNumber;
-			var cols 	= listToArray(arguments.qry.columnList);
-			var i   	= 1;
-			var n		= arrayLen(cols);
-			var prefixLength = len(arguments.prefix);
-			arguments.memento = structNew();
-
-			//build the struct from the query row
-			for(i = 1; i LTE n; i = i + 1){
-				if ( left(cols[i], prefixLength) EQ arguments.prefix ) {
-					var trueColumnName = right(cols[i], len(cols[i]) - prefixLength);
-					arguments.memento[trueColumnName] = arguments.qry[cols[i]][row];
-				}
+			if( isSimpleValue(arguments.target) ){
+				arguments.target = create(arguments.target);
 			}
 
 			//populate bean and return
-			return BeanFactory.populateFromStruct(argumentCollection=arguments);
+			return instance.beanPopulator.populateFromQueryWithPrefix(argumentCollection=arguments);
 		</cfscript>
 	</cffunction>
 
