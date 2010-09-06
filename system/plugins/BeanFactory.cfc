@@ -196,20 +196,20 @@ Description: This is the framework's simple bean factory.
 
 			// Class Path
 			modelClassPath = locateModel(arguments.name);
-		
+
 			// Trip error if not found
 			if( NOT len(modelClassPath) ){
 				$throw(message="Model #arguments.name# could not be located.",
 					   detail="The model object could not be located in the following locations: #instance.ModelsPath# OR #instance.ModelsExternalLocation#",
 					   type="BeanFactory.modelNotFoundException");
 			}
-			
+
 			// Construct CacheKey, Check if Model in Cache, if it is, return it and exit.
 			cacheKey = buildCacheKey(alias,modelClassPath);
 			if ( getColdboxOCM().lookup( cacheKey ) ){
 				return getColdBoxOCM().get( cacheKey );
 			}
-			
+
 			// Argument Overrides, else grab from existing settings
 			if( not structKeyExists(arguments,"useSetterInjection") ){
 				arguments.useSetterInjection = getSetting("ModelsSetterInjection");
@@ -375,42 +375,42 @@ Description: This is the framework's simple bean factory.
 			if( arguments.resolveAlias ){
 				arguments.name = resolveModelAlias(arguments.name);
 			}
-			
+
 			// Check refLocationMap for location discovery
 			if( structKeyExists(instance.refLocationMap, arguments.name) ){
 				return instance.refLocationMap[ arguments.name ];
 			}
-			
+
 			// Conventions Check First
 			checkPath = instance.ModelsPath & "/" & replace(arguments.name,".","/","all") & ".cfc";
-			
+
 			// Check Conventions First
 			if( fileExists(checkPath) ){
 				instance.refLocationMap[ arguments.name ] = instance.ModelsInvocationPath & "." & arguments.name;
 				return instance.refLocationMap[ arguments.name ];
 			}
-			
+
 			// Check External Locations in declared Order
 			for(x=1; x lte listLen(extPaths);x=x+1){
-			
+
 				// Compose Object Location
 				thisExtPath = listGetAt(extPaths,x);
 				checkExternalPath = "/" & replace(thisExtPath,".","/","all")  & "/" & replace(arguments.name,".","/","all") & ".cfc";
-				
+
 				// Check if located
 				if( fileExists(expandPath(checkExternalPath)) ){
 					instance.refLocationMap[ arguments.name ] = thisExtPath & "." & arguments.name;
 					return instance.refLocationMap[ arguments.name ];
 				}
 			}
-			
+
 			// Try full namespace
 			checkPath = "/" & replace(arguments.name,".","/","all") & ".cfc";
 			if( fileExists( expandPath(checkPath) ) ){
 				instance.refLocationMap[ arguments.name ] = arguments.name;
 				return instance.refLocationMap[ arguments.name ];
 			}
-			
+
 			return "";
 		</cfscript>
 	</cffunction>
@@ -422,12 +422,12 @@ Description: This is the framework's simple bean factory.
 		<cfscript>
 			// Resolve Alias?
 			if( arguments.resolveAlias ){ arguments.name = resolveModelAlias(arguments.name); }
-			
+
 			// Try to Locate with already resolved alias
 			if( len(locateModel(arguments.name)) ){
 				return true;
 			}
-			
+
 			return false;
 		</cfscript>
 	</cffunction>
@@ -468,11 +468,11 @@ Description: This is the framework's simple bean factory.
 		<!--- ************************************************************* --->
 		<cfscript>
 			arguments.memento = controller.getRequestService().getContext().getCollection();
-			
+
 			if( isSimpleValue(arguments.target) ){
 				arguments.target = create(arguments.target);
 			}
-			
+
 			return instance.beanPopulator.populateFromStruct(argumentCollection=arguments);
 		</cfscript>
 	</cffunction>
@@ -491,11 +491,11 @@ Description: This is the framework's simple bean factory.
 			if( isSimpleValue(arguments.target) ){
 				arguments.target = create(arguments.target);
 			}
-			
+
 			return instance.beanPopulator.populateFromJSON(argumentCollection=arguments);
 		</cfscript>
 	</cffunction>
-	
+
 	<!--- Populate from XML--->
 	<cffunction name="populateFromXML" access="public" returntype="any" hint="Populate a named or instantiated bean from an XML packet" output="false" >
 		<!--- ************************************************************* --->
@@ -511,7 +511,7 @@ Description: This is the framework's simple bean factory.
 			if( isSimpleValue(arguments.target) ){
 				arguments.target = create(arguments.target);
 			}
-			
+
 			return instance.beanPopulator.populateFromXML(argumentCollection=arguments);
 		</cfscript>
 	</cffunction>
@@ -531,8 +531,42 @@ Description: This is the framework's simple bean factory.
 			if( isSimpleValue(arguments.target) ){
 				arguments.target = create(arguments.target);
 			}
-			
+
 			return instance.beanPopulator.populateFromQuery(argumentCollection=arguments);
+		</cfscript>
+	</cffunction>
+
+	<!--- Populate an object using a query, but, only specific columns in the query. --->
+	<cffunction name="populateFromQueryWithPrefix" output=false
+		hint="Populates an Object using only specific columns from a query. Useful for performing a query with joins that needs to populate multiple objects.">
+		<cfargument name="target"  			required="true"  	type="any" 	 	hint="This can be an instantiated bean object or a bean instantitation path as a string. If you pass an instantiation path and the bean has an 'init' method. It will be executed. This method follows the bean contract (set{property_name}). Example: setUsername(), setfname()">
+		<cfargument name="qry"       		required="true"  	type="query"   	hint="The query to popluate the bean object with">
+		<cfargument name="RowNumber" 		required="false" 	type="Numeric" 	hint="The query row number to use for population" default="1">
+		<cfargument name="scope" 			required="false" 	type="string"   default=""   hint="Use scope injection instead of setters population. Ex: scope=variables.instance."/>
+		<cfargument name="trustedSetter"  	required="false" 	type="boolean" 	default="false" hint="If set to true, the setter method will be called even if it does not exist in the bean"/>
+		<cfargument name="include"  		required="false" 	type="string"  	default="" hint="A list of keys to include in the population">
+		<cfargument name="exclude"  		required="false" 	type="string"  	default="" hint="A list of keys to exclude in the population">
+		<cfargument name="prefix"  			required="true" 	type="string"  	hint="The prefix used to filter, Example: 'user_' would apply to the following columns: 'user_id' and 'user_name' but not 'address_id'.">
+		<cfscript>
+			// Create a struct including only those keys that match the prefix.
+			//by default to take values from first row of the query
+			var row 	= arguments.RowNumber;
+			var cols 	= listToArray(arguments.qry.columnList);
+			var i   	= 1;
+			var n		= arrayLen(cols);
+			var prefixLength = len(arguments.prefix);
+			arguments.memento = structNew();
+
+			//build the struct from the query row
+			for(i = 1; i LTE n; i = i + 1){
+				if ( left(cols[i], prefixLength) EQ arguments.prefix ) {
+					var trueColumnName = right(cols[i], len(cols[i]) - prefixLength);
+					arguments.memento[trueColumnName] = arguments.qry[cols[i]][row];
+				}
+			}
+
+			//populate bean and return
+			return BeanFactory.populateFromStruct(argumentCollection=arguments);
 		</cfscript>
 	</cffunction>
 
@@ -550,7 +584,7 @@ Description: This is the framework's simple bean factory.
 			if( isSimpleValue(arguments.target) ){
 				arguments.target = create(arguments.target);
 			}
-			
+
 			return instance.beanPopulator.populateFromStruct(argumentCollection=arguments);
 		</cfscript>
 	</cffunction>
@@ -825,7 +859,7 @@ Description: This is the framework's simple bean factory.
 					break;
 				}
 			}
-			
+
 			// Check if model Exists
 			if( containsModel(name=args.name,resolveAlias=true) ){
 				// Get Model
@@ -949,7 +983,7 @@ Description: This is the framework's simple bean factory.
 			return locatedDependency;
 		</cfscript>
 	</cffunction>
-	
+
 	<!--- getCacheBoxDSL --->
 	<cffunction name="getCacheBoxDSL" access="private" returntype="any" hint="Get dependencies using the cacheBox dependency DSL" output="false" >
 		<!--- ************************************************************* --->
@@ -971,7 +1005,7 @@ Description: This is the framework's simple bean factory.
 				// CacheBox:CacheName
 				case 2 : {
 					cacheName 			= getToken(thisType,2,":");
-					
+
 					// Verify that cache exists
 					if( thisCacheBox.cacheExists( cacheName ) ){
 						locatedDependency = thisCacheBox.getCache( cacheName );
@@ -979,14 +1013,14 @@ Description: This is the framework's simple bean factory.
 					else{
 						log.debug("getOCMDependency() cannot find named cache #cacheName# using definition: #arguments.definition.toString()#. Existing cache names are #thisCacheBox.getCacheNames().toString#");
 					}
-					
+
 					break;
 				}
 				// CacheBox:CacheName:Element
 				case 3 : {
 					cacheName 			= getToken(thisType,2,":");
 					cacheElement 		= getToken(thisType,3,":");
-					
+
 					// Verify that dependency exists in the Cache container
 					if( thisCacheBox.getCache( cacheName ).lookup( cacheElement ) ){
 						locatedDependency = thisCacheBox.getCache( cacheName ).get( cacheElement );
@@ -994,7 +1028,7 @@ Description: This is the framework's simple bean factory.
 					else{
 						log.debug("getOCMDependency() cannot find cache Key: #cacheElement# in the #cacheName# cache using definition: #arguments.definition.toString()#");
 					}
-					
+
 					break;
 				} // end level 3 main DSL
 			}
@@ -1085,9 +1119,9 @@ Description: This is the framework's simple bean factory.
 			var md = arguments.metadata;
 			var entry = structnew();
 			var foundDependencies = "";
-			
+
 			//TODO: The foundDependencies check should be made on the recursive array not the single list.
-			
+
 			// Look for Object's attributes, and override if found.
 			if( structKeyExists(md,"autowire_stoprecursion") ){
 				arguments.stopRecursion = md["autowire_stoprecursion"];
@@ -1098,29 +1132,29 @@ Description: This is the framework's simple bean factory.
 
 			// Look For properties for annotation injections
 			if( structKeyExists(md,"properties") and ArrayLen(md.properties) gt 0){
-				
+
 				// Loop over each property and identify injectable properties
 				for(x=1; x lte ArrayLen(md.properties); x=x+1 ){
 
 					// Check Inject annotation, if it exists, add it and process it
 					if( structKeyExists(md.properties[x],"inject") ){
-					
+
 						// New MD Entry
 						entry 		= structnew();
 						entry.name 	= md.properties[x].name;
 						entry.scope = "variables";
 						entry.type 	= instance.dslDefaultType;
-	
+
 						// Scope override if it exists
 						if( structKeyExists(md.properties[x],"scope") ){
 							entry.scope = md.properties[x].scope;
 						}
-						
+
 						// Setup the DSL Type if it has a value
 						if( len(md.properties[x].inject) ){
 							entry.type 	= md.properties[x].inject;
 						}
-						
+
 						// Add to found list
 						listAppend(foundDependencies,entry.name);
 						ArrayAppend( arguments.dependencies, entry );
@@ -1132,7 +1166,7 @@ Description: This is the framework's simple bean factory.
 			// Setter injection if enabled?
 			if( arguments.useSetterInjection and structKeyExists(md, "functions") ){
 				for(x=1; x lte ArrayLen(md.functions); x=x+1 ){
-				
+
 					// Verify we have a setter marked with the DSL injector annotation
 					if( left(md.functions[x].name,3) eq "set" AND structKeyExists(md.functions[x],instance.dslMarker)){
 
@@ -1141,7 +1175,7 @@ Description: This is the framework's simple bean factory.
 						entry.name 	= right(md.functions[x].name, Len(md.functions[x].name)-3);
 						entry.scope = "";
 						entry.type 	= instance.dslDefaultType;
-						
+
 						// Check DSL marker if it has a value else use default
 						if( len(md.functions[x].instance.dslMarker) ){
 							entry.type = md.functions[x][instance.dslMarker];
@@ -1155,7 +1189,7 @@ Description: This is the framework's simple bean factory.
 						}
 
 					}//end if setter found with annotation
-					
+
 				}//end loop of functions
 			}//end if functions found
 
@@ -1163,10 +1197,10 @@ Description: This is the framework's simple bean factory.
 			if ( structKeyExists(md, "extends")
 				 AND
 				 stopClassRecursion(classname=md.extends.name,stopRecursion=arguments.stopRecursion) EQ FALSE){
-				
+
 				// Recursive lookup
 				arguments.dependencies = parseMetadata(md.extends,arguments.dependencies,arguments.useSetterInjection,arguments.stopRecursion);
-				
+
 			}
 
 			return arguments.dependencies;
