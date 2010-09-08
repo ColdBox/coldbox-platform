@@ -139,7 +139,7 @@ I oversee and manage ColdBox modules
 				return false;
 			}
 			
-			// Config information for module
+			// Setup Vanilla Config information for module
 			mConfig = {
 				// Module MetaData and Directives
 				title				= "", 
@@ -166,6 +166,7 @@ I oversee and manage ColdBox modules
 				settings 				= {},
 				interceptors 			= [],
 				interceptorSettings     = { customInterceptionPoints = "" },
+				layoutSettings			= { defaultLayout = ""},
 				routes 					= [],
 				conventions = {
 					handlersLocation 	= "handlers",
@@ -478,6 +479,9 @@ I oversee and manage ColdBox modules
 			
 			// Get and Append Module conventions
 			structAppend(mConfig.conventions,oConfig.getPropertyMixin("conventions","variables",structnew()),true);
+			
+			// Get Module Layout Settings
+			structAppend(mConfig.layoutSettings,oConfig.getPropertyMixin("layoutSettings","variables", structnew()),true);
 			
 			return oConfig;
 		</cfscript>
