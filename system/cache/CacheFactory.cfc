@@ -241,6 +241,43 @@ Description :
 		</cfscript>
     </cffunction>
 	
+	<!--- shutdownCache --->
+    <cffunction name="shutdownCache" output="false" access="public" returntype="void" hint="Send a shutdown command to a specific cache provider to bring down gracefully. It also removes it from the cache factory">
+    	<cfargument name="name" type="string" required="true" hint="The cache provider name to shutdown"/>
+    	<cfscript>
+    		var iData 		= {};
+			var cache 	   	= "";
+			var i 		   	= 1;
+			
+    		// Check if cache exists, else exit out
+			if( NOT cacheExists(arguments.name) ){
+				instance.log.warn("Trying to shutdown #arguments.name#, but that cache does not exist, skipping.");
+				return;
+			}
+			
+			//get Cache
+			cache = getCache(arguments.name);
+			// log it
+			instance.log.info("Shutdown of cache: #arguments.name# requested and started on factoryID: #getFactoryID()#");
+			
+			// Notify Listeners
+			iData = {cache=cache};
+			getEventManager().processState("beforeCacheShutdown",iData);
+			
+			//Shutdown the cache
+			cache.shutdown();
+				
+			//process listeners
+			getEventManager().processState("afterCacheShutdown",iData);
+			
+			// remove cache
+			removeCache(arguments.name);
+			
+			// Log it
+			instance.log.debug("Cache: #arguments.name# was shut down and removed on factoryID: #getFactoryID()#.");
+		</cfscript>
+    </cffunction>
+	
 	<!--- removeFromScope --->
     <cffunction name="removeFromScope" output="false" access="public" returntype="void" hint="Remove the cache factory from scope registration if enabled, else does nothing">
     	<cfscript>

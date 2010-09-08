@@ -160,6 +160,24 @@
 		assertEquals( false, cacheFactory.cacheExists("CACHE2") );
 	}
 	
+	function testShutdownCache(){
+		caches = {
+			cache1 = getMockBox().createEmptyMock("coldbox.system.cache.providers.MockProvider"),
+			cache2 = getMockBox().createEmptyMock("coldbox.system.cache.providers.MockProvider")
+		};
+		caches.cache1.$("shutdown");
+		caches.cache2.$("shutdown");
+		
+		//mock caches
+		cacheFactory.$property("caches","instance",caches);
+		
+		// cache invalid
+		cacheFactory.shutdownCache("bogus");
+		cacheFactory.shutdownCache("cache1");
+		
+		assertEquals( false, cacheFactory.cacheExists("cache1") );
+	}
+	
 	function testAddDefaultCacheWithExceptions(){
 		debug( cacheFactory.getconfig().getMemento() );
 		
