@@ -21,7 +21,6 @@ The forgebox manager handler
 		<cfscript>	
 			event.paramValue("typeSlug","");
 			event.paramValue("orderBy","POPULAR");
-			event.setLayout("forgebox.main");
 		</cfscript>
 	</cffunction>
 

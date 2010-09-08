@@ -21,7 +21,6 @@ The forgebox manager handler
 		<cfscript>	
 			event.paramValue("typeSlug","");
 			event.paramValue("orderBy","POPULAR");
-			event.setLayout("forgebox.main");
 		</cfscript>
 	</cffunction>
 
@@ -45,6 +44,7 @@ The forgebox manager handler
 				default: { rc.entriesTitle = "Most Popular!"; }
 			}
 			
+			event.setView("manager/index");
 		</cfscript>
 	</cffunction>
 	

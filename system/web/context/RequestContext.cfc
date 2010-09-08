@@ -189,8 +189,9 @@ Modification History:
 		<cfargument name="layout" 					required="false" type="string"  hint="You can override the rendering layout of this setView() call if you want to. Else it defaults to implicit resolution or another override.">
 		<!--- ************************************************************* --->
 	    <cfscript>
-		    var key = "";
-		    var cacheEntry = structnew();
+		    var key 		= "";
+		    var cacheEntry 	= structnew();
+			var cModule		= getCurrentModule();
 		    
 			// Local Override
 			if( structKeyExists(arguments,"layout") ){
@@ -214,10 +215,15 @@ Modification History:
 					}//end for loop
 				}//end else
 				
-				//If not layout, then set default
+				//If not layout, then set default from main application
 				if( not valueExists("currentLayout",true) ){
 					setValue("currentLayout", instance.defaultLayout,true);
-				}					
+				}		
+				// If this is a module context, check for a module default layout, and override it
+				if( len(cModule) AND len(instance.modules[cModule].defaultLayout) ){
+					setValue("currentLayout", instance.modules[getCurrentModule()].layoutSettings.defaultLayout,true);
+				}
+											
 			}//end if overridding layout
 			
 			// No Layout Rendering?
