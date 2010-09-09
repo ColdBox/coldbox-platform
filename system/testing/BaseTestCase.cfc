@@ -184,6 +184,39 @@ id , name , mail
 			}
 		</cfscript>
 	</cffunction>
+	
+	<!--- getMockPlugin --->
+    <cffunction name="getMockPlugin" output="false" access="private" returntype="any" hint="Get a plugin mocked with capabilities">
+    	<cfargument name="path" type="string" required="true" hint="The path of the plugin to mock"/>
+    	<cfscript>
+    		var mockBox = getMockBox();
+			var plugin	= mockBox.createMock( arguments.path );
+			
+    		// Create Mock Objects
+			var mockController 		= mockBox.createEmptyMock("coldbox.system.testing.mock.web.MockController");
+			var mockRequestService 	= mockBox.createEmptyMock("coldbox.system.web.services.RequestService");
+			var mockLogBox	 		= mockBox.createEmptyMock("coldbox.system.logging.LogBox");
+			var mockLogger	 		= mockBox.createEmptyMock("coldbox.system.logging.Logger");
+			var mockFlash		 	= mockBox.createMock("coldbox.system.web.flash.MockFlash").init(mockController);
+			var mockCacheBox   		= mockBox.createEmptyMock("coldbox.system.cache.CacheFactory");
+			
+			// Mock Plugin Dependencies
+			mockController.$("getLogBox",mockLogBox);
+			mockController.$("getCacheBox",mockCacheBox);
+			mockController.$("getRequestService",mockRequestService);
+			mockRequestService.$("getFlashScope",mockFlash);
+			mockLogBox.$("getLogger",mockLogger);
+			
+			// Decorate plugin?
+			if( NOT getUtil().isFamilyType("plugin", plugin) ){
+				getUtil().convertToColdBox( "plugin", plugin );	
+				// Check if doing cbInit()
+				if( structKeyExists(plugin, "$cbInit") ){ plugin.$cbInit( mockController ); }
+			}
+			
+			return plugin;
+		</cfscript>
+    </cffunction>
 
 	<!--- Reset the persistence --->
 	<cffunction name="reset" access="private" returntype="void" hint="Reset the persistence of the unit test coldbox app, basically removes the controller from application scope" output="false" >
