@@ -482,8 +482,6 @@ Modification History:
 		<cfargument name="routedStruct" type="struct" required="true"/>
 		<cfset instance.routedStruct = arguments.routedStruct/>
 	</cffunction>
-	
-<!------------------------------------------- ACCESSORS/MUTATORS ------------------------------------------->
 
 	<cffunction name="getDefaultLayout" access="public" returntype="any" output="false" hint="Get's the default layout of the application: String">
 		<cfreturn instance.defaultLayout>
@@ -650,6 +648,13 @@ Modification History:
 	
 	<cffunction name="noExecution" output="false" access="public" returntype="void" hint="Set that the request will not execute an incoming event. Most likely simulating a servlet call.">
    		<cfset instance.isNoExecution = true>
+    </cffunction>
+	
+	<!--- isAjax --->
+    <cffunction name="isAjax" output="false" access="public" returntype="boolean" hint="Determines if in an Ajax call or not by looking at the request headers">
+    	<cfscript>
+    		return ( getHTTPHeader("X-Requested-With","") eq "XMLHttpRequest" );
+		</cfscript>
     </cffunction>
 
 <!------------------------------------------- PRIVATE ------------------------------------------->
