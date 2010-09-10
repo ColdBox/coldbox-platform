@@ -184,6 +184,9 @@ Description: This is the framework's simple bean factory.
 			var definition		 = structnew();
 			var alias			 = arguments.name;
 			var cacheKey		 = "";
+			var cache			 = getColdBoxOCM();
+			var refLocal		 = structnew();
+			var cacheCompatMode	 = getSetting("cacheSettings").compatMode;
 
 			// Are we using dsl or name localization?
 			if( structKeyExists(arguments,"dsl") ){
@@ -204,12 +207,25 @@ Description: This is the framework's simple bean factory.
 					   type="BeanFactory.modelNotFoundException");
 			}
 
-			// Construct CacheKey, Check if Model in Cache, if it is, return it and exit.
+			// Construct CacheKey
 			cacheKey = buildCacheKey(alias,modelClassPath);
-			if ( getColdboxOCM().lookup( cacheKey ) ){
-				return getColdBoxOCM().get( cacheKey );
+			// Get model
+			refLocal.oModel = cache.get( cacheKey );
+			// Test it, existance is enough for cacheBox
+			if( structKeyExists(refLocal,"oModel") AND NOT cacheCompatMode){
+				return refLocal.oModel;				
 			}
-
+			// Test it via compat mode (deprecated by 3.1)
+			if( cacheCompatMode AND 
+				(
+					( NOT isSimpleValue(refLocal.oModel) ) 
+					 OR 
+					( refLocal.oModel neq cache.NOT_FOUND )
+				)
+				){
+				return refLocal.oModel;
+			}
+			
 			// Argument Overrides, else grab from existing settings
 			if( not structKeyExists(arguments,"useSetterInjection") ){
 				arguments.useSetterInjection = getSetting("ModelsSetterInjection");
@@ -265,7 +281,7 @@ Description: This is the framework's simple bean factory.
 								md.cacheLastAccessTimeout = "";
 							}
 							// Cache This Puppy.
-							getColdBoxOCM().set(cacheKey,oModel,md.cacheTimeout,md.CacheLastAccessTimeout);
+							cache.set(cacheKey,oModel,md.cacheTimeout,md.CacheLastAccessTimeout);
 						}
 					}//end if caching enabled via settings.
 
