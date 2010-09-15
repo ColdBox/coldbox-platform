@@ -329,7 +329,11 @@ Modification History:
 				}
 				
 				// Else default to search the alternate custom external locations and just return, no checking, if it fails it fails.
-				return "#getCustomPluginsExternalPath()#.#arguments.plugin#";
+				if ( len ( trim ( getCustomPluginsExternalPath() ) ) ) {
+					return getCustomPluginsExternalPath() & "." & arguments.plugin;
+				} else {
+					return arguments.plugin;
+				}
 				
 			}//end if custom plugin
 			
