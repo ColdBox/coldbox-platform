@@ -238,8 +238,13 @@ Description :
 		</cfif>
 
 		<!--- Check explicit layout rendering --->
+		<!--- passing in an empty string for the layout mimic noLayout functionality and not render a layout --->
 		<cfif structKeyExists(arguments,"layout")>
-			<cfset cbox_currentLayout = arguments.layout & ".cfm">
+			<cfif len ( arguments.layout )>
+				<cfset cbox_currentLayout = arguments.layout & ".cfm">
+			<cfelse>
+				<cfset cbox_currentLayout = "">
+			</cfif>
 		</cfif>
 		
 		<!--- Choose location algorithm if in module mode --->
