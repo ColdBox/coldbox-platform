@@ -220,7 +220,7 @@ Modification History:
 					setValue("currentLayout", instance.defaultLayout,true);
 				}		
 				// If this is a module context, check for a module default layout, and override it
-				if( len(cModule) AND len(instance.modules[cModule].defaultLayout) ){
+				if( len(cModule) AND len(instance.modules[cModule].layoutSettings.defaultLayout) ){
 					setValue("currentLayout", instance.modules[getCurrentModule()].layoutSettings.defaultLayout,true);
 				}
 											
