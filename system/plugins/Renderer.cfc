@@ -239,7 +239,12 @@ Description :
 
 		<!--- Check explicit layout rendering --->
 		<cfif structKeyExists(arguments,"layout")>
-			<cfset cbox_currentLayout = arguments.layout & ".cfm">
+			<!--- Check if any length on incoming layout --->
+			<cfif len ( arguments.layout )>
+				<cfset cbox_currentLayout = arguments.layout & ".cfm">
+			<cfelse>
+				<cfset cbox_currentLayout = "">
+			</cfif>
 		</cfif>
 		
 		<!--- Choose location algorithm if in module mode --->
