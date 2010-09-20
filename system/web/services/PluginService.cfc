@@ -325,8 +325,12 @@ Modification History:
 					return "#getCustomPluginsPath()#.#arguments.plugin#";
 				}
 				
-				// Else default to search the alternate custom external locations and just return, no checking, if it fails it fails.
-				return "#getCustomPluginsExternalPath()#.#arguments.plugin#";
+				// External Locations Search
+				if( len( trim( getCustomPluginsExternalPath() ) ) ){
+					return getCustomPluginsExternalPath() & "." & arguments.plugin;
+				}
+				// If not, just return the plugin location
+				return arguments.plugin;
 				
 			}//end if custom plugin
 			
