@@ -28,6 +28,8 @@ Modification History:
 			return this;
 		</cfscript>
 	</cffunction>
+
+<!------------------------------------------- INTERNAL COLDBOX EVENTS ------------------------------------------->
 	
 	<cffunction name="onConfigurationLoad" access="public" output="false" returntype="void">
 		<cfscript>

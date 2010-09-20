@@ -44,12 +44,12 @@ Modification History:
     </cffunction>
 
 	<!--- Get Controller --->
-	<cffunction name="getcontroller" access="package" output="false" returntype="any" hint="Get controller">
+	<cffunction name="getController" access="package" output="false" returntype="any" hint="Get controller">
 		<cfreturn controller/>
 	</cffunction>
 	
 	<!--- Set Controller --->
-	<cffunction name="setcontroller" access="package" output="false" returntype="void" hint="Set controller">
+	<cffunction name="setController" access="package" output="false" returntype="void" hint="Set controller">
 		<cfargument name="controller" type="any" required="true"/>
 		<cfset variables.controller = arguments.controller/>
 	</cffunction>
@@ -60,7 +60,6 @@ Modification History:
 		<cfreturn controller.getColdboxOCM(arguments.cacheName)/>
 	</cffunction>
 	
-
 <!------------------------------------------- INTERNAL EVENTS ------------------------------------------>	
 	
 	<!--- onConfigurationLoad --->
@@ -80,17 +79,9 @@ Modification History:
 	
 <!------------------------------------------- PRIVATE ------------------------------------------->
 
+	<!--- getUtil --->
 	<cffunction name="getUtil" access="private" output="false" returntype="coldbox.system.core.util.Util" hint="Create and return a util object">
 		<cfreturn util/>
-	</cffunction>
-	
-	<cffunction name="debug" access="private" returntype="void" hint="Send debug to log file" output="false" >
-		<cfargument name="content" required="true" type="any" hint="">
-		<cfset controller.getPlugin("Logger").logEntry("debug",content)>
-	</cffunction>
-	
-	<cffunction name="getLogger" access="private" returntype="coldbox.system.plugins.Logger" hint="Get a logger plugin" output="false" >
-		<cfreturn controller.getPlugin("Logger")>
 	</cffunction>
 	
 </cfcomponent>

@@ -192,7 +192,7 @@ I oversee and manage ColdBox modules
 			modulesConfiguration[modName] = mConfig;
 
 			// Log registration
-			instance.logger.DEBUG("Module #arguments.moduleName# registered successfully.");
+			instance.logger.debug("Module #arguments.moduleName# registered successfully.");
 			</cfscript>
 		</cflock>
 
@@ -289,7 +289,7 @@ I oversee and manage ColdBox modules
 			interceptorService.processState("postModuleLoad",iData);
 
 			// Log it
-			instance.logger.DEBUG("Module #arguments.moduleName# activated sucessfully.");
+			instance.logger.debug("Module #arguments.moduleName# activated sucessfully.");
 		</cfscript>
 		</cflock>
 

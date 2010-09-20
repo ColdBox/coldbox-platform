@@ -40,7 +40,9 @@ Description :
 			return this;
 		</cfscript>
 	</cffunction>
-	
+
+<!------------------------------------------- INTERNAL COLDBOX EVENTS ------------------------------------------->
+		
 	<!--- onConfigurationLoad --->
     <cffunction name="onConfigurationLoad" output="false" access="public" returntype="void" hint="Called by loader service when configuration file loads">
     	<cfscript>

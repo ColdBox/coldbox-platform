@@ -19,37 +19,45 @@ Modification History:
 	<cffunction name="init" access="public" output="false" returntype="PluginService" hint="Constructor">
 		<cfargument name="controller" type="any" required="true">
 		<cfscript>
+			// setup controller
 			setController(arguments.controller);
 			
-			// Core Location
-			setCorePluginsPath('coldbox.system.plugins');
+			// Core Plugins Location
+			instance.CORE_PLUGINS_PATH = "coldbox.system.plugins";
+			// Core Extensions Location
+			instance.CORE_EXTENSIONS_PATH = "coldbox.system.extensions.plugins";
 			
 			// Custom Convention Locations
 			setCustomPluginsPath('');
 			setCustomPluginsPhysicalPath('');
 			setCustomPluginsExternalPath('');
 			
-			// Extension Points
-			setExtensionsPath('');
-			setExtensionsPhysicalPath('');
+			// Prepare Extension Points using default values
+			setExtensionsPath( instance.CORE_EXTENSIONS_PATH );
+			setExtensionsPhysicalPath( expandPath("/" & replace(getExtensionsPath(),".","/","all") & "/") );
 			
-			// MD dictionary
+			// Prepare MD dictionary
 			setCacheDictionary(CreateObject("component","coldbox.system.core.collections.BaseDictionary").init('PluginMetadata'));
 			
 			return this;
 		</cfscript>
 	</cffunction>
+
+<!------------------------------------------- INTERNAL COLDBOX EVENTS ------------------------------------------->
 	
+	<!--- onConfigurationLoad --->
 	<cffunction name="onConfigurationLoad" access="public" output="false" returntype="void">
 		<cfscript>
-			// Set convention paths 
+			// Set the custom plugin paths
 			setCustomPluginsPath(controller.getSetting("MyPluginsInvocationPath"));
 			setCustomPluginsPhysicalPath(controller.getSetting("MyPluginsPath"));
 			setCustomPluginsExternalPath(controller.getSetting('PluginsExternalLocation'));
 			
-			// set the plugin extensions location by using the configured locations
-			setExtensionsPath(controller.getSetting("ColdBoxExtensionsLocation") & ".plugins");
-			setExtensionsPhysicalPath(expandPath("/" & replace(getExtensionsPath(),".","/","all") & "/"));			
+			// Override the coldbox plugin extensions if defined in the configuration
+			if( len(controller.getSetting("ColdBoxExtensionsLocation")) ){
+				setExtensionsPath(controller.getSetting("ColdBoxExtensionsLocation") & ".plugins");
+				setExtensionsPhysicalPath(expandPath("/" & replace(getExtensionsPath(),".","/","all") & "/"));
+			}			
 		</cfscript>
 	</cffunction>
 
@@ -145,14 +153,15 @@ Modification History:
 		</cfscript>
 	</cffunction>
 	
-	<!--- ColdBox Plugins Path --->
-	<cffunction name="getCorePluginsPath" access="public" output="false" returntype="string" hint="Get the base invocation path where core plugins exist.">
-		<cfreturn instance.corePluginsPath/>
-	</cffunction>
-	
 	<!--- ColdBox Custom Conventions Plugins Path --->
 	<cffunction name="getCustomPluginsPath" access="public" output="false" returntype="string" hint="Get the base invocation path where custom convention plugins exist.">
 		<cfreturn instance.customPluginsPath/>
+	</cffunction>
+	
+	<!--- Set the custom plugins Path --->
+	<cffunction name="setCustomPluginsPath" access="public" output="false" returntype="void" hint="Set CorePluginsPath">
+		<cfargument name="customPluginsPath" type="string" required="true"/>
+		<cfset instance.customPluginsPath = arguments.customPluginsPath/>
 	</cffunction>
 	
 	<!--- ColdBox Custom Conventions External Plugins Path --->
@@ -160,9 +169,21 @@ Modification History:
 		<cfreturn instance.customPluginsExternalPath/>
 	</cffunction>
 	
+	<!--- Set the custom plugins Path --->
+	<cffunction name="setCustomPluginsExternalPath" access="public" output="false" returntype="void" hint="Set customPluginsExternalPath">
+		<cfargument name="customPluginsExternalPath" type="string" required="true"/>
+		<cfset instance.customPluginsExternalPath = arguments.customPluginsExternalPath/>
+	</cffunction>
+	
 	<!--- ColdBox Extensions Plugins Physical Path --->
 	<cffunction name="getCustomPluginsPhysicalPath" access="public" output="false" returntype="string" hint="Get the physical path where custom convention plugins exist.">
 		<cfreturn instance.customPluginsPhysicalPath/>
+	</cffunction>
+	
+	<!--- Set the custom plugins Path --->
+	<cffunction name="setCustomPluginsPhysicalPath" access="public" output="false" returntype="void" hint="Set customPluginsPhysicalPath">
+		<cfargument name="customPluginsPhysicalPath" type="string" required="true"/>
+		<cfset instance.customPluginsPhysicalPath = arguments.customPluginsPhysicalPath/>
 	</cffunction>
 	
 	<!--- ColdBox Extensions Plugins Path --->
@@ -170,6 +191,18 @@ Modification History:
 		<cfreturn instance.extensionsPath/>
 	</cffunction>
 	
+	<!--- Set the coldbox plugins Path --->
+	<cffunction name="setExtensionsPath" access="public" output="false" returntype="void" hint="Set ExtensionsPath">
+		<cfargument name="extensionsPath" type="string" required="true"/>
+		<cfset instance.extensionsPath = arguments.extensionsPath/>
+	</cffunction>
+	
+	<!--- Set the coldbox physical plugins Path --->
+	<cffunction name="setExtensionsPhysicalPath" access="public" output="false" returntype="void" hint="Set ExtensionsPhysicalPath">
+		<cfargument name="extensionsPhysicalPath" type="string" required="true"/>
+		<cfset instance.extensionsPhysicalPath = arguments.extensionsPhysicalPath/>
+	</cffunction>
+		
 	<!--- ColdBox Extensions Plugins Physical Path --->
 	<cffunction name="getExtensionsPhysicalPath" access="public" output="false" returntype="string" hint="Get the physical path where extension plugins exist.">
 		<cfreturn instance.extensionsPhysicalPath/>
@@ -243,42 +276,6 @@ Modification History:
 		</cfscript>
 	</cffunction>
 	
-	<!--- Set the coldbox plugins Path --->
-	<cffunction name="setCorePluginsPath" access="private" output="false" returntype="void" hint="Set CorePluginsPath">
-		<cfargument name="corePluginsPath" type="string" required="true"/>
-		<cfset instance.corePluginsPath = arguments.corePluginsPath/>
-	</cffunction>
-	
-	<!--- Set the custom plugins Path --->
-	<cffunction name="setCustomPluginsPath" access="private" output="false" returntype="void" hint="Set CorePluginsPath">
-		<cfargument name="customPluginsPath" type="string" required="true"/>
-		<cfset instance.customPluginsPath = arguments.customPluginsPath/>
-	</cffunction>
-	
-	<!--- Set the custom plugins Path --->
-	<cffunction name="setCustomPluginsExternalPath" access="private" output="false" returntype="void" hint="Set customPluginsExternalPath">
-		<cfargument name="customPluginsExternalPath" type="string" required="true"/>
-		<cfset instance.customPluginsExternalPath = arguments.customPluginsExternalPath/>
-	</cffunction>
-	
-	<!--- Set the custom plugins Path --->
-	<cffunction name="setCustomPluginsPhysicalPath" access="private" output="false" returntype="void" hint="Set customPluginsPhysicalPath">
-		<cfargument name="customPluginsPhysicalPath" type="string" required="true"/>
-		<cfset instance.customPluginsPhysicalPath = arguments.customPluginsPhysicalPath/>
-	</cffunction>
-	
-	<!--- Set the coldbox plugins Path --->
-	<cffunction name="setExtensionsPath" access="private" output="false" returntype="void" hint="Set ExtensionsPath">
-		<cfargument name="extensionsPath" type="string" required="true"/>
-		<cfset instance.extensionsPath = arguments.extensionsPath/>
-	</cffunction>
-	
-	<!--- Set the coldbox physical plugins Path --->
-	<cffunction name="setExtensionsPhysicalPath" access="private" output="false" returntype="void" hint="Set ExtensionsPhysicalPath">
-		<cfargument name="extensionsPhysicalPath" type="string" required="true"/>
-		<cfset instance.extensionsPhysicalPath = arguments.extensionsPhysicalPath/>
-	</cffunction>
-	
 	<!--- Set the internal plugin cache dictionary. --->
 	<cffunction name="setCacheDictionary" access="private" output="false" returntype="void" hint="Set the plugin cache dictionary. NOT EXPOSED to avoid screwups">
 		<cfargument name="cacheDictionary" type="coldbox.system.core.collections.BaseDictionary" required="true"/>
@@ -333,20 +330,16 @@ Modification History:
 				
 			}//end if custom plugin
 			
-			
 			// Check coldbox extensions
-			if( len(controller.getSetting("ColdBoxExtensionsLocation")) ){
-				// Plugin File Path to check, start with extensions first.
-				pluginFilePath = getExtensionsPhysicalPath() & replace(arguments.plugin,".","/","all") & ".cfc";
-				
-				// Check Extensions locations First
-				if( fileExists(pluginFilePath) ){
-					return getExtensionsPath() & "." & arguments.plugin;
-				}
+			pluginFilePath = getExtensionsPhysicalPath() & replace(arguments.plugin,".","/","all") & ".cfc";
+			
+			// Check Extensions locations First
+			if( fileExists(pluginFilePath) ){
+				return getExtensionsPath() & "." & arguments.plugin;
 			}
 						
 			// else return the core coldbox path
-			return getCorePluginsPath() & "." & arguments.plugin;
+			return instance.CORE_PLUGINS_PATH & "." & arguments.plugin;
 		</cfscript>
 	</cffunction>
 

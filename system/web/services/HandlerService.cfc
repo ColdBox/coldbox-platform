@@ -29,7 +29,7 @@ Description :
 		</cfscript>
 	</cffunction>
 
-<!------------------------------------------- PUBLIC ------------------------------------------->
+<!------------------------------------------- INTERNAL COLDBOX EVENTS ------------------------------------------->
 
 	<!--- onConfigurationLoad --->
     <cffunction name="onConfigurationLoad" output="false" access="public" returntype="void" hint="Called by loader service when configuration file loads">
@@ -39,6 +39,8 @@ Description :
 			registerHandlers();
     	</cfscript>
     </cffunction>
+
+<!------------------------------------------- PUBLIC ------------------------------------------->
 
 	<!--- Get a new handler Instance --->
 	<cffunction name="newHandler" access="public" returntype="any" hint="Create a New Handler Instance" output="false" >
