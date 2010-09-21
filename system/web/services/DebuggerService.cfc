@@ -95,7 +95,7 @@ Description :
 				
 				// Save timer
 				QueryAddRow(qTimers,1);
-				QuerySetCell(qTimers, "ID", hash(timerInfo.label & now()));
+				QuerySetCell(qTimers, "ID", hash( getTickCount() & timerInfo.label) );
 				QuerySetCell(qTimers, "Method", timerInfo.label);
 				QuerySetCell(qTimers, "Time", getTickCount() - timerInfo.stime);
 				QuerySetCell(qTimers, "Timestamp", now());
