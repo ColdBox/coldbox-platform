@@ -94,19 +94,25 @@ Description :
 	 <tr>
 	   <td align="right" class="fw_errorTablesTitles">Coldfusion ID: </td>
 	   <td >
-		<cfif isDefined("session") and structkeyExists(session, "cfid")>
-		CFID=#session.CFID# ;
-		<cfelseif isDefined("client") and structkeyExists(client,"cfid")>
-		CFID=#client.CFID# ;
-		</cfif>
-		<cfif isDefined("session") and structkeyExists(session,"CFToken")>
-		CFToken=#session.CFToken# ;
-		<cfelseif isDefined("client") and structkeyExists(client,"CFToken")>
-		CFToken=#client.CFToken# ;
-		</cfif>
-		<cfif isDefined("session") and structkeyExists(session,"sessionID")>
-		JSessionID=#session.sessionID#
-		</cfif>
+	   	<cftry>
+			<cfif isDefined("session") and structkeyExists(session, "cfid")>
+			CFID=#session.CFID# ;
+			<cfelseif isDefined("client") and structkeyExists(client,"cfid")>
+			CFID=#client.CFID# ;
+			</cfif>
+			<cfif isDefined("session") and structkeyExists(session,"CFToken")>
+			CFToken=#session.CFToken# ;
+			<cfelseif isDefined("client") and structkeyExists(client,"CFToken")>
+			CFToken=#client.CFToken# ;
+			</cfif>
+			<cfif isDefined("session") and structkeyExists(session,"sessionID")>
+			JSessionID=#session.sessionID#
+			</cfif>
+			<cfcatch>
+				<!--- ignore, in case there is no session id available --->
+				N/A
+			</cfcatch>
+		</cftry>
 		</td>
 	 </tr>
 	 <tr>
