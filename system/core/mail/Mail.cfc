@@ -10,7 +10,7 @@ Description :
 
 ----------------------------------------------------------------------->
 <cfcomponent output="false" hint="I model a cfmail object with extra pizzazz">
-				 
+
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
 	<cfscript>
@@ -23,22 +23,22 @@ Description :
 		instance.from = "";
 		instance.to = "";
 	</cfscript>
-	
+
 	<!--- init --->
 	<cffunction name="init" access="public" output="false" returntype="Mail" hint="Initialize the Mail object">
 		<cfscript>
 			return config(argumentCollection=arguments);
 		</cfscript>
 	</cffunction>
-	
+
 	<!--- propertyExists --->
 	<cffunction name="propertyExists" output="false" access="public" returntype="boolean" hint="Checks if a mail property exists">
 		<cfargument name="property" type="string" required="true" hint="The property to check"/>
 		<cfreturn structKeyExists(instance,arguments.property)>
 	</cffunction>
-	
+
 	<!--- config --->
-	<cffunction name="config" access="public" output="false" returntype="Mail" hint="Configure the Mail object">
+	<cffunction name="config" access="public" output="false" returntype="Mail" 	hint="Configure the Mail object">
 		<cfargument name="from" 			required="false" type="string" 		hint="Initial value for the from property." />
 		<cfargument name="to" 				required="false" type="string" 		hint="Initial value for the to property." />
 		<cfargument name="body" 			required="false" type="string" 		hint="Initial value for the email body." />
@@ -50,35 +50,35 @@ Description :
 		<cfargument name="group"			required="false" type="string" 		hint="Initial value for the group property." />
 		<cfargument name="groupcasesensitive" required="false" type="boolean" 	hint="Initial value for the groupcasesensitive property." />
 		<cfargument name="mailerid" 		required="false" type="string" 		hint="Initial value for the mailerid property." />
-		<cfargument name="maxrows" 			required="false" type="numeric" 		hint="Initial value for the maxrows property." />
+		<cfargument name="maxrows" 			required="false" type="numeric" 	hint="Initial value for the maxrows property." />
 		<cfargument name="mimeattach" 		required="false" type="string" 		hint="Initial value for the mimeattach property." />
 		<cfargument name="password" 		required="false" type="string" 		hint="Initial value for the password property." />
-		<cfargument name="port" 			required="false" type="numeric" 		hint="Initial value for the port property." />
+		<cfargument name="port" 			required="false" type="numeric" 	hint="Initial value for the port property." />
 		<cfargument name="priority" 		required="false" type="string" 		hint="Initial value for the priority property." />
 		<cfargument name="query" 			required="false" type="string" 		hint="Initial value for the query property." />
 		<cfargument name="replyto" 			required="false" type="string" 		hint="Initial value for the replyto property." />
 		<cfargument name="server" 			required="false" type="string" 		hint="Initial value for the server property." />
 		<cfargument name="spoolenable" 		required="false" type="boolean" 	hint="Initial value for the spoolenable property." />
-		<cfargument name="startrow" 		required="false" type="numeric" 		hint="Initial value for the startrow property." />
+		<cfargument name="startrow" 		required="false" type="numeric" 	hint="Initial value for the startrow property." />
 		<cfargument name="subject" 			required="false" type="string" 		hint="Initial value for the subject property." />
-		<cfargument name="timeout" 			required="false" type="numeric" 		hint="Initial value for the timeout property." />
+		<cfargument name="timeout" 			required="false" type="numeric" 	hint="Initial value for the timeout property." />
 		<cfargument name="type" 			required="false" type="string" 		hint="Initial value for the type property." />
 		<cfargument name="username" 		required="false" type="string" 		hint="Initial value for the username property." />
 		<cfargument name="useSSL" 			required="false" type="boolean" 	hint="Initial value for the useSSL property." />
 		<cfargument name="useTLS" 			required="false" type="boolean" 	hint="Initial value for the useTLS property." />
-		<cfargument name="wraptext" 		required="false" type="numeric" 		hint="Initial value for the wraptext property." />
+		<cfargument name="wraptext" 		required="false" type="numeric" 	hint="Initial value for the wraptext property." />
 		<cfscript>
 			var key = 0;
-			
+
 			// populate mail keys
 			for(key in arguments){
 				if( structKeyExists(arguments,key) ){
 					instance[key] = arguments[key];
 				}
 			}
-			
+
 			return this;
-		</cfscript>	
+		</cfscript>
 	</cffunction>
 
 
@@ -203,7 +203,7 @@ Description :
 	<cffunction name="getMailParts" access="public" output="false" returntype="Array" hint="Gets the mailParts defined in this Mail object">
 		<cfreturn instance.mailParts />
 	</cffunction>
-	
+
 	<cffunction name="getBody" access="public" output="false" returntype="string" hint="Get body">
 		<cfreturn instance.body/>
 	</cffunction>
@@ -349,16 +349,16 @@ Description :
 		<cfargument name="newWraptext" type="numeric" required="yes" />
 		<cfset instance.wraptext = arguments.newWraptext />
 	</cffunction>
-	
+
 	<cffunction name="validate" access="public" returntype="boolean" hint="validates the basic fields of To, From and Body" output="false" >
 		<cfscript>
 			if( getFrom().length() eq 0 OR
 				getTO().length() eq 0 OR
 				getSubject().length() eq 0 OR
 				( getBody().length() eq 0 AND arrayLen(getMailParts()) EQ 0 )
-				
+
 			){
-				return false;	
+				return false;
 			}
 			else{
 				return true;
@@ -372,7 +372,7 @@ Description :
 		<cfargument name="tokenMap" type="struct" required="yes" />
 		<cfset instance.bodyTokens = arguments.tokenMap />
 	</cffunction>
-	
+
 	<cffunction name="addMailPart" access="public" returntype="void" output="false" >
 		<cfargument name="charset" 		required="false" type="string" 	hint="Initial value for the charsetproperty." />
 		<cfargument name="type" 		required="false" type="string" 	hint="Initial value for the typeproperty." />
@@ -382,11 +382,11 @@ Description :
 			// Add new mail part
 			var mailpart = structnew();
 			var key = 0;
-			
+
 			for( key in arguments ){
 				if( structKeyExists(arguments, key) ){ mailpart[key] = arguments[key]; }
 			}
-			
+
 			arrayAppend(getMailParts(), mailpart);
 		</cfscript>
 	</cffunction>
@@ -399,14 +399,14 @@ Description :
 		<cfargument name="name" 		required="false" type="string" hint="Initial value for the nameproperty." />
 		<cfargument name="value" 		required="false" type="string" hint="Initial value for the valueproperty." />
 		<cfscript>
-			// Add new mail Param 
+			// Add new mail Param
 			var mailparams = structnew();
 			var key = 0;
-			
+
 			for( key in arguments ){
 				if( structKeyExists(arguments, key) ){ mailparams[key] = arguments[key]; }
 			}
-			
+
 			arrayAppend(getMailParams(), mailparams);
 		</cfscript>
 	</cffunction>
@@ -419,5 +419,5 @@ Description :
 		<cfargument name="memento" required="false" type="struct" />
 		<cfset instance = arguments.memento>
 	</cffunction>
-	
+
 </cfcomponent>
