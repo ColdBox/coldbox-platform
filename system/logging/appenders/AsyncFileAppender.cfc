@@ -81,7 +81,7 @@ Properties:
 		<cfelse>
 			<!--- Thread this puppy --->
 			<cfthread name="#threadName#" entry="#entry#"> 
-				<cfset append(attributes.entry)>
+				<cfset variables.append(attributes.entry)>
 			</cfthread>		
 		</cfif>
 				
