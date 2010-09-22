@@ -524,7 +524,7 @@ Properties
 			<cfif NOT instance.utility.inThread()>
 			
 				<cfthread name="#threadName#">  
-					<cfset _reap()>
+					<cfset variables._reap()>
 				</cfthread>
 		
 			<cfelse>
