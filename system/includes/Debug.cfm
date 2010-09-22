@@ -79,7 +79,7 @@ Description :
 		  Server Instance:
 		</div>
 		<div class="fw_debugContentCell">
-	    #controller.getPlugin("Utilities").getInetHost()#
+	    #controller.getPlugin("JVMUtils").getInetHost()#
 		</div>
 
 		<div class="fw_debugTitleCell">

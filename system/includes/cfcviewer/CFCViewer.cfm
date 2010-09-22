@@ -104,7 +104,7 @@ Modification History:
 				</tr>
 				<tr>
 					<td><strong>Package</strong></td>
-					<td>#getPlugin("Utilities").ripExtension(md.name)#</td>
+					<td>#getPlugin("FileUtils").ripExtension(md.name)#</td>
 				</tr>
 				<cfif md.hint.length()>
 				<tr>
