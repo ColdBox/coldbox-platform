@@ -125,7 +125,7 @@ Description :
 	 </tr>
 	 <tr>
 	   <td align="right" class="fw_errorTablesTitles"> Host &amp; Server: </td>
-	   <td >#htmlEditFormat(cgi.http_host)# #controller.getPlugin("Utilities").getInetHost()#</td>
+	   <td >#htmlEditFormat(cgi.http_host)# #controller.getPlugin("JVMUtils").getInetHost()#</td>
 	 </tr>
 	 <tr>
 	   <td align="right" class="fw_errorTablesTitles">Query String: </td>

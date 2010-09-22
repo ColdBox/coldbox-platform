@@ -32,12 +32,10 @@ Validations:
 - zipcode 5 or 9 digit format zip codes
 
 ----------------------------------------------------------------------->
-<cfcomponent name="Validator" 
-			 extends="coldbox.system.core.util.Validator" 
+<cfcomponent extends="coldbox.system.core.util.Validator" 
 			 output="false" 
 			 hint="Our incredible validator for EVERYTHING!"
-			 cache="true"
-			 cacheTimeout="10">
+			 cache="true">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------>
 
@@ -45,14 +43,13 @@ Validations:
 		<cfscript>
 			super.init();
 			
-			/* Plugin Properties */
+			// Plugin Properties
 			setPluginName("Validator");
 			setPluginVersion("1.0");
 			setPluginDescription("Validate Stuff now!");
 			setPluginAuthor("Luis Majano & Henrik Joreteg");
 			setPluginAuthorURL("http://coldbox.org,http://joreteg.com/");
 
-			/* Return Instance */
 			return this;
 		</cfscript>
 	</cffunction>

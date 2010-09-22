@@ -234,15 +234,14 @@ Modification History:
 			var coldpsring = "";
 			var settingsStruct = StructNew();
 			var ConfigContents = "";
-			var oUtil = getPlugin("Utilities");
 			
 			//Copy the settings Structure
 			structAppend(settingsStruct, getSettingStructure());
 			//Create the Coldspring Factory
 			coldpsring = createObject("component",getCOLDSPRING_FACTORY()).init(structnew(),settingsStruct);
 			/* Read the XML File and do string replacement First */
-			ConfigContents = oUtil.readFile(getExpandedIOCDefinitionFile());
-			ConfigContents = oUtil.placeHolderReplacer(ConfigContents,settingsStruct);	
+			ConfigContents = getPlugin("FileUtils").readFile(getExpandedIOCDefinitionFile());
+			ConfigContents = getPlugin("Utilities").placeHolderReplacer(ConfigContents,settingsStruct);	
 			/* Load BEan Definitions */
 			coldpsring.loadBeansFromXmlRaw( ConfigContents );
 			
