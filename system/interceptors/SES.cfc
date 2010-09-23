@@ -415,9 +415,26 @@ Description :
 		</cfscript>
 	</cffunction>
 
-
-
 <!------------------------------------------- PRIVATE ------------------------------------------->
+
+	<!--- detectExtension --->
+    <cffunction name="detectExtension" output="false" access="private" returntype="any" hint="Detect extensions from the incoming request">
+    	<cfargument name="requestString" 	type="any"    required="true"  hint="The requested URL string">
+		<cfargument name="event"  			type="any"    required="true"  hint="The event object.">
+		<cfscript>
+    		var extension = listLast(arguments.requestString,".");
+			
+			// check if extension found
+			if( find(".", extension) AND len(extension) ){
+				// set the format request collection variable
+				event.setValue("format", extension);
+				// remove it from the string
+				return left(requestString, len(arguments.requestString) - len(extension) - 1 );
+			}
+			
+			return requestString;
+		</cfscript>
+    </cffunction>
 
 	<!--- throwInvalidHTTP --->
     <cffunction name="throwInvalidHTTP" output="false" access="private" returntype="void" hint="Throw an invalid HTTP exception">
@@ -638,23 +655,8 @@ Description :
 		</cfscript>
 	</cffunction>
 	
-	<!--- detectExtension --->
-    <cffunction name="detectExtension" output="false" access="public" returntype="any" hint="Detect extensions from the incoming request">
-    	<cfargument name="requestString" 	type="any"    required="true"  hint="The requested URL string">
-		<cfargument name="event"  			type="any"    required="true"  hint="The event object.">
-		<cfscript>
-    		var extension = listLast(arguments.requestString,".");
-			
-			// check if extension found
-			if( len(extension) ){
-				// set the format request collection variable
-				event.setValue("format", extension);
-				// remove it from the string
-				return left(requestString, len(arguments.requestString) - len(extension) - 1 );
-			}
-		</cfscript>
-    </cffunction>
-
+	fnc
+	
 	<!--- Find a route --->
 	<cffunction name="findRoute" access="private" output="false" returntype="Struct" hint="Figures out which route matches this request">
 		<!--- ************************************************************* --->
@@ -724,9 +726,16 @@ Description :
 
 			// Check if the match is a module Routing entry point or not?
 			if( len( foundRoute.moduleRouting ) ){
+				
+				// Try to Populate the params from the module pattern if any
+				for(x=1; x lte arrayLen(foundRoute.patternParams); x=x+1){
+					params[foundRoute.patternParams[x]] = mid(requestString, match.pos[x+1], match.len[x+1]);
+				}
+				
 				// Try to discover the route via the module routing calls
-				params = findRoute(reReplaceNoCase(requestString,foundRoute.regexpattern,""),arguments.event,foundRoute.moduleRouting);
-				// If empty, then just continue matching calls, else return matched route.
+				structAppend(params, findRoute(reReplaceNoCase(requestString,foundRoute.regexpattern,""),arguments.event,foundRoute.moduleRouting), true);
+				
+				// Return if parameters found.
 				if( NOT structIsEmpty(params) ){
 					return params;
 				}
