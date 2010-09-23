@@ -77,7 +77,9 @@ Optional Methods
 		
 		// SES Routes
 		routes = [
-			{pattern="/api-docs", handler="api",action="index"}		
+			{pattern="/", handler="test",action="index"},	
+			{pattern="/api-docs/:name", handler="api",action="index"},
+			{pattern="/api-docs", handler="api",action="index"}				
 		];		
 		
 		// Interceptor Config
