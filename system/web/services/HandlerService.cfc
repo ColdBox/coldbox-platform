@@ -134,6 +134,11 @@ Description :
 					// Let's go execute our missing action
 					return oEventHandler;
 				}
+				
+				// Test for Implicit View Dispatch
+				if( isViewDispatch(arguments.ehBean.getFullEvent(),arguments.ehBean) ){
+					return oEventHandler;
+				}
 
 				// Invalid Event procedures
 				invalidEvent(arguments.ehBean.getFullEvent(), arguments.ehBean);
@@ -268,6 +273,11 @@ Description :
 				return HandlerBean;
 			}
 		} //end else
+		
+		// Do View Dispatch Check Procedures
+		if( isViewDispatch(arguments.event,handlerBean) ){
+			return handlerBean;
+		}
 
 		// Run invalid event procedures, handler not found
 		invalidEvent(arguments.event,handlerBean);
@@ -276,6 +286,38 @@ Description :
 		return handlerBean;
 		</cfscript>
 	</cffunction>
+	
+	<!--- isViewDispatch --->
+    <cffunction name="isViewDispatch" output="false" access="public" returntype="any" hint="Check if the incoming event has a matching implicit view dispatch available">
+    	<cfargument name="event"  type="any"	required="true" hint="The event string"/>
+		<cfargument name="ehBean" type="any" 	required="true" hint="The event handler bean"/>
+		<cfscript>
+    		// Cleanup for modules
+			var cEvent     		= reReplaceNoCase(arguments.event,"^([^:.]*):","");
+			var renderer 		= controller.getPlugin("Renderer");
+			var targetView		= "";
+			var targetModule	= getToken(arguments.event,1,":");
+			
+			// Cleanup of . to / for lookups 
+			cEvent = lcase(replace(cEvent,".","/","all"));
+			
+			// module?
+			if( find(":", arguments.event) and structKeyExists(controller.getSetting("modules"), targetModule ) ){
+				targetView = renderer.locateModuleView(cEvent,targetModule);
+			}	
+			else{
+				targetView = renderer.locateView(cEvent);
+			}
+			
+			// Validate Target View
+			if( fileExists( expandPath(targetView & ".cfm") ) ){
+				arguments.ehBean.setViewDispatch(true);
+				return true;
+			}
+			
+			return false;			
+		</cfscript>
+    </cffunction>
 
 	<!--- invalidEvent --->
 	<cffunction name="invalidEvent" output="false" access="private" returntype="void" hint="Invalid Event procedures. Throws EventHandlerNotRegisteredException">

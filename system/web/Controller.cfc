@@ -485,11 +485,21 @@ Only one instance of a specific ColdBox application exists.
 
 			// Validate the incoming event and get a handler bean to continue execution
 			ehBean = getHandlerService().getRegisteredHandler(arguments.event);
+			
+			// Validate this is not a view dispatch, else return for rendering
+			if( ehBean.getViewDispatch() ){
+				return;
+			}
+			
 			// Is this a private event execution?
 			ehBean.setIsPrivate(arguments.private);
 			// Now get the correct handler to execute
 			oHandler = handlerService.getHandler(ehBean,oRequestContext);
-
+			// Validate again this is not a view dispatch as the handler might exist but not the action
+			if( ehBean.getViewDispatch() ){
+				return;
+			}
+			
 			try{
 
 				// Determine if it is An allowed HTTP method to execute, else throw error

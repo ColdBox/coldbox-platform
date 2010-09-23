@@ -1,4 +1,8 @@
-<cfset cachePut("test",now(), createTimeSpan(0,0,3,0))>
-<cfset test = cacheGet("test")>
-
-<cfdump var="#cacheGetMetadata("test")#">
+<cfset test = "hello:test">
+<cfset module = "">
+<cfif find(":",test)>
+	<cfset module = getToken(test,1, ":")>
+</cfif>
+<cfoutput>
+module= #module#
+</cfoutput>
