@@ -28,10 +28,11 @@ Description :
 			// Setup the default interceptor properties
 			setRoutes( ArrayNew(1) );
 			setModuleRoutingTable( structnew() );
-			setLooseMatching(false);
-			setUniqueURLs(true);
-			setEnabled(true);
-			setAutoReload(false);
+			setLooseMatching( false );
+			setUniqueURLs( true );
+			setEnabled( true );
+			setAutoReload( false );
+			setExtensionDetection( true );
 
 			//Import Config
 			importConfiguration();
@@ -73,7 +74,7 @@ Description :
 			if( getUniqueURLs() ){
 				checkForInvalidURL( cleanedPaths["pathInfo"] , cleanedPaths["scriptName"], arguments.event );
 			}
-
+			
 			// Find a route to dispatch
 			aRoute = findRoute( cleanedPaths["pathInfo"], arguments.event );
 
@@ -372,6 +373,16 @@ Description :
     	<cfargument name="looseMatching" type="boolean" required="true">
     	<cfset instance.looseMatching = arguments.looseMatching>
     </cffunction>
+	
+	<!--- get/set Extension Detection --->
+	<cffunction name="getExtensionDetection" access="public" returntype="boolean" output="false" hint="Get the flag if extension detection is enabled">
+    	<cfreturn instance.extensionDetection>
+    </cffunction>
+    <cffunction name="setExtensionDetection" access="public" returntype="void" output="false" hint="Call it to activate/deactivate automatic extension detection">
+    	<cfargument name="extensionDetection" type="boolean" required="true">
+    	<cfset instance.extensionDetection = arguments.extensionDetection>
+    </cffunction>
+    
 
 	<!--- Getter/Setter Enabled --->
 	<cffunction name="setEnabled" access="public" output="false" returntype="void" hint="Set whether the interceptor is enabled or not.">
@@ -626,6 +637,23 @@ Description :
 			return arguments.requestString;
 		</cfscript>
 	</cffunction>
+	
+	<!--- detectExtension --->
+    <cffunction name="detectExtension" output="false" access="public" returntype="any" hint="Detect extensions from the incoming request">
+    	<cfargument name="requestString" 	type="any"    required="true"  hint="The requested URL string">
+		<cfargument name="event"  			type="any"    required="true"  hint="The event object.">
+		<cfscript>
+    		var extension = listLast(arguments.requestString,".");
+			
+			// check if extension found
+			if( len(extension) ){
+				// set the format request collection variable
+				event.setValue("format", extension);
+				// remove it from the string
+				return left(requestString, len(arguments.requestString) - len(extension) - 1 );
+			}
+		</cfscript>
+    </cffunction>
 
 	<!--- Find a route --->
 	<cffunction name="findRoute" access="private" output="false" returntype="Struct" hint="Figures out which route matches this request">
@@ -647,7 +675,7 @@ Description :
 		<cfset var _routesLength = ArrayLen(_routes)>
 
 		<cfscript>
-
+		
 			// Module call? Switch routes
 			if( len(arguments.module) ){
 				_routes = getModuleRoutes(arguments.module);
@@ -656,6 +684,12 @@ Description :
 
 			// fix URL vars after ?
 			requestString = fixIISURLVars(requestString,rc);
+			
+			// Extension detection if enabled
+			if( getExtensionDetection() ){
+				requestString = detectExtension(requestString,arguments.event);
+			}
+			
 			//Remove the leading slash
 			if( len(requestString) GT 1 AND left(requestString,1) eq "/" ){
 				requestString = right(requestString,len(requestString)-1);
@@ -664,7 +698,7 @@ Description :
 			if( right(requestString,1) IS NOT "/" ){
 				requestString = requestString & "/";
 			}
-
+			
 			// Let's Find a Route, Loop over all the routes array
 			for(i=1; i lte _routesLength; i=i+1){
 
