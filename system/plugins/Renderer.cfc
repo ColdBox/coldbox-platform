@@ -270,36 +270,8 @@ Description :
 		<cfreturn cbox_RederedLayout>
 	</cffunction>
 
-<!------------------------------------------- PRIVATE ------------------------------------------->
-
-	<!--- implicitViewChecks --->
-	<cffunction name="implicitViewChecks" output="false" access="private" returntype="any" hint="Does implicit view rendering checks">
-		<cfscript>
-			var layout = event.getCurrentLayout();
-			var cEvent = event.getCurrentEvent();
-			// Cleanup for modules
-			cEvent     = reReplaceNoCase(cEvent,"^([^:.]*):","");
-
-			//Check if no view set?
-			if( NOT len( event.getCurrentView() ) ){
-				// Implicit views
-				event.setView( lcase(replace(cEvent,".","/","all")) );
-
-				// check if default view is set?
-				if( len( event.getDefaultView() ) ){
-					event.setView(event.getDefaultView());
-				}
-
-				// reset layout according to newly set views;
-				layout = event.getCurrentLayout();
-			}
-
-			return layout;
-		</cfscript>
-	</cffunction>
-
 	<!--- locateLayout --->
-	<cffunction name="locateLayout" output="false" access="private" returntype="any" hint="Locate the layout to render">
+	<cffunction name="locateLayout" output="false" access="public" returntype="any" hint="Locate the layout to render">
 		<cfargument name="layout" type="any" required="true" hint="The layout name"/>
 		<cfscript>
 			// Default path is the conventions
@@ -326,7 +298,7 @@ Description :
 	</cffunction>
 
 	<!--- locateModuleLayout --->
-	<cffunction name="locateModuleLayout" output="false" access="private" returntype="any" hint="Locate the view to render using module logic">
+	<cffunction name="locateModuleLayout" output="false" access="public" returntype="any" hint="Locate the view to render using module logic">
 		<cfargument name="layout" 			type="any" 		required="true"  hint="The layout name to discover" >
 		<cfargument name="module" 			type="any" 		required="false" default="" hint="The name of the module we are searching for"/>
 		<cfargument name="explicitModule" 	type="boolean" 	required="false" default="false" hint="Are we locating explicitly or implicitly for a module layout"/>
@@ -373,7 +345,7 @@ Description :
 	</cffunction>
 
 	<!--- locateView --->
-	<cffunction name="locateView" output="false" access="private" returntype="any" hint="Locate the view to render">
+	<cffunction name="locateView" output="false" access="public" returntype="any" hint="Locate the view to render">
 		<cfargument name="view" 		type="any" 		required="true" 	hint="The view name" >
 		<cfscript>
 			// Default path is the conventions
@@ -390,7 +362,7 @@ Description :
 	</cffunction>
 
 	<!--- locateModuleView --->
-	<cffunction name="locateModuleView" output="false" access="private" returntype="any" hint="Locate the view to render using module logic">
+	<cffunction name="locateModuleView" output="false" access="public" returntype="any" hint="Locate the view to render using module logic">
 		<cfargument name="view" 			type="any" 		required="true"  hint="The view name" >
 		<cfargument name="module" 			type="any"	    required="false" default="" hint="The name of the module to explicity look for a view"/>
 		<cfargument name="explicitModule" 	type="boolean" 	required="false" default="false" hint="Are we locating explicitly or implicitly for a module layout"/>
@@ -434,6 +406,35 @@ Description :
 
 			// Return normal view lookup
 			return locateView(arguments.view);
+		</cfscript>
+	</cffunction>
+	
+<!------------------------------------------- PRIVATE ------------------------------------------->
+
+	<!--- implicitViewChecks --->
+	<cffunction name="implicitViewChecks" output="false" access="private" returntype="any" hint="Does implicit view rendering checks">
+		<cfscript>
+			var layout = event.getCurrentLayout();
+			var cEvent = event.getCurrentEvent();
+			
+			// Cleanup for modules
+			cEvent     = reReplaceNoCase(cEvent,"^([^:.]*):","");
+
+			//Check if no view set?
+			if( NOT len( event.getCurrentView() ) ){
+				// Implicit views
+				event.setView( lcase(replace(cEvent,".","/","all")) );
+
+				// check if default view is set?
+				if( len( event.getDefaultView() ) ){
+					event.setView(event.getDefaultView());
+				}
+
+				// reset layout according to newly set views;
+				layout = event.getCurrentLayout();
+			}
+
+			return layout;
 		</cfscript>
 	</cffunction>
 

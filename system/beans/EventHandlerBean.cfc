@@ -25,6 +25,7 @@ Modification History:
 		instance.isPrivate 			= false;
 		instance.missingAction 		= "";
 		instance.module				= "";
+		instance.viewDispatch		= false;
 	</cfscript>
 
 	<cffunction name="init" access="public" returntype="EventHandlerBean" output="false">
@@ -34,6 +35,15 @@ Modification History:
 	</cffunction>
 
 <!------------------------------------------- PUBLIC ------------------------------------------->
+	
+	<!--- Get/Set View Dispatch --->
+	<cffunction name="getViewDispatch" access="public" returntype="boolean" output="false" hint="Get the view dispatch flag">
+    	<cfreturn instance.viewDispatch>
+    </cffunction>
+    <cffunction name="setViewDispatch" access="public" returntype="void" output="false" hint="Setup a view dispatch or not">
+    	<cfargument name="viewDispatch" type="boolean" required="true">
+    	<cfset instance.viewDispatch = arguments.viewDispatch>
+    </cffunction>    
 	
 	<!--- Get Set Memento --->
 	<cffunction name="getMemento" access="public" returntype="struct" output="false" hint="Get the memento">
