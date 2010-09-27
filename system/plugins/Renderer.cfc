@@ -422,14 +422,16 @@ Description :
 
 			//Check if no view set?
 			if( NOT len( event.getCurrentView() ) ){
-				// Implicit views
-				event.setView( lcase(replace(cEvent,".","/","all")) );
-
+				
 				// check if default view is set?
 				if( len( event.getDefaultView() ) ){
 					event.setView(event.getDefaultView());
 				}
-
+				else{
+					// Implicit views
+					event.setView( lcase(replace(cEvent,".","/","all")) );
+				}
+				
 				// reset layout according to newly set views;
 				layout = event.getCurrentLayout();
 			}
