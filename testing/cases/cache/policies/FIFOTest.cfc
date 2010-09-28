@@ -36,7 +36,8 @@ Description :
 		
 		mockCM.$("getConfiguration",config);
 		mockIndexer.$("getPoolMetadata", pool).$("objectExists",true);
-		keys = ["obj2","obj3","obj1"];
+		keys = structSort(pool,"numeric","asc","Created");
+		
 		mockIndexer.$("getSortedKeys", keys);
 		mockIndexer.$("getObjectMetadata").$results(pool.obj2,pool.obj3,pool.obj1);
 		
