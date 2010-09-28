@@ -27,7 +27,7 @@ Description:
 			
 			// Properties
 			setpluginName("OWASP AntiSamy Project");
-			setpluginVersion("1.0");
+			setpluginVersion("1.4.1");
 			setpluginDescription("AntiSamy to protect from XSS hacks.");
 			setpluginAuthor("Sana Ullah");
 			setpluginAuthorURL("http://www.coldbox.org");
@@ -39,13 +39,15 @@ Description:
 			getPlugin("JavaLoader").appendPaths(expandPath("#libPath#"));
 			
 			// AntiSamy policyfile
-			instance.PolicyFileStruct['antisamy'] = expandPath('#libPath#/antisamy-1.3.xml');
+			instance.policyFileStruct['antisamy'] = expandPath('#libPath#/antisamy-1.4.1.xml');
 			//Load eBay policyfile
-			instance.PolicyFileStruct['ebay']	  = expandPath('#libPath#/antisamy-ebay-1.3.xml');
+			instance.policyFileStruct['ebay']	  = expandPath('#libPath#/antisamy-ebay-1.4.1.xml');
 			//Load myspace policyfile
-			instance.PolicyFileStruct['myspace']  = expandPath('#libPath#/antisamy-myspace-1.3.xml');
+			instance.policyFileStruct['myspace']  = expandPath('#libPath#/antisamy-myspace-1.4.1.xml');
 			//Load slashdot policyfile
-			instance.PolicyFileStruct['slashdot'] = expandPath('#libPath#/antisamy-slashdot-1.3.xml');
+			instance.policyFileStruct['slashdot'] = expandPath('#libPath#/antisamy-slashdot-1.4.1.xml');
+			//Load tinymce policyfile
+			instance.policyFileStruct['tinymce'] = expandPath('#libPath#/antisamy-tinymce-1.4.1.xml');
 			
 			return this;
 		</cfscript>
@@ -57,7 +59,7 @@ Description:
 	<cffunction name="HTMLSanitizer" returntype="Any" output="false" hint="clean HTML from XSS scripts using the AntiSamy project. The available policies are antisamy, ebay,myspace or slashdot">
 		<!--- ************************************************************* --->
 		<cfargument name="HTMLData"		 type="string"  required="true" hint="The html text to sanitize">
-		<cfargument name="policyFile"	 type="string"  required="false" default="myspace" hint="Provide policy file to scan html. Available options are: antisamy, ebay, myspace, slashdot">
+		<cfargument name="policyFile"	 type="string"  required="false" default="myspace" hint="Provide policy file to scan html. Available options are: antisamy, ebay, myspace, slashdot, tinymce">
 		<cfargument name="resultsObject" type="boolean" required="false" default="false" hint="Return the cleaned HTML or the results object. By default it is the cleaned HTML"/>
 		<!--- ************************************************************* --->
 		<cfscript>
@@ -65,8 +67,15 @@ Description:
 			var cleanedHtml  = "";
 			var antiSamy	= getPlugin("JavaLoader").create("org.owasp.validator.html.AntiSamy");
 			
+			// validate policy file
+			if( NOT structKeyExists(instance.policyFileStruct, arguments.policyFile) ){
+				$throw("Invalid Policy File: #arguments.policyFile#","The available policy files are #structKeyList(instance.policyFileStruct)#","AntiSamy.InvalidPolicyException");
+			}
+			
+			// Clean with policy
 			cleanedHtml	= antiSamy.scan(arguments.htmlData, instance.policyFileStruct[arguments.policyFile]);
 			
+			// returning results object or just clean HTML?
 			if( arguments.resultsObject ){
 				return cleanedHtml;
 			} 

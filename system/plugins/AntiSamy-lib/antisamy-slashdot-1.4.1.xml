@@ -33,9 +33,9 @@ Slashdot allowed tags taken from "Reply" page:
 		space characters.
 		-->
 		
-		<regexp name="htmlTitle" value="[\p{L}\p{N}\s-_',:\[\]!\./\\\(\)]*"/> <!-- force non-empty with a '+' at the end instead of '*' -->
+		<regexp name="htmlTitle" value="[\p{L}\p{N}\s\-_',:\[\]!\./\\\(\)&amp;]*"/> <!-- force non-empty with a '+' at the end instead of '*' -->
 		<regexp name="onsiteURL" value="([\p{L}\p{N}\\/\.\?=\#&amp;;\-_~]+|\#(\w)+)"/>
-		<regexp name="offsiteURL" value="(\s)*((ht|f)tp(s?)://|mailto:)[\p{L}\p{N}]+[~\p{L}\p{N}\p{Zs}\-_\.@#$%&amp;;:,\?=/\+!]*(\s)*"/>
+		<regexp name="offsiteURL" value="(\s)*((ht|f)tp(s?)://|mailto:)[\p{L}\p{N}]+[~\p{L}\p{N}\p{Zs}\-_\.@\#\$%&amp;;:,\?=/\+!\(\)]*(\s)*"/>
 	
 	</common-regexps>
 	

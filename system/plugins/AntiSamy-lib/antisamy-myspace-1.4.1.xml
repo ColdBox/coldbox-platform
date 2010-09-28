@@ -43,16 +43,15 @@ http://www.w3.org/TR/html401/struct/global.html
 		<!-- HTML/CSS Spec allows 3 or 6 digit hex to specify color -->
 		<regexp name="colorCode" value="(#([0-9a-fA-F]{6}|[0-9a-fA-F]{3}))"/>
 
-		<regexp name="number" value="[0-9]+"/>
 		<regexp name="anything" value=".*"/>
 		<regexp name="numberOrPercent" value="(\d)+(%{0,1})"/>
 		<regexp name="paragraph" value="([\p{L}\p{N},'\.\s\-_\(\)]|&amp;[0-9]{2};)*"/>
-		<regexp name="htmlId" value="[a-zA-Z0-9-_]+"/>
-		<regexp name="htmlTitle" value="[\p{L}\p{N}\s-_',:\[\]!\./\\\(\)]*"/> <!-- force non-empty with a '+' at the end instead of '*' -->
-		<regexp name="htmlClass" value="[a-zA-Z0-9\s,-_]+"/>
+		<regexp name="htmlId" value="[a-zA-Z0-9\:\-_\.]+"/>
+		<regexp name="htmlTitle" value="[\p{L}\p{N}\s\-_',:\[\]!\./\\\(\)&amp;]*"/> <!-- force non-empty with a '+' at the end instead of '*' -->
+		<regexp name="htmlClass" value="[a-zA-Z0-9\s,\-_]+"/>
 
 		<regexp name="onsiteURL" value="([\p{L}\p{N}\\\.\#@\$%\+&amp;;\-_~,\?=/!]+|\#(\w)+)"/>
-		<regexp name="offsiteURL" value="(\s)*((ht|f)tp(s?)://|mailto:)[\p{L}\p{N}]+[\p{L}\p{N}\p{Zs}\.\#@\$%\+&amp;;:\-_~,\?=/!]*(\s)*"/>
+		<regexp name="offsiteURL" value="(\s)*((ht|f)tp(s?)://|mailto:)[\p{L}\p{N}]+[\p{L}\p{N}\p{Zs}\.\#@\$%\+&amp;;:\-_~,\?=/!\(\)]*(\s)*"/>
 
 		<regexp name="boolean" value="(true|false)"/>
 		<regexp name="singlePrintable" value="[a-zA-Z0-9]{1}"/> <!-- \w allows the '_' character -->
@@ -92,22 +91,21 @@ http://www.w3.org/TR/html401/struct/global.html
 		<regexp name="cssOffsiteUri" value="url\((\s)*((ht|f)tp(s?)://)[\p{L}\p{N}]+[~\p{L}\p{N}\p{Zs}\-_\.@#$%&amp;;:,\?=/\+!]*(\s)*\)"/>
 
 		<!--  This if for CSS Identifiers -->
-		<regexp name="cssIdentifier" value="[a-zA-Z][a-zA-Z0-9-]+"/>
+		<regexp name="cssIdentifier" value="[a-zA-Z0-9\-_]+"/>
 
 		<!--  This is for comments within CSS (ex. /* comment */) -->
-		<regexp name="cssCommentText" value="[\p{L}\p{N}-_,\/\\\.\s\(\)!\?\=\$#%\^&amp;:&quot;']+"/>
+		<regexp name="cssCommentText" value="[\p{L}\p{N}\-_,\/\\\.\s\(\)!\?\=\$#%\^&amp;:&quot;']+"/>
 
 		<regexp name="integer" value="(-|\+)?[0-9]+"/>
 		<regexp name="positiveInteger" value="(\+)?[0-9]+"/>
-		<regexp name="number" value="(-|\+)?([0-9]+(.[0-9]+)?)"/>
-		<regexp name="positiveNumber" value="(-|\+)?([0-9]+(.[0-9]+)?)"/>
-		<regexp name="angle" value="(-|\+)?([0-9]+(.[0-9]+)?)(deg|grads|rad)"/>
-		<regexp name="time" value="([0-9]+(.[0-9]+)?)(ms|s)"/>
-		<regexp name="frequency" value="([0-9]+(.[0-9]+)?)(hz|khz)"/>
-		<regexp name="length" value="((-|\+)?0|(-|\+)?([0-9]+(.[0-9]+)?)(em|ex|px|in|cm|mm|pt|pc))"/>
-		<regexp name="positiveLength" value="((\+)?0|(\+)?([0-9]+(.[0-9]+)?)(em|ex|px|in|cm|mm|pt|pc))"/>
-		<regexp name="percentage" value="(-|\+)?([0-9]+(.[0-9]+)?)%"/>
-		<regexp name="positivePercentage" value="(\+)?([0-9]+(.[0-9]+)?)%"/>
+		<regexp name="number" value="(-|\+)?([0-9]+(\.[0-9]+)?)"/>
+		<regexp name="angle" value="(-|\+)?([0-9]+(\.[0-9]+)?)(deg|grads|rad)"/>
+		<regexp name="time" value="([0-9]+(\.[0-9]+)?)(ms|s)"/>
+		<regexp name="frequency" value="([0-9]+(\.[0-9]+)?)(hz|khz)"/>
+		<regexp name="length" value="((-|\+)?0|(-|\+)?([0-9]+(\.[0-9]+)?)(em|ex|px|in|cm|mm|pt|pc))"/>
+		<regexp name="positiveLength" value="((\+)?0|(\+)?([0-9]+(\.[0-9]+)?)(em|ex|px|in|cm|mm|pt|pc))"/>
+		<regexp name="percentage" value="(-|\+)?([0-9]+(\.[0-9]+)?)%"/>
+		<regexp name="positivePercentage" value="(\+)?([0-9]+(\.[0-9]+)?)%"/>
 
 		<regexp name="absolute-size" value="(xx-small|x-small|small|medium|large|x-large|xx-large)"/>
 		<regexp name="relative-size" value="(larger|smaller)"/>
@@ -142,7 +140,7 @@ http://www.w3.org/TR/html401/struct/global.html
 
 		<attribute name="id" description="The 'id' of any HTML attribute should not contain anything besides letters and numbers">
 			<regexp-list>
-				<regexp value="[a-zA-Z0-9_\-\:]+"/>
+				<regexp name="htmlId"/>
 			</regexp-list>
 		</attribute>
 
@@ -174,6 +172,10 @@ http://www.w3.org/TR/html401/struct/global.html
 		 <attribute name="style" description="The 'style' attribute provides the ability for users to change many attributes of the tag's contents using a strict syntax"/>
 
 		 <attribute name="media">
+		 	<regexp-list>
+		 		<regexp value="[a-zA-Z0-9,\-\s]+"/>
+		 	</regexp-list>
+		 	
 		 	<literal-list>
 		 		<literal value="screen"/>
 		 		<literal value="tty"/>
@@ -201,7 +203,7 @@ http://www.w3.org/TR/html401/struct/global.html
 		<attribute name="name">
 		 	<regexp-list>
 
-		 		<regexp value="[a-zA-Z0-9-_\$]+"/>
+		 		<regexp value="[a-zA-Z0-9\-_\$]+"/>
 
 		 		<!--
 		 		have to allow the $ for .NET controls - although,
@@ -270,7 +272,7 @@ http://www.w3.org/TR/html401/struct/global.html
 			</regexp-list>
 		</attribute>
 
-		 <attribute name="abbrev">
+		 <attribute name="abbr">
 			<regexp-list>
 			 	<regexp name="paragraph"/>
 		 	</regexp-list>
@@ -290,7 +292,7 @@ http://www.w3.org/TR/html401/struct/global.html
 
 		 <attribute name="char">
 			<regexp-list>
-				<regexp value=".*{0,1}"/>
+				<regexp value=".{0,1}"/>
 			</regexp-list>
 		 </attribute>
 
@@ -905,7 +907,7 @@ http://www.w3.org/TR/html401/struct/global.html
 		<tag name="td" action="validate">
 			<attribute name="background"/>
 			<attribute name="bgcolor"/>
-			<attribute name="abbrev"/>
+			<attribute name="abbr"/>
 			<attribute name="axis"/>
 			<attribute name="headers"/>
 			<attribute name="scope"/>
@@ -921,7 +923,7 @@ http://www.w3.org/TR/html401/struct/global.html
 		</tag>
 
 		<tag name="th" action="validate">
-			<attribute name="abbrev"/>
+			<attribute name="abbr"/>
 			<attribute name="axis"/>
 			<attribute name="headers"/>
 			<attribute name="scope"/>
@@ -1967,18 +1969,6 @@ http://www.w3.org/TR/html401/struct/global.html
 			</literal-list>
 			<regexp-list>
 				<regexp name="length"/>
-			</regexp-list>
-		</property>
-		<property name="z-index" default="auto" description="">
-			<category-list>
-				<category value="visual"/>
-			</category-list>
-			<literal-list>
-				<literal value="auto"/>
-				<literal value="inherit"/>
-			</literal-list>
-			<regexp-list>
-				<regexp name="integer"/>
 			</regexp-list>
 		</property>
 
