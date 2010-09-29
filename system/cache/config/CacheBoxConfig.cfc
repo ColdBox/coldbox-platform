@@ -299,7 +299,7 @@ Description :
 	</cffunction>
 	
 	<!--- getListeners --->
-	<cffunction name="getListeners" output="false" access="public" returntype="struct" hint="Get the configured listeners">
+	<cffunction name="getListeners" output="false" access="public" returntype="array" hint="Get the configured listeners">
 		<cfreturn instance.listeners>
 	</cffunction>
 	
