@@ -100,6 +100,37 @@ Description :
 		</cfscript>
 	</cffunction>
 	
+		
+	<!--- registerListeners --->
+    <cffunction name="registerListeners" output="false" access="private" returntype="void" hint="Register all the configured listeners in the configuration file">
+    	<cfscript>
+    		var listeners 	= instance.config.getListeners();
+			var regLen		= arrayLen(listeners);
+			var x			= 1;
+			var thisListener = "";
+			
+			// iterate and register listeners
+			for(x=1; x lte regLen; x++){
+				// try to create it
+				try{
+					// create it
+					thisListener = createObject("component", listeners[x].class);
+					// configure it
+					thisListener.configure( this, listeners[x].properties);
+				}
+				catch(Any e){
+					getUtil().throwit(message="Error creating listener: #listeners[x].toString()#",
+									  detail="#e.message# #e.detail# #e.stackTrace#",
+									  type="CacheBox.ListenerCreationException");
+				}
+				
+				// Now register listener
+				getEventManager().register(thisListener,listeners[x].name);
+				
+			}			
+		</cfscript>
+    </cffunction>
+	
 	<!--- configure --->
 	<cffunction name="configure" output="false" access="public" returntype="void" hint="Configure the cache factory for operation, called by the init(). You can also re-configure CacheBox programmatically.">
 		<cfargument name="config" type="coldbox.system.cache.config.CacheBoxConfig" required="true" hint="The CacheBoxConfig object to use to configure this instance of CacheBox"/>
@@ -118,7 +149,11 @@ Description :
 			instance.config.validate();
 			// Reset Registries
 			instance.caches = {};
-			// Register Listeners
+			
+			// Register Listeners if not using ColdBox
+			if( not isObject(instance.coldbox) ){
+				registerListeners();
+			}
 			
 			// Register default cache first
 			defaultCacheConfig = instance.config.getDefaultCache();
@@ -586,7 +621,10 @@ Description :
 	<!--- configureEventManager --->
     <cffunction name="configureEventManager" output="false" access="private" returntype="void" hint="Configure a standalone version of a ColdBox Event Manager">
     	<cfscript>
-    		instance.eventManager = createObject("component","coldbox.system.core.events.EventPoolManager").init( instance.eventStates );
+    		// create event manager
+			instance.eventManager = createObject("component","coldbox.system.core.events.EventPoolManager").init( instance.eventStates );
+			// register the points to listen to
+			instance.eventManager.appendCustomStates( arrayToList(instance.eventStates) );
 		</cfscript>
     </cffunction>
 
