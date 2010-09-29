@@ -24,7 +24,6 @@
         
         <!--  ColdBox Defaults -->
 		<Setting name="EventName" value="event"/>
-		<Setting name="ColdBoxExtensionsLocation" value="coldbox.system.extensions" />
 		
 		<!--Default Storage Scope For Flash URL Persist session or client only-->
 		<Setting name="FlashURLPersistScope" value="session"/>

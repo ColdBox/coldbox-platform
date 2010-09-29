@@ -238,8 +238,8 @@ Description :
 		</cfif>
 
 		<!--- Check explicit layout rendering --->
-		<!--- passing in an empty string for the layout mimic noLayout functionality and not render a layout --->
 		<cfif structKeyExists(arguments,"layout")>
+			<!--- Check if any length on incoming layout --->
 			<cfif len ( arguments.layout )>
 				<cfset cbox_currentLayout = arguments.layout & ".cfm">
 			<cfelse>

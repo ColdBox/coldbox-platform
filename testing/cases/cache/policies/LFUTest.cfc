@@ -26,7 +26,7 @@ Description :
 		pool['obj1'].Created = now();
 		pool['obj1'].Timeout = 5;
 		pool['obj1'].isExpired = false;
-		pool['obj1'].hits = 999;
+		pool['obj1'].hits = 1;
 		
 		pool['obj2'].Created = dateAdd("n",-7,now());
 		pool['obj2'].Timeout = 10;
@@ -36,11 +36,11 @@ Description :
 		pool['obj3'].Created = dateAdd("n",-6,now());
 		pool['obj3'].Timeout = 10;
 		pool['obj3'].isExpired = false;
-		pool['obj3'].hits = 111;
+		pool['obj3'].hits = 2;
 		
 		mockCM.$("getConfiguration",config);
 		mockIndexer.$("getPoolMetadata", pool).$("objectExists",true);
-		keys = ["obj3","obj2","obj1"];
+		keys = structSort(pool,"numeric","asc","hits");
 		mockIndexer.$("getSortedKeys", keys);
 		mockIndexer.$("getObjectMetadata").$results(pool.obj2,pool.obj3,pool.obj1);
 		
@@ -54,7 +54,7 @@ Description :
 			lfu.execute();	
 				
 			assertEquals(2 , arrayLen(mockCM.$callLog().expireKey) );			
-			assertEquals( "obj3", mockCM.$callLog().expireKey[1][1] );
+			assertEquals( "obj1", mockCM.$callLog().expireKey[1][1] );
 		</cfscript>
 	</cffunction>
 	

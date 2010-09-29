@@ -72,10 +72,7 @@ Modification History:
 		
 		// Create the Cache Container
 		createCacheContainer();
-		
-		// Create WireBox
-		controller.getPlugin("BeanFactory");
-		
+				
 		// Execute onConfigurationLoad for coldbox internal services()
 		for(key in services){
 			services[key].onConfigurationLoad();
