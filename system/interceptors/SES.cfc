@@ -655,8 +655,6 @@ Description :
 		</cfscript>
 	</cffunction>
 	
-	fnc
-	
 	<!--- Find a route --->
 	<cffunction name="findRoute" access="private" output="false" returntype="Struct" hint="Figures out which route matches this request">
 		<!--- ************************************************************* --->
