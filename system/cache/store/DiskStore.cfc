@@ -35,6 +35,13 @@ Description :
 				config.autoExpandPath = true;
 			}
 			
+			// Check directory path
+			if( NOT structKeyExists(config,"directoryPath") ){
+				getUtil().throwit(message="The 'directoryPath' configuration property was not found in the cache configuration",
+								  detail="Please check the cache configuration and add the 'directoryPath' property. Current Configuration: #config.toString()#",
+								  type="DiskStore.InvalidConfigurationException");				
+			}
+			
 			//AutoExpand
 			if( config.autoExpandPath ){
 				instance.directoryPath = expandPath( config.directoryPath );
@@ -43,11 +50,9 @@ Description :
 				instance.directoryPath = config.directoryPath;
 			}
 			
-			//Check if directory exists else throw
+			//Check if directory exists else create it
 			if( NOT directoryExists(instance.directoryPath) ){
-				getUtil().throwit(message="Directory #instance.directoryPath# does not exist",
-								  detail="Please make sure the cache directory exists",
-								  type="DiskStore.DirectoryNotFoundException");
+				instance.fileUtils.directoryCreate(path=instance.directoryPath);
 			}
 			
 			return this;

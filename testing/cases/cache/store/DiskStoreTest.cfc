@@ -14,8 +14,8 @@ Description :
 
 	function setup(){
 		config = {
-			autoExpandPath = true,
-			directoryPath  = "/coldbox/testing/cacheDepotInvalid"
+			autoExpandPath = true
+			//directoryPath  = "/coldbox/testing/cacheDepot"
 		};
 		mockProvider = getMockBox().createMock("coldbox.system.cache.providers.MockProvider");
 		mockProvider.$("getConfiguration", config);
@@ -24,8 +24,9 @@ Description :
 			store = getMockBox().createMock(className="coldbox.system.cache.store.DiskStore").init(mockProvider);
 			fail("this should have failed");
 		}
-		catch("DiskStore.DirectoryNotFoundException" e){}
+		catch("DiskStore.InvalidConfigurationException" e){}
 		catch(any e){ fail(e); }
+		
 		
 		// good directory
 		config.directoryPath = "/coldbox/testing/cacheDepot";
@@ -33,7 +34,9 @@ Description :
 	}
 	
 	function tearDown(){
-		store.clearAll();
+		if( structKeyExists(variables,"store") ){
+			store.clearAll();
+		}
 	}
 	
 	function testClearAll(){
