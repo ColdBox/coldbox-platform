@@ -20,18 +20,8 @@ Description :
 		instance = structnew();
 		
 		// CacheBox Provider Defaults
-		defaults = {
-			objectDefaultTimeout = 60,
-			objectDefaultLastAccessTimeout = 30,
-			useLastAccessTimeouts = true,
-			reapFrequency = 2,
-			freeMemoryPercentageThreshold = 0,
-			evictionPolicy = "LRU",
-			evictCount = 1,
-			maxObjects = 200,
-			objectStore = "ConcurrentStore",
+		DEFAULTS = {
 			logBoxConfig = "coldbox.system.cache.config.LogBox",
-			coldboxEnabled = false,
 			cacheBoxProvider = "coldbox.system.cache.providers.CacheBoxProvider",
 			coldboxAppProvider = "coldbox.system.cache.providers.CacheBoxColdBoxProvider"
 		};
@@ -77,7 +67,7 @@ Description :
 	
 	<!--- getDefaults --->
     <cffunction name="getDefaults" output="false" access="public" returntype="struct" hint="Get the default CacheBox settings">
-    	<cfreturn variables.defaults>
+    	<cfreturn variables.DEFAULTS>
     </cffunction>
 	
 	<!--- logBoxConfig --->
@@ -108,7 +98,7 @@ Description :
 			defaultCache(argumentCollection=cacheBoxDSL.defaultCache);
 			
 			// Register LogBox Configuration
-			logBoxConfig( variables.defaults.logBoxConfig );
+			logBoxConfig( variables.DEFAULTS.logBoxConfig );
 			if( structKeyExists( cacheBoxDSL, "logBoxConfig") ){
 				logBoxConfig(cacheBoxDSL.logBoxConfig);
 			}
@@ -206,27 +196,28 @@ Description :
 	
 	<!--- defaultCache --->
 	<cffunction name="defaultCache" output="false" access="public" returntype="any" hint="Add a default cache configuration.">
-		<cfargument name="objectDefaultTimeout" 			type="numeric" required="false"  default="#variables.defaults.objectDefaultTimeout#">
-	    <cfargument name="objectDefaultLastAccessTimeout"   type="numeric" required="false"  default="#variables.defaults.objectDefaultLastAccessTimeout#">
-	    <cfargument name="reapFrequency" 					type="numeric" required="false"  default="#variables.defaults.reapFrequency#">
-	    <cfargument name="maxObjects" 						type="numeric" required="false"  default="#variables.defaults.maxObjects#">
-	    <cfargument name="freeMemoryPercentageThreshold" 	type="numeric" required="false"  default="#variables.defaults.freeMemoryPercentageThreshold#">
-	    <cfargument name="useLastAccessTimeouts"			type="boolean" required="false"  default="#variables.defaults.useLastAccessTimeouts#">
-	    <cfargument name="evictionPolicy"					type="string"  required="false"  default="#variables.defaults.evictionPolicy#">
-	    <cfargument name="evictCount"						type="numeric" required="false"  default="#variables.defaults.evictCount#">
-	    <cfargument name="objectStore" 						type="string"  required="false"  default="#variables.defaults.objectStore#">
-	    <cfargument name="coldboxEnabled" 					type="boolean" required="false"  default="#variables.defaults.coldboxEnabled#"/>
+		<cfargument name="objectDefaultTimeout" 			type="numeric" required="false">
+	    <cfargument name="objectDefaultLastAccessTimeout"   type="numeric" required="false">
+	    <cfargument name="reapFrequency" 					type="numeric" required="false">
+	    <cfargument name="maxObjects" 						type="numeric" required="false">
+	    <cfargument name="freeMemoryPercentageThreshold" 	type="numeric" required="false">
+	    <cfargument name="useLastAccessTimeouts"			type="boolean" required="false">
+	    <cfargument name="evictionPolicy"					type="string"  required="false">
+	    <cfargument name="evictCount"						type="numeric" required="false">
+	    <cfargument name="objectStore" 						type="string"  required="false">
+	    <cfargument name="coldboxEnabled" 					type="boolean" required="false"/>
 	    <cfscript>			
 	    	var cacheConfig = getDefaultCache();
 			
 			// Append all incoming arguments to configuration, just in case using non-default arguments, maybe for stores
 			structAppend(cacheConfig, arguments);
+			
 			// coldbox enabled context
-			if( arguments.coldboxEnabled ){
-				cacheConfig.provider = variables.defaults.coldboxAppProvider;
+			if( structKeyExists(arguments,"coldboxEnabled") AND arguments.coldboxEnabled ){
+				cacheConfig.provider = variables.DEFAULTS.coldboxAppProvider;
 			}
 			else{
-				cacheConfig.provider = variables.defaults.cacheboxProvider;
+				cacheConfig.provider = variables.DEFAULTS.cacheboxProvider;
 			}
 			
 			return this;
@@ -241,7 +232,7 @@ Description :
 	<!--- cache --->
 	<cffunction name="cache" output="false" access="public" returntype="any" hint="Add a new cache configuration.">
 		<cfargument name="name" 		type="string" required="true"   hint="The name of the cache"/>
-		<cfargument name="provider" 	type="string" required="false"  default="#variables.defaults.cacheBoxProvider#" hint="The cache provider class, defaults to: coldbox.system.cache.providers.CacheBoxProvider"/>
+		<cfargument name="provider" 	type="string" required="false"  default="#variables.DEFAULTS.cacheBoxProvider#" hint="The cache provider class, defaults to: coldbox.system.cache.providers.CacheBoxProvider"/>
 		<cfargument name="properties" 	type="struct" required="false"  default="#structNew()#" hint="The structure of properties for the cache"/>
 		<cfscript>
 			instance.caches[arguments.name] = {
@@ -325,7 +316,7 @@ Description :
 			defaultCache(argumentCollection=defaultXML[1].XMLAttributes);
 			
 			// Register LogBox Configuration
-			logBoxConfig( variables.defaults.logBoxConfig );
+			logBoxConfig( variables.DEFAULTS.logBoxConfig );
 			if( arrayLen(logBoxXML) ){
 				logBoxConfig( trim(logBoxXML[1].XMLText) );
 			}

@@ -45,16 +45,45 @@ Properties
 			instance.utility			= createObject("component","coldbox.system.core.util.Util");
 			instance.uuidHelper			= createobject("java", "java.util.UUID");
 			
+			// CacheBox Provider Property Defaults
+			instance.DEFAULTS = {
+				objectDefaultTimeout = 60,
+				objectDefaultLastAccessTimeout = 30,
+				useLastAccessTimeouts = true,
+				reapFrequency = 2,
+				freeMemoryPercentageThreshold = 0,
+				evictionPolicy = "LRU",
+				evictCount = 1,
+				maxObjects = 200,
+				objectStore = "ConcurrentStore",
+				coldboxEnabled = false
+			};
+			
 			return this;
 		</cfscript>
 	</cffunction>
 
+	<!--- validateConfiguration --->
+    <cffunction name="validateConfiguration" output="false" access="private" returntype="void" hint="Validate incoming set configuration data">
+    	<cfscript>
+    		var cacheConfig = getConfiguration();
+			var key			= "";
+			
+			// Validate configuration values, if they don't exist, then default them to DEFAULTS
+			for(key in instance.DEFAULTS){
+				if( NOT structKeyExists(cacheConfig, key) OR NOT len(cacheConfig[key]) ){
+					cacheConfig[key] = instance.DEFAULTS[key];
+				}
+			}
+		</cfscript>
+    </cffunction>
+
 	<!--- Configure the Cache for Operation --->
 	<cffunction name="configure" access="public" output="false" returntype="void" hint="Configures the cache for operation, sets the configuration object, sets and creates the eviction policy and clears the stats. If this method is not called, the cache is useless.">
 		
-		<cfset var cacheConfig     = getConfiguration()>
-		<cfset 	var evictionPolicy  = "">
-		<cfset 	var objectStore		= "">
+		<cfset var cacheConfig     	= getConfiguration()>
+		<cfset var evictionPolicy  	= "">
+		<cfset var objectStore		= "">
 		
 		<cflock name="CacheBoxProvider.configure.#instance.cacheID#" type="exclusive" timeout="20" throwontimeout="true">
 		<cfscript>		
@@ -62,6 +91,9 @@ Properties
 			// Prepare the logger
 			instance.logger = getCacheFactory().getLogBox().getLogger( this );
 			instance.logger.debug("Starting up CacheBox Cache: #getName()# with configuration: #cacheConfig.toString()#");
+			
+			// Validate the configuration
+			validateConfiguration();
 			
 			// Prepare Statistics
 			instance.stats = CreateObject("component","coldbox.system.cache.util.CacheStats").init(this);

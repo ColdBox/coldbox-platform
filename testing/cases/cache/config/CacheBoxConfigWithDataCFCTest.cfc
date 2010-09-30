@@ -24,7 +24,6 @@
 		assertEquals( "cacheBoxAwesome", memento.scopeRegistration.key );
 		assertEquals("coldbox.system.cache.config.LogBoxConfig", memento.logBoxConfig);
 		
-		
 		config.validate();
 	}
 	

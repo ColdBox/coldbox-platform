@@ -23,7 +23,7 @@ Description :
 			
 			// Scope Registration
 			scopeRegistration = {
-				enabled = true, scope = "application", key = "cacheBoxAwesome"
+				enabled = false
 			},	
 			
 			// The defaultCache has an implicit name "default" which is a reserved cache name
@@ -56,7 +56,7 @@ Description :
 					}
 				},
 				sampleCache2 = {
-					provider = "coldbox.system.cache.providers.CacheBox",
+					provider = "coldbox.system.cache.providers.CacheBoxProvider",
 					properties = {
 						maxObjects = 100,
 						evictionPolicy="FIFO"
@@ -66,7 +66,7 @@ Description :
 			
 			// Register all event listeners here, they are created in the specified order
 			listeners = [
-				{ class="path.to.listener", name="Syncrhonizer", properties={} }
+				//{ class="path.to.listener", name="Syncrhonizer", properties={} }
 			]
 			
 		};

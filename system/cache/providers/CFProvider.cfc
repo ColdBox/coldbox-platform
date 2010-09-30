@@ -16,6 +16,7 @@ component serializable="false" implements="coldbox.system.cache.ICacheProvider"{
     * Constructor
     */
 	CFProvider function init() output=false{
+		// Setup Cache instance
 		instance = {
 			name 				= "",
 			enabled 			= false,
@@ -25,12 +26,16 @@ component serializable="false" implements="coldbox.system.cache.ICacheProvider"{
 			eventManager		= "",
 			store				= "",
 			cacheID				= createObject('java','java.lang.System').identityHashCode(this),
-			defaultCacheName	= "object",
 			// Element Cleaner Helper
 			elementCleaner		= CreateObject("component","coldbox.system.cache.util.ElementCleaner").init(this),
 			// Utilities
 			utility				= createObject("component","coldbox.system.core.util.Util"),
 			uuidHelper			= createobject("java", "java.util.UUID")
+		};
+		
+		// Provider Property Defaults
+		instance.DEFAULTS = {
+			cacheName = "object"
 		};
 		
 		return this;
@@ -86,6 +91,21 @@ component serializable="false" implements="coldbox.system.cache.ICacheProvider"{
 	}
 	
 	/**
+	* Validate the configuration
+	**/
+	private void function validateConfiguration(){
+		var cacheConfig = getConfiguration();
+		var key			= "";
+		
+		// Validate configuration values, if they don't exist, then default them to DEFAULTS
+		for(key in instance.DEFAULTS){
+			if( NOT structKeyExists(cacheConfig, key) OR NOT len(cacheConfig[key]) ){
+				cacheConfig[key] = instance.DEFAULTS[key];
+			}
+		}
+	}
+	
+	/**
     * configure the cache for operation
     */
     void function configure() output=false{
@@ -98,10 +118,8 @@ component serializable="false" implements="coldbox.system.cache.ICacheProvider"{
 			instance.logger = getCacheFactory().getLogBox().getLogger( this );
 			instance.logger.debug("Starting up CFProvider Cache: #getName()# with configuration: #config.toString()#");
 			
-			// link cacheName according to property if defined, else use default
-			if( NOT structKeyExists(config,"cacheName") ){
-				config.cacheName = instance.defaultCacheName;
-			}
+			// Validate the configuration
+			validateConfiguration();
 			
 			// Merge configurations
 			props = cacheGetProperties();
