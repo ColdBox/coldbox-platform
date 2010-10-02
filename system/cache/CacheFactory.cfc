@@ -502,6 +502,11 @@ Description :
     <cffunction name="getColdbox" output="false" access="public" returntype="coldbox.system.web.Controller" hint="Get the instance of ColdBox linked in this cache factory. Empty if using standalone version">
     	<cfreturn instance.coldbox>
     </cffunction>
+	
+	<!--- isColdBoxLinked --->
+    <cffunction name="isColdBoxLinked" output="false" access="public" returntype="boolean" hint="Checks if Coldbox application controller is linked">
+    	<cfreturn isObject(instance.coldbox)>
+    </cffunction>
 
 	<!--- getLogBox --->
     <cffunction name="getLogBox" output="false" access="public" returntype="coldbox.system.logging.LogBox" hint="Get the instance of LogBox configured for this cache factory">

@@ -45,6 +45,8 @@ Description :
 				case "expirecache"    		: { cacheBox.getCache(arguments.cacheName).expireAll(); break; }
 				case "reapcache"  	  		: { cacheBox.getCache(arguments.cacheName).reap(); break;}
 				case "delcacheentry"  		: { cacheBox.getCache(arguments.cacheName).clear( arguments.cacheEntry );break;}
+				case "clearallevents" 		: { cacheBox.getCache(arguments.cacheName).clearAllEvents();break;}
+				case "clearallviews"  		: { cacheBox.getCache(arguments.cacheName).clearAllViews();break;}
 				case "cacheBoxReapAll"		: { cacheBox.reapAll();break;}
 				case "cacheBoxExpireAll"	: { cacheBox.expireAll();break;}
 				case "gc"			 		: { runtime.getRuntime().gc(); break;}
