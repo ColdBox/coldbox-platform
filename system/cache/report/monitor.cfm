@@ -27,6 +27,8 @@ ATTRIBUTES:
 <cfparam name="attributes.baseURL" 		type="string" default="#cgi.script_name#">
 <!--- Skin To Use --->
 <cfparam name="attributes.skin"			type="string" default="default">
+<!--- Content Report --->
+<cfparam name="attributes.contentReport"	type="boolean" default="true" >
 
 <!--- Validate CacheBox --->
 <cfif NOT isObject(attributes.cacheFactory)>
@@ -36,7 +38,10 @@ ATTRIBUTES:
 </cfif>
 
 <!--- Create Report Handler --->
-<cfset reportHandler = createObject("component","coldbox.system.cache.report.ReportHandler").init(attributes.cacheFactory,attributes.baseURL,attributes.skin)>
+<cfset reportHandler = createObject("component","coldbox.system.cache.report.ReportHandler").init(attributes.cacheFactory,
+																								  attributes.baseURL,
+																								  attributes.skin,
+																								  attributes.contentReport)>
 
 <!--- Monitor's Default URL Arguments --->
 <cfparam name="url.debugPanel" 		default="cache">

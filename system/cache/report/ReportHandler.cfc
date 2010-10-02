@@ -16,15 +16,17 @@ Description :
 		
 	<!--- init --->
 	<cffunction name="init" access="public" returntype="ReportHandler" hint="Constructor" output="false" >
-		<cfargument name="cacheBox" type="coldbox.system.cache.CacheFactory" required="true" hint="The cache factory binded to"/>
-		<cfargument name="baseURL" 	type="string" required="true" hint="The baseURL used for reporting"/>
-		<cfargument name="skin" 	type="string" required="true" hint="The skin to use for reporting"/>
+		<cfargument name="cacheBox" 	 type="coldbox.system.cache.CacheFactory" required="true" hint="The cache factory binded to"/>
+		<cfargument name="baseURL" 		 type="string" required="true" hint="The baseURL used for reporting"/>
+		<cfargument name="skin" 		 type="string" required="true" hint="The skin to use for reporting"/>
+		<cfargument name="contentReport" type="boolean" required="false" default="true" hint="Display content report"/>
 		<cfscript>
 			variables.cacheBox  = arguments.cacheBox;
 			variables.baseURL 	= arguments.baseURL;
 			variables.runtime	= createObject("java", "java.lang.Runtime");
 			variables.skin		= arguments.skin;
 			variables.skinPath  = "/coldbox/system/cache/report/skins/#arguments.skin#";
+			variables.contentReport = arguments.contentReport;
 			
 			return this;
 		</cfscript>
