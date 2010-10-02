@@ -16,12 +16,15 @@ Description :
 		
 	<!--- init --->
 	<cffunction name="init" access="public" returntype="ReportHandler" hint="Constructor" output="false" >
-		<cfargument name="cacheBox" type="coldbox.system.cache.CacheFactory" required="true" default="" hint="The cache factory binded to"/>
-		<cfargument name="baseURL" type="string" required="true" default="" hint="The baseURL used for reporting"/>
+		<cfargument name="cacheBox" type="coldbox.system.cache.CacheFactory" required="true" hint="The cache factory binded to"/>
+		<cfargument name="baseURL" 	type="string" required="true" hint="The baseURL used for reporting"/>
+		<cfargument name="skin" 	type="string" required="true" hint="The skin to use for reporting"/>
 		<cfscript>
 			variables.cacheBox  = arguments.cacheBox;
 			variables.baseURL 	= arguments.baseURL;
 			variables.runtime	= createObject("java", "java.lang.Runtime");
+			variables.skin		= arguments.skin;
+			variables.skinPath  = "/coldbox/system/cache/report/skins/#arguments.skin#";
 			
 			return this;
 		</cfscript>
@@ -31,26 +34,17 @@ Description :
 
 	<!--- processCommands --->
     <cffunction name="processCommands" output="false" access="public" returntype="boolean" hint="Process CacheBox Commands">
-    	<cfscript>
-    		var rc 			= captureRequest();
-			var cacheName	= "default";
-			var cacheEntry	= "";
-			
-			// Verify command, else just exit out
-			if( NOT len(rc.cbox_command) ){ return false; }
-			
-			// Verify incoming cacheName
-			if( len(rc.cbox_cacheName) ){ cacheName = rc.cbox_cacheName; }
-			
-			// Verify incoming cacheEntry
-			if( len(rc.cbox_cacheentry) ){ cacheEntry = rc.cbox_cacheEntry; }
-			
+    	<cfargument name="command" 		type="string" 	required="false" default="" hint="The command to process"/>
+		<cfargument name="cacheName" 	type="string" 	required="false" default="default" hint="The cache name"/>
+		<cfargument name="cacheEntry" 	type="string" 	required="false" default="" hint="The cache entry to act upon"/>
+		<cfscript>
+    		
 			// Commands
-			switch(rc.cbox_command){
+			switch(arguments.command){
 				// Cache Commands
-				case "expirecache"    		: { cacheBox.getCache(cacheName).expireAll(); break; }
-				case "reapcache"  	  		: { cacheBox.getCache(cacheName).reap(); break;}
-				case "delcacheentry"  		: { cacheBox.getCache(cacheName).clear( cacheEntry );break;}
+				case "expirecache"    		: { cacheBox.getCache(arguments.cacheName).expireAll(); break; }
+				case "reapcache"  	  		: { cacheBox.getCache(arguments.cacheName).reap(); break;}
+				case "delcacheentry"  		: { cacheBox.getCache(arguments.cacheName).clear( arguments.cacheEntry );break;}
 				case "cacheBoxReapAll"		: { cacheBox.reapAll();break;}
 				case "cacheBoxExpireAll"	: { cacheBox.expireAll();break;}
 				case "gc"			 		: { runtime.getRuntime().gc(); break;}
@@ -64,7 +58,6 @@ Description :
 	
 	<!--- Render the cache panel --->
 	<cffunction name="renderCachePanel" access="public" hint="Renders the caching panel." output="false" returntype="any">
-		<cfargument name="monitor" type="boolean" required="false" default="false" hint="monitor or panel"/>
 		<cfscript>
 			var content			= "";
 			var cacheNames		= cacheBox.getCacheNames();
@@ -72,7 +65,7 @@ Description :
 		</cfscript>
 		
 		<!--- Generate Debugging --->
-		<cfsavecontent variable="content"><cfinclude template="/coldbox/system/cache/report/panels/CachePanel.cfm"></cfsavecontent>
+		<cfsavecontent variable="content"><cfinclude template="#skinPath#/CachePanel.cfm"></cfsavecontent>
 		
 		<cfreturn content>
 	</cffunction>	
@@ -105,7 +98,7 @@ Description :
     	</cfscript>	
 		
 		<!--- Generate Debugging --->
-		<cfsavecontent variable="content"><cfinclude template="/coldbox/system/cache/report/panels/CacheReport.cfm"></cfsavecontent>
+		<cfsavecontent variable="content"><cfinclude template="#skinPath#/CacheReport.cfm"></cfsavecontent>
 		
 		<cfreturn content>
 	</cffunction>
@@ -137,16 +130,16 @@ Description :
     	</cfscript>
 		
 		<!--- Render content out --->
-		<cfsavecontent variable="content"><cfinclude template="/coldbox/system/cache/report/panels/CacheContentReport.cfm"></cfsavecontent>
+		<cfsavecontent variable="content"><cfinclude template="#skinPath#/CacheContentReport.cfm"></cfsavecontent>
 				
 		<cfreturn content>		
     </cffunction>
 	
 	<!--- Render Cache Dumpver --->
 	<cffunction name="renderCacheDumper" access="public" hint="Renders the caching key value dumper." output="false" returntype="Any">
-		<cfargument name="cacheName" type="any" required="true" default="default" hint="The cache name"/>
-		<cfset var rc				= captureRequest()>
-		<cfset var cachekey 		= URLDecode(rc.key)>
+		<cfargument name="cacheName" 	type="any" 		required="true" default="default" hint="The cache name"/>
+		<cfargument name="cacheEntry" 	type="string" 	required="true" hint="The cache entry to dump"/>
+		<cfset var cachekey 		= URLDecode(arguments.cacheEntry)>
 		<cfset var cacheValue 		= "">
 		<cfset var dumperContents 	= "NOT_FOUND">
 		<cfset var cache 			= cacheBox.getCache( arguments.cacheName )>
@@ -171,17 +164,6 @@ Description :
 	</cffunction>
 
 <!------------------------------------------- PRIVATE ------------------------------------------>	
-
-	<!--- captureRequest --->
-    <cffunction name="captureRequest" output="false" access="private" returntype="struct" hint="Capture incoming report request">
-    	<cfscript>
-    		var rc = {};
-			// Capture Request
-			if( isDefined("URL") ){ structAppend(rc,URL,true); }
-			if( isDefined("FORM") ){ structAppend(rc,FORM,true); }
-			return rc;
-		</cfscript>
-    </cffunction>
 
 	<!--- Get ColdBox Util --->
 	<cffunction name="getUtil" access="private" output="false" returntype="coldbox.system.core.util.Util" hint="Create and return a util object">

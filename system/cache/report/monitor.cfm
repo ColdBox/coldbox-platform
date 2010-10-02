@@ -11,7 +11,8 @@ Description :
 	
 ATTRIBUTES:
 - cacheBox : An instance reference to the cacheBox factory to report on
-- baseURL (optional) : An optional baseURL that will be used to post to this monitor on. Default is cgi.script_name
+- baseURL (optional='default') : An optional baseURL that will be used to post to this monitor on. Default is cgi.script_name
+- skin (optional='default') : The skin to render the report in, it uses 'default' skin by default.
 ----------------------------------------------------------------------->
 
 <!--- Leave on end --->
@@ -23,7 +24,9 @@ ATTRIBUTES:
 <!--- CacheBox Factory --->
 <cfparam name="attributes.cacheFactory" type="any" default="">
 <!--- BaseURL --->
-<cfparam name="attributes.baseURL" type="string" default="#cgi.script_name#">
+<cfparam name="attributes.baseURL" 		type="string" default="#cgi.script_name#">
+<!--- Skin To Use --->
+<cfparam name="attributes.skin"			type="string" default="default">
 
 <!--- Validate CacheBox --->
 <cfif NOT isObject(attributes.cacheFactory)>
@@ -33,21 +36,24 @@ ATTRIBUTES:
 </cfif>
 
 <!--- Create Report Handler --->
-<cfset reportHandler = createObject("component","coldbox.system.cache.report.ReportHandler").init(attributes.cacheFactory,attributes.baseURL)>
+<cfset reportHandler = createObject("component","coldbox.system.cache.report.ReportHandler").init(attributes.cacheFactory,attributes.baseURL,attributes.skin)>
 
-<!--- Monitor Default URL Arguments --->
+<!--- Monitor's Default URL Arguments --->
 <cfparam name="url.debugPanel" 		default="cache">
 <cfparam name="url.cbox_command" 	default="">
 <cfparam name="url.cbox_cacheName" 	default="default">
 <cfparam name="url.cbox_cacheEntry" default="">
-<cfparam name="url.key"				default="">
 
 <!--- Process incoming commands --->
-<cfif reportHandler.processCommands()>
-	<cfexit>
+<cfif reportHandler.processCommands(command=url.cbox_command,
+								    cacheName=url.cbox_cacheName,
+								    cacheEntry=url.cbox_cacheEntry)>
+	<!--- Command executed, abort anything else after this point --->
+	<cfsetting enablecfoutputonly="false">
+	<cfabort>
 </cfif>
 
-<!--- Render Report --->
+<!--- Render Reports According To Panel Requested --->
 <cfswitch expression="#debugPanel#">
 	<cfcase value="cache">
 		<cfset ajaxRender = false>
@@ -63,21 +69,25 @@ ATTRIBUTES:
 	</cfcase>
 	<cfcase value="cacheViewer">
 		<cfset ajaxRender = true>
-		<cfset report = reportHandler.renderCacheDumper(cacheName=url.cbox_cacheName)>
+		<cfset report = reportHandler.renderCacheDumper(cacheName=url.cbox_cacheName,cacheEntry=url.cbox_cacheEntry)>
 	</cfcase>		
 </cfswitch>
 
-<!--- reset content --->
-<cfif ajaxRender><cfcontent reset="true"></cfif>
+<!--- Ajax Rendering --->
+<cfif ajaxRender>
+	<cfcontent reset="true">
+	<cfoutput>#report#</cfoutput>
+	<cfsetting enablecfoutputonly="false">
+	<cfabort>
+</cfif>
 
 <!--- output header assets --->
 <cfsavecontent variable="reportHeader">
-<style type="text/css"><cfinclude template="/coldbox/system/cache/report/assets/cachebox.css"></style>
-<script type="text/javascript"><cfinclude template="/coldbox/system/cache/report/assets/cachebox.js"></script>
+<style type="text/css"><cfinclude template="/coldbox/system/cache/report/skins/#attributes.skin#/cachebox.css"></style>
+<script type="text/javascript"><cfinclude template="/coldbox/system/cache/report/skins/#attributes.skin#/cachebox.js"></script>
 </cfsavecontent>
 <cfhtmlhead text="#reportHeader#">
 
 <!--- output rendered report --->
 <cfoutput>#report#</cfoutput>
 <cfsetting enablecfoutputonly="false">
-<cfif ajaxRender><cfabort></cfif>
