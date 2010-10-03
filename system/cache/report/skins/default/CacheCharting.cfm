@@ -33,7 +33,7 @@
 		<td align="center">
 		<cfchart format="png" show3d="#show3d#" backgroundcolor="##ffffff" 
 				 chartwidth="300" chartheight="300" showlegend="true" title="Cache Performance Report">
-			<cfchartseries type="bar" colorlist="131cd7,ED2939,black,d47f00">
+			<cfchartseries type="bar" colorlist="131cd7,ED2939,gray,d47f00">
 				<cfchartdata item="Hits" value="#cacheStats.getHits()#">
 				<cfchartdata item="Misses" value="#cacheStats.getMisses()#">
 				<cfchartdata item="Garbage Collections" value="#cacheStats.getGarbageCollections()#">

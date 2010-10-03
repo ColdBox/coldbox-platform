@@ -21,12 +21,13 @@ ATTRIBUTES:
 </cfif>
 
 <!--- Tag Attributes --->
+
 <!--- CacheBox Factory --->
-<cfparam name="attributes.cacheFactory" type="any" default="">
-<!--- BaseURL --->
-<cfparam name="attributes.baseURL" 		type="string" default="#cgi.script_name#">
+<cfparam name="attributes.cacheFactory" 	type="any" default="">
+<!--- BaseURL --->	
+<cfparam name="attributes.baseURL" 			type="string" default="#cgi.script_name#">
 <!--- Skin To Use --->
-<cfparam name="attributes.skin"			type="string" default="default">
+<cfparam name="attributes.skin"				type="string" default="default">
 <!--- Content Report --->
 <cfparam name="attributes.contentReport"	type="boolean" default="true" >
 
@@ -54,6 +55,9 @@ ATTRIBUTES:
 								    cacheName=url.cbox_cacheName,
 								    cacheEntry=url.cbox_cacheEntry)>
 	<!--- Command executed, abort anything else after this point --->
+	<cfcontent reset="true">
+	<cfsetting showdebugoutput="false">
+	<cfoutput>true</cfoutput>
 	<cfsetting enablecfoutputonly="false">
 	<cfabort>
 </cfif>
@@ -80,6 +84,7 @@ ATTRIBUTES:
 
 <!--- Ajax Rendering --->
 <cfif ajaxRender>
+	<cfsetting showdebugoutput="false">
 	<cfcontent reset="true">
 	<cfoutput>#report#</cfoutput>
 	<cfsetting enablecfoutputonly="false">

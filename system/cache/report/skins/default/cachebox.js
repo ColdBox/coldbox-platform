@@ -6,13 +6,6 @@ function fw_toggle(divid){
 		document.getElementById(divid).className = "fw_debugContent";
 	}
 }
-function fw_poprc(divid){
-	var _div = document.getElementById(divid);
-	if ( _div.className == 'hideRC' )
-		document.getElementById(divid).className = "showRC";
-	else
-		document.getElementById(divid).className = "hideRC";
-}
 function fw_openwindow(mypage,myname,w,h,features) {
 	if(screen.width){
 		var winl = (screen.width-w)/2;
@@ -31,17 +24,6 @@ function fw_openwindow(mypage,myname,w,h,features) {
 	settings += features;
 	win = window.open(mypage,myname,settings);
 	win.window.focus();
-}
-function fw_reinitframework(usingPassword){
-	var reinitForm = document.getElementById('fw_reinitcoldbox');
-	if( usingPassword ){
-		reinitForm.fwreinit.value = prompt("Reinit Password?");
-		if( reinitForm.fwreinit.value.length ){
-			reinitForm.submit();
-		}
-	}else{
-		reinitForm.submit();
-	}
 }
 function fw_pollmonitor(panel, frequency, urlBase){
 	window.location=urlBase + '?debugpanel='+panel+'&frequency='+frequency;
@@ -124,4 +106,8 @@ function fw_toggleDiv(targetDiv, displayStyle){
 	else{
 		target.style.display = displayStyle;
 	}	
+}
+// Timed Refresh
+function fw_timedRefresh(timeoutPeriod) {
+	setTimeout("location.reload(true);",timeoutPeriod);
 }
