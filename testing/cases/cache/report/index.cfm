@@ -37,7 +37,7 @@
 	</div>
 	
 	<!--- Render Report Here --->
-	<cachebox:monitor cacheFactory="#cacheBox#" contentReport=true/>
+	<cachebox:monitor cacheFactory="#cacheBox#"/>
 
 	<!--- Footer --->
 	<div id="footer">Copyright Ortus Solutions, Corp</div>

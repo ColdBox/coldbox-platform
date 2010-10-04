@@ -1,4 +1,7 @@
-<cfoutput>		   
+<cfoutput>		
+<!--- Attributes In Use for this skin --->
+<cfparam name="attributes.contentReport"	type="boolean" default="true" >
+   
 <!--- Id & Name --->
 <div class="fw_debugTitleCell">
   Cache Name
@@ -75,7 +78,7 @@
 </div>
 
 <!--- Content Report --->
-<cfif cacheProvider.isReportingEnabled() AND variables.contentReport>
+<cfif cacheProvider.isReportingEnabled() AND attributes.contentReport>
 	<h3>Cache Content Report</h3>
 
 	<!--- Reload Contents --->
