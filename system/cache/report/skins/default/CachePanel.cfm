@@ -5,6 +5,7 @@
 setTimeout("location.reload(true);",#url.frequency*1000#);
 </script>
 </cfif>
+
 <!--- CacheBox Panel Accordion --->
 <div class="fw_titles" onClick="fw_toggle('fw_cache')">&nbsp;CacheBox Report Monitor</div>
 <!--- Panel Content --->

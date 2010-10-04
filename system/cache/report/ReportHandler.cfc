@@ -17,9 +17,10 @@ Description :
 	<!--- init --->
 	<cffunction name="init" access="public" returntype="ReportHandler" hint="Constructor" output="false" >
 		<cfargument name="cacheBox" 	 	type="coldbox.system.cache.CacheFactory" required="true" hint="The cache factory binded to"/>
-		<cfargument name="baseURL" 		 	type="string" required="true" hint="The baseURL used for reporting"/>
-		<cfargument name="skin" 		 	type="string" required="true" hint="The skin to use for reporting"/>
-		<cfargument name="attributes" 		type="struct" required="true" hint="The incoming attributes"/>
+		<cfargument name="baseURL" 		 	type="string" 	required="true" hint="The baseURL used for reporting"/>
+		<cfargument name="skin" 		 	type="string" 	required="true" hint="The skin to use for reporting"/>
+		<cfargument name="attributes" 		type="struct" 	required="true" hint="The incoming attributes"/>
+		<cfargument name="caller" 			type="any" 		required="true" hint="Access to the caller tag"/>
 		<cfscript>
 			variables.cacheBox  = arguments.cacheBox;
 			variables.baseURL 	= arguments.baseURL;
@@ -28,6 +29,8 @@ Description :
 			variables.skinPath  = "/coldbox/system/cache/report/skins/#arguments.skin#";
 			// Store tag attributes so they are available on skin templates.
 			variables.attributes = arguments.attributes;
+			// Caller references
+			variables.caller 	= arguments.caller;
 			
 			return this;
 		</cfscript>

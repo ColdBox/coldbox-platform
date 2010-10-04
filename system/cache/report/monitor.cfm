@@ -40,7 +40,8 @@ ATTRIBUTES:
 <cfset reportHandler = createObject("component","coldbox.system.cache.report.ReportHandler").init(attributes.cacheFactory,
 																								   attributes.baseURL,
 																								   attributes.skin,
-																								   attributes)>
+																								   attributes,
+																								   caller)>
 
 <!--- Monitor's Default URL Arguments --->
 <cfparam name="url.debugPanel" 		default="cache">
