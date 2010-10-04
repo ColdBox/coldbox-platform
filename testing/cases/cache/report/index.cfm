@@ -1,6 +1,5 @@
 <!--- Import Report Tags --->
 <cfimport prefix="cachebox" taglib="/coldbox/system/cache/report">
-<cfsetting showdebugoutput="false" >
 
 <!--- Create CacheBox --->
 <cfif structKeyExists(url,"reinit") OR NOT structKeyExists(application,"cacheBox")>
@@ -38,7 +37,7 @@
 	</div>
 	
 	<!--- Render Report Here --->
-	<cachebox:monitor cacheFactory="#cacheBox#"/>
+	<cachebox:monitor cacheFactory="#cacheBox#" contentReport=true/>
 
 	<!--- Footer --->
 	<div id="footer">Copyright Ortus Solutions, Corp</div>

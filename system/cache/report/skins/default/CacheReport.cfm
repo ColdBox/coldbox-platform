@@ -74,43 +74,45 @@
 	</table>
 </div>
 
-<!--- Check if reporting enabled --->
-<cfif isCacheBox and NOT cacheProvider.isReportingEnabled()><cfexit></cfif>
-
 <!--- Content Report --->
-<h3>Cache Content Report</h3>
+<cfif cacheProvider.isReportingEnabled() AND variables.contentReport>
+	<h3>Cache Content Report</h3>
 
-<!--- Reload Contents --->
-<input type="button" value="Reload Contents" 
-	   name="cboxbutton_reloadContents"
-	   style="font-size:10px" 
-	   title="Reload the contents" 
-	   onClick="fw_cacheContentReport('#URLBase#','#arguments.cacheName#')" />
-<!--- Expire All Keys --->
-<input type="button" value="Expire All Keys" 
-	   name="cboxbutton_expirekeys" id="cboxbutton_expirekeys"
-	   style="font-size:10px" 
-	   title="Expire all the keys in the cache" 
-	   onclick="fw_cacheContentCommand('#URLBase#','expirecache', '#arguments.cacheName#')" />
-<cfif cacheBox.isColdBoxLinked()>
-<!--- Clear All Events --->
-<input type="button" value="Clear All Events" 
-	   name="cboxbutton_clearallevents" id="cboxbutton_clearallevents"
-	   style="font-size:10px" 
-	   title="Remove all the events in the cache" 
-	   onclick="fw_cacheContentCommand('#URLBase#','clearallevents', '#arguments.cacheName#')" />
-<!--- Clear All Views --->
-<input type="button" value="Clear All Views" 
-	   name="cboxbutton_clearallviews" id="cboxbutton_clearallviews"
-	   style="font-size:10px" 
-	   title="Remove all the views in the cache" 
-	   onclick="fw_cacheContentCommand('#URLBase#','clearallviews', '#arguments.cacheName#')" />
+	<!--- Reload Contents --->
+	<input type="button" value="Reload Contents" 
+		   name="cboxbutton_reloadContents"
+		   style="font-size:10px" 
+		   title="Reload the contents" 
+		   onClick="fw_cacheContentReport('#URLBase#','#arguments.cacheName#')" />
+		   
+	<!--- Expire All Keys --->
+	<input type="button" value="Expire All Keys" 
+		   name="cboxbutton_expirekeys" id="cboxbutton_expirekeys"
+		   style="font-size:10px" 
+		   title="Expire all the keys in the cache" 
+		   onclick="fw_cacheContentCommand('#URLBase#','expirecache', '#arguments.cacheName#')" />
+
+	<!--- ColdBox Application Commands --->
+	<cfif cacheBox.isColdBoxLinked()>
+		<!--- Clear All Events --->
+		<input type="button" value="Clear All Events" 
+			   name="cboxbutton_clearallevents" id="cboxbutton_clearallevents"
+			   style="font-size:10px" 
+			   title="Remove all the events in the cache" 
+			   onclick="fw_cacheContentCommand('#URLBase#','clearallevents', '#arguments.cacheName#')" />
+		<!--- Clear All Views --->
+		<input type="button" value="Clear All Views" 
+			   name="cboxbutton_clearallviews" id="cboxbutton_clearallviews"
+			   style="font-size:10px" 
+			   title="Remove all the views in the cache" 
+			   onclick="fw_cacheContentCommand('#URLBase#','clearallviews', '#arguments.cacheName#')" />
+	</cfif>
+
+	<!--- Loader --->
+	<span class="fw_redText fw_debugContent" id="fw_cacheContentReport_loader">Please Wait, Processing...</span>
+
+	<div class="fw_cacheContentReport" id="fw_cacheContentReport">
+		#renderCacheContentReport(arguments.cacheName)#
+	</div>
 </cfif>
-<!--- Loader --->
-<span class="fw_redText fw_debugContent" id="fw_cacheContentReport_loader">Please Wait, Processing...</span>
-
-<!--- Content Report --->
-<div class="fw_cacheContentReport" id="fw_cacheContentReport">
-	#renderCacheContentReport(arguments.cacheName)#
-</div>
 </cfoutput>

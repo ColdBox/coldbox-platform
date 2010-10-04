@@ -12,7 +12,7 @@
     font-weight: bold;
     color: white;
     border: 1px solid #2694E8;
-    background: #3BAAE3 url(/coldbox/system/includes/images/bg-glass.png) repeat-x scroll 50% 50%;
+    background: #3BAAE3 url(/coldbox/system/cache/report/skins/default/images/bg-glass.png) repeat-x scroll 50% 50%;
     padding:5px 5px 5px 5px;
     cursor: pointer;
     margin-bottom: 2px;
@@ -21,28 +21,10 @@
 	-khtml-border-radius: 5px;
 }
 .fw_titles:hover{
-   background: #D7EBF9 url(/coldbox/system/includes/images/bg-glass2.png) repeat-x scroll 50% 50%;
+   background: #D7EBF9 url(/coldbox/system/cache/report/skins/default/images/bg-glass2.png) repeat-x scroll 50% 50%;
    border:1px solid #D3D3D3;
    cursor: pointer;
    color: black;
-}
-.fw_profilers{
-    font-size: 10px;
-    font-weight:bold;
-    color: black;
-    background: #D7EBF9 url(/coldbox/system/includes/images/bg-glass2.png) repeat-x scroll 50% 50%;
-    border:1px solid #D3D3D3;
-   	padding:5px 5px 5px 5px;
-    cursor: pointer;
-    margin-bottom: 2px;
-    -moz-border-radius: 5px;
-	-webkit-border-radius: 5px;
-	-khtml-border-radius: 5px;
-}
-.fw_profilers:hover{
-   background-color: #6988c4;
-   border:1px solid #555555;
-   cursor: pointer;
 }
 .fw_debugContentView{
     color: black;
