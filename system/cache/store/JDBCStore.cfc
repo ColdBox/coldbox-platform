@@ -156,26 +156,41 @@ Or look in the /coldbox/system/cache/store/sql/*.sql for you sql script for your
 		<cfargument name="objectKey" type="any" required="true" hint="The key of the object">
 		
 		<cfset var q 			= "">
+		<cfset var qStats		= "">
 		<cfset var normalizedID = getNormalizedID(arguments.objectKey)>
 		<cfset var refLocal = {}>
 		
-		<!--- Get Object --->
-		<cfset refLocal.target = getQuiet(arguments.objectKey)>
-		
-		<!--- Check if object returned --->
-		<cfif structKeyExists(refLocal,"target")>
-		
-			<!--- Update Stats --->
+		<cftransaction isolation="serializable">
+			<!--- select entry --->
 			<cfquery name="q" datasource="#instance.dsn#" username="#instance.dsnUsername#" password="#instance.dsnPassword#">
+			SELECT *
+			  FROM #instance.table#
+			 WHERE id = <cfqueryparam cfsqltype="cf_sql_varchar" value="#normalizedID#">
+			</cfquery>
+			
+			<!--- Update Stats If Found --->
+			<cfquery name="qStats" datasource="#instance.dsn#" username="#instance.dsnUsername#" password="#instance.dsnPassword#">
 			UPDATE #instance.table# 
 			   SET lastAccessed = <cfqueryparam cfsqltype="cf_sql_timestamp" value="#now()#">,
 				    hits  = hits + 1
 			  WHERE id = <cfqueryparam cfsqltype="cf_sql_varchar" value="#normalizedID#">
 			</cfquery>
+		</cftransaction>
 			
-			<cfreturn refLocal.target>
-		
-		</cfif>		
+		<!--- Object Check --->
+		<cfscript>
+			// Just return if records found, else null
+			if( q.recordCount ){
+				
+				// if simple value, just return it
+				if( q.isSimple ){
+					return q.objectValue;
+				}
+				
+				//else we return deserialized
+				return instance.converter.deserializeObject(binaryObject=q.objectValue);
+			}
+		</cfscript>
 	</cffunction>
 	
 	<!--- getQuiet --->
@@ -265,26 +280,28 @@ Or look in the /coldbox/system/cache/store/sql/*.sql for you sql script for your
 		</cfif>
 		
 		<!--- Check if already in DB or not --->
-		<cfif NOT lookupQuery(arguments.objectKey).recordcount> 	
-			<!--- store it --->	
-			<cfquery name="q" datasource="#instance.dsn#" username="#instance.dsnUsername#" password="#instance.dsnPassword#">
-			INSERT INTO #instance.table# (id,objectKey,objectValue,hits,timeout,lastAccessTimeout,created,lastAccessed,isExpired,isSimple)
-			     VALUES (
-				 	<cfqueryparam cfsqltype="cf_sql_varchar" value="#normalizedID#">,
-				 	<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.objectKey#">,
-				 	<cfqueryparam cfsqltype="cf_sql_longvarchar" value="#arguments.object#">,
-				 	<cfqueryparam cfsqltype="cf_sql_integer" value="1">,
-					<cfqueryparam cfsqltype="cf_sql_integer" value="#arguments.timeout#">,
-					<cfqueryparam cfsqltype="cf_sql_integer" value="#arguments.lastAccessTimeout#">,
-					<cfqueryparam cfsqltype="cf_sql_timestamp" value="#now()#">,
-					<cfqueryparam cfsqltype="cf_sql_timestamp" value="#now()#">,
-					<cfqueryparam cfsqltype="cf_sql_bit" value="0">,
-					<cfqueryparam cfsqltype="cf_sql_bit" value="#isSimple#">
-				 )
-			</cfquery>
+		<cftransaction isolation="serializable">
+			<cfif NOT lookupQuery(arguments.objectKey).recordcount> 	
+				<!--- store it --->	
+				<cfquery name="q" datasource="#instance.dsn#" username="#instance.dsnUsername#" password="#instance.dsnPassword#">
+				INSERT INTO #instance.table# (id,objectKey,objectValue,hits,timeout,lastAccessTimeout,created,lastAccessed,isExpired,isSimple)
+				     VALUES (
+					 	<cfqueryparam cfsqltype="cf_sql_varchar" value="#normalizedID#">,
+					 	<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.objectKey#">,
+					 	<cfqueryparam cfsqltype="cf_sql_longvarchar" value="#arguments.object#">,
+					 	<cfqueryparam cfsqltype="cf_sql_integer" value="1">,
+						<cfqueryparam cfsqltype="cf_sql_integer" value="#arguments.timeout#">,
+						<cfqueryparam cfsqltype="cf_sql_integer" value="#arguments.lastAccessTimeout#">,
+						<cfqueryparam cfsqltype="cf_sql_timestamp" value="#now()#">,
+						<cfqueryparam cfsqltype="cf_sql_timestamp" value="#now()#">,
+						<cfqueryparam cfsqltype="cf_sql_bit" value="0">,
+						<cfqueryparam cfsqltype="cf_sql_bit" value="#isSimple#">
+					 )
+				</cfquery>
+				<!--- Just go back --->
+				<cfreturn>				
+			</cfif>
 			
-		<cfelse>
-		
 			<!--- Update it --->	
 			<cfquery name="q" datasource="#instance.dsn#" username="#instance.dsnUsername#" password="#instance.dsnPassword#">
 			UPDATE #instance.table# 
@@ -299,8 +316,8 @@ Or look in the /coldbox/system/cache/store/sql/*.sql for you sql script for your
 					isSimple			= <cfqueryparam cfsqltype="cf_sql_bit" value="#isSimple#">
 			  WHERE id = <cfqueryparam cfsqltype="cf_sql_varchar" value="#normalizedID#">
 			</cfquery>
-		
-		</cfif>
+			
+		</cftransaction>		
 	</cffunction>
 
 	<!--- Clear an object from the pool --->
