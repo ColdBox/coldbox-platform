@@ -1,8 +1,11 @@
-<cfset test = "hello:test">
-<cfset module = "">
-<cfif find(":",test)>
-	<cfset module = getToken(test,1, ":")>
-</cfif>
-<cfoutput>
-module= #module#
-</cfoutput>
+<cfscript>
+
+cachePut("Test",createUUID());
+writeDump(cacheGet("Test"));
+writeDump(cacheGet("Test2"));
+writeDump(cacheCount());
+writeDump(cacheGetAllIds());
+
+writeDump(cacheGetProperties("object") );
+
+</cfscript>

@@ -16,22 +16,36 @@ component serializable="false" implements="coldbox.system.cache.ICacheProvider"{
     * Constructor
     */
 	RailoProvider function init() output=false{
+		// prepare instance data
 		instance = {
+			// provider name
 			name 				= "",
+			// provider enable flag
 			enabled 			= false,
+			// reporting enabled flag
 			reportingEnabled 	= false,
+			// configuration structure
 			configuration 		= {},
+			// cacheFactory composition
 			cacheFactory 		= "",
+			// event manager composition
 			eventManager		= "",
+			// storage composition, even if it does not exist, depends on cache
 			store				= "",
+			// the cache identifier for this provider
 			cacheID				= createObject('java','java.lang.System').identityHashCode(this),
-			defaultCacheName	= "object",
 			// Element Cleaner Helper
 			elementCleaner		= CreateObject("component","coldbox.system.cache.util.ElementCleaner").init(this),
 			// Utilities
 			utility				= createObject("component","coldbox.system.core.util.Util"),
+			// our UUID creation helper
 			uuidHelper			= createobject("java", "java.util.UUID")
 		};
+		
+		// Provider Property Defaults
+		instance.DEFAULTS = {
+			cacheName = "object"
+		};		
 		
 		return this;
 	}
@@ -86,6 +100,21 @@ component serializable="false" implements="coldbox.system.cache.ICacheProvider"{
 	}
 	
 	/**
+	* Validate the configuration
+	**/
+	private void function validateConfiguration(){
+		var cacheConfig = getConfiguration();
+		var key			= "";
+		
+		// Validate configuration values, if they don't exist, then default them to DEFAULTS
+		for(key in instance.DEFAULTS){
+			if( NOT structKeyExists(cacheConfig, key) OR NOT len(cacheConfig[key]) ){
+				cacheConfig[key] = instance.DEFAULTS[key];
+			}
+		}
+	}
+	
+	/**
     * configure the cache for operation
     */
     void function configure() output=false{
@@ -98,17 +127,8 @@ component serializable="false" implements="coldbox.system.cache.ICacheProvider"{
 			instance.logger = getCacheFactory().getLogBox().getLogger( this );
 			instance.logger.debug("Starting up Railoprovider Cache: #getName()# with configuration: #config.toString()#");
 			
-			// link cacheName according to property if defined, else use default
-			if( NOT structKeyExists(config,"cacheName") ){
-				config.cacheName = instance.defaultCacheName;
-			}
-			
-			// Merge configurations
-			props = cacheGetProperties();
-			var key = "";
-			for(key in props){
-				config["ehcache_#key.objectType#"] = key;
-			}
+			// Validate the configuration
+			validateConfiguration();
 			
 			// enabled cache
 			instance.enabled = true;
@@ -144,22 +164,22 @@ component serializable="false" implements="coldbox.system.cache.ICacheProvider"{
 	* @colddoc:generic coldbox.system.cache.util.ICacheStats
 	*/
 	any function getStats() output=false{
-		return CreateObject("component", "coldbox.system.cache.providers.cf-lib.CFStats").init( getObjectStore().getStatistics() );		
+		return createObject("component", "coldbox.system.cache.providers.railo-lib.RailoStats").init( this );		
 	}
 	
 	/**
     * clear the cache stats
     */
     void function clearStatistics() output=false{
-		getObjectStore().clearStatistics();
+		// not yet posible with railo
 	}
 	
 	/**
     * Returns the ehCache storage session according to configured cache name
     */
     any function getObjectStore() output=false{
-		// get the cache session according to set name
-		return cacheGetSession( getConfiguration().cacheName );
+		// not yet possible with railo
+		//return cacheGetSession( getConfiguration().cacheName );
 	}
 	
 	/**
@@ -196,7 +216,7 @@ component serializable="false" implements="coldbox.system.cache.ICacheProvider"{
 		if( thisCacheName eq "object" ){
 			return cacheGetAllIds();
 		}
-		return cacheGetAllIds(thisCacheName);
+		return cacheGetAllIds("",thisCacheName);
 	}
 	
 	/**
@@ -217,35 +237,30 @@ component serializable="false" implements="coldbox.system.cache.ICacheProvider"{
     * get an item silently from cache, no stats advised
     */
     any function getQuiet(required any objectKey) output=false{
-		var element = getObjectStore().getQuiet( ucase(arguments.objectKey) );
-		if( NOT isNull(element) ){
-			return element.getValue();
-		}
+		// not implemented by railo yet
+		return get(arguments.objectKey);
 	}
 	
 	/**
     * Not implemented by this cache
     */
     boolean function isExpired(required any objectKey) output=false{
-		var element = getObjectStore().getQuiet( ucase(arguments.objectKey) );
-		if( NOT isNull(element) ){
-			return element.isExpired();
-		}
-		return true;
+		return false;
 	}
 	 
 	/**
     * check if object in cache
     */
     boolean function lookup(required any objectKey) output=false{
-		return lookupQuiet(arguments.objectKey);
+		return cachekeyexists(arguments.objectKey, getConfiguration().cacheName );
 	}
 	
 	/**
     * check if object in cache with no stats
     */
     boolean function lookupQuiet(required any objectKey) output=false{
-		return getObjectStore().isKeyInCache( ucase(arguments.objectKey) );
+		// not possible yet on railo
+		return lookup(arguments.objectKey);
 	}
 	
 	/**
@@ -281,7 +296,7 @@ component serializable="false" implements="coldbox.system.cache.ICacheProvider"{
 						 	   any lastAccessTimeout="0",
 						  	   struct extra) output=false{
 		
-		cachePut(arguments.objectKey,arguments.object,arguments.timeout,arguments.lastAccessTimeout);
+		cachePut(arguments.objectKey,arguments.object,arguments.timeout,arguments.lastAccessTimeout, getConfiguration().cacheName);
 		
 		return true;
 	}	
@@ -290,28 +305,35 @@ component serializable="false" implements="coldbox.system.cache.ICacheProvider"{
     * get cache size
     */
     numeric function getSize() output=false{
-		return getObjectStore().getSize();
+		return cacheCount( getConfiguration().cacheName );
 	}
 	
 	/**
     * Not implemented, let ehCache due its thang!
     */
     void function reap() output=false{
-		// Not implemented, let ehCache due its thang!		
+		// Not implemented by this provider
 	}
 	
 	/**
     * clear all elements from cache
     */
     void function clearAll() output=false{
-		getObjectStore().removeAll();
+		var iData = {
+			cache	= this
+		};
+		
+		cacheClear("",getConfiguration().cacheName);
+		
+		// notify listeners		
+		getEventManager().processState("afterCacheClearAll",iData);
 	}
 	
 	/**
     * clear an element from cache
     */
     boolean function clear(required any objectKey) output=false{
-		cacheRemove( arguments.objectKey );
+		cacheRemove( arguments.objectKey ,false, getConfiguration().cacheName );
 		
 		//ColdBox events
 		var iData = { 
@@ -327,7 +349,8 @@ component serializable="false" implements="coldbox.system.cache.ICacheProvider"{
     * clear with no stats
     */
     boolean function clearQuiet(required any objectKey) output=false{
-		getObjectStore().removeQuiet( ucase(arguments.objectKey) );
+		// normal clear, not implemented by railo
+		clear(arguments.objectKey);
 		return true;
 	}
 	
@@ -352,8 +375,7 @@ component serializable="false" implements="coldbox.system.cache.ICacheProvider"{
     * not implemented by cache
     */
     void function expireAll() output=false{ 
-		// Just try to evict stuff, not a way to expire all elements.
-		getObjectStore().evictExpiredElements();
+		// Not implemented by this cache
 	}
 	
 	/**
