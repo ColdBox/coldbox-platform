@@ -18,18 +18,27 @@ component serializable="false" implements="coldbox.system.cache.ICacheProvider"{
 	CFProvider function init() output=false{
 		// Setup Cache instance
 		instance = {
+			// cache name
 			name 				= "",
+			// enabled cache flag
 			enabled 			= false,
+			// reporting enabled flag
 			reportingEnabled 	= false,
+			// configuration structure
 			configuration 		= {},
+			// cache factory reference
 			cacheFactory 		= "",
+			// event manager reference
 			eventManager		= "",
+			// reference to underlying data store
 			store				= "",
+			// internal cache id
 			cacheID				= createObject('java','java.lang.System').identityHashCode(this),
 			// Element Cleaner Helper
 			elementCleaner		= CreateObject("component","coldbox.system.cache.util.ElementCleaner").init(this),
 			// Utilities
 			utility				= createObject("component","coldbox.system.core.util.Util"),
+			// uuid creation helper
 			uuidHelper			= createobject("java", "java.util.UUID")
 		};
 		

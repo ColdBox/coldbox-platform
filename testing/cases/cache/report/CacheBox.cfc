@@ -68,8 +68,15 @@ Description :
 			listeners = [
 				//{ class="path.to.listener", name="Syncrhonizer", properties={} }
 			]
-			
 		};
+		
+		// cool thing about programmatic configuration
+		if( structKeyExists(server,"railo") ){
+			cachebox.caches.railoCache = {
+				provider = "coldbox.system.cache.providers.RailoProvider"
+			};
+		}
+		
 	}	
 </cfscript>
 </cfcomponent>

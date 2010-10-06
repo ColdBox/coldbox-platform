@@ -43,6 +43,7 @@ Properties
 			instance.elementCleaner		= CreateObject("component","coldbox.system.cache.util.ElementCleaner").init(this);
 			// Utilities
 			instance.utility			= createObject("component","coldbox.system.core.util.Util");
+			// UUID Helper
 			instance.uuidHelper			= createobject("java", "java.util.UUID");
 			
 			// CacheBox Provider Property Defaults

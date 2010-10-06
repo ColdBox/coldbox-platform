@@ -15,7 +15,7 @@ component serializable="false" extends="coldbox.system.cache.providers.RailoProv
 	RailoColdboxProvider function init() output=false{
 		super.init();
 		
-		// Prefixes
+		// Cache Prefixes
 		this.VIEW_CACHEKEY_PREFIX 			= "railo_view-";
 		this.EVENT_CACHEKEY_PREFIX 			= "railo_event-";
 		this.HANDLER_CACHEKEY_PREFIX 		= "railo_handler-";
@@ -25,7 +25,7 @@ component serializable="false" extends="coldbox.system.cache.providers.RailoProv
 		
 		
 		// URL Facade Utility
-		eventURLFacade		= CreateObject("component","coldbox.system.cache.util.EventURLFacade").init(this);
+		instance.eventURLFacade		= CreateObject("component","coldbox.system.cache.util.EventURLFacade").init(this);
 		
 		return this;
 	}
@@ -42,10 +42,13 @@ component serializable="false" extends="coldbox.system.cache.providers.RailoProv
 	void function setColdbox(required any coldbox) output=false{
 		variables.coldbox = arguments.coldbox;
 	}
+	
 	// Get ColdBox
 	any function getColdbox() output=false{ return coldbox; }
+	
 	// Get Event URL Facade Tool
-	coldbox.system.cache.util.EventURLFacade function getEventURLFacade() output=false{ return eventURLFacade; }
+	coldbox.system.cache.util.EventURLFacade function getEventURLFacade() output=false{ return instance.eventURLFacade; }
+	
 	// Get Item Type Counts
 	coldbox.system.cache.util.ItemTypeCount function getItemTypes() output=false{
 		var x 			= 1;

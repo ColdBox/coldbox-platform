@@ -100,7 +100,7 @@ component serializable="false" implements="coldbox.system.cache.ICacheProvider"{
 	}
 	
 	/**
-	* Validate the configuration
+	* Validate the incoming configuration and make necessary defaults
 	**/
 	private void function validateConfiguration(){
 		var cacheConfig = getConfiguration();
@@ -142,7 +142,8 @@ component serializable="false" implements="coldbox.system.cache.ICacheProvider"{
     * shutdown the cache
     */
     void function shutdown() output=false{
-		instance.logger.info("CFProvider Cache: #getName()# has been shutdown.");
+		//nothing to shutdown
+		instance.logger.info("RailoProvider Cache: #getName()# has been shutdown.");
 	}
 	
 	/*
@@ -153,7 +154,7 @@ component serializable="false" implements="coldbox.system.cache.ICacheProvider"{
 	} 
 
 	/*
-	* Indicates if cache is ready for operation
+	* Indicates if cache is ready for reporting
 	*/
 	boolean function isReportingEnabled() output=false{
 		return instance.reportingEnabled;
@@ -168,14 +169,14 @@ component serializable="false" implements="coldbox.system.cache.ICacheProvider"{
 	}
 	
 	/**
-    * clear the cache stats
+    * clear the cache stats: Not enabled in this provider
     */
     void function clearStatistics() output=false{
 		// not yet posible with railo
 	}
 	
 	/**
-    * Returns the ehCache storage session according to configured cache name
+    * Returns the underlying cache engine: Not enabled in this provider
     */
     any function getObjectStore() output=false{
 		// not yet possible with railo
@@ -235,11 +236,17 @@ component serializable="false" implements="coldbox.system.cache.ICacheProvider"{
     * get an item from cache
     */
     any function get(required any objectKey) output=false{
-		return cacheGet( arguments.objectKey );
+	
+		if( isDefaultCache() ){
+			return cacheGet( arguments.objectKey );
+		}
+		else{
+			return cacheGet( arguments.objectKey, false, getConfiguration().cacheName );
+		}
 	}
 	
 	/**
-    * get an item silently from cache, no stats advised
+    * get an item silently from cache, no stats advised: Stats not available on railo
     */
     any function getQuiet(required any objectKey) output=false{
 		// not implemented by railo yet
@@ -264,7 +271,7 @@ component serializable="false" implements="coldbox.system.cache.ICacheProvider"{
 	}
 	
 	/**
-    * check if object in cache with no stats
+    * check if object in cache with no stats: Stats not available on railo
     */
     boolean function lookupQuiet(required any objectKey) output=false{
 		// not possible yet on railo
@@ -296,7 +303,7 @@ component serializable="false" implements="coldbox.system.cache.ICacheProvider"{
 	}	
 	
 	/**
-    * set an object in cache with no stats
+    * set an object in cache with no advising to events
     */
     boolean function setQuiet(required any objectKey,
 						 	   required any object,
@@ -325,7 +332,7 @@ component serializable="false" implements="coldbox.system.cache.ICacheProvider"{
 	}
 	
 	/**
-    * Not implemented, let ehCache due its thang!
+    * Not implemented by this cache
     */
     void function reap() output=false{
 		// Not implemented by this provider
@@ -373,7 +380,7 @@ component serializable="false" implements="coldbox.system.cache.ICacheProvider"{
 	}
 	
 	/**
-    * clear with no stats
+    * clear with no advising to events
     */
     boolean function clearQuiet(required any objectKey) output=false{
 		// normal clear, not implemented by railo

@@ -26,14 +26,23 @@ Properties
 	<!--- init --->
     <cffunction name="init" output="false" access="public" returntype="any" hint="Simple Constructor">
     	<cfscript>
+    		// setup instance
     		instance = {
+				// cache provider name
 				name 				= "",
+				// enabled flag
 				enabled 			= false,
+				// reporting flag
 				reportingEnabled 	= false,
+				// stats reference will go here
 				stats   			= "",
+				// configuration structure
 				configuration 		= {},
+				// cache factory instance
 				cacheFactory 		= "",
+				// event manager instance
 				eventManager		= "",
+				// cache internal identifier
 				cacheID				= createObject('java','java.lang.System').identityHashCode(this)
 			};
 			return this;
