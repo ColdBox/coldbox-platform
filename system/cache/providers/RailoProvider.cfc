@@ -212,17 +212,22 @@ component serializable="false" implements="coldbox.system.cache.ICacheProvider"{
     * get all the keys in this provider
     */
     array function getKeys() output=false{
-		var thisCacheName = getConfiguration().cacheName;
-		if( thisCacheName eq "object" ){
+		
+		if( isDefaultCache() ){
 			return cacheGetAllIds();
 		}
-		return cacheGetAllIds("",thisCacheName);
+		
+		return cacheGetAllIds("",getConfiguration().cacheName);
 	}
 	
 	/**
     * get an object's cached metadata
     */
     struct function getCachedObjectMetadata(required any objectKey) output=false{
+		if( isDefaultCache() ){
+			return cacheGetMetadata( arguments.objectKey );
+		}
+		
 		return cacheGetMetadata( arguments.objectKey, getConfiguration().cacheName );
 	}
 	
@@ -252,6 +257,9 @@ component serializable="false" implements="coldbox.system.cache.ICacheProvider"{
     * check if object in cache
     */
     boolean function lookup(required any objectKey) output=false{
+		if( isDefaultCache() ){
+			return cachekeyexists(arguments.objectKey );
+		}
 		return cachekeyexists(arguments.objectKey, getConfiguration().cacheName );
 	}
 	
@@ -296,7 +304,12 @@ component serializable="false" implements="coldbox.system.cache.ICacheProvider"{
 						 	   any lastAccessTimeout="0",
 						  	   struct extra) output=false{
 		
-		cachePut(arguments.objectKey,arguments.object,arguments.timeout,arguments.lastAccessTimeout, getConfiguration().cacheName);
+		if( isDefaultCache() ){
+			cachePut(arguments.objectKey,arguments.object,arguments.timeout,arguments.lastAccessTimeout);
+		}
+		else{
+			cachePut(arguments.objectKey,arguments.object,arguments.timeout,arguments.lastAccessTimeout, getConfiguration().cacheName);
+		}
 		
 		return true;
 	}	
@@ -305,6 +318,9 @@ component serializable="false" implements="coldbox.system.cache.ICacheProvider"{
     * get cache size
     */
     numeric function getSize() output=false{
+		if( isDefaultCache() ){
+			return cacheCount();
+		}
 		return cacheCount( getConfiguration().cacheName );
 	}
 	
@@ -323,7 +339,12 @@ component serializable="false" implements="coldbox.system.cache.ICacheProvider"{
 			cache	= this
 		};
 		
-		cacheClear("",getConfiguration().cacheName);
+		if( isDefaultCache() ){
+			cacheClear();
+		}
+		else{
+			cacheClear("",getConfiguration().cacheName);
+		}
 		
 		// notify listeners		
 		getEventManager().processState("afterCacheClearAll",iData);
@@ -333,7 +354,13 @@ component serializable="false" implements="coldbox.system.cache.ICacheProvider"{
     * clear an element from cache
     */
     boolean function clear(required any objectKey) output=false{
-		cacheRemove( arguments.objectKey ,false, getConfiguration().cacheName );
+		
+		if( isDefaultCache() ){
+			cacheRemove( arguments.objectKey );
+		}
+		else{
+			cacheRemove( arguments.objectKey ,false, getConfiguration().cacheName );
+		}
 		
 		//ColdBox events
 		var iData = { 
@@ -383,6 +410,13 @@ component serializable="false" implements="coldbox.system.cache.ICacheProvider"{
     */
     void function expireObject(required any objectKey) output=false{
 		//not implemented
+	}
+	
+	/**
+	* Checks if the default cache is in use
+	*/
+	private boolean function isDefaultCache(){
+		return  ( getConfiguration().cacheName EQ instance.DEFAULTS.cacheName );
 	}
 	
 	/**
