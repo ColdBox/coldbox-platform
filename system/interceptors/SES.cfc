@@ -732,6 +732,9 @@ Description :
 					params[foundRoute.patternParams[x]] = mid(requestString, match.pos[x+1], match.len[x+1]);
 				}
 				
+				// Save Found URL
+				arguments.event.setValue(name="currentRoutedURL",value=requestString,private=true);
+
 				// Try to discover the route via the module routing calls
 				structAppend(params, findRoute(reReplaceNoCase(requestString,foundRoute.regexpattern,""),arguments.event,foundRoute.moduleRouting), true);
 				
@@ -743,8 +746,10 @@ Description :
 
 			// Save Found Route
 			arguments.event.setValue(name="currentRoute",value=foundRoute.pattern,private=true);
-			// Save Found URL
-			arguments.event.setValue(name="currentRoutedURL",value=requestString,private=true);
+			// Save Found URL if NOT Found already
+			if( NOT arguments.event.valueExists(name="currentRoutedURL",private=true) ){
+				arguments.event.setValue(name="currentRoutedURL",value=requestString,private=true);
+			}
 
 			// Do we need to do package resolving
 			if( NOT foundRoute.packageResolverExempt ){
