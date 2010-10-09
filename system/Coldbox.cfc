@@ -571,10 +571,10 @@ Description :
 	</cffunction>
 	
 	<!--- AppHash --->
-	<cffunction name="getAppHash" access="private" output="false" returntype="string" hint="Get AppHash">
+	<cffunction name="getAppHash" access="public" output="false" returntype="string" hint="Get AppHash used in the cflocks">
 		<cfreturn instance.AppHash/>
 	</cffunction>
-	<cffunction name="setAppHash" access="private" output="false" returntype="void" hint="Set AppHash">
+	<cffunction name="setAppHash" access="public" output="false" returntype="void" hint="Set AppHash used in the cflocks">
 		<cfargument name="AppHash" type="string" required="true"/>
 		<cfset instance.AppHash = arguments.AppHash/>
 	</cffunction>
