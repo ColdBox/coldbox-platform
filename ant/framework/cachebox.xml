@@ -70,6 +70,7 @@
 		  	<include name="**/*.cfc" />
 			<include name="**/*.cfm" />
 			<include name="**/*.xml" />
+			<include name="**/*.css" />
 			<replacetoken>/coldbox/system/</replacetoken>
 		</replace>
 		<echo>Refactoring for coldbox instantitation and cfc paths</echo>
@@ -77,6 +78,7 @@
 		  	<include name="**/*.cfc" />
 			<include name="**/*.cfm" />
 			<include name="**/*.xml" />
+			<include name="**/*.css" />
 			<replacetoken>coldbox.system.</replacetoken>
 		</replace>
 		
