@@ -1,5 +1,5 @@
 <cfoutput>
-<table border="0" cellpadding="0" cellspacing="1" class="fw_debugTables">
+<table border="0" cellpadding="0" cellspacing="1" class="cachebox_debugTables">
   <thead>
   	<tr>
 	  	<th>Object</th>
@@ -18,7 +18,7 @@
   	<tr <cfif x mod 2 eq 0>class="even"</cfif> id="cbox_cache_tr_#urlEncodedFormat(thisKey)#">
 	  	<!--- Link --->
 		<td align="left">
-		  	<a href="javascript:fw_openwindow('#URLBase#?debugpanel=cacheviewer&cbox_cacheName=#arguments.cacheName#&cbox_cacheEntry=#urlEncodedFormat( thisKey )#','CacheViewer',650,375,'resizable,scrollbars,status')" 
+		  	<a href="javascript:cachebox_openwindow('#URLBase#?debugpanel=cacheviewer&cbox_cacheName=#arguments.cacheName#&cbox_cacheEntry=#urlEncodedFormat( thisKey )#','CacheViewer',650,375,'resizable,scrollbars,status')" 
 			   title="#thisKey#">
 		  	#left(thisKey,40)#<cfif len(thisKey) gt 40>...</cfif>
 			</a>
@@ -36,9 +36,9 @@
 	 	<!--- isExpired --->
 		<td align="center">
 			<cfif structKeyExists(cacheMDKeyLookup,"isExpired") and cacheMetadata[thisKey][ cacheMDKeyLookup.isExpired ]>
-				<span class="fw_redText">Expired</span>
+				<span class="cachebox_redText">Expired</span>
 			<cfelse>
-				<span class="fw_blueText">Alive</span>
+				<span class="cachebox_blueText">Alive</span>
 			</cfif>
 		</td>
 		<!--- Commands --->
@@ -47,7 +47,7 @@
 				   name="cboxbutton_removeentry_#urlEncodedFormat(thisKey)#" id="cboxbutton_removeentry_#urlEncodedFormat(thisKey)#"
 			  	   style="font-size:10px" 
 				   title="Remove this entry from the cache." 
-				   onclick="fw_cacheClearItem('#URLBase#','#urlEncodedFormat(thisKey)#','#arguments.cacheName#')">
+				   onclick="cachebox_cacheClearItem('#URLBase#','#urlEncodedFormat(thisKey)#','#arguments.cacheName#')">
 		</td>
 	  </tr>
   </cfloop>	
