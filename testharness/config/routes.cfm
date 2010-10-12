@@ -21,6 +21,9 @@
 	addModuleRoutes(pattern="/modTest1",module="test1");
 	addModuleRoutes(pattern="/forgebox",module="forgebox");
 	
+	// Add Module Routing Here For Common-View Layout Testing
+	addModuleRoutes(pattern="/moduleLookup",module="moduleLookup");
+	addModuleRoutes(pattern="/parentLookup",module="parentLookup");
 	
 	
 	addRoute(pattern="/test/:id-numeric{2}/:num-numeric/:name/:month{3}?",handler="ehGeneral",action="dspHello");
