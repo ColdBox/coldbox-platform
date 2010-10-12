@@ -31,7 +31,6 @@ Description :
 	<!--- COLDBOX APPLICATION KEY OVERRIDE --->
 	<cfset COLDBOX_APP_KEY = "">
 	
-	
 	<cfset this.mappings["/coldbox"] = expandPath('../') />
 	<cfset this.mappings["/testing"] = expandpath("/coldbox/testing")>
 	
@@ -42,6 +41,7 @@ Description :
 		<cfset this.ormSettings = {
 			dialect = "MySQLwithInnoDB",
 			cfclocation = ["/coldbox","/testing"],
+			skipCFCWithError = true,
 			eventHandling=true,
 			logSQL = true,
 			eventhandling = true,
@@ -70,6 +70,7 @@ Description :
 		<!--- ************************************************************* --->
 		<cfargument name="targetPage" type="string" required="true" />
 		<!--- ************************************************************* --->
+		
 		<cfset var start = getTickCount()>
 		<cfsetting enablecfoutputonly="yes">
 		<cfsetting showdebugoutput="true">
@@ -78,7 +79,6 @@ Description :
 			<cfset structDelete(application,"cbBootStrap")>
 			<cfset structDelete(application,"cbController")>
 		</cfif>
-		
 		<cfif structKeyExists(URL,"ormreinit")>
 			<cfset ORMReload()>
 		</cfif>
@@ -90,6 +90,7 @@ Description :
 				<cfset application.cbBootstrap = CreateObject("component","coldbox.system.Coldbox").init(COLDBOX_CONFIG_FILE,COLDBOX_APP_ROOT_PATH,COLDBOX_APP_KEY,COLDBOX_APP_MAPPING)>
 			</cflock>
 		</cfif>
+		
 		<!--- Reload Checks --->
 		<cfset application.cbBootstrap.reloadChecks()>
 		

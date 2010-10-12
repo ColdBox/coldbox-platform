@@ -68,6 +68,9 @@ Modification History:
 			if ( controller.settingExists("RequestContextDecorator") and len(controller.getSetting("RequestContextDecorator")) ){
 				instance.decorator = controller.getSetting("RequestContextDecorator");
 			}
+			
+			//Get Local Logger Configured
+			instance.logger = controller.getLogBox().getLogger(this);
 		</cfscript>
 	</cffunction>
 
@@ -87,6 +90,7 @@ Modification History:
 			
 			// Do we have flash elements to inflate?
 			if( getFlashScope().flashExists() ){
+				instance.logger.debug("Flash RAM detected, inflating flash...");
 				getFlashScope().inflateFlash();
 			}
 					
@@ -165,6 +169,8 @@ Modification History:
 				// Event has been found, flag it so we can render it from cache if it still survives
 				arguments.context.setEventCacheableEntry(eventCacheKey);
 				
+				instance.logger.debug("Event caching detected: #eventCacheKey.toString()#");
+				
 			}//If using event caching.
 		</cfscript>
 	</cffunction>
@@ -183,6 +189,7 @@ Modification History:
 	<cffunction name="setContext" access="public" output="false" returntype="void" hint="Set the Request Context">
 		<cfargument name="Context" type="any" required="true">
 		<cfscript>
+			instance.logger.debug("Request Context set on request scope");
 			request.cb_requestContext = arguments.Context;
 		</cfscript>
 	</cffunction>

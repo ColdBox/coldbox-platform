@@ -220,7 +220,7 @@ Description :
 				<cfset renderedContent = cbController.getColdboxOCM("template").get(event.getEventCacheableEntry())>
 				<cfoutput>#renderedContent#</cfoutput>
 			<cfelse>
-			
+				
 				<!--- Run Default/Set Event not executing an event --->
 				<cfif NOT event.isNoExecution()>
 					<cfset refResults.results = cbController.runEvent(default=true)>
