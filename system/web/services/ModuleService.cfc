@@ -74,7 +74,7 @@ I oversee and manage ColdBox modules
 			var modLocations   = [ controller.getSetting("ModulesLocation") ];
 			
 			// Register the initial empty module configuration holder structure
-			controller.setSetting("modules",structnew());
+			structClear( controller.getSetting("modules") );
 			
 			// construct our locations array, conventions first.
 			modLocations.addAll( controller.getSetting("ModulesExternalLocation") );
