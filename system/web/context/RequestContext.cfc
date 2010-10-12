@@ -15,34 +15,58 @@ Modification History:
 <cfcomponent hint="The request context object simulates a user request. It has two internal data collections: one public and one private.  You can also manipulate the request stream and contents from this object." output="false">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
-	
-	<cfscript>
-		instance = structnew();
-	</cfscript>
 
 	<cffunction name="init" access="public" output="false" hint="constructor" returntype="RequestContext">
 		<!--- ************************************************************* --->
 		<cfargument name="properties" 	type="any" 	required="true" hint="The context properties struct">
 		<!--- ************************************************************* --->
 		<cfscript>
-			var key = "";
+			instance = structnew();
 			
 			// Create the Collections
 			instance.context		= structnew();
 			instance.privateContext = structnew();
 			
-			// Create Default Properties
+			// flag if using SES
 			instance.isSES 				= false;
-			instance.sesBaseURL 		= "";
+			// routed SES structures
 			instance.routedStruct 		= structnew();
+			// flag for no event execution
 			instance.isNoExecution  	= false;
-			instance.modules			= structnew();
+			// the name of the event via URL/FORM/REMOTE
+			instance.eventName			= arguments.properties.eventName;
 			
-			// Populate instance
-			for( key in arguments.properties ){
-				instance[key] = arguments.properties[key];
+			// Registered Layouts
+			instance.registeredLayouts	= structnew();
+			if( structKeyExists(arguments.properties,"registeredLayouts") ){
+				instance.registeredLayouts = arguments.properties.registeredLayouts;
 			}
 			
+			// Registered Folder Layouts
+			instance.folderLayouts	= structnew();
+			if( structKeyExists(arguments.properties,"folderLayouts") ){
+				instance.folderLayouts = arguments.properties.folderLayouts;
+			}
+			
+			// Registered View Layouts
+			instance.viewLayouts	= structnew();
+			if( structKeyExists(arguments.properties,"viewLayouts") ){
+				instance.viewLayouts = arguments.properties.viewLayouts;
+			}
+			
+			// Modules reference
+			instance.modules = arguments.properties.modules;
+			
+			// Default layout + View
+			instance.defaultLayout = arguments.properties.defaultLayout;
+			instance.defaultView = arguments.properties.defaultView;
+			
+			// SES Base URL
+			instance.SESBaseURL = "";
+			if( structKeyExists(arguments.properties,"SESBaseURL") ){
+				instance.SESBaseURL = arguments.properties.SESBaseURL;
+			}
+						
 			return this;
 		</cfscript>		
 	</cffunction>
@@ -219,9 +243,14 @@ Modification History:
 				if( not valueExists("currentLayout",true) ){
 					setValue("currentLayout", instance.defaultLayout,true);
 				}		
+				try{
 				// If this is a module context, check for a module default layout, and override it
 				if( len(cModule) AND len(instance.modules[cModule].layoutSettings.defaultLayout) ){
 					setValue("currentLayout", instance.modules[getCurrentModule()].layoutSettings.defaultLayout,true);
+				}
+				}
+				catch(Any e){
+					writeDump(instance);writeDump(e);abort;
 				}
 											
 			}//end if overridding layout
