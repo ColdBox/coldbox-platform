@@ -8,12 +8,8 @@ Author 	    :	Luis Majano
 Date        :	August 21, 2006
 Description :
 	IoC Plugin, acts as a IoC Factory Decorator and Facade.
-
-Modification History:
-07/24/2007 - LightWire integration added by Aaron Roberson
-02/15/2007 - Created
 ----------------------------------------------------------------------->
-<cfcomponent hint="An Inversion Of Control plugin that interfaces with major ColdFusion IoC/DI frameworks such as ColdSpring and LightWire"
+<cfcomponent hint="An Inversion Of Control plugin that interfaces with major ColdFusion IoC/DI frameworks"
 			 extends="coldbox.system.Plugin"
 			 output="false"
 			 singleton=true>
@@ -25,17 +21,18 @@ Modification History:
 		<cfargument name="controller" type="any" required="true" hint="coldbox.system.web.Controller">
 		<!--- ************************************************************* --->
 		<cfscript>
-			super.Init(arguments.controller);
+			super.init(arguments.controller);
 			
 			// Plugin Properties
 			setpluginName("IOC");
-			setpluginVersion("2.2");
+			setpluginVersion("3.0");
 			setpluginDescription("This is an inversion of control plugin.");
 			setpluginAuthor("Luis Majano");
 			setpluginAuthorURL("http://www.coldbox.org");
 			
-			// Setup the framework chosen in the config
+			// Setup the framework chosen in the configuration File
 			setIOCFramework( getSetting("IOCFramework") );
+			
 			// Setup the IOC definition file or cfc from the config
 			setIOCDefinitionFile( getSetting("IOCDefinitionFile") );
 			// Setup the initial expanded file 
@@ -166,10 +163,10 @@ Modification History:
 	</cffunction>
 
 	<!--- get/set which IoC Framework is Used --->
-	<cffunction name="getIOCFramework" access="public" output="false" returntype="string" hint="Gets the IoC Framework string used: lightwire or coldspring">
+	<cffunction name="getIOCFramework" access="public" output="false" returntype="string" hint="Get the IoC framework for this plugin to use">
 		<cfreturn instance.IOCFramework/>
 	</cffunction>
-	<cffunction name="setIOCFramework" access="public" output="false" returntype="void" hint="Set the IoC Framework used: lightwire or coldspring">
+	<cffunction name="setIOCFramework" access="public" output="false" returntype="void" hint="Set the IoC framework for this plugin to use">
 		<cfargument name="IOCFramework" type="string" required="true"/>
 		<cfset instance.IOCFramework = arguments.IOCFramework/>
 	</cffunction>

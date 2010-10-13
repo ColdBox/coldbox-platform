@@ -7,17 +7,17 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 Author 	    :	Luis Majano
 Date        :	may 7, 2009
 Description :
-	This is a concrete ColdSpring Adapter
+	This is a concrete ColdSpring2 Adapter
 
 ----------------------------------------------------------------------->
-<cfcomponent hint="The ColdBox ColdSpring IOC factory adapter"
+<cfcomponent hint="The ColdBox ColdSpring2 IOC factory adapter"
 			 extends="coldbox.system.ioc.AbstractIOCAdapter" 
 			 output="false">
 
 <!----------------------------------------- CONSTRUCTOR ------------------------------------->			
 	
 	<!--- Constructor --->
-	<cffunction name="init" access="public" returntype="ColdSpringAdapter" hint="Constructor" output="false" >
+	<cffunction name="init" access="public" returntype="ColdSpring2Adapter" hint="Constructor" output="false" >
 		<cfargument name="definitionFile" 	type="string" 	required="false" default="" hint="The definition file to load a factory with"/>
 		<cfargument name="properties" 		type="struct" 	required="false" default="#structNew()#" hint="Properties to pass to the factory to create"/>
 		<cfargument name="factoryPath" 		type="string" 	required="false" default="" hint="This is an optional factory location path that should override local paths"/>
@@ -26,10 +26,10 @@ Description :
 			super.init(argumentCollection=arguments);
 			
 			// ColdSpring Factory Path
-			instance.COLDSPRING_FACTORY_PATH = "coldspring.beans.DefaultXmlBeanFactory";
+			instance.COLDSPRING2_FACTORY_PATH = "coldspring.beans.xml.XmlBeanFactory";
 			
 			// setup default factory path
-			instance.factoryPath = instance.COLDSPRING_FACTORY_PATH;
+			instance.factoryPath = instance.COLDSPRING2_FACTORY_PATH;
 			
 			// factory path override?
 			if( len(arguments.factoryPath) ){
@@ -48,10 +48,7 @@ Description :
 			var properties = getProperties();
 			
 			//Create the Coldspring Factory
-			instance.factory = createObject("component", getFactoryPath() ).init(structnew(),properties);
-			
-			// Load Bean Definitions
-			instance.factory.loadBeans( getDefinitionFile() );
+			instance.factory = createObject("component", getFactoryPath() ).init( getDefinitionFile() , properties);
 		</cfscript>
 	</cffunction>
 
@@ -72,14 +69,14 @@ Description :
 	</cffunction>
 	
 	<!--- setParentFactory --->
-    <cffunction name="setParentFactory" output="false" access="public" returntype="void" hint="Set a parent factory on the adapted factory">
+    <cffunction name="setParentBeanFactory" output="false" access="public" returntype="void" hint="Set a parent factory on the adapted factory">
     	<cfargument name="parent" type="any" required="true" hint="The parent factory to add"/>
-  		<cfset getFactory().setParent( arguments.parent )>
+  		<cfset getFactory().setParentFactory( arguments.parent )>
     </cffunction>
 	
 	<!--- getParentFactory --->
     <cffunction name="getParentFactory" output="false" access="public" returntype="any" hint="Get the parent factory">
-    	<cfreturn getFactory().getParent()>
+    	<cfreturn getFactory().getParentBeanFactory()>
     </cffunction>
 
 <!----------------------------------------- PRIVATE ------------------------------------->	
