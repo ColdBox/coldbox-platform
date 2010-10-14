@@ -59,6 +59,9 @@ Description :
 		obj = factory.getMailSettings();
 		AssertTrue( isStruct(obj.getMemento()), "Mail Settings");
 		
+		obj = factory.getCacheBox();
+		assertEquals(obj, getController().getCacheBox());
+		
 		obj = factory.getLogBox();
 		assertEquals(obj, getController().getLogBox());
 		
