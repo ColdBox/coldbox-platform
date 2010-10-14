@@ -20,22 +20,13 @@ Description :
 	<cffunction name="init" access="public" returntype="ColdSpring2Adapter" hint="Constructor" output="false" >
 		<cfargument name="definitionFile" 	type="string" 	required="false" default="" hint="The definition file to load a factory with"/>
 		<cfargument name="properties" 		type="struct" 	required="false" default="#structNew()#" hint="Properties to pass to the factory to create"/>
-		<cfargument name="factoryPath" 		type="string" 	required="false" default="" hint="This is an optional factory location path that should override local paths"/>
 		<cfargument name="coldbox" 			type="any" 		required="false" default="" hint="A coldbox application that this instance of logbox can be linked to, not used if not using within a ColdBox Application."/>
 		<cfscript>
 			super.init(argumentCollection=arguments);
 			
 			// ColdSpring Factory Path
 			instance.COLDSPRING2_FACTORY_PATH = "coldspring.beans.xml.XmlBeanFactory";
-			
-			// setup default factory path
-			instance.factoryPath = instance.COLDSPRING2_FACTORY_PATH;
-			
-			// factory path override?
-			if( len(arguments.factoryPath) ){
-				instance.factoryPath = arguments.factoryPath;
-			}
-			
+						
 			return this;
 		</cfscript>
 	</cffunction>
@@ -48,7 +39,7 @@ Description :
 			var properties = getProperties();
 			
 			//Create the Coldspring Factory
-			instance.factory = createObject("component", getFactoryPath() ).init( getDefinitionFile() , properties);
+			instance.factory = createObject("component", instance.COLDSPRING2_FACTORY_PATH ).init( getDefinitionFile() , properties);
 		</cfscript>
 	</cffunction>
 

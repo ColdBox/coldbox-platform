@@ -18,7 +18,6 @@ Description :
 	<cffunction name="init" access="public" returntype="AbstractIOCAdapter" hint="Constructor" output="false" >
 		<cfargument name="definitionFile" 	type="string" 	required="false" default="" hint="The definition file to load a factory with"/>
 		<cfargument name="properties" 		type="struct" 	required="false" default="#structNew()#" hint="Properties to pass to the factory to create"/>
-		<cfargument name="factoryPath" 		type="string" 	required="false" default="" hint="This is an optional factory location path that should override local paths"/>
 		<cfargument name="coldbox" 			type="any" 		required="false" default="" hint="A coldbox application that this instance of logbox can be linked to, not used if not using within a ColdBox Application."/>
 		<cfscript>
 			instance 		 		= structnew();
@@ -30,10 +29,8 @@ Description :
 			instance.definitionFile	= arguments.definitionFile;
 			// The properties passed to the factory to create
 			instance.properties 	= arguments.properties;
-			// The optional factory path to use for creation purposes
-			instance.factoryPath	= arguments.factoryPath;
 			
-			// Link to coldbox if passed
+			// Link to coldbox context if passed
 			if( isObject(arguments.coldbox) ){ instance.coldbox = arguments.coldbox; }
 			
 			return this;
@@ -77,11 +74,6 @@ Description :
 	<!--- getDefinitionFile --->
     <cffunction name="getDefinitionFile" output="false" access="public" returntype="string" hint="Get the definition file for this adapter">
     	<cfreturn instance.definitionFile>
-    </cffunction>
-	
-	<!--- getFactoryPath --->
-    <cffunction name="getFactoryPath" output="false" access="public" returntype="string" hint="Get the factory path for this adapter">
-    	<cfreturn instance.factoryPath>
     </cffunction>
 	
 	<!--- getColdBox --->
