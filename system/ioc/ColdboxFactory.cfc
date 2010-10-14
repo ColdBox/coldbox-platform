@@ -67,6 +67,11 @@ Modification History:
 		<cfreturn application[coldboxAppKey]>
 	</cffunction>
 	
+	<!--- Get the cachebox instance --->
+	<cffunction name="getCacheBox" output="false" access="public" returntype="any" hint="Get the CacheBox reference." colddoc:generic="coldbox.system.logging.LogBox">
+		<cfreturn getColdbox().getCacheBox()>
+	</cffunction>
+	
 	<!--- Get the logbox configured on this app --->
 	<cffunction name="getLogBox" output="false" access="public" returntype="coldbox.system.logging.LogBox" hint="Get the LogBox reference.">
 		<cfreturn getColdbox().getLogBox()>
@@ -92,15 +97,13 @@ Modification History:
 	<cffunction name="getRequestCollection" access="public" returntype="struct" hint="Tries to retrieve the request collection" output="false" >
 		<cfargument name="private" type="boolean" required="false" default="false" hint="Get the request collection or private request collection"/>
 		<cfreturn getRequestContext().getCollection(private=arguments.private)>
-	</cffunction>
-	
+	</cffunction>	
 	
 	<!--- Get the cache manager --->
 	<cffunction name="getColdboxOCM" access="public" output="false" returntype="any" hint="Get ColdboxOCM: coldbox.system.cache.CacheManager or new CacheBox providers as coldbox.system.cache.IColdboxApplicationCache" colddoc:generic="coldbox.system.cache.IColdboxApplicationCache">
 		<cfargument name="cacheName" type="string" required="false" default="default" hint="The cache name to retrieve"/>
-		<cfreturn application[coldboxAppKey].getColdboxOCM(arguments.cacheName)/>
+		<cfreturn getColdbox().getColdboxOCM(arguments.cacheName)/>
 	</cffunction>
-
 	
 	<!--- Get a plugin --->
 	<cffunction name="getPlugin" access="Public" returntype="any" hint="Plugin factory, returns a new or cached instance of a plugin." output="false">
@@ -110,7 +113,7 @@ Modification History:
 		<cfargument name="module" 		type="any" 	    required="false" default="" hint="The module to retrieve the plugin from"/>
 		<cfargument name="init" 		type="boolean"  required="false" default="true" hint="Auto init() the plugin upon construction"/>
 		<!--- ************************************************************* --->
-		<cfreturn application[coldboxAppKey].getPlugin(argumentCollection=arguments)>
+		<cfreturn getColdbox().getPlugin(argumentCollection=arguments)>
 	</cffunction>
 	
 	<!--- Interceptor Facade --->
@@ -119,7 +122,7 @@ Modification History:
 		<cfargument name="interceptorName" 	required="false" type="string" hint="The name of the interceptor to search for"/>
 		<cfargument name="deepSearch" 		required="false" type="boolean" default="false" hint="By default we search the cache for the interceptor reference. If true, we search all the registered interceptor states for a match."/>
 		<!--- ************************************************************* --->
-		<cfreturn application[coldboxAppKey].getInterceptorService().getInterceptor(argumentCollection=arguments)>
+		<cfreturn getColdbox().getInterceptorService().getInterceptor(argumentCollection=arguments)>
 	</cffunction>
 	
 	<!--- Get a datasource --->
@@ -128,7 +131,7 @@ Modification History:
 		<cfargument name="alias" type="string" hint="The alias of the datasource to get from the configstruct (alias property in the config file)">
 		<!--- ************************************************************* --->
 		<cfscript>
-		var datasources = application[coldboxAppKey].getSetting("Datasources");
+		var datasources = getColdbox().getSetting("Datasources");
 		//Check for datasources structure
 		if ( structIsEmpty(datasources) ){
 			getUtil().throwit("There are no datasources defined for this application.","","ColdboxFactory.DatasourceStructureEmptyException");
@@ -145,10 +148,11 @@ Modification History:
 	
 	<!--- Get a mail settings bean --->
 	<cffunction name="getMailSettings" access="public" output="false" returnType="coldbox.system.core.mail.MailSettingsBean" hint="I will return to you a mailsettingsBean modeled after your mail settings in your config file.">
-		<cfreturn CreateObject("component",mailsettingsBeanPath).init(application[coldboxAppKey].getSetting("MailServer"),
-																   application[coldboxAppKey].getSetting("MailUsername"),
-																   application[coldboxAppKey].getSetting("MailPassword"), 
-																   application[coldboxAppKey].getSetting("MailPort"))>
+		<cfset var coldbox = getColdbox()>
+		<cfreturn CreateObject("component",mailsettingsBeanPath).init(coldbox.getSetting("MailServer"),
+																   		coldbox.getSetting("MailUsername"),
+																   		coldbox.getSetting("MailPassword"), 
+																  		coldbox.getSetting("MailPort"))>
 
 	</cffunction>
 	
