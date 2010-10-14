@@ -101,8 +101,12 @@ Description :
 			return refLocal.oBean;	
 		</cfscript>
 	</cffunction>
-
-<!------------------------------------------- ACCESSOR/MUTATORS ------------------------------------------->
+	
+	<!--- containsBean --->
+	<cffunction name="containsBean" access="public" returntype="boolean" hint="Check if the bean factory contains a bean" output="false" >
+		<cfargument name="beanName" type="string" required="true" hint="The bean name to retrieve from the object factory">	
+		<cfreturn instance.adapter.containsBean( arguments.beanName )>
+	</cffunction>
 
 	<!--- getAdapter --->
     <cffunction name="getAdapter" output="false" access="public" returntype="any" hint="Get the IoC Factory Adapter in use by this plugin">
@@ -199,7 +203,7 @@ Description :
     </cffunction>
 	
 	<!--- Validate the definition file --->
-	<cffunction name="validateDefinitionFile" access="private" output="false" returntype="void" hint="Validate the IoC Definition File. Called internally to verify the file location and get the correct path to it.">
+	<cffunction name="validateDefinitionFile" access="private" output="false" returntype="string" hint="Validate the IoC Definition File. Called internally to verify the file location and get the correct path to it.">
 		<cfargument name="definitionFile" type="string" required="true" hint="The definition file to verify for loading"/>
 		<cfscript>
 			var foundFilePath = "";
