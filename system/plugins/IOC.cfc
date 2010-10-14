@@ -69,6 +69,7 @@ Description :
 	<!--- reloadDefinitionFile --->
 	<cffunction name="reloadDefinitionFile" access="public" output="false" returntype="void" hint="Reloads the IoC factory. Basically calls configure again. DEPRECATED">
 		<cfscript>
+			log.info("Reloading ioc definition files...");
 			configure();
 		</cfscript>
 	</cffunction>
@@ -153,6 +154,7 @@ Description :
 					if( not structKeyExists(MetaData,"cacheLastAccessTimeout") or not isNumeric(metadata.cacheLastAccessTimeout) ){
 						metaData.cacheLastAccessTimeout = "";
 					}
+					log.debug("Bean: #metadata.name# ioc caching detected, saving on buffer cache");
 					getColdboxOCM().set(arguments.cacheKey,target,metadata.cacheTimeout,metadata.cacheLastAccessTimeout);
 				}
 			</cfscript>
