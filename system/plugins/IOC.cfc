@@ -46,7 +46,7 @@ Description :
 	<cffunction name="configure" access="public" returntype="void" hint="Configure or Re-Configure the IoC Plugin. Loads the chosen IoC Factory and configures it for usage" output="false">
 		<cfscript>
 			var framework 			= getSetting("IOCFramework");
-			var definitionFile  	= getSetting("IOCFrameworkDefinitionFile");
+			var definitionFile  	= getSetting("IOCDefinitionFile");
 			var parentFramework		= getSetting("IOCParentFactory");
 			var paretDefinitionFile	= getSetting("IOCParentFactoryDefinitionFile");
 			var parentAdapter		= "";

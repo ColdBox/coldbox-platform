@@ -29,7 +29,7 @@ Modification History:
 	}
 	function testConfigure(){
 		ioc.$("getSetting").$args("IOCFramework").$results("coldspring");
-		ioc.$("getSetting").$args("IOCFrameworkDefinitionFile").$results("/coldbox/testharness/config/coldspring.xml.cfm");
+		ioc.$("getSetting").$args("IOCDefinitionFile").$results("/coldbox/testharness/config/coldspring.xml.cfm");
 		ioc.$("getSetting").$args("IOCParentFactory").$results("");
 		ioc.$("getSetting").$args("IOCParentFactoryDefinitionFile").$results("");
 		
@@ -40,7 +40,7 @@ Modification History:
 	
 	function testConfigureWithParent(){
 		ioc.$("getSetting").$args("IOCFramework").$results("coldspring");
-		ioc.$("getSetting").$args("IOCFrameworkDefinitionFile").$results("/coldbox/testharness/config/coldspring.xml.cfm");
+		ioc.$("getSetting").$args("IOCDefinitionFile").$results("/coldbox/testharness/config/coldspring.xml.cfm");
 		ioc.$("getSetting").$args("IOCParentFactory").$results("coldspring");
 		ioc.$("getSetting").$args("IOCParentFactoryDefinitionFile").$results("/coldbox/testing/resources/coldspring.xml.cfm");
 		ioc.init( mockController );
