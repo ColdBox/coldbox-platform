@@ -49,6 +49,11 @@ Description:
 			//Load tinymce policyfile
 			instance.policyFileStruct['tinymce'] = expandPath('#libPath#/antisamy-tinymce-1.4.1.xml');
 			
+			// Custom Policy
+			if( settingExists("AntiSamy_Custom_Policy") ){
+				instance.policyFileStruct['custom'] = getSetting("AntiSamy_Custom_Policy");
+			}
+			
 			return this;
 		</cfscript>
 	</cffunction>
@@ -56,10 +61,10 @@ Description:
 <!------------------------------------------- PUBLIC ------------------------------------------->
 	
 	<!--- HTMLSanitizer --->
-	<cffunction name="HTMLSanitizer" returntype="Any" output="false" hint="clean HTML from XSS scripts using the AntiSamy project. The available policies are antisamy, ebay,myspace or slashdot">
+	<cffunction name="HTMLSanitizer" returntype="Any" output="false" hint="clean HTML from XSS scripts using the AntiSamy project. The available policies are antisamy, ebay, myspace, slashdot, custom">
 		<!--- ************************************************************* --->
 		<cfargument name="HTMLData"		 type="string"  required="true" hint="The html text to sanitize">
-		<cfargument name="policyFile"	 type="string"  required="false" default="myspace" hint="Provide policy file to scan html. Available options are: antisamy, ebay, myspace, slashdot, tinymce">
+		<cfargument name="policyFile"	 type="string"  required="false" default="myspace" hint="Provide policy file to scan html. Available options are: antisamy, ebay, myspace, slashdot, tinymce, custom">
 		<cfargument name="resultsObject" type="boolean" required="false" default="false" hint="Return the cleaned HTML or the results object. By default it is the cleaned HTML"/>
 		<!--- ************************************************************* --->
 		<cfscript>
