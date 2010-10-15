@@ -62,6 +62,9 @@ Description :
 		obj = factory.getLogBox();
 		assertEquals(obj, getController().getLogBox());
 		
+		obj = factory.getCacheBox();
+		assertEquals(obj, getController().getCacheBox());
+		
 		obj = factory.getRootLogger();
 		assertEquals(obj, getController().getLogBox().getRootLogger());
 		

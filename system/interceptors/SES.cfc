@@ -21,20 +21,30 @@ Description :
 		// Reserved Keys as needed for cleanups
 		instance.RESERVED_KEYS 			  = "handler,action,view,viewNoLayout,module,moduleRouting";
 		instance.RESERVED_ROUTE_ARGUMENTS = "constraints,pattern,regexpattern,matchVariables,packageresolverexempt,patternParams,valuePairTranslation";
+		// Default Valid Extensions
+		instance.VALID_EXTENSIONS = "json,jsont,xml,html,htm,rss";
 	</cfscript>
 
 	<cffunction name="configure" access="public" returntype="void" hint="This is where the ses plugin configures itself." output="false" >
 		<cfscript>
-			// Setup the default interceptor properties
+			// Routes Array
 			setRoutes( ArrayNew(1) );
+			// Module Routing Table
 			setModuleRoutingTable( structnew() );
+			// Loose matching flag for regex matches
 			setLooseMatching( false );
+			// Flag to enable unique or not URLs
 			setUniqueURLs( true );
+			// Enable th interceptor by default
 			setEnabled( true );
+			// Auto reload configuration file flag
 			setAutoReload( false );
+			// Detect extensions flag, so it can place a 'format' variable on the rc
 			setExtensionDetection( true );
+			// Initialize the valid extensions to detect
+			setValidExtensions(instance.VALID_EXTENSIONS);
 
-			//Import Config
+			//Import Configuration
 			importConfiguration();
 
 			// Save the base URL in the application settings
@@ -42,7 +52,6 @@ Description :
 			setSetting('htmlBaseURL', replacenocase(getBaseURL(),"index.cfm",""));
 		</cfscript>
 	</cffunction>
-
 
 <!------------------------------------------- INTERCEPTION POINTS ------------------------------------------->
 
@@ -339,6 +348,7 @@ Description :
 		</cfscript>
 	</cffunction>
 
+	<!--- Get AutoReload --->
 	<cffunction name="getAutoReload" access="public" returntype="boolean" output="false" hint="Set to auto reload the rules in each request">
 		<cfreturn instance.autoReload>
 	</cffunction>
@@ -346,7 +356,7 @@ Description :
 		<cfargument name="autoReload" type="boolean" required="true">
 		<cfset instance.autoReload = arguments.autoReload>
 	</cffunction>
-
+	
 	<!--- Getter/Setter for uniqueURLs --->
 	<cffunction name="setUniqueURLs" access="public" output="false" returntype="void" hint="Set the uniqueURLs property">
 		<cfargument name="uniqueURLs" type="boolean" required="true" />
@@ -382,8 +392,18 @@ Description :
     	<cfargument name="extensionDetection" type="boolean" required="true">
     	<cfset instance.extensionDetection = arguments.extensionDetection>
     </cffunction>
+	
+	<!--- setValidExtensions --->
+    <cffunction name="setValidExtensions" output="false" access="public" returntype="void" hint="Setup the list of valid extensions to detect automatically for you.: e.g.: json,xml,rss">
+    	<cfargument name="validExtensions" type="string" required="true" hint="A list of valid extensions to allow in a request"/>
+    	<cfset instance.validExtensions = arguments.validExtensions>
+    </cffunction>
+	
+	<!--- getValidExtensions --->
+    <cffunction name="getValidExtensions" output="false" access="public" returntype="string" hint="Get the list of valid extensions this interceptor allows">
+    	<cfreturn instance.validExtensions>
+    </cffunction>
     
-
 	<!--- Getter/Setter Enabled --->
 	<cffunction name="setEnabled" access="public" output="false" returntype="void" hint="Set whether the interceptor is enabled or not.">
 		<cfargument name="enabled" type="boolean" required="true" />
@@ -422,16 +442,17 @@ Description :
     	<cfargument name="requestString" 	type="any"    required="true"  hint="The requested URL string">
 		<cfargument name="event"  			type="any"    required="true"  hint="The event object.">
 		<cfscript>
-    		var extension = listLast(arguments.requestString,".");
+    		var extension 			= listLast(arguments.requestString,".");
+			var validExtensions 	= getValidExtensions();
 			
-			// check if extension found
-			if( find(".", extension) AND len(extension) ){
+			// check if extension found and valid
+			if( listLen(arguments.requestString,".") AND len(extension) AND listFindNoCase(validExtensions, extension) ){
 				// set the format request collection variable
-				event.setValue("format", extension);
+				event.setValue("format", lcase(extension));
 				// remove it from the string
 				return left(requestString, len(arguments.requestString) - len(extension) - 1 );
 			}
-			
+			// return the same request string
 			return requestString;
 		</cfscript>
     </cffunction>
@@ -655,8 +676,6 @@ Description :
 		</cfscript>
 	</cffunction>
 	
-	fnc
-	
 	<!--- Find a route --->
 	<cffunction name="findRoute" access="private" output="false" returntype="Struct" hint="Figures out which route matches this request">
 		<!--- ************************************************************* --->
@@ -797,6 +816,7 @@ Description :
 		</cfscript>
 	</cffunction>
 
+	<!--- findConventionNameValuePairs --->
 	<cffunction name="findConventionNameValuePairs" access="private" returntype="void" hint="Find the convention name value pairs" output="false" >
 		<cfargument name="requestString"  	type="string" 	required="true" hint="The request string">
 		<cfargument name="match"  			type="any" 		required="true" hint="The regex matcher">
@@ -837,29 +857,35 @@ Description :
 		</cfscript>
 	</cffunction>
 
+	<!--- getCleanedPaths --->
 	<cffunction name="getCleanedPaths" access="private" returntype="struct" hint="Get and Clean the path_info and script names" output="false" >
 		<cfscript>
 			var items = structnew();
 
-			// Get path_info
-			items["pathInfo"] = getCGIElement('path_info');
+			// Get path_info & script name
+			items["pathInfo"] 	= getCGIElement('path_info');
 			items["scriptName"] = trim(reReplacenocase(getCGIElement('script_name'),"[/\\]index\.cfm",""));
 
 			// Clean ContextRoots
 			if( len(getContextRoot()) ){
-				items["pathInfo"] = replacenocase(items["pathInfo"],getContextRoot(),"");
+				items["pathInfo"] 	= replacenocase(items["pathInfo"],getContextRoot(),"");
 				items["scriptName"] = replacenocase(items["scriptName"],getContextRoot(),"");
 			}
+			
 			// Clean up the path_info from index.cfm and nested pathing
 			items["pathInfo"] = trim(reReplacenocase(items["pathInfo"],"[/\\]index\.cfm",""));
 			if( len(items["scriptName"]) ){
 				items["pathInfo"] = replaceNocase(items["pathInfo"],items["scriptName"],'');
 			}
-
+			
+			// clean 1 or > / in front of route in some cases, scope = one by default
+			items["pathInfo"] = reReplaceNoCase(items["pathInfo"], "^/+", "/");
+			
 			return items;
 		</cfscript>
 	</cffunction>
 
+	<!--- processRouteOptionals --->
 	<cffunction name="processRouteOptionals" access="private" returntype="void" hint="Process route optionals" output="false" >
 		<cfargument name="thisRoute"  type="struct" required="true" hint="The route struct">
 		<cfscript>

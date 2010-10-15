@@ -7,26 +7,26 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 Author 	    :	Luis Majano
 Date        :	may 7, 2009
 Description :
-	This is a concrete LightWire Adapter
+	This is a concrete ColdSpring2 Adapter
 
 ----------------------------------------------------------------------->
-<cfcomponent hint="The ColdBox LightWire IOC factory adapter"
+<cfcomponent hint="The ColdBox ColdSpring2 IOC factory adapter"
 			 extends="coldbox.system.ioc.AbstractIOCAdapter" 
 			 output="false">
 
 <!----------------------------------------- CONSTRUCTOR ------------------------------------->			
 	
 	<!--- Constructor --->
-	<cffunction name="init" access="public" returntype="LightWireAdapter" hint="Constructor" output="false" >
+	<cffunction name="init" access="public" returntype="ColdSpring2Adapter" hint="Constructor" output="false" >
 		<cfargument name="definitionFile" 	type="string" 	required="false" default="" hint="The definition file to load a factory with"/>
 		<cfargument name="properties" 		type="struct" 	required="false" default="#structNew()#" hint="Properties to pass to the factory to create"/>
 		<cfargument name="coldbox" 			type="any" 		required="false" default="" hint="A coldbox application that this instance of logbox can be linked to, not used if not using within a ColdBox Application."/>
 		<cfscript>
 			super.init(argumentCollection=arguments);
 			
-			// LightWire Factory Path
-			instance.LIGHTWIRE_FACTORY_PATH = "coldbox.system.ioc.lightwire.LightWire";
-			
+			// ColdSpring Factory Path
+			instance.COLDSPRING2_FACTORY_PATH = "coldspring.beans.xml.XmlBeanFactory";
+						
 			return this;
 		</cfscript>
 	</cffunction>
@@ -38,9 +38,8 @@ Description :
 		<cfscript>
 			var properties = getProperties();
 			
-			//Create the lightwire Factory
-			instance.factory = createObject("component", instance.LIGHTWIRE_FACTORY_PATH ).init( createLightwireConfigBean() );
-			
+			//Create the Coldspring Factory
+			instance.factory = createObject("component", instance.COLDSPRING2_FACTORY_PATH ).init( getDefinitionFile() , properties);
 		</cfscript>
 	</cffunction>
 
@@ -61,49 +60,16 @@ Description :
 	</cffunction>
 	
 	<!--- setParentFactory --->
-    <cffunction name="setParentFactory" output="false" access="public" returntype="void" hint="Set a parent factory on the adapted factory">
+    <cffunction name="setParentBeanFactory" output="false" access="public" returntype="void" hint="Set a parent factory on the adapted factory">
     	<cfargument name="parent" type="any" required="true" hint="The parent factory to add"/>
   		<cfset getFactory().setParentFactory( arguments.parent )>
     </cffunction>
 	
-	<!--- getParent --->
+	<!--- getParentFactory --->
     <cffunction name="getParentFactory" output="false" access="public" returntype="any" hint="Get the parent factory">
-    	<cfreturn getFactory().getParentFactory()>
+    	<cfreturn getFactory().getParentBeanFactory()>
     </cffunction>
 
 <!----------------------------------------- PRIVATE ------------------------------------->	
-	
-	<!--- Create Lightwire Config Bean --->
-	<cffunction name="createLightwireConfigBean" output="false" access="private" returntype="any" hint="Creates the lightwire config bean">
-		<cfscript>
-			var lightwireBeanConfig	= "";
-			var isUsingXML 			= listLast(getDefinitionFile(),".") eq "xml" or listLast(getDefinitionFile(),".") eq "cfm";
-			
-			// Create the lightwire Config Bean.
-			if( NOT isUsingXML ){
-				// Create the declared config bean, but do not init it
-				lightwireBeanConfig = createObject("component", getDefinitionFile());
-			}
-			else{
-				// Create base config Bean
-				lightwireBeanConfig = CreateObject("component", "coldbox.system.ioc.lightwire.BaseConfigObject").init();	
-			}
-			
-			// Are we using ColdBox Application Container?
-			if( isObject(getColdBox()) ){
-				lightwireBeanConfig.controller = getColdBox();
-			} 
-			
-			// Do we need to configure
-			if( isUsingXML ){
-				// Read in and parse the XML
-				lightwireBeanConfig.parseXMLConfigFile( getDefinitionFile(), getProperties());
-				return lightwireBeanConfig;
-			}
-			else{
-				return lightwireBeanConfig.init();
-			}					
-		</cfscript>
-	</cffunction>
 	
 </cfcomponent>
