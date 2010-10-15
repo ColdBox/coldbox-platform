@@ -11,20 +11,20 @@ Description :
  	This is just a base class you can inherit from to give you access to your ColdBox
 	Application and the CF9 ORM event handler methods. Then you just need to
 	use a la carte.
-	
-	We also fires several coldbox interceptors that match the ORM events prefixed by ORM within
-	a ColdBox application, so it makes it super easy to chain ORM interceptions
+
+	We also execute interception points that match the ORM events so you can eaisly
+	chain ORM interceptions.
 
 */
 component extends="coldbox.system.remote.ColdboxProxy" implements="CFIDE.orm.IEventHandler"{
-	
+
 	/**
 	* postNew called by ColdBox which in turn announces a coldbox interception: ORMPostNew
 	*/
 	public void function postNew(any entity){
 		announceInterception("ORMPostNew",{entity = arguments.entity});
 	}
-	
+
 	/**
 	* preLoad called by hibernate which in turn announces a coldbox interception: ORMPreLoad
 	*/
@@ -38,7 +38,7 @@ component extends="coldbox.system.remote.ColdboxProxy" implements="CFIDE.orm.IEv
 	public void function postLoad(any entity){
 		announceInterception("ORMPostLoad",{entity=arguments.entity});
 	}
-	
+
 	/**
 	* postDelete called by hibernate which in turn announces a coldbox interception: ORMPostDelete
 	*/
@@ -66,28 +66,28 @@ component extends="coldbox.system.remote.ColdboxProxy" implements="CFIDE.orm.IEv
 	public void function postUpdate(any entity){
 		announceInterception("ORMPostUpdate", {entity=arguments.entity});
 	}
-	
+
 	/**
 	* preInsert called by hibernate which in turn announces a coldbox interception: ORMPreInsert
 	*/
 	public void function preInsert(any entity){
 		announceInterception("ORMPreInsert", {entity=arguments.entity});
 	}
-	
+
 	/**
 	* postInsert called by hibernate which in turn announces a coldbox interception: ORMPostInsert
 	*/
 	public void function postInsert(any entity){
 		announceInterception("ORMPostInsert", {entity=arguments.entity});
 	}
-	
+
 	/**
 	* preSave called by ColdBox Base service before save() calls
 	*/
 	public void function preSave(any entity){
 		announceInterception("ORMPreSave", {entity=arguments.entity});
 	}
-	
+
 	/**
 	* postSave called by ColdBox Base service after transaction commit or rollback via the save() method
 	*/
