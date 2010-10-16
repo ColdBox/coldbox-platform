@@ -44,7 +44,7 @@ component accessors="true"{
 	* The bit that enables event handling via the ORM Event handler such as interceptions when new entities get created, etc, enabled by default.
 	*/
 	property name="eventHandling" type="boolean" default="true";
-	
+
 /* ----------------------------------- DEPENDENCIES ------------------------------ */
 
 
@@ -54,20 +54,20 @@ component accessors="true"{
 	/**
 	* Constructor
 	*/
-	BaseORMService function init(string queryCacheRegion="ORMService.defaultCache", 
+	BaseORMService function init(string queryCacheRegion="ORMService.defaultCache",
 								  boolean useQueryCaching=false,
 								  boolean eventHandling=true){
 		// setup properties
 		setQueryCacheRegion( arguments.queryCacheRegion );
 		setUseQueryCaching( arguments.useQueryCaching );
 		setEventHandling( arguments.eventHandling );
-		
+
 		// Create the service ORM Event Handler composition
 		ORMEventHandler = new coldbox.system.orm.hibernate.EventHandler();
-		
+
 		// Create our bean populator utility
 		beanPopulator = createObject("component","coldbox.system.core.dynamic.BeanPopulator").init();
-		
+
 		return this;
 	}
 
@@ -77,11 +77,11 @@ component accessors="true"{
 	/**
 	* Create a virtual abstract service for a specfic entity.
 	*/
-	any function createService(required string entityName, 
-							   boolean useQueryCaching=getUseQueryCaching(), 
+	any function createService(required string entityName,
+							   boolean useQueryCaching=getUseQueryCaching(),
 							   string queryCacheRegion=getQueryCacheRegion(),
 							   boolean eventHandling=getEventHandling()) {
-								   
+
 		return  CreateObject("component", "coldbox.system.orm.hibernate.VirtualEntityService").init(argumentCollection=arguments);
 	}
 
@@ -242,7 +242,7 @@ component accessors="true"{
 		var entity   = entityNew(arguments.entityName);
 		var key      = "";
 		var excludes = "entityName,properties";
-		
+
 		// Properties exists?
 		if( NOT structIsEmpty(arguments.properties) ){
 			populate( entity, arguments.properties );
@@ -250,15 +250,15 @@ component accessors="true"{
 		else{
 			populate(target=entity,memento=arguments,exclude="entityName,properties");
 		}
-		
+
 		// Event Handling? If enabled, call the postNew() interception
 		if( getEventHandling() ){
 			ORMEventHandler.postNew( entity );
 		}
-				
+
 		return entity;
 	}
-	
+
 	/**
     * Simple map to property population for entities
 	* @memento.hint	The map/struct to populate the entity with
@@ -273,10 +273,10 @@ component accessors="true"{
 					 	   boolean trustedSetter=false,
 						   string include="",
 						   string exclude=""){
-		
+
 		beanPopulator.populateFromStruct(argumentCollection=arguments);
 	}
-	
+
 	/**
 	* Populate from JSON, for argument definitions look at the populate method
 	* @JSONString.hint	The JSON packet to use for population
@@ -291,10 +291,10 @@ component accessors="true"{
 								   boolean trustedSetter=false,
 								   string include="",
 								   string exclude=""){
-		
+
 		beanPopulator.populateFromJSON(argumentCollection=arguments);
 	}
-	
+
 	/**
 	* Populate from XML, for argument definitions look at the populate method. <br/>
 	* @root.hint The XML root element to start from
@@ -311,10 +311,10 @@ component accessors="true"{
 								  boolean trustedSetter=false,
 								  string include="",
 								  string exclude=""){
-		
+
 		beanPopulator.populateFromXML(argumentCollection=arguments);
 	}
-	
+
 	/**
 	* Populate from Query, for argument definitions look at the populate method. <br/>
 	* @qry.hint The query to use for population
@@ -331,11 +331,11 @@ component accessors="true"{
 								    boolean trustedSetter=false,
 								    string include="",
 								    string exclude=""){
-		
+
 		beanPopulator.populateFromQuery(argumentCollection=arguments);
 	}
-	
-	
+
+
 	/**
     * Refresh the state of an entity or array of entities from the database
     */
@@ -437,7 +437,7 @@ component accessors="true"{
 		// Auto Flush
 		if( arguments.flush ){ ORMFlush(); }
 	}
-	
+
 	/**
 	* Delete all entries for an entity DLM style and transaction safe. It also returns all the count of deletions
 	*/
@@ -454,7 +454,7 @@ component accessors="true"{
 		}
 		// Auto Flush
 		if( arguments.flush ){ ORMFlush(); }
-		
+
 		return count;
 	}
 
@@ -465,12 +465,12 @@ component accessors="true"{
 	numeric function deleteByID(required string entityName, required any id, boolean flush=false){
 		var tx 		= ORMGetSession().beginTransaction();
 		var count   = 0;
-		
+
 		//id conversion to array
 		if( isSimpleValue(arguments.id) ){
 			arguments.id = listToArray(arguments.id);
 		}
-		
+
 		try{
 			// delete using lowercase id convention from hibernate for identifier
 			var query = ORMGetSession().createQuery("delete FROM #arguments.entityName# where id in (:idlist)");
@@ -482,10 +482,10 @@ component accessors="true"{
 			tx.rollback();
 			throw(e);
 		}
-		
+
 		// Auto Flush
 		if( arguments.flush ){ ORMFlush(); }
-		
+
 		return count;
 	}
 
@@ -527,9 +527,9 @@ component accessors="true"{
 		var params	  = {};
 		var idx	  	  = 1;
 		var count	  = 0;
-		
+
 		buffer.append('delete from #arguments.entityName#');
-		
+
 		// Do we have arguments?
 		if( structCount(arguments) gt 1){
 			buffer.append(" WHERE");
@@ -539,7 +539,7 @@ component accessors="true"{
 			  detail="We will not do a full delete via this method, you need to pass in named value arguments.",
 			  type="BaseORMService.NoWhereArgumentsFound");
 		}
-		
+
 		// Go over Params
 		for(key in arguments){
 			// Build where parameterized
@@ -553,7 +553,7 @@ component accessors="true"{
 				}
 			}
 		}
-		
+
 		//start transaction DLM deleteion
 		var tx = ORMGetSession().beginTransaction();
 		try{
@@ -570,7 +570,7 @@ component accessors="true"{
 			tx.rollback();
 			throw(e);
 		}
-		
+
 		return count;
 	}
 
@@ -578,13 +578,13 @@ component accessors="true"{
     * Save an entity using hibernate transactions. You can optionally flush the session also
     */
 	any function save(required any entity, boolean forceInsert=false, boolean flush=false){
-		
+
 		// Event Handling? If enabled, call the preSave() interception
 		if( getEventHandling() ){
 			ORMEventHandler.preSave( arguments.entity );
 		}
-		
-		var tx = ORMGetSession().beginTransaction();		
+
+		var tx = ORMGetSession().beginTransaction();
 		try{
 			entitySave(arguments.entity, arguments.forceInsert);
 
@@ -594,15 +594,15 @@ component accessors="true"{
 			tx.rollback();
 			throw(e);
 		}
-		
+
 		// Auto Flush
 		if( arguments.flush ){ ORMFlush(); }
-		
+
 		// Event Handling? If enabled, call the postSave() interception
 		if( getEventHandling() ){
 			ORMEventHandler.postSave( arguments.entity );
 		}
-		
+
 		return true;
 	}
 
@@ -703,7 +703,7 @@ component accessors="true"{
 	/**
     * Evict entity objects from session. The argument can be one persistence entity or an array of entities
     */
-	void function evictEntity(required any entity){
+	void function evictEntity(required any entities){
 		var objects = arrayNew(1);
 
 		if( not isArray(arguments.entities) ){
@@ -789,7 +789,7 @@ component accessors="true"{
 
 	/**
 	* A nice onMissingMethod template to create awesome dynamic methods.
-	* 
+	*
 	*/
 	any function onMissingMethod(String missingMethodName,Struct missingMethodArguments){
 		var method = arguments.missingMethodName;
@@ -803,18 +803,18 @@ component accessors="true"{
 	*/
 	any function getKey(required string entityName){
 		var hibernateMD =  ormGetSessionFactory().getClassMetaData(arguments.entityName);
-		
+
 		// Is this a simple key?
 		if( hibernateMD.hasIdentifierProperty() ){
 			return hibernateMD.getIdentifierPropertyName();
 		}
-		
+
 		// Composite Keys?
 		if( hibernateMD.getIdentifierType().isComponentType() ){
 			// Do conversion to CF Array instead of java array, just in case
 			return listToArray(arrayToList(hibernateMD.getIdentifierType().getPropertyNames()));
 		}
-		
+
 		return "";
 	}
 
@@ -831,7 +831,7 @@ component accessors="true"{
 	string function getTableName(required string entityName){
 		return ormGetSessionFactory().getClassMetadata(arguments.entityName).getTableName();
 	}
-	
+
 	/**
 	* Returns array of error or empty array.
 	*/
@@ -839,13 +839,13 @@ component accessors="true"{
 		//TODO: CustomErrorMessage file path. it would be coldbox setting "ValidationErrorMessage" = "file name"
 		var validator	= new coldbox.system.orm.hibernate.hyrule.Validator();
 		var result		= validator.validate(arguments.entity);
-		
+
 		if(result.hasErrors()){
 			// Return Array of error messages
 			return result.getErrors();
 		}
-		
+
 		return ArrayNew(1);
 	}
-	
+
 }
