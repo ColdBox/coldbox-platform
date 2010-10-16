@@ -701,7 +701,8 @@ component accessors="true"{
 	}
 
 	/**
-    * Evict entity objects from session. The argument can be one persistence entity or an array of entities
+    * Evict entity objects from session.
+	* @entities The argument can be one persistence entity or an array of entities
     */
 	void function evictEntity(required any entities){
 		var objects = arrayNew(1);
