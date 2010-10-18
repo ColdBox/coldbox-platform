@@ -7,10 +7,10 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 Author     :	Luis Majano
 Date        :	3/13/2009
 Description :
-	This is a CacheBox configuration object.  You can use it to configure
-	a CacheBox instance.
+	This is a WireBox configuration object.  You can use it to configure
+	a WireBox injector instance.
 ----------------------------------------------------------------------->
-<cfcomponent output="false" hint="This is a CacheBox configuration object.  You can use it to configure a CacheBox instance">
+<cfcomponent output="false" hint="This is a WireBox configuration object.  You can use it to configur a WireBox injector instance">
 
 	<cfscript>
 		// Utility class
@@ -19,29 +19,35 @@ Description :
 		// Instance private scope
 		instance = structnew();
 		
-		// CacheBox Provider Defaults
+		// WireBox Defaults
 		DEFAULTS = {
-			logBoxConfig = "coldbox.system.cache.config.LogBox",
-			cacheBoxProvider = "coldbox.system.cache.providers.CacheBoxProvider",
-			coldboxAppProvider = "coldbox.system.cache.providers.CacheBoxColdBoxProvider"
+			//LogBox Defaults
+			logBoxConfig = "coldbox.system.ioc.config.LogBox",
+			// Scope Defaults
+			scopeRegistration = {
+				enabled = false,
+				scope = "application",
+				key = "wireBox"
+			},
+			// CacheBox Integration Defaults
+			cacheBox = {
+				enabled = false,
+				configFile = "",
+				cacheFactory = "",
+				classNamespace = "coldbox.system.cache"
+			}
 		};
 		
 		// Startup the configuration
 		reset();
 	</cfscript>
-
+	
 	<!--- init --->
-	<cffunction name="init" output="false" access="public" returntype="CacheBoxConfig" hint="Constructor">
-		<cfargument name="XMLConfig" 		type="string"   required="false" default="" hint="The xml configuration file to use instead of a programmatic approach"/>
+	<cffunction name="init" output="false" access="public" returntype="WireBoxConfig" hint="Constructor">
 		<cfargument name="CFCConfig" 		type="any" 		required="false" hint="The cacheBox Data Configuration CFC"/>
 		<cfargument name="CFCConfigPath" 	type="string" 	required="false" hint="The cacheBox Data Configuration CFC path to use"/>
 		<cfscript>
-			var cacheBoxDSL = "";
-			
-			// Test and load via XML
-			if( len(trim(arguments.XMLConfig)) ){
-				parseAndLoad(xmlParse(arguments.XMLConfig));
-			}
+			var wireBoxDSL = "";
 			
 			// Test and load via Data CFC Path
 			if( structKeyExists(arguments, "CFCConfigPath") ){
@@ -55,18 +61,153 @@ Description :
 				// Execute the configuration
 				arguments.CFCConfig.configure();
 				// Get Data
-				cacheBoxDSL = arguments.CFCConfig.getPropertyMixin("cacheBox","variables",structnew());
+				wireBoxDSL = arguments.CFCConfig.getPropertyMixin("wireBox","variables",structnew());
 				// Load the DSL
-				loadDataDSL( cacheBoxDSL );
+				loadDataDSL( wireBoxDSL );
 			}
 			
 			// Just return, most likely programmatic config
 			return this;
 		</cfscript>
 	</cffunction>
+
+	<!--- reset --->
+	<cffunction name="reset" output="false" access="public" returntype="void" hint="Reset the configuration back to the defaults">
+		<cfscript>
+			// logBox File
+			instance.logBoxConfig = DEFAULTS.logBoxConfig;
+			// CacheBox integration
+			instance.cacheBox = DEFAULTS.cacheBox;
+			// Listeners
+			instance.listeners = [];
+			// Scope Registration
+			instance.scopeRegistration = DEFAULTS.scopeRegistration;
+			// Custom DSL namespaces
+			instance.customDSL = {};
+			// Custom Storage Scopes
+			instance.customScopes = {};
+			// Package Scan Locations
+			instance.scanLocations = createObject("java","java.util.LinkedHashMap").init(5);
+			// Object Mappings
+			instance.mappings = {};
+			// Parent Injector Mapping
+			instance.parentInjector = "";
+		</cfscript>
+	</cffunction>
 	
+	<!--- getParentInjector --->
+    <cffunction name="getParentInjector" output="false" access="public" returntype="any" hint="Get a parent injector if linked">
+    	<cfreturn instance.parentInjector>
+    </cffunction>
+	
+	<!--- parentInjector --->
+    <cffunction name="parentInjector" output="false" access="public" returntype="any" hint="Link a parent injector to the configuration">
+    	<cfargument name="injector" type="any" required="true" hint="A parent injector to configure link"/>
+		<cfset instance.parentInjector = arguments.injector>
+		<cfreturn this>
+    </cffunction>
+	
+	<!--- getMappings --->
+    <cffunction name="getMappings" output="false" access="public" returntype="struct" hint="Get all the registered object mappings">
+    	<cfreturn instance.mappings>
+    </cffunction>
+	
+	<!--- getMapping --->
+    <cffunction name="getMapping" output="false" access="public" returntype="any" hint="Get a specific object mapping">
+    	<cfargument name="name" type="string" required="true" hint="The name of the mapping to retrieve"/>
+    	<cfreturn instance.mappings[arguments.name]>
+    </cffunction>
+
+	<!--- mappingExists --->
+    <cffunction name="mappingExists" output="false" access="public" returntype="boolean" hint="Check if an object mapping exists">
+    	<cfargument name="name" type="string" required="true" hint="The name of the mapping to retrieve"/>
+    	<cfreturn structKeyExists(instance.mappings, arguments.name)>
+    </cffunction>
+	
+	<!--- getScanLocations --->
+    <cffunction name="getScanLocations" output="false" access="public" returntype="any" hint="Get the linked map of package scan locations for CFCs" colddoc:generic="java.util.LinkedHashMap">
+    	<cfreturn instance.scanLocations>
+    </cffunction>
+	
+	<!--- scanLocations --->
+    <cffunction name="scanLocations" output="false" access="public" returntype="any" hint="Register one or more package scan locations for CFC lookups">
+    	<cfargument name="locations" type="any" required="true" hint="A list or array of locations to add to package scanning.e.g.: ['coldbox','com.myapp','transfer']"/>
+   		<cfscript>
+   			var x = 1;
+			
+   			// inflate incoming locations
+   			if( isSimpleValue(arguments.locations) ){ arguments.locations = listToArray(arguments.locations); }
+			
+			// Prepare Locations
+			for(x=1; x lte arrayLen(arguments.locations); x++){
+				// Validate it is not registered already
+				if ( NOT structKeyExists(instance.scanLocations, arguments.locations[x]) ){
+					// Process creation path & Absolute Path
+					instance.scanLocations[ arguments.locations[x] ] = expandPath( "/" & replace(arguments.locations[x],".","/","all") & "/" );
+				}
+			}
+			
+			return this;
+		</cfscript>
+    </cffunction>
+	
+	<!--- removeScanLocations --->
+	<cffunction name="removeScanLocations" output="false" access="public" returntype="void" hint="Try to remove all the scan locations passed in">
+		<cfargument name="locations" type="any" required="true" hint="Locations to remove from the lookup. A list or array of locations"/>
+		<cfscript>
+			var x = 1;
+			
+			// inflate incoming locations
+   			if( isSimpleValue(arguments.locations) ){ arguments.locations = listToArray(arguments.locations); }
+			
+			// Loop and remove
+			for(x=1;x lte arraylen(arguments.locations); x++ ){
+				structDelete(instance.scanLocations, arguments.locations[x]);
+			}
+		</cfscript>
+	</cffunction>
+		
+	<!--- cacheBox --->
+    <cffunction name="cacheBox" output="false" access="public" returntype="any" hint="Integrate with CacheBox">
+    	<cfargument name="configFile" 		type="string" 	required="false" default="" hint="The configuration file to use for loading CacheBox if creating it."/>
+		<cfargument name="cacheFactory" 	type="any" 		required="false" default="" hint="The CacheBox cache factory instance to link WireBox to"/>
+		<cfargument name="enabled" 			type="boolean" 	required="false" default="true" hint="Enable or Disable CacheBox Integration, if you call this method then enabled is set to true as most likely you are trying to enable it"/>
+    	<cfargument name="classNamespace" 	type="string" 	required="false" default="#DEFAULTS.cachebox.classNamespace#" hint="The package namespace to use for creating or connecting to CacheBox. Defaults to: coldbox.system.cache"/>
+		<cfset structAppend(instance.cacheBox, arguments, true)>
+		<cfreturn this>
+	</cffunction>
+	
+	<!--- getCacheBoxConfig --->
+    <cffunction name="getCacheBoxConfig" output="false" access="public" returntype="struct" hint="Get the CacheBox Configuration Integration structure">
+    	<cfreturn instance.cacheBox>
+    </cffunction>
+	
+	<!--- dsl --->
+    <cffunction name="registerDSL" output="false" access="public" returntype="any" hint="Register a new custom dsl namespace">
+    	<cfargument name="namespace" 	type="string" required="true" hint="The namespace you would like to register"/>
+		<cfargument name="mapping" 		type="string" required="true" hint="The name of the mapping or CFC that implements this custom DSL."/>
+		<cfset instance.customDSL[arguments.namespace] = arguments.mapping>
+		<cfreturn this>
+    </cffunction>
+	
+	<!--- getCustomDSL --->
+    <cffunction name="getCustomDSL" output="false" access="public" returntype="struct" hint="Get the custom dsl namespace registration">
+    	<cfreturn instance.customDSL>
+    </cffunction>
+
+	<!--- registerScope --->
+    <cffunction name="registerScope" output="false" access="public" returntype="any" hint="Register a new WireBox custom scope">
+    	<cfargument name="scope" 		type="string" required="true" hint="The unique scope name to register. This translates to an annotation value on CFCs"/>
+    	<cfargument name="mapping" 		type="string" required="true" hint="The name of the mapping or CFC that implements this custom scope."/>
+	</cffunction>
+
+	<!--- getCustomScopes --->
+    <cffunction name="getCustomScopes" output="false" access="public" returntype="struct" hint="Get the registered custom scopes">
+    	<cfreturn instance.customScopes>
+    </cffunction>	
+
 	<!--- getDefaults --->
-    <cffunction name="getDefaults" output="false" access="public" returntype="struct" hint="Get the default CacheBox settings">
+    <cffunction name="getDefaults" output="false" access="public" returntype="struct" hint="Get the default WireBox settings">
     	<cfreturn variables.DEFAULTS>
     </cffunction>
 	
@@ -86,80 +227,50 @@ Description :
     <cffunction name="loadDataDSL" output="false" access="public" returntype="void" hint="Load a data configuration CFC data DSL">
     	<cfargument name="rawDSL" type="struct" required="true" hint="The data configuration DSL structure"/>
     	<cfscript>
-			var cacheBoxDSL  = arguments.rawDSL;
+			var wireBoxDSL  = arguments.rawDSL;
 			var key 		= "";
 			
-			// Is default configuration defined
-			if( NOT structKeyExists( cacheBoxDSL, "defaultCache" ) ){
-				utility.throwIt("No default cache defined","Please define the 'defaultCache'","CacheBoxConfig.NoDefaultCacheFound");
-			}
-			
-			// Register Default Cache
-			defaultCache(argumentCollection=cacheBoxDSL.defaultCache);
-			
 			// Register LogBox Configuration
-			logBoxConfig( variables.DEFAULTS.logBoxConfig );
-			if( structKeyExists( cacheBoxDSL, "logBoxConfig") ){
-				logBoxConfig(cacheBoxDSL.logBoxConfig);
+			if( structKeyExists( wireBoxDSL, "logBoxConfig") ){
+				logBoxConfig(wireBoxDSL.logBoxConfig);
 			}
 			
 			// Register Server Scope Registration
-			if( structKeyExists( cacheBoxDSL, "scopeRegistration") ){
-				scopeRegistration(argumentCollection=cacheBoxDSL.scopeRegistration);
+			if( structKeyExists( wireBoxDSL, "scopeRegistration") ){
+				scopeRegistration(argumentCollection=wireBoxDSL.scopeRegistration);
 			}
 			
-			// Register Caches
-			if( structKeyExists( cacheBoxDSL, "caches") ){
-				for( key in cacheBoxDSL.caches ){
-					cacheBoxDSL.caches[key].name = key;
-					cache(argumentCollection=cacheBoxDSL.caches[key]);
-				}
+			// Register CacheBox
+			if( structKeyExists( wireBoxDSL, "cacheBox") ){
+				cacheBox(argumentCollection=wireBoxDSL.cacheBox);
 			}
 			
+			// Register Custom DSL
+			if( structKeyExists( wireBoxDSL, "customDSL") ){
+				instance.customDSL = wireBoxDSL.customDSL;
+			}
+			
+			// Register Custom Scopes
+			if( structKeyExists( wireBoxDSL, "customScopes") ){
+				instance.customScopes = wireBoxDSL.customScopes;
+			}
+			
+			// Register Scan Locations
+			if( structKeyExists( wireBoxDSL, "scanLocations") ){
+				scanLocations( wireBoxDSL.scanLocations );
+			}
+
 			// Register listeners
-			if( structKeyExists( cacheBoxDSL, "listeners") ){
-				for(key=1; key lte arrayLen(cacheBoxDSL.listeners); key++ ){
-					listener(argumentCollection=cacheBoxDSL.listeners[key]);
+			if( structKeyExists( wireBoxDSL, "listeners") ){
+				for(key=1; key lte arrayLen(wireBoxDSL.listeners); key++ ){
+					listener(argumentCollection=wireBoxDSL.listeners[key]);
 				}
-			}		
+			}	
+			
+			// Register Mappings	
 		</cfscript>
     </cffunction>
-	
-	<!--- reset --->
-	<cffunction name="reset" output="false" access="public" returntype="void" hint="Reset the configuration">
-		<cfscript>
-			// default cache
-			instance.defaultCache = {};
-			// logBox File
-			instance.logBoxConfig = "";
-			// Named Caches
-			instance.caches = {};
-			// Listeners
-			instance.listeners = [];
-			// Scope Registration
-			instance.scopeRegistration = {
-				enabled = false,
-				scope 	= "server",
-				key		= "cachebox"
-			};
-		</cfscript>
-	</cffunction>
-	
-	<!--- resetDefaultCache --->
-    <cffunction name="resetDefaultCache" output="false" access="public" returntype="void" hint="Reset the default cache configurations">
-    	<cfset instance.defaultCache = {}>
-    </cffunction>
-	
-	<!--- resetCaches --->
-    <cffunction name="resetCaches" output="false" access="public" returntype="void" hint="Reset the set caches">
-    	<cfset instance.caches = {}>
-    </cffunction>
-	
-	<!--- resetListeners --->
-    <cffunction name="resetListeners" output="false" access="public" returntype="void" hint="Reset the cache listeners">
-    	<cfset instance.listeners = []>
-    </cffunction>
-	
+		
 	<!--- Get Memento --->
 	<cffunction name="getMemento" access="public" returntype="struct" output="false" hint="Get the instance data">
 		<cfreturn instance>
@@ -168,98 +279,24 @@ Description :
 	<!--- validate --->
 	<cffunction name="validate" output="false" access="public" returntype="void" hint="Validates the configuration. If not valid, it will throw an appropriate exception.">
 		<cfscript>
-			// Is the default cache defined
-			if( structIsEmpty(instance.defaultCache) ){
-				utility.throwIt(message="Invalid Configuration. No default cache defined",type="CacheBoxConfig.NoDefaultCacheFound");
-			}			
+					
 		</cfscript>
 	</cffunction>
 	
 	<!--- scopeRegistration --->
-    <cffunction name="scopeRegistration" output="false" access="public" returntype="any" hint="Use to define cachebox factory scope registration">
-    	<cfargument name="enabled" 	type="boolean" 	required="false" default="false" hint="Enable registration"/>
-		<cfargument name="scope" 	type="string" 	required="false" default="server" hint="The scope to register on, defaults to server scope"/>
-		<cfargument name="key" 		type="string" 	required="false" default="cachebox" hint="The key to use in the scope, defaults to cachebox"/>
-		<cfscript>
-			instance.scopeRegistration.enabled 	= arguments.enabled;
-			instance.scopeRegistration.key 		= arguments.key;
-			instance.scopeRegistration.scope 	= arguments.scope;
-			
-			return this;
-		</cfscript>
+    <cffunction name="scopeRegistration" output="false" access="public" returntype="any" hint="Use to define injector scope registration">
+    	<cfargument name="enabled" 	type="boolean" 	required="false" default="#DEFAULTS.scopeRegistration.enabled#" hint="Enable registration or not (defaults=false)"/>
+		<cfargument name="scope" 	type="string" 	required="false" default="#DEFAULTS.scopeRegistration.scope#" hint="The scope to register on, defaults to application scope"/>
+		<cfargument name="key" 		type="string" 	required="false" default="#DEFAULTS.scopeRegistration.key#" hint="The key to use in the scope, defaults to wireBox"/>
+		<cfset structApend( instance.scopeRegistration, arguments, true)>
+		<cfreturn this>
     </cffunction>
 
 	<!--- getScopeRegistration --->
     <cffunction name="getScopeRegistration" output="false" access="public" returntype="struct" hint="Get the scope registration details">
     	<cfreturn instance.scopeRegistration>
     </cffunction>
-	
-	<!--- defaultCache --->
-	<cffunction name="defaultCache" output="false" access="public" returntype="any" hint="Add a default cache configuration.">
-		<cfargument name="objectDefaultTimeout" 			type="numeric" required="false">
-	    <cfargument name="objectDefaultLastAccessTimeout"   type="numeric" required="false">
-	    <cfargument name="reapFrequency" 					type="numeric" required="false">
-	    <cfargument name="maxObjects" 						type="numeric" required="false">
-	    <cfargument name="freeMemoryPercentageThreshold" 	type="numeric" required="false">
-	    <cfargument name="useLastAccessTimeouts"			type="boolean" required="false">
-	    <cfargument name="evictionPolicy"					type="string"  required="false">
-	    <cfargument name="evictCount"						type="numeric" required="false">
-	    <cfargument name="objectStore" 						type="string"  required="false">
-	    <cfargument name="coldboxEnabled" 					type="boolean" required="false"/>
-	    <cfscript>			
-	    	var cacheConfig = getDefaultCache();
-			
-			// Append all incoming arguments to configuration, just in case using non-default arguments, maybe for stores
-			structAppend(cacheConfig, arguments);
-			
-			// coldbox enabled context
-			if( structKeyExists(arguments,"coldboxEnabled") AND arguments.coldboxEnabled ){
-				cacheConfig.provider = variables.DEFAULTS.coldboxAppProvider;
-			}
-			else{
-				cacheConfig.provider = variables.DEFAULTS.cacheboxProvider;
-			}
-			
-			return this;
-		</cfscript>
-	</cffunction>
-	
-	<!--- defaultCache --->
-	<cffunction name="getDefaultCache" access="public" returntype="struct" output="false" hint="Get the defaultCache definition.">
-		<cfreturn instance.defaultCache>
-	</cffunction>
-	
-	<!--- cache --->
-	<cffunction name="cache" output="false" access="public" returntype="any" hint="Add a new cache configuration.">
-		<cfargument name="name" 		type="string" required="true"   hint="The name of the cache"/>
-		<cfargument name="provider" 	type="string" required="false"  default="#variables.DEFAULTS.cacheBoxProvider#" hint="The cache provider class, defaults to: coldbox.system.cache.providers.CacheBoxProvider"/>
-		<cfargument name="properties" 	type="struct" required="false"  default="#structNew()#" hint="The structure of properties for the cache"/>
-		<cfscript>
-			instance.caches[arguments.name] = {
-				provider 	= arguments.provider,
-				properties 	= arguments.properties
-			};
-			return this;
-		</cfscript>
-	</cffunction>
-	
-	<!--- getCache --->
-	<cffunction name="getCache" output="false" access="public" returntype="struct" hint="Get a specifed cache definition">
-		<cfargument name="name" type="string" required="true" hint="The cache configuration to retrieve"/>
-		<cfreturn instance.caches[arguments.name]>
-	</cffunction>
-	
-	<!--- cacheExists --->
-	<cffunction name="cacheExists" output="false" access="public" returntype="boolean" hint="Check if a cache definition exists">
-		<cfargument name="name" type="string" required="true" hint="The cache to check"/>
-		<cfreturn structKeyExists(instance.caches, arguments.name)>
-	</cffunction>
-	
-	<!--- getCaches --->
-	<cffunction name="getCaches" output="false" access="public" returntype="struct" hint="Get the configured caches">
-		<cfreturn instance.caches>
-	</cffunction>
-	
+				
 	<!--- listener --->
 	<cffunction name="listener" output="false" access="public" returntype="any" hint="Add a new listener configuration.">
 		<cfargument name="class" 		type="string" required="true"  hint="The class of the listener"/>
@@ -279,7 +316,7 @@ Description :
 	
 	<!--- getListener --->
 	<cffunction name="getListener" output="false" access="public" returntype="struct" hint="Get a specifed listener definition">
-		<cfargument name="name" type="string" required="true" hint="The listner configuration to retrieve"/>
+		<cfargument name="name" type="string" required="true" hint="The listener configuration to retrieve"/>
 		<cfreturn instance.listeners[arguments.name]>
 	</cffunction>
 	
@@ -292,65 +329,6 @@ Description :
 	<!--- getListeners --->
 	<cffunction name="getListeners" output="false" access="public" returntype="array" hint="Get the configured listeners">
 		<cfreturn instance.listeners>
-	</cffunction>
-	
-	<!--- parseAndLoad --->
-	<cffunction name="parseAndLoad" output="false" access="public" returntype="void" hint="Parse and load a config xml object">
-		<cfargument name="xmlDoc" type="any" required="true" hint="The xml document object to use for parsing."/>
-		<cfscript>
-			var xml 		 = arguments.xmlDoc;
-			var logBoxXML	 = xmlSearch(xml,"//LogBoxConfig");
-			var scopeXML	 = xmlSearch(xml,"//ScopeRegistration");
-			var defaultXML	 = xmlSearch(xml,"//DefaultConfiguration");
-			var cachesXML	 = xmlSearch(xml,"//CacheBox/Cache");
-			var listenersXML = xmlSearch(xml,"//Listener");
-			var args = structnew();
-			var x =1;
-			var y =1;
-			
-			// Default Cache Config Check
-			if( NOT arrayLen(defaultXML) ){
-				utility.throwIt(message="The defaultcache configuration cannot be found and it is mandatory",type="CacheBoxConfig.DefaultCacheConfigurationNotFound");
-			}
-			// Register Default Cache
-			defaultCache(argumentCollection=defaultXML[1].XMLAttributes);
-			
-			// Register LogBox Configuration
-			logBoxConfig( variables.DEFAULTS.logBoxConfig );
-			if( arrayLen(logBoxXML) ){
-				logBoxConfig( trim(logBoxXML[1].XMLText) );
-			}
-			
-			// Register ScopeRegistrations
-			if( arrayLen(scopeXML) ){
-				scopeRegistration(argumentCollection=scopeXML[1].XMLAttributes);
-			}
-			
-			// Register Caches
-			for(x=1; x lte arrayLen( cachesXML ); x++){
-				// Add arguments
-				args = {};
-				structAppend(args,cachesXML[x].XMLAttributes);
-				// Check if properties exist
-				if( structKeyExists(cachesXML[x],"Properties") ){
-					args.properties = cachesXML[x].properties.XMLAttributes;
-				}
-				cache(argumentCollection=args);
-			}
-			
-			// Register listeners
-			for(x=1; x lte arrayLen( listenersXML ); x++){
-				// Add arguments
-				args = {};
-				structAppend(args,listenersXML[x].XMLAttributes);
-				
-				// Check if properties exist
-				if( structKeyExists(listenersXML[x],"Properties") ){
-					args.properties = listenersXML[x].properties.XMLAttributes;
-				}
-				listener(argumentCollection=args);
-			}		
-		</cfscript>
 	</cffunction>
 	
 <!------------------------------------------- PRIVATE ------------------------------------------>

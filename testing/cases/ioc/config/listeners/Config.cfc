@@ -52,12 +52,19 @@ Description :
 			],
 			
 			// Parent Injector to assign to the configured injector, this must be an object reference
-			parentInjector = "",
+			parent = "",
 			
 			// Register all event listeners here, they are created in the specified order
 			listeners = [
-				// { class="", name="", properties={} }
-			]			
+				{ class="coldbox.testing.cases.ioc.listeners.MyListener", name="MyListener", 
+				  properties={
+				  	name="CoolListener"
+				  } },
+				{ class="coldbox.testing.cases.ioc.listeners.MyListener", name="FunkyListener", 
+				  properties={
+				  	name="FunkyListener"
+				  } }				  
+			]		
 		};
 	}	
 </cfscript>
