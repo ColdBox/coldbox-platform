@@ -43,30 +43,24 @@ Description :
 	</cfscript>
 	
 	<!--- init --->
-	<cffunction name="init" output="false" access="public" returntype="WireBoxConfig" hint="Constructor">
-		<cfargument name="CFCConfig" 		type="any" 		required="false" hint="The cacheBox Data Configuration CFC"/>
-		<cfargument name="CFCConfigPath" 	type="string" 	required="false" hint="The cacheBox Data Configuration CFC path to use"/>
+	<cffunction name="init" output="false" access="public" returntype="WireBoxConfig" hint="Constructor: You can pass a data CFC instance, path or nothing at all for programmatic configuration">
+		<cfargument name="config" type="any" required="false" hint="The WireBox Injector Data Configuration CFC instance or instantiation path to it. Leave blank if using this configuration object programatically"/>
 		<cfscript>
-			var wireBoxDSL = "";
-			
-			// Test and load via Data CFC Path
-			if( structKeyExists(arguments, "CFCConfigPath") ){
-				arguments.CFCConfig = createObject("component",arguments.CFCConfigPath);
+			// Test and load via Data CFC Path?
+			if( structKeyExists(arguments, "config") and isSimpleValue(arguments.config) ){
+				arguments.config = createObject("component",arguments.config);
 			}
 			
-			// Test and load via Data CFC
-			if( structKeyExists(arguments,"CFCConfig") and isObject(arguments.CFCConfig) ){
+			// Test and load via Data CFC?
+			if( structKeyExists(arguments,"config") and isObject(arguments.config) ){
 				// Decorate our data CFC
-				arguments.CFCConfig.getPropertyMixin = utility.getPropertyMixin;
+				arguments.config.getPropertyMixin = utility.getPropertyMixin;
 				// Execute the configuration
-				arguments.CFCConfig.configure();
-				// Get Data
-				wireBoxDSL = arguments.CFCConfig.getPropertyMixin("wireBox","variables",structnew());
+				arguments.config.configure();
 				// Load the DSL
-				loadDataDSL( wireBoxDSL );
+				loadDataDSL( arguments.config.getPropertyMixin("wireBox","variables",structnew()) );
 			}
 			
-			// Just return, most likely programmatic config
 			return this;
 		</cfscript>
 	</cffunction>

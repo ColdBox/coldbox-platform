@@ -18,9 +18,10 @@ Description :
 <!----------------------------------------- CONSTRUCTOR ------------------------------------->			
 		
 	<!--- init --->
-	<cffunction name="init" access="public" returntype="CacheFactory" hint="Constructor" output="false" >
-		<cfargument name="config"  		type="coldbox.system.ioc.config.WireBoxConfig" 	required="false" hint="The WireBoxConfig object to use to configure this injector. If not passed then WireBox will instantiate the default configuration."/>
-		<cfargument name="coldbox" 		type="coldbox.system.web.Controller" 			required="false" hint="A coldbox application that this instance of CacheBox can be linked to, if not using it, just ignore it."/>
+	<cffunction name="init" access="public" returntype="CacheFactory" hint="Constructor. If called with no configuration objects, then WireBox will instantiate the default configuration" output="false" >
+		<cfargument name="config" 		type="any" 		required="false" default="coldbox.system.ioc.config.DefaultConfiguration" hint="The data CFC configuration instance or instantiation path or programmatic WireBoxConfig object to configure this injector with"/>
+		<cfargument name="properties" 	type="struct" 	required="false" default="#structNew()#" hint="A map of binding properties to passthrough to the Configuration CFC"/>
+		<cfargument name="coldbox" 		type="coldbox.system.web.Controller" required="false" hint="A coldbox application that this instance of CacheBox can be linked to, if not using it, just ignore it."/>
 		<cfscript>
 			// Prepare Injector
 			instance = {
@@ -54,7 +55,9 @@ Description :
 				// Parent Injector
 				parent = "",
 				// Metadata Dictionary
-				DICacheDictionary = createObject("component","coldbox.system.core.collections.BaseDictionary").init('DIMetadata')
+				DICacheDictionary = createObject("component","coldbox.system.core.collections.BaseDictionary").init('DIMetadata'),
+				// Utility class
+				utility  = createObject("component","coldbox.system.core.util.Util")
 			};
 			
 			// Prepare Lock Info
@@ -65,31 +68,27 @@ Description :
 				instance.coldbox = arguments.coldbox;
 			}
 			
-			// Passed in configuration?
-			if( NOT structKeyExists(arguments,"config") ){
-				// Create default configuration
-				arguments.config = createObject("component","coldbox.system.ioc.config.WireBoxConfig").init(CFCConfigPath="coldbox.system.ioc.config.DefaultConfiguration");
-			}
-			
 			// Configure the injector
-			configure( arguments.config );
+			configure( arguments.config, arguments.properties);
 			
 			return this;
 		</cfscript>
 	</cffunction>
-			
+				
 	<!--- configure --->
-	<cffunction name="configure" output="false" access="public" returntype="void" hint="Configure the cache factory for operation, called by the init(). You can also re-configure CacheBox programmatically.">
-		<cfargument name="config" type="coldbox.system.cache.config.CacheBoxConfig" required="true" hint="The CacheBoxConfig object to use to configure this instance of CacheBox"/>
+	<cffunction name="configure" output="false" access="public" returntype="void" hint="Configure this injector for operation, called by the init(). You can also re-configure this injector programmatically, but it is not recommended.">
+		<cfargument name="config" 		type="any"		required="true" hint="The configuration object or path to configure this Injector instance with"/>
+		<cfargument name="properties" 	type="struct" 	required="false" default="#structNew()#" hint="A map of binding properties to passthrough to the Configuration CFC"/>
 		<cfscript>
 			var defaultCacheConfig = "";
-			var caches 	= "";
 			var key 	= "";
 			var iData	= {};
 		</cfscript>
 		
 		<cflock name="#instance.lockName#" type="exclusive" timeout="30" throwontimeout="true">
 			<cfscript>
+			// Build appropriate WireBox Injector configuration object
+			arguments.config = buildConfiguration( arguments.config, arguments.properties );
 			// Store config object
 			instance.config = arguments.config;
 			// Validate configuration
@@ -113,6 +112,7 @@ Description :
 				// Create local event manager
 				configureEventManager();
 			}
+			
 			// Configure Logging for this injector
 			instance.log = getLogBox().getLogger( this );
 			
@@ -361,5 +361,33 @@ Description :
 	<cffunction name="getUtil" access="private" output="false" returntype="coldbox.system.core.util.Util" hint="Create and return a core util object">
 		<cfreturn createObject("component","coldbox.system.core.util.Util")/>
 	</cffunction>
+	
+	<!--- buildConfiguration --->
+    <cffunction name="buildConfiguration" output="false" access="private" returntype="any" hint="Load a configuration object according to passed in config type">
+    	<cfargument name="config" 		type="any" 		required="true" hint="The data CFC configuration instance or instantiation path or programmatic WireBoxConfig object to configure this injector with"/>
+		<cfargument name="properties" 	type="struct" 	required="true" hint="A map of binding properties to passthrough to the Configuration CFC"/>
+		<cfscript>
+			var dataCFC = "";
+			
+			// Check if already a programmatic config object
+			if( isObject(arguments.config) AND isInstanceOf(arguments.config, "coldbox.system.ioc.config.WireBoxConfig") ){
+				return arguments.config;
+			}
+			// Check if just a plain CFC path and build it
+			if( isSimpleValue(arguments.config) ){
+				arguments.config = createObject("component",arguments.config);
+			}
+			// Now decorate it with properties, a self reference, and a coldbox reference if needed.
+			arguments.config.injectPropertyMixin = instance.utility.injectPropertyMixin;
+			arguments.config.injectPropertyMixin("properties",arguments.properties);
+			arguments.config.injectPropertyMixin("wirebox",this);
+			if( isColdBoxLinked() ){
+				arguments.config.injectPropertyMixin("coldbox",getColdBox());
+			}
+			
+			// Now create WireBoxConfig Mapping object with it
+			return createObject("component","coldbox.system.ioc.config.WireBoxConfig").init(arguments.config);
+		</cfscript>
+    </cffunction>
 	
 </cfcomponent>
