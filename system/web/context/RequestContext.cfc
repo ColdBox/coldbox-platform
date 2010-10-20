@@ -376,7 +376,7 @@ Modification History:
 		<cfset setValue(name="coldbox_proxyrequest",value=true,private=true)>
 	</cffunction>
 	
-	<cffunction name="NoRender" access="public" returntype="void" hint="Set the flag that tells the framework not to render, just execute" output="false">
+	<cffunction name="noRender" access="public" returntype="void" hint="Set the flag that tells the framework not to render, just execute" output="false">
 		<cfargument name="remove" required="false" type="boolean" default="false" hint="If true, it removes the flag, else its set.">
 		<cfscript>
 			if (arguments.remove eq false)
