@@ -8,13 +8,15 @@ Description :
 	The default ColdBox WireBox Injector configuration object that is used when the
 	WireBox injector is created
 ----------------------------------------------------------------------->
-<cfcomponent output="false" hint="The default WireBox Injector configuration object">
+<cfcomponent output="false" extends="coldbox.system.ioc.config.WireBoxConfig">
 <cfscript>
 	
 	/**
 	* Configure WireBox, that's it!
 	*/
 	function configure(){
+		
+		
 		
 		// The WireBox configuration structure DSL
 		wireBox = {
@@ -39,23 +41,27 @@ Description :
 
 			// DSL Namespace registrations
 			customDSL = {
-				// namespace = "mapping name"
+				//namespace = "class.path"
 			},
 			
 			// Custom Storage Scopes
 			customScopes = {
-				// annotationName = "mapping name"
+				// annotationName = "class.path"
 			},
 			
 			// Package scan locations
-			scanLocations = [],
+			scanLocations = [
+			],
 			
 			// Parent Injector to assign to the configured injector, this must be an object reference
-			parentInjector = "",
+			parent = "",
 			
 			// Register all event listeners here, they are created in the specified order
 			listeners = [
-				// { class="", name="", properties={} }
+				{ class="coldbox.testing.cases.ioc.listeners.MyListener", name="MyListener", 
+				  properties={
+				  	name="CoolListener"
+				  } }
 			]			
 		};
 	}	
