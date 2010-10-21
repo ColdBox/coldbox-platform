@@ -13,8 +13,14 @@ Description :
 <cfcomponent output="false" hint="This is a WireBox configuration object.  You can use it to configur a WireBox injector instance">
 
 	<cfscript>
+		// Available public scopes
+		this.SCOPES = createObject("component","coldbox.system.ioc.Scopes");
+		
 		// Utility class
 		utility  = createObject("component","coldbox.system.core.util.Util");
+		
+		// Temp Mapping holder
+		currentMapping = "";
 		
 		// Instance private scope
 		instance = structnew();
@@ -118,6 +124,113 @@ Description :
     	<cfreturn structKeyExists(instance.mappings, arguments.name)>
     </cffunction>
 	
+	<!--- resolveAlias --->
+	<cffunction name="resolveAlias" access="public" returntype="string" hint="Try to resolve a mapping alias or just return the mapping name back if not found." output="false" >
+		<cfargument name="name" required="true"  type="string" hint="The model alias or name to resolve">
+		<cfscript>
+			// try to resolve alias
+			if( mappingExists( arguments.name ) ){
+				return instance.mappings[arguments.name];
+			}
+			return arguments.name;
+		</cfscript>
+	</cffunction>
+	
+	<!--- generateMapping --->
+    <cffunction name="generateMapping" output="false" access="private" returntype="struct" hint="Generate a mapping structure">
+    	<cfscript>
+    		var mapping = {
+				alias="",
+				type="CFC",
+				path="",
+				constructor="init",
+				executeInit=true,
+				eagerInit=false,
+				autowire=true,
+				scope=this.SCOPES.NO_SCOPE,
+				dsl="",
+				cache={},
+				discovered = false,
+				DIConstructor = [],
+				DIProperties = [],
+				DISetters = []		
+			};
+			return mapping;
+		</cfscript>
+    </cffunction>
+
+	
+	<!--- mapPath --->
+    <cffunction name="mapPath" output="false" access="public" returntype="any" hint="Directly map to a path by using the last part of the path as the alias. This is equivalent to map('MyService').to('model.MyService'). Only use if the name of the alias is the same as the last part of the path.">
+    	<cfargument name="path" type="string" required="true" hint="The class path to the object to map"/>
+		<cfscript>
+			// directly map to a path
+			return map( listlast(arguments.path,".") ).to(arguments.path);
+		</cfscript>
+    </cffunction>
+	
+	<!--- map --->
+    <cffunction name="map" output="false" access="public" returntype="any" hint="Create a mapping to an object">
+    	<cfargument name="alias" type="string" required="true" hint="An alias or a list of aliases for this mapping. Remember an object can be refered by many names"/>
+		<cfscript>
+			// generate mapping entry for this dude.
+			var name 	= listFirst(arguments.alias);
+			var x		= 1;
+			var cAlias	= "";
+			
+			// generate the mapping
+			instance.mappings[name] = generateMapping();
+
+			// Loop and create references
+			for(x=2;x lte listlen(arguments.alias); x++){
+				instance.mappings[ listgetAt(arguments.alias,x) ] = mappings[name];
+			}
+			// set current mapping
+			currentMapping = name;
+			
+			return this;
+		</cfscript>    	
+    </cffunction>
+	
+	<!--- to --->
+    <cffunction name="to" output="false" access="public" returntype="any" hint="Map to a destination class path.">
+    	<cfargument name="path" type="string" required="true" hint="The class path to the object to map"/>
+		<cfscript>
+    		instance.mappings[ currentMapping ].path = arguments.path;
+			return this;
+    	</cfscript>
+    </cffunction>
+	
+	<!--- toJava --->
+    <cffunction name="toJava" output="false" access="public" returntype="any" hint="Map to a java destination class path.">
+    	<cfargument name="path" type="string" required="true" hint="The class path to the object to map"/>
+		<cfscript>
+    		instance.mappings[ currentMapping ].path = arguments.path;
+			instance.mappings[ currentMapping ].type = "java";
+			return this;
+    	</cfscript>
+    </cffunction>
+	
+	<!--- toWebservice --->
+    <cffunction name="toWebservice" output="false" access="public" returntype="any" hint="Map to a webservice destination class path.">
+    	<cfargument name="path" type="string" required="true" hint="The class path to the object to map"/>
+		<cfscript>
+    		instance.mappings[ currentMapping ].path = arguments.path;
+			instance.mappings[ currentMapping ].type = "webservice";
+			return this;
+    	</cfscript>
+    </cffunction>
+	
+	<!--- toRSS --->
+    <cffunction name="toRSS" output="false" access="public" returntype="any" hint="Map to a rss destination class path.">
+    	<cfargument name="path" type="string" required="true" hint="The class path to the object to map"/>
+		<cfscript>
+    		instance.mappings[ currentMapping ].path = arguments.path;
+			instance.mappings[ currentMapping ].type = "rss";
+			return this;
+    	</cfscript>
+    </cffunction>
+		
 	<!--- getScanLocations --->
     <cffunction name="getScanLocations" output="false" access="public" returntype="any" hint="Get the linked map of package scan locations for CFCs" colddoc:generic="java.util.LinkedHashMap">
     	<cfreturn instance.scanLocations>
@@ -176,8 +289,8 @@ Description :
     	<cfreturn instance.cacheBox>
     </cffunction>
 	
-	<!--- dsl --->
-    <cffunction name="registerDSL" output="false" access="public" returntype="any" hint="Register a new custom dsl namespace">
+	<!--- mapDSL --->
+    <cffunction name="mapDSL" output="false" access="public" returntype="any" hint="Register a new custom dsl namespace">
     	<cfargument name="namespace" 	type="string" required="true" hint="The namespace you would like to register"/>
 		<cfargument name="mapping" 		type="string" required="true" hint="The name of the mapping or CFC that implements this custom DSL."/>
 		<cfset instance.customDSL[arguments.namespace] = arguments.mapping>
@@ -189,10 +302,11 @@ Description :
     	<cfreturn instance.customDSL>
     </cffunction>
 
-	<!--- registerScope --->
-    <cffunction name="registerScope" output="false" access="public" returntype="any" hint="Register a new WireBox custom scope">
-    	<cfargument name="scope" 		type="string" required="true" hint="The unique scope name to register. This translates to an annotation value on CFCs"/>
+	<!--- mapScope --->
+    <cffunction name="mapScope" output="false" access="public" returntype="any" hint="Register a new WireBox custom scope">
+    	<cfargument name="annotation"	type="string" required="true" hint="The unique scope name to register. This translates to an annotation value on CFCs"/>
     	<cfargument name="mapping" 		type="string" required="true" hint="The name of the mapping or CFC that implements this custom scope."/>
+		<cfset instance.customScopes[arguments.annotation] = arguments.mapping>
 	</cffunction>
 
 	<!--- getCustomScopes --->
@@ -282,7 +396,7 @@ Description :
     	<cfargument name="enabled" 	type="boolean" 	required="false" default="#DEFAULTS.scopeRegistration.enabled#" hint="Enable registration or not (defaults=false)"/>
 		<cfargument name="scope" 	type="string" 	required="false" default="#DEFAULTS.scopeRegistration.scope#" hint="The scope to register on, defaults to application scope"/>
 		<cfargument name="key" 		type="string" 	required="false" default="#DEFAULTS.scopeRegistration.key#" hint="The key to use in the scope, defaults to wireBox"/>
-		<cfset structApend( instance.scopeRegistration, arguments, true)>
+		<cfset structAppend( instance.scopeRegistration, arguments, true)>
 		<cfreturn this>
     </cffunction>
 

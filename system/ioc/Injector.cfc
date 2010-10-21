@@ -23,6 +23,9 @@ Description :
 		<cfargument name="properties" 	type="struct" 	required="false" default="#structNew()#" hint="A map of binding properties to passthrough to the Configuration CFC"/>
 		<cfargument name="coldbox" 		type="coldbox.system.web.Controller" required="false" hint="A coldbox application that this instance of CacheBox can be linked to, if not using it, just ignore it."/>
 		<cfscript>
+			// Available public scopes
+			this.SCOPES = createObject("component","coldbox.system.ioc.Scopes");
+		
 			// Prepare Injector
 			instance = {
 				// WireBox Injector UniqueID
@@ -54,8 +57,6 @@ Description :
 				singletons = structnew(),
 				// Parent Injector
 				parent = "",
-				// Metadata Dictionary
-				DICacheDictionary = createObject("component","coldbox.system.core.collections.BaseDictionary").init('DIMetadata'),
 				// Utility class
 				utility  = createObject("component","coldbox.system.core.util.Util")
 			};

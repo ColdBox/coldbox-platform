@@ -2,13 +2,13 @@
 <cfscript>
 	function setup(){
 		dataConfigPath = "coldbox.testing.cases.ioc.config.samples.SampleWireBox";
-		config = createObject("component","coldbox.system.ioc.config.WireBoxConfig").init(CFCConfigPath=dataConfigPath);
+		config = createObject("component","coldbox.system.ioc.config.WireBoxConfig").init(dataConfigPath);
 	}
 	
 	function testLoader(){
 		// My Data Object
 		dataConfig = createObject("component",dataConfigPath);
-		config = createObject("component","coldbox.system.ioc.config.WireBoxConfig").init(CFCConfig=dataConfig);
+		config = createObject("component","coldbox.system.ioc.config.WireBoxConfig").init(dataConfig);
 		
 		memento = config.getMemento();
 		debug(memento);
@@ -27,7 +27,7 @@
 	
 	function testLoader2(){
 		// My Data Object
-		config = createObject("component","coldbox.system.ioc.config.WireBoxConfig").init(CFCConfigPath=dataConfigPath);
+		config = createObject("component","coldbox.system.ioc.config.WireBoxConfig").init(dataConfigPath);
 		
 		memento = config.getMemento();
 		debug(memento);
@@ -83,5 +83,9 @@
 		assertFalse( structKeyExists( config.getScanLocations(), "mxunit") );		
 	}
 	
+	function testResolveAlias(){
+		
+		assertEquals("hello", config.resolveAlias("hello") );
+	}
 </cfscript>
 </cfcomponent>
