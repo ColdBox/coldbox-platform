@@ -1,7 +1,7 @@
 <cfcomponent extends="coldbox.system.testing.BaseTestCase">
 <cfscript>
 	function setup(){
-		dataConfigPath = "coldbox.testing.cases.ioc.config.samples.SampleWireBox";
+		dataConfigPath = "coldbox.testing.cases.ioc.config.samples.SampleWireBox2";
 		config = createObject("component","coldbox.system.ioc.config.WireBoxConfig").init(dataConfigPath);
 	}
 	

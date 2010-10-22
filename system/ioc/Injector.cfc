@@ -23,6 +23,11 @@ Description :
 		<cfargument name="properties" 	type="struct" 	required="false" default="#structNew()#" hint="A map of binding properties to passthrough to the Configuration CFC"/>
 		<cfargument name="coldbox" 		type="coldbox.system.web.Controller" required="false" hint="A coldbox application that this instance of CacheBox can be linked to, if not using it, just ignore it."/>
 		<cfscript>
+			// Available public scopes
+			this.SCOPES = createObject("component","coldbox.system.ioc.Scopes");
+			// Available public types
+			this.TYPES = createObject("component","coldbox.system.ioc.Types");
+		
 			// Prepare Injector
 			instance = {
 				// WireBox Injector UniqueID
@@ -47,15 +52,13 @@ Description :
 					"afterMetadataInspection",	// after an object has been inspected and metadata is ready to be saved
 					"onObjectException"			// traps when the injector throws controlled exceptions when building, injeting objects
 				],
-				// LogBox Links
+				// LogBox and Class Logger
 				logBox  = "",
 				log		= "",
 				// Singleton Cache
 				singletons = structnew(),
 				// Parent Injector
 				parent = "",
-				// Metadata Dictionary
-				DICacheDictionary = createObject("component","coldbox.system.core.collections.BaseDictionary").init('DIMetadata'),
 				// Utility class
 				utility  = createObject("component","coldbox.system.core.util.Util")
 			};
@@ -66,6 +69,14 @@ Description :
 			// Check if linking ColdBox
 			if( structKeyExists(arguments, "coldbox") ){ 
 				instance.coldbox = arguments.coldbox;
+				// link LogBox
+				instance.logBox  = instance.coldbox.getLogBox();
+				// Link CacheBox
+				instance.cacheBox = instance.coldbox.getCacheBox();
+				// Link Event Manager
+				instance.eventManager = instance.coldbox.getInterceptorService();
+				// Link Interception States
+				instance.coldbox.getInterceptorService().appendInterceptionPoints( arrayToList(instance.eventStates) ); 
 			}
 			
 			// Configure the injector
@@ -78,33 +89,22 @@ Description :
 	<!--- configure --->
 	<cffunction name="configure" output="false" access="public" returntype="void" hint="Configure this injector for operation, called by the init(). You can also re-configure this injector programmatically, but it is not recommended.">
 		<cfargument name="config" 		type="any"		required="true" hint="The configuration object or path to configure this Injector instance with"/>
-		<cfargument name="properties" 	type="struct" 	required="false" default="#structNew()#" hint="A map of binding properties to passthrough to the Configuration CFC"/>
+		<cfargument name="properties" 	type="struct" 	required="true" hint="A map of binding properties to passthrough to the Configuration CFC"/>
 		<cfscript>
-			var defaultCacheConfig = "";
 			var key 	= "";
 			var iData	= {};
 		</cfscript>
 		
 		<cflock name="#instance.lockName#" type="exclusive" timeout="30" throwontimeout="true">
 			<cfscript>
-			// Build appropriate WireBox Injector configuration object
-			arguments.config = buildConfiguration( arguments.config, arguments.properties );
-			// Store config object
-			instance.config = arguments.config;
+			// Store config object built accordingly
+			instance.config = buildConfiguration( arguments.config, arguments.properties );
+			
 			// Validate configuration
 			instance.config.validate();
 			
-			if( isColdBoxLinked() ){ 
-				// link LogBox
-				instance.logBox  = instance.coldbox.getLogBox();
-				// Link CacheBox
-				instance.cacheBox = instance.coldbox.getCacheBox();
-				// Link Event Manager
-				instance.eventManager = instance.coldbox.getInterceptorService();
-				// Link Interception States
-				instance.coldbox.getInterceptorService().appendInterceptionPoints( arrayToList(instance.eventStates) ); 
-			}
-			else{
+			// Create local cache, logging and event management if not coldbox linked.
+			if( NOT isColdBoxLinked() ){ 
 				// Running standalone, so create our own logging first
 				configureLogBox( instance.config.getLogBoxConfig() );
 				// Create local CacheBox reference
@@ -369,23 +369,27 @@ Description :
 		<cfscript>
 			var dataCFC = "";
 			
-			// Check if already a programmatic config object
-			if( isObject(arguments.config) AND isInstanceOf(arguments.config, "coldbox.system.ioc.config.WireBoxConfig") ){
-				return arguments.config;
-			}
 			// Check if just a plain CFC path and build it
 			if( isSimpleValue(arguments.config) ){
 				arguments.config = createObject("component",arguments.config);
 			}
+			
 			// Now decorate it with properties, a self reference, and a coldbox reference if needed.
 			arguments.config.injectPropertyMixin = instance.utility.injectPropertyMixin;
-			arguments.config.injectPropertyMixin("properties",arguments.properties);
+			arguments.config.injectPropertyMixin("properties",arguments.properties,"instance");
 			arguments.config.injectPropertyMixin("wirebox",this);
 			if( isColdBoxLinked() ){
 				arguments.config.injectPropertyMixin("coldbox",getColdBox());
 			}
 			
-			// Now create WireBoxConfig Mapping object with it
+			// Check if already a programmatic config object
+			if( isInstanceOf(arguments.config, "coldbox.system.ioc.config.WireBoxConfig") ){
+				// Configure it
+				arguments.config.configure();
+				return arguments.config;
+			}
+			
+			// If we get here, then it is a simple CFC, decorate it with a vanilla config object and configure
 			return createObject("component","coldbox.system.ioc.config.WireBoxConfig").init(arguments.config);
 		</cfscript>
     </cffunction>
