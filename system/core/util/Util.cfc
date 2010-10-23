@@ -1,19 +1,18 @@
 <!-----------------------------------------------------------------------
-Template : Util.cfc
-Author 	 : Luis Majano
-Date     : Aug 29, 2007
+********************************************************************************
+Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
+www.coldbox.org | www.luismajano.com | www.ortussolutions.com
+********************************************************************************
 
+Author     :	Luis Majano
 Description :
-	This is a utility method cfc, wished we had static methods.
-
----------------------------------------------------------------------->
+	The main ColdBox utility library.
+----------------------------------------------------------------------->
 <cfcomponent output="false" hint="The main ColdBox utility library.">
 	
-	<!--- File last Modified --->
+	<!--- fileLastModified --->
 	<cffunction name="fileLastModified" access="public" returntype="string" output="false" hint="Get the last modified date of a file">
-		<!--- ************************************************************* --->
 		<cfargument name="filename" type="string" required="yes">
-		<!--- ************************************************************* --->
 		<cfscript>
 		var objFile =  createObject("java","java.io.File").init(javaCast("string",arguments.filename));
 		// Calculate adjustments fot timezone and daylightsavindtime
@@ -23,7 +22,7 @@ Description :
 		</cfscript>
 	</cffunction>
 	
-	<!--- Get Absolute Path --->
+	<!--- getAbsolutePath --->
 	<cffunction name="getAbsolutePath" access="public" output="false" returntype="string" hint="Turn any system path, either relative or absolute, into a fully qualified one">
 		<!--- ************************************************************* --->
 		<cfargument name="path" type="string" required="true" hint="Abstract pathname">
@@ -33,13 +32,12 @@ Description :
 			if(fileObj.isAbsolute()){
 				return arguments.path;
 			}
-			
 			return expandPath(arguments.path);
 		</cfscript>
 	</cffunction>
 	
 	<!--- inThread --->
-	<cffunction name="inThread" output="false" access="public" returntype="boolean" hint="Check if you are in cfthread or not">
+	<cffunction name="inThread" output="false" access="public" returntype="boolean" hint="Check if you are in cfthread or not for any CFML Engine">
 		<cfscript>
 			var engine = "ADOBE";
 			
@@ -70,12 +68,10 @@ Description :
 		</cfscript>
 	</cffunction>
 
-	<!--- PlaceHolder Replacer --->
+	<!--- placeHolderReplacer --->
 	<cffunction name="placeHolderReplacer" access="public" returntype="any" hint="PlaceHolder Replacer for strings containing ${} patterns" output="false" >
-		<!---************************************************************************************************ --->
 		<cfargument name="str" 		required="true" type="any" hint="The string variable to look for replacements">
 		<cfargument name="settings" required="true" type="any" hint="The structure of settings to use in replacing">
-		<!---************************************************************************************************ --->
 		<cfscript>
 			var returnString = arguments.str;
 			var regex = "\$\{([0-9a-z\-\.\_]+)\}";
@@ -114,64 +110,74 @@ Description :
 		</cfscript>
 	</cffunction>
 	
+	<!--- ripExtension --->
 	<cffunction name="ripExtension" access="public" returntype="string" output="false" hint="Rip the extension of a filename.">
 		<cfargument name="filename" type="string" required="true">
 		<cfreturn reReplace(arguments.filename,"\.[^.]*$","")>
 	</cffunction>
 
+	<!--- throw it --->
 	<cffunction name="throwit" access="public" hint="Facade for cfthrow" output="false">
-		<!--- ************************************************************* --->
 		<cfargument name="message" 	type="string" 	required="yes">
 		<cfargument name="detail" 	type="string" 	required="no" default="">
 		<cfargument name="type"  	type="string" 	required="no" default="Framework">
-		<!--- ************************************************************* --->
+		
 		<cfthrow type="#arguments.type#" message="#arguments.message#"  detail="#arguments.detail#">
 	</cffunction>
 	
+	<!--- rethrowit --->
 	<cffunction name="rethrowit" access="public" returntype="void" hint="Rethrow an exception" output="false" >
 		<cfargument name="throwObject" required="true" type="any" hint="The exception object">
+		
 		<cfthrow object="#arguments.throwObject#">
 	</cffunction>
 	
+	<!--- relocate --->
 	<cffunction name="relocate" access="public" hint="Facade for cflocation" returntype="void" output="false">
 		<cfargument name="url" 		required="true" 	type="string">
 		<cfargument name="addtoken" required="false" 	type="boolean" default="false">
+		
 		<cflocation url="#arguments.url#" addtoken="#addtoken#">
 	</cffunction>
 	
+	<!--- dump it --->
 	<cffunction name="dumpit" access="public" hint="Facade for cfmx dump" returntype="void" output="true">
 		<cfargument name="var" required="yes" type="any">
 		<cfargument name="isAbort" type="boolean" default="false" required="false" hint="Abort also"/>
+		
 		<cfdump var="#var#">
 		<cfif arguments.isAbort><cfabort></cfif>
 	</cffunction>
 	
+	<!--- abort it --->
 	<cffunction name="abortit" access="public" hint="Facade for cfabort" returntype="void" output="false">
 		<cfabort>
 	</cffunction>
 	
+	<!--- include it --->
 	<cffunction name="includeit" access="public" hint="Facade for cfinclude" returntype="void" output="false">
 		<cfargument name="template" type="string" required="yes">
+		
 		<cfinclude template="#template#">
 	</cffunction>
+
+<!------------------------------------------- mixin methods ------------------------------------------>
 	
-	<cffunction name="injectPropertyMixin" hint="injects a property into the passed scope" access="public" returntype="void" output="false">
-		<!--- ************************************************************* --->
+	<!--- injectPropertyMixin --->
+	<cffunction name="injectPropertyMixin" hint="Injects a property into the passed scope" access="public" returntype="void" output="false">
 		<cfargument name="propertyName" 	type="string" 	required="true" hint="The name of the property to inject."/>
 		<cfargument name="propertyValue" 	type="any" 		required="true" hint="The value of the property to inject"/>
 		<cfargument name="scope" 			type="string" 	required="false" default="variables" hint="The scope to which inject the property to."/>
-		<!--- ************************************************************* --->
 		<cfscript>
 			"#arguments.scope#.#arguments.propertyName#" = arguments.propertyValue;
 		</cfscript>
 	</cffunction>
 
-	<cffunction name="getPropertyMixin" hint="gets a property" access="public" returntype="any" output="false">
-		<!--- ************************************************************* --->
-		<cfargument name="name" 	type="string" 	required="true" hint="The name of the property to inject."/>
-		<cfargument name="scope" 	type="string" 	required="false" default="variables" hint="The scope to which inject the property to."/>
-		<cfargument name="default"  type="any"      required="false" hint="Default value to return"/>
-		<!--- ************************************************************* --->
+	<!--- getPropertyMixin --->
+	<cffunction name="getPropertyMixin" hint="Retrives a property from a mixed in container" access="public" returntype="any" output="false">
+		<cfargument name="name" 	type="string" 	required="true" hint="The name of the property to retrieve"/>
+		<cfargument name="scope" 	type="string" 	required="false" default="variables" hint="The scope to which to retrieve the property from"/>
+		<cfargument name="default"  type="any"      required="false" hint="Default value to return, if property not found"/>
 		<cfscript>
 			var thisScope = variables;
 			if( arguments.scope eq "this"){ thisScope = this; }
@@ -181,6 +187,16 @@ Description :
 			}
 			
 			return thisScope[arguments.name];
+		</cfscript>
+	</cffunction>
+	
+	<!--- injectUDFMixin --->
+	<cffunction name="injectUDFMixin" hint="Injects a UDF into both public/private scopes in a CFC" access="public" returntype="void" output="false">
+		<cfargument name="name" type="string" required="true" hint="The name of the method to be injected">
+		<cfargument name="UDF" type="any" hint="The UDF to inject">
+		<cfscript>
+			variables[arguments.name] = arguments.UDF;
+			this[arguments.name] 	  = arguments.UDF;
 		</cfscript>
 	</cffunction>
 	
@@ -216,33 +232,6 @@ Description :
 			return false;
     	</cfscript>
     </cffunction>
-	
-	<!--- Inject Mixin --->
-	<cffunction name="injectUDFMixin" hint="injects a method into the CFC scope" access="public" returntype="void" output="false">
-		<!--- ************************************************************* --->
-		<cfargument name="name">
-		<cfargument name="UDF">
-		<!--- ************************************************************* --->
-		<cfscript>
-			variables[arguments.name] = arguments.UDF;
-			this[arguments.name] 	  = arguments.UDF;
-		</cfscript>
-	</cffunction>
-	
-	<!--- arrayToStruct --->
-	<cffunction name="arrayToStruct" output="false" access="public" returntype="struct" hint="Convert an array to struct argument notation">
-		<cfargument name="in" type="array" required="true" hint="The array to convert"/>
-		<cfscript>
-			var results = structnew();
-			var x       = 1;
-			
-			for(x=1; x lte Arraylen(arguments.in); x=x+1){
-				results[x] = arguments.in[x];
-			}
-			
-			return results;
-		</cfscript>
-	</cffunction>
 	
 	
 	<!--- isFamilyType --->
@@ -309,5 +298,20 @@ Description :
 			arguments.target.$super = baseObject;
 		</cfscript>
     </cffunction>
+	
+	<!--- arrayToStruct --->
+	<cffunction name="arrayToStruct" output="false" access="public" returntype="struct" hint="Convert an array to struct argument notation">
+		<cfargument name="in" type="array" required="true" hint="The array to convert"/>
+		<cfscript>
+			var results = structnew();
+			var x       = 1;
+			
+			for(x=1; x lte Arraylen(arguments.in); x=x+1){
+				results[x] = arguments.in[x];
+			}
+			
+			return results;
+		</cfscript>
+	</cffunction>
 
 </cfcomponent>
