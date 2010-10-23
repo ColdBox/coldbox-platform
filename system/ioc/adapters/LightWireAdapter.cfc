@@ -24,6 +24,8 @@ Description :
 		<cfscript>
 			super.init(argumentCollection=arguments);
 			
+			instance.utility  = createObject("component","coldbox.system.core.util.Util");
+			
 			// LightWire Factory Path
 			instance.LIGHTWIRE_FACTORY_PATH = "coldbox.system.ioc.lightwire.LightWire";
 			
@@ -89,8 +91,10 @@ Description :
 				lightwireBeanConfig = CreateObject("component", "coldbox.system.ioc.lightwire.BaseConfigObject").init();	
 			}
 			
-			// Are we using ColdBox Application Container?
+			// Are we using ColdBox Application Container? If so, then do mixins.
 			if( isObject(getColdBox()) ){
+				lightWireBeanConfig.injectUDFMixin = instance.utility.injectUDFMixin;
+				lightWireBeanConfig.injectUDFMixin( "getController", variables.getController );
 				lightwireBeanConfig.controller = getColdBox();
 			} 
 			
@@ -104,6 +108,11 @@ Description :
 				return lightwireBeanConfig.init();
 			}					
 		</cfscript>
+	</cffunction>
+	
+	<!--- Controller Accessor/Mutators --->
+	<cffunction name="getController" access="private" output="false" returntype="any" hint="Get controller: coldbox.system.web.Controller">
+		<cfreturn this.controller/>
 	</cffunction>
 	
 </cfcomponent>
