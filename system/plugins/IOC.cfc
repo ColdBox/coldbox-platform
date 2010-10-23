@@ -210,6 +210,11 @@ Description :
 		<cfscript>
 			var foundFilePath = "";
 			
+			// Is this an xml or cfm file or a CFC path?
+			if( NOT listFindNoCase("xml,cfm", listLast(arguments.definitionFile,".")) ){
+				return arguments.definitionFile;
+			}
+			
 			// Try to locate the path
 			foundFilePath = locateFilePath( arguments.definitionFile );
 			
