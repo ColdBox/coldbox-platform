@@ -189,19 +189,30 @@ Modifications:
 							<cfif structKey EQ "recordcount">
 								<cfset qRows = decode(structVal) />
 							<cfelseif structKey EQ "columnlist">
+								<!--- build query with columns --->
 								<cfset st = QueryNew( decode(structVal) ) />
+								<!--- Add Number of Rows to Query if > 0 found --->
 								<cfif qRows>
 									<cfset QueryAddRow(st, qRows) />
 								</cfif>
 							<cfelseif structKey EQ "data">
 								<cfset qData = decode(structVal) />
-								<cfset ar = StructKeyArray(qData) />
-								<cfloop from="1" to="#ArrayLen(ar)#" index="j">
-									<cfloop from="1" to="#st.recordcount#" index="qRows">
-										<cfset qCol = ar[j] />
-										<cfset QuerySetCell(st, qCol, qData[qCol][qRows], qRows) />
+								
+								<!--- Determine if qData is an Array or Structure --->
+								<cfif isArray(qData)>
+									
+									<!--- It is an array, so rebuild to a query --->
+									<cfset ar = StructKeyArray(qData) />
+									<cfloop from="1" to="#ArrayLen(ar)#" index="j">
+										<cfloop from="1" to="#st.recordcount#" index="qRows">
+											<cfset qCol = ar[j] />
+											<cfset QuerySetCell(st, qCol, qData[qCol][qRows], qRows) />
+										</cfloop>
 									</cfloop>
-								</cfloop>
+								<cfelse>
+									<!--- It is a structure, so just rebuild it --->
+									<cfset StructInsert( st, structKey, decode(structVal) ) />
+								</cfif>
 							</cfif>
 						</cfif>
 					</cfif>
