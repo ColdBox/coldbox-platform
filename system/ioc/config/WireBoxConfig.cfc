@@ -182,19 +182,20 @@ Description :
     	<cfscript>
     		var mapping = {
 				alias="",
-				type="CFC",
+				type=TYPES.CFC,
 				path="",
 				constructor="init",
 				autowire=false,
 				noInit=false,
 				asEagerInit=false,
-				scope=this.SCOPES.NO_SCOPE,
+				scope=SCOPES.NO_SCOPE,
 				dsl="",
 				cache={},
-				discovered = false,
-				DIConstructor = [],
+				DIConstructorArgs = [],
 				DIProperties = [],
-				DISetters = []		
+				DISetters = [],
+				onDIComplete = [],
+				discovered = false
 			};
 			return mapping;
 		</cfscript>
@@ -286,11 +287,19 @@ Description :
     	</cfscript>
     </cffunction>
 	
-	<!--- initWith --->
-    <cffunction name="initWith" output="false" access="public" returntype="any" hint="You can choose what method will be treated as the constructor. By default the value is 'init', so don't call this method if that is the case.">
+	<!--- constructor --->
+    <cffunction name="constructor" output="false" access="public" returntype="any" hint="You can choose what method will be treated as the constructor. By default the value is 'init', so don't call this method if that is the case.">
     	<cfargument name="constructor" type="string" required="true" hint="The constructor method to use for the mapped object"/>
    		<cfscript>
     		instance.mappings[ currentMapping ].constructor = arguments.arguments.constructor;
+			return this;
+    	</cfscript>
+    </cffunction>
+	
+	<!--- initWith --->
+    <cffunction name="initWith" output="false" access="public" returntype="any" hint="Positional or named value arguments to use when initializing the mapping.">
+    	<cfscript>
+    		instance.mappings[ currentMapping ].initWith = arguments;
 			return this;
     	</cfscript>
     </cffunction>
@@ -330,6 +339,74 @@ Description :
 			utility.throwit(message="The mapping '#arguments.alias# has not been initialized yet.'",
 							detail="Please use the map('#arguments.alias#') first to work with a mapping",
 							type="WireBoxConfig.InvalidMappingStateException");
+		</cfscript>
+    </cffunction>
+	
+	<!--- initArg --->
+    <cffunction name="initArg" output="false" access="public" returntype="any" hint="Map a constructor argument to a mapping">
+    	<cfargument name="name" 	type="string" 	required="true"  hint="The name of the constructor argument."/>
+		<cfargument name="ref" 		type="string" 	required="false" hint="The reference mapping id this constructor argument maps to"/>
+		<cfargument name="dsl" 		type="string" 	required="false" hint="The construction dsl this argument references. If used, the name value must be used."/>
+		<cfargument name="value" 	type="any" 		required="false" hint="The value of the constructor argument, if passed."/>
+    	<cfargument name="javaCast" type="string" 	required="false" hint="The type of javaCast() to use on the value of the argument. Only used if using dsl or ref arguments"/>
+    	<cfscript>
+    		var cArgs = getMapping(currentMapping).DIConstructorArgs;
+    		cArgs[ arguments.name ] = {};
+    		processDIArgs(cArgs[ arguments.name ], arguments);
+    	</cfscript>
+    </cffunction>
+	
+	<!--- setter --->
+    <cffunction name="setter" output="false" access="public" returntype="any" hint="Map a setter function to a mapping">
+    	<cfargument name="name" 	type="string" 	required="true"  hint="The name of the constructor argument."/>
+		<cfargument name="ref" 		type="string" 	required="false" hint="The reference mapping id this constructor argument maps to"/>
+		<cfargument name="dsl" 		type="string" 	required="false" hint="The construction dsl this argument references. If used, the name value must be used."/>
+		<cfargument name="value" 	type="any" 		required="false" hint="The value of the constructor argument, if passed."/>
+    	<cfargument name="javaCast" type="string" 	required="false" hint="The type of javaCast() to use on the value of the argument. Only used if using dsl or ref arguments"/>
+    	<cfscript>
+    		var cArgs = getMapping(currentMapping).DISetters;
+    		cArgs[ arguments.name ] = {};
+    		processDIArgs(cArgs[ arguments.name ], arguments);
+    	</cfscript>
+    </cffunction>
+		
+	<!--- property --->
+    <cffunction name="property" output="false" access="public" returntype="any" hint="Map a cfproperty to a mapping">
+    	<cfargument name="name" 	type="string" 	required="true"  hint="The name of the constructor argument."/>
+		<cfargument name="ref" 		type="string" 	required="false" hint="The reference mapping id this constructor argument maps to"/>
+		<cfargument name="dsl" 		type="string" 	required="false" hint="The construction dsl this argument references. If used, the name value must be used."/>
+		<cfargument name="value" 	type="any" 		required="false" hint="The value of the constructor argument, if passed."/>
+    	<cfargument name="javaCast" type="string" 	required="false" hint="The type of javaCast() to use on the value of the argument. Only used if using dsl or ref arguments"/>
+    	<cfargument name="scope" 	type="string" 	required="false" default="variables" hint="The scope in the CFC to inject the property to. By default it will inject it to the variables scope"/>
+    	<cfscript>
+    		var cArgs = getMapping(currentMapping).DIProperties;
+    		cArgs[ arguments.name ] = {};
+    		processDIArgs(cArgs[ arguments.name ], arguments);
+    	</cfscript>
+    </cffunction>
+
+	<!--- processDIArgs --->
+    <cffunction name="processDIArgs" output="false" access="private" returntype="void" hint="Process incoming DI arguments">
+    	<cfargument name="target" 	type="struct" 	required="true" hint="The target structure to place the arguments in"/>
+		<cfargument name="args" 	type="any" 		required="true" hint="The arguments to process"/>
+    	<cfscript>
+    		var key = "";
+			// loop over arguments and only set the ones that are sent that are not name;
+			for(key in arguments.args){
+				if( structKeyExists(arguments.args,key) AND key neq "name"){
+					arguments.target[ key ] = arguments.args[key]; 
+				}
+			}
+    	</cfscript>
+    </cffunction>
+	
+	<!--- onDIComplete --->
+    <cffunction name="onDIComplete" output="false" access="public" returntype="any" hint="Tell us what methods to execute once DI completes on the mapping">
+    	<cfargument name="methods" type="any" required="true" hint="A list or an array of methods to execute once the mapping is created, inited and DI has happened."/>
+    	<cfscript>
+    		//inflate list
+			if( isSimpleValue(arguments,"methods") ){ arguments.methods = listToArray(arguments.methods); }
+			instance.mappings[ currentMapping ].onDIComplete = arguments.methods;
 		</cfscript>
     </cffunction>
 
@@ -410,6 +487,25 @@ Description :
     <cffunction name="getCacheBoxConfig" output="false" access="public" returntype="struct" hint="Get the CacheBox Configuration Integration structure">
     	<cfreturn instance.cacheBox>
     </cffunction>
+	
+	<!--- inCacheBox --->
+    <cffunction name="inCacheBox" output="false" access="public" returntype="any" hint="Map an object into CacheBox">
+    	<cfargument name="provider" 			type="string" 	required="false" default="default" hint="Uses the 'default' cache provider by default"/>
+		<cfargument name="key" 					type="string" 	required="false" default="" hint="You can override the key it will use for storing in cache. By default it uses the name of the mapping."/>
+    	<cfargument name="timeout" 				type="any" 		required="false" default="" hint="Object Timeout, else defaults to whatever the default is in the choosen cache"/>
+		<cfargument name="lastAccessTimeout" 	type="any" 		required="false" default="" hint="Object Timeout, else defaults to whatever the default is in the choosen cache"/>
+		<cfscript>
+			if( NOT len(arguments.key) ){ arguments.key = currentMapping; }
+    		instance.mappings[ currentMapping ].cache = {
+				provider = arguments.provider,
+				key      = cacheKey,
+				timeout  = arguments.timeout,
+				lastAccessTimeout = arguments.lastAccessTimeout 
+			};
+			return this;
+    	</cfscript>
+    </cffunction>
+
 
 <!------------------------------------------- MAP DSL ------------------------------------------>
 	
