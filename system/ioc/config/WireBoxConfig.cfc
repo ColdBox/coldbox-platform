@@ -8,21 +8,21 @@ Author     :	Luis Majano
 Date        :	3/13/2009
 Description :
 	This is a WireBox configuration object.  You can use it to configure
-	a WireBox injector instance.
+	a WireBox injector instance using our WireBox Mapping DSL
 ----------------------------------------------------------------------->
-<cfcomponent output="false" hint="This is a WireBox configuration object.  You can use it to configur a WireBox injector instance">
+<cfcomponent output="false" hint="This is a WireBox configuration object.  You can use it to configure a WireBox injector instance using our WireBox Mapping DSL">
 
 	<cfscript>
-		// Available public scopes
+		// Available WireBox public scopes
 		this.SCOPES = createObject("component","coldbox.system.ioc.Scopes");
-		// Available public types
+		// Available WireBox public types
 		this.TYPES = createObject("component","coldbox.system.ioc.Types");
-		// Utility class
+		// Internal Utility class
 		utility  	= createObject("component","coldbox.system.core.util.Util");
 		// Temp Mapping holder
 		currentMapping = "";
 		// Instance private scope
-		instance = structnew();
+		instance = {};
 		// WireBox Defaults
 		DEFAULTS = {
 			//LogBox Defaults
@@ -405,8 +405,10 @@ Description :
     	<cfargument name="methods" type="any" required="true" hint="A list or an array of methods to execute once the mapping is created, inited and DI has happened."/>
     	<cfscript>
     		//inflate list
-			if( isSimpleValue(arguments,"methods") ){ arguments.methods = listToArray(arguments.methods); }
+			if( isSimpleValue(arguments.methods) ){ arguments.methods = listToArray(arguments.methods); }
+			// store list
 			instance.mappings[ currentMapping ].onDIComplete = arguments.methods;
+			return this;
 		</cfscript>
     </cffunction>
 
