@@ -542,6 +542,7 @@ I oversee and manage ColdBox modules
 			
 			// If we have excludes and in the excludes
 			if( len(excludeModules) and listFindNoCase(excludeModules,arguments.moduleName) ){
+				instance.logger.info("Module: #arguments.moduleName# excluded from loading.");
 				return false;
 			}
 
