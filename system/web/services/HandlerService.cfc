@@ -34,7 +34,7 @@ Description :
 	<!--- onConfigurationLoad --->
     <cffunction name="onConfigurationLoad" output="false" access="public" returntype="void" hint="Called by loader service when configuration file loads">
     	<cfscript>
-			instance.log = getController().getLogBox().getLogger(this);
+			instance.logger = getController().getLogBox().getLogger(this);
     		// execute the handler registrations after configurations loaded
 			registerHandlers();
     	</cfscript>
@@ -253,6 +253,8 @@ Description :
 					return handlerBean;
 				}
 			}
+			// log it.
+			controller.getPlugin("Logger").error("Invalid Module Event Called: #arguments.event#. The module: #moduleReceived# is not valid. Valid Modules are: #structKeyList(moduleSettings)#");
 		}
 		else{
 			// Try to do list localization in the registry for full event string.
