@@ -420,6 +420,7 @@ Only one instance of a specific ColdBox application exists.
 
 					// Check SSL?
 					if( arguments.ssl ){  relocationURL = replacenocase(relocationURL,"http:","https:"); }
+					else{ relocationURL = replacenocase(relocationURL,"https:","http:"); }
 
 					// Finalize the URL
 					relocationURL = relocationURL & routeString;
