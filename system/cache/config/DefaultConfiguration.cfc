@@ -25,7 +25,7 @@ Description :
 			// By default it registeres itself on server scope
 			scopeRegistration = {
 				enabled = true,
-				scope   = "server", // server, cluster, session
+				scope   = "application", // the cf scope you want
 				key		= "cacheBox"
 			},
 			
