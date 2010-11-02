@@ -442,13 +442,15 @@ Description :
     	<cfargument name="requestString" 	type="any"    required="true"  hint="The requested URL string">
 		<cfargument name="event"  			type="any"    required="true"  hint="The event object.">
 		<cfscript>
-    		var extension 			= listLast(arguments.requestString,".");
+    		var extension 			= reReplace( listLast(arguments.requestString,"."), "(\/|\\)","","all" );
 			var validExtensions 	= getValidExtensions();
 			
 			// check if extension found and valid
 			if( listLen(arguments.requestString,".") AND len(extension) AND listFindNoCase(validExtensions, extension) ){
 				// set the format request collection variable
 				event.setValue("format", lcase(extension));
+				// debug logging
+				log.debug("Extension: #lcase(extension)# detected and set in rc.format");
 				// remove it from the string
 				return left(requestString, len(arguments.requestString) - len(extension) - 1 );
 			}
