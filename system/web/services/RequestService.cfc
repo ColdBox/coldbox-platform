@@ -77,16 +77,18 @@ Modification History:
 <!------------------------------------------- PUBLIC ------------------------------------------->
 
 	<!--- Request Capture --->
-	<cffunction name="requestCapture" access="public" returntype="any" output="false" hint="I capture an incoming request. Returns: coldbox.system.web.context.RequestContext">
+	<cffunction name="requestCapture" access="public" returntype="any" output="false" hint="I capture an incoming request. Returns: coldbox.system.web.context.RequestContext" colddoc:generic="coldbox.system.web.context.RequestContext">
 		<cfscript>
 			var context 		= getContext();
 			var debugPassword 	= controller.getSetting("debugPassword");
 			var eventName 		= controller.getSetting("EventName");
 			
 			// Capture FORM/URL
-			initFORMURL();
-			context.collectionAppend(FORM);
-			context.collectionAppend(URL);
+			if( isDefined("FORM") ){ context.collectionAppend(FORM); }
+			if( isDefined("URL")  ){ context.collectionAppend(URL); }
+			
+			// Execute onRequestCapture interceptionPoint
+			controller.getInterceptorService().processState("onRequestCapture");
 			
 			// Do we have flash elements to inflate?
 			if( getFlashScope().flashExists() ){
@@ -104,18 +106,19 @@ Modification History:
 			}
 			
 			// Debug Mode Checks
-			if ( Context.valueExists("debugMode") and isBoolean(Context.getValue("debugMode")) ){
-				if ( DebugPassword eq ""){
+			if ( context.valueExists("debugMode") and isBoolean(Context.getValue("debugMode")) ){
+				if ( NOT len(DebugPassword) ){
 					controller.getDebuggerService().setDebugMode(Context.getValue("debugMode"));
 				}
-				else if ( Context.valueExists("debugpass") and CompareNoCase(DebugPassword,Context.getValue("debugpass")) eq 0 ){
+				else if ( context.valueExists("debugpass") and CompareNoCase(DebugPassword,Context.getValue("debugpass")) eq 0 ){
 					controller.getDebuggerService().setDebugMode(Context.getValue("debugMode"));
 				}
 			}
 
 			// Default Event Definition
-			if ( not Context.valueExists(EventName))
+			if ( not context.valueExists(EventName))
 				Context.setValue(EventName, controller.getSetting("DefaultEvent"));
+			
 			// Event More Than 1 Check, grab the first event instance, other's are discarded
 			if ( listLen(Context.getValue(EventName)) gte 2 )
 				Context.setValue(EventName, getToken(Context.getValue(EventName),2,","));
@@ -126,7 +129,7 @@ Modification History:
 			// Are we using event caching?
 			eventCachingTest(Context);
 			
-			return Context;
+			return context;
 		</cfscript>
 	</cffunction>
 
@@ -147,7 +150,7 @@ Modification History:
 				// Cleanup the cache key, just in case, maybe ses interceptor has been used.
 				arguments.context.removeEventCacheableEntry();
 					
-				// Get Entry
+				// Get metadata entry for event that's fired.
 				eventDictionary = controller.getHandlerService().getEventMetaDataEntry(currentEvent);	
 				
 				// Verify that it is cacheable, else quit, no need for testing anymore.
@@ -155,12 +158,12 @@ Modification History:
 					return;	
 				}
 				
-				// setup the cache key.
+				// Build the event cache key according to incoming request
 				eventCacheKey = oEventURLFacade.buildEventKey(keySuffix=eventDictionary.suffix,
 															  targetEvent=currentEvent,
 															  targetContext=arguments.context);
 				// Check for Event Cache Purge
-				if ( Context.valueExists("fwCache") ){
+				if ( context.valueExists("fwCache") ){
 					// Clear the key from the cache
 					oOCM.clearKey( eventCacheKey );
 					return;
@@ -169,14 +172,15 @@ Modification History:
 				// Event has been found, flag it so we can render it from cache if it still survives
 				arguments.context.setEventCacheableEntry(eventCacheKey);
 				
-				instance.logger.debug("Event caching detected: #eventCacheKey.toString()#");
+				// debug logging
+				instance.logger.debug("Event caching detected for : #eventCacheKey.toString()#");
 				
-			}//If using event caching.
+			}//end if using event caching.
 		</cfscript>
 	</cffunction>
 	
-	<!--- Get the Context --->
-	<cffunction name="getContext" access="public" output="false" returntype="any" hint="Get the Request Context from request scope or create a new one.">
+	<!--- Get the context --->
+	<cffunction name="getContext" access="public" output="false" returntype="any" hint="Get the Request context from request scope or create a new one.">
 		<cfscript>
 			if ( structKeyExists(request,"cb_requestContext") )
 				return request.cb_requestContext;
@@ -186,7 +190,7 @@ Modification History:
 	</cffunction>
 
 	<!--- Set the context --->
-	<cffunction name="setContext" access="public" output="false" returntype="void" hint="Set the Request Context">
+	<cffunction name="setContext" access="public" output="false" returntype="void" hint="Set the Request context">
 		<cfargument name="Context" type="any" required="true">
 		<cfscript>
 			instance.logger.debug("Request Context set on request scope");
@@ -207,11 +211,6 @@ Modification History:
     </cffunction>
 	
 <!------------------------------------------- PRIVATE ------------------------------------------->
-	
-	<cffunction name="initFORMURL" access="private" returntype="void" hint="param form/url" output="false" >
-		<cfparam name="FORM" default="#structNew()#">
-		<cfparam name="URL"  default="#structNew()#">		
-	</cffunction>
 	
 	<!--- Creates a new Context Object --->
 	<cffunction name="createContext" access="private" output="false" returntype="any" hint="Creates a new request context object">

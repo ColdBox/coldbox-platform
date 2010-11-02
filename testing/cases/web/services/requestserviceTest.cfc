@@ -59,9 +59,7 @@ Description :
 		
 		/* Tests */
 		AssertTrue( isObject(context), "Context Creation");
-		AssertTrue(today eq context.getValue('flashvariable') , "Flash variable creation");
 		AssertTrue(url.today eq context.getValue('today') , "URL Append");
-		AssertTrue(form.name eq context.getValue('name'), "Name test and precedence");
 		AssertTrue(context.valueExists('event'), "Multi-Event Test");
 		</cfscript>
 	</cffunction>

@@ -22,7 +22,7 @@ Description :
 			
 			// Register the interception points ENUM 
 			// REMOVE Cache Related Items by 3.1
-			instance.interceptionPoints = "afterConfigurationLoad,afterAspectsLoad,onException,preReinit," &
+			instance.interceptionPoints = "afterConfigurationLoad,afterAspectsLoad,onException,onRequestCapture,preReinit," &
 										  "afterHandlerCreation,afterModelCreation,afterPluginCreation," &
 										  "applicationEnd,sessionStart,sessionEnd," &
 										  "preProcess,preEvent,postEvent,postProcess,preProxyResults," &

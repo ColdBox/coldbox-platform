@@ -35,8 +35,8 @@ Description :
 		<cfargument name="event" type="any" required="true" hint="The event request context to incorporate into the hash"/>
 		<!--- **************************************************************************** --->
 		<cfscript>
-			var urlCopy  		 = "";
-			var formCopy 		 = "";
+			var urlCopy  		 = structnew();
+			var formCopy 		 = structnew();
 			var eventName 		 = arguments.event.getEventName();
 			var urlActionsList 	 = "fwReinit,fwCache,debugMode,debugpass,dumpvar,debugpanel";
 			var urlColdboxExempt = "currentview,currentlayout,currentroute";
@@ -44,9 +44,8 @@ Description :
 			var routedStruct 	 = arguments.event.getRoutedStruct();
 			
 			// Param URL/FORM
-			paramStructs();
-			urlCopy 	= duplicate(URL);
-			formCopy	= duplicate(FORM);
+			if( isDefined("URL")  ){ urlCopy  = duplicate(URL); }
+			if( isDefined("FORM") ){ formCopy = duplicate(FORM); }
 			
 			// Collide the form vars also
 			structAppend(urlCopy,formCopy);
@@ -146,12 +145,5 @@ Description :
 	</cffunction>
 
 <!------------------------------------------- PRIVATE ------------------------------------------->
-	
-	<!--- paramStructs --->
-    <cffunction name="paramStructs" output="false" access="private" returntype="void" hint="Param structs">
-    	<cfparam name="URL" 	default="#structNew()#">
-    	<cfparam name="FORM" 	default="#structNew()#">
-    </cffunction>
-
 
 </cfcomponent>
