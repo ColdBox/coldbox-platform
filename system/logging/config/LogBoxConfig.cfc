@@ -68,7 +68,7 @@ Description :
 			
 			// Are appenders defined?
 			if( NOT structKeyExists( logBoxDSL, "appenders" ) ){
-				$throw("No appenders defined","Please define at least one appender","LogBoxConfig.NoAppendersFound");
+				instance.utility.throwit("No appenders defined","Please define at least one appender","#getMetadata(this).name#.NoAppendersFound");
 			}
 			// Register Appenders
 			for( key in logBoxDSL.appenders ){
@@ -78,7 +78,7 @@ Description :
 			
 			// Register Root Logger
 			if( NOT structKeyExists( logBoxDSL, "root" ) ){
-				$throw("No Root Logger Defined","Please define the root logger","CFCApplicationLoader.NoRootLoggerException");
+				instance.utility.throwit("No Root Logger Defined","Please define the root logger","#getMetadata(this).name#.NoRootLoggerException");
 			}
 			root(argumentCollection=logBoxDSL.root);
 			
@@ -143,7 +143,6 @@ Description :
 	<cffunction name="getMemento" access="public" returntype="struct" output="false" hint="Get the instance data">
 		<cfreturn instance>
 	</cffunction>
-
 	
 	<!--- validate --->
 	<cffunction name="validate" output="false" access="public" returntype="void" hint="Validates the configuration. If not valid, it will throw an appropriate exception.">
@@ -153,11 +152,11 @@ Description :
 			
 			// Are appenders defined
 			if( structIsEmpty(instance.appenders) ){
-				$throw(message="Invalid Configuration. No appenders defined.",type="LogBoxConfig.NoAppendersFound");
+				instance.utility.throwit(message="Invalid Configuration. No appenders defined.",type="#getMetadata(this).name#.NoAppendersFound");
 			}
 			// Check root logger definition
 			if( structIsEmpty(instance.rootLogger) ){
-				$throw(message="Invalid Configuration. No root logger defined.",type="LogBoxConfig.RootLoggerNotFound");
+				instance.utility.throwit(message="Invalid Configuration. No root logger defined.",type="#getMetadata(this).name#.RootLoggerNotFound");
 			}
 			
 			// All root appenders?
@@ -167,9 +166,9 @@ Description :
 			// Check root's appenders
 			for(x=1; x lte listlen(instance.rootLogger.appenders); x=x+1){
 				if( NOT structKeyExists(instance.appenders, listGetAt(instance.rootLogger.appenders,x)) ){
-					$throw(message="Invalid appender in Root Logger",
-						   detail="The appender #listGetAt(instance.rootLogger.appenders,x)# has not been defined yet. Please define it first.",
-						   type="LogBoxConfig.AppenderNotFound");
+					instance.utility.throwit(message="Invalid appender in Root Logger",
+						   					 detail="The appender #listGetAt(instance.rootLogger.appenders,x)# has not been defined yet. Please define it first.",
+						   					 type="#getMetadata(this).name#.AppenderNotFound");
 				}
 			}
 			
@@ -183,9 +182,9 @@ Description :
 				
 				for(x=1; x lte listlen(instance.categories[key].appenders); x=x+1){
 					if( NOT structKeyExists(instance.appenders, listGetAt(instance.categories[key].appenders,x)) ){
-						$throw(message="Invalid appender in Category: #key#",
-							   detail="The appender #listGetAt(instance.categories[key].appenders,x)# has not been defined yet. Please define it first.",
-							   type="LogBoxConfig.AppenderNotFound");
+						instance.utility.throwit(message="Invalid appender in Category: #key#",
+							   					 detail="The appender #listGetAt(instance.categories[key].appenders,x)# has not been defined yet. Please define it first.",
+							   					 type="#getMetadata(this).name#.AppenderNotFound");
 					}
 				}
 			}
@@ -229,7 +228,7 @@ Description :
 			
 			//Verify appender list
 			if( NOT listLen(arguments.appenders) ){
-				$throw("Invalid Appenders","Please send in at least one appender for the root logger","LogBoxConfig.InvalidAppenders");
+				instance.utility.throwit("Invalid Appenders","Please send in at least one appender for the root logger","#getMetadata(this).name#.InvalidAppenders");
 			}
 
 			// Add definition
@@ -329,7 +328,7 @@ Description :
 			for(key in arguments){
 				category(name=arguments[key],levelMax=this.logLevels.ERROR);
 			}
-				return this;
+			return this;
 		</cfscript>
 	</cffunction>
 	
@@ -376,7 +375,7 @@ Description :
 				// Error
 				if( NOT structKeyExists(thisAppender.XMLAttributes,"name") OR NOT 
 				        structKeyExists(thisAppender.XMLAttributes,"class") ){
-					$throw(message="An appender must have a name and class attribute",type="LogBoxConfig.InvalidAppenderDefinition");
+					instance.utility.throwit(message="An appender must have a name and class attribute",type="#getMetadata(this).name#.InvalidAppenderDefinition");
 				}
 				// Construct appender Properties
 				args.name = trim(thisAppender.XMLAttributes.name);
@@ -412,7 +411,7 @@ Description :
 			
 			//Register Root Logger
 			if( NOT arrayLen(rootXML) ){
-				$throw(message="The root element cannot be found and it is mandatory",type="LogBoxConfig.RootLoggerNotFound");
+				instance.utility.throwit(message="The root element cannot be found and it is mandatory",type="#getMetadata(this).name#.RootLoggerNotFound");
 			}
 			args = structnew();
 			if( structKeyExists(rootXML[1].xmlAttributes,"levelMin") ){
@@ -450,7 +449,7 @@ Description :
 				
 				// Category Name
 				if( NOT structKeyExists(categoriesXML[x].XMLAttributes,"name") ){
-					$throw(message="A category definition must have a name attribute",type="LogBoxConfig.InvalidCategoryDefinition");
+					instance.utility.throwit(message="A category definition must have a name attribute",type="#getMetadata(this).name#.InvalidCategoryDefinition");
 				}
 				args.name = trim(categoriesXML[x].XMLAttributes.name);
 				
@@ -522,29 +521,6 @@ Description :
 		<cfelseif NOT this.logLevels.isLevelValid(arguments.levelMax)>
 			<cfthrow message="LevelMin #arguments.levelMax# is not a valid level." type="LogBoxConfig.InvalidLevel">
 		</cfif>
-	</cffunction>
-
-	<!--- Throw Facade --->
-	<cffunction name="$throw" access="private" hint="Facade for cfthrow" output="false">
-		<!--- ************************************************************* --->
-		<cfargument name="message" 	type="string" 	required="yes">
-		<cfargument name="detail" 	type="string" 	required="no" default="">
-		<cfargument name="type"  	type="string" 	required="no" default="Framework">
-		<!--- ************************************************************* --->
-		<cfthrow type="#arguments.type#" message="#arguments.message#"  detail="#arguments.detail#">
-	</cffunction>
-	
-		<!--- Dump facade --->
-	<cffunction name="$dump" access="private" hint="Facade for cfmx dump" returntype="void" output="false">
-		<cfargument name="var" required="yes" type="any">
-		<cfargument name="isAbort" type="boolean" default="false" required="false" hint="Abort also"/>
-		<cfdump var="#var#">
-		<cfif arguments.isAbort><cfabort></cfif>
-	</cffunction>
-	
-	<!--- Abort Facade --->
-	<cffunction name="$abort" access="private" hint="Facade for cfabort" returntype="void" output="false">
-		<cfabort>
 	</cffunction>
 	
 </cfcomponent>

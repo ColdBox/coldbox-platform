@@ -25,7 +25,7 @@
 			config.validate();
 			fail("this should have failed.");
 		}
-		catch("LogBoxConfig.NoAppendersFound" e){}
+		catch("coldbox.system.logging.config.LogBoxConfig.NoAppendersFound" e){}
 		catch(Any e){ fail(e.message); }
 	}
 	function testAddCategory(){
@@ -38,7 +38,7 @@
 			config.validate();
 			fail("this should have failed.");
 		}
-		catch("LogBoxConfig.AppenderNotFound" e){}
+		catch("coldbox.system.logging.config.LogBoxConfig.AppenderNotFound" e){}
 		catch(Any e){ fail(e.message); }
 	}
 	
@@ -47,7 +47,7 @@
 			config.validate();
 			fail("this should have failed.");
 		}
-		catch("LogBoxConfig.NoAppendersFound" e){}
+		catch("coldbox.system.logging.config.LogBoxConfig.NoAppendersFound" e){}
 		catch(Any e){ fail(e.message); }
 		
 		//add appender, but still fails, no root logger
@@ -56,7 +56,7 @@
 			config.validate();
 			fail("this should have failed.");
 		}
-		catch("LogBoxConfig.RootLoggerNotFound" e){}
+		catch("coldbox.system.logging.config.LogBoxConfig.RootLoggerNotFound" e){}
 		catch(Any e){ fail(e.message); }
 		
 		//Add root
