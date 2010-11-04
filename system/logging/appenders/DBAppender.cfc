@@ -50,6 +50,11 @@ If you are building a mapper, the map must have the above keys in it.
 			// Init supertype
 			super.init(argumentCollection=arguments);
 			
+			// valid columns
+			instance.columns = "id,severity,category,logdate,appendername,message,extrainfo";
+			// UUID generator
+			instance.uuid = createobject("java", "java.util.UUID");
+			
 			// Verify properties
 			if( NOT propertyExists('dsn') ){ 
 				$throw(message="No dsn property defined",type="DBAppender.InvalidProperty"); 
@@ -73,12 +78,6 @@ If you are building a mapper, the map must have the above keys in it.
 				setProperty("textDBType","text");
 			}
 			
-			// columns
-			instance.columns = "id,severity,category,logdate,appendername,message,extrainfo";
-			// UUID generator
-			instance.uuid = createobject("java", "java.util.UUID");
-			
-						
 			return this;
 		</cfscript>
 	</cffunction>	
