@@ -6,11 +6,11 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 
 Author 	    :	Luis Majano
 Description :
-	A lookup static CFC that gives you the scopes that WireBox uses.
+	A lookup static CFC that gives you the scopes that WireBox uses by default
 	
 
 ----------------------------------------------------------------------->
-<cfcomponent hint="A lookup static CFC that gives you the scopes that WireBox uses." output="false">
+<cfcomponent hint="A lookup static CFC that gives you the scopes that WireBox uses by default" output="false">
 <cfscript>
 	//DECLARED SCOPES
 	this.NO_SCOPE 	= 0;

@@ -18,7 +18,7 @@ Description :
 <!----------------------------------------- CONSTRUCTOR ------------------------------------->			
 		
 	<!--- init --->
-	<cffunction name="init" access="public" returntype="CacheFactory" hint="Constructor. If called with no configuration objects, then WireBox will instantiate the default configuration" output="false" >
+	<cffunction name="init" access="public" returntype="Injector" hint="Constructor. If called with no configuration objects, then WireBox will instantiate the default configuration" output="false" >
 		<cfargument name="config" 		type="any" 		required="false" default="coldbox.system.ioc.config.DefaultConfiguration" hint="The data CFC configuration instance or instantiation path or programmatic WireBoxConfig object to configure this injector with"/>
 		<cfargument name="properties" 	type="struct" 	required="false" default="#structNew()#" hint="A map of binding properties to passthrough to the Configuration CFC"/>
 		<cfargument name="coldbox" 		type="coldbox.system.web.Controller" required="false" hint="A coldbox application that this instance of CacheBox can be linked to, if not using it, just ignore it."/>
