@@ -13,6 +13,7 @@ Description :
 
 	<cffunction name="setUp" returntype="void" access="public" output="false">
 		<cfscript>
+		reset();
 		//Call the super setup method to setup the app.
 		super.setup();
 		</cfscript>
@@ -42,5 +43,25 @@ Description :
 			plugin.encode( local );
 		</cfscript>
 	</cffunction>
+	
+	<!--- testNulls --->
+    <cffunction name="testNulls" output="false" access="public" returntype="any" hint="">
+    	<cfscript>
+    	var plugin = getController().getPlugin("JSON");
+			
+		var data = {
+			firstname = "luis",
+			homePhone = javaCast("null",""),
+			numbers = [javaCast("null",""),1,2,3]
+		};
+		
+		results = plugin.encode( data );
+		debug(serializeJSON(data));
+		debug(results);
+		results = plugin.decode( results );
+		assertEquals('', results.homePhone);
+		</cfscript>
+    </cffunction>
+
 	
 </cfcomponent>
