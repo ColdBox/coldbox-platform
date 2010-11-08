@@ -63,7 +63,7 @@ Modification History:
 				variables.buffer.init(arguments.strIn);	
 			}
 			else{
-				variables.buffer.init(arguments.bufferLength);
+				variables.buffer.init( javaCast("int",arguments.bufferLength) );
 			}
 			
 			return this;
