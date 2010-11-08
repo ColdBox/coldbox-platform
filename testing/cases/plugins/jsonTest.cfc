@@ -39,8 +39,25 @@ Description :
 			
 			assertTrue(isArray(plugin.decode("[1,2,3,4]")), "Inflation");
 			
-			plugin.encode( listToArray('luis,majano'));
+			plugin.encode( listToArray('luis,majano') );
 			plugin.encode( local );
+			
+			complexData = {
+				name="luis",
+				age = 32,
+				numbers = [1,2,3,4],
+				term={ data=1, age=32}
+			};
+			results = plugin.encode( complexData );
+			debug( results );
+			
+			complexData =[
+				{class="test",name="test",props={n=1,y=2}},
+				{class="test",name="test",props={n=1,y=2}},
+				{class="test",name="test",props={n=1,y=2}}
+			];
+			results = plugin.encode( complexData );
+			debug( results );
 		</cfscript>
 	</cffunction>
 	
