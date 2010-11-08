@@ -299,7 +299,7 @@ Modifications:
 			<cfset dJSONString = createObject('java','java.lang.StringBuffer').init("") />
 			<cfloop from="1" to="#ArrayLen(_data)#" index="i">
 				<!--- Null Checks --->
-				<cfif _data.get(i-1) EQ JavaCast("null","")>
+				<cfif isSimpleValue(_data.get(i-1)) AND _data.get(i-1) EQ JavaCast("null","")>
 					<cfset tempVal = "null">
 				<cfelse>
 					<cfset tempVal = encode( _data[i], arguments.queryFormat, arguments.queryKeyCase, arguments.stringNumbers, arguments.formatDates, arguments.columnListFormat ) />
