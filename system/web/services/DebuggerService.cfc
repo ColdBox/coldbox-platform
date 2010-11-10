@@ -194,7 +194,7 @@ Description :
 		
 		<!--- URL Base --->
 		<cfif NOT event.isSES()>
-			<cfset URLBase = "index.cfm">
+			<cfset URLBase = listlast(cgi.script_name,"/")>
 		</cfif>
 		
 		<!--- Render debuglog --->
@@ -217,7 +217,7 @@ Description :
 			
 			// Command URL Base if not using SES
 			if( NOT event.isSES() ){
-				URLBase = "index.cfm";
+				URLBase = listlast(cgi.script_name,"/");
 			}
 			
 			// Caches
@@ -265,7 +265,7 @@ Description :
 			
 			// Command URL Base if not using SES
 			if( NOT event.isSES() ){
-				URLBase = "index.cfm";
+				URLBase = listlast(cgi.script_name,"/");
 			}
 			
 			// Prepare cache report for cachebox
@@ -307,7 +307,7 @@ Description :
 			
 			// Command URL Base if not using SES
 			if( NOT event.isSES() ){
-				URLBase = "index.cfm";
+				URLBase = listlast(cgi.script_name,"/");
 			}
 			
 			// Prepare cache report for cachebox
@@ -382,7 +382,7 @@ Description :
 		
 		<!--- URL Base --->
 		<cfif NOT event.isSES()>
-			<cfset URLBase = "index.cfm">
+			<cfset URLBase = listlast(cgi.script_name,"/")>
 		</cfif>
 		
 		<cfsavecontent variable="profilerContents"><cfinclude template="/coldbox/system/includes/panels/ProfilerPanel.cfm"></cfsavecontent>
