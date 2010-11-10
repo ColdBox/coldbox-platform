@@ -449,28 +449,40 @@ Description :
 			// cleanup of extension, just in case rewrites add garbage.
 			extension = reReplace(extension, "(\/|\\)","","all" );
 			
-			// check if extension found and valid
-			if( listLen(arguments.requestString,".") AND len(extension) AND listFindNoCase(validExtensions, extension) ){
-				// set the format request collection variable
-				event.setValue("format", lcase(extension));
-				// debug logging
-				log.debug("Extension: #lcase(extension)# detected and set in rc.format");
-				// remove it from the string
-				return left(requestString, len(arguments.requestString) - extensionLen - 1 );
+			// check if extension found
+			if( listLen(arguments.requestString,".") AND len(extension) ){
+				
+				// Check if extension is valid?
+				if( listFindNoCase(validExtensions, extension) ){
+					// set the format request collection variable
+					event.setValue("format", lcase(extension));
+					// debug logging
+					log.debug("Extension: #lcase(extension)# detected and set in rc.format");
+					// remove it from the string and return string for continued parsing.
+					return left(requestString, len(arguments.requestString) - extensionLen - 1 );
+				}
+				else{
+					// log invalid extension
+					log.debug("Invalid Extension Detected: #lcase(extension)# detected but it is not in the valid extension list: #validExtensions#");
+					// throw exception
+					throwInvalidHTTP("Invalid Request Extension Detected: #lcase(extension)#","Invalid Request Extension");
+				}				
 			}
-			// return the same request string
+			
+			// return the same request string, extension not found
 			return requestString;
 		</cfscript>
     </cffunction>
 
 	<!--- throwInvalidHTTP --->
     <cffunction name="throwInvalidHTTP" output="false" access="private" returntype="void" hint="Throw an invalid HTTP exception">
-    	<cfargument name="description" type="string" required="true" hint="The throw description"/>
-
-		<cfheader statuscode="403" statustext="403 Invalid HTTP Method Exception">
+    	<cfargument name="description"	type="string" required="true" hint="The throw description"/>
+		<cfargument name="statusText" 	type="string" required="false" default="403 Invalid HTTP Method Exception" hint="Invalid exception status text"/>
+		
+		<cfheader statuscode="403" statustext="#arguments.statusText#">
 		<cfthrow type="SES.403"
 			     errorcode="403"
-			     message="403 Invalid HTTP Method Exception"
+			     message="#arguments.statusText#"
 				 detail="#arguments.description#">
 
     </cffunction>
