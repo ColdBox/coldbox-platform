@@ -32,6 +32,9 @@
 		event.renderdata(type="xml",data=q);
 	}
 	
+	function pass(event,name,cool){
+		return "Hello #arguments.name#, you are cool=#arguments.cool#!";
+	}
 
 </cfscript>			 
 </cfcomponent>
