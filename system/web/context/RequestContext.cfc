@@ -393,7 +393,7 @@ Modification History:
 	</cffunction>
 	
 	<cffunction name="getSelf" access="public" output="false" returntype="any" hint="Returns index.cfm?{eventName}= : String">
-	   <cfreturn listlast(cgi.script_name,"/") & getEventName() & "=">
+	   <cfreturn "index.cfm" & getEventName() & "=">
 	</cffunction>
 	
 	<cffunction name="buildLink" access="public" output="false" returntype="any" hint="Builds a link to a passed event, either SES or normal link. If the ses interceptor is declared it will create routes.">
@@ -406,7 +406,7 @@ Modification History:
 		<!--- ************************************************************* --->
 		<cfscript>
 		var sesBaseURL = getSESbaseURL();
-		var frontController = listlast(cgi.script_name,"/");
+		var frontController = "index.cfm";
 		
 		/* baseURL */
 		if( len(trim(arguments.baseURL)) neq 0 ){
