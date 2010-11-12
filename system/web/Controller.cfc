@@ -482,6 +482,8 @@ Only one instance of a specific ColdBox application exists.
 			// Setup Invoker args
 			loc.args 				= structnew();
 			loc.args.event 			= oRequestContext;
+			loc.args.eventArguments = arguments.eventArguments;
+			
 			// Setup Main Invoker Args
 			loc.argsMain 			= structnew();
 			loc.argsMain.event		= oRequestContext;
@@ -524,17 +526,21 @@ Only one instance of a specific ColdBox application exists.
 					// PREEVENT Interceptor
 					interceptorService.processState("preEvent",iData);
 
-					// Execute Pre Handler
+					// Execute Pre Handler if it exists and valid?
 					if( oHandler._actionExists("preHandler") AND validateAction(ehBean.getMethod(),oHandler.PREHANDLER_ONLY,oHandler.PREHANDLER_EXCEPT) ){
 						loc.tHash = debuggerService.timerStart("invoking runEvent [preHandler] for #arguments.event#");
+						
 						oHandler.preHandler(oRequestContext,ehBean.getMethod(),arguments.eventArguments);
+						
 						debuggerService.timerEnd(loc.tHash);
 					}
 
-					// Execute pre{Action}?
+					// Execute pre{Action}? if it exists and valid?
 					if( oHandler._actionExists("pre#ehBean.getMethod()#") ){
 						loc.tHash = debuggerService.timerStart("invoking runEvent [pre#ehBean.getMethod()#] for #arguments.event#");
+						
 						invoker(oHandler,"pre#ehBean.getMethod()#",loc.args);
+						
 						debuggerService.timerEnd(loc.tHash);
 					}
 				}
@@ -553,14 +559,42 @@ Only one instance of a specific ColdBox application exists.
 				else
 					loc.tHash 	= debuggerService.timerStart("invoking runEvent [#arguments.event#]");
 
+				// Invoke onMissingAction event
 				if( ehBean.isMissingAction() ){
-					// Invoke onMissingAction
 					loc.results	= oHandler.onMissingAction(oRequestContext,ehBean.getMissingAction(),arguments.eventArguments);
 				}
+				// Invoke main event
 				else{
-					// Invoke main event
-					loc.results = invoker(oHandler,ehBean.getMethod(), loc.argsMain, arguments.private);
+					
+					// Around Handler Advice Check?
+					if( oHandler._actionExists("aroundHandler") AND validateAction(ehBean.getMethod(),oHandler.aroundHandler_only,oHandler.aroundHandler_except) ){
+						loc.tHash = debuggerService.timerStart("invoking runEvent [aroundHandler] for #arguments.event#");
+						
+						loc.results = oHandler.aroundHandler(oRequestContext, oHandler[ehBean.getMethod()], arguments.eventArguments);
+						
+						debuggerService.timerEnd(loc.tHash);
+					}
+					// Around {Action} Advice Check?
+					else if( oHandler._actionExists("around#ehBean.getMethod()#") ){
+						loc.tHash = debuggerService.timerStart("invoking runEvent [around#ehBean.getMethod()#] for #arguments.event#");
+						
+						// Add target Action to loc.args
+						loc.args.targetAction  	= oHandler[ehBean.getMethod()];
+						
+						loc.results = invoker(oHandler,"around#ehBean.getMethod()#",loc.args);
+						
+						// Cleanup: Remove target action from loc.args for post events
+						structDelete(loc.args, "targetAction");
+						
+						debuggerService.timerEnd(loc.tHash);
+					}
+					else{
+						// Normal execution
+						loc.results = invoker(oHandler,ehBean.getMethod(), loc.argsMain, arguments.private);
+					}
 				}
+				
+				// finalize execution timer of main event
 				debuggerService.timerEnd(loc.tHash);
 
 				// POST ACTIONS

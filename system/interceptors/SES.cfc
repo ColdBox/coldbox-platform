@@ -447,10 +447,10 @@ Description :
 			var extensionLen		= len(extension);
 			
 			// cleanup of extension, just in case rewrites add garbage.
-			extension = reReplace(extension, "(\/|\\)","","all" );
+			extension = reReplace(extension, "/$","","all" );
 			
 			// check if extension found
-			if( listLen(arguments.requestString,".") AND len(extension) ){
+			if( listLen(arguments.requestString,".") GT 1 AND len(extension) ){
 				
 				// Check if extension is valid?
 				if( listFindNoCase(validExtensions, extension) ){
