@@ -9,7 +9,7 @@ Description :
 	The WireBox injector is the pivotal class in WireBox that performs
 	dependency injection.  It can be used standalone or it can be used in conjunction
 	of a ColdBox application context.  It can also be configured with a mapping configuration
-	file that can provide object/mappings.
+	file called a binder, that can provide object/mappings.
 	
 
 ----------------------------------------------------------------------->
@@ -18,13 +18,14 @@ Description :
 <!----------------------------------------- CONSTRUCTOR ------------------------------------->			
 		
 	<!--- init --->
-	<cffunction name="init" access="public" returntype="Injector" hint="Constructor. If called with no configuration objects, then WireBox will instantiate the default configuration" output="false" >
-		<cfargument name="config" 		type="any" 		required="false" default="coldbox.system.ioc.config.DefaultConfiguration" hint="The data CFC configuration instance or instantiation path or programmatic WireBoxConfig object to configure this injector with"/>
-		<cfargument name="properties" 	type="struct" 	required="false" default="#structNew()#" hint="A map of binding properties to passthrough to the Configuration CFC"/>
-		<cfargument name="coldbox" 		type="coldbox.system.web.Controller" required="false" hint="A coldbox application that this instance of CacheBox can be linked to, if not using it, just ignore it."/>
+	<cffunction name="init" access="public" returntype="Injector" hint="Constructor. If called without a configuration binder, then WireBox will instantiate the default configuration binder" output="false" >
+		<cfargument name="binder" 		type="any" 		required="false" default="coldbox.system.ioc.config.DefaultConfiguration" hint="The data CFC configuration instance, instantiation path or programmatic Binder configuration object to configure this injector with"/>
+		<cfargument name="properties" 	type="struct" 	required="false" default="#structNew()#" hint="A structure of binding properties to passthrough to the Binder Configuration CFC"/>
+		<cfargument name="coldbox" 		type="coldbox.system.web.Controller" required="false" hint="A coldbox application context that this instance of WireBox can be linked to, if not using it, we just ignore it."/>
 		<cfscript>
 			// Available public scopes
 			this.SCOPES = createObject("component","coldbox.system.ioc.Scopes");
+			
 			// Available public types
 			this.TYPES = createObject("component","coldbox.system.ioc.Types");
 		
@@ -32,10 +33,12 @@ Description :
 			instance = {
 				// WireBox Injector UniqueID
 				injectorID = createObject('java','java.lang.System').identityHashCode(this),	
+				// Utility class
+				utility  = createObject("component","coldbox.system.core.util.Util"),
 				// Version
 				version = "1.0.0",	 
-				// Configuration object
-				config  = "",
+				// Configuration Binder object
+				binder  = "",
 				// ColdBox Application Link
 				coldbox = "",
 				// Event Manager Link
@@ -55,12 +58,8 @@ Description :
 				// LogBox and Class Logger
 				logBox  = "",
 				log		= "",
-				// Singleton Cache
-				singletons = structnew(),
 				// Parent Injector
-				parent = "",
-				// Utility class
-				utility  = createObject("component","coldbox.system.core.util.Util")
+				parent = ""
 			};
 			
 			// Prepare Lock Info
@@ -79,8 +78,8 @@ Description :
 				instance.coldbox.getInterceptorService().appendInterceptionPoints( arrayToList(instance.eventStates) ); 
 			}
 			
-			// Configure the injector
-			configure( arguments.config, arguments.properties);
+			// Configure the injector for operation with the passed binder and properties
+			configure( arguments.binder, arguments.properties);
 			
 			return this;
 		</cfscript>
@@ -88,7 +87,7 @@ Description :
 				
 	<!--- configure --->
 	<cffunction name="configure" output="false" access="public" returntype="void" hint="Configure this injector for operation, called by the init(). You can also re-configure this injector programmatically, but it is not recommended.">
-		<cfargument name="config" 		type="any"		required="true" hint="The configuration object or path to configure this Injector instance with"/>
+		<cfargument name="binder" 		type="any"		required="true" hint="The configuration binder object or path to configure this Injector instance with"/>
 		<cfargument name="properties" 	type="struct" 	required="true" hint="A map of binding properties to passthrough to the Configuration CFC"/>
 		<cfscript>
 			var key 	= "";
@@ -97,8 +96,8 @@ Description :
 		
 		<cflock name="#instance.lockName#" type="exclusive" timeout="30" throwontimeout="true">
 			<cfscript>
-			// Store config object built accordingly
-			instance.config = buildConfiguration( arguments.config, arguments.properties );
+			// Store binder object built accordingly
+			instance.binder = buildConfiguration( arguments.binder, arguments.properties );
 			
 			// Validate configuration
 			instance.config.validate();
@@ -229,9 +228,9 @@ Description :
 		<cfreturn instance.version>
 	</cffunction>
 	
-	<!--- Get the config object --->
-	<cffunction name="getConfig" access="public" returntype="coldbox.system.ioc.config.WireBoxConfig" output="false" hint="Get the Injector's configuration object">
-		<cfreturn instance.config>
+	<!--- Get the binder config object --->
+	<cffunction name="getBinder" access="public" returntype="coldbox.system.ioc.config.Binder" output="false" hint="Get the Injector's configuration binder object">
+		<cfreturn instance.binder>
 	</cffunction>
 	
 	<!--- getInjectorID --->
@@ -363,34 +362,35 @@ Description :
 	</cffunction>
 	
 	<!--- buildConfiguration --->
-    <cffunction name="buildConfiguration" output="false" access="private" returntype="any" hint="Load a configuration object according to passed in config type">
-    	<cfargument name="config" 		type="any" 		required="true" hint="The data CFC configuration instance or instantiation path or programmatic WireBoxConfig object to configure this injector with"/>
+    <cffunction name="buildConfiguration" output="false" access="private" returntype="any" hint="Load a configuration binder object according to passed in type">
+    	<cfargument name="binder" 		type="any" 		required="true" hint="The data CFC configuration instance, instantiation path or programmatic binder object to configure this injector with"/>
 		<cfargument name="properties" 	type="struct" 	required="true" hint="A map of binding properties to passthrough to the Configuration CFC"/>
 		<cfscript>
 			var dataCFC = "";
 			
 			// Check if just a plain CFC path and build it
-			if( isSimpleValue(arguments.config) ){
-				arguments.config = createObject("component",arguments.config);
+			if( isSimpleValue(arguments.binder) ){
+				arguments.binder = createObject("component",arguments.binder);
 			}
 			
 			// Now decorate it with properties, a self reference, and a coldbox reference if needed.
-			arguments.config.injectPropertyMixin = instance.utility.injectPropertyMixin;
-			arguments.config.injectPropertyMixin("properties",arguments.properties,"instance");
-			arguments.config.injectPropertyMixin("wirebox",this);
+			arguments.binder.injectPropertyMixin = instance.utility.injectPropertyMixin;
+			arguments.binder.injectPropertyMixin("properties",arguments.properties,"instance");
+			arguments.binder.injectPropertyMixin("wirebox",this);
 			if( isColdBoxLinked() ){
-				arguments.config.injectPropertyMixin("coldbox",getColdBox());
+				arguments.binder.injectPropertyMixin("coldbox",getColdBox());
 			}
 			
-			// Check if already a programmatic config object
-			if( isInstanceOf(arguments.config, "coldbox.system.ioc.config.WireBoxConfig") ){
+			// Check if already a programmatic binder object
+			if( isInstanceOf(arguments.binder, "coldbox.system.ioc.config.Binder") ){
 				// Configure it
-				arguments.config.configure();
-				return arguments.config;
+				arguments.binder.configure();
+				// use it
+				return arguments.binder;
 			}
 			
-			// If we get here, then it is a simple CFC, decorate it with a vanilla config object and configure
-			return createObject("component","coldbox.system.ioc.config.WireBoxConfig").init(arguments.config);
+			// If we get here, then it is a simple data CFC, decorate it with a vanilla binder object and configure it for operation
+			return createObject("component","coldbox.system.ioc.config.Binder").init(arguments.binder);
 		</cfscript>
     </cffunction>
 	

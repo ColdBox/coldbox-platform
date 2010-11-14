@@ -18,10 +18,10 @@ Description :
 		
 		// The WireBox configuration structure DSL
 		wireBox = {
-			// LogBox Configuration file
+			// Default LogBox Configuration file
 			logBoxConfig 	= "coldbox.system.ioc.config.LogBox", 
 			
-			// CacheBox Integration
+			// CacheBox Integration OFF by default
 			cacheBox = {
 				enabled = false 
 				// configFile = "coldbox.system.ioc.config.CacheBox", An optional configuration file to use for loading CacheBox
@@ -49,6 +49,9 @@ Description :
 			
 			// Package scan locations
 			scanLocations = [],
+			
+			// Stop Recursions
+			stopRecursions = [],
 			
 			// Parent Injector to assign to the configured injector, this must be an object reference
 			parentInjector = "",

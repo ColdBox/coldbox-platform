@@ -7,10 +7,11 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 Author     :	Luis Majano
 Date        :	3/13/2009
 Description :
-	This is a WireBox configuration object.  You can use it to configure
-	a WireBox injector instance using our WireBox Mapping DSL
+	This is a WireBox configuration binder object.  You can use it to configure
+	a WireBox injector instance using our WireBox Mapping DSL.
+	This binder will hold all your object mappings, injector settings and more.
 ----------------------------------------------------------------------->
-<cfcomponent output="false" hint="This is a WireBox configuration object.  You can use it to configure a WireBox injector instance using our WireBox Mapping DSL">
+<cfcomponent output="false" hint="This is a WireBox configuration binder object.  You can use it to configure a WireBox injector instance using our WireBox Mapping DSL">
 
 	<cfscript>
 		// Available WireBox public scopes
@@ -19,7 +20,7 @@ Description :
 		this.TYPES = createObject("component","coldbox.system.ioc.Types");
 		// Internal Utility class
 		utility  	= createObject("component","coldbox.system.core.util.Util");
-		// Temp Mapping holder
+		// Temp Mapping positional mover
 		currentMapping = "";
 		// Instance private scope
 		instance = {};
@@ -46,15 +47,15 @@ Description :
 	</cfscript>
 	
 	<!--- init --->
-	<cffunction name="init" output="false" access="public" returntype="WireBoxConfig" hint="Constructor: You can pass a data CFC instance, path or nothing at all for programmatic configuration">
+	<cffunction name="init" output="false" access="public" returntype="Binder" hint="Constructor: You can pass a data CFC instance, path or nothing at all for programmatic configuration">
 		<cfargument name="config" type="any" required="false" hint="The WireBox Injector Data Configuration CFC instance or instantiation path to it. Leave blank if using this configuration object programatically"/>
 		<cfscript>
-			// Test and load via Data CFC Path?
+			// If sent and a path, then create the data CFC
 			if( structKeyExists(arguments, "config") and isSimpleValue(arguments.config) ){
 				arguments.config = createObject("component",arguments.config);
 			}
 			
-			// Test and load via Data CFC?
+			// If sent and a data CFC instance
 			if( structKeyExists(arguments,"config") and isObject(arguments.config) ){
 				// Decorate our data CFC
 				arguments.config.getPropertyMixin = utility.getPropertyMixin;
@@ -69,7 +70,7 @@ Description :
 	</cffunction>
 
 	<!--- configure --->
-    <cffunction name="configure" output="false" access="public" returntype="any" hint="The main configuration method that must be overriden by a specific WireBox configuration object">
+    <cffunction name="configure" output="false" access="public" returntype="any" hint="The main configuration method that must be overriden by a specific WireBox Binder configuration object">
     </cffunction>
 
 	<!--- reset --->
@@ -95,6 +96,8 @@ Description :
 			instance.parentInjector = "";
 			// Binding Properties
 			instance.properties = {};
+			// Stop Recursion classes
+			instance.stopRecursion = [];
 		</cfscript>
 	</cffunction>
 
@@ -182,13 +185,13 @@ Description :
     	<cfscript>
     		var mapping = {
 				alias="",
-				type=TYPES.CFC,
+				type= this.TYPES.CFC,
 				path="",
 				constructor="init",
 				autowire=false,
 				noInit=false,
 				asEagerInit=false,
-				scope=SCOPES.NO_SCOPE,
+				scope=this.SCOPES.NO_SCOPE,
 				dsl="",
 				cache={},
 				DIConstructorArgs = [],
@@ -337,8 +340,8 @@ Description :
 				return this;
 			}
 			utility.throwit(message="The mapping '#arguments.alias# has not been initialized yet.'",
-							detail="Please use the map('#arguments.alias#') first to work with a mapping",
-							type="WireBoxConfig.InvalidMappingStateException");
+							detail="Please use the map('#arguments.alias#') first to start working with a mapping",
+							type="Binder.InvalidMappingStateException");
 		</cfscript>
     </cffunction>
 	
@@ -412,7 +415,27 @@ Description :
 		</cfscript>
     </cffunction>
 
-<!------------------------------------------- SCOPE REGISTRATIONS ------------------------------------------>
+<!------------------------------------------- STOP RECURSIONS ------------------------------------------>
+
+	<!--- getStopRecursions --->
+    <cffunction name="getStopRecursions" output="false" access="public" returntype="array" hint="Get all the stop recursion classes">
+    	<cfreturn instance.stopRecursions>
+    </cffunction>
+	
+	<!--- stopRecursions --->
+    <cffunction name="stopRecursions" output="false" access="public" returntype="any" hint="Configure the stop recursion classes">
+    	<cfargument name="classes" type="any" required="true" hint="A list or array of classes to use so the injector can stop when looking for dependencies in inheritance chains"/>
+   		<cfscript>
+    		// inflate incoming locations
+   			if( isSimpleValue(arguments.classes) ){ arguments.classes = listToArray(arguments.classes); }
+			// Save them
+			instance.stopRecursions = arguments.classes;
+			
+			return this;
+		</cfscript>
+    </cffunction>
+
+<!------------------------------------------- SCOPE REGISTRATION ------------------------------------------>
 	
 	<!--- scopeRegistration --->
     <cffunction name="scopeRegistration" output="false" access="public" returntype="any" hint="Use to define injector scope registration">
@@ -492,17 +515,21 @@ Description :
 	
 	<!--- inCacheBox --->
     <cffunction name="inCacheBox" output="false" access="public" returntype="any" hint="Map an object into CacheBox">
-    	<cfargument name="provider" 			type="string" 	required="false" default="default" hint="Uses the 'default' cache provider by default"/>
-		<cfargument name="key" 					type="string" 	required="false" default="" hint="You can override the key it will use for storing in cache. By default it uses the name of the mapping."/>
+    	<cfargument name="key" 					type="string" 	required="false" default="" hint="You can override the key it will use for storing in cache. By default it uses the name of the mapping."/>
     	<cfargument name="timeout" 				type="any" 		required="false" default="" hint="Object Timeout, else defaults to whatever the default is in the choosen cache"/>
 		<cfargument name="lastAccessTimeout" 	type="any" 		required="false" default="" hint="Object Timeout, else defaults to whatever the default is in the choosen cache"/>
+		<cfargument name="provider" 			type="string" 	required="false" default="default" hint="Uses the 'default' cache provider by default"/>
 		<cfscript>
+			// if key not passed, use the same mapping name
 			if( NOT len(arguments.key) ){ arguments.key = currentMapping; }
+			// store the mappings scope as cacheBox
+			instance.mappings[ currentMapping ].scope = this.SCOPES.CACHEBOX;
+			// Store the cache information on the mapping
     		instance.mappings[ currentMapping ].cache = {
 				provider = arguments.provider,
-				key      = cacheKey,
+				key      = arguments.key,
 				timeout  = arguments.timeout,
-				lastAccessTimeout = arguments.lastAccessTimeout 
+				lastAccessTimeout = arguments.lastAccessTimeout
 			};
 			return this;
     	</cfscript>
@@ -514,8 +541,8 @@ Description :
 	<!--- mapDSL --->
     <cffunction name="mapDSL" output="false" access="public" returntype="any" hint="Register a new custom dsl namespace">
     	<cfargument name="namespace" 	type="string" required="true" hint="The namespace you would like to register"/>
-		<cfargument name="mapping" 		type="string" required="true" hint="The name of the mapping or CFC that implements this custom DSL."/>
-		<cfset instance.customDSL[arguments.namespace] = arguments.mapping>
+		<cfargument name="path" 		type="string" required="true" hint="The path to the CFC that implements this scope, it must have an init() method and implement: coldbox.system.ioc.dsl.IDSLNamespace"/>
+		<cfset instance.customDSL[arguments.namespace] = arguments.path>
 		<cfreturn this>
     </cffunction>
 	
@@ -529,8 +556,9 @@ Description :
 	<!--- mapScope --->
     <cffunction name="mapScope" output="false" access="public" returntype="any" hint="Register a new WireBox custom scope">
     	<cfargument name="annotation"	type="string" required="true" hint="The unique scope name to register. This translates to an annotation value on CFCs"/>
-    	<cfargument name="mapping" 		type="string" required="true" hint="The name of the mapping or CFC that implements this custom scope."/>
-		<cfset instance.customScopes[arguments.annotation] = arguments.mapping>
+    	<cfargument name="path" 		type="string" required="true" hint="The path to the CFC that implements this scope, it must have an init() method and implement: coldbox.system.ioc.scopes.IScope"/>
+		<cfset instance.customScopes[arguments.annotation] = arguments.path>
+		<cfreturn this>
 	</cffunction>
 
 	<!--- getCustomScopes --->
@@ -590,6 +618,11 @@ Description :
 			if( structKeyExists( wireBoxDSL, "scanLocations") ){
 				scanLocations( wireBoxDSL.scanLocations );
 			}
+			
+			// Register Stop Recursions
+			if( structKeyExists( wireBoxDSL, "stopRecursions") ){
+				stopRecursions( wireBoxDSL.stopRecursions );
+			}
 
 			// Register listeners
 			if( structKeyExists( wireBoxDSL, "listeners") ){
@@ -636,18 +669,6 @@ Description :
 			
 			return this;
 		</cfscript>
-	</cffunction>
-	
-	<!--- getListener --->
-	<cffunction name="getListener" output="false" access="public" returntype="struct" hint="Get a specifed listener definition">
-		<cfargument name="name" type="string" required="true" hint="The listener configuration to retrieve"/>
-		<cfreturn instance.listeners[arguments.name]>
-	</cffunction>
-	
-	<!--- listenerExists --->
-	<cffunction name="listenerExists" output="false" access="public" returntype="boolean" hint="Check if a listener definition exists">
-		<cfargument name="name" type="string" required="true" hint="The listener to check"/>
-		<cfreturn structKeyExists(instance.listeners, arguments.name)>
 	</cffunction>
 	
 	<!--- getListeners --->
