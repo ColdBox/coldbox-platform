@@ -18,7 +18,7 @@ Description :
 
 	<!--- getFromScope --->
     <cffunction name="getFromScope" output="false" access="public" returntype="any" hint="Retrieve an object from scope or create it if not found in scope">
-    	<cfargument name="mapping" type="coldbox.system.ioc.Mapping" required="true" hint="The object mapping"/>
+    	<cfargument name="mapping" type="coldbox.system.ioc.config.Mapping" required="true" hint="The object mapping"/>
     </cffunction>
 	
 </cfinterface>
