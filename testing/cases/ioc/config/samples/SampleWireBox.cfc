@@ -14,7 +14,7 @@ Description :
 	/**
 	* Configure WireBox, that's it!
 	*/
-	function configure(config){
+	function configure(binder){
 		
 		// The WireBox configuration structure DSL
 		wireBox = {
@@ -23,7 +23,7 @@ Description :
 			
 			// CacheBox Integration
 			cacheBox = {
-				enabled = false 
+				enabled = true 
 				// configFile = "coldbox.system.ioc.config.CacheBox", An optional configuration file to use for loading CacheBox
 				// cacheFactory = ""  A reference to an already instantiated CacheBox CacheFactory
 				// classNamespace = "" A class path namespace to use to create CacheBox: Default=coldbox.system.cache or wirebox.system.cache
@@ -51,6 +51,9 @@ Description :
 			scanLocations = [
 			],
 			
+			// Stop recursions
+			stopRecursions = [ "coldbox.system.Interceptor"	],
+			
 			// Parent Injector to assign to the configured injector, this must be an object reference
 			parent = "",
 			
@@ -60,7 +63,16 @@ Description :
 				  properties={
 				  	name="CoolListener"
 				  } }
-			]			
+			]	
+		};
+		
+		// WireBox Mappings
+		wirebox.mappings = {
+			myBean = {alias="jose",path="my.path.Sample"},
+			buffer = {path="java.lang.StringBuffer", type=binder.TYPES.JAVA,
+					  DIConstructorArgs=[
+					  	{name="buffer", value="16", javaCast="int"}
+					  ]}
 		};
 	}	
 </cfscript>

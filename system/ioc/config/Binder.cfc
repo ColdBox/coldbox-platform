@@ -47,7 +47,7 @@ Description :
 	</cfscript>
 	
 	<!--- init --->
-	<cffunction name="init" output="false" access="public" returntype="Binder" hint="Constructor: You can pass a data CFC instance, path or nothing at all for programmatic configuration">
+	<cffunction name="init" output="false" access="public" returntype="Binder" hint="Constructor: You can pass a data CFC instance, data CFC path or nothing at all for purely programmatic configuration">
 		<cfargument name="config" type="any" required="false" hint="The WireBox Injector Data Configuration CFC instance or instantiation path to it. Leave blank if using this configuration object programatically"/>
 		<cfscript>
 			// If sent and a path, then create the data CFC
@@ -71,6 +71,7 @@ Description :
 
 	<!--- configure --->
     <cffunction name="configure" output="false" access="public" returntype="any" hint="The main configuration method that must be overriden by a specific WireBox Binder configuration object">
+    	<!--- Usually implemented by concrete classes of this Binder --->
     </cffunction>
 
 	<!--- reset --->
@@ -632,6 +633,13 @@ Description :
 			}	
 			
 			// Register Mappings	
+			if( structKeyExists( wireBoxDSL, "mappings") ){
+				// iterate and register
+				for(key in wireboxDSL.mappings){
+					// create mapping & process its memento
+					map(key).processMemento( wireBoxDSL.mappings[key] );
+				}
+			}
 		</cfscript>
     </cffunction>
 	
