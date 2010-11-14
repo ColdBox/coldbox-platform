@@ -32,11 +32,11 @@ Description :
 				// Mapped constructor
 				constructor = "init",
 				// Discovery and wiring flag
-				autoWire = false,
+				autoWire = true,
 				// Auto init or not
 				autoInit = true,
 				// Lazy load the mapping or not
-				asEagerInit = false,
+				eagerInit = false,
 				// The storage or visibility scope of the mapping
 				scope = "",
 				// A construction dsl
@@ -47,14 +47,16 @@ Description :
 				DIConstructorArgs = [],
 				// Explicit Properties
 				DIProperties = [],
-				// Explicit Methods
-				DIMethods = [],
+				// Explicit Setters
+				DISetters = [],
 				// Post Processors
 				onDIComplete = [],
 				// Flag used to distinguish between discovered and non-discovered mappings
 				discovered = false,
 				// original object's metadata
-				metadata = {}
+				metadata = {},
+				// discovered provider methods
+				providerMethods = []
 			};
 			
 			// DI definition structure
@@ -69,34 +71,43 @@ Description :
     	<cfargument name="memento" type="struct" required="true" hint="The data memento to process"/>
     	<cfscript>
     		var x = 1;
+			var key = "";
 			
 			// append incoming memento data
-    		structAppend(instance, arguments.memento, true);
-			
-			//process cache properties
-			if( structKeyExists(arguments.memento, "cache") ){
-				setCacheProperties(argumentCollection=arguments.memento.cache ); 
-			}
-			
-			//process constructor args
-			if( structKeyExists(arguments.memento, "DIConstructorArgs") ){
-				for(x=1; x lte arrayLen(arguments.memento.DIConstructorArgs); x++){
-					addDIConstructorArgument(argumentCollection=arguments.memento.DIConstructorArgs[x] );
-				} 
-			}
-			
-			//process properties
-			if( structKeyExists(arguments.memento, "DIProperties") ){
-				for(x=1; x lte arrayLen(arguments.memento.DIProperties); x++){
-					addDIProperty(argumentCollection=arguments.memento.DIProperties[x] );
-				} 
-			}
-			
-			//process methods
-			if( structKeyExists(arguments.memento, "DIMethods") ){
-				for(x=1; x lte arrayLen(arguments.memento.DIMethods); x++){
-					addDIMethod(argumentCollection=arguments.memento.DIMethods[x] );
-				} 
+    		for(key in arguments.memento){
+				
+				switch(key){
+					//process cache properties
+					case "cache" : {
+						setCacheProperties(argumentCollection=arguments.memento.cache ); break;
+					}
+					//process constructor args
+					case "DIConstructorArgs" : {
+						for(x=1; x lte arrayLen(arguments.memento.DIConstructorArgs); x++){
+							addDIConstructorArgument(argumentCollection=arguments.memento.DIConstructorArgs[x] );
+						}
+						break; 
+					}	
+					//process properties
+					case "DIProperties" : {
+						for(x=1; x lte arrayLen(arguments.memento.DIProperties); x++){
+							addDIProperty(argumentCollection=arguments.memento.DIProperties[x] );
+						} 
+						break; 
+					}	
+					//process DISetters
+					case "DISetters" : {
+						for(x=1; x lte arrayLen(arguments.memento.DISetters); x++){
+							addDISetter(argumentCollection=arguments.memento.DISetters[x] );
+						} 
+						break; 
+					}	
+					
+					default:{
+						instance[key] = arguments.memento[key];
+					}
+				}// end switch
+				
 			}
     	</cfscript>
     </cffunction>
@@ -117,6 +128,15 @@ Description :
     <cffunction name="setAlias" access="public" returntype="void" output="false" hint="Set the mapping aliases">
     	<cfargument name="alias" type="string" required="true">
     	<cfset instance.alias = arguments.alias>
+    </cffunction>
+	
+	<!--- Path --->
+	<cffunction name="getPath" access="public" returntype="string" output="false" hint="Get the path to this mapping">
+    	<cfreturn instance.path>
+    </cffunction>
+    <cffunction name="setPath" access="public" returntype="void" output="false" hint="Set the path to this mapping">
+    	<cfargument name="path" type="string" required="true">
+    	<cfset instance.path = arguments.path>
     </cffunction>
     
 	<!--- Type --->
@@ -139,7 +159,7 @@ Description :
     
 	<!--- isAutowire --->
     <cffunction name="isAutowire" output="false" access="public" returntype="boolean" hint="Using autowire or not">
-    	<cfreturn intance.autowire>
+    	<cfreturn instance.autowire>
     </cffunction>
     <cffunction name="setAutowire" access="public" returntype="void" output="false" hint="Set autowire property">
     	<cfargument name="autowire" type="boolean" required="true">
@@ -148,7 +168,7 @@ Description :
 	
 	<!--- isAutoInit --->
     <cffunction name="isAutoInit" output="false" access="public" returntype="boolean" hint="Using auto init of mapping target or not">
-    	<cfreturn intance.autoInit>
+    	<cfreturn instance.autoInit>
     </cffunction>
     <cffunction name="setAutoInit" access="public" returntype="void" output="false" hint="Set autoInit property">
     	<cfargument name="autoInit" type="boolean" required="true">
@@ -181,7 +201,7 @@ Description :
     	<cfargument name="key" 					type="string" 	required="false" default="" hint="Cache key."/>
     	<cfargument name="timeout" 				type="any" 		required="false" default="" hint="Object Timeout"/>
 		<cfargument name="lastAccessTimeout" 	type="any" 		required="false" default="" hint="Object Last Access Timeout"/>
-		<cfargument name="provider" 			type="string" 	required="false" default="" hint="Cache Provider"/>
+		<cfargument name="provider" 			type="string" 	required="false" default="default" hint="Cache Provider"/>
 		<cfscript>
 			structAppend( instance.cache, arguments, true);
 		</cfscript>
@@ -216,12 +236,12 @@ Description :
 	
 	<!--- addDIProperty --->
     <cffunction name="addDIProperty" output="false" access="public" returntype="any" hint="Add a new cfproperty definition">
-    	<cfargument name="name" 	type="string" 	required="true"  hint="The name of the constructor argument."/>
-		<cfargument name="ref" 		type="string" 	required="false" hint="The reference mapping id this constructor argument maps to"/>
-		<cfargument name="dsl" 		type="string" 	required="false" hint="The construction dsl this argument references. If used, the name value must be used."/>
-		<cfargument name="value" 	type="any" 		required="false" hint="The value of the constructor argument, if passed."/>
-    	<cfargument name="javaCast" type="string" 	required="false" hint="The type of javaCast() to use on the value of the argument. Only used if using dsl or ref arguments"/>
-    	<cfargument name="scope" 	type="string" 	required="false" hint="The scope in the CFC to inject the property to. By default it will inject it to the variables scope"/>
+    	<cfargument name="name" 	type="string" 	required="true"  hint="The name of the cfproperty to inject"/>
+		<cfargument name="ref" 		type="string" 	required="false" hint="The reference mapping id this property maps to"/>
+		<cfargument name="dsl" 		type="string" 	required="false" hint="The construction dsl this property references. If used, the name value must be used."/>
+		<cfargument name="value" 	type="any" 		required="false" hint="The value of the property, if passed."/>
+    	<cfargument name="javaCast" type="string" 	required="false" hint="The type of javaCast() to use on the value of the property. Only used if using dsl or ref arguments"/>
+    	<cfargument name="scope" 	type="string" 	required="false" default="variables" hint="The scope in the CFC to inject the property to. By default it will inject it to the variables scope"/>
     	<cfscript>
     		var def = getDIDefinition();
 			structAppend(def, arguments, true);
@@ -229,22 +249,22 @@ Description :
     	</cfscript>
     </cffunction>
 
-    <!--- getDIMethods --->
-    <cffunction name="getDIMethods" output="false" access="public" returntype="array" hint="Get all the DI method definitions">
-    	<cfreturn instance.DIMethods>
+    <!--- getDISetters --->
+    <cffunction name="getDISetters" output="false" access="public" returntype="array" hint="Get all the DI setter definitions">
+    	<cfreturn instance.DISetters>
     </cffunction>
 	
-	<!--- addDIMethod --->
-    <cffunction name="addDIMethod" output="false" access="public" returntype="any" hint="Add a new DI method definition">
-    	<cfargument name="name" 	type="string" 	required="true"  hint="The name of the constructor argument."/>
-		<cfargument name="ref" 		type="string" 	required="false" hint="The reference mapping id this constructor argument maps to"/>
+	<!--- addDISetter --->
+    <cffunction name="addDISetter" output="false" access="public" returntype="any" hint="Add a new DI setter definition">
+    	<cfargument name="name" 	type="string" 	required="true"  hint="The name of the setter method."/>
+		<cfargument name="ref" 		type="string" 	required="false" hint="The reference mapping id this setter argument maps to"/>
 		<cfargument name="dsl" 		type="string" 	required="false" hint="The construction dsl this argument references. If used, the name value must be used."/>
-		<cfargument name="value" 	type="any" 		required="false" hint="The value of the constructor argument, if passed."/>
+		<cfargument name="value" 	type="any" 		required="false" hint="The value of the setter argument, if passed."/>
     	<cfargument name="javaCast" type="string" 	required="false" hint="The type of javaCast() to use on the value of the argument. Only used if using dsl or ref arguments"/>
     	<cfscript>
     		var def = getDIDefinition();
 			structAppend(def, arguments, true);
-			arrayAppend( instance.DIMethods, def );
+			arrayAppend( instance.DISetters, def );
     	</cfscript>
     </cffunction>
 	
@@ -276,6 +296,29 @@ Description :
     <cffunction name="setMetadata" output="false" access="public" returntype="void" hint="Set the mappings CFC target metadata">
     	<cfargument name="metadata" type="any" required="true" hint="Target CFC metadata"/>
 		<cfset instance.metadata = arguments.metadata>
+    </cffunction>
+
+	<!--- isEagerInit --->
+    <cffunction name="isEagerInit" output="false" access="public" returntype="boolean" hint="Is this mapping eager initialized">
+    	<cfreturn instance.eagerInit>
+    </cffunction>
+	
+	<!--- setEagerInit --->
+    <cffunction name="setEagerInit" output="false" access="public" returntype="void" hint="Set the eager init flag">
+    	<cfargument name="eagerInit" type="boolean" required="true" hint="Set the eager init flag"/>
+    	<cfset instance.eagerInit = arguments.eagerInit>
+	</cffunction>
+	
+	<!--- getProviderMethods --->
+    <cffunction name="getProviderMethods" output="false" access="public" returntype="array" hint="Get the discovered provider methods">
+    	<cfreturn instance.providerMethods>
+    </cffunction>
+	
+	<!--- addProviderMethod --->
+    <cffunction name="addProviderMethod" output="false" access="public" returntype="void" hint="Add a new provider method">
+    	<cfargument name="method" 	type="string" required="true" hint="The provided method"/>
+		<cfargument name="mapping" 	type="string" required="true" hint="The mapping to provide"/>
+		<cfset arrayAppend( instance.providerMethods, arguments)>
     </cffunction>
 
 <!----------------------------------------- PRIVATE ------------------------------------->	
