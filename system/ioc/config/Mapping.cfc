@@ -64,6 +64,43 @@ Description :
 		</cfscript>
 	</cffunction>
 	
+	<!--- processMemento --->
+    <cffunction name="processMemento" output="false" access="public" returntype="void" hint="Process a mapping memento">
+    	<cfargument name="memento" type="struct" required="true" hint="The data memento to process"/>
+    	<cfscript>
+    		var x = 1;
+			
+			// append incoming memento data
+    		structAppend(instance, arguments.memento, true);
+			
+			//process cache properties
+			if( structKeyExists(arguments.memento, "cache") ){
+				setCacheProperties(argumentCollection=arguments.memento.cache ); 
+			}
+			
+			//process constructor args
+			if( structKeyExists(arguments.memento, "DIConstructorArgs") ){
+				for(x=1; x lte arrayLen(arguments.memento.DIConstructorArgs); x++){
+					addDIConstructorArgument(argumentCollection=arguments.memento.DIConstructorArgs[x] );
+				} 
+			}
+			
+			//process properties
+			if( structKeyExists(arguments.memento, "DIProperties") ){
+				for(x=1; x lte arrayLen(arguments.memento.DIProperties); x++){
+					addDIProperty(argumentCollection=arguments.memento.DIProperties[x] );
+				} 
+			}
+			
+			//process methods
+			if( structKeyExists(arguments.memento, "DIMethods") ){
+				for(x=1; x lte arrayLen(arguments.memento.DIMethods); x++){
+					addDIMethod(argumentCollection=arguments.memento.DIMethods[x] );
+				} 
+			}
+    	</cfscript>
+    </cffunction>
+	
 	<!--- Name --->
 	<cffunction name="getName" access="public" returntype="string" output="false" hint="Get the mapping name">
     	<cfreturn instance.name>
@@ -83,11 +120,11 @@ Description :
     </cffunction>
     
 	<!--- Type --->
-	<cffunction name="getType" access="public" returntype="string" output="false" hint="Get the mapping type">
+	<cffunction name="getType" access="public" returntype="any" output="false" hint="Get the mapping type">
     	<cfreturn instance.type>
     </cffunction>
     <cffunction name="setType" access="public" returntype="void" output="false" hint="Set the mapping type">
-    	<cfargument name="type" type="string" required="true">
+    	<cfargument name="type" type="any" required="true">
     	<cfset instance.type = arguments.type>
     </cffunction>
 	
@@ -119,11 +156,11 @@ Description :
     </cffunction>
 	
 	<!--- scope --->
-	<cffunction name="getScope" access="public" returntype="string" output="false" hint="Get the visibility scope">
+	<cffunction name="getScope" access="public" returntype="any" output="false" hint="Get the visibility scope">
     	<cfreturn instance.scope>
     </cffunction>
     <cffunction name="setScope" access="public" returntype="void" output="false" hint="Set the visibility scope">
-    	<cfargument name="scope" type="string" required="true">
+    	<cfargument name="scope" type="any" required="true">
     	<cfset instance.scope = arguments.scope>
     </cffunction>
     
