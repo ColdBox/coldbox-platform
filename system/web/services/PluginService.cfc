@@ -127,6 +127,7 @@ Modification History:
 			var pluginKey 				= getPluginCacheKey(argumentCollection=arguments);
 			var pluginDictionaryEntry 	= "";
 			var refLocal				= structnew();
+			var oPlugin					= "";
 			
 			// Lookup plugin in Cache
 			refLocal.oPlugin = controller.getColdboxOCM().get(pluginKey);
@@ -134,22 +135,19 @@ Modification History:
 			// Verify it, COMPAT MODE Remove later
 			if( NOT structKeyExists(refLocal,"oPlugin") OR NOT isObject(refLocal.oPlugin) ){
 				// Object not found, proceed to create and verify
-				oPlugin = new(argumentCollection=arguments);
+				refLocal.oPlugin = new(argumentCollection=arguments);
 				
 				// Get plugin metadata Entry
 				pluginDictionaryEntry = getCacheDictionary().getKey(pluginKey);
 				
 				// Do we Cache the plugin?
 				if ( pluginDictionaryEntry.cacheable ){
-					controller.getColdboxOCM().set(pluginKey,oPlugin,pluginDictionaryEntry.timeout,pluginDictionaryEntry.lastAccessTimeout);
+					controller.getColdboxOCM().set(pluginKey,refLocal.oPlugin,pluginDictionaryEntry.timeout,pluginDictionaryEntry.lastAccessTimeout);
 				}				
 			}
 			//end else if instance not in cache.
-			else{
-				oPlugin = refLocal.oPlugin;
-			}
 			
-			return oPlugin;
+			return	refLocal.oPlugin;
 		</cfscript>
 	</cffunction>
 	

@@ -1,7 +1,7 @@
 <cfcomponent output="false">
 <cfscript>
 
-	this.aroundHandler_except = "json";
+	this.aroundHandler_except = "json,pass";
 
 	function wddx(event){
 		var data = {

@@ -326,11 +326,16 @@ Description :
 		<cfargument name="event"  type="string" required="true" hint="The event that was found invalid"/>
 		<cfargument name="ehBean" type="any" 	required="true" hint="The event handler bean"/>
 		<cfscript>
-			var onInvalidEvent = controller.getSetting("onInvalidEvent");
+			var onInvalidEvent 	= controller.getSetting("onInvalidEvent");
+			var iData			= structnew();
 
 			// Invalid Event Detected, log it in the Application log, not a coldbox log but an app log
 			controller.getPlugin("Logger").error("Invalid Event detected: #arguments.event#. Path info: #cgi.path_info# , query string: #cgi.query_string#");
-
+			
+			// Announce invalid event
+			iData.invalidEvent = arguments.event;
+			controller.getInterceptorService().processState("onInvalidEvent",iData);
+			
 			// If onInvalidEvent is registered, use it
 			if ( len(trim(onInvalidEvent)) ){
 

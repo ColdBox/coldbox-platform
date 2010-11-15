@@ -308,9 +308,10 @@ id , name , mail
 
 	<!--- prepare request, execute request and retrieve request --->
 	<cffunction name="execute" access="private" output="false" returntype="any" hint="Executes a framework lifecycle by executing an event.  This method returns a request context object that can be used for assertions">
-		<cfargument name="event" 	required="true"  type="string" hint="The event to execute">
-		<cfargument name="private" 	required="false" type="boolean" default="false" hint="Call a private event or not">
-		<cfargument name="prepostExempt" type="boolean" required="false" default="false" hint="If true, pre/post handlers will not be fired.">
+		<cfargument name="event" 			required="true"  type="string" hint="The event to execute">
+		<cfargument name="private" 			required="false" type="boolean" default="false" hint="Call a private event or not">
+		<cfargument name="prepostExempt"	required="false" type="boolean" default="false" hint="If true, pre/post handlers will not be fired.">
+		<cfargument name="eventArguments"   required="false" type="struct"  default="#structNew()#" hint="A collection of arguments to passthrough to the calling event handler method"/>
 		<cfscript>
 			var handlerResults  = "";
 			var requestContext  = "";
@@ -334,7 +335,7 @@ id , name , mail
 				}
 			
 				//TEST EVENT EXECUTION
-				handlerResults = cbController.runEvent(event=arguments.event,private=arguments.private,prepostExempt=arguments.prepostExempt);
+				handlerResults = cbController.runEvent(event=arguments.event,private=arguments.private,prepostExempt=arguments.prepostExempt,eventArguments=arguments.eventArguments);
 			
 				// Request Start Handler
 				if ( len(cbController.getSetting("RequestEndHandler")) ){
