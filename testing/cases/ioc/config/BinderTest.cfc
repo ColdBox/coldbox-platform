@@ -2,6 +2,10 @@
 <cfscript>
 	function setup(){
 		dataConfigPath = "coldbox.testing.cases.ioc.config.samples.SampleWireBox";
+		// Available WireBox public scopes
+		this.SCOPES = createObject("component","coldbox.system.ioc.Scopes");
+		// Available WireBox public types
+		this.TYPES = createObject("component","coldbox.system.ioc.Types");
 		config = createObject("component","coldbox.system.ioc.config.Binder").init(dataConfigPath);
 	}
 	
@@ -50,13 +54,108 @@
 		assertEquals( 0, structCount(config.getScanLocations()) );
 	}
 	
+	// BINDER PROPERTIES
+	function testProperties(){
+		prop = config.getProperties();
+		assertTrue( structIsEmpty(prop) );
+		assertEquals(false, config.propertyExists("bogus"));
+		config.setProperty("woot","yeaa!");
+		assertEquals("yeaa!", config.getProperty("woot"));
+		assertEquals(false, config.getProperty("bogus",false));
+	
+	}
+	
 	function testParentInjector(){
 		config.parentInjector( this );
 		assertEquals( this, config.getParentInjector() );
 	}
 	
-	function testResolveAlias(){
-		assertEquals("hello", config.resolveAlias("hello") );
+	// MAPPING Tests
+	function testMappings(){
+		mappings = config.getMappings();
+		assertEquals(false, config.mappingExists("xx") );
+		mappings["test"] = this;
+		assertEquals( this, config.getMapping("test"));
+	}
+	
+	function testMap(){
+		config.map("MyService");
+		mapping = config.getMapping("MyService");
+		assertTrue( isObject(mapping) );
+		assertEquals( "MyService", mapping.getName() );
+		
+		config.map("MyService,TestService");
+		mapping1 = config.getMapping("TestService");
+		mapping2 = config.getMapping("MyService");
+		assertEquals(mapping1, mapping2);
+		assertEquals(2, arrayLen(mapping1.getAlias()));
+		
+		config.map(["MyService","TestService"]);
+		mapping1 = config.getMapping("TestService");
+		mapping2 = config.getMapping("MyService");
+		assertEquals(mapping1, mapping2);
+		assertEquals(2, arrayLen(mapping1.getAlias()));
+	}
+	
+	function testTo(){
+		config.map("Test").to("model.TestService");
+		mapping = config.getMapping("Test");
+		assertEquals( this.TYPES.CFC, mapping.getType() );
+		assertEquals( "model.TestService", mapping.getPath() );
+	}
+	
+	function testMapPath(){
+		config.mapPath("model.TestService");
+		mapping = config.getMapping("TestService");
+		assertEquals( "TestService", mapping.getName() );
+		assertEquals( this.TYPES.CFC, mapping.getType() );
+		assertEquals( "model.TestService", mapping.getPath() );
+	
+	}
+	
+	function testToJava(){
+		config.map("Test").toJava("java.lang.StringBuffer");
+		mapping = config.getMapping("Test");
+		assertEquals( this.TYPES.java, mapping.getType() );
+		assertEquals( "java.lang.StringBuffer", mapping.getPath() );
+	}
+	
+	function testToWebservice(){
+		config.map("Test").toWebservice("http://www.coldbox.org/paths.cfc?wsdl");
+		mapping = config.getMapping("Test");
+		assertEquals( this.TYPES.WEBSERVICE, mapping.getType() );
+		assertEquals( "http://www.coldbox.org/paths.cfc?wsdl", mapping.getPath() );
+	}
+	
+	function testToRSS(){
+		config.map("Test").toRSS("http://www.coldbox.org/rss");
+		mapping = config.getMapping("Test");
+		assertEquals( this.TYPES.RSS, mapping.getType() );
+		assertEquals( "http://www.coldbox.org/rss", mapping.getPath() );
+	}
+
+	function testToDSL(){
+		config.map("Test").toDSL("provider:user");
+		mapping = config.getMapping("Test");
+		assertEquals( this.TYPES.DSL, mapping.getType() );
+		assertEquals( "provider:user", mapping.getDSL() );
+	}
+	
+	function testSetConstructor(){
+		config.mapPath("Test").constructor("init2");
+		mapping = config.getMapping("Test");
+		assertEquals( "init2", mapping.getConstructor() );
+		
+		config.mapPath("Test");
+		mapping = config.getMapping("Test");
+		assertEquals( "init", mapping.getConstructor() );
+	}
+	
+	function testInitWith(){
+		config.mapPath("Test").initWith("luis","hola");
+		mapping = config.getMapping("Test");
+		args = mapping.getDIConstructorArguments();
+		assertEquals(2, arrayLen(args));
 	}
 	
 	function testListenerMethods(){

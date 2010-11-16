@@ -24,7 +24,7 @@ Description :
 				// Setup the mapping name
 				name = arguments.name,
 				// Setup the alias list for this mapping.
-				alias = "",
+				alias = [],
 				// Mapping Type
 				type =  "",
 				// Mapped instantiation path
@@ -67,7 +67,7 @@ Description :
 	</cffunction>
 	
 	<!--- processMemento --->
-    <cffunction name="processMemento" output="false" access="public" returntype="void" hint="Process a mapping memento">
+    <cffunction name="processMemento" output="false" access="public" returntype="any" hint="Process a mapping memento">
     	<cfargument name="memento" type="struct" required="true" hint="The data memento to process"/>
     	<cfscript>
     		var x = 1;
@@ -109,6 +109,7 @@ Description :
 				}// end switch
 				
 			}
+			return this;
     	</cfscript>
     </cffunction>
 	
@@ -116,72 +117,80 @@ Description :
 	<cffunction name="getName" access="public" returntype="string" output="false" hint="Get the mapping name">
     	<cfreturn instance.name>
     </cffunction>
-    <cffunction name="setName" access="public" returntype="void" output="false" hint="Name the mapping">
+    <cffunction name="setName" access="public" returntype="any" output="false" hint="Name the mapping">
     	<cfargument name="name" type="string" required="true">
     	<cfset instance.name = arguments.name>
+    	<cfreturn this>
     </cffunction>
 	
 	<!--- Aliases --->
-	<cffunction name="getAlias" access="public" returntype="string" output="false" hint="Get the mapping aliases">
+	<cffunction name="getAlias" access="public" returntype="array" output="false" hint="Get the mapping aliases">
     	<cfreturn instance.alias>
     </cffunction>
-    <cffunction name="setAlias" access="public" returntype="void" output="false" hint="Set the mapping aliases">
-    	<cfargument name="alias" type="string" required="true">
+    <cffunction name="setAlias" access="public" returntype="any" output="false" hint="Set the mapping aliases">
+    	<cfargument name="alias" type="array" required="true">
     	<cfset instance.alias = arguments.alias>
+    	<cfreturn this>
     </cffunction>
 	
 	<!--- Path --->
 	<cffunction name="getPath" access="public" returntype="string" output="false" hint="Get the path to this mapping">
     	<cfreturn instance.path>
     </cffunction>
-    <cffunction name="setPath" access="public" returntype="void" output="false" hint="Set the path to this mapping">
+    <cffunction name="setPath" access="public" returntype="any" output="false" hint="Set the path to this mapping">
     	<cfargument name="path" type="string" required="true">
     	<cfset instance.path = arguments.path>
+    	<cfreturn this>
     </cffunction>
     
 	<!--- Type --->
 	<cffunction name="getType" access="public" returntype="any" output="false" hint="Get the mapping type">
     	<cfreturn instance.type>
     </cffunction>
-    <cffunction name="setType" access="public" returntype="void" output="false" hint="Set the mapping type">
+    <cffunction name="setType" access="public" returntype="any" output="false" hint="Set the mapping type">
     	<cfargument name="type" type="any" required="true">
     	<cfset instance.type = arguments.type>
+    	<cfreturn this>
     </cffunction>
 	
 	<!--- Constructor --->
 	<cffunction name="getConstructor" access="public" returntype="string" output="false" hint="Get the name of the constructor method">
     	<cfreturn instance.constructor>
     </cffunction>
-    <cffunction name="setConstructor" access="public" returntype="void" output="false" hint="Override the name of the constructor method">
+    <cffunction name="setConstructor" access="public" returntype="any" output="false" hint="Override the name of the constructor method">
     	<cfargument name="constructor" type="string" required="true">
     	<cfset instance.constructor = arguments.constructor>
+    	<cfreturn this>
     </cffunction>
     
 	<!--- isAutowire --->
     <cffunction name="isAutowire" output="false" access="public" returntype="boolean" hint="Using autowire or not">
     	<cfreturn instance.autowire>
     </cffunction>
-    <cffunction name="setAutowire" access="public" returntype="void" output="false" hint="Set autowire property">
+    <cffunction name="setAutowire" access="public" returntype="any" output="false" hint="Set autowire property">
     	<cfargument name="autowire" type="boolean" required="true">
     	<cfset instance.autowire = arguments.autowire>
+    	<cfreturn this>
     </cffunction>
 	
 	<!--- isAutoInit --->
     <cffunction name="isAutoInit" output="false" access="public" returntype="boolean" hint="Using auto init of mapping target or not">
     	<cfreturn instance.autoInit>
     </cffunction>
-    <cffunction name="setAutoInit" access="public" returntype="void" output="false" hint="Set autoInit property">
+    <cffunction name="setAutoInit" access="public" returntype="any" output="false" hint="Set autoInit property">
     	<cfargument name="autoInit" type="boolean" required="true">
     	<cfset instance.autoInit = arguments.autoInit>
+    	<cfreturn this>
     </cffunction>
 	
 	<!--- scope --->
 	<cffunction name="getScope" access="public" returntype="any" output="false" hint="Get the visibility scope">
     	<cfreturn instance.scope>
     </cffunction>
-    <cffunction name="setScope" access="public" returntype="void" output="false" hint="Set the visibility scope">
+    <cffunction name="setScope" access="public" returntype="any" output="false" hint="Set the visibility scope">
     	<cfargument name="scope" type="any" required="true">
     	<cfset instance.scope = arguments.scope>
+    	<cfreturn this>
     </cffunction>
     
 	<!--- DSL --->
@@ -191,19 +200,21 @@ Description :
     <cffunction name="getDSL" access="public" returntype="string" output="false" hint="Get the construction DSL">
     	<cfreturn instance.dsl>
     </cffunction>
-    <cffunction name="setDSL" access="public" returntype="void" output="false" hint="Set the construction DSL">
+    <cffunction name="setDSL" access="public" returntype="any" output="false" hint="Set the construction DSL">
     	<cfargument name="dsl" type="string" required="true">
     	<cfset instance.dsl = arguments.dsl>
+    	<cfreturn this>
     </cffunction>
 	
 	<!--- cacheProperties --->
-    <cffunction name="setCacheProperties" output="false" access="public" returntype="void" hint="Set the cache properties for this mapping (Needs cachebox integration)">
+    <cffunction name="setCacheProperties" output="false" access="public" returntype="any" hint="Set the cache properties for this mapping (Needs cachebox integration)">
     	<cfargument name="key" 					type="string" 	required="false" default="" hint="Cache key."/>
     	<cfargument name="timeout" 				type="any" 		required="false" default="" hint="Object Timeout"/>
 		<cfargument name="lastAccessTimeout" 	type="any" 		required="false" default="" hint="Object Last Access Timeout"/>
 		<cfargument name="provider" 			type="string" 	required="false" default="default" hint="Cache Provider"/>
 		<cfscript>
 			structAppend( instance.cache, arguments, true);
+			return this;
 		</cfscript>
     </cffunction>
     <cffunction name="getCacheProperties" output="false" access="public" returntype="struct" hint="Get this mappings cache properties">
@@ -217,7 +228,7 @@ Description :
 	
 	<!--- addConstructorArgument --->
     <cffunction name="addDIConstructorArgument" output="false" access="public" returntype="any" hint="Add a new constructor argument">
-    	<cfargument name="name" 	type="string" 	required="true"  hint="The name of the constructor argument."/>
+    	<cfargument name="name" 	type="string" 	required="false" hint="The name of the constructor argument (NA: JAVA,WEBSERVICE)"/>
 		<cfargument name="ref" 		type="string" 	required="false" hint="The reference mapping id this constructor argument maps to"/>
 		<cfargument name="dsl" 		type="string" 	required="false" hint="The construction dsl this argument references. If used, the name value must be used."/>
 		<cfargument name="value" 	type="any" 		required="false" hint="The explicit value of the constructor argument, if passed."/>
@@ -226,6 +237,7 @@ Description :
     		var def = getDIDefinition();
 			structAppend(def, arguments, true);
 			arrayAppend( instance.DIConstructorArgs, def );
+			return this;
     	</cfscript>
     </cffunction>
 
@@ -246,6 +258,7 @@ Description :
     		var def = getDIDefinition();
 			structAppend(def, arguments, true);
 			arrayAppend( instance.DIProperties, def );
+			return this;
     	</cfscript>
     </cffunction>
 
@@ -265,6 +278,7 @@ Description :
     		var def = getDIDefinition();
 			structAppend(def, arguments, true);
 			arrayAppend( instance.DISetters, def );
+			return this;
     	</cfscript>
     </cffunction>
 	
@@ -272,9 +286,10 @@ Description :
     <cffunction name="getOnDIComplete" output="false" access="public" returntype="array" hint="Get all the DI complete methods array">
     	<cfreturn instance.onDIComplete>
     </cffunction>
-    <cffunction name="setOnDIComplete" output="false" access="public" returntype="void" hint="Set the DI Complete method array">
+    <cffunction name="setOnDIComplete" output="false" access="public" returntype="any" hint="Set the DI Complete method array">
   		<cfargument name="DIComplete" type="array" required="true" default="" hint="The method array list"/>
     	<cfset instance.onDIComplete = arguments.DIComplete>
+    	<cfreturn this>
     </cffunction>
 
 	<!--- isDiscovered --->
@@ -283,8 +298,9 @@ Description :
     </cffunction>
 	
 	<!--- setDiscovered --->
-    <cffunction name="setDiscovered" output="false" access="public" returntype="void" hint="Flag this mapping as discovered">
+    <cffunction name="setDiscovered" output="false" access="public" returntype="any" hint="Flag this mapping as discovered">
     	<cfset instance.discovered = true>
+    	<cfreturn this>
     </cffunction>
 	
 	<!--- getMetadata --->
@@ -293,9 +309,10 @@ Description :
     </cffunction>
 	
 	<!--- setMetadata --->
-    <cffunction name="setMetadata" output="false" access="public" returntype="void" hint="Set the mappings CFC target metadata">
+    <cffunction name="setMetadata" output="false" access="public" returntype="any" hint="Set the mappings CFC target metadata">
     	<cfargument name="metadata" type="any" required="true" hint="Target CFC metadata"/>
 		<cfset instance.metadata = arguments.metadata>
+		<cfreturn this>
     </cffunction>
 
 	<!--- isEagerInit --->
@@ -304,9 +321,10 @@ Description :
     </cffunction>
 	
 	<!--- setEagerInit --->
-    <cffunction name="setEagerInit" output="false" access="public" returntype="void" hint="Set the eager init flag">
+    <cffunction name="setEagerInit" output="false" access="public" returntype="any" hint="Set the eager init flag">
     	<cfargument name="eagerInit" type="boolean" required="true" hint="Set the eager init flag"/>
     	<cfset instance.eagerInit = arguments.eagerInit>
+    	<cfreturn this>
 	</cffunction>
 	
 	<!--- getProviderMethods --->
@@ -315,10 +333,11 @@ Description :
     </cffunction>
 	
 	<!--- addProviderMethod --->
-    <cffunction name="addProviderMethod" output="false" access="public" returntype="void" hint="Add a new provider method">
+    <cffunction name="addProviderMethod" output="false" access="public" returntype="any" hint="Add a new provider method">
     	<cfargument name="method" 	type="string" required="true" hint="The provided method"/>
 		<cfargument name="mapping" 	type="string" required="true" hint="The mapping to provide"/>
 		<cfset arrayAppend( instance.providerMethods, arguments)>
+		<cfreturn this>
     </cffunction>
 
 <!----------------------------------------- PRIVATE ------------------------------------->	

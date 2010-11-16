@@ -158,52 +158,25 @@ Description :
     </cffunction>
 	
 	<!--- getMapping --->
-    <cffunction name="getMapping" output="false" access="public" returntype="any" hint="Get a specific object mapping">
+    <cffunction name="getMapping" output="false" access="public" returntype="any" hint="Get a specific object mapping: coldbox.system.ioc.config.Mapping" colddoc:generic="coldbox.system.ioc.config.Mapping">
     	<cfargument name="name" type="string" required="true" hint="The name of the mapping to retrieve"/>
-    	<cfreturn instance.mappings[arguments.name]>
+    	
+		<cfif NOT structKeyExists(instance.mappings, arguments.name)>
+    		<cfthrow message="Mapping #arguments.name# has not been registered"
+					 detail="Registered mappings are: #structKeyList(instance.mappings)#"
+					 type="Binder.MappingNotFoundException" >
+    	</cfif>
+		
+		<cfreturn instance.mappings[arguments.name]>
     </cffunction>
 
 	<!--- mappingExists --->
     <cffunction name="mappingExists" output="false" access="public" returntype="boolean" hint="Check if an object mapping exists">
-    	<cfargument name="name" type="string" required="true" hint="The name of the mapping to retrieve"/>
+    	<cfargument name="name" type="string" required="true" hint="The name of the mapping to verify"/>
     	<cfreturn structKeyExists(instance.mappings, arguments.name)>
     </cffunction>
-	
-	<!--- resolveAlias --->
-	<cffunction name="resolveAlias" access="public" returntype="string" hint="Try to resolve a mapping alias or just return the mapping name back if not found." output="false" >
-		<cfargument name="name" required="true"  type="string" hint="The model alias or name to resolve">
-		<cfscript>
-			// try to resolve alias
-			if( mappingExists( arguments.name ) ){
-				return instance.mappings[arguments.name];
-			}
-			return arguments.name;
-		</cfscript>
-	</cffunction>
-	
-	<!--- generateMapping --->
-    <cffunction name="generateMapping" output="false" access="public" returntype="struct" hint="Generate a mapping structure">
-    	<cfscript>
-    		var mapping = {
-				alias="",
-				type= this.TYPES.CFC,
-				path="",
-				constructor="init",
-				autowire=false,
-				noInit=false,
-				asEagerInit=false,
-				scope=this.SCOPES.NO_SCOPE,
-				dsl="",
-				cache={},
-				DIConstructorArgs = [],
-				DIProperties = [],
-				DISetters = [],
-				onDIComplete = [],
-				discovered = false
-			};
-			return mapping;
-		</cfscript>
-    </cffunction>
+
+<!------------------------------------------- MAPPING DSL ------------------------------------------>
 
 	<!--- mapPath --->
     <cffunction name="mapPath" output="false" access="public" returntype="any" hint="Directly map to a path by using the last part of the path as the alias. This is equivalent to map('MyService').to('model.MyService'). Only use if the name of the alias is the same as the last part of the path.">
@@ -212,6 +185,11 @@ Description :
 			// directly map to a path
 			return map( listlast(arguments.path,".") ).to(arguments.path);
 		</cfscript>
+    </cffunction>
+	
+	<!--- mapDirectory --->
+    <cffunction name="mapDirectory" output="false" access="public" returntype="any" hint="Map an entire instantiation path directory, please note that the unique name of each file will be used.">
+    	<cfargument name="packagePath" type="string" required="true" hint="The instantiation packagePath to map"/>
     </cffunction>
 	
 	<!--- map --->
@@ -225,18 +203,23 @@ Description :
 			
 			// unflatten list
 			if( isSimpleValue( arguments.alias ) ){ arguments.alias = listToArray(arguments.alias); }
+			
 			// first entry
 			name = arguments.alias[1];
 			
 			// generate the mapping for the first name passed
-			instance.mappings[name] = generateMapping();
-
-			// Loop and create references
+			instance.mappings[ name ] = createObject("component","coldbox.system.ioc.config.Mapping").init( name );
+			
+			// set the current mapping
+			currentMapping = instance.mappings[ name ];
+			
+			// Set aliases
+			instance.mappings[ name ].setAlias( arguments.alias );
+			
+			// Loop and create alias references
 			for(x=2;x lte arrayLen(arguments.alias); x++){
-				instance.mappings[ arguments.alias[x] ] = mappings[name];
+				instance.mappings[ arguments.alias[x] ] = instance.mappings[ name ];
 			}
-			// set current mapping
-			currentMapping = name;
 			
 			return this;
 		</cfscript>    	
@@ -246,8 +229,7 @@ Description :
     <cffunction name="to" output="false" access="public" returntype="any" hint="Map to a destination CFC class path.">
     	<cfargument name="path" type="string" required="true" hint="The class path to the object to map"/>
 		<cfscript>
-    		instance.mappings[ currentMapping ].path = arguments.path;
-			instance.mappings[ currentMapping ].type = this.TYPES.CFC;
+			currentMapping.setPath( arguments.path ).setType( this.TYPES.CFC );
 			return this;
     	</cfscript>
     </cffunction>
@@ -256,8 +238,7 @@ Description :
     <cffunction name="toJava" output="false" access="public" returntype="any" hint="Map to a java destination class path.">
     	<cfargument name="path" type="string" required="true" hint="The class path to the object to map"/>
 		<cfscript>
-    		instance.mappings[ currentMapping ].path = arguments.path;
-			instance.mappings[ currentMapping ].type = this.TYPES.JAVA;
+			currentMapping.setPath( arguments.path ).setType( this.TYPES.JAVA );
 			return this;
     	</cfscript>
     </cffunction>
@@ -266,8 +247,7 @@ Description :
     <cffunction name="toWebservice" output="false" access="public" returntype="any" hint="Map to a webservice destination class path.">
     	<cfargument name="path" type="string" required="true" hint="The class path to the object to map"/>
 		<cfscript>
-    		instance.mappings[ currentMapping ].path = arguments.path;
-			instance.mappings[ currentMapping ].type = this.TYPES.WEBSERVICE;
+    		currentMapping.setPath( arguments.path ).setType( this.TYPES.WEBSERVICE );
 			return this;
     	</cfscript>
     </cffunction>
@@ -276,8 +256,7 @@ Description :
     <cffunction name="toRSS" output="false" access="public" returntype="any" hint="Map to a rss destination class path.">
     	<cfargument name="path" type="string" required="true" hint="The class path to the object to map"/>
 		<cfscript>
-    		instance.mappings[ currentMapping ].path = arguments.path;
-			instance.mappings[ currentMapping ].type = this.TYPES.RSS;
+    		currentMapping.setPath( arguments.path ).setType( this.TYPES.RSS );
 			return this;
     	</cfscript>
     </cffunction>
@@ -286,7 +265,7 @@ Description :
     <cffunction name="toDSL" output="false" access="public" returntype="any" hint="Map to a dsl that will be used to create the mapped object">
     	<cfargument name="dsl" type="string" required="true" hint="The DSL string to use"/>
 		<cfscript>
-    		instance.mappings[ currentMapping ].dsl = arguments.dsl;
+			currentMapping.setDSL( arguments.dsl ).setType( this.TYPES.DSL );
 			return this;
     	</cfscript>
     </cffunction>
@@ -295,15 +274,18 @@ Description :
     <cffunction name="constructor" output="false" access="public" returntype="any" hint="You can choose what method will be treated as the constructor. By default the value is 'init', so don't call this method if that is the case.">
     	<cfargument name="constructor" type="string" required="true" hint="The constructor method to use for the mapped object"/>
    		<cfscript>
-    		instance.mappings[ currentMapping ].constructor = arguments.arguments.constructor;
+    		currentMapping.setConstructor( arguments.constructor );
 			return this;
     	</cfscript>
     </cffunction>
 	
 	<!--- initWith --->
-    <cffunction name="initWith" output="false" access="public" returntype="any" hint="Positional or named value arguments to use when initializing the mapping.">
+    <cffunction name="initWith" output="false" access="public" returntype="any" hint="Positional or named value arguments to use when initializing the mapping. (CFC-only)">
     	<cfscript>
-    		instance.mappings[ currentMapping ].initWith = arguments;
+    		var key = "";
+    		for(key in arguments){
+				currentMapping.addDIConstructorArgument(name=key,value=arguments[key]);
+			}
 			return this;
     	</cfscript>
     </cffunction>
@@ -348,7 +330,7 @@ Description :
 	
 	<!--- initArg --->
     <cffunction name="initArg" output="false" access="public" returntype="any" hint="Map a constructor argument to a mapping">
-    	<cfargument name="name" 	type="string" 	required="true"  hint="The name of the constructor argument."/>
+    	<cfargument name="name" 	type="string" 	required="false" hint="The name of the constructor argument. NA: JAVA-WEBSERVICE"/>
 		<cfargument name="ref" 		type="string" 	required="false" hint="The reference mapping id this constructor argument maps to"/>
 		<cfargument name="dsl" 		type="string" 	required="false" hint="The construction dsl this argument references. If used, the name value must be used."/>
 		<cfargument name="value" 	type="any" 		required="false" hint="The value of the constructor argument, if passed."/>
@@ -637,7 +619,7 @@ Description :
 				// iterate and register
 				for(key in wireboxDSL.mappings){
 					// create mapping & process its memento
-					map(key).processMemento( wireBoxDSL.mappings[key] );
+					//map(key).processMemento( wireBoxDSL.mappings[key] );
 				}
 			}
 		</cfscript>
@@ -651,13 +633,6 @@ Description :
 	<!--- Get Memento --->
 	<cffunction name="getMemento" access="public" returntype="struct" output="false" hint="Get the instance data">
 		<cfreturn instance>
-	</cffunction>
-	
-	<!--- validate --->
-	<cffunction name="validate" output="false" access="public" returntype="void" hint="Validates the configuration. If not valid, it will throw an appropriate exception.">
-		<cfscript>
-					
-		</cfscript>
 	</cffunction>
 
 <!------------------------------------------- LISTENER METHODS ------------------------------------------>
