@@ -135,7 +135,7 @@ Description :
 			arguments.event.setRoutedStruct(routedStruct);
 
 			// Execute Cache Test now that routing has been done. We override, because events are determined until now.
-			getController().getRequestService().EventCachingTest(context=arguments.event);
+			getController().getRequestService().eventCachingTest(context=arguments.event);
 		</cfscript>
 	</cffunction>
 

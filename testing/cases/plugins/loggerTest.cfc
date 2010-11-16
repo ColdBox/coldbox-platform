@@ -8,51 +8,59 @@ Author      :	Sana Ullah
 Date        :	Jan 13, 2009
 Description :   Logger Plugin Test
 ----------------------------------------------------------------------->
-<cfcomponent name="loggertest" extends="coldbox.system.testing.BaseTestCase" output="false">
+<cfcomponent extends="coldbox.system.testing.BasePluginTest"
+			 plugin="coldbox.system.plugins.Logger">
+<cfscript>
 
-	<cffunction name="setUp" returntype="void" access="public" output="false">
-		<cfscript>
-		//Setup ColdBox Mappings For this Test
-		setAppMapping("/coldbox/testharness");
-		setConfigMapping(ExpandPath(instance.AppMapping & "/config/coldbox.xml.cfm"));
-		//Call the super setup method to setup the app.
+	function setup(){
 		super.setup();
-		</cfscript>
-	</cffunction>
+		mockController.$("getSetting").$args("AppName").$results("UnitTesting");
+		logger = plugin.init(mockController);
+		// setup mocking
+		mockDebuggerService = getMockBox().createStub().$("pushTracer");
+		mockController.$("getDebuggerService", mockDebuggerService );
+		mockLogger.$("debug").$("info").$("error").$("warn").$("fatal");
+		complex = {
+			data=createUUID(),
+			name="unit tTest",
+			date = now()
+		};
+	}
+
+	function testGetLogger(){
+		log = logger.getLogger();
+		assertTrue( isOBject(log) );
+	}
+	function testDebug(){
+		logger.debug("Hello", complex);
+		assertEquals("Hello", mockLogger.$callLog().debug[1].message);
+		assertEquals(complex, mockLogger.$callLog().debug[1].extrainfo);
+	}
+	function testInfo(){
+		logger.info("Hello", complex);
+		assertEquals("Hello", mockLogger.$callLog().info[1].message);
+		assertEquals(complex, mockLogger.$callLog().info[1].extrainfo);
+	}
+	function testWarn(){
+		logger.warn("Hello", complex);
+		assertEquals("Hello", mockLogger.$callLog().warn[1].message);
+		assertEquals(complex, mockLogger.$callLog().warn[1].extrainfo);
+	}
+	function testError(){
+		logger.error("Hello", complex);
+		assertEquals("Hello", mockLogger.$callLog().error[1].message);
+		assertEquals(complex, mockLogger.$callLog().error[1].extrainfo);
+	}
+	function testFatal(){
+		logger.fatal("Hello", complex);
+		assertEquals("Hello", mockLogger.$callLog().fatal[1].message);
+		assertEquals(complex, mockLogger.$callLog().fatal[1].extrainfo);
+	}
 	
-	<cffunction name="testAPlugin" access="public" returntype="void" output="false">
-		<!--- Now test some events --->
-		<cfscript>
-			var plugin = getController().getPlugin("Logger");
-			
-			AssertTrue( isObject(plugin) );
-			
-		</cfscript>
-	</cffunction>	
-	
-	<cffunction name="testMethods" access="public" returntype="void" output="false">
-		<!--- Now test some events --->
-		<cfscript>
-			var plugin = getController().getPlugin("Logger");
-			
-			AssertEquals(2, plugin.getlogLevel("tester"), "Log level --- Test");
-			plugin.setlogLevel(4);
-			AssertEquals(4, plugin.getlogLevel("tester"), "Log level --- Test");
-			
-			plugin.debug('The debug message to log');
-			
-			plugin.info('The message to log.');
-			
-			plugin.warn('The warning message to log');
-			
-			plugin.error('The error message to log');
-			
-			plugin.fatal('The fatal message to log');
-			
-			plugin.tracer('The tracer message to log');
-			
-			AssertEquals(4, plugin.getlogLevel("tester"), "Log level --- Test");
-		</cfscript>
-	</cffunction>
-	
+	function testTracer(){
+		logger.tracer("hello", complex);
+		assertEquals("Hello", mockDebuggerService.$callLog().pushTracer[1].message);
+		assertEquals(complex, mockDebuggerService.$callLog().pushTracer[1].extrainfo);
+	}
+</cfscript>
 </cfcomponent>
