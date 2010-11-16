@@ -82,13 +82,17 @@ Modification History:
 			var context 		= getContext();
 			var debugPassword 	= controller.getSetting("debugPassword");
 			var eventName 		= controller.getSetting("EventName");
+			var rc				= context.getCollection();
 			
 			// Capture FORM/URL
-			if( isDefined("FORM") ){ context.collectionAppend(FORM); }
-			if( isDefined("URL")  ){ context.collectionAppend(URL); }
+			if( isDefined("FORM") ){ structAppend(rc, FORM); }
+			if( isDefined("URL")  ){ structAppend(rc, URL); }
 			
 			// Execute onRequestCapture interceptionPoint
 			controller.getInterceptorService().processState("onRequestCapture");
+			
+			// Take snapshot of incoming collection
+			context.setValue(name="cbox_incomingContextHash",value=hash(rc.toString()),private=true);
 			
 			// Do we have flash elements to inflate?
 			if( getFlashScope().flashExists() ){
@@ -106,28 +110,30 @@ Modification History:
 			}
 			
 			// Debug Mode Checks
-			if ( context.valueExists("debugMode") and isBoolean(Context.getValue("debugMode")) ){
-				if ( NOT len(DebugPassword) ){
-					controller.getDebuggerService().setDebugMode(Context.getValue("debugMode"));
+			if ( structKeyExists(rc,"debugMode") AND isBoolean(rc.debugMode) ){
+				if ( NOT len(debugPassword) ){
+					controller.getDebuggerService().setDebugMode( rc.debugMode );
 				}
-				else if ( context.valueExists("debugpass") and CompareNoCase(DebugPassword,Context.getValue("debugpass")) eq 0 ){
-					controller.getDebuggerService().setDebugMode(Context.getValue("debugMode"));
+				else if ( structKeyExists(rc,"debugpass") AND CompareNoCase(debugPassword,rc.debugpass) eq 0 ){
+					controller.getDebuggerService().setDebugMode( rc.debugMode );
 				}
 			}
 
-			// Default Event Definition
-			if ( not context.valueExists(EventName))
-				Context.setValue(EventName, controller.getSetting("DefaultEvent"));
+			// Default Event Determination
+			if ( NOT structKeyExists(rc, eventName)){
+				rc[eventName] = controller.getSetting("DefaultEvent");
+			}
 			
 			// Event More Than 1 Check, grab the first event instance, other's are discarded
-			if ( listLen(Context.getValue(EventName)) gte 2 )
-				Context.setValue(EventName, getToken(Context.getValue(EventName),2,","));
+			if ( listLen( rc[eventName] ) GTE 2 ){
+				rc[eventName] = getToken( rc[eventName], 2, ",");
+			}
 			
 			// Default Event Action Checks
-			controller.getHandlerService().defaultEventCheck(Context);
+			controller.getHandlerService().defaultEventCheck(context);
 			
 			// Are we using event caching?
-			eventCachingTest(Context);
+			eventCachingTest(context);
 			
 			return context;
 		</cfscript>
@@ -135,9 +141,7 @@ Modification History:
 
 	<!--- Event caching test --->
 	<cffunction name="eventCachingTest" access="public" output="false" returntype="void" hint="Tests if the incoming context is an event cache">
-		<!--- ************************************************************* --->
-		<cfargument name="context" 			required="true"  type="any" hint="The request context to test for event caching.">
-		<!--- ************************************************************* --->
+		<cfargument name="context" 	required="true"  type="any" hint="The request context to test for event caching." colddoc:generic="coldbox.system.web.context.RequestContext">
 		<cfscript>
 			var eventCacheKey   = "";
 			var oEventURLFacade = controller.getColdboxOCM("template").getEventURLFacade();

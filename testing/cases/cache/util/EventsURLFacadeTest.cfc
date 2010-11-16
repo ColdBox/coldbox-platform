@@ -26,9 +26,8 @@ Description :
 			
 			/* Mocks */
 			context = getMockBox().createMock('coldbox.system.web.context.RequestContext');
-			context.$('getRoutedStruct').$results(routedStruct);
-			context.$('getCurrentEvent').$results('main.index');
-			context.$('getEventName').$results('event');
+			context.$('getRoutedStruct').$results(routedStruct)
+			       .$("getValue","123");
 			
 			/* setup url vars */
 			url.event = 'main.index';
@@ -61,10 +60,9 @@ Description :
 			
 			/* Mocks */
 			context = getMockBox().createMock('coldbox.system.web.context.RequestContext');
-			context.$('getRoutedStruct').$results(routedStruct,routedStruct);
-			context.$('getCurrentEvent').$results('main.index');
-			context.$('getEventName').$results('event','event');
-			
+			context.$('getRoutedStruct').$results(routedStruct)
+			       .$("getValue","123");
+		
 			/* setup url vars */
 			url.event = 'main.index';
 			url.id = "123";

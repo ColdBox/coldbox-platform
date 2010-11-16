@@ -35,39 +35,20 @@ Description :
 		<cfargument name="event" type="any" required="true" hint="The event request context to incorporate into the hash"/>
 		<!--- **************************************************************************** --->
 		<cfscript>
-			var urlCopy = duplicate(URL);
-			var formCopy = duplicate(FORM);
-			var eventName = arguments.event.getEventName();
-			var urlActionsList = "fwReinit,fwCache,debugMode,debugpass,dumpvar,debugpanel";
-			var urlColdboxExempt = "currentview,currentlayout,currentroute";
-			var x = 1;
-			var routedStruct = arguments.event.getRoutedStruct();
+			var targetMixer		 = structnew();
+			var key 			 = "";
 			
-			// Collide the form vars also
-			structAppend(urlCopy,formCopy);
-			
-			// Remove event if it exists
-			if( structKeyExists(urlCopy, eventName) ){
-				structDelete(urlCopy,eventName);
-			}
-			
-			// Remove fw URL Actions
-			for(x=1; x lte listLen(urlActionsList); x=x+1){
-				if( structKeyExists(urlCopy, listgetAt(urlActionsList,x)) ){
-					structDelete(urlCopy,listgetAt(urlActionsList,x));
-				}
-			}
+			// Get the original incoming context hash
+			targetMixer['incomingHash'] = arguments.event.getValue(name="cbox_incomingContextHash",private=true);
 			
 			// Multi-Host support
-			urlCopy['cgihost'] = cgi.http_host;
+			targetMixer['cgihost'] = cgi.http_host;
 			
 			// Incorporate Routed Structs
-			for( key in routedStruct ){
-				urlCopy[key] = routedStruct[key];
-			}
+			structAppend(targetMixer, arguments.event.getRoutedStruct(),true);
 			
-			// Get a unique key
-			return hash(urlCopy.toString());			
+			// Return unique identifier
+			return hash(targetMixer.toString());			
 		</cfscript>
 	</cffunction>
 	
@@ -142,6 +123,4 @@ Description :
 
 <!------------------------------------------- PRIVATE ------------------------------------------->
 	
-	
-
 </cfcomponent>
