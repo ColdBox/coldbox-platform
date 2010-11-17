@@ -47,5 +47,54 @@ Modification History:
 		
 		assertTrue( isObject(ioc.getAdapter().getParentFactory()) );
 	}
+	
+	function testGetBean(){
+		testConfigure();
+		// mock bean factory
+		mockBeanFactory = getMockBox().createStub().$("autowire");
+		ioc.$("getPlugin", mockBeanFactory);
+		ioc.$("getSetting").$args("IOCObjectCaching").$results(false,true,true);
+		
+		// No Object Caching
+		service = ioc.getBean("testService");
+		assertTrue( isObject(service) );
+		assertEquals(1, mockBeanFactory.$count("autowire") );
+		
+		// With object caching
+		// mock cache
+		mockCache = getMockBox().createStub().$("get", service);
+		ioc.$("getColdboxOCM",mockCache);
+		ioc.$("processObjectCaching");
+		service = ioc.getBean("testService");
+		assertTrue( isObject(service) );
+		assertEquals(1, mockBeanFactory.$count("autowire") );
+		assertEquals(0, ioc.$count("processObjectCaching") );
+		
+		// Not found in cache
+		mockCache.$("get", javaCast("null",""));
+		service = ioc.getBean("testService");
+		assertTrue( isObject(service) );
+		assertEquals(2, mockBeanFactory.$count("autowire") );
+		assertEquals(1, ioc.$count("processObjectCaching") );
+	}
+	
+	function testGetIOCFactory(){
+		testConfigure();
+		assertTrue( isObject(ioc.getIOCFactory() ) );
+	}
+	
+	function testContainsBean(){
+		testConfigure();
+		assertFalse( ioc.containsBean("Bogus") );
+		assertTrue( ioc.containsBean("testService") );
+	}
+	
+	function testReloadDefinitionFile(){
+		testConfigure();
+		ioc.$("configure");
+		ioc.reloadDefinitionFile();
+		debug( ioc.$callLog().configure );
+		assertEquals( 1, ioc.$count("configure") );
+	}
 </cfscript>
 </cfcomponent>
