@@ -22,8 +22,8 @@ Description :
 		<cfreturn instance.__hash>
 	</cffunction>
 	
-	<!--- Get object Instance --->
-	<cffunction name="getMemento" access="public" hint="Get the instance of this object" returntype="any" output="false">
+	<!--- Get Memento --->
+	<cffunction name="getMemento" access="public" hint="Get the memento of this object" returntype="any" output="false">
 		<cfreturn instance>
 	</cffunction>
 	
