@@ -184,8 +184,9 @@ id , name , mail
 			rcProps.ViewLayouts = structnew();
 			rcProps.FolderLayouts = structnew();
 			rcProps.RegisteredLayouts = structnew();
+			rcProps.modules = structnew();
 			
-			return mockRC.init(structnew(),structNew(),rcProps);
+			return mockRC.init(rcProps);
 		</cfscript>
 	</cffunction>
 	

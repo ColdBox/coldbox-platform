@@ -623,7 +623,7 @@ Only one instance of a specific ColdBox application exists.
 			catch(Any e){
 				// Check if onError exists?
 				if( oHandler._actionExists("onError") ){
-					loc.results = oHandler.onError(oRequestContext,ehBean.getmethod(),e);
+					loc.results = oHandler.onError(oRequestContext,ehBean.getmethod(),e,arguments.eventArguments);
 				}
 				else{
 					getUtil().rethrowit(e);

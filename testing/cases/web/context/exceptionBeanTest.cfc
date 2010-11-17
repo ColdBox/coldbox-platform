@@ -4,7 +4,7 @@
 	
 	<cffunction name="setUp" returntype="void" access="public">
 		<cfscript>
-			this.e = createObject("component","coldbox.system.beans.ExceptionBean");
+			this.e = createObject("component","coldbox.system.web.context.ExceptionBean");
 			
 			this.instance.exceptionstruct = structnew();
 			this.instance.exceptionstruct.type = "error";
@@ -90,7 +90,8 @@
 	
 	<cffunction name="testtagContext" access="public" returnType="void">
 		<cfscript>
-			assertEquals( this.e.gettagContext(), this.instance.exceptionstruct.tagContext );
+			tagC = this.e.gettagContext();
+			assertEquals( tagC[1].id , this.instance.exceptionstruct.tagContext[1].id );
 			assertTrue( isSimpleValue(this.e.getTagContextAsString()) );
 		</cfscript>
 	</cffunction>

@@ -43,7 +43,7 @@ Modification History:
 		<cfargument name="overrideAppMapping" required="false" type="string" default="" hint="The direct location of the application in the web server."/>
 		<!--- ************************************************************* --->
 		<cfscript>
-		var debuggerConfig = createObject("Component","coldbox.system.beans.DebuggerConfig").init();
+		var debuggerConfig = createObject("Component","coldbox.system.web.config.DebuggerConfig").init();
 		var coldBoxSettings = controller.getColdBoxSettings();
 		var key = "";
 		var services = controller.getServices();
