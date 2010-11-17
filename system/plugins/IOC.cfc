@@ -94,6 +94,9 @@ Description :
 			// get object from adapter factory
 			refLocal.oBean = instance.adapter.getBean( arguments.beanName );
 			
+			// process WireBox autowires
+			getPlugin("BeanFactory").autowire(target=refLocal.oBean,annotationCheck=true);
+			
 			// processObjectCaching?
 			if( objCaching ){
 				processObjectCaching( refLocal.oBean, beanKey);

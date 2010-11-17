@@ -16,6 +16,7 @@ Description		:
 		instance = structnew();
 	</cfscript>
 
+	<!--- init --->
 	<cffunction name="init" access="public" output="false" returntype="MockBox" hint="Create an instance of MockBox">
 		<cfargument name="generationPath" type="string" required="false" default="" hint="The mocking generation relative path.  If not defined, then the factory will use its internal tmp path. Just make sure that this folder is accessible from an include."/>
 		<cfscript>
@@ -53,13 +54,13 @@ Description		:
 	<cffunction name="getGenerationPath" access="public" returntype="string" output="false" hint="Get the current generation path">
 		<cfreturn instance.generationPath>
 	</cffunction>
-	<cffunction name="setGenerationPath" access="public" returntype="void" output="false" hint="Override the generation path">
+	<cffunction name="setGenerationPath" access="public" returntype="void" output="false" hint="Override the mocks generation path">
 		<cfargument name="generationPath" type="string" required="true">
 		<cfset instance.generationPath = arguments.generationPath>
 	</cffunction>
 	
-	<!--- Get/Set version --->
-	<cffunction name="getVersion" access="public" returntype="string" output="false" hint="Get the current mock factory version">
+	<!--- Get MockBox Version --->
+	<cffunction name="getVersion" access="public" returntype="string" output="false" hint="Get the MockBox version">
 		<cfreturn instance.version>
 	</cffunction>
 	
@@ -209,13 +210,14 @@ Description		:
 				// Cleanup
 				this._mockCurrentMethod = "";
 				this._mockCurrentArgsHash = "";
+				
+				return this;
 			</cfscript>
-		<cfelse>
-			<cfthrow type="MockFactory.IllegalStateException"
-					 message="No current method name set"
-					 detail="This method was probably called without chaining it to a mockMethod() call. Ex: obj.$().mockResults(), or obj.$('method').mockArgs().mockResults()">
 		</cfif>
-		<cfreturn this>
+		
+		<cfthrow type="MockFactory.IllegalStateException"
+			     message="No current method name set"
+			     detail="This method was probably called without chaining it to a mockMethod() call. Ex: obj.$().mockResults(), or obj.$('method').mockArgs().mockResults()">
 	</cffunction>
 	
 	<!--- mockArgs --->

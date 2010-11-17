@@ -21,6 +21,14 @@ Description :
 
 <!------------------------------------------- INTERCEPTION POINTS ------------------------------------------->
 
+	<cffunction name="onRequestCapture" access="public" returntype="void" output="false">
+		<!--- ************************************************************* --->
+		<cfargument name="event" required="true" type="coldbox.system.web.context.RequestContext" hint="The event object.">
+		<cfargument name="interceptData" required="true" type="struct" hint="Metadata of intercepted info.">
+		<!--- ************************************************************* --->
+		<cfset event.setValue("mySession", createUUID())>
+	</cffunction>
+	
 	<cffunction name="preProcess" access="public" returntype="void" output="false" eventPattern="^DONT">
 		<!--- ************************************************************* --->
 		<cfargument name="event" required="true" type="coldbox.system.web.context.RequestContext" hint="The event object.">

@@ -242,15 +242,13 @@ Modification History:
 				//If not layout, then set default from main application
 				if( not valueExists("currentLayout",true) ){
 					setValue("currentLayout", instance.defaultLayout,true);
-				}		
-				try{
-				// If this is a module context, check for a module default layout, and override it
-				if( len(cModule) AND len(instance.modules[cModule].layoutSettings.defaultLayout) ){
+				}	
+					
+				// Check for module integration
+				if( len(cModule) 
+				    AND structKeyExists(instance.modules,cModule) 
+					AND len(instance.modules[cModule].layoutSettings.defaultLayout) ){
 					setValue("currentLayout", instance.modules[getCurrentModule()].layoutSettings.defaultLayout,true);
-				}
-				}
-				catch(Any e){
-					writeDump(instance);writeDump(e);abort;
 				}
 											
 			}//end if overridding layout
@@ -395,7 +393,7 @@ Modification History:
 	</cffunction>
 	
 	<cffunction name="getSelf" access="public" output="false" returntype="any" hint="Returns index.cfm?{eventName}= : String">
-	   <cfreturn "index.cfm?" & getEventName() & "=">
+	   <cfreturn "index.cfm" & getEventName() & "=">
 	</cffunction>
 	
 	<cffunction name="buildLink" access="public" output="false" returntype="any" hint="Builds a link to a passed event, either SES or normal link. If the ses interceptor is declared it will create routes.">

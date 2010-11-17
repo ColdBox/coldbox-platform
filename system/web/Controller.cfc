@@ -420,6 +420,7 @@ Only one instance of a specific ColdBox application exists.
 
 					// Check SSL?
 					if( arguments.ssl ){  relocationURL = replacenocase(relocationURL,"http:","https:"); }
+					else{ relocationURL = replacenocase(relocationURL,"https:","http:"); }
 
 					// Finalize the URL
 					relocationURL = relocationURL & routeString;
@@ -456,22 +457,23 @@ Only one instance of a specific ColdBox application exists.
 	<!--- Event Service Locator Factory --->
 	<cffunction name="runEvent" returntype="any" access="Public" hint="I am an event handler runnable factory. If no event is passed in then it will run the default event from the config file." output="false">
 		<!--- ************************************************************* --->
-		<cfargument name="event"         type="any" 	required="false" default="" 	 hint="The event to run as a string. If no current event is set, use the default event from the config.xml. This is a string">
-		<cfargument name="prepostExempt" type="boolean" required="false" default="false" hint="If true, pre/post handlers will not be fired.">
-		<cfargument name="private" 		 type="boolean" required="false" default="false" hint="Execute a private event or not, default is false"/>
-		<cfargument name="default" 		 type="boolean" required="false" default="false" hint="The flag that let's this service now if it is the default set event running or not. USED BY THE FRAMEWORK ONLY">
+		<cfargument name="event"         	type="any" 		required="false" default="" 	 hint="The event to run as a string. If no current event is set, use the default event from the config.xml. This is a string">
+		<cfargument name="prepostExempt" 	type="boolean" 	required="false" default="false" hint="If true, pre/post handlers will not be fired.">
+		<cfargument name="private" 		 	type="boolean" 	required="false" default="false" hint="Execute a private event or not, default is false"/>
+		<cfargument name="default" 		 	type="boolean" 	required="false" default="false" hint="The flag that let's this service now if it is the default set event running or not. USED BY THE FRAMEWORK ONLY">
+		<cfargument name="eventArguments" 	type="struct"  	required="false" default="#structNew()#" hint="A collection of arguments to passthrough to the calling event handler method"/>
 		<!--- ************************************************************* --->
 		<cfscript>
 
 			var oRequestContext 	= getRequestService().getContext();
-			var loc					= structnew();
 			var debuggerService	 	= getDebuggerService();
 			var handlerService 		= getHandlerService();
 			var interceptorService 	= getInterceptorService();
 			var ehBean 				= "";
 			var oHandler 			= "";
 			var iData				= structnew();
-
+			var loc					= structnew();
+			
 			// Check if event empty, if empty then use default event
 			if(NOT len(trim(arguments.event)) ){
 				arguments.event = oRequestContext.getCurrentEvent();
@@ -480,8 +482,16 @@ Only one instance of a specific ColdBox application exists.
 			// Setup Invoker args
 			loc.args 				= structnew();
 			loc.args.event 			= oRequestContext;
+			loc.args.eventArguments = arguments.eventArguments;
+			
+			// Setup Main Invoker Args
+			loc.argsMain 			= structnew();
+			loc.argsMain.event		= oRequestContext;
+			structAppend(loc.argsMain, arguments.eventArguments);
+			
 			// Setup interception data
 			iData.processedEvent 	= arguments.event;
+			iData.eventArguments	= arguments.eventArguments;
 
 			// Validate the incoming event and get a handler bean to continue execution
 			ehBean = getHandlerService().getRegisteredHandler(arguments.event);
@@ -516,17 +526,21 @@ Only one instance of a specific ColdBox application exists.
 					// PREEVENT Interceptor
 					interceptorService.processState("preEvent",iData);
 
-					// Execute Pre Handler
+					// Execute Pre Handler if it exists and valid?
 					if( oHandler._actionExists("preHandler") AND validateAction(ehBean.getMethod(),oHandler.PREHANDLER_ONLY,oHandler.PREHANDLER_EXCEPT) ){
 						loc.tHash = debuggerService.timerStart("invoking runEvent [preHandler] for #arguments.event#");
-						oHandler.preHandler(oRequestContext,ehBean.getMethod());
+						
+						oHandler.preHandler(oRequestContext,ehBean.getMethod(),arguments.eventArguments);
+						
 						debuggerService.timerEnd(loc.tHash);
 					}
 
-					// Execute pre{Action}?
+					// Execute pre{Action}? if it exists and valid?
 					if( oHandler._actionExists("pre#ehBean.getMethod()#") ){
 						loc.tHash = debuggerService.timerStart("invoking runEvent [pre#ehBean.getMethod()#] for #arguments.event#");
+						
 						invoker(oHandler,"pre#ehBean.getMethod()#",loc.args);
+						
 						debuggerService.timerEnd(loc.tHash);
 					}
 				}
@@ -545,17 +559,47 @@ Only one instance of a specific ColdBox application exists.
 				else
 					loc.tHash 	= debuggerService.timerStart("invoking runEvent [#arguments.event#]");
 
+				// Invoke onMissingAction event
 				if( ehBean.isMissingAction() ){
-					loc.results		= oHandler.onMissingAction(oRequestContext,ehBean.getMissingAction());
+					loc.results	= oHandler.onMissingAction(oRequestContext,ehBean.getMissingAction(),arguments.eventArguments);
 				}
+				// Invoke main event
 				else{
-					loc.results 	= invoker(oHandler,ehBean.getMethod(),loc.args,arguments.private);
+					
+					// Around Handler Advice Check?
+					if( oHandler._actionExists("aroundHandler") AND validateAction(ehBean.getMethod(),oHandler.aroundHandler_only,oHandler.aroundHandler_except) ){
+						loc.tHash = debuggerService.timerStart("invoking runEvent [aroundHandler] for #arguments.event#");
+						
+						loc.results = oHandler.aroundHandler(oRequestContext, oHandler[ehBean.getMethod()], arguments.eventArguments);
+						
+						debuggerService.timerEnd(loc.tHash);
+					}
+					// Around {Action} Advice Check?
+					else if( oHandler._actionExists("around#ehBean.getMethod()#") ){
+						loc.tHash = debuggerService.timerStart("invoking runEvent [around#ehBean.getMethod()#] for #arguments.event#");
+						
+						// Add target Action to loc.args
+						loc.args.targetAction  	= oHandler[ehBean.getMethod()];
+						
+						loc.results = invoker(oHandler,"around#ehBean.getMethod()#",loc.args);
+						
+						// Cleanup: Remove target action from loc.args for post events
+						structDelete(loc.args, "targetAction");
+						
+						debuggerService.timerEnd(loc.tHash);
+					}
+					else{
+						// Normal execution
+						loc.results = invoker(oHandler,ehBean.getMethod(), loc.argsMain, arguments.private);
+					}
 				}
+				
+				// finalize execution timer of main event
 				debuggerService.timerEnd(loc.tHash);
 
 				// POST ACTIONS
 				if( NOT arguments.prePostExempt ){
-
+					
 					// Execute post{Action}?
 					if( oHandler._actionExists("post#ehBean.getMethod()#") ){
 						loc.tHash = debuggerService.timerStart("invoking runEvent [post#ehBean.getMethod()#] for #arguments.event#");
@@ -566,7 +610,7 @@ Only one instance of a specific ColdBox application exists.
 					// Execute postHandler()?
 					if( oHandler._actionExists("postHandler") AND validateAction(ehBean.getMethod(),oHandler.POSTHANDLER_ONLY,oHandler.POSTHANDLER_EXCEPT) ){
 						loc.tHash = debuggerService.timerStart("invoking runEvent [postHandler] for #arguments.event#");
-						oHandler.postHandler(oRequestContext,ehBean.getMethod());
+						oHandler.postHandler(oRequestContext,ehBean.getMethod(),arguments.eventArguments);
 						debuggerService.timerEnd(loc.tHash);
 					}
 

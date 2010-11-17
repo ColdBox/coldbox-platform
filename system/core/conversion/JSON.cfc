@@ -271,7 +271,7 @@ Modifications:
 		<cfset var dJSONString = "" />
 		<cfset var escapeToVals = "\\,\"",\/,\b,\t,\n,\f,\r" />
 		<cfset var escapeVals = "\,"",/,#Chr(8)#,#Chr(9)#,#Chr(10)#,#Chr(12)#,#Chr(13)#" />
-		
+		<cfset var loc = structnew()>
 		<cfset var _data = arguments.data />
 		
 		<!--- BOOLEAN --->
@@ -298,7 +298,14 @@ Modifications:
 		<cfelseif IsArray(_data)>
 			<cfset dJSONString = createObject('java','java.lang.StringBuffer').init("") />
 			<cfloop from="1" to="#ArrayLen(_data)#" index="i">
-				<cfset tempVal = encode( _data[i], arguments.queryFormat, arguments.queryKeyCase, arguments.stringNumbers, arguments.formatDates, arguments.columnListFormat ) />
+				<!--- Null Checks --->
+				<cfset loc.data = _data.get(i-1)>
+				<cfif NOT structKeyExists(loc,"data")>
+					<cfset tempVal = "null">
+				<cfelse>
+					<cfset tempVal = encode( _data[i], arguments.queryFormat, arguments.queryKeyCase, arguments.stringNumbers, arguments.formatDates, arguments.columnListFormat ) />
+				</cfif>
+				
 				<cfif dJSONString.toString() EQ "">
 					<cfset dJSONString.append(tempVal) />
 				<cfelse>
@@ -318,7 +325,14 @@ Modifications:
 			<cfset dJSONString = createObject('java','java.lang.StringBuffer').init("") />
 			<cfset arKeys = StructKeyArray(_data) />
 			<cfloop from="1" to="#ArrayLen(arKeys)#" index="i">
-				<cfset tempVal = encode( _data[ arKeys[i] ], arguments.queryFormat, arguments.queryKeyCase, arguments.stringNumbers, arguments.formatDates, arguments.columnListFormat ) />
+				
+				<!--- Null Checks --->
+				<cfif NOT structKeyExists(_data, arKeys[i])>
+					<cfset tempVal = "null">
+				<cfelse>
+					<!--- Get Encoded Value --->
+					<cfset tempVal = encode( _data[ arKeys[i] ], arguments.queryFormat, arguments.queryKeyCase, arguments.stringNumbers, arguments.formatDates, arguments.columnListFormat ) />
+				</cfif>
 				
 				<!--- Key to lower Case? --->
 				<cfif arguments.keyCase EQ "lower">

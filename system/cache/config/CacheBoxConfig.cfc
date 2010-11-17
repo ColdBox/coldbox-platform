@@ -23,7 +23,12 @@ Description :
 		DEFAULTS = {
 			logBoxConfig = "coldbox.system.cache.config.LogBox",
 			cacheBoxProvider = "coldbox.system.cache.providers.CacheBoxProvider",
-			coldboxAppProvider = "coldbox.system.cache.providers.CacheBoxColdBoxProvider"
+			coldboxAppProvider = "coldbox.system.cache.providers.CacheBoxColdBoxProvider",
+			scopeRegistration = {
+				enabled = true,
+				scope = "application",
+				key = "cachebox"
+			}
 		};
 		
 		// Startup the configuration
@@ -177,9 +182,9 @@ Description :
 	
 	<!--- scopeRegistration --->
     <cffunction name="scopeRegistration" output="false" access="public" returntype="any" hint="Use to define cachebox factory scope registration">
-    	<cfargument name="enabled" 	type="boolean" 	required="false" default="false" hint="Enable registration"/>
-		<cfargument name="scope" 	type="string" 	required="false" default="server" hint="The scope to register on, defaults to server scope"/>
-		<cfargument name="key" 		type="string" 	required="false" default="cachebox" hint="The key to use in the scope, defaults to cachebox"/>
+    	<cfargument name="enabled" 	type="boolean" 	required="false" default="#DEFAULTS.scopeRegistration.enabled#" hint="Enable registration"/>
+		<cfargument name="scope" 	type="string" 	required="false" default="#DEFAULTS.scopeRegistration.scope#" hint="The scope to register on, defaults to application scope"/>
+		<cfargument name="key" 		type="string" 	required="false" default="#DEFAULTS.scopeRegistration.key#" hint="The key to use in the scope, defaults to cachebox"/>
 		<cfscript>
 			instance.scopeRegistration.enabled 	= arguments.enabled;
 			instance.scopeRegistration.key 		= arguments.key;

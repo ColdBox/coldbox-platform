@@ -46,6 +46,19 @@
 	
 	}
 	
+	function testNullsToXML(){
+		test = {name="luis",age="11", testVal=javaCast("null","")};		
+		
+		results = xml.structToXML(test);
+		assertTrue( isXML(results) );
+		debug(results);
+		
+		test = [javaCast("null",""),1,3,test];
+		results = xml.toXML(test);
+		assertTrue( isXML(results) );
+		debug(results);
+	}
+	
 	function testToXML(){
 		//1: Simple Values
 		results = xml.toXML(data="luis");

@@ -1,8 +1,13 @@
 <cfcomponent output="false">
 <cfscript>
 
+	this.aroundHandler_except = "json,pass";
+
 	function wddx(event){
-		event.renderdata(type="wddx",data=server);
+		var data = {
+			name="luis",age="33", cool=true
+		};
+		event.renderdata(type="wddx",data=data);
 	}
 	
 	function plain(event){
@@ -13,7 +18,10 @@
 	}
 	
 	function json(event){
-		event.renderdata(type="json",data=server,jsonCase="upper",jsonAsText=true);
+		var data = {
+			name="luis",age="33", cool=true
+		};
+		event.renderdata(type="json",data=data,jsonCase="upper",jsonAsText=true);
 	}
 	
 	function text(event){
@@ -32,6 +40,30 @@
 		event.renderdata(type="xml",data=q);
 	}
 	
+	function pass(event,name,cool){
+		return "Hello #arguments.name#, you are cool=#arguments.cool#!";
+	}
+	
+	function aroundHandler(event,targetAction,eventArguments){
+		log.info("calling around handler with:#arguments.toString()#");
+		
+		// Call original target
+		arguments.targetAction(event);
+		
+		// hijack it
+		event.renderdata(type="html",data="<h1>Hello Around HTML</h1>");
+	}
+	
+	function aroundJSON(event,targetAction,eventArguments){
+		log.info("calling around handler with:#arguments.toString()#");
+		
+		// call original
+		arguments.targetAction(event);
+		
+		// Hijack it and add an element
+		var rd = event.getValue(name="cbox_renderdata",private=true);
+		rd.data.aroundAdvicePerformed = true;		
+	}
 
 </cfscript>			 
 </cfcomponent>

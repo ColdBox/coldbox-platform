@@ -4,7 +4,6 @@ Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 ********************************************************************************
 Author 	  : Luis Majano
-Date        : 5/25/2007
 Description :
 	Base Unit Test Component based on MXUnit.
 	{ADD MORE DESCRIPTION HERE}
@@ -141,6 +140,27 @@ id , name , mail
 		<cfreturn instance.mockBox>
 	</cffunction>
 	
+	<!--- Get a Mock Datasource Object --->
+	<cffunction name="getMockDatasource" access="private" output="false" returnType="coldbox.system.core.db.DatasourceBean" hint="I will return to you a datasourceBean according to the mocking parameters sent">
+		<cfargument name="name" 	type="string" required="true"  hint="The name of the DSN on the ColdFusion administrator"/>
+		<cfargument name="alias" 	type="string" required="false" default="" hint="The alias to use, if not passed the name will be used also as the alias"/>
+		<cfargument name="dbtype" 	type="string" required="false" default="" hint="The db type metadata"/>
+		<cfargument name="username" type="string" required="false" default="" hint="The dsn username metadata"/>
+		<cfargument name="password" type="string" required="false" default="" hint="The password metadata"/>
+		<cfscript>
+			if( NOT len(arguments.alias) ){ arguments.alias = arguments.name; }
+			return getMockBox().createMock("coldbox.system.core.db.DatasourceBean").init(arguments);
+		</cfscript>
+	</cffunction>
+	
+	<!--- getMockConfigBean --->
+	<cffunction name="getMockConfigBean" access="private" output="false" returnType="coldbox.system.core.collections.ConfigBean" hint="I will return to you a configBean according to the mocking configuration structure you send in">
+		<cfargument name="configStruct" type="struct" required="false" default="#structnew()#" hint="A memento of name-value pairs to init">
+	    <cfscript>
+			return getMockBox().createMock("coldbox.system.core.collections.ConfigBean").init(arguments.configStruct);
+		</cfscript>
+	</cffunction>
+		
 	<!--- getMockRequestContext --->
 	<cffunction name="getMockRequestContext" output="false" access="private" returntype="coldbox.system.web.context.RequestContext" hint="Builds an empty functioning request context mocked with methods via MockBox.  You can also optionally wipe all methods on it.">
 		<cfargument name="clearMethods" type="boolean" required="false" default="false" hint="Clear Methods on it?"/>
@@ -288,9 +308,10 @@ id , name , mail
 
 	<!--- prepare request, execute request and retrieve request --->
 	<cffunction name="execute" access="private" output="false" returntype="any" hint="Executes a framework lifecycle by executing an event.  This method returns a request context object that can be used for assertions">
-		<cfargument name="event" 	required="true"  type="string" hint="The event to execute">
-		<cfargument name="private" 	required="false" type="boolean" default="false" hint="Call a private event or not">
-		<cfargument name="prepostExempt" type="boolean" required="false" default="false" hint="If true, pre/post handlers will not be fired.">
+		<cfargument name="event" 			required="true"  type="string" hint="The event to execute">
+		<cfargument name="private" 			required="false" type="boolean" default="false" hint="Call a private event or not">
+		<cfargument name="prepostExempt"	required="false" type="boolean" default="false" hint="If true, pre/post handlers will not be fired.">
+		<cfargument name="eventArguments"   required="false" type="struct"  default="#structNew()#" hint="A collection of arguments to passthrough to the calling event handler method"/>
 		<cfscript>
 			var handlerResults  = "";
 			var requestContext  = "";
@@ -314,7 +335,7 @@ id , name , mail
 				}
 			
 				//TEST EVENT EXECUTION
-				handlerResults = cbController.runEvent(event=arguments.event,private=arguments.private,prepostExempt=arguments.prepostExempt);
+				handlerResults = cbController.runEvent(event=arguments.event,private=arguments.private,prepostExempt=arguments.prepostExempt,eventArguments=arguments.eventArguments);
 			
 				// Request Start Handler
 				if ( len(cbController.getSetting("RequestEndHandler")) ){

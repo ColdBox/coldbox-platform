@@ -205,19 +205,19 @@ Modification History:
 		<!--- Clear scope link --->
 		<cfset refLocal.clearScopeHref = "location.href='#refLocal.currentURL#&sbClearScope='+ getElementById('sbClearScope').value;">
 		<!--- Cache panel link --->
-		<cfset refLocal.cachePanelHref = "window.open('index.cfm?debugpanel=cache','cache','status=1,toolbar=0,location=0,resizable=1,scrollbars=1,height=750,width=800')">
+		<cfset refLocal.cachePanelHref = "window.open('#listlast(cgi.script_name,"/")#?debugpanel=cache','cache','status=1,toolbar=0,location=0,resizable=1,scrollbars=1,height=750,width=800')">
 		<!--- Profiler link --->
-		<cfset refLocal.profilerHref = "window.open('index.cfm?debugpanel=profiler','profilermonitor','status=1,toolbar=0,location=0,resizable=1,scrollbars=1,height=750,width=800')">
+		<cfset refLocal.profilerHref = "window.open('#listlast(cgi.script_name,"/")#?debugpanel=profiler','profilermonitor','status=1,toolbar=0,location=0,resizable=1,scrollbars=1,height=750,width=800')">
 		<!--- Dump var link --->
 		<cfset refLocal.dumpvarHref = "location.href='#refLocal.currentURL#&dumpvar='+ getElementById('sbDumpVar').value;">
 		<!--- ColdBox Live Docs link --->
-		<cfset refLocal.CBLiveDocsHref = "http://ortus.svnrepository.com/coldbox/trac.cgi">
+		<cfset refLocal.CBLiveDocsHref = "http://wiki.coldbox.org">
 		<!--- Search ColdBox Live Docs link --->
-		<cfset refLocal.searchCBLiveDocsHref = "window.open('http://ortus.svnrepository.com/coldbox/trac.cgi/search?q='+ getElementById('sbSearchCBLiveDocs').value + '&wiki=on','CBLiveDocsSearchResults')">
+		<cfset refLocal.searchCBLiveDocsHref = "window.open('http://wiki.coldbox.org/page/search.cfm?search_query='+ getElementById('sbSearchCBLiveDocs').value + '&wiki=on','CBLiveDocsSearchResults')">
 		<!--- ColdBox Forums link --->
-		<cfset refLocal.CBForumsHref = "http://forums.coldboxframework.com/index.cfm">
+		<cfset refLocal.CBForumsHref = "http://groups.google.com/group/coldbox">
 		<!--- Search ColdBox Forums link --->
-		<cfset refLocal.searchCBForumsHref = "window.open('http://forums.coldboxframework.com/index.cfm?event=ehForums.doSearch&searchterms='+ getElementById('sbSearchCBForums').value + '&searchtype=any','CBForumsSearchResults')">
+		<cfset refLocal.searchCBForumsHref = "window.open('http://groups.google.com/group/coldbox/search?group=coldbox&qt_g=Search+this+group&q='+ getElementById('sbSearchCBForums').value + '&searchtype=any','CBForumsSearchResults')">
 
 		<!--- Render? --->
 		<cfif getIsRender(arguments.event)>

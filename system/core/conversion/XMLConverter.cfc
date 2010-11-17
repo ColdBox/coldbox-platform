@@ -102,7 +102,10 @@ Modifications
 		
 		//Data
 		for(;x lte dataLen; x=x+1){
-			thisValue = target[x];
+			thisValue = target.get(x-1);
+			if( NOT isDefined("thisValue") ){
+				thisValue = "NULL";
+			}
 			if( NOT isSimpleValue(thisValue) ){
 				thisValue = translateValue(arguments,thisValue);
 			}
@@ -198,6 +201,10 @@ Modifications
 		
 		// Content
 		for(key in target){
+			// Null Checks
+			if( NOT structKeyExists(target, key) ){
+				target[key] = 'NULL';
+			}
 			// Translate Value
 			if( NOT isSimpleValue(target[key]) ){
 				thisValue = translateValue(arguments,target[key]);

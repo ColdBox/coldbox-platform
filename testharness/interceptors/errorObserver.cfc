@@ -31,6 +31,11 @@ Description :
 		</cfscript>
 	</cffunction>
 	
+	<cffunction name="onInvalidEvent" access="public" returntype="void" output="false" interceptionPoint>
+		<cfargument name="event">
+		<cfargument name="interceptData">
+		<cfset log.info("Invalid event detected: #interceptData.toString()#")>
+	</cffunction>
 	
 	<cffunction name="onLog" access="public" returntype="void" output="false" interceptionPoint>
 		<cfargument name="event">
