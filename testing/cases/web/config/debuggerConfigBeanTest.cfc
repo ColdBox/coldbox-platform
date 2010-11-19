@@ -2,7 +2,7 @@
 
 	<cffunction name="setUp" returntype="void" access="public">
 		<cfscript>
-			debugconfig = createObject("component","coldbox.system.beans.DebuggerConfig");
+			debugconfig = createObject("component","coldbox.system.web.config.DebuggerConfig");
 
 			debugconfig.init();
 
