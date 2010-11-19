@@ -88,7 +88,7 @@ Description :
 	<cffunction name="testonException" returntype="void" output="false">
 		<cfscript>
 		//You need to create an exception bean first and place it on the request context FIRST as a setup.
-		var exceptionBean = CreateObject("component","coldbox.system.beans.ExceptionBean");
+		var exceptionBean = CreateObject("component","coldbox.system.web.context.ExceptionBean");
 		var event = "";
 		
 		//Initialize an exception
