@@ -400,11 +400,11 @@ Description :
 	</cffunction>
 	
 	<!--- Configuration Bean --->
-	<cffunction name="getDebuggerConfig" access="public" output="false" returntype="coldbox.system.beans.DebuggerConfig" hint="Get DebuggerConfig">
+	<cffunction name="getDebuggerConfig" access="public" output="false" returntype="coldbox.system.web.config.DebuggerConfig" hint="Get DebuggerConfig">
 		<cfreturn instance.DebuggerConfig/>
 	</cffunction>	
 	<cffunction name="setDebuggerConfig" access="public" output="false" returntype="void" hint="Set DebuggerConfig">
-		<cfargument name="DebuggerConfig" type="coldbox.system.beans.DebuggerConfig" required="true"/>
+		<cfargument name="DebuggerConfig" type="coldbox.system.web.config.DebuggerConfig" required="true"/>
 		<cfset instance.DebuggerConfig = arguments.DebuggerConfig/>
 	</cffunction>
 	

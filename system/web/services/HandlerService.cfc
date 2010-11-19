@@ -77,7 +77,7 @@ Description :
 	<!--- Get a validated handler instance, using a handlerBean --->
 	<cffunction name="getHandler" output="false" access="public" returntype="any" hint="Returns a valid event handler object ready for execution">
 		<!--- ************************************************************* --->
-		<cfargument name="ehBean" 			type="any" required="true" hint="The event handler bean to use: coldbox.system.beans.EventHandlerBean"/>
+		<cfargument name="ehBean" 			type="any" required="true" hint="The event handler bean to use: coldbox.system.web.context.EventHandlerBean"/>
 		<cfargument name="RequestContext"   type="any" required="true" hint="The request context"/>
 		<!--- ************************************************************* --->
 		<cfscript>
@@ -219,7 +219,7 @@ Description :
 	</cffunction>
 
 	<!--- Get a Registered Handler Bean --->
-	<cffunction name="getRegisteredHandler" access="public" hint="I parse the incoming event string into an event handler bean that is used for executions." returntype="coldbox.system.beans.EventHandlerBean"  output="false">
+	<cffunction name="getRegisteredHandler" access="public" hint="I parse the incoming event string into an event handler bean that is used for executions." returntype="coldbox.system.web.context.EventHandlerBean"  output="false">
 		<!--- ************************************************************* --->
 		<cfargument name="event"   type="any"  required="true"  hint="The full event string to check and get." >
 		<!--- ************************************************************* --->
@@ -229,7 +229,7 @@ Description :
 		var methodReceived 			= "";
 		var handlersList 			= controller.getSetting("RegisteredHandlers");
 		var handlersExternalList 	= controller.getSetting("RegisteredExternalHandlers");
-		var HandlerBean 			= CreateObject("component","coldbox.system.beans.EventHandlerBean").init(controller.getSetting("HandlersInvocationPath"));
+		var HandlerBean 			= CreateObject("component","coldbox.system.web.context.EventHandlerBean").init(controller.getSetting("HandlersInvocationPath"));
 		var moduleReceived			= "";
 		var moduleSettings 			= controller.getSetting("modules");
 
@@ -324,7 +324,7 @@ Description :
 	<!--- invalidEvent --->
 	<cffunction name="invalidEvent" output="false" access="private" returntype="void" hint="Invalid Event procedures. Throws EventHandlerNotRegisteredException">
 		<cfargument name="event"  type="string" required="true" hint="The event that was found invalid"/>
-		<cfargument name="ehBean" type="any" 	required="true" hint="The event handler bean" colddoc:generic="coldbox.system.beans.EventHandlerBean"/>
+		<cfargument name="ehBean" type="any" 	required="true" hint="The event handler bean" colddoc:generic="coldbox.system.web.context.EventHandlerBean"/>
 		<cfscript>
 			var onInvalidEvent 	= controller.getSetting("onInvalidEvent");
 			var iData			= structnew();

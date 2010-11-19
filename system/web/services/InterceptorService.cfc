@@ -372,7 +372,7 @@ Description :
 			
 			// Verify if state doesn't exist, create it
 			if ( not structKeyExists(getInterceptionStates(), arguments.state) ){
-				oInterceptorState = CreateObject("component","coldbox.system.beans.InterceptorState").init(arguments.state);
+				oInterceptorState = CreateObject("component","coldbox.system.web.context.InterceptorState").init(arguments.state);
 				structInsert(getInterceptionStates(), arguments.state, oInterceptorState );
 			}
 			else{

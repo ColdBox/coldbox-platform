@@ -27,7 +27,7 @@ Modification History:
 <!------------------------------------------- PUBLIC ------------------------------------------->
 
 	<!--- exception handler --->
-	<cffunction name="exceptionHandler" access="public" hint="I handle a framework/application exception. I return a framework exception bean" returntype="any" output="false" colddoc:generic="coldbox.system.beans.ExceptionBean">
+	<cffunction name="exceptionHandler" access="public" hint="I handle a framework/application exception. I return a framework exception bean" returntype="any" output="false" colddoc:generic="coldbox.system.web.context.ExceptionBean">
 		<!--- ************************************************************* --->
 		<cfargument name="exception" 	 type="any"  	required="true"  hint="The exception structure. Passed as any due to CF glitch">
 		<cfargument name="errorType" 	 type="string" 	required="false" default="application">
@@ -35,7 +35,7 @@ Modification History:
 		<!--- ************************************************************* --->
 		<cfscript>
 		var bugReport 		= "";
-		var exceptionBean 	= createObject("component","coldbox.system.beans.ExceptionBean").init(errorStruct=arguments.exception,extramessage=arguments.extraMessage,errorType=arguments.errorType);
+		var exceptionBean 	= createObject("component","coldbox.system.web.context.ExceptionBean").init(errorStruct=arguments.exception,extramessage=arguments.extraMessage,errorType=arguments.errorType);
 		var requestContext 	= controller.getRequestService().getContext();
 		var appLogger 		= controller.getPlugin("Logger");
 		
@@ -54,7 +54,7 @@ Modification History:
 				// Log Original Error First
 				appLogger.logErrorWithBean(exceptionBean);
 				// Create new exception bean
-				exceptionBean = createObject("component","coldbox.system.beans.ExceptionBean").init(errorStruct=e,extramessage="Error Running Custom Exception handler",errorType="application");
+				exceptionBean = createObject("component","coldbox.system.web.context.ExceptionBean").init(errorStruct=e,extramessage="Error Running Custom Exception handler",errorType="application");
 				// Log it
 				appLogger.logErrorWithBean(exceptionBean);
 			}

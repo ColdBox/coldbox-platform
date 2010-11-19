@@ -3,7 +3,7 @@
 	
 	<cffunction name="setUp" returntype="void" access="public">
 		<cfscript>
-			this.state = createObject("component","coldbox.system.beans.InterceptorState");		
+			this.state = createObject("component","coldbox.system.web.context.InterceptorState");		
 			this.event = getMockRequestContext();
 			this.event.$("getEventName","event");
 			this.mock = createObject("component","coldbox.testing.testinterceptors.mock");

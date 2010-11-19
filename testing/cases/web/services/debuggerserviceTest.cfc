@@ -139,7 +139,7 @@ Modification History:
 	
 	function testPushProfiler(){
 		/* Mocks */
-		mockConfig = getMockBox().createMock(className='coldbox.system.beans.DebuggerConfig',clearMethods=true);
+		mockConfig = getMockBox().createMock(className='coldbox.system.web.config.DebuggerConfig',clearMethods=true);
 		debugger.setProfilers(arrayNew(1));
 		debugger.$("getDebuggerConfig",mockConfig);
 		debugger.$("popProfiler");
@@ -167,7 +167,7 @@ Modification History:
 		assertEquals( arrayLen(debugger.getProfilers()), 3);
 	}
 	function testPushTracer(){
-		mockConfig = getMockBox().createMock(className='coldbox.system.beans.DebuggerConfig',clearMethods=true);
+		mockConfig = getMockBox().createMock(className='coldbox.system.web.config.DebuggerConfig',clearMethods=true);
 		debugger.setTracers(arrayNew(1));
 		debugger.$("getDebuggerConfig",mockConfig);
 		

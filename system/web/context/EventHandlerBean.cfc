@@ -4,16 +4,10 @@ Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 ********************************************************************************
 Author 	 :	Luis Majano
-Date     :	June 30, 2006
 Description :
 	I model a ColdBox Event Handler
-
-Modification History:
-
 ----------------------------------------------------------------------->
-<cfcomponent name="EventHandlerBean"
-			 hint="I model a ColdBox event handler"
-			 output="false">
+<cfcomponent hint="I model a ColdBox event execution" output="false">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
@@ -28,7 +22,7 @@ Modification History:
 		instance.viewDispatch		= false;
 	</cfscript>
 
-	<cffunction name="init" access="public" returntype="EventHandlerBean" output="false">
+	<cffunction name="init" access="public" returntype="EventHandlerBean" output="false" hint="Constructor">
 		<cfargument name="invocationPath" type="string" required="false" default="" hint="The default invocation path" />
 		<cfset setInvocationPath(arguments.invocationPath)>
 		<cfreturn this >
@@ -40,9 +34,10 @@ Modification History:
 	<cffunction name="getViewDispatch" access="public" returntype="boolean" output="false" hint="Get the view dispatch flag">
     	<cfreturn instance.viewDispatch>
     </cffunction>
-    <cffunction name="setViewDispatch" access="public" returntype="void" output="false" hint="Setup a view dispatch or not">
+    <cffunction name="setViewDispatch" access="public" returntype="any" output="false" hint="Setup a view dispatch or not">
     	<cfargument name="viewDispatch" type="boolean" required="true">
     	<cfset instance.viewDispatch = arguments.viewDispatch>
+    	<cfreturn this>
     </cffunction>    
 	
 	<!--- Get Set Memento --->
@@ -55,7 +50,7 @@ Modification History:
 	</cffunction>
 		
 	<!--- Get Full Event Syntax --->
-	<cffunction name="getFullEvent" access="public" returntype="any" output="false">
+	<cffunction name="getFullEvent" access="public" returntype="any" output="false" hint="Get the full event string">
 		<cfscript>
 			var event = getHandler() & "." & getMethod();
 			if( isModule() ){
@@ -66,26 +61,28 @@ Modification History:
 	</cffunction>
 
 	<!--- Getr Runnable object --->
-	<cffunction name="getRunnable" access="public" returntype="any" output="false">
+	<cffunction name="getRunnable" access="public" returntype="any" output="false" hint="Get the runnable execution string">
 		<cfreturn getInvocationPath() & "." & getHandler()>
 	</cffunction>
 	
 	<!--- Get/Set Method --->
-	<cffunction name="setMethod" access="public" returntype="void" output="false">
+	<cffunction name="setMethod" access="public" returntype="any" output="false" hint="Set the method to execute">
 		<cfargument name="method" type="string" required="true" />
 		<cfset instance.method = arguments.method>
+		<cfreturn this>
 	</cffunction>
-	<cffunction name="getMethod" access="public" returntype="any" output="false">
+	<cffunction name="getMethod" access="public" returntype="any" output="false" hint="Get the method to execute">
 		<cfreturn instance.method >
 	</cffunction>
 	
 	<!--- Get/Set Private --->
-	<cffunction name="getIsPrivate" access="public" returntype="boolean" output="false">
+	<cffunction name="getIsPrivate" access="public" returntype="boolean" output="false" hint="Get the private execution flag">
 		<cfreturn instance.isPrivate>
 	</cffunction>
-	<cffunction name="setIsPrivate" access="public" returntype="void" output="false">
+	<cffunction name="setIsPrivate" access="public" returntype="any" output="false" hint="Set the private execution flag">
 		<cfargument name="isPrivate" type="boolean" required="true">
 		<cfset instance.isPrivate = arguments.isPrivate>
+		<cfreturn this>
 	</cffunction>
 	
 	<!--- isModule --->
@@ -94,44 +91,48 @@ Modification History:
 	</cffunction>
 
 	<!--- get/set module --->
-	<cffunction name="getmodule" access="public" returntype="any" output="false">
+	<cffunction name="getModule" access="public" returntype="any" output="false" hint="Get the module to execute">
 		<cfreturn instance.module>
 	</cffunction>
-	<cffunction name="setmodule" access="public" returntype="void" output="false">
+	<cffunction name="setModule" access="public" returntype="any" output="false" hint="Set the module to execute">
 		<cfargument name="module" type="any" required="true">
 		<cfset instance.module = arguments.module>
+		<cfreturn this>
 	</cffunction>
 
 	<!--- Get/Set Handler name --->
-	<cffunction name="setHandler" access="public" returntype="void" output="false">
+	<cffunction name="setHandler" access="public" returntype="any" output="false" hint="Set the handler to execute">
 		<cfargument name="handler" type="any" required="true" />
 		<cfset instance.handler = arguments.handler >
+		<cfreturn this>
 	</cffunction>
-	<cffunction name="getHandler" access="public" returntype="any" output="false">
+	<cffunction name="getHandler" access="public" returntype="any" output="false" hint="Get the handler to execute">
 		<cfreturn instance.handler >
 	</cffunction>
 
 	<!--- Get Set Invocation Path --->
-	<cffunction name="setInvocationPath" access="public" returntype="void" output="false">
+	<cffunction name="setInvocationPath" access="public" returntype="any" output="false" hint="Set the full invocation path">
 		<cfargument name="InvocationPath" type="any" required="true" />
 		<cfset instance.InvocationPath = arguments.InvocationPath >
+		<cfreturn this>
 	</cffunction>
-	<cffunction name="getInvocationPath" access="public" returntype="any" output="false">
+	<cffunction name="getInvocationPath" access="public" returntype="any" output="false" hint="Get the full invocation path">
 		<cfreturn instance.InvocationPath >
 	</cffunction>
 	
 	<!--- Is missing Action --->
-	<cffunction name="isMissingAction" access="public" returntype="boolean" output="false">
+	<cffunction name="isMissingAction" access="public" returntype="boolean" output="false" hint="Verify if in missing action">
 		<cfreturn (len(getMissingAction()) GT 0)>
 	</cffunction>
 	
 	<!--- Missing Action item. --->
-	<cffunction name="getMissingAction" access="public" returntype="string" output="false">
+	<cffunction name="getMissingAction" access="public" returntype="string" output="false" hint="Get the missing action flag">
 		<cfreturn instance.missingAction>
 	</cffunction>
-	<cffunction name="setMissingAction" access="public" returntype="void" output="false">
+	<cffunction name="setMissingAction" access="public" returntype="any" output="false" hint="Set the missing action flag">
 		<cfargument name="missingAction" type="string" required="true">
 		<cfset instance.missingAction = arguments.missingAction>
+		<cfreturn this>
 	</cffunction>
 
 </cfcomponent>
