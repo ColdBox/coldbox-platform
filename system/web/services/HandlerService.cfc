@@ -324,17 +324,21 @@ Description :
 	<!--- invalidEvent --->
 	<cffunction name="invalidEvent" output="false" access="private" returntype="void" hint="Invalid Event procedures. Throws EventHandlerNotRegisteredException">
 		<cfargument name="event"  type="string" required="true" hint="The event that was found invalid"/>
-		<cfargument name="ehBean" type="any" 	required="true" hint="The event handler bean"/>
+		<cfargument name="ehBean" type="any" 	required="true" hint="The event handler bean" colddoc:generic="coldbox.system.beans.EventHandlerBean"/>
 		<cfscript>
 			var onInvalidEvent 	= controller.getSetting("onInvalidEvent");
 			var iData			= structnew();
 
-			// Invalid Event Detected, log it in the Application log, not a coldbox log but an app log
-			controller.getPlugin("Logger").error("Invalid Event detected: #arguments.event#. Path info: #cgi.path_info# , query string: #cgi.query_string#");
-			
-			// Announce invalid event
-			iData.invalidEvent = arguments.event;
+			// Announce invalid event with invalid event, ehBean and override flag.
+			iData.invalidEvent 	= arguments.event;
+			iData.ehBean 		= arguments.ehBean;
+			iData.override 		= false;
 			controller.getInterceptorService().processState("onInvalidEvent",iData);
+			
+			//If the override was changed by the interceptors then they updated the ehBean of execution
+			if( iData.override ){
+				return;
+			}
 			
 			// If onInvalidEvent is registered, use it
 			if ( len(trim(onInvalidEvent)) ){
@@ -355,7 +359,10 @@ Description :
 
 				return;
 			}
-
+		
+			// Invalid Event Detected, log it in the Application log, not a coldbox log but an app log
+			controller.getPlugin("Logger").error("Invalid Event detected: #arguments.event#. Path info: #cgi.path_info# , query string: #cgi.query_string#");
+		
 			// Throw Exception
 			getUtil().throwit(message="The event: #arguments.event# is not valid registered event.",type="HandlerService.EventHandlerNotRegisteredException");
 		</cfscript>
