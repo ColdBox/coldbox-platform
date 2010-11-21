@@ -14,7 +14,7 @@ Description :
 	/**
 	* Configure WireBox, that's it!
 	*/
-	function configure(){
+	function configure(binder){
 		
 		// The WireBox configuration structure DSL
 		wireBox = {

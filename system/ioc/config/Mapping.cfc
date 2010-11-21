@@ -208,7 +208,7 @@ Description :
 	
 	<!--- cacheProperties --->
     <cffunction name="setCacheProperties" output="false" access="public" returntype="any" hint="Set the cache properties for this mapping (Needs cachebox integration)">
-    	<cfargument name="key" 					type="string" 	required="false" default="" hint="Cache key."/>
+    	<cfargument name="key" 					type="string" 	required="true" hint="Cache key."/>
     	<cfargument name="timeout" 				type="any" 		required="false" default="" hint="Object Timeout"/>
 		<cfargument name="lastAccessTimeout" 	type="any" 		required="false" default="" hint="Object Last Access Timeout"/>
 		<cfargument name="provider" 			type="string" 	required="false" default="default" hint="Cache Provider"/>

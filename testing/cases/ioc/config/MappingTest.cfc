@@ -10,7 +10,7 @@
 	
 	function testProcessMemento(){
 		var data = {
-			alias="funky",
+			alias=["funky"],
 			type="CFC",
 			path="my.model.Funky",
 			eagerInit = true,
