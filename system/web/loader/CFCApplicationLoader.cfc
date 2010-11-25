@@ -44,7 +44,7 @@ Loads a coldbox xml configuration file
 		var configCreatePath 	= "";
 		var oConfig 			= "";
 		var logBoxConfigHash  	= hash(getController().getLogBox().getConfig().getMemento().toString());
-			
+		var appMappingAsDots	= "";
 		
 		//Is incoming app mapping set, or do we auto-calculate
 		if( NOT len(arguments.overrideAppMapping) ){

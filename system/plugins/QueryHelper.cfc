@@ -21,7 +21,7 @@ Description :
 		<cfargument name="controller" type="any" required="true">
 		<!--- ************************************************************* --->
 		<cfscript>
-			super.Init(arguments.controller);
+			super.init(arguments.controller);
 			
 			// Plugin Properties
 			setpluginName("Query Helper");
@@ -456,6 +456,7 @@ Description :
         var col = 0;
         var csv = 0;
         var c = 0;
+		var line = "";
 		</cfscript>
 		
 		<!--- set columns as first row in the csv --->

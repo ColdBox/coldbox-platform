@@ -684,7 +684,7 @@ Description :
 				// loop and create
 				for(x=1; x lte listLen(qsValues,"&"); x=x+1){
 					qsVal = listGetAt(qsValues,x,"&");
-					rc[listFirst(qsVal,"=")] = listLast(qsVal,"=");
+					arguments.rc[listFirst(qsVal,"=")] = listLast(qsVal,"=");
 				}
 				// Clean the request string
 				arguments.requestString = Mid(arguments.requestString, 1, (varMatch.pos[1]-1));
