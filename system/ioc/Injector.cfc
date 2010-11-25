@@ -99,15 +99,12 @@ Description :
 			// Store binder object built accordingly
 			instance.binder = buildConfiguration( arguments.binder, arguments.properties );
 			
-			// Validate configuration
-			instance.config.validate();
-			
 			// Create local cache, logging and event management if not coldbox linked.
 			if( NOT isColdBoxLinked() ){ 
 				// Running standalone, so create our own logging first
-				configureLogBox( instance.config.getLogBoxConfig() );
+				configureLogBox( instance.binder.getLogBoxConfig() );
 				// Create local CacheBox reference
-				configureCacheBox( instance.config.getCacheBoxConfig() ); 
+				configureCacheBox( instance.binder.getCacheBoxConfig() ); 
 				// Create local event manager
 				configureEventManager();
 			}
@@ -115,17 +112,14 @@ Description :
 			// Configure Logging for this injector
 			instance.log = getLogBox().getLogger( this );
 			
-			// Reset Registries
-			instance.singletons = {};
-			
 			// Register Listeners if not using ColdBox
 			if( NOT isColdBoxLinked() ){
 				registerListeners();
 			}
 			
 			// Parent Injector declared
-			if( isObject(config.getParent()) ){
-				setParent( config.getParent() );
+			if( isObject(instance.binder.getParentInjector()) ){
+				setParent( instance.binder.getParentInjector() );
 			}
 			
 			// Register Scan Locations
@@ -133,7 +127,7 @@ Description :
 			// Register Mappings
 			
 			// Scope registration
-			if( instance.config.getScopeRegistration().enabled ){
+			if( instance.binder.getScopeRegistration().enabled ){
 				doScopeRegistration();
 			}
 			
@@ -157,9 +151,10 @@ Description :
 		</cfscript>
     </cffunction>
 	
-	<!--- contains --->
-    <cffunction name="contains" output="false" access="public" returntype="boolean" hint="Checks if this container contains a specific object mapping or not">
+	<!--- containsMapping --->
+    <cffunction name="containsMapping" output="false" access="public" returntype="boolean" hint="Checks if this container contains a specific object mapping or not">
     	<cfargument name="name" type="string" required="true" hint="The object name or alias to search for if this container has information about it"/>
+		<cfreturn true>
     </cffunction>
 	
 	<!--- locateInstance --->
@@ -253,7 +248,7 @@ Description :
 	<!--- registerListeners --->
     <cffunction name="registerListeners" output="false" access="private" returntype="void" hint="Register all the configured listeners in the configuration file">
     	<cfscript>
-    		var listeners 	= instance.config.getListeners();
+    		var listeners 	= instance.binder.getListeners();
 			var regLen		= arrayLen(listeners);
 			var x			= 1;
 			var thisListener = "";

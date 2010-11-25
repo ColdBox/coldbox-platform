@@ -177,8 +177,8 @@ Description :
 				case "coldspring" 	: { adapterPath = "coldbox.system.ioc.adapters.ColdSpringAdapter"; break; }
 				case "coldspring2" 	: { adapterPath = "coldbox.system.ioc.adapters.ColdSpring2Adapter"; break; }
 				case "lightwire" 	: { adapterPath = "coldbox.system.ioc.adapters.LightWireAdapter"; break; }
-				//case "wirebox" 	: { adapterPath = "coldbox.system.ioc.adapters.WireBoxAdapter"; break; }
-				default			: { adapterPath = arguments.framework; break;}	
+				case "wirebox" 		: { adapterPath = "coldbox.system.ioc.adapters.WireBoxAdapter"; break; }
+				default				: { adapterPath = arguments.framework; break;}	
 			}
 			
 			// Create Adapter

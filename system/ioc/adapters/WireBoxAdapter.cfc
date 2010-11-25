@@ -5,19 +5,18 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 ********************************************************************************
 
 Author 	    :	Luis Majano
-Date        :	may 7, 2009
 Description :
-	This is a concrete LightWire Adapter
+	This is a concrete WireBox Adapter
 
 ----------------------------------------------------------------------->
-<cfcomponent hint="The ColdBox LightWire IOC factory adapter"
+<cfcomponent hint="The ColdBox WireBox IOC factory adapter"
 			 extends="coldbox.system.ioc.AbstractIOCAdapter" 
 			 output="false">
 
 <!----------------------------------------- CONSTRUCTOR ------------------------------------->			
 	
 	<!--- Constructor --->
-	<cffunction name="init" access="public" returntype="LightWireAdapter" hint="Constructor" output="false" >
+	<cffunction name="init" access="public" returntype="WireBoxAdapter" hint="Constructor" output="false" >
 		<cfargument name="definitionFile" 	type="string" 	required="false" default="" hint="The definition file to load a factory with"/>
 		<cfargument name="properties" 		type="struct" 	required="false" default="#structNew()#" hint="Properties to pass to the factory to create"/>
 		<cfargument name="coldbox" 			type="any" 		required="false" default="" hint="A coldbox application that this instance of logbox can be linked to, not used if not using within a ColdBox Application."/>
@@ -26,8 +25,8 @@ Description :
 			
 			instance.utility  = createObject("component","coldbox.system.core.util.Util");
 			
-			// LightWire Factory Path
-			instance.LIGHTWIRE_FACTORY_PATH = "coldbox.system.ioc.lightwire.LightWire";
+			// WireBox Factory Path
+			instance.WIREBOX_FACTORY_PATH = "coldbox.system.ioc.Injector";
 			
 			return this;
 		</cfscript>
@@ -36,12 +35,12 @@ Description :
 <!----------------------------------------- PUBLIC ------------------------------------->	
 
 	<!--- createFactory --->
-	<cffunction name="createFactory" access="public" returntype="void" hint="Create the LightWire Factory" output="false" >
+	<cffunction name="createFactory" access="public" returntype="void" hint="Create the WireBox Factory" output="false" >
 		<cfscript>
 			var properties = getProperties();
 			
-			//Create the lightwire Factory
-			instance.factory = createObject("component", instance.LIGHTWIRE_FACTORY_PATH ).init( createLightwireConfigBean() );
+			//Create a WireBox injector
+			instance.factory = createObject("component", instance.WIREBOX_FACTORY_PATH ).init( getDefinitionFile() );
 			
 		</cfscript>
 	</cffunction>
@@ -50,7 +49,7 @@ Description :
 	<cffunction name="getBean" access="public" output="false" returntype="any" hint="Get a Bean from the object factory">
 		<cfargument name="beanName" type="string" required="true" hint="The bean name to retrieve from the object factory">
 		<cfscript>
-			return getFactory().getBean(arguments.beanName);
+			return getFactory().getInstance(arguments.beanName);
 		</cfscript>
 	</cffunction>
 	
@@ -58,61 +57,21 @@ Description :
 	<cffunction name="containsBean" access="public" returntype="boolean" hint="Check if the bean factory contains a bean" output="false" >
 		<cfargument name="beanName" type="string" required="true" hint="The bean name to retrieve from the object factory">	
 		<cfscript>
-			return getFactory().containsBean(arguments.beanName);
+			return getFactory().containsMapping(arguments.beanName);
 		</cfscript>
 	</cffunction>
 	
 	<!--- setParentFactory --->
     <cffunction name="setParentFactory" output="false" access="public" returntype="void" hint="Set a parent factory on the adapted factory">
     	<cfargument name="parent" type="any" required="true" hint="The parent factory to add"/>
-  		<cfset getFactory().setParentFactory( arguments.parent )>
+  		<cfset getFactory().setParent( arguments.parent )>
     </cffunction>
 	
-	<!--- getParent --->
+	<!--- getParentFactory --->
     <cffunction name="getParentFactory" output="false" access="public" returntype="any" hint="Get the parent factory">
-    	<cfreturn getFactory().getParentFactory()>
+    	<cfreturn getFactory().getParent()>
     </cffunction>
 
 <!----------------------------------------- PRIVATE ------------------------------------->	
-	
-	<!--- Create Lightwire Config Bean --->
-	<cffunction name="createLightwireConfigBean" output="false" access="private" returntype="any" hint="Creates the lightwire config bean">
-		<cfscript>
-			var lightwireBeanConfig	= "";
-			var isUsingXML 			= listLast(getDefinitionFile(),".") eq "xml" or listLast(getDefinitionFile(),".") eq "cfm";
-			
-			// Create the lightwire Config Bean.
-			if( NOT isUsingXML ){
-				// Create the declared config bean, but do not init it
-				lightwireBeanConfig = createObject("component", getDefinitionFile());
-			}
-			else{
-				// Create base config Bean
-				lightwireBeanConfig = CreateObject("component", "coldbox.system.ioc.lightwire.BaseConfigObject").init();	
-			}
-			
-			// Are we using ColdBox Application Container? If so, then do mixins.
-			if( isObject(getColdBox()) ){
-				lightWireBeanConfig.injectUDFMixin = instance.utility.injectUDFMixin;
-				lightWireBeanConfig.injectUDFMixin( "getController", variables.getController );
-				lightwireBeanConfig.controller = getColdBox();
-			} 
-			
-			// Do we need to configure
-			if( isUsingXML ){
-				// Read in and parse the XML
-				lightwireBeanConfig.parseXMLConfigFile( getDefinitionFile(), getProperties());
-				return lightwireBeanConfig;
-			}
-			else{
-				return lightwireBeanConfig.init();
-			}					
-		</cfscript>
-	</cffunction>
-	
-	<!--- Controller Accessor/Mutators --->
-	<cffunction name="getController" access="private" output="false" returntype="any" hint="Get controller: coldbox.system.web.Controller">
-		<cfreturn this.controller/>
-	</cffunction>
 	
 </cfcomponent>
