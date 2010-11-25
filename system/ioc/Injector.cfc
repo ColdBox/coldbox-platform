@@ -9,7 +9,7 @@ Description :
 	The WireBox injector is the pivotal class in WireBox that performs
 	dependency injection.  It can be used standalone or it can be used in conjunction
 	of a ColdBox application context.  It can also be configured with a mapping configuration
-	file called a binder, that can provide object/mappings.
+	file called a binder, that can provide object/mappings and configuration data.
 	
 
 ----------------------------------------------------------------------->
@@ -18,18 +18,17 @@ Description :
 <!----------------------------------------- CONSTRUCTOR ------------------------------------->			
 		
 	<!--- init --->
-	<cffunction name="init" access="public" returntype="Injector" hint="Constructor. If called without a configuration binder, then WireBox will instantiate the default configuration binder" output="false" >
-		<cfargument name="binder" 		type="any" 		required="false" default="coldbox.system.ioc.config.DefaultConfiguration" hint="The data CFC configuration instance, instantiation path or programmatic Binder configuration object to configure this injector with"/>
+	<cffunction name="init" access="public" returntype="Injector" hint="Constructor. If called without a configuration binder, then WireBox will instantiate the default configuration binder found in: coldbox.system.ioc.config.DefaultBinder" output="false" >
+		<cfargument name="binder" 		type="any" 		required="false" default="coldbox.system.ioc.config.DefaultBinder" hint="The WireBox binder or data CFC instance or instantiation path to configure this injector with"/>
 		<cfargument name="properties" 	type="struct" 	required="false" default="#structNew()#" hint="A structure of binding properties to passthrough to the Binder Configuration CFC"/>
 		<cfargument name="coldbox" 		type="coldbox.system.web.Controller" required="false" hint="A coldbox application context that this instance of WireBox can be linked to, if not using it, we just ignore it."/>
 		<cfscript>
-			// Available public scopes
+			// Setup Available public scopes
 			this.SCOPES = createObject("component","coldbox.system.ioc.Scopes");
-			
-			// Available public types
+			// Setup Available public types
 			this.TYPES = createObject("component","coldbox.system.ioc.Types");
 		
-			// Prepare Injector
+			// Prepare Injector instance
 			instance = {
 				// WireBox Injector UniqueID
 				injectorID = createObject('java','java.lang.System').identityHashCode(this),	
@@ -37,7 +36,7 @@ Description :
 				utility  = createObject("component","coldbox.system.core.util.Util"),
 				// Version
 				version = "1.0.0",	 
-				// Configuration Binder object
+				// The Configuration Binder object
 				binder  = "",
 				// ColdBox Application Link
 				coldbox = "",
@@ -46,14 +45,14 @@ Description :
 				// Configured Event States
 				eventStates = [
 					"afterInjectorConfiguration", 	// once injector is created and configured
-					"beforeObjectCreation", 	// Before an injector creates the object, the configuration data is passed here.
-					"afterObjectCreation", 		// once an object is created but not initialized via its constructor, the obj reference is passed
-					"beforeObjectInitialized",	// before the constructor is called, the arguments that will be passed to the constructer are sent
-					"afterObjectInitialized",	// once the constructor is called
-					"afterDIComplete",			// after object is completely initialized and DI injections have ocurred
-					"beforeMetadataInspection",	// before an object is inspected for injection metadata
-					"afterMetadataInspection",	// after an object has been inspected and metadata is ready to be saved
-					"onObjectException"			// traps when the injector throws controlled exceptions when building, injeting objects
+					"beforeObjectCreation", 		// Before an injector creates an object, the mapping is passed.
+					"afterObjectCreation", 			// once an object is created but not initialized via its constructor, the obj reference is passed
+					"beforeObjectInitialized",		// before the constructor is called, the arguments that will be passed to the constructer are sent
+					"afterObjectInitialized",		// once the constructor is called
+					"afterDIComplete",				// after object is completely initialized and DI injections have ocurred
+					"beforeMetadataInspection",		// before an object is inspected for injection metadata
+					"afterMetadataInspection",		// after an object has been inspected and metadata is ready to be saved
+					"onObjectException"				// traps when the injector throws controlled exceptions when building, injeting objects
 				],
 				// LogBox and Class Logger
 				logBox  = "",
@@ -65,7 +64,7 @@ Description :
 			// Prepare Lock Info
 			instance.lockName = "WireBox.Injector.#instance.injectorID#";
 			
-			// Check if linking ColdBox
+			// Check if linking with ColdBox Application Context
 			if( structKeyExists(arguments, "coldbox") ){ 
 				instance.coldbox = arguments.coldbox;
 				// link LogBox
@@ -78,7 +77,7 @@ Description :
 				instance.coldbox.getInterceptorService().appendInterceptionPoints( arrayToList(instance.eventStates) ); 
 			}
 			
-			// Configure the injector for operation with the passed binder and properties
+			// Configure the injector for operation
 			configure( arguments.binder, arguments.properties);
 			
 			return this;
@@ -94,6 +93,7 @@ Description :
 			var iData	= {};
 		</cfscript>
 		
+		<!--- Lock Configuration --->
 		<cflock name="#instance.lockName#" type="exclusive" timeout="30" throwontimeout="true">
 			<cfscript>
 			// Store binder object built accordingly

@@ -8,7 +8,7 @@ Description :
 	The default ColdBox WireBox Injector configuration object that is used when the
 	WireBox injector is created
 ----------------------------------------------------------------------->
-<cfcomponent output="false" hint="The default WireBox Injector configuration object">
+<cfcomponent output="false" hint="The default WireBox Injector configuration object" extends="coldbox.system.ioc.config.Binder">
 <cfscript>
 	
 	/**
