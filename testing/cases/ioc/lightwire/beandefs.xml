@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans default-lazy-init="false">
 	
-   	<bean id="CategoryDAO" class="${mapping}.com.model.category.CategoryDAO">
+   	<bean id="CategoryDAO" class="${mapping}.ioc.category.CategoryDAO">
 		<constructor-arg name="dsn"><value>${dsn}</value></constructor-arg>
 	</bean>
-	<bean id="CategoryService" class="${mapping}.com.model.category.CategoryService">
+	<bean id="CategoryService" class="${mapping}.ioc.category.CategoryService">
 		<constructor-arg name="CategoryDAO">
 			<ref bean="CategoryDAO"/>
 		</constructor-arg>
@@ -21,7 +21,7 @@
 	</bean>
 	
 	<alias name="ProductService" alias="PS" />
-	<bean id="ProductService" class="${mapping}.com.model.product.ProductService">
+	<bean id="ProductService" class="${mapping}.ioc.product.ProductService">
 		<constructor-arg name="ProdDAO">
 			<ref bean="ProdDAO"/>
 		</constructor-arg>
@@ -45,10 +45,10 @@
 			<ref bean="CategoryService"/>
 		</mixin>
 	</bean>
-	<bean id="ProdDAO" class="${mapping}.com.model.product.ProductDAO">
+	<bean id="ProdDAO" class="${mapping}.ioc.product.ProductDAO">
 		<constructor-arg name="dsn"><value>${dsn}</value></constructor-arg>
 	</bean>
-	<bean id="Product" class="${mapping}.com.model.product.ProductBean" singleton="false">
+	<bean id="Product" class="${mapping}.ioc.product.ProductBean" singleton="false">
 		<constructor-arg name="ProdDAO">
 			<ref bean="ProdDAO"/>
 		</constructor-arg>

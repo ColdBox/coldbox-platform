@@ -1,11 +1,12 @@
-<cfcomponent name="configBeanTest" extends="coldbox.testing.resources.baseMockCase">
+<cfcomponent extends="coldbox.system.testing.BaseTestCase">
+
 	<!--- setup and teardown --->
 	<cfset this.xmlSingle = "#getDirectoryFromPath(getMetadata(this).path)#beandefs.xml">
 	<cfset this.xmlParent = "#getDirectoryFromPath(getMetadata(this).path)#beandefsParent.xml">
 	
 	<cffunction name="setUp" returntype="void" access="public">
 		<cfscript>
-			beanConfig = createObject("component","coldbox.testing.tests.cases.extras.lightwire.BeanConfig").init();		
+			beanConfig = createObject("component","coldbox.testing.cases.ioc.lightwire.BeanConfig").init();		
 			beanFactory = createObject("component","coldbox.system.ioc.lightwire.LightWire").init(beanConfig);
 		</cfscript>
 	</cffunction>
@@ -54,7 +55,7 @@
 			
 			props.mapping = "coldbox.testing.testmodel";
 			
-			config = createObject("component","coldbox.testing.tests.cases.extras.lightwire.xmlBeanConfig").init(this.xmlSingle,props);		
+			config = createObject("component","coldbox.testing.cases.ioc.lightwire.xmlBeanConfig").init(this.xmlSingle,props);		
 			factory = createObject("component","coldbox.system.ioc.lightwire.LightWire").init(config);
 			
 			testSet(factory);
@@ -75,12 +76,12 @@
 			props.mapping = "coldbox.testing.testmodel";
 			
 			/* Parent Factory */
-			parentconfig = createObject("component","coldbox.testing.tests.cases.extras.lightwire.xmlBeanConfig").init(this.xmlParent,props);		
+			parentconfig = createObject("component","coldbox.testing.cases.ioc.lightwire.xmlBeanConfig").init(this.xmlParent,props);		
 			parentFactory = createObject("component","coldbox.system.ioc.lightwire.LightWire").init(parentconfig);
 			AssertTrue( parentFactory.containsBean('formBean') );
 			
 			/* Main Factory */
-			config = createObject("component","coldbox.testing.tests.cases.extras.lightwire.xmlBeanConfig").init(this.xmlSingle,props);		
+			config = createObject("component","coldbox.testing.cases.ioc.lightwire.xmlBeanConfig").init(this.xmlSingle,props);		
 			factory = createObject("component","coldbox.system.ioc.lightwire.LightWire").init(configBean=config,parentFactory=parentFactory);
 			
 			/* TestSet */

@@ -5,28 +5,20 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 ********************************************************************************
 
 Author     :	Luis Majano
-Date        :	9/3/2007
-Description :
-	Request service Test
 ----------------------------------------------------------------------->
-<cfcomponent name="requestserviceTest" extends="coldbox.testing.resources.baseMockCase" output="false">
+<cfcomponent extends="coldbox.system.testing.BaseTestCase" output="false">
 
 	<cffunction name="setUp" returntype="void" access="public" output="false">
 		<cfscript>
-		//Call the super setup method to setup the app.
-		super.setup();
 		
-		transfer = mockFactory.createMock('transfer.com.Transfer');
-		transferEvent = mockFactory.createMock('transfer.com.events.TransferEvent');
-		transferObject = mockFactory.createMock('transfer.com.TransferObject');
-		transferEvent.mockMethod('getTransferObject').returns(transferObject);
+		transfer = getMockBox().createEmptyMock('transfer.com.Transfer').$("addAfterNewObserver");
+		transferObject = getMockBox().createEmptyMock('transfer.com.TransferObject');
+		transferEvent = getMockBox().createEmptyMock('transfer.com.events.TransferEvent').$('getTransferObject').$results(transferObject);
 		
-		BeanFactory = mockFactory.createMock('coldbox.system.plugins.BeanFactory');
-		BeanFactory.mockMethod('autowire');
-		
+		BeanFactory = getMockBox().createEmptyMock('coldbox.system.plugins.BeanFactory').$('autowire');
 		BeanFactory.autowire(this);
 		
-		observer = createObject("component","coldbox.system.extras.transfer.TDOBeanInjectorObserver");
+		observer = createObject("component","coldbox.system.orm.transfer.TDOBeanInjectorObserver");
 		observer.init(transfer=transfer,ColdBoxBeanFactory=BeanFactory,useSetterInjection=true,onDICompleteUDF='onComplete',debugMode=true);
 		
 		</cfscript>

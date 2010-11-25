@@ -5,18 +5,13 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 ********************************************************************************
 
 Author     :	Luis Majano
-Date        :	9/3/2007
-Description :
-	Request service Test
 ----------------------------------------------------------------------->
-<cfcomponent name="requestserviceTest" extends="coldbox.testing.resources.baseMockCase" output="false">
+<cfcomponent extends="coldbox.system.testing.BaseTestCase" output="false">
 
 	<cffunction name="setUp" returntype="void" access="public" output="false">
 		<cfscript>
-		//Call the super setup method to setup the app.
-		super.setup();
 		
-		TransferConfigFactory = createObject("component","coldbox.system.extras.transfer.TransferConfigFactory").init();
+		TransferConfigFactory = createObject("component","coldbox.system.orm.transfer.TransferConfigFactory").init();
 		
 		dsnBean = createObject("component","coldbox.system.core.db.DatasourceBean");		
 		memento.name = "mydsn";

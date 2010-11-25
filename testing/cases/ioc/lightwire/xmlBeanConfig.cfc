@@ -76,7 +76,7 @@ Adds a constructor property to a bean.
 		parseXMLConfigFile(arguments.filePath,settings);
 		
 		/* Parse again using XML Raw */
-		ConfigFile = FileRead(ExpandPath('/coldbox/testing/tests/cases/extras/lightwire/beandefs.xml'));
+		ConfigFile = FileRead(ExpandPath('/coldbox/testing/cases/ioc/lightwire/beandefs.xml'));
 		parseXMLRaw(ConfigFile,settings);
 		
 		return this;

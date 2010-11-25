@@ -73,11 +73,11 @@ Adds a constructor property to a bean.
 		// OPTIONAL: Set lazy loading: true or false. If true, Singletons will only be created when requested. If false, they will all be created when LightWire is first initialized. Default if you don't set: LazyLoad = true.
 		setLazyLoad("false");
 		
-		path = "coldbox.testing.testmodel";
+		path = "coldbox.testing.testmodel.ioc.";
 		
 		// BEAN DEFINITIONS (see top of bean for instructions)
 		// Product Service
-		addSingleton(FullClassPath="#path#.com.model.Product.ProductService",Aliases="PS,ProdService");
+		addSingleton(FullClassPath="#path#Product.ProductService",Aliases="PS,ProdService");
 		addConstructorDependency("ProductService","ProdDAO");
 		addConstructorProperty("ProductService","MyTitle","My Title Goes Here");
 		addConstructorProperty("ProductService","MyTitle2","My Other Title Goes Here");
@@ -88,19 +88,19 @@ Adds a constructor property to a bean.
 		addMixinDependency("ProductService", "CategoryService");
 
 		// Product DAO
-		addSingleton("#path#.com.model.Product.ProductDAO","ProdDAO");
+		addSingleton("#path#Product.ProductDAO","ProdDAO");
 		
 		// Product
-		addTransient("#path#.com.model.Product.ProductBean","Product");
+		addTransient("#path#Product.ProductBean","Product");
 		addConstructorDependency("Product","ProdDAO");
 		
 		// Category Service
-		addSingleton("#path#.com.model.Category.CategoryService");
+		addSingleton("#path#Category.CategoryService");
 		addConstructorDependency("CategoryService","CategoryDAO");
 		addSetterDependency("CategoryService", "PS");
 		
 		// Category DAO
-		addSingleton("#path#.com.model.Category.CategoryDAO");
+		addSingleton("#path#Category.CategoryDAO");
 
 		// Transfer Factory
 		// addSingleton("transfer.TransferFactory");
