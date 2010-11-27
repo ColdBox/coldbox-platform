@@ -42,12 +42,12 @@ Modification History:
 		<cfif structKeyExists(arguments,"COLDBOX_APP_KEY") AND
 			  len(trim(arguments.COLDBOX_APP_KEY)) NEQ 0>
 			<!--- Setup the coldbox app Key --->
-			<cfset coldboxAppKey = arugments.COLDBOX_APP_KEY>
+			<cfset variables.coldboxAppKey = arugments.COLDBOX_APP_KEY>
 		</cfif>
 		
 		<!--- Check App Config --->
 		<cfif not structKeyExists(application,coldboxAppKey)>
-			<cfthrow message="ColdBox controller does not exist as application.#coldboxAppKey#" detail="The coldbox controller does not exist in application scope. Most likely the application has not been initialized.">
+			<cfthrow message="ColdBox controller does not exist as application.#variables.coldboxAppKey#" detail="The coldbox controller does not exist in application scope. Most likely the application has not been initialized.">
 		</cfif>	
 		
 		<cfreturn this>

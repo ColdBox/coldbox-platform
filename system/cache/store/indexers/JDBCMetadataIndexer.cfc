@@ -79,6 +79,7 @@ Description :
 		<cfset var q 				= "">
 		<cfset var normalizedID 	= instance.store.getNormalizedID(arguments.objectKey)>
 		<cfset var target			= {}>
+		<cfset var thisField		= "">
 		
 		<!--- select entry --->
 		<cfquery name="q" datasource="#instance.config.dsn#" username="#instance.config.dsnUsername#" password="#instance.config.dsnPassword#">
