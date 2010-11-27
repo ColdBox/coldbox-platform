@@ -339,6 +339,31 @@ Description :
 		</cfscript>
 	</cffunction>
 	
+	<!--- canFatal --->
+    <cffunction name="canFatal" output="false" access="public" returntype="boolean" hint="Can log fatal messages">
+    	<cfreturn canLog( this.logLevels.FATAL )>
+    </cffunction>
+	
+	<!--- canError --->
+    <cffunction name="canError" output="false" access="public" returntype="boolean" hint="Can log error messages">
+    	<cfreturn canLog( this.logLevels.ERROR )>
+    </cffunction>
+	
+	<!--- canWarn --->
+    <cffunction name="canWarn" output="false" access="public" returntype="boolean" hint="Can log warn messages">
+    	<cfreturn canLog( this.logLevels.WARN )>
+    </cffunction>
+    
+	<!--- canInfo --->
+    <cffunction name="canInfo" output="false" access="public" returntype="boolean" hint="Can log info messages">
+    	<cfreturn canLog( this.logLevels.INFO )>
+    </cffunction>
+	
+	<!--- canDebug --->
+    <cffunction name="canDebug" output="false" access="public" returntype="boolean" hint="Can log debug messages">
+    	<cfreturn canLog( this.logLevels.DEBUG )>
+    </cffunction>
+	
 <!------------------------------------------- PRIVATE ------------------------------------------>
 	
 	<!--- Throw Facade --->

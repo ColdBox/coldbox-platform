@@ -9,6 +9,19 @@
 		//init Logger
 		logger.init(category="coldbox.system.logging.UnitTest");
 	}
+	
+	function testCanMethods(){
+		logger.setLevelMin(0);
+		logger.setLevelMax(3);
+		
+		assertTrue( logger.canFatal() );
+		assertTrue( logger.canError() );
+		assertTrue( logger.canWarn() );
+		assertTrue( logger.canInfo() );
+		assertFalse( logger.canDebug() );
+	}
+	
+	
 	function testAppenderMethods(){
 		//has appenders
 		assertFalse( logger.hasAppenders() );
