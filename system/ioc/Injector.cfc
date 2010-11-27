@@ -11,6 +11,14 @@ Description :
 	of a ColdBox application context.  It can also be configured with a mapping configuration
 	file called a binder, that can provide object/mappings and configuration data.
 	
+	Easy Startup:
+	injector = new coldbox.system.ioc.Injector();
+	
+	Binder Startup
+	injector = new coldbox.system.ioc.Injector(new MyBinder());
+	
+	Binder Path Startup
+	injector = new coldbox.system.ioc.Injector("config.MyBinder");
 
 ----------------------------------------------------------------------->
 <cfcomponent hint="A WireBox Injector: Builds the graphs of objects that make up your application." output="false" serializable="false">
@@ -30,16 +38,20 @@ Description :
 		
 			// Prepare Injector instance
 			instance = {
-				// WireBox Injector UniqueID
-				injectorID = createObject('java','java.lang.System').identityHashCode(this),	
+				// Java System
+				javaSystem = createObject('java','java.lang.System'),	
 				// Utility class
 				utility  = createObject("component","coldbox.system.core.util.Util"),
 				// Version
-				version = "1.0.0",	 
+				version  = "1.0.0",	 
 				// The Configuration Binder object
-				binder  = "",
+				binder   = "",
 				// ColdBox Application Link
-				coldbox = "",
+				coldbox  = "",
+				// LogBox Link
+				logBox   = "",
+				// CacheBox Link
+				cacheBox = "",
 				// Event Manager Link
 				eventManager = "",
 				// Configured Event States
@@ -58,9 +70,13 @@ Description :
 				logBox  = "",
 				log		= "",
 				// Parent Injector
-				parent = ""
+				parent = "",
+				// LifeCycle Scopes
+				scopes = {}
 			};
 			
+			// Prepare instance ID
+			instance.injectorID = instance.javaSystem.identityHashCode(this);
 			// Prepare Lock Info
 			instance.lockName = "WireBox.Injector.#instance.injectorID#";
 			
@@ -69,6 +85,8 @@ Description :
 				instance.coldbox = arguments.coldbox;
 				// link LogBox
 				instance.logBox  = instance.coldbox.getLogBox();
+				// Configure Logging for this injector
+				instance.log = instance.logBox.getLogger( this );
 				// Link CacheBox
 				instance.cacheBox = instance.coldbox.getCacheBox();
 				// Link Event Manager
@@ -93,24 +111,29 @@ Description :
 			var iData	= {};
 		</cfscript>
 		
-		<!--- Lock Configuration --->
+		<!--- Lock For Configuration --->
 		<cflock name="#instance.lockName#" type="exclusive" timeout="30" throwontimeout="true">
 			<cfscript>
-			// Store binder object built accordingly
+			// Store binder object built accordingly by building and configuring our binder
 			instance.binder = buildConfiguration( arguments.binder, arguments.properties );
 			
 			// Create local cache, logging and event management if not coldbox linked.
 			if( NOT isColdBoxLinked() ){ 
 				// Running standalone, so create our own logging first
 				configureLogBox( instance.binder.getLogBoxConfig() );
+				// Configure Logging for this injector
+				instance.log = getLogBox().getLogger( this );
 				// Create local CacheBox reference
 				configureCacheBox( instance.binder.getCacheBoxConfig() ); 
 				// Create local event manager
 				configureEventManager();
-			}
+			}		
 			
-			// Configure Logging for this injector
-			instance.log = getLogBox().getLogger( this );
+			// Register Scopes
+			registerScopes();
+			
+			// Register DSLs
+			// registerDSLs();
 			
 			// Register Listeners if not using ColdBox
 			if( NOT isColdBoxLinked() ){
@@ -122,35 +145,21 @@ Description :
 				setParent( instance.binder.getParentInjector() );
 			}
 			
-			// Register Scan Locations
-			
-			// Register Mappings
-			
 			// Scope registration
 			if( instance.binder.getScopeRegistration().enabled ){
 				doScopeRegistration();
 			}
 			
-			// Announce To Listeners
+			// Announce To Listeners we are online
 			iData.injector = this;
-			getEventManager().processState("afterInjectorConfiguration",iData);	
+			getEventManager().processState("afterInjectorConfiguration",iData);
+			
+			// Now create eager objects
+			//createEagerMappings();	
 			</cfscript>
 		</cflock>
 	</cffunction>
-	
-	<!--- removeFromScope --->
-    <cffunction name="removeFromScope" output="false" access="public" returntype="void" hint="Remove the Injector from scope registration if enabled, else does nothing">
-    	<cfscript>
-			var scopeInfo 		= instance.config.getScopeRegistration();
-			var scopeStorage	= "";
-			
-			if( scopeInfo.enabled ){
-				scopeStorage = createObject("component","coldbox.system.core.collections.ScopeStorage").init();
-				scopeStorage.delete(scopeInfo.key, scopeInfo.scope);
-			}
-		</cfscript>
-    </cffunction>
-	
+		
 	<!--- containsMapping --->
     <cffunction name="containsMapping" output="false" access="public" returntype="boolean" hint="Checks if this container contains a specific object mapping or not">
     	<cfargument name="name" type="string" required="true" hint="The object name or alias to search for if this container has information about it"/>
@@ -164,7 +173,7 @@ Description :
 	
 	<!--- getInstance --->
     <cffunction name="getInstance" output="false" access="public" returntype="any" hint="Locates, Creates, Injects and Configures an object instance">
-    	
+    	<cfargument name="name" type="any" required="true" hint="The mapping name or alias to retrieve"/>
     </cffunction>
 
 	<!--- autowire --->
@@ -178,19 +187,19 @@ Description :
     	<cfset instance.parent = arguments.injector>
     </cffunction>
 	
+	<!--- hasParent --->
+    <cffunction name="hasParent" output="false" access="public" returntype="boolean" hint="Checks if this Injector has a defined parent injector">
+    	<cfreturn (isObject(instance.parent))>
+    </cffunction>
+	
 	<!--- getParent --->
     <cffunction name="getParent" output="false" access="public" returntype="any" hint="Get a reference to the parent injector, else an empty string" colddoc:generic="coldbox.system.ioc.Injector">
     	<cfreturn instance.parent>
     </cffunction>
 	
-	<!--- getPopulator --->
-    <cffunction name="getPopulator" output="false" access="public" returntype="coldbox.system.core.dynamic.BeanPopulator" hint="Get an object populator useful for populating objects from JSON,XML, etc.">
+	<!--- getObjectPopulator --->
+    <cffunction name="getObjectPopulator" output="false" access="public" returntype="coldbox.system.core.dynamic.BeanPopulator" hint="Get an object populator useful for populating objects from JSON,XML, etc.">
     	<cfreturn createObject("component","coldbox.system.core.dynamic.BeanPopulator").init()>
-    </cffunction>
-	
-	<!--- getSingletons --->
-    <cffunction name="getSingletons" output="false" access="public" returntype="any" hint="Get a collection of all the objects in the singleton cache">
-    	<cfreturn instance.singletons>
     </cffunction>
 	
 	<!--- getColdbox --->
@@ -240,11 +249,67 @@ Description :
 
 	<!--- getScopeRegistration --->
     <cffunction name="getScopeRegistration" output="false" access="public" returntype="struct" hint="Get the scope registration information">
-    	<cfreturn instance.config.getScopeRegistration()>
+    	<cfreturn instance.binder.getScopeRegistration()>
     </cffunction>
 
+	<!--- removeFromScope --->
+    <cffunction name="removeFromScope" output="false" access="public" returntype="void" hint="Remove the Injector from scope registration if enabled, else does nothing">
+    	<cfscript>
+			var scopeInfo 		= instance.binder.getScopeRegistration();
+			// if enabled remove.
+			if( scopeInfo.enabled ){
+				createObject("component","coldbox.system.core.collections.ScopeStorage")
+					.init()
+					.delete(scopeInfo.key, scopeInfo.scope);
+			}
+		</cfscript>
+    </cffunction>
+	
 <!----------------------------------------- PRIVATE ------------------------------------->	
 
+	<!--- registerScopes --->
+    <cffunction name="registerScopes" output="false" access="private" returntype="void" hint="Register all internal and configured WireBox Scopes">
+    	<cfscript>
+    		var customScopes 	= "";
+    		var key				= "";
+			
+    		// register no_scope
+			instance.scopes["NOSCOPE"] = createObject("component","coldbox.system.ioc.scopes.NoScope").init();
+			instance.scopes["NOSCOPE"].configure(this);
+			// register singleton
+			instance.scopes["SINGLETON"] = createObject("component","coldbox.system.ioc.scopes.Singleton").init();
+			instance.scopes["SINGLETON"].configure(this);
+			// is cachebox linked?
+			if( isCacheBoxLinked() ){
+				instance.scopes["CACHEBOX"] = createObject("component","coldbox.system.ioc.scopes.CacheBox").init();
+				instance.scopes["CACHEBOX"].configure(this);
+			}
+			// CF Scopes and references
+			instance.scopes["REQUEST"] 	= createObject("component","coldbox.system.ioc.scopes.CFScopes").init();
+			instance.scopes["REQUEST"].configure(this);
+			instance.scopes["SESSION"] 		= instance.scopes["REQUEST"];
+			instance.scopes["SERVER"] 		= instance.scopes["REQUEST"];
+			instance.scopes["APPLICATION"] 	= instance.scopes["REQUEST"];
+			
+			// Debugging
+			if( instance.log.canDebug() ){
+				instance.log.debug("Registered all internal lifecycle scopes successfully: #structKeyList(instance.scopes)#");
+			}
+			
+			// Custom Scopes
+			customScopes = instance.binder.getCustomScopes();
+			// register Custom Scopes
+			for(key in customScopes){
+				instance.scopes[key] = createObject("component",customScopes[key]).init();
+				instance.scopes[key].configure(this);
+				// Debugging
+				if( instance.log.canDebug() ){
+					instance.log.debug("Registered custom scope: #key# (#customScopes[key]#)");
+				}
+			}			 
+		</cfscript>
+    </cffunction>
+		
 	<!--- registerListeners --->
     <cffunction name="registerListeners" output="false" access="private" returntype="void" hint="Register all the configured listeners in the configuration file">
     	<cfscript>
@@ -263,6 +328,7 @@ Description :
 					thisListener.configure( this, listeners[x].properties);
 				}
 				catch(Any e){
+					instance.log.error("Error creating listener: #listeners[x].toString()#", e);
 					getUtil().throwit(message="Error creating listener: #listeners[x].toString()#",
 									  detail="#e.message# #e.detail# #e.stackTrace#",
 									  type="Injector.ListenerCreationException");
@@ -270,6 +336,11 @@ Description :
 				
 				// Now register listener
 				getEventManager().register(thisListener,listeners[x].name);
+				
+				// debugging
+				if( instance.log.canDebug() ){
+					instance.log.debug("Injector has just registered a new listener: #listeners[x].toString()#");
+				}
 			}			
 		</cfscript>
     </cffunction>
@@ -277,10 +348,14 @@ Description :
 	<!--- doScopeRegistration --->
     <cffunction name="doScopeRegistration" output="false" access="private" returntype="void" hint="Register this injector on a user specified scope">
     	<cfscript>
-    		var scopeInfo 		= instance.config.getScopeRegistration();
+    		var scopeInfo 		= instance.binder.getScopeRegistration();
 			var scopeStorage	= createObject("component","coldbox.system.core.collections.ScopeStorage").init();
 			// register injector with scope
 			scopeStorage.put(scopeInfo.key, this, scopeInfo.scope);
+			// Log info
+			if( instance.log.canDebug() ){
+				instance.log.debug("Scope Registration enabled and Injector scoped to: #scopeInfo.toString()#");
+			}
 		</cfscript>
     </cffunction>
 	
@@ -296,27 +371,43 @@ Description :
 				return;
 			}
 			
+			// Do we have a cacheBox reference?
+			if( isObject(arguments.config.cacheFactory) ){
+				instance.cacheBox = arguments.config.cacheFactory;
+				// debugging
+				if( instance.log.canDebug() ){
+					instance.log.debug("Configured Injector #getInjectorID()# with direct CacheBox instance: #instance.cacheBox.getFactoryID()#");
+				}
+				return;
+			}
+			
 			// Do we have a configuration file?
 			if( len(arguments.config.configFile) ){
 				// xml?
-				if( listFindNoCase("xml,cfm", listLast(arguments.configPath,".") ) ){
-					args["XMLConfig"] = arguments.configPath;
+				if( listFindNoCase("xml,cfm", listLast(arguments.config.configFile,".") ) ){
+					args["XMLConfig"] = arguments.config.configFile;
 				}
 				else{
 					// cfc
-					args["CFCConfigPath"] = arguments.configPath;
+					args["CFCConfigPath"] = arguments.config.configFile;
 				}
 				
 				// Create CacheBox
 				oConfig = createObject("component","#arguments.config.classNamespace#.config.CacheBoxConfig").init(argumentCollection=args);
-				instance.cacheBox = createObject("component","#arguments.config.classNamespace#.CacheFactory").init( config );
+				instance.cacheBox = createObject("component","#arguments.config.classNamespace#.CacheFactory").init( oConfig );
+				// debugging
+				if( instance.log.canDebug() ){
+					instance.log.debug("Configured Injector #getInjectorID()# with CacheBox instance: #instance.cacheBox.getFactoryID()# and configuration file: #arguments.config.configFile#");
+				}
 				return;
 			}
 			
-			// Do we have a cacheBox reference?
-			if( isObject(arguments.config.cacheFactory) ){
-				instance.cacheBox = arguments.config.cacheFactory;
-			}			
+			// No config file, plain vanilla cachebox
+			instance.cacheBox = createObject("component","#arguments.config.classNamespace#.CacheFactory").init();
+			// debugging
+			if( instance.log.canDebug() ){
+				instance.log.debug("Configured Injector #getInjectorID()# with vanilla CacheBox instance: #instance.cacheBox.getFactoryID()#");
+			}						
 		</cfscript>
     </cffunction>
 	
@@ -348,6 +439,10 @@ Description :
     	<cfscript>
     		// create event manager
 			instance.eventManager = createObject("component","coldbox.system.core.events.EventPoolManager").init( instance.eventStates );
+			// Debugging
+			if( instance.log.canDebug() ){
+				instance.log.debug("Registered injector's event manager with the following event states: #instance.eventStates.toString()#");
+			}
 		</cfscript>
     </cffunction>
 	

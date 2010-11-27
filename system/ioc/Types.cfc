@@ -10,7 +10,7 @@ Description :
 	
 
 ----------------------------------------------------------------------->
-<cfcomponent hint="A lookup static CFC that gives you the instantiation types that WireBox can talk to" output="false">
+<cfcomponent hint="A lookup static CFC that gives you the instantiation types that WireBox can talk to. Declared Types are: CFC, JAVA, WEBSERVICE, RSS, and DSL" output="false">
 <cfscript>
 	//DECLARED WIREBOX INSTANTIATION TYPES
 	this.CFC 		= "cfc";

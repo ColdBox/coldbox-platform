@@ -10,7 +10,7 @@ Description :
 	
 
 ----------------------------------------------------------------------->
-<cfcomponent hint="A lookup static CFC that gives you the scopes that WireBox uses by default" output="false">
+<cfcomponent hint="A lookup static CFC that gives you the scopes that WireBox uses by default. Declared Scopes are: NOSCOPE, PROTOTYPE, SINGLETON, SESSION, APPLICATION, REQUEST, SERVER, CACHEBOX" output="false">
 <cfscript>
 	//DECLARED SCOPES
 	this.NOSCOPE 		= "NoScope";

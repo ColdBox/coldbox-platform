@@ -11,10 +11,15 @@ Description :
 ----------------------------------------------------------------------->
 <cfcomponent output="false" implements="coldbox.system.ioc.scopes.IScope" hint="I am a scopes that stores in valid CF scopes">
 
+	<!--- init --->
+    <cffunction name="init" output="false" access="public" returntype="any" hint="Constructor">
+    	<cfreturn this>
+    </cffunction>
+	
 	<!--- configure --->
-    <cffunction name="configure" output="false" access="public" returntype="void" hint="Configure your scope for operation">
-    	<cfargument name="wirebox" type="any" required="true" hint="The linked WireBox injector: coldbox.system.ioc.Injector" colddoc:generic="coldbox.system.ioc.Injector"/>
-		<cfscript>
+    <cffunction name="configure" output="false" access="public" returntype="void" hint="Configure the scope for operation">
+    	<cfargument name="wirebox" type="any" required="true" hint="The linked WireBox injector" colddoc:generic="coldbox.system.ioc.Injector"/>
+    	<cfscript>
 			instance = {
 				wirebox		 = arguments.wirebox,
 				scopeStorage = createObject("component","coldbox.system.core.collections.ScopeStorage").init(), 
