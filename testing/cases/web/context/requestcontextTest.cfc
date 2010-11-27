@@ -468,7 +468,7 @@
 			// Test PLAIN
 			event.renderData(data="Hello");
 			rd = event.getRenderData();
-			assertEquals( rd.type, "plain");
+			assertEquals( rd.type, "html");
 			assertEquals( rd.contenttype, "text/html");
 			
 			// Test XML
@@ -482,7 +482,7 @@
 			// Test contenttype
 			event.renderData(data="Hello",contentType="application/ms-excel");
 			rd = event.getRenderData();
-			assertEquals( rd.type, "plain");
+			assertEquals( rd.type, "html");
 			assertEquals( rd.contenttype, "application/ms-excel");
 			
 			// Test StatusCodes
@@ -545,5 +545,17 @@
 			event.setHTTPHeader(name="expires",value="#now()#");
 		</cfscript>
 	</cffunction>
+	
+	<cffunction name="testGetHTTPConetnt" access="public"  returntype="void" output="false">
+		<cfscript>
+			var event = getRequestContext();
+			
+			test = event.getHTTPContent();
+			
+			assertTrue( isSimpleValue(test) );
+			
+		</cfscript>
+	</cffunction>
+	
 	
 </cfcomponent>
