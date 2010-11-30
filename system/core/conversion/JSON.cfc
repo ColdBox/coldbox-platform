@@ -302,7 +302,7 @@ Modifications:
 				<cfif isSimpleValue(_data[i]) and _data[i] EQ "_INVALID_">
 					<cfset tempVal = "null">
 				<cfelse>
-					<cfset tempVal = encode( _data[i], arguments.queryFormat, arguments.queryKeyCase, arguments.stringNumbers, arguments.formatDates, arguments.columnListFormat ) />
+					<cfset tempVal = encode( _data[i], arguments.queryFormat, arguments.queryKeyCase, arguments.stringNumbers, arguments.formatDates, arguments.columnListFormat, arguments.keyCase ) />
 				</cfif>
 				
 				<cfif dJSONString.toString() EQ "">
@@ -330,7 +330,7 @@ Modifications:
 					<cfset tempVal = "null">
 				<cfelse>
 					<!--- Get Encoded Value --->
-					<cfset tempVal = encode( _data[ arKeys[i] ], arguments.queryFormat, arguments.queryKeyCase, arguments.stringNumbers, arguments.formatDates, arguments.columnListFormat ) />
+					<cfset tempVal = encode( _data[ arKeys[i] ], arguments.queryFormat, arguments.queryKeyCase, arguments.stringNumbers, arguments.formatDates, arguments.columnListFormat, arguments.keyCase ) />
 				</cfif>
 				
 				<!--- Key to lower Case? --->
@@ -393,7 +393,7 @@ Modifications:
 					
 					<cfloop from="1" to="#_data.recordcount#" index="i">
 						<!--- Get cell value; recurse to get proper format depending on string/number/boolean data type --->
-						<cfset tempVal = encode( _data[column][i], arguments.queryFormat, arguments.queryKeyCase, arguments.stringNumbers, arguments.formatDates, arguments.columnListFormat ) />
+						<cfset tempVal = encode( _data[column][i], arguments.queryFormat, arguments.queryKeyCase, arguments.stringNumbers, arguments.formatDates, arguments.columnListFormat, arguments.keyCase ) />
 						
 						<cfif i GT 1>
 							<cfset dJSONString.append(",") />
@@ -416,7 +416,7 @@ Modifications:
 					<cfset dJSONString.append("{") />
 					<cfset colPos = 1 />
 					<cfloop list="#columnlist#" delimiters="," index="column">
-						<cfset tempVal = encode( _data[column][CurrentRow], arguments.queryFormat, arguments.queryKeyCase, arguments.stringNumbers, arguments.formatDates, arguments.columnListFormat ) />
+						<cfset tempVal = encode( _data[column][CurrentRow], arguments.queryFormat, arguments.queryKeyCase, arguments.stringNumbers, arguments.formatDates, arguments.columnListFormat, arguments.keyCase ) />
 						
 						<cfif colPos GT 1>
 							<cfset dJSONString.append(",") />
