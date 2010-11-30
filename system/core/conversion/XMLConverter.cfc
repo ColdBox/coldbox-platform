@@ -99,27 +99,30 @@ Modifications
 		
 		//Create Root
 		buffer.append("<#rootElement#>");
-		
-		//Data
-		for(;x lte dataLen; x=x+1){
-			thisValue = target.get(x-1);
-			if( NOT isDefined("thisValue") ){
-				thisValue = "NULL";
-			}
-			if( NOT isSimpleValue(thisValue) ){
-				thisValue = translateValue(arguments,thisValue);
-			}
-			else{
-				thisValue = safeText(thisValue,arguments.useCDATA);
-			}
-			buffer.append("<#itemElement#>#thisValue#</#itemElement#>");
-		}
-		
-		//End Root
-		buffer.append("</#rootElement#>");
-		
-		return buffer.toString();
 		</cfscript>
+		
+		<cfloop from="1" to="#dataLen#" index="x">
+			
+			<cfparam name="target[x]" default="_INVALID_">
+			
+			<cfif isSimpleValue(target[x]) AND target[x] EQ "_INVALID_">
+				<cfset thisValue = "NULL">
+			<cfelse>
+				<cfset thisValue = target[x]>
+			</cfif>
+			
+			<cfif NOT isSimpleValue(thisValue)>
+				<cfset thisValue = translateValue(arguments, thisValue)>
+			<cfelse>
+				<cfset thisValue = safeText(thisValue,arguments.useCDATA)>
+			</cfif>
+			
+			<cfset buffer.append("<#itemElement#>#thisValue#</#itemElement#>")>
+		</cfloop>
+		
+		<cfset buffer.append("</#rootElement#>")>
+		
+		<cfreturn buffer.toString()>
 	</cffunction>
 	
 	<cffunction name="queryToXML" returnType="string" access="public" output="false" hint="Converts a query to XML with no headers.">

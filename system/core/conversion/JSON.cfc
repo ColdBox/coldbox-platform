@@ -271,7 +271,6 @@ Modifications:
 		<cfset var dJSONString = "" />
 		<cfset var escapeToVals = "\\,\"",\/,\b,\t,\n,\f,\r" />
 		<cfset var escapeVals = "\,"",/,#Chr(8)#,#Chr(9)#,#Chr(10)#,#Chr(12)#,#Chr(13)#" />
-		<cfset var loc = structnew()>
 		<cfset var _data = arguments.data />
 		
 		<!--- BOOLEAN --->
@@ -299,8 +298,8 @@ Modifications:
 			<cfset dJSONString = createObject('java','java.lang.StringBuffer').init("") />
 			<cfloop from="1" to="#ArrayLen(_data)#" index="i">
 				<!--- Null Checks --->
-				<cfset loc.data = _data.get(i-1)>
-				<cfif NOT structKeyExists(loc,"data")>
+				<cfparam name="_data[i]" default="_INVALID_"/>
+				<cfif isSimpleValue(_data[i]) and _data[i] EQ "_INVALID_">
 					<cfset tempVal = "null">
 				<cfelse>
 					<cfset tempVal = encode( _data[i], arguments.queryFormat, arguments.queryKeyCase, arguments.stringNumbers, arguments.formatDates, arguments.columnListFormat ) />
