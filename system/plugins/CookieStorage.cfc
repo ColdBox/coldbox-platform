@@ -150,9 +150,18 @@ Modification History: March 23,2008 Added new feature to encrypt/decrypt cookie 
 
 	<!--- deleteVar --->
 	<cffunction name="deleteVar" access="public" returntype="boolean" hint="Tries to delete a permanent cookie variable" output="false">
-		<cfargument  name="name" type="string" required="true" 	hint="The variable name to retrieve.">
+		<cfargument  name="name" 	type="string" required="true" 	hint="The variable name to retrieve.">
+		<cfargument name="domain"	type="string" required="false"	default=""	hint="Domain in which cookie is valid and to which cookie content can be sent from the user's system.">
+		<!--- ************************************************************* --->
+		<cfset var args		= StructNew() />
 		<cfif exists(arguments.name)>
-			<cfcookie name="#arguments.name#" expires="NOW" value='NULL'>
+			<cfset args["name"] 	= ucase(arguments.name) />
+			<cfset args["expires"]	= "NOW" />
+			<cfset args["value"]	= "" />
+			<cfif len(arguments.domain)>
+				<cfset args["domain"]	= arguments.domain />
+			</cfif>
+			<cfcookie attributeCollection="#args#">
 			<cfset structdelete(cookie, arguments.name)>
 			<cfreturn true>
 		<cfelse>
