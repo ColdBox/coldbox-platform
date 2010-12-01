@@ -22,57 +22,56 @@ Modification History: March 23,2008 Added new feature to encrypt/decrypt cookie 
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
-	<cffunction name="init" access="public" returntype="CookieStorage" output="false" hint="Constructor.">
-		<!--- ************************************************************* --->
-		<cfargument name="controller" type="any" required="true" hint="coldbox.system.web.Controller">
-		<!--- ************************************************************* --->
+	<cffunction name="init" access="public" returntype="CookieStorage" output="false" hint="Constructor">
+		<cfargument name="controller" type="any" required="true" colddoc:generic="coldbox.system.web.Controller">
 		<cfscript>	
-			super.Init(arguments.controller);
+			super.init(arguments.controller);
 			
-			/* Plugin Properties */
+			// Plugin Properties
 			setpluginName("Cookie Storage");
-			setpluginVersion("1.0");
+			setpluginVersion("2.0");
 			setpluginDescription("A permanent data storage plugin.");
 			setpluginAuthor("Sana Ullah");
 			setpluginAuthorURL("http://www.coldbox.org");
 			
-			/* set CFML engine encryption CF, BD, Railo*/
+			// set CFML engine encryption CF, BD, Railo
 			setEncryptionAlgorithm("CFMX_COMPAT");
 			setEncryptionKey("ColdBoxPlatform");
 			setEncryption(false);
 			setEncryptionEncoding("HEX");
 			
-			/* set defautl alogrithm according to CFML engine */
+			// set defautl alogrithm according to CFML engine
 			if(controller.getCFMLEngine().getEngine() EQ 'BLUEDRAGON'){
 				setEncryptionAlgorithm("BD_DEFAULT");
-			}
-			
-			/* Do we Encrypt. */
+			}			
+			// Do we Encrypt.
 			if(settingExists('CookieStorage_encryption') and isBoolean(getSetting('CookieStorage_encryption'))){
 				setEncryption(getSetting('CookieStorage_encryption'));
 			}
-			/* Override the Seed if sent in. */
+			// Override the Seed if sent in.
 			if(settingExists('CookieStorage_encryption_seed') and len(getSetting('CookieStorage_encryption_seed'))){
 				setEncryptionKey(getSetting('CookieStorage_encryption_seed'));
 			}
-			/* Override the Algorithm if used. */
+			// Override the Algorithm if used.
 			if(settingExists('CookieStorage_encryption_algorithm') and len(getSetting('CookieStorage_encryption_algorithm'))){
 				setEncryptionAlgorithm(getSetting('CookieStorage_encryption_algorithm'));
 			}
-			/* Override the encoding if used. */
+			// Override the encoding if used.
 			if(settingExists('CookieStorage_encryption_encoding') and len(getSetting('CookieStorage_encryption_encoding'))){
 				setEncryptionEncoding(getSetting('CookieStorage_encryption_encoding'));
 			}
 			
-			/* Return Instance. */
+			// JSON utility
+			instance.json = getPlugin("JSON");
+			
 			return this;
 		</cfscript>
 	</cffunction>
 
 <!------------------------------------------- PUBLIC ------------------------------------------->
 
-	<!--- Set A Cookie --->
-	<cffunction name="setVar" access="public" returntype="void" hint="Set a new permanent variable." output="false">
+	<!--- setVar --->
+	<cffunction name="setVar" access="public" returntype="void" hint="Set a new permanent variable in the storage." output="false">
 		<!--- ************************************************************* --->
 		<cfargument name="name"  	type="string" 	required="true"  hint="The name of the variable.">
 		<cfargument name="value" 	type="any"    	required="true"  hint="The value to set in the variable, simple, array, query or structure.">
@@ -81,20 +80,16 @@ Modification History: March 23,2008 Added new feature to encrypt/decrypt cookie 
 		<cfargument name="path"		type="string"	required="false"	default=""		hint="URL, within a domain, to which the cookie applies; typically a directory. Only pages in this path can use the cookie. By default, all pages on the server that set the cookie can access the cookie.">
 		<cfargument name="domain"	type="string"	required="false"	default=""		hint="Domain in which cookie is valid and to which cookie content can be sent from the user's system.">
 		<!--- ************************************************************* --->
+		
 		<cfset var tmpVar	= "">
 		<cfset var args		= StructNew()>
 		
-		<!--- Test for simple mode --->
-		<cfif isSimpleValue(arguments.value)>
-			<cfset tmpVar = arguments.value>
-		<cfelse>
-			<!--- Wddx variable --->
-			<cfwddx action="cfml2wddx" input="#arguments.value#" output="tmpVar">
-		</cfif>
+		<!--- JSON storage --->
+		<cfset tmpVar = instance.json.encode(arguments.value)>
 		
 		<!--- Encryption? --->
 		<cfif getEncryption()>
-			<cfset tmpVar = EncryptIt(tmpVar)>		
+			<cfset tmpVar = encryptIt(tmpVar)>		
 		</cfif>
 		
 		<!--- Store cookie with expiration info --->
@@ -119,13 +114,10 @@ Modification History: March 23,2008 Added new feature to encrypt/decrypt cookie 
 		<cfcookie attributeCollection="#args#" />
 	</cffunction>
 
-	<!--- Get a Cookie Var --->
-	<cffunction name="getVar" access="public" returntype="any" hint="Get a new permanent variable. If the cookie does not exist. The method returns blank." output="false">
-		<!--- ************************************************************* --->
+	<!--- getVar --->
+	<cffunction name="getVar" access="public" returntype="any" hint="Get a new permanent variable. If the cookie does not exist. The method returns blank or use the default value argument" output="false">
 		<cfargument  name="name" 		type="string"  required="true" 		hint="The variable name to retrieve.">
 		<cfargument  name="default"  	type="any"     required="false"  	hint="The default value to set. If not used, a blank is returned." default="">
-		<!--- ************************************************************* --->
-		<cfset var wddxVar = "">
 		<cfset var rtnVar = "">
 		
 		<cfif exists(arguments.name)>
@@ -134,35 +126,31 @@ Modification History: March 23,2008 Added new feature to encrypt/decrypt cookie 
 			
 			<!--- Decrypt? --->
 			<cfif getEncryption() and rtnVar.length()>
-				<cfset rtnVar = DecryptIt(rtnVar)>
+				<cfset rtnVar = decryptIt(rtnVar)>
 			</cfif>
 			
-			<cfif isWDDX(rtnVar)>
-				<!--- Unwddx packet --->
-				<cfwddx action="wddx2cfml" input="#rtnVar#" output="wddxVar">
-				<cfset rtnVar = wddxVar>
+			<!--- Deserialize it with length --->
+			<cfif rtnVar.length()>
+				<cfset rtnVar = instance.json.decode(rtnVar)>
 			</cfif>
 		<cfelse>
 			<!--- Return the default value --->
 			<cfset rtnVar = arguments.default>
 		</cfif>
+		
 		<!--- Return Var --->
 		<cfreturn rtnVar>
 	</cffunction>
 
-	<!--- Check if a cookie value exists --->
-	<cffunction name="exists" access="public" returntype="boolean" hint="Checks wether the permanent variable exists." output="false">
-		<!--- ************************************************************* --->
+	<!--- exists --->
+	<cffunction name="exists" access="public" returntype="boolean" hint="Checks wether the permanent variable exists in the storage" output="false">
 		<cfargument  name="name" type="string" required="true" 	hint="The variable name to retrieve.">
-		<!--- ************************************************************* --->
 		<cfreturn structKeyExists(cookie,uCase(arguments.name))>
 	</cffunction>
 
-	<!--- Delete a Cookie Value --->
-	<cffunction name="deleteVar" access="public" returntype="boolean" hint="Tries to delete a permanent cookie var." output="false">
-		<!--- ************************************************************* --->
+	<!--- deleteVar --->
+	<cffunction name="deleteVar" access="public" returntype="boolean" hint="Tries to delete a permanent cookie variable" output="false">
 		<cfargument  name="name" type="string" required="true" 	hint="The variable name to retrieve.">
-		<!--- ************************************************************* --->
 		<cfif exists(arguments.name)>
 			<cfcookie name="#arguments.name#" expires="NOW" value='NULL'>
 			<cfset structdelete(cookie, arguments.name)>
@@ -173,37 +161,37 @@ Modification History: March 23,2008 Added new feature to encrypt/decrypt cookie 
 	</cffunction>
 	
 	<!--- Get/Set Encryption Key --->
-	<cffunction name="getEncryptionKey" access="public" output="false" returntype="string" hint="Get EncryptionKey">
+	<cffunction name="getEncryptionKey" access="public" output="false" returntype="string" hint="Get the EncryptionKey">
 		<cfreturn instance.EncryptionKey/>
 	</cffunction>
-	<cffunction name="setEncryptionKey" access="public" output="false" returntype="void" hint="Set EncryptionKey">
+	<cffunction name="setEncryptionKey" access="public" output="false" returntype="void" hint="Set EncryptionKey for this storage">
 		<cfargument name="EncryptionKey" type="string" required="true"/>
 		<cfset instance.EncryptionKey = arguments.EncryptionKey/>
 	</cffunction>
 
 	<!--- Get/Set Encryption Algorithm --->
-	<cffunction name="getEncryptionAlgorithm" access="public" output="false" returntype="string" hint="Get EncryptionAlgorithm">
+	<cffunction name="getEncryptionAlgorithm" access="public" output="false" returntype="string" hint="Get the EncryptionAlgorithm">
 		<cfreturn instance.EncryptionAlgorithm/>
 	</cffunction>
-	<cffunction name="setEncryptionAlgorithm" access="public" output="false" returntype="void" hint="Set EncryptionAlgorithm">
+	<cffunction name="setEncryptionAlgorithm" access="public" output="false" returntype="void" hint="Set EncryptionAlgorithm for this storage">
 		<cfargument name="EncryptionAlgorithm" type="string" required="true"/>
 		<cfset instance.EncryptionAlgorithm = arguments.EncryptionAlgorithm/>
 	</cffunction>
 	
 	<!--- Get/set Encrypting values or not. --->
-	<cffunction name="getEncryption" access="public" output="false" returntype="boolean" hint="Get Encryption">
+	<cffunction name="getEncryption" access="public" output="false" returntype="boolean" hint="Get Encryption flag">
 		<cfreturn instance.Encryption/>
 	</cffunction>
-	<cffunction name="setEncryption" access="public" output="false" returntype="void" hint="Set Encryption">
+	<cffunction name="setEncryption" access="public" output="false" returntype="void" hint="Set Encryption flag">
 		<cfargument name="Encryption" type="boolean" required="true"/>
 		<cfset instance.Encryption = arguments.Encryption/>
 	</cffunction>
 	
 	<!--- Encryption Encoding --->
-	<cffunction name="getEncryptionEncoding" access="public" output="false" returntype="string" hint="Get EncryptionEncoding">
+	<cffunction name="getEncryptionEncoding" access="public" output="false" returntype="string" hint="Get EncryptionEncoding value">
 		<cfreturn instance.EncryptionEncoding/>
 	</cffunction>	
-	<cffunction name="setEncryptionEncoding" access="public" output="false" returntype="void" hint="Set EncryptionEncoding">
+	<cffunction name="setEncryptionEncoding" access="public" output="false" returntype="void" hint="Set EncryptionEncoding value">
 		<cfargument name="EncryptionEncoding" type="string" required="true"/>
 		<cfset instance.EncryptionEncoding = arguments.EncryptionEncoding/>
 	</cffunction>
@@ -211,15 +199,14 @@ Modification History: March 23,2008 Added new feature to encrypt/decrypt cookie 
 <!------------------------------------------- PUBLIC ------------------------------------------->
 
 	<!--- Encrypt Data --->
-	<cffunction name="EncryptIt" access="private" returntype="Any" hint="Return encypted value" output="false">
-		<cfargument name="encValue" hint="string to be encrypted" required="yes" type="string" />
+	<cffunction name="encryptIt" access="private" returntype="any" hint="Return encrypted value" output="false">
+		<cfargument name="encValue" hint="string to be encrypted" required="true" type="string" />
 		<cfreturn encrypt(arguments.encValue,getEncryptionKey(),getEncryptionAlgorithm(),getEncryptionEncoding()) />		
 	</cffunction>
 	
-	
 	<!--- Decrypt Data --->
-	<cffunction name="DecryptIt" access="private" returntype="Any" hint="Return decrypted value" output="false">
-		<cfargument name="decValue" hint="string to be decrypted" required="yes" type="string" />
+	<cffunction name="decryptIt" access="private" returntype="any" hint="Return decrypted value" output="false">
+		<cfargument name="decValue" hint="string to be decrypted" required="true" type="string" />
 		<cfreturn decrypt(arguments.decValue,getEncryptionKey(),getEncryptionAlgorithm(),getEncryptionEncoding()) />		
 	</cffunction>
 	
