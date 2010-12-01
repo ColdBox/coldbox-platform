@@ -509,9 +509,11 @@ Only one instance of a specific ColdBox application exists.
 			if( ehBean.getViewDispatch() ){
 				return;
 			}
-			
-			try{
-
+		</cfscript>
+		
+		<!--- break cfscript here because we need to <cfrethrow> at the end --->
+		<cftry>		
+			<cfscript>
 				// Determine if it is An allowed HTTP method to execute, else throw error
 				if( NOT structIsEmpty(oHandler.allowedMethods) AND
 					structKeyExists(oHandler.allowedMethods,ehBean.getMethod()) AND
@@ -618,18 +620,19 @@ Only one instance of a specific ColdBox application exists.
 					interceptorService.processState("postEvent",iData);
 
 				}// end if prePostExempt
-
-			}// end of try
-			catch(Any e){
-				// Check if onError exists?
-				if( oHandler._actionExists("onError") ){
-					loc.results = oHandler.onError(oRequestContext,ehBean.getmethod(),e,arguments.eventArguments);
-				}
-				else{
-					getUtil().rethrowit(e);
-				}
-			}
-
+			</cfscript>
+			<cfcatch>
+				<!--- Check if onError exists? --->
+				<cfif oHandler._actionExists("onError")>
+					<cfset loc.results = oHandler.onError(oRequestContext,ehBean.getmethod(),e,arguments.eventArguments)>
+				<cfelse>
+					<!--- rethrow not supported in cfscript <cfthrow object="e"> doesn't work properly as we lose context --->
+					<cfrethrow>
+				</cfif>
+			</cfcatch>
+		</cftry>
+		
+		<cfscript>
 			// Check if sending back results
 			if( structKeyExists(loc,"results") ){
 				return loc.results;
