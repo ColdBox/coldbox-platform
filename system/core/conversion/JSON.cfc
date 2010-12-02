@@ -253,7 +253,7 @@ Modifications:
 		<cfargument name="stringNumbers" 	type="boolean" 	required="No" default="false" >
 		<cfargument name="formatDates" 		type="boolean" 	required="No" default="false" >
 		<cfargument name="columnListFormat" type="string" 	required="No" default="string" hint="string or array" >
-		<cfargument name="keyCase"			type="string" 	required="No" default="lower"  hint="lower or upper"/>
+		<cfargument name="keyCase"			type="string" 	required="No" default="lower"  hint="lower, none or upper"/>
 		<!--- ************************************************************* --->
 		
 		<!--- VARIABLE DECLARATION --->
@@ -336,6 +336,8 @@ Modifications:
 				<!--- Key to lower Case? --->
 				<cfif arguments.keyCase EQ "lower">
 					<cfset arKey = LCASE(arKeys[i]) />
+				<cfelseif arguments.keyCase EQ "none">
+					<cfset arKey = arKeys[i] />
 				<cfelse>
 					<cfset arKey = UCASE(arKeys[i]) />
 				</cfif>
