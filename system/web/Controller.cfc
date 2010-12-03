@@ -360,7 +360,7 @@ Only one instance of a specific ColdBox application exists.
 		<cfargument name="addToken"				required="false" type="boolean" default="false"	hint="Wether to add the tokens or not. Default is false">
 		<cfargument name="persist" 				required="false" type="string"  default="" hint="What request collection keys to persist in flash ram">
 		<cfargument name="persistStruct" 		required="false" type="struct"  default="#structnew()#" hint="A structure key-value pairs to persist in flash ram.">
-		<cfargument name="ssl"					required="false" type="boolean" default="false"	hint="Whether to relocate in SSL or not">
+		<cfargument name="ssl"					required="false" type="boolean" hint="Whether to relocate in SSL or not. You need to explicitly say TRUE or FALSE if going out from SSL. If none passed, we look at the even's SES base URL (if in SES mode)">
 		<cfargument name="baseURL" 				required="false" type="string"  default="" hint="Use this baseURL instead of the index.cfm that is used by default. You can use this for ssl or any full base url you would like to use. Ex: https://mysite.com/index.cfm"/>
 		<cfargument name="postProcessExempt"    required="false" type="boolean" default="false" hint="Do not fire the postProcess interceptors">
 		<cfargument name="URL"  				required="false" type="string"  hint="The full URL you would like to relocate to instead of an event: ex: URL='http://www.google.com'"/>
@@ -419,9 +419,11 @@ Only one instance of a specific ColdBox application exists.
 					if( right(relocationURL,1) neq "/" ){ relocationURL = relocationURL & "/"; }
 
 					// Check SSL?
-					if( arguments.ssl ){  relocationURL = replacenocase(relocationURL,"http:","https:"); }
-					else{ relocationURL = replacenocase(relocationURL,"https:","http:"); }
-
+					if( structKeyExists(arguments, "ssl") ){
+						if( arguments.ssl ){  relocationURL = replacenocase(relocationURL,"http:","https:"); }
+						else{ relocationURL = replacenocase(relocationURL,"https:","http:"); }
+					}
+					
 					// Finalize the URL
 					relocationURL = relocationURL & routeString;
 
