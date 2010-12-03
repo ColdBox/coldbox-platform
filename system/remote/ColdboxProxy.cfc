@@ -31,61 +31,64 @@ Description :
 		<cfset var refLocal = structnew()>
 		<cfset var interceptData = structnew()>
 		<cfsetting showdebugoutput="false">
-		<cfscript>
-			
+		
+		<cftry>
+			<cfscript>
 			// Locate ColdBox Controller
 			cbController = getController();
 			
-			try{
-				// Trace the incoming arguments for debuggers
-				tracer('Process: Incoming arguments',arguments);
-				
-				// Create the request context
-				event = cbController.getRequestService().requestCapture();
-				
-				// Test event Name in the arguemnts.
-				if( not structKeyExists(arguments,event.getEventName()) ){
-					getUtil().throwit("Event not detected","The #event.geteventName()# variable does not exist in the arguments.");
-				}
-				
-				//Append the arguments to the collection
-				event.collectionAppend(arguments,true);
-				//Set that this is a proxy request.
-				event.setProxyRequest();
-				
-				//Execute the app start handler if not fired already
-				if ( cbController.getSetting("ApplicationStartHandler") neq "" and (not cbController.getAppStartHandlerFired()) ){
-					cbController.runEvent(cbController.getSetting("ApplicationStartHandler"),true);
-					cbController.setAppStartHandlerFired(true);
-				}
-				
-				//Execute a pre process interception.
-				cbController.getInterceptorService().processState("preProcess");
-				
-				//Request Start Handler if defined
-				if ( cbController.getSetting("RequestStartHandler") neq "" ){
-					cbController.runEvent(cbController.getSetting("RequestStartHandler"),true);
-				}
-					
-				//Execute the Event
-				refLocal.results = cbController.runEvent(default=true);
-				
-				//Request END Handler if defined
-				if ( cbController.getSetting("RequestEndHandler") neq "" ){
-					cbController.runEvent(cbController.getSetting("RequestEndHandler"),true);
-				}
-				
-				//Execute the post process interceptor
-				cbController.getInterceptorService().processState("postProcess");
-				
-				// Request Profilers for debuggers.
-				pushTimers();
+			// Trace the incoming arguments for debuggers
+			tracer('Process: Incoming arguments',arguments);
+			
+			// Create the request context
+			event = cbController.getRequestService().requestCapture();
+			
+			// Test event Name in the arguemnts.
+			if( not structKeyExists(arguments,event.getEventName()) ){
+				getUtil().throwit("Event not detected","The #event.geteventName()# variable does not exist in the arguments.");
 			}
-			catch(Any e){
-				handleException(e);
-				getUtil().rethrowit(e);
+			
+			//Append the arguments to the collection
+			event.collectionAppend(arguments,true);
+			//Set that this is a proxy request.
+			event.setProxyRequest();
+			
+			//Execute the app start handler if not fired already
+			if ( cbController.getSetting("ApplicationStartHandler") neq "" and (not cbController.getAppStartHandlerFired()) ){
+				cbController.runEvent(cbController.getSetting("ApplicationStartHandler"),true);
+				cbController.setAppStartHandlerFired(true);
+			}
+			
+			//Execute a pre process interception.
+			cbController.getInterceptorService().processState("preProcess");
+			
+			//Request Start Handler if defined
+			if ( cbController.getSetting("RequestStartHandler") neq "" ){
+				cbController.runEvent(cbController.getSetting("RequestStartHandler"),true);
 			}
 				
+			//Execute the Event
+			refLocal.results = cbController.runEvent(default=true);
+			
+			//Request END Handler if defined
+			if ( cbController.getSetting("RequestEndHandler") neq "" ){
+				cbController.runEvent(cbController.getSetting("RequestEndHandler"),true);
+			}
+			
+			//Execute the post process interceptor
+			cbController.getInterceptorService().processState("postProcess");
+			
+			// Request Profilers for debuggers.
+			pushTimers();
+			</cfscript>
+		
+			<cfcatch>
+				<cfset handleException(cfcatch)>
+				<cfrethrow>
+			</cfcatch>
+		</cftry>
+		
+		<cfscript>	
 			// Determine what to return via the setting for proxy calls, no preProxyReturn because we can just listen to the collection
 			if ( cbController.getSetting("ProxyReturnCollection") ){
 				// Return request collection
@@ -130,23 +133,17 @@ Description :
 		<cfargument name="state" 			type="string" 	required="true" hint="The intercept state"/>
 		<cfargument name="interceptData"    type="any" 	    required="false" default="#structNew()#" hint="This method will take the contents and embedded into a structure"/>
 		<!--- ************************************************************* --->
-		<cfscript>
-			var cbController = getController();
-			
-			// Intercept
-			try{
-				cbController.getInterceptorService().processState(arguments.state,arguments.interceptData);
-			}
-			catch(Any e){
-				handleException(e);				
-				getUtil().rethrowit(e);
-			}
-			
-			// Request Profilers
-			pushTimers();
-			
-			return true;
-		</cfscript>
+		
+		<cfset var cbController = getController()>
+		<cftry>
+			<cfset cbController.getInterceptorService().processState(arguments.state,arguments.interceptData)>
+			<cfcatch>
+				<cfset handleException(cfcatch)>
+				<cfrethrow>
+			</cfcatch>
+		</cftry>  
+		<cfset pushTimers()>
+		<cfreturn true>
 	</cffunction>
 		
 	<!--- handleException --->
