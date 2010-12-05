@@ -235,7 +235,7 @@ Optional Methods
 		//Interceptor Settings
 		interceptorSettings = {
 			throwOnInvalidStates = false,
-			customInterceptionPoints = ""
+			customInterceptionPoints = "customOutput"
 		};
 		
 		//Register interceptors as an array, we need order
