@@ -102,7 +102,7 @@ Optional Methods
 		
 		// Modules Configuration
 		modules = {
-			autoReload = true,
+			autoReload = false,
 			exclude    = [],
 			include    = []
 		};

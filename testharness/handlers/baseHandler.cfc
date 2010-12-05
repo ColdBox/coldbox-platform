@@ -17,15 +17,5 @@ Sep/25/2005 - Luis Majano
 <!--- Autowire --->
 <cfproperty name="badService" type="ioc" scope="instance">
 
-	<cffunction name="doColdboxFactoryTests" access="public" returntype="any" hint="" output="false" >
-		<cfargument name="Event" type="coldbox.system.web.context.RequestContext">
-		<cfscript>
-		var rc = event.getCollection();
-		
-		rc.testModel = getPlugin("IOC").getBean("testModel");
-		
-		event.setView("coldboxfactory");
-		</cfscript>
-	</cffunction>
 
 </cfcomponent>

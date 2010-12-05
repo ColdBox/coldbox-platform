@@ -6,7 +6,6 @@
 <p><a href="#event.buildLink('log.ehTest.dspApi')#">Call Package Event</a></p>
 <p><a href="#getSetting("sesbaseURL")#?fwreinit=1">RELOAD</a></p>
 <p><a href="#getSetting("sesbaseURL")#?#getController().getSetting("eventName")#=testing">Error</a></p>
-<p><a href="#getSetting("sesbaseURL")#?#getController().getSetting("eventName")#=ehGeneral.doColdboxFactoryTests">ColdBox Factory Tests</a></p>
 <p><a href="#getSetting("sesbaseURL")#?#getController().getSetting("eventName")#=ehGeneral.testflash">Test Flash Persist</a></p>
 <p><a href="#getSetting("sesbaseURL")#?#getController().getSetting("eventName")#=ehGeneral.purgeEvents">Purge All Events</a></p>
 <hr>
@@ -22,4 +21,5 @@
 <p><a href="#getSetting("sesbaseURL")#?#getController().getSetting("eventName")#=default">Default Handler</a></p>
 
 <p><a href="#getSetting("sesbaseURL")#?#getController().getSetting("eventName")#=default.protect">PreHandler Protection</a></p>
+<p><a href="#event.buildLink('ehGeneral.viewcaching')#">View Caching With Suffix</a></p>
 </cfoutput>
