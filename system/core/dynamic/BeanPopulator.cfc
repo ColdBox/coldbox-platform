@@ -16,7 +16,7 @@ Description :
     <cffunction name="init" output="false" access="public" returntype="BeanPopulator" hint="Constructor">
     	<cfscript>
     		JSONUtil  = createObject("component","coldbox.system.core.conversion.JSON").init();
-			mixerUtil = createObject("component","coldbox.system.core.dynamic.MethodInjector").init();
+			mixerUtil = createObject("component","coldbox.system.core.dynamic.MixerUtil").init();
 			
 			return this;
 		</cfscript>

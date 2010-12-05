@@ -130,12 +130,13 @@ Description :
 	<!--- process an interception --->
 	<cffunction name="announceInterception" output="false" access="private" returntype="boolean" hint="Process a remote interception">
 		<!--- ************************************************************* --->
-		<cfargument name="state" 			type="string" 	required="true" hint="The intercept state"/>
-		<cfargument name="interceptData"    type="any" 	    required="false" default="#structNew()#" hint="This method will take the contents and embedded into a structure"/>
+		<cfargument name="state" 			type="string" 	required="true"  hint="The intercept state"/>
+		<cfargument name="interceptData"    type="any" 	    required="false" hint="This intercept data structure to announce with"/>
 		<!--- ************************************************************* --->
 		
 		<cfset var cbController = getController()>
 		<cftry>
+			<cfif NOT structKeyExists(arguments,"interceptData")><cfset arguments.interceptData = structnew()></cfif>
 			<cfset cbController.getInterceptorService().processState(arguments.state,arguments.interceptData)>
 			<cfcatch>
 				<cfset handleException(cfcatch)>

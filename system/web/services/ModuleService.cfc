@@ -403,8 +403,8 @@ I oversee and manage ColdBox modules
 			var x=1;
 
 			//Decorate It
-			oConfig.injectPropertyMixin = getUtil().injectPropertyMixin;
-			oConfig.getPropertyMixin 	= getUtil().getPropertyMixin;
+			oConfig.injectPropertyMixin = getUtil().getMixerUtil().injectPropertyMixin;
+			oConfig.getPropertyMixin 	= getUtil().getMixerUtil().getPropertyMixin;
 
 			//MixIn Variables
 			oConfig.injectPropertyMixin("controller",controller);

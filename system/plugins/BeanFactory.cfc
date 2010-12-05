@@ -62,10 +62,11 @@ Description: This is the framework's simple bean factory.
 
 			// Setup the Autowire DI Dictionary
 			setDICacheDictionary(CreateObject("component","coldbox.system.core.collections.BaseDictionary").init('DIMetadata'));
-
 			// Bean Populator
 			instance.beanPopulator = createObject("component","coldbox.system.core.dynamic.BeanPopulator").init();
-
+			// Mixer util
+			instance.mixerUtil     = CreateObject("component","coldbox.system.core.dynamic.MixerUtil").init();
+			
 			// Configure the plugin
 			configure();
 
@@ -615,10 +616,7 @@ Description: This is the framework's simple bean factory.
 			var targetDIEntry = "";
 			var dependenciesLength = 0;
 			var x = 1;
-			var tmpBean = "";
-
-			// Helpers
-			var oMethodInjector = '';
+			var tmpBean = "";		
 		</cfscript>
 
 		<!--- Do we have the incoming target object's data in the cache? or caching disabled for objects --->
@@ -671,10 +669,8 @@ Description: This is the framework's simple bean factory.
 			// Dependencies Length
 			dependenciesLength = arrayLen(targetDIEntry.dependencies);
 			if( dependenciesLength gt 0 ){
-				// References
-				oMethodInjector = getPlugin("MethodInjector");
 				// Let's inject our mixins
-				oMethodInjector.start(targetObject);
+				instance.mixerUtil.start(targetObject);
 
 				// Loop over dependencies and inject
 				for(x=1; x lte dependenciesLength; x=x+1){
@@ -683,7 +679,9 @@ Description: This is the framework's simple bean factory.
 
 					// Was dependency Found?
 					if( isSimpleValue(thisDependency) and thisDependency eq instance.NOT_FOUND ){
-						log.debug("Dependency: #targetDIEntry.dependencies[x].toString()# Not Found when wiring #getMetadata(arguments.target).name#");
+						if( log.canDebug() ){
+							log.debug("Dependency: #targetDIEntry.dependencies[x].toString()# Not Found when wiring #getMetadata(arguments.target).name#");
+						}
 						continue;
 					}
 
@@ -693,7 +691,9 @@ Description: This is the framework's simple bean factory.
 							   beanObject=thisDependency,
 							   scope=targetDIEntry.dependencies[x].scope);
 
-					log.debug("Dependency: #targetDIEntry.dependencies[x].toString()# --> injected into #getMetadata(targetObject).name#.");
+					if( log.canDebug() ){
+						log.debug("Dependency: #targetDIEntry.dependencies[x].toString()# --> injected into #getMetadata(targetObject).name#.");
+					}
 				}//end for loop of dependencies.
 
 				// Process After ID Complete
@@ -745,7 +745,9 @@ Description: This is the framework's simple bean factory.
 				// Get Dependency
 				thisDependency = getDSLDependency(definition=definition);
 				if( isSimpleValue(thisDependency) and thisDependency eq instance.NOT_FOUND ){
-					log.debug("Constructor Dependency: #definition.toString()# not found when wiring model: #getMetaData(arguments.model).name#, skipping");
+					if( log.canDebug() ){
+						log.debug("Constructor Dependency: #definition.toString()# not found when wiring model: #getMetaData(arguments.model).name#, skipping");
+					}
 				}
 				else{
 					args[definition.name] = thisDependency;
@@ -872,7 +874,7 @@ Description: This is the framework's simple bean factory.
 					locatedDependency = evaluate("locatedDependency.#thisLocationKey#()");
 				}
 			}
-			else{
+			else if( log.canDebug() ){
 				log.debug("getModelDSL() cannot find model object #args.name# using definition #arguments.definition.toString()#");
 			}
 
@@ -1013,7 +1015,7 @@ Description: This is the framework's simple bean factory.
 					if( thisCacheBox.cacheExists( cacheName ) ){
 						locatedDependency = thisCacheBox.getCache( cacheName );
 					}
-					else{
+					else if( log.canDebug() ){
 						log.debug("getOCMDependency() cannot find named cache #cacheName# using definition: #arguments.definition.toString()#. Existing cache names are #thisCacheBox.getCacheNames().toString#");
 					}
 
@@ -1028,7 +1030,7 @@ Description: This is the framework's simple bean factory.
 					if( thisCacheBox.getCache( cacheName ).lookup( cacheElement ) ){
 						locatedDependency = thisCacheBox.getCache( cacheName ).get( cacheElement );
 					}
-					else{
+					else if( log.canDebug() ){
 						log.debug("getOCMDependency() cannot find cache Key: #cacheElement# in the #cacheName# cache using definition: #arguments.definition.toString()#");
 					}
 
@@ -1068,7 +1070,7 @@ Description: This is the framework's simple bean factory.
 			if( oIOC.getIOCFactory().containsBean(thisLocationKey) ){
 				locatedDependency = oIOC.getBean(thisLocationKey);
 			}
-			else{
+			else if( log.canDebug() ){
 				log.debug("getIOCDependency() cannot find IOC Bean: #thisLocationKey# using definition: #arguments.definition.toString()#");
 			}
 
@@ -1101,7 +1103,7 @@ Description: This is the framework's simple bean factory.
 			if( oOCM.lookup(thisLocationKey) ){
 				locatedDependency = oOCM.get(thisLocationKey);
 			}
-			else{
+			else if( log.canDebug() ){
 				log.debug("getOCMDependency() cannot find cache Key: #thisLocationKey# using definition: #arguments.definition.toString()#");
 			}
 
