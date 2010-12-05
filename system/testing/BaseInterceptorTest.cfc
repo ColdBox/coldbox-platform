@@ -34,12 +34,13 @@ Description :
 			variables.interceptor = mockBox.createMock(md.interceptor);
 			
 			// Create Mock Objects
-			variables.mockController = mockBox.createEmptyMock("coldbox.system.testing.mock.web.MockController");
-			variables.mockRequestService = mockBox.createEmptyMock("coldbox.system.web.services.RequestService");
-			variables.mockLogBox	 = mockBox.createEmptyMock("coldbox.system.logging.LogBox");
-			variables.mockLogger	 = mockBox.createEmptyMock("coldbox.system.logging.Logger");
-			variables.mockFlash		 = mockBox.createMock("coldbox.system.web.flash.MockFlash").init(mockController);
-			variables.mockCacheBox   = mockBox.createEmptyMock("coldbox.system.cache.CacheFactory");
+			variables.mockController 	 = mockBox.createEmptyMock("coldbox.system.testing.mock.web.MockController");
+			variables.mockRequestContext = getMockRequestContext();
+			variables.mockRequestService = mockBox.createEmptyMock("coldbox.system.web.services.RequestService").$("getContext", variables.mockRequestContext);
+			variables.mockLogBox	 	 = mockBox.createEmptyMock("coldbox.system.logging.LogBox");
+			variables.mockLogger	 	 = mockBox.createEmptyMock("coldbox.system.logging.Logger");
+			variables.mockFlash		 	 = mockBox.createMock("coldbox.system.web.flash.MockFlash").init(mockController);
+			variables.mockCacheBox   	 = mockBox.createEmptyMock("coldbox.system.cache.CacheFactory");
 			
 			// Mock Plugin Dependencies
 			variables.mockController.$("getLogBox",variables.mockLogBox);
