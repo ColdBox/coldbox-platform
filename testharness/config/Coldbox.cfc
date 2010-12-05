@@ -102,7 +102,7 @@ Optional Methods
 		
 		// Modules Configuration
 		modules = {
-			autoReload = true,
+			autoReload = false,
 			exclude    = [],
 			include    = []
 		};
@@ -235,7 +235,7 @@ Optional Methods
 		//Interceptor Settings
 		interceptorSettings = {
 			throwOnInvalidStates = false,
-			customInterceptionPoints = ""
+			customInterceptionPoints = "customOutput"
 		};
 		
 		//Register interceptors as an array, we need order

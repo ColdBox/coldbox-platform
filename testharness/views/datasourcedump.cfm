@@ -2,6 +2,7 @@
 <cfoutput>
 <cfset mysiteDSNBean = getColdBoxOCM().get("mysiteDSNBean")>
 <h2>Datasource: #mysiteDSNBean.getname()#</h2>
+<p>#now()#</p>
 Database: #mysiteDSNBean.getdbtype()# <br>
 Username: #mysiteDSNBean.getusername()# <br>
 Password: #mysiteDSNBean.getpassword()#

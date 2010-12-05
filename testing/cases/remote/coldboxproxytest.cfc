@@ -74,7 +74,7 @@ Description :
 		
 		//Announce interception
 		makePublic(proxy,"announceInterception");
-		results = proxy.announceInterception(state='onLog',interceptData='');
+		results = proxy.announceInterception(state='onLog');
 		AssertTrue(results,"onLog intercepted");
 		
 		</cfscript>
@@ -124,7 +124,7 @@ Description :
 		var proxy = CreateObject("component","coldbox.testharness.coldboxproxy");
 		var local = structnew();
 		
-		getController().getPlugin("MethodInjector").start(proxy);
+		createObject("component","coldbox.system.core.dynamic.MixerUtil").init().start(proxy);
 		
 		local.load = structnew();
 		local.load.appMapping = "/coldbox/testharness";
@@ -139,8 +139,6 @@ Description :
 		proxy.invokerMixin(method='loadColdbox',argCollection=local.load);
 		
 		
-		/* Stop Injection */
-		getController().getPlugin("MethodInjector").stop(proxy);
 		</cfscript>
 	</cffunction>
 	

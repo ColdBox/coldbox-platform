@@ -253,7 +253,7 @@ Modifications:
 		<cfargument name="stringNumbers" 	type="boolean" 	required="No" default="false" >
 		<cfargument name="formatDates" 		type="boolean" 	required="No" default="false" >
 		<cfargument name="columnListFormat" type="string" 	required="No" default="string" hint="string or array" >
-		<cfargument name="keyCase"			type="string" 	required="No" default="lower"  hint="lower or upper"/>
+		<cfargument name="keyCase"			type="string" 	required="No" default="lower"  hint="lower, none or upper"/>
 		<!--- ************************************************************* --->
 		
 		<!--- VARIABLE DECLARATION --->
@@ -271,7 +271,6 @@ Modifications:
 		<cfset var dJSONString = "" />
 		<cfset var escapeToVals = "\\,\"",\/,\b,\t,\n,\f,\r" />
 		<cfset var escapeVals = "\,"",/,#Chr(8)#,#Chr(9)#,#Chr(10)#,#Chr(12)#,#Chr(13)#" />
-		<cfset var loc = structnew()>
 		<cfset var _data = arguments.data />
 		
 		<!--- BOOLEAN --->
@@ -299,11 +298,11 @@ Modifications:
 			<cfset dJSONString = createObject('java','java.lang.StringBuffer').init("") />
 			<cfloop from="1" to="#ArrayLen(_data)#" index="i">
 				<!--- Null Checks --->
-				<cfset loc.data = _data.get(i-1)>
-				<cfif NOT structKeyExists(loc,"data")>
+				<cfparam name="_data[i]" default="_INVALID_"/>
+				<cfif isSimpleValue(_data[i]) and _data[i] EQ "_INVALID_">
 					<cfset tempVal = "null">
 				<cfelse>
-					<cfset tempVal = encode( _data[i], arguments.queryFormat, arguments.queryKeyCase, arguments.stringNumbers, arguments.formatDates, arguments.columnListFormat ) />
+					<cfset tempVal = encode( _data[i], arguments.queryFormat, arguments.queryKeyCase, arguments.stringNumbers, arguments.formatDates, arguments.columnListFormat, arguments.keyCase ) />
 				</cfif>
 				
 				<cfif dJSONString.toString() EQ "">
@@ -331,12 +330,14 @@ Modifications:
 					<cfset tempVal = "null">
 				<cfelse>
 					<!--- Get Encoded Value --->
-					<cfset tempVal = encode( _data[ arKeys[i] ], arguments.queryFormat, arguments.queryKeyCase, arguments.stringNumbers, arguments.formatDates, arguments.columnListFormat ) />
+					<cfset tempVal = encode( _data[ arKeys[i] ], arguments.queryFormat, arguments.queryKeyCase, arguments.stringNumbers, arguments.formatDates, arguments.columnListFormat, arguments.keyCase ) />
 				</cfif>
 				
 				<!--- Key to lower Case? --->
 				<cfif arguments.keyCase EQ "lower">
 					<cfset arKey = LCASE(arKeys[i]) />
+				<cfelseif arguments.keyCase EQ "none">
+					<cfset arKey = arKeys[i] />
 				<cfelse>
 					<cfset arKey = UCASE(arKeys[i]) />
 				</cfif>
@@ -394,7 +395,7 @@ Modifications:
 					
 					<cfloop from="1" to="#_data.recordcount#" index="i">
 						<!--- Get cell value; recurse to get proper format depending on string/number/boolean data type --->
-						<cfset tempVal = encode( _data[column][i], arguments.queryFormat, arguments.queryKeyCase, arguments.stringNumbers, arguments.formatDates, arguments.columnListFormat ) />
+						<cfset tempVal = encode( _data[column][i], arguments.queryFormat, arguments.queryKeyCase, arguments.stringNumbers, arguments.formatDates, arguments.columnListFormat, arguments.keyCase ) />
 						
 						<cfif i GT 1>
 							<cfset dJSONString.append(",") />
@@ -417,7 +418,7 @@ Modifications:
 					<cfset dJSONString.append("{") />
 					<cfset colPos = 1 />
 					<cfloop list="#columnlist#" delimiters="," index="column">
-						<cfset tempVal = encode( _data[column][CurrentRow], arguments.queryFormat, arguments.queryKeyCase, arguments.stringNumbers, arguments.formatDates, arguments.columnListFormat ) />
+						<cfset tempVal = encode( _data[column][CurrentRow], arguments.queryFormat, arguments.queryKeyCase, arguments.stringNumbers, arguments.formatDates, arguments.columnListFormat, arguments.keyCase ) />
 						
 						<cfif colPos GT 1>
 							<cfset dJSONString.append(",") />

@@ -5,11 +5,10 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 ********************************************************************************
 
 Author     :	Luis Majano
-Date        :	9/28/2007
 Description :
-	This object invokes methods
+	This object invokes methods on target CFCs
 ----------------------------------------------------------------------->
-<cfcomponent hint="Dynamic invokes a method on a CFC by its name" output="false">
+<cfcomponent hint="This object invokes methods on target CFCs" output="false">
 
 <!------------------------------------------- CONSTRUCTOR ------------------------------------------->
 
@@ -22,9 +21,9 @@ Description :
 <!------------------------------------------- PUBLIC ------------------------------------------->
 
 	<cffunction name="invokeMethod" hint="Invokes a method and returns its result. If no results, then it returns null" access="public" returntype="any" output="false">
-		<cfargument name="component"	type="any" 		required="true" hint="The component to invoke against">
-		<cfargument name="methodName" 	type="string" 	required="true" hint="The name of the method">
-		<cfargument name="args" 		type="struct" 	required="false" default="#structNew()#" hint="Argument Collection to pass in">
+		<cfargument name="component"	required="true" hint="The component to invoke against">
+		<cfargument name="methodName"   required="true" hint="The name of the method to invoke">
+		<cfargument name="args" 		required="false" default="#structNew()#" hint="Argument Collection to pass in to execution">
 	
 		<cfset var refLocal = StructNew()>
 	

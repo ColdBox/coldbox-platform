@@ -72,6 +72,7 @@ Description :
 			// Validate Basic Mail Fields
 			if( NOT payload.validate() ){
 				arrayAppend(rtnStruct.errorArray,"Please check the basic mail fields of To, From and Body as they are empty. To: #payload.getTo()#, From: #payload.getFrom()#, Body Len = #payload.getBody().length()#.");
+				return rtnStruct;
 			}
 			
 			// If mail payload does not have a server and one is defined in the mail settings, use that

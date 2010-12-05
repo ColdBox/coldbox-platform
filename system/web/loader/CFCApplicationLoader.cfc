@@ -74,8 +74,8 @@ Loads a coldbox xml configuration file
 		oConfig = createObject("component", configCreatePath);
 		
 		//Decorate It
-		oConfig.injectPropertyMixin = getUtil().injectPropertyMixin;
-		oConfig.getPropertyMixin 	= getUtil().getPropertyMixin;
+		oConfig.injectPropertyMixin = getUtil().getMixerUtil().injectPropertyMixin;
+		oConfig.getPropertyMixin 	= getUtil().getMixerUtil().getPropertyMixin;
 		
 		//MixIn Variables
 		oConfig.injectPropertyMixin("controller",getController());

@@ -52,5 +52,10 @@ Description :
 		<!--- ************************************************************* --->
 		<cfset log.info("Application reinited at #now()#")>
 	</cffunction>
+	
+	<!--- customOutput --->
+    <cffunction name="customOutput" output="false" access="public" returntype="void">
+    	<cfset appendToBuffer('<h4>I just outputted something via a custom output buffer.</h4>')>
+    </cffunction>
 
 </cfcomponent>

@@ -93,8 +93,8 @@ Description :
 			
 			// Are we using ColdBox Application Container? If so, then do mixins.
 			if( isObject(getColdBox()) ){
-				lightWireBeanConfig.injectUDFMixin = instance.utility.injectUDFMixin;
-				lightWireBeanConfig.injectUDFMixin( "getController", variables.getController );
+				lightWireBeanConfig.injectMixin = instance.utility.getMixerUtil().injectMixin;
+				lightWireBeanConfig.injectMixin( "getController", variables.getController );
 				lightwireBeanConfig.controller = getColdBox();
 			} 
 			

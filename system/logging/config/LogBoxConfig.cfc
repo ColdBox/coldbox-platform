@@ -45,7 +45,7 @@ Description :
 			// Test and load via Data CFC
 			if( structKeyExists(arguments,"CFCConfig") and isObject(arguments.CFCConfig) ){
 				// Decorate our data CFC
-				arguments.CFCConfig.getPropertyMixin = instance.utility.getPropertyMixin;
+				arguments.CFCConfig.getPropertyMixin = instance.utility.getMixerUtil().getPropertyMixin;
 				// Execute the configuration
 				arguments.CFCConfig.configure();
 				// Get Data

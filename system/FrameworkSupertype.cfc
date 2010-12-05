@@ -180,9 +180,9 @@ Description :
 	</cffunction>
 	
 	<!--- Announce Interception --->
-	<cffunction name="announceInterception" access="public" returntype="void" hint="Announce an interception to the system." output="false" >
+	<cffunction name="announceInterception" access="public" returntype="void" hint="Announce an interception to the system." output="true" >
 		<cfargument name="state" 			required="true"  type="string" hint="The interception state to execute">
-		<cfargument name="interceptData" 	required="false" type="struct" default="#structNew()#" hint="A data structure used to pass intercepted information.">
+		<cfargument name="interceptData" 	required="false" type="struct" hint="A data structure used to pass intercepted information.">
 		<cfset controller.getInterceptorService().processState(argumentCollection=arguments)>
 	</cffunction>
 	
@@ -446,9 +446,8 @@ Description :
 	</cffunction>
 	
 	<!--- Include Facade --->
-	<cffunction name="$include" access="public" hint="Facade for cfinclude" returntype="void" output="false">
-		<cfargument name="template" type="string">
-		<cfinclude template="#arguments.template#">
+	<cffunction name="$include" access="public" hint="Facade for cfinclude" returntype="void" output="true">
+		<cfargument name="template" type="string"><cfinclude template="#arguments.template#">
 	</cffunction>
 
 </cfcomponent>

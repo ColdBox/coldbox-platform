@@ -32,16 +32,15 @@ clearStorage():void
 		<cfscript>
 			super.Init(arguments.controller);
 			
-			/* Plugin Properties */
+			// Plugin Properties
 			setpluginName("Session Storage");
 			setpluginVersion("2.0");
 			setpluginAuthor("Luis Majano");
 			setpluginAuthorURL("http://www.coldbox.org");
 			setpluginDescription("A permanent data storage plugin using the session scope.");
 			
-			/* Lock Properties */
-			instance.lockName = getController().getAppHash() & "_SESSION_STORAGE";
-			instance.LockTimeout = 20;
+			// Lock Properties 
+			instance.lockTimeout = 20;
 			
 			return this;
 		</cfscript>
@@ -57,7 +56,7 @@ clearStorage():void
 		<!--- ************************************************************* --->
 		<cfset var storage = getStorage()>
 		
-		<cflock name="#instance.lockName#" type="exclusive" timeout="#instance.lockTimeout#" throwontimeout="true">
+		<cflock scope="session" type="exclusive" timeout="#instance.lockTimeout#" throwontimeout="true">
 			<cfset storage[arguments.name] = arguments.value>
 		</cflock>
 	</cffunction>
@@ -71,7 +70,7 @@ clearStorage():void
 		<cfset var storage = getStorage()>
 		<cfset var results = "">
 		
-		<cflock name="#instance.lockName#" type="readonly" timeout="#instance.lockTimeout#" throwontimeout="true">
+		<cflock scope="session" type="readonly" timeout="#instance.lockTimeout#" throwontimeout="true">
 			<cfscript>
 				if ( structKeyExists( storage, arguments.name) )
 					results = storage[arguments.name];
@@ -91,7 +90,7 @@ clearStorage():void
 		<cfset var results = false>
 		<cfset var storage = getStorage()>
 		
-		<cflock name="#instance.lockName#" type="exclusive" timeout="#instance.lockTimeout#" throwontimeout="true">
+		<cflock scope="session" type="exclusive" timeout="#instance.lockTimeout#" throwontimeout="true">
 			<cfset results = structdelete(storage, arguments.name, true)>
 		</cflock>
 		
@@ -114,7 +113,7 @@ clearStorage():void
 	<cffunction name="clearAll" access="public" returntype="void" hint="Clear the entire coldbox session storage" output="false">
 		<cfset var storage = getStorage()>
 		
-		<cflock name="#instance.lockName#" type="exclusive" timeout="#instance.lockTimeout#" throwontimeout="true">
+		<cflock scope="session" type="exclusive" timeout="#instance.lockTimeout#" throwontimeout="true">
 			<cfset structClear(storage)>
 		</cflock>
 	</cffunction>
@@ -122,16 +121,16 @@ clearStorage():void
 	<!--- Get Storage --->
 	<cffunction name="getStorage" access="public" returntype="any" hint="Get the entire storage scope" output="false" >
 		<cfscript>
-			/* Verify Storage Exists */
+			// Verify Storage Exists
 			createStorage();
-			/* Return it */
+			// Return it
 			return session.cbStorage;
 		</cfscript>
 	</cffunction>
 	
 	<!--- remove Storage --->
 	<cffunction name="removeStorage" access="public" returntype="void" hint="remove the entire storage scope" output="false" >
-		<cflock name="#instance.lockName#" type="exclusive" timeout="#instance.lockTimeout#" throwontimeout="true">
+		<cflock scope="session" type="exclusive" timeout="#instance.lockTimeout#" throwontimeout="true">
 			<cfset structDelete(session, "cbStorage")>
 		</cflock>
 	</cffunction>
@@ -142,7 +141,7 @@ clearStorage():void
 	<cffunction name="createStorage" access="private" returntype="void" hint="Create the session storage scope" output="false" >
 		<cfif isDefined("session") AND NOT structKeyExists(session, "cbStorage")>
 			<!--- Create session Storage Scope --->
-			<cflock name="#instance.lockName#" type="exclusive" timeout="#instance.lockTimeout#" throwontimeout="true">
+			<cflock scope="session" type="exclusive" timeout="#instance.lockTimeout#" throwontimeout="true">
 				<cfif not structKeyExists(session, "cbStorage")>
 					<cfset session["cbStorage"] = structNew()>
 				</cfif>

@@ -8,11 +8,36 @@ Author     :	Luis Majano
 Description :
 	The main ColdBox utility library.
 ----------------------------------------------------------------------->
-<cfcomponent output="false" hint="The main ColdBox utility library.">
+<cfcomponent output="false" hint="The main ColdBox utility library filled with lots of nice goodies.">
+	
+	<!--- getMixerUtil --->
+    <cffunction name="getMixerUtil" output="false" access="public" returntype="any" hint="Get the mixer utility" colddoc:generic="coldbox.system.core.dynamic.MixerUtil">
+    	<cfscript>
+    		if( structKeyExists(variables, "mixerUtil") ){ return variables.mixerUtil; }
+			variables.mixerUtil = createObject("component","coldbox.system.core.dynamic.MixerUtil").init();
+			return variables.mixerUtil;
+		</cfscript>
+    </cffunction>
+	
+	<!--- arrayToStruct --->
+	<cffunction name="arrayToStruct" output="false" access="public" returntype="struct" hint="Convert an array to struct argument notation">
+		<cfargument name="in" type="array" required="true" hint="The array to convert"/>
+		<cfscript>
+			var results = structnew();
+			var x       = 1;
+			var inLen   = Arraylen(arguments.in);
+			
+			for(x=1; x lte inLen; x=x+1){
+				results[x] = arguments.in[x];
+			}
+			
+			return results;
+		</cfscript>
+	</cffunction>
 	
 	<!--- fileLastModified --->
 	<cffunction name="fileLastModified" access="public" returntype="string" output="false" hint="Get the last modified date of a file">
-		<cfargument name="filename" type="string" required="yes">
+		<cfargument name="filename" required="true">
 		<cfscript>
 		var objFile =  createObject("java","java.io.File").init(javaCast("string",arguments.filename));
 		// Calculate adjustments fot timezone and daylightsavindtime
@@ -22,11 +47,15 @@ Description :
 		</cfscript>
 	</cffunction>
 	
+	<!--- ripExtension --->
+	<cffunction name="ripExtension" access="public" returntype="string" output="false" hint="Rip the extension of a filename.">
+		<cfargument name="filename" required="true">
+		<cfreturn reReplace(arguments.filename,"\.[^.]*$","")>
+	</cffunction>
+	
 	<!--- getAbsolutePath --->
 	<cffunction name="getAbsolutePath" access="public" output="false" returntype="string" hint="Turn any system path, either relative or absolute, into a fully qualified one">
-		<!--- ************************************************************* --->
-		<cfargument name="path" type="string" required="true" hint="Abstract pathname">
-		<!--- ************************************************************* --->
+		<cfargument name="path" required="true">
 		<cfscript>
 			var fileObj = createObject("java","java.io.File").init(javaCast("String",arguments.path));
 			if(fileObj.isAbsolute()){
@@ -70,8 +99,8 @@ Description :
 
 	<!--- placeHolderReplacer --->
 	<cffunction name="placeHolderReplacer" access="public" returntype="any" hint="PlaceHolder Replacer for strings containing ${} patterns" output="false" >
-		<cfargument name="str" 		required="true" type="any" hint="The string variable to look for replacements">
-		<cfargument name="settings" required="true" type="any" hint="The structure of settings to use in replacing">
+		<cfargument name="str" 		required="true" hint="The string variable to look for replacements">
+		<cfargument name="settings" required="true" hint="The structure of settings to use in replacing">
 		<cfscript>
 			var returnString = arguments.str;
 			var regex = "\$\{([0-9a-z\-\.\_]+)\}";
@@ -110,43 +139,27 @@ Description :
 		</cfscript>
 	</cffunction>
 	
-	<!--- ripExtension --->
-	<cffunction name="ripExtension" access="public" returntype="string" output="false" hint="Rip the extension of a filename.">
-		<cfargument name="filename" type="string" required="true">
-		<cfreturn reReplace(arguments.filename,"\.[^.]*$","")>
-	</cffunction>
+<!------------------------------------------- CF Facades ------------------------------------------>
 
 	<!--- throw it --->
 	<cffunction name="throwit" access="public" hint="Facade for cfthrow" output="false">
-		<cfargument name="message" 	type="string" 	required="yes">
-		<cfargument name="detail" 	type="string" 	required="no" default="">
-		<cfargument name="type"  	type="string" 	required="no" default="Framework">
-		
+		<cfargument name="message" 	required="true">
+		<cfargument name="detail" 	required="false" default="">
+		<cfargument name="type"  	required="false" default="Framework">
 		<cfthrow type="#arguments.type#" message="#arguments.message#"  detail="#arguments.detail#">
 	</cffunction>
 	
 	<!--- rethrowit --->
 	<cffunction name="rethrowit" access="public" returntype="void" hint="Rethrow an exception" output="false" >
-		<cfargument name="throwObject" required="true" type="any" hint="The exception object">
-		
+		<cfargument name="throwObject" required="true" hint="The exception object">
 		<cfthrow object="#arguments.throwObject#">
 	</cffunction>
-	
-	<!--- relocate --->
-	<cffunction name="relocate" access="public" hint="Facade for cflocation" returntype="void" output="false">
-		<cfargument name="url" 		required="true" 	type="string">
-		<cfargument name="addtoken" required="false" 	type="boolean" default="false">
 		
-		<cflocation url="#arguments.url#" addtoken="#addtoken#">
-	</cffunction>
-	
 	<!--- dump it --->
 	<cffunction name="dumpit" access="public" hint="Facade for cfmx dump" returntype="void" output="true">
-		<cfargument name="var" required="yes" type="any">
-		<cfargument name="isAbort" type="boolean" default="false" required="false" hint="Abort also"/>
-		
-		<cfdump var="#var#">
-		<cfif arguments.isAbort><cfabort></cfif>
+		<cfargument name="var" 		required="true">
+		<cfargument name="isAbort"  type="boolean" default="false" required="false" hint="Abort also"/>
+		<cfdump var="#var#"><cfif arguments.isAbort><cfabort></cfif>
 	</cffunction>
 	
 	<!--- abort it --->
@@ -155,60 +168,22 @@ Description :
 	</cffunction>
 	
 	<!--- include it --->
-	<cffunction name="includeit" access="public" hint="Facade for cfinclude" returntype="void" output="false">
-		<cfargument name="template" type="string" required="yes">
-		
+	<cffunction name="includeit" access="public" hint="Facade for cfinclude" returntype="void" output="true">
+		<cfargument name="template" required="true">
 		<cfinclude template="#template#">
 	</cffunction>
 
-<!------------------------------------------- mixin methods ------------------------------------------>
-	
-	<!--- injectPropertyMixin --->
-	<cffunction name="injectPropertyMixin" hint="Injects a property into the passed scope" access="public" returntype="void" output="false">
-		<cfargument name="propertyName" 	type="string" 	required="true" hint="The name of the property to inject."/>
-		<cfargument name="propertyValue" 	type="any" 		required="true" hint="The value of the property to inject"/>
-		<cfargument name="scope" 			type="string" 	required="false" default="variables" hint="The scope to which inject the property to."/>
-		<cfscript>
-			"#arguments.scope#.#arguments.propertyName#" = arguments.propertyValue;
-		</cfscript>
-	</cffunction>
-
-	<!--- getPropertyMixin --->
-	<cffunction name="getPropertyMixin" hint="Retrives a property from a mixed in container" access="public" returntype="any" output="false">
-		<cfargument name="name" 	type="string" 	required="true" hint="The name of the property to retrieve"/>
-		<cfargument name="scope" 	type="string" 	required="false" default="variables" hint="The scope to which to retrieve the property from"/>
-		<cfargument name="default"  type="any"      required="false" hint="Default value to return, if property not found"/>
-		<cfscript>
-			var thisScope = variables;
-			if( arguments.scope eq "this"){ thisScope = this; }
-			
-			if( NOT structKeyExists(thisScope,arguments.name) AND structKeyExists(arguments,"default")){
-				return arguments.default;
-			}
-			
-			return thisScope[arguments.name];
-		</cfscript>
-	</cffunction>
-	
-	<!--- injectUDFMixin --->
-	<cffunction name="injectUDFMixin" hint="Injects a UDF into both public/private scopes in a CFC" access="public" returntype="void" output="false">
-		<cfargument name="name" type="string" required="true" hint="The name of the method to be injected">
-		<cfargument name="UDF" type="any" hint="The UDF to inject">
-		<cfscript>
-			variables[arguments.name] = arguments.UDF;
-			this[arguments.name] 	  = arguments.UDF;
-		</cfscript>
-	</cffunction>
+<!------------------------------------------- Taxonomy Utility Methods ------------------------------------------>
 	
 	<!--- isInstanceCheck --->
     <cffunction name="isInstanceCheck" output="false" access="public" returntype="boolean" hint="Checks if an object is of a certain type of family via inheritance">
-    	<cfargument name="obj"    type="any" required="true" hint="The object to evaluate"/>
-		<cfargument name="family" type="string" required="true" default="" hint="The family string to check"/>
+    	<cfargument name="obj"    required="true" hint="The object to evaluate"/>
+		<cfargument name="family" required="true" default="" hint="The family string to check"/>
     	<cfscript>
     		var md 			= "";
 			var moreChecks  = true;
 			
-    		// Get cf7 nasty metadata
+    		// Get cf7 nasty metadata, remove by 3.1
 			md = getMetadata(arguments.obj);
 			if( NOT structKeyExists(md, "extends") ){
 				return false;
@@ -236,8 +211,8 @@ Description :
 	
 	<!--- isFamilyType --->
     <cffunction name="isFamilyType" output="false" access="public" returntype="boolean" hint="Checks if an object is of the passed in family type">
-    	<cfargument name="family" type="string" required="true" hint="The family to covert it to: handler, plugin, interceptor"/>
-		<cfargument name="target" type="any" 	required="true" hint="The target object"/>
+    	<cfargument name="family" required="true" hint="The family to covert it to: handler, plugin, interceptor"/>
+		<cfargument name="target" required="true" hint="The target object"/>
 		<cfscript>
 			var familyPath = "";
 			
@@ -260,9 +235,9 @@ Description :
     </cffunction>
 	
 	<!--- convertToColdBox --->
-    <cffunction name="convertToColdBox" output="false" access="public" returntype="void" hint="Decorate an object as a ColdBox object">
-    	<cfargument name="family" type="string" required="true" hint="The family to covert it to: handler, plugin, interceptor"/>
-		<cfargument name="target" type="any" 	required="true" hint="The target object"/>
+    <cffunction name="convertToColdBox" output="false" access="public" returntype="void" hint="Decorate an object as a ColdBox Family object">
+    	<cfargument name="family" required="true" hint="The family to covert it to: handler, plugin, interceptor"/>
+		<cfargument name="target" required="true" hint="The target object"/>
 		<cfscript>
 			var baseObject = "";
 			var familyPath = "";
@@ -278,7 +253,7 @@ Description :
 			}
 			
 			// Mix it up baby
-			arguments.target.$injectUDF = this.injectUDFMixin;
+			arguments.target.$injectUDF = getMixerUtil().injectMixin;
 			
 			// Create base family object
 			baseObject = createObject("component",familyPath);
@@ -298,20 +273,5 @@ Description :
 			arguments.target.$super = baseObject;
 		</cfscript>
     </cffunction>
-	
-	<!--- arrayToStruct --->
-	<cffunction name="arrayToStruct" output="false" access="public" returntype="struct" hint="Convert an array to struct argument notation">
-		<cfargument name="in" type="array" required="true" hint="The array to convert"/>
-		<cfscript>
-			var results = structnew();
-			var x       = 1;
-			
-			for(x=1; x lte Arraylen(arguments.in); x=x+1){
-				results[x] = arguments.in[x];
-			}
-			
-			return results;
-		</cfscript>
-	</cffunction>
 
 </cfcomponent>

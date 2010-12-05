@@ -47,10 +47,12 @@ Description :
 			
 			AssertFalse( plugin.exists("nothing") ,"False Assertion on exists" );
 			plugin.deleteVar("tester");
-			AssertFalse( plugin.getVar("tester").length() ,"Remove & Exists for tester simple");
+			debug(cookie);
 			
+			AssertFalse( plugin.getVar("tester").length() ,"Remove & Exists for tester simple");
 			plugin.setVar("tester", complex );
 			AssertTrue( plugin.exists("tester") ,"Test Complex set & Exists");
+			debug(cookie);
 			
 			plugin.deleteVar("tester");
 			AssertFalse( plugin.getVar("tester").length() ,"Remove & Exists for complex");
