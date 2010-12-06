@@ -281,19 +281,7 @@ Description :
 			return this;
 		</cfscript>
 	</cffunction>
-	
-	<!--- getListener --->
-	<cffunction name="getListener" output="false" access="public" returntype="struct" hint="Get a specifed listener definition">
-		<cfargument name="name" type="string" required="true" hint="The listner configuration to retrieve"/>
-		<cfreturn instance.listeners[arguments.name]>
-	</cffunction>
-	
-	<!--- listenerExists --->
-	<cffunction name="listenerExists" output="false" access="public" returntype="boolean" hint="Check if a listener definition exists">
-		<cfargument name="name" type="string" required="true" hint="The listener to check"/>
-		<cfreturn structKeyExists(instance.listeners, arguments.name)>
-	</cffunction>
-	
+		
 	<!--- getListeners --->
 	<cffunction name="getListeners" output="false" access="public" returntype="array" hint="Get the configured listeners">
 		<cfreturn instance.listeners>
