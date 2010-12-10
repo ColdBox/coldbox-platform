@@ -626,7 +626,7 @@ Only one instance of a specific ColdBox application exists.
 			<cfcatch>
 				<!--- Check if onError exists? --->
 				<cfif oHandler._actionExists("onError")>
-					<cfset loc.results = oHandler.onError(oRequestContext,ehBean.getmethod(),e,arguments.eventArguments)>
+					<cfset loc.results = oHandler.onError(oRequestContext,ehBean.getmethod(),cfcatch,arguments.eventArguments)>
 				<cfelse>
 					<!--- rethrow not supported in cfscript <cfthrow object="e"> doesn't work properly as we lose context --->
 					<cfrethrow>
