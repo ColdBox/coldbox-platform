@@ -177,23 +177,28 @@ Description		:
 		<cfargument name="count" 		type="numeric" required="true"  hint="The number of calls made"/>
 		<cfargument name="methodName" 	type="string"  required="false" default="" hint="Name of the method to verify the calls from" />
 		<cfscript>
-			var key   		= "";
-			var totalCount 	= 0;
-			
-			// Specific Method Calls
-			if( len(arguments.methodName) ){
-				return (this.mockMethodCallCount(arguments.methodName) eq arguments.count);
-			}
-			
-			// All Calls
-			for( key in this._mockMethodCallCounters ){
-				totalCount = totalCount + this._mockMethodCallCounters[key];
-			}
-			return (totalCount eq arguments.count );
+			return (this.$count(argumentCollection=arguments) eq arguments.count );
 		</cfscript>
 	</cffunction>
 	
+	<!--- mockAtLeast --->
+	<cffunction name="mockAtLeast" output="false" returntype="boolean" hint="Assert that at least a certain number of calls have been made on the mock or a specific mock method">
+		<cfargument name="minNumberOfInvocations" type="numeric" required="true"  hint="The min number of calls to assert"/>
+		<cfargument name="methodName" 			  type="string"  required="false" default="" hint="Name of the method to verify the calls from, if blank, from the entire mock" />
+		<cfscript>
+			return (this.$count(argumentCollection=arguments) GTE arguments.minNumberOfInvocations);
+		</cfscript>
+	</cffunction>
 	
+	<!--- mockAtMost --->
+	<cffunction name="mockAtMost" output="false" returntype="boolean" hint="Assert that at most a certain number of calls have been made on the mock or a specific mock method">
+		<cfargument name="maxNumberOfInvocations" type="numeric" required="true"  hint="The max number of calls to assert"/>
+		<cfargument name="methodName" 			  type="string"  required="false" default="" hint="Name of the method to verify the calls from, if blank, from the entire mock" />
+		<cfscript>
+			return (this.$count(argumentCollection=arguments) LTE arguments.maxNumberOfInvocations);
+		</cfscript>
+	</cffunction>
+		
 	<!--- mockResults --->
 	<cffunction name="mockResults" output="false" access="public" returntype="any" hint="Use this method to mock more than 1 result as passed in arguments.  Can only be called when chained to a mockMethod(),$() or $().mockArgs() call.  Results will be recycled on a multiple of their lengths according to how many times they are called, simulating a state-machine algorithm. Method Alias: $results()">
 		<!--- Check if current method set? --->
@@ -426,25 +431,20 @@ Description		:
 			
 			// Mock Method
 			obj.$ 					= variables.mockMethod;
-			obj.mockMethod			= variables.mockMethod;
 			// Mock Property
 			obj.$property	 		= variables.mockProperty;
-			obj.mockProperty 		= variables.mockProperty;
 			// Mock Method Call Counts
 			obj.$count 				= variables.mockMethodCallCount;
-			obj.mockMethodCallCount = variables.mockMethodCallCount;
 			// Mock Results
-			obj.mockResults 		= variables.mockResults;
-			obj.$results			= obj.mockResults;
+			obj.$results			= variables.mockResults;
 			// Mock Arguments
-			obj.mockArgs			= variables.mockArgs;
-			obj.$args				= obj.mockArgs;
+			obj.$args				= variables.mockArgs;
 			// CallLog
-			obj.mockCallLog			= variables.mockCallLog;
-			obj.$callLog			= obj.mockCallLog;
+			obj.$callLog			= variables.mockCallLog;
 			// Verify Call Count
-			obj.mockVerifyCallCount	= variables.mockVerifyCallCount;
-			obj.$verifyCallCount	= obj.mockVerifyCallCount;
+			obj.$verifyCallCount	= variables.mockVerifyCallCount;
+			obj.$atLeast			= variables.mockAtLeast;
+			obj.$atMost				= variables.mockAtMost;
 			// Debug
 			obj.$debug				= variables.mockDebug;
 			// Mock Box

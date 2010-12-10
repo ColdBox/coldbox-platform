@@ -5,6 +5,20 @@
 		test = getMockBox().createEmptyMock("coldbox.testing.cases.testing.Test");
 	}
 	
+	function testVerifyAtMost(){
+		test.$("displayData",queryNew(''));
+		test.displayData();test.displayData();test.displayData();test.displayData();test.displayData();
+		assertFalse( test.$atMost(3) );
+		assertTrue( test.$atMost(5) );		
+	}
+	
+	function testVerifyAtLeast(){
+		test.$("displayData",queryNew(''));
+		assertTrue( test.$atLeast(0) );
+		test.displayData();test.displayData();test.displayData();test.displayData();test.displayData();
+		assertTrue( test.$atLeast(3) );
+		
+	}
 	function testVerifyCallCount(){
 		test.$("displayData",queryNew(''));
 		assertTrue( test.$verifyCallCount(0) );
