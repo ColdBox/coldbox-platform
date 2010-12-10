@@ -181,6 +181,15 @@ Description		:
 		</cfscript>
 	</cffunction>
 	
+	<!--- Verify How Many Calls have been made. --->
+	<cffunction name="mockNever" output="false" returntype="boolean" hint="Assert that no interactions have been made to the mock or a specific mock method: Alias to $verifyCallCount(0)">
+		<cfargument name="methodName" 	type="string"  required="false" default="" hint="Name of the method to verify the calls from" />
+		<cfscript>
+			if( this.$count(arguments.methodName) EQ 0 ){ return true; }
+			return false;
+		</cfscript>
+	</cffunction>
+	
 	<!--- mockAtLeast --->
 	<cffunction name="mockAtLeast" output="false" returntype="boolean" hint="Assert that at least a certain number of calls have been made on the mock or a specific mock method">
 		<cfargument name="minNumberOfInvocations" type="numeric" required="true"  hint="The min number of calls to assert"/>
@@ -433,18 +442,18 @@ Description		:
 			obj.$ 					= variables.mockMethod;
 			// Mock Property
 			obj.$property	 		= variables.mockProperty;
-			// Mock Method Call Counts
-			obj.$count 				= variables.mockMethodCallCount;
 			// Mock Results
 			obj.$results			= variables.mockResults;
 			// Mock Arguments
 			obj.$args				= variables.mockArgs;
 			// CallLog
 			obj.$callLog			= variables.mockCallLog;
-			// Verify Call Count
+			// Verify Call Counts
+			obj.$count 				= variables.mockMethodCallCount;
 			obj.$verifyCallCount	= variables.mockVerifyCallCount;
 			obj.$atLeast			= variables.mockAtLeast;
 			obj.$atMost				= variables.mockAtMost;
+			obj.$never				= variables.mockNever;
 			// Debug
 			obj.$debug				= variables.mockDebug;
 			// Mock Box
