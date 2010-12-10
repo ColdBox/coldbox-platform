@@ -135,7 +135,7 @@ Description		:
 <!------------------------------------------- DECORATION INJECTED METHODS ON MOCK OBJECTS ------------------------------------------>
 
 	<!--- mockProperty --->
-	<cffunction name="mockProperty" output="false" access="public" returntype="any" hint="Mock a property inside of an object in any scope. Methods Alias = $property()">
+	<cffunction name="mockProperty" output="false" access="public" returntype="any" hint="Mock a property inside of an object in any scope. Injected as = $property()">
 		<!--- ************************************************************* --->
 		<cfargument name="propertyName" 	type="string" 	required="true" hint="The name of the property to mock"/>
 		<cfargument name="propertyScope" 	type="string" 	required="false" default="variables" hint="The scope where the property lives in. By default we will use the variables scope."/>
@@ -148,7 +148,7 @@ Description		:
 	</cffunction>	
 	
 	<!--- Tell how many times a method has been called. --->
-	<cffunction name="mockMethodCallCount" output="false" returntype="numeric" hint="I return the number of times the specified mock method has been called or ALL mock methods have been called.  If the mock method has not been defined the results is a -1. Method Alias = $count()">
+	<cffunction name="mockMethodCallCount" output="false" returntype="numeric" hint="I return the number of times the specified mock method has been called or ALL mock methods have been called.  If the mock method has not been defined the results is a -1. Injected as = $count()">
 		<cfargument name="methodName" type="string" default="" required="false" hint="Name of the method to get calls from" />
 		<cfscript>
 			var key   		= "";
@@ -173,7 +173,7 @@ Description		:
 	</cffunction>
 	
 	<!--- Verify How Many Calls have been made. --->
-	<cffunction name="mockVerifyCallCount" output="false" returntype="boolean" hint="Assert how many calls have been made to the mock or a specific mock method">
+	<cffunction name="mockVerifyCallCount" output="false" returntype="boolean" hint="Assert how many calls have been made to the mock or a specific mock method: Injected as $verifyCallCount(), $times()">
 		<cfargument name="count" 		type="numeric" required="true"  hint="The number of calls made"/>
 		<cfargument name="methodName" 	type="string"  required="false" default="" hint="Name of the method to verify the calls from" />
 		<cfscript>
@@ -182,7 +182,7 @@ Description		:
 	</cffunction>
 	
 	<!--- Verify How Many Calls have been made. --->
-	<cffunction name="mockNever" output="false" returntype="boolean" hint="Assert that no interactions have been made to the mock or a specific mock method: Alias to $verifyCallCount(0)">
+	<cffunction name="mockVerifyNever" output="false" returntype="boolean" hint="Assert that no interactions have been made to the mock or a specific mock method: Alias to $verifyCallCount(0). Injected as $never()">
 		<cfargument name="methodName" 	type="string"  required="false" default="" hint="Name of the method to verify the calls from" />
 		<cfscript>
 			if( this.$count(arguments.methodName) EQ 0 ){ return true; }
@@ -191,7 +191,7 @@ Description		:
 	</cffunction>
 	
 	<!--- mockAtLeast --->
-	<cffunction name="mockAtLeast" output="false" returntype="boolean" hint="Assert that at least a certain number of calls have been made on the mock or a specific mock method">
+	<cffunction name="mockVerifyAtLeast" output="false" returntype="boolean" hint="Assert that at least a certain number of calls have been made on the mock or a specific mock method. Injected as $atLeast()">
 		<cfargument name="minNumberOfInvocations" type="numeric" required="true"  hint="The min number of calls to assert"/>
 		<cfargument name="methodName" 			  type="string"  required="false" default="" hint="Name of the method to verify the calls from, if blank, from the entire mock" />
 		<cfscript>
@@ -199,8 +199,16 @@ Description		:
 		</cfscript>
 	</cffunction>
 	
+	<!--- mockOnce --->
+	<cffunction name="mockVerifyOnce" output="false" returntype="boolean" hint="Assert that only 1 call has been made on the mock or a specific mock method. Injected as $once()">
+		<cfargument name="methodName" type="string"  required="false" default="" hint="Name of the method to verify the calls from, if blank, from the entire mock" />
+		<cfscript>
+			return (this.$count(argumentCollection=arguments) EQ 1);
+		</cfscript>
+	</cffunction>
+	
 	<!--- mockAtMost --->
-	<cffunction name="mockAtMost" output="false" returntype="boolean" hint="Assert that at most a certain number of calls have been made on the mock or a specific mock method">
+	<cffunction name="mockVerifyAtMost" output="false" returntype="boolean" hint="Assert that at most a certain number of calls have been made on the mock or a specific mock method. Injected as $atMost()">
 		<cfargument name="maxNumberOfInvocations" type="numeric" required="true"  hint="The max number of calls to assert"/>
 		<cfargument name="methodName" 			  type="string"  required="false" default="" hint="Name of the method to verify the calls from, if blank, from the entire mock" />
 		<cfscript>
@@ -209,7 +217,7 @@ Description		:
 	</cffunction>
 		
 	<!--- mockResults --->
-	<cffunction name="mockResults" output="false" access="public" returntype="any" hint="Use this method to mock more than 1 result as passed in arguments.  Can only be called when chained to a mockMethod(),$() or $().mockArgs() call.  Results will be recycled on a multiple of their lengths according to how many times they are called, simulating a state-machine algorithm. Method Alias: $results()">
+	<cffunction name="mockResults" output="false" access="public" returntype="any" hint="Use this method to mock more than 1 result as passed in arguments.  Can only be called when chained to a mockMethod(),$() or $().mockArgs() call.  Results will be recycled on a multiple of their lengths according to how many times they are called, simulating a state-machine algorithm. Injected as: $results()">
 		<!--- Check if current method set? --->
 		<cfif len(this._mockCurrentMethod)>
 			<cfscript>
@@ -235,7 +243,7 @@ Description		:
 	</cffunction>
 	
 	<!--- mockArgs --->
-	<cffunction name="mockArgs" output="false" access="public" returntype="any" hint="Use this method to mock specific arguments when calling a mocked method.  Can only be called when chained to a mockMethod() call.  If a method is called with arguments and no match, it defaults to the base results defined. Method Alias: $args()">
+	<cffunction name="mockArgs" output="false" access="public" returntype="any" hint="Use this method to mock specific arguments when calling a mocked method.  Can only be called when chained to a mockMethod() call.  If a method is called with arguments and no match, it defaults to the base results defined. Injected as: $args()">
 		<cfscript>
 			var argOrderedTree = "";
 			
@@ -257,7 +265,7 @@ Description		:
 	</cffunction>
 	
 	<!--- mockMethod --->
-	<cffunction name="mockMethod" output="false" access="public" returntype="any" hint="Mock a Method, very simply, no fancy stuff. Method Alias: $()">
+	<cffunction name="mockMethod" output="false" access="public" returntype="any" hint="Mock a Method, very simply, no fancy stuff. Injected as: $()">
 		<!--- ************************************************************* --->
 		<cfargument name="method" 	type="string" 	required="true" hint="The method you want to mock or spy on"/>
 		<cfargument name="returns" 	type="any" 		required="false" hint="The results it must return, if not passed it returns void or you will have to do the mockResults() chain"/>
@@ -329,7 +337,7 @@ Description		:
 	</cffunction>	
 	
 	<!--- mockCallLog --->
-	<cffunction name="mockCallLog" output="false" access="public" returntype="struct" hint="Retrieve the method call logger structure. Method Alias: $callLog()">
+	<cffunction name="mockCallLog" output="false" access="public" returntype="struct" hint="Retrieve the method call logger structure. Injected as: $callLog()">
 		<cfreturn this._mockCallLoggers>
 	</cffunction>
 	
@@ -451,9 +459,11 @@ Description		:
 			// Verify Call Counts
 			obj.$count 				= variables.mockMethodCallCount;
 			obj.$verifyCallCount	= variables.mockVerifyCallCount;
-			obj.$atLeast			= variables.mockAtLeast;
-			obj.$atMost				= variables.mockAtMost;
-			obj.$never				= variables.mockNever;
+			obj.$times				= obj.$verifyCallCount;
+			obj.$atLeast			= variables.mockVerifyAtLeast;
+			obj.$atMost				= variables.mockVerifyAtMost;
+			obj.$never				= variables.mockVerifyNever;
+			obj.$once				= variables.mockVerifyOnce;
 			// Debug
 			obj.$debug				= variables.mockDebug;
 			// Mock Box

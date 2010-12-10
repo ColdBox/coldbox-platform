@@ -5,6 +5,17 @@
 		test = getMockBox().createEmptyMock("coldbox.testing.cases.testing.Test");
 	}
 	
+	function testVerifyOnce(){
+		test.$("displayData",queryNew('')).$("testIt").$("testNone");
+		test.testIt();
+		assertTrue( test.$once() );
+		test.displayData();
+		assertTrue( test.$once("displayData") );
+		
+		assertFalse( test.$once("testNone") );
+	}
+	
+	
 	function testVerifyNever(){
 		test.$("displayData",queryNew(''));
 		test.$("testIt");
